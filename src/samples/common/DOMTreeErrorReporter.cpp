@@ -1,3 +1,4 @@
+
 /*
  * The Apache Software License, Version 1.1
  *
@@ -56,6 +57,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2005/11/02 16:06:03  jpcs
+ * Updated the copyright notices for the project.
+ *
  * Revision 1.1  2005/11/01 18:04:14  jpcs
  * Initial check in.
  *
