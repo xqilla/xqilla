@@ -28,4 +28,4 @@
 
 CVSROOT /cvsroot/sitedocs/CVSROOT/cvstools/syncmail %{sVv} jpcs@users.sourceforge.net
 
-DEFAULT /cvsroot/sitedocs/CVSROOT/cvstools/syncmail %{sVv} john@parthcomp.com
+DEFAULT /cvsroot/sitedocs/CVSROOT/cvstools/syncmail %{sVv} xqilla-devel@lists.sourceforge.net
