@@ -1,6 +1,17 @@
-// CollationImpl.h: interface for the CollationImpl interface.
-//
-//////////////////////////////////////////////////////////////////////
+/*
+ * Copyright (c) 2001-2005
+ *     DecisionSoft Limited. All rights reserved.
+ * Copyright (c) 2004-2005
+ *     Progress Software Corporation. All rights reserved.
+ * Copyright (c) 2004-2005
+ *     Sleepycat Software. All rights reserved.
+ * Copyright (c) 2004-2005
+ *     Parthenon Computing Ltd. All rights reserved.
+ *
+ * Please see the file LICENSE for more information.
+ *
+ * $Id$
+ */
 
 #if !defined(AFX_COLLATIONIMPL_H__6BA76C4A_0A5B_480B_9870_86A89A118100__INCLUDED_)
 #define AFX_COLLATIONIMPL_H__6BA76C4A_0A5B_480B_9870_86A89A118100__INCLUDED_

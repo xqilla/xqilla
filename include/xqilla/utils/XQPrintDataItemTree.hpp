@@ -1,11 +1,17 @@
-//
-// See the file LICENSE for redistribution information.
-//
-// Copyright (c) 2002-2005
-//	Sleepycat Software.  All rights reserved.
-//
-// $Id$
-//
+/*
+ * Copyright (c) 2001-2005
+ *     DecisionSoft Limited. All rights reserved.
+ * Copyright (c) 2004-2005
+ *     Progress Software Corporation. All rights reserved.
+ * Copyright (c) 2004-2005
+ *     Sleepycat Software. All rights reserved.
+ * Copyright (c) 2004-2005
+ *     Parthenon Computing Ltd. All rights reserved.
+ *
+ * Please see the file LICENSE for more information.
+ *
+ * $Id$
+ */
 
 #ifndef AFX_XQUERYPRINTDATAITEMTREE_HPP__FAA9543A_2F10_49A4_93D2_857E2I8C48E3__INCLUDED_
 #define	AFX_XQUERYPRINTDATAITEMTREE_HPP__FAA9543A_2F10_49A4_93D2_857E2I8C48E3__INCLUDED_
