@@ -16,7 +16,7 @@
 #include "../config/pathan_config.h"
 #include <sstream>
 
-#include <xqilla/utils/PrintDataItemTree.hpp>
+#include <xqilla/utils/PrintAST.hpp>
 #include <xqilla/ast/ASTNodeImpl.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/utils/NumUtils.hpp>
@@ -437,9 +437,7 @@ std::string ASTNodeImpl::PredicateFilterResult::asString(DynamicContext *context
     oss << parent_.asString(context, indent + 2);
     oss << in << "  </parent>" << std::endl;
   }
-  oss << in << "  <dataitem>" << std::endl;
-  oss << PrintDataItemTree::print(pred_.pred, context, indent + 2);
-  oss << in << "  </dataitem>" << std::endl;
+  oss << PrintAST::print(pred_.pred, context, indent + 1);
   oss << in << "</predicate>" << std::endl;
 
   return oss.str();
@@ -514,9 +512,7 @@ std::string ASTNodeImpl::NonNumericPredicateFilterResult::asString(DynamicContex
     oss << parent_.asString(context, indent + 2);
     oss << in << "  </parent>" << std::endl;
   }
-  oss << in << "  <dataitem>" << std::endl;
-  oss << PrintDataItemTree::print(pred_.pred, context, indent + 2);
-  oss << in << "  </dataitem>" << std::endl;
+  oss << PrintAST::print(pred_.pred, context, indent + 1);
   oss << in << "</nonnumeric_predicate>" << std::endl;
 
   return oss.str();
@@ -602,9 +598,7 @@ std::string ASTNodeImpl::NumericPredicateFilterResult::asString(DynamicContext *
     oss << parent_.asString(context, indent + 2);
     oss << in << "  </parent>" << std::endl;
   }
-  oss << in << "  <dataitem>" << std::endl;
-  oss << PrintDataItemTree::print(pred_.pred, context, indent + 2);
-  oss << in << "  </dataitem>" << std::endl;
+  oss << PrintAST::print(pred_.pred, context, indent + 1);
   oss << in << "</numeric_predicate>" << std::endl;
 
   return oss.str();

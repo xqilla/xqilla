@@ -39,7 +39,7 @@
 
 typedef union {
 	XMLCh* str;
-	ASTNode* dataItem;
+	ASTNode* astNode;
 	XQUserFunction* functDecl;
 	XQUserFunction::XQFunctionParameter* funcParam;
 	XQUserFunction::VectorOfFunctionParameters* funcParams;

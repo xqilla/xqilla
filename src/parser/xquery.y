@@ -406,15 +406,15 @@ namespace XQuery {
 %type <functDecl>			FunctionDecl 
 %type <funcParam>			Param
 %type <funcParams>			ParamList
-%type <dataItem>			Expr ExprSingle OrExpr AndExpr EnclosedExpr FLWORExpr IfExpr ComparisonExpr DecimalLiteral VarRef
-%type <dataItem>			RangeExpr AdditiveExpr MultiplicativeExpr UnionExpr QuantifiedExpr StringLiteral Literal ContextItemExpr
-%type <dataItem>			UnaryExpr ValidateExpr CastExpr TreatExpr IntersectExceptExpr ParenthesizedExpr PrimaryExpr FunctionCall
-%type <dataItem>			RelativePathExpr StepExpr AxisStep FilterExpr TypeswitchExpr ValueExpr PathExpr NumericLiteral IntegerLiteral 
-%type <dataItem>			CastableExpr Constructor ComputedConstructor DirElemConstructor DirCommentConstructor DirPIConstructor  
-%type <dataItem>			CompElemConstructor CompTextConstructor CompPIConstructor CompCommentConstructor OrderedExpr UnorderedExpr
-%type <dataItem>			CompAttrConstructor WhereClause CompDocConstructor DoubleLiteral InstanceofExpr DirectConstructor 
-%type <dataItem>			ContentExpr ExtensionExpr 
-%type <dataItem>      		ForwardStep ReverseStep AbbrevForwardStep AbbrevReverseStep
+%type <astNode>			Expr ExprSingle OrExpr AndExpr EnclosedExpr FLWORExpr IfExpr ComparisonExpr DecimalLiteral VarRef
+%type <astNode>			RangeExpr AdditiveExpr MultiplicativeExpr UnionExpr QuantifiedExpr StringLiteral Literal ContextItemExpr
+%type <astNode>			UnaryExpr ValidateExpr CastExpr TreatExpr IntersectExceptExpr ParenthesizedExpr PrimaryExpr FunctionCall
+%type <astNode>			RelativePathExpr StepExpr AxisStep FilterExpr TypeswitchExpr ValueExpr PathExpr NumericLiteral IntegerLiteral 
+%type <astNode>			CastableExpr Constructor ComputedConstructor DirElemConstructor DirCommentConstructor DirPIConstructor  
+%type <astNode>			CompElemConstructor CompTextConstructor CompPIConstructor CompCommentConstructor OrderedExpr UnorderedExpr
+%type <astNode>			CompAttrConstructor WhereClause CompDocConstructor DoubleLiteral InstanceofExpr DirectConstructor 
+%type <astNode>			ContentExpr ExtensionExpr 
+%type <astNode>      		ForwardStep ReverseStep AbbrevForwardStep AbbrevReverseStep
 %type <itemList>			DirElementContent DirAttributeList QuotAttrValueContent AposAttrValueContent DirAttributeValue PredicateList FunctionCallArgumentList
 %type <axis>          		ForwardAxis ReverseAxis
 %type <nodeTest>			NodeTest NameTest KindTest AttributeTest SchemaAttributeTest

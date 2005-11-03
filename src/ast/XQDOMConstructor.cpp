@@ -23,7 +23,7 @@
 #include <xqilla/context/XQFactory.hpp>
 #include <xqilla/ast/XQDebugHook.hpp>
 #include <xqilla/dom-api/XQScopedNamespace.hpp>
-#include <xqilla/exceptions/DataItemException.hpp>
+#include <xqilla/exceptions/ASTException.hpp>
 #include <xqilla/exceptions/NamespaceLookupException.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>
 #include <xqilla/schema/SequenceType.hpp>
@@ -116,7 +116,7 @@ Sequence XQDOMConstructor::collapseTreeInternal(DynamicContext *context, int fla
               Node::Ptr sourceNode=(Node::Ptr)child;
               // If the content sequence contains an attribute node following a node that is not an attribute node, a type error is raised [err:XQTY0024].
               if(sourceNode->dmNodeKind()==Node::attribute_string)
-                DSLthrow(DataItemException,X("DOM Constructor"),X("An attribute node cannot be a child of a document [err:XQTY0024]"));
+                DSLthrow(ASTException,X("DOM Constructor"),X("An attribute node cannot be a child of a document [err:XQTY0024]"));
               // If the content sequence contains a document node, the document node is replaced in the content 
               // sequence by its children.
               else if(sourceNode->dmNodeKind()==Node::document_string) {
@@ -163,7 +163,7 @@ Sequence XQDOMConstructor::collapseTreeInternal(DynamicContext *context, int fla
         Result resName=m_name->collapseTree(context).atomize(context);
         AnyAtomicType::Ptr itemName=resName.next(context);
         if(itemName==NULLRCP || resName.next(context)!=NULLRCP)
-          DSLthrow(DataItemException,X("DOM Constructor"),X("The name for the element must be a single xs:QName, xs:string or xs:untypedAtomic item [err:XPTY0004]"));
+          DSLthrow(ASTException,X("DOM Constructor"),X("The name for the element must be a single xs:QName, xs:string or xs:untypedAtomic item [err:XPTY0004]"));
 
         std::vector<Node::Ptr> attrList;
         std::vector<XQFactory::ElementChild> childList;
@@ -234,11 +234,11 @@ Sequence XQDOMConstructor::collapseTreeInternal(DynamicContext *context, int fla
           nodeName=pString;
         }
         else
-          DSLthrow(DataItemException,X("DOM Constructor"),X("The name for the element must be either a xs:QName, xs:string or xs:untypedAtomic [err:XPTY0004]"));
+          DSLthrow(ASTException,X("DOM Constructor"),X("The name for the element must be either a xs:QName, xs:string or xs:untypedAtomic [err:XPTY0004]"));
 
         // TODO: what error should we return if the string is empty?
         if(XMLString::stringLen(nodeName)==0)
-          DSLthrow(DataItemException,X("DOM Constructor"),X("The name for the element is empty"));
+          DSLthrow(ASTException,X("DOM Constructor"),X("The name for the element is empty"));
 
         for (VectorOfASTNodes::const_iterator itCont = m_children->begin(); itCont != m_children->end (); ++itCont)
         {
@@ -267,7 +267,7 @@ Sequence XQDOMConstructor::collapseTreeInternal(DynamicContext *context, int fla
               else if(sourceNode->dmNodeKind() == Node::attribute_string)
               {
                 if(!childList.empty())
-                  DSLthrow(DataItemException,X("DOM Constructor"),X("Attribute nodes must be created before the other child nodes of an element [err:XQTY0024]"));
+                  DSLthrow(ASTException,X("DOM Constructor"),X("Attribute nodes must be created before the other child nodes of an element [err:XQTY0024]"));
 
                 // check if the attribute has a prefix that has been defined
                 ATQNameOrDerived::Ptr name = sourceNode->dmNodeName(context);
@@ -336,7 +336,7 @@ Sequence XQDOMConstructor::collapseTreeInternal(DynamicContext *context, int fla
         Result resName=m_name->collapseTree(context).atomize(context);
         AnyAtomicType::Ptr itemName=resName.next(context);
         if(itemName==NULLRCP || resName.next(context)!=NULLRCP)
-          DSLthrow(DataItemException,X("DOM Constructor"),X("The name for the attribute must be a single xs:QName, xs:string or xs:untypedAtomic item [err:XPTY0004]"));
+          DSLthrow(ASTException,X("DOM Constructor"),X("The name for the attribute must be a single xs:QName, xs:string or xs:untypedAtomic item [err:XPTY0004]"));
 
         const XMLCh* nodeUri=NULL, *nodePrefix=NULL, *nodeName=NULL;
         if(itemName->getPrimitiveTypeIndex()==AnyAtomicType::QNAME)
@@ -359,18 +359,18 @@ Sequence XQDOMConstructor::collapseTreeInternal(DynamicContext *context, int fla
           nodeName=pString;
         }
         else
-          DSLthrow(DataItemException,X("DOM Constructor"),X("The name for the attribute must be either a xs:QName, xs:string or xs:untypedAtomic [err:XPTY0004]"));
+          DSLthrow(ASTException,X("DOM Constructor"),X("The name for the attribute must be either a xs:QName, xs:string or xs:untypedAtomic [err:XPTY0004]"));
 
         if(nodeUri==NULL && XPath2Utils::equals(nodeName, XMLUni::fgXMLNSString))
           nodeUri=XMLUni::fgXMLNSURIName;
         // TODO: add a flag to distinguish between direct attribute constructors and computed constructor: this test must
         // be done only on computed attribute constuctors
         //if(XPath2Utils::equals(nodeUri, XMLUni::fgXMLNSURIName))
-        //    DSLthrow(DataItemException,X("DOM Constructor"),X("A computed attribute constructor cannot create a namespace declaration [err:XQ0044]"));
+        //    DSLthrow(ASTException,X("DOM Constructor"),X("A computed attribute constructor cannot create a namespace declaration [err:XQ0044]"));
 
         // TODO: what error should we return if the string is empty?
         if(XMLString::stringLen(nodeName)==0)
-          DSLthrow(DataItemException,X("DOM Constructor"),X("The name for the attribute is empty"));
+          DSLthrow(ASTException,X("DOM Constructor"),X("The name for the attribute is empty"));
 
         XMLBuffer value;
         getStringValue(value, context);
@@ -385,7 +385,7 @@ Sequence XQDOMConstructor::collapseTreeInternal(DynamicContext *context, int fla
         Result resName=m_name->collapseTree(context).atomize(context);
         AnyAtomicType::Ptr itemName=resName.next(context);
         if(itemName==NULLRCP || resName.next(context)!=NULLRCP)
-          DSLthrow(DataItemException,X("DOM Constructor"),X("The target for the processing instruction must be a single xs:NCName, xs:string or xs:untypedAtomic item [err:XPTY0004]"));
+          DSLthrow(ASTException,X("DOM Constructor"),X("The target for the processing instruction must be a single xs:NCName, xs:string or xs:untypedAtomic item [err:XPTY0004]"));
 
         const XMLCh* nodeName=NULL;
         // the specs specify that a xs:NCName could be returned, but we create a xs:string in that case
@@ -393,24 +393,24 @@ Sequence XQDOMConstructor::collapseTreeInternal(DynamicContext *context, int fla
         {
           nodeName=itemName->asString(context);
           if(!XMLChar1_0::isValidNCName(nodeName, XMLString::stringLen(nodeName)))
-            DSLthrow(DataItemException,X("DOM Constructor"),X("The target for the processing instruction must be a valid xs:NCName [err:XQDY0041]"));
+            DSLthrow(ASTException,X("DOM Constructor"),X("The target for the processing instruction must be a valid xs:NCName [err:XQDY0041]"));
         }
         else
-          DSLthrow(DataItemException,X("DOM Constructor"),X("The target for the processing instruction must be a single xs:NCName, xs:string or xs:untypedAtomic item [err:XPTY0004]"));
+          DSLthrow(ASTException,X("DOM Constructor"),X("The target for the processing instruction must be a single xs:NCName, xs:string or xs:untypedAtomic item [err:XPTY0004]"));
 
         if(XMLString::compareIString(nodeName, XMLUni::fgXMLString)==0)
-          DSLthrow(DataItemException,X("DOM Constructor"),X("The target for the processing instruction must not be 'XML' [err:XQDY0064]"));
+          DSLthrow(ASTException,X("DOM Constructor"),X("The target for the processing instruction must not be 'XML' [err:XQDY0064]"));
         int nIndex=XMLString::indexOf(nodeName, chQuestion);
         int nTargetLen=XMLString::stringLen(nodeName);
         while(nIndex!=-1)
         {
           if((nIndex+1)<nTargetLen && nodeName[nIndex+1]==chCloseAngle)
-            DSLthrow(DataItemException,X("DOM Constructor"),X("The target for the processing instruction must not contain the string '?>' [err:XQDY0026]"));
+            DSLthrow(ASTException,X("DOM Constructor"),X("The target for the processing instruction must not contain the string '?>' [err:XQDY0026]"));
           nIndex=XMLString::indexOf(nodeName, chQuestion, nIndex+1);
         }
 
         if(XMLString::stringLen(nodeName)==0)
-          DSLthrow(DataItemException,X("DOM Constructor"),X("The name for the processing instruction is empty"));
+          DSLthrow(ASTException,X("DOM Constructor"),X("The name for the processing instruction is empty"));
         XMLBuffer value;
         getStringValue(value, context);
 
@@ -420,7 +420,7 @@ Sequence XQDOMConstructor::collapseTreeInternal(DynamicContext *context, int fla
         const XMLCh *end = ptr + value.getLen();
         while(ptr != end) {
           if(*ptr == chCloseAngle && foundQ)
-            DSLthrow(DataItemException,X("DOM Constructor"),X("The content for the processing instruction must not contain the string '?>' [err:XQDY0026]"));
+            DSLthrow(ASTException,X("DOM Constructor"),X("The content for the processing instruction must not contain the string '?>' [err:XQDY0026]"));
           else if(*ptr == chQuestion) foundQ = true;
           else foundQ = false;
           ++ptr;
@@ -448,7 +448,7 @@ Sequence XQDOMConstructor::collapseTreeInternal(DynamicContext *context, int fla
           ++ptr;
         }
         if(foundDash)
-          DSLthrow(DataItemException,X("DOM Constructor"),X("It is a dynamic error if the result of the content expression of a computed comment constructor contains two adjacent hyphens or ends with a hyphen. [err:XQDY0072]"));
+          DSLthrow(ASTException,X("DOM Constructor"),X("It is a dynamic error if the result of the content expression of a computed comment constructor contains two adjacent hyphens or ends with a hyphen. [err:XQDY0072]"));
 
         result = ((XQFactory*)context->getPathanFactory())->createCommentNode(value.getRawBuffer(), context);
       }
@@ -467,7 +467,7 @@ Sequence XQDOMConstructor::collapseTreeInternal(DynamicContext *context, int fla
 #if defined(_DEBUG) || defined(DEBUG)
     }
     catch(DOMException& e) {
-        DSLthrow(DataItemException,X("DOM Constructor"),e.getMessage());
+        DSLthrow(ASTException,X("DOM Constructor"),e.getMessage());
     }
 #endif
     if(result.notNull())

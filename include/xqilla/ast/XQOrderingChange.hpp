@@ -26,7 +26,7 @@
 class XQENGINE_API XQOrderingChange : public ASTNodeImpl
 {
 public:
-  XQOrderingChange(StaticContext::NodeSetOrdering ordering, ASTNode* dataItem, XPath2MemoryManager* expr);
+  XQOrderingChange(StaticContext::NodeSetOrdering ordering, ASTNode* astNode, XPath2MemoryManager* expr);
 
 	virtual Result createResult(DynamicContext *context, int flags=0) const;
 	virtual ASTNode* staticResolution(StaticContext *context);

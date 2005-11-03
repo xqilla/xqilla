@@ -22,7 +22,7 @@
 #include <xqilla/context/DynamicContext.hpp>
 
 XQParenthesizedExpr::XQParenthesizedExpr(XPath2MemoryManager* memMgr)
-	: ASTNodeImpl(memMgr), _dataItems(PathanAllocator<ASTNode*>(memMgr))
+	: ASTNodeImpl(memMgr), _astNodes(PathanAllocator<ASTNode*>(memMgr))
 {
   setType(ASTNode::PARENTHESIZED);
 }
@@ -34,18 +34,18 @@ Result XQParenthesizedExpr::createResult(DynamicContext* context, int flags) con
 
 void XQParenthesizedExpr::addItem(ASTNode* di) {
 
-	_dataItems.push_back(di);
+	_astNodes.push_back(di);
 }
 
 ASTNode* XQParenthesizedExpr::staticResolution(StaticContext *context) {
   // Return a blank XQSequence if we have no children
-  if(_dataItems.empty()) {
+  if(_astNodes.empty()) {
     return new (getMemoryManager()) XQSequence(getMemoryManager());
   }
 
   // Dissolve ourselves if we have only one child
-  if(_dataItems.size() == 1) {
-    ASTNode *result = _dataItems.front();
+  if(_astNodes.size() == 1) {
+    ASTNode *result = _astNodes.front();
     result->addPredicates(getPredicates());
     return result->staticResolution(context);
   }
@@ -53,7 +53,7 @@ ASTNode* XQParenthesizedExpr::staticResolution(StaticContext *context) {
   _src.getStaticType().flags = 0;
 
   bool allConstant = true;
-  for(VectorOfASTNodes::iterator i = _dataItems.begin(); i != _dataItems.end(); ++i) {
+  for(VectorOfASTNodes::iterator i = _astNodes.begin(); i != _astNodes.end(); ++i) {
     *i = (*i)->staticResolution(context);
     _src.getStaticType().typeUnion((*i)->getStaticResolutionContext().getStaticType());
     _src.add((*i)->getStaticResolutionContext());
@@ -71,7 +71,7 @@ ASTNode* XQParenthesizedExpr::staticResolution(StaticContext *context) {
 }
 
 const VectorOfASTNodes &XQParenthesizedExpr::getChildren() const {
-  return _dataItems;
+  return _astNodes;
 }
 
 XQParenthesizedExpr::ParenthesizedResult::ParenthesizedResult(const XQParenthesizedExpr *di, int flags, DynamicContext *context)
