@@ -21,7 +21,7 @@
 
 class AnyAtomicType;
 
-class PATHAN_EXPORT ComparisonOperator : public XQOperator
+class XQILLA_API ComparisonOperator : public XQOperator
 {
 public:
   ComparisonOperator(const XMLCh* opName, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);

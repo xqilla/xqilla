@@ -20,14 +20,14 @@
 #ifndef _LESSTHAN_HPP
 #define _LESSTHAN_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/operators/ComparisonOperator.hpp>
 
 class Collation;
 
 /** OpLessThan operator function*/
-class PATHAN_EXPORT LessThan : public ComparisonOperator
+class XQILLA_API LessThan : public ComparisonOperator
 {
 public:
   static const XMLCh name[];

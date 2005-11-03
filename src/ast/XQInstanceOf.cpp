@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <assert.h>
 #include <sstream>
 
@@ -24,7 +24,7 @@
 #include <xqilla/items/ATBooleanOrDerived.hpp>
 #include <xqilla/ast/XQSequence.hpp>
 #include <xqilla/exceptions/XPath2TypeMatchException.hpp>
-#include <xqilla/context/PathanFactory.hpp>
+#include <xqilla/context/XQillaFactory.hpp>
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -78,10 +78,10 @@ Item::Ptr XQInstanceOf::InstanceOfResult::getSingleResult(DynamicContext *contex
     while(result.next(context) != NULLRCP) {}
   }
   catch(const XPath2TypeMatchException &ex) {
-    return (const Item::Ptr)context->getPathanFactory()->createBoolean(false, context);
+    return (const Item::Ptr)context->getXQillaFactory()->createBoolean(false, context);
   }
 
-  return (const Item::Ptr)context->getPathanFactory()->createBoolean(true, context);
+  return (const Item::Ptr)context->getXQillaFactory()->createBoolean(true, context);
 }
 
 std::string XQInstanceOf::InstanceOfResult::asString(DynamicContext *context, int indent) const

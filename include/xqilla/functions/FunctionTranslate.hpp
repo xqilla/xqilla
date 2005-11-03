@@ -19,7 +19,7 @@
 #include <xqilla/ast/ConstantFoldingFunction.hpp>
 
 /** Translate function. */
-class PATHAN_EXPORT FunctionTranslate : public ConstantFoldingFunction
+class XQILLA_API FunctionTranslate : public ConstantFoldingFunction
 {
 public:
   static const XMLCh name[];

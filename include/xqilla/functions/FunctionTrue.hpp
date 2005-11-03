@@ -16,7 +16,7 @@
 #ifndef _FUNCTIONTRUE_HPP
 #define _FUNCTIONTRUE_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/ConstantFoldingFunction.hpp>
 
@@ -25,7 +25,7 @@
  *
  * xf:true() => boolean
  */
-class PATHAN_EXPORT FunctionTrue : public ConstantFoldingFunction
+class XQILLA_API FunctionTrue : public ConstantFoldingFunction
 {
 public:
   static const XMLCh name[];

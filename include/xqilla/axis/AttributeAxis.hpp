@@ -20,7 +20,7 @@
 
 #include <xercesc/dom/DOMNamedNodeMap.hpp>
 
-class PATHAN_EXPORT AttributeAxis : public Axis
+class XQILLA_API AttributeAxis : public Axis
 {
 public:
   AttributeAxis(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *contextNode, const Node *nodeObj,

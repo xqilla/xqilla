@@ -15,7 +15,7 @@
 
 #include <sstream>
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xqilla/items/ATQNameConstructor.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/context/DynamicContext.hpp>

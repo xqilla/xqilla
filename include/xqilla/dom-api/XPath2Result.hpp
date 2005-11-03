@@ -16,7 +16,7 @@
 #ifndef __XPATH2RESULT_HPP
 #define __XPATH2RESULT_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xercesc/util/XMLString.hpp>
 
@@ -32,7 +32,7 @@
 
 class DynamicContext;
 
-class PATHAN_EXPORT XPath2Result
+class XQILLA_API XPath2Result
 {
 public:
 

@@ -17,10 +17,10 @@
   Factory base class
 */
 
-#ifndef _PATHANFACTORYIMPL_HPP
-#define _PATHANFACTORYIMPL_HPP
+#ifndef _XQILLAFACTORYIMPL_HPP
+#define _XQILLAFACTORYIMPL_HPP
 
-#include <xqilla/context/PathanFactory.hpp>
+#include <xqilla/context/XQillaFactory.hpp>
 #include <xqilla/items/DatatypeLookup.hpp>
 #include <xqilla/items/impl/NodeImpl.hpp>
 
@@ -30,11 +30,11 @@
 class DatatypeLookup;
 class DocumentCache;
 
-class PATHAN_EXPORT PathanFactoryImpl : public PathanFactory
+class XQILLA_API XQillaFactoryImpl : public XQillaFactory
 {
 public:
-  PathanFactoryImpl(const DocumentCache* dc, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr);
-  virtual ~PathanFactoryImpl();
+  XQillaFactoryImpl(const DocumentCache* dc, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr);
+  virtual ~XQillaFactoryImpl();
 
   /* @name Node factory methods */
 

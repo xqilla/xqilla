@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <assert.h>
 #include <sstream>
 
@@ -233,7 +233,7 @@ void SequenceType::ItemType::getStaticType(StaticResolutionContext::StaticType &
 	      break;
       }
       case SequenceType::ItemType::TEST_ATOMIC_TYPE: {
-	      switch(context->getPathanFactory()->getPrimitiveTypeIndex(getTypeURI(context), getType()->getName())) {
+	      switch(context->getXQillaFactory()->getPrimitiveTypeIndex(getTypeURI(context), getType()->getName())) {
         case AnyAtomicType::DECIMAL:
         case AnyAtomicType::DOUBLE:
         case AnyAtomicType::FLOAT: {

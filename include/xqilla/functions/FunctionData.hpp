@@ -20,11 +20,11 @@
 #ifndef _FUNCTIONDATA_HPP
 #define _FUNCTIONDATA_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/XQFunction.hpp>
 
-class PATHAN_EXPORT FunctionData : public XQFunction
+class XQILLA_API FunctionData : public XQFunction
 {
 public:
   static const XMLCh name[];

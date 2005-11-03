@@ -20,14 +20,14 @@
 #ifndef _GREATERTHAN_HPP
 #define _GREATERTHAN_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/operators/ComparisonOperator.hpp>
 
 class Collation;
 
 /** OpGreaterThan operator function*/
-class PATHAN_EXPORT GreaterThan : public ComparisonOperator
+class XQILLA_API GreaterThan : public ComparisonOperator
 {
 public:
   static const XMLCh name[];

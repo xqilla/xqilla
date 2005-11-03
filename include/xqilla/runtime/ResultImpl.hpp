@@ -19,7 +19,7 @@
 #include <string>
 #include <xercesc/util/XercesDefs.hpp>
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/items/Item.hpp>
 #include <xqilla/framework/ReferenceCounted.hpp>
 
@@ -28,7 +28,7 @@ class DynamicContext;
 class Sequence;
 
 /** A lazily evaluated query result */
-class PATHAN_EXPORT ResultImpl : public ReferenceCounted
+class XQILLA_API ResultImpl : public ReferenceCounted
 {
 public:
   /**

@@ -20,11 +20,11 @@
 #include <xqilla/items/ATDoubleOrDerived.hpp>
 #include <xqilla/mapm/m_apm.h>
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #define DOUBLE_MAX_DIGITS 25
 
-class PATHAN_EXPORT ATDoubleOrDerivedImpl : public ATDoubleOrDerived 
+class XQILLA_API ATDoubleOrDerivedImpl : public ATDoubleOrDerived 
 {
 
 public:

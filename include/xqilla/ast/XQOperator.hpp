@@ -24,7 +24,7 @@
 class Node;
 
 /** Virtual interface class for operator */
-class PATHAN_EXPORT XQOperator : public ASTNodeImpl
+class XQILLA_API XQOperator : public ASTNodeImpl
 {
 public:
 

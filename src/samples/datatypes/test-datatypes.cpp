@@ -34,13 +34,13 @@
 #include <xercesc/validators/schema/SchemaValidator.hpp>
 #include <xercesc/validators/schema/SchemaGrammar.hpp>
 
-//Pathan includes
-#include <xqilla/exceptions/PathanException.hpp>
-#include <xqilla/simple-api/PathanEngine.hpp>
-#include <xqilla/dom-api/PathanNSResolver.hpp>
+//XQilla includes
+#include <xqilla/exceptions/XQillaException.hpp>
+#include <xqilla/simple-api/XQillaEngine.hpp>
+#include <xqilla/dom-api/XQillaNSResolver.hpp>
 
 #include <xqilla/runtime/Sequence.hpp>
-#include <xqilla/simple-api/PathanPlatformUtils.hpp>
+#include <xqilla/simple-api/XQillaPlatformUtils.hpp>
 #include <xqilla/utils/XPath2NSUtils.hpp>
 #include <xqilla/utils/NumUtils.hpp>
 #include <xqilla/context/DynamicContext.hpp>
@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
   // initialisation                                                //
   ///////////////////////////////////////////////////////////////////
   try{
-    PathanPlatformUtils::initialize();
+    XQillaPlatformUtils::initialize();
   }
   catch (const XERCES_CPP_NAMESPACE_QUALIFIER XMLException& eXerces){
     char *pMsg = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::transcode(eXerces.getMessage());
@@ -107,7 +107,7 @@ int main(int argc, char *argv[])
     return 1;
   }
 
-  XPath2MemoryManager* memMgr = PathanEngine::createMemoryManager();
+  XPath2MemoryManager* memMgr = XQillaEngine::createMemoryManager();
 
   XERCES_CPP_NAMESPACE_QUALIFIER XercesDOMParser *xmlparser = new XERCES_CPP_NAMESPACE_QUALIFIER XercesDOMParser();
 
@@ -120,18 +120,18 @@ int main(int argc, char *argv[])
   DOMTreeErrorReporter *errHandler = new DOMTreeErrorReporter();
   xmlparser->setErrorHandler(errHandler);
 
-  //Initialise the Pathan memoryManager
-  PathanException::setDebug(false);
+  //Initialise the XQilla memoryManager
+  XQillaException::setDebug(false);
   DSLException::setDebug(fullExceptionDebug);
 
   //no XML file specified
   XERCES_CPP_NAMESPACE_QUALIFIER DOMImplementation *factory = XERCES_CPP_NAMESPACE_QUALIFIER DOMImplementationRegistry::getDOMImplementation(X("Core"));;
   XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *doc = factory->createDocument(0,X("test"), 0);
   
-  DynamicContext* context = PathanEngine::createContext(memMgr);
+  DynamicContext* context = XQillaEngine::createContext(memMgr);
   context->setBaseURI(doc->getBaseURI());
 
-  PathanNSResolver* resolver = context->getMemoryManager()->createNSResolver(doc->getDocumentElement());
+  XQillaNSResolver* resolver = context->getMemoryManager()->createNSResolver(doc->getDocumentElement());
   resolver->addNamespaceBinding(X("xs"),X("http://www.w3.org/2001/XMLSchema"));
   context->setNSResolver(resolver);
 
@@ -172,8 +172,8 @@ int main(int argc, char *argv[])
     
     try {
       (*test)->run(context);
-    } catch(const PathanException &e) {
-      std::cerr << std::endl << "PathanException: " << XERCES_CPP_NAMESPACE_QUALIFIER XMLString::transcode(e.getString()) << std::endl;
+    } catch(const XQillaException &e) {
+      std::cerr << std::endl << "XQillaException: " << XERCES_CPP_NAMESPACE_QUALIFIER XMLString::transcode(e.getString()) << std::endl;
       failed = true;
     } catch(const DSLException &e) {
       std::cerr << std::endl << "DSLException: " << XERCES_CPP_NAMESPACE_QUALIFIER XMLString::transcode(e.getError()) << std::endl;
@@ -192,7 +192,7 @@ int main(int argc, char *argv[])
   context->release();
 	delete xmlparser; //parser must be deleted before calling Terminate
   delete errHandler;
-  PathanPlatformUtils::terminate();
+  XQillaPlatformUtils::terminate();
   delete memMgr;
 
   if (failed)

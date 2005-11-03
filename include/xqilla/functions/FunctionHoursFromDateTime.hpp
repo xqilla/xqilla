@@ -16,7 +16,7 @@
 #ifndef _FUNCTIONGETHOURSFROMDATETIME_HPP
 #define _FUNCTIONGETHOURSFROMDATETIME_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/XQFunction.hpp>
 
@@ -25,7 +25,7 @@
  *
  * hours-from-dateTime(dateTime $srcval) => integer
  */
-class PATHAN_EXPORT FunctionHoursFromDateTime : public XQFunction
+class XQILLA_API FunctionHoursFromDateTime : public XQFunction
 {
 public:
   static const XMLCh name[];

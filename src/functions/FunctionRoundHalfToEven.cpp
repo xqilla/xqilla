@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionRoundHalfToEven.hpp>
 #include <xqilla/items/ATDecimalOrDerived.hpp>
 #include <xqilla/context/DynamicContext.hpp>
@@ -65,7 +65,7 @@ Sequence FunctionRoundHalfToEven::collapseTreeInternal(DynamicContext* context, 
     precision = (const ATDecimalOrDerived::Ptr )precisionArg.first();
   }
   else
-    precision = context->getPathanFactory()->createInteger(0, context);
+    precision = context->getXQillaFactory()->createInteger(0, context);
   
   return Sequence(numericArg->roundHalfToEven(precision, context), memMgr);
 }

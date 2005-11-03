@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include "ATBase64BinaryOrDerivedImpl.hpp"
 #include "ATHexBinaryOrDerivedImpl.hpp"
 #include <xqilla/utils/XPath2Utils.hpp>
@@ -25,7 +25,7 @@
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 #include <xqilla/framework/XPath2MemoryManager.hpp>
 #include <xqilla/context/DynamicContext.hpp>
-#include <xqilla/context/PathanFactory.hpp>
+#include <xqilla/context/XQillaFactory.hpp>
 
 ATBase64BinaryOrDerivedImpl::
 ATBase64BinaryOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* value, const StaticContext* context): 
@@ -37,7 +37,7 @@ ATBase64BinaryOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const X
 
 void *ATBase64BinaryOrDerivedImpl::getInterface(const XMLCh *name) const
 {
-  if(name == Item::gPathan) {
+  if(name == Item::gXQilla) {
     return (void*)this;
   }
   return 0;

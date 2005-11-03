@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionMax.hpp>
 #include <xqilla/runtime/Sequence.hpp>
 #include <xqilla/ast/XQSequence.hpp>
@@ -72,7 +72,7 @@ Sequence FunctionMax::collapseTreeInternal(DynamicContext* context, int flags) c
         Sequence collArg = getParamNumber(2,context);
         const XMLCh* collName = collArg.first()->asString(context);
         try {
-            context->getPathanFactory()->createAnyURI(collName, context);
+            context->getXQillaFactory()->createAnyURI(collName, context);
         } catch(XPath2ErrorException &e) {
             DSLthrow(FunctionException, X("FunctionMax::collapseTreeInternal"), X("Invalid collationURI"));  
         }
@@ -95,7 +95,7 @@ Sequence FunctionMax::collapseTreeInternal(DynamicContext* context, int flags) c
           }
         } else {
             ATBooleanOrDerived::Ptr greater;
-            VectorOfASTNodes gtArgs = VectorOfASTNodes(PathanAllocator<ASTNode*>(memMgr));
+            VectorOfASTNodes gtArgs = VectorOfASTNodes(XQillaAllocator<ASTNode*>(memMgr));
             XQSequence seq1(*i, context, memMgr);
             gtArgs.push_back(&seq1);
             XQSequence seq2(maxItem, context, memMgr);

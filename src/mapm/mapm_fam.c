@@ -17,35 +17,6 @@
  *  This software is provided "as is" without express or implied warranty.
  */
 
-/*
- *      $Id$
- *
- *      This file contains the free all memory and similiar functions.
- *
- *      $Log$
- *      Revision 1.1  2005/11/01 18:04:13  jpcs
- *      Initial check in.
- *
- *      Revision 1.1  2004/07/21 09:23:01  jpcs
- *      Initial check in of the Parthenon backup of Pathan.
- *
- *      Revision 1.2  2003/05/01 12:46:55  alby
- *      - Updated MAPM to version 4.6.1
- *      - The MAPM class is now thread-safe
- *
- *      Revision 1.4  2003/03/30 21:13:05  mike
- *      remove _log from free list
- *
- *      Revision 1.3  2002/02/14 13:36:27  mike
- *      add conditional compile around free all FFT
- *
- *      Revision 1.2  2001/07/16 18:52:40  mike
- *      add some comments
- *
- *      Revision 1.1  2001/07/16 18:41:44  mike
- *      Initial revision
- */
-
 #include "m_apm_lc.h"
 
 /****************************************************************************/

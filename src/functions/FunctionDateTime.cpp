@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionDateTime.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/ATDateTimeOrDerived.hpp>
@@ -67,7 +67,7 @@ Sequence FunctionDateTime::collapseTreeInternal(DynamicContext* context, int fla
     }
     buff.append(time->getSeconds()->asString(context));
     buff.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_S);
-    ATDurationOrDerived::Ptr timeAsDur=context->getPathanFactory()->createDayTimeDuration(buff.getRawBuffer(), context);
+    ATDurationOrDerived::Ptr timeAsDur=context->getXQillaFactory()->createDayTimeDuration(buff.getRawBuffer(), context);
 
     // convert the date into a dateTime, with no timezone
     const ATDateTimeOrDerived::Ptr dateTime=date->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA, 

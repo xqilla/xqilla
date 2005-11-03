@@ -13,8 +13,8 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
-#include <xqilla/dom-api/impl/PathanNSResolverImpl.hpp>
+#include "../config/xqilla_config.h"
+#include <xqilla/dom-api/impl/XQillaNSResolverImpl.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/framework/XPath2MemoryManager.hpp>
 #include <xqilla/utils/XPath2NSUtils.hpp>
@@ -23,7 +23,7 @@
 #include <xercesc/util/XMLString.hpp>
 #include <xercesc/dom/DOMNamedNodeMap.hpp>
 
-PathanNSResolverImpl::PathanNSResolverImpl(XPath2MemoryManager* memMgr, 
+XQillaNSResolverImpl::XQillaNSResolverImpl(XPath2MemoryManager* memMgr, 
                                          XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *resolverNode) : 
   _namespaceBindings(6, false, memMgr),
   _resolverNode(resolverNode),
@@ -39,12 +39,12 @@ PathanNSResolverImpl::PathanNSResolverImpl(XPath2MemoryManager* memMgr,
 }//constructor
 
 
-PathanNSResolverImpl::~PathanNSResolverImpl()
+XQillaNSResolverImpl::~XQillaNSResolverImpl()
 {
 	//Nothing
 }//destructor
 
-const XMLCh* PathanNSResolverImpl::lookupNamespaceURI(const XMLCh* prefix) const
+const XMLCh* XQillaNSResolverImpl::lookupNamespaceURI(const XMLCh* prefix) const
 {
   const XERCES_CPP_NAMESPACE_QUALIFIER DOMElement *parent = XPath2NSUtils::returnOwnerElement(_resolverNode);
   const XMLCh* uri = 0;
@@ -71,7 +71,7 @@ const XMLCh* PathanNSResolverImpl::lookupNamespaceURI(const XMLCh* prefix) const
 
 }//lookupNamespaceURI
 
-const XMLCh* PathanNSResolverImpl::lookupPrefix(const XMLCh* uri) const {
+const XMLCh* XQillaNSResolverImpl::lookupPrefix(const XMLCh* uri) const {
   const XERCES_CPP_NAMESPACE_QUALIFIER DOMElement *parent = XPath2NSUtils::returnOwnerElement(_resolverNode);
 
   while(!parent == 0 && parent->getNodeType() != XERCES_CPP_NAMESPACE_QUALIFIER DOMNode::DOCUMENT_NODE) {
@@ -111,7 +111,7 @@ const XMLCh* PathanNSResolverImpl::lookupPrefix(const XMLCh* uri) const {
 
 }
 
-void PathanNSResolverImpl::addNamespaceBinding(const XMLCh* prefix, const XMLCh* uri) {
+void XQillaNSResolverImpl::addNamespaceBinding(const XMLCh* prefix, const XMLCh* uri) {
     if(uri==0 || *uri==0)
     {
         if(_namespaceBindings.containsKey((const void*)prefix))
@@ -121,12 +121,12 @@ void PathanNSResolverImpl::addNamespaceBinding(const XMLCh* prefix, const XMLCh*
         _namespaceBindings.put((void*)_memMgr->getPooledString(prefix),(XMLCh*)_memMgr->getPooledString(uri));
 }
 
-void PathanNSResolverImpl::release() {
-  this->~PathanNSResolverImpl();
+void XQillaNSResolverImpl::release() {
+  this->~XQillaNSResolverImpl();
   _memMgr->deallocate(this);
 }
 
-XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *PathanNSResolverImpl::getResolverNode(void) 
+XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *XQillaNSResolverImpl::getResolverNode(void) 
 {
   return _resolverNode;
 }//getResolverNode

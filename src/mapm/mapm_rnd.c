@@ -17,56 +17,6 @@
  *  This software is provided "as is" without express or implied warranty.
  */
 
-/*
- *      $Id$
- *
- *      This file contains the Random Number Generator function.
- *
- *      $Log$
- *      Revision 1.1  2005/11/01 18:04:13  jpcs
- *      Initial check in.
- *
- *      Revision 1.2  2005/06/03 20:52:29  alby
- *      Updated specs to April 2005 - tests should pass (on Windows I get failures due to the limitation of the testing platform, but some real failures could hide between them)
- *
- *      Revision 1.1  2004/07/21 09:23:01  jpcs
- *      Initial check in of the Parthenon backup of Pathan.
- *
- *      Revision 1.2  2003/05/01 12:46:55  alby
- *      - Updated MAPM to version 4.6.1
- *      - The MAPM class is now thread-safe
- *
- *      Revision 1.10  2002/11/03 22:41:03  mike
- *      Updated function parameters to use the modern style
- *
- *      Revision 1.9  2002/02/14 21:50:45  mike
- *      add _set_random_seed
- *
- *      Revision 1.8  2001/07/16 19:30:32  mike
- *      add function M_free_all_rnd
- *
- *      Revision 1.7  2001/03/20 17:19:45  mike
- *      use a new multiplier
- *
- *      Revision 1.6  2000/08/20 23:46:07  mike
- *      add more possible multupliers (no code changes)
- *
- *      Revision 1.5  1999/09/19 23:32:14  mike
- *      added comments
- *
- *      Revision 1.4  1999/09/18 03:49:25  mike
- *      *** empty log message ***
- *
- *      Revision 1.3  1999/09/18 03:35:36  mike
- *      only prototype get_microsec for non-DOS
- *
- *      Revision 1.2  1999/09/18 02:35:36  mike
- *      delete debug printf's
- *
- *      Revision 1.1  1999/09/18 02:26:52  mike
- *      Initial revision
- */
-
 #include "m_apm_lc.h"
 
 #ifdef MSDOS

@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionCodepointEqual.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/context/Collation.hpp>
@@ -51,5 +51,5 @@ Sequence FunctionCodepointEqual::collapseTreeInternal(DynamicContext* context, i
     const XMLCh* string2 = str2.first()->asString(context);
     
     Collation* collation=context->getCollation(CodepointCollation::getCodepointCollationName());
-    return Sequence(context->getPathanFactory()->createBoolean(collation->compare(string1,string2)==0, context), context->getMemoryManager());
+    return Sequence(context->getXQillaFactory()->createBoolean(collation->compare(string1,string2)==0, context), context->getMemoryManager());
 }

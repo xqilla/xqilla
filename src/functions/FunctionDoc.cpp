@@ -12,7 +12,7 @@
  *
  * $Id$
  */
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionDoc.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/context/URIResolver.hpp>
@@ -22,7 +22,7 @@
 #include <xqilla/exceptions/XMLParseException.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/ast/StaticResolutionContext.hpp>
-#include <xqilla/context/PathanFactory.hpp>
+#include <xqilla/context/XQillaFactory.hpp>
 #include <xercesc/util/XMLString.hpp>
 
 const XMLCh FunctionDoc::name[] = {
@@ -67,7 +67,7 @@ Sequence FunctionDoc::collapseTreeInternal(DynamicContext* context, int flags) c
 	  uri=newUri;
   }
   try {
-    context->getPathanFactory()->createAnyURI(uri, context);
+    context->getXQillaFactory()->createAnyURI(uri, context);
   } catch(XPath2ErrorException &e) {
     DSLthrow(FunctionException, X("FunctionDoc::collapseTreeInternal"), X("Invalid argument to fn:doc function"));
   }

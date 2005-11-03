@@ -16,14 +16,14 @@
 #ifndef _RANGE_HPP
 #define _RANGE_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/XQOperator.hpp>
 
 class Numeric;
 
 /** Range operator function*/
-class PATHAN_EXPORT Range : public XQOperator
+class XQILLA_API Range : public XQOperator
 {
 public:
   static const XMLCh name[];

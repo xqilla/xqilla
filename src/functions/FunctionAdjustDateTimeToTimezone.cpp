@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionAdjustDateTimeToTimezone.hpp>
 #include <xqilla/items/ATDateTimeOrDerived.hpp>
 #include <xqilla/items/ATDurationOrDerived.hpp>

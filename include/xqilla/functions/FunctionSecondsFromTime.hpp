@@ -16,7 +16,7 @@
 #ifndef _FUNCTIONGETSECONDSFROMTIME_HPP
 #define _FUNCTIONGETSECONDSFROMTIME_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/XQFunction.hpp>
 
@@ -25,7 +25,7 @@
  *
  * xf:seconds-from-time(time? $srcval) => decimal?
  */
-class PATHAN_EXPORT FunctionSecondsFromTime : public XQFunction
+class XQILLA_API FunctionSecondsFromTime : public XQFunction
 {
 public:
   static const XMLCh name[];

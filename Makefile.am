@@ -8,7 +8,7 @@ LDADD = libxqilla.la -lxerces-c
 TESTS = testDatatypes
 
 bin_PROGRAMS = xgrep
-noinst_PROGRAMS = basicPathanUsage testDatatypes eval
+noinst_PROGRAMS = basicXQillaUsage testDatatypes eval
 
 lib_LTLIBRARIES = libxqilla.la
 
@@ -24,7 +24,7 @@ src/context/impl/UCANormalizer2.cpp \
 src/context/impl/UCANormalizer.cpp \
 src/context/impl/UCANormalizer.hpp \
 src/context/impl/CodepointCollation.cpp \
-src/context/impl/PathanFactoryImpl.cpp \
+src/context/impl/XQillaFactoryImpl.cpp \
 src/context/impl/VarStoreImpl.hpp \
 src/context/impl/VarStoreImpl.cpp \
 src/context/impl/VarTypeStoreImpl.hpp \
@@ -63,21 +63,21 @@ src/ast/XQQuantified.cpp \
 src/ast/XQValidate.cpp \
 src/ast/XQTypeswitch.cpp \
 src/ast/XQVariableBinding.cpp \
-src/dom-api/impl/PathanBuilderImpl.cpp \
-src/dom-api/impl/PathanBuilderImpl.hpp \
-src/dom-api/impl/PathanDocumentImpl.cpp \
-src/dom-api/impl/PathanDocumentImpl.hpp \
-src/dom-api/impl/PathanExpressionImpl.cpp \
-src/dom-api/impl/PathanNSResolverImpl.cpp \
-src/dom-api/impl/PathanXMLGrammarPoolImpl.cpp \
-src/dom-api/impl/PathanXMLGrammarPoolImpl.hpp \
+src/dom-api/impl/XQillaBuilderImpl.cpp \
+src/dom-api/impl/XQillaBuilderImpl.hpp \
+src/dom-api/impl/XQillaDocumentImpl.cpp \
+src/dom-api/impl/XQillaDocumentImpl.hpp \
+src/dom-api/impl/XQillaExpressionImpl.cpp \
+src/dom-api/impl/XQillaNSResolverImpl.cpp \
+src/dom-api/impl/XQillaXMLGrammarPoolImpl.cpp \
+src/dom-api/impl/XQillaXMLGrammarPoolImpl.hpp \
 src/dom-api/impl/XPathNamespaceImpl.cpp \
 src/dom-api/impl/XPathNamespaceImpl.hpp \
-src/dom-api/PathanImplementation.cpp \
+src/dom-api/XQillaImplementation.cpp \
 src/dom-api/XPath2NodeSerializer.cpp \
 src/dom-api/XPath2Result.cpp \
 src/dom-api/XQScopedNamespace.cpp \
-src/simple-api/PathanEngine.cpp \
+src/simple-api/XQillaEngine.cpp \
 src/simple-api/XQEvaluator.cpp \
 src/simple-api/XQQuery.cpp \
 src/utils/UTF8Str.cpp \
@@ -89,11 +89,11 @@ src/utils/Date.hpp \
 src/utils/DateUtils.cpp \
 src/utils/DateUtils.hpp \
 src/utils/NumUtils.cpp \
-src/utils/PathanPlatformUtils.cpp \
+src/utils/XQillaPlatformUtils.cpp \
 src/utils/PrintAST.cpp \
 src/utils/XPath2NSUtils.cpp \
 src/utils/XPath2Utils.cpp \
-src/exceptions/PathanException.cpp \
+src/exceptions/XQillaException.cpp \
 src/exceptions/DSLException.cpp \
 src/exceptions/InvalidLexicalSpaceException.hpp \
 src/exceptions/MiscException.hpp \
@@ -374,8 +374,8 @@ src/runtime/SequenceResult.cpp \
 src/runtime/SingleResult.cpp \
 src/runtime/SortIntoDocumentOrderResult.cpp \
 src/runtime/Sequence.cpp \
-src/config/pathan_config.h \
-src/config/pathan_config_win32.h
+src/config/xqilla_config.h \
+src/config/xqilla_config_win32.h
 
 EXTRA_DIST = \
 src/lexer/flex.skl \
@@ -384,8 +384,8 @@ src/lexer/XPath2Lexer.lex \
 src/parser/xquery.y \
 src/parser/XPath2Parser.y
 
-basicPathanUsage_SOURCES = \
-src/samples/basic/basicPathanUsage.cpp
+basicXQillaUsage_SOURCES = \
+src/samples/basic/basicXQillaUsage.cpp
 
 eval_SOURCES = \
 src/samples/evaluator/eval.cpp \
@@ -472,8 +472,8 @@ $(XPLEXERFILE) : $(XPLEXTEMPLATE)
 
 $(XPPARSERCPP) $(XPPARSERHPP): $(XPPARSERFILE)
 	$(YACC) -d -v -p XPathyy  -o $(XPPARSERCPP) $(XPPARSERFILE)
-	${perl} -pi -e "s/yyparse\(YYPARSE_PARAM_ARG\)/PATHAN_EXPORT yyparse(YYPARSE_PARAM_ARG)/g" $(XPPARSERCPP)
-	${perl} -pi -e "s/int yydebug/int PATHAN_EXPORT yydebug/g" $(XPPARSERCPP)
+	${perl} -pi -e "s/yyparse\(YYPARSE_PARAM_ARG\)/XQILLA_API yyparse(YYPARSE_PARAM_ARG)/g" $(XPPARSERCPP)
+	${perl} -pi -e "s/int yydebug/int XQILLA_API yydebug/g" $(XPPARSERCPP)
 
 $(XQLEXERFILE): $(XQLEXTEMPLATE) $(XQLEXSKEL)
 	$(LEX) -BUs -S$(XQLEXSKEL) -o$(XQLEXERFILE) $(XQLEXTEMPLATE) # This can take a long time

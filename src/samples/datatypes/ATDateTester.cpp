@@ -20,7 +20,7 @@
 #include <xqilla/framework/XPath2MemoryManager.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xqilla/context/PathanFactory.hpp>
+#include <xqilla/context/XQillaFactory.hpp>
 
 #include <xqilla/items/ATDateOrDerived.hpp>
 #include <xqilla/items/ATDecimalOrDerived.hpp>
@@ -32,9 +32,9 @@ ATDateTester::ATDateTester(XPath2MemoryManager* memMgr) : DatatypeTester(memMgr,
 
 void ATDateTester::run(const DynamicContext* context) {
   // test constructor & asString
-  const ATDecimalOrDerived::Ptr y1999 = context->getPathanFactory()->createDecimal(1999, context);
-  const ATDecimalOrDerived::Ptr m05 = context->getPathanFactory()->createDecimal(5, context);
-  const ATDecimalOrDerived::Ptr d31 = context->getPathanFactory()->createDecimal(31, context);
+  const ATDecimalOrDerived::Ptr y1999 = context->getXQillaFactory()->createDecimal(1999, context);
+  const ATDecimalOrDerived::Ptr m05 = context->getXQillaFactory()->createDecimal(5, context);
+  const ATDecimalOrDerived::Ptr d31 = context->getXQillaFactory()->createDecimal(31, context);
   
   const ATDateOrDerived::Ptr date1 = this->createDate(X("1999-05-31Z"), context);
   const ATDateOrDerived::Ptr date2 = this->createDate(X("1999-06-01+12:00"), context);
@@ -46,9 +46,9 @@ void ATDateTester::run(const DynamicContext* context) {
   assertEquals(date1->asString(context), X("1999-05-31Z"));
   assertEquals(date1->asString(context), date2->asString(context));
 
-  const ATDecimalOrDerived::Ptr y1099 = context->getPathanFactory()->createDecimal(-1099, context);
-  const ATDecimalOrDerived::Ptr m12 = context->getPathanFactory()->createDecimal(12, context);
-  const ATDecimalOrDerived::Ptr d25 = context->getPathanFactory()->createDecimal(25, context);
+  const ATDecimalOrDerived::Ptr y1099 = context->getXQillaFactory()->createDecimal(-1099, context);
+  const ATDecimalOrDerived::Ptr m12 = context->getXQillaFactory()->createDecimal(12, context);
+  const ATDecimalOrDerived::Ptr d25 = context->getXQillaFactory()->createDecimal(25, context);
   
   // test ordering
   const ATDateOrDerived::Ptr date3 = this->createDate(X("-1099-12-25"), context);
@@ -73,15 +73,15 @@ void ATDateTester::run(const DynamicContext* context) {
   // test subtractDate  
   const ATDateOrDerived::Ptr date4 = this->createDate(X("2000-01-06"), context);
   const ATDateOrDerived::Ptr date5 = this->createDate(X("2000-01-30"), context);
-  const ATDurationOrDerived::Ptr expectedDiff1 = context->getPathanFactory()->createDayTimeDuration(X("P24D"), context);
+  const ATDurationOrDerived::Ptr expectedDiff1 = context->getXQillaFactory()->createDayTimeDuration(X("P24D"), context);
   const ATDurationOrDerived::Ptr dayTimeDiff1 = date5->subtractDate(date4, context);
   assertCondition(dayTimeDiff1->equals(expectedDiff1, context));
 
   const ATDateOrDerived::Ptr date6 = this->createDate(X("1999-01-05"), context);
   const ATDateOrDerived::Ptr date7 = this->createDate(X("2000-01-05"), context);
 
-  const ATDurationOrDerived::Ptr expectedDiff2 = context->getPathanFactory()->createDayTimeDuration(X("-P365D"), context);
-  const ATDurationOrDerived::Ptr expectedDiff3 = context->getPathanFactory()->createDayTimeDuration(X("P365D"), context);
+  const ATDurationOrDerived::Ptr expectedDiff2 = context->getXQillaFactory()->createDayTimeDuration(X("-P365D"), context);
+  const ATDurationOrDerived::Ptr expectedDiff3 = context->getXQillaFactory()->createDayTimeDuration(X("P365D"), context);
 
   const ATDurationOrDerived::Ptr dayTimeDiff2 = date6->subtractDate(date7, context);
   assertCondition(dayTimeDiff2->equals(expectedDiff2, context));
@@ -97,7 +97,7 @@ void ATDateTester::run(const DynamicContext* context) {
   const ATDateOrDerived::Ptr date8 = this->createDate(X("1867-07-01"), context);
   assertCondition(!date8->hasTimezone());
 
-  const ATDateOrDerived::Ptr date9 = date8->addTimezone(context->getPathanFactory()->createDayTimeDuration(X("-PT5H"), context) ,context);
+  const ATDateOrDerived::Ptr date9 = date8->addTimezone(context->getXQillaFactory()->createDayTimeDuration(X("-PT5H"), context) ,context);
   assertCondition(date9->hasTimezone());
   assertCondition(date9->getTimezone()->equals(new Timezone(-5, 0)));
 
@@ -120,7 +120,7 @@ void ATDateTester::run(const DynamicContext* context) {
 
 const ATDateOrDerived::Ptr ATDateTester::createDate(const XMLCh* value,
                                    const DynamicContext* context) {
-  return context->getPathanFactory()->createDateOrDerived(
+  return context->getXQillaFactory()->createDateOrDerived(
       XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
       XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DATE,
       value, context);

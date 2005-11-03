@@ -20,7 +20,7 @@
 #ifndef _DATATYPEFACTORY_HPP
 #define _DATATYPEFACTORY_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/mapm/m_apm.h>
 #include <xqilla/items/ATAnySimpleType.hpp>
 #include <xqilla/items/ATAnyURIOrDerived.hpp>
@@ -51,7 +51,7 @@ class StaticContext;
 class XPath2MemoryManager;
 class DocumentCache;
 
-class PATHAN_EXPORT DatatypeFactory
+class XQILLA_API DatatypeFactory
 {
 public:
   DatatypeFactory(const DocumentCache* dc, XERCES_CPP_NAMESPACE_QUALIFIER DatatypeValidator *baseValidator);

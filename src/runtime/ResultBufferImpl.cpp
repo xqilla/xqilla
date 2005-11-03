@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include "ResultBufferImpl.hpp"
 
 ResultBufferImpl::ResultBufferImpl(const Result &result)

@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionIdref.hpp>
 
 #include <xqilla/context/DynamicContext.hpp>
@@ -29,7 +29,7 @@
 #include <xqilla/ast/StaticResolutionContext.hpp>
 #include <xqilla/framework/XPath2MemoryManagerImpl.hpp>
 #include <xqilla/functions/FunctionRoot.hpp>
-#include <xqilla/context/PathanFactory.hpp>
+#include <xqilla/context/XQillaFactory.hpp>
 
 const XMLCh FunctionIdref::name[] = {
   XERCES_CPP_NAMESPACE_QUALIFIER chLatin_i, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_d, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_r, 
@@ -92,7 +92,7 @@ Sequence FunctionIdref::collapseTreeInternal(DynamicContext* context, int flags)
     //for each string check that it is lexically a xs:ID, if not ignore it
     bool validID = true;
     try {
-      context->getPathanFactory()->createStringOrDerived(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA, XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgIDString, str, context);
+      context->getXQillaFactory()->createStringOrDerived(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA, XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgIDString, str, context);
     } catch (InvalidLexicalSpaceException &e) {
       validID = false;
     }

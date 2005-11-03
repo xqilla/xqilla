@@ -106,7 +106,7 @@ LDADD = libxqilla.la -lxerces-c
 TESTS = testDatatypes
 
 bin_PROGRAMS = xgrep
-noinst_PROGRAMS = basicPathanUsage testDatatypes eval
+noinst_PROGRAMS = basicXQillaUsage testDatatypes eval
 
 lib_LTLIBRARIES = libxqilla.la
 
@@ -122,7 +122,7 @@ src/context/impl/UCANormalizer2.cpp \
 src/context/impl/UCANormalizer.cpp \
 src/context/impl/UCANormalizer.hpp \
 src/context/impl/CodepointCollation.cpp \
-src/context/impl/PathanFactoryImpl.cpp \
+src/context/impl/XQillaFactoryImpl.cpp \
 src/context/impl/VarStoreImpl.hpp \
 src/context/impl/VarStoreImpl.cpp \
 src/context/impl/VarTypeStoreImpl.hpp \
@@ -161,21 +161,21 @@ src/ast/XQQuantified.cpp \
 src/ast/XQValidate.cpp \
 src/ast/XQTypeswitch.cpp \
 src/ast/XQVariableBinding.cpp \
-src/dom-api/impl/PathanBuilderImpl.cpp \
-src/dom-api/impl/PathanBuilderImpl.hpp \
-src/dom-api/impl/PathanDocumentImpl.cpp \
-src/dom-api/impl/PathanDocumentImpl.hpp \
-src/dom-api/impl/PathanExpressionImpl.cpp \
-src/dom-api/impl/PathanNSResolverImpl.cpp \
-src/dom-api/impl/PathanXMLGrammarPoolImpl.cpp \
-src/dom-api/impl/PathanXMLGrammarPoolImpl.hpp \
+src/dom-api/impl/XQillaBuilderImpl.cpp \
+src/dom-api/impl/XQillaBuilderImpl.hpp \
+src/dom-api/impl/XQillaDocumentImpl.cpp \
+src/dom-api/impl/XQillaDocumentImpl.hpp \
+src/dom-api/impl/XQillaExpressionImpl.cpp \
+src/dom-api/impl/XQillaNSResolverImpl.cpp \
+src/dom-api/impl/XQillaXMLGrammarPoolImpl.cpp \
+src/dom-api/impl/XQillaXMLGrammarPoolImpl.hpp \
 src/dom-api/impl/XPathNamespaceImpl.cpp \
 src/dom-api/impl/XPathNamespaceImpl.hpp \
-src/dom-api/PathanImplementation.cpp \
+src/dom-api/XQillaImplementation.cpp \
 src/dom-api/XPath2NodeSerializer.cpp \
 src/dom-api/XPath2Result.cpp \
 src/dom-api/XQScopedNamespace.cpp \
-src/simple-api/PathanEngine.cpp \
+src/simple-api/XQillaEngine.cpp \
 src/simple-api/XQEvaluator.cpp \
 src/simple-api/XQQuery.cpp \
 src/utils/UTF8Str.cpp \
@@ -187,11 +187,11 @@ src/utils/Date.hpp \
 src/utils/DateUtils.cpp \
 src/utils/DateUtils.hpp \
 src/utils/NumUtils.cpp \
-src/utils/PathanPlatformUtils.cpp \
+src/utils/XQillaPlatformUtils.cpp \
 src/utils/PrintAST.cpp \
 src/utils/XPath2NSUtils.cpp \
 src/utils/XPath2Utils.cpp \
-src/exceptions/PathanException.cpp \
+src/exceptions/XQillaException.cpp \
 src/exceptions/DSLException.cpp \
 src/exceptions/InvalidLexicalSpaceException.hpp \
 src/exceptions/MiscException.hpp \
@@ -472,8 +472,8 @@ src/runtime/SequenceResult.cpp \
 src/runtime/SingleResult.cpp \
 src/runtime/SortIntoDocumentOrderResult.cpp \
 src/runtime/Sequence.cpp \
-src/config/pathan_config.h \
-src/config/pathan_config_win32.h
+src/config/xqilla_config.h \
+src/config/xqilla_config_win32.h
 
 
 EXTRA_DIST = \
@@ -484,8 +484,8 @@ src/parser/xquery.y \
 src/parser/XPath2Parser.y
 
 
-basicPathanUsage_SOURCES = \
-src/samples/basic/basicPathanUsage.cpp
+basicXQillaUsage_SOURCES = \
+src/samples/basic/basicXQillaUsage.cpp
 
 
 eval_SOURCES = \
@@ -567,7 +567,7 @@ XQPARSERHPP = $(top_srcdir)/src/parser/Grammar.hpp
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/autotools/mkinstalldirs
-CONFIG_HEADER = $(top_builddir)/src/config/pathan_config_unix.h
+CONFIG_HEADER = $(top_builddir)/src/config/xqilla_config_unix.h
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(lib_LTLIBRARIES)
 
@@ -576,7 +576,7 @@ libxqilla_la_LIBADD =
 am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	ProxyMemoryManager.lo StringPool.lo XPath2MemoryManagerImpl.lo \
 	CollationImpl.lo UCANormalizer1.lo UCANormalizer2.lo \
-	UCANormalizer.lo CodepointCollation.lo PathanFactoryImpl.lo \
+	UCANormalizer.lo CodepointCollation.lo XQillaFactoryImpl.lo \
 	VarStoreImpl.lo VarTypeStoreImpl.lo VarHashEntryImpl.lo \
 	XQContextImpl.lo XQDynamicContextImpl.lo XQFactoryImpl.lo \
 	XQRemoteDebugger.lo XQCastableAs.lo XQCastAs.lo \
@@ -588,14 +588,14 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	XQDOMConstructor.lo XQFLWOR.lo XQFunctionCall.lo \
 	XQGlobalVariable.lo XQOrderingChange.lo XQQuantified.lo \
 	XQValidate.lo XQTypeswitch.lo XQVariableBinding.lo \
-	PathanBuilderImpl.lo PathanDocumentImpl.lo \
-	PathanExpressionImpl.lo PathanNSResolverImpl.lo \
-	PathanXMLGrammarPoolImpl.lo XPathNamespaceImpl.lo \
-	PathanImplementation.lo XPath2NodeSerializer.lo XPath2Result.lo \
-	XQScopedNamespace.lo PathanEngine.lo XQEvaluator.lo XQQuery.lo \
+	XQillaBuilderImpl.lo XQillaDocumentImpl.lo \
+	XQillaExpressionImpl.lo XQillaNSResolverImpl.lo \
+	XQillaXMLGrammarPoolImpl.lo XPathNamespaceImpl.lo \
+	XQillaImplementation.lo XPath2NodeSerializer.lo XPath2Result.lo \
+	XQScopedNamespace.lo XQillaEngine.lo XQEvaluator.lo XQQuery.lo \
 	UTF8Str.lo XMLChCompare.lo XStr.lo ContextUtils.lo Date.lo \
-	DateUtils.lo NumUtils.lo PathanPlatformUtils.lo PrintAST.lo \
-	XPath2NSUtils.lo XPath2Utils.lo PathanException.lo \
+	DateUtils.lo NumUtils.lo XQillaPlatformUtils.lo PrintAST.lo \
+	XPath2NSUtils.lo XPath2Utils.lo XQillaException.lo \
 	DSLException.lo FuncFactory.lo FunctionLookupImpl.lo \
 	FunctionAbs.lo FunctionAvg.lo FunctionBaseURI.lo \
 	FunctionBoolean.lo FunctionCeiling.lo FunctionCodepointEqual.lo \
@@ -685,15 +685,15 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	SingleResult.lo SortIntoDocumentOrderResult.lo Sequence.lo
 libxqilla_la_OBJECTS = $(am_libxqilla_la_OBJECTS)
 bin_PROGRAMS = xgrep$(EXEEXT)
-noinst_PROGRAMS = basicPathanUsage$(EXEEXT) testDatatypes$(EXEEXT) \
+noinst_PROGRAMS = basicXQillaUsage$(EXEEXT) testDatatypes$(EXEEXT) \
 	eval$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS) $(noinst_PROGRAMS)
 
-am_basicPathanUsage_OBJECTS = basicPathanUsage.$(OBJEXT)
-basicPathanUsage_OBJECTS = $(am_basicPathanUsage_OBJECTS)
-basicPathanUsage_LDADD = $(LDADD)
-basicPathanUsage_DEPENDENCIES = libxqilla.la
-basicPathanUsage_LDFLAGS =
+am_basicXQillaUsage_OBJECTS = basicXQillaUsage.$(OBJEXT)
+basicXQillaUsage_OBJECTS = $(am_basicXQillaUsage_OBJECTS)
+basicXQillaUsage_LDADD = $(LDADD)
+basicXQillaUsage_DEPENDENCIES = libxqilla.la
+basicXQillaUsage_LDFLAGS =
 am_eval_OBJECTS = eval.$(OBJEXT) DOMTreeErrorReporter.$(OBJEXT)
 eval_OBJECTS = $(am_eval_OBJECTS)
 eval_LDADD = $(LDADD)
@@ -934,18 +934,8 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/Numeric.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/NumericFunction.Plo ./$(DEPDIR)/Or.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/OrderComparison.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/ParentAxis.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/PathanBuilderImpl.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/PathanDocumentImpl.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/PathanEngine.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/PathanException.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/PathanExpressionImpl.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/PathanFactoryImpl.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/PathanImplementation.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/PathanNSResolverImpl.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/PathanPlatformUtils.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/PathanXMLGrammarPoolImpl.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/Plus.Plo ./$(DEPDIR)/PrecedingAxis.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/ParentAxis.Plo ./$(DEPDIR)/Plus.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/PrecedingAxis.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/PrecedingSiblingAxis.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/PrintAST.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/ProxyMemoryManager.Plo \
@@ -1008,8 +998,18 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/XQValidate.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XQVariable.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XQVariableBinding.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/XQillaBuilderImpl.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/XQillaDocumentImpl.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/XQillaEngine.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/XQillaException.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/XQillaExpressionImpl.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/XQillaFactoryImpl.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/XQillaImplementation.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/XQillaNSResolverImpl.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/XQillaPlatformUtils.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/XQillaXMLGrammarPoolImpl.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XStr.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/basicPathanUsage.Po ./$(DEPDIR)/eval.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/basicXQillaUsage.Po ./$(DEPDIR)/eval.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/m_apm.Plo ./$(DEPDIR)/mapm5sin.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/mapm_add.Plo ./$(DEPDIR)/mapm_cpi.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/mapm_div.Plo ./$(DEPDIR)/mapm_exp.Plo \
@@ -1047,20 +1047,20 @@ CXXLD = $(CXX)
 CXXLINK = $(LIBTOOL) --mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
 CXXFLAGS = @CXXFLAGS@
-DIST_SOURCES = $(libxqilla_la_SOURCES) $(basicPathanUsage_SOURCES) \
+DIST_SOURCES = $(libxqilla_la_SOURCES) $(basicXQillaUsage_SOURCES) \
 	$(eval_SOURCES) $(testDatatypes_SOURCES) $(xgrep_SOURCES)
 
 RECURSIVE_TARGETS = info-recursive dvi-recursive install-info-recursive \
 	uninstall-info-recursive all-recursive install-data-recursive \
 	install-exec-recursive installdirs-recursive install-recursive \
 	uninstall-recursive check-recursive installcheck-recursive
-DIST_COMMON = ./src/config/pathan_config_unix.h.in Makefile.am \
+DIST_COMMON = ./src/config/xqilla_config_unix.h.in Makefile.am \
 	Makefile.in aclocal.m4 autotools/config.guess \
 	autotools/config.sub autotools/depcomp autotools/install-sh \
 	autotools/ltmain.sh autotools/missing autotools/mkinstalldirs \
 	configure configure.in
 DIST_SUBDIRS = $(SUBDIRS)
-SOURCES = $(libxqilla_la_SOURCES) $(basicPathanUsage_SOURCES) $(eval_SOURCES) $(testDatatypes_SOURCES) $(xgrep_SOURCES)
+SOURCES = $(libxqilla_la_SOURCES) $(basicXQillaUsage_SOURCES) $(eval_SOURCES) $(testDatatypes_SOURCES) $(xgrep_SOURCES)
 
 all: all-recursive
 
@@ -1083,22 +1083,22 @@ $(srcdir)/configure:  $(srcdir)/configure.in $(ACLOCAL_M4) $(CONFIGURE_DEPENDENC
 $(ACLOCAL_M4):  configure.in 
 	cd $(srcdir) && $(ACLOCAL) $(ACLOCAL_AMFLAGS)
 
-src/config/pathan_config_unix.h: src/config/stamp-h1
+src/config/xqilla_config_unix.h: src/config/stamp-h1
 	@if test ! -f $@; then \
 	  rm -f src/config/stamp-h1; \
 	  $(MAKE) src/config/stamp-h1; \
 	else :; fi
 
-src/config/stamp-h1: $(srcdir)/./src/config/pathan_config_unix.h.in $(top_builddir)/config.status
+src/config/stamp-h1: $(srcdir)/./src/config/xqilla_config_unix.h.in $(top_builddir)/config.status
 	@rm -f src/config/stamp-h1
-	cd $(top_builddir) && $(SHELL) ./config.status src/config/pathan_config_unix.h
+	cd $(top_builddir) && $(SHELL) ./config.status src/config/xqilla_config_unix.h
 
-$(srcdir)/./src/config/pathan_config_unix.h.in:  $(top_srcdir)/configure.in $(ACLOCAL_M4) 
+$(srcdir)/./src/config/xqilla_config_unix.h.in:  $(top_srcdir)/configure.in $(ACLOCAL_M4) 
 	cd $(top_srcdir) && $(AUTOHEADER)
-	touch $(srcdir)/./src/config/pathan_config_unix.h.in
+	touch $(srcdir)/./src/config/xqilla_config_unix.h.in
 
 distclean-hdr:
-	-rm -f src/config/pathan_config_unix.h src/config/stamp-h1
+	-rm -f src/config/xqilla_config_unix.h src/config/stamp-h1
 libLTLIBRARIES_INSTALL = $(INSTALL)
 install-libLTLIBRARIES: $(lib_LTLIBRARIES)
 	@$(NORMAL_INSTALL)
@@ -1137,7 +1137,7 @@ UCANormalizer1.lo: src/context/impl/UCANormalizer1.cpp
 UCANormalizer2.lo: src/context/impl/UCANormalizer2.cpp
 UCANormalizer.lo: src/context/impl/UCANormalizer.cpp
 CodepointCollation.lo: src/context/impl/CodepointCollation.cpp
-PathanFactoryImpl.lo: src/context/impl/PathanFactoryImpl.cpp
+XQillaFactoryImpl.lo: src/context/impl/XQillaFactoryImpl.cpp
 VarStoreImpl.lo: src/context/impl/VarStoreImpl.cpp
 VarTypeStoreImpl.lo: src/context/impl/VarTypeStoreImpl.cpp
 VarHashEntryImpl.lo: src/context/impl/VarHashEntryImpl.cpp
@@ -1174,18 +1174,18 @@ XQQuantified.lo: src/ast/XQQuantified.cpp
 XQValidate.lo: src/ast/XQValidate.cpp
 XQTypeswitch.lo: src/ast/XQTypeswitch.cpp
 XQVariableBinding.lo: src/ast/XQVariableBinding.cpp
-PathanBuilderImpl.lo: src/dom-api/impl/PathanBuilderImpl.cpp
-PathanDocumentImpl.lo: src/dom-api/impl/PathanDocumentImpl.cpp
-PathanExpressionImpl.lo: src/dom-api/impl/PathanExpressionImpl.cpp
-PathanNSResolverImpl.lo: src/dom-api/impl/PathanNSResolverImpl.cpp
-PathanXMLGrammarPoolImpl.lo: \
-	src/dom-api/impl/PathanXMLGrammarPoolImpl.cpp
+XQillaBuilderImpl.lo: src/dom-api/impl/XQillaBuilderImpl.cpp
+XQillaDocumentImpl.lo: src/dom-api/impl/XQillaDocumentImpl.cpp
+XQillaExpressionImpl.lo: src/dom-api/impl/XQillaExpressionImpl.cpp
+XQillaNSResolverImpl.lo: src/dom-api/impl/XQillaNSResolverImpl.cpp
+XQillaXMLGrammarPoolImpl.lo: \
+	src/dom-api/impl/XQillaXMLGrammarPoolImpl.cpp
 XPathNamespaceImpl.lo: src/dom-api/impl/XPathNamespaceImpl.cpp
-PathanImplementation.lo: src/dom-api/PathanImplementation.cpp
+XQillaImplementation.lo: src/dom-api/XQillaImplementation.cpp
 XPath2NodeSerializer.lo: src/dom-api/XPath2NodeSerializer.cpp
 XPath2Result.lo: src/dom-api/XPath2Result.cpp
 XQScopedNamespace.lo: src/dom-api/XQScopedNamespace.cpp
-PathanEngine.lo: src/simple-api/PathanEngine.cpp
+XQillaEngine.lo: src/simple-api/XQillaEngine.cpp
 XQEvaluator.lo: src/simple-api/XQEvaluator.cpp
 XQQuery.lo: src/simple-api/XQQuery.cpp
 UTF8Str.lo: src/utils/UTF8Str.cpp
@@ -1195,11 +1195,11 @@ ContextUtils.lo: src/utils/ContextUtils.cpp
 Date.lo: src/utils/Date.cpp
 DateUtils.lo: src/utils/DateUtils.cpp
 NumUtils.lo: src/utils/NumUtils.cpp
-PathanPlatformUtils.lo: src/utils/PathanPlatformUtils.cpp
+XQillaPlatformUtils.lo: src/utils/XQillaPlatformUtils.cpp
 PrintAST.lo: src/utils/PrintAST.cpp
 XPath2NSUtils.lo: src/utils/XPath2NSUtils.cpp
 XPath2Utils.lo: src/utils/XPath2Utils.cpp
-PathanException.lo: src/exceptions/PathanException.cpp
+XQillaException.lo: src/exceptions/XQillaException.cpp
 DSLException.lo: src/exceptions/DSLException.cpp
 FuncFactory.lo: src/functions/FuncFactory.cpp
 FunctionLookupImpl.lo: src/functions/FunctionLookupImpl.cpp
@@ -1506,10 +1506,10 @@ clean-noinstPROGRAMS:
 	  echo " rm -f $$p $$f"; \
 	  rm -f $$p $$f ; \
 	done
-basicPathanUsage.$(OBJEXT): src/samples/basic/basicPathanUsage.cpp
-basicPathanUsage$(EXEEXT): $(basicPathanUsage_OBJECTS) $(basicPathanUsage_DEPENDENCIES) 
-	@rm -f basicPathanUsage$(EXEEXT)
-	$(CXXLINK) $(basicPathanUsage_LDFLAGS) $(basicPathanUsage_OBJECTS) $(basicPathanUsage_LDADD) $(LIBS)
+basicXQillaUsage.$(OBJEXT): src/samples/basic/basicXQillaUsage.cpp
+basicXQillaUsage$(EXEEXT): $(basicXQillaUsage_OBJECTS) $(basicXQillaUsage_DEPENDENCIES) 
+	@rm -f basicXQillaUsage$(EXEEXT)
+	$(CXXLINK) $(basicXQillaUsage_LDFLAGS) $(basicXQillaUsage_OBJECTS) $(basicXQillaUsage_LDADD) $(LIBS)
 eval.$(OBJEXT): src/samples/evaluator/eval.cpp
 DOMTreeErrorReporter.$(OBJEXT): \
 	src/samples/common/DOMTreeErrorReporter.cpp
@@ -1775,16 +1775,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Or.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/OrderComparison.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ParentAxis.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PathanBuilderImpl.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PathanDocumentImpl.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PathanEngine.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PathanException.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PathanExpressionImpl.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PathanFactoryImpl.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PathanImplementation.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PathanNSResolverImpl.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PathanPlatformUtils.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PathanXMLGrammarPoolImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Plus.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PrecedingAxis.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PrecedingSiblingAxis.Plo@am__quote@
@@ -1859,8 +1849,18 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQValidate.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQVariable.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQVariableBinding.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQillaBuilderImpl.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQillaDocumentImpl.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQillaEngine.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQillaException.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQillaExpressionImpl.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQillaFactoryImpl.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQillaImplementation.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQillaNSResolverImpl.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQillaPlatformUtils.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQillaXMLGrammarPoolImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XStr.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/basicPathanUsage.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/basicXQillaUsage.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eval.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/m_apm.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mapm5sin.Plo@am__quote@
@@ -2771,23 +2771,23 @@ CodepointCollation.lo: src/context/impl/CodepointCollation.cpp
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o CodepointCollation.lo `test -f 'src/context/impl/CodepointCollation.cpp' || echo '$(srcdir)/'`src/context/impl/CodepointCollation.cpp
 
-PathanFactoryImpl.o: src/context/impl/PathanFactoryImpl.cpp
-@AMDEP_TRUE@	source='src/context/impl/PathanFactoryImpl.cpp' object='PathanFactoryImpl.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/PathanFactoryImpl.Po' tmpdepfile='$(DEPDIR)/PathanFactoryImpl.TPo' @AMDEPBACKSLASH@
+XQillaFactoryImpl.o: src/context/impl/XQillaFactoryImpl.cpp
+@AMDEP_TRUE@	source='src/context/impl/XQillaFactoryImpl.cpp' object='XQillaFactoryImpl.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQillaFactoryImpl.Po' tmpdepfile='$(DEPDIR)/XQillaFactoryImpl.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o PathanFactoryImpl.o `test -f 'src/context/impl/PathanFactoryImpl.cpp' || echo '$(srcdir)/'`src/context/impl/PathanFactoryImpl.cpp
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQillaFactoryImpl.o `test -f 'src/context/impl/XQillaFactoryImpl.cpp' || echo '$(srcdir)/'`src/context/impl/XQillaFactoryImpl.cpp
 
-PathanFactoryImpl.obj: src/context/impl/PathanFactoryImpl.cpp
-@AMDEP_TRUE@	source='src/context/impl/PathanFactoryImpl.cpp' object='PathanFactoryImpl.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/PathanFactoryImpl.Po' tmpdepfile='$(DEPDIR)/PathanFactoryImpl.TPo' @AMDEPBACKSLASH@
+XQillaFactoryImpl.obj: src/context/impl/XQillaFactoryImpl.cpp
+@AMDEP_TRUE@	source='src/context/impl/XQillaFactoryImpl.cpp' object='XQillaFactoryImpl.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQillaFactoryImpl.Po' tmpdepfile='$(DEPDIR)/XQillaFactoryImpl.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o PathanFactoryImpl.obj `cygpath -w src/context/impl/PathanFactoryImpl.cpp`
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQillaFactoryImpl.obj `cygpath -w src/context/impl/XQillaFactoryImpl.cpp`
 
-PathanFactoryImpl.lo: src/context/impl/PathanFactoryImpl.cpp
-@AMDEP_TRUE@	source='src/context/impl/PathanFactoryImpl.cpp' object='PathanFactoryImpl.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/PathanFactoryImpl.Plo' tmpdepfile='$(DEPDIR)/PathanFactoryImpl.TPlo' @AMDEPBACKSLASH@
+XQillaFactoryImpl.lo: src/context/impl/XQillaFactoryImpl.cpp
+@AMDEP_TRUE@	source='src/context/impl/XQillaFactoryImpl.cpp' object='XQillaFactoryImpl.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQillaFactoryImpl.Plo' tmpdepfile='$(DEPDIR)/XQillaFactoryImpl.TPlo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o PathanFactoryImpl.lo `test -f 'src/context/impl/PathanFactoryImpl.cpp' || echo '$(srcdir)/'`src/context/impl/PathanFactoryImpl.cpp
+	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQillaFactoryImpl.lo `test -f 'src/context/impl/XQillaFactoryImpl.cpp' || echo '$(srcdir)/'`src/context/impl/XQillaFactoryImpl.cpp
 
 VarStoreImpl.o: src/context/impl/VarStoreImpl.cpp
 @AMDEP_TRUE@	source='src/context/impl/VarStoreImpl.cpp' object='VarStoreImpl.o' libtool=no @AMDEPBACKSLASH@
@@ -3437,95 +3437,95 @@ XQVariableBinding.lo: src/ast/XQVariableBinding.cpp
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQVariableBinding.lo `test -f 'src/ast/XQVariableBinding.cpp' || echo '$(srcdir)/'`src/ast/XQVariableBinding.cpp
 
-PathanBuilderImpl.o: src/dom-api/impl/PathanBuilderImpl.cpp
-@AMDEP_TRUE@	source='src/dom-api/impl/PathanBuilderImpl.cpp' object='PathanBuilderImpl.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/PathanBuilderImpl.Po' tmpdepfile='$(DEPDIR)/PathanBuilderImpl.TPo' @AMDEPBACKSLASH@
+XQillaBuilderImpl.o: src/dom-api/impl/XQillaBuilderImpl.cpp
+@AMDEP_TRUE@	source='src/dom-api/impl/XQillaBuilderImpl.cpp' object='XQillaBuilderImpl.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQillaBuilderImpl.Po' tmpdepfile='$(DEPDIR)/XQillaBuilderImpl.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o PathanBuilderImpl.o `test -f 'src/dom-api/impl/PathanBuilderImpl.cpp' || echo '$(srcdir)/'`src/dom-api/impl/PathanBuilderImpl.cpp
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQillaBuilderImpl.o `test -f 'src/dom-api/impl/XQillaBuilderImpl.cpp' || echo '$(srcdir)/'`src/dom-api/impl/XQillaBuilderImpl.cpp
 
-PathanBuilderImpl.obj: src/dom-api/impl/PathanBuilderImpl.cpp
-@AMDEP_TRUE@	source='src/dom-api/impl/PathanBuilderImpl.cpp' object='PathanBuilderImpl.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/PathanBuilderImpl.Po' tmpdepfile='$(DEPDIR)/PathanBuilderImpl.TPo' @AMDEPBACKSLASH@
+XQillaBuilderImpl.obj: src/dom-api/impl/XQillaBuilderImpl.cpp
+@AMDEP_TRUE@	source='src/dom-api/impl/XQillaBuilderImpl.cpp' object='XQillaBuilderImpl.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQillaBuilderImpl.Po' tmpdepfile='$(DEPDIR)/XQillaBuilderImpl.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o PathanBuilderImpl.obj `cygpath -w src/dom-api/impl/PathanBuilderImpl.cpp`
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQillaBuilderImpl.obj `cygpath -w src/dom-api/impl/XQillaBuilderImpl.cpp`
 
-PathanBuilderImpl.lo: src/dom-api/impl/PathanBuilderImpl.cpp
-@AMDEP_TRUE@	source='src/dom-api/impl/PathanBuilderImpl.cpp' object='PathanBuilderImpl.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/PathanBuilderImpl.Plo' tmpdepfile='$(DEPDIR)/PathanBuilderImpl.TPlo' @AMDEPBACKSLASH@
+XQillaBuilderImpl.lo: src/dom-api/impl/XQillaBuilderImpl.cpp
+@AMDEP_TRUE@	source='src/dom-api/impl/XQillaBuilderImpl.cpp' object='XQillaBuilderImpl.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQillaBuilderImpl.Plo' tmpdepfile='$(DEPDIR)/XQillaBuilderImpl.TPlo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o PathanBuilderImpl.lo `test -f 'src/dom-api/impl/PathanBuilderImpl.cpp' || echo '$(srcdir)/'`src/dom-api/impl/PathanBuilderImpl.cpp
+	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQillaBuilderImpl.lo `test -f 'src/dom-api/impl/XQillaBuilderImpl.cpp' || echo '$(srcdir)/'`src/dom-api/impl/XQillaBuilderImpl.cpp
 
-PathanDocumentImpl.o: src/dom-api/impl/PathanDocumentImpl.cpp
-@AMDEP_TRUE@	source='src/dom-api/impl/PathanDocumentImpl.cpp' object='PathanDocumentImpl.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/PathanDocumentImpl.Po' tmpdepfile='$(DEPDIR)/PathanDocumentImpl.TPo' @AMDEPBACKSLASH@
+XQillaDocumentImpl.o: src/dom-api/impl/XQillaDocumentImpl.cpp
+@AMDEP_TRUE@	source='src/dom-api/impl/XQillaDocumentImpl.cpp' object='XQillaDocumentImpl.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQillaDocumentImpl.Po' tmpdepfile='$(DEPDIR)/XQillaDocumentImpl.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o PathanDocumentImpl.o `test -f 'src/dom-api/impl/PathanDocumentImpl.cpp' || echo '$(srcdir)/'`src/dom-api/impl/PathanDocumentImpl.cpp
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQillaDocumentImpl.o `test -f 'src/dom-api/impl/XQillaDocumentImpl.cpp' || echo '$(srcdir)/'`src/dom-api/impl/XQillaDocumentImpl.cpp
 
-PathanDocumentImpl.obj: src/dom-api/impl/PathanDocumentImpl.cpp
-@AMDEP_TRUE@	source='src/dom-api/impl/PathanDocumentImpl.cpp' object='PathanDocumentImpl.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/PathanDocumentImpl.Po' tmpdepfile='$(DEPDIR)/PathanDocumentImpl.TPo' @AMDEPBACKSLASH@
+XQillaDocumentImpl.obj: src/dom-api/impl/XQillaDocumentImpl.cpp
+@AMDEP_TRUE@	source='src/dom-api/impl/XQillaDocumentImpl.cpp' object='XQillaDocumentImpl.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQillaDocumentImpl.Po' tmpdepfile='$(DEPDIR)/XQillaDocumentImpl.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o PathanDocumentImpl.obj `cygpath -w src/dom-api/impl/PathanDocumentImpl.cpp`
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQillaDocumentImpl.obj `cygpath -w src/dom-api/impl/XQillaDocumentImpl.cpp`
 
-PathanDocumentImpl.lo: src/dom-api/impl/PathanDocumentImpl.cpp
-@AMDEP_TRUE@	source='src/dom-api/impl/PathanDocumentImpl.cpp' object='PathanDocumentImpl.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/PathanDocumentImpl.Plo' tmpdepfile='$(DEPDIR)/PathanDocumentImpl.TPlo' @AMDEPBACKSLASH@
+XQillaDocumentImpl.lo: src/dom-api/impl/XQillaDocumentImpl.cpp
+@AMDEP_TRUE@	source='src/dom-api/impl/XQillaDocumentImpl.cpp' object='XQillaDocumentImpl.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQillaDocumentImpl.Plo' tmpdepfile='$(DEPDIR)/XQillaDocumentImpl.TPlo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o PathanDocumentImpl.lo `test -f 'src/dom-api/impl/PathanDocumentImpl.cpp' || echo '$(srcdir)/'`src/dom-api/impl/PathanDocumentImpl.cpp
+	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQillaDocumentImpl.lo `test -f 'src/dom-api/impl/XQillaDocumentImpl.cpp' || echo '$(srcdir)/'`src/dom-api/impl/XQillaDocumentImpl.cpp
 
-PathanExpressionImpl.o: src/dom-api/impl/PathanExpressionImpl.cpp
-@AMDEP_TRUE@	source='src/dom-api/impl/PathanExpressionImpl.cpp' object='PathanExpressionImpl.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/PathanExpressionImpl.Po' tmpdepfile='$(DEPDIR)/PathanExpressionImpl.TPo' @AMDEPBACKSLASH@
+XQillaExpressionImpl.o: src/dom-api/impl/XQillaExpressionImpl.cpp
+@AMDEP_TRUE@	source='src/dom-api/impl/XQillaExpressionImpl.cpp' object='XQillaExpressionImpl.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQillaExpressionImpl.Po' tmpdepfile='$(DEPDIR)/XQillaExpressionImpl.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o PathanExpressionImpl.o `test -f 'src/dom-api/impl/PathanExpressionImpl.cpp' || echo '$(srcdir)/'`src/dom-api/impl/PathanExpressionImpl.cpp
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQillaExpressionImpl.o `test -f 'src/dom-api/impl/XQillaExpressionImpl.cpp' || echo '$(srcdir)/'`src/dom-api/impl/XQillaExpressionImpl.cpp
 
-PathanExpressionImpl.obj: src/dom-api/impl/PathanExpressionImpl.cpp
-@AMDEP_TRUE@	source='src/dom-api/impl/PathanExpressionImpl.cpp' object='PathanExpressionImpl.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/PathanExpressionImpl.Po' tmpdepfile='$(DEPDIR)/PathanExpressionImpl.TPo' @AMDEPBACKSLASH@
+XQillaExpressionImpl.obj: src/dom-api/impl/XQillaExpressionImpl.cpp
+@AMDEP_TRUE@	source='src/dom-api/impl/XQillaExpressionImpl.cpp' object='XQillaExpressionImpl.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQillaExpressionImpl.Po' tmpdepfile='$(DEPDIR)/XQillaExpressionImpl.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o PathanExpressionImpl.obj `cygpath -w src/dom-api/impl/PathanExpressionImpl.cpp`
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQillaExpressionImpl.obj `cygpath -w src/dom-api/impl/XQillaExpressionImpl.cpp`
 
-PathanExpressionImpl.lo: src/dom-api/impl/PathanExpressionImpl.cpp
-@AMDEP_TRUE@	source='src/dom-api/impl/PathanExpressionImpl.cpp' object='PathanExpressionImpl.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/PathanExpressionImpl.Plo' tmpdepfile='$(DEPDIR)/PathanExpressionImpl.TPlo' @AMDEPBACKSLASH@
+XQillaExpressionImpl.lo: src/dom-api/impl/XQillaExpressionImpl.cpp
+@AMDEP_TRUE@	source='src/dom-api/impl/XQillaExpressionImpl.cpp' object='XQillaExpressionImpl.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQillaExpressionImpl.Plo' tmpdepfile='$(DEPDIR)/XQillaExpressionImpl.TPlo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o PathanExpressionImpl.lo `test -f 'src/dom-api/impl/PathanExpressionImpl.cpp' || echo '$(srcdir)/'`src/dom-api/impl/PathanExpressionImpl.cpp
+	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQillaExpressionImpl.lo `test -f 'src/dom-api/impl/XQillaExpressionImpl.cpp' || echo '$(srcdir)/'`src/dom-api/impl/XQillaExpressionImpl.cpp
 
-PathanNSResolverImpl.o: src/dom-api/impl/PathanNSResolverImpl.cpp
-@AMDEP_TRUE@	source='src/dom-api/impl/PathanNSResolverImpl.cpp' object='PathanNSResolverImpl.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/PathanNSResolverImpl.Po' tmpdepfile='$(DEPDIR)/PathanNSResolverImpl.TPo' @AMDEPBACKSLASH@
+XQillaNSResolverImpl.o: src/dom-api/impl/XQillaNSResolverImpl.cpp
+@AMDEP_TRUE@	source='src/dom-api/impl/XQillaNSResolverImpl.cpp' object='XQillaNSResolverImpl.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQillaNSResolverImpl.Po' tmpdepfile='$(DEPDIR)/XQillaNSResolverImpl.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o PathanNSResolverImpl.o `test -f 'src/dom-api/impl/PathanNSResolverImpl.cpp' || echo '$(srcdir)/'`src/dom-api/impl/PathanNSResolverImpl.cpp
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQillaNSResolverImpl.o `test -f 'src/dom-api/impl/XQillaNSResolverImpl.cpp' || echo '$(srcdir)/'`src/dom-api/impl/XQillaNSResolverImpl.cpp
 
-PathanNSResolverImpl.obj: src/dom-api/impl/PathanNSResolverImpl.cpp
-@AMDEP_TRUE@	source='src/dom-api/impl/PathanNSResolverImpl.cpp' object='PathanNSResolverImpl.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/PathanNSResolverImpl.Po' tmpdepfile='$(DEPDIR)/PathanNSResolverImpl.TPo' @AMDEPBACKSLASH@
+XQillaNSResolverImpl.obj: src/dom-api/impl/XQillaNSResolverImpl.cpp
+@AMDEP_TRUE@	source='src/dom-api/impl/XQillaNSResolverImpl.cpp' object='XQillaNSResolverImpl.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQillaNSResolverImpl.Po' tmpdepfile='$(DEPDIR)/XQillaNSResolverImpl.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o PathanNSResolverImpl.obj `cygpath -w src/dom-api/impl/PathanNSResolverImpl.cpp`
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQillaNSResolverImpl.obj `cygpath -w src/dom-api/impl/XQillaNSResolverImpl.cpp`
 
-PathanNSResolverImpl.lo: src/dom-api/impl/PathanNSResolverImpl.cpp
-@AMDEP_TRUE@	source='src/dom-api/impl/PathanNSResolverImpl.cpp' object='PathanNSResolverImpl.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/PathanNSResolverImpl.Plo' tmpdepfile='$(DEPDIR)/PathanNSResolverImpl.TPlo' @AMDEPBACKSLASH@
+XQillaNSResolverImpl.lo: src/dom-api/impl/XQillaNSResolverImpl.cpp
+@AMDEP_TRUE@	source='src/dom-api/impl/XQillaNSResolverImpl.cpp' object='XQillaNSResolverImpl.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQillaNSResolverImpl.Plo' tmpdepfile='$(DEPDIR)/XQillaNSResolverImpl.TPlo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o PathanNSResolverImpl.lo `test -f 'src/dom-api/impl/PathanNSResolverImpl.cpp' || echo '$(srcdir)/'`src/dom-api/impl/PathanNSResolverImpl.cpp
+	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQillaNSResolverImpl.lo `test -f 'src/dom-api/impl/XQillaNSResolverImpl.cpp' || echo '$(srcdir)/'`src/dom-api/impl/XQillaNSResolverImpl.cpp
 
-PathanXMLGrammarPoolImpl.o: src/dom-api/impl/PathanXMLGrammarPoolImpl.cpp
-@AMDEP_TRUE@	source='src/dom-api/impl/PathanXMLGrammarPoolImpl.cpp' object='PathanXMLGrammarPoolImpl.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/PathanXMLGrammarPoolImpl.Po' tmpdepfile='$(DEPDIR)/PathanXMLGrammarPoolImpl.TPo' @AMDEPBACKSLASH@
+XQillaXMLGrammarPoolImpl.o: src/dom-api/impl/XQillaXMLGrammarPoolImpl.cpp
+@AMDEP_TRUE@	source='src/dom-api/impl/XQillaXMLGrammarPoolImpl.cpp' object='XQillaXMLGrammarPoolImpl.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQillaXMLGrammarPoolImpl.Po' tmpdepfile='$(DEPDIR)/XQillaXMLGrammarPoolImpl.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o PathanXMLGrammarPoolImpl.o `test -f 'src/dom-api/impl/PathanXMLGrammarPoolImpl.cpp' || echo '$(srcdir)/'`src/dom-api/impl/PathanXMLGrammarPoolImpl.cpp
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQillaXMLGrammarPoolImpl.o `test -f 'src/dom-api/impl/XQillaXMLGrammarPoolImpl.cpp' || echo '$(srcdir)/'`src/dom-api/impl/XQillaXMLGrammarPoolImpl.cpp
 
-PathanXMLGrammarPoolImpl.obj: src/dom-api/impl/PathanXMLGrammarPoolImpl.cpp
-@AMDEP_TRUE@	source='src/dom-api/impl/PathanXMLGrammarPoolImpl.cpp' object='PathanXMLGrammarPoolImpl.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/PathanXMLGrammarPoolImpl.Po' tmpdepfile='$(DEPDIR)/PathanXMLGrammarPoolImpl.TPo' @AMDEPBACKSLASH@
+XQillaXMLGrammarPoolImpl.obj: src/dom-api/impl/XQillaXMLGrammarPoolImpl.cpp
+@AMDEP_TRUE@	source='src/dom-api/impl/XQillaXMLGrammarPoolImpl.cpp' object='XQillaXMLGrammarPoolImpl.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQillaXMLGrammarPoolImpl.Po' tmpdepfile='$(DEPDIR)/XQillaXMLGrammarPoolImpl.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o PathanXMLGrammarPoolImpl.obj `cygpath -w src/dom-api/impl/PathanXMLGrammarPoolImpl.cpp`
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQillaXMLGrammarPoolImpl.obj `cygpath -w src/dom-api/impl/XQillaXMLGrammarPoolImpl.cpp`
 
-PathanXMLGrammarPoolImpl.lo: src/dom-api/impl/PathanXMLGrammarPoolImpl.cpp
-@AMDEP_TRUE@	source='src/dom-api/impl/PathanXMLGrammarPoolImpl.cpp' object='PathanXMLGrammarPoolImpl.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/PathanXMLGrammarPoolImpl.Plo' tmpdepfile='$(DEPDIR)/PathanXMLGrammarPoolImpl.TPlo' @AMDEPBACKSLASH@
+XQillaXMLGrammarPoolImpl.lo: src/dom-api/impl/XQillaXMLGrammarPoolImpl.cpp
+@AMDEP_TRUE@	source='src/dom-api/impl/XQillaXMLGrammarPoolImpl.cpp' object='XQillaXMLGrammarPoolImpl.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQillaXMLGrammarPoolImpl.Plo' tmpdepfile='$(DEPDIR)/XQillaXMLGrammarPoolImpl.TPlo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o PathanXMLGrammarPoolImpl.lo `test -f 'src/dom-api/impl/PathanXMLGrammarPoolImpl.cpp' || echo '$(srcdir)/'`src/dom-api/impl/PathanXMLGrammarPoolImpl.cpp
+	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQillaXMLGrammarPoolImpl.lo `test -f 'src/dom-api/impl/XQillaXMLGrammarPoolImpl.cpp' || echo '$(srcdir)/'`src/dom-api/impl/XQillaXMLGrammarPoolImpl.cpp
 
 XPathNamespaceImpl.o: src/dom-api/impl/XPathNamespaceImpl.cpp
 @AMDEP_TRUE@	source='src/dom-api/impl/XPathNamespaceImpl.cpp' object='XPathNamespaceImpl.o' libtool=no @AMDEPBACKSLASH@
@@ -3545,23 +3545,23 @@ XPathNamespaceImpl.lo: src/dom-api/impl/XPathNamespaceImpl.cpp
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XPathNamespaceImpl.lo `test -f 'src/dom-api/impl/XPathNamespaceImpl.cpp' || echo '$(srcdir)/'`src/dom-api/impl/XPathNamespaceImpl.cpp
 
-PathanImplementation.o: src/dom-api/PathanImplementation.cpp
-@AMDEP_TRUE@	source='src/dom-api/PathanImplementation.cpp' object='PathanImplementation.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/PathanImplementation.Po' tmpdepfile='$(DEPDIR)/PathanImplementation.TPo' @AMDEPBACKSLASH@
+XQillaImplementation.o: src/dom-api/XQillaImplementation.cpp
+@AMDEP_TRUE@	source='src/dom-api/XQillaImplementation.cpp' object='XQillaImplementation.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQillaImplementation.Po' tmpdepfile='$(DEPDIR)/XQillaImplementation.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o PathanImplementation.o `test -f 'src/dom-api/PathanImplementation.cpp' || echo '$(srcdir)/'`src/dom-api/PathanImplementation.cpp
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQillaImplementation.o `test -f 'src/dom-api/XQillaImplementation.cpp' || echo '$(srcdir)/'`src/dom-api/XQillaImplementation.cpp
 
-PathanImplementation.obj: src/dom-api/PathanImplementation.cpp
-@AMDEP_TRUE@	source='src/dom-api/PathanImplementation.cpp' object='PathanImplementation.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/PathanImplementation.Po' tmpdepfile='$(DEPDIR)/PathanImplementation.TPo' @AMDEPBACKSLASH@
+XQillaImplementation.obj: src/dom-api/XQillaImplementation.cpp
+@AMDEP_TRUE@	source='src/dom-api/XQillaImplementation.cpp' object='XQillaImplementation.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQillaImplementation.Po' tmpdepfile='$(DEPDIR)/XQillaImplementation.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o PathanImplementation.obj `cygpath -w src/dom-api/PathanImplementation.cpp`
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQillaImplementation.obj `cygpath -w src/dom-api/XQillaImplementation.cpp`
 
-PathanImplementation.lo: src/dom-api/PathanImplementation.cpp
-@AMDEP_TRUE@	source='src/dom-api/PathanImplementation.cpp' object='PathanImplementation.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/PathanImplementation.Plo' tmpdepfile='$(DEPDIR)/PathanImplementation.TPlo' @AMDEPBACKSLASH@
+XQillaImplementation.lo: src/dom-api/XQillaImplementation.cpp
+@AMDEP_TRUE@	source='src/dom-api/XQillaImplementation.cpp' object='XQillaImplementation.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQillaImplementation.Plo' tmpdepfile='$(DEPDIR)/XQillaImplementation.TPlo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o PathanImplementation.lo `test -f 'src/dom-api/PathanImplementation.cpp' || echo '$(srcdir)/'`src/dom-api/PathanImplementation.cpp
+	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQillaImplementation.lo `test -f 'src/dom-api/XQillaImplementation.cpp' || echo '$(srcdir)/'`src/dom-api/XQillaImplementation.cpp
 
 XPath2NodeSerializer.o: src/dom-api/XPath2NodeSerializer.cpp
 @AMDEP_TRUE@	source='src/dom-api/XPath2NodeSerializer.cpp' object='XPath2NodeSerializer.o' libtool=no @AMDEPBACKSLASH@
@@ -3617,23 +3617,23 @@ XQScopedNamespace.lo: src/dom-api/XQScopedNamespace.cpp
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQScopedNamespace.lo `test -f 'src/dom-api/XQScopedNamespace.cpp' || echo '$(srcdir)/'`src/dom-api/XQScopedNamespace.cpp
 
-PathanEngine.o: src/simple-api/PathanEngine.cpp
-@AMDEP_TRUE@	source='src/simple-api/PathanEngine.cpp' object='PathanEngine.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/PathanEngine.Po' tmpdepfile='$(DEPDIR)/PathanEngine.TPo' @AMDEPBACKSLASH@
+XQillaEngine.o: src/simple-api/XQillaEngine.cpp
+@AMDEP_TRUE@	source='src/simple-api/XQillaEngine.cpp' object='XQillaEngine.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQillaEngine.Po' tmpdepfile='$(DEPDIR)/XQillaEngine.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o PathanEngine.o `test -f 'src/simple-api/PathanEngine.cpp' || echo '$(srcdir)/'`src/simple-api/PathanEngine.cpp
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQillaEngine.o `test -f 'src/simple-api/XQillaEngine.cpp' || echo '$(srcdir)/'`src/simple-api/XQillaEngine.cpp
 
-PathanEngine.obj: src/simple-api/PathanEngine.cpp
-@AMDEP_TRUE@	source='src/simple-api/PathanEngine.cpp' object='PathanEngine.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/PathanEngine.Po' tmpdepfile='$(DEPDIR)/PathanEngine.TPo' @AMDEPBACKSLASH@
+XQillaEngine.obj: src/simple-api/XQillaEngine.cpp
+@AMDEP_TRUE@	source='src/simple-api/XQillaEngine.cpp' object='XQillaEngine.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQillaEngine.Po' tmpdepfile='$(DEPDIR)/XQillaEngine.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o PathanEngine.obj `cygpath -w src/simple-api/PathanEngine.cpp`
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQillaEngine.obj `cygpath -w src/simple-api/XQillaEngine.cpp`
 
-PathanEngine.lo: src/simple-api/PathanEngine.cpp
-@AMDEP_TRUE@	source='src/simple-api/PathanEngine.cpp' object='PathanEngine.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/PathanEngine.Plo' tmpdepfile='$(DEPDIR)/PathanEngine.TPlo' @AMDEPBACKSLASH@
+XQillaEngine.lo: src/simple-api/XQillaEngine.cpp
+@AMDEP_TRUE@	source='src/simple-api/XQillaEngine.cpp' object='XQillaEngine.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQillaEngine.Plo' tmpdepfile='$(DEPDIR)/XQillaEngine.TPlo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o PathanEngine.lo `test -f 'src/simple-api/PathanEngine.cpp' || echo '$(srcdir)/'`src/simple-api/PathanEngine.cpp
+	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQillaEngine.lo `test -f 'src/simple-api/XQillaEngine.cpp' || echo '$(srcdir)/'`src/simple-api/XQillaEngine.cpp
 
 XQEvaluator.o: src/simple-api/XQEvaluator.cpp
 @AMDEP_TRUE@	source='src/simple-api/XQEvaluator.cpp' object='XQEvaluator.o' libtool=no @AMDEPBACKSLASH@
@@ -3797,23 +3797,23 @@ NumUtils.lo: src/utils/NumUtils.cpp
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o NumUtils.lo `test -f 'src/utils/NumUtils.cpp' || echo '$(srcdir)/'`src/utils/NumUtils.cpp
 
-PathanPlatformUtils.o: src/utils/PathanPlatformUtils.cpp
-@AMDEP_TRUE@	source='src/utils/PathanPlatformUtils.cpp' object='PathanPlatformUtils.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/PathanPlatformUtils.Po' tmpdepfile='$(DEPDIR)/PathanPlatformUtils.TPo' @AMDEPBACKSLASH@
+XQillaPlatformUtils.o: src/utils/XQillaPlatformUtils.cpp
+@AMDEP_TRUE@	source='src/utils/XQillaPlatformUtils.cpp' object='XQillaPlatformUtils.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQillaPlatformUtils.Po' tmpdepfile='$(DEPDIR)/XQillaPlatformUtils.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o PathanPlatformUtils.o `test -f 'src/utils/PathanPlatformUtils.cpp' || echo '$(srcdir)/'`src/utils/PathanPlatformUtils.cpp
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQillaPlatformUtils.o `test -f 'src/utils/XQillaPlatformUtils.cpp' || echo '$(srcdir)/'`src/utils/XQillaPlatformUtils.cpp
 
-PathanPlatformUtils.obj: src/utils/PathanPlatformUtils.cpp
-@AMDEP_TRUE@	source='src/utils/PathanPlatformUtils.cpp' object='PathanPlatformUtils.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/PathanPlatformUtils.Po' tmpdepfile='$(DEPDIR)/PathanPlatformUtils.TPo' @AMDEPBACKSLASH@
+XQillaPlatformUtils.obj: src/utils/XQillaPlatformUtils.cpp
+@AMDEP_TRUE@	source='src/utils/XQillaPlatformUtils.cpp' object='XQillaPlatformUtils.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQillaPlatformUtils.Po' tmpdepfile='$(DEPDIR)/XQillaPlatformUtils.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o PathanPlatformUtils.obj `cygpath -w src/utils/PathanPlatformUtils.cpp`
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQillaPlatformUtils.obj `cygpath -w src/utils/XQillaPlatformUtils.cpp`
 
-PathanPlatformUtils.lo: src/utils/PathanPlatformUtils.cpp
-@AMDEP_TRUE@	source='src/utils/PathanPlatformUtils.cpp' object='PathanPlatformUtils.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/PathanPlatformUtils.Plo' tmpdepfile='$(DEPDIR)/PathanPlatformUtils.TPlo' @AMDEPBACKSLASH@
+XQillaPlatformUtils.lo: src/utils/XQillaPlatformUtils.cpp
+@AMDEP_TRUE@	source='src/utils/XQillaPlatformUtils.cpp' object='XQillaPlatformUtils.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQillaPlatformUtils.Plo' tmpdepfile='$(DEPDIR)/XQillaPlatformUtils.TPlo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o PathanPlatformUtils.lo `test -f 'src/utils/PathanPlatformUtils.cpp' || echo '$(srcdir)/'`src/utils/PathanPlatformUtils.cpp
+	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQillaPlatformUtils.lo `test -f 'src/utils/XQillaPlatformUtils.cpp' || echo '$(srcdir)/'`src/utils/XQillaPlatformUtils.cpp
 
 PrintAST.o: src/utils/PrintAST.cpp
 @AMDEP_TRUE@	source='src/utils/PrintAST.cpp' object='PrintAST.o' libtool=no @AMDEPBACKSLASH@
@@ -3869,23 +3869,23 @@ XPath2Utils.lo: src/utils/XPath2Utils.cpp
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XPath2Utils.lo `test -f 'src/utils/XPath2Utils.cpp' || echo '$(srcdir)/'`src/utils/XPath2Utils.cpp
 
-PathanException.o: src/exceptions/PathanException.cpp
-@AMDEP_TRUE@	source='src/exceptions/PathanException.cpp' object='PathanException.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/PathanException.Po' tmpdepfile='$(DEPDIR)/PathanException.TPo' @AMDEPBACKSLASH@
+XQillaException.o: src/exceptions/XQillaException.cpp
+@AMDEP_TRUE@	source='src/exceptions/XQillaException.cpp' object='XQillaException.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQillaException.Po' tmpdepfile='$(DEPDIR)/XQillaException.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o PathanException.o `test -f 'src/exceptions/PathanException.cpp' || echo '$(srcdir)/'`src/exceptions/PathanException.cpp
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQillaException.o `test -f 'src/exceptions/XQillaException.cpp' || echo '$(srcdir)/'`src/exceptions/XQillaException.cpp
 
-PathanException.obj: src/exceptions/PathanException.cpp
-@AMDEP_TRUE@	source='src/exceptions/PathanException.cpp' object='PathanException.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/PathanException.Po' tmpdepfile='$(DEPDIR)/PathanException.TPo' @AMDEPBACKSLASH@
+XQillaException.obj: src/exceptions/XQillaException.cpp
+@AMDEP_TRUE@	source='src/exceptions/XQillaException.cpp' object='XQillaException.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQillaException.Po' tmpdepfile='$(DEPDIR)/XQillaException.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o PathanException.obj `cygpath -w src/exceptions/PathanException.cpp`
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQillaException.obj `cygpath -w src/exceptions/XQillaException.cpp`
 
-PathanException.lo: src/exceptions/PathanException.cpp
-@AMDEP_TRUE@	source='src/exceptions/PathanException.cpp' object='PathanException.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/PathanException.Plo' tmpdepfile='$(DEPDIR)/PathanException.TPlo' @AMDEPBACKSLASH@
+XQillaException.lo: src/exceptions/XQillaException.cpp
+@AMDEP_TRUE@	source='src/exceptions/XQillaException.cpp' object='XQillaException.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQillaException.Plo' tmpdepfile='$(DEPDIR)/XQillaException.TPlo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o PathanException.lo `test -f 'src/exceptions/PathanException.cpp' || echo '$(srcdir)/'`src/exceptions/PathanException.cpp
+	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQillaException.lo `test -f 'src/exceptions/XQillaException.cpp' || echo '$(srcdir)/'`src/exceptions/XQillaException.cpp
 
 DSLException.o: src/exceptions/DSLException.cpp
 @AMDEP_TRUE@	source='src/exceptions/DSLException.cpp' object='DSLException.o' libtool=no @AMDEPBACKSLASH@
@@ -7667,23 +7667,23 @@ Sequence.lo: src/runtime/Sequence.cpp
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o Sequence.lo `test -f 'src/runtime/Sequence.cpp' || echo '$(srcdir)/'`src/runtime/Sequence.cpp
 
-basicPathanUsage.o: src/samples/basic/basicPathanUsage.cpp
-@AMDEP_TRUE@	source='src/samples/basic/basicPathanUsage.cpp' object='basicPathanUsage.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/basicPathanUsage.Po' tmpdepfile='$(DEPDIR)/basicPathanUsage.TPo' @AMDEPBACKSLASH@
+basicXQillaUsage.o: src/samples/basic/basicXQillaUsage.cpp
+@AMDEP_TRUE@	source='src/samples/basic/basicXQillaUsage.cpp' object='basicXQillaUsage.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/basicXQillaUsage.Po' tmpdepfile='$(DEPDIR)/basicXQillaUsage.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o basicPathanUsage.o `test -f 'src/samples/basic/basicPathanUsage.cpp' || echo '$(srcdir)/'`src/samples/basic/basicPathanUsage.cpp
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o basicXQillaUsage.o `test -f 'src/samples/basic/basicXQillaUsage.cpp' || echo '$(srcdir)/'`src/samples/basic/basicXQillaUsage.cpp
 
-basicPathanUsage.obj: src/samples/basic/basicPathanUsage.cpp
-@AMDEP_TRUE@	source='src/samples/basic/basicPathanUsage.cpp' object='basicPathanUsage.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/basicPathanUsage.Po' tmpdepfile='$(DEPDIR)/basicPathanUsage.TPo' @AMDEPBACKSLASH@
+basicXQillaUsage.obj: src/samples/basic/basicXQillaUsage.cpp
+@AMDEP_TRUE@	source='src/samples/basic/basicXQillaUsage.cpp' object='basicXQillaUsage.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/basicXQillaUsage.Po' tmpdepfile='$(DEPDIR)/basicXQillaUsage.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o basicPathanUsage.obj `cygpath -w src/samples/basic/basicPathanUsage.cpp`
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o basicXQillaUsage.obj `cygpath -w src/samples/basic/basicXQillaUsage.cpp`
 
-basicPathanUsage.lo: src/samples/basic/basicPathanUsage.cpp
-@AMDEP_TRUE@	source='src/samples/basic/basicPathanUsage.cpp' object='basicPathanUsage.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/basicPathanUsage.Plo' tmpdepfile='$(DEPDIR)/basicPathanUsage.TPlo' @AMDEPBACKSLASH@
+basicXQillaUsage.lo: src/samples/basic/basicXQillaUsage.cpp
+@AMDEP_TRUE@	source='src/samples/basic/basicXQillaUsage.cpp' object='basicXQillaUsage.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/basicXQillaUsage.Plo' tmpdepfile='$(DEPDIR)/basicXQillaUsage.TPlo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o basicPathanUsage.lo `test -f 'src/samples/basic/basicPathanUsage.cpp' || echo '$(srcdir)/'`src/samples/basic/basicPathanUsage.cpp
+	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o basicXQillaUsage.lo `test -f 'src/samples/basic/basicXQillaUsage.cpp' || echo '$(srcdir)/'`src/samples/basic/basicXQillaUsage.cpp
 
 eval.o: src/samples/evaluator/eval.cpp
 @AMDEP_TRUE@	source='src/samples/evaluator/eval.cpp' object='eval.o' libtool=no @AMDEPBACKSLASH@
@@ -8535,8 +8535,8 @@ $(XPLEXERFILE) : $(XPLEXTEMPLATE)
 
 $(XPPARSERCPP) $(XPPARSERHPP): $(XPPARSERFILE)
 	$(YACC) -d -v -p XPathyy  -o $(XPPARSERCPP) $(XPPARSERFILE)
-	${perl} -pi -e "s/yyparse\(YYPARSE_PARAM_ARG\)/PATHAN_EXPORT yyparse(YYPARSE_PARAM_ARG)/g" $(XPPARSERCPP)
-	${perl} -pi -e "s/int yydebug/int PATHAN_EXPORT yydebug/g" $(XPPARSERCPP)
+	${perl} -pi -e "s/yyparse\(YYPARSE_PARAM_ARG\)/XQILLA_API yyparse(YYPARSE_PARAM_ARG)/g" $(XPPARSERCPP)
+	${perl} -pi -e "s/int yydebug/int XQILLA_API yydebug/g" $(XPPARSERCPP)
 
 $(XQLEXERFILE): $(XQLEXTEMPLATE) $(XQLEXSKEL)
 	$(LEX) -BUs -S$(XQLEXSKEL) -o$(XQLEXERFILE) $(XQLEXTEMPLATE) # This can take a long time

@@ -28,14 +28,14 @@
 #include <xercesc/util/XMLString.hpp>
 #include <xercesc/framework/StdOutFormatTarget.hpp>
 
-//Pathan includes
+//XQilla includes
 
-#include <xqilla/dom-api/PathanNSResolver.hpp>
-#include <xqilla/exceptions/PathanException.hpp>
-#include <xqilla/dom-api/PathanExpression.hpp>
-#include <xqilla/dom-api/PathanImplementation.hpp>
+#include <xqilla/dom-api/XQillaNSResolver.hpp>
+#include <xqilla/exceptions/XQillaException.hpp>
+#include <xqilla/dom-api/XQillaExpression.hpp>
+#include <xqilla/dom-api/XQillaImplementation.hpp>
 #include <xqilla/dom-api/XPath2Result.hpp>
-#include <xqilla/simple-api/PathanPlatformUtils.hpp>
+#include <xqilla/simple-api/XQillaPlatformUtils.hpp>
 #include <xqilla/framework/XPath2MemoryManager.hpp>
 
 // IO include
@@ -46,16 +46,16 @@
 int main(int argc, char *argv[])
 {
   ///////////////////////
-  // Initialise Pathan //
+  // Initialise XQilla //
   ///////////////////////
 
-  // 1. Initialize Pathan
+  // 1. Initialize XQilla
   //
   // Note that this initialisation takes care of initialising
   // xerces-c as well
   try {
     
-    PathanPlatformUtils::initialize();
+    XQillaPlatformUtils::initialize();
     
   } catch (const XERCES XMLException& eXerces) {
     char *pMsg = XERCES XMLString::transcode(eXerces.getMessage());
@@ -66,15 +66,15 @@ int main(int argc, char *argv[])
     return 1;
   }
 
-  // 2. Obtain a DOM3 XPath2 implementation.  This is a Pathan-specific 
+  // 2. Obtain a DOM3 XPath2 implementation.  This is a XQilla-specific 
   //    implementation that overrides the standard DOMDocument, the standard 
   //    DOMWriter and the standard DOMBuilder
-  XERCES DOMImplementation* pathanImplementation = 
+  XERCES DOMImplementation* xqillaImplementation = 
     XERCES DOMImplementationRegistry::getDOMImplementation(X("XPath2 3.0"));
 
   // 3. Obtain a parser and set 'do namespaces', 'use schema' and 'validate' to 
   //    true.
-  XERCES DOMBuilder* xmlParser = pathanImplementation->createDOMBuilder(XERCES DOMImplementationLS::MODE_SYNCHRONOUS, 0);
+  XERCES DOMBuilder* xmlParser = xqillaImplementation->createDOMBuilder(XERCES DOMImplementationLS::MODE_SYNCHRONOUS, 0);
   xmlParser->setFeature(X("namespaces"), true);
   xmlParser->setFeature(X("http://apache.org/xml/features/validation/schema"), true);
   xmlParser->setFeature(X("validation"), true);
@@ -98,9 +98,9 @@ int main(int argc, char *argv[])
   const XERCES DOMXPathNSResolver* resolver = document->createNSResolver(document->getDocumentElement());
 
   //    For a more advanced interface (like to have the ability to add 
-  //    namespace bindings, this NSResolver can be cast to a PathanNSResolver
-  PathanNSResolver* pathanResolver = (PathanNSResolver*)resolver;
-  pathanResolver->addNamespaceBinding(X("my"), X("http://example.com/myURI"));
+  //    namespace bindings, this NSResolver can be cast to a XQillaNSResolver
+  XQillaNSResolver* xqillaResolver = (XQillaNSResolver*)resolver;
+  xqillaResolver->addNamespaceBinding(X("my"), X("http://example.com/myURI"));
   
   // **************** Example 1: max() function ****************** //
   
@@ -129,7 +129,7 @@ int main(int argc, char *argv[])
   // 4. Work with the result: output it to the screen in this case
   
   // create a DOMWriter (serializer) to output the nodes
-  XERCES DOMWriter* serializer = pathanImplementation->createDOMWriter();
+  XERCES DOMWriter* serializer = xqillaImplementation->createDOMWriter();
   XERCES StdOutFormatTarget* target = new XERCES StdOutFormatTarget();
 
   std::cout << "The answer for expression '" << expression2 << "' is: " <<std::endl;
@@ -150,7 +150,7 @@ int main(int argc, char *argv[])
   // Terminate //
   ///////////////
 
-  PathanPlatformUtils::terminate();
+  XQillaPlatformUtils::terminate();
   
   return 0;
 }

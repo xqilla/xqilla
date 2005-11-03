@@ -16,7 +16,7 @@
 #ifndef __XPATHNAMESPACEIMPL_HPP
 #define __XPATHNAMESPACEIMPL_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xercesc/util/XercesDefs.hpp>
 #include <xercesc/dom/impl/DOMNodeImpl.hpp>
@@ -28,7 +28,7 @@ class DOMDocument;
 XERCES_CPP_NAMESPACE_END
 
 
-class PATHAN_EXPORT XPathNamespaceImpl : public XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNamespace
+class XQILLA_API XPathNamespaceImpl : public XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNamespace
 {
 public:
 	XERCES_CPP_NAMESPACE_QUALIFIER DOMNodeImpl fNode;

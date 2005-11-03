@@ -20,12 +20,12 @@
 #ifndef _PLUS_HPP
 #define _PLUS_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/operators/ArithmeticOperator.hpp>
 
 /** OpPlus operator function*/
-class PATHAN_EXPORT Plus : public ArithmeticOperator
+class XQILLA_API Plus : public ArithmeticOperator
 {
 public:
   static const XMLCh name[];

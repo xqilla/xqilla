@@ -20,7 +20,7 @@
 #include <xqilla/items/ATDateOrDerived.hpp>
 #include <xqilla/mapm/m_apm.h>
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 class Timezone;
 class ATDecimalOrDerived;
@@ -29,7 +29,7 @@ class XPath2MemoryManager;
 class DynamicContext;
 class StaticContext;
 
-class PATHAN_EXPORT ATDateOrDerivedImpl : public ATDateOrDerived 
+class XQILLA_API ATDateOrDerivedImpl : public ATDateOrDerived 
 {
 
 public:

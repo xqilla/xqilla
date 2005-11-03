@@ -20,11 +20,11 @@
 #ifndef _FUNCTIONDOCAVAILABLE_HPP
 #define _FUNCTIONDOCAVAILABLE_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/XQFunction.hpp>
 
-class PATHAN_EXPORT FunctionDocAvailable : public XQFunction
+class XQILLA_API FunctionDocAvailable : public XQFunction
 {
 public:
   static const XMLCh name[];

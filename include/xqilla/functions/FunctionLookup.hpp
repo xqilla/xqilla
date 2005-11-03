@@ -16,7 +16,7 @@
 #ifndef _FLOOKUP_HPP
 #define _FLOOKUP_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <vector>
 #include <xercesc/util/XercesDefs.hpp>
@@ -25,7 +25,7 @@
 class FuncFactory;
 class XPath2MemoryManager;
 
-class PATHAN_EXPORT FunctionLookup
+class XQILLA_API FunctionLookup
 {
 public:
   ///adds a function to the custom function table

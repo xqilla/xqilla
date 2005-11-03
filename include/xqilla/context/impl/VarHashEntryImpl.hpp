@@ -16,7 +16,7 @@
 #ifndef _VARHASHENTRYIMPL_HPP
 #define _VARHASHENTRYIMPL_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/runtime/Sequence.hpp>
 #include <xqilla/context/VarHashEntry.hpp>
 

@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionQName.hpp>
 #include <xqilla/utils/XPath2NSUtils.hpp>
 #include <xqilla/context/DynamicContext.hpp>
@@ -52,7 +52,7 @@ Sequence FunctionQName::collapseTreeInternal(DynamicContext* context, int flags)
   const XMLCh* prefix = XPath2NSUtils::getPrefix(local, context->getMemoryManager());
   local = XPath2NSUtils::getLocalName(local);
   //Construct QName here
-  Sequence result(context->getPathanFactory()->createQName(uri, prefix, local, context),
+  Sequence result(context->getXQillaFactory()->createQName(uri, prefix, local, context),
                   context->getMemoryManager());
 
 	return result;

@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <assert.h>
 #include <xqilla/operators/UnaryMinus.hpp>
 #include <xqilla/operators/Multiply.hpp>

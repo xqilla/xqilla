@@ -22,7 +22,7 @@
 
 #include <xercesc/dom/DOMNamedNodeMap.hpp>
 
-class PATHAN_EXPORT NamespaceAxis : public Axis
+class XQILLA_API NamespaceAxis : public Axis
 {
 public:
   NamespaceAxis(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *contextNode, const Node *nodeObj,

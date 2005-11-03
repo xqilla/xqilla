@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include "ATDurationOrDerivedImpl.hpp"
 #include <xqilla/items/ATDecimalOrDerived.hpp>
 #include <xqilla/items/ATDoubleOrDerived.hpp>
@@ -72,7 +72,7 @@ ATDurationOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName,
 
 void *ATDurationOrDerivedImpl::getInterface(const XMLCh *name) const
 {
-  if(name == Item::gPathan) {
+  if(name == Item::gXQilla) {
     return (void*)this;
   }
   return 0;
@@ -118,7 +118,7 @@ AnyAtomicType::Ptr ATDurationOrDerivedImpl::castAsInternal(AtomicObjectType targ
       DSLthrow(XPath2TypeCastException,X("ATDurationOrDerivedImpl::castAsInternal"), X("Invalid representation of duration"));
 
     } else if (durationType == YEAR_MONTH_DURATION) {
-      return context->getPathanFactory()->createDurationOrDerived(targetURI, targetType, this->asString(context), context);
+      return context->getXQillaFactory()->createDurationOrDerived(targetURI, targetType, this->asString(context), context);
     } else {
       //else we're a duration and we must remove the day and time components
       if(this->_year->isZero()   && this->_month->isZero()) {
@@ -140,7 +140,7 @@ AnyAtomicType::Ptr ATDurationOrDerivedImpl::castAsInternal(AtomicObjectType targ
           buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_M);
         }   
       }
-      return context->getPathanFactory()->createDurationOrDerived(targetURI, targetType, buf.getRawBuffer(), context);
+      return context->getXQillaFactory()->createDurationOrDerived(targetURI, targetType, buf.getRawBuffer(), context);
     }
 
   } else if (context->isTypeOrDerivedFromType(targetURI, targetType, 
@@ -153,7 +153,7 @@ AnyAtomicType::Ptr ATDurationOrDerivedImpl::castAsInternal(AtomicObjectType targ
       DSLthrow(XPath2TypeCastException,X("ATDurationOrDerivedImpl::castAsInternal"), X("Invalid representation of duration"));
 
     } else if (durationType == DAY_TIME_DURATION) {
-      return context->getPathanFactory()->createDurationOrDerived(targetURI, targetType, this->asString(context), context);
+      return context->getXQillaFactory()->createDurationOrDerived(targetURI, targetType, this->asString(context), context);
     } else {
       //else we're a duration and we must remove the year and month components
       if (this->_day->isZero()    && this->_hour->isZero()  &&
@@ -191,7 +191,7 @@ AnyAtomicType::Ptr ATDurationOrDerivedImpl::castAsInternal(AtomicObjectType targ
           }
         }
       }
-      return context->getPathanFactory()->createDurationOrDerived(targetURI, targetType, buf.getRawBuffer(), context);
+      return context->getXQillaFactory()->createDurationOrDerived(targetURI, targetType, buf.getRawBuffer(), context);
     }
 
   } else {
@@ -495,7 +495,7 @@ ATDecimalOrDerived::Ptr ATDurationOrDerivedImpl::dayTimeDivide(const ATDurationO
 
 /* Divide a xdt:yearMonthDuration by an xs:decimal */  
 ATDurationOrDerived::Ptr ATDurationOrDerivedImpl::yearMonthDivide(const Numeric::Ptr &divisor, const DynamicContext* context) const {
-  ATDecimalOrDerived::Ptr i12 = context->getPathanFactory()->createInteger(12,context);
+  ATDecimalOrDerived::Ptr i12 = context->getXQillaFactory()->createInteger(12,context);
 
   ATDecimalOrDerived::Ptr asMonths = (const ATDecimalOrDerived::Ptr )_year->multiply(i12, context)->
                                        add(_month, context)->divide(divisor, context)->round(context)->
@@ -520,7 +520,7 @@ ATDecimalOrDerived::Ptr ATDurationOrDerivedImpl::yearMonthDivide(const ATDuratio
     asMonths2 = asMonths2.neg();
   }
   MAPM result = asMonths1 / asMonths2;
-  return context->getPathanFactory()->createDecimal(result, context);
+  return context->getXQillaFactory()->createDecimal(result, context);
 }
 
 AnyAtomicType::AtomicObjectType ATDurationOrDerivedImpl::getPrimitiveTypeIndex() const {
@@ -539,7 +539,7 @@ ATDurationOrDerived::Ptr ATDurationOrDerivedImpl::multiply(const Numeric::Ptr &m
     return newDayTimeDuration(asSeconds, context);
   } else if(durationType == YEAR_MONTH_DURATION) { 
     // multiplying an xdt:yearMonthDuration
-    ATDecimalOrDerived::Ptr i12 = context->getPathanFactory()->createInteger(12,context);
+    ATDecimalOrDerived::Ptr i12 = context->getXQillaFactory()->createInteger(12,context);
   
     ATDecimalOrDerived::Ptr asMonths = (const ATDecimalOrDerived::Ptr )_year->multiply(i12, context)->
                                        add(_month, context)->multiply(multiplier, context)->round(context)->
@@ -570,7 +570,7 @@ ATDurationOrDerived::Ptr ATDurationOrDerivedImpl::add(const ATDurationOrDerived:
     return newDayTimeDuration(sum, context);
     
   } else if(this->isYearMonthDuration() && ((const ATDurationOrDerived*)other)->isYearMonthDuration() ) {
-    const ATDecimalOrDerived::Ptr i12 = context->getPathanFactory()->createInteger(12,context);
+    const ATDecimalOrDerived::Ptr i12 = context->getXQillaFactory()->createInteger(12,context);
   
     Numeric::Ptr thisMonths = _year->multiply(i12, context)->add(_month, context);
     if(this->isNegative()) { thisMonths = thisMonths->invert(context); }
@@ -599,7 +599,7 @@ ATDurationOrDerived::Ptr ATDurationOrDerivedImpl::subtract(const ATDurationOrDer
     return newDayTimeDuration(diff, context);
     
   } else if(this->isYearMonthDuration() && ((const ATDurationOrDerived*)other)->isYearMonthDuration() ) {
-    const ATDecimalOrDerived::Ptr i12 = context->getPathanFactory()->createInteger(12,context);
+    const ATDecimalOrDerived::Ptr i12 = context->getXQillaFactory()->createInteger(12,context);
   
     Numeric::Ptr thisMonths = _year->multiply(i12, context)->add(_month, context);
     if(this->isNegative()) { thisMonths = thisMonths->invert(context); }
@@ -659,7 +659,7 @@ ATDurationOrDerived::Ptr ATDurationOrDerivedImpl::normalize(const DynamicContext
 }
 
 ATDurationOrDerived::Ptr ATDurationOrDerivedImpl::normalizeDayTimeDuration(const DynamicContext* context) const {
-  const ATDecimalOrDerived::Ptr zero = context->getPathanFactory()->createInteger(0,context);
+  const ATDecimalOrDerived::Ptr zero = context->getXQillaFactory()->createInteger(0,context);
 
   // normalize
   MAPM asSeconds =((const ATDecimalOrDerived*)_day)->asMAPM() * DateUtils::g_secondsPerDay +
@@ -680,23 +680,23 @@ ATDurationOrDerived::Ptr ATDurationOrDerivedImpl::normalizeDayTimeDuration(const
 
   return new
       ATDurationOrDerivedImpl(this->getTypeURI(), this->getTypeName(), zero, zero,
-                              context->getPathanFactory()->createInteger(day, context),
-                              context->getPathanFactory()->createInteger(hour, context),
-                              context->getPathanFactory()->createInteger(minute, context),
-                              context->getPathanFactory()->createDecimal(sec, context),
+                              context->getXQillaFactory()->createInteger(day, context),
+                              context->getXQillaFactory()->createInteger(hour, context),
+                              context->getXQillaFactory()->createInteger(minute, context),
+                              context->getXQillaFactory()->createDecimal(sec, context),
                               _isPositive, context);
 }
 
 ATDurationOrDerived::Ptr ATDurationOrDerivedImpl::normalizeYearMonthDuration(const DynamicContext* context) const {
-  const ATDecimalOrDerived::Ptr zero = context->getPathanFactory()->createInteger(0,context);
+  const ATDecimalOrDerived::Ptr zero = context->getXQillaFactory()->createInteger(0,context);
   MAPM year = ((const ATDecimalOrDerived*)_year)->asMAPM()+(((const ATDecimalOrDerived*)_month)->asMAPM() / 12).floor();
 
   MAPM month = DateUtils::modulo(((const ATDecimalOrDerived*)_month)->asMAPM(),12);
   
   return new
       ATDurationOrDerivedImpl(this->getTypeURI(), this->getTypeName(),
-                              context->getPathanFactory()->createInteger(year, context),
-                              context->getPathanFactory()->createInteger(month, context),
+                              context->getXQillaFactory()->createInteger(year, context),
+                              context->getXQillaFactory()->createInteger(month, context),
                               zero, zero, zero, zero, _isPositive, context);
 }
 
@@ -713,7 +713,7 @@ ATDecimalOrDerived::Ptr ATDurationOrDerivedImpl::asSeconds(const DynamicContext*
 
   if(this->isNegative())
     asSeconds=asSeconds.neg();
-  return context->getPathanFactory()->createDecimal(asSeconds, context);
+  return context->getXQillaFactory()->createDecimal(asSeconds, context);
 }
 
 ATDurationOrDerived::Ptr ATDurationOrDerivedImpl::newDayTimeDuration(ATDecimalOrDerived::Ptr valueSeconds, const DynamicContext* context) const
@@ -737,7 +737,7 @@ ATDurationOrDerived::Ptr ATDurationOrDerivedImpl::newDayTimeDuration(ATDecimalOr
     buf.append(valueSeconds->asString(context));
     buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_S);
   }
-  return context->getPathanFactory()->createDayTimeDuration(buf.getRawBuffer(), context);
+  return context->getXQillaFactory()->createDayTimeDuration(buf.getRawBuffer(), context);
 }
 
 ATDurationOrDerived::Ptr ATDurationOrDerivedImpl::newYearMonthDuration(ATDecimalOrDerived::Ptr valueMonth, const DynamicContext* context) const
@@ -760,7 +760,7 @@ ATDurationOrDerived::Ptr ATDurationOrDerivedImpl::newYearMonthDuration(ATDecimal
     buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_M);
   }
 
-  return context->getPathanFactory()->createYearMonthDuration(buf.getRawBuffer(), context);
+  return context->getXQillaFactory()->createYearMonthDuration(buf.getRawBuffer(), context);
 }
 
 void ATDurationOrDerivedImpl::setDuration(const XMLCh* const s, const DynamicContext* context) {
@@ -933,11 +933,11 @@ void ATDurationOrDerivedImpl::setDuration(const XMLCh* const s, const DynamicCon
   }
 
   
-  _year = context->getPathanFactory()->createNonNegativeInteger(year, context);
-  _month = context->getPathanFactory()->createNonNegativeInteger(month, context);
-  _day = context->getPathanFactory()->createNonNegativeInteger(day, context);
-  _hour = context->getPathanFactory()->createNonNegativeInteger(hour, context);
-  _minute = context->getPathanFactory()->createNonNegativeInteger(minute, context);
+  _year = context->getXQillaFactory()->createNonNegativeInteger(year, context);
+  _month = context->getXQillaFactory()->createNonNegativeInteger(month, context);
+  _day = context->getXQillaFactory()->createNonNegativeInteger(day, context);
+  _hour = context->getXQillaFactory()->createNonNegativeInteger(hour, context);
+  _minute = context->getXQillaFactory()->createNonNegativeInteger(minute, context);
   
-  _sec = context->getPathanFactory()->createDecimal(sec, context);
+  _sec = context->getXQillaFactory()->createDecimal(sec, context);
 }

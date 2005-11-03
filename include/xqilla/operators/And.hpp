@@ -16,12 +16,12 @@
 #ifndef _AND_HPP
 #define _AND_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/XQOperator.hpp>
 #include <xqilla/runtime/SingleResult.hpp>
 
-class PATHAN_EXPORT And : public XQOperator
+class XQILLA_API And : public XQOperator
 {
 public:
   static const XMLCh name[];

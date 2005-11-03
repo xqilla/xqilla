@@ -20,11 +20,11 @@
 #ifndef _MOD_HPP
 #define _MOD_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/operators/ArithmeticOperator.hpp>
 
 /** OpMod operator function*/
-class PATHAN_EXPORT Mod : public ArithmeticOperator
+class XQILLA_API Mod : public ArithmeticOperator
 {
 public:
   static const XMLCh name[];

@@ -46,7 +46,7 @@ xqilla/axis/PrecedingSiblingAxis.hpp \
 xqilla/axis/SelfAxis.hpp \
 xqilla/context/DynamicContext.hpp \
 xqilla/context/StaticContext.hpp \
-xqilla/context/PathanFactory.hpp \
+xqilla/context/XQillaFactory.hpp \
 xqilla/context/URIResolver.hpp \
 xqilla/context/VariableStore.hpp \
 xqilla/context/Scope.hpp \
@@ -56,7 +56,7 @@ xqilla/context/VariableTypeStore.hpp \
 xqilla/context/XQFactory.hpp \
 xqilla/context/Collation.hpp \
 xqilla/context/impl/CollationImpl.hpp \
-xqilla/context/impl/PathanFactoryImpl.hpp \
+xqilla/context/impl/XQillaFactoryImpl.hpp \
 xqilla/context/impl/VarHashEntryImpl.hpp \
 xqilla/context/impl/VariableStoreTemplate.hpp \
 xqilla/context/impl/CodepointCollation.hpp \
@@ -64,15 +64,15 @@ xqilla/context/impl/XQRemoteDebugger.hpp \
 xqilla/context/impl/XQContextImpl.hpp \
 xqilla/context/impl/XQDynamicContextImpl.hpp \
 xqilla/context/impl/XQFactoryImpl.hpp \
-xqilla/dom-api/PathanExpression.hpp \
-xqilla/dom-api/PathanImplementation.hpp \
-xqilla/dom-api/PathanNSResolver.hpp \
+xqilla/dom-api/XQillaExpression.hpp \
+xqilla/dom-api/XQillaImplementation.hpp \
+xqilla/dom-api/XQillaNSResolver.hpp \
 xqilla/dom-api/XPath2NodeSerializer.hpp \
 xqilla/dom-api/XPath2Result.hpp \
 xqilla/dom-api/XQScopedNamespace.hpp \
-xqilla/dom-api/impl/PathanExpressionImpl.hpp \
-xqilla/dom-api/impl/PathanNSResolverImpl.hpp \
-xqilla/exceptions/PathanException.hpp \
+xqilla/dom-api/impl/XQillaExpressionImpl.hpp \
+xqilla/dom-api/impl/XQillaNSResolverImpl.hpp \
+xqilla/exceptions/XQillaException.hpp \
 xqilla/exceptions/ContextException.hpp \
 xqilla/exceptions/ASTException.hpp \
 xqilla/exceptions/DSLException.hpp \
@@ -241,7 +241,6 @@ xqilla/items/impl/ATFloatOrDerivedImpl.hpp \
 xqilla/items/impl/ATQNameOrDerivedImpl.hpp \
 xqilla/items/impl/NodeImpl.hpp \
 xqilla/mapm/m_apm.h \
-xqilla/pathan.hpp \
 xqilla/operators/And.hpp \
 xqilla/operators/ArithmeticOperator.hpp \
 xqilla/operators/ComparisonOperator.hpp \
@@ -281,8 +280,8 @@ xqilla/schema/DocumentCache.hpp \
 xqilla/schema/SequenceType.hpp \
 xqilla/schema/AnyAtomicTypeDatatypeValidator.hpp \
 xqilla/schema/DocumentCacheImpl.hpp \
-xqilla/simple-api/PathanEngine.hpp \
-xqilla/simple-api/PathanPlatformUtils.hpp \
+xqilla/simple-api/XQillaEngine.hpp \
+xqilla/simple-api/XQillaPlatformUtils.hpp \
 xqilla/simple-api/XQEvaluator.hpp \
 xqilla/simple-api/XQQuery.hpp \
 xqilla/utils/NumUtils.hpp \
@@ -299,8 +298,5 @@ xqilla/framework/BaseMemoryManager.hpp \
 xqilla/framework/ProxyMemoryManager.hpp \
 xqilla/framework/StringPool.hpp \
 xqilla/framework/XPath2MemoryManagerImpl.hpp \
-xqilla/framework/XQEngine.hpp \
-xqilla/framework/Pathan.hpp \
-xqilla/pathan-simple.hpp \
-xqilla/pathan-dom3.hpp
+xqilla/framework/XQillaExport.hpp
 

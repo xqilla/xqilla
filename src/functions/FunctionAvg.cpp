@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionAvg.hpp>
 #include <xqilla/functions/FunctionSum.hpp>
 #include <xqilla/runtime/Sequence.hpp>
@@ -27,7 +27,7 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
-#include <xqilla/context/PathanFactory.hpp>
+#include <xqilla/context/XQillaFactory.hpp>
 
 const XMLCh FunctionAvg::name[] = {
   XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_v, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_g, 
@@ -73,11 +73,11 @@ Sequence FunctionAvg::collapseTreeInternal(DynamicContext* context, int flags) c
     DSLthrow(IllegalArgumentException, X("FunctionAvg::collapseTreeInternal()"), X("Invalid argument to fn:avg() function"));
   }
 
-  VectorOfASTNodes divArgs = VectorOfASTNodes(PathanAllocator<ASTNode*>(context->getMemoryManager()));
+  VectorOfASTNodes divArgs = VectorOfASTNodes(XQillaAllocator<ASTNode*>(context->getMemoryManager()));
   XQSequence seq1(sum, context, context->getMemoryManager());
   divArgs.push_back(&seq1);
 
-  XQSequence seq2(context->getPathanFactory()->createDecimal((long)sequence.getLength(), context),
+  XQSequence seq2(context->getXQillaFactory()->createDecimal((long)sequence.getLength(), context),
                         context, context->getMemoryManager());
   divArgs.push_back(&seq2);
 

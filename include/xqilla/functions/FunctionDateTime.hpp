@@ -20,12 +20,12 @@
 #ifndef _FUNCTION_DATETIME_HPP
 #define _FUNCTION_DATETIME_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/XQFunction.hpp>
 
 /** dateTime function*/
-class PATHAN_EXPORT FunctionDateTime : public XQFunction
+class XQILLA_API FunctionDateTime : public XQFunction
 {
 public:
   static const XMLCh name[];

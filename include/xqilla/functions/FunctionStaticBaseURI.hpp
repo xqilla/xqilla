@@ -20,11 +20,11 @@
 #ifndef _FUNCTIONSTATICBASEURI_HPP
 #define _FUNCTIONSTATICBASEURI_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/XQFunction.hpp>
 
-class PATHAN_EXPORT FunctionStaticBaseURI : public XQFunction
+class XQILLA_API FunctionStaticBaseURI : public XQFunction
 {
 public:
   static const XMLCh name[];

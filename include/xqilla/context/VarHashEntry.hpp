@@ -16,7 +16,7 @@
 #ifndef _VARHASHENTRY_HPP
 #define _VARHASHENTRY_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 /** The class that stores the values of the variables. */
 template<class TYPE>

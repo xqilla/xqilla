@@ -17,51 +17,6 @@
  *  This software is provided "as is" without express or implied warranty.
  */
 
-/*
- *      $Id$
- *
- *      This file contains the functions that implement the sin (5x)
- *	and cos (4x) multiple angle relations
- *
- *      $Log$
- *      Revision 1.1  2005/11/01 18:04:13  jpcs
- *      Initial check in.
- *
- *      Revision 1.1  2004/07/21 09:23:01  jpcs
- *      Initial check in of the Parthenon backup of Pathan.
- *
- *      Revision 1.2  2003/05/01 12:46:55  alby
- *      - Updated MAPM to version 4.6.1
- *      - The MAPM class is now thread-safe
- *
- *      Revision 1.9  2002/11/03 21:50:36  mike
- *      Updated function parameters to use the modern style
- *
- *      Revision 1.8  2001/03/25 20:57:03  mike
- *      move cos_to_sin func in here
- *
- *      Revision 1.7  2000/05/04 23:50:21  mike
- *      use multiple angle identity 4 times of larger COS angles
- *
- *      Revision 1.6  1999/06/30 00:08:53  mike
- *      pass more decimal places to raw functions
- *
- *      Revision 1.5  1999/06/20 23:41:32  mike
- *      changed COS to use 4x multiple angle identity instead of 5x
- *
- *      Revision 1.4  1999/06/20 19:42:26  mike
- *      tweak number of dec places passed to sub-functions
- *
- *      Revision 1.3  1999/06/20 19:03:56  mike
- *      changed local static variables to MAPM stack variables
- *
- *      Revision 1.2  1999/05/12 21:30:09  mike
- *      replace local 5.0 with global
- *
- *      Revision 1.1  1999/05/10 20:56:31  mike
- *      Initial revision
- */
-
 #include "m_apm_lc.h"
 
 /****************************************************************************/

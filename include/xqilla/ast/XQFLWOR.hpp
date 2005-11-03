@@ -20,7 +20,7 @@
 #if !defined(AFXQ_XQFLWOR_H__6E34F36F_797C_4A12_AF0B_5538F1D650B1__INCLUDED_)
 #define AFXQ_XQFLWOR_H__6E34F36F_797C_4A12_AF0B_5538F1D650B1__INCLUDED_
 
-#include <xqilla/framework/XQEngine.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <vector>
 #include <xqilla/ast/ASTNodeImpl.hpp>
 #include <xqilla/runtime/ResultBuffer.hpp>
@@ -31,7 +31,7 @@
 
 class Collation;
 
-class XQENGINE_API SortableItem
+class XQILLA_API SortableItem
 {
 public:
 	SortableItem();
@@ -46,10 +46,10 @@ public:
 	AnyAtomicType::Ptr m_item;
 };
 
-class XQENGINE_API XQSort
+class XQILLA_API XQSort
 {
 public:
-	class XQENGINE_API SortSpec
+	class XQILLA_API SortSpec
 	{
 	public:
 		static const long ascending;
@@ -76,7 +76,7 @@ public:
 		const XMLCh* _collation;
 	};
 
-	typedef std::vector<SortSpec*, PathanAllocator<SortSpec*> > VectorOfSortSpec;
+	typedef std::vector<SortSpec*, XQillaAllocator<SortSpec*> > VectorOfSortSpec;
   typedef std::vector<SortableItem> SortItems;
 	typedef enum { stable, unstable } sortType;
 
@@ -94,7 +94,7 @@ protected:
 };
 
 
-class XQENGINE_API XQFLWOR : public ASTNodeImpl
+class XQILLA_API XQFLWOR : public ASTNodeImpl
 {
 public:
   XQFLWOR(VectorOfVariableBinding* bindings, ASTNode* where, XQSort* orderBy, ASTNode* returnExpr, XPath2MemoryManager* expr);

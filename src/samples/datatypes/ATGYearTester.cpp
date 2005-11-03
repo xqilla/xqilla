@@ -19,7 +19,7 @@
 #include <xqilla/framework/XPath2MemoryManager.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xqilla/context/PathanFactory.hpp>
+#include <xqilla/context/XQillaFactory.hpp>
 
 #include <xqilla/items/ATGYearOrDerived.hpp>
 #include <xqilla/items/Timezone.hpp>
@@ -63,7 +63,7 @@ void ATGYearTester::run(const DynamicContext* context) {
 
 const ATGYearOrDerived::Ptr ATGYearTester::createGYear(const XMLCh* value,
                                                    const DynamicContext* context) {
-  return context->getPathanFactory()->createGYearOrDerived(
+  return context->getXQillaFactory()->createGYearOrDerived(
       XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
       XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_YEAR,
       value, context);

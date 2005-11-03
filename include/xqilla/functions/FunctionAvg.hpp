@@ -24,7 +24,7 @@
 #include <xqilla/ast/AggregateFunction.hpp>
 
 /** Avg operator function*/
-class PATHAN_EXPORT FunctionAvg : public AggregateFunction
+class XQILLA_API FunctionAvg : public AggregateFunction
 {
 public:
   static const XMLCh name[];

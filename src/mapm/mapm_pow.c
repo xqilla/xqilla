@@ -17,51 +17,6 @@
  *  This software is provided "as is" without express or implied warranty.
  */
 
-/*
- *      $Id$
- *
- *      This file contains the POW function.
- *
- *      $Log$
- *      Revision 1.1  2005/11/01 18:04:13  jpcs
- *      Initial check in.
- *
- *      Revision 1.1  2004/07/21 09:23:01  jpcs
- *      Initial check in of the Parthenon backup of Pathan.
- *
- *      Revision 1.2  2003/05/01 12:46:55  alby
- *      - Updated MAPM to version 4.6.1
- *      - The MAPM class is now thread-safe
- *
- *      Revision 1.9  2002/11/05 23:39:42  mike
- *      use new set_to_zero call
- *
- *      Revision 1.8  2002/11/03 22:20:59  mike
- *      Updated function parameters to use the modern style
- *
- *      Revision 1.7  2001/07/16 19:24:26  mike
- *      add function M_free_all_pow
- *
- *      Revision 1.6  2000/09/05 22:15:03  mike
- *      minor tweak
- *
- *      Revision 1.5  2000/08/22 21:22:29  mike
- *      if parameter yy is an integer, call the more
- *      efficient _integer_pow function
- *
- *      Revision 1.4  2000/08/22 20:42:08  mike
- *      compute more digits in the log calculation
- *
- *      Revision 1.3  2000/05/24 20:08:21  mike
- *      update some comments
- *
- *      Revision 1.2  2000/05/23 23:20:11  mike
- *      return 1 when input is 0^0. 
- *
- *      Revision 1.1  2000/05/18 22:10:43  mike
- *      Initial revision
- */
-
 #include "m_apm_lc.h"
 
 static	M_APM   M_last_xx_input;

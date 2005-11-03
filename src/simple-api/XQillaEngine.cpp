@@ -13,17 +13,17 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
-#include <xqilla/simple-api/PathanEngine.hpp>
+#include "../config/xqilla_config.h"
+#include <xqilla/simple-api/XQillaEngine.hpp>
 
-#include <xqilla/dom-api/impl/PathanExpressionImpl.hpp>
-#include <xqilla/exceptions/PathanException.hpp>
-#include <xqilla/dom-api/PathanExpression.hpp>
+#include <xqilla/dom-api/impl/XQillaExpressionImpl.hpp>
+#include <xqilla/exceptions/XQillaException.hpp>
+#include <xqilla/dom-api/XQillaExpression.hpp>
 
-#include <xqilla/dom-api/PathanNSResolver.hpp>
+#include <xqilla/dom-api/XQillaNSResolver.hpp>
 #include <xqilla/dom-api/XPath2Result.hpp>
 #include <xqilla/context/impl/XQContextImpl.hpp>
-#include "../dom-api/impl/PathanDocumentImpl.hpp"
+#include "../dom-api/impl/XQillaDocumentImpl.hpp"
 #include <xqilla/ast/StaticResolutionContext.hpp>
 #include <xqilla/framework/XPath2MemoryManagerImpl.hpp>
 
@@ -81,15 +81,15 @@ static const XMLCh* stripWhitespace(const XMLCh* inputString, XPath2MemoryManage
   return memMgr->getPooledString(inputString);
 }//stripWhitespace
 
-PathanExpression* PathanEngine::createExpression(const XMLCh* expression,
+XQillaExpression* XQillaEngine::createExpression(const XMLCh* expression,
                                                  DynamicContext* context,
                                                  XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr)
   throw (XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException, XERCES_CPP_NAMESPACE_QUALIFIER DOMException)
 {
-  return new (memMgr) PathanExpressionImpl(expression, context, memMgr);
+  return new (memMgr) XQillaExpressionImpl(expression, context, memMgr);
 }
 
-ASTNode* PathanEngine::createASTNode(const XMLCh* expression,
+ASTNode* XQillaEngine::createASTNode(const XMLCh* expression,
                                        DynamicContext* context,
                                        XPath2MemoryManager *memMgr,
                                        bool staticallyResolve)
@@ -121,36 +121,36 @@ ASTNode* PathanEngine::createASTNode(const XMLCh* expression,
     return pcontrol.result;
   }
   catch(const ContextException &e) {
-    if(PathanException::getDebug()) {
+    if(XQillaException::getDebug()) {
       e.printDebug( X("Caught exception at Interface") );
     }
     throw XERCES_CPP_NAMESPACE_QUALIFIER DOMException(XERCES_CPP_NAMESPACE_QUALIFIER DOMException::NAMESPACE_ERR, e.getError());
   }
   catch(const NamespaceLookupException &e) {
-    if(PathanException::getDebug()) {
+    if(XQillaException::getDebug()) {
       e.printDebug( X("Caught exception at Interface") );
     }
-    throw PathanException(XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException::INVALID_EXPRESSION_ERR, e.getError());
+    throw XQillaException(XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException::INVALID_EXPRESSION_ERR, e.getError());
   }
   catch(const FunctionException &fe) {
-    if(PathanException::getDebug()) {
+    if(XQillaException::getDebug()) {
       fe.printDebug( X("Caught exception at Interface") );
     }
     const XMLCh* errString = fe.getError();
-    throw PathanException(XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException::INVALID_EXPRESSION_ERR, errString);
+    throw XQillaException(XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException::INVALID_EXPRESSION_ERR, errString);
   }
   catch(const DSLException &e) {
-    if(PathanException::getDebug()) {
+    if(XQillaException::getDebug()) {
       e.printDebug( X("Caught exception at Interface") );
     }
-    throw PathanException(XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException::INVALID_EXPRESSION_ERR, e.getError());
+    throw XQillaException(XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException::INVALID_EXPRESSION_ERR, e.getError());
   }
 
   return 0;
 }
 
 /** Create an NSResolver */
-PathanNSResolver *PathanEngine::createNSResolver(XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* nodeResolver,
+XQillaNSResolver *XQillaEngine::createNSResolver(XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* nodeResolver,
                                                  XPath2MemoryManager *memMgr)
 {
   if(memMgr == 0) {
@@ -159,7 +159,7 @@ PathanNSResolver *PathanEngine::createNSResolver(XERCES_CPP_NAMESPACE_QUALIFIER 
   return memMgr->createNSResolver(nodeResolver);
 }
 
-DynamicContext* PathanEngine::createContext(XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *document, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr)
+DynamicContext* XQillaEngine::createContext(XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *document, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr)
 {
   if(memMgr == 0) {
     return 0;
@@ -167,13 +167,13 @@ DynamicContext* PathanEngine::createContext(XERCES_CPP_NAMESPACE_QUALIFIER DOMDo
 
   XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool* xmlgr = 0;
   if(document != 0) {
-    xmlgr = static_cast<PathanDocumentImpl*>(document)->getGrammarPool();
+    xmlgr = static_cast<XQillaDocumentImpl*>(document)->getGrammarPool();
   }
 
   return new (memMgr) XQContextImpl(memMgr, xmlgr, 0);
 }
 
-DynamicContext *PathanEngine::createContext(XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool *xmlGP,
+DynamicContext *XQillaEngine::createContext(XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool *xmlGP,
 					    XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr)
 {
   if(memMgr == 0) {
@@ -183,7 +183,7 @@ DynamicContext *PathanEngine::createContext(XERCES_CPP_NAMESPACE_QUALIFIER XMLGr
   return new (memMgr) XQContextImpl(memMgr, xmlGP, 0);
 }
 
-DynamicContext *PathanEngine::createContext(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr)
+DynamicContext *XQillaEngine::createContext(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr)
 {
   if(memMgr == 0) {
     return 0;
@@ -192,6 +192,6 @@ DynamicContext *PathanEngine::createContext(XERCES_CPP_NAMESPACE_QUALIFIER Memor
   return new (memMgr) XQContextImpl(memMgr, 0, 0);
 }
 
-XPath2MemoryManager *PathanEngine::createMemoryManager() {
+XPath2MemoryManager *XQillaEngine::createMemoryManager() {
   return new XPath2MemoryManagerImpl;
 }

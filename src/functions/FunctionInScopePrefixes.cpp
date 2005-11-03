@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionInScopePrefixes.hpp>
 #include <xqilla/items/ATStringOrDerived.hpp>
 #include <xqilla/items/Node.hpp>
@@ -21,7 +21,7 @@
 #include <xqilla/utils/XMLChCompare.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xqilla/context/PathanFactory.hpp>
+#include <xqilla/context/XQillaFactory.hpp>
 
 #include <xercesc/dom/DOMNode.hpp>
 #include <xercesc/dom/DOMNamedNodeMap.hpp>
@@ -60,10 +60,10 @@ Sequence FunctionInScopePrefixes::collapseTreeInternal(DynamicContext* context, 
   while((ns = (Node::Ptr)namespaces.next(context)).notNull()) {
     ATQNameOrDerived::Ptr name = ns->dmNodeName(context);
     if(name.isNull()) {
-      returnSeq.addItem(context->getPathanFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context));
+      returnSeq.addItem(context->getXQillaFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context));
     }
     else {
-      returnSeq.addItem(context->getPathanFactory()->createString(((const ATQNameOrDerived*)name.get())->getName(), context));
+      returnSeq.addItem(context->getXQillaFactory()->createString(((const ATQNameOrDerived*)name.get())->getName(), context));
     }
   }
 

@@ -16,13 +16,13 @@
 #ifndef _XQINSTANCEOF_HPP
 #define _XQINSTANCEOF_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/ast/ASTNodeImpl.hpp>
 #include <xqilla/runtime/SingleResult.hpp>
 
 class SequenceType;
 
-class PATHAN_EXPORT XQInstanceOf : public ASTNodeImpl
+class XQILLA_API XQInstanceOf : public ASTNodeImpl
 {
 public:
   XQInstanceOf(ASTNode* expr, SequenceType* exprType, XPath2MemoryManager* memMgr);

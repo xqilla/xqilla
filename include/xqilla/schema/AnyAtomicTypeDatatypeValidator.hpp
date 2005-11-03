@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xercesc/validators/datatype/AnySimpleTypeDatatypeValidator.hpp>
 #include <xercesc/validators/datatype/DatatypeValidator.hpp>
@@ -25,7 +25,7 @@
 
 class KVStringPair;
 
-class PATHAN_EXPORT AnyAtomicTypeDatatypeValidator : public XERCES_CPP_NAMESPACE_QUALIFIER AnySimpleTypeDatatypeValidator {
+class XQILLA_API AnyAtomicTypeDatatypeValidator : public XERCES_CPP_NAMESPACE_QUALIFIER AnySimpleTypeDatatypeValidator {
 
 public:
   // constructor

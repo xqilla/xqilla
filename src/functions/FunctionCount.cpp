@@ -13,13 +13,13 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionCount.hpp>
 #include <xqilla/runtime/Sequence.hpp>
 #include <xqilla/items/ATDecimalOrDerived.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xqilla/context/PathanFactory.hpp>
+#include <xqilla/context/XQillaFactory.hpp>
 
 const XMLCh FunctionCount::name[] = {
   XERCES_CPP_NAMESPACE_QUALIFIER chLatin_c, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_u, 
@@ -41,6 +41,6 @@ FunctionCount::FunctionCount(const VectorOfASTNodes &args, XPath2MemoryManager* 
 Sequence FunctionCount::collapseTreeInternal(DynamicContext* context, int flags) const
 {
   Sequence arg = getParamNumber(1,context,ASTNode::UNORDERED);
-	return Sequence(context->getPathanFactory()->createInteger((long)arg.getLength(), context), context->getMemoryManager());
+	return Sequence(context->getXQillaFactory()->createInteger((long)arg.getLength(), context), context->getMemoryManager());
 }
 

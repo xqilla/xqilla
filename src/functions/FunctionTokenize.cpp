@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionTokenize.hpp>
 #include <xqilla/items/ATStringOrDerived.hpp>
 #include <xqilla/context/DynamicContext.hpp>
@@ -88,7 +88,7 @@ Sequence FunctionTokenize::collapseTreeInternal(DynamicContext* context, int fla
   Sequence resultSeq(toks -> size(),memMgr);
 
   for (i = 0; i < toks -> size(); ++i){
-    resultSeq.addItem(context->getPathanFactory()->createString(toks -> elementAt(i), context));  
+    resultSeq.addItem(context->getXQillaFactory()->createString(toks -> elementAt(i), context));  
   }
 
   return resultSeq;

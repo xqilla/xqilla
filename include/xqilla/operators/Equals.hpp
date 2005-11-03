@@ -20,14 +20,14 @@
 #ifndef _EQUALS_HPP
 #define _EQUALS_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/operators/ComparisonOperator.hpp>
 
 class Collation;
 
 /** OpEqualsEquals operator function*/
-class PATHAN_EXPORT Equals : public ComparisonOperator
+class XQILLA_API Equals : public ComparisonOperator
 {
 public:
   static const XMLCh name[];

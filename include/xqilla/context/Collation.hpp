@@ -16,13 +16,13 @@
 #if !defined(AFXQ_COLLATION_H__6BA76C4A_0A5B_480B_9870_86A89A118100__INCLUDED_)
 #define AFXQ_COLLATION_H__6BA76C4A_0A5B_480B_9870_86A89A118100__INCLUDED_
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xercesc/util/XercesDefs.hpp>
 
 class Sequence;
 class DynamicContext;
 
-class PATHAN_EXPORT Collation
+class XQILLA_API Collation
 {
 public:
   virtual ~Collation() {};

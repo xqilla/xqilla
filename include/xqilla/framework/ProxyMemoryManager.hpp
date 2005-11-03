@@ -16,10 +16,10 @@
 #ifndef __PROXYMEMORYMANAGER_HPP
 #define __PROXYMEMORYMANAGER_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/framework/BaseMemoryManager.hpp>
 
-class PATHAN_EXPORT ProxyMemoryManager : public BaseMemoryManager
+class XQILLA_API ProxyMemoryManager : public BaseMemoryManager
 {
 public:
   ProxyMemoryManager(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *parent);

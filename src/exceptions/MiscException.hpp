@@ -22,13 +22,13 @@
 #ifndef _MISCEXCEPTION_HPP
 #define _MISCEXCEPTION_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/exceptions/DSLException.hpp>
 #include <xqilla/utils/XStr.hpp>
 
 /** exception class for miscellaneous errors */
-class PATHAN_EXPORT MiscException : public DSLException
+class XQILLA_API MiscException : public DSLException
 {
 public:
   

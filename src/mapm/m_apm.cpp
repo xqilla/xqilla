@@ -1,5 +1,5 @@
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xqilla/mapm/m_apm.h>
 
 void MAPM::create(void) 

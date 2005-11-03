@@ -13,10 +13,10 @@
  * $Id$
  */
 
-#ifndef __PATHANNSRESOLVER_HPP
-#define __PATHANNSRESOLVER_HPP
+#ifndef __XQILLANSRESOLVER_HPP
+#define __XQILLANSRESOLVER_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xercesc/dom/DOMXPathNSResolver.hpp>
 
 XERCES_CPP_NAMESPACE_BEGIN
@@ -27,11 +27,11 @@ XERCES_CPP_NAMESPACE_END
 class XPath2MemoryManager;
 
 /**
- * The <code>PathanNSResolver</code> interface extends the <code>DOMXPathNSResolver</code>
+ * The <code>XQillaNSResolver</code> interface extends the <code>DOMXPathNSResolver</code>
  * providing the ability to add additional namespace bindings.
  * @since DOM Level 3
  */
-class PATHAN_EXPORT PathanNSResolver : public XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver
+class XQILLA_API XQillaNSResolver : public XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver
 {
 public:
   
@@ -44,7 +44,7 @@ public:
   /**
    * Non-standard extension
    *
-   * Pathan requires additional bindings of namespaces.  This method will bind
+   * XQilla requires additional bindings of namespaces.  This method will bind
    * the given prefix to the associated namespace.
    * @param prefix of type XMLCh - The prefix to bind.
    * @param URI of type XMLCh - The associated namespace.
@@ -90,9 +90,9 @@ protected:
   // -----------------------------------------------------------------------
   /** @name Hidden constructors */
   //@{    
-	PathanNSResolver() {};
+	XQillaNSResolver() {};
   //@}
-};//PathanNSResolver
+};//XQillaNSResolver
 
 
-#endif //__PATHANNSRESOLVER_HPP
+#endif //__XQILLANSRESOLVER_HPP

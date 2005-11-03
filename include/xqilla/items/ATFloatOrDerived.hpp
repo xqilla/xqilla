@@ -17,10 +17,10 @@
 #define _ATFLOATORDERIVED_HPP
 
 #include <xercesc/util/XercesDefs.hpp>
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/items/Numeric.hpp>
 
-class PATHAN_EXPORT ATFloatOrDerived : public Numeric
+class XQILLA_API ATFloatOrDerived : public Numeric
 {
 public:
   typedef RefCountPointer<const ATFloatOrDerived> Ptr;

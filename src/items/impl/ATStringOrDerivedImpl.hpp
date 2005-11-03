@@ -19,11 +19,11 @@
 #include <xercesc/util/XercesDefs.hpp>
 #include <xqilla/items/ATStringOrDerived.hpp>
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 class Sequence;
 
-class PATHAN_EXPORT ATStringOrDerivedImpl : public ATStringOrDerived 
+class XQILLA_API ATStringOrDerivedImpl : public ATStringOrDerived 
 {
 
 public:

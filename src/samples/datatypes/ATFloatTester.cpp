@@ -20,7 +20,7 @@
 #include <xqilla/mapm/m_apm.h>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xqilla/context/PathanFactory.hpp>
+#include <xqilla/context/XQillaFactory.hpp>
 
 #include <xqilla/items/ATFloatOrDerived.hpp>
 
@@ -29,13 +29,13 @@ ATFloatTester::ATFloatTester(XPath2MemoryManager* memMgr) : DatatypeTester(memMg
 
 void ATFloatTester::run(const DynamicContext* context) {
   // test 1 -- equality
-  const ATFloatOrDerived::Ptr float1 = context->getPathanFactory()->createFloat(10, context);
-  const ATFloatOrDerived::Ptr float2 = context->getPathanFactory()->createFloat(10.0, context);
-  const ATFloatOrDerived::Ptr float3 = context->getPathanFactory()->createFloat(X("10"), context);
-  const ATFloatOrDerived::Ptr float4 = context->getPathanFactory()->createFloat(X("10.0"), context);
-  const ATFloatOrDerived::Ptr float5 = context->getPathanFactory()->createFloat(X("1.0E+1"), context);
-  const ATFloatOrDerived::Ptr float6 = context->getPathanFactory()->createFloat(1.0e1, context);
-  const ATFloatOrDerived::Ptr float7 = context->getPathanFactory()->createFloat(100e-1, context);
+  const ATFloatOrDerived::Ptr float1 = context->getXQillaFactory()->createFloat(10, context);
+  const ATFloatOrDerived::Ptr float2 = context->getXQillaFactory()->createFloat(10.0, context);
+  const ATFloatOrDerived::Ptr float3 = context->getXQillaFactory()->createFloat(X("10"), context);
+  const ATFloatOrDerived::Ptr float4 = context->getXQillaFactory()->createFloat(X("10.0"), context);
+  const ATFloatOrDerived::Ptr float5 = context->getXQillaFactory()->createFloat(X("1.0E+1"), context);
+  const ATFloatOrDerived::Ptr float6 = context->getXQillaFactory()->createFloat(1.0e1, context);
+  const ATFloatOrDerived::Ptr float7 = context->getXQillaFactory()->createFloat(100e-1, context);
 
   assertObjectEquals(float1, float2, context);
   assertObjectEquals(float1, float3, context);
@@ -54,13 +54,13 @@ void ATFloatTester::run(const DynamicContext* context) {
   assertEquals(float7->asString(context), X("10"));
 
   // test 3 -- inequality
-  const ATFloatOrDerived::Ptr float8 = context->getPathanFactory()->createFloat(100, context);
-  const ATFloatOrDerived::Ptr float9 = context->getPathanFactory()->createFloat(-100, context);
-  const ATFloatOrDerived::Ptr float10 = context->getPathanFactory()->createFloat(X("0.2e+1"), context);
-  const ATFloatOrDerived::Ptr float11 = context->getPathanFactory()->createFloat(X("0.5e+1"), context);
-  const ATFloatOrDerived::Ptr float12 = context->getPathanFactory()->createFloat(2.1479, context);
-  const ATFloatOrDerived::Ptr float13 = context->getPathanFactory()->createFloat(4.5, context);
-  const ATFloatOrDerived::Ptr float14 = context->getPathanFactory()->createFloat(1, context);
+  const ATFloatOrDerived::Ptr float8 = context->getXQillaFactory()->createFloat(100, context);
+  const ATFloatOrDerived::Ptr float9 = context->getXQillaFactory()->createFloat(-100, context);
+  const ATFloatOrDerived::Ptr float10 = context->getXQillaFactory()->createFloat(X("0.2e+1"), context);
+  const ATFloatOrDerived::Ptr float11 = context->getXQillaFactory()->createFloat(X("0.5e+1"), context);
+  const ATFloatOrDerived::Ptr float12 = context->getXQillaFactory()->createFloat(2.1479, context);
+  const ATFloatOrDerived::Ptr float13 = context->getXQillaFactory()->createFloat(4.5, context);
+  const ATFloatOrDerived::Ptr float14 = context->getXQillaFactory()->createFloat(1, context);
   
   assertCondition(!float1->equals(float8, context));
   assertCondition(!float1->equals(float9, context));
@@ -71,11 +71,11 @@ void ATFloatTester::run(const DynamicContext* context) {
   assertCondition(float1->greaterThan(float10, context));
 
   // test 4 -- special values (NaN, INF, etc.)
-  const ATFloatOrDerived::Ptr floatNaN = context->getPathanFactory()->createFloat(X("NaN"), context);
-  const ATFloatOrDerived::Ptr floatINF = context->getPathanFactory()->createFloat(X("INF"), context);
-  const ATFloatOrDerived::Ptr floatNegINF = context->getPathanFactory()->createFloat(X("-INF"), context);
-  const ATFloatOrDerived::Ptr floatZero = context->getPathanFactory()->createFloat(X("0"), context);
-  const ATFloatOrDerived::Ptr floatNegZero = context->getPathanFactory()->createFloat(X("-0"), context);
+  const ATFloatOrDerived::Ptr floatNaN = context->getXQillaFactory()->createFloat(X("NaN"), context);
+  const ATFloatOrDerived::Ptr floatINF = context->getXQillaFactory()->createFloat(X("INF"), context);
+  const ATFloatOrDerived::Ptr floatNegINF = context->getXQillaFactory()->createFloat(X("-INF"), context);
+  const ATFloatOrDerived::Ptr floatZero = context->getXQillaFactory()->createFloat(X("0"), context);
+  const ATFloatOrDerived::Ptr floatNegZero = context->getXQillaFactory()->createFloat(X("-0"), context);
 
   
   assertCondition(((const ATFloatOrDerived*)floatNaN)->isNaN());

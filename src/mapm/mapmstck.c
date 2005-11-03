@@ -17,52 +17,6 @@
  *  This software is provided "as is" without express or implied warranty.
  */
 
-/*
- *      $Id$
- *
- *      This file contains the stack implementation for using 
- *	local M_APM variables.
- *
- *      $Log$
- *      Revision 1.1  2005/11/01 18:04:13  jpcs
- *      Initial check in.
- *
- *      Revision 1.1  2004/07/21 09:23:01  jpcs
- *      Initial check in of the Parthenon backup of Pathan.
- *
- *      Revision 1.2  2003/05/01 12:46:55  alby
- *      - Updated MAPM to version 4.6.1
- *      - The MAPM class is now thread-safe
- *
- *      Revision 1.9  2003/03/31 21:49:08  mike
- *      call generic error handling function
- *
- *      Revision 1.8  2002/11/03 22:42:05  mike
- *      Updated function parameters to use the modern style
- *
- *      Revision 1.7  2002/05/17 22:05:00  mike
- *      the stack is now dynamically allocated and will grow
- *      at run-time if needed
- *
- *      Revision 1.6  2001/07/16 19:47:04  mike
- *      add function M_free_all_stck
- *
- *      Revision 1.5  2000/09/23 19:27:52  mike
- *      increase stack size for new functionality
- *
- *      Revision 1.4  1999/07/09 00:04:47  mike
- *      tweak stack again
- *
- *      Revision 1.3  1999/07/09 00:02:24  mike
- *      increase stack size for new functions
- *
- *      Revision 1.2  1999/06/20 21:13:18  mike
- *      comment out printf debug and set max stack depth
- *
- *      Revision 1.1  1999/06/19 20:32:43  mike
- *      Initial revision
- */
-
 #include "m_apm_lc.h"
 
 static	int	M_stack_ptr  = -1;

@@ -13,10 +13,10 @@
  * $Id$
  */
 
-#ifndef __PATHANEXPRESSION_HPP
-#define __PATHANEXPRESSION_HPP
+#ifndef __XQILLAEXPRESSION_HPP
+#define __XQILLAEXPRESSION_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/dom-api/XPath2Result.hpp>
 #include <xqilla/runtime/Sequence.hpp>
@@ -29,11 +29,11 @@
 class DynamicContext;
 
 /**
- * The <code>PathanExpression</code> interface extends the <code>DOMXPathExpression</code> interface, 
+ * The <code>XQillaExpression</code> interface extends the <code>DOMXPathExpression</code> interface, 
  * providing the ability to evaluate against a given context. 
  * @since DOM Level 3
  */
-class PATHAN_EXPORT PathanExpression: public XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathExpression
+class XQILLA_API XQillaExpression: public XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathExpression
 {
 public:
   // -----------------------------------------------------------------------
@@ -45,13 +45,13 @@ public:
    * Destructor
    *
    */
-  virtual ~PathanExpression() {}
+  virtual ~XQillaExpression() {}
   //@}
   
   // -----------------------------------------------------------------------
-  // Virtual PathanExpression interface
+  // Virtual XQillaExpression interface
   // -----------------------------------------------------------------------
-  /** @name Pathan extension */
+  /** @name XQilla extension */
   //@{  
   /**
    * Evaluates this XPath expression and returns a result.
@@ -121,8 +121,8 @@ public:
   /**
    * Creates a DynamicContext object suitable for passing to the extended evaluate methods.
    * @param mm of type <code>XPath2MemoryManager</code> - The memory manager used to create the
-   * DynamicContext if present. If not, the DynamicContext is owned by the PathanExpression
-   * object, and is released when the PathanExpression is deleted.
+   * DynamicContext if present. If not, the DynamicContext is owned by the XQillaExpression
+   * object, and is released when the XQillaExpression is deleted.
    */
   virtual DynamicContext *createContext(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mm = XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager) const = 0;
 
@@ -144,9 +144,9 @@ protected:
   // -----------------------------------------------------------------------
   /** @name Hidden constructors */
   //@{   
-  PathanExpression() {};
+  XQillaExpression() {};
   //@}
-};//PathanExpression
+};//XQillaExpression
 
-#endif //__PATHANEXPRESSION_HPP
+#endif //__XQILLAEXPRESSION_HPP
 

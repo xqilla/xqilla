@@ -39,7 +39,7 @@
 #include <xqilla/functions/FunctionLookup.hpp>
 #include <xqilla/functions/FunctionConstructor.hpp>
 #include <xqilla/schema/DocumentCacheImpl.hpp>
-#include <xqilla/dom-api/impl/PathanNSResolverImpl.hpp>
+#include <xqilla/dom-api/impl/XQillaNSResolverImpl.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/context/URIResolver.hpp>
 #include <xqilla/exceptions/XMLParseException.hpp>
@@ -63,13 +63,13 @@ XQDynamicContextImpl::XQDynamicContextImpl(const StaticContext *staticContext, X
     _contextPosition(1),
     _contextSize(1),
     _implicitTimezone(0),
-    _resolvers(PathanAllocator<URIResolver*>(&_internalMM)),
+    _resolvers(XQillaAllocator<URIResolver*>(&_internalMM)),
     _docCache(staticContext->getDocumentCache()->createDerivedCache(&_internalMM))
 {
   time(&_currentTime);
   _memMgr = &_internalMM;
   _varStore = _internalMM.createVariableStore();
-  _pathanFactory = new (&_internalMM) XQFactoryImpl(_docCache, &_internalMM);
+  _xqillaFactory = new (&_internalMM) XQFactoryImpl(_docCache, &_internalMM);
 
   m_pDebugCallback = NULL;
   m_bEnableDebugging = false;
@@ -233,8 +233,8 @@ Sequence XQDynamicContextImpl::resolveDocument(const XMLCh* uri)
 {
   bool found = false;
   Sequence result(getMemoryManager());
-  std::vector<URIResolver *, PathanAllocator<URIResolver*> >::reverse_iterator end = _resolvers.rend();
-  for(std::vector<URIResolver *, PathanAllocator<URIResolver*> >::reverse_iterator i = _resolvers.rbegin(); i != end; ++i) {
+  std::vector<URIResolver *, XQillaAllocator<URIResolver*> >::reverse_iterator end = _resolvers.rend();
+  for(std::vector<URIResolver *, XQillaAllocator<URIResolver*> >::reverse_iterator i = _resolvers.rbegin(); i != end; ++i) {
     if((*i)->resolveDocument(result, uri, this)) {
       found = true;
       break;
@@ -268,8 +268,8 @@ Sequence XQDynamicContextImpl::resolveCollection(const XMLCh* uri)
 {
   bool found = false;
   Sequence result(getMemoryManager());
-  std::vector<URIResolver *, PathanAllocator<URIResolver*> >::reverse_iterator end = _resolvers.rend();
-  for(std::vector<URIResolver *, PathanAllocator<URIResolver*> >::reverse_iterator i = _resolvers.rbegin(); i != end; ++i) {
+  std::vector<URIResolver *, XQillaAllocator<URIResolver*> >::reverse_iterator end = _resolvers.rend();
+  for(std::vector<URIResolver *, XQillaAllocator<URIResolver*> >::reverse_iterator i = _resolvers.rbegin(); i != end; ++i) {
     if((*i)->resolveCollection(result, uri, this)) {
       found = true;
       break;
@@ -302,8 +302,8 @@ Sequence XQDynamicContextImpl::resolveCollection(const XMLCh* uri)
 Sequence XQDynamicContextImpl::resolveDefaultCollection()
 {
   Sequence result(getMemoryManager());
-  std::vector<URIResolver *, PathanAllocator<URIResolver*> >::reverse_iterator end = _resolvers.rend();
-  for(std::vector<URIResolver *, PathanAllocator<URIResolver*> >::reverse_iterator i = _resolvers.rbegin(); i != end; ++i) {
+  std::vector<URIResolver *, XQillaAllocator<URIResolver*> >::reverse_iterator end = _resolvers.rend();
+  for(std::vector<URIResolver *, XQillaAllocator<URIResolver*> >::reverse_iterator i = _resolvers.rbegin(); i != end; ++i) {
     if((*i)->resolveDefaultCollection(result, this)) {
       break;
     }
@@ -316,14 +316,14 @@ Node::Ptr XQDynamicContextImpl::validate(const Node::Ptr &node, DocumentCache::V
   return _docCache->validate(node, valMode, this);
 }
 
-PathanFactory *XQDynamicContextImpl::getPathanFactory() const
+XQillaFactory *XQDynamicContextImpl::getXQillaFactory() const
 {
-  return _pathanFactory;
+  return _xqillaFactory;
 }
 
-void XQDynamicContextImpl::setPathanFactory(PathanFactory *factory)
+void XQDynamicContextImpl::setXQillaFactory(XQillaFactory *factory)
 {
-  _pathanFactory = factory;
+  _xqillaFactory = factory;
 }
 
 void XQDynamicContextImpl::trace(const XMLCh* message1, const XMLCh* message2) {
@@ -336,7 +336,7 @@ void XQDynamicContextImpl::trace(const XMLCh* message1, const XMLCh* message2) {
 
 void XQDynamicContextImpl::setNamespaceBinding(const XMLCh* prefix, const XMLCh* uri)
 {
-	((PathanNSResolverImpl*)_nsResolver)->addNamespaceBinding(prefix,uri);
+	((XQillaNSResolverImpl*)_nsResolver)->addNamespaceBinding(prefix,uri);
 }
 
 void XQDynamicContextImpl::setNSResolver(const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver* resolver) {

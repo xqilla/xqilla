@@ -13,13 +13,13 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionBoolean.hpp>
 #include <xqilla/items/ATBooleanOrDerived.hpp>
 #include <xqilla/items/Item.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xqilla/context/PathanFactory.hpp>
+#include <xqilla/context/XQillaFactory.hpp>
 
 const XMLCh FunctionBoolean::name[] = {
   XERCES_CPP_NAMESPACE_QUALIFIER chLatin_b, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, 
@@ -42,6 +42,6 @@ Sequence FunctionBoolean::collapseTreeInternal(DynamicContext* context, int flag
 {
   bool result = getParamNumber(1,context,ASTNode::UNORDERED|ASTNode::RETURN_TWO)
     .getEffectiveBooleanValue(context);
-  return Sequence(context->getPathanFactory()->createBoolean(result, context),
+  return Sequence(context->getXQillaFactory()->createBoolean(result, context),
                   context->getMemoryManager());
 }

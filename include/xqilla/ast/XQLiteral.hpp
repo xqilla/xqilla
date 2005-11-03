@@ -16,14 +16,14 @@
 #ifndef _XQLITERAL_HPP
 #define _XQLITERAL_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/ASTNodeImpl.hpp>
 
 class ItemConstructor;
 
 /** defines the behaviour for the literal  types*/
-class PATHAN_EXPORT XQLiteral : public ASTNodeImpl
+class XQILLA_API XQLiteral : public ASTNodeImpl
 {
 public:
   XQLiteral(ItemConstructor *ic, XPath2MemoryManager* memMgr);

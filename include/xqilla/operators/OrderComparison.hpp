@@ -16,12 +16,12 @@
 #ifndef _ORDERCOMPARISON_HPP
 #define _ORDERCOMPARISON_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/XQOperator.hpp>
 #include <xqilla/runtime/SingleResult.hpp>
 
-class PATHAN_EXPORT OrderComparison : public XQOperator
+class XQILLA_API OrderComparison : public XQOperator
 {
 public:
   static const XMLCh name[];

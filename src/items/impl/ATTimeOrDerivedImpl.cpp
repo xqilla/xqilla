@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include "ATTimeOrDerivedImpl.hpp"
 #include <xercesc/util/XMLUniDefs.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
@@ -28,7 +28,7 @@
 #include <xqilla/items/ATDecimalOrDerived.hpp>
 #include <xqilla/items/ATDurationOrDerived.hpp>
 #include <xqilla/items/Timezone.hpp>
-#include <xqilla/context/PathanFactory.hpp>
+#include <xqilla/context/XQillaFactory.hpp>
 
 #include <limits.h>   // for INT_MIN and INT_MAX
 #include <stdlib.h>   // for atoi
@@ -60,7 +60,7 @@ ATTimeOrDerivedImpl::ATTimeOrDerivedImpl(const XMLCh* typeURI, const XMLCh* type
 
 void *ATTimeOrDerivedImpl::getInterface(const XMLCh *name) const
 {
-  if(name == Item::gPathan) {
+  if(name == Item::gXQilla) {
     return (void*)this;
   }
   return 0;
@@ -97,7 +97,7 @@ AnyAtomicType::Ptr ATTimeOrDerivedImpl::castAsInternal(AtomicObjectType targetIn
   switch (targetIndex) {
     case DATE_TIME: {
       const ATDateOrDerived::Ptr currentDate = DateUtils::getCurrentDate(context); 
-      if(currentDate->getYears()->greaterThan(context->getPathanFactory()->createInteger(9999, context), context)) {
+      if(currentDate->getYears()->greaterThan(context->getXQillaFactory()->createInteger(9999, context), context)) {
         buf.set(currentDate->getYears()->asString(context));
       } else {
         buf.set(currentDate->getYears()->asString(4, context)); //pad to 4 digits
@@ -108,13 +108,13 @@ AnyAtomicType::Ptr ATTimeOrDerivedImpl::castAsInternal(AtomicObjectType targetIn
       buf.append(currentDate->getDays()->asString(2, context));
       buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_T);
       buf.append(this->asString(context));
-      return context->getPathanFactory()->createDateTimeOrDerived(targetURI, targetType, buf.getRawBuffer(), context);
+      return context->getXQillaFactory()->createDateTimeOrDerived(targetURI, targetType, buf.getRawBuffer(), context);
     }
     case ANY_SIMPLE_TYPE:
     case UNTYPED_ATOMIC:
       //anySimpleType and untypedAtomic follow the same casting rules as string.
     case STRING: {
-      return context->getPathanFactory()->createDerivedFromAtomicType(targetURI, targetType, this->asString(context), context);
+      return context->getXQillaFactory()->createDerivedFromAtomicType(targetURI, targetType, this->asString(context), context);
 		}
     default: return AnyAtomicType::castAsInternal(targetIndex, targetURI, targetType, context);
   }
@@ -272,7 +272,7 @@ ATTimeOrDerived::Ptr ATTimeOrDerivedImpl::addTimezone(const ATDurationOrDerived:
     // Minutes
     MAPM offset = tz->getMinutes()-timezone_->getMinutes();
     MAPM temp = ((const ATDecimalOrDerived*)this->_mm)->asMAPM() + offset;
-    const ATDecimalOrDerived::Ptr mm = context->getPathanFactory()->createNonNegativeInteger(
+    const ATDecimalOrDerived::Ptr mm = context->getXQillaFactory()->createNonNegativeInteger(
                                                                                      DateUtils::modulo(temp, DateUtils::g_minutesPerHour),
                                                                                      context);
     MAPM carry = (temp / DateUtils::g_minutesPerHour).floor();
@@ -280,7 +280,7 @@ ATTimeOrDerived::Ptr ATTimeOrDerivedImpl::addTimezone(const ATDurationOrDerived:
     // Hours
     offset = tz->getHours()-timezone_->getHours();
     temp = ((const ATDecimalOrDerived*)this->_hh)->asMAPM() + offset + carry;
-    const ATDecimalOrDerived::Ptr hh = context->getPathanFactory()->createNonNegativeInteger(
+    const ATDecimalOrDerived::Ptr hh = context->getXQillaFactory()->createNonNegativeInteger(
                                                                                      DateUtils::modulo(temp, DateUtils::g_hoursPerDay),
                                                                                      context);
     
@@ -322,7 +322,7 @@ ATTimeOrDerived::Ptr ATTimeOrDerivedImpl::normalize(const DynamicContext* contex
   // Minutes
   MAPM tzMinutes = timezone->getMinutes();
   MAPM temp = ((const ATDecimalOrDerived*)this->_mm)->asMAPM() - tzMinutes;
-  const ATDecimalOrDerived::Ptr mm = context->getPathanFactory()->createNonNegativeInteger(
+  const ATDecimalOrDerived::Ptr mm = context->getXQillaFactory()->createNonNegativeInteger(
                                                                                    DateUtils::modulo(temp, DateUtils::g_minutesPerHour),
                                                                                    context);
 
@@ -331,7 +331,7 @@ ATTimeOrDerived::Ptr ATTimeOrDerivedImpl::normalize(const DynamicContext* contex
   // Hours
   MAPM tzHours = timezone->getHours();
   temp = ((const ATDecimalOrDerived*)this->_hh)->asMAPM() - tzHours + carry;
-  const ATDecimalOrDerived::Ptr hh = context->getPathanFactory()->createNonNegativeInteger(
+  const ATDecimalOrDerived::Ptr hh = context->getXQillaFactory()->createNonNegativeInteger(
                                                                                    DateUtils::modulo(temp, DateUtils::g_hoursPerDay),
                                                                                    context);
   
@@ -380,9 +380,9 @@ ATTimeOrDerived::Ptr ATTimeOrDerivedImpl::addDayTimeDuration(MAPM hours, MAPM mi
   return new
     ATTimeOrDerivedImpl(_typeURI, 
                         _typeName, 
-                        context->getPathanFactory()->createNonNegativeInteger(hh, context),
-                        context->getPathanFactory()->createNonNegativeInteger(mm, context),
-                        context->getPathanFactory()->createDecimal(ss, context),
+                        context->getXQillaFactory()->createNonNegativeInteger(hh, context),
+                        context->getXQillaFactory()->createNonNegativeInteger(mm, context),
+                        context->getXQillaFactory()->createDecimal(ss, context),
                         getTimezone(), 
                         hasTimezone());
 }
@@ -409,7 +409,7 @@ ATDurationOrDerived::Ptr ATTimeOrDerivedImpl::subtractTime(const ATTimeOrDerived
   buf.append(s31);
   buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_T);
   buf.append(this->asString(context));
-  ATDateTimeOrDerived::Ptr thisTime=context->getPathanFactory()->createDateTime(buf.getRawBuffer(), context);
+  ATDateTimeOrDerived::Ptr thisTime=context->getXQillaFactory()->createDateTime(buf.getRawBuffer(), context);
 
   buf.set(s1972);
   buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
@@ -418,7 +418,7 @@ ATDurationOrDerived::Ptr ATTimeOrDerivedImpl::subtractTime(const ATTimeOrDerived
   buf.append(s31);
   buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_T);
   buf.append(time->asString(context));
-  ATDateTimeOrDerived::Ptr otherTime=context->getPathanFactory()->createDateTime(buf.getRawBuffer(), context);
+  ATDateTimeOrDerived::Ptr otherTime=context->getXQillaFactory()->createDateTime(buf.getRawBuffer(), context);
 
   return thisTime->subtractDateTimeAsDayTimeDuration(otherTime, context);
 }
@@ -604,7 +604,7 @@ void ATTimeOrDerivedImpl::setTime(const XMLCh* const time, const DynamicContext*
   
   timezone_ = new Timezone(zonehh, zonemm);
   
-  _hh = context->getPathanFactory()->createNonNegativeInteger(hh, context);
-  _mm = context->getPathanFactory()->createNonNegativeInteger(mm, context);
-  _ss = context->getPathanFactory()->createDecimal(ss, context);
+  _hh = context->getXQillaFactory()->createNonNegativeInteger(hh, context);
+  _mm = context->getXQillaFactory()->createNonNegativeInteger(mm, context);
+  _ss = context->getXQillaFactory()->createDecimal(ss, context);
 }

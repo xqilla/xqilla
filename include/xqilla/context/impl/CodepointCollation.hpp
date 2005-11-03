@@ -16,12 +16,12 @@
 #if !defined(AFXQ_CODEPOINTCOLLATION_H__6BA76C4A_0A5B_480B_9870_86A89A118100__INCLUDED_)
 #define AFXQ_CODEPOINTCOLLATION_H__6BA76C4A_0A5B_480B_9870_86A89A118100__INCLUDED_
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/context/impl/CollationImpl.hpp>
 
 class XPath2MemoryManager;
 
-class PATHAN_EXPORT CodepointCollation : public CollationHelper {
+class XQILLA_API CodepointCollation : public CollationHelper {
 public:
 	CodepointCollation();
 

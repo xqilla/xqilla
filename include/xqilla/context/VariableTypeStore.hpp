@@ -16,7 +16,7 @@
 #ifndef _VARIABLETYPESTORE_HPP
 #define _VARIABLETYPESTORE_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xercesc/util/XercesDefs.hpp>
 
 class SequenceType;
@@ -25,7 +25,7 @@ class StaticResolutionContext;
 
 /** This is the wrapper class for the variable store, which implements the 
     lookup and scoping of simple variables. */
-class PATHAN_EXPORT VariableTypeStore
+class XQILLA_API VariableTypeStore
 {
 public:
   /** default destructor */

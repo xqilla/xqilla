@@ -20,11 +20,11 @@
 #ifndef _INTEGER_DIVIDE_HPP
 #define _INTEGER_DIVIDE_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/operators/ArithmeticOperator.hpp>
 
 /** OpIntegerDivide operator function*/
-class PATHAN_EXPORT IntegerDivide : public ArithmeticOperator
+class XQILLA_API IntegerDivide : public ArithmeticOperator
 {
 public:
   static const XMLCh name[];

@@ -20,14 +20,14 @@
 #ifndef _LESSTHANEQUAL_HPP
 #define _LESSTHANEQUAL_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/operators/ComparisonOperator.hpp>
 
 class Collation;
 
 /** OpLessThanEqual operator function*/
-class PATHAN_EXPORT LessThanEqual : public ComparisonOperator
+class XQILLA_API LessThanEqual : public ComparisonOperator
 {
 public:
   static const XMLCh name[];

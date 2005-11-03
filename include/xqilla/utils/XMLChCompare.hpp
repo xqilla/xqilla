@@ -16,16 +16,16 @@
 #ifndef _XMLCHCOMPARE_HPP
 #define _XMLCHCOMPARE_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <algorithm>
 #include <xercesc/util/XercesDefs.hpp>
 
-class PATHAN_EXPORT QNameSort {
+class XQILLA_API QNameSort {
 public:
     bool operator() (const std::pair<XMLCh*, XMLCh *> lhs, const std::pair<XMLCh*, XMLCh *> rhs) const;
 };
 
-class PATHAN_EXPORT XMLChSort {
+class XQILLA_API XMLChSort {
 public:
     bool operator() (const XMLCh* lhs, const XMLCh* rhs) const;
 };

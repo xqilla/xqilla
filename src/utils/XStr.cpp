@@ -1,4 +1,4 @@
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xercesc/util/XMLString.hpp>
 #include <xqilla/utils/XStr.hpp>
 

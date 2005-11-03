@@ -22,11 +22,11 @@
 #ifndef _FUNCTIONLOWERCASE_HPP
 #define _FUNCTIONLOWERCASE_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/ConstantFoldingFunction.hpp>
 
-class PATHAN_EXPORT FunctionLowerCase : public ConstantFoldingFunction
+class XQILLA_API FunctionLowerCase : public ConstantFoldingFunction
 {
 public:
   static const XMLCh name[];

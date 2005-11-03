@@ -22,11 +22,11 @@
 #ifndef _FUNCTIONDOC_HPP
 #define _FUNCTIONDOC_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/XQFunction.hpp>
 
-class PATHAN_EXPORT FunctionDoc : public XQFunction
+class XQILLA_API FunctionDoc : public XQFunction
 {
 public:
   static const XMLCh name[];

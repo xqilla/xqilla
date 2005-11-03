@@ -20,10 +20,10 @@
 #ifndef _FUNCTIONGETINSCOPEPREFIXES_HPP
 #define _FUNCTIONGETINSCOPEPREFIXES_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/ast/ConstantFoldingFunction.hpp>
 
-class PATHAN_EXPORT FunctionInScopePrefixes : public ConstantFoldingFunction
+class XQILLA_API FunctionInScopePrefixes : public ConstantFoldingFunction
 {
 public:
     static const XMLCh name[];

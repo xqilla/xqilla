@@ -20,7 +20,7 @@
 #if !defined(AFXQ_XQDEBUGCALLBACK_H__446AD191_E9D0_4658_BD8C_032D29DA125F__INCLUDED_)
 #define AFXQ_XQDEBUGCALLBACK_H__446AD191_E9D0_4658_BD8C_032D29DA125F__INCLUDED_
 
-#include <xqilla/framework/XQEngine.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xercesc/util/XercesDefs.hpp>
 
 class Sequence;
@@ -30,7 +30,7 @@ XERCES_CPP_NAMESPACE_BEGIN
     class DOMNode;
 XERCES_CPP_NAMESPACE_END
 
-class XQENGINE_API XQDebugCallback
+class XQILLA_API XQDebugCallback
 {
 public:
     virtual void IsBreakPointHit(DynamicContext* context, const XMLCh* file, unsigned int nLine) = 0;

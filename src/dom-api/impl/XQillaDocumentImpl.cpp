@@ -13,13 +13,13 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
-#include "PathanDocumentImpl.hpp"
+#include "../config/xqilla_config.h"
+#include "XQillaDocumentImpl.hpp"
 
-#include <xqilla/dom-api/impl/PathanExpressionImpl.hpp>
-#include <xqilla/dom-api/PathanExpression.hpp>
+#include <xqilla/dom-api/impl/XQillaExpressionImpl.hpp>
+#include <xqilla/dom-api/XQillaExpression.hpp>
 
-#include <xqilla/dom-api/PathanNSResolver.hpp>
+#include <xqilla/dom-api/XQillaNSResolver.hpp>
 #include <xqilla/dom-api/XPath2Result.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 
@@ -41,34 +41,34 @@
 
 #include <xqilla/utils/XPath2Utils.hpp>
 
-PathanDocumentImpl::PathanDocumentImpl(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr)
+XQillaDocumentImpl::XQillaDocumentImpl(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr)
   : XERCES_CPP_NAMESPACE_QUALIFIER DOMDocumentImpl(memMgr), _memMgr(memMgr), _xmlGrammarPool(0)
 {
   // Nothing
 }//constructor
 
-PathanDocumentImpl::PathanDocumentImpl(const XMLCh *fNamespaceURI, const XMLCh *qualifiedName, XERCES_CPP_NAMESPACE_QUALIFIER DOMDocumentType *doctype,
+XQillaDocumentImpl::XQillaDocumentImpl(const XMLCh *fNamespaceURI, const XMLCh *qualifiedName, XERCES_CPP_NAMESPACE_QUALIFIER DOMDocumentType *doctype,
                                        XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* const memMgr) 
   : XERCES_CPP_NAMESPACE_QUALIFIER DOMDocumentImpl(fNamespaceURI, qualifiedName, doctype, memMgr), _memMgr(memMgr), _xmlGrammarPool(0)
 {
   // Nothing
 }
 
-PathanDocumentImpl::~PathanDocumentImpl()
+XQillaDocumentImpl::~XQillaDocumentImpl()
 {
   // Nothing
 }//destructor
 
 // weak version, create a context within
-const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathExpression* PathanDocumentImpl::createExpression(const XMLCh* expression, 
+const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathExpression* XQillaDocumentImpl::createExpression(const XMLCh* expression, 
                                                                                               const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver* resolver)
   throw (XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException, XERCES_CPP_NAMESPACE_QUALIFIER DOMException)
 {
-  return new (&_memMgr) PathanExpressionImpl(expression, this, &_memMgr, resolver, _xmlGrammarPool);
+  return new (&_memMgr) XQillaExpressionImpl(expression, this, &_memMgr, resolver, _xmlGrammarPool);
 }
 
 // weak version, create context within
-void* PathanDocumentImpl::evaluate(const XMLCh* expression,
+void* XQillaDocumentImpl::evaluate(const XMLCh* expression,
                                    XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* contextNode,
                                    const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver* resolver,
                                    unsigned short type,
@@ -80,14 +80,14 @@ void* PathanDocumentImpl::evaluate(const XMLCh* expression,
 }
 
 /** Create an NSResolver */
-const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver* PathanDocumentImpl::createNSResolver(XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* nodeResolver) {
+const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver* XQillaDocumentImpl::createNSResolver(XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* nodeResolver) {
   return _memMgr.createNSResolver(nodeResolver);
 }
 
-void PathanDocumentImpl::setGrammarPool(XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool *xmlGrammarPool) {
+void XQillaDocumentImpl::setGrammarPool(XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool *xmlGrammarPool) {
     _xmlGrammarPool = xmlGrammarPool;
 }
 
-XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool *PathanDocumentImpl::getGrammarPool() {
+XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool *XQillaDocumentImpl::getGrammarPool() {
   return _xmlGrammarPool;
 }

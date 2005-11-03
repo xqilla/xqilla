@@ -22,14 +22,14 @@
 #ifndef _FUNCTIONDOCUMENTURI_HPP
 #define _FUNCTIONDOCUMENTURI_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/ConstantFoldingFunction.hpp>
 
 class Sequence;
 
 /* document-uri function */
-class PATHAN_EXPORT FunctionDocumentURI : public ConstantFoldingFunction
+class XQILLA_API FunctionDocumentURI : public ConstantFoldingFunction
 {
 public:
   static const XMLCh name[];

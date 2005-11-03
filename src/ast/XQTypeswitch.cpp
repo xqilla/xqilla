@@ -19,7 +19,7 @@
 
 #include <sstream>
 
-#include <xqilla/framework/XQEngine.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/ast/XQTypeswitch.hpp>
 #include <xqilla/context/impl/XQDynamicContextImpl.hpp>
 #include <xqilla/context/VariableStore.hpp>

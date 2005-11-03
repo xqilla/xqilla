@@ -20,7 +20,7 @@
 #if !defined(AFXQ_XQCONTEXTIMPL_H__D608B994_E090_4206_9473_81F3D7350410__INCLUDED_)
 #define AFXQ_XQCONTEXTIMPL_H__D608B994_E090_4206_9473_81F3D7350410__INCLUDED_
 
-#include <xqilla/framework/XQEngine.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/context/XQDebugCallback.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/schema/DocumentCache.hpp>
@@ -34,7 +34,7 @@ class DOMNode;
 class XMLGrammarPool;
 XERCES_CPP_NAMESPACE_END
 
-class XQENGINE_API XQContextImpl : public DynamicContext
+class XQILLA_API XQContextImpl : public DynamicContext
 {
 public:
   XQContextImpl(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr = XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager,
@@ -84,10 +84,10 @@ public:
   /** Resets the dynamic context, as if it had never been used */
   virtual void clearDynamicContext();
 
-  /** Returns the PathanFactory for this context, which is used to create Pathan items and other objects. */
-  virtual PathanFactory *getPathanFactory() const;
-  /** Sets the PathanFactory for this context */
-  virtual void setPathanFactory(PathanFactory *factory);
+  /** Returns the XQillaFactory for this context, which is used to create XQilla items and other objects. */
+  virtual XQillaFactory *getXQillaFactory() const;
+  /** Sets the XQillaFactory for this context */
+  virtual void setXQillaFactory(XQillaFactory *factory);
 
   /** Get the context Item */
   virtual const Item::Ptr &getContextItem() const;
@@ -194,7 +194,7 @@ public:
   virtual bool isTypeOrDerivedFromType(const XMLCh* const uri, const XMLCh* const typeName, const XMLCh* const uriToCheck, const XMLCh* const typeNameToCheck) const;
   /**
    * Sets the XMLEntityResolver that is used by Xerces when it is used
-   * to parse documents. This affects the behaviour of Pathan whenever
+   * to parse documents. This affects the behaviour of XQilla whenever
    * it retrieves a DTD or XML Schema grammar.
    */
   virtual void setXMLEntityResolver(XERCES_CPP_NAMESPACE_QUALIFIER XMLEntityResolver* const handler);
@@ -250,7 +250,7 @@ public:
   virtual bool getPreserveNamespaces() const;
 
   /////////////////////////////////////////
-  //  Pathan context specific accessors  //
+  //  XQilla context specific accessors  //
   /////////////////////////////////////////
 
   /** Get the memory manager */
@@ -318,7 +318,7 @@ protected:
    * that given a set of strings, returns a sequence containing those strings
    * in sorted order; and a function that given two strings, returns true if
    * they are considered equal, and false if not. */
-  std::vector<Collation*, PathanAllocator<Collation*> > _collations;
+  std::vector<Collation*, XQillaAllocator<Collation*> > _collations;
 
   /** Default collation. This is a collation. This collation is used by
    * string comparison functions when no explicit collation is specified. */
@@ -398,14 +398,14 @@ protected:
   /** For each atomic type in the in-scope type  definitions, there is 
    * a constructor function in the in-scope functions. Constructor 
    * functions are discussed in 3.10.4 Constructor Functions */
-  PathanFactory* _pathanFactory;
+  XQillaFactory* _xqillaFactory;
 
   ////////////////////////////////////////
-  //  Pathan Context specific variables //
+  //  XQilla Context specific variables //
   ////////////////////////////////////////
 
   /// A stack of URIResolver pointers
-  std::vector<URIResolver *, PathanAllocator<URIResolver*> > _resolvers;
+  std::vector<URIResolver *, XQillaAllocator<URIResolver*> > _resolvers;
 
   // used for memory management in expression evaluation
   XPath2MemoryManager* _memMgr;

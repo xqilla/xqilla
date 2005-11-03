@@ -1,7 +1,7 @@
 #ifndef _XSTR_HPP
 #define _XSTR_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xercesc/util/XercesDefs.hpp>
 
 // From Xerces 2.0
@@ -11,7 +11,7 @@
 //  trancoding of char* data to XMLCh data.
 // ---------------------------------------------------------------------------
 
-class PATHAN_EXPORT XStr
+class XQILLA_API XStr
 {
 public :
     // -----------------------------------------------------------------------

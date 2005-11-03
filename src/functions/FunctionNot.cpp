@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionNot.hpp>
 #include <xqilla/items/ATBooleanOrDerived.hpp>
 #include <xqilla/context/DynamicContext.hpp>
@@ -39,5 +39,5 @@ Sequence FunctionNot::collapseTreeInternal(DynamicContext* context, int flags) c
 {
 	bool result = !getParamNumber(1,context,ASTNode::UNORDERED|ASTNode::RETURN_TWO).getEffectiveBooleanValue(context);
 	XPath2MemoryManager* memMgr = context->getMemoryManager();
-	return Sequence(context->getPathanFactory()->createBoolean(result, context), memMgr);
+	return Sequence(context->getXQillaFactory()->createBoolean(result, context), memMgr);
 }

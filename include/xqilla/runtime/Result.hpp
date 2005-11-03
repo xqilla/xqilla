@@ -19,7 +19,7 @@
 #include <string>
 #include <xercesc/util/XercesDefs.hpp>
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/items/Item.hpp>
 #include <xqilla/runtime/ResultImpl.hpp>
 #include <xqilla/ast/StaticResolutionContext.hpp>
@@ -29,7 +29,7 @@ class SequenceType;
 class DynamicContext;
 
 /** A reference counting wrapper for the lazily evaluated query result */
-class PATHAN_EXPORT Result
+class XQILLA_API Result
 {
 public:
   Result(const Sequence &seq);

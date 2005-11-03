@@ -22,13 +22,13 @@
 #ifndef _FUNCTIONBASEURI_HPP
 #define _FUNCTIONBASEURI_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/ConstantFoldingFunction.hpp>
 #include <xqilla/runtime/Sequence.hpp>
 
 /** base-uri function */
-class PATHAN_EXPORT FunctionBaseURI : public ConstantFoldingFunction
+class XQILLA_API FunctionBaseURI : public ConstantFoldingFunction
 {
 public:
   static const XMLCh name[];

@@ -22,12 +22,12 @@
 #ifndef _FUNCTIONSUBSTRING_HPP
 #define _FUNCTIONSUBSTRING_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/ConstantFoldingFunction.hpp>
 
 /** Substring function. */
-class PATHAN_EXPORT FunctionSubstring : public ConstantFoldingFunction
+class XQILLA_API FunctionSubstring : public ConstantFoldingFunction
 {
 public:
   static const XMLCh name[];

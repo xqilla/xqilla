@@ -27,7 +27,7 @@
 
 #include <xercesc/framework/XMLBuffer.hpp>
 
-class XQENGINE_API XQDOMConstructor : public ASTNodeImpl
+class XQILLA_API XQDOMConstructor : public ASTNodeImpl
 {
 public:
 	XQDOMConstructor(const XMLCh* nodeType, ASTNode* name, VectorOfASTNodes* attrList, VectorOfASTNodes* children, XPath2MemoryManager* expr);

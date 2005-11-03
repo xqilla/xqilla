@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionReplace.hpp>
 #include <xqilla/items/ATStringOrDerived.hpp>
 #include <xqilla/context/DynamicContext.hpp>
@@ -81,5 +81,5 @@ Sequence FunctionReplace::collapseTreeInternal(DynamicContext* context, int flag
     DSLthrow(FunctionException, X("FunctionReplace::collapseTreeInternal"),X("Invalid regular expression"));
   }  
 
-  return Sequence(context->getPathanFactory()->createString(result, context), memMgr);
+  return Sequence(context->getXQillaFactory()->createString(result, context), memMgr);
 }

@@ -20,11 +20,11 @@
 #ifndef _FUNCTIONGETNAMESPACEURIFORPREFIX_HPP
 #define _FUNCTIONGETNAMESPACEURIFORPREFIX_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/ConstantFoldingFunction.hpp>
 
-class PATHAN_EXPORT FunctionNamespaceURIForPrefix : public ConstantFoldingFunction
+class XQILLA_API FunctionNamespaceURIForPrefix : public ConstantFoldingFunction
 {
 public:
   static const XMLCh name[];

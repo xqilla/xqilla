@@ -19,13 +19,13 @@
 #include <xercesc/util/XercesDefs.hpp>
 #include <xqilla/items/ATGYearOrDerived.hpp>
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/items/ATDecimalOrDerived.hpp>
 #include <xqilla/items/Timezone.hpp>
 
 class DynamicContext;
 
-class PATHAN_EXPORT ATGYearOrDerivedImpl : public ATGYearOrDerived 
+class XQILLA_API ATGYearOrDerivedImpl : public ATGYearOrDerived 
 {
 
 public:

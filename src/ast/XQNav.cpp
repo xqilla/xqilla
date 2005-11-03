@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <sstream>
 
 #include <xqilla/utils/PrintAST.hpp>
@@ -34,7 +34,7 @@ XQNav::XQNav(XPath2MemoryManager* memMgr)
 	: ASTNodeImpl(memMgr),
     _isSorted(-1),
     _properties(0),
-	  _steps(PathanAllocator<StepInfo>(memMgr))
+	  _steps(XQillaAllocator<StepInfo>(memMgr))
 {
   setType(ASTNode::NAVIGATION);
   _gotoRoot = false;
@@ -120,7 +120,7 @@ void XQNav::setGotoRootFirst(bool gotoRoot)
 
 ASTNode* XQNav::staticResolution(StaticContext *context)
 {
-  Steps newSteps(PathanAllocator<StepInfo>(context->getMemoryManager()));
+  Steps newSteps(XQillaAllocator<StepInfo>(context->getMemoryManager()));
 
   if(_gotoRoot) {
     _src.contextItemUsed(true);

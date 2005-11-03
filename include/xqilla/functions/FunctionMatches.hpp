@@ -25,7 +25,7 @@
 #include <xqilla/ast/ConstantFoldingFunction.hpp>
 
 /** Matches function. */
-class PATHAN_EXPORT FunctionMatches : public ConstantFoldingFunction
+class XQILLA_API FunctionMatches : public ConstantFoldingFunction
 {
 public:
   static const XMLCh name[];

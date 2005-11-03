@@ -21,12 +21,12 @@
 #ifndef _FUNCTIONLOCALNAME_HPP
 #define _FUNCTIONLOCALNAME_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/XQFunction.hpp>
 #include <xqilla/runtime/Sequence.hpp>
 
-class PATHAN_EXPORT FunctionLocalname : public XQFunction
+class XQILLA_API FunctionLocalname : public XQFunction
 {
 public:
   static const XMLCh name[];

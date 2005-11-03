@@ -19,13 +19,13 @@
 #include <xercesc/util/XercesDefs.hpp>
 
 #include <xqilla/items/AnyAtomicType.hpp>
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/items/ATDecimalOrDerived.hpp>
 
 class XPath2MemoryManager;
 class DynamicContext;
 
-class PATHAN_EXPORT ATDurationOrDerived : public AnyAtomicType
+class XQILLA_API ATDurationOrDerived : public AnyAtomicType
 {
 public:
   typedef RefCountPointer<const ATDurationOrDerived> Ptr;

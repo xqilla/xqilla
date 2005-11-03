@@ -13,23 +13,23 @@
  * $Id$
  */
 
-#ifndef __PATHANNSRESOLVERIMPL_HPP
-#define __PATHANNSRESOLVERIMPL_HPP
+#ifndef __XQILLANSRESOLVERIMPL_HPP
+#define __XQILLANSRESOLVERIMPL_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xercesc/util/XercesDefs.hpp>
 #include <xercesc/dom/DOMNode.hpp>
-#include <xqilla/dom-api/PathanNSResolver.hpp>
+#include <xqilla/dom-api/XQillaNSResolver.hpp>
 #include <xercesc/util/RefHashTableOf.hpp>
 
 class XPath2MemoryManager;
 
-class PATHAN_EXPORT PathanNSResolverImpl : public PathanNSResolver
+class XQILLA_API XQillaNSResolverImpl : public XQillaNSResolver
 {
 public:
-	PathanNSResolverImpl(XPath2MemoryManager* memMgr, XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *resolverNode);
-	~PathanNSResolverImpl();
+	XQillaNSResolverImpl(XPath2MemoryManager* memMgr, XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *resolverNode);
+	~XQillaNSResolverImpl();
 
 	virtual const XMLCh* lookupNamespaceURI(const XMLCh* prefix) const;
   virtual const XMLCh* lookupPrefix(const XMLCh* uri) const;
@@ -44,7 +44,7 @@ protected:
   XERCES_CPP_NAMESPACE_QUALIFIER RefHashTableOf< XMLCh > _namespaceBindings;
 	XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *_resolverNode;
   XPath2MemoryManager* _memMgr;
-};//PathanNSResolverImpl
+};//XQillaNSResolverImpl
 
 
-#endif //__PATHANNSRESOLVERIMPL_HPP
+#endif //__XQILLANSRESOLVERIMPL_HPP

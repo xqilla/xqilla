@@ -13,10 +13,10 @@
  * $Id$
  */
 
-#ifndef __PATHANDOMBUILDERIMPL_HPP
-#define __PATHANDOMBUILDERIMPL_HPP
+#ifndef __XQILLADOMBUILDERIMPL_HPP
+#define __XQILLADOMBUILDERIMPL_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xercesc/parsers/DOMBuilderImpl.hpp>
 
 XERCES_CPP_NAMESPACE_BEGIN
@@ -26,7 +26,7 @@ class MemoryManager;
 class XMLValidator;
 XERCES_CPP_NAMESPACE_END  
 
-class PathanBuilderImpl : public XERCES_CPP_NAMESPACE_QUALIFIER DOMBuilderImpl
+class XQillaBuilderImpl : public XERCES_CPP_NAMESPACE_QUALIFIER DOMBuilderImpl
 {
 public:
 
@@ -45,7 +45,7 @@ public:
       * @param valToAdopt Pointer to the validator instance to use. The
       *                   parser is responsible for freeing the memory.
       */
-    PathanBuilderImpl
+    XQillaBuilderImpl
     (
           XERCES_CPP_NAMESPACE_QUALIFIER XMLValidator* const   valToAdopt = 0
         , XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* const  manager = XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager
@@ -129,15 +129,15 @@ public:
     XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* parseURI(const char* const systemId);
 
 
-    static const XMLCh gPathan[];
+    static const XMLCh gXQilla[];
 
 
 private:
     void initParser();
     XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* getDocumentAndAddGrammar();
-}; //PathanBuilderImpl
+}; //XQillaBuilderImpl
 
 
-#endif //__PATHANDOMBUILDERIMPL_HPP
+#endif //__XQILLADOMBUILDERIMPL_HPP
 
 

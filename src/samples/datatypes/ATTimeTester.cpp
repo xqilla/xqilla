@@ -19,7 +19,7 @@
 #include <xqilla/framework/XPath2MemoryManager.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xqilla/context/PathanFactory.hpp>
+#include <xqilla/context/XQillaFactory.hpp>
 
 #include <xqilla/items/ATTimeOrDerived.hpp>
 #include <xqilla/items/ATDecimalOrDerived.hpp>
@@ -51,25 +51,25 @@ void ATTimeTester::run(const DynamicContext* context) {
   assertCondition(((const ATTimeOrDerived*)time1)->greaterThan(time3, context));
   
   // test 3 -- component extraction
-  assertObjectEquals(((const ATTimeOrDerived*)time1)->getHours(), context->getPathanFactory()->createInteger(13, context), context);
-  assertObjectEquals(((const ATTimeOrDerived*)time1)->getMinutes(), context->getPathanFactory()->createInteger(20, context), context);
-  assertObjectEquals(((const ATTimeOrDerived*)time1)->getSeconds(), context->getPathanFactory()->createDecimal(10.0564, context), context);
+  assertObjectEquals(((const ATTimeOrDerived*)time1)->getHours(), context->getXQillaFactory()->createInteger(13, context), context);
+  assertObjectEquals(((const ATTimeOrDerived*)time1)->getMinutes(), context->getXQillaFactory()->createInteger(20, context), context);
+  assertObjectEquals(((const ATTimeOrDerived*)time1)->getSeconds(), context->getXQillaFactory()->createDecimal(10.0564, context), context);
   assertCondition(((const ATTimeOrDerived*)time1)->hasTimezone());
   assertCondition(((const ATTimeOrDerived*)time1)->getTimezone()->equals(new Timezone(14, 0)));
 
   // test 4 -- adding and subtracting durations/dates
-  const ATDurationOrDerived::Ptr duration1 = context->getPathanFactory()->createDayTimeDuration(X("P3DT10H"), context);
+  const ATDurationOrDerived::Ptr duration1 = context->getXQillaFactory()->createDayTimeDuration(X("P3DT10H"), context);
   const ATTimeOrDerived::Ptr result1 = ((const ATTimeOrDerived*)time1)->addDayTimeDuration(duration1, context);
   assertEquals(result1->asString(context), X("09:20:10.0564Z"));
   const ATTimeOrDerived::Ptr result2 = ((const ATTimeOrDerived*)result1)->subtractDayTimeDuration(duration1, context);
   assertObjectEquals(time1, result2, context);
   const ATDurationOrDerived::Ptr result5 = ((const ATTimeOrDerived*)time1)->subtractTime(time3, context);
-  const ATDurationOrDerived::Ptr difference = context->getPathanFactory()->createDayTimeDuration(X("PT8H20M10.0564S"), context);
+  const ATDurationOrDerived::Ptr difference = context->getXQillaFactory()->createDayTimeDuration(X("PT8H20M10.0564S"), context);
   assertObjectEquals(result5, difference, context);
   // test 5 -- timezones
   assertCondition(!((const ATTimeOrDerived*)time4)->hasTimezone());
 
-  const ATTimeOrDerived::Ptr time5 = ((const ATTimeOrDerived*)time4)->addTimezone(context->getPathanFactory()->createDayTimeDuration(X("-PT5H"), context) ,context);
+  const ATTimeOrDerived::Ptr time5 = ((const ATTimeOrDerived*)time4)->addTimezone(context->getXQillaFactory()->createDayTimeDuration(X("-PT5H"), context) ,context);
   assertCondition(((const ATTimeOrDerived*)time5)->hasTimezone());
   assertCondition(((const ATTimeOrDerived*)time5)->getTimezone()->equals(new Timezone(-5, 0)));
 
@@ -90,7 +90,7 @@ void ATTimeTester::run(const DynamicContext* context) {
 
 const ATTimeOrDerived::Ptr ATTimeTester::createTime(const XMLCh* value,
                                                 const DynamicContext* context) {
-  return context->getPathanFactory()->createTimeOrDerived(
+  return context->getXQillaFactory()->createTimeOrDerived(
       XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
       XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_TIME,
       value, context);

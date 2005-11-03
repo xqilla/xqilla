@@ -17,7 +17,7 @@
 #define _ATANYSIMPLETYPE_HPP
 
 #include <xercesc/util/XercesDefs.hpp>
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/items/AnyAtomicType.hpp>
 
 class DynamicContext;
@@ -26,7 +26,7 @@ class DynamicContext;
  * This class represents the atomic types (ie, the simple types 
  * which are not list or union types) with type annotation
  * xs:anySimpleType */
-class PATHAN_EXPORT ATAnySimpleType : public AnyAtomicType
+class XQILLA_API ATAnySimpleType : public AnyAtomicType
 {
 
 public:

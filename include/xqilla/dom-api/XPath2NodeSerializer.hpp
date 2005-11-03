@@ -16,7 +16,7 @@
 #ifndef __XPATH2NODESERIALIZER_HPP
 #define __XPATH2NODESERIALIZER_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xercesc/dom/impl/DOMWriterImpl.hpp>
 
 XERCES_CPP_NAMESPACE_BEGIN
@@ -26,7 +26,7 @@ class XMLFormatter;
 
 XERCES_CPP_NAMESPACE_END
 
-class PATHAN_EXPORT XPath2NodeSerializer: public XERCES_CPP_NAMESPACE_QUALIFIER DOMWriterImpl {
+class XQILLA_API XPath2NodeSerializer: public XERCES_CPP_NAMESPACE_QUALIFIER DOMWriterImpl {
 public:
   /** @name Constructor */
   //@{

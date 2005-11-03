@@ -20,11 +20,11 @@
 #if !defined(AFXQ_XQUANTIFIED_H__2B6902E9_A4FA_4AB3_9C69_08A8E77E70DA__INCLUDED_)
 #define AFXQ_XQUANTIFIED_H__2B6902E9_A4FA_4AB3_9C69_08A8E77E70DA__INCLUDED_
 
-#include <xqilla/framework/XQEngine.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/ast/XQFLWOR.hpp>
 #include <xqilla/runtime/SingleResult.hpp>
 
-class XQENGINE_API XQQuantified : public XQFLWOR
+class XQILLA_API XQQuantified : public XQFLWOR
 {
 public:
 	typedef enum {some, every} QuantifierType;

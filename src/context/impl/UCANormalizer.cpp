@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include "UCANormalizer.hpp"
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xercesc/framework/XMLBuffer.hpp>

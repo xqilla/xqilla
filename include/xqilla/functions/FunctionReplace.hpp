@@ -26,7 +26,7 @@
  * xf:replace(string? $input, string $pattern, string  $replacement, 
  *            string  $flags) => string?
  */
-class PATHAN_EXPORT FunctionReplace : public ConstantFoldingFunction
+class XQILLA_API FunctionReplace : public ConstantFoldingFunction
 {
 public:
   static const XMLCh name[];

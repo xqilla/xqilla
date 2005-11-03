@@ -16,7 +16,7 @@
 #ifndef _FUNCTIONIDREF_HPP
 #define _FUNCTIONIDREF_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xercesc/dom/DOMNodeFilter.hpp>
 
 #include <xqilla/ast/XQFunction.hpp>
@@ -29,7 +29,7 @@
  * fn:idref(string* $srcval) => element*
  *
  */
-class PATHAN_EXPORT FunctionIdref : public XQFunction
+class XQILLA_API FunctionIdref : public XQFunction
 {
 public:
   static const XMLCh name[];

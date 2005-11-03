@@ -22,11 +22,11 @@ The intersect operator takes two node sequences as operands and returns a sequen
 #ifndef _INTERSECT_HPP
 #define _INTERSECT_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/XQOperator.hpp>
 
-class PATHAN_EXPORT Intersect : public XQOperator
+class XQILLA_API Intersect : public XQOperator
 {
 public:
   static const XMLCh name[];

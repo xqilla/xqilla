@@ -13,8 +13,8 @@
  * $Id$
  */
 
-#ifndef _PATHAN_CONFIG_H
-#define _PATHAN_CONFIG_H
+#ifndef _XQILLA_CONFIG_H
+#define _XQILLA_CONFIG_H
 
 /** BEGIN CONFIG.H **/
 /* Configure-style definitions for Windows.  */
@@ -32,16 +32,16 @@
 /* If we are building the library, export symbols */
 /* If we are linking against the library, import symbols */
 
-#define PATHAN_EXPORT __declspec(dllimport)
+#define XQILLA_EXPORT __declspec(dllimport)
 
-#if defined(PROJ_PATHAN)
-#undef PATHAN_EXPORT
-#define PATHAN_EXPORT __declspec(dllexport)
+#if defined(PROJ_XQILLA)
+#undef XQILLA_EXPORT
+#define XQILLA_EXPORT __declspec(dllexport)
 #endif
 
-#if defined(PROJ_PATHAN_STATIC)
-#undef PATHAN_EXPORT
-#define PATHAN_EXPORT
+#if defined(PROJ_XQILLA_STATIC)
+#undef XQILLA_EXPORT
+#define XQILLA_EXPORT
 #endif
 
 // Warning 4064: switch statement contains 'default' but no 'case' labels

@@ -16,7 +16,7 @@
 #ifndef _DOCUMENTCACHEIMPL_HPP
 #define _DOCUMENTCACHEIMPL_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xercesc/parsers/XercesDOMParser.hpp>
 #include <xercesc/sax/ErrorHandler.hpp>
@@ -36,7 +36,7 @@ class XMLGrammarPool;
 XERCES_CPP_NAMESPACE_END
 
 // convert  errors into exceptions
-class PATHAN_EXPORT DocumentCacheErrorCatcher : public XERCES_CPP_NAMESPACE_QUALIFIER ErrorHandler
+class XQILLA_API DocumentCacheErrorCatcher : public XERCES_CPP_NAMESPACE_QUALIFIER ErrorHandler
 {
 public:
   // ErrorHandler interface
@@ -49,7 +49,7 @@ protected:
 };
 
 // custom parser to manipulate the schema repository
-class PATHAN_EXPORT DocumentCacheParser : public XERCES_CPP_NAMESPACE_QUALIFIER XercesDOMParser
+class XQILLA_API DocumentCacheParser : public XERCES_CPP_NAMESPACE_QUALIFIER XercesDOMParser
 {
 public:
   DocumentCacheParser(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr, XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool* xmlgr = 0);
@@ -123,7 +123,7 @@ protected:
 };
 
 /// The class that performs the (cached) parsing of input documents
-class PATHAN_EXPORT DocumentCacheImpl : public DocumentCache
+class XQILLA_API DocumentCacheImpl : public DocumentCache
 {
 public:
   DocumentCacheImpl(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr, XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool* xmlgr = 0);
@@ -137,7 +137,7 @@ public:
 
   /**
    * Sets the XMLEntityResolver that is used by Xerces when it is used
-   * to parse documents. This affects the behaviour of Pathan whenever
+   * to parse documents. This affects the behaviour of XQilla whenever
    * it retrieves an XML, DTD or XML Schema grammar.
    */
   virtual void setXMLEntityResolver(XERCES_CPP_NAMESPACE_QUALIFIER XMLEntityResolver* const handler);

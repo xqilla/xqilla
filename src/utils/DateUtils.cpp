@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include "DateUtils.hpp"
 #include <xercesc/framework/XMLBuffer.hpp>
 #include <xercesc/util/XMLUniDefs.hpp>
@@ -22,7 +22,7 @@
 #include <xqilla/items/ATDateOrDerived.hpp>
 #include <xqilla/items/ATDateTimeOrDerived.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xqilla/context/PathanFactory.hpp>
+#include <xqilla/context/XQillaFactory.hpp>
 #include <math.h>
 
 #include <xercesc/util/Mutexes.hpp>
@@ -130,7 +130,7 @@ const ATDateOrDerived::Ptr DateUtils::getCurrentDate(const DynamicContext* conte
   sprintf(szDate,"%04d-%02d-%02d",curLocalDate->tm_year+1900, curLocalDate->tm_mon+1, curLocalDate->tm_mday);
   // no need to add timezone, it's already compensated for in localtime
   // date.setTimezone(Timezone(XSDecimal(DateUtils::getImplicitTimezone(), context->getMemoryManager())));
-  return context->getPathanFactory()->createDate(memMgr->getPooledString(szDate), context);
+  return context->getXQillaFactory()->createDate(memMgr->getPooledString(szDate), context);
 }
 
 const ATDateTimeOrDerived::Ptr DateUtils::getCurrentDateTime(const DynamicContext* context) 
@@ -156,7 +156,7 @@ const ATDateTimeOrDerived::Ptr DateUtils::getCurrentDateTime(const DynamicContex
 
   // no need to add timezone, it's already compensated for in localtime
   // dateTime.setTimezone(Timezone(XSDecimal(DateUtils::getImplicitTimezone(), context->getMemoryManager())));
-  return context->getPathanFactory()->createDateTime(memMgr->getPooledString(szDate), context);
+  return context->getXQillaFactory()->createDateTime(memMgr->getPooledString(szDate), context);
 }
 
 static XERCES_CPP_NAMESPACE_QUALIFIER XMLMutex *time_mutex = 0;

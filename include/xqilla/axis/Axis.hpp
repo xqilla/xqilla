@@ -16,7 +16,7 @@
 #ifndef _AXIS_HPP
 #define _AXIS_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/runtime/ResultImpl.hpp>
 #include <xqilla/items/impl/NodeImpl.hpp>
 
@@ -41,7 +41,7 @@ public:
 };
 
 
-class PATHAN_EXPORT Axis : public ResultImpl
+class XQILLA_API Axis : public ResultImpl
 {
 public:
   static AxisNodeFactoryTemplate<NodeImpl> gNodeImplFactory;

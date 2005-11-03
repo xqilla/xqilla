@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionCollection.hpp>
 
 #include <xqilla/context/DynamicContext.hpp>
@@ -27,7 +27,7 @@
 #include <xqilla/ast/StaticResolutionContext.hpp>
 #include <xercesc/dom/DOMDocument.hpp>
 #include <xqilla/context/URIResolver.hpp>
-#include <xqilla/context/PathanFactory.hpp>
+#include <xqilla/context/XQillaFactory.hpp>
 
 const XMLCh FunctionCollection::name[] = {
   XERCES_CPP_NAMESPACE_QUALIFIER chLatin_c, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_l, 
@@ -68,7 +68,7 @@ Sequence FunctionCollection::collapseTreeInternal(DynamicContext* context, int f
   const XMLCh* currentUri = arg.first()->asString(context);
 
   try {
-    context->getPathanFactory()->createAnyURI(currentUri, context);
+    context->getXQillaFactory()->createAnyURI(currentUri, context);
   } catch(XPath2ErrorException &e) {
     DSLthrow(FunctionException, X("FunctionCollection::collapseTreeInternal"), X("Invalid URI format"));
   }

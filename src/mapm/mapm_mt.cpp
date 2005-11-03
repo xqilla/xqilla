@@ -24,20 +24,24 @@
  *	using semaphores
  *
  *      $Log$
+ *      Revision 1.2  2005/11/03 17:04:24  jpcs
+ *      Merged XQEngine.hpp and Pathan.hpp into XQillaExport.hpp. Renamed all
+ *      things Pathan to XQilla.
+ *
  *      Revision 1.1  2005/11/01 18:04:13  jpcs
  *      Initial check in.
  *
  *      Revision 1.2  2004/08/18 19:05:38  jpcs
- *      Merged in changes from DSL pathan.
+ *      Merged in changes from DSL xqilla.
  *
  *      Revision 1.1  2004/07/21 09:23:01  jpcs
- *      Initial check in of the Parthenon backup of Pathan.
+ *      Initial check in of the Parthenon backup of XQilla.
  *
  *      Revision 1.4  2004/07/08 15:24:43  swhite
  *      Moved more headers into the include directory.  Still a few to go.
  *
  *      Revision 1.3  2004/06/30 13:49:08  swhite
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
  *      Moved the 'extern "C"' declaration so that #include "foo.hpp" is no longer inside it, as some versions of GCC object to this (quite rightly as far as I can see).
  *
  *      Revision 1.2  2004/06/04 14:41:04  jpcs

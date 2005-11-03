@@ -20,14 +20,14 @@
 #ifndef _ITEMEXCEPTION_HPP
 #define _ITEMEXCEPTION_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/exceptions/DSLException.hpp>
 #include <xqilla/utils/XStr.hpp>
 
 /** exception class for tests. Inherit from this if you need to throw an exception
     in the test suite.*/
-class PATHAN_EXPORT ItemException : public DSLException
+class XQILLA_API ItemException : public DSLException
 {
 public:
   

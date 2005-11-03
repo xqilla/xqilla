@@ -13,8 +13,8 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
-#include <xqilla/framework/Pathan.hpp>
+#include "../config/xqilla_config.h"
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/items/AnyAtomicType.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/context/DynamicContext.hpp>
@@ -24,7 +24,7 @@
 #include <xqilla/exceptions/TypeNotFoundException.hpp>
 #include <xqilla/exceptions/XPath2TypeCastException.hpp>
 #include <xqilla/exceptions/NamespaceLookupException.hpp>
-#include <xqilla/context/PathanFactory.hpp>
+#include <xqilla/context/XQillaFactory.hpp>
 
 #include <xercesc/util/XMLString.hpp>
 #include <xercesc/util/XMLUniDefs.hpp>
@@ -93,7 +93,7 @@ const XMLCh* AnyAtomicType::getPrimitiveTypeURI() const{
 }
 
 AnyAtomicType::Ptr AnyAtomicType::castAs(const XMLCh* targetTypeURI, const XMLCh* targetTypeName, const DynamicContext* context) const {
-  AtomicObjectType targetIndex = context->getPathanFactory()->getPrimitiveTypeIndex(targetTypeURI, targetTypeName);
+  AtomicObjectType targetIndex = context->getXQillaFactory()->getPrimitiveTypeIndex(targetTypeURI, targetTypeName);
 
   if(!castIsSupported(targetIndex, context)) {
     XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buffer(1023, context->getMemoryManager());
@@ -133,12 +133,12 @@ AnyAtomicType::Ptr AnyAtomicType::castAs(const XMLCh* targetTypeURI, const XMLCh
 }
 
 AnyAtomicType::Ptr AnyAtomicType::castAsInternal(AtomicObjectType targetIndex, const XMLCh* targetTypeURI, const XMLCh* targetTypeName, const DynamicContext* context) const {
-    return context->getPathanFactory()->createDerivedFromAtomicType(targetIndex, targetTypeURI, targetTypeName, this->asString(context), context);
+    return context->getXQillaFactory()->createDerivedFromAtomicType(targetIndex, targetTypeURI, targetTypeName, this->asString(context), context);
 }
 
 /* Test if this type can be cast to the target type */
 bool AnyAtomicType::castable(const XMLCh* targetTypeURI, const XMLCh* targetTypeName, const DynamicContext* context) const {
-  AtomicObjectType targetIndex = context->getPathanFactory()->getPrimitiveTypeIndex(targetTypeURI, targetTypeName);
+  AtomicObjectType targetIndex = context->getXQillaFactory()->getPrimitiveTypeIndex(targetTypeURI, targetTypeName);
 
   if(!castIsSupported(targetIndex, context)) {
           return false;

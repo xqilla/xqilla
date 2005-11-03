@@ -17,7 +17,7 @@
 // XQDebugHook.cpp: implementation of the XQDebugHook class.
 //////////////////////////////////////////////////////////////////////
 
-#include <xqilla/framework/XQEngine.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/ast/XQDebugHook.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/exceptions/XQException.hpp>

@@ -22,13 +22,13 @@
 #ifndef _XMLPARSEEXCEPTION_HPP
 #define _XMLPARSEEXCEPTION_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/exceptions/DSLException.hpp>
 #include <xqilla/utils/XStr.hpp>
 
 /** exception class for parsing XML */
-class PATHAN_EXPORT XMLParseException : public DSLException
+class XQILLA_API XMLParseException : public DSLException
 {
 public:
 

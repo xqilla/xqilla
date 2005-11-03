@@ -16,7 +16,7 @@
 #ifndef _XPATH2UTILS_HPP
 #define _XPATH2UTILS_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <vector>
 
@@ -32,7 +32,7 @@ XERCES_CPP_NAMESPACE_BEGIN
 XERCES_CPP_NAMESPACE_END
 
 /**class with methods that are used by v2 that are DOM related*/ 
-class PATHAN_EXPORT XPath2Utils
+class XQILLA_API XPath2Utils
 {
 public:
 

@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xqilla/axis/NamespaceAxis.hpp>
 #include <xqilla/utils/XPath2NSUtils.hpp>
 #include "../dom-api/impl/XPathNamespaceImpl.hpp"

@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xqilla/framework/StringPool.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 

@@ -13,12 +13,12 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
-#include <xqilla/dom-api/PathanImplementation.hpp>
+#include "../config/xqilla_config.h"
+#include <xqilla/dom-api/XQillaImplementation.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
-#include "impl/PathanDocumentImpl.hpp"
-#include "impl/PathanBuilderImpl.hpp"
-#include "impl/PathanXMLGrammarPoolImpl.hpp"
+#include "impl/XQillaDocumentImpl.hpp"
+#include "impl/XQillaBuilderImpl.hpp"
+#include "impl/XQillaXMLGrammarPoolImpl.hpp"
 
 #include <xqilla/dom-api/XPath2NodeSerializer.hpp>
 
@@ -32,77 +32,77 @@
 #include <xercesc/util/XMLStringTokenizer.hpp>
 #include <xercesc/util/XMLUniDefs.hpp>
 
-const XMLCh PathanImplementation::gPathan[] =   // Points to "XPath2"
+const XMLCh XQillaImplementation::gXQilla[] =   // Points to "XPath2"
 {XERCES_CPP_NAMESPACE_QUALIFIER chLatin_X, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_P, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_h, XERCES_CPP_NAMESPACE_QUALIFIER chDigit_2, XERCES_CPP_NAMESPACE_QUALIFIER chNull};
  
-const XMLCh PathanImplementation::g3_0[] =      // Points to "3.0"
+const XMLCh XQillaImplementation::g3_0[] =      // Points to "3.0"
         {XERCES_CPP_NAMESPACE_QUALIFIER chDigit_3, XERCES_CPP_NAMESPACE_QUALIFIER chPeriod, XERCES_CPP_NAMESPACE_QUALIFIER chDigit_0, XERCES_CPP_NAMESPACE_QUALIFIER chNull};
 
-PathanImplementation::PathanImplementation() {
+XQillaImplementation::XQillaImplementation() {
     domImpl = XERCES_CPP_NAMESPACE_QUALIFIER DOMImplementation::getImplementation();
 }
   
-PathanImplementation::~PathanImplementation() {
+XQillaImplementation::~XQillaImplementation() {
   // nothing to do
 }
 
 // -----------------------------------------------------------------------
 //  Singleton DOMImplementationImpl
 // -----------------------------------------------------------------------
-PathanImplementation * PathanImplementation::gDomimp = 0;
+XQillaImplementation * XQillaImplementation::gDomimp = 0;
 
 //static
-void PathanImplementation::initialize()
+void XQillaImplementation::initialize()
 {
 	if (gDomimp)
 		delete gDomimp;
-	gDomimp = new PathanImplementation();
+	gDomimp = new XQillaImplementation();
 	XERCES_CPP_NAMESPACE_QUALIFIER DOMImplementationRegistry::addSource(
 		gDomimp);
 }
 
-void PathanImplementation::terminate()
+void XQillaImplementation::terminate()
 {
 	if (gDomimp)
 		delete gDomimp;
 	gDomimp = 0;
 }
 
-PathanImplementation* PathanImplementation::getDOMImplementationImpl() {
-	// initialized by PathanImplementation::initialize()
+XQillaImplementation* XQillaImplementation::getDOMImplementationImpl() {
+	// initialized by XQillaImplementation::initialize()
 	return gDomimp;
 }
 
-bool PathanImplementation::hasFeature(const  XMLCh * feature,  const  XMLCh * version) const
+bool XQillaImplementation::hasFeature(const  XMLCh * feature,  const  XMLCh * version) const
 {
   if (!feature)
     return false;
     
-  if (XERCES_CPP_NAMESPACE_QUALIFIER XMLString::compareIString(feature, gPathan) == 0
+  if (XERCES_CPP_NAMESPACE_QUALIFIER XMLString::compareIString(feature, gXQilla) == 0
       && (version == 0 || !*version || XERCES_CPP_NAMESPACE_QUALIFIER XMLString::equals(version, g3_0)))
       return true;
   
   return domImpl->hasFeature(feature, version);
 }
 
-XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* PathanImplementation::createDocument(const XMLCh *namespaceURI,
+XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* XQillaImplementation::createDocument(const XMLCh *namespaceURI,
 	const XMLCh *qualifiedName, XERCES_CPP_NAMESPACE_QUALIFIER DOMDocumentType *doctype, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* const manager)
 {
-    return new (manager) PathanDocumentImpl(namespaceURI, qualifiedName, doctype, manager);
+    return new (manager) XQillaDocumentImpl(namespaceURI, qualifiedName, doctype, manager);
 }
 
 
-XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* PathanImplementation::createDocument(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* const manager)
+XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* XQillaImplementation::createDocument(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* const manager)
 {
-  return new (manager) PathanDocumentImpl(manager);
+  return new (manager) XQillaDocumentImpl(manager);
 }
 
-XERCES_CPP_NAMESPACE_QUALIFIER DOMWriter* PathanImplementation::createDOMWriter(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* const manager)
+XERCES_CPP_NAMESPACE_QUALIFIER DOMWriter* XQillaImplementation::createDOMWriter(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* const manager)
 {
     return new (manager) XPath2NodeSerializer(manager);
 }
 
-XERCES_CPP_NAMESPACE_QUALIFIER DOMBuilder* PathanImplementation::createDOMBuilder(const short mode,
+XERCES_CPP_NAMESPACE_QUALIFIER DOMBuilder* XQillaImplementation::createDOMBuilder(const short mode,
                                                                                   const XMLCh* const schemaType,
                                                                                   XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* const manager,
                                                                                   XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool*  const gramPool)
@@ -110,7 +110,7 @@ XERCES_CPP_NAMESPACE_QUALIFIER DOMBuilder* PathanImplementation::createDOMBuilde
   XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool *temp = 0;
   
   if(!gramPool) {
-    temp = new (manager) PathanXMLGrammarPoolImpl(manager);
+    temp = new (manager) XQillaXMLGrammarPoolImpl(manager);
   }
   else {
     temp = gramPool;
@@ -120,8 +120,8 @@ XERCES_CPP_NAMESPACE_QUALIFIER DOMBuilder* PathanImplementation::createDOMBuilde
     if (mode == XERCES_CPP_NAMESPACE_QUALIFIER DOMImplementationLS::MODE_ASYNCHRONOUS)
         throw XERCES_CPP_NAMESPACE_QUALIFIER DOMException(XERCES_CPP_NAMESPACE_QUALIFIER DOMException::NOT_SUPPORTED_ERR, 0);
 
-    XERCES_CPP_NAMESPACE_QUALIFIER DOMBuilder *tmp = new (manager) PathanBuilderImpl(0, manager, temp);
-    tmp->setProperty(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgXercesParserUseDocumentFromImplementation, (void*)gPathan);
+    XERCES_CPP_NAMESPACE_QUALIFIER DOMBuilder *tmp = new (manager) XQillaBuilderImpl(0, manager, temp);
+    tmp->setProperty(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgXercesParserUseDocumentFromImplementation, (void*)gXQilla);
     tmp->setFeature(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgXercesCacheGrammarFromParse, true);
 
     return tmp;
@@ -129,9 +129,9 @@ XERCES_CPP_NAMESPACE_QUALIFIER DOMBuilder* PathanImplementation::createDOMBuilde
 
 
 
-XERCES_CPP_NAMESPACE_QUALIFIER DOMImplementation* PathanImplementation::getDOMImplementation(const XMLCh* features) const
+XERCES_CPP_NAMESPACE_QUALIFIER DOMImplementation* XQillaImplementation::getDOMImplementation(const XMLCh* features) const
 {
-  XERCES_CPP_NAMESPACE_QUALIFIER  DOMImplementation* impl = PathanImplementation::getDOMImplementationImpl();
+  XERCES_CPP_NAMESPACE_QUALIFIER  DOMImplementation* impl = XQillaImplementation::getDOMImplementationImpl();
 
   XERCES_CPP_NAMESPACE_QUALIFIER XMLStringTokenizer tokenizer(features);
   const XMLCh* feature = 0;
@@ -157,20 +157,20 @@ XERCES_CPP_NAMESPACE_QUALIFIER DOMImplementation* PathanImplementation::getDOMIm
 }
 
 
-XERCES_CPP_NAMESPACE_QUALIFIER DOMInputSource* PathanImplementation::createDOMInputSource()
+XERCES_CPP_NAMESPACE_QUALIFIER DOMInputSource* XQillaImplementation::createDOMInputSource()
 {
     throw XERCES_CPP_NAMESPACE_QUALIFIER DOMException(XERCES_CPP_NAMESPACE_QUALIFIER DOMException::NOT_SUPPORTED_ERR, 0);
     return 0;
 }
 
-XERCES_CPP_NAMESPACE_QUALIFIER DOMDocumentType *PathanImplementation::createDocumentType(const XMLCh *qualifiedName,
+XERCES_CPP_NAMESPACE_QUALIFIER DOMDocumentType *XQillaImplementation::createDocumentType(const XMLCh *qualifiedName,
 	const XMLCh * publicId, const XMLCh *systemId)
 {
     return domImpl->createDocumentType(qualifiedName, publicId, systemId); 
 }
 
 //Introduced in DOM Level 3
-XERCES_CPP_NAMESPACE_QUALIFIER DOMImplementation* PathanImplementation::getInterface(const XMLCh* feature){
+XERCES_CPP_NAMESPACE_QUALIFIER DOMImplementation* XQillaImplementation::getInterface(const XMLCh* feature){
     throw XERCES_CPP_NAMESPACE_QUALIFIER DOMException(XERCES_CPP_NAMESPACE_QUALIFIER DOMException::NOT_SUPPORTED_ERR, 0);
     return 0;
 }

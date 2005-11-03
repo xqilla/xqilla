@@ -16,7 +16,7 @@
 #ifndef _FUNCTIONGETMONTHFROMDATETIME_HPP
 #define _FUNCTIONGETMONTHFROMDATETIME_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/XQFunction.hpp>
 
@@ -25,7 +25,7 @@
  *
  * month-from-dateTime(dateTime $srcval) => integer
  */
-class PATHAN_EXPORT FunctionMonthFromDateTime : public XQFunction
+class XQILLA_API FunctionMonthFromDateTime : public XQFunction
 {
 public:
   static const XMLCh name[];

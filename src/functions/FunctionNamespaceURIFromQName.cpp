@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionNamespaceURIFromQName.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/ATQNameOrDerived.hpp>
@@ -48,6 +48,6 @@ Sequence FunctionNamespaceURIFromQName::collapseTreeInternal(DynamicContext* con
   Sequence arg=getParamNumber(1,context);
   if(arg.isEmpty())
     return Sequence(context->getMemoryManager());
-  return Sequence(context->getPathanFactory()->createAnyURI(((const ATQNameOrDerived*)arg.first().get())->getURI(), context),
+  return Sequence(context->getXQillaFactory()->createAnyURI(((const ATQNameOrDerived*)arg.first().get())->getURI(), context),
 	  context->getMemoryManager());
 }

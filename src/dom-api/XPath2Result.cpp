@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xqilla/dom-api/XPath2Result.hpp>
 #include <string>
 
@@ -22,14 +22,14 @@
 #include <xqilla/items/ATDecimalOrDerived.hpp>
 #include <xqilla/items/ATDoubleOrDerived.hpp>
 #include <xqilla/items/ATBooleanOrDerived.hpp>
-#include <xqilla/exceptions/PathanException.hpp>
+#include <xqilla/exceptions/XQillaException.hpp>
 #include <xqilla/exceptions/XPath2TypeCastException.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/runtime/Result.hpp>
 
 #include <xqilla/exceptions/FunctionException.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xqilla/context/PathanFactory.hpp>
+#include <xqilla/context/XQillaFactory.hpp>
 #include <xqilla/items/impl/NodeImpl.hpp>
 
 #include <xercesc/dom/DOMException.hpp>
@@ -122,23 +122,23 @@ void XPath2Result::evaluate(const ASTNode *expression)
     _resultSequence = new Sequence(expression->collapseTree(_context, flags));
   }
   catch(const DSLException &e) {
-    if(PathanException::getDebug()) {
+    if(XQillaException::getDebug()) {
       e.printDebug( X("Caught exception at Interface") );
     }    
-    throw PathanException(XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException::TYPE_ERR, e.getError());
+    throw XQillaException(XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException::TYPE_ERR, e.getError());
   }
-  catch(const PathanException &) {
+  catch(const XQillaException &) {
     //rethrow it
     throw;
   }
   catch(XERCES_CPP_NAMESPACE_QUALIFIER DOMException &e) {
-    throw PathanException(XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException::TYPE_ERR, X("PathanExpressionImpl::evaluateToSequence(): DOMException!"));
+    throw XQillaException(XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException::TYPE_ERR, X("XQillaExpressionImpl::evaluateToSequence(): DOMException!"));
   }
   catch(XERCES_CPP_NAMESPACE_QUALIFIER XMLException &e) {
-    throw PathanException(XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException::TYPE_ERR, e.getMessage());
+    throw XQillaException(XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException::TYPE_ERR, e.getMessage());
   }
   catch (...) {
-    throw PathanException(XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException::TYPE_ERR, X("PathanExpressionImpl::evaluateToSequence(): Unknown exception caught."));
+    throw XQillaException(XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException::TYPE_ERR, X("XQillaExpressionImpl::evaluateToSequence(): Unknown exception caught."));
   }
 }
 
@@ -205,7 +205,7 @@ int XPath2Result::asInt() const throw (XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathEx
 
   const Item::Ptr item = _resultSequence->item(_curIndex);
   if(item->isNode()) {
-    throw PathanException(XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException::TYPE_ERR, X("Cannot convert result to int"));
+    throw XQillaException(XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException::TYPE_ERR, X("Cannot convert result to int"));
   }  
 
   AnyAtomicType::Ptr atom = (const AnyAtomicType::Ptr )item;
@@ -214,7 +214,7 @@ int XPath2Result::asInt() const throw (XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathEx
     integer = (const ATDecimalOrDerived::Ptr )atom->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA, 
                            XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_INTEGER, _context);
   } catch (XPath2TypeCastException &e) {
-    throw PathanException(XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException::TYPE_ERR, X("Cannot convert result to int"));
+    throw XQillaException(XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException::TYPE_ERR, X("Cannot convert result to int"));
   }
   
   return atoi(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::transcode(integer->asString(_context)));
@@ -227,7 +227,7 @@ double XPath2Result::asDouble() const throw (XERCES_CPP_NAMESPACE_QUALIFIER DOMX
 
   const Item::Ptr item = _resultSequence->item(_curIndex);
   if(item->isNode()) {
-    throw PathanException(XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException::TYPE_ERR, X("Cannot convert result to double"));
+    throw XQillaException(XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException::TYPE_ERR, X("Cannot convert result to double"));
   }
 
   AnyAtomicType::Ptr atom = (const AnyAtomicType::Ptr )item;
@@ -236,7 +236,7 @@ double XPath2Result::asDouble() const throw (XERCES_CPP_NAMESPACE_QUALIFIER DOMX
     doubleValue = (const ATDoubleOrDerived::Ptr )atom->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                            XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DOUBLE, _context);
   } catch (XPath2TypeCastException &e) {
-    throw PathanException(XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException::TYPE_ERR, X("Cannot convert result to double"));
+    throw XQillaException(XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException::TYPE_ERR, X("Cannot convert result to double"));
   }
 
   return atof(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::transcode(doubleValue->asString(_context)));
@@ -250,7 +250,7 @@ const XMLCh* XPath2Result::asString() const throw (XERCES_CPP_NAMESPACE_QUALIFIE
 
   const Item::Ptr item = _resultSequence->item(_curIndex);
   if(item->isNode()) {
-    throw PathanException(XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException::TYPE_ERR, X("Cannot convert result to a string"));
+    throw XQillaException(XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException::TYPE_ERR, X("Cannot convert result to a string"));
   }
 
   return item->asString(_context);
@@ -263,7 +263,7 @@ bool XPath2Result::asBoolean() const throw (XERCES_CPP_NAMESPACE_QUALIFIER DOMXP
 
   const Item::Ptr item = _resultSequence->item(_curIndex);
   if(item->isNode()) {
-    throw PathanException(XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException::TYPE_ERR, X("Cannot convert result to a boolean"));
+    throw XQillaException(XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException::TYPE_ERR, X("Cannot convert result to a boolean"));
   }
 
   AnyAtomicType::Ptr atom = (const AnyAtomicType::Ptr )item;
@@ -272,7 +272,7 @@ bool XPath2Result::asBoolean() const throw (XERCES_CPP_NAMESPACE_QUALIFIER DOMXP
     boolean = (const ATBooleanOrDerived::Ptr )atom->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                            XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_BOOLEAN, _context);
   } catch (XPath2TypeCastException &e) {
-    throw PathanException(XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException::TYPE_ERR, X("Cannot convert result to a boolean"));
+    throw XQillaException(XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException::TYPE_ERR, X("Cannot convert result to a boolean"));
   }
   return ((const ATBooleanOrDerived*)boolean)->isTrue();
 }
@@ -284,11 +284,11 @@ const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* XPath2Result::asNode() const throw
 
   const Item::Ptr item = _resultSequence->item(_curIndex);
   if(!item->isNode()) {
-    throw PathanException(XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException::TYPE_ERR, X("The requested result is not a node"));
+    throw XQillaException(XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException::TYPE_ERR, X("The requested result is not a node"));
   }
-  const NodeImpl *nodeImpl = (const NodeImpl*)item->getInterface(Item::gPathan);
+  const NodeImpl *nodeImpl = (const NodeImpl*)item->getInterface(Item::gXQilla);
   if(nodeImpl == 0) {
-    throw PathanException(XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException::TYPE_ERR, X("The requested result not a Pathan implementation node"));
+    throw XQillaException(XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException::TYPE_ERR, X("The requested result not a XQilla implementation node"));
   }
 
   return nodeImpl->getDOMNode();
@@ -309,14 +309,14 @@ bool XPath2Result::getInvalidIteratorState() const {
 
 unsigned long XPath2Result::getSnapshotLength() const throw(XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException) {
   if(_resultType != XPath2Result::SNAPSHOT_RESULT) {
-    throw PathanException(XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException::TYPE_ERR, errorMessage(XPath2Result::SNAPSHOT_RESULT, _resultType));
+    throw XQillaException(XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException::TYPE_ERR, errorMessage(XPath2Result::SNAPSHOT_RESULT, _resultType));
   }
   return _resultSequence->getLength();
 }
 
 bool XPath2Result::iterateNext() const throw (XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException, XERCES_CPP_NAMESPACE_QUALIFIER DOMException) {
   if(_resultType != XPath2Result::ITERATOR_RESULT) {
-    throw PathanException(XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException::TYPE_ERR, errorMessage(XPath2Result::ITERATOR_RESULT, _resultType));
+    throw XQillaException(XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException::TYPE_ERR, errorMessage(XPath2Result::ITERATOR_RESULT, _resultType));
   }
 
   // this method is const, need to cast that away
@@ -342,7 +342,7 @@ bool XPath2Result::iterateNext() const throw (XERCES_CPP_NAMESPACE_QUALIFIER DOM
 
 bool XPath2Result::snapshotItem(unsigned long index) const throw(XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException) {
   if(_resultType != XPath2Result::SNAPSHOT_RESULT) {
-    throw PathanException(XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException::TYPE_ERR, errorMessage(XPath2Result::SNAPSHOT_RESULT, _resultType));
+    throw XQillaException(XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException::TYPE_ERR, errorMessage(XPath2Result::SNAPSHOT_RESULT, _resultType));
   }
 
   //Reached end of set, return false

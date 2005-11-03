@@ -15,13 +15,13 @@
 
 %{
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xercesc/util/XercesDefs.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 #include <xercesc/util/XMLString.hpp>
 #include <xercesc/framework/XMLBuffer.hpp>
 #include <xercesc/dom/DOMXPathNamespace.hpp>
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/items/AnyAtomicTypeConstructor.hpp>
 
@@ -381,7 +381,7 @@ _VariableBindingList:
 	}
 
     | _VARNAME_ _IN_ _ExprSingle {
-		$$ = new (((XPathParserControl *)parm)->memMgr) VectorOfVariableBinding(PathanAllocator<XQVariableBinding*>((((XPathParserControl *)parm)->memMgr)));
+		$$ = new (((XPathParserControl *)parm)->memMgr) VectorOfVariableBinding(XQillaAllocator<XQVariableBinding*>((((XPathParserControl *)parm)->memMgr)));
 		XQVariableBinding* bind=new (((XPathParserControl *)parm)->memMgr) XQVariableBinding(((XPathParserControl *)parm)->memMgr,
                                                                                          XQVariableBinding::forBinding,
                                                                                          ((XPathParserControl *)parm)->memMgr->getPooledString($1), $3);
@@ -710,7 +710,7 @@ _UnaryExpr:
 	}
 
 	| _MINUS_ _UnaryExpr {
-	  VectorOfASTNodes args(PathanAllocator<ASTNode*>(((XPathParserControl *)parm)->memMgr));
+	  VectorOfASTNodes args(XQillaAllocator<ASTNode*>(((XPathParserControl *)parm)->memMgr));
 	  args.push_back($2);
 	  $$ = new (((XPathParserControl *)parm)->memMgr) UnaryMinus(args, ((XPathParserControl *)parm)->memMgr);
 	}
@@ -1137,7 +1137,7 @@ _PredicateList:
 	*/
 
     /* empty */ {
-        $$ = new VectorOfASTNodes(PathanAllocator<ASTNode*>(((XPathParserControl *)parm)->memMgr));
+        $$ = new VectorOfASTNodes(XQillaAllocator<ASTNode*>(((XPathParserControl *)parm)->memMgr));
     }
 	| _PredicateList _Predicate {
         $1->push_back($2);
@@ -1310,7 +1310,7 @@ _FunctionCall:
 	_QNAME_LPAR_ _RPAR_ {
         QualifiedName *qname = new (((XPathParserControl *)parm)->memMgr) QualifiedName($1, ((XPathParserControl *)parm)->memMgr);
         delete $1;
-        VectorOfASTNodes tmp(PathanAllocator<ASTNode*>(((XPathParserControl *)parm)->memMgr));
+        VectorOfASTNodes tmp(XQillaAllocator<ASTNode*>(((XPathParserControl *)parm)->memMgr));
         ASTNode* functionImpl = ((XPathParserControl*)parm)->context->lookUpFunction(qname->getPrefix(), qname->getName(), tmp);
         if( functionImpl == NULL) {
           XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buf(1023, ((XPathParserControl *)parm)->memMgr);
@@ -1349,7 +1349,7 @@ _ArgumentList:
 	*/
 
 	_ExprSingle {
-        $$ = new VectorOfASTNodes(PathanAllocator<ASTNode*>(((XPathParserControl *)parm)->memMgr));
+        $$ = new VectorOfASTNodes(XQillaAllocator<ASTNode*>(((XPathParserControl *)parm)->memMgr));
         $$->push_back($1);
 	  }
 
@@ -1769,7 +1769,7 @@ void yyerror(const char *s)
 
 inline VectorOfASTNodes packageArgs(ASTNode *arg1Impl, ASTNode *arg2Impl, XPath2MemoryManager* memMgr)
 {
-	VectorOfASTNodes args=VectorOfASTNodes(2,(ASTNode*)NULL,PathanAllocator<ASTNode*>(memMgr));
+	VectorOfASTNodes args=VectorOfASTNodes(2,(ASTNode*)NULL,XQillaAllocator<ASTNode*>(memMgr));
 	args[0]=arg1Impl;
 	args[1]=arg2Impl;
 

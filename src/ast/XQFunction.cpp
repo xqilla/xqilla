@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xqilla/ast/XQFunction.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/schema/SequenceType.hpp>

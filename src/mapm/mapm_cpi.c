@@ -17,32 +17,6 @@
  *  This software is provided "as is" without express or implied warranty.
  */
 
-/*
- *      $Id$
- *
- *      This file contains the PI related functions.
- *
- *      $Log$
- *      Revision 1.1  2005/11/01 18:04:13  jpcs
- *      Initial check in.
- *
- *      Revision 1.1  2004/07/21 09:23:01  jpcs
- *      Initial check in of the Parthenon backup of Pathan.
- *
- *      Revision 1.2  2003/05/01 12:46:55  alby
- *      - Updated MAPM to version 4.6.1
- *      - The MAPM class is now thread-safe
- *
- *      Revision 1.3  2002/11/05 23:10:14  mike
- *      streamline the PI AGM algorithm
- *
- *      Revision 1.2  2002/11/03 21:56:21  mike
- *      Updated function parameters to use the modern style
- *
- *      Revision 1.1  2001/03/25 21:01:53  mike
- *      Initial revision
- */
-
 #include "m_apm_lc.h"
 
 /****************************************************************************/

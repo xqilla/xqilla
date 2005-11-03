@@ -19,7 +19,7 @@
 
 #include <sstream>
 
-#include <xqilla/framework/XQEngine.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/ast/XQQuantified.hpp>
 #include <xqilla/context/impl/XQDynamicContextImpl.hpp>
 #include <xqilla/context/VariableStore.hpp>
@@ -27,7 +27,7 @@
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/ast/StaticResolutionContext.hpp>
 #include <xqilla/ast/XQSequence.hpp>
-#include <xqilla/context/PathanFactory.hpp>
+#include <xqilla/context/XQillaFactory.hpp>
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -51,7 +51,7 @@ ASTNode* XQQuantified::staticResolution(StaticContext* context) {
       dContext->setMemoryManager(context->getMemoryManager());
       bool value = _return->collapseTree(dContext).getEffectiveBooleanValue(dContext);
       ASTNode *newBlock = new (getMemoryManager())
-	      XQSequence(dContext->getPathanFactory()->createBoolean(value, dContext),
+	      XQSequence(dContext->getXQillaFactory()->createBoolean(value, dContext),
 			       dContext, getMemoryManager());
       newBlock->addPredicates(getPredicates());
       return newBlock->staticResolution(context);
@@ -105,7 +105,7 @@ Item::Ptr XQQuantified::QuantifiedResult::getSingleResult(DynamicContext *contex
   }
   varStore->removeScope();
 
-  return (const Item::Ptr)context->getPathanFactory()->createBoolean(defaultResult, context);
+  return (const Item::Ptr)context->getXQillaFactory()->createBoolean(defaultResult, context);
 }
 
 std::string XQQuantified::QuantifiedResult::asString(DynamicContext *context, int indent) const

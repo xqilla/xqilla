@@ -57,6 +57,10 @@
 
 /*
  * $Log$
+ * Revision 1.3  2005/11/03 17:04:25  jpcs
+ * Merged XQEngine.hpp and Pathan.hpp into XQillaExport.hpp. Renamed all
+ * things Pathan to XQilla.
+ *
  * Revision 1.2  2005/11/02 16:06:03  jpcs
  * Updated the copyright notices for the project.
  *
@@ -64,7 +68,7 @@
  * Initial check in.
  *
  * Revision 1.1  2004/07/21 09:22:58  jpcs
- * Initial check in of the Parthenon backup of Pathan.
+ * Initial check in of the Parthenon backup of XQilla.
  *
  * Revision 1.5  2004/07/12 08:36:41  swhite
  * Restored old, uncorrupted, copy.  What is it about perl -pi -e on NFS?
@@ -116,12 +120,12 @@
  * Removed obselete files from make install and distrib scripts.
  *
  * Revision 1.2  2001/07/25 13:18:44  jpcs
- * Added VC6 project files for pathan, pathan-testharness, and xgrep.
- * Fixed pathan to build under windows.
+ * Added VC6 project files for xqilla, xqilla-testharness, and xgrep.
+ * Fixed xqilla to build under windows.
  *
  * Revision 1.1  2001/05/25 18:11:07  jpcs
- * Sorted out the main Pathan makefiles, to generate the include files.
- * Added an example project, xgrep, that shows how to use Pathan.
+ * Sorted out the main XQilla makefiles, to generate the include files.
+ * Added an example project, xgrep, that shows how to use XQilla.
  *
  * Revision 1.1  2001/02/09 16:40:16  gareth
  * added Xerces 1_4

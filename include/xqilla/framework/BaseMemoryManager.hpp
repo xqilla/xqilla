@@ -16,7 +16,7 @@
 #ifndef __BASEMEMORYMANAGER_HPP
 #define __BASEMEMORYMANAGER_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/framework/XPath2MemoryManager.hpp>
 
 #include <xercesc/util/RefHashTableOf.hpp>
@@ -36,10 +36,10 @@ class VariableStore;
 class FunctionLookup;
 class Collation;
 class CollationHelper;
-class PathanNSResolver;
+class XQillaNSResolver;
 class StringPool;
 
-class PATHAN_EXPORT BaseMemoryManager : public XPath2MemoryManager
+class XQILLA_API BaseMemoryManager : public XPath2MemoryManager
 {
 public:
   virtual ~BaseMemoryManager();
@@ -67,7 +67,7 @@ public:
   virtual Collation* createCollation(CollationHelper* helper);
 
   /** create a resolver */
-  virtual PathanNSResolver* createNSResolver(XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *resolverNode);
+  virtual XQillaNSResolver* createNSResolver(XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *resolverNode);
   
   /** create a store for variables */
   virtual VariableStore* createVariableStore();
@@ -88,7 +88,7 @@ protected:
   virtual void *internal_allocate(size_t size) = 0;
   virtual void internal_deallocate(void *p) = 0;
 
-  struct PATHAN_EXPORT MemList {
+  struct XQILLA_API MemList {
     MemList *prev;
     MemList *next;
     size_t size;
@@ -99,7 +99,7 @@ protected:
   };
 
 #if ALLOCATE_IN_CHUNKS
-  struct PATHAN_EXPORT MemAlloc {
+  struct XQILLA_API MemAlloc {
     MemList *list;
   };
 #endif

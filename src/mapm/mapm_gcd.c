@@ -17,41 +17,6 @@
  *  This software is provided "as is" without express or implied warranty.
  */
 
-/*
- *      $Id$
- *
- *      This file contains the GCD and LCM functions
- *
- *      $Log$
- *      Revision 1.1  2005/11/01 18:04:13  jpcs
- *      Initial check in.
- *
- *      Revision 1.1  2004/07/21 09:23:01  jpcs
- *      Initial check in of the Parthenon backup of Pathan.
- *
- *      Revision 1.2  2003/05/01 12:46:55  alby
- *      - Updated MAPM to version 4.6.1
- *      - The MAPM class is now thread-safe
- *
- *      Revision 1.6  2003/03/31 22:12:33  mike
- *      call generic error handling function
- *
- *      Revision 1.5  2002/11/03 22:44:21  mike
- *      Updated function parameters to use the modern style
- *
- *      Revision 1.4  2002/05/17 22:17:47  mike
- *      fix comment
- *
- *      Revision 1.3  2002/05/17 22:16:36  mike
- *      move even/odd util functions to mapmutl2
- *
- *      Revision 1.2  2001/07/15 20:55:20  mike
- *      add comments
- *
- *      Revision 1.1  2001/07/15 20:48:27  mike
- *      Initial revision
- */
-
 #include "m_apm_lc.h"
 
 /****************************************************************************/

@@ -20,7 +20,7 @@
 #include <xqilla/framework/XPath2MemoryManager.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xqilla/context/PathanFactory.hpp>
+#include <xqilla/context/XQillaFactory.hpp>
 
 #include <xqilla/items/ATQNameOrDerived.hpp>
 
@@ -56,7 +56,7 @@ void ATQNameTester::run(const DynamicContext* context) {
 
 const ATQNameOrDerived::Ptr ATQNameTester::createQName(const XMLCh* value,
                                                    const DynamicContext* context) {
-  return context->getPathanFactory()->createDerivedFromAtomicType(
+  return context->getXQillaFactory()->createDerivedFromAtomicType(
       XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
       XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_QNAME,
       value, context);
@@ -66,7 +66,7 @@ const ATQNameOrDerived::Ptr ATQNameTester::createQName(const XMLCh* uri,
                                                        const XMLCh* prefix,
                                                    const XMLCh* name,
                                                    const DynamicContext* context) {
-  return context->getPathanFactory()->createQNameOrDerived(
+  return context->getXQillaFactory()->createQNameOrDerived(
       XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
       XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_QNAME,
       uri, prefix, name, context);

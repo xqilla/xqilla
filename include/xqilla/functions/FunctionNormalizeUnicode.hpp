@@ -22,12 +22,12 @@
 #ifndef _FUNCTIONNORMALIZEUNICODE_HPP
 #define _FUNCTIONNORMALIZEUNICODE_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/ConstantFoldingFunction.hpp>
 
 /** normalize-unicode function. */
-class PATHAN_EXPORT FunctionNormalizeUnicode : public ConstantFoldingFunction
+class XQILLA_API FunctionNormalizeUnicode : public ConstantFoldingFunction
 {
 public:
   static const XMLCh name[];

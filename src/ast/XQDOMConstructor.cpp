@@ -17,7 +17,7 @@
 // XQDOMConstructor.cpp: implementation of the XQDOMConstructor class.
 //////////////////////////////////////////////////////////////////////
 
-#include <xqilla/framework/XQEngine.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/ast/XQDOMConstructor.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/context/XQFactory.hpp>
@@ -134,7 +134,7 @@ Sequence XQDOMConstructor::collapseTreeInternal(DynamicContext *context, int fla
                                                              sourceNode->dmStringValue(context),
                                                              context->getMemoryManager());
                 childList.pop_back();
-                childList.push_back(((XQFactory*)context->getPathanFactory())->createTextNode(buff, context));
+                childList.push_back(((XQFactory*)context->getXQillaFactory())->createTextNode(buff, context));
               }
               else {
                 childList.push_back(sourceNode);
@@ -146,15 +146,15 @@ Sequence XQDOMConstructor::collapseTreeInternal(DynamicContext *context, int fla
                 const XMLCh* buff=XPath2Utils::concatStrings(childList.back()->dmStringValue(context),child->asString(context),context->getMemoryManager());
 
                 childList.pop_back();
-                childList.push_back(((XQFactory*)context->getPathanFactory())->createTextNode(buff, context));
+                childList.push_back(((XQFactory*)context->getXQillaFactory())->createTextNode(buff, context));
               }
               else {
-                childList.push_back(((XQFactory*)context->getPathanFactory())->createTextNode(child->asString(context), context));
+                childList.push_back(((XQFactory*)context->getXQillaFactory())->createTextNode(child->asString(context), context));
               }
             }
           }
         }
-        result = ((XQFactory*)context->getPathanFactory())->createDocumentNode(childList, context);
+        result = ((XQFactory*)context->getXQillaFactory())->createDocumentNode(childList, context);
       }
 
       // ELEMENT node
@@ -278,7 +278,7 @@ Sequence XQDOMConstructor::collapseTreeInternal(DynamicContext *context, int fla
                   const XMLCh *newPrefix = definePrefix(szPrefix, szURI, newNSScope, locallyDefinedNamespaces, attrList, context);
                   if(newPrefix != szPrefix)
                   {
-                    sourceNode = ((XQFactory*)context->getPathanFactory())->
+                    sourceNode = ((XQFactory*)context->getXQillaFactory())->
                       createAttributeNode(szURI, newPrefix, ((const ATQNameOrDerived*)name.get())->getName(), sourceNode->dmStringValue(context), context);
                   }
                 }
@@ -292,7 +292,7 @@ Sequence XQDOMConstructor::collapseTreeInternal(DynamicContext *context, int fla
                                                                sourceNode->dmStringValue(context),
                                                                context->getMemoryManager());
                   childList.pop_back();
-                  childList.push_back(XQFactory::ElementChild(((XQFactory*)context->getPathanFactory())->createTextNode(buff, context), /*clone*/false));
+                  childList.push_back(XQFactory::ElementChild(((XQFactory*)context->getXQillaFactory())->createTextNode(buff, context), /*clone*/false));
                 }
                 else {
                   ASTNode* pChild=childItem;
@@ -319,15 +319,15 @@ Sequence XQDOMConstructor::collapseTreeInternal(DynamicContext *context, int fla
                 const XMLCh* buff=XPath2Utils::concatStrings(childList.back()->dmStringValue(context),valueStr,context->getMemoryManager());
                         
                 childList.pop_back();
-                childList.push_back(((XQFactory*)context->getPathanFactory())->createTextNode(buff, context));
+                childList.push_back(((XQFactory*)context->getXQillaFactory())->createTextNode(buff, context));
               }
               else {
-                childList.push_back(((XQFactory*)context->getPathanFactory())->createTextNode(valueStr, context));
+                childList.push_back(((XQFactory*)context->getXQillaFactory())->createTextNode(valueStr, context));
               }
             }
           }
         }
-        result = ((XQFactory*)context->getPathanFactory())->createElementNode(nodeUri, nodePrefix, nodeName, attrList, childList, context);
+        result = ((XQFactory*)context->getXQillaFactory())->createElementNode(nodeUri, nodePrefix, nodeName, attrList, childList, context);
       }
 
       // ATTRIBUTE node
@@ -376,7 +376,7 @@ Sequence XQDOMConstructor::collapseTreeInternal(DynamicContext *context, int fla
         getStringValue(value, context);
         XMLString::replaceWS(value.getRawBuffer(), context->getMemoryManager());
 
-        result = ((XQFactory*)context->getPathanFactory())->createAttributeNode(nodeUri, nodePrefix, nodeName, value.getRawBuffer(), context);
+        result = ((XQFactory*)context->getXQillaFactory())->createAttributeNode(nodeUri, nodePrefix, nodeName, value.getRawBuffer(), context);
       }
 
       // PROCESSING INSTRUCTION node
@@ -426,7 +426,7 @@ Sequence XQDOMConstructor::collapseTreeInternal(DynamicContext *context, int fla
           ++ptr;
         }
 
-        result = ((XQFactory*)context->getPathanFactory())->createPINode(nodeName, value.getRawBuffer(), context);
+        result = ((XQFactory*)context->getXQillaFactory())->createPINode(nodeName, value.getRawBuffer(), context);
       }
 
       // COMMENT node
@@ -450,7 +450,7 @@ Sequence XQDOMConstructor::collapseTreeInternal(DynamicContext *context, int fla
         if(foundDash)
           DSLthrow(ASTException,X("DOM Constructor"),X("It is a dynamic error if the result of the content expression of a computed comment constructor contains two adjacent hyphens or ends with a hyphen. [err:XQDY0072]"));
 
-        result = ((XQFactory*)context->getPathanFactory())->createCommentNode(value.getRawBuffer(), context);
+        result = ((XQFactory*)context->getXQillaFactory())->createCommentNode(value.getRawBuffer(), context);
       }
 
       // TEXT node
@@ -458,7 +458,7 @@ Sequence XQDOMConstructor::collapseTreeInternal(DynamicContext *context, int fla
       {
         XMLBuffer value;
         if(getStringValue(value, context))
-          result = ((XQFactory*)context->getPathanFactory())->createTextNode(value.getRawBuffer(), context);
+          result = ((XQFactory*)context->getXQillaFactory())->createTextNode(value.getRawBuffer(), context);
       }
       else
       {
@@ -623,7 +623,7 @@ const XMLCh *definePrefix(const XMLCh *szPrefix, const XMLCh *szURI, const XQSco
   if(associatedURI==NULL) // prefix is not defined
   {
     locallyDefinedNamespaces.addNamespaceBinding(szPrefix,szURI);
-    attrList.push_back(((XQFactory*)context->getPathanFactory())->
+    attrList.push_back(((XQFactory*)context->getXQillaFactory())->
       createAttributeNode(XMLUni::fgXMLNSURIName, XMLUni::fgXMLNSString, szPrefix, szURI, context));
   }
   else if(!XPath2Utils::equals(szURI, associatedURI))  // prefix is defined, but it is associated to another URI
@@ -631,7 +631,7 @@ const XMLCh *definePrefix(const XMLCh *szPrefix, const XMLCh *szURI, const XQSco
     if(locallyDefinedNamespaces.lookupNamespaceURI(szPrefix)==NULL)    // prefix is inherited, override it
     {
       locallyDefinedNamespaces.addNamespaceBinding(szPrefix,szURI);
-      attrList.push_back(((XQFactory*)context->getPathanFactory())->
+      attrList.push_back(((XQFactory*)context->getXQillaFactory())->
         createAttributeNode(XMLUni::fgXMLNSURIName, XMLUni::fgXMLNSString, szPrefix, szURI, context));
     }
     else // prefix is defined here, rename it
@@ -646,7 +646,7 @@ const XMLCh *definePrefix(const XMLCh *szPrefix, const XMLCh *szURI, const XQSco
       }
 
       locallyDefinedNamespaces.addNamespaceBinding(szPrefix,szURI);
-      attrList.push_back(((XQFactory*)context->getPathanFactory())->
+      attrList.push_back(((XQFactory*)context->getXQillaFactory())->
         createAttributeNode(XMLUni::fgXMLNSURIName, XMLUni::fgXMLNSString, szPrefix, szURI, context));
     }
   }

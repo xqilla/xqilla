@@ -17,44 +17,6 @@
  *  This software is provided "as is" without express or implied warranty.
  */
 
-/*
- *      $Id$
- *
- *      This file contains the basic series expansion functions for 
- *	the SIN / COS functions.
- *
- *      $Log$
- *      Revision 1.1  2005/11/01 18:04:13  jpcs
- *      Initial check in.
- *
- *      Revision 1.1  2004/07/21 09:23:01  jpcs
- *      Initial check in of the Parthenon backup of Pathan.
- *
- *      Revision 1.2  2003/05/01 12:46:55  alby
- *      - Updated MAPM to version 4.6.1
- *      - The MAPM class is now thread-safe
- *
- *      Revision 1.6  2002/11/03 21:58:27  mike
- *      Updated function parameters to use the modern style
- *
- *      Revision 1.5  2001/07/10 22:14:43  mike
- *      optimize raw_sin & cos by using fewer digits
- *      as subsequent terms get smaller
- *
- *      Revision 1.4  2000/03/30 21:53:48  mike
- *      change compare to terminate series expansion using ints instead
- *      of MAPM numbers
- *
- *      Revision 1.3  1999/06/20 16:23:10  mike
- *      changed local static variables to MAPM stack variables
- *
- *      Revision 1.2  1999/05/12 21:06:36  mike
- *      changed global var names
- *
- *      Revision 1.1  1999/05/10 20:56:31  mike
- *      Initial revision
- */
-
 #include "m_apm_lc.h"
 
 /****************************************************************************/

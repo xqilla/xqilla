@@ -13,8 +13,8 @@
  * $Id$
  */
 
-#ifndef _PATHANNODEIMPL_HPP
-#define _PATHANNODEIMPL_HPP
+#ifndef _XQILLANODEIMPL_HPP
+#define _XQILLANODEIMPL_HPP
 
 #include <xqilla/items/Node.hpp>
 #include <xqilla/utils/XMLChCompare.hpp>
@@ -32,7 +32,7 @@ class DOMWriter;
 class DOMNode;
 XERCES_CPP_NAMESPACE_END
 
-class PATHAN_EXPORT NodeImpl : public Node
+class XQILLA_API NodeImpl : public Node
 {
 public:
   typedef RefCountPointer<const NodeImpl> Ptr;

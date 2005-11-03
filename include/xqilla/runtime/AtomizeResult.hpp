@@ -19,7 +19,7 @@
 #include <xqilla/runtime/Result.hpp>
 #include <xqilla/runtime/ResultImpl.hpp>
 
-class PATHAN_EXPORT AtomizeResult : public ResultImpl
+class XQILLA_API AtomizeResult : public ResultImpl
 {
 public:
   AtomizeResult(const Result &parent, DynamicContext *context);

@@ -20,11 +20,11 @@
 #ifndef _FUNCTIONFLOOR_HPP
 #define _FUNCTIONFLOOR_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/NumericFunction.hpp>
 
-class PATHAN_EXPORT FunctionFloor : public NumericFunction
+class XQILLA_API FunctionFloor : public NumericFunction
 {
 public:
   static const XMLCh name[];

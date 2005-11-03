@@ -16,14 +16,14 @@
 #ifndef _XQCASTAS_HPP
 #define _XQCASTAS_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/ASTNodeImpl.hpp>
 #include <xqilla/runtime/SingleResult.hpp>
 
 class SequenceType;
 
-class PATHAN_EXPORT XQCastAs : public ASTNodeImpl
+class XQILLA_API XQCastAs : public ASTNodeImpl
 {
 public:
 	XQCastAs(ASTNode* expr, SequenceType* exprType, XPath2MemoryManager* memMgr);

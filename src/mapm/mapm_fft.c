@@ -12,59 +12,6 @@
  *  This software is provided "as is" without express or implied warranty.
  */
 
-/*
- *      $Id$
- *
- *      This file contains the FFT based FAST MULTIPLICATION function 
- *      as well as its support functions.
- *
- *      $Log$
- *      Revision 1.1  2005/11/01 18:04:13  jpcs
- *      Initial check in.
- *
- *      Revision 1.1  2004/07/21 09:23:01  jpcs
- *      Initial check in of the Parthenon backup of Pathan.
- *
- *      Revision 1.2  2003/05/01 12:46:55  alby
- *      - Updated MAPM to version 4.6.1
- *      - The MAPM class is now thread-safe
- *
- *      Revision 1.11  2003/03/31 22:10:09  mike
- *      call generic error handling function
- *
- *      Revision 1.10  2002/11/03 22:11:48  mike
- *      Updated function parameters to use the modern style
- *
- *      Revision 1.9  2001/07/16 19:16:15  mike
- *      add function M_free_all_fft
- *
- *      Revision 1.8  2000/08/01 22:23:24  mike
- *      use sizeof(int) from function call to stop
- *      some compilers from complaining.
- *
- *      Revision 1.7  2000/07/30 22:39:21  mike
- *      lower 16 bit malloc size
- *
- *      Revision 1.6  2000/07/10 22:54:26  mike
- *      malloc the local data arrays
- *
- *      Revision 1.5  2000/07/10 00:09:02  mike
- *      use local static arrays for smaller numbers
- *
- *      Revision 1.4  2000/07/08 18:24:23  mike
- *      minor optimization tweak
- *
- *      Revision 1.3  2000/07/08 17:52:49  mike
- *      do the FFT in base 10000 instead of MAPM numbers base 100
- *      this runs faster and uses 1/2 the RAM
- *
- *      Revision 1.2  2000/07/06 21:04:34  mike
- *      added more comments
- *
- *      Revision 1.1  2000/07/06 20:42:05  mike
- *      Initial revision
- */
-
 #include "m_apm_lc.h"
 #include <math.h>
 

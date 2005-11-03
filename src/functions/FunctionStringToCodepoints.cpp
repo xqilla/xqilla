@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionStringToCodepoints.hpp>
 #include <xqilla/items/ATStringOrDerived.hpp>
 #include <xqilla/context/DynamicContext.hpp>

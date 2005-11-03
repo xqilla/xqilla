@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xqilla/framework/ProxyMemoryManager.hpp>
 
 ProxyMemoryManager::ProxyMemoryManager(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *parent)

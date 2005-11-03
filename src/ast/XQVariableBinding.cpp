@@ -17,7 +17,7 @@
 // XQVariableBinding.cpp: implementation of the XQVariableBinding class.
 //////////////////////////////////////////////////////////////////////
 
-#include <xqilla/framework/XQEngine.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/ast/XQVariableBinding.hpp>
 #include <xqilla/operators/And.hpp>
 #include <xqilla/ast/StaticResolutionContext.hpp>
@@ -88,7 +88,7 @@ void XQVariableBinding::addWhereCondition(ASTNode *condition)
   }
   else {
     // Change the where expression to an And, and add the two conditions to it as arguments
-    VectorOfASTNodes args(2, (ASTNode*)0 ,PathanAllocator<ASTNode*>(_memMgr));
+    VectorOfASTNodes args(2, (ASTNode*)0 ,XQillaAllocator<ASTNode*>(_memMgr));
     args[0] = _where;
     args[1] = condition;
     _where = new (_memMgr) And(args, _memMgr);

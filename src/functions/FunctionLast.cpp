@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionLast.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/ATDecimalOrDerived.hpp>
@@ -49,7 +49,7 @@ Sequence FunctionLast::collapseTreeInternal(DynamicContext* context, int flags) 
 
   if(context->getContextItem()==NULLRCP)
     DSLthrow(FunctionException,X("FunctionPosition::collapseTreeInternal"), X("Undefined context item in fn:last [err:FONC0001]"));
-  return Sequence(context->getPathanFactory()->createInteger((long)context->getContextSize(), context), memMgr);
+  return Sequence(context->getXQillaFactory()->createInteger((long)context->getContextSize(), context), memMgr);
 }
 
 

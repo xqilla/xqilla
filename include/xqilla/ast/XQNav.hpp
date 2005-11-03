@@ -18,7 +18,7 @@
 
 #include <set>
 #include <vector>
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/ASTNodeImpl.hpp>
 #include <xqilla/runtime/Sequence.hpp>
@@ -29,10 +29,10 @@
 #include <xercesc/dom/DOMNode.hpp>
 
 ///this class calculates a node list based on a context
-class PATHAN_EXPORT XQNav : public ASTNodeImpl
+class XQILLA_API XQNav : public ASTNodeImpl
 {
 public:
-  class PATHAN_EXPORT StepInfo {
+  class XQILLA_API StepInfo {
   public:
     StepInfo() : usesContextSize(false), step(0) {}
     StepInfo(ASTNode *s) : usesContextSize(false), step(s) {}
@@ -40,7 +40,7 @@ public:
     bool usesContextSize;
     ASTNode *step;
   };
-  typedef std::vector<StepInfo,PathanAllocator<StepInfo> > Steps;
+  typedef std::vector<StepInfo,XQillaAllocator<StepInfo> > Steps;
 
   XQNav(XPath2MemoryManager* memMgr);
   virtual ~XQNav();
@@ -74,7 +74,7 @@ public:
 protected:
   static unsigned int combineProperties(unsigned int prev_props, unsigned int step_props);
 
-  class PATHAN_EXPORT GotoRootResult : public SingleResult
+  class XQILLA_API GotoRootResult : public SingleResult
   {
   public:
     GotoRootResult(DynamicContext *context);
@@ -82,7 +82,7 @@ protected:
     std::string asString(DynamicContext *context, int indent) const;
   };
 
-  class PATHAN_EXPORT StepResult : public ResultImpl
+  class XQILLA_API StepResult : public ResultImpl
   {
   public:
     StepResult(const Result &parent, ASTNode *step, unsigned int contextSize, int flags, DynamicContext *context);
@@ -102,7 +102,7 @@ protected:
     Item::Ptr contextItem_;
   };
 
-  class PATHAN_EXPORT IntermediateStepCheckResult : public ResultImpl
+  class XQILLA_API IntermediateStepCheckResult : public ResultImpl
   {
   public:
     IntermediateStepCheckResult(const Result &parent, DynamicContext *context);
@@ -115,7 +115,7 @@ protected:
     Result parent_;
   };
 
-  class PATHAN_EXPORT LastStepCheckResult : public ResultImpl
+  class XQILLA_API LastStepCheckResult : public ResultImpl
   {
   public:
     LastStepCheckResult(const Result &parent, DynamicContext *context);
@@ -129,7 +129,7 @@ protected:
     int _nTypeOfItemsInLastStep;
   };
 
-  class PATHAN_EXPORT UniqueNodesResult : public ResultImpl
+  class XQILLA_API UniqueNodesResult : public ResultImpl
   {
   public:
     UniqueNodesResult(const Result &parent, DynamicContext *context);

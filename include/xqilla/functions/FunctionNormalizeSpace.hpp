@@ -22,12 +22,12 @@
 #ifndef _FUNCTIONNORMALIZESPACE_HPP
 #define _FUNCTIONNORMALIZESPACE_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/XQFunction.hpp>
 
 /** normalize-space function. */
-class PATHAN_EXPORT FunctionNormalizeSpace : public XQFunction
+class XQILLA_API FunctionNormalizeSpace : public XQFunction
 {
 public:
   static const XMLCh name[];

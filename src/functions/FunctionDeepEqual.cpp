@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionDeepEqual.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/runtime/Sequence.hpp>
@@ -31,7 +31,7 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/operators/Equals.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xqilla/context/PathanFactory.hpp>
+#include <xqilla/context/XQillaFactory.hpp>
 
 #include <xercesc/dom/DOM.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
@@ -215,7 +215,7 @@ Sequence FunctionDeepEqual::collapseTreeInternal(DynamicContext* context, int fl
       Sequence collArg = getParamNumber(3,context);
       const XMLCh* collName = collArg.first()->asString(context);
       try {
-        context->getPathanFactory()->createAnyURI(collName, context);
+        context->getXQillaFactory()->createAnyURI(collName, context);
       } catch(InvalidLexicalSpaceException &e) {
         DSLthrow(FunctionException, X("FunctionDeepEqual::collapseTreeInternal"), X("Invalid collationURI"));  
       }
@@ -230,7 +230,7 @@ Sequence FunctionDeepEqual::collapseTreeInternal(DynamicContext* context, int fl
 
     bool bEqual=deep_equal(arg1, arg2, collation, context);
 
-	return Sequence(context->getPathanFactory()->createBoolean(bEqual, context),
+	return Sequence(context->getXQillaFactory()->createBoolean(bEqual, context),
                   context->getMemoryManager());
 }
 

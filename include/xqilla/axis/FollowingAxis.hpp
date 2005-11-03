@@ -18,7 +18,7 @@
 
 #include <xqilla/axis/Axis.hpp>
 
-class PATHAN_EXPORT FollowingAxis : public Axis
+class XQILLA_API FollowingAxis : public Axis
 {
 public:
   FollowingAxis(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *contextNode, const Node *nodeObj,

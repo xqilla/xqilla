@@ -17,7 +17,7 @@
 // XQGlobalVariable.cpp: implementation of the XQGlobalVariable class.
 //////////////////////////////////////////////////////////////////////
 
-#include <xqilla/framework/XQEngine.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/ast/XQGlobalVariable.hpp>
 #include <xqilla/runtime/Sequence.hpp>
 #include <xqilla/schema/SequenceType.hpp>

@@ -69,7 +69,7 @@
 // Never included before - need to define base class.
 #define __XPATH_FLEX_LEXER_H
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 extern "C++" {
 
@@ -84,7 +84,7 @@ typedef int yy_state_type;
 // yyFlexLexer, as discussed in the flex man page.
 #define yyFlexLexerOnce
 
-class PATHAN_EXPORT yyFlexLexer : public FlexLexer {
+class XQILLA_API yyFlexLexer : public FlexLexer {
 public:
 	// arg_yyin and arg_yyout default to the cin and cout, but we
 	// only make that assignment when initializing in yylex().

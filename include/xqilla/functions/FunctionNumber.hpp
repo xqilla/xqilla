@@ -22,14 +22,14 @@
 #ifndef _FUNCTIONNUMBER_HPP
 #define _FUNCTIONNUMBER_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/XQFunction.hpp>
 
 class AnyAtomicType;
 
 /** Number operator function, and exists functions. */
-class PATHAN_EXPORT FunctionNumber : public XQFunction
+class XQILLA_API FunctionNumber : public XQFunction
 {
 public:
   static const XMLCh name[];

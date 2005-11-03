@@ -20,14 +20,14 @@
 #ifndef _FUNCTIONEXCEPTION_HPP
 #define _FUNCTIONEXCEPTION_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/exceptions/DSLException.hpp>
 #include <xqilla/utils/XStr.hpp>
 
 /** exception class for tests. Inherit from this if you need to throw an exception
     in the test suite.*/
-class PATHAN_EXPORT FunctionException : public DSLException
+class XQILLA_API FunctionException : public DSLException
 {
 public:
 

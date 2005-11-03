@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include "ATAnyURIOrDerivedImpl.hpp"
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/exceptions/IllegalArgumentException.hpp>
@@ -27,7 +27,7 @@
 #include <xercesc/framework/XMLBuffer.hpp>
 #include <xqilla/framework/XPath2MemoryManager.hpp>
 #include <xqilla/items/ATStringOrDerived.hpp>
-#include <xqilla/context/PathanFactory.hpp>
+#include <xqilla/context/XQillaFactory.hpp>
 
 ATAnyURIOrDerivedImpl::
 ATAnyURIOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* value, const StaticContext* context): 
@@ -39,7 +39,7 @@ ATAnyURIOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* 
 
 void *ATAnyURIOrDerivedImpl::getInterface(const XMLCh *name) const
 {
-  if(name == Item::gPathan) {
+  if(name == Item::gXQilla) {
     return (void*)this;
   }
   return 0;
@@ -76,7 +76,7 @@ AnyAtomicType::Ptr ATAnyURIOrDerivedImpl::castAsInternal(AtomicObjectType target
     case UNTYPED_ATOMIC:
       //anySimpleType and untypedAtomic follow the same casting rules as string.
     case STRING: {
-      return context->getPathanFactory()->createDerivedFromAtomicType(targetURI, targetType, _uri, context);
+      return context->getXQillaFactory()->createDerivedFromAtomicType(targetURI, targetType, _uri, context);
     }
     default: return AnyAtomicType::castAsInternal(targetIndex, targetURI, targetType, context);
   }

@@ -19,11 +19,11 @@
 #include <xercesc/util/XercesDefs.hpp>
 #include <xqilla/items/AnyAtomicType.hpp>
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 class XPath2MemoryManager;
 
-class PATHAN_EXPORT ATBooleanOrDerived : public AnyAtomicType
+class XQILLA_API ATBooleanOrDerived : public AnyAtomicType
 {
 public:
   typedef RefCountPointer<const ATBooleanOrDerived> Ptr;

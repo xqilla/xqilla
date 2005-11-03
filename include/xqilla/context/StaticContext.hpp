@@ -16,13 +16,13 @@
 #ifndef _STATICCONTEXT_HPP
 #define _STATICCONTEXT_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <time.h>
 #include <xqilla/schema/DocumentCache.hpp>
 #include <xercesc/util/PlatformUtils.hpp>
 
 // Copied from ASTNode.hpp
-typedef std::vector<ASTNode*,PathanAllocator<ASTNode*> > VectorOfASTNodes;
+typedef std::vector<ASTNode*,XQillaAllocator<ASTNode*> > VectorOfASTNodes;
 
 class DynamicContext;
 class XPath2MemoryManager;
@@ -30,7 +30,7 @@ class FuncFactory;
 class DatatypeFactory;
 class Collation;
 class VariableTypeStore;
-class PathanFactory;
+class XQillaFactory;
 
 XERCES_CPP_NAMESPACE_BEGIN
 class DOMDocument;
@@ -39,7 +39,7 @@ class XMLEntityResolver;
 XERCES_CPP_NAMESPACE_END
 
 /// The parse time static context interface
-class PATHAN_EXPORT StaticContext
+class XQILLA_API StaticContext
 {
 public:
   typedef enum {
@@ -64,10 +64,10 @@ public:
   virtual DynamicContext *createDynamicContext(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr
                                                = XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager) const = 0;
   
-  /** Returns the PathanFactory for this context, which is used to create Pathan items and other objects. */
-  virtual PathanFactory *getPathanFactory() const = 0;
-  /** Sets the PathanFactory for this context */
-  virtual void setPathanFactory(PathanFactory *factory) = 0;
+  /** Returns the XQillaFactory for this context, which is used to create XQilla items and other objects. */
+  virtual XQillaFactory *getXQillaFactory() const = 0;
+  /** Sets the XQillaFactory for this context */
+  virtual void setXQillaFactory(XQillaFactory *factory) = 0;
 
   /** Get the current XPath 1.0 compatibility mode */
   virtual bool getXPath1CompatibilityMode() const = 0;
@@ -110,7 +110,7 @@ public:
   virtual bool isTypeOrDerivedFromType(const XMLCh* const uri, const XMLCh* const typeName, const XMLCh* const uriToCheck, const XMLCh* const typeNameToCheck) const = 0;
   /**
    * Sets the XMLEntityResolver that is used by Xerces when it is used
-   * to parse documents. This affects the behaviour of Pathan whenever
+   * to parse documents. This affects the behaviour of XQilla whenever
    * it retrieves a DTD or XML Schema grammar.
    */
   virtual void setXMLEntityResolver(XERCES_CPP_NAMESPACE_QUALIFIER XMLEntityResolver* const handler) = 0;
@@ -176,7 +176,7 @@ public:
   virtual bool isDebuggingEnabled() const = 0;
 
   /////////////////////////////////////////
-  //  Pathan context specific accessors  //
+  //  XQilla context specific accessors  //
   /////////////////////////////////////////
 
   /** Used whenever we need to create a new document (including parsing in documents) */

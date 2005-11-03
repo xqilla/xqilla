@@ -16,7 +16,7 @@
 #ifndef _URIRESOLVER_HPP
 #define _URIRESOLVER_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xercesc/util/XercesDefs.hpp>
 
 class DynamicContext;
@@ -30,7 +30,7 @@ XERCES_CPP_NAMESPACE_END
 /** 
  * This is an abstract class used to resolve URIs in different ways
 **/
-class PATHAN_EXPORT URIResolver {
+class XQILLA_API URIResolver {
   public:
     /* virtual destructor, does nothing */
     virtual ~URIResolver() {};      

@@ -16,7 +16,7 @@
 #ifndef _FUNCTIONGETMINUTESFROMTIME_HPP
 #define _FUNCTIONGETMINUTESFROMTIME_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/XQFunction.hpp>
 
@@ -25,7 +25,7 @@
  *
  * xf:minutes-from-time(time? $srcval) => integer?
  */
-class PATHAN_EXPORT FunctionMinutesFromTime : public XQFunction
+class XQILLA_API FunctionMinutesFromTime : public XQFunction
 {
 public:
   static const XMLCh name[];

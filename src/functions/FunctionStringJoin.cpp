@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionStringJoin.hpp>
 #include <xqilla/items/ATStringOrDerived.hpp>
 #include <xqilla/context/DynamicContext.hpp>
@@ -59,6 +59,6 @@ Sequence FunctionStringJoin::collapseTreeInternal(DynamicContext* context, int f
     }
   }
   
-  const ATStringOrDerived::Ptr strResult = context->getPathanFactory()->createString(result.getRawBuffer(), context);
+  const ATStringOrDerived::Ptr strResult = context->getXQillaFactory()->createString(result.getRawBuffer(), context);
   return Sequence(strResult, memMgr);
 }

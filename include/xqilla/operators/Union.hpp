@@ -20,14 +20,14 @@
 #ifndef _UNION_HPP
 #define _UNION_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/XQNav.hpp>
 #include <xqilla/ast/XQOperator.hpp>
 #include <xqilla/runtime/ResultImpl.hpp>
 
 /** Union operator function*/
-class PATHAN_EXPORT Union : public XQOperator
+class XQILLA_API Union : public XQOperator
 {
 public:
   static const XMLCh name[];

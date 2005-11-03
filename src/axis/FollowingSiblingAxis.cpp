@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xqilla/axis/FollowingSiblingAxis.hpp>
 #include <xercesc/dom/DOMNode.hpp>
 #include <xqilla/items/Node.hpp>

@@ -24,7 +24,7 @@
 #ifndef _FUNCTIONESCAPEURI_HPP
 #define _FUNCTIONESCAPEURI_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xercesc/util/XMLUTF8Transcoder.hpp>
 #include <xercesc/util/TransService.hpp>
 #include <xercesc/util/XMLUni.hpp>
@@ -32,7 +32,7 @@
 #include <xqilla/ast/ConstantFoldingFunction.hpp>
 
 /** Substring function. */
-class PATHAN_EXPORT FunctionEscapeURI : public ConstantFoldingFunction
+class XQILLA_API FunctionEscapeURI : public ConstantFoldingFunction
 {
 public:
   static const XMLCh name[];

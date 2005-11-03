@@ -19,7 +19,7 @@
 #include <xqilla/framework/XPath2MemoryManager.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xqilla/context/PathanFactory.hpp>
+#include <xqilla/context/XQillaFactory.hpp>
 
 #include <xqilla/items/ATDecimalOrDerived.hpp>
 #include <xqilla/items/ATDoubleOrDerived.hpp>
@@ -41,9 +41,9 @@ void TypePromotionTester::run(const DynamicContext* context) {
   // double op decimal => double
   // double op float => double
 
-  const ATDecimalOrDerived::Ptr decimal50 = context->getPathanFactory()->createDecimal(50, context);
-  const ATDoubleOrDerived::Ptr double50   = context->getPathanFactory()->createDouble(50, context);
-  const ATFloatOrDerived::Ptr float50     = context->getPathanFactory()->createFloat(50, context);
+  const ATDecimalOrDerived::Ptr decimal50 = context->getXQillaFactory()->createDecimal(50, context);
+  const ATDoubleOrDerived::Ptr double50   = context->getXQillaFactory()->createDouble(50, context);
+  const ATFloatOrDerived::Ptr float50     = context->getXQillaFactory()->createFloat(50, context);
 
   // add ////////////////////////////////////////////////////////////////////
   // decimal + decimal

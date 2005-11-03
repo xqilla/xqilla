@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionUpperCase.hpp>
 #include <xqilla/items/ATStringOrDerived.hpp>
 #include <xqilla/context/DynamicContext.hpp>
@@ -45,10 +45,10 @@ Sequence FunctionUpperCase::collapseTreeInternal(DynamicContext* context, int fl
   XPath2MemoryManager* memMgr = context->getMemoryManager();
   Sequence arg=getParamNumber(1,context);
   if(arg.isEmpty()) {
-    return Sequence(context->getPathanFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context), memMgr);
+    return Sequence(context->getXQillaFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context), memMgr);
   }
 	const XMLCh *src = arg.first()->asString(context);
 	const XMLCh* str = XPath2Utils::toUpper(src, memMgr);
 
-  return Sequence(context->getPathanFactory()->createString(str, context), memMgr);
+  return Sequence(context->getXQillaFactory()->createString(str, context), memMgr);
 }

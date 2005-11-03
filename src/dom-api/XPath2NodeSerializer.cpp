@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xqilla/dom-api/XPath2NodeSerializer.hpp>
 
 #include <xercesc/dom/DOMXPathNamespace.hpp>

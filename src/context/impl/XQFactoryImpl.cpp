@@ -122,7 +122,7 @@ Node::Ptr XQFactoryImpl::createElementNode(const XMLCh *uri, const XMLCh *prefix
     element->setPrefix(prefix);
 
   for(std::vector<Node::Ptr>::const_iterator a = attrList.begin(); a != attrList.end(); ++a) {
-    const NodeImpl *nodeImpl = (const NodeImpl *)(*a)->getInterface(Item::gPathan);
+    const NodeImpl *nodeImpl = (const NodeImpl *)(*a)->getInterface(Item::gXQilla);
     assert(nodeImpl != 0);
 
     const DOMNode* attr=nodeImpl->getDOMNode();
@@ -139,7 +139,7 @@ Node::Ptr XQFactoryImpl::createElementNode(const XMLCh *uri, const XMLCh *prefix
   }
 
   for(std::vector<XQFactory::ElementChild>::const_iterator i = childList.begin(); i != childList.end(); ++i) {
-    const NodeImpl *nodeImpl = (const NodeImpl *)(*i)->getInterface(Item::gPathan);
+    const NodeImpl *nodeImpl = (const NodeImpl *)(*i)->getInterface(Item::gXQilla);
     assert(nodeImpl != 0);
 
     DOMNode *newChild = NULL;
@@ -177,7 +177,7 @@ Node::Ptr XQFactoryImpl::createDocumentNode(const std::vector<Node::Ptr> &childL
   DOMDocument *document = context->createNewDocument();
 
   for(std::vector<Node::Ptr>::const_iterator i = childList.begin(); i != childList.end(); ++i) {
-    const NodeImpl *nodeImpl = (const NodeImpl *)(*i)->getInterface(Item::gPathan);
+    const NodeImpl *nodeImpl = (const NodeImpl *)(*i)->getInterface(Item::gXQilla);
     assert(nodeImpl != 0);
 
     DOMNode *newChild = document->importNode(const_cast<DOMNode*>(nodeImpl->getDOMNode()),true);

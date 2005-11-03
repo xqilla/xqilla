@@ -87,7 +87,7 @@
 
 #include <xqilla/utils/XPath2Utils.hpp>
 #ifdef HAVE_CONFIG_H
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #endif
 
 #define YYPARSE_PARAM qp
@@ -163,7 +163,7 @@ static inline XQNav* getNavigation(ASTNode *possibleNav, XPath2MemoryManager * e
 
 static inline VectorOfASTNodes packageArgs(ASTNode *arg1Impl, ASTNode *arg2Impl, XPath2MemoryManager* memMgr)
 {
-	VectorOfASTNodes args=VectorOfASTNodes(2,(ASTNode*)NULL,PathanAllocator<ASTNode*>(memMgr));
+	VectorOfASTNodes args=VectorOfASTNodes(2,(ASTNode*)NULL,XQillaAllocator<ASTNode*>(memMgr));
 	args[0]=arg1Impl;
 	args[1]=arg2Impl;
 
@@ -674,7 +674,7 @@ SchemaImport:
 ResourceLocations:
 	_AT_KEYWORD_ URILiteral
 	{
-		$$ = new (MEMMGR) VectorOfStrings(PathanAllocator<const XMLCh*>(MEMMGR));
+		$$ = new (MEMMGR) VectorOfStrings(XQillaAllocator<const XMLCh*>(MEMMGR));
 		$$->push_back($2);
 	}
 	| ResourceLocations _COMMA_ URILiteral
@@ -807,7 +807,7 @@ ParamList:
 		}
       | Param
 		{
-			XQUserFunction::VectorOfFunctionParameters* paramList = new (MEMMGR) XQUserFunction::VectorOfFunctionParameters(PathanAllocator<XQUserFunction::XQFunctionParameter*>(MEMMGR));
+			XQUserFunction::VectorOfFunctionParameters* paramList = new (MEMMGR) XQUserFunction::VectorOfFunctionParameters(XQillaAllocator<XQUserFunction::XQFunctionParameter*>(MEMMGR));
 			paramList->push_back($1);
 			$$ = paramList;
 		}
@@ -927,7 +927,7 @@ ForBindingList:
 		}
 	  | ForBinding
 		{
-			$$ = new (MEMMGR) VectorOfVariableBinding(PathanAllocator<XQVariableBinding*>(MEMMGR));
+			$$ = new (MEMMGR) VectorOfVariableBinding(XQillaAllocator<XQVariableBinding*>(MEMMGR));
 			$$->push_back($1);
 		}
 	  ;
@@ -984,7 +984,7 @@ LetBindingList:
 		}
     | LetBinding
 		{
-			$$ = new (MEMMGR) VectorOfVariableBinding(PathanAllocator<XQVariableBinding*>(MEMMGR));
+			$$ = new (MEMMGR) VectorOfVariableBinding(XQillaAllocator<XQVariableBinding*>(MEMMGR));
 			$$->push_back($1);
 		}
     ;
@@ -1033,7 +1033,7 @@ OrderSpecList:
 		}
 	| OrderSpec
 		{
-			$$ = new (MEMMGR) XQSort::VectorOfSortSpec(PathanAllocator<XQSort::SortSpec*>(MEMMGR));
+			$$ = new (MEMMGR) XQSort::VectorOfSortSpec(XQillaAllocator<XQSort::SortSpec*>(MEMMGR));
 			$$->push_back($1);
 		}
 	;
@@ -1097,7 +1097,7 @@ QuantifyBindingList:
 		}
 	  | QuantifyBinding
 		{
-			$$ = new (MEMMGR) VectorOfVariableBinding(PathanAllocator<XQVariableBinding*>(MEMMGR));
+			$$ = new (MEMMGR) VectorOfVariableBinding(XQillaAllocator<XQVariableBinding*>(MEMMGR));
 			$$->push_back($1);
 		}
 	  ;
@@ -1139,7 +1139,7 @@ CaseClauseList:
 		}
 	  | CaseClause
 		{
-			$$=new (MEMMGR) XQTypeswitch::VectorOfClause(PathanAllocator<XQTypeswitch::Clause*>(MEMMGR));
+			$$=new (MEMMGR) XQTypeswitch::VectorOfClause(XQillaAllocator<XQTypeswitch::Clause*>(MEMMGR));
 			$$->push_back($1);
 		}
 	  ;
@@ -1381,7 +1381,7 @@ CastExpr:
 UnaryExpr:
       _MINUS_ UnaryExpr
 		{
-			VectorOfASTNodes args(PathanAllocator<ASTNode*>(MEMMGR));
+			VectorOfASTNodes args(XQillaAllocator<ASTNode*>(MEMMGR));
 			args.push_back($2);
 			$$ = new (MEMMGR) UnaryMinus(args, MEMMGR);
 		}
@@ -1723,7 +1723,7 @@ FilterExpr:
 PredicateList:
 	  /* empty */
 		{
-	        $$ = new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
+	        $$ = new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 		}
 	| PredicateList _LBRACK_ Expr _RBRACK_
 		{
@@ -1819,7 +1819,7 @@ UnorderedExpr:
 FunctionCall:
 	  _FUNCTION_CALL_ _RPAR_
 		{
-			VectorOfASTNodes args(PathanAllocator<ASTNode*>(MEMMGR));
+			VectorOfASTNodes args(XQillaAllocator<ASTNode*>(MEMMGR));
 			$$ = FNWRAP(@1, $1, new (MEMMGR) XQFunctionCall(new (MEMMGR) QualifiedName($1, MEMMGR), args, MEMMGR));
 		}
 	| _FUNCTION_CALL_ FunctionCallArgumentList _RPAR_
@@ -1836,7 +1836,7 @@ FunctionCallArgumentList:
 		}
 	| ExprSingle
 		{
-			$$ = new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
+			$$ = new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 			$$->push_back($1);
 		}	
 	;
@@ -1860,7 +1860,7 @@ DirectConstructor:
 DirElemConstructor:
       _START_TAG_OPEN_ _TAG_NAME_ DirAttributeList _EMPTY_TAG_CLOSE_
 		{ 
-			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
+			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 			$$ = WRAP(@1, new (MEMMGR) XQDOMConstructor(Node::element_string,
 								new (MEMMGR) XQLiteral(
                     new (MEMMGR) AnyAtomicTypeConstructor(
@@ -1900,7 +1900,7 @@ DirElemConstructor:
 DirAttributeList: 
 		/* empty */
 		{
-			$$ = new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
+			$$ = new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 		}
 	  | DirAttributeList _ATTRIBUTE_NAME_ _VALUE_INDICATOR_ DirAttributeValue
 		{
@@ -1943,7 +1943,7 @@ DirAttributeValue:
 QuotAttrValueContent:
 		/* empty */
 		{ 
-			$$ = new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
+			$$ = new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 		}
       | QuotAttrValueContent EnclosedExpr
 		{
@@ -1967,7 +1967,7 @@ QuotAttrValueContent:
 AposAttrValueContent:
 		/* empty */
 		{ 
-			$$ = new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
+			$$ = new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 		}
       | AposAttrValueContent EnclosedExpr
 		{
@@ -1993,7 +1993,7 @@ AposAttrValueContent:
 DirElementContent:
 	  /* empty */
 		{
-			$$ = new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR)); 
+			$$ = new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR)); 
 		}
 	  |	DirElementContent DirectConstructor
 		{
@@ -2062,7 +2062,7 @@ CommonContent:
 DirCommentConstructor:
 	_XML_COMMENT_
 		{
-			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
+			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 			content->push_back(new (MEMMGR) XQLiteral(
                     new (MEMMGR) AnyAtomicTypeConstructor(
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
@@ -2078,8 +2078,8 @@ DirCommentConstructor:
 DirPIConstructor:
 	_PROCESSING_INSTRUCTION_START_ _PI_TARGET_ _PROCESSING_INSTRUCTION_CONTENT_
 		{
-			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
-			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
+			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
+			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 			content->push_back(new (MEMMGR) XQLiteral(
                     new (MEMMGR) AnyAtomicTypeConstructor(
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
@@ -2125,8 +2125,8 @@ ComputedConstructor:
 CompDocConstructor:
 	  _DOCUMENT_CONSTR_ _LBRACE_ Expr _RBRACE_
 		{
-			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
-			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
+			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
+			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 			content->push_back(WRAP(@3, $3));
 			$$ = WRAP(@1, new (MEMMGR) XQDOMConstructor(Node::document_string,
 								  new (MEMMGR) XQLiteral(
@@ -2143,8 +2143,8 @@ CompDocConstructor:
 CompElemConstructor:
 	  _NAMED_ELEMENT_CONSTR_ _LBRACE_ ContentExpr _RBRACE_ 
 		{
-			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
-			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
+			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
+			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 			content->push_back(WRAP(@3, $3));
 			$$ = WRAP(@1, new (MEMMGR) XQDOMConstructor(Node::element_string,
 								  new (MEMMGR) XQLiteral(
@@ -2157,7 +2157,7 @@ CompElemConstructor:
 		}
 	| _NAMED_ELEMENT_CONSTR_ _LBRACE_ _RBRACE_ 
 		{
-			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
+			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 			$$ = WRAP(@1, new (MEMMGR) XQDOMConstructor(Node::element_string,
 								  new (MEMMGR) XQLiteral(
                     new (MEMMGR) AnyAtomicTypeConstructor(
@@ -2169,8 +2169,8 @@ CompElemConstructor:
 		}
 	| _ELEMENT_CONSTR_ _LBRACE_ Expr _RBRACE_ _LBRACE_ ContentExpr _RBRACE_ 
 		{
-			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
-			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
+			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
+			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 			content->push_back(WRAP(@6, $6));
 			$$ = WRAP(@1, new (MEMMGR) XQDOMConstructor(Node::element_string,
 								  WRAP(@3, $3), 
@@ -2178,7 +2178,7 @@ CompElemConstructor:
 		}
 	| _ELEMENT_CONSTR_ _LBRACE_ Expr _RBRACE_ _LBRACE_ _RBRACE_ 
 		{
-			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
+			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 			$$ = WRAP(@1, new (MEMMGR) XQDOMConstructor(Node::element_string,
 								  WRAP(@3, $3), 
 								  empty, empty, MEMMGR));
@@ -2194,7 +2194,7 @@ ContentExpr:
 CompAttrConstructor:
 	  _NAMED_ATTRIBUTE_CONSTR_ _LBRACE_ Expr _RBRACE_ 
 		{
-			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
+			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 			content->push_back(WRAP(@3, $3));
 			$$ = WRAP(@1, new (MEMMGR) XQDOMConstructor(Node::attribute_string,
 								      new (MEMMGR) XQLiteral(
@@ -2207,7 +2207,7 @@ CompAttrConstructor:
 		}
 	| _NAMED_ATTRIBUTE_CONSTR_ _LBRACE_ _RBRACE_ 
 		{
-			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
+			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 			$$ = WRAP(@1, new (MEMMGR) XQDOMConstructor(Node::attribute_string,
 								      new (MEMMGR) XQLiteral(
                     new (MEMMGR) AnyAtomicTypeConstructor(
@@ -2219,7 +2219,7 @@ CompAttrConstructor:
 		}
 	| _ATTRIBUTE_CONSTR_ _LBRACE_ Expr _RBRACE_ _LBRACE_ Expr _RBRACE_ 
 		{
-			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
+			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 			content->push_back(WRAP(@6, $6));
 			$$ = WRAP(@1, new (MEMMGR) XQDOMConstructor(Node::attribute_string,
 									  WRAP(@3, $3), 
@@ -2227,7 +2227,7 @@ CompAttrConstructor:
 		}
 	| _ATTRIBUTE_CONSTR_ _LBRACE_ Expr _RBRACE_ _LBRACE_ _RBRACE_ 
 		{
-			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
+			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 			$$ = WRAP(@1, new (MEMMGR) XQDOMConstructor(Node::attribute_string,
 									  WRAP(@3, $3), 
 									  0, empty, MEMMGR));
@@ -2238,7 +2238,7 @@ CompAttrConstructor:
 CompTextConstructor:
 	  _TEXT_CONSTR_ _LBRACE_ Expr _RBRACE_
 		{
-			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
+			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 			content->push_back(WRAP(@3, $3));
 			$$ = WRAP(@1, new (MEMMGR) XQDOMConstructor(Node::text_string, 0, 0, content, MEMMGR));
 		}
@@ -2248,7 +2248,7 @@ CompTextConstructor:
 CompCommentConstructor:
 	  _COMMENT_CONSTR_ _LBRACE_ Expr _RBRACE_
 		{
-			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
+			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 			content->push_back(WRAP(@3, $3));
 			$$ = WRAP(@1, new (MEMMGR) XQDOMConstructor(Node::comment_string, 0, 0, content, MEMMGR));
 		}
@@ -2258,7 +2258,7 @@ CompCommentConstructor:
 CompPIConstructor:
 	  _NAMED_PROCESSING_INSTRUCTION_CONSTR_ _LBRACE_ Expr _RBRACE_
 	  {
-			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
+			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 			content->push_back(WRAP(@3, $3));
 			$$ = WRAP(@1, new (MEMMGR) XQDOMConstructor(Node::processing_instruction_string,
 								      new (MEMMGR) XQLiteral(
@@ -2271,7 +2271,7 @@ CompPIConstructor:
 	  }
 	| _NAMED_PROCESSING_INSTRUCTION_CONSTR_ _LBRACE_ _RBRACE_
 	  {
-			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
+			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 			$$ = WRAP(@1, new (MEMMGR) XQDOMConstructor(Node::processing_instruction_string,
 								      new (MEMMGR) XQLiteral(
                     new (MEMMGR) AnyAtomicTypeConstructor(
@@ -2283,7 +2283,7 @@ CompPIConstructor:
 	  }
 	| _PROCESSING_INSTRUCTION_CONSTR_ _LBRACE_ Expr _RBRACE_ _LBRACE_ Expr _RBRACE_
 	  {
-			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
+			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 			content->push_back(WRAP(@6, $6));
 			$$ = WRAP(@1, new (MEMMGR) XQDOMConstructor(Node::processing_instruction_string,
 									  WRAP(@3, $3), 
@@ -2291,7 +2291,7 @@ CompPIConstructor:
 	  }
 	| _PROCESSING_INSTRUCTION_CONSTR_ _LBRACE_ Expr _RBRACE_ _LBRACE_ _RBRACE_
 	  {
-			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
+			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 			$$ = WRAP(@1, new (MEMMGR) XQDOMConstructor(Node::processing_instruction_string,
 									  WRAP(@3, $3), 
 									  0, empty, MEMMGR));

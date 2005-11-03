@@ -1925,7 +1925,7 @@ INSTALL_STRIP_PROGRAM="\${SHELL} \$(install_sh) -c -s"
 
 # Add the stamp file to the list of files AC keeps track of,
 # along with our hook.
-          ac_config_headers="$ac_config_headers src/config/pathan_config_unix.h"
+          ac_config_headers="$ac_config_headers src/config/xqilla_config_unix.h"
 
 
 
@@ -11892,7 +11892,7 @@ do
   "Makefile" ) CONFIG_FILES="$CONFIG_FILES Makefile" ;;
   "include/Makefile" ) CONFIG_FILES="$CONFIG_FILES include/Makefile" ;;
   "depfiles" ) CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
-  "src/config/pathan_config_unix.h" ) CONFIG_HEADERS="$CONFIG_HEADERS src/config/pathan_config_unix.h" ;;
+  "src/config/xqilla_config_unix.h" ) CONFIG_HEADERS="$CONFIG_HEADERS src/config/xqilla_config_unix.h" ;;
   *) { { echo "$as_me:$LINENO: error: invalid argument: $ac_config_target" >&5
 echo "$as_me: error: invalid argument: $ac_config_target" >&2;}
    { (exit 1); exit 1; }; };;
@@ -12469,8 +12469,8 @@ echo "$as_me: error: cannot create directory \"$ac_dir\"" >&2;}
   fi
   # Run the commands associated with the file.
   case $ac_file in
-    src/config/pathan_config_unix.h ) # update the timestamp
-echo 'timestamp for src/config/pathan_config_unix.h' >"src/config/stamp-h1"
+    src/config/xqilla_config_unix.h ) # update the timestamp
+echo 'timestamp for src/config/xqilla_config_unix.h' >"src/config/stamp-h1"
  ;;
   esac
 done

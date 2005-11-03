@@ -20,7 +20,7 @@
 #if !defined(AFXQ_XQEVALUATOR_H__D608B994_E090_4206_9473_81F3D7350410__INCLUDED_)
 #define AFXQ_XQEVALUATOR_H__D608B994_E090_4206_9473_81F3D7350410__INCLUDED_
 
-#include <xqilla/framework/XQEngine.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/simple-api/XQQuery.hpp>
 
 class DynamicContext;
@@ -30,7 +30,7 @@ XERCES_CPP_NAMESPACE_BEGIN
     class XMLBuffer;
 XERCES_CPP_NAMESPACE_END
 
-class XQENGINE_API XQEvaluator
+class XQILLA_API XQEvaluator
 {
 public:
     static XQQuery* parse(const XMLCh* query, DynamicContext* context, bool staticallyResolve = true, const XMLCh* queryFile=NULL);

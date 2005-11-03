@@ -20,7 +20,7 @@
 #if !defined(AFXQ_XQUERY_H__FAA9933A_2F10_49A4_93A2_857E2A8C48E3__INCLUDED_)
 #define AFXQ_XQUERY_H__FAA9933A_2F10_49A4_93A2_857E2A8C48E3__INCLUDED_
 
-#include <xqilla/framework/XQEngine.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <vector>
 #include <xercesc/util/XMemory.hpp>
 #include <xqilla/runtime/Result.hpp>
@@ -33,7 +33,7 @@ class XQUserFunction;
 class XQGlobalVariable;
 class StaticResolutionContext;
 
-class XQENGINE_API XQQuery : public XERCES_CPP_NAMESPACE_QUALIFIER XMemory
+class XQILLA_API XQQuery : public XERCES_CPP_NAMESPACE_QUALIFIER XMemory
 {
 public:
 	XQQuery(const XMLCh* queryText, XPath2MemoryManager* memMgr);
@@ -59,8 +59,8 @@ public:
 
     const XMLCh* getQueryText() const;
 
-    std::vector<XQUserFunction*, PathanAllocator<XQUserFunction*> > m_userDefFns;
-	std::vector<XQGlobalVariable*, PathanAllocator<XQGlobalVariable*> > m_userDefVars;
+    std::vector<XQUserFunction*, XQillaAllocator<XQUserFunction*> > m_userDefFns;
+	std::vector<XQGlobalVariable*, XQillaAllocator<XQGlobalVariable*> > m_userDefVars;
 
 protected:
   class QueryResult : public ResultImpl

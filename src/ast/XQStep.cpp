@@ -15,7 +15,7 @@
 
 #include <sstream>
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xqilla/ast/XQStep.hpp>
 #include <xqilla/axis/NodeTest.hpp>
 #include <xqilla/items/Item.hpp>

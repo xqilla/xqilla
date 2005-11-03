@@ -19,7 +19,7 @@
 #include <xqilla/runtime/ResultImpl.hpp>
 
 /** A reference counting wrapper for the lazily evaluated query result */
-class PATHAN_EXPORT SingleResult : public ResultImpl
+class XQILLA_API SingleResult : public ResultImpl
 {
 public:
   SingleResult(DynamicContext *context);

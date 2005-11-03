@@ -16,14 +16,14 @@
 #ifndef _ANYATOMICTYPE_HPP
 #define _ANYATOMICTYPE_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/items/Item.hpp>
 #include <xercesc/util/XercesDefs.hpp>
 
 class DynamicContext;
 class StaticContext;
 
-class PATHAN_EXPORT AnyAtomicType: public Item
+class XQILLA_API AnyAtomicType: public Item
 {
 
 public:

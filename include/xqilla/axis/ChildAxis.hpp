@@ -21,7 +21,7 @@
 /**
 This class implements the ChildAxis axis as defined by the XPath spec
 */
-class PATHAN_EXPORT ChildAxis : public Axis
+class XQILLA_API ChildAxis : public Axis
 {
 public:
   ChildAxis(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *contextNode, const Node *nodeObj,

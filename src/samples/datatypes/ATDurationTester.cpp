@@ -33,11 +33,11 @@ void ATDurationTester::run(const DynamicContext* context) {
   const ATDurationOrDerived::Ptr duration1 = createDuration(X("P21Y11M35DT13H20M10.69S"), context);
   const ATDurationOrDerived::Ptr duration2 = createDuration(X("P21Y11M35DT13H20M10.69S"), context);
 
-  const ATDurationOrDerived::Ptr ym_duration1 = context->getPathanFactory()->createYearMonthDuration(X("P21Y11M"), context);
-  const ATDurationOrDerived::Ptr ym_duration2 = context->getPathanFactory()->createYearMonthDuration(X("P263M"), context);
+  const ATDurationOrDerived::Ptr ym_duration1 = context->getXQillaFactory()->createYearMonthDuration(X("P21Y11M"), context);
+  const ATDurationOrDerived::Ptr ym_duration2 = context->getXQillaFactory()->createYearMonthDuration(X("P263M"), context);
 
-  const ATDurationOrDerived::Ptr dt_duration1 = context->getPathanFactory()->createDayTimeDuration(X("P35DT13H20M10.69S"), context);
-  const ATDurationOrDerived::Ptr dt_duration2 = context->getPathanFactory()->createDayTimeDuration(X("P34DT36H80M10.69S"), context);
+  const ATDurationOrDerived::Ptr dt_duration1 = context->getXQillaFactory()->createDayTimeDuration(X("P35DT13H20M10.69S"), context);
+  const ATDurationOrDerived::Ptr dt_duration2 = context->getXQillaFactory()->createDayTimeDuration(X("P34DT36H80M10.69S"), context);
 
   assertEquals(duration1->asString(context), X("P21Y11M35DT13H20M10.69S")); 
   assertEquals(duration1->asString(context), duration2->asString(context));
@@ -57,10 +57,10 @@ void ATDurationTester::run(const DynamicContext* context) {
   // test 2 -- inequality
 
   const ATDurationOrDerived::Ptr duration3 = createDuration(X("P21Y7M20DT13H20M10.69S"), context);
-  const ATDurationOrDerived::Ptr ym_duration3 = context->getPathanFactory()->createYearMonthDuration(X("P21Y7M"), context);  
-  const ATDurationOrDerived::Ptr ym_duration4 = context->getPathanFactory()->createYearMonthDuration(X("-P21Y7M"), context);  
-  const ATDurationOrDerived::Ptr dt_duration3 = context->getPathanFactory()->createDayTimeDuration(X("P20DT13H20M10.69S"), context); 
-  const ATDurationOrDerived::Ptr dt_duration4 = context->getPathanFactory()->createDayTimeDuration(X("-P20DT13H20M10.69S"), context); 
+  const ATDurationOrDerived::Ptr ym_duration3 = context->getXQillaFactory()->createYearMonthDuration(X("P21Y7M"), context);  
+  const ATDurationOrDerived::Ptr ym_duration4 = context->getXQillaFactory()->createYearMonthDuration(X("-P21Y7M"), context);  
+  const ATDurationOrDerived::Ptr dt_duration3 = context->getXQillaFactory()->createDayTimeDuration(X("P20DT13H20M10.69S"), context); 
+  const ATDurationOrDerived::Ptr dt_duration4 = context->getXQillaFactory()->createDayTimeDuration(X("-P20DT13H20M10.69S"), context); 
 
   bool opNotSupported = false;
   try {
@@ -148,29 +148,29 @@ void ATDurationTester::run(const DynamicContext* context) {
   assertCondition(opNotSupported);
 
   // test 3 -- component extraction
-  assertObjectEquals(((const ATDurationOrDerived*)duration3)->getYears(), context->getPathanFactory()->createInteger(21, context), context);
-  assertObjectEquals(((const ATDurationOrDerived*)duration3)->getMonths(), context->getPathanFactory()->createInteger(7, context), context);
-  assertObjectEquals(((const ATDurationOrDerived*)duration3)->getDays(), context->getPathanFactory()->createInteger(20, context), context);
-  assertObjectEquals(((const ATDurationOrDerived*)duration3)->getHours(), context->getPathanFactory()->createInteger(13, context), context);
-  assertObjectEquals(((const ATDurationOrDerived*)duration3)->getMinutes(), context->getPathanFactory()->createInteger(20, context), context);
-  assertObjectEquals(((const ATDurationOrDerived*)duration3)->getSeconds(), context->getPathanFactory()->createDecimal(10.69, context), context);
+  assertObjectEquals(((const ATDurationOrDerived*)duration3)->getYears(), context->getXQillaFactory()->createInteger(21, context), context);
+  assertObjectEquals(((const ATDurationOrDerived*)duration3)->getMonths(), context->getXQillaFactory()->createInteger(7, context), context);
+  assertObjectEquals(((const ATDurationOrDerived*)duration3)->getDays(), context->getXQillaFactory()->createInteger(20, context), context);
+  assertObjectEquals(((const ATDurationOrDerived*)duration3)->getHours(), context->getXQillaFactory()->createInteger(13, context), context);
+  assertObjectEquals(((const ATDurationOrDerived*)duration3)->getMinutes(), context->getXQillaFactory()->createInteger(20, context), context);
+  assertObjectEquals(((const ATDurationOrDerived*)duration3)->getSeconds(), context->getXQillaFactory()->createDecimal(10.69, context), context);
   assertCondition(!((const ATDurationOrDerived*)duration3)->isNegative());
 
-  assertObjectEquals(((const ATDurationOrDerived*)ym_duration3)->getYears(), context->getPathanFactory()->createInteger(21, context), context);
-  assertObjectEquals(((const ATDurationOrDerived*)ym_duration3)->getMonths(), context->getPathanFactory()->createInteger(7, context), context);
-  assertObjectEquals(((const ATDurationOrDerived*)ym_duration3)->getDays(), context->getPathanFactory()->createInteger(0, context), context);
-  assertObjectEquals(((const ATDurationOrDerived*)ym_duration3)->getHours(), context->getPathanFactory()->createInteger(0, context), context);
-  assertObjectEquals(((const ATDurationOrDerived*)ym_duration3)->getMinutes(), context->getPathanFactory()->createInteger(0, context), context);
-  assertObjectEquals(((const ATDurationOrDerived*)ym_duration3)->getSeconds(), context->getPathanFactory()->createDecimal(MAPM(0), context), context);
+  assertObjectEquals(((const ATDurationOrDerived*)ym_duration3)->getYears(), context->getXQillaFactory()->createInteger(21, context), context);
+  assertObjectEquals(((const ATDurationOrDerived*)ym_duration3)->getMonths(), context->getXQillaFactory()->createInteger(7, context), context);
+  assertObjectEquals(((const ATDurationOrDerived*)ym_duration3)->getDays(), context->getXQillaFactory()->createInteger(0, context), context);
+  assertObjectEquals(((const ATDurationOrDerived*)ym_duration3)->getHours(), context->getXQillaFactory()->createInteger(0, context), context);
+  assertObjectEquals(((const ATDurationOrDerived*)ym_duration3)->getMinutes(), context->getXQillaFactory()->createInteger(0, context), context);
+  assertObjectEquals(((const ATDurationOrDerived*)ym_duration3)->getSeconds(), context->getXQillaFactory()->createDecimal(MAPM(0), context), context);
   assertCondition(!((const ATDurationOrDerived*)ym_duration3)->isNegative());
   assertCondition(((const ATDurationOrDerived*)ym_duration4)->isNegative());
 
-  assertObjectEquals(((const ATDurationOrDerived*)dt_duration3)->getYears(), context->getPathanFactory()->createInteger(0, context), context);
-  assertObjectEquals(((const ATDurationOrDerived*)dt_duration3)->getMonths(), context->getPathanFactory()->createInteger(0, context), context);
-  assertObjectEquals(((const ATDurationOrDerived*)dt_duration3)->getDays(), context->getPathanFactory()->createInteger(20, context), context);
-  assertObjectEquals(((const ATDurationOrDerived*)dt_duration3)->getHours(), context->getPathanFactory()->createInteger(13, context), context);
-  assertObjectEquals(((const ATDurationOrDerived*)dt_duration3)->getMinutes(), context->getPathanFactory()->createInteger(20, context), context);
-  assertObjectEquals(((const ATDurationOrDerived*)dt_duration3)->getSeconds(), context->getPathanFactory()->createDecimal(10.69, context), context);
+  assertObjectEquals(((const ATDurationOrDerived*)dt_duration3)->getYears(), context->getXQillaFactory()->createInteger(0, context), context);
+  assertObjectEquals(((const ATDurationOrDerived*)dt_duration3)->getMonths(), context->getXQillaFactory()->createInteger(0, context), context);
+  assertObjectEquals(((const ATDurationOrDerived*)dt_duration3)->getDays(), context->getXQillaFactory()->createInteger(20, context), context);
+  assertObjectEquals(((const ATDurationOrDerived*)dt_duration3)->getHours(), context->getXQillaFactory()->createInteger(13, context), context);
+  assertObjectEquals(((const ATDurationOrDerived*)dt_duration3)->getMinutes(), context->getXQillaFactory()->createInteger(20, context), context);
+  assertObjectEquals(((const ATDurationOrDerived*)dt_duration3)->getSeconds(), context->getXQillaFactory()->createDecimal(10.69, context), context);
   assertCondition(!((const ATDurationOrDerived*)dt_duration3)->isNegative());
   assertCondition(((const ATDurationOrDerived*)dt_duration4)->isNegative());
 
@@ -213,7 +213,7 @@ void ATDurationTester::run(const DynamicContext* context) {
 
 const ATDurationOrDerived::Ptr ATDurationTester::createDuration(const XMLCh* value,
                                              const DynamicContext* context) {
-  return context->getPathanFactory()->createDurationOrDerived(
+  return context->getXQillaFactory()->createDurationOrDerived(
       XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
       XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DURATION,
       value, context);

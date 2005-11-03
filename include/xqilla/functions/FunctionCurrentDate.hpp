@@ -20,12 +20,12 @@
 #ifndef _FUNCTIONCURRENTDATE_HPP
 #define _FUNCTIONCURRENTDATE_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/XQFunction.hpp>
 
 /** Current-date function*/
-class PATHAN_EXPORT FunctionCurrentDate : public XQFunction
+class XQILLA_API FunctionCurrentDate : public XQFunction
 {
 public:
   static const XMLCh name[];

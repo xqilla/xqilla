@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionNormalizeSpace.hpp>
 #include <xqilla/functions/FunctionString.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
@@ -48,7 +48,7 @@ FunctionNormalizeSpace::FunctionNormalizeSpace(const VectorOfASTNodes &args, XPa
 const XMLCh* FunctionNormalizeSpace::getString(DynamicContext* context) const {
   XPath2MemoryManager* memMgr = context->getMemoryManager();
   //setup xf:string with empty args
-  VectorOfASTNodes args=VectorOfASTNodes(PathanAllocator<ASTNode*>(memMgr));
+  VectorOfASTNodes args=VectorOfASTNodes(XQillaAllocator<ASTNode*>(memMgr));
   FunctionString stringGrabber(args, memMgr);
   //call xf:string and extract result
   return stringGrabber.collapseTree(context).next(context)->asString(context);
@@ -70,7 +70,7 @@ Sequence FunctionNormalizeSpace::collapseTreeInternal(DynamicContext* context, i
     } else {
         Sequence strParm=getParamNumber(1,context);
         if(strParm.isEmpty())
-            return Sequence(context->getPathanFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context), memMgr);
+            return Sequence(context->getXQillaFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context), memMgr);
 
         str = strParm.first()->asString(context);
     }
@@ -110,6 +110,6 @@ Sequence FunctionNormalizeSpace::collapseTreeInternal(DynamicContext* context, i
             result = XPath2Utils::deleteData(result, XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(result) -1, 1, memMgr);
         }
     }
-    return Sequence(context->getPathanFactory()->createString(result, context), memMgr);
+    return Sequence(context->getXQillaFactory()->createString(result, context), memMgr);
 }
 

@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include "ATNotationOrDerivedImpl.hpp"
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/exceptions/IllegalArgumentException.hpp>
@@ -35,7 +35,7 @@ ATNotationOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh
 
 void *ATNotationOrDerivedImpl::getInterface(const XMLCh *name) const
 {
-  if(name == Item::gPathan) {
+  if(name == Item::gXQilla) {
     return (void*)this;
   }
   return 0;

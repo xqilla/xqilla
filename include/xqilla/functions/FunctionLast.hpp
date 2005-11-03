@@ -22,12 +22,12 @@
 #ifndef _FUNCTIONLAST_HPP
 #define _FUNCTIONLAST_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/XQFunction.hpp>
 
 /** Last function*/
-class PATHAN_EXPORT FunctionLast : public XQFunction
+class XQILLA_API FunctionLast : public XQFunction
 {
 public:
   static const XMLCh name[];

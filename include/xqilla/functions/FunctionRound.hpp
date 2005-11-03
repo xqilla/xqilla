@@ -20,11 +20,11 @@
 #ifndef _FUNCTIONROUND_HPP
 #define _FUNCTIONROUND_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/NumericFunction.hpp>
 
-class PATHAN_EXPORT FunctionRound : public NumericFunction
+class XQILLA_API FunctionRound : public NumericFunction
 {
 public:
   static const XMLCh name[];

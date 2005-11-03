@@ -16,11 +16,11 @@
 #ifndef _XQPARENTHESIZEDEXPR_HPP
 #define _XQPARENTHESIZEDEXPR_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/ASTNodeImpl.hpp>
 
-class PATHAN_EXPORT XQParenthesizedExpr : public ASTNodeImpl
+class XQILLA_API XQParenthesizedExpr : public ASTNodeImpl
 {
 
 public:

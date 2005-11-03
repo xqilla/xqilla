@@ -17,10 +17,10 @@
   Factory base class
 */
 
-#ifndef _PATHANFACTORY_HPP
-#define _PATHANFACTORY_HPP
+#ifndef _XQILLAFACTORY_HPP
+#define _XQILLAFACTORY_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/mapm/m_apm.h>
 #include <xqilla/items/ATAnyURIOrDerived.hpp>
 #include <xqilla/items/ATBooleanOrDerived.hpp>
@@ -41,10 +41,10 @@
 #include <xqilla/items/ATUntypedAtomic.hpp>
 #include <xqilla/items/Node.hpp>
 
-class PATHAN_EXPORT PathanFactory
+class XQILLA_API XQillaFactory
 {
 public:
-  virtual ~PathanFactory() {};
+  virtual ~XQillaFactory() {};
 
   /* @name Atomic type factory methods */
 

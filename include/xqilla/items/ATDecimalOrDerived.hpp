@@ -17,12 +17,12 @@
 #define _ATDECIMALORDERIVED_HPP
 
 #include <xercesc/util/XercesDefs.hpp>
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/items/Numeric.hpp>
 
 class DynamicContext;
 class MAPM;
-class PATHAN_EXPORT ATDecimalOrDerived : public Numeric
+class XQILLA_API ATDecimalOrDerived : public Numeric
 {
 public:
   typedef RefCountPointer<const ATDecimalOrDerived> Ptr;

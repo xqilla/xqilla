@@ -18,7 +18,7 @@
 
 #include <xqilla/runtime/ResultImpl.hpp>
 
-class PATHAN_EXPORT EmptyResult : public ResultImpl
+class XQILLA_API EmptyResult : public ResultImpl
 {
 public:
   EmptyResult(DynamicContext *context);

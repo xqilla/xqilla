@@ -16,7 +16,7 @@
 #ifndef _TYPEERROREXCEPTION_HPP
 #define _TYPEERROREXCEPTION_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/exceptions/DSLException.hpp>
 #include <xqilla/utils/XStr.hpp>
@@ -25,7 +25,7 @@
  * This means that an error was found while manipulating typed data
  */
 
-class PATHAN_EXPORT TypeErrorException : public DSLException
+class XQILLA_API TypeErrorException : public DSLException
 {
 public:
   TypeErrorException(const XMLCh* const functionName, const XMLCh* const reason, const char *file, int line)

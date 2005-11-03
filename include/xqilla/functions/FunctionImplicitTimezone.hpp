@@ -26,7 +26,7 @@
 #include <xqilla/ast/XQFunction.hpp>
 
 /** implicit-timezone function*/
-class PATHAN_EXPORT FunctionImplicitTimezone : public XQFunction
+class XQILLA_API FunctionImplicitTimezone : public XQFunction
 {
 public:
   static const XMLCh name[];

@@ -15,7 +15,7 @@
 
 #include <sstream>
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <assert.h>
 #include <xqilla/ast/XQSequence.hpp>
 #include <xqilla/ast/ASTNode.hpp>
@@ -86,28 +86,28 @@ inline void resultToItemConstructors(Result &result, DynamicContext *context, It
 }
 
 XQSequence::XQSequence(Result &result, DynamicContext *context, XPath2MemoryManager* memMgr)
-  : ASTNodeImpl(memMgr), _itemConstructors(PathanAllocator<ItemConstructor*>(memMgr))
+  : ASTNodeImpl(memMgr), _itemConstructors(XQillaAllocator<ItemConstructor*>(memMgr))
 {
   setType(ASTNode::SEQUENCE);
   resultToItemConstructors(result, context, _itemConstructors, memMgr);
 }
 
 XQSequence::XQSequence(const Item::Ptr &item, DynamicContext *context, XPath2MemoryManager* memMgr)
-  : ASTNodeImpl(memMgr), _itemConstructors(PathanAllocator<ItemConstructor*>(memMgr))
+  : ASTNodeImpl(memMgr), _itemConstructors(XQillaAllocator<ItemConstructor*>(memMgr))
 {
   setType(ASTNode::SEQUENCE);
   _itemConstructors.push_back(itemToItemConstructor(item, context, memMgr));
 }
 
 XQSequence::XQSequence(ItemConstructor *ic, XPath2MemoryManager* memMgr)
-  : ASTNodeImpl(memMgr), _itemConstructors(PathanAllocator<ItemConstructor*>(memMgr))
+  : ASTNodeImpl(memMgr), _itemConstructors(XQillaAllocator<ItemConstructor*>(memMgr))
 {
   setType(ASTNode::SEQUENCE);
   _itemConstructors.push_back(ic);
 }
 
 XQSequence::XQSequence(XPath2MemoryManager* memMgr)
-  : ASTNodeImpl(memMgr), _itemConstructors(PathanAllocator<ItemConstructor*>(memMgr))
+  : ASTNodeImpl(memMgr), _itemConstructors(XQillaAllocator<ItemConstructor*>(memMgr))
 {
   setType(ASTNode::SEQUENCE);
 }

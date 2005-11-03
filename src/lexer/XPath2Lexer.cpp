@@ -9953,7 +9953,7 @@ static yyconst short int yy_chk[9776] =
  */
 #line 17 "../src/lexer/XPath2Lexer.lex"
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include "XPathFlexLexer.hpp"
 #include "../parser/XPath2ParserControl.hpp"
 #include "../parser/XPath2Parser.hpp"

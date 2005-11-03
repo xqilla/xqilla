@@ -16,11 +16,11 @@
 #ifndef _SELFAXIS_HPP
 #define _SELFAXIS_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/runtime/ResultImpl.hpp>
 #include <xqilla/items/Node.hpp>
 
-class PATHAN_EXPORT SelfAxis : public ResultImpl
+class XQILLA_API SelfAxis : public ResultImpl
 {
 public:
   SelfAxis(Node::Ptr contextNode, DynamicContext *context);

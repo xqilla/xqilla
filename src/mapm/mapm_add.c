@@ -17,32 +17,6 @@
  *  This software is provided "as is" without express or implied warranty.
  */
 
-/*
- *      $Id$
- *
- *      This file contains basic addition/subtraction functions
- *
- *      $Log$
- *      Revision 1.1  2005/11/01 18:04:13  jpcs
- *      Initial check in.
- *
- *      Revision 1.1  2004/07/21 09:23:01  jpcs
- *      Initial check in of the Parthenon backup of Pathan.
- *
- *      Revision 1.2  2003/05/01 12:46:55  alby
- *      - Updated MAPM to version 4.6.1
- *      - The MAPM class is now thread-safe
- *
- *      Revision 1.3  2002/11/03 22:03:31  mike
- *      Updated function parameters to use the modern style
- *
- *      Revision 1.2  2001/07/16 18:59:25  mike
- *      add function M_free_all_add
- *
- *      Revision 1.1  1999/05/10 20:56:31  mike
- *      Initial revision
- */
-
 #include "m_apm_lc.h"
 
 static	M_APM	M_work1 = NULL;

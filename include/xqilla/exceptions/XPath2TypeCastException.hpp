@@ -22,13 +22,13 @@
 #ifndef _XPATH2TYPECASTEXCEPTION_HPP
 #define _XPATH2TYPECASTEXCEPTION_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/exceptions/DSLException.hpp>
 #include <xqilla/utils/XStr.hpp>
 
 /** exception class for data items */
-class PATHAN_EXPORT XPath2TypeCastException : public DSLException
+class XQILLA_API XPath2TypeCastException : public DSLException
 {
 public:
 

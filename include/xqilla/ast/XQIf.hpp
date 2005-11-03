@@ -16,12 +16,12 @@
 #ifndef _XQIF_HPP
 #define _XQIF_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/ASTNodeImpl.hpp>
 
 /** If function. */
-class PATHAN_EXPORT XQIf : public ASTNodeImpl
+class XQILLA_API XQIf : public ASTNodeImpl
 {
 public:
   XQIf(ASTNode* test, ASTNode* whenTrue, ASTNode* whenFalse, XPath2MemoryManager* memMgr);

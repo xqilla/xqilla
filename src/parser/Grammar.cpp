@@ -505,7 +505,7 @@
 
 #include <xqilla/utils/XPath2Utils.hpp>
 #ifdef HAVE_CONFIG_H
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #endif
 
 #define YYPARSE_PARAM qp
@@ -581,7 +581,7 @@ static inline XQNav* getNavigation(ASTNode *possibleNav, XPath2MemoryManager * e
 
 static inline VectorOfASTNodes packageArgs(ASTNode *arg1Impl, ASTNode *arg2Impl, XPath2MemoryManager* memMgr)
 {
-	VectorOfASTNodes args=VectorOfASTNodes(2,(ASTNode*)NULL,PathanAllocator<ASTNode*>(memMgr));
+	VectorOfASTNodes args=VectorOfASTNodes(2,(ASTNode*)NULL,XQillaAllocator<ASTNode*>(memMgr));
 	args[0]=arg1Impl;
 	args[1]=arg2Impl;
 
@@ -2831,7 +2831,7 @@ yyreduce:
   case 52:
 #line 676 "../src/parser/xquery.y"
     {
-		yyval.stringList = new (MEMMGR) VectorOfStrings(PathanAllocator<const XMLCh*>(MEMMGR));
+		yyval.stringList = new (MEMMGR) VectorOfStrings(XQillaAllocator<const XMLCh*>(MEMMGR));
 		yyval.stringList->push_back(yyvsp[0].str);
 	}
     break;
@@ -3008,7 +3008,7 @@ yyreduce:
   case 75:
 #line 809 "../src/parser/xquery.y"
     {
-			XQUserFunction::VectorOfFunctionParameters* paramList = new (MEMMGR) XQUserFunction::VectorOfFunctionParameters(PathanAllocator<XQUserFunction::XQFunctionParameter*>(MEMMGR));
+			XQUserFunction::VectorOfFunctionParameters* paramList = new (MEMMGR) XQUserFunction::VectorOfFunctionParameters(XQillaAllocator<XQUserFunction::XQFunctionParameter*>(MEMMGR));
 			paramList->push_back(yyvsp[0].funcParam);
 			yyval.funcParams = paramList;
 		}
@@ -3124,7 +3124,7 @@ yyreduce:
   case 97:
 #line 929 "../src/parser/xquery.y"
     {
-			yyval.variableBindingList = new (MEMMGR) VectorOfVariableBinding(PathanAllocator<XQVariableBinding*>(MEMMGR));
+			yyval.variableBindingList = new (MEMMGR) VectorOfVariableBinding(XQillaAllocator<XQVariableBinding*>(MEMMGR));
 			yyval.variableBindingList->push_back(yyvsp[0].variableBinding);
 		}
     break;
@@ -3190,7 +3190,7 @@ yyreduce:
   case 105:
 #line 986 "../src/parser/xquery.y"
     {
-			yyval.variableBindingList = new (MEMMGR) VectorOfVariableBinding(PathanAllocator<XQVariableBinding*>(MEMMGR));
+			yyval.variableBindingList = new (MEMMGR) VectorOfVariableBinding(XQillaAllocator<XQVariableBinding*>(MEMMGR));
 			yyval.variableBindingList->push_back(yyvsp[0].variableBinding);
 		}
     break;
@@ -3245,7 +3245,7 @@ yyreduce:
   case 112:
 #line 1035 "../src/parser/xquery.y"
     {
-			yyval.sortSpecList = new (MEMMGR) XQSort::VectorOfSortSpec(PathanAllocator<XQSort::SortSpec*>(MEMMGR));
+			yyval.sortSpecList = new (MEMMGR) XQSort::VectorOfSortSpec(XQillaAllocator<XQSort::SortSpec*>(MEMMGR));
 			yyval.sortSpecList->push_back(yyvsp[0].sortSpec);
 		}
     break;
@@ -3326,7 +3326,7 @@ yyreduce:
   case 124:
 #line 1099 "../src/parser/xquery.y"
     {
-			yyval.variableBindingList = new (MEMMGR) VectorOfVariableBinding(PathanAllocator<XQVariableBinding*>(MEMMGR));
+			yyval.variableBindingList = new (MEMMGR) VectorOfVariableBinding(XQillaAllocator<XQVariableBinding*>(MEMMGR));
 			yyval.variableBindingList->push_back(yyvsp[0].variableBinding);
 		}
     break;
@@ -3376,7 +3376,7 @@ yyreduce:
   case 130:
 #line 1141 "../src/parser/xquery.y"
     {
-			yyval.clauseList=new (MEMMGR) XQTypeswitch::VectorOfClause(PathanAllocator<XQTypeswitch::Clause*>(MEMMGR));
+			yyval.clauseList=new (MEMMGR) XQTypeswitch::VectorOfClause(XQillaAllocator<XQTypeswitch::Clause*>(MEMMGR));
 			yyval.clauseList->push_back(yyvsp[0].clause);
 		}
     break;
@@ -3649,7 +3649,7 @@ yyreduce:
   case 178:
 #line 1383 "../src/parser/xquery.y"
     {
-			VectorOfASTNodes args(PathanAllocator<ASTNode*>(MEMMGR));
+			VectorOfASTNodes args(XQillaAllocator<ASTNode*>(MEMMGR));
 			args.push_back(yyvsp[0].astNode);
 			yyval.astNode = new (MEMMGR) UnaryMinus(args, MEMMGR);
 		}
@@ -3990,7 +3990,7 @@ yyreduce:
   case 230:
 #line 1725 "../src/parser/xquery.y"
     {
-	        yyval.itemList = new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
+	        yyval.itemList = new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 		}
     break;
 
@@ -4061,7 +4061,7 @@ yyreduce:
   case 251:
 #line 1821 "../src/parser/xquery.y"
     {
-			VectorOfASTNodes args(PathanAllocator<ASTNode*>(MEMMGR));
+			VectorOfASTNodes args(XQillaAllocator<ASTNode*>(MEMMGR));
 			yyval.astNode = FNWRAP(yylsp[-1], yyvsp[-1].str, new (MEMMGR) XQFunctionCall(new (MEMMGR) QualifiedName(yyvsp[-1].str, MEMMGR), args, MEMMGR));
 		}
     break;
@@ -4084,7 +4084,7 @@ yyreduce:
   case 254:
 #line 1838 "../src/parser/xquery.y"
     {
-			yyval.itemList = new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
+			yyval.itemList = new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 			yyval.itemList->push_back(yyvsp[0].astNode);
 		}
     break;
@@ -4092,7 +4092,7 @@ yyreduce:
   case 260:
 #line 1862 "../src/parser/xquery.y"
     { 
-			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
+			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 			yyval.astNode = WRAP(yylsp[-3], new (MEMMGR) XQDOMConstructor(Node::element_string,
 								new (MEMMGR) XQLiteral(
                     new (MEMMGR) AnyAtomicTypeConstructor(
@@ -4134,7 +4134,7 @@ yyreduce:
   case 262:
 #line 1902 "../src/parser/xquery.y"
     {
-			yyval.itemList = new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
+			yyval.itemList = new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 		}
     break;
 
@@ -4179,7 +4179,7 @@ yyreduce:
   case 266:
 #line 1945 "../src/parser/xquery.y"
     { 
-			yyval.itemList = new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
+			yyval.itemList = new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 		}
     break;
 
@@ -4210,7 +4210,7 @@ yyreduce:
   case 270:
 #line 1969 "../src/parser/xquery.y"
     { 
-			yyval.itemList = new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
+			yyval.itemList = new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 		}
     break;
 
@@ -4241,7 +4241,7 @@ yyreduce:
   case 274:
 #line 1995 "../src/parser/xquery.y"
     {
-			yyval.itemList = new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR)); 
+			yyval.itemList = new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR)); 
 		}
     break;
 
@@ -4318,7 +4318,7 @@ yyreduce:
   case 284:
 #line 2064 "../src/parser/xquery.y"
     {
-			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
+			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 			content->push_back(new (MEMMGR) XQLiteral(
                     new (MEMMGR) AnyAtomicTypeConstructor(
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
@@ -4332,8 +4332,8 @@ yyreduce:
   case 285:
 #line 2080 "../src/parser/xquery.y"
     {
-			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
-			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
+			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
+			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 			content->push_back(new (MEMMGR) XQLiteral(
                     new (MEMMGR) AnyAtomicTypeConstructor(
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
@@ -4361,8 +4361,8 @@ yyreduce:
   case 293:
 #line 2127 "../src/parser/xquery.y"
     {
-			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
-			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
+			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
+			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 			content->push_back(WRAP(yylsp[-1], yyvsp[-1].astNode));
 			yyval.astNode = WRAP(yylsp[-3], new (MEMMGR) XQDOMConstructor(Node::document_string,
 								  new (MEMMGR) XQLiteral(
@@ -4378,8 +4378,8 @@ yyreduce:
   case 294:
 #line 2145 "../src/parser/xquery.y"
     {
-			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
-			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
+			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
+			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 			content->push_back(WRAP(yylsp[-1], yyvsp[-1].astNode));
 			yyval.astNode = WRAP(yylsp[-3], new (MEMMGR) XQDOMConstructor(Node::element_string,
 								  new (MEMMGR) XQLiteral(
@@ -4395,7 +4395,7 @@ yyreduce:
   case 295:
 #line 2159 "../src/parser/xquery.y"
     {
-			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
+			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 			yyval.astNode = WRAP(yylsp[-2], new (MEMMGR) XQDOMConstructor(Node::element_string,
 								  new (MEMMGR) XQLiteral(
                     new (MEMMGR) AnyAtomicTypeConstructor(
@@ -4410,8 +4410,8 @@ yyreduce:
   case 296:
 #line 2171 "../src/parser/xquery.y"
     {
-			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
-			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
+			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
+			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 			content->push_back(WRAP(yylsp[-1], yyvsp[-1].astNode));
 			yyval.astNode = WRAP(yylsp[-6], new (MEMMGR) XQDOMConstructor(Node::element_string,
 								  WRAP(yylsp[-4], yyvsp[-4].astNode), 
@@ -4422,7 +4422,7 @@ yyreduce:
   case 297:
 #line 2180 "../src/parser/xquery.y"
     {
-			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
+			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 			yyval.astNode = WRAP(yylsp[-5], new (MEMMGR) XQDOMConstructor(Node::element_string,
 								  WRAP(yylsp[-3], yyvsp[-3].astNode), 
 								  empty, empty, MEMMGR));
@@ -4432,7 +4432,7 @@ yyreduce:
   case 299:
 #line 2196 "../src/parser/xquery.y"
     {
-			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
+			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 			content->push_back(WRAP(yylsp[-1], yyvsp[-1].astNode));
 			yyval.astNode = WRAP(yylsp[-3], new (MEMMGR) XQDOMConstructor(Node::attribute_string,
 								      new (MEMMGR) XQLiteral(
@@ -4448,7 +4448,7 @@ yyreduce:
   case 300:
 #line 2209 "../src/parser/xquery.y"
     {
-			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
+			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 			yyval.astNode = WRAP(yylsp[-2], new (MEMMGR) XQDOMConstructor(Node::attribute_string,
 								      new (MEMMGR) XQLiteral(
                     new (MEMMGR) AnyAtomicTypeConstructor(
@@ -4463,7 +4463,7 @@ yyreduce:
   case 301:
 #line 2221 "../src/parser/xquery.y"
     {
-			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
+			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 			content->push_back(WRAP(yylsp[-1], yyvsp[-1].astNode));
 			yyval.astNode = WRAP(yylsp[-6], new (MEMMGR) XQDOMConstructor(Node::attribute_string,
 									  WRAP(yylsp[-4], yyvsp[-4].astNode), 
@@ -4474,7 +4474,7 @@ yyreduce:
   case 302:
 #line 2229 "../src/parser/xquery.y"
     {
-			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
+			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 			yyval.astNode = WRAP(yylsp[-5], new (MEMMGR) XQDOMConstructor(Node::attribute_string,
 									  WRAP(yylsp[-3], yyvsp[-3].astNode), 
 									  0, empty, MEMMGR));
@@ -4484,7 +4484,7 @@ yyreduce:
   case 303:
 #line 2240 "../src/parser/xquery.y"
     {
-			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
+			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 			content->push_back(WRAP(yylsp[-1], yyvsp[-1].astNode));
 			yyval.astNode = WRAP(yylsp[-3], new (MEMMGR) XQDOMConstructor(Node::text_string, 0, 0, content, MEMMGR));
 		}
@@ -4493,7 +4493,7 @@ yyreduce:
   case 304:
 #line 2250 "../src/parser/xquery.y"
     {
-			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
+			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 			content->push_back(WRAP(yylsp[-1], yyvsp[-1].astNode));
 			yyval.astNode = WRAP(yylsp[-3], new (MEMMGR) XQDOMConstructor(Node::comment_string, 0, 0, content, MEMMGR));
 		}
@@ -4502,7 +4502,7 @@ yyreduce:
   case 305:
 #line 2260 "../src/parser/xquery.y"
     {
-			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
+			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 			content->push_back(WRAP(yylsp[-1], yyvsp[-1].astNode));
 			yyval.astNode = WRAP(yylsp[-3], new (MEMMGR) XQDOMConstructor(Node::processing_instruction_string,
 								      new (MEMMGR) XQLiteral(
@@ -4518,7 +4518,7 @@ yyreduce:
   case 306:
 #line 2273 "../src/parser/xquery.y"
     {
-			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
+			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 			yyval.astNode = WRAP(yylsp[-2], new (MEMMGR) XQDOMConstructor(Node::processing_instruction_string,
 								      new (MEMMGR) XQLiteral(
                     new (MEMMGR) AnyAtomicTypeConstructor(
@@ -4533,7 +4533,7 @@ yyreduce:
   case 307:
 #line 2285 "../src/parser/xquery.y"
     {
-			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
+			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 			content->push_back(WRAP(yylsp[-1], yyvsp[-1].astNode));
 			yyval.astNode = WRAP(yylsp[-6], new (MEMMGR) XQDOMConstructor(Node::processing_instruction_string,
 									  WRAP(yylsp[-4], yyvsp[-4].astNode), 
@@ -4544,7 +4544,7 @@ yyreduce:
   case 308:
 #line 2293 "../src/parser/xquery.y"
     {
-			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
+			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 			yyval.astNode = WRAP(yylsp[-5], new (MEMMGR) XQDOMConstructor(Node::processing_instruction_string,
 									  WRAP(yylsp[-3], yyvsp[-3].astNode), 
 									  0, empty, MEMMGR));

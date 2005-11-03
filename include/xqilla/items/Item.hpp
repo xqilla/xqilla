@@ -16,7 +16,7 @@
 #ifndef _ITEM_HPP
 #define _ITEM_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/framework/ReferenceCounted.hpp>
 #include <xercesc/util/XercesDefs.hpp>
 
@@ -24,13 +24,13 @@
 class XPath2MemoryManager;
 class DynamicContext;
 
-class PATHAN_EXPORT Item : public ReferenceCounted
+class XQILLA_API Item : public ReferenceCounted
 {
 public:
   typedef RefCountPointer<const Item> Ptr;
 
-  /** The "Pathan" item interface */
-  static const XMLCh gPathan[];
+  /** The "XQilla" item interface */
+  static const XMLCh gXQilla[];
 
   virtual bool isNode() const = 0;
 

@@ -16,7 +16,7 @@
 #ifndef _TZONE_HPP
 #define _TZONE_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/framework/ReferenceCounted.hpp>
 #include <xqilla/items/ATDurationOrDerived.hpp>
 #include <xqilla/items/ATDecimalOrDerived.hpp>
@@ -26,7 +26,7 @@
 class DynamicContext;
 class DynamicContext;
 
-class PATHAN_EXPORT Timezone : public ReferenceCounted
+class XQILLA_API Timezone : public ReferenceCounted
 {
 public :
   typedef RefCountPointer<const Timezone> Ptr;

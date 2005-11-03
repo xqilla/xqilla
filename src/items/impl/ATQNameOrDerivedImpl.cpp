@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xqilla/items/impl/ATQNameOrDerivedImpl.hpp>
 #include <xqilla/items/ATStringOrDerived.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
@@ -29,7 +29,7 @@
 #include <xqilla/utils/XStr.hpp>
 #include <xqilla/framework/XPath2MemoryManager.hpp>
 #include <xqilla/context/DynamicContext.hpp>
-#include <xqilla/context/PathanFactory.hpp>
+#include <xqilla/context/XQillaFactory.hpp>
 
 #include <xercesc/util/XMLString.hpp>
 
@@ -76,7 +76,7 @@ ATQNameOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* u
 
 void *ATQNameOrDerivedImpl::getInterface(const XMLCh *name) const
 {
-  if(name == Item::gPathan) {
+  if(name == Item::gXQilla) {
     return (void*)this;
   }
   return 0;
@@ -125,10 +125,10 @@ AnyAtomicType::Ptr ATQNameOrDerivedImpl::castAsInternal(AtomicObjectType targetI
     case UNTYPED_ATOMIC:
       //anySimpleType and untypedAtomic follow the same casting rules as string.
     case STRING: {
-      return context->getPathanFactory()->createDerivedFromAtomicType(targetURI, targetType, this->asLexicalString(context), context);
+      return context->getXQillaFactory()->createDerivedFromAtomicType(targetURI, targetType, this->asLexicalString(context), context);
     } 
     case QNAME: {
-      return context->getPathanFactory()->createQNameOrDerived(targetURI, targetType, _uri, _prefix, _name, context);
+      return context->getXQillaFactory()->createQNameOrDerived(targetURI, targetType, _uri, _prefix, _name, context);
     }
     default: return AnyAtomicType::castAsInternal(targetIndex, targetURI, targetType, context);
   }

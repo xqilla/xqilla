@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include "ATDateOrDerivedImpl.hpp"
 #include <xercesc/util/XMLUniDefs.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
@@ -32,7 +32,7 @@
 #include <xqilla/items/ATGYearMonthOrDerived.hpp>
 #include <xqilla/items/ATGYearOrDerived.hpp>
 #include <xqilla/items/Timezone.hpp>
-#include <xqilla/context/PathanFactory.hpp>
+#include <xqilla/context/XQillaFactory.hpp>
 
 #include <limits.h>   // for INT_MIN and INT_MAX
 #include <stdlib.h>   // for atoi
@@ -60,7 +60,7 @@ ATDateOrDerivedImpl::ATDateOrDerivedImpl(const XMLCh* typeURI, const XMLCh* type
 
 void *ATDateOrDerivedImpl::getInterface(const XMLCh *name) const
 {
-  if(name == Item::gPathan) {
+  if(name == Item::gXQilla) {
     return (void*)this;
   }
   return 0;
@@ -118,7 +118,7 @@ AnyAtomicType::Ptr ATDateOrDerivedImpl::castAsInternal(AtomicObjectType targetIn
       if (_hasTimezone) {
         buf.append(timezone_->asString(context));
       }
-      return context->getPathanFactory()->createDateTimeOrDerived(targetURI, targetType, buf.getRawBuffer(), context);
+      return context->getXQillaFactory()->createDateTimeOrDerived(targetURI, targetType, buf.getRawBuffer(), context);
     }
     case G_DAY: {
       buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
@@ -128,7 +128,7 @@ AnyAtomicType::Ptr ATDateOrDerivedImpl::castAsInternal(AtomicObjectType targetIn
       if (_hasTimezone) {
         buf.append(timezone_->asString(context));
       }
-      return context->getPathanFactory()->createGDayOrDerived(targetURI, targetType, buf.getRawBuffer(), context);
+      return context->getXQillaFactory()->createGDayOrDerived(targetURI, targetType, buf.getRawBuffer(), context);
     }
     case G_MONTH_DAY: {
       buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
@@ -139,7 +139,7 @@ AnyAtomicType::Ptr ATDateOrDerivedImpl::castAsInternal(AtomicObjectType targetIn
       if (_hasTimezone) {
         buf.append(timezone_->asString(context));
       }
-      return context->getPathanFactory()->createGMonthDayOrDerived(targetURI, targetType, buf.getRawBuffer(), context);
+      return context->getXQillaFactory()->createGMonthDayOrDerived(targetURI, targetType, buf.getRawBuffer(), context);
     } 
     case G_MONTH: {
       buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
@@ -148,7 +148,7 @@ AnyAtomicType::Ptr ATDateOrDerivedImpl::castAsInternal(AtomicObjectType targetIn
       if (_hasTimezone) {
         buf.append(timezone_->asString(context));
       }
-      return context->getPathanFactory()->createGMonthOrDerived(targetURI, targetType, buf.getRawBuffer(), context);
+      return context->getXQillaFactory()->createGMonthOrDerived(targetURI, targetType, buf.getRawBuffer(), context);
     } 
     case G_YEAR_MONTH: {
       if(_YY->asMAPM() > 9999) {
@@ -161,7 +161,7 @@ AnyAtomicType::Ptr ATDateOrDerivedImpl::castAsInternal(AtomicObjectType targetIn
       if (_hasTimezone) {
         buf.append(timezone_->asString(context));
       }
-      return context->getPathanFactory()->createGYearMonthOrDerived(targetURI, targetType, buf.getRawBuffer(), context);
+      return context->getXQillaFactory()->createGYearMonthOrDerived(targetURI, targetType, buf.getRawBuffer(), context);
     } 
     case G_YEAR: {
       if(_YY->asMAPM() > 9999) {
@@ -172,13 +172,13 @@ AnyAtomicType::Ptr ATDateOrDerivedImpl::castAsInternal(AtomicObjectType targetIn
       if (_hasTimezone) {
         buf.append(timezone_->asString(context));
       }
-      return context->getPathanFactory()->createGYearOrDerived(targetURI, targetType, buf.getRawBuffer(), context);
+      return context->getXQillaFactory()->createGYearOrDerived(targetURI, targetType, buf.getRawBuffer(), context);
     } 
     case ANY_SIMPLE_TYPE:
     case UNTYPED_ATOMIC:
       //anySimpleType and untypedAtomic follow the same casting rules as string.
     case STRING: {
-      return context->getPathanFactory()->createDerivedFromAtomicType(targetURI, targetType, asString(context), context);
+      return context->getXQillaFactory()->createDerivedFromAtomicType(targetURI, targetType, asString(context), context);
 		} 
     default: {
       return AnyAtomicType::castAsInternal(targetIndex, targetURI, targetType, context);
@@ -358,8 +358,8 @@ ATDateOrDerived::Ptr ATDateOrDerivedImpl::addYearMonthDuration(MAPM years, MAPM 
   }
 
   return new ATDateOrDerivedImpl(getTypeURI(), getTypeName(),
-                                 context->getPathanFactory()->createInteger(YY, context),
-                                 context->getPathanFactory()->createNonNegativeInteger(MM, context),
+                                 context->getXQillaFactory()->createInteger(YY, context),
+                                 context->getXQillaFactory()->createNonNegativeInteger(MM, context),
                                  _DD,
                                  getTimezone(), 
                                  hasTimezone());
@@ -437,7 +437,7 @@ ATDurationOrDerived::Ptr ATDateOrDerivedImpl::subtractDate(const ATDateOrDerived
   // return the difference as a dayTimeDuration
   // Returns the number of days
   long diff = dateThis - dateOther;
-  ATDecimalOrDerived::Ptr dateDiff = (const ATDecimalOrDerived::Ptr )context->getPathanFactory()->createInteger(diff, context);
+  ATDecimalOrDerived::Ptr dateDiff = (const ATDecimalOrDerived::Ptr )context->getXQillaFactory()->createInteger(diff, context);
   bool isNegative = dateDiff->isNegative();
   ATDecimalOrDerived::Ptr endDiff = dateDiff;
   
@@ -454,7 +454,7 @@ ATDurationOrDerived::Ptr ATDateOrDerivedImpl::subtractDate(const ATDateOrDerived
   buffer.append(endDiff->asString(context));
   buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_D);
 
-  return context->getPathanFactory()->createDayTimeDuration(buffer.getRawBuffer(), context);
+  return context->getXQillaFactory()->createDayTimeDuration(buffer.getRawBuffer(), context);
 }
 
 
@@ -486,9 +486,9 @@ ATDateOrDerived::Ptr ATDateOrDerivedImpl::normalize(const DynamicContext* contex
   return new
     ATDateOrDerivedImpl(this->_typeURI, 
                         this->_typeName, 
-                        context->getPathanFactory()->createInteger(sumDate.Year(), context),
-                        context->getPathanFactory()->createNonNegativeInteger(sumDate.Month(), context),
-                        context->getPathanFactory()->createNonNegativeInteger(sumDate.Day(), context),
+                        context->getXQillaFactory()->createInteger(sumDate.Year(), context),
+                        context->getXQillaFactory()->createNonNegativeInteger(sumDate.Month(), context),
+                        context->getXQillaFactory()->createNonNegativeInteger(sumDate.Day(), context),
                         new Timezone(0, 0), true  // timezone set to UTC 
                         );
 }
@@ -686,8 +686,8 @@ void ATDateOrDerivedImpl::setDate(const XMLCh* const date, const DynamicContext*
   }
   timezone_ = new Timezone(zonehh, zonemm);
 
-  _DD = context->getPathanFactory()->createNonNegativeInteger(DD, context);
-  _MM = context->getPathanFactory()->createNonNegativeInteger(MM, context);
-  _YY = context->getPathanFactory()->createInteger(YY, context);
+  _DD = context->getXQillaFactory()->createNonNegativeInteger(DD, context);
+  _MM = context->getXQillaFactory()->createNonNegativeInteger(MM, context);
+  _YY = context->getXQillaFactory()->createInteger(YY, context);
 }
 

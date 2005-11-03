@@ -13,11 +13,11 @@
  * $Id$
  */
 
-#ifndef __PATHANEXPRESSIONIMPL_HPP
-#define __PATHANEXPRESSIONIMPL_HPP
+#ifndef __XQILLAEXPRESSIONIMPL_HPP
+#define __XQILLAEXPRESSIONIMPL_HPP
 
-#include <xqilla/framework/Pathan.hpp>
-#include <xqilla/dom-api/PathanExpression.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
+#include <xqilla/dom-api/XQillaExpression.hpp>
 #include <xqilla/runtime/Sequence.hpp>
 
 class XPath2Result;
@@ -31,18 +31,18 @@ class DOMDocument;
 class DOMException;
 XERCES_CPP_NAMESPACE_END 
 
-class PATHAN_EXPORT PathanExpressionImpl : public PathanExpression
+class XQILLA_API XQillaExpressionImpl : public XQillaExpression
 {
 public:
 
-  PathanExpressionImpl(const XMLCh *expression,
+  XQillaExpressionImpl(const XMLCh *expression,
                        const XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* documentRoot,
                        XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr,
                        const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver *nsr,
                        XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool *xmlGP);
-  PathanExpressionImpl(const XMLCh *expression, DynamicContext *context,
+  XQillaExpressionImpl(const XMLCh *expression, DynamicContext *context,
                        XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr);
-  virtual ~PathanExpressionImpl();
+  virtual ~XQillaExpressionImpl();
 
   // weak version -  must create a context from scratch
   virtual void* evaluate(XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* contextNode,
@@ -71,8 +71,8 @@ private:
   bool _staticContextOwned;
   DynamicContext *_staticContext;
 	ASTNode* _compiledExpression;
-}; //PathanExpressionImpl
+}; //XQillaExpressionImpl
 
 
-#endif //__PATHANEXPRESSIONIMPL_HPP
+#endif //__XQILLAEXPRESSIONIMPL_HPP
 

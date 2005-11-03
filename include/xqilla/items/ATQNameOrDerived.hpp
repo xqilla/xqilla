@@ -17,12 +17,12 @@
 #define _ATQNAMEORDERIVED_HPP
 
 #include <xercesc/util/XercesDefs.hpp>
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/items/AnyAtomicType.hpp>
 
 class DynamicContext;
 
-class PATHAN_EXPORT ATQNameOrDerived : public AnyAtomicType
+class XQILLA_API ATQNameOrDerived : public AnyAtomicType
 {
 public:
   /* Get the name of the primitive type (basic type) of this type

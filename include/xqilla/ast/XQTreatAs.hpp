@@ -16,14 +16,14 @@
 #ifndef _XQTREATAS_HPP
 #define _XQTREATAS_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/ASTNodeImpl.hpp>
 #include <xqilla/runtime/LazySequenceResult.hpp>
 
 class SequenceType;
 
-class PATHAN_EXPORT XQTreatAs : public ASTNodeImpl
+class XQILLA_API XQTreatAs : public ASTNodeImpl
 {
 public:
 	XQTreatAs(ASTNode* expr, SequenceType* exprType, XPath2MemoryManager* memMgr);

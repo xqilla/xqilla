@@ -20,11 +20,11 @@
 #include <xqilla/items/ATFloatOrDerived.hpp>
 #include <xqilla/mapm/m_apm.h>
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #define FLOAT_MAX_DIGITS 25
 
-class PATHAN_EXPORT ATFloatOrDerivedImpl : public ATFloatOrDerived 
+class XQILLA_API ATFloatOrDerivedImpl : public ATFloatOrDerived 
 {
 
 public:

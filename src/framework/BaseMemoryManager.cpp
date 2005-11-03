@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xqilla/framework/BaseMemoryManager.hpp>
 
 #include <xercesc/util/XMLString.hpp>
@@ -26,10 +26,10 @@ XERCES_CPP_NAMESPACE_USE
 #endif
 
 #include <xqilla/framework/StringPool.hpp>
-#include <xqilla/exceptions/PathanException.hpp>
+#include <xqilla/exceptions/XQillaException.hpp>
 #include <xqilla/utils/XStr.hpp>
 #include <xqilla/context/impl/CollationImpl.hpp>
-#include <xqilla/dom-api/impl/PathanNSResolverImpl.hpp>
+#include <xqilla/dom-api/impl/XQillaNSResolverImpl.hpp>
 #include "../context/impl/VarStoreImpl.hpp"
 #include "../context/impl/VarTypeStoreImpl.hpp"
 #include "../functions/FunctionLookupImpl.hpp"
@@ -91,7 +91,7 @@ void *BaseMemoryManager::allocate(size_t amount)
     }
     catch (...) {}
     if(!newBlock) {
-      throw PathanException(PathanException::RUNTIME_ERR, X("BaseMemoryManager::allocate(): Out of memory"));
+      throw XQillaException(XQillaException::RUNTIME_ERR, X("BaseMemoryManager::allocate(): Out of memory"));
     }
 
     ++objectsAllocated_;
@@ -128,7 +128,7 @@ void *BaseMemoryManager::allocate(size_t amount)
   }
   catch (...) {}
   if(!newBlock) {
-    throw PathanException(PathanException::RUNTIME_ERR, X("BaseMemoryManager::allocate(): Out of memory"));
+    throw XQillaException(XQillaException::RUNTIME_ERR, X("BaseMemoryManager::allocate(): Out of memory"));
   }
 
   ++objectsAllocated_;
@@ -145,7 +145,7 @@ void *BaseMemoryManager::allocate(size_t amount)
   if(fCurrentBlock) {
 #if DEBUG_MEMORY
 	  if (fCurrentBlock->magic != DEBUG_MEMORY_ALLOCD)
-		  throw PathanException(PathanException::RUNTIME_ERR, X("BaseMemoryManager::allocate(): Corrupt block list"));		  
+		  throw XQillaException(XQillaException::RUNTIME_ERR, X("BaseMemoryManager::allocate(): Corrupt block list"));		  
 #endif
     fCurrentBlock->next = newMemList;
   }
@@ -187,9 +187,9 @@ void BaseMemoryManager::deallocate(void* p)
 #if DEBUG_MEMORY
     if (oldMemList->magic != DEBUG_MEMORY_ALLOCD) {
 	    if (oldMemList->magic == DEBUG_MEMORY_FREED)
-		    throw PathanException(PathanException::RUNTIME_ERR, X("BaseMemoryManager::deallocate(): Trying to free free'd memory"));
+		    throw XQillaException(XQillaException::RUNTIME_ERR, X("BaseMemoryManager::deallocate(): Trying to free free'd memory"));
 	    else
-		    throw PathanException(PathanException::RUNTIME_ERR, X("BaseMemoryManager::deallocate(): Trying to free unalloc'd memory"));
+		    throw XQillaException(XQillaException::RUNTIME_ERR, X("BaseMemoryManager::deallocate(): Trying to free unalloc'd memory"));
     } else
 	    oldMemList->magic = DEBUG_MEMORY_FREED;
 #endif
@@ -199,9 +199,9 @@ void BaseMemoryManager::deallocate(void* p)
 #if DEBUG_MEMORY
     if (oldMemList->prev->magic != DEBUG_MEMORY_ALLOCD) {
 	    if (oldMemList->prev->magic == DEBUG_MEMORY_FREED)
-		    throw PathanException(PathanException::RUNTIME_ERR, X("BaseMemoryManager::deallocate(): Free'd memory found on list"));
+		    throw XQillaException(XQillaException::RUNTIME_ERR, X("BaseMemoryManager::deallocate(): Free'd memory found on list"));
 	    else
-		    throw PathanException(PathanException::RUNTIME_ERR, X("BaseMemoryManager::deallocate(): stray memory found on list"));
+		    throw XQillaException(XQillaException::RUNTIME_ERR, X("BaseMemoryManager::deallocate(): stray memory found on list"));
     }
 #endif	    
       oldMemList->prev->next = oldMemList->next;
@@ -210,9 +210,9 @@ void BaseMemoryManager::deallocate(void* p)
 #if DEBUG_MEMORY
     if (oldMemList->next->magic != DEBUG_MEMORY_ALLOCD) {
 	    if (oldMemList->next->magic == DEBUG_MEMORY_FREED)
-		    throw PathanException(PathanException::RUNTIME_ERR, X("BaseMemoryManager::deallocate(): Free'd memory found on list (next)"));
+		    throw XQillaException(XQillaException::RUNTIME_ERR, X("BaseMemoryManager::deallocate(): Free'd memory found on list (next)"));
 	    else
-		    throw PathanException(PathanException::RUNTIME_ERR, X("BaseMemoryManager::deallocate(): stray memory found on list (next)"));
+		    throw XQillaException(XQillaException::RUNTIME_ERR, X("BaseMemoryManager::deallocate(): stray memory found on list (next)"));
     }
 #endif	    
       oldMemList->next->prev = oldMemList->prev;
@@ -224,9 +224,9 @@ void BaseMemoryManager::deallocate(void* p)
 #if DEBUG_MEMORY
     if (fCurrentBlock && fCurrentBlock->magic != DEBUG_MEMORY_ALLOCD) {
 	    if (fCurrentBlock->magic == DEBUG_MEMORY_FREED)
-		    throw PathanException(PathanException::RUNTIME_ERR, X("BaseMemoryManager::deallocate(): Free'd memory found on list (fCurrent)"));
+		    throw XQillaException(XQillaException::RUNTIME_ERR, X("BaseMemoryManager::deallocate(): Free'd memory found on list (fCurrent)"));
 	    else
-		    throw PathanException(PathanException::RUNTIME_ERR, X("BaseMemoryManager::deallocate(): stray memory found on list (fCurrent)"));
+		    throw XQillaException(XQillaException::RUNTIME_ERR, X("BaseMemoryManager::deallocate(): stray memory found on list (fCurrent)"));
     }
 #endif
     --objectsAllocated_;
@@ -263,8 +263,8 @@ Collation* BaseMemoryManager::createCollation(CollationHelper* helper) {
 }
 
 /** create a resolver */
-PathanNSResolver* BaseMemoryManager::createNSResolver(DOMNode *resolverNode) {
-  return new (this) PathanNSResolverImpl(this, resolverNode);
+XQillaNSResolver* BaseMemoryManager::createNSResolver(DOMNode *resolverNode) {
+  return new (this) XQillaNSResolverImpl(this, resolverNode);
 }
 
 /** create a store for variables */

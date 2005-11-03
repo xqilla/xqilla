@@ -16,12 +16,12 @@
 #ifndef _TOTALORDERCOMPARISON_HPP
 #define _TOTALORDERCOMPARISON_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/operators/ComparisonOperator.hpp>
 
 /** OpPlus operator function*/
-class PATHAN_EXPORT TotalOrderComparison : public ComparisonOperator
+class XQILLA_API TotalOrderComparison : public ComparisonOperator
 {
 public:
 	//greaterThan should be set to true if you want to param1 > param2 

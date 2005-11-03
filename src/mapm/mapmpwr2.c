@@ -17,33 +17,6 @@
  *  This software is provided "as is" without express or implied warranty.
  */
 
-/*
- *      $Id$
- *
- *      This file contains the Integer Power function and the result 
- *	is NOT ROUNDED. The exponent must be an integer >= zero.
- *
- *      This will typically be used in an application where full integer
- *	precision is required to be maintained.
- *
- *      $Log$
- *      Revision 1.1  2005/11/01 18:04:13  jpcs
- *      Initial check in.
- *
- *      Revision 1.1  2004/07/21 09:23:01  jpcs
- *      Initial check in of the Parthenon backup of Pathan.
- *
- *      Revision 1.1  2003/05/01 12:46:55  alby
- *      - Updated MAPM to version 4.6.1
- *      - The MAPM class is now thread-safe
- *
- *      Revision 1.2  2003/03/31 21:51:23  mike
- *      call generic error handling function
- *
- *      Revision 1.1  2002/11/03 21:02:04  mike
- *      Initial revision
- */
-
 #include "m_apm_lc.h"
 
 /****************************************************************************/

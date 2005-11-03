@@ -20,13 +20,13 @@
 #ifndef _FUNCTIONGETLOCALNAMEFROMQNAME_HPP
 #define _FUNCTIONGETLOCALNAMEFROMQNAME_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/ConstantFoldingFunction.hpp>
 #include <xqilla/runtime/Sequence.hpp>
 
 /** Name function */
-class PATHAN_EXPORT FunctionLocalNameFromQName : public ConstantFoldingFunction
+class XQILLA_API FunctionLocalNameFromQName : public ConstantFoldingFunction
 {
 public:
   static const XMLCh name[];

@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <sstream>
 
 #include <xqilla/ast/XQParenthesizedExpr.hpp>
@@ -22,7 +22,7 @@
 #include <xqilla/context/DynamicContext.hpp>
 
 XQParenthesizedExpr::XQParenthesizedExpr(XPath2MemoryManager* memMgr)
-	: ASTNodeImpl(memMgr), _astNodes(PathanAllocator<ASTNode*>(memMgr))
+	: ASTNodeImpl(memMgr), _astNodes(XQillaAllocator<ASTNode*>(memMgr))
 {
   setType(ASTNode::PARENTHESIZED);
 }

@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionString.hpp>
 #include <assert.h>
 #include <xqilla/utils/XPath2Utils.hpp>
@@ -73,10 +73,10 @@ Sequence FunctionString::collapseTreeInternal(DynamicContext* context, int flags
 Item::Ptr FunctionString::string(const Item::Ptr &item, DynamicContext *context)
 {
   if(item == NULLRCP) {
-    return (const Item::Ptr)context->getPathanFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context);
+    return (const Item::Ptr)context->getXQillaFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context);
   }
 	else if(item->isNode()) {
-    return (const Item::Ptr)context->getPathanFactory()->createString(((Node*)(const Item*)item)->dmStringValue(context), context);
+    return (const Item::Ptr)context->getXQillaFactory()->createString(((Node*)(const Item*)item)->dmStringValue(context), context);
   }
   else if(item->isAtomicValue()) {
     return (const Item::Ptr)((AnyAtomicType*)(const Item*)item)->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,

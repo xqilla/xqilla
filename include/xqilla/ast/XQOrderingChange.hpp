@@ -23,7 +23,7 @@
 #include <xqilla/ast/ASTNodeImpl.hpp>
 #include <xqilla/context/StaticContext.hpp>
 
-class XQENGINE_API XQOrderingChange : public ASTNodeImpl
+class XQILLA_API XQOrderingChange : public ASTNodeImpl
 {
 public:
   XQOrderingChange(StaticContext::NodeSetOrdering ordering, ASTNode* astNode, XPath2MemoryManager* expr);

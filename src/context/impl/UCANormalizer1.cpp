@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include "UCANormalizer.hpp"
 
 static wchar_t hlp00A0[]={0x0020,0};

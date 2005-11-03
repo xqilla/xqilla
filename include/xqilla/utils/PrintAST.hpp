@@ -18,7 +18,7 @@
 
 #include <string>
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/ast/ASTNode.hpp>
 #include <xqilla/axis/NodeTest.hpp>
 #include <xqilla/schema/SequenceType.hpp>
@@ -26,7 +26,7 @@
 #include <xqilla/ast/XQTypeswitch.hpp>
 #include <xqilla/functions/XQUserFunction.hpp>
 
-class PathanExpression;
+class XQillaExpression;
 class XQFunction;
 class ASTNodeImpl;
 class XQLiteral;
@@ -56,10 +56,10 @@ class XQOrderingChange;
 class DynamicContext;
 class Item;
 
-class PATHAN_EXPORT PrintAST
+class XQILLA_API PrintAST
 {
 public:
-  static std::string print(const PathanExpression *expr, const DynamicContext *context, int indent = 0);
+  static std::string print(const XQillaExpression *expr, const DynamicContext *context, int indent = 0);
   static std::string print(const XQQuery *query, const DynamicContext *context, int indent = 0);
   static std::string print(const ASTNode *item, const DynamicContext *context, int indent = 0);
 

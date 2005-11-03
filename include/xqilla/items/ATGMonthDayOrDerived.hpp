@@ -17,13 +17,13 @@
 #define _ATGMONTHDAYORDERIVED_HPP
 
 #include <xercesc/util/XercesDefs.hpp>
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/items/DateOrTimeType.hpp>
 #include <xqilla/items/Timezone.hpp>
 
 class DynamicContext;
 
-class PATHAN_EXPORT ATGMonthDayOrDerived : public DateOrTimeType
+class XQILLA_API ATGMonthDayOrDerived : public DateOrTimeType
 {
 public:
   typedef RefCountPointer<const ATGMonthDayOrDerived> Ptr;

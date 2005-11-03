@@ -44,20 +44,20 @@
 #include <xercesc/framework/StdOutFormatTarget.hpp>
 #include <xercesc/framework/XMLFormatter.hpp>
 
-//Pathan includes
+//XQilla includes
 
-#include <xqilla/simple-api/PathanEngine.hpp>
+#include <xqilla/simple-api/XQillaEngine.hpp>
 #include <xqilla/dom-api/XPath2Result.hpp>
-#include <xqilla/exceptions/PathanException.hpp>
-#include <xqilla/dom-api/PathanExpression.hpp>
-#include <xqilla/dom-api/PathanImplementation.hpp>
+#include <xqilla/exceptions/XQillaException.hpp>
+#include <xqilla/dom-api/XQillaExpression.hpp>
+#include <xqilla/dom-api/XQillaImplementation.hpp>
 #include <xqilla/runtime/Sequence.hpp>
-#include <xqilla/simple-api/PathanPlatformUtils.hpp>
+#include <xqilla/simple-api/XQillaPlatformUtils.hpp>
 #include <xqilla/items/ATDecimalOrDerived.hpp>
 #include <xqilla/items/Node.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
-#include <xqilla/dom-api/PathanNSResolver.hpp>
+#include <xqilla/dom-api/XQillaNSResolver.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 
 #define XERCES XERCES_CPP_NAMESPACE_QUALIFIER
@@ -144,7 +144,7 @@ int main(int argc, char *argv[])
     return 1;
   }
 
-  PathanException::setDebug(debug);
+  XQillaException::setDebug(debug);
 
   // run the parsed expression on the document(s)
   if(newArgC == 0) {
@@ -180,13 +180,13 @@ int runExpression(XERCES DOMDocument *document, const XMLCh* expression, const s
 
     try {
       //Evaluate expression on document
-      AutoRelease<DynamicContext> context(PathanEngine::createContext(document));
+      AutoRelease<DynamicContext> context(XQillaEngine::createContext(document));
       context->setXPath1CompatibilityMode(bXPath1Compatible);
 
-      PathanNSResolver *nsR = PathanEngine::createNSResolver(document->getDocumentElement(), context->getMemoryManager());
+      XQillaNSResolver *nsR = XQillaEngine::createNSResolver(document->getDocumentElement(), context->getMemoryManager());
       context->setNSResolver(nsR);
 
-      AutoRelease<PathanExpression> parsedExpression(PathanEngine::createExpression(expression, context));
+      AutoRelease<XQillaExpression> parsedExpression(XQillaEngine::createExpression(expression, context));
 
       DynamicContext *eval_context = parsedExpression->createContext(); // Memory managed by parsedExpression
       eval_context->setExternalContextNode(document->getDocumentElement());
@@ -201,7 +201,7 @@ int runExpression(XERCES DOMDocument *document, const XMLCh* expression, const s
         printResultNodes(result, filename);
       }
     }
-    catch(const PathanException &e) {
+    catch(const XQillaException &e) {
       std::cerr << XERCES XMLString::transcode(e.getString()) << std::endl;
       return 1;
     }
@@ -318,7 +318,7 @@ XMLCh* getPath(const XERCES DOMNode *node, const DynamicContext* context)
 int init(bool doValidate)
 {
   try{
-    PathanPlatformUtils::initialize();
+    XQillaPlatformUtils::initialize();
   }
   catch (const XERCES XMLException& eXerces){
     char *pMsg = XERCES XMLString::transcode(eXerces.getMessage());
@@ -330,9 +330,9 @@ int init(bool doValidate)
   }
 
   XERCES XMLBuffer implementation_name;
-  implementation_name.set(PathanImplementation::gPathan);
+  implementation_name.set(XQillaImplementation::gXQilla);
   implementation_name.append(XERCES chSpace);
-  implementation_name.append(PathanImplementation::g3_0);
+  implementation_name.append(XQillaImplementation::g3_0);
 
   _DOMImpl = XERCES DOMImplementationRegistry::getDOMImplementation(implementation_name.getRawBuffer());
 
@@ -357,7 +357,7 @@ void term()
 {
   delete _xmlparser; //parser must be deleted before calling Terminate
   delete _errHandler;
-  PathanPlatformUtils::terminate();
+  XQillaPlatformUtils::terminate();
 }
 
 // parse an XML file to memory

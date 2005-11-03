@@ -20,7 +20,7 @@
 #ifndef _VARSTOREIMPL_HPP
 #define _VARSTOREIMPL_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/context/VariableStore.hpp>
 #include <xqilla/context/impl/VariableStoreTemplate.hpp>
@@ -32,7 +32,7 @@
 class XPath2MemoryManager;
 
 /** implementation of the variable store. */
-class PATHAN_EXPORT VarStoreImpl : public VariableStore
+class XQILLA_API VarStoreImpl : public VariableStore
 {
 public:
   /** constructor. automatically creates a global store for the

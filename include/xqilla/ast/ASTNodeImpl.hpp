@@ -25,7 +25,7 @@ class Numeric;
 #include <xqilla/ast/StaticResolutionContext.hpp>
 
 /** class which is used as base for all the different data types */
-class PATHAN_EXPORT ASTNodeImpl : public ASTNode
+class XQILLA_API ASTNodeImpl : public ASTNode
 {
 public:
   ASTNodeImpl(XPath2MemoryManager* memMgr);

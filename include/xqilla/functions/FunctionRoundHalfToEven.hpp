@@ -20,11 +20,11 @@
 #ifndef _FUNCTIONROUNDHALFTOEVEN_HPP
 #define _FUNCTIONROUNDHALFTOEVEN_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/NumericFunction.hpp>
 
-class PATHAN_EXPORT FunctionRoundHalfToEven : public NumericFunction
+class XQILLA_API FunctionRoundHalfToEven : public NumericFunction
 {
 public:
   static const XMLCh name[];

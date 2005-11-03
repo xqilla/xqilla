@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionTrue.hpp>
 #include <xqilla/items/ATBooleanOrDerived.hpp>
 #include <xqilla/context/DynamicContext.hpp>
@@ -38,5 +38,5 @@ FunctionTrue::FunctionTrue(const VectorOfASTNodes &args, XPath2MemoryManager* me
 Sequence FunctionTrue::collapseTreeInternal(DynamicContext* context, int flags) const
 {
 	XPath2MemoryManager* memMgr = context->getMemoryManager();
-	return Sequence(context->getPathanFactory()->createBoolean(true, context), memMgr);
+	return Sequence(context->getXQillaFactory()->createBoolean(true, context), memMgr);
 }

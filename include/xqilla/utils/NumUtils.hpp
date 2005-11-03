@@ -16,14 +16,14 @@
 #ifndef _NUMUTILS_HPP
 #define _NUMUTILS_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/mapm/m_apm.h>
 
 class XPath2MemoryManager;
 
 /** class with static methods for dealing with floating point numbers */
-class PATHAN_EXPORT NumUtils
+class XQILLA_API NumUtils
 {
 public:
   /** return MAPM to int */

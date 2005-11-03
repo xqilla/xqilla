@@ -13,10 +13,10 @@
  * $Id$
  */
 
-#ifndef __PATHANENGINE_HPP
-#define __PATHANENGINE_HPP
+#ifndef __XQILLAENGINE_HPP
+#define __XQILLAENGINE_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xercesc/dom/DOMException.hpp>
 #include <xercesc/dom/DOMXPathException.hpp>
@@ -27,8 +27,8 @@
 class XPath2MemoryManager;
 class XPath2Result;
 class DynamicContext;
-class PathanExpression;
-class PathanNSResolver;
+class XQillaExpression;
+class XQillaNSResolver;
 class ASTNode;
 
 XERCES_CPP_NAMESPACE_BEGIN 
@@ -41,10 +41,10 @@ XERCES_CPP_NAMESPACE_END
 
 
 /**
- * The <code>PathanEngine</code> class provides functions to create expressions and evaluate with
+ * The <code>XQillaEngine</code> class provides functions to create expressions and evaluate with
  * a given context, and shortcuts to creating your own context.
  */
-class PATHAN_EXPORT PathanEngine : public XERCES_CPP_NAMESPACE_QUALIFIER XMemory
+class XQILLA_API XQillaEngine : public XERCES_CPP_NAMESPACE_QUALIFIER XMemory
 {
 private:
     // -----------------------------------------------------------------------
@@ -52,7 +52,7 @@ private:
     // -----------------------------------------------------------------------
     /** @name Constructor */
     //@{    
-    PathanEngine();
+    XQillaEngine();
     //@}
 
 public:
@@ -72,8 +72,8 @@ public:
    * to alter the context to evaluate the expression, obtain a new context using the
    * StaticContext::createDynamicContext() method.
    * @param memMgr of type <code>MemoryManager</code> - The memory manager used to create the
-   * <code>PathanExpression</code>. Defaults to the xerces default memory manager.
-   * @return <code>PathanExpression</code> The compiled form of the XPath2 expression.
+   * <code>XQillaExpression</code>. Defaults to the xerces default memory manager.
+   * @return <code>XQillaExpression</code> The compiled form of the XPath2 expression.
    * @exception XPathException
    * INVALID_EXPRESSION_ERR: Raised if the expression is not legal according to the 
    * rules of the <code>DOMXPathEvaluator</code>.
@@ -81,7 +81,7 @@ public:
    * NAMESPACE_ERR: Raised if the expression contains namespace prefixes which cannot
    * be resolved by the specified <code>XPathNSResolver</code>.
    */
-	static PathanExpression *createExpression(const XMLCh* expression, DynamicContext* context,
+	static XQillaExpression *createExpression(const XMLCh* expression, DynamicContext* context,
                                             XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr = XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager)
     throw (XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException, XERCES_CPP_NAMESPACE_QUALIFIER DOMException);
 
@@ -106,7 +106,7 @@ public:
 
   /**
    * Creates a context suitable for parsing an expression with.
-   * @param document of type <code>DOMDocument</code> - the document, that must be from the Pathan
+   * @param document of type <code>DOMDocument</code> - the document, that must be from the XQilla
    * implementation of xerces, to get the grammar from. If the parameter is null, no grammar wil
    * be set in the context.
    * @param memMgr of type <code>MemoryManager</code> - The memory manager used to create the
@@ -119,7 +119,7 @@ public:
   /**
    * Creates a parsed XPath2 expression, using the given context. This method returns a ASTNode,
    * which is the root of the executable parse tree for the expression, and is more flexible than
-   * the PathanExpression returned above.
+   * the XQillaExpression returned above.
    * @param expression of type XMLCh - The XPath expression string to be parsed.
    * @param context of type <code>DynamicContext</code> - The static context to use during parsing.
    * The context must not change or be deleted during the lifetime of the ASTNode. If you want
@@ -142,12 +142,12 @@ public:
     throw (XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException, XERCES_CPP_NAMESPACE_QUALIFIER DOMException);
 
   /**
-   * Create a PathanNSResolver
+   * Create a XQillaNSResolver
    * @param memMgr of type <code>XPath2MemoryManager</code> - The memory manager used to create the
-   * <code>PathanNSResolver</code>.
-   * @return An implementation of <code>PathanNSResolver</code>
+   * <code>XQillaNSResolver</code>.
+   * @return An implementation of <code>XQillaNSResolver</code>
    */
-  static PathanNSResolver *createNSResolver(XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* nodeResolver,
+  static XQillaNSResolver *createNSResolver(XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* nodeResolver,
                                             XPath2MemoryManager *memMgr);
 
   /**
@@ -163,5 +163,5 @@ public:
 };
 
 
-#endif //__PATHANENGINE_HPP
+#endif //__XQILLAENGINE_HPP
 

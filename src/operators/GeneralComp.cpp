@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <assert.h>
 #include <sstream>
 
@@ -28,7 +28,7 @@
 #include <xqilla/items/AnyAtomicType.hpp>
 #include <xqilla/items/ATBooleanOrDerived.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
-#include <xqilla/context/PathanFactory.hpp>
+#include <xqilla/context/XQillaFactory.hpp>
 #include <xqilla/context/impl/CodepointCollation.hpp>
 
 /*static*/ const XMLCh GeneralComp::name[]={ XERCES_CPP_NAMESPACE_QUALIFIER chLatin_c, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_m, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_p, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
@@ -147,7 +147,7 @@ Item::Ptr GeneralComp::GeneralCompResult::getSingleResult(DynamicContext *contex
     Sequence arg2_sequence(context->getMemoryManager());
     while((item2 = (const AnyAtomicType::Ptr)arg2.next(context)) != NULLRCP) {
       if(compare(_op->getOperation(), item1, item2, collation, context))
-        return (const Item::Ptr)context->getPathanFactory()->createBoolean(true, context);
+        return (const Item::Ptr)context->getXQillaFactory()->createBoolean(true, context);
       arg2_sequence.addItem(item2);
     }
 
@@ -156,11 +156,11 @@ Item::Ptr GeneralComp::GeneralCompResult::getSingleResult(DynamicContext *contex
     while((item1 = (const AnyAtomicType::Ptr)arg1.next(context)) != NULLRCP) {
       for(itSecond = arg2_sequence.begin(); itSecond != arg2_sequence.end(); ++itSecond) {
         if(compare(_op->getOperation(), item1, (const AnyAtomicType::Ptr)*itSecond, collation, context))
-          return (const Item::Ptr)context->getPathanFactory()->createBoolean(true, context);
+          return (const Item::Ptr)context->getXQillaFactory()->createBoolean(true, context);
       }
     }
   }
-  return (const Item::Ptr)context->getPathanFactory()->createBoolean(false, context);
+  return (const Item::Ptr)context->getXQillaFactory()->createBoolean(false, context);
 }
 
 std::string GeneralComp::GeneralCompResult::asString(DynamicContext *context, int indent) const
