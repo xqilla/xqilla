@@ -28,7 +28,7 @@
 #include "../utils/DateUtils.hpp"
 #include <xqilla/items/ATDecimalOrDerived.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xqilla/context/XQillaFactory.hpp>
+#include <xqilla/context/ItemFactory.hpp>
 
 #include <xercesc/util/XMLString.hpp>
 
@@ -116,7 +116,7 @@ bool ATGMonthDayOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const Dy
     if ( _hasTimezone == true ) {
         buffer.append(timezone_->asString(context));
   }
-    ATDateTimeOrDerived::Ptr myValue=context->getXQillaFactory()->createDateTime(buffer.getRawBuffer(), context);
+    ATDateTimeOrDerived::Ptr myValue=context->getItemFactory()->createDateTime(buffer.getRawBuffer(), context);
 
     buffer.set(s1972);
     buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
@@ -132,7 +132,7 @@ bool ATGMonthDayOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const Dy
     if ( targetGMonthDay->_hasTimezone == true ) {
         buffer.append(targetGMonthDay->timezone_->asString(context));
   }
-    ATDateTimeOrDerived::Ptr targetValue=context->getXQillaFactory()->createDateTime(buffer.getRawBuffer(), context);
+    ATDateTimeOrDerived::Ptr targetValue=context->getItemFactory()->createDateTime(buffer.getRawBuffer(), context);
 
     return myValue->equals(targetValue, context);
 }
@@ -186,7 +186,7 @@ ATGMonthDayOrDerived::Ptr ATGMonthDayOrDerivedImpl::setTimezone(const Timezone::
   if (hasTimezone) 
     buffer.append(timezone->asString(context));
   const XMLCh* gMonthDay = context->getMemoryManager()->getPooledString(buffer.getRawBuffer());
-  return context->getXQillaFactory()->createGMonthDayOrDerived(this->getTypeURI(), this->getTypeName(), gMonthDay, context);        
+  return context->getItemFactory()->createGMonthDayOrDerived(this->getTypeURI(), this->getTypeName(), gMonthDay, context);        
 }
 
 
@@ -352,6 +352,6 @@ void ATGMonthDayOrDerivedImpl::setGMonthDay(const XMLCh* const value, const Dyna
   }
   timezone_ = new Timezone(zonehh, zonemm);
 
-  _MM = context->getXQillaFactory()->createNonNegativeInteger(MM, context);  
-  _DD = context->getXQillaFactory()->createNonNegativeInteger(DD, context);  
+  _MM = context->getItemFactory()->createNonNegativeInteger(MM, context);  
+  _DD = context->getItemFactory()->createNonNegativeInteger(DD, context);  
 }

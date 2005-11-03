@@ -24,7 +24,7 @@
 #include <xqilla/items/ATAnyURIOrDerived.hpp>
 #include <xqilla/items/ATStringOrDerived.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xqilla/context/XQillaFactory.hpp>
+#include <xqilla/context/ItemFactory.hpp>
 
 const XMLCh FunctionCompare::name[] = {
   XERCES_CPP_NAMESPACE_QUALIFIER chLatin_c, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_m, 
@@ -57,7 +57,7 @@ Sequence FunctionCompare::collapseTreeInternal(DynamicContext* context, int flag
         Sequence collArg = getParamNumber(3,context);
         const XMLCh* collName = collArg.first()->asString(context);
         try {
-            context->getXQillaFactory()->createAnyURI(collName, context);
+            context->getItemFactory()->createAnyURI(collName, context);
         } catch(XPath2ErrorException &e) {
             DSLthrow(FunctionException, X("FunctionCompare::collapseTreeInternal"), X("Invalid argument to compare function"));  
         }
@@ -72,7 +72,7 @@ Sequence FunctionCompare::collapseTreeInternal(DynamicContext* context, int flag
 
     const XMLCh* string1 = str1.first()->asString(context);
     const XMLCh* string2 = str2.first()->asString(context);
-    Sequence result(context->getXQillaFactory()->createInteger(collation->compare(string1,string2), context), context->getMemoryManager());
+    Sequence result(context->getItemFactory()->createInteger(collation->compare(string1,string2), context), context->getMemoryManager());
 
     return result;
 }

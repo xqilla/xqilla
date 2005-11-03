@@ -20,7 +20,7 @@
 #include <xqilla/framework/XPath2MemoryManager.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xqilla/context/XQillaFactory.hpp>
+#include <xqilla/context/ItemFactory.hpp>
 
 #include <xqilla/items/ATHexBinaryOrDerived.hpp>
 
@@ -53,7 +53,7 @@ void ATHexBinaryTester::run(const DynamicContext* context) {
 
 const ATHexBinaryOrDerived::Ptr ATHexBinaryTester::createHexBinary(const XMLCh* value,
                                    const DynamicContext* context) {
-  return context->getXQillaFactory()->createDerivedFromAtomicType(
+  return context->getItemFactory()->createDerivedFromAtomicType(
       XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
       XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_HEXBINARY,
       value, context);

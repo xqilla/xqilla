@@ -17,8 +17,8 @@
   Factory base class
 */
 
-#ifndef _XQILLAFACTORY_HPP
-#define _XQILLAFACTORY_HPP
+#ifndef _ITEMFACTORY_HPP
+#define _ITEMFACTORY_HPP
 
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/mapm/m_apm.h>
@@ -41,10 +41,10 @@
 #include <xqilla/items/ATUntypedAtomic.hpp>
 #include <xqilla/items/Node.hpp>
 
-class XQILLA_API XQillaFactory
+class XQILLA_API ItemFactory
 {
 public:
-  virtual ~XQillaFactory() {};
+  virtual ~ItemFactory() {};
 
   /* @name Atomic type factory methods */
 
@@ -52,6 +52,29 @@ public:
   virtual AnyAtomicType::Ptr createDerivedFromAtomicType(AnyAtomicType::AtomicObjectType typeIndex, const XMLCh* typeURI,
                                                          const XMLCh* typeName, const XMLCh* value, const DynamicContext* context) = 0;
   virtual AnyAtomicType::Ptr createDerivedFromAtomicType(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* value, const DynamicContext* context) = 0;
+
+  /* @name Node factory methods */
+
+  class XQILLA_API ElementChild {
+  public:
+    ElementChild(const Node::Ptr &n) : node(n), clone(true) {}
+    ElementChild(const Node::Ptr &n, bool c) : node(n), clone(c) {}
+    operator const Node::Ptr &() { return node; }
+    const Node *operator ->() const { return node.get(); }
+
+    Node::Ptr node;
+    bool clone;
+  };
+
+  virtual Node::Ptr createTextNode(const XMLCh *value, const DynamicContext *context) const = 0;
+  virtual Node::Ptr createCommentNode(const XMLCh *value, const DynamicContext *context) const = 0;
+  virtual Node::Ptr createPINode(const XMLCh *name, const XMLCh *value, const DynamicContext *context) const = 0;
+  virtual Node::Ptr createAttributeNode(const XMLCh *uri, const XMLCh *prefix, const XMLCh *name,
+                                        const XMLCh *value, const DynamicContext *context) const = 0;
+  virtual Node::Ptr createElementNode(const XMLCh *uri, const XMLCh *prefix, const XMLCh *name,
+                                      const std::vector<Node::Ptr> &attrList, const std::vector<ElementChild> &childList,
+                                      const DynamicContext *context) const = 0;
+  virtual Node::Ptr createDocumentNode(const std::vector<Node::Ptr> &childList, const DynamicContext *context) const = 0;
 
   /* @name Number factory methods */
 

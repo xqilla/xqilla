@@ -19,7 +19,7 @@
 #include <xqilla/items/AnyAtomicTypeConstructor.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/context/DynamicContext.hpp>
-#include <xqilla/context/XQillaFactory.hpp>
+#include <xqilla/context/ItemFactory.hpp>
 #include <xqilla/utils/UTF8Str.hpp>
 
 AnyAtomicTypeConstructor::AnyAtomicTypeConstructor(const XMLCh* typeURI,
@@ -40,7 +40,7 @@ bool AnyAtomicTypeConstructor::isNumeric() const
 
 Item::Ptr AnyAtomicTypeConstructor::createItem(const DynamicContext* context) const
 {
-  return context->getXQillaFactory()->createDerivedFromAtomicType(_typeURI, _typeName, _value, context);
+  return context->getItemFactory()->createDerivedFromAtomicType(_typeURI, _typeName, _value, context);
 }
 
 std::string AnyAtomicTypeConstructor::asString(const DynamicContext* context) const

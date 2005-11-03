@@ -24,7 +24,7 @@
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 #include <xqilla/framework/XPath2MemoryManager.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
-#include <xqilla/context/XQillaFactory.hpp>
+#include <xqilla/context/ItemFactory.hpp>
 #include <assert.h>
 
 ATFloatOrDerivedImpl::
@@ -103,16 +103,16 @@ AnyAtomicType::Ptr ATFloatOrDerivedImpl::castAsInternal(AtomicObjectType targetI
                                          XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_INTEGER)) {
         char obuf[1024];
         _float.toIntegerString(obuf);
-        return (const AnyAtomicType::Ptr)context->getXQillaFactory()->createDecimalOrDerived(targetURI, targetType, obuf, context);
+        return (const AnyAtomicType::Ptr)context->getItemFactory()->createDecimalOrDerived(targetURI, targetType, obuf, context);
       }    
       else
-        return (const AnyAtomicType::Ptr)context->getXQillaFactory()->createDecimalOrDerived(targetURI, targetType, _float, context);
+        return (const AnyAtomicType::Ptr)context->getItemFactory()->createDecimalOrDerived(targetURI, targetType, _float, context);
     }
     case BOOLEAN: {
       if (this->isZero() || this->isNaN()) {
-        return context->getXQillaFactory()->createBooleanOrDerived(targetURI, targetType, false, context);
+        return context->getItemFactory()->createBooleanOrDerived(targetURI, targetType, false, context);
       } else {
-        return context->getXQillaFactory()->createBooleanOrDerived(targetURI, targetType, true, context);
+        return context->getItemFactory()->createBooleanOrDerived(targetURI, targetType, true, context);
       }
     }
     default: return AnyAtomicType::castAsInternal(targetIndex, targetURI, targetType, context);
@@ -142,7 +142,7 @@ const XMLCh* ATFloatOrDerivedImpl::asString(const DynamicContext* context) const
         if(absVal<upper && absVal>=lower)
         {
           // treat it as a decimal
-          const ATDecimalOrDerived::Ptr decimal=context->getXQillaFactory()->createDecimal(_float, context);
+          const ATDecimalOrDerived::Ptr decimal=context->getItemFactory()->createDecimal(_float, context);
           return decimal->asString(context);
         }
         else
@@ -713,27 +713,27 @@ AnyAtomicType::AtomicObjectType ATFloatOrDerivedImpl::getPrimitiveTypeIndex() co
 
 /* returns a new infinity xs:float*/
 ATFloatOrDerived::Ptr ATFloatOrDerivedImpl::infinity(const DynamicContext* context) const {
-  return context->getXQillaFactory()->createFloat(Numeric::INF_string, context);
+  return context->getItemFactory()->createFloat(Numeric::INF_string, context);
 }
 
 /* returns a new negative infinity xs:float*/
 ATFloatOrDerived::Ptr ATFloatOrDerivedImpl::negInfinity(const DynamicContext* context) const {
-  return context->getXQillaFactory()->createFloat(Numeric::NegINF_string, context);
+  return context->getItemFactory()->createFloat(Numeric::NegINF_string, context);
 }
   
 /* returns a NaN xs:float*/
 ATFloatOrDerived::Ptr ATFloatOrDerivedImpl::notANumber(const DynamicContext* context) const {
-  return context->getXQillaFactory()->createFloat(Numeric::NaN_string, context);
+  return context->getItemFactory()->createFloat(Numeric::NaN_string, context);
 }
 
 /* returns a -0 ATFloatOrDerived*/
 ATFloatOrDerived::Ptr ATFloatOrDerivedImpl::negZero(const DynamicContext* context) const {
-  return context->getXQillaFactory()->createFloat(Numeric::NegZero_string, context);
+  return context->getItemFactory()->createFloat(Numeric::NegZero_string, context);
 }
 
 /*returns a ATFloatOrDerived of value value*/
 ATFloatOrDerived::Ptr ATFloatOrDerivedImpl::newFloat(MAPM value, const DynamicContext* context) const {
-  return context->getXQillaFactory()->createFloat(value, context);
+  return context->getItemFactory()->createFloat(value, context);
 }
 
 void ATFloatOrDerivedImpl::setFloat(const XMLCh* const value, const StaticContext *context) {

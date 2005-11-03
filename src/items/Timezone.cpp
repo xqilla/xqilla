@@ -25,7 +25,7 @@
 #include "../utils/DateUtils.hpp"
 #include <xqilla/items/ATDecimalOrDerived.hpp>
 #include <xqilla/items/ATDurationOrDerived.hpp>
-#include <xqilla/context/XQillaFactory.hpp>
+#include <xqilla/context/ItemFactory.hpp>
 
 #include <xercesc/util/XMLString.hpp>
 #include <xercesc/util/XMLUniDefs.hpp>
@@ -131,7 +131,7 @@ ATDurationOrDerived::Ptr Timezone::asDayTimeDuration(const DynamicContext* conte
     buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_M);        
   }
 
-  return context->getXQillaFactory()->createDayTimeDuration(buffer.getRawBuffer(), context);
+  return context->getItemFactory()->createDayTimeDuration(buffer.getRawBuffer(), context);
   
 
 }

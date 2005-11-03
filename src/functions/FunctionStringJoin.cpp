@@ -59,6 +59,6 @@ Sequence FunctionStringJoin::collapseTreeInternal(DynamicContext* context, int f
     }
   }
   
-  const ATStringOrDerived::Ptr strResult = context->getXQillaFactory()->createString(result.getRawBuffer(), context);
+  const ATStringOrDerived::Ptr strResult = context->getItemFactory()->createString(result.getRawBuffer(), context);
   return Sequence(strResult, memMgr);
 }

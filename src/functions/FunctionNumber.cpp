@@ -80,14 +80,14 @@ Sequence FunctionNumber::collapseTreeInternal(DynamicContext* context, int flags
 Item::Ptr FunctionNumber::number(const AnyAtomicType::Ptr &item, DynamicContext *context)
 {
   if(item == NULLRCP) {
-    return (const Item::Ptr)context->getXQillaFactory()->createDouble(Numeric::NaN_string, context);
+    return (const Item::Ptr)context->getItemFactory()->createDouble(Numeric::NaN_string, context);
   }
   else {
     try {
       return (const Item::Ptr)item->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                                      XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DOUBLE, context);
     } catch (XPath2TypeCastException &e) {
-      return (const Item::Ptr)context->getXQillaFactory()->createDouble(Numeric::NaN_string, context);
+      return (const Item::Ptr)context->getItemFactory()->createDouble(Numeric::NaN_string, context);
     }   
   }
 }

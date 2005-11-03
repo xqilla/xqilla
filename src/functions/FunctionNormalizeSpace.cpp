@@ -70,7 +70,7 @@ Sequence FunctionNormalizeSpace::collapseTreeInternal(DynamicContext* context, i
     } else {
         Sequence strParm=getParamNumber(1,context);
         if(strParm.isEmpty())
-            return Sequence(context->getXQillaFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context), memMgr);
+            return Sequence(context->getItemFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context), memMgr);
 
         str = strParm.first()->asString(context);
     }
@@ -110,6 +110,6 @@ Sequence FunctionNormalizeSpace::collapseTreeInternal(DynamicContext* context, i
             result = XPath2Utils::deleteData(result, XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(result) -1, 1, memMgr);
         }
     }
-    return Sequence(context->getXQillaFactory()->createString(result, context), memMgr);
+    return Sequence(context->getItemFactory()->createString(result, context), memMgr);
 }
 

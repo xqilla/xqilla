@@ -38,5 +38,5 @@ FunctionTrue::FunctionTrue(const VectorOfASTNodes &args, XPath2MemoryManager* me
 Sequence FunctionTrue::collapseTreeInternal(DynamicContext* context, int flags) const
 {
 	XPath2MemoryManager* memMgr = context->getMemoryManager();
-	return Sequence(context->getXQillaFactory()->createBoolean(true, context), memMgr);
+	return Sequence(context->getItemFactory()->createBoolean(true, context), memMgr);
 }

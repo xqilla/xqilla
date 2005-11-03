@@ -44,7 +44,7 @@ Sequence FunctionEscapeURI::collapseTreeInternal(DynamicContext* context, int fl
 {
   Sequence string=getParamNumber(1, context);
   if(string.isEmpty())
-    return Sequence(context->getXQillaFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context),
+    return Sequence(context->getItemFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context),
                     context->getMemoryManager());
   
   const XMLCh* str = string.first()->asString(context);
@@ -56,6 +56,6 @@ Sequence FunctionEscapeURI::collapseTreeInternal(DynamicContext* context, int fl
     escapedURI = XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString;
   }
   
-  return Sequence(context->getXQillaFactory()->createString(escapedURI, context),
+  return Sequence(context->getItemFactory()->createString(escapedURI, context),
                   context->getMemoryManager());
 }

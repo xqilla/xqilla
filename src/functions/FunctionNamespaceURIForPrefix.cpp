@@ -70,12 +70,12 @@ Sequence FunctionNamespaceURIForPrefix::collapseTreeInternal(DynamicContext* con
     ATQNameOrDerived::Ptr name = ns->dmNodeName(context);
     if(name.isNull()) {
       if(prefix == 0) {
-        return Sequence(context->getXQillaFactory()->createAnyURI(ns->dmStringValue(context), context), context->getMemoryManager());
+        return Sequence(context->getItemFactory()->createAnyURI(ns->dmStringValue(context), context), context->getMemoryManager());
       }
     }
     else {
       if(XPath2Utils::equals(((const ATQNameOrDerived*)name.get())->getName(), prefix)) {
-        return Sequence(context->getXQillaFactory()->createAnyURI(ns->dmStringValue(context), context), context->getMemoryManager());
+        return Sequence(context->getItemFactory()->createAnyURI(ns->dmStringValue(context), context), context->getMemoryManager());
       }
     }
   }

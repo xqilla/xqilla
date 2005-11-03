@@ -33,7 +33,7 @@
 #include <xqilla/ast/XQSequence.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 #include <xqilla/runtime/SequenceResult.hpp>
-#include <xqilla/context/XQillaFactory.hpp>
+#include <xqilla/context/ItemFactory.hpp>
 
 ASTNodeImpl::ASTNodeImpl(XPath2MemoryManager* memMgr)
   : _predList(XQillaAllocator<PredInfo>(memMgr)),
@@ -403,7 +403,7 @@ Item::Ptr ASTNodeImpl::PredicateFilterResult::next(DynamicContext *context)
     if(first_ != NULLRCP && second_ == NULLRCP && first_->isAtomicValue() &&
        ((const AnyAtomicType::Ptr)first_)->isNumericValue()) {
       const Numeric::Ptr num = (const Numeric::Ptr)first_;
-      if(!num->equals((const AnyAtomicType::Ptr)context->getXQillaFactory()->createInteger((long)contextPos_, context), context)) {
+      if(!num->equals((const AnyAtomicType::Ptr)context->getItemFactory()->createInteger((long)contextPos_, context), context)) {
         result = 0;
       }
       else if(!contextUsed) {
@@ -536,7 +536,7 @@ Item::Ptr ASTNodeImpl::NumericPredicateFilterResult::next(DynamicContext *contex
   if(todo_) {
     todo_ = false;
 
-    Numeric::Ptr one = context->getXQillaFactory()->createInteger(1, context);
+    Numeric::Ptr one = context->getItemFactory()->createInteger(1, context);
 
     AutoContextInfoReset autoReset(context);
     context->setContextSize(contextSize_);

@@ -59,7 +59,7 @@ Sequence FunctionName::collapseTreeInternal(DynamicContext* context, int flags) 
   {
     Sequence arg=getParamNumber(1,context);
     if(arg.isEmpty())
-      return Sequence(context->getXQillaFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context), memMgr);
+      return Sequence(context->getItemFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context), memMgr);
     ctxNode=arg.first();
   }
   else

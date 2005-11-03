@@ -22,7 +22,7 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xercesc/dom/DOMNode.hpp>
-#include <xqilla/context/XQillaFactory.hpp>
+#include <xqilla/context/ItemFactory.hpp>
 
 /*static*/ const XMLCh NodeComparison::name[]={ XERCES_CPP_NAMESPACE_QUALIFIER chLatin_i, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_s, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
 
@@ -49,7 +49,7 @@ Item::Ptr NodeComparison::NodeComparisonResult::getSingleResult(DynamicContext *
 	const Node::Ptr arg2 = _op->getNodeParam(1,context);
   if(arg2 == NULLRCP) return 0;
   
-	return (const Item::Ptr)context->getXQillaFactory()->createBoolean(arg1->equals(arg2), context);
+	return (const Item::Ptr)context->getItemFactory()->createBoolean(arg1->equals(arg2), context);
 }
 
 std::string NodeComparison::NodeComparisonResult::asString(DynamicContext *context, int indent) const

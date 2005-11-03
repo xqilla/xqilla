@@ -52,7 +52,7 @@ Sequence FunctionQName::collapseTreeInternal(DynamicContext* context, int flags)
   const XMLCh* prefix = XPath2NSUtils::getPrefix(local, context->getMemoryManager());
   local = XPath2NSUtils::getLocalName(local);
   //Construct QName here
-  Sequence result(context->getXQillaFactory()->createQName(uri, prefix, local, context),
+  Sequence result(context->getItemFactory()->createQName(uri, prefix, local, context),
                   context->getMemoryManager());
 
 	return result;

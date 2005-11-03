@@ -13,30 +13,36 @@
  * $Id$
  */
 
-/*
-  Factory base class
-*/
+#if !defined(AFXQ_ITEMFACTORYIMPL_H__D608C994_F090_4206_9473_81F3D7350510__INCLUDED_)
+#define AFXQ_ITEMFACTORYIMPL_H__D608C994_F090_4206_9473_81F3D7350510__INCLUDED_
 
-#ifndef _XQILLAFACTORYIMPL_HPP
-#define _XQILLAFACTORYIMPL_HPP
+#include <xqilla/context/ItemFactory.hpp>
 
-#include <xqilla/context/XQillaFactory.hpp>
 #include <xqilla/items/DatatypeLookup.hpp>
 #include <xqilla/items/impl/NodeImpl.hpp>
 
 #include <xercesc/framework/MemoryManager.hpp>
 #include <xercesc/dom/DOMDocument.hpp>
 
-class DatatypeLookup;
-class DocumentCache;
-
-class XQILLA_API XQillaFactoryImpl : public XQillaFactory
+class XQILLA_API ItemFactoryImpl : public ItemFactory
 {
 public:
-  XQillaFactoryImpl(const DocumentCache* dc, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr);
-  virtual ~XQillaFactoryImpl();
+  ItemFactoryImpl(const DocumentCache* dc, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr);
+  virtual ~ItemFactoryImpl();
+
+  virtual void release();
 
   /* @name Node factory methods */
+
+  virtual Node::Ptr createTextNode(const XMLCh *value, const DynamicContext *context) const;
+  virtual Node::Ptr createCommentNode(const XMLCh *value, const DynamicContext *context) const;
+  virtual Node::Ptr createPINode(const XMLCh *name, const XMLCh *value, const DynamicContext *context) const;
+  virtual Node::Ptr createAttributeNode(const XMLCh *uri, const XMLCh *prefix, const XMLCh *name,
+                                        const XMLCh *value, const DynamicContext *context) const;
+  virtual Node::Ptr createElementNode(const XMLCh *uri, const XMLCh *prefix, const XMLCh *name,
+                                      const std::vector<Node::Ptr> &attrList, const std::vector<ItemFactory::ElementChild> &childList,
+                                      const DynamicContext *context) const;
+  virtual Node::Ptr createDocumentNode(const std::vector<Node::Ptr> &childList, const DynamicContext *context) const;
 
   /* @name Atomic type factory methods */
 
@@ -101,12 +107,16 @@ public:
 
   virtual ATAnyURIOrDerived::Ptr createAnyURI(const XMLCh* value, const DynamicContext* context);
 
-  virtual ATQNameOrDerived::Ptr createQName(const XMLCh* uri, const XMLCh *prefix, const XMLCh* name, const DynamicContext* context);
-  virtual ATQNameOrDerived::Ptr createQNameOrDerived(const XMLCh* typeURI, const XMLCh *prefix, const XMLCh* typeName, const XMLCh* uri, const XMLCh* name, const DynamicContext* context);
+  virtual ATQNameOrDerived::Ptr createQName(const XMLCh* uri, const XMLCh* prefix, const XMLCh* name, const DynamicContext* context);
+  virtual ATQNameOrDerived::Ptr createQNameOrDerived(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* uri, const XMLCh* prefix,
+                                                     const XMLCh* name, const DynamicContext* context);
 
+  XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *getOutputDocument(const DynamicContext *context) const;
 private:
-  DatatypeLookup datatypeLookup_;
 
+  DatatypeLookup datatypeLookup_;
+  mutable NodeImpl::Ptr outputDocument_;
+  XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr_;
 };
 
 #endif

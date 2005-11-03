@@ -19,7 +19,7 @@
 #include <xqilla/framework/XPath2MemoryManager.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xqilla/context/XQillaFactory.hpp>
+#include <xqilla/context/ItemFactory.hpp>
 
 #include <xqilla/items/ATBase64BinaryOrDerived.hpp>
 
@@ -52,7 +52,7 @@ void ATBase64BinaryTester::run(const DynamicContext* context) {
 
 const ATBase64BinaryOrDerived::Ptr ATBase64BinaryTester::createBinary(const XMLCh* value,
                                    const DynamicContext* context) {
-  return context->getXQillaFactory()->createDerivedFromAtomicType(
+  return context->getItemFactory()->createDerivedFromAtomicType(
       XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
       XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_BASE64BINARY,
       value, context);

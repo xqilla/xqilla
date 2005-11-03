@@ -51,5 +51,5 @@ Sequence FunctionCodepointEqual::collapseTreeInternal(DynamicContext* context, i
     const XMLCh* string2 = str2.first()->asString(context);
     
     Collation* collation=context->getCollation(CodepointCollation::getCodepointCollationName());
-    return Sequence(context->getXQillaFactory()->createBoolean(collation->compare(string1,string2)==0, context), context->getMemoryManager());
+    return Sequence(context->getItemFactory()->createBoolean(collation->compare(string1,string2)==0, context), context->getMemoryManager());
 }

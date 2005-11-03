@@ -48,7 +48,7 @@ Sequence FunctionLocalNameFromQName::collapseTreeInternal(DynamicContext* contex
   Sequence arg=getParamNumber(1,context);
   if(arg.isEmpty())
     return Sequence(context->getMemoryManager());
-  return Sequence(context->getXQillaFactory()->createStringOrDerived(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+  return Sequence(context->getItemFactory()->createStringOrDerived(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 			  XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_NCNAME,
 			  ((const ATQNameOrDerived*)arg.first().get())->getName(),
 			  context),

@@ -24,7 +24,6 @@ src/context/impl/UCANormalizer2.cpp \
 src/context/impl/UCANormalizer.cpp \
 src/context/impl/UCANormalizer.hpp \
 src/context/impl/CodepointCollation.cpp \
-src/context/impl/XQillaFactoryImpl.cpp \
 src/context/impl/VarStoreImpl.hpp \
 src/context/impl/VarStoreImpl.cpp \
 src/context/impl/VarTypeStoreImpl.hpp \
@@ -32,7 +31,7 @@ src/context/impl/VarTypeStoreImpl.cpp \
 src/context/impl/VarHashEntryImpl.cpp \
 src/context/impl/XQContextImpl.cpp \
 src/context/impl/XQDynamicContextImpl.cpp \
-src/context/impl/XQFactoryImpl.cpp \
+src/context/impl/ItemFactoryImpl.cpp \
 src/context/impl/XQRemoteDebugger.cpp \
 src/ast/XQCastableAs.cpp \
 src/ast/XQCastAs.cpp \

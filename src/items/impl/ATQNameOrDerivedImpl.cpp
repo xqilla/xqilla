@@ -29,7 +29,7 @@
 #include <xqilla/utils/XStr.hpp>
 #include <xqilla/framework/XPath2MemoryManager.hpp>
 #include <xqilla/context/DynamicContext.hpp>
-#include <xqilla/context/XQillaFactory.hpp>
+#include <xqilla/context/ItemFactory.hpp>
 
 #include <xercesc/util/XMLString.hpp>
 
@@ -125,10 +125,10 @@ AnyAtomicType::Ptr ATQNameOrDerivedImpl::castAsInternal(AtomicObjectType targetI
     case UNTYPED_ATOMIC:
       //anySimpleType and untypedAtomic follow the same casting rules as string.
     case STRING: {
-      return context->getXQillaFactory()->createDerivedFromAtomicType(targetURI, targetType, this->asLexicalString(context), context);
+      return context->getItemFactory()->createDerivedFromAtomicType(targetURI, targetType, this->asLexicalString(context), context);
     } 
     case QNAME: {
-      return context->getXQillaFactory()->createQNameOrDerived(targetURI, targetType, _uri, _prefix, _name, context);
+      return context->getItemFactory()->createQNameOrDerived(targetURI, targetType, _uri, _prefix, _name, context);
     }
     default: return AnyAtomicType::castAsInternal(targetIndex, targetURI, targetType, context);
   }

@@ -24,7 +24,7 @@ class Sequence;
 class Item;
 class URIResolver;
 class VariableStore;
-class XQillaFactory;
+class ItemFactory;
 
 /// The execution time dynamic context interface
 class XQILLA_API DynamicContext : public StaticContext

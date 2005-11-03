@@ -56,10 +56,10 @@ Sequence FunctionMatches::collapseTreeInternal(DynamicContext* context, int flag
 	// If the value of $operand1 is the zero-length string and the value of $operand2 is not the zero-length string,
 	// then the function returns false.
 	if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(input)==0 && XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(pattern)>0)
-		return Sequence(context->getXQillaFactory()->createBoolean(false, context), memMgr);
+		return Sequence(context->getItemFactory()->createBoolean(false, context), memMgr);
 	// If the value of $operand2 is the zero-length string, then the function returns true
 	if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(pattern)==0)
-		return Sequence(context->getXQillaFactory()->createBoolean(true, context), memMgr);
+		return Sequence(context->getItemFactory()->createBoolean(true, context), memMgr);
 
 	const XMLCh* options = XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString;
 	if(getNumArgs()>2)
@@ -79,7 +79,7 @@ Sequence FunctionMatches::collapseTreeInternal(DynamicContext* context, int flag
   //Build the Regular Expression
   try {
     XERCES_CPP_NAMESPACE_QUALIFIER RegularExpression regEx(pattern, options, memMgr);
-    return Sequence(context->getXQillaFactory()->createBoolean(regEx.matches(input), context), memMgr);
+    return Sequence(context->getItemFactory()->createBoolean(regEx.matches(input), context), memMgr);
   } catch (XERCES_CPP_NAMESPACE_QUALIFIER XMLException &e){ 
     DSLthrow(FunctionException, X("FunctionMatches::collapseTreeInternal"), e.getMessage());  
   } catch (...){

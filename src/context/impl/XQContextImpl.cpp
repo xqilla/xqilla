@@ -24,7 +24,7 @@
 #include <xqilla/ast/XQDebugHook.hpp>
 #include <xqilla/context/impl/XQDynamicContextImpl.hpp>
 #include <xqilla/ast/XQFunction.hpp>
-#include <xqilla/context/impl/XQFactoryImpl.hpp>
+#include <xqilla/context/impl/ItemFactoryImpl.hpp>
 #include <xercesc/dom/DOMImplementation.hpp>
 #include <xercesc/dom/DOM.hpp>
 #include <xercesc/sax/InputSource.hpp>
@@ -118,7 +118,7 @@ XQContextImpl::XQContextImpl(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMg
   if(_functionTable==NULL)
     _functionTable=_internalMM.createFunctionTable();
 
-  _xqillaFactory = new (&_internalMM) XQFactoryImpl(_docCache, &_internalMM);
+  _itemFactory = new (&_internalMM) ItemFactoryImpl(_docCache, &_internalMM);
 
   // insert the default collation
   addCollation(_internalMM.createCollation(&g_codepointCollation));
@@ -175,7 +175,7 @@ XQContextImpl::~XQContextImpl()
   _contextItem = 0;
   _implicitTimezone = 0;
 
-  ((XQFactoryImpl*)_xqillaFactory)->release();
+  ((ItemFactoryImpl*)_itemFactory)->release();
 }
 
 void XQContextImpl::release()
@@ -497,7 +497,7 @@ ASTNode* XQContextImpl::lookUpFunction(const XMLCh* prefix, const XMLCh* name, V
         try
         {
           functionImpl = new (getMemoryManager())
-		  FunctionConstructor(uri, name, _xqillaFactory->getPrimitiveTypeIndex(uri, name), v, getMemoryManager());
+		  FunctionConstructor(uri, name, _itemFactory->getPrimitiveTypeIndex(uri, name), v, getMemoryManager());
         }
         catch(TypeNotFoundException&)
         {
@@ -645,14 +645,14 @@ Node::Ptr XQContextImpl::validate(const Node::Ptr &node, DocumentCache::Validati
   return _docCache->validate(node, valMode, this);
 }
 
-XQillaFactory *XQContextImpl::getXQillaFactory() const
+ItemFactory *XQContextImpl::getItemFactory() const
 {
-  return _xqillaFactory;
+  return _itemFactory;
 }
 
-void XQContextImpl::setXQillaFactory(XQillaFactory *factory)
+void XQContextImpl::setItemFactory(ItemFactory *factory)
 {
-  _xqillaFactory = factory;
+  _itemFactory = factory;
 }
 
 void XQContextImpl::trace(const XMLCh* message1, const XMLCh* message2) {

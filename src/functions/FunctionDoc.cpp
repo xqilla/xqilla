@@ -22,7 +22,7 @@
 #include <xqilla/exceptions/XMLParseException.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/ast/StaticResolutionContext.hpp>
-#include <xqilla/context/XQillaFactory.hpp>
+#include <xqilla/context/ItemFactory.hpp>
 #include <xercesc/util/XMLString.hpp>
 
 const XMLCh FunctionDoc::name[] = {
@@ -67,7 +67,7 @@ Sequence FunctionDoc::collapseTreeInternal(DynamicContext* context, int flags) c
 	  uri=newUri;
   }
   try {
-    context->getXQillaFactory()->createAnyURI(uri, context);
+    context->getItemFactory()->createAnyURI(uri, context);
   } catch(XPath2ErrorException &e) {
     DSLthrow(FunctionException, X("FunctionDoc::collapseTreeInternal"), X("Invalid argument to fn:doc function"));
   }

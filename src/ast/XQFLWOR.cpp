@@ -35,7 +35,7 @@
 #include <xqilla/ast/StaticResolutionContext.hpp>
 #include <xqilla/ast/XQSequence.hpp>
 #include <xqilla/schema/SequenceType.hpp>
-#include <xqilla/context/XQillaFactory.hpp>
+#include <xqilla/context/ItemFactory.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 
 // needed to sort
@@ -234,7 +234,7 @@ XQSort::SortItems XQSort::buildKeys(DynamicContext *context) const
 
       if(keyType==AnyAtomicType::ANY_SIMPLE_TYPE)
         {
-          orderingItem.m_item=context->getXQillaFactory()->createString(orderingItem.m_item->asString(context),context);
+          orderingItem.m_item=context->getItemFactory()->createString(orderingItem.m_item->asString(context),context);
           keyType=orderingItem.m_item->getPrimitiveTypeIndex();
         }
 
@@ -337,7 +337,7 @@ bool XQFLWOR::ProductFactor::initialise(DynamicContext *context)
     if(_vb->_positionalVariable) {
       _index = 1;
       varStore->declareVar(_vb->_pURI, _vb->_pName,
-                           Sequence((const Item::Ptr)context->getXQillaFactory()->createInteger(_index, context), context->getMemoryManager()), context);
+                           Sequence((const Item::Ptr)context->getItemFactory()->createInteger(_index, context), context->getMemoryManager()), context);
       _posRefVar = varStore->getReferenceVar(_vb->_pURI, _vb->_pName, context);
     }
   }
@@ -375,7 +375,7 @@ bool XQFLWOR::ProductFactor::next(DynamicContext *context)
     // Set the positional variable value, if present
     if(_vb->_positionalVariable) {
       ++_index;
-      _posRefVar->setValue(Sequence((const Item::Ptr)context->getXQillaFactory()->createInteger(_index, context), context->getMemoryManager()));
+      _posRefVar->setValue(Sequence((const Item::Ptr)context->getItemFactory()->createInteger(_index, context), context->getMemoryManager()));
     }
 
     return true;

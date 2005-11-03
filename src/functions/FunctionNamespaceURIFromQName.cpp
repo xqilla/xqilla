@@ -48,6 +48,6 @@ Sequence FunctionNamespaceURIFromQName::collapseTreeInternal(DynamicContext* con
   Sequence arg=getParamNumber(1,context);
   if(arg.isEmpty())
     return Sequence(context->getMemoryManager());
-  return Sequence(context->getXQillaFactory()->createAnyURI(((const ATQNameOrDerived*)arg.first().get())->getURI(), context),
+  return Sequence(context->getItemFactory()->createAnyURI(((const ATQNameOrDerived*)arg.first().get())->getURI(), context),
 	  context->getMemoryManager());
 }

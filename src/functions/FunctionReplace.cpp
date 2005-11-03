@@ -81,5 +81,5 @@ Sequence FunctionReplace::collapseTreeInternal(DynamicContext* context, int flag
     DSLthrow(FunctionException, X("FunctionReplace::collapseTreeInternal"),X("Invalid regular expression"));
   }  
 
-  return Sequence(context->getXQillaFactory()->createString(result, context), memMgr);
+  return Sequence(context->getItemFactory()->createString(result, context), memMgr);
 }

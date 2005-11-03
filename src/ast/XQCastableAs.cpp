@@ -27,7 +27,7 @@
 #include <xqilla/items/AnyAtomicType.hpp>
 #include <xqilla/items/ATBooleanOrDerived.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xqilla/context/XQillaFactory.hpp>
+#include <xqilla/context/ItemFactory.hpp>
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -102,7 +102,7 @@ Item::Ptr XQCastableAs::CastableAsResult::getSingleResult(DynamicContext *contex
       result = ((const AnyAtomicType::Ptr)first)->castable(_di->getSequenceType()->getTypeURI(context), _di->getSequenceType()->getConstrainingType()->getName(), context);
     }
   }
-  return (const Item::Ptr)context->getXQillaFactory()->createBoolean(result, context);
+  return (const Item::Ptr)context->getItemFactory()->createBoolean(result, context);
 }
 
 std::string XQCastableAs::CastableAsResult::asString(DynamicContext *context, int indent) const

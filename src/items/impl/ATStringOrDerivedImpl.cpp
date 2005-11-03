@@ -27,7 +27,7 @@
 #include <xqilla/runtime/Result.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/context/DynamicContext.hpp>
-#include <xqilla/context/XQillaFactory.hpp>
+#include <xqilla/context/ItemFactory.hpp>
 
 #include <xercesc/util/XMLString.hpp>
 #include <xercesc/framework/XMLBuffer.hpp>
@@ -80,11 +80,11 @@ AnyAtomicType::Ptr ATStringOrDerivedImpl::castAsInternal(AtomicObjectType target
   switch (targetIndex) {
     case DOUBLE: {
       const XMLCh* upCase = XPath2Utils::toUpper(_value, context->getMemoryManager());
-      return (const AnyAtomicType::Ptr)context->getXQillaFactory()->createDoubleOrDerived(targetURI, targetType, upCase, context);
+      return (const AnyAtomicType::Ptr)context->getItemFactory()->createDoubleOrDerived(targetURI, targetType, upCase, context);
     }
     case FLOAT: {
       const XMLCh* upCase = XPath2Utils::toUpper(_value, context->getMemoryManager());
-      return (const AnyAtomicType::Ptr)context->getXQillaFactory()->createFloatOrDerived(targetURI, targetType, upCase, context);
+      return (const AnyAtomicType::Ptr)context->getItemFactory()->createFloatOrDerived(targetURI, targetType, upCase, context);
     }
     default: return AnyAtomicType::castAsInternal(targetIndex, targetURI, targetType, context);
   }
@@ -102,15 +102,15 @@ Result ATStringOrDerivedImpl::asCodepoints(const DynamicContext* context) const 
   unsigned int length = this->getLength();
   Sequence result(length,context->getMemoryManager());
   for(unsigned int i=0; i<length; i++) {
-     result.addItem(context->getXQillaFactory()->createInteger((long int)_value[i], context));
+     result.addItem(context->getItemFactory()->createInteger((long int)_value[i], context));
   } 
   return result;
 }
 
 /* returns the substring starting at startingLoc of given length */
 ATStringOrDerived::Ptr ATStringOrDerivedImpl::substring(const Numeric::Ptr &startingLoc, const Numeric::Ptr &length, const DynamicContext* context) const {
-  const ATDecimalOrDerived::Ptr one = context->getXQillaFactory()->createInteger(1, context);
-  const ATDecimalOrDerived::Ptr strLength = context->getXQillaFactory()->createInteger((long)this->getLength(), context); 
+  const ATDecimalOrDerived::Ptr one = context->getItemFactory()->createInteger(1, context);
+  const ATDecimalOrDerived::Ptr strLength = context->getItemFactory()->createInteger((long)this->getLength(), context); 
  
 	// More specifically, returns the characters in $sourceString whose position $p obeys:
 	//    fn:round($startingLoc) <= $p < fn:round($startingLoc) + fn:round($length)
@@ -118,11 +118,11 @@ ATStringOrDerived::Ptr ATStringOrDerivedImpl::substring(const Numeric::Ptr &star
 	const Numeric::Ptr endIndex = startIndex->add(length->round(context), context);
 
   if(startIndex->greaterThan(strLength, context) || startIndex->greaterThan(endIndex, context)) {
-    return context->getXQillaFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context);
+    return context->getItemFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context);
   }
 
 	XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buffer(1023, context->getMemoryManager());
-  Numeric::Ptr index = one;//context->getXQillaFactory()->createInteger(0, context);
+  Numeric::Ptr index = one;//context->getItemFactory()->createInteger(0, context);
 
   // i is kept at one less than index, since XMLCh* start at index 0
   int i = 0;
@@ -133,7 +133,7 @@ ATStringOrDerived::Ptr ATStringOrDerivedImpl::substring(const Numeric::Ptr &star
       buffer.append(_value[i]);
   }
 
-	return context->getXQillaFactory()->createString(buffer.getRawBuffer(), context);
+	return context->getItemFactory()->createString(buffer.getRawBuffer(), context);
 }
 
 /* returns the substring that occurs after the first occurence of pattern */
@@ -146,7 +146,7 @@ ATStringOrDerived::Ptr ATStringOrDerivedImpl::substringAfter(const ATStringOrDer
 	}
 
 	if(patternLength > containerLength) {
-		return context->getXQillaFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context);
+		return context->getItemFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context);
 	}
 
 	const XMLCh* patternStr = pattern->asString(context);
@@ -162,11 +162,11 @@ ATStringOrDerived::Ptr ATStringOrDerivedImpl::substringAfter(const ATStringOrDer
 		{
 			int index = i + patternLength;
 			const XMLCh* value = XPath2Utils::subString(_value, index, containerLength - index, context->getMemoryManager());
-			return context->getXQillaFactory()->createString(value, context);
+			return context->getItemFactory()->createString(value, context);
 		}
 	}
 	
-	return context->getXQillaFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context);
+	return context->getItemFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context);
 }
 
 /* returns the substring that occurs before the first occurence of pattern */
@@ -179,7 +179,7 @@ ATStringOrDerived::Ptr ATStringOrDerivedImpl::substringBefore(const ATStringOrDe
 	}
 
 	if(patternLength > containerLength) {
-		return context->getXQillaFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context);
+		return context->getItemFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context);
 	}
 
 	const XMLCh* patternStr = pattern->asString(context);
@@ -194,10 +194,10 @@ ATStringOrDerived::Ptr ATStringOrDerivedImpl::substringBefore(const ATStringOrDe
 		if(result)
 		{
       const XMLCh* value = XPath2Utils::subString(_value, 0, i, context->getMemoryManager());
-			return context->getXQillaFactory()->createString(value, context);
+			return context->getItemFactory()->createString(value, context);
     }
   }
-	return context->getXQillaFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context);
+	return context->getItemFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context);
 }
 
 unsigned int ATStringOrDerivedImpl::getLength() const {

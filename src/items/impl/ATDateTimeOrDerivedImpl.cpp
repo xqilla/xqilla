@@ -34,7 +34,7 @@
 #include <xqilla/items/ATTimeOrDerived.hpp>
 #include <xqilla/items/AnyAtomicType.hpp>
 #include <xqilla/items/Timezone.hpp>
-#include <xqilla/context/XQillaFactory.hpp>
+#include <xqilla/context/ItemFactory.hpp>
 
 #include <limits.h>   // for INT_MIN and INT_MAX
 #include <stdlib.h>   // for atoi
@@ -114,7 +114,7 @@ AnyAtomicType::Ptr ATDateTimeOrDerivedImpl::castAsInternal(AtomicObjectType targ
       if (_hasTimezone) {
         buf.append(timezone_->asString(context));
       }
-      return context->getXQillaFactory()->createDateOrDerived(targetURI, targetType, buf.getRawBuffer(), context);
+      return context->getItemFactory()->createDateOrDerived(targetURI, targetType, buf.getRawBuffer(), context);
     }
     case G_DAY: {
       buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
@@ -124,7 +124,7 @@ AnyAtomicType::Ptr ATDateTimeOrDerivedImpl::castAsInternal(AtomicObjectType targ
       if (_hasTimezone) {
         buf.append(timezone_->asString(context));
       }
-      return context->getXQillaFactory()->createGDayOrDerived(targetURI, targetType, buf.getRawBuffer(), context);
+      return context->getItemFactory()->createGDayOrDerived(targetURI, targetType, buf.getRawBuffer(), context);
     }
     case G_MONTH_DAY: {
       buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
@@ -135,7 +135,7 @@ AnyAtomicType::Ptr ATDateTimeOrDerivedImpl::castAsInternal(AtomicObjectType targ
       if (_hasTimezone) {
         buf.append(timezone_->asString(context));
       }
-      return context->getXQillaFactory()->createGMonthDayOrDerived(targetURI, targetType, buf.getRawBuffer(), context);
+      return context->getItemFactory()->createGMonthDayOrDerived(targetURI, targetType, buf.getRawBuffer(), context);
     } 
     case G_MONTH: {
       buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
@@ -144,21 +144,21 @@ AnyAtomicType::Ptr ATDateTimeOrDerivedImpl::castAsInternal(AtomicObjectType targ
       if (_hasTimezone) {
         buf.append(timezone_->asString(context));
       }
-      return context->getXQillaFactory()->createGMonthOrDerived(targetURI, targetType, buf.getRawBuffer(), context);
+      return context->getItemFactory()->createGMonthOrDerived(targetURI, targetType, buf.getRawBuffer(), context);
     } 
     case TIME: {
       buf.append(_hh->asString(2, context));
       buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chColon);
       buf.append(_mm->asString(2, context));
       buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chColon);
-      if(_ss->lessThan(context->getXQillaFactory()->createDecimal(10, context), context)) {
+      if(_ss->lessThan(context->getItemFactory()->createDecimal(10, context), context)) {
         buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chDigit_0);
       }
       buf.append(_ss->asString(context));
       if (_hasTimezone) {
         buf.append(timezone_->asString(context));
       }
-      return context->getXQillaFactory()->createTimeOrDerived(targetURI, targetType, buf.getRawBuffer(), context);
+      return context->getItemFactory()->createTimeOrDerived(targetURI, targetType, buf.getRawBuffer(), context);
     } 
     case G_YEAR_MONTH: {
       if(_YY->asMAPM() > 9999) {
@@ -171,7 +171,7 @@ AnyAtomicType::Ptr ATDateTimeOrDerivedImpl::castAsInternal(AtomicObjectType targ
       if (_hasTimezone) {
         buf.append(timezone_->asString(context));
       }
-      return context->getXQillaFactory()->createGYearMonthOrDerived(targetURI, targetType, buf.getRawBuffer(), context);
+      return context->getItemFactory()->createGYearMonthOrDerived(targetURI, targetType, buf.getRawBuffer(), context);
     } 
     case G_YEAR: {
       if(_YY->asMAPM() > 9999) {
@@ -182,13 +182,13 @@ AnyAtomicType::Ptr ATDateTimeOrDerivedImpl::castAsInternal(AtomicObjectType targ
       if (_hasTimezone) {
         buf.append(timezone_->asString(context));
       }
-      return context->getXQillaFactory()->createGYearOrDerived(targetURI, targetType, buf.getRawBuffer(), context);
+      return context->getItemFactory()->createGYearOrDerived(targetURI, targetType, buf.getRawBuffer(), context);
     } 
     case ANY_SIMPLE_TYPE:
     case UNTYPED_ATOMIC:
       //anySimpleType and untypedAtomic follow the same casting rules as string.
     case STRING: {
-      return context->getXQillaFactory()->createDerivedFromAtomicType(targetURI, targetType, asString(context), context);
+      return context->getItemFactory()->createDerivedFromAtomicType(targetURI, targetType, asString(context), context);
     }
 		default: {
       return AnyAtomicType::castAsInternal(targetIndex, targetURI, targetType, context);
@@ -438,11 +438,11 @@ ATDateTimeOrDerived::Ptr ATDateTimeOrDerivedImpl::addTimezone(const ATDurationOr
     return new
       ATDateTimeOrDerivedImpl(this->getTypeURI(), 
                               this->getTypeName(), 
-                              context->getXQillaFactory()->createInteger(sumDate.Year(), context),
-                              context->getXQillaFactory()->createNonNegativeInteger(sumDate.Month(), context),
-                              context->getXQillaFactory()->createNonNegativeInteger(sumDate.Day(), context),
-                              context->getXQillaFactory()->createNonNegativeInteger(hh, context),
-                              context->getXQillaFactory()->createNonNegativeInteger(mm, context),
+                              context->getItemFactory()->createInteger(sumDate.Year(), context),
+                              context->getItemFactory()->createNonNegativeInteger(sumDate.Month(), context),
+                              context->getItemFactory()->createNonNegativeInteger(sumDate.Day(), context),
+                              context->getItemFactory()->createNonNegativeInteger(hh, context),
+                              context->getItemFactory()->createNonNegativeInteger(mm, context),
                               _ss, 
                               tz, 
                               true);
@@ -489,8 +489,8 @@ ATDateTimeOrDerived::Ptr ATDateTimeOrDerivedImpl::addYearMonthDuration(MAPM year
   return new
     ATDateTimeOrDerivedImpl(getTypeURI(), 
                             getTypeName(), 
-                            context->getXQillaFactory()->createInteger(YY, context),
-                            context->getXQillaFactory()->createNonNegativeInteger(MM, context),
+                            context->getItemFactory()->createInteger(YY, context),
+                            context->getItemFactory()->createNonNegativeInteger(MM, context),
                             _DD, 
                             getHours(),
                             getMinutes(),
@@ -545,11 +545,11 @@ ATDateTimeOrDerived::Ptr ATDateTimeOrDerivedImpl::normalize(const DynamicContext
   return new
     ATDateTimeOrDerivedImpl(this->getTypeURI(), 
                         this->getTypeName(), 
-                        context->getXQillaFactory()->createInteger(sumDate.Year(), context),
-                        context->getXQillaFactory()->createNonNegativeInteger(sumDate.Month(), context),
-                        context->getXQillaFactory()->createNonNegativeInteger(sumDate.Day(), context),
-                        context->getXQillaFactory()->createNonNegativeInteger(hh, context),
-                        context->getXQillaFactory()->createNonNegativeInteger(mm, context),
+                        context->getItemFactory()->createInteger(sumDate.Year(), context),
+                        context->getItemFactory()->createNonNegativeInteger(sumDate.Month(), context),
+                        context->getItemFactory()->createNonNegativeInteger(sumDate.Day(), context),
+                        context->getItemFactory()->createNonNegativeInteger(hh, context),
+                        context->getItemFactory()->createNonNegativeInteger(mm, context),
                         _ss,
                         new Timezone(0, 0), true  // timezone set to UTC 
                         );
@@ -612,12 +612,12 @@ ATDateTimeOrDerived::Ptr ATDateTimeOrDerivedImpl::addDayTimeDuration(MAPM days, 
   return new
     ATDateTimeOrDerivedImpl(_typeURI, 
                             _typeName, 
-                            context->getXQillaFactory()->createInteger(sumDate.Year(), context),
-                            context->getXQillaFactory()->createNonNegativeInteger(sumDate.Month(), context),
-                            context->getXQillaFactory()->createNonNegativeInteger(sumDate.Day(), context),
-                            context->getXQillaFactory()->createNonNegativeInteger(hh, context),
-                            context->getXQillaFactory()->createNonNegativeInteger(mm, context),
-                            context->getXQillaFactory()->createDecimal(ss, context),
+                            context->getItemFactory()->createInteger(sumDate.Year(), context),
+                            context->getItemFactory()->createNonNegativeInteger(sumDate.Month(), context),
+                            context->getItemFactory()->createNonNegativeInteger(sumDate.Day(), context),
+                            context->getItemFactory()->createNonNegativeInteger(hh, context),
+                            context->getItemFactory()->createNonNegativeInteger(mm, context),
+                            context->getItemFactory()->createDecimal(ss, context),
                             getTimezone(), hasTimezone());
 }
 
@@ -661,17 +661,17 @@ ATDurationOrDerived::Ptr ATDateTimeOrDerivedImpl::subtractDateTimeAsDayTimeDurat
   MAPM endDiff = secDiff.abs();
 
   // getDays 
-  const ATDecimalOrDerived::Ptr DD = context->getXQillaFactory()->createInteger((endDiff / DateUtils::g_secondsPerDay).floor(), context);
+  const ATDecimalOrDerived::Ptr DD = context->getItemFactory()->createInteger((endDiff / DateUtils::g_secondsPerDay).floor(), context);
   MAPM carry = DateUtils::modulo(endDiff,DateUtils::g_secondsPerDay);
 
   // get hour
-  const ATDecimalOrDerived::Ptr hh = context->getXQillaFactory()->createInteger((carry/DateUtils::g_secondsPerHour).floor(), context);
+  const ATDecimalOrDerived::Ptr hh = context->getItemFactory()->createInteger((carry/DateUtils::g_secondsPerHour).floor(), context);
 
   // get minute
-  const ATDecimalOrDerived::Ptr mm = context->getXQillaFactory()->createInteger((DateUtils::modulo(carry,DateUtils::g_secondsPerHour)/DateUtils::g_secondsPerMinute).floor(), context);
+  const ATDecimalOrDerived::Ptr mm = context->getItemFactory()->createInteger((DateUtils::modulo(carry,DateUtils::g_secondsPerHour)/DateUtils::g_secondsPerMinute).floor(), context);
 
   // get seconds
-  const ATDecimalOrDerived::Ptr ss = context->getXQillaFactory()->createDecimal(DateUtils::modulo( DateUtils::modulo(carry,DateUtils::g_secondsPerHour), DateUtils::g_secondsPerMinute) , context);
+  const ATDecimalOrDerived::Ptr ss = context->getItemFactory()->createDecimal(DateUtils::modulo( DateUtils::modulo(carry,DateUtils::g_secondsPerHour), DateUtils::g_secondsPerMinute) , context);
   
   XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buffer(1023, context->getMemoryManager());
   if(isNegative) {
@@ -687,7 +687,7 @@ ATDurationOrDerived::Ptr ATDateTimeOrDerivedImpl::subtractDateTimeAsDayTimeDurat
   buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_M);
   buffer.append(ss->asString(context));
   buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_S);
-  return context->getXQillaFactory()->createDayTimeDuration(buffer.getRawBuffer(), context);
+  return context->getItemFactory()->createDayTimeDuration(buffer.getRawBuffer(), context);
 }
 
 /**
@@ -731,11 +731,11 @@ ATDurationOrDerived::Ptr ATDateTimeOrDerivedImpl::subtractDateTimeAsYearMonthDur
     buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
     months=months.neg();
   }
-  const ATDecimalOrDerived::Ptr MM=context->getXQillaFactory()->createInteger(months, context);
+  const ATDecimalOrDerived::Ptr MM=context->getItemFactory()->createInteger(months, context);
   buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_P);
   buffer.append(MM->asString(context));
   buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_M);
-  return context->getXQillaFactory()->createYearMonthDuration(buffer.getRawBuffer(), context);
+  return context->getItemFactory()->createYearMonthDuration(buffer.getRawBuffer(), context);
 }
 
 //////////////////////////////////////
@@ -978,11 +978,11 @@ void ATDateTimeOrDerivedImpl::setDateTime(const XMLCh* const dateTime, const Dyn
   }
   timezone_ = new Timezone(zonehh, zonemm);
   
-  _YY = context->getXQillaFactory()->createInteger(YY, context);
-  _MM = context->getXQillaFactory()->createNonNegativeInteger(MM, context);
-  _DD = context->getXQillaFactory()->createNonNegativeInteger(DD, context);
-  _hh = context->getXQillaFactory()->createNonNegativeInteger(hh, context);
-  _mm = context->getXQillaFactory()->createNonNegativeInteger(mm, context);
-  _ss = context->getXQillaFactory()->createDecimal(ss, context);
+  _YY = context->getItemFactory()->createInteger(YY, context);
+  _MM = context->getItemFactory()->createNonNegativeInteger(MM, context);
+  _DD = context->getItemFactory()->createNonNegativeInteger(DD, context);
+  _hh = context->getItemFactory()->createNonNegativeInteger(hh, context);
+  _mm = context->getItemFactory()->createNonNegativeInteger(mm, context);
+  _ss = context->getItemFactory()->createDecimal(ss, context);
 }
 

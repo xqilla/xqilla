@@ -122,7 +122,6 @@ src/context/impl/UCANormalizer2.cpp \
 src/context/impl/UCANormalizer.cpp \
 src/context/impl/UCANormalizer.hpp \
 src/context/impl/CodepointCollation.cpp \
-src/context/impl/XQillaFactoryImpl.cpp \
 src/context/impl/VarStoreImpl.hpp \
 src/context/impl/VarStoreImpl.cpp \
 src/context/impl/VarTypeStoreImpl.hpp \
@@ -130,7 +129,7 @@ src/context/impl/VarTypeStoreImpl.cpp \
 src/context/impl/VarHashEntryImpl.cpp \
 src/context/impl/XQContextImpl.cpp \
 src/context/impl/XQDynamicContextImpl.cpp \
-src/context/impl/XQFactoryImpl.cpp \
+src/context/impl/ItemFactoryImpl.cpp \
 src/context/impl/XQRemoteDebugger.cpp \
 src/ast/XQCastableAs.cpp \
 src/ast/XQCastAs.cpp \
@@ -576,29 +575,29 @@ libxqilla_la_LIBADD =
 am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	ProxyMemoryManager.lo StringPool.lo XPath2MemoryManagerImpl.lo \
 	CollationImpl.lo UCANormalizer1.lo UCANormalizer2.lo \
-	UCANormalizer.lo CodepointCollation.lo XQillaFactoryImpl.lo \
-	VarStoreImpl.lo VarTypeStoreImpl.lo VarHashEntryImpl.lo \
-	XQContextImpl.lo XQDynamicContextImpl.lo XQFactoryImpl.lo \
-	XQRemoteDebugger.lo XQCastableAs.lo XQCastAs.lo \
-	XQContextItem.lo XQFunction.lo XQIf.lo ASTNodeImpl.lo \
-	XQInstanceOf.lo XQLiteral.lo XQNav.lo XQOperator.lo \
-	XQParenthesizedExpr.lo XQSequence.lo XQStep.lo XQTreatAs.lo \
-	XQVariable.lo StaticResolutionContext.lo AggregateFunction.lo \
-	ConstantFoldingFunction.lo NumericFunction.lo XQDebugHook.lo \
-	XQDOMConstructor.lo XQFLWOR.lo XQFunctionCall.lo \
-	XQGlobalVariable.lo XQOrderingChange.lo XQQuantified.lo \
-	XQValidate.lo XQTypeswitch.lo XQVariableBinding.lo \
-	XQillaBuilderImpl.lo XQillaDocumentImpl.lo \
-	XQillaExpressionImpl.lo XQillaNSResolverImpl.lo \
-	XQillaXMLGrammarPoolImpl.lo XPathNamespaceImpl.lo \
-	XQillaImplementation.lo XPath2NodeSerializer.lo XPath2Result.lo \
-	XQScopedNamespace.lo XQillaEngine.lo XQEvaluator.lo XQQuery.lo \
-	UTF8Str.lo XMLChCompare.lo XStr.lo ContextUtils.lo Date.lo \
-	DateUtils.lo NumUtils.lo XQillaPlatformUtils.lo PrintAST.lo \
-	XPath2NSUtils.lo XPath2Utils.lo XQillaException.lo \
-	DSLException.lo FuncFactory.lo FunctionLookupImpl.lo \
-	FunctionAbs.lo FunctionAvg.lo FunctionBaseURI.lo \
-	FunctionBoolean.lo FunctionCeiling.lo FunctionCodepointEqual.lo \
+	UCANormalizer.lo CodepointCollation.lo VarStoreImpl.lo \
+	VarTypeStoreImpl.lo VarHashEntryImpl.lo XQContextImpl.lo \
+	XQDynamicContextImpl.lo ItemFactoryImpl.lo XQRemoteDebugger.lo \
+	XQCastableAs.lo XQCastAs.lo XQContextItem.lo XQFunction.lo \
+	XQIf.lo ASTNodeImpl.lo XQInstanceOf.lo XQLiteral.lo XQNav.lo \
+	XQOperator.lo XQParenthesizedExpr.lo XQSequence.lo XQStep.lo \
+	XQTreatAs.lo XQVariable.lo StaticResolutionContext.lo \
+	AggregateFunction.lo ConstantFoldingFunction.lo \
+	NumericFunction.lo XQDebugHook.lo XQDOMConstructor.lo \
+	XQFLWOR.lo XQFunctionCall.lo XQGlobalVariable.lo \
+	XQOrderingChange.lo XQQuantified.lo XQValidate.lo \
+	XQTypeswitch.lo XQVariableBinding.lo XQillaBuilderImpl.lo \
+	XQillaDocumentImpl.lo XQillaExpressionImpl.lo \
+	XQillaNSResolverImpl.lo XQillaXMLGrammarPoolImpl.lo \
+	XPathNamespaceImpl.lo XQillaImplementation.lo \
+	XPath2NodeSerializer.lo XPath2Result.lo XQScopedNamespace.lo \
+	XQillaEngine.lo XQEvaluator.lo XQQuery.lo UTF8Str.lo \
+	XMLChCompare.lo XStr.lo ContextUtils.lo Date.lo DateUtils.lo \
+	NumUtils.lo XQillaPlatformUtils.lo PrintAST.lo XPath2NSUtils.lo \
+	XPath2Utils.lo XQillaException.lo DSLException.lo \
+	FuncFactory.lo FunctionLookupImpl.lo FunctionAbs.lo \
+	FunctionAvg.lo FunctionBaseURI.lo FunctionBoolean.lo \
+	FunctionCeiling.lo FunctionCodepointEqual.lo \
 	FunctionCodepointsToString.lo FunctionCollection.lo \
 	FunctionCompare.lo FunctionConcat.lo FunctionConstructor.lo \
 	FunctionContains.lo FunctionCount.lo FunctionCurrentDate.lo \
@@ -921,6 +920,7 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/GreaterThanEqual.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/IntegerDivide.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/Intersect.Plo ./$(DEPDIR)/Item.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/ItemFactoryImpl.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/LazySequenceResult.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/LessThan.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/LessThanEqual.Plo \
@@ -978,7 +978,6 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/XQDebugHook.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XQDynamicContextImpl.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XQEvaluator.Plo ./$(DEPDIR)/XQFLWOR.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/XQFactoryImpl.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XQFunction.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XQFunctionCall.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XQGlobalVariable.Plo \
@@ -1003,7 +1002,6 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/XQillaEngine.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XQillaException.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XQillaExpressionImpl.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/XQillaFactoryImpl.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XQillaImplementation.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XQillaNSResolverImpl.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XQillaPlatformUtils.Plo \
@@ -1137,13 +1135,12 @@ UCANormalizer1.lo: src/context/impl/UCANormalizer1.cpp
 UCANormalizer2.lo: src/context/impl/UCANormalizer2.cpp
 UCANormalizer.lo: src/context/impl/UCANormalizer.cpp
 CodepointCollation.lo: src/context/impl/CodepointCollation.cpp
-XQillaFactoryImpl.lo: src/context/impl/XQillaFactoryImpl.cpp
 VarStoreImpl.lo: src/context/impl/VarStoreImpl.cpp
 VarTypeStoreImpl.lo: src/context/impl/VarTypeStoreImpl.cpp
 VarHashEntryImpl.lo: src/context/impl/VarHashEntryImpl.cpp
 XQContextImpl.lo: src/context/impl/XQContextImpl.cpp
 XQDynamicContextImpl.lo: src/context/impl/XQDynamicContextImpl.cpp
-XQFactoryImpl.lo: src/context/impl/XQFactoryImpl.cpp
+ItemFactoryImpl.lo: src/context/impl/ItemFactoryImpl.cpp
 XQRemoteDebugger.lo: src/context/impl/XQRemoteDebugger.cpp
 XQCastableAs.lo: src/ast/XQCastableAs.cpp
 XQCastAs.lo: src/ast/XQCastAs.cpp
@@ -1756,6 +1753,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/IntegerDivide.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Intersect.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Item.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ItemFactoryImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LazySequenceResult.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LessThan.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LessThanEqual.Plo@am__quote@
@@ -1826,7 +1824,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQDynamicContextImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQEvaluator.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQFLWOR.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQFactoryImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQFunction.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQFunctionCall.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQGlobalVariable.Plo@am__quote@
@@ -1854,7 +1851,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQillaEngine.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQillaException.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQillaExpressionImpl.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQillaFactoryImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQillaImplementation.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQillaNSResolverImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQillaPlatformUtils.Plo@am__quote@
@@ -2771,24 +2767,6 @@ CodepointCollation.lo: src/context/impl/CodepointCollation.cpp
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o CodepointCollation.lo `test -f 'src/context/impl/CodepointCollation.cpp' || echo '$(srcdir)/'`src/context/impl/CodepointCollation.cpp
 
-XQillaFactoryImpl.o: src/context/impl/XQillaFactoryImpl.cpp
-@AMDEP_TRUE@	source='src/context/impl/XQillaFactoryImpl.cpp' object='XQillaFactoryImpl.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/XQillaFactoryImpl.Po' tmpdepfile='$(DEPDIR)/XQillaFactoryImpl.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQillaFactoryImpl.o `test -f 'src/context/impl/XQillaFactoryImpl.cpp' || echo '$(srcdir)/'`src/context/impl/XQillaFactoryImpl.cpp
-
-XQillaFactoryImpl.obj: src/context/impl/XQillaFactoryImpl.cpp
-@AMDEP_TRUE@	source='src/context/impl/XQillaFactoryImpl.cpp' object='XQillaFactoryImpl.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/XQillaFactoryImpl.Po' tmpdepfile='$(DEPDIR)/XQillaFactoryImpl.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQillaFactoryImpl.obj `cygpath -w src/context/impl/XQillaFactoryImpl.cpp`
-
-XQillaFactoryImpl.lo: src/context/impl/XQillaFactoryImpl.cpp
-@AMDEP_TRUE@	source='src/context/impl/XQillaFactoryImpl.cpp' object='XQillaFactoryImpl.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/XQillaFactoryImpl.Plo' tmpdepfile='$(DEPDIR)/XQillaFactoryImpl.TPlo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQillaFactoryImpl.lo `test -f 'src/context/impl/XQillaFactoryImpl.cpp' || echo '$(srcdir)/'`src/context/impl/XQillaFactoryImpl.cpp
-
 VarStoreImpl.o: src/context/impl/VarStoreImpl.cpp
 @AMDEP_TRUE@	source='src/context/impl/VarStoreImpl.cpp' object='VarStoreImpl.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@	depfile='$(DEPDIR)/VarStoreImpl.Po' tmpdepfile='$(DEPDIR)/VarStoreImpl.TPo' @AMDEPBACKSLASH@
@@ -2879,23 +2857,23 @@ XQDynamicContextImpl.lo: src/context/impl/XQDynamicContextImpl.cpp
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQDynamicContextImpl.lo `test -f 'src/context/impl/XQDynamicContextImpl.cpp' || echo '$(srcdir)/'`src/context/impl/XQDynamicContextImpl.cpp
 
-XQFactoryImpl.o: src/context/impl/XQFactoryImpl.cpp
-@AMDEP_TRUE@	source='src/context/impl/XQFactoryImpl.cpp' object='XQFactoryImpl.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/XQFactoryImpl.Po' tmpdepfile='$(DEPDIR)/XQFactoryImpl.TPo' @AMDEPBACKSLASH@
+ItemFactoryImpl.o: src/context/impl/ItemFactoryImpl.cpp
+@AMDEP_TRUE@	source='src/context/impl/ItemFactoryImpl.cpp' object='ItemFactoryImpl.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/ItemFactoryImpl.Po' tmpdepfile='$(DEPDIR)/ItemFactoryImpl.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQFactoryImpl.o `test -f 'src/context/impl/XQFactoryImpl.cpp' || echo '$(srcdir)/'`src/context/impl/XQFactoryImpl.cpp
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ItemFactoryImpl.o `test -f 'src/context/impl/ItemFactoryImpl.cpp' || echo '$(srcdir)/'`src/context/impl/ItemFactoryImpl.cpp
 
-XQFactoryImpl.obj: src/context/impl/XQFactoryImpl.cpp
-@AMDEP_TRUE@	source='src/context/impl/XQFactoryImpl.cpp' object='XQFactoryImpl.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/XQFactoryImpl.Po' tmpdepfile='$(DEPDIR)/XQFactoryImpl.TPo' @AMDEPBACKSLASH@
+ItemFactoryImpl.obj: src/context/impl/ItemFactoryImpl.cpp
+@AMDEP_TRUE@	source='src/context/impl/ItemFactoryImpl.cpp' object='ItemFactoryImpl.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/ItemFactoryImpl.Po' tmpdepfile='$(DEPDIR)/ItemFactoryImpl.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQFactoryImpl.obj `cygpath -w src/context/impl/XQFactoryImpl.cpp`
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ItemFactoryImpl.obj `cygpath -w src/context/impl/ItemFactoryImpl.cpp`
 
-XQFactoryImpl.lo: src/context/impl/XQFactoryImpl.cpp
-@AMDEP_TRUE@	source='src/context/impl/XQFactoryImpl.cpp' object='XQFactoryImpl.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/XQFactoryImpl.Plo' tmpdepfile='$(DEPDIR)/XQFactoryImpl.TPlo' @AMDEPBACKSLASH@
+ItemFactoryImpl.lo: src/context/impl/ItemFactoryImpl.cpp
+@AMDEP_TRUE@	source='src/context/impl/ItemFactoryImpl.cpp' object='ItemFactoryImpl.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/ItemFactoryImpl.Plo' tmpdepfile='$(DEPDIR)/ItemFactoryImpl.TPlo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQFactoryImpl.lo `test -f 'src/context/impl/XQFactoryImpl.cpp' || echo '$(srcdir)/'`src/context/impl/XQFactoryImpl.cpp
+	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ItemFactoryImpl.lo `test -f 'src/context/impl/ItemFactoryImpl.cpp' || echo '$(srcdir)/'`src/context/impl/ItemFactoryImpl.cpp
 
 XQRemoteDebugger.o: src/context/impl/XQRemoteDebugger.cpp
 @AMDEP_TRUE@	source='src/context/impl/XQRemoteDebugger.cpp' object='XQRemoteDebugger.o' libtool=no @AMDEPBACKSLASH@

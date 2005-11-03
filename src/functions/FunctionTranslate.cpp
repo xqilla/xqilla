@@ -48,7 +48,7 @@ Sequence FunctionTranslate::collapseTreeInternal(DynamicContext* context, int fl
 	Sequence str1 = getParamNumber(1,context);
 
 	if(str1.isEmpty()) {
-    return Sequence(context->getXQillaFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context), memMgr);
+    return Sequence(context->getItemFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context), memMgr);
   }
  
 	Sequence str2 = getParamNumber(2,context);
@@ -61,7 +61,7 @@ Sequence FunctionTranslate::collapseTreeInternal(DynamicContext* context, int fl
 	const XMLCh* newString = XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString;
 
   if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(search)==0)
-    return Sequence(context->getXQillaFactory()->createString(container, context), memMgr);
+    return Sequence(context->getItemFactory()->createString(container, context), memMgr);
 
   std::map<XMLCh,XMLCh> Change;
 
@@ -86,5 +86,5 @@ Sequence FunctionTranslate::collapseTreeInternal(DynamicContext* context, int fl
 			}
     }
 
-	return Sequence(context->getXQillaFactory()->createString(newString, context), memMgr);
+	return Sequence(context->getItemFactory()->createString(newString, context), memMgr);
 }
