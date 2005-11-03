@@ -22,7 +22,7 @@
 #include <xqilla/items/ATDecimalOrDerived.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xqilla/context/XQillaFactory.hpp>
+#include <xqilla/context/ItemFactory.hpp>
 
 const XMLCh FunctionInsertBefore::name[] = { 
   XERCES_CPP_NAMESPACE_QUALIFIER chLatin_i, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_s, 
@@ -67,7 +67,7 @@ Item::Ptr FunctionInsertBefore::InsertBeforeResult::next(DynamicContext *context
 {
   if(_position == NULLRCP) {
     _position = ((const ATDecimalOrDerived::Ptr )_func->getParamNumber(2, context).next(context));
-    _one = context->getXQillaFactory()->createInteger(1, context);
+    _one = context->getItemFactory()->createInteger(1, context);
     _i = _one;
     _target = _func->getParamNumber(1, context, _flags);
 

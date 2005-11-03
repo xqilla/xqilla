@@ -84,10 +84,10 @@ public:
   /** Resets the dynamic context, as if it had never been used */
   virtual void clearDynamicContext();
 
-  /** Returns the XQillaFactory for this context, which is used to create XQilla items and other objects. */
-  virtual XQillaFactory *getXQillaFactory() const;
-  /** Sets the XQillaFactory for this context */
-  virtual void setXQillaFactory(XQillaFactory *factory);
+  /** Returns the ItemFactory for this context, which is used to create XQilla items and other objects. */
+  virtual ItemFactory *getItemFactory() const;
+  /** Sets the ItemFactory for this context */
+  virtual void setItemFactory(ItemFactory *factory);
 
   /** Get the context Item */
   virtual const Item::Ptr &getContextItem() const;
@@ -398,7 +398,7 @@ protected:
   /** For each atomic type in the in-scope type  definitions, there is 
    * a constructor function in the in-scope functions. Constructor 
    * functions are discussed in 3.10.4 Constructor Functions */
-  XQillaFactory* _xqillaFactory;
+  ItemFactory* _itemFactory;
 
   ////////////////////////////////////////
   //  XQilla Context specific variables //

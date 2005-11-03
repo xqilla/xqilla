@@ -31,7 +31,7 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/operators/Equals.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xqilla/context/XQillaFactory.hpp>
+#include <xqilla/context/ItemFactory.hpp>
 
 #include <xercesc/dom/DOM.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
@@ -215,7 +215,7 @@ Sequence FunctionDeepEqual::collapseTreeInternal(DynamicContext* context, int fl
       Sequence collArg = getParamNumber(3,context);
       const XMLCh* collName = collArg.first()->asString(context);
       try {
-        context->getXQillaFactory()->createAnyURI(collName, context);
+        context->getItemFactory()->createAnyURI(collName, context);
       } catch(InvalidLexicalSpaceException &e) {
         DSLthrow(FunctionException, X("FunctionDeepEqual::collapseTreeInternal"), X("Invalid collationURI"));  
       }
@@ -230,7 +230,7 @@ Sequence FunctionDeepEqual::collapseTreeInternal(DynamicContext* context, int fl
 
     bool bEqual=deep_equal(arg1, arg2, collation, context);
 
-	return Sequence(context->getXQillaFactory()->createBoolean(bEqual, context),
+	return Sequence(context->getItemFactory()->createBoolean(bEqual, context),
                   context->getMemoryManager());
 }
 

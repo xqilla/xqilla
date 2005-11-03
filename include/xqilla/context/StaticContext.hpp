@@ -30,7 +30,7 @@ class FuncFactory;
 class DatatypeFactory;
 class Collation;
 class VariableTypeStore;
-class XQillaFactory;
+class ItemFactory;
 
 XERCES_CPP_NAMESPACE_BEGIN
 class DOMDocument;
@@ -64,10 +64,10 @@ public:
   virtual DynamicContext *createDynamicContext(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr
                                                = XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager) const = 0;
   
-  /** Returns the XQillaFactory for this context, which is used to create XQilla items and other objects. */
-  virtual XQillaFactory *getXQillaFactory() const = 0;
-  /** Sets the XQillaFactory for this context */
-  virtual void setXQillaFactory(XQillaFactory *factory) = 0;
+  /** Returns the ItemFactory for this context, which is used to create XQilla items and other objects. */
+  virtual ItemFactory *getItemFactory() const = 0;
+  /** Sets the ItemFactory for this context */
+  virtual void setItemFactory(ItemFactory *factory) = 0;
 
   /** Get the current XPath 1.0 compatibility mode */
   virtual bool getXPath1CompatibilityMode() const = 0;

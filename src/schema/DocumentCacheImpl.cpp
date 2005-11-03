@@ -47,7 +47,7 @@
 #include <xqilla/schema/AnyAtomicTypeDatatypeValidator.hpp>
 #include <xqilla/parser/QName.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xqilla/context/XQillaFactory.hpp>
+#include <xqilla/context/ItemFactory.hpp>
 #include <xqilla/items/impl/NodeImpl.hpp>
 
 void DocumentCacheErrorCatcher::warning(const XERCES_CPP_NAMESPACE_QUALIFIER SAXParseException& toCatch)

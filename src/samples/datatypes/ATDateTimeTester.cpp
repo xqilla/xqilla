@@ -19,7 +19,7 @@
 #include <xqilla/framework/XPath2MemoryManager.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xqilla/context/XQillaFactory.hpp>
+#include <xqilla/context/ItemFactory.hpp>
 
 #include <xqilla/items/ATDateTimeOrDerived.hpp>
 #include <xqilla/items/ATDecimalOrDerived.hpp>
@@ -47,37 +47,37 @@ void ATDateTimeTester::run(const DynamicContext* context) {
   assertCondition(((const ATDateTimeOrDerived*)dateTime3)->greaterThan(dateTime1, context));
   
   // test 3 -- component extraction
-  assertObjectEquals(((const ATDateTimeOrDerived*)dateTime1)->getYears(), context->getXQillaFactory()->createInteger(2000, context), context);
-  assertObjectEquals(((const ATDateTimeOrDerived*)dateTime1)->getMonths(), context->getXQillaFactory()->createInteger(2, context), context);
-  assertObjectEquals(((const ATDateTimeOrDerived*)dateTime1)->getDays(), context->getXQillaFactory()->createInteger(29, context), context);
-  assertObjectEquals(((const ATDateTimeOrDerived*)dateTime1)->getHours(), context->getXQillaFactory()->createInteger(13, context), context);
-  assertObjectEquals(((const ATDateTimeOrDerived*)dateTime1)->getMinutes(), context->getXQillaFactory()->createInteger(20, context), context);
-  assertObjectEquals(((const ATDateTimeOrDerived*)dateTime1)->getSeconds(), context->getXQillaFactory()->createDecimal(10.0564, context), context);
+  assertObjectEquals(((const ATDateTimeOrDerived*)dateTime1)->getYears(), context->getItemFactory()->createInteger(2000, context), context);
+  assertObjectEquals(((const ATDateTimeOrDerived*)dateTime1)->getMonths(), context->getItemFactory()->createInteger(2, context), context);
+  assertObjectEquals(((const ATDateTimeOrDerived*)dateTime1)->getDays(), context->getItemFactory()->createInteger(29, context), context);
+  assertObjectEquals(((const ATDateTimeOrDerived*)dateTime1)->getHours(), context->getItemFactory()->createInteger(13, context), context);
+  assertObjectEquals(((const ATDateTimeOrDerived*)dateTime1)->getMinutes(), context->getItemFactory()->createInteger(20, context), context);
+  assertObjectEquals(((const ATDateTimeOrDerived*)dateTime1)->getSeconds(), context->getItemFactory()->createDecimal(10.0564, context), context);
   assertCondition(((const ATDateTimeOrDerived*)dateTime1)->hasTimezone());
   assertCondition(((const ATDateTimeOrDerived*)dateTime1)->getTimezone()->equals(new Timezone(2, 0)));
 
   // test 4 -- adding and subtracting durations/dates
-  const ATDurationOrDerived::Ptr duration1 = context->getXQillaFactory()->createDayTimeDuration(X("P3DT10H"), context);
+  const ATDurationOrDerived::Ptr duration1 = context->getItemFactory()->createDayTimeDuration(X("P3DT10H"), context);
   const ATDateTimeOrDerived::Ptr result1 = ((const ATDateTimeOrDerived*)dateTime1)->subtractDayTimeDuration(duration1, context);
   assertEquals(result1->asString(context), X("2000-02-26T01:20:10.0564Z"));
   const ATDateTimeOrDerived::Ptr result2 = ((const ATDateTimeOrDerived*)result1)->addDayTimeDuration(duration1, context);
   assertObjectEquals(dateTime1, result2, context);
 
-  const ATDurationOrDerived::Ptr duration2 = context->getXQillaFactory()->createYearMonthDuration(X("P1Y2M"), context);
+  const ATDurationOrDerived::Ptr duration2 = context->getItemFactory()->createYearMonthDuration(X("P1Y2M"), context);
   const ATDateTimeOrDerived::Ptr result3 = ((const ATDateTimeOrDerived*)dateTime1)->addYearMonthDuration(duration2, context);
   assertEquals(result3->asString(context), X("2001-04-29T11:20:10.0564Z"));
   const ATDateTimeOrDerived::Ptr result4 = ((const ATDateTimeOrDerived*)result3)->subtractYearMonthDuration(duration2, context);
   assertObjectEquals(dateTime1, result4, context);
  
   const ATDurationOrDerived::Ptr result5 = ((const ATDateTimeOrDerived*)dateTime3)->subtractDateTimeAsDayTimeDuration(dateTime1, context);
-  const ATDurationOrDerived::Ptr difference = context->getXQillaFactory()->createDayTimeDuration(X("P762DT17H39M49.9436S"), context);
+  const ATDurationOrDerived::Ptr difference = context->getItemFactory()->createDayTimeDuration(X("P762DT17H39M49.9436S"), context);
   assertObjectEquals(result5, difference, context);
 
   // test 5 -- timezones
   const ATDateTimeOrDerived::Ptr dateTime4 = this->createDateTime(X("1867-07-01T15:20:00"), context);
   assertCondition(!((const ATDateTimeOrDerived*)dateTime4)->hasTimezone());
 
-  const ATDateTimeOrDerived::Ptr dateTime5 = ((const ATDateTimeOrDerived*)dateTime4)->addTimezone(context->getXQillaFactory()->createDayTimeDuration(X("-PT5H"), context) ,context);
+  const ATDateTimeOrDerived::Ptr dateTime5 = ((const ATDateTimeOrDerived*)dateTime4)->addTimezone(context->getItemFactory()->createDayTimeDuration(X("-PT5H"), context) ,context);
   assertCondition(((const ATDateTimeOrDerived*)dateTime5)->hasTimezone());
   assertCondition(((const ATDateTimeOrDerived*)dateTime5)->getTimezone()->equals(new Timezone(-5, 0)));
 
@@ -98,7 +98,7 @@ void ATDateTimeTester::run(const DynamicContext* context) {
 
 const ATDateTimeOrDerived::Ptr ATDateTimeTester::createDateTime(const XMLCh* value,
                                    const DynamicContext* context) {
-  return context->getXQillaFactory()->createDateTimeOrDerived(
+  return context->getItemFactory()->createDateTimeOrDerived(
       XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
       XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DATETIME,
       value, context);

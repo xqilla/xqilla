@@ -25,7 +25,7 @@
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 #include <xqilla/framework/XPath2MemoryManager.hpp>
 #include <xqilla/context/DynamicContext.hpp>
-#include <xqilla/context/XQillaFactory.hpp>
+#include <xqilla/context/ItemFactory.hpp>
 
 ATBase64BinaryOrDerivedImpl::
 ATBase64BinaryOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* value, const StaticContext* context): 

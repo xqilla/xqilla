@@ -50,7 +50,7 @@ Sequence FunctionPosition::collapseTreeInternal(DynamicContext* context, int fla
 
   if(context->getContextItem()==NULLRCP)
     DSLthrow(FunctionException,X("FunctionPosition::collapseTreeInternal"), X("Undefined context item in fn:position [err:FONC0001]"));
-  return Sequence(context->getXQillaFactory()->createInteger((long)context->getContextPosition(), context), memMgr);
+  return Sequence(context->getItemFactory()->createInteger((long)context->getContextPosition(), context), memMgr);
 }
 
 

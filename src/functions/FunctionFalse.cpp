@@ -18,7 +18,7 @@
 #include <xqilla/items/ATBooleanOrDerived.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xqilla/context/XQillaFactory.hpp>
+#include <xqilla/context/ItemFactory.hpp>
 
 const XMLCh FunctionFalse::name[] = {
   XERCES_CPP_NAMESPACE_QUALIFIER chLatin_f, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_l, 
@@ -38,6 +38,6 @@ FunctionFalse::FunctionFalse(const VectorOfASTNodes &args, XPath2MemoryManager* 
 
 Sequence FunctionFalse::collapseTreeInternal(DynamicContext* context, int flags) const
 {
-	return Sequence(context->getXQillaFactory()->createBoolean(false, context),
+	return Sequence(context->getItemFactory()->createBoolean(false, context),
                   context->getMemoryManager());
 }

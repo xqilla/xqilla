@@ -71,10 +71,10 @@ Sequence FunctionStringLength::collapseTreeInternal(DynamicContext* context, int
 
         Sequence strParm=getParamNumber(1,context);
         if(strParm.isEmpty())
-            return Sequence(context->getXQillaFactory()->createInteger(0, context), memMgr);
+            return Sequence(context->getItemFactory()->createInteger(0, context), memMgr);
 
         str = strParm.first()->asString(context);
     }
-    const ATDecimalOrDerived::Ptr length = context->getXQillaFactory()->createInteger((long)XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(str), context);
+    const ATDecimalOrDerived::Ptr length = context->getItemFactory()->createInteger((long)XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(str), context);
     return Sequence(length, memMgr);
 }

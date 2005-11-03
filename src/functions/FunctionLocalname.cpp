@@ -60,7 +60,7 @@ Sequence FunctionLocalname::collapseTreeInternal(DynamicContext* context, int fl
   if(getNumArgs() == 1) {
     Sequence arg=getParamNumber(1,context);
     if(arg.isEmpty())
-      return Sequence(context->getXQillaFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context), memMgr);
+      return Sequence(context->getItemFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context), memMgr);
     ctxNode=arg.first();
   }
   else {
@@ -74,9 +74,9 @@ Sequence FunctionLocalname::collapseTreeInternal(DynamicContext* context, int fl
 
   ATQNameOrDerived::Ptr name = ctxNode->dmNodeName(context);
   if(name.notNull())
-    return Sequence(context->getXQillaFactory()->createString(((const ATQNameOrDerived*)name.get())->getName(), context), memMgr);
+    return Sequence(context->getItemFactory()->createString(((const ATQNameOrDerived*)name.get())->getName(), context), memMgr);
 
-  return Sequence(context->getXQillaFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context), memMgr);
+  return Sequence(context->getItemFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context), memMgr);
 }
 
 

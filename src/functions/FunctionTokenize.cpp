@@ -88,7 +88,7 @@ Sequence FunctionTokenize::collapseTreeInternal(DynamicContext* context, int fla
   Sequence resultSeq(toks -> size(),memMgr);
 
   for (i = 0; i < toks -> size(); ++i){
-    resultSeq.addItem(context->getXQillaFactory()->createString(toks -> elementAt(i), context));  
+    resultSeq.addItem(context->getItemFactory()->createString(toks -> elementAt(i), context));  
   }
 
   return resultSeq;

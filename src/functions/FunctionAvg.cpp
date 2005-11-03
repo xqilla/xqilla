@@ -27,7 +27,7 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
-#include <xqilla/context/XQillaFactory.hpp>
+#include <xqilla/context/ItemFactory.hpp>
 
 const XMLCh FunctionAvg::name[] = {
   XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_v, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_g, 
@@ -77,7 +77,7 @@ Sequence FunctionAvg::collapseTreeInternal(DynamicContext* context, int flags) c
   XQSequence seq1(sum, context, context->getMemoryManager());
   divArgs.push_back(&seq1);
 
-  XQSequence seq2(context->getXQillaFactory()->createDecimal((long)sequence.getLength(), context),
+  XQSequence seq2(context->getItemFactory()->createDecimal((long)sequence.getLength(), context),
                         context, context->getMemoryManager());
   divArgs.push_back(&seq2);
 

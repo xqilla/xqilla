@@ -31,7 +31,7 @@
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/functions/FunctionConstructor.hpp>
 #include <xqilla/schema/SequenceType.hpp>
-#include <xqilla/context/XQillaFactory.hpp>
+#include <xqilla/context/ItemFactory.hpp>
 
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 
@@ -110,7 +110,7 @@ Item::Ptr FunctionDistinctValues::DistinctValueResult::next(DynamicContext *cont
     if(fdv_->getNumArgs() > 1) {
         const XMLCh* collName = fdv_->getParamNumber(2, context).next(context)->asString(context);
         try {
-            context->getXQillaFactory()->createAnyURI(collName, context);
+            context->getItemFactory()->createAnyURI(collName, context);
         } catch(XPath2ErrorException &e) {
             DSLthrow(FunctionException, X("FunctionDistinctValues::DistinctValueResult::next"), X("Invalid collationURI"));  
         }
@@ -140,7 +140,7 @@ Item::Ptr FunctionDistinctValues::DistinctValueResult::next(DynamicContext *cont
     else if(item->getPrimitiveTypeIndex() == AnyAtomicType::DOUBLE) {
       ATDoubleOrDerived* dbl = (ATDoubleOrDerived*)item.get();
       if(dbl->isZero() && dbl->isNegative()) {
-        toCompare = context->getXQillaFactory()->createDouble(0.0, context);
+        toCompare = context->getItemFactory()->createDouble(0.0, context);
       }
       else if(dbl->isNaN()) {
         if(!seenNan_) {
@@ -153,7 +153,7 @@ Item::Ptr FunctionDistinctValues::DistinctValueResult::next(DynamicContext *cont
     else if(item->getPrimitiveTypeIndex() == AnyAtomicType::FLOAT) {
       ATFloatOrDerived* flt = (ATFloatOrDerived*)item.get();
       if(flt->isZero() && flt->isNegative()) {
-        toCompare = context->getXQillaFactory()->createFloat(0.0, context);
+        toCompare = context->getItemFactory()->createFloat(0.0, context);
       }
       else if(flt->isNaN()) {
         if(!seenNan_) {

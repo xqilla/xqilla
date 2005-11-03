@@ -20,7 +20,7 @@
 #include <xqilla/ast/ASTNodeImpl.hpp>
 #include <xqilla/runtime/Sequence.hpp>
 #include <xqilla/items/ATStringOrDerived.hpp>
-#include <xqilla/context/XQillaFactory.hpp>
+#include <xqilla/context/ItemFactory.hpp>
 
 #include <xercesc/util/XMLUniDefs.hpp>      // because every implementation will use these to define the function name
 #include <vector>

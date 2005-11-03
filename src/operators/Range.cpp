@@ -24,7 +24,7 @@
 #include <xqilla/items/Numeric.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xqilla/context/XQillaFactory.hpp>
+#include <xqilla/context/ItemFactory.hpp>
 #include <assert.h>
 
 /*static*/ const XMLCh Range::name[]={ XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
@@ -49,7 +49,7 @@ Range::RangeResult::RangeResult(const Range *op, DynamicContext *context)
   : ResultImpl(context),
     _op(op),
     _last(0),
-    _step(context->getXQillaFactory()->createInteger(1, context)),
+    _step(context->getItemFactory()->createInteger(1, context)),
     _end(0)
 {  
 }

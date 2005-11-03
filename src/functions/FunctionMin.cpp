@@ -72,7 +72,7 @@ Sequence FunctionMin::collapseTreeInternal(DynamicContext* context, int flags) c
         Sequence collArg = getParamNumber(2,context);
         const XMLCh* collName = collArg.first()->asString(context);
         try {
-            context->getXQillaFactory()->createAnyURI(collName, context);
+            context->getItemFactory()->createAnyURI(collName, context);
         } catch(XPath2ErrorException &e) {
             DSLthrow(FunctionException, X("FunctionMin::collapseTreeInternal"), X("Invalid collationURI"));  
         }

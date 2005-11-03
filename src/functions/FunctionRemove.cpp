@@ -66,7 +66,7 @@ Item::Ptr FunctionRemove::RemoveResult::next(DynamicContext *context)
 {
   if(_position == NULLRCP) {
     _position = ((const ATDecimalOrDerived::Ptr )_func->getParamNumber(2, context).next(context));
-    _one = context->getXQillaFactory()->createInteger(1, context);
+    _one = context->getItemFactory()->createInteger(1, context);
     _i = _one;
     _target = _func->getParamNumber(1, context);
   }

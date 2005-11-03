@@ -51,7 +51,7 @@ Sequence FunctionResolveURI::collapseTreeInternal(DynamicContext* context, int f
     return Sequence(memMgr);
   const XMLCh* relativeURI = relativeSeq.first()->asString(context);
   try {
-    context->getXQillaFactory()->createAnyURI(relativeURI, context);
+    context->getItemFactory()->createAnyURI(relativeURI, context);
   } catch(InvalidLexicalSpaceException &e) {
      DSLthrow(FunctionException, X("FunctionResolveURI::collapseTreeInternal"), X("Invalid argument to resolve-uri"));
   }
@@ -74,7 +74,7 @@ Sequence FunctionResolveURI::collapseTreeInternal(DynamicContext* context, int f
     XERCES_CPP_NAMESPACE_QUALIFIER XMLUri full(&base, relativeURI);
 
     const XMLCh* fullURI = getMemoryManager()->getPooledString(full.getUriText());    
-    return Sequence(context->getXQillaFactory()->createAnyURI(fullURI, context), memMgr); 
+    return Sequence(context->getItemFactory()->createAnyURI(fullURI, context), memMgr); 
 
   } catch(InvalidLexicalSpaceException &e){
     DSLthrow(FunctionException, X("FunctionResolveURI::collapseTreeInternal"), X("Invalid argument to resolve-uri"));

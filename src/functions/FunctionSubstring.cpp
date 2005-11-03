@@ -50,12 +50,12 @@ Sequence FunctionSubstring::collapseTreeInternal(DynamicContext* context, int fl
 
 	Sequence string=getParamNumber(1, context);
 	if(string.isEmpty())
-		return Sequence(context->getXQillaFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context), memMgr);
+		return Sequence(context->getItemFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context), memMgr);
 	
   ATStringOrDerived::Ptr str = (const ATStringOrDerived::Ptr )string.first();
 
 	Sequence startingLoc=getParamNumber(2,context);
-  const ATDoubleOrDerived::Ptr one = context->getXQillaFactory()->createDouble(1, context);
+  const ATDoubleOrDerived::Ptr one = context->getItemFactory()->createDouble(1, context);
 	// The first character of a string is located at position 1 (not position 0).
 	ATDoubleOrDerived::Ptr index = (const ATDoubleOrDerived::Ptr )startingLoc.first();
   if (index->lessThan(one, context))
@@ -68,7 +68,7 @@ Sequence FunctionSubstring::collapseTreeInternal(DynamicContext* context, int fl
 		subStrLength=(const ATDoubleOrDerived::Ptr )length.first();
 	}
 	else {
-		subStrLength=(const ATDoubleOrDerived::Ptr )context->getXQillaFactory()->createDouble((long)((const ATStringOrDerived*)str)->getLength(), context)->subtract(index, context)->add(one, context);
+		subStrLength=(const ATDoubleOrDerived::Ptr )context->getItemFactory()->createDouble((long)((const ATStringOrDerived*)str)->getLength(), context)->subtract(index, context)->add(one, context);
   }
   
 	return Sequence(((const ATStringOrDerived*)str)->substring(index, subStrLength, context), memMgr);

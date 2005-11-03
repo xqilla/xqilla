@@ -24,7 +24,7 @@
 #include <xqilla/exceptions/XPath2TypeCastException.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/utils/XStr.hpp>
-#include <xqilla/context/XQillaFactory.hpp>
+#include <xqilla/context/ItemFactory.hpp>
 
 #include <xqilla/items/ATDoubleOrDerived.hpp>
 #include <xqilla/items/ATFloatOrDerived.hpp>
@@ -99,13 +99,13 @@ AnyAtomicType::Ptr ATBooleanOrDerivedImpl::castAsInternal(AtomicObjectType targe
 
   switch(targetIndex) {
     case FLOAT: {
-      return (const AnyAtomicType::Ptr)context->getXQillaFactory()->createFloatOrDerived(targetURI, targetType, chValue, context);
+      return (const AnyAtomicType::Ptr)context->getItemFactory()->createFloatOrDerived(targetURI, targetType, chValue, context);
     }
     case DECIMAL:  {
-      return (const AnyAtomicType::Ptr)context->getXQillaFactory()->createDecimalOrDerived(targetURI, targetType, chValue, context);
+      return (const AnyAtomicType::Ptr)context->getItemFactory()->createDecimalOrDerived(targetURI, targetType, chValue, context);
     }
     case DOUBLE: {
-      return (const AnyAtomicType::Ptr)context->getXQillaFactory()->createDoubleOrDerived(targetURI, targetType, chValue, context);
+      return (const AnyAtomicType::Ptr)context->getItemFactory()->createDoubleOrDerived(targetURI, targetType, chValue, context);
     }
     default: {
       return AnyAtomicType::castAsInternal(targetIndex, targetURI, targetType, context);

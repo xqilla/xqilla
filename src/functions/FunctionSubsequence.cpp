@@ -65,7 +65,7 @@ FunctionSubsequence::SubsequenceResult::SubsequenceResult(const FunctionSubseque
 Item::Ptr FunctionSubsequence::SubsequenceResult::next(DynamicContext *context)
 {
   if(_one == NULLRCP) {
-    _one = context->getXQillaFactory()->createDouble(1, context);
+    _one = context->getItemFactory()->createDouble(1, context);
     _source = _func->getParamNumber(1, context);
     if(_func->getNumArgs()>2) {
       _length = ((const Numeric::Ptr )_func->getParamNumber(3, context).next(context))->round(context);

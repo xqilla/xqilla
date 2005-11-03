@@ -52,5 +52,5 @@ Sequence FunctionStaticBaseURI::collapseTreeInternal(DynamicContext* context, in
     if(uri==NULL)
         return Sequence(context->getMemoryManager());
 
-    return Sequence(context->getXQillaFactory()->createAnyURI(uri, context), context->getMemoryManager());
+    return Sequence(context->getItemFactory()->createAnyURI(uri, context), context->getMemoryManager());
 }

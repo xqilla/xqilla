@@ -65,17 +65,17 @@ Sequence FunctionStartsWith::collapseTreeInternal(DynamicContext* context, int f
 	// If the value of $operand1 is the zero-length string and the value of $operand2 is not the zero-length string, 
 	// then the function returns false. 
 	if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(source)==0 && XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(find)>0)
-		return Sequence(context->getXQillaFactory()->createBoolean(false, context), memMgr);
+		return Sequence(context->getItemFactory()->createBoolean(false, context), memMgr);
 	// If the value of $operand2 is the zero-length string, then the function returns true
 	if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(find)==0)
-		return Sequence(context->getXQillaFactory()->createBoolean(true, context), memMgr);
+		return Sequence(context->getItemFactory()->createBoolean(true, context), memMgr);
 
 	Collation* collation=NULL;
 	if(getNumArgs()>2) {
     Sequence collArg = getParamNumber(3,context);
     const XMLCh* collName = collArg.first()->asString(context);
     try {
-      context->getXQillaFactory()->createAnyURI(collName, context);
+      context->getItemFactory()->createAnyURI(collName, context);
     } catch(XPath2ErrorException &e) {
       DSLthrow(FunctionException, X("FunctionEndsWith::collapseTreeInternal"), X("Invalid collationURI"));  
     }
@@ -90,10 +90,10 @@ Sequence FunctionStartsWith::collapseTreeInternal(DynamicContext* context, int f
 	// of $operand2 according to the specified collation
 
 	if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(find)>XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(source)) {
-		return Sequence(context->getXQillaFactory()->createBoolean(false, context), memMgr);
+		return Sequence(context->getItemFactory()->createBoolean(false, context), memMgr);
 	}
 	const XMLCh* string = XPath2Utils::subString(source, 0,XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(find), memMgr);
 	bool result = (collation->compare(string,find)==0);
 
-	return Sequence(context->getXQillaFactory()->createBoolean(result, context), memMgr);
+	return Sequence(context->getItemFactory()->createBoolean(result, context), memMgr);
 }

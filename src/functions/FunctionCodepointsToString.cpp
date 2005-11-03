@@ -55,7 +55,7 @@ Sequence FunctionCodepointsToString::collapseTreeInternal(DynamicContext* contex
     result.append(((const ATDecimalOrDerived*)(const Item*)*i)->treatAsCodepoint(context));
   }
 
-  return Sequence(context->getXQillaFactory()->createString(result.getRawBuffer(), context),
+  return Sequence(context->getItemFactory()->createString(result.getRawBuffer(), context),
                   context->getMemoryManager());
 }
 

@@ -20,7 +20,7 @@
 #include <xqilla/context/impl/CodepointCollation.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/items/ATStringOrDerived.hpp>
-#include <xqilla/context/XQillaFactory.hpp>
+#include <xqilla/context/ItemFactory.hpp>
 
 const XMLCh FunctionDefaultCollation::name[] = {
   XERCES_CPP_NAMESPACE_QUALIFIER chLatin_d, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_f, 
@@ -46,9 +46,9 @@ Sequence FunctionDefaultCollation::collapseTreeInternal(DynamicContext* context,
 {
   Collation* collation = context->getDefaultCollation();
   if(collation != NULL)
-    return Sequence(context->getXQillaFactory()->createString(collation->getCollationName(), context),
+    return Sequence(context->getItemFactory()->createString(collation->getCollationName(), context),
                     context->getMemoryManager());
 
-  return Sequence(context->getXQillaFactory()->createString(CodepointCollation::getCodepointCollationName(), context),
+  return Sequence(context->getItemFactory()->createString(CodepointCollation::getCodepointCollationName(), context),
                   context->getMemoryManager());
 }

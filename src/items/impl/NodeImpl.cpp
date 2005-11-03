@@ -142,7 +142,7 @@ Sequence NodeImpl::dmBaseURI(const DynamicContext* context) const {
                 const XMLCh *tmp = pNode->getBaseURI();
                 if(tmp && tmp[0]) 
                 {
-                    const ATAnyURIOrDerived::Ptr tempURI = context->getXQillaFactory()->createAnyURI(tmp, context);
+                    const ATAnyURIOrDerived::Ptr tempURI = context->getItemFactory()->createAnyURI(tmp, context);
                     return Sequence(tempURI, context->getMemoryManager());
                 }
             }
@@ -157,7 +157,7 @@ Sequence NodeImpl::dmBaseURI(const DynamicContext* context) const {
             const XMLCh *tmp = fNode->getBaseURI();
             if(tmp && tmp[0]) 
             {
-                const ATAnyURIOrDerived::Ptr tempURI = context->getXQillaFactory()->createAnyURI(tmp, context);
+                const ATAnyURIOrDerived::Ptr tempURI = context->getItemFactory()->createAnyURI(tmp, context);
                 return Sequence(tempURI, context->getMemoryManager());
             }
         }
@@ -205,19 +205,19 @@ ATQNameOrDerived::Ptr NodeImpl::dmNodeName(const DynamicContext* context) const 
 	switch(fNode->getNodeType())
 	{
 	case DOMNode::ELEMENT_NODE:
-        return context->getXQillaFactory()->createQName(fNode->getNamespaceURI(), fNode->getPrefix(), fNode->getLocalName(), context);
+        return context->getItemFactory()->createQName(fNode->getNamespaceURI(), fNode->getPrefix(), fNode->getLocalName(), context);
 
 	case DOMNode::ATTRIBUTE_NODE:				
-        return context->getXQillaFactory()->createQName(fNode->getNamespaceURI(), fNode->getPrefix(), fNode->getLocalName(), context);
+        return context->getItemFactory()->createQName(fNode->getNamespaceURI(), fNode->getPrefix(), fNode->getLocalName(), context);
 
 	case DOMNode::PROCESSING_INSTRUCTION_NODE:	
-        return context->getXQillaFactory()->createQName(XMLUni::fgZeroLenString, XMLUni::fgZeroLenString, fNode->getNodeName(), context);
+        return context->getItemFactory()->createQName(XMLUni::fgZeroLenString, XMLUni::fgZeroLenString, fNode->getNodeName(), context);
 
 	case DOMXPathNamespace::XPATH_NAMESPACE_NODE:  
         {
             const XMLCh* prefix = fNode->getPrefix();
             if(prefix)
-                return context->getXQillaFactory()->createQName(XMLUni::fgZeroLenString, XMLUni::fgZeroLenString, prefix, context);
+                return context->getItemFactory()->createQName(XMLUni::fgZeroLenString, XMLUni::fgZeroLenString, prefix, context);
         }
 	}
 	return 0;
@@ -305,7 +305,7 @@ const XMLCh* NodeImpl::dmStringValue(const DynamicContext* context) const {
 					     XPath2Utils::equals(typeName, SchemaSymbols::fgDT_DATE) ||
 					     XPath2Utils::equals(typeName, SchemaSymbols::fgDT_TIME)))
 			    {
-				    const AnyAtomicType::Ptr item = context->getXQillaFactory()->createDerivedFromAtomicType(typeUri, typeName, fNode->getTextContent(), context);
+				    const AnyAtomicType::Ptr item = context->getItemFactory()->createDerivedFromAtomicType(typeUri, typeName, fNode->getTextContent(), context);
 				    str.set(item->asString(context));
 			    }
 			    //     - In all other cases, returns the concatenation of the string-values of all its text node descendants in document order.
@@ -353,7 +353,7 @@ const XMLCh* NodeImpl::dmStringValue(const DynamicContext* context) const {
                      XPath2Utils::equals(typeName, SchemaSymbols::fgDT_DATE) ||
                      XPath2Utils::equals(typeName, SchemaSymbols::fgDT_TIME)))
             {
-                const AnyAtomicType::Ptr item = context->getXQillaFactory()->createDerivedFromAtomicType(typeUri, typeName, fNode->getTextContent(), context);
+                const AnyAtomicType::Ptr item = context->getItemFactory()->createDerivedFromAtomicType(typeUri, typeName, fNode->getTextContent(), context);
                 return item->asString(context);
             }
             else
@@ -394,7 +394,7 @@ Sequence NodeImpl::getListTypeTypedValue(DatatypeValidator *dtv, const DynamicCo
 
 
     for ( unsigned int j = 0; j < tokenVector->size(); j++ )
-        s.addItem(context->getXQillaFactory()->createDerivedFromAtomicType(itemTypeDTVUri, itemTypeDTVName, tokenVector->elementAt(j), context));
+        s.addItem(context->getItemFactory()->createDerivedFromAtomicType(itemTypeDTVUri, itemTypeDTVName, tokenVector->elementAt(j), context));
 
     return s;
  
@@ -429,7 +429,7 @@ Sequence NodeImpl::dmTypedValue(const DynamicContext* context) const {
             if(XPath2Utils::equals(typeName, ATUntypedAtomic::fgDT_UNTYPEDATOMIC) &&
                XPath2Utils::equals(typeUri, FunctionConstructor::XMLChXPath2DatatypesURI))
             {
-                item = (const Item::Ptr)context->getXQillaFactory()->createUntypedAtomic(dmStringValue(context), context);
+                item = (const Item::Ptr)context->getItemFactory()->createUntypedAtomic(dmStringValue(context), context);
                 return Sequence(item, context->getMemoryManager()); 
             } 
             else 
@@ -455,7 +455,7 @@ Sequence NodeImpl::dmTypedValue(const DynamicContext* context) const {
                     return getListTypeTypedValue(dtv, context);
                 else 
                 {
-                    item = (const Item::Ptr)context->getXQillaFactory()->createDerivedFromAtomicType(typeUri, typeName, dmStringValue(context), context);
+                    item = (const Item::Ptr)context->getItemFactory()->createDerivedFromAtomicType(typeUri, typeName, dmStringValue(context), context);
                     return Sequence(item, context->getMemoryManager()); 
                 }
             }
@@ -476,7 +476,7 @@ Sequence NodeImpl::dmTypedValue(const DynamicContext* context) const {
                (XPath2Utils::equals(typeName, SchemaSymbols::fgATTVAL_ANYTYPE) && XPath2Utils::equals(typeUri, SchemaSymbols::fgURI_SCHEMAFORSCHEMA))
               )
             {
-                const AnyAtomicType::Ptr item = context->getXQillaFactory()->createUntypedAtomic(dmStringValue(context), context);
+                const AnyAtomicType::Ptr item = context->getItemFactory()->createUntypedAtomic(dmStringValue(context), context);
                 return Sequence(item, context->getMemoryManager());
             }
 
@@ -490,7 +490,7 @@ Sequence NodeImpl::dmTypedValue(const DynamicContext* context) const {
                     return getListTypeTypedValue(dtv, context);
                 else 
                 {
-                    const AnyAtomicType::Ptr item = context->getXQillaFactory()->createDerivedFromAtomicType(typeUri, typeName, dmStringValue(context), context);
+                    const AnyAtomicType::Ptr item = context->getItemFactory()->createDerivedFromAtomicType(typeUri, typeName, dmStringValue(context), context);
                     return Sequence(item, context->getMemoryManager()); 
                 }
             }
@@ -506,7 +506,7 @@ Sequence NodeImpl::dmTypedValue(const DynamicContext* context) const {
                         return getListTypeTypedValue(dtv, context);
                     else 
                     {
-                        const AnyAtomicType::Ptr item = context->getXQillaFactory()->createDerivedFromAtomicType(dtv->getTypeUri(), dtv->getTypeLocalName(), dmStringValue(context), context);
+                        const AnyAtomicType::Ptr item = context->getItemFactory()->createDerivedFromAtomicType(dtv->getTypeUri(), dtv->getTypeLocalName(), dmStringValue(context), context);
                         return Sequence(item, context->getMemoryManager());
                     }
                 } 
@@ -519,7 +519,7 @@ Sequence NodeImpl::dmTypedValue(const DynamicContext* context) const {
                 if(cti->getContentType() == SchemaElementDecl::Mixed_Simple || 
                    cti->getContentType() == SchemaElementDecl::Mixed_Complex)
                 {
-                    const AnyAtomicType::Ptr item = context->getXQillaFactory()->createUntypedAtomic(dmStringValue(context), context);
+                    const AnyAtomicType::Ptr item = context->getItemFactory()->createUntypedAtomic(dmStringValue(context), context);
                     return Sequence(item, context->getMemoryManager());
                 }
 
@@ -542,7 +542,7 @@ Sequence NodeImpl::dmTypedValue(const DynamicContext* context) const {
     case DOMNode::CDATA_SECTION_NODE:
         {
             const XMLCh *stringValue = dmStringValue(context);
-            const AnyAtomicType::Ptr untypedAtomic = context->getXQillaFactory()->createUntypedAtomic(stringValue, context);
+            const AnyAtomicType::Ptr untypedAtomic = context->getItemFactory()->createUntypedAtomic(stringValue, context);
             return Sequence(untypedAtomic, context->getMemoryManager()); 
         }
         break;
@@ -551,7 +551,7 @@ Sequence NodeImpl::dmTypedValue(const DynamicContext* context) const {
     case DOMNode::PROCESSING_INSTRUCTION_NODE:
         {
             const XMLCh *stringValue = dmStringValue(context);
-            const AnyAtomicType::Ptr untypedAtomic = context->getXQillaFactory()->createString(stringValue, context);
+            const AnyAtomicType::Ptr untypedAtomic = context->getItemFactory()->createString(stringValue, context);
             return Sequence(untypedAtomic, context->getMemoryManager());
         }
         break;
@@ -567,7 +567,7 @@ Sequence NodeImpl::dmDocumentURI(const DynamicContext* context) const {
   const XMLCh* docURI = doc->getDocumentURI();
   if( docURI==NULL || *docURI==0)
     return Sequence(context->getMemoryManager());
-  return Sequence(context->getXQillaFactory()->createAnyURI(docURI, context), context->getMemoryManager());
+  return Sequence(context->getItemFactory()->createAnyURI(docURI, context), context->getMemoryManager());
 }
 
 ATQNameOrDerived::Ptr NodeImpl::dmTypeName(const DynamicContext* context) const {
@@ -583,7 +583,7 @@ ATQNameOrDerived::Ptr NodeImpl::dmTypeName(const DynamicContext* context) const 
   //otherwise return the Qname for the node 
   const XMLCh* typeUri, *typeName;
   getTypeUriAndName(typeUri,typeName);
-  return context->getXQillaFactory()->createQName(typeUri, XMLUni::fgZeroLenString, typeName, context);
+  return context->getItemFactory()->createQName(typeUri, XMLUni::fgZeroLenString, typeName, context);
 }
 
 ATBooleanOrDerived::Ptr NodeImpl::dmNilled(const DynamicContext* context) const
@@ -601,12 +601,12 @@ ATBooleanOrDerived::Ptr NodeImpl::dmNilled(const DynamicContext* context) const
         if(psviType && psviType->getNumericProperty(DOMPSVITypeInfo::PSVI_Validity)==PSVIItem::VALIDITY_VALID)
         {
             bool isNil=(psviType->getNumericProperty(DOMPSVITypeInfo::PSVI_Nil)!=0);
-            return context->getXQillaFactory()->createBoolean(isNil, context);
+            return context->getItemFactory()->createBoolean(isNil, context);
         }
     } catch(DOMException&) {
         // ignore it; the implementation of getInterface for Xerces < 2.6 will throw it
     }
-    return context->getXQillaFactory()->createBoolean(false, context);
+    return context->getItemFactory()->createBoolean(false, context);
 }
 
 bool NodeImpl::lessThan(const Node::Ptr &other, const DynamicContext *context) const
@@ -791,10 +791,10 @@ ATBooleanOrDerived::Ptr NodeImpl::dmIsId(const DynamicContext* context) const
   if(typeInfo != 0 &&
      XPath2Utils::equals(typeInfo->getName(), XMLUni::fgIDString) &&
      XPath2Utils::equals(typeInfo->getNamespace(), SchemaSymbols::fgURI_SCHEMAFORSCHEMA)) {
-    return context->getXQillaFactory()->createBoolean(true, context);
+    return context->getItemFactory()->createBoolean(true, context);
   }
 
-  return context->getXQillaFactory()->createBoolean(false, context);
+  return context->getItemFactory()->createBoolean(false, context);
 }
 
 ATBooleanOrDerived::Ptr NodeImpl::dmIsIdRefs(const DynamicContext* context) const
@@ -812,10 +812,10 @@ ATBooleanOrDerived::Ptr NodeImpl::dmIsIdRefs(const DynamicContext* context) cons
      (XPath2Utils::equals(typeInfo->getName(), XMLUni::fgIDRefString) ||
       XPath2Utils::equals(typeInfo->getName(), XMLUni::fgIDRefsString)) &&
      XPath2Utils::equals(typeInfo->getNamespace(), SchemaSymbols::fgURI_SCHEMAFORSCHEMA)) {
-    return context->getXQillaFactory()->createBoolean(true, context);
+    return context->getItemFactory()->createBoolean(true, context);
   }
 
-  return context->getXQillaFactory()->createBoolean(false, context);
+  return context->getItemFactory()->createBoolean(false, context);
 }
 
 void NodeImpl::getMemberTypeUriAndName(const XMLCh*& uri, const XMLCh*& name) const

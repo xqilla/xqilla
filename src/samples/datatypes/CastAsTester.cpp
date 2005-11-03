@@ -50,26 +50,26 @@ void CastAsTester::run(const DynamicContext* context) {
   // casts to all of the primitive datatypes as defined by the spec
 
   // create data to cast 
-  const ATUntypedAtomic::Ptr uA = context->getXQillaFactory()->createUntypedAtomic(X("DSL"), context);
+  const ATUntypedAtomic::Ptr uA = context->getItemFactory()->createUntypedAtomic(X("DSL"), context);
   const ATAnyURIOrDerived::Ptr aURI = this->createURI(X("http://www.example.org"), context);
   const ATBase64BinaryOrDerived::Ptr b64 = this->createBinary(X("01101100"), context);
   const ATBooleanOrDerived::Ptr boolean = this->createBoolean(X("false"), context);
-  const ATDateOrDerived::Ptr dat = context->getXQillaFactory()->createDate(X("1999-05-31-08:00"), context);
+  const ATDateOrDerived::Ptr dat = context->getItemFactory()->createDate(X("1999-05-31-08:00"), context);
   const ATGDayOrDerived::Ptr Day = this->createGDay(X("---29Z"), context);
-  const ATDoubleOrDerived::Ptr dbl = context->getXQillaFactory()->createDouble(X("0.0E+0"), context);
-  const ATDecimalOrDerived::Ptr dec = context->getXQillaFactory()->createDecimal("1", context);
-  const ATDateTimeOrDerived::Ptr dT = context->getXQillaFactory()->createDateTime(X("2000-02-29T13:20:10.0564+02:00"), context);
-  const ATDurationOrDerived::Ptr dTD = context->getXQillaFactory()->createDayTimeDuration(X("-P15DT7H21M10.69S"), context);
+  const ATDoubleOrDerived::Ptr dbl = context->getItemFactory()->createDouble(X("0.0E+0"), context);
+  const ATDecimalOrDerived::Ptr dec = context->getItemFactory()->createDecimal("1", context);
+  const ATDateTimeOrDerived::Ptr dT = context->getItemFactory()->createDateTime(X("2000-02-29T13:20:10.0564+02:00"), context);
+  const ATDurationOrDerived::Ptr dTD = context->getItemFactory()->createDayTimeDuration(X("-P15DT7H21M10.69S"), context);
   const ATDurationOrDerived::Ptr dur = createDuration(X("P21Y11M35DT13H20M10.69S"), context);
-  const ATFloatOrDerived::Ptr flt = context->getXQillaFactory()->createFloat(X("1.0000"), context);
+  const ATFloatOrDerived::Ptr flt = context->getItemFactory()->createFloat(X("1.0000"), context);
   const ATHexBinaryOrDerived::Ptr hxB = this->createHexBinary(X("A4C4D3FF"), context);
   const ATGMonthDayOrDerived::Ptr MD = this->createGMonthDay(X("--12-06Z"), context);
   const ATGMonthOrDerived::Ptr Mon = this->createGMonth(X("--12--Z"), context);
   const ATQNameOrDerived::Ptr QN = this->createQName(X("xs:foo"), context);
   const ATStringOrDerived::Ptr str = this->createString(X("inf"), context);
-  const ATTimeOrDerived::Ptr tim = context->getXQillaFactory()->createTime(X("13:20:10.0564+14:00"), context);
+  const ATTimeOrDerived::Ptr tim = context->getItemFactory()->createTime(X("13:20:10.0564+14:00"), context);
   const ATGYearMonthOrDerived::Ptr YM = this->createGYearMonth(X("2003-07Z"), context);
-  const ATDurationOrDerived::Ptr yMD = context->getXQillaFactory()->createYearMonthDuration(X("-P7Y5M"), context);
+  const ATDurationOrDerived::Ptr yMD = context->getItemFactory()->createYearMonthDuration(X("-P7Y5M"), context);
   const ATGYearOrDerived::Ptr Yr = this->createGYear(X("2003Z"), context);
 
   // create pointers for casted data
@@ -462,7 +462,7 @@ void CastAsTester::run(const DynamicContext* context) {
   // cast down to them from primitive datatypes, and cast them across to each other
   
   // create data to cast
-  ATDecimalOrDerived::Ptr lng = context->getXQillaFactory()->createDecimalOrDerived(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+  ATDecimalOrDerived::Ptr lng = context->getItemFactory()->createDecimalOrDerived(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                                                                              XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_LONG,
                                                                              X("5"), context);
                                
@@ -516,7 +516,7 @@ void CastAsTester::run(const DynamicContext* context) {
 
 const ATAnyURIOrDerived::Ptr CastAsTester::createURI(const XMLCh* value,
                                    const DynamicContext* context) {
-  return context->getXQillaFactory()->createDerivedFromAtomicType(
+  return context->getItemFactory()->createDerivedFromAtomicType(
       XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
       XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_ANYURI,
       value, context);
@@ -524,7 +524,7 @@ const ATAnyURIOrDerived::Ptr CastAsTester::createURI(const XMLCh* value,
 
 const ATBase64BinaryOrDerived::Ptr CastAsTester::createBinary(const XMLCh* value,
                                    const DynamicContext* context) {
-  return context->getXQillaFactory()->createDerivedFromAtomicType(
+  return context->getItemFactory()->createDerivedFromAtomicType(
       XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
       XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_BASE64BINARY,
       value, context);
@@ -532,7 +532,7 @@ const ATBase64BinaryOrDerived::Ptr CastAsTester::createBinary(const XMLCh* value
 
 const ATBooleanOrDerived::Ptr CastAsTester::createBoolean(const XMLCh* value,
                                    const DynamicContext* context) {
-  return context->getXQillaFactory()->createBooleanOrDerived(
+  return context->getItemFactory()->createBooleanOrDerived(
       XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
       XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_BOOLEAN,
       value, context);
@@ -540,7 +540,7 @@ const ATBooleanOrDerived::Ptr CastAsTester::createBoolean(const XMLCh* value,
 
 const ATGDayOrDerived::Ptr CastAsTester::createGDay(const XMLCh* value,
                                                    const DynamicContext* context) {
-  return context->getXQillaFactory()->createGDayOrDerived(
+  return context->getItemFactory()->createGDayOrDerived(
       XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
       XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DAY,
       value, context);
@@ -548,7 +548,7 @@ const ATGDayOrDerived::Ptr CastAsTester::createGDay(const XMLCh* value,
 
 const ATDurationOrDerived::Ptr CastAsTester::createDuration(const XMLCh* value,
                                              const DynamicContext* context) {
-  return context->getXQillaFactory()->createDurationOrDerived(
+  return context->getItemFactory()->createDurationOrDerived(
       XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
       XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DURATION,
       value, context);
@@ -556,7 +556,7 @@ const ATDurationOrDerived::Ptr CastAsTester::createDuration(const XMLCh* value,
 
 const ATHexBinaryOrDerived::Ptr CastAsTester::createHexBinary(const XMLCh* value,
                                    const DynamicContext* context) {
-  return context->getXQillaFactory()->createDerivedFromAtomicType(
+  return context->getItemFactory()->createDerivedFromAtomicType(
       XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
       XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_HEXBINARY,
       value, context);
@@ -564,7 +564,7 @@ const ATHexBinaryOrDerived::Ptr CastAsTester::createHexBinary(const XMLCh* value
 
 const ATGMonthDayOrDerived::Ptr CastAsTester::createGMonthDay(const XMLCh* value,
                                                    const DynamicContext* context) {
-  return context->getXQillaFactory()->createGMonthDayOrDerived(
+  return context->getItemFactory()->createGMonthDayOrDerived(
       XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
       XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_MONTHDAY,
       value, context);
@@ -573,7 +573,7 @@ const ATGMonthDayOrDerived::Ptr CastAsTester::createGMonthDay(const XMLCh* value
 
 const ATGMonthOrDerived::Ptr CastAsTester::createGMonth(const XMLCh* value,
                                                    const DynamicContext* context) {
-  return context->getXQillaFactory()->createGMonthOrDerived(
+  return context->getItemFactory()->createGMonthOrDerived(
       XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
       XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_MONTH,
       value, context);
@@ -581,7 +581,7 @@ const ATGMonthOrDerived::Ptr CastAsTester::createGMonth(const XMLCh* value,
 
 const ATQNameOrDerived::Ptr CastAsTester::createQName(const XMLCh* value,
                                                    const DynamicContext* context) {
-  return context->getXQillaFactory()->createDerivedFromAtomicType(
+  return context->getItemFactory()->createDerivedFromAtomicType(
       XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
       XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_QNAME,
       value, context);
@@ -589,7 +589,7 @@ const ATQNameOrDerived::Ptr CastAsTester::createQName(const XMLCh* value,
 
 const ATStringOrDerived::Ptr CastAsTester::createString(const XMLCh* value,
                                    const DynamicContext* context) {
-  return context->getXQillaFactory()->createStringOrDerived(
+  return context->getItemFactory()->createStringOrDerived(
       XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
       XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
       value, context);
@@ -597,7 +597,7 @@ const ATStringOrDerived::Ptr CastAsTester::createString(const XMLCh* value,
 
 const ATGYearMonthOrDerived::Ptr CastAsTester::createGYearMonth(const XMLCh* value,
                                                    const DynamicContext* context) {
-  return context->getXQillaFactory()->createGYearMonthOrDerived(
+  return context->getItemFactory()->createGYearMonthOrDerived(
       XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
       XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_YEARMONTH,
       value, context);
@@ -605,7 +605,7 @@ const ATGYearMonthOrDerived::Ptr CastAsTester::createGYearMonth(const XMLCh* val
 
 const ATGYearOrDerived::Ptr CastAsTester::createGYear(const XMLCh* value,
                                                    const DynamicContext* context) {
-  return context->getXQillaFactory()->createGYearOrDerived(
+  return context->getItemFactory()->createGYearOrDerived(
       XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
       XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_YEAR,
       value, context);

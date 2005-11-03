@@ -28,7 +28,7 @@
 #include "../utils/DateUtils.hpp"
 #include <xqilla/items/ATDecimalOrDerived.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xqilla/context/XQillaFactory.hpp>
+#include <xqilla/context/ItemFactory.hpp>
 
 #include <xercesc/util/XMLString.hpp>
 
@@ -114,7 +114,7 @@ bool ATGDayOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const Dynamic
     if ( _hasTimezone == true ) {
         buffer.append(timezone_->asString(context));
   }
-    ATDateTimeOrDerived::Ptr myValue=context->getXQillaFactory()->createDateTime(buffer.getRawBuffer(), context);
+    ATDateTimeOrDerived::Ptr myValue=context->getItemFactory()->createDateTime(buffer.getRawBuffer(), context);
 
     buffer.set(s1972);
     buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
@@ -130,7 +130,7 @@ bool ATGDayOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const Dynamic
     if ( targetGDay->_hasTimezone == true ) {
         buffer.append(targetGDay->timezone_->asString(context));
   }
-    ATDateTimeOrDerived::Ptr targetValue=context->getXQillaFactory()->createDateTime(buffer.getRawBuffer(), context);
+    ATDateTimeOrDerived::Ptr targetValue=context->getItemFactory()->createDateTime(buffer.getRawBuffer(), context);
 
     return myValue->equals(targetValue, context);
 }
@@ -181,7 +181,7 @@ ATGDayOrDerived::Ptr ATGDayOrDerivedImpl::setTimezone(const Timezone::Ptr &timez
   if (hasTimezone) 
     buffer.append(timezone->asString(context));
   const XMLCh* gDay = context->getMemoryManager()->getPooledString(buffer.getRawBuffer());
-  return context->getXQillaFactory()->createGDayOrDerived(this->getTypeURI(), this->getTypeName(), gDay, context);        
+  return context->getItemFactory()->createGDayOrDerived(this->getTypeURI(), this->getTypeName(), gDay, context);        
 }
 
 
@@ -324,6 +324,6 @@ void ATGDayOrDerivedImpl::setGDay(const XMLCh* const value, const DynamicContext
     zonemm *= -1;
   }
   timezone_ = new Timezone(zonehh, zonemm);
-  _gDay = context->getXQillaFactory()->createNonNegativeInteger(DD, context);
+  _gDay = context->getItemFactory()->createNonNegativeInteger(DD, context);
   
 }

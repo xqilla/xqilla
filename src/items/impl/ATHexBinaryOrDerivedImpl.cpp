@@ -26,7 +26,7 @@
 #include <xqilla/framework/XPath2MemoryManager.hpp>
 #include <xercesc/util/XMLString.hpp>
 #include <xqilla/context/DynamicContext.hpp>
-#include <xqilla/context/XQillaFactory.hpp>
+#include <xqilla/context/ItemFactory.hpp>
 
 ATHexBinaryOrDerivedImpl::
 ATHexBinaryOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* value, const StaticContext* context): 

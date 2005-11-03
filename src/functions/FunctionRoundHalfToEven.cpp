@@ -65,7 +65,7 @@ Sequence FunctionRoundHalfToEven::collapseTreeInternal(DynamicContext* context, 
     precision = (const ATDecimalOrDerived::Ptr )precisionArg.first();
   }
   else
-    precision = context->getXQillaFactory()->createInteger(0, context);
+    precision = context->getItemFactory()->createInteger(0, context);
   
   return Sequence(numericArg->roundHalfToEven(precision, context), memMgr);
 }

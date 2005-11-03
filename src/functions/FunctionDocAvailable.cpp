@@ -67,7 +67,7 @@ Sequence FunctionDocAvailable::collapseTreeInternal(DynamicContext* context, int
 	  uri=newUri;
   }
   try {
-    context->getXQillaFactory()->createAnyURI(uri, context);
+    context->getItemFactory()->createAnyURI(uri, context);
   } catch(XPath2ErrorException &e) {
     DSLthrow(FunctionException, X("FunctionDocAvailable::collapseTreeInternal"), X("Invalid argument to fn:doc-available function [err:FODC0005]"));
   }
@@ -78,5 +78,5 @@ Sequence FunctionDocAvailable::collapseTreeInternal(DynamicContext* context, int
   } 
   catch(...) {
   }
-  return Sequence(context->getXQillaFactory()->createBoolean(bSuccess, context), context->getMemoryManager());
+  return Sequence(context->getItemFactory()->createBoolean(bSuccess, context), context->getMemoryManager());
 }

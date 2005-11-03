@@ -29,7 +29,7 @@
 
 #include <xqilla/exceptions/FunctionException.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xqilla/context/XQillaFactory.hpp>
+#include <xqilla/context/ItemFactory.hpp>
 #include <xqilla/items/impl/NodeImpl.hpp>
 
 #include <xercesc/dom/DOMException.hpp>

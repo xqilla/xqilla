@@ -27,7 +27,7 @@
 #include <xqilla/items/Timezone.hpp>
 #include <xqilla/items/ATDecimalOrDerived.hpp>
 #include "../utils/DateUtils.hpp"
-#include <xqilla/context/XQillaFactory.hpp>
+#include <xqilla/context/ItemFactory.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 
 #include <xercesc/util/XMLString.hpp>
@@ -119,7 +119,7 @@ bool ATGYearMonthOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const D
     if ( _hasTimezone == true ) {
         buffer.append(timezone_->asString(context));
     }
-    ATDateTimeOrDerived::Ptr myValue=context->getXQillaFactory()->createDateTime(buffer.getRawBuffer(), context);
+    ATDateTimeOrDerived::Ptr myValue=context->getItemFactory()->createDateTime(buffer.getRawBuffer(), context);
 
   ATGYearMonthOrDerivedImpl* targetGYearMonth = (ATGYearMonthOrDerivedImpl*)(const AnyAtomicType*)target;
     if(targetGYearMonth->_YY->asMAPM() > 9999 || targetGYearMonth->_YY->asMAPM() < -9999) {
@@ -140,7 +140,7 @@ bool ATGYearMonthOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const D
     if ( targetGYearMonth->_hasTimezone == true ) {
         buffer.append(targetGYearMonth->timezone_->asString(context));
   }
-    ATDateTimeOrDerived::Ptr targetValue=context->getXQillaFactory()->createDateTime(buffer.getRawBuffer(), context);
+    ATDateTimeOrDerived::Ptr targetValue=context->getItemFactory()->createDateTime(buffer.getRawBuffer(), context);
 
     return myValue->equals(targetValue, context);
 }
@@ -196,7 +196,7 @@ ATGYearMonthOrDerived::Ptr ATGYearMonthOrDerivedImpl::setTimezone(const Timezone
     if (hasTimezone) 
         buffer.append(timezone->asString(context));
     const XMLCh* gYearMonth = context->getMemoryManager()->getPooledString(buffer.getRawBuffer());
-    return context->getXQillaFactory()->createGYearMonthOrDerived(this->getTypeURI(), this->getTypeName(), gYearMonth, context);        
+    return context->getItemFactory()->createGYearMonthOrDerived(this->getTypeURI(), this->getTypeName(), gYearMonth, context);        
 }
 
 
@@ -361,8 +361,8 @@ void ATGYearMonthOrDerivedImpl::setGYearMonth(const XMLCh* const value, const Dy
  timezone_ = new Timezone(zonehh, zonemm);
  
 
-  _MM = context->getXQillaFactory()->createNonNegativeInteger(MM, context);  
-  _YY = context->getXQillaFactory()->createInteger(YY, context);  
+  _MM = context->getItemFactory()->createNonNegativeInteger(MM, context);  
+  _YY = context->getItemFactory()->createInteger(YY, context);  
 }
 
 //////////////////////////////////////

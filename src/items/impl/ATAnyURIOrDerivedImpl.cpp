@@ -27,7 +27,7 @@
 #include <xercesc/framework/XMLBuffer.hpp>
 #include <xqilla/framework/XPath2MemoryManager.hpp>
 #include <xqilla/items/ATStringOrDerived.hpp>
-#include <xqilla/context/XQillaFactory.hpp>
+#include <xqilla/context/ItemFactory.hpp>
 
 ATAnyURIOrDerivedImpl::
 ATAnyURIOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* value, const StaticContext* context): 
@@ -76,7 +76,7 @@ AnyAtomicType::Ptr ATAnyURIOrDerivedImpl::castAsInternal(AtomicObjectType target
     case UNTYPED_ATOMIC:
       //anySimpleType and untypedAtomic follow the same casting rules as string.
     case STRING: {
-      return context->getXQillaFactory()->createDerivedFromAtomicType(targetURI, targetType, _uri, context);
+      return context->getItemFactory()->createDerivedFromAtomicType(targetURI, targetType, _uri, context);
     }
     default: return AnyAtomicType::castAsInternal(targetIndex, targetURI, targetType, context);
   }

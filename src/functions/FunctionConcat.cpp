@@ -19,7 +19,7 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xercesc/framework/XMLBuffer.hpp>
-#include <xqilla/context/XQillaFactory.hpp>
+#include <xqilla/context/ItemFactory.hpp>
 
 const XMLCh FunctionConcat::name[] = {
   XERCES_CPP_NAMESPACE_QUALIFIER chLatin_c, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, 
@@ -51,7 +51,7 @@ Sequence FunctionConcat::collapseTreeInternal(DynamicContext* context, int flags
 		  result.append(item.first()->asString(context));
 		}
 	}
-  const ATStringOrDerived::Ptr strResult = context->getXQillaFactory()->createString(result.getRawBuffer(), context);
+  const ATStringOrDerived::Ptr strResult = context->getItemFactory()->createString(result.getRawBuffer(), context);
 	/*	cerr << XERCES_CPP_NAMESPACE_QUALIFIER XMLString::transcode(strResult.asString()) << endl;*/
 
 	return Sequence(strResult, context->getMemoryManager());

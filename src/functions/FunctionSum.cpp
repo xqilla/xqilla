@@ -59,7 +59,7 @@ Sequence FunctionSum::collapseTreeInternal(DynamicContext* context, int flags) c
 
   if(sequence.isEmpty())
     if(getNumArgs() == 1)
-      return Sequence(context->getXQillaFactory()->createDouble(0.0, context), memMgr);
+      return Sequence(context->getItemFactory()->createDouble(0.0, context), memMgr);
     else
       return getParamNumber(2,context);
   if(sequence.getLength()==1 && isNumericNaN(sequence.first()))

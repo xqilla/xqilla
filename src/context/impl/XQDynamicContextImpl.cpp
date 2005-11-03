@@ -20,7 +20,7 @@
 #include <iostream>
 
 #include <xqilla/context/impl/XQDynamicContextImpl.hpp>
-#include <xqilla/context/impl/XQFactoryImpl.hpp>
+#include <xqilla/context/impl/ItemFactoryImpl.hpp>
 
 #include <xqilla/context/VariableStore.hpp>
 #include <xqilla/utils/XPath2NSUtils.hpp>
@@ -69,7 +69,7 @@ XQDynamicContextImpl::XQDynamicContextImpl(const StaticContext *staticContext, X
   time(&_currentTime);
   _memMgr = &_internalMM;
   _varStore = _internalMM.createVariableStore();
-  _xqillaFactory = new (&_internalMM) XQFactoryImpl(_docCache, &_internalMM);
+  _itemFactory = new (&_internalMM) ItemFactoryImpl(_docCache, &_internalMM);
 
   m_pDebugCallback = NULL;
   m_bEnableDebugging = false;
@@ -79,6 +79,8 @@ XQDynamicContextImpl::~XQDynamicContextImpl()
 {
   _contextItem = 0;
   _implicitTimezone = 0;
+
+  ((ItemFactoryImpl*)_itemFactory)->release();
 }
 
 void XQDynamicContextImpl::release()
@@ -316,14 +318,14 @@ Node::Ptr XQDynamicContextImpl::validate(const Node::Ptr &node, DocumentCache::V
   return _docCache->validate(node, valMode, this);
 }
 
-XQillaFactory *XQDynamicContextImpl::getXQillaFactory() const
+ItemFactory *XQDynamicContextImpl::getItemFactory() const
 {
-  return _xqillaFactory;
+  return _itemFactory;
 }
 
-void XQDynamicContextImpl::setXQillaFactory(XQillaFactory *factory)
+void XQDynamicContextImpl::setItemFactory(ItemFactory *factory)
 {
-  _xqillaFactory = factory;
+  _itemFactory = factory;
 }
 
 void XQDynamicContextImpl::trace(const XMLCh* message1, const XMLCh* message2) {

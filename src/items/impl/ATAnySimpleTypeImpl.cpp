@@ -76,11 +76,11 @@ AnyAtomicType::Ptr ATAnySimpleTypeImpl::castAsInternal(AtomicObjectType targetIn
   switch (targetIndex) {
     case DOUBLE: { 
       const XMLCh* upCase = XPath2Utils::toUpper(_value, context->getMemoryManager());
-      return (const AnyAtomicType::Ptr)context->getXQillaFactory()->createDoubleOrDerived(targetURI, targetType, upCase, context);
+      return (const AnyAtomicType::Ptr)context->getItemFactory()->createDoubleOrDerived(targetURI, targetType, upCase, context);
     } 
     case FLOAT: {
       const XMLCh* upCase = XPath2Utils::toUpper(_value, context->getMemoryManager());
-      return (const AnyAtomicType::Ptr)context->getXQillaFactory()->createFloatOrDerived(targetURI, targetType, upCase, context);
+      return (const AnyAtomicType::Ptr)context->getItemFactory()->createFloatOrDerived(targetURI, targetType, upCase, context);
     } 
     default: return AnyAtomicType::castAsInternal(targetIndex, targetURI, targetType, context);
   }

@@ -22,7 +22,7 @@
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/ast/StaticResolutionContext.hpp>
 #include <xqilla/ast/XQSequence.hpp>
-#include <xqilla/context/XQillaFactory.hpp>
+#include <xqilla/context/ItemFactory.hpp>
 
 /*static*/ const XMLCh Or::name[]={ XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_r, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
 
@@ -55,7 +55,7 @@ ASTNode* Or::staticResolution(StaticContext *context)
       if((*i)->collapseTree(dContext, ASTNode::UNORDERED | ASTNode::RETURN_TWO).getEffectiveBooleanValue(dContext)) {
         // It's constantly true, so this expression is true
         ASTNode* newBlock = new (getMemoryManager())
-          XQSequence(dContext->getXQillaFactory()->createBoolean(true, dContext),
+          XQSequence(dContext->getItemFactory()->createBoolean(true, dContext),
                            dContext, getMemoryManager());
         newBlock->addPredicates(_predList);
         return newBlock->staticResolution(context);
@@ -78,11 +78,11 @@ Item::Ptr Or::OrResult::getSingleResult(DynamicContext *context) const
   unsigned int numArgs=_op->getNumArgs();
   for(unsigned int i=0;i<numArgs;i++) {
     if(_op->getArgument(i)->collapseTree(context, ASTNode::UNORDERED | ASTNode::RETURN_TWO).getEffectiveBooleanValue(context)) {
-      return (const Item::Ptr)context->getXQillaFactory()->createBoolean(true, context);
+      return (const Item::Ptr)context->getItemFactory()->createBoolean(true, context);
     }
   }
 
-	return (const Item::Ptr)context->getXQillaFactory()->createBoolean(false, context);
+	return (const Item::Ptr)context->getItemFactory()->createBoolean(false, context);
 }
 
 std::string Or::OrResult::asString(DynamicContext *context, int indent) const

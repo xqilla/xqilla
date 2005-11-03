@@ -85,7 +85,7 @@ Sequence FunctionResolveQName::collapseTreeInternal(DynamicContext* context, int
     DSLthrow(FunctionException, X("FunctionResolveQName::collapseTreeInternal"),X("no namespace found for prefix"));
   }
 
-  Sequence result(context->getXQillaFactory()->createQName(namespaceURI, prefix, localName, context), memMgr);
+  Sequence result(context->getItemFactory()->createQName(namespaceURI, prefix, localName, context), memMgr);
 
   return result; 
 }

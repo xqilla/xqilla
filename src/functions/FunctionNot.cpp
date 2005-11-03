@@ -39,5 +39,5 @@ Sequence FunctionNot::collapseTreeInternal(DynamicContext* context, int flags) c
 {
 	bool result = !getParamNumber(1,context,ASTNode::UNORDERED|ASTNode::RETURN_TWO).getEffectiveBooleanValue(context);
 	XPath2MemoryManager* memMgr = context->getMemoryManager();
-	return Sequence(context->getXQillaFactory()->createBoolean(result, context), memMgr);
+	return Sequence(context->getItemFactory()->createBoolean(result, context), memMgr);
 }
