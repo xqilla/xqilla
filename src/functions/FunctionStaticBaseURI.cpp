@@ -36,14 +36,14 @@ const unsigned int FunctionStaticBaseURI::maxArgs = 0;
  * fn:static-base-uri() as xs:anyURI?
 **/
 
-FunctionStaticBaseURI::FunctionStaticBaseURI(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
-  : DataItemFunction(name, minArgs, maxArgs, "empty()", args, memMgr)
+FunctionStaticBaseURI::FunctionStaticBaseURI(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
+  : XQFunction(name, minArgs, maxArgs, "empty()", args, memMgr)
 {
 }
 
-DataItem* FunctionStaticBaseURI::staticResolution(StaticContext *context) {
+ASTNode* FunctionStaticBaseURI::staticResolution(StaticContext *context) {
   _src.staticBaseURIUsed(true);
-  return resolveDataItems(_args, context, false);
+  return resolveASTNodes(_args, context, false);
 }
 
 Sequence FunctionStaticBaseURI::collapseTreeInternal(DynamicContext* context, int flags) const

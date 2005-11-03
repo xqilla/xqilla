@@ -36,7 +36,7 @@ public:
   static const unsigned int minArgs;
   static const unsigned int maxArgs;
 
-  FunctionDocumentURI(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  FunctionDocumentURI(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
 	/* returns the document-URI property of the node */
   Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;

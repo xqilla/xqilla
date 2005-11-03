@@ -32,7 +32,7 @@ public:
   static const unsigned int minArgs;
   static const unsigned int maxArgs;
 
-  FunctionPrefixFromQName(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  FunctionPrefixFromQName(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   /** Returns the prefix part of a QName, eg for foo:bar it returns foo */
   Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;

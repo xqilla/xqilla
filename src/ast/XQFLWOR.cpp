@@ -33,7 +33,7 @@
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/utils/XPath2NSUtils.hpp>
 #include <xqilla/ast/StaticResolutionContext.hpp>
-#include <xqilla/ast/DataItemSequence.hpp>
+#include <xqilla/ast/XQSequence.hpp>
 #include <xqilla/schema/SequenceType.hpp>
 #include <xqilla/context/PathanFactory.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
@@ -127,7 +127,7 @@ const long XQSort::SortSpec::descending=2;
 const long XQSort::SortSpec::empty_greatest=4;
 const long XQSort::SortSpec::empty_least=8;
 
-XQSort::SortSpec::SortSpec(DataItem* expr, sortModifier modifier, const XMLCh* collation)
+XQSort::SortSpec::SortSpec(ASTNode* expr, sortModifier modifier, const XMLCh* collation)
   : _expr(expr),
     _modifier(modifier),
     _collation(collation)
@@ -177,7 +177,7 @@ SortableItem XQSort::SortSpec::buildKey(DynamicContext* context)
   return value;
 }
 
-const DataItem *XQSort::SortSpec::getExpression() const
+const ASTNode *XQSort::SortSpec::getExpression() const
 {
   return _expr;
 }
@@ -192,7 +192,7 @@ const XMLCh *XQSort::SortSpec::getCollation() const
   return _collation;
 }
 
-void XQSort::SortSpec::setExpression(DataItem *expr)
+void XQSort::SortSpec::setExpression(ASTNode *expr)
 {
   _expr = expr;
 }
@@ -273,10 +273,8 @@ XQFLWOR::ProductFactor::ProductFactor(const XQVariableBinding *vb, DynamicContex
 {
 }
 
-bool XQFLWOR::ProductFactor::initialise(DynamicContext *ctx)
+bool XQFLWOR::ProductFactor::initialise(DynamicContext *context)
 {
-  XQContext *context = CAST_TO_XQCONTEXT(ctx);
-
   // Compute the values, if needed
   if(_vb->_valuesResultMustBeRecalculated) {
     _values = _vb->_allValues->collapseTree(context);
@@ -347,10 +345,8 @@ bool XQFLWOR::ProductFactor::initialise(DynamicContext *ctx)
   return true;
 }
 
-bool XQFLWOR::ProductFactor::next(DynamicContext *ctx)
+bool XQFLWOR::ProductFactor::next(DynamicContext *context)
 {
-  XQContext *context = CAST_TO_XQCONTEXT(ctx);
-
   if(_vb->_bindingType == XQVariableBinding::letBinding) {
     // A let binding never has a next
     if(_vb->_needsNewScope) {
@@ -388,21 +384,21 @@ bool XQFLWOR::ProductFactor::next(DynamicContext *ctx)
 
 bool XQFLWOR::ProductFactor::checkWhere(DynamicContext *context)
 {
-  return _vb->_where == 0 || _vb->_where->collapseTree(context, DataItem::UNORDERED|DataItem::RETURN_TWO).getEffectiveBooleanValue(context);
+  return _vb->_where == 0 || _vb->_where->collapseTree(context, ASTNode::UNORDERED|ASTNode::RETURN_TWO).getEffectiveBooleanValue(context);
 }
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-XQFLWOR::XQFLWOR(VectorOfVariableBinding* bindings, DataItem* where, XQSort* orderBy, DataItem* returnExpr, XPath2MemoryManager* expr)
-  : DataItemImpl(expr),
+XQFLWOR::XQFLWOR(VectorOfVariableBinding* bindings, ASTNode* where, XQSort* orderBy, ASTNode* returnExpr, XPath2MemoryManager* expr)
+  : ASTNodeImpl(expr),
     _return(returnExpr),
     _where(where),
     _sort(orderBy)
 {
   _bindings=bindings;
-  setType((DataItem::whichType)XQContext::FLWOR);
+  setType(ASTNode::FLWOR);
 }
 
 bool XQFLWOR::nextState(ExecutionBindings &ebs, DynamicContext *context, bool initialisationState) const
@@ -480,12 +476,11 @@ bool XQFLWOR::nextState(ExecutionBindings &ebs, DynamicContext *context, bool in
 
 bool XQFLWOR::checkWhere(DynamicContext *context) const
 {
-  return _where == 0 || _where->collapseTree(context, DataItem::UNORDERED|DataItem::RETURN_TWO).getEffectiveBooleanValue(context);
+  return _where == 0 || _where->collapseTree(context, ASTNode::UNORDERED|ASTNode::RETURN_TWO).getEffectiveBooleanValue(context);
 }
 
-VariableStore::Entry *XQFLWOR::getAccumulator(DynamicContext *ctx) const
+VariableStore::Entry *XQFLWOR::getAccumulator(DynamicContext *context) const
 {
-  XQContext *context = CAST_TO_XQCONTEXT(ctx);
   VariableStore* varStore = context->getVariableStore();
 
   if(context->isDebuggingEnabled()) {
@@ -510,9 +505,8 @@ VariableStore::Entry *XQFLWOR::getAccumulator(DynamicContext *ctx) const
   return 0;
 }
 
-void XQFLWOR::setAccumulator(VariableStore::Entry *refVar, const PreSortResult &toBeSorted, DynamicContext *ctx) const
+void XQFLWOR::setAccumulator(VariableStore::Entry *refVar, const PreSortResult &toBeSorted, DynamicContext *context) const
 {
-  XQContext *context = CAST_TO_XQCONTEXT(ctx);
   if(context->isDebuggingEnabled()) {
     Sequence curReturnValue(context->getMemoryManager());
     for(PreSortResult::const_iterator orderIt = toBeSorted.begin(); orderIt != toBeSorted.end(); ++orderIt)
@@ -527,10 +521,9 @@ Result XQFLWOR::createResult(DynamicContext* context, int flags) const
 }
 
 Result XQFLWOR::createResultImpl(VectorOfVariableBinding::const_iterator it, VectorOfVariableBinding::const_iterator end,
-                                 DynamicContext* ctx, int flags) const
+                                 DynamicContext* context, int flags) const
 {
-  XQContext *context = CAST_TO_XQCONTEXT(ctx);
-  if((_sort && !(flags & DataItem::UNORDERED)) ||
+  if((_sort && !(flags & ASTNode::UNORDERED)) ||
      context->isDebuggingEnabled()) {
     return new SortingFLWORResult(it, end, this, flags, context);
   }
@@ -539,7 +532,7 @@ Result XQFLWOR::createResultImpl(VectorOfVariableBinding::const_iterator it, Vec
   }
 }
 
-DataItem* XQFLWOR::staticResolution(StaticContext* context)
+ASTNode* XQFLWOR::staticResolution(StaticContext* context)
 {
   staticResolutionImpl(context);
 
@@ -552,10 +545,8 @@ DataItem* XQFLWOR::staticResolution(StaticContext* context)
   }
 }
 
-void XQFLWOR::staticResolutionImpl(StaticContext* ctx)
+void XQFLWOR::staticResolutionImpl(StaticContext* context)
 {
-  XQContext *context = CAST_TO_XQCONTEXT(ctx);
-
   VectorOfVariableBinding *newBindings =
     new (getMemoryManager()) VectorOfVariableBinding(PathanAllocator<XQVariableBinding*>(getMemoryManager()));
 
@@ -653,7 +644,7 @@ void XQFLWOR::staticResolutionImpl(StaticContext* ctx)
         break;
       }
     }
-    // DbXml optimises collection() and doc(), so they have to be recalculated
+    // DbXQml optimises collection() and doc(), so they have to be recalculated
     if(valueSrc.areDocsOrCollectionsUsed()) {
       newVB->_valuesResultMustBeRecalculated = true;
     }
@@ -693,7 +684,7 @@ void XQFLWOR::staticResolutionImpl(StaticContext* ctx)
       AutoRelease<DynamicContext> dContext(context->createDynamicContext());
       dContext->setMemoryManager(context->getMemoryManager());
       Result result = createResultImpl(newBindings->begin(), newBindings->end(), dContext);
-      _return = new (getMemoryManager()) DataItemSequence(result, dContext, getMemoryManager());
+      _return = new (getMemoryManager()) XQSequence(result, dContext, getMemoryManager());
       newBindings->clear();
     }
   }
@@ -702,23 +693,21 @@ void XQFLWOR::staticResolutionImpl(StaticContext* ctx)
   _bindings = newBindings;
 }
 
-DataItem *XQFLWOR::staticallyResolveWhere(DataItem *where, StaticContext *ctx)
+ASTNode *XQFLWOR::staticallyResolveWhere(ASTNode *where, StaticContext *context)
 {
-  XQContext *context = CAST_TO_XQCONTEXT(ctx);
-
   if(context->isDebuggingEnabled()) {
     // Don't do anything special if this is a debug build
     where = where->staticResolution(context);
   }
   else {
-    if(where->getType()==DataItem::OPERATOR &&
-       XPath2Utils::equals(((DataItemOperator*)where)->getOperatorName(), And::name)) {
+    if(where->getType()==ASTNode::OPERATOR &&
+       XPath2Utils::equals(((XQOperator*)where)->getOperatorName(), And::name)) {
 
       // If it's an And, treat each argument to the And as a where condition in it's own right
       And* fAnd = (And*)where;
       unsigned int index = 0;
       while(index < fAnd->getNumArgs()) {
-        DataItem* subWhere = staticallyResolveWhere(fAnd->getArgument(index), context);
+        ASTNode* subWhere = staticallyResolveWhere(fAnd->getArgument(index), context);
         if(subWhere) {
           fAnd->setArgument(index, subWhere);
           ++index;
@@ -771,12 +760,12 @@ const VectorOfVariableBinding *XQFLWOR::getBindings() const
   return _bindings;
 }
 
-const DataItem *XQFLWOR::getWhereExpr() const
+const ASTNode *XQFLWOR::getWhereExpr() const
 {
   return _where;
 }
 
-const DataItem *XQFLWOR::getReturnExpr() const
+const ASTNode *XQFLWOR::getReturnExpr() const
 {
   return _return;
 }
@@ -786,12 +775,12 @@ const XQSort *XQFLWOR::getSort() const
   return _sort;
 }
 
-void XQFLWOR::setWhereExpr(DataItem *where)
+void XQFLWOR::setWhereExpr(ASTNode *where)
 {
   _where = where;
 }
 
-void XQFLWOR::setReturnExpr(DataItem *ret)
+void XQFLWOR::setReturnExpr(ASTNode *ret)
 {
   _return = ret;
 }
@@ -819,7 +808,7 @@ void XQFLWOR::SortingFLWORResult::getResult(Sequence &toFill, DynamicContext *co
   varStore->addLogicalBlockScope();
 
   VariableStore::Entry *accumulator = _flwor->getAccumulator(context);
-  bool sorting = _flwor->getSort() && !(_flags & DataItem::UNORDERED);
+  bool sorting = _flwor->getSort() && !(_flags & ASTNode::UNORDERED);
 
   unsigned int resultsSoFar = 0;
   PreSortResult toBeSorted;
@@ -839,9 +828,9 @@ void XQFLWOR::SortingFLWORResult::getResult(Sequence &toFill, DynamicContext *co
 
       if(!sorting) {
         // Try to short the for loop execution
-        if((_flags & DataItem::RETURN_ONE) && resultsSoFar)
+        if((_flags & ASTNode::RETURN_ONE) && resultsSoFar)
           break;
-        if((_flags & DataItem::RETURN_TWO) && resultsSoFar > 1)
+        if((_flags & ASTNode::RETURN_TWO) && resultsSoFar > 1)
           break;
       }
     } while(_flwor->nextState(const_cast<ExecutionBindings&>(_ebs), context, false));

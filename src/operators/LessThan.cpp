@@ -36,7 +36,7 @@
 
 /*static*/ const XMLCh LessThan::name[]={ XERCES_CPP_NAMESPACE_QUALIFIER chLatin_l, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
 
-LessThan::LessThan(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+LessThan::LessThan(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ComparisonOperator(name, args, memMgr)
 {
 }

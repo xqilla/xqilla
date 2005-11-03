@@ -36,7 +36,7 @@ public:
   /**
    * Constructor.
    */
-  FunctionTokenize(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  FunctionTokenize(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   /**
    * Returns $input broken into a sequence of strings 

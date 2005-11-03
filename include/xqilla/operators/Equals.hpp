@@ -32,7 +32,7 @@ class PATHAN_EXPORT Equals : public ComparisonOperator
 public:
   static const XMLCh name[];
 
-  Equals(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  Equals(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   static bool equals(const Item::Ptr &arg1, const Item::Ptr &arg2, Collation* collation, DynamicContext* context);
 

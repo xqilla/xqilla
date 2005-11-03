@@ -16,15 +16,15 @@
 #ifndef _COMPARISONOPERATOR_HPP
 #define _COMPARISONOPERATOR_HPP
 
-#include <xqilla/ast/DataItemOperator.hpp>
+#include <xqilla/ast/XQOperator.hpp>
 #include <xqilla/runtime/SingleResult.hpp>
 
 class AnyAtomicType;
 
-class PATHAN_EXPORT ComparisonOperator : public DataItemOperator
+class PATHAN_EXPORT ComparisonOperator : public XQOperator
 {
 public:
-  ComparisonOperator(const XMLCh* opName, const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  ComparisonOperator(const XMLCh* opName, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
 
   Result createResult(DynamicContext* context, int flags=0) const;
 

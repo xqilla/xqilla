@@ -17,8 +17,8 @@
 // XQException.h: interface for the XQException class.
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_XQEXCEPTION_H__446AD191_E9D0_4658_BD8C_032D29DA123E__INCLUDED_)
-#define AFX_XQEXCEPTION_H__446AD191_E9D0_4658_BD8C_032D29DA123E__INCLUDED_
+#if !defined(AFXQ_XQEXCEPTION_H__446AD191_E9D0_4658_BD8C_032D29DA123E__INCLUDED_)
+#define AFXQ_XQEXCEPTION_H__446AD191_E9D0_4658_BD8C_032D29DA123E__INCLUDED_
 
 #include <xqilla/framework/XQEngine.hpp>
 #include <xqilla/exceptions/DSLException.hpp>
@@ -35,5 +35,5 @@ public:
   const XMLCh* m_szFile;
 };
 
-#endif // !defined(AFX_XQEXCEPTION_H__446AD191_E9D0_4658_BD8C_032D29DA123E__INCLUDED_)
+#endif // !defined(AFXQ_XQEXCEPTION_H__446AD191_E9D0_4658_BD8C_032D29DA123E__INCLUDED_)
 

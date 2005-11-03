@@ -32,7 +32,7 @@ const unsigned int FunctionCount::maxArgs = 1;
  * fn:count($arg as item()*) as xs:integer
 **/
 
-FunctionCount::FunctionCount(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+FunctionCount::FunctionCount(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "item()*", args, memMgr)
 {
   _src.getStaticType().flags = StaticResolutionContext::NUMERIC_TYPE;
@@ -40,7 +40,7 @@ FunctionCount::FunctionCount(const VectorOfDataItems &args, XPath2MemoryManager*
 
 Sequence FunctionCount::collapseTreeInternal(DynamicContext* context, int flags) const
 {
-  Sequence arg = getParamNumber(1,context,DataItem::UNORDERED);
+  Sequence arg = getParamNumber(1,context,ASTNode::UNORDERED);
 	return Sequence(context->getPathanFactory()->createInteger((long)arg.getLength(), context), context->getMemoryManager());
 }
 

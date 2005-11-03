@@ -17,18 +17,18 @@
 // XQValidate.hpp: interface for the XQValidate class.
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_XQVALIDATE_H__2B6902E9_A4FA_4AB3_9C69_08A8E77E70DA__INCLUDED_)
-#define AFX_XQVALIDATE_H__2B6902E9_A4FA_4AB3_9C69_08A8E77E70DA__INCLUDED_
+#if !defined(AFXQ_XQVALIDATE_H__2B6902E9_A4FA_4AB3_9C69_08A8E77E70DA__INCLUDED_)
+#define AFXQ_XQVALIDATE_H__2B6902E9_A4FA_4AB3_9C69_08A8E77E70DA__INCLUDED_
 
 #include <xqilla/framework/XQEngine.hpp>
-#include <xqilla/ast/DataItemImpl.hpp>
+#include <xqilla/ast/ASTNodeImpl.hpp>
 #include <xqilla/schema/DocumentCache.hpp>
 
 /** Validate function. */
-class XQENGINE_API XQValidate : public DataItemImpl
+class XQENGINE_API XQValidate : public ASTNodeImpl
 {
 public:
-  XQValidate(DataItem* valExpr, DocumentCache::ValidationMode valMode, XPath2MemoryManager* expr);
+  XQValidate(ASTNode* valExpr, DocumentCache::ValidationMode valMode, XPath2MemoryManager* expr);
 
   /** evaluate the expression, and check if it's valid according to the schemas **/
   Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
@@ -37,16 +37,16 @@ public:
    *  Called during static analysis to determine if statically correct.  If
    *  not an appropriate error is thrown.
    */
-  virtual DataItem* staticResolution(StaticContext *context);
+  virtual ASTNode* staticResolution(StaticContext *context);
 
-  const DataItem *getExpression() const;
+  const ASTNode *getExpression() const;
   DocumentCache::ValidationMode getValidationMode() const;
 
-  void setExpression(DataItem *expr);
+  void setExpression(ASTNode *expr);
 
 protected:
-  DataItem* _expr;
+  ASTNode* _expr;
   DocumentCache::ValidationMode _validationMode;
 };
 
-#endif // !defined(AFX_XQVALIDATE_H__2B6902E9_A4FA_4AB3_9C69_08A8E77E70DA__INCLUDED_)
+#endif // !defined(AFXQ_XQVALIDATE_H__2B6902E9_A4FA_4AB3_9C69_08A8E77E70DA__INCLUDED_)

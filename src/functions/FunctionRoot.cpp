@@ -37,8 +37,8 @@ const unsigned int FunctionRoot::maxArgs = 1;
  * fn:root($arg as node()?) as node()?
 **/
 
-FunctionRoot::FunctionRoot(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
-  : DataItemFunction(name, minArgs, maxArgs, "node()?", args, memMgr)
+FunctionRoot::FunctionRoot(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
+  : XQFunction(name, minArgs, maxArgs, "node()?", args, memMgr)
 {
   _src.setProperties(StaticResolutionContext::DOCORDER | StaticResolutionContext::GROUPED | StaticResolutionContext::PEER | StaticResolutionContext::SAMEDOC | StaticResolutionContext::ONENODE);
   _src.getStaticType().flags = StaticResolutionContext::NODE_TYPE;
@@ -55,11 +55,11 @@ FunctionRoot::FunctionRoot(const VectorOfDataItems &args, XPath2MemoryManager* m
   return result;
 }
 
-DataItem* FunctionRoot::staticResolution(StaticContext *context) {
+ASTNode* FunctionRoot::staticResolution(StaticContext *context) {
   if(_args.empty()) {
     _src.contextItemUsed(true);
   }
-  return resolveDataItems(_args, context, !_args.empty());
+  return resolveASTNodes(_args, context, !_args.empty());
 }
 
 Sequence FunctionRoot::collapseTreeInternal(DynamicContext* context, int flags) const

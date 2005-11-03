@@ -22,18 +22,18 @@
 
 #include <xqilla/framework/Pathan.hpp>
 
-#include <xqilla/ast/DataItemFunction.hpp>
+#include <xqilla/ast/XQFunction.hpp>
 
-class PATHAN_EXPORT FunctionData : public DataItemFunction
+class PATHAN_EXPORT FunctionData : public XQFunction
 {
 public:
   static const XMLCh name[];
   static const unsigned int minArgs;
   static const unsigned int maxArgs;
 
-  FunctionData(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  FunctionData(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
 
-  virtual DataItem* staticResolution(StaticContext *context);
+  virtual ASTNode* staticResolution(StaticContext *context);
   Result createResult(DynamicContext* context, int flags=0) const;
 };
 

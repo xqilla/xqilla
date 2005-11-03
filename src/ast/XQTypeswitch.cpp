@@ -35,13 +35,13 @@
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-XQTypeswitch::XQTypeswitch(DataItem* eval, VectorOfClause* clauses, Clause* defReturn, XPath2MemoryManager* expr)
-  : DataItemImpl(expr)
+XQTypeswitch::XQTypeswitch(ASTNode* eval, VectorOfClause* clauses, Clause* defReturn, XPath2MemoryManager* expr)
+  : ASTNodeImpl(expr)
 {
   _expr=eval;
   _default=defReturn;
   _clauses=clauses;
-  setType((DataItem::whichType)XQContext::TYPESWITCH);
+  setType(ASTNode::TYPESWITCH);
 }
 
 Result XQTypeswitch::createResult(DynamicContext *context, int flags) const
@@ -49,7 +49,7 @@ Result XQTypeswitch::createResult(DynamicContext *context, int flags) const
   return new TypeswitchResult(this, flags, context);
 }
 
-DataItem* XQTypeswitch::staticResolution(StaticContext *context)
+ASTNode* XQTypeswitch::staticResolution(StaticContext *context)
 {
   // Statically resolve the test expression
   _expr = _expr->staticResolution(context);
@@ -137,7 +137,7 @@ void XQTypeswitch::Clause::staticResolution(const StaticResolutionContext &var_s
   src.add(newSrc);
 }
 
-const DataItem *XQTypeswitch::getExpression() const
+const ASTNode *XQTypeswitch::getExpression() const
 {
   return _expr;
 }
@@ -152,7 +152,7 @@ const XQTypeswitch::VectorOfClause *XQTypeswitch::getClauses() const
   return _clauses;
 }
 
-void XQTypeswitch::setExpression(DataItem *expr)
+void XQTypeswitch::setExpression(ASTNode *expr)
 {
   _expr = expr;
 }

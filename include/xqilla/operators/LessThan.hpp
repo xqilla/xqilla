@@ -32,7 +32,7 @@ class PATHAN_EXPORT LessThan : public ComparisonOperator
 public:
   static const XMLCh name[];
 
-  LessThan(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  LessThan(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   static bool less_than(const AnyAtomicType::Ptr &arg1, const AnyAtomicType::Ptr &arg2, Collation* collation, DynamicContext* context);
 

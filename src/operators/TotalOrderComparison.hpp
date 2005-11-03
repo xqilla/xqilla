@@ -25,7 +25,7 @@ class PATHAN_EXPORT TotalOrderComparison : public ComparisonOperator
 {
 public:
 	//greaterThan should be set to true if you want to param1 > param2 
-  TotalOrderComparison(const VectorOfDataItems &args, bool greatherThan, XPath2MemoryManager* memMgr);
+  TotalOrderComparison(const VectorOfASTNodes &args, bool greatherThan, XPath2MemoryManager* memMgr);
 
   bool execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::Ptr &atom2, DynamicContext *context) const;
 

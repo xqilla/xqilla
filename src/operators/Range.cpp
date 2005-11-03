@@ -29,15 +29,15 @@
 
 /*static*/ const XMLCh Range::name[]={ XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
 
-Range::Range(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
-  : DataItemOperator(name, args, memMgr)
+Range::Range(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
+  : XQOperator(name, args, memMgr)
 {
 }
 
-DataItem* Range::staticResolution(StaticContext *context)
+ASTNode* Range::staticResolution(StaticContext *context)
 {
   _src.getStaticType().flags = StaticResolutionContext::NUMERIC_TYPE;
-  return DataItemOperator::staticResolution(context);
+  return XQOperator::staticResolution(context);
 }
 
 Result Range::createResult(DynamicContext* context, int flags) const
@@ -62,9 +62,9 @@ Item::Ptr Range::RangeResult::next(DynamicContext *context)
 
   if(_end == NULLRCP) {
     // initialise
-    _last = (const Numeric::Ptr )_op->getArgument(0)->collapseTree(context, DataItem::UNORDERED|DataItem::RETURN_TWO).
+    _last = (const Numeric::Ptr )_op->getArgument(0)->collapseTree(context, ASTNode::UNORDERED|ASTNode::RETURN_TWO).
       convertFunctionArg(&integerType, _op->getArgument(0)->getStaticResolutionContext().getStaticType(), context).next(context);
-    _end = (const Numeric::Ptr )_op->getArgument(1)->collapseTree(context, DataItem::UNORDERED|DataItem::RETURN_TWO).
+    _end = (const Numeric::Ptr )_op->getArgument(1)->collapseTree(context, ASTNode::UNORDERED|ASTNode::RETURN_TWO).
       convertFunctionArg(&integerType, _op->getArgument(1)->getStaticResolutionContext().getStaticType(), context).next(context);
     if(_last.isNull() || _end.isNull() || _last->greaterThan(_end, context))
       _last = 0;

@@ -35,14 +35,14 @@ const unsigned int FunctionCurrentDateTime::maxArgs = 0;
  * fn:current-dateTime() as xs:dateTime
 **/
 
-FunctionCurrentDateTime::FunctionCurrentDateTime(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
-  : DataItemFunction(name, minArgs, maxArgs, "empty()", args, memMgr)
+FunctionCurrentDateTime::FunctionCurrentDateTime(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
+  : XQFunction(name, minArgs, maxArgs, "empty()", args, memMgr)
 {
 }
 
-DataItem* FunctionCurrentDateTime::staticResolution(StaticContext *context) {
+ASTNode* FunctionCurrentDateTime::staticResolution(StaticContext *context) {
   _src.currentTimeUsed(true);
-  return resolveDataItems(_args, context, false);
+  return resolveASTNodes(_args, context, false);
 }
 
 Sequence FunctionCurrentDateTime::collapseTreeInternal(DynamicContext* context, int flags) const

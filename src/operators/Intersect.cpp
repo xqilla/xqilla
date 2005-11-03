@@ -22,8 +22,8 @@
 
 /*static*/ const XMLCh Intersect::name[]={ XERCES_CPP_NAMESPACE_QUALIFIER chLatin_i, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_r, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_s, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_c, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
 
-Intersect::Intersect(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
-  : DataItemOperator(name, args, memMgr)
+Intersect::Intersect(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
+  : XQOperator(name, args, memMgr)
 {
   _src.setProperties(StaticResolutionContext::DOCORDER | StaticResolutionContext::GROUPED);
   _src.getStaticType().flags = StaticResolutionContext::NODE_TYPE;
@@ -31,11 +31,11 @@ Intersect::Intersect(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
 
 Sequence Intersect::collapseTreeInternal(DynamicContext* context, int flags) const
 {
-	Sequence param1 = _args[0]->collapseTree(context, flags & DataItem::UNORDERED).toSequence(context);
+	Sequence param1 = _args[0]->collapseTree(context, flags & ASTNode::UNORDERED).toSequence(context);
 	if(!checkSequenceIsNodes(param1)) {
 		DSLthrow(XPath2ErrorException,X("Intersect::collapseTreeInternal"), X("The operator 'intersect' has been called with a parameter that is not just nodes"));
 	}
-	Sequence param2 = _args[1]->collapseTree(context, flags & DataItem::UNORDERED).toSequence(context);
+	Sequence param2 = _args[1]->collapseTree(context, flags & ASTNode::UNORDERED).toSequence(context);
 	if(!checkSequenceIsNodes(param2)) {
 		DSLthrow(XPath2ErrorException,X("Intersect::collapseTreeInternal"), X("The operator 'intersect' has been called with a parameter that is not just nodes"));
 	}
@@ -57,7 +57,7 @@ Sequence Intersect::collapseTreeInternal(DynamicContext* context, int flags) con
 	}
 
     //Sort the nodes into document order
-    if(!(context->getNodeSetOrdering()==StaticContext::ORDERING_UNORDERED || flags & DataItem::UNORDERED))
+    if(!(context->getNodeSetOrdering()==StaticContext::ORDERING_UNORDERED || flags & ASTNode::UNORDERED))
         result.sortIntoDocumentOrder(context);
     return result;
 }

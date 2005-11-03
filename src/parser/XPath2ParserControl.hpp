@@ -24,7 +24,7 @@
 
 #include <xqilla/framework/Pathan.hpp>
 
-#include <xqilla/ast/DataItem.hpp>
+#include <xqilla/ast/ASTNode.hpp>
 #include <xqilla/context/StaticContext.hpp>
 
 class xxFlexLexer;
@@ -33,7 +33,7 @@ class XPath2MemoryManager;
 class PATHAN_EXPORT XPathParserControl {
 
 public:
-  DataItem* result;
+  ASTNode* result;
   xxFlexLexer *lexer;
   const StaticContext* context;
 	XPath2MemoryManager* memMgr;

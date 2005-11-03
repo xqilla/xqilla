@@ -30,7 +30,7 @@ class PATHAN_EXPORT Plus : public ArithmeticOperator
 public:
   static const XMLCh name[];
 
-  Plus(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  Plus(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   Item::Ptr execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::Ptr &atom2, DynamicContext *context) const;
 

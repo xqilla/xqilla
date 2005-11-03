@@ -37,7 +37,7 @@ const unsigned int FunctionMatches::maxArgs = 3;
  * fn:matches($input as xs:string?, $pattern as xs:string, $flags as xs:string) as xs:boolean
  */
   
-FunctionMatches::FunctionMatches(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+FunctionMatches::FunctionMatches(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "string?, string, string", args, memMgr)
 {
 }

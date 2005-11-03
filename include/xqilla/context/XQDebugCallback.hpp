@@ -17,8 +17,8 @@
 // XQDebugCallback.h: interface for debugging
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_XQDEBUGCALLBACK_H__446AD191_E9D0_4658_BD8C_032D29DA125F__INCLUDED_)
-#define AFX_XQDEBUGCALLBACK_H__446AD191_E9D0_4658_BD8C_032D29DA125F__INCLUDED_
+#if !defined(AFXQ_XQDEBUGCALLBACK_H__446AD191_E9D0_4658_BD8C_032D29DA125F__INCLUDED_)
+#define AFXQ_XQDEBUGCALLBACK_H__446AD191_E9D0_4658_BD8C_032D29DA125F__INCLUDED_
 
 #include <xqilla/framework/XQEngine.hpp>
 #include <xercesc/util/XercesDefs.hpp>
@@ -44,4 +44,4 @@ public:
     virtual void NotifyQueryEnd(DynamicContext* context, Sequence& result) = 0;
 };
 
-#endif // !defined(AFX_XQDEBUGCALLBACK_H__446AD191_E9D0_4658_BD8C_032D29DA125F__INCLUDED_)
+#endif // !defined(AFXQ_XQDEBUGCALLBACK_H__446AD191_E9D0_4658_BD8C_032D29DA125F__INCLUDED_)

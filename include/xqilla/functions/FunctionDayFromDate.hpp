@@ -18,14 +18,14 @@
 
 #include <xqilla/framework/Pathan.hpp>
 
-#include <xqilla/ast/DataItemFunction.hpp>
+#include <xqilla/ast/XQFunction.hpp>
 
 /**
  * Get function for the day component of date.
  *
  * xf:day-from-date(date $srcval) => integer
  */
-class PATHAN_EXPORT FunctionDayFromDate : public DataItemFunction
+class PATHAN_EXPORT FunctionDayFromDate : public XQFunction
 {
 public:
   static const XMLCh name[];
@@ -35,9 +35,9 @@ public:
   /**
    * Constructor
    */
-  FunctionDayFromDate(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  FunctionDayFromDate(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
 
-  DataItem* staticResolution(StaticContext *context);
+  ASTNode* staticResolution(StaticContext *context);
 
   /**
    * Returns the integer representing the day in the value of $srcval

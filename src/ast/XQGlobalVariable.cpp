@@ -18,7 +18,6 @@
 //////////////////////////////////////////////////////////////////////
 
 #include <xqilla/framework/XQEngine.hpp>
-#include <xqilla/context/XQContext.hpp>
 #include <xqilla/ast/XQGlobalVariable.hpp>
 #include <xqilla/runtime/Sequence.hpp>
 #include <xqilla/schema/SequenceType.hpp>
@@ -34,15 +33,15 @@
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-XQGlobalVariable::XQGlobalVariable(const XMLCh* varQName, SequenceType* seqType, DataItem* value, XPath2MemoryManager* expr)
-  : DataItemImpl(expr),
+XQGlobalVariable::XQGlobalVariable(const XMLCh* varQName, SequenceType* seqType, ASTNode* value, XPath2MemoryManager* expr)
+  : ASTNodeImpl(expr),
     m_szURI(0),
     m_szLocalName(0),
     m_Type(seqType),
     m_Value(value)
 {
   m_szQName=expr->getPooledString(varQName);
-  setType((DataItem::whichType)XQContext::VARIABLE_DEFINITION);
+  setType(ASTNode::VARIABLE_DEFINITION);
 }
 
 Sequence XQGlobalVariable::collapseTreeInternal(DynamicContext* context, int flags) const
@@ -84,7 +83,7 @@ Sequence XQGlobalVariable::collapseTreeInternal(DynamicContext* context, int fla
   return Sequence(context->getMemoryManager());
 }
 
-DataItem* XQGlobalVariable::staticResolution(StaticContext* context)
+ASTNode* XQGlobalVariable::staticResolution(StaticContext* context)
 {
   m_szURI = context->getUriBoundToPrefix(XPath2NSUtils::getPrefix(m_szQName, context->getMemoryManager()));
   m_szLocalName = XPath2NSUtils::getLocalName(m_szQName);
@@ -111,7 +110,7 @@ bool XQGlobalVariable::isExternal() const
   return (m_Value==NULL);
 }
 
-void XQGlobalVariable::setVariableExpr(DataItem* value)
+void XQGlobalVariable::setVariableExpr(ASTNode* value)
 {
   m_Value=value;
 }
@@ -121,7 +120,7 @@ const SequenceType *XQGlobalVariable::getSequenceType() const
   return m_Type;
 }
 
-const DataItem *XQGlobalVariable::getVariableExpr() const
+const ASTNode *XQGlobalVariable::getVariableExpr() const
 {
   return m_Value;
 }

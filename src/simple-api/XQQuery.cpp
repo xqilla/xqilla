@@ -19,7 +19,7 @@
 
 #include <xqilla/simple-api/XQQuery.hpp>
 #include <xqilla/framework/XQEngine.hpp>
-#include <xqilla/functions/XQFunction.hpp>
+#include <xqilla/functions/XQUserFunction.hpp>
 #include <xqilla/ast/XQGlobalVariable.hpp>
 #include <xqilla/context/impl/XQContextImpl.hpp>
 #include <xqilla/exceptions/XQException.hpp>
@@ -33,7 +33,7 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/utils/XPath2NSUtils.hpp>
-#include <xqilla/ast/DataItemSequence.hpp>
+#include <xqilla/ast/XQSequence.hpp>
 #include <xqilla/ast/StaticResolutionContext.hpp>
 #include <xqilla/runtime/Result.hpp>
 
@@ -56,7 +56,7 @@ using namespace std;
 //////////////////////////////////////////////////////////////////////
 
 XQQuery::XQQuery(const XMLCh* queryText, XPath2MemoryManager* memMgr) :
-  m_userDefFns(PathanAllocator<XQFunction*>(memMgr)),
+  m_userDefFns(PathanAllocator<XQUserFunction*>(memMgr)),
   m_userDefVars(PathanAllocator<XQGlobalVariable*>(memMgr))
 {
   m_memMgr=memMgr;
@@ -67,7 +67,7 @@ XQQuery::XQQuery(const XMLCh* queryText, XPath2MemoryManager* memMgr) :
   m_szQueryText=m_memMgr->getPooledString(queryText);
 }
 
-Result XQQuery::evaluate(XQContext* context) const
+Result XQQuery::evaluate(DynamicContext* context) const
 {
   if(context->getDebugCallback()) {
     return new DebugResult(this, context);
@@ -77,30 +77,30 @@ Result XQQuery::evaluate(XQContext* context) const
   }
 }
 
-void XQQuery::staticResolution(XQContext *context)
+void XQQuery::staticResolution(StaticContext *context)
 {
   for(vector<XQGlobalVariable*, PathanAllocator<XQGlobalVariable*> >::iterator it = m_userDefVars.begin();
       it != m_userDefVars.end(); ++it) {
     (*it) = (XQGlobalVariable*)(*it)->staticResolution(context);
   }
-  for(vector<XQFunction*, PathanAllocator<XQFunction*> >::iterator i = m_userDefFns.begin();
+  for(vector<XQUserFunction*, PathanAllocator<XQUserFunction*> >::iterator i = m_userDefFns.begin();
       i != m_userDefFns.end(); ++i) {
     (*i)->staticResolution(context);
   }
   if(m_query) m_query = m_query->staticResolution(context);
 }
 
-DataItem* XQQuery::getQueryBody() const
+ASTNode* XQQuery::getQueryBody() const
 {
   return m_query;
 }
 
-void XQQuery::setQueryBody(DataItem* query)
+void XQQuery::setQueryBody(ASTNode* query)
 {
   m_query=query;
 }
 
-void XQQuery::addFunction(XQFunction* fnDef)
+void XQQuery::addFunction(XQUserFunction* fnDef)
 {
   m_userDefFns.push_back(fnDef);
 }
@@ -130,10 +130,8 @@ const XMLCh* XQQuery::getModuleTargetNamespace() const
   return m_szTargetNamespace;
 }
 
-void XQQuery::importModule(const XMLCh* szUri, VectorOfStrings* locations, StaticContext* ctx)
+void XQQuery::importModule(const XMLCh* szUri, VectorOfStrings* locations, StaticContext* context)
 {
-  XQContext *context = CAST_TO_XQCONTEXT(ctx);
-
   XQContextImpl moduleCtx(context->getMemoryManager());
   // force the context to use our memory manager
   moduleCtx.setMemoryManager(context->getMemoryManager());
@@ -197,7 +195,7 @@ void XQQuery::importModule(const XMLCh* szUri, VectorOfStrings* locations, Stati
           DSLthrow(ContextException,X("XQQuery::ImportModule"), errMsg.getRawBuffer());
         }
         // now move the variable declarations and the function definitions into my context
-        for(vector<XQFunction*, PathanAllocator<XQFunction*> >::iterator itFn = pParsedQuery->m_userDefFns.begin();
+        for(vector<XQUserFunction*, PathanAllocator<XQUserFunction*> >::iterator itFn = pParsedQuery->m_userDefFns.begin();
             itFn != pParsedQuery->m_userDefFns.end(); ++itFn) {
           m_userDefFns.push_back(*itFn);
           context->addCustomFunction(*itFn);
@@ -291,10 +289,8 @@ XQQuery::DebugResult::DebugResult(const XQQuery *query, DynamicContext *context)
 {
 }
 
-void XQQuery::DebugResult::getResult(Sequence &toFill, DynamicContext *ctx) const
+void XQQuery::DebugResult::getResult(Sequence &toFill, DynamicContext *context) const
 {
-  XQContext *context = CAST_TO_XQCONTEXT(ctx);
-
   static XMLCh szMain[]= { XERCES_CPP_NAMESPACE_QUALIFIER chLatin_M, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_i, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
 
   if(context->getDebugCallback()) {

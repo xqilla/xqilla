@@ -25,8 +25,8 @@
 
 /*static*/ const XMLCh Union::name[]={ XERCES_CPP_NAMESPACE_QUALIFIER chLatin_u, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_i, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
 
-Union::Union(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
-  : DataItemOperator(name, args, memMgr)
+Union::Union(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
+  : XQOperator(name, args, memMgr)
 {
   _src.setProperties(StaticResolutionContext::DOCORDER | StaticResolutionContext::GROUPED);
   _src.getStaticType().flags = StaticResolutionContext::NODE_TYPE;
@@ -36,7 +36,7 @@ Result Union::createResult(DynamicContext* context, int flags) const
 {
   Result result(new UnionResult(this, flags, context));
 
-  if(context->getNodeSetOrdering()==StaticContext::ORDERING_UNORDERED || flags & DataItem::UNORDERED) {
+  if(context->getNodeSetOrdering()==StaticContext::ORDERING_UNORDERED || flags & ASTNode::UNORDERED) {
     return result;
   }
   else {

@@ -32,7 +32,7 @@ class PATHAN_EXPORT GreaterThan : public ComparisonOperator
 public:
   static const XMLCh name[];
 
-  GreaterThan(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  GreaterThan(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   static bool greater_than(const AnyAtomicType::Ptr &arg1, const AnyAtomicType::Ptr &arg2, Collation* collation, DynamicContext* context);
 

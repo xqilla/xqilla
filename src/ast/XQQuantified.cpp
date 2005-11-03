@@ -26,21 +26,21 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/ast/StaticResolutionContext.hpp>
-#include <xqilla/ast/DataItemSequence.hpp>
+#include <xqilla/ast/XQSequence.hpp>
 #include <xqilla/context/PathanFactory.hpp>
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-XQQuantified::XQQuantified(XQQuantified::QuantifierType qType, VectorOfVariableBinding* bindings, DataItem* returnExpr, XPath2MemoryManager* expr)
+XQQuantified::XQQuantified(XQQuantified::QuantifierType qType, VectorOfVariableBinding* bindings, ASTNode* returnExpr, XPath2MemoryManager* expr)
   : XQFLWOR(bindings, NULL, NULL, returnExpr, expr)
 {
 	_qType=qType;
-    setType((DataItem::whichType)XQContext::FLWOR_QUANTIFIED);
+    setType(ASTNode::FLWOR_QUANTIFIED);
 }
 
-DataItem* XQQuantified::staticResolution(StaticContext* context) {
+ASTNode* XQQuantified::staticResolution(StaticContext* context) {
   XQFLWOR::staticResolutionImpl(context);
 
   _src.getStaticType().flags = StaticResolutionContext::OTHER_TYPE;
@@ -50,8 +50,8 @@ DataItem* XQQuantified::staticResolution(StaticContext* context) {
       AutoRelease<DynamicContext> dContext(context->createDynamicContext());
       dContext->setMemoryManager(context->getMemoryManager());
       bool value = _return->collapseTree(dContext).getEffectiveBooleanValue(dContext);
-      DataItem *newBlock = new (getMemoryManager())
-	      DataItemSequence(dContext->getPathanFactory()->createBoolean(value, dContext),
+      ASTNode *newBlock = new (getMemoryManager())
+	      XQSequence(dContext->getPathanFactory()->createBoolean(value, dContext),
 			       dContext, getMemoryManager());
       newBlock->addPredicates(getPredicates());
       return newBlock->staticResolution(context);
@@ -96,7 +96,7 @@ Item::Ptr XQQuantified::QuantifiedResult::getSingleResult(DynamicContext *contex
   varStore->addLogicalBlockScope();
   if(_quantified->nextState(ebs, context, true)) {
     do {
-      bool result = _quantified->getReturnExpr()->collapseTree(context, DataItem::UNORDERED|DataItem::RETURN_TWO).getEffectiveBooleanValue(context);
+      bool result = _quantified->getReturnExpr()->collapseTree(context, ASTNode::UNORDERED|ASTNode::RETURN_TWO).getEffectiveBooleanValue(context);
       if(defaultResult != result) {
         defaultResult = result;
         break;

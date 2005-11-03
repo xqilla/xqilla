@@ -29,7 +29,7 @@ const unsigned int FunctionReverse::maxArgs = 1;
  * fn:reverse($arg as item()*) as item()*
  */
 
-FunctionReverse::FunctionReverse(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+FunctionReverse::FunctionReverse(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "item()*", args, memMgr)
 {
   // TBD - could do better here - jpcs

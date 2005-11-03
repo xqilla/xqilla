@@ -35,7 +35,7 @@ public:
   /**
    * Constructor.
    */
-  FunctionDaysFromDuration(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  FunctionDaysFromDuration(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
 
   /**
    * Returns an integer representing the days component of the value of

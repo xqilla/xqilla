@@ -16,7 +16,7 @@
 #include "../config/pathan_config.h"
 #include <assert.h>
 #include "VarStoreImpl.hpp"
-#include <xqilla/context/impl/XPath2ContextImpl.hpp>
+#include <xqilla/context/impl/XQContextImpl.hpp>
 #include <xqilla/context/impl/VarHashEntryImpl.hpp>
 #include <xqilla/context/StaticContext.hpp>
 #include <xqilla/utils/XPath2NSUtils.hpp>
@@ -198,7 +198,7 @@ XMLCh* VarStoreImpl::print(XPath2MemoryManager* memMgr) const
   XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buf(1023, memMgr);
   buf.set(X("<VariableStore>\n"));
   const Scope<Sequence>* index=_store.getCurrentScope();
-  XPath2ContextImpl xp2c(memMgr, 0, 0);
+  XQContextImpl xp2c(memMgr, 0, 0);
 
   while(index)
     {

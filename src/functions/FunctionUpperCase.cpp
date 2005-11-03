@@ -35,7 +35,7 @@ const unsigned int FunctionUpperCase::maxArgs = 1;
  * fn:upper-case($arg as xs:string?) as xs:string
  */
 
-FunctionUpperCase::FunctionUpperCase(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+FunctionUpperCase::FunctionUpperCase(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "string?", args, memMgr)
 {
 }

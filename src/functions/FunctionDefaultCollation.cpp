@@ -37,7 +37,7 @@ const unsigned int FunctionDefaultCollation::maxArgs = 0;
  * fn:default-collation() as xs:string
 **/
 
-FunctionDefaultCollation::FunctionDefaultCollation(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+FunctionDefaultCollation::FunctionDefaultCollation(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "empty()", args, memMgr)
 {
 }

@@ -18,14 +18,14 @@
 
 #include <xqilla/framework/Pathan.hpp>
 
-#include <xqilla/ast/DataItemFunction.hpp>
+#include <xqilla/ast/XQFunction.hpp>
 
 /**
  * Getter function for hours component of time.
  *
  * xf:hours-from-time(time? $srcval) => integer?
  */
-class PATHAN_EXPORT FunctionHoursFromTime : public DataItemFunction
+class PATHAN_EXPORT FunctionHoursFromTime : public XQFunction
 {
 public:
   static const XMLCh name[];
@@ -35,9 +35,9 @@ public:
   /**
    * Constructor
    */
-  FunctionHoursFromTime(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  FunctionHoursFromTime(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
 
-  DataItem* staticResolution(StaticContext *context);
+  ASTNode* staticResolution(StaticContext *context);
 
   /**
    * Returns the integer representing the hours in the value of $srcval

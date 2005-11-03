@@ -38,7 +38,7 @@ const unsigned int FunctionLocalNameFromQName::maxArgs = 1;
  * fn:local-name-from-QName($arg as xs:QName?) as xs:NCNAME?
 **/
 
-FunctionLocalNameFromQName::FunctionLocalNameFromQName(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+FunctionLocalNameFromQName::FunctionLocalNameFromQName(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "QName?", args, memMgr)
 {
 }

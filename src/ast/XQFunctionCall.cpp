@@ -18,7 +18,6 @@
 //////////////////////////////////////////////////////////////////////
 
 #include <xqilla/framework/XQEngine.hpp>
-#include <xqilla/context/XQContext.hpp>
 #include <xqilla/ast/XQFunctionCall.hpp>
 #include <xqilla/exceptions/FunctionException.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>
@@ -32,12 +31,12 @@
 //
 //
 
-XQFunctionCall::XQFunctionCall(QualifiedName* qname, const VectorOfDataItems &args, XPath2MemoryManager* expr)
-  : DataItemImpl(expr),
+XQFunctionCall::XQFunctionCall(QualifiedName* qname, const VectorOfASTNodes &args, XPath2MemoryManager* expr)
+  : ASTNodeImpl(expr),
   _args(args),
   _qname(qname)
 {
-    setType((DataItem::whichType)XQContext::FUNCTION_CALL);
+    setType(ASTNode::FUNCTION_CALL);
 }
 
 Result XQFunctionCall::createResult(DynamicContext* ctx, int flags) const
@@ -45,9 +44,9 @@ Result XQFunctionCall::createResult(DynamicContext* ctx, int flags) const
 	DSLthrow(FunctionException,X("XQFunctionCall::collapseTreeInternal"), X("staticResolution has not been called!!!"));
 }
 
-DataItem* XQFunctionCall::staticResolution(StaticContext *context) 
+ASTNode* XQFunctionCall::staticResolution(StaticContext *context) 
 {
-  DataItem* functionImpl=context->lookUpFunction(_qname->getPrefix(),_qname->getName(), _args);
+  ASTNode* functionImpl=context->lookUpFunction(_qname->getPrefix(),_qname->getName(), _args);
   if(functionImpl==NULL) {
     // get the uri for debugging purposes
     const XMLCh* uri = context->getUriBoundToPrefix(_qname->getPrefix());
@@ -79,7 +78,7 @@ const QualifiedName *XQFunctionCall::getName() const
   return _qname;
 }
 
-const VectorOfDataItems &XQFunctionCall::getArguments() const
+const VectorOfASTNodes &XQFunctionCall::getArguments() const
 {
   return _args;
 }

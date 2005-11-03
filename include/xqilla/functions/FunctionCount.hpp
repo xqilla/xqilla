@@ -34,7 +34,7 @@ public:
   static const unsigned int maxArgs;
 
   ///Constructor. Sets arg def to NOT_OPTIONAL.
-  FunctionCount(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  FunctionCount(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   /** Returns the number of nodes in the nodelist argument. **/
   Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;

@@ -20,11 +20,10 @@
 #include <xqilla/utils/UTF8Str.hpp>
 
 #include <xqilla/dom-api/impl/PathanExpressionImpl.hpp>
-#include <xqilla/ast/DataItem.hpp>
-#include <xqilla/ast/DataItemFunction.hpp>
+#include <xqilla/ast/ASTNode.hpp>
+#include <xqilla/ast/XQFunction.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 
-#include <xqilla/context/XQContext.hpp>
 #include <xqilla/simple-api/XQQuery.hpp>
 #include <xqilla/ast/XQDebugHook.hpp>
 #include <xqilla/ast/XQDOMConstructor.hpp>
@@ -36,7 +35,7 @@
 #include <xqilla/ast/XQTypeswitch.hpp>
 #include <xqilla/ast/XQValidate.hpp>
 #include <xqilla/ast/XQOrderingChange.hpp>
-#include <xqilla/functions/XQFunction.hpp>
+#include <xqilla/ast/XQFunction.hpp>
 
 #include <xercesc/dom/DOMNode.hpp>
 #if defined(XERCES_HAS_CPP_NAMESPACE)
@@ -72,9 +71,9 @@ string XQueryPrintDataItemTree::print(const XQQuery *query, const DynamicContext
 
 	XQueryPrintDataItemTree p;
 
-  for(std::vector<XQFunction*, PathanAllocator<XQFunction*> >::const_iterator i = query->m_userDefFns.begin();
+  for(std::vector<XQUserFunction*, PathanAllocator<XQUserFunction*> >::const_iterator i = query->m_userDefFns.begin();
       i != query->m_userDefFns.end(); ++i) {
-    XQFunction *f = *i;
+    XQUserFunction *f = *i;
 
     const XMLCh *funUri = f->getURI();
     const XMLCh *funName = f->getName();
@@ -85,14 +84,14 @@ string XQueryPrintDataItemTree::print(const XQQuery *query, const DynamicContext
     name += UTF8(funName);
 
     s << "  <FunctionDefinition name=\"" << name << "\">" << endl;
-    s << p.printDataItem(f->getFunctionBody(), context, 2);
+    s << p.printX(f->getFunctionBody(), context, 2);
     s << "  </FunctionDefinition>" << endl;
   }
 	for(vector<XQGlobalVariable*, PathanAllocator<XQGlobalVariable*> >::const_iterator it = query->m_userDefVars.begin();
 	    it != query->m_userDefVars.end(); ++it) {
-		s << p.printDataItem(*it, context, indent);
+		s << p.printX(*it, context, indent);
 	}
-	s << p.printDataItem(query->getQueryBody(), context, indent);
+	s << p.printX(query->getQueryBody(), context, indent);
 
 	indent -= INDENT;
 	s << getIndent(indent) << "</XQuery>" << endl;
@@ -100,117 +99,109 @@ string XQueryPrintDataItemTree::print(const XQQuery *query, const DynamicContext
 	return s.str();
 }
 
-string XQueryPrintDataItemTree::print(const DataItem *item, const DynamicContext *context, int indent)
+string XQueryPrintDataItemTree::print(const ASTNode *item, const DynamicContext *context, int indent)
 {
 	XQueryPrintDataItemTree p;
-	return p.printDataItem(item, context, indent);
+	return p.printX(item, context, indent);
 }
 
-string XQueryPrintDataItemTree::printDataItem(const DataItem *item, const DynamicContext *context, int indent)
+string XQueryPrintDataItemTree::printX(const ASTNode *item, const DynamicContext *context, int indent)
 {
 	switch(item->getType()) {
-	case DataItem::LITERAL: {
-		return printLiteral((DataItemLiteral *)item, context, indent);
+	case ASTNode::LITERAL: {
+		return printLiteral((XQLiteral *)item, context, indent);
 		break;
 	}
-	case DataItem::SEQUENCE: {
-		return printSequence((DataItemSequence *)item, context, indent);
+	case ASTNode::SEQUENCE: {
+		return printSequence((XQSequence *)item, context, indent);
 		break;
 	}
-	case DataItem::FUNCTION: {
-		return printFunction((DataItemFunction *)item, context, indent);
+	case ASTNode::FUNCTION: {
+		return printFunction((XQFunction *)item, context, indent);
 		break;
 	}
-	case DataItem::NAVIGATION: {
-		return printNav((DataItemNav *)item, context, indent);
+	case ASTNode::NAVIGATION: {
+		return printNav((XQNav *)item, context, indent);
 		break;
 	}
-	case DataItem::VARIABLE: {
-		return printVariable((DataItemVariable *)item, context, indent);
+	case ASTNode::VARIABLE: {
+		return printVariable((XQVariable *)item, context, indent);
 		break;
 	}
-	case DataItem::STEP: {
-		return printStep((DataItemStep *)item, context, indent);
+	case ASTNode::STEP: {
+		return printStep((XQStep *)item, context, indent);
 		break;
 	}
-	case DataItem::IF: {
-		return printIf((DataItemIf *)item, context, indent);
+	case ASTNode::IF: {
+		return printIf((XQIf *)item, context, indent);
 		break;
 	}
-	case DataItem::INSTANCE_OF: {
-		return printInstanceOf((DataItemInstanceOf *)item, context, indent);
+	case ASTNode::INSTANCE_OF: {
+		return printInstanceOf((XQInstanceOf *)item, context, indent);
 		break;
 	}
-	case DataItem::CASTABLE_AS: {
-		return printCastableAs((DataItemCastableAs *)item, context, indent);
+	case ASTNode::CASTABLE_AS: {
+		return printCastableAs((XQCastableAs *)item, context, indent);
 		break;
 	}
-	case DataItem::CAST_AS: {
-		return printCastAs((DataItemCastAs *)item, context, indent);
+	case ASTNode::CAST_AS: {
+		return printCastAs((XQCastAs *)item, context, indent);
 		break;
 	}
-	case DataItem::TREAT_AS: {
-		return printTreatAs((DataItemTreatAs *)item, context, indent);
+	case ASTNode::TREAT_AS: {
+		return printTreatAs((XQTreatAs *)item, context, indent);
 		break;
 	}
-	case DataItem::PARENTHESIZED: {
-		return printParenthesized((DataItemParenthesizedExpr *)item, context, indent);
+	case ASTNode::PARENTHESIZED: {
+		return printParenthesized((XQParenthesizedExpr *)item, context, indent);
 		break;
 	}
-	case DataItem::FOR: {
-		return printFor((DataItemFor *)item, context, indent);
+	case ASTNode::OPERATOR: {
+		return printOperator((XQOperator *)item, context, indent);
 		break;
 	}
-	case DataItem::QUANTIFIED: {
-		return printQuantified((DataItemQuantifiedExpr *)item, context, indent);
+	case ASTNode::CONTEXT_ITEM: {
+		return printContextItem((XQContextItem *)item, context, indent);
 		break;
 	}
-	case DataItem::OPERATOR: {
-		return printOperator((DataItemOperator *)item, context, indent);
-		break;
-	}
-	case DataItem::CONTEXT_ITEM: {
-		return printContextItem((DataItemContextItem *)item, context, indent);
-		break;
-	}
-	case ((DataItem::whichType)XQContext::DEBUG_HOOK): {
+	case (ASTNode::DEBUG_HOOK): {
 		return printDebugHook((XQDebugHook *)item, context, indent);
 		break;
 	}
-	case ((DataItem::whichType)XQContext::FLWOR): {
+	case (ASTNode::FLWOR): {
 		return printFLWOR((XQFLWOR *)item, context, indent);
 		break;
 	}
-	case ((DataItem::whichType)XQContext::FLWOR_QUANTIFIED): {
+	case (ASTNode::FLWOR_QUANTIFIED): {
 		return printFLWORQuantified((XQQuantified *)item, context, indent);
 		break;
 	}
-	case ((DataItem::whichType)XQContext::TYPESWITCH): {
+	case (ASTNode::TYPESWITCH): {
 		return printTypeswitch((XQTypeswitch *)item, context, indent);
 		break;
 	}
-	case ((DataItem::whichType)XQContext::VALIDATE): {
+	case (ASTNode::VALIDATE): {
 		return printValidate((XQValidate *)item, context, indent);
 		break;
 	}
-	case ((DataItem::whichType)XQContext::VARIABLE_DEFINITION): {
+	case (ASTNode::VARIABLE_DEFINITION): {
 		return printGlobal((XQGlobalVariable *)item, context, indent);
 		break;
 	}
-	case ((DataItem::whichType)XQContext::FUNCTION_CALL): {
+	case (ASTNode::FUNCTION_CALL): {
 		return printFunctionCall((XQFunctionCall *)item, context, indent);
 		break;
 	}
-	case ((DataItem::whichType)XQContext::DOM_CONSTRUCTOR): {
+	case (ASTNode::DOM_CONSTRUCTOR): {
 		return printDOMConstructor((XQDOMConstructor *)item, context, indent);
 		break;
 	}
-	case ((DataItem::whichType)XQContext::ORDERING_CHANGE): {
+	case (ASTNode::ORDERING_CHANGE): {
 		return printOrderingChange((XQOrderingChange *)item, context, indent);
 		break;
 	}
-	case ((DataItem::whichType)XQContext::USER_FUNCTION): {
-		return printUserFunction((XQFunction::XQFunctionEvaluator *)item, context, indent);
+	case (ASTNode::USER_FUNCTION): {
+		return printUserFunction((XQUserFunction::XQFunctionEvaluator *)item, context, indent);
 		break;
 	}
 	default:
@@ -219,7 +210,7 @@ string XQueryPrintDataItemTree::printDataItem(const DataItem *item, const Dynami
 	return getIndent(indent) + "<Unknown/>\n";
 }
 
-string XQueryPrintDataItemTree::printUserFunction(const XQFunction::XQFunctionEvaluator *item, const DynamicContext *context, int indent)
+string XQueryPrintDataItemTree::printUserFunction(const XQUserFunction::XQFunctionEvaluator *item, const DynamicContext *context, int indent)
 {
 	ostringstream s;
 
@@ -233,15 +224,15 @@ string XQueryPrintDataItemTree::printUserFunction(const XQFunction::XQFunctionEv
 	name += "}:";
 	name += UTF8(funName);
 
-	const VectorOfDataItems &args = item->getArguments();
+	const VectorOfASTNodes &args = item->getArguments();
 	s << in << "<UserFunction name=\"" << name << "\">" << endl;
 
 	if(item->getFunctionDefinition()->getParams()) {
-		XQFunction::VectorOfFunctionParameters::const_iterator binding = item->getFunctionDefinition()->getParams()->begin();
-		for(VectorOfDataItems::const_iterator arg = args.begin(); arg != args.end() && binding != item->getFunctionDefinition()->getParams()->end(); ++arg, ++binding) {
+		XQUserFunction::VectorOfFunctionParameters::const_iterator binding = item->getFunctionDefinition()->getParams()->begin();
+		for(VectorOfASTNodes::const_iterator arg = args.begin(); arg != args.end() && binding != item->getFunctionDefinition()->getParams()->end(); ++arg, ++binding) {
 			if((*binding)->_qname) {
 				s << in << "  <Binding name=\"{" << UTF8((*binding)->_uri) << "}:" << UTF8((*binding)->_name) << "\">" << endl;
-				s << printDataItem(*arg, context, indent + INDENT + INDENT);
+				s << printX(*arg, context, indent + INDENT + INDENT);
 				s << in << "  </Binding>" << endl;
 			}
 		}
@@ -250,7 +241,7 @@ string XQueryPrintDataItemTree::printUserFunction(const XQFunction::XQFunctionEv
 	// We don't output the body, as it may result in an infinite loop
 	// for recursive user functions - jpcs
 // 	s << in << "  <Body>" << endl;
-// 	s << printDataItem(item->getFunctionDefinition()->getFunctionBody(), context, indent + INDENT + INDENT);
+// 	s << printX(item->getFunctionDefinition()->getFunctionBody(), context, indent + INDENT + INDENT);
 // 	s << in << "  </Body>" << endl;
 	s << printPredicates(item, context, indent + INDENT);
 	s << in << "</UserFunction>" << endl;
@@ -269,7 +260,7 @@ string XQueryPrintDataItemTree::printDebugHook(const XQDebugHook *item, const Dy
 	s << in << "<DebugHook function=\"" << functionName
 	  << "\" file=\"" << file << ":" << item->getLine() << ":"
 	  << item->getColumn() << "\">" << endl;
-	s << printDataItem(item->m_impl, context, indent + INDENT);
+	s << printX(item->m_impl, context, indent + INDENT);
 	s << in << "</DebugHook>" << endl;
 
 	return s.str();
@@ -281,7 +272,7 @@ string XQueryPrintDataItemTree::printFLWOR(const XQFLWOR *item, const DynamicCon
 
 	string in(getIndent(indent));
 	const VectorOfVariableBinding *bindings = item->getBindings();
-	const DataItem *where = item->getWhereExpr();
+	const ASTNode *where = item->getWhereExpr();
 	const XQSort *sort = item->getSort();
 
 	s << in << "<FLWOR>" << endl;
@@ -290,11 +281,11 @@ string XQueryPrintDataItemTree::printFLWOR(const XQFLWOR *item, const DynamicCon
 	}
 	if(where) {
 		s << in << "  <Where>" << endl;
-		s << printDataItem(where, context, indent + INDENT + INDENT);
+		s << printX(where, context, indent + INDENT + INDENT);
 		s << in << "  </Where>" << endl;
 	}
 	if(sort) s << printSort(sort, context, indent + INDENT);
-	s << printDataItem(item->getReturnExpr(), context, indent + INDENT);
+	s << printX(item->getReturnExpr(), context, indent + INDENT);
 	s << printPredicates(item, context, indent + INDENT);
 	s << in << "</FLWOR>" << endl;
 
@@ -319,10 +310,10 @@ string XQueryPrintDataItemTree::printXQVariableBinding(const XQVariableBinding *
 		s << "\" at=\"" << UTF8(binding->_positionalVariable);
 	}
 	s << "\">" << endl;
-	s << printDataItem(binding->_allValues, context, indent + INDENT);
+	s << printX(binding->_allValues, context, indent + INDENT);
 	if(binding->_where) {
 		s << in << "  <Where>" << endl;
-		s << printDataItem(binding->_where, context, indent + INDENT + INDENT);
+		s << printX(binding->_where, context, indent + INDENT + INDENT);
 		s << in << "  </Where>" << endl;
 	}
 	s << in << "</" << type << ">" << endl;
@@ -374,7 +365,7 @@ string XQueryPrintDataItemTree::printSort(const XQSort *sort, const DynamicConte
 			s << " collation=\"" << UTF8((*it)->getCollation()) << "\"";
 		}
 		s << ">" << endl;
-		s << printDataItem((*it)->getExpression(), context, indent + INDENT + INDENT);
+		s << printX((*it)->getExpression(), context, indent + INDENT + INDENT);
 		s << in << "  </Specification>" << endl;
 	}
 	s << in << "</" << type << ">" << endl;
@@ -396,7 +387,7 @@ string XQueryPrintDataItemTree::printFLWORQuantified(const XQQuantified *item, c
 	for(VectorOfVariableBinding::const_iterator i = bindings->begin(); i != bindings->end(); ++i) {
 		s << printXQVariableBinding(*i, context, indent + INDENT);
 	}
-	s << printDataItem(item->getReturnExpr(), context, indent + INDENT);
+	s << printX(item->getReturnExpr(), context, indent + INDENT);
 	s << printPredicates(item, context, indent + INDENT);
 	s << in << "</" << name << ">" << endl;
 
@@ -412,7 +403,7 @@ string XQueryPrintDataItemTree::printTypeswitch(const XQTypeswitch *item, const 
 	const XQTypeswitch::VectorOfClause *clauses = item->getClauses();
 
 	s << in << "<TypeSwitch>" << endl;
-	s << printDataItem(item->getExpression(), context, indent + INDENT);
+	s << printX(item->getExpression(), context, indent + INDENT);
 	for(XQTypeswitch::VectorOfClause::const_iterator i = clauses->begin(); i != clauses->end(); ++i) {
 		s << printClause(*i, context, indent + INDENT);
 	}
@@ -436,7 +427,7 @@ string XQueryPrintDataItemTree::printClause(const XQTypeswitch::Clause *clause, 
 		}
 		s << ">" << endl;
 		s << printSequenceType(clause->_type, context, indent + INDENT);
-		s << printDataItem(clause->_expr, context, indent + INDENT);
+		s << printX(clause->_expr, context, indent + INDENT);
 		s << in << "</Clause>" << endl;
 	}
 	else {
@@ -445,7 +436,7 @@ string XQueryPrintDataItemTree::printClause(const XQTypeswitch::Clause *clause, 
 			s << " name=\"" << UTF8(clause->_variable) << "\"";
 		}
 		s << ">" << endl;
-		s << printDataItem(clause->_expr, context, indent + INDENT);
+		s << printX(clause->_expr, context, indent + INDENT);
 		s << in << "</Default>" << endl;
 	}
 
@@ -470,7 +461,7 @@ string XQueryPrintDataItemTree::printValidate(const XQValidate *item, const Dyna
 	}
 	}
 	s << "\">" << endl;
-	s << printDataItem(item->getExpression(), context, indent + INDENT);
+	s << printX(item->getExpression(), context, indent + INDENT);
 	s << printPredicates(item, context, indent + INDENT);
 	s << in << "</Validate>" << endl;
 
@@ -493,7 +484,7 @@ string XQueryPrintDataItemTree::printGlobal(const XQGlobalVariable *item, const 
 			s << printSequenceType(item->getSequenceType(), context, indent + INDENT);
 		}
 		if(item->getVariableExpr()) {
-			s << printDataItem(item->getVariableExpr(), context, indent + INDENT);
+			s << printX(item->getVariableExpr(), context, indent + INDENT);
 		}
 		s << printPredicates(item, context, indent + INDENT);
 		s << in << "</GlobalVar>" << endl;
@@ -519,14 +510,14 @@ string XQueryPrintDataItemTree::printFunctionCall(const XQFunctionCall *item, co
 	name += ":";
 	name += UTF8(funName);
 
-	const VectorOfDataItems &args = item->getArguments();
+	const VectorOfASTNodes &args = item->getArguments();
 	if(args.empty() && !hasPredicates(item)) {
 		s << in << "<FunctionCall name=\"" << name << "\"/>" << endl;
 	}
 	else {
 		s << in << "<FunctionCall name=\"" << name << "\">" << endl;
-		for(VectorOfDataItems::const_iterator i = args.begin(); i != args.end(); ++i) {
-			s << printDataItem(*i, context, indent + INDENT);
+		for(VectorOfASTNodes::const_iterator i = args.begin(); i != args.end(); ++i) {
+			s << printX(*i, context, indent + INDENT);
 		}
 		s << printPredicates(item, context, indent + INDENT);
 		s << in << "</FunctionCall>" << endl;
@@ -546,22 +537,22 @@ string XQueryPrintDataItemTree::printDOMConstructor(const XQDOMConstructor *item
 		s << "\">" << endl;
 		if(item->getName()) {
 			s << in << "  <Name>" << endl;
-			s << printDataItem(item->getName(), context, indent + INDENT + INDENT);
+			s << printX(item->getName(), context, indent + INDENT + INDENT);
 			s << in << "  </Name>" << endl;
 		}
 		if(item->getAttributes() != 0 && !item->getAttributes()->empty()) {
 			s << in << "  <Attributes>" << endl;
-			for(VectorOfDataItems::const_iterator i = item->getAttributes()->begin();
+			for(VectorOfASTNodes::const_iterator i = item->getAttributes()->begin();
 			    i != item->getAttributes()->end(); ++i) {
-				s << printDataItem(*i, context, indent + INDENT + INDENT);
+				s << printX(*i, context, indent + INDENT + INDENT);
 			}
 			s << in << "  </Attributes>" << endl;
 		}
 		if(!item->getChildren()->empty()) {
 			s << in << "  <Children>" << endl;
-			for(VectorOfDataItems::const_iterator i = item->getChildren()->begin();
+			for(VectorOfASTNodes::const_iterator i = item->getChildren()->begin();
 			    i != item->getChildren()->end(); ++i) {
-				s << printDataItem(*i, context, indent + INDENT + INDENT);
+				s << printX(*i, context, indent + INDENT + INDENT);
 			}
 			s << in << "  </Children>" << endl;
 		}
@@ -586,7 +577,7 @@ string XQueryPrintDataItemTree::printOrderingChange(const XQOrderingChange *item
     s << "ordered";
   else s << "unordered";
   s << "\">" << endl;
-	s << printDataItem(item->getExpr(), context, indent + INDENT);
+	s << printX(item->getExpr(), context, indent + INDENT);
 	s << in << "</OrderingChange>" << endl;
 
 	return s.str();

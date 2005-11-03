@@ -26,7 +26,7 @@
 
 /*static*/ const XMLCh Plus::name[]={ XERCES_CPP_NAMESPACE_QUALIFIER chLatin_p, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_l, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_u, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_s, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
 
-Plus::Plus(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+Plus::Plus(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ArithmeticOperator(name, args, memMgr)
 {
   // Nothing to do

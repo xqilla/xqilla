@@ -22,7 +22,7 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/dom-api/PathanExpression.hpp>
 #include <xqilla/dom-api/XPath2Result.hpp>
-#include <xqilla/ast/DataItem.hpp>
+#include <xqilla/ast/ASTNode.hpp>
 #include <xqilla/runtime/Sequence.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/framework/XPath2MemoryManager.hpp>
@@ -51,7 +51,7 @@ PathanExpressionImpl::PathanExpressionImpl(const XMLCh *expression,
 {
   _staticContext = PathanEngine::createContext(xmlGP, &_memMgr);
   _staticContext->setNSResolver(nsr);
-  _compiledExpression = PathanEngine::createDataItem(expression, _staticContext, &_memMgr, true);
+  _compiledExpression = PathanEngine::createASTNode(expression, _staticContext, &_memMgr, true);
 }
 
 PathanExpressionImpl::PathanExpressionImpl(const XMLCh *expression, DynamicContext *context,
@@ -62,7 +62,7 @@ PathanExpressionImpl::PathanExpressionImpl(const XMLCh *expression, DynamicConte
     _staticContextOwned(false),
     _staticContext(context)
 {
-  _compiledExpression = PathanEngine::createDataItem(expression, _staticContext, &_memMgr, true);
+  _compiledExpression = PathanEngine::createASTNode(expression, _staticContext, &_memMgr, true);
 }
 
 PathanExpressionImpl::~PathanExpressionImpl() 

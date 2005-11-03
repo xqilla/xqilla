@@ -34,7 +34,7 @@ public:
   {
   }
 
-  virtual DataItem *createInstance(const VectorOfDataItems &args, XPath2MemoryManager* memMgr) const
+  virtual ASTNode *createInstance(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr) const
   {
 	  return new (memMgr) TYPE(args, memMgr);
   }

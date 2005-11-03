@@ -36,13 +36,13 @@ const unsigned int FunctionNilled::maxArgs = 1;
  * fn:nilled($arg as node()?) as boolean?
  */
 
-FunctionNilled::FunctionNilled(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
-  : DataItemFunction(name, minArgs, maxArgs, "node()?", args, memMgr)
+FunctionNilled::FunctionNilled(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
+  : XQFunction(name, minArgs, maxArgs, "node()?", args, memMgr)
 {
 }
 
-DataItem* FunctionNilled::staticResolution(StaticContext *context) {
-  return resolveDataItems(_args, context, false);
+ASTNode* FunctionNilled::staticResolution(StaticContext *context) {
+  return resolveASTNodes(_args, context, false);
 }
 
 Sequence FunctionNilled::collapseTreeInternal(DynamicContext* context, int flags) const

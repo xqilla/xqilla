@@ -17,21 +17,21 @@
 // XQDebugHook.hpp: interface for the XQDebugHook class.
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_XQDEBUGHOOK_H__446AD191_E9D0_4658_BD8C_032D29DA123C__INCLUDED_)
-#define AFX_XQDEBUGHOOK_H__446AD191_E9D0_4658_BD8C_032D29DA123C__INCLUDED_
+#if !defined(AFXQ_XQDEBUGHOOK_H__446AD191_E9D0_4658_BD8C_032D29DA123C__INCLUDED_)
+#define AFXQ_XQDEBUGHOOK_H__446AD191_E9D0_4658_BD8C_032D29DA123C__INCLUDED_
 
 #include <xqilla/framework/XQEngine.hpp>
-#include <xqilla/ast/DataItemImpl.hpp>
+#include <xqilla/ast/ASTNodeImpl.hpp>
 
-class XQENGINE_API XQDebugHook : public DataItemImpl
+class XQENGINE_API XQDebugHook : public ASTNodeImpl
 {
 public:
-	XQDebugHook(const XMLCh* szFile, unsigned int nLine, unsigned int nColumn, DataItem* impl, const XMLCh* functionName, XPath2MemoryManager* memMgr);
+	XQDebugHook(const XMLCh* szFile, unsigned int nLine, unsigned int nColumn, ASTNode* impl, const XMLCh* functionName, XPath2MemoryManager* memMgr);
 	
   virtual Result collapseTree(DynamicContext* context, int flags=0) const;
 
-	virtual void addPredicates(const VectorOfDataItems &steps);
-	virtual DataItem* staticResolution(StaticContext *context);
+	virtual void addPredicates(const VectorOfASTNodes &steps);
+	virtual ASTNode* staticResolution(StaticContext *context);
 
   virtual const StaticResolutionContext &getStaticResolutionContext() const;
 
@@ -40,11 +40,11 @@ public:
   int getColumn() const;
   const XMLCh *getFile() const;
 
-	DataItem* m_impl;
+	ASTNode* m_impl;
 protected:
 	const XMLCh* m_szFunctionName;
 	unsigned int m_nLine,m_nColumn;
 	const XMLCh* m_szFile; 
 };
 
-#endif // !defined(AFX_XQDEBUGHOOK_H__446AD191_E9D0_4658_BD8C_032D29DA123C__INCLUDED_)
+#endif // !defined(AFXQ_XQDEBUGHOOK_H__446AD191_E9D0_4658_BD8C_032D29DA123C__INCLUDED_)

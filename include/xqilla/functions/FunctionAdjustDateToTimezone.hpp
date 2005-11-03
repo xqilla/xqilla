@@ -18,7 +18,7 @@
 
 #include <xqilla/framework/Pathan.hpp>
 
-#include <xqilla/ast/DataItemFunction.hpp>
+#include <xqilla/ast/XQFunction.hpp>
 
 /**
  * Adjusts a date to a specific timezone, or to no timezone at all
@@ -26,7 +26,7 @@
  *  fn:adjust-date-to-timezone(date? $srcval) => date?
  *  fn:adjust-date-to-timezone(date? $srcval, dayTimeDuration? $timezone) => date?
  */
-class PATHAN_EXPORT FunctionAdjustDateToTimezone : public DataItemFunction
+class PATHAN_EXPORT FunctionAdjustDateToTimezone : public XQFunction
 {
 public:
   static const XMLCh name[];
@@ -36,14 +36,14 @@ public:
   /**
    * Constructor
    */
-   FunctionAdjustDateToTimezone(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+   FunctionAdjustDateToTimezone(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
 
   /**
    * Called during static analysis to determine if statically correct.
    * Performs constant folding if the function has two arguments, and
    * they are constant.
    */
-  virtual DataItem* staticResolution(StaticContext *context);
+  virtual ASTNode* staticResolution(StaticContext *context);
 
   /**
    * Adjusts a date to a specific timezone, or to no timezone at all

@@ -25,16 +25,16 @@ but not in the second operand
 
 #include <xqilla/framework/Pathan.hpp>
 
-#include <xqilla/ast/DataItemOperator.hpp>
-#include <xqilla/ast/DataItemNav.hpp>
+#include <xqilla/ast/XQOperator.hpp>
+#include <xqilla/ast/XQNav.hpp>
 #include <xqilla/runtime/ResultBuffer.hpp>
 
-class PATHAN_EXPORT Except : public DataItemOperator
+class PATHAN_EXPORT Except : public XQOperator
 {
 public:
   static const XMLCh name[];
 
-  Except(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  Except(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   Result createResult(DynamicContext* context, int flags=0) const;
 

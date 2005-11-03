@@ -42,7 +42,7 @@ const unsigned int FunctionSubstringAfter::maxArgs = 3;
  * fn:substring-after($arg1 as xs:string?, $arg2 as xs:string?, $collation as xs:string) as xs:string
 **/
 
-FunctionSubstringAfter::FunctionSubstringAfter(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+FunctionSubstringAfter::FunctionSubstringAfter(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "string?,string?,string", args, memMgr)
 {
 }

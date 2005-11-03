@@ -20,7 +20,6 @@
 #include <xqilla/context/impl/XQRemoteDebugger.hpp>
 #include <xqilla/exceptions/XQException.hpp>
 #include <xqilla/simple-api/XQEvaluator.hpp>
-#include <xqilla/context/XQContext.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/context/VariableStore.hpp>
 #include <xqilla/exceptions/IllegalArgumentException.hpp>
@@ -206,10 +205,8 @@ XQRemoteDebugger::~XQRemoteDebugger()
 {
 }
 
-void XQRemoteDebugger::SendNotification(DynamicContext* ctx, XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer& command, const char* postData/*=NULL*/)
+void XQRemoteDebugger::SendNotification(DynamicContext* context, XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer& command, const char* postData/*=NULL*/)
 {
-    XQContext *context = CAST_TO_XQCONTEXT(ctx);
-
     if(m_szSessionId==NULL)
     {
         try

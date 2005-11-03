@@ -24,8 +24,8 @@
 
 /*static*/ const XMLCh Except::name[]={ XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_x, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_c, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_p, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
 
-Except::Except(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
-  : DataItemOperator(name, args, memMgr)
+Except::Except(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
+  : XQOperator(name, args, memMgr)
 {
   _src.setProperties(StaticResolutionContext::DOCORDER | StaticResolutionContext::GROUPED);
   _src.getStaticType().flags = StaticResolutionContext::NODE_TYPE;
@@ -35,7 +35,7 @@ Result Except::createResult(DynamicContext* context, int flags) const
 {
   Result result(new ExceptResult(this, flags, context));
 
-  if(context->getNodeSetOrdering()==StaticContext::ORDERING_UNORDERED || flags & DataItem::UNORDERED) {
+  if(context->getNodeSetOrdering()==StaticContext::ORDERING_UNORDERED || flags & ASTNode::UNORDERED) {
     return result;
   }
   else {
@@ -58,7 +58,7 @@ Item::Ptr Except::ExceptResult::next(DynamicContext *context)
   if(_toDo) {
     _toDo = false;
     _result = _op->getArgument(0)->collapseTree(context, _flags);
-    _excpt = _op->getArgument(1)->collapseTree(context, DataItem::UNORDERED);
+    _excpt = _op->getArgument(1)->collapseTree(context, ASTNode::UNORDERED);
   }
 
   Item::Ptr item = _result.next(context);

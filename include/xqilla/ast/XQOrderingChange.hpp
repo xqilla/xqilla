@@ -17,23 +17,23 @@
 // XQOrderingChange.hpp: interface for the XQOrderingChange class.
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_XQORDERINGCHANGE_H__A97FA5AE_5355_45CD_9092_ED94F5CD035B__INCLUDED_)
-#define AFX_XQORDERINGCHANGE_H__A97FA5AE_5355_45CD_9092_ED94F5CD035B__INCLUDED_
+#if !defined(AFXQ_XQORDERINGCHANGE_H__A97FA5AE_5355_45CD_9092_ED94F5CD035B__INCLUDED_)
+#define AFXQ_XQORDERINGCHANGE_H__A97FA5AE_5355_45CD_9092_ED94F5CD035B__INCLUDED_
 
-#include <xqilla/ast/DataItemImpl.hpp>
+#include <xqilla/ast/ASTNodeImpl.hpp>
 #include <xqilla/context/StaticContext.hpp>
 
-class XQENGINE_API XQOrderingChange : public DataItemImpl
+class XQENGINE_API XQOrderingChange : public ASTNodeImpl
 {
 public:
-  XQOrderingChange(StaticContext::NodeSetOrdering ordering, DataItem* dataItem, XPath2MemoryManager* expr);
+  XQOrderingChange(StaticContext::NodeSetOrdering ordering, ASTNode* dataItem, XPath2MemoryManager* expr);
 
 	virtual Result createResult(DynamicContext *context, int flags=0) const;
-	virtual DataItem* staticResolution(StaticContext *context);
+	virtual ASTNode* staticResolution(StaticContext *context);
 
 	StaticContext::NodeSetOrdering getOrderingValue() const;
-  DataItem* getExpr() const;
-  void setExpr(DataItem *expr);
+  ASTNode* getExpr() const;
+  void setExpr(ASTNode *expr);
 
 protected:
   class OrderingChangeResult : public ResultImpl
@@ -51,7 +51,7 @@ protected:
   };
 
   StaticContext::NodeSetOrdering m_nOrdering;
-  DataItem* m_pExpr;
+  ASTNode* m_pExpr;
 };
 
-#endif // !defined(AFX_XQORDERINGCHANGE_H__A97FA5AE_5355_45CD_9092_ED94F5CD035B__INCLUDED_)
+#endif // !defined(AFXQ_XQORDERINGCHANGE_H__A97FA5AE_5355_45CD_9092_ED94F5CD035B__INCLUDED_)

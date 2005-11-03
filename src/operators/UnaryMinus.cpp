@@ -17,7 +17,7 @@
 #include <assert.h>
 #include <xqilla/operators/UnaryMinus.hpp>
 #include <xqilla/operators/Multiply.hpp>
-#include <xqilla/ast/DataItemLiteral.hpp>
+#include <xqilla/ast/XQLiteral.hpp>
 #include <xqilla/items/ATDecimalOrDerived.hpp>
 #include <xqilla/exceptions/XPath2ErrorException.hpp>
 #include <xqilla/context/DynamicContext.hpp>
@@ -25,7 +25,7 @@
 
 /*static*/ const XMLCh UnaryMinus::name[]={ XERCES_CPP_NAMESPACE_QUALIFIER chLatin_u, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_m, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_i, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_u, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_s, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
 
-UnaryMinus::UnaryMinus(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+UnaryMinus::UnaryMinus(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ArithmeticOperator(name, args, memMgr)
 {
 	assert(_args.size() == 1);

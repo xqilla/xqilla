@@ -35,15 +35,15 @@ const unsigned int FunctionYearFromDate::maxArgs = 1;
  * fn:year-from-date($arg as xs:date?) as xs:integer?
  */
 
-FunctionYearFromDate::FunctionYearFromDate(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
-  : DataItemFunction(name, minArgs, maxArgs, "date?", args, memMgr)
+FunctionYearFromDate::FunctionYearFromDate(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
+  : XQFunction(name, minArgs, maxArgs, "date?", args, memMgr)
 {
   _src.getStaticType().flags = StaticResolutionContext::NUMERIC_TYPE;
 }
 
-DataItem* FunctionYearFromDate::staticResolution(StaticContext *context)
+ASTNode* FunctionYearFromDate::staticResolution(StaticContext *context)
 {
-  return resolveDataItemsForDateOrTime(_args, context, true);
+  return resolveASTNodesForDateOrTime(_args, context, true);
 }
 
 Sequence FunctionYearFromDate::collapseTreeInternal(DynamicContext* context, int flags) const

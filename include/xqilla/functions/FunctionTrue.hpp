@@ -35,7 +35,7 @@ public:
   /**
    * Constructor.
    */
-  FunctionTrue(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  FunctionTrue(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
 
   /**
    * Returns the boolean value true.

@@ -24,7 +24,7 @@
 
 /*static*/ const XMLCh IntegerDivide::name[]={ XERCES_CPP_NAMESPACE_QUALIFIER chLatin_i, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_d, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_i, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_v, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
 
-IntegerDivide::IntegerDivide(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+IntegerDivide::IntegerDivide(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ArithmeticOperator(name, args, memMgr)
 {
   // Nothing to do

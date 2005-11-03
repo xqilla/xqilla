@@ -33,7 +33,7 @@ const unsigned int FunctionStringJoin::maxArgs = 2;
  * fn:string-join($arg1 as xs:string*, $arg2 as xs:string) as xs:string
 **/
 
-FunctionStringJoin::FunctionStringJoin(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+FunctionStringJoin::FunctionStringJoin(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "string*, string", args, memMgr)
 {
   // Nothing to do

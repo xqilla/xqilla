@@ -55,15 +55,15 @@ const unsigned int FunctionDistinctValues::maxArgs = 2;
  * fn:distinct-values($arg as xdt:anyAtomicType*, $collation as xs:string) as xdt:anyAtomicType*
 **/
 
-FunctionDistinctValues::FunctionDistinctValues(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
-  : DataItemFunction(name, minArgs, maxArgs, "anyAtomicType*, string", args, memMgr)
+FunctionDistinctValues::FunctionDistinctValues(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
+  : XQFunction(name, minArgs, maxArgs, "anyAtomicType*, string", args, memMgr)
 {
 }
 
-DataItem* FunctionDistinctValues::staticResolution(StaticContext *context)
+ASTNode* FunctionDistinctValues::staticResolution(StaticContext *context)
 {
   bool allConstant = true;
-  for(VectorOfDataItems::iterator i = _args.begin(); i != _args.end(); ++i) {
+  for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
     *i = (*i)->staticResolution(context);
     _src.add((*i)->getStaticResolutionContext());
     if(!(*i)->isConstant()) {
@@ -105,7 +105,7 @@ Item::Ptr FunctionDistinctValues::DistinctValueResult::next(DynamicContext *cont
 {
   if(toDo_) {
     toDo_ = false;
-    parent_ = fdv_->getParamNumber(1, context, DataItem::UNORDERED);
+    parent_ = fdv_->getParamNumber(1, context, ASTNode::UNORDERED);
 
     if(fdv_->getNumArgs() > 1) {
         const XMLCh* collName = fdv_->getParamNumber(2, context).next(context)->asString(context);

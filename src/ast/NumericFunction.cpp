@@ -23,7 +23,7 @@
 #include <xqilla/items/ATDoubleOrDerived.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 
-NumericFunction::NumericFunction(const XMLCh* name, unsigned int argsFrom, unsigned int argsTo, const char* paramDecl, const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+NumericFunction::NumericFunction(const XMLCh* name, unsigned int argsFrom, unsigned int argsTo, const char* paramDecl, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name,argsFrom, argsTo, paramDecl, args, memMgr) 
 { 
 }
@@ -35,7 +35,7 @@ Result NumericFunction::getParamNumber(unsigned int number, DynamicContext* cont
 
 Result NumericFunction::getParamNumber(unsigned int paramNumber, unsigned int signatureNumber, DynamicContext* context, int flags) const
 {
-  Sequence arg = DataItemFunction::getParamNumber(paramNumber, signatureNumber, context, flags).toSequence(context);
+  Sequence arg = XQFunction::getParamNumber(paramNumber, signatureNumber, context, flags).toSequence(context);
 
   if (arg.isEmpty()) {
     return arg;

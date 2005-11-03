@@ -32,7 +32,7 @@ const unsigned int FunctionDocumentURI::maxArgs = 1;
  * fn:document-uri($arg as node()?) as xs:anyURI?
  */
 
-FunctionDocumentURI::FunctionDocumentURI(const VectorOfDataItems  &args, XPath2MemoryManager* memMgr)
+FunctionDocumentURI::FunctionDocumentURI(const VectorOfASTNodes  &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "node()?", args, memMgr)
 {
 }

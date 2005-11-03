@@ -33,7 +33,7 @@ public:
   static const unsigned int minArgs;
   static const unsigned int maxArgs;
 
-  FunctionNamespaceURIFromQName(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  FunctionNamespaceURIFromQName(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   /** Returns the namespace part of a QName*/
   Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;

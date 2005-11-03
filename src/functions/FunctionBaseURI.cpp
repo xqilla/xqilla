@@ -33,15 +33,15 @@ const unsigned int FunctionBaseURI::maxArgs = 1;
  * fn:base-uri($arg as node()?) as xs:anyURI?
 **/
 
-FunctionBaseURI::FunctionBaseURI(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+FunctionBaseURI::FunctionBaseURI(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "node()?", args, memMgr)
 {
 }
 
-DataItem* FunctionBaseURI::staticResolution(StaticContext *context) {
+ASTNode* FunctionBaseURI::staticResolution(StaticContext *context) {
   if(_args.empty())
     _src.contextItemUsed(true);
-  return resolveDataItems(_args, context, !_args.empty());
+  return resolveASTNodes(_args, context, !_args.empty());
 }
 
 Sequence FunctionBaseURI::collapseTreeInternal(DynamicContext* context, int flags) const

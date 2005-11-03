@@ -22,7 +22,7 @@
 
 #include <xqilla/dom-api/PathanNSResolver.hpp>
 #include <xqilla/dom-api/XPath2Result.hpp>
-#include <xqilla/context/impl/XPath2ContextImpl.hpp>
+#include <xqilla/context/impl/XQContextImpl.hpp>
 #include "../dom-api/impl/PathanDocumentImpl.hpp"
 #include <xqilla/ast/StaticResolutionContext.hpp>
 #include <xqilla/framework/XPath2MemoryManagerImpl.hpp>
@@ -89,7 +89,7 @@ PathanExpression* PathanEngine::createExpression(const XMLCh* expression,
   return new (memMgr) PathanExpressionImpl(expression, context, memMgr);
 }
 
-DataItem* PathanEngine::createDataItem(const XMLCh* expression,
+ASTNode* PathanEngine::createASTNode(const XMLCh* expression,
                                        DynamicContext* context,
                                        XPath2MemoryManager *memMgr,
                                        bool staticallyResolve)
@@ -170,7 +170,7 @@ DynamicContext* PathanEngine::createContext(XERCES_CPP_NAMESPACE_QUALIFIER DOMDo
     xmlgr = static_cast<PathanDocumentImpl*>(document)->getGrammarPool();
   }
 
-  return new (memMgr) XPath2ContextImpl(memMgr, xmlgr, 0);
+  return new (memMgr) XQContextImpl(memMgr, xmlgr, 0);
 }
 
 DynamicContext *PathanEngine::createContext(XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool *xmlGP,
@@ -180,7 +180,7 @@ DynamicContext *PathanEngine::createContext(XERCES_CPP_NAMESPACE_QUALIFIER XMLGr
     return 0;
   }
 
-  return new (memMgr) XPath2ContextImpl(memMgr, xmlGP, 0);
+  return new (memMgr) XQContextImpl(memMgr, xmlGP, 0);
 }
 
 DynamicContext *PathanEngine::createContext(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr)
@@ -189,7 +189,7 @@ DynamicContext *PathanEngine::createContext(XERCES_CPP_NAMESPACE_QUALIFIER Memor
     return 0;
   }
 
-  return new (memMgr) XPath2ContextImpl(memMgr, 0, 0);
+  return new (memMgr) XQContextImpl(memMgr, 0, 0);
 }
 
 XPath2MemoryManager *PathanEngine::createMemoryManager() {

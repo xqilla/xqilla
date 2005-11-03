@@ -33,7 +33,7 @@ public:
   static const unsigned int minArgs;
   static const unsigned int maxArgs;
 
-  FunctionFalse(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  FunctionFalse(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
 
   virtual Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
 };

@@ -37,7 +37,7 @@ public:
   /**
    * Constructor
    */
-  FunctionUpperCase(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  FunctionUpperCase(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
 
   /**
    * Returns the upper-case string.

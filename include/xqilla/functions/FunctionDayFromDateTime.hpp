@@ -24,18 +24,18 @@
 
 #include <xqilla/framework/Pathan.hpp>
 
-#include <xqilla/ast/DataItemFunction.hpp>
+#include <xqilla/ast/XQFunction.hpp>
 
-class PATHAN_EXPORT FunctionDayFromDateTime : public DataItemFunction
+class PATHAN_EXPORT FunctionDayFromDateTime : public XQFunction
 {
 public:
   static const XMLCh name[];
   static const unsigned int minArgs;
   static const unsigned int maxArgs;
 
-  FunctionDayFromDateTime(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  FunctionDayFromDateTime(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
 
-  DataItem* staticResolution(StaticContext *context);
+  ASTNode* staticResolution(StaticContext *context);
 
   Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
 };

@@ -21,7 +21,6 @@
 #include <xqilla/runtime/Sequence.hpp>
 
 class XPath2Result;
-class DataItem;
 class DynamicContext;
 class XPath2MemoryManager;
 
@@ -60,8 +59,8 @@ public:
 
   virtual void release();
 
-  const DataItem *getCompiledExpression() const { return _compiledExpression; }
-  void setCompiledExpression(DataItem *expr) { _compiledExpression = expr; }
+  const ASTNode *getCompiledExpression() const { return _compiledExpression; }
+  void setCompiledExpression(ASTNode *expr) { _compiledExpression = expr; }
 
 private:
   XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* _createdWith;
@@ -71,7 +70,7 @@ private:
 
   bool _staticContextOwned;
   DynamicContext *_staticContext;
-	DataItem* _compiledExpression;
+	ASTNode* _compiledExpression;
 }; //PathanExpressionImpl
 
 

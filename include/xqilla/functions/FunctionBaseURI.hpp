@@ -35,9 +35,9 @@ public:
   static const unsigned int minArgs;
   static const unsigned int maxArgs;
 
-  FunctionBaseURI(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  FunctionBaseURI(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
-  virtual DataItem* staticResolution(StaticContext *context);
+  virtual ASTNode* staticResolution(StaticContext *context);
 
 	/* returns the base-URI property of document or element nodes,
 	 * and the empty sequence for all other kinds of nodes */

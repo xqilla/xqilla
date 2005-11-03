@@ -40,7 +40,7 @@ const unsigned int FunctionCodepointsToString::maxArgs = 1;
  * Creates a string from a sequence of codepoints.
 **/
 
-FunctionCodepointsToString::FunctionCodepointsToString(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+FunctionCodepointsToString::FunctionCodepointsToString(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "integer*", args, memMgr) // 1 argument
 {
   // Nothing to do

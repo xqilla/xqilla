@@ -17,7 +17,7 @@
 #include <xqilla/functions/FunctionAvg.hpp>
 #include <xqilla/functions/FunctionSum.hpp>
 #include <xqilla/runtime/Sequence.hpp>
-#include <xqilla/ast/DataItemSequence.hpp>
+#include <xqilla/ast/XQSequence.hpp>
 #include <xqilla/operators/Divide.hpp>
 #include <xqilla/functions/FunctionConstructor.hpp>
 #include <xqilla/items/ATDecimalOrDerived.hpp>
@@ -40,7 +40,7 @@ const unsigned int FunctionAvg::maxArgs = 1;
  * fn:avg($arg as xdt:anyAtomicType*) as xdt:anyAtomicType?
 **/
 
-FunctionAvg::FunctionAvg(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+FunctionAvg::FunctionAvg(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : AggregateFunction(name, minArgs, maxArgs, "anyAtomicType*", args, memMgr)
 {
   // TBD - could do better here - jpcs
@@ -73,11 +73,11 @@ Sequence FunctionAvg::collapseTreeInternal(DynamicContext* context, int flags) c
     DSLthrow(IllegalArgumentException, X("FunctionAvg::collapseTreeInternal()"), X("Invalid argument to fn:avg() function"));
   }
 
-  VectorOfDataItems divArgs = VectorOfDataItems(PathanAllocator<DataItem*>(context->getMemoryManager()));
-  DataItemSequence seq1(sum, context, context->getMemoryManager());
+  VectorOfASTNodes divArgs = VectorOfASTNodes(PathanAllocator<ASTNode*>(context->getMemoryManager()));
+  XQSequence seq1(sum, context, context->getMemoryManager());
   divArgs.push_back(&seq1);
 
-  DataItemSequence seq2(context->getPathanFactory()->createDecimal((long)sequence.getLength(), context),
+  XQSequence seq2(context->getPathanFactory()->createDecimal((long)sequence.getLength(), context),
                         context, context->getMemoryManager());
   divArgs.push_back(&seq2);
 

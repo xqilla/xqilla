@@ -39,7 +39,7 @@ public:
   static const unsigned int minArgs;
   static const unsigned int maxArgs;
 
-  FunctionEscapeURI(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  FunctionEscapeURI(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   /** Returns param1 after applying URI escaping rules - the value of param2 determines exactly which set of 
    *  characters is escaped**/

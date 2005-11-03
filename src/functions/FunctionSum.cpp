@@ -16,7 +16,7 @@
 #include "../config/pathan_config.h"
 #include <xqilla/functions/FunctionSum.hpp>
 #include <xqilla/runtime/Sequence.hpp>
-#include <xqilla/ast/DataItemSequence.hpp>
+#include <xqilla/ast/XQSequence.hpp>
 #include <xqilla/items/AnyAtomicType.hpp>
 #include <xqilla/items/ATDoubleOrDerived.hpp>
 #include <xqilla/items/ATDurationOrDerived.hpp>
@@ -39,7 +39,7 @@ const unsigned int FunctionSum::maxArgs = 2;
  * fn:sum($arg as xdt:anyAtomicType*, $zero as xdt:anyAtomicType?) as xdt:anyAtomicType?
 **/
 
-FunctionSum::FunctionSum(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+FunctionSum::FunctionSum(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : AggregateFunction(name, minArgs, maxArgs, "anyAtomicType*,anyAtomicType?", args, memMgr)
 {
   // TBD - could do better here - jpcs
@@ -52,7 +52,7 @@ Sequence FunctionSum::collapseTreeInternal(DynamicContext* context, int flags) c
 
   Sequence sequence(memMgr);
   try {
-    sequence = validateSequence(getParamNumber(1,context,DataItem::UNORDERED), context);
+    sequence = validateSequence(getParamNumber(1,context,ASTNode::UNORDERED), context);
   } catch (IllegalArgumentException &e) {
     DSLthrow(IllegalArgumentException, X("FunctionSum::collapseTreeInternal"), X("Invalid argument to fn:sum() function"));
   }

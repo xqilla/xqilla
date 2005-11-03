@@ -21,9 +21,8 @@
 #include <xqilla/schema/DocumentCache.hpp>
 #include <xercesc/util/PlatformUtils.hpp>
 
-// Copied from DataItem.hpp
-class DataItem;
-typedef std::vector<DataItem*,PathanAllocator<DataItem*> > VectorOfDataItems;
+// Copied from ASTNode.hpp
+typedef std::vector<ASTNode*,PathanAllocator<ASTNode*> > VectorOfASTNodes;
 
 class DynamicContext;
 class XPath2MemoryManager;
@@ -47,6 +46,16 @@ public:
       ORDERING_ORDERED,
       ORDERING_UNORDERED
   } NodeSetOrdering;
+
+  typedef enum {
+    CONSTRUCTION_MODE_PRESERVE,
+    CONSTRUCTION_MODE_STRIP
+  } ConstructionMode;
+
+  typedef enum {
+    FLWOR_ORDER_EMPTY_GREATEST,
+    FLWOR_ORDER_EMPTY_LEAST
+  } FLWOROrderingMode;
 
   virtual ~StaticContext() {};
 
@@ -75,7 +84,8 @@ public:
   virtual const XMLCh* getPrefixBoundToUri(const XMLCh* uri) const = 0;
   /** Set the NS resolver */
   virtual void setNSResolver(const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver* resolver) = 0;
-
+  /** Binds a prefix to a namespace URI */
+  virtual void setNamespaceBinding(const XMLCh* prefix, const XMLCh* uri) = 0;
 
   /** get the value of the default namespace for elements and types */
   virtual const XMLCh* getDefaultElementAndTypeNS() const = 0;
@@ -113,7 +123,7 @@ public:
   /** adds a custom function to the function table */
   virtual void addCustomFunction(FuncFactory *func) = 0;
 	/** returns a function with name name in the namespace represented by prefix */
-  virtual DataItem* lookUpFunction(const XMLCh* prefix, const XMLCh* name, VectorOfDataItems& v) const = 0;
+  virtual ASTNode* lookUpFunction(const XMLCh* prefix, const XMLCh* name, VectorOfASTNodes& v) const = 0;
 
   /** Get the implementation for the specified collation */
   virtual Collation* getCollation(const XMLCh* const URI) const = 0;
@@ -134,6 +144,36 @@ public:
   virtual NodeSetOrdering getNodeSetOrdering() const = 0;
   /** Set the ordering method for node sets */
   virtual void setNodeSetOrdering(NodeSetOrdering newOrder) = 0;
+
+  /** Return the construction mode */
+  virtual ConstructionMode getConstructionMode() const = 0;
+  /** Set the construction mode */
+  virtual void setConstructionMode(ConstructionMode newMode) = 0;
+
+  /** Set the policy for boundary space */
+  virtual void setPreserveBoundarySpace(bool value) = 0;
+  /** Get the policy for boundary  space */
+  virtual bool getPreserveBoundarySpace() const = 0;
+
+  /** Return the default ordering mode for FLWOR blocks */
+  virtual FLWOROrderingMode getDefaultFLWOROrderingMode() const = 0;
+  /** Set the default ordering mode for FLWOR blocks */
+  virtual void setDefaultFLWOROrderingMode(FLWOROrderingMode newMode) = 0;
+
+  /** Set the policy for namespace inheritance */
+  virtual void setInheritNamespaces(bool value) = 0;
+  /** Get the policy for namespace inheritance */
+  virtual bool getInheritNamespaces() const = 0;
+
+  /** Set the policy for namespace copy */
+  virtual void setPreserveNamespaces(bool value) = 0;
+  /** Get the policy for namespace copy */
+  virtual bool getPreserveNamespaces() const = 0;
+
+  /// The enableDebuging flag is considered to be in both the static and dynamic contexts
+  virtual void enableDebugging(bool enable=true) = 0;
+  /// The enableDebuging flag is considered to be in both the static and dynamic contexts
+  virtual bool isDebuggingEnabled() const = 0;
 
   /////////////////////////////////////////
   //  Pathan context specific accessors  //

@@ -19,10 +19,10 @@
 
 #include <xqilla/framework/XQEngine.hpp>
 #include <xqilla/ast/XQDebugHook.hpp>
-#include <xqilla/context/XQContext.hpp>
+#include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/exceptions/XQException.hpp>
 #include <xqilla/context/XQDebugCallback.hpp>
-#include <xqilla/ast/DataItemFunction.hpp>
+#include <xqilla/ast/XQFunction.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <assert.h>
 
@@ -30,21 +30,19 @@
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-XQDebugHook::XQDebugHook(const XMLCh* szFile, unsigned int nLine, unsigned int nColumn, DataItem* impl, const XMLCh* functionName, XPath2MemoryManager* memMgr)
-  : DataItemImpl(memMgr)
+XQDebugHook::XQDebugHook(const XMLCh* szFile, unsigned int nLine, unsigned int nColumn, ASTNode* impl, const XMLCh* functionName, XPath2MemoryManager* memMgr)
+  : ASTNodeImpl(memMgr)
 {
   m_impl=impl;
   m_nLine=nLine;
   m_nColumn=nColumn;
   m_szFile=szFile;
   m_szFunctionName=functionName;
-  setType((DataItem::whichType)XQContext::DEBUG_HOOK);
+  setType(ASTNode::DEBUG_HOOK);
 }
 
-Result XQDebugHook::collapseTree(DynamicContext *ctx, int flags) const
+Result XQDebugHook::collapseTree(DynamicContext *context, int flags) const
 {
-  XQContext *context = CAST_TO_XQCONTEXT(ctx);
-
   XQDebugCallback* pDbgCallback=context->getDebugCallback();
 
   if(pDbgCallback)
@@ -82,12 +80,12 @@ Result XQDebugHook::collapseTree(DynamicContext *ctx, int flags) const
   return Sequence(context->getMemoryManager());
 }
 
-void XQDebugHook::addPredicates(const VectorOfDataItems& steps)
+void XQDebugHook::addPredicates(const VectorOfASTNodes& steps)
 {
   m_impl->addPredicates(steps);
 }
 
-DataItem* XQDebugHook::staticResolution(StaticContext *context) 
+ASTNode* XQDebugHook::staticResolution(StaticContext *context) 
 {
   try {
     m_impl=m_impl->staticResolution(context);

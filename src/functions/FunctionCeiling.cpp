@@ -30,7 +30,7 @@ const unsigned int FunctionCeiling::maxArgs = 1;
  * fn:ceiling($arg as numeric?) as numeric?
  */
 
-FunctionCeiling::FunctionCeiling(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+FunctionCeiling::FunctionCeiling(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : NumericFunction(name, minArgs, maxArgs, "anySimpleType?", args, memMgr)
 {
   _src.getStaticType().flags = StaticResolutionContext::NUMERIC_TYPE;

@@ -36,7 +36,7 @@ public:
   /**
    * Constructor.
    */
-  FunctionReplace(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  FunctionReplace(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   /**
    * Returns $input with non-overlapping matches to $pattern 

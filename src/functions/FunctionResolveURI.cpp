@@ -38,7 +38,7 @@ const unsigned int FunctionResolveURI::maxArgs = 2;
  * fn:resolve-uri($relative as xs:string?, $base as xs:string) as xs:anyURI?
  **/
 
-FunctionResolveURI::FunctionResolveURI(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+FunctionResolveURI::FunctionResolveURI(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "string?, string", args, memMgr) 
 {
 }

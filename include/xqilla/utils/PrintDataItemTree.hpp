@@ -19,29 +19,27 @@
 #include <string>
 
 #include <xqilla/framework/Pathan.hpp>
-#include <xqilla/ast/DataItem.hpp>
+#include <xqilla/ast/ASTNode.hpp>
 #include <xqilla/axis/NodeTest.hpp>
 #include <xqilla/schema/SequenceType.hpp>
 #include <xqilla/operators/GeneralComp.hpp>
-#include <xqilla/ast/DataItemFor.hpp>
 
 class PathanExpression;
-class DataItemFunction;
-class DataItemImpl;
-class DataItemLiteral;
-class DataItemNav;
-class DataItemParenthesizedExpr;
-class DataItemSequence;
-class DataItemStep;
-class DataItemVariable;
-class DataItemIf;
-class DataItemQuantifiedExpr;
-class DataItemInstanceOf;
-class DataItemCastableAs;
-class DataItemCastAs;
-class DataItemTreatAs;
-class DataItemOperator;
-class DataItemContextItem;
+class XQFunction;
+class ASTNodeImpl;
+class XQLiteral;
+class XQNav;
+class XQParenthesizedExpr;
+class XQSequence;
+class XQStep;
+class XQVariable;
+class XQIf;
+class XQInstanceOf;
+class XQCastableAs;
+class XQCastAs;
+class XQTreatAs;
+class XQOperator;
+class XQContextItem;
 class DynamicContext;
 class Item;
 
@@ -49,35 +47,32 @@ class PATHAN_EXPORT PrintDataItemTree
 {
 public:
   static std::string print(const PathanExpression *expr, const DynamicContext *context, int indent = 0);
-  static std::string print(const DataItem *item, const DynamicContext *context, int indent = 0);
+  static std::string print(const ASTNode *item, const DynamicContext *context, int indent = 0);
 
-  virtual std::string printDataItem(const DataItem *item, const DynamicContext *context, int indent = 0);
-  virtual std::string printFunction(const DataItemFunction *item, const DynamicContext *context, int indent);
-  virtual std::string printLiteral(const DataItemLiteral *item, const DynamicContext *context, int indent);
-  virtual std::string printNav(const DataItemNav *item, const DynamicContext *context, int indent);
-  virtual std::string printParenthesized(const DataItemParenthesizedExpr *item, const DynamicContext *context, int indent);
-  virtual std::string printSequence(const DataItemSequence *item, const DynamicContext *context, int indent);
-  virtual std::string printStep(const DataItemStep *item, const DynamicContext *context, int indent);
-  virtual std::string printVariable(const DataItemVariable *item, const DynamicContext *context, int indent);
-  virtual std::string printIf(const DataItemIf *item, const DynamicContext *context, int indent);
-  virtual std::string printFor(const DataItemFor *item, const DynamicContext *context, int indent);
-  virtual std::string printQuantified(const DataItemQuantifiedExpr *item, const DynamicContext *context, int indent);
-  virtual std::string printInstanceOf(const DataItemInstanceOf *item, const DynamicContext *context, int indent);
-  virtual std::string printCastableAs(const DataItemCastableAs *item, const DynamicContext *context, int indent);
-  virtual std::string printCastAs(const DataItemCastAs *item, const DynamicContext *context, int indent);
-  virtual std::string printTreatAs(const DataItemTreatAs *item, const DynamicContext *context, int indent);
-  virtual std::string printOperator(const DataItemOperator *item, const DynamicContext *context, int indent);
-  virtual std::string printContextItem(const DataItemContextItem *item, const DynamicContext *context, int indent);
+  virtual std::string printX(const ASTNode *item, const DynamicContext *context, int indent = 0);
+  virtual std::string printFunction(const XQFunction *item, const DynamicContext *context, int indent);
+  virtual std::string printLiteral(const XQLiteral *item, const DynamicContext *context, int indent);
+  virtual std::string printNav(const XQNav *item, const DynamicContext *context, int indent);
+  virtual std::string printParenthesized(const XQParenthesizedExpr *item, const DynamicContext *context, int indent);
+  virtual std::string printSequence(const XQSequence *item, const DynamicContext *context, int indent);
+  virtual std::string printStep(const XQStep *item, const DynamicContext *context, int indent);
+  virtual std::string printVariable(const XQVariable *item, const DynamicContext *context, int indent);
+  virtual std::string printIf(const XQIf *item, const DynamicContext *context, int indent);
+  virtual std::string printInstanceOf(const XQInstanceOf *item, const DynamicContext *context, int indent);
+  virtual std::string printCastableAs(const XQCastableAs *item, const DynamicContext *context, int indent);
+  virtual std::string printCastAs(const XQCastAs *item, const DynamicContext *context, int indent);
+  virtual std::string printTreatAs(const XQTreatAs *item, const DynamicContext *context, int indent);
+  virtual std::string printOperator(const XQOperator *item, const DynamicContext *context, int indent);
+  virtual std::string printContextItem(const XQContextItem *item, const DynamicContext *context, int indent);
 
   virtual std::string printItem(const Item::Ptr item, const DynamicContext *context, int indent);
-  virtual std::string printVariableBinding(const DataItemFor::VB *binding, const DynamicContext *context, int indent);
   virtual std::string printSequenceType(const SequenceType *type, const DynamicContext *context, int indent);
   virtual std::string printItemTypeAttrs(const SequenceType::ItemType *type, const DynamicContext *context);
-  virtual std::string printPredicates(const DataItemImpl *item, const DynamicContext *context, int indent);
+  virtual std::string printPredicates(const ASTNodeImpl *item, const DynamicContext *context, int indent);
 
-  static bool hasPredicates(const DataItemImpl *item);
+  static bool hasPredicates(const ASTNodeImpl *item);
   static std::string getIndent(int indent);
-  static std::string getAxisName(DataItemStep::Axis axis);
+  static std::string getAxisName(XQStep::Axis axis);
   static std::string getItemTestTypeName(int type);
   static std::string getOccurrenceIndicatorName(SequenceType::OccurrenceIndicator oi);
   static std::string getComparisonOperationName(GeneralComp::ComparisonOperation co);

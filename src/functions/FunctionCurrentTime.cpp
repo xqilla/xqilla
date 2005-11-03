@@ -37,14 +37,14 @@ const unsigned int FunctionCurrentTime::maxArgs = 0;
  * fn:current-time() as xs:time
 **/
 
-FunctionCurrentTime::FunctionCurrentTime(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
-  : DataItemFunction(name, minArgs, maxArgs, "empty()", args, memMgr)
+FunctionCurrentTime::FunctionCurrentTime(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
+  : XQFunction(name, minArgs, maxArgs, "empty()", args, memMgr)
 {
 }
 
-DataItem* FunctionCurrentTime::staticResolution(StaticContext *context) {
+ASTNode* FunctionCurrentTime::staticResolution(StaticContext *context) {
   _src.currentTimeUsed(true);
-  return resolveDataItems(_args, context, false);
+  return resolveASTNodes(_args, context, false);
 }
 
 Sequence FunctionCurrentTime::collapseTreeInternal(DynamicContext* context, int flags) const

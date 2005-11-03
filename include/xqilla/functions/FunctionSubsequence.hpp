@@ -27,7 +27,7 @@ public:
   static const unsigned int minArgs;
   static const unsigned int maxArgs;
 
-  FunctionSubsequence(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  FunctionSubsequence(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   Result createResult(DynamicContext* context, int flags=0) const;
 

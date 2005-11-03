@@ -37,15 +37,15 @@ const unsigned int FunctionMonthFromDateTime::maxArgs = 1;
  * fn:month-from-dateTime($arg as xs:dateTime?) as xs:integer?
  */
 
-FunctionMonthFromDateTime::FunctionMonthFromDateTime(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
-  : DataItemFunction(name, minArgs, maxArgs, "dateTime?", args, memMgr)
+FunctionMonthFromDateTime::FunctionMonthFromDateTime(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
+  : XQFunction(name, minArgs, maxArgs, "dateTime?", args, memMgr)
 {
   _src.getStaticType().flags = StaticResolutionContext::NUMERIC_TYPE;
 }
 
-DataItem* FunctionMonthFromDateTime::staticResolution(StaticContext *context)
+ASTNode* FunctionMonthFromDateTime::staticResolution(StaticContext *context)
 {
-  return resolveDataItemsForDateOrTime(_args, context, true);
+  return resolveASTNodesForDateOrTime(_args, context, true);
 }
 
 Sequence FunctionMonthFromDateTime::collapseTreeInternal(DynamicContext* context, int flags) const

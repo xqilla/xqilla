@@ -34,7 +34,7 @@ public:
   static const unsigned int minArgs;
   static const unsigned int maxArgs;
 
-  FunctionIndexOf(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  FunctionIndexOf(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   /** Returns a sequence of indices where the item occurs in the sequence */
   Sequence indexOf(Sequence &list, const Item::Ptr &item, Collation* collation, DynamicContext* context) const;

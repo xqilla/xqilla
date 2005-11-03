@@ -22,19 +22,19 @@
 
 #include <xqilla/framework/Pathan.hpp>
 
-#include <xqilla/ast/DataItemFunction.hpp>
+#include <xqilla/ast/XQFunction.hpp>
 
 /** Current-dateTime function*/
-class PATHAN_EXPORT FunctionCurrentDateTime : public DataItemFunction
+class PATHAN_EXPORT FunctionCurrentDateTime : public XQFunction
 {
 public:
   static const XMLCh name[];
   static const unsigned int minArgs;
   static const unsigned int maxArgs;
 
-  FunctionCurrentDateTime(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  FunctionCurrentDateTime(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
-  virtual DataItem* staticResolution(StaticContext *context);
+  virtual ASTNode* staticResolution(StaticContext *context);
 
   Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
 };

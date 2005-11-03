@@ -40,16 +40,16 @@ const unsigned int FunctionLocalname::maxArgs = 1;
  * fn:local-name($arg as node()?) as xs:string
 **/
 
-FunctionLocalname::FunctionLocalname(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
-  : DataItemFunction(name, minArgs, maxArgs, "node()?", args, memMgr)
+FunctionLocalname::FunctionLocalname(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
+  : XQFunction(name, minArgs, maxArgs, "node()?", args, memMgr)
 {
 }
 
-DataItem* FunctionLocalname::staticResolution(StaticContext *context) {
+ASTNode* FunctionLocalname::staticResolution(StaticContext *context) {
   if(_args.empty()) {
     _src.contextItemUsed(true);
   }
-  return resolveDataItems(_args, context, !_args.empty());
+  return resolveASTNodes(_args, context, !_args.empty());
 }
 
 Sequence FunctionLocalname::collapseTreeInternal(DynamicContext* context, int flags) const

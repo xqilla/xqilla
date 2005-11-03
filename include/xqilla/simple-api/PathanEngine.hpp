@@ -29,7 +29,7 @@ class XPath2Result;
 class DynamicContext;
 class PathanExpression;
 class PathanNSResolver;
-class DataItem;
+class ASTNode;
 
 XERCES_CPP_NAMESPACE_BEGIN 
 class DOMDocumentType;
@@ -68,7 +68,7 @@ public:
    * @param expression of type XMLCh - The XPath expression string to be parsed.
    * code NAMESPACE_ERR.
    * @param context of type <code>DynamicContext</code> - The static context to use during parsing.
-   * The context must not change or be deleted during the lifetime of the DataItem. If you want
+   * The context must not change or be deleted during the lifetime of the ASTNode. If you want
    * to alter the context to evaluate the expression, obtain a new context using the
    * StaticContext::createDynamicContext() method.
    * @param memMgr of type <code>MemoryManager</code> - The memory manager used to create the
@@ -117,19 +117,19 @@ public:
                                        XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr = XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager);
 
   /**
-   * Creates a parsed XPath2 expression, using the given context. This method returns a DataItem,
+   * Creates a parsed XPath2 expression, using the given context. This method returns a ASTNode,
    * which is the root of the executable parse tree for the expression, and is more flexible than
    * the PathanExpression returned above.
    * @param expression of type XMLCh - The XPath expression string to be parsed.
    * @param context of type <code>DynamicContext</code> - The static context to use during parsing.
-   * The context must not change or be deleted during the lifetime of the DataItem. If you want
+   * The context must not change or be deleted during the lifetime of the ASTNode. If you want
    * to alter the context to evaluate the expression, obtain a new context using the
    * StaticContext::createDynamicContext() method.
    * @param memMgr of type <code>XPath2MemoryManager</code> - The memory manager used to create the
-   * <code>DataItem</code> tree.
-   * @param staticallyResolve of type bool - If set to true, the DataItem returned will have been
-   * statically resolved using the DataItem::staticResolution() method.
-   * @return <code>DataItem</code> The compiled form of the XPath2 expression.
+   * <code>ASTNode</code> tree.
+   * @param staticallyResolve of type bool - If set to true, the ASTNode returned will have been
+   * statically resolved using the ASTNode::staticResolution() method.
+   * @return <code>ASTNode</code> The compiled form of the XPath2 expression.
    * @exception XPathException
    * INVALID_EXPRESSION_ERR: Raised if the expression is not legal according to the 
    * rules of the <code>DOMXPathEvaluator</code>.
@@ -137,7 +137,7 @@ public:
    * NAMESPACE_ERR: Raised if the expression contains namespace prefixes which cannot
    * be resolved by the specified <code>XPathNSResolver</code>.
    */
-  static DataItem* createDataItem(const XMLCh* expression, DynamicContext* context,
+  static ASTNode* createASTNode(const XMLCh* expression, DynamicContext* context,
                                   XPath2MemoryManager *memMgr, bool staticallyResolve = true)
     throw (XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException, XERCES_CPP_NAMESPACE_QUALIFIER DOMException);
 

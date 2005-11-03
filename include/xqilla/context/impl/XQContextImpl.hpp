@@ -17,22 +17,29 @@
 // XQContextImpl.h: interface for the XQContextImpl class.
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_XQCONTEXTIMPL_H__D608B994_E090_4206_9473_81F3D7350410__INCLUDED_)
-#define AFX_XQCONTEXTIMPL_H__D608B994_E090_4206_9473_81F3D7350410__INCLUDED_
+#if !defined(AFXQ_XQCONTEXTIMPL_H__D608B994_E090_4206_9473_81F3D7350410__INCLUDED_)
+#define AFXQ_XQCONTEXTIMPL_H__D608B994_E090_4206_9473_81F3D7350410__INCLUDED_
 
 #include <xqilla/framework/XQEngine.hpp>
 #include <xqilla/context/XQDebugCallback.hpp>
-#include <xqilla/context/XQContext.hpp>
+#include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/schema/DocumentCache.hpp>
 #include <xqilla/utils/XMLChCompare.hpp>
-#include <xqilla/ast/DataItem.hpp>
+#include <xqilla/ast/ASTNode.hpp>
 #include <xqilla/runtime/Sequence.hpp>
 #include <xqilla/framework/ProxyMemoryManager.hpp>
 
-class XQENGINE_API XQContextImpl : public XQContext
+XERCES_CPP_NAMESPACE_BEGIN
+class DOMNode;
+class XMLGrammarPool;
+XERCES_CPP_NAMESPACE_END
+
+class XQENGINE_API XQContextImpl : public DynamicContext
 {
 public:
-  XQContextImpl(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr);
+  XQContextImpl(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr = XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager,
+                XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool* xmlgr = 0,
+                XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* contextNode = 0);
   ~XQContextImpl();
 
   virtual void release();
@@ -200,7 +207,7 @@ public:
   /** adds a custom function to the function table */
   virtual void addCustomFunction(FuncFactory *func);
 	/** returns a function with name name in the namespace represented by prefix */
-  virtual DataItem* lookUpFunction(const XMLCh* prefix, const XMLCh* name, VectorOfDataItems& v) const;
+  virtual ASTNode* lookUpFunction(const XMLCh* prefix, const XMLCh* name, VectorOfASTNodes& v) const;
 
   /** Get the implementation for the specified collation */
   virtual Collation* getCollation(const XMLCh* const URI) const;
@@ -416,4 +423,4 @@ protected:
   XQDebugCallback* m_pDebugCallback;
 };
 
-#endif // !defined(AFX_XQCONTEXTIMPL_H__D608B994_E090_4206_9473_81F3D7350410__INCLUDED_)
+#endif // !defined(AFXQ_XQCONTEXTIMPL_H__D608B994_E090_4206_9473_81F3D7350410__INCLUDED_)

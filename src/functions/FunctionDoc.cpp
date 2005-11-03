@@ -35,17 +35,17 @@ const unsigned int FunctionDoc::maxArgs = 1;
 /**
  * fn:doc($uri as xs:string?) as document?
  **/
-FunctionDoc::FunctionDoc(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
-  : DataItemFunction(name, minArgs, maxArgs, "string?", args, memMgr)
+FunctionDoc::FunctionDoc(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
+  : XQFunction(name, minArgs, maxArgs, "string?", args, memMgr)
 {
 }
 
-DataItem* FunctionDoc::staticResolution(StaticContext *context)
+ASTNode* FunctionDoc::staticResolution(StaticContext *context)
 {
   _src.setProperties(StaticResolutionContext::DOCORDER | StaticResolutionContext::GROUPED | StaticResolutionContext::PEER | StaticResolutionContext::SUBTREE | StaticResolutionContext::ONENODE);
   _src.getStaticType().flags = StaticResolutionContext::NODE_TYPE;
   _src.availableDocumentsUsed(true);
-  return resolveDataItems(_args, context, false);
+  return resolveASTNodes(_args, context, false);
 }
 
 Sequence FunctionDoc::collapseTreeInternal(DynamicContext* context, int flags) const {

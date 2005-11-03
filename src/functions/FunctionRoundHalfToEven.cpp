@@ -36,7 +36,7 @@ const unsigned int FunctionRoundHalfToEven::maxArgs = 2;
  * fn:round-half-to-even($arg as numeric?, $precision as xs:integer) as numeric?
  */
 
-FunctionRoundHalfToEven::FunctionRoundHalfToEven(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+FunctionRoundHalfToEven::FunctionRoundHalfToEven(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : NumericFunction(name, minArgs, maxArgs, "anySimpleType?, integer", args, memMgr)
 {
   _src.getStaticType().flags = StaticResolutionContext::NUMERIC_TYPE;

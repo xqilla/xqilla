@@ -33,7 +33,7 @@ public:
   static const unsigned int maxArgs;
 
   ///Constructor.
-  FunctionConcat(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  FunctionConcat(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
 protected:
   /** concatenates two strings. Takes two strings, and gives a string */

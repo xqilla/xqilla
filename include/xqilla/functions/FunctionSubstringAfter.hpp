@@ -32,7 +32,7 @@ public:
   static const unsigned int minArgs;
   static const unsigned int maxArgs;
 
-  FunctionSubstringAfter(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  FunctionSubstringAfter(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   /** XPath function. returns the substring of the first string following the first occurrence of the second string within that string **/
   Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;

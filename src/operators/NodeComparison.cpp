@@ -26,8 +26,8 @@
 
 /*static*/ const XMLCh NodeComparison::name[]={ XERCES_CPP_NAMESPACE_QUALIFIER chLatin_i, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_s, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
 
-NodeComparison::NodeComparison(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
-  : DataItemOperator(name, args, memMgr)
+NodeComparison::NodeComparison(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
+  : XQOperator(name, args, memMgr)
 {
 }
 

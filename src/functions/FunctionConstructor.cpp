@@ -69,7 +69,7 @@ const XMLCh szColon[] = { XERCES_CPP_NAMESPACE_QUALIFIER chLatin_h, XERCES_CPP_N
 
 FunctionConstructor::FunctionConstructor(const XMLCh* nsURI, const XMLCh* typeName,
                                          AnyAtomicType::AtomicObjectType primitiveType,
-                                         const VectorOfDataItems &args, XPath2MemoryManager* memMgr) 
+                                         const VectorOfASTNodes &args, XPath2MemoryManager* memMgr) 
 : ConstantFoldingFunction( typeName, 1, 1, "item()", args, memMgr)
 {
   _fURI=nsURI;

@@ -52,7 +52,7 @@ const unsigned int FunctionDeepEqual::maxArgs = 3;
  * fn:deep-equal($parameter1 as item()*, $parameter2 as item()*, $collation as string) as xs:boolean
 **/
 
-FunctionDeepEqual::FunctionDeepEqual(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+FunctionDeepEqual::FunctionDeepEqual(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "item()*,item()*,string", args, memMgr)
 {
 }

@@ -35,7 +35,7 @@ public:
   /**
    * Constructor.
    */
-  FunctionTimezoneFromDateTime(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  FunctionTimezoneFromDateTime(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
 
   /**
    * Returns a string representing the timezone component in the value of

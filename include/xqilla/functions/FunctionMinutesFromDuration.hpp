@@ -35,7 +35,7 @@ public:
   /**
    * Constructor.
    */
-  FunctionMinutesFromDuration(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  FunctionMinutesFromDuration(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
 
   /**
    * Returns an integer representing the minutes component in the value

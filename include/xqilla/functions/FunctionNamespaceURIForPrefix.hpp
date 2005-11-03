@@ -31,7 +31,7 @@ public:
   static const unsigned int minArgs;
   static const unsigned int maxArgs;
 
-  FunctionNamespaceURIForPrefix(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  FunctionNamespaceURIForPrefix(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   /** Given a uri and a name, it returns an expanded QName **/
   Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;

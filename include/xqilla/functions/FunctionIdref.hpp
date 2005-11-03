@@ -19,7 +19,7 @@
 #include <xqilla/framework/Pathan.hpp>
 #include <xercesc/dom/DOMNodeFilter.hpp>
 
-#include <xqilla/ast/DataItemFunction.hpp>
+#include <xqilla/ast/XQFunction.hpp>
 #include <xqilla/runtime/Sequence.hpp>
 #include <vector>
 
@@ -29,7 +29,7 @@
  * fn:idref(string* $srcval) => element*
  *
  */
-class PATHAN_EXPORT FunctionIdref : public DataItemFunction
+class PATHAN_EXPORT FunctionIdref : public XQFunction
 {
 public:
   static const XMLCh name[];
@@ -39,9 +39,9 @@ public:
   /**
    * Constructor
    */
-  FunctionIdref(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  FunctionIdref(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
-  virtual DataItem* staticResolution(StaticContext *context);
+  virtual ASTNode* staticResolution(StaticContext *context);
 
   /** 
    * Returns the sequence of elements nodes having either an IDREF attribute 

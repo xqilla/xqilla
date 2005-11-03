@@ -24,26 +24,26 @@
 
 #include <xqilla/framework/Pathan.hpp>
 
-#include <xqilla/ast/DataItemFunction.hpp>
+#include <xqilla/ast/XQFunction.hpp>
 
 class AnyAtomicType;
 
 /** Number operator function, and exists functions. */
-class PATHAN_EXPORT FunctionNumber : public DataItemFunction
+class PATHAN_EXPORT FunctionNumber : public XQFunction
 {
 public:
   static const XMLCh name[];
   static const unsigned int minArgs;
   static const unsigned int maxArgs;
 
-  FunctionNumber(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  FunctionNumber(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   /**
    * Called during static analysis to determine if statically correct.
    * Performs constant folding if the function has an argument, and it
    * is constant.
    */
-  virtual DataItem* staticResolution(StaticContext *context);
+  virtual ASTNode* staticResolution(StaticContext *context);
 
   /** Returns the argument as a number **/
   Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;

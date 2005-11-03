@@ -29,24 +29,24 @@
 #include <xercesc/validators/schema/SchemaGrammar.hpp>
 #include <xercesc/validators/common/ContentSpecNode.hpp>
 #include <xqilla/ast/StaticResolutionContext.hpp>
-#include <xqilla/ast/DataItemSequence.hpp>
+#include <xqilla/ast/XQSequence.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 
 ////////////////////////////////////////////////////////////////////////////////////////
 //
 //
 
-XQValidate::XQValidate(DataItem* valExpr, DocumentCache::ValidationMode valMode, XPath2MemoryManager* expr)
-  : DataItemImpl(expr)
+XQValidate::XQValidate(ASTNode* valExpr, DocumentCache::ValidationMode valMode, XPath2MemoryManager* expr)
+  : ASTNodeImpl(expr)
 {
   _expr=valExpr;
   _validationMode=valMode;
-  setType((DataItem::whichType)XQContext::VALIDATE);
+  setType(ASTNode::VALIDATE);
 }
 
 Sequence XQValidate::collapseTreeInternal(DynamicContext* context, int flags) const
 {
-  Result toBeValidated = _expr->collapseTree(context, DataItem::UNORDERED|DataItem::RETURN_TWO);
+  Result toBeValidated = _expr->collapseTree(context, ASTNode::UNORDERED|ASTNode::RETURN_TWO);
   const Item::Ptr first = toBeValidated.next(context);
   const Item::Ptr second = toBeValidated.next(context);
 
@@ -66,7 +66,7 @@ Sequence XQValidate::collapseTreeInternal(DynamicContext* context, int flags) co
   return Sequence(validatedElt, context->getMemoryManager());
 }
 
-DataItem* XQValidate::staticResolution(StaticContext* ctx)
+ASTNode* XQValidate::staticResolution(StaticContext* ctx)
 {
   _expr = _expr->staticResolution(ctx);
   _src.add(_expr->getStaticResolutionContext());
@@ -76,7 +76,7 @@ DataItem* XQValidate::staticResolution(StaticContext* ctx)
   return resolvePredicates(ctx); // Never constant fold
 }
 
-const DataItem *XQValidate::getExpression() const
+const ASTNode *XQValidate::getExpression() const
 {
   return _expr;
 }
@@ -86,7 +86,7 @@ DocumentCache::ValidationMode XQValidate::getValidationMode() const
   return _validationMode;
 }
 
-void XQValidate::setExpression(DataItem *expr)
+void XQValidate::setExpression(ASTNode *expr)
 {
   _expr = expr;
 }

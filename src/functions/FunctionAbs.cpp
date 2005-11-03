@@ -30,7 +30,7 @@ const unsigned int FunctionAbs::maxArgs = 1;
  * fn:abs($arg as numeric?) as numeric?
  */
 
-FunctionAbs::FunctionAbs(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+FunctionAbs::FunctionAbs(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : NumericFunction(name, minArgs, maxArgs, "anySimpleType?", args, memMgr)
 {
   _src.getStaticType().flags = StaticResolutionContext::NUMERIC_TYPE;

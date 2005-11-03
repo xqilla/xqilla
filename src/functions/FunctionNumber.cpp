@@ -38,17 +38,17 @@ const unsigned int FunctionNumber::maxArgs = 1;
  * fn:number($arg as anyAtomicType?) as xs:double
 **/
 
-FunctionNumber::FunctionNumber(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
-  : DataItemFunction(name, minArgs, maxArgs, "anyAtomicType?", args, memMgr)
+FunctionNumber::FunctionNumber(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
+  : XQFunction(name, minArgs, maxArgs, "anyAtomicType?", args, memMgr)
 {
   _src.getStaticType().flags = StaticResolutionContext::NUMERIC_TYPE;
 }
 
-DataItem* FunctionNumber::staticResolution(StaticContext *context) {
+ASTNode* FunctionNumber::staticResolution(StaticContext *context) {
   if(_args.empty()) {
     _src.contextItemUsed(true);
   }
-  return resolveDataItems(_args, context, !_args.empty());
+  return resolveASTNodes(_args, context, !_args.empty());
 }
 
 Sequence FunctionNumber::collapseTreeInternal(DynamicContext* context, int flags) const

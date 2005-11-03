@@ -45,16 +45,16 @@ const unsigned int FunctionAdjustDateTimeToTimezone::maxArgs = 2;
  * fn:adjust-dateTime-to-timezone($arg as xs:dateTime?, $timezone as xdt:dayTimeDuration?) as xs:dateTime?
  */
 
-FunctionAdjustDateTimeToTimezone::FunctionAdjustDateTimeToTimezone(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
-  : DataItemFunction(name, minArgs, maxArgs, "dateTime?, dayTimeDuration?", args, memMgr)
+FunctionAdjustDateTimeToTimezone::FunctionAdjustDateTimeToTimezone(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
+  : XQFunction(name, minArgs, maxArgs, "dateTime?, dayTimeDuration?", args, memMgr)
 {
 }
 
-DataItem* FunctionAdjustDateTimeToTimezone::staticResolution(StaticContext *context) {
+ASTNode* FunctionAdjustDateTimeToTimezone::staticResolution(StaticContext *context) {
   if(getNumArgs() == 1) {
     _src.implicitTimezoneUsed(true);
   }
-  return resolveDataItems(_args, context, getNumArgs() > 1);
+  return resolveASTNodes(_args, context, getNumArgs() > 1);
 }
 
 Sequence FunctionAdjustDateTimeToTimezone::collapseTreeInternal(DynamicContext* context, int flags) const

@@ -13,8 +13,8 @@
  * $Id$
  */
 
-#if !defined(AFX_NORMALIZER_H__6BA76C4A_0A5B_480B_9870_86A89A118100__INCLUDED_)
-#define AFX_NORMALIZER_H__6BA76C4A_0A5B_480B_9870_86A89A118100__INCLUDED_
+#if !defined(AFXQ_NORMALIZER_H__6BA76C4A_0A5B_480B_9870_86A89A118100__INCLUDED_)
+#define AFXQ_NORMALIZER_H__6BA76C4A_0A5B_480B_9870_86A89A118100__INCLUDED_
 
 #include <xqilla/framework/Pathan.hpp>
 #include <xercesc/util/XercesDefs.hpp>
@@ -49,4 +49,4 @@ public:
 	static const XMLCh* NormalizeKD(const XMLCh* source, XPath2MemoryManager* memMgr);
 };
 
-#endif // !defined(AFX_NORMALIZER_H__6BA76C4A_0A5B_480B_9870_86A89A118100__INCLUDED_)
+#endif // !defined(AFXQ_NORMALIZER_H__6BA76C4A_0A5B_480B_9870_86A89A118100__INCLUDED_)

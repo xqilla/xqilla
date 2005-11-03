@@ -33,7 +33,7 @@ public:
   virtual void insertFunction(FuncFactory *func);
 
   ///returns the approriate Function object
-  virtual DataItem* lookUpFunction(const XMLCh* URI, const XMLCh* fname, const VectorOfDataItems &args, XPath2MemoryManager* memMgr) const;
+  virtual ASTNode* lookUpFunction(const XMLCh* URI, const XMLCh* fname, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr) const;
 
   /// returns all the defined functions
   virtual std::vector< std::pair<const XMLCh*,const XMLCh*> > getFunctions() const;

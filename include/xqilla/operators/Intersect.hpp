@@ -24,14 +24,14 @@ The intersect operator takes two node sequences as operands and returns a sequen
 
 #include <xqilla/framework/Pathan.hpp>
 
-#include <xqilla/ast/DataItemOperator.hpp>
+#include <xqilla/ast/XQOperator.hpp>
 
-class PATHAN_EXPORT Intersect : public DataItemOperator
+class PATHAN_EXPORT Intersect : public XQOperator
 {
 public:
   static const XMLCh name[];
 
-  Intersect(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  Intersect(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   /** exectutes the operator*/
   Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;

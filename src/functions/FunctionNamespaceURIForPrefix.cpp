@@ -49,7 +49,7 @@ const unsigned int FunctionNamespaceURIForPrefix::maxArgs = 2;
  * by its namespace prefix.
 **/
 
-FunctionNamespaceURIForPrefix::FunctionNamespaceURIForPrefix(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+FunctionNamespaceURIForPrefix::FunctionNamespaceURIForPrefix(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "string, element()", args, memMgr)
 {
 }

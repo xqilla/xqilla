@@ -17,8 +17,8 @@
 // XQQuery.h: interface for the XQQuery class.
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_XQQUERY_H__FAA9933A_2F10_49A4_93A2_857E2A8C48E3__INCLUDED_)
-#define AFX_XQQUERY_H__FAA9933A_2F10_49A4_93A2_857E2A8C48E3__INCLUDED_
+#if !defined(AFXQ_XQUERY_H__FAA9933A_2F10_49A4_93A2_857E2A8C48E3__INCLUDED_)
+#define AFXQ_XQUERY_H__FAA9933A_2F10_49A4_93A2_857E2A8C48E3__INCLUDED_
 
 #include <xqilla/framework/XQEngine.hpp>
 #include <vector>
@@ -28,10 +28,9 @@
 #include <xqilla/runtime/LazySequenceResult.hpp>
 #include <xqilla/context/StaticContext.hpp>
 
-class XQContext;
-class XQFunction;
+class DynamicContext;
+class XQUserFunction;
 class XQGlobalVariable;
-class DataItem;
 class StaticResolutionContext;
 
 class XQENGINE_API XQQuery : public XERCES_CPP_NAMESPACE_QUALIFIER XMemory
@@ -39,8 +38,8 @@ class XQENGINE_API XQQuery : public XERCES_CPP_NAMESPACE_QUALIFIER XMemory
 public:
 	XQQuery(const XMLCh* queryText, XPath2MemoryManager* memMgr);
 
-  Result evaluate(XQContext* context) const;
-  void staticResolution(XQContext *context);
+  Result evaluate(DynamicContext* context) const;
+  void staticResolution(StaticContext *context);
 
 	// Module stuff
 	void setIsLibraryModule(bool bIsModule=true);
@@ -49,10 +48,10 @@ public:
 	const XMLCh* getModuleTargetNamespace() const;
 	void importModule(const XMLCh* szUri, VectorOfStrings* locations, StaticContext* context);
 
-	DataItem* getQueryBody() const;
-	void setQueryBody(DataItem* query);
+	ASTNode* getQueryBody() const;
+	void setQueryBody(ASTNode* query);
 
-	void addFunction(XQFunction* fnDef);
+	void addFunction(XQUserFunction* fnDef);
 	void addVariable(XQGlobalVariable* varDef);
 
     const XMLCh* getFile() const;
@@ -60,7 +59,7 @@ public:
 
     const XMLCh* getQueryText() const;
 
-    std::vector<XQFunction*, PathanAllocator<XQFunction*> > m_userDefFns;
+    std::vector<XQUserFunction*, PathanAllocator<XQUserFunction*> > m_userDefFns;
 	std::vector<XQGlobalVariable*, PathanAllocator<XQGlobalVariable*> > m_userDefVars;
 
 protected:
@@ -90,7 +89,7 @@ protected:
     const XQQuery *_query;
   };
 
-	DataItem* m_query;
+	ASTNode* m_query;
 	bool m_bIsLibraryModule;
 	const XMLCh* m_szTargetNamespace;
     const XMLCh* m_szQueryText;
@@ -98,4 +97,4 @@ protected:
     XPath2MemoryManager* m_memMgr;
 };
 
-#endif // !defined(AFX_XQQUERY_H__FAA9933A_2F10_49A4_93A2_857E2A8C48E3__INCLUDED_)
+#endif // !defined(AFXQ_XQUERY_H__FAA9933A_2F10_49A4_93A2_857E2A8C48E3__INCLUDED_)

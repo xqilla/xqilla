@@ -30,7 +30,7 @@
 XQVariableBinding::XQVariableBinding(XPath2MemoryManager* memMgr, 
                                      BindingType bindingType, 
                                      const XMLCh* variable, 
-                                     DataItem* allValues, 
+                                     ASTNode* allValues, 
                                      const XMLCh* positionalVariable/*=NULL*/,
                                      SequenceType* seqType/*=NULL*/)
   : _bindingType(bindingType),
@@ -74,21 +74,21 @@ XQVariableBinding::XQVariableBinding(XPath2MemoryManager *memMgr, const XQVariab
 {
 }
 
-void XQVariableBinding::addWhereCondition(DataItem *condition)
+void XQVariableBinding::addWhereCondition(ASTNode *condition)
 {
   if(!_where) {
     // Set the where condition
     _where = condition;
   }
-  else if(_where->getType()==DataItem::OPERATOR &&
-          XPath2Utils::equals(((DataItemOperator *)_where)->getOperatorName(), And::name)) {
+  else if(_where->getType()==ASTNode::OPERATOR &&
+          XPath2Utils::equals(((XQOperator *)_where)->getOperatorName(), And::name)) {
     // Add an argument to the existing And
     And* fAnd = (And*)_where;
     fAnd->addArgument(condition);
   }
   else {
     // Change the where expression to an And, and add the two conditions to it as arguments
-    VectorOfDataItems args(2, (DataItem*)0 ,PathanAllocator<DataItem*>(_memMgr));
+    VectorOfASTNodes args(2, (ASTNode*)0 ,PathanAllocator<ASTNode*>(_memMgr));
     args[0] = _where;
     args[1] = condition;
     _where = new (_memMgr) And(args, _memMgr);

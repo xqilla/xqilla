@@ -18,14 +18,14 @@
 
 #include <xqilla/framework/Pathan.hpp>
 
-#include <xqilla/ast/DataItemFunction.hpp>
+#include <xqilla/ast/XQFunction.hpp>
 
 /**
  * Getter function for minutes component of time.
  *
  * xf:minutes-from-time(time? $srcval) => integer?
  */
-class PATHAN_EXPORT FunctionMinutesFromTime : public DataItemFunction
+class PATHAN_EXPORT FunctionMinutesFromTime : public XQFunction
 {
 public:
   static const XMLCh name[];
@@ -35,9 +35,9 @@ public:
   /**
    * Constructor
    */
-  FunctionMinutesFromTime(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  FunctionMinutesFromTime(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
 
-  DataItem* staticResolution(StaticContext *context);
+  ASTNode* staticResolution(StaticContext *context);
 
   /**
    * Returns the integer representing the minutes in the value of $srcval

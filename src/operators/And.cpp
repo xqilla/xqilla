@@ -18,17 +18,16 @@
 
 #include <xqilla/operators/And.hpp>
 #include <xqilla/context/DynamicContext.hpp>
-#include <xqilla/context/impl/DynamicContextImpl.hpp>
 #include <xqilla/items/ATBooleanOrDerived.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/ast/StaticResolutionContext.hpp>
-#include <xqilla/ast/DataItemSequence.hpp>
+#include <xqilla/ast/XQSequence.hpp>
 #include <xqilla/context/PathanFactory.hpp>
 
 /*static*/ const XMLCh And::name[]={ XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_d, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
 
-And::And(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
-  : DataItemOperator(name, args, memMgr)
+And::And(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
+  : XQOperator(name, args, memMgr)
 {
 }
 
@@ -37,11 +36,11 @@ Result And::createResult(DynamicContext* context, int flags) const
   return new AndResult(this, context);
 }
 
-DataItem* And::staticResolution(StaticContext *context)
+ASTNode* And::staticResolution(StaticContext *context)
 {
-  VectorOfDataItems newArgs(PathanAllocator<DataItem*>(context->getMemoryManager()));
+  VectorOfASTNodes newArgs(PathanAllocator<ASTNode*>(context->getMemoryManager()));
 
-  for(VectorOfDataItems::iterator i = _args.begin(); i != _args.end(); ++i) {
+  for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
     *i = (*i)->staticResolution(context);
     const StaticResolutionContext &valueSrc = (*i)->getStaticResolutionContext();
 
@@ -52,10 +51,10 @@ DataItem* And::staticResolution(StaticContext *context)
     else {
       AutoRelease<DynamicContext> dContext(context->createDynamicContext());
       dContext->setMemoryManager(context->getMemoryManager());
-      if(!(*i)->collapseTree(dContext, DataItem::UNORDERED | DataItem::RETURN_TWO).getEffectiveBooleanValue(dContext)) {
+      if(!(*i)->collapseTree(dContext, ASTNode::UNORDERED | ASTNode::RETURN_TWO).getEffectiveBooleanValue(dContext)) {
         // It's constantly false, so this expression is false
-        DataItem* newBlock = new (getMemoryManager())
-          DataItemSequence(dContext->getPathanFactory()->createBoolean(false, dContext),
+        ASTNode* newBlock = new (getMemoryManager())
+          XQSequence(dContext->getPathanFactory()->createBoolean(false, dContext),
                            dContext, getMemoryManager());
         newBlock->addPredicates(_predList);
         return newBlock->staticResolution(context);
@@ -77,7 +76,7 @@ Item::Ptr And::AndResult::getSingleResult(DynamicContext *context) const
 {
   unsigned int numArgs=_op->getNumArgs();
   for(unsigned int i=0;i<numArgs;i++) {
-    if(!_op->getArgument(i)->collapseTree(context, DataItem::UNORDERED | DataItem::RETURN_TWO).getEffectiveBooleanValue(context)) {
+    if(!_op->getArgument(i)->collapseTree(context, ASTNode::UNORDERED | ASTNode::RETURN_TWO).getEffectiveBooleanValue(context)) {
       return (const Item::Ptr)context->getPathanFactory()->createBoolean(false, context);
     }
   }

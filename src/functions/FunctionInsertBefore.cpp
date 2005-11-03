@@ -38,7 +38,7 @@ const unsigned int FunctionInsertBefore::maxArgs = 3;
  * fn:insert-before($target as item()*, $position as xs:integer, $inserts as item()*) as item()*
  */
 
-FunctionInsertBefore::FunctionInsertBefore(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+FunctionInsertBefore::FunctionInsertBefore(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "item()*, integer, item()*", args, memMgr)
 {
   // TBD - could do better here - jpcs

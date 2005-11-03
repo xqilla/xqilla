@@ -23,7 +23,7 @@
 #include <xqilla/context/impl/XQContextImpl.hpp>
 #include <xqilla/ast/XQDebugHook.hpp>
 #include <xqilla/context/impl/XQDynamicContextImpl.hpp>
-#include <xqilla/functions/XQFunction.hpp>
+#include <xqilla/ast/XQFunction.hpp>
 #include <xqilla/context/impl/XQFactoryImpl.hpp>
 #include <xercesc/dom/DOMImplementation.hpp>
 #include <xercesc/dom/DOM.hpp>
@@ -34,10 +34,9 @@
 
 #include <xqilla/items/Node.hpp>
 #include <xqilla/functions/FunctionLookup.hpp>
-#include <xqilla/ast/DataItemFunction.hpp>
 #include <xqilla/functions/FunctionConstructor.hpp>
 #include <xqilla/dom-api/impl/PathanNSResolverImpl.hpp>
-#include <xqilla/ast/DataItemSequence.hpp>
+#include <xqilla/ast/XQSequence.hpp>
 #include <xqilla/utils/ContextUtils.hpp>
 
 #include <xqilla/context/VariableStore.hpp>
@@ -53,7 +52,7 @@
 #include <xqilla/items/Node.hpp>
 #include <xqilla/items/ATDurationOrDerived.hpp>
 #include <xqilla/items/Timezone.hpp>
-#include <xqilla/ast/DataItemFunction.hpp>
+#include <xqilla/functions/XQUserFunction.hpp>
 #include <xqilla/items/DatatypeLookup.hpp>
 #include <xqilla/functions/FunctionLookup.hpp>
 #include <xqilla/functions/FunctionConstructor.hpp>
@@ -62,7 +61,7 @@
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/context/URIResolver.hpp>
 #include <xqilla/exceptions/XMLParseException.hpp>
-#include <xqilla/context/impl/DynamicContextImpl.hpp>
+#include <xqilla/context/impl/XQDynamicContextImpl.hpp>
 #include <xqilla/items/impl/NodeImpl.hpp>
 
 //////////////////////////////////////////////////////////////////////
@@ -79,7 +78,9 @@ const XMLCh XMLChLOCAL[] = { XERCES_CPP_NAMESPACE_QUALIFIER chLatin_l, XERCES_CP
 
 static CodepointCollation g_codepointCollation;
 
-XQContextImpl::XQContextImpl(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr)
+XQContextImpl::XQContextImpl(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr,
+                             XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool* xmlgr,
+                             XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* contextNode)
   : _createdWith(memMgr),
     _internalMM(memMgr),
     _varTypeStore(0),
@@ -103,8 +104,13 @@ XQContextImpl::XQContextImpl(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMg
 
   _defaultElementNS = 0;
   // by default, the default namespace for functions is the XPath2 namespace
-  _functionNS = DataItemFunction::XMLChFunctionURI;
-  _docCache=new (&_internalMM) DocumentCacheImpl(&_internalMM);
+  _functionNS = XQFunction::XMLChFunctionURI;
+
+  if(xmlgr)
+    _docCache=new (&_internalMM) DocumentCacheImpl(&_internalMM, xmlgr);
+  else 
+    _docCache=new (&_internalMM) DocumentCacheImpl(&_internalMM);
+
   if(_varStore==NULL)
     _varStore=_internalMM.createVariableStore();
   if(_varTypeStore==NULL)
@@ -118,18 +124,30 @@ XQContextImpl::XQContextImpl(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMg
   addCollation(_internalMM.createCollation(&g_codepointCollation));
   setDefaultCollation(g_codepointCollation.getCollationName());
 
-  _baseURI=0;
-
   _flworOrderingMode = FLWOR_ORDER_EMPTY_LEAST; // implementation-defined
 
   _bInheritNamespaces = true;
   _bPreserveNamespaces = true;
 
+  if(contextNode==0)
+		_baseURI=0;
+  else {
+    if(contextNode->getNodeType() == XERCES_CPP_NAMESPACE_QUALIFIER DOMNode::DOCUMENT_NODE) {
+      _baseURI = _internalMM.getPooledString(contextNode->getBaseURI());
+    } else {
+      _baseURI = _internalMM.getPooledString(contextNode->getOwnerDocument()->getBaseURI());
+    }
+  }
+
   ////////////////////////
   // Evaluation context //
   ////////////////////////
 
-  _contextItem = NULL;
+  if(contextNode!=NULL)
+    setExternalContextNode(contextNode);
+  else
+    _contextItem = NULL;
+
   _contextPosition = 1;
   _contextSize = 1;
   time(&_currentTime);
@@ -145,9 +163,9 @@ XQContextImpl::XQContextImpl(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMg
   setNamespaceBinding(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgXMLString, XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgXMLURIName);
   setNamespaceBinding(XMLChXS, XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA);
   setNamespaceBinding(XMLChXSI, XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_XSI);
-  setNamespaceBinding(XMLChFN, DataItemFunction::XMLChFunctionURI);
+  setNamespaceBinding(XMLChFN, XQFunction::XMLChFunctionURI);
   setNamespaceBinding(XMLChXDT, FunctionConstructor::XMLChXPath2DatatypesURI);
-  setNamespaceBinding(XMLChLOCAL, XQFunction::XMLChXQueryLocalFunctionsURI);
+  setNamespaceBinding(XMLChLOCAL, XQUserFunction::XMLChXQueryLocalFunctionsURI);
 }
 
 XQContextImpl::~XQContextImpl()
@@ -277,7 +295,7 @@ void XQContextImpl::setBaseURI(const XMLCh* newURI)
 	_baseURI = _internalMM.getPooledString(newURI);
 }
 
-XQStaticContext::ConstructionMode XQContextImpl::getConstructionMode() const
+StaticContext::ConstructionMode XQContextImpl::getConstructionMode() const
 {
     return _constructionMode;
 }
@@ -297,12 +315,12 @@ void XQContextImpl::setNodeSetOrdering(NodeSetOrdering newOrder)
     _ordering=newOrder;
 }
 
-XQStaticContext::FLWOROrderingMode XQContextImpl::getDefaultFLWOROrderingMode() const
+StaticContext::FLWOROrderingMode XQContextImpl::getDefaultFLWOROrderingMode() const
 {
     return _flworOrderingMode;
 }
 
-void XQContextImpl::setDefaultFLWOROrderingMode(XQStaticContext::FLWOROrderingMode newMode)
+void XQContextImpl::setDefaultFLWOROrderingMode(StaticContext::FLWOROrderingMode newMode)
 {
     _flworOrderingMode=newMode;
 }
@@ -452,7 +470,7 @@ Collation* XQContextImpl::getDefaultCollation() const
   return getCollation(_defaultCollation);
 }
 
-DataItem* XQContextImpl::lookUpFunction(const XMLCh* prefix, const XMLCh* name, VectorOfDataItems& v) const
+ASTNode* XQContextImpl::lookUpFunction(const XMLCh* prefix, const XMLCh* name, VectorOfASTNodes& v) const
 {
 	const XMLCh* uri;
 
@@ -471,7 +489,7 @@ DataItem* XQContextImpl::lookUpFunction(const XMLCh* prefix, const XMLCh* name, 
 		}
 	}
 
-	DataItem* functionImpl=_functionTable->lookUpFunction(uri, name, v, getMemoryManager());
+	ASTNode* functionImpl=_functionTable->lookUpFunction(uri, name, v, getMemoryManager());
 
     if(functionImpl == NULL && v.size() == 1)
     {

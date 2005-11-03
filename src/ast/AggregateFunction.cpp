@@ -32,7 +32,7 @@
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 #include <xercesc/util/XMLString.hpp>
 
-AggregateFunction::AggregateFunction(const XMLCh* name, unsigned int argsFrom, unsigned int argsTo, const char* paramDecl, const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+AggregateFunction::AggregateFunction(const XMLCh* name, unsigned int argsFrom, unsigned int argsTo, const char* paramDecl, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   :  ConstantFoldingFunction(name,argsFrom, argsTo, paramDecl, args, memMgr)
 { 
 }

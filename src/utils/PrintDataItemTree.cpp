@@ -21,23 +21,22 @@
 #include <xqilla/utils/UTF8Str.hpp>
 
 #include <xqilla/dom-api/impl/PathanExpressionImpl.hpp>
-#include <xqilla/ast/DataItem.hpp>
-#include <xqilla/ast/DataItemFunction.hpp>
-#include <xqilla/ast/DataItemImpl.hpp>
-#include <xqilla/ast/DataItemLiteral.hpp>
-#include <xqilla/ast/DataItemNav.hpp>
-#include <xqilla/ast/DataItemParenthesizedExpr.hpp>
-#include <xqilla/ast/DataItemSequence.hpp>
-#include <xqilla/ast/DataItemStep.hpp>
-#include <xqilla/ast/DataItemVariable.hpp>
-#include <xqilla/ast/DataItemIf.hpp>
-#include <xqilla/ast/DataItemQuantifiedExpr.hpp>
-#include <xqilla/ast/DataItemInstanceOf.hpp>
-#include <xqilla/ast/DataItemCastableAs.hpp>
-#include <xqilla/ast/DataItemCastAs.hpp>
-#include <xqilla/ast/DataItemTreatAs.hpp>
-#include <xqilla/ast/DataItemOperator.hpp>
-#include <xqilla/ast/DataItemContextItem.hpp>
+#include <xqilla/ast/ASTNode.hpp>
+#include <xqilla/ast/XQFunction.hpp>
+#include <xqilla/ast/ASTNodeImpl.hpp>
+#include <xqilla/ast/XQLiteral.hpp>
+#include <xqilla/ast/XQNav.hpp>
+#include <xqilla/ast/XQParenthesizedExpr.hpp>
+#include <xqilla/ast/XQSequence.hpp>
+#include <xqilla/ast/XQStep.hpp>
+#include <xqilla/ast/XQVariable.hpp>
+#include <xqilla/ast/XQIf.hpp>
+#include <xqilla/ast/XQInstanceOf.hpp>
+#include <xqilla/ast/XQCastableAs.hpp>
+#include <xqilla/ast/XQCastAs.hpp>
+#include <xqilla/ast/XQTreatAs.hpp>
+#include <xqilla/ast/XQOperator.hpp>
+#include <xqilla/ast/XQContextItem.hpp>
 #include <xqilla/schema/SequenceType.hpp>
 #include <xqilla/parser/QName.hpp>
 #include <xqilla/context/DynamicContext.hpp>
@@ -61,77 +60,69 @@ string PrintDataItemTree::print(const PathanExpression *expr, const DynamicConte
   return print(((const PathanExpressionImpl *)expr)->getCompiledExpression(), context, indent);
 }
 
-string PrintDataItemTree::print(const DataItem *item, const DynamicContext *context, int indent)
+string PrintDataItemTree::print(const ASTNode *item, const DynamicContext *context, int indent)
 {
   PrintDataItemTree p;
-  return p.printDataItem(item, context, indent);
+  return p.printX(item, context, indent);
 }
 
-string PrintDataItemTree::printDataItem(const DataItem *item, const DynamicContext *context, int indent)
+string PrintDataItemTree::printX(const ASTNode *item, const DynamicContext *context, int indent)
 {
   switch(item->getType()) {
-  case DataItem::LITERAL: {
-    return printLiteral((DataItemLiteral *)item, context, indent);
+  case ASTNode::LITERAL: {
+    return printLiteral((XQLiteral *)item, context, indent);
     break;
   }
-  case DataItem::SEQUENCE: {
-    return printSequence((DataItemSequence *)item, context, indent);
+  case ASTNode::SEQUENCE: {
+    return printSequence((XQSequence *)item, context, indent);
     break;
   }
-  case DataItem::FUNCTION: {
-    return printFunction((DataItemFunction *)item, context, indent);
+  case ASTNode::FUNCTION: {
+    return printFunction((XQFunction *)item, context, indent);
     break;
   }
-  case DataItem::NAVIGATION: {
-    return printNav((DataItemNav *)item, context, indent);
+  case ASTNode::NAVIGATION: {
+    return printNav((XQNav *)item, context, indent);
     break;
   }
-  case DataItem::VARIABLE: {
-    return printVariable((DataItemVariable *)item, context, indent);
+  case ASTNode::VARIABLE: {
+    return printVariable((XQVariable *)item, context, indent);
     break;
   }
-  case DataItem::STEP: {
-    return printStep((DataItemStep *)item, context, indent);
+  case ASTNode::STEP: {
+    return printStep((XQStep *)item, context, indent);
     break;
   }
-  case DataItem::IF: {
-    return printIf((DataItemIf *)item, context, indent);
+  case ASTNode::IF: {
+    return printIf((XQIf *)item, context, indent);
     break;
   }
-  case DataItem::INSTANCE_OF: {
-    return printInstanceOf((DataItemInstanceOf *)item, context, indent);
+  case ASTNode::INSTANCE_OF: {
+    return printInstanceOf((XQInstanceOf *)item, context, indent);
     break;
   }
-  case DataItem::CASTABLE_AS: {
-    return printCastableAs((DataItemCastableAs *)item, context, indent);
+  case ASTNode::CASTABLE_AS: {
+    return printCastableAs((XQCastableAs *)item, context, indent);
     break;
   }
-  case DataItem::CAST_AS: {
-    return printCastAs((DataItemCastAs *)item, context, indent);
+  case ASTNode::CAST_AS: {
+    return printCastAs((XQCastAs *)item, context, indent);
     break;
   }
-  case DataItem::TREAT_AS: {
-    return printTreatAs((DataItemTreatAs *)item, context, indent);
+  case ASTNode::TREAT_AS: {
+    return printTreatAs((XQTreatAs *)item, context, indent);
     break;
   }
-  case DataItem::PARENTHESIZED: {
-    return printParenthesized((DataItemParenthesizedExpr *)item, context, indent);
+  case ASTNode::PARENTHESIZED: {
+    return printParenthesized((XQParenthesizedExpr *)item, context, indent);
     break;
   }
-  case DataItem::FOR: {
-    return printFor((DataItemFor *)item, context, indent);
+  case ASTNode::OPERATOR: {
+    return printOperator((XQOperator *)item, context, indent);
     break;
   }
-  case DataItem::QUANTIFIED: {
-    return printQuantified((DataItemQuantifiedExpr *)item, context, indent);
-    break;
-  }
-  case DataItem::OPERATOR: {
-    return printOperator((DataItemOperator *)item, context, indent);
-    break;
-  }
-  case DataItem::CONTEXT_ITEM: {
-    return printContextItem((DataItemContextItem *)item, context, indent);
+  case ASTNode::CONTEXT_ITEM: {
+    return printContextItem((XQContextItem *)item, context, indent);
     break;
   }
   default: {
@@ -141,7 +132,7 @@ string PrintDataItemTree::printDataItem(const DataItem *item, const DynamicConte
   }
 }
 
-string PrintDataItemTree::printFunction(const DataItemFunction *item, const DynamicContext *context, int indent)
+string PrintDataItemTree::printFunction(const XQFunction *item, const DynamicContext *context, int indent)
 {
   ostringstream s;
 
@@ -155,14 +146,14 @@ string PrintDataItemTree::printFunction(const DataItemFunction *item, const Dyna
   name += "}:";
   name += UTF8(funName);
 
-  const VectorOfDataItems &args = item->getArguments();
+  const VectorOfASTNodes &args = item->getArguments();
   if(args.empty() && !hasPredicates(item)) {
     s << in << "<Function name=\"" << name << "\"/>" << endl;
   }
   else {
     s << in << "<Function name=\"" << name << "\">" << endl;
-    for(VectorOfDataItems::const_iterator i = args.begin(); i != args.end(); ++i) {
-      s << printDataItem(*i, context, indent + INDENT);
+    for(VectorOfASTNodes::const_iterator i = args.begin(); i != args.end(); ++i) {
+      s << printX(*i, context, indent + INDENT);
     }
     s << printPredicates(item, context, indent + INDENT);
     s << in << "</Function>" << endl;
@@ -171,7 +162,7 @@ string PrintDataItemTree::printFunction(const DataItemFunction *item, const Dyna
   return s.str();
 }
 
-string PrintDataItemTree::printOperator(const DataItemOperator *item, const DynamicContext *context, int indent)
+string PrintDataItemTree::printOperator(const XQOperator *item, const DynamicContext *context, int indent)
 {
   ostringstream s;
 
@@ -181,14 +172,14 @@ string PrintDataItemTree::printOperator(const DataItemOperator *item, const Dyna
     name = getComparisonOperationName(((const GeneralComp *)item)->getOperation());
   }
 
-  const VectorOfDataItems &args = item->getArguments();
+  const VectorOfASTNodes &args = item->getArguments();
   if(args.empty() && !hasPredicates(item)) {
     s << in << "<Operator name=\"" << name << "\"/>" << endl;
   }
   else {
     s << in << "<Operator name=\"" << name << "\">" << endl;
-    for(VectorOfDataItems::const_iterator i = args.begin(); i != args.end(); ++i) {
-      s << printDataItem(*i, context, indent + INDENT);
+    for(VectorOfASTNodes::const_iterator i = args.begin(); i != args.end(); ++i) {
+      s << printX(*i, context, indent + INDENT);
     }
     s << printPredicates(item, context, indent + INDENT);
     s << in << "</Operator>" << endl;
@@ -197,7 +188,7 @@ string PrintDataItemTree::printOperator(const DataItemOperator *item, const Dyna
   return s.str();
 }
 
-string PrintDataItemTree::printContextItem(const DataItemContextItem *item, const DynamicContext *context, int indent)
+string PrintDataItemTree::printContextItem(const XQContextItem *item, const DynamicContext *context, int indent)
 {
   ostringstream s;
 
@@ -215,7 +206,7 @@ string PrintDataItemTree::printContextItem(const DataItemContextItem *item, cons
   return s.str();
 }
 
-string PrintDataItemTree::printLiteral(const DataItemLiteral *item, const DynamicContext *context, int indent)
+string PrintDataItemTree::printLiteral(const XQLiteral *item, const DynamicContext *context, int indent)
 {
   ostringstream s;
 
@@ -229,22 +220,22 @@ string PrintDataItemTree::printLiteral(const DataItemLiteral *item, const Dynami
   return s.str();
 }
 
-string PrintDataItemTree::printNav(const DataItemNav *item, const DynamicContext *context, int indent)
+string PrintDataItemTree::printNav(const XQNav *item, const DynamicContext *context, int indent)
 {
   ostringstream s;
 
   string in(getIndent(indent));
   string gotoRoot(item->getGotoRootFirst() ? " gotoRoot=\"true\"" : "");
 
-  const DataItemNav::Steps &steps = item->getSteps();
+  const XQNav::Steps &steps = item->getSteps();
 
   if(steps.empty() && !hasPredicates(item)) {
     s << in << "<Navigation" << gotoRoot << "/>" << endl;
   }
   else {
     s << in << "<Navigation" << gotoRoot << ">" << endl;
-    for(DataItemNav::Steps::const_iterator i = steps.begin(); i != steps.end(); ++i) {
-      s << printDataItem(i->step, context, indent + INDENT);
+    for(XQNav::Steps::const_iterator i = steps.begin(); i != steps.end(); ++i) {
+      s << printX(i->step, context, indent + INDENT);
     }
     s << printPredicates(item, context, indent + INDENT);
     s << in << "</Navigation>" << endl;
@@ -253,7 +244,7 @@ string PrintDataItemTree::printNav(const DataItemNav *item, const DynamicContext
   return s.str();
 }
 
-string PrintDataItemTree::printStep(const DataItemStep *item, const DynamicContext *context, int indent)
+string PrintDataItemTree::printStep(const XQStep *item, const DynamicContext *context, int indent)
 {
   ostringstream s;
 
@@ -308,20 +299,20 @@ string PrintDataItemTree::printStep(const DataItemStep *item, const DynamicConte
   return s.str();
 }
 
-string PrintDataItemTree::printParenthesized(const DataItemParenthesizedExpr *item, const DynamicContext *context, int indent)
+string PrintDataItemTree::printParenthesized(const XQParenthesizedExpr *item, const DynamicContext *context, int indent)
 {
   ostringstream s;
 
   string in(getIndent(indent));
-  const VectorOfDataItems &children = item->getChildren();
+  const VectorOfASTNodes &children = item->getChildren();
 
   if(children.empty() && !hasPredicates(item)) {
     s << in << "<Parenthesized/>" << endl;
   }
   else {
     s << in << "<Parenthesized>" << endl;
-    for(VectorOfDataItems::const_iterator i = children.begin(); i != children.end(); ++i) {
-      s << printDataItem(*i, context, indent + INDENT);
+    for(VectorOfASTNodes::const_iterator i = children.begin(); i != children.end(); ++i) {
+      s << printX(*i, context, indent + INDENT);
     }
     s << printPredicates(item, context, indent + INDENT);
     s << in << "</Parenthesized>" << endl;
@@ -330,7 +321,7 @@ string PrintDataItemTree::printParenthesized(const DataItemParenthesizedExpr *it
   return s.str();
 }
 
-string PrintDataItemTree::printSequence(const DataItemSequence *item, const DynamicContext *context, int indent)
+string PrintDataItemTree::printSequence(const XQSequence *item, const DynamicContext *context, int indent)
 {
   ostringstream s;
 
@@ -352,7 +343,7 @@ string PrintDataItemTree::printSequence(const DataItemSequence *item, const Dyna
   return s.str();
 }
 
-string PrintDataItemTree::printVariable(const DataItemVariable *item, const DynamicContext *context, int indent)
+string PrintDataItemTree::printVariable(const XQVariable *item, const DynamicContext *context, int indent)
 {
   ostringstream s;
 
@@ -375,7 +366,7 @@ string PrintDataItemTree::printVariable(const DataItemVariable *item, const Dyna
   return s.str();
 }
 
-string PrintDataItemTree::printIf(const DataItemIf *item, const DynamicContext *context, int indent)
+string PrintDataItemTree::printIf(const XQIf *item, const DynamicContext *context, int indent)
 {
   ostringstream s;
 
@@ -383,13 +374,13 @@ string PrintDataItemTree::printIf(const DataItemIf *item, const DynamicContext *
 
   s << in << "<If>" << endl;
   s << in << "  <Test>" << endl;
-  s << printDataItem(item->getTest(), context, indent + INDENT + INDENT);
+  s << printX(item->getTest(), context, indent + INDENT + INDENT);
   s << in << "  </Test>" << endl;
   s << in << "  <Then>" << endl;
-  s << printDataItem(item->getWhenTrue(), context, indent + INDENT + INDENT);
+  s << printX(item->getWhenTrue(), context, indent + INDENT + INDENT);
   s << in << "  </Then>" << endl;
   s << in << "  <Else>" << endl;
-  s << printDataItem(item->getWhenFalse(), context, indent + INDENT + INDENT);
+  s << printX(item->getWhenFalse(), context, indent + INDENT + INDENT);
   s << in << "  </Else>" << endl;
   s << printPredicates(item, context, indent + INDENT);
   s << in << "</If>" << endl;
@@ -397,53 +388,14 @@ string PrintDataItemTree::printIf(const DataItemIf *item, const DynamicContext *
   return s.str();
 }
 
-string PrintDataItemTree::printFor(const DataItemFor *item, const DynamicContext *context, int indent)
-{
-  ostringstream s;
-
-  string in(getIndent(indent));
-  const DataItemFor::Bindings &bindings = item->getBindings();
-
-  s << in << "<For>" << endl;
-  for(DataItemFor::Bindings::const_iterator i = bindings.begin(); i != bindings.end(); ++i) {
-    s << printVariableBinding(*i, context, indent + INDENT);
-  }
-  s << printDataItem(item->getReturnExpr(), context, indent + INDENT);
-  s << printPredicates(item, context, indent + INDENT);
-  s << in << "</For>" << endl;
-
-  return s.str();
-}
-
-string PrintDataItemTree::printQuantified(const DataItemQuantifiedExpr *item, const DynamicContext *context, int indent)
-{
-  ostringstream s;
-
-  string in(getIndent(indent));
-  DataItemQuantifiedExpr::QuantifierType type = item->getQuantifierType();
-  string name(type == DataItemQuantifiedExpr::some ? "Some" : "Every");
-
-  const DataItemFor::Bindings &bindings = item->getBindings();
-
-  s << in << "<" << name << ">" << endl;
-  for(DataItemFor::Bindings::const_iterator i = bindings.begin(); i != bindings.end(); ++i) {
-    s << printVariableBinding(*i, context, indent + INDENT);
-  }
-  s << printDataItem(item->getReturnExpr(), context, indent + INDENT);
-  s << printPredicates(item, context, indent + INDENT);
-  s << in << "</" << name << ">" << endl;
-
-  return s.str();
-}
-
-string PrintDataItemTree::printInstanceOf(const DataItemInstanceOf *item, const DynamicContext *context, int indent)
+string PrintDataItemTree::printInstanceOf(const XQInstanceOf *item, const DynamicContext *context, int indent)
 {
   ostringstream s;
 
   string in(getIndent(indent));
 
   s << in << "<InstanceOf>" << endl;
-  s << printDataItem(item->getExpression(), context, indent + INDENT);
+  s << printX(item->getExpression(), context, indent + INDENT);
   s << printSequenceType(item->getSequenceType(), context, indent + INDENT);
   s << printPredicates(item, context, indent + INDENT);
   s << in << "</InstanceOf>" << endl;
@@ -451,14 +403,14 @@ string PrintDataItemTree::printInstanceOf(const DataItemInstanceOf *item, const 
   return s.str();
 }
 
-string PrintDataItemTree::printCastableAs(const DataItemCastableAs *item, const DynamicContext *context, int indent)
+string PrintDataItemTree::printCastableAs(const XQCastableAs *item, const DynamicContext *context, int indent)
 {
   ostringstream s;
 
   string in(getIndent(indent));
 
   s << in << "<CastableAs>" << endl;
-  s << printDataItem(item->getExpression(), context, indent + INDENT);
+  s << printX(item->getExpression(), context, indent + INDENT);
   s << printSequenceType(item->getSequenceType(), context, indent + INDENT);
   s << printPredicates(item, context, indent + INDENT);
   s << in << "</CastableAs>" << endl;
@@ -466,28 +418,28 @@ string PrintDataItemTree::printCastableAs(const DataItemCastableAs *item, const 
   return s.str();
 }
 
-string PrintDataItemTree::printCastAs(const DataItemCastAs *item, const DynamicContext *context, int indent)
+string PrintDataItemTree::printCastAs(const XQCastAs *item, const DynamicContext *context, int indent)
 {
   ostringstream s;
 
   string in(getIndent(indent));
 
   s << in << "<CastAs>" << endl;
-  s << printDataItem(item->getExpression(), context, indent + INDENT);
+  s << printX(item->getExpression(), context, indent + INDENT);
   s << printSequenceType(item->getSequenceType(), context, indent + INDENT);
   s << in << "</CastAs>" << endl;
 
   return s.str();
 }
 
-string PrintDataItemTree::printTreatAs(const DataItemTreatAs *item, const DynamicContext *context, int indent)
+string PrintDataItemTree::printTreatAs(const XQTreatAs *item, const DynamicContext *context, int indent)
 {
   ostringstream s;
 
   string in(getIndent(indent));
 
   s << in << "<TreatAs>" << endl;
-  s << printDataItem(item->getExpression(), context, indent + INDENT);
+  s << printX(item->getExpression(), context, indent + INDENT);
   s << printSequenceType(item->getSequenceType(), context, indent + INDENT);
   s << printPredicates(item, context, indent + INDENT);
   s << in << "</TreatAs>" << endl;
@@ -556,19 +508,6 @@ string PrintDataItemTree::printItemTypeAttrs(const SequenceType::ItemType *type,
   return s.str();
 }
 
-string PrintDataItemTree::printVariableBinding(const DataItemFor::VB *binding, const DynamicContext *context, int indent)
-{
-  ostringstream s;
-
-  string in(getIndent(indent));
-
-  s << in << "<Binding name=\"{" << UTF8(binding->_uri) << "}:" << UTF8(binding->_name) << "\">" << endl;
-  s << printDataItem(binding->_allValues, context, indent + INDENT);
-  s << in << "</Binding>" << endl;
-
-  return s.str();
-}
-
 string PrintDataItemTree::printItem(const Item::Ptr item, const DynamicContext *context, int indent)
 {
   ostringstream s;
@@ -589,23 +528,23 @@ string PrintDataItemTree::printItem(const Item::Ptr item, const DynamicContext *
   return s.str();
 }
 
-bool PrintDataItemTree::hasPredicates(const DataItemImpl *item)
+bool PrintDataItemTree::hasPredicates(const ASTNodeImpl *item)
 {
   return !item->getPredicates().empty();
 }
 
-string PrintDataItemTree::printPredicates(const DataItemImpl *item, const DynamicContext *context, int indent)
+string PrintDataItemTree::printPredicates(const ASTNodeImpl *item, const DynamicContext *context, int indent)
 {
   ostringstream s;
 
-  const DataItem::Predicates &preds = item->getPredicates();
+  const ASTNode::Predicates &preds = item->getPredicates();
 
   if(!preds.empty()) {
     string in(getIndent(indent));
     s << in << "<Predicates>" << endl;
     
-    for(DataItem::Predicates::const_iterator i = preds.begin(); i != preds.end(); ++i) {
-      s << printDataItem(i->pred, context, indent + INDENT);
+    for(ASTNode::Predicates::const_iterator i = preds.begin(); i != preds.end(); ++i) {
+      s << printX(i->pred, context, indent + INDENT);
     }
     
     s << in << "</Predicates>" << endl;
@@ -625,46 +564,46 @@ string PrintDataItemTree::getIndent(int indent)
   return s.str();
 }
 
-string PrintDataItemTree::getAxisName(DataItemStep::Axis axis)
+string PrintDataItemTree::getAxisName(XQStep::Axis axis)
 {
   switch(axis) {
-  case DataItemStep::ANCESTOR: {
+  case XQStep::ANCESTOR: {
     return "ancestor";
   }
-  case DataItemStep::ANCESTOR_OR_SELF: {
+  case XQStep::ANCESTOR_OR_SELF: {
     return "ancestor-or-self";
   }
-  case DataItemStep::ATTRIBUTE: {
+  case XQStep::ATTRIBUTE: {
     return "attribute";
   }
-  case DataItemStep::CHILD: {
+  case XQStep::CHILD: {
     return "child";
   }
-  case DataItemStep::DESCENDANT: {
+  case XQStep::DESCENDANT: {
     return "descendant";
   }
-  case DataItemStep::DESCENDANT_OR_SELF: {
+  case XQStep::DESCENDANT_OR_SELF: {
     return "descendant-or-self";
   }
-  case DataItemStep::FOLLOWING: {
+  case XQStep::FOLLOWING: {
     return "following";
   }
-  case DataItemStep::FOLLOWING_SIBLING: {
+  case XQStep::FOLLOWING_SIBLING: {
     return "following-sibling";
   }
-  case DataItemStep::NAMESPACE: {
+  case XQStep::NAMESPACE: {
     return "namespace";
   }
-  case DataItemStep::PARENT: {
+  case XQStep::PARENT: {
     return "parent";
   }
-  case DataItemStep::PRECEDING: {
+  case XQStep::PRECEDING: {
     return "preceding";
   }
-  case DataItemStep::PRECEDING_SIBLING: {
+  case XQStep::PRECEDING_SIBLING: {
     return "preceding-sibling";
   }
-  case DataItemStep::SELF: {
+  case XQStep::SELF: {
     return "self";
   }
   default: {

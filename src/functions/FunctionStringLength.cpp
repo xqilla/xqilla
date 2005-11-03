@@ -39,8 +39,8 @@ const unsigned int FunctionStringLength::maxArgs = 1;
  * fn:string-length($arg as xs:string?) as xs:integer
 **/
 
-FunctionStringLength::FunctionStringLength(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
-  : DataItemFunction(name, minArgs, maxArgs, "string?", args, memMgr)
+FunctionStringLength::FunctionStringLength(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
+  : XQFunction(name, minArgs, maxArgs, "string?", args, memMgr)
 {
   _src.getStaticType().flags = StaticResolutionContext::NUMERIC_TYPE;
 }
@@ -48,17 +48,17 @@ FunctionStringLength::FunctionStringLength(const VectorOfDataItems &args, XPath2
 const XMLCh* FunctionStringLength::getString(DynamicContext* context) const {
   XPath2MemoryManager* memMgr = context->getMemoryManager();
   //setup xf:string with empty args
-  VectorOfDataItems args=VectorOfDataItems(PathanAllocator<DataItem*>(context->getMemoryManager()));
+  VectorOfASTNodes args=VectorOfASTNodes(PathanAllocator<ASTNode*>(context->getMemoryManager()));
   FunctionString stringGrabber(args, memMgr);
   //call xf:string and extract result
   return stringGrabber.collapseTree(context).next(context)->asString(context);
 }
 
-DataItem* FunctionStringLength::staticResolution(StaticContext *context) {
+ASTNode* FunctionStringLength::staticResolution(StaticContext *context) {
   if(_args.empty()) {
     _src.contextItemUsed(true);
   }
-  return resolveDataItems(_args, context, !_args.empty());
+  return resolveASTNodes(_args, context, !_args.empty());
 }
 
 Sequence FunctionStringLength::collapseTreeInternal(DynamicContext* context, int flags) const

@@ -30,14 +30,14 @@ const unsigned int FunctionNot::maxArgs = 1;
  * fn:not($arg as item()*) as xs:boolean
 **/
 
-FunctionNot::FunctionNot(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+FunctionNot::FunctionNot(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "item()*", args, memMgr)
 {
 }
 
 Sequence FunctionNot::collapseTreeInternal(DynamicContext* context, int flags) const
 {
-	bool result = !getParamNumber(1,context,DataItem::UNORDERED|DataItem::RETURN_TWO).getEffectiveBooleanValue(context);
+	bool result = !getParamNumber(1,context,ASTNode::UNORDERED|ASTNode::RETURN_TWO).getEffectiveBooleanValue(context);
 	XPath2MemoryManager* memMgr = context->getMemoryManager();
 	return Sequence(context->getPathanFactory()->createBoolean(result, context), memMgr);
 }

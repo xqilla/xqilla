@@ -24,32 +24,32 @@
 #include <xercesc/util/XMLString.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/simple-api/XQQuery.hpp>
-#include <xqilla/context/XQContext.hpp>
+#include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/exceptions/XQException.hpp>
 
 #ifndef YYSTYPE
-#include <xqilla/ast/DataItem.hpp>
-#include <xqilla/ast/DataItemNav.hpp>
+#include <xqilla/ast/ASTNode.hpp>
+#include <xqilla/ast/XQNav.hpp>
 #include <xqilla/schema/SequenceType.hpp>
 #include <xqilla/parser/QName.hpp>
-#include <xqilla/functions/XQFunction.hpp>
+#include <xqilla/functions/XQUserFunction.hpp>
 #include <xqilla/ast/XQFLWOR.hpp>
 #include <xqilla/ast/XQVariableBinding.hpp>
 #include <xqilla/ast/XQTypeswitch.hpp>
 
 typedef union {
 	XMLCh* str;
-	DataItem* dataItem;
-	XQFunction* functDecl;
-	XQFunction::XQFunctionParameter* funcParam;
-	XQFunction::VectorOfFunctionParameters* funcParams;
+	ASTNode* dataItem;
+	XQUserFunction* functDecl;
+	XQUserFunction::XQFunctionParameter* funcParam;
+	XQUserFunction::VectorOfFunctionParameters* funcParams;
 	NodeTest *nodeTest;
-	DataItemStep::Axis axis;
+	XQStep::Axis axis;
 	QualifiedName *qName;
 	SequenceType* sequenceType;
 	SequenceType::OccurrenceIndicator occurrence;
 	SequenceType::ItemType* itemType;
-	VectorOfDataItems* itemList;
+	VectorOfASTNodes* itemList;
 	XQVariableBinding* variableBinding;
 	VectorOfVariableBinding* variableBindingList;
 	XQTypeswitch::Clause* clause;
@@ -314,7 +314,7 @@ class XQueryParserArgs
 {
 public:
     CXQueryScanner* _scanner;
-    XQContext* _context;
+    DynamicContext* _context;
     XQQuery* _query;
 };
 

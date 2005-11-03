@@ -37,7 +37,7 @@ const unsigned int FunctionYearsFromDuration::maxArgs = 1;
  *  fn:years-from-duration($arg as xdt:yearMonthDuration?) as xs:integer?
  */
 
-FunctionYearsFromDuration::FunctionYearsFromDuration(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+FunctionYearsFromDuration::FunctionYearsFromDuration(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "yearMonthDuration?", args, memMgr)
 {
   _src.getStaticType().flags = StaticResolutionContext::NUMERIC_TYPE;

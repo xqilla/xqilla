@@ -23,17 +23,17 @@
 #include <xqilla/items/Item.hpp>
 #include <xqilla/items/AnyAtomicType.hpp>
 
-ArithmeticOperator::ArithmeticOperator(const XMLCh* opName, const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
-  : DataItemOperator(opName, args, memMgr)
+ArithmeticOperator::ArithmeticOperator(const XMLCh* opName, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
+  : XQOperator(opName, args, memMgr)
 {
 }
 
-DataItem* ArithmeticOperator::staticResolution(StaticContext *context)
+ASTNode* ArithmeticOperator::staticResolution(StaticContext *context)
 {
   _src.getStaticType().flags = 0;
 
   bool allConstant = true;
-  for(VectorOfDataItems::iterator i = _args.begin(); i != _args.end(); ++i) {
+  for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
     *i = (*i)->staticResolution(context);
 
     if((*i)->getStaticResolutionContext().getStaticType().flags & StaticResolutionContext::NODE_TYPE) {

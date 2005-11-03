@@ -17,13 +17,13 @@
 // XQEvaluator.h: interface for the XQEvaluator class.
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_XQEVALUATOR_H__D608B994_E090_4206_9473_81F3D7350410__INCLUDED_)
-#define AFX_XQEVALUATOR_H__D608B994_E090_4206_9473_81F3D7350410__INCLUDED_
+#if !defined(AFXQ_XQEVALUATOR_H__D608B994_E090_4206_9473_81F3D7350410__INCLUDED_)
+#define AFXQ_XQEVALUATOR_H__D608B994_E090_4206_9473_81F3D7350410__INCLUDED_
 
 #include <xqilla/framework/XQEngine.hpp>
 #include <xqilla/simple-api/XQQuery.hpp>
 
-class XQContext;
+class DynamicContext;
 
 XERCES_CPP_NAMESPACE_BEGIN
     class InputSource;
@@ -33,9 +33,9 @@ XERCES_CPP_NAMESPACE_END
 class XQENGINE_API XQEvaluator
 {
 public:
-    static XQQuery* parse(const XMLCh* query, XQContext* context, bool staticallyResolve = true, const XMLCh* queryFile=NULL);
-    static XQQuery* parse(const XERCES_CPP_NAMESPACE_QUALIFIER InputSource& querySrc, XQContext* context, bool staticallyResolve = true);
-    static XQQuery* parseFromURI(const XMLCh* queryFile, XQContext* context, bool staticallyResolve = true);
+    static XQQuery* parse(const XMLCh* query, DynamicContext* context, bool staticallyResolve = true, const XMLCh* queryFile=NULL);
+    static XQQuery* parse(const XERCES_CPP_NAMESPACE_QUALIFIER InputSource& querySrc, DynamicContext* context, bool staticallyResolve = true);
+    static XQQuery* parseFromURI(const XMLCh* queryFile, DynamicContext* context, bool staticallyResolve = true);
     static bool readQuery(const XMLCh* queryFile, 
                           XPath2MemoryManager* memMgr, 
                           XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer& queryText);
@@ -44,4 +44,4 @@ public:
                           XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer& queryText);
 };
 
-#endif // !defined(AFX_XQEVALUATOR_H__D608B994_E090_4206_9473_81F3D7350410__INCLUDED_)
+#endif // !defined(AFXQ_XQEVALUATOR_H__D608B994_E090_4206_9473_81F3D7350410__INCLUDED_)

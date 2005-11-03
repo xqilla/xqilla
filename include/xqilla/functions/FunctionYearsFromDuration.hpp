@@ -35,7 +35,7 @@ public:
   /**
    * Constructor.
    */
-  FunctionYearsFromDuration(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  FunctionYearsFromDuration(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
 
   /**
    * Returns an integer representing the years component in the value of 

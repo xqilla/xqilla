@@ -18,14 +18,14 @@
 
 #include <xqilla/framework/Pathan.hpp>
 
-#include <xqilla/ast/DataItemFunction.hpp>
+#include <xqilla/ast/XQFunction.hpp>
 
 /**
  * Getter function for seconds comoponent of dateTime.
  *
  * seconds-from-dateTime(dateTime $srcval) => decimal
  */
-class PATHAN_EXPORT FunctionSecondsFromDateTime : public DataItemFunction
+class PATHAN_EXPORT FunctionSecondsFromDateTime : public XQFunction
 {
 public:
   static const XMLCh name[];
@@ -35,9 +35,9 @@ public:
   /**
    * Constructor.
    */
-  FunctionSecondsFromDateTime(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  FunctionSecondsFromDateTime(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
 
-  DataItem* staticResolution(StaticContext *context);
+  ASTNode* staticResolution(StaticContext *context);
 
   /**
    * Returns a decimal representing the seconds component in the value of 

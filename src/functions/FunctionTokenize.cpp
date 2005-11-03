@@ -37,7 +37,7 @@ const unsigned int FunctionTokenize::maxArgs = 3;
  * fn:tokenize($input as xs:string?, $pattern as xs:string, $flags as xs:string) as xs:string*
  */
   
-FunctionTokenize::FunctionTokenize(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+FunctionTokenize::FunctionTokenize(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "string?, string, string", args, memMgr)
 {
 }
