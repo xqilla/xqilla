@@ -34,7 +34,7 @@ public:
   static const unsigned int minArgs;
   static const unsigned int maxArgs;
 
-  FunctionStringToCodepoints(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  FunctionStringToCodepoints(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
 };

@@ -39,7 +39,7 @@ const unsigned int FunctionSubstring::maxArgs = 3;
  * fn:substring($sourceString as xs:string?, $startingLoc as xs:double, $length as xs:double) as xs:string
 **/
 
-FunctionSubstring::FunctionSubstring(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+FunctionSubstring::FunctionSubstring(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "string?, double, double", args, memMgr)
 {
 }

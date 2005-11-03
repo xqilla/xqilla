@@ -35,7 +35,7 @@
 #include <xqilla/exceptions/ContextException.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 
-/*static*/ XQQuery* XQEvaluator::parse(const XMLCh* inputQuery, XQContext* context, bool staticallyResolve/*=true*/, const XMLCh* queryFile/*=NULL*/)
+/*static*/ XQQuery* XQEvaluator::parse(const XMLCh* inputQuery, DynamicContext* context, bool staticallyResolve/*=true*/, const XMLCh* queryFile/*=NULL*/)
 {
   XQueryParserArgs args;
   try
@@ -71,7 +71,7 @@
   return args._query;
 }
 
-/*static*/ XQQuery* XQEvaluator::parse(const XERCES_CPP_NAMESPACE_QUALIFIER InputSource& querySrc, XQContext* context, bool staticallyResolve/*=true*/)
+/*static*/ XQQuery* XQEvaluator::parse(const XERCES_CPP_NAMESPACE_QUALIFIER InputSource& querySrc, DynamicContext* context, bool staticallyResolve/*=true*/)
 {
   XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer moduleText;
   if(!XQEvaluator::readQuery(querySrc, context->getMemoryManager(), moduleText)) {
@@ -81,7 +81,7 @@
   return parse(moduleText.getRawBuffer(), context, staticallyResolve, querySrc.getSystemId());
 }
 
-/*static*/ XQQuery* XQEvaluator::parseFromURI(const XMLCh* queryFile, XQContext* context, bool staticallyResolve/*=true*/)
+/*static*/ XQQuery* XQEvaluator::parseFromURI(const XMLCh* queryFile, DynamicContext* context, bool staticallyResolve/*=true*/)
 {
   XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer moduleText;
   if(!XQEvaluator::readQuery(queryFile, context->getMemoryManager(), moduleText)) {

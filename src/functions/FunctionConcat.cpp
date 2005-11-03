@@ -34,7 +34,7 @@ const unsigned int FunctionConcat::maxArgs = UNLIMITED;
 **/
 
 
-FunctionConcat::FunctionConcat(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+FunctionConcat::FunctionConcat(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "anyAtomicType?", args, memMgr) // Between 2 and UNLIMITED arguments
 {
   // Nothing to do

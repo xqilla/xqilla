@@ -17,8 +17,8 @@
 // XQQuantified.hpp: interface for the XQQuantified class.
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_XQQUANTIFIED_H__2B6902E9_A4FA_4AB3_9C69_08A8E77E70DA__INCLUDED_)
-#define AFX_XQQUANTIFIED_H__2B6902E9_A4FA_4AB3_9C69_08A8E77E70DA__INCLUDED_
+#if !defined(AFXQ_XQUANTIFIED_H__2B6902E9_A4FA_4AB3_9C69_08A8E77E70DA__INCLUDED_)
+#define AFXQ_XQUANTIFIED_H__2B6902E9_A4FA_4AB3_9C69_08A8E77E70DA__INCLUDED_
 
 #include <xqilla/framework/XQEngine.hpp>
 #include <xqilla/ast/XQFLWOR.hpp>
@@ -29,9 +29,9 @@ class XQENGINE_API XQQuantified : public XQFLWOR
 public:
 	typedef enum {some, every} QuantifierType;
 
-	XQQuantified(QuantifierType qType, VectorOfVariableBinding* bindings, DataItem* returnExpr, XPath2MemoryManager *expr);
+	XQQuantified(QuantifierType qType, VectorOfVariableBinding* bindings, ASTNode* returnExpr, XPath2MemoryManager *expr);
 
-  virtual DataItem* staticResolution(StaticContext* context);
+  virtual ASTNode* staticResolution(StaticContext* context);
 
   QuantifierType getQuantifierType() const;
 
@@ -56,4 +56,4 @@ protected:
 	QuantifierType _qType;
 };
 
-#endif // !defined(AFX_XQQUANTIFIED_H__2B6902E9_A4FA_4AB3_9C69_08A8E77E70DA__INCLUDED_)
+#endif // !defined(AFXQ_XQUANTIFIED_H__2B6902E9_A4FA_4AB3_9C69_08A8E77E70DA__INCLUDED_)

@@ -17,30 +17,30 @@
 // XQDOMConstructor.hpp: interface for the XQDOMConstructor class.
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_XQDOMCONSTRUCTOR_H__56E97972_3896_49D3_B055_36CC3E9E550A__INCLUDED_)
-#define AFX_XQDOMCONSTRUCTOR_H__56E97972_3896_49D3_B055_36CC3E9E550A__INCLUDED_
+#if !defined(AFXQ_XQDOMCONSTRUCTOR_H__56E97972_3896_49D3_B055_36CC3E9E550A__INCLUDED_)
+#define AFXQ_XQDOMCONSTRUCTOR_H__56E97972_3896_49D3_B055_36CC3E9E550A__INCLUDED_
 
 #include <vector>
 
-#include <xqilla/ast/DataItemImpl.hpp>
+#include <xqilla/ast/ASTNodeImpl.hpp>
 #include <xqilla/items/Node.hpp>
 
 #include <xercesc/framework/XMLBuffer.hpp>
 
-class XQENGINE_API XQDOMConstructor : public DataItemImpl
+class XQENGINE_API XQDOMConstructor : public ASTNodeImpl
 {
 public:
-	XQDOMConstructor(const XMLCh* nodeType, DataItem* name, VectorOfDataItems* attrList, VectorOfDataItems* children, XPath2MemoryManager* expr);
+	XQDOMConstructor(const XMLCh* nodeType, ASTNode* name, VectorOfASTNodes* attrList, VectorOfASTNodes* children, XPath2MemoryManager* expr);
 
 	virtual Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
-	virtual DataItem* staticResolution(StaticContext *context);
+	virtual ASTNode* staticResolution(StaticContext *context);
 
   const XMLCh* getNodeType() const;
-  const DataItem *getName() const;
-  const VectorOfDataItems *getAttributes() const;
-  const VectorOfDataItems *getChildren() const;
+  const ASTNode *getName() const;
+  const VectorOfASTNodes *getAttributes() const;
+  const VectorOfASTNodes *getChildren() const;
 
-  void setName(DataItem *name);
+  void setName(ASTNode *name);
 
 protected:
   bool isTextNode(const Node::Ptr &node) const;
@@ -48,8 +48,8 @@ protected:
 
 protected:
 	const XMLCh* m_nodeType;
-	DataItem* m_name;
-	VectorOfDataItems* m_attrList, *m_children;
+	ASTNode* m_name;
+	VectorOfASTNodes* m_attrList, *m_children;
 };
 
-#endif // !defined(AFX_XQDOMCONSTRUCTOR_H__56E97972_3896_49D3_B055_36CC3E9E550A__INCLUDED_)
+#endif // !defined(AFXQ_XQDOMCONSTRUCTOR_H__56E97972_3896_49D3_B055_36CC3E9E550A__INCLUDED_)

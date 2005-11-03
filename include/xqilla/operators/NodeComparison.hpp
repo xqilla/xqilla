@@ -18,16 +18,16 @@
 
 #include <xqilla/framework/Pathan.hpp>
 
-#include <xqilla/ast/DataItemOperator.hpp>
+#include <xqilla/ast/XQOperator.hpp>
 #include <xqilla/runtime/SingleResult.hpp>
 
 /** NodeComparison operator function*/
-class PATHAN_EXPORT NodeComparison : public DataItemOperator
+class PATHAN_EXPORT NodeComparison : public XQOperator
 {
 public:
   static const XMLCh name[];
 
-  NodeComparison(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  NodeComparison(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   Result createResult(DynamicContext* context, int flags=0) const;
 

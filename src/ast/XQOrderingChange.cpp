@@ -20,7 +20,6 @@
 #include <sstream>
 
 #include <xqilla/framework/XQEngine.hpp>
-#include <xqilla/context/XQContext.hpp>
 #include <xqilla/ast/XQOrderingChange.hpp>
 
 #include <xqilla/context/DynamicContext.hpp>
@@ -29,12 +28,12 @@
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-XQOrderingChange::XQOrderingChange(StaticContext::NodeSetOrdering ordering, DataItem* dataItem, XPath2MemoryManager* expr)
-  : DataItemImpl(expr),
+XQOrderingChange::XQOrderingChange(StaticContext::NodeSetOrdering ordering, ASTNode* dataItem, XPath2MemoryManager* expr)
+  : ASTNodeImpl(expr),
     m_nOrdering(ordering),
     m_pExpr(dataItem)
 {
-  setType((DataItem::whichType)XQContext::ORDERING_CHANGE);
+  setType(ASTNode::ORDERING_CHANGE);
 }
 
 Result XQOrderingChange::createResult(DynamicContext *context, int flags/*=0*/) const
@@ -42,7 +41,7 @@ Result XQOrderingChange::createResult(DynamicContext *context, int flags/*=0*/) 
     return new OrderingChangeResult(this, flags, context);
 }
 
-DataItem* XQOrderingChange::staticResolution(StaticContext* context)
+ASTNode* XQOrderingChange::staticResolution(StaticContext* context)
 {
     StaticContext::NodeSetOrdering oldOrder=context->getNodeSetOrdering();
     context->setNodeSetOrdering(m_nOrdering);
@@ -66,12 +65,12 @@ StaticContext::NodeSetOrdering XQOrderingChange::getOrderingValue() const
     return m_nOrdering;
 }
 
-DataItem* XQOrderingChange::getExpr() const
+ASTNode* XQOrderingChange::getExpr() const
 {
     return m_pExpr;
 }
 
-void XQOrderingChange::setExpr(DataItem *expr)
+void XQOrderingChange::setExpr(ASTNode *expr)
 {
 	m_pExpr = expr;
 }

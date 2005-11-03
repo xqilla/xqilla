@@ -32,7 +32,7 @@ public:
   static const unsigned int maxArgs;
 
   ///Constructor. Sets arg def to NOT_OPTIONAL.
-  FunctionInsertBefore(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  FunctionInsertBefore(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   Result createResult(DynamicContext* context, int flags=0) const;
 

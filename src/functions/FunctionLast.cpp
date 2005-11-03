@@ -32,15 +32,15 @@ const unsigned int FunctionLast::maxArgs = 0;
  * fn:last() as xs:integer
 **/
 
-FunctionLast::FunctionLast(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
-  : DataItemFunction(name, minArgs, maxArgs, "empty()", args, memMgr)
+FunctionLast::FunctionLast(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
+  : XQFunction(name, minArgs, maxArgs, "empty()", args, memMgr)
 {
 }
 
-DataItem* FunctionLast::staticResolution(StaticContext *context) {
+ASTNode* FunctionLast::staticResolution(StaticContext *context) {
   _src.getStaticType().flags = StaticResolutionContext::NUMERIC_TYPE;
   _src.contextSizeUsed(true);
-  return resolveDataItems(_args, context, false);
+  return resolveASTNodes(_args, context, false);
 }
 
 Sequence FunctionLast::collapseTreeInternal(DynamicContext* context, int flags) const

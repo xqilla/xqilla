@@ -41,7 +41,7 @@ const unsigned int FunctionIndexOf::maxArgs = 3;
  * fn:index-of($seqParam as xdt:anyAtomicType*, $srchParam as xdt:anyAtomicType, $collation as xs:string) as xs:integer*
 **/
 
-FunctionIndexOf::FunctionIndexOf(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+FunctionIndexOf::FunctionIndexOf(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "anyAtomicType*, anyAtomicType, string", args, memMgr)
 {
   _src.getStaticType().flags = StaticResolutionContext::NUMERIC_TYPE;

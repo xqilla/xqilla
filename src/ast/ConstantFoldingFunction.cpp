@@ -17,8 +17,8 @@
 #include <xqilla/ast/ConstantFoldingFunction.hpp>
 #include <xqilla/context/StaticContext.hpp>
 
-ConstantFoldingFunction::ConstantFoldingFunction(const XMLCh* name, unsigned int argsFrom, unsigned int argsTo, const char* paramDecl, const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
-  : DataItemFunction(name, argsFrom, argsTo, paramDecl, args, memMgr)
+ConstantFoldingFunction::ConstantFoldingFunction(const XMLCh* name, unsigned int argsFrom, unsigned int argsTo, const char* paramDecl, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
+  : XQFunction(name, argsFrom, argsTo, paramDecl, args, memMgr)
 {
 }
 
@@ -27,6 +27,6 @@ ConstantFoldingFunction::~ConstantFoldingFunction()
 {
 }
 
-DataItem* ConstantFoldingFunction::staticResolution(StaticContext *context) {
-  return resolveDataItems(_args, context, true);
+ASTNode* ConstantFoldingFunction::staticResolution(StaticContext *context) {
+  return resolveASTNodes(_args, context, true);
 }

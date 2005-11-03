@@ -39,16 +39,16 @@ const unsigned int FunctionNamespaceUri::maxArgs = 1;
  * fn:namespace-uri($arg as node()?) as xs:anyURI
 **/
 
-FunctionNamespaceUri::FunctionNamespaceUri(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
-  : DataItemFunction(name, minArgs, maxArgs, "node()?", args, memMgr)
+FunctionNamespaceUri::FunctionNamespaceUri(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
+  : XQFunction(name, minArgs, maxArgs, "node()?", args, memMgr)
 {
 }
 
-DataItem* FunctionNamespaceUri::staticResolution(StaticContext *context) {
+ASTNode* FunctionNamespaceUri::staticResolution(StaticContext *context) {
   if(_args.empty()) {
     _src.contextItemUsed(true);
   }
-  return resolveDataItems(_args, context, !_args.empty());
+  return resolveASTNodes(_args, context, !_args.empty());
 }
 
 Sequence FunctionNamespaceUri::collapseTreeInternal(DynamicContext* context, int flags) const

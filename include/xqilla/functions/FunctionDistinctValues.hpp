@@ -24,20 +24,20 @@
 
 #include <xqilla/framework/Pathan.hpp>
 
-#include <xqilla/ast/DataItemFunction.hpp>
+#include <xqilla/ast/XQFunction.hpp>
 
 // Distinct values is not really an aggregate function, but since its behaviour is so
 // similar (in terms of sequence validation) we will extend from it.
-class PATHAN_EXPORT FunctionDistinctValues : public DataItemFunction
+class PATHAN_EXPORT FunctionDistinctValues : public XQFunction
 {
 public:
   static const XMLCh name[];
   static const unsigned int minArgs;
   static const unsigned int maxArgs;
 
-  FunctionDistinctValues(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  FunctionDistinctValues(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
-  virtual DataItem* staticResolution(StaticContext *context);
+  virtual ASTNode* staticResolution(StaticContext *context);
 	virtual Result createResult(DynamicContext* context, int flags=0) const;
 
 private:  

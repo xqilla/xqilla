@@ -31,14 +31,14 @@ const unsigned int FunctionTrace::maxArgs = 2;
  * fn:trace($value as item()*, $label as xs:string) as item()*
  */
 
-FunctionTrace::FunctionTrace(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
-  : DataItemFunction(name, minArgs, maxArgs, "item()*, string", args, memMgr)
+FunctionTrace::FunctionTrace(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
+  : XQFunction(name, minArgs, maxArgs, "item()*, string", args, memMgr)
 {
 }
 
-DataItem* FunctionTrace::staticResolution(StaticContext *context) {
+ASTNode* FunctionTrace::staticResolution(StaticContext *context) {
   bool allConstant = true;
-  for(VectorOfDataItems::iterator i = _args.begin(); i != _args.end(); ++i) {
+  for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
     *i = (*i)->staticResolution(context);
     _src.add((*i)->getStaticResolutionContext());
     if(!(*i)->isConstant()) {

@@ -29,7 +29,7 @@ class PATHAN_EXPORT UnaryMinus : public ArithmeticOperator
 public:
   static const XMLCh name[];
 
-  UnaryMinus(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  UnaryMinus(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   Item::Ptr execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::Ptr &atom2, DynamicContext *context) const;
 };

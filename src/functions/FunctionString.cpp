@@ -39,16 +39,16 @@ const unsigned int FunctionString::maxArgs = 1;
  * fn:string($arg as item()?) as xs:string
 **/
 
-FunctionString::FunctionString(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
-  : DataItemFunction(name, minArgs, maxArgs, "item()?", args, memMgr)
+FunctionString::FunctionString(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
+  : XQFunction(name, minArgs, maxArgs, "item()?", args, memMgr)
 {
 }
 
-DataItem* FunctionString::staticResolution(StaticContext *context) {
+ASTNode* FunctionString::staticResolution(StaticContext *context) {
   if(_args.empty()) {
     _src.contextItemUsed(true);
   }
-  return resolveDataItems(_args, context, !_args.empty());
+  return resolveASTNodes(_args, context, !_args.empty());
 }
 
 Sequence FunctionString::collapseTreeInternal(DynamicContext* context, int flags) const

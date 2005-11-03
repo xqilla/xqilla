@@ -17,36 +17,36 @@
 // XQGlobalVariable.hpp: interface for the XQGlobalVariable class.
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_XQGLOBALVARIABLE_H__A97FA5AD_5355_45CD_9092_ED94F5CD035B__INCLUDED_)
-#define AFX_XQGLOBALVARIABLE_H__A97FA5AD_5355_45CD_9092_ED94F5CD035B__INCLUDED_
+#if !defined(AFXQ_XQGLOBALVARIABLE_H__A97FA5AD_5355_45CD_9092_ED94F5CD035B__INCLUDED_)
+#define AFXQ_XQGLOBALVARIABLE_H__A97FA5AD_5355_45CD_9092_ED94F5CD035B__INCLUDED_
 
-#include <xqilla/ast/DataItemImpl.hpp>
+#include <xqilla/ast/ASTNodeImpl.hpp>
 
 class SequenceType;
 
-class XQENGINE_API XQGlobalVariable : public DataItemImpl
+class XQENGINE_API XQGlobalVariable : public ASTNodeImpl
 {
 public:
-	XQGlobalVariable(const XMLCh* varQName, SequenceType* seqType, DataItem* value, XPath2MemoryManager* expr);
+	XQGlobalVariable(const XMLCh* varQName, SequenceType* seqType, ASTNode* value, XPath2MemoryManager* expr);
 
 	virtual Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
-	virtual DataItem* staticResolution(StaticContext *context);
+	virtual ASTNode* staticResolution(StaticContext *context);
 
 	const XMLCh* getVariableName() const;
 	bool isExternal() const;
-	void setVariableExpr(DataItem* value);
+	void setVariableExpr(ASTNode* value);
 
   const XMLCh *getVariableURI() const;
   const XMLCh *getVariableLocalName() const;
   const SequenceType *getSequenceType() const;
-  const DataItem *getVariableExpr() const;
+  const ASTNode *getVariableExpr() const;
 
 protected:
 	const XMLCh* m_szQName;
 	const XMLCh* m_szURI;
 	const XMLCh* m_szLocalName;
 	SequenceType* m_Type;
-	DataItem* m_Value;
+	ASTNode* m_Value;
 };
 
-#endif // !defined(AFX_XQGLOBALVARIABLE_H__A97FA5AD_5355_45CD_9092_ED94F5CD035B__INCLUDED_)
+#endif // !defined(AFXQ_XQGLOBALVARIABLE_H__A97FA5AD_5355_45CD_9092_ED94F5CD035B__INCLUDED_)

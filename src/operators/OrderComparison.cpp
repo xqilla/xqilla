@@ -26,8 +26,8 @@
 
 /*static*/ const XMLCh OrderComparison::name[]={ XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_d, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, XERCES_CPP_NAMESPACE_QUALIFIER chDash, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_r, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_d, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_r, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
 
-OrderComparison::OrderComparison(const VectorOfDataItems &args, bool testBefore, XPath2MemoryManager* memMgr)
-  : DataItemOperator(name, args, memMgr)
+OrderComparison::OrderComparison(const VectorOfASTNodes &args, bool testBefore, XPath2MemoryManager* memMgr)
+  : XQOperator(name, args, memMgr)
 {
 	_testBefore = testBefore;
 }

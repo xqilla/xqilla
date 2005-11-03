@@ -16,17 +16,17 @@
 #ifndef _ARITHMETICOPERATOR_HPP
 #define _ARITHMETICOPERATOR_HPP
 
-#include <xqilla/ast/DataItemOperator.hpp>
+#include <xqilla/ast/XQOperator.hpp>
 #include <xqilla/runtime/SingleResult.hpp>
 
 class AnyAtomicType;
 
-class PATHAN_EXPORT ArithmeticOperator : public DataItemOperator
+class PATHAN_EXPORT ArithmeticOperator : public XQOperator
 {
 public:
-  ArithmeticOperator(const XMLCh* opName, const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  ArithmeticOperator(const XMLCh* opName, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
 
-  virtual DataItem* staticResolution(StaticContext *context);
+  virtual ASTNode* staticResolution(StaticContext *context);
   Result createResult(DynamicContext* context, int flags=0) const;
 
   AnyAtomicType::Ptr getArgument(unsigned int index, DynamicContext *context) const;

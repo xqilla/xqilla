@@ -27,7 +27,7 @@ public:
   static const unsigned int minArgs;
   static const unsigned int maxArgs;
 
-  FunctionZeroOrOne(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  FunctionZeroOrOne(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   Result createResult(DynamicContext* context, int flags=0) const;
 

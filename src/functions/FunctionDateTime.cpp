@@ -34,14 +34,14 @@ const unsigned int FunctionDateTime::maxArgs = 2;
  * fn:dateTime($arg1 as xs:date, $arg2 as xs:time) as xs:dateTime
 **/
 
-FunctionDateTime::FunctionDateTime(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
-  : DataItemFunction(name, minArgs, maxArgs, "date, time", args, memMgr)
+FunctionDateTime::FunctionDateTime(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
+  : XQFunction(name, minArgs, maxArgs, "date, time", args, memMgr)
 {
 }
 
-DataItem* FunctionDateTime::staticResolution(StaticContext *context)
+ASTNode* FunctionDateTime::staticResolution(StaticContext *context)
 {
-  return resolveDataItemsForDateOrTime(_args, context, true);
+  return resolveASTNodesForDateOrTime(_args, context, true);
 }
 
 Sequence FunctionDateTime::collapseTreeInternal(DynamicContext* context, int flags) const

@@ -26,7 +26,7 @@ class PATHAN_EXPORT NumericFunction : public ConstantFoldingFunction
 public:
 
   /// constructor, checks for the correct number of arguments.
-  NumericFunction(const XMLCh* name, unsigned int argsFrom, unsigned int argsTo, const char* paramDecl, const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  NumericFunction(const XMLCh* name, unsigned int argsFrom, unsigned int argsTo, const char* paramDecl, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
 
 protected:
 

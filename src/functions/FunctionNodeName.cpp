@@ -32,7 +32,7 @@ const unsigned int FunctionNodeName::maxArgs = 1;
  * fn:node-name($arg as node()?) as xs:QName?
  */
 
-FunctionNodeName::FunctionNodeName(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+FunctionNodeName::FunctionNodeName(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "node()?", args, memMgr)
 {
 }

@@ -18,16 +18,16 @@
 
 #include <xqilla/framework/Pathan.hpp>
 
-#include <xqilla/ast/DataItemOperator.hpp>
+#include <xqilla/ast/XQOperator.hpp>
 #include <xqilla/runtime/SingleResult.hpp>
 
-class PATHAN_EXPORT OrderComparison : public DataItemOperator
+class PATHAN_EXPORT OrderComparison : public XQOperator
 {
 public:
   static const XMLCh name[];
 
   ///testBefore should be set to true if you want to test that the first parameter is before the second.
-  OrderComparison(const VectorOfDataItems &args, bool testBefore, XPath2MemoryManager* memMgr);
+  OrderComparison(const VectorOfASTNodes &args, bool testBefore, XPath2MemoryManager* memMgr);
 
   Result createResult(DynamicContext* context, int flags=0) const;
 

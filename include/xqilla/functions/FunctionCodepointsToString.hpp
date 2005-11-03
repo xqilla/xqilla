@@ -33,7 +33,7 @@ public:
   static const unsigned int maxArgs;
 
   ///Constructor.
-  FunctionCodepointsToString(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  FunctionCodepointsToString(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
 protected:
   /** takes a series of integers (codepoints) and turns them into a unicode string */

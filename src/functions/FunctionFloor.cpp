@@ -30,7 +30,7 @@ const unsigned int FunctionFloor::maxArgs = 1;
  * fn:floor($arg as numeric?) as numeric?
  */
 
-FunctionFloor::FunctionFloor(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+FunctionFloor::FunctionFloor(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : NumericFunction(name, minArgs, maxArgs, "anySimpleType?", args, memMgr)
 {
   _src.getStaticType().flags = StaticResolutionContext::NUMERIC_TYPE;

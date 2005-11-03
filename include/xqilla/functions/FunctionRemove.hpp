@@ -27,7 +27,7 @@ public:
   static const unsigned int minArgs;
   static const unsigned int maxArgs;
 
-  FunctionRemove(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  FunctionRemove(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   Result createResult(DynamicContext* context, int flags=0) const;
 

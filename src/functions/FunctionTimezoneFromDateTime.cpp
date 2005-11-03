@@ -37,7 +37,7 @@ const unsigned int FunctionTimezoneFromDateTime::maxArgs = 1;
  * fn:timezone-from-dateTime($arg as xs:dateTime?) as xdt:dayTimeDuration?
  */
 
-FunctionTimezoneFromDateTime::FunctionTimezoneFromDateTime(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+FunctionTimezoneFromDateTime::FunctionTimezoneFromDateTime(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "dateTime?", args, memMgr)
 {
 }

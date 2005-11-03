@@ -43,17 +43,17 @@ const unsigned int FunctionCollection::maxArgs = 1;
  * fn:collection($arg as xs:string?) as node()*
 **/
 
-FunctionCollection::FunctionCollection(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
-  : DataItemFunction(name, minArgs, maxArgs, "string?", args, memMgr)
+FunctionCollection::FunctionCollection(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
+  : XQFunction(name, minArgs, maxArgs, "string?", args, memMgr)
 {
 }
 
-DataItem* FunctionCollection::staticResolution(StaticContext *context)
+ASTNode* FunctionCollection::staticResolution(StaticContext *context)
 {
   _src.setProperties(StaticResolutionContext::DOCORDER | StaticResolutionContext::GROUPED | StaticResolutionContext::PEER | StaticResolutionContext::SUBTREE);
   _src.getStaticType().flags = StaticResolutionContext::NODE_TYPE;
   _src.availableCollectionsUsed(true);
-  return resolveDataItems(_args, context, false);
+  return resolveASTNodes(_args, context, false);
 }
 
 Sequence FunctionCollection::collapseTreeInternal(DynamicContext* context, int flags) const

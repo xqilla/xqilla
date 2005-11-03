@@ -37,7 +37,7 @@ public:
   static const unsigned int minArgs;
   static const unsigned int maxArgs;
 
-  FunctionResolveURI(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  FunctionResolveURI(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
  /** 
   * Returns an absolute anyURI given a base URI and a relative URI.

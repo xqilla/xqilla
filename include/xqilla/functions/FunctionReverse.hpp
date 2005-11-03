@@ -32,7 +32,7 @@ public:
   static const unsigned int maxArgs;
 
   ///Constructor. Sets arg def to NOT_OPTIONAL.
-  FunctionReverse(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  FunctionReverse(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
 

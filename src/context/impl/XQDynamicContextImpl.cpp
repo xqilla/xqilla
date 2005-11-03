@@ -22,7 +22,6 @@
 #include <xqilla/context/impl/XQDynamicContextImpl.hpp>
 #include <xqilla/context/impl/XQFactoryImpl.hpp>
 
-#include <xqilla/context/impl/DynamicContextImpl.hpp>
 #include <xqilla/context/VariableStore.hpp>
 #include <xqilla/utils/XPath2NSUtils.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
@@ -35,7 +34,7 @@
 #include <xqilla/items/Node.hpp>
 #include <xqilla/items/ATDurationOrDerived.hpp>
 #include <xqilla/items/Timezone.hpp>
-#include <xqilla/ast/DataItemFunction.hpp>
+#include <xqilla/ast/XQFunction.hpp>
 #include <xqilla/items/DatatypeLookup.hpp>
 #include <xqilla/functions/FunctionLookup.hpp>
 #include <xqilla/functions/FunctionConstructor.hpp>
@@ -53,7 +52,7 @@
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-XQDynamicContextImpl::XQDynamicContextImpl(const XQContext *staticContext, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr)
+XQDynamicContextImpl::XQDynamicContextImpl(const StaticContext *staticContext, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr)
   : _staticContext(staticContext),
     _createdWith(memMgr),
     _internalMM(memMgr),

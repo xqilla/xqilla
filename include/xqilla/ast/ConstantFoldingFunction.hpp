@@ -17,14 +17,14 @@
 #define _CONSTANTFOLDINGFUNCTION_HPP
 
 #include <xqilla/framework/Pathan.hpp>
-#include <xqilla/ast/DataItemFunction.hpp>
+#include <xqilla/ast/XQFunction.hpp>
 #include <xqilla/runtime/Sequence.hpp>
 
-class PATHAN_EXPORT ConstantFoldingFunction : public DataItemFunction
+class PATHAN_EXPORT ConstantFoldingFunction : public XQFunction
 {
 
 public:
-  ConstantFoldingFunction(const XMLCh* name, unsigned int argsFrom, unsigned int argsTo, const char* paramDecl, const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  ConstantFoldingFunction(const XMLCh* name, unsigned int argsFrom, unsigned int argsTo, const char* paramDecl, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   virtual ~ConstantFoldingFunction();
 
   /**
@@ -32,7 +32,7 @@ public:
    * Performs constant folding if the arguments to the function are
    * all constant.
    */
-  virtual DataItem* staticResolution(StaticContext *context);
+  virtual ASTNode* staticResolution(StaticContext *context);
 };
 
 #endif

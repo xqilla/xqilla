@@ -33,7 +33,7 @@ public:
   static const unsigned int maxArgs;
 
   ///Constructor. Sets arg def to NOT_OPTIONAL.
-  FunctionMin(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  FunctionMin(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   /** Returns the maximum value from the given sequence. **/
   Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;

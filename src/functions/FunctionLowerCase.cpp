@@ -35,7 +35,7 @@ const unsigned int FunctionLowerCase::maxArgs = 1;
  * fn:lower-case($arg as xs:string?) as xs:string
  */
 
-FunctionLowerCase::FunctionLowerCase(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+FunctionLowerCase::FunctionLowerCase(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "string?", args, memMgr)
 {
 }

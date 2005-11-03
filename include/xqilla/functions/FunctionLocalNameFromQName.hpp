@@ -33,7 +33,7 @@ public:
   static const unsigned int minArgs;
   static const unsigned int maxArgs;
 
-  FunctionLocalNameFromQName(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  FunctionLocalNameFromQName(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   /** Returns the local-name part of a QName, eg for foo:bar it returns bar */
   Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;

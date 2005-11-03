@@ -37,7 +37,7 @@ const unsigned int FunctionReplace::maxArgs = 4;
  * fn:replace($input as xs:string?, $pattern as xs:string, $replacement as xs:string, $flags as xs:string) as xs:string
  */
   
-FunctionReplace::FunctionReplace(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+FunctionReplace::FunctionReplace(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "string?, string, string, string", args, memMgr)
 {
 }

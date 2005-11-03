@@ -31,15 +31,15 @@ const unsigned int FunctionData::maxArgs = 1;
  * fn:data($arg as item()*) as xdt:anyAtomicType*
  */
 
-FunctionData::FunctionData(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
-  : DataItemFunction(name, minArgs, maxArgs, "item()*", args, memMgr)
+FunctionData::FunctionData(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
+  : XQFunction(name, minArgs, maxArgs, "item()*", args, memMgr)
 {
 }
 
-DataItem* FunctionData::staticResolution(StaticContext *context)
+ASTNode* FunctionData::staticResolution(StaticContext *context)
 {
   bool allConstant = true;
-  for(VectorOfDataItems::iterator i = _args.begin(); i != _args.end(); ++i) {
+  for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
     *i = (*i)->staticResolution(context);
     _src.getStaticType() = (*i)->getStaticResolutionContext().getStaticType();
     _src.add((*i)->getStaticResolutionContext());

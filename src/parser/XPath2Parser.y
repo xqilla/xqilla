@@ -25,21 +25,20 @@
 
 #include <xqilla/items/AnyAtomicTypeConstructor.hpp>
 
-#include <xqilla/ast/DataItem.hpp>
-#include <xqilla/ast/DataItemVariable.hpp>
-#include <xqilla/ast/DataItemLiteral.hpp>
-#include <xqilla/ast/DataItemSequence.hpp>
-#include <xqilla/ast/DataItemParenthesizedExpr.hpp>
-#include <xqilla/ast/DataItemStep.hpp>
-#include <xqilla/ast/DataItemNav.hpp>
-#include <xqilla/ast/DataItemIf.hpp>
-#include <xqilla/ast/DataItemCastableAs.hpp>
-#include <xqilla/ast/DataItemCastAs.hpp>
-#include <xqilla/ast/DataItemFor.hpp>
-#include <xqilla/ast/DataItemInstanceOf.hpp>
-#include <xqilla/ast/DataItemQuantifiedExpr.hpp>
-#include <xqilla/ast/DataItemTreatAs.hpp>
-#include <xqilla/ast/DataItemContextItem.hpp>
+#include <xqilla/ast/XQVariable.hpp>
+#include <xqilla/ast/XQLiteral.hpp>
+#include <xqilla/ast/XQSequence.hpp>
+#include <xqilla/ast/XQParenthesizedExpr.hpp>
+#include <xqilla/ast/XQStep.hpp>
+#include <xqilla/ast/XQNav.hpp>
+#include <xqilla/ast/XQIf.hpp>
+#include <xqilla/ast/XQCastableAs.hpp>
+#include <xqilla/ast/XQCastAs.hpp>
+#include <xqilla/ast/XQInstanceOf.hpp>
+#include <xqilla/ast/XQTreatAs.hpp>
+#include <xqilla/ast/XQContextItem.hpp>
+#include <xqilla/ast/XQQuantified.hpp>
+#include <xqilla/ast/XQFLWOR.hpp>
 
 #include <xqilla/utils/XPath2NSUtils.hpp>
 
@@ -80,7 +79,7 @@
 #define YYLEX_PARAM parm
 #define YYERROR_VERBOSE
 	
-inline VectorOfDataItems packageArgs(DataItem *arg1Impl, DataItem *arg2Impl, XPath2MemoryManager* memMgr);
+inline VectorOfASTNodes packageArgs(ASTNode *arg1Impl, ASTNode *arg2Impl, XPath2MemoryManager* memMgr);
 void yyerror(const char* s);
 
 #include "XPath2ParserControl.hpp"
@@ -284,7 +283,7 @@ _XPath:
 	*/
 
 	/* EMPTY */ {
-      ((XPathParserControl *)parm)->result = new (((XPathParserControl *)parm)->memMgr) DataItemSequence(((XPathParserControl *)parm)->memMgr);
+      ((XPathParserControl *)parm)->result = new (((XPathParserControl *)parm)->memMgr) XQSequence(((XPathParserControl *)parm)->memMgr);
 	}
 
 	| _Expr {
@@ -299,15 +298,15 @@ _Expr:
 	*/
 
 	_Expr _COMMA_ _ExprSingle {
-		if($1->getType()==DataItem::PARENTHESIZED)
+		if($1->getType()==ASTNode::PARENTHESIZED)
 			$$ = $1;
 		else
 		{
-			DataItemParenthesizedExpr *dis = new (((XPathParserControl *)parm)->memMgr) DataItemParenthesizedExpr(((XPathParserControl *)parm)->memMgr);
+			XQParenthesizedExpr *dis = new (((XPathParserControl *)parm)->memMgr) XQParenthesizedExpr(((XPathParserControl *)parm)->memMgr);
 			dis->addItem($1);
 			$$ = dis;
 		}
-		((DataItemParenthesizedExpr *)$$)->addItem($3);
+		((XQParenthesizedExpr *)$$)->addItem($3);
 	}
 	| _ExprSingle {
 		$$ = $1;
@@ -341,7 +340,7 @@ _ForExpr:
 	*/
 
 	_SimpleForClause _RETURN_ _ExprSingle {
-		$$ = new (((XPathParserControl *)parm)->memMgr) DataItemFor($1, $3, ((XPathParserControl *)parm)->memMgr);
+		$$ = new (((XPathParserControl *)parm)->memMgr) XQFLWOR($1, NULL, NULL, $3, ((XPathParserControl *)parm)->memMgr);
 	}
 
 ;
@@ -362,27 +361,30 @@ _QuantifiedExpr:
 	*/
 
 	_SOME_ _VariableBindingList _SATISFIES_ _ExprSingle {
-		$$ = new (((XPathParserControl *)parm)->memMgr) DataItemQuantifiedExpr(DataItemQuantifiedExpr::some, $2, $4, ((XPathParserControl *)parm)->memMgr);
+		$$ = new (((XPathParserControl *)parm)->memMgr) XQQuantified(XQQuantified::some, $2, $4, ((XPathParserControl *)parm)->memMgr);
 	}
 
 	| _EVERY_ _VariableBindingList _SATISFIES_ _ExprSingle {
-		$$ = new (((XPathParserControl *)parm)->memMgr) DataItemQuantifiedExpr(DataItemQuantifiedExpr::every, $2, $4, ((XPathParserControl *)parm)->memMgr);
+		$$ = new (((XPathParserControl *)parm)->memMgr) XQQuantified(XQQuantified::every, $2, $4, ((XPathParserControl *)parm)->memMgr);
 	}
 
 ;
 
-
 _VariableBindingList:
     _VariableBindingList _COMMA_ _VARNAME_ _IN_ _ExprSingle {
-		VariableBinding* bind=new (((XPathParserControl *)parm)->memMgr) VariableBinding(((XPathParserControl *)parm)->memMgr->getPooledString($3), $5);
+		XQVariableBinding* bind=new (((XPathParserControl *)parm)->memMgr) XQVariableBinding(((XPathParserControl *)parm)->memMgr,
+                                                                                         XQVariableBinding::forBinding,
+                                                                                         ((XPathParserControl *)parm)->memMgr->getPooledString($3), $5);
 		$1->push_back(bind);
 		$$ = $1;
 		delete $3;
 	}
 
     | _VARNAME_ _IN_ _ExprSingle {
-		$$ = new (((XPathParserControl *)parm)->memMgr) VectorOfBindings(PathanAllocator<VariableBinding*>((((XPathParserControl *)parm)->memMgr)));
-		VariableBinding* bind=new (((XPathParserControl *)parm)->memMgr) VariableBinding(((XPathParserControl *)parm)->memMgr->getPooledString($1), $3);
+		$$ = new (((XPathParserControl *)parm)->memMgr) VectorOfVariableBinding(PathanAllocator<XQVariableBinding*>((((XPathParserControl *)parm)->memMgr)));
+		XQVariableBinding* bind=new (((XPathParserControl *)parm)->memMgr) XQVariableBinding(((XPathParserControl *)parm)->memMgr,
+                                                                                         XQVariableBinding::forBinding,
+                                                                                         ((XPathParserControl *)parm)->memMgr->getPooledString($1), $3);
 		$$->push_back(bind);
 		delete $1;
 	}
@@ -396,7 +398,7 @@ _IfExpr:
 	*/
 
 	_IF_LPAR_ _Expr _RPAR_ _THEN_ _ExprSingle _ELSE_ _ExprSingle {
-		$$ = new (((XPathParserControl *)parm)->memMgr) DataItemIf($2, $5, $7, ((XPathParserControl *)parm)->memMgr);
+		$$ = new (((XPathParserControl *)parm)->memMgr) XQIf($2, $5, $7, ((XPathParserControl *)parm)->memMgr);
 	}
 
 ;
@@ -414,15 +416,15 @@ _OrExpr:
 	}
 
 	| _OrExpr _OR_ _AndExpr {
-    if($1->getType() == DataItem::OPERATOR
-       && (static_cast<DataItemOperator *>($1))->getOperatorName() == Or::name) {
+    if($1->getType() == ASTNode::OPERATOR
+       && (static_cast<XQOperator *>($1))->getOperatorName() == Or::name) {
 			Or* pOr = static_cast<Or*>($1);
 			pOr->addArgument($3);
 			$$ = $1;
 		}
 		else
 		{
-			DataItemImpl *dii = new (((XPathParserControl *)parm)->memMgr) Or(packageArgs($1, $3, ((XPathParserControl *)parm)->memMgr), ((XPathParserControl *)parm)->memMgr);
+			ASTNodeImpl *dii = new (((XPathParserControl *)parm)->memMgr) Or(packageArgs($1, $3, ((XPathParserControl *)parm)->memMgr), ((XPathParserControl *)parm)->memMgr);
 			$$ = dii;
 		}
 	}
@@ -439,15 +441,15 @@ _AndExpr:
 	}
 
 	| _AndExpr _AND_ _ComparisonExpr {
-    if($1->getType() == DataItem::OPERATOR
-       && (static_cast<DataItemOperator *>($1))->getOperatorName() == And::name) {
+    if($1->getType() == ASTNode::OPERATOR
+       && (static_cast<XQOperator *>($1))->getOperatorName() == And::name) {
 			And* pAnd = static_cast<And*>($1);
 			pAnd->addArgument($3);
 			$$ = $1;
 		}
 		else
 		{
-			DataItemImpl *dii = new (((XPathParserControl *)parm)->memMgr) And(packageArgs($1, $3, ((XPathParserControl *)parm)->memMgr), ((XPathParserControl *)parm)->memMgr);
+			ASTNodeImpl *dii = new (((XPathParserControl *)parm)->memMgr) And(packageArgs($1, $3, ((XPathParserControl *)parm)->memMgr), ((XPathParserControl *)parm)->memMgr);
 			$$ = dii;
 		}
 	}
@@ -650,7 +652,7 @@ _InstanceOfExpr:
 	}
 
 	| _TreatExpr _INSTANCE_OF_ _SequenceType {
-		$$ = new (((XPathParserControl *)parm)->memMgr) DataItemInstanceOf($1, $3, ((XPathParserControl *)parm)->memMgr);
+		$$ = new (((XPathParserControl *)parm)->memMgr) XQInstanceOf($1, $3, ((XPathParserControl *)parm)->memMgr);
 	}
 
 ;
@@ -664,7 +666,7 @@ _TreatExpr:
         $$ = $1;
     }
     | _CastableExpr _TREAT_AS_ _SequenceType {
-		$$ = new (((XPathParserControl *)parm)->memMgr) DataItemTreatAs($1, $3, ((XPathParserControl *)parm)->memMgr);
+		$$ = new (((XPathParserControl *)parm)->memMgr) XQTreatAs($1, $3, ((XPathParserControl *)parm)->memMgr);
 	}
 ;
 
@@ -679,7 +681,7 @@ _CastableExpr:
 	}
 
 	| _CastExpr _CASTABLE_AS_ _SingleType {
-        $$ = new (((XPathParserControl *)parm)->memMgr) DataItemCastableAs($1, $3,((XPathParserControl *)parm)->memMgr);
+        $$ = new (((XPathParserControl *)parm)->memMgr) XQCastableAs($1, $3,((XPathParserControl *)parm)->memMgr);
 	}
 
 ;
@@ -693,7 +695,7 @@ _CastExpr:
         $$ = $1;
     }
     | _UnaryExpr _CAST_AS_ _SingleType {
-		$$ = new (((XPathParserControl *)parm)->memMgr) DataItemCastAs($1, $3,((XPathParserControl *)parm)->memMgr);
+		$$ = new (((XPathParserControl *)parm)->memMgr) XQCastAs($1, $3,((XPathParserControl *)parm)->memMgr);
 	}
 ;
 
@@ -708,7 +710,7 @@ _UnaryExpr:
 	}
 
 	| _MINUS_ _UnaryExpr {
-	  VectorOfDataItems args(PathanAllocator<DataItem*>(((XPathParserControl *)parm)->memMgr));
+	  VectorOfASTNodes args(PathanAllocator<ASTNode*>(((XPathParserControl *)parm)->memMgr));
 	  args.push_back($2);
 	  $$ = new (((XPathParserControl *)parm)->memMgr) UnaryMinus(args, ((XPathParserControl *)parm)->memMgr);
 	}
@@ -742,22 +744,22 @@ _PathExpr:
 	*/
 
   _SLASH_ {
-		DataItemNav *nav = new (((XPathParserControl *)parm)->memMgr) DataItemNav(((XPathParserControl *)parm)->memMgr);
+		XQNav *nav = new (((XPathParserControl *)parm)->memMgr) XQNav(((XPathParserControl *)parm)->memMgr);
 		nav->setGotoRootFirst(true);
 		$$ = nav;
   }
 
 	| _SLASH_ _RelativePathExpr {
 
-        // Optimization: if the _RelativePathExpr is already a DataItemNav, simply set the "go to root" flag
-        if($2->getType()==DataItem::NAVIGATION)
+        // Optimization: if the _RelativePathExpr is already a XQNav, simply set the "go to root" flag
+        if($2->getType()==ASTNode::NAVIGATION)
         {
-            ((DataItemNav*)$2)->setGotoRootFirst(true);
+            ((XQNav*)$2)->setGotoRootFirst(true);
             $$ = $2;
         }
         else
         {
-	        DataItemNav *nav = new (((XPathParserControl *)parm)->memMgr) DataItemNav(((XPathParserControl *)parm)->memMgr);
+	        XQNav *nav = new (((XPathParserControl *)parm)->memMgr) XQNav(((XPathParserControl *)parm)->memMgr);
 		    nav->setGotoRootFirst(true);
 		    nav->addStep($2);
 		    $$ = nav;
@@ -765,12 +767,12 @@ _PathExpr:
   }
 
 	| _SLASHSLASH_ _RelativePathExpr {
-    DataItemNav *nav = 0;
-    if($2->getType()==DataItem::NAVIGATION) {
-      nav = (DataItemNav*)$2;
+    XQNav *nav = 0;
+    if($2->getType()==ASTNode::NAVIGATION) {
+      nav = (XQNav*)$2;
     }
     else {
-      nav = new (((XPathParserControl *)parm)->memMgr) DataItemNav(((XPathParserControl *)parm)->memMgr);
+      nav = new (((XPathParserControl *)parm)->memMgr) XQNav(((XPathParserControl *)parm)->memMgr);
       nav->addStep($2);
     }
 
@@ -780,7 +782,7 @@ _PathExpr:
     step->setTypeWildcard();
     step->setNameWildcard();
     step->setNamespaceWildcard();
-    nav->addStepFront(new (((XPathParserControl *)parm)->memMgr) DataItemStep(DataItemStep::DESCENDANT_OR_SELF, step, ((XPathParserControl *)parm)->memMgr));
+    nav->addStepFront(new (((XPathParserControl *)parm)->memMgr) XQStep(XQStep::DESCENDANT_OR_SELF, step, ((XPathParserControl *)parm)->memMgr));
 
     $$ = nav;
 	}
@@ -805,15 +807,15 @@ _RelativePathExpr:
 
 	| _RelativePathExpr _SLASH_ _StepExpr {
 
-        // Optimization: if the _RelativePathExpr is already a DataItemNav, simply add the new step
-        if($1->getType()==DataItem::NAVIGATION)
+        // Optimization: if the _RelativePathExpr is already a XQNav, simply add the new step
+        if($1->getType()==ASTNode::NAVIGATION)
         {
-            ((DataItemNav*)$1)->addStep($3);
+            ((XQNav*)$1)->addStep($3);
             $$ = $1;
         }
         else
         {
-		    DataItemNav *nav = new (((XPathParserControl *)parm)->memMgr) DataItemNav(((XPathParserControl *)parm)->memMgr);
+		    XQNav *nav = new (((XPathParserControl *)parm)->memMgr) XQNav(((XPathParserControl *)parm)->memMgr);
 		    nav->addStep($1);
 		    nav->addStep($3);
 		    $$ = nav;
@@ -822,12 +824,12 @@ _RelativePathExpr:
 
 	| _RelativePathExpr _SLASHSLASH_ _StepExpr {
 
-    DataItemNav *nav = 0;
-    if($1->getType()==DataItem::NAVIGATION) {
-      nav = (DataItemNav*)$1;
+    XQNav *nav = 0;
+    if($1->getType()==ASTNode::NAVIGATION) {
+      nav = (XQNav*)$1;
     }
     else {
-      nav = new (((XPathParserControl *)parm)->memMgr) DataItemNav(((XPathParserControl *)parm)->memMgr);
+      nav = new (((XPathParserControl *)parm)->memMgr) XQNav(((XPathParserControl *)parm)->memMgr);
       nav->addStep($1);
     }
 
@@ -835,7 +837,7 @@ _RelativePathExpr:
     step->setTypeWildcard();
     step->setNameWildcard();
     step->setNamespaceWildcard();
-    nav->addStep(DataItemStep::DESCENDANT_OR_SELF, step);
+    nav->addStep(XQStep::DESCENDANT_OR_SELF, step);
 
     nav->addStep($3);
 
@@ -885,13 +887,13 @@ _ForwardStep:
 	_ForwardAxis _NodeTest {
       if(!$2->isNodeTypeSet()) {
         switch($1) {
-        case DataItemStep::NAMESPACE: $2->setNodeType(Node::namespace_string); break;
-        case DataItemStep::ATTRIBUTE: $2->setNodeType(Node::attribute_string); break;
+        case XQStep::NAMESPACE: $2->setNodeType(Node::namespace_string); break;
+        case XQStep::ATTRIBUTE: $2->setNodeType(Node::attribute_string); break;
         default: $2->setNodeType(Node::element_string); break;
         }
       }
 
-      $$ = new (((XPathParserControl *)parm)->memMgr) DataItemStep($1, $2, ((XPathParserControl *)parm)->memMgr);
+      $$ = new (((XPathParserControl *)parm)->memMgr) XQStep($1, $2, ((XPathParserControl *)parm)->memMgr);
 	}
 
 	| _AbbrevForwardStep {
@@ -914,35 +916,35 @@ _ForwardAxis:
 
 
 	_AXIS_CHILD_ {
-    $$ = DataItemStep::CHILD;
+    $$ = XQStep::CHILD;
 	}
 
 	| _AXIS_DESCENDANT_ {
-    $$ = DataItemStep::DESCENDANT;
+    $$ = XQStep::DESCENDANT;
 	}
 
 	| _AXIS_ATTRIBUTE_ {
-    $$ = DataItemStep::ATTRIBUTE;
+    $$ = XQStep::ATTRIBUTE;
 	}
 
 	| _AXIS_SELF_ {
-    $$ = DataItemStep::SELF;
+    $$ = XQStep::SELF;
 	}
 
 	| _AXIS_DESCENDANT_OR_SELF_ {
-    $$ = DataItemStep::DESCENDANT_OR_SELF;
+    $$ = XQStep::DESCENDANT_OR_SELF;
 	}
 
 	| _AXIS_FOLLOWING_SIBLING_ {
-    $$ = DataItemStep::FOLLOWING_SIBLING;
+    $$ = XQStep::FOLLOWING_SIBLING;
 	}
 
 	| _AXIS_FOLLOWING_ {
-    $$ = DataItemStep::FOLLOWING;
+    $$ = XQStep::FOLLOWING;
 	}
 
 	| _AXIS_NAMESPACE_ {
-    $$ = DataItemStep::NAMESPACE;
+    $$ = XQStep::NAMESPACE;
 	}
 
 ;
@@ -958,21 +960,21 @@ _AbbrevForwardStep:
       $2->setNodeType(Node::attribute_string);
     }
 
-    $$ = new (((XPathParserControl *)parm)->memMgr) DataItemStep(DataItemStep::ATTRIBUTE, $2, ((XPathParserControl *)parm)->memMgr);
+    $$ = new (((XPathParserControl *)parm)->memMgr) XQStep(XQStep::ATTRIBUTE, $2, ((XPathParserControl *)parm)->memMgr);
 	}
 
 	| _NodeTest {
-    DataItemStep::Axis axis = DataItemStep::CHILD;
+    XQStep::Axis axis = XQStep::CHILD;
     SequenceType::ItemType *itemtype = $1->getItemType();
     if(itemtype != 0 &&
        itemtype->getItemTestType() == SequenceType::ItemType::TEST_ATTRIBUTE) {
-      axis = DataItemStep::ATTRIBUTE;
+      axis = XQStep::ATTRIBUTE;
     }
     else if(!$1->isNodeTypeSet()) {
       $1->setNodeType(Node::element_string);
     }
 
-    $$ = new (((XPathParserControl *)parm)->memMgr) DataItemStep(axis, $1, ((XPathParserControl *)parm)->memMgr);
+    $$ = new (((XPathParserControl *)parm)->memMgr) XQStep(axis, $1, ((XPathParserControl *)parm)->memMgr);
 	}
 
 ;
@@ -988,7 +990,7 @@ _ReverseStep:
       $2->setNodeType(Node::element_string);
     }
 
-    $$ = new (((XPathParserControl *)parm)->memMgr) DataItemStep($1, $2, ((XPathParserControl *)parm)->memMgr);
+    $$ = new (((XPathParserControl *)parm)->memMgr) XQStep($1, $2, ((XPathParserControl *)parm)->memMgr);
 	}
 
 	| _AbbrevReverseStep {
@@ -1007,23 +1009,23 @@ _ReverseAxis:
 	*/
 
 	_AXIS_PARENT_ {
-    $$ = DataItemStep::PARENT;
+    $$ = XQStep::PARENT;
 	}
 
 	| _AXIS_ANCESTOR_ {
-    $$ = DataItemStep::ANCESTOR;
+    $$ = XQStep::ANCESTOR;
 	}
 
 	| _AXIS_PRECEDING_SIBLING_ {
-    $$ = DataItemStep::PRECEDING_SIBLING;
+    $$ = XQStep::PRECEDING_SIBLING;
 	}
 
 	| _AXIS_PRECEDING_ {
-    $$ = DataItemStep::PRECEDING;
+    $$ = XQStep::PRECEDING;
 	}
 
 	| _AXIS_ANCESTOR_OR_SELF_ {
-    $$ = DataItemStep::ANCESTOR_OR_SELF;
+    $$ = XQStep::ANCESTOR_OR_SELF;
 	}
 
 ;
@@ -1038,7 +1040,7 @@ _AbbrevReverseStep:
 		step->setNameWildcard();
 		step->setNamespaceWildcard();
 		step->setTypeWildcard();
-    $$ = new (((XPathParserControl *)parm)->memMgr) DataItemStep(DataItemStep::PARENT, step, ((XPathParserControl *)parm)->memMgr);
+    $$ = new (((XPathParserControl *)parm)->memMgr) XQStep(XQStep::PARENT, step, ((XPathParserControl *)parm)->memMgr);
 	}
 
 ;
@@ -1135,7 +1137,7 @@ _PredicateList:
 	*/
 
     /* empty */ {
-        $$ = new VectorOfDataItems(PathanAllocator<DataItem*>(((XPathParserControl *)parm)->memMgr));
+        $$ = new VectorOfASTNodes(PathanAllocator<ASTNode*>(((XPathParserControl *)parm)->memMgr));
     }
 	| _PredicateList _Predicate {
         $1->push_back($2);
@@ -1199,8 +1201,8 @@ _Literal:
 				XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 				XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
 				((XPathParserControl *)parm)->memMgr->getPooledString($1), /*isNumeric*/false);
-		DataItemLiteral *str_val  = new (((XPathParserControl *)parm)->memMgr)
-      DataItemLiteral(ic, ((XPathParserControl *)parm)->memMgr);
+		XQLiteral *str_val  = new (((XPathParserControl *)parm)->memMgr)
+      XQLiteral(ic, ((XPathParserControl *)parm)->memMgr);
 		$$ = str_val;
         delete $1;
 	}
@@ -1219,8 +1221,8 @@ _NumericLiteral:
 			XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 			XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_INTEGER,
 				((XPathParserControl *)parm)->memMgr->getPooledString($1), /*isNumeric*/true);
-    DataItemLiteral *did  = new (((XPathParserControl *)parm)->memMgr)
-      DataItemLiteral(ic, ((XPathParserControl *)parm)->memMgr);
+    XQLiteral *did  = new (((XPathParserControl *)parm)->memMgr)
+      XQLiteral(ic, ((XPathParserControl *)parm)->memMgr);
     delete $1;
     $$ = did;
   }
@@ -1231,8 +1233,8 @@ _NumericLiteral:
 			XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 			XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DECIMAL,
 				((XPathParserControl *)parm)->memMgr->getPooledString($1), /*isNumeric*/true);
-    DataItemLiteral *did  = new (((XPathParserControl *)parm)->memMgr)
-      DataItemLiteral(ic, ((XPathParserControl *)parm)->memMgr);
+    XQLiteral *did  = new (((XPathParserControl *)parm)->memMgr)
+      XQLiteral(ic, ((XPathParserControl *)parm)->memMgr);
     delete $1;
     $$ = did;
   }
@@ -1243,8 +1245,8 @@ _NumericLiteral:
 			XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 			XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DOUBLE,
 				((XPathParserControl *)parm)->memMgr->getPooledString($1), /*isNumeric*/true);
-    DataItemLiteral *did  = new (((XPathParserControl *)parm)->memMgr)
-      DataItemLiteral(ic, ((XPathParserControl *)parm)->memMgr);
+    XQLiteral *did  = new (((XPathParserControl *)parm)->memMgr)
+      XQLiteral(ic, ((XPathParserControl *)parm)->memMgr);
     delete $1;
     $$ = did;
   }
@@ -1258,7 +1260,7 @@ _VarRef:
   */
   
   _VARNAME_ {
-		DataItemVariable *var = new (((XPathParserControl *)parm)->memMgr) DataItemVariable($1, ((XPathParserControl *)parm)->memMgr);
+		XQVariable *var = new (((XPathParserControl *)parm)->memMgr) XQVariable($1, ((XPathParserControl *)parm)->memMgr);
 		delete $1;
 		$$ = var;
   }
@@ -1271,9 +1273,9 @@ _ParenthesizedExpr:
 	*/
 
 	_LPAR_ _Expr _RPAR_ {
-        if($2->getType()!=DataItem::PARENTHESIZED)
+        if($2->getType()!=ASTNode::PARENTHESIZED)
         {
-          DataItemParenthesizedExpr *dis = new (((XPathParserControl *)parm)->memMgr) DataItemParenthesizedExpr(((XPathParserControl *)parm)->memMgr);
+          XQParenthesizedExpr *dis = new (((XPathParserControl *)parm)->memMgr) XQParenthesizedExpr(((XPathParserControl *)parm)->memMgr);
           dis->addItem($2);
           $$ = dis;
         }
@@ -1281,7 +1283,7 @@ _ParenthesizedExpr:
           $$ = $2;
 	}
 	| _LPAR_ _RPAR_ {
-		$$ = new (((XPathParserControl *)parm)->memMgr) DataItemSequence(((XPathParserControl *)parm)->memMgr);
+		$$ = new (((XPathParserControl *)parm)->memMgr) XQSequence(((XPathParserControl *)parm)->memMgr);
 	}
 
 ;
@@ -1294,7 +1296,7 @@ _ContextItemExpr:
   */
 
 	_DOT_ {
-		$$ = new (((XPathParserControl *)parm)->memMgr) DataItemContextItem(((XPathParserControl *)parm)->memMgr);
+		$$ = new (((XPathParserControl *)parm)->memMgr) XQContextItem(((XPathParserControl *)parm)->memMgr);
 	}
 
 ;
@@ -1308,8 +1310,8 @@ _FunctionCall:
 	_QNAME_LPAR_ _RPAR_ {
         QualifiedName *qname = new (((XPathParserControl *)parm)->memMgr) QualifiedName($1, ((XPathParserControl *)parm)->memMgr);
         delete $1;
-        VectorOfDataItems tmp(PathanAllocator<DataItem*>(((XPathParserControl *)parm)->memMgr));
-        DataItem* functionImpl = ((XPathParserControl*)parm)->context->lookUpFunction(qname->getPrefix(), qname->getName(), tmp);
+        VectorOfASTNodes tmp(PathanAllocator<ASTNode*>(((XPathParserControl *)parm)->memMgr));
+        ASTNode* functionImpl = ((XPathParserControl*)parm)->context->lookUpFunction(qname->getPrefix(), qname->getName(), tmp);
         if( functionImpl == NULL) {
           XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buf(1023, ((XPathParserControl *)parm)->memMgr);
           buf.set(X("Function '"));
@@ -1323,7 +1325,7 @@ _FunctionCall:
 	| _QNAME_LPAR_ _ArgumentList _RPAR_ {
         QualifiedName *qname = new (((XPathParserControl *)parm)->memMgr) QualifiedName($1, ((XPathParserControl *)parm)->memMgr);
         delete $1;
-        DataItem* functionImpl = ((XPathParserControl*)parm)->context->lookUpFunction(qname->getPrefix(), qname->getName(), *$2);
+        ASTNode* functionImpl = ((XPathParserControl*)parm)->context->lookUpFunction(qname->getPrefix(), qname->getName(), *$2);
         if( functionImpl == NULL) {
           XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buf(1023, ((XPathParserControl *)parm)->memMgr);
           buf.set(X("Function '"));
@@ -1347,7 +1349,7 @@ _ArgumentList:
 	*/
 
 	_ExprSingle {
-        $$ = new VectorOfDataItems(PathanAllocator<DataItem*>(((XPathParserControl *)parm)->memMgr));
+        $$ = new VectorOfASTNodes(PathanAllocator<ASTNode*>(((XPathParserControl *)parm)->memMgr));
         $$->push_back($1);
 	  }
 
@@ -1765,9 +1767,9 @@ void yyerror(const char *s)
   DSLthrow(StaticErrorException, X("XPath2Parser.y"), X(s));
 }
 
-inline VectorOfDataItems packageArgs(DataItem *arg1Impl, DataItem *arg2Impl, XPath2MemoryManager* memMgr)
+inline VectorOfASTNodes packageArgs(ASTNode *arg1Impl, ASTNode *arg2Impl, XPath2MemoryManager* memMgr)
 {
-	VectorOfDataItems args=VectorOfDataItems(2,(DataItem*)NULL,PathanAllocator<DataItem*>(memMgr));
+	VectorOfASTNodes args=VectorOfASTNodes(2,(ASTNode*)NULL,PathanAllocator<ASTNode*>(memMgr));
 	args[0]=arg1Impl;
 	args[1]=arg2Impl;
 

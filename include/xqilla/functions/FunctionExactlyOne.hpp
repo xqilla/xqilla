@@ -31,7 +31,7 @@ public:
   static const unsigned int minArgs;
   static const unsigned int maxArgs;
 
-  FunctionExactlyOne(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  FunctionExactlyOne(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   Result createResult(DynamicContext* context, int flags=0) const;
 

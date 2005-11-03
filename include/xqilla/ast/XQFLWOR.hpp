@@ -17,12 +17,12 @@
 // XQFLWOR.hpp: interface for the XQFLWOR class.
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_XQFLWOR_H__6E34F36F_797C_4A12_AF0B_5538F1D650B1__INCLUDED_)
-#define AFX_XQFLWOR_H__6E34F36F_797C_4A12_AF0B_5538F1D650B1__INCLUDED_
+#if !defined(AFXQ_XQFLWOR_H__6E34F36F_797C_4A12_AF0B_5538F1D650B1__INCLUDED_)
+#define AFXQ_XQFLWOR_H__6E34F36F_797C_4A12_AF0B_5538F1D650B1__INCLUDED_
 
 #include <xqilla/framework/XQEngine.hpp>
 #include <vector>
-#include <xqilla/ast/DataItemImpl.hpp>
+#include <xqilla/ast/ASTNodeImpl.hpp>
 #include <xqilla/runtime/ResultBuffer.hpp>
 #include <xqilla/items/AnyAtomicType.hpp>
 #include <xqilla/runtime/Sequence.hpp>
@@ -59,19 +59,19 @@ public:
 
 		typedef long sortModifier;
 
-		SortSpec(DataItem* expr, sortModifier modifier, const XMLCh* collation);
+		SortSpec(ASTNode* expr, sortModifier modifier, const XMLCh* collation);
 
 		void staticResolution(StaticContext *context, StaticResolutionContext &src);
 		SortableItem buildKey(DynamicContext* context);
 
-    const DataItem *getExpression() const;
+    const ASTNode *getExpression() const;
     sortModifier getModifier() const;
     const XMLCh *getCollation() const;
 
-    void setExpression(DataItem *expr);
+    void setExpression(ASTNode *expr);
 
 	protected:
-		DataItem* _expr;
+		ASTNode* _expr;
 		sortModifier _modifier;
 		const XMLCh* _collation;
 	};
@@ -94,21 +94,21 @@ protected:
 };
 
 
-class XQENGINE_API XQFLWOR : public DataItemImpl
+class XQENGINE_API XQFLWOR : public ASTNodeImpl
 {
 public:
-  XQFLWOR(VectorOfVariableBinding* bindings, DataItem* where, XQSort* orderBy, DataItem* returnExpr, XPath2MemoryManager* expr);
+  XQFLWOR(VectorOfVariableBinding* bindings, ASTNode* where, XQSort* orderBy, ASTNode* returnExpr, XPath2MemoryManager* expr);
 
   virtual Result createResult(DynamicContext *context, int flags=0) const;
-  virtual DataItem* staticResolution(StaticContext *context);
+  virtual ASTNode* staticResolution(StaticContext *context);
 
   const VectorOfVariableBinding *getBindings() const;
-  const DataItem *getWhereExpr() const;
-  const DataItem *getReturnExpr() const;
+  const ASTNode *getWhereExpr() const;
+  const ASTNode *getReturnExpr() const;
   const XQSort *getSort() const;
 
-  void setWhereExpr(DataItem *where);
-  void setReturnExpr(DataItem *ret);
+  void setWhereExpr(ASTNode *where);
+  void setReturnExpr(ASTNode *ret);
 
   typedef std::pair<Sequence, XQSort::SortItems> ResultPair;
 
@@ -142,7 +142,7 @@ protected:
   virtual Result createResultImpl(VectorOfVariableBinding::const_iterator it, VectorOfVariableBinding::const_iterator end,
                                   DynamicContext* context, int flags = 0) const;
   void staticResolutionImpl(StaticContext* context);
-  DataItem *staticallyResolveWhere(DataItem *where, StaticContext* context);
+  ASTNode *staticallyResolveWhere(ASTNode *where, StaticContext* context);
 
   class SortingFLWORResult : public LazySequenceResult
   {
@@ -179,8 +179,8 @@ protected:
   };
 
 	VectorOfVariableBinding* _bindings;
-	DataItem* _return, * _where;
+	ASTNode* _return, * _where;
 	XQSort* _sort;
 };
 
-#endif // !defined(AFX_XQFLWOR_H__6E34F36F_797C_4A12_AF0B_5538F1D650B1__INCLUDED_)
+#endif // !defined(AFXQ_XQFLWOR_H__6E34F36F_797C_4A12_AF0B_5538F1D650B1__INCLUDED_)

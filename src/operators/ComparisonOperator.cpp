@@ -27,8 +27,8 @@
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/context/PathanFactory.hpp>
 
-ComparisonOperator::ComparisonOperator(const XMLCh* opName, const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
-  : DataItemOperator(opName, args, memMgr)
+ComparisonOperator::ComparisonOperator(const XMLCh* opName, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
+  : XQOperator(opName, args, memMgr)
 {
 }
 

@@ -17,18 +17,18 @@
 // XQDynamicContextImpl.h: proxies calls to the embedded XQStaticContext
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_XQDYNAMICCONTEXTIMPL_H__D608B994_E090_4206_9473_81F3D7350410__INCLUDED_)
-#define AFX_XQDYNAMICCONTEXTIMPL_H__D608B994_E090_4206_9473_81F3D7350410__INCLUDED_
+#if !defined(AFXQ_XQDYNAMICCONTEXTIMPL_H__D608B994_E090_4206_9473_81F3D7350410__INCLUDED_)
+#define AFXQ_XQDYNAMICCONTEXTIMPL_H__D608B994_E090_4206_9473_81F3D7350410__INCLUDED_
 
-#include <xqilla/context/XQContext.hpp>
-#include <xqilla/context/impl/DynamicContextImpl.hpp>
+#include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/runtime/Sequence.hpp>
 #include <xqilla/framework/ProxyMemoryManager.hpp>
+#include <xqilla/exceptions/ContextException.hpp>
 
-class XQENGINE_API XQDynamicContextImpl : public XQContext
+class XQENGINE_API XQDynamicContextImpl : public DynamicContext
 {
 public:
-  XQDynamicContextImpl(const XQContext *staticContext, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr);
+  XQDynamicContextImpl(const StaticContext *staticContext, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr);
   ~XQDynamicContextImpl();
 
   virtual void release();
@@ -196,7 +196,7 @@ public:
   /** adds a custom function to the function table */
   virtual void addCustomFunction(FuncFactory *func);
 	/** returns a function with name name in the namespace represented by prefix */
-  virtual DataItem* lookUpFunction(const XMLCh* prefix, const XMLCh* name, VectorOfDataItems& v) const;
+  virtual ASTNode* lookUpFunction(const XMLCh* prefix, const XMLCh* name, VectorOfASTNodes& v) const;
 
   /** Get the implementation for the specified collation */
   virtual Collation* getCollation(const XMLCh* const URI) const;
@@ -246,7 +246,7 @@ public:
   virtual XPath2MemoryManager* getMemoryManager() const;
 
 protected:
-  const XQContext *_staticContext;
+  const StaticContext *_staticContext;
 
   // The memory manager used to create this context
   XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* _createdWith;
@@ -342,11 +342,11 @@ inline void XQDynamicContextImpl::addSchemaLocation(const XMLCh* uri, VectorOfSt
 { DSLthrow(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
 inline VariableTypeStore* XQDynamicContextImpl::getVariableTypeStore()
 { DSLthrow(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); return 0; }
-inline void XQDynamicContextImpl::setConstructionMode(XQStaticContext::ConstructionMode newMode)
+inline void XQDynamicContextImpl::setConstructionMode(StaticContext::ConstructionMode newMode)
 { DSLthrow(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
 inline void XQDynamicContextImpl::setPreserveBoundarySpace(bool value)
 { DSLthrow(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
-inline void XQDynamicContextImpl::setDefaultFLWOROrderingMode(XQStaticContext::FLWOROrderingMode newMode)
+inline void XQDynamicContextImpl::setDefaultFLWOROrderingMode(StaticContext::FLWOROrderingMode newMode)
 { DSLthrow(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
 inline void XQDynamicContextImpl::setInheritNamespaces(bool value) 
 { DSLthrow(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
@@ -357,15 +357,15 @@ inline bool XQDynamicContextImpl::getXPath1CompatibilityMode() const { return _s
 inline const XMLCh* XQDynamicContextImpl::getDefaultFuncNS() const { return _staticContext->getDefaultFuncNS(); }
 inline const XMLCh* XQDynamicContextImpl::getBaseURI() const { return _staticContext->getBaseURI(); }
 inline const XMLCh* XQDynamicContextImpl::getDefaultElementAndTypeNS() const { return _staticContext->getDefaultElementAndTypeNS(); }
-inline XQStaticContext::FLWOROrderingMode XQDynamicContextImpl::getDefaultFLWOROrderingMode() const { return _staticContext->getDefaultFLWOROrderingMode(); }
+inline StaticContext::FLWOROrderingMode XQDynamicContextImpl::getDefaultFLWOROrderingMode() const { return _staticContext->getDefaultFLWOROrderingMode(); }
 inline bool XQDynamicContextImpl::getInheritNamespaces() const { return _staticContext->getInheritNamespaces(); }
 inline bool XQDynamicContextImpl::getPreserveNamespaces() const { return _staticContext->getPreserveNamespaces(); }
 
 inline Collation* XQDynamicContextImpl::getCollation(const XMLCh* URI) const { return _staticContext->getCollation(URI); }
-inline DataItem* XQDynamicContextImpl::lookUpFunction(const XMLCh* prefix, const XMLCh* name, VectorOfDataItems& v) const { return _staticContext->lookUpFunction(prefix, name, v); }
+inline ASTNode* XQDynamicContextImpl::lookUpFunction(const XMLCh* prefix, const XMLCh* name, VectorOfASTNodes& v) const { return _staticContext->lookUpFunction(prefix, name, v); }
 inline bool XQDynamicContextImpl::isTypeOrDerivedFromType(const XMLCh* uri, const XMLCh* typeName, const XMLCh* uriToCheck, const XMLCh* typeNameToCheck) const { return _staticContext->isTypeOrDerivedFromType(uri, typeName, uriToCheck, typeNameToCheck); }
 
-inline XQStaticContext::ConstructionMode XQDynamicContextImpl::getConstructionMode() const { return _staticContext->getConstructionMode(); }
+inline StaticContext::ConstructionMode XQDynamicContextImpl::getConstructionMode() const { return _staticContext->getConstructionMode(); }
 inline bool XQDynamicContextImpl::getPreserveBoundarySpace() const { return _staticContext->getPreserveBoundarySpace(); }
 
-#endif // !defined(AFX_XQDYNAMICCONTEXTIMPL_H__D608B994_E090_4206_9473_81F3D7350410__INCLUDED_)
+#endif // !defined(AFXQ_XQDYNAMICCONTEXTIMPL_H__D608B994_E090_4206_9473_81F3D7350410__INCLUDED_)

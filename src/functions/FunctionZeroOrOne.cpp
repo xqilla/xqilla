@@ -34,7 +34,7 @@ const unsigned int FunctionZeroOrOne::maxArgs = 1;
  * fn:zero-or-one($arg as item()*) as item()?
  */
 
-FunctionZeroOrOne::FunctionZeroOrOne(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+FunctionZeroOrOne::FunctionZeroOrOne(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "item()*", args, memMgr)
 {
   // TBD - could do better here - jpcs
@@ -58,7 +58,7 @@ FunctionZeroOrOne::ZeroOrOneResult::ZeroOrOneResult(const FunctionZeroOrOne *fun
 Item::Ptr FunctionZeroOrOne::ZeroOrOneResult::next(DynamicContext *context)
 {
   if(_arg.isNull()) {
-    _arg = _func->getParamNumber(1, context, DataItem::RETURN_TWO|(_flags & ~DataItem::RETURN_ONE));
+    _arg = _func->getParamNumber(1, context, ASTNode::RETURN_TWO|(_flags & ~ASTNode::RETURN_ONE));
   }
 
   const Item::Ptr result = _arg.next(context);

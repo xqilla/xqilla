@@ -40,15 +40,15 @@ const unsigned int FunctionLang::maxArgs = 2;
  * fn:lang($testlang as xs:string?, $node as node()) as xs:boolean
 **/
 
-FunctionLang::FunctionLang(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
-  : DataItemFunction(name, minArgs, maxArgs, "string?,node()", args, memMgr)
+FunctionLang::FunctionLang(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
+  : XQFunction(name, minArgs, maxArgs, "string?,node()", args, memMgr)
 {
 }
 
-DataItem* FunctionLang::staticResolution(StaticContext *context) {
+ASTNode* FunctionLang::staticResolution(StaticContext *context) {
   if(_args.size()==1)
     _src.contextItemUsed(true);
-  return resolveDataItems(_args, context, _args.size()!=1);
+  return resolveASTNodes(_args, context, _args.size()!=1);
 }
 
 Sequence FunctionLang::collapseTreeInternal(DynamicContext* context, int flags) const

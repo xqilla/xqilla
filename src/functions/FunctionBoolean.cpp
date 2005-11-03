@@ -33,14 +33,14 @@ const unsigned int FunctionBoolean::maxArgs = 1;
  * fn:boolean($arg as item()*) as xs:boolean
 **/
 
-FunctionBoolean::FunctionBoolean(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+FunctionBoolean::FunctionBoolean(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "item()*", args, memMgr)
 {
 }
 
 Sequence FunctionBoolean::collapseTreeInternal(DynamicContext* context, int flags) const
 {
-  bool result = getParamNumber(1,context,DataItem::UNORDERED|DataItem::RETURN_TWO)
+  bool result = getParamNumber(1,context,ASTNode::UNORDERED|ASTNode::RETURN_TWO)
     .getEffectiveBooleanValue(context);
   return Sequence(context->getPathanFactory()->createBoolean(result, context),
                   context->getMemoryManager());

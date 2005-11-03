@@ -31,7 +31,7 @@ const unsigned int FunctionFalse::maxArgs = 0;
  * fn:false() as xs:boolean
  */
 
-FunctionFalse::FunctionFalse(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+FunctionFalse::FunctionFalse(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "empty()", args, memMgr)
 {
 }

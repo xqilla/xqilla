@@ -18,14 +18,14 @@
 
 #include <xqilla/framework/Pathan.hpp>
 
-#include <xqilla/ast/DataItemFunction.hpp>
+#include <xqilla/ast/XQFunction.hpp>
 
 /**
  * Gettter function for month component of date.
  *
  * xf:month-from-date(date $srcval) => integer
  */
-class PATHAN_EXPORT FunctionMonthFromDate : public DataItemFunction
+class PATHAN_EXPORT FunctionMonthFromDate : public XQFunction
 {
 public:
   static const XMLCh name[];
@@ -35,9 +35,9 @@ public:
   /**
    * Constructor
    */
-  FunctionMonthFromDate(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  FunctionMonthFromDate(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
 
-  DataItem* staticResolution(StaticContext *context);
+  ASTNode* staticResolution(StaticContext *context);
 
   /**
    * Returns the integer representing the month in the value of $srcval

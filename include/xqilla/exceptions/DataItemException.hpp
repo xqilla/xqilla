@@ -15,7 +15,7 @@
 
 /*
 
-  DataItemDSLException - exception class for DataItems
+  DataItemException - exception class for ASTNodes
 
 */
 
@@ -34,7 +34,7 @@ class PATHAN_EXPORT DataItemException : public DSLException
 public:
 
   DataItemException(const XMLCh *functionName, const XMLCh *reason, const char *file, int line)
-    : DSLException(X("DataItemException"), functionName, reason, file, line) {};
+    : DSLException(X("XQException"), functionName, reason, file, line) {};
 };
 
 #endif // _DATAITEMEXCEPTION_HPP

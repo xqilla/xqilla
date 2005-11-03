@@ -18,18 +18,18 @@
 
 #include <xqilla/framework/Pathan.hpp>
 
-#include <xqilla/ast/DataItemOperator.hpp>
+#include <xqilla/ast/XQOperator.hpp>
 #include <xqilla/runtime/SingleResult.hpp>
 
-class PATHAN_EXPORT And : public DataItemOperator
+class PATHAN_EXPORT And : public XQOperator
 {
 public:
   static const XMLCh name[];
 
-  And(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  And(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   Result createResult(DynamicContext* context, int flags=0) const;
-  virtual DataItem* staticResolution(StaticContext *context);
+  virtual ASTNode* staticResolution(StaticContext *context);
 
 private:
   class AndResult : public SingleResult

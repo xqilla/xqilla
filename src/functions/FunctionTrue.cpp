@@ -30,7 +30,7 @@ const unsigned int FunctionTrue::maxArgs = 0;
  * fn:true() as xs:boolean
  */
 
-FunctionTrue::FunctionTrue(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+FunctionTrue::FunctionTrue(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "empty()", args, memMgr)
 {
 }

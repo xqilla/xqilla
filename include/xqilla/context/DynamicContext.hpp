@@ -17,6 +17,7 @@
 #define _DYNAMICCONTEXT_HPP
 
 #include <xqilla/context/StaticContext.hpp>
+#include <xqilla/context/XQDebugCallback.hpp>
 #include <xqilla/items/ATDurationOrDerived.hpp>
 
 class Sequence;
@@ -91,6 +92,11 @@ public:
 
   /** send a pair of strings to the "trace" data set */
   virtual void trace(const XMLCh* message1, const XMLCh* message2) = 0;
+
+  /** Set the object to be used for debugging callbacks */
+  virtual void setDebugCallback(XQDebugCallback* callback) = 0;
+  /** Get the object to be used for debugging callbacks */
+  virtual XQDebugCallback* getDebugCallback() const = 0;
 };
 
 #endif

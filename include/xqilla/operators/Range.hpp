@@ -18,20 +18,20 @@
 
 #include <xqilla/framework/Pathan.hpp>
 
-#include <xqilla/ast/DataItemOperator.hpp>
+#include <xqilla/ast/XQOperator.hpp>
 
 class Numeric;
 
 /** Range operator function*/
-class PATHAN_EXPORT Range : public DataItemOperator
+class PATHAN_EXPORT Range : public XQOperator
 {
 public:
   static const XMLCh name[];
 
   ///Constructor
-  Range(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  Range(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
-  virtual DataItem* staticResolution(StaticContext *context);
+  virtual ASTNode* staticResolution(StaticContext *context);
   Result createResult(DynamicContext* context, int flags=0) const;
 
 private:

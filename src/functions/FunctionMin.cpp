@@ -16,7 +16,7 @@
 #include "../config/pathan_config.h"
 #include <xqilla/functions/FunctionMin.hpp>
 #include <xqilla/runtime/Sequence.hpp>
-#include <xqilla/ast/DataItemSequence.hpp>
+#include <xqilla/ast/XQSequence.hpp>
 #include <xqilla/context/Collation.hpp>
 #include <xqilla/context/impl/CodepointCollation.hpp>
 #include "../operators/TotalOrderComparison.hpp"
@@ -42,7 +42,7 @@ const unsigned int FunctionMin::maxArgs = 2;
  * fn:min($arg as xdt:anyAtomicType*, $collation as string) as xdt:anyAtomicType?
 **/
 
-FunctionMin::FunctionMin(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+FunctionMin::FunctionMin(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : AggregateFunction(name, minArgs, maxArgs, "anyAtomicType*, string", args, memMgr)
 {
   // TBD - could do better here - jpcs
@@ -55,7 +55,7 @@ Sequence FunctionMin::collapseTreeInternal(DynamicContext* context, int flags) c
 
     Sequence sequence(memMgr);  
     try {
-        sequence = validateSequence(getParamNumber(1,context,DataItem::UNORDERED), context);
+        sequence = validateSequence(getParamNumber(1,context,ASTNode::UNORDERED), context);
     } catch (IllegalArgumentException &e) {
         DSLthrow(IllegalArgumentException, X("FunctionMin::collapseTreeInternal"), X("Invalid argument to fn:min() function"));
     }
@@ -97,10 +97,10 @@ Sequence FunctionMin::collapseTreeInternal(DynamicContext* context, int flags) c
     } else {
         ATBooleanOrDerived::Ptr less;
         for (++i; i != sequence.end(); i++) {
-            VectorOfDataItems gtArgs = VectorOfDataItems(PathanAllocator<DataItem*>(memMgr));
-            DataItemSequence seq1(*i, context, memMgr);
+            VectorOfASTNodes gtArgs = VectorOfASTNodes(PathanAllocator<ASTNode*>(memMgr));
+            XQSequence seq1(*i, context, memMgr);
             gtArgs.push_back(&seq1);
-            DataItemSequence seq2(minItem, context, memMgr);
+            XQSequence seq2(minItem, context, memMgr);
             gtArgs.push_back(&seq2);
             TotalOrderComparison gt(gtArgs, false, memMgr);
             try {

@@ -42,7 +42,7 @@ const unsigned int FunctionResolveQName::maxArgs = 2;
 
 /** Returns an QName with the lexical form given in the first argument. The 
  *  prefix is resolved using the in-scope namespaces for a given element. **/
-FunctionResolveQName::FunctionResolveQName(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+FunctionResolveQName::FunctionResolveQName(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "string?, element()", args, memMgr)
 {
 }

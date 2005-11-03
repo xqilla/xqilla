@@ -32,7 +32,7 @@
 #include <xqilla/items/ATGYearMonthOrDerived.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 
-TotalOrderComparison::TotalOrderComparison(const VectorOfDataItems &args, bool greaterThan, XPath2MemoryManager* memMgr)
+TotalOrderComparison::TotalOrderComparison(const VectorOfASTNodes &args, bool greaterThan, XPath2MemoryManager* memMgr)
   : ComparisonOperator(NULL, args, memMgr)
 {
 	_greaterThan = greaterThan;

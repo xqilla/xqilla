@@ -16,7 +16,7 @@
 #include "../config/pathan_config.h"
 #include <xqilla/exceptions/DSLException.hpp>
 
-#include <xqilla/exceptions/DataItemException.hpp>
+#include <xqilla/exceptions/XQException.hpp>
 
 #include <xercesc/util/XMLString.hpp>
 #include <xqilla/utils/XStr.hpp>

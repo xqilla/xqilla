@@ -38,15 +38,15 @@ const unsigned int FunctionMinutesFromDateTime::maxArgs = 1;
  * fn:minutes-from-dateTime($arg as xs:dateTime?) as xs:integer?
  */
 
-FunctionMinutesFromDateTime::FunctionMinutesFromDateTime(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
-  : DataItemFunction(name, minArgs, maxArgs, "dateTime?", args, memMgr)
+FunctionMinutesFromDateTime::FunctionMinutesFromDateTime(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
+  : XQFunction(name, minArgs, maxArgs, "dateTime?", args, memMgr)
 {
   _src.getStaticType().flags = StaticResolutionContext::NUMERIC_TYPE;
 }
 
-DataItem* FunctionMinutesFromDateTime::staticResolution(StaticContext *context)
+ASTNode* FunctionMinutesFromDateTime::staticResolution(StaticContext *context)
 {
-  return resolveDataItemsForDateOrTime(_args, context, true);
+  return resolveASTNodesForDateOrTime(_args, context, true);
 }
 
 Sequence FunctionMinutesFromDateTime::collapseTreeInternal(DynamicContext* context, int flags) const

@@ -31,7 +31,7 @@ const unsigned int FunctionRound::maxArgs = 1;
  * fn:round($arg as numeric?) as numeric?
  */
 
-FunctionRound::FunctionRound(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+FunctionRound::FunctionRound(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : NumericFunction(name, minArgs, maxArgs, "anySimpleType?", args, memMgr)
 {
   _src.getStaticType().flags = StaticResolutionContext::NUMERIC_TYPE;

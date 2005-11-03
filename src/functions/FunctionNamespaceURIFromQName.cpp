@@ -38,7 +38,7 @@ const unsigned int FunctionNamespaceURIFromQName::maxArgs = 1;
  * fn:namespace-uri-from-QName($arg as xs:QName?) as xs:anyURI?
 **/
 
-FunctionNamespaceURIFromQName::FunctionNamespaceURIFromQName(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+FunctionNamespaceURIFromQName::FunctionNamespaceURIFromQName(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "QName?", args, memMgr)
 {
 }

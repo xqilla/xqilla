@@ -17,19 +17,19 @@
 // XQFunctionCall.hpp: interface for the XQFunctionCall class.
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_XQFUNCTIONCALL_H__2B6902E9_A4FA_4AB3_9C69_08A8E77E70DA__INCLUDED_)
-#define AFX_XQFUNCTIONCALL_H__2B6902E9_A4FA_4AB3_9C69_08A8E77E70DA__INCLUDED_
+#if !defined(AFXQ_XQFUNCTIONCALL_H__2B6902E9_A4FA_4AB3_9C69_08A8E77E70DA__INCLUDED_)
+#define AFXQ_XQFUNCTIONCALL_H__2B6902E9_A4FA_4AB3_9C69_08A8E77E70DA__INCLUDED_
 
 #include <xqilla/framework/XQEngine.hpp>
-#include <xqilla/ast/DataItemImpl.hpp>
+#include <xqilla/ast/ASTNodeImpl.hpp>
 
 class QualifiedName;
 
 /** placeholder for function calls. */
-class XQENGINE_API XQFunctionCall : public DataItemImpl
+class XQENGINE_API XQFunctionCall : public ASTNodeImpl
 {
 public:
-  XQFunctionCall(QualifiedName* qname, const VectorOfDataItems &args, XPath2MemoryManager* expr);
+  XQFunctionCall(QualifiedName* qname, const VectorOfASTNodes &args, XPath2MemoryManager* expr);
 
   /** always throws an exception **/
   Result createResult(DynamicContext* context, int flags=0) const;
@@ -37,14 +37,14 @@ public:
   /**
    *  Will perform the binding with the real function body
    */
-  virtual DataItem* staticResolution(StaticContext *context);
+  virtual ASTNode* staticResolution(StaticContext *context);
 
   const QualifiedName *getName() const;
-  const VectorOfDataItems &getArguments() const;
+  const VectorOfASTNodes &getArguments() const;
 
 protected:
-  VectorOfDataItems _args;
+  VectorOfASTNodes _args;
   QualifiedName* _qname;
 };
 
-#endif // !defined(AFX_XQFUNCTIONCALL_H__2B6902E9_A4FA_4AB3_9C69_08A8E77E70DA__INCLUDED_)
+#endif // !defined(AFXQ_XQFUNCTIONCALL_H__2B6902E9_A4FA_4AB3_9C69_08A8E77E70DA__INCLUDED_)

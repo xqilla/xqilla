@@ -34,7 +34,7 @@ const unsigned int FunctionOneOrMore::maxArgs = 1;
  * fn:one-or-more($arg as item()*) as item()+
  */
 
-FunctionOneOrMore::FunctionOneOrMore(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+FunctionOneOrMore::FunctionOneOrMore(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "item()*", args, memMgr)
 {
   // TBD - could do better here - jpcs
@@ -58,7 +58,7 @@ FunctionOneOrMore::OneOrMoreResult::OneOrMoreResult(const FunctionOneOrMore *fun
 Item::Ptr FunctionOneOrMore::OneOrMoreResult::next(DynamicContext *context)
 {
   if(_arg.isNull()) {
-    _arg = _func->getParamNumber(1, context, _flags & ~(DataItem::RETURN_ONE|DataItem::RETURN_TWO));
+    _arg = _func->getParamNumber(1, context, _flags & ~(ASTNode::RETURN_ONE|ASTNode::RETURN_TWO));
   }
 
   const Item::Ptr result = _arg.next(context);

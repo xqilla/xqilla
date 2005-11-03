@@ -35,7 +35,7 @@ public:
   /**
    * Constructor.
    */
-  FunctionMonthsFromDuration(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  FunctionMonthsFromDuration(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
 
   /**
    * Returns an integer representing the months component in the value of

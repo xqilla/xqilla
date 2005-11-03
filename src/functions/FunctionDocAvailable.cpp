@@ -38,14 +38,14 @@ const unsigned int FunctionDocAvailable::maxArgs = 1;
 /**
  * fn:doc-available($uri as xs:string?) as xs:boolean
  **/
-FunctionDocAvailable::FunctionDocAvailable(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
-  : DataItemFunction(name, minArgs, maxArgs, "string?", args, memMgr)
+FunctionDocAvailable::FunctionDocAvailable(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
+  : XQFunction(name, minArgs, maxArgs, "string?", args, memMgr)
 {
 }
 
-DataItem* FunctionDocAvailable::staticResolution(StaticContext *context) {
+ASTNode* FunctionDocAvailable::staticResolution(StaticContext *context) {
   _src.availableDocumentsUsed(true);
-  return resolveDataItems(_args, context, false);
+  return resolveASTNodes(_args, context, false);
 }
 
 Sequence FunctionDocAvailable::collapseTreeInternal(DynamicContext* context, int flags) const {

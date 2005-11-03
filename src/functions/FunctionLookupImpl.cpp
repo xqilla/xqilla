@@ -43,8 +43,8 @@ void FunctionLookupImpl::insertFunction(FuncFactory *func)
     }
 }
 
-DataItem* FunctionLookupImpl::lookUpFunction(const XMLCh* URI, const XMLCh* fname,
-                                             const VectorOfDataItems &args, XPath2MemoryManager* memMgr) const
+ASTNode* FunctionLookupImpl::lookUpFunction(const XMLCh* URI, const XMLCh* fname,
+                                             const VectorOfASTNodes &args, XPath2MemoryManager* memMgr) const
 {
     if(!_uriPool.exists(URI))
       return NULL;  

@@ -39,7 +39,7 @@ const unsigned int FunctionSubsequence::maxArgs = 3;
  * fn:subsequence($sourceSeq as item()*, $startingLoc as xs:double, $length as xs:double) as item()*
 **/
 
-FunctionSubsequence::FunctionSubsequence(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+FunctionSubsequence::FunctionSubsequence(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "item()*, double, double", args, memMgr)
 {
   // TBD - could do better here - jpcs

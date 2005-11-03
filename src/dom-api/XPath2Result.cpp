@@ -42,7 +42,7 @@
 
 
 XPath2Result::XPath2Result(const ResultType resultType,
-                           const DataItem *expression,
+                           const ASTNode *expression,
                            DynamicContext *dynamicContext,
                            XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr)
   : _createdWith(memMgr),
@@ -62,7 +62,7 @@ XPath2Result::XPath2Result(const ResultType resultType,
 }
 
 XPath2Result::XPath2Result(const ResultType resultType,
-                           const DataItem *expression,
+                           const ASTNode *expression,
                            XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* contextNode,
                            DynamicContext *staticContext,
                            XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr)
@@ -111,11 +111,11 @@ void XPath2Result::release()
   _createdWith->deallocate(this);
 }
 
-void XPath2Result::evaluate(const DataItem *expression)
+void XPath2Result::evaluate(const ASTNode *expression)
 {
   int flags = 0;
   if(_resultType == FIRST_RESULT) {
-    flags |= DataItem::UNORDERED | DataItem::RETURN_ONE;
+    flags |= ASTNode::UNORDERED | ASTNode::RETURN_ONE;
   }
 
   try {

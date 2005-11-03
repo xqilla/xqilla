@@ -17,7 +17,7 @@
 #include <sstream>
 
 #include <xqilla/functions/FunctionRemove.hpp>
-#include <xqilla/ast/DataItemLiteral.hpp>
+#include <xqilla/ast/XQLiteral.hpp>
 #include <xqilla/runtime/Sequence.hpp>
 #include <xqilla/items/Node.hpp>
 #include <xqilla/items/ATStringOrDerived.hpp>
@@ -38,7 +38,7 @@ const unsigned int FunctionRemove::maxArgs = 2;
  * fn:remove($target as item()*, $position as xs:integer) as item()*
  */
 
-FunctionRemove::FunctionRemove(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+FunctionRemove::FunctionRemove(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "item()*, integer", args, memMgr)
 {
   // TBD - could do better here - jpcs

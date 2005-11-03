@@ -35,15 +35,15 @@ const unsigned int FunctionDayFromDate::maxArgs = 1;
  * fn:day-from-date($arg as xs:date?) as xs:integer?
  */
 
-FunctionDayFromDate::FunctionDayFromDate(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
-  : DataItemFunction(name, minArgs, maxArgs, "date?", args, memMgr)
+FunctionDayFromDate::FunctionDayFromDate(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
+  : XQFunction(name, minArgs, maxArgs, "date?", args, memMgr)
 {
   _src.getStaticType().flags = StaticResolutionContext::NUMERIC_TYPE;
 }
 
-DataItem* FunctionDayFromDate::staticResolution(StaticContext *context)
+ASTNode* FunctionDayFromDate::staticResolution(StaticContext *context)
 {
-  return resolveDataItemsForDateOrTime(_args, context, true);
+  return resolveASTNodesForDateOrTime(_args, context, true);
 }
 
 Sequence FunctionDayFromDate::collapseTreeInternal(DynamicContext* context, int flags) const

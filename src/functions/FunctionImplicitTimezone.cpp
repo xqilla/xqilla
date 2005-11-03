@@ -35,14 +35,14 @@ const unsigned int FunctionImplicitTimezone::maxArgs = 0;
  * fn:implicit-timezone() as xdt:dayTimeDuration
 **/
 
-FunctionImplicitTimezone::FunctionImplicitTimezone(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
-  : DataItemFunction(name, minArgs, maxArgs, "empty()", args, memMgr)
+FunctionImplicitTimezone::FunctionImplicitTimezone(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
+  : XQFunction(name, minArgs, maxArgs, "empty()", args, memMgr)
 {
 }
 
-DataItem* FunctionImplicitTimezone::staticResolution(StaticContext *context) {
+ASTNode* FunctionImplicitTimezone::staticResolution(StaticContext *context) {
   _src.implicitTimezoneUsed(true);
-  return resolveDataItems(_args, context, false);
+  return resolveASTNodes(_args, context, false);
 }
 
 Sequence FunctionImplicitTimezone::collapseTreeInternal(DynamicContext* context, int flags) const

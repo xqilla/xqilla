@@ -36,7 +36,7 @@ const unsigned int FunctionQName::maxArgs = 2;
 /** Returns a QName with the URI given in $paramURI and the localname
  * given in $paramLocal **/
 
-FunctionQName::FunctionQName(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+FunctionQName::FunctionQName(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "string?, string", args, memMgr)
 {
 }

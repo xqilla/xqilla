@@ -18,7 +18,7 @@
 
 #include <xqilla/items/ATQNameOrDerived.hpp>
 #include <xqilla/items/ATBooleanOrDerived.hpp>
-#include <xqilla/ast/DataItemStep.hpp>
+#include <xqilla/ast/XQStep.hpp>
 
 class DynamicContext;
 class XPath2MemoryManager;
@@ -104,7 +104,7 @@ public:
    * Forward axis results should be in document order.
    * Reverse axis results should be in reverse document order.
    */
-  virtual Result getAxisResult(DataItemStep::Axis axis, const NodeTest *nodeTest, const DynamicContext *context) const = 0;
+  virtual Result getAxisResult(XQStep::Axis axis, const NodeTest *nodeTest, const DynamicContext *context) const = 0;
 
   /** Returns if the node is an id node or not */
   virtual ATBooleanOrDerived::Ptr dmIsId(const DynamicContext* context) const = 0;

@@ -39,7 +39,7 @@ const unsigned int FunctionCompare::maxArgs = 3;
  * fn:compare($comparand1 as xs:string?, $comparand2 as xs:string?, $collation as xs:string) as xs:integer?
 **/
 
-FunctionCompare::FunctionCompare(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+FunctionCompare::FunctionCompare(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "string?,string?,string", args, memMgr)
 {
   _src.getStaticType().flags = StaticResolutionContext::NUMERIC_TYPE;

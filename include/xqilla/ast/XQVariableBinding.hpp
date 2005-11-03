@@ -17,11 +17,11 @@
 // XQVariableBinding.hpp: interface for the XQVariableBinding class.
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_XQVARIABLEBINDING_H__4EDA7D8A_78E2_476F_80DA_029C3E4B9AC8__INCLUDED_)
-#define AFX_XQVARIABLEBINDING_H__4EDA7D8A_78E2_476F_80DA_029C3E4B9AC8__INCLUDED_
+#if !defined(AFXQ_XQVARIABLEBINDING_H__4EDA7D8A_78E2_476F_80DA_029C3E4B9AC8__INCLUDED_)
+#define AFXQ_XQVARIABLEBINDING_H__4EDA7D8A_78E2_476F_80DA_029C3E4B9AC8__INCLUDED_
 
 #include <xqilla/framework/XQEngine.hpp>
-#include <xqilla/ast/DataItem.hpp>
+#include <xqilla/ast/ASTNode.hpp>
 #include <xqilla/ast/StaticResolutionContext.hpp>
 
 class XQENGINE_API XQVariableBinding
@@ -33,10 +33,10 @@ public:
 		forBinding
 	} BindingType;
 
-  XQVariableBinding(XPath2MemoryManager* memMgr, BindingType bindingType, const XMLCh* variable, DataItem* allValues, const XMLCh* positionalVariable=NULL, SequenceType* seqType=NULL);
+  XQVariableBinding(XPath2MemoryManager* memMgr, BindingType bindingType, const XMLCh* variable, ASTNode* allValues, const XMLCh* positionalVariable=NULL, SequenceType* seqType=NULL);
   XQVariableBinding(XPath2MemoryManager* memMgr, const XQVariableBinding &o);
 
-  void addWhereCondition(DataItem *clause);
+  void addWhereCondition(ASTNode *clause);
 
 	BindingType _bindingType;
 
@@ -47,12 +47,12 @@ public:
 
   SequenceType* _seqType;
 
-	DataItem* _allValues;
+	ASTNode* _allValues;
 
   bool _valuesResultMustBeRecalculated;
   bool _needsNewScope;
 
-  DataItem *_where;
+  ASTNode *_where;
 
 	unsigned long _line;
 	const XMLCh* _file;
@@ -65,4 +65,4 @@ private:
 
 typedef std::vector<XQVariableBinding*, PathanAllocator<XQVariableBinding*> > VectorOfVariableBinding;
 
-#endif // !defined(AFX_XQVARIABLEBINDING_H__4EDA7D8A_78E2_476F_80DA_029C3E4B9AC8__INCLUDED_)
+#endif // !defined(AFXQ_XQVARIABLEBINDING_H__4EDA7D8A_78E2_476F_80DA_029C3E4B9AC8__INCLUDED_)

@@ -26,7 +26,7 @@
 
 /*static*/ const XMLCh Minus::name[]={ XERCES_CPP_NAMESPACE_QUALIFIER chLatin_m, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_i, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_u, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_s, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
 
-Minus::Minus(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+Minus::Minus(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ArithmeticOperator(name, args, memMgr)
 {
 }

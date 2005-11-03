@@ -33,7 +33,7 @@ public:
   static const unsigned int minArgs;
   static const unsigned int maxArgs;
 
-  FunctionCeiling(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  FunctionCeiling(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
 
   Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
 

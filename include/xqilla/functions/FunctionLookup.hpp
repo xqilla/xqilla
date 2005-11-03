@@ -20,7 +20,7 @@
 
 #include <vector>
 #include <xercesc/util/XercesDefs.hpp>
-#include <xqilla/ast/DataItem.hpp>
+#include <xqilla/ast/ASTNode.hpp>
 
 class FuncFactory;
 class XPath2MemoryManager;
@@ -31,7 +31,7 @@ public:
   ///adds a function to the custom function table
   virtual void insertFunction(FuncFactory *func) = 0;
   ///returns the approriate Function object
-  virtual DataItem* lookUpFunction(const XMLCh* URI, const XMLCh* fname, const VectorOfDataItems &args, XPath2MemoryManager* memMgr) const = 0;
+  virtual ASTNode* lookUpFunction(const XMLCh* URI, const XMLCh* fname, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr) const = 0;
 
   /// returns all the defined functions
   virtual std::vector< std::pair<const XMLCh*,const XMLCh*> > getFunctions() const = 0;

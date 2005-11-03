@@ -43,7 +43,7 @@ const unsigned int FunctionInScopePrefixes::minArgs = 1;
 const unsigned int FunctionInScopePrefixes::maxArgs = 1;
 
 
-FunctionInScopePrefixes::FunctionInScopePrefixes(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+FunctionInScopePrefixes::FunctionInScopePrefixes(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "element()", args, memMgr)
 {
 }

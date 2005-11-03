@@ -22,7 +22,7 @@
 
 /*static*/ const XMLCh NotEquals::name[]={ XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
 
-NotEquals::NotEquals(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+NotEquals::NotEquals(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ComparisonOperator(name, args, memMgr)
 {
 }

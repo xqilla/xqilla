@@ -33,8 +33,8 @@
 
 /*static*/ const XMLCh GeneralComp::name[]={ XERCES_CPP_NAMESPACE_QUALIFIER chLatin_c, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_m, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_p, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
 
-GeneralComp::GeneralComp(ComparisonOperation operation, const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
-  : DataItemOperator(name, args, memMgr)
+GeneralComp::GeneralComp(ComparisonOperation operation, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
+  : XQOperator(name, args, memMgr)
 {
   _operation=operation;
 }
@@ -122,11 +122,11 @@ GeneralComp::GeneralCompResult::GeneralCompResult(const GeneralComp *op, Dynamic
 Item::Ptr GeneralComp::GeneralCompResult::getSingleResult(DynamicContext *context) const
 {
   // Atomization is applied to each operand of a general comparison.
-  Result arg1 = _op->getArgument(0)->collapseTree(context, DataItem::UNORDERED);
+  Result arg1 = _op->getArgument(0)->collapseTree(context, ASTNode::UNORDERED);
   if(_op->getArgument(0)->getStaticResolutionContext().getStaticType().flags & StaticResolutionContext::NODE_TYPE) {
 	  arg1 = arg1.atomize(context);
   }
-  Result arg2 = _op->getArgument(1)->collapseTree(context, DataItem::UNORDERED).atomize(context);
+  Result arg2 = _op->getArgument(1)->collapseTree(context, ASTNode::UNORDERED).atomize(context);
   if(_op->getArgument(1)->getStaticResolutionContext().getStaticType().flags & StaticResolutionContext::NODE_TYPE) {
 	  arg2 = arg2.atomize(context);
   }

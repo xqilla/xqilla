@@ -23,30 +23,29 @@
 
 #include <xqilla/framework/Pathan.hpp>
 
-#include <xqilla/ast/DataItemFor.hpp>
-#include <xqilla/ast/DataItemStep.hpp>
+#include <xqilla/ast/XQFLWOR.hpp>
+#include <xqilla/ast/XQStep.hpp>
 #include <xqilla/schema/SequenceType.hpp>
 
 #ifndef YY_CHAR
 #define YY_CHAR unsigned short
 #endif
 
-class DataItem;
 class NodeTest;
 class QualifiedName;
 
 typedef union {
 
-  DataItem* dataItemImpl;
+  ASTNode* dataItemImpl;
   XMLCh *wString;
   NodeTest *nodeTest;
-  DataItemStep::Axis axis;
+  XQStep::Axis axis;
   QualifiedName *qName;
-  VectorOfDataItems *dataItemStore;
+  VectorOfASTNodes *dataItemStore;
   SequenceType* sequenceType;
   SequenceType::OccurrenceIndicator occurrence;
   SequenceType::ItemType* itemType;
-  VectorOfBindings* variableBinding;
+  VectorOfVariableBinding* variableBinding;
 } yystype;
 
 #define YYSTYPE yystype

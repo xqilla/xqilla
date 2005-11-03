@@ -32,15 +32,15 @@ const unsigned int FunctionUnordered::maxArgs = 1;
  * fn:unordered($sourceSeq as item()*) as item()*
 **/
 
-FunctionUnordered::FunctionUnordered(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
-  : DataItemFunction(name, minArgs, maxArgs, "item()*", args, memMgr)
+FunctionUnordered::FunctionUnordered(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
+  : XQFunction(name, minArgs, maxArgs, "item()*", args, memMgr)
 {
 }
 
-DataItem* FunctionUnordered::staticResolution(StaticContext *context)
+ASTNode* FunctionUnordered::staticResolution(StaticContext *context)
 {
   bool allConstant = true;
-  for(VectorOfDataItems::iterator i = _args.begin(); i != _args.end(); ++i) {
+  for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
     *i = (*i)->staticResolution(context);
     _src.getStaticType() = (*i)->getStaticResolutionContext().getStaticType();
     _src.add((*i)->getStaticResolutionContext());
@@ -74,7 +74,7 @@ FunctionUnordered::UnorderedResult::UnorderedResult(const FunctionUnordered *fun
 Item::Ptr FunctionUnordered::UnorderedResult::next(DynamicContext *context)
 {
   if(_arg.isNull()) {
-    _arg = _func->getParamNumber(1, context, DataItem::UNORDERED|_flags);
+    _arg = _func->getParamNumber(1, context, ASTNode::UNORDERED|_flags);
   }
   return _arg.next(context);
 }

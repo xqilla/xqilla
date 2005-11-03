@@ -23,19 +23,19 @@
 #ifndef _FUNCTIONIMPLICITTIMEZONE_HPP
 #define _FUNCTIONIMPLICITTIMEZONE_HPP
 
-#include <xqilla/ast/DataItemFunction.hpp>
+#include <xqilla/ast/XQFunction.hpp>
 
 /** implicit-timezone function*/
-class PATHAN_EXPORT FunctionImplicitTimezone : public DataItemFunction
+class PATHAN_EXPORT FunctionImplicitTimezone : public XQFunction
 {
 public:
   static const XMLCh name[];
   static const unsigned int minArgs;
   static const unsigned int maxArgs;
 
-  FunctionImplicitTimezone(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  FunctionImplicitTimezone(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
-  virtual DataItem* staticResolution(StaticContext *context);
+  virtual ASTNode* staticResolution(StaticContext *context);
 
   Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
 };

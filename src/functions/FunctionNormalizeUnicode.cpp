@@ -40,7 +40,7 @@ const unsigned int FunctionNormalizeUnicode::maxArgs = 2;
  * fn:normalize-unicode($arg as xs:string?, $normalizationForm as xs:string) as xs:string
  **/
 
-FunctionNormalizeUnicode::FunctionNormalizeUnicode(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+FunctionNormalizeUnicode::FunctionNormalizeUnicode(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "string?,string", args, memMgr)
 {
 }

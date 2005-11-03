@@ -34,7 +34,7 @@ public:
   ///Constructor. Sets arg def to NOT_OPTIONAL.
   FunctionConstructor(const XMLCh* nsURI, const XMLCh* typeName,
                       AnyAtomicType::AtomicObjectType primitiveType,
-                      const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+                      const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   virtual Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
 

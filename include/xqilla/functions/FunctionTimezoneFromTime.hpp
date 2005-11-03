@@ -35,7 +35,7 @@ public:
   /**
    * Constructor
    */
-  FunctionTimezoneFromTime(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  FunctionTimezoneFromTime(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
 
   /**
    * Returns the string representing the timezone in the value of $srcval

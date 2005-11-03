@@ -34,15 +34,15 @@ const unsigned int FunctionError::maxArgs = 3;
  * fn:error($error as xs:QName?, $description as xs:string, $error-object as item()*) as none
  */
 
-FunctionError::FunctionError(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
-  : DataItemFunction(name, minArgs, maxArgs, "QName?, string, item()*", args, memMgr)
+FunctionError::FunctionError(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
+  : XQFunction(name, minArgs, maxArgs, "QName?, string, item()*", args, memMgr)
 {
 }
 
-DataItem* FunctionError::staticResolution(StaticContext *context)
+ASTNode* FunctionError::staticResolution(StaticContext *context)
 {
   _src.forceNoFolding(true);
-  return resolveDataItems(_args, context, false);
+  return resolveASTNodes(_args, context, false);
 }
 
 Sequence FunctionError::collapseTreeInternal(DynamicContext* context, int flags) const

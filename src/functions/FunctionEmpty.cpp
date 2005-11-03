@@ -31,14 +31,14 @@ const unsigned int FunctionEmpty::maxArgs = 1;
  * fn:empty($arg as item()*) as xs:boolean
  */
 
-FunctionEmpty::FunctionEmpty(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+FunctionEmpty::FunctionEmpty(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "item()*", args, memMgr)
 {
 }
 
 Sequence FunctionEmpty::collapseTreeInternal(DynamicContext* context, int flags) const
 {
-	Result items = getParamNumber(1,context,DataItem::UNORDERED|DataItem::RETURN_ONE);
+	Result items = getParamNumber(1,context,ASTNode::UNORDERED|ASTNode::RETURN_ONE);
 	return Sequence(context->getPathanFactory()->createBoolean(items.next(context) == NULLRCP, context),
                   context->getMemoryManager());
 }

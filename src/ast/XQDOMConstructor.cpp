@@ -19,8 +19,7 @@
 
 #include <xqilla/framework/XQEngine.hpp>
 #include <xqilla/ast/XQDOMConstructor.hpp>
-#include <xqilla/context/XQContext.hpp>
-#include <xqilla/context/impl/XQDynamicContextImpl.hpp>
+#include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/context/XQFactory.hpp>
 #include <xqilla/ast/XQDebugHook.hpp>
 #include <xqilla/dom-api/XQScopedNamespace.hpp>
@@ -32,8 +31,8 @@
 #include <xqilla/utils/XPath2NSUtils.hpp>
 #include <xqilla/items/Node.hpp>
 #include <xqilla/ast/StaticResolutionContext.hpp>
-#include <xqilla/ast/DataItemSequence.hpp>
-#include <xqilla/ast/DataItemLiteral.hpp>
+#include <xqilla/ast/XQSequence.hpp>
+#include <xqilla/ast/XQLiteral.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/utils/XMLChCompare.hpp>
 
@@ -77,14 +76,14 @@ static const XMLCh *definePrefix(const XMLCh *szPrefix, const XMLCh *szURI, cons
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-XQDOMConstructor::XQDOMConstructor(const XMLCh* nodeType, DataItem* name, VectorOfDataItems* attrList, VectorOfDataItems* children, XPath2MemoryManager* expr) :
-  DataItemImpl(expr),
+XQDOMConstructor::XQDOMConstructor(const XMLCh* nodeType, ASTNode* name, VectorOfASTNodes* attrList, VectorOfASTNodes* children, XPath2MemoryManager* expr) :
+  ASTNodeImpl(expr),
   m_name(name),
   m_attrList(attrList),
   m_children(children)
 {
   m_nodeType=nodeType;
-  setType((DataItem::whichType)XQContext::DOM_CONSTRUCTOR);
+  setType(ASTNode::DOM_CONSTRUCTOR);
 }
 
 bool XQDOMConstructor::isTextNode(const Node::Ptr &node) const
@@ -94,7 +93,6 @@ bool XQDOMConstructor::isTextNode(const Node::Ptr &node) const
 
 Sequence XQDOMConstructor::collapseTreeInternal(DynamicContext *context, int flags) const 
 {
-    XQDynamicContext* xqcontext=CAST_TO_DYNAMIC(context);
     Node::Ptr result;
 #if defined(_DEBUG) || defined(DEBUG)
     // in debug builds, I'd rather get the exception
@@ -106,9 +104,9 @@ Sequence XQDOMConstructor::collapseTreeInternal(DynamicContext *context, int fla
       {
         std::vector<Node::Ptr> childList;
 
-        for (VectorOfDataItems::const_iterator itCont = m_children->begin(); itCont != m_children->end (); ++itCont) 
+        for (VectorOfASTNodes::const_iterator itCont = m_children->begin(); itCont != m_children->end (); ++itCont) 
         {
-          DataItem* childItem=(*itCont);
+          ASTNode* childItem=(*itCont);
           Result oneChild = childItem->collapseTree(context);
           Item::Ptr child;
           while((child = oneChild.next(context)) != NULLRCP)
@@ -178,9 +176,9 @@ Sequence XQDOMConstructor::collapseTreeInternal(DynamicContext *context, int fla
 
         if(m_attrList != 0)
         {
-          for (VectorOfDataItems::const_iterator itAttr = m_attrList->begin(); itAttr != m_attrList->end (); ++itAttr) 
+          for (VectorOfASTNodes::const_iterator itAttr = m_attrList->begin(); itAttr != m_attrList->end (); ++itAttr) 
           {
-            DataItem* attrItem=(*itAttr);
+            ASTNode* attrItem=(*itAttr);
             static SequenceType nodeSequence(new SequenceType::ItemType(SequenceType::ItemType::TEST_NODE), SequenceType::STAR);
 	    StaticResolutionContext::StaticType stype;
 	    stype.flags = StaticResolutionContext::NODE_TYPE;
@@ -201,12 +199,12 @@ Sequence XQDOMConstructor::collapseTreeInternal(DynamicContext *context, int fla
                   if(XPath2Utils::equals(node_name, XMLUni::fgXMLNSString))
                   {
                     locallyDefinedNamespaces.addNamespaceBinding(XMLUni::fgZeroLenString, node->dmStringValue(context));
-                    xqcontext->setNamespaceBinding(XMLUni::fgZeroLenString, node->dmStringValue(context));
+                    context->setNamespaceBinding(XMLUni::fgZeroLenString, node->dmStringValue(context));
                   }
                   else if(node_prefix && XPath2Utils::equals(node_prefix, XMLUni::fgXMLNSString))
                   {
                     locallyDefinedNamespaces.addNamespaceBinding(node_name, node->dmStringValue(context));
-                    xqcontext->setNamespaceBinding(node_name, node->dmStringValue(context));
+                    context->setNamespaceBinding(node_name, node->dmStringValue(context));
                   }
 
                   attrList.push_back(node);
@@ -242,9 +240,9 @@ Sequence XQDOMConstructor::collapseTreeInternal(DynamicContext *context, int fla
         if(XMLString::stringLen(nodeName)==0)
           DSLthrow(DataItemException,X("DOM Constructor"),X("The name for the element is empty"));
 
-        for (VectorOfDataItems::const_iterator itCont = m_children->begin(); itCont != m_children->end (); ++itCont)
+        for (VectorOfASTNodes::const_iterator itCont = m_children->begin(); itCont != m_children->end (); ++itCont)
         {
-          DataItem* childItem=(*itCont);
+          ASTNode* childItem=(*itCont);
           Result children=childItem->collapseTree(context);
           Item::Ptr child;
           bool lastWasAtomic = false;
@@ -297,13 +295,13 @@ Sequence XQDOMConstructor::collapseTreeInternal(DynamicContext *context, int fla
                   childList.push_back(XQFactory::ElementChild(((XQFactory*)context->getPathanFactory())->createTextNode(buff, context), /*clone*/false));
                 }
                 else {
-                  DataItem* pChild=childItem;
-                  if((unsigned int)pChild->getType()==XQContext::DEBUG_HOOK)
+                  ASTNode* pChild=childItem;
+                  if((unsigned int)pChild->getType()==ASTNode::DEBUG_HOOK)
                     pChild=((XQDebugHook*)pChild)->m_impl;
                   // if it's a text node, ensure it's not empty
                   if(!isTextNode(sourceNode) || !XPath2Utils::equals(sourceNode->dmStringValue(context),0))
                     // if the node we should add as a child was generated by a DOM constructor, we can skip cloning it
-                    childList.push_back(XQFactory::ElementChild(sourceNode, (unsigned int)pChild->getType()!=XQContext::DOM_CONSTRUCTOR));
+                    childList.push_back(XQFactory::ElementChild(sourceNode, (unsigned int)pChild->getType()!=ASTNode::DOM_CONSTRUCTOR));
                 }
               }
             }
@@ -477,10 +475,8 @@ Sequence XQDOMConstructor::collapseTreeInternal(DynamicContext *context, int fla
     return Sequence(context->getMemoryManager());
 }
 
-DataItem* XQDOMConstructor::staticResolution(StaticContext *context)
+ASTNode* XQDOMConstructor::staticResolution(StaticContext *context)
 {
-  XQContext* xqcontext = CAST_TO_XQCONTEXT(context);
-
   if(m_name != 0) {
     m_name = m_name->staticResolution(context);
     _src.add(m_name->getStaticResolutionContext());
@@ -504,12 +500,12 @@ DataItem* XQDOMConstructor::staticResolution(StaticContext *context)
         dContext->setMemoryManager(context->getMemoryManager());
         for (i=0;i<m_attrList->size();i++) 
         {
-          if((*m_attrList)[i]->getType()==(DataItem::whichType)XQContext::DOM_CONSTRUCTOR)
+          if((*m_attrList)[i]->getType()==ASTNode::DOM_CONSTRUCTOR)
           {
-            const DataItem* dItem=((XQDOMConstructor*)(*m_attrList)[i])->getName();
-            if(dItem->getType()==DataItem::SEQUENCE)
+            const ASTNode* dItem=((XQDOMConstructor*)(*m_attrList)[i])->getName();
+            if(dItem->getType()==ASTNode::SEQUENCE)
             {
-              const ItemConstructor::Vector &ics = ((DataItemSequence*)dItem)->getItemConstructors();
+              const ItemConstructor::Vector &ics = ((XQSequence*)dItem)->getItemConstructors();
               if(ics.size() == 1) {
                 Item::Ptr item = ics[0]->createItem(dContext);
                 QualifiedName attrName(item->asString(dContext));
@@ -545,11 +541,11 @@ DataItem* XQDOMConstructor::staticResolution(StaticContext *context)
     dContext->setMemoryManager(context->getMemoryManager());
 
     Item::Ptr item;
-    if(m_name->getType() == DataItem::LITERAL) {
-      item = ((DataItemLiteral*)m_name)->getItemConstructor()->createItem(dContext);
+    if(m_name->getType() == ASTNode::LITERAL) {
+      item = ((XQLiteral*)m_name)->getItemConstructor()->createItem(dContext);
     }
-    else if(m_name->getType() == DataItem::SEQUENCE) {
-      const ItemConstructor::Vector &ics = ((DataItemSequence*)m_name)->getItemConstructors();
+    else if(m_name->getType() == ASTNode::SEQUENCE) {
+      const ItemConstructor::Vector &ics = ((XQSequence*)m_name)->getItemConstructors();
       if(ics.size() == 1) {
         item = ics[0]->createItem(dContext);
       }
@@ -569,19 +565,19 @@ DataItem* XQDOMConstructor::staticResolution(StaticContext *context)
       if(XMLNSPrefix!=NULL) {
         // we are a namespace attribute: check that we have a constant value
         if(m_children->size()==0) { // TODO: supporting Namespace 1.1 would mean unsetting the binding...
-          xqcontext->setNamespaceBinding(XMLNSPrefix, XMLUni::fgZeroLenString);
+          context->setNamespaceBinding(XMLNSPrefix, XMLUni::fgZeroLenString);
         }
-        else if(m_children->size()>1 || (*m_children)[0]->getType()!=DataItem::SEQUENCE) {
+        else if(m_children->size()>1 || (*m_children)[0]->getType()!=ASTNode::SEQUENCE) {
           DSLthrow(StaticErrorException,X("DOM Constructor"),X("The value of a namespace declaration attribute must be a literal string [err:XQST0022]"));
         }
         else {
-          DataItem *child = (*m_children)[0];
+          ASTNode *child = (*m_children)[0];
           Item::Ptr nsUri;
-          if(child->getType() == DataItem::LITERAL) {
-            nsUri = ((DataItemLiteral*)child)->getItemConstructor()->createItem(dContext);
+          if(child->getType() == ASTNode::LITERAL) {
+            nsUri = ((XQLiteral*)child)->getItemConstructor()->createItem(dContext);
           }
-          else if(child->getType() == DataItem::SEQUENCE) {
-            const ItemConstructor::Vector &ics = ((DataItemSequence*)child)->getItemConstructors();
+          else if(child->getType() == ASTNode::SEQUENCE) {
+            const ItemConstructor::Vector &ics = ((XQSequence*)child)->getItemConstructors();
             if(ics.size() == 1) {
               nsUri = ics[0]->createItem(dContext);
             }
@@ -589,7 +585,7 @@ DataItem* XQDOMConstructor::staticResolution(StaticContext *context)
 
           if(nsUri == NULLRCP)
             DSLthrow(StaticErrorException,X("DOM Constructor"),X("The value of a namespace declaration attribute must be a literal string [err:XQST0022]"));
-          xqcontext->setNamespaceBinding(XMLNSPrefix, nsUri->asString(dContext));
+          context->setNamespaceBinding(XMLNSPrefix, nsUri->asString(dContext));
         }
       }
     }
@@ -603,7 +599,7 @@ DataItem* XQDOMConstructor::staticResolution(StaticContext *context)
 bool XQDOMConstructor::getStringValue(XMLBuffer &value, DynamicContext *context) const
 {
   bool bSomethingFound=false;
-  for(VectorOfDataItems::const_iterator itCont = m_children->begin();
+  for(VectorOfASTNodes::const_iterator itCont = m_children->begin();
       itCont != m_children->end (); ++itCont) {
     Result childList = (*itCont)->collapseTree(context).atomize(context);
     Item::Ptr child;
@@ -663,22 +659,22 @@ const XMLCh* XQDOMConstructor::getNodeType() const
   return m_nodeType;
 }
 
-const DataItem *XQDOMConstructor::getName() const
+const ASTNode *XQDOMConstructor::getName() const
 {
   return m_name;
 }
 
-const VectorOfDataItems *XQDOMConstructor::getAttributes() const
+const VectorOfASTNodes *XQDOMConstructor::getAttributes() const
 {
   return m_attrList;
 }
 
-const VectorOfDataItems *XQDOMConstructor::getChildren() const
+const VectorOfASTNodes *XQDOMConstructor::getChildren() const
 {
   return m_children;
 }
 
-void XQDOMConstructor::setName(DataItem *name)
+void XQDOMConstructor::setName(ASTNode *name)
 {
   m_name = name;
 }

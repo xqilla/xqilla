@@ -45,7 +45,7 @@ const unsigned int FunctionEndsWith::maxArgs = 3;
  * fn:ends-with($arg1 as xs:string?, $arg2 as xs:string?, $collation as xs:string) as xs:boolean
  */
 
-FunctionEndsWith::FunctionEndsWith(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+FunctionEndsWith::FunctionEndsWith(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "string?,string?,string", args, memMgr)
 {
 }

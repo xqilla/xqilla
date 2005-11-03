@@ -37,7 +37,7 @@ const unsigned int FunctionTranslate::maxArgs = 3;
  * fn:translate($arg as xs:string?, $mapString as xs:string, $transString as xs:string) as xs:string
 **/
 
-FunctionTranslate::FunctionTranslate(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+FunctionTranslate::FunctionTranslate(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "string?,string,string", args, memMgr)
 {
 }

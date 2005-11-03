@@ -24,7 +24,7 @@
 #include "../lexer/Scanner.hpp"
 
 #include <xqilla/simple-api/XQQuery.hpp>
-#include <xqilla/functions/XQFunction.hpp>
+#include <xqilla/ast/XQFunction.hpp>
 #include <xqilla/ast/XQDOMConstructor.hpp>
 #include <xqilla/ast/XQFLWOR.hpp>
 #include <xqilla/ast/XQQuantified.hpp>
@@ -41,19 +41,18 @@
 
 #include <xqilla/items/AnyAtomicTypeConstructor.hpp>
 
-#include <xqilla/ast/DataItemSequence.hpp>
-#include <xqilla/ast/DataItemParenthesizedExpr.hpp>
-#include <xqilla/ast/DataItemNav.hpp>
-#include <xqilla/ast/DataItemStep.hpp>
-#include <xqilla/ast/DataItemLiteral.hpp>
-#include <xqilla/ast/DataItemVariable.hpp>
-#include <xqilla/ast/DataItemQuantifiedExpr.hpp>
-#include <xqilla/ast/DataItemInstanceOf.hpp>
-#include <xqilla/ast/DataItemCastAs.hpp>
-#include <xqilla/ast/DataItemCastableAs.hpp>
-#include <xqilla/ast/DataItemTreatAs.hpp>
-#include <xqilla/ast/DataItemIf.hpp>
-#include <xqilla/ast/DataItemContextItem.hpp>
+#include <xqilla/ast/XQSequence.hpp>
+#include <xqilla/ast/XQParenthesizedExpr.hpp>
+#include <xqilla/ast/XQNav.hpp>
+#include <xqilla/ast/XQStep.hpp>
+#include <xqilla/ast/XQLiteral.hpp>
+#include <xqilla/ast/XQVariable.hpp>
+#include <xqilla/ast/XQInstanceOf.hpp>
+#include <xqilla/ast/XQCastAs.hpp>
+#include <xqilla/ast/XQCastableAs.hpp>
+#include <xqilla/ast/XQTreatAs.hpp>
+#include <xqilla/ast/XQIf.hpp>
+#include <xqilla/ast/XQContextItem.hpp>
 
 #include <xqilla/parser/QName.hpp>
 
@@ -147,35 +146,35 @@ static inline bool isAllSpaces(const XMLCh* str)
 	return true;
 }
 
-static inline DataItemNav* getNavigation(DataItem *possibleNav, XPath2MemoryManager * expr)
+static inline XQNav* getNavigation(ASTNode *possibleNav, XPath2MemoryManager * expr)
 {
-	DataItem* originalObj=possibleNav;
-	if((unsigned int)possibleNav->getType()==XQContext::DEBUG_HOOK)
+	ASTNode* originalObj=possibleNav;
+	if((unsigned int)possibleNav->getType()==ASTNode::DEBUG_HOOK)
 		possibleNav=((XQDebugHook*)possibleNav)->m_impl;
-	if(possibleNav->getType()==DataItem::NAVIGATION)
-		return (DataItemNav*)possibleNav;
+	if(possibleNav->getType()==ASTNode::NAVIGATION)
+		return (XQNav*)possibleNav;
 	else
 	{
-		DataItemNav* nav=new (expr) DataItemNav(expr);
+		XQNav* nav=new (expr) XQNav(expr);
 		nav->addStep(originalObj);
 		return nav;
 	}
 }
 
-static inline VectorOfDataItems packageArgs(DataItem *arg1Impl, DataItem *arg2Impl, XPath2MemoryManager* memMgr)
+static inline VectorOfASTNodes packageArgs(ASTNode *arg1Impl, ASTNode *arg2Impl, XPath2MemoryManager* memMgr)
 {
-	VectorOfDataItems args=VectorOfDataItems(2,(DataItem*)NULL,PathanAllocator<DataItem*>(memMgr));
+	VectorOfASTNodes args=VectorOfASTNodes(2,(ASTNode*)NULL,PathanAllocator<ASTNode*>(memMgr));
 	args[0]=arg1Impl;
 	args[1]=arg2Impl;
 
 	return args;
 }
 
-static void merge_strings(DynamicContext* context, VectorOfDataItems* vec, XMLCh* toBeAdded)
+static void merge_strings(DynamicContext* context, VectorOfASTNodes* vec, XMLCh* toBeAdded)
 {
-	if(vec->size()>0 && vec->back()->getType()==DataItem::LITERAL)
+	if(vec->size()>0 && vec->back()->getType()==ASTNode::LITERAL)
 	{
-		DataItemLiteral *lit = (DataItemLiteral*)vec->back();
+		XQLiteral *lit = (XQLiteral*)vec->back();
 		const XMLCh* string=lit->getItemConstructor()->createItem(context)->asString(context);
 		string=XPath2Utils::concatStrings(string,toBeAdded,context->getMemoryManager());
 
@@ -195,16 +194,16 @@ static void merge_strings(DynamicContext* context, VectorOfDataItems* vec, XMLCh
 				toBeAdded, /*isNumeric*/false);
 
 		vec->push_back(new (context->getMemoryManager())
-                   DataItemLiteral(ic, context->getMemoryManager()));
+                   XQLiteral(ic, context->getMemoryManager()));
 	}
 }
 
-static DataItem* wrapForDebug(XQueryParserArgs *qp, DataItem* pObjToWrap,
+static ASTNode* wrapForDebug(XQueryParserArgs *qp, ASTNode* pObjToWrap,
                               const XMLCh* fnName, unsigned int line, unsigned int column)
 {
   if(!CONTEXT->getDebugCallback())
     return pObjToWrap;
-  if(fnName==NULL && (unsigned int)pObjToWrap->getType()==XQContext::DEBUG_HOOK)
+  if(fnName==NULL && (unsigned int)pObjToWrap->getType()==ASTNode::DEBUG_HOOK)
     return pObjToWrap;
   return new (MEMMGR) XQDebugHook(QP->_query->getFile(), line, column, pObjToWrap, fnName, MEMMGR);
 }
@@ -509,7 +508,7 @@ VariablesAndFunctions:
 	| VariablesAndFunctions VarDecl Separator
 	| VariablesAndFunctions FunctionDecl Separator
 	{
-		XQFunction* decl=$2;
+		XQUserFunction* decl=$2;
 		CONTEXT->addCustomFunction(decl);
 		QP->_query->addFunction(decl);
 	}
@@ -597,11 +596,11 @@ OrderingModeDecl:
 EmptyOrderDecl:
 	_DECLARE_ _DEFAULT_ORDER_ _EMPTY_GREATEST_
 	{ 
-		CONTEXT->setDefaultFLWOROrderingMode(XQStaticContext::FLWOR_ORDER_EMPTY_GREATEST);
+		CONTEXT->setDefaultFLWOROrderingMode(StaticContext::FLWOR_ORDER_EMPTY_GREATEST);
 	}
 	| _DECLARE_ _DEFAULT_ORDER_ _EMPTY_LEAST_
 	{ 
-		CONTEXT->setDefaultFLWOROrderingMode(XQStaticContext::FLWOR_ORDER_EMPTY_LEAST);
+		CONTEXT->setDefaultFLWOROrderingMode(StaticContext::FLWOR_ORDER_EMPTY_LEAST);
 	}
 	;
 
@@ -746,11 +745,11 @@ VarDecl:
 ConstructionDecl:
 	_DECLARE_ _CONSTRUCTION_ _CONSTRUCTION_PRESERVE_
 	{
-		CONTEXT->setConstructionMode(XQStaticContext::CONSTRUCTION_MODE_PRESERVE);
+		CONTEXT->setConstructionMode(StaticContext::CONSTRUCTION_MODE_PRESERVE);
 	}
 	| _DECLARE_ _CONSTRUCTION_ _CONSTRUCTION_STRIP_
 	{
-		CONTEXT->setConstructionMode(XQStaticContext::CONSTRUCTION_MODE_STRIP);
+		CONTEXT->setConstructionMode(StaticContext::CONSTRUCTION_MODE_STRIP);
 	}
 	;
 
@@ -759,42 +758,42 @@ ConstructionDecl:
 FunctionDecl:
 	  _DECLARE_FUNCTION_ _FUNCTION_CALL_ ParamList _RPAR_ EnclosedExpr
 		{
-			$$ = new (MEMMGR) XQFunction($2,$3,$5,NULL, MEMMGR); 
+			$$ = new (MEMMGR) XQUserFunction($2,$3,$5,NULL, MEMMGR); 
 			$$->setURI(CONTEXT->getUriBoundToPrefix($$->getPrefix()));
 		}
 	| _DECLARE_FUNCTION_ _FUNCTION_CALL_ _RPAR_ EnclosedExpr
 		{
-			$$ = new (MEMMGR) XQFunction($2,NULL,$4,NULL, MEMMGR); 
+			$$ = new (MEMMGR) XQUserFunction($2,NULL,$4,NULL, MEMMGR); 
 			$$->setURI(CONTEXT->getUriBoundToPrefix($$->getPrefix()));
 		}
 	| _DECLARE_FUNCTION_ _FUNCTION_CALL_ ParamList _EXPR_AS_ SequenceType EnclosedExpr
 		{
-			$$ = new (MEMMGR) XQFunction($2,$3,$6,$5, MEMMGR); 
+			$$ = new (MEMMGR) XQUserFunction($2,$3,$6,$5, MEMMGR); 
 			$$->setURI(CONTEXT->getUriBoundToPrefix($$->getPrefix()));
 		}
 	| _DECLARE_FUNCTION_ _FUNCTION_CALL_ _EXPR_AS_ SequenceType EnclosedExpr
 		{
-			$$ = new (MEMMGR) XQFunction($2,NULL,$5,$4, MEMMGR); 
+			$$ = new (MEMMGR) XQUserFunction($2,NULL,$5,$4, MEMMGR); 
 			$$->setURI(CONTEXT->getUriBoundToPrefix($$->getPrefix()));
 		}
 	| _DECLARE_FUNCTION_ _FUNCTION_CALL_ ParamList _RPAR_ _EXTERNAL_
 		{
-			$$ = new (MEMMGR) XQFunction($2,$3,NULL,NULL, MEMMGR); 
+			$$ = new (MEMMGR) XQUserFunction($2,$3,NULL,NULL, MEMMGR); 
 			$$->setURI(CONTEXT->getUriBoundToPrefix($$->getPrefix()));
 		}
 	| _DECLARE_FUNCTION_ _FUNCTION_CALL_ _RPAR_ _EXTERNAL_
 		{
-			$$ = new (MEMMGR) XQFunction($2,NULL,NULL,NULL, MEMMGR); 
+			$$ = new (MEMMGR) XQUserFunction($2,NULL,NULL,NULL, MEMMGR); 
 			$$->setURI(CONTEXT->getUriBoundToPrefix($$->getPrefix()));
 		}
 	| _DECLARE_FUNCTION_ _FUNCTION_CALL_ ParamList _EXPR_AS_ SequenceType _EXTERNAL_
 		{
-			$$ = new (MEMMGR) XQFunction($2,$3,NULL,$5, MEMMGR); 
+			$$ = new (MEMMGR) XQUserFunction($2,$3,NULL,$5, MEMMGR); 
 			$$->setURI(CONTEXT->getUriBoundToPrefix($$->getPrefix()));
 		}
 	| _DECLARE_FUNCTION_ _FUNCTION_CALL_ _EXPR_AS_ SequenceType _EXTERNAL_
 		{
-			$$ = new (MEMMGR) XQFunction($2,NULL,NULL,$4, MEMMGR); 
+			$$ = new (MEMMGR) XQUserFunction($2,NULL,NULL,$4, MEMMGR); 
 			$$->setURI(CONTEXT->getUriBoundToPrefix($$->getPrefix()));
 		}
 	;
@@ -808,7 +807,7 @@ ParamList:
 		}
       | Param
 		{
-			XQFunction::VectorOfFunctionParameters* paramList = new (MEMMGR) XQFunction::VectorOfFunctionParameters(PathanAllocator<XQFunction::XQFunctionParameter*>(MEMMGR));
+			XQUserFunction::VectorOfFunctionParameters* paramList = new (MEMMGR) XQUserFunction::VectorOfFunctionParameters(PathanAllocator<XQUserFunction::XQFunctionParameter*>(MEMMGR));
 			paramList->push_back($1);
 			$$ = paramList;
 		}
@@ -818,11 +817,11 @@ ParamList:
 Param:
         _DOLLAR_SIGN_ _VARIABLE_ TypeDeclaration
 		{
-			$$ = new (MEMMGR) XQFunction::XQFunctionParameter($2,$3,MEMMGR);
+			$$ = new (MEMMGR) XQUserFunction::XQFunctionParameter($2,$3,MEMMGR);
 		}
 	  | _DOLLAR_SIGN_ _VARIABLE_
 		{
-			$$ = new (MEMMGR) XQFunction::XQFunctionParameter($2,new (MEMMGR) SequenceType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ANYTHING), SequenceType::STAR) ,MEMMGR);
+			$$ = new (MEMMGR) XQUserFunction::XQFunctionParameter($2,new (MEMMGR) SequenceType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ANYTHING), SequenceType::STAR) ,MEMMGR);
 		}
       ;
 
@@ -846,17 +845,17 @@ QueryBody:
 Expr:
 		Expr _COMMA_ ExprSingle
 		{
-			DataItem* prevExpr=$1;
-			if((unsigned int)prevExpr->getType()==XQContext::DEBUG_HOOK)
+			ASTNode* prevExpr=$1;
+			if((unsigned int)prevExpr->getType()==ASTNode::DEBUG_HOOK)
 				prevExpr=((XQDebugHook*)prevExpr)->m_impl;
-			if(prevExpr->getType()==DataItem::PARENTHESIZED)
+			if(prevExpr->getType()==ASTNode::PARENTHESIZED)
 			{
-				((DataItemParenthesizedExpr *)prevExpr)->addItem($3);
+				((XQParenthesizedExpr *)prevExpr)->addItem($3);
 				$$ = $1;
 			}
 			else
 			{
-				DataItemParenthesizedExpr *dis = new (MEMMGR) DataItemParenthesizedExpr(MEMMGR);
+				XQParenthesizedExpr *dis = new (MEMMGR) XQParenthesizedExpr(MEMMGR);
 				dis->addItem($1);
 				dis->addItem($3);
 				$$ = dis;
@@ -1066,9 +1065,9 @@ EmptyHandling:
 		{ 
 			switch(CONTEXT->getDefaultFLWOROrderingMode())
 			{
-			case XQStaticContext::FLWOR_ORDER_EMPTY_LEAST:
+			case StaticContext::FLWOR_ORDER_EMPTY_LEAST:
 				$$ = XQSort::SortSpec::empty_least; break;
-			case XQStaticContext::FLWOR_ORDER_EMPTY_GREATEST:
+			case StaticContext::FLWOR_ORDER_EMPTY_GREATEST:
 				$$ = XQSort::SortSpec::empty_greatest; break;
 			}
 		}
@@ -1161,7 +1160,7 @@ CaseClause:
 IfExpr:
 	  _IF_ _LPAR_ Expr _RPAR_ _THEN_ ExprSingle _ELSE_ ExprSingle
 		{ 
-	        $$ = WRAP(@1, new (MEMMGR) DataItemIf($3, $6, $8, MEMMGR));
+	        $$ = WRAP(@1, new (MEMMGR) XQIf($3, $6, $8, MEMMGR));
 		}
 	;
 
@@ -1169,11 +1168,11 @@ IfExpr:
 OrExpr:
 		OrExpr _OR_ AndExpr
 		{
-			DataItem* prevExpr=$1;
-			if((unsigned int)prevExpr->getType()==XQContext::DEBUG_HOOK)
+			ASTNode* prevExpr=$1;
+			if((unsigned int)prevExpr->getType()==ASTNode::DEBUG_HOOK)
 				prevExpr=((XQDebugHook*)prevExpr)->m_impl;
-			if(prevExpr->getType()==DataItem::OPERATOR && 
-			   XPath2Utils::equals(((DataItemOperator*)prevExpr)->getOperatorName(),Or::name))
+			if(prevExpr->getType()==ASTNode::OPERATOR && 
+			   XPath2Utils::equals(((XQOperator*)prevExpr)->getOperatorName(),Or::name))
 			{
 				((Or*)prevExpr)->addArgument($3);
 				$$ = prevExpr;
@@ -1188,11 +1187,11 @@ OrExpr:
 AndExpr:
 		AndExpr _AND_ ComparisonExpr
 		{
-			DataItem* prevExpr=$1;
-			if((unsigned int)prevExpr->getType()==XQContext::DEBUG_HOOK)
+			ASTNode* prevExpr=$1;
+			if((unsigned int)prevExpr->getType()==ASTNode::DEBUG_HOOK)
 				prevExpr=((XQDebugHook*)prevExpr)->m_impl;
-			if(prevExpr->getType()==DataItem::OPERATOR && 
-			   XPath2Utils::equals(((DataItemOperator*)prevExpr)->getOperatorName(),And::name))
+			if(prevExpr->getType()==ASTNode::OPERATOR && 
+			   XPath2Utils::equals(((XQOperator*)prevExpr)->getOperatorName(),And::name))
 			{
 				((And*)prevExpr)->addArgument($3);
 				$$ = prevExpr;
@@ -1346,7 +1345,7 @@ IntersectExceptExpr:
 InstanceofExpr:
 	TreatExpr _INSTANCE_OF_ SequenceType
 	{
-		$$ = WRAP(@2, new (MEMMGR) DataItemInstanceOf($1,$3,MEMMGR));
+		$$ = WRAP(@2, new (MEMMGR) XQInstanceOf($1,$3,MEMMGR));
 	}
 	| TreatExpr
 	;
@@ -1355,7 +1354,7 @@ InstanceofExpr:
 TreatExpr:
 	CastableExpr _TREAT_AS_ SequenceType
 	{
-		$$ = WRAP(@2, new (MEMMGR) DataItemTreatAs($1,$3,MEMMGR));
+		$$ = WRAP(@2, new (MEMMGR) XQTreatAs($1,$3,MEMMGR));
 	}
 	| CastableExpr
 	;
@@ -1364,7 +1363,7 @@ TreatExpr:
 CastableExpr:
 	CastExpr _CASTABLE_AS_ SingleType
 	{
-		$$ = WRAP(@2, new (MEMMGR) DataItemCastableAs($1,$3,MEMMGR));
+		$$ = WRAP(@2, new (MEMMGR) XQCastableAs($1,$3,MEMMGR));
 	}
 	| CastExpr
 	;
@@ -1373,7 +1372,7 @@ CastableExpr:
 CastExpr:
 	UnaryExpr _CAST_AS_ SingleType
 	{
-		$$ = WRAP(@1, new (MEMMGR) DataItemCastAs($1,$3,MEMMGR));
+		$$ = WRAP(@1, new (MEMMGR) XQCastAs($1,$3,MEMMGR));
 	}
 	| UnaryExpr
 	;
@@ -1382,7 +1381,7 @@ CastExpr:
 UnaryExpr:
       _MINUS_ UnaryExpr
 		{
-			VectorOfDataItems args(PathanAllocator<DataItem*>(MEMMGR));
+			VectorOfASTNodes args(PathanAllocator<ASTNode*>(MEMMGR));
 			args.push_back($2);
 			$$ = new (MEMMGR) UnaryMinus(args, MEMMGR);
 		}
@@ -1447,26 +1446,26 @@ Pragma:
 PathExpr:
 	  _SLASH_
   		{
-			DataItemNav *nav = new (MEMMGR) DataItemNav(MEMMGR);
+			XQNav *nav = new (MEMMGR) XQNav(MEMMGR);
 			nav->setGotoRootFirst(true);
 			$$ = nav;
 		}
 	| _SLASH_ RelativePathExpr
   		{
-			DataItemNav* nav=getNavigation($2,MEMMGR);
+			XQNav* nav=getNavigation($2,MEMMGR);
 			nav->setGotoRootFirst(true);
 			$$ = nav;
 		}
 	| _SLASHSLASH_ RelativePathExpr
   		{
-			DataItemNav *newNavigation = getNavigation($2,MEMMGR);
+			XQNav *newNavigation = getNavigation($2,MEMMGR);
 			newNavigation->setGotoRootFirst(true);
 
       NodeTest *step = new (MEMMGR) NodeTest();
       step->setTypeWildcard();
       step->setNameWildcard();
       step->setNamespaceWildcard();
-      newNavigation->addStepFront(new (MEMMGR) DataItemStep(DataItemStep::DESCENDANT_OR_SELF, step, MEMMGR));        
+      newNavigation->addStepFront(new (MEMMGR) XQStep(XQStep::DESCENDANT_OR_SELF, step, MEMMGR));        
 
 			$$ = newNavigation;
 		}
@@ -1477,19 +1476,19 @@ PathExpr:
 RelativePathExpr:
 	  RelativePathExpr _SLASH_ StepExpr
   		{
-			DataItemNav *nav = getNavigation($1,MEMMGR);
+			XQNav *nav = getNavigation($1,MEMMGR);
 			nav->addStep($3);
 			$$ = nav;
 		}
 	| RelativePathExpr _SLASHSLASH_ StepExpr
   		{
-			DataItemNav *nav = getNavigation($1,MEMMGR);
+			XQNav *nav = getNavigation($1,MEMMGR);
 
       NodeTest *step = new (MEMMGR) NodeTest();
       step->setTypeWildcard();
       step->setNameWildcard();
       step->setNamespaceWildcard();
-      nav->addStep(DataItemStep::DESCENDANT_OR_SELF, step);
+      nav->addStep(XQStep::DESCENDANT_OR_SELF, step);
 			nav->addStep($3);
 
 			$$ = nav;
@@ -1523,13 +1522,13 @@ ForwardStep:
 		{
       if(!$2->isNodeTypeSet()) {
         switch($1) {
-        case DataItemStep::NAMESPACE: $2->setNodeType(Node::namespace_string); break;
-        case DataItemStep::ATTRIBUTE: $2->setNodeType(Node::attribute_string); break;
+        case XQStep::NAMESPACE: $2->setNodeType(Node::namespace_string); break;
+        case XQStep::ATTRIBUTE: $2->setNodeType(Node::attribute_string); break;
         default: $2->setNodeType(Node::element_string); break;
         }
       }
 
-			$$ = new (MEMMGR) DataItemStep($1,$2,MEMMGR);
+			$$ = new (MEMMGR) XQStep($1,$2,MEMMGR);
 		}
 	| AbbrevForwardStep
 	;
@@ -1544,31 +1543,31 @@ ForwardStep:
 ForwardAxis:
 	  _AXIS_CHILD_ 
 		{
-      $$ = DataItemStep::CHILD;
+      $$ = XQStep::CHILD;
 		}
 	| _AXIS_DESCENDANT_ 
 		{
-      $$ = DataItemStep::DESCENDANT;
+      $$ = XQStep::DESCENDANT;
 		}
 	| _AXIS_ATTRIBUTE_
 		{
-      $$ = DataItemStep::ATTRIBUTE;
+      $$ = XQStep::ATTRIBUTE;
 		}
 	| _AXIS_SELF_
 		{
-      $$ = DataItemStep::SELF;
+      $$ = XQStep::SELF;
 		}
 	| _AXIS_DESCENDANT_OR_SELF_ 
 		{
-      $$ = DataItemStep::DESCENDANT_OR_SELF;
+      $$ = XQStep::DESCENDANT_OR_SELF;
 		}
 	| _AXIS_FOLLOWING_SIBLING_ 
 		{
-      $$ = DataItemStep::FOLLOWING_SIBLING;
+      $$ = XQStep::FOLLOWING_SIBLING;
 		}
 	| _AXIS_FOLLOWING_ 
 		{
-      $$ = DataItemStep::FOLLOWING;
+      $$ = XQStep::FOLLOWING;
 		}
 	;
 
@@ -1580,21 +1579,21 @@ AbbrevForwardStep:
         $2->setNodeType(Node::attribute_string);
       }
 
-      $$ = new (MEMMGR) DataItemStep(DataItemStep::ATTRIBUTE, $2, MEMMGR);
+      $$ = new (MEMMGR) XQStep(XQStep::ATTRIBUTE, $2, MEMMGR);
 		}
 	| NodeTest
 		{
-      DataItemStep::Axis axis = DataItemStep::CHILD;
+      XQStep::Axis axis = XQStep::CHILD;
       SequenceType::ItemType *itemtype = $1->getItemType();
       if(itemtype != 0 &&
          itemtype->getItemTestType() == SequenceType::ItemType::TEST_ATTRIBUTE) {
-        axis = DataItemStep::ATTRIBUTE;
+        axis = XQStep::ATTRIBUTE;
       }
       else if(!$1->isNodeTypeSet()) {
         $1->setNodeType(Node::element_string);
       }
 
-      $$ = new (MEMMGR) DataItemStep(axis, $1, MEMMGR);
+      $$ = new (MEMMGR) XQStep(axis, $1, MEMMGR);
 		}
 	;
 
@@ -1606,7 +1605,7 @@ ReverseStep:
         $2->setNodeType(Node::element_string);
       }
 
-      $$ = new (MEMMGR) DataItemStep($1, $2, MEMMGR);
+      $$ = new (MEMMGR) XQStep($1, $2, MEMMGR);
 		}
 	| AbbrevReverseStep 
 	;
@@ -1619,23 +1618,23 @@ ReverseStep:
 ReverseAxis:
 	  _AXIS_PARENT_
 		{
-      $$ = DataItemStep::PARENT;
+      $$ = XQStep::PARENT;
 		}
 	| _AXIS_ANCESTOR_
 		{
-      $$ = DataItemStep::ANCESTOR;
+      $$ = XQStep::ANCESTOR;
 		}
 	| _AXIS_PRECEDING_SIBLING_
 		{
-      $$ = DataItemStep::PRECEDING_SIBLING;
+      $$ = XQStep::PRECEDING_SIBLING;
 		}
 	| _AXIS_PRECEDING_
 		{
-      $$ = DataItemStep::PRECEDING;
+      $$ = XQStep::PRECEDING;
 		}
 	| _AXIS_ANCESTOR_OR_SELF_
 		{
-      $$ = DataItemStep::ANCESTOR_OR_SELF;
+      $$ = XQStep::ANCESTOR_OR_SELF;
 		}
 	;
 
@@ -1647,7 +1646,7 @@ AbbrevReverseStep:
 			step->setNameWildcard();
 			step->setNamespaceWildcard();
 			step->setTypeWildcard();
-			$$ = new (MEMMGR) DataItemStep(DataItemStep::PARENT, step, MEMMGR);
+			$$ = new (MEMMGR) XQStep(XQStep::PARENT, step, MEMMGR);
 		}	
 	;
 
@@ -1724,7 +1723,7 @@ FilterExpr:
 PredicateList:
 	  /* empty */
 		{
-	        $$ = new (MEMMGR) VectorOfDataItems(PathanAllocator<DataItem*>(MEMMGR));
+	        $$ = new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
 		}
 	| PredicateList _LBRACK_ Expr _RBRACK_
 		{
@@ -1764,9 +1763,9 @@ VarRef:
 		{
 		    int nColon=XERCES_CPP_NAMESPACE_QUALIFIER XMLString::indexOf($2,':');
 			if(nColon!=-1)
-  				$$ = new (MEMMGR) DataItemVariable($2,MEMMGR);
+  				$$ = new (MEMMGR) XQVariable($2,MEMMGR);
 			else
-				$$ = new (MEMMGR) DataItemVariable(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, $2,MEMMGR);
+				$$ = new (MEMMGR) XQVariable(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, $2,MEMMGR);
 		}
 	;
 		
@@ -1774,12 +1773,12 @@ VarRef:
 ParenthesizedExpr:
       _LPAR_ Expr _RPAR_
 		{ 
-			DataItem* prevExpr=$2;
-			if((unsigned int)prevExpr->getType()==XQContext::DEBUG_HOOK)
+			ASTNode* prevExpr=$2;
+			if((unsigned int)prevExpr->getType()==ASTNode::DEBUG_HOOK)
 				prevExpr=((XQDebugHook*)prevExpr)->m_impl;
-			if(prevExpr->getType()!=DataItem::PARENTHESIZED)
+			if(prevExpr->getType()!=ASTNode::PARENTHESIZED)
 			{
-				DataItemParenthesizedExpr *dis = new (MEMMGR) DataItemParenthesizedExpr(MEMMGR);
+				XQParenthesizedExpr *dis = new (MEMMGR) XQParenthesizedExpr(MEMMGR);
 				dis->addItem($2);
 				$$ = WRAP(@2, dis);
 			}
@@ -1788,7 +1787,7 @@ ParenthesizedExpr:
 		}
     | _LPAR_ _RPAR_
 		{ 
-			$$ = WRAP(@1, new (MEMMGR) DataItemSequence(MEMMGR));
+			$$ = WRAP(@1, new (MEMMGR) XQSequence(MEMMGR));
 		}
     ;
 
@@ -1796,7 +1795,7 @@ ParenthesizedExpr:
 ContextItemExpr:
 	  _DOT_
 		{
-			$$ = new (MEMMGR) DataItemContextItem(MEMMGR);
+			$$ = new (MEMMGR) XQContextItem(MEMMGR);
 		}
 	;
 
@@ -1820,7 +1819,7 @@ UnorderedExpr:
 FunctionCall:
 	  _FUNCTION_CALL_ _RPAR_
 		{
-			VectorOfDataItems args(PathanAllocator<DataItem*>(MEMMGR));
+			VectorOfASTNodes args(PathanAllocator<ASTNode*>(MEMMGR));
 			$$ = FNWRAP(@1, $1, new (MEMMGR) XQFunctionCall(new (MEMMGR) QualifiedName($1, MEMMGR), args, MEMMGR));
 		}
 	| _FUNCTION_CALL_ FunctionCallArgumentList _RPAR_
@@ -1837,7 +1836,7 @@ FunctionCallArgumentList:
 		}
 	| ExprSingle
 		{
-			$$ = new (MEMMGR) VectorOfDataItems(PathanAllocator<DataItem*>(MEMMGR));
+			$$ = new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
 			$$->push_back($1);
 		}	
 	;
@@ -1861,9 +1860,9 @@ DirectConstructor:
 DirElemConstructor:
       _START_TAG_OPEN_ _TAG_NAME_ DirAttributeList _EMPTY_TAG_CLOSE_
 		{ 
-			VectorOfDataItems* content=new (MEMMGR) VectorOfDataItems(PathanAllocator<DataItem*>(MEMMGR));
+			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
 			$$ = WRAP(@1, new (MEMMGR) XQDOMConstructor(Node::element_string,
-								new (MEMMGR) DataItemLiteral(
+								new (MEMMGR) XQLiteral(
                     new (MEMMGR) AnyAtomicTypeConstructor(
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
@@ -1876,18 +1875,18 @@ DirElemConstructor:
 			if(!XPath2Utils::equals($2,$7))
 				yyerror("Close tag does not match open tag");
 			// if we are requested to strip whitespace-only nodes, check if the last element content should be removed
-			VectorOfDataItems* elemContent=$5;
+			VectorOfASTNodes* elemContent=$5;
 			if(!CONTEXT->getPreserveBoundarySpace() &&
 			   elemContent->size()>0 && 
-			   elemContent->back()->getType()==DataItem::LITERAL)
+			   elemContent->back()->getType()==ASTNode::LITERAL)
 			{
-                Item::Ptr litVal = ((DataItemLiteral*)elemContent->back())->getItemConstructor()->createItem(CONTEXT);
+                Item::Ptr litVal = ((XQLiteral*)elemContent->back())->getItemConstructor()->createItem(CONTEXT);
 				if(((AnyAtomicType*)(const Item*)litVal)->getPrimitiveTypeIndex()==AnyAtomicType::STRING &&
                    isAllSpaces(litVal->asString(CONTEXT)))
 					elemContent->pop_back();
 			}
 			$$ = WRAP(@1, new (MEMMGR) XQDOMConstructor(Node::element_string,
-							  new (MEMMGR) DataItemLiteral(
+							  new (MEMMGR) XQLiteral(
                     new (MEMMGR) AnyAtomicTypeConstructor(
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
@@ -1901,13 +1900,13 @@ DirElemConstructor:
 DirAttributeList: 
 		/* empty */
 		{
-			$$ = new (MEMMGR) VectorOfDataItems(PathanAllocator<DataItem*>(MEMMGR));
+			$$ = new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
 		}
 	  | DirAttributeList _ATTRIBUTE_NAME_ _VALUE_INDICATOR_ DirAttributeValue
 		{
 			$$ = $1;
-			DataItem* attrItem=WRAP(@2, new (MEMMGR) XQDOMConstructor(Node::attribute_string,
-										   new (MEMMGR) DataItemLiteral(
+			ASTNode* attrItem=WRAP(@2, new (MEMMGR) XQDOMConstructor(Node::attribute_string,
+										   new (MEMMGR) XQLiteral(
 						new (MEMMGR) AnyAtomicTypeConstructor(
 											XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 											XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
@@ -1944,7 +1943,7 @@ DirAttributeValue:
 QuotAttrValueContent:
 		/* empty */
 		{ 
-			$$ = new (MEMMGR) VectorOfDataItems(PathanAllocator<DataItem*>(MEMMGR));
+			$$ = new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
 		}
       | QuotAttrValueContent EnclosedExpr
 		{
@@ -1968,7 +1967,7 @@ QuotAttrValueContent:
 AposAttrValueContent:
 		/* empty */
 		{ 
-			$$ = new (MEMMGR) VectorOfDataItems(PathanAllocator<DataItem*>(MEMMGR));
+			$$ = new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
 		}
       | AposAttrValueContent EnclosedExpr
 		{
@@ -1994,17 +1993,17 @@ AposAttrValueContent:
 DirElementContent:
 	  /* empty */
 		{
-			$$ = new (MEMMGR) VectorOfDataItems(PathanAllocator<DataItem*>(MEMMGR)); 
+			$$ = new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR)); 
 		}
 	  |	DirElementContent DirectConstructor
 		{
 			// if the last token was a string literal made of whitesapce and
 			// we are adding a node constructor, and the context tells us to strip whitespace, remove it
 			if($1->size()>0 && 
-			   $1->back()->getType()==DataItem::LITERAL)
+			   $1->back()->getType()==ASTNode::LITERAL)
 			{
 				const XMLCh* lastString=NULL;
-                Item::Ptr litVal = ((DataItemLiteral*)$1->back())->getItemConstructor()->createItem(CONTEXT);
+                Item::Ptr litVal = ((XQLiteral*)$1->back())->getItemConstructor()->createItem(CONTEXT);
 				if(((AnyAtomicType*)(const Item*)litVal)->getPrimitiveTypeIndex()==AnyAtomicType::STRING)
 					lastString=litVal->asString(CONTEXT);
 				if(lastString!=NULL && XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(lastString)>0 && isAllSpaces(lastString) && !CONTEXT->getPreserveBoundarySpace())
@@ -2018,10 +2017,10 @@ DirElementContent:
 			// if the last token was a string literal made of whitesapce and
 			// we are adding an enclosed expression, and the context tells us to strip whitespace, remove it
 			if($1->size()>0 && 
-			   $1->back()->getType()==DataItem::LITERAL)
+			   $1->back()->getType()==ASTNode::LITERAL)
 			{
 				const XMLCh* lastString=NULL;
-                Item::Ptr litVal = ((DataItemLiteral*)$1->back())->getItemConstructor()->createItem(CONTEXT);
+                Item::Ptr litVal = ((XQLiteral*)$1->back())->getItemConstructor()->createItem(CONTEXT);
 				if(((AnyAtomicType*)(const Item*)litVal)->getPrimitiveTypeIndex()==AnyAtomicType::STRING)
 					lastString=litVal->asString(CONTEXT);
 				if(lastString!=NULL && XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(lastString)>0 && isAllSpaces(lastString) && !CONTEXT->getPreserveBoundarySpace())
@@ -2063,8 +2062,8 @@ CommonContent:
 DirCommentConstructor:
 	_XML_COMMENT_
 		{
-			VectorOfDataItems* content=new (MEMMGR) VectorOfDataItems(PathanAllocator<DataItem*>(MEMMGR));
-			content->push_back(new (MEMMGR) DataItemLiteral(
+			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
+			content->push_back(new (MEMMGR) XQLiteral(
                     new (MEMMGR) AnyAtomicTypeConstructor(
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
@@ -2079,16 +2078,16 @@ DirCommentConstructor:
 DirPIConstructor:
 	_PROCESSING_INSTRUCTION_START_ _PI_TARGET_ _PROCESSING_INSTRUCTION_CONTENT_
 		{
-			VectorOfDataItems* content=new (MEMMGR) VectorOfDataItems(PathanAllocator<DataItem*>(MEMMGR));
-			VectorOfDataItems* empty=new (MEMMGR) VectorOfDataItems(PathanAllocator<DataItem*>(MEMMGR));
-			content->push_back(new (MEMMGR) DataItemLiteral(
+			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
+			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
+			content->push_back(new (MEMMGR) XQLiteral(
                     new (MEMMGR) AnyAtomicTypeConstructor(
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
 										$3, /*isNumeric*/false),
 										MEMMGR));
 			$$ = WRAP(@1, new (MEMMGR) XQDOMConstructor(Node::processing_instruction_string,
-								      new (MEMMGR) DataItemLiteral(
+								      new (MEMMGR) XQLiteral(
                     new (MEMMGR) AnyAtomicTypeConstructor(
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
@@ -2126,11 +2125,11 @@ ComputedConstructor:
 CompDocConstructor:
 	  _DOCUMENT_CONSTR_ _LBRACE_ Expr _RBRACE_
 		{
-			VectorOfDataItems* content=new (MEMMGR) VectorOfDataItems(PathanAllocator<DataItem*>(MEMMGR));
-			VectorOfDataItems* empty=new (MEMMGR) VectorOfDataItems(PathanAllocator<DataItem*>(MEMMGR));
+			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
+			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
 			content->push_back(WRAP(@3, $3));
 			$$ = WRAP(@1, new (MEMMGR) XQDOMConstructor(Node::document_string,
-								  new (MEMMGR) DataItemLiteral(
+								  new (MEMMGR) XQLiteral(
                     new (MEMMGR) AnyAtomicTypeConstructor(
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
@@ -2144,11 +2143,11 @@ CompDocConstructor:
 CompElemConstructor:
 	  _NAMED_ELEMENT_CONSTR_ _LBRACE_ ContentExpr _RBRACE_ 
 		{
-			VectorOfDataItems* content=new (MEMMGR) VectorOfDataItems(PathanAllocator<DataItem*>(MEMMGR));
-			VectorOfDataItems* empty=new (MEMMGR) VectorOfDataItems(PathanAllocator<DataItem*>(MEMMGR));
+			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
+			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
 			content->push_back(WRAP(@3, $3));
 			$$ = WRAP(@1, new (MEMMGR) XQDOMConstructor(Node::element_string,
-								  new (MEMMGR) DataItemLiteral(
+								  new (MEMMGR) XQLiteral(
                     new (MEMMGR) AnyAtomicTypeConstructor(
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
@@ -2158,9 +2157,9 @@ CompElemConstructor:
 		}
 	| _NAMED_ELEMENT_CONSTR_ _LBRACE_ _RBRACE_ 
 		{
-			VectorOfDataItems* empty=new (MEMMGR) VectorOfDataItems(PathanAllocator<DataItem*>(MEMMGR));
+			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
 			$$ = WRAP(@1, new (MEMMGR) XQDOMConstructor(Node::element_string,
-								  new (MEMMGR) DataItemLiteral(
+								  new (MEMMGR) XQLiteral(
                     new (MEMMGR) AnyAtomicTypeConstructor(
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
@@ -2170,8 +2169,8 @@ CompElemConstructor:
 		}
 	| _ELEMENT_CONSTR_ _LBRACE_ Expr _RBRACE_ _LBRACE_ ContentExpr _RBRACE_ 
 		{
-			VectorOfDataItems* content=new (MEMMGR) VectorOfDataItems(PathanAllocator<DataItem*>(MEMMGR));
-			VectorOfDataItems* empty=new (MEMMGR) VectorOfDataItems(PathanAllocator<DataItem*>(MEMMGR));
+			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
+			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
 			content->push_back(WRAP(@6, $6));
 			$$ = WRAP(@1, new (MEMMGR) XQDOMConstructor(Node::element_string,
 								  WRAP(@3, $3), 
@@ -2179,7 +2178,7 @@ CompElemConstructor:
 		}
 	| _ELEMENT_CONSTR_ _LBRACE_ Expr _RBRACE_ _LBRACE_ _RBRACE_ 
 		{
-			VectorOfDataItems* empty=new (MEMMGR) VectorOfDataItems(PathanAllocator<DataItem*>(MEMMGR));
+			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
 			$$ = WRAP(@1, new (MEMMGR) XQDOMConstructor(Node::element_string,
 								  WRAP(@3, $3), 
 								  empty, empty, MEMMGR));
@@ -2195,10 +2194,10 @@ ContentExpr:
 CompAttrConstructor:
 	  _NAMED_ATTRIBUTE_CONSTR_ _LBRACE_ Expr _RBRACE_ 
 		{
-			VectorOfDataItems* content=new (MEMMGR) VectorOfDataItems(PathanAllocator<DataItem*>(MEMMGR));
+			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
 			content->push_back(WRAP(@3, $3));
 			$$ = WRAP(@1, new (MEMMGR) XQDOMConstructor(Node::attribute_string,
-								      new (MEMMGR) DataItemLiteral(
+								      new (MEMMGR) XQLiteral(
                     new (MEMMGR) AnyAtomicTypeConstructor(
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
@@ -2208,9 +2207,9 @@ CompAttrConstructor:
 		}
 	| _NAMED_ATTRIBUTE_CONSTR_ _LBRACE_ _RBRACE_ 
 		{
-			VectorOfDataItems* empty=new (MEMMGR) VectorOfDataItems(PathanAllocator<DataItem*>(MEMMGR));
+			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
 			$$ = WRAP(@1, new (MEMMGR) XQDOMConstructor(Node::attribute_string,
-								      new (MEMMGR) DataItemLiteral(
+								      new (MEMMGR) XQLiteral(
                     new (MEMMGR) AnyAtomicTypeConstructor(
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
@@ -2220,7 +2219,7 @@ CompAttrConstructor:
 		}
 	| _ATTRIBUTE_CONSTR_ _LBRACE_ Expr _RBRACE_ _LBRACE_ Expr _RBRACE_ 
 		{
-			VectorOfDataItems* content=new (MEMMGR) VectorOfDataItems(PathanAllocator<DataItem*>(MEMMGR));
+			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
 			content->push_back(WRAP(@6, $6));
 			$$ = WRAP(@1, new (MEMMGR) XQDOMConstructor(Node::attribute_string,
 									  WRAP(@3, $3), 
@@ -2228,7 +2227,7 @@ CompAttrConstructor:
 		}
 	| _ATTRIBUTE_CONSTR_ _LBRACE_ Expr _RBRACE_ _LBRACE_ _RBRACE_ 
 		{
-			VectorOfDataItems* empty=new (MEMMGR) VectorOfDataItems(PathanAllocator<DataItem*>(MEMMGR));
+			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
 			$$ = WRAP(@1, new (MEMMGR) XQDOMConstructor(Node::attribute_string,
 									  WRAP(@3, $3), 
 									  0, empty, MEMMGR));
@@ -2239,7 +2238,7 @@ CompAttrConstructor:
 CompTextConstructor:
 	  _TEXT_CONSTR_ _LBRACE_ Expr _RBRACE_
 		{
-			VectorOfDataItems* content=new (MEMMGR) VectorOfDataItems(PathanAllocator<DataItem*>(MEMMGR));
+			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
 			content->push_back(WRAP(@3, $3));
 			$$ = WRAP(@1, new (MEMMGR) XQDOMConstructor(Node::text_string, 0, 0, content, MEMMGR));
 		}
@@ -2249,7 +2248,7 @@ CompTextConstructor:
 CompCommentConstructor:
 	  _COMMENT_CONSTR_ _LBRACE_ Expr _RBRACE_
 		{
-			VectorOfDataItems* content=new (MEMMGR) VectorOfDataItems(PathanAllocator<DataItem*>(MEMMGR));
+			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
 			content->push_back(WRAP(@3, $3));
 			$$ = WRAP(@1, new (MEMMGR) XQDOMConstructor(Node::comment_string, 0, 0, content, MEMMGR));
 		}
@@ -2259,10 +2258,10 @@ CompCommentConstructor:
 CompPIConstructor:
 	  _NAMED_PROCESSING_INSTRUCTION_CONSTR_ _LBRACE_ Expr _RBRACE_
 	  {
-			VectorOfDataItems* content=new (MEMMGR) VectorOfDataItems(PathanAllocator<DataItem*>(MEMMGR));
+			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
 			content->push_back(WRAP(@3, $3));
 			$$ = WRAP(@1, new (MEMMGR) XQDOMConstructor(Node::processing_instruction_string,
-								      new (MEMMGR) DataItemLiteral(
+								      new (MEMMGR) XQLiteral(
                     new (MEMMGR) AnyAtomicTypeConstructor(
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
@@ -2272,9 +2271,9 @@ CompPIConstructor:
 	  }
 	| _NAMED_PROCESSING_INSTRUCTION_CONSTR_ _LBRACE_ _RBRACE_
 	  {
-			VectorOfDataItems* empty=new (MEMMGR) VectorOfDataItems(PathanAllocator<DataItem*>(MEMMGR));
+			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
 			$$ = WRAP(@1, new (MEMMGR) XQDOMConstructor(Node::processing_instruction_string,
-								      new (MEMMGR) DataItemLiteral(
+								      new (MEMMGR) XQLiteral(
                     new (MEMMGR) AnyAtomicTypeConstructor(
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
@@ -2284,7 +2283,7 @@ CompPIConstructor:
 	  }
 	| _PROCESSING_INSTRUCTION_CONSTR_ _LBRACE_ Expr _RBRACE_ _LBRACE_ Expr _RBRACE_
 	  {
-			VectorOfDataItems* content=new (MEMMGR) VectorOfDataItems(PathanAllocator<DataItem*>(MEMMGR));
+			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
 			content->push_back(WRAP(@6, $6));
 			$$ = WRAP(@1, new (MEMMGR) XQDOMConstructor(Node::processing_instruction_string,
 									  WRAP(@3, $3), 
@@ -2292,7 +2291,7 @@ CompPIConstructor:
 	  }
 	| _PROCESSING_INSTRUCTION_CONSTR_ _LBRACE_ Expr _RBRACE_ _LBRACE_ _RBRACE_
 	  {
-			VectorOfDataItems* empty=new (MEMMGR) VectorOfDataItems(PathanAllocator<DataItem*>(MEMMGR));
+			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(PathanAllocator<ASTNode*>(MEMMGR));
 			$$ = WRAP(@1, new (MEMMGR) XQDOMConstructor(Node::processing_instruction_string,
 									  WRAP(@3, $3), 
 									  0, empty, MEMMGR));
@@ -2603,7 +2602,7 @@ TypeName:
 IntegerLiteral:
       _INTEGER_NUMBER_
 		{
-			$$ = new (MEMMGR) DataItemLiteral(
+			$$ = new (MEMMGR) XQLiteral(
                     new (MEMMGR) AnyAtomicTypeConstructor(
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_INTEGER,
@@ -2616,7 +2615,7 @@ IntegerLiteral:
 DecimalLiteral:
       _DECIMAL_NUMBER_
 		{
-			$$ = new (MEMMGR) DataItemLiteral(
+			$$ = new (MEMMGR) XQLiteral(
                     new (MEMMGR) AnyAtomicTypeConstructor(
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DECIMAL,
@@ -2629,7 +2628,7 @@ DecimalLiteral:
 DoubleLiteral:
       _DOUBLE_NUMBER_
 		{
-			$$ = new (MEMMGR) DataItemLiteral(
+			$$ = new (MEMMGR) XQLiteral(
                     new (MEMMGR) AnyAtomicTypeConstructor(
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DOUBLE,
@@ -2648,7 +2647,7 @@ URILiteral:
 StringLiteral:
       _STRING_LITERAL_
 		{
-			$$ = new (MEMMGR) DataItemLiteral(
+			$$ = new (MEMMGR) XQLiteral(
                     new (MEMMGR) AnyAtomicTypeConstructor(
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,

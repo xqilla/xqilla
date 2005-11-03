@@ -32,7 +32,7 @@ public:
   static const unsigned int minArgs;
   static const unsigned int maxArgs;
 
-  FunctionResolveQName(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  FunctionResolveQName(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   /** Returns an QName with the lexical form given in the first argument. The 
    *  prefix is resolved using the in-scope namespaces for a given element. **/

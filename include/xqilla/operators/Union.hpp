@@ -22,17 +22,17 @@
 
 #include <xqilla/framework/Pathan.hpp>
 
-#include <xqilla/ast/DataItemNav.hpp>
-#include <xqilla/ast/DataItemOperator.hpp>
+#include <xqilla/ast/XQNav.hpp>
+#include <xqilla/ast/XQOperator.hpp>
 #include <xqilla/runtime/ResultImpl.hpp>
 
 /** Union operator function*/
-class PATHAN_EXPORT Union : public DataItemOperator
+class PATHAN_EXPORT Union : public XQOperator
 {
 public:
   static const XMLCh name[];
 
-  Union(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  Union(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   Result createResult(DynamicContext* context, int flags=0) const;
 

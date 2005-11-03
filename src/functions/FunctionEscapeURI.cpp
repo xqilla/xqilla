@@ -35,7 +35,7 @@ const unsigned int FunctionEscapeURI::maxArgs = 2;
  * fn:escape-uri($uri-part as xs:string?, $escape-reserved as xs:boolean) as xs:string
  **/
 
-FunctionEscapeURI::FunctionEscapeURI(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+FunctionEscapeURI::FunctionEscapeURI(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "string?, boolean", args, memMgr) 
 {
 }

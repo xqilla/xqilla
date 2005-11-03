@@ -22,11 +22,11 @@
 
 #include <xqilla/framework/Pathan.hpp>
 
-#include <xqilla/ast/DataItemOperator.hpp>
+#include <xqilla/ast/XQOperator.hpp>
 #include <xqilla/runtime/SingleResult.hpp>
 
 /** GeneralComp operator function*/
-class PATHAN_EXPORT GeneralComp : public DataItemOperator
+class PATHAN_EXPORT GeneralComp : public XQOperator
 {
 public:
   typedef enum {
@@ -40,7 +40,7 @@ public:
 
   static const XMLCh name[];
 
-  GeneralComp(ComparisonOperation operation, const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  GeneralComp(ComparisonOperation operation, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
 
   Result createResult(DynamicContext* context, int flags=0) const;
 

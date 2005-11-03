@@ -33,15 +33,15 @@ const unsigned int FunctionPosition::maxArgs = 0;
  * fn:position() as xs:integer
 **/
 
-FunctionPosition::FunctionPosition(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
-  : DataItemFunction(name, minArgs, maxArgs, "empty()", args, memMgr)
+FunctionPosition::FunctionPosition(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
+  : XQFunction(name, minArgs, maxArgs, "empty()", args, memMgr)
 {
 }
 
-DataItem* FunctionPosition::staticResolution(StaticContext *context) {
+ASTNode* FunctionPosition::staticResolution(StaticContext *context) {
   _src.getStaticType().flags = StaticResolutionContext::NUMERIC_TYPE;
   _src.contextPositionUsed(true);
-  return resolveDataItems(_args, context, false);
+  return resolveASTNodes(_args, context, false);
 }
 
 Sequence FunctionPosition::collapseTreeInternal(DynamicContext* context, int flags) const

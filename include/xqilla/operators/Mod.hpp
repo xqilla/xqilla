@@ -29,7 +29,7 @@ class PATHAN_EXPORT Mod : public ArithmeticOperator
 public:
   static const XMLCh name[];
 
-  Mod(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  Mod(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   Item::Ptr execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::Ptr &atom2, DynamicContext *context) const;
 };

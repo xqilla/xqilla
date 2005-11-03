@@ -30,7 +30,7 @@ public:
     static const unsigned int minArgs;
     static const unsigned int maxArgs;
 
-    FunctionInScopePrefixes(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+    FunctionInScopePrefixes(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
     /** Returns the getinscopenamespaces to the right of parm2 until optional parm3 from string parm1 **/
     Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;

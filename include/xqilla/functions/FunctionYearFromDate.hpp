@@ -18,14 +18,14 @@
 
 #include <xqilla/framework/Pathan.hpp>
 
-#include <xqilla/ast/DataItemFunction.hpp>
+#include <xqilla/ast/XQFunction.hpp>
 
 /**
  * Getter function for year component of date.
  *
  * xf:year-from-date(date $srcval) => integer
  */
-class PATHAN_EXPORT FunctionYearFromDate : public DataItemFunction
+class PATHAN_EXPORT FunctionYearFromDate : public XQFunction
 {
 public:
   static const XMLCh name[];
@@ -35,9 +35,9 @@ public:
   /**
    * Constructor
    */
-  FunctionYearFromDate(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  FunctionYearFromDate(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
 
-  DataItem* staticResolution(StaticContext *context);
+  ASTNode* staticResolution(StaticContext *context);
 
   /**
    * Returns the integer representing the year in the value of $srcval

@@ -42,7 +42,7 @@ const unsigned int FunctionSubstringBefore::maxArgs = 3;
  * fn:substring-before($arg1 as xs:string?, $arg2 as xs:string?, $collation as xs:string) as xs:string
 **/
 
-FunctionSubstringBefore::FunctionSubstringBefore(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+FunctionSubstringBefore::FunctionSubstringBefore(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "string?,string?,string", args, memMgr)
 {
 }

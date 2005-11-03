@@ -43,7 +43,7 @@
 #include <xqilla/simple-api/PathanPlatformUtils.hpp>
 #include <xqilla/utils/XPath2NSUtils.hpp>
 #include <xqilla/utils/NumUtils.hpp>
-#include <xqilla/context/impl/DynamicContextImpl.hpp>
+#include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/Node.hpp>
 #include <xqilla/exceptions/DSLException.hpp>
 #include <xqilla/utils/XStr.hpp>

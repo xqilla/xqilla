@@ -24,7 +24,7 @@
 
 /*static*/ const XMLCh GreaterThanEqual::name[]={ XERCES_CPP_NAMESPACE_QUALIFIER chLatin_g, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
 
-GreaterThanEqual::GreaterThanEqual(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+GreaterThanEqual::GreaterThanEqual(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ComparisonOperator(name, args, memMgr)
 {
 }

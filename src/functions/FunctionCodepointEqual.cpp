@@ -35,7 +35,7 @@ const unsigned int FunctionCodepointEqual::maxArgs = 2;
  * fn:codepoint-equal($comparand1 as xs:string?, $comparand2 as xs:string?) as xs:boolean?
 **/
 
-FunctionCodepointEqual::FunctionCodepointEqual(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+FunctionCodepointEqual::FunctionCodepointEqual(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "string?,string?", args, memMgr)
 {
 }

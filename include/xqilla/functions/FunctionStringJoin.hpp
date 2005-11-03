@@ -33,7 +33,7 @@ public:
   static const unsigned int maxArgs;
 
   //Constructor.
-  FunctionStringJoin(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  FunctionStringJoin(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
 protected:
   /* Accepts a sequence of strings and returns the strings concatenated together with an optional separator. */

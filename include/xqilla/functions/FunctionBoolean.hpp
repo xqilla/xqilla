@@ -36,7 +36,7 @@ public:
   static const unsigned int maxArgs;
 
   ///Constructor. Sets arg def to NOT_OPTIONAL
-  FunctionBoolean(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  FunctionBoolean(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   /** Returns the argument as a boolean. Sets result to value of getNextBool() **/
   Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;

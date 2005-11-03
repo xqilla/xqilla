@@ -122,8 +122,6 @@ src/context/impl/UCANormalizer2.cpp \
 src/context/impl/UCANormalizer.cpp \
 src/context/impl/UCANormalizer.hpp \
 src/context/impl/CodepointCollation.cpp \
-src/context/impl/DynamicContextImpl.cpp \
-src/context/impl/XPath2ContextImpl.cpp \
 src/context/impl/PathanFactoryImpl.cpp \
 src/context/impl/VarStoreImpl.hpp \
 src/context/impl/VarStoreImpl.cpp \
@@ -134,24 +132,21 @@ src/context/impl/XQContextImpl.cpp \
 src/context/impl/XQDynamicContextImpl.cpp \
 src/context/impl/XQFactoryImpl.cpp \
 src/context/impl/XQRemoteDebugger.cpp \
-src/context/XQContext.cpp \
-src/ast/DataItemCastableAs.cpp \
-src/ast/DataItemCastAs.cpp \
-src/ast/DataItemContextItem.cpp \
-src/ast/DataItemFor.cpp \
-src/ast/DataItemFunction.cpp \
-src/ast/DataItemIf.cpp \
-src/ast/DataItemImpl.cpp \
-src/ast/DataItemInstanceOf.cpp \
-src/ast/DataItemLiteral.cpp \
-src/ast/DataItemNav.cpp \
-src/ast/DataItemOperator.cpp \
-src/ast/DataItemParenthesizedExpr.cpp \
-src/ast/DataItemQuantifiedExpr.cpp \
-src/ast/DataItemSequence.cpp \
-src/ast/DataItemStep.cpp \
-src/ast/DataItemTreatAs.cpp \
-src/ast/DataItemVariable.cpp \
+src/ast/XQCastableAs.cpp \
+src/ast/XQCastAs.cpp \
+src/ast/XQContextItem.cpp \
+src/ast/XQFunction.cpp \
+src/ast/XQIf.cpp \
+src/ast/ASTNodeImpl.cpp \
+src/ast/XQInstanceOf.cpp \
+src/ast/XQLiteral.cpp \
+src/ast/XQNav.cpp \
+src/ast/XQOperator.cpp \
+src/ast/XQParenthesizedExpr.cpp \
+src/ast/XQSequence.cpp \
+src/ast/XQStep.cpp \
+src/ast/XQTreatAs.cpp \
+src/ast/XQVariable.cpp \
 src/ast/StaticResolutionContext.cpp \
 src/ast/AggregateFunction.cpp \
 src/ast/ConstantFoldingFunction.cpp \
@@ -315,7 +310,7 @@ src/functions/FunctionTimezoneFromTime.cpp \
 src/functions/FunctionYearFromDate.cpp \
 src/functions/FunctionYearFromDateTime.cpp \
 src/functions/FunctionYearsFromDuration.cpp \
-src/functions/XQFunction.cpp \
+src/functions/XQUserFunction.cpp \
 src/items/impl/ATAnySimpleTypeImpl.cpp \
 src/items/impl/ATAnySimpleTypeImpl.hpp \
 src/items/impl/ATAnyURIOrDerivedImpl.cpp \
@@ -368,7 +363,6 @@ src/items/Node.cpp \
 src/items/Numeric.cpp \
 src/items/Timezone.cpp \
 src/parser/QName.cpp \
-src/parser/VariableBinding.cpp \
 src/parser/XPath2ParserControl.hpp \
 src/parser/XPath2Parser.cpp \
 src/parser/XPath2Parser.hpp \
@@ -583,45 +577,41 @@ libxqilla_la_LIBADD =
 am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	ProxyMemoryManager.lo StringPool.lo XPath2MemoryManagerImpl.lo \
 	CollationImpl.lo UCANormalizer1.lo UCANormalizer2.lo \
-	UCANormalizer.lo CodepointCollation.lo DynamicContextImpl.lo \
-	XPath2ContextImpl.lo PathanFactoryImpl.lo VarStoreImpl.lo \
-	VarTypeStoreImpl.lo VarHashEntryImpl.lo XQContextImpl.lo \
-	XQDynamicContextImpl.lo XQFactoryImpl.lo XQRemoteDebugger.lo \
-	XQContext.lo DataItemCastableAs.lo DataItemCastAs.lo \
-	DataItemContextItem.lo DataItemFor.lo DataItemFunction.lo \
-	DataItemIf.lo DataItemImpl.lo DataItemInstanceOf.lo \
-	DataItemLiteral.lo DataItemNav.lo DataItemOperator.lo \
-	DataItemParenthesizedExpr.lo DataItemQuantifiedExpr.lo \
-	DataItemSequence.lo DataItemStep.lo DataItemTreatAs.lo \
-	DataItemVariable.lo StaticResolutionContext.lo \
-	AggregateFunction.lo ConstantFoldingFunction.lo \
-	NumericFunction.lo XQDebugHook.lo XQDOMConstructor.lo \
-	XQFLWOR.lo XQFunctionCall.lo XQGlobalVariable.lo \
-	XQOrderingChange.lo XQQuantified.lo XQValidate.lo \
-	XQTypeswitch.lo XQVariableBinding.lo PathanBuilderImpl.lo \
-	PathanDocumentImpl.lo PathanExpressionImpl.lo \
-	PathanNSResolverImpl.lo PathanXMLGrammarPoolImpl.lo \
-	XPathNamespaceImpl.lo PathanImplementation.lo \
-	XPath2NodeSerializer.lo XPath2Result.lo XQScopedNamespace.lo \
-	PathanEngine.lo XQEvaluator.lo XQQuery.lo UTF8Str.lo \
-	XMLChCompare.lo XStr.lo ContextUtils.lo Date.lo DateUtils.lo \
-	NumUtils.lo PathanPlatformUtils.lo PrintDataItemTree.lo \
-	XPath2NSUtils.lo XPath2Utils.lo XQPrintDataItemTree.lo \
-	PathanException.lo DSLException.lo FuncFactory.lo \
-	FunctionLookupImpl.lo FunctionAbs.lo FunctionAvg.lo \
-	FunctionBaseURI.lo FunctionBoolean.lo FunctionCeiling.lo \
-	FunctionCodepointEqual.lo FunctionCodepointsToString.lo \
-	FunctionCollection.lo FunctionCompare.lo FunctionConcat.lo \
-	FunctionConstructor.lo FunctionContains.lo FunctionCount.lo \
-	FunctionCurrentDate.lo FunctionCurrentDateTime.lo \
-	FunctionCurrentTime.lo FunctionData.lo FunctionDateTime.lo \
-	FunctionDeepEqual.lo FunctionDefaultCollation.lo \
-	FunctionDistinctValues.lo FunctionDocAvailable.lo \
-	FunctionDoc.lo FunctionDocumentURI.lo FunctionEmpty.lo \
-	FunctionEndsWith.lo FunctionError.lo FunctionEscapeURI.lo \
-	FunctionExactlyOne.lo FunctionExists.lo FunctionFalse.lo \
-	FunctionFloor.lo FunctionId.lo FunctionIdref.lo \
-	FunctionImplicitTimezone.lo FunctionIndexOf.lo \
+	UCANormalizer.lo CodepointCollation.lo PathanFactoryImpl.lo \
+	VarStoreImpl.lo VarTypeStoreImpl.lo VarHashEntryImpl.lo \
+	XQContextImpl.lo XQDynamicContextImpl.lo XQFactoryImpl.lo \
+	XQRemoteDebugger.lo XQCastableAs.lo XQCastAs.lo \
+	XQContextItem.lo XQFunction.lo XQIf.lo ASTNodeImpl.lo \
+	XQInstanceOf.lo XQLiteral.lo XQNav.lo XQOperator.lo \
+	XQParenthesizedExpr.lo XQSequence.lo XQStep.lo XQTreatAs.lo \
+	XQVariable.lo StaticResolutionContext.lo AggregateFunction.lo \
+	ConstantFoldingFunction.lo NumericFunction.lo XQDebugHook.lo \
+	XQDOMConstructor.lo XQFLWOR.lo XQFunctionCall.lo \
+	XQGlobalVariable.lo XQOrderingChange.lo XQQuantified.lo \
+	XQValidate.lo XQTypeswitch.lo XQVariableBinding.lo \
+	PathanBuilderImpl.lo PathanDocumentImpl.lo \
+	PathanExpressionImpl.lo PathanNSResolverImpl.lo \
+	PathanXMLGrammarPoolImpl.lo XPathNamespaceImpl.lo \
+	PathanImplementation.lo XPath2NodeSerializer.lo XPath2Result.lo \
+	XQScopedNamespace.lo PathanEngine.lo XQEvaluator.lo XQQuery.lo \
+	UTF8Str.lo XMLChCompare.lo XStr.lo ContextUtils.lo Date.lo \
+	DateUtils.lo NumUtils.lo PathanPlatformUtils.lo \
+	PrintDataItemTree.lo XPath2NSUtils.lo XPath2Utils.lo \
+	XQPrintDataItemTree.lo PathanException.lo DSLException.lo \
+	FuncFactory.lo FunctionLookupImpl.lo FunctionAbs.lo \
+	FunctionAvg.lo FunctionBaseURI.lo FunctionBoolean.lo \
+	FunctionCeiling.lo FunctionCodepointEqual.lo \
+	FunctionCodepointsToString.lo FunctionCollection.lo \
+	FunctionCompare.lo FunctionConcat.lo FunctionConstructor.lo \
+	FunctionContains.lo FunctionCount.lo FunctionCurrentDate.lo \
+	FunctionCurrentDateTime.lo FunctionCurrentTime.lo \
+	FunctionData.lo FunctionDateTime.lo FunctionDeepEqual.lo \
+	FunctionDefaultCollation.lo FunctionDistinctValues.lo \
+	FunctionDocAvailable.lo FunctionDoc.lo FunctionDocumentURI.lo \
+	FunctionEmpty.lo FunctionEndsWith.lo FunctionError.lo \
+	FunctionEscapeURI.lo FunctionExactlyOne.lo FunctionExists.lo \
+	FunctionFalse.lo FunctionFloor.lo FunctionId.lo \
+	FunctionIdref.lo FunctionImplicitTimezone.lo FunctionIndexOf.lo \
 	FunctionInScopePrefixes.lo FunctionInsertBefore.lo \
 	FunctionLang.lo FunctionLast.lo FunctionLocalname.lo \
 	FunctionLocalNameFromQName.lo FunctionLowerCase.lo \
@@ -655,7 +645,7 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	FunctionSecondsFromTime.lo FunctionTimezoneFromDate.lo \
 	FunctionTimezoneFromDateTime.lo FunctionTimezoneFromTime.lo \
 	FunctionYearFromDate.lo FunctionYearFromDateTime.lo \
-	FunctionYearsFromDuration.lo XQFunction.lo \
+	FunctionYearsFromDuration.lo XQUserFunction.lo \
 	ATAnySimpleTypeImpl.lo ATAnyURIOrDerivedImpl.lo \
 	ATBase64BinaryOrDerivedImpl.lo ATBooleanOrDerivedImpl.lo \
 	ATDateOrDerivedImpl.lo ATDateTimeOrDerivedImpl.lo \
@@ -670,25 +660,25 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	DatatypeLookup.lo AnyAtomicTypeConstructor.lo AnyAtomicType.lo \
 	ATDurationOrDerived.lo ATQNameConstructor.lo ATUntypedAtomic.lo \
 	DateOrTimeType.lo Item.lo Node.lo Numeric.lo Timezone.lo \
-	QName.lo VariableBinding.lo XPath2Parser.lo Grammar.lo \
-	LexerDOMStringStream.lo XPath2Lexer.lo Scanner.lo mapm5sin.lo \
-	mapm_add.lo mapmasin.lo mapmasn0.lo mapmcbrt.lo mapmcnst.lo \
-	mapm_cpi.lo m_apm.lo mapm_div.lo mapm_exp.lo mapmfact.lo \
-	mapm_fam.lo mapm_fft.lo mapm_flr.lo mapmfmul.lo mapm_fpf.lo \
-	mapm_gcd.lo mapmgues.lo mapmhasn.lo mapmhsin.lo mapmipwr.lo \
-	mapmistr.lo mapm_lg2.lo mapm_lg3.lo mapm_log.lo mapm_mt.lo \
-	mapm_mul.lo mapm_pow.lo mapmpwr2.lo mapm_rcp.lo mapm_rnd.lo \
-	mapmrsin.lo mapm_set.lo mapm_sin.lo mapmsqrt.lo mapmstck.lo \
-	mapmutil.lo mapmutl2.lo AncestorAxis.lo AncestorOrSelfAxis.lo \
-	AttributeAxis.lo Axis.lo ChildAxis.lo DescendantAxis.lo \
-	DescendantOrSelfAxis.lo FollowingAxis.lo \
-	FollowingSiblingAxis.lo NamespaceAxis.lo NodeTest.lo \
-	ParentAxis.lo PrecedingAxis.lo PrecedingSiblingAxis.lo \
-	SelfAxis.lo And.lo ArithmeticOperator.lo ComparisonOperator.lo \
-	Divide.lo Equals.lo Except.lo GeneralComp.lo GreaterThan.lo \
-	GreaterThanEqual.lo IntegerDivide.lo Intersect.lo LessThan.lo \
-	LessThanEqual.lo Minus.lo Mod.lo Multiply.lo NodeComparison.lo \
-	NotEquals.lo Or.lo OrderComparison.lo Plus.lo Range.lo \
+	QName.lo XPath2Parser.lo Grammar.lo LexerDOMStringStream.lo \
+	XPath2Lexer.lo Scanner.lo mapm5sin.lo mapm_add.lo mapmasin.lo \
+	mapmasn0.lo mapmcbrt.lo mapmcnst.lo mapm_cpi.lo m_apm.lo \
+	mapm_div.lo mapm_exp.lo mapmfact.lo mapm_fam.lo mapm_fft.lo \
+	mapm_flr.lo mapmfmul.lo mapm_fpf.lo mapm_gcd.lo mapmgues.lo \
+	mapmhasn.lo mapmhsin.lo mapmipwr.lo mapmistr.lo mapm_lg2.lo \
+	mapm_lg3.lo mapm_log.lo mapm_mt.lo mapm_mul.lo mapm_pow.lo \
+	mapmpwr2.lo mapm_rcp.lo mapm_rnd.lo mapmrsin.lo mapm_set.lo \
+	mapm_sin.lo mapmsqrt.lo mapmstck.lo mapmutil.lo mapmutl2.lo \
+	AncestorAxis.lo AncestorOrSelfAxis.lo AttributeAxis.lo Axis.lo \
+	ChildAxis.lo DescendantAxis.lo DescendantOrSelfAxis.lo \
+	FollowingAxis.lo FollowingSiblingAxis.lo NamespaceAxis.lo \
+	NodeTest.lo ParentAxis.lo PrecedingAxis.lo \
+	PrecedingSiblingAxis.lo SelfAxis.lo And.lo \
+	ArithmeticOperator.lo ComparisonOperator.lo Divide.lo Equals.lo \
+	Except.lo GeneralComp.lo GreaterThan.lo GreaterThanEqual.lo \
+	IntegerDivide.lo Intersect.lo LessThan.lo LessThanEqual.lo \
+	Minus.lo Mod.lo Multiply.lo NodeComparison.lo NotEquals.lo \
+	Or.lo OrderComparison.lo Plus.lo Range.lo \
 	TotalOrderComparison.lo UnaryMinus.lo Union.lo \
 	DocumentCacheImpl.lo SequenceType.lo \
 	AnyAtomicTypeDatatypeValidator.lo AtomizeResult.lo \
@@ -740,7 +730,8 @@ CPPFLAGS = @CPPFLAGS@
 LIBS = @LIBS@
 depcomp = $(SHELL) $(top_srcdir)/autotools/depcomp
 am__depfiles_maybe = depfiles
-@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/ATAnySimpleTypeImpl.Plo \
+@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/ASTNodeImpl.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/ATAnySimpleTypeImpl.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/ATAnyURIOrDerivedImpl.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/ATAnyURITester.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/ATBase64BinaryOrDerivedImpl.Plo \
@@ -802,23 +793,6 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/ContextUtils.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/DOMTreeErrorReporter.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/DSLException.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/DataItemCastAs.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/DataItemCastableAs.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/DataItemContextItem.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/DataItemFor.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/DataItemFunction.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/DataItemIf.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/DataItemImpl.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/DataItemInstanceOf.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/DataItemLiteral.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/DataItemNav.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/DataItemOperator.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/DataItemParenthesizedExpr.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/DataItemQuantifiedExpr.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/DataItemSequence.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/DataItemStep.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/DataItemTreatAs.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/DataItemVariable.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/DatatypeFactory.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/DatatypeLookup.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/DatatypeTester.Po ./$(DEPDIR)/Date.Plo \
@@ -828,7 +802,6 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/DescendantOrSelfAxis.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/Divide.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/DocumentCacheImpl.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/DynamicContextImpl.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/EmptyResult.Plo ./$(DEPDIR)/Equals.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/Except.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/FollowingAxis.Plo \
@@ -1000,9 +973,7 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/VarHashEntryImpl.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/VarStoreImpl.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/VarTypeStoreImpl.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/VariableBinding.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XMLChCompare.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/XPath2ContextImpl.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XPath2Lexer.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XPath2MemoryManagerImpl.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XPath2NSUtils.Plo \
@@ -1011,8 +982,10 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/XPath2Result.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XPath2Utils.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XPathNamespaceImpl.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/XQContext.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/XQCastAs.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/XQCastableAs.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XQContextImpl.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/XQContextItem.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XQDOMConstructor.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XQDebugHook.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XQDynamicContextImpl.Plo \
@@ -1021,14 +994,22 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/XQFunction.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XQFunctionCall.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XQGlobalVariable.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/XQIf.Plo ./$(DEPDIR)/XQInstanceOf.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/XQLiteral.Plo ./$(DEPDIR)/XQNav.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/XQOperator.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XQOrderingChange.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/XQParenthesizedExpr.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XQPrintDataItemTree.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XQQuantified.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XQQuery.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XQRemoteDebugger.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XQScopedNamespace.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/XQSequence.Plo ./$(DEPDIR)/XQStep.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/XQTreatAs.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XQTypeswitch.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/XQUserFunction.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XQValidate.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/XQVariable.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XQVariableBinding.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XStr.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/basicPathanUsage.Po ./$(DEPDIR)/eval.Po \
@@ -1159,8 +1140,6 @@ UCANormalizer1.lo: src/context/impl/UCANormalizer1.cpp
 UCANormalizer2.lo: src/context/impl/UCANormalizer2.cpp
 UCANormalizer.lo: src/context/impl/UCANormalizer.cpp
 CodepointCollation.lo: src/context/impl/CodepointCollation.cpp
-DynamicContextImpl.lo: src/context/impl/DynamicContextImpl.cpp
-XPath2ContextImpl.lo: src/context/impl/XPath2ContextImpl.cpp
 PathanFactoryImpl.lo: src/context/impl/PathanFactoryImpl.cpp
 VarStoreImpl.lo: src/context/impl/VarStoreImpl.cpp
 VarTypeStoreImpl.lo: src/context/impl/VarTypeStoreImpl.cpp
@@ -1169,24 +1148,21 @@ XQContextImpl.lo: src/context/impl/XQContextImpl.cpp
 XQDynamicContextImpl.lo: src/context/impl/XQDynamicContextImpl.cpp
 XQFactoryImpl.lo: src/context/impl/XQFactoryImpl.cpp
 XQRemoteDebugger.lo: src/context/impl/XQRemoteDebugger.cpp
-XQContext.lo: src/context/XQContext.cpp
-DataItemCastableAs.lo: src/ast/DataItemCastableAs.cpp
-DataItemCastAs.lo: src/ast/DataItemCastAs.cpp
-DataItemContextItem.lo: src/ast/DataItemContextItem.cpp
-DataItemFor.lo: src/ast/DataItemFor.cpp
-DataItemFunction.lo: src/ast/DataItemFunction.cpp
-DataItemIf.lo: src/ast/DataItemIf.cpp
-DataItemImpl.lo: src/ast/DataItemImpl.cpp
-DataItemInstanceOf.lo: src/ast/DataItemInstanceOf.cpp
-DataItemLiteral.lo: src/ast/DataItemLiteral.cpp
-DataItemNav.lo: src/ast/DataItemNav.cpp
-DataItemOperator.lo: src/ast/DataItemOperator.cpp
-DataItemParenthesizedExpr.lo: src/ast/DataItemParenthesizedExpr.cpp
-DataItemQuantifiedExpr.lo: src/ast/DataItemQuantifiedExpr.cpp
-DataItemSequence.lo: src/ast/DataItemSequence.cpp
-DataItemStep.lo: src/ast/DataItemStep.cpp
-DataItemTreatAs.lo: src/ast/DataItemTreatAs.cpp
-DataItemVariable.lo: src/ast/DataItemVariable.cpp
+XQCastableAs.lo: src/ast/XQCastableAs.cpp
+XQCastAs.lo: src/ast/XQCastAs.cpp
+XQContextItem.lo: src/ast/XQContextItem.cpp
+XQFunction.lo: src/ast/XQFunction.cpp
+XQIf.lo: src/ast/XQIf.cpp
+ASTNodeImpl.lo: src/ast/ASTNodeImpl.cpp
+XQInstanceOf.lo: src/ast/XQInstanceOf.cpp
+XQLiteral.lo: src/ast/XQLiteral.cpp
+XQNav.lo: src/ast/XQNav.cpp
+XQOperator.lo: src/ast/XQOperator.cpp
+XQParenthesizedExpr.lo: src/ast/XQParenthesizedExpr.cpp
+XQSequence.lo: src/ast/XQSequence.cpp
+XQStep.lo: src/ast/XQStep.cpp
+XQTreatAs.lo: src/ast/XQTreatAs.cpp
+XQVariable.lo: src/ast/XQVariable.cpp
 StaticResolutionContext.lo: src/ast/StaticResolutionContext.cpp
 AggregateFunction.lo: src/ast/AggregateFunction.cpp
 ConstantFoldingFunction.lo: src/ast/ConstantFoldingFunction.cpp
@@ -1359,7 +1335,7 @@ FunctionYearFromDate.lo: src/functions/FunctionYearFromDate.cpp
 FunctionYearFromDateTime.lo: src/functions/FunctionYearFromDateTime.cpp
 FunctionYearsFromDuration.lo: \
 	src/functions/FunctionYearsFromDuration.cpp
-XQFunction.lo: src/functions/XQFunction.cpp
+XQUserFunction.lo: src/functions/XQUserFunction.cpp
 ATAnySimpleTypeImpl.lo: src/items/impl/ATAnySimpleTypeImpl.cpp
 ATAnyURIOrDerivedImpl.lo: src/items/impl/ATAnyURIOrDerivedImpl.cpp
 ATBase64BinaryOrDerivedImpl.lo: \
@@ -1397,7 +1373,6 @@ Node.lo: src/items/Node.cpp
 Numeric.lo: src/items/Numeric.cpp
 Timezone.lo: src/items/Timezone.cpp
 QName.lo: src/parser/QName.cpp
-VariableBinding.lo: src/parser/VariableBinding.cpp
 XPath2Parser.lo: src/parser/XPath2Parser.cpp
 Grammar.lo: src/parser/Grammar.cpp
 LexerDOMStringStream.lo: src/lexer/LexerDOMStringStream.cpp
@@ -1586,6 +1561,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ASTNodeImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATAnySimpleTypeImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATAnyURIOrDerivedImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATAnyURITester.Po@am__quote@
@@ -1650,23 +1626,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ContextUtils.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DOMTreeErrorReporter.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DSLException.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DataItemCastAs.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DataItemCastableAs.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DataItemContextItem.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DataItemFor.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DataItemFunction.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DataItemIf.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DataItemImpl.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DataItemInstanceOf.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DataItemLiteral.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DataItemNav.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DataItemOperator.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DataItemParenthesizedExpr.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DataItemQuantifiedExpr.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DataItemSequence.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DataItemStep.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DataItemTreatAs.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DataItemVariable.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DatatypeFactory.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DatatypeLookup.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DatatypeTester.Po@am__quote@
@@ -1677,7 +1636,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DescendantOrSelfAxis.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Divide.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DocumentCacheImpl.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DynamicContextImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/EmptyResult.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Equals.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Except.Plo@am__quote@
@@ -1864,9 +1822,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/VarHashEntryImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/VarStoreImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/VarTypeStoreImpl.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/VariableBinding.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XMLChCompare.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XPath2ContextImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XPath2Lexer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XPath2MemoryManagerImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XPath2NSUtils.Plo@am__quote@
@@ -1875,8 +1831,10 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XPath2Result.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XPath2Utils.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XPathNamespaceImpl.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQContext.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQCastAs.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQCastableAs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQContextImpl.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQContextItem.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQDOMConstructor.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQDebugHook.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQDynamicContextImpl.Plo@am__quote@
@@ -1886,14 +1844,25 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQFunction.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQFunctionCall.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQGlobalVariable.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQIf.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQInstanceOf.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQLiteral.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQNav.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQOperator.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQOrderingChange.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQParenthesizedExpr.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQPrintDataItemTree.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQQuantified.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQQuery.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQRemoteDebugger.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQScopedNamespace.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQSequence.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQStep.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQTreatAs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQTypeswitch.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQUserFunction.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQValidate.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQVariable.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQVariableBinding.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XStr.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/basicPathanUsage.Po@am__quote@
@@ -2807,42 +2776,6 @@ CodepointCollation.lo: src/context/impl/CodepointCollation.cpp
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o CodepointCollation.lo `test -f 'src/context/impl/CodepointCollation.cpp' || echo '$(srcdir)/'`src/context/impl/CodepointCollation.cpp
 
-DynamicContextImpl.o: src/context/impl/DynamicContextImpl.cpp
-@AMDEP_TRUE@	source='src/context/impl/DynamicContextImpl.cpp' object='DynamicContextImpl.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/DynamicContextImpl.Po' tmpdepfile='$(DEPDIR)/DynamicContextImpl.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DynamicContextImpl.o `test -f 'src/context/impl/DynamicContextImpl.cpp' || echo '$(srcdir)/'`src/context/impl/DynamicContextImpl.cpp
-
-DynamicContextImpl.obj: src/context/impl/DynamicContextImpl.cpp
-@AMDEP_TRUE@	source='src/context/impl/DynamicContextImpl.cpp' object='DynamicContextImpl.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/DynamicContextImpl.Po' tmpdepfile='$(DEPDIR)/DynamicContextImpl.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DynamicContextImpl.obj `cygpath -w src/context/impl/DynamicContextImpl.cpp`
-
-DynamicContextImpl.lo: src/context/impl/DynamicContextImpl.cpp
-@AMDEP_TRUE@	source='src/context/impl/DynamicContextImpl.cpp' object='DynamicContextImpl.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/DynamicContextImpl.Plo' tmpdepfile='$(DEPDIR)/DynamicContextImpl.TPlo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DynamicContextImpl.lo `test -f 'src/context/impl/DynamicContextImpl.cpp' || echo '$(srcdir)/'`src/context/impl/DynamicContextImpl.cpp
-
-XPath2ContextImpl.o: src/context/impl/XPath2ContextImpl.cpp
-@AMDEP_TRUE@	source='src/context/impl/XPath2ContextImpl.cpp' object='XPath2ContextImpl.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/XPath2ContextImpl.Po' tmpdepfile='$(DEPDIR)/XPath2ContextImpl.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XPath2ContextImpl.o `test -f 'src/context/impl/XPath2ContextImpl.cpp' || echo '$(srcdir)/'`src/context/impl/XPath2ContextImpl.cpp
-
-XPath2ContextImpl.obj: src/context/impl/XPath2ContextImpl.cpp
-@AMDEP_TRUE@	source='src/context/impl/XPath2ContextImpl.cpp' object='XPath2ContextImpl.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/XPath2ContextImpl.Po' tmpdepfile='$(DEPDIR)/XPath2ContextImpl.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XPath2ContextImpl.obj `cygpath -w src/context/impl/XPath2ContextImpl.cpp`
-
-XPath2ContextImpl.lo: src/context/impl/XPath2ContextImpl.cpp
-@AMDEP_TRUE@	source='src/context/impl/XPath2ContextImpl.cpp' object='XPath2ContextImpl.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/XPath2ContextImpl.Plo' tmpdepfile='$(DEPDIR)/XPath2ContextImpl.TPlo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XPath2ContextImpl.lo `test -f 'src/context/impl/XPath2ContextImpl.cpp' || echo '$(srcdir)/'`src/context/impl/XPath2ContextImpl.cpp
-
 PathanFactoryImpl.o: src/context/impl/PathanFactoryImpl.cpp
 @AMDEP_TRUE@	source='src/context/impl/PathanFactoryImpl.cpp' object='PathanFactoryImpl.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@	depfile='$(DEPDIR)/PathanFactoryImpl.Po' tmpdepfile='$(DEPDIR)/PathanFactoryImpl.TPo' @AMDEPBACKSLASH@
@@ -2987,329 +2920,275 @@ XQRemoteDebugger.lo: src/context/impl/XQRemoteDebugger.cpp
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQRemoteDebugger.lo `test -f 'src/context/impl/XQRemoteDebugger.cpp' || echo '$(srcdir)/'`src/context/impl/XQRemoteDebugger.cpp
 
-XQContext.o: src/context/XQContext.cpp
-@AMDEP_TRUE@	source='src/context/XQContext.cpp' object='XQContext.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/XQContext.Po' tmpdepfile='$(DEPDIR)/XQContext.TPo' @AMDEPBACKSLASH@
+XQCastableAs.o: src/ast/XQCastableAs.cpp
+@AMDEP_TRUE@	source='src/ast/XQCastableAs.cpp' object='XQCastableAs.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQCastableAs.Po' tmpdepfile='$(DEPDIR)/XQCastableAs.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQContext.o `test -f 'src/context/XQContext.cpp' || echo '$(srcdir)/'`src/context/XQContext.cpp
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQCastableAs.o `test -f 'src/ast/XQCastableAs.cpp' || echo '$(srcdir)/'`src/ast/XQCastableAs.cpp
 
-XQContext.obj: src/context/XQContext.cpp
-@AMDEP_TRUE@	source='src/context/XQContext.cpp' object='XQContext.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/XQContext.Po' tmpdepfile='$(DEPDIR)/XQContext.TPo' @AMDEPBACKSLASH@
+XQCastableAs.obj: src/ast/XQCastableAs.cpp
+@AMDEP_TRUE@	source='src/ast/XQCastableAs.cpp' object='XQCastableAs.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQCastableAs.Po' tmpdepfile='$(DEPDIR)/XQCastableAs.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQContext.obj `cygpath -w src/context/XQContext.cpp`
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQCastableAs.obj `cygpath -w src/ast/XQCastableAs.cpp`
 
-XQContext.lo: src/context/XQContext.cpp
-@AMDEP_TRUE@	source='src/context/XQContext.cpp' object='XQContext.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/XQContext.Plo' tmpdepfile='$(DEPDIR)/XQContext.TPlo' @AMDEPBACKSLASH@
+XQCastableAs.lo: src/ast/XQCastableAs.cpp
+@AMDEP_TRUE@	source='src/ast/XQCastableAs.cpp' object='XQCastableAs.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQCastableAs.Plo' tmpdepfile='$(DEPDIR)/XQCastableAs.TPlo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQContext.lo `test -f 'src/context/XQContext.cpp' || echo '$(srcdir)/'`src/context/XQContext.cpp
+	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQCastableAs.lo `test -f 'src/ast/XQCastableAs.cpp' || echo '$(srcdir)/'`src/ast/XQCastableAs.cpp
 
-DataItemCastableAs.o: src/ast/DataItemCastableAs.cpp
-@AMDEP_TRUE@	source='src/ast/DataItemCastableAs.cpp' object='DataItemCastableAs.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/DataItemCastableAs.Po' tmpdepfile='$(DEPDIR)/DataItemCastableAs.TPo' @AMDEPBACKSLASH@
+XQCastAs.o: src/ast/XQCastAs.cpp
+@AMDEP_TRUE@	source='src/ast/XQCastAs.cpp' object='XQCastAs.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQCastAs.Po' tmpdepfile='$(DEPDIR)/XQCastAs.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DataItemCastableAs.o `test -f 'src/ast/DataItemCastableAs.cpp' || echo '$(srcdir)/'`src/ast/DataItemCastableAs.cpp
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQCastAs.o `test -f 'src/ast/XQCastAs.cpp' || echo '$(srcdir)/'`src/ast/XQCastAs.cpp
 
-DataItemCastableAs.obj: src/ast/DataItemCastableAs.cpp
-@AMDEP_TRUE@	source='src/ast/DataItemCastableAs.cpp' object='DataItemCastableAs.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/DataItemCastableAs.Po' tmpdepfile='$(DEPDIR)/DataItemCastableAs.TPo' @AMDEPBACKSLASH@
+XQCastAs.obj: src/ast/XQCastAs.cpp
+@AMDEP_TRUE@	source='src/ast/XQCastAs.cpp' object='XQCastAs.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQCastAs.Po' tmpdepfile='$(DEPDIR)/XQCastAs.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DataItemCastableAs.obj `cygpath -w src/ast/DataItemCastableAs.cpp`
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQCastAs.obj `cygpath -w src/ast/XQCastAs.cpp`
 
-DataItemCastableAs.lo: src/ast/DataItemCastableAs.cpp
-@AMDEP_TRUE@	source='src/ast/DataItemCastableAs.cpp' object='DataItemCastableAs.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/DataItemCastableAs.Plo' tmpdepfile='$(DEPDIR)/DataItemCastableAs.TPlo' @AMDEPBACKSLASH@
+XQCastAs.lo: src/ast/XQCastAs.cpp
+@AMDEP_TRUE@	source='src/ast/XQCastAs.cpp' object='XQCastAs.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQCastAs.Plo' tmpdepfile='$(DEPDIR)/XQCastAs.TPlo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DataItemCastableAs.lo `test -f 'src/ast/DataItemCastableAs.cpp' || echo '$(srcdir)/'`src/ast/DataItemCastableAs.cpp
+	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQCastAs.lo `test -f 'src/ast/XQCastAs.cpp' || echo '$(srcdir)/'`src/ast/XQCastAs.cpp
 
-DataItemCastAs.o: src/ast/DataItemCastAs.cpp
-@AMDEP_TRUE@	source='src/ast/DataItemCastAs.cpp' object='DataItemCastAs.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/DataItemCastAs.Po' tmpdepfile='$(DEPDIR)/DataItemCastAs.TPo' @AMDEPBACKSLASH@
+XQContextItem.o: src/ast/XQContextItem.cpp
+@AMDEP_TRUE@	source='src/ast/XQContextItem.cpp' object='XQContextItem.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQContextItem.Po' tmpdepfile='$(DEPDIR)/XQContextItem.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DataItemCastAs.o `test -f 'src/ast/DataItemCastAs.cpp' || echo '$(srcdir)/'`src/ast/DataItemCastAs.cpp
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQContextItem.o `test -f 'src/ast/XQContextItem.cpp' || echo '$(srcdir)/'`src/ast/XQContextItem.cpp
 
-DataItemCastAs.obj: src/ast/DataItemCastAs.cpp
-@AMDEP_TRUE@	source='src/ast/DataItemCastAs.cpp' object='DataItemCastAs.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/DataItemCastAs.Po' tmpdepfile='$(DEPDIR)/DataItemCastAs.TPo' @AMDEPBACKSLASH@
+XQContextItem.obj: src/ast/XQContextItem.cpp
+@AMDEP_TRUE@	source='src/ast/XQContextItem.cpp' object='XQContextItem.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQContextItem.Po' tmpdepfile='$(DEPDIR)/XQContextItem.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DataItemCastAs.obj `cygpath -w src/ast/DataItemCastAs.cpp`
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQContextItem.obj `cygpath -w src/ast/XQContextItem.cpp`
 
-DataItemCastAs.lo: src/ast/DataItemCastAs.cpp
-@AMDEP_TRUE@	source='src/ast/DataItemCastAs.cpp' object='DataItemCastAs.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/DataItemCastAs.Plo' tmpdepfile='$(DEPDIR)/DataItemCastAs.TPlo' @AMDEPBACKSLASH@
+XQContextItem.lo: src/ast/XQContextItem.cpp
+@AMDEP_TRUE@	source='src/ast/XQContextItem.cpp' object='XQContextItem.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQContextItem.Plo' tmpdepfile='$(DEPDIR)/XQContextItem.TPlo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DataItemCastAs.lo `test -f 'src/ast/DataItemCastAs.cpp' || echo '$(srcdir)/'`src/ast/DataItemCastAs.cpp
+	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQContextItem.lo `test -f 'src/ast/XQContextItem.cpp' || echo '$(srcdir)/'`src/ast/XQContextItem.cpp
 
-DataItemContextItem.o: src/ast/DataItemContextItem.cpp
-@AMDEP_TRUE@	source='src/ast/DataItemContextItem.cpp' object='DataItemContextItem.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/DataItemContextItem.Po' tmpdepfile='$(DEPDIR)/DataItemContextItem.TPo' @AMDEPBACKSLASH@
+XQFunction.o: src/ast/XQFunction.cpp
+@AMDEP_TRUE@	source='src/ast/XQFunction.cpp' object='XQFunction.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQFunction.Po' tmpdepfile='$(DEPDIR)/XQFunction.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DataItemContextItem.o `test -f 'src/ast/DataItemContextItem.cpp' || echo '$(srcdir)/'`src/ast/DataItemContextItem.cpp
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQFunction.o `test -f 'src/ast/XQFunction.cpp' || echo '$(srcdir)/'`src/ast/XQFunction.cpp
 
-DataItemContextItem.obj: src/ast/DataItemContextItem.cpp
-@AMDEP_TRUE@	source='src/ast/DataItemContextItem.cpp' object='DataItemContextItem.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/DataItemContextItem.Po' tmpdepfile='$(DEPDIR)/DataItemContextItem.TPo' @AMDEPBACKSLASH@
+XQFunction.obj: src/ast/XQFunction.cpp
+@AMDEP_TRUE@	source='src/ast/XQFunction.cpp' object='XQFunction.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQFunction.Po' tmpdepfile='$(DEPDIR)/XQFunction.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DataItemContextItem.obj `cygpath -w src/ast/DataItemContextItem.cpp`
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQFunction.obj `cygpath -w src/ast/XQFunction.cpp`
 
-DataItemContextItem.lo: src/ast/DataItemContextItem.cpp
-@AMDEP_TRUE@	source='src/ast/DataItemContextItem.cpp' object='DataItemContextItem.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/DataItemContextItem.Plo' tmpdepfile='$(DEPDIR)/DataItemContextItem.TPlo' @AMDEPBACKSLASH@
+XQFunction.lo: src/ast/XQFunction.cpp
+@AMDEP_TRUE@	source='src/ast/XQFunction.cpp' object='XQFunction.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQFunction.Plo' tmpdepfile='$(DEPDIR)/XQFunction.TPlo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DataItemContextItem.lo `test -f 'src/ast/DataItemContextItem.cpp' || echo '$(srcdir)/'`src/ast/DataItemContextItem.cpp
+	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQFunction.lo `test -f 'src/ast/XQFunction.cpp' || echo '$(srcdir)/'`src/ast/XQFunction.cpp
 
-DataItemFor.o: src/ast/DataItemFor.cpp
-@AMDEP_TRUE@	source='src/ast/DataItemFor.cpp' object='DataItemFor.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/DataItemFor.Po' tmpdepfile='$(DEPDIR)/DataItemFor.TPo' @AMDEPBACKSLASH@
+XQIf.o: src/ast/XQIf.cpp
+@AMDEP_TRUE@	source='src/ast/XQIf.cpp' object='XQIf.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQIf.Po' tmpdepfile='$(DEPDIR)/XQIf.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DataItemFor.o `test -f 'src/ast/DataItemFor.cpp' || echo '$(srcdir)/'`src/ast/DataItemFor.cpp
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQIf.o `test -f 'src/ast/XQIf.cpp' || echo '$(srcdir)/'`src/ast/XQIf.cpp
 
-DataItemFor.obj: src/ast/DataItemFor.cpp
-@AMDEP_TRUE@	source='src/ast/DataItemFor.cpp' object='DataItemFor.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/DataItemFor.Po' tmpdepfile='$(DEPDIR)/DataItemFor.TPo' @AMDEPBACKSLASH@
+XQIf.obj: src/ast/XQIf.cpp
+@AMDEP_TRUE@	source='src/ast/XQIf.cpp' object='XQIf.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQIf.Po' tmpdepfile='$(DEPDIR)/XQIf.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DataItemFor.obj `cygpath -w src/ast/DataItemFor.cpp`
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQIf.obj `cygpath -w src/ast/XQIf.cpp`
 
-DataItemFor.lo: src/ast/DataItemFor.cpp
-@AMDEP_TRUE@	source='src/ast/DataItemFor.cpp' object='DataItemFor.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/DataItemFor.Plo' tmpdepfile='$(DEPDIR)/DataItemFor.TPlo' @AMDEPBACKSLASH@
+XQIf.lo: src/ast/XQIf.cpp
+@AMDEP_TRUE@	source='src/ast/XQIf.cpp' object='XQIf.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQIf.Plo' tmpdepfile='$(DEPDIR)/XQIf.TPlo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DataItemFor.lo `test -f 'src/ast/DataItemFor.cpp' || echo '$(srcdir)/'`src/ast/DataItemFor.cpp
+	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQIf.lo `test -f 'src/ast/XQIf.cpp' || echo '$(srcdir)/'`src/ast/XQIf.cpp
 
-DataItemFunction.o: src/ast/DataItemFunction.cpp
-@AMDEP_TRUE@	source='src/ast/DataItemFunction.cpp' object='DataItemFunction.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/DataItemFunction.Po' tmpdepfile='$(DEPDIR)/DataItemFunction.TPo' @AMDEPBACKSLASH@
+ASTNodeImpl.o: src/ast/ASTNodeImpl.cpp
+@AMDEP_TRUE@	source='src/ast/ASTNodeImpl.cpp' object='ASTNodeImpl.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/ASTNodeImpl.Po' tmpdepfile='$(DEPDIR)/ASTNodeImpl.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DataItemFunction.o `test -f 'src/ast/DataItemFunction.cpp' || echo '$(srcdir)/'`src/ast/DataItemFunction.cpp
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ASTNodeImpl.o `test -f 'src/ast/ASTNodeImpl.cpp' || echo '$(srcdir)/'`src/ast/ASTNodeImpl.cpp
 
-DataItemFunction.obj: src/ast/DataItemFunction.cpp
-@AMDEP_TRUE@	source='src/ast/DataItemFunction.cpp' object='DataItemFunction.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/DataItemFunction.Po' tmpdepfile='$(DEPDIR)/DataItemFunction.TPo' @AMDEPBACKSLASH@
+ASTNodeImpl.obj: src/ast/ASTNodeImpl.cpp
+@AMDEP_TRUE@	source='src/ast/ASTNodeImpl.cpp' object='ASTNodeImpl.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/ASTNodeImpl.Po' tmpdepfile='$(DEPDIR)/ASTNodeImpl.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DataItemFunction.obj `cygpath -w src/ast/DataItemFunction.cpp`
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ASTNodeImpl.obj `cygpath -w src/ast/ASTNodeImpl.cpp`
 
-DataItemFunction.lo: src/ast/DataItemFunction.cpp
-@AMDEP_TRUE@	source='src/ast/DataItemFunction.cpp' object='DataItemFunction.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/DataItemFunction.Plo' tmpdepfile='$(DEPDIR)/DataItemFunction.TPlo' @AMDEPBACKSLASH@
+ASTNodeImpl.lo: src/ast/ASTNodeImpl.cpp
+@AMDEP_TRUE@	source='src/ast/ASTNodeImpl.cpp' object='ASTNodeImpl.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/ASTNodeImpl.Plo' tmpdepfile='$(DEPDIR)/ASTNodeImpl.TPlo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DataItemFunction.lo `test -f 'src/ast/DataItemFunction.cpp' || echo '$(srcdir)/'`src/ast/DataItemFunction.cpp
+	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ASTNodeImpl.lo `test -f 'src/ast/ASTNodeImpl.cpp' || echo '$(srcdir)/'`src/ast/ASTNodeImpl.cpp
 
-DataItemIf.o: src/ast/DataItemIf.cpp
-@AMDEP_TRUE@	source='src/ast/DataItemIf.cpp' object='DataItemIf.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/DataItemIf.Po' tmpdepfile='$(DEPDIR)/DataItemIf.TPo' @AMDEPBACKSLASH@
+XQInstanceOf.o: src/ast/XQInstanceOf.cpp
+@AMDEP_TRUE@	source='src/ast/XQInstanceOf.cpp' object='XQInstanceOf.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQInstanceOf.Po' tmpdepfile='$(DEPDIR)/XQInstanceOf.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DataItemIf.o `test -f 'src/ast/DataItemIf.cpp' || echo '$(srcdir)/'`src/ast/DataItemIf.cpp
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQInstanceOf.o `test -f 'src/ast/XQInstanceOf.cpp' || echo '$(srcdir)/'`src/ast/XQInstanceOf.cpp
 
-DataItemIf.obj: src/ast/DataItemIf.cpp
-@AMDEP_TRUE@	source='src/ast/DataItemIf.cpp' object='DataItemIf.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/DataItemIf.Po' tmpdepfile='$(DEPDIR)/DataItemIf.TPo' @AMDEPBACKSLASH@
+XQInstanceOf.obj: src/ast/XQInstanceOf.cpp
+@AMDEP_TRUE@	source='src/ast/XQInstanceOf.cpp' object='XQInstanceOf.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQInstanceOf.Po' tmpdepfile='$(DEPDIR)/XQInstanceOf.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DataItemIf.obj `cygpath -w src/ast/DataItemIf.cpp`
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQInstanceOf.obj `cygpath -w src/ast/XQInstanceOf.cpp`
 
-DataItemIf.lo: src/ast/DataItemIf.cpp
-@AMDEP_TRUE@	source='src/ast/DataItemIf.cpp' object='DataItemIf.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/DataItemIf.Plo' tmpdepfile='$(DEPDIR)/DataItemIf.TPlo' @AMDEPBACKSLASH@
+XQInstanceOf.lo: src/ast/XQInstanceOf.cpp
+@AMDEP_TRUE@	source='src/ast/XQInstanceOf.cpp' object='XQInstanceOf.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQInstanceOf.Plo' tmpdepfile='$(DEPDIR)/XQInstanceOf.TPlo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DataItemIf.lo `test -f 'src/ast/DataItemIf.cpp' || echo '$(srcdir)/'`src/ast/DataItemIf.cpp
+	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQInstanceOf.lo `test -f 'src/ast/XQInstanceOf.cpp' || echo '$(srcdir)/'`src/ast/XQInstanceOf.cpp
 
-DataItemImpl.o: src/ast/DataItemImpl.cpp
-@AMDEP_TRUE@	source='src/ast/DataItemImpl.cpp' object='DataItemImpl.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/DataItemImpl.Po' tmpdepfile='$(DEPDIR)/DataItemImpl.TPo' @AMDEPBACKSLASH@
+XQLiteral.o: src/ast/XQLiteral.cpp
+@AMDEP_TRUE@	source='src/ast/XQLiteral.cpp' object='XQLiteral.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQLiteral.Po' tmpdepfile='$(DEPDIR)/XQLiteral.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DataItemImpl.o `test -f 'src/ast/DataItemImpl.cpp' || echo '$(srcdir)/'`src/ast/DataItemImpl.cpp
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQLiteral.o `test -f 'src/ast/XQLiteral.cpp' || echo '$(srcdir)/'`src/ast/XQLiteral.cpp
 
-DataItemImpl.obj: src/ast/DataItemImpl.cpp
-@AMDEP_TRUE@	source='src/ast/DataItemImpl.cpp' object='DataItemImpl.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/DataItemImpl.Po' tmpdepfile='$(DEPDIR)/DataItemImpl.TPo' @AMDEPBACKSLASH@
+XQLiteral.obj: src/ast/XQLiteral.cpp
+@AMDEP_TRUE@	source='src/ast/XQLiteral.cpp' object='XQLiteral.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQLiteral.Po' tmpdepfile='$(DEPDIR)/XQLiteral.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DataItemImpl.obj `cygpath -w src/ast/DataItemImpl.cpp`
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQLiteral.obj `cygpath -w src/ast/XQLiteral.cpp`
 
-DataItemImpl.lo: src/ast/DataItemImpl.cpp
-@AMDEP_TRUE@	source='src/ast/DataItemImpl.cpp' object='DataItemImpl.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/DataItemImpl.Plo' tmpdepfile='$(DEPDIR)/DataItemImpl.TPlo' @AMDEPBACKSLASH@
+XQLiteral.lo: src/ast/XQLiteral.cpp
+@AMDEP_TRUE@	source='src/ast/XQLiteral.cpp' object='XQLiteral.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQLiteral.Plo' tmpdepfile='$(DEPDIR)/XQLiteral.TPlo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DataItemImpl.lo `test -f 'src/ast/DataItemImpl.cpp' || echo '$(srcdir)/'`src/ast/DataItemImpl.cpp
+	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQLiteral.lo `test -f 'src/ast/XQLiteral.cpp' || echo '$(srcdir)/'`src/ast/XQLiteral.cpp
 
-DataItemInstanceOf.o: src/ast/DataItemInstanceOf.cpp
-@AMDEP_TRUE@	source='src/ast/DataItemInstanceOf.cpp' object='DataItemInstanceOf.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/DataItemInstanceOf.Po' tmpdepfile='$(DEPDIR)/DataItemInstanceOf.TPo' @AMDEPBACKSLASH@
+XQNav.o: src/ast/XQNav.cpp
+@AMDEP_TRUE@	source='src/ast/XQNav.cpp' object='XQNav.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQNav.Po' tmpdepfile='$(DEPDIR)/XQNav.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DataItemInstanceOf.o `test -f 'src/ast/DataItemInstanceOf.cpp' || echo '$(srcdir)/'`src/ast/DataItemInstanceOf.cpp
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQNav.o `test -f 'src/ast/XQNav.cpp' || echo '$(srcdir)/'`src/ast/XQNav.cpp
 
-DataItemInstanceOf.obj: src/ast/DataItemInstanceOf.cpp
-@AMDEP_TRUE@	source='src/ast/DataItemInstanceOf.cpp' object='DataItemInstanceOf.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/DataItemInstanceOf.Po' tmpdepfile='$(DEPDIR)/DataItemInstanceOf.TPo' @AMDEPBACKSLASH@
+XQNav.obj: src/ast/XQNav.cpp
+@AMDEP_TRUE@	source='src/ast/XQNav.cpp' object='XQNav.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQNav.Po' tmpdepfile='$(DEPDIR)/XQNav.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DataItemInstanceOf.obj `cygpath -w src/ast/DataItemInstanceOf.cpp`
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQNav.obj `cygpath -w src/ast/XQNav.cpp`
 
-DataItemInstanceOf.lo: src/ast/DataItemInstanceOf.cpp
-@AMDEP_TRUE@	source='src/ast/DataItemInstanceOf.cpp' object='DataItemInstanceOf.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/DataItemInstanceOf.Plo' tmpdepfile='$(DEPDIR)/DataItemInstanceOf.TPlo' @AMDEPBACKSLASH@
+XQNav.lo: src/ast/XQNav.cpp
+@AMDEP_TRUE@	source='src/ast/XQNav.cpp' object='XQNav.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQNav.Plo' tmpdepfile='$(DEPDIR)/XQNav.TPlo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DataItemInstanceOf.lo `test -f 'src/ast/DataItemInstanceOf.cpp' || echo '$(srcdir)/'`src/ast/DataItemInstanceOf.cpp
+	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQNav.lo `test -f 'src/ast/XQNav.cpp' || echo '$(srcdir)/'`src/ast/XQNav.cpp
 
-DataItemLiteral.o: src/ast/DataItemLiteral.cpp
-@AMDEP_TRUE@	source='src/ast/DataItemLiteral.cpp' object='DataItemLiteral.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/DataItemLiteral.Po' tmpdepfile='$(DEPDIR)/DataItemLiteral.TPo' @AMDEPBACKSLASH@
+XQOperator.o: src/ast/XQOperator.cpp
+@AMDEP_TRUE@	source='src/ast/XQOperator.cpp' object='XQOperator.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQOperator.Po' tmpdepfile='$(DEPDIR)/XQOperator.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DataItemLiteral.o `test -f 'src/ast/DataItemLiteral.cpp' || echo '$(srcdir)/'`src/ast/DataItemLiteral.cpp
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQOperator.o `test -f 'src/ast/XQOperator.cpp' || echo '$(srcdir)/'`src/ast/XQOperator.cpp
 
-DataItemLiteral.obj: src/ast/DataItemLiteral.cpp
-@AMDEP_TRUE@	source='src/ast/DataItemLiteral.cpp' object='DataItemLiteral.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/DataItemLiteral.Po' tmpdepfile='$(DEPDIR)/DataItemLiteral.TPo' @AMDEPBACKSLASH@
+XQOperator.obj: src/ast/XQOperator.cpp
+@AMDEP_TRUE@	source='src/ast/XQOperator.cpp' object='XQOperator.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQOperator.Po' tmpdepfile='$(DEPDIR)/XQOperator.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DataItemLiteral.obj `cygpath -w src/ast/DataItemLiteral.cpp`
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQOperator.obj `cygpath -w src/ast/XQOperator.cpp`
 
-DataItemLiteral.lo: src/ast/DataItemLiteral.cpp
-@AMDEP_TRUE@	source='src/ast/DataItemLiteral.cpp' object='DataItemLiteral.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/DataItemLiteral.Plo' tmpdepfile='$(DEPDIR)/DataItemLiteral.TPlo' @AMDEPBACKSLASH@
+XQOperator.lo: src/ast/XQOperator.cpp
+@AMDEP_TRUE@	source='src/ast/XQOperator.cpp' object='XQOperator.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQOperator.Plo' tmpdepfile='$(DEPDIR)/XQOperator.TPlo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DataItemLiteral.lo `test -f 'src/ast/DataItemLiteral.cpp' || echo '$(srcdir)/'`src/ast/DataItemLiteral.cpp
+	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQOperator.lo `test -f 'src/ast/XQOperator.cpp' || echo '$(srcdir)/'`src/ast/XQOperator.cpp
 
-DataItemNav.o: src/ast/DataItemNav.cpp
-@AMDEP_TRUE@	source='src/ast/DataItemNav.cpp' object='DataItemNav.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/DataItemNav.Po' tmpdepfile='$(DEPDIR)/DataItemNav.TPo' @AMDEPBACKSLASH@
+XQParenthesizedExpr.o: src/ast/XQParenthesizedExpr.cpp
+@AMDEP_TRUE@	source='src/ast/XQParenthesizedExpr.cpp' object='XQParenthesizedExpr.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQParenthesizedExpr.Po' tmpdepfile='$(DEPDIR)/XQParenthesizedExpr.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DataItemNav.o `test -f 'src/ast/DataItemNav.cpp' || echo '$(srcdir)/'`src/ast/DataItemNav.cpp
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQParenthesizedExpr.o `test -f 'src/ast/XQParenthesizedExpr.cpp' || echo '$(srcdir)/'`src/ast/XQParenthesizedExpr.cpp
 
-DataItemNav.obj: src/ast/DataItemNav.cpp
-@AMDEP_TRUE@	source='src/ast/DataItemNav.cpp' object='DataItemNav.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/DataItemNav.Po' tmpdepfile='$(DEPDIR)/DataItemNav.TPo' @AMDEPBACKSLASH@
+XQParenthesizedExpr.obj: src/ast/XQParenthesizedExpr.cpp
+@AMDEP_TRUE@	source='src/ast/XQParenthesizedExpr.cpp' object='XQParenthesizedExpr.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQParenthesizedExpr.Po' tmpdepfile='$(DEPDIR)/XQParenthesizedExpr.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DataItemNav.obj `cygpath -w src/ast/DataItemNav.cpp`
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQParenthesizedExpr.obj `cygpath -w src/ast/XQParenthesizedExpr.cpp`
 
-DataItemNav.lo: src/ast/DataItemNav.cpp
-@AMDEP_TRUE@	source='src/ast/DataItemNav.cpp' object='DataItemNav.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/DataItemNav.Plo' tmpdepfile='$(DEPDIR)/DataItemNav.TPlo' @AMDEPBACKSLASH@
+XQParenthesizedExpr.lo: src/ast/XQParenthesizedExpr.cpp
+@AMDEP_TRUE@	source='src/ast/XQParenthesizedExpr.cpp' object='XQParenthesizedExpr.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQParenthesizedExpr.Plo' tmpdepfile='$(DEPDIR)/XQParenthesizedExpr.TPlo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DataItemNav.lo `test -f 'src/ast/DataItemNav.cpp' || echo '$(srcdir)/'`src/ast/DataItemNav.cpp
+	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQParenthesizedExpr.lo `test -f 'src/ast/XQParenthesizedExpr.cpp' || echo '$(srcdir)/'`src/ast/XQParenthesizedExpr.cpp
 
-DataItemOperator.o: src/ast/DataItemOperator.cpp
-@AMDEP_TRUE@	source='src/ast/DataItemOperator.cpp' object='DataItemOperator.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/DataItemOperator.Po' tmpdepfile='$(DEPDIR)/DataItemOperator.TPo' @AMDEPBACKSLASH@
+XQSequence.o: src/ast/XQSequence.cpp
+@AMDEP_TRUE@	source='src/ast/XQSequence.cpp' object='XQSequence.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQSequence.Po' tmpdepfile='$(DEPDIR)/XQSequence.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DataItemOperator.o `test -f 'src/ast/DataItemOperator.cpp' || echo '$(srcdir)/'`src/ast/DataItemOperator.cpp
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQSequence.o `test -f 'src/ast/XQSequence.cpp' || echo '$(srcdir)/'`src/ast/XQSequence.cpp
 
-DataItemOperator.obj: src/ast/DataItemOperator.cpp
-@AMDEP_TRUE@	source='src/ast/DataItemOperator.cpp' object='DataItemOperator.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/DataItemOperator.Po' tmpdepfile='$(DEPDIR)/DataItemOperator.TPo' @AMDEPBACKSLASH@
+XQSequence.obj: src/ast/XQSequence.cpp
+@AMDEP_TRUE@	source='src/ast/XQSequence.cpp' object='XQSequence.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQSequence.Po' tmpdepfile='$(DEPDIR)/XQSequence.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DataItemOperator.obj `cygpath -w src/ast/DataItemOperator.cpp`
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQSequence.obj `cygpath -w src/ast/XQSequence.cpp`
 
-DataItemOperator.lo: src/ast/DataItemOperator.cpp
-@AMDEP_TRUE@	source='src/ast/DataItemOperator.cpp' object='DataItemOperator.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/DataItemOperator.Plo' tmpdepfile='$(DEPDIR)/DataItemOperator.TPlo' @AMDEPBACKSLASH@
+XQSequence.lo: src/ast/XQSequence.cpp
+@AMDEP_TRUE@	source='src/ast/XQSequence.cpp' object='XQSequence.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQSequence.Plo' tmpdepfile='$(DEPDIR)/XQSequence.TPlo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DataItemOperator.lo `test -f 'src/ast/DataItemOperator.cpp' || echo '$(srcdir)/'`src/ast/DataItemOperator.cpp
+	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQSequence.lo `test -f 'src/ast/XQSequence.cpp' || echo '$(srcdir)/'`src/ast/XQSequence.cpp
 
-DataItemParenthesizedExpr.o: src/ast/DataItemParenthesizedExpr.cpp
-@AMDEP_TRUE@	source='src/ast/DataItemParenthesizedExpr.cpp' object='DataItemParenthesizedExpr.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/DataItemParenthesizedExpr.Po' tmpdepfile='$(DEPDIR)/DataItemParenthesizedExpr.TPo' @AMDEPBACKSLASH@
+XQStep.o: src/ast/XQStep.cpp
+@AMDEP_TRUE@	source='src/ast/XQStep.cpp' object='XQStep.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQStep.Po' tmpdepfile='$(DEPDIR)/XQStep.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DataItemParenthesizedExpr.o `test -f 'src/ast/DataItemParenthesizedExpr.cpp' || echo '$(srcdir)/'`src/ast/DataItemParenthesizedExpr.cpp
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQStep.o `test -f 'src/ast/XQStep.cpp' || echo '$(srcdir)/'`src/ast/XQStep.cpp
 
-DataItemParenthesizedExpr.obj: src/ast/DataItemParenthesizedExpr.cpp
-@AMDEP_TRUE@	source='src/ast/DataItemParenthesizedExpr.cpp' object='DataItemParenthesizedExpr.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/DataItemParenthesizedExpr.Po' tmpdepfile='$(DEPDIR)/DataItemParenthesizedExpr.TPo' @AMDEPBACKSLASH@
+XQStep.obj: src/ast/XQStep.cpp
+@AMDEP_TRUE@	source='src/ast/XQStep.cpp' object='XQStep.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQStep.Po' tmpdepfile='$(DEPDIR)/XQStep.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DataItemParenthesizedExpr.obj `cygpath -w src/ast/DataItemParenthesizedExpr.cpp`
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQStep.obj `cygpath -w src/ast/XQStep.cpp`
 
-DataItemParenthesizedExpr.lo: src/ast/DataItemParenthesizedExpr.cpp
-@AMDEP_TRUE@	source='src/ast/DataItemParenthesizedExpr.cpp' object='DataItemParenthesizedExpr.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/DataItemParenthesizedExpr.Plo' tmpdepfile='$(DEPDIR)/DataItemParenthesizedExpr.TPlo' @AMDEPBACKSLASH@
+XQStep.lo: src/ast/XQStep.cpp
+@AMDEP_TRUE@	source='src/ast/XQStep.cpp' object='XQStep.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQStep.Plo' tmpdepfile='$(DEPDIR)/XQStep.TPlo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DataItemParenthesizedExpr.lo `test -f 'src/ast/DataItemParenthesizedExpr.cpp' || echo '$(srcdir)/'`src/ast/DataItemParenthesizedExpr.cpp
+	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQStep.lo `test -f 'src/ast/XQStep.cpp' || echo '$(srcdir)/'`src/ast/XQStep.cpp
 
-DataItemQuantifiedExpr.o: src/ast/DataItemQuantifiedExpr.cpp
-@AMDEP_TRUE@	source='src/ast/DataItemQuantifiedExpr.cpp' object='DataItemQuantifiedExpr.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/DataItemQuantifiedExpr.Po' tmpdepfile='$(DEPDIR)/DataItemQuantifiedExpr.TPo' @AMDEPBACKSLASH@
+XQTreatAs.o: src/ast/XQTreatAs.cpp
+@AMDEP_TRUE@	source='src/ast/XQTreatAs.cpp' object='XQTreatAs.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQTreatAs.Po' tmpdepfile='$(DEPDIR)/XQTreatAs.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DataItemQuantifiedExpr.o `test -f 'src/ast/DataItemQuantifiedExpr.cpp' || echo '$(srcdir)/'`src/ast/DataItemQuantifiedExpr.cpp
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQTreatAs.o `test -f 'src/ast/XQTreatAs.cpp' || echo '$(srcdir)/'`src/ast/XQTreatAs.cpp
 
-DataItemQuantifiedExpr.obj: src/ast/DataItemQuantifiedExpr.cpp
-@AMDEP_TRUE@	source='src/ast/DataItemQuantifiedExpr.cpp' object='DataItemQuantifiedExpr.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/DataItemQuantifiedExpr.Po' tmpdepfile='$(DEPDIR)/DataItemQuantifiedExpr.TPo' @AMDEPBACKSLASH@
+XQTreatAs.obj: src/ast/XQTreatAs.cpp
+@AMDEP_TRUE@	source='src/ast/XQTreatAs.cpp' object='XQTreatAs.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQTreatAs.Po' tmpdepfile='$(DEPDIR)/XQTreatAs.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DataItemQuantifiedExpr.obj `cygpath -w src/ast/DataItemQuantifiedExpr.cpp`
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQTreatAs.obj `cygpath -w src/ast/XQTreatAs.cpp`
 
-DataItemQuantifiedExpr.lo: src/ast/DataItemQuantifiedExpr.cpp
-@AMDEP_TRUE@	source='src/ast/DataItemQuantifiedExpr.cpp' object='DataItemQuantifiedExpr.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/DataItemQuantifiedExpr.Plo' tmpdepfile='$(DEPDIR)/DataItemQuantifiedExpr.TPlo' @AMDEPBACKSLASH@
+XQTreatAs.lo: src/ast/XQTreatAs.cpp
+@AMDEP_TRUE@	source='src/ast/XQTreatAs.cpp' object='XQTreatAs.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQTreatAs.Plo' tmpdepfile='$(DEPDIR)/XQTreatAs.TPlo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DataItemQuantifiedExpr.lo `test -f 'src/ast/DataItemQuantifiedExpr.cpp' || echo '$(srcdir)/'`src/ast/DataItemQuantifiedExpr.cpp
+	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQTreatAs.lo `test -f 'src/ast/XQTreatAs.cpp' || echo '$(srcdir)/'`src/ast/XQTreatAs.cpp
 
-DataItemSequence.o: src/ast/DataItemSequence.cpp
-@AMDEP_TRUE@	source='src/ast/DataItemSequence.cpp' object='DataItemSequence.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/DataItemSequence.Po' tmpdepfile='$(DEPDIR)/DataItemSequence.TPo' @AMDEPBACKSLASH@
+XQVariable.o: src/ast/XQVariable.cpp
+@AMDEP_TRUE@	source='src/ast/XQVariable.cpp' object='XQVariable.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQVariable.Po' tmpdepfile='$(DEPDIR)/XQVariable.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DataItemSequence.o `test -f 'src/ast/DataItemSequence.cpp' || echo '$(srcdir)/'`src/ast/DataItemSequence.cpp
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQVariable.o `test -f 'src/ast/XQVariable.cpp' || echo '$(srcdir)/'`src/ast/XQVariable.cpp
 
-DataItemSequence.obj: src/ast/DataItemSequence.cpp
-@AMDEP_TRUE@	source='src/ast/DataItemSequence.cpp' object='DataItemSequence.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/DataItemSequence.Po' tmpdepfile='$(DEPDIR)/DataItemSequence.TPo' @AMDEPBACKSLASH@
+XQVariable.obj: src/ast/XQVariable.cpp
+@AMDEP_TRUE@	source='src/ast/XQVariable.cpp' object='XQVariable.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQVariable.Po' tmpdepfile='$(DEPDIR)/XQVariable.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DataItemSequence.obj `cygpath -w src/ast/DataItemSequence.cpp`
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQVariable.obj `cygpath -w src/ast/XQVariable.cpp`
 
-DataItemSequence.lo: src/ast/DataItemSequence.cpp
-@AMDEP_TRUE@	source='src/ast/DataItemSequence.cpp' object='DataItemSequence.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/DataItemSequence.Plo' tmpdepfile='$(DEPDIR)/DataItemSequence.TPlo' @AMDEPBACKSLASH@
+XQVariable.lo: src/ast/XQVariable.cpp
+@AMDEP_TRUE@	source='src/ast/XQVariable.cpp' object='XQVariable.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQVariable.Plo' tmpdepfile='$(DEPDIR)/XQVariable.TPlo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DataItemSequence.lo `test -f 'src/ast/DataItemSequence.cpp' || echo '$(srcdir)/'`src/ast/DataItemSequence.cpp
-
-DataItemStep.o: src/ast/DataItemStep.cpp
-@AMDEP_TRUE@	source='src/ast/DataItemStep.cpp' object='DataItemStep.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/DataItemStep.Po' tmpdepfile='$(DEPDIR)/DataItemStep.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DataItemStep.o `test -f 'src/ast/DataItemStep.cpp' || echo '$(srcdir)/'`src/ast/DataItemStep.cpp
-
-DataItemStep.obj: src/ast/DataItemStep.cpp
-@AMDEP_TRUE@	source='src/ast/DataItemStep.cpp' object='DataItemStep.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/DataItemStep.Po' tmpdepfile='$(DEPDIR)/DataItemStep.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DataItemStep.obj `cygpath -w src/ast/DataItemStep.cpp`
-
-DataItemStep.lo: src/ast/DataItemStep.cpp
-@AMDEP_TRUE@	source='src/ast/DataItemStep.cpp' object='DataItemStep.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/DataItemStep.Plo' tmpdepfile='$(DEPDIR)/DataItemStep.TPlo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DataItemStep.lo `test -f 'src/ast/DataItemStep.cpp' || echo '$(srcdir)/'`src/ast/DataItemStep.cpp
-
-DataItemTreatAs.o: src/ast/DataItemTreatAs.cpp
-@AMDEP_TRUE@	source='src/ast/DataItemTreatAs.cpp' object='DataItemTreatAs.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/DataItemTreatAs.Po' tmpdepfile='$(DEPDIR)/DataItemTreatAs.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DataItemTreatAs.o `test -f 'src/ast/DataItemTreatAs.cpp' || echo '$(srcdir)/'`src/ast/DataItemTreatAs.cpp
-
-DataItemTreatAs.obj: src/ast/DataItemTreatAs.cpp
-@AMDEP_TRUE@	source='src/ast/DataItemTreatAs.cpp' object='DataItemTreatAs.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/DataItemTreatAs.Po' tmpdepfile='$(DEPDIR)/DataItemTreatAs.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DataItemTreatAs.obj `cygpath -w src/ast/DataItemTreatAs.cpp`
-
-DataItemTreatAs.lo: src/ast/DataItemTreatAs.cpp
-@AMDEP_TRUE@	source='src/ast/DataItemTreatAs.cpp' object='DataItemTreatAs.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/DataItemTreatAs.Plo' tmpdepfile='$(DEPDIR)/DataItemTreatAs.TPlo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DataItemTreatAs.lo `test -f 'src/ast/DataItemTreatAs.cpp' || echo '$(srcdir)/'`src/ast/DataItemTreatAs.cpp
-
-DataItemVariable.o: src/ast/DataItemVariable.cpp
-@AMDEP_TRUE@	source='src/ast/DataItemVariable.cpp' object='DataItemVariable.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/DataItemVariable.Po' tmpdepfile='$(DEPDIR)/DataItemVariable.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DataItemVariable.o `test -f 'src/ast/DataItemVariable.cpp' || echo '$(srcdir)/'`src/ast/DataItemVariable.cpp
-
-DataItemVariable.obj: src/ast/DataItemVariable.cpp
-@AMDEP_TRUE@	source='src/ast/DataItemVariable.cpp' object='DataItemVariable.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/DataItemVariable.Po' tmpdepfile='$(DEPDIR)/DataItemVariable.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DataItemVariable.obj `cygpath -w src/ast/DataItemVariable.cpp`
-
-DataItemVariable.lo: src/ast/DataItemVariable.cpp
-@AMDEP_TRUE@	source='src/ast/DataItemVariable.cpp' object='DataItemVariable.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/DataItemVariable.Plo' tmpdepfile='$(DEPDIR)/DataItemVariable.TPlo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DataItemVariable.lo `test -f 'src/ast/DataItemVariable.cpp' || echo '$(srcdir)/'`src/ast/DataItemVariable.cpp
+	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQVariable.lo `test -f 'src/ast/XQVariable.cpp' || echo '$(srcdir)/'`src/ast/XQVariable.cpp
 
 StaticResolutionContext.o: src/ast/StaticResolutionContext.cpp
 @AMDEP_TRUE@	source='src/ast/StaticResolutionContext.cpp' object='StaticResolutionContext.o' libtool=no @AMDEPBACKSLASH@
@@ -6065,23 +5944,23 @@ FunctionYearsFromDuration.lo: src/functions/FunctionYearsFromDuration.cpp
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionYearsFromDuration.lo `test -f 'src/functions/FunctionYearsFromDuration.cpp' || echo '$(srcdir)/'`src/functions/FunctionYearsFromDuration.cpp
 
-XQFunction.o: src/functions/XQFunction.cpp
-@AMDEP_TRUE@	source='src/functions/XQFunction.cpp' object='XQFunction.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/XQFunction.Po' tmpdepfile='$(DEPDIR)/XQFunction.TPo' @AMDEPBACKSLASH@
+XQUserFunction.o: src/functions/XQUserFunction.cpp
+@AMDEP_TRUE@	source='src/functions/XQUserFunction.cpp' object='XQUserFunction.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQUserFunction.Po' tmpdepfile='$(DEPDIR)/XQUserFunction.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQFunction.o `test -f 'src/functions/XQFunction.cpp' || echo '$(srcdir)/'`src/functions/XQFunction.cpp
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQUserFunction.o `test -f 'src/functions/XQUserFunction.cpp' || echo '$(srcdir)/'`src/functions/XQUserFunction.cpp
 
-XQFunction.obj: src/functions/XQFunction.cpp
-@AMDEP_TRUE@	source='src/functions/XQFunction.cpp' object='XQFunction.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/XQFunction.Po' tmpdepfile='$(DEPDIR)/XQFunction.TPo' @AMDEPBACKSLASH@
+XQUserFunction.obj: src/functions/XQUserFunction.cpp
+@AMDEP_TRUE@	source='src/functions/XQUserFunction.cpp' object='XQUserFunction.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQUserFunction.Po' tmpdepfile='$(DEPDIR)/XQUserFunction.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQFunction.obj `cygpath -w src/functions/XQFunction.cpp`
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQUserFunction.obj `cygpath -w src/functions/XQUserFunction.cpp`
 
-XQFunction.lo: src/functions/XQFunction.cpp
-@AMDEP_TRUE@	source='src/functions/XQFunction.cpp' object='XQFunction.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/XQFunction.Plo' tmpdepfile='$(DEPDIR)/XQFunction.TPlo' @AMDEPBACKSLASH@
+XQUserFunction.lo: src/functions/XQUserFunction.cpp
+@AMDEP_TRUE@	source='src/functions/XQUserFunction.cpp' object='XQUserFunction.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQUserFunction.Plo' tmpdepfile='$(DEPDIR)/XQUserFunction.TPlo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQFunction.lo `test -f 'src/functions/XQFunction.cpp' || echo '$(srcdir)/'`src/functions/XQFunction.cpp
+	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQUserFunction.lo `test -f 'src/functions/XQUserFunction.cpp' || echo '$(srcdir)/'`src/functions/XQUserFunction.cpp
 
 ATAnySimpleTypeImpl.o: src/items/impl/ATAnySimpleTypeImpl.cpp
 @AMDEP_TRUE@	source='src/items/impl/ATAnySimpleTypeImpl.cpp' object='ATAnySimpleTypeImpl.o' libtool=no @AMDEPBACKSLASH@
@@ -6712,24 +6591,6 @@ QName.lo: src/parser/QName.cpp
 @AMDEP_TRUE@	depfile='$(DEPDIR)/QName.Plo' tmpdepfile='$(DEPDIR)/QName.TPlo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o QName.lo `test -f 'src/parser/QName.cpp' || echo '$(srcdir)/'`src/parser/QName.cpp
-
-VariableBinding.o: src/parser/VariableBinding.cpp
-@AMDEP_TRUE@	source='src/parser/VariableBinding.cpp' object='VariableBinding.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/VariableBinding.Po' tmpdepfile='$(DEPDIR)/VariableBinding.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o VariableBinding.o `test -f 'src/parser/VariableBinding.cpp' || echo '$(srcdir)/'`src/parser/VariableBinding.cpp
-
-VariableBinding.obj: src/parser/VariableBinding.cpp
-@AMDEP_TRUE@	source='src/parser/VariableBinding.cpp' object='VariableBinding.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/VariableBinding.Po' tmpdepfile='$(DEPDIR)/VariableBinding.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o VariableBinding.obj `cygpath -w src/parser/VariableBinding.cpp`
-
-VariableBinding.lo: src/parser/VariableBinding.cpp
-@AMDEP_TRUE@	source='src/parser/VariableBinding.cpp' object='VariableBinding.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/VariableBinding.Plo' tmpdepfile='$(DEPDIR)/VariableBinding.TPlo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o VariableBinding.lo `test -f 'src/parser/VariableBinding.cpp' || echo '$(srcdir)/'`src/parser/VariableBinding.cpp
 
 XPath2Parser.o: src/parser/XPath2Parser.cpp
 @AMDEP_TRUE@	source='src/parser/XPath2Parser.cpp' object='XPath2Parser.o' libtool=no @AMDEPBACKSLASH@

@@ -31,7 +31,7 @@ public:
   static const unsigned int minArgs;
   static const unsigned int maxArgs;
 
-  FunctionCompare(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  FunctionCompare(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
 };

@@ -17,8 +17,8 @@
 // XQScopedNamespace.hpp: interface for the XQScopedNamespace class.
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_XQSCOPEDNAMESPACE_H__D6A320F5_21F1_421D_9E46_E4373B375E1A__INCLUDED_)
-#define AFX_XQSCOPEDNAMESPACE_H__D6A320F5_21F1_421D_9E46_E4373B375E1A__INCLUDED_
+#if !defined(AFXQ_XQSCOPEDNAMESPACE_H__D6A320F5_21F1_421D_9E46_E4373B375E1A__INCLUDED_)
+#define AFXQ_XQSCOPEDNAMESPACE_H__D6A320F5_21F1_421D_9E46_E4373B375E1A__INCLUDED_
 
 #include <xqilla/framework/XQEngine.hpp>
 #include <xqilla/dom-api/impl/PathanNSResolverImpl.hpp>
@@ -40,4 +40,4 @@ protected:
     const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver* _prevScope;
 };
 
-#endif // !defined(AFX_XQSCOPEDNAMESPACE_H__D6A320F5_21F1_421D_9E46_E4373B375E1A__INCLUDED_)
+#endif // !defined(AFXQ_XQSCOPEDNAMESPACE_H__D6A320F5_21F1_421D_9E46_E4373B375E1A__INCLUDED_)

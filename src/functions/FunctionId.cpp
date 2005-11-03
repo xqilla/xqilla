@@ -39,16 +39,16 @@ const unsigned int FunctionId::maxArgs = 2;
  * fn:id($arg as xs:string*, $node as node()) as element()*
 **/
 
-FunctionId::FunctionId(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
-  : DataItemFunction(name, minArgs, maxArgs, "string*, node()", args, memMgr)
+FunctionId::FunctionId(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
+  : XQFunction(name, minArgs, maxArgs, "string*, node()", args, memMgr)
 {
 }
 
-DataItem* FunctionId::staticResolution(StaticContext *context) {
+ASTNode* FunctionId::staticResolution(StaticContext *context) {
   _src.getStaticType().flags = StaticResolutionContext::NODE_TYPE;
   if(_args.size()==1)
     _src.contextItemUsed(true);
-  return resolveDataItems(_args, context, _args.size()!=1);
+  return resolveASTNodes(_args, context, _args.size()!=1);
 }
 
 Sequence FunctionId::collapseTreeInternal(DynamicContext* context, int flags) const

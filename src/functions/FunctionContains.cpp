@@ -42,7 +42,7 @@ const unsigned int FunctionContains::maxArgs = 3;
  * fn:contains($arg1 as xs:string?, $arg2 as xs:string?, $collation as xs:string) as xs:boolean
 **/
 
-FunctionContains::FunctionContains(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+FunctionContains::FunctionContains(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "string?,string?,string", args, memMgr)
 {
 }

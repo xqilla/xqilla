@@ -24,19 +24,19 @@
 
 #include <xqilla/framework/Pathan.hpp>
 
-#include <xqilla/ast/DataItemFunction.hpp>
+#include <xqilla/ast/XQFunction.hpp>
 
 /** Last function*/
-class PATHAN_EXPORT FunctionLast : public DataItemFunction
+class PATHAN_EXPORT FunctionLast : public XQFunction
 {
 public:
   static const XMLCh name[];
   static const unsigned int minArgs;
   static const unsigned int maxArgs;
 
-  FunctionLast(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  FunctionLast(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
-  virtual DataItem* staticResolution(StaticContext *context);
+  virtual ASTNode* staticResolution(StaticContext *context);
 
   /** returns the context size */
   Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;

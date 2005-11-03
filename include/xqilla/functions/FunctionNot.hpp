@@ -34,7 +34,7 @@ public:
   static const unsigned int minArgs;
   static const unsigned int maxArgs;
 
-  FunctionNot(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  FunctionNot(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   /** negates the argument **/
   Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;

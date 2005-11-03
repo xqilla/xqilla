@@ -24,19 +24,19 @@
 
 #include <xqilla/framework/Pathan.hpp>
 
-#include <xqilla/ast/DataItemFunction.hpp>
+#include <xqilla/ast/XQFunction.hpp>
 
 /** lang function. */
-class PATHAN_EXPORT FunctionLang : public DataItemFunction
+class PATHAN_EXPORT FunctionLang : public XQFunction
 {
 public:
   static const XMLCh name[];
   static const unsigned int minArgs;
   static const unsigned int maxArgs;
 
-  FunctionLang(const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  FunctionLang(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
-  virtual DataItem* staticResolution(StaticContext *context);
+  virtual ASTNode* staticResolution(StaticContext *context);
 
   /** The lang function returns true or false depending on whether the language of
       the context node as specified by xml:lang attributes is the same as or is a

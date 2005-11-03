@@ -24,7 +24,7 @@ class PATHAN_EXPORT AggregateFunction : public ConstantFoldingFunction
 public:
 
   /// constructor, checks for the correct number of arguments.
-  AggregateFunction(const XMLCh* name,unsigned int argsFrom, unsigned int argsTo, const char* paramDecl, const VectorOfDataItems &args, XPath2MemoryManager* memMgr);
+  AggregateFunction(const XMLCh* name,unsigned int argsFrom, unsigned int argsTo, const char* paramDecl, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
 
 protected:
   /* 

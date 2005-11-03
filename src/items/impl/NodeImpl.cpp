@@ -716,59 +716,59 @@ Result NodeImpl::dmChildren(const DynamicContext *context) const
   return 0;
 }
 
-Result NodeImpl::getAxisResult(DataItemStep::Axis axis, const NodeTest *nodeTest, const DynamicContext *context) const
+Result NodeImpl::getAxisResult(XQStep::Axis axis, const NodeTest *nodeTest, const DynamicContext *context) const
 {
   switch(axis) {
-  case DataItemStep::ANCESTOR: {
+  case XQStep::ANCESTOR: {
     return new AncestorAxis(fNode, this, nodeTest, const_cast<DynamicContext*>(context));
   }
-  case DataItemStep::ANCESTOR_OR_SELF: {
+  case XQStep::ANCESTOR_OR_SELF: {
     return new AncestorOrSelfAxis(fNode, this, nodeTest, const_cast<DynamicContext*>(context));
   }
-  case DataItemStep::ATTRIBUTE: {
+  case XQStep::ATTRIBUTE: {
     if(fNode->getNodeType() == DOMNode::ELEMENT_NODE) {
       return new AttributeAxis(fNode, this, nodeTest, const_cast<DynamicContext*>(context));
     }
     break;
   }
-  case DataItemStep::CHILD: {
+  case XQStep::CHILD: {
     if(fNode->getNodeType() == DOMNode::ELEMENT_NODE || fNode->getNodeType() == DOMNode::DOCUMENT_NODE) {
       return new ChildAxis(fNode, this, nodeTest, const_cast<DynamicContext*>(context));
     }
     break;
   }
-  case DataItemStep::DESCENDANT: {
+  case XQStep::DESCENDANT: {
     if(fNode->getNodeType() == DOMNode::ELEMENT_NODE || fNode->getNodeType() == DOMNode::DOCUMENT_NODE) {
       return new DescendantAxis(fNode, this, nodeTest, const_cast<DynamicContext*>(context));
     }
     break;
   }
-  case DataItemStep::DESCENDANT_OR_SELF: {
+  case XQStep::DESCENDANT_OR_SELF: {
     return new DescendantOrSelfAxis(fNode, this, nodeTest, const_cast<DynamicContext*>(context));
     break;
   }
-  case DataItemStep::FOLLOWING: {
+  case XQStep::FOLLOWING: {
     return new FollowingAxis(fNode, this, nodeTest, const_cast<DynamicContext*>(context));
   }
-  case DataItemStep::FOLLOWING_SIBLING: {
+  case XQStep::FOLLOWING_SIBLING: {
     return new FollowingSiblingAxis(fNode, this, nodeTest, const_cast<DynamicContext*>(context));
   }
-  case DataItemStep::NAMESPACE: {
+  case XQStep::NAMESPACE: {
     if(fNode->getNodeType() == DOMNode::ELEMENT_NODE) {
       return new NamespaceAxis(fNode, this, nodeTest, const_cast<DynamicContext*>(context));
     }
     break;
   }
-  case DataItemStep::PARENT: {
+  case XQStep::PARENT: {
     return new ParentAxis(fNode, this, nodeTest, const_cast<DynamicContext*>(context));
   }
-  case DataItemStep::PRECEDING: {
+  case XQStep::PRECEDING: {
     return new PrecedingAxis(fNode, this, nodeTest, const_cast<DynamicContext*>(context));
   }
-  case DataItemStep::PRECEDING_SIBLING: {
+  case XQStep::PRECEDING_SIBLING: {
     return new PrecedingSiblingAxis(fNode, this, nodeTest, const_cast<DynamicContext*>(context));
   }
-  case DataItemStep::SELF: {
+  case XQStep::SELF: {
     return nodeTest->filterResult(new SelfAxis(this, const_cast<DynamicContext*>(context)),
       const_cast<DynamicContext*>(context));
   }

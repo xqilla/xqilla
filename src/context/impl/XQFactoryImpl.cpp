@@ -14,7 +14,7 @@
  */
 
 #include <xqilla/context/impl/XQFactoryImpl.hpp>
-#include <xqilla/context/XQContext.hpp>
+#include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/context/XQDebugCallback.hpp>
 
 #include <assert.h>
@@ -112,11 +112,9 @@ Node::Ptr XQFactoryImpl::createAttributeNode(const XMLCh *uri, const XMLCh *pref
 
 Node::Ptr XQFactoryImpl::createElementNode(const XMLCh *uri, const XMLCh *prefix, const XMLCh *name,
                                            const std::vector<Node::Ptr> &attrList, const std::vector<XQFactory::ElementChild> &childList,
-                                           const DynamicContext *ctx) const
+                                           const DynamicContext *context) const
 {
-  const XQContext *context = CAST_TO_CONST_XQCONTEXT(ctx);
-
-  XQStaticContext::ConstructionMode constrMode=context->getConstructionMode();
+  StaticContext::ConstructionMode constrMode=context->getConstructionMode();
 
   DOMDocument *document = getOutputDocument(context);
   DOMElement *element = document->createElementNS(uri, name);
@@ -133,9 +131,9 @@ Node::Ptr XQFactoryImpl::createElementNode(const XMLCh *uri, const XMLCh *prefix
       DSLthrow(DataItemException,X("XQFactoryImpl::createElementNode"),X("An element has two attributes with the same expanded name [err:XQDY0025]"));
 
     DOMAttr* imported = (DOMAttr*)document->importNode(const_cast<DOMNode*>(attr),true);
-    if(constrMode == XQStaticContext::CONSTRUCTION_MODE_PRESERVE)
+    if(constrMode == StaticContext::CONSTRUCTION_MODE_PRESERVE)
       XPath2Utils::copyAttributeType(document, imported, (const DOMAttr*)attr);
-    if(context->getDebugCallback()) context->getDebugCallback()->ReportClonedNode(const_cast<XQContext*>(context), attr, imported);
+    if(context->getDebugCallback()) context->getDebugCallback()->ReportClonedNode(const_cast<DynamicContext*>(context), attr, imported);
 
     element->setAttributeNodeNS(imported);
   }
@@ -148,9 +146,9 @@ Node::Ptr XQFactoryImpl::createElementNode(const XMLCh *uri, const XMLCh *prefix
     if(nodeImpl->getDOMNode()->getOwnerDocument() == document) {
       if(i->clone) {
         newChild = nodeImpl->getDOMNode()->cloneNode(true);
-        if(constrMode == XQStaticContext::CONSTRUCTION_MODE_PRESERVE && nodeImpl->dmNodeKind()==Node::element_string)
+        if(constrMode == StaticContext::CONSTRUCTION_MODE_PRESERVE && nodeImpl->dmNodeKind()==Node::element_string)
           XPath2Utils::copyElementType(newChild->getOwnerDocument(), (DOMElement*)newChild, (DOMElement*)nodeImpl->getDOMNode());
-        if(context->getDebugCallback()) context->getDebugCallback()->ReportClonedNode(const_cast<XQContext*>(context), nodeImpl->getDOMNode(), newChild);
+        if(context->getDebugCallback()) context->getDebugCallback()->ReportClonedNode(const_cast<DynamicContext*>(context), nodeImpl->getDOMNode(), newChild);
       }
       else {
         newChild = const_cast<DOMNode*>(nodeImpl->getDOMNode());
@@ -158,25 +156,23 @@ Node::Ptr XQFactoryImpl::createElementNode(const XMLCh *uri, const XMLCh *prefix
     }
     else {
       newChild = document->importNode(const_cast<DOMNode*>(nodeImpl->getDOMNode()),true);
-      if(constrMode == XQStaticContext::CONSTRUCTION_MODE_PRESERVE && nodeImpl->dmNodeKind()==Node::element_string)
+      if(constrMode == StaticContext::CONSTRUCTION_MODE_PRESERVE && nodeImpl->dmNodeKind()==Node::element_string)
         XPath2Utils::copyElementType(newChild->getOwnerDocument(), (DOMElement*)newChild, (DOMElement*)nodeImpl->getDOMNode());
-      if(context->getDebugCallback()) context->getDebugCallback()->ReportClonedNode(const_cast<XQContext*>(context), nodeImpl->getDOMNode(), newChild);
+      if(context->getDebugCallback()) context->getDebugCallback()->ReportClonedNode(const_cast<DynamicContext*>(context), nodeImpl->getDOMNode(), newChild);
     }
 
     element->appendChild(newChild);
   }  
 
-  if(constrMode == XQStaticContext::CONSTRUCTION_MODE_PRESERVE)
+  if(constrMode == StaticContext::CONSTRUCTION_MODE_PRESERVE)
     XPath2Utils::setElementType(document, element, SchemaSymbols::fgURI_SCHEMAFORSCHEMA, SchemaSymbols::fgATTVAL_ANYTYPE);
 
   return new NodeImpl(element, context);
 }
 
-Node::Ptr XQFactoryImpl::createDocumentNode(const std::vector<Node::Ptr> &childList, const DynamicContext *ctx) const
+Node::Ptr XQFactoryImpl::createDocumentNode(const std::vector<Node::Ptr> &childList, const DynamicContext *context) const
 {
-  const XQContext *context = CAST_TO_CONST_XQCONTEXT(ctx);
-
-  XQStaticContext::ConstructionMode constrMode=context->getConstructionMode();
+  StaticContext::ConstructionMode constrMode=context->getConstructionMode();
 
   DOMDocument *document = context->createNewDocument();
 
@@ -185,9 +181,9 @@ Node::Ptr XQFactoryImpl::createDocumentNode(const std::vector<Node::Ptr> &childL
     assert(nodeImpl != 0);
 
     DOMNode *newChild = document->importNode(const_cast<DOMNode*>(nodeImpl->getDOMNode()),true);
-    if(constrMode == XQStaticContext::CONSTRUCTION_MODE_PRESERVE && nodeImpl->dmNodeKind()==Node::element_string)
+    if(constrMode == StaticContext::CONSTRUCTION_MODE_PRESERVE && nodeImpl->dmNodeKind()==Node::element_string)
       XPath2Utils::copyElementType(newChild->getOwnerDocument(), (DOMElement*)newChild, (DOMElement*)nodeImpl->getDOMNode());
-    if(context->getDebugCallback()) context->getDebugCallback()->ReportClonedNode(const_cast<XQContext*>(context), nodeImpl->getDOMNode(), newChild);
+    if(context->getDebugCallback()) context->getDebugCallback()->ReportClonedNode(const_cast<DynamicContext*>(context), nodeImpl->getDOMNode(), newChild);
 
     document->appendChild(newChild);
   }

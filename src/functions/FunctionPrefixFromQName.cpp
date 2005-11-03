@@ -36,7 +36,7 @@ const unsigned int FunctionPrefixFromQName::maxArgs = 1;
  * fn:prefix-from-QName($arg as xs:QName?) as xs:NCNAME?
 **/
 
-FunctionPrefixFromQName::FunctionPrefixFromQName(const VectorOfDataItems &args, XPath2MemoryManager* memMgr)
+FunctionPrefixFromQName::FunctionPrefixFromQName(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "QName?", args, memMgr)
 {
 }
