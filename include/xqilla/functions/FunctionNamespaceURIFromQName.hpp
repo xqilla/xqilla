@@ -22,11 +22,11 @@
 #ifndef _FUNCTIONGETNAMESPACEURIFROMQNAME_HPP
 #define _FUNCTIONGETNAMESPACEURIFROMQNAME_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/ConstantFoldingFunction.hpp>
 
-class PATHAN_EXPORT FunctionNamespaceURIFromQName : public ConstantFoldingFunction
+class XQILLA_API FunctionNamespaceURIFromQName : public ConstantFoldingFunction
 {
 public:
   static const XMLCh name[];

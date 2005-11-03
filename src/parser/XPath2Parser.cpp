@@ -254,13 +254,13 @@
 #line 16 "../src/parser/XPath2Parser.y"
 
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xercesc/util/XercesDefs.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 #include <xercesc/util/XMLString.hpp>
 #include <xercesc/framework/XMLBuffer.hpp>
 #include <xercesc/dom/DOMXPathNamespace.hpp>
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/items/AnyAtomicTypeConstructor.hpp>
 
@@ -1128,7 +1128,7 @@ do {					\
 
 /* Nonzero means print parse trace.  It is left uninitialized so that
    multiple parsers can coexist.  */
-int PATHAN_EXPORT yydebug;
+int XQILLA_API yydebug;
 #else /* !YYDEBUG */
 # define YYDPRINTF(Args)
 # define YYDSYMPRINT(Args)
@@ -1679,7 +1679,7 @@ yyreduce:
   case 15:
 #line 383 "../src/parser/XPath2Parser.y"
     {
-		yyval.variableBinding = new (((XPathParserControl *)parm)->memMgr) VectorOfVariableBinding(PathanAllocator<XQVariableBinding*>((((XPathParserControl *)parm)->memMgr)));
+		yyval.variableBinding = new (((XPathParserControl *)parm)->memMgr) VectorOfVariableBinding(XQillaAllocator<XQVariableBinding*>((((XPathParserControl *)parm)->memMgr)));
 		XQVariableBinding* bind=new (((XPathParserControl *)parm)->memMgr) XQVariableBinding(((XPathParserControl *)parm)->memMgr,
                                                                                          XQVariableBinding::forBinding,
                                                                                          ((XPathParserControl *)parm)->memMgr->getPooledString(yyvsp[-2].wString), yyvsp[0].astNodeImpl);
@@ -2033,7 +2033,7 @@ yyreduce:
   case 62:
 #line 712 "../src/parser/XPath2Parser.y"
     {
-	  VectorOfASTNodes args(PathanAllocator<ASTNode*>(((XPathParserControl *)parm)->memMgr));
+	  VectorOfASTNodes args(XQillaAllocator<ASTNode*>(((XPathParserControl *)parm)->memMgr));
 	  args.push_back(yyvsp[0].astNodeImpl);
 	  yyval.astNodeImpl = new (((XPathParserControl *)parm)->memMgr) UnaryMinus(args, ((XPathParserControl *)parm)->memMgr);
 	}
@@ -2452,7 +2452,7 @@ yyreduce:
   case 104:
 #line 1139 "../src/parser/XPath2Parser.y"
     {
-        yyval.astNodeStore = new VectorOfASTNodes(PathanAllocator<ASTNode*>(((XPathParserControl *)parm)->memMgr));
+        yyval.astNodeStore = new VectorOfASTNodes(XQillaAllocator<ASTNode*>(((XPathParserControl *)parm)->memMgr));
     }
     break;
 
@@ -2615,7 +2615,7 @@ yyreduce:
     {
         QualifiedName *qname = new (((XPathParserControl *)parm)->memMgr) QualifiedName(yyvsp[-1].wString, ((XPathParserControl *)parm)->memMgr);
         delete yyvsp[-1].wString;
-        VectorOfASTNodes tmp(PathanAllocator<ASTNode*>(((XPathParserControl *)parm)->memMgr));
+        VectorOfASTNodes tmp(XQillaAllocator<ASTNode*>(((XPathParserControl *)parm)->memMgr));
         ASTNode* functionImpl = ((XPathParserControl*)parm)->context->lookUpFunction(qname->getPrefix(), qname->getName(), tmp);
         if( functionImpl == NULL) {
           XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buf(1023, ((XPathParserControl *)parm)->memMgr);
@@ -2649,7 +2649,7 @@ yyreduce:
   case 123:
 #line 1351 "../src/parser/XPath2Parser.y"
     {
-        yyval.astNodeStore = new VectorOfASTNodes(PathanAllocator<ASTNode*>(((XPathParserControl *)parm)->memMgr));
+        yyval.astNodeStore = new VectorOfASTNodes(XQillaAllocator<ASTNode*>(((XPathParserControl *)parm)->memMgr));
         yyval.astNodeStore->push_back(yyvsp[0].astNodeImpl);
 	  }
     break;
@@ -3274,7 +3274,7 @@ void yyerror(const char *s)
 
 inline VectorOfASTNodes packageArgs(ASTNode *arg1Impl, ASTNode *arg2Impl, XPath2MemoryManager* memMgr)
 {
-	VectorOfASTNodes args=VectorOfASTNodes(2,(ASTNode*)NULL,PathanAllocator<ASTNode*>(memMgr));
+	VectorOfASTNodes args=VectorOfASTNodes(2,(ASTNode*)NULL,XQillaAllocator<ASTNode*>(memMgr));
 	args[0]=arg1Impl;
 	args[1]=arg2Impl;
 

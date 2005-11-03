@@ -22,7 +22,7 @@
 #ifndef _XPATHPARSERCONTROL_HPP
 #define _XPATHPARSERCONTROL_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/ASTNode.hpp>
 #include <xqilla/context/StaticContext.hpp>
@@ -30,7 +30,7 @@
 class xxFlexLexer;
 class XPath2MemoryManager;
 
-class PATHAN_EXPORT XPathParserControl {
+class XQILLA_API XPathParserControl {
 
 public:
   ASTNode* result;

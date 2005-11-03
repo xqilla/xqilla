@@ -18,51 +18,6 @@
  */
 
 /*
- *      $Id$
- *
- *      This file contains the FACTORIAL function.
- *
- *      $Log$
- *      Revision 1.1  2005/11/01 18:04:13  jpcs
- *      Initial check in.
- *
- *      Revision 1.1  2004/07/21 09:23:01  jpcs
- *      Initial check in of the Parthenon backup of Pathan.
- *
- *      Revision 1.2  2003/05/01 12:46:55  alby
- *      - Updated MAPM to version 4.6.1
- *      - The MAPM class is now thread-safe
- *
- *      Revision 1.9  2002/11/03 21:27:28  mike
- *      Updated function parameters to use the modern style
- *
- *      Revision 1.8  2000/06/14 20:36:16  mike
- *      increase size of DOS array
- *
- *      Revision 1.7  2000/05/29 13:15:59  mike
- *      minor tweaks, fixed comment
- *
- *      Revision 1.6  2000/05/26 16:39:03  mike
- *      minor update to comments and code
- *
- *      Revision 1.5  2000/05/25 23:12:53  mike
- *      change 'nd' calculation
- *
- *      Revision 1.4  2000/05/25 22:17:45  mike
- *      implement new algorithm for speed. approx 5 - 10X
- *      faster on my PC when N! is large (> 6000)
- *
- *      Revision 1.3  1999/06/19 21:25:21  mike
- *      changed local static variables to MAPM stack variables
- *
- *      Revision 1.2  1999/05/23 18:21:12  mike
- *      minor variable name tweaks
- *
- *      Revision 1.1  1999/05/15 21:06:11  mike
- *      Initial revision
- */
-
-/*
  *      Brief explanation of the factorial algorithm.
  *      ----------------------------------------------
  *

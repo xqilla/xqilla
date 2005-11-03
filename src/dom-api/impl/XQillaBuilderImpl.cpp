@@ -13,10 +13,10 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
-#include "PathanBuilderImpl.hpp"
-#include "PathanDocumentImpl.hpp"
-#include "PathanXMLGrammarPoolImpl.hpp"
+#include "../config/xqilla_config.h"
+#include "XQillaBuilderImpl.hpp"
+#include "XQillaDocumentImpl.hpp"
+#include "XQillaXMLGrammarPoolImpl.hpp"
 #include <xqilla/schema/DocumentCacheImpl.hpp>
 
 #include <xercesc/framework/XMLGrammarPool.hpp>
@@ -30,13 +30,13 @@
 
 #include <xercesc/framework/XMLSchemaDescription.hpp>
 
-const XMLCh PathanBuilderImpl::gPathan[] =   // Points to "XPath2"
+const XMLCh XQillaBuilderImpl::gXQilla[] =   // Points to "XPath2"
 {XERCES_CPP_NAMESPACE_QUALIFIER chLatin_X, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_P, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_h, XERCES_CPP_NAMESPACE_QUALIFIER chDigit_2, XERCES_CPP_NAMESPACE_QUALIFIER chNull};
 
 
 
 
-PathanBuilderImpl::PathanBuilderImpl( XERCES_CPP_NAMESPACE_QUALIFIER XMLValidator* const   valToAdopt
+XQillaBuilderImpl::XQillaBuilderImpl( XERCES_CPP_NAMESPACE_QUALIFIER XMLValidator* const   valToAdopt
                               , XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* const  manager
                               , XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool* const gramPool) :
 
@@ -47,7 +47,7 @@ DOMBuilderImpl(valToAdopt, manager, gramPool)
 // ---------------------------------------------------------------------------
 //  DOMBuilderImpl: Parsing methods
 // ---------------------------------------------------------------------------
-XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* PathanBuilderImpl::parse(const XERCES_CPP_NAMESPACE_QUALIFIER DOMInputSource& source)
+XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* XQillaBuilderImpl::parse(const XERCES_CPP_NAMESPACE_QUALIFIER DOMInputSource& source)
 {
     initParser();
     
@@ -59,9 +59,9 @@ XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* PathanBuilderImpl::parse(const XERCE
 
 }
 
-void PathanBuilderImpl::initParser() {
+void XQillaBuilderImpl::initParser() {
     //set it here in case someone has messed it up.
-    setProperty(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgXercesParserUseDocumentFromImplementation, (void*)gPathan);
+    setProperty(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgXercesParserUseDocumentFromImplementation, (void*)gXQilla);
  
     //add our specific ones in
     XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool *xmlGr = getGrammarResolver()->getGrammarPool();
@@ -70,7 +70,7 @@ void PathanBuilderImpl::initParser() {
 }
 
 
-XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* PathanBuilderImpl::getDocumentAndAddGrammar() {
+XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* XQillaBuilderImpl::getDocumentAndAddGrammar() {
     XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *doc = 0;
 
     if (getFeature(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgXercesUserAdoptsDOMDocument))
@@ -82,7 +82,7 @@ XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* PathanBuilderImpl::getDocumentAndAdd
     }
 
     //we copy this gramamr and reset the parser one in the process.
-    PathanXMLGrammarPoolImpl *gr = new (getMemoryManager()) PathanXMLGrammarPoolImpl(getMemoryManager());
+    XQillaXMLGrammarPoolImpl *gr = new (getMemoryManager()) XQillaXMLGrammarPoolImpl(getMemoryManager());
 
     XERCES_CPP_NAMESPACE_QUALIFIER RefHashTableOfEnumerator< XERCES_CPP_NAMESPACE_QUALIFIER Grammar> enumerator
         = getGrammarResolver()->getCachedGrammarEnumerator();
@@ -93,18 +93,18 @@ XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* PathanBuilderImpl::getDocumentAndAdd
         gr->cacheGrammar(oldGrPool->orphanGrammar(g.getGrammarDescription()->getGrammarKey()));
     }
 
-    ((PathanDocumentImpl*)doc)->setGrammarPool(gr);
+    ((XQillaDocumentImpl*)doc)->setGrammarPool(gr);
     return doc;
 }
 
-XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* PathanBuilderImpl::parseURI(const XMLCh* const systemId)
+XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* XQillaBuilderImpl::parseURI(const XMLCh* const systemId)
 {
     initParser();
     AbstractDOMParser::parse(systemId);
     return getDocumentAndAddGrammar();
 }
 
-XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* PathanBuilderImpl::parseURI(const char* const systemId)
+XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* XQillaBuilderImpl::parseURI(const char* const systemId)
 {
     initParser();
     AbstractDOMParser::parse(systemId);

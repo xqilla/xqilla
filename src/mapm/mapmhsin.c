@@ -17,32 +17,6 @@
  *  This software is provided "as is" without express or implied warranty.
  */
 
-/*
- *      $Id$
- *
- *      This file contains the Hyperbolic SIN, COS, & TAN functions.
- *
- *      $Log$
- *      Revision 1.1  2005/11/01 18:04:13  jpcs
- *      Initial check in.
- *
- *      Revision 1.1  2004/07/21 09:23:01  jpcs
- *      Initial check in of the Parthenon backup of Pathan.
- *
- *      Revision 1.2  2003/05/01 12:46:55  alby
- *      - Updated MAPM to version 4.6.1
- *      - The MAPM class is now thread-safe
- *
- *      Revision 1.3  2002/11/03 21:29:20  mike
- *      Updated function parameters to use the modern style
- *
- *      Revision 1.2  2000/09/23 19:52:56  mike
- *      change divide call to reciprocal
- *
- *      Revision 1.1  2000/04/03 18:16:26  mike
- *      Initial revision
- */
-
 #include "m_apm_lc.h"
 
 /****************************************************************************/

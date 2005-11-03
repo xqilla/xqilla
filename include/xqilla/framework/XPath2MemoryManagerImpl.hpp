@@ -16,7 +16,7 @@
 #ifndef __XPATH2MEMORYMANAGERIMPL_HPP
 #define __XPATH2MEMORYMANAGERIMPL_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/framework/BaseMemoryManager.hpp>
 
 #if 0
@@ -28,7 +28,7 @@
 #endif
 #endif
 
-class PATHAN_EXPORT XPath2MemoryManagerImpl : public BaseMemoryManager
+class XQILLA_API XPath2MemoryManagerImpl : public BaseMemoryManager
 {
 public:
   XPath2MemoryManagerImpl();

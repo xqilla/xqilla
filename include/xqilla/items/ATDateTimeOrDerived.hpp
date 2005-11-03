@@ -19,12 +19,12 @@
 #include <xercesc/util/XMLString.hpp>
 #include <xqilla/items/DateOrTimeType.hpp>
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/items/ATDecimalOrDerived.hpp>
 #include <xqilla/items/ATDurationOrDerived.hpp>
 #include <xqilla/items/Timezone.hpp>
 
-class PATHAN_EXPORT ATDateTimeOrDerived : public DateOrTimeType
+class XQILLA_API ATDateTimeOrDerived : public DateOrTimeType
 {
 public:
   typedef RefCountPointer<const ATDateTimeOrDerived> Ptr;

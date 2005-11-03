@@ -16,7 +16,7 @@
 #ifndef _FUNCTIONID_HPP
 #define _FUNCTIONID_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xercesc/dom/DOMNodeFilter.hpp>
 
 #include <xqilla/ast/XQFunction.hpp>
@@ -28,7 +28,7 @@
  *
  * fn:id(string* $srcval) => element*
  */
-class PATHAN_EXPORT FunctionId : public XQFunction
+class XQILLA_API FunctionId : public XQFunction
 {
 public:
   static const XMLCh name[];

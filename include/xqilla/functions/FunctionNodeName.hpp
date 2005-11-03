@@ -20,11 +20,11 @@
 #ifndef _FUNCTIONNODENAME_HPP
 #define _FUNCTIONNODENAME_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/ConstantFoldingFunction.hpp>
 
-class PATHAN_EXPORT FunctionNodeName : public ConstantFoldingFunction
+class XQILLA_API FunctionNodeName : public ConstantFoldingFunction
 {
 public:
   static const XMLCh name[];

@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionPosition.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/ATDecimalOrDerived.hpp>
@@ -50,7 +50,7 @@ Sequence FunctionPosition::collapseTreeInternal(DynamicContext* context, int fla
 
   if(context->getContextItem()==NULLRCP)
     DSLthrow(FunctionException,X("FunctionPosition::collapseTreeInternal"), X("Undefined context item in fn:position [err:FONC0001]"));
-  return Sequence(context->getPathanFactory()->createInteger((long)context->getContextPosition(), context), memMgr);
+  return Sequence(context->getXQillaFactory()->createInteger((long)context->getContextPosition(), context), memMgr);
 }
 
 

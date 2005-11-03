@@ -19,11 +19,11 @@
 #include <xercesc/util/XercesDefs.hpp>
 #include <xqilla/items/ATGMonthDayOrDerived.hpp>
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/items/ATDecimalOrDerived.hpp>
 #include <xqilla/items/Timezone.hpp>
 
-class PATHAN_EXPORT ATGMonthDayOrDerivedImpl : public ATGMonthDayOrDerived 
+class XQILLA_API ATGMonthDayOrDerivedImpl : public ATGMonthDayOrDerived 
 {
 
 public:

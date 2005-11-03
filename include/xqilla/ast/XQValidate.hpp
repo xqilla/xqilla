@@ -20,12 +20,12 @@
 #if !defined(AFXQ_XQVALIDATE_H__2B6902E9_A4FA_4AB3_9C69_08A8E77E70DA__INCLUDED_)
 #define AFXQ_XQVALIDATE_H__2B6902E9_A4FA_4AB3_9C69_08A8E77E70DA__INCLUDED_
 
-#include <xqilla/framework/XQEngine.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/ast/ASTNodeImpl.hpp>
 #include <xqilla/schema/DocumentCache.hpp>
 
 /** Validate function. */
-class XQENGINE_API XQValidate : public ASTNodeImpl
+class XQILLA_API XQValidate : public ASTNodeImpl
 {
 public:
   XQValidate(ASTNode* valExpr, DocumentCache::ValidationMode valMode, XPath2MemoryManager* expr);

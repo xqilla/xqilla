@@ -19,7 +19,7 @@
 #include <xqilla/framework/XPath2MemoryManager.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xqilla/context/PathanFactory.hpp>
+#include <xqilla/context/XQillaFactory.hpp>
 
 #include <xqilla/items/ATGYearMonthOrDerived.hpp>
 #include <xqilla/items/Timezone.hpp>
@@ -65,7 +65,7 @@ void ATGYearMonthTester::run(const DynamicContext* context) {
 
 const ATGYearMonthOrDerived::Ptr ATGYearMonthTester::createGYearMonth(const XMLCh* value,
                                                    const DynamicContext* context) {
-  return context->getPathanFactory()->createGYearMonthOrDerived(
+  return context->getXQillaFactory()->createGYearMonthOrDerived(
       XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
       XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_YEARMONTH,
       value, context);

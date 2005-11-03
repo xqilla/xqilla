@@ -19,12 +19,12 @@
 #include <xercesc/util/XercesDefs.hpp>
 #include <xqilla/items/ATBase64BinaryOrDerived.hpp>
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 class XPath2MemoryManager;
 class AnyAtomicType;
 
-class PATHAN_EXPORT ATBase64BinaryOrDerivedImpl : public ATBase64BinaryOrDerived 
+class XQILLA_API ATBase64BinaryOrDerivedImpl : public ATBase64BinaryOrDerived 
 {
 
 public:

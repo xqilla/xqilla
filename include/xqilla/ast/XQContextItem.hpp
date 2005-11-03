@@ -16,13 +16,13 @@
 #ifndef _XQCONTEXTITEM_HPP
 #define _XQCONTEXTITEM_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/ASTNodeImpl.hpp>
 #include <xqilla/runtime/SingleResult.hpp>
 
 /** Returns the context item. Raises [err:XP0002] if the context item is null. */
-class PATHAN_EXPORT XQContextItem : public ASTNodeImpl
+class XQILLA_API XQContextItem : public ASTNodeImpl
 {
 
 public:
@@ -37,7 +37,7 @@ public:
 
 	virtual Result createResult(DynamicContext* context, int flags=0) const;
 
-  class PATHAN_EXPORT ContextItemResult : public SingleResult
+  class XQILLA_API ContextItemResult : public SingleResult
   {
   public:
 		ContextItemResult(DynamicContext *context);

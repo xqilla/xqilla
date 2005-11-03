@@ -17,10 +17,10 @@
 #define _ATDOUBLEORDERIVED_HPP
 
 #include <xercesc/util/XercesDefs.hpp>
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/items/Numeric.hpp>
 
-class PATHAN_EXPORT ATDoubleOrDerived : public Numeric
+class XQILLA_API ATDoubleOrDerived : public Numeric
 {
 public:
   typedef RefCountPointer<const ATDoubleOrDerived> Ptr;

@@ -20,12 +20,12 @@
 #ifndef _FUNCTIONCODEPOINTSTOSTRING_HPP
 #define _FUNCTIONCODEPOINTSTOSTRING_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/ConstantFoldingFunction.hpp>
 
 /** codepoints-to-string function */
-class PATHAN_EXPORT FunctionCodepointsToString : public ConstantFoldingFunction
+class XQILLA_API FunctionCodepointsToString : public ConstantFoldingFunction
 {
 public:
   static const XMLCh name[];

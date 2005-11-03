@@ -21,7 +21,7 @@
 #ifndef _XPATHLEXER_HPP
 #define _XPATHLEXER_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/XQFLWOR.hpp>
 #include <xqilla/ast/XQStep.hpp>

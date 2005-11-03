@@ -20,7 +20,7 @@
 #include <xqilla/mapm/m_apm.h>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xqilla/context/PathanFactory.hpp>
+#include <xqilla/context/XQillaFactory.hpp>
 
 #include <xqilla/items/ATDoubleOrDerived.hpp>
 
@@ -29,13 +29,13 @@ ATDoubleTester::ATDoubleTester(XPath2MemoryManager* memMgr) : DatatypeTester(mem
 
 void ATDoubleTester::run(const DynamicContext* context) {
   // test 1 -- equality
-  const ATDoubleOrDerived::Ptr double1 = context->getPathanFactory()->createDouble(10, context);
-  const ATDoubleOrDerived::Ptr double2 = context->getPathanFactory()->createDouble(10.0, context);
-  const ATDoubleOrDerived::Ptr double3 = context->getPathanFactory()->createDouble(X("10"), context);
-  const ATDoubleOrDerived::Ptr double4 = context->getPathanFactory()->createDouble(X("10.0"), context);
-  const ATDoubleOrDerived::Ptr double5 = context->getPathanFactory()->createDouble(X("1.0E+1"), context);
-  const ATDoubleOrDerived::Ptr double6 = context->getPathanFactory()->createDouble(1.0e1, context);
-  const ATDoubleOrDerived::Ptr double7 = context->getPathanFactory()->createDouble(100e-1, context);
+  const ATDoubleOrDerived::Ptr double1 = context->getXQillaFactory()->createDouble(10, context);
+  const ATDoubleOrDerived::Ptr double2 = context->getXQillaFactory()->createDouble(10.0, context);
+  const ATDoubleOrDerived::Ptr double3 = context->getXQillaFactory()->createDouble(X("10"), context);
+  const ATDoubleOrDerived::Ptr double4 = context->getXQillaFactory()->createDouble(X("10.0"), context);
+  const ATDoubleOrDerived::Ptr double5 = context->getXQillaFactory()->createDouble(X("1.0E+1"), context);
+  const ATDoubleOrDerived::Ptr double6 = context->getXQillaFactory()->createDouble(1.0e1, context);
+  const ATDoubleOrDerived::Ptr double7 = context->getXQillaFactory()->createDouble(100e-1, context);
 
   assertObjectEquals(double1, double2, context);
   assertObjectEquals(double1, double3, context);
@@ -54,13 +54,13 @@ void ATDoubleTester::run(const DynamicContext* context) {
   assertEquals(double7->asString(context), X("10"));
 
   // test 3 -- inequality
-  const ATDoubleOrDerived::Ptr double8 = context->getPathanFactory()->createDouble(100, context);
-  const ATDoubleOrDerived::Ptr double9 = context->getPathanFactory()->createDouble(-100, context);
-  const ATDoubleOrDerived::Ptr double10 = context->getPathanFactory()->createDouble(X("0.2e+1"), context);
-  const ATDoubleOrDerived::Ptr double11 = context->getPathanFactory()->createDouble(X("0.5e+1"), context);
-  const ATDoubleOrDerived::Ptr double12 = context->getPathanFactory()->createDouble(2.1479, context);
-  const ATDoubleOrDerived::Ptr double13 = context->getPathanFactory()->createDouble(4.5, context);
-  const ATDoubleOrDerived::Ptr double14 = context->getPathanFactory()->createDouble(1, context);
+  const ATDoubleOrDerived::Ptr double8 = context->getXQillaFactory()->createDouble(100, context);
+  const ATDoubleOrDerived::Ptr double9 = context->getXQillaFactory()->createDouble(-100, context);
+  const ATDoubleOrDerived::Ptr double10 = context->getXQillaFactory()->createDouble(X("0.2e+1"), context);
+  const ATDoubleOrDerived::Ptr double11 = context->getXQillaFactory()->createDouble(X("0.5e+1"), context);
+  const ATDoubleOrDerived::Ptr double12 = context->getXQillaFactory()->createDouble(2.1479, context);
+  const ATDoubleOrDerived::Ptr double13 = context->getXQillaFactory()->createDouble(4.5, context);
+  const ATDoubleOrDerived::Ptr double14 = context->getXQillaFactory()->createDouble(1, context);
   
   assertCondition(!double1->equals(double8, context));
   assertCondition(!double1->equals(double9, context));
@@ -71,11 +71,11 @@ void ATDoubleTester::run(const DynamicContext* context) {
   assertCondition(double1->greaterThan(double10, context));
 
   // test 4 -- special values (NaN, INF, etc.)
-  const ATDoubleOrDerived::Ptr doubleNaN = context->getPathanFactory()->createDouble(X("NaN"), context);
-  const ATDoubleOrDerived::Ptr doubleINF = context->getPathanFactory()->createDouble(X("INF"), context);
-  const ATDoubleOrDerived::Ptr doubleNegINF = context->getPathanFactory()->createDouble(X("-INF"), context);
-  const ATDoubleOrDerived::Ptr doubleZero = context->getPathanFactory()->createDouble(X("0"), context);
-  const ATDoubleOrDerived::Ptr doubleNegZero = context->getPathanFactory()->createDouble(X("-0"), context);
+  const ATDoubleOrDerived::Ptr doubleNaN = context->getXQillaFactory()->createDouble(X("NaN"), context);
+  const ATDoubleOrDerived::Ptr doubleINF = context->getXQillaFactory()->createDouble(X("INF"), context);
+  const ATDoubleOrDerived::Ptr doubleNegINF = context->getXQillaFactory()->createDouble(X("-INF"), context);
+  const ATDoubleOrDerived::Ptr doubleZero = context->getXQillaFactory()->createDouble(X("0"), context);
+  const ATDoubleOrDerived::Ptr doubleNegZero = context->getXQillaFactory()->createDouble(X("-0"), context);
 
   
   assertCondition(((const ATDoubleOrDerived*)doubleNaN)->isNaN());

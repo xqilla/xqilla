@@ -19,15 +19,15 @@
 #include <vector>
 #include <string>
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/items/Item.hpp>
 #include <xqilla/framework/XPath2MemoryManager.hpp>
 
 class DynamicContext;
 
-class PATHAN_EXPORT ItemConstructor {
+class XQILLA_API ItemConstructor {
 public:
-  typedef std::vector<ItemConstructor*,PathanAllocator<ItemConstructor*> > Vector;
+  typedef std::vector<ItemConstructor*,XQillaAllocator<ItemConstructor*> > Vector;
 
   virtual bool isNumeric() const = 0;
 

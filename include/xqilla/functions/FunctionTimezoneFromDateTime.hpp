@@ -16,7 +16,7 @@
 #ifndef _FUNCTIONGETTIMEZONEFROMDATETIME_HPP
 #define _FUNCTIONGETTIMEZONEFROMDATETIME_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/ConstantFoldingFunction.hpp>
 
@@ -25,7 +25,7 @@
  *
  *  timezone-from-dateTime(dateTime $srcval) => xdt:dayTimeDuration?
  */
-class PATHAN_EXPORT FunctionTimezoneFromDateTime : public ConstantFoldingFunction
+class XQILLA_API FunctionTimezoneFromDateTime : public ConstantFoldingFunction
 {
 public:
   static const XMLCh name[];

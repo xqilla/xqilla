@@ -18,7 +18,7 @@
 
 #include <xqilla/axis/Axis.hpp>
 
-class PATHAN_EXPORT ParentAxis : public Axis
+class XQILLA_API ParentAxis : public Axis
 {
 public:
   ParentAxis(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *contextNode, const Node *nodeObj,

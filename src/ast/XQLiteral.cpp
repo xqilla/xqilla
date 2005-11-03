@@ -13,8 +13,8 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
-#include <xqilla/framework/Pathan.hpp>
+#include "../config/xqilla_config.h"
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/ast/XQLiteral.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/Item.hpp>

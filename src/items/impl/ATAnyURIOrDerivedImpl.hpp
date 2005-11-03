@@ -19,10 +19,10 @@
 #include <xercesc/util/XercesDefs.hpp>
 #include <xqilla/items/ATAnyURIOrDerived.hpp>
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 class DynamicContext;
 
-class PATHAN_EXPORT ATAnyURIOrDerivedImpl : public ATAnyURIOrDerived 
+class XQILLA_API ATAnyURIOrDerivedImpl : public ATAnyURIOrDerived 
 {
 
 public:

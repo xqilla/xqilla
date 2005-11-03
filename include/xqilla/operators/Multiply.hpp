@@ -20,12 +20,12 @@
 #ifndef _MULTIPLY_HPP
 #define _MULTIPLY_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/operators/ArithmeticOperator.hpp>
 
 /** OpTimes operator function*/
-class PATHAN_EXPORT Multiply : public ArithmeticOperator
+class XQILLA_API Multiply : public ArithmeticOperator
 {
 public:
   static const XMLCh name[];

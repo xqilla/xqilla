@@ -16,11 +16,11 @@
 #ifndef _CONSTANTFOLDINGFUNCTION_HPP
 #define _CONSTANTFOLDINGFUNCTION_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/ast/XQFunction.hpp>
 #include <xqilla/runtime/Sequence.hpp>
 
-class PATHAN_EXPORT ConstantFoldingFunction : public XQFunction
+class XQILLA_API ConstantFoldingFunction : public XQFunction
 {
 
 public:

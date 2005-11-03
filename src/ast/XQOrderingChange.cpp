@@ -19,7 +19,7 @@
 
 #include <sstream>
 
-#include <xqilla/framework/XQEngine.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/ast/XQOrderingChange.hpp>
 
 #include <xqilla/context/DynamicContext.hpp>

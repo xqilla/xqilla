@@ -7,7 +7,7 @@ AC_CONFIG_AUX_DIR(autotools)
 AC_CANONICAL_SYSTEM
 AM_INIT_AUTOMAKE(XQilla, 1.0,)
 AC_CONFIG_SRCDIR([src/runtime/AtomizeResult.cpp])
-AM_CONFIG_HEADER([src/config/pathan_config_unix.h])
+AM_CONFIG_HEADER([src/config/xqilla_config_unix.h])
 
 # Check debug option
 AC_MSG_CHECKING(if --enable-debug option specified)

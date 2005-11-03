@@ -24,7 +24,7 @@
 //////////////////////////////////////////////////////////////////////
 
 XQScopedNamespace::XQScopedNamespace(XPath2MemoryManager* memMgr, const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver* prevScope) :
-    PathanNSResolverImpl(memMgr, NULL)
+    XQillaNSResolverImpl(memMgr, NULL)
 {
     _prevScope=prevScope;
 }
@@ -36,7 +36,7 @@ XQScopedNamespace::~XQScopedNamespace()
 
 const XMLCh* XQScopedNamespace::lookupNamespaceURI(const XMLCh* prefix) const
 {
-    const XMLCh* nsURI=PathanNSResolverImpl::lookupNamespaceURI(prefix);
+    const XMLCh* nsURI=XQillaNSResolverImpl::lookupNamespaceURI(prefix);
     if(nsURI!=NULL)
         return nsURI;
     if(_prevScope)
@@ -46,7 +46,7 @@ const XMLCh* XQScopedNamespace::lookupNamespaceURI(const XMLCh* prefix) const
 
 const XMLCh* XQScopedNamespace::lookupPrefix(const XMLCh* uri) const
 {
-    const XMLCh* nsPrefix=PathanNSResolverImpl::lookupPrefix(uri);
+    const XMLCh* nsPrefix=XQillaNSResolverImpl::lookupPrefix(uri);
     if(nsPrefix!=NULL)
         return nsPrefix;
     if(_prevScope)

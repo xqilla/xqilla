@@ -16,7 +16,7 @@
 #ifndef _V2NSUTILS_HPP
 #define _V2NSUTILS_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <vector>
 
 #include <xercesc/dom/DOMNode.hpp>
@@ -31,7 +31,7 @@ class XPath2MemoryManager;
 
 typedef std::map<const XMLCh* , const XMLCh* , XMLChSort> namespaceMapType;
 
-class PATHAN_EXPORT XPath2NSUtils
+class XQILLA_API XPath2NSUtils
 {
 public:
 

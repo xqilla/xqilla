@@ -20,11 +20,11 @@
 #ifndef _FUNCTIONREVERSE_HPP
 #define _FUNCTIONREVERSE_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/ConstantFoldingFunction.hpp>
 
-class PATHAN_EXPORT FunctionReverse : public ConstantFoldingFunction
+class XQILLA_API FunctionReverse : public ConstantFoldingFunction
 {
 public:
   static const XMLCh name[];

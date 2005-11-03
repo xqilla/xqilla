@@ -21,11 +21,11 @@
 #ifndef _FUNCTIONMIN_HPP
 #define _FUNCTIONMIN_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/AggregateFunction.hpp>
 
-class PATHAN_EXPORT FunctionMin : public AggregateFunction
+class XQILLA_API FunctionMin : public AggregateFunction
 {
 public:
   static const XMLCh name[];

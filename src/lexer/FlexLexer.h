@@ -55,14 +55,14 @@
 // Never included before - need to define base class.
 #define __FLEX_LEXER_H
 #include <iostream>
-#include <xqilla/framework/XQEngine.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 extern "C++" {
 
 struct yy_buffer_state;
 typedef int yy_state_type;
 
-class XQENGINE_API FlexLexer {
+class XQILLA_API FlexLexer {
 public:
 	virtual ~FlexLexer()	{ }
 
@@ -99,7 +99,7 @@ protected:
 // yyFlexLexer, as discussed in the flex man page.
 #define yyFlexLexerOnce
 
-class XQENGINE_API yyFlexLexer : public FlexLexer {
+class XQILLA_API yyFlexLexer : public FlexLexer {
 public:
 	// arg_yyin and arg_yyout default to the cin and cout, but we
 	// only make that assignment when initializing in yylex().

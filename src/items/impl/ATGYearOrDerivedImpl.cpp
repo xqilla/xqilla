@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include "ATGYearOrDerivedImpl.hpp"
 #include <xqilla/exceptions/IllegalArgumentException.hpp>
 #include <xqilla/exceptions/XPath2TypeCastException.hpp>
@@ -27,7 +27,7 @@
 #include <xqilla/items/Timezone.hpp>
 #include "../utils/DateUtils.hpp"
 #include <xqilla/items/ATDecimalOrDerived.hpp>
-#include <xqilla/context/PathanFactory.hpp>
+#include <xqilla/context/XQillaFactory.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 
 #include <xercesc/util/XMLString.hpp>
@@ -43,7 +43,7 @@ ATGYearOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* v
 
 void *ATGYearOrDerivedImpl::getInterface(const XMLCh *name) const
 {
-  if(name == Item::gPathan) {
+  if(name == Item::gXQilla) {
     return (void*)this;
   }
   return 0;
@@ -76,8 +76,8 @@ AnyAtomicType::AtomicObjectType ATGYearOrDerivedImpl::getTypeIndex() {
 /* returns the XMLCh* (canonical) representation of this type */
 const XMLCh* ATGYearOrDerivedImpl::asString(const DynamicContext* context) const {
   XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buffer(1023, context->getMemoryManager());
-  if(_YY->greaterThan(context->getPathanFactory()->createInteger(9999, context), context) ||
-     _YY->lessThan(context->getPathanFactory()->createInteger(-9999, context), context)) {
+  if(_YY->greaterThan(context->getXQillaFactory()->createInteger(9999, context), context) ||
+     _YY->lessThan(context->getXQillaFactory()->createInteger(-9999, context), context)) {
     buffer.set(_YY->asString(context));
   } else {
     buffer.set(((const ATDecimalOrDerived*)_YY)->asString(4, context)); //pad to 4 digits
@@ -147,7 +147,7 @@ bool ATGYearOrDerivedImpl::hasTimezone() const {
 ATGYearOrDerived::Ptr ATGYearOrDerivedImpl::setTimezone(const Timezone::Ptr &timezone, const DynamicContext* context) const {
   bool hasTimezone = timezone == NULLRCP ? false : true;
   XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buffer(1023, context->getMemoryManager());
-  if(_YY->greaterThan(context->getPathanFactory()->createInteger(9999, context), context)) {
+  if(_YY->greaterThan(context->getXQillaFactory()->createInteger(9999, context), context)) {
     buffer.set(_YY->asString(context));
   } else {
     buffer.set(((const ATDecimalOrDerived*)_YY)->asString(4, context)); //pad to 4 digits
@@ -155,7 +155,7 @@ ATGYearOrDerived::Ptr ATGYearOrDerivedImpl::setTimezone(const Timezone::Ptr &tim
   if (hasTimezone) 
     buffer.append(timezone->asString(context));
   const XMLCh* gYearMonth = context->getMemoryManager()->getPooledString(buffer.getRawBuffer());
-  return context->getPathanFactory()->createGYearOrDerived(this->getTypeURI(), this->getTypeName(), gYearMonth, context);        
+  return context->getXQillaFactory()->createGYearOrDerived(this->getTypeURI(), this->getTypeName(), gYearMonth, context);        
 }
 
 
@@ -310,6 +310,6 @@ void ATGYearOrDerivedImpl::setGYear(const XMLCh* const value, const DynamicConte
   }
   timezone_ = new Timezone(zonehh, zonemm);
 
-  _YY = context->getPathanFactory()->createInteger(YY, context);
+  _YY = context->getXQillaFactory()->createInteger(YY, context);
   
 }

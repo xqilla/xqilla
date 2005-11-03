@@ -546,7 +546,7 @@ void XQRemoteDebugger::ReportResult(DynamicContext* context, const XMLCh* file, 
 		// special case for nodes: associate the info to the underlying DOMNode object
 		if(data->isNode())
 		{
-      const NodeImpl *nodeImpl = (const NodeImpl*)data->getInterface(Item::gPathan);
+      const NodeImpl *nodeImpl = (const NodeImpl*)data->getInterface(Item::gXQilla);
       if(nodeImpl == 0) {
         m_backMappingInfo->put((void*)(const Item*)data, location);
       }

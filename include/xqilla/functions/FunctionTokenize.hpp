@@ -26,7 +26,7 @@
  * tokenize(string? $input, string $pattern) => string*
  * tokenize(string? $input, string $pattern, string $flags) => string*
  */
-class PATHAN_EXPORT FunctionTokenize : public ConstantFoldingFunction
+class XQILLA_API FunctionTokenize : public ConstantFoldingFunction
 {
 public:
   static const XMLCh name[];

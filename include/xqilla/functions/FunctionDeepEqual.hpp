@@ -20,14 +20,14 @@
 #ifndef _FUNCTIONDEEPEQUAL_HPP
 #define _FUNCTIONDEEPEQUAL_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/ConstantFoldingFunction.hpp>
 
 class Node;
 class Collation;
 
-class PATHAN_EXPORT FunctionDeepEqual : public ConstantFoldingFunction
+class XQILLA_API FunctionDeepEqual : public ConstantFoldingFunction
 {
 public:
   static const XMLCh name[];

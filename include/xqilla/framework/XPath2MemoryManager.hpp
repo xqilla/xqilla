@@ -18,7 +18,7 @@
 
 #include <algorithm>
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xercesc/framework/MemoryManager.hpp>
 
@@ -33,11 +33,11 @@ class FunctionLookup;
 class DynamicContext;
 class Collation;
 class CollationHelper;
-class PathanNSResolver;
+class XQillaNSResolver;
 class ATDecimalOrDerived;
 class StringPool;
 
-class PATHAN_EXPORT XPath2MemoryManager : public XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager
+class XQILLA_API XPath2MemoryManager : public XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager
 {
 public:
   virtual ~XPath2MemoryManager() {}
@@ -57,7 +57,7 @@ public:
   virtual Collation* createCollation(CollationHelper* helper) = 0;
 
   /** create a resolver */
-  virtual PathanNSResolver* createNSResolver(XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *resolverNode) = 0;
+  virtual XQillaNSResolver* createNSResolver(XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *resolverNode) = 0;
   
   /** create a store for variables */
   virtual VariableStore* createVariableStore() = 0;
@@ -78,7 +78,7 @@ public:
 };//XPath2MemoryManager
 
 template <class _Tp>
-class PathanAllocator
+class XQillaAllocator
 {
 public:
   typedef size_t size_type;
@@ -90,16 +90,16 @@ public:
   typedef _Tp value_type;
 
   template <class _Tp1> struct rebind {
-    typedef PathanAllocator<_Tp1> other;
+    typedef XQillaAllocator<_Tp1> other;
   };
 
-  PathanAllocator(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr)
+  XQillaAllocator(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr)
   {
     _memMgr=memMgr;
   }
 
   // define a copy constructor, because we don't want to copy the singleton object
-  PathanAllocator(const PathanAllocator<_Tp>& o)
+  XQillaAllocator(const XQillaAllocator<_Tp>& o)
   {
     _memMgr=o._memMgr;
   }
@@ -108,7 +108,7 @@ public:
   {
     if(_n==1)
       return (pointer)_singleton;
-    //std::cout << "PathanAllocator::allocate(" << _n << ")" << std::endl;
+    //std::cout << "XQillaAllocator::allocate(" << _n << ")" << std::endl;
     if(_memMgr)
       return _n != 0 ? static_cast<pointer>(_memMgr->allocate(_n*sizeof(_Tp))) : 0;
     else
@@ -117,7 +117,7 @@ public:
 
   void deallocate(void* _p, size_t _n)
   {
-    //std::cout << "PathanAllocator::deallocate(" << _n << ")" << std::endl;
+    //std::cout << "XQillaAllocator::deallocate(" << _n << ")" << std::endl;
     if(_p) {
       if(_p!=_singleton) {
         if(_memMgr)

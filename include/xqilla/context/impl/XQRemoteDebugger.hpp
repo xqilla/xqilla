@@ -36,7 +36,7 @@
 class XPath2MemoryManager;
 class DynamicContext;
 
-class XQENGINE_API XQRemoteDebugger : public XQDebugCallback
+class XQILLA_API XQRemoteDebugger : public XQDebugCallback
 {
 public:
 	XQRemoteDebugger(const XMLCh* lpchHostName, XPath2MemoryManager* memMgr);

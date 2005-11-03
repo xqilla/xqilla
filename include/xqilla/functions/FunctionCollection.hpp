@@ -22,12 +22,12 @@
 #ifndef _FUNCTIONCOLLECTION_HPP
 #define _FUNCTIONCOLLECTION_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/XQFunction.hpp>
 
 /** collection function. */
-class PATHAN_EXPORT FunctionCollection : public XQFunction
+class XQILLA_API FunctionCollection : public XQFunction
 {
 public:
   static const XMLCh name[];

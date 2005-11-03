@@ -22,12 +22,12 @@
 #ifndef _FUNCTIONNOT_HPP
 #define _FUNCTIONNOT_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/ConstantFoldingFunction.hpp>
 
 /** Not operator function. */
-class PATHAN_EXPORT FunctionNot : public ConstantFoldingFunction
+class XQILLA_API FunctionNot : public ConstantFoldingFunction
 {
 public:
   static const XMLCh name[];

@@ -13,8 +13,8 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
-#include <xqilla/framework/Pathan.hpp>
+#include "../config/xqilla_config.h"
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/items/DateOrTimeType.hpp>
 
 /* is this type date or time based?  Return true by default */

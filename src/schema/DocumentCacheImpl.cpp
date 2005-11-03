@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <assert.h>
 #include <xqilla/schema/DocumentCacheImpl.hpp>
 #include <xercesc/util/XMLURL.hpp>
@@ -47,7 +47,7 @@
 #include <xqilla/schema/AnyAtomicTypeDatatypeValidator.hpp>
 #include <xqilla/parser/QName.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xqilla/context/PathanFactory.hpp>
+#include <xqilla/context/XQillaFactory.hpp>
 #include <xqilla/items/impl/NodeImpl.hpp>
 
 void DocumentCacheErrorCatcher::warning(const XERCES_CPP_NAMESPACE_QUALIFIER SAXParseException& toCatch)

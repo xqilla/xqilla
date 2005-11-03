@@ -13,13 +13,13 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xqilla/context/impl/CollationImpl.hpp>
 #include <xqilla/items/ATStringOrDerived.hpp>
 #include <xqilla/items/Item.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xqilla/context/PathanFactory.hpp>
+#include <xqilla/context/XQillaFactory.hpp>
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -47,7 +47,7 @@ Sequence CollationImpl::sort(Sequence data, const DynamicContext* context) const
   Sequence stringSeq = Sequence(data.getLength(), context->getMemoryManager());
   for(Sequence::iterator it=data.begin(); it!=data.end(); ++it) {
     const XMLCh *str = (*it)->asString(context);
-    stringSeq.addItem(context->getPathanFactory()->createString(str, context));
+    stringSeq.addItem(context->getXQillaFactory()->createString(str, context));
   }
 
   stringSeq.sortWithCollation(this, context);

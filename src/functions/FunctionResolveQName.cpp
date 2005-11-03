@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionResolveQName.hpp>
 
 #include <xqilla/utils/XPath2Utils.hpp>
@@ -85,7 +85,7 @@ Sequence FunctionResolveQName::collapseTreeInternal(DynamicContext* context, int
     DSLthrow(FunctionException, X("FunctionResolveQName::collapseTreeInternal"),X("no namespace found for prefix"));
   }
 
-  Sequence result(context->getPathanFactory()->createQName(namespaceURI, prefix, localName, context), memMgr);
+  Sequence result(context->getXQillaFactory()->createQName(namespaceURI, prefix, localName, context), memMgr);
 
   return result; 
 }

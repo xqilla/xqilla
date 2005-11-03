@@ -17,7 +17,7 @@
 // XQValidate.cpp: implementation of the XQValidate class.
 //////////////////////////////////////////////////////////////////////
 
-#include <xqilla/framework/XQEngine.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/ast/XQValidate.hpp>
 #include <xqilla/context/impl/XQDynamicContextImpl.hpp>
 #include <xqilla/exceptions/FunctionException.hpp>

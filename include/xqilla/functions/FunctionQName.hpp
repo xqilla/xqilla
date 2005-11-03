@@ -22,12 +22,12 @@
 #ifndef _FUNCTIONQNAME_HPP
 #define _FUNCTIONQNAME_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/ConstantFoldingFunction.hpp>
 
 /** QName constructor function. */
-class PATHAN_EXPORT FunctionQName : public ConstantFoldingFunction
+class XQILLA_API FunctionQName : public ConstantFoldingFunction
 {
 public:
   static const XMLCh name[];

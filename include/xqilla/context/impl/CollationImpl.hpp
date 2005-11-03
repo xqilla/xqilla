@@ -16,7 +16,7 @@
 #if !defined(AFXQ_COLLATIONIMPL_H__6BA76C4A_0A5B_480B_9870_86A89A118100__INCLUDED_)
 #define AFXQ_COLLATIONIMPL_H__6BA76C4A_0A5B_480B_9870_86A89A118100__INCLUDED_
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/context/Collation.hpp>
 #include <xqilla/runtime/Sequence.hpp>
@@ -25,7 +25,7 @@ class Item;
 class XPath2MemoryManager;
 class DynamicContext;
 
-class PATHAN_EXPORT CollationHelper
+class XQILLA_API CollationHelper
 {
 public:
     virtual ~CollationHelper() {};
@@ -33,7 +33,7 @@ public:
   virtual int compare(const XMLCh* string1, const XMLCh* string2) const = 0;
 };
 
-class PATHAN_EXPORT CollationImpl : public Collation 
+class XQILLA_API CollationImpl : public Collation 
 {
 public:
   CollationImpl(XPath2MemoryManager* memMgr, CollationHelper* helper);

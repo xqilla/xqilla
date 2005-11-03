@@ -20,12 +20,12 @@
 #ifndef _FUNCTIONSTRINGJOIN_HPP
 #define _FUNCTIONSTRINGJOIN_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/ConstantFoldingFunction.hpp>
 
 /* string-join function */
-class PATHAN_EXPORT FunctionStringJoin : public ConstantFoldingFunction
+class XQILLA_API FunctionStringJoin : public ConstantFoldingFunction
 {
 public:
   static const XMLCh name[];

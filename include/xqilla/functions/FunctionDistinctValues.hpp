@@ -22,13 +22,13 @@
 #ifndef _FUNCTIONDISTINCTVALUES_HPP
 #define _FUNCTIONDISTINCTVALUES_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/XQFunction.hpp>
 
 // Distinct values is not really an aggregate function, but since its behaviour is so
 // similar (in terms of sequence validation) we will extend from it.
-class PATHAN_EXPORT FunctionDistinctValues : public XQFunction
+class XQILLA_API FunctionDistinctValues : public XQFunction
 {
 public:
   static const XMLCh name[];

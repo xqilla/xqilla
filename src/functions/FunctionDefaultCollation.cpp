@@ -13,14 +13,14 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionDefaultCollation.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/context/Collation.hpp>
 #include <xqilla/context/impl/CodepointCollation.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/items/ATStringOrDerived.hpp>
-#include <xqilla/context/PathanFactory.hpp>
+#include <xqilla/context/XQillaFactory.hpp>
 
 const XMLCh FunctionDefaultCollation::name[] = {
   XERCES_CPP_NAMESPACE_QUALIFIER chLatin_d, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_f, 
@@ -46,9 +46,9 @@ Sequence FunctionDefaultCollation::collapseTreeInternal(DynamicContext* context,
 {
   Collation* collation = context->getDefaultCollation();
   if(collation != NULL)
-    return Sequence(context->getPathanFactory()->createString(collation->getCollationName(), context),
+    return Sequence(context->getXQillaFactory()->createString(collation->getCollationName(), context),
                     context->getMemoryManager());
 
-  return Sequence(context->getPathanFactory()->createString(CodepointCollation::getCodepointCollationName(), context),
+  return Sequence(context->getXQillaFactory()->createString(CodepointCollation::getCodepointCollationName(), context),
                   context->getMemoryManager());
 }

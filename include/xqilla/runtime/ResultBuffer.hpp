@@ -16,7 +16,7 @@
 #ifndef _RESULTBUFFER_HPP
 #define _RESULTBUFFER_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/runtime/ResultImpl.hpp>
 
 class Result;
@@ -24,7 +24,7 @@ class ResultBufferImpl;
 class Item;
 
 /** A reference counting wrapper for the result buffer */
-class PATHAN_EXPORT ResultBuffer
+class XQILLA_API ResultBuffer
 {
 public:
   ResultBuffer(const Result &result);

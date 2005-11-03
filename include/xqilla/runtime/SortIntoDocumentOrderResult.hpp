@@ -19,7 +19,7 @@
 #include <xqilla/runtime/Result.hpp>
 #include <xqilla/runtime/LazySequenceResult.hpp>
 
-class PATHAN_EXPORT SortIntoDocumentOrderResult : public LazySequenceResult
+class XQILLA_API SortIntoDocumentOrderResult : public LazySequenceResult
 {
 public:
   SortIntoDocumentOrderResult(Result &parent, DynamicContext *context);

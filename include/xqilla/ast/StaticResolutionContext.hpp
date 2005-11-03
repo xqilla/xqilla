@@ -18,7 +18,7 @@
 
 #include <string>
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xercesc/util/RefHash2KeysTableOf.hpp>
 #include <xercesc/util/StringPool.hpp>
@@ -31,7 +31,7 @@ typedef XERCES_CPP_NAMESPACE_QUALIFIER RefHash2KeysTableOfEnumerator<int> Variab
 /**
  * Records access to various parts of the context during static resolution.
  */
-class PATHAN_EXPORT StaticResolutionContext
+class XQILLA_API StaticResolutionContext
 {
 public:
   StaticResolutionContext(XPath2MemoryManager* memMgr);
@@ -103,7 +103,7 @@ public:
   /**
    * Class that represents the static type of a sub-expression
    */
-  class PATHAN_EXPORT StaticType {
+  class XQILLA_API StaticType {
   public:
     void typeUnion(const StaticType &st);
     bool isNodesOnly() const;

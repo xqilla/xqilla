@@ -20,12 +20,12 @@
 #ifndef _FUNCTIONRESOLVEQNAME_HPP
 #define _FUNCTIONRESOLVEQNAME_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/ConstantFoldingFunction.hpp>
 
 /** resolve-QName function. */
-class PATHAN_EXPORT FunctionResolveQName : public ConstantFoldingFunction
+class XQILLA_API FunctionResolveQName : public ConstantFoldingFunction
 {
 public:
   static const XMLCh name[];

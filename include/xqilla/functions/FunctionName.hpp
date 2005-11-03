@@ -22,13 +22,13 @@
 #ifndef _FUNCTIONNAME_HPP
 #define _FUNCTIONNAME_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/XQFunction.hpp>
 #include <xqilla/runtime/Sequence.hpp>
 
 /** Name function */
-class PATHAN_EXPORT FunctionName : public XQFunction
+class XQILLA_API FunctionName : public XQFunction
 {
 public:
   static const XMLCh name[];

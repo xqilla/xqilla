@@ -16,7 +16,7 @@
 #ifndef _VARIABLESTORE_HPP
 #define _VARIABLESTORE_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xercesc/util/XercesDefs.hpp>
 #include <vector>
 
@@ -28,7 +28,7 @@ class XPath2MemoryManager;
 
 /** This is the wrapper class for the variable store, which implements the 
     lookup and scoping of simple variables. */
-class PATHAN_EXPORT VariableStore
+class XQILLA_API VariableStore
 {
 public:
   typedef Scope<Sequence> MyScope;

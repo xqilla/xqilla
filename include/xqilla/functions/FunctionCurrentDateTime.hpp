@@ -20,12 +20,12 @@
 #ifndef _FUNCTIONCURRENT_DATETIME_HPP
 #define _FUNCTIONCURRENT_DATETIME_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/XQFunction.hpp>
 
 /** Current-dateTime function*/
-class PATHAN_EXPORT FunctionCurrentDateTime : public XQFunction
+class XQILLA_API FunctionCurrentDateTime : public XQFunction
 {
 public:
   static const XMLCh name[];

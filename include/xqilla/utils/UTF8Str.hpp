@@ -16,12 +16,12 @@
 #ifndef _UTF8STR_HPP
 #define _UTF8STR_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xercesc/util/XercesDefs.hpp>
 
 #include <xercesc/util/XMLUTF8Transcoder.hpp>
 
-class PATHAN_EXPORT UTF8Str
+class XQILLA_API UTF8Str
 {
 public :
     UTF8Str(const XMLCh* const toTranscode);

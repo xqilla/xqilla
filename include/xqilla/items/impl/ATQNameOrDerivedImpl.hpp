@@ -19,9 +19,9 @@
 #include <xercesc/util/XercesDefs.hpp>
 #include <xqilla/items/ATQNameOrDerived.hpp>
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
-class PATHAN_EXPORT ATQNameOrDerivedImpl : public ATQNameOrDerived 
+class XQILLA_API ATQNameOrDerivedImpl : public ATQNameOrDerived 
 {
 
 public:

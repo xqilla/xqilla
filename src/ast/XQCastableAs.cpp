@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <assert.h>
 #include <sstream>
 
@@ -27,7 +27,7 @@
 #include <xqilla/items/AnyAtomicType.hpp>
 #include <xqilla/items/ATBooleanOrDerived.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xqilla/context/PathanFactory.hpp>
+#include <xqilla/context/XQillaFactory.hpp>
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -102,7 +102,7 @@ Item::Ptr XQCastableAs::CastableAsResult::getSingleResult(DynamicContext *contex
       result = ((const AnyAtomicType::Ptr)first)->castable(_di->getSequenceType()->getTypeURI(context), _di->getSequenceType()->getConstrainingType()->getName(), context);
     }
   }
-  return (const Item::Ptr)context->getPathanFactory()->createBoolean(result, context);
+  return (const Item::Ptr)context->getXQillaFactory()->createBoolean(result, context);
 }
 
 std::string XQCastableAs::CastableAsResult::asString(DynamicContext *context, int indent) const

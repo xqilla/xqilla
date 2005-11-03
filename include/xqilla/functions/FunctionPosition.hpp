@@ -25,7 +25,7 @@
 #include <xqilla/ast/XQFunction.hpp>
 
 /** Position function*/
-class PATHAN_EXPORT FunctionPosition : public XQFunction
+class XQILLA_API FunctionPosition : public XQFunction
 {
 public:
   static const XMLCh name[];

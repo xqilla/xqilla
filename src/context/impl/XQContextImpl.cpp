@@ -19,7 +19,7 @@
 
 #include <iostream>
 
-#include <xqilla/framework/XQEngine.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/context/impl/XQContextImpl.hpp>
 #include <xqilla/ast/XQDebugHook.hpp>
 #include <xqilla/context/impl/XQDynamicContextImpl.hpp>
@@ -35,7 +35,7 @@
 #include <xqilla/items/Node.hpp>
 #include <xqilla/functions/FunctionLookup.hpp>
 #include <xqilla/functions/FunctionConstructor.hpp>
-#include <xqilla/dom-api/impl/PathanNSResolverImpl.hpp>
+#include <xqilla/dom-api/impl/XQillaNSResolverImpl.hpp>
 #include <xqilla/ast/XQSequence.hpp>
 #include <xqilla/utils/ContextUtils.hpp>
 
@@ -57,7 +57,7 @@
 #include <xqilla/functions/FunctionLookup.hpp>
 #include <xqilla/functions/FunctionConstructor.hpp>
 #include <xqilla/schema/DocumentCacheImpl.hpp>
-#include <xqilla/dom-api/impl/PathanNSResolverImpl.hpp>
+#include <xqilla/dom-api/impl/XQillaNSResolverImpl.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/context/URIResolver.hpp>
 #include <xqilla/exceptions/XMLParseException.hpp>
@@ -85,11 +85,11 @@ XQContextImpl::XQContextImpl(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMg
     _internalMM(memMgr),
     _varTypeStore(0),
     _functionTable(0),
-    _collations(PathanAllocator<Collation*>(&_internalMM)),
+    _collations(XQillaAllocator<Collation*>(&_internalMM)),
     _constructionMode(CONSTRUCTION_MODE_PRESERVE),
     _bPreserveBoundarySpace(false),
     _varStore(0),
-    _resolvers(PathanAllocator<URIResolver*>(&_internalMM))
+    _resolvers(XQillaAllocator<URIResolver*>(&_internalMM))
 {
   _memMgr = &_internalMM;
 
@@ -99,7 +99,7 @@ XQContextImpl::XQContextImpl(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMg
   _xpath1Compatibility = false;    // according to Formal Semantics, § 4.1.1
   _ordering = ORDERING_ORDERED;
 
-  _globalNSResolver = new (&_internalMM) PathanNSResolverImpl(&_internalMM, 0); // resolve acc.to null node
+  _globalNSResolver = new (&_internalMM) XQillaNSResolverImpl(&_internalMM, 0); // resolve acc.to null node
   _nsResolver = _globalNSResolver;
 
   _defaultElementNS = 0;
@@ -118,7 +118,7 @@ XQContextImpl::XQContextImpl(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMg
   if(_functionTable==NULL)
     _functionTable=_internalMM.createFunctionTable();
 
-  _pathanFactory = new (&_internalMM) XQFactoryImpl(_docCache, &_internalMM);
+  _xqillaFactory = new (&_internalMM) XQFactoryImpl(_docCache, &_internalMM);
 
   // insert the default collation
   addCollation(_internalMM.createCollation(&g_codepointCollation));
@@ -175,7 +175,7 @@ XQContextImpl::~XQContextImpl()
   _contextItem = 0;
   _implicitTimezone = 0;
 
-  ((XQFactoryImpl*)_pathanFactory)->release();
+  ((XQFactoryImpl*)_xqillaFactory)->release();
 }
 
 void XQContextImpl::release()
@@ -199,7 +199,7 @@ void XQContextImpl::setMemoryManager(XPath2MemoryManager* memMgr)
 
 void XQContextImpl::setNamespaceBinding(const XMLCh* prefix, const XMLCh* uri)
 {
-	((PathanNSResolverImpl*)_nsResolver)->addNamespaceBinding(prefix,uri);
+	((XQillaNSResolverImpl*)_nsResolver)->addNamespaceBinding(prefix,uri);
 }
 
 void XQContextImpl::setPreserveBoundarySpace(bool value)
@@ -455,7 +455,7 @@ void XQContextImpl::setDefaultCollation(const XMLCh* URI)
 
 Collation* XQContextImpl::getCollation(const XMLCh* URI) const
 {
-  for(std::vector<Collation*, PathanAllocator<Collation*> >::const_iterator it= _collations.begin(); it!=_collations.end(); ++it)
+  for(std::vector<Collation*, XQillaAllocator<Collation*> >::const_iterator it= _collations.begin(); it!=_collations.end(); ++it)
     if(XPath2Utils::equals((*it)->getCollationName(), URI))
       return (*it);
 
@@ -497,7 +497,7 @@ ASTNode* XQContextImpl::lookUpFunction(const XMLCh* prefix, const XMLCh* name, V
         try
         {
           functionImpl = new (getMemoryManager())
-		  FunctionConstructor(uri, name, _pathanFactory->getPrimitiveTypeIndex(uri, name), v, getMemoryManager());
+		  FunctionConstructor(uri, name, _xqillaFactory->getPrimitiveTypeIndex(uri, name), v, getMemoryManager());
         }
         catch(TypeNotFoundException&)
         {
@@ -533,8 +533,8 @@ Sequence XQContextImpl::resolveDocument(const XMLCh* uri)
 {
   bool found = false;
   Sequence result(getMemoryManager());
-  std::vector<URIResolver *, PathanAllocator<URIResolver*> >::reverse_iterator end = _resolvers.rend();
-  for(std::vector<URIResolver *, PathanAllocator<URIResolver*> >::reverse_iterator i = _resolvers.rbegin(); i != end; ++i) {
+  std::vector<URIResolver *, XQillaAllocator<URIResolver*> >::reverse_iterator end = _resolvers.rend();
+  for(std::vector<URIResolver *, XQillaAllocator<URIResolver*> >::reverse_iterator i = _resolvers.rbegin(); i != end; ++i) {
     if((*i)->resolveDocument(result, uri, this)) {
       found = true;
       break;
@@ -573,8 +573,8 @@ Sequence XQContextImpl::resolveCollection(const XMLCh* uri)
 {
   bool found = false;
   Sequence result(getMemoryManager());
-  std::vector<URIResolver *, PathanAllocator<URIResolver*> >::reverse_iterator end = _resolvers.rend();
-  for(std::vector<URIResolver *, PathanAllocator<URIResolver*> >::reverse_iterator i = _resolvers.rbegin(); i != end; ++i) {
+  std::vector<URIResolver *, XQillaAllocator<URIResolver*> >::reverse_iterator end = _resolvers.rend();
+  for(std::vector<URIResolver *, XQillaAllocator<URIResolver*> >::reverse_iterator i = _resolvers.rbegin(); i != end; ++i) {
     if((*i)->resolveCollection(result, uri, this)) {
       found = true;
       break;
@@ -607,8 +607,8 @@ Sequence XQContextImpl::resolveCollection(const XMLCh* uri)
 Sequence XQContextImpl::resolveDefaultCollection()
 {
   Sequence result(getMemoryManager());
-  std::vector<URIResolver *, PathanAllocator<URIResolver*> >::reverse_iterator end = _resolvers.rend();
-  for(std::vector<URIResolver *, PathanAllocator<URIResolver*> >::reverse_iterator i = _resolvers.rbegin(); i != end; ++i) {
+  std::vector<URIResolver *, XQillaAllocator<URIResolver*> >::reverse_iterator end = _resolvers.rend();
+  for(std::vector<URIResolver *, XQillaAllocator<URIResolver*> >::reverse_iterator i = _resolvers.rbegin(); i != end; ++i) {
     if((*i)->resolveDefaultCollection(result, this)) {
       break;
     }
@@ -645,14 +645,14 @@ Node::Ptr XQContextImpl::validate(const Node::Ptr &node, DocumentCache::Validati
   return _docCache->validate(node, valMode, this);
 }
 
-PathanFactory *XQContextImpl::getPathanFactory() const
+XQillaFactory *XQContextImpl::getXQillaFactory() const
 {
-  return _pathanFactory;
+  return _xqillaFactory;
 }
 
-void XQContextImpl::setPathanFactory(PathanFactory *factory)
+void XQContextImpl::setXQillaFactory(XQillaFactory *factory)
 {
-  _pathanFactory = factory;
+  _xqillaFactory = factory;
 }
 
 void XQContextImpl::trace(const XMLCh* message1, const XMLCh* message2) {

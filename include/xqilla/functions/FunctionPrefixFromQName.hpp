@@ -20,12 +20,12 @@
 #ifndef _FUNCTIONPREFIXFROMQNAME_HPP
 #define _FUNCTIONPREFIXFROMQNAME_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/ConstantFoldingFunction.hpp>
 #include <xqilla/runtime/Sequence.hpp>
 
-class PATHAN_EXPORT FunctionPrefixFromQName : public ConstantFoldingFunction
+class XQILLA_API FunctionPrefixFromQName : public ConstantFoldingFunction
 {
 public:
   static const XMLCh name[];

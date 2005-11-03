@@ -29,8 +29,8 @@ ATUntypedAtomicTester::ATUntypedAtomicTester(XPath2MemoryManager* memMgr) : Data
 
 void ATUntypedAtomicTester::run(const DynamicContext* context) {
   // test 1 -- equality
-  const ATUntypedAtomic::Ptr untyped1 = context->getPathanFactory()->createUntypedAtomic(X("DSL"), context);
-  const ATUntypedAtomic::Ptr untyped2 = context->getPathanFactory()->createUntypedAtomic(X("DSL"), context);
+  const ATUntypedAtomic::Ptr untyped1 = context->getXQillaFactory()->createUntypedAtomic(X("DSL"), context);
+  const ATUntypedAtomic::Ptr untyped2 = context->getXQillaFactory()->createUntypedAtomic(X("DSL"), context);
 
   assertObjectEquals(untyped1, untyped1, context);  
   assertObjectEquals(untyped1, untyped2, context);
@@ -39,7 +39,7 @@ void ATUntypedAtomicTester::run(const DynamicContext* context) {
   assertEquals(untyped1->asString(context), untyped2->asString(context));
 
   // test 2 -- inequality
-  const ATUntypedAtomic::Ptr untyped3 = context->getPathanFactory()->createUntypedAtomic(X("Mr. Bungle"), context);
+  const ATUntypedAtomic::Ptr untyped3 = context->getXQillaFactory()->createUntypedAtomic(X("Mr. Bungle"), context);
   assertCondition(!untyped1->equals(untyped3, context));
 
   // test 3 -- typeURI and typeName

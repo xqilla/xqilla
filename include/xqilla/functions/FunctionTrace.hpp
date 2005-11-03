@@ -22,11 +22,11 @@
 #ifndef _FUNCTIONTRACE_HPP
 #define _FUNCTIONTRACE_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/XQFunction.hpp>
 
-class PATHAN_EXPORT FunctionTrace : public XQFunction
+class XQILLA_API FunctionTrace : public XQFunction
 {
 public:
   static const XMLCh name[];

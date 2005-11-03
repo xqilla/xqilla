@@ -16,11 +16,11 @@
 #ifndef _FUNCTIONZEROORONE_HPP
 #define _FUNCTIONZEROORONE_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/ConstantFoldingFunction.hpp>
 
-class PATHAN_EXPORT FunctionZeroOrOne : public ConstantFoldingFunction
+class XQILLA_API FunctionZeroOrOne : public ConstantFoldingFunction
 {
 public:
   static const XMLCh name[];

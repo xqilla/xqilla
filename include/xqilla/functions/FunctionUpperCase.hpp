@@ -16,7 +16,7 @@
 #ifndef _FUNCTIONUPPERCASE_HPP
 #define _FUNCTIONUPPERCASE_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/ConstantFoldingFunction.hpp>
 
@@ -27,7 +27,7 @@
  * xf:upper-case(string? $srcval) =>  string?
  * 
  */
-class PATHAN_EXPORT FunctionUpperCase : public ConstantFoldingFunction
+class XQILLA_API FunctionUpperCase : public ConstantFoldingFunction
 {
 public:
   static const XMLCh name[];

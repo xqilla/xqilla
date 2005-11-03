@@ -17,7 +17,7 @@
 // XQFunctionCall.cpp: implementation of the XQFunctionCall class.
 //////////////////////////////////////////////////////////////////////
 
-#include <xqilla/framework/XQEngine.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/ast/XQFunctionCall.hpp>
 #include <xqilla/exceptions/FunctionException.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>

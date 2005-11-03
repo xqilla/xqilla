@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <assert.h>
 #include <xqilla/runtime/Sequence.hpp>
 #include <xqilla/context/DynamicContext.hpp>
@@ -24,7 +24,7 @@
 #include <xqilla/context/Collation.hpp>
 
 Sequence::Sequence(XPath2MemoryManager* memMgr)
-  : _itemList(PathanAllocator<Item::Ptr>(memMgr)),
+  : _itemList(XQillaAllocator<Item::Ptr>(memMgr)),
     _memMgr(memMgr)
 {
 }
@@ -35,7 +35,7 @@ Sequence::~Sequence()
 }
 
 Sequence::Sequence(const Item::Ptr &item, XPath2MemoryManager* memMgr)
-  : _itemList(1, item, PathanAllocator<Item::Ptr>(memMgr)),
+  : _itemList(1, item, XQillaAllocator<Item::Ptr>(memMgr)),
     _memMgr(memMgr)
 {
 }
@@ -47,14 +47,14 @@ Sequence::Sequence(const Sequence & s)
 }
 
 Sequence::Sequence(const Sequence &s, XPath2MemoryManager* memMgr)
-  : _itemList(PathanAllocator<Item::Ptr>(memMgr)),
+  : _itemList(XQillaAllocator<Item::Ptr>(memMgr)),
     _memMgr(memMgr)
 {
   joinSequence(s);
 }
 
 Sequence::Sequence(unsigned int n, XPath2MemoryManager* memMgr)
-  : _itemList(PathanAllocator<Item::Ptr>(memMgr)),
+  : _itemList(XQillaAllocator<Item::Ptr>(memMgr)),
     _memMgr(memMgr)
 {
     _itemList.reserve(n);

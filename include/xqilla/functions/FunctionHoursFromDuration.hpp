@@ -16,7 +16,7 @@
 #ifndef _FUNCTIONGETHOURSFROMDAYTIMEDURATION_HPP
 #define _FUNCTIONGETHOURSFROMDAYTIMEDURATION_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/ConstantFoldingFunction.hpp>
 
@@ -25,7 +25,7 @@
  *
  * hours-from-duration(dayTimeDuration? $srcval) => integer?
  */
-class PATHAN_EXPORT FunctionHoursFromDuration : public ConstantFoldingFunction
+class XQILLA_API FunctionHoursFromDuration : public ConstantFoldingFunction
 {
 public:
   static const XMLCh name[];

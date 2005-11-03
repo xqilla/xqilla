@@ -16,7 +16,7 @@
 #ifndef _VARIABLESTORETEMPLATE_HPP
 #define _VARIABLESTORETEMPLATE_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <vector>
 #include <xercesc/util/StringPool.hpp>

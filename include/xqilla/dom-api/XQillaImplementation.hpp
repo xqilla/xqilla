@@ -13,10 +13,10 @@
  * $Id$
  */
 
-#ifndef __PATHANIMPLEMENTATION_HPP
-#define __PATHANIMPLEMENTATION_HPP
+#ifndef __XQILLAIMPLEMENTATION_HPP
+#define __XQILLAIMPLEMENTATION_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xercesc/dom/DOMImplementation.hpp>
 #include <xercesc/dom/DOMImplementationSource.hpp>
 
@@ -28,18 +28,18 @@ class XMLGrammarPool;
 XERCES_CPP_NAMESPACE_END
 
 /**
- * The <code>PathanImplentation</code> class implements the 
+ * The <code>XQillaImplentation</code> class implements the 
  * <code>DOMImplementation</code> interface and the 
  * <code>DOMImplementationSource</code> interface and provides a number of methods
  * for performing operations that are independent of any particular instance
  * of the document object model.
  */
 
-class PATHAN_EXPORT PathanImplementation: public XERCES_CPP_NAMESPACE_QUALIFIER DOMImplementation,
+class XQILLA_API XQillaImplementation: public XERCES_CPP_NAMESPACE_QUALIFIER DOMImplementation,
                                           public XERCES_CPP_NAMESPACE_QUALIFIER DOMImplementationSource
 {
 protected:
-  PathanImplementation();
+  XQillaImplementation();
 public:
   /** @name Destructor */
   //@{
@@ -47,20 +47,20 @@ public:
    * Destructor
    *
    */
-  virtual ~PathanImplementation();
+  virtual ~XQillaImplementation();
   //@}
 
-  /**  Factory method for getting a PathanImplementation object.
-   *     The Pathan implementation retains ownership of the returned object.
+  /**  Factory method for getting a XQillaImplementation object.
+   *     The XQilla implementation retains ownership of the returned object.
    *     Application code should NOT delete it.
    */
-  static PathanImplementation* getDOMImplementationImpl();
+  static XQillaImplementation* getDOMImplementationImpl();
 
-  /**  Initialize the PathanImplementation
+  /**  Initialize the XQillaImplementation
    */
   static void initialize();
 
-  /**  Terminate the PathanImplementation
+  /**  Terminate the XQillaImplementation
    */
   static void terminate();
 
@@ -142,7 +142,7 @@ public:
 
 
     /**
-     * We create our own DOMBulider that creates a PathanDocument. It also sets various parser options so we can 
+     * We create our own DOMBulider that creates a XQillaDocument. It also sets various parser options so we can 
      * use the grammars correctly. Please note that if you pass your own XMLGrammarPool in then the special
      * XQuery types will not be available during parse
      **/
@@ -216,7 +216,7 @@ public:
 
   /** The "XPath2" feature 
    */
-  static const XMLCh gPathan[];
+  static const XMLCh gXQilla[];
 
   /** The "3.0" version
    */
@@ -224,8 +224,8 @@ public:
 
   XERCES_CPP_NAMESPACE_QUALIFIER DOMImplementation *domImpl;
 private:
-	static PathanImplementation* gDomimp;
+	static XQillaImplementation* gDomimp;
 };
 
-#endif // __PATHANIMPLEMENTATION_HPP
+#endif // __XQILLAIMPLEMENTATION_HPP
 

@@ -16,13 +16,13 @@
 #ifndef _NODECOMPARISON_HPP
 #define _NODECOMPARISON_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/XQOperator.hpp>
 #include <xqilla/runtime/SingleResult.hpp>
 
 /** NodeComparison operator function*/
-class PATHAN_EXPORT NodeComparison : public XQOperator
+class XQILLA_API NodeComparison : public XQOperator
 {
 public:
   static const XMLCh name[];

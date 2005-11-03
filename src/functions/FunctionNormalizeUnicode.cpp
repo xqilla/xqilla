@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionNormalizeUnicode.hpp>
 
 #include <xqilla/utils/XPath2Utils.hpp>
@@ -50,7 +50,7 @@ Sequence FunctionNormalizeUnicode::collapseTreeInternal(DynamicContext* context,
   XPath2MemoryManager* memMgr = context->getMemoryManager();
   Sequence strParm=getParamNumber(1,context);
   if(strParm.isEmpty()) {
-    return Sequence(context->getPathanFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context), memMgr);
+    return Sequence(context->getXQillaFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context), memMgr);
   }
 
   const XMLCh *str = strParm.first()->asString(context);
@@ -97,33 +97,33 @@ Sequence FunctionNormalizeUnicode::collapseTreeInternal(DynamicContext* context,
 		}
 
 	if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(normalization) == 0) {
-		return Sequence(context->getPathanFactory()->createString(str, context), memMgr);
+		return Sequence(context->getXQillaFactory()->createString(str, context), memMgr);
 	}
 
 	else if(XPath2Utils::equals(normalization, fg_NFC)) {
 		XMLCh *normalizedString = Normalizer::NormalizeC(str, context->getMemoryManager());
 
-		Sequence result = Sequence(context->getPathanFactory()->createString(normalizedString , context), memMgr);
+		Sequence result = Sequence(context->getXQillaFactory()->createString(normalizedString , context), memMgr);
 		delete normalizedString;
 		return result;
 	}
 	else if(XPath2Utils::equals(normalization, fg_NFD)) {
 		const XMLCh *normalizedString = Normalizer::NormalizeD(str, context->getMemoryManager());
 
-		Sequence result(context->getPathanFactory()->createString(normalizedString, context), memMgr);
+		Sequence result(context->getXQillaFactory()->createString(normalizedString, context), memMgr);
 		return result;
 	}
 	else if(XPath2Utils::equals(normalization, fg_NFKC)) {
 		XMLCh *normalizedString = Normalizer::NormalizeKC(str, context->getMemoryManager());
 
-		Sequence result(context->getPathanFactory()->createString(normalizedString, context), memMgr);
+		Sequence result(context->getXQillaFactory()->createString(normalizedString, context), memMgr);
 		delete normalizedString;
 		return result;
 	}
 	else if(XPath2Utils::equals(normalization, fg_NFKD)) {
 
 		const XMLCh *normalizedString = Normalizer::NormalizeKD(str, context->getMemoryManager());
-		Sequence result(context->getPathanFactory()->createString(normalizedString, context), memMgr);
+		Sequence result(context->getXQillaFactory()->createString(normalizedString, context), memMgr);
 		return result;
 	}
 	else if(XPath2Utils::equals(normalization, fg_fully)) {

@@ -19,7 +19,7 @@
 #include <xqilla/framework/XPath2MemoryManager.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xqilla/context/PathanFactory.hpp>
+#include <xqilla/context/XQillaFactory.hpp>
 
 #include <xqilla/items/ATBooleanOrDerived.hpp>
 
@@ -57,7 +57,7 @@ void ATBooleanTester::run(const DynamicContext* context) {
 
 const ATBooleanOrDerived::Ptr ATBooleanTester::createBoolean(const XMLCh* value,
                                    const DynamicContext* context) {
-  return context->getPathanFactory()->createBooleanOrDerived(
+  return context->getXQillaFactory()->createBooleanOrDerived(
       XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
       XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_BOOLEAN,
       value, context);
@@ -65,5 +65,5 @@ const ATBooleanOrDerived::Ptr ATBooleanTester::createBoolean(const XMLCh* value,
 
 const ATBooleanOrDerived::Ptr ATBooleanTester::createBoolean(bool value,
                                    const DynamicContext* context) {
-  return context->getPathanFactory()->createBoolean(value, context);
+  return context->getXQillaFactory()->createBoolean(value, context);
 }

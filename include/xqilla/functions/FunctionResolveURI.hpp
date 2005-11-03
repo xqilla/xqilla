@@ -17,7 +17,7 @@
 #ifndef _FUNCTIONRESOLVEURI_HPP
 #define _FUNCTIONRESOLVEURI_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xercesc/util/XMLUTF8Transcoder.hpp>
 #include <xercesc/util/TransService.hpp>
 #include <xercesc/util/XMLUri.hpp>
@@ -30,7 +30,7 @@
  *  fn:resolve-uri(anyURI $relative) => anyURI
  *  fn:resolve-uri(anyURI $relative, anyURI $base) => anyURI
  */
-class PATHAN_EXPORT FunctionResolveURI : public ConstantFoldingFunction
+class XQILLA_API FunctionResolveURI : public ConstantFoldingFunction
 {
 public:
   static const XMLCh name[];

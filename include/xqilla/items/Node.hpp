@@ -13,8 +13,8 @@
  * $Id$
  */
 
-#ifndef _PATHANNODE_HPP
-#define _PATHANNODE_HPP
+#ifndef _XQILLANODE_HPP
+#define _XQILLANODE_HPP
 
 #include <xqilla/items/ATQNameOrDerived.hpp>
 #include <xqilla/items/ATBooleanOrDerived.hpp>
@@ -31,7 +31,7 @@ class DOMNode;
 XERCES_CPP_NAMESPACE_END
 
 
-class PATHAN_EXPORT Node : public Item
+class XQILLA_API Node : public Item
 {
 public:
   typedef RefCountPointer<const Node> Ptr;

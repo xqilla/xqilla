@@ -13,14 +13,14 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
-#include <xqilla/dom-api/impl/PathanExpressionImpl.hpp>
-#include <xqilla/simple-api/PathanEngine.hpp>
+#include "../config/xqilla_config.h"
+#include <xqilla/dom-api/impl/XQillaExpressionImpl.hpp>
+#include <xqilla/simple-api/XQillaEngine.hpp>
 #include <xqilla/items/Node.hpp>
 #include <xqilla/items/Item.hpp>
 #include <xqilla/runtime/Sequence.hpp>
 #include <xqilla/context/DynamicContext.hpp>
-#include <xqilla/dom-api/PathanExpression.hpp>
+#include <xqilla/dom-api/XQillaExpression.hpp>
 #include <xqilla/dom-api/XPath2Result.hpp>
 #include <xqilla/ast/ASTNode.hpp>
 #include <xqilla/runtime/Sequence.hpp>
@@ -39,7 +39,7 @@
 #include <xercesc/dom/DOMException.hpp>
 #include <xercesc/util/XercesDefs.hpp>
 
-PathanExpressionImpl::PathanExpressionImpl(const XMLCh *expression,
+XQillaExpressionImpl::XQillaExpressionImpl(const XMLCh *expression,
                                            const XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* documentRoot,
                                            XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr,
                                            const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver *nsr,
@@ -49,12 +49,12 @@ PathanExpressionImpl::PathanExpressionImpl(const XMLCh *expression,
     _docRoot(documentRoot),
     _staticContextOwned(true)
 {
-  _staticContext = PathanEngine::createContext(xmlGP, &_memMgr);
+  _staticContext = XQillaEngine::createContext(xmlGP, &_memMgr);
   _staticContext->setNSResolver(nsr);
-  _compiledExpression = PathanEngine::createASTNode(expression, _staticContext, &_memMgr, true);
+  _compiledExpression = XQillaEngine::createASTNode(expression, _staticContext, &_memMgr, true);
 }
 
-PathanExpressionImpl::PathanExpressionImpl(const XMLCh *expression, DynamicContext *context,
+XQillaExpressionImpl::XQillaExpressionImpl(const XMLCh *expression, DynamicContext *context,
                                            XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr)
 	: _createdWith(memMgr),
     _memMgr(memMgr),
@@ -62,22 +62,22 @@ PathanExpressionImpl::PathanExpressionImpl(const XMLCh *expression, DynamicConte
     _staticContextOwned(false),
     _staticContext(context)
 {
-  _compiledExpression = PathanEngine::createASTNode(expression, _staticContext, &_memMgr, true);
+  _compiledExpression = XQillaEngine::createASTNode(expression, _staticContext, &_memMgr, true);
 }
 
-PathanExpressionImpl::~PathanExpressionImpl() 
+XQillaExpressionImpl::~XQillaExpressionImpl() 
 {
   if(_staticContextOwned) _staticContext->release();
 }//destructor
 
-void PathanExpressionImpl::release()
+void XQillaExpressionImpl::release()
 {
-  this->~PathanExpressionImpl();
+  this->~XQillaExpressionImpl();
   _createdWith->deallocate(this);
 }
 
 // weak version -  must create a context from scratch
-void* PathanExpressionImpl::evaluate(XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* contextNode,
+void* XQillaExpressionImpl::evaluate(XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* contextNode,
                                      unsigned short type,
                                      void*) const
   throw (XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException, XERCES_CPP_NAMESPACE_QUALIFIER DOMException)
@@ -87,14 +87,14 @@ void* PathanExpressionImpl::evaluate(XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* con
 }
 
 // strong version, use given context
-XPath2Result* PathanExpressionImpl::evaluate(DynamicContext* context, unsigned short type) const
+XPath2Result* XQillaExpressionImpl::evaluate(DynamicContext* context, unsigned short type) const
 	throw (XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException, XERCES_CPP_NAMESPACE_QUALIFIER DOMException)
 {
   return new (_createdWith) XPath2Result((XPath2Result::ResultType)type, _compiledExpression,
                                          context, _createdWith);
 }
 
-DynamicContext *PathanExpressionImpl::createContext(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mm) const
+DynamicContext *XQillaExpressionImpl::createContext(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mm) const
 {
   if(mm == 0) {
     return 0;

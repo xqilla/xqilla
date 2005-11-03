@@ -21,7 +21,7 @@
 /**
    This class implements the PrecedingSiblingAxis axis as defined by the XPath spec
 */
-class PATHAN_EXPORT PrecedingSiblingAxis : public Axis
+class XQILLA_API PrecedingSiblingAxis : public Axis
 {
 public:
   PrecedingSiblingAxis(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *contextNode, const Node *nodeObj,

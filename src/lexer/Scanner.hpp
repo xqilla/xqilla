@@ -18,7 +18,7 @@
 
 #define YY_CHAR unsigned short
 
-#include <xqilla/framework/XQEngine.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include "FlexLexer.h"
 #include <xercesc/util/XMLUniDefs.hpp>
 #include <xercesc/util/XMLString.hpp>
@@ -94,7 +94,7 @@ typedef struct yyltype
   Current.first_offset = Rhs[1].first_offset;   \
   Current.last_offset  = Rhs[N].last_offset;
 
-class XQENGINE_API CXQueryScanner : public yyFlexLexer
+class XQILLA_API CXQueryScanner : public yyFlexLexer
 {
 public:
 	CXQueryScanner(XPath2MemoryManager* memMgr, const XMLCh* query)

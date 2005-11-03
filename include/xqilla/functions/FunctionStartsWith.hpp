@@ -25,7 +25,7 @@
 #include <xqilla/ast/ConstantFoldingFunction.hpp>
 
 /** StartsWith function. */
-class PATHAN_EXPORT FunctionStartsWith : public ConstantFoldingFunction
+class XQILLA_API FunctionStartsWith : public ConstantFoldingFunction
 {
 public:
   static const XMLCh name[];

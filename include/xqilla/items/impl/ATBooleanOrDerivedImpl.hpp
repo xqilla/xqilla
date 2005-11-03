@@ -19,12 +19,12 @@
 #include <xercesc/util/XercesDefs.hpp>
 #include <xqilla/items/ATBooleanOrDerived.hpp>
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 class DynamicContext;
 class StaticContext;
 
-class PATHAN_EXPORT ATBooleanOrDerivedImpl : public ATBooleanOrDerived 
+class XQILLA_API ATBooleanOrDerivedImpl : public ATBooleanOrDerived 
 {
 
 public:

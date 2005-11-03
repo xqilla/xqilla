@@ -20,7 +20,7 @@
 #if !defined(AFXQ_XQTYPESWITCH_H__90ED3AA0_5C63_437A_9B94_0CCDEF499124__INCLUDED_)
 #define AFXQ_XQTYPESWITCH_H__90ED3AA0_5C63_437A_9B94_0CCDEF499124__INCLUDED_
 
-#include <xqilla/framework/XQEngine.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/ast/ASTNodeImpl.hpp>
 #include <xqilla/schema/SequenceType.hpp>
 #include <vector>
@@ -28,7 +28,7 @@
 class ResultBuffer;
 template<class TYPE> class Scope;
 
-class XQENGINE_API XQTypeswitch : public ASTNodeImpl
+class XQILLA_API XQTypeswitch : public ASTNodeImpl
 {
 public:
   class Clause
@@ -46,7 +46,7 @@ public:
     const XMLCh* _name;
   };
 
-  typedef std::vector<Clause*, PathanAllocator<Clause*> > VectorOfClause;
+  typedef std::vector<Clause*, XQillaAllocator<Clause*> > VectorOfClause;
 
   XQTypeswitch(ASTNode* eval, VectorOfClause* clauses, Clause* defReturn, XPath2MemoryManager* expr);
 

@@ -22,12 +22,12 @@
 #ifndef _FUNCTIONSTRING_HPP
 #define _FUNCTIONSTRING_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/XQFunction.hpp>
 
 /** String operator function. */
-class PATHAN_EXPORT FunctionString : public XQFunction
+class XQILLA_API FunctionString : public XQFunction
 {
 public:
   static const XMLCh name[];

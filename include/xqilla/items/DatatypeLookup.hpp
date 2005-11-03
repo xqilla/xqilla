@@ -16,7 +16,7 @@
 #ifndef _DATATYPELOOKUP_HPP
 #define _DATATYPELOOKUP_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/items/AnyAtomicType.hpp>
 #include <xercesc/util/XercesDefs.hpp>
 #include <xercesc/util/RefHashTableOf.hpp>
@@ -24,7 +24,7 @@
 class DatatypeFactory;
 class DocumentCache;
 
-class PATHAN_EXPORT DatatypeLookup
+class XQILLA_API DatatypeLookup
 {
 public:
   DatatypeLookup(const DocumentCache* dc, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr);

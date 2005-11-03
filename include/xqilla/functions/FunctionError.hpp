@@ -22,11 +22,11 @@
 #ifndef _FUNCTIONError_HPP
 #define _FUNCTIONError_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/XQFunction.hpp>
 
-class PATHAN_EXPORT FunctionError : public XQFunction
+class XQILLA_API FunctionError : public XQFunction
 {
 public:
   static const XMLCh name[];

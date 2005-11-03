@@ -16,11 +16,11 @@
 #ifndef _FUNCTIONSUBSEQUENCE_HPP
 #define _FUNCTIONSUBSEQUENCE_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/ConstantFoldingFunction.hpp>
 
-class PATHAN_EXPORT FunctionSubsequence : public ConstantFoldingFunction
+class XQILLA_API FunctionSubsequence : public ConstantFoldingFunction
 {
 public:
   static const XMLCh name[];

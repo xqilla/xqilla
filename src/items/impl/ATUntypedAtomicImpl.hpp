@@ -19,10 +19,10 @@
 #include <xercesc/util/XercesDefs.hpp>
 #include <xqilla/items/ATUntypedAtomic.hpp>
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 class DynamicContext;
 
-class PATHAN_EXPORT ATUntypedAtomicImpl : public ATUntypedAtomic
+class XQILLA_API ATUntypedAtomicImpl : public ATUntypedAtomic
 {
 
 public:

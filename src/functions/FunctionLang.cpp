@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionLang.hpp>
 
 #include <xqilla/utils/XPath2Utils.hpp>
@@ -107,7 +107,7 @@ Sequence FunctionLang::collapseTreeInternal(DynamicContext* context, int flags) 
               asLower = XPath2Utils::subString(asLower, 0, dashLocation, memMgr);
             }
 
-            return Sequence(context->getPathanFactory()->createBoolean(XPath2Utils::equals(asLower, xmlLangValue), context), memMgr);
+            return Sequence(context->getXQillaFactory()->createBoolean(XPath2Utils::equals(asLower, xmlLangValue), context), memMgr);
           }
         }
       }
@@ -115,5 +115,5 @@ Sequence FunctionLang::collapseTreeInternal(DynamicContext* context, int flags) 
       node = node->dmParent(context);
     }
 
-    return Sequence(context->getPathanFactory()->createBoolean(false, context), memMgr);
+    return Sequence(context->getXQillaFactory()->createBoolean(false, context), memMgr);
 }

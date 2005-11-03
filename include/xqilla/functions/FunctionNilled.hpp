@@ -20,11 +20,11 @@
 #ifndef _FUNCTIONNILLED_HPP
 #define _FUNCTIONNILLED_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/XQFunction.hpp>
 
-class PATHAN_EXPORT FunctionNilled : public XQFunction
+class XQILLA_API FunctionNilled : public XQFunction
 {
 public:
   static const XMLCh name[];

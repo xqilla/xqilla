@@ -21,7 +21,7 @@
 class Numeric;
 
 /** Virtual interface class for functions */
-class PATHAN_EXPORT NumericFunction : public ConstantFoldingFunction
+class XQILLA_API NumericFunction : public ConstantFoldingFunction
 {
 public:
 

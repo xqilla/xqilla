@@ -17,7 +17,7 @@
 // XQEvaluator.cpp: implementation of the XQEvaluator class.
 //////////////////////////////////////////////////////////////////////
 
-#include <xqilla/framework/XQEngine.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/simple-api/XQEvaluator.hpp>
 #include <xqilla/simple-api/XQQuery.hpp>
 #include <xqilla/context/XQDebugCallback.hpp>

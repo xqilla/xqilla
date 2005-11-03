@@ -20,7 +20,7 @@
 #ifndef _FUNCTIONCONSTRUCTOR_HPP
 #define _FUNCTIONCONSTRUCTOR_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/ConstantFoldingFunction.hpp>
 #include <xqilla/functions/FuncFactory.hpp>
@@ -28,7 +28,7 @@
 #include <xercesc/util/XercesDefs.hpp>
 
 
-class PATHAN_EXPORT FunctionConstructor : public ConstantFoldingFunction
+class XQILLA_API FunctionConstructor : public ConstantFoldingFunction
 {
 public:
   ///Constructor. Sets arg def to NOT_OPTIONAL.

@@ -17,20 +17,20 @@
 #define _SEQUENCE_HPP
 
 #include <vector>
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/items/ATDecimalOrDerived.hpp>
 
-// needed for the definition of PathanAllocator
+// needed for the definition of XQillaAllocator
 #include <xqilla/framework/XPath2MemoryManager.hpp>
 
 class Item;
 class SequenceType;
 class DynamicContext;
 
-typedef std::vector<Item::Ptr, PathanAllocator<Item::Ptr> > VectorOfItems;
+typedef std::vector<Item::Ptr, XQillaAllocator<Item::Ptr> > VectorOfItems;
 
 /** defines the behaviour for the string data type*/
-class PATHAN_EXPORT Sequence 
+class XQILLA_API Sequence 
 {
 
 public:

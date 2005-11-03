@@ -18,7 +18,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include <xqilla/simple-api/XQQuery.hpp>
-#include <xqilla/framework/XQEngine.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/functions/XQUserFunction.hpp>
 #include <xqilla/ast/XQGlobalVariable.hpp>
 #include <xqilla/context/impl/XQContextImpl.hpp>
@@ -56,8 +56,8 @@ using namespace std;
 //////////////////////////////////////////////////////////////////////
 
 XQQuery::XQQuery(const XMLCh* queryText, XPath2MemoryManager* memMgr) :
-  m_userDefFns(PathanAllocator<XQUserFunction*>(memMgr)),
-  m_userDefVars(PathanAllocator<XQGlobalVariable*>(memMgr))
+  m_userDefFns(XQillaAllocator<XQUserFunction*>(memMgr)),
+  m_userDefVars(XQillaAllocator<XQGlobalVariable*>(memMgr))
 {
   m_memMgr=memMgr;
   m_query=NULL;
@@ -79,11 +79,11 @@ Result XQQuery::evaluate(DynamicContext* context) const
 
 void XQQuery::staticResolution(StaticContext *context)
 {
-  for(vector<XQGlobalVariable*, PathanAllocator<XQGlobalVariable*> >::iterator it = m_userDefVars.begin();
+  for(vector<XQGlobalVariable*, XQillaAllocator<XQGlobalVariable*> >::iterator it = m_userDefVars.begin();
       it != m_userDefVars.end(); ++it) {
     (*it) = (XQGlobalVariable*)(*it)->staticResolution(context);
   }
-  for(vector<XQUserFunction*, PathanAllocator<XQUserFunction*> >::iterator i = m_userDefFns.begin();
+  for(vector<XQUserFunction*, XQillaAllocator<XQUserFunction*> >::iterator i = m_userDefFns.begin();
       i != m_userDefFns.end(); ++i) {
     (*i)->staticResolution(context);
   }
@@ -195,12 +195,12 @@ void XQQuery::importModule(const XMLCh* szUri, VectorOfStrings* locations, Stati
           DSLthrow(ContextException,X("XQQuery::ImportModule"), errMsg.getRawBuffer());
         }
         // now move the variable declarations and the function definitions into my context
-        for(vector<XQUserFunction*, PathanAllocator<XQUserFunction*> >::iterator itFn = pParsedQuery->m_userDefFns.begin();
+        for(vector<XQUserFunction*, XQillaAllocator<XQUserFunction*> >::iterator itFn = pParsedQuery->m_userDefFns.begin();
             itFn != pParsedQuery->m_userDefFns.end(); ++itFn) {
           m_userDefFns.push_back(*itFn);
           context->addCustomFunction(*itFn);
         }
-        for(vector<XQGlobalVariable*, PathanAllocator<XQGlobalVariable*> >::iterator itVar = pParsedQuery->m_userDefVars.begin();
+        for(vector<XQGlobalVariable*, XQillaAllocator<XQGlobalVariable*> >::iterator itVar = pParsedQuery->m_userDefVars.begin();
             itVar != pParsedQuery->m_userDefVars.end(); ++itVar) {
           // Should this set a global variable in the context? - jpcs
           m_userDefVars.push_back(*itVar);
@@ -253,7 +253,7 @@ Item::Ptr XQQuery::QueryResult::next(DynamicContext *context)
     _toDo = false;
 
     // define global variables
-    for(vector<XQGlobalVariable*, PathanAllocator<XQGlobalVariable*> >::const_iterator it = _query->m_userDefVars.begin();
+    for(vector<XQGlobalVariable*, XQillaAllocator<XQGlobalVariable*> >::const_iterator it = _query->m_userDefVars.begin();
         it != _query->m_userDefVars.end(); ++it) {
       (*it)->collapseTree(context).toSequence(context);
     }
@@ -301,7 +301,7 @@ void XQQuery::DebugResult::getResult(Sequence &toFill, DynamicContext *context) 
   try
   {
     // define global variables
-    for(vector<XQGlobalVariable*, PathanAllocator<XQGlobalVariable*> >::const_iterator it = _query->m_userDefVars.begin();
+    for(vector<XQGlobalVariable*, XQillaAllocator<XQGlobalVariable*> >::const_iterator it = _query->m_userDefVars.begin();
         it != _query->m_userDefVars.end(); ++it) {
       (*it)->collapseTree(context).toSequence(context);
     }

@@ -15,11 +15,11 @@
 
 #include <sstream>
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xqilla/items/AnyAtomicTypeConstructor.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/context/DynamicContext.hpp>
-#include <xqilla/context/PathanFactory.hpp>
+#include <xqilla/context/XQillaFactory.hpp>
 #include <xqilla/utils/UTF8Str.hpp>
 
 AnyAtomicTypeConstructor::AnyAtomicTypeConstructor(const XMLCh* typeURI,
@@ -40,7 +40,7 @@ bool AnyAtomicTypeConstructor::isNumeric() const
 
 Item::Ptr AnyAtomicTypeConstructor::createItem(const DynamicContext* context) const
 {
-  return context->getPathanFactory()->createDerivedFromAtomicType(_typeURI, _typeName, _value, context);
+  return context->getXQillaFactory()->createDerivedFromAtomicType(_typeURI, _typeName, _value, context);
 }
 
 std::string AnyAtomicTypeConstructor::asString(const DynamicContext* context) const

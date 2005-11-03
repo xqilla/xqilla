@@ -22,12 +22,12 @@
 #ifndef _FUNCTIONSUBSTRINGBEFORE_HPP
 #define _FUNCTIONSUBSTRINGBEFORE_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/ConstantFoldingFunction.hpp>
 
 /** Substring-before function. */
-class PATHAN_EXPORT FunctionSubstringBefore : public ConstantFoldingFunction
+class XQILLA_API FunctionSubstringBefore : public ConstantFoldingFunction
 {
 public:
   static const XMLCh name[];

@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include "ATGDayOrDerivedImpl.hpp"
 #include <xqilla/exceptions/IllegalArgumentException.hpp>
 #include <xqilla/exceptions/XPath2TypeCastException.hpp>
@@ -28,7 +28,7 @@
 #include "../utils/DateUtils.hpp"
 #include <xqilla/items/ATDecimalOrDerived.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xqilla/context/PathanFactory.hpp>
+#include <xqilla/context/XQillaFactory.hpp>
 
 #include <xercesc/util/XMLString.hpp>
 
@@ -43,7 +43,7 @@ ATGDayOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* va
 
 void *ATGDayOrDerivedImpl::getInterface(const XMLCh *name) const
 {
-  if(name == Item::gPathan) {
+  if(name == Item::gXQilla) {
     return (void*)this;
   }
   return 0;
@@ -114,7 +114,7 @@ bool ATGDayOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const Dynamic
     if ( _hasTimezone == true ) {
         buffer.append(timezone_->asString(context));
   }
-    ATDateTimeOrDerived::Ptr myValue=context->getPathanFactory()->createDateTime(buffer.getRawBuffer(), context);
+    ATDateTimeOrDerived::Ptr myValue=context->getXQillaFactory()->createDateTime(buffer.getRawBuffer(), context);
 
     buffer.set(s1972);
     buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
@@ -130,7 +130,7 @@ bool ATGDayOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const Dynamic
     if ( targetGDay->_hasTimezone == true ) {
         buffer.append(targetGDay->timezone_->asString(context));
   }
-    ATDateTimeOrDerived::Ptr targetValue=context->getPathanFactory()->createDateTime(buffer.getRawBuffer(), context);
+    ATDateTimeOrDerived::Ptr targetValue=context->getXQillaFactory()->createDateTime(buffer.getRawBuffer(), context);
 
     return myValue->equals(targetValue, context);
 }
@@ -181,7 +181,7 @@ ATGDayOrDerived::Ptr ATGDayOrDerivedImpl::setTimezone(const Timezone::Ptr &timez
   if (hasTimezone) 
     buffer.append(timezone->asString(context));
   const XMLCh* gDay = context->getMemoryManager()->getPooledString(buffer.getRawBuffer());
-  return context->getPathanFactory()->createGDayOrDerived(this->getTypeURI(), this->getTypeName(), gDay, context);        
+  return context->getXQillaFactory()->createGDayOrDerived(this->getTypeURI(), this->getTypeName(), gDay, context);        
 }
 
 
@@ -324,6 +324,6 @@ void ATGDayOrDerivedImpl::setGDay(const XMLCh* const value, const DynamicContext
     zonemm *= -1;
   }
   timezone_ = new Timezone(zonehh, zonemm);
-  _gDay = context->getPathanFactory()->createNonNegativeInteger(DD, context);
+  _gDay = context->getXQillaFactory()->createNonNegativeInteger(DD, context);
   
 }

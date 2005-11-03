@@ -16,10 +16,10 @@
 #if !defined(AFXQ_XQFACTORY_H__D608B994_F090_4206_9473_81F3D7350510__INCLUDED_)
 #define AFXQ_XQFACTORY_H__D608B994_F090_4206_9473_81F3D7350510__INCLUDED_
 
-#include <xqilla/framework/XQEngine.hpp>
-#include <xqilla/context/PathanFactory.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
+#include <xqilla/context/XQillaFactory.hpp>
 
-class XQENGINE_API XQFactory : public PathanFactory
+class XQILLA_API XQFactory : public XQillaFactory
 {
 public:
   virtual ~XQFactory() {};
@@ -28,7 +28,7 @@ public:
 
   /* @name Node factory methods */
 
-  class XQENGINE_API ElementChild {
+  class XQILLA_API ElementChild {
   public:
     ElementChild(const Node::Ptr &n) : node(n), clone(true) {}
     ElementChild(const Node::Ptr &n, bool c) : node(n), clone(c) {}

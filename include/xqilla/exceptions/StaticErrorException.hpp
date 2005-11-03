@@ -16,7 +16,7 @@
 #ifndef _STATICERROREXCEPTION_HPP
 #define _STATICERROREXCEPTION_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/exceptions/DSLException.hpp>
 #include <xqilla/utils/XStr.hpp>
@@ -25,7 +25,7 @@
  * This means that an error was found while parsing or when doing static analysis of the expression
  */
 
-class PATHAN_EXPORT StaticErrorException : public DSLException
+class XQILLA_API StaticErrorException : public DSLException
 {
 public:
   StaticErrorException(const XMLCh* const functionName, const XMLCh* const reason, const char *file, int line)

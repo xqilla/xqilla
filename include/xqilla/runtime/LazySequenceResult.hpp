@@ -20,7 +20,7 @@
 
 #include <xqilla/runtime/Sequence.hpp>
 
-class PATHAN_EXPORT LazySequenceResult : public ResultImpl
+class XQILLA_API LazySequenceResult : public ResultImpl
 {
 public:
   LazySequenceResult(DynamicContext *context);

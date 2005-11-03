@@ -18,7 +18,7 @@
 
 #include <xqilla/ast/XQFunction.hpp>
 
-class PATHAN_EXPORT FunctionUnordered : public XQFunction
+class XQILLA_API FunctionUnordered : public XQFunction
 {
 public:
   static const XMLCh name[];

@@ -17,65 +17,6 @@
  *  This software is provided "as is" without express or implied warranty.
  */
 
-/*
- *      $Id$
- *
- *      This file contains basic multiplication function.
- *
- *      $Log$
- *      Revision 1.1  2005/11/01 18:04:13  jpcs
- *      Initial check in.
- *
- *      Revision 1.1  2004/07/21 09:23:01  jpcs
- *      Initial check in of the Parthenon backup of Pathan.
- *
- *      Revision 1.2  2003/05/01 12:46:55  alby
- *      - Updated MAPM to version 4.6.1
- *      - The MAPM class is now thread-safe
- *
- *      Revision 1.13  2003/03/31 22:14:05  mike
- *      call generic error handling function
- *
- *      Revision 1.12  2002/11/03 22:25:36  mike
- *      Updated function parameters to use the modern style
- *
- *      Revision 1.11  2001/07/24 18:24:26  mike
- *      access div/rem lookup table directly
- *      for speed
- *
- *      Revision 1.10  2001/02/11 22:31:39  mike
- *      modify parameters to REALLOC
- *
- *      Revision 1.9  2000/07/09 00:20:03  mike
- *      change break even point again ....
- *
- *      Revision 1.8  2000/07/08 18:51:43  mike
- *      change break even point between this O(n^2)
- *      multiply and the FFT multiply
- *
- *      Revision 1.7  2000/04/14 16:27:45  mike
- *      change the break even point between the 2 multiply
- *      functions since we made the fast one even faster.
- *
- *      Revision 1.6  2000/02/03 22:46:40  mike
- *      use MAPM_* generic memory function
- *
- *      Revision 1.5  1999/09/19 21:10:14  mike
- *      change the break even point between the 2 multiply choices
- *
- *      Revision 1.4  1999/08/09 23:57:17  mike
- *      added more comments
- *
- *      Revision 1.3  1999/08/09 02:38:17  mike
- *      tweak break even point and add comments
- *
- *      Revision 1.2  1999/08/08 18:35:20  mike
- *      add call to fast algorithm if input numbers are large
- *
- *      Revision 1.1  1999/05/10 20:56:31  mike
- *      Initial revision
- */
-
 #include "m_apm_lc.h"
 
 extern void M_fast_multiply(M_APM, M_APM, M_APM);

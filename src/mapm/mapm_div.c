@@ -17,54 +17,6 @@
  *  This software is provided "as is" without express or implied warranty.
  */
 
-/*
- *      $Id$
- *
- *      This file contains the basic division functions 
- *
- *      $Log$
- *      Revision 1.1  2005/11/01 18:04:13  jpcs
- *      Initial check in.
- *
- *      Revision 1.1  2004/07/21 09:23:01  jpcs
- *      Initial check in of the Parthenon backup of Pathan.
- *
- *      Revision 1.2  2003/05/01 12:46:55  alby
- *      - Updated MAPM to version 4.6.1
- *      - The MAPM class is now thread-safe
- *
- *      Revision 1.10  2003/03/31 22:09:18  mike
- *      call generic error handling function
- *
- *      Revision 1.9  2002/11/03 22:06:50  mike
- *      Updated function parameters to use the modern style
- *
- *      Revision 1.8  2001/07/16 19:03:22  mike
- *      add function M_free_all_div
- *
- *      Revision 1.7  2001/02/11 22:30:42  mike
- *      modify parameters to REALLOC
- *
- *      Revision 1.6  2000/09/23 19:07:17  mike
- *      change _divide to M_apm_sdivide function name
- *
- *      Revision 1.5  2000/04/11 18:38:55  mike
- *      use new algorithm to determine q-hat. uses more digits of
- *      the numerator and denominator.
- *
- *      Revision 1.4  2000/02/03 22:45:08  mike
- *      use MAPM_* generic memory function
- *
- *      Revision 1.3  1999/06/23 01:10:49  mike
- *      use predefined constant for '15'
- *
- *      Revision 1.2  1999/06/23 00:55:09  mike
- *      change mult factor to 15
- *
- *      Revision 1.1  1999/05/10 20:56:31  mike
- *      Initial revision
- */
-
 #include "m_apm_lc.h"
 
 static	M_APM	M_div_worka;

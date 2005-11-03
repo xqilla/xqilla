@@ -13,19 +13,19 @@
  * $Id$
  */
 
-#ifndef __PATHANEXCEPTION_HPP
-#define __PATHANEXCEPTION_HPP
+#ifndef __XQILLAEXCEPTION_HPP
+#define __XQILLAEXCEPTION_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xercesc/dom/DOMXPathException.hpp>
 #include <xercesc/util/XMLString.hpp>
 
 /**
- * The <code>PathanException</code> interface extends the <code>DOMXPathException</code>
+ * The <code>XQillaException</code> interface extends the <code>DOMXPathException</code>
  * allowing an additional exception of type <code>RUNTIME_ERR</code> to be thrown.
  * @since DOM Level 3
  */
-class PATHAN_EXPORT PathanException: public XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException
+class XQILLA_API XQillaException: public XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException
 {
 public:
   // -----------------------------------------------------------------------
@@ -39,7 +39,7 @@ public:
    * @param code The error code which indicates the exception
    * @param message The string containing the error message
    */
-  PathanException(short code, const XMLCh* message): 
+  XQillaException(short code, const XMLCh* message): 
       XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException(code, XERCES_CPP_NAMESPACE_QUALIFIER XMLString::replicate(message)) {};
 
   /**
@@ -47,7 +47,7 @@ public:
    *
    * @param other The object to be copied.
    */
-  PathanException(const PathanException &other);
+  XQillaException(const XQillaException &other);
   //@}
 
   // -----------------------------------------------------------------------
@@ -56,16 +56,16 @@ public:
   /** @name Destructor */
   //@{
   /**
-   * Destructor for PathanException.
+   * Destructor for XQillaException.
    *
    */
-  virtual ~PathanException();
+  virtual ~XQillaException();
   //@}
   
   //@{
   /**
    * ExceptionCode
-   * RUNTIME_ERR If Pathan encounters a runtime exception
+   * RUNTIME_ERR If XQilla encounters a runtime exception
    */
   enum valExtension {
      RUNTIME_ERR = 53
@@ -97,7 +97,7 @@ public:
   /** @name Getter methods */
   //@{  
   /**
-   * Statically returns whether or not PathanExceptions have debug on
+   * Statically returns whether or not XQillaExceptions have debug on
    *
    * @return debug
    */
@@ -112,7 +112,7 @@ public:
   //@{
   /** Set the 'debug' flag
    *
-   * This method allows users to enable or disable debug on PathanExceptions.
+   * This method allows users to enable or disable debug on XQillaExceptions.
    *
    * @param debug The value specifying whether or not debug is enabled
    */
@@ -121,7 +121,7 @@ public:
 
 private:
   static bool _debug;
-};//PathanException
+};//XQillaException
 
-#endif //__PATHANEXCEPTION_HPP
+#endif //__XQILLAEXCEPTION_HPP
 

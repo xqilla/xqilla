@@ -25,7 +25,7 @@
 #include <xqilla/ast/ConstantFoldingFunction.hpp>
 
 /** Substring-after function. */
-class PATHAN_EXPORT FunctionSubstringAfter : public ConstantFoldingFunction
+class XQILLA_API FunctionSubstringAfter : public ConstantFoldingFunction
 {
 public:
   static const XMLCh name[];

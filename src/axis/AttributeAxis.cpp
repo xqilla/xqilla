@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xqilla/axis/AttributeAxis.hpp>
 #include <xqilla/axis/NodeTest.hpp>
 

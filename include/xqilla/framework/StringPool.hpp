@@ -16,11 +16,11 @@
 #ifndef __STRINGPOOL_HPP
 #define __STRINGPOOL_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xercesc/framework/MemoryManager.hpp>
 #include <memory>
 
-class PATHAN_EXPORT StringPool
+class XQILLA_API StringPool
 {
 public:
   StringPool(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mm);

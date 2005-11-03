@@ -24,7 +24,7 @@
 #include <xercesc/framework/MemoryManager.hpp>
 #include <xercesc/dom/DOMDocument.hpp>
 
-class XQENGINE_API XQFactoryImpl : public XQFactory
+class XQILLA_API XQFactoryImpl : public XQFactory
 {
 public:
   XQFactoryImpl(const DocumentCache* dc, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr);

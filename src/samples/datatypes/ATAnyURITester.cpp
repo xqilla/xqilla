@@ -19,7 +19,7 @@
 #include <xqilla/framework/XPath2MemoryManager.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xqilla/context/PathanFactory.hpp>
+#include <xqilla/context/XQillaFactory.hpp>
 
 #include <xqilla/items/ATAnyURIOrDerived.hpp>
 
@@ -51,6 +51,6 @@ void ATAnyURITester::run(const DynamicContext* context) {
 
 ATAnyURIOrDerived::Ptr ATAnyURITester::createURI(const XMLCh* value,
                                    const DynamicContext* context) {
-  return context->getPathanFactory()->createAnyURI(value, context);
+  return context->getXQillaFactory()->createAnyURI(value, context);
 }
 

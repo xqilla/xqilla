@@ -20,14 +20,14 @@
 #if !defined(AFXQ_XQSCOPEDNAMESPACE_H__D6A320F5_21F1_421D_9E46_E4373B375E1A__INCLUDED_)
 #define AFXQ_XQSCOPEDNAMESPACE_H__D6A320F5_21F1_421D_9E46_E4373B375E1A__INCLUDED_
 
-#include <xqilla/framework/XQEngine.hpp>
-#include <xqilla/dom-api/impl/PathanNSResolverImpl.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
+#include <xqilla/dom-api/impl/XQillaNSResolverImpl.hpp>
 
 XERCES_CPP_NAMESPACE_BEGIN
 class DOMXPathNSResolver;
 XERCES_CPP_NAMESPACE_END
 
-class XQENGINE_API XQScopedNamespace : public PathanNSResolverImpl
+class XQILLA_API XQScopedNamespace : public XQillaNSResolverImpl
 {
 public:
 	XQScopedNamespace(XPath2MemoryManager* memMgr, const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver* prevScope);

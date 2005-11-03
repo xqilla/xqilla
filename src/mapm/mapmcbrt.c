@@ -17,38 +17,6 @@
  *  This software is provided "as is" without express or implied warranty.
  */
 
-/*
- *      $Id$
- *
- *      This file contains the CBRT (cube root) function.
- *
- *      $Log$
- *      Revision 1.1  2005/11/01 18:04:13  jpcs
- *      Initial check in.
- *
- *      Revision 1.1  2004/07/21 09:23:01  jpcs
- *      Initial check in of the Parthenon backup of Pathan.
- *
- *      Revision 1.2  2003/05/01 12:46:55  alby
- *      - Updated MAPM to version 4.6.1
- *      - The MAPM class is now thread-safe
- *
- *      Revision 1.5  2002/11/03 21:34:34  mike
- *      Updated function parameters to use the modern style
- *
- *      Revision 1.4  2000/10/30 16:42:22  mike
- *      minor speed optimization
- *
- *      Revision 1.3  2000/07/11 18:03:39  mike
- *      make better estimate for initial precision
- *
- *      Revision 1.2  2000/04/08 18:34:35  mike
- *      added some more comments
- *
- *      Revision 1.1  2000/04/03 17:58:04  mike
- *      Initial revision
- */
-
 #include "m_apm_lc.h"
 
 /****************************************************************************/

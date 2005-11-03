@@ -16,7 +16,7 @@
 #ifndef _FUNCTIONGETYEARFROMDATE_HPP
 #define _FUNCTIONGETYEARFROMDATE_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/XQFunction.hpp>
 
@@ -25,7 +25,7 @@
  *
  * xf:year-from-date(date $srcval) => integer
  */
-class PATHAN_EXPORT FunctionYearFromDate : public XQFunction
+class XQILLA_API FunctionYearFromDate : public XQFunction
 {
 public:
   static const XMLCh name[];

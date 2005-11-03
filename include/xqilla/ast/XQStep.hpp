@@ -16,14 +16,14 @@
 #ifndef _XQSTEP_HPP
 #define _XQSTEP_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/ASTNodeImpl.hpp>
 
 class NodeTest;
 
 ///this class calculates a node list based on a context
-class PATHAN_EXPORT XQStep : public ASTNodeImpl
+class XQILLA_API XQStep : public ASTNodeImpl
 {
 public:
   enum Axis {

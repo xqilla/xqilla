@@ -27,7 +27,7 @@ class XPath2MemoryManager;
 class Collation;
 
 /** index-of function*/
-class PATHAN_EXPORT FunctionIndexOf : public ConstantFoldingFunction
+class XQILLA_API FunctionIndexOf : public ConstantFoldingFunction
 {
 public:
   static const XMLCh name[];

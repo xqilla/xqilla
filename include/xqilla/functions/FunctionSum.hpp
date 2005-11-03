@@ -24,7 +24,7 @@
 #include <xqilla/ast/AggregateFunction.hpp>
 
 /** Sum operator function*/
-class PATHAN_EXPORT FunctionSum : public AggregateFunction
+class XQILLA_API FunctionSum : public AggregateFunction
 {
 public:
   static const XMLCh name[];

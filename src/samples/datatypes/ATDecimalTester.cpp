@@ -19,7 +19,7 @@
 #include <xqilla/framework/XPath2MemoryManager.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xqilla/context/PathanFactory.hpp>
+#include <xqilla/context/XQillaFactory.hpp>
 
 #include <xqilla/items/ATDecimalOrDerived.hpp>
 
@@ -28,11 +28,11 @@ ATDecimalTester::ATDecimalTester(XPath2MemoryManager* memMgr) : DatatypeTester(m
 
 void ATDecimalTester::run(const DynamicContext* context) {
   // test 1 -- equality
-  const ATDecimalOrDerived::Ptr dec1 = context->getPathanFactory()->createDecimal(10, context);
-  const ATDecimalOrDerived::Ptr dec2 = context->getPathanFactory()->createDecimalOrDerived(
+  const ATDecimalOrDerived::Ptr dec1 = context->getXQillaFactory()->createDecimal(10, context);
+  const ATDecimalOrDerived::Ptr dec2 = context->getXQillaFactory()->createDecimalOrDerived(
       XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA, 
       XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DECIMAL, X("10"), context);
-  const ATDecimalOrDerived::Ptr int1 = context->getPathanFactory()->createInteger(10, context);
+  const ATDecimalOrDerived::Ptr int1 = context->getXQillaFactory()->createInteger(10, context);
 
   assertObjectEquals(dec1, dec1, context);  // 1
   assertObjectEquals(dec1, dec2, context);  // 2
@@ -44,14 +44,14 @@ void ATDecimalTester::run(const DynamicContext* context) {
   assertEquals(dec1->asString(context), dec2->asString(context)); // 6
 
   // test 2 -- inequality
-  const ATDecimalOrDerived::Ptr dec3 = context->getPathanFactory()->createDecimal(20, context);
+  const ATDecimalOrDerived::Ptr dec3 = context->getXQillaFactory()->createDecimal(20, context);
   assertCondition(!dec1->equals(dec3, context));  // 8
 
 
   // test type name, type uri, hierarchy
-  const ATDecimalOrDerived::Ptr decimal = context->getPathanFactory()->createDecimal(25, context);
-  const ATDecimalOrDerived::Ptr nonNegInteger = context->getPathanFactory()->createNonNegativeInteger(25, context);
-  const ATDecimalOrDerived::Ptr integer = context->getPathanFactory()->createInteger(25, context);
+  const ATDecimalOrDerived::Ptr decimal = context->getXQillaFactory()->createDecimal(25, context);
+  const ATDecimalOrDerived::Ptr nonNegInteger = context->getXQillaFactory()->createNonNegativeInteger(25, context);
+  const ATDecimalOrDerived::Ptr integer = context->getXQillaFactory()->createInteger(25, context);
 
   assertCondition(decimal->isInstanceOfType(  // 10
       XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA, 
@@ -94,8 +94,8 @@ void ATDecimalTester::run(const DynamicContext* context) {
   assertEquals(nonNegInteger->asString(context), X("25")); // 23
   
   // test lessThan, greaterThan
-  const ATDecimalOrDerived::Ptr integer10 = context->getPathanFactory()->createInteger(10, context);  // 24
-  const ATDecimalOrDerived::Ptr integer11 = context->getPathanFactory()->createInteger(11, context);  // 25
+  const ATDecimalOrDerived::Ptr integer10 = context->getXQillaFactory()->createInteger(10, context);  // 24
+  const ATDecimalOrDerived::Ptr integer11 = context->getXQillaFactory()->createInteger(11, context);  // 25
 
   assertCondition(integer10->lessThan(integer11, context));  // 26
   assertCondition(!integer10->lessThan(integer10, context)); // 27
@@ -108,7 +108,7 @@ void ATDecimalTester::run(const DynamicContext* context) {
   ////////////////////////
   // test add, subtract //
   // /////////////////////
-  const ATDecimalOrDerived::Ptr integer1 = context->getPathanFactory()->createInteger(1, context);
+  const ATDecimalOrDerived::Ptr integer1 = context->getXQillaFactory()->createInteger(1, context);
   
   const Numeric::Ptr sum = integer10->add(integer1, context);
   assertObjectEquals(sum, integer11, context);  // 32
@@ -116,8 +116,8 @@ void ATDecimalTester::run(const DynamicContext* context) {
   const Numeric::Ptr diff = integer11->subtract(integer1, context); 
   assertObjectEquals(diff, integer10, context);  // 33
 
-  const ATDecimalOrDerived::Ptr integer0 = context->getPathanFactory()->createInteger(0, context);
-  const ATDecimalOrDerived::Ptr decimal0 = context->getPathanFactory()->createDecimal(MAPM(0), context);
+  const ATDecimalOrDerived::Ptr integer0 = context->getXQillaFactory()->createInteger(0, context);
+  const ATDecimalOrDerived::Ptr decimal0 = context->getXQillaFactory()->createDecimal(MAPM(0), context);
 
   assertObjectEquals(integer10->add(integer0, context), integer10, context); // 34
   const Numeric::Ptr diff2 = integer10->subtract(decimal0, context);
@@ -140,10 +140,10 @@ void ATDecimalTester::run(const DynamicContext* context) {
   ///////////////////////////
   // test multiply, divide //
   // ////////////////////////
-  const ATDecimalOrDerived::Ptr integer100 = context->getPathanFactory()->createInteger(100, context);
-  const ATDecimalOrDerived::Ptr decimal10  = context->getPathanFactory()->createDecimal(10, context);
-  const ATDecimalOrDerived::Ptr decimal11  = context->getPathanFactory()->createDecimal(11, context);
-  const ATDecimalOrDerived::Ptr decimal110 = context->getPathanFactory()->createDecimal(110, context);
+  const ATDecimalOrDerived::Ptr integer100 = context->getXQillaFactory()->createInteger(100, context);
+  const ATDecimalOrDerived::Ptr decimal10  = context->getXQillaFactory()->createDecimal(10, context);
+  const ATDecimalOrDerived::Ptr decimal11  = context->getXQillaFactory()->createDecimal(11, context);
+  const ATDecimalOrDerived::Ptr decimal110 = context->getXQillaFactory()->createDecimal(110, context);
 
   const Numeric::Ptr integerProduct = integer10->multiply(integer10, context);
   assertObjectEquals(integerProduct, integer100, context);  // 39
@@ -176,8 +176,8 @@ void ATDecimalTester::run(const DynamicContext* context) {
   assertObjectEquals(decimal0->divide(decimal11, context), decimal0, context);
 
   // integer divide
-//   const ATDecimalOrDerived::Ptr integer3 = context->getPathanFactory()->createInteger(3, context);
-//   const ATDecimalOrDerived::Ptr integer33 = context->getPathanFactory()->createInteger(33, context);
+//   const ATDecimalOrDerived::Ptr integer3 = context->getXQillaFactory()->createInteger(3, context);
+//   const ATDecimalOrDerived::Ptr integer33 = context->getXQillaFactory()->createInteger(33, context);
 
 //   const ATDecimalOrDerived::Ptr integerResult = ((const ATDecimalOrDerived*)integer100)->integerDivide(integer3, context);
 //   assertObjectEquals(integerResult, integer33, context);
@@ -227,13 +227,13 @@ void ATDecimalTester::run(const DynamicContext* context) {
   //////////////
   // test mod //
   //////////////
-  const ATDecimalOrDerived::Ptr integerOdd23 = context->getPathanFactory()->createInteger(23, context);
-  const ATDecimalOrDerived::Ptr integerEven22 = context->getPathanFactory()->createInteger(22, context);
-  const ATDecimalOrDerived::Ptr decimalOdd2005 = context->getPathanFactory()->createDecimal(2005, context);
-  const ATDecimalOrDerived::Ptr decimalEven204 = context->getPathanFactory()->createDecimal(204, context);
-  const ATDecimalOrDerived::Ptr integer2 = context->getPathanFactory()->createInteger(2, context);
-  const ATDecimalOrDerived::Ptr decimal2 = context->getPathanFactory()->createDecimal(2, context);
-  const ATDecimalOrDerived::Ptr decimal1 = context->getPathanFactory()->createDecimal(1, context);
+  const ATDecimalOrDerived::Ptr integerOdd23 = context->getXQillaFactory()->createInteger(23, context);
+  const ATDecimalOrDerived::Ptr integerEven22 = context->getXQillaFactory()->createInteger(22, context);
+  const ATDecimalOrDerived::Ptr decimalOdd2005 = context->getXQillaFactory()->createDecimal(2005, context);
+  const ATDecimalOrDerived::Ptr decimalEven204 = context->getXQillaFactory()->createDecimal(204, context);
+  const ATDecimalOrDerived::Ptr integer2 = context->getXQillaFactory()->createInteger(2, context);
+  const ATDecimalOrDerived::Ptr decimal2 = context->getXQillaFactory()->createDecimal(2, context);
+  const ATDecimalOrDerived::Ptr decimal1 = context->getXQillaFactory()->createDecimal(1, context);
 
 
   const Numeric::Ptr mod1 = integerOdd23->mod(integer2, context);
@@ -275,10 +275,10 @@ void ATDecimalTester::run(const DynamicContext* context) {
   //////////////////////////////////////////////////
   //  test floor, ceiling, round, roundHalfToEven //
   //////////////////////////////////////////////////
-  const ATDecimalOrDerived::Ptr integer28 = context->getPathanFactory()->createInteger(28, context);
-  const ATDecimalOrDerived::Ptr decimal27_5 = context->getPathanFactory()->createDecimal(27.5, context);
-  const ATDecimalOrDerived::Ptr decimal28 = context->getPathanFactory()->createDecimal(28, context);
-  const ATDecimalOrDerived::Ptr decimal27 = context->getPathanFactory()->createDecimal(27, context);
+  const ATDecimalOrDerived::Ptr integer28 = context->getXQillaFactory()->createInteger(28, context);
+  const ATDecimalOrDerived::Ptr decimal27_5 = context->getXQillaFactory()->createDecimal(27.5, context);
+  const ATDecimalOrDerived::Ptr decimal28 = context->getXQillaFactory()->createDecimal(28, context);
+  const ATDecimalOrDerived::Ptr decimal27 = context->getXQillaFactory()->createDecimal(27, context);
 
   assertObjectEquals(integer28->floor(context), integer28, context);
   assertObjectEquals(decimal28->floor(context), decimal28, context);
@@ -299,8 +299,8 @@ void ATDecimalTester::run(const DynamicContext* context) {
   /////////////////////////////
   // test isZero, isNegative //
   /////////////////////////////
-  const ATDecimalOrDerived::Ptr integerNeg28 = context->getPathanFactory()->createInteger(-28, context);
-  const ATDecimalOrDerived::Ptr decimalNeg28 = context->getPathanFactory()->createDecimal(-28, context);
+  const ATDecimalOrDerived::Ptr integerNeg28 = context->getXQillaFactory()->createInteger(-28, context);
+  const ATDecimalOrDerived::Ptr decimalNeg28 = context->getXQillaFactory()->createDecimal(-28, context);
 
   assertCondition(integer0->isZero());
   assertCondition(integer1->isPositive());

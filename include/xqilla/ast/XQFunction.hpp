@@ -16,18 +16,18 @@
 #ifndef _XQFUNCTION_HPP
 #define _XQFUNCTION_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/ast/ASTNodeImpl.hpp>
 #include <xqilla/runtime/Sequence.hpp>
 #include <xqilla/items/ATStringOrDerived.hpp>
-#include <xqilla/context/PathanFactory.hpp>
+#include <xqilla/context/XQillaFactory.hpp>
 
 #include <xercesc/util/XMLUniDefs.hpp>      // because every implementation will use these to define the function name
 #include <vector>
 
 class SequenceType;
 
-class PATHAN_EXPORT XQFunction : public ASTNodeImpl
+class XQILLA_API XQFunction : public ASTNodeImpl
 {
 
 public:

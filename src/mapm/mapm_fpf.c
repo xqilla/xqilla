@@ -17,47 +17,6 @@
  *  This software is provided "as is" without express or implied warranty.
  */
 
-/*
- *      $Id$
- *
- *      This file contains the Fixed Point Formatting functions
- *
- *      $Log$
- *      Revision 1.1  2005/11/01 18:04:13  jpcs
- *      Initial check in.
- *
- *      Revision 1.1  2004/07/21 09:23:01  jpcs
- *      Initial check in of the Parthenon backup of Pathan.
- *
- *      Revision 1.2  2003/05/01 12:46:55  alby
- *      - Updated MAPM to version 4.6.1
- *      - The MAPM class is now thread-safe
- *
- *      Revision 1.8  2003/03/31 22:11:14  mike
- *      call generic error handling function
- *
- *      Revision 1.7  2002/11/05 23:31:00  mike
- *      use new set_to_zero call instead of copy
- *
- *      Revision 1.6  2002/11/03 22:33:24  mike
- *      Updated function parameters to use the modern style
- *
- *      Revision 1.5  2002/02/14 19:31:44  mike
- *      eliminate need for conditional compile
- *
- *      Revision 1.4  2001/08/26 22:35:50  mike
- *      no LCC conditional needed on fixpt_string
- *
- *      Revision 1.3  2001/08/26 22:11:10  mike
- *      add new 'stringexp' function
- *
- *      Revision 1.2  2001/08/25 22:30:09  mike
- *      fix LCC-WIN32 compile problem
- *
- *      Revision 1.1  2001/08/25 16:50:59  mike
- *      Initial revision
- */
-
 #include "m_apm_lc.h"
 #include <ctype.h>
 

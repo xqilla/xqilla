@@ -16,7 +16,7 @@
 #ifndef _QNAME_HPP
 #define _QNAME_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xercesc/util/XercesDefs.hpp>
 #include <xqilla/framework/XPath2MemoryManager.hpp>
 #include <vector>
@@ -24,7 +24,7 @@
 /*
 Represents a Qualified name. Built in the parser.
  */
-class PATHAN_EXPORT QualifiedName {
+class XQILLA_API QualifiedName {
 
 public:
 	QualifiedName(const XMLCh* qualifiedName, XPath2MemoryManager* memMgr);

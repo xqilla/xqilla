@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionContains.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/context/Collation.hpp>
@@ -27,7 +27,7 @@
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xercesc/util/XMLString.hpp>
 #include <xercesc/util/XMLUni.hpp>
-#include <xqilla/context/PathanFactory.hpp>
+#include <xqilla/context/XQillaFactory.hpp>
 
 const XMLCh FunctionContains::name[] = {
   XERCES_CPP_NAMESPACE_QUALIFIER chLatin_c, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, 
@@ -57,7 +57,7 @@ Sequence FunctionContains::collapseTreeInternal(DynamicContext* context, int fla
         Sequence collArg = getParamNumber(3,context);
         const XMLCh* collName = collArg.first()->asString(context);
         try {
-            context->getPathanFactory()->createAnyURI(collName, context);
+            context->getXQillaFactory()->createAnyURI(collName, context);
         } catch(XPath2ErrorException &e) {
             DSLthrow(FunctionException, X("FunctionContains::collapseTreeInternal"), X("Invalid collationURI"));  
         }
@@ -76,10 +76,10 @@ Sequence FunctionContains::collapseTreeInternal(DynamicContext* context, int fla
         pattern=str2.first()->asString(context);
 
     if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(pattern)==0)
-        return Sequence(context->getPathanFactory()->createBoolean(true, context), context->getMemoryManager());
+        return Sequence(context->getXQillaFactory()->createBoolean(true, context), context->getMemoryManager());
     else if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(container)==0)
-        return Sequence(context->getPathanFactory()->createBoolean(false, context), context->getMemoryManager());
+        return Sequence(context->getXQillaFactory()->createBoolean(false, context), context->getMemoryManager());
 
     bool contains = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::patternMatch(container, pattern) > -1;
-    return Sequence(context->getPathanFactory()->createBoolean(contains, context), context->getMemoryManager());
+    return Sequence(context->getXQillaFactory()->createBoolean(contains, context), context->getMemoryManager());
 }

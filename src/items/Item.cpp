@@ -13,13 +13,13 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xqilla/items/Item.hpp>
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/framework/XPath2MemoryManager.hpp>
 #include <xercesc/util/XMLUniDefs.hpp>
 
-const XMLCh Item::gPathan[] =   // Points to "Pathan"
+const XMLCh Item::gXQilla[] =   // Points to "XQilla"
 {
   XERCES_CPP_NAMESPACE_QUALIFIER chLatin_P,
   XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a,

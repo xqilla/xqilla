@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <assert.h>
 #include <sstream>
 
@@ -22,7 +22,7 @@
 #include <xqilla/items/ATBooleanOrDerived.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xqilla/context/PathanFactory.hpp>
+#include <xqilla/context/XQillaFactory.hpp>
 
 /*static*/ const XMLCh OrderComparison::name[]={ XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_d, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, XERCES_CPP_NAMESPACE_QUALIFIER chDash, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_r, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_d, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_r, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
 
@@ -56,9 +56,9 @@ Item::Ptr OrderComparison::OrderComparisonResult::getSingleResult(DynamicContext
   if(arg2 == NULLRCP) return 0;
 
 	if(_op->getTestBefore())
-    return (const Item::Ptr)context->getPathanFactory()->createBoolean(arg1->lessThan(arg2, context), context);
+    return (const Item::Ptr)context->getXQillaFactory()->createBoolean(arg1->lessThan(arg2, context), context);
 
-	return (const Item::Ptr)context->getPathanFactory()->createBoolean(arg2->lessThan(arg1, context), context);
+	return (const Item::Ptr)context->getXQillaFactory()->createBoolean(arg2->lessThan(arg1, context), context);
 }
 
 std::string OrderComparison::OrderComparisonResult::asString(DynamicContext *context, int indent) const

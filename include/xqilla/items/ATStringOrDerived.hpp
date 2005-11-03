@@ -17,7 +17,7 @@
 #define _ATSTRINGORDERIVED_HPP
 
 #include <xercesc/util/XercesDefs.hpp>
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/items/AnyAtomicType.hpp>
 #include <xqilla/items/Numeric.hpp>
 
@@ -25,7 +25,7 @@ class Collation;
 class Result;
 class DynamicContext;
 
-class PATHAN_EXPORT ATStringOrDerived : public AnyAtomicType
+class XQILLA_API ATStringOrDerived : public AnyAtomicType
 {
 public:
   typedef RefCountPointer<const ATStringOrDerived> Ptr;

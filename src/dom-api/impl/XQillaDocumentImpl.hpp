@@ -13,10 +13,10 @@
  * $Id$
  */
 
-#ifndef __PATHANDOCUMENTIMPL_HPP
-#define __PATHANDOCUMENTIMPL_HPP
+#ifndef __XQILLADOCUMENTIMPL_HPP
+#define __XQILLADOCUMENTIMPL_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/framework/XPath2MemoryManagerImpl.hpp>
 #include <xqilla/framework/ProxyMemoryManager.hpp>
@@ -34,13 +34,13 @@ XERCES_CPP_NAMESPACE_BEGIN
 class XMLGrammarPool;
 XERCES_CPP_NAMESPACE_END  
 
-class PathanDocumentImpl : public XERCES_CPP_NAMESPACE_QUALIFIER DOMDocumentImpl
+class XQillaDocumentImpl : public XERCES_CPP_NAMESPACE_QUALIFIER DOMDocumentImpl
 {
 public:
-  PathanDocumentImpl(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr);
-  PathanDocumentImpl(const XMLCh *fNamespaceURI, const XMLCh *qualifiedName, XERCES_CPP_NAMESPACE_QUALIFIER DOMDocumentType *doctype,
+  XQillaDocumentImpl(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr);
+  XQillaDocumentImpl(const XMLCh *fNamespaceURI, const XMLCh *qualifiedName, XERCES_CPP_NAMESPACE_QUALIFIER DOMDocumentType *doctype,
                      XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* const memMgr);
-  ~PathanDocumentImpl();
+  ~XQillaDocumentImpl();
   
   // weak version, need to create a context from scratch inside
   virtual const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathExpression* createExpression(const XMLCh* expression,
@@ -67,7 +67,7 @@ protected:
 
   XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool *_xmlGrammarPool;
 
-}; //PathanDocumentImpl
+}; //XQillaDocumentImpl
 
 
-#endif //__PATHANDOCUMENTIMPL_HPP
+#endif //__XQILLADOCUMENTIMPL_HPP

@@ -19,7 +19,7 @@
 #include <xqilla/framework/XPath2MemoryManager.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xqilla/context/PathanFactory.hpp>
+#include <xqilla/context/XQillaFactory.hpp>
 
 #include <xqilla/items/ATGMonthDayOrDerived.hpp>
 #include <xqilla/items/Timezone.hpp>
@@ -63,7 +63,7 @@ void ATGMonthDayTester::run(const DynamicContext* context) {
 
 const ATGMonthDayOrDerived::Ptr ATGMonthDayTester::createGMonthDay(const XMLCh* value,
                                                    const DynamicContext* context) {
-  return context->getPathanFactory()->createGMonthDayOrDerived(
+  return context->getXQillaFactory()->createGMonthDayOrDerived(
       XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
       XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_MONTHDAY,
       value, context);

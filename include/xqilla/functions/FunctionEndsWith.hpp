@@ -23,11 +23,11 @@
 #ifndef _FUNCTIONENDSWITH_HPP
 #define _FUNCTIONENDSWITH_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/ConstantFoldingFunction.hpp>
 
-class PATHAN_EXPORT FunctionEndsWith : public ConstantFoldingFunction
+class XQILLA_API FunctionEndsWith : public ConstantFoldingFunction
 {
 public:
   static const XMLCh name[];

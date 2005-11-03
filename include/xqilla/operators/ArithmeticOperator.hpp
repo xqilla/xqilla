@@ -21,7 +21,7 @@
 
 class AnyAtomicType;
 
-class PATHAN_EXPORT ArithmeticOperator : public XQOperator
+class XQILLA_API ArithmeticOperator : public XQOperator
 {
 public:
   ArithmeticOperator(const XMLCh* opName, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);

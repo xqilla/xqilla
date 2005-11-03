@@ -26,7 +26,7 @@
 #include <xqilla/ast/XQFunction.hpp>
 
 /** String-length function. */
-class PATHAN_EXPORT FunctionStringLength : public XQFunction
+class XQILLA_API FunctionStringLength : public XQFunction
 {
 public:
   static const XMLCh name[];

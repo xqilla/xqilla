@@ -20,11 +20,11 @@
 #ifndef _FUNCFACTORY_HPP
 #define _FUNCFACTORY_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/ASTNode.hpp>
 
-class PATHAN_EXPORT FuncFactory
+class XQILLA_API FuncFactory
 {
 public:
   FuncFactory();

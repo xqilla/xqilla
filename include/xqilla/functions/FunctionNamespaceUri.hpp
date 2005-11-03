@@ -22,12 +22,12 @@
 #ifndef _FUNCTIONNAMESPACEURI_HPP
 #define _FUNCTIONNAMESPACEURI_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/XQFunction.hpp>
 
 /** Namespace-uri function */
-class PATHAN_EXPORT FunctionNamespaceUri : public XQFunction
+class XQILLA_API FunctionNamespaceUri : public XQFunction
 {
 public:
   static const XMLCh name[];

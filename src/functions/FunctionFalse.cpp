@@ -13,12 +13,12 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionFalse.hpp>
 #include <xqilla/items/ATBooleanOrDerived.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xqilla/context/PathanFactory.hpp>
+#include <xqilla/context/XQillaFactory.hpp>
 
 const XMLCh FunctionFalse::name[] = {
   XERCES_CPP_NAMESPACE_QUALIFIER chLatin_f, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_l, 
@@ -38,6 +38,6 @@ FunctionFalse::FunctionFalse(const VectorOfASTNodes &args, XPath2MemoryManager* 
 
 Sequence FunctionFalse::collapseTreeInternal(DynamicContext* context, int flags) const
 {
-	return Sequence(context->getPathanFactory()->createBoolean(false, context),
+	return Sequence(context->getXQillaFactory()->createBoolean(false, context),
                   context->getMemoryManager());
 }

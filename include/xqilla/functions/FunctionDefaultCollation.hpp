@@ -26,7 +26,7 @@
 #include <xqilla/ast/ConstantFoldingFunction.hpp>
 
 /** default-collation function*/
-class PATHAN_EXPORT FunctionDefaultCollation : public ConstantFoldingFunction
+class XQILLA_API FunctionDefaultCollation : public ConstantFoldingFunction
 {
 public:
   static const XMLCh name[];

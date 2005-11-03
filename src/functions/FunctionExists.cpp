@@ -13,12 +13,12 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionExists.hpp>
 #include <xqilla/items/ATBooleanOrDerived.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xqilla/context/PathanFactory.hpp>
+#include <xqilla/context/XQillaFactory.hpp>
 
 
 const XMLCh FunctionExists::name[] = {
@@ -41,7 +41,7 @@ FunctionExists::FunctionExists(const VectorOfASTNodes &args, XPath2MemoryManager
 Sequence FunctionExists::collapseTreeInternal(DynamicContext* context, int flags) const
 {
 	Result items = getParamNumber(1,context,ASTNode::UNORDERED|ASTNode::RETURN_ONE);
-	return Sequence(context->getPathanFactory()->createBoolean(items.next(context) != NULLRCP, context),
+	return Sequence(context->getXQillaFactory()->createBoolean(items.next(context) != NULLRCP, context),
                   context->getMemoryManager());
 }
 

@@ -20,13 +20,13 @@
 #if !defined(AFXQ_XQFUNCTIONCALL_H__2B6902E9_A4FA_4AB3_9C69_08A8E77E70DA__INCLUDED_)
 #define AFXQ_XQFUNCTIONCALL_H__2B6902E9_A4FA_4AB3_9C69_08A8E77E70DA__INCLUDED_
 
-#include <xqilla/framework/XQEngine.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/ast/ASTNodeImpl.hpp>
 
 class QualifiedName;
 
 /** placeholder for function calls. */
-class XQENGINE_API XQFunctionCall : public ASTNodeImpl
+class XQILLA_API XQFunctionCall : public ASTNodeImpl
 {
 public:
   XQFunctionCall(QualifiedName* qname, const VectorOfASTNodes &args, XPath2MemoryManager* expr);

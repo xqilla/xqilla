@@ -16,14 +16,14 @@
 #ifndef _FLOOKUPIMPL_HPP
 #define _FLOOKUPIMPL_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/functions/FunctionLookup.hpp>
 #include <xercesc/util/RefHash2KeysTableOf.hpp>
 #include <xercesc/util/StringPool.hpp>
 
 /** class implementing a lookup table for functions */
-class PATHAN_EXPORT FunctionLookupImpl : public FunctionLookup
+class XQILLA_API FunctionLookupImpl : public FunctionLookup
 {
 public:
   FunctionLookupImpl(XPath2MemoryManager* memMgr);

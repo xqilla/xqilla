@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionCodepointsToString.hpp>
 #include <xqilla/items/Item.hpp>
 #include <xqilla/items/ATDecimalOrDerived.hpp>
@@ -55,7 +55,7 @@ Sequence FunctionCodepointsToString::collapseTreeInternal(DynamicContext* contex
     result.append(((const ATDecimalOrDerived*)(const Item*)*i)->treatAsCodepoint(context));
   }
 
-  return Sequence(context->getPathanFactory()->createString(result.getRawBuffer(), context),
+  return Sequence(context->getXQillaFactory()->createString(result.getRawBuffer(), context),
                   context->getMemoryManager());
 }
 

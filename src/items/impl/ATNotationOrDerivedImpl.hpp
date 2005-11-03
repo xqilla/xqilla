@@ -19,11 +19,11 @@
 #include <xercesc/util/XercesDefs.hpp>
 #include <xqilla/items/ATNotationOrDerived.hpp>
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 class DynamicContext;
 
-class PATHAN_EXPORT ATNotationOrDerivedImpl : public ATNotationOrDerived 
+class XQILLA_API ATNotationOrDerivedImpl : public ATNotationOrDerived 
 {
 
 public:

@@ -19,7 +19,7 @@
 #include <xqilla/ast/ConstantFoldingFunction.hpp>
 
 /** Virtual interface class for functions */
-class PATHAN_EXPORT AggregateFunction : public ConstantFoldingFunction
+class XQILLA_API AggregateFunction : public ConstantFoldingFunction
 {
 public:
 

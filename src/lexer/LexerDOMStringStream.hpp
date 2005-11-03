@@ -16,10 +16,10 @@
 #ifndef __LEXERDOMSTRINGSTREAM_HPP
 #define __LEXERDOMSTRINGSTREAM_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xercesc/util/XercesDefs.hpp>
 
-class PATHAN_EXPORT LexerDOMStringStream {
+class XQILLA_API LexerDOMStringStream {
 
 public:
   LexerDOMStringStream(const XMLCh* const inputBuffer);

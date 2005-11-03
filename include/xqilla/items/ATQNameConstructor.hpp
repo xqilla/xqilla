@@ -19,7 +19,7 @@
 #include <xqilla/items/ItemConstructor.hpp>
 #include <xercesc/util/XercesDefs.hpp>
 
-class PATHAN_EXPORT ATQNameConstructor : public ItemConstructor {
+class XQILLA_API ATQNameConstructor : public ItemConstructor {
 public:
   ATQNameConstructor(const XMLCh* typeURI,
 		     const XMLCh* typeName,

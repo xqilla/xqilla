@@ -16,7 +16,7 @@
 #ifndef _FUNCTIONADJUSTDATETOTIMEZONE_HPP
 #define _FUNCTIONADJUSTDATETOTIMEZONE_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/XQFunction.hpp>
 
@@ -26,7 +26,7 @@
  *  fn:adjust-date-to-timezone(date? $srcval) => date?
  *  fn:adjust-date-to-timezone(date? $srcval, dayTimeDuration? $timezone) => date?
  */
-class PATHAN_EXPORT FunctionAdjustDateToTimezone : public XQFunction
+class XQILLA_API FunctionAdjustDateToTimezone : public XQFunction
 {
 public:
   static const XMLCh name[];

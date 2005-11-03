@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xqilla/items/impl/ATDoubleOrDerivedImpl.hpp>
 #include <xqilla/items/ATDecimalOrDerived.hpp>
 #include <xqilla/items/ATBooleanOrDerived.hpp>
@@ -23,7 +23,7 @@
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 #include <xqilla/framework/XPath2MemoryManager.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
-#include <xqilla/context/PathanFactory.hpp>
+#include <xqilla/context/XQillaFactory.hpp>
 
 #include <assert.h>
 
@@ -62,7 +62,7 @@ ATDoubleOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const MAPM va
 
 void *ATDoubleOrDerivedImpl::getInterface(const XMLCh *name) const
 {
-  if(name == Item::gPathan) {
+  if(name == Item::gXQilla) {
     return (void*)this;
   }
   return 0;
@@ -103,16 +103,16 @@ AnyAtomicType::Ptr ATDoubleOrDerivedImpl::castAsInternal(AtomicObjectType target
                                              XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_INTEGER)) {
         char obuf[1024];
         _double.toIntegerString(obuf);
-        return (const AnyAtomicType::Ptr)context->getPathanFactory()->createDecimalOrDerived(targetURI, targetType, obuf, context);
+        return (const AnyAtomicType::Ptr)context->getXQillaFactory()->createDecimalOrDerived(targetURI, targetType, obuf, context);
       }    
       else
-        return (const AnyAtomicType::Ptr)context->getPathanFactory()->createDecimalOrDerived(targetURI, targetType, _double, context);
+        return (const AnyAtomicType::Ptr)context->getXQillaFactory()->createDecimalOrDerived(targetURI, targetType, _double, context);
     }
     case BOOLEAN: {
       if (this->isZero() || this->isNaN()) {
-        return context->getPathanFactory()->createBooleanOrDerived(targetURI, targetType, false, context);
+        return context->getXQillaFactory()->createBooleanOrDerived(targetURI, targetType, false, context);
       } else {
-        return context->getPathanFactory()->createBooleanOrDerived(targetURI, targetType, true, context);
+        return context->getXQillaFactory()->createBooleanOrDerived(targetURI, targetType, true, context);
       }
     }
     default: return AnyAtomicType::castAsInternal(targetIndex, targetURI, targetType, context);
@@ -142,7 +142,7 @@ const XMLCh* ATDoubleOrDerivedImpl::asString(const DynamicContext* context) cons
         if(absVal<upper && absVal>=lower)
         {
           // treat it as a decimal
-          const ATDecimalOrDerived::Ptr decimal=context->getPathanFactory()->createDecimal(_double, context);
+          const ATDecimalOrDerived::Ptr decimal=context->getXQillaFactory()->createDecimal(_double, context);
           return decimal->asString(context);
         }
         else
@@ -679,27 +679,27 @@ AnyAtomicType::AtomicObjectType ATDoubleOrDerivedImpl::getPrimitiveTypeIndex() c
 
 /* returns a new infinity xs:double*/
 ATDoubleOrDerived::Ptr ATDoubleOrDerivedImpl::infinity(const DynamicContext* context) const {
-  return context->getPathanFactory()->createDouble(Numeric::INF_string, context);
+  return context->getXQillaFactory()->createDouble(Numeric::INF_string, context);
 }
 
 /* returns a new negative infinity xs:double*/
 ATDoubleOrDerived::Ptr ATDoubleOrDerivedImpl::negInfinity(const DynamicContext* context) const {
-  return context->getPathanFactory()->createDouble(Numeric::NegINF_string, context);
+  return context->getXQillaFactory()->createDouble(Numeric::NegINF_string, context);
 }
   
 /* returns a NaN xs:double*/
 ATDoubleOrDerived::Ptr ATDoubleOrDerivedImpl::notANumber(const DynamicContext* context) const {
-  return context->getPathanFactory()->createDouble(Numeric::NaN_string, context);
+  return context->getXQillaFactory()->createDouble(Numeric::NaN_string, context);
 }
 
 /* returns a -0 ATDoubleOrDerived*/
 ATDoubleOrDerived::Ptr ATDoubleOrDerivedImpl::negZero(const DynamicContext* context) const {
-  return context->getPathanFactory()->createDouble(Numeric::NegZero_string, context);
+  return context->getXQillaFactory()->createDouble(Numeric::NegZero_string, context);
 }
 
 /*returns a ATDoubleOrDerived of value value*/
 ATDoubleOrDerived::Ptr ATDoubleOrDerivedImpl::newDouble(MAPM value, const DynamicContext* context) const {
-  return context->getPathanFactory()->createDouble(value, context);
+  return context->getXQillaFactory()->createDouble(value, context);
 }
 
 void ATDoubleOrDerivedImpl::setDouble(const XMLCh* const value, const StaticContext *context) {

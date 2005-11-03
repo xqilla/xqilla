@@ -16,13 +16,13 @@
 #ifndef _XQVARIABLE_HPP
 #define _XQVARIABLE_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/ASTNodeImpl.hpp>
 #include <xqilla/runtime/Sequence.hpp>
 
 /** Deals with all the simple variable stuff.*/
-class PATHAN_EXPORT XQVariable : public ASTNodeImpl
+class XQILLA_API XQVariable : public ASTNodeImpl
 {
 public:
   XQVariable(const XMLCh *qualifiedName, XPath2MemoryManager* memMgr);

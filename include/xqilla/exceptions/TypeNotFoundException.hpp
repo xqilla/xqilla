@@ -16,11 +16,11 @@
 #ifndef _TYPENOTFOUNDEXCEPTION_HPP
 #define _TYPENOTFOUNDEXCEPTION_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/exceptions/DSLException.hpp>
 
-class PATHAN_EXPORT TypeNotFoundException : public DSLException
+class XQILLA_API TypeNotFoundException : public DSLException
 {
 public:
   

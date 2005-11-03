@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <assert.h>
 #include <xercesc/dom/DOM.hpp>
 #include <xercesc/util/XMLException.hpp>

@@ -18,7 +18,7 @@
 
 #include <xqilla/axis/Axis.hpp>
 
-class PATHAN_EXPORT DescendantAxis : public Axis
+class XQILLA_API DescendantAxis : public Axis
 {
 public:
   DescendantAxis(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *contextNode, const Node *nodeObj,

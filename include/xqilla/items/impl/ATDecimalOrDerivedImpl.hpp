@@ -20,12 +20,12 @@
 #include <xqilla/items/ATDecimalOrDerived.hpp>
 #include <xqilla/mapm/m_apm.h>
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #define DECIMAL_MAX_DIGITS 50
 class StaticContext;
 
-class PATHAN_EXPORT ATDecimalOrDerivedImpl : public ATDecimalOrDerived 
+class XQILLA_API ATDecimalOrDerivedImpl : public ATDecimalOrDerived 
 {
 
 public:

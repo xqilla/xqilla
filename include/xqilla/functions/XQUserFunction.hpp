@@ -20,14 +20,14 @@
 #if !defined(AFXQ_XQFUNCTION_H__97943356_0D2D_4930_9D60_6E95AB67586A__INCLUDED_)
 #define AFXQ_XQFUNCTION_H__97943356_0D2D_4930_9D60_6E95AB67586A__INCLUDED_
 
-#include <xqilla/framework/XQEngine.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/functions/FuncFactory.hpp>
 #include <xqilla/schema/SequenceType.hpp>
 #include <xqilla/ast/XQFunction.hpp>
 #include <xqilla/ast/StaticResolutionContext.hpp>
 #include <xqilla/context/Scope.hpp>
 
-class XQENGINE_API XQUserFunction : public FuncFactory
+class XQILLA_API XQUserFunction : public FuncFactory
 {
 public:
   class XQFunctionParameter
@@ -45,7 +45,7 @@ public:
     StaticResolutionContext _src;
   };
 
-  typedef std::vector<XQFunctionParameter*,PathanAllocator<XQFunctionParameter*> > VectorOfFunctionParameters;
+  typedef std::vector<XQFunctionParameter*,XQillaAllocator<XQFunctionParameter*> > VectorOfFunctionParameters;
 
   class XQFunctionEvaluator : public XQFunction
   {

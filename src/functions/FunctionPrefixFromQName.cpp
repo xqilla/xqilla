@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionPrefixFromQName.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/ATQNameOrDerived.hpp>
@@ -46,7 +46,7 @@ Sequence FunctionPrefixFromQName::collapseTreeInternal(DynamicContext* context, 
   Sequence arg=getParamNumber(1,context);
   if(arg.isEmpty())
     return Sequence(context->getMemoryManager());
-  return Sequence(context->getPathanFactory()->createStringOrDerived(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+  return Sequence(context->getXQillaFactory()->createStringOrDerived(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                                                                      XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_NCNAME,
                                                                      ((const ATQNameOrDerived*)(const Item*)arg.first())->getPrefix(), 
                                                                      context),

@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionSubstringBefore.hpp>
 #include <xqilla/items/ATStringOrDerived.hpp>
 #include <xqilla/context/DynamicContext.hpp>
@@ -59,7 +59,7 @@ Sequence FunctionSubstringBefore::collapseTreeInternal(DynamicContext* context, 
     Sequence collArg = getParamNumber(3,context);
     const XMLCh* collName=collArg.first()->asString(context);
     try {
-      context->getPathanFactory()->createAnyURI(collName, context);
+      context->getXQillaFactory()->createAnyURI(collName, context);
     } catch(XPath2ErrorException &e) {
       DSLthrow(FunctionException, X("FunctionSubstringAfter::collapseTreeInternal"), X("Invalid collationURI"));  
     }
@@ -72,12 +72,12 @@ Sequence FunctionSubstringBefore::collapseTreeInternal(DynamicContext* context, 
 
 	ATStringOrDerived::Ptr container = NULL;
   if(str1.isEmpty())
-    container=context->getPathanFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context);
+    container=context->getXQillaFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context);
   else
     container=(const ATStringOrDerived::Ptr )str1.first();
 	ATStringOrDerived::Ptr pattern = NULL;
   if(str2.isEmpty())
-    pattern=context->getPathanFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context);
+    pattern=context->getXQillaFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context);
   else
     pattern=(const ATStringOrDerived::Ptr )str2.first();
 

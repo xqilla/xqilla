@@ -13,14 +13,14 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <iostream>
 #include <sstream>
 
 #include <xqilla/utils/PrintAST.hpp>
 #include <xqilla/utils/UTF8Str.hpp>
 
-#include <xqilla/dom-api/impl/PathanExpressionImpl.hpp>
+#include <xqilla/dom-api/impl/XQillaExpressionImpl.hpp>
 #include <xqilla/ast/ASTNode.hpp>
 #include <xqilla/ast/XQFunction.hpp>
 #include <xqilla/ast/ASTNodeImpl.hpp>
@@ -67,9 +67,9 @@ using namespace std;
 
 static const int INDENT = 1;
 
-string PrintAST::print(const PathanExpression *expr, const DynamicContext *context, int indent)
+string PrintAST::print(const XQillaExpression *expr, const DynamicContext *context, int indent)
 {
-  return print(((const PathanExpressionImpl *)expr)->getCompiledExpression(), context, indent);
+  return print(((const XQillaExpressionImpl *)expr)->getCompiledExpression(), context, indent);
 }
 
 string PrintAST::print(const XQQuery *query, const DynamicContext *context, int indent)
@@ -88,7 +88,7 @@ string PrintAST::print(const XQQuery *query, const DynamicContext *context, int 
 
   PrintAST p;
 
-  for(std::vector<XQUserFunction*, PathanAllocator<XQUserFunction*> >::const_iterator i = query->m_userDefFns.begin();
+  for(std::vector<XQUserFunction*, XQillaAllocator<XQUserFunction*> >::const_iterator i = query->m_userDefFns.begin();
       i != query->m_userDefFns.end(); ++i) {
     XQUserFunction *f = *i;
 
@@ -104,7 +104,7 @@ string PrintAST::print(const XQQuery *query, const DynamicContext *context, int 
     s << p.printASTNode(f->getFunctionBody(), context, 2);
     s << "  </FunctionDefinition>" << endl;
   }
-  for(vector<XQGlobalVariable*, PathanAllocator<XQGlobalVariable*> >::const_iterator it = query->m_userDefVars.begin();
+  for(vector<XQGlobalVariable*, XQillaAllocator<XQGlobalVariable*> >::const_iterator it = query->m_userDefVars.begin();
       it != query->m_userDefVars.end(); ++it) {
     s << p.printASTNode(*it, context, indent);
   }

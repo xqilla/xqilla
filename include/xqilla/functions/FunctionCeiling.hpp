@@ -22,11 +22,11 @@
 #ifndef _FUNCTIONCEILING_HPP
 #define _FUNCTIONCEILING_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/NumericFunction.hpp>
 
-class PATHAN_EXPORT FunctionCeiling : public NumericFunction
+class XQILLA_API FunctionCeiling : public NumericFunction
 {
 public:
   static const XMLCh name[];

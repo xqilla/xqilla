@@ -19,7 +19,7 @@
 
 #include <sstream>
 
-#include <xqilla/framework/XQEngine.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/functions/XQUserFunction.hpp>
 #include <xqilla/exceptions/FunctionException.hpp>
 #include <xqilla/exceptions/XPath2TypeMatchException.hpp>

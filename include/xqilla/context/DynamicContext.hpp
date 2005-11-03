@@ -24,10 +24,10 @@ class Sequence;
 class Item;
 class URIResolver;
 class VariableStore;
-class PathanFactory;
+class XQillaFactory;
 
 /// The execution time dynamic context interface
-class PATHAN_EXPORT DynamicContext : public StaticContext
+class XQILLA_API DynamicContext : public StaticContext
 {
 public:
   virtual ~DynamicContext() {};

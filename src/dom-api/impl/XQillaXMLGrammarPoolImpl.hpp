@@ -13,10 +13,10 @@
  * $Id$
  */
 
-#ifndef __PATHANXMLGRAMMARPOOLIMPL_HPP
-#define __PATHANXMLGRAMMARPOOLIMPL_HPP
+#ifndef __XQILLAXMLGRAMMARPOOLIMPL_HPP
+#define __XQILLAXMLGRAMMARPOOLIMPL_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xercesc/internal/XMLGrammarPoolImpl.hpp>
 
 
@@ -25,11 +25,11 @@ class Grammar;
 class MemoryManager;
 XERCES_CPP_NAMESPACE_END  
 
-class PathanXMLGrammarPoolImpl : public XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPoolImpl
+class XQillaXMLGrammarPoolImpl : public XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPoolImpl
 {
 public:
 
-    PathanXMLGrammarPoolImpl(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* const memMgr);
+    XQillaXMLGrammarPoolImpl(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* const memMgr);
 
     /**
      * This method is overriden to not throw exceptions when a repeated grammar is found, but just ignore them

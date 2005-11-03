@@ -16,7 +16,7 @@
 #ifndef _FUNCTIONGETMONTHSFROMYEARMONTHDURATION_HPP
 #define _FUNCTIONGETMONTHSFROMYEARMONTHDURATION_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/ConstantFoldingFunction.hpp>
 
@@ -25,7 +25,7 @@
  *
  * months-from-duration(yearMonthDuration? $srcval) => integer?
  */
-class PATHAN_EXPORT FunctionMonthsFromDuration : public ConstantFoldingFunction
+class XQILLA_API FunctionMonthsFromDuration : public ConstantFoldingFunction
 {
 public:
   static const XMLCh name[];

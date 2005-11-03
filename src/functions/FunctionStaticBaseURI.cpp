@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionStaticBaseURI.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/ast/StaticResolutionContext.hpp>
@@ -52,5 +52,5 @@ Sequence FunctionStaticBaseURI::collapseTreeInternal(DynamicContext* context, in
     if(uri==NULL)
         return Sequence(context->getMemoryManager());
 
-    return Sequence(context->getPathanFactory()->createAnyURI(uri, context), context->getMemoryManager());
+    return Sequence(context->getXQillaFactory()->createAnyURI(uri, context), context->getMemoryManager());
 }

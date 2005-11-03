@@ -19,14 +19,14 @@
 #include <xercesc/util/XercesDefs.hpp>
 #include <xqilla/items/ATAnySimpleType.hpp>
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 class DynamicContext;
 
 /**
  * This class represents the atomic types (ie, the simple types 
  * which are not list or union types) with type annotation
  * xs:anySimpleType */
-class PATHAN_EXPORT ATAnySimpleTypeImpl : public ATAnySimpleType
+class XQILLA_API ATAnySimpleTypeImpl : public ATAnySimpleType
 {
 
 public:

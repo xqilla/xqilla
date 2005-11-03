@@ -17,38 +17,6 @@
  *  This software is provided "as is" without express or implied warranty.
  */
 
-/*
- *      $Id$
- *
- *      This file contains the iterative function to compute the LOG
- *	This is an internal function to the library and is not intended
- *	to be called directly by the user.
- *
- *      $Log$
- *      Revision 1.1  2005/11/01 18:04:13  jpcs
- *      Initial check in.
- *
- *      Revision 1.1  2004/07/21 09:23:01  jpcs
- *      Initial check in of the Parthenon backup of Pathan.
- *
- *      Revision 1.1  2003/05/01 12:46:55  alby
- *      - Updated MAPM to version 4.6.1
- *      - The MAPM class is now thread-safe
- *
- *      Revision 1.4  2003/04/09 20:21:29  mike
- *      fix rare corner condition by intentionally inducing a
- *      10 ^ -5 error in the initial guess.
- *
- *      Revision 1.3  2003/03/31 22:13:15  mike
- *      call generic error handling function
- *
- *      Revision 1.2  2003/03/30 21:27:22  mike
- *      add comments
- *
- *      Revision 1.1  2003/03/30 21:18:07  mike
- *      Initial revision
- */
-
 #include "m_apm_lc.h"
 #include <math.h>
 

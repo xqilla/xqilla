@@ -14,15 +14,15 @@
  */
 
 
-#include "../config/pathan_config.h"
-#include "PathanXMLGrammarPoolImpl.hpp"
+#include "../config/xqilla_config.h"
+#include "XQillaXMLGrammarPoolImpl.hpp"
 #include <xercesc/validators/common/Grammar.hpp>
 #include <xercesc/util/RuntimeException.hpp>
 
-PathanXMLGrammarPoolImpl::PathanXMLGrammarPoolImpl(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* const memMgr) : XMLGrammarPoolImpl(memMgr)
+XQillaXMLGrammarPoolImpl::XQillaXMLGrammarPoolImpl(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* const memMgr) : XMLGrammarPoolImpl(memMgr)
 {};
 
-bool PathanXMLGrammarPoolImpl::cacheGrammar(XERCES_CPP_NAMESPACE_QUALIFIER Grammar* const  gramToCache)
+bool XQillaXMLGrammarPoolImpl::cacheGrammar(XERCES_CPP_NAMESPACE_QUALIFIER Grammar* const  gramToCache)
 {
   try {
     return XMLGrammarPoolImpl::cacheGrammar(gramToCache);

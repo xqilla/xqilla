@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <sstream>
 
 #include <xqilla/utils/PrintAST.hpp>
@@ -33,10 +33,10 @@
 #include <xqilla/ast/XQSequence.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 #include <xqilla/runtime/SequenceResult.hpp>
-#include <xqilla/context/PathanFactory.hpp>
+#include <xqilla/context/XQillaFactory.hpp>
 
 ASTNodeImpl::ASTNodeImpl(XPath2MemoryManager* memMgr)
-  : _predList(PathanAllocator<PredInfo>(memMgr)),
+  : _predList(XQillaAllocator<PredInfo>(memMgr)),
     _src(memMgr),
     _memMgr(memMgr)
 {
@@ -215,7 +215,7 @@ ASTNode *ASTNodeImpl::resolveASTNodesForDateOrTime(VectorOfASTNodes &dis, Static
     if possible */
 ASTNode *ASTNodeImpl::resolvePredicates(StaticContext *context)
 {
-  Predicates newPreds(PathanAllocator<PredInfo>(context->getMemoryManager()));
+  Predicates newPreds(XQillaAllocator<PredInfo>(context->getMemoryManager()));
   ASTNodeImpl *result = resolvePredicate(_predList.rbegin(), newPreds, context);
   result->_predList = newPreds;
 
@@ -403,7 +403,7 @@ Item::Ptr ASTNodeImpl::PredicateFilterResult::next(DynamicContext *context)
     if(first_ != NULLRCP && second_ == NULLRCP && first_->isAtomicValue() &&
        ((const AnyAtomicType::Ptr)first_)->isNumericValue()) {
       const Numeric::Ptr num = (const Numeric::Ptr)first_;
-      if(!num->equals((const AnyAtomicType::Ptr)context->getPathanFactory()->createInteger((long)contextPos_, context), context)) {
+      if(!num->equals((const AnyAtomicType::Ptr)context->getXQillaFactory()->createInteger((long)contextPos_, context), context)) {
         result = 0;
       }
       else if(!contextUsed) {
@@ -536,7 +536,7 @@ Item::Ptr ASTNodeImpl::NumericPredicateFilterResult::next(DynamicContext *contex
   if(todo_) {
     todo_ = false;
 
-    Numeric::Ptr one = context->getPathanFactory()->createInteger(1, context);
+    Numeric::Ptr one = context->getXQillaFactory()->createInteger(1, context);
 
     AutoContextInfoReset autoReset(context);
     context->setContextSize(contextSize_);

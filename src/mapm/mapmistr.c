@@ -17,45 +17,6 @@
  *  This software is provided "as is" without express or implied warranty.
  */
 
-/*
- *      $Id$
- *
- *      This file contains M_APM -> integer string function
- *
- *      $Log$
- *      Revision 1.1  2005/11/01 18:04:13  jpcs
- *      Initial check in.
- *
- *      Revision 1.1  2004/07/21 09:23:01  jpcs
- *      Initial check in of the Parthenon backup of Pathan.
- *
- *      Revision 1.2  2003/05/01 12:46:55  alby
- *      - Updated MAPM to version 4.6.1
- *      - The MAPM class is now thread-safe
- *
- *      Revision 1.7  2003/03/31 21:52:07  mike
- *      call generic error handling function
- *
- *      Revision 1.6  2002/11/03 22:28:02  mike
- *      Updated function parameters to use the modern style
- *
- *      Revision 1.5  2001/08/06 16:58:20  mike
- *      improve the new function
- *
- *      Revision 1.4  2001/08/05 23:18:48  mike
- *      fix function when input is not an integer but the
- *      number is close to rounding upwards (NNN.9999999999....)
- *
- *      Revision 1.3  2000/02/03 22:48:38  mike
- *      use MAPM_* generic memory function
- *
- *      Revision 1.2  1999/07/18 01:33:04  mike
- *      minor tweak to code alignment
- *
- *      Revision 1.1  1999/07/12 02:06:08  mike
- *      Initial revision
- */
-
 #include "m_apm_lc.h"
 
 /****************************************************************************/

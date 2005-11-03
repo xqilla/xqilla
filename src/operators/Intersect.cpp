@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <assert.h>
 #include <xqilla/operators/Intersect.hpp>
 #include <xqilla/exceptions/XPath2ErrorException.hpp>

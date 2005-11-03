@@ -19,11 +19,11 @@
 #include <xercesc/util/XercesDefs.hpp>
 #include <xqilla/items/AnyAtomicType.hpp>
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 class DynamicContext;
 
-class PATHAN_EXPORT ATBase64BinaryOrDerived : public AnyAtomicType
+class XQILLA_API ATBase64BinaryOrDerived : public AnyAtomicType
 {
 public:
   /* Get the name of the primitive type (basic type) of this type (ie "decimal" for xs:decimal) */

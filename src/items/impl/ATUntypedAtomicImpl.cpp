@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include "ATUntypedAtomicImpl.hpp"
 #include <xqilla/items/ATDoubleOrDerived.hpp>
 #include <xqilla/items/ATFloatOrDerived.hpp>
@@ -39,7 +39,7 @@ ATUntypedAtomicImpl(const XMLCh*, const XMLCh*, const XMLCh* value, const Static
 
 void *ATUntypedAtomicImpl::getInterface(const XMLCh *name) const
 {
-  if(name == Item::gPathan) {
+  if(name == Item::gXQilla) {
     return (void*)this;
   }
   return 0;
@@ -81,11 +81,11 @@ AnyAtomicType::Ptr ATUntypedAtomicImpl::castAsInternal(AtomicObjectType targetIn
   switch (targetIndex) {
     case DOUBLE: {
       const XMLCh* upCase = XPath2Utils::toUpper(_value, context->getMemoryManager());
-      return (const AnyAtomicType::Ptr)context->getPathanFactory()->createDoubleOrDerived(targetURI, targetType, upCase, context);
+      return (const AnyAtomicType::Ptr)context->getXQillaFactory()->createDoubleOrDerived(targetURI, targetType, upCase, context);
     }
     case FLOAT: {
       const XMLCh* upCase = XPath2Utils::toUpper(_value, context->getMemoryManager());
-      return (const AnyAtomicType::Ptr)context->getPathanFactory()->createFloatOrDerived(targetURI, targetType, upCase, context);
+      return (const AnyAtomicType::Ptr)context->getXQillaFactory()->createFloatOrDerived(targetURI, targetType, upCase, context);
     }
     default: return AnyAtomicType::castAsInternal(targetIndex, targetURI, targetType, context);
   }

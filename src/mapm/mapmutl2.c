@@ -17,35 +17,6 @@
  *  This software is provided "as is" without express or implied warranty.
  */
 
-/*
- *      $Id$
- *
- *      This file contains various utility functions
- *
- *      $Log$
- *      Revision 1.1  2005/11/01 18:04:13  jpcs
- *      Initial check in.
- *
- *      Revision 1.1  2004/07/21 09:23:01  jpcs
- *      Initial check in of the Parthenon backup of Pathan.
- *
- *      Revision 1.2  2003/05/01 12:46:55  alby
- *      - Updated MAPM to version 4.6.1
- *      - The MAPM class is now thread-safe
- *
- *      Revision 1.4  2003/03/31 22:02:22  mike
- *      call generic error handling function
- *
- *      Revision 1.3  2002/11/03 21:19:40  mike
- *      Updated function parameters to use the modern style
- *
- *      Revision 1.2  2002/05/17 22:29:46  mike
- *      update some comments
- *
- *      Revision 1.1  2002/05/17 22:28:27  mike
- *      Initial revision
- */
-
 #include "m_apm_lc.h"
 
 /****************************************************************************/

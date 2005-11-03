@@ -57,11 +57,15 @@
 
 /*
  * $Log$
+ * Revision 1.2  2005/11/03 17:04:25  jpcs
+ * Merged XQEngine.hpp and Pathan.hpp into XQillaExport.hpp. Renamed all
+ * things Pathan to XQilla.
+ *
  * Revision 1.1  2005/11/01 18:04:14  jpcs
  * Initial check in.
  *
  * Revision 1.1  2004/07/21 09:22:58  jpcs
- * Initial check in of the Parthenon backup of Pathan.
+ * Initial check in of the Parthenon backup of XQilla.
  *
  * Revision 1.1  2003/07/31 12:54:37  crioux
  * * Moved eval out of functionalTesting and into samples/evaluator
@@ -82,7 +86,7 @@
  * * changed ATDecimalOrDerived to output correct canonical representation
  *
  * Revision 1.2  2002/12/29 18:00:57  tom
- * Many source changes. Pathan and eval now compile and link.
+ * Many source changes. XQilla and eval now compile and link.
  *
  * Revision 1.1  2002/12/09 10:11:22  nfg
  * Moved examples/ * to samples/ *.
@@ -105,8 +109,8 @@
  * Many #include etc. changes for Windows build.
  *
  * Revision 1.1  2001/05/25 18:11:07  jpcs
- * Sorted out the main Pathan makefiles, to generate the include files.
- * Added an example project, xgrep, that shows how to use Pathan.
+ * Sorted out the main XQilla makefiles, to generate the include files.
+ * Added an example project, xgrep, that shows how to use XQilla.
  *
  * Revision 1.1  2001/02/09 16:40:16  gareth
  * added Xerces 1_4

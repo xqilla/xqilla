@@ -20,7 +20,7 @@
 #ifndef _DatatypeFactoryTemplate_HPP
 #define _DatatypeFactoryTemplate_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/functions/FunctionConstructor.hpp>

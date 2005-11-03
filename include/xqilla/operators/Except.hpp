@@ -23,13 +23,13 @@ but not in the second operand
 #ifndef _EXCEPT_HPP
 #define _EXCEPT_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/XQOperator.hpp>
 #include <xqilla/ast/XQNav.hpp>
 #include <xqilla/runtime/ResultBuffer.hpp>
 
-class PATHAN_EXPORT Except : public XQOperator
+class XQILLA_API Except : public XQOperator
 {
 public:
   static const XMLCh name[];

@@ -20,7 +20,7 @@
 #ifndef _FUNCFACTORYTEMPLATE_HPP
 #define _FUNCFACTORYTEMPLATE_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/functions/FuncFactory.hpp>
 

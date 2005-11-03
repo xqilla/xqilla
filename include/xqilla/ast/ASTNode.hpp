@@ -17,7 +17,7 @@
 #define _ASTNODE_HPP
 
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <vector>
 #include <xqilla/framework/XPath2MemoryManager.hpp>
 
@@ -28,9 +28,9 @@ class ASTNode;
 class StaticResolutionContext;
 class SequenceType;
 
-typedef std::vector<ASTNode*,PathanAllocator<ASTNode*> > VectorOfASTNodes;
+typedef std::vector<ASTNode*,XQillaAllocator<ASTNode*> > VectorOfASTNodes;
 
-class PATHAN_EXPORT ASTNode
+class XQILLA_API ASTNode
 {
 public:
   ///enum for data types
@@ -68,7 +68,7 @@ public:
     PredInfo(ASTNode *s) : pred(s) {}
     ASTNode *pred;
   };
-  typedef std::vector<PredInfo,PathanAllocator<PredInfo> > Predicates;
+  typedef std::vector<PredInfo,XQillaAllocator<PredInfo> > Predicates;
 
   enum executionFlags {
     UNORDERED =0x01,

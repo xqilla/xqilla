@@ -16,13 +16,13 @@
 #ifndef _DOCUMENTCACHE_HPP
 #define _DOCUMENTCACHE_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xercesc/util/XercesDefs.hpp>
 #include <vector>
 #include <xqilla/framework/XPath2MemoryManager.hpp>
 #include <xqilla/items/Node.hpp>
 
-typedef std::vector<const XMLCh*, PathanAllocator<const XMLCh*> > VectorOfStrings;
+typedef std::vector<const XMLCh*, XQillaAllocator<const XMLCh*> > VectorOfStrings;
 
 class DynamicContext;
 class StaticContext;
@@ -39,7 +39,7 @@ class SchemaAttDef;
 XERCES_CPP_NAMESPACE_END
 
 ///Expression Context is a storage for contexts.
-class PATHAN_EXPORT DocumentCache 
+class XQILLA_API DocumentCache 
 {
 public:
   enum ValidationMode {
@@ -65,7 +65,7 @@ public:
 
   /**
    * Sets the XMLEntityResolver that is used by Xerces when it is used
-   * to parse documents. This affects the behaviour of Pathan whenever
+   * to parse documents. This affects the behaviour of XQilla whenever
    * it retrieves an XML, DTD or XML Schema grammar.
    */
   virtual void setXMLEntityResolver(XERCES_CPP_NAMESPACE_QUALIFIER XMLEntityResolver* const handler) = 0;

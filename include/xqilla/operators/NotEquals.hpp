@@ -20,14 +20,14 @@
 #ifndef _NOTEQUALS_HPP
 #define _NOTEQUALS_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/operators/ComparisonOperator.hpp>
 
 class Collation;
 
 /** OpNotEquals operator function*/
-class PATHAN_EXPORT NotEquals : public ComparisonOperator
+class XQILLA_API NotEquals : public ComparisonOperator
 {
 public:
   static const XMLCh name[];

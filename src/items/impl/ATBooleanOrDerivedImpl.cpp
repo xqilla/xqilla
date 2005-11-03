@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xqilla/items/impl/ATBooleanOrDerivedImpl.hpp>
 #include <xercesc/util/XMLUni.hpp>
 #include <xercesc/util/XMLUniDefs.hpp>
@@ -24,7 +24,7 @@
 #include <xqilla/exceptions/XPath2TypeCastException.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/utils/XStr.hpp>
-#include <xqilla/context/PathanFactory.hpp>
+#include <xqilla/context/XQillaFactory.hpp>
 
 #include <xqilla/items/ATDoubleOrDerived.hpp>
 #include <xqilla/items/ATFloatOrDerived.hpp>
@@ -57,7 +57,7 @@ ATBooleanOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, bool value, 
     
 void *ATBooleanOrDerivedImpl::getInterface(const XMLCh *name) const
 {
-  if(name == Item::gPathan) {
+  if(name == Item::gXQilla) {
     return (void*)this;
   }
   return 0;
@@ -99,13 +99,13 @@ AnyAtomicType::Ptr ATBooleanOrDerivedImpl::castAsInternal(AtomicObjectType targe
 
   switch(targetIndex) {
     case FLOAT: {
-      return (const AnyAtomicType::Ptr)context->getPathanFactory()->createFloatOrDerived(targetURI, targetType, chValue, context);
+      return (const AnyAtomicType::Ptr)context->getXQillaFactory()->createFloatOrDerived(targetURI, targetType, chValue, context);
     }
     case DECIMAL:  {
-      return (const AnyAtomicType::Ptr)context->getPathanFactory()->createDecimalOrDerived(targetURI, targetType, chValue, context);
+      return (const AnyAtomicType::Ptr)context->getXQillaFactory()->createDecimalOrDerived(targetURI, targetType, chValue, context);
     }
     case DOUBLE: {
-      return (const AnyAtomicType::Ptr)context->getPathanFactory()->createDoubleOrDerived(targetURI, targetType, chValue, context);
+      return (const AnyAtomicType::Ptr)context->getXQillaFactory()->createDoubleOrDerived(targetURI, targetType, chValue, context);
     }
     default: {
       return AnyAtomicType::castAsInternal(targetIndex, targetURI, targetType, context);

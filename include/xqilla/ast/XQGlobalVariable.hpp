@@ -24,7 +24,7 @@
 
 class SequenceType;
 
-class XQENGINE_API XQGlobalVariable : public ASTNodeImpl
+class XQILLA_API XQGlobalVariable : public ASTNodeImpl
 {
 public:
 	XQGlobalVariable(const XMLCh* varQName, SequenceType* seqType, ASTNode* value, XPath2MemoryManager* expr);

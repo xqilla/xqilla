@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include "ATGMonthOrDerivedImpl.hpp"
 #include <xqilla/exceptions/IllegalArgumentException.hpp>
 #include <xqilla/exceptions/XPath2TypeCastException.hpp>
@@ -28,7 +28,7 @@
 #include "../utils/DateUtils.hpp"
 #include <xqilla/items/ATDecimalOrDerived.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xqilla/context/PathanFactory.hpp>
+#include <xqilla/context/XQillaFactory.hpp>
 
 #include <xercesc/util/XMLString.hpp>
 
@@ -43,7 +43,7 @@ ATGMonthOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* 
 
 void *ATGMonthOrDerivedImpl::getInterface(const XMLCh *name) const
 {
-  if(name == Item::gPathan) {
+  if(name == Item::gXQilla) {
     return (void*)this;
   }
   return 0;
@@ -116,7 +116,7 @@ bool ATGMonthOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const Dynam
     if ( _hasTimezone == true ) {
         buffer.append(timezone_->asString(context));
   }
-    ATDateTimeOrDerived::Ptr myValue=context->getPathanFactory()->createDateTime(buffer.getRawBuffer(), context);
+    ATDateTimeOrDerived::Ptr myValue=context->getXQillaFactory()->createDateTime(buffer.getRawBuffer(), context);
 
     buffer.set(s1972);
     buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
@@ -132,7 +132,7 @@ bool ATGMonthOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const Dynam
     if ( targetGMonth->_hasTimezone == true ) {
         buffer.append(targetGMonth->timezone_->asString(context));
   }
-    ATDateTimeOrDerived::Ptr targetValue=context->getPathanFactory()->createDateTime(buffer.getRawBuffer(), context);
+    ATDateTimeOrDerived::Ptr targetValue=context->getXQillaFactory()->createDateTime(buffer.getRawBuffer(), context);
 
     return myValue->equals(targetValue, context);
 }
@@ -182,7 +182,7 @@ ATGMonthOrDerived::Ptr ATGMonthOrDerivedImpl::setTimezone(const Timezone::Ptr &t
   if (hasTimezone) 
      buffer.append(timezone->asString(context));
   const XMLCh* gMonth = context->getMemoryManager()->getPooledString(buffer.getRawBuffer());
-  return context->getPathanFactory()->createGMonthOrDerived(this->getTypeURI(), this->getTypeName(), gMonth, context);        
+  return context->getXQillaFactory()->createGMonthOrDerived(this->getTypeURI(), this->getTypeName(), gMonth, context);        
 }
 
 
@@ -330,7 +330,7 @@ void ATGMonthOrDerivedImpl::setGMonth(const XMLCh* const value, const DynamicCon
     zonehh *= -1;
     zonemm *= -1;
   }
-  _gMonth = context->getPathanFactory()->createNonNegativeInteger(MM, context);
+  _gMonth = context->getXQillaFactory()->createNonNegativeInteger(MM, context);
   timezone_ = new Timezone(zonehh, zonemm);
   
 }

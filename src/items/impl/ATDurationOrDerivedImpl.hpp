@@ -19,14 +19,14 @@
 #include <xqilla/items/ATDurationOrDerived.hpp>
 #include <xercesc/util/XercesDefs.hpp>
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 class AnyAtomicType;
 class ATDecimalOrDerived;
 class XPath2MemoryManager;
 class MAPM;
 
-class PATHAN_EXPORT ATDurationOrDerivedImpl : public ATDurationOrDerived 
+class XQILLA_API ATDurationOrDerivedImpl : public ATDurationOrDerived 
 {
 
 public:

@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionIndexOf.hpp>
 #include <xqilla/runtime/Sequence.hpp>
 #include <xqilla/items/AnyAtomicType.hpp>
@@ -25,7 +25,7 @@
 #include <xqilla/context/Collation.hpp>
 #include <xqilla/context/impl/CodepointCollation.hpp>
 #include <xqilla/context/DynamicContext.hpp>
-#include <xqilla/context/PathanFactory.hpp>
+#include <xqilla/context/XQillaFactory.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 
 const XMLCh FunctionIndexOf::name[] = {
@@ -65,7 +65,7 @@ Sequence FunctionIndexOf::indexOf(Sequence &list, const Item::Ptr &item, Collati
                                       XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING, context);
 
         if(Equals::equals(current,atom,collation,context))
-        result.addItem(context->getPathanFactory()->createInteger(index, context));
+        result.addItem(context->getXQillaFactory()->createInteger(index, context));
     } catch (IllegalArgumentException &e) {
         // if eq is not defined, they are different
     } catch (XPath2ErrorException &e) {
@@ -87,7 +87,7 @@ Sequence FunctionIndexOf::collapseTreeInternal(DynamicContext* context, int flag
   if (getNumArgs() > 2) {
     const XMLCh* collName=getParamNumber(3,context).next(context)->asString(context);
     try {
-      context->getPathanFactory()->createAnyURI(collName, context);
+      context->getXQillaFactory()->createAnyURI(collName, context);
     } catch(XPath2ErrorException &e) {
       DSLthrow(FunctionException, X("FunctionIndexOf::collapseTreeInternal"), X("Invalid collationURI"));  
     }

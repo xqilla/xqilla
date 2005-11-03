@@ -22,12 +22,12 @@
 #ifndef _FUNCTIONLANG_HPP
 #define _FUNCTIONLANG_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/XQFunction.hpp>
 
 /** lang function. */
-class PATHAN_EXPORT FunctionLang : public XQFunction
+class XQILLA_API FunctionLang : public XQFunction
 {
 public:
   static const XMLCh name[];

@@ -20,11 +20,11 @@
 #ifndef _FUNCTIONINSERTBEFORE_HPP
 #define _FUNCTIONINSERTBEFORE_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/ConstantFoldingFunction.hpp>
 
-class PATHAN_EXPORT FunctionInsertBefore : public ConstantFoldingFunction
+class XQILLA_API FunctionInsertBefore : public ConstantFoldingFunction
 {
 public:
   static const XMLCh name[];

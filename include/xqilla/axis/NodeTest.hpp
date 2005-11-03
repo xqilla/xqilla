@@ -16,7 +16,7 @@
 #ifndef _NODETEST_HPP
 #define _NODETEST_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/runtime/Result.hpp>
 #include <xqilla/runtime/ResultImpl.hpp>
@@ -30,7 +30,7 @@ class DynamicContext;
  * and provides methods for filtering a Result containing Node items,
  * and determining if a single Item matches.
  */
-class PATHAN_EXPORT NodeTest
+class XQILLA_API NodeTest
 {
 public:
   NodeTest();
@@ -105,7 +105,7 @@ protected:
   /**
    * Performs filtering based on type or name.
    */
-  class PATHAN_EXPORT FilterResult : public ResultImpl
+  class XQILLA_API FilterResult : public ResultImpl
   {
   public:
     FilterResult(const Result &toFilter, const NodeTest *nodeTest, DynamicContext *context);

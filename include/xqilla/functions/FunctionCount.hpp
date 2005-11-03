@@ -22,11 +22,11 @@
 #ifndef _FUNCTIONCOUNT_HPP
 #define _FUNCTIONCOUNT_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/ConstantFoldingFunction.hpp>
 
-class PATHAN_EXPORT FunctionCount : public ConstantFoldingFunction
+class XQILLA_API FunctionCount : public ConstantFoldingFunction
 {
 public:
   static const XMLCh name[];

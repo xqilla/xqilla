@@ -20,12 +20,12 @@
 #ifndef _FUNCTIONCONCAT_HPP
 #define _FUNCTIONCONCAT_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/ConstantFoldingFunction.hpp>
 
 /** Concat operator function*/
-class PATHAN_EXPORT FunctionConcat : public ConstantFoldingFunction
+class XQILLA_API FunctionConcat : public ConstantFoldingFunction
 {
 public:
   static const XMLCh name[];

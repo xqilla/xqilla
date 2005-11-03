@@ -16,7 +16,7 @@
 #ifndef _FUNCTIONGETDAYFROMDATE_HPP
 #define _FUNCTIONGETDAYFROMDATE_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/XQFunction.hpp>
 
@@ -25,7 +25,7 @@
  *
  * xf:day-from-date(date $srcval) => integer
  */
-class PATHAN_EXPORT FunctionDayFromDate : public XQFunction
+class XQILLA_API FunctionDayFromDate : public XQFunction
 {
 public:
   static const XMLCh name[];

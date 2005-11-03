@@ -19,11 +19,11 @@
 #include <xercesc/util/XercesDefs.hpp>
 #include <xqilla/items/ATHexBinaryOrDerived.hpp>
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 class DynamicContext;
 
-class PATHAN_EXPORT ATHexBinaryOrDerivedImpl : public ATHexBinaryOrDerived 
+class XQILLA_API ATHexBinaryOrDerivedImpl : public ATHexBinaryOrDerived 
 {
 
 public:

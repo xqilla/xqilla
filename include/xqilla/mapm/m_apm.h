@@ -17,151 +17,10 @@
  *  This software is provided "as is" without express or implied warranty.
  */
 
-/*
- *      This is the header file that the user will include.
- *
- *      $Log$
- *      Revision 1.1  2005/11/01 18:04:11  jpcs
- *      Initial check in.
- *
- *      Revision 1.3  2005/07/08 09:51:41  alby
- *      Make MAPM function not inline, or Windows will have problems finding the C functions from XQuery DLL
- *
- *      Revision 1.2  2005/07/06 19:20:48  alby
- *      Export a few methods needed by XQuery
- *
- *      Revision 1.1  2004/07/21 09:22:57  jpcs
- *      Initial check in of the Parthenon backup of Pathan.
- *
- *      Revision 1.2  2004/07/15 15:51:23  alby
- *      Remove unary operator- as VC 7.1 gets confused
- *
- *      Revision 1.1  2004/07/08 15:24:39  swhite
- *      Moved more headers into the include directory.  Still a few to go.
- *
- *      Revision 1.5  2004/06/21 12:10:29  swhite
- *      * Moved the public interface classes into include/pathan (thus removing
- *      the requirement for the perl script that used to do this, and making
- *      things generally fluffier especially under windows).  This will also
- *      make it easier to ensure that (for example) xgrep only requires the
- *      public API to compile.
- *
- *      * Minor fixes for the benefit of compilation under MS VC++ 6.0
- *
- *      Revision 1.4  2003/08/20 12:08:00  alby
- *      Export the MAPM class on Windows
- *
- *      Revision 1.3  2003/06/05 11:42:23  alby
- *      Make the comparison operators return bool instead of int
- *
- *      Revision 1.2  2003/05/01 12:46:55  alby
- *      - Updated MAPM to version 4.6.1
- *      - The MAPM class is now thread-safe
- *
- *      Revision 1.31  2002/11/04 20:46:33  mike
- *      change definition of the M_APM structure
- *
- *      Revision 1.30  2002/11/03 23:36:24  mike
- *      added new function, m_apm_integer_pow_nr
- *
- *      Revision 1.29  2002/02/14 21:43:00  mike
- *      add set_random_seed prototype
- *
- *      Revision 1.28  2001/08/28 18:29:32  mike
- *      fix fixptstringexp
- *
- *      Revision 1.27  2001/08/27 22:45:03  mike
- *      fix typo
- *
- *      Revision 1.26  2001/08/27 22:43:06  mike
- *      add new fix pt functions to C++ wrapper
- *
- *      Revision 1.25  2001/08/26 22:09:13  mike
- *      add new prototype
- *
- *      Revision 1.24  2001/08/25 16:48:21  mike
- *      add new prototypes
- *
- *      Revision 1.23  2001/07/16 18:40:27  mike
- *      add free_all_mem, trim_mem_usage prototypes
- *
- *      Revision 1.22  2001/07/15 20:49:21  mike
- *      added is_odd, is_even, gcd, lcm functions
- *
- *      Revision 1.21  2001/03/25 21:24:55  mike
- *      add floor and ceil functions
- *
- *      Revision 1.20  2000/09/23 19:05:29  mike
- *      add _reciprocal prototype
- *
- *      Revision 1.19  2000/08/21 23:30:13  mike
- *      add _is_integer function
- *
- *      Revision 1.18  2000/07/06 00:10:15  mike
- *      redo declare for MM_cpp_min_precision
- *
- *      Revision 1.17  2000/07/04 20:59:43  mike
- *      move MM_cpp_min_precision into cplusplus block below
- *
- *      Revision 1.16  2000/07/04 20:49:04  mike
- *      move 'MM_cpp_min_precision' inside the extern "C"
- *      brackets
- *
- *      Revision 1.15  2000/04/06 21:19:38  mike
- *      minor final tweaks from Orion
- *
- *      Revision 1.14  2000/04/05 20:15:25  mike
- *      add cpp_min_precision
- *
- *      Revision 1.13  2000/04/04 22:20:09  mike
- *      updated some comments from Orion
- *
- *      Revision 1.12  2000/04/04 19:46:36  mike
- *      fix preincrement, postincrement operators
- *      added some comments
- *      added 'ipow' operators
- *
- *      Revision 1.11  2000/04/03 22:08:35  mike
- *      added MAPM C++ wrapper class
- *      supplied by Orion Sky Lawlor (olawlor@acm.org)
- *
- *      Revision 1.10  2000/04/03 18:40:28  mike
- *      add #define atan2 for alias
- *
- *      Revision 1.9  2000/04/03 18:05:23  mike
- *      added hyperbolic functions
- *
- *      Revision 1.8  2000/04/03 17:26:57  mike
- *      add cbrt prototype
- *
- *      Revision 1.7  1999/09/18 03:11:23  mike
- *      add new prototype
- *
- *      Revision 1.6  1999/09/18 03:08:25  mike
- *      add new prototypes
- *
- *      Revision 1.5  1999/09/18 01:37:55  mike
- *      added new prototype
- *
- *      Revision 1.4  1999/07/12 02:04:30  mike
- *      added new function prototpye (m_apm_integer_string)
- *
- *      Revision 1.3  1999/05/15 21:04:08  mike
- *      added factorial prototype
- *
- *      Revision 1.2  1999/05/12 20:50:12  mike
- *      added more constants
- *
- *      Revision 1.1  1999/05/12 20:48:25  mike
- *      Initial revision
- *
- *      $Id$
- */
-
 #ifndef M__APM__INCLUDED
 #define M__APM__INCLUDED
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #ifdef __cplusplus
 /* Comment this line out if you've compiled the library as C++. */
@@ -400,7 +259,7 @@ extern
 int MM_cpp_min_precision;
 
 
-class PATHAN_EXPORT MAPM {
+class XQILLA_API MAPM {
 protected:
 
 /*

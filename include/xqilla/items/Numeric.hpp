@@ -17,12 +17,12 @@
 #define __NUMERIC_HPP
 
 #include <xercesc/util/XercesDefs.hpp>
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/items/AnyAtomicType.hpp>
 
 class DynamicContext;
 
-class PATHAN_EXPORT Numeric : public AnyAtomicType
+class XQILLA_API Numeric : public AnyAtomicType
 {
 public:
   typedef RefCountPointer<const Numeric> Ptr;

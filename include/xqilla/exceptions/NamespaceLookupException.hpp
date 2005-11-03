@@ -22,13 +22,13 @@
 #ifndef _NAMESPACELOOKUPEXCPETION_HPP
 #define _NAMESPACELOOKUPEXCPETION_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/exceptions/DSLException.hpp>
 
 /** exception class for DSLPath parser */
 
-class PATHAN_EXPORT NamespaceLookupException : public DSLException
+class XQILLA_API NamespaceLookupException : public DSLException
 {
 public:
 

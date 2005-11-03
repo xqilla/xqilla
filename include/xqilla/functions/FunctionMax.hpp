@@ -21,11 +21,11 @@
 #ifndef _FUNCTIONMAX_HPP
 #define _FUNCTIONMAX_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/AggregateFunction.hpp>
 
-class PATHAN_EXPORT FunctionMax : public AggregateFunction
+class XQILLA_API FunctionMax : public AggregateFunction
 {
 public:
   static const XMLCh name[];

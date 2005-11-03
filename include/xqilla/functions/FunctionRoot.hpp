@@ -22,14 +22,14 @@
 #ifndef _FUNCTIONROOT_HPP
 #define _FUNCTIONROOT_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/XQFunction.hpp>
 
 class XPath2MemoryManager;
 
 /** For function. */
-class PATHAN_EXPORT FunctionRoot : public XQFunction
+class XQILLA_API FunctionRoot : public XQFunction
 {
 public:
   static const XMLCh name[];

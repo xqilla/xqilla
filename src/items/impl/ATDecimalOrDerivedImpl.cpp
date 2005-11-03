@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xqilla/items/impl/ATDecimalOrDerivedImpl.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/items/ATBooleanOrDerived.hpp>
@@ -27,7 +27,7 @@
 #include <xercesc/framework/XMLBuffer.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 #include <xqilla/framework/XPath2MemoryManager.hpp>
-#include <xqilla/context/PathanFactory.hpp>
+#include <xqilla/context/XQillaFactory.hpp>
 
 ATDecimalOrDerivedImpl::
 ATDecimalOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* value, const StaticContext* context): 
@@ -71,7 +71,7 @@ ATDecimalOrDerivedImpl(int value):
 
 void *ATDecimalOrDerivedImpl::getInterface(const XMLCh *name) const
 {
-  if(name == Item::gPathan) {
+  if(name == Item::gXQilla) {
     return (void*)this;
   }
   return 0;
@@ -108,12 +108,12 @@ AnyAtomicType::Ptr ATDecimalOrDerivedImpl::castAsInternal(AtomicObjectType targe
                                       XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_INTEGER)) {
     char obuf[1024];
     _decimal.toIntegerString(obuf);
-    return (const AnyAtomicType::Ptr)context->getPathanFactory()->createDecimalOrDerived(targetURI, targetType, obuf, context);
+    return (const AnyAtomicType::Ptr)context->getXQillaFactory()->createDecimalOrDerived(targetURI, targetType, obuf, context);
   } else if (targetIndex == BOOLEAN) {
     if (this->isZero()) {
-      return context->getPathanFactory()->createBooleanOrDerived(targetURI, targetType, false, context);
+      return context->getXQillaFactory()->createBooleanOrDerived(targetURI, targetType, false, context);
     } else {
-      return context->getPathanFactory()->createBooleanOrDerived(targetURI, targetType, true, context);
+      return context->getXQillaFactory()->createBooleanOrDerived(targetURI, targetType, true, context);
     }
   } else {
     return AnyAtomicType::castAsInternal(targetIndex, targetURI, targetType, context);
@@ -268,9 +268,9 @@ Numeric::Ptr ATDecimalOrDerivedImpl::add(const Numeric::Ptr &other, const Dynami
 
     // if integer, return xs:integer, otherwise xs:decimal
     if(_isInteger) {
-      return context->getPathanFactory()->createInteger(_decimal + otherImpl->_decimal, context);
+      return context->getXQillaFactory()->createInteger(_decimal + otherImpl->_decimal, context);
     }
-    return context->getPathanFactory()->createDecimal(_decimal + otherImpl->_decimal, context);
+    return context->getXQillaFactory()->createDecimal(_decimal + otherImpl->_decimal, context);
   } else if(this->getPrimitiveTypeIndex() != other->getPrimitiveTypeIndex()) {
     // if other is not a decimal, then we need to promote this to a float or double
     return ((const Numeric::Ptr )this->castAs(other->getPrimitiveTypeURI(), other->getPrimitiveTypeName(), context))->add(other, context);
@@ -317,9 +317,9 @@ Numeric::Ptr ATDecimalOrDerivedImpl::subtract(const Numeric::Ptr &other, const D
     ATDecimalOrDerivedImpl* otherImpl = (ATDecimalOrDerivedImpl*)(const Numeric*)other;
     // if integer, return xs:integer, otherwise xs:decimal    
     if(_isInteger) {
-      return context->getPathanFactory()->createInteger(_decimal - otherImpl->_decimal, context);
+      return context->getXQillaFactory()->createInteger(_decimal - otherImpl->_decimal, context);
     }
-    return context->getPathanFactory()->createDecimal(_decimal - otherImpl->_decimal, context);
+    return context->getXQillaFactory()->createDecimal(_decimal - otherImpl->_decimal, context);
 
   } else if(this->getPrimitiveTypeIndex() != other->getPrimitiveTypeIndex()) {
     // if other is not a decimal, then we need to promote this to a float or double
@@ -365,9 +365,9 @@ Numeric::Ptr ATDecimalOrDerivedImpl::multiply(const Numeric::Ptr &other, const D
     ATDecimalOrDerivedImpl* otherImpl = (ATDecimalOrDerivedImpl*)(const Numeric*)other;
     // if integer, return xs:integer, otherwise xs:decimal    
     if(_isInteger) {
-      return context->getPathanFactory()->createInteger(_decimal * otherImpl->_decimal, context);
+      return context->getXQillaFactory()->createInteger(_decimal * otherImpl->_decimal, context);
     }
-    return context->getPathanFactory()->createDecimal(_decimal * otherImpl->_decimal, context);
+    return context->getXQillaFactory()->createDecimal(_decimal * otherImpl->_decimal, context);
 
   } else if(this->getPrimitiveTypeIndex() != other->getPrimitiveTypeIndex()) {
     // if other is not a decimal, then we need to promote this to a float or double
@@ -417,7 +417,7 @@ Numeric::Ptr ATDecimalOrDerivedImpl::divide(const Numeric::Ptr &other, const Dyn
     }
   
     // return a xs:decimal, regardless of the actual types of the operands
-    return context->getPathanFactory()->createDecimal(_decimal / otherImpl->_decimal, context);
+    return context->getXQillaFactory()->createDecimal(_decimal / otherImpl->_decimal, context);
   } else if(this->getPrimitiveTypeIndex() != other->getPrimitiveTypeIndex()) {
     // if other is not a decimal, then we need to promote this to a float or double
     return ((const Numeric::Ptr )this->castAs(other->getPrimitiveTypeURI(), other->getPrimitiveTypeName(), context))->divide(other, context);
@@ -471,9 +471,9 @@ Numeric::Ptr ATDecimalOrDerivedImpl::mod(const Numeric::Ptr &other, const Dynami
     result -= r * otherImpl->_decimal;
     // if integer, return xs:integer, otherwise xs:decimal    
     if(_isInteger) {
-      return context->getPathanFactory()->createInteger(result, context);
+      return context->getXQillaFactory()->createInteger(result, context);
     }
-    return context->getPathanFactory()->createDecimal(result, context);
+    return context->getXQillaFactory()->createDecimal(result, context);
   } else if(this->getPrimitiveTypeIndex() != other->getPrimitiveTypeIndex()) {
     // if other is not a decimal, then we need to promote this to a float or double
     return ((const Numeric::Ptr )this->castAs(other->getPrimitiveTypeURI(), other->getPrimitiveTypeName(), context))->mod(other, context);
@@ -518,7 +518,7 @@ Numeric::Ptr ATDecimalOrDerivedImpl::floor(const DynamicContext* context) const 
     return (const Numeric::Ptr )this->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                         XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_INTEGER, context);
   }
-  return context->getPathanFactory()->createDecimal(_decimal.floor(), context);
+  return context->getXQillaFactory()->createDecimal(_decimal.floor(), context);
 
 }
 
@@ -529,7 +529,7 @@ Numeric::Ptr ATDecimalOrDerivedImpl::ceiling(const DynamicContext* context) cons
     return (const Numeric::Ptr )this->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                         XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_INTEGER, context);
   }
-  return context->getPathanFactory()->createDecimal(_decimal.ceil(), context);
+  return context->getXQillaFactory()->createDecimal(_decimal.ceil(), context);
 
 }
 
@@ -541,7 +541,7 @@ Numeric::Ptr ATDecimalOrDerivedImpl::round(const DynamicContext* context) const 
                         XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_INTEGER, context);
   }
   MAPM value = _decimal + 0.5;
-  return context->getPathanFactory()->createDecimal(value.floor(), context);
+  return context->getXQillaFactory()->createDecimal(value.floor(), context);
 }
 
 /** Rounds this Numeric to the given precision, and rounds a half to even */
@@ -567,22 +567,22 @@ Numeric::Ptr ATDecimalOrDerivedImpl::roundHalfToEven(const Numeric::Ptr &precisi
   value = value / exp;  
   // if integer, return xs:integer, otherwise xs:decimal    
   if(_isInteger) {
-    return context->getPathanFactory()->createInteger(value, context);
+    return context->getXQillaFactory()->createInteger(value, context);
   }
-  return context->getPathanFactory()->createDecimal(value, context);
+  return context->getXQillaFactory()->createDecimal(value, context);
 }
 
 /** Returns the Additive inverse of this Numeric */
 Numeric::Ptr ATDecimalOrDerivedImpl::invert(const DynamicContext* context) const {
   if(_isInteger) {
-    return context->getPathanFactory()->createInteger(_decimal.neg(), context);
+    return context->getXQillaFactory()->createInteger(_decimal.neg(), context);
   }
-  return context->getPathanFactory()->createDecimal(_decimal.neg(), context);
+  return context->getXQillaFactory()->createDecimal(_decimal.neg(), context);
 }
 
 /** Returns the absolute value of this Numeric */
 Numeric::Ptr ATDecimalOrDerivedImpl::abs(const DynamicContext* context) const {
-  return context->getPathanFactory()->createDecimal(_decimal.abs(), context);
+  return context->getXQillaFactory()->createDecimal(_decimal.abs(), context);
 }
 
 /** Does this Numeric have value 0? */

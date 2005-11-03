@@ -22,12 +22,12 @@
 #ifndef _INVALIDLEXICALSPACEEXCEPTION_HPP
 #define _INVALIDLEXICALSPACEEXCEPTION_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/exceptions/DSLException.hpp>
 #include <xqilla/utils/XStr.hpp>
 
-class PATHAN_EXPORT InvalidLexicalSpaceException : public DSLException
+class XQILLA_API InvalidLexicalSpaceException : public DSLException
 {
 public:
   

@@ -16,7 +16,7 @@
 #ifndef _SEQUENCETYPE_HPP
 #define _SEQUENCETYPE_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/items/Node.hpp>
 #include <xqilla/parser/QName.hpp>
@@ -26,11 +26,11 @@
 class Item;
 class XPath2MemoryManager;
 
-class PATHAN_EXPORT SequenceType  
+class XQILLA_API SequenceType  
 {
 public:
 
-  class PATHAN_EXPORT ItemType
+  class XQILLA_API ItemType
   {
   public:
 

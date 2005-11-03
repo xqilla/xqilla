@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <assert.h>
 #include <sstream>
 
@@ -25,7 +25,7 @@
 #include <xqilla/items/ATBooleanOrDerived.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xqilla/context/PathanFactory.hpp>
+#include <xqilla/context/XQillaFactory.hpp>
 
 ComparisonOperator::ComparisonOperator(const XMLCh* opName, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : XQOperator(opName, args, memMgr)
@@ -90,7 +90,7 @@ Item::Ptr ComparisonOperator::ComparisonResult::getSingleResult(DynamicContext *
   if(right==NULLRCP)
     return right;
   bool result = _op->execute(left, right, context);
-  return (const Item::Ptr)context->getPathanFactory()->createBoolean(result, context);
+  return (const Item::Ptr)context->getXQillaFactory()->createBoolean(result, context);
 }
 
 std::string ComparisonOperator::ComparisonResult::asString(DynamicContext *context, int indent) const

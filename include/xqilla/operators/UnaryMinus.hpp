@@ -20,11 +20,11 @@
 #ifndef _UNARYMINUS_HPP
 #define _UNARYMINUS_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/operators/ArithmeticOperator.hpp>
 
 /** Unary Minus operator function*/
-class PATHAN_EXPORT UnaryMinus : public ArithmeticOperator
+class XQILLA_API UnaryMinus : public ArithmeticOperator
 {
 public:
   static const XMLCh name[];

@@ -69,7 +69,7 @@
 // Never included before - need to define base class.
 #define __FLEX_LEXER_H
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <iostream>
 
 #define YY_CHAR unsigned short
@@ -81,7 +81,7 @@ extern "C++" {
 struct yy_buffer_state;
 typedef int yy_state_type;
 
-class PATHAN_EXPORT FlexLexer {
+class XQILLA_API FlexLexer {
 public:
 	virtual ~FlexLexer()	{ }
 

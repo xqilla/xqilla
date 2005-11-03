@@ -22,14 +22,14 @@
 #ifndef _ASTEXCEPTION_HPP
 #define _ASTEXCEPTION_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/exceptions/DSLException.hpp>
 #include <xqilla/utils/XStr.hpp>
 
 /** exception class for data items */
 
-class PATHAN_EXPORT ASTException : public DSLException
+class XQILLA_API ASTException : public DSLException
 {
 public:
 

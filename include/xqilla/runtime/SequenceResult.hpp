@@ -20,7 +20,7 @@
 
 #include <xqilla/runtime/Sequence.hpp>
 
-class PATHAN_EXPORT SequenceResult : public ResultImpl
+class XQILLA_API SequenceResult : public ResultImpl
 {
 public:
   SequenceResult(const Sequence &seq);

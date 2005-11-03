@@ -21,7 +21,7 @@
 /**
 This class implements the AncestorAxis as defined in the XPath spec
 */
-class PATHAN_EXPORT AncestorAxis : public Axis
+class XQILLA_API AncestorAxis : public Axis
 {
 public:
   AncestorAxis(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *contextNode, const Node *nodeObj,

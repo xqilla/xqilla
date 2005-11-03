@@ -16,7 +16,7 @@
 #ifndef _XQSEQUENCE_HPP
 #define _XQSEQUENCE_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/ast/ASTNodeImpl.hpp>
 #include <xqilla/items/ItemConstructor.hpp>
 
@@ -24,7 +24,7 @@ class XPath2MemoryManager;
 class DynamicContext;
 
 /** deals with the numeric data type */
-class PATHAN_EXPORT XQSequence : public ASTNodeImpl
+class XQILLA_API XQSequence : public ASTNodeImpl
 {
 public:
   XQSequence(Result &result, DynamicContext *context, XPath2MemoryManager* memMgr);

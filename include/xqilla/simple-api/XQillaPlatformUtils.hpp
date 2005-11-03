@@ -13,10 +13,10 @@
  * $Id$
  */
 
-#ifndef _PATHANPLATFORMUTILS_HPP
-#define _PATHANPLATFORMUTILS_HPP
+#ifndef _XQILLAPLATFORMUTILS_HPP
+#define _XQILLAPLATFORMUTILS_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xercesc/util/XercesDefs.hpp>
 XERCES_CPP_NAMESPACE_BEGIN
@@ -24,11 +24,11 @@ class MemoryManager;
 XERCES_CPP_NAMESPACE_END
 
 /**class with methods that are used by v2 that are DOM related*/ 
-class PATHAN_EXPORT PathanPlatformUtils
+class XQILLA_API XQillaPlatformUtils
 {
 public:
 
-  /** Perform Pathan initialization
+  /** Perform XQilla initialization
    *
    * Initialization should be called first in any client code.
    * 
@@ -36,7 +36,7 @@ public:
    */
   static void initialize(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr = 0);
 
-  /** Perform Pathan termination
+  /** Perform XQilla termination
    *
    * Terminates Xerces
    */

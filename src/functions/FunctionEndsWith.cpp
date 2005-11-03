@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionEndsWith.hpp>
 #include <xqilla/context/Collation.hpp>
 #include <xqilla/context/impl/CodepointCollation.hpp>
@@ -26,7 +26,7 @@
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/framework/XPath2MemoryManager.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xqilla/context/PathanFactory.hpp>
+#include <xqilla/context/XQillaFactory.hpp>
 
 #include <xercesc/util/XMLString.hpp>
 #include <xercesc/util/XMLUni.hpp>
@@ -65,17 +65,17 @@ Sequence FunctionEndsWith::collapseTreeInternal(DynamicContext* context, int fla
     // If the value of $operand1 is the zero-length string and the value of $operand2 is not the zero-length string,
     // then the function returns false.
     if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(source)==0 && XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(find)>0)
-        return Sequence(context->getPathanFactory()->createBoolean(false, context), context->getMemoryManager());
+        return Sequence(context->getXQillaFactory()->createBoolean(false, context), context->getMemoryManager());
     // If the value of $operand2 is the zero-length string, then the function returns true
     if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(find)==0)
-        return Sequence(context->getPathanFactory()->createBoolean(true, context), context->getMemoryManager());
+        return Sequence(context->getXQillaFactory()->createBoolean(true, context), context->getMemoryManager());
 
     Collation* collation=NULL;
     if(getNumArgs()>2) {
         Sequence collArg = getParamNumber(3,context);
         const XMLCh* collName = collArg.first()->asString(context);
         try {
-            context->getPathanFactory()->createAnyURI(collName, context);
+            context->getXQillaFactory()->createAnyURI(collName, context);
         } catch(XPath2ErrorException &e) {
             DSLthrow(FunctionException, X("FunctionEndsWith::collapseTreeInternal"), X("Invalid collationURI"));  
         }
@@ -90,7 +90,7 @@ Sequence FunctionEndsWith::collapseTreeInternal(DynamicContext* context, int fla
 	// of $operand2 according to the specified collation
 
     if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(find)>XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(source))
-        return Sequence(context->getPathanFactory()->createBoolean(false, context), context->getMemoryManager());
+        return Sequence(context->getXQillaFactory()->createBoolean(false, context), context->getMemoryManager());
     int i,j;
     for(i = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(source)-1, j=XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(find)-1; i >=0 && j >=0; i--,j--)
     {
@@ -99,9 +99,9 @@ Sequence FunctionEndsWith::collapseTreeInternal(DynamicContext* context, int fla
         bool result = (collation->compare(string1, string2)!=0);
 
         if(result) {
-            return Sequence(context->getPathanFactory()->createBoolean(false, context), context->getMemoryManager());
+            return Sequence(context->getXQillaFactory()->createBoolean(false, context), context->getMemoryManager());
         }
     }
 
-    return Sequence(context->getPathanFactory()->createBoolean(true, context), context->getMemoryManager());
+    return Sequence(context->getXQillaFactory()->createBoolean(true, context), context->getMemoryManager());
 }

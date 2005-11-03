@@ -22,7 +22,7 @@
 #ifndef _DSLEXCEPTION_HPP
 #define _DSLEXCEPTION_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xercesc/util/XercesDefs.hpp>
 
 #include <xqilla/utils/XStr.hpp>
@@ -32,7 +32,7 @@
 /** The exception super class. Please inherit from this class, and sub class as
     appropriate. This can be used as a method of catching groups of exceptions. */
 
-class PATHAN_EXPORT DSLException
+class XQILLA_API DSLException
 {
 public:
 

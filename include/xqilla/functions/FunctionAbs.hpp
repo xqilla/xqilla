@@ -20,11 +20,11 @@
 #ifndef _FUNCTIONABS_HPP
 #define _FUNCTIONABS_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/NumericFunction.hpp>
 
-class PATHAN_EXPORT FunctionAbs : public NumericFunction
+class XQILLA_API FunctionAbs : public NumericFunction
 {
 public:
   static const XMLCh name[];

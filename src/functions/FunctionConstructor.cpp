@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionConstructor.hpp>
 #include <xqilla/items/Node.hpp>
 #include <xqilla/items/AnyAtomicType.hpp>

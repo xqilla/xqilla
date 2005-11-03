@@ -20,12 +20,12 @@
 #ifndef _MINUS_HPP
 #define _MINUS_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/operators/ArithmeticOperator.hpp>
 
 /** OpMinus operator function*/
-class PATHAN_EXPORT Minus : public ArithmeticOperator
+class XQILLA_API Minus : public ArithmeticOperator
 {
 public:
   static const XMLCh name[];

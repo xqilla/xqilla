@@ -20,7 +20,7 @@
 #ifndef _SCOPE_HPP
 #define _SCOPE_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <vector>
 #include <xercesc/util/RefHash2KeysTableOf.hpp>
 

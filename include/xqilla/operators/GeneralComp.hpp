@@ -20,13 +20,13 @@
 #ifndef _GENERALCOMP_HPP
 #define _GENERALCOMP_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/XQOperator.hpp>
 #include <xqilla/runtime/SingleResult.hpp>
 
 /** GeneralComp operator function*/
-class PATHAN_EXPORT GeneralComp : public XQOperator
+class XQILLA_API GeneralComp : public XQOperator
 {
 public:
   typedef enum {

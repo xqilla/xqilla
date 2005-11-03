@@ -16,7 +16,7 @@
 #ifndef _FUNCTIONGETMINUTESFROMDATETIME_HPP
 #define _FUNCTIONGETMINUTESFROMDATETIME_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/XQFunction.hpp>
 
@@ -25,7 +25,7 @@
  *
  *  minutes-from-dateTime(dateTime $srcval) => integer
  */
-class PATHAN_EXPORT FunctionMinutesFromDateTime : public XQFunction
+class XQILLA_API FunctionMinutesFromDateTime : public XQFunction
 {
 public:
   static const XMLCh name[];

@@ -20,11 +20,11 @@
 #ifndef _FUNCTIONEXACTLYONE_HPP
 #define _FUNCTIONEXACTLYONE_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/ConstantFoldingFunction.hpp>
 
-class PATHAN_EXPORT FunctionExactlyOne : public ConstantFoldingFunction
+class XQILLA_API FunctionExactlyOne : public ConstantFoldingFunction
 {
 public:
   static const XMLCh name[];

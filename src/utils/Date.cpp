@@ -63,7 +63,7 @@
 //   and input the string form.
 //
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include "Date.hpp"
 #include "DateUtils.hpp"
 #include <stdlib.h> // for atol

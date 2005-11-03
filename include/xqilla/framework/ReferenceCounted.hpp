@@ -16,14 +16,14 @@
 #ifndef _REFERENCECOUNTED_HPP
 #define _REFERENCECOUNTED_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xercesc/framework/MemoryManager.hpp>
 
 // for null RefCountPointer instances
 #define NULLRCP ((void *)0)
 
 /** Super class for reference counted classes */
-class PATHAN_EXPORT ReferenceCounted
+class XQILLA_API ReferenceCounted
 {
 public:
   ReferenceCounted()

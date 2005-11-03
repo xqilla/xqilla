@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionStringLength.hpp>
 #include <xqilla/functions/FunctionString.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
@@ -48,7 +48,7 @@ FunctionStringLength::FunctionStringLength(const VectorOfASTNodes &args, XPath2M
 const XMLCh* FunctionStringLength::getString(DynamicContext* context) const {
   XPath2MemoryManager* memMgr = context->getMemoryManager();
   //setup xf:string with empty args
-  VectorOfASTNodes args=VectorOfASTNodes(PathanAllocator<ASTNode*>(context->getMemoryManager()));
+  VectorOfASTNodes args=VectorOfASTNodes(XQillaAllocator<ASTNode*>(context->getMemoryManager()));
   FunctionString stringGrabber(args, memMgr);
   //call xf:string and extract result
   return stringGrabber.collapseTree(context).next(context)->asString(context);
@@ -71,10 +71,10 @@ Sequence FunctionStringLength::collapseTreeInternal(DynamicContext* context, int
 
         Sequence strParm=getParamNumber(1,context);
         if(strParm.isEmpty())
-            return Sequence(context->getPathanFactory()->createInteger(0, context), memMgr);
+            return Sequence(context->getXQillaFactory()->createInteger(0, context), memMgr);
 
         str = strParm.first()->asString(context);
     }
-    const ATDecimalOrDerived::Ptr length = context->getPathanFactory()->createInteger((long)XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(str), context);
+    const ATDecimalOrDerived::Ptr length = context->getXQillaFactory()->createInteger((long)XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(str), context);
     return Sequence(length, memMgr);
 }

@@ -16,13 +16,13 @@
 #if !defined(AFXQ_NORMALIZER_H__6BA76C4A_0A5B_480B_9870_86A89A118100__INCLUDED_)
 #define AFXQ_NORMALIZER_H__6BA76C4A_0A5B_480B_9870_86A89A118100__INCLUDED_
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xercesc/util/XercesDefs.hpp>
 #include <map>
 
 class XPath2MemoryManager;
 
-class PATHAN_EXPORT Normalizer 
+class XQILLA_API Normalizer 
 {
 protected:
 	static wchar_t* g_decompose[];

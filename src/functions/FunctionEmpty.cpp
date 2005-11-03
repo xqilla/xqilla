@@ -13,12 +13,12 @@
  * $Id$
  */
 
-#include "../config/pathan_config.h"
+#include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionEmpty.hpp>
 #include <xqilla/items/ATBooleanOrDerived.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xqilla/context/PathanFactory.hpp>
+#include <xqilla/context/XQillaFactory.hpp>
 
 const XMLCh FunctionEmpty::name[] = {
   XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_m, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_p, 
@@ -39,7 +39,7 @@ FunctionEmpty::FunctionEmpty(const VectorOfASTNodes &args, XPath2MemoryManager* 
 Sequence FunctionEmpty::collapseTreeInternal(DynamicContext* context, int flags) const
 {
 	Result items = getParamNumber(1,context,ASTNode::UNORDERED|ASTNode::RETURN_ONE);
-	return Sequence(context->getPathanFactory()->createBoolean(items.next(context) == NULLRCP, context),
+	return Sequence(context->getXQillaFactory()->createBoolean(items.next(context) == NULLRCP, context),
                   context->getMemoryManager());
 }
 

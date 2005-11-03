@@ -22,12 +22,12 @@
 #ifndef _XPATH2TYPEMATCHEXCEPTION_HPP
 #define _XPATH2TYPEMATCHEXCEPTION_HPP
 
-#include <xqilla/framework/Pathan.hpp>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/exceptions/DSLException.hpp>
 
 /** Exception to be thrown if an attempt to match a non-existent type is made */
-class PATHAN_EXPORT XPath2TypeMatchException : public DSLException
+class XQILLA_API XPath2TypeMatchException : public DSLException
 {
 public:
 
