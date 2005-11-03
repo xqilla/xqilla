@@ -188,10 +188,9 @@ src/utils/DateUtils.cpp \
 src/utils/DateUtils.hpp \
 src/utils/NumUtils.cpp \
 src/utils/PathanPlatformUtils.cpp \
-src/utils/PrintDataItemTree.cpp \
+src/utils/PrintAST.cpp \
 src/utils/XPath2NSUtils.cpp \
 src/utils/XPath2Utils.cpp \
-src/utils/XQPrintDataItemTree.cpp \
 src/exceptions/PathanException.cpp \
 src/exceptions/DSLException.cpp \
 src/exceptions/InvalidLexicalSpaceException.hpp \
@@ -595,12 +594,11 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	PathanImplementation.lo XPath2NodeSerializer.lo XPath2Result.lo \
 	XQScopedNamespace.lo PathanEngine.lo XQEvaluator.lo XQQuery.lo \
 	UTF8Str.lo XMLChCompare.lo XStr.lo ContextUtils.lo Date.lo \
-	DateUtils.lo NumUtils.lo PathanPlatformUtils.lo \
-	PrintDataItemTree.lo XPath2NSUtils.lo XPath2Utils.lo \
-	XQPrintDataItemTree.lo PathanException.lo DSLException.lo \
-	FuncFactory.lo FunctionLookupImpl.lo FunctionAbs.lo \
-	FunctionAvg.lo FunctionBaseURI.lo FunctionBoolean.lo \
-	FunctionCeiling.lo FunctionCodepointEqual.lo \
+	DateUtils.lo NumUtils.lo PathanPlatformUtils.lo PrintAST.lo \
+	XPath2NSUtils.lo XPath2Utils.lo PathanException.lo \
+	DSLException.lo FuncFactory.lo FunctionLookupImpl.lo \
+	FunctionAbs.lo FunctionAvg.lo FunctionBaseURI.lo \
+	FunctionBoolean.lo FunctionCeiling.lo FunctionCodepointEqual.lo \
 	FunctionCodepointsToString.lo FunctionCollection.lo \
 	FunctionCompare.lo FunctionConcat.lo FunctionConstructor.lo \
 	FunctionContains.lo FunctionCount.lo FunctionCurrentDate.lo \
@@ -949,7 +947,7 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/PathanXMLGrammarPoolImpl.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/Plus.Plo ./$(DEPDIR)/PrecedingAxis.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/PrecedingSiblingAxis.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/PrintDataItemTree.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/PrintAST.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/ProxyMemoryManager.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/QName.Plo ./$(DEPDIR)/Range.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/ReferenceCounted.Plo \
@@ -999,7 +997,6 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/XQOperator.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XQOrderingChange.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XQParenthesizedExpr.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/XQPrintDataItemTree.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XQQuantified.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XQQuery.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XQRemoteDebugger.Plo \
@@ -1199,10 +1196,9 @@ Date.lo: src/utils/Date.cpp
 DateUtils.lo: src/utils/DateUtils.cpp
 NumUtils.lo: src/utils/NumUtils.cpp
 PathanPlatformUtils.lo: src/utils/PathanPlatformUtils.cpp
-PrintDataItemTree.lo: src/utils/PrintDataItemTree.cpp
+PrintAST.lo: src/utils/PrintAST.cpp
 XPath2NSUtils.lo: src/utils/XPath2NSUtils.cpp
 XPath2Utils.lo: src/utils/XPath2Utils.cpp
-XQPrintDataItemTree.lo: src/utils/XQPrintDataItemTree.cpp
 PathanException.lo: src/exceptions/PathanException.cpp
 DSLException.lo: src/exceptions/DSLException.cpp
 FuncFactory.lo: src/functions/FuncFactory.cpp
@@ -1792,7 +1788,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Plus.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PrecedingAxis.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PrecedingSiblingAxis.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PrintDataItemTree.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PrintAST.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ProxyMemoryManager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/QName.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Range.Plo@am__quote@
@@ -1851,7 +1847,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQOperator.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQOrderingChange.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQParenthesizedExpr.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQPrintDataItemTree.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQQuantified.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQQuery.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQRemoteDebugger.Plo@am__quote@
@@ -3820,23 +3815,23 @@ PathanPlatformUtils.lo: src/utils/PathanPlatformUtils.cpp
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o PathanPlatformUtils.lo `test -f 'src/utils/PathanPlatformUtils.cpp' || echo '$(srcdir)/'`src/utils/PathanPlatformUtils.cpp
 
-PrintDataItemTree.o: src/utils/PrintDataItemTree.cpp
-@AMDEP_TRUE@	source='src/utils/PrintDataItemTree.cpp' object='PrintDataItemTree.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/PrintDataItemTree.Po' tmpdepfile='$(DEPDIR)/PrintDataItemTree.TPo' @AMDEPBACKSLASH@
+PrintAST.o: src/utils/PrintAST.cpp
+@AMDEP_TRUE@	source='src/utils/PrintAST.cpp' object='PrintAST.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/PrintAST.Po' tmpdepfile='$(DEPDIR)/PrintAST.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o PrintDataItemTree.o `test -f 'src/utils/PrintDataItemTree.cpp' || echo '$(srcdir)/'`src/utils/PrintDataItemTree.cpp
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o PrintAST.o `test -f 'src/utils/PrintAST.cpp' || echo '$(srcdir)/'`src/utils/PrintAST.cpp
 
-PrintDataItemTree.obj: src/utils/PrintDataItemTree.cpp
-@AMDEP_TRUE@	source='src/utils/PrintDataItemTree.cpp' object='PrintDataItemTree.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/PrintDataItemTree.Po' tmpdepfile='$(DEPDIR)/PrintDataItemTree.TPo' @AMDEPBACKSLASH@
+PrintAST.obj: src/utils/PrintAST.cpp
+@AMDEP_TRUE@	source='src/utils/PrintAST.cpp' object='PrintAST.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/PrintAST.Po' tmpdepfile='$(DEPDIR)/PrintAST.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o PrintDataItemTree.obj `cygpath -w src/utils/PrintDataItemTree.cpp`
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o PrintAST.obj `cygpath -w src/utils/PrintAST.cpp`
 
-PrintDataItemTree.lo: src/utils/PrintDataItemTree.cpp
-@AMDEP_TRUE@	source='src/utils/PrintDataItemTree.cpp' object='PrintDataItemTree.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/PrintDataItemTree.Plo' tmpdepfile='$(DEPDIR)/PrintDataItemTree.TPlo' @AMDEPBACKSLASH@
+PrintAST.lo: src/utils/PrintAST.cpp
+@AMDEP_TRUE@	source='src/utils/PrintAST.cpp' object='PrintAST.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/PrintAST.Plo' tmpdepfile='$(DEPDIR)/PrintAST.TPlo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o PrintDataItemTree.lo `test -f 'src/utils/PrintDataItemTree.cpp' || echo '$(srcdir)/'`src/utils/PrintDataItemTree.cpp
+	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o PrintAST.lo `test -f 'src/utils/PrintAST.cpp' || echo '$(srcdir)/'`src/utils/PrintAST.cpp
 
 XPath2NSUtils.o: src/utils/XPath2NSUtils.cpp
 @AMDEP_TRUE@	source='src/utils/XPath2NSUtils.cpp' object='XPath2NSUtils.o' libtool=no @AMDEPBACKSLASH@
@@ -3873,24 +3868,6 @@ XPath2Utils.lo: src/utils/XPath2Utils.cpp
 @AMDEP_TRUE@	depfile='$(DEPDIR)/XPath2Utils.Plo' tmpdepfile='$(DEPDIR)/XPath2Utils.TPlo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XPath2Utils.lo `test -f 'src/utils/XPath2Utils.cpp' || echo '$(srcdir)/'`src/utils/XPath2Utils.cpp
-
-XQPrintDataItemTree.o: src/utils/XQPrintDataItemTree.cpp
-@AMDEP_TRUE@	source='src/utils/XQPrintDataItemTree.cpp' object='XQPrintDataItemTree.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/XQPrintDataItemTree.Po' tmpdepfile='$(DEPDIR)/XQPrintDataItemTree.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQPrintDataItemTree.o `test -f 'src/utils/XQPrintDataItemTree.cpp' || echo '$(srcdir)/'`src/utils/XQPrintDataItemTree.cpp
-
-XQPrintDataItemTree.obj: src/utils/XQPrintDataItemTree.cpp
-@AMDEP_TRUE@	source='src/utils/XQPrintDataItemTree.cpp' object='XQPrintDataItemTree.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/XQPrintDataItemTree.Po' tmpdepfile='$(DEPDIR)/XQPrintDataItemTree.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQPrintDataItemTree.obj `cygpath -w src/utils/XQPrintDataItemTree.cpp`
-
-XQPrintDataItemTree.lo: src/utils/XQPrintDataItemTree.cpp
-@AMDEP_TRUE@	source='src/utils/XQPrintDataItemTree.cpp' object='XQPrintDataItemTree.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/XQPrintDataItemTree.Plo' tmpdepfile='$(DEPDIR)/XQPrintDataItemTree.TPlo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQPrintDataItemTree.lo `test -f 'src/utils/XQPrintDataItemTree.cpp' || echo '$(srcdir)/'`src/utils/XQPrintDataItemTree.cpp
 
 PathanException.o: src/exceptions/PathanException.cpp
 @AMDEP_TRUE@	source='src/exceptions/PathanException.cpp' object='PathanException.o' libtool=no @AMDEPBACKSLASH@

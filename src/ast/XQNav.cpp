@@ -16,7 +16,7 @@
 #include "../config/pathan_config.h"
 #include <sstream>
 
-#include <xqilla/utils/PrintDataItemTree.hpp>
+#include <xqilla/utils/PrintAST.hpp>
 #include <xqilla/ast/XQNav.hpp>
 #include <xqilla/ast/XQStep.hpp>
 #include <xqilla/runtime/Sequence.hpp>
@@ -432,9 +432,7 @@ std::string XQNav::StepResult::asString(DynamicContext *context, int indent) con
     oss << parent_.asString(context, indent + 2);
     oss << in << "  </parent>" << std::endl;
   }
-  oss << in << "  <dataitem>" << std::endl;
-  oss << PrintDataItemTree::print(step_, context, indent + 2);
-  oss << in << "  </dataitem>" << std::endl;
+  oss << PrintAST::print(step_, context, indent + 1);
   oss << in << "</step>" << std::endl;
 
   return oss.str();

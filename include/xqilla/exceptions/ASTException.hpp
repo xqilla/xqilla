@@ -15,12 +15,12 @@
 
 /*
 
-  DataItemException - exception class for ASTNodes
+  ASTException - exception class for ASTNodes
 
 */
 
-#ifndef _DATAITEMEXCEPTION_HPP
-#define _DATAITEMEXCEPTION_HPP
+#ifndef _ASTEXCEPTION_HPP
+#define _ASTEXCEPTION_HPP
 
 #include <xqilla/framework/Pathan.hpp>
 
@@ -29,12 +29,12 @@
 
 /** exception class for data items */
 
-class PATHAN_EXPORT DataItemException : public DSLException
+class PATHAN_EXPORT ASTException : public DSLException
 {
 public:
 
-  DataItemException(const XMLCh *functionName, const XMLCh *reason, const char *file, int line)
+  ASTException(const XMLCh *functionName, const XMLCh *reason, const char *file, int line)
     : DSLException(X("XQException"), functionName, reason, file, line) {};
 };
 
-#endif // _DATAITEMEXCEPTION_HPP
+#endif

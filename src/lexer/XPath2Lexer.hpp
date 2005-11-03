@@ -36,12 +36,12 @@ class QualifiedName;
 
 typedef union {
 
-  ASTNode* dataItemImpl;
+  ASTNode* astNodeImpl;
   XMLCh *wString;
   NodeTest *nodeTest;
   XQStep::Axis axis;
   QualifiedName *qName;
-  VectorOfASTNodes *dataItemStore;
+  VectorOfASTNodes *astNodeStore;
   SequenceType* sequenceType;
   SequenceType::OccurrenceIndicator occurrence;
   SequenceType::ItemType* itemType;

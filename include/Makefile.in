@@ -172,7 +172,7 @@ xqilla/dom-api/impl/PathanExpressionImpl.hpp \
 xqilla/dom-api/impl/PathanNSResolverImpl.hpp \
 xqilla/exceptions/PathanException.hpp \
 xqilla/exceptions/ContextException.hpp \
-xqilla/exceptions/DataItemException.hpp \
+xqilla/exceptions/ASTException.hpp \
 xqilla/exceptions/DSLException.hpp \
 xqilla/exceptions/DynamicErrorException.hpp \
 xqilla/exceptions/FunctionException.hpp \
@@ -389,9 +389,8 @@ xqilla/utils/XPath2Utils.hpp \
 xqilla/utils/XMLChCompare.hpp \
 xqilla/utils/XStr.hpp \
 xqilla/utils/ContextUtils.hpp \
-xqilla/utils/PrintDataItemTree.hpp \
+xqilla/utils/PrintAST.hpp \
 xqilla/utils/UTF8Str.hpp \
-xqilla/utils/XQPrintDataItemTree.hpp \
 xqilla/framework/ReferenceCounted.hpp \
 xqilla/framework/XPath2MemoryManager.hpp \
 xqilla/framework/BaseMemoryManager.hpp \

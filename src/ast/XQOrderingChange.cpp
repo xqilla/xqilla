@@ -28,10 +28,10 @@
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-XQOrderingChange::XQOrderingChange(StaticContext::NodeSetOrdering ordering, ASTNode* dataItem, XPath2MemoryManager* expr)
+XQOrderingChange::XQOrderingChange(StaticContext::NodeSetOrdering ordering, ASTNode* astNode, XPath2MemoryManager* expr)
   : ASTNodeImpl(expr),
     m_nOrdering(ordering),
-    m_pExpr(dataItem)
+    m_pExpr(astNode)
 {
   setType(ASTNode::ORDERING_CHANGE);
 }

@@ -53,4 +53,4 @@ protected:
 	SequenceType* _exprType;
 };
 
-#endif // DATAITEMINSTANCEOF_HPP
+#endif

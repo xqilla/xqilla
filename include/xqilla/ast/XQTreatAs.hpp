@@ -41,4 +41,4 @@ protected:
 	SequenceType* _exprType;
 };
 
-#endif // DATAITEMTREATAS_HPP
+#endif

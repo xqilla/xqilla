@@ -90,10 +90,9 @@ src/utils/DateUtils.cpp \
 src/utils/DateUtils.hpp \
 src/utils/NumUtils.cpp \
 src/utils/PathanPlatformUtils.cpp \
-src/utils/PrintDataItemTree.cpp \
+src/utils/PrintAST.cpp \
 src/utils/XPath2NSUtils.cpp \
 src/utils/XPath2Utils.cpp \
-src/utils/XQPrintDataItemTree.cpp \
 src/exceptions/PathanException.cpp \
 src/exceptions/DSLException.cpp \
 src/exceptions/InvalidLexicalSpaceException.hpp \

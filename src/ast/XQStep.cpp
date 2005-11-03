@@ -24,7 +24,7 @@
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/ast/StaticResolutionContext.hpp>
 #include <xqilla/exceptions/TypeErrorException.hpp>
-#include <xqilla/utils/PrintDataItemTree.hpp>
+#include <xqilla/utils/PrintAST.hpp>
 
 XQStep::XQStep(Axis axis, NodeTest* nodeTest, XPath2MemoryManager* memMgr)
 	: ASTNodeImpl(memMgr),
@@ -163,7 +163,7 @@ std::string XQStep::StepResult::asString(DynamicContext *context, int indent) co
   std::ostringstream oss;
   std::string in(getIndent(indent));
 
-  oss << in << "<dataitemstep name=\"" << PrintDataItemTree::getAxisName(step_->getAxis()) << "\"/>" << std::endl;
+  oss << in << "<step name=\"" << PrintAST::getAxisName(step_->getAxis()) << "\"/>" << std::endl;
 
   return oss.str();
 }

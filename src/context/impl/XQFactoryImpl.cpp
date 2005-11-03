@@ -32,7 +32,7 @@
 #include <xqilla/items/ATUntypedAtomic.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/exceptions/TypeNotFoundException.hpp>
-#include <xqilla/exceptions/DataItemException.hpp>
+#include <xqilla/exceptions/ASTException.hpp>
 
 #include <xercesc/util/XMLString.hpp>
 #include <xercesc/util/XMLChar.hpp>
@@ -93,7 +93,7 @@ Node::Ptr XQFactoryImpl::createAttributeNode(const XMLCh *uri, const XMLCh *pref
   if(XPath2Utils::equals(uri, XMLUni::fgXMLURIName) && XPath2Utils::equals(name, xmlID))
   {
     if(!XMLChar1_0::isValidNCName(value, XMLString::stringLen(value)))
-      DSLthrow(DataItemException,X("XQFactoryImpl::createAttributeNode"),X("The value of an attribute xml:id must be a valid xs:NCName [err:XQST0082]"));
+      DSLthrow(ASTException,X("XQFactoryImpl::createAttributeNode"),X("The value of an attribute xml:id must be a valid xs:NCName [err:XQST0082]"));
     isID=true;
   }
 
@@ -128,7 +128,7 @@ Node::Ptr XQFactoryImpl::createElementNode(const XMLCh *uri, const XMLCh *prefix
     const DOMNode* attr=nodeImpl->getDOMNode();
     DOMAttr* exists=element->getAttributeNodeNS(attr->getNamespaceURI(), attr->getLocalName());
     if(exists!=0)
-      DSLthrow(DataItemException,X("XQFactoryImpl::createElementNode"),X("An element has two attributes with the same expanded name [err:XQDY0025]"));
+      DSLthrow(ASTException,X("XQFactoryImpl::createElementNode"),X("An element has two attributes with the same expanded name [err:XQDY0025]"));
 
     DOMAttr* imported = (DOMAttr*)document->importNode(const_cast<DOMNode*>(attr),true);
     if(constrMode == StaticContext::CONSTRUCTION_MODE_PRESERVE)

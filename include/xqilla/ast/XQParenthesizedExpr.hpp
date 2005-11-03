@@ -26,7 +26,7 @@ class PATHAN_EXPORT XQParenthesizedExpr : public ASTNodeImpl
 public:
   XQParenthesizedExpr(XPath2MemoryManager* memMgr);	
 
-  ///adds a dataitem to this XQParenthesizedExpr
+  ///adds a ASTNode to this XQParenthesizedExpr
   void addItem(ASTNode* di);
 
   virtual Result createResult(DynamicContext* context, int flags=0) const;
@@ -50,7 +50,7 @@ private:
     Result _result;
   };
 
-	VectorOfASTNodes _dataItems;
+	VectorOfASTNodes _astNodes;
 };
 
 #endif
