@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/xqilla_config.h"
+#include "../../config/xqilla_config.h"
 #include <assert.h>
 #include "VarStoreImpl.hpp"
 #include <xqilla/context/impl/XQContextImpl.hpp>

@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/xqilla_config.h"
+#include "../../config/xqilla_config.h"
 #include <xqilla/context/impl/CodepointCollation.hpp>
 #include <xercesc/util/XMLUniDefs.hpp>
 #include <xercesc/util/XMLString.hpp>

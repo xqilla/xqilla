@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/xqilla_config.h"
+#include "../../config/xqilla_config.h"
 #include <xqilla/items/impl/NodeImpl.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/framework/XPath2MemoryManager.hpp>

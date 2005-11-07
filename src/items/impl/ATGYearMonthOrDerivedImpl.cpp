@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/xqilla_config.h"
+#include "../../config/xqilla_config.h"
 #include "ATGYearMonthOrDerivedImpl.hpp"
 #include <xqilla/exceptions/IllegalArgumentException.hpp>
 #include <xqilla/exceptions/XPath2TypeCastException.hpp>
@@ -26,7 +26,7 @@
 #include <xqilla/mapm/m_apm.h>
 #include <xqilla/items/Timezone.hpp>
 #include <xqilla/items/ATDecimalOrDerived.hpp>
-#include "../utils/DateUtils.hpp"
+#include "../../utils/DateUtils.hpp"
 #include <xqilla/context/ItemFactory.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 

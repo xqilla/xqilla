@@ -28,22 +28,6 @@
 /* Intel & Alpha architechtures are small endian */
 #undef WORDS_BIGENDIAN
 
-/* MSVC++ requires explicit exportation of symbols accessed in a DLL */
-/* If we are building the library, export symbols */
-/* If we are linking against the library, import symbols */
-
-#define XQILLA_EXPORT __declspec(dllimport)
-
-#if defined(PROJ_XQILLA)
-#undef XQILLA_EXPORT
-#define XQILLA_EXPORT __declspec(dllexport)
-#endif
-
-#if defined(PROJ_XQILLA_STATIC)
-#undef XQILLA_EXPORT
-#define XQILLA_EXPORT
-#endif
-
 // Warning 4064: switch statement contains 'default' but no 'case' labels
 // 
 // Warning 4251: We have a lot of std::vector objects inside exported classes, and VC++ complains about it

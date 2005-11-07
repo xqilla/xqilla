@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/xqilla_config.h"
+#include "../../config/xqilla_config.h"
 #include <xqilla/dom-api/impl/XQillaExpressionImpl.hpp>
 #include <xqilla/simple-api/XQillaEngine.hpp>
 #include <xqilla/items/Node.hpp>

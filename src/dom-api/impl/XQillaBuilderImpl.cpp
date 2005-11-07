@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/xqilla_config.h"
+#include "../../config/xqilla_config.h"
 #include "XQillaBuilderImpl.hpp"
 #include "XQillaDocumentImpl.hpp"
 #include "XQillaXMLGrammarPoolImpl.hpp"

@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/xqilla_config.h"
+#include "../../config/xqilla_config.h"
 #include "UCANormalizer.hpp"
 
 static int compose_values[][2]={

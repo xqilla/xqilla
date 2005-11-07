@@ -13,5 +13,5 @@
  * $Id$
  */
 
-#include "../config/xqilla_config.h"
+#include "../../config/xqilla_config.h"
 #include <xqilla/context/impl/VarHashEntryImpl.hpp>

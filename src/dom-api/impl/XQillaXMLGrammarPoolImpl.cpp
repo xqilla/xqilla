@@ -14,7 +14,7 @@
  */
 
 
-#include "../config/xqilla_config.h"
+#include "../../config/xqilla_config.h"
 #include "XQillaXMLGrammarPoolImpl.hpp"
 #include <xercesc/validators/common/Grammar.hpp>
 #include <xercesc/util/RuntimeException.hpp>
