@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/xqilla_config.h"
+#include "../../config/xqilla_config.h"
 #include "ATUntypedAtomicImpl.hpp"
 #include <xqilla/items/ATDoubleOrDerived.hpp>
 #include <xqilla/items/ATFloatOrDerived.hpp>

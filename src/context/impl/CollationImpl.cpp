@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/xqilla_config.h"
+#include "../../config/xqilla_config.h"
 #include <xqilla/context/impl/CollationImpl.hpp>
 #include <xqilla/items/ATStringOrDerived.hpp>
 #include <xqilla/items/Item.hpp>

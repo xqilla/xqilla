@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/xqilla_config.h"
+#include "../../config/xqilla_config.h"
 #include "ATDateOrDerivedImpl.hpp"
 #include <xercesc/util/XMLUniDefs.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
@@ -38,8 +38,8 @@
 #include <stdlib.h>   // for atoi
 #include <assert.h>
 
-#include "../utils/DateUtils.hpp"
-#include "../utils/Date.hpp"
+#include "../../utils/DateUtils.hpp"
+#include "../../utils/Date.hpp"
 
 
 ATDateOrDerivedImpl::

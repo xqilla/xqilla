@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/xqilla_config.h"
+#include "../../config/xqilla_config.h"
 #include "ATTimeOrDerivedImpl.hpp"
 #include <xercesc/util/XMLUniDefs.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
@@ -34,8 +34,8 @@
 #include <stdlib.h>   // for atoi
 #include <assert.h>
 
-#include "../utils/DateUtils.hpp"
-#include "../utils/Date.hpp"
+#include "../../utils/DateUtils.hpp"
+#include "../../utils/Date.hpp"
 
 ATTimeOrDerivedImpl::
 ATTimeOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* value, const DynamicContext* context): 

@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/xqilla_config.h"
+#include "../../config/xqilla_config.h"
 #include "ATDurationOrDerivedImpl.hpp"
 #include <xqilla/items/ATDecimalOrDerived.hpp>
 #include <xqilla/items/ATDoubleOrDerived.hpp>
@@ -27,7 +27,7 @@
 #include <xercesc/framework/XMLBuffer.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 #include <xqilla/mapm/m_apm.h>
-#include "../utils/DateUtils.hpp"
+#include "../../utils/DateUtils.hpp"
 
 ATDurationOrDerivedImpl::
 ATDurationOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* value, const DynamicContext* context): 

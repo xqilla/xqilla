@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/xqilla_config.h"
+#include "../../config/xqilla_config.h"
 #include <xqilla/items/impl/ATQNameOrDerivedImpl.hpp>
 #include <xqilla/items/ATStringOrDerived.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>

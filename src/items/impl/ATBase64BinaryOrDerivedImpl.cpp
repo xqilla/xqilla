@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "../config/xqilla_config.h"
+#include "../../config/xqilla_config.h"
 #include "ATBase64BinaryOrDerivedImpl.hpp"
 #include "ATHexBinaryOrDerivedImpl.hpp"
 #include <xqilla/utils/XPath2Utils.hpp>
