@@ -377,7 +377,7 @@ _VariableBindingList:
                                                                                          ((XPathParserControl *)parm)->memMgr->getPooledString($3), $5);
 		$1->push_back(bind);
 		$$ = $1;
-		delete $3;
+		delete [] $3;
 	}
 
     | _VARNAME_ _IN_ _ExprSingle {
@@ -386,7 +386,7 @@ _VariableBindingList:
                                                                                          XQVariableBinding::forBinding,
                                                                                          ((XPathParserControl *)parm)->memMgr->getPooledString($1), $3);
 		$$->push_back(bind);
-		delete $1;
+		delete [] $1;
 	}
 ;
 
@@ -1204,7 +1204,7 @@ _Literal:
 		XQLiteral *str_val  = new (((XPathParserControl *)parm)->memMgr)
       XQLiteral(ic, ((XPathParserControl *)parm)->memMgr);
 		$$ = str_val;
-        delete $1;
+        delete [] $1;
 	}
 
 ;
@@ -1223,7 +1223,7 @@ _NumericLiteral:
 				((XPathParserControl *)parm)->memMgr->getPooledString($1), /*isNumeric*/true);
     XQLiteral *did  = new (((XPathParserControl *)parm)->memMgr)
       XQLiteral(ic, ((XPathParserControl *)parm)->memMgr);
-    delete $1;
+    delete [] $1;
     $$ = did;
   }
 
@@ -1261,7 +1261,7 @@ _VarRef:
   
   _VARNAME_ {
 		XQVariable *var = new (((XPathParserControl *)parm)->memMgr) XQVariable($1, ((XPathParserControl *)parm)->memMgr);
-		delete $1;
+		delete [] $1;
 		$$ = var;
   }
 
@@ -1324,7 +1324,7 @@ _FunctionCall:
 
 	| _QNAME_LPAR_ _ArgumentList _RPAR_ {
         QualifiedName *qname = new (((XPathParserControl *)parm)->memMgr) QualifiedName($1, ((XPathParserControl *)parm)->memMgr);
-        delete $1;
+        delete [] $1;
         ASTNode* functionImpl = ((XPathParserControl*)parm)->context->lookUpFunction(qname->getPrefix(), qname->getName(), *$2);
         if( functionImpl == NULL) {
           XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buf(1023, ((XPathParserControl *)parm)->memMgr);
@@ -1754,7 +1754,7 @@ _QName:
 
   _QNAME_ {
 		QualifiedName *qn = new (((XPathParserControl *)parm)->memMgr) QualifiedName($1, ((XPathParserControl *)parm)->memMgr);
-		delete $1;
+		delete [] $1;
 	  $$ = qn;
 	}
 

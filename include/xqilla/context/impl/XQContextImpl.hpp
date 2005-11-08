@@ -37,15 +37,14 @@ XERCES_CPP_NAMESPACE_END
 class XQILLA_API XQContextImpl : public DynamicContext
 {
 public:
-  XQContextImpl(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr = XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager,
+  XQContextImpl(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr =
+                XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager,
                 XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool* xmlgr = 0,
                 XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* contextNode = 0);
   ~XQContextImpl();
 
-  virtual void release();
-
-  virtual DynamicContext *createDynamicContext(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr
-                                               = XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager) const;
+  virtual DynamicContext *createDynamicContext(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr =
+                                               XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager) const;
 
   //////////////////////////////////////
   // XQuery Static Context Accessors  //

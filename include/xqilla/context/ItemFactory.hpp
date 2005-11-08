@@ -41,7 +41,9 @@
 #include <xqilla/items/ATUntypedAtomic.hpp>
 #include <xqilla/items/Node.hpp>
 
-class XQILLA_API ItemFactory
+#include <xercesc/util/XMemory.hpp>
+
+class XQILLA_API ItemFactory : public XERCES_CPP_NAMESPACE_QUALIFIER XMemory
 {
 public:
   virtual ~ItemFactory() {};

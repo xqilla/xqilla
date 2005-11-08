@@ -1,4 +1,5 @@
 nobase_include_HEADERS = \
+xqilla/xqilla-simple.hpp \
 xqilla/ast/XQCastableAs.hpp \
 xqilla/ast/XQCastAs.hpp \
 xqilla/ast/XQContextItem.hpp \
@@ -279,8 +280,8 @@ xqilla/schema/SequenceType.hpp \
 xqilla/schema/AnyAtomicTypeDatatypeValidator.hpp \
 xqilla/schema/DocumentCacheImpl.hpp \
 xqilla/simple-api/XQillaEngine.hpp \
-xqilla/simple-api/XQillaPlatformUtils.hpp \
 xqilla/simple-api/XQEvaluator.hpp \
+xqilla/simple-api/XQilla.hpp \
 xqilla/simple-api/XQQuery.hpp \
 xqilla/utils/NumUtils.hpp \
 xqilla/utils/XPath2NSUtils.hpp \
@@ -290,6 +291,7 @@ xqilla/utils/XStr.hpp \
 xqilla/utils/ContextUtils.hpp \
 xqilla/utils/PrintAST.hpp \
 xqilla/utils/UTF8Str.hpp \
+xqilla/utils/XQillaPlatformUtils.hpp \
 xqilla/framework/ReferenceCounted.hpp \
 xqilla/framework/XPath2MemoryManager.hpp \
 xqilla/framework/BaseMemoryManager.hpp \

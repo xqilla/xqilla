@@ -19,7 +19,7 @@
 
 #include <xqilla/framework/XPath2MemoryManagerImpl.hpp>
 
-#include <xqilla/simple-api/XQillaPlatformUtils.hpp>
+#include <xqilla/utils/XQillaPlatformUtils.hpp>
 #include <xqilla/dom-api/XQillaImplementation.hpp>
 
 #include <xqilla/mapm/m_apm.h>

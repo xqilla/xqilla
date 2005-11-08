@@ -39,7 +39,7 @@ ASTNode* XQIf::staticResolution(StaticContext *context) {
   _test = _test->staticResolution(context);
 
   if(_test->isConstant()) {
-    AutoRelease<DynamicContext> dContext(context->createDynamicContext());
+    AutoDelete<DynamicContext> dContext(context->createDynamicContext());
     dContext->setMemoryManager(context->getMemoryManager());
     if(_test->collapseTree(dContext).getEffectiveBooleanValue(dContext)) {
       _whenTrue->addPredicates(getPredicates());

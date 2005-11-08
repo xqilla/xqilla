@@ -47,7 +47,7 @@ ASTNode* XQQuantified::staticResolution(StaticContext* context) {
 
   if(_src.isUsed()) {
     if(_return->isConstant()) {
-      AutoRelease<DynamicContext> dContext(context->createDynamicContext());
+      AutoDelete<DynamicContext> dContext(context->createDynamicContext());
       dContext->setMemoryManager(context->getMemoryManager());
       bool value = _return->collapseTree(dContext).getEffectiveBooleanValue(dContext);
       ASTNode *newBlock = new (getMemoryManager())

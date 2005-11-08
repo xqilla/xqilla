@@ -11096,7 +11096,7 @@ yyFlexLexer::yyFlexLexer( LexerDOMStringStream* arg_yyin, ostream* arg_yyout )
 
 yyFlexLexer::~yyFlexLexer()
 	{
-	delete yy_state_buf; yy_flex_free(yy_start_stack);
+	delete [] yy_state_buf; yy_flex_free(yy_start_stack);
 	yy_delete_buffer( yy_current_buffer );
 	}
 

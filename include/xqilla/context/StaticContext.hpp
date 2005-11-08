@@ -20,6 +20,7 @@
 #include <time.h>
 #include <xqilla/schema/DocumentCache.hpp>
 #include <xercesc/util/PlatformUtils.hpp>
+#include <xercesc/util/XMemory.hpp>
 
 // Copied from ASTNode.hpp
 typedef std::vector<ASTNode*,XQillaAllocator<ASTNode*> > VectorOfASTNodes;
@@ -39,7 +40,7 @@ class XMLEntityResolver;
 XERCES_CPP_NAMESPACE_END
 
 /// The parse time static context interface
-class XQILLA_API StaticContext
+class XQILLA_API StaticContext : public XERCES_CPP_NAMESPACE_QUALIFIER XMemory
 {
 public:
   typedef enum {
@@ -59,10 +60,8 @@ public:
 
   virtual ~StaticContext() {};
 
-  virtual void release() = 0;
-
-  virtual DynamicContext *createDynamicContext(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr
-                                               = XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager) const = 0;
+  virtual DynamicContext *createDynamicContext(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr =
+                                               XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager) const = 0;
   
   /** Returns the ItemFactory for this context, which is used to create XQilla items and other objects. */
   virtual ItemFactory *getItemFactory() const = 0;

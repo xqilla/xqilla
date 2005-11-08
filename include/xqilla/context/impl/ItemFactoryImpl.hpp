@@ -30,8 +30,6 @@ public:
   ItemFactoryImpl(const DocumentCache* dc, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr);
   virtual ~ItemFactoryImpl();
 
-  virtual void release();
-
   /* @name Node factory methods */
 
   virtual Node::Ptr createTextNode(const XMLCh *value, const DynamicContext *context) const;

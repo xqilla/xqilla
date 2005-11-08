@@ -243,7 +243,7 @@ ASTNodeImpl *ASTNodeImpl::resolvePredicate(Predicates::reverse_iterator it, Pred
 
     if(!newSrc.isUsed() && !pred->isSingleNumericConstant(context)) {
       // It's not a numeric constant
-      AutoRelease<DynamicContext> dContext(context->createDynamicContext());
+      AutoDelete<DynamicContext> dContext(context->createDynamicContext());
       dContext->setMemoryManager(context->getMemoryManager());
       if(pred->collapseTree(dContext).getEffectiveBooleanValue(dContext)) {
         // We have a true predicate, so don't add it to the new predicate list
@@ -273,7 +273,7 @@ ASTNodeImpl *ASTNodeImpl::resolvePredicate(Predicates::reverse_iterator it, Pred
     the returned ASTNode */
 ASTNode *ASTNodeImpl::constantFold(StaticContext *context) const
 {
-  AutoRelease<DynamicContext> dContext(context->createDynamicContext());
+  AutoDelete<DynamicContext> dContext(context->createDynamicContext());
   dContext->setMemoryManager(context->getMemoryManager());
   Result result = createResult(dContext);
   ASTNode* newBlock = new (getMemoryManager()) XQSequence(result, dContext, getMemoryManager());

@@ -44,7 +44,7 @@
 
       args._context=context;
       args._scanner=&scanner;
-      args._query=new (context->getMemoryManager()) XQQuery(inputQuery, context->getMemoryManager());
+      args._query=new (context->getMemoryManager()) XQQuery(inputQuery, context);
       args._query->setFile(queryFile);
 
 	    XQuery::yyparse(&args);

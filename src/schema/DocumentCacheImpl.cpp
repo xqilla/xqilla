@@ -519,12 +519,6 @@ DocumentCacheImpl::~DocumentCacheImpl()
   }
 }
 
-void DocumentCacheImpl::release()
-{
-  this->~DocumentCacheImpl();
-  _memMgr->deallocate(this);
-}
-
 void DocumentCacheImpl::incrementDocumentRefCount(const XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* document) const
 {
   assert(document != 0);

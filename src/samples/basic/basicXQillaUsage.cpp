@@ -35,7 +35,7 @@
 #include <xqilla/dom-api/XQillaExpression.hpp>
 #include <xqilla/dom-api/XQillaImplementation.hpp>
 #include <xqilla/dom-api/XPath2Result.hpp>
-#include <xqilla/simple-api/XQillaPlatformUtils.hpp>
+#include <xqilla/utils/XQillaPlatformUtils.hpp>
 #include <xqilla/framework/XPath2MemoryManager.hpp>
 
 // IO include

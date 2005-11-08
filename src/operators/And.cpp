@@ -49,7 +49,7 @@ ASTNode* And::staticResolution(StaticContext *context)
       newArgs.push_back(*i);
     }
     else {
-      AutoRelease<DynamicContext> dContext(context->createDynamicContext());
+      AutoDelete<DynamicContext> dContext(context->createDynamicContext());
       dContext->setMemoryManager(context->getMemoryManager());
       if(!(*i)->collapseTree(dContext, ASTNode::UNORDERED | ASTNode::RETURN_TWO).getEffectiveBooleanValue(dContext)) {
         // It's constantly false, so this expression is false

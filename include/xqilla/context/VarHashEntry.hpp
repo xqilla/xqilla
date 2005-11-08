@@ -17,10 +17,11 @@
 #define _VARHASHENTRY_HPP
 
 #include <xqilla/framework/XQillaExport.hpp>
+#include <xercesc/util/XMemory.hpp>
 
 /** The class that stores the values of the variables. */
 template<class TYPE>
-class VarHashEntry
+class VarHashEntry : public XERCES_CPP_NAMESPACE_QUALIFIER XMemory
 {
 public:
   virtual ~VarHashEntry() {}

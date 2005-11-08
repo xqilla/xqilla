@@ -40,7 +40,7 @@ public:
 
   VariableStoreTemplate(XPath2MemoryManager *memMgr);
   /** default destructor */
-  ~VariableStoreTemplate() {};
+  ~VariableStoreTemplate();
 
   void clear();
 
@@ -104,6 +104,13 @@ VariableStoreTemplate<TYPE>::VariableStoreTemplate(XPath2MemoryManager* memMgr)
 }
 
 template<class TYPE>
+VariableStoreTemplate<TYPE>::~VariableStoreTemplate()
+{
+  clear();
+  delete _global;
+}
+
+template<class TYPE>
 void VariableStoreTemplate<TYPE>::clear()
 {
   // Remove all the scopes
@@ -136,7 +143,7 @@ void VariableStoreTemplate<TYPE>::setCurrentScope(MyScope *scope)
 template<class TYPE>
 void VariableStoreTemplate<TYPE>::removeScope()
 {
-  popScope()->release();
+  delete popScope();
 }
 
 template<class TYPE>
@@ -161,7 +168,7 @@ void VariableStoreTemplate<TYPE>::setGlobalVar(const XMLCh* namespaceURI,
   if(result)
     result->setValue(value);
   else
-    _global->put(nsID, name, new VarHashEntryImpl<TYPE>(value));
+    _global->put(nsID, name, new (_memMgr) VarHashEntryImpl<TYPE>(value));
 }
 
 template<class TYPE>
@@ -178,7 +185,7 @@ void VariableStoreTemplate<TYPE>::setVar(const XMLCh* namespaceURI,
   if(result)
     result->setValue(value);
   else
-    scope->put(nsID, name, new VarHashEntryImpl<TYPE>(value));
+    scope->put(nsID, name, new (_memMgr) VarHashEntryImpl<TYPE>(value));
 }
 
 template<class TYPE>
@@ -189,7 +196,7 @@ void VariableStoreTemplate<TYPE>::declareVar(const XMLCh* namespaceURI,
   if(!_uriPool.exists(namespaceURI))
     namespaceURI=_memMgr->getPooledString(namespaceURI);
   unsigned int nsID=_uriPool.addOrFind(namespaceURI);
-  _current->put(nsID, name, new VarHashEntryImpl<TYPE>(value));
+  _current->put(nsID, name, new (_memMgr) VarHashEntryImpl<TYPE>(value));
 }
 
 /** Returns a null VarHashEntry if unsuccessful */

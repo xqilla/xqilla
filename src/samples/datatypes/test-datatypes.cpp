@@ -40,7 +40,7 @@
 #include <xqilla/dom-api/XQillaNSResolver.hpp>
 
 #include <xqilla/runtime/Sequence.hpp>
-#include <xqilla/simple-api/XQillaPlatformUtils.hpp>
+#include <xqilla/utils/XQillaPlatformUtils.hpp>
 #include <xqilla/utils/XPath2NSUtils.hpp>
 #include <xqilla/utils/NumUtils.hpp>
 #include <xqilla/context/DynamicContext.hpp>
@@ -189,7 +189,7 @@ int main(int argc, char *argv[])
   //////////////////////////////////////////////////////////////////
   // clean up and exit                                            //
   //////////////////////////////////////////////////////////////////
-  context->release();
+  delete context;
 	delete xmlparser; //parser must be deleted before calling Terminate
   delete errHandler;
   XQillaPlatformUtils::terminate();

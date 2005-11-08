@@ -80,13 +80,8 @@ XQDynamicContextImpl::~XQDynamicContextImpl()
   _contextItem = 0;
   _implicitTimezone = 0;
 
-  ((ItemFactoryImpl*)_itemFactory)->release();
-}
-
-void XQDynamicContextImpl::release()
-{
-  this->~XQDynamicContextImpl();
-  _createdWith->deallocate(this);
+  delete _varStore;
+  delete _itemFactory;
 }
 
 DynamicContext *XQDynamicContextImpl::createDynamicContext(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr) const

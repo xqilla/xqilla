@@ -35,7 +35,7 @@ XQLiteral::XQLiteral(ItemConstructor *ic, XPath2MemoryManager* memMgr)
 bool XQLiteral::isConstantAndHasTimezone(StaticContext *context) const
 {
   if(isConstant()) {
-    AutoRelease<DynamicContext> dContext(context->createDynamicContext());
+    AutoDelete<DynamicContext> dContext(context->createDynamicContext());
     dContext->setMemoryManager(context->getMemoryManager());
 
     Item::Ptr item = _itemConstructor->createItem(dContext);
@@ -51,7 +51,7 @@ bool XQLiteral::isConstantAndHasTimezone(StaticContext *context) const
 bool XQLiteral::isSingleNumericConstant(StaticContext *context) const
 {
   if(isConstant()) {
-    AutoRelease<DynamicContext> dContext(context->createDynamicContext());
+    AutoDelete<DynamicContext> dContext(context->createDynamicContext());
     dContext->setMemoryManager(context->getMemoryManager());
 
     Item::Ptr item = _itemConstructor->createItem(dContext);

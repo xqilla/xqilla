@@ -88,8 +88,8 @@ string PrintAST::print(const XQQuery *query, const DynamicContext *context, int 
 
   PrintAST p;
 
-  for(std::vector<XQUserFunction*, XQillaAllocator<XQUserFunction*> >::const_iterator i = query->m_userDefFns.begin();
-      i != query->m_userDefFns.end(); ++i) {
+  for(std::vector<XQUserFunction*, XQillaAllocator<XQUserFunction*> >::const_iterator i = query->getFunctions().begin();
+      i != query->getFunctions().end(); ++i) {
     XQUserFunction *f = *i;
 
     const XMLCh *funUri = f->getURI();
@@ -104,8 +104,8 @@ string PrintAST::print(const XQQuery *query, const DynamicContext *context, int 
     s << p.printASTNode(f->getFunctionBody(), context, 2);
     s << "  </FunctionDefinition>" << endl;
   }
-  for(vector<XQGlobalVariable*, XQillaAllocator<XQGlobalVariable*> >::const_iterator it = query->m_userDefVars.begin();
-      it != query->m_userDefVars.end(); ++it) {
+  for(vector<XQGlobalVariable*, XQillaAllocator<XQGlobalVariable*> >::const_iterator it = query->getVariables().begin();
+      it != query->getVariables().end(); ++it) {
     s << p.printASTNode(*it, context, indent);
   }
   s << p.printASTNode(query->getQueryBody(), context, indent);

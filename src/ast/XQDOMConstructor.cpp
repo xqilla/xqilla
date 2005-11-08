@@ -496,7 +496,7 @@ ASTNode* XQDOMConstructor::staticResolution(StaticContext *context)
        }
         // after we have added all the namespace declaration, check for duplicate attributes
         std::set<const XMLCh*, XMLChSort> attrNames;
-        AutoRelease<DynamicContext> dContext(context->createDynamicContext());
+        AutoDelete<DynamicContext> dContext(context->createDynamicContext());
         dContext->setMemoryManager(context->getMemoryManager());
         for (i=0;i<m_attrList->size();i++) 
         {
@@ -537,7 +537,7 @@ ASTNode* XQDOMConstructor::staticResolution(StaticContext *context)
   }
 
   if(m_nodeType==Node::attribute_string && m_name->isConstant()) {
-    AutoRelease<DynamicContext> dContext(context->createDynamicContext());
+    AutoDelete<DynamicContext> dContext(context->createDynamicContext());
     dContext->setMemoryManager(context->getMemoryManager());
 
     Item::Ptr item;

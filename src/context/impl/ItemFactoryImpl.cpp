@@ -55,12 +55,6 @@ ItemFactoryImpl::~ItemFactoryImpl()
 {
 }
 
-void ItemFactoryImpl::release()
-{
-  this->~ItemFactoryImpl();
-  memMgr_->deallocate(this);
-}
-
 DOMDocument *ItemFactoryImpl::getOutputDocument(const DynamicContext *context) const
 {
   // Lazily create the output document

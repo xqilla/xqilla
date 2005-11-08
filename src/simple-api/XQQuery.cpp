@@ -51,20 +51,37 @@
 
 using namespace std;
 
+#if defined(XERCES_HAS_CPP_NAMESPACE)
+XERCES_CPP_NAMESPACE_USE
+#endif
+
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-XQQuery::XQQuery(const XMLCh* queryText, XPath2MemoryManager* memMgr) :
-  m_userDefFns(XQillaAllocator<XQUserFunction*>(memMgr)),
-  m_userDefVars(XQillaAllocator<XQGlobalVariable*>(memMgr))
+XQQuery::XQQuery(const XMLCh* queryText, DynamicContext *context, bool contextOwned, MemoryManager *memMgr)
+  : m_memMgr(memMgr),
+    m_context(context),
+    m_contextOwned(contextOwned),
+    m_query(NULL),
+    m_bIsLibraryModule(false),
+    m_szTargetNamespace(NULL),
+    m_szQueryText(m_context->getMemoryManager()->getPooledString(queryText)),
+    m_szCurrentFile(NULL),
+    m_userDefFns(XQillaAllocator<XQUserFunction*>(memMgr)),
+    m_userDefVars(XQillaAllocator<XQGlobalVariable*>(memMgr))
 {
-  m_memMgr=memMgr;
-  m_query=NULL;
-  m_bIsLibraryModule=false;
-  m_szTargetNamespace=NULL;
-  m_szCurrentFile = NULL;
-  m_szQueryText=m_memMgr->getPooledString(queryText);
+}
+
+XQQuery::~XQQuery()
+{
+	if(m_contextOwned)
+		delete m_context;
+}
+
+DynamicContext *XQQuery::createDynamicContext(MemoryManager *memMgr) const
+{
+  return m_context->createDynamicContext(memMgr);
 }
 
 Result XQQuery::evaluate(DynamicContext* context) const
@@ -79,6 +96,8 @@ Result XQQuery::evaluate(DynamicContext* context) const
 
 void XQQuery::staticResolution(StaticContext *context)
 {
+  if(context == 0) context = m_context;
+
   for(vector<XQGlobalVariable*, XQillaAllocator<XQGlobalVariable*> >::iterator it = m_userDefVars.begin();
       it != m_userDefVars.end(); ++it) {
     (*it) = (XQGlobalVariable*)(*it)->staticResolution(context);
@@ -144,12 +163,12 @@ void XQQuery::importModule(const XMLCh* szUri, VectorOfStrings* locations, Stati
   for(VectorOfStrings::iterator it=locations->begin();it!=locations->end();it++)
   {
       const XMLCh* fullPath=NULL;
-      XERCES_CPP_NAMESPACE_QUALIFIER InputSource* srcToUse = 0;
+      InputSource* srcToUse = 0;
       if (context->getDocumentCache()->getXMLEntityResolver()){
-        XERCES_CPP_NAMESPACE_QUALIFIER XMLResourceIdentifier resourceIdentifier(XERCES_CPP_NAMESPACE_QUALIFIER XMLResourceIdentifier::UnKnown,
+        XMLResourceIdentifier resourceIdentifier(XMLResourceIdentifier::UnKnown,
                                                                                 *it, 
                                                                                 szUri, 
-                                                                                XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, 
+                                                                                XMLUni::fgZeroLenString, 
                                                                                 context->getBaseURI());
         srcToUse = context->getDocumentCache()->getXMLEntityResolver()->resolveEntity(&resourceIdentifier);
       }
@@ -157,38 +176,38 @@ void XQQuery::importModule(const XMLCh* szUri, VectorOfStrings* locations, Stati
       if(srcToUse==0)
       {
           try {
-            XERCES_CPP_NAMESPACE_QUALIFIER XMLURL urlTmp(context->getBaseURI(), *it);
+            XMLURL urlTmp(context->getBaseURI(), *it);
             if (urlTmp.isRelative()) {
-              throw XERCES_CPP_NAMESPACE_QUALIFIER MalformedURLException(__FILE__, __LINE__, XERCES_CPP_NAMESPACE_QUALIFIER XMLExcepts::URL_NoProtocolPresent);
+              throw MalformedURLException(__FILE__, __LINE__, XMLExcepts::URL_NoProtocolPresent);
             }
-            srcToUse = new XERCES_CPP_NAMESPACE_QUALIFIER URLInputSource(urlTmp);
+            srcToUse = new URLInputSource(urlTmp);
           }
-          catch(const XERCES_CPP_NAMESPACE_QUALIFIER MalformedURLException&) {
+          catch(const MalformedURLException&) {
             // It's not a URL, so let's assume it's a local file name.
             const XMLCh* baseUri=context->getBaseURI();
             if(baseUri && baseUri[0]) {
-              XMLCh* tmpBuf = XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::weavePaths(baseUri, *it);
-              srcToUse = new XERCES_CPP_NAMESPACE_QUALIFIER LocalFileInputSource(tmpBuf);
-              XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager->deallocate(tmpBuf);
+              XMLCh* tmpBuf = XMLPlatformUtils::weavePaths(baseUri, *it);
+              srcToUse = new LocalFileInputSource(tmpBuf);
+              XMLPlatformUtils::fgMemoryManager->deallocate(tmpBuf);
             }
             else {
-              srcToUse = new XERCES_CPP_NAMESPACE_QUALIFIER LocalFileInputSource(*it);
+              srcToUse = new LocalFileInputSource(*it);
             }
           }
       }
-      XERCES_CPP_NAMESPACE_QUALIFIER Janitor<XERCES_CPP_NAMESPACE_QUALIFIER InputSource> janIS(srcToUse);
+      Janitor<InputSource> janIS(srcToUse);
       moduleCtx.setBaseURI(srcToUse->getSystemId());
       try {
         XQQuery* pParsedQuery = XQEvaluator::parse(*srcToUse, &moduleCtx, false);
         if(!pParsedQuery->getIsLibraryModule()) {
-          XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer errMsg;
+          XMLBuffer errMsg;
           errMsg.set(X("The module at "));
           errMsg.append(*it);
           errMsg.append(X(" is not a module"));
               DSLthrow(ContextException,X("XQQuery::ImportModule"), errMsg.getRawBuffer());
         }
         if(!XERCES_CPP_NAMESPACE::XMLString::equals(szUri,pParsedQuery->getModuleTargetNamespace())) {
-          XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer errMsg;
+          XMLBuffer errMsg;
           errMsg.set(X("The module at "));
           errMsg.append(*it);
           errMsg.append(X(" specifies a different namespace"));
@@ -231,7 +250,7 @@ const XMLCh* XQQuery::getFile() const
 
 void XQQuery::setFile(const XMLCh* file)
 {
-	m_szCurrentFile=m_memMgr->getPooledString(file);
+	m_szCurrentFile=m_context->getMemoryManager()->getPooledString(file);
 }
 
 const XMLCh* XQQuery::getQueryText() const
@@ -291,7 +310,7 @@ XQQuery::DebugResult::DebugResult(const XQQuery *query, DynamicContext *context)
 
 void XQQuery::DebugResult::getResult(Sequence &toFill, DynamicContext *context) const
 {
-  static XMLCh szMain[]= { XERCES_CPP_NAMESPACE_QUALIFIER chLatin_M, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_i, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
+  static XMLCh szMain[]= { chLatin_M, chLatin_a, chLatin_i, chLatin_n, chNull };
 
   if(context->getDebugCallback()) {
     context->getDebugCallback()->NotifyQueryBegin(context, _query->getQueryText());
