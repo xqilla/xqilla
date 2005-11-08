@@ -112,9 +112,9 @@ public:
     {
 	    m_index=m_position=0;
 	    m_lineno=m_columnno=1;
-	    m_szQuery=query;
         m_memMgr=memMgr;
-        m_nLength=XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(query);
+        m_szQuery=XPath2Utils::normalizeEOL(query, m_memMgr);
+        m_nLength=XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(m_szQuery);
         m_nOpenComments=0;
     	m_bGenerateEOF=m_bReportWhiteSpace=false;
     }
