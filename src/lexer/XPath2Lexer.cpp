@@ -9947,11 +9947,21 @@ static yyconst short int yy_chk[9776] =
  * Copyright (c) 2004-2005
  *     Parthenon Computing Ltd. All rights reserved.
  *
- * Please see the file LICENSE for more information.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  * $Id$
  */
-#line 17 "../src/lexer/XPath2Lexer.lex"
+#line 27 "../src/lexer/XPath2Lexer.lex"
 
 #include "../config/xqilla_config.h"
 #include "XPathFlexLexer.hpp"
@@ -10090,7 +10100,7 @@ int XPathyylex(YYSTYPE *lvalp, void *pcontrol) {
 
 #define SINGLETYPE 9
 
-#line 10094 "../src/lexer/XPath2Lexer.cpp"
+#line 10104 "../src/lexer/XPath2Lexer.cpp"
 
 /* Macros after this point can all be overridden by user definitions in
  * section 1.
@@ -10217,12 +10227,12 @@ YY_DECL
 	register YY_CHAR *yy_cp, *yy_bp;
 	register int yy_act;
 
-#line 190 "../src/lexer/XPath2Lexer.lex"
+#line 200 "../src/lexer/XPath2Lexer.lex"
 
 
  /* All tokens */
 
-#line 10226 "../src/lexer/XPath2Lexer.cpp"
+#line 10236 "../src/lexer/XPath2Lexer.cpp"
 
 	if ( yy_init )
 		{
@@ -10303,78 +10313,78 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 194 "../src/lexer/XPath2Lexer.lex"
+#line 204 "../src/lexer/XPath2Lexer.lex"
 /* ignore whitespace */
 	YY_BREAK
 /* Default [INITIAL] state */
 case 2:
 YY_RULE_SETUP
-#line 198 "../src/lexer/XPath2Lexer.lex"
+#line 208 "../src/lexer/XPath2Lexer.lex"
 BEGIN(OPERATOR); RECOGNIZE(_INTEGER_LITERAL_);
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 199 "../src/lexer/XPath2Lexer.lex"
+#line 209 "../src/lexer/XPath2Lexer.lex"
 BEGIN(OPERATOR); RECOGNIZE(_DECIMAL_LITERAL_);
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 200 "../src/lexer/XPath2Lexer.lex"
+#line 210 "../src/lexer/XPath2Lexer.lex"
 BEGIN(OPERATOR); RECOGNIZE(_DOUBLE_LITERAL_);
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 201 "../src/lexer/XPath2Lexer.lex"
+#line 211 "../src/lexer/XPath2Lexer.lex"
 BEGIN(OPERATOR); RECOGNIZE(_DOT_);
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 202 "../src/lexer/XPath2Lexer.lex"
+#line 212 "../src/lexer/XPath2Lexer.lex"
 BEGIN(OPERATOR); RECOGNIZE(_DOT_DOT_);
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 203 "../src/lexer/XPath2Lexer.lex"
+#line 213 "../src/lexer/XPath2Lexer.lex"
 BEGIN(OPERATOR); RECOGNIZE(_NCNAME_COLON_STAR_);
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 204 "../src/lexer/XPath2Lexer.lex"
+#line 214 "../src/lexer/XPath2Lexer.lex"
 BEGIN(OPERATOR); RECOGNIZE(_RPAR_);
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 205 "../src/lexer/XPath2Lexer.lex"
+#line 215 "../src/lexer/XPath2Lexer.lex"
 BEGIN(OPERATOR); RECOGNIZE(_STAR_COLON_NCNAME_);
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 206 "../src/lexer/XPath2Lexer.lex"
+#line 216 "../src/lexer/XPath2Lexer.lex"
 BEGIN(OPERATOR); RECOGNIZE(_STAR_);
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 207 "../src/lexer/XPath2Lexer.lex"
+#line 217 "../src/lexer/XPath2Lexer.lex"
 BEGIN(OPERATOR); RECOGNIZE(_STRING_LITERAL_);
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 209 "../src/lexer/XPath2Lexer.lex"
+#line 219 "../src/lexer/XPath2Lexer.lex"
 BEGIN(VARNAME);
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 210 "../src/lexer/XPath2Lexer.lex"
+#line 220 "../src/lexer/XPath2Lexer.lex"
 BEGIN(VARNAME); RECOGNIZE(_FOR_);
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 211 "../src/lexer/XPath2Lexer.lex"
+#line 221 "../src/lexer/XPath2Lexer.lex"
 BEGIN(VARNAME); RECOGNIZE(_SOME_);
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 212 "../src/lexer/XPath2Lexer.lex"
+#line 222 "../src/lexer/XPath2Lexer.lex"
 BEGIN(VARNAME); RECOGNIZE(_EVERY_);
 	YY_BREAK
 case 16:
@@ -10382,7 +10392,7 @@ case 16:
 yy_c_buf_p = yy_cp -= 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 214 "../src/lexer/XPath2Lexer.lex"
+#line 224 "../src/lexer/XPath2Lexer.lex"
 {
 																	switch(YYSTATE)
 																	{
@@ -10399,7 +10409,7 @@ case 17:
 yy_c_buf_p = yy_cp -= 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 224 "../src/lexer/XPath2Lexer.lex"
+#line 234 "../src/lexer/XPath2Lexer.lex"
 {
 																	int stateToPush=(YYSTATE==INITIAL)?OPERATOR:OCCURRENCEINDICATOR;
 																	PUSH(stateToPush);
@@ -10412,7 +10422,7 @@ case 18:
 yy_c_buf_p = yy_cp -= 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 230 "../src/lexer/XPath2Lexer.lex"
+#line 240 "../src/lexer/XPath2Lexer.lex"
 {
 																	switch(YYSTATE)
 																	{
@@ -10429,7 +10439,7 @@ case 19:
 yy_c_buf_p = yy_cp -= 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 240 "../src/lexer/XPath2Lexer.lex"
+#line 250 "../src/lexer/XPath2Lexer.lex"
 {
 																	int stateToPush=(YYSTATE==INITIAL)?OPERATOR:OCCURRENCEINDICATOR;
 																	PUSH(stateToPush);
@@ -10442,7 +10452,7 @@ case 20:
 yy_c_buf_p = yy_cp -= 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 246 "../src/lexer/XPath2Lexer.lex"
+#line 256 "../src/lexer/XPath2Lexer.lex"
 {
 																	int stateToPush=(YYSTATE==INITIAL)?OPERATOR:OCCURRENCEINDICATOR;
 																	PUSH(stateToPush);
@@ -10455,7 +10465,7 @@ case 21:
 yy_c_buf_p = yy_cp -= 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 252 "../src/lexer/XPath2Lexer.lex"
+#line 262 "../src/lexer/XPath2Lexer.lex"
 {
 																	int stateToPush=(YYSTATE==INITIAL)?OPERATOR:OCCURRENCEINDICATOR;
 																	PUSH(stateToPush);
@@ -10468,7 +10478,7 @@ case 22:
 yy_c_buf_p = yy_cp -= 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 258 "../src/lexer/XPath2Lexer.lex"
+#line 268 "../src/lexer/XPath2Lexer.lex"
 {
 																	int stateToPush=(YYSTATE==INITIAL)?OPERATOR:OCCURRENCEINDICATOR;
 																	PUSH(stateToPush);
@@ -10481,7 +10491,7 @@ case 23:
 yy_c_buf_p = yy_cp -= 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 264 "../src/lexer/XPath2Lexer.lex"
+#line 274 "../src/lexer/XPath2Lexer.lex"
 {
 																	int stateToPush=(YYSTATE==INITIAL)?OPERATOR:OCCURRENCEINDICATOR;
 																	PUSH(stateToPush);
@@ -10494,7 +10504,7 @@ case 24:
 yy_c_buf_p = yy_cp -= 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 270 "../src/lexer/XPath2Lexer.lex"
+#line 280 "../src/lexer/XPath2Lexer.lex"
 {
 																	int stateToPush=(YYSTATE==INITIAL)?OPERATOR:OCCURRENCEINDICATOR;
 																	PUSH(stateToPush);
@@ -10504,82 +10514,82 @@ YY_RULE_SETUP
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 277 "../src/lexer/XPath2Lexer.lex"
+#line 287 "../src/lexer/XPath2Lexer.lex"
 PUSH_CURRENT(); BEGIN(EXPR_COMMENT);
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 279 "../src/lexer/XPath2Lexer.lex"
+#line 289 "../src/lexer/XPath2Lexer.lex"
 RECOGNIZE(_AT_);
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 280 "../src/lexer/XPath2Lexer.lex"
+#line 290 "../src/lexer/XPath2Lexer.lex"
 RECOGNIZE(_AXIS_ANCESTOR_OR_SELF_);
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 281 "../src/lexer/XPath2Lexer.lex"
+#line 291 "../src/lexer/XPath2Lexer.lex"
 RECOGNIZE(_AXIS_ANCESTOR_);
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 282 "../src/lexer/XPath2Lexer.lex"
+#line 292 "../src/lexer/XPath2Lexer.lex"
 RECOGNIZE(_AXIS_ATTRIBUTE_);
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 283 "../src/lexer/XPath2Lexer.lex"
+#line 293 "../src/lexer/XPath2Lexer.lex"
 RECOGNIZE(_AXIS_CHILD_);
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 284 "../src/lexer/XPath2Lexer.lex"
+#line 294 "../src/lexer/XPath2Lexer.lex"
 RECOGNIZE(_AXIS_DESCENDANT_OR_SELF_);
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 285 "../src/lexer/XPath2Lexer.lex"
+#line 295 "../src/lexer/XPath2Lexer.lex"
 RECOGNIZE(_AXIS_DESCENDANT_);
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 286 "../src/lexer/XPath2Lexer.lex"
+#line 296 "../src/lexer/XPath2Lexer.lex"
 RECOGNIZE(_AXIS_FOLLOWING_SIBLING_);
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 287 "../src/lexer/XPath2Lexer.lex"
+#line 297 "../src/lexer/XPath2Lexer.lex"
 RECOGNIZE(_AXIS_FOLLOWING_);
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 288 "../src/lexer/XPath2Lexer.lex"
+#line 298 "../src/lexer/XPath2Lexer.lex"
 RECOGNIZE(_AXIS_NAMESPACE_);
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 289 "../src/lexer/XPath2Lexer.lex"
+#line 299 "../src/lexer/XPath2Lexer.lex"
 RECOGNIZE(_AXIS_PARENT_);
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 290 "../src/lexer/XPath2Lexer.lex"
+#line 300 "../src/lexer/XPath2Lexer.lex"
 RECOGNIZE(_AXIS_PRECEDING_SIBLING_);
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 291 "../src/lexer/XPath2Lexer.lex"
+#line 301 "../src/lexer/XPath2Lexer.lex"
 RECOGNIZE(_AXIS_PRECEDING_);
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 292 "../src/lexer/XPath2Lexer.lex"
+#line 302 "../src/lexer/XPath2Lexer.lex"
 RECOGNIZE(_AXIS_SELF_);
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 293 "../src/lexer/XPath2Lexer.lex"
+#line 303 "../src/lexer/XPath2Lexer.lex"
 BEGIN(INITIAL); RECOGNIZE(_COMMA_);
 	YY_BREAK
 case 41:
@@ -10587,305 +10597,305 @@ case 41:
 yy_c_buf_p = yy_cp -= 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 294 "../src/lexer/XPath2Lexer.lex"
+#line 304 "../src/lexer/XPath2Lexer.lex"
 RECOGNIZE(_IF_LPAR_);
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 295 "../src/lexer/XPath2Lexer.lex"
+#line 305 "../src/lexer/XPath2Lexer.lex"
 BEGIN(INITIAL); RECOGNIZE(_LPAR_);
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 296 "../src/lexer/XPath2Lexer.lex"
+#line 306 "../src/lexer/XPath2Lexer.lex"
 BEGIN(INITIAL); RECOGNIZE(_MINUS_);
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 297 "../src/lexer/XPath2Lexer.lex"
+#line 307 "../src/lexer/XPath2Lexer.lex"
 BEGIN(INITIAL); RECOGNIZE(_PLUS_);
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 298 "../src/lexer/XPath2Lexer.lex"
+#line 308 "../src/lexer/XPath2Lexer.lex"
 BEGIN(INITIAL); RECOGNIZE(_SLASH_);
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 299 "../src/lexer/XPath2Lexer.lex"
+#line 309 "../src/lexer/XPath2Lexer.lex"
 BEGIN(INITIAL); RECOGNIZE(_SLASHSLASH_);
 	YY_BREAK
 /* OPERATOR state */
 case 47:
 YY_RULE_SETUP
-#line 303 "../src/lexer/XPath2Lexer.lex"
+#line 313 "../src/lexer/XPath2Lexer.lex"
 BEGIN(INITIAL); RECOGNIZE(_THEN_);
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 304 "../src/lexer/XPath2Lexer.lex"
+#line 314 "../src/lexer/XPath2Lexer.lex"
 BEGIN(INITIAL); RECOGNIZE(_ELSE_);
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 305 "../src/lexer/XPath2Lexer.lex"
+#line 315 "../src/lexer/XPath2Lexer.lex"
 BEGIN(INITIAL); RECOGNIZE(_AND_);
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 306 "../src/lexer/XPath2Lexer.lex"
+#line 316 "../src/lexer/XPath2Lexer.lex"
 BEGIN(INITIAL); RECOGNIZE(_DIV_);
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 307 "../src/lexer/XPath2Lexer.lex"
+#line 317 "../src/lexer/XPath2Lexer.lex"
 BEGIN(INITIAL); RECOGNIZE(_EQUALS_);
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 308 "../src/lexer/XPath2Lexer.lex"
+#line 318 "../src/lexer/XPath2Lexer.lex"
 BEGIN(INITIAL); RECOGNIZE(_EXCEPT_);
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 309 "../src/lexer/XPath2Lexer.lex"
+#line 319 "../src/lexer/XPath2Lexer.lex"
 BEGIN(INITIAL); RECOGNIZE(_FORTRAN_EQ_);
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 310 "../src/lexer/XPath2Lexer.lex"
+#line 320 "../src/lexer/XPath2Lexer.lex"
 BEGIN(INITIAL); RECOGNIZE(_FORTRAN_GE_);
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-#line 311 "../src/lexer/XPath2Lexer.lex"
+#line 321 "../src/lexer/XPath2Lexer.lex"
 BEGIN(INITIAL); RECOGNIZE(_FORTRAN_GT_);
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-#line 312 "../src/lexer/XPath2Lexer.lex"
+#line 322 "../src/lexer/XPath2Lexer.lex"
 BEGIN(INITIAL); RECOGNIZE(_FORTRAN_LE_);
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 313 "../src/lexer/XPath2Lexer.lex"
+#line 323 "../src/lexer/XPath2Lexer.lex"
 BEGIN(INITIAL); RECOGNIZE(_FORTRAN_LT_);
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
-#line 314 "../src/lexer/XPath2Lexer.lex"
+#line 324 "../src/lexer/XPath2Lexer.lex"
 BEGIN(INITIAL); RECOGNIZE(_FORTRAN_NE_);
 	YY_BREAK
 case 59:
 YY_RULE_SETUP
-#line 315 "../src/lexer/XPath2Lexer.lex"
+#line 325 "../src/lexer/XPath2Lexer.lex"
 BEGIN(INITIAL); RECOGNIZE(_GT_EQUALS_);
 	YY_BREAK
 case 60:
 YY_RULE_SETUP
-#line 316 "../src/lexer/XPath2Lexer.lex"
+#line 326 "../src/lexer/XPath2Lexer.lex"
 BEGIN(INITIAL); RECOGNIZE(_GT_GT_);
 	YY_BREAK
 case 61:
 YY_RULE_SETUP
-#line 317 "../src/lexer/XPath2Lexer.lex"
+#line 327 "../src/lexer/XPath2Lexer.lex"
 BEGIN(INITIAL); RECOGNIZE(_GT_);
 	YY_BREAK
 case 62:
 YY_RULE_SETUP
-#line 318 "../src/lexer/XPath2Lexer.lex"
+#line 328 "../src/lexer/XPath2Lexer.lex"
 BEGIN(INITIAL); RECOGNIZE(_INTEGER_DIV_);
 	YY_BREAK
 case 63:
 YY_RULE_SETUP
-#line 319 "../src/lexer/XPath2Lexer.lex"
+#line 329 "../src/lexer/XPath2Lexer.lex"
 BEGIN(INITIAL); RECOGNIZE(_INTERSECT_);
 	YY_BREAK
 case 64:
 YY_RULE_SETUP
-#line 320 "../src/lexer/XPath2Lexer.lex"
+#line 330 "../src/lexer/XPath2Lexer.lex"
 BEGIN(INITIAL); RECOGNIZE(_IN_);
 	YY_BREAK
 case 65:
 YY_RULE_SETUP
-#line 321 "../src/lexer/XPath2Lexer.lex"
+#line 331 "../src/lexer/XPath2Lexer.lex"
 BEGIN(INITIAL); RECOGNIZE(_IS_);
 	YY_BREAK
 case 66:
 YY_RULE_SETUP
-#line 322 "../src/lexer/XPath2Lexer.lex"
+#line 332 "../src/lexer/XPath2Lexer.lex"
 BEGIN(INITIAL); RECOGNIZE(_LBRACK_);
 	YY_BREAK
 case 67:
 YY_RULE_SETUP
-#line 323 "../src/lexer/XPath2Lexer.lex"
+#line 333 "../src/lexer/XPath2Lexer.lex"
 BEGIN(INITIAL); RECOGNIZE(_LT_EQUALS_);
 	YY_BREAK
 case 68:
 YY_RULE_SETUP
-#line 324 "../src/lexer/XPath2Lexer.lex"
+#line 334 "../src/lexer/XPath2Lexer.lex"
 BEGIN(INITIAL); RECOGNIZE(_LT_LT_);
 	YY_BREAK
 case 69:
 YY_RULE_SETUP
-#line 325 "../src/lexer/XPath2Lexer.lex"
+#line 335 "../src/lexer/XPath2Lexer.lex"
 BEGIN(INITIAL); RECOGNIZE(_LT_);
 	YY_BREAK
 case 70:
 YY_RULE_SETUP
-#line 326 "../src/lexer/XPath2Lexer.lex"
+#line 336 "../src/lexer/XPath2Lexer.lex"
 BEGIN(INITIAL); RECOGNIZE(_MOD_);
 	YY_BREAK
 case 71:
 YY_RULE_SETUP
-#line 327 "../src/lexer/XPath2Lexer.lex"
+#line 337 "../src/lexer/XPath2Lexer.lex"
 BEGIN(INITIAL); RECOGNIZE(_MULTIPLY_);
 	YY_BREAK
 case 72:
 YY_RULE_SETUP
-#line 328 "../src/lexer/XPath2Lexer.lex"
+#line 338 "../src/lexer/XPath2Lexer.lex"
 BEGIN(INITIAL); RECOGNIZE(_NOT_EQUALS_);
 	YY_BREAK
 case 73:
 YY_RULE_SETUP
-#line 329 "../src/lexer/XPath2Lexer.lex"
+#line 339 "../src/lexer/XPath2Lexer.lex"
 BEGIN(INITIAL); RECOGNIZE(_OR_);
 	YY_BREAK
 case 74:
 YY_RULE_SETUP
-#line 330 "../src/lexer/XPath2Lexer.lex"
+#line 340 "../src/lexer/XPath2Lexer.lex"
 BEGIN(INITIAL); RECOGNIZE(_RETURN_);
 	YY_BREAK
 case 75:
 YY_RULE_SETUP
-#line 331 "../src/lexer/XPath2Lexer.lex"
+#line 341 "../src/lexer/XPath2Lexer.lex"
 BEGIN(INITIAL); RECOGNIZE(_SATISFIES_);
 	YY_BREAK
 case 76:
 YY_RULE_SETUP
-#line 332 "../src/lexer/XPath2Lexer.lex"
+#line 342 "../src/lexer/XPath2Lexer.lex"
 BEGIN(INITIAL); RECOGNIZE(_TO_);
 	YY_BREAK
 case 77:
 YY_RULE_SETUP
-#line 333 "../src/lexer/XPath2Lexer.lex"
+#line 343 "../src/lexer/XPath2Lexer.lex"
 BEGIN(INITIAL); RECOGNIZE(_UNION_);
 	YY_BREAK
 case 78:
 YY_RULE_SETUP
-#line 334 "../src/lexer/XPath2Lexer.lex"
+#line 344 "../src/lexer/XPath2Lexer.lex"
 BEGIN(INITIAL); RECOGNIZE(_VERTICAL_BAR_);
 	YY_BREAK
 case 79:
 YY_RULE_SETUP
-#line 336 "../src/lexer/XPath2Lexer.lex"
+#line 346 "../src/lexer/XPath2Lexer.lex"
 BEGIN(SINGLETYPE); RECOGNIZE(_CASTABLE_AS_);
 	YY_BREAK
 case 80:
 YY_RULE_SETUP
-#line 337 "../src/lexer/XPath2Lexer.lex"
+#line 347 "../src/lexer/XPath2Lexer.lex"
 BEGIN(SINGLETYPE); RECOGNIZE(_CAST_AS_);
 	YY_BREAK
 case 81:
 YY_RULE_SETUP
-#line 338 "../src/lexer/XPath2Lexer.lex"
+#line 348 "../src/lexer/XPath2Lexer.lex"
 BEGIN(ITEMTYPE); RECOGNIZE(_INSTANCE_OF_);
 	YY_BREAK
 case 82:
 YY_RULE_SETUP
-#line 339 "../src/lexer/XPath2Lexer.lex"
+#line 349 "../src/lexer/XPath2Lexer.lex"
 BEGIN(ITEMTYPE); RECOGNIZE(_TREAT_AS_);
 	YY_BREAK
 case 83:
 YY_RULE_SETUP
-#line 341 "../src/lexer/XPath2Lexer.lex"
+#line 351 "../src/lexer/XPath2Lexer.lex"
 RECOGNIZE(_QUESTION_);
 	YY_BREAK
 case 84:
 YY_RULE_SETUP
-#line 342 "../src/lexer/XPath2Lexer.lex"
+#line 352 "../src/lexer/XPath2Lexer.lex"
 RECOGNIZE(_RBRACK_);
 	YY_BREAK
 /* ITEMTYPE state */
 case 85:
 YY_RULE_SETUP
-#line 346 "../src/lexer/XPath2Lexer.lex"
+#line 356 "../src/lexer/XPath2Lexer.lex"
 BEGIN(OPERATOR); RECOGNIZE(_EMPTY_);
 	YY_BREAK
 case 86:
 YY_RULE_SETUP
-#line 348 "../src/lexer/XPath2Lexer.lex"
+#line 358 "../src/lexer/XPath2Lexer.lex"
 BEGIN(OCCURRENCEINDICATOR); RECOGNIZE(_ITEM_);
 	YY_BREAK
 /* KINDTEST state */
 case 87:
 YY_RULE_SETUP
-#line 352 "../src/lexer/XPath2Lexer.lex"
+#line 362 "../src/lexer/XPath2Lexer.lex"
 POP(); RECOGNIZE(_RPAR_);
 	YY_BREAK
 case 88:
 YY_RULE_SETUP
-#line 354 "../src/lexer/XPath2Lexer.lex"
+#line 364 "../src/lexer/XPath2Lexer.lex"
 BEGIN(CLOSEKINDTEST); RECOGNIZE(_STAR_);
 	YY_BREAK
 /* KINDTESTFORPI state */
 case 89:
 YY_RULE_SETUP
-#line 358 "../src/lexer/XPath2Lexer.lex"
+#line 368 "../src/lexer/XPath2Lexer.lex"
 RECOGNIZE(_NCNAME_);
 	YY_BREAK
 case 90:
 YY_RULE_SETUP
-#line 359 "../src/lexer/XPath2Lexer.lex"
+#line 369 "../src/lexer/XPath2Lexer.lex"
 RECOGNIZE(_STRING_LITERAL_);
 	YY_BREAK
 /*CLOSEKINDTEST state */
 case 91:
 YY_RULE_SETUP
-#line 363 "../src/lexer/XPath2Lexer.lex"
+#line 373 "../src/lexer/XPath2Lexer.lex"
 BEGIN(KINDTEST); RECOGNIZE(_COMMA_);
 	YY_BREAK
 case 92:
 YY_RULE_SETUP
-#line 365 "../src/lexer/XPath2Lexer.lex"
+#line 375 "../src/lexer/XPath2Lexer.lex"
 RECOGNIZE(_NILLABLE_);
 	YY_BREAK
 /* OCCURRENCEINDICATOR state */
 case 93:
 YY_RULE_SETUP
-#line 369 "../src/lexer/XPath2Lexer.lex"
+#line 379 "../src/lexer/XPath2Lexer.lex"
 BEGIN(OPERATOR); RECOGNIZE(_ZERO_OR_MORE_);
 	YY_BREAK
 case 94:
 YY_RULE_SETUP
-#line 370 "../src/lexer/XPath2Lexer.lex"
+#line 380 "../src/lexer/XPath2Lexer.lex"
 BEGIN(OPERATOR); RECOGNIZE(_ONE_OR_MORE_);
 	YY_BREAK
 case 95:
 YY_RULE_SETUP
-#line 371 "../src/lexer/XPath2Lexer.lex"
+#line 381 "../src/lexer/XPath2Lexer.lex"
 BEGIN(OPERATOR); RECOGNIZE(_ZERO_OR_ONE_);
 	YY_BREAK
 case 96:
 YY_RULE_SETUP
-#line 372 "../src/lexer/XPath2Lexer.lex"
+#line 382 "../src/lexer/XPath2Lexer.lex"
 BEGIN(OPERATOR); yyless(0);
 	YY_BREAK
 /* VARNAME state */
 /* EXPR_COMMENT state */
 case 97:
 YY_RULE_SETUP
-#line 378 "../src/lexer/XPath2Lexer.lex"
+#line 388 "../src/lexer/XPath2Lexer.lex"
 POP();
 	YY_BREAK
 case 98:
 YY_RULE_SETUP
-#line 379 "../src/lexer/XPath2Lexer.lex"
+#line 389 "../src/lexer/XPath2Lexer.lex"
 /* ignore it */
 	YY_BREAK
 case 99:
 YY_RULE_SETUP
-#line 381 "../src/lexer/XPath2Lexer.lex"
+#line 391 "../src/lexer/XPath2Lexer.lex"
 {
 															int curState=YYSTATE;  
 															switch(curState)
@@ -10905,12 +10915,12 @@ case 100:
 yy_c_buf_p = yy_cp -= 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 395 "../src/lexer/XPath2Lexer.lex"
+#line 405 "../src/lexer/XPath2Lexer.lex"
 RECOGNIZE(_QNAME_LPAR_);
 	YY_BREAK
 case 101:
 YY_RULE_SETUP
-#line 397 "../src/lexer/XPath2Lexer.lex"
+#line 407 "../src/lexer/XPath2Lexer.lex"
 {
 														char buff[128]; 
 														sprintf(buff,"Unrecognized character '%c' (0x%X)",yytext[0],yytext[0]); 
@@ -10919,10 +10929,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 102:
 YY_RULE_SETUP
-#line 403 "../src/lexer/XPath2Lexer.lex"
+#line 413 "../src/lexer/XPath2Lexer.lex"
 YY_FATAL_ERROR( "flex scanner jammed" );
 	YY_BREAK
-#line 10926 "../src/lexer/XPath2Lexer.cpp"
+#line 10936 "../src/lexer/XPath2Lexer.cpp"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(OPERATOR):
 case YY_STATE_EOF(ITEMTYPE):
@@ -11741,5 +11751,5 @@ int main()
 	return 0;
 	}
 #endif
-#line 403 "../src/lexer/XPath2Lexer.lex"
+#line 413 "../src/lexer/XPath2Lexer.lex"
 
