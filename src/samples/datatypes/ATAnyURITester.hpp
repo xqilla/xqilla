@@ -38,7 +38,7 @@ class XPath2MemoryManager;
  */
 class ATAnyURITester: public DatatypeTester {
 public: 
-  ATAnyURITester(XPath2MemoryManager* memMgr);
+  ATAnyURITester();
    
   // use default
   // virtual void init();

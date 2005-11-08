@@ -57,7 +57,7 @@ class XPath2MemoryManager;
  */
 class CastAsTester: public DatatypeTester {
 public: 
-  CastAsTester(XPath2MemoryManager* memMgr);
+  CastAsTester();
    
   // use default
   // virtual void init();

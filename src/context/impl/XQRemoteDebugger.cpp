@@ -29,7 +29,8 @@
 
 #include <xqilla/context/impl/XQRemoteDebugger.hpp>
 #include <xqilla/exceptions/XQException.hpp>
-#include <xqilla/simple-api/XQEvaluator.hpp>
+#include <xqilla/simple-api/XQilla.hpp>
+#include <xqilla/simple-api/XQQuery.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/context/VariableStore.hpp>
 #include <xqilla/exceptions/IllegalArgumentException.hpp>
@@ -368,9 +369,10 @@ void XQRemoteDebugger::SendNotification(DynamicContext* context, XERCES_CPP_NAME
 	        for(std::vector< std::pair<const XMLCh*,const XMLCh*> >::iterator it=vec.begin();it!=vec.end();it++)
                 context->getVariableTypeStore()->declareVar(it->first, it->second, dummy_src);
 
-            try
+            try 
             {
-                XQQuery* pQuery=XQEvaluator::parse(unicodeQuery, context);
+                XQilla xqilla;
+                AutoDelete<XQQuery> pQuery(xqilla.parseXQuery(unicodeQuery, context));
                 Sequence result=pQuery->evaluate(context);
 
                 static const char* header="<xqe:items xmlns:xqe=\"http://www.stylusstudio.com/XQEngine\">";

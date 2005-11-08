@@ -34,7 +34,7 @@
 
 #include <xqilla/items/ATDoubleOrDerived.hpp>
 
-ATDoubleTester::ATDoubleTester(XPath2MemoryManager* memMgr) : DatatypeTester(memMgr, "ATDoubleOrDerived") {
+ATDoubleTester::ATDoubleTester() : DatatypeTester("ATDoubleOrDerived") {
 }
 
 void ATDoubleTester::run(const DynamicContext* context) {

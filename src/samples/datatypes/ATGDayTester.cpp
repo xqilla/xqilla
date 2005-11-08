@@ -34,7 +34,7 @@
 #include <xqilla/items/ATGDayOrDerived.hpp>
 #include <xqilla/items/Timezone.hpp>
 
-ATGDayTester::ATGDayTester(XPath2MemoryManager* memMgr) : DatatypeTester(memMgr, "ATGDayOrDerived") {
+ATGDayTester::ATGDayTester() : DatatypeTester("ATGDayOrDerived") {
 }
 
 void ATGDayTester::run(const DynamicContext* context) {

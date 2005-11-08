@@ -31,7 +31,6 @@
 #include <xercesc/util/XMLString.hpp>
 
 #include <xqilla/runtime/Sequence.hpp>
-#include <xqilla/ast/ASTNode.hpp>
 #include <xqilla/framework/ProxyMemoryManager.hpp>
 
 #include <xercesc/dom/DOMException.hpp>
@@ -41,6 +40,7 @@
 #include <string>
 
 class DynamicContext;
+class XQQuery;
 
 class XQILLA_API XPath2Result
 {
@@ -53,12 +53,12 @@ public:
   };
 
   XPath2Result(const ResultType resultType,
-               const ASTNode *expression,
+               const XQQuery *expression,
                DynamicContext *dynamicContext,
                XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr);
 
   XPath2Result(const ResultType resultType,
-               const ASTNode *expression,
+               const XQQuery *expression,
                XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* contextNode,
                DynamicContext *staticContext,
                XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr);
@@ -108,7 +108,7 @@ public:
   //@}
 
 protected:
-  void evaluate(const ASTNode *expression);
+  void evaluate(const XQQuery *expression);
   bool hasDocumentChanged(const Item::Ptr &item) const;
 
   const XMLCh* errorMessage(ResultType requestedType,

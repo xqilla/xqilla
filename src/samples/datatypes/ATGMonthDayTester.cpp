@@ -34,7 +34,7 @@
 #include <xqilla/items/ATGMonthDayOrDerived.hpp>
 #include <xqilla/items/Timezone.hpp>
 
-ATGMonthDayTester::ATGMonthDayTester(XPath2MemoryManager* memMgr) : DatatypeTester(memMgr, "ATGMonthDayOrDerived") {
+ATGMonthDayTester::ATGMonthDayTester() : DatatypeTester("ATGMonthDayOrDerived") {
 }
 
 void ATGMonthDayTester::run(const DynamicContext* context) {

@@ -33,7 +33,7 @@
 
 #include <xqilla/items/ATAnyURIOrDerived.hpp>
 
-ATAnyURITester::ATAnyURITester(XPath2MemoryManager* memMgr) : DatatypeTester(memMgr, "ATAnyURIOrDerived") {
+ATAnyURITester::ATAnyURITester() : DatatypeTester("ATAnyURIOrDerived") {
 }
 
 void ATAnyURITester::run(const DynamicContext* context) {

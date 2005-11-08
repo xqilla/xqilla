@@ -174,8 +174,6 @@ src/dom-api/XQillaImplementation.cpp \
 src/dom-api/XPath2NodeSerializer.cpp \
 src/dom-api/XPath2Result.cpp \
 src/dom-api/XQScopedNamespace.cpp \
-src/simple-api/XQillaEngine.cpp \
-src/simple-api/XQEvaluator.cpp \
 src/simple-api/XQilla.cpp \
 src/simple-api/XQilla2.cpp \
 src/simple-api/XQQuery.cpp \
@@ -539,9 +537,7 @@ src/samples/datatypes/DatatypeTester.cpp \
 src/samples/datatypes/DatatypeTester.hpp \
 src/samples/datatypes/test-datatypes.cpp \
 src/samples/datatypes/TypePromotionTester.cpp \
-src/samples/datatypes/TypePromotionTester.hpp \
-src/samples/common/DOMTreeErrorReporter.cpp \
-src/samples/common/DOMTreeErrorReporter.hpp
+src/samples/datatypes/TypePromotionTester.hpp
 
 
 XPLEXERFILE = $(top_srcdir)/src/lexer/XPath2Lexer.cpp
@@ -586,24 +582,24 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	XQillaNSResolverImpl.lo XQillaXMLGrammarPoolImpl.lo \
 	XPathNamespaceImpl.lo XQillaImplementation.lo \
 	XPath2NodeSerializer.lo XPath2Result.lo XQScopedNamespace.lo \
-	XQillaEngine.lo XQEvaluator.lo XQilla.lo XQilla2.lo XQQuery.lo \
-	UTF8Str.lo XMLChCompare.lo XStr.lo ContextUtils.lo Date.lo \
-	DateUtils.lo NumUtils.lo XQillaPlatformUtils.lo PrintAST.lo \
-	XPath2NSUtils.lo XPath2Utils.lo XQillaException.lo \
-	XQException.lo FuncFactory.lo FunctionLookupImpl.lo \
-	FunctionAbs.lo FunctionAvg.lo FunctionBaseURI.lo \
-	FunctionBoolean.lo FunctionCeiling.lo FunctionCodepointEqual.lo \
-	FunctionCodepointsToString.lo FunctionCollection.lo \
-	FunctionCompare.lo FunctionConcat.lo FunctionConstructor.lo \
-	FunctionContains.lo FunctionCount.lo FunctionCurrentDate.lo \
-	FunctionCurrentDateTime.lo FunctionCurrentTime.lo \
-	FunctionData.lo FunctionDateTime.lo FunctionDeepEqual.lo \
-	FunctionDefaultCollation.lo FunctionDistinctValues.lo \
-	FunctionDocAvailable.lo FunctionDoc.lo FunctionDocumentURI.lo \
-	FunctionEmpty.lo FunctionEndsWith.lo FunctionError.lo \
-	FunctionEscapeURI.lo FunctionExactlyOne.lo FunctionExists.lo \
-	FunctionFalse.lo FunctionFloor.lo FunctionId.lo \
-	FunctionIdref.lo FunctionImplicitTimezone.lo FunctionIndexOf.lo \
+	XQilla.lo XQilla2.lo XQQuery.lo UTF8Str.lo XMLChCompare.lo \
+	XStr.lo ContextUtils.lo Date.lo DateUtils.lo NumUtils.lo \
+	XQillaPlatformUtils.lo PrintAST.lo XPath2NSUtils.lo \
+	XPath2Utils.lo XQillaException.lo XQException.lo FuncFactory.lo \
+	FunctionLookupImpl.lo FunctionAbs.lo FunctionAvg.lo \
+	FunctionBaseURI.lo FunctionBoolean.lo FunctionCeiling.lo \
+	FunctionCodepointEqual.lo FunctionCodepointsToString.lo \
+	FunctionCollection.lo FunctionCompare.lo FunctionConcat.lo \
+	FunctionConstructor.lo FunctionContains.lo FunctionCount.lo \
+	FunctionCurrentDate.lo FunctionCurrentDateTime.lo \
+	FunctionCurrentTime.lo FunctionData.lo FunctionDateTime.lo \
+	FunctionDeepEqual.lo FunctionDefaultCollation.lo \
+	FunctionDistinctValues.lo FunctionDocAvailable.lo \
+	FunctionDoc.lo FunctionDocumentURI.lo FunctionEmpty.lo \
+	FunctionEndsWith.lo FunctionError.lo FunctionEscapeURI.lo \
+	FunctionExactlyOne.lo FunctionExists.lo FunctionFalse.lo \
+	FunctionFloor.lo FunctionId.lo FunctionIdref.lo \
+	FunctionImplicitTimezone.lo FunctionIndexOf.lo \
 	FunctionInScopePrefixes.lo FunctionInsertBefore.lo \
 	FunctionLang.lo FunctionLast.lo FunctionLocalname.lo \
 	FunctionLocalNameFromQName.lo FunctionLowerCase.lo \
@@ -698,8 +694,7 @@ am_testDatatypes_OBJECTS = ATAnyURITester.$(OBJEXT) \
 	ATQNameTester.$(OBJEXT) ATStringTester.$(OBJEXT) \
 	ATTimeTester.$(OBJEXT) ATUntypedAtomicTester.$(OBJEXT) \
 	CastAsTester.$(OBJEXT) DatatypeTester.$(OBJEXT) \
-	test-datatypes.$(OBJEXT) TypePromotionTester.$(OBJEXT) \
-	DOMTreeErrorReporter.$(OBJEXT)
+	test-datatypes.$(OBJEXT) TypePromotionTester.$(OBJEXT)
 testDatatypes_OBJECTS = $(am_testDatatypes_OBJECTS)
 testDatatypes_LDADD = $(LDADD)
 testDatatypes_DEPENDENCIES = libxqilla.la
@@ -777,7 +772,6 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/ComparisonOperator.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/ConstantFoldingFunction.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/ContextUtils.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/DOMTreeErrorReporter.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/DatatypeFactory.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/DatatypeLookup.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/DatatypeTester.Po ./$(DEPDIR)/Date.Plo \
@@ -965,7 +959,6 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/XQDOMConstructor.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XQDebugHook.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XQDynamicContextImpl.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/XQEvaluator.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XQException.Plo ./$(DEPDIR)/XQFLWOR.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XQFunction.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XQFunctionCall.Plo \
@@ -989,7 +982,6 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/XQilla.Plo ./$(DEPDIR)/XQilla2.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XQillaBuilderImpl.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XQillaDocumentImpl.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/XQillaEngine.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XQillaException.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XQillaExpressionImpl.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XQillaImplementation.Plo \
@@ -1172,8 +1164,6 @@ XQillaImplementation.lo: src/dom-api/XQillaImplementation.cpp
 XPath2NodeSerializer.lo: src/dom-api/XPath2NodeSerializer.cpp
 XPath2Result.lo: src/dom-api/XPath2Result.cpp
 XQScopedNamespace.lo: src/dom-api/XQScopedNamespace.cpp
-XQillaEngine.lo: src/simple-api/XQillaEngine.cpp
-XQEvaluator.lo: src/simple-api/XQEvaluator.cpp
 XQilla.lo: src/simple-api/XQilla.cpp
 XQilla2.lo: src/simple-api/XQilla2.cpp
 XQQuery.lo: src/simple-api/XQQuery.cpp
@@ -1526,8 +1516,6 @@ DatatypeTester.$(OBJEXT): src/samples/datatypes/DatatypeTester.cpp
 test-datatypes.$(OBJEXT): src/samples/datatypes/test-datatypes.cpp
 TypePromotionTester.$(OBJEXT): \
 	src/samples/datatypes/TypePromotionTester.cpp
-DOMTreeErrorReporter.$(OBJEXT): \
-	src/samples/common/DOMTreeErrorReporter.cpp
 testDatatypes$(EXEEXT): $(testDatatypes_OBJECTS) $(testDatatypes_DEPENDENCIES) 
 	@rm -f testDatatypes$(EXEEXT)
 	$(CXXLINK) $(testDatatypes_LDFLAGS) $(testDatatypes_OBJECTS) $(testDatatypes_LDADD) $(LIBS)
@@ -1605,7 +1593,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ComparisonOperator.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ConstantFoldingFunction.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ContextUtils.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DOMTreeErrorReporter.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DatatypeFactory.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DatatypeLookup.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DatatypeTester.Po@am__quote@
@@ -1809,7 +1796,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQDOMConstructor.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQDebugHook.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQDynamicContextImpl.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQEvaluator.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQException.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQFLWOR.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQFunction.Plo@am__quote@
@@ -1838,7 +1824,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQilla2.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQillaBuilderImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQillaDocumentImpl.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQillaEngine.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQillaException.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQillaExpressionImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQillaImplementation.Plo@am__quote@
@@ -3583,42 +3568,6 @@ XQScopedNamespace.lo: src/dom-api/XQScopedNamespace.cpp
 @AMDEP_TRUE@	depfile='$(DEPDIR)/XQScopedNamespace.Plo' tmpdepfile='$(DEPDIR)/XQScopedNamespace.TPlo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQScopedNamespace.lo `test -f 'src/dom-api/XQScopedNamespace.cpp' || echo '$(srcdir)/'`src/dom-api/XQScopedNamespace.cpp
-
-XQillaEngine.o: src/simple-api/XQillaEngine.cpp
-@AMDEP_TRUE@	source='src/simple-api/XQillaEngine.cpp' object='XQillaEngine.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/XQillaEngine.Po' tmpdepfile='$(DEPDIR)/XQillaEngine.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQillaEngine.o `test -f 'src/simple-api/XQillaEngine.cpp' || echo '$(srcdir)/'`src/simple-api/XQillaEngine.cpp
-
-XQillaEngine.obj: src/simple-api/XQillaEngine.cpp
-@AMDEP_TRUE@	source='src/simple-api/XQillaEngine.cpp' object='XQillaEngine.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/XQillaEngine.Po' tmpdepfile='$(DEPDIR)/XQillaEngine.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQillaEngine.obj `cygpath -w src/simple-api/XQillaEngine.cpp`
-
-XQillaEngine.lo: src/simple-api/XQillaEngine.cpp
-@AMDEP_TRUE@	source='src/simple-api/XQillaEngine.cpp' object='XQillaEngine.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/XQillaEngine.Plo' tmpdepfile='$(DEPDIR)/XQillaEngine.TPlo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQillaEngine.lo `test -f 'src/simple-api/XQillaEngine.cpp' || echo '$(srcdir)/'`src/simple-api/XQillaEngine.cpp
-
-XQEvaluator.o: src/simple-api/XQEvaluator.cpp
-@AMDEP_TRUE@	source='src/simple-api/XQEvaluator.cpp' object='XQEvaluator.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/XQEvaluator.Po' tmpdepfile='$(DEPDIR)/XQEvaluator.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQEvaluator.o `test -f 'src/simple-api/XQEvaluator.cpp' || echo '$(srcdir)/'`src/simple-api/XQEvaluator.cpp
-
-XQEvaluator.obj: src/simple-api/XQEvaluator.cpp
-@AMDEP_TRUE@	source='src/simple-api/XQEvaluator.cpp' object='XQEvaluator.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/XQEvaluator.Po' tmpdepfile='$(DEPDIR)/XQEvaluator.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQEvaluator.obj `cygpath -w src/simple-api/XQEvaluator.cpp`
-
-XQEvaluator.lo: src/simple-api/XQEvaluator.cpp
-@AMDEP_TRUE@	source='src/simple-api/XQEvaluator.cpp' object='XQEvaluator.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/XQEvaluator.Plo' tmpdepfile='$(DEPDIR)/XQEvaluator.TPlo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQEvaluator.lo `test -f 'src/simple-api/XQEvaluator.cpp' || echo '$(srcdir)/'`src/simple-api/XQEvaluator.cpp
 
 XQilla.o: src/simple-api/XQilla.cpp
 @AMDEP_TRUE@	source='src/simple-api/XQilla.cpp' object='XQilla.o' libtool=no @AMDEPBACKSLASH@
@@ -8101,24 +8050,6 @@ TypePromotionTester.lo: src/samples/datatypes/TypePromotionTester.cpp
 @AMDEP_TRUE@	depfile='$(DEPDIR)/TypePromotionTester.Plo' tmpdepfile='$(DEPDIR)/TypePromotionTester.TPlo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o TypePromotionTester.lo `test -f 'src/samples/datatypes/TypePromotionTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/TypePromotionTester.cpp
-
-DOMTreeErrorReporter.o: src/samples/common/DOMTreeErrorReporter.cpp
-@AMDEP_TRUE@	source='src/samples/common/DOMTreeErrorReporter.cpp' object='DOMTreeErrorReporter.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/DOMTreeErrorReporter.Po' tmpdepfile='$(DEPDIR)/DOMTreeErrorReporter.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DOMTreeErrorReporter.o `test -f 'src/samples/common/DOMTreeErrorReporter.cpp' || echo '$(srcdir)/'`src/samples/common/DOMTreeErrorReporter.cpp
-
-DOMTreeErrorReporter.obj: src/samples/common/DOMTreeErrorReporter.cpp
-@AMDEP_TRUE@	source='src/samples/common/DOMTreeErrorReporter.cpp' object='DOMTreeErrorReporter.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/DOMTreeErrorReporter.Po' tmpdepfile='$(DEPDIR)/DOMTreeErrorReporter.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DOMTreeErrorReporter.obj `cygpath -w src/samples/common/DOMTreeErrorReporter.cpp`
-
-DOMTreeErrorReporter.lo: src/samples/common/DOMTreeErrorReporter.cpp
-@AMDEP_TRUE@	source='src/samples/common/DOMTreeErrorReporter.cpp' object='DOMTreeErrorReporter.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/DOMTreeErrorReporter.Plo' tmpdepfile='$(DEPDIR)/DOMTreeErrorReporter.TPlo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DOMTreeErrorReporter.lo `test -f 'src/samples/common/DOMTreeErrorReporter.cpp' || echo '$(srcdir)/'`src/samples/common/DOMTreeErrorReporter.cpp
 
 xqilla.o: src/samples/xqilla/xqilla.cpp
 @AMDEP_TRUE@	source='src/samples/xqilla/xqilla.cpp' object='xqilla.o' libtool=no @AMDEPBACKSLASH@

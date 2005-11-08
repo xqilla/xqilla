@@ -38,7 +38,7 @@ class ATUntypedAtomic;
  */
 class ATUntypedAtomicTester: public DatatypeTester {
 public: 
-  ATUntypedAtomicTester(XPath2MemoryManager* memMgr);
+  ATUntypedAtomicTester();
    
   // use default
   // virtual void init();

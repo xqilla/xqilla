@@ -33,6 +33,7 @@
 class XPath2Result;
 class DynamicContext;
 class XPath2MemoryManager;
+class XQQuery;
 
 XERCES_CPP_NAMESPACE_BEGIN
 class XMLGrammarPool;
@@ -69,8 +70,8 @@ public:
 
   virtual void release();
 
-  const ASTNode *getCompiledExpression() const { return _compiledExpression; }
-  void setCompiledExpression(ASTNode *expr) { _compiledExpression = expr; }
+  const XQQuery *getCompiledExpression() const { return _compiledExpression; }
+  void setCompiledExpression(XQQuery *expr) { _compiledExpression = expr; }
 
 private:
   XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* _createdWith;
@@ -80,7 +81,7 @@ private:
 
   bool _staticContextOwned;
   DynamicContext *_staticContext;
-	ASTNode* _compiledExpression;
+  XQQuery* _compiledExpression;
 }; //XQillaExpressionImpl
 
 

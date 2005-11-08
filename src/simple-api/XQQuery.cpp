@@ -33,7 +33,7 @@
 #include <xqilla/ast/XQGlobalVariable.hpp>
 #include <xqilla/context/impl/XQContextImpl.hpp>
 #include <xqilla/exceptions/XQException.hpp>
-#include <xqilla/simple-api/XQEvaluator.hpp>
+#include <xqilla/simple-api/XQilla.hpp>
 #include <xqilla/context/XQDebugCallback.hpp>
 #include <xqilla/dom-api/XQScopedNamespace.hpp>
 #include <xqilla/functions/FunctionLookup.hpp>
@@ -161,13 +161,15 @@ const XMLCh* XQQuery::getModuleTargetNamespace() const
 
 void XQQuery::importModule(const XMLCh* szUri, VectorOfStrings* locations, StaticContext* context)
 {
-  XQContextImpl moduleCtx(context->getMemoryManager());
+  XQilla xqilla;
+
+  AutoDelete<DynamicContext> moduleCtx(xqilla.createContext(context->getMemoryManager()));
   // force the context to use our memory manager
-  moduleCtx.setMemoryManager(context->getMemoryManager());
+  moduleCtx->setMemoryManager(context->getMemoryManager());
   // we also need to fix the namespace resolver, because it has already been initialized using the internal memory manager
-  moduleCtx.setNSResolver(new (context->getMemoryManager()) XQScopedNamespace(context->getMemoryManager(), moduleCtx.getNSResolver()));
+  moduleCtx->setNSResolver(new (context->getMemoryManager()) XQScopedNamespace(context->getMemoryManager(), moduleCtx->getNSResolver()));
   // propagate debug settings
-  moduleCtx.enableDebugging(context->isDebuggingEnabled());
+  moduleCtx->enableDebugging(context->isDebuggingEnabled());
 
   bool bFound=false;
   for(VectorOfStrings::iterator it=locations->begin();it!=locations->end();it++)
@@ -175,10 +177,8 @@ void XQQuery::importModule(const XMLCh* szUri, VectorOfStrings* locations, Stati
       InputSource* srcToUse = 0;
       if (context->getDocumentCache()->getXMLEntityResolver()){
         XMLResourceIdentifier resourceIdentifier(XMLResourceIdentifier::UnKnown,
-                                                                                *it, 
-                                                                                szUri, 
-                                                                                XMLUni::fgZeroLenString, 
-                                                                                context->getBaseURI());
+                                                 *it, szUri, XMLUni::fgZeroLenString, 
+                                                 context->getBaseURI());
         srcToUse = context->getDocumentCache()->getXMLEntityResolver()->resolveEntity(&resourceIdentifier);
       }
 
@@ -205,9 +205,9 @@ void XQQuery::importModule(const XMLCh* szUri, VectorOfStrings* locations, Stati
           }
       }
       Janitor<InputSource> janIS(srcToUse);
-      moduleCtx.setBaseURI(srcToUse->getSystemId());
+      moduleCtx->setBaseURI(srcToUse->getSystemId());
       try {
-        XQQuery* pParsedQuery = XQEvaluator::parse(*srcToUse, &moduleCtx, false);
+        AutoDelete<XQQuery> pParsedQuery(xqilla.parseXQuery(*srcToUse, moduleCtx, XQilla::NO_STATIC_RESOLUTION|XQilla::NO_ADOPT_CONTEXT));
         if(!pParsedQuery->getIsLibraryModule()) {
           XMLBuffer errMsg;
           errMsg.set(X("The module at "));

@@ -33,7 +33,7 @@
 
 #include <xqilla/items/ATStringOrDerived.hpp>
 
-ATStringTester::ATStringTester(XPath2MemoryManager* memMgr) : DatatypeTester(memMgr, "ATStringOrDerived") {
+ATStringTester::ATStringTester() : DatatypeTester("ATStringOrDerived") {
 }
   
 #include <iostream>

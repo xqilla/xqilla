@@ -25,11 +25,13 @@
 
 #include "../../config/xqilla_config.h"
 #include <xqilla/dom-api/impl/XQillaExpressionImpl.hpp>
-#include <xqilla/simple-api/XQillaEngine.hpp>
+#include <xqilla/simple-api/XQilla.hpp>
+#include <xqilla/simple-api/XQQuery.hpp>
 #include <xqilla/items/Node.hpp>
 #include <xqilla/items/Item.hpp>
 #include <xqilla/runtime/Sequence.hpp>
 #include <xqilla/context/DynamicContext.hpp>
+#include <xqilla/context/impl/XQContextImpl.hpp>
 #include <xqilla/dom-api/XQillaExpression.hpp>
 #include <xqilla/dom-api/XPath2Result.hpp>
 #include <xqilla/ast/ASTNode.hpp>
@@ -59,9 +61,10 @@ XQillaExpressionImpl::XQillaExpressionImpl(const XMLCh *expression,
     _docRoot(documentRoot),
     _staticContextOwned(true)
 {
-  _staticContext = XQillaEngine::createContext(xmlGP, &_memMgr);
+  _staticContext = new (&_memMgr) XQContextImpl(&_memMgr, xmlGP);
   _staticContext->setNSResolver(nsr);
-  _compiledExpression = XQillaEngine::createASTNode(expression, _staticContext, &_memMgr, true);
+  XQilla xqilla;
+  _compiledExpression = xqilla.parseXQuery(expression, _staticContext, NULL, XQilla::NO_ADOPT_CONTEXT, &_memMgr);
 }
 
 XQillaExpressionImpl::XQillaExpressionImpl(const XMLCh *expression, DynamicContext *context,
@@ -72,12 +75,14 @@ XQillaExpressionImpl::XQillaExpressionImpl(const XMLCh *expression, DynamicConte
     _staticContextOwned(false),
     _staticContext(context)
 {
-  _compiledExpression = XQillaEngine::createASTNode(expression, _staticContext, &_memMgr, true);
+  XQilla xqilla;
+  _compiledExpression = xqilla.parseXQuery(expression, _staticContext, NULL, XQilla::NO_ADOPT_CONTEXT, &_memMgr);
 }
 
 XQillaExpressionImpl::~XQillaExpressionImpl() 
 {
   if(_staticContextOwned) delete _staticContext;
+  if(_compiledExpression) delete _compiledExpression;
 }//destructor
 
 void XQillaExpressionImpl::release()

@@ -38,7 +38,7 @@ class ATDoubleOrDerived;
  */
 class ATDoubleTester: public DatatypeTester {
 public: 
-  ATDoubleTester(XPath2MemoryManager* memMgr);
+  ATDoubleTester();
    
   // use default
   // virtual void init();

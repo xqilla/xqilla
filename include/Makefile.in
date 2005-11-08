@@ -376,8 +376,6 @@ xqilla/schema/DocumentCache.hpp \
 xqilla/schema/SequenceType.hpp \
 xqilla/schema/AnyAtomicTypeDatatypeValidator.hpp \
 xqilla/schema/DocumentCacheImpl.hpp \
-xqilla/simple-api/XQillaEngine.hpp \
-xqilla/simple-api/XQEvaluator.hpp \
 xqilla/simple-api/XQilla.hpp \
 xqilla/simple-api/XQQuery.hpp \
 xqilla/utils/NumUtils.hpp \

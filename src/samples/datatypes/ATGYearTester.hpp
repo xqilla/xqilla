@@ -38,7 +38,7 @@ class XPath2MemoryManager;
  */
 class ATGYearTester: public DatatypeTester {
 public: 
-  ATGYearTester(XPath2MemoryManager* memMgr);
+  ATGYearTester();
    
   // use default
   // virtual void init();

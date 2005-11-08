@@ -35,7 +35,7 @@
 #include <xqilla/items/ATDoubleOrDerived.hpp>
 #include <xqilla/items/ATFloatOrDerived.hpp>
 
-TypePromotionTester::TypePromotionTester(XPath2MemoryManager* memMgr) : DatatypeTester(memMgr, "Type Promotion") {
+TypePromotionTester::TypePromotionTester() : DatatypeTester("Type Promotion") {
 }
 
 void TypePromotionTester::run(const DynamicContext* context) {

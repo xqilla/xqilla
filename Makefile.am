@@ -76,8 +76,6 @@ src/dom-api/XQillaImplementation.cpp \
 src/dom-api/XPath2NodeSerializer.cpp \
 src/dom-api/XPath2Result.cpp \
 src/dom-api/XQScopedNamespace.cpp \
-src/simple-api/XQillaEngine.cpp \
-src/simple-api/XQEvaluator.cpp \
 src/simple-api/XQilla.cpp \
 src/simple-api/XQilla2.cpp \
 src/simple-api/XQQuery.cpp \
@@ -437,9 +435,7 @@ src/samples/datatypes/DatatypeTester.cpp \
 src/samples/datatypes/DatatypeTester.hpp \
 src/samples/datatypes/test-datatypes.cpp \
 src/samples/datatypes/TypePromotionTester.cpp \
-src/samples/datatypes/TypePromotionTester.hpp \
-src/samples/common/DOMTreeErrorReporter.cpp \
-src/samples/common/DOMTreeErrorReporter.hpp
+src/samples/datatypes/TypePromotionTester.hpp
 
 XPLEXERFILE   = $(top_srcdir)/src/lexer/XPath2Lexer.cpp
 XPLEXTEMPLATE   = $(top_srcdir)/src/lexer/XPath2Lexer.lex

@@ -36,6 +36,7 @@
 #include <xqilla/exceptions/XPath2TypeCastException.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/runtime/Result.hpp>
+#include <xqilla/simple-api/XQQuery.hpp>
 
 #include <xqilla/exceptions/FunctionException.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
@@ -52,7 +53,7 @@
 
 
 XPath2Result::XPath2Result(const ResultType resultType,
-                           const ASTNode *expression,
+                           const XQQuery *expression,
                            DynamicContext *dynamicContext,
                            XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr)
   : _createdWith(memMgr),
@@ -72,7 +73,7 @@ XPath2Result::XPath2Result(const ResultType resultType,
 }
 
 XPath2Result::XPath2Result(const ResultType resultType,
-                           const ASTNode *expression,
+                           const XQQuery *expression,
                            XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* contextNode,
                            DynamicContext *staticContext,
                            XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr)
@@ -121,15 +122,15 @@ void XPath2Result::release()
   _createdWith->deallocate(this);
 }
 
-void XPath2Result::evaluate(const ASTNode *expression)
+void XPath2Result::evaluate(const XQQuery *expression)
 {
-  int flags = 0;
-  if(_resultType == FIRST_RESULT) {
-    flags |= ASTNode::UNORDERED | ASTNode::RETURN_ONE;
-  }
+//   int flags = 0;
+//   if(_resultType == FIRST_RESULT) {
+//     flags |= ASTNode::UNORDERED | ASTNode::RETURN_ONE;
+//   }
 
   try {
-    _resultSequence = new Sequence(expression->collapseTree(_context, flags));
+    _resultSequence = new Sequence(expression->evaluate(_context));
   }
   catch(const XQException &e) {
     if(XQillaException::getDebug()) {

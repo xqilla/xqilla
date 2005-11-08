@@ -35,7 +35,7 @@
 #include <xqilla/items/ATDurationOrDerived.hpp>
 #include <xqilla/items/ATDecimalOrDerived.hpp>
 
-ATDurationTester::ATDurationTester(XPath2MemoryManager* memMgr) : DatatypeTester(memMgr, "ATDurationOrDerived") {
+ATDurationTester::ATDurationTester() : DatatypeTester("ATDurationOrDerived") {
 }
 
 void ATDurationTester::run(const DynamicContext* context) {
