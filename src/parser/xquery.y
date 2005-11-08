@@ -131,6 +131,8 @@ void *alloca (size_t);
 #define WRAP(pos,object)		(wrapForDebug((QP),(object),NULL  ,(pos).first_line, (pos).first_column))
 #define FNWRAP(pos,name,object)	(wrapForDebug((QP),(object),(name),(pos).first_line, (pos).first_column))
 
+#define BIT_ORDERING_SPECIFIED	0
+
 #undef yylex
 #define yylex QP->_scanner->yylex
 #undef yyerror
@@ -594,10 +596,16 @@ OptionDecl:
 OrderingModeDecl:
 	_DECLARE_ _ORDERING_ _ORDERING_ORDERED_
 	{
+		if(QP->_flags.get(BIT_ORDERING_SPECIFIED))
+			yyerror("Prolog contains more than one ordering mode declaration [err:XQST0065]");
+		QP->_flags.set(BIT_ORDERING_SPECIFIED);
 		CONTEXT->setNodeSetOrdering(StaticContext::ORDERING_ORDERED);
 	}
 	| _DECLARE_ _ORDERING_ _ORDERING_UNORDERED_
 	{
+		if(QP->_flags.get(BIT_ORDERING_SPECIFIED))
+			yyerror("Prolog contains more than one ordering mode declaration [err:XQST0065]");
+		QP->_flags.set(BIT_ORDERING_SPECIFIED);
 		CONTEXT->setNodeSetOrdering(StaticContext::ORDERING_UNORDERED);
 	}
 	;

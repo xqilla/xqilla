@@ -32,6 +32,7 @@
 #include "FlexLexer.h"
 #include <xercesc/util/XMLUniDefs.hpp>
 #include <xercesc/util/XMLString.hpp>
+#include <xercesc/util/BitSet.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/simple-api/XQQuery.hpp>
 #include <xqilla/context/DynamicContext.hpp>
@@ -261,9 +262,9 @@ protected:
 
 	virtual void LexerError( const char* msg )
     {
-        XMLCh szMsg[256];
-        XERCES_CPP_NAMESPACE_QUALIFIER XMLString::transcode(msg,szMsg,256,m_memMgr);
-        XERCES_CPP_NAMESPACE_QUALIFIER XMLString::catString(szMsg, X(" [err:XPST0003]"));
+        if(strstr(msg, "[err:")!=NULL)
+    	    XQSimpleThrow(X(msg), NULL, m_lineno, m_columnno);
+        const XMLCh* szMsg=XPath2Utils::concatStrings(X(msg), X(" [err:XPST0003]"), m_memMgr);
 	    XQSimpleThrow(szMsg, NULL, m_lineno, m_columnno);
     }
 
@@ -307,6 +308,21 @@ protected:
 	    m_index=m_yyloc.last_offset=m_yyloc.first_offset;
     }
 
+    virtual bool next_tokens(int state, int tok1, int tok2=0)
+    {
+        CXQueryScanner lookAhead(m_memMgr, m_szQuery+m_index);
+        lookAhead.yy_start=1 + 2 * state;
+
+        int nextToken1 = lookAhead.yylex();
+        if(tok1!=nextToken1)
+            return false;
+        int nextToken2 = 0;
+        if(tok2!=0)
+            nextToken2 = lookAhead.yylex();
+
+        return (tok2==nextToken2);
+    }
+
     const XMLCh* m_szQuery;
     unsigned int m_nLength;
 	int m_position,m_index;
@@ -323,13 +339,17 @@ protected:
 class XQueryParserArgs
 {
 public:
+    XQueryParserArgs() : _scanner(0), _context(0), _query(0), _flags(32) {}
+
     CXQueryScanner* _scanner;
     DynamicContext* _context;
     XQQuery* _query;
+    XERCES_CPP_NAMESPACE_QUALIFIER BitSet _flags;
 };
 
 namespace XQuery {
 	extern int yyparse(void *);
+	extern int yydebug;
 }
 
 
