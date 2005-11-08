@@ -18,6 +18,7 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xercesc/util/XercesDefs.hpp>
+#include <xercesc/util/XMemory.hpp>
 
 class SequenceType;
 class XPath2MemoryManager;
@@ -25,7 +26,7 @@ class StaticResolutionContext;
 
 /** This is the wrapper class for the variable store, which implements the 
     lookup and scoping of simple variables. */
-class XQILLA_API VariableTypeStore
+class XQILLA_API VariableTypeStore : public XERCES_CPP_NAMESPACE_QUALIFIER XMemory
 {
 public:
   /** default destructor */

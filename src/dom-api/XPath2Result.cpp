@@ -102,7 +102,7 @@ XPath2Result::XPath2Result(const ResultType resultType,
 XPath2Result::~XPath2Result() { 
   // the destructor will try to access the context, that we are going to delete now
   if(_resultSequence) delete _resultSequence;
-  if(_contextOwned) _context->release();
+  if(_contextOwned) delete _context;
 }
 
 void XPath2Result::release()

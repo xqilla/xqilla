@@ -67,7 +67,7 @@ XQillaExpressionImpl::XQillaExpressionImpl(const XMLCh *expression, DynamicConte
 
 XQillaExpressionImpl::~XQillaExpressionImpl() 
 {
-  if(_staticContextOwned) _staticContext->release();
+  if(_staticContextOwned) delete _staticContext;
 }//destructor
 
 void XQillaExpressionImpl::release()

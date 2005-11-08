@@ -203,6 +203,38 @@ private:
 };
 
 template<class TYPE>
+class AutoDelete
+{
+public:
+  AutoDelete(TYPE *p)
+    : _p(p) {}
+  ~AutoDelete()
+  {
+    delete _p;
+  }
+
+  TYPE &operator*() const
+  {
+    return *_p;
+  }
+  TYPE *operator->() const
+  {
+    return _p;
+  }
+
+  operator TYPE*() const
+  {
+    return _p;
+  }
+
+private:
+  AutoDelete(const AutoDelete<TYPE> &);
+  AutoDelete<TYPE> &operator=(const AutoDelete<TYPE> &);
+
+  TYPE *_p;
+};
+
+template<class TYPE>
 class AutoDeallocate
 {
 public:

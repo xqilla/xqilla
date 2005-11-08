@@ -21,6 +21,7 @@
 #include <vector>
 #include <xqilla/framework/XPath2MemoryManager.hpp>
 #include <xqilla/items/Node.hpp>
+#include <xercesc/util/XMemory.hpp>
 
 typedef std::vector<const XMLCh*, XQillaAllocator<const XMLCh*> > VectorOfStrings;
 
@@ -39,7 +40,7 @@ class SchemaAttDef;
 XERCES_CPP_NAMESPACE_END
 
 ///Expression Context is a storage for contexts.
-class XQILLA_API DocumentCache 
+class XQILLA_API DocumentCache : public XERCES_CPP_NAMESPACE_QUALIFIER XMemory
 {
 public:
   enum ValidationMode {
@@ -49,8 +50,6 @@ public:
 
   /** virtual destructor */
   virtual ~DocumentCache() {}
-
-  virtual void release() = 0;
 
   /** Register a new reference to the document */
   virtual void incrementDocumentRefCount(const XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* document) const = 0;

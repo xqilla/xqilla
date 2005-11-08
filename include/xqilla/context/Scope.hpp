@@ -23,12 +23,13 @@
 #include <xqilla/framework/XQillaExport.hpp>
 #include <vector>
 #include <xercesc/util/RefHash2KeysTableOf.hpp>
+#include <xercesc/util/XMemory.hpp>
 
 template<class TYPE> class VarHashEntry;
 
 /** used inside VariableStore to implement variable scoping */
 template<class TYPE>
-class Scope
+class Scope : public XERCES_CPP_NAMESPACE_QUALIFIER XMemory
 {
 public:
   /** enum for classifying type of scope */
@@ -42,19 +43,18 @@ public:
 
   /** constructor. */
   Scope(XPath2MemoryManager* memMgr, Type type);
-  virtual ~Scope() {};
+  ~Scope();
 
-  virtual void clear();
+  void clear();
 
-  virtual Type getType() const;
-  virtual VarHashEntry<TYPE>* get(unsigned int nsID, const XMLCh* name);
-  virtual void put(unsigned int nsID, const XMLCh* name, VarHashEntry<TYPE>* value);
-  virtual void remove(unsigned int nsID, const XMLCh* name);
-  virtual std::vector< std::pair<unsigned int, const XMLCh*> > getVars() const;
-  virtual void release();
+  Type getType() const;
+  VarHashEntry<TYPE>* get(unsigned int nsID, const XMLCh* name);
+  void put(unsigned int nsID, const XMLCh* name, VarHashEntry<TYPE>* value);
+  void remove(unsigned int nsID, const XMLCh* name);
+  std::vector< std::pair<unsigned int, const XMLCh*> > getVars() const;
 
-  virtual Scope* getNext();
-  virtual void setNext(Scope* next);
+  Scope* getNext();
+  void setNext(Scope* next);
   
 private:
   typename Scope<TYPE>::Type _type;
@@ -118,10 +118,9 @@ std::vector< std::pair<unsigned int, const XMLCh*> > Scope<TYPE>::getVars() cons
 }
 
 template<class TYPE>
-void Scope<TYPE>::release()
+Scope<TYPE>::~Scope()
 {
   _map.removeAll();
-  _memMgr->deallocate(this);
 }
 
 template<class TYPE>

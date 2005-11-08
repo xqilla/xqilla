@@ -681,7 +681,7 @@ void XQFLWOR::staticResolutionImpl(StaticContext* context)
     }
 
     if(!_src.isUsed()) {
-      AutoRelease<DynamicContext> dContext(context->createDynamicContext());
+      AutoDelete<DynamicContext> dContext(context->createDynamicContext());
       dContext->setMemoryManager(context->getMemoryManager());
       Result result = createResultImpl(newBindings->begin(), newBindings->end(), dContext);
       _return = new (getMemoryManager()) XQSequence(result, dContext, getMemoryManager());

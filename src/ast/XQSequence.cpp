@@ -176,7 +176,7 @@ Result XQSequence::createResult(DynamicContext* context, int flags) const
 bool XQSequence::isConstantAndHasTimezone(StaticContext *context) const
 {
   if(isConstant() && _itemConstructors.size() == 1) {
-    AutoRelease<DynamicContext> dContext(context->createDynamicContext());
+    AutoDelete<DynamicContext> dContext(context->createDynamicContext());
     dContext->setMemoryManager(context->getMemoryManager());
 
     Item::Ptr item = _itemConstructors[0]->createItem(dContext);
@@ -192,7 +192,7 @@ bool XQSequence::isConstantAndHasTimezone(StaticContext *context) const
 bool XQSequence::isSingleNumericConstant(StaticContext *context) const
 {
   if(isConstant() && _itemConstructors.size() == 1) {
-    AutoRelease<DynamicContext> dContext(context->createDynamicContext());
+    AutoDelete<DynamicContext> dContext(context->createDynamicContext());
     dContext->setMemoryManager(context->getMemoryManager());
 
     Item::Ptr item = _itemConstructors[0]->createItem(dContext);

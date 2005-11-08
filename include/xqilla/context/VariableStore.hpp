@@ -19,6 +19,7 @@
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xercesc/util/XercesDefs.hpp>
 #include <vector>
+#include <xercesc/util/XMemory.hpp>
 
 class Sequence;
 template<class TYPE> class VarHashEntry;
@@ -28,7 +29,7 @@ class XPath2MemoryManager;
 
 /** This is the wrapper class for the variable store, which implements the 
     lookup and scoping of simple variables. */
-class XQILLA_API VariableStore
+class XQILLA_API VariableStore : public XERCES_CPP_NAMESPACE_QUALIFIER XMemory
 {
 public:
   typedef Scope<Sequence> MyScope;

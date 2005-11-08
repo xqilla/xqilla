@@ -1672,7 +1672,7 @@ yyreduce:
                                                                                          ((XPathParserControl *)parm)->memMgr->getPooledString(yyvsp[-2].wString), yyvsp[0].astNodeImpl);
 		yyvsp[-4].variableBinding->push_back(bind);
 		yyval.variableBinding = yyvsp[-4].variableBinding;
-		delete yyvsp[-2].wString;
+		delete [] yyvsp[-2].wString;
 	}
     break;
 
@@ -1684,7 +1684,7 @@ yyreduce:
                                                                                          XQVariableBinding::forBinding,
                                                                                          ((XPathParserControl *)parm)->memMgr->getPooledString(yyvsp[-2].wString), yyvsp[0].astNodeImpl);
 		yyval.variableBinding->push_back(bind);
-		delete yyvsp[-2].wString;
+		delete [] yyvsp[-2].wString;
 	}
     break;
 
@@ -2524,7 +2524,7 @@ yyreduce:
 		XQLiteral *str_val  = new (((XPathParserControl *)parm)->memMgr)
       XQLiteral(ic, ((XPathParserControl *)parm)->memMgr);
 		yyval.astNodeImpl = str_val;
-        delete yyvsp[0].wString;
+        delete [] yyvsp[0].wString;
 	}
     break;
 
@@ -2538,7 +2538,7 @@ yyreduce:
 				((XPathParserControl *)parm)->memMgr->getPooledString(yyvsp[0].wString), /*isNumeric*/true);
     XQLiteral *did  = new (((XPathParserControl *)parm)->memMgr)
       XQLiteral(ic, ((XPathParserControl *)parm)->memMgr);
-    delete yyvsp[0].wString;
+    delete [] yyvsp[0].wString;
     yyval.astNodeImpl = did;
   }
     break;
@@ -2577,7 +2577,7 @@ yyreduce:
 #line 1262 "../src/parser/XPath2Parser.y"
     {
 		XQVariable *var = new (((XPathParserControl *)parm)->memMgr) XQVariable(yyvsp[0].wString, ((XPathParserControl *)parm)->memMgr);
-		delete yyvsp[0].wString;
+		delete [] yyvsp[0].wString;
 		yyval.astNodeImpl = var;
   }
     break;
@@ -2632,7 +2632,7 @@ yyreduce:
 #line 1325 "../src/parser/XPath2Parser.y"
     {
         QualifiedName *qname = new (((XPathParserControl *)parm)->memMgr) QualifiedName(yyvsp[-2].wString, ((XPathParserControl *)parm)->memMgr);
-        delete yyvsp[-2].wString;
+        delete [] yyvsp[-2].wString;
         ASTNode* functionImpl = ((XPathParserControl*)parm)->context->lookUpFunction(qname->getPrefix(), qname->getName(), *yyvsp[-1].astNodeStore);
         if( functionImpl == NULL) {
           XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buf(1023, ((XPathParserControl *)parm)->memMgr);
@@ -3061,7 +3061,7 @@ yyreduce:
 #line 1755 "../src/parser/XPath2Parser.y"
     {
 		QualifiedName *qn = new (((XPathParserControl *)parm)->memMgr) QualifiedName(yyvsp[0].wString, ((XPathParserControl *)parm)->memMgr);
-		delete yyvsp[0].wString;
+		delete [] yyvsp[0].wString;
 	  yyval.qName = qn;
 	}
     break;

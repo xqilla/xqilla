@@ -7,8 +7,8 @@ LDADD = libxqilla.la -lxerces-c
 
 TESTS = testDatatypes
 
-bin_PROGRAMS = xgrep
-noinst_PROGRAMS = basicXQillaUsage testDatatypes eval
+bin_PROGRAMS = xqilla
+noinst_PROGRAMS = basicXQillaUsage testDatatypes
 
 lib_LTLIBRARIES = libxqilla.la
 
@@ -78,6 +78,8 @@ src/dom-api/XPath2Result.cpp \
 src/dom-api/XQScopedNamespace.cpp \
 src/simple-api/XQillaEngine.cpp \
 src/simple-api/XQEvaluator.cpp \
+src/simple-api/XQilla.cpp \
+src/simple-api/XQilla2.cpp \
 src/simple-api/XQQuery.cpp \
 src/utils/UTF8Str.cpp \
 src/utils/XMLChCompare.cpp \
@@ -383,18 +385,11 @@ src/lexer/XPath2Lexer.lex \
 src/parser/xquery.y \
 src/parser/XPath2Parser.y
 
+xqilla_SOURCES = \
+src/samples/xqilla/xqilla.cpp
+
 basicXQillaUsage_SOURCES = \
 src/samples/basic/basicXQillaUsage.cpp
-
-eval_SOURCES = \
-src/samples/evaluator/eval.cpp \
-src/samples/common/DOMTreeErrorReporter.cpp \
-src/samples/common/DOMTreeErrorReporter.hpp
-
-xgrep_SOURCES = \
-src/samples/xgrep/xgrep.cpp \
-src/samples/common/DOMTreeErrorReporter.cpp \
-src/samples/common/DOMTreeErrorReporter.hpp
 
 testDatatypes_SOURCES = \
 src/samples/datatypes/ATAnyURITester.cpp \
@@ -467,7 +462,7 @@ $(XPLEXERFILE) : $(XPLEXTEMPLATE)
 	${perl} -pi -e "s/\#include \<FlexLexer\.h\>/\#include \"XPath2Lexer\.hpp\"/g" $(XPLEXERFILE)
 	${perl} -pi -e "s/\#include \<unistd\.h\>//g" $(XPLEXERFILE)
 	${perl} -pi -e "s/yyout->write\(\(unsigned char \*\)  buf/yyout->write\(\(const char \*\)buf/g" $(XPLEXERFILE)
-	${perl} -pi -e "s/delete yy_state_buf;/delete yy_state_buf; yy_flex_free\(yy_start_stack\);/g" $(XPLEXERFILE)
+	${perl} -pi -e "s/delete yy_state_buf;/delete [] yy_state_buf; yy_flex_free\(yy_start_stack\);/g" $(XPLEXERFILE)
 
 $(XPPARSERCPP) $(XPPARSERHPP): $(XPPARSERFILE)
 	$(YACC) -d -v -p XPathyy  -o $(XPPARSERCPP) $(XPPARSERFILE)
@@ -476,6 +471,7 @@ $(XPPARSERCPP) $(XPPARSERHPP): $(XPPARSERFILE)
 
 $(XQLEXERFILE): $(XQLEXTEMPLATE) $(XQLEXSKEL)
 	$(LEX) -BUs -S$(XQLEXSKEL) -o$(XQLEXERFILE) $(XQLEXTEMPLATE) # This can take a long time
+	${perl} -pi -e "s/delete yy_state_buf;/delete [] yy_state_buf;/g" $(XQLEXERFILE)
 
 $(XQPARSERCPP) $(XQPARSERHPP): $(XQPARSERFILE)
 	$(YACC) -d -v -o $(XQPARSERCPP) $(XQPARSERFILE)

@@ -72,7 +72,7 @@ ASTNode* XQTypeswitch::staticResolution(StaticContext *context)
   }
   else {
     // If it's constant, we can narrow it down to the correct clause
-    AutoRelease<DynamicContext> dContext(context->createDynamicContext());
+    AutoDelete<DynamicContext> dContext(context->createDynamicContext());
     dContext->setMemoryManager(context->getMemoryManager());
     Sequence value = _expr->collapseTree(dContext);
 

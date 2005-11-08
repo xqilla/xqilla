@@ -23,7 +23,6 @@
 #include <xqilla/framework/XQillaExport.hpp>
 #include <vector>
 #include <xercesc/util/XMemory.hpp>
-#include <xqilla/runtime/Result.hpp>
 #include <xqilla/runtime/ResultImpl.hpp>
 #include <xqilla/runtime/LazySequenceResult.hpp>
 #include <xqilla/context/StaticContext.hpp>
@@ -33,36 +32,45 @@ class XQUserFunction;
 class XQGlobalVariable;
 class StaticResolutionContext;
 
+typedef std::vector<XQUserFunction*, XQillaAllocator<XQUserFunction*> > UserFunctions;
+typedef std::vector<XQGlobalVariable*, XQillaAllocator<XQGlobalVariable*> > GlobalVariables;
+
 class XQILLA_API XQQuery : public XERCES_CPP_NAMESPACE_QUALIFIER XMemory
 {
 public:
-	XQQuery(const XMLCh* queryText, XPath2MemoryManager* memMgr);
+  XQQuery(const XMLCh* queryText, DynamicContext *context, bool contextOwned = false,
+          XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr =
+          XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager);
+  ~XQQuery();
+
+  DynamicContext *createDynamicContext(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr =
+                                       XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager) const;
 
   Result evaluate(DynamicContext* context) const;
-  void staticResolution(StaticContext *context);
+  void staticResolution(StaticContext *context = 0);
 
-	// Module stuff
-	void setIsLibraryModule(bool bIsModule=true);
-	bool getIsLibraryModule() const;
-	void setModuleTargetNamespace(const XMLCh* uri);
-	const XMLCh* getModuleTargetNamespace() const;
-	void importModule(const XMLCh* szUri, VectorOfStrings* locations, StaticContext* context);
+  // Module stuff
+  void setIsLibraryModule(bool bIsModule=true);
+  bool getIsLibraryModule() const;
+  void setModuleTargetNamespace(const XMLCh* uri);
+  const XMLCh* getModuleTargetNamespace() const;
+  void importModule(const XMLCh* szUri, VectorOfStrings* locations, StaticContext* context);
 
-	ASTNode* getQueryBody() const;
-	void setQueryBody(ASTNode* query);
+  ASTNode* getQueryBody() const;
+  void setQueryBody(ASTNode* query);
 
-	void addFunction(XQUserFunction* fnDef);
-	void addVariable(XQGlobalVariable* varDef);
+  void addFunction(XQUserFunction* fnDef);
+  const UserFunctions &getFunctions() const { return m_userDefFns; }
 
-    const XMLCh* getFile() const;
-    void setFile(const XMLCh* file);
+  void addVariable(XQGlobalVariable* varDef);
+  const GlobalVariables &getVariables() const { return m_userDefVars; }
 
-    const XMLCh* getQueryText() const;
+  const XMLCh* getFile() const;
+  void setFile(const XMLCh* file);
 
-    std::vector<XQUserFunction*, XQillaAllocator<XQUserFunction*> > m_userDefFns;
-	std::vector<XQGlobalVariable*, XQillaAllocator<XQGlobalVariable*> > m_userDefVars;
+  const XMLCh* getQueryText() const;
 
-protected:
+private:
   class QueryResult : public ResultImpl
   {
   public:
@@ -89,12 +97,27 @@ protected:
     const XQQuery *_query;
   };
 
-	ASTNode* m_query;
-	bool m_bIsLibraryModule;
-	const XMLCh* m_szTargetNamespace;
-    const XMLCh* m_szQueryText;
-    const XMLCh* m_szCurrentFile;
-    XPath2MemoryManager* m_memMgr;
+private:
+  XQQuery(const XQQuery &);
+  XQQuery &operator=(const XQQuery &);
+
+private:
+  // The memory manager used to create this object
+  XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* m_memMgr;
+
+  // The context used to create this query
+  DynamicContext *m_context;
+  bool m_contextOwned;
+
+  ASTNode* m_query;
+
+  bool m_bIsLibraryModule;
+  const XMLCh* m_szTargetNamespace;
+  const XMLCh* m_szQueryText;
+  const XMLCh* m_szCurrentFile;
+
+  UserFunctions m_userDefFns;
+  GlobalVariables m_userDefVars;
 };
 
 #endif // !defined(AFXQ_XQUERY_H__FAA9933A_2F10_49A4_93A2_857E2A8C48E3__INCLUDED_)
