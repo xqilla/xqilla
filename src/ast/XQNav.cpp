@@ -330,7 +330,7 @@ Item::Ptr XQNav::GotoRootResult::getSingleResult(DynamicContext *context) const
   if(contextItem != NULLRCP && contextItem->isNode()) {
     return FunctionRoot::root((const Node::Ptr)contextItem, context);
   } else {
-    DSLthrow(TypeErrorException,X("XQNav::collapseTreeInternal"), X("An attempt to navigate when the Context Item was not a node was made [err:XPTY0020]"));
+    XQThrow(TypeErrorException,X("XQNav::collapseTreeInternal"), X("An attempt to navigate when the Context Item was not a node was made [err:XPTY0020]"));
   }
   return 0;
 }
@@ -450,7 +450,7 @@ Item::Ptr XQNav::IntermediateStepCheckResult::next(DynamicContext *context)
 
   // Check it's a node
   if(result != NULLRCP && !result->isNode()) {
-    DSLthrow(TypeErrorException,X("XQNav::StepResult::next"),
+    XQThrow(TypeErrorException,X("XQNav::StepResult::next"),
              X("The result of a step expression (StepExpr) is not a sequence of nodes [err:XPTY0019]"));
   }
 
@@ -494,11 +494,11 @@ Item::Ptr XQNav::LastStepCheckResult::next(DynamicContext *context)
     switch(_nTypeOfItemsInLastStep) {
     case 0: _nTypeOfItemsInLastStep=result->isNode()?1:2; break;
     case 1: if(!result->isNode()) 
-      DSLthrow(TypeErrorException,X("XQNav::StepResult::next"),
+      XQThrow(TypeErrorException,X("XQNav::StepResult::next"),
                X("The result of the last step in a path expression contains both nodes and atomic values [err:XPTY0018]"));
       break;
     case 2: if(result->isNode()) 
-      DSLthrow(TypeErrorException,X("XQNav::StepResult::next"),
+      XQThrow(TypeErrorException,X("XQNav::StepResult::next"),
                X("The result of the last step in a path expression contains both nodes and atomic values [err:XPTY0018]"));
       break;
     }

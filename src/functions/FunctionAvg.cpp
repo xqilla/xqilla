@@ -53,7 +53,7 @@ Sequence FunctionAvg::collapseTreeInternal(DynamicContext* context, int flags) c
   try {
     sequence = validateSequence(getParamNumber(1,context), context);
   } catch (IllegalArgumentException &e) {
-    DSLthrow(IllegalArgumentException, X("FunctionAvg::collapseTreeInternal()"), X("Invalid argument to fn:avg() function"));
+    XQThrow(IllegalArgumentException, X("FunctionAvg::collapseTreeInternal()"), X("Invalid argument to fn:avg() function"));
   }
 	if(sequence.isEmpty())
 		return Sequence(context->getMemoryManager());
@@ -63,14 +63,14 @@ Sequence FunctionAvg::collapseTreeInternal(DynamicContext* context, int flags) c
   if (!atom->isNumericValue() && 
       !context->isTypeOrDerivedFromType(atom->getTypeURI(), atom->getTypeName(), FunctionConstructor::XMLChXPath2DatatypesURI, ATDurationOrDerived::fgDT_DAYTIMEDURATION) &&
       !context->isTypeOrDerivedFromType(atom->getTypeURI(), atom->getTypeName(), FunctionConstructor::XMLChXPath2DatatypesURI, ATDurationOrDerived::fgDT_YEARMONTHDURATION))
-    DSLthrow(IllegalArgumentException, X("FunctionAvg::collapseTreeInternal()"), X("Invalid argument to fn:avg() function"));
+    XQThrow(IllegalArgumentException, X("FunctionAvg::collapseTreeInternal()"), X("Invalid argument to fn:avg() function"));
 
   FunctionSum fnSum(_args, context->getMemoryManager());
   Result sum = 0;
   try {
     sum = fnSum.collapseTree(context);
   } catch (IllegalArgumentException &e) {
-    DSLthrow(IllegalArgumentException, X("FunctionAvg::collapseTreeInternal()"), X("Invalid argument to fn:avg() function"));
+    XQThrow(IllegalArgumentException, X("FunctionAvg::collapseTreeInternal()"), X("Invalid argument to fn:avg() function"));
   }
 
   VectorOfASTNodes divArgs = VectorOfASTNodes(XQillaAllocator<ASTNode*>(context->getMemoryManager()));
@@ -86,7 +86,7 @@ Sequence FunctionAvg::collapseTreeInternal(DynamicContext* context, int flags) c
   try {
     avg = divide.collapseTree(context);
   } catch (XPath2ErrorException &e) {
-    DSLthrow(IllegalArgumentException, X("FunctionAvg::collapseTreeInternal()"), X("Invalid argument to fn:avg() function"));
+    XQThrow(IllegalArgumentException, X("FunctionAvg::collapseTreeInternal()"), X("Invalid argument to fn:avg() function"));
   }
 	return avg;
 }

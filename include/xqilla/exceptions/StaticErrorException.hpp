@@ -18,18 +18,18 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 
-#include <xqilla/exceptions/DSLException.hpp>
+#include <xqilla/exceptions/XQException.hpp>
 #include <xqilla/utils/XStr.hpp>
 
 /** 
  * This means that an error was found while parsing or when doing static analysis of the expression
  */
 
-class XQILLA_API StaticErrorException : public DSLException
+class XQILLA_API StaticErrorException : public XQException
 {
 public:
   StaticErrorException(const XMLCh* const functionName, const XMLCh* const reason, const char *file, int line)
-    : DSLException(X("StaticErrorException"), functionName, reason, file, line) {};
+    : XQException(X("StaticErrorException"), functionName, reason, file, line) {};
 };
 
 #endif // _STATICERROREXCEPTION_HPP

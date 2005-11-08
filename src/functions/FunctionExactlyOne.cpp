@@ -65,10 +65,10 @@ Item::Ptr FunctionExactlyOne::ExactlyOneResult::next(DynamicContext *context)
   ++_argNo;
 
   if(_argNo == 1 && result == NULLRCP) {
-    DSLthrow(FunctionException, X("FunctionExactlyOne::ExactlyOneResult::next"),X("fn:exactly-one called with a sequence containing no items [err:FORG0005]"));
+    XQThrow(FunctionException, X("FunctionExactlyOne::ExactlyOneResult::next"),X("fn:exactly-one called with a sequence containing no items [err:FORG0005]"));
   }
   if(_argNo == 2 && result != NULLRCP) {
-    DSLthrow(FunctionException, X("FunctionExactlyOne::ExactlyOneResult::next"),X("fn:exactly-one called with a sequence containing more than one item [err:FORG0005]"));
+    XQThrow(FunctionException, X("FunctionExactlyOne::ExactlyOneResult::next"),X("fn:exactly-one called with a sequence containing more than one item [err:FORG0005]"));
   }
 
   return result;

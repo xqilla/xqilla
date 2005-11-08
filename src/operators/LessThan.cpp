@@ -51,7 +51,7 @@ LessThan::LessThan(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
     if(atom2->isNumericValue()) {
       return ((Numeric*)(const AnyAtomicType*)atom1)->lessThan((const Numeric::Ptr )atom2, context);
     } else {
-      DSLthrow(XPath2ErrorException,X("LessThan::less_than"), X("An attempt to compare a numeric type to a non numeric type has occurred"));
+      XQThrow(XPath2ErrorException,X("LessThan::less_than"), X("An attempt to compare a numeric type to a non numeric type has occurred"));
     }
   }
 
@@ -60,14 +60,14 @@ LessThan::LessThan(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
     {
       // op:boolean-less-than(A, B)
       if(atom2->getPrimitiveTypeIndex() != AnyAtomicType::BOOLEAN) 
-        DSLthrow(XPath2ErrorException,X("LessThan::less_than"), X("An attempt to compare a boolean type to a non boolean type has occurred"));
+        XQThrow(XPath2ErrorException,X("LessThan::less_than"), X("An attempt to compare a boolean type to a non boolean type has occurred"));
       return ((const ATBooleanOrDerived*)(const AnyAtomicType*)atom1)->lessThan((const ATBooleanOrDerived*)(const AnyAtomicType*)atom2, context);
     }
     case AnyAtomicType::STRING:
     {
       // op:numeric-less-than(fn:compare(A, B), 0)
       if(atom2->getPrimitiveTypeIndex() != AnyAtomicType::STRING)
-        DSLthrow(XPath2ErrorException,X("LessThan::less_than"), X("An attempt to compare a string type to a non string type has occurred"));
+        XQThrow(XPath2ErrorException,X("LessThan::less_than"), X("An attempt to compare a string type to a non string type has occurred"));
       // if the function returns -1, then atom1 is less
       return collation->compare(arg1->asString(context),arg2->asString(context))<0;
     }
@@ -75,21 +75,21 @@ LessThan::LessThan(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
     {
       // op:date-less-than(A, B)
       if(atom2->getPrimitiveTypeIndex() != AnyAtomicType::DATE)
-        DSLthrow(XPath2ErrorException,X("LessThan::less_than"), X("An attempt to compare a date type to a non date type has occurred"));
+        XQThrow(XPath2ErrorException,X("LessThan::less_than"), X("An attempt to compare a date type to a non date type has occurred"));
       return ((ATDateOrDerived*)(const AnyAtomicType*)atom1)->lessThan((const ATDateOrDerived::Ptr )atom2, context);
     }
     case AnyAtomicType::TIME:
     {
       // op:time-less-than(A, B)
       if(atom2->getPrimitiveTypeIndex() != AnyAtomicType::TIME) 
-        DSLthrow(XPath2ErrorException,X("LessThan::less_than"), X("An attempt to compare a time type to a non time type has occurred"));
+        XQThrow(XPath2ErrorException,X("LessThan::less_than"), X("An attempt to compare a time type to a non time type has occurred"));
       return ((ATTimeOrDerived*)(const AnyAtomicType*)atom1)->lessThan((const ATTimeOrDerived::Ptr )atom2, context);
     }
     case AnyAtomicType::DATE_TIME:
     {
       // op:datetime-less-than(A, B)
       if(atom2->getPrimitiveTypeIndex() != AnyAtomicType::DATE_TIME)
-        DSLthrow(XPath2ErrorException,X("LessThan::less_than"), X("An attempt to compare a dateTime type to a non dateTime type has occurred"));
+        XQThrow(XPath2ErrorException,X("LessThan::less_than"), X("An attempt to compare a dateTime type to a non dateTime type has occurred"));
       return ((ATDateTimeOrDerived*)(const AnyAtomicType*)atom1)->lessThan((const ATDateTimeOrDerived::Ptr )atom2, context);
     }
     case AnyAtomicType::DURATION:
@@ -97,13 +97,13 @@ LessThan::LessThan(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
       // op:yearMonthDuration-less-than(A, B)
       // op:dayTimeDuration-less-than(A, B)
       if(atom2->getPrimitiveTypeIndex() != AnyAtomicType::DURATION) 
-        DSLthrow(XPath2ErrorException,X("LessThan::less_than"), X("An attempt to compare a duration type to a non duration type has occurred"));
+        XQThrow(XPath2ErrorException,X("LessThan::less_than"), X("An attempt to compare a duration type to a non duration type has occurred"));
       return ((ATDurationOrDerived*)(const AnyAtomicType*)atom1)->lessThan((const ATDurationOrDerived::Ptr )atom2, context);
     }
     default:
-      DSLthrow(XPath2ErrorException,X("LessThan::less_than"), X("Unexpected data type in operator 'lt'"));
+      XQThrow(XPath2ErrorException,X("LessThan::less_than"), X("Unexpected data type in operator 'lt'"));
   }// switch
-  DSLthrow(FunctionException,X("LessThan::less_than"), X("An equality operator is not defined for the provided arguments"));
+  XQThrow(FunctionException,X("LessThan::less_than"), X("An equality operator is not defined for the provided arguments"));
 }
 
 bool LessThan::execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::Ptr &atom2, DynamicContext *context) const

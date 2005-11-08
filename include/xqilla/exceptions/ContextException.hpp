@@ -24,17 +24,17 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 
-#include <xqilla/exceptions/DSLException.hpp>
+#include <xqilla/exceptions/XQException.hpp>
 #include <xqilla/utils/XStr.hpp>
 
 /** exception class for DSLPath parser */
 
-class XQILLA_API ContextException : public DSLException
+class XQILLA_API ContextException : public XQException
 {
 public:
 
   ContextException(const XMLCh *functionName, const XMLCh *reason, const char *file, int line)
-    : DSLException(X("ContextException"), functionName, reason, file, line) {};
+    : XQException(X("ContextException"), functionName, reason, file, line) {};
 };
 
 #endif // _CONTEXTEXCEPTION_HPP

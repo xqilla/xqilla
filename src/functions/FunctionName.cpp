@@ -66,9 +66,9 @@ Sequence FunctionName::collapseTreeInternal(DynamicContext* context, int flags) 
   {
     const Item::Ptr item = context->getContextItem();
     if(item==NULLRCP)
-      DSLthrow(FunctionException, X("FunctionName::collapseTreeInternal"),X("Undefined context item in fn:name [err:FONC0001]"));
+      XQThrow(FunctionException, X("FunctionName::collapseTreeInternal"),X("Undefined context item in fn:name [err:FONC0001]"));
     if(!item->isNode())
-      DSLthrow(FunctionException, X("FunctionName::collapseTreeInternal"),X("The context item is not a node [err:XPTY0006]"));
+      XQThrow(FunctionException, X("FunctionName::collapseTreeInternal"),X("The context item is not a node [err:XPTY0006]"));
     ctxNode=item;
   }
 

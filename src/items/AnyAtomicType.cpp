@@ -107,27 +107,27 @@ AnyAtomicType::Ptr AnyAtomicType::castAs(const XMLCh* targetTypeURI, const XMLCh
     buffer.append(targetTypeName);
     buffer.append(X(" is not supported [err:FORG0001]"));
 
-    DSLthrow(XPath2TypeCastException, X("AnyAtomicType::castAs"), buffer.getRawBuffer());
+    XQThrow(XPath2TypeCastException, X("AnyAtomicType::castAs"), buffer.getRawBuffer());
   }
   
   try {
     return this->castAsInternal(targetIndex, targetTypeURI, targetTypeName, context);
   } catch (TypeNotFoundException &e) {
-    DSLthrow(XPath2TypeCastException, X("AnyAtomicType::castAs"), e.getError());
+    XQThrow(XPath2TypeCastException, X("AnyAtomicType::castAs"), e.getError());
   } catch (InvalidLexicalSpaceException &e) {
     XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buf(1023, context->getMemoryManager());
 
     if(this->getPrimitiveTypeIndex() == UNTYPED_ATOMIC ||
        this->getPrimitiveTypeIndex() == ANY_SIMPLE_TYPE || 
        this->getPrimitiveTypeIndex() == STRING) {
-      DSLthrow(XPath2TypeCastException, X("AnyAtomicType::castAs"), X("Invalid lexical value [err:FORG0001]"));
+      XQThrow(XPath2TypeCastException, X("AnyAtomicType::castAs"), X("Invalid lexical value [err:FORG0001]"));
     } else if (context->isTypeOrDerivedFromType(targetTypeURI, targetTypeName, this->getPrimitiveTypeURI(), this->getPrimitiveTypeName())) {
-      DSLthrow(XPath2TypeCastException, X("AnyAtomicType::castAs"), X("Value does not conform to facets [err:FORG0001]"));
+      XQThrow(XPath2TypeCastException, X("AnyAtomicType::castAs"), X("Value does not conform to facets [err:FORG0001]"));
     } else {
-      DSLthrow(XPath2TypeCastException, X("AnyAtomicType::castAs"), e.getError());  // should never be here, in theory
+      XQThrow(XPath2TypeCastException, X("AnyAtomicType::castAs"), e.getError());  // should never be here, in theory
     }
   } catch (NamespaceLookupException &e) {
-    DSLthrow(XPath2TypeCastException, X("AnyAtomicType::castAs"), e.getError());
+    XQThrow(XPath2TypeCastException, X("AnyAtomicType::castAs"), e.getError());
   }
 
 }

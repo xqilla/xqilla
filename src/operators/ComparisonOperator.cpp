@@ -63,7 +63,7 @@ AnyAtomicType::Ptr ComparisonOperator::getArgument(unsigned int index, DynamicCo
   // 3. If the atomized operand is a sequence of length greater than one, a type error is raised [err:XPTY0004].
   Item::Ptr second = arg_result.next(context);
   if(second != NULLRCP) {
-    DSLthrow(XPath2TypeCastException,X("ComparisonOperator::getArgument"), X("A parameter of the operator is not a single atomic value [err:XPTY0004]"));
+    XQThrow(XPath2TypeCastException,X("ComparisonOperator::getArgument"), X("A parameter of the operator is not a single atomic value [err:XPTY0004]"));
   }
 
   // 4. Any atomized operand that has the dynamic type xdt:untypedAtomic is cast to the type xs:string.

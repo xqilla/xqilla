@@ -57,7 +57,7 @@ Sequence FunctionMin::collapseTreeInternal(DynamicContext* context, int flags) c
     try {
         sequence = validateSequence(getParamNumber(1,context,ASTNode::UNORDERED), context);
     } catch (IllegalArgumentException &e) {
-        DSLthrow(IllegalArgumentException, X("FunctionMin::collapseTreeInternal"), X("Invalid argument to fn:min() function"));
+        XQThrow(IllegalArgumentException, X("FunctionMin::collapseTreeInternal"), X("Invalid argument to fn:min() function"));
     }
 
     // Return the empty sequence if the sequence is empty
@@ -74,11 +74,11 @@ Sequence FunctionMin::collapseTreeInternal(DynamicContext* context, int flags) c
         try {
             context->getItemFactory()->createAnyURI(collName, context);
         } catch(XPath2ErrorException &e) {
-            DSLthrow(FunctionException, X("FunctionMin::collapseTreeInternal"), X("Invalid collationURI"));  
+            XQThrow(FunctionException, X("FunctionMin::collapseTreeInternal"), X("Invalid collationURI"));  
         }
         collation=context->getCollation(collName);
         if (collation==NULL)
-            DSLthrow(FunctionException,X("FunctionMin::collapseTreeInternal"),X("Collation object is not available"));
+            XQThrow(FunctionException,X("FunctionMin::collapseTreeInternal"),X("Collation object is not available"));
     }
     else
         collation=context->getDefaultCollation();
@@ -106,9 +106,9 @@ Sequence FunctionMin::collapseTreeInternal(DynamicContext* context, int flags) c
             try {
                 less = (const ATBooleanOrDerived::Ptr )gt.collapseTree(context).next(context);
             } catch (IllegalArgumentException &e) {
-                DSLthrow(IllegalArgumentException, X("FunctionMin::collapseTreeInternal"), X("Invalid argument to fn:min() function"));
+                XQThrow(IllegalArgumentException, X("FunctionMin::collapseTreeInternal"), X("Invalid argument to fn:min() function"));
             } catch (XPath2ErrorException &e) {
-                DSLthrow(IllegalArgumentException, X("FunctionMin::collapseTreeInternal"), X("Invalid argument to fn:min() function"));
+                XQThrow(IllegalArgumentException, X("FunctionMin::collapseTreeInternal"), X("Invalid argument to fn:min() function"));
             }
             if(((const ATBooleanOrDerived*)less)->isTrue()) {
               minItem = *i;

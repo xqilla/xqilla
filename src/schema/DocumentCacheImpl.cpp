@@ -412,7 +412,7 @@ Node::Ptr DocumentCacheParser::validate(const Node::Ptr &node,
                 msg.append(X("}"));
                 msg.append(node_name);
                 msg.append(X(" is not defined as a global element [err:XQDY0084]"));
-                DSLthrow(DynamicErrorException,X("DocumentCacheParser::validate"), msg.getRawBuffer());
+                XQThrow(DynamicErrorException,X("DocumentCacheParser::validate"), msg.getRawBuffer());
             }
         }
         // - build a textual representation of the element
@@ -452,7 +452,7 @@ Node::Ptr DocumentCacheParser::validate(const Node::Ptr &node,
         exc_msg.set(X("Validation failed: "));
         exc_msg.append(toCatch.getMessage());
         exc_msg.append(X(" [err:XQDY0027]"));
-        DSLthrow(DynamicErrorException,X("DocumentCacheParser::validate"), exc_msg.getRawBuffer());
+        XQThrow(DynamicErrorException,X("DocumentCacheParser::validate"), exc_msg.getRawBuffer());
     }
 	catch (const XERCES_CPP_NAMESPACE_QUALIFIER DOMException& toCatch) {
         setValidationConstraintFatal(false);
@@ -461,7 +461,7 @@ Node::Ptr DocumentCacheParser::validate(const Node::Ptr &node,
         exc_msg.set(X("Validation failed: "));
         exc_msg.append(toCatch.msg);
         exc_msg.append(X(" [err:XQDY0027]"));
-        DSLthrow(DynamicErrorException,X("DocumentCacheParser::validate"), exc_msg.getRawBuffer());
+        XQThrow(DynamicErrorException,X("DocumentCacheParser::validate"), exc_msg.getRawBuffer());
     }
     catch (const XERCES_CPP_NAMESPACE_QUALIFIER XMLException& toCatch) {
         setValidationConstraintFatal(false);
@@ -470,7 +470,7 @@ Node::Ptr DocumentCacheParser::validate(const Node::Ptr &node,
         exc_msg.set(X("Validation failed: "));
         exc_msg.append(toCatch.getMessage());
         exc_msg.append(X(" [err:XQDY0027]"));
-        DSLthrow(DynamicErrorException,X("DocumentCacheParser::validate"), exc_msg.getRawBuffer());
+        XQThrow(DynamicErrorException,X("DocumentCacheParser::validate"), exc_msg.getRawBuffer());
     }
     return NULL;
 }
@@ -589,13 +589,13 @@ Node::Ptr DocumentCacheImpl::loadXMLDocument(const XMLCh* uri, DynamicContext *c
   }
   catch(const XERCES_CPP_NAMESPACE_QUALIFIER SAXException& toCatch) {
     //TODO: Find a way to decipher whether the exception is actually because of a parsing problem or because the document can't be found
-    DSLthrow(XMLParseException, X("DocumentCacheImpl::loadXMLDocument"), toCatch.getMessage());
+    XQThrow(XMLParseException, X("DocumentCacheImpl::loadXMLDocument"), toCatch.getMessage());
   }
   catch(const XERCES_CPP_NAMESPACE_QUALIFIER DOMException& toCatch) {
-    DSLthrow(XMLParseException,X("DocumentCacheImpl::loadXMLDocument"), toCatch.msg);
+    XQThrow(XMLParseException,X("DocumentCacheImpl::loadXMLDocument"), toCatch.msg);
   }
   catch(const XERCES_CPP_NAMESPACE_QUALIFIER XMLException& toCatch) {
-    DSLthrow(XMLParseException,X("DocumentCacheImpl::loadXMLDocument"), toCatch.getMessage());
+    XQThrow(XMLParseException,X("DocumentCacheImpl::loadXMLDocument"), toCatch.getMessage());
   }
   return result;
 }
@@ -710,7 +710,7 @@ void DocumentCacheImpl::addSchemaLocation(const XMLCh* uri, VectorOfStrings* loc
 	  }
   }
   if(!bFoundSchema)
-    DSLthrow(StaticErrorException,X("DocumentCacheImpl::addSchemaLocation"), X("Schema not found [err:XQST0059]"));
+    XQThrow(StaticErrorException,X("DocumentCacheImpl::addSchemaLocation"), X("Schema not found [err:XQST0059]"));
 }
 
 unsigned int DocumentCacheImpl::getSchemaUriId(const XMLCh* uri) const

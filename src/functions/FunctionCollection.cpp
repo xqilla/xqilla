@@ -70,7 +70,7 @@ Sequence FunctionCollection::collapseTreeInternal(DynamicContext* context, int f
   try {
     context->getItemFactory()->createAnyURI(currentUri, context);
   } catch(XPath2ErrorException &e) {
-    DSLthrow(FunctionException, X("FunctionCollection::collapseTreeInternal"), X("Invalid URI format"));
+    XQThrow(FunctionException, X("FunctionCollection::collapseTreeInternal"), X("Invalid URI format"));
   }
 
   return context->resolveCollection(currentUri);

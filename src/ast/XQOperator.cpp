@@ -78,12 +78,12 @@ Node::Ptr XQOperator::getNodeParam(unsigned int index, DynamicContext* context) 
   if(first == NULLRCP) return 0;
 
   if(!first->isNode()) {
-		DSLthrow(XPath2TypeCastException,X("XQOperator::getNodeParam"), X("A parameter of the operator is not a node or empty [err:XP0006]"));
+		XQThrow(XPath2TypeCastException,X("XQOperator::getNodeParam"), X("A parameter of the operator is not a node or empty [err:XP0006]"));
   }
 
   const Item::Ptr second = arg_result.next(context);
   if(second != NULLRCP) {
-		DSLthrow(XPath2TypeCastException,X("XQOperator::getNodeParam"), X("A parameter of the operator is not a single node or empty [err:XP0006]"));
+		XQThrow(XPath2TypeCastException,X("XQOperator::getNodeParam"), X("A parameter of the operator is not a single node or empty [err:XP0006]"));
   }
 
 	return (const Node::Ptr )first;

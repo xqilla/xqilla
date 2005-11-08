@@ -254,7 +254,7 @@ protected:
         XMLCh szMsg[256];
         XERCES_CPP_NAMESPACE_QUALIFIER XMLString::transcode(msg,szMsg,256,m_memMgr);
         XERCES_CPP_NAMESPACE_QUALIFIER XMLString::catString(szMsg, X(" [err:XPST0003]"));
-	    throw XQException(szMsg, NULL, m_lineno, m_columnno);
+	    XQSimpleThrow(szMsg, NULL, m_lineno, m_columnno);
     }
 
 	virtual void yy_pop_state()
@@ -265,7 +265,7 @@ protected:
             XERCES_CPP_NAMESPACE_QUALIFIER XMLString::copyString(szMsg, X("Unbalanced '"));
             XERCES_CPP_NAMESPACE_QUALIFIER XMLString::catString(szMsg, yytext);
             XERCES_CPP_NAMESPACE_QUALIFIER XMLString::catString(szMsg, X("' token"));
-	        throw XQException(szMsg, NULL, m_lineno, m_columnno);
+	        XQSimpleThrow(szMsg, NULL, m_lineno, m_columnno);
         }
         yyFlexLexer::yy_pop_state();
     }

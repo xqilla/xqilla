@@ -24,17 +24,17 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 
-#include <xqilla/exceptions/DSLException.hpp>
+#include <xqilla/exceptions/XQException.hpp>
 #include <xqilla/utils/XStr.hpp>
 
 /** exception class for data items */
 
-class XQILLA_API ASTException : public DSLException
+class XQILLA_API ASTException : public XQException
 {
 public:
 
   ASTException(const XMLCh *functionName, const XMLCh *reason, const char *file, int line)
-    : DSLException(X("ASTException"), functionName, reason, file, line) {};
+    : XQException(X("ASTException"), functionName, reason, file, line) {};
 };
 
 #endif

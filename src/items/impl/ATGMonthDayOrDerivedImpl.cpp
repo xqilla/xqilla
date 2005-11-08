@@ -94,7 +94,7 @@ const XMLCh* ATGMonthDayOrDerivedImpl::asString(const DynamicContext* context) c
  */
 bool ATGMonthDayOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const {
   if(this->getPrimitiveTypeIndex() != target->getPrimitiveTypeIndex()) {
-        DSLthrow(IllegalArgumentException,X("ATGMonthDayOrDerivedImpl::equals"), X("Equality operator for given types not supported"));
+        XQThrow(IllegalArgumentException,X("ATGMonthDayOrDerivedImpl::equals"), X("Equality operator for given types not supported"));
   }
   
   ATGMonthDayOrDerivedImpl* targetGMonthDay = (ATGMonthDayOrDerivedImpl*)(const AnyAtomicType*)target;
@@ -200,7 +200,7 @@ void ATGMonthDayOrDerivedImpl::setGMonthDay(const XMLCh* const value, const Dyna
   unsigned int length = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(value);
  
   if(value == NULL) {
-      DSLthrow(XPath2TypeCastException,X("XSGMonthDayImpl::setGMonthDay"), X("Invalid representation of gMonthDay"));
+      XQThrow(XPath2TypeCastException,X("XSGMonthDayImpl::setGMonthDay"), X("Invalid representation of gMonthDay"));
   }
   
   // State variables etc.
@@ -342,7 +342,7 @@ void ATGMonthDayOrDerivedImpl::setGMonthDay(const XMLCh* const value, const Dyna
   }
 
   if (wrongformat) {
-    DSLthrow(XPath2TypeCastException,X("XSGMonthDayImpl::setGMonthDay"), X("Invalid representation of gMonthDay"));
+    XQThrow(XPath2TypeCastException,X("XSGMonthDayImpl::setGMonthDay"), X("Invalid representation of gMonthDay"));
   }
   
   // Create Timezone object, clean this up in future

@@ -66,15 +66,13 @@ Result XQDebugHook::collapseTree(DynamicContext *context, int flags) const
       else
         return result;
     }
-  catch(XQException&)
-    {
-      throw;
-    }
-  catch(DSLException& e)
-    {
+  catch(XQException& e) {
+    if(e.getXQueryFile() == NULL) {
       if(pDbgCallback && context->isDebuggingEnabled()) pDbgCallback->ReportFirstError(context,e.getError(), m_szFile, m_nLine);
-      throw XQException(e.getError(),m_szFile,m_nLine,m_nColumn);
+      e.setXQueryPosition(m_szFile,m_nLine,m_nColumn);
+      throw e;
     }
+  }
   // shouldn't get here
   assert(0);
   return Sequence(context->getMemoryManager());
@@ -90,11 +88,11 @@ ASTNode* XQDebugHook::staticResolution(StaticContext *context)
   try {
     m_impl=m_impl->staticResolution(context);
   }
-  catch(XQException&) {
-    throw;
-  }
-  catch(DSLException& e) {
-    throw XQException(e.getError(),m_szFile,m_nLine,m_nColumn);
+  catch(XQException& e) {
+    if(e.getXQueryFile() == NULL) {
+      e.setXQueryPosition(m_szFile,m_nLine,m_nColumn);
+      throw e;
+    }
   }
   return this;
 }

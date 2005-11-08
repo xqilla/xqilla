@@ -87,7 +87,7 @@ Sequence FunctionDateTime::collapseTreeInternal(DynamicContext* context, int fla
         {
             const Timezone::Ptr timeTZ=time->getTimezone();
             if(!timeTZ->equals(dateTZ))
-                DSLthrow(FunctionException, X("FunctionDateTime::collapseTreeInternal"), X("Both arguments to fn:dateTime have a speciified timezone [err:FORG0008]"));
+                XQThrow(FunctionException, X("FunctionDateTime::collapseTreeInternal"), X("Both arguments to fn:dateTime have a speciified timezone [err:FORG0008]"));
         }
         return Sequence(result->setTimezone(dateTZ, context), context->getMemoryManager());
     }

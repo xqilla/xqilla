@@ -33,11 +33,11 @@ Sequence Intersect::collapseTreeInternal(DynamicContext* context, int flags) con
 {
 	Sequence param1 = _args[0]->collapseTree(context, flags & ASTNode::UNORDERED).toSequence(context);
 	if(!checkSequenceIsNodes(param1)) {
-		DSLthrow(XPath2ErrorException,X("Intersect::collapseTreeInternal"), X("The operator 'intersect' has been called with a parameter that is not just nodes"));
+		XQThrow(XPath2ErrorException,X("Intersect::collapseTreeInternal"), X("The operator 'intersect' has been called with a parameter that is not just nodes"));
 	}
 	Sequence param2 = _args[1]->collapseTree(context, flags & ASTNode::UNORDERED).toSequence(context);
 	if(!checkSequenceIsNodes(param2)) {
-		DSLthrow(XPath2ErrorException,X("Intersect::collapseTreeInternal"), X("The operator 'intersect' has been called with a parameter that is not just nodes"));
+		XQThrow(XPath2ErrorException,X("Intersect::collapseTreeInternal"), X("The operator 'intersect' has been called with a parameter that is not just nodes"));
 	}
 
 	XPath2MemoryManager* memMgr = context->getMemoryManager();

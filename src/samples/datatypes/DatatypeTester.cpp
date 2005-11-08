@@ -18,7 +18,7 @@
 #include <xqilla/framework/XPath2MemoryManager.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/AnyAtomicType.hpp>
-#include <xqilla/exceptions/DSLException.hpp>
+#include <xqilla/exceptions/XQException.hpp>
 #include <xqilla/exceptions/XPath2ErrorException.hpp>
 #include <xqilla/utils/XStr.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
@@ -76,7 +76,7 @@ void DatatypeTester::testPassed() const {
 }
 
 void DatatypeTester::testFailed(const char* msg) const {
-  DSLthrow(XPath2ErrorException, X("DatatypeTester"), XERCES_CPP_NAMESPACE_QUALIFIER XMLString::transcode(msg));
+  XQThrow(XPath2ErrorException, X("DatatypeTester"), XERCES_CPP_NAMESPACE_QUALIFIER XMLString::transcode(msg));
 }
 
 XPath2MemoryManager* DatatypeTester::getMemoryManager() const {

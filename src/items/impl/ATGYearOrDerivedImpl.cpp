@@ -94,7 +94,7 @@ const XMLCh* ATGYearOrDerivedImpl::asString(const DynamicContext* context) const
    * false otherwise */
 bool ATGYearOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const {
   if(this->getPrimitiveTypeIndex() != target->getPrimitiveTypeIndex()) {
-    DSLthrow(IllegalArgumentException,X("ATGYearOrDerivedImpl::equals"), 
+    XQThrow(IllegalArgumentException,X("ATGYearOrDerivedImpl::equals"), 
         X("Equality operator for given types not supported"));
   }
   ATGYearOrDerivedImpl* targetGYear = (ATGYearOrDerivedImpl*)(const AnyAtomicType*)target;
@@ -168,7 +168,7 @@ void ATGYearOrDerivedImpl::setGYear(const XMLCh* const value, const DynamicConte
  
   unsigned int length = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(value);
   if(value == NULL) {
-			DSLthrow(XPath2TypeCastException,X("ATGYearOrDerivedImpl::setGYear"), X("Invalid representation of gYear"));
+			XQThrow(XPath2TypeCastException,X("ATGYearOrDerivedImpl::setGYear"), X("Invalid representation of gYear"));
 	}
 	
 	// State variables etc.
@@ -300,7 +300,7 @@ void ATGYearOrDerivedImpl::setGYear(const XMLCh* const value, const DynamicConte
 	// check time format
 
 	if (wrongformat) {
-		DSLthrow(XPath2TypeCastException,X("ATGYearOrDerivedImpl::setGYear"), X("Invalid representation of gYear"));
+		XQThrow(XPath2TypeCastException,X("ATGYearOrDerivedImpl::setGYear"), X("Invalid representation of gYear"));
 	}
 
   // Create Timezone object, clean this up in future

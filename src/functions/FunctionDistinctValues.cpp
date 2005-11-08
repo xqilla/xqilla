@@ -112,11 +112,11 @@ Item::Ptr FunctionDistinctValues::DistinctValueResult::next(DynamicContext *cont
         try {
             context->getItemFactory()->createAnyURI(collName, context);
         } catch(XPath2ErrorException &e) {
-            DSLthrow(FunctionException, X("FunctionDistinctValues::DistinctValueResult::next"), X("Invalid collationURI"));  
+            XQThrow(FunctionException, X("FunctionDistinctValues::DistinctValueResult::next"), X("Invalid collationURI"));  
         }
         collation_ = context->getCollation(collName);
         if(collation_ == NULL)
-            DSLthrow(FunctionException,X("FunctionDistinctValues::DistinctValueResult::next"),X("Collation object is not available"));
+            XQThrow(FunctionException,X("FunctionDistinctValues::DistinctValueResult::next"),X("Collation object is not available"));
     }
     else
         collation_ = context->getDefaultCollation();

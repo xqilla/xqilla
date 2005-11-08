@@ -92,7 +92,7 @@ const XMLCh* ATGDayOrDerivedImpl::asString(const DynamicContext* context) const 
  */
 bool ATGDayOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const {
   if(this->getPrimitiveTypeIndex() != target->getPrimitiveTypeIndex()) {
-        DSLthrow(IllegalArgumentException,X("ATGDayOrDerivedImpl::equals"), X("Equality operator for given types not supported"));
+        XQThrow(IllegalArgumentException,X("ATGDayOrDerivedImpl::equals"), X("Equality operator for given types not supported"));
   }
   ATGDayOrDerivedImpl* targetGDay = (ATGDayOrDerivedImpl*)(const AnyAtomicType*)target;
 
@@ -193,7 +193,7 @@ AnyAtomicType::AtomicObjectType ATGDayOrDerivedImpl::getPrimitiveTypeIndex() con
 void ATGDayOrDerivedImpl::setGDay(const XMLCh* const value, const DynamicContext* context) {
  
 	if(value == NULL) {
-			DSLthrow(XPath2TypeCastException,X("ATGDayOrDerivedImpl::setGDay"), 
+			XQThrow(XPath2TypeCastException,X("ATGDayOrDerivedImpl::setGDay"), 
           X("Invalid representation of gDay"));
 	}
   unsigned int length = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(value);
@@ -314,7 +314,7 @@ void ATGDayOrDerivedImpl::setGDay(const XMLCh* const value, const DynamicContext
 	}
 
 	if ( wrongformat) {
-		DSLthrow(XPath2TypeCastException,X("ATGDayOrDerivedImpl::setGDay"), 
+		XQThrow(XPath2TypeCastException,X("ATGDayOrDerivedImpl::setGDay"), 
         X("Invalid representation of gDay"));
 	}
 

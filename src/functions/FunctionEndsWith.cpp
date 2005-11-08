@@ -77,11 +77,11 @@ Sequence FunctionEndsWith::collapseTreeInternal(DynamicContext* context, int fla
         try {
             context->getItemFactory()->createAnyURI(collName, context);
         } catch(XPath2ErrorException &e) {
-            DSLthrow(FunctionException, X("FunctionEndsWith::collapseTreeInternal"), X("Invalid collationURI"));  
+            XQThrow(FunctionException, X("FunctionEndsWith::collapseTreeInternal"), X("Invalid collationURI"));  
         }
         collation=context->getCollation(collName);
         if(collation==NULL)
-            DSLthrow(FunctionException,X("FunctionEndsWith::collapseTreeInternal"),X("Cannot find requested collation"));
+            XQThrow(FunctionException,X("FunctionEndsWith::collapseTreeInternal"),X("Cannot find requested collation"));
     }
     else
         collation=context->getCollation(CodepointCollation::getCodepointCollationName());

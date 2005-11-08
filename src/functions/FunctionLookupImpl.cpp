@@ -38,7 +38,7 @@ void FunctionLookupImpl::insertFunction(FuncFactory *func)
     {
         unsigned int secondaryKey=uriId | (i << 16);
         if(_funcTable.containsKey((void*)func->getName(), secondaryKey))
-            DSLthrow(StaticErrorException,X("FunctionLookupImpl::insertFunction"), X("Multiple functions have the same expanded QName and the same number of arguments. [err:XQST0034]"));
+            XQThrow(StaticErrorException,X("FunctionLookupImpl::insertFunction"), X("Multiple functions have the same expanded QName and the same number of arguments. [err:XQST0034]"));
         _funcTable.put((void*)func->getName(), secondaryKey, func);
     }
 }

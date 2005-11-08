@@ -16,7 +16,7 @@
 #include "../config/xqilla_config.h"
 #include <xqilla/ast/AggregateFunction.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
-#include <xqilla/exceptions/DSLException.hpp>
+#include <xqilla/exceptions/XQException.hpp>
 #include <xqilla/exceptions/FunctionException.hpp>
 #include <xqilla/exceptions/IllegalArgumentException.hpp>
 #include <xqilla/exceptions/XPath2ErrorException.hpp>
@@ -111,10 +111,10 @@ Sequence AggregateFunction::validateSequence(Sequence sequence, DynamicContext* 
           }          
         } else { 
           // we should never actually get here
-          DSLthrow(IllegalArgumentException, X("AggregateFunction::validateSequence"), X("Invalid argument to aggregate function"));
+          XQThrow(IllegalArgumentException, X("AggregateFunction::validateSequence"), X("Invalid argument to aggregate function"));
         }
       } else { // we have incompatible types
-        DSLthrow(IllegalArgumentException, X("AggregateFunction::validateSequence"), X("Invalid argument to aggregate function"));
+        XQThrow(IllegalArgumentException, X("AggregateFunction::validateSequence"), X("Invalid argument to aggregate function"));
       } 
     }
   }
@@ -126,7 +126,7 @@ Sequence AggregateFunction::validateSequence(Sequence sequence, DynamicContext* 
     stype.flags = StaticResolutionContext::NODE_TYPE;
     castedSequence = sequenceType.convertFunctionArg(firstStep, stype, context).toSequence(context);
   } catch (XPath2ErrorException &e) {
-    DSLthrow(IllegalArgumentException, X("AggregateFunction::validateSequence"), X("Invalid argument to aggregate function"));    
+    XQThrow(IllegalArgumentException, X("AggregateFunction::validateSequence"), X("Invalid argument to aggregate function"));    
   }
 
   return castedSequence;

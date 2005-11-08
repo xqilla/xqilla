@@ -95,7 +95,7 @@ src/utils/PrintAST.cpp \
 src/utils/XPath2NSUtils.cpp \
 src/utils/XPath2Utils.cpp \
 src/exceptions/XQillaException.cpp \
-src/exceptions/DSLException.cpp \
+src/exceptions/XQException.cpp \
 src/exceptions/InvalidLexicalSpaceException.hpp \
 src/exceptions/MiscException.hpp \
 src/functions/FuncFactory.cpp \
@@ -383,7 +383,8 @@ src/lexer/flex.skl \
 src/lexer/xquery.l \
 src/lexer/XPath2Lexer.lex \
 src/parser/xquery.y \
-src/parser/XPath2Parser.y
+src/parser/XPath2Parser.y \
+LICENSE
 
 xqilla_SOURCES = \
 src/samples/xqilla/xqilla.cpp

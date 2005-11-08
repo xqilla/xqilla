@@ -69,7 +69,7 @@ Sequence FunctionDoc::collapseTreeInternal(DynamicContext* context, int flags) c
   try {
     context->getItemFactory()->createAnyURI(uri, context);
   } catch(XPath2ErrorException &e) {
-    DSLthrow(FunctionException, X("FunctionDoc::collapseTreeInternal"), X("Invalid argument to fn:doc function"));
+    XQThrow(FunctionException, X("FunctionDoc::collapseTreeInternal"), X("Invalid argument to fn:doc function"));
   }
 
   try {
@@ -77,7 +77,7 @@ Sequence FunctionDoc::collapseTreeInternal(DynamicContext* context, int flags) c
   } 
   //TODO:  once DocumentCacheImpl can throw different errors, we should be able to throw the correct corresponding error messages.
   catch(XMLParseException &e) {
-    DSLthrow(FunctionException, X("FunctionDoc::collapseTreeInternal"), e.getError());
+    XQThrow(FunctionException, X("FunctionDoc::collapseTreeInternal"), e.getError());
   }
 	return Sequence(context->getMemoryManager());
 }

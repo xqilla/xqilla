@@ -59,11 +59,11 @@ Sequence FunctionCompare::collapseTreeInternal(DynamicContext* context, int flag
         try {
             context->getItemFactory()->createAnyURI(collName, context);
         } catch(XPath2ErrorException &e) {
-            DSLthrow(FunctionException, X("FunctionCompare::collapseTreeInternal"), X("Invalid argument to compare function"));  
+            XQThrow(FunctionException, X("FunctionCompare::collapseTreeInternal"), X("Invalid argument to compare function"));  
         }
         collation = context->getCollation(collName);
         if(collation == NULL)
-            DSLthrow(FunctionException,X("FunctionCompare::collapseTreeInternal"),X("Collation object is not available"));
+            XQThrow(FunctionException,X("FunctionCompare::collapseTreeInternal"),X("Collation object is not available"));
     }
     else
         collation = context->getDefaultCollation();

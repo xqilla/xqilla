@@ -59,7 +59,7 @@ Sequence FunctionString::collapseTreeInternal(DynamicContext* context, int flags
 	if(getNumArgs() == 0) {
 		item = context->getContextItem();
     if(item == NULLRCP) {
-      DSLthrow(FunctionException, X("FunctionString::collapseTreeInternal"),
+      XQThrow(FunctionException, X("FunctionString::collapseTreeInternal"),
                X("Undefined context item in fn:string [err:FONC0001]"));
     }
   }

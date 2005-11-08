@@ -49,7 +49,7 @@ ATQNameOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* v
   else {
     uri = context->getUriBoundToPrefix(prefix);
     if (uri == 0) {
-       DSLthrow(IllegalArgumentException, X("ATQNameOrDerivedImpl::ATQNameOrDerivedImpl"),X("No namespace for prefix"));
+       XQThrow(IllegalArgumentException, X("ATQNameOrDerivedImpl::ATQNameOrDerivedImpl"),X("No namespace for prefix"));
     }
   }
 
@@ -150,7 +150,7 @@ const XMLCh* ATQNameOrDerivedImpl::asLexicalString(const DynamicContext* context
   const XMLCh* prefix;
   if(this->_uri == 0 || XPath2Utils::equals(_uri, XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString)) {
     if(context->getDefaultElementAndTypeNS() != 0) {
-      DSLthrow(NamespaceLookupException,X("ATQNameOrDerivedImpl::asLexicalString"), X("Default namespace is defined: casting a QName that has no namespace is ambiguous"));
+      XQThrow(NamespaceLookupException,X("ATQNameOrDerivedImpl::asLexicalString"), X("Default namespace is defined: casting a QName that has no namespace is ambiguous"));
     }
     buffer.set(_name);
   } 
@@ -165,7 +165,7 @@ const XMLCh* ATQNameOrDerivedImpl::asLexicalString(const DynamicContext* context
       msg.set(X("No prefix defined for namespace '"));
       msg.append(_uri);
       msg.append(X("'"));
-      DSLthrow(NamespaceLookupException,X("ATQNameOrDerivedImpl::asLexicalString"), msg.getRawBuffer());
+      XQThrow(NamespaceLookupException,X("ATQNameOrDerivedImpl::asLexicalString"), msg.getRawBuffer());
     }
     buffer.set(prefix);
     buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chColon);
@@ -178,7 +178,7 @@ const XMLCh* ATQNameOrDerivedImpl::asLexicalString(const DynamicContext* context
    * false otherwise */
 bool ATQNameOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const {
   if(this->getPrimitiveTypeIndex() != target->getPrimitiveTypeIndex()) {
-    DSLthrow(IllegalArgumentException,X("ATQNameOrDerivedImpl::equals"), X("Equality operator for given types not supported"));
+    XQThrow(IllegalArgumentException,X("ATQNameOrDerivedImpl::equals"), X("Equality operator for given types not supported"));
   }
 
   return XPath2Utils::equals(((ATQNameOrDerivedImpl*)(const AnyAtomicType*)target)->_name, _name) &&

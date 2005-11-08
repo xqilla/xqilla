@@ -51,17 +51,17 @@ Sequence XQValidate::collapseTreeInternal(DynamicContext* context, int flags) co
   const Item::Ptr second = toBeValidated.next(context);
 
   if(first == NULLRCP || second != NULLRCP || !first->isNode())
-    DSLthrow(FunctionException,X("XQValidate::collapseTreeInternal"), X("The expression to be validated must evaluate to exactly one document or element node [err:XQ0030]"));
+    XQThrow(FunctionException,X("XQValidate::collapseTreeInternal"), X("The expression to be validated must evaluate to exactly one document or element node [err:XQ0030]"));
 
   Node::Ptr node = (Node::Ptr)first;
   if(node->dmNodeKind() != Node::element_string &&
      node->dmNodeKind() != Node::document_string)
-    DSLthrow(FunctionException,X("XQValidate::collapseTreeInternal"), X("The expression to be validated must evaluate to exactly one document or element node [err:XQ0030]"));
+    XQThrow(FunctionException,X("XQValidate::collapseTreeInternal"), X("The expression to be validated must evaluate to exactly one document or element node [err:XQ0030]"));
 
   // perform validation on this item
   Node::Ptr validatedElt = context->validate(node, _validationMode);
   if(validatedElt.isNull())
-    DSLthrow(FunctionException,X("XQValidate::collapseTreeInternal"), X("Unexpected error while validating"));
+    XQThrow(FunctionException,X("XQValidate::collapseTreeInternal"), X("Unexpected error while validating"));
 
   return Sequence(validatedElt, context->getMemoryManager());
 }

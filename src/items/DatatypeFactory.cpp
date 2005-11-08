@@ -44,7 +44,7 @@ AnyAtomicType::Ptr DatatypeFactory::createInstance(const XMLCh* value,
   try {
     fBaseValidator->validate(value, 0, context->getMemoryManager());
   } catch (XERCES_CPP_NAMESPACE_QUALIFIER XMLException &e) {
-    DSLthrow(InvalidLexicalSpaceException, X("DatatypeFactory::createInstance"), e.getMessage());
+    XQThrow(InvalidLexicalSpaceException, X("DatatypeFactory::createInstance"), e.getMessage());
   }
 
   return createInstanceNoCheck(getPrimitiveTypeURI(), getPrimitiveTypeName(), value, context);
@@ -65,13 +65,13 @@ AnyAtomicType::Ptr DatatypeFactory::createInstance(const XMLCh* typeURI,
     buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chColon);
     buf.append(typeName);
     buf.append(X(" not found"));
-    DSLthrow(TypeNotFoundException, X("DatatypeFactoryTemplate::createInstance"), buf.getRawBuffer());
+    XQThrow(TypeNotFoundException, X("DatatypeFactoryTemplate::createInstance"), buf.getRawBuffer());
   }
 
   try {
     validator->validate(value, 0, context->getMemoryManager());
   } catch (XERCES_CPP_NAMESPACE_QUALIFIER XMLException &e) {
-    DSLthrow(InvalidLexicalSpaceException, X("DatatypeFactory::createInstance"), e.getMessage());
+    XQThrow(InvalidLexicalSpaceException, X("DatatypeFactory::createInstance"), e.getMessage());
   }
 
   return createInstanceNoCheck(typeURI, typeName, value, context);
@@ -103,7 +103,7 @@ bool DatatypeFactory::checkInstance(const XMLCh* typeURI,
     buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chColon);
     buf.append(typeName);
     buf.append(X(" not found"));
-    DSLthrow(TypeNotFoundException, X("DatatypeFactoryTemplate::createInstance"), buf.getRawBuffer());
+    XQThrow(TypeNotFoundException, X("DatatypeFactoryTemplate::createInstance"), buf.getRawBuffer());
   }
 
   try {

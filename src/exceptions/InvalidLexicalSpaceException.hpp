@@ -24,15 +24,15 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 
-#include <xqilla/exceptions/DSLException.hpp>
+#include <xqilla/exceptions/XQException.hpp>
 #include <xqilla/utils/XStr.hpp>
 
-class XQILLA_API InvalidLexicalSpaceException : public DSLException
+class XQILLA_API InvalidLexicalSpaceException : public XQException
 {
 public:
   
   InvalidLexicalSpaceException(const XMLCh *functionName, const XMLCh *reason, const char *file, int line)
-    : DSLException(X("InvalidLexicalSpaceException"), functionName, reason, file, line) {};
+    : XQException(X("InvalidLexicalSpaceException"), functionName, reason, file, line) {};
 };
 
 #endif // _INVALIDLEXICALSPACEEXCEPTION_HPP

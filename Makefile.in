@@ -193,7 +193,7 @@ src/utils/PrintAST.cpp \
 src/utils/XPath2NSUtils.cpp \
 src/utils/XPath2Utils.cpp \
 src/exceptions/XQillaException.cpp \
-src/exceptions/DSLException.cpp \
+src/exceptions/XQException.cpp \
 src/exceptions/InvalidLexicalSpaceException.hpp \
 src/exceptions/MiscException.hpp \
 src/functions/FuncFactory.cpp \
@@ -482,7 +482,8 @@ src/lexer/flex.skl \
 src/lexer/xquery.l \
 src/lexer/XPath2Lexer.lex \
 src/parser/xquery.y \
-src/parser/XPath2Parser.y
+src/parser/XPath2Parser.y \
+LICENSE
 
 
 xqilla_SOURCES = \
@@ -589,7 +590,7 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	UTF8Str.lo XMLChCompare.lo XStr.lo ContextUtils.lo Date.lo \
 	DateUtils.lo NumUtils.lo XQillaPlatformUtils.lo PrintAST.lo \
 	XPath2NSUtils.lo XPath2Utils.lo XQillaException.lo \
-	DSLException.lo FuncFactory.lo FunctionLookupImpl.lo \
+	XQException.lo FuncFactory.lo FunctionLookupImpl.lo \
 	FunctionAbs.lo FunctionAvg.lo FunctionBaseURI.lo \
 	FunctionBoolean.lo FunctionCeiling.lo FunctionCodepointEqual.lo \
 	FunctionCodepointsToString.lo FunctionCollection.lo \
@@ -777,7 +778,6 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/ConstantFoldingFunction.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/ContextUtils.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/DOMTreeErrorReporter.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/DSLException.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/DatatypeFactory.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/DatatypeLookup.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/DatatypeTester.Po ./$(DEPDIR)/Date.Plo \
@@ -965,7 +965,8 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/XQDOMConstructor.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XQDebugHook.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XQDynamicContextImpl.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/XQEvaluator.Plo ./$(DEPDIR)/XQFLWOR.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/XQEvaluator.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/XQException.Plo ./$(DEPDIR)/XQFLWOR.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XQFunction.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XQFunctionCall.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XQGlobalVariable.Plo \
@@ -1188,7 +1189,7 @@ PrintAST.lo: src/utils/PrintAST.cpp
 XPath2NSUtils.lo: src/utils/XPath2NSUtils.cpp
 XPath2Utils.lo: src/utils/XPath2Utils.cpp
 XQillaException.lo: src/exceptions/XQillaException.cpp
-DSLException.lo: src/exceptions/DSLException.cpp
+XQException.lo: src/exceptions/XQException.cpp
 FuncFactory.lo: src/functions/FuncFactory.cpp
 FunctionLookupImpl.lo: src/functions/FunctionLookupImpl.cpp
 FunctionAbs.lo: src/functions/FunctionAbs.cpp
@@ -1605,7 +1606,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ConstantFoldingFunction.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ContextUtils.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DOMTreeErrorReporter.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DSLException.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DatatypeFactory.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DatatypeLookup.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DatatypeTester.Po@am__quote@
@@ -1810,6 +1810,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQDebugHook.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQDynamicContextImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQEvaluator.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQException.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQFLWOR.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQFunction.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQFunctionCall.Plo@am__quote@
@@ -3889,23 +3890,23 @@ XQillaException.lo: src/exceptions/XQillaException.cpp
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQillaException.lo `test -f 'src/exceptions/XQillaException.cpp' || echo '$(srcdir)/'`src/exceptions/XQillaException.cpp
 
-DSLException.o: src/exceptions/DSLException.cpp
-@AMDEP_TRUE@	source='src/exceptions/DSLException.cpp' object='DSLException.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/DSLException.Po' tmpdepfile='$(DEPDIR)/DSLException.TPo' @AMDEPBACKSLASH@
+XQException.o: src/exceptions/XQException.cpp
+@AMDEP_TRUE@	source='src/exceptions/XQException.cpp' object='XQException.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQException.Po' tmpdepfile='$(DEPDIR)/XQException.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DSLException.o `test -f 'src/exceptions/DSLException.cpp' || echo '$(srcdir)/'`src/exceptions/DSLException.cpp
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQException.o `test -f 'src/exceptions/XQException.cpp' || echo '$(srcdir)/'`src/exceptions/XQException.cpp
 
-DSLException.obj: src/exceptions/DSLException.cpp
-@AMDEP_TRUE@	source='src/exceptions/DSLException.cpp' object='DSLException.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/DSLException.Po' tmpdepfile='$(DEPDIR)/DSLException.TPo' @AMDEPBACKSLASH@
+XQException.obj: src/exceptions/XQException.cpp
+@AMDEP_TRUE@	source='src/exceptions/XQException.cpp' object='XQException.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQException.Po' tmpdepfile='$(DEPDIR)/XQException.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DSLException.obj `cygpath -w src/exceptions/DSLException.cpp`
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQException.obj `cygpath -w src/exceptions/XQException.cpp`
 
-DSLException.lo: src/exceptions/DSLException.cpp
-@AMDEP_TRUE@	source='src/exceptions/DSLException.cpp' object='DSLException.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/DSLException.Plo' tmpdepfile='$(DEPDIR)/DSLException.TPlo' @AMDEPBACKSLASH@
+XQException.lo: src/exceptions/XQException.cpp
+@AMDEP_TRUE@	source='src/exceptions/XQException.cpp' object='XQException.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/XQException.Plo' tmpdepfile='$(DEPDIR)/XQException.TPlo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DSLException.lo `test -f 'src/exceptions/DSLException.cpp' || echo '$(srcdir)/'`src/exceptions/DSLException.cpp
+	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQException.lo `test -f 'src/exceptions/XQException.cpp' || echo '$(srcdir)/'`src/exceptions/XQException.cpp
 
 FuncFactory.o: src/functions/FuncFactory.cpp
 @AMDEP_TRUE@	source='src/functions/FuncFactory.cpp' object='FuncFactory.o' libtool=no @AMDEPBACKSLASH@

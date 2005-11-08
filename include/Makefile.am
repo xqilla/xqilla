@@ -74,7 +74,6 @@ xqilla/dom-api/impl/XQillaNSResolverImpl.hpp \
 xqilla/exceptions/XQillaException.hpp \
 xqilla/exceptions/ContextException.hpp \
 xqilla/exceptions/ASTException.hpp \
-xqilla/exceptions/DSLException.hpp \
 xqilla/exceptions/DynamicErrorException.hpp \
 xqilla/exceptions/FunctionException.hpp \
 xqilla/exceptions/IllegalArgumentException.hpp \

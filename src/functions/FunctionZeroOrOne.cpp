@@ -65,7 +65,7 @@ Item::Ptr FunctionZeroOrOne::ZeroOrOneResult::next(DynamicContext *context)
   ++_argNo;
 
   if(_argNo == 2 && result != NULLRCP) {
-    DSLthrow(FunctionException, X("FunctionZeroOrOne::ZeroOrOneResult::next"),X("fn:zero-or-one called with a sequence containing more than one item [err:FORG0003]"));
+    XQThrow(FunctionException, X("FunctionZeroOrOne::ZeroOrOneResult::next"),X("fn:zero-or-one called with a sequence containing more than one item [err:FORG0003]"));
   }
 
   return result;

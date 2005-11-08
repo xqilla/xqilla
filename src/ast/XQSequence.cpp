@@ -41,7 +41,7 @@
 inline ItemConstructor *itemToItemConstructor(const Item::Ptr &item, DynamicContext *context, XPath2MemoryManager *memMgr)
 {
   if(item->isNode()) {
-    DSLthrow(IllegalArgumentException, X("itemToItemConstructor"), X("Cannot create an ItemConstructor for a Node"));
+    XQThrow(IllegalArgumentException, X("itemToItemConstructor"), X("Cannot create an ItemConstructor for a Node"));
   }
   else {
     const AnyAtomicType *atom = (const AnyAtomicType*)(const Item*)item;

@@ -95,7 +95,7 @@ AnyAtomicType::Ptr ArithmeticOperator::getArgument(unsigned int index, DynamicCo
     Item::Ptr second = arg_result.next(context);
 
     if(first != NULLRCP && second != NULLRCP) {
-      DSLthrow(XPath2TypeCastException,X("ArithmeticOperator::getArgument"),
+      XQThrow(XPath2TypeCastException,X("ArithmeticOperator::getArgument"),
                X("A parameter of the operator is not an empty sequence or a single atomic value [err:XPTY0004]"));
     }
   }
@@ -112,7 +112,7 @@ AnyAtomicType::Ptr ArithmeticOperator::getArgument(unsigned int index, DynamicCo
       }
     }
     else {
-      DSLthrow(XPath2TypeCastException,X("ArithmeticOperator::getArgument"), X("A parameter of the operator is not an atomic value"));
+      XQThrow(XPath2TypeCastException,X("ArithmeticOperator::getArgument"), X("A parameter of the operator is not an atomic value"));
     }
   }
 

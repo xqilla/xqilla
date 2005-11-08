@@ -82,7 +82,7 @@ Sequence FunctionResolveQName::collapseTreeInternal(DynamicContext* context, int
   }
 
   if(!noPrefix && namespaceURI == 0) {
-    DSLthrow(FunctionException, X("FunctionResolveQName::collapseTreeInternal"),X("no namespace found for prefix"));
+    XQThrow(FunctionException, X("FunctionResolveQName::collapseTreeInternal"),X("no namespace found for prefix"));
   }
 
   Sequence result(context->getItemFactory()->createQName(namespaceURI, prefix, localName, context), memMgr);

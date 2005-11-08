@@ -362,7 +362,7 @@ const XMLCh* XQContextImpl::getUriBoundToPrefix(const XMLCh* prefix) const
 
 	if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(uri) == 0 && XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(prefix) > 0){
 		const XMLCh* msg = XPath2Utils::concatStrings(X("No namespace for prefix \'"), prefix, X("\'"), getMemoryManager());
-		DSLthrow(NamespaceLookupException, X("XQContextImpl::getUriBoundToPrefix"), msg);
+		XQThrow(NamespaceLookupException, X("XQContextImpl::getUriBoundToPrefix"), msg);
 	}
 
 	return uri;
@@ -457,7 +457,7 @@ Collation* XQContextImpl::getCollation(const XMLCh* URI) const
 
   const XMLCh* msg = XPath2Utils::concatStrings(X("The requested collation ('"), URI, X("') is not defined [err:FOCH0002]"), getMemoryManager());
 
-  DSLthrow(ContextException, X("XQContextImpl::getCollation"), msg);
+  XQThrow(ContextException, X("XQContextImpl::getCollation"), msg);
   return NULL;
 }
 
@@ -481,7 +481,7 @@ ASTNode* XQContextImpl::lookUpFunction(const XMLCh* prefix, const XMLCh* name, V
 		if(uri == 0) {
 
 			const XMLCh* msg = XPath2Utils::concatStrings(X("The prefix '"), prefix , X("' is not bound to a uri in the current context"), getMemoryManager());
-			DSLthrow(NamespaceLookupException, X("XQContextImpl::lookUpFunction"), msg);
+			XQThrow(NamespaceLookupException, X("XQContextImpl::lookUpFunction"), msg);
 		}
 	}
 
@@ -548,7 +548,7 @@ Sequence XQContextImpl::resolveDocument(const XMLCh* uri)
       errMsg.append(uri);
       errMsg.append(X(". Error message: "));
       errMsg.append(e.getError());
-      DSLthrow(XMLParseException,X("XQContextImpl::resolveDocument"), errMsg.getRawBuffer());
+      XQThrow(XMLParseException,X("XQContextImpl::resolveDocument"), errMsg.getRawBuffer());
     }
 
     if(doc != NULLRCP) {
@@ -558,7 +558,7 @@ Sequence XQContextImpl::resolveDocument(const XMLCh* uri)
       XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer errMsg;
       errMsg.set(X("Error retrieving resource: "));
       errMsg.append(uri);
-      DSLthrow(XMLParseException,X("XQContextImpl::resolveDocument"), errMsg.getRawBuffer());
+      XQThrow(XMLParseException,X("XQContextImpl::resolveDocument"), errMsg.getRawBuffer());
     }
   }
 
@@ -593,7 +593,7 @@ Sequence XQContextImpl::resolveCollection(const XMLCh* uri)
       XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer errMsg;
       errMsg.set(X("Error retrieving resource: "));
       errMsg.append(uri);
-      DSLthrow(XMLParseException,X("XQContextImpl::resolveDocument"), errMsg.getRawBuffer());
+      XQThrow(XMLParseException,X("XQContextImpl::resolveDocument"), errMsg.getRawBuffer());
     }
   }
 

@@ -117,7 +117,7 @@ const XMLCh* ATBase64BinaryOrDerivedImpl::asString(const DynamicContext* context
 
 bool ATBase64BinaryOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const {
   if(this->getPrimitiveTypeIndex() != target->getPrimitiveTypeIndex()) {
-    DSLthrow(IllegalArgumentException,X("ATBase64BinaryOrDerivedImpl::equals"), X("Equality operator for given types not supported"));
+    XQThrow(IllegalArgumentException,X("ATBase64BinaryOrDerivedImpl::equals"), X("Equality operator for given types not supported"));
   }
   return XPath2Utils::equals(target->asString(context), _base64Data);  
 }

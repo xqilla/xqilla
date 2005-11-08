@@ -65,7 +65,7 @@ Item::Ptr FunctionOneOrMore::OneOrMoreResult::next(DynamicContext *context)
   ++_argNo;
 
   if(_argNo == 1 && result == NULLRCP) {
-    DSLthrow(FunctionException, X("FunctionOneOrMore::OneOrMoreResult::next"),X("fn:one-or-more called with a sequence containing no items [err:FORG0004]"));
+    XQThrow(FunctionException, X("FunctionOneOrMore::OneOrMoreResult::next"),X("fn:one-or-more called with a sequence containing no items [err:FORG0004]"));
   }
 
   return result;

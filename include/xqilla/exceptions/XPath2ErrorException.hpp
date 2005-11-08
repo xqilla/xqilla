@@ -24,16 +24,16 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 
-#include <xqilla/exceptions/DSLException.hpp>
+#include <xqilla/exceptions/XQException.hpp>
 #include <xqilla/utils/XStr.hpp>
 
 /** exception class for data items */
-class XQILLA_API XPath2ErrorException : public DSLException
+class XQILLA_API XPath2ErrorException : public XQException
 {
 public:
   
   XPath2ErrorException(const XMLCh* const functionName, const XMLCh* const reason, const char *file, int line)
-    : DSLException(X("XPath2ErrorException"), functionName, reason, file, line) {};
+    : XQException(X("XPath2ErrorException"), functionName, reason, file, line) {};
 };
 
 #endif // _XPATH2ERROREXCEPTON_HPP

@@ -196,7 +196,7 @@ XQRemoteDebugger::XQRemoteDebugger(const XMLCh* lpchHostName, XPath2MemoryManage
 
     // throw an exception also if there is no support for HTTP client
     if(XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgNetAccessor==NULL)
-        throw XQException(X("Xerces-C++ has not been compiled with HTTP support"),NULL,0,0);
+        XQSimpleThrow(X("Xerces-C++ has not been compiled with HTTP support"),NULL,0,0);
 
     m_backMappingInfo=new (memMgr) XERCES_CPP_NAMESPACE_QUALIFIER ValueHashTableOf<unsigned int>(197, new (memMgr) XERCES_CPP_NAMESPACE_QUALIFIER HashPtr(), memMgr);
 }
@@ -282,7 +282,7 @@ void XQRemoteDebugger::SendNotification(DynamicContext* context, XERCES_CPP_NAME
         if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::equals((const char*)data,"GO"))
     		m_bEnableComm=false;
         else if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::equals((const char*)data,"STOP"))
-    		throw XQException(X("Debugging aborted"),m_szLastFileSeen,m_nLastLineSeen,0);
+    		XQSimpleThrow(X("Debugging aborted"),m_szLastFileSeen,m_nLastLineSeen,0);
         else if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::equals((const char*)data,"GET_VARIABLES_IN_SCOPE"))
         {
 	        VariableStore* varStore=context->getVariableStore();
@@ -371,7 +371,7 @@ void XQRemoteDebugger::SendNotification(DynamicContext* context, XERCES_CPP_NAME
                 static const unsigned int footerLen=XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(footer);
                 m_messageBuffer.writeChars((const XMLByte*)footer,footerLen,&m_messageFormatter);
             }
-            catch(DSLException& e)
+            catch(XQException& e)
             {
                 static const char* header="<xqe:error xmlns:xqe=\"http://www.stylusstudio.com/XQEngine\">";
                 static const unsigned int headerLen=XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(header);

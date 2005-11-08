@@ -24,16 +24,16 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 
-#include <xqilla/exceptions/DSLException.hpp>
+#include <xqilla/exceptions/XQException.hpp>
 #include <xqilla/utils/XStr.hpp>
 
 /** exception class for parsing XML */
-class XQILLA_API XMLParseException : public DSLException
+class XQILLA_API XMLParseException : public XQException
 {
 public:
 
   XMLParseException(const XMLCh* const functionName, const XMLCh* const reason, const char *file, int line)
-    : DSLException(X("XMLParseException"), functionName, reason, file, line) {};
+    : XQException(X("XMLParseException"), functionName, reason, file, line) {};
 };
 
 #endif // _XMLPARSEEXCEPTION_HPP

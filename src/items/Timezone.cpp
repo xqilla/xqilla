@@ -78,10 +78,10 @@ void Timezone::init(int seconds)
 void Timezone::validate() const {
   // Check that we have a valid timezone
   if ( _hh > g_maxHour || (_hh == g_maxHour && _mm > 0) || _hh < g_minHour || (_hh == g_minHour && _mm < 0)) {
-    DSLthrow(XPath2TypeCastException ,X("Timezone::Timezone"), X("Timezone outside of valid range created."));
+    XQThrow(XPath2TypeCastException ,X("Timezone::Timezone"), X("Timezone outside of valid range created."));
   }
   if ( (_hh > 0 && _mm < 0) || (_hh < 0 && _mm > 0)) {
-    DSLthrow(XPath2TypeCastException ,X("Timezone::Timezone"), X("Invalid timezone."));
+    XQThrow(XPath2TypeCastException ,X("Timezone::Timezone"), X("Invalid timezone."));
   }
 }
 

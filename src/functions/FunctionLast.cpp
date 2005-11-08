@@ -48,7 +48,7 @@ Sequence FunctionLast::collapseTreeInternal(DynamicContext* context, int flags) 
   XPath2MemoryManager* memMgr = context->getMemoryManager();
 
   if(context->getContextItem()==NULLRCP)
-    DSLthrow(FunctionException,X("FunctionPosition::collapseTreeInternal"), X("Undefined context item in fn:last [err:FONC0001]"));
+    XQThrow(FunctionException,X("FunctionPosition::collapseTreeInternal"), X("Undefined context item in fn:last [err:FONC0001]"));
   return Sequence(context->getItemFactory()->createInteger((long)context->getContextSize(), context), memMgr);
 }
 

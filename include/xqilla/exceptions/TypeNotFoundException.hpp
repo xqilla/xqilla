@@ -18,14 +18,14 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 
-#include <xqilla/exceptions/DSLException.hpp>
+#include <xqilla/exceptions/XQException.hpp>
 
-class XQILLA_API TypeNotFoundException : public DSLException
+class XQILLA_API TypeNotFoundException : public XQException
 {
 public:
   
   TypeNotFoundException(const XMLCh *functionName, const XMLCh *reason, const char *file, int line)
-    : DSLException(X("TypeNotFoundException"), functionName, reason, file, line) {};
+    : XQException(X("TypeNotFoundException"), functionName, reason, file, line) {};
 };
 
 #endif // _TYPENOTFOUNDEXCEPTION_HPP

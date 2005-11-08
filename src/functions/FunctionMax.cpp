@@ -57,7 +57,7 @@ Sequence FunctionMax::collapseTreeInternal(DynamicContext* context, int flags) c
     try {
         sequence = validateSequence(getParamNumber(1,context,ASTNode::UNORDERED), context);
     } catch (IllegalArgumentException &e) {
-        DSLthrow(IllegalArgumentException, X("FunctionMax::collapseTreeInternal"), X("Invalid argument to fn:max() function"));
+        XQThrow(IllegalArgumentException, X("FunctionMax::collapseTreeInternal"), X("Invalid argument to fn:max() function"));
     }
 
     // Return the empty sequence if the sequence is empty
@@ -74,11 +74,11 @@ Sequence FunctionMax::collapseTreeInternal(DynamicContext* context, int flags) c
         try {
             context->getItemFactory()->createAnyURI(collName, context);
         } catch(XPath2ErrorException &e) {
-            DSLthrow(FunctionException, X("FunctionMax::collapseTreeInternal"), X("Invalid collationURI"));  
+            XQThrow(FunctionException, X("FunctionMax::collapseTreeInternal"), X("Invalid collationURI"));  
         }
         collation=context->getCollation(collName);
         if (collation==NULL)
-            DSLthrow(FunctionException,X("FunctionMax::collapseTreeInternal"),X("Collation object is not available"));
+            XQThrow(FunctionException,X("FunctionMax::collapseTreeInternal"),X("Collation object is not available"));
     }
     else
         collation=context->getDefaultCollation();
@@ -104,9 +104,9 @@ Sequence FunctionMax::collapseTreeInternal(DynamicContext* context, int flags) c
             try {
                 greater = (const ATBooleanOrDerived::Ptr )gt.collapseTree(context).next(context);
             } catch (IllegalArgumentException &e) {
-                DSLthrow(IllegalArgumentException, X("FunctionMax::collapseTreeInternal"), X("Invalid argument to fn:max() function"));
+                XQThrow(IllegalArgumentException, X("FunctionMax::collapseTreeInternal"), X("Invalid argument to fn:max() function"));
             } catch (XPath2ErrorException &e) {
-                DSLthrow(IllegalArgumentException, X("FunctionMax::collapseTreeInternal"), X("Invalid argument to fn:max() function"));
+                XQThrow(IllegalArgumentException, X("FunctionMax::collapseTreeInternal"), X("Invalid argument to fn:max() function"));
             }
             if(((const ATBooleanOrDerived*)greater)->isTrue()) {
               maxItem = *i;

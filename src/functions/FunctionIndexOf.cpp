@@ -89,11 +89,11 @@ Sequence FunctionIndexOf::collapseTreeInternal(DynamicContext* context, int flag
     try {
       context->getItemFactory()->createAnyURI(collName, context);
     } catch(XPath2ErrorException &e) {
-      DSLthrow(FunctionException, X("FunctionIndexOf::collapseTreeInternal"), X("Invalid collationURI"));  
+      XQThrow(FunctionException, X("FunctionIndexOf::collapseTreeInternal"), X("Invalid collationURI"));  
     }
 	  collation=context->getCollation(collName);
     if (collation==NULL)
-      DSLthrow(FunctionException, X("FunctionIndexOf::collapseTreeInternal"), X("Collation object is not available"));
+      XQThrow(FunctionException, X("FunctionIndexOf::collapseTreeInternal"), X("Collation object is not available"));
   }
   else
     collation = context->getDefaultCollation();
