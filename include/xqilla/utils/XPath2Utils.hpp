@@ -79,6 +79,8 @@ public:
 
   static const XMLCh* toCollapsedWS(const XMLCh* const target, XPath2MemoryManager* memMgr);
 
+  static const XMLCh* normalizeEOL(const XMLCh* const src, XPath2MemoryManager* memMgr);
+
   /*** 
    * Extract the individual values from a list of whitespace separated 
    * values (values) and puts them into valList. 

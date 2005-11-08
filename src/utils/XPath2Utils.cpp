@@ -210,6 +210,29 @@ const XMLCh* XPath2Utils::toCollapsedWS(const XMLCh* const target, XPath2MemoryM
   return retval;
 }
 
+const XMLCh* XPath2Utils::normalizeEOL(const XMLCh* const src, XPath2MemoryManager* memMgr) {
+    int len=XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(src);
+	int j=0;
+    XMLCh* dst=(XMLCh*)memMgr->allocate((len+1)*sizeof(XMLCh*));
+    // A.2.3 End-of-Line Handling
+    // For [XML 1.0] processing, all of the following must be translated to a single #xA character:
+    //  1. the two-character sequence #xD #xA
+    //  2. any #xD character that is not immediately followed by #xA.
+	for(int i=0;i<len;i++)
+	{
+        if (src[i]== XERCES_CPP_NAMESPACE_QUALIFIER chCR && i<len && src[i+1]== XERCES_CPP_NAMESPACE_QUALIFIER chLF)
+        {
+			dst[j++]=XERCES_CPP_NAMESPACE_QUALIFIER chLF;
+            i++;
+        }
+        else if(src[i]== XERCES_CPP_NAMESPACE_QUALIFIER chCR)
+			dst[j++]=XERCES_CPP_NAMESPACE_QUALIFIER chLF;
+        else
+            dst[j++]=src[i];
+    }
+	dst[j++]=0;
+    return dst;
+}
 
 std::vector<const XMLCh*> XPath2Utils::getVal(const XMLCh* values, XPath2MemoryManager* memMgr){
 
