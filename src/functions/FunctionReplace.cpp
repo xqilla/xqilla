@@ -66,7 +66,7 @@ Sequence FunctionReplace::collapseTreeInternal(DynamicContext* context, int flag
        options[i]!= XERCES_CPP_NAMESPACE_QUALIFIER chLatin_m &&
        options[i]!= XERCES_CPP_NAMESPACE_QUALIFIER chLatin_i &&
        options[i]!= XERCES_CPP_NAMESPACE_QUALIFIER chLatin_x)
-      DSLthrow(FunctionException, X("FunctionReplace::collapseTreeInternal"),X("Invalid regular expression flags"));  
+      XQThrow(FunctionException, X("FunctionReplace::collapseTreeInternal"),X("Invalid regular expression flags"));  
   }
 
   const XMLCh* result=NULL;
@@ -75,10 +75,10 @@ Sequence FunctionReplace::collapseTreeInternal(DynamicContext* context, int flag
     XERCES_CPP_NAMESPACE_QUALIFIER RegularExpression regEx(pattern, options, memMgr);
     result = regEx.replace(input, replacement);
   } catch (XERCES_CPP_NAMESPACE_QUALIFIER XMLException &e){ 
-    DSLthrow(FunctionException, X("FunctionReplace::collapseTreeInternal"), e.getMessage());  
+    XQThrow(FunctionException, X("FunctionReplace::collapseTreeInternal"), e.getMessage());  
   }
   catch(...) {
-    DSLthrow(FunctionException, X("FunctionReplace::collapseTreeInternal"),X("Invalid regular expression"));
+    XQThrow(FunctionException, X("FunctionReplace::collapseTreeInternal"),X("Invalid regular expression"));
   }  
 
   return Sequence(context->getItemFactory()->createString(result, context), memMgr);

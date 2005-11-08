@@ -16,7 +16,7 @@
 #include "../config/xqilla_config.h"
 #include <xqilla/ast/NumericFunction.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
-#include <xqilla/exceptions/DSLException.hpp>
+#include <xqilla/exceptions/XQException.hpp>
 #include <xqilla/exceptions/FunctionException.hpp>
 #include <xqilla/items/AnyAtomicType.hpp>
 #include <xqilla/items/ATFloatOrDerived.hpp>
@@ -42,7 +42,7 @@ Result NumericFunction::getParamNumber(unsigned int paramNumber, unsigned int si
   } else  if (arg.first()->isAtomicValue() && ((const AnyAtomicType::Ptr)arg.first())->isNumericValue()) {
     return arg;
   } else {
-    DSLthrow(FunctionException,X("NumericFunction::getParamNumber"), X("Non-numeric argument in numeric function."));
+    XQThrow(FunctionException,X("NumericFunction::getParamNumber"), X("Non-numeric argument in numeric function."));
   }
 }
 

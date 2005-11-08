@@ -81,7 +81,7 @@ Item::Ptr XQCastAs::CastAsResult::getSingleResult(DynamicContext *context) const
     //       1. If ? is specified after the target type, the result of the cast expression is an empty sequence.
     //       2. If ? is not specified after the target type, a type error is raised [err:XPTY0004].
     if(_di->getSequenceType()->getOccurrenceIndicator() == SequenceType::EXACTLY_ONE) {
-      DSLthrow(TypeErrorException,X("XQCastAs::CastAsResult::getSingleResult"),X("The input to a non-optional cast as expression is an empty sequence [err:XPTY0004]"));
+      XQThrow(TypeErrorException,X("XQCastAs::CastAsResult::getSingleResult"),X("The input to a non-optional cast as expression is an empty sequence [err:XPTY0004]"));
     }
     else {
       return 0;
@@ -92,11 +92,11 @@ Item::Ptr XQCastAs::CastAsResult::getSingleResult(DynamicContext *context) const
 
   //    2. If the result of atomization is a sequence of more than one atomic value, a type error is raised.[err:XPTY0004]
   if(second != NULLRCP) {
-    DSLthrow(TypeErrorException,X("XQCastAs::CastAsResult::getSingleResult"),X("The input to a cast as expression is more than one atomic value [err:XPTY0004]"));
+    XQThrow(TypeErrorException,X("XQCastAs::CastAsResult::getSingleResult"),X("The input to a cast as expression is more than one atomic value [err:XPTY0004]"));
   }
 
   if(_di->getSequenceType()->getItemTestType() != SequenceType::ItemType::TEST_ATOMIC_TYPE)
-    DSLthrow(TypeErrorException,X("XQCastAs::CastAsResult::getSingleResult"),X("Cannot cast to a non atomic type"));
+    XQThrow(TypeErrorException,X("XQCastAs::CastAsResult::getSingleResult"),X("Cannot cast to a non atomic type"));
   //    4. If the result of atomization is a single atomic value, the result of the cast expression depends on the input type and the target type.
   //       The normative definition of these rules is given in [XQuery 1.0 and XPath 2.0 Functions and Operators].
   return (const Item::Ptr)((const AnyAtomicType::Ptr)first)->castAs(_di->getSequenceType()->getTypeURI(context), _di->getSequenceType()->getConstrainingType()->getName(), context);

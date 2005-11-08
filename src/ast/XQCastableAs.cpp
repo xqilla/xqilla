@@ -96,7 +96,7 @@ Item::Ptr XQCastableAs::CastableAsResult::getSingleResult(DynamicContext *contex
     }
     else {
       if(_di->getSequenceType()->getItemTestType() != SequenceType::ItemType::TEST_ATOMIC_TYPE)
-        DSLthrow(TypeErrorException,X("XQCastableAs::collapseTreeInternal"),X("Cannot cast to a non atomic type"));
+        XQThrow(TypeErrorException,X("XQCastableAs::collapseTreeInternal"),X("Cannot cast to a non atomic type"));
       //    4. If the result of atomization is a single atomic value, the result of the cast expression depends on the input type and the target type.
       //       The normative definition of these rules is given in [XQuery 1.0 and XPath 2.0 Functions and Operators].
       result = ((const AnyAtomicType::Ptr)first)->castable(_di->getSequenceType()->getTypeURI(context), _di->getSequenceType()->getConstrainingType()->getName(), context);

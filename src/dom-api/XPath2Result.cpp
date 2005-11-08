@@ -121,7 +121,7 @@ void XPath2Result::evaluate(const ASTNode *expression)
   try {
     _resultSequence = new Sequence(expression->collapseTree(_context, flags));
   }
-  catch(const DSLException &e) {
+  catch(const XQException &e) {
     if(XQillaException::getDebug()) {
       e.printDebug( X("Caught exception at Interface") );
     }    

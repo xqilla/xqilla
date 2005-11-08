@@ -54,7 +54,7 @@ Sequence FunctionSum::collapseTreeInternal(DynamicContext* context, int flags) c
   try {
     sequence = validateSequence(getParamNumber(1,context,ASTNode::UNORDERED), context);
   } catch (IllegalArgumentException &e) {
-    DSLthrow(IllegalArgumentException, X("FunctionSum::collapseTreeInternal"), X("Invalid argument to fn:sum() function"));
+    XQThrow(IllegalArgumentException, X("FunctionSum::collapseTreeInternal"), X("Invalid argument to fn:sum() function"));
   }
 
   if(sequence.isEmpty())
@@ -70,7 +70,7 @@ Sequence FunctionSum::collapseTreeInternal(DynamicContext* context, int flags) c
   if (!atom->isNumericValue() && 
       !context->isTypeOrDerivedFromType(atom->getTypeURI(), atom->getTypeName(), FunctionConstructor::XMLChXPath2DatatypesURI, ATDurationOrDerived::fgDT_DAYTIMEDURATION) &&
       !context->isTypeOrDerivedFromType(atom->getTypeURI(), atom->getTypeName(), FunctionConstructor::XMLChXPath2DatatypesURI, ATDurationOrDerived::fgDT_YEARMONTHDURATION))
-    DSLthrow(IllegalArgumentException, X("FunctionSum::collapseTreeInternal"), X("Invalid argument to fn:sum() function"));
+    XQThrow(IllegalArgumentException, X("FunctionSum::collapseTreeInternal"), X("Invalid argument to fn:sum() function"));
 
   Sequence::iterator i = sequence.begin();
   Item::Ptr sum = *i;
@@ -80,7 +80,7 @@ Sequence FunctionSum::collapseTreeInternal(DynamicContext* context, int flags) c
     try {
       sum = Plus::plus(*i, sum, context);
     } catch (IllegalArgumentException &e) {
-      DSLthrow(IllegalArgumentException, X("FunctionSum::collapseTreeInternal"), X("Invalid argument to fn:sum() function"));
+      XQThrow(IllegalArgumentException, X("FunctionSum::collapseTreeInternal"), X("Invalid argument to fn:sum() function"));
     }  
   } 
 

@@ -96,7 +96,7 @@ AnyAtomicType::Ptr ATFloatOrDerivedImpl::castAsInternal(AtomicObjectType targetI
   switch (targetIndex) {
     case DECIMAL: {
       if (_state != NUM)
-        DSLthrow(IllegalArgumentException, X("ATFloatOrDerivedImpl::castAsInternal"), X("Special values like NaN, INF or -INF cannot be cast to decimal [err:FOCA0002]"));
+        XQThrow(IllegalArgumentException, X("ATFloatOrDerivedImpl::castAsInternal"), X("Special values like NaN, INF or -INF cannot be cast to decimal [err:FOCA0002]"));
 
       if (context->isTypeOrDerivedFromType(targetURI, targetType,
                                              XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA, 
@@ -183,7 +183,7 @@ Numeric::Ptr ATFloatOrDerivedImpl::promoteTypeIfApplicable(const XMLCh* typeURI,
    * false otherwise */
 bool ATFloatOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const {
   if(!target->isNumericValue()) {
-    DSLthrow(IllegalArgumentException,X("ATFloatOrDerivedImpl::equals"), X("Equality operator for given types not supported"));
+    XQThrow(IllegalArgumentException,X("ATFloatOrDerivedImpl::equals"), X("Equality operator for given types not supported"));
   } 
 
   if(target->getPrimitiveTypeIndex() == AnyAtomicType::DECIMAL) {

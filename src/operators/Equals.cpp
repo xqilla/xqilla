@@ -44,7 +44,7 @@ Equals::Equals(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
     // take care of the special case first
     if(atom1->getPrimitiveTypeIndex() == AnyAtomicType::STRING) {
         if(atom2->getPrimitiveTypeIndex() != AnyAtomicType::STRING) {
-            DSLthrow(XPath2ErrorException,X("Equals::equals"), X("An attempt to compare a string type to a non string type has occurred"));
+            XQThrow(XPath2ErrorException,X("Equals::equals"), X("An attempt to compare a string type to a non string type has occurred"));
         }
         // if the function returns 0, then they are equal
         return (collation->compare(atom1->asString(context),atom2->asString(context))==0);

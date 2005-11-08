@@ -41,6 +41,6 @@ Item::Ptr UnaryMinus::execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicTy
   if(atom1->isNumericValue()) {
     return (const Item::Ptr)((Numeric*)(const AnyAtomicType*)atom1)->invert(context);
   } else {
-    DSLthrow(XPath2ErrorException,X("UnaryMinus::collapseTreeInternal"), X("An attempt to apply unary minus a non numeric type has occurred [err:XPTY0004]"));
+    XQThrow(XPath2ErrorException,X("UnaryMinus::collapseTreeInternal"), X("An attempt to apply unary minus a non numeric type has occurred [err:XPTY0004]"));
   }
 }

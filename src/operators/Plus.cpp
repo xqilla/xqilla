@@ -46,7 +46,7 @@ Item::Ptr Plus::plus(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::Ptr &
       return (const Item::Ptr)((Numeric*)(const AnyAtomicType*)atom1)->add((const Numeric::Ptr )atom2, context);
     }
     else {
-      DSLthrow(XPath2ErrorException,X("Plus::collapseTreeInternal"), X("An attempt to add a non numeric type to a numeric type has occurred [err:XPTY0004]"));
+      XQThrow(XPath2ErrorException,X("Plus::collapseTreeInternal"), X("An attempt to add a non numeric type to a numeric type has occurred [err:XPTY0004]"));
 		}
 	}
 
@@ -61,11 +61,11 @@ Item::Ptr Plus::plus(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::Ptr &
           else if(duration->isDayTimeDuration()) {
             return (const Item::Ptr)((ATDateOrDerived*)(const AnyAtomicType*)atom1)->addDayTimeDuration(duration, context);
           } else {
-            DSLthrow(XPath2ErrorException,X("Plus::collapseTreeInternal"), X("An invalid attempt to add to xs:date type has occurred [err:XPTY0004]"));
+            XQThrow(XPath2ErrorException,X("Plus::collapseTreeInternal"), X("An invalid attempt to add to xs:date type has occurred [err:XPTY0004]"));
           }
         }
         default: {
-          DSLthrow(XPath2ErrorException,X("Plus::collapseTreeInternal"), X("An invalid attempt to add to xs:date type has occurred [err:XPTY0004]"));
+          XQThrow(XPath2ErrorException,X("Plus::collapseTreeInternal"), X("An invalid attempt to add to xs:date type has occurred [err:XPTY0004]"));
         }
       }// switch
     }
@@ -76,7 +76,7 @@ Item::Ptr Plus::plus(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::Ptr &
           return (const Item::Ptr)((ATTimeOrDerived*)(const AnyAtomicType*)atom1)->addDayTimeDuration( (const ATDurationOrDerived::Ptr )atom2, context );
         }
         default: {
-          DSLthrow(XPath2ErrorException,X("Plus::collapseTreeInternal"), X("An invalid attempt to add to xs:time type has occurred [err:XPTY0004]"));
+          XQThrow(XPath2ErrorException,X("Plus::collapseTreeInternal"), X("An invalid attempt to add to xs:time type has occurred [err:XPTY0004]"));
         }
       }// switch
     }
@@ -90,11 +90,11 @@ Item::Ptr Plus::plus(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::Ptr &
           else if(duration->isDayTimeDuration()) {
             return (const Item::Ptr)((ATDateTimeOrDerived*)(const AnyAtomicType*)atom1)->addDayTimeDuration(duration, context);
           } else {
-            DSLthrow(XPath2ErrorException,X("Plus::collapseTreeInternal"), X("An invalid attempt to add to xs:dateTime type has occurred [err:XPTY0004]"));
+            XQThrow(XPath2ErrorException,X("Plus::collapseTreeInternal"), X("An invalid attempt to add to xs:dateTime type has occurred [err:XPTY0004]"));
           }
         }
        default: {
-          DSLthrow(XPath2ErrorException,X("Plus::collapseTreeInternal"), X("An invalid attempt to add to xs:dateTime type has occurred [err:XPTY0004]"));
+          XQThrow(XPath2ErrorException,X("Plus::collapseTreeInternal"), X("An invalid attempt to add to xs:dateTime type has occurred [err:XPTY0004]"));
         }
 
       }// switch
@@ -112,7 +112,7 @@ Item::Ptr Plus::plus(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::Ptr &
           } else if (duration->isDayTimeDuration()) {
             return (const Item::Ptr)((ATDateOrDerived*)(const AnyAtomicType*)atom2)->addDayTimeDuration(duration, context);
           } else {
-            DSLthrow(XPath2ErrorException,X("Plus::collapseTreeInternal"), X("An invalid attempt to add to xs:duration type has occurred [err:XPTY0004]"));
+            XQThrow(XPath2ErrorException,X("Plus::collapseTreeInternal"), X("An invalid attempt to add to xs:duration type has occurred [err:XPTY0004]"));
           }
         }
         case AnyAtomicType::DATE_TIME: {
@@ -121,7 +121,7 @@ Item::Ptr Plus::plus(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::Ptr &
           } else if (duration->isDayTimeDuration()) {
             return (const Item::Ptr)((ATDateTimeOrDerived*)(const AnyAtomicType*)atom2)->addDayTimeDuration(duration, context);
           } else {
-            DSLthrow(XPath2ErrorException,X("Plus::collapseTreeInternal"), X("An invalid attempt to add to xs:duration type has occurred [err:XPTY0004]"));
+            XQThrow(XPath2ErrorException,X("Plus::collapseTreeInternal"), X("An invalid attempt to add to xs:duration type has occurred [err:XPTY0004]"));
           }                                         
         }
         case AnyAtomicType::TIME: {
@@ -129,12 +129,12 @@ Item::Ptr Plus::plus(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::Ptr &
           return (const Item::Ptr)((ATTimeOrDerived*)(const AnyAtomicType*)atom2)->addDayTimeDuration(duration, context);
         }
         default: {
-          DSLthrow(XPath2ErrorException,X("Plus::collapseTreeInternal"), X("An invalid attempt to add to xs:duration type has occurred [err:XPTY0004]"));
+          XQThrow(XPath2ErrorException,X("Plus::collapseTreeInternal"), X("An invalid attempt to add to xs:duration type has occurred [err:XPTY0004]"));
         }
       }// switch
     }
     default: {
-      DSLthrow(XPath2ErrorException,X("Plus::collapseTreeInternal"), X("The operator add ('+') has been called on invalid operand types [err:XPTY0004]"));
+      XQThrow(XPath2ErrorException,X("Plus::collapseTreeInternal"), X("The operator add ('+') has been called on invalid operand types [err:XPTY0004]"));
     }
   }// switch
 }

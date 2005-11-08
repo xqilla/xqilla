@@ -58,14 +58,8 @@
   {
       // parsing errors and staticResolution don't invoke ReportFirstError, so do it here
       if(context->getDebugCallback() && context->isDebuggingEnabled()) 
-          context->getDebugCallback()->ReportFirstError(context, e.getError(), queryFile, e.m_nLine);
-      throw XQException(e.getError(),e.m_szFile?e.m_szFile:queryFile,e.m_nLine,e.m_nColumn);
-  }
-  catch(DSLException& e)
-  {
-      if(context->getDebugCallback() && context->isDebuggingEnabled()) 
-          context->getDebugCallback()->ReportFirstError(context, e.getError(), queryFile, 0);
-      throw XQException(e.getError(),queryFile,0,0);
+          context->getDebugCallback()->ReportFirstError(context, e.getError(), queryFile, e.getXQueryLine());
+      throw e;
   }
 
   return args._query;
@@ -75,7 +69,7 @@
 {
   XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer moduleText;
   if(!XQEvaluator::readQuery(querySrc, context->getMemoryManager(), moduleText)) {
-    DSLthrow(ContextException,X("XQEvaluator::parse"), X("Exception reading query content"));
+    XQThrow(ContextException,X("XQEvaluator::parse"), X("Exception reading query content"));
   }
 
   return parse(moduleText.getRawBuffer(), context, staticallyResolve, querySrc.getSystemId());
@@ -85,7 +79,7 @@
 {
   XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer moduleText;
   if(!XQEvaluator::readQuery(queryFile, context->getMemoryManager(), moduleText)) {
-    DSLthrow(ContextException,X("XQEvaluator::parseFromUri"), X("Exception reading query content"));
+    XQThrow(ContextException,X("XQEvaluator::parseFromUri"), X("Exception reading query content"));
   }
 
   return parse(moduleText.getRawBuffer(), context, staticallyResolve, queryFile);

@@ -148,7 +148,7 @@ const XMLCh* ATTimeOrDerivedImpl::asString(const DynamicContext* context) const 
  * false otherwise */
 bool ATTimeOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const {
   if(this->getPrimitiveTypeIndex() != target->getPrimitiveTypeIndex()) {
-    DSLthrow(IllegalArgumentException,X("ATTimeOrDerivedImpl::equals"), X("Equality operator for given types not supported"));
+    XQThrow(IllegalArgumentException,X("ATTimeOrDerivedImpl::equals"), X("Equality operator for given types not supported"));
   }
   ATTimeOrDerived::Ptr mtc = this->normalize(context);
   const ATTimeOrDerivedImpl* myTimeCopy = (ATTimeOrDerivedImpl*)(const ATTimeOrDerived*)mtc;
@@ -431,7 +431,7 @@ void ATTimeOrDerivedImpl::setTime(const XMLCh* const time, const DynamicContext*
 	unsigned int length = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(time);
  
 	if(time == NULL) {
-			DSLthrow(XPath2TypeCastException,X("XSTimeImpl::setTime"), X("Invalid representation of time"));
+			XQThrow(XPath2TypeCastException,X("XSTimeImpl::setTime"), X("Invalid representation of time"));
 	}
 	
 	// State variables etc.
@@ -593,7 +593,7 @@ void ATTimeOrDerivedImpl::setTime(const XMLCh* const time, const DynamicContext*
 
 
 	if ( wrongformat) {
-		DSLthrow(XPath2TypeCastException,X("XSTimeImpl::setTime"), X("Invalid representation of time"));
+		XQThrow(XPath2TypeCastException,X("XSTimeImpl::setTime"), X("Invalid representation of time"));
 	}
 	
   // Create Timezone object, clean this up in future

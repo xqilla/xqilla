@@ -74,7 +74,7 @@ static inline bool getEffectiveBooleanValueInternal(const Item::Ptr &first, cons
   }
 
   // In all other cases, fn:boolean raises a type error. 
-  DSLthrow(XPath2TypeMatchException,X("ResultImpl::getEffectiveBooleanValue"), X("Effective Boolean Value cannot be extracted from this type [err:FORG0006]"));
+  XQThrow(XPath2TypeMatchException,X("ResultImpl::getEffectiveBooleanValue"), X("Effective Boolean Value cannot be extracted from this type [err:FORG0006]"));
   return true;
 }
 

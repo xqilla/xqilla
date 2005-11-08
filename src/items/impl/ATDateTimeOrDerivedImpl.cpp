@@ -233,7 +233,7 @@ const XMLCh* ATDateTimeOrDerivedImpl::asString(const DynamicContext* context) co
  * false otherwise */
 bool ATDateTimeOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const {
   if(this->getPrimitiveTypeIndex() != target->getPrimitiveTypeIndex()) {
-    DSLthrow(IllegalArgumentException,X("ATDateTimeOrDerivedImpl::equals"), X("Equality operator for given types not supported"));
+    XQThrow(IllegalArgumentException,X("ATDateTimeOrDerivedImpl::equals"), X("Equality operator for given types not supported"));
   }
   ATDateTimeOrDerived::Ptr myDateTimeCopy = this;
   ATDateTimeOrDerived::Ptr otherDateTimeCopy = (const ATDateTimeOrDerived::Ptr )target;
@@ -745,7 +745,7 @@ ATDurationOrDerived::Ptr ATDateTimeOrDerivedImpl::subtractDateTimeAsYearMonthDur
 int ATDateTimeOrDerivedImpl::asInt(MAPM num) const
 {
   if(num < INT_MIN || num > INT_MAX) {
-    DSLthrow(XPath2TypeCastException, X("ATDateTimeOrDerivedImpl::asInt"), X("Invalid representation of an int"));
+    XQThrow(XPath2TypeCastException, X("ATDateTimeOrDerivedImpl::asInt"), X("Invalid representation of an int"));
   } else {
     char out_string[256];
     num.toIntegerString(out_string);
@@ -761,7 +761,7 @@ void ATDateTimeOrDerivedImpl::setDateTime(const XMLCh* const dateTime, const Dyn
   unsigned int length = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(dateTime);
 
   if(dateTime == 0) {
-          DSLthrow(XPath2TypeCastException,X("ATDateTimeOrDerivedImpl::setDateTime"), X("Invalid representation of dateTime"));
+          XQThrow(XPath2TypeCastException,X("ATDateTimeOrDerivedImpl::setDateTime"), X("Invalid representation of dateTime"));
   }
   
   // State variables etc.
@@ -968,7 +968,7 @@ void ATDateTimeOrDerivedImpl::setDateTime(const XMLCh* const dateTime, const Dyn
 
   if (wrongformat) 
   {
-    DSLthrow(XPath2TypeCastException,X("XSDateTimeImpl::setDateTime"), X("Invalid representation of dateTime"));
+    XQThrow(XPath2TypeCastException,X("XSDateTimeImpl::setDateTime"), X("Invalid representation of dateTime"));
   }
 
   // Create Timezone object, clean this up in future

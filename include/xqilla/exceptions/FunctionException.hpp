@@ -22,17 +22,17 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 
-#include <xqilla/exceptions/DSLException.hpp>
+#include <xqilla/exceptions/XQException.hpp>
 #include <xqilla/utils/XStr.hpp>
 
 /** exception class for tests. Inherit from this if you need to throw an exception
     in the test suite.*/
-class XQILLA_API FunctionException : public DSLException
+class XQILLA_API FunctionException : public XQException
 {
 public:
 
   FunctionException(const XMLCh* const functionName, const XMLCh* const reason, const char *file, int line)
-    : DSLException(X("FunctionException"), functionName, reason, file, line) {};
+    : XQException(X("FunctionException"), functionName, reason, file, line) {};
 };
 
 #endif // _FUNCTIONEXCEPTION_HPP

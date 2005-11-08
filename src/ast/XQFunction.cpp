@@ -85,7 +85,7 @@ XQFunction::XQFunction(const XMLCh* name, unsigned int argsFrom, unsigned int ar
     //cerr << "argsTo: " << argsTo << endl;
     //cerr << "number of args: " << args.size() << endl;
 
-    DSLthrow(FunctionException,X("XQFunction::XQFunction"), X("Wrong number of arguments"));
+    XQThrow(FunctionException,X("XQFunction::XQFunction"), X("Wrong number of arguments"));
   }
   const XMLCh* paramString=memMgr->getPooledString(paramDecl);
   if(argsFrom==argsTo)
@@ -168,7 +168,7 @@ ATStringOrDerived::Ptr XQFunction::getStringParam(unsigned int number, DynamicCo
   const Item::Ptr second = paramSeq.next(context);
 
   if(second != NULLRCP) {
-    DSLthrow(FunctionException,X("XQFunction::getStringParam"), X("getStringParam() called on a parameter which is a sequence of more than one item"));
+    XQThrow(FunctionException,X("XQFunction::getStringParam"), X("getStringParam() called on a parameter which is a sequence of more than one item"));
   }
 
   return (const ATStringOrDerived::Ptr)first;

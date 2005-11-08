@@ -147,7 +147,7 @@ SortableItem XQSort::SortSpec::buildKey(DynamicContext* context)
   if(atomized.isEmpty())
     value.m_item=NULL;
   else if(atomized.getLength()>1)
-    DSLthrow(ItemException, X("XQSort::SortSpec::buildKey"), X("The specified key returns multiple values"));
+    XQThrow(ItemException, X("XQSort::SortSpec::buildKey"), X("The specified key returns multiple values"));
   else
   {
     AnyAtomicType::Ptr atom = (const AnyAtomicType::Ptr )atomized.first();
@@ -171,7 +171,7 @@ SortableItem XQSort::SortSpec::buildKey(DynamicContext* context)
   {
     Collation* collation=context->getCollation(_collation);
     if(collation==NULL)
-      DSLthrow(ItemException,X("XQSort::SortSpec::buildKey"),X("Collation object is not available"));
+      XQThrow(ItemException,X("XQSort::SortSpec::buildKey"),X("Collation object is not available"));
     value.m_collation=collation;
   }
   return value;
@@ -242,7 +242,7 @@ XQSort::SortItems XQSort::buildKeys(DynamicContext *context) const
       if(*typeIt==AnyAtomicType::UNTYPED_ATOMIC)
         *typeIt=keyType;
       else if(keyType!=AnyAtomicType::UNTYPED_ATOMIC && *typeIt!=keyType)
-        DSLthrow(ItemException, X("XQSort::buildKeys"), X("Ordering item is not of the required type"));
+        XQThrow(ItemException, X("XQSort::buildKeys"), X("Ordering item is not of the required type"));
 
       keys.push_back(orderingItem);
     }

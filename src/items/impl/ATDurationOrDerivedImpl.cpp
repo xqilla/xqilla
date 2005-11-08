@@ -115,7 +115,7 @@ AnyAtomicType::Ptr ATDurationOrDerivedImpl::castAsInternal(AtomicObjectType targ
  
     if (durationType == DAY_TIME_DURATION) {
       //we are a dayTimeDuration so we can't do this 
-      DSLthrow(XPath2TypeCastException,X("ATDurationOrDerivedImpl::castAsInternal"), X("Invalid representation of duration"));
+      XQThrow(XPath2TypeCastException,X("ATDurationOrDerivedImpl::castAsInternal"), X("Invalid representation of duration"));
 
     } else if (durationType == YEAR_MONTH_DURATION) {
       return context->getItemFactory()->createDurationOrDerived(targetURI, targetType, this->asString(context), context);
@@ -150,7 +150,7 @@ AnyAtomicType::Ptr ATDurationOrDerivedImpl::castAsInternal(AtomicObjectType targ
 
     if (durationType == YEAR_MONTH_DURATION) {
       //we are a yearMonthDuration so we can't do this 
-      DSLthrow(XPath2TypeCastException,X("ATDurationOrDerivedImpl::castAsInternal"), X("Invalid representation of duration"));
+      XQThrow(XPath2TypeCastException,X("ATDurationOrDerivedImpl::castAsInternal"), X("Invalid representation of duration"));
 
     } else if (durationType == DAY_TIME_DURATION) {
       return context->getItemFactory()->createDurationOrDerived(targetURI, targetType, this->asString(context), context);
@@ -289,7 +289,7 @@ bool ATDurationOrDerivedImpl::isYearMonthDuration() const {
  * false otherwise */
 bool ATDurationOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const {
   if(this->getPrimitiveTypeIndex() != target->getPrimitiveTypeIndex()) {
-    DSLthrow(IllegalArgumentException,X("ATDurationOrDerivedImpl::equals"), X("Equality operator for given types not supported"));
+    XQThrow(IllegalArgumentException,X("ATDurationOrDerivedImpl::equals"), X("Equality operator for given types not supported"));
   }
 
   const ATDurationOrDerivedImpl* targetImpl = (ATDurationOrDerivedImpl*)(const AnyAtomicType*)target;
@@ -309,7 +309,7 @@ bool ATDurationOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const Dyn
             thisDurationNorm->_sec->equals((const AnyAtomicType::Ptr)otherDurationNorm->_sec, context) );
   }
   else {
-    DSLthrow(IllegalArgumentException,X("ATDurationOrDerivedImpl::equals"), X("Equality operator for given types not supported"));
+    XQThrow(IllegalArgumentException,X("ATDurationOrDerivedImpl::equals"), X("Equality operator for given types not supported"));
   }
 }
 
@@ -325,7 +325,7 @@ bool ATDurationOrDerivedImpl::lessThan(const ATDurationOrDerived::Ptr &other, co
     
   } else {
     // if we are trying to compare anything else -- error //
-    DSLthrow(IllegalArgumentException,X("ATDurationOrDerivedImpl::lessThan"), X("less-than operator for given types not supported"));
+    XQThrow(IllegalArgumentException,X("ATDurationOrDerivedImpl::lessThan"), X("less-than operator for given types not supported"));
   }
   
 }
@@ -343,7 +343,7 @@ bool ATDurationOrDerivedImpl::greaterThan(const ATDurationOrDerived::Ptr &other,
     
   } else {
     // if we are trying to compare anything else -- error //
-    DSLthrow(IllegalArgumentException,X("ATDurationOrDerivedImpl::greaterThan"), X("greater-than operator for given types not supported"));
+    XQThrow(IllegalArgumentException,X("ATDurationOrDerivedImpl::greaterThan"), X("greater-than operator for given types not supported"));
   }
 }
 
@@ -454,7 +454,7 @@ ATDurationOrDerived::Ptr ATDurationOrDerivedImpl::divide(const Numeric::Ptr &div
     
   } else {
     // if we are trying to compare anything else -- error //
-    DSLthrow(IllegalArgumentException,X("ATDurationOrDerivedImpl::divide"), X("divide operator for given types not supported"));
+    XQThrow(IllegalArgumentException,X("ATDurationOrDerivedImpl::divide"), X("divide operator for given types not supported"));
   }
 
 }
@@ -472,7 +472,7 @@ ATDecimalOrDerived::Ptr ATDurationOrDerivedImpl::divide(const ATDurationOrDerive
     
   } else {
     // if we are trying to compare anything else -- error //
-    DSLthrow(IllegalArgumentException,X("ATDurationOrDerivedImpl::divide"), X("divide operator for given types not supported"));
+    XQThrow(IllegalArgumentException,X("ATDurationOrDerivedImpl::divide"), X("divide operator for given types not supported"));
   }
 }
 
@@ -553,7 +553,7 @@ ATDurationOrDerived::Ptr ATDurationOrDerivedImpl::multiply(const Numeric::Ptr &m
 
   } else {
     // if we are trying to compare anything else -- error //
-    DSLthrow(IllegalArgumentException,X("ATDurationOrDerivedImpl::multiply"), X("multiply operator for given types not supported"));
+    XQThrow(IllegalArgumentException,X("ATDurationOrDerivedImpl::multiply"), X("multiply operator for given types not supported"));
   }
 
 }
@@ -582,7 +582,7 @@ ATDurationOrDerived::Ptr ATDurationOrDerivedImpl::add(const ATDurationOrDerived:
        
     return newYearMonthDuration(sum, context);
   } else {
-    DSLthrow(IllegalArgumentException, X("ATDurationOrDerivedImpl::add"), X("add operation not supported for given types"));
+    XQThrow(IllegalArgumentException, X("ATDurationOrDerivedImpl::add"), X("add operation not supported for given types"));
   }
 
 }
@@ -611,7 +611,7 @@ ATDurationOrDerived::Ptr ATDurationOrDerivedImpl::subtract(const ATDurationOrDer
     return newYearMonthDuration(diff, context);
        
   } else {
-    DSLthrow(IllegalArgumentException, X("ATDurationOrDerivedImpl::subtract"), X("subtract operation not supported for given types"));
+    XQThrow(IllegalArgumentException, X("ATDurationOrDerivedImpl::subtract"), X("subtract operation not supported for given types"));
   }
 }
 
@@ -654,7 +654,7 @@ ATDurationOrDerived::Ptr ATDurationOrDerivedImpl::normalize(const DynamicContext
     
   } else {
     // if we are trying to compare anything else -- error //
-    DSLthrow(IllegalArgumentException,X("ATDurationOrDerivedImpl::normalize"), X("normalize for given type not supported"));
+    XQThrow(IllegalArgumentException,X("ATDurationOrDerivedImpl::normalize"), X("normalize for given type not supported"));
   }
 }
 
@@ -703,7 +703,7 @@ ATDurationOrDerived::Ptr ATDurationOrDerivedImpl::normalizeYearMonthDuration(con
 /* return this duration in forms of seconds -- only for dayTimeDuration */
 ATDecimalOrDerived::Ptr ATDurationOrDerivedImpl::asSeconds(const DynamicContext* context) const {
   if(durationType != DAY_TIME_DURATION) {
-    DSLthrow(IllegalArgumentException, X("ATDurationOrDerivedImpl::asSeconds"), X("asSeconds for given type not supported"));
+    XQThrow(IllegalArgumentException, X("ATDurationOrDerivedImpl::asSeconds"), X("asSeconds for given type not supported"));
   }
   
   MAPM asSeconds =((const ATDecimalOrDerived*)_day)->asMAPM() * DateUtils::g_secondsPerDay +
@@ -767,7 +767,7 @@ void ATDurationOrDerivedImpl::setDuration(const XMLCh* const s, const DynamicCon
     unsigned int length = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(s);
  
   if(s == 0) {
-      DSLthrow(XPath2TypeCastException,X("XSDurationImpl::setDuration"), X("Invalid representation of duration"));
+      XQThrow(XPath2TypeCastException,X("XSDurationImpl::setDuration"), X("Invalid representation of duration"));
   }
   
   // State variables etc.
@@ -929,7 +929,7 @@ void ATDurationOrDerivedImpl::setDuration(const XMLCh* const s, const DynamicCon
 
   // check duration format
   if ( wrongformat || (Texist && state < 3) || gotDigit) {
-    DSLthrow(XPath2TypeCastException,X("ATDurationOrDerivedImpl::setDuration"), X("Invalid representation of duration"));
+    XQThrow(XPath2TypeCastException,X("ATDurationOrDerivedImpl::setDuration"), X("Invalid representation of duration"));
   }
 
   

@@ -57,6 +57,12 @@
 
 /*
  * $Log$
+ * Revision 1.3  2005/11/08 16:19:09  jpcs
+ * Renamed DSLException to XQException, and merged XQException's functionality
+ * into it.
+ *
+ * Added the Apache V2 License file.
+ *
  * Revision 1.2  2005/11/03 17:04:25  jpcs
  * Merged XQEngine.hpp and Pathan.hpp into XQillaExport.hpp. Renamed all
  * things Pathan to XQilla.
@@ -79,7 +85,7 @@
  * * changed the docs on the function isTypeOrDerivedFromType to make it clear
  * * changed use of isTypeOrDerivedFromType in AnyAtomicType
  * * Added tests for ATDecimalOrDerived (not finished)
- * * Added catching of XPathException and DSLException is test-datatypes
+ * * Added catching of XPathException and XQException is test-datatypes
  * * Added xs binding to test-datatypes
  * * fixed a nested 'comment' in DOMTreeErrorReporter.hpp
  * * changed ATHexBinaryOrDerived to store the hexBinary in upper case

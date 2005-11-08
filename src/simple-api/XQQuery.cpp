@@ -162,7 +162,6 @@ void XQQuery::importModule(const XMLCh* szUri, VectorOfStrings* locations, Stati
   bool bFound=false;
   for(VectorOfStrings::iterator it=locations->begin();it!=locations->end();it++)
   {
-      const XMLCh* fullPath=NULL;
       InputSource* srcToUse = 0;
       if (context->getDocumentCache()->getXMLEntityResolver()){
         XMLResourceIdentifier resourceIdentifier(XMLResourceIdentifier::UnKnown,
@@ -204,14 +203,14 @@ void XQQuery::importModule(const XMLCh* szUri, VectorOfStrings* locations, Stati
           errMsg.set(X("The module at "));
           errMsg.append(*it);
           errMsg.append(X(" is not a module"));
-              DSLthrow(ContextException,X("XQQuery::ImportModule"), errMsg.getRawBuffer());
+              XQThrow(ContextException,X("XQQuery::ImportModule"), errMsg.getRawBuffer());
         }
         if(!XERCES_CPP_NAMESPACE::XMLString::equals(szUri,pParsedQuery->getModuleTargetNamespace())) {
           XMLBuffer errMsg;
           errMsg.set(X("The module at "));
           errMsg.append(*it);
           errMsg.append(X(" specifies a different namespace"));
-          DSLthrow(ContextException,X("XQQuery::ImportModule"), errMsg.getRawBuffer());
+          XQThrow(ContextException,X("XQQuery::ImportModule"), errMsg.getRawBuffer());
         }
         // now move the variable declarations and the function definitions into my context
         for(vector<XQUserFunction*, XQillaAllocator<XQUserFunction*> >::iterator itFn = pParsedQuery->m_userDefFns.begin();
@@ -228,19 +227,15 @@ void XQQuery::importModule(const XMLCh* szUri, VectorOfStrings* locations, Stati
         break;
       }
       catch(XQException& e) {
-        if(e.m_szFile==NULL) {
-          e.m_szFile=fullPath;
+        if(e.getXQueryLine() != 0 ||
+            e.getXQueryColumn() != 0) {
+          // found module, parse error
+          throw;
         }
-	if (e.m_nLine != 0 ||
-	    e.m_nColumn != 0) {
-		// found module, parse error
-		throw;
-	}
-	
       }
   }
   if(!bFound)
-      DSLthrow(ContextException,X("XQQuery::ImportModule"), X("Cannot locate the requested module"));
+      XQThrow(ContextException,X("XQQuery::ImportModule"), X("Cannot locate the requested module"));
 }
 
 const XMLCh* XQQuery::getFile() const
@@ -331,13 +326,12 @@ void XQQuery::DebugResult::getResult(Sequence &toFill, DynamicContext *context) 
   }
   catch(XQException& e)
   {
-    throw XQException(e.getError(),e.m_szFile?e.m_szFile:_query->getFile(),e.m_nLine,e.m_nColumn);
-  }
-  catch(DSLException& e)
-  {
-    if(context->getDebugCallback() && context->isDebuggingEnabled()) 
-      context->getDebugCallback()->ReportFirstError(context, e.getError(), _query->getFile(), 0);
-    throw XQException(e.getError(),_query->getFile(),0,0);
+    if(e.getXQueryFile() == NULL) {
+      if(context->getDebugCallback() && context->isDebuggingEnabled()) 
+        context->getDebugCallback()->ReportFirstError(context, e.getError(), _query->getFile(), 0);
+      e.setXQueryPosition(_query->getFile(), 0, 0);
+    }
+    throw e;
   }
 
   if(context->getDebugCallback()) {

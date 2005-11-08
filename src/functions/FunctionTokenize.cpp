@@ -71,7 +71,7 @@ Sequence FunctionTokenize::collapseTreeInternal(DynamicContext* context, int fla
        options[i]!= XERCES_CPP_NAMESPACE_QUALIFIER chLatin_m &&
        options[i]!= XERCES_CPP_NAMESPACE_QUALIFIER chLatin_i &&
        options[i]!= XERCES_CPP_NAMESPACE_QUALIFIER chLatin_x)
-    DSLthrow(FunctionException, X("FunctionTokenize::collapseTreeInternal"),X("Invalid regular expression flags"));  
+    XQThrow(FunctionException, X("FunctionTokenize::collapseTreeInternal"),X("Invalid regular expression flags"));  
   }
    
   //Now attempt to tokenize
@@ -80,9 +80,9 @@ Sequence FunctionTokenize::collapseTreeInternal(DynamicContext* context, int fla
     XERCES_CPP_NAMESPACE_QUALIFIER RegularExpression regEx(pattern, options, memMgr);
     toks = regEx.tokenize(input);
   } catch (XERCES_CPP_NAMESPACE_QUALIFIER XMLException &e){ 
-    DSLthrow(FunctionException, X("FunctionTokenize::collapseTreeInternal"), e.getMessage());  
+    XQThrow(FunctionException, X("FunctionTokenize::collapseTreeInternal"), e.getMessage());  
   } catch (...){
-    DSLthrow(FunctionException, X("FunctionTokenize::collapseTreeInternal"),X("Invalid regular expression"));
+    XQThrow(FunctionException, X("FunctionTokenize::collapseTreeInternal"),X("Invalid regular expression"));
   }
 
   Sequence resultSeq(toks -> size(),memMgr);

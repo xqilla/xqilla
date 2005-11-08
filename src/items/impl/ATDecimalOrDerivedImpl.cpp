@@ -227,7 +227,7 @@ Numeric::Ptr ATDecimalOrDerivedImpl::promoteTypeIfApplicable(const XMLCh* typeUR
    * false otherwise */
 bool ATDecimalOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const {
   if(!target->isNumericValue()) {
-    DSLthrow(IllegalArgumentException,X("ATDecimalOrDerivedImpl::equals"), X("Equality operator for given types not supported"));
+    XQThrow(IllegalArgumentException,X("ATDecimalOrDerivedImpl::equals"), X("Equality operator for given types not supported"));
   }
   if(this->getPrimitiveTypeIndex() != target->getPrimitiveTypeIndex()) {
     // if targer is not a decimal, then we need to promote this to a float or double
@@ -413,7 +413,7 @@ Numeric::Ptr ATDecimalOrDerivedImpl::divide(const Numeric::Ptr &other, const Dyn
     ATDecimalOrDerivedImpl* otherImpl = (ATDecimalOrDerivedImpl*)(const Numeric*)other;
   
     if(otherImpl->_decimal == MM_Zero) {
-      DSLthrow(XPath2ErrorException, X("ATDecimalOrDerivedImpl::divide"), X("Division by zero [err:FOAR0001]"));
+      XQThrow(XPath2ErrorException, X("ATDecimalOrDerivedImpl::divide"), X("Division by zero [err:FOAR0001]"));
     }
   
     // return a xs:decimal, regardless of the actual types of the operands
@@ -462,7 +462,7 @@ Numeric::Ptr ATDecimalOrDerivedImpl::mod(const Numeric::Ptr &other, const Dynami
     const ATDecimalOrDerivedImpl* otherImpl = (ATDecimalOrDerivedImpl*)(const Numeric*)other;
   
     if(otherImpl->isZero()) {
-      DSLthrow(IllegalArgumentException, X("ATDecimalOrDerivedImpl::mod"), X("Division by zero [err:FOAR0001]"));
+      XQThrow(IllegalArgumentException, X("ATDecimalOrDerivedImpl::mod"), X("Division by zero [err:FOAR0001]"));
     }
   
     MAPM result = _decimal;
@@ -608,11 +608,11 @@ XMLCh ATDecimalOrDerivedImpl::treatAsCodepoint(const DynamicContext* context) co
     int integer = atoi(out_string);
     XMLCh ch = (XMLCh)integer;
     if(integer<=0 || (int)ch != integer) { // negative or lost some info
-      DSLthrow(XPath2ErrorException, X("ATDecimalOrDerivedImpl::treatAsCodepoint"), X("codepoint not legal."));
+      XQThrow(XPath2ErrorException, X("ATDecimalOrDerivedImpl::treatAsCodepoint"), X("codepoint not legal."));
     }
     return ch;
   } else {
-    DSLthrow(XPath2ErrorException, X("ATDecimalOrDerivedImpl::treatAsCodepoint"), X("Only integers can be treated as codepoints."));
+    XQThrow(XPath2ErrorException, X("ATDecimalOrDerivedImpl::treatAsCodepoint"), X("Only integers can be treated as codepoints."));
   }
 }
 
@@ -631,7 +631,7 @@ MAPM ATDecimalOrDerivedImpl::asMAPM() const {
 void ATDecimalOrDerivedImpl::setDecimal(const XMLCh* const value, const StaticContext *context) {
 
   if(value == NULL) {
-    DSLthrow(XPath2TypeCastException,X("ATDecimalOrDerivedImpl::setDecimal"), X("Invalid representation of decimal"));
+    XQThrow(XPath2TypeCastException,X("ATDecimalOrDerivedImpl::setDecimal"), X("Invalid representation of decimal"));
   }
   
   unsigned int length=XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(value) + 1;
@@ -740,7 +740,7 @@ void ATDecimalOrDerivedImpl::setDecimal(const XMLCh* const value, const StaticCo
   }//while
 
   if(!gotDigit || stop) {
-		DSLthrow(XPath2TypeCastException,X("ATDecimalOrDerivedImpl::setDecimal"), X("Invalid representation of decimal"));
+		XQThrow(XPath2TypeCastException,X("ATDecimalOrDerivedImpl::setDecimal"), X("Invalid representation of decimal"));
   }
 
   *dest++ = 0; // Null terminate  

@@ -56,7 +56,7 @@ Sequence XQGlobalVariable::collapseTreeInternal(DynamicContext* context, int fla
       errMsg.set(X("A value for the external variable '"));
       errMsg.append(m_szQName);
       errMsg.append(X("' has not been provided"));
-      DSLthrow(IllegalArgumentException,X("XQGlobalVariable::collapseTreeInternal"),errMsg.getRawBuffer());
+      XQThrow(IllegalArgumentException,X("XQGlobalVariable::collapseTreeInternal"),errMsg.getRawBuffer());
     }
     variableValue=value.second;
   }
@@ -76,7 +76,7 @@ Sequence XQGlobalVariable::collapseTreeInternal(DynamicContext* context, int fla
       errMsg.append(m_szQName);
       errMsg.append(X("' does not match the declared type: "));
       errMsg.append(ex.getError());
-      DSLthrow(XPath2TypeMatchException,X("XQGlobalVariable::collapseTreeInternal"),errMsg.getRawBuffer());
+      XQThrow(XPath2TypeMatchException,X("XQGlobalVariable::collapseTreeInternal"),errMsg.getRawBuffer());
     }
   }
 

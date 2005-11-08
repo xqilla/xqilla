@@ -40,7 +40,7 @@ Item::Ptr Divide::execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::
       return (const Item::Ptr)((Numeric*)(const AnyAtomicType*)atom1)->divide((const Numeric::Ptr )atom2, context);
     }
     else {
-      DSLthrow(XPath2ErrorException,X("Divide::collapseTreeInternal"), X("An attempt to divide a non numeric type to a numeric type has occurred [err:XPTY0004]"));
+      XQThrow(XPath2ErrorException,X("Divide::collapseTreeInternal"), X("An attempt to divide a non numeric type to a numeric type has occurred [err:XPTY0004]"));
     }
   }
   
@@ -51,7 +51,7 @@ Item::Ptr Divide::execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::
       if(duration->isDayTimeDuration() || duration->isYearMonthDuration()) {
         return (const Item::Ptr)duration->divide(num, context);
       } else {
-        DSLthrow(XPath2ErrorException,X("Divide::collapseTreeInternal"), X("An invalid attempt to divide an xs:duration by a decimal type has occurred [err:XPTY0004]"));
+        XQThrow(XPath2ErrorException,X("Divide::collapseTreeInternal"), X("An invalid attempt to divide an xs:duration by a decimal type has occurred [err:XPTY0004]"));
       }
     } else if(atom2->getPrimitiveTypeIndex() == AnyAtomicType::DURATION) {
       const ATDurationOrDerived* divisor = (const ATDurationOrDerived*)(const AnyAtomicType*)atom2;
@@ -59,13 +59,13 @@ Item::Ptr Divide::execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::
          (duration->isYearMonthDuration() && divisor->isYearMonthDuration())) {
           return (const Item::Ptr)duration->divide(divisor, context);
       } else {
-        DSLthrow(XPath2ErrorException,X("Divide::collapseTreeInternal"), X("An invalid attempt to divide an xs:duration by a duration type has occurred [err:XPTY0004]"));
+        XQThrow(XPath2ErrorException,X("Divide::collapseTreeInternal"), X("An invalid attempt to divide an xs:duration by a duration type has occurred [err:XPTY0004]"));
       }
     } else {
-      DSLthrow(XPath2ErrorException,X("Divide::collapseTreeInternal"), X("An invalid attempt to divide an xs:duration by a non-decimal type has occured [err:XPTY0004]"));
+      XQThrow(XPath2ErrorException,X("Divide::collapseTreeInternal"), X("An invalid attempt to divide an xs:duration by a non-decimal type has occured [err:XPTY0004]"));
     }
   } else {
-      DSLthrow(XPath2ErrorException,X("Divide::collapseTreeInternal"), X("The operator div has been called on invalid operand types [err:XPTY0004]"));
+      XQThrow(XPath2ErrorException,X("Divide::collapseTreeInternal"), X("The operator div has been called on invalid operand types [err:XPTY0004]"));
   }
 
   return 0;

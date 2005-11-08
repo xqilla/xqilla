@@ -58,9 +58,9 @@ Sequence FunctionBaseURI::collapseTreeInternal(DynamicContext* context, int flag
   {
     const Item::Ptr item = context->getContextItem();
     if(item==NULLRCP)
-        DSLthrow(FunctionException, X("FunctionBaseURI::collapseTreeInternal"),X("Undefined context item in fn:base-uri [err:FONC0001]"));
+        XQThrow(FunctionException, X("FunctionBaseURI::collapseTreeInternal"),X("Undefined context item in fn:base-uri [err:FONC0001]"));
     if(!item->isNode())
-        DSLthrow(FunctionException, X("FunctionBaseURI::collapseTreeInternal"),X("The context item is not a node [err:XPTY0006]"));
+        XQThrow(FunctionException, X("FunctionBaseURI::collapseTreeInternal"),X("The context item is not a node [err:XPTY0006]"));
     node = (const Node::Ptr )item;
   }
   return node->dmBaseURI(context);

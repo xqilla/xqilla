@@ -91,7 +91,7 @@ FunctionConstructor::FunctionConstructor(const XMLCh* nsURI, const XMLCh* typeNa
 Sequence FunctionConstructor::collapseTreeInternal(DynamicContext* context, int flags) const
 {
   if (context->isTypeOrDerivedFromType(_fURI, _fName, XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,  XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgNotationString)) {
-      DSLthrow(FunctionException, X("FunctionConstructor::collapseTreeInternal"), X("Construction of xs:NOTATION is forbidden"));    
+      XQThrow(FunctionException, X("FunctionConstructor::collapseTreeInternal"), X("Construction of xs:NOTATION is forbidden"));    
   }
 
   Sequence arg = getParamNumber(1,context);
@@ -115,7 +115,7 @@ Sequence FunctionConstructor::collapseTreeInternal(DynamicContext* context, int 
       msg.set(X("Invalid representation of "));
       msg.append(_fName);
       
-      DSLthrow(FunctionException, X("FunctionConstructor::collapseTreeInternal"), msg.getRawBuffer());
+      XQThrow(FunctionException, X("FunctionConstructor::collapseTreeInternal"), msg.getRawBuffer());
     }
     
   } 

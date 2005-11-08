@@ -1317,7 +1317,7 @@ _FunctionCall:
           buf.set(X("Function '"));
           buf.append(qname->getFullName(((XPathParserControl *)parm)->memMgr));
           buf.append(X("' is undefined [err:XPST0017]"));
-          DSLthrow(StaticErrorException, X("XPath2Parser.y"), buf.getRawBuffer());
+          XQThrow(StaticErrorException, X("XPath2Parser.y"), buf.getRawBuffer());
         }
         $$ = functionImpl;
 	}
@@ -1331,7 +1331,7 @@ _FunctionCall:
           buf.set(X("Function '"));
           buf.append(qname->getFullName(((XPathParserControl *)parm)->memMgr));
           buf.append(X("' is undefined [err:XPST0017]"));
-          DSLthrow(StaticErrorException, X("XPath2Parser.y"), buf.getRawBuffer());
+          XQThrow(StaticErrorException, X("XPath2Parser.y"), buf.getRawBuffer());
         }
         $$ = functionImpl;
         delete $2;
@@ -1764,7 +1764,7 @@ _QName:
 
 void yyerror(const char *s)
 {
-  DSLthrow(StaticErrorException, X("XPath2Parser.y"), X(s));
+  XQThrow(StaticErrorException, X("XPath2Parser.y"), X(s));
 }
 
 inline VectorOfASTNodes packageArgs(ASTNode *arg1Impl, ASTNode *arg2Impl, XPath2MemoryManager* memMgr)

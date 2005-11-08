@@ -41,7 +41,7 @@ XQFunctionCall::XQFunctionCall(QualifiedName* qname, const VectorOfASTNodes &arg
 
 Result XQFunctionCall::createResult(DynamicContext* ctx, int flags) const
 {
-	DSLthrow(FunctionException,X("XQFunctionCall::collapseTreeInternal"), X("staticResolution has not been called!!!"));
+	XQThrow(FunctionException,X("XQFunctionCall::collapseTreeInternal"), X("staticResolution has not been called!!!"));
 }
 
 ASTNode* XQFunctionCall::staticResolution(StaticContext *context) 
@@ -67,7 +67,7 @@ ASTNode* XQFunctionCall::staticResolution(StaticContext *context)
     buf.append(X(" argument is undefined [err:XPST0017]"));
 
     //cerr << "reason1: " << XERCES_CPP_NAMESPACE_QUALIFIER XMLString::transcode(buf.getRawBuffer()) << endl;
-    DSLthrow(StaticErrorException, X("XQFunctionCall::staticResolution"), buf.getRawBuffer());
+    XQThrow(StaticErrorException, X("XQFunctionCall::staticResolution"), buf.getRawBuffer());
   }
   functionImpl->addPredicates(getPredicates());
 	return functionImpl->staticResolution(context);

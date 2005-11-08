@@ -67,16 +67,16 @@ Sequence FunctionIdref::collapseTreeInternal(DynamicContext* context, int flags)
   {
     const Item::Ptr item = context->getContextItem();
     if(item==NULLRCP)
-      DSLthrow(FunctionException, X("FunctionIdref::collapseTreeInternal"),X("Undefined context item in fn:idref [err:FONC0001]"));
+      XQThrow(FunctionException, X("FunctionIdref::collapseTreeInternal"),X("Undefined context item in fn:idref [err:FONC0001]"));
     if(!item->isNode())
-      DSLthrow(FunctionException, X("FunctionIdref::collapseTreeInternal"),X("The context item is not a node [err:XPTY0006]"));
+      XQThrow(FunctionException, X("FunctionIdref::collapseTreeInternal"),X("The context item is not a node [err:XPTY0006]"));
     ctxNode=item;
   }
 
   Node::Ptr root = FunctionRoot::root(ctxNode, context);
 
   if(root->dmNodeKind() != Node::document_string) {
-    DSLthrow(FunctionException,X("FunctionIdref::collapseTreeInternal"), X("Current context doesn't belong to a document [err:FODC0001]"));
+    XQThrow(FunctionException,X("FunctionIdref::collapseTreeInternal"), X("Current context doesn't belong to a document [err:FODC0001]"));
   }
     
   Sequence strings = getParamNumber(1, context);

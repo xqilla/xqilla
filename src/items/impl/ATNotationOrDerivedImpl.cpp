@@ -74,7 +74,7 @@ const XMLCh* ATNotationOrDerivedImpl::asString(const DynamicContext* context) co
    * false otherwise */
 bool ATNotationOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const {
   if(this->getPrimitiveTypeIndex() != target->getPrimitiveTypeIndex()) {
-    DSLthrow(IllegalArgumentException,X("ATNotationOrDerivedImpl::equals"), X("Equality operator for given types not supported"));
+    XQThrow(IllegalArgumentException,X("ATNotationOrDerivedImpl::equals"), X("Equality operator for given types not supported"));
   }
   return XPath2Utils::equals(target->asString(context), _notation);  
 }

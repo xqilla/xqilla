@@ -346,7 +346,7 @@ bool SequenceType::ItemType::matches(const Node::Ptr &toBeTested, DynamicContext
         msg.append(X("}"));
         msg.append(elementName);
         msg.append(X(" is not defined as a global element [err:XPST0008]"));
-        DSLthrow(StaticErrorException,X("SequenceType::ItemType::matches"), msg.getRawBuffer());
+        XQThrow(StaticErrorException,X("SequenceType::ItemType::matches"), msg.getRawBuffer());
       }
       // 1. The name of the candidate node matches the specified ElementName or matches the name of an element in a 
       //    substitution group headed by an element named ElementName.
@@ -412,7 +412,7 @@ bool SequenceType::ItemType::matches(const Node::Ptr &toBeTested, DynamicContext
         msg.append(X("}"));
         msg.append(attributeName);
         msg.append(X(" is not defined as a global attribute [err:XPST0008]"));
-        DSLthrow(StaticErrorException,X("SequenceType::ItemType::matches"), msg.getRawBuffer());
+        XQThrow(StaticErrorException,X("SequenceType::ItemType::matches"), msg.getRawBuffer());
       }
       // 1. The name of the candidate node matches the specified AttributeName
       ATQNameOrDerived::Ptr name = toBeTested->dmNodeName(context);
@@ -617,10 +617,10 @@ Item::Ptr SequenceType::AtomicTypeConvertFunctionArgResult::next(DynamicContext 
         item = item->castAs(typeURI, typeName, context);
       }
       catch (XPath2TypeCastException &e) {
-        DSLthrow(XPath2ErrorException, X("SequenceType::AtomicTypeConvertFunctionArgResult::next"),
+        XQThrow(XPath2ErrorException, X("SequenceType::AtomicTypeConvertFunctionArgResult::next"),
                  X("Casting from xdt:untypedAtomic to required type failed."));
       } catch (const XMLException& e) {
-        DSLthrow(XPath2ErrorException, X("SequenceType::AtomicTypeConvertFunctionArgResult::next"),
+        XQThrow(XPath2ErrorException, X("SequenceType::AtomicTypeConvertFunctionArgResult::next"),
                  X("Casting from xdt:untypedAtomic to required type failed."));
       }
     }
@@ -634,10 +634,10 @@ Item::Ptr SequenceType::AtomicTypeConvertFunctionArgResult::next(DynamicContext 
           item = (const AnyAtomicType::Ptr)promotedType;
         }
       } catch (XPath2TypeCastException &e) {
-        DSLthrow(XPath2ErrorException, X("SequenceType::AtomicTypeConvertFunctionArgResult::next"),
+        XQThrow(XPath2ErrorException, X("SequenceType::AtomicTypeConvertFunctionArgResult::next"),
                  X("Numeric type promotion failed (for promotable type)"));
       } catch (const XMLException& e) {
-        DSLthrow(XPath2ErrorException, X("SequenceType::AtomicTypeConvertFunctionArgResult::next"),
+        XQThrow(XPath2ErrorException, X("SequenceType::AtomicTypeConvertFunctionArgResult::next"),
                  X("Numeric type promotion failed (for promotable type)"));
       }
     }
@@ -650,10 +650,10 @@ Item::Ptr SequenceType::AtomicTypeConvertFunctionArgResult::next(DynamicContext 
       try {
         item = (const AnyAtomicType::Ptr)item->castAs(typeURI, typeName, context);
       } catch (XPath2TypeCastException &e) {
-        DSLthrow(XPath2ErrorException, X("SequenceType::AtomicTypeConvertFunctionArgResult::next"),
+        XQThrow(XPath2ErrorException, X("SequenceType::AtomicTypeConvertFunctionArgResult::next"),
                  X("AnyURI type promotion failed (for promotable type)"));
       } catch (const XMLException& e) {
-        DSLthrow(XPath2ErrorException, X("SequenceType::AtomicTypeConvertFunctionArgResult::next"),
+        XQThrow(XPath2ErrorException, X("SequenceType::AtomicTypeConvertFunctionArgResult::next"),
                  X("AnyURI type promotion failed (for promotable type)"));
       }
     }
@@ -764,7 +764,7 @@ Item::Ptr SequenceType::MatchesResult::next(DynamicContext *context)
     // "SequenceType matching between a given value and a given SequenceType is performed as follows:
     //  If the SequenceType is empty, the match succeeds only if the value is an empty sequence."
     if(_seqType->getItemType() == NULL && item != NULLRCP) {
-      DSLthrow(XPath2TypeMatchException, X("SequenceType::MatchesResult::next"),
+      XQThrow(XPath2TypeMatchException, X("SequenceType::MatchesResult::next"),
                X("SequenceType matching failed: the sequence is not empty [err:XPTY0004]"));
     }
 
@@ -772,7 +772,7 @@ Item::Ptr SequenceType::MatchesResult::next(DynamicContext *context)
     //  the number of items in the value matches the OccurrenceIndicator and each of these items matches the ItemType. "
     if((_seqType->getOccurrenceIndicator() == PLUS || _seqType->getOccurrenceIndicator() == EXACTLY_ONE) &&
        item == NULLRCP) {
-      DSLthrow(XPath2TypeMatchException, X("SequenceType::MatchesResult::next"),
+      XQThrow(XPath2TypeMatchException, X("SequenceType::MatchesResult::next"),
                X("SequenceType matching failed: the sequence does not contain items [err:XPTY0004]"));
     }
 
@@ -790,7 +790,7 @@ Item::Ptr SequenceType::MatchesResult::next(DynamicContext *context)
         _parent = 0;
       }
       else {
-        DSLthrow(XPath2TypeMatchException, X("SequenceType::MatchesResult::next"),
+        XQThrow(XPath2TypeMatchException, X("SequenceType::MatchesResult::next"),
                  X("SequenceType matching failed: the sequence contains more than one item [err:XPTY0004]"));
       }
     }
@@ -804,7 +804,7 @@ Item::Ptr SequenceType::MatchesResult::next(DynamicContext *context)
     _parent = 0;
   }
   else if(!_seqType->getItemType()->matches(item, context)) {
-    DSLthrow(XPath2TypeMatchException, X("SequenceType::MatchesResult::next"),
+    XQThrow(XPath2TypeMatchException, X("SequenceType::MatchesResult::next"),
              X("ItemType matching failed [err:XPTY0004]"));
   }
 

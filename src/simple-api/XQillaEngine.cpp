@@ -139,7 +139,7 @@ ASTNode* XQillaEngine::createASTNode(const XMLCh* expression,
     const XMLCh* errString = fe.getError();
     throw XQillaException(XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException::INVALID_EXPRESSION_ERR, errString);
   }
-  catch(const DSLException &e) {
+  catch(const XQException &e) {
     if(XQillaException::getDebug()) {
       e.printDebug( X("Caught exception at Interface") );
     }

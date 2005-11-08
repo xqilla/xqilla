@@ -53,7 +53,7 @@ Item::Ptr XQContextItem::ContextItemResult::getSingleResult(DynamicContext *cont
 {
   const Item::Ptr item = context->getContextItem();
   if(item == NULLRCP) {
-    DSLthrow(DynamicErrorException,X("XQContextItem::ContextItemResult::getSingleResult"),
+    XQThrow(DynamicErrorException,X("XQContextItem::ContextItemResult::getSingleResult"),
              X("It is an error for the context item to be undefined when using it [err:XPDY0002]"));
   }
   return item;

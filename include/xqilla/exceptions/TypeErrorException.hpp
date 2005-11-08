@@ -18,18 +18,18 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 
-#include <xqilla/exceptions/DSLException.hpp>
+#include <xqilla/exceptions/XQException.hpp>
 #include <xqilla/utils/XStr.hpp>
 
 /** 
  * This means that an error was found while manipulating typed data
  */
 
-class XQILLA_API TypeErrorException : public DSLException
+class XQILLA_API TypeErrorException : public XQException
 {
 public:
   TypeErrorException(const XMLCh* const functionName, const XMLCh* const reason, const char *file, int line)
-    : DSLException(X("TypeErrorException"), functionName, reason, file, line) {};
+    : XQException(X("TypeErrorException"), functionName, reason, file, line) {};
 };
 
 #endif // _TYPEERROREXCEPTION_HPP

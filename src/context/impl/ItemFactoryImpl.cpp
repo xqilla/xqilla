@@ -87,7 +87,7 @@ Node::Ptr ItemFactoryImpl::createAttributeNode(const XMLCh *uri, const XMLCh *pr
   if(XPath2Utils::equals(uri, XMLUni::fgXMLURIName) && XPath2Utils::equals(name, xmlID))
   {
     if(!XMLChar1_0::isValidNCName(value, XMLString::stringLen(value)))
-      DSLthrow(ASTException,X("ItemFactoryImpl::createAttributeNode"),X("The value of an attribute xml:id must be a valid xs:NCName [err:XQST0082]"));
+      XQThrow(ASTException,X("ItemFactoryImpl::createAttributeNode"),X("The value of an attribute xml:id must be a valid xs:NCName [err:XQST0082]"));
     isID=true;
   }
 
@@ -122,7 +122,7 @@ Node::Ptr ItemFactoryImpl::createElementNode(const XMLCh *uri, const XMLCh *pref
     const DOMNode* attr=nodeImpl->getDOMNode();
     DOMAttr* exists=element->getAttributeNodeNS(attr->getNamespaceURI(), attr->getLocalName());
     if(exists!=0)
-      DSLthrow(ASTException,X("ItemFactoryImpl::createElementNode"),X("An element has two attributes with the same expanded name [err:XQDY0025]"));
+      XQThrow(ASTException,X("ItemFactoryImpl::createElementNode"),X("An element has two attributes with the same expanded name [err:XQDY0025]"));
 
     DOMAttr* imported = (DOMAttr*)document->importNode(const_cast<DOMNode*>(attr),true);
     if(constrMode == StaticContext::CONSTRUCTION_MODE_PRESERVE)

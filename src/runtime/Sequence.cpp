@@ -96,7 +96,7 @@ const Item::Ptr &Sequence::item(unsigned int index) const
 const Item::Ptr &Sequence::item(const ATDecimalOrDerived::Ptr &index) const
 {
   if(index->isNegative()) {
-    DSLthrow(MiscException,X("Sequence:item"),X("Index less than zero"));
+    XQThrow(MiscException,X("Sequence:item"),X("Index less than zero"));
   }
   return item(NumUtils::MAPMtoInt(((const ATDecimalOrDerived*)index)->asMAPM()));
 }

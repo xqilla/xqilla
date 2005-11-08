@@ -217,11 +217,11 @@ Sequence FunctionDeepEqual::collapseTreeInternal(DynamicContext* context, int fl
       try {
         context->getItemFactory()->createAnyURI(collName, context);
       } catch(InvalidLexicalSpaceException &e) {
-        DSLthrow(FunctionException, X("FunctionDeepEqual::collapseTreeInternal"), X("Invalid collationURI"));  
+        XQThrow(FunctionException, X("FunctionDeepEqual::collapseTreeInternal"), X("Invalid collationURI"));  
       }
       collation=context->getCollation(collName);
       if(collation==NULL)
-        DSLthrow(FunctionException,X("FunctionDeepEqual::collapseTreeInternal"),X("Collation object is not available"));
+        XQThrow(FunctionException,X("FunctionDeepEqual::collapseTreeInternal"),X("Collation object is not available"));
 	}
 	else
       collation=context->getDefaultCollation();

@@ -24,16 +24,16 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 
-#include <xqilla/exceptions/DSLException.hpp>
+#include <xqilla/exceptions/XQException.hpp>
 
 /** exception class for DSLPath parser */
 
-class XQILLA_API NamespaceLookupException : public DSLException
+class XQILLA_API NamespaceLookupException : public XQException
 {
 public:
 
   NamespaceLookupException(const XMLCh *functionName, const XMLCh *reason, const char *file, int line)
-    : DSLException(X("NamespaceLookupException"), functionName, reason, file, line) {};
+    : XQException(X("NamespaceLookupException"), functionName, reason, file, line) {};
 };
 
 #endif // _XPATHPARSEEXCEPTION_HPP

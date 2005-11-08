@@ -53,7 +53,7 @@ Sequence FunctionResolveURI::collapseTreeInternal(DynamicContext* context, int f
   try {
     context->getItemFactory()->createAnyURI(relativeURI, context);
   } catch(InvalidLexicalSpaceException &e) {
-     DSLthrow(FunctionException, X("FunctionResolveURI::collapseTreeInternal"), X("Invalid argument to resolve-uri"));
+     XQThrow(FunctionException, X("FunctionResolveURI::collapseTreeInternal"), X("Invalid argument to resolve-uri"));
   }
   
   const XMLCh* baseURI;
@@ -61,7 +61,7 @@ Sequence FunctionResolveURI::collapseTreeInternal(DynamicContext* context, int f
   if (getNumArgs() == 1) {
     baseURI = context->getBaseURI();
     if (!baseURI)
-      DSLthrow(FunctionException, X("FunctionResolveURI::collapseTreeInternal"), X("Base uri undefined in the static context"));
+      XQThrow(FunctionException, X("FunctionResolveURI::collapseTreeInternal"), X("Base uri undefined in the static context"));
   
   } else {
     Sequence baseSeq = getParamNumber(2, context);
@@ -77,10 +77,10 @@ Sequence FunctionResolveURI::collapseTreeInternal(DynamicContext* context, int f
     return Sequence(context->getItemFactory()->createAnyURI(fullURI, context), memMgr); 
 
   } catch(InvalidLexicalSpaceException &e){
-    DSLthrow(FunctionException, X("FunctionResolveURI::collapseTreeInternal"), X("Invalid argument to resolve-uri"));
+    XQThrow(FunctionException, X("FunctionResolveURI::collapseTreeInternal"), X("Invalid argument to resolve-uri"));
   } catch(XERCES_CPP_NAMESPACE_QUALIFIER XMLException &e) {
     //if can't build, assume its cause there was a relative URI given
-    DSLthrow(FunctionException, X("FunctionResolveURI::collapseTreeInternal"), X("Relative URI base argument to resolve-uri"));
+    XQThrow(FunctionException, X("FunctionResolveURI::collapseTreeInternal"), X("Relative URI base argument to resolve-uri"));
   }
   
   //should not get here

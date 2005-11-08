@@ -210,7 +210,7 @@ const XMLCh* ATDateOrDerivedImpl::asString(const DynamicContext* context) const 
  * false otherwise */
 bool ATDateOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const {
   if(getPrimitiveTypeIndex() != target->getPrimitiveTypeIndex()) {
-    DSLthrow(IllegalArgumentException,X("ATDateOrDerivedImpl::equals"), X("Equality operator for given types not supported"));
+    XQThrow(IllegalArgumentException,X("ATDateOrDerivedImpl::equals"), X("Equality operator for given types not supported"));
   }
   const ATDateOrDerivedImpl* targetDate = (ATDateOrDerivedImpl*)(const AnyAtomicType*)target;
   if ( _hasTimezone == targetDate->_hasTimezone ) {  // must be in the same state
@@ -323,7 +323,7 @@ ATDateOrDerived::Ptr ATDateOrDerivedImpl::addTimezone(const ATDurationOrDerived:
  */
 ATDateOrDerived::Ptr ATDateOrDerivedImpl::addYearMonthDuration(const ATDurationOrDerived::Ptr &yearMonth,  const DynamicContext* context) const {
   if(!yearMonth->isYearMonthDuration()) {
-    DSLthrow(IllegalArgumentException,X("ATDurationOrDerivedImpl::addYearMonthDuration"), X("addYearMonthDuration for given type not supported"));
+    XQThrow(IllegalArgumentException,X("ATDurationOrDerivedImpl::addYearMonthDuration"), X("addYearMonthDuration for given type not supported"));
   }
   MAPM year=yearMonth->getYears()->asMAPM();
   MAPM month=yearMonth->getMonths()->asMAPM();
@@ -370,7 +370,7 @@ ATDateOrDerived::Ptr ATDateOrDerivedImpl::addYearMonthDuration(MAPM years, MAPM 
  */
 ATDateOrDerived::Ptr ATDateOrDerivedImpl::addDayTimeDuration(const ATDurationOrDerived::Ptr &dayTime, const DynamicContext* context) const {
   if(!dayTime->isDayTimeDuration()) {
-    DSLthrow(IllegalArgumentException,X("ATDateOrDerivedImpl::addDayTimeDuration"),  X("addDayTimeDuration for given type not supported"));
+    XQThrow(IllegalArgumentException,X("ATDateOrDerivedImpl::addDayTimeDuration"),  X("addDayTimeDuration for given type not supported"));
   }
   ATDateTimeOrDerived::Ptr myDateTime=castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA, 
                                              XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DATETIME, 
@@ -386,7 +386,7 @@ ATDateOrDerived::Ptr ATDateOrDerivedImpl::addDayTimeDuration(const ATDurationOrD
  */
 ATDateOrDerived::Ptr ATDateOrDerivedImpl::subtractYearMonthDuration(const ATDurationOrDerived::Ptr &yearMonth, const DynamicContext* context) const {
   if(!((const ATDurationOrDerived*)yearMonth)->isYearMonthDuration()) {
-    DSLthrow(IllegalArgumentException,X("ATDurationOrDerivedImpl::subtractYearMonthDuration"), X("subtractYearMonthDuration for given type not supported")); 
+    XQThrow(IllegalArgumentException,X("ATDurationOrDerivedImpl::subtractYearMonthDuration"), X("subtractYearMonthDuration for given type not supported")); 
   }
   
   MAPM year=((const ATDecimalOrDerived*)((const ATDurationOrDerived*)yearMonth)->getYears())->asMAPM();
@@ -403,7 +403,7 @@ ATDateOrDerived::Ptr ATDateOrDerivedImpl::subtractYearMonthDuration(const ATDura
  */
 ATDateOrDerived::Ptr ATDateOrDerivedImpl::subtractDayTimeDuration(const ATDurationOrDerived::Ptr &dayTime, const DynamicContext* context) const {
   if(!((const ATDurationOrDerived*)dayTime)->isDayTimeDuration()) {
-    DSLthrow(IllegalArgumentException,X("ATDateOrDerivedImpl::subtractDayTimeDuration"),  X("subtractDayTimeDuration for given type not supported"));
+    XQThrow(IllegalArgumentException,X("ATDateOrDerivedImpl::subtractDayTimeDuration"),  X("subtractDayTimeDuration for given type not supported"));
   }
   
   ATDateTimeOrDerived::Ptr myDateTime=castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA, 
@@ -500,7 +500,7 @@ ATDateOrDerived::Ptr ATDateOrDerivedImpl::normalize(const DynamicContext* contex
 int ATDateOrDerivedImpl::asInt(MAPM num) const
 {
   if(num < INT_MIN || num > INT_MAX) {
-    DSLthrow(XPath2TypeCastException, X("ATDateOrDerivedImpl::asInt"), X("Invalid representation of an int"));
+    XQThrow(XPath2TypeCastException, X("ATDateOrDerivedImpl::asInt"), X("Invalid representation of an int"));
   } else {
     char out_string[256];
     num.toIntegerString(out_string);
@@ -513,7 +513,7 @@ void ATDateOrDerivedImpl::setDate(const XMLCh* const date, const DynamicContext*
   unsigned int length = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(date);
  
   if(date == 0) {
-      DSLthrow(XPath2TypeCastException,X("ATDateOrDerived::setDate"), X("Invalid representation of date"));
+      XQThrow(XPath2TypeCastException,X("ATDateOrDerived::setDate"), X("Invalid representation of date"));
   }
   
   // State variables etc.
@@ -676,7 +676,7 @@ void ATDateOrDerivedImpl::setDate(const XMLCh* const date, const DynamicContext*
 
   if ( wrongformat) 
   {
-    DSLthrow(XPath2TypeCastException,X("ATDateOrDerivedImpl::setDate"), X("Invalid representation of date"));
+    XQThrow(XPath2TypeCastException,X("ATDateOrDerivedImpl::setDate"), X("Invalid representation of date"));
   }
 
   // Create Timezone object, clean this up in future

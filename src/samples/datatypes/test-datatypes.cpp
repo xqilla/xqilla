@@ -45,7 +45,7 @@
 #include <xqilla/utils/NumUtils.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/Node.hpp>
-#include <xqilla/exceptions/DSLException.hpp>
+#include <xqilla/exceptions/XQException.hpp>
 #include <xqilla/utils/XStr.hpp>
 
 //Local includes
@@ -122,7 +122,6 @@ int main(int argc, char *argv[])
 
   //Initialise the XQilla memoryManager
   XQillaException::setDebug(false);
-  DSLException::setDebug(fullExceptionDebug);
 
   //no XML file specified
   XERCES_CPP_NAMESPACE_QUALIFIER DOMImplementation *factory = XERCES_CPP_NAMESPACE_QUALIFIER DOMImplementationRegistry::getDOMImplementation(X("Core"));;
@@ -175,8 +174,8 @@ int main(int argc, char *argv[])
     } catch(const XQillaException &e) {
       std::cerr << std::endl << "XQillaException: " << XERCES_CPP_NAMESPACE_QUALIFIER XMLString::transcode(e.getString()) << std::endl;
       failed = true;
-    } catch(const DSLException &e) {
-      std::cerr << std::endl << "DSLException: " << XERCES_CPP_NAMESPACE_QUALIFIER XMLString::transcode(e.getError()) << std::endl;
+    } catch(const XQException &e) {
+      std::cerr << std::endl << "XQException: " << XERCES_CPP_NAMESPACE_QUALIFIER XMLString::transcode(e.getError()) << std::endl;
       failed = true;
     } catch( ... ) {
       std::cerr << "Caught unknown exception!"<<std::endl;

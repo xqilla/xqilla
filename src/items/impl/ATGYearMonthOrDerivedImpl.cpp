@@ -96,7 +96,7 @@ const XMLCh* ATGYearMonthOrDerivedImpl::asString(const DynamicContext* context) 
  */
 bool ATGYearMonthOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const {
   if(this->getPrimitiveTypeIndex() != target->getPrimitiveTypeIndex()) {
-        DSLthrow(IllegalArgumentException,X("ATGYearMonthOrDerivedImpl::equals"), X("Equality operator for given types not supported"));
+        XQThrow(IllegalArgumentException,X("ATGYearMonthOrDerivedImpl::equals"), X("Equality operator for given types not supported"));
   }
   
     const XMLCh doubleZero[] = { XERCES_CPP_NAMESPACE_QUALIFIER chDigit_0, XERCES_CPP_NAMESPACE_QUALIFIER chDigit_0, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
@@ -209,7 +209,7 @@ void ATGYearMonthOrDerivedImpl::setGYearMonth(const XMLCh* const value, const Dy
  unsigned int length = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(value);
  
 	if(value == NULL) {
-			DSLthrow(XPath2TypeCastException,X("ATGYearMonthOrDerivedImpl::setGYearMonth"), X("Invalid representation of gYearMonth"));
+			XQThrow(XPath2TypeCastException,X("ATGYearMonthOrDerivedImpl::setGYearMonth"), X("Invalid representation of gYearMonth"));
 	}
 	
 	// State variables etc.
@@ -350,7 +350,7 @@ void ATGYearMonthOrDerivedImpl::setGYearMonth(const XMLCh* const value, const Dy
 	}
 
 	if ( wrongformat) {
-		DSLthrow(XPath2TypeCastException,X("ATGYearMonthOrDerivedImpl::setGYearMonth"), X("Invalid representation of gYearMonth"));
+		XQThrow(XPath2TypeCastException,X("ATGYearMonthOrDerivedImpl::setGYearMonth"), X("Invalid representation of gYearMonth"));
 	}
 
   // Create Timezone object, clean this up in future
@@ -372,7 +372,7 @@ void ATGYearMonthOrDerivedImpl::setGYearMonth(const XMLCh* const value, const Dy
 int ATGYearMonthOrDerivedImpl::asInt(MAPM num) const
 {
   if(num < INT_MIN || num > INT_MAX) {
-    DSLthrow(XPath2TypeCastException, X("ATGYearMonthOrDerivedImpl::asInt"), X("Invalid representation of an int"));
+    XQThrow(XPath2TypeCastException, X("ATGYearMonthOrDerivedImpl::asInt"), X("Invalid representation of an int"));
   } else {
     char out_string[256];
     num.toIntegerString(out_string);

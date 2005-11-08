@@ -61,7 +61,7 @@ Result XQVariable::createResult(DynamicContext* context, int flags) const
   if(!var.first) {
     const XMLCh* qname = XPath2NSUtils::qualifyName(_prefix, _name, context->getMemoryManager());
     const XMLCh* msg = XPath2Utils::concatStrings(X("Variable "), qname, X(" does not exist [err:XPDY0002]"), context->getMemoryManager());
-    DSLthrow(DynamicErrorException, X("XQVariable::collapseTreeInternal"), msg);
+    XQThrow(DynamicErrorException, X("XQVariable::collapseTreeInternal"), msg);
   }
 
   return var.second;
@@ -74,7 +74,7 @@ ASTNode* XQVariable::staticResolution(StaticContext *context)
   if(var_src == NULL) {
     const XMLCh* qname = XPath2NSUtils::qualifyName(_prefix, _name, context->getMemoryManager());
     const XMLCh* msg = XPath2Utils::concatStrings(X("Variable "), qname, X(" does not exist [err:XPST0001]"), context->getMemoryManager());
-    DSLthrow(StaticErrorException, X("XQVariable::staticResolution"), msg);
+    XQThrow(StaticErrorException, X("XQVariable::staticResolution"), msg);
   }
   _src.setProperties(var_src->getProperties() & ~(StaticResolutionContext::SUBTREE|StaticResolutionContext::SAMEDOC));
   _src.getStaticType() = var_src->getStaticType();

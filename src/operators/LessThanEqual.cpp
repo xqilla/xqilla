@@ -45,7 +45,7 @@ LessThanEqual::LessThanEqual(const VectorOfASTNodes &args, XPath2MemoryManager* 
             return ((Numeric*)(const AnyAtomicType*)arg1)->lessThan((const Numeric::Ptr )arg2, context) ||
                    ((Numeric*)(const AnyAtomicType*)arg1)->equals((const Numeric::Ptr )arg2, context);
         } else {
-            DSLthrow(XPath2ErrorException,X("LessThanEqual::less_than_equal"), X("An attempt to compare a numeric type to a non numeric type has occurred"));
+            XQThrow(XPath2ErrorException,X("LessThanEqual::less_than_equal"), X("An attempt to compare a numeric type to a non numeric type has occurred"));
         }
     }
 

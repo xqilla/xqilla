@@ -71,7 +71,7 @@ Sequence FunctionError::collapseTreeInternal(DynamicContext* context, int flags)
                 }
             }
     }
-    DSLthrow(XPath2ErrorException, X("FunctionError::collapseTreeInternal"), exc_name.getRawBuffer());
+    XQThrow(XPath2ErrorException, X("FunctionError::collapseTreeInternal"), exc_name.getRawBuffer());
 }
 
 

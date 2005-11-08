@@ -196,7 +196,7 @@ const XMLCh* NodeImpl::dmNodeKind(void) const {
         return namespace_string;
 	}
     
-  DSLthrow(ItemException, X("NodeImpl::dmNodeKind"), X("Unknown node type."));
+  XQThrow(ItemException, X("NodeImpl::dmNodeKind"), X("Unknown node type."));
 }
 
 
@@ -448,7 +448,7 @@ Sequence NodeImpl::dmTypedValue(const DynamicContext* context) const {
                     msg.append(X("}"));
                     msg.append(typeName);
                     msg.append(X(" is unknown"));
-                    DSLthrow(XPath2TypeCastException,X("NodeImpl::dmTypedValue"), msg.getRawBuffer());
+                    XQThrow(XPath2TypeCastException,X("NodeImpl::dmTypedValue"), msg.getRawBuffer());
                 } 
 
                 if(dtv->getType() == DatatypeValidator::List)
@@ -527,7 +527,7 @@ Sequence NodeImpl::dmTypedValue(const DynamicContext* context) const {
                 // The typed-value of such an element is undefined. Attempting to access this property with the dm:typed-value 
                 // accessor always raises an error.
                 if(cti->getContentType() == SchemaElementDecl::Children) 
-                    DSLthrow(ItemException, X("NodeImpl::dmTypedValue"), X("Attempt to get typed value from a complex type with non-mixed complex content"));
+                    XQThrow(ItemException, X("NodeImpl::dmTypedValue"), X("Attempt to get typed value from a complex type with non-mixed complex content"));
             }
             else 
             {
@@ -914,7 +914,7 @@ void NodeImpl::getTypeUriAndName(const XMLCh*& uri, const XMLCh*& name) const
         name=ATUntypedAtomic::fgDT_UNTYPEDATOMIC;
         return;
     }
-    DSLthrow(ItemException, X("NodeImpl::getTypeUriAndName"), X("Tried to get type informations on Node other than DOMElement, DOMAttribute or DOMText"));
+    XQThrow(ItemException, X("NodeImpl::getTypeUriAndName"), X("Tried to get type informations on Node other than DOMElement, DOMAttribute or DOMText"));
 }
 
 const XMLCh* NodeImpl::getTypeName() const {

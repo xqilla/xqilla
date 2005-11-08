@@ -149,7 +149,7 @@ Item::Ptr XQStep::StepResult::next(DynamicContext *context)
     Item::Ptr item = context->getContextItem();
 
     if(item == NULLRCP || !item->isNode()) {
-      DSLthrow(TypeErrorException,X("XQStep::StepResult::next"), X("An attempt was made to perform an axis step when the Context Item was not a node [err:XPTY0020]"));
+      XQThrow(TypeErrorException,X("XQStep::StepResult::next"), X("An attempt was made to perform an axis step when the Context Item was not a node [err:XPTY0020]"));
     }
 
     result_ = ((Node*)item.get())->getAxisResult(step_->getAxis(), step_->getNodeTest(), context);

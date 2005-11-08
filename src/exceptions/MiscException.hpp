@@ -24,16 +24,16 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 
-#include <xqilla/exceptions/DSLException.hpp>
+#include <xqilla/exceptions/XQException.hpp>
 #include <xqilla/utils/XStr.hpp>
 
 /** exception class for miscellaneous errors */
-class XQILLA_API MiscException : public DSLException
+class XQILLA_API MiscException : public XQException
 {
 public:
   
   MiscException(const XMLCh *functionName, const XMLCh *reason, const char *file, int line)
-    : DSLException(X("MiscException"), functionName, reason, file, line) {};
+    : XQException(X("MiscException"), functionName, reason, file, line) {};
 };
 
 #endif // _MISCEXCEPTION_HPP

@@ -40,7 +40,7 @@ Item::Ptr Minus::execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::P
       return (const Item::Ptr)((Numeric*)(const AnyAtomicType*)atom1)->subtract((const Numeric::Ptr )atom2, context);
     }
     else {
-      DSLthrow(XPath2ErrorException,X("Minus::collapseTreeInternal"), X("An attempt to subtract a non numeric type from a numeric type has occurred [err:XPTY0004]"));
+      XQThrow(XPath2ErrorException,X("Minus::collapseTreeInternal"), X("An attempt to subtract a non numeric type from a numeric type has occurred [err:XPTY0004]"));
     }
   }
   
@@ -55,14 +55,14 @@ Item::Ptr Minus::execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::P
           else if(duration->isDayTimeDuration()) {
             return (const Item::Ptr)((ATDateOrDerived*)(const AnyAtomicType*)atom1)->subtractDayTimeDuration(duration, context);
           } else {
-            DSLthrow(XPath2ErrorException,X("Minus::collapseTreeInternal"), X("An invalid attempt to subtract from xs:date type has occurred [err:XPTY0004]"));
+            XQThrow(XPath2ErrorException,X("Minus::collapseTreeInternal"), X("An invalid attempt to subtract from xs:date type has occurred [err:XPTY0004]"));
           }
         }
         case AnyAtomicType::DATE : {
           return (const Item::Ptr)((ATDateOrDerived*)(const AnyAtomicType*)atom1)->subtractDate((const ATDateOrDerived::Ptr )atom2, context);
         }
         default: {
-          DSLthrow(XPath2ErrorException,X("Minus::collapseTreeInternal"), X("An invalid attempt to subtract from xs:date type has occurred [err:XPTY0004]"));
+          XQThrow(XPath2ErrorException,X("Minus::collapseTreeInternal"), X("An invalid attempt to subtract from xs:date type has occurred [err:XPTY0004]"));
         }
       }// switch
     }
@@ -76,7 +76,7 @@ Item::Ptr Minus::execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::P
           return (const Item::Ptr)((ATTimeOrDerived*)(const AnyAtomicType*)atom1)->subtractTime((const ATTimeOrDerived::Ptr )atom2, context);
         }
         default: {
-          DSLthrow(XPath2ErrorException,X("Minus::collapseTreeInternal"), X("An invalid attempt to subtract from xs:time type has occurred [err:XPTY0004]"));
+          XQThrow(XPath2ErrorException,X("Minus::collapseTreeInternal"), X("An invalid attempt to subtract from xs:time type has occurred [err:XPTY0004]"));
         }
       }// switch
     }
@@ -90,14 +90,14 @@ Item::Ptr Minus::execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::P
           else if(duration->isDayTimeDuration()) {
             return (const Item::Ptr)((ATDateTimeOrDerived*)(const AnyAtomicType*)atom1)->subtractDayTimeDuration(duration, context);
           } else {
-            DSLthrow(XPath2ErrorException,X("Minus::collapseTreeInternal"), X("An invalid attempt to subtract from xs:dateTime type has occurred [err:XPTY0004]"));
+            XQThrow(XPath2ErrorException,X("Minus::collapseTreeInternal"), X("An invalid attempt to subtract from xs:dateTime type has occurred [err:XPTY0004]"));
           }
         }
         case AnyAtomicType::DATE_TIME : {
           return (const Item::Ptr)((ATDateTimeOrDerived*)(const AnyAtomicType*)atom1)->subtractDateTimeAsDayTimeDuration((const ATDateTimeOrDerived::Ptr )atom2, context);
         }
         default: {
-          DSLthrow(XPath2ErrorException,X("Minus::collapseTreeInternal"), X("An invalid attempt to subtract from xs:dateTime type has occurred [err:XPTY0004]"));
+          XQThrow(XPath2ErrorException,X("Minus::collapseTreeInternal"), X("An invalid attempt to subtract from xs:dateTime type has occurred [err:XPTY0004]"));
         }
 
       }// switch
@@ -109,12 +109,12 @@ Item::Ptr Minus::execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::P
           return (const Item::Ptr)((ATDurationOrDerived*)(const AnyAtomicType*)atom1)->subtract((const ATDurationOrDerived::Ptr )atom2, context);
         }
         default: {
-          DSLthrow(XPath2ErrorException,X("Minus::collapseTreeInternal"), X("An invalid attempt to subtract from xs:duration type has occurred [err:XPTY0004]"));
+          XQThrow(XPath2ErrorException,X("Minus::collapseTreeInternal"), X("An invalid attempt to subtract from xs:duration type has occurred [err:XPTY0004]"));
         }
       }// switch
     }
     default: {
-      DSLthrow(XPath2ErrorException,X("Minus::collapseTreeInternal"), X("The operator subtract ('-') has been called on invalid operand types [err:XPTY0004]"));
+      XQThrow(XPath2ErrorException,X("Minus::collapseTreeInternal"), X("The operator subtract ('-') has been called on invalid operand types [err:XPTY0004]"));
     }
   }// switch
 

@@ -76,13 +76,8 @@ XQQuery* XQilla::parseXQuery(const XMLCh* inputQuery, DynamicContext* context/*=
   catch(XQException& e) {
     // parsing errors and staticResolution don't invoke ReportFirstError, so do it here
     if(context->getDebugCallback() && context->isDebuggingEnabled()) 
-      context->getDebugCallback()->ReportFirstError(context, e.getError(), queryFile, e.m_nLine);
-    throw XQException(e.getError(),e.m_szFile?e.m_szFile:queryFile,e.m_nLine,e.m_nColumn);
-  }
-  catch(DSLException& e) {
-    if(context->getDebugCallback() && context->isDebuggingEnabled()) 
-      context->getDebugCallback()->ReportFirstError(context, e.getError(), queryFile, 0);
-    throw XQException(e.getError(),queryFile,0,0);
+      context->getDebugCallback()->ReportFirstError(context, e.getError(), queryFile, e.getXQueryLine());
+    throw e;
   }
 
   return args._query;
@@ -93,7 +88,7 @@ XQQuery* XQilla::parseXQuery(const InputSource& querySrc, DynamicContext* contex
 {
   XMLBuffer moduleText;
   if(!readQuery(querySrc, memMgr, moduleText)) {
-    DSLthrow(ContextException,X("XQilla::parse"), X("Exception reading query content"));
+    XQThrow(ContextException,X("XQilla::parse"), X("Exception reading query content"));
   }
 
   return parseXQuery(moduleText.getRawBuffer(), context, querySrc.getSystemId(), flags, memMgr);
@@ -104,7 +99,7 @@ XQQuery* XQilla::parseXQueryFromURI(const XMLCh* queryFile, DynamicContext* cont
 {
   XMLBuffer moduleText;
   if(!readQuery(queryFile, memMgr, moduleText)) {
-    DSLthrow(ContextException,X("XQilla::parseFromUri"), X("Exception reading query content"));
+    XQThrow(ContextException,X("XQilla::parseFromUri"), X("Exception reading query content"));
   }
 
   return parseXQuery(moduleText.getRawBuffer(), context, queryFile, flags, memMgr);

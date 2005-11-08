@@ -254,7 +254,7 @@ Sequence XQDynamicContextImpl::resolveDocument(const XMLCh* uri)
       XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer errMsg;
       errMsg.set(X("Error retrieving resource: "));
       errMsg.append(uri);
-      DSLthrow(XMLParseException,X("XQDynamicContextImpl::resolveDocument"), errMsg.getRawBuffer());
+      XQThrow(XMLParseException,X("XQDynamicContextImpl::resolveDocument"), errMsg.getRawBuffer());
     }
   }
 
@@ -289,7 +289,7 @@ Sequence XQDynamicContextImpl::resolveCollection(const XMLCh* uri)
       XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer errMsg;
       errMsg.set(X("Error retrieving resource: "));
       errMsg.append(uri);
-      DSLthrow(XMLParseException,X("XQDynamicContextImpl::resolveDocument"), errMsg.getRawBuffer());
+      XQThrow(XMLParseException,X("XQDynamicContextImpl::resolveDocument"), errMsg.getRawBuffer());
     }
   }
 
@@ -350,7 +350,7 @@ const XMLCh* XQDynamicContextImpl::getUriBoundToPrefix(const XMLCh* prefix) cons
 
 	if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(uri) == 0 && XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(prefix) > 0){
 		const XMLCh* msg = XPath2Utils::concatStrings(X("No namespace for prefix \'"), prefix, X("\'"), getMemoryManager());
-		DSLthrow(NamespaceLookupException, X("XQDynamicContextImpl::getUriBoundToPrefix"), msg);
+		XQThrow(NamespaceLookupException, X("XQDynamicContextImpl::getUriBoundToPrefix"), msg);
 	}
 
 	return uri;

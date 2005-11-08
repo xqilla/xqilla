@@ -72,7 +72,7 @@ XQUserFunction::XQUserFunction(const XMLCh* fnName, VectorOfFunctionParameters* 
 {
   int nColon=XERCES_CPP_NAMESPACE_QUALIFIER XMLString::indexOf(fnName,':');
   if(nColon==-1)
-    DSLthrow(FunctionException,X("User-defined Function"), X("The name for a user defined function must have a namespace prefix [err:XQ0045]"));
+    XQThrow(FunctionException,X("User-defined Function"), X("The name for a user defined function must have a namespace prefix [err:XQ0045]"));
 
   XMLCh* tempPrefix = new XMLCh[nColon + 1];
   XERCES_CPP_NAMESPACE_QUALIFIER XMLString::subString(tempPrefix, fnName, 0, nColon);
@@ -230,7 +230,7 @@ ASTNode* XQUserFunction::XQFunctionEvaluator::staticResolution(StaticContext* co
     buf.set(X("Function '"));
     buf.append(m_pFuncDef->m_szName);
     buf.append(X("' has been called with a number of arguments that doesn't match the function signature"));
-    DSLthrow(FunctionException,X("User-defined Function"), buf.getRawBuffer());
+    XQThrow(FunctionException,X("User-defined Function"), buf.getRawBuffer());
   }
 
   _src.getStaticType() = m_pFuncDef->m_body->getStaticResolutionContext().getStaticType();
@@ -307,7 +307,7 @@ Item::Ptr XQUserFunction::XQFunctionEvaluator::FunctionEvaluatorResult::next(Dyn
       buf.set(X("External function '"));
       buf.append(_di->getFunctionDefinition()->getName());
       buf.append(X("' has not been bound to an implementation"));
-      DSLthrow(FunctionException,X("User-defined Function"), buf.getRawBuffer());
+      XQThrow(FunctionException,X("User-defined Function"), buf.getRawBuffer());
     }
 
     _result = _di->getFunctionDefinition()->getFunctionBody()->collapseTree(context, _flags & ~(ASTNode::RETURN_ONE|ASTNode::RETURN_TWO));
