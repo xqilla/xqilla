@@ -128,6 +128,9 @@ private:
 
   UserFunctions m_userDefFns;
   GlobalVariables m_userDefVars;
+
+  friend class QueryResult;
+  friend class DebugResult;
 };
 
 #endif // !defined(AFXQ_XQUERY_H__FAA9933A_2F10_49A4_93A2_857E2A8C48E3__INCLUDED_)
