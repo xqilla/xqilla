@@ -22,7 +22,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="..\..\include,..\..\..\xerces-c-src_2_7_0\src"
+				AdditionalIncludeDirectories="..\..\include;..\..\src\lexer;&quot;..\..\..\xerces-c-src_2_7_0\src&quot;"
 				PreprocessorDefinitions="NDEBUG;WIN32;_WINDOWS;XQILLA_APIS"
 				StringPooling="TRUE"
 				RuntimeLibrary="0"
@@ -89,7 +89,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\include,..\..\..\xerces-c-src_2_7_0\src"
+				AdditionalIncludeDirectories="..\..\include;..\..\src\lexer;&quot;..\..\..\xerces-c-src_2_7_0\src&quot;"
 				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;XQILLA_APIS"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
@@ -127,7 +127,8 @@
 				Name="VCPostBuildEventTool"
 				Description="Copying Xerces DLL into target directory"
 				CommandLine="copy ..\..\..\xerces-c-src_2_7_0\Build\Win32\VC6\Debug\xerces-c_2_7D.dll .
-copy ..\..\..\xerces-c-src_2_7_0\Build\Win32\VC6\Debug\xerces-c_2_7D.pdb ."/>
+copy ..\..\..\xerces-c-src_2_7_0\Build\Win32\VC6\Debug\xerces-c_2_7D.pdb .
+"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
@@ -1739,29 +1740,6 @@ copy ..\..\..\xerces-c-src_2_7_0\Build\Win32\VC6\Debug\xerces-c_2_7D.pdb ."/>
 				RelativePath="..\..\include\xqilla\exceptions\ContextException.hpp">
 			</File>
 			<File
-				RelativePath="..\..\src\exceptions\DSLException.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="NDEBUG;WIN32;_WINDOWS;_MBCS;XQILLA_APIS;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;_MBCS;XQILLA_APIS;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\include\xqilla\exceptions\DSLException.hpp">
-			</File>
-			<File
 				RelativePath="..\..\include\xqilla\exceptions\DynamicErrorException.hpp">
 			</File>
 			<File
@@ -1802,6 +1780,9 @@ copy ..\..\..\xerces-c-src_2_7_0\Build\Win32\VC6\Debug\xerces-c_2_7D.pdb ."/>
 			</File>
 			<File
 				RelativePath="..\..\include\xqilla\exceptions\XPath2TypeMatchException.hpp">
+			</File>
+			<File
+				RelativePath="..\..\src\exceptions\XQException.cpp">
 			</File>
 			<File
 				RelativePath="..\..\include\xqilla\exceptions\XQException.hpp">
@@ -7208,6 +7189,18 @@ copy ..\..\..\xerces-c-src_2_7_0\Build\Win32\VC6\Debug\xerces-c_2_7D.pdb ."/>
 				RelativePath="..\..\include\xqilla\simple-api\XQEvaluator.hpp">
 			</File>
 			<File
+				RelativePath="..\..\include\xqilla\xqilla-simple.hpp">
+			</File>
+			<File
+				RelativePath="..\..\src\simple-api\XQilla.cpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\simple-api\XQilla.hpp">
+			</File>
+			<File
+				RelativePath="..\..\src\simple-api\XQilla2.cpp">
+			</File>
+			<File
 				RelativePath="..\..\src\simple-api\XQillaEngine.cpp">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -7229,9 +7222,6 @@ copy ..\..\..\xerces-c-src_2_7_0\Build\Win32\VC6\Debug\xerces-c_2_7D.pdb ."/>
 			</File>
 			<File
 				RelativePath="..\..\include\xqilla\simple-api\XQillaEngine.hpp">
-			</File>
-			<File
-				RelativePath="..\..\include\xqilla\simple-api\XQillaPlatformUtils.hpp">
 			</File>
 			<File
 				RelativePath="..\..\src\simple-api\XQQuery.cpp">
@@ -7486,6 +7476,9 @@ copy ..\..\..\xerces-c-src_2_7_0\Build\Win32\VC6\Debug\xerces-c_2_7D.pdb ."/>
 						PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;_MBCS;XQILLA_APIS;$(NoInherit)"
 						BasicRuntimeChecks="3"/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\utils\XQillaPlatformUtils.hpp">
 			</File>
 			<File
 				RelativePath="..\..\src\utils\XStr.cpp">
