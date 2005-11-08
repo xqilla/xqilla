@@ -43,7 +43,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "XQILLA_EXPORTS" /YX /FD /c
-# ADD CPP /nologo /MT /W3 /GX /O2 /I "..\..\include" /I "..\..\..\xerces-c-src_2_7_0\src" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "XQILLA_APIS" /YX /FD /c
+# ADD CPP /nologo /MT /W3 /GX /O2 /I "..\..\include" /I "..\..\src\lexer" /I "..\..\..\xerces-c-src_2_7_0\src" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "XQILLA_APIS" /YX /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x410 /d "NDEBUG"
@@ -75,7 +75,7 @@ PostBuild_Cmds=copy ..\..\..\xerces-c-src_2_7_0\Build\Win32\VC6\Release\xerces-c
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "XQILLA_EXPORTS" /YX /FD /GZ /c
-# ADD CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /I "..\..\include" /I "..\..\..\xerces-c-src_2_7_0\src" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "XQILLA_APIS" /YX /FD /GZ /c
+# ADD CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /I "..\..\include" /I "..\..\src\lexer" /I "..\..\..\xerces-c-src_2_7_0\src" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "XQILLA_APIS" /YX /FD /GZ /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x410 /d "_DEBUG"
@@ -712,14 +712,6 @@ SOURCE=..\..\include\xqilla\exceptions\ContextException.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\exceptions\DSLException.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\include\xqilla\exceptions\DSLException.hpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\include\xqilla\exceptions\DynamicErrorException.hpp
 # End Source File
 # Begin Source File
@@ -773,6 +765,10 @@ SOURCE=..\..\include\xqilla\exceptions\XPath2TypeCastException.hpp
 # Begin Source File
 
 SOURCE=..\..\include\xqilla\exceptions\XPath2TypeMatchException.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\exceptions\XQException.cpp
 # End Source File
 # Begin Source File
 
@@ -2664,15 +2660,27 @@ SOURCE="..\..\include\xqilla\simple-api\XQEvaluator.hpp"
 # End Source File
 # Begin Source File
 
+SOURCE="..\..\include\xqilla\xqilla-simple.hpp"
+# End Source File
+# Begin Source File
+
+SOURCE="..\..\src\simple-api\XQilla.cpp"
+# End Source File
+# Begin Source File
+
+SOURCE="..\..\include\xqilla\simple-api\XQilla.hpp"
+# End Source File
+# Begin Source File
+
+SOURCE="..\..\src\simple-api\XQilla2.cpp"
+# End Source File
+# Begin Source File
+
 SOURCE="..\..\src\simple-api\XQillaEngine.cpp"
 # End Source File
 # Begin Source File
 
 SOURCE="..\..\include\xqilla\simple-api\XQillaEngine.hpp"
-# End Source File
-# Begin Source File
-
-SOURCE="..\..\include\xqilla\simple-api\XQillaPlatformUtils.hpp"
 # End Source File
 # Begin Source File
 
@@ -2761,6 +2769,10 @@ SOURCE=..\..\include\xqilla\utils\XPath2Utils.hpp
 # Begin Source File
 
 SOURCE=..\..\src\utils\XQillaPlatformUtils.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\utils\XQillaPlatformUtils.hpp
 # End Source File
 # Begin Source File
 
