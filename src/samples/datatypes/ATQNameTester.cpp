@@ -34,7 +34,7 @@
 
 #include <xqilla/items/ATQNameOrDerived.hpp>
 
-ATQNameTester::ATQNameTester(XPath2MemoryManager* memMgr) : DatatypeTester(memMgr, "ATQNameOrDerived") {
+ATQNameTester::ATQNameTester() : DatatypeTester("ATQNameOrDerived") {
 }
 
 void ATQNameTester::run(const DynamicContext* context) {

@@ -34,7 +34,7 @@
 #include <xqilla/items/ATGYearOrDerived.hpp>
 #include <xqilla/items/Timezone.hpp>
 
-ATGYearTester::ATGYearTester(XPath2MemoryManager* memMgr) : DatatypeTester(memMgr, "ATGYearOrDerived") {
+ATGYearTester::ATGYearTester() : DatatypeTester("ATGYearOrDerived") {
 }
 
 void ATGYearTester::run(const DynamicContext* context) {

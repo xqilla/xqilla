@@ -34,7 +34,7 @@
 
 #include <xqilla/items/ATUntypedAtomic.hpp>
 
-ATUntypedAtomicTester::ATUntypedAtomicTester(XPath2MemoryManager* memMgr) : DatatypeTester(memMgr, "ATUntypedAtomic") {
+ATUntypedAtomicTester::ATUntypedAtomicTester() : DatatypeTester("ATUntypedAtomic") {
 }
 
 void ATUntypedAtomicTester::run(const DynamicContext* context) {

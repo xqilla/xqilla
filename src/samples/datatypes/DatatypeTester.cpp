@@ -35,7 +35,7 @@
 #include <iostream>
 #include <sstream>
 
-DatatypeTester::DatatypeTester(XPath2MemoryManager* memMgr, char* name) : _memMgr(memMgr), _name(name) {
+DatatypeTester::DatatypeTester(char* name) : _name(name) {
 }
 
 void DatatypeTester::assertEqualsInternal(const XMLCh* actual, const XMLCh* expected, const char *file, int line) {
@@ -87,10 +87,6 @@ void DatatypeTester::testPassed() const {
 
 void DatatypeTester::testFailed(const char* msg) const {
   XQThrow(XPath2ErrorException, X("DatatypeTester"), XERCES_CPP_NAMESPACE_QUALIFIER XMLString::transcode(msg));
-}
-
-XPath2MemoryManager* DatatypeTester::getMemoryManager() const {
-  return _memMgr;
 }
 
 char* DatatypeTester::getName() const {

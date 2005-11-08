@@ -33,7 +33,7 @@
 
 #include <xqilla/items/ATBase64BinaryOrDerived.hpp>
 
-ATBase64BinaryTester::ATBase64BinaryTester(XPath2MemoryManager* memMgr) : DatatypeTester(memMgr, "ATBase64BinaryOrDerived") {
+ATBase64BinaryTester::ATBase64BinaryTester() : DatatypeTester("ATBase64BinaryOrDerived") {
 }
   
 void ATBase64BinaryTester::run(const DynamicContext* context) {

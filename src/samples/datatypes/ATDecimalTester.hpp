@@ -38,7 +38,7 @@ class ATDecimalOrDerived;
  */
 class ATDecimalTester: public DatatypeTester {
 public: 
-  ATDecimalTester(XPath2MemoryManager* memMgr);
+  ATDecimalTester();
    
   // use default
   // virtual void init();

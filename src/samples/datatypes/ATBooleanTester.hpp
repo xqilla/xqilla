@@ -38,7 +38,7 @@ class XPath2MemoryManager;
  */
 class ATBooleanTester: public DatatypeTester {
 public: 
-  ATBooleanTester(XPath2MemoryManager* memMgr);
+  ATBooleanTester();
    
   // use default
   // virtual void init();

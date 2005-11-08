@@ -65,21 +65,17 @@ class DatatypeTester {
     virtual void testPassed() const;
     virtual void testFailed(const char* message) const;
 
-    // returns the memory manager
-    XPath2MemoryManager* getMemoryManager() const;
-
     // returns the name of this testcase
     char* getName() const;
     
   protected:
     // protected constructor
-    DatatypeTester(XPath2MemoryManager* memMgr, char* name);
+    DatatypeTester(char* name);
     void assertEqualsInternal(const XMLCh* actual, const XMLCh* expected, const char *file, int line);
     void assertObjectEqualsInternal(const AnyAtomicType::Ptr &actual, const AnyAtomicType::Ptr &expected,  const DynamicContext* context, const char *file, int line);
     void assertConditionInternal(bool condition, const char *file, int line);
     
   private:
-    XPath2MemoryManager* _memMgr;
     char* _name;
     
 };

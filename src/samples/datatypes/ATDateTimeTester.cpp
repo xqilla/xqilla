@@ -36,7 +36,7 @@
 #include <xqilla/items/ATDurationOrDerived.hpp>
 #include <xqilla/items/Timezone.hpp>
 
-ATDateTimeTester::ATDateTimeTester(XPath2MemoryManager* memMgr) : DatatypeTester(memMgr, "ATDateTimeOrDerived") {
+ATDateTimeTester::ATDateTimeTester() : DatatypeTester("ATDateTimeOrDerived") {
 }
 
 void ATDateTimeTester::run(const DynamicContext* context) {

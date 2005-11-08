@@ -38,7 +38,7 @@ class XPath2MemoryManager;
  */
 class ATQNameTester: public DatatypeTester {
 public: 
-  ATQNameTester(XPath2MemoryManager* memMgr);
+  ATQNameTester();
    
   // use default
   // virtual void init();

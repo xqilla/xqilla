@@ -33,7 +33,7 @@
 
 #include <xqilla/items/ATDecimalOrDerived.hpp>
 
-ATDecimalTester::ATDecimalTester(XPath2MemoryManager* memMgr) : DatatypeTester(memMgr, "ATDecimalOrDerived") {
+ATDecimalTester::ATDecimalTester() : DatatypeTester("ATDecimalOrDerived") {
 }
 
 void ATDecimalTester::run(const DynamicContext* context) {

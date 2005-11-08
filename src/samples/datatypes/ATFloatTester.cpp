@@ -34,7 +34,7 @@
 
 #include <xqilla/items/ATFloatOrDerived.hpp>
 
-ATFloatTester::ATFloatTester(XPath2MemoryManager* memMgr) : DatatypeTester(memMgr, "ATFloatOrDerived") {
+ATFloatTester::ATFloatTester() : DatatypeTester("ATFloatOrDerived") {
 }
 
 void ATFloatTester::run(const DynamicContext* context) {

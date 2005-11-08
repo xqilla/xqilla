@@ -38,7 +38,7 @@ class ATFloatOrDerived;
  */
 class ATFloatTester: public DatatypeTester {
 public: 
-  ATFloatTester(XPath2MemoryManager* memMgr);
+  ATFloatTester();
    
   // use default
   // virtual void init();

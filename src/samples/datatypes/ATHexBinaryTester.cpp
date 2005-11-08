@@ -34,7 +34,7 @@
 
 #include <xqilla/items/ATHexBinaryOrDerived.hpp>
 
-ATHexBinaryTester::ATHexBinaryTester(XPath2MemoryManager* memMgr) : DatatypeTester(memMgr, "ATHexBinaryOrDerived") {
+ATHexBinaryTester::ATHexBinaryTester() : DatatypeTester("ATHexBinaryOrDerived") {
 }
   
 void ATHexBinaryTester::run(const DynamicContext* context) {

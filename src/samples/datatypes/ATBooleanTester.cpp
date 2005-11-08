@@ -33,7 +33,7 @@
 
 #include <xqilla/items/ATBooleanOrDerived.hpp>
 
-ATBooleanTester::ATBooleanTester(XPath2MemoryManager* memMgr) : DatatypeTester(memMgr, "ATBooleanOrDerived") {
+ATBooleanTester::ATBooleanTester() : DatatypeTester("ATBooleanOrDerived") {
 }
 
 void ATBooleanTester::run(const DynamicContext* context) {

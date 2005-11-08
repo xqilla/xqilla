@@ -38,7 +38,7 @@ class XPath2MemoryManager;
  */
 class ATHexBinaryTester: public DatatypeTester {
 public: 
-  ATHexBinaryTester(XPath2MemoryManager* memMgr);
+  ATHexBinaryTester();
    
   // use default
   // virtual void init();

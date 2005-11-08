@@ -38,7 +38,7 @@ class ATAnyURIOrDerived;
  */
 class TypePromotionTester: public DatatypeTester {
 public: 
-  TypePromotionTester(XPath2MemoryManager* memMgr);
+  TypePromotionTester();
    
   // use default
   // virtual void init();

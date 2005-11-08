@@ -38,7 +38,7 @@ class XPath2MemoryManager;
  */
 class ATDateTimeTester: public DatatypeTester {
 public: 
-  ATDateTimeTester(XPath2MemoryManager* memMgr);
+  ATDateTimeTester();
    
   // use default
   // virtual void init();

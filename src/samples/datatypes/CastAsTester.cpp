@@ -52,7 +52,7 @@
 #include <xqilla/items/ATTimeOrDerived.hpp>
 #include <xqilla/items/ATUntypedAtomic.hpp>
 
-CastAsTester::CastAsTester(XPath2MemoryManager* memMgr) : DatatypeTester(memMgr, "CastAs") {
+CastAsTester::CastAsTester() : DatatypeTester("CastAs") {
 }
 
 void CastAsTester::run(const DynamicContext* context) {
