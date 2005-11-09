@@ -18,11 +18,7 @@ public :
     //  Constructors and Destructor
     // -----------------------------------------------------------------------
     XStr(const char* const toTranscode);
-
-    ~XStr()
-    {
-        delete [] fUnicodeForm;
-    }
+    ~XStr();
 
 
     // -----------------------------------------------------------------------
