@@ -65,7 +65,7 @@ FunctionSubsequence::SubsequenceResult::SubsequenceResult(const FunctionSubseque
   : ResultImpl(context),
     _flags(flags),
     _func(func),
-    _length(0),
+    _end(0),
     _one(0),
     _i(0),
     _source(0)
@@ -77,19 +77,18 @@ Item::Ptr FunctionSubsequence::SubsequenceResult::next(DynamicContext *context)
   if(_one == NULLRCP) {
     _one = context->getItemFactory()->createDouble(1, context);
     _source = _func->getParamNumber(1, context);
-    if(_func->getNumArgs()>2) {
-      _length = ((const Numeric::Ptr )_func->getParamNumber(3, context).next(context))->round(context);
-    }
 
     _i = _one;
     const Numeric::Ptr position = ((const Numeric::Ptr )_func->getParamNumber(2, context).next(context))->round(context);
+    if(_func->getNumArgs()>2)
+      _end = ((const Numeric::Ptr )_func->getParamNumber(3, context).next(context))->round(context)->add(position, context);
+
     while(_i->lessThan(position, context) && _source.next(context) != NULLRCP) {
       _i = _i->add(_one, context);
     }
-    _i = _one;
   }
 
-  if(_length != NULLRCP && _i->greaterThan(_length, context)) {
+  if(_end != NULLRCP && !_i->lessThan(_end, context)) {
     return 0;
   }
 

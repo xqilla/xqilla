@@ -52,7 +52,7 @@ private:
   private:
     int _flags;
     const FunctionSubsequence *_func;
-    Numeric::Ptr _length;
+    Numeric::Ptr _end;
     Numeric::Ptr _one;
     Numeric::Ptr _i;
     Result _source;
