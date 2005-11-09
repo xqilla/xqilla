@@ -297,3 +297,9 @@ xqilla/framework/StringPool.hpp \
 xqilla/framework/XPath2MemoryManagerImpl.hpp \
 xqilla/framework/XQillaExport.hpp
 
+docs: $(top_srcdir)/docs/.simple-api-timestamp
+
+$(top_srcdir)/docs/.simple-api-timestamp: $(nobase_include_HEADERS) $(top_srcdir)/docs/Doxyfile.simpleapi
+	cd $(top_srcdir)/docs && \
+		doxygen Doxyfile.simpleapi && \
+		touch .simple-api-timestamp

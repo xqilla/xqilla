@@ -109,6 +109,9 @@ void *NodeImpl::getInterface(const XMLCh *name) const
   if(name == Item::gXQilla) {
     return (void*)this;
   }
+  else if(name == Node::gXerces) {
+    return (void*)fNode;
+  }
   return 0;
 }
 

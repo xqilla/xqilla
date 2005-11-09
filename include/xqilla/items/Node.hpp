@@ -46,6 +46,15 @@ class XQILLA_API Node : public Item
 public:
   typedef RefCountPointer<const Node> Ptr;
 
+  /**
+   * The "Xerces" DOMNode node interface.
+   * Use this as the parameter when you call Item::getInterface()
+   * to have a xerces DOMNode returned, if the Node is of the
+   * correct type. If it is not of the correct type, the method
+   * will return 0.
+   */
+  static const XMLCh gXerces[];
+
   /** Returns true, since this Item is a Node */
   virtual bool isNode() const = 0;
 

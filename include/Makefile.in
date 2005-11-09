@@ -581,6 +581,13 @@ uninstall-am: uninstall-info-am uninstall-nobase_includeHEADERS
 	mostlyclean-libtool tags uninstall uninstall-am \
 	uninstall-info-am uninstall-nobase_includeHEADERS
 
+
+docs: $(top_srcdir)/docs/.simple-api-timestamp
+
+$(top_srcdir)/docs/.simple-api-timestamp: $(nobase_include_HEADERS) $(top_srcdir)/docs/Doxyfile.simpleapi
+	cd $(top_srcdir)/docs && \
+		doxygen Doxyfile.simpleapi && \
+		touch .simple-api-timestamp
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

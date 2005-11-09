@@ -74,7 +74,7 @@ private:
 };
 
 template<class TYPE>
-Scope<TYPE>::Scope(XPath2MemoryManager* memMgr, typename Scope<TYPE>::Type type) :
+Scope<TYPE>::Scope(XPath2MemoryManager* memMgr, Type type) :
     _map(17, true, memMgr)
 {
   _memMgr=memMgr;
