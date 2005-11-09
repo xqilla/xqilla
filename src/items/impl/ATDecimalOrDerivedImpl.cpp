@@ -618,7 +618,7 @@ XMLCh ATDecimalOrDerivedImpl::treatAsCodepoint(const DynamicContext* context) co
     int integer = atoi(out_string);
     XMLCh ch = (XMLCh)integer;
     if(integer<=0 || (int)ch != integer) { // negative or lost some info
-      XQThrow(XPath2ErrorException, X("ATDecimalOrDerivedImpl::treatAsCodepoint"), X("codepoint not legal."));
+      XQThrow(XPath2ErrorException, X("ATDecimalOrDerivedImpl::treatAsCodepoint"), X("Codepoint not legal [err:FOCH0001]."));
     }
     return ch;
   } else {
