@@ -27,20 +27,22 @@
 #define _SEQUENCE_HPP
 
 #include <vector>
+
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/items/ATDecimalOrDerived.hpp>
-
-// needed for the definition of XQillaAllocator
 #include <xqilla/framework/XPath2MemoryManager.hpp>
 
-class Item;
-class SequenceType;
+#include <xercesc/util/XMemory.hpp>
+#include <xercesc/util/PlatformUtils.hpp>
+
 class DynamicContext;
 
 typedef std::vector<Item::Ptr, XQillaAllocator<Item::Ptr> > VectorOfItems;
 
-/** defines the behaviour for the string data type*/
-class XQILLA_API Sequence 
+/**
+ * An eagerly evaluated result of a query execution.
+ */
+class XQILLA_API Sequence : public XERCES_CPP_NAMESPACE_QUALIFIER XMemory
 {
 
 public:
@@ -50,18 +52,20 @@ public:
   typedef VectorOfItems::const_reverse_iterator const_reverse_iterator;
 
   // constructor that takes one Item
-  Sequence(const Item::Ptr &item, XPath2MemoryManager* memMgr);
+  Sequence(const Item::Ptr &item, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr =
+           XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager);
   // constructor that creates a empty sequence
-  Sequence(XPath2MemoryManager* memMgr);
+  Sequence(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr =
+           XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager);
   /// construct and reserve space for n elements
-  Sequence(unsigned int n, XPath2MemoryManager* memMgr);
+  Sequence(unsigned int n, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr =
+           XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager);
   // copy constructor
-  Sequence(const Sequence&, XPath2MemoryManager* memMgr);
+  Sequence(const Sequence&, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr);
   // copy constructor
   Sequence(const Sequence&);
-  Sequence & operator=(const Sequence &);
+  Sequence &operator=(const Sequence &);
 
-  // no-op
   ~Sequence();
 
   void clear();
@@ -110,11 +114,8 @@ public:
   /// sort as strings, using the given collation
   void sortWithCollation(const Collation *collation, const DynamicContext *context);
 
-  XPath2MemoryManager *getMemoryManager() const { return _memMgr; }
-
 private:
   VectorOfItems _itemList;
-  XPath2MemoryManager *_memMgr;
 };
 
 #endif

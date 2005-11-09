@@ -382,7 +382,9 @@ src/lexer/xquery.l \
 src/lexer/XPath2Lexer.lex \
 src/parser/xquery.y \
 src/parser/XPath2Parser.y \
-LICENSE
+LICENSE \
+docs/Doxyfile.simpleapi \
+docs/simple-api
 
 xqilla_SOURCES = \
 src/samples/xqilla/xqilla.cpp
@@ -473,4 +475,11 @@ $(XQLEXERFILE): $(XQLEXTEMPLATE) $(XQLEXSKEL)
 $(XQPARSERCPP) $(XQPARSERHPP): $(XQPARSERFILE)
 	$(YACC) -d -v -o $(XQPARSERCPP) $(XQPARSERFILE)
 
+.PHONY: test docs
+
 test: check
+
+docs:
+	$(MAKE) -C include docs
+
+$(top_srcdir)/docs/simple-api: docs

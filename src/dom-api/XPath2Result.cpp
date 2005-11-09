@@ -130,7 +130,7 @@ void XPath2Result::evaluate(const XQQuery *expression)
 //   }
 
   try {
-    _resultSequence = new Sequence(expression->evaluate(_context));
+    _resultSequence = new Sequence(expression->execute(_context));
   }
   catch(const XQException &e) {
     if(XQillaException::getDebug()) {

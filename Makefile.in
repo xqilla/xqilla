@@ -481,7 +481,9 @@ src/lexer/xquery.l \
 src/lexer/XPath2Lexer.lex \
 src/parser/xquery.y \
 src/parser/XPath2Parser.y \
-LICENSE
+LICENSE \
+docs/Doxyfile.simpleapi \
+docs/simple-api
 
 
 xqilla_SOURCES = \
@@ -8246,7 +8248,7 @@ distcleancheck_listfiles = find . -type f -print
 distdir: $(DISTFILES)
 	$(am__remove_distdir)
 	mkdir $(distdir)
-	$(mkinstalldirs) $(distdir)/./src/config $(distdir)/autotools $(distdir)/src/lexer $(distdir)/src/parser
+	$(mkinstalldirs) $(distdir)/./src/config $(distdir)/autotools $(distdir)/docs $(distdir)/src/lexer $(distdir)/src/parser
 	@list='$(DISTFILES)'; for file in $$list; do \
 	  if test -f $$file || test -d $$file; then d=.; else d=$(srcdir); fi; \
 	  dir=`echo "$$file" | sed -e 's,/[^/]*$$,,'`; \
@@ -8461,7 +8463,14 @@ $(XQLEXERFILE): $(XQLEXTEMPLATE) $(XQLEXSKEL)
 $(XQPARSERCPP) $(XQPARSERHPP): $(XQPARSERFILE)
 	$(YACC) -d -v -o $(XQPARSERCPP) $(XQPARSERFILE)
 
+.PHONY: test docs
+
 test: check
+
+docs:
+	$(MAKE) -C include docs
+
+$(top_srcdir)/docs/simple-api: docs
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

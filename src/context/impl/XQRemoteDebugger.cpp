@@ -373,7 +373,7 @@ void XQRemoteDebugger::SendNotification(DynamicContext* context, XERCES_CPP_NAME
             {
                 XQilla xqilla;
                 AutoDelete<XQQuery> pQuery(xqilla.parseXQuery(unicodeQuery, context));
-                Sequence result=pQuery->evaluate(context);
+                Sequence result=pQuery->execute(context);
 
                 static const char* header="<xqe:items xmlns:xqe=\"http://www.stylusstudio.com/XQEngine\">";
                 static const unsigned int headerLen=XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(header);

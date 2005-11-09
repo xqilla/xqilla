@@ -46,6 +46,7 @@
 #include <xqilla/ast/XQSequence.hpp>
 #include <xqilla/ast/StaticResolutionContext.hpp>
 #include <xqilla/runtime/Result.hpp>
+#include <xqilla/utils/PrintAST.hpp>
 
 #include <xercesc/dom/DOM.hpp>
 #include <xercesc/util/XMLUni.hpp>
@@ -94,7 +95,7 @@ DynamicContext *XQQuery::createDynamicContext(MemoryManager *memMgr) const
   return m_context->createDynamicContext(memMgr);
 }
 
-Result XQQuery::evaluate(DynamicContext* context) const
+Result XQQuery::execute(DynamicContext* context) const
 {
   if(context->getDebugCallback()) {
     return new DebugResult(this, context);
@@ -117,6 +118,11 @@ void XQQuery::staticResolution(StaticContext *context)
     (*i)->staticResolution(context);
   }
   if(m_query) m_query = m_query->staticResolution(context);
+}
+
+std::string XQQuery::getQueryPlan() const
+{
+  return PrintAST::print(this, m_context);
 }
 
 ASTNode* XQQuery::getQueryBody() const

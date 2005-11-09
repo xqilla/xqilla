@@ -33,20 +33,25 @@ XERCES_CPP_NAMESPACE_BEGIN
 class MemoryManager;
 XERCES_CPP_NAMESPACE_END
 
-/**class with methods that are used by v2 that are DOM related*/ 
+/**
+ * Static utility methods for initializing and terminating the XQilla
+ * and Xerces environments.
+ */
 class XQILLA_API XQillaPlatformUtils
 {
 public:
 
-  /** Perform XQilla initialization
+  /**
+   * Perform XQilla initialization
    *
-   * Initialization should be called first in any client code.
+   * Initialization should be called first in any user code.
    * 
    * Initializes Xerces and adds its own DOMImplementation to the registry
    */
   static void initialize(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr = 0);
 
-  /** Perform XQilla termination
+  /**
+   * Perform XQilla termination
    *
    * Terminates Xerces
    */

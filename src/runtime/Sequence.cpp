@@ -33,9 +33,12 @@
 #include <xqilla/items/Node.hpp>
 #include <xqilla/context/Collation.hpp>
 
-Sequence::Sequence(XPath2MemoryManager* memMgr)
-  : _itemList(XQillaAllocator<Item::Ptr>(memMgr)),
-    _memMgr(memMgr)
+#if defined(XERCES_HAS_CPP_NAMESPACE)
+XERCES_CPP_NAMESPACE_USE
+#endif
+
+Sequence::Sequence(MemoryManager* memMgr)
+  : _itemList(XQillaAllocator<Item::Ptr>(memMgr))
 {
 }
 
@@ -44,28 +47,24 @@ Sequence::~Sequence()
 	//no-op
 }
 
-Sequence::Sequence(const Item::Ptr &item, XPath2MemoryManager* memMgr)
-  : _itemList(1, item, XQillaAllocator<Item::Ptr>(memMgr)),
-    _memMgr(memMgr)
+Sequence::Sequence(const Item::Ptr &item, MemoryManager* memMgr)
+  : _itemList(1, item, XQillaAllocator<Item::Ptr>(memMgr))
 {
 }
 
-Sequence::Sequence(const Sequence & s)
-  : _itemList(s._itemList),
-    _memMgr(s._memMgr)
+Sequence::Sequence(const Sequence &s)
+  : _itemList(s._itemList)
 {
 }
 
-Sequence::Sequence(const Sequence &s, XPath2MemoryManager* memMgr)
-  : _itemList(XQillaAllocator<Item::Ptr>(memMgr)),
-    _memMgr(memMgr)
+Sequence::Sequence(const Sequence &s, MemoryManager* memMgr)
+  : _itemList(XQillaAllocator<Item::Ptr>(memMgr))
 {
   joinSequence(s);
 }
 
-Sequence::Sequence(unsigned int n, XPath2MemoryManager* memMgr)
-  : _itemList(XQillaAllocator<Item::Ptr>(memMgr)),
-    _memMgr(memMgr)
+Sequence::Sequence(unsigned int n, MemoryManager* memMgr)
+  : _itemList(XQillaAllocator<Item::Ptr>(memMgr))
 {
     _itemList.reserve(n);
 }
