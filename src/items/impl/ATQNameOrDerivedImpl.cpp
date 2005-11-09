@@ -32,6 +32,7 @@
 #include <xqilla/exceptions/IllegalArgumentException.hpp>
 #include <xqilla/exceptions/NamespaceLookupException.hpp>
 #include <xqilla/exceptions/XPath2TypeCastException.hpp>
+#include <xqilla/exceptions/StaticErrorException.hpp>
 #include <xercesc/util/XMLUni.hpp>
 #include <xercesc/util/XMLUniDefs.hpp>
 #include <xercesc/framework/XMLBuffer.hpp>
@@ -57,9 +58,13 @@ ATQNameOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* v
   }
   // If $qname has a prefix
   else {
-    uri = context->getUriBoundToPrefix(prefix);
-    if (uri == 0) {
-       XQThrow(IllegalArgumentException, X("ATQNameOrDerivedImpl::ATQNameOrDerivedImpl"),X("No namespace for prefix"));
+    try
+    {
+      uri = context->getUriBoundToPrefix(prefix);
+    }
+    catch(NamespaceLookupException&)
+    {
+      XQThrow(StaticErrorException, X("ATQNameOrDerivedImpl::ATQNameOrDerivedImpl"),X("No namespace for prefix [err:XPST0081]"));
     }
   }
 
