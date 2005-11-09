@@ -68,9 +68,6 @@ Sequence FunctionSubstring::collapseTreeInternal(DynamicContext* context, int fl
   const ATDoubleOrDerived::Ptr one = context->getItemFactory()->createDouble(1, context);
 	// The first character of a string is located at position 1 (not position 0).
 	ATDoubleOrDerived::Ptr index = (const ATDoubleOrDerived::Ptr )startingLoc.first();
-  if (index->lessThan(one, context))
-      index = one;
-
 	ATDoubleOrDerived::Ptr subStrLength;
 	if(getNumArgs()>2)
 	{
