@@ -45,6 +45,7 @@ ATFloatOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* v
     _typeURI(typeURI) { 
     
   setFloat(value, context);
+  checkLimits();
   // if state is NaN, it could be because it should be INF or -INF
   if(_state == NaN) {
     if(XPath2Utils::equals(value, Numeric::NegINF_string)) {
@@ -67,8 +68,23 @@ ATFloatOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const MAPM val
   _state = NUM;
   if (value.sign() < 0) 
     _isNegative = true;
+  checkLimits();
 }
 
+void ATFloatOrDerivedImpl::checkLimits()
+{
+    if(_state==NUM)
+    {
+        int exp=_float.exponent();
+        if(exp>38 || (exp==38 && _float.abs()>MAPM(3.4028235e+38)))
+        {
+            _state=_isNegative?NEG_INF:INF;
+            _float=MM_Zero;
+        }
+        else if(exp<-38 || (exp==-38 && _float.abs()<MAPM(1.1754944e-38)))
+            _float=MM_Zero;
+    }
+}
 
 void *ATFloatOrDerivedImpl::getInterface(const XMLCh *name) const
 {
