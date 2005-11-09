@@ -4,6 +4,10 @@
 
 XStr::XStr(const char* const toTranscode)
 {
-  // Call the private transcoding method
   fUnicodeForm = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::transcode(toTranscode);
+}
+
+XStr::~XStr()
+{
+  XERCES_CPP_NAMESPACE_QUALIFIER XMLString::release(&fUnicodeForm);
 }
