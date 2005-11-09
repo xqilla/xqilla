@@ -45,7 +45,7 @@ ATDoubleOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* 
     _typeURI(typeURI) { 
       
   setDouble(value, context);
-  
+  checkLimits();
   // if state is NaN, it could be because it should be INF or -INF
   if(_state == NaN) {
     if(XPath2Utils::equals(value, Numeric::NegINF_string)) {
@@ -68,6 +68,22 @@ ATDoubleOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const MAPM va
   _state = NUM;
   if (value.sign() < 0) 
     _isNegative = true;
+  checkLimits();
+}
+
+void ATDoubleOrDerivedImpl::checkLimits()
+{
+    if(_state==NUM)
+    {
+        int exp=_double.exponent();
+        if(exp>308 || (exp==308 && _double.abs()>MAPM(1.7976931348623157e+308)))
+        {
+            _state=_isNegative?NEG_INF:INF;
+            _double=MM_Zero;
+        }
+        else if(exp<-308 || (exp==-308 && _double.abs()<MAPM(2.2250738585072014e-308)))
+            _double=MM_Zero;
+    }
 }
 
 void *ATDoubleOrDerivedImpl::getInterface(const XMLCh *name) const

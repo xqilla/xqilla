@@ -143,6 +143,9 @@ private:
   /* set the value of this decimal */
   void setFloat(const XMLCh* const value, const StaticContext *context);
 
+  /* check if the value is a valid xs:float */
+  void checkLimits();
+
   /* returns a new infinity ATFloatOrDerived*/
   ATFloatOrDerived::Ptr infinity(const DynamicContext* context) const;
 
