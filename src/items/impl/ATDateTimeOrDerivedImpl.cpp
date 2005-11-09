@@ -653,7 +653,7 @@ ATDurationOrDerived::Ptr ATDateTimeOrDerivedImpl::subtractDateTimeAsDayTimeDurat
                         asInt(((const ATDecimalOrDerived*)((const ATDateTimeOrDerived*)otherDate)->getMonths())->asMAPM()),
                         asInt(((const ATDecimalOrDerived*)((const ATDateTimeOrDerived*)otherDate)->getYears())->asMAPM()));
   // difference in days
-  long dateDiff = dateThis - dateOther;
+  MAPM dateDiff = dateThis - dateOther;
 
   MAPM dateDiffInSeconds = dateDiff*DateUtils::g_secondsPerDay;
   
