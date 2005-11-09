@@ -81,18 +81,21 @@ Sequence FunctionTokenize::collapseTreeInternal(DynamicContext* context, int fla
        options[i]!= XERCES_CPP_NAMESPACE_QUALIFIER chLatin_m &&
        options[i]!= XERCES_CPP_NAMESPACE_QUALIFIER chLatin_i &&
        options[i]!= XERCES_CPP_NAMESPACE_QUALIFIER chLatin_x)
-    XQThrow(FunctionException, X("FunctionTokenize::collapseTreeInternal"),X("Invalid regular expression flags"));  
+    XQThrow(FunctionException, X("FunctionTokenize::collapseTreeInternal"),X("Invalid regular expression flags [err:FORX0001]."));
   }
    
   //Now attempt to tokenize
 	XERCES_CPP_NAMESPACE_QUALIFIER RefArrayVectorOf<XMLCh>* toks=NULL;
   try {
     XERCES_CPP_NAMESPACE_QUALIFIER RegularExpression regEx(pattern, options, memMgr);
+    if(regEx.matches(X("")))
+      XQThrow(FunctionException, X("FunctionTokenize::collapseTreeInternal"), X("The pattern matches the zero-length string [err:FORX0003]"));
     toks = regEx.tokenize(input);
-  } catch (XERCES_CPP_NAMESPACE_QUALIFIER XMLException &e){ 
-    XQThrow(FunctionException, X("FunctionTokenize::collapseTreeInternal"), e.getMessage());  
-  } catch (...){
-    XQThrow(FunctionException, X("FunctionTokenize::collapseTreeInternal"),X("Invalid regular expression"));
+  } catch (XERCES_CPP_NAMESPACE_QUALIFIER RuntimeException &e){ 
+    if(e.getCode()==XERCES_CPP_NAMESPACE_QUALIFIER XMLExcepts::Regex_InvalidRepPattern)
+      XQThrow(FunctionException, X("FunctionTokenize::collapseTreeInternal"), X("Invalid replacement pattern [err:FORX0004]"));
+    else 
+      XQThrow(FunctionException, X("FunctionTokenize::collapseTreeInternal"),X("Invalid regular expression [err:FORX0002]."));
   }
 
   Sequence resultSeq(toks -> size(),memMgr);

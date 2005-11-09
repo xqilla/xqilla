@@ -65,6 +65,31 @@ Sequence FunctionReplace::collapseTreeInternal(DynamicContext* context, int flag
 	const XMLCh *pattern = patternString.first()->asString(context);
 	const XMLCh *replacement = replacementString.first()->asString(context);
 
+    bool notEscaped = true;
+    const XMLCh* ptr;
+    for (ptr = replacement; *ptr != XERCES_CPP_NAMESPACE_QUALIFIER chNull; ptr++)
+    {
+      if ((*ptr == XERCES_CPP_NAMESPACE_QUALIFIER chDollarSign) && notEscaped) {
+        ptr++;
+      
+        //check that after the $ is a digit 
+        if (!XERCES_CPP_NAMESPACE_QUALIFIER XMLString::isDigit(*ptr))
+          DSLthrow(FunctionException, X("FunctionReplace::collapseTreeInternal"), X("Invalid replacement pattern [err:FORX0004]"));
+      } else {
+        //if you have a slash and then a character that's not a $ or \, 
+        //then it's an invalid replace string  
+        if (!notEscaped && (*ptr != XERCES_CPP_NAMESPACE_QUALIFIER chDollarSign && *ptr != XERCES_CPP_NAMESPACE_QUALIFIER chBackSlash))
+        XQThrow(FunctionException, X("FunctionReplace::collapseTreeInternal"), X("Invalid replacement pattern [err:FORX0004]"));
+      
+        if (*ptr == XERCES_CPP_NAMESPACE_QUALIFIER chBackSlash)
+          notEscaped = false;        
+        else   
+          notEscaped = true;  
+      }
+    }
+    if(!notEscaped)
+      XQThrow(FunctionException, X("FunctionReplace::collapseTreeInternal"), X("Invalid replacement pattern [err:FORX0004]"));
+
 	const XMLCh *options = XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString;
 	if(getNumArgs()>3)
 		options=getParamNumber(4,context).castAsSingleString(context);
@@ -76,7 +101,7 @@ Sequence FunctionReplace::collapseTreeInternal(DynamicContext* context, int flag
        options[i]!= XERCES_CPP_NAMESPACE_QUALIFIER chLatin_m &&
        options[i]!= XERCES_CPP_NAMESPACE_QUALIFIER chLatin_i &&
        options[i]!= XERCES_CPP_NAMESPACE_QUALIFIER chLatin_x)
-      XQThrow(FunctionException, X("FunctionReplace::collapseTreeInternal"),X("Invalid regular expression flags"));  
+      XQThrow(FunctionException, X("FunctionReplace::collapseTreeInternal"),X("Invalid regular expression flags [err:FORX0001]."));
   }
 
   const XMLCh* result=NULL;
@@ -84,11 +109,13 @@ Sequence FunctionReplace::collapseTreeInternal(DynamicContext* context, int flag
   try {
     XERCES_CPP_NAMESPACE_QUALIFIER RegularExpression regEx(pattern, options, memMgr);
     result = regEx.replace(input, replacement);
-  } catch (XERCES_CPP_NAMESPACE_QUALIFIER XMLException &e){ 
-    XQThrow(FunctionException, X("FunctionReplace::collapseTreeInternal"), e.getMessage());  
-  }
-  catch(...) {
-    XQThrow(FunctionException, X("FunctionReplace::collapseTreeInternal"),X("Invalid regular expression"));
+  } catch (XERCES_CPP_NAMESPACE_QUALIFIER RuntimeException &e){ 
+    if(e.getCode()==XERCES_CPP_NAMESPACE_QUALIFIER XMLExcepts::Regex_RepPatMatchesZeroString)
+      XQThrow(FunctionException, X("FunctionReplace::collapseTreeInternal"), X("The pattern matches the zero-length string [err:FORX0003]"));
+    else if(e.getCode()==XERCES_CPP_NAMESPACE_QUALIFIER XMLExcepts::Regex_InvalidRepPattern)
+      XQThrow(FunctionException, X("FunctionReplace::collapseTreeInternal"), X("Invalid replacement pattern [err:FORX0004]"));
+    else 
+      XQThrow(FunctionException, X("FunctionReplace::collapseTreeInternal"),X("Invalid regular expression [err:FORX0002]."));
   }  
 
   return Sequence(context->getItemFactory()->createString(result, context), memMgr);

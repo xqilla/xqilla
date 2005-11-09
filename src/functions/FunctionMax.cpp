@@ -114,9 +114,9 @@ Sequence FunctionMax::collapseTreeInternal(DynamicContext* context, int flags) c
             try {
                 greater = (const ATBooleanOrDerived::Ptr )gt.collapseTree(context).next(context);
             } catch (IllegalArgumentException &e) {
-                XQThrow(IllegalArgumentException, X("FunctionMax::collapseTreeInternal"), X("Invalid argument to fn:max() function"));
+                XQThrow(IllegalArgumentException, X("FunctionMax::collapseTreeInternal"), X("Invalid argument to fn:max() function [err:FORG0006]."));
             } catch (XPath2ErrorException &e) {
-                XQThrow(IllegalArgumentException, X("FunctionMax::collapseTreeInternal"), X("Invalid argument to fn:max() function"));
+                XQThrow(IllegalArgumentException, X("FunctionMax::collapseTreeInternal"), X("Invalid argument to fn:max() function [err:FORG0006]."));
             }
             if(((const ATBooleanOrDerived*)greater)->isTrue()) {
               maxItem = *i;

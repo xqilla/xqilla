@@ -91,7 +91,7 @@ Sequence FunctionAdjustDateTimeToTimezone::collapseTreeInternal(DynamicContext* 
       timezoneAsDuration = (const ATDurationOrDerived::Ptr )op2.first();
       Timezone::Ptr timezone = new Timezone(timezoneAsDuration, context);
       if(!timezoneAsDuration->equals(timezone->asDayTimeDuration(context), context)) {
-        XQThrow(FunctionException, X("FunctionAdjustDateTimeToTimeZone::collapseTreeInternal"),X("invalid timezone value"));    
+        XQThrow(FunctionException, X("FunctionAdjustDateTimeToTimeZone::collapseTreeInternal"),X("Invalid timezone value [err:FODT0003]"));
       }
     }
   }
