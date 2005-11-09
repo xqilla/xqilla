@@ -429,42 +429,14 @@ ATDateOrDerived::Ptr ATDateOrDerivedImpl::subtractDayTimeDuration(const ATDurati
  * Returns a dayTimeDuration corresponding to the difference between this
  * and the given ATDateOrDerived*
  */
-ATDurationOrDerived::Ptr ATDateOrDerivedImpl::subtractDate(const ATDateOrDerived::Ptr &date, const DynamicContext* context) const {
-  
-  // normalize both dates first
-  const ATDateOrDerived::Ptr thisDate = this->normalize(context);
-  const ATDateOrDerived::Ptr otherDate = date->normalize(context);
-
-  // this as julian
-  Date dateThis = Date(asInt(thisDate->getDays()->asMAPM()),
-                       asInt(thisDate->getMonths()->asMAPM()),
-                       asInt(thisDate->getYears()->asMAPM()));
-  // date as julian
-  Date dateOther = Date(asInt(otherDate->getDays()->asMAPM()),
-                        asInt(otherDate->getMonths()->asMAPM()),
-                        asInt(otherDate->getYears()->asMAPM()));
-
-  // return the difference as a dayTimeDuration
-  // Returns the number of days
-  long diff = dateThis - dateOther;
-  ATDecimalOrDerived::Ptr dateDiff = (const ATDecimalOrDerived::Ptr )context->getItemFactory()->createInteger(diff, context);
-  bool isNegative = dateDiff->isNegative();
-  ATDecimalOrDerived::Ptr endDiff = dateDiff;
-  
-  if(isNegative) {
-    endDiff = (const ATDecimalOrDerived::Ptr )dateDiff->invert(context);
-  }
-
-
-  XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buffer(1023, context->getMemoryManager());
-  if(isNegative) {
-    buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-  }
-  buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_P);
-  buffer.append(endDiff->asString(context));
-  buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_D);
-
-  return context->getItemFactory()->createDayTimeDuration(buffer.getRawBuffer(), context);
+ATDurationOrDerived::Ptr ATDateOrDerivedImpl::subtractDate(const ATDateOrDerived::Ptr &other, const DynamicContext* context) const {
+  ATDateTimeOrDerived::Ptr myDateTime=castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA, 
+                                             XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DATETIME, 
+                                             context);
+  ATDateTimeOrDerived::Ptr otherDateTime=other->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA, 
+                                             XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DATETIME, 
+                                             context);
+  return myDateTime->subtractDateTimeAsDayTimeDuration(otherDateTime, context);
 }
 
 
