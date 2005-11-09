@@ -190,7 +190,7 @@ const XMLCh* XPath2Utils::toLower( const XMLCh* const target, XPath2MemoryManage
   XMLCh *newStr = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::replicate(target);
   XERCES_CPP_NAMESPACE_QUALIFIER XMLString::lowerCase(newStr);
   const XMLCh* retval=memMgr->getPooledString(newStr);
-  delete [] newStr;
+  XERCES_CPP_NAMESPACE_QUALIFIER XMLString::release(&newStr);
   return retval;
 }
 
@@ -198,7 +198,7 @@ const XMLCh* XPath2Utils::toUpper( const XMLCh* const target, XPath2MemoryManage
   XMLCh *newStr = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::replicate(target);
   XERCES_CPP_NAMESPACE_QUALIFIER XMLString::upperCase(newStr);
   const XMLCh* retval=memMgr->getPooledString(newStr);
-  delete [] newStr;
+  XERCES_CPP_NAMESPACE_QUALIFIER XMLString::release(&newStr);
   return retval;
 }
 
@@ -206,7 +206,7 @@ const XMLCh* XPath2Utils::toCollapsedWS(const XMLCh* const target, XPath2MemoryM
   XMLCh *newStr = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::replicate(target);
   XERCES_CPP_NAMESPACE_QUALIFIER XMLString::collapseWS(newStr);
   const XMLCh* retval=memMgr->getPooledString(newStr);
-  delete [] newStr;
+  XERCES_CPP_NAMESPACE_QUALIFIER XMLString::release(&newStr);
   return retval;
 }
 
