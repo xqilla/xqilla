@@ -74,7 +74,7 @@ Sequence FunctionReplace::collapseTreeInternal(DynamicContext* context, int flag
       
         //check that after the $ is a digit 
         if (!XERCES_CPP_NAMESPACE_QUALIFIER XMLString::isDigit(*ptr))
-          DSLthrow(FunctionException, X("FunctionReplace::collapseTreeInternal"), X("Invalid replacement pattern [err:FORX0004]"));
+          XQThrow(FunctionException, X("FunctionReplace::collapseTreeInternal"), X("Invalid replacement pattern [err:FORX0004]"));
       } else {
         //if you have a slash and then a character that's not a $ or \, 
         //then it's an invalid replace string  
