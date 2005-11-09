@@ -454,6 +454,10 @@ bool ATDurationOrDerivedImpl::yearMonthGreaterThan(const ATDurationOrDerived::Pt
 /** Divide this duration by a number -- only available for xdt:dayTimeDuration
  *  and xdt:yearMonthDuration */
 ATDurationOrDerived::Ptr ATDurationOrDerivedImpl::divide(const Numeric::Ptr &divisor, const DynamicContext* context) const {
+  if((divisor->getPrimitiveTypeIndex()==AnyAtomicType::DOUBLE && ((const ATDoubleOrDerived::Ptr)divisor)->isNaN()) ||
+     (divisor->getPrimitiveTypeIndex()==AnyAtomicType::FLOAT && ((const ATFloatOrDerived::Ptr)divisor)->isNaN()))
+      XQThrow(IllegalArgumentException,X("ATDurationOrDerivedImpl::multiply"), X("Cannot multiply a duration by NaN [err:FOCA0005]."));
+
   if(durationType == DAY_TIME_DURATION) {
     // if we are dividing a xdt:dayTimeDurations //
     return dayTimeDivide(divisor, context);
@@ -540,6 +544,10 @@ AnyAtomicType::AtomicObjectType ATDurationOrDerivedImpl::getPrimitiveTypeIndex()
 /** Multiply this duration by a number -- only available for xdt:dayTimeDuration
  *  and xdt:yearMonthDuration */
 ATDurationOrDerived::Ptr ATDurationOrDerivedImpl::multiply(const Numeric::Ptr &multiplier, const DynamicContext* context) const {
+  if((multiplier->getPrimitiveTypeIndex()==AnyAtomicType::DOUBLE && ((const ATDoubleOrDerived::Ptr)multiplier)->isNaN()) ||
+     (multiplier->getPrimitiveTypeIndex()==AnyAtomicType::FLOAT && ((const ATFloatOrDerived::Ptr)multiplier)->isNaN()))
+      XQThrow(IllegalArgumentException,X("ATDurationOrDerivedImpl::multiply"), X("Cannot multiply a duration by NaN [err:FOCA0005]."));
+
   if(durationType == DAY_TIME_DURATION) {
     // multiplying an xdt:
     ATDecimalOrDerived::Ptr asSeconds = (const ATDecimalOrDerived::Ptr )this->asSeconds(context)->multiply(multiplier, context)->
