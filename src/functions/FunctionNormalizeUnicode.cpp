@@ -137,8 +137,8 @@ Sequence FunctionNormalizeUnicode::collapseTreeInternal(DynamicContext* context,
 		return result;
 	}
 	else if(XPath2Utils::equals(normalization, fg_fully)) {
-		XQThrow(FunctionException, X("FunctionNormalizeUnicode::collapseTreeInternal"), X("Unsupported normalization form"));
+		XQThrow(FunctionException, X("FunctionNormalizeUnicode::collapseTreeInternal"), X("Unsupported normalization form [err:FOCH0003]."));
 	}
 	
-	XQThrow(FunctionException, X("FunctionNormalizeUnicode::collapseTreeInternal"), X("Invalid normalization form"));
+	XQThrow(FunctionException, X("FunctionNormalizeUnicode::collapseTreeInternal"), X("Invalid normalization form [err:FOCH0003]."));
 }

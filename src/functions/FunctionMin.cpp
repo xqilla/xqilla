@@ -116,9 +116,9 @@ Sequence FunctionMin::collapseTreeInternal(DynamicContext* context, int flags) c
             try {
                 less = (const ATBooleanOrDerived::Ptr )gt.collapseTree(context).next(context);
             } catch (IllegalArgumentException &e) {
-                XQThrow(IllegalArgumentException, X("FunctionMin::collapseTreeInternal"), X("Invalid argument to fn:min() function"));
+                XQThrow(IllegalArgumentException, X("FunctionMin::collapseTreeInternal"), X("Invalid argument to fn:min() function [err:FORG0006]."));
             } catch (XPath2ErrorException &e) {
-                XQThrow(IllegalArgumentException, X("FunctionMin::collapseTreeInternal"), X("Invalid argument to fn:min() function"));
+                XQThrow(IllegalArgumentException, X("FunctionMin::collapseTreeInternal"), X("Invalid argument to fn:min() function [err:FORG0006]."));
             }
             if(((const ATBooleanOrDerived*)less)->isTrue()) {
               minItem = *i;
