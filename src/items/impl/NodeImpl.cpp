@@ -64,6 +64,8 @@
 #include <xercesc/validators/schema/SchemaElementDecl.hpp>
 #include <xercesc/validators/schema/ComplexTypeInfo.hpp>
 #include <xercesc/validators/datatype/ListDatatypeValidator.hpp>
+#include <xercesc/util/XMLUri.hpp>
+#include <xercesc/util/XMLURL.hpp>
 #include <assert.h>
 
 #if defined(XERCES_HAS_CPP_NAMESPACE)
@@ -130,6 +132,7 @@ const XMLCh* NodeImpl::asString(const DynamicContext* context) const
   if(!fSerializer) {
     DOMImplementation *impl = DOMImplementationRegistry::getDOMImplementation(ls_string);
     ((NodeImpl*)this)->fSerializer = ((DOMImplementationLS*)impl)->createDOMWriter(context->getMemoryManager());
+    ((NodeImpl*)this)->fSerializer->setFeature(XMLUni::fgDOMXMLDeclaration, false);
   }
   return fSerializer->writeToString(*fNode);
 }
@@ -146,19 +149,13 @@ bool NodeImpl::hasInstanceOfType(const XMLCh* typeURI, const XMLCh* typeName, co
 
 Sequence NodeImpl::dmBaseURI(const DynamicContext* context) const {
   
+    const XMLCh* baseURI=NULL;
 	switch (fNode->getNodeType()) {
     case DOMNode::ATTRIBUTE_NODE : 
         {
             DOMElement* pNode=((DOMAttr*)fNode)->getOwnerElement();
             if(pNode)
-            {
-                const XMLCh *tmp = pNode->getBaseURI();
-                if(tmp && tmp[0]) 
-                {
-                    const ATAnyURIOrDerived::Ptr tempURI = context->getItemFactory()->createAnyURI(tmp, context);
-                    return Sequence(tempURI, context->getMemoryManager());
-                }
-            }
+                baseURI = pNode->getBaseURI();
         }
         break;
     case DOMNode::COMMENT_NODE : 
@@ -167,13 +164,35 @@ Sequence NodeImpl::dmBaseURI(const DynamicContext* context) const {
     case DOMNode::DOCUMENT_NODE :
     case DOMNode::PROCESSING_INSTRUCTION_NODE : 
         {
-            const XMLCh *tmp = fNode->getBaseURI();
-            if(tmp && tmp[0]) 
+            baseURI = fNode->getBaseURI();
+            break;
+        }
+	}
+    const XMLCh* moduleBaseURI=context->getBaseURI();
+    if(baseURI && baseURI[0]) 
+    {
+        ATAnyURIOrDerived::Ptr tempURI;
+        if(moduleBaseURI && moduleBaseURI[0])
+        {
+            try
             {
-                const ATAnyURIOrDerived::Ptr tempURI = context->getItemFactory()->createAnyURI(tmp, context);
-                return Sequence(tempURI, context->getMemoryManager());
+                XMLUri temp(moduleBaseURI, context->getMemoryManager());
+                XMLUri temp2(&temp, baseURI, context->getMemoryManager());
+                tempURI = context->getItemFactory()->createAnyURI(temp2.getUriText(), context);
+            }
+            catch(MalformedURLException& e)
+            {
+                XQThrow(ItemException, X("NodeImpl::dmBaseURI"), X("Base-URI is a malformed URL"));
             }
         }
+        else 
+            tempURI = context->getItemFactory()->createAnyURI(baseURI, context);
+        return Sequence(tempURI, context->getMemoryManager());
+    }
+    else if(moduleBaseURI && moduleBaseURI[0])
+    {
+        const ATAnyURIOrDerived::Ptr tempURI = context->getItemFactory()->createAnyURI(moduleBaseURI, context);
+        return Sequence(tempURI, context->getMemoryManager());
 	}
     return Sequence(context->getMemoryManager());
 }
@@ -658,9 +677,20 @@ bool NodeImpl::lessThan(const Node::Ptr &other, const DynamicContext *context) c
       return fNode->getOwnerDocument()<otherNode->getOwnerDocument();
     else
     {
-      Node::Ptr root1=FunctionRoot::root(this, context);
-      Node::Ptr root2=FunctionRoot::root(other, context);
-      return root1.get() < root2.get();
+      const DOMNode* myParent=fNode;
+      const DOMNode* tmpParent = XPath2NSUtils::getParent(fNode);
+      while(tmpParent != 0) {
+        myParent = tmpParent;
+        tmpParent = tmpParent->getParentNode();
+      }
+      const DOMNode* otherParent=otherNode;
+      tmpParent = XPath2NSUtils::getParent(otherNode);
+      while(tmpParent != 0) {
+        otherParent = tmpParent;
+        tmpParent = tmpParent->getParentNode();
+      }
+
+      return myParent < otherParent;
     }
   }
   assert(false);
