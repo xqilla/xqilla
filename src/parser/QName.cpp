@@ -88,8 +88,8 @@ QualifiedName::~QualifiedName()
 {
   if(_bDeleteStrings)
   {
-    delete [] (XMLCh*)_prefix;
-    delete [] (XMLCh*)_name;
+      XERCES_CPP_NAMESPACE_QUALIFIER XMLString::release((XMLCh**)&_prefix);
+      XERCES_CPP_NAMESPACE_QUALIFIER XMLString::release((XMLCh**)&_name);
   }
 }
 
