@@ -95,7 +95,7 @@ public:
     const XQUserFunction* m_pFuncDef;
   };
 
-  XQUserFunction(const XMLCh* fnName, VectorOfFunctionParameters* params, ASTNode* body, SequenceType* returnValue, XPath2MemoryManager* memMgr);
+  XQUserFunction(const XMLCh* fnName, VectorOfFunctionParameters* params, ASTNode* body, SequenceType* returnValue, StaticContext* ctx);
 
   // from FuncFactory
   virtual ASTNode *createInstance(const VectorOfASTNodes &args, XPath2MemoryManager* expr) const;

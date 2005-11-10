@@ -776,43 +776,35 @@ ConstructionDecl:
 FunctionDecl:
 	  _DECLARE_FUNCTION_ _FUNCTION_CALL_ ParamList _RPAR_ EnclosedExpr
 		{
-			$$ = new (MEMMGR) XQUserFunction($2,$3,$5,NULL, MEMMGR); 
-			$$->setURI(CONTEXT->getUriBoundToPrefix($$->getPrefix()));
+			$$ = new (MEMMGR) XQUserFunction($2,$3,$5,NULL, CONTEXT); 
 		}
 	| _DECLARE_FUNCTION_ _FUNCTION_CALL_ _RPAR_ EnclosedExpr
 		{
-			$$ = new (MEMMGR) XQUserFunction($2,NULL,$4,NULL, MEMMGR); 
-			$$->setURI(CONTEXT->getUriBoundToPrefix($$->getPrefix()));
+			$$ = new (MEMMGR) XQUserFunction($2,NULL,$4,NULL, CONTEXT); 
 		}
 	| _DECLARE_FUNCTION_ _FUNCTION_CALL_ ParamList _EXPR_AS_ SequenceType EnclosedExpr
 		{
-			$$ = new (MEMMGR) XQUserFunction($2,$3,$6,$5, MEMMGR); 
-			$$->setURI(CONTEXT->getUriBoundToPrefix($$->getPrefix()));
+			$$ = new (MEMMGR) XQUserFunction($2,$3,$6,$5, CONTEXT); 
 		}
 	| _DECLARE_FUNCTION_ _FUNCTION_CALL_ _EXPR_AS_ SequenceType EnclosedExpr
 		{
-			$$ = new (MEMMGR) XQUserFunction($2,NULL,$5,$4, MEMMGR); 
-			$$->setURI(CONTEXT->getUriBoundToPrefix($$->getPrefix()));
+			$$ = new (MEMMGR) XQUserFunction($2,NULL,$5,$4, CONTEXT); 
 		}
 	| _DECLARE_FUNCTION_ _FUNCTION_CALL_ ParamList _RPAR_ _EXTERNAL_
 		{
-			$$ = new (MEMMGR) XQUserFunction($2,$3,NULL,NULL, MEMMGR); 
-			$$->setURI(CONTEXT->getUriBoundToPrefix($$->getPrefix()));
+			$$ = new (MEMMGR) XQUserFunction($2,$3,NULL,NULL, CONTEXT); 
 		}
 	| _DECLARE_FUNCTION_ _FUNCTION_CALL_ _RPAR_ _EXTERNAL_
 		{
-			$$ = new (MEMMGR) XQUserFunction($2,NULL,NULL,NULL, MEMMGR); 
-			$$->setURI(CONTEXT->getUriBoundToPrefix($$->getPrefix()));
+			$$ = new (MEMMGR) XQUserFunction($2,NULL,NULL,NULL, CONTEXT); 
 		}
 	| _DECLARE_FUNCTION_ _FUNCTION_CALL_ ParamList _EXPR_AS_ SequenceType _EXTERNAL_
 		{
-			$$ = new (MEMMGR) XQUserFunction($2,$3,NULL,$5, MEMMGR); 
-			$$->setURI(CONTEXT->getUriBoundToPrefix($$->getPrefix()));
+			$$ = new (MEMMGR) XQUserFunction($2,$3,NULL,$5, CONTEXT); 
 		}
 	| _DECLARE_FUNCTION_ _FUNCTION_CALL_ _EXPR_AS_ SequenceType _EXTERNAL_
 		{
-			$$ = new (MEMMGR) XQUserFunction($2,NULL,NULL,$4, MEMMGR); 
-			$$->setURI(CONTEXT->getUriBoundToPrefix($$->getPrefix()));
+			$$ = new (MEMMGR) XQUserFunction($2,NULL,NULL,$4, CONTEXT); 
 		}
 	;
 
