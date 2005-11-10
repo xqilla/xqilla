@@ -114,7 +114,7 @@ Sequence FunctionNormalizeUnicode::collapseTreeInternal(DynamicContext* context,
 		XMLCh *normalizedString = Normalizer::NormalizeC(str, context->getMemoryManager());
 
 		Sequence result = Sequence(context->getItemFactory()->createString(normalizedString , context), memMgr);
-		delete normalizedString;
+        XERCES_CPP_NAMESPACE_QUALIFIER XMLString::release(&normalizedString);
 		return result;
 	}
 	else if(XPath2Utils::equals(normalization, fg_NFD)) {
@@ -127,7 +127,7 @@ Sequence FunctionNormalizeUnicode::collapseTreeInternal(DynamicContext* context,
 		XMLCh *normalizedString = Normalizer::NormalizeKC(str, context->getMemoryManager());
 
 		Sequence result(context->getItemFactory()->createString(normalizedString, context), memMgr);
-		delete normalizedString;
+        XERCES_CPP_NAMESPACE_QUALIFIER XMLString::release(&normalizedString);
 		return result;
 	}
 	else if(XPath2Utils::equals(normalization, fg_NFKD)) {
