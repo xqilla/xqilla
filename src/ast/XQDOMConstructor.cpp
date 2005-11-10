@@ -126,7 +126,7 @@ Sequence XQDOMConstructor::collapseTreeInternal(DynamicContext *context, int fla
               Node::Ptr sourceNode=(Node::Ptr)child;
               // If the content sequence contains an attribute node following a node that is not an attribute node, a type error is raised [err:XQTY0024].
               if(sourceNode->dmNodeKind()==Node::attribute_string)
-                XQThrow(ASTException,X("DOM Constructor"),X("An attribute node cannot be a child of a document [err:XQTY0024]"));
+                XQThrow(ASTException,X("DOM Constructor"),X("An attribute node cannot be a child of a document [err:XQTY0004]"));
               // If the content sequence contains a document node, the document node is replaced in the content 
               // sequence by its children.
               else if(sourceNode->dmNodeKind()==Node::document_string) {
@@ -235,8 +235,18 @@ Sequence XQDOMConstructor::collapseTreeInternal(DynamicContext *context, int fla
         else if(itemName->getPrimitiveTypeIndex()==AnyAtomicType::STRING || itemName->getPrimitiveTypeIndex()==AnyAtomicType::UNTYPED_ATOMIC)
         {
           const XMLCh* pString=itemName->asString(context);
+          if(!XERCES_CPP_NAMESPACE_QUALIFIER XMLChar1_0::isValidQName(pString, XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(pString)))
+            XQThrow(ASTException,X("DOM Constructor"),X("The name for the element cannot be converted to a xs:QName [err:XQDY0074]"));
+
           nodePrefix=XPath2NSUtils::getPrefix(pString, context->getMemoryManager());
-          nodeUri=context->getUriBoundToPrefix(nodePrefix);
+          try
+          {
+            nodeUri=context->getUriBoundToPrefix(nodePrefix);
+          }
+          catch(NamespaceLookupException&)
+          {
+            XQThrow(ASTException,X("DOM Constructor"),X("The name for the element cannot be converted to a xs:QName because the prefix is undefined [err:XQDY0074]"));
+          }
           // if the prefix was empty and we didn't find a xmlns=".." declaration in the scope, use the default element/type ns
           if((nodePrefix==0 || *nodePrefix==0) && (nodeUri==0 || *nodeUri==0))
             nodeUri=context->getDefaultElementAndTypeNS();
@@ -352,19 +362,30 @@ Sequence XQDOMConstructor::collapseTreeInternal(DynamicContext *context, int fla
         if(itemName->getPrimitiveTypeIndex()==AnyAtomicType::QNAME)
         {
           const ATQNameOrDerived* pQName=(const ATQNameOrDerived*)(const AnyAtomicType*)itemName;
-          nodeUri=pQName->getURI();
           nodePrefix=pQName->getPrefix();
+          // ignore the URI unless we have a prefix (xs:QName created by the parser 
+          if(nodePrefix!=NULL && *nodePrefix!=0)
+            nodeUri=pQName->getURI();
           nodeName=pQName->getName();
         }
         else if(itemName->getPrimitiveTypeIndex()==AnyAtomicType::STRING || itemName->getPrimitiveTypeIndex()==AnyAtomicType::UNTYPED_ATOMIC)
         {
           const XMLCh* pString=itemName->asString(context);
+          if(!XERCES_CPP_NAMESPACE_QUALIFIER XMLChar1_0::isValidQName(pString, XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(pString)))
+            XQThrow(ASTException,X("DOM Constructor"),X("The name for the attribute cannot be converted to a xs:QName [err:XQDY0074]"));
           nodePrefix=XPath2NSUtils::getPrefix(pString, context->getMemoryManager());
           // if the prefix was empty we are in no namespace
           if(nodePrefix==0 || *nodePrefix==0)
             nodeUri=NULL;
           else
-            nodeUri=context->getUriBoundToPrefix(nodePrefix);
+            try
+            {
+              nodeUri=context->getUriBoundToPrefix(nodePrefix);
+            }
+            catch(NamespaceLookupException&)
+            {
+              XQThrow(ASTException,X("DOM Constructor"),X("The name for the attribute cannot be converted to a xs:QName because the prefix is undefined [err:XQDY0074]"));
+            }
           // keep the specified prefix in the node name
           nodeName=pString;
         }

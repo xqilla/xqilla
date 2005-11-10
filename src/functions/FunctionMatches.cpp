@@ -83,7 +83,7 @@ Sequence FunctionMatches::collapseTreeInternal(DynamicContext* context, int flag
        options[i]!= XERCES_CPP_NAMESPACE_QUALIFIER chLatin_i &&
        options[i]!= XERCES_CPP_NAMESPACE_QUALIFIER chLatin_x) 
      
-    XQThrow(FunctionException, X("FunctionMatches::collapseTreeInternal"),X("Invalid regular expression flags"));  
+    XQThrow(FunctionException, X("FunctionMatches::collapseTreeInternal"),X("Invalid regular expression flags [err:FORX0001]."));
   }
 
   //Build the Regular Expression
@@ -93,7 +93,7 @@ Sequence FunctionMatches::collapseTreeInternal(DynamicContext* context, int flag
   } catch (XERCES_CPP_NAMESPACE_QUALIFIER XMLException &e){ 
     XQThrow(FunctionException, X("FunctionMatches::collapseTreeInternal"), e.getMessage());  
   } catch (...){
-    XQThrow(FunctionException, X("FunctionMatches::collapseTreeInternal"),X("Invalid regular expression"));  
+    XQThrow(FunctionException, X("FunctionMatches::collapseTreeInternal"),X("Invalid regular expression [err:FORX0002]."));
   }  
 
   //do not get here
