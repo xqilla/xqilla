@@ -319,10 +319,7 @@ bool XQFLWOR::ProductFactor::initialise(DynamicContext *context)
     if(_vb->_seqType!=NULL)
     {
       SequenceType::OccurrenceIndicator occurr=_vb->_seqType->getOccurrenceIndicator();
-      if(occurr==SequenceType::EXACTLY_ONE)
-        _vb->_seqType->setOccurrence(SequenceType::PLUS);
-      else if(occurr==SequenceType::QUESTION_MARK)
-        _vb->_seqType->setOccurrence(SequenceType::STAR);
+      _vb->_seqType->setOccurrence(SequenceType::STAR);
       _values=_values.matches(_vb->_seqType, context);
     }
 
