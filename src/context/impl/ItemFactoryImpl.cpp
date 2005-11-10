@@ -94,7 +94,10 @@ Node::Ptr ItemFactoryImpl::createAttributeNode(const XMLCh *uri, const XMLCh *pr
   // check if it's an ID
   bool isID=false;
   static XMLCh xmlID[]={ chLatin_x, chLatin_m, chLatin_l, chColon, chLatin_i, chLatin_d, chNull }; 
-  if(XPath2Utils::equals(uri, XMLUni::fgXMLURIName) && XPath2Utils::equals(name, xmlID))
+  static XMLCh xml[]={ chLatin_x, chLatin_m, chLatin_l, chNull }; 
+  static XMLCh ID[]={ chLatin_i, chLatin_d, chNull }; 
+  if(XPath2Utils::equals(uri, XMLUni::fgXMLURIName) && 
+     (XPath2Utils::equals(name, xmlID) || (XPath2Utils::equals(prefix, xml) && XPath2Utils::equals(name, ID))))
   {
     if(!XMLChar1_0::isValidNCName(value, XMLString::stringLen(value)))
       XQThrow(ASTException,X("ItemFactoryImpl::createAttributeNode"),X("The value of an attribute xml:id must be a valid xs:NCName [err:XQST0082]"));

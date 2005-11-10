@@ -34,6 +34,7 @@
 #include <xqilla/exceptions/TypeNotFoundException.hpp>
 #include <xqilla/exceptions/XPath2TypeCastException.hpp>
 #include <xqilla/exceptions/NamespaceLookupException.hpp>
+#include <xqilla/exceptions/IllegalArgumentException.hpp>
 #include <xqilla/context/ItemFactory.hpp>
 
 #include <xercesc/util/XMLString.hpp>
@@ -115,7 +116,7 @@ AnyAtomicType::Ptr AnyAtomicType::castAs(const XMLCh* targetTypeURI, const XMLCh
     buffer.append(targetTypeURI);
     buffer.append(X("}"));
     buffer.append(targetTypeName);
-    buffer.append(X(" is not supported [err:FORG0001]"));
+    buffer.append(X(" is not supported [err:XPTY0004]"));
 
     XQThrow(XPath2TypeCastException, X("AnyAtomicType::castAs"), buffer.getRawBuffer());
   }
@@ -156,6 +157,8 @@ bool AnyAtomicType::castable(const XMLCh* targetTypeURI, const XMLCh* targetType
   // validate the data by calling castAs (can't use checkInstance)
   try {
     this->castAs(targetTypeURI, targetTypeName, context);
+  } catch (IllegalArgumentException& e) {
+    return false;
   } catch (XPath2TypeCastException &e) {
     return false;
   }
