@@ -36,6 +36,8 @@
 #include <xqilla/exceptions/FunctionException.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 
+#include <xercesc/util/XMLChar.hpp>
+
 const XMLCh FunctionResolveQName::name[] = { 
   XERCES_CPP_NAMESPACE_QUALIFIER chLatin_r, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_s, 
   XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_l, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_v, 
@@ -66,6 +68,9 @@ Sequence FunctionResolveQName::collapseTreeInternal(DynamicContext* context, int
     return Sequence(memMgr);
     
   const XMLCh* paramQName = arg1.first()->asString(context);
+  if(!XERCES_CPP_NAMESPACE_QUALIFIER XMLChar1_0::isValidQName(paramQName, XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(paramQName)))
+    XQThrow(FunctionException,X("FunctionResolveQName::collapseTreeInternal"),X("The first argument to fn:resolve-QName is not a valid xs:QName [err:FOCA0002]"));
+
   const XMLCh* prefix = XPath2NSUtils::getPrefix(paramQName, memMgr);
   const XMLCh* localName = XPath2NSUtils::getLocalName(paramQName);
 
@@ -92,7 +97,7 @@ Sequence FunctionResolveQName::collapseTreeInternal(DynamicContext* context, int
   }
 
   if(!noPrefix && namespaceURI == 0) {
-    XQThrow(FunctionException, X("FunctionResolveQName::collapseTreeInternal"),X("no namespace found for prefix"));
+    XQThrow(FunctionException, X("FunctionResolveQName::collapseTreeInternal"),X("No namespace found for prefix [err:FONS0004]."));
   }
 
   Sequence result(context->getItemFactory()->createQName(namespaceURI, prefix, localName, context), memMgr);

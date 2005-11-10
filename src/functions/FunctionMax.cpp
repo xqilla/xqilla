@@ -67,7 +67,7 @@ Sequence FunctionMax::collapseTreeInternal(DynamicContext* context, int flags) c
     try {
         sequence = validateSequence(getParamNumber(1,context,ASTNode::UNORDERED), context);
     } catch (IllegalArgumentException &e) {
-        XQThrow(IllegalArgumentException, X("FunctionMax::collapseTreeInternal"), X("Invalid argument to fn:max() function"));
+        XQThrow(IllegalArgumentException, X("FunctionMax::collapseTreeInternal"), X("Invalid argument to fn:max() function [err:FORG0006]."));
     }
 
     // Return the empty sequence if the sequence is empty
