@@ -2158,7 +2158,7 @@ CompElemConstructor:
 								  new (MEMMGR) XQLiteral(
                     new (MEMMGR) AnyAtomicTypeConstructor(
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
+										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_QNAME,
 										$1, /*isNumeric*/false),
 										MEMMGR), 
 								  empty, content,MEMMGR));
@@ -2170,7 +2170,7 @@ CompElemConstructor:
 								  new (MEMMGR) XQLiteral(
                     new (MEMMGR) AnyAtomicTypeConstructor(
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
+										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_QNAME,
 										$1, /*isNumeric*/false),
 										MEMMGR), 
 								  empty, empty,MEMMGR));
@@ -2208,7 +2208,7 @@ CompAttrConstructor:
 								      new (MEMMGR) XQLiteral(
                     new (MEMMGR) AnyAtomicTypeConstructor(
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
+										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_QNAME,
 										$1, /*isNumeric*/false),
 										MEMMGR), 
 									  0, content,MEMMGR));
@@ -2220,7 +2220,7 @@ CompAttrConstructor:
 								      new (MEMMGR) XQLiteral(
                     new (MEMMGR) AnyAtomicTypeConstructor(
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
+										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_QNAME,
 										$1, /*isNumeric*/false),
 										MEMMGR), 
 									  0, empty,MEMMGR));
