@@ -4367,7 +4367,7 @@ yyreduce:
 								  new (MEMMGR) XQLiteral(
                     new (MEMMGR) AnyAtomicTypeConstructor(
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
+										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_QNAME,
 										yyvsp[-3].str, /*isNumeric*/false),
 										MEMMGR), 
 								  empty, content,MEMMGR));
@@ -4382,7 +4382,7 @@ yyreduce:
 								  new (MEMMGR) XQLiteral(
                     new (MEMMGR) AnyAtomicTypeConstructor(
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
+										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_QNAME,
 										yyvsp[-2].str, /*isNumeric*/false),
 										MEMMGR), 
 								  empty, empty,MEMMGR));
@@ -4420,7 +4420,7 @@ yyreduce:
 								      new (MEMMGR) XQLiteral(
                     new (MEMMGR) AnyAtomicTypeConstructor(
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
+										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_QNAME,
 										yyvsp[-3].str, /*isNumeric*/false),
 										MEMMGR), 
 									  0, content,MEMMGR));
@@ -4435,7 +4435,7 @@ yyreduce:
 								      new (MEMMGR) XQLiteral(
                     new (MEMMGR) AnyAtomicTypeConstructor(
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
+										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_QNAME,
 										yyvsp[-2].str, /*isNumeric*/false),
 										MEMMGR), 
 									  0, empty,MEMMGR));
