@@ -31,6 +31,9 @@
 #include <xqilla/runtime/Sequence.hpp>
 #include <xqilla/items/ATQNameOrDerived.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
+#include <xqilla/exceptions/FunctionException.hpp>
+
+#include <xercesc/util/XMLChar.hpp>
 
 const XMLCh FunctionQName::name[] = {
   XERCES_CPP_NAMESPACE_QUALIFIER chLatin_Q, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_N, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a, 
@@ -59,6 +62,9 @@ Sequence FunctionQName::collapseTreeInternal(DynamicContext* context, int flags)
   if(!paramURIseq.isEmpty())
     uri=paramURIseq.first()->asString(context);
   const XMLCh* local = paramLocalseq.first()->asString(context);
+  if(!XERCES_CPP_NAMESPACE_QUALIFIER XMLChar1_0::isValidQName(local, XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(local)))
+    XQThrow(FunctionException,X("FunctionQName::collapseTreeInternal"),X("The second argument to fn:QName is not a valid xs:QName [err:FOCA0002]"));
+
   const XMLCh* prefix = XPath2NSUtils::getPrefix(local, context->getMemoryManager());
   local = XPath2NSUtils::getLocalName(local);
   //Construct QName here
