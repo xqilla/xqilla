@@ -68,8 +68,7 @@ public:
     VARIABLE_DEFINITION,
     FUNCTION_CALL,
     USER_FUNCTION,
-    ORDERING_CHANGE,
-    UNUSED_VALUE = 140 // force compiler to use more than 4 bits for this enum
+    ORDERING_CHANGE
   } whichType;
 
   class PredInfo {
