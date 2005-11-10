@@ -31,16 +31,19 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/functions/XQUserFunction.hpp>
+#include <xqilla/functions/FunctionConstructor.hpp>
 #include <xqilla/exceptions/FunctionException.hpp>
 #include <xqilla/exceptions/XPath2TypeMatchException.hpp>
 #include <xqilla/ast/XQSequence.hpp>
 #include <xqilla/context/VariableStore.hpp>
 #include <xqilla/context/VariableTypeStore.hpp>
 #include <xqilla/utils/XPath2NSUtils.hpp>
+#include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 
 #include <xercesc/util/XMLString.hpp>
 #include <xercesc/framework/XMLBuffer.hpp>
+#include <xercesc/validators/schema/SchemaSymbols.hpp>
 
 using namespace std;
 
@@ -70,27 +73,41 @@ const XMLCh XQUserFunction::XMLChXQueryLocalFunctionsURI[] =
     XERCES_CPP_NAMESPACE_QUALIFIER chNull
 };
 
-XQUserFunction::XQUserFunction(const XMLCh* fnName, VectorOfFunctionParameters* params, ASTNode* body, SequenceType* returnValue, XPath2MemoryManager* memMgr)
+XQUserFunction::XQUserFunction(const XMLCh* fnName, VectorOfFunctionParameters* params, ASTNode* body, SequenceType* returnValue, StaticContext* ctx)
 	: m_body(body),
     m_szPrefix(NULL),
     m_szName(NULL),
     m_szSignature(NULL),
     m_szFullName(fnName),
     m_szURI(NULL),
-    m_pMemMgr(memMgr),
+    m_pMemMgr(ctx->getMemoryManager()),
     m_bStaticallyResolved(false)
 {
   int nColon=XERCES_CPP_NAMESPACE_QUALIFIER XMLString::indexOf(fnName,':');
   if(nColon==-1)
-    XQThrow(FunctionException,X("User-defined Function"), X("The name for a user defined function must have a namespace prefix [err:XQ0045]"));
+  {
+      m_szURI=ctx->getDefaultFuncNS();
+      m_szName=m_pMemMgr->getPooledString(fnName);
+  }
+  else
+  {
+      XMLCh* tempPrefix = new XMLCh[nColon + 1];
+      XERCES_CPP_NAMESPACE_QUALIFIER XMLString::subString(tempPrefix, fnName, 0, nColon);
+      tempPrefix[nColon] = 0;
+      m_szPrefix = m_pMemMgr->getPooledString(tempPrefix);
+      delete [] tempPrefix;
+      m_szURI=ctx->getUriBoundToPrefix(m_szPrefix);
+      m_szName=m_pMemMgr->getPooledString(fnName+nColon+1);
+  }
+  if(XPath2Utils::equals(m_szURI, XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgXMLString) ||
+     XPath2Utils::equals(m_szURI, XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA) ||
+     XPath2Utils::equals(m_szURI, XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_XSI) ||
+     XPath2Utils::equals(m_szURI, XQFunction::XMLChFunctionURI) ||
+     XPath2Utils::equals(m_szURI, FunctionConstructor::XMLChXPath2DatatypesURI))
+  {
+      XQThrow(FunctionException,X("User-defined Function"), X("A user defined function must not be in the namespaces xml, xsd, xsi, fn or xdt [err:XQST0045]"));
+  }
 
-  XMLCh* tempPrefix = new XMLCh[nColon + 1];
-  XERCES_CPP_NAMESPACE_QUALIFIER XMLString::subString(tempPrefix, fnName, 0, nColon);
-  tempPrefix[nColon] = 0;
-  m_szPrefix = memMgr->getPooledString(tempPrefix);
-  delete [] tempPrefix;
-
-  m_szName=memMgr->getPooledString(fnName+nColon+1);
   m_pReturnPattern=returnValue;
   m_pParams=params;
 }
@@ -243,8 +260,11 @@ ASTNode* XQUserFunction::XQFunctionEvaluator::staticResolution(StaticContext* co
     XQThrow(FunctionException,X("User-defined Function"), buf.getRawBuffer());
   }
 
-  _src.getStaticType() = m_pFuncDef->m_body->getStaticResolutionContext().getStaticType();
-  _src.add(m_pFuncDef->m_body->getStaticResolutionContext());
+  if(m_pFuncDef->m_body)
+  {
+    _src.getStaticType() = m_pFuncDef->m_body->getStaticResolutionContext().getStaticType();
+    _src.add(m_pFuncDef->m_body->getStaticResolutionContext());
+  }
 
   if(nDefinedArgs > 0) {
     VectorOfASTNodes::iterator argIt = _args.begin();
@@ -260,7 +280,7 @@ ASTNode* XQUserFunction::XQFunctionEvaluator::staticResolution(StaticContext* co
     }
   }
 
-  if(_src.isUsed()) {
+  if(m_pFuncDef->m_body==0 || _src.isUsed()) {
     return resolvePredicates(context);
   }
   else {
