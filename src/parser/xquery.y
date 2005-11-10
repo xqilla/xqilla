@@ -246,7 +246,6 @@ namespace XQuery {
 %token <str> _INTEGER_NUMBER_						"<integer number>"
 %token <str> _DECIMAL_NUMBER_						"<decimal number>"
 %token <str> _DOUBLE_NUMBER_						"<double number>"
-%token <str> _XQUERY_VERSION_						"xquery version <ver>"
 %token <str> _XML_COMMENT_							"<!-- ... -->"
 %token <str> _CDATA_SECTION_						"<![CDATA[...]]>"
 %token <str> _PROCESSING_INSTRUCTION_CONTENT_		"...?>"
@@ -361,11 +360,11 @@ namespace XQuery {
 %token _CLOSE_APOS_						"' (close)"
 %token _LBRACE_							"{"
 %token _RBRACE_							"}"
-%token _PRESERVE_						"preserve (xmlspace)"
-%token _STRIP_							"strip (xmlspace)"
+%token _PRESERVE_						"preserve"
+%token _STRIP_							"strip"
 %token _NAMESPACE_						"namespace"
 %token _EXPR_AS_						") as"
-%token _EMPTY_							"empty()"
+%token _EMPTY_							"void()"
 %token _ITEM_							"item()"
 %token _NILLABLE_						"?"
 %token _IMPORT_SCHEMA_					"import schema"
@@ -389,18 +388,15 @@ namespace XQuery {
 %token _SCHEMA_ATTRIBUTE_LPAR_			"schema-attribute("
 %token _ORDERED_						"ordered {"
 %token _UNORDERED_						"unordered {"
-%token _CONSTRUCTION_PRESERVE_			"preserve (construction)"
-%token _CONSTRUCTION_STRIP_				"strip (construction)"
 %token _ORDERING_UNORDERED_				"unordered"
 %token _ORDERING_ORDERED_				"ordered"
 %token _ZERO_OR_ONE_					"? (occurrence)"
 %token _ONE_OR_MORE_					"+ (occurrence)"
 %token _ZERO_OR_MORE_					"* (occurrence)"
 %token _ENCODING_						"encoding"
-%token _NS_PRESERVE_					"preserve (copy-namespaces)"
-%token _NS_NO_PRESERVE_					"no-preserve"
-%token _NS_INHERIT_						"inherit"
-%token _NS_NO_INHERIT_					"no-inherit"
+%token _NO_PRESERVE_					"no-preserve"
+%token _INHERIT_						"inherit"
+%token _NO_INHERIT_						"no-inherit"
 %token _DECLARE_						"declare"
 %token _BOUNDARYSPACE_					"boundary-space"
 %token _DEFAULT_COLLATION_				"default collation"
@@ -413,6 +409,8 @@ namespace XQuery {
 %token _DECLARE_FUNCTION_				"declare function"
 %token _DECLARE_VARIABLE_				"declare variable"
 %token _DECLARE_OPTION_					"declare option"
+%token _XQUERY_							"xquery"
+%token _VERSION_						"version"
 %token _EOF_
 
 %type <functDecl>			FunctionDecl 
@@ -464,15 +462,15 @@ Module:
 
 // [2]    VersionDecl    ::=    <"xquery" "version" StringLiteral> ("encoding" StringLiteral)? Separator
 VersionDecl:
-	_XQUERY_VERSION_ Separator
+	_XQUERY_ _VERSION_ _STRING_LITERAL_ Separator
 	{
-		if(!XPath2Utils::equals($1,sz1_0))
-			yyerror("This XQuery processor only supports version 1.0 of the specs");
+		if(!XPath2Utils::equals($3,sz1_0))
+			yyerror("This XQuery processor only supports version 1.0 of the specs [err:XQST0031]");
 	}
-	| _XQUERY_VERSION_ _ENCODING_ _STRING_LITERAL_ Separator
+	| _XQUERY_ _VERSION_ _STRING_LITERAL_ _ENCODING_ _STRING_LITERAL_ Separator
 	{
-		if(!XPath2Utils::equals($1,sz1_0))
-			yyerror("This XQuery processor only supports version 1.0 of the specs");
+		if(!XPath2Utils::equals($3,sz1_0))
+			yyerror("This XQuery processor only supports version 1.0 of the specs [err:XQST0031]");
 		// TODO: store the encoding somewhere
 	}
 	;
@@ -629,11 +627,11 @@ CopyNamespacesDecl:
 
 // [17]   	PreserveMode	   ::=   	"preserve" | "no-preserve"
 PreserveMode:
-	  _NS_PRESERVE_
+	  _PRESERVE_
 	{
 		CONTEXT->setPreserveNamespaces(true);
 	}
-	| _NS_NO_PRESERVE_
+	| _NO_PRESERVE_
 	{
 		CONTEXT->setPreserveNamespaces(false);
 	}
@@ -641,11 +639,11 @@ PreserveMode:
 
 // [18]   	InheritMode	   ::=   	"inherit" | "no-inherit"
 InheritMode:
-	  _NS_INHERIT_
+	  _INHERIT_
 	{
 		CONTEXT->setInheritNamespaces(true);
 	}
-	| _NS_NO_INHERIT_
+	| _NO_INHERIT_
 	{
 		CONTEXT->setInheritNamespaces(false);
 	}
@@ -761,11 +759,11 @@ VarDecl:
 
 // [25]    ConstructionDecl    ::=    <"declare" "construction"> ("preserve" | "strip") 
 ConstructionDecl:
-	_DECLARE_ _CONSTRUCTION_ _CONSTRUCTION_PRESERVE_
+	_DECLARE_ _CONSTRUCTION_ _PRESERVE_
 	{
 		CONTEXT->setConstructionMode(StaticContext::CONSTRUCTION_MODE_PRESERVE);
 	}
-	| _DECLARE_ _CONSTRUCTION_ _CONSTRUCTION_STRIP_
+	| _DECLARE_ _CONSTRUCTION_ _STRIP_
 	{
 		CONTEXT->setConstructionMode(StaticContext::CONSTRUCTION_MODE_STRIP);
 	}
@@ -1494,11 +1492,11 @@ RelativePathExpr:
   		{
 			XQNav *nav = getNavigation($1,MEMMGR);
 
-      NodeTest *step = new (MEMMGR) NodeTest();
-      step->setTypeWildcard();
-      step->setNameWildcard();
-      step->setNamespaceWildcard();
-      nav->addStep(XQStep::DESCENDANT_OR_SELF, step);
+            NodeTest *step = new (MEMMGR) NodeTest();
+            step->setTypeWildcard();
+            step->setNameWildcard();
+            step->setNamespaceWildcard();
+            nav->addStep(XQStep::DESCENDANT_OR_SELF, step);
 			nav->addStep($3);
 
 			$$ = nav;
