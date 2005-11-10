@@ -33,6 +33,7 @@
 #include <xercesc/util/XMLUniDefs.hpp>
 #include <xercesc/util/XMLString.hpp>
 #include <xercesc/util/BitSet.hpp>
+#include <xercesc/util/XMLChar.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/simple-api/XQQuery.hpp>
 #include <xqilla/context/DynamicContext.hpp>
@@ -227,6 +228,8 @@ public:
                         else
                             value = (value * radix) + nextVal;
                     }
+                    if(!XERCES_CPP_NAMESPACE_QUALIFIER XMLChar1_0::isXMLChar(value))
+                        LexerError("Entity reference is not a valid XML character");
 				    dst[j++]=value;
 				    i=k;
 			    } else
