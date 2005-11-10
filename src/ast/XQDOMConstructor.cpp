@@ -124,9 +124,9 @@ Sequence XQDOMConstructor::collapseTreeInternal(DynamicContext *context, int fla
             if(child->isNode())
             {
               Node::Ptr sourceNode=(Node::Ptr)child;
-              // If the content sequence contains an attribute node following a node that is not an attribute node, a type error is raised [err:XQTY0024].
+              // If the content sequence contains an attribute node following a node that is not an attribute node, a type error is raised [err:XPTY0004].
               if(sourceNode->dmNodeKind()==Node::attribute_string)
-                XQThrow(ASTException,X("DOM Constructor"),X("An attribute node cannot be a child of a document [err:XQTY0004]"));
+                XQThrow(ASTException,X("DOM Constructor"),X("An attribute node cannot be a child of a document [err:XPTY0004]."));
               // If the content sequence contains a document node, the document node is replaced in the content 
               // sequence by its children.
               else if(sourceNode->dmNodeKind()==Node::document_string) {
@@ -190,8 +190,8 @@ Sequence XQDOMConstructor::collapseTreeInternal(DynamicContext *context, int fla
           {
             ASTNode* attrItem=(*itAttr);
             static SequenceType nodeSequence(new SequenceType::ItemType(SequenceType::ItemType::TEST_NODE), SequenceType::STAR);
-	    StaticResolutionContext::StaticType stype;
-	    stype.flags = StaticResolutionContext::NODE_TYPE;
+            StaticResolutionContext::StaticType stype;
+            stype.flags = StaticResolutionContext::NODE_TYPE;
             Result oneAttribute=attrItem->collapseTree(context).convertFunctionArg(&nodeSequence,stype,context);
             Item::Ptr attr;
             while((attr = oneAttribute.next(context)) != NULLRCP) 
@@ -328,21 +328,25 @@ Sequence XQDOMConstructor::collapseTreeInternal(DynamicContext *context, int fla
             else
             {
               const XMLCh* valueStr=child->asString(context);
-              if(lastWasAtomic)
+              // empty strings are stripped
+              if(*valueStr)
               {
-                XMLCh space[]={ ' ', 0 };
-                valueStr=XPath2Utils::concatStrings(space,valueStr,context->getMemoryManager());
-              }
-              lastWasAtomic = true;
+                if(lastWasAtomic)
+                {
+                  XMLCh space[]={ ' ', 0 };
+                  valueStr=XPath2Utils::concatStrings(space,valueStr,context->getMemoryManager());
+                }
+                lastWasAtomic = true;
 
-              if(!childList.empty() && isTextNode(childList.back())) {
-                const XMLCh* buff=XPath2Utils::concatStrings(childList.back()->dmStringValue(context),valueStr,context->getMemoryManager());
+                if(!childList.empty() && isTextNode(childList.back())) {
+                  const XMLCh* buff=XPath2Utils::concatStrings(childList.back()->dmStringValue(context),valueStr,context->getMemoryManager());
                         
-                childList.pop_back();
-                childList.push_back(context->getItemFactory()->createTextNode(buff, context));
-              }
-              else {
-                childList.push_back(context->getItemFactory()->createTextNode(valueStr, context));
+                  childList.pop_back();
+                  childList.push_back(context->getItemFactory()->createTextNode(buff, context));
+                }
+                else {
+                  childList.push_back(context->getItemFactory()->createTextNode(valueStr, context));
+                }
               }
             }
           }
@@ -457,7 +461,11 @@ Sequence XQDOMConstructor::collapseTreeInternal(DynamicContext *context, int fla
           ++ptr;
         }
 
-        result = context->getItemFactory()->createPINode(nodeName, value.getRawBuffer(), context);
+        const XMLCh* piContent=value.getRawBuffer();
+        // remove leading whitespace
+        while(XERCES_CPP_NAMESPACE_QUALIFIER XMLChar1_0::isWhitespace(*piContent)) piContent++;
+
+        result = context->getItemFactory()->createPINode(nodeName, piContent, context);
       }
 
       // COMMENT node
