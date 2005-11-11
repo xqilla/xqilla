@@ -383,173 +383,175 @@ Grammatica
   265 QuotAttrValueContent: /* vuoto */
   266                     | QuotAttrValueContent EnclosedExpr
   267                     | QuotAttrValueContent """"
-  268                     | QuotAttrValueContent CommonContent
+  268                     | QuotAttrValueContent "<char>"
+  269                     | QuotAttrValueContent CommonContent
 
-  269 AposAttrValueContent: /* vuoto */
-  270                     | AposAttrValueContent EnclosedExpr
-  271                     | AposAttrValueContent "''"
-  272                     | AposAttrValueContent CommonContent
+  270 AposAttrValueContent: /* vuoto */
+  271                     | AposAttrValueContent EnclosedExpr
+  272                     | AposAttrValueContent "''"
+  273                     | AposAttrValueContent "<char>"
+  274                     | AposAttrValueContent CommonContent
 
-  273 DirElementContent: /* vuoto */
-  274                  | DirElementContent DirectConstructor
-  275                  | DirElementContent EnclosedExpr
-  276                  | DirElementContent CdataSection
-  277                  | DirElementContent CommonContent
+  275 DirElementContent: /* vuoto */
+  276                  | DirElementContent DirectConstructor
+  277                  | DirElementContent "<char>"
+  278                  | DirElementContent CdataSection
+  279                  | DirElementContent EnclosedExpr
+  280                  | DirElementContent CommonContent
 
-  278 CommonContent: "<predefined entity ref>"
-  279              | "&#XXX;"
-  280              | "{{"
-  281              | "}}"
-  282              | "<char>"
+  281 CommonContent: "<predefined entity ref>"
+  282              | "&#XXX;"
+  283              | "{{"
+  284              | "}}"
 
-  283 DirCommentConstructor: "<!-- ... -->"
+  285 DirCommentConstructor: "<!-- ... -->"
 
-  284 DirPIConstructor: "<?" "<processing instruction target>" "...?>"
+  286 DirPIConstructor: "<?" "<processing instruction target>" "...?>"
 
-  285 CdataSection: "<![CDATA[...]]>"
+  287 CdataSection: "<![CDATA[...]]>"
 
-  286 ComputedConstructor: CompDocConstructor
-  287                    | CompElemConstructor
-  288                    | CompAttrConstructor
-  289                    | CompTextConstructor
-  290                    | CompCommentConstructor
-  291                    | CompPIConstructor
+  288 ComputedConstructor: CompDocConstructor
+  289                    | CompElemConstructor
+  290                    | CompAttrConstructor
+  291                    | CompTextConstructor
+  292                    | CompCommentConstructor
+  293                    | CompPIConstructor
 
-  292 CompDocConstructor: "document {" "{" Expr "}"
+  294 CompDocConstructor: "document {" "{" Expr "}"
 
-  293 CompElemConstructor: "element <name> {" "{" ContentExpr "}"
-  294                    | "element <name> {" "{" "}"
-  295                    | "element {" "{" Expr "}" "{" ContentExpr "}"
-  296                    | "element {" "{" Expr "}" "{" "}"
+  295 CompElemConstructor: "element <name> {" "{" ContentExpr "}"
+  296                    | "element <name> {" "{" "}"
+  297                    | "element {" "{" Expr "}" "{" ContentExpr "}"
+  298                    | "element {" "{" Expr "}" "{" "}"
 
-  297 ContentExpr: Expr
+  299 ContentExpr: Expr
 
-  298 CompAttrConstructor: "attribute <name> {" "{" Expr "}"
-  299                    | "attribute <name> {" "{" "}"
-  300                    | "attribute {" "{" Expr "}" "{" Expr "}"
-  301                    | "attribute {" "{" Expr "}" "{" "}"
+  300 CompAttrConstructor: "attribute <name> {" "{" Expr "}"
+  301                    | "attribute <name> {" "{" "}"
+  302                    | "attribute {" "{" Expr "}" "{" Expr "}"
+  303                    | "attribute {" "{" Expr "}" "{" "}"
 
-  302 CompTextConstructor: "text {" "{" Expr "}"
+  304 CompTextConstructor: "text {" "{" Expr "}"
 
-  303 CompCommentConstructor: "comment {" "{" Expr "}"
+  305 CompCommentConstructor: "comment {" "{" Expr "}"
 
-  304 CompPIConstructor: "processing-instruction <pi> {" "{" Expr "}"
-  305                  | "processing-instruction <pi> {" "{" "}"
-  306                  | "processing-instruction {" "{" Expr "}" "{" Expr "}"
-  307                  | "processing-instruction {" "{" Expr "}" "{" "}"
+  306 CompPIConstructor: "processing-instruction <pi> {" "{" Expr "}"
+  307                  | "processing-instruction <pi> {" "{" "}"
+  308                  | "processing-instruction {" "{" Expr "}" "{" Expr "}"
+  309                  | "processing-instruction {" "{" Expr "}" "{" "}"
 
-  308 SingleType: AtomicType "? (occurrence)"
-  309           | AtomicType
+  310 SingleType: AtomicType "? (occurrence)"
+  311           | AtomicType
 
-  310 TypeDeclaration: "as" SequenceType
+  312 TypeDeclaration: "as" SequenceType
 
-  311 SequenceType: ItemType OccurrenceIndicator
-  312             | ItemType
-  313             | "void()"
+  313 SequenceType: ItemType OccurrenceIndicator
+  314             | ItemType
+  315             | "void()"
 
-  314 OccurrenceIndicator: "* (occurrence)"
-  315                    | "+ (occurrence)"
-  316                    | "? (occurrence)"
+  316 OccurrenceIndicator: "* (occurrence)"
+  317                    | "+ (occurrence)"
+  318                    | "? (occurrence)"
 
-  317 ItemType: AtomicType
-  318         | KindTest
-  319         | "item()"
+  319 ItemType: AtomicType
+  320         | KindTest
+  321         | "item()"
 
-  320 AtomicType: QName
+  322 AtomicType: QName
 
-  321 KindTest: DocumentTest
-  322         | ElementTest
-  323         | AttributeTest
-  324         | SchemaElementTest
-  325         | SchemaAttributeTest
-  326         | PITest
-  327         | CommentTest
-  328         | TextTest
-  329         | AnyKindTest
+  323 KindTest: DocumentTest
+  324         | ElementTest
+  325         | AttributeTest
+  326         | SchemaElementTest
+  327         | SchemaAttributeTest
+  328         | PITest
+  329         | CommentTest
+  330         | TextTest
+  331         | AnyKindTest
 
-  330 AnyKindTest: "node(" ")"
+  332 AnyKindTest: "node(" ")"
 
-  331 DocumentTest: "document-node(" ")"
-  332             | "document-node(" ElementTest ")"
-  333             | "document-node(" SchemaElementTest ")"
+  333 DocumentTest: "document-node(" ")"
+  334             | "document-node(" ElementTest ")"
+  335             | "document-node(" SchemaElementTest ")"
 
-  334 TextTest: "text(" ")"
+  336 TextTest: "text(" ")"
 
-  335 CommentTest: "comment(" ")"
+  337 CommentTest: "comment(" ")"
 
-  336 PITest: "processing-instruction(" ")"
-  337       | "processing-instruction(" "<local name>" ")"
-  338       | "processing-instruction(" "'...'" ")"
+  338 PITest: "processing-instruction(" ")"
+  339       | "processing-instruction(" "<local name>" ")"
+  340       | "processing-instruction(" "'...'" ")"
 
-  339 AttributeTest: "attribute(" ")"
-  340              | "attribute(" AttribNameOrWildcard ")"
-  341              | "attribute(" AttribNameOrWildcard "," TypeName ")"
+  341 AttributeTest: "attribute(" ")"
+  342              | "attribute(" AttribNameOrWildcard ")"
+  343              | "attribute(" AttribNameOrWildcard "," TypeName ")"
 
-  342 AttribNameOrWildcard: AttributeName
-  343                     | "* (wildcard)"
+  344 AttribNameOrWildcard: AttributeName
+  345                     | "* (wildcard)"
 
-  344 SchemaAttributeTest: "schema-attribute(" AttributeDeclaration ")"
+  346 SchemaAttributeTest: "schema-attribute(" AttributeDeclaration ")"
 
-  345 AttributeDeclaration: AttributeName
+  347 AttributeDeclaration: AttributeName
 
-  346 ElementTest: "element(" ")"
-  347            | "element(" ElementNameOrWildcard ")"
-  348            | "element(" ElementNameOrWildcard "," TypeName ")"
-  349            | "element(" ElementNameOrWildcard "," TypeName "?" ")"
+  348 ElementTest: "element(" ")"
+  349            | "element(" ElementNameOrWildcard ")"
+  350            | "element(" ElementNameOrWildcard "," TypeName ")"
+  351            | "element(" ElementNameOrWildcard "," TypeName "?" ")"
 
-  350 ElementNameOrWildcard: ElementName
-  351                      | "* (wildcard)"
+  352 ElementNameOrWildcard: ElementName
+  353                      | "* (wildcard)"
 
-  352 SchemaElementTest: "schema-element(" ElementDeclaration ")"
+  354 SchemaElementTest: "schema-element(" ElementDeclaration ")"
 
-  353 ElementDeclaration: ElementName
+  355 ElementDeclaration: ElementName
 
-  354 AttributeName: QName
+  356 AttributeName: QName
 
-  355 ElementName: QName
+  357 ElementName: QName
 
-  356 TypeName: QName
+  358 TypeName: QName
 
-  357 IntegerLiteral: "<integer number>"
+  359 IntegerLiteral: "<integer number>"
 
-  358 DecimalLiteral: "<decimal number>"
+  360 DecimalLiteral: "<decimal number>"
 
-  359 DoubleLiteral: "<double number>"
+  361 DoubleLiteral: "<double number>"
 
-  360 URILiteral: "'...'"
+  362 URILiteral: "'...'"
 
-  361 StringLiteral: "'...'"
+  363 StringLiteral: "'...'"
 
-  362 QName: "<qualified name>"
+  364 QName: "<qualified name>"
 
 
 Simboli terminali e regole in cui appaiono
 
 "<end of file>" (0) 0
 error (256)
-"<qualified name>" (258) 35 362
+"<qualified name>" (258) 35 364
 "<function>(" (259) 65 66 67 68 69 70 71 72 250 251
 "<tag name>" (260) 259 260
 "<attribute name>" (261) 262
-"'...'" (262) 5 6 35 338 360 361
+"'...'" (262) 5 6 35 340 362 363
 "<variable name>" (263) 59 60 61 62 75 76 97 98 99 100 101 105 106
     124 125 126 131 244
-"<char>" (264) 282
-"&#XXX;" (265) 279
-"<predefined entity ref>" (266) 278
+"<char>" (264) 268 273 277
+"&#XXX;" (265) 282
+"<predefined entity ref>" (266) 281
 "<ns>:*" (267) 226
 "*:<local name>" (268) 227
-"<local name>" (269) 9 30 53 55 56 337
-"<processing instruction target>" (270) 284
-"attribute <name> {" (271) 298 299
-"element <name> {" (272) 293 294
-"<integer number>" (273) 357
-"<decimal number>" (274) 358
-"<double number>" (275) 359
-"<!-- ... -->" (276) 283
-"<![CDATA[...]]>" (277) 285
-"...?>" (278) 284
-"processing-instruction <pi> {" (279) 304 305
+"<local name>" (269) 9 30 53 55 56 339
+"<processing instruction target>" (270) 286
+"attribute <name> {" (271) 300 301
+"element <name> {" (272) 295 296
+"<integer number>" (273) 359
+"<decimal number>" (274) 360
+"<double number>" (275) 361
+"<!-- ... -->" (276) 285
+"<![CDATA[...]]>" (277) 287
+"...?>" (278) 286
+"processing-instruction <pi> {" (279) 306 307
 "<pragma name>" (280) 190
 "<pragma content>" (281) 190
 "(: comment :)" (282)
@@ -557,9 +559,9 @@ _XQUERY_WHITESPACE_ (283)
 _XQUERY_ERROR_ (284)
 "(#" (285) 190
 "#)" (286) 190
-"''" (287) 271
+"''" (287) 272
 """" (288) 267
-"," (289) 40 52 73 79 95 103 110 122 252 341 348 349
+"," (289) 40 52 73 79 95 103 110 122 252 343 350 351
 "return" (290) 86 87 88 89 126 127 130 131
 "for" (291) 94
 "in" (292) 97 98 99 100 124 125
@@ -582,7 +584,7 @@ _XQUERY_ERROR_ (284)
 "typeswitch" (308) 126 127
 "default" (309) 126 127
 "case" (310) 130 131
-"as" (311) 131 310
+"as" (311) 131 312
 "if" (312) 132
 "then" (313) 132
 "else" (314) 132
@@ -634,50 +636,50 @@ _XQUERY_ERROR_ (284)
 "self::" (360) 207
 "descendant-or-self::" (361) 208
 "parent::" (362) 215
-"* (wildcard)" (363) 225 343 351
-"processing-instruction(" (364) 336 337 338
-"comment(" (365) 335
-"text(" (366) 334
-"node(" (367) 330
+"* (wildcard)" (363) 225 345 353
+"processing-instruction(" (364) 338 339 340
+"comment(" (365) 337
+"text(" (366) 336
+"node(" (367) 332
 "(" (368) 126 127 132 245 246
-")" (369) 65 66 69 70 126 127 132 245 246 250 251 330 331 332 333 334
-    335 336 337 338 339 340 341 344 346 347 348 349 352
+")" (369) 65 66 69 70 126 127 132 245 246 250 251 332 333 334 335 336
+    337 338 339 340 341 342 343 346 348 349 350 351 354
 "<" (370) 259 260
 "/>" (371) 259
 "=" (372) 262
 ">" (373) 260
 "</" (374) 260
-"document {" (375) 292
-"element {" (376) 295 296
-"attribute {" (377) 300 301
-"text {" (378) 302
-"<?" (379) 284
-"{{" (380) 280
-"}}" (381) 281
+"document {" (375) 294
+"element {" (376) 297 298
+"attribute {" (377) 302 303
+"text {" (378) 304
+"<?" (379) 286
+"{{" (380) 283
+"}}" (381) 284
 "" (open)" (382) 263
 "" (close)" (383) 263
 "' (open)" (384) 264
 "' (close)" (385) 264
-"{" (386) 77 183 184 185 186 187 248 249 292 293 294 295 296 298 299
-    300 301 302 303 304 305 306 307
-"}" (387) 77 183 184 185 186 187 248 249 292 293 294 295 296 298 299
-    300 301 302 303 304 305 306 307
+"{" (386) 77 183 184 185 186 187 248 249 294 295 296 297 298 300 301
+    302 303 304 305 306 307 308 309
+"}" (387) 77 183 184 185 186 187 248 249 294 295 296 297 298 300 301
+    302 303 304 305 306 307 308 309
 "preserve" (388) 31 41 63
 "strip" (389) 32 64
 "namespace" (390) 30 33 34 53 54 55 56
 ") as" (391) 67 68 71 72
-"void()" (392) 313
-"item()" (393) 319
-"?" (394) 349
+"void()" (392) 315
+"item()" (393) 321
+"?" (394) 351
 "import schema" (395) 47 48 49 50
 "import module" (396) 55 56 57 58
-"document-node(" (397) 331 332 333
-"attribute(" (398) 339 340 341
-"element(" (399) 346 347 348 349
+"document-node(" (397) 333 334 335
+"attribute(" (398) 341 342 343
+"element(" (399) 348 349 350 351
 "external" (400) 61 62 69 70 71 72
 "module namespace" (401) 9
-"processing-instruction {" (402) 306 307
-"comment {" (403) 303
+"processing-instruction {" (402) 308 309
+"comment {" (403) 305
 "ancestor-or-self::" (404) 219
 "ancestor::" (405) 216
 "following-sibling::" (406) 209
@@ -686,15 +688,15 @@ _XQUERY_ERROR_ (284)
 "preceding::" (409) 218
 ";" (410) 29
 "default element" (411) 33 54
-"schema-element(" (412) 352
-"schema-attribute(" (413) 344
+"schema-element(" (412) 354
+"schema-attribute(" (413) 346
 "ordered {" (414) 248
 "unordered {" (415) 249
 "unordered" (416) 37
 "ordered" (417) 36
-"? (occurrence)" (418) 308 316
-"+ (occurrence)" (419) 315
-"* (occurrence)" (420) 314
+"? (occurrence)" (418) 310 318
+"+ (occurrence)" (419) 317
+"* (occurrence)" (420) 316
 "encoding" (421) 6
 "no-preserve" (422) 42
 "inherit" (423) 43
@@ -786,13 +788,13 @@ ParamList (215)
 Param (216)
     nel primo membro: 75 76, nel secondo membro: 73 74
 EnclosedExpr (217)
-    nel primo membro: 77, nel secondo membro: 65 66 67 68 266 270 275
+    nel primo membro: 77, nel secondo membro: 65 66 67 68 266 271 279
 QueryBody (218)
     nel primo membro: 78, nel secondo membro: 7
 Expr (219)
     nel primo membro: 79 80, nel secondo membro: 77 78 79 126 127 132
-    183 184 185 187 230 245 248 249 292 295 296 297 298 300 301 302
-    303 304 306 307
+    183 184 185 187 230 245 248 249 294 297 298 299 300 302 303 304
+    305 306 308 309
 ExprSingle (220)
     nel primo membro: 81 82 83 84 85, nel secondo membro: 59 60 79
     80 86 87 88 89 97 98 99 100 105 106 107 112 113 120 121 124 125
@@ -942,7 +944,7 @@ FunctionCallArgumentList (286)
 Constructor (287)
     nel primo membro: 254 255, nel secondo membro: 236
 DirectConstructor (288)
-    nel primo membro: 256 257 258, nel secondo membro: 254 274
+    nel primo membro: 256 257 258, nel secondo membro: 254 276
 DirElemConstructor (289)
     nel primo membro: 259 260, nel secondo membro: 256
 DirAttributeList (290)
@@ -950,102 +952,102 @@ DirAttributeList (290)
 DirAttributeValue (291)
     nel primo membro: 263 264, nel secondo membro: 262
 QuotAttrValueContent (292)
-    nel primo membro: 265 266 267 268, nel secondo membro: 263 266
-    267 268
+    nel primo membro: 265 266 267 268 269, nel secondo membro: 263
+    266 267 268 269
 AposAttrValueContent (293)
-    nel primo membro: 269 270 271 272, nel secondo membro: 264 270
-    271 272
+    nel primo membro: 270 271 272 273 274, nel secondo membro: 264
+    271 272 273 274
 DirElementContent (294)
-    nel primo membro: 273 274 275 276 277, nel secondo membro: 260
-    274 275 276 277
+    nel primo membro: 275 276 277 278 279 280, nel secondo membro:
+    260 276 277 278 279 280
 CommonContent (295)
-    nel primo membro: 278 279 280 281 282, nel secondo membro: 268
-    272 277
+    nel primo membro: 281 282 283 284, nel secondo membro: 269 274
+    280
 DirCommentConstructor (296)
-    nel primo membro: 283, nel secondo membro: 257
+    nel primo membro: 285, nel secondo membro: 257
 DirPIConstructor (297)
-    nel primo membro: 284, nel secondo membro: 258
+    nel primo membro: 286, nel secondo membro: 258
 CdataSection (298)
-    nel primo membro: 285, nel secondo membro: 276
+    nel primo membro: 287, nel secondo membro: 278
 ComputedConstructor (299)
-    nel primo membro: 286 287 288 289 290 291, nel secondo membro:
+    nel primo membro: 288 289 290 291 292 293, nel secondo membro:
     255
 CompDocConstructor (300)
-    nel primo membro: 292, nel secondo membro: 286
+    nel primo membro: 294, nel secondo membro: 288
 CompElemConstructor (301)
-    nel primo membro: 293 294 295 296, nel secondo membro: 287
+    nel primo membro: 295 296 297 298, nel secondo membro: 289
 ContentExpr (302)
-    nel primo membro: 297, nel secondo membro: 293 295
+    nel primo membro: 299, nel secondo membro: 295 297
 CompAttrConstructor (303)
-    nel primo membro: 298 299 300 301, nel secondo membro: 288
+    nel primo membro: 300 301 302 303, nel secondo membro: 290
 CompTextConstructor (304)
-    nel primo membro: 302, nel secondo membro: 289
+    nel primo membro: 304, nel secondo membro: 291
 CompCommentConstructor (305)
-    nel primo membro: 303, nel secondo membro: 290
+    nel primo membro: 305, nel secondo membro: 292
 CompPIConstructor (306)
-    nel primo membro: 304 305 306 307, nel secondo membro: 291
+    nel primo membro: 306 307 308 309, nel secondo membro: 293
 SingleType (307)
-    nel primo membro: 308 309, nel secondo membro: 173 175
+    nel primo membro: 310 311, nel secondo membro: 173 175
 TypeDeclaration (308)
-    nel primo membro: 310, nel secondo membro: 59 61 75 99 100 106
+    nel primo membro: 312, nel secondo membro: 59 61 75 99 100 106
     125
 SequenceType (309)
-    nel primo membro: 311 312 313, nel secondo membro: 67 68 71 72
-    130 131 169 171 310
+    nel primo membro: 313 314 315, nel secondo membro: 67 68 71 72
+    130 131 169 171 312
 OccurrenceIndicator (310)
-    nel primo membro: 314 315 316, nel secondo membro: 311
+    nel primo membro: 316 317 318, nel secondo membro: 313
 ItemType (311)
-    nel primo membro: 317 318 319, nel secondo membro: 311 312
+    nel primo membro: 319 320 321, nel secondo membro: 313 314
 AtomicType (312)
-    nel primo membro: 320, nel secondo membro: 308 309 317
+    nel primo membro: 322, nel secondo membro: 310 311 319
 KindTest (313)
-    nel primo membro: 321 322 323 324 325 326 327 328 329,
-    nel secondo membro: 221 318
+    nel primo membro: 323 324 325 326 327 328 329 330 331,
+    nel secondo membro: 221 320
 AnyKindTest (314)
-    nel primo membro: 330, nel secondo membro: 329
+    nel primo membro: 332, nel secondo membro: 331
 DocumentTest (315)
-    nel primo membro: 331 332 333, nel secondo membro: 321
+    nel primo membro: 333 334 335, nel secondo membro: 323
 TextTest (316)
-    nel primo membro: 334, nel secondo membro: 328
+    nel primo membro: 336, nel secondo membro: 330
 CommentTest (317)
-    nel primo membro: 335, nel secondo membro: 327
+    nel primo membro: 337, nel secondo membro: 329
 PITest (318)
-    nel primo membro: 336 337 338, nel secondo membro: 326
+    nel primo membro: 338 339 340, nel secondo membro: 328
 AttributeTest (319)
-    nel primo membro: 339 340 341, nel secondo membro: 323
+    nel primo membro: 341 342 343, nel secondo membro: 325
 AttribNameOrWildcard (320)
-    nel primo membro: 342 343, nel secondo membro: 340 341
+    nel primo membro: 344 345, nel secondo membro: 342 343
 SchemaAttributeTest (321)
-    nel primo membro: 344, nel secondo membro: 325
+    nel primo membro: 346, nel secondo membro: 327
 AttributeDeclaration (322)
-    nel primo membro: 345, nel secondo membro: 344
+    nel primo membro: 347, nel secondo membro: 346
 ElementTest (323)
-    nel primo membro: 346 347 348 349, nel secondo membro: 322 332
+    nel primo membro: 348 349 350 351, nel secondo membro: 324 334
 ElementNameOrWildcard (324)
-    nel primo membro: 350 351, nel secondo membro: 347 348 349
+    nel primo membro: 352 353, nel secondo membro: 349 350 351
 SchemaElementTest (325)
-    nel primo membro: 352, nel secondo membro: 324 333
+    nel primo membro: 354, nel secondo membro: 326 335
 ElementDeclaration (326)
-    nel primo membro: 353, nel secondo membro: 352
+    nel primo membro: 355, nel secondo membro: 354
 AttributeName (327)
-    nel primo membro: 354, nel secondo membro: 342 345
+    nel primo membro: 356, nel secondo membro: 344 347
 ElementName (328)
-    nel primo membro: 355, nel secondo membro: 350 353
+    nel primo membro: 357, nel secondo membro: 352 355
 TypeName (329)
-    nel primo membro: 356, nel secondo membro: 341 348 349
+    nel primo membro: 358, nel secondo membro: 343 350 351
 IntegerLiteral (330)
-    nel primo membro: 357, nel secondo membro: 241
+    nel primo membro: 359, nel secondo membro: 241
 DecimalLiteral (331)
-    nel primo membro: 358, nel secondo membro: 242
+    nel primo membro: 360, nel secondo membro: 242
 DoubleLiteral (332)
-    nel primo membro: 359, nel secondo membro: 243
+    nel primo membro: 361, nel secondo membro: 243
 URILiteral (333)
-    nel primo membro: 360, nel secondo membro: 9 30 33 34 45 46 47
+    nel primo membro: 362, nel secondo membro: 9 30 33 34 45 46 47
     48 49 50 51 52 55 56 57 58 113
 StringLiteral (334)
-    nel primo membro: 361, nel secondo membro: 240
+    nel primo membro: 363, nel secondo membro: 240
 QName (335)
-    nel primo membro: 362, nel secondo membro: 223 320 354 355 356
+    nel primo membro: 364, nel secondo membro: 223 322 356 357 358
 
 
 stato 0
@@ -1352,9 +1354,9 @@ stato 15
 
 stato 16
 
-  362 QName: "<qualified name>" .
+  364 QName: "<qualified name>" .
 
-    $default  riduzione con la regola 362 (QName)
+    $default  riduzione con la regola 364 (QName)
 
 
 stato 17
@@ -1509,9 +1511,9 @@ stato 17
 
 stato 18
 
-  361 StringLiteral: "'...'" .
+  363 StringLiteral: "'...'" .
 
-    $default  riduzione con la regola 361 (StringLiteral)
+    $default  riduzione con la regola 363 (StringLiteral)
 
 
 stato 19
@@ -1530,52 +1532,52 @@ stato 20
 
 stato 21
 
-  298 CompAttrConstructor: "attribute <name> {" . "{" Expr "}"
-  299                    | "attribute <name> {" . "{" "}"
+  300 CompAttrConstructor: "attribute <name> {" . "{" Expr "}"
+  301                    | "attribute <name> {" . "{" "}"
 
     "{"  shift e prosecuzione allo stato 180
 
 
 stato 22
 
-  293 CompElemConstructor: "element <name> {" . "{" ContentExpr "}"
-  294                    | "element <name> {" . "{" "}"
+  295 CompElemConstructor: "element <name> {" . "{" ContentExpr "}"
+  296                    | "element <name> {" . "{" "}"
 
     "{"  shift e prosecuzione allo stato 181
 
 
 stato 23
 
-  357 IntegerLiteral: "<integer number>" .
+  359 IntegerLiteral: "<integer number>" .
 
-    $default  riduzione con la regola 357 (IntegerLiteral)
+    $default  riduzione con la regola 359 (IntegerLiteral)
 
 
 stato 24
 
-  358 DecimalLiteral: "<decimal number>" .
+  360 DecimalLiteral: "<decimal number>" .
 
-    $default  riduzione con la regola 358 (DecimalLiteral)
+    $default  riduzione con la regola 360 (DecimalLiteral)
 
 
 stato 25
 
-  359 DoubleLiteral: "<double number>" .
+  361 DoubleLiteral: "<double number>" .
 
-    $default  riduzione con la regola 359 (DoubleLiteral)
+    $default  riduzione con la regola 361 (DoubleLiteral)
 
 
 stato 26
 
-  283 DirCommentConstructor: "<!-- ... -->" .
+  285 DirCommentConstructor: "<!-- ... -->" .
 
-    $default  riduzione con la regola 283 (DirCommentConstructor)
+    $default  riduzione con la regola 285 (DirCommentConstructor)
 
 
 stato 27
 
-  304 CompPIConstructor: "processing-instruction <pi> {" . "{" Expr "}"
-  305                  | "processing-instruction <pi> {" . "{" "}"
+  306 CompPIConstructor: "processing-instruction <pi> {" . "{" Expr "}"
+  307                  | "processing-instruction <pi> {" . "{" "}"
 
     "{"  shift e prosecuzione allo stato 182
 
@@ -2222,9 +2224,9 @@ stato 52
 
 stato 53
 
-  336 PITest: "processing-instruction(" . ")"
-  337       | "processing-instruction(" . "<local name>" ")"
-  338       | "processing-instruction(" . "'...'" ")"
+  338 PITest: "processing-instruction(" . ")"
+  339       | "processing-instruction(" . "<local name>" ")"
+  340       | "processing-instruction(" . "'...'" ")"
 
     "'...'"         shift e prosecuzione allo stato 205
     "<local name>"  shift e prosecuzione allo stato 206
@@ -2233,21 +2235,21 @@ stato 53
 
 stato 54
 
-  335 CommentTest: "comment(" . ")"
+  337 CommentTest: "comment(" . ")"
 
     ")"  shift e prosecuzione allo stato 208
 
 
 stato 55
 
-  334 TextTest: "text(" . ")"
+  336 TextTest: "text(" . ")"
 
     ")"  shift e prosecuzione allo stato 209
 
 
 stato 56
 
-  330 AnyKindTest: "node(" . ")"
+  332 AnyKindTest: "node(" . ")"
 
     ")"  shift e prosecuzione allo stato 210
 
@@ -2412,46 +2414,46 @@ stato 58
 
 stato 59
 
-  292 CompDocConstructor: "document {" . "{" Expr "}"
+  294 CompDocConstructor: "document {" . "{" Expr "}"
 
     "{"  shift e prosecuzione allo stato 214
 
 
 stato 60
 
-  295 CompElemConstructor: "element {" . "{" Expr "}" "{" ContentExpr "}"
-  296                    | "element {" . "{" Expr "}" "{" "}"
+  297 CompElemConstructor: "element {" . "{" Expr "}" "{" ContentExpr "}"
+  298                    | "element {" . "{" Expr "}" "{" "}"
 
     "{"  shift e prosecuzione allo stato 215
 
 
 stato 61
 
-  300 CompAttrConstructor: "attribute {" . "{" Expr "}" "{" Expr "}"
-  301                    | "attribute {" . "{" Expr "}" "{" "}"
+  302 CompAttrConstructor: "attribute {" . "{" Expr "}" "{" Expr "}"
+  303                    | "attribute {" . "{" Expr "}" "{" "}"
 
     "{"  shift e prosecuzione allo stato 216
 
 
 stato 62
 
-  302 CompTextConstructor: "text {" . "{" Expr "}"
+  304 CompTextConstructor: "text {" . "{" Expr "}"
 
     "{"  shift e prosecuzione allo stato 217
 
 
 stato 63
 
-  284 DirPIConstructor: "<?" . "<processing instruction target>" "...?>"
+  286 DirPIConstructor: "<?" . "<processing instruction target>" "...?>"
 
     "<processing instruction target>"  shift e prosecuzione allo stato 218
 
 
 stato 64
 
-  331 DocumentTest: "document-node(" . ")"
-  332             | "document-node(" . ElementTest ")"
-  333             | "document-node(" . SchemaElementTest ")"
+  333 DocumentTest: "document-node(" . ")"
+  334             | "document-node(" . ElementTest ")"
+  335             | "document-node(" . SchemaElementTest ")"
 
     ")"                shift e prosecuzione allo stato 219
     "element("         shift e prosecuzione allo stato 66
@@ -2463,9 +2465,9 @@ stato 64
 
 stato 65
 
-  339 AttributeTest: "attribute(" . ")"
-  340              | "attribute(" . AttribNameOrWildcard ")"
-  341              | "attribute(" . AttribNameOrWildcard "," TypeName ")"
+  341 AttributeTest: "attribute(" . ")"
+  342              | "attribute(" . AttribNameOrWildcard ")"
+  343              | "attribute(" . AttribNameOrWildcard "," TypeName ")"
 
     "<qualified name>"  shift e prosecuzione allo stato 16
     "* (wildcard)"      shift e prosecuzione allo stato 222
@@ -2478,10 +2480,10 @@ stato 65
 
 stato 66
 
-  346 ElementTest: "element(" . ")"
-  347            | "element(" . ElementNameOrWildcard ")"
-  348            | "element(" . ElementNameOrWildcard "," TypeName ")"
-  349            | "element(" . ElementNameOrWildcard "," TypeName "?" ")"
+  348 ElementTest: "element(" . ")"
+  349            | "element(" . ElementNameOrWildcard ")"
+  350            | "element(" . ElementNameOrWildcard "," TypeName ")"
+  351            | "element(" . ElementNameOrWildcard "," TypeName "?" ")"
 
     "<qualified name>"  shift e prosecuzione allo stato 16
     "* (wildcard)"      shift e prosecuzione allo stato 227
@@ -2494,15 +2496,15 @@ stato 66
 
 stato 67
 
-  306 CompPIConstructor: "processing-instruction {" . "{" Expr "}" "{" Expr "}"
-  307                  | "processing-instruction {" . "{" Expr "}" "{" "}"
+  308 CompPIConstructor: "processing-instruction {" . "{" Expr "}" "{" Expr "}"
+  309                  | "processing-instruction {" . "{" Expr "}" "{" "}"
 
     "{"  shift e prosecuzione allo stato 232
 
 
 stato 68
 
-  303 CompCommentConstructor: "comment {" . "{" Expr "}"
+  305 CompCommentConstructor: "comment {" . "{" Expr "}"
 
     "{"  shift e prosecuzione allo stato 233
 
@@ -2551,7 +2553,7 @@ stato 74
 
 stato 75
 
-  352 SchemaElementTest: "schema-element(" . ElementDeclaration ")"
+  354 SchemaElementTest: "schema-element(" . ElementDeclaration ")"
 
     "<qualified name>"  shift e prosecuzione allo stato 16
 
@@ -2562,7 +2564,7 @@ stato 75
 
 stato 76
 
-  344 SchemaAttributeTest: "schema-attribute(" . AttributeDeclaration ")"
+  346 SchemaAttributeTest: "schema-attribute(" . AttributeDeclaration ")"
 
     "<qualified name>"  shift e prosecuzione allo stato 16
 
@@ -3156,44 +3158,44 @@ stato 136
 
 stato 137
 
-  286 ComputedConstructor: CompDocConstructor .
-
-    $default  riduzione con la regola 286 (ComputedConstructor)
-
-
-stato 138
-
-  287 ComputedConstructor: CompElemConstructor .
-
-    $default  riduzione con la regola 287 (ComputedConstructor)
-
-
-stato 139
-
-  288 ComputedConstructor: CompAttrConstructor .
+  288 ComputedConstructor: CompDocConstructor .
 
     $default  riduzione con la regola 288 (ComputedConstructor)
 
 
-stato 140
+stato 138
 
-  289 ComputedConstructor: CompTextConstructor .
+  289 ComputedConstructor: CompElemConstructor .
 
     $default  riduzione con la regola 289 (ComputedConstructor)
 
 
-stato 141
+stato 139
 
-  290 ComputedConstructor: CompCommentConstructor .
+  290 ComputedConstructor: CompAttrConstructor .
 
     $default  riduzione con la regola 290 (ComputedConstructor)
 
 
-stato 142
+stato 140
 
-  291 ComputedConstructor: CompPIConstructor .
+  291 ComputedConstructor: CompTextConstructor .
 
     $default  riduzione con la regola 291 (ComputedConstructor)
+
+
+stato 141
+
+  292 ComputedConstructor: CompCommentConstructor .
+
+    $default  riduzione con la regola 292 (ComputedConstructor)
+
+
+stato 142
+
+  293 ComputedConstructor: CompPIConstructor .
+
+    $default  riduzione con la regola 293 (ComputedConstructor)
 
 
 stato 143
@@ -3205,65 +3207,65 @@ stato 143
 
 stato 144
 
-  329 KindTest: AnyKindTest .
+  331 KindTest: AnyKindTest .
 
-    $default  riduzione con la regola 329 (KindTest)
+    $default  riduzione con la regola 331 (KindTest)
 
 
 stato 145
 
-  321 KindTest: DocumentTest .
-
-    $default  riduzione con la regola 321 (KindTest)
-
-
-stato 146
-
-  328 KindTest: TextTest .
-
-    $default  riduzione con la regola 328 (KindTest)
-
-
-stato 147
-
-  327 KindTest: CommentTest .
-
-    $default  riduzione con la regola 327 (KindTest)
-
-
-stato 148
-
-  326 KindTest: PITest .
-
-    $default  riduzione con la regola 326 (KindTest)
-
-
-stato 149
-
-  323 KindTest: AttributeTest .
+  323 KindTest: DocumentTest .
 
     $default  riduzione con la regola 323 (KindTest)
 
 
-stato 150
+stato 146
 
-  325 KindTest: SchemaAttributeTest .
+  330 KindTest: TextTest .
+
+    $default  riduzione con la regola 330 (KindTest)
+
+
+stato 147
+
+  329 KindTest: CommentTest .
+
+    $default  riduzione con la regola 329 (KindTest)
+
+
+stato 148
+
+  328 KindTest: PITest .
+
+    $default  riduzione con la regola 328 (KindTest)
+
+
+stato 149
+
+  325 KindTest: AttributeTest .
 
     $default  riduzione con la regola 325 (KindTest)
 
 
+stato 150
+
+  327 KindTest: SchemaAttributeTest .
+
+    $default  riduzione con la regola 327 (KindTest)
+
+
 stato 151
 
-  322 KindTest: ElementTest .
+  324 KindTest: ElementTest .
 
-    $default  riduzione con la regola 322 (KindTest)
+    $default  riduzione con la regola 324 (KindTest)
 
 
 stato 152
 
-  324 KindTest: SchemaElementTest .
+  326 KindTest: SchemaElementTest .
 
-    $default  riduzione con la regola 324 (KindTest)
+    $default  riduzione con la regola 326 (KindTest)
 
 
 stato 153
@@ -3520,8 +3522,8 @@ stato 179
 
 stato 180
 
-  298 CompAttrConstructor: "attribute <name> {" "{" . Expr "}"
-  299                    | "attribute <name> {" "{" . "}"
+  300 CompAttrConstructor: "attribute <name> {" "{" . Expr "}"
+  301                    | "attribute <name> {" "{" . "}"
 
     "<qualified name>"               shift e prosecuzione allo stato 16
     "<function>("                    shift e prosecuzione allo stato 17
@@ -3670,8 +3672,8 @@ stato 180
 
 stato 181
 
-  293 CompElemConstructor: "element <name> {" "{" . ContentExpr "}"
-  294                    | "element <name> {" "{" . "}"
+  295 CompElemConstructor: "element <name> {" "{" . ContentExpr "}"
+  296                    | "element <name> {" "{" . "}"
 
     "<qualified name>"               shift e prosecuzione allo stato 16
     "<function>("                    shift e prosecuzione allo stato 17
@@ -3821,8 +3823,8 @@ stato 181
 
 stato 182
 
-  304 CompPIConstructor: "processing-instruction <pi> {" "{" . Expr "}"
-  305                  | "processing-instruction <pi> {" "{" . "}"
+  306 CompPIConstructor: "processing-instruction <pi> {" "{" . Expr "}"
+  307                  | "processing-instruction <pi> {" "{" . "}"
 
     "<qualified name>"               shift e prosecuzione allo stato 16
     "<function>("                    shift e prosecuzione allo stato 17
@@ -4856,44 +4858,44 @@ stato 204
 
 stato 205
 
-  338 PITest: "processing-instruction(" "'...'" . ")"
+  340 PITest: "processing-instruction(" "'...'" . ")"
 
     ")"  shift e prosecuzione allo stato 343
 
 
 stato 206
 
-  337 PITest: "processing-instruction(" "<local name>" . ")"
+  339 PITest: "processing-instruction(" "<local name>" . ")"
 
     ")"  shift e prosecuzione allo stato 344
 
 
 stato 207
 
-  336 PITest: "processing-instruction(" ")" .
+  338 PITest: "processing-instruction(" ")" .
 
-    $default  riduzione con la regola 336 (PITest)
+    $default  riduzione con la regola 338 (PITest)
 
 
 stato 208
 
-  335 CommentTest: "comment(" ")" .
+  337 CommentTest: "comment(" ")" .
 
-    $default  riduzione con la regola 335 (CommentTest)
+    $default  riduzione con la regola 337 (CommentTest)
 
 
 stato 209
 
-  334 TextTest: "text(" ")" .
+  336 TextTest: "text(" ")" .
 
-    $default  riduzione con la regola 334 (TextTest)
+    $default  riduzione con la regola 336 (TextTest)
 
 
 stato 210
 
-  330 AnyKindTest: "node(" ")" .
+  332 AnyKindTest: "node(" ")" .
 
-    $default  riduzione con la regola 330 (AnyKindTest)
+    $default  riduzione con la regola 332 (AnyKindTest)
 
 
 stato 211
@@ -4924,7 +4926,7 @@ stato 213
 
 stato 214
 
-  292 CompDocConstructor: "document {" "{" . Expr "}"
+  294 CompDocConstructor: "document {" "{" . Expr "}"
 
     "<qualified name>"               shift e prosecuzione allo stato 16
     "<function>("                    shift e prosecuzione allo stato 17
@@ -5072,8 +5074,8 @@ stato 214
 
 stato 215
 
-  295 CompElemConstructor: "element {" "{" . Expr "}" "{" ContentExpr "}"
-  296                    | "element {" "{" . Expr "}" "{" "}"
+  297 CompElemConstructor: "element {" "{" . Expr "}" "{" ContentExpr "}"
+  298                    | "element {" "{" . Expr "}" "{" "}"
 
     "<qualified name>"               shift e prosecuzione allo stato 16
     "<function>("                    shift e prosecuzione allo stato 17
@@ -5221,8 +5223,8 @@ stato 215
 
 stato 216
 
-  300 CompAttrConstructor: "attribute {" "{" . Expr "}" "{" Expr "}"
-  301                    | "attribute {" "{" . Expr "}" "{" "}"
+  302 CompAttrConstructor: "attribute {" "{" . Expr "}" "{" Expr "}"
+  303                    | "attribute {" "{" . Expr "}" "{" "}"
 
     "<qualified name>"               shift e prosecuzione allo stato 16
     "<function>("                    shift e prosecuzione allo stato 17
@@ -5370,7 +5372,7 @@ stato 216
 
 stato 217
 
-  302 CompTextConstructor: "text {" "{" . Expr "}"
+  304 CompTextConstructor: "text {" "{" . Expr "}"
 
     "<qualified name>"               shift e prosecuzione allo stato 16
     "<function>("                    shift e prosecuzione allo stato 17
@@ -5518,50 +5520,50 @@ stato 217
 
 stato 218
 
-  284 DirPIConstructor: "<?" "<processing instruction target>" . "...?>"
+  286 DirPIConstructor: "<?" "<processing instruction target>" . "...?>"
 
     "...?>"  shift e prosecuzione allo stato 351
 
 
 stato 219
 
-  331 DocumentTest: "document-node(" ")" .
+  333 DocumentTest: "document-node(" ")" .
 
-    $default  riduzione con la regola 331 (DocumentTest)
+    $default  riduzione con la regola 333 (DocumentTest)
 
 
 stato 220
 
-  332 DocumentTest: "document-node(" ElementTest . ")"
+  334 DocumentTest: "document-node(" ElementTest . ")"
 
     ")"  shift e prosecuzione allo stato 352
 
 
 stato 221
 
-  333 DocumentTest: "document-node(" SchemaElementTest . ")"
+  335 DocumentTest: "document-node(" SchemaElementTest . ")"
 
     ")"  shift e prosecuzione allo stato 353
 
 
 stato 222
 
-  343 AttribNameOrWildcard: "* (wildcard)" .
+  345 AttribNameOrWildcard: "* (wildcard)" .
 
-    $default  riduzione con la regola 343 (AttribNameOrWildcard)
+    $default  riduzione con la regola 345 (AttribNameOrWildcard)
 
 
 stato 223
 
-  339 AttributeTest: "attribute(" ")" .
+  341 AttributeTest: "attribute(" ")" .
 
-    $default  riduzione con la regola 339 (AttributeTest)
+    $default  riduzione con la regola 341 (AttributeTest)
 
 
 stato 224
 
-  340 AttributeTest: "attribute(" AttribNameOrWildcard . ")"
-  341              | "attribute(" AttribNameOrWildcard . "," TypeName ")"
+  342 AttributeTest: "attribute(" AttribNameOrWildcard . ")"
+  343              | "attribute(" AttribNameOrWildcard . "," TypeName ")"
 
     ","  shift e prosecuzione allo stato 354
     ")"  shift e prosecuzione allo stato 355
@@ -5569,37 +5571,37 @@ stato 224
 
 stato 225
 
-  342 AttribNameOrWildcard: AttributeName .
+  344 AttribNameOrWildcard: AttributeName .
 
-    $default  riduzione con la regola 342 (AttribNameOrWildcard)
+    $default  riduzione con la regola 344 (AttribNameOrWildcard)
 
 
 stato 226
 
-  354 AttributeName: QName .
+  356 AttributeName: QName .
 
-    $default  riduzione con la regola 354 (AttributeName)
+    $default  riduzione con la regola 356 (AttributeName)
 
 
 stato 227
 
-  351 ElementNameOrWildcard: "* (wildcard)" .
+  353 ElementNameOrWildcard: "* (wildcard)" .
 
-    $default  riduzione con la regola 351 (ElementNameOrWildcard)
+    $default  riduzione con la regola 353 (ElementNameOrWildcard)
 
 
 stato 228
 
-  346 ElementTest: "element(" ")" .
+  348 ElementTest: "element(" ")" .
 
-    $default  riduzione con la regola 346 (ElementTest)
+    $default  riduzione con la regola 348 (ElementTest)
 
 
 stato 229
 
-  347 ElementTest: "element(" ElementNameOrWildcard . ")"
-  348            | "element(" ElementNameOrWildcard . "," TypeName ")"
-  349            | "element(" ElementNameOrWildcard . "," TypeName "?" ")"
+  349 ElementTest: "element(" ElementNameOrWildcard . ")"
+  350            | "element(" ElementNameOrWildcard . "," TypeName ")"
+  351            | "element(" ElementNameOrWildcard . "," TypeName "?" ")"
 
     ","  shift e prosecuzione allo stato 356
     ")"  shift e prosecuzione allo stato 357
@@ -5607,22 +5609,22 @@ stato 229
 
 stato 230
 
-  350 ElementNameOrWildcard: ElementName .
+  352 ElementNameOrWildcard: ElementName .
 
-    $default  riduzione con la regola 350 (ElementNameOrWildcard)
+    $default  riduzione con la regola 352 (ElementNameOrWildcard)
 
 
 stato 231
 
-  355 ElementName: QName .
+  357 ElementName: QName .
 
-    $default  riduzione con la regola 355 (ElementName)
+    $default  riduzione con la regola 357 (ElementName)
 
 
 stato 232
 
-  306 CompPIConstructor: "processing-instruction {" "{" . Expr "}" "{" Expr "}"
-  307                  | "processing-instruction {" "{" . Expr "}" "{" "}"
+  308 CompPIConstructor: "processing-instruction {" "{" . Expr "}" "{" Expr "}"
+  309                  | "processing-instruction {" "{" . Expr "}" "{" "}"
 
     "<qualified name>"               shift e prosecuzione allo stato 16
     "<function>("                    shift e prosecuzione allo stato 17
@@ -5770,7 +5772,7 @@ stato 232
 
 stato 233
 
-  303 CompCommentConstructor: "comment {" "{" . Expr "}"
+  305 CompCommentConstructor: "comment {" "{" . Expr "}"
 
     "<qualified name>"               shift e prosecuzione allo stato 16
     "<function>("                    shift e prosecuzione allo stato 17
@@ -5918,30 +5920,30 @@ stato 233
 
 stato 234
 
-  352 SchemaElementTest: "schema-element(" ElementDeclaration . ")"
+  354 SchemaElementTest: "schema-element(" ElementDeclaration . ")"
 
     ")"  shift e prosecuzione allo stato 360
 
 
 stato 235
 
-  353 ElementDeclaration: ElementName .
+  355 ElementDeclaration: ElementName .
 
-    $default  riduzione con la regola 353 (ElementDeclaration)
+    $default  riduzione con la regola 355 (ElementDeclaration)
 
 
 stato 236
 
-  344 SchemaAttributeTest: "schema-attribute(" AttributeDeclaration . ")"
+  346 SchemaAttributeTest: "schema-attribute(" AttributeDeclaration . ")"
 
     ")"  shift e prosecuzione allo stato 361
 
 
 stato 237
 
-  345 AttributeDeclaration: AttributeName .
+  347 AttributeDeclaration: AttributeName .
 
-    $default  riduzione con la regola 345 (AttributeDeclaration)
+    $default  riduzione con la regola 347 (AttributeDeclaration)
 
 
 stato 238
@@ -11084,9 +11086,9 @@ stato 288
 
 stato 289
 
-  360 URILiteral: "'...'" .
+  362 URILiteral: "'...'" .
 
-    $default  riduzione con la regola 360 (URILiteral)
+    $default  riduzione con la regola 362 (URILiteral)
 
 
 stato 290
@@ -11502,15 +11504,15 @@ stato 321
 
 stato 322
 
-  299 CompAttrConstructor: "attribute <name> {" "{" "}" .
+  301 CompAttrConstructor: "attribute <name> {" "{" "}" .
 
-    $default  riduzione con la regola 299 (CompAttrConstructor)
+    $default  riduzione con la regola 301 (CompAttrConstructor)
 
 
 stato 323
 
    79 Expr: Expr . "," ExprSingle
-  298 CompAttrConstructor: "attribute <name> {" "{" Expr . "}"
+  300 CompAttrConstructor: "attribute <name> {" "{" Expr . "}"
 
     ","  shift e prosecuzione allo stato 240
     "}"  shift e prosecuzione allo stato 450
@@ -11518,39 +11520,39 @@ stato 323
 
 stato 324
 
-  294 CompElemConstructor: "element <name> {" "{" "}" .
+  296 CompElemConstructor: "element <name> {" "{" "}" .
 
-    $default  riduzione con la regola 294 (CompElemConstructor)
+    $default  riduzione con la regola 296 (CompElemConstructor)
 
 
 stato 325
 
    79 Expr: Expr . "," ExprSingle
-  297 ContentExpr: Expr .
+  299 ContentExpr: Expr .
 
     ","  shift e prosecuzione allo stato 240
 
-    $default  riduzione con la regola 297 (ContentExpr)
+    $default  riduzione con la regola 299 (ContentExpr)
 
 
 stato 326
 
-  293 CompElemConstructor: "element <name> {" "{" ContentExpr . "}"
+  295 CompElemConstructor: "element <name> {" "{" ContentExpr . "}"
 
     "}"  shift e prosecuzione allo stato 451
 
 
 stato 327
 
-  305 CompPIConstructor: "processing-instruction <pi> {" "{" "}" .
+  307 CompPIConstructor: "processing-instruction <pi> {" "{" "}" .
 
-    $default  riduzione con la regola 305 (CompPIConstructor)
+    $default  riduzione con la regola 307 (CompPIConstructor)
 
 
 stato 328
 
    79 Expr: Expr . "," ExprSingle
-  304 CompPIConstructor: "processing-instruction <pi> {" "{" Expr . "}"
+  306 CompPIConstructor: "processing-instruction <pi> {" "{" Expr . "}"
 
     ","  shift e prosecuzione allo stato 240
     "}"  shift e prosecuzione allo stato 452
@@ -11969,16 +11971,16 @@ stato 342
 
 stato 343
 
-  338 PITest: "processing-instruction(" "'...'" ")" .
+  340 PITest: "processing-instruction(" "'...'" ")" .
 
-    $default  riduzione con la regola 338 (PITest)
+    $default  riduzione con la regola 340 (PITest)
 
 
 stato 344
 
-  337 PITest: "processing-instruction(" "<local name>" ")" .
+  339 PITest: "processing-instruction(" "<local name>" ")" .
 
-    $default  riduzione con la regola 337 (PITest)
+    $default  riduzione con la regola 339 (PITest)
 
 
 stato 345
@@ -12002,7 +12004,7 @@ stato 346
 stato 347
 
    79 Expr: Expr . "," ExprSingle
-  292 CompDocConstructor: "document {" "{" Expr . "}"
+  294 CompDocConstructor: "document {" "{" Expr . "}"
 
     ","  shift e prosecuzione allo stato 240
     "}"  shift e prosecuzione allo stato 476
@@ -12011,8 +12013,8 @@ stato 347
 stato 348
 
    79 Expr: Expr . "," ExprSingle
-  295 CompElemConstructor: "element {" "{" Expr . "}" "{" ContentExpr "}"
-  296                    | "element {" "{" Expr . "}" "{" "}"
+  297 CompElemConstructor: "element {" "{" Expr . "}" "{" ContentExpr "}"
+  298                    | "element {" "{" Expr . "}" "{" "}"
 
     ","  shift e prosecuzione allo stato 240
     "}"  shift e prosecuzione allo stato 477
@@ -12021,8 +12023,8 @@ stato 348
 stato 349
 
    79 Expr: Expr . "," ExprSingle
-  300 CompAttrConstructor: "attribute {" "{" Expr . "}" "{" Expr "}"
-  301                    | "attribute {" "{" Expr . "}" "{" "}"
+  302 CompAttrConstructor: "attribute {" "{" Expr . "}" "{" Expr "}"
+  303                    | "attribute {" "{" Expr . "}" "{" "}"
 
     ","  shift e prosecuzione allo stato 240
     "}"  shift e prosecuzione allo stato 478
@@ -12031,7 +12033,7 @@ stato 349
 stato 350
 
    79 Expr: Expr . "," ExprSingle
-  302 CompTextConstructor: "text {" "{" Expr . "}"
+  304 CompTextConstructor: "text {" "{" Expr . "}"
 
     ","  shift e prosecuzione allo stato 240
     "}"  shift e prosecuzione allo stato 479
@@ -12039,28 +12041,28 @@ stato 350
 
 stato 351
 
-  284 DirPIConstructor: "<?" "<processing instruction target>" "...?>" .
+  286 DirPIConstructor: "<?" "<processing instruction target>" "...?>" .
 
-    $default  riduzione con la regola 284 (DirPIConstructor)
+    $default  riduzione con la regola 286 (DirPIConstructor)
 
 
 stato 352
 
-  332 DocumentTest: "document-node(" ElementTest ")" .
+  334 DocumentTest: "document-node(" ElementTest ")" .
 
-    $default  riduzione con la regola 332 (DocumentTest)
+    $default  riduzione con la regola 334 (DocumentTest)
 
 
 stato 353
 
-  333 DocumentTest: "document-node(" SchemaElementTest ")" .
+  335 DocumentTest: "document-node(" SchemaElementTest ")" .
 
-    $default  riduzione con la regola 333 (DocumentTest)
+    $default  riduzione con la regola 335 (DocumentTest)
 
 
 stato 354
 
-  341 AttributeTest: "attribute(" AttribNameOrWildcard "," . TypeName ")"
+  343 AttributeTest: "attribute(" AttribNameOrWildcard "," . TypeName ")"
 
     "<qualified name>"  shift e prosecuzione allo stato 16
 
@@ -12070,15 +12072,15 @@ stato 354
 
 stato 355
 
-  340 AttributeTest: "attribute(" AttribNameOrWildcard ")" .
+  342 AttributeTest: "attribute(" AttribNameOrWildcard ")" .
 
-    $default  riduzione con la regola 340 (AttributeTest)
+    $default  riduzione con la regola 342 (AttributeTest)
 
 
 stato 356
 
-  348 ElementTest: "element(" ElementNameOrWildcard "," . TypeName ")"
-  349            | "element(" ElementNameOrWildcard "," . TypeName "?" ")"
+  350 ElementTest: "element(" ElementNameOrWildcard "," . TypeName ")"
+  351            | "element(" ElementNameOrWildcard "," . TypeName "?" ")"
 
     "<qualified name>"  shift e prosecuzione allo stato 16
 
@@ -12088,16 +12090,16 @@ stato 356
 
 stato 357
 
-  347 ElementTest: "element(" ElementNameOrWildcard ")" .
+  349 ElementTest: "element(" ElementNameOrWildcard ")" .
 
-    $default  riduzione con la regola 347 (ElementTest)
+    $default  riduzione con la regola 349 (ElementTest)
 
 
 stato 358
 
    79 Expr: Expr . "," ExprSingle
-  306 CompPIConstructor: "processing-instruction {" "{" Expr . "}" "{" Expr "}"
-  307                  | "processing-instruction {" "{" Expr . "}" "{" "}"
+  308 CompPIConstructor: "processing-instruction {" "{" Expr . "}" "{" Expr "}"
+  309                  | "processing-instruction {" "{" Expr . "}" "{" "}"
 
     ","  shift e prosecuzione allo stato 240
     "}"  shift e prosecuzione allo stato 483
@@ -12106,7 +12108,7 @@ stato 358
 stato 359
 
    79 Expr: Expr . "," ExprSingle
-  303 CompCommentConstructor: "comment {" "{" Expr . "}"
+  305 CompCommentConstructor: "comment {" "{" Expr . "}"
 
     ","  shift e prosecuzione allo stato 240
     "}"  shift e prosecuzione allo stato 484
@@ -12114,16 +12116,16 @@ stato 359
 
 stato 360
 
-  352 SchemaElementTest: "schema-element(" ElementDeclaration ")" .
+  354 SchemaElementTest: "schema-element(" ElementDeclaration ")" .
 
-    $default  riduzione con la regola 352 (SchemaElementTest)
+    $default  riduzione con la regola 354 (SchemaElementTest)
 
 
 stato 361
 
-  344 SchemaAttributeTest: "schema-attribute(" AttributeDeclaration ")" .
+  346 SchemaAttributeTest: "schema-attribute(" AttributeDeclaration ")" .
 
-    $default  riduzione con la regola 344 (SchemaAttributeTest)
+    $default  riduzione con la regola 346 (SchemaAttributeTest)
 
 
 stato 362
@@ -12760,16 +12762,16 @@ stato 401
 
 stato 402
 
-  313 SequenceType: "void()" .
+  315 SequenceType: "void()" .
 
-    $default  riduzione con la regola 313 (SequenceType)
+    $default  riduzione con la regola 315 (SequenceType)
 
 
 stato 403
 
-  319 ItemType: "item()" .
+  321 ItemType: "item()" .
 
-    $default  riduzione con la regola 319 (ItemType)
+    $default  riduzione con la regola 321 (ItemType)
 
 
 stato 404
@@ -12781,37 +12783,37 @@ stato 404
 
 stato 405
 
-  311 SequenceType: ItemType . OccurrenceIndicator
-  312             | ItemType .
+  313 SequenceType: ItemType . OccurrenceIndicator
+  314             | ItemType .
 
     "? (occurrence)"  shift e prosecuzione allo stato 494
     "+ (occurrence)"  shift e prosecuzione allo stato 495
     "* (occurrence)"  shift e prosecuzione allo stato 496
 
-    $default  riduzione con la regola 312 (SequenceType)
+    $default  riduzione con la regola 314 (SequenceType)
 
     OccurrenceIndicator  prosecuzione allo stato 497
 
 
 stato 406
 
-  317 ItemType: AtomicType .
+  319 ItemType: AtomicType .
 
-    $default  riduzione con la regola 317 (ItemType)
+    $default  riduzione con la regola 319 (ItemType)
 
 
 stato 407
 
-  318 ItemType: KindTest .
+  320 ItemType: KindTest .
 
-    $default  riduzione con la regola 318 (ItemType)
+    $default  riduzione con la regola 320 (ItemType)
 
 
 stato 408
 
-  320 AtomicType: QName .
+  322 AtomicType: QName .
 
-    $default  riduzione con la regola 320 (AtomicType)
+    $default  riduzione con la regola 322 (AtomicType)
 
 
 stato 409
@@ -12830,12 +12832,12 @@ stato 410
 
 stato 411
 
-  308 SingleType: AtomicType . "? (occurrence)"
-  309           | AtomicType .
+  310 SingleType: AtomicType . "? (occurrence)"
+  311           | AtomicType .
 
     "? (occurrence)"  shift e prosecuzione allo stato 498
 
-    $default  riduzione con la regola 309 (SingleType)
+    $default  riduzione con la regola 311 (SingleType)
 
 
 stato 412
@@ -13284,23 +13286,23 @@ stato 449
 
 stato 450
 
-  298 CompAttrConstructor: "attribute <name> {" "{" Expr "}" .
+  300 CompAttrConstructor: "attribute <name> {" "{" Expr "}" .
 
-    $default  riduzione con la regola 298 (CompAttrConstructor)
+    $default  riduzione con la regola 300 (CompAttrConstructor)
 
 
 stato 451
 
-  293 CompElemConstructor: "element <name> {" "{" ContentExpr "}" .
+  295 CompElemConstructor: "element <name> {" "{" ContentExpr "}" .
 
-    $default  riduzione con la regola 293 (CompElemConstructor)
+    $default  riduzione con la regola 295 (CompElemConstructor)
 
 
 stato 452
 
-  304 CompPIConstructor: "processing-instruction <pi> {" "{" Expr "}" .
+  306 CompPIConstructor: "processing-instruction <pi> {" "{" Expr "}" .
 
-    $default  riduzione con la regola 304 (CompPIConstructor)
+    $default  riduzione con la regola 306 (CompPIConstructor)
 
 
 stato 453
@@ -13466,7 +13468,7 @@ stato 455
 
 stato 456
 
-  310 TypeDeclaration: "as" . SequenceType
+  312 TypeDeclaration: "as" . SequenceType
 
     "<qualified name>"         shift e prosecuzione allo stato 16
     "processing-instruction("  shift e prosecuzione allo stato 53
@@ -13915,59 +13917,59 @@ stato 475
 
   260 DirElemConstructor: "<" "<tag name>" DirAttributeList "</" . DirElementContent ">" "<tag name>" "</"
 
-    $default  riduzione con la regola 273 (DirElementContent)
+    $default  riduzione con la regola 275 (DirElementContent)
 
     DirElementContent  prosecuzione allo stato 533
 
 
 stato 476
 
-  292 CompDocConstructor: "document {" "{" Expr "}" .
+  294 CompDocConstructor: "document {" "{" Expr "}" .
 
-    $default  riduzione con la regola 292 (CompDocConstructor)
+    $default  riduzione con la regola 294 (CompDocConstructor)
 
 
 stato 477
 
-  295 CompElemConstructor: "element {" "{" Expr "}" . "{" ContentExpr "}"
-  296                    | "element {" "{" Expr "}" . "{" "}"
+  297 CompElemConstructor: "element {" "{" Expr "}" . "{" ContentExpr "}"
+  298                    | "element {" "{" Expr "}" . "{" "}"
 
     "{"  shift e prosecuzione allo stato 534
 
 
 stato 478
 
-  300 CompAttrConstructor: "attribute {" "{" Expr "}" . "{" Expr "}"
-  301                    | "attribute {" "{" Expr "}" . "{" "}"
+  302 CompAttrConstructor: "attribute {" "{" Expr "}" . "{" Expr "}"
+  303                    | "attribute {" "{" Expr "}" . "{" "}"
 
     "{"  shift e prosecuzione allo stato 535
 
 
 stato 479
 
-  302 CompTextConstructor: "text {" "{" Expr "}" .
+  304 CompTextConstructor: "text {" "{" Expr "}" .
 
-    $default  riduzione con la regola 302 (CompTextConstructor)
+    $default  riduzione con la regola 304 (CompTextConstructor)
 
 
 stato 480
 
-  341 AttributeTest: "attribute(" AttribNameOrWildcard "," TypeName . ")"
+  343 AttributeTest: "attribute(" AttribNameOrWildcard "," TypeName . ")"
 
     ")"  shift e prosecuzione allo stato 536
 
 
 stato 481
 
-  356 TypeName: QName .
+  358 TypeName: QName .
 
-    $default  riduzione con la regola 356 (TypeName)
+    $default  riduzione con la regola 358 (TypeName)
 
 
 stato 482
 
-  348 ElementTest: "element(" ElementNameOrWildcard "," TypeName . ")"
-  349            | "element(" ElementNameOrWildcard "," TypeName . "?" ")"
+  350 ElementTest: "element(" ElementNameOrWildcard "," TypeName . ")"
+  351            | "element(" ElementNameOrWildcard "," TypeName . "?" ")"
 
     ")"  shift e prosecuzione allo stato 537
     "?"  shift e prosecuzione allo stato 538
@@ -13975,17 +13977,17 @@ stato 482
 
 stato 483
 
-  306 CompPIConstructor: "processing-instruction {" "{" Expr "}" . "{" Expr "}"
-  307                  | "processing-instruction {" "{" Expr "}" . "{" "}"
+  308 CompPIConstructor: "processing-instruction {" "{" Expr "}" . "{" Expr "}"
+  309                  | "processing-instruction {" "{" Expr "}" . "{" "}"
 
     "{"  shift e prosecuzione allo stato 539
 
 
 stato 484
 
-  303 CompCommentConstructor: "comment {" "{" Expr "}" .
+  305 CompCommentConstructor: "comment {" "{" Expr "}" .
 
-    $default  riduzione con la regola 303 (CompCommentConstructor)
+    $default  riduzione con la regola 305 (CompCommentConstructor)
 
 
 stato 485
@@ -14340,37 +14342,37 @@ stato 493
 
 stato 494
 
-  316 OccurrenceIndicator: "? (occurrence)" .
+  318 OccurrenceIndicator: "? (occurrence)" .
 
-    $default  riduzione con la regola 316 (OccurrenceIndicator)
+    $default  riduzione con la regola 318 (OccurrenceIndicator)
 
 
 stato 495
 
-  315 OccurrenceIndicator: "+ (occurrence)" .
+  317 OccurrenceIndicator: "+ (occurrence)" .
 
-    $default  riduzione con la regola 315 (OccurrenceIndicator)
+    $default  riduzione con la regola 317 (OccurrenceIndicator)
 
 
 stato 496
 
-  314 OccurrenceIndicator: "* (occurrence)" .
+  316 OccurrenceIndicator: "* (occurrence)" .
 
-    $default  riduzione con la regola 314 (OccurrenceIndicator)
+    $default  riduzione con la regola 316 (OccurrenceIndicator)
 
 
 stato 497
 
-  311 SequenceType: ItemType OccurrenceIndicator .
+  313 SequenceType: ItemType OccurrenceIndicator .
 
-    $default  riduzione con la regola 311 (SequenceType)
+    $default  riduzione con la regola 313 (SequenceType)
 
 
 stato 498
 
-  308 SingleType: AtomicType "? (occurrence)" .
+  310 SingleType: AtomicType "? (occurrence)" .
 
-    $default  riduzione con la regola 308 (SingleType)
+    $default  riduzione con la regola 310 (SingleType)
 
 
 stato 499
@@ -14582,9 +14584,9 @@ stato 519
 
 stato 520
 
-  310 TypeDeclaration: "as" SequenceType .
+  312 TypeDeclaration: "as" SequenceType .
 
-    $default  riduzione con la regola 310 (TypeDeclaration)
+    $default  riduzione con la regola 312 (TypeDeclaration)
 
 
 stato 521
@@ -15410,10 +15412,11 @@ stato 532
 stato 533
 
   260 DirElemConstructor: "<" "<tag name>" DirAttributeList "</" DirElementContent . ">" "<tag name>" "</"
-  274 DirElementContent: DirElementContent . DirectConstructor
-  275                  | DirElementContent . EnclosedExpr
-  276                  | DirElementContent . CdataSection
-  277                  | DirElementContent . CommonContent
+  276 DirElementContent: DirElementContent . DirectConstructor
+  277                  | DirElementContent . "<char>"
+  278                  | DirElementContent . CdataSection
+  279                  | DirElementContent . EnclosedExpr
+  280                  | DirElementContent . CommonContent
 
     "<char>"                   shift e prosecuzione allo stato 577
     "&#XXX;"                   shift e prosecuzione allo stato 578
@@ -15438,8 +15441,8 @@ stato 533
 
 stato 534
 
-  295 CompElemConstructor: "element {" "{" Expr "}" "{" . ContentExpr "}"
-  296                    | "element {" "{" Expr "}" "{" . "}"
+  297 CompElemConstructor: "element {" "{" Expr "}" "{" . ContentExpr "}"
+  298                    | "element {" "{" Expr "}" "{" . "}"
 
     "<qualified name>"               shift e prosecuzione allo stato 16
     "<function>("                    shift e prosecuzione allo stato 17
@@ -15589,8 +15592,8 @@ stato 534
 
 stato 535
 
-  300 CompAttrConstructor: "attribute {" "{" Expr "}" "{" . Expr "}"
-  301                    | "attribute {" "{" Expr "}" "{" . "}"
+  302 CompAttrConstructor: "attribute {" "{" Expr "}" "{" . Expr "}"
+  303                    | "attribute {" "{" Expr "}" "{" . "}"
 
     "<qualified name>"               shift e prosecuzione allo stato 16
     "<function>("                    shift e prosecuzione allo stato 17
@@ -15739,29 +15742,29 @@ stato 535
 
 stato 536
 
-  341 AttributeTest: "attribute(" AttribNameOrWildcard "," TypeName ")" .
+  343 AttributeTest: "attribute(" AttribNameOrWildcard "," TypeName ")" .
 
-    $default  riduzione con la regola 341 (AttributeTest)
+    $default  riduzione con la regola 343 (AttributeTest)
 
 
 stato 537
 
-  348 ElementTest: "element(" ElementNameOrWildcard "," TypeName ")" .
+  350 ElementTest: "element(" ElementNameOrWildcard "," TypeName ")" .
 
-    $default  riduzione con la regola 348 (ElementTest)
+    $default  riduzione con la regola 350 (ElementTest)
 
 
 stato 538
 
-  349 ElementTest: "element(" ElementNameOrWildcard "," TypeName "?" . ")"
+  351 ElementTest: "element(" ElementNameOrWildcard "," TypeName "?" . ")"
 
     ")"  shift e prosecuzione allo stato 592
 
 
 stato 539
 
-  306 CompPIConstructor: "processing-instruction {" "{" Expr "}" "{" . Expr "}"
-  307                  | "processing-instruction {" "{" Expr "}" "{" . "}"
+  308 CompPIConstructor: "processing-instruction {" "{" Expr "}" "{" . Expr "}"
+  309                  | "processing-instruction {" "{" Expr "}" "{" . "}"
 
     "<qualified name>"               shift e prosecuzione allo stato 16
     "<function>("                    shift e prosecuzione allo stato 17
@@ -16634,7 +16637,7 @@ stato 575
 
   264 DirAttributeValue: "' (open)" . AposAttrValueContent "' (close)"
 
-    $default  riduzione con la regola 269 (AposAttrValueContent)
+    $default  riduzione con la regola 270 (AposAttrValueContent)
 
     AposAttrValueContent  prosecuzione allo stato 615
 
@@ -16648,30 +16651,30 @@ stato 576
 
 stato 577
 
-  282 CommonContent: "<char>" .
+  277 DirElementContent: DirElementContent "<char>" .
 
-    $default  riduzione con la regola 282 (CommonContent)
+    $default  riduzione con la regola 277 (DirElementContent)
 
 
 stato 578
 
-  279 CommonContent: "&#XXX;" .
+  282 CommonContent: "&#XXX;" .
 
-    $default  riduzione con la regola 279 (CommonContent)
+    $default  riduzione con la regola 282 (CommonContent)
 
 
 stato 579
 
-  278 CommonContent: "<predefined entity ref>" .
+  281 CommonContent: "<predefined entity ref>" .
 
-    $default  riduzione con la regola 278 (CommonContent)
+    $default  riduzione con la regola 281 (CommonContent)
 
 
 stato 580
 
-  285 CdataSection: "<![CDATA[...]]>" .
+  287 CdataSection: "<![CDATA[...]]>" .
 
-    $default  riduzione con la regola 285 (CdataSection)
+    $default  riduzione con la regola 287 (CdataSection)
 
 
 stato 581
@@ -16683,71 +16686,71 @@ stato 581
 
 stato 582
 
-  280 CommonContent: "{{" .
+  283 CommonContent: "{{" .
 
-    $default  riduzione con la regola 280 (CommonContent)
+    $default  riduzione con la regola 283 (CommonContent)
 
 
 stato 583
 
-  281 CommonContent: "}}" .
+  284 CommonContent: "}}" .
 
-    $default  riduzione con la regola 281 (CommonContent)
+    $default  riduzione con la regola 284 (CommonContent)
 
 
 stato 584
 
-  275 DirElementContent: DirElementContent EnclosedExpr .
+  279 DirElementContent: DirElementContent EnclosedExpr .
 
-    $default  riduzione con la regola 275 (DirElementContent)
+    $default  riduzione con la regola 279 (DirElementContent)
 
 
 stato 585
 
-  274 DirElementContent: DirElementContent DirectConstructor .
-
-    $default  riduzione con la regola 274 (DirElementContent)
-
-
-stato 586
-
-  277 DirElementContent: DirElementContent CommonContent .
-
-    $default  riduzione con la regola 277 (DirElementContent)
-
-
-stato 587
-
-  276 DirElementContent: DirElementContent CdataSection .
+  276 DirElementContent: DirElementContent DirectConstructor .
 
     $default  riduzione con la regola 276 (DirElementContent)
 
 
+stato 586
+
+  280 DirElementContent: DirElementContent CommonContent .
+
+    $default  riduzione con la regola 280 (DirElementContent)
+
+
+stato 587
+
+  278 DirElementContent: DirElementContent CdataSection .
+
+    $default  riduzione con la regola 278 (DirElementContent)
+
+
 stato 588
 
-  296 CompElemConstructor: "element {" "{" Expr "}" "{" "}" .
+  298 CompElemConstructor: "element {" "{" Expr "}" "{" "}" .
 
-    $default  riduzione con la regola 296 (CompElemConstructor)
+    $default  riduzione con la regola 298 (CompElemConstructor)
 
 
 stato 589
 
-  295 CompElemConstructor: "element {" "{" Expr "}" "{" ContentExpr . "}"
+  297 CompElemConstructor: "element {" "{" Expr "}" "{" ContentExpr . "}"
 
     "}"  shift e prosecuzione allo stato 617
 
 
 stato 590
 
-  301 CompAttrConstructor: "attribute {" "{" Expr "}" "{" "}" .
+  303 CompAttrConstructor: "attribute {" "{" Expr "}" "{" "}" .
 
-    $default  riduzione con la regola 301 (CompAttrConstructor)
+    $default  riduzione con la regola 303 (CompAttrConstructor)
 
 
 stato 591
 
    79 Expr: Expr . "," ExprSingle
-  300 CompAttrConstructor: "attribute {" "{" Expr "}" "{" Expr . "}"
+  302 CompAttrConstructor: "attribute {" "{" Expr "}" "{" Expr . "}"
 
     ","  shift e prosecuzione allo stato 240
     "}"  shift e prosecuzione allo stato 618
@@ -16755,22 +16758,22 @@ stato 591
 
 stato 592
 
-  349 ElementTest: "element(" ElementNameOrWildcard "," TypeName "?" ")" .
+  351 ElementTest: "element(" ElementNameOrWildcard "," TypeName "?" ")" .
 
-    $default  riduzione con la regola 349 (ElementTest)
+    $default  riduzione con la regola 351 (ElementTest)
 
 
 stato 593
 
-  307 CompPIConstructor: "processing-instruction {" "{" Expr "}" "{" "}" .
+  309 CompPIConstructor: "processing-instruction {" "{" Expr "}" "{" "}" .
 
-    $default  riduzione con la regola 307 (CompPIConstructor)
+    $default  riduzione con la regola 309 (CompPIConstructor)
 
 
 stato 594
 
    79 Expr: Expr . "," ExprSingle
-  306 CompPIConstructor: "processing-instruction {" "{" Expr "}" "{" Expr . "}"
+  308 CompPIConstructor: "processing-instruction {" "{" Expr "}" "{" Expr . "}"
 
     ","  shift e prosecuzione allo stato 240
     "}"  shift e prosecuzione allo stato 619
@@ -17485,67 +17488,69 @@ stato 614
   263 DirAttributeValue: "" (open)" QuotAttrValueContent . "" (close)"
   266 QuotAttrValueContent: QuotAttrValueContent . EnclosedExpr
   267                     | QuotAttrValueContent . """"
-  268                     | QuotAttrValueContent . CommonContent
+  268                     | QuotAttrValueContent . "<char>"
+  269                     | QuotAttrValueContent . CommonContent
 
-    "<char>"                   shift e prosecuzione allo stato 577
+    "<char>"                   shift e prosecuzione allo stato 630
     "&#XXX;"                   shift e prosecuzione allo stato 578
     "<predefined entity ref>"  shift e prosecuzione allo stato 579
-    """"                       shift e prosecuzione allo stato 630
+    """"                       shift e prosecuzione allo stato 631
     "{{"                       shift e prosecuzione allo stato 582
     "}}"                       shift e prosecuzione allo stato 583
-    "" (close)"                shift e prosecuzione allo stato 631
+    "" (close)"                shift e prosecuzione allo stato 632
     "{"                        shift e prosecuzione allo stato 553
 
-    EnclosedExpr   prosecuzione allo stato 632
-    CommonContent  prosecuzione allo stato 633
+    EnclosedExpr   prosecuzione allo stato 633
+    CommonContent  prosecuzione allo stato 634
 
 
 stato 615
 
   264 DirAttributeValue: "' (open)" AposAttrValueContent . "' (close)"
-  270 AposAttrValueContent: AposAttrValueContent . EnclosedExpr
-  271                     | AposAttrValueContent . "''"
-  272                     | AposAttrValueContent . CommonContent
+  271 AposAttrValueContent: AposAttrValueContent . EnclosedExpr
+  272                     | AposAttrValueContent . "''"
+  273                     | AposAttrValueContent . "<char>"
+  274                     | AposAttrValueContent . CommonContent
 
-    "<char>"                   shift e prosecuzione allo stato 577
+    "<char>"                   shift e prosecuzione allo stato 635
     "&#XXX;"                   shift e prosecuzione allo stato 578
     "<predefined entity ref>"  shift e prosecuzione allo stato 579
-    "''"                       shift e prosecuzione allo stato 634
+    "''"                       shift e prosecuzione allo stato 636
     "{{"                       shift e prosecuzione allo stato 582
     "}}"                       shift e prosecuzione allo stato 583
-    "' (close)"                shift e prosecuzione allo stato 635
+    "' (close)"                shift e prosecuzione allo stato 637
     "{"                        shift e prosecuzione allo stato 553
 
-    EnclosedExpr   prosecuzione allo stato 636
-    CommonContent  prosecuzione allo stato 637
+    EnclosedExpr   prosecuzione allo stato 638
+    CommonContent  prosecuzione allo stato 639
 
 
 stato 616
 
   260 DirElemConstructor: "<" "<tag name>" DirAttributeList "</" DirElementContent ">" "<tag name>" . "</"
 
-    "</"  shift e prosecuzione allo stato 638
+    "</"  shift e prosecuzione allo stato 640
 
 
 stato 617
 
-  295 CompElemConstructor: "element {" "{" Expr "}" "{" ContentExpr "}" .
+  297 CompElemConstructor: "element {" "{" Expr "}" "{" ContentExpr "}" .
 
-    $default  riduzione con la regola 295 (CompElemConstructor)
+    $default  riduzione con la regola 297 (CompElemConstructor)
 
 
 stato 618
 
-  300 CompAttrConstructor: "attribute {" "{" Expr "}" "{" Expr "}" .
+  302 CompAttrConstructor: "attribute {" "{" Expr "}" "{" Expr "}" .
 
-    $default  riduzione con la regola 300 (CompAttrConstructor)
+    $default  riduzione con la regola 302 (CompAttrConstructor)
 
 
 stato 619
 
-  306 CompPIConstructor: "processing-instruction {" "{" Expr "}" "{" Expr "}" .
+  308 CompPIConstructor: "processing-instruction {" "{" Expr "}" "{" Expr "}" .
 
-    $default  riduzione con la regola 306 (CompPIConstructor)
+    $default  riduzione con la regola 308 (CompPIConstructor)
 
 
 stato 620
@@ -17600,7 +17605,7 @@ stato 625
     "schema-element("          shift e prosecuzione allo stato 75
     "schema-attribute("        shift e prosecuzione allo stato 76
 
-    SequenceType         prosecuzione allo stato 639
+    SequenceType         prosecuzione allo stato 641
     ItemType             prosecuzione allo stato 405
     AtomicType           prosecuzione allo stato 406
     KindTest             prosecuzione allo stato 407
@@ -17634,7 +17639,7 @@ stato 628
 
   126 TypeswitchExpr: "typeswitch" "(" Expr ")" CaseClauseList "default" "$" "<variable name>" . "return" ExprSingle
 
-    "return"  shift e prosecuzione allo stato 640
+    "return"  shift e prosecuzione allo stato 642
 
 
 stato 629
@@ -17646,75 +17651,89 @@ stato 629
 
 stato 630
 
+  268 QuotAttrValueContent: QuotAttrValueContent "<char>" .
+
+    $default  riduzione con la regola 268 (QuotAttrValueContent)
+
+
+stato 631
+
   267 QuotAttrValueContent: QuotAttrValueContent """" .
 
     $default  riduzione con la regola 267 (QuotAttrValueContent)
 
 
-stato 631
+stato 632
 
   263 DirAttributeValue: "" (open)" QuotAttrValueContent "" (close)" .
 
     $default  riduzione con la regola 263 (DirAttributeValue)
 
 
-stato 632
+stato 633
 
   266 QuotAttrValueContent: QuotAttrValueContent EnclosedExpr .
 
     $default  riduzione con la regola 266 (QuotAttrValueContent)
 
 
-stato 633
-
-  268 QuotAttrValueContent: QuotAttrValueContent CommonContent .
-
-    $default  riduzione con la regola 268 (QuotAttrValueContent)
-
-
 stato 634
 
-  271 AposAttrValueContent: AposAttrValueContent "''" .
+  269 QuotAttrValueContent: QuotAttrValueContent CommonContent .
 
-    $default  riduzione con la regola 271 (AposAttrValueContent)
+    $default  riduzione con la regola 269 (QuotAttrValueContent)
 
 
 stato 635
+
+  273 AposAttrValueContent: AposAttrValueContent "<char>" .
+
+    $default  riduzione con la regola 273 (AposAttrValueContent)
+
+
+stato 636
+
+  272 AposAttrValueContent: AposAttrValueContent "''" .
+
+    $default  riduzione con la regola 272 (AposAttrValueContent)
+
+
+stato 637
 
   264 DirAttributeValue: "' (open)" AposAttrValueContent "' (close)" .
 
     $default  riduzione con la regola 264 (DirAttributeValue)
 
 
-stato 636
-
-  270 AposAttrValueContent: AposAttrValueContent EnclosedExpr .
-
-    $default  riduzione con la regola 270 (AposAttrValueContent)
-
-
-stato 637
-
-  272 AposAttrValueContent: AposAttrValueContent CommonContent .
-
-    $default  riduzione con la regola 272 (AposAttrValueContent)
-
-
 stato 638
+
+  271 AposAttrValueContent: AposAttrValueContent EnclosedExpr .
+
+    $default  riduzione con la regola 271 (AposAttrValueContent)
+
+
+stato 639
+
+  274 AposAttrValueContent: AposAttrValueContent CommonContent .
+
+    $default  riduzione con la regola 274 (AposAttrValueContent)
+
+
+stato 640
 
   260 DirElemConstructor: "<" "<tag name>" DirAttributeList "</" DirElementContent ">" "<tag name>" "</" .
 
     $default  riduzione con la regola 260 (DirElemConstructor)
 
 
-stato 639
+stato 641
 
   131 CaseClause: "case" "$" "<variable name>" "as" SequenceType . "return" ExprSingle
 
-    "return"  shift e prosecuzione allo stato 641
+    "return"  shift e prosecuzione allo stato 643
 
 
-stato 640
+stato 642
 
   126 TypeswitchExpr: "typeswitch" "(" Expr ")" CaseClauseList "default" "$" "<variable name>" "return" . ExprSingle
 
@@ -17782,7 +17801,7 @@ stato 640
     "ordered {"                      shift e prosecuzione allo stato 77
     "unordered {"                    shift e prosecuzione allo stato 78
 
-    ExprSingle              prosecuzione allo stato 642
+    ExprSingle              prosecuzione allo stato 644
     FLWORExpr               prosecuzione allo stato 82
     FlworExprForLetList     prosecuzione allo stato 83
     ForOrLetClause          prosecuzione allo stato 84
@@ -17861,7 +17880,7 @@ stato 640
     QName                   prosecuzione allo stato 157
 
 
-stato 641
+stato 643
 
   131 CaseClause: "case" "$" "<variable name>" "as" SequenceType "return" . ExprSingle
 
@@ -17929,7 +17948,7 @@ stato 641
     "ordered {"                      shift e prosecuzione allo stato 77
     "unordered {"                    shift e prosecuzione allo stato 78
 
-    ExprSingle              prosecuzione allo stato 643
+    ExprSingle              prosecuzione allo stato 645
     FLWORExpr               prosecuzione allo stato 82
     FlworExprForLetList     prosecuzione allo stato 83
     ForOrLetClause          prosecuzione allo stato 84
@@ -18008,14 +18027,14 @@ stato 641
     QName                   prosecuzione allo stato 157
 
 
-stato 642
+stato 644
 
   126 TypeswitchExpr: "typeswitch" "(" Expr ")" CaseClauseList "default" "$" "<variable name>" "return" ExprSingle .
 
     $default  riduzione con la regola 126 (TypeswitchExpr)
 
 
-stato 643
+stato 645
 
   131 CaseClause: "case" "$" "<variable name>" "as" SequenceType "return" ExprSingle .
 
