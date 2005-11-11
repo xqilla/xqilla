@@ -328,16 +328,15 @@ Sequence XQDOMConstructor::collapseTreeInternal(DynamicContext *context, int fla
             else
             {
               const XMLCh* valueStr=child->asString(context);
+              if(lastWasAtomic)
+              {
+                XMLCh space[]={ ' ', 0 };
+                valueStr=XPath2Utils::concatStrings(space,valueStr,context->getMemoryManager());
+              }
+              lastWasAtomic = true;
               // empty strings are stripped
               if(*valueStr)
               {
-                if(lastWasAtomic)
-                {
-                  XMLCh space[]={ ' ', 0 };
-                  valueStr=XPath2Utils::concatStrings(space,valueStr,context->getMemoryManager());
-                }
-                lastWasAtomic = true;
-
                 if(!childList.empty() && isTextNode(childList.back())) {
                   const XMLCh* buff=XPath2Utils::concatStrings(childList.back()->dmStringValue(context),valueStr,context->getMemoryManager());
                         
