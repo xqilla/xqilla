@@ -61,6 +61,21 @@ Sequence FunctionDateTime::collapseTreeInternal(DynamicContext* context, int fla
     Sequence arg2= getParamNumber(2, context);
     const ATTimeOrDerived::Ptr time=arg2.first();
 
+    Timezone::Ptr finalTZ;
+    // determine the timezone of the result
+    if(date->hasTimezone())
+    {
+        finalTZ=date->getTimezone();
+        if(time->hasTimezone())
+        {
+            const Timezone::Ptr timeTZ=time->getTimezone();
+            if(!timeTZ->equals(finalTZ))
+                XQThrow(FunctionException, X("FunctionDateTime::collapseTreeInternal"), X("Both arguments to fn:dateTime have a timezone specified [err:FORG0008]"));
+        }
+    }
+    else if(time->hasTimezone())
+        finalTZ=time->getTimezone();
+
     // convert the time into a duration
     XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buff(64, context->getMemoryManager());
     buff.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_P);
@@ -83,28 +98,11 @@ Sequence FunctionDateTime::collapseTreeInternal(DynamicContext* context, int fla
     const ATDateTimeOrDerived::Ptr dateTime=date->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA, 
                                                          XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DATETIME, 
                                                          context);
-    const ATDateTimeOrDerived::Ptr dateTimeNoTZ=dateTime->setTimezone(0, context);
 
     // add them
-    const ATDateTimeOrDerived::Ptr result=dateTimeNoTZ->addDayTimeDuration(timeAsDur, context);
-
-    // fix the timezone
-    if(date->hasTimezone())
-    {
-        const Timezone::Ptr dateTZ=date->getTimezone();
-        if(time->hasTimezone())
-        {
-            const Timezone::Ptr timeTZ=time->getTimezone();
-            if(!timeTZ->equals(dateTZ))
-                XQThrow(FunctionException, X("FunctionDateTime::collapseTreeInternal"), X("Both arguments to fn:dateTime have a speciified timezone [err:FORG0008]"));
-        }
-        return Sequence(result->setTimezone(dateTZ, context), context->getMemoryManager());
-    }
-    else if(time->hasTimezone())
-    {
-        const Timezone::Ptr timeTZ=time->getTimezone();
-        return Sequence(result->setTimezone(timeTZ, context), context->getMemoryManager());
-    }
+    const ATDateTimeOrDerived::Ptr result=dateTime->addDayTimeDuration(timeAsDur, context);
+    if(finalTZ.notNull())
+        return Sequence(result->setTimezone(finalTZ, context), context->getMemoryManager());
     return Sequence(result, context->getMemoryManager());
 }
 
