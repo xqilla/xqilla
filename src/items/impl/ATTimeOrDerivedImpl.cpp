@@ -542,7 +542,7 @@ void ATTimeOrDerivedImpl::setTime(const XMLCh* const time, const DynamicContext*
 		case L':' : {
 			if (gotDigit ) {
 				if (state == 3 && numDigit == 2) {
-					hh = tmpnum;	
+					hh = tmpnum;
 					tmpnum = 0;
 					numDigit = 0;
 					gotDigit = false;
@@ -597,10 +597,10 @@ void ATTimeOrDerivedImpl::setTime(const XMLCh* const time, const DynamicContext*
 		}
 	} 
 
-  if ( hh > 24 || mm > 60 || ss >= 61 || zonehh > 24 || zonemm > 60 ) {
-    wrongformat = true;
-  }
-
+    if ( hh > 24 || mm > 60 || ss >= 61 || zonehh > 24 || zonemm > 60 )
+        wrongformat = true;
+    if(hh==24 && mm==0 && ss==0)
+        hh=0;
 
 	if ( wrongformat) {
 		XQThrow(XPath2TypeCastException,X("XSTimeImpl::setTime"), X("Invalid representation of time"));
