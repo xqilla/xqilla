@@ -83,8 +83,7 @@ Sequence FunctionDateTime::collapseTreeInternal(DynamicContext* context, int fla
     const ATDateTimeOrDerived::Ptr dateTime=date->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA, 
                                                          XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DATETIME, 
                                                          context);
-    Timezone::Ptr emptyTZ = new Timezone(0, 0);  
-    const ATDateTimeOrDerived::Ptr dateTimeNoTZ=dateTime->setTimezone(emptyTZ, context);
+    const ATDateTimeOrDerived::Ptr dateTimeNoTZ=dateTime->setTimezone(0, context);
 
     // add them
     const ATDateTimeOrDerived::Ptr result=dateTimeNoTZ->addDayTimeDuration(timeAsDur, context);
