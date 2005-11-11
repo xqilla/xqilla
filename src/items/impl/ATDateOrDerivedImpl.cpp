@@ -333,46 +333,15 @@ ATDateOrDerived::Ptr ATDateOrDerivedImpl::addTimezone(const ATDurationOrDerived:
  */
 ATDateOrDerived::Ptr ATDateOrDerivedImpl::addYearMonthDuration(const ATDurationOrDerived::Ptr &yearMonth,  const DynamicContext* context) const {
   if(!yearMonth->isYearMonthDuration()) {
-    XQThrow(IllegalArgumentException,X("ATDurationOrDerivedImpl::addYearMonthDuration"), X("addYearMonthDuration for given type not supported"));
+    XQThrow(IllegalArgumentException,X("ATDateOrDerivedImpl::addYearMonthDuration"), X("addYearMonthDuration for given type not supported"));
   }
-  MAPM year=yearMonth->getYears()->asMAPM();
-  MAPM month=yearMonth->getMonths()->asMAPM();
-  if(yearMonth->isNegative()) {
-    year=year.neg();
-    month=month.neg();
-  }
-  return this->addYearMonthDuration(year, month, context);
-}
-
-/**
- * Returns a date with the given yearMonthDuration added to it
- */
-ATDateOrDerived::Ptr ATDateOrDerivedImpl::addYearMonthDuration(MAPM years, MAPM months, const DynamicContext* context) const {
-  MAPM totalMonths = getMonths()->asMAPM()+months-MM_One;
-  
-  MAPM MM = DateUtils::modulo(totalMonths, 12) + MM_One;
-  MAPM carry = (totalMonths/12).floor();
-  MAPM finalYears = carry + years + getYears()->asMAPM(); 
-  
-  assert(!getYears()->isZero());  // We should never have _YY = 0000
-
-  MAPM YY;
-  // Fix year 0000 problem
-  if ( finalYears <= MM_Zero && getYears()->isPositive()) {
-    YY = finalYears - MM_One;
-  }
-  else if (finalYears >= MM_Zero && getYears()->isNegative()) {
-    YY = finalYears + MM_One;
-  } else {
-    YY = finalYears;
-  }
-
-  return new ATDateOrDerivedImpl(getTypeURI(), getTypeName(),
-                                 context->getItemFactory()->createInteger(YY, context),
-                                 context->getItemFactory()->createNonNegativeInteger(MM, context),
-                                 _DD,
-                                 getTimezone(), 
-                                 hasTimezone());
+  ATDateTimeOrDerived::Ptr myDateTime=castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA, 
+                                             XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DATETIME, 
+                                             context);
+  return myDateTime->addYearMonthDuration(yearMonth, context)
+                   ->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA, 
+                            XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DATE, 
+                            context);
 }
 
 /**
@@ -396,16 +365,16 @@ ATDateOrDerived::Ptr ATDateOrDerivedImpl::addDayTimeDuration(const ATDurationOrD
  */
 ATDateOrDerived::Ptr ATDateOrDerivedImpl::subtractYearMonthDuration(const ATDurationOrDerived::Ptr &yearMonth, const DynamicContext* context) const {
   if(!((const ATDurationOrDerived*)yearMonth)->isYearMonthDuration()) {
-    XQThrow(IllegalArgumentException,X("ATDurationOrDerivedImpl::subtractYearMonthDuration"), X("subtractYearMonthDuration for given type not supported")); 
+    XQThrow(IllegalArgumentException,X("ATDateOrDerivedImpl::subtractYearMonthDuration"), X("subtractYearMonthDuration for given type not supported")); 
   }
   
-  MAPM year=((const ATDecimalOrDerived*)((const ATDurationOrDerived*)yearMonth)->getYears())->asMAPM();
-  MAPM month=((const ATDecimalOrDerived*)((const ATDurationOrDerived*)yearMonth)->getMonths())->asMAPM();
-  if(!((const ATDurationOrDerived*)yearMonth)->isNegative()) {
-    year=year.neg();
-    month=month.neg();
-  }
-  return this->addYearMonthDuration(year, month, context);
+  ATDateTimeOrDerived::Ptr myDateTime=castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA, 
+                                             XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DATETIME, 
+                                             context);
+  return myDateTime->subtractYearMonthDuration(yearMonth, context)
+                   ->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA, 
+                            XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DATE, 
+                            context);
 }
 
 /**

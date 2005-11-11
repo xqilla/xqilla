@@ -166,8 +166,6 @@ private:
 
   void setDate(const XMLCh* const date, const DynamicContext* context);
 
-  ATDateOrDerived::Ptr addYearMonthDuration(MAPM years, MAPM months, const DynamicContext* context) const;
-
   //////////////////////////////////////
   // Horrible Hack to make Dates      //
   // work for now. Loss of Precision! //

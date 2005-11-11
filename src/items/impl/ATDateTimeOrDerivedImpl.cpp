@@ -495,13 +495,18 @@ ATDateTimeOrDerived::Ptr ATDateTimeOrDerivedImpl::addYearMonthDuration(MAPM year
   } else {
     YY = finalYears;
   }
-  
+
+  MAPM DD = getDays()->asMAPM();
+  int maxDay=DateUtils::maximumDayInMonthFor(asInt(YY), asInt(MM));
+  if(DD > maxDay)
+      DD = maxDay;
+
   return new
     ATDateTimeOrDerivedImpl(getTypeURI(), 
                             getTypeName(), 
                             context->getItemFactory()->createInteger(YY, context),
                             context->getItemFactory()->createNonNegativeInteger(MM, context),
-                            _DD, 
+                            context->getItemFactory()->createNonNegativeInteger(DD, context),
                             getHours(),
                             getMinutes(),
                             getSeconds(),
