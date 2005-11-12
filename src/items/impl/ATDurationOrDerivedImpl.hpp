@@ -187,7 +187,7 @@ private:
   ATDecimalOrDerived::Ptr _sec;   // xs:decimal
 
   enum DurationType { DAY_TIME_DURATION, YEAR_MONTH_DURATION, DURATION };
-  DurationType durationType;
+  DurationType _durationType;
   
   /* the name of this type */
   const XMLCh* _typeName;
