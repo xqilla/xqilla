@@ -24,49 +24,29 @@
  */
 
 /*
-
-  (string $uri-part, boolean $escape-reserved) => string
-  Applies the URI escaping rules to the string supplied
-  
-
+  fn:encode-for-uri($uri-part as xs:string?) as xs:string
 */
 
-#ifndef _FUNCTIONESCAPEURI_HPP
-#define _FUNCTIONESCAPEURI_HPP
+#ifndef _FUNCTIONENCODEFORURI_HPP
+#define _FUNCTIONENCODEFORURI_HPP
 
 #include <xqilla/framework/XQillaExport.hpp>
-#include <xercesc/util/XMLUTF8Transcoder.hpp>
-#include <xercesc/util/TransService.hpp>
-#include <xercesc/util/XMLUni.hpp>
 
 #include <xqilla/ast/ConstantFoldingFunction.hpp>
 
-/** Substring function. */
-class XQILLA_API FunctionEscapeURI : public ConstantFoldingFunction
+class XQILLA_API FunctionEncodeForUri : public ConstantFoldingFunction
 {
 public:
   static const XMLCh name[];
   static const unsigned int minArgs;
   static const unsigned int maxArgs;
 
-  FunctionEscapeURI(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
-  
-  /** Returns param1 after applying URI escaping rules - the value of param2 determines exactly which set of 
-   *  characters is escaped**/
-  Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
+  FunctionEncodeForUri(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
 
-private:
- //The UTF-8 XML Transcoder
- //XMLUTF8Transcoder transcoder;
-  
- //Returns the escape character sequence for the given character
- XMLCh* escapeChar(XMLCh c) const;
- 
+  Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
 };
 
-#endif // _FUNCTIONESCAPEURI_HPP
-
-
+#endif // _FUNCTIONENCODEFORURI_HPP
 
 
 

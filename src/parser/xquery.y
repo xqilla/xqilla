@@ -364,7 +364,7 @@ namespace XQuery {
 %token _STRIP_							"strip"
 %token _NAMESPACE_						"namespace"
 %token _EXPR_AS_						") as"
-%token _EMPTY_							"void()"
+%token _EMPTY_							"empty-sequence()"
 %token _ITEM_							"item()"
 %token _NILLABLE_						"?"
 %token _IMPORT_SCHEMA_					"import schema"
@@ -716,20 +716,28 @@ SchemaPrefix:
 ModuleImport:
 	_IMPORT_MODULE_ _NAMESPACE_ _NCNAME_ _EQUALS_ URILiteral ResourceLocations
 	{
+		if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen($5)==0)
+			yyerror("The literal that specifies the target namespace in a module import must not be of zero length [err:XQST0088]");
 		CONTEXT->setNamespaceBinding($3,$5);
 		QP->_query->importModule($5,$6,CONTEXT);
 	}
 	| _IMPORT_MODULE_ _NAMESPACE_ _NCNAME_ _EQUALS_ URILiteral 
 	{
-		yyerror("Cannot locate module without the 'at <location>' keyword");
+		if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen($5)==0)
+			yyerror("The literal that specifies the target namespace in a module import must not be of zero length [err:XQST0088]");
+		yyerror("Cannot locate module without the 'at <location>' keyword [err:XQST0059]");
 	}
 	| _IMPORT_MODULE_ URILiteral ResourceLocations
 	{
+		if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen($2)==0)
+			yyerror("The literal that specifies the target namespace in a module import must not be of zero length [err:XQST0088]");
 		QP->_query->importModule($2,$3,CONTEXT);
 	}
 	| _IMPORT_MODULE_ URILiteral 
 	{
-		yyerror("Cannot locate module without the 'at <location>' keyword");
+		if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen($2)==0)
+			yyerror("The literal that specifies the target namespace in a module import must not be of zero length [err:XQST0088]");
+		yyerror("Cannot locate module without the 'at <location>' keyword [err:XQST0059]");
 	}
 	;
 
@@ -2406,7 +2414,7 @@ TypeDeclaration:
 		}
 	;
 
-// [117]    SequenceType    ::=    (ItemType OccurrenceIndicator?) |  <"empty" "(" ")">
+// [117]    SequenceType    ::=    (ItemType OccurrenceIndicator?) |  <" empty-sequence" "(" ")">
 SequenceType:
 	    ItemType OccurrenceIndicator
 		{
