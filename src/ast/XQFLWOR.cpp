@@ -637,6 +637,9 @@ void XQFLWOR::staticResolutionImpl(StaticContext* context)
     }
 
     const StaticResolutionContext &valueSrc = newVB->_allValues->getStaticResolutionContext();
+    // if the expression makes use of a variable with the same name of the binding, we need a new scope
+    if(valueSrc.isVariableUsed(newVB->_vURI, newVB->_vName))
+      newVB->_needsNewScope=true;
     _src.add(valueSrc);
 
     VectorOfVariableBinding::reverse_iterator it2;
@@ -658,7 +661,7 @@ void XQFLWOR::staticResolutionImpl(StaticContext* context)
 
     // Check to see if this binding has the same name as any before it
     // (4 comparisons, since each binding has two possible variables for it)
-    for(it2 = it + 1; it2 != rend; ++it2) {
+    for(it2 = it + 1; newVB->_needsNewScope==false && it2 != rend; ++it2) {
       if(newVB->_variable && (*it2)->_variable &&
          XPath2Utils::equals(newVB->_vName, (*it2)->_vName) && XPath2Utils::equals(newVB->_vURI, (*it2)->_vURI)) {
         newVB->_needsNewScope = true;
