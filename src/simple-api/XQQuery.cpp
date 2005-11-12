@@ -38,7 +38,7 @@
 #include <xqilla/dom-api/XQScopedNamespace.hpp>
 #include <xqilla/functions/FunctionLookup.hpp>
 #include <xqilla/exceptions/XPath2ErrorException.hpp>
-#include <xqilla/exceptions/ContextException.hpp>
+#include <xqilla/exceptions/StaticErrorException.hpp>
 #include <xqilla/items/Node.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
@@ -111,10 +111,14 @@ void XQQuery::staticResolution(StaticContext *context)
 
   for(vector<XQGlobalVariable*, XQillaAllocator<XQGlobalVariable*> >::iterator it = m_userDefVars.begin();
       it != m_userDefVars.end(); ++it) {
+    if(getIsLibraryModule() && !XERCES_CPP_NAMESPACE::XMLString::equals((*it)->getVariableURI(), getModuleTargetNamespace()))
+      XQThrow(StaticErrorException,X("XQQuery::staticResolution"), X("Every global variable in a module must be in the module namespace [err:XQST0048]."));
     (*it) = (XQGlobalVariable*)(*it)->staticResolution(context);
   }
   for(vector<XQUserFunction*, XQillaAllocator<XQUserFunction*> >::iterator i = m_userDefFns.begin();
       i != m_userDefFns.end(); ++i) {
+    if(getIsLibraryModule() && !XERCES_CPP_NAMESPACE::XMLString::equals((*i)->getURI(), getModuleTargetNamespace()))
+      XQThrow(StaticErrorException,X("XQQuery::staticResolution"), X("Every function in a module must be in the module namespace [err:XQST0048]."));
     (*i)->staticResolution(context);
   }
   if(m_query) m_query = m_query->staticResolution(context);
@@ -219,14 +223,14 @@ void XQQuery::importModule(const XMLCh* szUri, VectorOfStrings* locations, Stati
           errMsg.set(X("The module at "));
           errMsg.append(*it);
           errMsg.append(X(" is not a module"));
-              XQThrow(ContextException,X("XQQuery::ImportModule"), errMsg.getRawBuffer());
+          XQThrow(StaticErrorException,X("XQQuery::ImportModule"), errMsg.getRawBuffer());
         }
         if(!XERCES_CPP_NAMESPACE::XMLString::equals(szUri,pParsedQuery->getModuleTargetNamespace())) {
           XMLBuffer errMsg;
           errMsg.set(X("The module at "));
           errMsg.append(*it);
           errMsg.append(X(" specifies a different namespace"));
-          XQThrow(ContextException,X("XQQuery::ImportModule"), errMsg.getRawBuffer());
+          XQThrow(StaticErrorException,X("XQQuery::ImportModule"), errMsg.getRawBuffer());
         }
         // now move the variable declarations and the function definitions into my context
         for(vector<XQUserFunction*, XQillaAllocator<XQUserFunction*> >::iterator itFn = pParsedQuery->m_userDefFns.begin();
@@ -236,6 +240,12 @@ void XQQuery::importModule(const XMLCh* szUri, VectorOfStrings* locations, Stati
         }
         for(vector<XQGlobalVariable*, XQillaAllocator<XQGlobalVariable*> >::iterator itVar = pParsedQuery->m_userDefVars.begin();
             itVar != pParsedQuery->m_userDefVars.end(); ++itVar) {
+          for(vector<XQGlobalVariable*, XQillaAllocator<XQGlobalVariable*> >::iterator it = m_userDefVars.begin();
+              it != m_userDefVars.end(); ++it) {
+                if(XERCES_CPP_NAMESPACE::XMLString::equals((*it)->getVariableURI(), (*itVar)->getVariableURI()) &&
+                   XERCES_CPP_NAMESPACE::XMLString::equals((*it)->getVariableLocalName(), (*itVar)->getVariableLocalName()))
+                   XQThrow(StaticErrorException, X("XQQuery::ImportModule"), X("An imported variable conflicts with an already defined global variable [err:XQST0049]."));
+          }
           // Should this set a global variable in the context? - jpcs
           m_userDefVars.push_back(*itVar);
         }
@@ -251,7 +261,7 @@ void XQQuery::importModule(const XMLCh* szUri, VectorOfStrings* locations, Stati
       }
   }
   if(!bFound)
-      XQThrow(ContextException,X("XQQuery::ImportModule"), X("Cannot locate the requested module"));
+      XQThrow(StaticErrorException,X("XQQuery::ImportModule"), X("Cannot locate the requested module [err:XQST0059]"));
 }
 
 const XMLCh* XQQuery::getFile() const
