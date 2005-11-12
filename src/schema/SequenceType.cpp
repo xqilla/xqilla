@@ -210,29 +210,40 @@ void SequenceType::ItemType::setTypeURI(const XMLCh* const typeURI) {
 
 const XMLCh* SequenceType::ItemType::getTypeURI(const StaticContext* context) const
 {
-	if(m_TypeURI!=0 && *m_TypeURI!=0) {
-		//      cerr << "NameTypeConstrain: Returning m_TypeURI: " << XMLString::transcode(m_TypeURI) << endl;
-		return m_TypeURI;
-	}
-	//    cerr << "NameTypeConstrain: Returning getUriBoundToPrefix: " << " prefix is: " << XMLString::transcode(m_pType->getPrefix()) << " result is: " << XMLString::transcode(context->getUriBoundToPrefix(m_pType->getPrefix())) <<  " default uri is " << XMLString::transcode(context->getDefaultFuncNS()) << endl;
-  if(m_pType != 0)
-    return context->getUriBoundToPrefix(m_pType->getPrefix());
-  return 0;
+    if(m_TypeURI!=0 && *m_TypeURI!=0) {
+        // cerr << "NameTypeConstrain: Returning m_TypeURI: " << XMLString::transcode(m_TypeURI) << endl;
+        return m_TypeURI;
+    }
+    // cerr << "NameTypeConstrain: Returning getUriBoundToPrefix: " << " prefix is: " << XMLString::transcode(m_pType->getPrefix()) << " result is: " << XMLString::transcode(context->getUriBoundToPrefix(m_pType->getPrefix())) <<  " default uri is " << XMLString::transcode(context->getDefaultFuncNS()) << endl;
+    if(m_pType != 0)
+    {
+        const XMLCh* prefix=m_pType->getPrefix();
+        // an empty prefix means the default element and type namespace
+        if(prefix==0 || *prefix==0)
+            return context->getDefaultElementAndTypeNS();
+        return context->getUriBoundToPrefix(prefix);
+    }
+    return 0;
 }
 
 const XMLCh* SequenceType::ItemType::getNameURI(const StaticContext* context) const
 {
-	if(m_NameURI!=0 && *m_NameURI!=0)
-		return m_NameURI;
-  if(m_pName != 0)
+    if(m_NameURI!=0 && *m_NameURI!=0)
+        return m_NameURI;
+    if(m_pName != 0)
     {
         const XMLCh* prefix=m_pName->getPrefix();
-        // if we are testing for an attribute, an empty prefix means empty namespace
-        if((prefix==0 || *prefix==0) && (m_nTestType==TEST_ATTRIBUTE || m_nTestType==TEST_SCHEMA_ATTRIBUTE))
-            return 0;
+        // if we are testing for an attribute, an empty prefix means empty namespace; if we are testing an element, it means 
+        // the default element and type namespace
+        if(prefix==0 || *prefix==0)
+            if(m_nTestType==TEST_ATTRIBUTE || m_nTestType==TEST_SCHEMA_ATTRIBUTE)
+                return 0;
+            else if(m_nTestType==TEST_ELEMENT || m_nTestType==TEST_SCHEMA_ELEMENT)
+                return context->getDefaultElementAndTypeNS();
+
         return context->getUriBoundToPrefix(prefix);
     }
-  return 0;
+    return 0;
 }
 
 void SequenceType::ItemType::getStaticType(StaticResolutionContext::StaticType &st, const StaticContext *context) const
