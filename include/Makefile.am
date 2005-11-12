@@ -119,9 +119,10 @@ xqilla/functions/FunctionDocAvailable.hpp \
 xqilla/functions/FunctionDoc.hpp \
 xqilla/functions/FunctionDocumentURI.hpp \
 xqilla/functions/FunctionEmpty.hpp \
+xqilla/functions/FunctionEncodeForUri.hpp \
 xqilla/functions/FunctionEndsWith.hpp \
 xqilla/functions/FunctionError.hpp \
-xqilla/functions/FunctionEscapeURI.hpp \
+xqilla/functions/FunctionEscapeHtmlUri.hpp \
 xqilla/functions/FunctionExactlyOne.hpp \
 xqilla/functions/FunctionExists.hpp \
 xqilla/functions/FunctionFalse.hpp \
@@ -135,6 +136,7 @@ xqilla/functions/FunctionImplicitTimezone.hpp \
 xqilla/functions/FunctionIndexOf.hpp \
 xqilla/functions/FunctionInScopePrefixes.hpp \
 xqilla/functions/FunctionInsertBefore.hpp \
+xqilla/functions/FunctionIriToUri.hpp \
 xqilla/functions/FunctionLang.hpp \
 xqilla/functions/FunctionLast.hpp \
 xqilla/functions/FunctionLocalNameFromQName.hpp \

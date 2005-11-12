@@ -125,9 +125,10 @@ std::vector< FuncFactory* > FunctionLookupImpl::getFunctionFactories() const
 #include <xqilla/functions/FunctionDocAvailable.hpp>
 #include <xqilla/functions/FunctionDocumentURI.hpp>
 #include <xqilla/functions/FunctionEmpty.hpp>
+#include <xqilla/functions/FunctionEncodeForUri.hpp>
 #include <xqilla/functions/FunctionEndsWith.hpp>
 #include <xqilla/functions/FunctionError.hpp>
-#include <xqilla/functions/FunctionEscapeURI.hpp>
+#include <xqilla/functions/FunctionEscapeHtmlUri.hpp>
 #include <xqilla/functions/FunctionExactlyOne.hpp>
 #include <xqilla/functions/FunctionExists.hpp>
 #include <xqilla/functions/FunctionQName.hpp>
@@ -140,9 +141,10 @@ std::vector< FuncFactory* > FunctionLookupImpl::getFunctionFactories() const
 #include <xqilla/functions/FunctionNamespaceURIForPrefix.hpp>
 #include <xqilla/functions/FunctionId.hpp>
 #include <xqilla/functions/FunctionIdref.hpp>
-#include <xqilla/functions/FunctionInsertBefore.hpp>
 #include <xqilla/functions/FunctionImplicitTimezone.hpp>
 #include <xqilla/functions/FunctionIndexOf.hpp>
+#include <xqilla/functions/FunctionInsertBefore.hpp>
+#include <xqilla/functions/FunctionIriToUri.hpp>
 #include <xqilla/functions/FunctionLang.hpp>
 #include <xqilla/functions/FunctionLast.hpp>
 #include <xqilla/functions/FunctionLocalname.hpp>
@@ -280,8 +282,12 @@ void FunctionLookupImpl::createTable()
   insertFunction(new (_memMgr) FuncFactoryTemplate<FunctionLowerCase>());
   //   fn:translate
   insertFunction(new (_memMgr) FuncFactoryTemplate<FunctionTranslate>());
-  //   fn:escape-URI
-  insertFunction(new (_memMgr) FuncFactoryTemplate<FunctionEscapeURI>());
+  //   fn:encode-for-uri
+  insertFunction(new (_memMgr) FuncFactoryTemplate<FunctionEncodeForUri>());
+  //   fn:iri-to-uri
+  insertFunction(new (_memMgr) FuncFactoryTemplate<FunctionIriToUri>());
+  //   fn:escape-html-uri
+  insertFunction(new (_memMgr) FuncFactoryTemplate<FunctionEscapeHtmlUri>());
   //   fn:contains
   insertFunction(new (_memMgr) FuncFactoryTemplate<FunctionContains>());
   //   fn:starts-with

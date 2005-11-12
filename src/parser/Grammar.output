@@ -447,7 +447,7 @@ Grammatica
 
   313 SequenceType: ItemType OccurrenceIndicator
   314             | ItemType
-  315             | "void()"
+  315             | "empty-sequence()"
 
   316 OccurrenceIndicator: "* (occurrence)"
   317                    | "+ (occurrence)"
@@ -668,7 +668,7 @@ _XQUERY_ERROR_ (284)
 "strip" (389) 32 64
 "namespace" (390) 30 33 34 53 54 55 56
 ") as" (391) 67 68 71 72
-"void()" (392) 315
+"empty-sequence()" (392) 315
 "item()" (393) 321
 "?" (394) 351
 "import schema" (395) 47 48 49 50
@@ -10596,7 +10596,7 @@ stato 276
     "comment("                 shift e prosecuzione allo stato 54
     "text("                    shift e prosecuzione allo stato 55
     "node("                    shift e prosecuzione allo stato 56
-    "void()"                   shift e prosecuzione allo stato 402
+    "empty-sequence()"         shift e prosecuzione allo stato 402
     "item()"                   shift e prosecuzione allo stato 403
     "document-node("           shift e prosecuzione allo stato 64
     "attribute("               shift e prosecuzione allo stato 65
@@ -10629,7 +10629,7 @@ stato 277
     "comment("                 shift e prosecuzione allo stato 54
     "text("                    shift e prosecuzione allo stato 55
     "node("                    shift e prosecuzione allo stato 56
-    "void()"                   shift e prosecuzione allo stato 402
+    "empty-sequence()"         shift e prosecuzione allo stato 402
     "item()"                   shift e prosecuzione allo stato 403
     "document-node("           shift e prosecuzione allo stato 64
     "attribute("               shift e prosecuzione allo stato 65
@@ -12762,7 +12762,7 @@ stato 401
 
 stato 402
 
-  315 SequenceType: "void()" .
+  315 SequenceType: "empty-sequence()" .
 
     $default  riduzione con la regola 315 (SequenceType)
 
@@ -13475,7 +13475,7 @@ stato 456
     "comment("                 shift e prosecuzione allo stato 54
     "text("                    shift e prosecuzione allo stato 55
     "node("                    shift e prosecuzione allo stato 56
-    "void()"                   shift e prosecuzione allo stato 402
+    "empty-sequence()"         shift e prosecuzione allo stato 402
     "item()"                   shift e prosecuzione allo stato 403
     "document-node("           shift e prosecuzione allo stato 64
     "attribute("               shift e prosecuzione allo stato 65
@@ -14496,7 +14496,7 @@ stato 512
     "comment("                 shift e prosecuzione allo stato 54
     "text("                    shift e prosecuzione allo stato 55
     "node("                    shift e prosecuzione allo stato 56
-    "void()"                   shift e prosecuzione allo stato 402
+    "empty-sequence()"         shift e prosecuzione allo stato 402
     "item()"                   shift e prosecuzione allo stato 403
     "document-node("           shift e prosecuzione allo stato 64
     "attribute("               shift e prosecuzione allo stato 65
@@ -15209,7 +15209,7 @@ stato 528
     "comment("                 shift e prosecuzione allo stato 54
     "text("                    shift e prosecuzione allo stato 55
     "node("                    shift e prosecuzione allo stato 56
-    "void()"                   shift e prosecuzione allo stato 402
+    "empty-sequence()"         shift e prosecuzione allo stato 402
     "item()"                   shift e prosecuzione allo stato 403
     "document-node("           shift e prosecuzione allo stato 64
     "attribute("               shift e prosecuzione allo stato 65
@@ -16218,7 +16218,7 @@ stato 559
     "comment("                 shift e prosecuzione allo stato 54
     "text("                    shift e prosecuzione allo stato 55
     "node("                    shift e prosecuzione allo stato 56
-    "void()"                   shift e prosecuzione allo stato 402
+    "empty-sequence()"         shift e prosecuzione allo stato 402
     "item()"                   shift e prosecuzione allo stato 403
     "document-node("           shift e prosecuzione allo stato 64
     "attribute("               shift e prosecuzione allo stato 65
@@ -17597,7 +17597,7 @@ stato 625
     "comment("                 shift e prosecuzione allo stato 54
     "text("                    shift e prosecuzione allo stato 55
     "node("                    shift e prosecuzione allo stato 56
-    "void()"                   shift e prosecuzione allo stato 402
+    "empty-sequence()"         shift e prosecuzione allo stato 402
     "item()"                   shift e prosecuzione allo stato 403
     "document-node("           shift e prosecuzione allo stato 64
     "attribute("               shift e prosecuzione allo stato 65

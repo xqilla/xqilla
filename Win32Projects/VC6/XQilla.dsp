@@ -1100,6 +1100,14 @@ SOURCE=..\..\include\xqilla\functions\FunctionEmpty.hpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\functions\FunctionEncodeForUri.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\functions\FunctionEncodeForUri.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\functions\FunctionEndsWith.cpp
 # End Source File
 # Begin Source File
@@ -1116,11 +1124,11 @@ SOURCE=..\..\include\xqilla\functions\FunctionError.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\functions\FunctionEscapeURI.cpp
+SOURCE=..\..\src\functions\FunctionEscapeHtmlUri.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\include\xqilla\functions\FunctionEscapeURI.hpp
+SOURCE=..\..\include\xqilla\functions\FunctionEscapeHtmlUri.hpp
 # End Source File
 # Begin Source File
 
@@ -1225,6 +1233,14 @@ SOURCE=..\..\src\functions\FunctionInsertBefore.cpp
 # Begin Source File
 
 SOURCE=..\..\include\xqilla\functions\FunctionInsertBefore.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\functions\FunctionIriToUri.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\functions\FunctionIriToUri.hpp
 # End Source File
 # Begin Source File
 
@@ -2652,14 +2668,6 @@ SOURCE=..\..\include\xqilla\schema\SequenceType.hpp
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE="..\..\src\simple-api\XQEvaluator.cpp"
-# End Source File
-# Begin Source File
-
-SOURCE="..\..\include\xqilla\simple-api\XQEvaluator.hpp"
-# End Source File
-# Begin Source File
-
 SOURCE="..\..\include\xqilla\xqilla-simple.hpp"
 # End Source File
 # Begin Source File
@@ -2673,14 +2681,6 @@ SOURCE="..\..\include\xqilla\simple-api\XQilla.hpp"
 # Begin Source File
 
 SOURCE="..\..\src\simple-api\XQilla2.cpp"
-# End Source File
-# Begin Source File
-
-SOURCE="..\..\src\simple-api\XQillaEngine.cpp"
-# End Source File
-# Begin Source File
-
-SOURCE="..\..\include\xqilla\simple-api\XQillaEngine.hpp"
 # End Source File
 # Begin Source File
 

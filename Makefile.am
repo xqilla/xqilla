@@ -125,9 +125,10 @@ src/functions/FunctionDocAvailable.cpp \
 src/functions/FunctionDoc.cpp \
 src/functions/FunctionDocumentURI.cpp \
 src/functions/FunctionEmpty.cpp \
+src/functions/FunctionEncodeForUri.cpp \
 src/functions/FunctionEndsWith.cpp \
 src/functions/FunctionError.cpp \
-src/functions/FunctionEscapeURI.cpp \
+src/functions/FunctionEscapeHtmlUri.cpp \
 src/functions/FunctionExactlyOne.cpp \
 src/functions/FunctionExists.cpp \
 src/functions/FunctionFalse.cpp \
@@ -138,6 +139,7 @@ src/functions/FunctionImplicitTimezone.cpp \
 src/functions/FunctionIndexOf.cpp \
 src/functions/FunctionInScopePrefixes.cpp \
 src/functions/FunctionInsertBefore.cpp \
+src/functions/FunctionIriToUri.cpp \
 src/functions/FunctionLang.cpp \
 src/functions/FunctionLast.cpp \
 src/functions/FunctionLocalname.cpp \

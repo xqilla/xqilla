@@ -2679,6 +2679,12 @@ copy ..\..\..\xerces-c-src_2_7_0\Build\Win32\VC6\Debug\xerces-c_2_7D.pdb .
 				RelativePath="..\..\include\xqilla\functions\FunctionEmpty.hpp">
 			</File>
 			<File
+				RelativePath="..\..\src\functions\FunctionEncodeForUri.cpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\functions\FunctionEncodeForUri.hpp">
+			</File>
+			<File
 				RelativePath="..\..\src\functions\FunctionEndsWith.cpp">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -2725,27 +2731,10 @@ copy ..\..\..\xerces-c-src_2_7_0\Build\Win32\VC6\Debug\xerces-c_2_7D.pdb .
 				RelativePath="..\..\include\xqilla\functions\FunctionError.hpp">
 			</File>
 			<File
-				RelativePath="..\..\src\functions\FunctionEscapeURI.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="NDEBUG;WIN32;_WINDOWS;_MBCS;XQILLA_APIS;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;_MBCS;XQILLA_APIS;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
+				RelativePath="..\..\src\functions\FunctionEscapeHtmlUri.cpp">
 			</File>
 			<File
-				RelativePath="..\..\include\xqilla\functions\FunctionEscapeURI.hpp">
+				RelativePath="..\..\include\xqilla\functions\FunctionEscapeHtmlUri.hpp">
 			</File>
 			<File
 				RelativePath="..\..\src\functions\FunctionExactlyOne.cpp">
@@ -3045,6 +3034,12 @@ copy ..\..\..\xerces-c-src_2_7_0\Build\Win32\VC6\Debug\xerces-c_2_7D.pdb .
 			</File>
 			<File
 				RelativePath="..\..\include\xqilla\functions\FunctionInsertBefore.hpp">
+			</File>
+			<File
+				RelativePath="..\..\src\functions\FunctionIriToUri.cpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\functions\FunctionIriToUri.hpp">
 			</File>
 			<File
 				RelativePath="..\..\src\functions\FunctionLang.cpp">
@@ -7166,29 +7161,6 @@ copy ..\..\..\xerces-c-src_2_7_0\Build\Win32\VC6\Debug\xerces-c_2_7D.pdb .
 			Name="Simple-API"
 			Filter="">
 			<File
-				RelativePath="..\..\src\simple-api\XQEvaluator.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="NDEBUG;WIN32;_WINDOWS;_MBCS;XQILLA_APIS;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;_MBCS;XQILLA_APIS;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\include\xqilla\simple-api\XQEvaluator.hpp">
-			</File>
-			<File
 				RelativePath="..\..\include\xqilla\xqilla-simple.hpp">
 			</File>
 			<File
@@ -7199,29 +7171,6 @@ copy ..\..\..\xerces-c-src_2_7_0\Build\Win32\VC6\Debug\xerces-c_2_7D.pdb .
 			</File>
 			<File
 				RelativePath="..\..\src\simple-api\XQilla2.cpp">
-			</File>
-			<File
-				RelativePath="..\..\src\simple-api\XQillaEngine.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="NDEBUG;WIN32;_WINDOWS;_MBCS;XQILLA_APIS;$(NoInherit)"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;_MBCS;XQILLA_APIS;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\include\xqilla\simple-api\XQillaEngine.hpp">
 			</File>
 			<File
 				RelativePath="..\..\src\simple-api\XQQuery.cpp">
