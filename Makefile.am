@@ -8,7 +8,7 @@ LDADD = libxqilla.la -lxerces-c
 TESTS = testDatatypes
 
 bin_PROGRAMS = xqilla
-noinst_PROGRAMS = basicXQillaUsage testDatatypes
+noinst_PROGRAMS = basicXQillaUsage testDatatypes xqtsRunner
 
 lib_LTLIBRARIES = libxqilla.la
 
@@ -393,6 +393,9 @@ src/samples/xqilla/xqilla.cpp
 
 basicXQillaUsage_SOURCES = \
 src/samples/basic/basicXQillaUsage.cpp
+
+xqtsRunner_SOURCES = \
+tests/xqts/runner.cpp
 
 testDatatypes_SOURCES = \
 src/samples/datatypes/ATAnyURITester.cpp \

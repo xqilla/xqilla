@@ -169,8 +169,8 @@ int main(int argc, char *argv[])
 
 TestSuiteParserHandler::TestSuiteParserHandler(std::string szXQTSDirectory, std::string szSingleTest)
 : m_urlXQTSDirectory(szXQTSDirectory.c_str()),
-  m_urlXQTSResultsDirectory(m_urlXQTSDirectory, "ExpectedTestResults/"),
-  m_urlXQTSQueriesDirectory(m_urlXQTSDirectory, "Queries/XQuery/")
+  m_urlXQTSQueriesDirectory(m_urlXQTSDirectory, "Queries/XQuery/"),
+  m_urlXQTSResultsDirectory(m_urlXQTSDirectory, "ExpectedTestResults/")
 {
     m_szSingleTest=szSingleTest;
     m_bReadingInputFile=m_bReadingOutputFile=m_bReadingExpectedError=false;
@@ -346,9 +346,9 @@ void TestSuiteParserHandler::runTest()
             allErrors+=",";
         allErrors+=*i;
     }
+    Janitor<DynamicContext> context(xqilla.createContext());
     try 
     {
-        Janitor<DynamicContext> context(xqilla.createContext());
         context->setBaseURI(m_urlQuery.getURLText());
         context->setImplicitTimezone(context->getItemFactory()->createDurationOrDerived(FunctionConstructor::XMLChXPath2DatatypesURI, ATDurationOrDerived::fgDT_DAYTIMEDURATION, X("PT0S"), context.get()));
         context->setXMLEntityResolver(this);
@@ -374,7 +374,7 @@ void TestSuiteParserHandler::runTest()
         if(m_outputFiles.empty() && !m_expectedErrors.empty())
         {
             std::string outputResult;
-		    for(int i=0;i<result.getLength();i++)
+		    for(unsigned int i=0;i<result.getLength();i++)
 		    {
 			    const Item* item=result.item(i);
                 if(outputResult.length()>0)
@@ -402,7 +402,7 @@ void TestSuiteParserHandler::runTest()
                 std::string szCompareMethod=(*i).second;
 
                 std::string expectedResult;
-                Janitor<BinFileInputStream> stream=(BinFileInputStream*)URLInputSource(szReferenceFile.c_str()).makeStream();
+                Janitor<BinFileInputStream> stream((BinFileInputStream*)URLInputSource(szReferenceFile.c_str()).makeStream());
                 unsigned int dwSize=stream->getSize();
                 expectedResult.resize(dwSize);
                 stream->readBytes((XMLByte*)expectedResult.c_str(), dwSize);
@@ -423,7 +423,7 @@ void TestSuiteParserHandler::runTest()
                     MemBufFormatTarget strTarget;
                     {
                         XMLFormatter formatter("UTF-16", "1.0", &strTarget, XMLFormatter::CharEscapes);
-		                for(int i=0;i<result.getLength();i++)
+		                for(unsigned int i=0;i<result.getLength();i++)
 		                {
 			                const Item* item=result.item(i);
                             if(i>0)
@@ -456,7 +456,7 @@ void TestSuiteParserHandler::runTest()
                         XMLFormatter formatter("UTF-16", "1.0", &strTarget);
                         if(szCompareMethod=="Fragment")
                             formatter << X("<wrapper>");
-		                for(int i=0;i<result.getLength();i++)
+		                for(unsigned int i=0;i<result.getLength();i++)
 		                {
 			                const Item* item=result.item(i);
                             if(i>0 && !item->isNode() && !result.item(i-1)->isNode())
@@ -564,6 +564,13 @@ void TestSuiteParserHandler::runTest()
             }
         }
 	}
+  catch(DOMException &de) {
+        if(m_bPreviousTestSucceeded)
+            std::cout << std::endl;
+        std::cout << "Test-case '" << m_szFullTestName << ":" << m_szCurrentTestCase << "': ";
+        std::cout << "Fail [DOMException: " << UTF8(de.getMessage()) << "]" << std::endl;
+        m_bPreviousTestSucceeded=false;
+  }
 	catch(...)
 	{
         if(m_bPreviousTestSucceeded)
@@ -603,7 +610,7 @@ bool TestSuiteParserHandler::compareNodes(DOMNode* node1, DOMNode* node2)
         DOMNamedNodeMap* map1=e1->getAttributes();
         DOMNamedNodeMap* map2=e2->getAttributes();
         // remove namespace nodes
-        int i;
+        unsigned int i;
         for(i=0;i<map1->getLength();i++)
         {
             if(XMLString::equals(map1->item(i)->getNamespaceURI(),XMLUni::fgXMLNSURIName))
