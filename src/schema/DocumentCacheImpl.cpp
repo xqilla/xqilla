@@ -269,7 +269,7 @@ const XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *DocumentCacheParser::parseWith
       parse(*srcToUse);
     else
       parse(systemId);
-    storeDocument(systemId, getDocument());
+    storeDocument(context->getMemoryManager()->getPooledString(systemId), getDocument());
   }
   catch(...) {
     _context = 0;
