@@ -80,8 +80,8 @@ Result XQDebugHook::collapseTree(DynamicContext *context, int flags) const
     if(e.getXQueryFile() == NULL) {
       if(pDbgCallback && context->isDebuggingEnabled()) pDbgCallback->ReportFirstError(context,e.getError(), m_szFile, m_nLine);
       e.setXQueryPosition(m_szFile,m_nLine,m_nColumn);
-      throw e;
     }
+    throw e;
   }
   // shouldn't get here
   assert(0);
