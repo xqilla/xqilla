@@ -133,13 +133,13 @@ NotColon			[^:]
 
 <INITIAL,OPERATOR,BOUNDARYSPACE_DECL,COPYNAMESPACE_DECL,XQUERYDECL,NAMESPACEDECL,NAMESPACEKEYWORD,KINDTEST,KINDTESTFORPI,CLOSEKINDTEST,ITEMTYPE,SINGLETYPE,ATTRIBUTE_DECL,PRAGMA_NAME>{S}		if(m_bReportWhiteSpace) RECOGNIZE(_XQUERY_WHITESPACE_);
 
-<INITIAL>{DecimalLiteral}									REJECT_IF_NOT_TERMINATED; yylval.str=allocate_string(yytext); BEGIN(OPERATOR); RECOGNIZE(_DECIMAL_NUMBER_);
-<INITIAL>{DoubleLiteral}									REJECT_IF_NOT_TERMINATED; yylval.str=allocate_string(yytext); BEGIN(OPERATOR); RECOGNIZE(_DOUBLE_NUMBER_);
-<INITIAL>{IntegerLiteral}									REJECT_IF_NOT_TERMINATED; yylval.str=allocate_string(yytext); BEGIN(OPERATOR); RECOGNIZE(_INTEGER_NUMBER_);
+<INITIAL>{DecimalLiteral}									REJECT_IF_NOT_TERMINATED; yylval.str=allocate_string((XMLCh*)yytext); BEGIN(OPERATOR); RECOGNIZE(_DECIMAL_NUMBER_);
+<INITIAL>{DoubleLiteral}									REJECT_IF_NOT_TERMINATED; yylval.str=allocate_string((XMLCh*)yytext); BEGIN(OPERATOR); RECOGNIZE(_DOUBLE_NUMBER_);
+<INITIAL>{IntegerLiteral}									REJECT_IF_NOT_TERMINATED; yylval.str=allocate_string((XMLCh*)yytext); BEGIN(OPERATOR); RECOGNIZE(_INTEGER_NUMBER_);
 <INITIAL>"."												BEGIN(OPERATOR); RECOGNIZE(_DOT_);
 <INITIAL>".."												BEGIN(OPERATOR); RECOGNIZE(_DOT_DOT_);
 <INITIAL>{NCName}":*"										{
-																yylval.str=allocate_string(yytext,XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(yytext)-2);
+																yylval.str=allocate_string((XMLCh*)yytext,XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen((XMLCh*)yytext)-2);
 																BEGIN(OPERATOR);
 																RECOGNIZE(_NCNAME_COLON_STAR_);
 															}
@@ -155,7 +155,7 @@ NotColon			[^:]
 																RECOGNIZE(_RPAR_);
 															}
 <INITIAL>"*:"{NCName}										{
-																yylval.str=allocate_string(yytext+2);	// skip the *:
+																yylval.str=allocate_string((XMLCh*)(yytext+2));	// skip the *:
 																BEGIN(OPERATOR);
 																RECOGNIZE(_STAR_COLON_NCNAME_);
 															}
@@ -169,7 +169,7 @@ NotColon			[^:]
 																}
 															}
 <INITIAL,OPERATOR,XQUERYDECL,NAMESPACEDECL,NAMESPACEKEYWORD,KINDTESTFORPI>{StringLiteral}	{
-																							yylval.str=allocate_string_and_unescape(*yytext,yytext+1,XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(yytext)-2);
+																							yylval.str=allocate_string_and_unescape(*yytext,(XMLCh*)(yytext+1),XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen((XMLCh*)yytext)-2);
 																							switch(YYSTATE)
 																							{
 																							case INITIAL:
@@ -286,7 +286,7 @@ NotColon			[^:]
 																}
 
 <INITIAL,ELEMENT_CONTENT>"<!--"{CommentContent}"-->"		{
-																yylval.str=allocate_string(yytext+4,XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(yytext+4)-3); 
+																yylval.str=allocate_string((XMLCh*)(yytext+4),XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen((XMLCh*)(yytext+4))-3); 
 																if(YYSTATE==INITIAL)
 																	BEGIN(OPERATOR);
 																RECOGNIZE(_XML_COMMENT_);
@@ -300,7 +300,7 @@ NotColon			[^:]
 															}
 
 <INITIAL,ELEMENT_CONTENT>"<![CDATA["{CDATAContent}"]]>"		{
-																yylval.str=allocate_string(yytext+9,XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(yytext+9)-3); 
+																yylval.str=allocate_string((XMLCh*)(yytext+9),XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen((XMLCh*)(yytext+9))-3); 
 																if(YYSTATE==INITIAL)
 																	BEGIN(OPERATOR);
 																RECOGNIZE(_CDATA_SECTION_);
@@ -331,13 +331,13 @@ NotColon			[^:]
 <INITIAL>"attribute"/{WhitespaceChar}*"{"					RECOGNIZE(_ATTRIBUTE_CONSTR_);
 
 <INITIAL>"attribute"{S}{QName}/{WhitespaceChar}*"{"			{
-																XMLCh* beginning=yytext+9;
+																XMLCh* beginning=(XMLCh*)(yytext+9);
 																while(iswspace(*beginning)) beginning++;
 																yylval.str=allocate_string(beginning); 
 																RECOGNIZE(_NAMED_ATTRIBUTE_CONSTR_);
 															}
 <INITIAL>"element"{S}{QName}/{WhitespaceChar}*"{"			{
-																XMLCh* beginning=yytext+7;
+																XMLCh* beginning=(XMLCh*)(yytext+7);
 																while(iswspace(*beginning)) beginning++;
 																yylval.str=allocate_string(beginning); 
 																RECOGNIZE(_NAMED_ELEMENT_CONSTR_);
@@ -346,7 +346,7 @@ NotColon			[^:]
 <INITIAL>"text"/{WhitespaceChar}*"{"						RECOGNIZE(_TEXT_CONSTR_);
 <INITIAL>"processing-instruction"/{WhitespaceChar}*"{"		RECOGNIZE(_PROCESSING_INSTRUCTION_CONSTR_);
 <INITIAL>"processing-instruction"{S}{NCName}/{WhitespaceChar}*"{"	{
-																		XMLCh* beginning=yytext+22;
+																		XMLCh* beginning=(XMLCh*)(yytext+22);
 																		while(iswspace(*beginning)) beginning++;
 																		yylval.str=allocate_string(beginning); 
 																		RECOGNIZE(_NAMED_PROCESSING_INSTRUCTION_CONSTR_);
@@ -479,7 +479,7 @@ NotColon			[^:]
 <OPERATOR>"default"											REJECT_IF_NOT_TERMINATED; RECOGNIZE(_DEFAULT_);
 
 <NAMESPACEDECL>"="											RECOGNIZE(_EQUALS_);
-<NAMESPACEDECL,KINDTESTFORPI>{NCName}						REJECT_IF_NOT_TERMINATED; yylval.str=allocate_string(yytext); RECOGNIZE(_NCNAME_);
+<NAMESPACEDECL,KINDTESTFORPI>{NCName}						REJECT_IF_NOT_TERMINATED; yylval.str=allocate_string((XMLCh*)yytext); RECOGNIZE(_NCNAME_);
 
 <NAMESPACEKEYWORD>"namespace"								REJECT_IF_NOT_TERMINATED; BEGIN(NAMESPACEDECL); RECOGNIZE(_NAMESPACE_);
 <NAMESPACEKEYWORD>"default"{S}"element"						REJECT_IF_NOT_TERMINATED; RECOGNIZE(_DEFAULT_ELEMENT_);
@@ -535,8 +535,8 @@ NotColon			[^:]
 
 <ELEMENT_CONTENT>"</"										BEGIN(END_TAG); RECOGNIZE(_END_TAG_OPEN_);
 
-<ELEMENT_CONTENT,QUOT_ATTRIBUTE_CONTENT,APOS_ATTRIBUTE_CONTENT>{PredefinedEntityRef}	yylval.str=allocate_string_and_unescape(0, yytext, yyleng); RECOGNIZE(_PREDEFINED_ENTITY_REF_); 
-<ELEMENT_CONTENT,QUOT_ATTRIBUTE_CONTENT,APOS_ATTRIBUTE_CONTENT>{CharRef}				yylval.str=allocate_string_and_unescape(0, yytext, yyleng); RECOGNIZE(_CHAR_REF_);
+<ELEMENT_CONTENT,QUOT_ATTRIBUTE_CONTENT,APOS_ATTRIBUTE_CONTENT>{PredefinedEntityRef}	yylval.str=allocate_string_and_unescape(0, (XMLCh*)yytext, yyleng); RECOGNIZE(_PREDEFINED_ENTITY_REF_); 
+<ELEMENT_CONTENT,QUOT_ATTRIBUTE_CONTENT,APOS_ATTRIBUTE_CONTENT>{CharRef}				yylval.str=allocate_string_and_unescape(0, (XMLCh*)yytext, yyleng); RECOGNIZE(_CHAR_REF_);
 <ELEMENT_CONTENT,QUOT_ATTRIBUTE_CONTENT,APOS_ATTRIBUTE_CONTENT>"{{"						RECOGNIZE(_LCURLY_BRACE_ESCAPE_);
 <ELEMENT_CONTENT,QUOT_ATTRIBUTE_CONTENT,APOS_ATTRIBUTE_CONTENT>"}}"						RECOGNIZE(_RCURLY_BRACE_ESCAPE_);
 
@@ -548,7 +548,7 @@ NotColon			[^:]
 <PRAGMA_CONTENT>"#)"										BEGIN(INITIAL); RECOGNIZE(_PRAGMA_CLOSE_);
 
 <PROCESSING_INSTRUCTION>{PITarget}							{
-																yylval.str=allocate_string(yytext); 
+																yylval.str=allocate_string((XMLCh*)yytext); 
 																BEGIN(PROCESSING_INSTRUCTION_CONTENT); RECOGNIZE(_PI_TARGET_); 
 															}
 
@@ -558,7 +558,7 @@ NotColon			[^:]
 																RECOGNIZE(_PROCESSING_INSTRUCTION_CONTENT_);
 															}
 <PROCESSING_INSTRUCTION_CONTENT>{S}{PIContent}"?>"			{
-																yylval.str=allocate_string(yytext,XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(yytext)-2); 
+																yylval.str=allocate_string((XMLCh*)yytext,XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen((XMLCh*)yytext)-2); 
 																while(iswspace(*yylval.str)) yylval.str++;
 																POP(); 
 																RECOGNIZE(_PROCESSING_INSTRUCTION_CONTENT_);
@@ -577,14 +577,14 @@ NotColon			[^:]
 																				return error("Character not allowed in content");
 																			if(YYSTATE==APOS_ATTRIBUTE_CONTENT && *yytext=='\'')
 																				return error("Character not allowed in content");
-																			yylval.str=allocate_string(yytext); 
+																			yylval.str=allocate_string((XMLCh*)yytext); 
 																			RECOGNIZE(_CHAR_);
 																		}
 
 <INITIAL>{QName}{WhitespaceChar}*"("						{
 																REJECT_IF_COLON;
 
-                                                                XMLCh* beginning=yylval.str=allocate_string(yytext);
+                                                                XMLCh* beginning=yylval.str=allocate_string((XMLCh*)yytext);
 																while(*beginning!='(' && !iswspace(*beginning)) beginning++;
 																*beginning=0;
 
@@ -625,7 +625,7 @@ NotColon			[^:]
 															}
 <INITIAL,SINGLETYPE,ITEMTYPE,KINDTEST,VARNAME,START_TAG,ATTRIBUTE_DECL,END_TAG,PRAGMA_NAME>{QName}		{
 																											REJECT_IF_NOT_TERMINATED; 
-																											yylval.str=allocate_string(yytext); 
+																											yylval.str=allocate_string((XMLCh*)yytext); 
 																											switch(YYSTATE)
 																											{
 																												case INITIAL:

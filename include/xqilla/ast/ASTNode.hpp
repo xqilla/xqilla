@@ -85,6 +85,8 @@ public:
     RETURN_TWO=0x04
   };
 
+  virtual ~ASTNode() {}
+
   virtual Result collapseTree(DynamicContext* context, int flags=0) const = 0;
 
   /** Returns true if this ASTNode has no predicates, and is an instance of

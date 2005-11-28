@@ -253,7 +253,7 @@ protected:
 
 	    if(nToRead>max_size)
 		    nToRead=max_size;
-        XERCES_CPP_NAMESPACE_QUALIFIER XMLString::subString(buf,m_szQuery,m_position,m_position+nToRead);
+        XERCES_CPP_NAMESPACE_QUALIFIER XMLString::subString((XMLCh*)buf,m_szQuery,m_position,m_position+nToRead);
 	    m_position+=nToRead;
 	    return nToRead;
 	}
@@ -277,7 +277,7 @@ protected:
         {
             XMLCh szMsg[256];
             XERCES_CPP_NAMESPACE_QUALIFIER XMLString::copyString(szMsg, X("Unbalanced '"));
-            XERCES_CPP_NAMESPACE_QUALIFIER XMLString::catString(szMsg, yytext);
+            XERCES_CPP_NAMESPACE_QUALIFIER XMLString::catString(szMsg, (XMLCh*)yytext);
             XERCES_CPP_NAMESPACE_QUALIFIER XMLString::catString(szMsg, X("' token"));
 	        XQSimpleThrow(szMsg, NULL, m_lineno, m_columnno);
         }

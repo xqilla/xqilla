@@ -69,6 +69,8 @@ class Item;
 class XQILLA_API PrintAST
 {
 public:
+  virtual ~PrintAST() {}
+
   static std::string print(const XQillaExpression *expr, const DynamicContext *context, int indent = 0);
   static std::string print(const XQQuery *query, const DynamicContext *context, int indent = 0);
   static std::string print(const ASTNode *item, const DynamicContext *context, int indent = 0);
