@@ -35,6 +35,7 @@ public:
                            const XMLCh* typeName,
                            const XMLCh* value,
                            bool numeric);
+  virtual ~AnyAtomicTypeConstructor() {}
 
   virtual bool isNumeric() const;
 

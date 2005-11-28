@@ -32,10 +32,11 @@
 class XQILLA_API ATQNameConstructor : public ItemConstructor {
 public:
   ATQNameConstructor(const XMLCh* typeURI,
-		     const XMLCh* typeName,
-		     const XMLCh* uri,
-             const XMLCh* prefix,
-		     const XMLCh* localname);
+                     const XMLCh* typeName,
+                     const XMLCh* uri,
+                     const XMLCh* prefix,
+                     const XMLCh* localname);
+  virtual ~ATQNameConstructor() {}
 
   virtual bool isNumeric() const;
 

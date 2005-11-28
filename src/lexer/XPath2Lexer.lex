@@ -55,7 +55,7 @@ using namespace std;
 
 bool whitespaceChar(const YY_CHAR *charPtr) {
 
-  XMLCh xmlCh = *charPtr;
+  XMLCh xmlCh = (XMLCh)*charPtr;
 
   if(xmlCh == 0x0009 || xmlCh == 0x000D || xmlCh == 0x000A || xmlCh == 0x0020) {
     return true;
@@ -78,7 +78,7 @@ int XPathyylex(YYSTYPE *lvalp, void *pcontrol) {
 
     dup = new YY_CHAR[theLexer->YYLeng() - 1];
     memcpy((void *)dup, (void *)theLexer->YYText(), (theLexer->YYLeng() - 2) * sizeof(YY_CHAR));
-    lvalp->wString = dup;
+    lvalp->wString = (XMLCh*)dup;
     dup += theLexer->YYLeng() - 2;
     while(whitespaceChar(dup)) {
       dup--;
@@ -91,7 +91,7 @@ int XPathyylex(YYSTYPE *lvalp, void *pcontrol) {
     dup = new YY_CHAR[theLexer->YYLeng() - 1];
     memcpy((void *)dup, (void *)(theLexer->YYText() + 2), (theLexer->YYLeng() - 2) * sizeof(YY_CHAR));
     dup[theLexer->YYLeng() - 2] = 0;
-    lvalp->wString = dup;
+    lvalp->wString = (XMLCh*)dup;
     break;
 
   case _STRING_LITERAL_:
@@ -100,7 +100,7 @@ int XPathyylex(YYSTYPE *lvalp, void *pcontrol) {
     memcpy((void *)dup, (void *)(theLexer->YYText() + 1), (theLexer->YYLeng() - 2) * sizeof(YY_CHAR));
     dup[theLexer->YYLeng() - 2] = 0;
     // TODO: collapse escaped quotes
-    lvalp->wString = dup;
+    lvalp->wString = (XMLCh*)dup;
     break;
 
   case _QNAME_LPAR_:
@@ -116,7 +116,7 @@ int XPathyylex(YYSTYPE *lvalp, void *pcontrol) {
       dup = new YY_CHAR[length + 1];
       memcpy((void *)dup, (void *)input, length * sizeof(YY_CHAR));
       dup[length] = 0;
-      lvalp->wString = dup;
+      lvalp->wString = (XMLCh*)dup;
       break;
     }
 
@@ -129,7 +129,7 @@ int XPathyylex(YYSTYPE *lvalp, void *pcontrol) {
     dup = new YY_CHAR[theLexer->YYLeng() + 1];
     memcpy((void *)dup, (void *)theLexer->YYText(), theLexer->YYLeng() * sizeof(YY_CHAR));
     dup[theLexer->YYLeng()] = 0;
-    lvalp->wString = dup;
+    lvalp->wString = (XMLCh*)dup;
     break;
 
   }

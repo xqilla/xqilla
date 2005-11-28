@@ -708,7 +708,7 @@ SchemaPrefix:
 		}
 	| _DEFAULT_ELEMENT_ _NAMESPACE_
 		{
-			$$ = (unsigned short*)XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString;
+			$$ = (XMLCh*)XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString;
 		}
 	;
 

@@ -37,6 +37,7 @@ class NodeTest;
 class AxisNodeFactory
 {
 public:
+  virtual ~AxisNodeFactory() {}
   virtual const Node::Ptr createNode(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *node, const DynamicContext *context) const = 0;
 };
 

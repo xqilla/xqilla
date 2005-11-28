@@ -38,6 +38,8 @@ class XPath2MemoryManager;
 class XQILLA_API FunctionLookup
 {
 public:
+  virtual ~FunctionLookup() {}
+
   ///adds a function to the custom function table
   virtual void insertFunction(FuncFactory *func) = 0;
   ///returns the approriate Function object

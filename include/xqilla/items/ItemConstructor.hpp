@@ -39,6 +39,8 @@ class XQILLA_API ItemConstructor {
 public:
   typedef std::vector<ItemConstructor*,XQillaAllocator<ItemConstructor*> > Vector;
 
+  virtual ~ItemConstructor() {}
+
   virtual bool isNumeric() const = 0;
 
   virtual Item::Ptr createItem(const DynamicContext* context) const = 0;
