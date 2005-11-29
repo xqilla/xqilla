@@ -101,8 +101,8 @@ ASTNode* XQDebugHook::staticResolution(StaticContext *context)
   catch(XQException& e) {
     if(e.getXQueryFile() == NULL) {
       e.setXQueryPosition(m_szFile,m_nLine,m_nColumn);
-      throw e;
     }
+    throw e;
   }
   return this;
 }
