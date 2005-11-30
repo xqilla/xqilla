@@ -48,7 +48,7 @@ FunctionLast::FunctionLast(const VectorOfASTNodes &args, XPath2MemoryManager* me
 }
 
 ASTNode* FunctionLast::staticResolution(StaticContext *context) {
-  _src.getStaticType().flags = StaticResolutionContext::NUMERIC_TYPE;
+  _src.getStaticType().flags = StaticType::NUMERIC_TYPE;
   _src.contextSizeUsed(true);
   return resolveASTNodes(_args, context, false);
 }

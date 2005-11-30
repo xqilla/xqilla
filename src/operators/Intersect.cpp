@@ -36,7 +36,7 @@ Intersect::Intersect(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : XQOperator(name, args, memMgr)
 {
   _src.setProperties(StaticResolutionContext::DOCORDER | StaticResolutionContext::GROUPED);
-  _src.getStaticType().flags = StaticResolutionContext::NODE_TYPE;
+  _src.getStaticType().flags = StaticType::NODE_TYPE;
 }
 
 Sequence Intersect::collapseTreeInternal(DynamicContext* context, int flags) const

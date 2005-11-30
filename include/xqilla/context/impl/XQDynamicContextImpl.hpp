@@ -150,6 +150,11 @@ public:
   // Static Context Accessors     //
   //////////////////////////////////
 
+  /** Get the static type of the context item */
+  virtual const StaticType &getContextItemType() const;
+  /** Set the static type of the context item */
+  virtual void setContextItemType(const StaticType &st);
+
   /** Get the current XPath 1.0 compatibility mode */
   virtual bool getXPath1CompatibilityMode() const;
   /** Set the current XPath 1.0 compatibility mode */
@@ -334,6 +339,8 @@ protected:
 };
 
 
+inline void XQDynamicContextImpl::setContextItemType(const StaticType &)
+{ XQThrow(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
 inline void XQDynamicContextImpl::setXPath1CompatibilityMode(bool newMode)
 { XQThrow(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
 inline void XQDynamicContextImpl::setDefaultFuncNS(const XMLCh* newNS)
@@ -361,6 +368,7 @@ inline void XQDynamicContextImpl::setInheritNamespaces(bool value)
 inline void XQDynamicContextImpl::setPreserveNamespaces(bool value) 
 { XQThrow(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
 
+inline const StaticType &XQDynamicContextImpl::getContextItemType() const { return _staticContext->getContextItemType(); }
 inline bool XQDynamicContextImpl::getXPath1CompatibilityMode() const { return _staticContext->getXPath1CompatibilityMode(); }
 inline const XMLCh* XQDynamicContextImpl::getDefaultFuncNS() const { return _staticContext->getDefaultFuncNS(); }
 inline const XMLCh* XQDynamicContextImpl::getBaseURI() const { return _staticContext->getBaseURI(); }

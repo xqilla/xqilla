@@ -51,7 +51,7 @@ const unsigned int FunctionNumber::maxArgs = 1;
 FunctionNumber::FunctionNumber(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : XQFunction(name, minArgs, maxArgs, "anyAtomicType?", args, memMgr)
 {
-  _src.getStaticType().flags = StaticResolutionContext::NUMERIC_TYPE;
+  _src.getStaticType().flags = StaticType::NUMERIC_TYPE;
 }
 
 ASTNode* FunctionNumber::staticResolution(StaticContext *context) {
@@ -76,8 +76,8 @@ Sequence FunctionNumber::collapseTreeInternal(DynamicContext* context, int flags
     Sequence ci_seq(item, memMgr);
     Result ci_result(ci_seq);
 
-    StaticResolutionContext::StaticType stype;
-    stype.flags = StaticResolutionContext::NODE_TYPE;
+    StaticType stype;
+    stype.flags = StaticType::NODE_TYPE;
     item = ci_result.convertFunctionArg((*_paramDecl)[0], stype, context).next(context);
   }
 	else {

@@ -45,7 +45,7 @@ const unsigned int FunctionCount::maxArgs = 1;
 FunctionCount::FunctionCount(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "item()*", args, memMgr)
 {
-  _src.getStaticType().flags = StaticResolutionContext::NUMERIC_TYPE;
+  _src.getStaticType().flags = StaticType::NUMERIC_TYPE;
 }
 
 Sequence FunctionCount::collapseTreeInternal(DynamicContext* context, int flags) const

@@ -165,9 +165,9 @@ ASTNode* XQSequence::staticResolution(StaticContext *context)
   ItemConstructor::Vector::iterator it = _itemConstructors.begin();
   for(; it != _itemConstructors.end(); ++it) {
     if((*it)->isNumeric()) {
-      _src.getStaticType().flags |= StaticResolutionContext::NUMERIC_TYPE;
+      _src.getStaticType().flags |= StaticType::NUMERIC_TYPE;
     } else {
-      _src.getStaticType().flags |= StaticResolutionContext::OTHER_TYPE;
+      _src.getStaticType().flags |= StaticType::OTHER_TYPE;
     }
   }
 

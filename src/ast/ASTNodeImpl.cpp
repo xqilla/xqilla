@@ -75,7 +75,7 @@ const ASTNodeImpl::Predicates& ASTNodeImpl::getPredicates(void) const
 }
 
 
-/** Returns true if this XQ has no predicates, and is an instance of
+/** Returns true if this ASTNode has no predicates, and is an instance of
     XQSequence or XQLiteral */
 bool ASTNodeImpl::isConstant() const
 {
@@ -114,13 +114,13 @@ Result ASTNodeImpl::createPredicateResult(Result &parent, const PredInfo &p, Dyn
     contextSize = seq.getLength();
     parent = new SequenceResult(seq);
   }
-  if(src.getStaticType().flags == StaticResolutionContext::NUMERIC_TYPE &&
+  if(src.getStaticType().flags == StaticType::NUMERIC_TYPE &&
      !src.isContextItemUsed() && !src.isContextPositionUsed()) {
     // It only contains numeric type results, and doesn't use the context
     // item or position
     return new NumericPredicateFilterResult(parent, p, contextSize, context);
   }
-  else if((src.getStaticType().flags & StaticResolutionContext::NUMERIC_TYPE) == 0) {
+  else if((src.getStaticType().flags & StaticType::NUMERIC_TYPE) == 0) {
     // It only contains non-numeric results
     return new NonNumericPredicateFilterResult(parent, p, contextSize, context);
   }
@@ -155,7 +155,7 @@ Sequence ASTNodeImpl::collapseTreeInternal(DynamicContext* context, int flags) c
   return Sequence(context->getMemoryManager());
 }
 
-/** Calls staticResolution on the XQ, then if isConstant() is true for
+/** Calls staticResolution on the ASTNode, then if isConstant() is true for
     it, and constantFold is true, returns the result of the
     constantFold() method, otherwise returns the result of the resolvePredicates()
     method. */
@@ -172,7 +172,7 @@ ASTNode *ASTNodeImpl::resolveASTNode(ASTNode *&di, StaticContext *context, bool 
   }
 }
 
-/** Calls staticResolution on the XQs, then if isConstant() is true for
+/** Calls staticResolution on the ASTNodes, then if isConstant() is true for
     all of them, and constantFold is true, returns the result of the
     constantFold() method, otherwise returns the result of the resolvePredicates()
     method. */
@@ -195,7 +195,7 @@ ASTNode *ASTNodeImpl::resolveASTNodes(VectorOfASTNodes &dis, StaticContext *cont
   }
 }
 
-/** Calls staticResolution on the XQs, then if isConstantAndHasTimezone() is true for
+/** Calls staticResolution on the ASTNodes, then if isConstantAndHasTimezone() is true for
     all of them, and constantFold is true, returns the result of the
     constantFold() method, otherwise returns the result of the resolvePredicates()
     method. */
@@ -221,18 +221,23 @@ ASTNode *ASTNodeImpl::resolveASTNodesForDateOrTime(VectorOfASTNodes &dis, Static
   }
 }
 
-/** Calls staticResolution on the predicates of this XQ, constant folding
+/** Calls staticResolution on the predicates of this ASTNode, constant folding
     if possible */
 ASTNode *ASTNodeImpl::resolvePredicates(StaticContext *context)
 {
+  StaticType oldContextItemType = context->getContextItemType();
+  context->setContextItemType(_src.getStaticType());
+
   Predicates newPreds(XQillaAllocator<PredInfo>(context->getMemoryManager()));
   ASTNodeImpl *result = resolvePredicate(_predList.rbegin(), newPreds, context);
   result->_predList = newPreds;
 
+  context->setContextItemType(oldContextItemType);
+
   return result;
 }
 
-/** Calls staticResolution on the predicates of this XQ, constant folding
+/** Calls staticResolution on the predicates of this ASTNode, constant folding
     if possible */
 ASTNodeImpl *ASTNodeImpl::resolvePredicate(Predicates::reverse_iterator it, Predicates &newPreds, StaticContext *context)
 {

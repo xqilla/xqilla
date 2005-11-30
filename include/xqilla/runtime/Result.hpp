@@ -32,11 +32,11 @@
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/items/Item.hpp>
 #include <xqilla/runtime/ResultImpl.hpp>
-#include <xqilla/ast/StaticResolutionContext.hpp>
 
 class Sequence;
 class SequenceType;
 class DynamicContext;
+class StaticType;
 
 /** A reference counting wrapper for the lazily evaluated query result */
 class XQILLA_API Result
@@ -58,7 +58,7 @@ public:
   void skip();
 
   /// Cast as a specified type. Only works properly before next() has been called.
-  Result convertFunctionArg(const SequenceType* sequenceType, const StaticResolutionContext::StaticType &stype, DynamicContext* context);
+  Result convertFunctionArg(const SequenceType* sequenceType, const StaticType &stype, DynamicContext* context);
 
   /// castAs( X("string") ) asString(). Only works properly before next() has been called.
   const XMLCh* castAsSingleString(DynamicContext* context);

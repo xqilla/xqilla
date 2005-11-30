@@ -61,7 +61,7 @@ FunctionCollection::FunctionCollection(const VectorOfASTNodes &args, XPath2Memor
 ASTNode* FunctionCollection::staticResolution(StaticContext *context)
 {
   _src.setProperties(StaticResolutionContext::DOCORDER | StaticResolutionContext::GROUPED | StaticResolutionContext::PEER | StaticResolutionContext::SUBTREE);
-  _src.getStaticType().flags = StaticResolutionContext::NODE_TYPE;
+  _src.getStaticType().flags = StaticType::NODE_TYPE;
   _src.availableCollectionsUsed(true);
   return resolveASTNodes(_args, context, false);
 }

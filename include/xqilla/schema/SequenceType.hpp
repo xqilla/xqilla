@@ -89,7 +89,7 @@ public:
     const XMLCh* getTypeURI(const StaticContext* context) const;
     const XMLCh* getNameURI(const StaticContext* context) const;
 
-    void getStaticType(StaticResolutionContext::StaticType &st, const StaticContext *context) const;
+    void getStaticType(StaticType &st, const StaticContext *context) const;
 
     bool matches(const Item::Ptr &toBeTested, DynamicContext* context) const;
     bool matches(const Node::Ptr &toBeTested, DynamicContext* context) const;
@@ -176,7 +176,7 @@ public:
    */
   Result matches(const Result &toBeTested, DynamicContext *context) const;
 
-  Result convertFunctionArg(const Result &param, const StaticResolutionContext::StaticType &stype, DynamicContext *context) const;
+  Result convertFunctionArg(const Result &param, const StaticType &stype, DynamicContext *context) const;
 
   QualifiedName *getConstrainingType(void) const;
   QualifiedName *getConstrainingName(void) const;

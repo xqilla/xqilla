@@ -53,7 +53,7 @@ XQQuantified::XQQuantified(XQQuantified::QuantifierType qType, VectorOfVariableB
 ASTNode* XQQuantified::staticResolution(StaticContext* context) {
   XQFLWOR::staticResolutionImpl(context);
 
-  _src.getStaticType().flags = StaticResolutionContext::OTHER_TYPE;
+  _src.getStaticType().flags = StaticType::OTHER_TYPE;
 
   if(_src.isUsed()) {
     if(_return->isConstant()) {

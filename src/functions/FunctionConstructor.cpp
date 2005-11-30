@@ -87,11 +87,11 @@ FunctionConstructor::FunctionConstructor(const XMLCh* nsURI, const XMLCh* typeNa
   case AnyAtomicType::DECIMAL:
   case AnyAtomicType::DOUBLE:
   case AnyAtomicType::FLOAT: {
-    _src.getStaticType().flags = StaticResolutionContext::NUMERIC_TYPE;
+    _src.getStaticType().flags = StaticType::NUMERIC_TYPE;
     break;
   }
   default: {
-    _src.getStaticType().flags = StaticResolutionContext::OTHER_TYPE;
+    _src.getStaticType().flags = StaticType::OTHER_TYPE;
     break;
   }
   }

@@ -51,7 +51,7 @@ FunctionRoot::FunctionRoot(const VectorOfASTNodes &args, XPath2MemoryManager* me
   : XQFunction(name, minArgs, maxArgs, "node()?", args, memMgr)
 {
   _src.setProperties(StaticResolutionContext::DOCORDER | StaticResolutionContext::GROUPED | StaticResolutionContext::PEER | StaticResolutionContext::SAMEDOC | StaticResolutionContext::ONENODE);
-  _src.getStaticType().flags = StaticResolutionContext::NODE_TYPE;
+  _src.getStaticType().flags = StaticType::NODE_TYPE;
 }
 
 /*static*/ Node::Ptr FunctionRoot::root(const Node::Ptr &node, const DynamicContext *context) 

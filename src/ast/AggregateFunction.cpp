@@ -132,8 +132,8 @@ Sequence AggregateFunction::validateSequence(Sequence sequence, DynamicContext* 
   SequenceType sequenceType(sequenceTypeURI, sequenceTypeName, SequenceType::STAR);
   Sequence castedSequence(context->getMemoryManager());
   try {
-    StaticResolutionContext::StaticType stype;
-    stype.flags = StaticResolutionContext::NODE_TYPE;
+    StaticType stype;
+    stype.flags = StaticType::NODE_TYPE;
     castedSequence = sequenceType.convertFunctionArg(firstStep, stype, context).toSequence(context);
   } catch (XPath2ErrorException &e) {
     XQThrow(IllegalArgumentException, X("AggregateFunction::validateSequence"), X("Invalid argument to aggregate function"));    

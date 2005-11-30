@@ -49,7 +49,7 @@ const unsigned int FunctionMinutesFromTime::maxArgs = 1;
 FunctionMinutesFromTime::FunctionMinutesFromTime(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : XQFunction(name, minArgs, maxArgs, "time?", args, memMgr)
 {
-  _src.getStaticType().flags = StaticResolutionContext::NUMERIC_TYPE;
+  _src.getStaticType().flags = StaticType::NUMERIC_TYPE;
 }
 
 ASTNode* FunctionMinutesFromTime::staticResolution(StaticContext *context)

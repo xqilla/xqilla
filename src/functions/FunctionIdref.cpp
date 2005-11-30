@@ -59,7 +59,7 @@ FunctionIdref::FunctionIdref(const VectorOfASTNodes &args, XPath2MemoryManager* 
 }
 
 ASTNode* FunctionIdref::staticResolution(StaticContext *context) {
-  _src.getStaticType().flags = StaticResolutionContext::NODE_TYPE;
+  _src.getStaticType().flags = StaticType::NODE_TYPE;
   if(_args.size()==1)
     _src.contextItemUsed(true);
   return resolveASTNodes(_args, context, _args.size()!=1);

@@ -43,7 +43,7 @@ const unsigned int FunctionFloor::maxArgs = 1;
 FunctionFloor::FunctionFloor(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : NumericFunction(name, minArgs, maxArgs, "anySimpleType?", args, memMgr)
 {
-  _src.getStaticType().flags = StaticResolutionContext::NUMERIC_TYPE;
+  _src.getStaticType().flags = StaticType::NUMERIC_TYPE;
 }
 
 Sequence FunctionFloor::collapseTreeInternal(DynamicContext* context, int flags) const

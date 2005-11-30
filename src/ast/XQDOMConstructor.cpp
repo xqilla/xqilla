@@ -190,8 +190,8 @@ Sequence XQDOMConstructor::collapseTreeInternal(DynamicContext *context, int fla
           {
             ASTNode* attrItem=(*itAttr);
             static SequenceType nodeSequence(new SequenceType::ItemType(SequenceType::ItemType::TEST_NODE), SequenceType::STAR);
-            StaticResolutionContext::StaticType stype;
-            stype.flags = StaticResolutionContext::NODE_TYPE;
+            StaticType stype;
+            stype.flags = StaticType::NODE_TYPE;
             Result oneAttribute=attrItem->collapseTree(context).convertFunctionArg(&nodeSequence,stype,context);
             Item::Ptr attr;
             while((attr = oneAttribute.next(context)) != NULLRCP) 
@@ -629,7 +629,7 @@ ASTNode* XQDOMConstructor::staticResolution(StaticContext *context)
     }
   }
 
-  _src.getStaticType().flags = StaticResolutionContext::NODE_TYPE;
+  _src.getStaticType().flags = StaticType::NODE_TYPE;
   _src.forceNoFolding(true);
   return resolvePredicates(context); // Never constant fold
 }

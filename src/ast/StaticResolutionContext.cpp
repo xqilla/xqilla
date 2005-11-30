@@ -68,7 +68,7 @@ void StaticResolutionContext::clear()
   _forceNoFolding = false;
 
   _properties = 0;
-  _staticType.flags = StaticResolutionContext::OTHER_TYPE;
+  _staticType.flags = StaticType::OTHER_TYPE;
 
   _dynamicVariables.removeAll();
   _uriPool.flushAll();
@@ -254,22 +254,22 @@ void StaticResolutionContext::setProperties(unsigned int props)
 	_properties = props;
 }
 
-void StaticResolutionContext::StaticType::typeUnion(const StaticType &st)
+void StaticType::typeUnion(const StaticType &st)
 {
   flags |= st.flags;
 }
 
-bool StaticResolutionContext::StaticType::isNodesOnly() const
+bool StaticType::isNodesOnly() const
 {
   return (flags & ~NODE_TYPE) == 0;
 }
 
-const StaticResolutionContext::StaticType &StaticResolutionContext::getStaticType() const
+const StaticType &StaticResolutionContext::getStaticType() const
 {
 	return _staticType;
 }
 
-StaticResolutionContext::StaticType &StaticResolutionContext::getStaticType()
+StaticType &StaticResolutionContext::getStaticType()
 {
 	return _staticType;
 }

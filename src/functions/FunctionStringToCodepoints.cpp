@@ -48,7 +48,7 @@ const unsigned int FunctionStringToCodepoints::maxArgs = 1;
 FunctionStringToCodepoints::FunctionStringToCodepoints(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "string?", args, memMgr) // 1 argument
 {
-  _src.getStaticType().flags = StaticResolutionContext::NUMERIC_TYPE;
+  _src.getStaticType().flags = StaticType::NUMERIC_TYPE;
 }
 
 Sequence FunctionStringToCodepoints::collapseTreeInternal(DynamicContext* context, int flags) const

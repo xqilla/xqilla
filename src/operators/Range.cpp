@@ -46,7 +46,7 @@ Range::Range(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
 
 ASTNode* Range::staticResolution(StaticContext *context)
 {
-  _src.getStaticType().flags = StaticResolutionContext::NUMERIC_TYPE;
+  _src.getStaticType().flags = StaticType::NUMERIC_TYPE;
   return XQOperator::staticResolution(context);
 }
 

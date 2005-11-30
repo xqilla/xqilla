@@ -53,7 +53,7 @@ FunctionDoc::FunctionDoc(const VectorOfASTNodes &args, XPath2MemoryManager* memM
 ASTNode* FunctionDoc::staticResolution(StaticContext *context)
 {
   _src.setProperties(StaticResolutionContext::DOCORDER | StaticResolutionContext::GROUPED | StaticResolutionContext::PEER | StaticResolutionContext::SUBTREE | StaticResolutionContext::ONENODE);
-  _src.getStaticType().flags = StaticResolutionContext::NODE_TYPE;
+  _src.getStaticType().flags = StaticType::NODE_TYPE;
   _src.availableDocumentsUsed(true);
   return resolveASTNodes(_args, context, false);
 }
