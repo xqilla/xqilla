@@ -67,7 +67,7 @@ bool Result::isNull() const
   return _impl == 0;
 }
 
-Result Result::convertFunctionArg(const SequenceType* sequenceType, const StaticResolutionContext::StaticType &stype, DynamicContext* context)
+Result Result::convertFunctionArg(const SequenceType* sequenceType, const StaticType &stype, DynamicContext* context)
 {
   return sequenceType->convertFunctionArg(*this, stype, context);
 }

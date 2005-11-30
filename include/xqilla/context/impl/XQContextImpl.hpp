@@ -162,6 +162,11 @@ public:
   // Static Context Accessors     //
   //////////////////////////////////
 
+  /** Get the static type of the context item */
+  virtual const StaticType &getContextItemType() const;
+  /** Set the static type of the context item */
+  virtual void setContextItemType(const StaticType &st);
+
   /** Get the current XPath 1.0 compatibility mode */
   virtual bool getXPath1CompatibilityMode() const;
   /** Set the current XPath 1.0 compatibility mode */
@@ -275,6 +280,9 @@ protected:
   ////////////////////////////////
   //  Static Context variables  //
   ////////////////////////////////
+
+  /** Static type of the context item */
+  StaticType _contextItemType;
 
   /** XPath 1.0 compatibility mode. This value is true if rules for
    * backward compatibility with XPath Version 1.0 are in effect;

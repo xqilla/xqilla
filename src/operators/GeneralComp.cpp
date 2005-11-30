@@ -133,11 +133,11 @@ Item::Ptr GeneralComp::GeneralCompResult::getSingleResult(DynamicContext *contex
 {
   // Atomization is applied to each operand of a general comparison.
   Result arg1 = _op->getArgument(0)->collapseTree(context, ASTNode::UNORDERED);
-  if(_op->getArgument(0)->getStaticResolutionContext().getStaticType().flags & StaticResolutionContext::NODE_TYPE) {
+  if(_op->getArgument(0)->getStaticResolutionContext().getStaticType().flags & StaticType::NODE_TYPE) {
 	  arg1 = arg1.atomize(context);
   }
   Result arg2 = _op->getArgument(1)->collapseTree(context, ASTNode::UNORDERED).atomize(context);
-  if(_op->getArgument(1)->getStaticResolutionContext().getStaticType().flags & StaticResolutionContext::NODE_TYPE) {
+  if(_op->getArgument(1)->getStaticResolutionContext().getStaticType().flags & StaticType::NODE_TYPE) {
 	  arg2 = arg2.atomize(context);
   }
 

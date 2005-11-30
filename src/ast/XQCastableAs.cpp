@@ -84,7 +84,7 @@ Item::Ptr XQCastableAs::CastableAsResult::getSingleResult(DynamicContext *contex
   //    1. Atomization is performed on the input expression.
 	Result toBeCasted(_di->getExpression()->collapseTree(context, ASTNode::RETURN_TWO|ASTNode::UNORDERED));
 
-  if(_di->getExpression()->getStaticResolutionContext().getStaticType().flags & StaticResolutionContext::NODE_TYPE) {
+  if(_di->getExpression()->getStaticResolutionContext().getStaticType().flags & StaticType::NODE_TYPE) {
     toBeCasted = toBeCasted.atomize(context);
   }
 

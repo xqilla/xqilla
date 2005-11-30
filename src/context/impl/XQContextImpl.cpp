@@ -106,6 +106,7 @@ XQContextImpl::XQContextImpl(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMg
   ////////////////////
   // static context //
   ////////////////////
+  _contextItemType.flags = StaticType::NODE_TYPE | StaticType::NUMERIC_TYPE | StaticType::OTHER_TYPE;
   _xpath1Compatibility = false;    // according to Formal Semantics, § 4.1.1
   _ordering = ORDERING_ORDERED;
 
@@ -269,6 +270,16 @@ void XQContextImpl::clearDynamicContext()
   _resolvers.clear();
   _docCache->clearStoredDocuments();
   time(&_currentTime);
+}
+
+const StaticType &XQContextImpl::getContextItemType() const
+{
+  return _contextItemType;
+}
+
+void XQContextImpl::setContextItemType(const StaticType &st)
+{
+  _contextItemType = st;
 }
 
 bool XQContextImpl::getXPath1CompatibilityMode() const

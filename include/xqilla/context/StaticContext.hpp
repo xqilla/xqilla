@@ -42,6 +42,7 @@ class DatatypeFactory;
 class Collation;
 class VariableTypeStore;
 class ItemFactory;
+class StaticType;
 
 XERCES_CPP_NAMESPACE_BEGIN
 class DOMDocument;
@@ -77,6 +78,11 @@ public:
   virtual ItemFactory *getItemFactory() const = 0;
   /** Sets the ItemFactory for this context */
   virtual void setItemFactory(ItemFactory *factory) = 0;
+
+  /** Get the static type of the context item */
+  virtual const StaticType &getContextItemType() const = 0;
+  /** Set the static type of the context item */
+  virtual void setContextItemType(const StaticType &st) = 0;
 
   /** Get the current XPath 1.0 compatibility mode */
   virtual bool getXPath1CompatibilityMode() const = 0;

@@ -46,14 +46,14 @@ ASTNode* ArithmeticOperator::staticResolution(StaticContext *context)
   for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
     *i = (*i)->staticResolution(context);
 
-    if((*i)->getStaticResolutionContext().getStaticType().flags & StaticResolutionContext::NODE_TYPE) {
-      _src.getStaticType().flags |= StaticResolutionContext::NUMERIC_TYPE | StaticResolutionContext::OTHER_TYPE;
+    if((*i)->getStaticResolutionContext().getStaticType().flags & StaticType::NODE_TYPE) {
+      _src.getStaticType().flags |= StaticType::NUMERIC_TYPE | StaticType::OTHER_TYPE;
     }
-    if((*i)->getStaticResolutionContext().getStaticType().flags & StaticResolutionContext::NUMERIC_TYPE) {
-      _src.getStaticType().flags |= StaticResolutionContext::NUMERIC_TYPE;
+    if((*i)->getStaticResolutionContext().getStaticType().flags & StaticType::NUMERIC_TYPE) {
+      _src.getStaticType().flags |= StaticType::NUMERIC_TYPE;
     }
-    if((*i)->getStaticResolutionContext().getStaticType().flags & StaticResolutionContext::OTHER_TYPE) {
-      _src.getStaticType().flags |= StaticResolutionContext::OTHER_TYPE;
+    if((*i)->getStaticResolutionContext().getStaticType().flags & StaticType::OTHER_TYPE) {
+      _src.getStaticType().flags |= StaticType::OTHER_TYPE;
     }
 
     _src.add((*i)->getStaticResolutionContext());
@@ -95,7 +95,7 @@ AnyAtomicType::Ptr ArithmeticOperator::getArgument(unsigned int index, DynamicCo
   //        Otherwise, a type error is raised.
   Result arg_result(_args[index]->collapseTree(context));
 
-  if(_args[index]->getStaticResolutionContext().getStaticType().flags & StaticResolutionContext::NODE_TYPE) {
+  if(_args[index]->getStaticResolutionContext().getStaticType().flags & StaticType::NODE_TYPE) {
 	  arg_result = arg_result.atomize(context);
   }
 

@@ -80,7 +80,7 @@ ASTNode* XQStep::staticResolution(StaticContext *context)
   properties |= StaticResolutionContext::DOCORDER | StaticResolutionContext::GROUPED | StaticResolutionContext::SAMEDOC;
 
   _src.setProperties(properties);
-  _src.getStaticType().flags = StaticResolutionContext::NODE_TYPE;
+  _src.getStaticType().flags = StaticType::NODE_TYPE;
   _src.contextItemUsed(true);
   nodeTest_->staticResolution(context);
   return resolvePredicates(context);

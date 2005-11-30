@@ -246,11 +246,11 @@ const XMLCh* SequenceType::ItemType::getNameURI(const StaticContext* context) co
     return 0;
 }
 
-void SequenceType::ItemType::getStaticType(StaticResolutionContext::StaticType &st, const StaticContext *context) const
+void SequenceType::ItemType::getStaticType(StaticType &st, const StaticContext *context) const
 {
   switch(m_nTestType) {
       case SequenceType::ItemType::TEST_ANYTHING: {
-	      st.flags = StaticResolutionContext::NODE_TYPE | StaticResolutionContext::NUMERIC_TYPE | StaticResolutionContext::OTHER_TYPE;
+	      st.flags = StaticType::NODE_TYPE | StaticType::NUMERIC_TYPE | StaticType::OTHER_TYPE;
 	      break;
       }
       case SequenceType::ItemType::TEST_ATOMIC_TYPE: {
@@ -258,18 +258,18 @@ void SequenceType::ItemType::getStaticType(StaticResolutionContext::StaticType &
         case AnyAtomicType::DECIMAL:
         case AnyAtomicType::DOUBLE:
         case AnyAtomicType::FLOAT: {
-          st.flags = StaticResolutionContext::NUMERIC_TYPE;
+          st.flags = StaticType::NUMERIC_TYPE;
           break;
         }
         default: {
-          st.flags = StaticResolutionContext::OTHER_TYPE;
+          st.flags = StaticType::OTHER_TYPE;
           break;
         }
         }     
         break;
       }
       default: {
-	      st.flags = StaticResolutionContext::NODE_TYPE;
+	      st.flags = StaticType::NODE_TYPE;
 	      break;
       }
       }
@@ -566,7 +566,7 @@ bool SequenceType::ItemType::matches(const Item::Ptr &toBeTested, DynamicContext
   return true;
 }
 
-Result SequenceType::convertFunctionArg(const Result &param, const StaticResolutionContext::StaticType &stype, DynamicContext* context) const {
+Result SequenceType::convertFunctionArg(const Result &param, const StaticType &stype, DynamicContext* context) const {
   // From XPath2 Spec, Section 3.1.5 (http://www.w3.org/TR/xpath20/#id-function-calls)
 
   // The function conversion rules are used to convert an argument value to its expected type; that is, to the
@@ -576,7 +576,7 @@ Result SequenceType::convertFunctionArg(const Result &param, const StaticResolut
   Result ret = param;
 
   // FS says we atomize first if the sequence type is atomic, and I think that's sensible - jpcs
-  if((stype.flags & StaticResolutionContext::NODE_TYPE) && getItemTestType() == ItemType::TEST_ATOMIC_TYPE) {
+  if((stype.flags & StaticType::NODE_TYPE) && getItemTestType() == ItemType::TEST_ATOMIC_TYPE) {
     ret = ret.atomize(context);
   }
 

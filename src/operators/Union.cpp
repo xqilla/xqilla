@@ -39,7 +39,7 @@ Union::Union(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : XQOperator(name, args, memMgr)
 {
   _src.setProperties(StaticResolutionContext::DOCORDER | StaticResolutionContext::GROUPED);
-  _src.getStaticType().flags = StaticResolutionContext::NODE_TYPE;
+  _src.getStaticType().flags = StaticType::NODE_TYPE;
 }
 
 Result Union::createResult(DynamicContext* context, int flags) const

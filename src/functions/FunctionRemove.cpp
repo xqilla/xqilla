@@ -52,7 +52,7 @@ FunctionRemove::FunctionRemove(const VectorOfASTNodes &args, XPath2MemoryManager
   : ConstantFoldingFunction(name, minArgs, maxArgs, "item()*, integer", args, memMgr)
 {
   // TBD - could do better here - jpcs
-  _src.getStaticType().flags = StaticResolutionContext::NUMERIC_TYPE | StaticResolutionContext::NODE_TYPE | StaticResolutionContext::OTHER_TYPE;
+  _src.getStaticType().flags = StaticType::NUMERIC_TYPE | StaticType::NODE_TYPE | StaticType::OTHER_TYPE;
 }
 
 Result FunctionRemove::createResult(DynamicContext* context, int flags) const

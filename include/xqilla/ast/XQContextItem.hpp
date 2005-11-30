@@ -34,7 +34,6 @@
 /** Returns the context item. Raises [err:XP0002] if the context item is null. */
 class XQILLA_API XQContextItem : public ASTNodeImpl
 {
-
 public:
   XQContextItem(XPath2MemoryManager* memMgr);
   ~XQContextItem();

@@ -49,7 +49,7 @@ const unsigned int FunctionDayFromDateTime::maxArgs = 1;
 FunctionDayFromDateTime::FunctionDayFromDateTime(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : XQFunction(name, minArgs, maxArgs, "dateTime?", args, memMgr)
 {
-  _src.getStaticType().flags = StaticResolutionContext::NUMERIC_TYPE;
+  _src.getStaticType().flags = StaticType::NUMERIC_TYPE;
 }
 
 ASTNode* FunctionDayFromDateTime::staticResolution(StaticContext *context)

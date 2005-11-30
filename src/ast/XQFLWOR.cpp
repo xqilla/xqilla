@@ -586,7 +586,7 @@ void XQFLWOR::staticResolutionImpl(StaticContext* context)
       // Work out the uri and localname of the positional variable binding
       (*it0)->_pURI = context->getUriBoundToPrefix(XPath2NSUtils::getPrefix((*it0)->_positionalVariable, context->getMemoryManager()));
       (*it0)->_pName = XPath2NSUtils::getLocalName((*it0)->_positionalVariable);
-      (*it0)->_pSrc.getStaticType().flags = StaticResolutionContext::NUMERIC_TYPE;
+      (*it0)->_pSrc.getStaticType().flags = StaticType::NUMERIC_TYPE;
 
       // Declare the positional variable binding
       varStore->declareVar((*it0)->_pURI, (*it0)->_pName, (*it0)->_pSrc);

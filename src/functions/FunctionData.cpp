@@ -59,9 +59,9 @@ ASTNode* FunctionData::staticResolution(StaticContext *context)
     break; // should only be one
   }
 
-  if(_src.getStaticType().flags & StaticResolutionContext::NODE_TYPE) {
-    _src.getStaticType().flags &= ~StaticResolutionContext::NODE_TYPE;
-    _src.getStaticType().flags |= StaticResolutionContext::NUMERIC_TYPE | StaticResolutionContext::OTHER_TYPE;
+  if(_src.getStaticType().flags & StaticType::NODE_TYPE) {
+    _src.getStaticType().flags &= ~StaticType::NODE_TYPE;
+    _src.getStaticType().flags |= StaticType::NUMERIC_TYPE | StaticType::OTHER_TYPE;
   }
   else {
     // If the parameter has no nodes, this function does nothing

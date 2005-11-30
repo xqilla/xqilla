@@ -81,7 +81,7 @@ ASTNode* XQValidate::staticResolution(StaticContext* ctx)
   _expr = _expr->staticResolution(ctx);
   _src.add(_expr->getStaticResolutionContext());
 
-  _src.getStaticType().flags = StaticResolutionContext::NODE_TYPE;
+  _src.getStaticType().flags = StaticType::NODE_TYPE;
   _src.forceNoFolding(true);
   return resolvePredicates(ctx); // Never constant fold
 }

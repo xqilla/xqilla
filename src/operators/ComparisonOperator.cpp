@@ -58,7 +58,7 @@ AnyAtomicType::Ptr ComparisonOperator::getArgument(unsigned int index, DynamicCo
   //    exactly one atomic value, a type error is raised.
   Result arg_result(_args[index]->collapseTree(context));
 
-  if(_args[index]->getStaticResolutionContext().getStaticType().flags & StaticResolutionContext::NODE_TYPE) {
+  if(_args[index]->getStaticResolutionContext().getStaticType().flags & StaticType::NODE_TYPE) {
 	  arg_result = arg_result.atomize(context);
   }
 

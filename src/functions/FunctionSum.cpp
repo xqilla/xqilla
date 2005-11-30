@@ -53,7 +53,7 @@ FunctionSum::FunctionSum(const VectorOfASTNodes &args, XPath2MemoryManager* memM
   : AggregateFunction(name, minArgs, maxArgs, "anyAtomicType*,anyAtomicType?", args, memMgr)
 {
   // TBD - could do better here - jpcs
-  _src.getStaticType().flags = StaticResolutionContext::NUMERIC_TYPE | StaticResolutionContext::OTHER_TYPE;
+  _src.getStaticType().flags = StaticType::NUMERIC_TYPE | StaticType::OTHER_TYPE;
 }
 
 Sequence FunctionSum::collapseTreeInternal(DynamicContext* context, int flags) const

@@ -48,7 +48,7 @@ FunctionExactlyOne::FunctionExactlyOne(const VectorOfASTNodes &args, XPath2Memor
   : ConstantFoldingFunction(name, minArgs, maxArgs, "item()*", args, memMgr)
 {
   // TBD - could do better here - jpcs
-  _src.getStaticType().flags = StaticResolutionContext::NUMERIC_TYPE | StaticResolutionContext::NODE_TYPE | StaticResolutionContext::OTHER_TYPE;
+  _src.getStaticType().flags = StaticType::NUMERIC_TYPE | StaticType::NODE_TYPE | StaticType::OTHER_TYPE;
 }
 
 Result FunctionExactlyOne::createResult(DynamicContext* context, int flags) const

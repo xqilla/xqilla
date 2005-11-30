@@ -79,18 +79,18 @@ Result XQNav::createResult(DynamicContext* context, int flags) const
       result = new StepResult(result, it->step, 0, flags, context);
     }
 
-    const StaticResolutionContext::StaticType &st = it->step->getStaticResolutionContext().getStaticType();
+    const StaticType &st = it->step->getStaticResolutionContext().getStaticType();
     if(it == (end-1)) {
       // the last step allows either nodes or atomic items
-      if((st.flags & StaticResolutionContext::NODE_TYPE) &&
-         ((st.flags & StaticResolutionContext::NUMERIC_TYPE) ||
-          (st.flags & StaticResolutionContext::OTHER_TYPE))) {
+      if((st.flags & StaticType::NODE_TYPE) &&
+         ((st.flags & StaticType::NUMERIC_TYPE) ||
+          (st.flags & StaticType::OTHER_TYPE))) {
         result = new LastStepCheckResult(result, context);
       }
     }
     else {
-      if((st.flags & StaticResolutionContext::NUMERIC_TYPE) ||
-         (st.flags & StaticResolutionContext::OTHER_TYPE)) {
+      if((st.flags & StaticType::NUMERIC_TYPE) ||
+         (st.flags & StaticType::OTHER_TYPE)) {
         result = new IntermediateStepCheckResult(result, context);
       }
     }
@@ -132,8 +132,13 @@ ASTNode* XQNav::staticResolution(StaticContext *context)
 {
   Steps newSteps(XQillaAllocator<StepInfo>(context->getMemoryManager()));
 
+  StaticType oldContextItemType = context->getContextItemType();
+
   if(_gotoRoot) {
     _src.contextItemUsed(true);
+    StaticType newContextItemType;
+    newContextItemType.flags = StaticType::NODE_TYPE;
+    context->setContextItemType(newContextItemType);
   }
 
   Steps::iterator begin = _steps.begin();
@@ -143,6 +148,7 @@ ASTNode* XQNav::staticResolution(StaticContext *context)
     // Statically resolve our step
     ASTNode *step = it->step->staticResolution(context);
     const StaticResolutionContext &stepSrc = step->getStaticResolutionContext();
+    context->setContextItemType(stepSrc.getStaticType());
 
     if(stepSrc.areContextFlagsUsed() || _src.isNoFoldingForced()) {
       newSteps.push_back(StepInfo(step, stepSrc.isContextSizeUsed()));
@@ -198,7 +204,7 @@ ASTNode* XQNav::staticResolution(StaticContext *context)
               for(; it2 != end2; ++it2) {
                 if(it2->pred->getStaticResolutionContext().isContextPositionUsed() ||
                    it2->pred->getStaticResolutionContext().isContextSizeUsed() ||
-                   it2->pred->getStaticResolutionContext().getStaticType().flags & StaticResolutionContext::NUMERIC_TYPE) {
+                   it2->pred->getStaticResolutionContext().getStaticType().flags & StaticType::NUMERIC_TYPE) {
                   usesContextPositionOrSize = true;
                   break;
                 }
@@ -232,10 +238,12 @@ ASTNode* XQNav::staticResolution(StaticContext *context)
     _src.getStaticType() = _steps.back().step->getStaticResolutionContext().getStaticType();
   }
   else if(_gotoRoot) {
-    _src.getStaticType().flags = StaticResolutionContext::NODE_TYPE;
+    _src.getStaticType().flags = StaticType::NODE_TYPE;
   }
 
   getIsSorted(); // Calculate the properties
+
+  context->setContextItemType(oldContextItemType);
 
   if(_src.isUsed()) {
     return resolvePredicates(context);

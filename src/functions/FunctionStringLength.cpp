@@ -52,7 +52,7 @@ const unsigned int FunctionStringLength::maxArgs = 1;
 FunctionStringLength::FunctionStringLength(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : XQFunction(name, minArgs, maxArgs, "string?", args, memMgr)
 {
-  _src.getStaticType().flags = StaticResolutionContext::NUMERIC_TYPE;
+  _src.getStaticType().flags = StaticType::NUMERIC_TYPE;
 }
 
 const XMLCh* FunctionStringLength::getString(DynamicContext* context) const {
