@@ -386,7 +386,12 @@ src/parser/xquery.y \
 src/parser/XPath2Parser.y \
 LICENSE \
 docs/Doxyfile.simpleapi \
-docs/simple-api
+docs/simple-api \
+Win32Projects/VC6/XQilla.dsp \
+Win32Projects/VC6/XQilla.dsw \
+Win32Projects/VC7.1/XQilla.sln \
+Win32Projects/VC7.1/XQilla.vcproj
+
 
 xqilla_SOURCES = \
 src/samples/xqilla/xqilla.cpp

@@ -72,17 +72,23 @@ Sequence FunctionSum::collapseTreeInternal(DynamicContext* context, int flags) c
       return Sequence(context->getItemFactory()->createDouble(0.0, context), memMgr);
     else
       return getParamNumber(2,context);
-  if(sequence.getLength()==1 && isNumericNaN(sequence.first()))
-    return sequence;
 
   // check for types that don't support addition
   const AnyAtomicType::Ptr atom = (const AnyAtomicType::Ptr )sequence.first();
-  if (!atom->isNumericValue() && 
-      !context->isTypeOrDerivedFromType(atom->getTypeURI(), atom->getTypeName(), FunctionConstructor::XMLChXPath2DatatypesURI, ATDurationOrDerived::fgDT_DAYTIMEDURATION) &&
-      !context->isTypeOrDerivedFromType(atom->getTypeURI(), atom->getTypeName(), FunctionConstructor::XMLChXPath2DatatypesURI, ATDurationOrDerived::fgDT_YEARMONTHDURATION))
+  if(!atom->isNumericValue() && 
+     atom->getPrimitiveTypeIndex() != AnyAtomicType::DAY_TIME_DURATION &&
+     atom->getPrimitiveTypeIndex() != AnyAtomicType::YEAR_MONTH_DURATION)
     XQThrow(IllegalArgumentException, X("FunctionSum::collapseTreeInternal"), X("Invalid argument to fn:sum() function"));
 
-  Sequence::iterator i = sequence.begin();
+  return Sequence(sum(sequence, context), memMgr);
+}
+
+Item::Ptr FunctionSum::sum(const Sequence &sequence, DynamicContext *context)
+{
+  if(sequence.getLength() == 1)
+    return sequence.first();
+
+  Sequence::const_iterator i = sequence.begin();
   Item::Ptr sum = *i;
   ++i;
 
@@ -94,5 +100,5 @@ Sequence FunctionSum::collapseTreeInternal(DynamicContext* context, int flags) c
     }  
   } 
 
-	return Sequence(sum, memMgr);
+  return sum;
 }

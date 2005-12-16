@@ -65,38 +65,35 @@ Sequence FunctionAvg::collapseTreeInternal(DynamicContext* context, int flags) c
   } catch (IllegalArgumentException &e) {
     XQThrow(IllegalArgumentException, X("FunctionAvg::collapseTreeInternal()"), X("Invalid argument to fn:avg() function [err:FORG0006]."));
   }
-	if(sequence.isEmpty())
-		return Sequence(context->getMemoryManager());
+
+  if(sequence.isEmpty())
+    return Sequence(context->getMemoryManager());
 
   // check for types that don't support addition and division by an integer
   const AnyAtomicType::Ptr atom = (const AnyAtomicType::Ptr )sequence.first();
-  if (!atom->isNumericValue() && 
-      !context->isTypeOrDerivedFromType(atom->getTypeURI(), atom->getTypeName(), FunctionConstructor::XMLChXPath2DatatypesURI, ATDurationOrDerived::fgDT_DAYTIMEDURATION) &&
-      !context->isTypeOrDerivedFromType(atom->getTypeURI(), atom->getTypeName(), FunctionConstructor::XMLChXPath2DatatypesURI, ATDurationOrDerived::fgDT_YEARMONTHDURATION))
+  if(!atom->isNumericValue() && 
+     atom->getPrimitiveTypeIndex() != AnyAtomicType::DAY_TIME_DURATION &&
+     atom->getPrimitiveTypeIndex() != AnyAtomicType::YEAR_MONTH_DURATION)
     XQThrow(IllegalArgumentException, X("FunctionAvg::collapseTreeInternal()"), X("Invalid argument to fn:avg() function [err:FORG0006]."));
 
-  FunctionSum fnSum(_args, context->getMemoryManager());
-  Result sum = 0;
+  if(sequence.getLength() == 1)
+    return sequence;
+
+  AnyAtomicType::Ptr sum;
   try {
-    sum = fnSum.collapseTree(context);
-  } catch (IllegalArgumentException &e) {
+    sum = (AnyAtomicType::Ptr)FunctionSum::sum(sequence, context);
+  }
+  catch(IllegalArgumentException &) {
     XQThrow(IllegalArgumentException, X("FunctionAvg::collapseTreeInternal()"), X("Invalid argument to fn:avg() function [err:FORG0006]."));
   }
 
-  VectorOfASTNodes divArgs = VectorOfASTNodes(XQillaAllocator<ASTNode*>(context->getMemoryManager()));
-  XQSequence seq1(sum, context, context->getMemoryManager());
-  divArgs.push_back(&seq1);
+  Numeric::Ptr count = context->getItemFactory()->createDecimal((long)sequence.getLength(), context);
 
-  XQSequence seq2(context->getItemFactory()->createDecimal((long)sequence.getLength(), context),
-                        context, context->getMemoryManager());
-  divArgs.push_back(&seq2);
-
-  Divide divide(divArgs, context->getMemoryManager());
-  Sequence avg(context->getMemoryManager()); 
-  try {
-    avg = divide.collapseTree(context);
-  } catch (XPath2ErrorException &e) {
-    XQThrow(IllegalArgumentException, X("FunctionAvg::collapseTreeInternal()"), X("Invalid argument to fn:avg() function [err:FORG0006]."));
+  if(sum->isNumericValue()) {
+    return Sequence(((Numeric*)sum.get())->divide(count, context), context->getMemoryManager());
   }
-	return avg;
+  else {
+    // It must be a duration type
+    return Sequence(((ATDurationOrDerived*)sum.get())->divide(count, context), context->getMemoryManager());
+  }
 }
