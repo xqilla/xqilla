@@ -531,7 +531,11 @@ src/parser/xquery.y \
 src/parser/XPath2Parser.y \
 LICENSE \
 docs/Doxyfile.simpleapi \
-docs/simple-api
+docs/simple-api \
+Win32Projects/VC6/XQilla.dsp \
+Win32Projects/VC6/XQilla.dsw \
+Win32Projects/VC7.1/XQilla.sln \
+Win32Projects/VC7.1/XQilla.vcproj
 
 
 xqilla_SOURCES = \
@@ -13245,7 +13249,7 @@ distcleancheck_listfiles = find . -type f -print
 distdir: $(DISTFILES)
 	$(am__remove_distdir)
 	mkdir $(distdir)
-	$(mkinstalldirs) $(distdir)/./src/config $(distdir)/autotools $(distdir)/docs $(distdir)/src/lexer $(distdir)/src/parser
+	$(mkinstalldirs) $(distdir)/./src/config $(distdir)/Win32Projects/VC6 $(distdir)/Win32Projects/VC7.1 $(distdir)/autotools $(distdir)/docs $(distdir)/src/lexer $(distdir)/src/parser
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \
