@@ -24,7 +24,7 @@
  */
 
 #include "../../config/xqilla_config.h"
-#include <xqilla/dom-api/impl/XQillaExpressionImpl.hpp>
+#include "XQillaExpressionImpl.hpp"
 #include <xqilla/simple-api/XQilla.hpp>
 #include <xqilla/simple-api/XQQuery.hpp>
 #include <xqilla/items/Node.hpp>
@@ -33,7 +33,7 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/context/impl/XQContextImpl.hpp>
 #include <xqilla/dom-api/XQillaExpression.hpp>
-#include <xqilla/dom-api/XPath2Result.hpp>
+#include "XPath2ResultImpl.hpp"
 #include <xqilla/ast/ASTNode.hpp>
 #include <xqilla/runtime/Sequence.hpp>
 #include <xqilla/context/DynamicContext.hpp>
@@ -52,38 +52,22 @@
 #include <xercesc/util/XercesDefs.hpp>
 
 XQillaExpressionImpl::XQillaExpressionImpl(const XMLCh *expression,
-                                           const XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* documentRoot,
                                            XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr,
                                            const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver *nsr,
                                            XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool *xmlGP)
-	: _createdWith(memMgr),
-    _memMgr(memMgr),
-    _docRoot(documentRoot),
-    _staticContextOwned(true)
+	: _createdWith(memMgr)
 {
-  _staticContext = new (&_memMgr) XQContextImpl(&_memMgr, xmlGP);
-  _staticContext->setNSResolver(nsr);
+  _staticContext = new (_createdWith) XQContextImpl(_createdWith, xmlGP);
+  if(nsr != 0) _staticContext->setNSResolver(nsr);
   XQilla xqilla;
-  _compiledExpression = xqilla.parseXQuery(expression, _staticContext, NULL, XQilla::NO_ADOPT_CONTEXT, &_memMgr);
-}
-
-XQillaExpressionImpl::XQillaExpressionImpl(const XMLCh *expression, DynamicContext *context,
-                                           XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr)
-	: _createdWith(memMgr),
-    _memMgr(memMgr),
-    _docRoot(0),
-    _staticContextOwned(false),
-    _staticContext(context)
-{
-  XQilla xqilla;
-  _compiledExpression = xqilla.parseXQuery(expression, _staticContext, NULL, XQilla::NO_ADOPT_CONTEXT, &_memMgr);
+  _compiledExpression = xqilla.parseXPath2(expression, _staticContext, NULL, XQilla::NO_ADOPT_CONTEXT, _createdWith);
 }
 
 XQillaExpressionImpl::~XQillaExpressionImpl() 
 {
-  if(_staticContextOwned) delete _staticContext;
-  if(_compiledExpression) delete _compiledExpression;
-}//destructor
+  delete _staticContext;
+  delete _compiledExpression;
+}
 
 void XQillaExpressionImpl::release()
 {
@@ -91,28 +75,50 @@ void XQillaExpressionImpl::release()
   _createdWith->deallocate(this);
 }
 
-// weak version -  must create a context from scratch
 void* XQillaExpressionImpl::evaluate(XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* contextNode,
                                      unsigned short type,
                                      void*) const
-  throw (XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException, XERCES_CPP_NAMESPACE_QUALIFIER DOMException)
 {
-  return new (_createdWith) XPath2Result((XPath2Result::ResultType)type, _compiledExpression,
-                                         contextNode, _staticContext, _createdWith);
-}
-
-// strong version, use given context
-XPath2Result* XQillaExpressionImpl::evaluate(DynamicContext* context, unsigned short type) const
-	throw (XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException, XERCES_CPP_NAMESPACE_QUALIFIER DOMException)
-{
-  return new (_createdWith) XPath2Result((XPath2Result::ResultType)type, _compiledExpression,
-                                         context, _createdWith);
-}
-
-DynamicContext *XQillaExpressionImpl::createContext(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mm) const
-{
-  if(mm == 0) {
-    return 0;
+  switch((XPath2Result::ResultType)type) {
+  case XPath2Result::FIRST_RESULT: {
+    return new (_createdWith) XPath2FirstResultImpl(_compiledExpression, contextNode,
+                                                    _staticContext, _createdWith);
+    break;
   }
-  return _staticContext->createDynamicContext(mm);
+  case XPath2Result::ITERATOR_RESULT: {
+    return new (_createdWith) XPath2IteratorResultImpl(_compiledExpression, contextNode,
+                                                       _staticContext, _createdWith);
+    break;
+  }
+  case XPath2Result::SNAPSHOT_RESULT: {
+    return new (_createdWith) XPath2SnapshotResultImpl(_compiledExpression, contextNode,
+                                                       _staticContext, _createdWith);
+    break;
+  }
+  }
+  return 0;
+}
+
+void* XQillaExpressionImpl::evaluateOnce(XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* contextNode,
+                                         unsigned short type,
+                                         void*)
+{
+  switch((XPath2Result::ResultType)type) {
+  case XPath2Result::FIRST_RESULT: {
+    return new (_createdWith) XPath2FirstResultImpl(_compiledExpression, contextNode,
+                                                    _staticContext, _createdWith, this);
+    break;
+  }
+  case XPath2Result::ITERATOR_RESULT: {
+    return new (_createdWith) XPath2IteratorResultImpl(_compiledExpression, contextNode,
+                                                       _staticContext, _createdWith, this);
+    break;
+  }
+  case XPath2Result::SNAPSHOT_RESULT: {
+    return new (_createdWith) XPath2SnapshotResultImpl(_compiledExpression, contextNode,
+                                                       _staticContext, _createdWith, this);
+    break;
+  }
+  }
+  return 0;
 }

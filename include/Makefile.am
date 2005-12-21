@@ -1,4 +1,5 @@
 nobase_include_HEADERS = \
+xqilla/xqilla-dom3.hpp \
 xqilla/xqilla-simple.hpp \
 xqilla/ast/XQCastableAs.hpp \
 xqilla/ast/XQCastAs.hpp \
@@ -55,6 +56,7 @@ xqilla/context/VarHashEntry.hpp \
 xqilla/context/XQDebugCallback.hpp \
 xqilla/context/VariableTypeStore.hpp \
 xqilla/context/Collation.hpp \
+xqilla/context/XQScopedNamespace.hpp \
 xqilla/context/impl/CollationImpl.hpp \
 xqilla/context/impl/VarHashEntryImpl.hpp \
 xqilla/context/impl/VariableStoreTemplate.hpp \
@@ -63,14 +65,10 @@ xqilla/context/impl/XQRemoteDebugger.hpp \
 xqilla/context/impl/XQContextImpl.hpp \
 xqilla/context/impl/XQDynamicContextImpl.hpp \
 xqilla/context/impl/ItemFactoryImpl.hpp \
-xqilla/dom-api/XQillaExpression.hpp \
-xqilla/dom-api/XQillaImplementation.hpp \
-xqilla/dom-api/XQillaNSResolver.hpp \
-xqilla/dom-api/XPath2NodeSerializer.hpp \
-xqilla/dom-api/XPath2Result.hpp \
-xqilla/dom-api/XQScopedNamespace.hpp \
-xqilla/dom-api/impl/XQillaExpressionImpl.hpp \
 xqilla/dom-api/impl/XQillaNSResolverImpl.hpp \
+xqilla/dom-api/XPath2Result.hpp \
+xqilla/dom-api/XQillaExpression.hpp \
+xqilla/dom-api/XQillaNSResolver.hpp \
 xqilla/exceptions/XQillaException.hpp \
 xqilla/exceptions/ContextException.hpp \
 xqilla/exceptions/ASTException.hpp \
@@ -299,9 +297,20 @@ xqilla/framework/StringPool.hpp \
 xqilla/framework/XPath2MemoryManagerImpl.hpp \
 xqilla/framework/XQillaExport.hpp
 
-docs: $(top_srcdir)/docs/.simple-api-timestamp
+docs: $(top_srcdir)/docs/.simple-api-timestamp $(top_srcdir)/docs/.dom3-api-timestamp
 
 $(top_srcdir)/docs/.simple-api-timestamp: $(nobase_include_HEADERS) $(top_srcdir)/docs/Doxyfile.simpleapi
 	cd $(top_srcdir)/docs && \
 		doxygen Doxyfile.simpleapi && \
 		touch .simple-api-timestamp
+
+$(top_srcdir)/docs/Doxyfile.simpleapi: $(top_srcdir)/docs/Doxyfile.simpleapi.in
+	sed -e "s,%xerces_include%,$(xerces_include)," $(top_srcdir)/docs/Doxyfile.simpleapi.in >$(top_srcdir)/docs/Doxyfile.simpleapi
+
+$(top_srcdir)/docs/.dom3-api-timestamp: $(nobase_include_HEADERS) $(top_srcdir)/docs/Doxyfile.dom3api
+	cd $(top_srcdir)/docs && \
+		doxygen Doxyfile.dom3api && \
+		touch .dom3-api-timestamp
+
+$(top_srcdir)/docs/Doxyfile.dom3api: $(top_srcdir)/docs/Doxyfile.dom3api.in
+	sed -e "s,%xerces_include%,$(xerces_include)," $(top_srcdir)/docs/Doxyfile.dom3api.in >$(top_srcdir)/docs/Doxyfile.dom3api

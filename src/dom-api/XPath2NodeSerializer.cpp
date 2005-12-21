@@ -24,7 +24,7 @@
  */
 
 #include "../config/xqilla_config.h"
-#include <xqilla/dom-api/XPath2NodeSerializer.hpp>
+#include "XPath2NodeSerializer.hpp"
 
 #include <xercesc/dom/DOMXPathNamespace.hpp>
 #include <xercesc/dom/DOMNode.hpp>

@@ -30,7 +30,7 @@
 #include <xqilla/utils/PrintAST.hpp>
 #include <xqilla/utils/UTF8Str.hpp>
 
-#include <xqilla/dom-api/impl/XQillaExpressionImpl.hpp>
+#include "../dom-api/impl/XQillaExpressionImpl.hpp"
 #include <xqilla/ast/ASTNode.hpp>
 #include <xqilla/ast/XQFunction.hpp>
 #include <xqilla/ast/ASTNodeImpl.hpp>

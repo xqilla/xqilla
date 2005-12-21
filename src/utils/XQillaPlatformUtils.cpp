@@ -30,20 +30,24 @@
 #include <xqilla/framework/XPath2MemoryManagerImpl.hpp>
 
 #include <xqilla/utils/XQillaPlatformUtils.hpp>
-#include <xqilla/dom-api/XQillaImplementation.hpp>
+#include "../dom-api/XQillaImplementation.hpp"
 
 #include <xqilla/mapm/m_apm.h>
 #include "DateUtils.hpp"
 
+XERCES_CPP_NAMESPACE_USE;
+
 static int gInitFlag = 0;
 
-void XQillaPlatformUtils::initialize(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr) {
-  XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::
-    Initialize(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgXercescDefaultLocale, 0, 0, memMgr);
-  XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::atomicIncrement(gInitFlag);
-  XQillaImplementation::initialize();
-  m_apm_mt_initialize();
-  DateUtils::initialize();
+void XQillaPlatformUtils::initialize(MemoryManager *memMgr) {
+  //  Make sure we haven't already been initialized. Note that this is not
+  //  thread safe and is not intended for that.
+  if(gInitFlag++ == 0) {
+    XMLPlatformUtils::Initialize(XMLUni::fgXercescDefaultLocale, 0, 0, memMgr);
+    XQillaImplementation::initialize();
+    m_apm_mt_initialize();
+    DateUtils::initialize();
+  }
 }
 
 void XQillaPlatformUtils::terminate() {
@@ -51,11 +55,11 @@ void XQillaPlatformUtils::terminate() {
     return;
   }
 
-  if(XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::atomicDecrement(gInitFlag)==0) {
-	  m_apm_free_all_mem_mt();
+  if(--gInitFlag == 0) {
+    m_apm_free_all_mem_mt();
     DateUtils::terminate();
     m_apm_mt_terminate();
+    XQillaImplementation::terminate();
+    XMLPlatformUtils::Terminate();
   }
-  XQillaImplementation::terminate();
-  XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::Terminate();
 }

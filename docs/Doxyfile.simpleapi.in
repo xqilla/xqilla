@@ -346,7 +346,20 @@ INPUT                  = \
 ../include/xqilla/runtime/Sequence.hpp \
 ../include/xqilla/runtime/Result.hpp \
 ../include/xqilla/ast/StaticResolutionContext.hpp \
-../include/xqilla/exceptions/XQException.hpp
+../include/xqilla/exceptions/XQException.hpp \
+%xerces_include%/xercesc/framework/MemoryManager.hpp \
+%xerces_include%/xercesc/util/XMemory.hpp \
+%xerces_include%/xercesc/dom/DOMNode.hpp \
+%xerces_include%/xercesc/dom/DOMDocument.hpp \
+%xerces_include%/xercesc/dom/DOMXPathNSResolver.hpp \
+%xerces_include%/xercesc/util/XMLEntityResolver.hpp \
+%xerces_include%/xercesc/util/PlatformUtils.hpp \
+%xerces_include%/xercesc/sax/InputSource.hpp \
+%xerces_include%/xercesc/framework/LocalFileInputSource.hpp \
+%xerces_include%/xercesc/framework/MemBufInputSource.hpp \
+%xerces_include%/xercesc/framework/StdInInputSource.hpp \
+%xerces_include%/xercesc/framework/URLInputSource.hpp
+
 
 # If the value of the INPUT tag contains directories, you can use the 
 # FILE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp 
@@ -371,7 +384,7 @@ EXCLUDE                = \
 ../include/xqilla/items/ItemConstructor.hpp \
 ../include/xqilla/items/AnyAtomicTypeConstructor.hpp \
 ../include/xqilla/items/ATQNameConstructor.hpp \
-../include/xqilla/items/DatatypeLookup.hpp
+../include/xqilla/items/DatatypeLookup.hpp \
 ../include/xqilla/items/DatatypeFactory.hpp
 
 # The EXCLUDE_SYMLINKS tag can be used select whether or not files or directories 
@@ -808,7 +821,10 @@ INCLUDE_FILE_PATTERNS  =
 # or name=definition (no spaces). If the definition and the = are 
 # omitted =1 is assumed.
 
-PREDEFINED             = XERCES_CPP_NAMESPACE_QUALIFIER=xercesc::
+PREDEFINED             = \
+  XERCES_CPP_NAMESPACE_QUALIFIER=xercesc:: \
+  XERCES_CPP_NAMESPACE_BEGIN="namespace xercesc {" \
+  XERCES_CPP_NAMESPACE_END="};"
 
 # If the MACRO_EXPANSION and EXPAND_PREDEF_ONLY tags are set to YES then 
 # this tag can be used to specify a list of macro names that should be expanded. 

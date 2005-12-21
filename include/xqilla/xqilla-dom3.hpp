@@ -23,10 +23,11 @@
  * $Id$
  */
 
-#include <xqilla/simple-api/XQilla.hpp>
-#include <xqilla/simple-api/XQQuery.hpp>
-#include <xqilla/context/DynamicContext.hpp>
-#include <xqilla/exceptions/XQException.hpp>
+#include <xqilla/dom-api/XQillaExpression.hpp>
+#include <xqilla/dom-api/XPath2Result.hpp>
+#include <xqilla/dom-api/XQillaNSResolver.hpp>
+#include <xqilla/exceptions/XQillaException.hpp>
+#include <xqilla/utils/XQillaPlatformUtils.hpp>
 #include <xqilla/utils/XStr.hpp>
 #include <xqilla/utils/UTF8Str.hpp>
 #include <xqilla/framework/XPath2MemoryManager.hpp>
