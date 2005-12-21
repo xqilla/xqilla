@@ -72,7 +72,7 @@ INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
-LDFLAGS = -L$(xerces_lib)
+LDFLAGS = -L$(xerces_lib) -R$(xerces_lib)
 LEX = @LEX@
 LEXLIB = @LEXLIB@
 LEX_OUTPUT_ROOT = @LEX_OUTPUT_ROOT@
@@ -162,6 +162,7 @@ src/framework/BaseMemoryManager.cpp \
 src/framework/ProxyMemoryManager.cpp \
 src/framework/StringPool.cpp \
 src/framework/XPath2MemoryManagerImpl.cpp \
+src/context/XQScopedNamespace.cpp \
 src/context/impl/CollationImpl.cpp \
 src/context/impl/UCANormalizer1.cpp \
 src/context/impl/UCANormalizer2.cpp \
@@ -211,15 +212,18 @@ src/dom-api/impl/XQillaBuilderImpl.hpp \
 src/dom-api/impl/XQillaDocumentImpl.cpp \
 src/dom-api/impl/XQillaDocumentImpl.hpp \
 src/dom-api/impl/XQillaExpressionImpl.cpp \
+src/dom-api/impl/XQillaExpressionImpl.hpp \
 src/dom-api/impl/XQillaNSResolverImpl.cpp \
 src/dom-api/impl/XQillaXMLGrammarPoolImpl.cpp \
 src/dom-api/impl/XQillaXMLGrammarPoolImpl.hpp \
 src/dom-api/impl/XPathNamespaceImpl.cpp \
 src/dom-api/impl/XPathNamespaceImpl.hpp \
+src/dom-api/impl/XPath2ResultImpl.cpp \
+src/dom-api/impl/XPath2ResultImpl.hpp \
 src/dom-api/XQillaImplementation.cpp \
+src/dom-api/XQillaImplementation.hpp \
 src/dom-api/XPath2NodeSerializer.cpp \
-src/dom-api/XPath2Result.cpp \
-src/dom-api/XQScopedNamespace.cpp \
+src/dom-api/XPath2NodeSerializer.hpp \
 src/simple-api/XQilla.cpp \
 src/simple-api/XQilla2.cpp \
 src/simple-api/XQQuery.cpp \
@@ -530,8 +534,10 @@ src/lexer/XPath2Lexer.lex \
 src/parser/xquery.y \
 src/parser/XPath2Parser.y \
 LICENSE \
-docs/Doxyfile.simpleapi \
+docs/Doxyfile.simpleapi.in \
+docs/Doxyfile.dom3api.in \
 docs/simple-api \
+docs/dom3-api \
 Win32Projects/VC6/XQilla.dsp \
 Win32Projects/VC6/XQilla.dsw \
 Win32Projects/VC7.1/XQilla.sln \
@@ -623,39 +629,39 @@ libxqilla_la_LDFLAGS =
 libxqilla_la_LIBADD =
 am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	ProxyMemoryManager.lo StringPool.lo XPath2MemoryManagerImpl.lo \
-	CollationImpl.lo UCANormalizer1.lo UCANormalizer2.lo \
-	UCANormalizer.lo CodepointCollation.lo VarStoreImpl.lo \
-	VarTypeStoreImpl.lo VarHashEntryImpl.lo XQContextImpl.lo \
-	XQDynamicContextImpl.lo ItemFactoryImpl.lo XQRemoteDebugger.lo \
-	XQCastableAs.lo XQCastAs.lo XQContextItem.lo XQFunction.lo \
-	XQIf.lo ASTNodeImpl.lo XQInstanceOf.lo XQLiteral.lo XQNav.lo \
-	XQOperator.lo XQParenthesizedExpr.lo XQSequence.lo XQStep.lo \
-	XQTreatAs.lo XQVariable.lo StaticResolutionContext.lo \
-	AggregateFunction.lo ConstantFoldingFunction.lo \
-	NumericFunction.lo XQDebugHook.lo XQDOMConstructor.lo \
-	XQFLWOR.lo XQFunctionCall.lo XQGlobalVariable.lo \
-	XQOrderingChange.lo XQQuantified.lo XQValidate.lo \
-	XQTypeswitch.lo XQVariableBinding.lo XQillaBuilderImpl.lo \
-	XQillaDocumentImpl.lo XQillaExpressionImpl.lo \
-	XQillaNSResolverImpl.lo XQillaXMLGrammarPoolImpl.lo \
-	XPathNamespaceImpl.lo XQillaImplementation.lo \
-	XPath2NodeSerializer.lo XPath2Result.lo XQScopedNamespace.lo \
-	XQilla.lo XQilla2.lo XQQuery.lo UTF8Str.lo XMLChCompare.lo \
-	XStr.lo ContextUtils.lo Date.lo DateUtils.lo NumUtils.lo \
-	XQillaPlatformUtils.lo PrintAST.lo XPath2NSUtils.lo \
-	XPath2Utils.lo XQillaException.lo XQException.lo FuncFactory.lo \
-	FunctionLookupImpl.lo FunctionAbs.lo FunctionAvg.lo \
-	FunctionBaseURI.lo FunctionBoolean.lo FunctionCeiling.lo \
-	FunctionCodepointEqual.lo FunctionCodepointsToString.lo \
-	FunctionCollection.lo FunctionCompare.lo FunctionConcat.lo \
-	FunctionConstructor.lo FunctionContains.lo FunctionCount.lo \
-	FunctionCurrentDate.lo FunctionCurrentDateTime.lo \
-	FunctionCurrentTime.lo FunctionData.lo FunctionDateTime.lo \
-	FunctionDeepEqual.lo FunctionDefaultCollation.lo \
-	FunctionDistinctValues.lo FunctionDocAvailable.lo \
-	FunctionDoc.lo FunctionDocumentURI.lo FunctionEmpty.lo \
-	FunctionEncodeForUri.lo FunctionEndsWith.lo FunctionError.lo \
-	FunctionEscapeHtmlUri.lo FunctionExactlyOne.lo \
+	XQScopedNamespace.lo CollationImpl.lo UCANormalizer1.lo \
+	UCANormalizer2.lo UCANormalizer.lo CodepointCollation.lo \
+	VarStoreImpl.lo VarTypeStoreImpl.lo VarHashEntryImpl.lo \
+	XQContextImpl.lo XQDynamicContextImpl.lo ItemFactoryImpl.lo \
+	XQRemoteDebugger.lo XQCastableAs.lo XQCastAs.lo \
+	XQContextItem.lo XQFunction.lo XQIf.lo ASTNodeImpl.lo \
+	XQInstanceOf.lo XQLiteral.lo XQNav.lo XQOperator.lo \
+	XQParenthesizedExpr.lo XQSequence.lo XQStep.lo XQTreatAs.lo \
+	XQVariable.lo StaticResolutionContext.lo AggregateFunction.lo \
+	ConstantFoldingFunction.lo NumericFunction.lo XQDebugHook.lo \
+	XQDOMConstructor.lo XQFLWOR.lo XQFunctionCall.lo \
+	XQGlobalVariable.lo XQOrderingChange.lo XQQuantified.lo \
+	XQValidate.lo XQTypeswitch.lo XQVariableBinding.lo \
+	XQillaBuilderImpl.lo XQillaDocumentImpl.lo \
+	XQillaExpressionImpl.lo XQillaNSResolverImpl.lo \
+	XQillaXMLGrammarPoolImpl.lo XPathNamespaceImpl.lo \
+	XPath2ResultImpl.lo XQillaImplementation.lo \
+	XPath2NodeSerializer.lo XQilla.lo XQilla2.lo XQQuery.lo \
+	UTF8Str.lo XMLChCompare.lo XStr.lo ContextUtils.lo Date.lo \
+	DateUtils.lo NumUtils.lo XQillaPlatformUtils.lo PrintAST.lo \
+	XPath2NSUtils.lo XPath2Utils.lo XQillaException.lo \
+	XQException.lo FuncFactory.lo FunctionLookupImpl.lo \
+	FunctionAbs.lo FunctionAvg.lo FunctionBaseURI.lo \
+	FunctionBoolean.lo FunctionCeiling.lo FunctionCodepointEqual.lo \
+	FunctionCodepointsToString.lo FunctionCollection.lo \
+	FunctionCompare.lo FunctionConcat.lo FunctionConstructor.lo \
+	FunctionContains.lo FunctionCount.lo FunctionCurrentDate.lo \
+	FunctionCurrentDateTime.lo FunctionCurrentTime.lo \
+	FunctionData.lo FunctionDateTime.lo FunctionDeepEqual.lo \
+	FunctionDefaultCollation.lo FunctionDistinctValues.lo \
+	FunctionDocAvailable.lo FunctionDoc.lo FunctionDocumentURI.lo \
+	FunctionEmpty.lo FunctionEncodeForUri.lo FunctionEndsWith.lo \
+	FunctionError.lo FunctionEscapeHtmlUri.lo FunctionExactlyOne.lo \
 	FunctionExists.lo FunctionFalse.lo FunctionFloor.lo \
 	FunctionId.lo FunctionIdref.lo FunctionImplicitTimezone.lo \
 	FunctionIndexOf.lo FunctionInScopePrefixes.lo \
@@ -1013,7 +1019,7 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/XPath2NSUtils.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XPath2NodeSerializer.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XPath2Parser.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/XPath2Result.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/XPath2ResultImpl.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XPath2Utils.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XPathNamespaceImpl.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XQCastAs.Plo \
@@ -1487,7 +1493,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XPath2NSUtils.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XPath2NodeSerializer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XPath2Parser.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XPath2Result.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XPath2ResultImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XPath2Utils.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XPathNamespaceImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQCastAs.Plo@am__quote@
@@ -2993,6 +2999,39 @@ XPath2MemoryManagerImpl.lo: src/framework/XPath2MemoryManagerImpl.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/XPath2MemoryManagerImpl.Plo' tmpdepfile='$(DEPDIR)/XPath2MemoryManagerImpl.TPlo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XPath2MemoryManagerImpl.lo `test -f 'src/framework/XPath2MemoryManagerImpl.cpp' || echo '$(srcdir)/'`src/framework/XPath2MemoryManagerImpl.cpp
+
+XQScopedNamespace.o: src/context/XQScopedNamespace.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQScopedNamespace.o -MD -MP -MF "$(DEPDIR)/XQScopedNamespace.Tpo" \
+@am__fastdepCXX_TRUE@	  -c -o XQScopedNamespace.o `test -f 'src/context/XQScopedNamespace.cpp' || echo '$(srcdir)/'`src/context/XQScopedNamespace.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/XQScopedNamespace.Tpo" "$(DEPDIR)/XQScopedNamespace.Po"; \
+@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/XQScopedNamespace.Tpo"; exit 1; \
+@am__fastdepCXX_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/context/XQScopedNamespace.cpp' object='XQScopedNamespace.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/XQScopedNamespace.Po' tmpdepfile='$(DEPDIR)/XQScopedNamespace.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQScopedNamespace.o `test -f 'src/context/XQScopedNamespace.cpp' || echo '$(srcdir)/'`src/context/XQScopedNamespace.cpp
+
+XQScopedNamespace.obj: src/context/XQScopedNamespace.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQScopedNamespace.obj -MD -MP -MF "$(DEPDIR)/XQScopedNamespace.Tpo" \
+@am__fastdepCXX_TRUE@	  -c -o XQScopedNamespace.obj `if test -f 'src/context/XQScopedNamespace.cpp'; then $(CYGPATH_W) 'src/context/XQScopedNamespace.cpp'; else $(CYGPATH_W) '$(srcdir)/src/context/XQScopedNamespace.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/XQScopedNamespace.Tpo" "$(DEPDIR)/XQScopedNamespace.Po"; \
+@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/XQScopedNamespace.Tpo"; exit 1; \
+@am__fastdepCXX_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/context/XQScopedNamespace.cpp' object='XQScopedNamespace.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/XQScopedNamespace.Po' tmpdepfile='$(DEPDIR)/XQScopedNamespace.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQScopedNamespace.obj `if test -f 'src/context/XQScopedNamespace.cpp'; then $(CYGPATH_W) 'src/context/XQScopedNamespace.cpp'; else $(CYGPATH_W) '$(srcdir)/src/context/XQScopedNamespace.cpp'; fi`
+
+XQScopedNamespace.lo: src/context/XQScopedNamespace.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQScopedNamespace.lo -MD -MP -MF "$(DEPDIR)/XQScopedNamespace.Tpo" \
+@am__fastdepCXX_TRUE@	  -c -o XQScopedNamespace.lo `test -f 'src/context/XQScopedNamespace.cpp' || echo '$(srcdir)/'`src/context/XQScopedNamespace.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/XQScopedNamespace.Tpo" "$(DEPDIR)/XQScopedNamespace.Plo"; \
+@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/XQScopedNamespace.Tpo"; exit 1; \
+@am__fastdepCXX_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/context/XQScopedNamespace.cpp' object='XQScopedNamespace.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/XQScopedNamespace.Plo' tmpdepfile='$(DEPDIR)/XQScopedNamespace.TPlo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQScopedNamespace.lo `test -f 'src/context/XQScopedNamespace.cpp' || echo '$(srcdir)/'`src/context/XQScopedNamespace.cpp
 
 CollationImpl.o: src/context/impl/CollationImpl.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT CollationImpl.o -MD -MP -MF "$(DEPDIR)/CollationImpl.Tpo" \
@@ -4545,6 +4584,39 @@ XPathNamespaceImpl.lo: src/dom-api/impl/XPathNamespaceImpl.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XPathNamespaceImpl.lo `test -f 'src/dom-api/impl/XPathNamespaceImpl.cpp' || echo '$(srcdir)/'`src/dom-api/impl/XPathNamespaceImpl.cpp
 
+XPath2ResultImpl.o: src/dom-api/impl/XPath2ResultImpl.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XPath2ResultImpl.o -MD -MP -MF "$(DEPDIR)/XPath2ResultImpl.Tpo" \
+@am__fastdepCXX_TRUE@	  -c -o XPath2ResultImpl.o `test -f 'src/dom-api/impl/XPath2ResultImpl.cpp' || echo '$(srcdir)/'`src/dom-api/impl/XPath2ResultImpl.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/XPath2ResultImpl.Tpo" "$(DEPDIR)/XPath2ResultImpl.Po"; \
+@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/XPath2ResultImpl.Tpo"; exit 1; \
+@am__fastdepCXX_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/dom-api/impl/XPath2ResultImpl.cpp' object='XPath2ResultImpl.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/XPath2ResultImpl.Po' tmpdepfile='$(DEPDIR)/XPath2ResultImpl.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XPath2ResultImpl.o `test -f 'src/dom-api/impl/XPath2ResultImpl.cpp' || echo '$(srcdir)/'`src/dom-api/impl/XPath2ResultImpl.cpp
+
+XPath2ResultImpl.obj: src/dom-api/impl/XPath2ResultImpl.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XPath2ResultImpl.obj -MD -MP -MF "$(DEPDIR)/XPath2ResultImpl.Tpo" \
+@am__fastdepCXX_TRUE@	  -c -o XPath2ResultImpl.obj `if test -f 'src/dom-api/impl/XPath2ResultImpl.cpp'; then $(CYGPATH_W) 'src/dom-api/impl/XPath2ResultImpl.cpp'; else $(CYGPATH_W) '$(srcdir)/src/dom-api/impl/XPath2ResultImpl.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/XPath2ResultImpl.Tpo" "$(DEPDIR)/XPath2ResultImpl.Po"; \
+@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/XPath2ResultImpl.Tpo"; exit 1; \
+@am__fastdepCXX_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/dom-api/impl/XPath2ResultImpl.cpp' object='XPath2ResultImpl.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/XPath2ResultImpl.Po' tmpdepfile='$(DEPDIR)/XPath2ResultImpl.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XPath2ResultImpl.obj `if test -f 'src/dom-api/impl/XPath2ResultImpl.cpp'; then $(CYGPATH_W) 'src/dom-api/impl/XPath2ResultImpl.cpp'; else $(CYGPATH_W) '$(srcdir)/src/dom-api/impl/XPath2ResultImpl.cpp'; fi`
+
+XPath2ResultImpl.lo: src/dom-api/impl/XPath2ResultImpl.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XPath2ResultImpl.lo -MD -MP -MF "$(DEPDIR)/XPath2ResultImpl.Tpo" \
+@am__fastdepCXX_TRUE@	  -c -o XPath2ResultImpl.lo `test -f 'src/dom-api/impl/XPath2ResultImpl.cpp' || echo '$(srcdir)/'`src/dom-api/impl/XPath2ResultImpl.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/XPath2ResultImpl.Tpo" "$(DEPDIR)/XPath2ResultImpl.Plo"; \
+@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/XPath2ResultImpl.Tpo"; exit 1; \
+@am__fastdepCXX_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/dom-api/impl/XPath2ResultImpl.cpp' object='XPath2ResultImpl.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/XPath2ResultImpl.Plo' tmpdepfile='$(DEPDIR)/XPath2ResultImpl.TPlo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XPath2ResultImpl.lo `test -f 'src/dom-api/impl/XPath2ResultImpl.cpp' || echo '$(srcdir)/'`src/dom-api/impl/XPath2ResultImpl.cpp
+
 XQillaImplementation.o: src/dom-api/XQillaImplementation.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQillaImplementation.o -MD -MP -MF "$(DEPDIR)/XQillaImplementation.Tpo" \
 @am__fastdepCXX_TRUE@	  -c -o XQillaImplementation.o `test -f 'src/dom-api/XQillaImplementation.cpp' || echo '$(srcdir)/'`src/dom-api/XQillaImplementation.cpp; \
@@ -4610,72 +4682,6 @@ XPath2NodeSerializer.lo: src/dom-api/XPath2NodeSerializer.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/XPath2NodeSerializer.Plo' tmpdepfile='$(DEPDIR)/XPath2NodeSerializer.TPlo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XPath2NodeSerializer.lo `test -f 'src/dom-api/XPath2NodeSerializer.cpp' || echo '$(srcdir)/'`src/dom-api/XPath2NodeSerializer.cpp
-
-XPath2Result.o: src/dom-api/XPath2Result.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XPath2Result.o -MD -MP -MF "$(DEPDIR)/XPath2Result.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o XPath2Result.o `test -f 'src/dom-api/XPath2Result.cpp' || echo '$(srcdir)/'`src/dom-api/XPath2Result.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/XPath2Result.Tpo" "$(DEPDIR)/XPath2Result.Po"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/XPath2Result.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/dom-api/XPath2Result.cpp' object='XPath2Result.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/XPath2Result.Po' tmpdepfile='$(DEPDIR)/XPath2Result.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XPath2Result.o `test -f 'src/dom-api/XPath2Result.cpp' || echo '$(srcdir)/'`src/dom-api/XPath2Result.cpp
-
-XPath2Result.obj: src/dom-api/XPath2Result.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XPath2Result.obj -MD -MP -MF "$(DEPDIR)/XPath2Result.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o XPath2Result.obj `if test -f 'src/dom-api/XPath2Result.cpp'; then $(CYGPATH_W) 'src/dom-api/XPath2Result.cpp'; else $(CYGPATH_W) '$(srcdir)/src/dom-api/XPath2Result.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/XPath2Result.Tpo" "$(DEPDIR)/XPath2Result.Po"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/XPath2Result.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/dom-api/XPath2Result.cpp' object='XPath2Result.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/XPath2Result.Po' tmpdepfile='$(DEPDIR)/XPath2Result.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XPath2Result.obj `if test -f 'src/dom-api/XPath2Result.cpp'; then $(CYGPATH_W) 'src/dom-api/XPath2Result.cpp'; else $(CYGPATH_W) '$(srcdir)/src/dom-api/XPath2Result.cpp'; fi`
-
-XPath2Result.lo: src/dom-api/XPath2Result.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XPath2Result.lo -MD -MP -MF "$(DEPDIR)/XPath2Result.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o XPath2Result.lo `test -f 'src/dom-api/XPath2Result.cpp' || echo '$(srcdir)/'`src/dom-api/XPath2Result.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/XPath2Result.Tpo" "$(DEPDIR)/XPath2Result.Plo"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/XPath2Result.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/dom-api/XPath2Result.cpp' object='XPath2Result.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/XPath2Result.Plo' tmpdepfile='$(DEPDIR)/XPath2Result.TPlo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XPath2Result.lo `test -f 'src/dom-api/XPath2Result.cpp' || echo '$(srcdir)/'`src/dom-api/XPath2Result.cpp
-
-XQScopedNamespace.o: src/dom-api/XQScopedNamespace.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQScopedNamespace.o -MD -MP -MF "$(DEPDIR)/XQScopedNamespace.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o XQScopedNamespace.o `test -f 'src/dom-api/XQScopedNamespace.cpp' || echo '$(srcdir)/'`src/dom-api/XQScopedNamespace.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/XQScopedNamespace.Tpo" "$(DEPDIR)/XQScopedNamespace.Po"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/XQScopedNamespace.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/dom-api/XQScopedNamespace.cpp' object='XQScopedNamespace.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/XQScopedNamespace.Po' tmpdepfile='$(DEPDIR)/XQScopedNamespace.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQScopedNamespace.o `test -f 'src/dom-api/XQScopedNamespace.cpp' || echo '$(srcdir)/'`src/dom-api/XQScopedNamespace.cpp
-
-XQScopedNamespace.obj: src/dom-api/XQScopedNamespace.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQScopedNamespace.obj -MD -MP -MF "$(DEPDIR)/XQScopedNamespace.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o XQScopedNamespace.obj `if test -f 'src/dom-api/XQScopedNamespace.cpp'; then $(CYGPATH_W) 'src/dom-api/XQScopedNamespace.cpp'; else $(CYGPATH_W) '$(srcdir)/src/dom-api/XQScopedNamespace.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/XQScopedNamespace.Tpo" "$(DEPDIR)/XQScopedNamespace.Po"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/XQScopedNamespace.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/dom-api/XQScopedNamespace.cpp' object='XQScopedNamespace.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/XQScopedNamespace.Po' tmpdepfile='$(DEPDIR)/XQScopedNamespace.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQScopedNamespace.obj `if test -f 'src/dom-api/XQScopedNamespace.cpp'; then $(CYGPATH_W) 'src/dom-api/XQScopedNamespace.cpp'; else $(CYGPATH_W) '$(srcdir)/src/dom-api/XQScopedNamespace.cpp'; fi`
-
-XQScopedNamespace.lo: src/dom-api/XQScopedNamespace.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQScopedNamespace.lo -MD -MP -MF "$(DEPDIR)/XQScopedNamespace.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o XQScopedNamespace.lo `test -f 'src/dom-api/XQScopedNamespace.cpp' || echo '$(srcdir)/'`src/dom-api/XQScopedNamespace.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/XQScopedNamespace.Tpo" "$(DEPDIR)/XQScopedNamespace.Plo"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/XQScopedNamespace.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/dom-api/XQScopedNamespace.cpp' object='XQScopedNamespace.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/XQScopedNamespace.Plo' tmpdepfile='$(DEPDIR)/XQScopedNamespace.TPlo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQScopedNamespace.lo `test -f 'src/dom-api/XQScopedNamespace.cpp' || echo '$(srcdir)/'`src/dom-api/XQScopedNamespace.cpp
 
 XQilla.o: src/simple-api/XQilla.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQilla.o -MD -MP -MF "$(DEPDIR)/XQilla.Tpo" \

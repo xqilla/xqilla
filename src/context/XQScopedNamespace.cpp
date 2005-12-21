@@ -27,7 +27,7 @@
 // XQScopedNamespace.cpp: implementation of the XQScopedNamespace class.
 //////////////////////////////////////////////////////////////////////
 
-#include <xqilla/dom-api/XQScopedNamespace.hpp>
+#include <xqilla/context/XQScopedNamespace.hpp>
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction

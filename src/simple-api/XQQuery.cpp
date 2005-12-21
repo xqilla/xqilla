@@ -35,7 +35,7 @@
 #include <xqilla/exceptions/XQException.hpp>
 #include <xqilla/simple-api/XQilla.hpp>
 #include <xqilla/context/XQDebugCallback.hpp>
-#include <xqilla/dom-api/XQScopedNamespace.hpp>
+#include <xqilla/context/XQScopedNamespace.hpp>
 #include <xqilla/functions/FunctionLookup.hpp>
 #include <xqilla/exceptions/XPath2ErrorException.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>

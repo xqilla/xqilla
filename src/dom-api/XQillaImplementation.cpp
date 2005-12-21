@@ -24,13 +24,13 @@
  */
 
 #include "../config/xqilla_config.h"
-#include <xqilla/dom-api/XQillaImplementation.hpp>
+#include "XQillaImplementation.hpp"
 #include <xqilla/utils/XPath2Utils.hpp>
 #include "impl/XQillaDocumentImpl.hpp"
 #include "impl/XQillaBuilderImpl.hpp"
 #include "impl/XQillaXMLGrammarPoolImpl.hpp"
 
-#include <xqilla/dom-api/XPath2NodeSerializer.hpp>
+#include "XPath2NodeSerializer.hpp"
 
 #include <xercesc/dom/DOMDocument.hpp>
 #include <xercesc/dom/DOMDocumentType.hpp>

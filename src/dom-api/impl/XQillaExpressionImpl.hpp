@@ -40,6 +40,7 @@ class XMLGrammarPool;
 class DOMNode;
 class DOMDocument;
 class DOMException;
+class DOMXPathNSResolver;
 XERCES_CPP_NAMESPACE_END 
 
 class XQILLA_API XQillaExpressionImpl : public XQillaExpression
@@ -47,26 +48,17 @@ class XQILLA_API XQillaExpressionImpl : public XQillaExpression
 public:
 
   XQillaExpressionImpl(const XMLCh *expression,
-                       const XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* documentRoot,
                        XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr,
                        const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver *nsr,
                        XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool *xmlGP);
-  XQillaExpressionImpl(const XMLCh *expression, DynamicContext *context,
-                       XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr);
   virtual ~XQillaExpressionImpl();
 
-  // weak version -  must create a context from scratch
   virtual void* evaluate(XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* contextNode,
                          unsigned short type,
-                         void* reuseableResult) const 
-    throw (XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException, XERCES_CPP_NAMESPACE_QUALIFIER DOMException);
-
-  // strong version -- use the user's context
-  virtual XPath2Result* evaluate(DynamicContext* context,
-                                 unsigned short type) const
-    throw (XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException, XERCES_CPP_NAMESPACE_QUALIFIER DOMException);
-
-  virtual DynamicContext *createContext(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mm = XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager) const;
+                         void* reuseableResult) const;
+  virtual void* evaluateOnce(XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* contextNode,
+                             unsigned short type,
+                             void* reuseableResult);
 
   virtual void release();
 
@@ -75,11 +67,7 @@ public:
 
 private:
   XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* _createdWith;
-  ProxyMemoryManager _memMgr;
 
-  const XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* _docRoot;
-
-  bool _staticContextOwned;
   DynamicContext *_staticContext;
   XQQuery* _compiledExpression;
 }; //XQillaExpressionImpl

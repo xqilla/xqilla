@@ -28,58 +28,173 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 
-#include <xercesc/util/XMLString.hpp>
-
-#include <xqilla/runtime/Sequence.hpp>
-#include <xqilla/framework/ProxyMemoryManager.hpp>
-
+#include <xercesc/dom/DOMNode.hpp>
+#include <xercesc/dom/DOMTypeInfo.hpp>
 #include <xercesc/dom/DOMException.hpp>
-#include <xercesc/dom/DOMDocument.hpp>
 #include <xercesc/dom/DOMXPathException.hpp>
 
-#include <string>
-
-class DynamicContext;
-class XQQuery;
-
+/**
+ * The XPathResult2 interface represents the result of the evaluation of an XPath
+ * 2.0 expression within the context of a particular node. Since evaluation of an
+ * XPath 2.0 expression can result in various result types, this object makes it
+ * possible to discover and manipulate the type and value of the result. 
+ * @since DOM Level 3
+ */
 class XQILLA_API XPath2Result
 {
 public:
+  /** @name Destructor */
+  //@{
+  /**
+   * Destructor
+   */
+  virtual ~XPath2Result() {};
+  //@}
 
+  /** @name Public Constants */
+  //@{
+  /**
+   * <p>FIRST_RESULT
+   * <br>The result is a sequence as defined by XPath 2.0 and will be accessed
+   * as a single current value or there will be no current value if the sequence
+   * is empty. Document modification does not invalidate the value, but may mean
+   * that the result no longer corresponds to the current document. This is a
+   * convenience that permits optimization since the implementation can stop once
+   * the first item in the resulting sequence has been found. If there is more
+   * than one item in the actual result, the single item returned might not be
+   * the first in document order.
+   * <p>ITERATOR_RESULT
+   * <br>The result is a sequence as defined by XPath 2.0 that will be accessed
+   * iteratively. Document modification invalidates the iteration.
+   * <p>SNAPSHOT_RESULT
+   * <br>The result is a sequence as defined by XPath 2.0 that will be accessed
+   * as a snapshot list of values. Document modification does not invalidate the
+   * snapshot but may mean that reevaluation would not yield the same snapshot
+   * and any items in the snapshot may have been altered, moved, or removed from
+   * the document.
+   */
   enum ResultType {
     FIRST_RESULT    = 100,
     ITERATOR_RESULT = 101,
     SNAPSHOT_RESULT = 102
   };
+  //@}
 
-  XPath2Result(const ResultType resultType,
-               const XQQuery *expression,
-               DynamicContext *dynamicContext,
-               XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr);
+  /** @name Functions introduced in DOM Level 3 */
+  //@{
 
-  XPath2Result(const ResultType resultType,
-               const XQQuery *expression,
-               XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* contextNode,
-               DynamicContext *staticContext,
-               XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr);
+  /**
+   * Returns the result type of this result
+   * @return ResultType 
+   * A code representing the type of this result, as defined by the type constants.
+   */
+  virtual ResultType getResultType() const = 0;
 
-  ~XPath2Result();
+  /**
+   * Returns true if the result has a current result and the value is a node.
+   * @return isNode of type boolean, readonly
+   */
+  virtual bool isNode() const = 0;
 
-  const ResultType getResultType() const;
+  /**
+   * Returns the DOM type info of the current result node or value.
+   * @return typeInfo of type TypeInfo, readonly
+   */
+  virtual const XERCES_CPP_NAMESPACE_QUALIFIER DOMTypeInfo *getTypeInfo() const = 0;
 
-  bool isNode() const;
+  /**
+   * Conversion of the current result to double. If the native double type of the
+   * DOM binding does not directly support the exact IEEE 754 result of the XPath
+   * expression, then it is up to the definition of the binding to specify how the
+   * XPath number is converted to the native binding number.
+   * @return asDouble of type double, readonly
+   * @exception XPathException
+   * TYPE_ERR: raised if current result cannot be properly converted to double.
+   * @exception DOMException
+   * INVALID_STATE_ERR: There is no current result in the result.
+   */
+  virtual double asDouble() const = 0;
 
-  int asInt() const throw (XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException, XERCES_CPP_NAMESPACE_QUALIFIER DOMException);
-  double asDouble() const throw (XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException, XERCES_CPP_NAMESPACE_QUALIFIER DOMException);
-  const XMLCh* asString() const throw (XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException, XERCES_CPP_NAMESPACE_QUALIFIER DOMException);
-  bool asBoolean() const throw (XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException, XERCES_CPP_NAMESPACE_QUALIFIER DOMException);
-  const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* asNode() const throw (XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException, XERCES_CPP_NAMESPACE_QUALIFIER DOMException);
+  /**
+   * Conversion of the current result to int.
+   * @return asInt of type int, readonly
+   * @exception XPathException
+   * TYPE_ERR: raised if current result cannot be properly converted to int.
+   * @exception DOMException
+   * INVALID_STATE_ERR: There is no current result in the result.
+   */
+  virtual int asInt() const = 0;
 
-  bool getInvalidIteratorState() const;
-  bool iterateNext() const throw (XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException, XERCES_CPP_NAMESPACE_QUALIFIER DOMException);
+  /**
+   * Conversion of the current result to string.
+   * @return asString of type DOMString, readonly
+   * @exception XPathException
+   * TYPE_ERR: raised if current result cannot be properly converted to string.
+   * @exception DOMException
+   * INVALID_STATE_ERR: There is no current result in the result.
+   */
+  virtual const XMLCh* asString() const = 0;
 
-  unsigned long getSnapshotLength() const throw(XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException);
-  bool snapshotItem(unsigned long index) const throw(XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException);
+  /**
+   * Conversion of the current result to boolean.
+   * @return asBoolean of type boolean, readonly
+   * @exception XPathException
+   * TYPE_ERR: raised if  cannot be properly converted to boolean.
+   * @exception DOMException
+   * INVALID_STATE_ERR: There is no current result in the result.
+   */
+  virtual bool asBoolean() const = 0;
+
+  /**
+   * Retrieve the current node value.
+   * @return asNode of type Node, readonly
+   * @exception XPathException
+   * TYPE_ERR: raised if current result is not a node.
+   * @exception DOMException
+   * INVALID_STATE_ERR: There is no current result in the result.
+   */
+  virtual const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* asNode() const = 0;
+
+  /**
+   * Signifies that the iterator has become invalid.
+   * @return invalidIteratorState of type boolean, readonly
+   */
+  virtual bool getInvalidIteratorState() const = 0;
+
+  /**
+   * The number of items in the result snapshot. Valid values for snapshotItem
+   * indices are 0 to snapshotLength-1 inclusive.
+   * @return snapshotLength of type unsigned long, readonly
+   * @exception XPathException
+   * TYPE_ERR: raised if resultType is not SNAPSHOT_RESULT.
+   */
+  virtual unsigned long getSnapshotLength() const = 0;
+
+  /**
+   * Iterates and returns true if the current result is the next item from the
+   * sequence or false if there are no more items.
+   * @return boolean True if the current result is the next item from the sequence
+   * or false if there are no more items.
+   * @exception XPathException
+   * TYPE_ERR: raised if resultType is not ITERATOR_RESULT.
+   * @exception DOMException
+   * INVALID_STATE_ERR: The document has been mutated since the result was returned.
+   */
+  virtual bool iterateNext() = 0;
+
+  /**
+   * Sets the current result to the indexth item in the snapshot collection. If
+   * index is greater than or equal to the number of items in the list, this method
+   * returns false. Unlike the iterator result, the snapshot does not become
+   * invalid, but may not correspond to the current document if it is mutated.
+   * @param index of type unsigned long - Index into the snapshot collection.
+   * @return boolean True if the current result is the next item from the sequence
+   * or false if there are no more items.
+   * @exception XPathException
+   * TYPE_ERR: raised if resultType is not SNAPSHOT_RESULT.
+   */
+  virtual bool snapshotItem(unsigned long index) = 0;
+  //@}
 
   /** @name Non-standard Extension */
   //@{
@@ -90,47 +205,20 @@ public:
    *
    * Access to a released object will lead to unexpected result.
    */
-  void release();
-  //@}
-
-  //@{
-  /**
-   * Called to retrieve the namespace URI of the type of the current result item
-   */
-  const XMLCh* getTypeURI() const;
-  //@}
-
-  //@{
-  /**
-   * Called to retrieve the name of the type of the current result item
-   */
-  const XMLCh* getTypeName() const;
+  virtual void release() = 0;
   //@}
 
 protected:
-  void evaluate(const XQQuery *expression);
-  bool hasDocumentChanged(const Item::Ptr &item) const;
+  /** @name Hidden constructors */
+  //@{    
+  XPath2Result() {};
+  //@}
+private:
+  /** @name Unimplemented constructors and operators */
+  //@{
+  XPath2Result(const XPath2Result &);
+  XPath2Result &operator=(const XPath2Result &);
+  //@}
+};
 
-  const XMLCh* errorMessage(ResultType requestedType,
-                            ResultType resultType) const;
-  const std::string typeName(ResultType type) const;
-
-  XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* _createdWith;
-  ProxyMemoryManager _memMgr;
-
-  Sequence *_resultSequence;
-  ResultType _resultType;
-
-  bool _contextOwned;
-  DynamicContext* _context;
-
-  unsigned int _curIndex;
-
-  int _changes;
-  const XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* _documentRoot;
-
-  bool beforeStart;  // used for iterator
-
-}; //XPath2Result
-
-#endif //__XPATH2RESULT_HPP
+#endif

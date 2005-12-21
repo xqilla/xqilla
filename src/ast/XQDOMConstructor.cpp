@@ -32,7 +32,7 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/context/ItemFactory.hpp>
 #include <xqilla/ast/XQDebugHook.hpp>
-#include <xqilla/dom-api/XQScopedNamespace.hpp>
+#include <xqilla/context/XQScopedNamespace.hpp>
 #include <xqilla/exceptions/ASTException.hpp>
 #include <xqilla/exceptions/NamespaceLookupException.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>

@@ -2,7 +2,7 @@ AUTOMAKE_OPTIONS = foreign dist-zip
 SUBDIRS = include
 
 INCLUDES = -I $(top_srcdir)/include/ -I $(xerces_include) -I $(top_srcdir)/src/lexer/
-LDFLAGS = -L$(xerces_lib)
+LDFLAGS = -L$(xerces_lib) -R$(xerces_lib)
 LDADD = libxqilla.la -lxerces-c
 
 TESTS = testDatatypes
@@ -18,6 +18,7 @@ src/framework/BaseMemoryManager.cpp \
 src/framework/ProxyMemoryManager.cpp \
 src/framework/StringPool.cpp \
 src/framework/XPath2MemoryManagerImpl.cpp \
+src/context/XQScopedNamespace.cpp \
 src/context/impl/CollationImpl.cpp \
 src/context/impl/UCANormalizer1.cpp \
 src/context/impl/UCANormalizer2.cpp \
@@ -67,15 +68,18 @@ src/dom-api/impl/XQillaBuilderImpl.hpp \
 src/dom-api/impl/XQillaDocumentImpl.cpp \
 src/dom-api/impl/XQillaDocumentImpl.hpp \
 src/dom-api/impl/XQillaExpressionImpl.cpp \
+src/dom-api/impl/XQillaExpressionImpl.hpp \
 src/dom-api/impl/XQillaNSResolverImpl.cpp \
 src/dom-api/impl/XQillaXMLGrammarPoolImpl.cpp \
 src/dom-api/impl/XQillaXMLGrammarPoolImpl.hpp \
 src/dom-api/impl/XPathNamespaceImpl.cpp \
 src/dom-api/impl/XPathNamespaceImpl.hpp \
+src/dom-api/impl/XPath2ResultImpl.cpp \
+src/dom-api/impl/XPath2ResultImpl.hpp \
 src/dom-api/XQillaImplementation.cpp \
+src/dom-api/XQillaImplementation.hpp \
 src/dom-api/XPath2NodeSerializer.cpp \
-src/dom-api/XPath2Result.cpp \
-src/dom-api/XQScopedNamespace.cpp \
+src/dom-api/XPath2NodeSerializer.hpp \
 src/simple-api/XQilla.cpp \
 src/simple-api/XQilla2.cpp \
 src/simple-api/XQQuery.cpp \
@@ -385,8 +389,10 @@ src/lexer/XPath2Lexer.lex \
 src/parser/xquery.y \
 src/parser/XPath2Parser.y \
 LICENSE \
-docs/Doxyfile.simpleapi \
+docs/Doxyfile.simpleapi.in \
+docs/Doxyfile.dom3api.in \
 docs/simple-api \
+docs/dom3-api \
 Win32Projects/VC6/XQilla.dsp \
 Win32Projects/VC6/XQilla.dsw \
 Win32Projects/VC7.1/XQilla.sln \
