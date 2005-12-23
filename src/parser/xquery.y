@@ -669,13 +669,19 @@ BaseURIDecl:
 SchemaImport:
         _IMPORT_SCHEMA_ SchemaPrefix URILiteral
 		{
-			CONTEXT->setNamespaceBinding($2,$3);
+			if(XPath2Utils::equals($2, XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString))
+				CONTEXT->setDefaultElementAndTypeNS($3);
+			else
+				CONTEXT->setNamespaceBinding($2,$3);
 			CONTEXT->addSchemaLocation($3,NULL);
 		}
 	  | _IMPORT_SCHEMA_ SchemaPrefix URILiteral ResourceLocations
 		{
+			if(XPath2Utils::equals($2, XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString))
+				CONTEXT->setDefaultElementAndTypeNS($3);
+			else
+				CONTEXT->setNamespaceBinding($2,$3);
 			CONTEXT->addSchemaLocation($3,$4);
-			CONTEXT->setNamespaceBinding($2,$3);
 		}
 	  | _IMPORT_SCHEMA_ URILiteral
 		{ 
@@ -2730,6 +2736,11 @@ DoubleLiteral:
 // [141]   	URILiteral	   ::=   	StringLiteral
 URILiteral:
 	_STRING_LITERAL_
+	{
+		// the string must be whitespace-normalized
+		XERCES_CPP_NAMESPACE_QUALIFIER XMLString::collapseWS($1, MEMMGR);
+		$$ = $1;
+	}
 	;
 
 // [142]   	StringLiteral	   ::=   	('"' (PredefinedEntityRef | CharRef | ('"' '"') | [^"&])* '"') | 
