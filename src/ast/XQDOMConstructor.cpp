@@ -58,25 +58,6 @@
 XERCES_CPP_NAMESPACE_USE
 #endif
 
-class AutoNsScopeReset
-{
-public:
-    AutoNsScopeReset(StaticContext* context)
-    {
-        _context=context;
-        _oldNSResolver=_context->getNSResolver();
-    }
-
-    ~AutoNsScopeReset()
-    {
-        _context->setNSResolver(_oldNSResolver);
-    }
-
-protected:
-    StaticContext* _context;
-    const DOMXPathNSResolver* _oldNSResolver;
-};
-
 static const XMLCh *definePrefix(const XMLCh *szPrefix, const XMLCh *szURI, const XQScopedNamespace &newNSScope,
                                  XQScopedNamespace &locallyDefinedNamespaces, std::vector<Node::Ptr> &attrList,
                                  DynamicContext *context);
@@ -178,11 +159,10 @@ Sequence XQDOMConstructor::collapseTreeInternal(DynamicContext *context, int fla
         std::vector<Node::Ptr> attrList;
         std::vector<ItemFactory::ElementChild> childList;
 
-        AutoNsScopeReset jan(context);
         // Add a new scope for the namespace definitions, before we try to assign a URI to the name of the element
         XQScopedNamespace locallyDefinedNamespaces(context->getMemoryManager(), NULL);
         XQScopedNamespace newNSScope(context->getMemoryManager(), context->getNSResolver());
-        context->setNSResolver(&newNSScope);
+        AutoNsScopeReset jan(context, &newNSScope);
 
         if(m_attrList != 0)
         {
@@ -521,10 +501,9 @@ ASTNode* XQDOMConstructor::staticResolution(StaticContext *context)
   }
 
   {
-      AutoNsScopeReset jan(context);
       // Add a new scope for the namespace definitions
       XQScopedNamespace newNSScope(context->getMemoryManager(), context->getNSResolver());
-      context->setNSResolver(&newNSScope);
+      AutoNsScopeReset jan(context, &newNSScope);
       unsigned int i;
 	  if(m_attrList != 0)
       {

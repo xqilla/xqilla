@@ -26,6 +26,7 @@
 #include "../../config/xqilla_config.h"
 #include <xqilla/items/impl/NodeImpl.hpp>
 #include <xqilla/context/DynamicContext.hpp>
+#include <xqilla/context/XQScopedNamespace.hpp>
 #include <xqilla/framework/XPath2MemoryManager.hpp>
 #include <xqilla/runtime/Sequence.hpp>
 #include <xqilla/runtime/Result.hpp>
@@ -433,7 +434,7 @@ Sequence NodeImpl::getListTypeTypedValue(DatatypeValidator *dtv, const DynamicCo
 }
 
 
-Sequence NodeImpl::dmTypedValue(const DynamicContext* context) const {
+Sequence NodeImpl::dmTypedValue(DynamicContext* context) const {
     /*
     cerr<<"NodeImpl::dmTypedValue getTypeName(): "<<XMLString::transcode(getTypeName())<<endl;
     cerr<<"NodeImpl::dmTypedValue getTypeURI():  "<<XMLString::transcode(getTypeURI())<<endl;
@@ -445,6 +446,10 @@ Sequence NodeImpl::dmTypedValue(const DynamicContext* context) const {
 
     cerr << "\n\n" << endl;
     */
+    XQScopedNamespace newNSScope(context->getMemoryManager(), context->getNSResolver());
+    newNSScope.setNodeContext(fNode);
+    AutoNsScopeReset jan(context,&newNSScope);
+
     switch(fNode->getNodeType())
     {
     case DOMNode::ATTRIBUTE_NODE:

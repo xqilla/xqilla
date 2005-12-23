@@ -32,9 +32,11 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/dom-api/impl/XQillaNSResolverImpl.hpp>
+#include <xqilla/context/StaticContext.hpp>
 
 XERCES_CPP_NAMESPACE_BEGIN
 class DOMXPathNSResolver;
+class DOMNode;
 XERCES_CPP_NAMESPACE_END
 
 class XQILLA_API XQScopedNamespace : public XQillaNSResolverImpl
@@ -46,8 +48,30 @@ public:
     virtual const XMLCh* lookupNamespaceURI(const XMLCh* prefix) const;
     virtual const XMLCh* lookupPrefix(const XMLCh* uri) const;
 
+    void setNodeContext(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* node);
 protected:
     const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver* _prevScope;
+    const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* _ctxNode;
+};
+
+class XQILLA_API AutoNsScopeReset
+{
+public:
+    AutoNsScopeReset(StaticContext* context, XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver* newResolver)
+    {
+        _context=context;
+        _oldNSResolver=_context->getNSResolver();
+        _context->setNSResolver(newResolver);
+    }
+
+    ~AutoNsScopeReset()
+    {
+        _context->setNSResolver(_oldNSResolver);
+    }
+
+protected:
+    StaticContext* _context;
+    const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver* _oldNSResolver;
 };
 
 #endif // !defined(AFXQ_XQSCOPEDNAMESPACE_H__D6A320F5_21F1_421D_9E46_E4373B375E1A__INCLUDED_)

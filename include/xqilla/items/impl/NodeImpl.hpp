@@ -61,7 +61,7 @@ public:
   virtual const XMLCh* dmNodeKind() const;
   virtual ATQNameOrDerived::Ptr dmNodeName(const DynamicContext* context) const;
   virtual const XMLCh* dmStringValue(const DynamicContext* context) const;
-  virtual Sequence dmTypedValue(const DynamicContext* context) const;
+  virtual Sequence dmTypedValue(DynamicContext* context) const;
 
   virtual Sequence dmDocumentURI(const DynamicContext* context) const;
   virtual ATQNameOrDerived::Ptr dmTypeName(const DynamicContext* context) const;

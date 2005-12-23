@@ -83,7 +83,7 @@ public:
   /** Accessor: returns the typed value of this node, which is a sequence of zero or 
    * more atomic values derived from the string-value of the node and its type in such 
    * a way as to be consistent with validation */
-  virtual Sequence dmTypedValue(const DynamicContext* context) const = 0;
+  virtual Sequence dmTypedValue(DynamicContext* context) const = 0;
 
   /** Accessor:  returns the absolute URI of the resource from which the document node 
    * was constructed, if the absolute URI is available*/
