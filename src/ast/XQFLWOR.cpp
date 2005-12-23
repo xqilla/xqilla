@@ -32,20 +32,21 @@
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/ast/XQFLWOR.hpp>
 #include <xqilla/ast/XQDebugHook.hpp>
+#include <xqilla/ast/StaticResolutionContext.hpp>
+#include <xqilla/ast/XQSequence.hpp>
 #include <xqilla/context/impl/XQDynamicContextImpl.hpp>
 #include <xqilla/context/XQDebugCallback.hpp>
-#include <xqilla/operators/And.hpp>
 #include <xqilla/context/VariableStore.hpp>
 #include <xqilla/context/VariableTypeStore.hpp>
 #include <xqilla/context/VarHashEntry.hpp>
 #include <xqilla/context/DynamicContext.hpp>
+#include <xqilla/context/ItemFactory.hpp>
+#include <xqilla/operators/And.hpp>
 #include <xqilla/parser/QName.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/utils/XPath2NSUtils.hpp>
-#include <xqilla/ast/StaticResolutionContext.hpp>
-#include <xqilla/ast/XQSequence.hpp>
 #include <xqilla/schema/SequenceType.hpp>
-#include <xqilla/context/ItemFactory.hpp>
+#include <xqilla/exceptions/StaticErrorException.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 
 // needed to sort
@@ -565,7 +566,9 @@ void XQFLWOR::staticResolutionImpl(StaticContext* context)
     varStore->addLogicalBlockScope();
 
     // Work out the uri and localname of the variable binding
-    (*it0)->_vURI = context->getUriBoundToPrefix(XPath2NSUtils::getPrefix((*it0)->_variable, context->getMemoryManager()));
+    const XMLCh* prefix=XPath2NSUtils::getPrefix((*it0)->_variable, context->getMemoryManager());
+    if(prefix && *prefix)
+      (*it0)->_vURI = context->getUriBoundToPrefix(prefix);
     (*it0)->_vName = XPath2NSUtils::getLocalName((*it0)->_variable);
 
     // call static resolution on the value
@@ -584,10 +587,23 @@ void XQFLWOR::staticResolutionImpl(StaticContext* context)
 
     if((*it0)->_positionalVariable != NULL && *((*it0)->_positionalVariable) != 0) {
       // Work out the uri and localname of the positional variable binding
-      (*it0)->_pURI = context->getUriBoundToPrefix(XPath2NSUtils::getPrefix((*it0)->_positionalVariable, context->getMemoryManager()));
+      const XMLCh* prefix=XPath2NSUtils::getPrefix((*it0)->_positionalVariable, context->getMemoryManager());
+      if(prefix && *prefix)
+        (*it0)->_pURI = context->getUriBoundToPrefix(prefix);
       (*it0)->_pName = XPath2NSUtils::getLocalName((*it0)->_positionalVariable);
       (*it0)->_pSrc.getStaticType().flags = StaticType::NUMERIC_TYPE;
 
+      if(XPath2Utils::equals((*it0)->_pURI, (*it0)->_vURI) && 
+         XPath2Utils::equals((*it0)->_pName, (*it0)->_vName))
+      {
+        XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer errMsg;
+        errMsg.set(X("The positional variable with name {"));
+        errMsg.append((*it0)->_pURI);
+        errMsg.append(X("}"));
+        errMsg.append((*it0)->_pName);
+        errMsg.append(X(" conflicts with the iteration variable [err:XPTY0019]"));
+        XQThrow(StaticErrorException,X("XQFLWOR::staticResolutionImpl"), errMsg.getRawBuffer());
+      }
       // Declare the positional variable binding
       varStore->declareVar((*it0)->_pURI, (*it0)->_pName, (*it0)->_pSrc);
     }
