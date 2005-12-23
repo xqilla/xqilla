@@ -52,7 +52,7 @@ Result NumericFunction::getParamNumber(unsigned int paramNumber, unsigned int si
   } else  if (arg.first()->isAtomicValue() && ((const AnyAtomicType::Ptr)arg.first())->isNumericValue()) {
     return arg;
   } else {
-    XQThrow(FunctionException,X("NumericFunction::getParamNumber"), X("Non-numeric argument in numeric function."));
+    XQThrow(FunctionException,X("NumericFunction::getParamNumber"), X("Non-numeric argument in numeric function [err:XPTY0004]"));
   }
 }
 

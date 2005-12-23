@@ -123,6 +123,7 @@ Sequence FunctionConstructor::collapseTreeInternal(DynamicContext* context, int 
       XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer msg(1023, context->getMemoryManager());
       msg.set(X("Invalid representation of "));
       msg.append(_fName);
+      msg.append(X(" [err:FORG0001]"));
       
       XQThrow(FunctionException, X("FunctionConstructor::collapseTreeInternal"), msg.getRawBuffer());
     }
