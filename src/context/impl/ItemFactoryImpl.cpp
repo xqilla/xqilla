@@ -45,7 +45,6 @@
 #include <xqilla/exceptions/ASTException.hpp>
 
 #include <xercesc/util/XMLString.hpp>
-#include <xercesc/util/XMLChar.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 #include <xercesc/validators/datatype/DatatypeValidator.hpp>
 #include <xercesc/dom/DOM.hpp>
@@ -99,8 +98,13 @@ Node::Ptr ItemFactoryImpl::createAttributeNode(const XMLCh *uri, const XMLCh *pr
   if(XPath2Utils::equals(uri, XMLUni::fgXMLURIName) && 
      (XPath2Utils::equals(name, xmlID) || (XPath2Utils::equals(prefix, xml) && XPath2Utils::equals(name, ID))))
   {
-    if(!XMLChar1_0::isValidNCName(value, XMLString::stringLen(value)))
-      XQThrow(ASTException,X("ItemFactoryImpl::createAttributeNode"),X("The value of an attribute xml:id must be a valid xs:NCName [err:XQST0082]"));
+    // If the attribute name is xml:id, the string value and typed value of the attribute are further normalized by 
+    // discarding any leading and trailing space (#x20) characters, and by replacing sequences of space (#x20) characters 
+    // by a single space (#x20) character.
+    XMLCh* copyStr=(XMLCh*)context->getMemoryManager()->allocate((XMLString::stringLen(value)+1)*sizeof(XMLCh));
+    XMLString::copyString(copyStr, value);
+    XMLString::collapseWS(copyStr, context->getMemoryManager());
+    value=copyStr;
     isID=true;
   }
 
