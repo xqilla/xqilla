@@ -78,67 +78,66 @@ Sequence FunctionNormalizeUnicode::collapseTreeInternal(DynamicContext* context,
 
   const XMLCh* normalization = fg_NFC;
   if(getNumArgs()==2)
-		{
-			Sequence normParam=getParamNumber(2,context);
-			const XMLCh *src = normParam.first()->asString(context);
-			normalization = XPath2Utils::toUpper(src, memMgr);
+  {
+    Sequence normParam=getParamNumber(2,context);
+    const XMLCh *src = normParam.first()->asString(context);
+    normalization = XPath2Utils::toUpper(src, memMgr);
 
-			if (XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(normalization) > 0)
-			{
-					unsigned int i;
-					// remove leading spaces
-					for(i = 0; i < XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(normalization); i++) 
-					{
-							XMLCh ch = normalization[i];
-							if((ch != 0x9) && (ch != 0xA) && (ch != 0xD) && (ch != 0x20))
-								break;
-					}
-					const XMLCh *frontChop = XPath2Utils::subString(normalization, i,XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(normalization)-i, memMgr);
+    if (XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(normalization) > 0)
+    {
+      unsigned int i;
+      // remove leading spaces
+      for(i = 0; i < XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(normalization); i++) 
+      {
+        XMLCh ch = normalization[i];
+        if((ch != 0x9) && (ch != 0xA) && (ch != 0xD) && (ch != 0x20))
+          break;
+      }
+      const XMLCh *frontChop = XPath2Utils::subString(normalization, i,XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(normalization)-i, memMgr);
 
-					// remove trailing spaces
-					for(i = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(normalization)-1; i !=0 ; i--) 
-					{
-							XMLCh ch = frontChop[i];
-							if((ch != 0x9) && (ch != 0xA) && (ch != 0xD) && (ch != 0x20))
-								break;
-					}
-					normalization = XPath2Utils::subString(frontChop, 0, i+1, memMgr);
-			}
-		}
+      // remove trailing spaces
+      for(i = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(frontChop)-1; i !=0 ; i--) 
+      {
+        XMLCh ch = frontChop[i];
+        if((ch != 0x9) && (ch != 0xA) && (ch != 0xD) && (ch != 0x20))
+          break;
+      }
+      normalization = XPath2Utils::subString(frontChop, 0, i+1, memMgr);
+    }
+  }
 
-	if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(normalization) == 0) {
-		return Sequence(context->getItemFactory()->createString(str, context), memMgr);
-	}
+  if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(normalization) == 0) {
+    return Sequence(context->getItemFactory()->createString(str, context), memMgr);
+  }
+  else if(XPath2Utils::equals(normalization, fg_NFC)) {
+    XMLCh *normalizedString = Normalizer::NormalizeC(str, context->getMemoryManager());
 
-	else if(XPath2Utils::equals(normalization, fg_NFC)) {
-		XMLCh *normalizedString = Normalizer::NormalizeC(str, context->getMemoryManager());
+    Sequence result = Sequence(context->getItemFactory()->createString(normalizedString , context), memMgr);
+    XERCES_CPP_NAMESPACE_QUALIFIER XMLString::release(&normalizedString);
+    return result;
+  }
+  else if(XPath2Utils::equals(normalization, fg_NFD)) {
+    const XMLCh *normalizedString = Normalizer::NormalizeD(str, context->getMemoryManager());
 
-		Sequence result = Sequence(context->getItemFactory()->createString(normalizedString , context), memMgr);
-        XERCES_CPP_NAMESPACE_QUALIFIER XMLString::release(&normalizedString);
-		return result;
-	}
-	else if(XPath2Utils::equals(normalization, fg_NFD)) {
-		const XMLCh *normalizedString = Normalizer::NormalizeD(str, context->getMemoryManager());
+    Sequence result(context->getItemFactory()->createString(normalizedString, context), memMgr);
+    return result;
+  }
+  else if(XPath2Utils::equals(normalization, fg_NFKC)) {
+    XMLCh *normalizedString = Normalizer::NormalizeKC(str, context->getMemoryManager());
 
-		Sequence result(context->getItemFactory()->createString(normalizedString, context), memMgr);
-		return result;
-	}
-	else if(XPath2Utils::equals(normalization, fg_NFKC)) {
-		XMLCh *normalizedString = Normalizer::NormalizeKC(str, context->getMemoryManager());
+    Sequence result(context->getItemFactory()->createString(normalizedString, context), memMgr);
+    XERCES_CPP_NAMESPACE_QUALIFIER XMLString::release(&normalizedString);
+    return result;
+  }
+  else if(XPath2Utils::equals(normalization, fg_NFKD)) {
 
-		Sequence result(context->getItemFactory()->createString(normalizedString, context), memMgr);
-        XERCES_CPP_NAMESPACE_QUALIFIER XMLString::release(&normalizedString);
-		return result;
-	}
-	else if(XPath2Utils::equals(normalization, fg_NFKD)) {
-
-		const XMLCh *normalizedString = Normalizer::NormalizeKD(str, context->getMemoryManager());
-		Sequence result(context->getItemFactory()->createString(normalizedString, context), memMgr);
-		return result;
-	}
-	else if(XPath2Utils::equals(normalization, fg_fully)) {
-		XQThrow(FunctionException, X("FunctionNormalizeUnicode::collapseTreeInternal"), X("Unsupported normalization form [err:FOCH0003]."));
-	}
+	const XMLCh *normalizedString = Normalizer::NormalizeKD(str, context->getMemoryManager());
+	Sequence result(context->getItemFactory()->createString(normalizedString, context), memMgr);
+	return result;
+  }
+  else if(XPath2Utils::equals(normalization, fg_fully)) {
+    XQThrow(FunctionException, X("FunctionNormalizeUnicode::collapseTreeInternal"), X("Unsupported normalization form [err:FOCH0003]."));
+  }
 	
-	XQThrow(FunctionException, X("FunctionNormalizeUnicode::collapseTreeInternal"), X("Invalid normalization form [err:FOCH0003]."));
+  XQThrow(FunctionException, X("FunctionNormalizeUnicode::collapseTreeInternal"), X("Invalid normalization form [err:FOCH0003]."));
 }
