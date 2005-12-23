@@ -109,14 +109,32 @@ void XQQuery::staticResolution(StaticContext *context)
 {
   if(context == 0) context = m_context;
 
-  for(vector<XQGlobalVariable*, XQillaAllocator<XQGlobalVariable*> >::iterator it = m_userDefVars.begin();
-      it != m_userDefVars.end(); ++it) {
-    if(getIsLibraryModule() && !XERCES_CPP_NAMESPACE::XMLString::equals((*it)->getVariableURI(), getModuleTargetNamespace()))
+  if(!m_userDefVars.empty())
+  {
+    GlobalVariables::iterator itVar;
+    for(itVar = m_userDefVars.begin(); itVar != m_userDefVars.end(); ++itVar) {
+      (*itVar) = (XQGlobalVariable*)(*itVar)->staticResolution(context);
+      if(getIsLibraryModule() && !XERCES_CPP_NAMESPACE::XMLString::equals((*itVar)->getVariableURI(), getModuleTargetNamespace()))
       XQThrow(StaticErrorException,X("XQQuery::staticResolution"), X("Every global variable in a module must be in the module namespace [err:XQST0048]."));
-    (*it) = (XQGlobalVariable*)(*it)->staticResolution(context);
+    }
+    // check for duplicate variable declarations
+    for(itVar = m_userDefVars.begin(); itVar != m_userDefVars.end()-1; ++itVar) 
+      for (GlobalVariables::iterator it2 = itVar+1; it2 != m_userDefVars.end(); ++it2) 
+      {
+        if(XPath2Utils::equals((*itVar)->getVariableURI(), (*it2)->getVariableURI()) &&
+           XPath2Utils::equals((*itVar)->getVariableLocalName(), (*it2)->getVariableLocalName()))
+        {
+          XMLBuffer errMsg;
+          errMsg.set(X("A variable with name {"));
+          errMsg.append((*it2)->getVariableURI());
+          errMsg.append(X("}"));
+          errMsg.append((*it2)->getVariableLocalName());
+          errMsg.append(X(" has already been declared [err:XQST0049]"));
+          XQThrow(StaticErrorException,X("XQQuery::ImportModule"), errMsg.getRawBuffer());
+        }
+      }
   }
-  for(vector<XQUserFunction*, XQillaAllocator<XQUserFunction*> >::iterator i = m_userDefFns.begin();
-      i != m_userDefFns.end(); ++i) {
+  for(UserFunctions::iterator i = m_userDefFns.begin(); i != m_userDefFns.end(); ++i) {
     if(getIsLibraryModule() && !XERCES_CPP_NAMESPACE::XMLString::equals((*i)->getURI(), getModuleTargetNamespace()))
       XQThrow(StaticErrorException,X("XQQuery::staticResolution"), X("Every function in a module must be in the module namespace [err:XQST0048]."));
     (*i)->staticResolution(context);
@@ -233,18 +251,15 @@ void XQQuery::importModule(const XMLCh* szUri, VectorOfStrings* locations, Stati
           XQThrow(StaticErrorException,X("XQQuery::ImportModule"), errMsg.getRawBuffer());
         }
         // now move the variable declarations and the function definitions into my context
-        for(vector<XQUserFunction*, XQillaAllocator<XQUserFunction*> >::iterator itFn = pParsedQuery->m_userDefFns.begin();
-            itFn != pParsedQuery->m_userDefFns.end(); ++itFn) {
+        for(UserFunctions::iterator itFn = pParsedQuery->m_userDefFns.begin(); itFn != pParsedQuery->m_userDefFns.end(); ++itFn) {
           m_userDefFns.push_back(*itFn);
           context->addCustomFunction(*itFn);
         }
-        for(vector<XQGlobalVariable*, XQillaAllocator<XQGlobalVariable*> >::iterator itVar = pParsedQuery->m_userDefVars.begin();
-            itVar != pParsedQuery->m_userDefVars.end(); ++itVar) {
-          for(vector<XQGlobalVariable*, XQillaAllocator<XQGlobalVariable*> >::iterator it = m_userDefVars.begin();
-              it != m_userDefVars.end(); ++it) {
-                if(XERCES_CPP_NAMESPACE::XMLString::equals((*it)->getVariableURI(), (*itVar)->getVariableURI()) &&
-                   XERCES_CPP_NAMESPACE::XMLString::equals((*it)->getVariableLocalName(), (*itVar)->getVariableLocalName()))
-                   XQThrow(StaticErrorException, X("XQQuery::ImportModule"), X("An imported variable conflicts with an already defined global variable [err:XQST0049]."));
+        for(GlobalVariables::iterator itVar = pParsedQuery->m_userDefVars.begin(); itVar != pParsedQuery->m_userDefVars.end(); ++itVar) {
+          for(GlobalVariables::iterator it = m_userDefVars.begin(); it != m_userDefVars.end(); ++it) {
+             if(XERCES_CPP_NAMESPACE::XMLString::equals((*it)->getVariableURI(), (*itVar)->getVariableURI()) &&
+                XERCES_CPP_NAMESPACE::XMLString::equals((*it)->getVariableLocalName(), (*itVar)->getVariableLocalName()))
+               XQThrow(StaticErrorException, X("XQQuery::ImportModule"), X("An imported variable conflicts with an already defined global variable [err:XQST0049]."));
           }
           // Should this set a global variable in the context? - jpcs
           m_userDefVars.push_back(*itVar);
@@ -293,10 +308,8 @@ Item::Ptr XQQuery::QueryResult::next(DynamicContext *context)
     _toDo = false;
 
     // define global variables
-    for(vector<XQGlobalVariable*, XQillaAllocator<XQGlobalVariable*> >::const_iterator it = _query->m_userDefVars.begin();
-        it != _query->m_userDefVars.end(); ++it) {
+    for(GlobalVariables::const_iterator it = _query->m_userDefVars.begin(); it != _query->m_userDefVars.end(); ++it)
       (*it)->collapseTree(context).toSequence(context);
-    }
     if(_query->getQueryBody() != NULL) {
       _parent = _query->getQueryBody()->collapseTree(context);
     }
@@ -341,10 +354,8 @@ void XQQuery::DebugResult::getResult(Sequence &toFill, DynamicContext *context) 
   try
   {
     // define global variables
-    for(vector<XQGlobalVariable*, XQillaAllocator<XQGlobalVariable*> >::const_iterator it = _query->m_userDefVars.begin();
-        it != _query->m_userDefVars.end(); ++it) {
+    for(GlobalVariables::const_iterator it = _query->m_userDefVars.begin(); it != _query->m_userDefVars.end(); ++it)
       (*it)->collapseTree(context).toSequence(context);
-    }
 
     if(_query->getQueryBody() != NULL) {
       toFill = _query->getQueryBody()->collapseTree(context);

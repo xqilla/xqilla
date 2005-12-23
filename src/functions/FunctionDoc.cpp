@@ -79,7 +79,7 @@ Sequence FunctionDoc::collapseTreeInternal(DynamicContext* context, int flags) c
   try {
     context->getItemFactory()->createAnyURI(uri, context);
   } catch(XPath2ErrorException &e) {
-    XQThrow(FunctionException, X("FunctionDoc::collapseTreeInternal"), X("Invalid argument to fn:doc function"));
+    XQThrow(FunctionException, X("FunctionDoc::collapseTreeInternal"), X("Invalid argument to fn:doc function [err:FODC0005]"));
   }
 
   try {

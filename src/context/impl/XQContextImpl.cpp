@@ -29,12 +29,6 @@
 
 #include <iostream>
 
-#include <xqilla/framework/XQillaExport.hpp>
-#include <xqilla/context/impl/XQContextImpl.hpp>
-#include <xqilla/ast/XQDebugHook.hpp>
-#include <xqilla/context/impl/XQDynamicContextImpl.hpp>
-#include <xqilla/ast/XQFunction.hpp>
-#include <xqilla/context/impl/ItemFactoryImpl.hpp>
 #include <xercesc/dom/DOMImplementation.hpp>
 #include <xercesc/dom/DOM.hpp>
 #include <xercesc/sax/InputSource.hpp>
@@ -42,37 +36,39 @@
 #include <xercesc/framework/MemBufInputSource.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 
-#include <xqilla/items/Node.hpp>
-#include <xqilla/functions/FunctionLookup.hpp>
-#include <xqilla/functions/FunctionConstructor.hpp>
-#include <xqilla/dom-api/impl/XQillaNSResolverImpl.hpp>
-#include <xqilla/ast/XQSequence.hpp>
-#include <xqilla/utils/ContextUtils.hpp>
-
+#include <xqilla/framework/XQillaExport.hpp>
+#include <xqilla/context/impl/XQContextImpl.hpp>
+#include <xqilla/context/impl/XQDynamicContextImpl.hpp>
+#include <xqilla/context/impl/ItemFactoryImpl.hpp>
+#include <xqilla/context/impl/XQDynamicContextImpl.hpp>
+#include <xqilla/context/impl/CodepointCollation.hpp>
 #include <xqilla/context/VariableStore.hpp>
 #include <xqilla/context/VariableTypeStore.hpp>
+#include <xqilla/context/URIResolver.hpp>
+#include <xqilla/context/Collation.hpp>
+#include <xqilla/ast/XQDebugHook.hpp>
+#include <xqilla/ast/XQFunction.hpp>
+#include <xqilla/ast/XQSequence.hpp>
 #include <xqilla/utils/XPath2NSUtils.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
+#include <xqilla/utils/ContextUtils.hpp>
 #include <xqilla/exceptions/ContextException.hpp>
 #include <xqilla/exceptions/NamespaceLookupException.hpp>
 #include <xqilla/exceptions/TypeNotFoundException.hpp>
-#include <xqilla/context/impl/CodepointCollation.hpp>
-#include <xqilla/context/Collation.hpp>
+#include <xqilla/exceptions/StaticErrorException.hpp>
+#include <xqilla/exceptions/XMLParseException.hpp>
 #include <xqilla/items/Item.hpp>
 #include <xqilla/items/Node.hpp>
 #include <xqilla/items/ATDurationOrDerived.hpp>
 #include <xqilla/items/Timezone.hpp>
-#include <xqilla/functions/XQUserFunction.hpp>
 #include <xqilla/items/DatatypeLookup.hpp>
+#include <xqilla/items/DatatypeFactory.hpp>
+#include <xqilla/items/impl/NodeImpl.hpp>
 #include <xqilla/functions/FunctionLookup.hpp>
 #include <xqilla/functions/FunctionConstructor.hpp>
+#include <xqilla/functions/XQUserFunction.hpp>
 #include <xqilla/schema/DocumentCacheImpl.hpp>
 #include <xqilla/dom-api/impl/XQillaNSResolverImpl.hpp>
-#include <xqilla/items/DatatypeFactory.hpp>
-#include <xqilla/context/URIResolver.hpp>
-#include <xqilla/exceptions/XMLParseException.hpp>
-#include <xqilla/context/impl/XQDynamicContextImpl.hpp>
-#include <xqilla/items/impl/NodeImpl.hpp>
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -170,8 +166,7 @@ XQContextImpl::XQContextImpl(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMg
   m_pDebugCallback = NULL;
   m_bEnableDebugging = false;
 
-  // XQuery defines 6 predefined namespace bindings
-  setNamespaceBinding(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgXMLString, XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgXMLURIName);
+  // XQuery defines these predefined namespace bindings
   setNamespaceBinding(XMLChXS, XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA);
   setNamespaceBinding(XMLChXSI, XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_XSI);
   setNamespaceBinding(XMLChFN, XQFunction::XMLChFunctionURI);
@@ -206,6 +201,12 @@ void XQContextImpl::setMemoryManager(XPath2MemoryManager* memMgr)
 
 void XQContextImpl::setNamespaceBinding(const XMLCh* prefix, const XMLCh* uri)
 {
+    if(XPath2Utils::equals(prefix,XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgXMLNSString) || 
+       XPath2Utils::equals(prefix,XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgXMLString))
+      XQThrow(StaticErrorException,X("XQContextImpl::setNamespaceBinding"),X("The prefixes 'xmlns' and 'xml' cannot be used in a namespace declaration [err:XQST0070]"));
+    if(XPath2Utils::equals(uri,XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgXMLURIName))
+      XQThrow(StaticErrorException,X("XQContextImpl::setNamespaceBinding"),X("The 'http://www.w3.org/XML/1998/namespace' namespace cannot be bound to any prefix [err:XQST0070]"));
+
 	((XQillaNSResolverImpl*)_nsResolver)->addNamespaceBinding(prefix,uri);
 }
 
@@ -579,6 +580,7 @@ Sequence XQContextImpl::resolveDocument(const XMLCh* uri)
       XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer errMsg;
       errMsg.set(X("Error retrieving resource: "));
       errMsg.append(uri);
+      errMsg.append(X(" [err:FODC0002]"));
       XQThrow(XMLParseException,X("XQContextImpl::resolveDocument"), errMsg.getRawBuffer());
     }
   }
@@ -614,6 +616,7 @@ Sequence XQContextImpl::resolveCollection(const XMLCh* uri)
       XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer errMsg;
       errMsg.set(X("Error retrieving resource: "));
       errMsg.append(uri);
+      errMsg.append(X(" [err:FODC0004]"));
       XQThrow(XMLParseException,X("XQContextImpl::resolveDocument"), errMsg.getRawBuffer());
     }
   }
