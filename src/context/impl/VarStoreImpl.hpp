@@ -140,6 +140,8 @@ public:
   /** Returns a vector with the names of the variable currently in scope */
   std::vector< std::pair<const XMLCh*, const XMLCh*> > getVars() const;
 
+  const XMLCh* getVariableNsURI(const XMLCh* qName, const StaticContext* context) const;
+
 private:
   VariableStoreTemplate<Sequence> _store;
 };

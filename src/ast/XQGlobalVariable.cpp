@@ -95,7 +95,10 @@ Sequence XQGlobalVariable::collapseTreeInternal(DynamicContext* context, int fla
 
 ASTNode* XQGlobalVariable::staticResolution(StaticContext* context)
 {
-  m_szURI = context->getUriBoundToPrefix(XPath2NSUtils::getPrefix(m_szQName, context->getMemoryManager()));
+  // variables with no prefix are in no namespace
+  const XMLCh* prefix=XPath2NSUtils::getPrefix(m_szQName, context->getMemoryManager());
+  if(prefix && *prefix)
+    m_szURI = context->getUriBoundToPrefix(prefix);
   m_szLocalName = XPath2NSUtils::getLocalName(m_szQName);
   VariableTypeStore* varStore = context->getVariableTypeStore();
   if(m_Value!=NULL) {
