@@ -2174,6 +2174,8 @@ DirCommentConstructor:
 DirPIConstructor:
 	_PROCESSING_INSTRUCTION_START_ _PI_TARGET_ _PROCESSING_INSTRUCTION_CONTENT_
 		{
+			if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::compareIString($2, XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgXMLString)==0)
+			  yyerror("The target for the processing instruction must not be 'XML'");
 			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 			content->push_back(new (MEMMGR) XQLiteral(
