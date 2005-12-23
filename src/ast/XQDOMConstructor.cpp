@@ -79,7 +79,7 @@ protected:
 
 static const XMLCh *definePrefix(const XMLCh *szPrefix, const XMLCh *szURI, const XQScopedNamespace &newNSScope,
                                  XQScopedNamespace &locallyDefinedNamespaces, std::vector<Node::Ptr> &attrList,
-                                 const DynamicContext *context);
+                                 DynamicContext *context);
 
 
 //////////////////////////////////////////////////////////////////////
@@ -663,13 +663,14 @@ bool XQDOMConstructor::getStringValue(XMLBuffer &value, DynamicContext *context)
 
 const XMLCh *definePrefix(const XMLCh *szPrefix, const XMLCh *szURI, const XQScopedNamespace &newNSScope,
                           XQScopedNamespace &locallyDefinedNamespaces, std::vector<Node::Ptr> &attrList,
-                          const DynamicContext *context)
+                          DynamicContext *context)
 {
   // check if the attribute has a prefix that has been defined
   const XMLCh* associatedURI=newNSScope.lookupNamespaceURI(szPrefix);
   if(associatedURI==NULL) // prefix is not defined
   {
     locallyDefinedNamespaces.addNamespaceBinding(szPrefix,szURI);
+    context->setNamespaceBinding(szPrefix, szURI);
     attrList.push_back(context->getItemFactory()->
       createAttributeNode(XMLUni::fgXMLNSURIName, XMLUni::fgXMLNSString, szPrefix, szURI, context));
   }
@@ -678,6 +679,7 @@ const XMLCh *definePrefix(const XMLCh *szPrefix, const XMLCh *szURI, const XQSco
     if(locallyDefinedNamespaces.lookupNamespaceURI(szPrefix)==NULL)    // prefix is inherited, override it
     {
       locallyDefinedNamespaces.addNamespaceBinding(szPrefix,szURI);
+      context->setNamespaceBinding(szPrefix, szURI);
       attrList.push_back(context->getItemFactory()->
         createAttributeNode(XMLUni::fgXMLNSURIName, XMLUni::fgXMLNSString, szPrefix, szURI, context));
     }
@@ -693,6 +695,7 @@ const XMLCh *definePrefix(const XMLCh *szPrefix, const XMLCh *szURI, const XQSco
       }
 
       locallyDefinedNamespaces.addNamespaceBinding(szPrefix,szURI);
+      context->setNamespaceBinding(szPrefix, szURI);
       attrList.push_back(context->getItemFactory()->
         createAttributeNode(XMLUni::fgXMLNSURIName, XMLUni::fgXMLNSString, szPrefix, szURI, context));
     }
