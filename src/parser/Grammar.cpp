@@ -4414,6 +4414,8 @@ yyreduce:
   case 287:
 #line 2176 "xquery.y"
     {
+			if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::compareIString(yyvsp[-1].str, XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgXMLString)==0)
+			  yyerror("The target for the processing instruction must not be 'XML'");
 			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 			content->push_back(new (MEMMGR) XQLiteral(
