@@ -29,9 +29,12 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/ast/XQDOMConstructor.hpp>
+#include <xqilla/ast/XQDebugHook.hpp>
+#include <xqilla/ast/StaticResolutionContext.hpp>
+#include <xqilla/ast/XQSequence.hpp>
+#include <xqilla/ast/XQLiteral.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/context/ItemFactory.hpp>
-#include <xqilla/ast/XQDebugHook.hpp>
 #include <xqilla/context/XQScopedNamespace.hpp>
 #include <xqilla/exceptions/ASTException.hpp>
 #include <xqilla/exceptions/NamespaceLookupException.hpp>
@@ -39,12 +42,9 @@
 #include <xqilla/schema/SequenceType.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/utils/XPath2NSUtils.hpp>
-#include <xqilla/items/Node.hpp>
-#include <xqilla/ast/StaticResolutionContext.hpp>
-#include <xqilla/ast/XQSequence.hpp>
-#include <xqilla/ast/XQLiteral.hpp>
-#include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/utils/XMLChCompare.hpp>
+#include <xqilla/items/Node.hpp>
+#include <xqilla/items/DatatypeFactory.hpp>
 
 #include <xercesc/dom/DOM.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
@@ -589,8 +589,17 @@ ASTNode* XQDOMConstructor::staticResolution(StaticContext *context)
       }
     }
 
-    if(item != NULLRCP) {
-      const XMLCh* strName = item->asString(dContext);
+    if(item != NULLRCP && item->isAtomicValue()) {
+      AnyAtomicType::Ptr atomName=item;
+      const XMLCh* strName;
+      if(atomName->getPrimitiveTypeIndex()==AnyAtomicType::QNAME)
+      {
+        const ATQNameOrDerived* pQName=(const ATQNameOrDerived*)(const AnyAtomicType*)atomName;
+        strName=pQName->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                               XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING, dContext)->asString(dContext);
+      }
+      else
+        strName = atomName->asString(dContext);
       const XMLCh* XMLNSPrefix=NULL;
       if(XPath2Utils::equals(strName,XMLUni::fgXMLNSString)) {
         XMLNSPrefix=XMLUni::fgZeroLenString;
