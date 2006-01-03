@@ -114,7 +114,7 @@ int main(int argc, char *argv[])
     // **************** Example 1: max() function ****************** //
   
     // 2. Create a parsed expression
-    char* expression = "max(( data(/Catalogue/Book[1]/Price), data(/Catalogue/Book[2]/Price) ))";
+    char* expression = "max(/Catalogue/Book/Price)";
     const DOMXPathExpression* parsedExpression = document->createExpression(X(expression), resolver); 
 
     // 3. Evaluate the expression. We choose to have a first result, since we 

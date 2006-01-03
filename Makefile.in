@@ -155,6 +155,7 @@ bin_PROGRAMS = xqilla
 noinst_PROGRAMS = basicXQillaUsage testDatatypes xqtsRunner
 
 lib_LTLIBRARIES = libxqilla.la
+noinst_LTLIBRARIES = libxqilla_xqts.la
 
 libxqilla_la_SOURCES = \
 src/framework/ReferenceCounted.cpp \
@@ -556,6 +557,17 @@ xqtsRunner_SOURCES = \
 tests/xqts/runner.cpp
 
 
+xqtsRunner_LDADD = libxqilla_xqts.la libxqilla.la -lxerces-c
+
+libxqilla_xqts_la_SOURCES = \
+tests/xqts/TestSuiteParser.cpp \
+tests/xqts/TestSuiteParser.hpp \
+tests/xqts/TestSuiteResultListener.cpp \
+tests/xqts/TestSuiteResultListener.hpp \
+tests/xqts/TestSuiteRunner.cpp \
+tests/xqts/TestSuiteRunner.hpp
+
+
 testDatatypes_SOURCES = \
 src/samples/datatypes/ATAnyURITester.cpp \
 src/samples/datatypes/ATAnyURITester.hpp \
@@ -623,7 +635,7 @@ ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/autotools/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/src/config/xqilla_config_unix.h
 CONFIG_CLEAN_FILES =
-LTLIBRARIES = $(lib_LTLIBRARIES)
+LTLIBRARIES = $(lib_LTLIBRARIES) $(noinst_LTLIBRARIES)
 
 libxqilla_la_LDFLAGS =
 libxqilla_la_LIBADD =
@@ -739,6 +751,11 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	ResultBufferImpl.lo Result.lo ResultImpl.lo SequenceResult.lo \
 	SingleResult.lo SortIntoDocumentOrderResult.lo Sequence.lo
 libxqilla_la_OBJECTS = $(am_libxqilla_la_OBJECTS)
+libxqilla_xqts_la_LDFLAGS =
+libxqilla_xqts_la_LIBADD =
+am_libxqilla_xqts_la_OBJECTS = TestSuiteParser.lo \
+	TestSuiteResultListener.lo TestSuiteRunner.lo
+libxqilla_xqts_la_OBJECTS = $(am_libxqilla_xqts_la_OBJECTS)
 bin_PROGRAMS = xqilla$(EXEEXT)
 noinst_PROGRAMS = basicXQillaUsage$(EXEEXT) testDatatypes$(EXEEXT) \
 	xqtsRunner$(EXEEXT)
@@ -772,8 +789,7 @@ xqilla_DEPENDENCIES = libxqilla.la
 xqilla_LDFLAGS =
 am_xqtsRunner_OBJECTS = runner.$(OBJEXT)
 xqtsRunner_OBJECTS = $(am_xqtsRunner_OBJECTS)
-xqtsRunner_LDADD = $(LDADD)
-xqtsRunner_DEPENDENCIES = libxqilla.la
+xqtsRunner_DEPENDENCIES = libxqilla_xqts.la libxqilla.la
 xqtsRunner_LDFLAGS =
 
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)/src/config
@@ -1002,7 +1018,11 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/SingleResult.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/SortIntoDocumentOrderResult.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/StaticResolutionContext.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/StringPool.Plo ./$(DEPDIR)/Timezone.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/StringPool.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/TestSuiteParser.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/TestSuiteResultListener.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/TestSuiteRunner.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/Timezone.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/TotalOrderComparison.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/TypePromotionTester.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/UCANormalizer.Plo \
@@ -1096,9 +1116,9 @@ LTCXXCOMPILE = $(LIBTOOL) --mode=compile $(CXX) $(DEFS) \
 CXXLD = $(CXX)
 CXXLINK = $(LIBTOOL) --mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-DIST_SOURCES = $(libxqilla_la_SOURCES) $(basicXQillaUsage_SOURCES) \
-	$(testDatatypes_SOURCES) $(xqilla_SOURCES) \
-	$(xqtsRunner_SOURCES)
+DIST_SOURCES = $(libxqilla_la_SOURCES) $(libxqilla_xqts_la_SOURCES) \
+	$(basicXQillaUsage_SOURCES) $(testDatatypes_SOURCES) \
+	$(xqilla_SOURCES) $(xqtsRunner_SOURCES)
 
 RECURSIVE_TARGETS = info-recursive dvi-recursive pdf-recursive \
 	ps-recursive install-info-recursive uninstall-info-recursive \
@@ -1111,7 +1131,7 @@ DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/configure \
 	autotools/install-sh autotools/ltmain.sh autotools/missing \
 	autotools/mkinstalldirs configure configure.in
 DIST_SUBDIRS = $(SUBDIRS)
-SOURCES = $(libxqilla_la_SOURCES) $(basicXQillaUsage_SOURCES) $(testDatatypes_SOURCES) $(xqilla_SOURCES) $(xqtsRunner_SOURCES)
+SOURCES = $(libxqilla_la_SOURCES) $(libxqilla_xqts_la_SOURCES) $(basicXQillaUsage_SOURCES) $(testDatatypes_SOURCES) $(xqilla_SOURCES) $(xqtsRunner_SOURCES)
 
 all: all-recursive
 
@@ -1178,8 +1198,19 @@ clean-libLTLIBRARIES:
 	  echo "rm -f \"$${dir}/so_locations\""; \
 	  rm -f "$${dir}/so_locations"; \
 	done
+
+clean-noinstLTLIBRARIES:
+	-test -z "$(noinst_LTLIBRARIES)" || rm -f $(noinst_LTLIBRARIES)
+	@list='$(noinst_LTLIBRARIES)'; for p in $$list; do \
+	  dir="`echo $$p | sed -e 's|/[^/]*$$||'`"; \
+	  test "$$dir" = "$$p" && dir=.; \
+	  echo "rm -f \"$${dir}/so_locations\""; \
+	  rm -f "$${dir}/so_locations"; \
+	done
 libxqilla.la: $(libxqilla_la_OBJECTS) $(libxqilla_la_DEPENDENCIES) 
 	$(CXXLINK) -rpath $(libdir) $(libxqilla_la_LDFLAGS) $(libxqilla_la_OBJECTS) $(libxqilla_la_LIBADD) $(LIBS)
+libxqilla_xqts.la: $(libxqilla_xqts_la_OBJECTS) $(libxqilla_xqts_la_DEPENDENCIES) 
+	$(CXXLINK)  $(libxqilla_xqts_la_LDFLAGS) $(libxqilla_xqts_la_OBJECTS) $(libxqilla_xqts_la_LIBADD) $(LIBS)
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 install-binPROGRAMS: $(bin_PROGRAMS)
 	@$(NORMAL_INSTALL)
@@ -1475,6 +1506,9 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SortIntoDocumentOrderResult.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/StaticResolutionContext.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/StringPool.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TestSuiteParser.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TestSuiteResultListener.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TestSuiteRunner.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Timezone.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TotalOrderComparison.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TypePromotionTester.Po@am__quote@
@@ -12174,6 +12208,105 @@ Sequence.lo: src/runtime/Sequence.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o Sequence.lo `test -f 'src/runtime/Sequence.cpp' || echo '$(srcdir)/'`src/runtime/Sequence.cpp
 
+TestSuiteParser.o: tests/xqts/TestSuiteParser.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT TestSuiteParser.o -MD -MP -MF "$(DEPDIR)/TestSuiteParser.Tpo" \
+@am__fastdepCXX_TRUE@	  -c -o TestSuiteParser.o `test -f 'tests/xqts/TestSuiteParser.cpp' || echo '$(srcdir)/'`tests/xqts/TestSuiteParser.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/TestSuiteParser.Tpo" "$(DEPDIR)/TestSuiteParser.Po"; \
+@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/TestSuiteParser.Tpo"; exit 1; \
+@am__fastdepCXX_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='tests/xqts/TestSuiteParser.cpp' object='TestSuiteParser.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/TestSuiteParser.Po' tmpdepfile='$(DEPDIR)/TestSuiteParser.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o TestSuiteParser.o `test -f 'tests/xqts/TestSuiteParser.cpp' || echo '$(srcdir)/'`tests/xqts/TestSuiteParser.cpp
+
+TestSuiteParser.obj: tests/xqts/TestSuiteParser.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT TestSuiteParser.obj -MD -MP -MF "$(DEPDIR)/TestSuiteParser.Tpo" \
+@am__fastdepCXX_TRUE@	  -c -o TestSuiteParser.obj `if test -f 'tests/xqts/TestSuiteParser.cpp'; then $(CYGPATH_W) 'tests/xqts/TestSuiteParser.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/xqts/TestSuiteParser.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/TestSuiteParser.Tpo" "$(DEPDIR)/TestSuiteParser.Po"; \
+@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/TestSuiteParser.Tpo"; exit 1; \
+@am__fastdepCXX_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='tests/xqts/TestSuiteParser.cpp' object='TestSuiteParser.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/TestSuiteParser.Po' tmpdepfile='$(DEPDIR)/TestSuiteParser.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o TestSuiteParser.obj `if test -f 'tests/xqts/TestSuiteParser.cpp'; then $(CYGPATH_W) 'tests/xqts/TestSuiteParser.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/xqts/TestSuiteParser.cpp'; fi`
+
+TestSuiteParser.lo: tests/xqts/TestSuiteParser.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT TestSuiteParser.lo -MD -MP -MF "$(DEPDIR)/TestSuiteParser.Tpo" \
+@am__fastdepCXX_TRUE@	  -c -o TestSuiteParser.lo `test -f 'tests/xqts/TestSuiteParser.cpp' || echo '$(srcdir)/'`tests/xqts/TestSuiteParser.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/TestSuiteParser.Tpo" "$(DEPDIR)/TestSuiteParser.Plo"; \
+@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/TestSuiteParser.Tpo"; exit 1; \
+@am__fastdepCXX_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='tests/xqts/TestSuiteParser.cpp' object='TestSuiteParser.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/TestSuiteParser.Plo' tmpdepfile='$(DEPDIR)/TestSuiteParser.TPlo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o TestSuiteParser.lo `test -f 'tests/xqts/TestSuiteParser.cpp' || echo '$(srcdir)/'`tests/xqts/TestSuiteParser.cpp
+
+TestSuiteResultListener.o: tests/xqts/TestSuiteResultListener.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT TestSuiteResultListener.o -MD -MP -MF "$(DEPDIR)/TestSuiteResultListener.Tpo" \
+@am__fastdepCXX_TRUE@	  -c -o TestSuiteResultListener.o `test -f 'tests/xqts/TestSuiteResultListener.cpp' || echo '$(srcdir)/'`tests/xqts/TestSuiteResultListener.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/TestSuiteResultListener.Tpo" "$(DEPDIR)/TestSuiteResultListener.Po"; \
+@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/TestSuiteResultListener.Tpo"; exit 1; \
+@am__fastdepCXX_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='tests/xqts/TestSuiteResultListener.cpp' object='TestSuiteResultListener.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/TestSuiteResultListener.Po' tmpdepfile='$(DEPDIR)/TestSuiteResultListener.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o TestSuiteResultListener.o `test -f 'tests/xqts/TestSuiteResultListener.cpp' || echo '$(srcdir)/'`tests/xqts/TestSuiteResultListener.cpp
+
+TestSuiteResultListener.obj: tests/xqts/TestSuiteResultListener.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT TestSuiteResultListener.obj -MD -MP -MF "$(DEPDIR)/TestSuiteResultListener.Tpo" \
+@am__fastdepCXX_TRUE@	  -c -o TestSuiteResultListener.obj `if test -f 'tests/xqts/TestSuiteResultListener.cpp'; then $(CYGPATH_W) 'tests/xqts/TestSuiteResultListener.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/xqts/TestSuiteResultListener.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/TestSuiteResultListener.Tpo" "$(DEPDIR)/TestSuiteResultListener.Po"; \
+@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/TestSuiteResultListener.Tpo"; exit 1; \
+@am__fastdepCXX_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='tests/xqts/TestSuiteResultListener.cpp' object='TestSuiteResultListener.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/TestSuiteResultListener.Po' tmpdepfile='$(DEPDIR)/TestSuiteResultListener.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o TestSuiteResultListener.obj `if test -f 'tests/xqts/TestSuiteResultListener.cpp'; then $(CYGPATH_W) 'tests/xqts/TestSuiteResultListener.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/xqts/TestSuiteResultListener.cpp'; fi`
+
+TestSuiteResultListener.lo: tests/xqts/TestSuiteResultListener.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT TestSuiteResultListener.lo -MD -MP -MF "$(DEPDIR)/TestSuiteResultListener.Tpo" \
+@am__fastdepCXX_TRUE@	  -c -o TestSuiteResultListener.lo `test -f 'tests/xqts/TestSuiteResultListener.cpp' || echo '$(srcdir)/'`tests/xqts/TestSuiteResultListener.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/TestSuiteResultListener.Tpo" "$(DEPDIR)/TestSuiteResultListener.Plo"; \
+@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/TestSuiteResultListener.Tpo"; exit 1; \
+@am__fastdepCXX_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='tests/xqts/TestSuiteResultListener.cpp' object='TestSuiteResultListener.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/TestSuiteResultListener.Plo' tmpdepfile='$(DEPDIR)/TestSuiteResultListener.TPlo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o TestSuiteResultListener.lo `test -f 'tests/xqts/TestSuiteResultListener.cpp' || echo '$(srcdir)/'`tests/xqts/TestSuiteResultListener.cpp
+
+TestSuiteRunner.o: tests/xqts/TestSuiteRunner.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT TestSuiteRunner.o -MD -MP -MF "$(DEPDIR)/TestSuiteRunner.Tpo" \
+@am__fastdepCXX_TRUE@	  -c -o TestSuiteRunner.o `test -f 'tests/xqts/TestSuiteRunner.cpp' || echo '$(srcdir)/'`tests/xqts/TestSuiteRunner.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/TestSuiteRunner.Tpo" "$(DEPDIR)/TestSuiteRunner.Po"; \
+@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/TestSuiteRunner.Tpo"; exit 1; \
+@am__fastdepCXX_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='tests/xqts/TestSuiteRunner.cpp' object='TestSuiteRunner.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/TestSuiteRunner.Po' tmpdepfile='$(DEPDIR)/TestSuiteRunner.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o TestSuiteRunner.o `test -f 'tests/xqts/TestSuiteRunner.cpp' || echo '$(srcdir)/'`tests/xqts/TestSuiteRunner.cpp
+
+TestSuiteRunner.obj: tests/xqts/TestSuiteRunner.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT TestSuiteRunner.obj -MD -MP -MF "$(DEPDIR)/TestSuiteRunner.Tpo" \
+@am__fastdepCXX_TRUE@	  -c -o TestSuiteRunner.obj `if test -f 'tests/xqts/TestSuiteRunner.cpp'; then $(CYGPATH_W) 'tests/xqts/TestSuiteRunner.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/xqts/TestSuiteRunner.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/TestSuiteRunner.Tpo" "$(DEPDIR)/TestSuiteRunner.Po"; \
+@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/TestSuiteRunner.Tpo"; exit 1; \
+@am__fastdepCXX_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='tests/xqts/TestSuiteRunner.cpp' object='TestSuiteRunner.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/TestSuiteRunner.Po' tmpdepfile='$(DEPDIR)/TestSuiteRunner.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o TestSuiteRunner.obj `if test -f 'tests/xqts/TestSuiteRunner.cpp'; then $(CYGPATH_W) 'tests/xqts/TestSuiteRunner.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/xqts/TestSuiteRunner.cpp'; fi`
+
+TestSuiteRunner.lo: tests/xqts/TestSuiteRunner.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT TestSuiteRunner.lo -MD -MP -MF "$(DEPDIR)/TestSuiteRunner.Tpo" \
+@am__fastdepCXX_TRUE@	  -c -o TestSuiteRunner.lo `test -f 'tests/xqts/TestSuiteRunner.cpp' || echo '$(srcdir)/'`tests/xqts/TestSuiteRunner.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/TestSuiteRunner.Tpo" "$(DEPDIR)/TestSuiteRunner.Plo"; \
+@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/TestSuiteRunner.Tpo"; exit 1; \
+@am__fastdepCXX_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='tests/xqts/TestSuiteRunner.cpp' object='TestSuiteRunner.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/TestSuiteRunner.Plo' tmpdepfile='$(DEPDIR)/TestSuiteRunner.TPlo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o TestSuiteRunner.lo `test -f 'tests/xqts/TestSuiteRunner.cpp' || echo '$(srcdir)/'`tests/xqts/TestSuiteRunner.cpp
+
 basicXQillaUsage.o: src/samples/basic/basicXQillaUsage.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT basicXQillaUsage.o -MD -MP -MF "$(DEPDIR)/basicXQillaUsage.Tpo" \
 @am__fastdepCXX_TRUE@	  -c -o basicXQillaUsage.o `test -f 'src/samples/basic/basicXQillaUsage.cpp' || echo '$(srcdir)/'`src/samples/basic/basicXQillaUsage.cpp; \
@@ -13408,7 +13541,8 @@ maintainer-clean-generic:
 clean: clean-recursive
 
 clean-am: clean-binPROGRAMS clean-generic clean-libLTLIBRARIES \
-	clean-libtool clean-noinstPROGRAMS mostlyclean-am
+	clean-libtool clean-noinstLTLIBRARIES clean-noinstPROGRAMS \
+	mostlyclean-am
 
 distclean: distclean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
@@ -13462,26 +13596,26 @@ uninstall-info: uninstall-info-recursive
 
 .PHONY: $(RECURSIVE_TARGETS) CTAGS GTAGS all all-am check check-TESTS \
 	check-am clean clean-binPROGRAMS clean-generic \
-	clean-libLTLIBRARIES clean-libtool clean-noinstPROGRAMS \
-	clean-recursive ctags ctags-recursive dist dist-all dist-gzip \
-	dist-zip distcheck distclean distclean-compile \
-	distclean-generic distclean-hdr distclean-libtool \
-	distclean-recursive distclean-tags distcleancheck distdir \
-	distuninstallcheck dvi dvi-am dvi-recursive info info-am \
-	info-recursive install install-am install-binPROGRAMS \
-	install-data install-data-am install-data-recursive \
-	install-exec install-exec-am install-exec-recursive \
-	install-info install-info-am install-info-recursive \
-	install-libLTLIBRARIES install-man install-recursive \
-	install-strip installcheck installcheck-am installdirs \
-	installdirs-am installdirs-recursive maintainer-clean \
-	maintainer-clean-generic maintainer-clean-recursive mostlyclean \
-	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
-	mostlyclean-recursive pdf pdf-am pdf-recursive ps ps-am \
-	ps-recursive tags tags-recursive uninstall uninstall-am \
-	uninstall-binPROGRAMS uninstall-info-am \
-	uninstall-info-recursive uninstall-libLTLIBRARIES \
-	uninstall-recursive
+	clean-libLTLIBRARIES clean-libtool clean-noinstLTLIBRARIES \
+	clean-noinstPROGRAMS clean-recursive ctags ctags-recursive dist \
+	dist-all dist-gzip dist-zip distcheck distclean \
+	distclean-compile distclean-generic distclean-hdr \
+	distclean-libtool distclean-recursive distclean-tags \
+	distcleancheck distdir distuninstallcheck dvi dvi-am \
+	dvi-recursive info info-am info-recursive install install-am \
+	install-binPROGRAMS install-data install-data-am \
+	install-data-recursive install-exec install-exec-am \
+	install-exec-recursive install-info install-info-am \
+	install-info-recursive install-libLTLIBRARIES install-man \
+	install-recursive install-strip installcheck installcheck-am \
+	installdirs installdirs-am installdirs-recursive \
+	maintainer-clean maintainer-clean-generic \
+	maintainer-clean-recursive mostlyclean mostlyclean-compile \
+	mostlyclean-generic mostlyclean-libtool mostlyclean-recursive \
+	pdf pdf-am pdf-recursive ps ps-am ps-recursive tags \
+	tags-recursive uninstall uninstall-am uninstall-binPROGRAMS \
+	uninstall-info-am uninstall-info-recursive \
+	uninstall-libLTLIBRARIES uninstall-recursive
 
 
 $(XPLEXERFILE) : $(XPLEXTEMPLATE)
