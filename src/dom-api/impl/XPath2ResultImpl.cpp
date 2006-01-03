@@ -43,7 +43,6 @@
 #include <xqilla/exceptions/FunctionException.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/context/ItemFactory.hpp>
-#include <xqilla/items/impl/NodeImpl.hpp>
 
 #include <xercesc/dom/DOMException.hpp>
 #include <xercesc/dom/DOMElement.hpp>
@@ -210,12 +209,13 @@ const DOMNode* XPath2ResultImpl::asNode() const
     throw XQillaException(DOMXPathException::TYPE_ERR, X("The requested result is not a node"));
   }
 
-  const NodeImpl *nodeImpl = (const NodeImpl*)_currentItem->getInterface(Item::gXQilla);
-  if(nodeImpl == 0) {
+  const DOMNode *node = (const DOMNode*)_currentItem->getInterface(Node::gXerces);
+  if(node == 0) {
+    // Should never happen
     throw XQillaException(DOMXPathException::TYPE_ERR, X("The requested result not a XQilla implementation node"));
   }
 
-  return nodeImpl->getDOMNode();
+  return node;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
