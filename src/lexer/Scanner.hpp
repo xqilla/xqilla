@@ -99,12 +99,26 @@ typedef struct yyltype
 #include "../parser/Grammar.hpp"	// to be included *after* defining YYSTYPE and YYLTYPE
 
 #define YYLLOC_DEFAULT(Current, Rhs, N)       	\
-  Current.first_line   = Rhs[1].first_line;     \
-  Current.first_column = Rhs[1].first_column;   \
-  Current.last_line    = Rhs[N].last_line;	    \
-  Current.last_column  = Rhs[N].last_column;    \
-  Current.first_offset = Rhs[1].first_offset;   \
-  Current.last_offset  = Rhs[N].last_offset;
+    do									\
+     if (N)								\
+	 {								\
+	  (Current).first_line   = (Rhs)[1].first_line;	\
+	  (Current).first_column = (Rhs)[1].first_column;	\
+	  (Current).last_line    = (Rhs)[N].last_line;		\
+	  (Current).last_column  = (Rhs)[N].last_column;	\
+	  (Current).first_offset = (Rhs)[1].first_offset;  \
+	  (Current).last_offset  = (Rhs)[N].last_offset;   \
+	 }								\
+     else								\
+	 {								\
+	  (Current).first_line   = (Current).last_line   =		\
+	    (Rhs)[0].last_line;				\
+	  (Current).first_column = (Current).last_column =		\
+	    (Rhs)[0].last_column;				\
+	  (Current).first_offset = (Current).last_offset =		\
+	    (Rhs)[0].last_offset;				\
+	}								\
+    while (0)
 
 class XQILLA_API CXQueryScanner : public yyFlexLexer
 {
