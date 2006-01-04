@@ -48,7 +48,7 @@ bool compareNodes(DOMNode* node1, DOMNode* node2);
 
 void TestSuiteRunner::testResults(const std::string &name, const std::map<std::string, std::string> &outputFiles,
                                   const std::list<std::string> &expectedErrors,
-                                  const std::string &textResult, const std::string &xmlResult) const
+                                  const std::string &xmlResult) const
 {
   if(outputFiles.empty() && !expectedErrors.empty()) {
     string allErrors;
@@ -58,7 +58,7 @@ void TestSuiteRunner::testResults(const std::string &name, const std::map<std::s
       allErrors+=*i;
     }
 
-    m_results->reportFailNoError(name, textResult, allErrors);
+    m_results->reportFailNoError(name, xmlResult, allErrors);
   }
   else {
     bool passed = false;
@@ -67,18 +67,9 @@ void TestSuiteRunner::testResults(const std::string &name, const std::map<std::s
       compareMethod=(*i).second;
       expectedResult = loadExpectedResult((*i).first);
 
-      if(compareMethod=="Text") {
-        if(expectedResult == textResult) {
-          passed = true;
-          break;
-        }
-        else {
-          outputResult = textResult;
-        }
-      }
-      else if(compareMethod=="Fragment" || compareMethod=="XML") {
+      if(compareMethod=="Text" || compareMethod=="Fragment" || compareMethod=="XML") {
         outputResult = xmlResult;
-        if(compareMethod=="Fragment") {
+        if(compareMethod=="Text" || compareMethod=="Fragment") {
           expectedResult="<wrapper>"+expectedResult+"</wrapper>";
           outputResult="<wrapper>"+outputResult+"</wrapper>";
         }

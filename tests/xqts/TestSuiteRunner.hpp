@@ -50,7 +50,7 @@ protected:
   TestSuiteRunner(TestSuiteResultListener *results) : m_results(results) {}
 
   void testResults(const std::string &name, const std::map<std::string, std::string> &outputFiles, const std::list<std::string> &expectedErrors,
-                   const std::string &textResults, const std::string &xmlResults) const;
+                   const std::string &xmlResults) const;
   void testErrors(const std::string &name, const std::list<std::string> &expectedErrors, const std::string &actualError) const;
 
 protected:
