@@ -165,6 +165,29 @@ string loadExpectedResult(const string &file) {
   return expectedResult;
 }
 
+bool isIgnorableWS(DOMNode* node)
+{
+   if(node!=NULL &&
+       node->getNodeType()==DOMNode::TEXT_NODE && 
+       XMLString::isAllWhiteSpace(node->getNodeValue()) &&
+       (node->getPreviousSibling()==NULL || (node->getPreviousSibling()!=NULL && 
+                                           (
+                                            node->getPreviousSibling()->getNodeType()==DOMNode::ELEMENT_NODE || 
+                                            node->getPreviousSibling()->getNodeType()==DOMNode::PROCESSING_INSTRUCTION_NODE ||
+                                            node->getPreviousSibling()->getNodeType()==DOMNode::COMMENT_NODE
+                                           )
+                                           )) &&
+       (node->getNextSibling()==NULL || (node->getNextSibling()!=NULL && 
+                                       (
+                                        node->getNextSibling()->getNodeType()==DOMNode::ELEMENT_NODE || 
+                                        node->getNextSibling()->getNodeType()==DOMNode::PROCESSING_INSTRUCTION_NODE ||
+                                        node->getNextSibling()->getNodeType()==DOMNode::COMMENT_NODE 
+                                       )
+                                      )))
+     return true;
+   return false;
+ }
+
 bool compareNodes(DOMNode* node1, DOMNode* node2)
 {
     if(node1->getNodeType()!=node2->getNodeType())
@@ -230,18 +253,12 @@ bool compareNodes(DOMNode* node1, DOMNode* node2)
     DOMNode* n2=node2->getFirstChild();
     while(n1 && n2)
     {
-        if(n1->getNodeType()==DOMNode::TEXT_NODE && 
-           XMLString::isAllWhiteSpace(n1->getNodeValue()) &&
-           (n1->getPreviousSibling()==NULL || (n1->getPreviousSibling()!=NULL && n1->getPreviousSibling()->getNodeType()==DOMNode::ELEMENT_NODE)) &&
-           (n1->getNextSibling()==NULL || (n1->getNextSibling()!=NULL && n1->getNextSibling()->getNodeType()==DOMNode::ELEMENT_NODE)))
+        if(isIgnorableWS(n1))
         {
             //TRACE(_T("skipping ws node %s value '%s'\n"),n1->getNodeName(), n1->getNodeValue());
             n1=n1->getNextSibling();
         }
-        if(n2->getNodeType()==DOMNode::TEXT_NODE && 
-           XMLString::isAllWhiteSpace(n2->getNodeValue()) &&
-           (n2->getPreviousSibling()==NULL || (n2->getPreviousSibling()!=NULL && n2->getPreviousSibling()->getNodeType()==DOMNode::ELEMENT_NODE)) &&
-           (n2->getNextSibling()==NULL || (n2->getNextSibling()!=NULL && n2->getNextSibling()->getNodeType()==DOMNode::ELEMENT_NODE)))
+        if(isIgnorableWS(n2))
         {
             //TRACE(_T("skipping ws node %s value '%s'\n"),n2->getNodeName(), n2->getNodeValue());
             n2=n2->getNextSibling();
@@ -254,44 +271,12 @@ bool compareNodes(DOMNode* node1, DOMNode* node2)
         n1=n1->getNextSibling();
         n2=n2->getNextSibling();
     }
-    if(n1!=NULL &&
-       n1->getNodeType()==DOMNode::TEXT_NODE && 
-       XMLString::isAllWhiteSpace(n1->getNodeValue()) &&
-       (n1->getPreviousSibling()==NULL || (n1->getPreviousSibling()!=NULL && 
-                                           (
-                                            n1->getPreviousSibling()->getNodeType()==DOMNode::ELEMENT_NODE || 
-                                            n1->getPreviousSibling()->getNodeType()==DOMNode::PROCESSING_INSTRUCTION_NODE ||
-                                            n1->getPreviousSibling()->getNodeType()==DOMNode::COMMENT_NODE
-                                           )
-                                           )) &&
-       (n1->getNextSibling()==NULL || (n1->getNextSibling()!=NULL && 
-                                       (
-                                        n1->getNextSibling()->getNodeType()==DOMNode::ELEMENT_NODE || 
-                                        n1->getNextSibling()->getNodeType()==DOMNode::PROCESSING_INSTRUCTION_NODE ||
-                                        n1->getNextSibling()->getNodeType()==DOMNode::COMMENT_NODE 
-                                       )
-                                      )))
+    if(isIgnorableWS(n1))
     {
         //TRACE(_T("skipping ws node %s value '%s'\n"),n1->getNodeName(), n1->getNodeValue());
         n1=n1->getNextSibling();
     }
-    if(n2!=NULL &&
-       n2->getNodeType()==DOMNode::TEXT_NODE && 
-       XMLString::isAllWhiteSpace(n2->getNodeValue()) &&
-       (n2->getPreviousSibling()==NULL || (n2->getPreviousSibling()!=NULL && 
-                                           (
-                                            n2->getPreviousSibling()->getNodeType()==DOMNode::ELEMENT_NODE || 
-                                            n2->getPreviousSibling()->getNodeType()==DOMNode::PROCESSING_INSTRUCTION_NODE ||
-                                            n2->getPreviousSibling()->getNodeType()==DOMNode::COMMENT_NODE
-                                           )
-                                          )) &&
-       (n2->getNextSibling()==NULL || (n2->getNextSibling()!=NULL && 
-                                       (
-                                        n2->getNextSibling()->getNodeType()==DOMNode::ELEMENT_NODE || 
-                                        n2->getNextSibling()->getNodeType()==DOMNode::PROCESSING_INSTRUCTION_NODE ||
-                                        n2->getNextSibling()->getNodeType()==DOMNode::COMMENT_NODE
-                                       )
-                                      )))
+    if(isIgnorableWS(n2))
     {
         //TRACE(_T("skipping ws node %s value '%s'\n"),n2->getNodeName(), n2->getNodeValue());
         n2=n2->getNextSibling();
