@@ -28,6 +28,7 @@
 
 #include <xercesc/util/XMLString.hpp>
 #include <xqilla/items/ATTimeOrDerived.hpp>
+#include <xqilla/items/ATDateTimeOrDerived.hpp>
 #include <xqilla/mapm/m_apm.h>
 
 #include <xqilla/framework/XQillaExport.hpp>
@@ -111,8 +112,6 @@ public:
    */
   virtual ATTimeOrDerived::Ptr setTimezone(const Timezone::Ptr &timezone, const DynamicContext* context) const;
 
-  virtual ATTimeOrDerived::Ptr normalize(const DynamicContext* context) const;
-
   /**
    * Returns an ATTimeOrDerived with a timezone added to it
    */
@@ -160,6 +159,8 @@ private:
   ATTimeOrDerived::Ptr addDayTimeDuration(MAPM hours, MAPM minutes, MAPM seconds, const DynamicContext* context) const;
 
   ATTimeOrDerived::Ptr subtractDayTimeDuration(MAPM hours, MAPM minutes, MAPM seconds, const DynamicContext* context) const;
+
+  ATDateTimeOrDerived::Ptr buildReferenceDateTime(ATTimeOrDerived::Ptr time, const DynamicContext* context) const;
 
   int asInt(MAPM num) const;
   
