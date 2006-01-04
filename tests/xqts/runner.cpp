@@ -95,7 +95,6 @@ int main(int argc, char *argv[])
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-string serializeTextResults(const Sequence &result, const DynamicContext *context);
 string serializeXMLResults(const Sequence &result, const DynamicContext *context);
 
 XQillaTestSuiteRunner::XQillaTestSuiteRunner(const string &singleTest, TestSuiteResultListener *results)
@@ -172,8 +171,7 @@ void XQillaTestSuiteRunner::runTestCase(const string &name, const string &queryU
 
     Sequence result=pParsedQuery->execute(context.get());
 
-    testResults(name, outputFiles, expectedErrors, serializeTextResults(result, context.get()),
-                serializeXMLResults(result, context.get()));
+    testResults(name, outputFiles, expectedErrors, serializeXMLResults(result, context.get()));
   }
   catch(XQException& e) {
     testErrors(name, expectedErrors, UTF8(e.getError()));
@@ -201,19 +199,6 @@ InputSource* XQillaTestSuiteRunner::resolveEntity(XMLResourceIdentifier* resourc
     return NULL;
 }
 
-string serializeTextResults(const Sequence &result, const DynamicContext *context) {
-  MemBufFormatTarget strTarget;
-  {
-    XMLFormatter formatter("UTF-16", "1.0", &strTarget, XMLFormatter::CharEscapes);
-    for(unsigned int i=0;i<result.getLength();i++) {
-      const Item* item=result.item(i);
-      if(i>0) formatter << X(" ");
-      formatter << item->asString(context);
-    }
-  }
-  return UTF8((XMLCh*)strTarget.getRawBuffer());
-}
-
 string serializeXMLResults(const Sequence &result, const DynamicContext *context) {
   MemBufFormatTarget strTarget;
   {
@@ -222,6 +207,10 @@ string serializeXMLResults(const Sequence &result, const DynamicContext *context
       const Item* item=result.item(i);
       if(i>0 && !item->isNode() && !result.item(i-1)->isNode())
         formatter << X(" ");
+      if(item->isNode())
+        formatter << XMLFormatter::NoEscapes;
+      else
+        formatter << XMLFormatter::CharEscapes;
       formatter << item->asString(context);
     }
   }
