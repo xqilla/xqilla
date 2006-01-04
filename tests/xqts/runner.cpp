@@ -153,7 +153,10 @@ void XQillaTestSuiteRunner::runTestCase(const string &name, const string &queryU
   Janitor<DynamicContext> context(xqilla.createContext());
   try {
     context->setBaseURI(X(queryURL.c_str()));
-    context->setImplicitTimezone(context->getItemFactory()->createDurationOrDerived(FunctionConstructor::XMLChXPath2DatatypesURI, ATDurationOrDerived::fgDT_DAYTIMEDURATION, X("PT0S"), context.get()));
+    context->setImplicitTimezone(context->getItemFactory()->
+                                 createDurationOrDerived(FunctionConstructor::XMLChXPath2DatatypesURI,
+                                                         ATDurationOrDerived::fgDT_DAYTIMEDURATION,
+                                                         X("PT0S"), context.get()));
     context->setXMLEntityResolver(this);
 
     XQQuery* pParsedQuery=xqilla.parseXQueryFromURI(X(queryURL.c_str()), context.get());
@@ -162,10 +165,10 @@ void XQillaTestSuiteRunner::runTestCase(const string &name, const string &queryU
       Sequence doc=context->resolveDocument(X(m_inputFiles[v->second].c_str()));
       context->getVariableStore()->setGlobalVar(X(v->first.c_str()),doc,context.get());
     }
-		context->setContextPosition(1);
-		context->setContextSize(1);
-		time_t curTime;
-		context->setCurrentTime(time(&curTime));
+    context->setContextPosition(1);
+    context->setContextSize(1);
+    time_t curTime;
+    context->setCurrentTime(time(&curTime));
 
     Sequence result=pParsedQuery->execute(context.get());
 
@@ -178,9 +181,9 @@ void XQillaTestSuiteRunner::runTestCase(const string &name, const string &queryU
   catch(DOMException &de) {
     testErrors(name, expectedErrors, string("DOMException: ") + UTF8(de.getMessage()));
   }
-	catch(...) {
+  catch(...) {
     testErrors(name, expectedErrors, "[Unknown exception]");
-	}
+  }
 }
 
 InputSource* XQillaTestSuiteRunner::resolveEntity(XMLResourceIdentifier* resourceIdentifier)

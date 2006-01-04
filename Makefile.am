@@ -401,7 +401,7 @@ Win32Projects/VC7.1/XQilla.vcproj
 
 
 xqilla_SOURCES = \
-src/samples/xqilla/xqilla.cpp
+src/samples/xqilla/xqilla-commandline.cpp
 
 basicXQillaUsage_SOURCES = \
 src/samples/basic/basicXQillaUsage.cpp
