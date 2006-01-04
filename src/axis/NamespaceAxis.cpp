@@ -26,6 +26,7 @@
 #include "../config/xqilla_config.h"
 #include <xqilla/axis/NamespaceAxis.hpp>
 #include <xqilla/utils/XPath2NSUtils.hpp>
+#include <xqilla/context/DynamicContext.hpp>
 #include "../dom-api/impl/XPathNamespaceImpl.hpp"
 
 #include <xercesc/util/XMLString.hpp>
@@ -39,8 +40,10 @@ NamespaceAxis::NamespaceAxis(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *conte
        const NodeTest *nodeTest, DynamicContext *context, const AxisNodeFactory &factory)
   : Axis(contextNode, nodeObj, nodeTest, context, factory),
     node_(contextNode),
+    originalNode_(contextNode),
     nodeMap_(node_->getAttributes()),
-    i_(0)
+    i_(0),
+    defNsTested_(false)
 {
 }
 
@@ -51,10 +54,10 @@ const DOMNode *NamespaceAxis::nextNode()
   if(toDo_) {
     // Output the obligatory namespace node for the "xml" prefix
     toDo_ = false;
-    result = XPathNamespaceImpl::createXPathNamespace(XMLUni::fgXMLString, XMLUni::fgXMLURIName, static_cast<DOMElement*>(const_cast<DOMNode*>(node_)));
+    result = XPathNamespaceImpl::createXPathNamespace(XMLUni::fgXMLString, XMLUni::fgXMLURIName, static_cast<DOMElement*>(const_cast<DOMNode*>(originalNode_)));
   }
 
-  while(result == 0) {
+  while(node_!=0 && result == 0) {
     if(nodeMap_ == 0 || i_ >= nodeMap_->getLength()) {
       node_ = XPath2NSUtils::getParent(node_);
       if(node_ != 0) {
@@ -104,10 +107,16 @@ const DOMNode *NamespaceAxis::nextNode()
  
     // Add namespace, if not already there
     if(done_.insert(prefix).second) {
-      result = XPathNamespaceImpl::createXPathNamespace(prefix, uri, static_cast<DOMElement*>(const_cast<DOMNode*>(node_)));
+      result = XPathNamespaceImpl::createXPathNamespace(prefix, uri, static_cast<DOMElement*>(const_cast<DOMNode*>(originalNode_)));
     }
   }
 
+  if(result==0 && !defNsTested_)
+  {
+    defNsTested_=true;
+    if(context_->getDefaultElementAndTypeNS()!=0 && done_.insert(0).second)
+      result = XPathNamespaceImpl::createXPathNamespace(0, context_->getDefaultElementAndTypeNS(), static_cast<DOMElement*>(const_cast<DOMNode*>(originalNode_)));
+  }
   return result;  
 }
 
