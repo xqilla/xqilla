@@ -43,12 +43,13 @@ public:
   std::string asString(DynamicContext *context, int indent) const;
 
 private:
-  const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *node_;
+  const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *node_, *originalNode_;
   XERCES_CPP_NAMESPACE_QUALIFIER DOMNamedNodeMap *nodeMap_;
   unsigned int i_;
 
   typedef std::set<const XMLCh*, XMLChSort> DoneSet;
   DoneSet done_;
+  bool defNsTested_;
 };
 
 #endif
