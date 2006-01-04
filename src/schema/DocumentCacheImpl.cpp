@@ -437,7 +437,7 @@ Node::Ptr DocumentCacheParser::validate(const Node::Ptr &node,
         XERCES_CPP_NAMESPACE_QUALIFIER MemBufInputSource inputSrc(  (const XMLByte*)serializedForm, 
                                                                     XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(serializedForm)*sizeof(XMLCh), 
                                                                     XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString,
-                                                                    true,
+                                                                    false,
                                                                     context->getMemoryManager());
         inputSrc.setCopyBufToStream(false);
         inputSrc.setEncoding(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgUTF16EncodingString);
@@ -446,6 +446,7 @@ Node::Ptr DocumentCacheParser::validate(const Node::Ptr &node,
         setValidationConstraintFatal(false);
         setValidationScheme(oldValScheme);
         setIdentityConstraintChecking(true);
+        XERCES_CPP_NAMESPACE_QUALIFIER XMLString::release((void**)&serializedForm, context->getMemoryManager() );
         // - return the document element
         if(pDoc==NULL)
             return NULL;
@@ -453,7 +454,10 @@ Node::Ptr DocumentCacheParser::validate(const Node::Ptr &node,
         if(node->dmNodeKind() == Node::document_string)
             return new NodeImpl(pDoc, context);
         else
-            return new NodeImpl(pDoc->getDocumentElement(), context);
+        {
+          // the newly returned node has no parent
+          return new NodeImpl(pDoc->removeChild(pDoc->getDocumentElement()), context);
+        }
     }
     catch (const XERCES_CPP_NAMESPACE_QUALIFIER SAXException& toCatch) {
         setValidationConstraintFatal(false);
@@ -508,13 +512,16 @@ void DocumentCacheParser::error(const   unsigned int                errCode
 DocumentCacheImpl::DocumentCacheImpl(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr, XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool* xmlgr) :
   _parser(memMgr, xmlgr),
   _firstDocRefCount(new (memMgr) DocRefCount()),
+  _loadedSchemas(0),
   _memMgr(memMgr)
 {
+    _loadedSchemas=new (_memMgr) XERCES_CPP_NAMESPACE_QUALIFIER XMLStringPool(3, _memMgr);
 }
 
 DocumentCacheImpl::DocumentCacheImpl(const DocumentCacheImpl *parent, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr)
   : _parser(parent->_parser, memMgr),
     _firstDocRefCount(new (memMgr) DocRefCount()),
+    _loadedSchemas(0),
     _memMgr(memMgr)
 {
 }
@@ -527,6 +534,8 @@ DocumentCacheImpl::~DocumentCacheImpl()
     _firstDocRefCount = _firstDocRefCount->next;
     _memMgr->deallocate(drc);
   }
+  if(_loadedSchemas)
+	  delete _loadedSchemas;
 }
 
 void DocumentCacheImpl::incrementDocumentRefCount(const XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* document) const
@@ -697,6 +706,9 @@ bool DocumentCacheImpl::isTypeOrDerivedFromType(const XMLCh* const uri, const XM
 
 void DocumentCacheImpl::addSchemaLocation(const XMLCh* uri, VectorOfStrings* locations, StaticContext *context)
 {
+  if(_loadedSchemas->exists(uri))
+    XQThrow(StaticErrorException,X("DocumentCacheImpl::addSchemaLocation"), X("More than one 'import schema' specifies the same target namespace [err:XQST0058]"));
+  _loadedSchemas->addOrFind(uri);
   if(locations==NULL)
   {
     // if no locations are given, try to see if the entity resolver can still find it

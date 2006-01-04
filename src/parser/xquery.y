@@ -671,6 +671,8 @@ SchemaImport:
 		{
 			if(XPath2Utils::equals($2, XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString))
 				CONTEXT->setDefaultElementAndTypeNS($3);
+			else if(XPath2Utils::equals($3, XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString))
+				yyerror("A schema that has no target namespace cannot be bound to non-empty prefix [err:XQST0057]");
 			else
 				CONTEXT->setNamespaceBinding($2,$3);
 			CONTEXT->addSchemaLocation($3,NULL);
@@ -679,6 +681,8 @@ SchemaImport:
 		{
 			if(XPath2Utils::equals($2, XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString))
 				CONTEXT->setDefaultElementAndTypeNS($3);
+			else if(XPath2Utils::equals($3, XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString))
+				yyerror("A schema that has no target namespace cannot be bound to non-empty prefix [err:XQST0057]");
 			else
 				CONTEXT->setNamespaceBinding($2,$3);
 			CONTEXT->addSchemaLocation($3,$4);

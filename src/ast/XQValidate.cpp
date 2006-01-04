@@ -61,12 +61,12 @@ Sequence XQValidate::collapseTreeInternal(DynamicContext* context, int flags) co
   const Item::Ptr second = toBeValidated.next(context);
 
   if(first == NULLRCP || second != NULLRCP || !first->isNode())
-    XQThrow(FunctionException,X("XQValidate::collapseTreeInternal"), X("The expression to be validated must evaluate to exactly one document or element node [err:XQ0030]"));
+    XQThrow(FunctionException,X("XQValidate::collapseTreeInternal"), X("The expression to be validated must evaluate to exactly one document or element node [err:XQTY0030]."));
 
   Node::Ptr node = (Node::Ptr)first;
   if(node->dmNodeKind() != Node::element_string &&
      node->dmNodeKind() != Node::document_string)
-    XQThrow(FunctionException,X("XQValidate::collapseTreeInternal"), X("The expression to be validated must evaluate to exactly one document or element node [err:XQ0030]"));
+    XQThrow(FunctionException,X("XQValidate::collapseTreeInternal"), X("The expression to be validated must evaluate to exactly one document or element node [err:XQTY0030]."));
 
   // perform validation on this item
   Node::Ptr validatedElt = context->validate(node, _validationMode);

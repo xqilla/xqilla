@@ -200,6 +200,7 @@ protected:
   DocumentCacheParser _parser;
   DocRefCount *_firstDocRefCount;
 //   XERCES_CPP_NAMESPACE_QUALIFIER ValueHashTableOf<unsigned int> _docRefCountMap; // mutable
+  XERCES_CPP_NAMESPACE_QUALIFIER XMLStringPool* _loadedSchemas;
   XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* _memMgr;
 };
 
