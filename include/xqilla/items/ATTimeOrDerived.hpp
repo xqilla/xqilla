@@ -101,8 +101,6 @@ public:
    */
   virtual ATTimeOrDerived::Ptr setTimezone(const Timezone::Ptr &timezone, const DynamicContext* context) const = 0;
 
-  virtual ATTimeOrDerived::Ptr normalize(const DynamicContext* context) const = 0;
-
   /**
    * Returns an ATTimeOrDerived with a timezone added to it
    */

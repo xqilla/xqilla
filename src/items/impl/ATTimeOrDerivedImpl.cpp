@@ -34,7 +34,6 @@
 #include <xqilla/exceptions/IllegalArgumentException.hpp>
 #include <xqilla/exceptions/XPath2TypeCastException.hpp>
 #include <xqilla/items/ATDateOrDerived.hpp>
-#include <xqilla/items/ATDateTimeOrDerived.hpp>
 #include <xqilla/items/ATDecimalOrDerived.hpp>
 #include <xqilla/items/ATDurationOrDerived.hpp>
 #include <xqilla/items/Timezone.hpp>
@@ -154,69 +153,68 @@ const XMLCh* ATTimeOrDerivedImpl::asString(const DynamicContext* context) const 
   return context->getMemoryManager()->getPooledString(buffer.getRawBuffer());
 }
 
-/* returns true if the two objects represent the same time,
- * false otherwise */
+ATDateTimeOrDerived::Ptr ATTimeOrDerivedImpl::buildReferenceDateTime(ATTimeOrDerived::Ptr time, const DynamicContext* context) const
+{
+  const XMLCh s1972[] = { XERCES_CPP_NAMESPACE_QUALIFIER chDigit_1, XERCES_CPP_NAMESPACE_QUALIFIER chDigit_9, XERCES_CPP_NAMESPACE_QUALIFIER chDigit_7, XERCES_CPP_NAMESPACE_QUALIFIER chDigit_2, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
+  const XMLCh s12[] = { XERCES_CPP_NAMESPACE_QUALIFIER chDigit_1, XERCES_CPP_NAMESPACE_QUALIFIER chDigit_2, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
+  const XMLCh s31[] = { XERCES_CPP_NAMESPACE_QUALIFIER chDigit_3, XERCES_CPP_NAMESPACE_QUALIFIER chDigit_1, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
+  XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buf(1023, context->getMemoryManager());
+  buf.set(s1972);
+  buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
+  buf.append(s12);
+  buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
+  buf.append(s31);
+  buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_T);
+  buf.append(time->asString(context));
+  return context->getItemFactory()->createDateTime(buf.getRawBuffer(), context);
+}
+
+/**
+ * Returns true if and only if the value of $arg1 converted to an xs:dateTime using the date components from the reference 
+ * xs:dateTime is equal to the value of $arg2 converted to an xs:dateTime using the date components from the same reference 
+ * xs:dateTime. Returns false otherwise.
+ * 
+ * The two xs:dateTime values are compared using op:dateTime-equal.
+ */
 bool ATTimeOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const {
   if(this->getPrimitiveTypeIndex() != target->getPrimitiveTypeIndex()) {
     XQThrow(IllegalArgumentException,X("ATTimeOrDerivedImpl::equals"), X("Equality operator for given types not supported"));
   }
-  ATTimeOrDerived::Ptr mtc = this->normalize(context);
-  const ATTimeOrDerivedImpl* myTimeCopy = (ATTimeOrDerivedImpl*)(const ATTimeOrDerived*)mtc;
-  ATTimeOrDerived::Ptr otc = ((const ATTimeOrDerived* )(const AnyAtomicType*)target)->normalize(context);
-  const ATTimeOrDerivedImpl* otherTimeCopy = (ATTimeOrDerivedImpl*)(const ATTimeOrDerived*)otc;
-
-  return ( myTimeCopy->_hh->equals((const AnyAtomicType::Ptr)otherTimeCopy->_hh, context) &&
-             myTimeCopy->_mm->equals((const AnyAtomicType::Ptr)otherTimeCopy->_mm, context) &&
-             myTimeCopy->_ss->equals((const AnyAtomicType::Ptr)otherTimeCopy->_ss, context) ); 
+  ATDateTimeOrDerived::Ptr thisTime=buildReferenceDateTime(this, context);
+  ATDateTimeOrDerived::Ptr otherTime=buildReferenceDateTime(target, context);
+  return thisTime->equals(otherTime, context);
 }
 
 /**
- * Returns true i and only if this time is greater than the given time. 
+ * Returns true if and only if the value of $arg1 converted to an xs:dateTime using the date components from the reference 
+ * xs:dateTime is greater than the value of $arg2 converted to an xs:dateTime using the date components from the same reference 
+ * xs:dateTime. Returns false otherwise.
+ *
+ * The two xs:dateTime values are compared using op:dateTime-greater-than.
  */
 bool ATTimeOrDerivedImpl::greaterThan(const ATTimeOrDerived::Ptr &other, const DynamicContext* context) const {
-  
-  ATTimeOrDerived::Ptr mtc = this->normalize(context);
-  const ATTimeOrDerivedImpl* myTimeCopy = (ATTimeOrDerivedImpl*)(const ATTimeOrDerived*)mtc;
-  ATTimeOrDerived::Ptr otc = other->normalize(context);
-  const ATTimeOrDerivedImpl* otherTimeCopy = (ATTimeOrDerivedImpl*)(const ATTimeOrDerived*)otc;
-
-  if ((myTimeCopy->_hh->greaterThan(otherTimeCopy->_hh, context)) || 
-
-      (myTimeCopy->_hh->equals((const AnyAtomicType::Ptr)otherTimeCopy->_hh, context) && 
-       myTimeCopy->_mm->greaterThan(otherTimeCopy->_mm, context)) || 
-
-      (myTimeCopy->_hh->equals((const AnyAtomicType::Ptr)otherTimeCopy->_hh, context) && 
-       myTimeCopy->_mm->equals((const AnyAtomicType::Ptr)otherTimeCopy->_mm, context) && 
-       myTimeCopy->_ss->greaterThan(otherTimeCopy->_ss, context)) ) {
-        return true;
-  } else {
-   return false;
+  if(this->getPrimitiveTypeIndex() != other->getPrimitiveTypeIndex()) {
+    XQThrow(IllegalArgumentException,X("ATTimeOrDerivedImpl::equals"), X("GreaterThan operator for given types not supported"));
   } 
-
+  ATDateTimeOrDerived::Ptr thisTime=buildReferenceDateTime(this, context);
+  ATDateTimeOrDerived::Ptr otherTime=buildReferenceDateTime(other, context);
+  return thisTime->greaterThan(otherTime, context);
 }
 
 /**
- * Returns true if and only if this time is less than the given time. 
+ * Returns true if and only if the value of $arg1 converted to an xs:dateTime using the date components from the reference 
+ * xs:dateTime is less than the normalized value of $arg2 converted to an xs:dateTime using the date components from the same 
+ * reference xs:dateTime. Returns false otherwise.
+ *
+ * The two xs:dateTime values are compared using op:dateTime-less-than.
  */
 bool ATTimeOrDerivedImpl::lessThan(const ATTimeOrDerived::Ptr &other,  const DynamicContext* context) const {
-  ATTimeOrDerived::Ptr mtc = this->normalize(context);
-  const ATTimeOrDerivedImpl* myTimeCopy = (ATTimeOrDerivedImpl*)(const ATTimeOrDerived*)mtc;
-  ATTimeOrDerived::Ptr otc = other->normalize(context);
-  const ATTimeOrDerivedImpl* otherTimeCopy = (ATTimeOrDerivedImpl*)(const ATTimeOrDerived*)otc;
-
-  if ((myTimeCopy->_hh->lessThan(otherTimeCopy->_hh, context)) || 
-
-      (myTimeCopy->_hh->equals((const AnyAtomicType::Ptr)otherTimeCopy->_hh, context) && 
-       myTimeCopy->_mm->lessThan(otherTimeCopy->_mm, context)) || 
-
-      (myTimeCopy->_hh->equals((const AnyAtomicType::Ptr)otherTimeCopy->_hh, context) && 
-       myTimeCopy->_mm->equals((const AnyAtomicType::Ptr)otherTimeCopy->_mm, context) && 
-       myTimeCopy->_ss->lessThan(otherTimeCopy->_ss, context)) ) {
-        return true;
-  } else {
-   return false;
+  if(this->getPrimitiveTypeIndex() != other->getPrimitiveTypeIndex()) {
+    XQThrow(IllegalArgumentException,X("ATTimeOrDerivedImpl::equals"), X("LessThan operator for given types not supported"));
   } 
-
+  ATDateTimeOrDerived::Ptr thisTime=buildReferenceDateTime(this, context);
+  ATDateTimeOrDerived::Ptr otherTime=buildReferenceDateTime(other, context);
+  return thisTime->lessThan(otherTime, context);
 }
 
 /** 
@@ -320,41 +318,6 @@ ATTimeOrDerived::Ptr ATTimeOrDerivedImpl::addDayTimeDuration(const ATDurationOrD
   }
 }
   
-ATTimeOrDerived::Ptr ATTimeOrDerivedImpl::normalize(const DynamicContext* context) const {  
-
-  Timezone::Ptr timezone;
-  if (!_hasTimezone) {
-    timezone = new Timezone(context->getImplicitTimezone(), context);
-  } else {
-    timezone = this->timezone_;
-  }
-
-  // Minutes
-  MAPM tzMinutes = timezone->getMinutes();
-  MAPM temp = ((const ATDecimalOrDerived*)this->_mm)->asMAPM() - tzMinutes;
-  const ATDecimalOrDerived::Ptr mm = context->getItemFactory()->createNonNegativeInteger(
-                                                                                   DateUtils::modulo(temp, DateUtils::g_minutesPerHour),
-                                                                                   context);
-
-  MAPM carry = (temp / DateUtils::g_minutesPerHour).floor();
-  
-  // Hours
-  MAPM tzHours = timezone->getHours();
-  temp = ((const ATDecimalOrDerived*)this->_hh)->asMAPM() - tzHours + carry;
-  const ATDecimalOrDerived::Ptr hh = context->getItemFactory()->createNonNegativeInteger(
-                                                                                   DateUtils::modulo(temp, DateUtils::g_hoursPerDay),
-                                                                                   context);
-  
-  return new
-    ATTimeOrDerivedImpl(this->getTypeURI(), 
-                        this->getTypeName(), 
-                        hh, mm, 
-                        this->_ss,
-                        new Timezone(0, 0), true // timezone set to UTC
-                        );
-}
-
-
 /**
  * Returns a time with the given dayTimeDuration subtracted from it
  */
@@ -408,28 +371,8 @@ ATTimeOrDerived::Ptr ATTimeOrDerivedImpl::subtractDayTimeDuration(MAPM hours, MA
  */
 ATDurationOrDerived::Ptr ATTimeOrDerivedImpl::subtractTime(const ATTimeOrDerived::Ptr &time, const DynamicContext* context) const {
   
-  const XMLCh s1972[] = { XERCES_CPP_NAMESPACE_QUALIFIER chDigit_1, XERCES_CPP_NAMESPACE_QUALIFIER chDigit_9, XERCES_CPP_NAMESPACE_QUALIFIER chDigit_7, XERCES_CPP_NAMESPACE_QUALIFIER chDigit_2, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
-  const XMLCh s12[] = { XERCES_CPP_NAMESPACE_QUALIFIER chDigit_1, XERCES_CPP_NAMESPACE_QUALIFIER chDigit_2, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
-  const XMLCh s31[] = { XERCES_CPP_NAMESPACE_QUALIFIER chDigit_3, XERCES_CPP_NAMESPACE_QUALIFIER chDigit_1, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
-  XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buf(1023, context->getMemoryManager());
-  buf.set(s1972);
-  buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-  buf.append(s12);
-  buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-  buf.append(s31);
-  buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_T);
-  buf.append(this->asString(context));
-  ATDateTimeOrDerived::Ptr thisTime=context->getItemFactory()->createDateTime(buf.getRawBuffer(), context);
-
-  buf.set(s1972);
-  buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-  buf.append(s12);
-  buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-  buf.append(s31);
-  buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_T);
-  buf.append(time->asString(context));
-  ATDateTimeOrDerived::Ptr otherTime=context->getItemFactory()->createDateTime(buf.getRawBuffer(), context);
-
+  ATDateTimeOrDerived::Ptr thisTime=buildReferenceDateTime(this, context);
+  ATDateTimeOrDerived::Ptr otherTime=buildReferenceDateTime(time, context);
   return thisTime->subtractDateTimeAsDayTimeDuration(otherTime, context);
 }
 
