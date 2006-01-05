@@ -295,7 +295,11 @@ xqilla/framework/BaseMemoryManager.hpp \
 xqilla/framework/ProxyMemoryManager.hpp \
 xqilla/framework/StringPool.hpp \
 xqilla/framework/XPath2MemoryManagerImpl.hpp \
-xqilla/framework/XQillaExport.hpp
+xqilla/framework/XQillaExport.hpp \
+xqilla/xqts/TestSuiteParser.hpp \
+xqilla/xqts/TestSuiteResultListener.hpp \
+xqilla/xqts/TestSuiteRunner.hpp
+
 
 docs: $(top_srcdir)/docs/.simple-api-timestamp $(top_srcdir)/docs/.dom3-api-timestamp
 

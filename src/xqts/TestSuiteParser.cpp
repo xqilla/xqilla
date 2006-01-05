@@ -27,8 +27,8 @@
 #pragma warning(disable: 4786)
 #endif
 
-#include "TestSuiteParser.hpp"
-#include "TestSuiteRunner.hpp"
+#include <xqilla/xqts/TestSuiteParser.hpp>
+#include <xqilla/xqts/TestSuiteRunner.hpp>
 
 #include <iostream>
 

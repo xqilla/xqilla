@@ -23,8 +23,8 @@
  * $Id$
  */
 
-#include "TestSuiteResultListener.hpp"
-#include "TestSuiteParser.hpp"
+#include <xqilla/xqts/TestSuiteResultListener.hpp>
+#include <xqilla/xqts/TestSuiteParser.hpp>
 
 #include <iostream>
 

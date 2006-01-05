@@ -27,9 +27,9 @@
 #pragma warning(disable: 4786)
 #endif
 
-#include "TestSuiteParser.hpp"
-#include "TestSuiteResultListener.hpp"
-#include "TestSuiteRunner.hpp"
+#include <xqilla/xqts/TestSuiteParser.hpp>
+#include <xqilla/xqts/TestSuiteResultListener.hpp>
+#include <xqilla/xqts/TestSuiteRunner.hpp>
 
 #include <iostream>
 
@@ -50,12 +50,12 @@ using namespace std;
 class XQillaTestSuiteRunner : public TestSuiteRunner, private XMLEntityResolver
 {
 public:
-  XQillaTestSuiteRunner(const std::string &singleTest, TestSuiteResultListener *results);
+  XQillaTestSuiteRunner(const string &singleTest, TestSuiteResultListener *results);
 
-  virtual void addSource(const std::string &id, const std::string &filename, const std::string &schema);
-  virtual void addSchema(const std::string &id, const std::string &filename, const std::string &uri);
+  virtual void addSource(const string &id, const string &filename, const string &schema);
+  virtual void addSchema(const string &id, const string &filename, const string &uri);
 
-  virtual void startTestGroup(const std::string &name);
+  virtual void startTestGroup(const string &name);
   virtual void endTestGroup();
 
   virtual void runTestCase(const TestCase &testCase);
@@ -64,13 +64,13 @@ private:
   virtual InputSource* resolveEntity(XMLResourceIdentifier* resourceIdentifier);
 
 private:
-  std::string m_szSingleTest;
-  std::string m_szFullTestName;
+  string m_szSingleTest;
+  string m_szFullTestName;
 
   // id -> filename
-  std::map<std::string, std::string> m_inputFiles;
+  map<string, string> m_inputFiles;
   // schemaURL -> filename
-  std::map<std::string, std::string> m_schemaFiles;
+  map<string, string> m_schemaFiles;
 };
 
 int main(int argc, char *argv[])
@@ -173,7 +173,7 @@ void XQillaTestSuiteRunner::runTestCase(const TestCase &testCase)
   }
   catch(XQException& e) {
     testErrors(testCase, UTF8(e.getError()));
-	}
+  }
   catch(DOMException &de) {
     testErrors(testCase, string("DOMException: ") + UTF8(de.getMessage()));
   }
