@@ -49,7 +49,9 @@ class XPath2MemoryManager;
  * Then, just type make, and run test-datatypes.
  */
 class DatatypeTester {
-  public: 
+public:
+    virtual ~DatatypeTester() {}
+	
     // init your test.  By default, it will print out a header with the name
     // of the testcase
     virtual void init();
