@@ -31,6 +31,7 @@
 #include <map>
 
 class TestSuiteResultListener;
+class TestCase;
 
 class TestSuiteRunner
 {
@@ -43,15 +44,13 @@ public:
   virtual void startTestGroup(const std::string &name) = 0;
   virtual void endTestGroup() = 0;
 
-  virtual void runTestCase(const std::string &name, const std::string &queryURL, const std::map<std::string, std::string> &inputVars,
-                           const std::map<std::string, std::string> &outputFiles, const std::list<std::string> &expectedErrors) = 0;
+  virtual void runTestCase(const TestCase &testCase) = 0;
 
 protected:
   TestSuiteRunner(TestSuiteResultListener *results) : m_results(results) {}
 
-  void testResults(const std::string &name, const std::map<std::string, std::string> &outputFiles, const std::list<std::string> &expectedErrors,
-                   const std::string &xmlResults) const;
-  void testErrors(const std::string &name, const std::list<std::string> &expectedErrors, const std::string &actualError) const;
+  void testResults(const TestCase &testCase, const std::string &results) const;
+  void testErrors(const TestCase &testCase, const std::string &actualError) const;
 
 protected:
   TestSuiteResultListener *m_results;

@@ -35,6 +35,7 @@
 #include <xercesc/parsers/SAXParser.hpp>
 #include <xercesc/sax/AttributeList.hpp>
 #include <xercesc/framework/URLInputSource.hpp>
+#include <xercesc/util/BinFileInputStream.hpp>
 
 #include <xqilla/utils/XStr.hpp>
 #include <xqilla/utils/UTF8Str.hpp>
@@ -103,7 +104,12 @@ void TestSuiteParser::startElement
     }
     else if(szName=="test-case")
     {
-        m_szCurrentTestCase=UTF8(attributes.getValue("name"));
+        m_testCase.name = UTF8(attributes.getValue("name"));
+        m_testCase.queryURL = "";
+        m_testCase.inputVars.clear();
+        m_testCase.expectedErrors.clear();
+        m_testCase.outputFiles.clear();
+
         m_szVariableBoundToInput=m_szCompareMethod="";
         m_urlQuery=XMLURL();
         XMLBuffer buff;
@@ -111,9 +117,6 @@ void TestSuiteParser::startElement
         buff.append('/');
         m_urlBasePath.setURL(m_urlXQTSQueriesDirectory, buff.getRawBuffer());
         m_urlBasePathReferenceFiles.setURL(m_urlXQTSResultsDirectory, buff.getRawBuffer());
-        m_inputVars.clear();
-        m_expectedErrors.clear();
-        m_outputFiles.clear();
     }
     else if(szName=="query")
     {
@@ -123,6 +126,12 @@ void TestSuiteParser::startElement
         if(!XMLString::endsWith(name,X(".xq")))
             buff.append(X(".xq"));
         m_urlQuery.setURL(m_urlBasePath,buff.getRawBuffer());
+        m_testCase.queryURL = UTF8(m_urlQuery.getURLText());
+
+        Janitor<BinFileInputStream> stream((BinFileInputStream*)URLInputSource(m_urlQuery).makeStream());
+        unsigned int dwSize=stream->getSize();
+        m_testCase.query.resize(dwSize);
+        stream->readBytes((XMLByte*)m_testCase.query.c_str(), dwSize);
     }
     else if(szName=="input-file")
     {
@@ -170,24 +179,24 @@ void TestSuiteParser::endElement(const XMLCh* const name)
         m_runner->endTestGroup();
     }
     else if(szName == "test-case") {
-        m_runner->runTestCase(m_szCurrentTestCase, UTF8(m_urlQuery.getURLText()), m_inputVars, m_outputFiles, m_expectedErrors);
+        m_runner->runTestCase(m_testCase);
     }
     else if(szName == "input-file")
     {
         m_bReadingChars=false;
-        m_inputVars[m_szVariableBoundToInput]=m_szChars;
+        m_testCase.inputVars[m_szVariableBoundToInput]=m_szChars;
         m_szVariableBoundToInput="";
     }
     else if(szName == "output-file")
     {
         m_bReadingChars=false;
         m_szChars=UTF8(XMLURL(m_urlBasePathReferenceFiles, m_szChars.c_str()).getURLText());
-        m_outputFiles[m_szChars]=m_szCompareMethod;
+        m_testCase.outputFiles[m_szChars]=m_szCompareMethod;
         m_szCompareMethod="";
     }
     else if(szName == "expected-error")
     {
         m_bReadingChars=false;
-        m_expectedErrors.push_back(m_szChars);
+        m_testCase.expectedErrors.push_back(m_szChars);
     }
 }

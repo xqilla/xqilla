@@ -24,6 +24,7 @@
  */
 
 #include "TestSuiteResultListener.hpp"
+#include "TestSuiteParser.hpp"
 
 #include <iostream>
 
@@ -66,7 +67,7 @@ void ConsoleResultListener::endTestGroup()
     m_szFullTestName = "";
 }
 
-void ConsoleResultListener::reportPass(const string &testName)
+void ConsoleResultListener::reportPass(const TestCase &testCase)
 {
   ++m_nTotalTests;
   ++m_nPassedTests;
@@ -74,8 +75,38 @@ void ConsoleResultListener::reportPass(const string &testName)
   cout << "." << flush;
 }
 
-void ConsoleResultListener::reportInspect(const std::string &name, const std::string &actualResult,
-                                          const std::string &expectedResult)
+void ConsoleResultListener::testCaseToErrors(const TestCase &testCase)
+{
+  errors_ << "* Test-case '" << m_szFullTestName << ":" << testCase.name << "':" << endl;
+  errors_ << "* Query URL: " << testCase.queryURL << endl;
+
+  for(std::map<std::string, std::string>::const_iterator i = testCase.inputVars.begin();
+      i != testCase.inputVars.end(); ++i) {
+    errors_ << "* Input: " << i->first << " -> " << i->second << endl;
+  }
+
+  for(std::map<std::string, std::string>::const_iterator j = testCase.outputFiles.begin();
+      j != testCase.outputFiles.end(); ++j) {
+    errors_ << "* Output: " << j->second << " -> " << j->first << endl;
+  }
+
+  if(!testCase.expectedErrors.empty()) {
+    errors_ << "* Errors:";
+    for(std::list<std::string>::const_iterator k = testCase.expectedErrors.begin();
+        k != testCase.expectedErrors.end(); ++k) {
+      errors_ << " " << *k;
+    }
+    errors_ << endl;
+  }
+
+  errors_ << endl;
+  errors_ << "********** Query: **********" << endl;
+  errors_ << testCase.query << endl;
+  errors_ << endl;
+}
+
+void ConsoleResultListener::reportInspect(const TestCase &testCase, const string &actualResult,
+                                          const string &expectedResult)
 {
   ++m_nTotalTests;
   ++m_nInspectTests;
@@ -83,16 +114,17 @@ void ConsoleResultListener::reportInspect(const std::string &name, const std::st
   cout << "," << flush;
 
   errors_ << "************************************************************************" << endl;
-  errors_ << "For inspection:" << endl;
-  errors_ << "Test-case '" << m_szFullTestName << ":" << name << "':" << endl;
-  errors_ << "Actual result: " << endl;
+  errors_ << "* For inspection:" << endl;
+  testCaseToErrors(testCase);
+  errors_ << "********** Actual result: **********" << endl;
   errors_ << actualResult << endl;;
-  errors_ << "Expected result: " << endl;;
+  errors_ << endl;
+  errors_ << "********** Expected result: **********" << endl;;
   errors_ << expectedResult << endl;
   errors_ << endl;
 }
 
-void ConsoleResultListener::reportSkip(const string &name)
+void ConsoleResultListener::reportSkip(const TestCase &testCase)
 {
   ++m_nTotalTests;
   ++m_nSkippedTests;
@@ -100,48 +132,47 @@ void ConsoleResultListener::reportSkip(const string &name)
   cout << "^" << flush;
 }
 
-void ConsoleResultListener::reportFail(const string &name,
-                                       const string &actualResult, const string &expectedResult)
+void ConsoleResultListener::reportFail(const TestCase &testCase, const string &actualResult,
+                                       const string &expectedResult)
 {
   ++m_nTotalTests;
 
   cout << "!" << flush;
 
   errors_ << "************************************************************************" << endl;
-  errors_ << "Test-case '" << m_szFullTestName << ":" << name << "':" << endl;
-  errors_ << "Actual result: " << endl;
+  testCaseToErrors(testCase);
+  errors_ << "********** Actual result: **********" << endl;
   errors_ << actualResult << endl;;
-  errors_ << "Expected result: " << endl;;
+  errors_ << endl;
+  errors_ << "********** Expected result: **********" << endl;;
   errors_ << expectedResult << endl;
   errors_ << endl;
 }
 
-void ConsoleResultListener::reportFailNoError(const string &name,
-                                              const string &actualResult, const string &expectedErrors)
+void ConsoleResultListener::reportFailNoError(const TestCase &testCase, const string &actualResult)
 {
   ++m_nTotalTests;
 
   cout << "!" << flush;
 
   errors_ << "************************************************************************" << endl;
-  errors_ << "Test-case '" << m_szFullTestName << ":" << name << "':" << endl;
-  errors_ << "Actual result: " << endl;
+  testCaseToErrors(testCase);
+  errors_ << "********** Actual result: **********" << endl;
   errors_ << actualResult << endl;;
-  errors_ << "Expected result: " << endl;;
-  errors_ << "[Error " << expectedErrors << "]" << endl;
   errors_ << endl;
 }
 
-void ConsoleResultListener::reportFailUnexpectedError(const string &name,
-                                                      const string &unexpectedError, const string &expectedErrors)
+void ConsoleResultListener::reportFailUnexpectedError(const TestCase &testCase, const string &unexpectedError)
 {
   ++m_nTotalTests;
 
   cout << "!" << flush;
 
   errors_ << "************************************************************************" << endl;
-  errors_ << "Test-case '" << m_szFullTestName << ":" << name << "':" << endl;
-  errors_ << "Expected error: " << expectedErrors << ", actual error '" << unexpectedError << "'" << endl;
+  testCaseToErrors(testCase);
+  errors_ << "********** Actual error: **********" << endl;
+  errors_ << unexpectedError << endl;;
+  errors_ << endl;
 }
 
 void ConsoleResultListener::printReport() const

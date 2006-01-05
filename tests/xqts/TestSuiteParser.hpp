@@ -35,6 +35,17 @@
 
 class TestSuiteRunner;
 
+class TestCase
+{
+public:
+  std::string name;
+  std::string queryURL;
+  std::string query;
+  std::map<std::string, std::string> inputVars;
+  std::map<std::string, std::string> outputFiles;
+  std::list<std::string> expectedErrors;
+};
+
 class TestSuiteParser : private XERCES_CPP_NAMESPACE_QUALIFIER HandlerBase
 {
 public:
@@ -61,7 +72,6 @@ private:
 private:
   TestSuiteRunner *m_runner;
 
-  std::string m_szCurrentTestCase;
   XERCES_CPP_NAMESPACE_QUALIFIER XMLURL m_urlXQTSDirectory, m_urlXQTSQueriesDirectory, m_urlXQTSResultsDirectory, 
     m_urlBasePath, m_urlBasePathReferenceFiles, m_urlQuery;
 
@@ -69,9 +79,8 @@ private:
   std::string m_szChars;
 
   std::string m_szVariableBoundToInput, m_szCompareMethod;
-  std::map<std::string, std::string> m_inputVars;
-  std::map<std::string, std::string> m_outputFiles;
-  std::list<std::string> m_expectedErrors;
+
+  TestCase m_testCase;
 };
 
 #endif

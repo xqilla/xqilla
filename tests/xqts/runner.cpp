@@ -58,8 +58,7 @@ public:
   virtual void startTestGroup(const std::string &name);
   virtual void endTestGroup();
 
-  virtual void runTestCase(const std::string &name, const std::string &queryURL, const std::map<std::string, std::string> &inputVars,
-                           const std::map<std::string, std::string> &outputFiles, const std::list<std::string> &expectedErrors);
+  virtual void runTestCase(const TestCase &testCase);
 
 private:
   virtual InputSource* resolveEntity(XMLResourceIdentifier* resourceIdentifier);
@@ -133,17 +132,16 @@ void XQillaTestSuiteRunner::addSchema(const string &id, const string &filename, 
   m_schemaFiles[uri] = filename;
 }
 
-void XQillaTestSuiteRunner::runTestCase(const string &name, const string &queryURL, const map<string, string> &inputVars,
-                                  const map<string, string> &outputFiles, const list<string> &expectedErrors)
+void XQillaTestSuiteRunner::runTestCase(const TestCase &testCase)
 {
-  if(m_szSingleTest != "" && name != m_szSingleTest &&
+  if(m_szSingleTest != "" && testCase.name != m_szSingleTest &&
      m_szFullTestName.find(m_szSingleTest) == string::npos) {
-    m_results->reportSkip(name);
+    m_results->reportSkip(testCase);
     return;
   }
 
   if(m_szFullTestName.substr(0,21)=="Optional:StaticTyping") {
-    m_results->reportSkip(name);
+    m_results->reportSkip(testCase);
     return;
   }
 
@@ -151,16 +149,16 @@ void XQillaTestSuiteRunner::runTestCase(const string &name, const string &queryU
 
   Janitor<DynamicContext> context(xqilla.createContext());
   try {
-    context->setBaseURI(X(queryURL.c_str()));
+    context->setBaseURI(X(testCase.queryURL.c_str()));
     context->setImplicitTimezone(context->getItemFactory()->
                                  createDurationOrDerived(FunctionConstructor::XMLChXPath2DatatypesURI,
                                                          ATDurationOrDerived::fgDT_DAYTIMEDURATION,
                                                          X("PT0S"), context.get()));
     context->setXMLEntityResolver(this);
 
-    XQQuery* pParsedQuery=xqilla.parseXQueryFromURI(X(queryURL.c_str()), context.get());
+    XQQuery* pParsedQuery=xqilla.parseXQuery(X(testCase.query.c_str()), context.get(), X(testCase.queryURL.c_str()));
 
-    for(map<string, string>::const_iterator v=inputVars.begin();v!=inputVars.end();v++) {
+    for(map<string, string>::const_iterator v=testCase.inputVars.begin();v!=testCase.inputVars.end();v++) {
       Sequence doc=context->resolveDocument(X(m_inputFiles[v->second].c_str()));
       context->getVariableStore()->setGlobalVar(X(v->first.c_str()),doc,context.get());
     }
@@ -171,16 +169,16 @@ void XQillaTestSuiteRunner::runTestCase(const string &name, const string &queryU
 
     Sequence result=pParsedQuery->execute(context.get());
 
-    testResults(name, outputFiles, expectedErrors, serializeXMLResults(result, context.get()));
+    testResults(testCase, serializeXMLResults(result, context.get()));
   }
   catch(XQException& e) {
-    testErrors(name, expectedErrors, UTF8(e.getError()));
+    testErrors(testCase, UTF8(e.getError()));
 	}
   catch(DOMException &de) {
-    testErrors(name, expectedErrors, string("DOMException: ") + UTF8(de.getMessage()));
+    testErrors(testCase, string("DOMException: ") + UTF8(de.getMessage()));
   }
   catch(...) {
-    testErrors(name, expectedErrors, "[Unknown exception]");
+    testErrors(testCase, "[Unknown exception]");
   }
 }
 

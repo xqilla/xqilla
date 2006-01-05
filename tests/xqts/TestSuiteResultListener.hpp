@@ -29,6 +29,8 @@
 #include <string>
 #include <sstream>
 
+class TestCase;
+
 class TestSuiteResultListener
 {
 public:
@@ -37,16 +39,14 @@ public:
   virtual void startTestGroup(const std::string &name) = 0;
   virtual void endTestGroup() = 0;
 
-  virtual void reportPass(const std::string &name) = 0;
-  virtual void reportInspect(const std::string &name, const std::string &actualResult,
+  virtual void reportPass(const TestCase &testCase) = 0;
+  virtual void reportInspect(const TestCase &testCase, const std::string &actualResult,
                              const std::string &expectedResult) = 0;
-  virtual void reportSkip(const std::string &name) = 0;
-  virtual void reportFail(const std::string &name, const std::string &actualResult,
+  virtual void reportSkip(const TestCase &testCase) = 0;
+  virtual void reportFail(const TestCase &testCase, const std::string &actualResult,
                           const std::string &expectedResult) = 0;
-  virtual void reportFailNoError(const std::string &name, const std::string &actualResult,
-                                 const std::string &expectedErrors) = 0;
-  virtual void reportFailUnexpectedError(const std::string &name, const std::string &unexpectedError,
-                                         const std::string &expectedErrors) = 0;
+  virtual void reportFailNoError(const TestCase &testCase, const std::string &actualResult) = 0;
+  virtual void reportFailUnexpectedError(const TestCase &testCase, const std::string &unexpectedError) = 0;
 
 protected:
   TestSuiteResultListener() {}
@@ -60,18 +60,19 @@ public:
   virtual void startTestGroup(const std::string &name);
   virtual void endTestGroup();
 
-  virtual void reportPass(const std::string &name);
-  virtual void reportInspect(const std::string &name, const std::string &actualResult,
+  virtual void reportPass(const TestCase &testCase);
+  virtual void reportInspect(const TestCase &testCase, const std::string &actualResult,
                              const std::string &expectedResult);
-  virtual void reportSkip(const std::string &name);
-  virtual void reportFail(const std::string &name, const std::string &actualResult,
+  virtual void reportSkip(const TestCase &testCase);
+  virtual void reportFail(const TestCase &testCase, const std::string &actualResult,
                           const std::string &expectedResult);
-  virtual void reportFailNoError(const std::string &name, const std::string &actualResult,
-                                 const std::string &expectedErrors);
-  virtual void reportFailUnexpectedError(const std::string &name, const std::string &unexpectedError,
-                                         const std::string &expectedErrors);
+  virtual void reportFailNoError(const TestCase &testCase, const std::string &actualResult);
+  virtual void reportFailUnexpectedError(const TestCase &testCase, const std::string &unexpectedError);
 
   void printReport() const;
+
+private:
+  void testCaseToErrors(const TestCase &testCase);
 
 private:
   std::string m_szFullTestName;
