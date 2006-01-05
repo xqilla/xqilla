@@ -73,6 +73,8 @@ typedef union {
     VectorOfStrings* stringList;
 } yystype;
 #define YYSTYPE yystype
+#define YYSTYPE_IS_DECLARED 1
+#define YYSTYPE_IS_TRIVIAL 1
 #endif  // #ifndef YYSTYPE
 
 typedef struct yyltype
@@ -85,14 +87,10 @@ typedef struct yyltype
 
   int first_offset;
   int last_offset;
-
-  yyltype() {
-	  first_line=last_line=1;
-	  first_column=last_column=0;
-	  first_offset=last_offset=0;
-  }
 } yyltype;
 #define YYLTYPE yyltype
+#define YYLTYPE_IS_DECLARED 1
+#define YYLTYPE_IS_TRIVIAL 1
 
 #define YY_USER_ACTION	userAction();
 
