@@ -11,7 +11,6 @@ bin_PROGRAMS = xqilla
 noinst_PROGRAMS = basicXQillaUsage testDatatypes xqtsRunner
 
 lib_LTLIBRARIES = libxqilla.la
-noinst_LTLIBRARIES = libxqilla_xqts.la
 
 libxqilla_la_SOURCES = \
 src/framework/ReferenceCounted.cpp \
@@ -381,7 +380,10 @@ src/runtime/SingleResult.cpp \
 src/runtime/SortIntoDocumentOrderResult.cpp \
 src/runtime/Sequence.cpp \
 src/config/xqilla_config.h \
-src/config/xqilla_config_win32.h
+src/config/xqilla_config_win32.h \
+src/xqts/TestSuiteParser.cpp \
+src/xqts/TestSuiteResultListener.cpp \
+src/xqts/TestSuiteRunner.cpp
 
 EXTRA_DIST = \
 src/lexer/flex.skl \
@@ -408,16 +410,6 @@ src/samples/basic/basicXQillaUsage.cpp
 
 xqtsRunner_SOURCES = \
 tests/xqts/runner.cpp
-
-xqtsRunner_LDADD = libxqilla_xqts.la libxqilla.la -lxerces-c
-
-libxqilla_xqts_la_SOURCES = \
-tests/xqts/TestSuiteParser.cpp \
-tests/xqts/TestSuiteParser.hpp \
-tests/xqts/TestSuiteResultListener.cpp \
-tests/xqts/TestSuiteResultListener.hpp \
-tests/xqts/TestSuiteRunner.cpp \
-tests/xqts/TestSuiteRunner.hpp
 
 testDatatypes_SOURCES = \
 src/samples/datatypes/ATAnyURITester.cpp \
