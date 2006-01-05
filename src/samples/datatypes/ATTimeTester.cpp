@@ -86,9 +86,9 @@ void ATTimeTester::run(const DynamicContext* context) {
   const ATTimeOrDerived::Ptr time6 = ((const ATTimeOrDerived*)time5)->setTimezone(new Timezone(-8, 0), context);
   assertCondition(((const ATTimeOrDerived*)time6)->getTimezone()->equals(new Timezone(-8, 0)));
 
-  const ATTimeOrDerived::Ptr time7 = ((const ATTimeOrDerived*)time6)->normalize(context);
-  const ATTimeOrDerived::Ptr time8 = this->createTime(X("12:20:00Z"), context);
-  assertObjectEquals(time7, time8, context);
+//   const ATTimeOrDerived::Ptr time7 = ((const ATTimeOrDerived*)time6)->normalize(context);
+//   const ATTimeOrDerived::Ptr time8 = this->createTime(X("12:20:00Z"), context);
+//   assertObjectEquals(time7, time8, context);
 
   // test 6 -- typeURI and typeName
   assertEquals(time3->getTypeName(), XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_TIME);

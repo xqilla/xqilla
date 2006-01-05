@@ -28,6 +28,7 @@
 #endif
 
 #include "TestSuiteRunner.hpp"
+#include "TestSuiteParser.hpp"
 #include "TestSuiteResultListener.hpp"
 
 #include <iostream>
@@ -46,24 +47,15 @@ using namespace std;
 string loadExpectedResult(const string &file);
 bool compareNodes(DOMNode* node1, DOMNode* node2);
 
-void TestSuiteRunner::testResults(const std::string &name, const std::map<std::string, std::string> &outputFiles,
-                                  const std::list<std::string> &expectedErrors,
-                                  const std::string &xmlResult) const
+void TestSuiteRunner::testResults(const TestCase &testCase, const std::string &xmlResult) const
 {
-  if(outputFiles.empty() && !expectedErrors.empty()) {
-    string allErrors;
-    for(list<string>::const_iterator i=expectedErrors.begin();i!=expectedErrors.end();i++) {
-      if(i!=expectedErrors.begin())
-        allErrors+=",";
-      allErrors+=*i;
-    }
-
-    m_results->reportFailNoError(name, xmlResult, allErrors);
+  if(testCase.outputFiles.empty() && !testCase.expectedErrors.empty()) {
+    m_results->reportFailNoError(testCase, xmlResult);
   }
   else {
     bool passed = false;
     string compareMethod, expectedResult, outputResult;
-    for(map<string, string>::const_iterator i=outputFiles.begin();i!=outputFiles.end();i++) {
+    for(map<string, string>::const_iterator i=testCase.outputFiles.begin();i!=testCase.outputFiles.end();i++) {
       compareMethod=(*i).second;
       expectedResult = loadExpectedResult((*i).first);
 
@@ -96,31 +88,30 @@ void TestSuiteRunner::testResults(const std::string &name, const std::map<std::s
       }
       else {
         // TODO
-        cout << "Test-case '" << name << "': Unsupported comparison method " << compareMethod << endl;
+        cout << "Test-case '" << testCase.name << "': Unsupported comparison method " << compareMethod << endl;
       }
     }
 
     if(passed) {
-      m_results->reportPass(name);
+      m_results->reportPass(testCase);
     }
     else if(compareMethod == "Inspect") {
-      m_results->reportInspect(name, xmlResult, expectedResult);
+      m_results->reportInspect(testCase, xmlResult, expectedResult);
     }
     else {
-      m_results->reportFail(name, outputResult, expectedResult);
+      m_results->reportFail(testCase, outputResult, expectedResult);
     }
   }
 }
 
-void TestSuiteRunner::testErrors(const std::string &name, const std::list<std::string> &expectedErrors,
-                                 const std::string &actualError) const
+void TestSuiteRunner::testErrors(const TestCase &testCase, const std::string &actualError) const
 {
-  if(expectedErrors.empty()) {
-    m_results->reportFailUnexpectedError(name, actualError, "");
+  if(testCase.expectedErrors.empty()) {
+    m_results->reportFailUnexpectedError(testCase, actualError);
   }
   else {
     bool bFound = false;
-    for(list<string>::const_iterator i=expectedErrors.begin();i!=expectedErrors.end();i++) {
+    for(list<string>::const_iterator i=testCase.expectedErrors.begin();i!=testCase.expectedErrors.end();i++) {
       if(actualError.find(*i) != string::npos) {
         bFound = true;
         break;
@@ -128,17 +119,10 @@ void TestSuiteRunner::testErrors(const std::string &name, const std::list<std::s
     }
 
     if(bFound) {
-      m_results->reportPass(name);
+      m_results->reportPass(testCase);
     }
     else {
-      string allErrors;
-      for(list<string>::const_iterator i=expectedErrors.begin();i!=expectedErrors.end();i++) {
-        if(i!=expectedErrors.begin())
-          allErrors+=",";
-        allErrors+=*i;
-      }
-
-      m_results->reportFailUnexpectedError(name, actualError, allErrors);
+      m_results->reportFailUnexpectedError(testCase, actualError);
     }
   }
 }
