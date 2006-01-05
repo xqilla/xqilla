@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2001-2005
+ * Copyright (c) 2001-2006
  *     DecisionSoft Limited. All rights reserved.
- * Copyright (c) 2004-2005
+ * Copyright (c) 2004-2006
  *     Progress Software Corporation. All rights reserved.
- * Copyright (c) 2004-2005
+ * Copyright (c) 2004-2006
  *     Sleepycat Software. All rights reserved.
- * Copyright (c) 2004-2005
+ * Copyright (c) 2004-2006
  *     Parthenon Computing Ltd. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -319,7 +319,6 @@ bool XQFLWOR::ProductFactor::initialise(DynamicContext *context)
     // sequence itself, so allow it to match multiple matches
     if(_vb->_seqType!=NULL)
     {
-      SequenceType::OccurrenceIndicator occurr=_vb->_seqType->getOccurrenceIndicator();
       _vb->_seqType->setOccurrence(SequenceType::STAR);
       _values=_values.matches(_vb->_seqType, context);
     }
