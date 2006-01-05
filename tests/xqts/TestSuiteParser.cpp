@@ -75,7 +75,8 @@ void TestSuiteParser::run()
     parser.setDocumentHandler(this);
     parser.setErrorHandler(this);
     XMLURL url(m_urlXQTSDirectory,"XQTSCatalog.xml");
-    parser.parse(URLInputSource(url));
+    URLInputSource is(url);
+    parser.parse(is);
   }
   catch(const XMLException& e) {
     cerr << "Error while reading test catalog: " << UTF8(e.getMessage()) << endl;
