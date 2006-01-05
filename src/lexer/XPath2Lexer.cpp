@@ -9938,13 +9938,13 @@ static yyconst short int yy_chk[9776] =
 #line 1 "../src/lexer/XPath2Lexer.lex"
 #define INITIAL 0
 /*
- * Copyright (c) 2001-2005
+ * Copyright (c) 2001-2006
  *     DecisionSoft Limited. All rights reserved.
- * Copyright (c) 2004-2005
+ * Copyright (c) 2004-2006
  *     Progress Software Corporation. All rights reserved.
- * Copyright (c) 2004-2005
+ * Copyright (c) 2004-2006
  *     Sleepycat Software. All rights reserved.
- * Copyright (c) 2004-2005
+ * Copyright (c) 2004-2006
  *     Parthenon Computing Ltd. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
