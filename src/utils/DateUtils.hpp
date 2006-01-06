@@ -29,7 +29,6 @@
 #include <time.h>
 
 #include <xqilla/context/DynamicContext.hpp>
-#include "Date.hpp"
 #include <xqilla/mapm/m_apm.h>
 #include <xqilla/items/ATDateOrDerived.hpp>
 #include <xqilla/items/ATDateTimeOrDerived.hpp>
@@ -100,7 +99,12 @@ public:
    * Returns the maximum day of the given month for the given year
    * month - Value between 1 (January) and 12 (December)
    */
-  static int maximumDayInMonthFor(int yearValue, int monthValue);
+  static int maximumDayInMonthFor(MAPM yearValue, MAPM monthValue);
+
+  /**
+   * Returns whether the yer is a leap year
+   */
+  static bool isLeapYear(MAPM year);
 
   /**
    * Returns the number of days in the given year
@@ -108,10 +112,19 @@ public:
   static int daysInYear(int yearValue);
 
   /**
-   * Returns a Date representing the given Date as well as the given number
-   * of days.
+   * Convert a MAPM to an int (to be used on small numbers!!!
    */
-  static Date addDaysToDate(Date &day, int days);
+  static int asInt(MAPM num);
+
+  /**
+   * Convert from day,month,year into the proleptic Gregorian calendar used by XMLSchema
+   */
+  static MAPM convertDMY2Absolute(MAPM day, MAPM month, MAPM year);
+
+  /**
+   * Convert the proleptic Gregorian calendar used by XMLSchema into day,month,year 
+   */
+  static void convertAbsolute2DMY(MAPM absolute, MAPM& day, MAPM& month, MAPM& year);
 
   /**
    * Returns the current date as an ATDate

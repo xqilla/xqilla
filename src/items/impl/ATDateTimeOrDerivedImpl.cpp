@@ -51,7 +51,6 @@
 #include <assert.h>
 
 #include "../../utils/DateUtils.hpp"
-#include "../../utils/Date.hpp"
 
 ATDateTimeOrDerivedImpl::
 ATDateTimeOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* value, const DynamicContext* context): 
@@ -440,17 +439,16 @@ ATDateTimeOrDerived::Ptr ATDateTimeOrDerivedImpl::addTimezone(const ATDurationOr
     MAPM hh = DateUtils::modulo(temp, DateUtils::g_hoursPerDay);
     carry = (temp / DateUtils::g_hoursPerDay).floor();
     
-    Date thisDate = Date(asInt(_DD->asMAPM()),
-                         asInt(_MM->asMAPM()),
-                         asInt(_YY->asMAPM()));
-    Date sumDate = thisDate + asInt(carry);
+    MAPM sumDate = DateUtils::convertDMY2Absolute(_DD->asMAPM(),_MM->asMAPM(),_YY->asMAPM())+carry;
     
+    MAPM day,month,year;
+    DateUtils::convertAbsolute2DMY(sumDate, day,month,year);
     return new
       ATDateTimeOrDerivedImpl(this->getTypeURI(), 
                               this->getTypeName(), 
-                              context->getItemFactory()->createInteger(sumDate.Year(), context),
-                              context->getItemFactory()->createNonNegativeInteger(sumDate.Month(), context),
-                              context->getItemFactory()->createNonNegativeInteger(sumDate.Day(), context),
+                              context->getItemFactory()->createInteger(year, context),
+                              context->getItemFactory()->createNonNegativeInteger(month, context),
+                              context->getItemFactory()->createNonNegativeInteger(day, context),
                               context->getItemFactory()->createNonNegativeInteger(hh, context),
                               context->getItemFactory()->createNonNegativeInteger(mm, context),
                               _ss, 
@@ -464,9 +462,9 @@ ATDateTimeOrDerived::Ptr ATDateTimeOrDerivedImpl::addTimezone(const ATDurationOr
  * Returns a date with the given yearMonthDuration added to it
  */
 ATDateTimeOrDerived::Ptr ATDateTimeOrDerivedImpl::addYearMonthDuration(const ATDurationOrDerived::Ptr &yearMonth,  const DynamicContext* context) const {
-  MAPM year=((const ATDecimalOrDerived*)((const ATDurationOrDerived*)yearMonth)->getYears())->asMAPM();
-  MAPM month=((const ATDecimalOrDerived*)((const ATDurationOrDerived*)yearMonth)->getMonths())->asMAPM();
-  if(((const ATDurationOrDerived*)yearMonth)->isNegative()) {
+  MAPM year=yearMonth->getYears()->asMAPM();
+  MAPM month=yearMonth->getMonths()->asMAPM();
+  if(yearMonth->isNegative()) {
     year=year.neg();
     month=month.neg();
   }
@@ -497,7 +495,7 @@ ATDateTimeOrDerived::Ptr ATDateTimeOrDerivedImpl::addYearMonthDuration(MAPM year
   }
 
   MAPM DD = getDays()->asMAPM();
-  int maxDay=DateUtils::maximumDayInMonthFor(asInt(YY), asInt(MM));
+  int maxDay=DateUtils::maximumDayInMonthFor(YY, MM);
   if(DD > maxDay)
       DD = maxDay;
 
@@ -518,16 +516,17 @@ ATDateTimeOrDerived::Ptr ATDateTimeOrDerivedImpl::addYearMonthDuration(MAPM year
  * Returns a date with the given dayTimeDuration added to it
  */
 ATDateTimeOrDerived::Ptr ATDateTimeOrDerivedImpl::addDayTimeDuration(const ATDurationOrDerived::Ptr &dayTime, const DynamicContext* context) const {
-  if(((const ATDurationOrDerived*)dayTime)->isNegative()) {
-    return subtractDayTimeDuration(((const ATDecimalOrDerived*)((const ATDurationOrDerived*)dayTime)->getDays())->asMAPM(),
-                                   ((const ATDecimalOrDerived*)((const ATDurationOrDerived*)dayTime)->getHours())->asMAPM(),
-                                   ((const ATDecimalOrDerived*)((const ATDurationOrDerived*)dayTime)->getMinutes())->asMAPM(),
-                                   ((const ATDecimalOrDerived*)((const ATDurationOrDerived*)dayTime)->getSeconds())->asMAPM(), context);
+  if(dayTime->isNegative()) {
+    return addDayTimeDuration(dayTime->getDays()->asMAPM().neg(), 
+                              dayTime->getHours()->asMAPM().neg(), 
+                              dayTime->getMinutes()->asMAPM().neg(), 
+                              dayTime->getSeconds()->asMAPM().neg(), 
+                              context);
   } else {
-    return addDayTimeDuration(((const ATDecimalOrDerived*)((const ATDurationOrDerived*)dayTime)->getDays())->asMAPM(),
-                              ((const ATDecimalOrDerived*)((const ATDurationOrDerived*)dayTime)->getHours())->asMAPM(),
-                              ((const ATDecimalOrDerived*)((const ATDurationOrDerived*)dayTime)->getMinutes())->asMAPM(),
-                              ((const ATDecimalOrDerived*)((const ATDurationOrDerived*)dayTime)->getSeconds())->asMAPM(), context);
+    return addDayTimeDuration(dayTime->getDays()->asMAPM(),
+                              dayTime->getHours()->asMAPM(),
+                              dayTime->getMinutes()->asMAPM(),
+                              dayTime->getSeconds()->asMAPM(), context);
   }
 }
   
@@ -552,17 +551,21 @@ ATDateTimeOrDerived::Ptr ATDateTimeOrDerivedImpl::normalize(const DynamicContext
   MAPM hh = DateUtils::modulo(temp, DateUtils::g_hoursPerDay);
   carry = (temp / DateUtils::g_hoursPerDay).floor();
   
-  Date thisDate = Date(asInt(((const ATDecimalOrDerived*)_DD)->asMAPM()),
-                       asInt(((const ATDecimalOrDerived*)_MM)->asMAPM()),
-                       asInt(((const ATDecimalOrDerived*)_YY)->asMAPM()));
-  Date sumDate = thisDate + asInt(carry);
+  MAPM day=_DD->asMAPM();
+  MAPM month=_MM->asMAPM();
+  MAPM year=_YY->asMAPM();
+  if(carry != 0)
+  {
+    MAPM sumDate = DateUtils::convertDMY2Absolute(day,month,year)+carry;
+    DateUtils::convertAbsolute2DMY(sumDate, day,month,year);
+  }
   
   return new
     ATDateTimeOrDerivedImpl(this->getTypeURI(), 
                         this->getTypeName(), 
-                        context->getItemFactory()->createInteger(sumDate.Year(), context),
-                        context->getItemFactory()->createNonNegativeInteger(sumDate.Month(), context),
-                        context->getItemFactory()->createNonNegativeInteger(sumDate.Day(), context),
+                        context->getItemFactory()->createInteger(year, context),
+                        context->getItemFactory()->createNonNegativeInteger(month, context),
+                        context->getItemFactory()->createNonNegativeInteger(day, context),
                         context->getItemFactory()->createNonNegativeInteger(hh, context),
                         context->getItemFactory()->createNonNegativeInteger(mm, context),
                         _ss,
@@ -575,29 +578,29 @@ ATDateTimeOrDerived::Ptr ATDateTimeOrDerivedImpl::normalize(const DynamicContext
  * Returns a date with the given yearMonthDuration subtracted from it
  */
 ATDateTimeOrDerived::Ptr ATDateTimeOrDerivedImpl::subtractYearMonthDuration(const ATDurationOrDerived::Ptr &yearMonth, const DynamicContext* context) const {
-  MAPM year=((const ATDecimalOrDerived*)((const ATDurationOrDerived*)yearMonth)->getYears())->asMAPM();
-  MAPM month=((const ATDecimalOrDerived*)((const ATDurationOrDerived*)yearMonth)->getMonths())->asMAPM();
-  if(!((const ATDurationOrDerived*)yearMonth)->isNegative()) {
+  MAPM year=yearMonth->getYears()->asMAPM();
+  MAPM month=yearMonth->getMonths()->asMAPM();
+  if(!yearMonth->isNegative()) {
     year=year.neg();
     month=month.neg();
   }
-  return this->addYearMonthDuration(year, month, context);
+  return addYearMonthDuration(year, month, context);
 }
 
 /**
  * Returns a date with the given dayTimeDuration subtracted from it
  */
 ATDateTimeOrDerived::Ptr ATDateTimeOrDerivedImpl::subtractDayTimeDuration(const ATDurationOrDerived::Ptr &dayTime, const DynamicContext* context) const {
-  if(((const ATDurationOrDerived*)dayTime)->isNegative()) {
-    return addDayTimeDuration(((const ATDecimalOrDerived*)((const ATDurationOrDerived*)dayTime)->getDays())->asMAPM(),
-                              ((const ATDecimalOrDerived*)((const ATDurationOrDerived*)dayTime)->getHours())->asMAPM(),
-                              ((const ATDecimalOrDerived*)((const ATDurationOrDerived*)dayTime)->getMinutes())->asMAPM(),
-                              ((const ATDecimalOrDerived*)((const ATDurationOrDerived*)dayTime)->getSeconds())->asMAPM(), context);
+  if(dayTime->isNegative()) {
+    return addDayTimeDuration(dayTime->getDays()->asMAPM(),
+                              dayTime->getHours()->asMAPM(),
+                              dayTime->getMinutes()->asMAPM(),
+                              dayTime->getSeconds()->asMAPM(), context);
   } else {
-    return subtractDayTimeDuration(((const ATDecimalOrDerived*)((const ATDurationOrDerived*)dayTime)->getDays())->asMAPM(),
-                                   ((const ATDecimalOrDerived*)((const ATDurationOrDerived*)dayTime)->getHours())->asMAPM(),
-                                   ((const ATDecimalOrDerived*)((const ATDurationOrDerived*)dayTime)->getMinutes())->asMAPM(),
-                                   ((const ATDecimalOrDerived*)((const ATDurationOrDerived*)dayTime)->getSeconds())->asMAPM(), context);
+    return addDayTimeDuration(dayTime->getDays()->asMAPM().neg(),
+                              dayTime->getHours()->asMAPM().neg(),
+                              dayTime->getMinutes()->asMAPM().neg(),
+                              dayTime->getSeconds()->asMAPM().neg(), context);
   }
   
 }
@@ -619,25 +622,27 @@ ATDateTimeOrDerived::Ptr ATDateTimeOrDerivedImpl::addDayTimeDuration(MAPM days, 
   MAPM hh = DateUtils::modulo(temp, DateUtils::g_hoursPerDay);
   carry = (temp / DateUtils::g_hoursPerDay).floor();
 
-  Date thisDate = Date(asInt(getDays()->asMAPM()),
-                       asInt(getMonths()->asMAPM()),
-                       asInt(getYears()->asMAPM()));
-  Date sumDate = thisDate + asInt(days) + asInt(carry);
+  days += carry;
+
+  MAPM day=_DD->asMAPM();
+  MAPM month=_MM->asMAPM();
+  MAPM year=_YY->asMAPM();
+  if(days != 0)
+  {
+    MAPM sumDate = DateUtils::convertDMY2Absolute(day,month,year)+days;
+    DateUtils::convertAbsolute2DMY(sumDate, day,month,year);
+  }
   
   return new
     ATDateTimeOrDerivedImpl(_typeURI, 
                             _typeName, 
-                            context->getItemFactory()->createInteger(sumDate.Year(), context),
-                            context->getItemFactory()->createNonNegativeInteger(sumDate.Month(), context),
-                            context->getItemFactory()->createNonNegativeInteger(sumDate.Day(), context),
+                            context->getItemFactory()->createInteger(year, context),
+                            context->getItemFactory()->createNonNegativeInteger(month, context),
+                            context->getItemFactory()->createNonNegativeInteger(day, context),
                             context->getItemFactory()->createNonNegativeInteger(hh, context),
                             context->getItemFactory()->createNonNegativeInteger(mm, context),
                             context->getItemFactory()->createDecimal(ss, context),
                             getTimezone(), hasTimezone());
-}
-
-ATDateTimeOrDerived::Ptr ATDateTimeOrDerivedImpl::subtractDayTimeDuration(MAPM days, MAPM hours, MAPM minutes, MAPM seconds, const DynamicContext* context) const {
-  return this->addDayTimeDuration(days.neg(), hours.neg(), minutes.neg(), seconds.neg(), context);
 }
 
 /**
@@ -649,26 +654,23 @@ ATDurationOrDerived::Ptr ATDateTimeOrDerivedImpl::subtractDateTimeAsDayTimeDurat
   const ATDateTimeOrDerived::Ptr thisDate = this->normalize(context);
   const ATDateTimeOrDerived::Ptr otherDate = date->normalize(context);
   
-  // this as julian
-  Date dateThis = Date(asInt(((const ATDecimalOrDerived*)((const ATDateTimeOrDerived*)thisDate)->getDays())->asMAPM()),
-                       asInt(((const ATDecimalOrDerived*)((const ATDateTimeOrDerived*)thisDate)->getMonths())->asMAPM()),
-                       asInt(((const ATDecimalOrDerived*)((const ATDateTimeOrDerived*)thisDate)->getYears())->asMAPM()));
-  // other date as julian
-  Date dateOther = Date(asInt(((const ATDecimalOrDerived*)((const ATDateTimeOrDerived*)otherDate)->getDays())->asMAPM()),
-                        asInt(((const ATDecimalOrDerived*)((const ATDateTimeOrDerived*)otherDate)->getMonths())->asMAPM()),
-                        asInt(((const ATDecimalOrDerived*)((const ATDateTimeOrDerived*)otherDate)->getYears())->asMAPM()));
+  // this as number of days
+  MAPM dateThis = DateUtils::convertDMY2Absolute(thisDate->getDays()->asMAPM(),thisDate->getMonths()->asMAPM(),thisDate->getYears()->asMAPM());
+  // other date as number of days
+  MAPM dateOther = DateUtils::convertDMY2Absolute(otherDate->getDays()->asMAPM(),otherDate->getMonths()->asMAPM(),otherDate->getYears()->asMAPM());
+    
   // difference in days
   MAPM dateDiff = dateThis - dateOther;
 
   MAPM dateDiffInSeconds = dateDiff*DateUtils::g_secondsPerDay;
   
   // calculate the differences in seconds
-  MAPM thisSeconds = ((const ATDecimalOrDerived*)((const ATDateTimeOrDerived*)thisDate)->getHours())->asMAPM() * DateUtils::g_secondsPerHour +
-                     ((const ATDecimalOrDerived*)((const ATDateTimeOrDerived*)thisDate)->getMinutes())->asMAPM() * DateUtils::g_secondsPerMinute +
-                     ((const ATDecimalOrDerived*)((const ATDateTimeOrDerived*)thisDate)->getSeconds())->asMAPM();
-  MAPM otherSeconds = ((const ATDecimalOrDerived*)((const ATDateTimeOrDerived*)otherDate)->getHours())->asMAPM() * DateUtils::g_secondsPerHour +
-                      ((const ATDecimalOrDerived*)((const ATDateTimeOrDerived*)otherDate)->getMinutes())->asMAPM() * DateUtils::g_secondsPerMinute +
-                      ((const ATDecimalOrDerived*)((const ATDateTimeOrDerived*)otherDate)->getSeconds())->asMAPM();
+  MAPM thisSeconds = thisDate->getHours()->asMAPM() * DateUtils::g_secondsPerHour +
+                     thisDate->getMinutes()->asMAPM() * DateUtils::g_secondsPerMinute +
+                     thisDate->getSeconds()->asMAPM();
+  MAPM otherSeconds = otherDate->getHours()->asMAPM() * DateUtils::g_secondsPerHour +
+                      otherDate->getMinutes()->asMAPM() * DateUtils::g_secondsPerMinute +
+                      otherDate->getSeconds()->asMAPM();
 
   MAPM secDiff = thisSeconds - otherSeconds + dateDiffInSeconds;
 
@@ -719,8 +721,8 @@ ATDurationOrDerived::Ptr ATDateTimeOrDerivedImpl::subtractDateTimeAsYearMonthDur
   const ATDurationOrDerived::Ptr dayTimeDiff = ((const ATDateTimeOrDerived*)thisDate)->subtractDateTimeAsDayTimeDuration(((const ATDateTimeOrDerived*)otherDate), context);
 
   // put it into yearMonthDuration form
-  MAPM days = ((const ATDecimalOrDerived*)((const ATDurationOrDerived*)dayTimeDiff)->getDays())->asMAPM();
-  if(((const ATDurationOrDerived*)dayTimeDiff)->isNegative()) 
+  MAPM days = dayTimeDiff->getDays()->asMAPM();
+  if(dayTimeDiff->isNegative()) 
     days = days.neg();
   
   MAPM months = MM_Zero;
@@ -728,13 +730,12 @@ ATDurationOrDerived::Ptr ATDateTimeOrDerivedImpl::subtractDateTimeAsYearMonthDur
   ATDateTimeOrDerived::Ptr cur = (ATDateTimeOrDerivedImpl::Ptr)date;
   while (true)
   {
-    int currentDaysInMonth = DateUtils::maximumDayInMonthFor(asInt(((const ATDecimalOrDerived*)((const ATDateTimeOrDerived*)cur)->getYears())->asMAPM()),
-                                                             asInt(((const ATDecimalOrDerived*)((const ATDateTimeOrDerived*)cur)->getMonths())->asMAPM()));
-    int daysToNextMonth = currentDaysInMonth-asInt(((const ATDecimalOrDerived*)((const ATDateTimeOrDerived*)cur)->getDays())->asMAPM())+1;
+    int currentDaysInMonth = DateUtils::maximumDayInMonthFor(cur->getYears()->asMAPM(), cur->getMonths()->asMAPM());
+    int daysToNextMonth = currentDaysInMonth-DateUtils::asInt(cur->getDays()->asMAPM())+1;
     if (days > daysToNextMonth) {
       days = days - daysToNextMonth;
       months = months + MM_One;
-      cur = (const ATDateTimeOrDerived::Ptr)((const ATDateTimeOrDerivedImpl*)(const ATDateTimeOrDerived*)cur)->addDayTimeDuration(daysToNextMonth, MM_Zero, MM_Zero, MM_Zero, context);
+      cur = ((const ATDateTimeOrDerivedImpl*)(const ATDateTimeOrDerived*)cur)->addDayTimeDuration(daysToNextMonth, MM_Zero, MM_Zero, MM_Zero, context);
     }
     else
       break;
@@ -751,21 +752,6 @@ ATDurationOrDerived::Ptr ATDateTimeOrDerivedImpl::subtractDateTimeAsYearMonthDur
   buffer.append(MM->asString(context));
   buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_M);
   return context->getItemFactory()->createYearMonthDuration(buffer.getRawBuffer(), context);
-}
-
-//////////////////////////////////////
-// Horrible Hack to make Dates      //
-// work for now. Loss of Precision! //
-//////////////////////////////////////
-int ATDateTimeOrDerivedImpl::asInt(MAPM num) const
-{
-  if(num < INT_MIN || num > INT_MAX) {
-    XQThrow(XPath2TypeCastException, X("ATDateTimeOrDerivedImpl::asInt"), X("Invalid representation of an int"));
-  } else {
-    char out_string[256];
-    num.toIntegerString(out_string);
-    return atoi(out_string);
-  }
 }
 
 AnyAtomicType::AtomicObjectType ATDateTimeOrDerivedImpl::getPrimitiveTypeIndex() const {
@@ -964,22 +950,10 @@ void ATDateTimeOrDerivedImpl::setDateTime(const XMLCh* const dateTime, const Dyn
   } 
   
   // check time format
-      
-  if ( MM > 12 || DD > 28 || hh > 24 || mm > 60 || ss >= 61 || zonehh > 24 || zonemm > 60 || YY == 0 ) 
-  {
-    // mod in MAPM is called rem
-    bool leapyear = false;
-    if ( YY.rem(400) == 0 || ( (YY.rem(100) != 0 ) && (YY.rem(4) == 0 ) ) ) 
-      leapyear = true;
-    if ( (MM == 2 && leapyear && DD > 29 ) || 
-  (MM == 2 && ! leapyear && DD > 28 ) ||
-  (( MM == 1 || MM == 3 || MM == 5 || MM == 7 || MM == 8 || MM == 10 || MM ==12 ) && DD > 31 ) ||
-        ( ( MM == 4 || MM == 6 || MM == 9 || MM == 11) && DD > 30 ) || 
-  hh > 24 || mm > 60 || ss >= 61 || zonehh > 24 || zonemm > 60 || YY == 0) 
+  if(MM > 12 || YY == 0 || DD > DateUtils::maximumDayInMonthFor(YY, MM) || hh > 24 || mm > 60 || ss >= 61 || zonehh > 24 || zonemm > 60 ) 
     {
     wrongformat = true;
     }
-  }
 
   if (wrongformat) 
   {

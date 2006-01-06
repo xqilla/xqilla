@@ -88,8 +88,6 @@ private:
   /* parse the gDay */
   void setGMonth(const XMLCh* const value, const DynamicContext* context);
   
-  int asInt(MAPM num) const;
-
   /*The value of this gDay*/
   ATDecimalOrDerived::Ptr _gMonth; // as nonNegativeInteger
 

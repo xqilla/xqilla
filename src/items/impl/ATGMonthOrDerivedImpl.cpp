@@ -116,7 +116,7 @@ bool ATGMonthOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const Dynam
     buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
     buffer.append(_gMonth->asString(2, context));
     buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-    DateUtils::formatNumber(DateUtils::maximumDayInMonthFor(1972, asInt(_gMonth->asMAPM())),2,buffer);
+    DateUtils::formatNumber(DateUtils::maximumDayInMonthFor(1972, _gMonth->asMAPM()),2,buffer);
     buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_T);
     buffer.append(doubleZero);
     buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chColon);
@@ -132,7 +132,7 @@ bool ATGMonthOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const Dynam
     buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
     buffer.append(targetGMonth->_gMonth->asString(2, context));
     buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-    DateUtils::formatNumber(DateUtils::maximumDayInMonthFor(1972, asInt(targetGMonth->_gMonth->asMAPM())),2,buffer);
+    DateUtils::formatNumber(DateUtils::maximumDayInMonthFor(1972, targetGMonth->_gMonth->asMAPM()),2,buffer);
     buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_T);
     buffer.append(doubleZero);
     buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chColon);
@@ -345,17 +345,3 @@ void ATGMonthOrDerivedImpl::setGMonth(const XMLCh* const value, const DynamicCon
   
 }
 
-//////////////////////////////////////
-// Horrible Hack to make Dates      //
-// work for now. Loss of Precision! //
-//////////////////////////////////////
-int ATGMonthOrDerivedImpl::asInt(MAPM num) const
-{
-  if(num < INT_MIN || num > INT_MAX) {
-    XQThrow(XPath2TypeCastException, X("ATGMonthOrDerivedImpl::asInt"), X("Invalid representation of an int"));
-  } else {
-    char out_string[256];
-    num.toIntegerString(out_string);
-    return atoi(out_string);
-  }
-}

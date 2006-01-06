@@ -94,7 +94,6 @@ public:
    * Returns an integer representing the day component  of this object
    */
   virtual const ATDecimalOrDerived::Ptr &getDays() const;
-  virtual ATDateOrDerived::Ptr normalize(const DynamicContext* context) const;
   
   /**
    * Returns the timezone associated with this object, or
@@ -166,12 +165,6 @@ private:
 
   void setDate(const XMLCh* const date, const DynamicContext* context);
 
-  //////////////////////////////////////
-  // Horrible Hack to make Dates      //
-  // work for now. Loss of Precision! //
-  //////////////////////////////////////
-  int asInt(MAPM num) const;
-  
   /*The value of this date*/
   ATDecimalOrDerived::Ptr _YY;  // year
   ATDecimalOrDerived::Ptr _MM;  // month

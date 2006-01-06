@@ -119,7 +119,7 @@ bool ATGYearMonthOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const D
     buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
     buffer.append(_MM->asString(2, context));
     buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-    DateUtils::formatNumber(DateUtils::maximumDayInMonthFor(asInt(_YY->asMAPM()), asInt(_MM->asMAPM())),2,buffer);
+    DateUtils::formatNumber(DateUtils::maximumDayInMonthFor(_YY->asMAPM(), _MM->asMAPM()),2,buffer);
     buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_T);
     buffer.append(doubleZero);
     buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chColon);
@@ -140,7 +140,7 @@ bool ATGYearMonthOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const D
     buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
     buffer.append(targetGYearMonth->_MM->asString(2, context));
     buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-    DateUtils::formatNumber(DateUtils::maximumDayInMonthFor(asInt(targetGYearMonth->_YY->asMAPM()), asInt(targetGYearMonth->_MM->asMAPM())),2,buffer);
+    DateUtils::formatNumber(DateUtils::maximumDayInMonthFor(targetGYearMonth->_YY->asMAPM(), targetGYearMonth->_MM->asMAPM()),2,buffer);
     buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_T);
     buffer.append(doubleZero);
     buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chColon);
@@ -375,17 +375,3 @@ void ATGYearMonthOrDerivedImpl::setGYearMonth(const XMLCh* const value, const Dy
   _YY = context->getItemFactory()->createInteger(YY, context);  
 }
 
-//////////////////////////////////////
-// Horrible Hack to make Dates      //
-// work for now. Loss of Precision! //
-//////////////////////////////////////
-int ATGYearMonthOrDerivedImpl::asInt(MAPM num) const
-{
-  if(num < INT_MIN || num > INT_MAX) {
-    XQThrow(XPath2TypeCastException, X("ATGYearMonthOrDerivedImpl::asInt"), X("Invalid representation of an int"));
-  } else {
-    char out_string[256];
-    num.toIntegerString(out_string);
-    return atoi(out_string);
-  }
-}

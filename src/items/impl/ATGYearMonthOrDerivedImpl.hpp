@@ -90,8 +90,6 @@ private:
   /* parse the gYearMonth */
   void setGYearMonth(const XMLCh* const value, const DynamicContext* context);
   
-  int asInt(MAPM num) const;
-
   /*The values of this gYearMonth*/
   ATDecimalOrDerived::Ptr _MM;  // as nonNegativeInteger
   ATDecimalOrDerived::Ptr _YY;  // as integer
