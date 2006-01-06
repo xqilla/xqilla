@@ -191,12 +191,8 @@ private:
 
   ATDateTimeOrDerived::Ptr addDayTimeDuration(MAPM days, MAPM hours, MAPM minutes, MAPM seconds, const DynamicContext* context) const;
 
-  ATDateTimeOrDerived::Ptr subtractDayTimeDuration(MAPM days, MAPM hours, MAPM minutes, MAPM seconds, const DynamicContext* context) const;
-
   ATDateTimeOrDerived::Ptr addYearMonthDuration(MAPM years, MAPM months, const DynamicContext* context) const;
 
-  int asInt(MAPM num) const;
-  
   /*The value of this date*/
   ATDecimalOrDerived::Ptr _YY;  // year as xs:integer
   ATDecimalOrDerived::Ptr _MM;  // month as xs:nonNegativeInteger

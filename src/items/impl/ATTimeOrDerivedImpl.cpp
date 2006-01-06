@@ -44,7 +44,6 @@
 #include <assert.h>
 
 #include "../../utils/DateUtils.hpp"
-#include "../../utils/Date.hpp"
 
 ATTimeOrDerivedImpl::
 ATTimeOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* value, const DynamicContext* context): 

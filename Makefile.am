@@ -87,8 +87,6 @@ src/utils/UTF8Str.cpp \
 src/utils/XMLChCompare.cpp \
 src/utils/XStr.cpp \
 src/utils/ContextUtils.cpp \
-src/utils/Date.cpp \
-src/utils/Date.hpp \
 src/utils/DateUtils.cpp \
 src/utils/DateUtils.hpp \
 src/utils/NumUtils.cpp \

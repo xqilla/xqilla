@@ -49,7 +49,6 @@
 #include <assert.h>
 
 #include "../../utils/DateUtils.hpp"
-#include "../../utils/Date.hpp"
 
 
 ATDateOrDerivedImpl::
@@ -412,53 +411,6 @@ ATDurationOrDerived::Ptr ATDateOrDerivedImpl::subtractDate(const ATDateOrDerived
 AnyAtomicType::AtomicObjectType ATDateOrDerivedImpl::getPrimitiveTypeIndex() const {
   return this->getTypeIndex();
 }
-
-ATDateOrDerived::Ptr ATDateOrDerivedImpl::normalize(const DynamicContext* context) const {
-  Timezone::Ptr timezone;
-  if (!_hasTimezone) {
-    timezone = new Timezone(context->getImplicitTimezone(), context);
-  } else {
-    timezone = this->timezone_;
-  }
-
-  // Minutes
-  MAPM temp = -timezone->getMinutes();
-  MAPM carry = (temp / DateUtils::g_minutesPerHour).floor();
-
-  // Hours
-  temp =  -timezone->getHours() + carry;
-  carry = (temp / DateUtils::g_hoursPerDay).floor();
-
-  Date thisDate = Date(asInt(((const ATDecimalOrDerived*)_DD)->asMAPM()),
-                       asInt(((const ATDecimalOrDerived*)_MM)->asMAPM()),
-                       asInt(((const ATDecimalOrDerived*)_YY)->asMAPM()));
-  Date sumDate = thisDate + asInt(carry);
-
-  return new
-    ATDateOrDerivedImpl(this->_typeURI, 
-                        this->_typeName, 
-                        context->getItemFactory()->createInteger(sumDate.Year(), context),
-                        context->getItemFactory()->createNonNegativeInteger(sumDate.Month(), context),
-                        context->getItemFactory()->createNonNegativeInteger(sumDate.Day(), context),
-                        new Timezone(0, 0), true  // timezone set to UTC 
-                        );
-}
-
-//////////////////////////////////////
-// Horrible Hack to make Dates      //
-// work for now. Loss of Precision! //
-//////////////////////////////////////
-int ATDateOrDerivedImpl::asInt(MAPM num) const
-{
-  if(num < INT_MIN || num > INT_MAX) {
-    XQThrow(XPath2TypeCastException, X("ATDateOrDerivedImpl::asInt"), X("Invalid representation of an int"));
-  } else {
-    char out_string[256];
-    num.toIntegerString(out_string);
-    return atoi(out_string);
-  }
-}
-
 
 void ATDateOrDerivedImpl::setDate(const XMLCh* const date, const DynamicContext* context) {
   unsigned int length = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(date);

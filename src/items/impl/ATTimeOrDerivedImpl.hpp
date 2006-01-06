@@ -162,8 +162,6 @@ private:
 
   ATDateTimeOrDerived::Ptr buildReferenceDateTime(ATTimeOrDerived::Ptr time, const DynamicContext* context) const;
 
-  int asInt(MAPM num) const;
-  
   /*The value of this time*/
   ATDecimalOrDerived::Ptr _hh;  // hours
   ATDecimalOrDerived::Ptr _mm;  // minutes
