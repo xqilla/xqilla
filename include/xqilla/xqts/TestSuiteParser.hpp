@@ -33,9 +33,11 @@
 #include <xercesc/sax/HandlerBase.hpp>
 #include <xercesc/util/XMLURL.hpp>
 
+#include <xqilla/framework/XQillaExport.hpp>
+
 class TestSuiteRunner;
 
-class TestCase
+class XQILLA_API TestCase
 {
 public:
   std::string name;
@@ -46,7 +48,7 @@ public:
   std::list<std::string> expectedErrors;
 };
 
-class TestSuiteParser : private XERCES_CPP_NAMESPACE_QUALIFIER HandlerBase
+class XQILLA_API TestSuiteParser : private XERCES_CPP_NAMESPACE_QUALIFIER HandlerBase
 {
 public:
   TestSuiteParser(std::string pathToTestSuite, TestSuiteRunner *runner);

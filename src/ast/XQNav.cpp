@@ -214,6 +214,10 @@ ASTNode* XQNav::staticResolution(StaticContext *context)
                 // This is a descendant-or-self::node()/child::foo that we can optimise into descendant::foo
                 ++it;
                 const_cast<XQStep*>(peekstep)->setAxis(XQStep::DESCENDANT);
+		// Set the properties to those for descendant axis
+		const_cast<StaticResolutionContext&>(peekstep->getStaticResolutionContext()).
+			setProperties(StaticResolutionContext::SUBTREE | StaticResolutionContext::DOCORDER |
+				StaticResolutionContext::GROUPED | StaticResolutionContext::SAMEDOC);
               }
             }
 

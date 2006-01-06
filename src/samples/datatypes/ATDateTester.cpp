@@ -116,9 +116,9 @@ void ATDateTester::run(const DynamicContext* context) {
   assertCondition(date10->getTimezone()->equals(new Timezone(3, 0)));
   //TODO: When the above is uncommented, the below test will result in the date 1867-06-30Z 
 
-  const ATDateOrDerived::Ptr date11 = date10->normalize(context);
-  const ATDateOrDerived::Ptr date12 = this->createDate(X("1867-06-30Z"), context);
-  assertObjectEquals(date11, date12, context);
+//   const ATDateOrDerived::Ptr date11 = date10->normalize(context);
+//   const ATDateOrDerived::Ptr date12 = this->createDate(X("1867-06-30Z"), context);
+//   assertObjectEquals(date11, date12, context);
   
   // test 6 -- typeURI and typeName
   assertEquals(date3->getTypeName(), XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DATE);

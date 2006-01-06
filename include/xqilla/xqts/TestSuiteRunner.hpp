@@ -30,10 +30,12 @@
 #include <list>
 #include <map>
 
+#include <xqilla/framework/XQillaExport.hpp>
+
 class TestSuiteResultListener;
 class TestCase;
 
-class TestSuiteRunner
+class XQILLA_API TestSuiteRunner
 {
 public:
   virtual ~TestSuiteRunner() {}

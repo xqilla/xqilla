@@ -29,9 +29,11 @@
 #include <string>
 #include <sstream>
 
+#include <xqilla/framework/XQillaExport.hpp>
+
 class TestCase;
 
-class TestSuiteResultListener
+class XQILLA_API TestSuiteResultListener
 {
 public:
   virtual ~TestSuiteResultListener() {}
@@ -52,7 +54,7 @@ protected:
   TestSuiteResultListener() {}
 };
 
-class ConsoleResultListener : public TestSuiteResultListener
+class XQILLA_API ConsoleResultListener : public TestSuiteResultListener
 {
 public:
   ConsoleResultListener();
