@@ -231,8 +231,6 @@ src/utils/UTF8Str.cpp \
 src/utils/XMLChCompare.cpp \
 src/utils/XStr.cpp \
 src/utils/ContextUtils.cpp \
-src/utils/Date.cpp \
-src/utils/Date.hpp \
 src/utils/DateUtils.cpp \
 src/utils/DateUtils.hpp \
 src/utils/NumUtils.cpp \
@@ -650,21 +648,21 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	XQillaXMLGrammarPoolImpl.lo XPathNamespaceImpl.lo \
 	XPath2ResultImpl.lo XQillaImplementation.lo \
 	XPath2NodeSerializer.lo XQilla.lo XQilla2.lo XQQuery.lo \
-	UTF8Str.lo XMLChCompare.lo XStr.lo ContextUtils.lo Date.lo \
-	DateUtils.lo NumUtils.lo XQillaPlatformUtils.lo PrintAST.lo \
-	XPath2NSUtils.lo XPath2Utils.lo XQillaException.lo \
-	XQException.lo FuncFactory.lo FunctionLookupImpl.lo \
-	FunctionAbs.lo FunctionAvg.lo FunctionBaseURI.lo \
-	FunctionBoolean.lo FunctionCeiling.lo FunctionCodepointEqual.lo \
-	FunctionCodepointsToString.lo FunctionCollection.lo \
-	FunctionCompare.lo FunctionConcat.lo FunctionConstructor.lo \
-	FunctionContains.lo FunctionCount.lo FunctionCurrentDate.lo \
-	FunctionCurrentDateTime.lo FunctionCurrentTime.lo \
-	FunctionData.lo FunctionDateTime.lo FunctionDeepEqual.lo \
-	FunctionDefaultCollation.lo FunctionDistinctValues.lo \
-	FunctionDocAvailable.lo FunctionDoc.lo FunctionDocumentURI.lo \
-	FunctionEmpty.lo FunctionEncodeForUri.lo FunctionEndsWith.lo \
-	FunctionError.lo FunctionEscapeHtmlUri.lo FunctionExactlyOne.lo \
+	UTF8Str.lo XMLChCompare.lo XStr.lo ContextUtils.lo DateUtils.lo \
+	NumUtils.lo XQillaPlatformUtils.lo PrintAST.lo XPath2NSUtils.lo \
+	XPath2Utils.lo XQillaException.lo XQException.lo FuncFactory.lo \
+	FunctionLookupImpl.lo FunctionAbs.lo FunctionAvg.lo \
+	FunctionBaseURI.lo FunctionBoolean.lo FunctionCeiling.lo \
+	FunctionCodepointEqual.lo FunctionCodepointsToString.lo \
+	FunctionCollection.lo FunctionCompare.lo FunctionConcat.lo \
+	FunctionConstructor.lo FunctionContains.lo FunctionCount.lo \
+	FunctionCurrentDate.lo FunctionCurrentDateTime.lo \
+	FunctionCurrentTime.lo FunctionData.lo FunctionDateTime.lo \
+	FunctionDeepEqual.lo FunctionDefaultCollation.lo \
+	FunctionDistinctValues.lo FunctionDocAvailable.lo \
+	FunctionDoc.lo FunctionDocumentURI.lo FunctionEmpty.lo \
+	FunctionEncodeForUri.lo FunctionEndsWith.lo FunctionError.lo \
+	FunctionEscapeHtmlUri.lo FunctionExactlyOne.lo \
 	FunctionExists.lo FunctionFalse.lo FunctionFloor.lo \
 	FunctionId.lo FunctionIdref.lo FunctionImplicitTimezone.lo \
 	FunctionIndexOf.lo FunctionInScopePrefixes.lo \
@@ -847,7 +845,7 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/ContextUtils.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/DatatypeFactory.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/DatatypeLookup.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/DatatypeTester.Po ./$(DEPDIR)/Date.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/DatatypeTester.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/DateOrTimeType.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/DateUtils.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/DescendantAxis.Plo \
@@ -1310,7 +1308,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DatatypeFactory.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DatatypeLookup.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DatatypeTester.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Date.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DateOrTimeType.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DateUtils.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DescendantAxis.Plo@am__quote@
@@ -4925,39 +4922,6 @@ ContextUtils.lo: src/utils/ContextUtils.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ContextUtils.Plo' tmpdepfile='$(DEPDIR)/ContextUtils.TPlo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ContextUtils.lo `test -f 'src/utils/ContextUtils.cpp' || echo '$(srcdir)/'`src/utils/ContextUtils.cpp
-
-Date.o: src/utils/Date.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT Date.o -MD -MP -MF "$(DEPDIR)/Date.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o Date.o `test -f 'src/utils/Date.cpp' || echo '$(srcdir)/'`src/utils/Date.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/Date.Tpo" "$(DEPDIR)/Date.Po"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/Date.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/utils/Date.cpp' object='Date.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/Date.Po' tmpdepfile='$(DEPDIR)/Date.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o Date.o `test -f 'src/utils/Date.cpp' || echo '$(srcdir)/'`src/utils/Date.cpp
-
-Date.obj: src/utils/Date.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT Date.obj -MD -MP -MF "$(DEPDIR)/Date.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o Date.obj `if test -f 'src/utils/Date.cpp'; then $(CYGPATH_W) 'src/utils/Date.cpp'; else $(CYGPATH_W) '$(srcdir)/src/utils/Date.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/Date.Tpo" "$(DEPDIR)/Date.Po"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/Date.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/utils/Date.cpp' object='Date.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/Date.Po' tmpdepfile='$(DEPDIR)/Date.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o Date.obj `if test -f 'src/utils/Date.cpp'; then $(CYGPATH_W) 'src/utils/Date.cpp'; else $(CYGPATH_W) '$(srcdir)/src/utils/Date.cpp'; fi`
-
-Date.lo: src/utils/Date.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT Date.lo -MD -MP -MF "$(DEPDIR)/Date.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o Date.lo `test -f 'src/utils/Date.cpp' || echo '$(srcdir)/'`src/utils/Date.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/Date.Tpo" "$(DEPDIR)/Date.Plo"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/Date.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/utils/Date.cpp' object='Date.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/Date.Plo' tmpdepfile='$(DEPDIR)/Date.TPlo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o Date.lo `test -f 'src/utils/Date.cpp' || echo '$(srcdir)/'`src/utils/Date.cpp
 
 DateUtils.o: src/utils/DateUtils.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DateUtils.o -MD -MP -MF "$(DEPDIR)/DateUtils.Tpo" \

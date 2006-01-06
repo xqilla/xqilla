@@ -134,8 +134,6 @@ public:
   virtual ATDurationOrDerived::Ptr subtractDate(const ATDateOrDerived::Ptr &date,  const DynamicContext* context) const = 0;
 
   virtual AnyAtomicType::AtomicObjectType getPrimitiveTypeIndex() const = 0;
-
-  virtual ATDateOrDerived::Ptr normalize(const DynamicContext* context) const = 0;
 };
 
 #endif //  _ATDATEORDERIVED_HPP
