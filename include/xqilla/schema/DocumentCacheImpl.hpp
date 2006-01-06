@@ -93,7 +93,7 @@ public:
   }
 
   /** Pre parse the schema at the given uri */
-  void loadSchema(const XMLCh* const uri, const XMLCh* location, StaticContext *context);
+  bool loadSchema(const XMLCh* const uri, const XMLCh* location, StaticContext *context);
   unsigned int getSchemaUriId(const XMLCh* uri) const;
   const XMLCh* getSchemaUri(unsigned int id) const;
 

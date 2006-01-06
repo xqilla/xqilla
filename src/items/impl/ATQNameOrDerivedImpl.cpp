@@ -152,8 +152,10 @@ AnyAtomicType::Ptr ATQNameOrDerivedImpl::castAsInternal(AtomicObjectType targetI
 /* returns the XMLCh* (canonical) representation of this type */
 const XMLCh* ATQNameOrDerivedImpl::asString(const DynamicContext* context) const {
   XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buffer(1023, context->getMemoryManager());
-  buffer.set(_uri);
-  buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chColon);
+  if(_uri != 0 && *_uri != 0) {
+	  buffer.set(_uri);
+	  buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chColon);
+  }
   buffer.append(_name);
 
   return context->getMemoryManager()->getPooledString(buffer.getRawBuffer());

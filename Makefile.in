@@ -149,10 +149,8 @@ SUBDIRS = include
 INCLUDES = -I $(top_srcdir)/include/ -I $(xerces_include) -I $(top_srcdir)/src/lexer/
 LDADD = libxqilla.la -lxerces-c
 
-TESTS = testDatatypes
-
 bin_PROGRAMS = xqilla
-noinst_PROGRAMS = basicXQillaUsage testDatatypes xqtsRunner
+noinst_PROGRAMS = basicXQillaUsage xqtsRunner
 
 lib_LTLIBRARIES = libxqilla.la
 
@@ -557,54 +555,6 @@ xqtsRunner_SOURCES = \
 tests/xqts/runner.cpp
 
 
-testDatatypes_SOURCES = \
-src/samples/datatypes/ATAnyURITester.cpp \
-src/samples/datatypes/ATAnyURITester.hpp \
-src/samples/datatypes/ATBase64BinaryTester.cpp \
-src/samples/datatypes/ATBase64BinaryTester.hpp \
-src/samples/datatypes/ATBooleanTester.cpp \
-src/samples/datatypes/ATBooleanTester.hpp \
-src/samples/datatypes/ATDateTester.cpp \
-src/samples/datatypes/ATDateTester.hpp \
-src/samples/datatypes/ATDateTimeTester.cpp \
-src/samples/datatypes/ATDateTimeTester.hpp \
-src/samples/datatypes/ATDecimalTester.cpp \
-src/samples/datatypes/ATDecimalTester.hpp \
-src/samples/datatypes/ATDoubleTester.cpp \
-src/samples/datatypes/ATDoubleTester.hpp \
-src/samples/datatypes/ATDurationTester.cpp \
-src/samples/datatypes/ATDurationTester.hpp \
-src/samples/datatypes/ATFloatTester.cpp \
-src/samples/datatypes/ATFloatTester.hpp \
-src/samples/datatypes/ATGDayTester.cpp \
-src/samples/datatypes/ATGDayTester.hpp \
-src/samples/datatypes/ATGMonthDayTester.cpp \
-src/samples/datatypes/ATGMonthDayTester.hpp \
-src/samples/datatypes/ATGMonthTester.cpp \
-src/samples/datatypes/ATGMonthTester.hpp \
-src/samples/datatypes/ATGYearMonthTester.cpp \
-src/samples/datatypes/ATGYearMonthTester.hpp \
-src/samples/datatypes/ATGYearTester.cpp \
-src/samples/datatypes/ATGYearTester.hpp \
-src/samples/datatypes/ATHexBinaryTester.cpp \
-src/samples/datatypes/ATHexBinaryTester.hpp \
-src/samples/datatypes/ATQNameTester.cpp \
-src/samples/datatypes/ATQNameTester.hpp \
-src/samples/datatypes/ATStringTester.cpp \
-src/samples/datatypes/ATStringTester.hpp \
-src/samples/datatypes/ATTimeTester.cpp \
-src/samples/datatypes/ATTimeTester.hpp \
-src/samples/datatypes/ATUntypedAtomicTester.cpp \
-src/samples/datatypes/ATUntypedAtomicTester.hpp \
-src/samples/datatypes/CastAsTester.cpp \
-src/samples/datatypes/CastAsTester.hpp \
-src/samples/datatypes/DatatypeTester.cpp \
-src/samples/datatypes/DatatypeTester.hpp \
-src/samples/datatypes/test-datatypes.cpp \
-src/samples/datatypes/TypePromotionTester.cpp \
-src/samples/datatypes/TypePromotionTester.hpp
-
-
 XPLEXERFILE = $(top_srcdir)/src/lexer/XPath2Lexer.cpp
 XPLEXTEMPLATE = $(top_srcdir)/src/lexer/XPath2Lexer.lex
 
@@ -743,8 +693,7 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	TestSuiteRunner.lo
 libxqilla_la_OBJECTS = $(am_libxqilla_la_OBJECTS)
 bin_PROGRAMS = xqilla$(EXEEXT)
-noinst_PROGRAMS = basicXQillaUsage$(EXEEXT) testDatatypes$(EXEEXT) \
-	xqtsRunner$(EXEEXT)
+noinst_PROGRAMS = basicXQillaUsage$(EXEEXT) xqtsRunner$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS) $(noinst_PROGRAMS)
 
 am_basicXQillaUsage_OBJECTS = basicXQillaUsage.$(OBJEXT)
@@ -752,22 +701,6 @@ basicXQillaUsage_OBJECTS = $(am_basicXQillaUsage_OBJECTS)
 basicXQillaUsage_LDADD = $(LDADD)
 basicXQillaUsage_DEPENDENCIES = libxqilla.la
 basicXQillaUsage_LDFLAGS =
-am_testDatatypes_OBJECTS = ATAnyURITester.$(OBJEXT) \
-	ATBase64BinaryTester.$(OBJEXT) ATBooleanTester.$(OBJEXT) \
-	ATDateTester.$(OBJEXT) ATDateTimeTester.$(OBJEXT) \
-	ATDecimalTester.$(OBJEXT) ATDoubleTester.$(OBJEXT) \
-	ATDurationTester.$(OBJEXT) ATFloatTester.$(OBJEXT) \
-	ATGDayTester.$(OBJEXT) ATGMonthDayTester.$(OBJEXT) \
-	ATGMonthTester.$(OBJEXT) ATGYearMonthTester.$(OBJEXT) \
-	ATGYearTester.$(OBJEXT) ATHexBinaryTester.$(OBJEXT) \
-	ATQNameTester.$(OBJEXT) ATStringTester.$(OBJEXT) \
-	ATTimeTester.$(OBJEXT) ATUntypedAtomicTester.$(OBJEXT) \
-	CastAsTester.$(OBJEXT) DatatypeTester.$(OBJEXT) \
-	test-datatypes.$(OBJEXT) TypePromotionTester.$(OBJEXT)
-testDatatypes_OBJECTS = $(am_testDatatypes_OBJECTS)
-testDatatypes_LDADD = $(LDADD)
-testDatatypes_DEPENDENCIES = libxqilla.la
-testDatatypes_LDFLAGS =
 am_xqilla_OBJECTS = xqilla-commandline.$(OBJEXT)
 xqilla_OBJECTS = $(am_xqilla_OBJECTS)
 xqilla_LDADD = $(LDADD)
@@ -785,47 +718,28 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/ASTNodeImpl.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/ATAnySimpleTypeImpl.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/ATAnyURIOrDerivedImpl.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/ATAnyURITester.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/ATBase64BinaryOrDerivedImpl.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/ATBase64BinaryTester.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/ATBooleanOrDerivedImpl.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/ATBooleanTester.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/ATDateOrDerivedImpl.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/ATDateTester.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/ATDateTimeOrDerivedImpl.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/ATDateTimeTester.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/ATDecimalOrDerivedImpl.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/ATDecimalTester.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/ATDoubleOrDerivedImpl.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/ATDoubleTester.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/ATDurationOrDerived.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/ATDurationOrDerivedImpl.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/ATDurationTester.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/ATFloatOrDerivedImpl.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/ATFloatTester.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/ATGDayOrDerivedImpl.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/ATGDayTester.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/ATGMonthDayOrDerivedImpl.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/ATGMonthDayTester.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/ATGMonthOrDerivedImpl.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/ATGMonthTester.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/ATGYearMonthOrDerivedImpl.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/ATGYearMonthTester.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/ATGYearOrDerivedImpl.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/ATGYearTester.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/ATHexBinaryOrDerivedImpl.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/ATHexBinaryTester.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/ATNotationOrDerivedImpl.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/ATQNameConstructor.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/ATQNameOrDerivedImpl.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/ATQNameTester.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/ATStringOrDerivedImpl.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/ATStringTester.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/ATTimeOrDerivedImpl.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/ATTimeTester.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/ATUntypedAtomic.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/ATUntypedAtomicImpl.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/ATUntypedAtomicTester.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/AggregateFunction.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/AncestorAxis.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/AncestorOrSelfAxis.Plo \
@@ -836,7 +750,6 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/AtomizeResult.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/AttributeAxis.Plo ./$(DEPDIR)/Axis.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/BaseMemoryManager.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/CastAsTester.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/ChildAxis.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/CodepointCollation.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/CollationImpl.Plo \
@@ -845,7 +758,6 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/ContextUtils.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/DatatypeFactory.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/DatatypeLookup.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/DatatypeTester.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/DateOrTimeType.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/DateUtils.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/DescendantAxis.Plo \
@@ -1011,7 +923,6 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/TestSuiteRunner.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/Timezone.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/TotalOrderComparison.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/TypePromotionTester.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/UCANormalizer.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/UCANormalizer1.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/UCANormalizer2.Plo \
@@ -1086,7 +997,7 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/mapmpwr2.Plo ./$(DEPDIR)/mapmrsin.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/mapmsqrt.Plo ./$(DEPDIR)/mapmstck.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/mapmutil.Plo ./$(DEPDIR)/mapmutl2.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/runner.Po ./$(DEPDIR)/test-datatypes.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/runner.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/xqilla-commandline.Po
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -1104,8 +1015,7 @@ CXXLD = $(CXX)
 CXXLINK = $(LIBTOOL) --mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
 DIST_SOURCES = $(libxqilla_la_SOURCES) $(basicXQillaUsage_SOURCES) \
-	$(testDatatypes_SOURCES) $(xqilla_SOURCES) \
-	$(xqtsRunner_SOURCES)
+	$(xqilla_SOURCES) $(xqtsRunner_SOURCES)
 
 RECURSIVE_TARGETS = info-recursive dvi-recursive pdf-recursive \
 	ps-recursive install-info-recursive uninstall-info-recursive \
@@ -1118,7 +1028,7 @@ DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/configure \
 	autotools/install-sh autotools/ltmain.sh autotools/missing \
 	autotools/mkinstalldirs configure configure.in
 DIST_SUBDIRS = $(SUBDIRS)
-SOURCES = $(libxqilla_la_SOURCES) $(basicXQillaUsage_SOURCES) $(testDatatypes_SOURCES) $(xqilla_SOURCES) $(xqtsRunner_SOURCES)
+SOURCES = $(libxqilla_la_SOURCES) $(basicXQillaUsage_SOURCES) $(xqilla_SOURCES) $(xqtsRunner_SOURCES)
 
 all: all-recursive
 
@@ -1226,9 +1136,6 @@ clean-noinstPROGRAMS:
 basicXQillaUsage$(EXEEXT): $(basicXQillaUsage_OBJECTS) $(basicXQillaUsage_DEPENDENCIES) 
 	@rm -f basicXQillaUsage$(EXEEXT)
 	$(CXXLINK) $(basicXQillaUsage_LDFLAGS) $(basicXQillaUsage_OBJECTS) $(basicXQillaUsage_LDADD) $(LIBS)
-testDatatypes$(EXEEXT): $(testDatatypes_OBJECTS) $(testDatatypes_DEPENDENCIES) 
-	@rm -f testDatatypes$(EXEEXT)
-	$(CXXLINK) $(testDatatypes_LDFLAGS) $(testDatatypes_OBJECTS) $(testDatatypes_LDADD) $(LIBS)
 xqilla$(EXEEXT): $(xqilla_OBJECTS) $(xqilla_DEPENDENCIES) 
 	@rm -f xqilla$(EXEEXT)
 	$(CXXLINK) $(xqilla_LDFLAGS) $(xqilla_OBJECTS) $(xqilla_LDADD) $(LIBS)
@@ -1245,47 +1152,28 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ASTNodeImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATAnySimpleTypeImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATAnyURIOrDerivedImpl.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATAnyURITester.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATBase64BinaryOrDerivedImpl.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATBase64BinaryTester.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATBooleanOrDerivedImpl.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATBooleanTester.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATDateOrDerivedImpl.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATDateTester.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATDateTimeOrDerivedImpl.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATDateTimeTester.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATDecimalOrDerivedImpl.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATDecimalTester.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATDoubleOrDerivedImpl.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATDoubleTester.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATDurationOrDerived.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATDurationOrDerivedImpl.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATDurationTester.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATFloatOrDerivedImpl.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATFloatTester.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATGDayOrDerivedImpl.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATGDayTester.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATGMonthDayOrDerivedImpl.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATGMonthDayTester.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATGMonthOrDerivedImpl.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATGMonthTester.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATGYearMonthOrDerivedImpl.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATGYearMonthTester.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATGYearOrDerivedImpl.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATGYearTester.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATHexBinaryOrDerivedImpl.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATHexBinaryTester.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATNotationOrDerivedImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATQNameConstructor.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATQNameOrDerivedImpl.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATQNameTester.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATStringOrDerivedImpl.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATStringTester.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATTimeOrDerivedImpl.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATTimeTester.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATUntypedAtomic.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATUntypedAtomicImpl.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATUntypedAtomicTester.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AggregateFunction.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AncestorAxis.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AncestorOrSelfAxis.Plo@am__quote@
@@ -1298,7 +1186,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AttributeAxis.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Axis.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/BaseMemoryManager.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CastAsTester.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ChildAxis.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CodepointCollation.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CollationImpl.Plo@am__quote@
@@ -1307,7 +1194,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ContextUtils.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DatatypeFactory.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DatatypeLookup.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DatatypeTester.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DateOrTimeType.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DateUtils.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DescendantAxis.Plo@am__quote@
@@ -1486,7 +1372,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TestSuiteRunner.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Timezone.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TotalOrderComparison.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TypePromotionTester.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UCANormalizer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UCANormalizer1.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UCANormalizer2.Plo@am__quote@
@@ -1587,7 +1472,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mapmutil.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mapmutl2.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/runner.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-datatypes.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xqilla-commandline.Po@am__quote@
 
 .c.o:
@@ -12282,765 +12166,6 @@ basicXQillaUsage.lo: src/samples/basic/basicXQillaUsage.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o basicXQillaUsage.lo `test -f 'src/samples/basic/basicXQillaUsage.cpp' || echo '$(srcdir)/'`src/samples/basic/basicXQillaUsage.cpp
 
-ATAnyURITester.o: src/samples/datatypes/ATAnyURITester.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATAnyURITester.o -MD -MP -MF "$(DEPDIR)/ATAnyURITester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o ATAnyURITester.o `test -f 'src/samples/datatypes/ATAnyURITester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATAnyURITester.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ATAnyURITester.Tpo" "$(DEPDIR)/ATAnyURITester.Po"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/ATAnyURITester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/ATAnyURITester.cpp' object='ATAnyURITester.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ATAnyURITester.Po' tmpdepfile='$(DEPDIR)/ATAnyURITester.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ATAnyURITester.o `test -f 'src/samples/datatypes/ATAnyURITester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATAnyURITester.cpp
-
-ATAnyURITester.obj: src/samples/datatypes/ATAnyURITester.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATAnyURITester.obj -MD -MP -MF "$(DEPDIR)/ATAnyURITester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o ATAnyURITester.obj `if test -f 'src/samples/datatypes/ATAnyURITester.cpp'; then $(CYGPATH_W) 'src/samples/datatypes/ATAnyURITester.cpp'; else $(CYGPATH_W) '$(srcdir)/src/samples/datatypes/ATAnyURITester.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ATAnyURITester.Tpo" "$(DEPDIR)/ATAnyURITester.Po"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/ATAnyURITester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/ATAnyURITester.cpp' object='ATAnyURITester.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ATAnyURITester.Po' tmpdepfile='$(DEPDIR)/ATAnyURITester.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ATAnyURITester.obj `if test -f 'src/samples/datatypes/ATAnyURITester.cpp'; then $(CYGPATH_W) 'src/samples/datatypes/ATAnyURITester.cpp'; else $(CYGPATH_W) '$(srcdir)/src/samples/datatypes/ATAnyURITester.cpp'; fi`
-
-ATAnyURITester.lo: src/samples/datatypes/ATAnyURITester.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATAnyURITester.lo -MD -MP -MF "$(DEPDIR)/ATAnyURITester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o ATAnyURITester.lo `test -f 'src/samples/datatypes/ATAnyURITester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATAnyURITester.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ATAnyURITester.Tpo" "$(DEPDIR)/ATAnyURITester.Plo"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/ATAnyURITester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/ATAnyURITester.cpp' object='ATAnyURITester.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ATAnyURITester.Plo' tmpdepfile='$(DEPDIR)/ATAnyURITester.TPlo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ATAnyURITester.lo `test -f 'src/samples/datatypes/ATAnyURITester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATAnyURITester.cpp
-
-ATBase64BinaryTester.o: src/samples/datatypes/ATBase64BinaryTester.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATBase64BinaryTester.o -MD -MP -MF "$(DEPDIR)/ATBase64BinaryTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o ATBase64BinaryTester.o `test -f 'src/samples/datatypes/ATBase64BinaryTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATBase64BinaryTester.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ATBase64BinaryTester.Tpo" "$(DEPDIR)/ATBase64BinaryTester.Po"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/ATBase64BinaryTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/ATBase64BinaryTester.cpp' object='ATBase64BinaryTester.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ATBase64BinaryTester.Po' tmpdepfile='$(DEPDIR)/ATBase64BinaryTester.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ATBase64BinaryTester.o `test -f 'src/samples/datatypes/ATBase64BinaryTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATBase64BinaryTester.cpp
-
-ATBase64BinaryTester.obj: src/samples/datatypes/ATBase64BinaryTester.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATBase64BinaryTester.obj -MD -MP -MF "$(DEPDIR)/ATBase64BinaryTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o ATBase64BinaryTester.obj `if test -f 'src/samples/datatypes/ATBase64BinaryTester.cpp'; then $(CYGPATH_W) 'src/samples/datatypes/ATBase64BinaryTester.cpp'; else $(CYGPATH_W) '$(srcdir)/src/samples/datatypes/ATBase64BinaryTester.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ATBase64BinaryTester.Tpo" "$(DEPDIR)/ATBase64BinaryTester.Po"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/ATBase64BinaryTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/ATBase64BinaryTester.cpp' object='ATBase64BinaryTester.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ATBase64BinaryTester.Po' tmpdepfile='$(DEPDIR)/ATBase64BinaryTester.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ATBase64BinaryTester.obj `if test -f 'src/samples/datatypes/ATBase64BinaryTester.cpp'; then $(CYGPATH_W) 'src/samples/datatypes/ATBase64BinaryTester.cpp'; else $(CYGPATH_W) '$(srcdir)/src/samples/datatypes/ATBase64BinaryTester.cpp'; fi`
-
-ATBase64BinaryTester.lo: src/samples/datatypes/ATBase64BinaryTester.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATBase64BinaryTester.lo -MD -MP -MF "$(DEPDIR)/ATBase64BinaryTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o ATBase64BinaryTester.lo `test -f 'src/samples/datatypes/ATBase64BinaryTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATBase64BinaryTester.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ATBase64BinaryTester.Tpo" "$(DEPDIR)/ATBase64BinaryTester.Plo"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/ATBase64BinaryTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/ATBase64BinaryTester.cpp' object='ATBase64BinaryTester.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ATBase64BinaryTester.Plo' tmpdepfile='$(DEPDIR)/ATBase64BinaryTester.TPlo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ATBase64BinaryTester.lo `test -f 'src/samples/datatypes/ATBase64BinaryTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATBase64BinaryTester.cpp
-
-ATBooleanTester.o: src/samples/datatypes/ATBooleanTester.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATBooleanTester.o -MD -MP -MF "$(DEPDIR)/ATBooleanTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o ATBooleanTester.o `test -f 'src/samples/datatypes/ATBooleanTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATBooleanTester.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ATBooleanTester.Tpo" "$(DEPDIR)/ATBooleanTester.Po"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/ATBooleanTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/ATBooleanTester.cpp' object='ATBooleanTester.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ATBooleanTester.Po' tmpdepfile='$(DEPDIR)/ATBooleanTester.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ATBooleanTester.o `test -f 'src/samples/datatypes/ATBooleanTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATBooleanTester.cpp
-
-ATBooleanTester.obj: src/samples/datatypes/ATBooleanTester.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATBooleanTester.obj -MD -MP -MF "$(DEPDIR)/ATBooleanTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o ATBooleanTester.obj `if test -f 'src/samples/datatypes/ATBooleanTester.cpp'; then $(CYGPATH_W) 'src/samples/datatypes/ATBooleanTester.cpp'; else $(CYGPATH_W) '$(srcdir)/src/samples/datatypes/ATBooleanTester.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ATBooleanTester.Tpo" "$(DEPDIR)/ATBooleanTester.Po"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/ATBooleanTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/ATBooleanTester.cpp' object='ATBooleanTester.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ATBooleanTester.Po' tmpdepfile='$(DEPDIR)/ATBooleanTester.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ATBooleanTester.obj `if test -f 'src/samples/datatypes/ATBooleanTester.cpp'; then $(CYGPATH_W) 'src/samples/datatypes/ATBooleanTester.cpp'; else $(CYGPATH_W) '$(srcdir)/src/samples/datatypes/ATBooleanTester.cpp'; fi`
-
-ATBooleanTester.lo: src/samples/datatypes/ATBooleanTester.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATBooleanTester.lo -MD -MP -MF "$(DEPDIR)/ATBooleanTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o ATBooleanTester.lo `test -f 'src/samples/datatypes/ATBooleanTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATBooleanTester.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ATBooleanTester.Tpo" "$(DEPDIR)/ATBooleanTester.Plo"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/ATBooleanTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/ATBooleanTester.cpp' object='ATBooleanTester.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ATBooleanTester.Plo' tmpdepfile='$(DEPDIR)/ATBooleanTester.TPlo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ATBooleanTester.lo `test -f 'src/samples/datatypes/ATBooleanTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATBooleanTester.cpp
-
-ATDateTester.o: src/samples/datatypes/ATDateTester.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATDateTester.o -MD -MP -MF "$(DEPDIR)/ATDateTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o ATDateTester.o `test -f 'src/samples/datatypes/ATDateTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATDateTester.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ATDateTester.Tpo" "$(DEPDIR)/ATDateTester.Po"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/ATDateTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/ATDateTester.cpp' object='ATDateTester.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ATDateTester.Po' tmpdepfile='$(DEPDIR)/ATDateTester.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ATDateTester.o `test -f 'src/samples/datatypes/ATDateTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATDateTester.cpp
-
-ATDateTester.obj: src/samples/datatypes/ATDateTester.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATDateTester.obj -MD -MP -MF "$(DEPDIR)/ATDateTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o ATDateTester.obj `if test -f 'src/samples/datatypes/ATDateTester.cpp'; then $(CYGPATH_W) 'src/samples/datatypes/ATDateTester.cpp'; else $(CYGPATH_W) '$(srcdir)/src/samples/datatypes/ATDateTester.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ATDateTester.Tpo" "$(DEPDIR)/ATDateTester.Po"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/ATDateTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/ATDateTester.cpp' object='ATDateTester.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ATDateTester.Po' tmpdepfile='$(DEPDIR)/ATDateTester.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ATDateTester.obj `if test -f 'src/samples/datatypes/ATDateTester.cpp'; then $(CYGPATH_W) 'src/samples/datatypes/ATDateTester.cpp'; else $(CYGPATH_W) '$(srcdir)/src/samples/datatypes/ATDateTester.cpp'; fi`
-
-ATDateTester.lo: src/samples/datatypes/ATDateTester.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATDateTester.lo -MD -MP -MF "$(DEPDIR)/ATDateTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o ATDateTester.lo `test -f 'src/samples/datatypes/ATDateTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATDateTester.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ATDateTester.Tpo" "$(DEPDIR)/ATDateTester.Plo"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/ATDateTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/ATDateTester.cpp' object='ATDateTester.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ATDateTester.Plo' tmpdepfile='$(DEPDIR)/ATDateTester.TPlo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ATDateTester.lo `test -f 'src/samples/datatypes/ATDateTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATDateTester.cpp
-
-ATDateTimeTester.o: src/samples/datatypes/ATDateTimeTester.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATDateTimeTester.o -MD -MP -MF "$(DEPDIR)/ATDateTimeTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o ATDateTimeTester.o `test -f 'src/samples/datatypes/ATDateTimeTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATDateTimeTester.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ATDateTimeTester.Tpo" "$(DEPDIR)/ATDateTimeTester.Po"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/ATDateTimeTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/ATDateTimeTester.cpp' object='ATDateTimeTester.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ATDateTimeTester.Po' tmpdepfile='$(DEPDIR)/ATDateTimeTester.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ATDateTimeTester.o `test -f 'src/samples/datatypes/ATDateTimeTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATDateTimeTester.cpp
-
-ATDateTimeTester.obj: src/samples/datatypes/ATDateTimeTester.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATDateTimeTester.obj -MD -MP -MF "$(DEPDIR)/ATDateTimeTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o ATDateTimeTester.obj `if test -f 'src/samples/datatypes/ATDateTimeTester.cpp'; then $(CYGPATH_W) 'src/samples/datatypes/ATDateTimeTester.cpp'; else $(CYGPATH_W) '$(srcdir)/src/samples/datatypes/ATDateTimeTester.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ATDateTimeTester.Tpo" "$(DEPDIR)/ATDateTimeTester.Po"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/ATDateTimeTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/ATDateTimeTester.cpp' object='ATDateTimeTester.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ATDateTimeTester.Po' tmpdepfile='$(DEPDIR)/ATDateTimeTester.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ATDateTimeTester.obj `if test -f 'src/samples/datatypes/ATDateTimeTester.cpp'; then $(CYGPATH_W) 'src/samples/datatypes/ATDateTimeTester.cpp'; else $(CYGPATH_W) '$(srcdir)/src/samples/datatypes/ATDateTimeTester.cpp'; fi`
-
-ATDateTimeTester.lo: src/samples/datatypes/ATDateTimeTester.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATDateTimeTester.lo -MD -MP -MF "$(DEPDIR)/ATDateTimeTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o ATDateTimeTester.lo `test -f 'src/samples/datatypes/ATDateTimeTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATDateTimeTester.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ATDateTimeTester.Tpo" "$(DEPDIR)/ATDateTimeTester.Plo"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/ATDateTimeTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/ATDateTimeTester.cpp' object='ATDateTimeTester.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ATDateTimeTester.Plo' tmpdepfile='$(DEPDIR)/ATDateTimeTester.TPlo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ATDateTimeTester.lo `test -f 'src/samples/datatypes/ATDateTimeTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATDateTimeTester.cpp
-
-ATDecimalTester.o: src/samples/datatypes/ATDecimalTester.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATDecimalTester.o -MD -MP -MF "$(DEPDIR)/ATDecimalTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o ATDecimalTester.o `test -f 'src/samples/datatypes/ATDecimalTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATDecimalTester.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ATDecimalTester.Tpo" "$(DEPDIR)/ATDecimalTester.Po"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/ATDecimalTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/ATDecimalTester.cpp' object='ATDecimalTester.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ATDecimalTester.Po' tmpdepfile='$(DEPDIR)/ATDecimalTester.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ATDecimalTester.o `test -f 'src/samples/datatypes/ATDecimalTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATDecimalTester.cpp
-
-ATDecimalTester.obj: src/samples/datatypes/ATDecimalTester.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATDecimalTester.obj -MD -MP -MF "$(DEPDIR)/ATDecimalTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o ATDecimalTester.obj `if test -f 'src/samples/datatypes/ATDecimalTester.cpp'; then $(CYGPATH_W) 'src/samples/datatypes/ATDecimalTester.cpp'; else $(CYGPATH_W) '$(srcdir)/src/samples/datatypes/ATDecimalTester.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ATDecimalTester.Tpo" "$(DEPDIR)/ATDecimalTester.Po"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/ATDecimalTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/ATDecimalTester.cpp' object='ATDecimalTester.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ATDecimalTester.Po' tmpdepfile='$(DEPDIR)/ATDecimalTester.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ATDecimalTester.obj `if test -f 'src/samples/datatypes/ATDecimalTester.cpp'; then $(CYGPATH_W) 'src/samples/datatypes/ATDecimalTester.cpp'; else $(CYGPATH_W) '$(srcdir)/src/samples/datatypes/ATDecimalTester.cpp'; fi`
-
-ATDecimalTester.lo: src/samples/datatypes/ATDecimalTester.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATDecimalTester.lo -MD -MP -MF "$(DEPDIR)/ATDecimalTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o ATDecimalTester.lo `test -f 'src/samples/datatypes/ATDecimalTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATDecimalTester.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ATDecimalTester.Tpo" "$(DEPDIR)/ATDecimalTester.Plo"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/ATDecimalTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/ATDecimalTester.cpp' object='ATDecimalTester.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ATDecimalTester.Plo' tmpdepfile='$(DEPDIR)/ATDecimalTester.TPlo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ATDecimalTester.lo `test -f 'src/samples/datatypes/ATDecimalTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATDecimalTester.cpp
-
-ATDoubleTester.o: src/samples/datatypes/ATDoubleTester.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATDoubleTester.o -MD -MP -MF "$(DEPDIR)/ATDoubleTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o ATDoubleTester.o `test -f 'src/samples/datatypes/ATDoubleTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATDoubleTester.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ATDoubleTester.Tpo" "$(DEPDIR)/ATDoubleTester.Po"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/ATDoubleTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/ATDoubleTester.cpp' object='ATDoubleTester.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ATDoubleTester.Po' tmpdepfile='$(DEPDIR)/ATDoubleTester.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ATDoubleTester.o `test -f 'src/samples/datatypes/ATDoubleTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATDoubleTester.cpp
-
-ATDoubleTester.obj: src/samples/datatypes/ATDoubleTester.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATDoubleTester.obj -MD -MP -MF "$(DEPDIR)/ATDoubleTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o ATDoubleTester.obj `if test -f 'src/samples/datatypes/ATDoubleTester.cpp'; then $(CYGPATH_W) 'src/samples/datatypes/ATDoubleTester.cpp'; else $(CYGPATH_W) '$(srcdir)/src/samples/datatypes/ATDoubleTester.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ATDoubleTester.Tpo" "$(DEPDIR)/ATDoubleTester.Po"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/ATDoubleTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/ATDoubleTester.cpp' object='ATDoubleTester.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ATDoubleTester.Po' tmpdepfile='$(DEPDIR)/ATDoubleTester.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ATDoubleTester.obj `if test -f 'src/samples/datatypes/ATDoubleTester.cpp'; then $(CYGPATH_W) 'src/samples/datatypes/ATDoubleTester.cpp'; else $(CYGPATH_W) '$(srcdir)/src/samples/datatypes/ATDoubleTester.cpp'; fi`
-
-ATDoubleTester.lo: src/samples/datatypes/ATDoubleTester.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATDoubleTester.lo -MD -MP -MF "$(DEPDIR)/ATDoubleTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o ATDoubleTester.lo `test -f 'src/samples/datatypes/ATDoubleTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATDoubleTester.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ATDoubleTester.Tpo" "$(DEPDIR)/ATDoubleTester.Plo"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/ATDoubleTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/ATDoubleTester.cpp' object='ATDoubleTester.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ATDoubleTester.Plo' tmpdepfile='$(DEPDIR)/ATDoubleTester.TPlo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ATDoubleTester.lo `test -f 'src/samples/datatypes/ATDoubleTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATDoubleTester.cpp
-
-ATDurationTester.o: src/samples/datatypes/ATDurationTester.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATDurationTester.o -MD -MP -MF "$(DEPDIR)/ATDurationTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o ATDurationTester.o `test -f 'src/samples/datatypes/ATDurationTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATDurationTester.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ATDurationTester.Tpo" "$(DEPDIR)/ATDurationTester.Po"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/ATDurationTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/ATDurationTester.cpp' object='ATDurationTester.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ATDurationTester.Po' tmpdepfile='$(DEPDIR)/ATDurationTester.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ATDurationTester.o `test -f 'src/samples/datatypes/ATDurationTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATDurationTester.cpp
-
-ATDurationTester.obj: src/samples/datatypes/ATDurationTester.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATDurationTester.obj -MD -MP -MF "$(DEPDIR)/ATDurationTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o ATDurationTester.obj `if test -f 'src/samples/datatypes/ATDurationTester.cpp'; then $(CYGPATH_W) 'src/samples/datatypes/ATDurationTester.cpp'; else $(CYGPATH_W) '$(srcdir)/src/samples/datatypes/ATDurationTester.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ATDurationTester.Tpo" "$(DEPDIR)/ATDurationTester.Po"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/ATDurationTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/ATDurationTester.cpp' object='ATDurationTester.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ATDurationTester.Po' tmpdepfile='$(DEPDIR)/ATDurationTester.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ATDurationTester.obj `if test -f 'src/samples/datatypes/ATDurationTester.cpp'; then $(CYGPATH_W) 'src/samples/datatypes/ATDurationTester.cpp'; else $(CYGPATH_W) '$(srcdir)/src/samples/datatypes/ATDurationTester.cpp'; fi`
-
-ATDurationTester.lo: src/samples/datatypes/ATDurationTester.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATDurationTester.lo -MD -MP -MF "$(DEPDIR)/ATDurationTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o ATDurationTester.lo `test -f 'src/samples/datatypes/ATDurationTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATDurationTester.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ATDurationTester.Tpo" "$(DEPDIR)/ATDurationTester.Plo"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/ATDurationTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/ATDurationTester.cpp' object='ATDurationTester.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ATDurationTester.Plo' tmpdepfile='$(DEPDIR)/ATDurationTester.TPlo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ATDurationTester.lo `test -f 'src/samples/datatypes/ATDurationTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATDurationTester.cpp
-
-ATFloatTester.o: src/samples/datatypes/ATFloatTester.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATFloatTester.o -MD -MP -MF "$(DEPDIR)/ATFloatTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o ATFloatTester.o `test -f 'src/samples/datatypes/ATFloatTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATFloatTester.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ATFloatTester.Tpo" "$(DEPDIR)/ATFloatTester.Po"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/ATFloatTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/ATFloatTester.cpp' object='ATFloatTester.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ATFloatTester.Po' tmpdepfile='$(DEPDIR)/ATFloatTester.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ATFloatTester.o `test -f 'src/samples/datatypes/ATFloatTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATFloatTester.cpp
-
-ATFloatTester.obj: src/samples/datatypes/ATFloatTester.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATFloatTester.obj -MD -MP -MF "$(DEPDIR)/ATFloatTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o ATFloatTester.obj `if test -f 'src/samples/datatypes/ATFloatTester.cpp'; then $(CYGPATH_W) 'src/samples/datatypes/ATFloatTester.cpp'; else $(CYGPATH_W) '$(srcdir)/src/samples/datatypes/ATFloatTester.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ATFloatTester.Tpo" "$(DEPDIR)/ATFloatTester.Po"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/ATFloatTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/ATFloatTester.cpp' object='ATFloatTester.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ATFloatTester.Po' tmpdepfile='$(DEPDIR)/ATFloatTester.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ATFloatTester.obj `if test -f 'src/samples/datatypes/ATFloatTester.cpp'; then $(CYGPATH_W) 'src/samples/datatypes/ATFloatTester.cpp'; else $(CYGPATH_W) '$(srcdir)/src/samples/datatypes/ATFloatTester.cpp'; fi`
-
-ATFloatTester.lo: src/samples/datatypes/ATFloatTester.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATFloatTester.lo -MD -MP -MF "$(DEPDIR)/ATFloatTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o ATFloatTester.lo `test -f 'src/samples/datatypes/ATFloatTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATFloatTester.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ATFloatTester.Tpo" "$(DEPDIR)/ATFloatTester.Plo"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/ATFloatTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/ATFloatTester.cpp' object='ATFloatTester.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ATFloatTester.Plo' tmpdepfile='$(DEPDIR)/ATFloatTester.TPlo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ATFloatTester.lo `test -f 'src/samples/datatypes/ATFloatTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATFloatTester.cpp
-
-ATGDayTester.o: src/samples/datatypes/ATGDayTester.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATGDayTester.o -MD -MP -MF "$(DEPDIR)/ATGDayTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o ATGDayTester.o `test -f 'src/samples/datatypes/ATGDayTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATGDayTester.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ATGDayTester.Tpo" "$(DEPDIR)/ATGDayTester.Po"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/ATGDayTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/ATGDayTester.cpp' object='ATGDayTester.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ATGDayTester.Po' tmpdepfile='$(DEPDIR)/ATGDayTester.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ATGDayTester.o `test -f 'src/samples/datatypes/ATGDayTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATGDayTester.cpp
-
-ATGDayTester.obj: src/samples/datatypes/ATGDayTester.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATGDayTester.obj -MD -MP -MF "$(DEPDIR)/ATGDayTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o ATGDayTester.obj `if test -f 'src/samples/datatypes/ATGDayTester.cpp'; then $(CYGPATH_W) 'src/samples/datatypes/ATGDayTester.cpp'; else $(CYGPATH_W) '$(srcdir)/src/samples/datatypes/ATGDayTester.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ATGDayTester.Tpo" "$(DEPDIR)/ATGDayTester.Po"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/ATGDayTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/ATGDayTester.cpp' object='ATGDayTester.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ATGDayTester.Po' tmpdepfile='$(DEPDIR)/ATGDayTester.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ATGDayTester.obj `if test -f 'src/samples/datatypes/ATGDayTester.cpp'; then $(CYGPATH_W) 'src/samples/datatypes/ATGDayTester.cpp'; else $(CYGPATH_W) '$(srcdir)/src/samples/datatypes/ATGDayTester.cpp'; fi`
-
-ATGDayTester.lo: src/samples/datatypes/ATGDayTester.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATGDayTester.lo -MD -MP -MF "$(DEPDIR)/ATGDayTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o ATGDayTester.lo `test -f 'src/samples/datatypes/ATGDayTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATGDayTester.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ATGDayTester.Tpo" "$(DEPDIR)/ATGDayTester.Plo"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/ATGDayTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/ATGDayTester.cpp' object='ATGDayTester.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ATGDayTester.Plo' tmpdepfile='$(DEPDIR)/ATGDayTester.TPlo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ATGDayTester.lo `test -f 'src/samples/datatypes/ATGDayTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATGDayTester.cpp
-
-ATGMonthDayTester.o: src/samples/datatypes/ATGMonthDayTester.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATGMonthDayTester.o -MD -MP -MF "$(DEPDIR)/ATGMonthDayTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o ATGMonthDayTester.o `test -f 'src/samples/datatypes/ATGMonthDayTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATGMonthDayTester.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ATGMonthDayTester.Tpo" "$(DEPDIR)/ATGMonthDayTester.Po"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/ATGMonthDayTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/ATGMonthDayTester.cpp' object='ATGMonthDayTester.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ATGMonthDayTester.Po' tmpdepfile='$(DEPDIR)/ATGMonthDayTester.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ATGMonthDayTester.o `test -f 'src/samples/datatypes/ATGMonthDayTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATGMonthDayTester.cpp
-
-ATGMonthDayTester.obj: src/samples/datatypes/ATGMonthDayTester.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATGMonthDayTester.obj -MD -MP -MF "$(DEPDIR)/ATGMonthDayTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o ATGMonthDayTester.obj `if test -f 'src/samples/datatypes/ATGMonthDayTester.cpp'; then $(CYGPATH_W) 'src/samples/datatypes/ATGMonthDayTester.cpp'; else $(CYGPATH_W) '$(srcdir)/src/samples/datatypes/ATGMonthDayTester.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ATGMonthDayTester.Tpo" "$(DEPDIR)/ATGMonthDayTester.Po"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/ATGMonthDayTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/ATGMonthDayTester.cpp' object='ATGMonthDayTester.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ATGMonthDayTester.Po' tmpdepfile='$(DEPDIR)/ATGMonthDayTester.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ATGMonthDayTester.obj `if test -f 'src/samples/datatypes/ATGMonthDayTester.cpp'; then $(CYGPATH_W) 'src/samples/datatypes/ATGMonthDayTester.cpp'; else $(CYGPATH_W) '$(srcdir)/src/samples/datatypes/ATGMonthDayTester.cpp'; fi`
-
-ATGMonthDayTester.lo: src/samples/datatypes/ATGMonthDayTester.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATGMonthDayTester.lo -MD -MP -MF "$(DEPDIR)/ATGMonthDayTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o ATGMonthDayTester.lo `test -f 'src/samples/datatypes/ATGMonthDayTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATGMonthDayTester.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ATGMonthDayTester.Tpo" "$(DEPDIR)/ATGMonthDayTester.Plo"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/ATGMonthDayTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/ATGMonthDayTester.cpp' object='ATGMonthDayTester.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ATGMonthDayTester.Plo' tmpdepfile='$(DEPDIR)/ATGMonthDayTester.TPlo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ATGMonthDayTester.lo `test -f 'src/samples/datatypes/ATGMonthDayTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATGMonthDayTester.cpp
-
-ATGMonthTester.o: src/samples/datatypes/ATGMonthTester.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATGMonthTester.o -MD -MP -MF "$(DEPDIR)/ATGMonthTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o ATGMonthTester.o `test -f 'src/samples/datatypes/ATGMonthTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATGMonthTester.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ATGMonthTester.Tpo" "$(DEPDIR)/ATGMonthTester.Po"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/ATGMonthTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/ATGMonthTester.cpp' object='ATGMonthTester.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ATGMonthTester.Po' tmpdepfile='$(DEPDIR)/ATGMonthTester.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ATGMonthTester.o `test -f 'src/samples/datatypes/ATGMonthTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATGMonthTester.cpp
-
-ATGMonthTester.obj: src/samples/datatypes/ATGMonthTester.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATGMonthTester.obj -MD -MP -MF "$(DEPDIR)/ATGMonthTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o ATGMonthTester.obj `if test -f 'src/samples/datatypes/ATGMonthTester.cpp'; then $(CYGPATH_W) 'src/samples/datatypes/ATGMonthTester.cpp'; else $(CYGPATH_W) '$(srcdir)/src/samples/datatypes/ATGMonthTester.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ATGMonthTester.Tpo" "$(DEPDIR)/ATGMonthTester.Po"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/ATGMonthTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/ATGMonthTester.cpp' object='ATGMonthTester.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ATGMonthTester.Po' tmpdepfile='$(DEPDIR)/ATGMonthTester.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ATGMonthTester.obj `if test -f 'src/samples/datatypes/ATGMonthTester.cpp'; then $(CYGPATH_W) 'src/samples/datatypes/ATGMonthTester.cpp'; else $(CYGPATH_W) '$(srcdir)/src/samples/datatypes/ATGMonthTester.cpp'; fi`
-
-ATGMonthTester.lo: src/samples/datatypes/ATGMonthTester.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATGMonthTester.lo -MD -MP -MF "$(DEPDIR)/ATGMonthTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o ATGMonthTester.lo `test -f 'src/samples/datatypes/ATGMonthTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATGMonthTester.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ATGMonthTester.Tpo" "$(DEPDIR)/ATGMonthTester.Plo"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/ATGMonthTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/ATGMonthTester.cpp' object='ATGMonthTester.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ATGMonthTester.Plo' tmpdepfile='$(DEPDIR)/ATGMonthTester.TPlo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ATGMonthTester.lo `test -f 'src/samples/datatypes/ATGMonthTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATGMonthTester.cpp
-
-ATGYearMonthTester.o: src/samples/datatypes/ATGYearMonthTester.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATGYearMonthTester.o -MD -MP -MF "$(DEPDIR)/ATGYearMonthTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o ATGYearMonthTester.o `test -f 'src/samples/datatypes/ATGYearMonthTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATGYearMonthTester.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ATGYearMonthTester.Tpo" "$(DEPDIR)/ATGYearMonthTester.Po"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/ATGYearMonthTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/ATGYearMonthTester.cpp' object='ATGYearMonthTester.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ATGYearMonthTester.Po' tmpdepfile='$(DEPDIR)/ATGYearMonthTester.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ATGYearMonthTester.o `test -f 'src/samples/datatypes/ATGYearMonthTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATGYearMonthTester.cpp
-
-ATGYearMonthTester.obj: src/samples/datatypes/ATGYearMonthTester.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATGYearMonthTester.obj -MD -MP -MF "$(DEPDIR)/ATGYearMonthTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o ATGYearMonthTester.obj `if test -f 'src/samples/datatypes/ATGYearMonthTester.cpp'; then $(CYGPATH_W) 'src/samples/datatypes/ATGYearMonthTester.cpp'; else $(CYGPATH_W) '$(srcdir)/src/samples/datatypes/ATGYearMonthTester.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ATGYearMonthTester.Tpo" "$(DEPDIR)/ATGYearMonthTester.Po"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/ATGYearMonthTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/ATGYearMonthTester.cpp' object='ATGYearMonthTester.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ATGYearMonthTester.Po' tmpdepfile='$(DEPDIR)/ATGYearMonthTester.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ATGYearMonthTester.obj `if test -f 'src/samples/datatypes/ATGYearMonthTester.cpp'; then $(CYGPATH_W) 'src/samples/datatypes/ATGYearMonthTester.cpp'; else $(CYGPATH_W) '$(srcdir)/src/samples/datatypes/ATGYearMonthTester.cpp'; fi`
-
-ATGYearMonthTester.lo: src/samples/datatypes/ATGYearMonthTester.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATGYearMonthTester.lo -MD -MP -MF "$(DEPDIR)/ATGYearMonthTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o ATGYearMonthTester.lo `test -f 'src/samples/datatypes/ATGYearMonthTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATGYearMonthTester.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ATGYearMonthTester.Tpo" "$(DEPDIR)/ATGYearMonthTester.Plo"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/ATGYearMonthTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/ATGYearMonthTester.cpp' object='ATGYearMonthTester.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ATGYearMonthTester.Plo' tmpdepfile='$(DEPDIR)/ATGYearMonthTester.TPlo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ATGYearMonthTester.lo `test -f 'src/samples/datatypes/ATGYearMonthTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATGYearMonthTester.cpp
-
-ATGYearTester.o: src/samples/datatypes/ATGYearTester.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATGYearTester.o -MD -MP -MF "$(DEPDIR)/ATGYearTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o ATGYearTester.o `test -f 'src/samples/datatypes/ATGYearTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATGYearTester.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ATGYearTester.Tpo" "$(DEPDIR)/ATGYearTester.Po"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/ATGYearTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/ATGYearTester.cpp' object='ATGYearTester.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ATGYearTester.Po' tmpdepfile='$(DEPDIR)/ATGYearTester.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ATGYearTester.o `test -f 'src/samples/datatypes/ATGYearTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATGYearTester.cpp
-
-ATGYearTester.obj: src/samples/datatypes/ATGYearTester.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATGYearTester.obj -MD -MP -MF "$(DEPDIR)/ATGYearTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o ATGYearTester.obj `if test -f 'src/samples/datatypes/ATGYearTester.cpp'; then $(CYGPATH_W) 'src/samples/datatypes/ATGYearTester.cpp'; else $(CYGPATH_W) '$(srcdir)/src/samples/datatypes/ATGYearTester.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ATGYearTester.Tpo" "$(DEPDIR)/ATGYearTester.Po"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/ATGYearTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/ATGYearTester.cpp' object='ATGYearTester.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ATGYearTester.Po' tmpdepfile='$(DEPDIR)/ATGYearTester.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ATGYearTester.obj `if test -f 'src/samples/datatypes/ATGYearTester.cpp'; then $(CYGPATH_W) 'src/samples/datatypes/ATGYearTester.cpp'; else $(CYGPATH_W) '$(srcdir)/src/samples/datatypes/ATGYearTester.cpp'; fi`
-
-ATGYearTester.lo: src/samples/datatypes/ATGYearTester.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATGYearTester.lo -MD -MP -MF "$(DEPDIR)/ATGYearTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o ATGYearTester.lo `test -f 'src/samples/datatypes/ATGYearTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATGYearTester.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ATGYearTester.Tpo" "$(DEPDIR)/ATGYearTester.Plo"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/ATGYearTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/ATGYearTester.cpp' object='ATGYearTester.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ATGYearTester.Plo' tmpdepfile='$(DEPDIR)/ATGYearTester.TPlo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ATGYearTester.lo `test -f 'src/samples/datatypes/ATGYearTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATGYearTester.cpp
-
-ATHexBinaryTester.o: src/samples/datatypes/ATHexBinaryTester.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATHexBinaryTester.o -MD -MP -MF "$(DEPDIR)/ATHexBinaryTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o ATHexBinaryTester.o `test -f 'src/samples/datatypes/ATHexBinaryTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATHexBinaryTester.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ATHexBinaryTester.Tpo" "$(DEPDIR)/ATHexBinaryTester.Po"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/ATHexBinaryTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/ATHexBinaryTester.cpp' object='ATHexBinaryTester.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ATHexBinaryTester.Po' tmpdepfile='$(DEPDIR)/ATHexBinaryTester.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ATHexBinaryTester.o `test -f 'src/samples/datatypes/ATHexBinaryTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATHexBinaryTester.cpp
-
-ATHexBinaryTester.obj: src/samples/datatypes/ATHexBinaryTester.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATHexBinaryTester.obj -MD -MP -MF "$(DEPDIR)/ATHexBinaryTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o ATHexBinaryTester.obj `if test -f 'src/samples/datatypes/ATHexBinaryTester.cpp'; then $(CYGPATH_W) 'src/samples/datatypes/ATHexBinaryTester.cpp'; else $(CYGPATH_W) '$(srcdir)/src/samples/datatypes/ATHexBinaryTester.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ATHexBinaryTester.Tpo" "$(DEPDIR)/ATHexBinaryTester.Po"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/ATHexBinaryTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/ATHexBinaryTester.cpp' object='ATHexBinaryTester.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ATHexBinaryTester.Po' tmpdepfile='$(DEPDIR)/ATHexBinaryTester.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ATHexBinaryTester.obj `if test -f 'src/samples/datatypes/ATHexBinaryTester.cpp'; then $(CYGPATH_W) 'src/samples/datatypes/ATHexBinaryTester.cpp'; else $(CYGPATH_W) '$(srcdir)/src/samples/datatypes/ATHexBinaryTester.cpp'; fi`
-
-ATHexBinaryTester.lo: src/samples/datatypes/ATHexBinaryTester.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATHexBinaryTester.lo -MD -MP -MF "$(DEPDIR)/ATHexBinaryTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o ATHexBinaryTester.lo `test -f 'src/samples/datatypes/ATHexBinaryTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATHexBinaryTester.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ATHexBinaryTester.Tpo" "$(DEPDIR)/ATHexBinaryTester.Plo"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/ATHexBinaryTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/ATHexBinaryTester.cpp' object='ATHexBinaryTester.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ATHexBinaryTester.Plo' tmpdepfile='$(DEPDIR)/ATHexBinaryTester.TPlo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ATHexBinaryTester.lo `test -f 'src/samples/datatypes/ATHexBinaryTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATHexBinaryTester.cpp
-
-ATQNameTester.o: src/samples/datatypes/ATQNameTester.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATQNameTester.o -MD -MP -MF "$(DEPDIR)/ATQNameTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o ATQNameTester.o `test -f 'src/samples/datatypes/ATQNameTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATQNameTester.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ATQNameTester.Tpo" "$(DEPDIR)/ATQNameTester.Po"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/ATQNameTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/ATQNameTester.cpp' object='ATQNameTester.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ATQNameTester.Po' tmpdepfile='$(DEPDIR)/ATQNameTester.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ATQNameTester.o `test -f 'src/samples/datatypes/ATQNameTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATQNameTester.cpp
-
-ATQNameTester.obj: src/samples/datatypes/ATQNameTester.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATQNameTester.obj -MD -MP -MF "$(DEPDIR)/ATQNameTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o ATQNameTester.obj `if test -f 'src/samples/datatypes/ATQNameTester.cpp'; then $(CYGPATH_W) 'src/samples/datatypes/ATQNameTester.cpp'; else $(CYGPATH_W) '$(srcdir)/src/samples/datatypes/ATQNameTester.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ATQNameTester.Tpo" "$(DEPDIR)/ATQNameTester.Po"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/ATQNameTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/ATQNameTester.cpp' object='ATQNameTester.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ATQNameTester.Po' tmpdepfile='$(DEPDIR)/ATQNameTester.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ATQNameTester.obj `if test -f 'src/samples/datatypes/ATQNameTester.cpp'; then $(CYGPATH_W) 'src/samples/datatypes/ATQNameTester.cpp'; else $(CYGPATH_W) '$(srcdir)/src/samples/datatypes/ATQNameTester.cpp'; fi`
-
-ATQNameTester.lo: src/samples/datatypes/ATQNameTester.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATQNameTester.lo -MD -MP -MF "$(DEPDIR)/ATQNameTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o ATQNameTester.lo `test -f 'src/samples/datatypes/ATQNameTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATQNameTester.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ATQNameTester.Tpo" "$(DEPDIR)/ATQNameTester.Plo"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/ATQNameTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/ATQNameTester.cpp' object='ATQNameTester.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ATQNameTester.Plo' tmpdepfile='$(DEPDIR)/ATQNameTester.TPlo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ATQNameTester.lo `test -f 'src/samples/datatypes/ATQNameTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATQNameTester.cpp
-
-ATStringTester.o: src/samples/datatypes/ATStringTester.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATStringTester.o -MD -MP -MF "$(DEPDIR)/ATStringTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o ATStringTester.o `test -f 'src/samples/datatypes/ATStringTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATStringTester.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ATStringTester.Tpo" "$(DEPDIR)/ATStringTester.Po"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/ATStringTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/ATStringTester.cpp' object='ATStringTester.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ATStringTester.Po' tmpdepfile='$(DEPDIR)/ATStringTester.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ATStringTester.o `test -f 'src/samples/datatypes/ATStringTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATStringTester.cpp
-
-ATStringTester.obj: src/samples/datatypes/ATStringTester.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATStringTester.obj -MD -MP -MF "$(DEPDIR)/ATStringTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o ATStringTester.obj `if test -f 'src/samples/datatypes/ATStringTester.cpp'; then $(CYGPATH_W) 'src/samples/datatypes/ATStringTester.cpp'; else $(CYGPATH_W) '$(srcdir)/src/samples/datatypes/ATStringTester.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ATStringTester.Tpo" "$(DEPDIR)/ATStringTester.Po"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/ATStringTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/ATStringTester.cpp' object='ATStringTester.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ATStringTester.Po' tmpdepfile='$(DEPDIR)/ATStringTester.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ATStringTester.obj `if test -f 'src/samples/datatypes/ATStringTester.cpp'; then $(CYGPATH_W) 'src/samples/datatypes/ATStringTester.cpp'; else $(CYGPATH_W) '$(srcdir)/src/samples/datatypes/ATStringTester.cpp'; fi`
-
-ATStringTester.lo: src/samples/datatypes/ATStringTester.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATStringTester.lo -MD -MP -MF "$(DEPDIR)/ATStringTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o ATStringTester.lo `test -f 'src/samples/datatypes/ATStringTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATStringTester.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ATStringTester.Tpo" "$(DEPDIR)/ATStringTester.Plo"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/ATStringTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/ATStringTester.cpp' object='ATStringTester.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ATStringTester.Plo' tmpdepfile='$(DEPDIR)/ATStringTester.TPlo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ATStringTester.lo `test -f 'src/samples/datatypes/ATStringTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATStringTester.cpp
-
-ATTimeTester.o: src/samples/datatypes/ATTimeTester.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATTimeTester.o -MD -MP -MF "$(DEPDIR)/ATTimeTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o ATTimeTester.o `test -f 'src/samples/datatypes/ATTimeTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATTimeTester.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ATTimeTester.Tpo" "$(DEPDIR)/ATTimeTester.Po"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/ATTimeTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/ATTimeTester.cpp' object='ATTimeTester.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ATTimeTester.Po' tmpdepfile='$(DEPDIR)/ATTimeTester.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ATTimeTester.o `test -f 'src/samples/datatypes/ATTimeTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATTimeTester.cpp
-
-ATTimeTester.obj: src/samples/datatypes/ATTimeTester.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATTimeTester.obj -MD -MP -MF "$(DEPDIR)/ATTimeTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o ATTimeTester.obj `if test -f 'src/samples/datatypes/ATTimeTester.cpp'; then $(CYGPATH_W) 'src/samples/datatypes/ATTimeTester.cpp'; else $(CYGPATH_W) '$(srcdir)/src/samples/datatypes/ATTimeTester.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ATTimeTester.Tpo" "$(DEPDIR)/ATTimeTester.Po"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/ATTimeTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/ATTimeTester.cpp' object='ATTimeTester.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ATTimeTester.Po' tmpdepfile='$(DEPDIR)/ATTimeTester.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ATTimeTester.obj `if test -f 'src/samples/datatypes/ATTimeTester.cpp'; then $(CYGPATH_W) 'src/samples/datatypes/ATTimeTester.cpp'; else $(CYGPATH_W) '$(srcdir)/src/samples/datatypes/ATTimeTester.cpp'; fi`
-
-ATTimeTester.lo: src/samples/datatypes/ATTimeTester.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATTimeTester.lo -MD -MP -MF "$(DEPDIR)/ATTimeTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o ATTimeTester.lo `test -f 'src/samples/datatypes/ATTimeTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATTimeTester.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ATTimeTester.Tpo" "$(DEPDIR)/ATTimeTester.Plo"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/ATTimeTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/ATTimeTester.cpp' object='ATTimeTester.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ATTimeTester.Plo' tmpdepfile='$(DEPDIR)/ATTimeTester.TPlo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ATTimeTester.lo `test -f 'src/samples/datatypes/ATTimeTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATTimeTester.cpp
-
-ATUntypedAtomicTester.o: src/samples/datatypes/ATUntypedAtomicTester.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATUntypedAtomicTester.o -MD -MP -MF "$(DEPDIR)/ATUntypedAtomicTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o ATUntypedAtomicTester.o `test -f 'src/samples/datatypes/ATUntypedAtomicTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATUntypedAtomicTester.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ATUntypedAtomicTester.Tpo" "$(DEPDIR)/ATUntypedAtomicTester.Po"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/ATUntypedAtomicTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/ATUntypedAtomicTester.cpp' object='ATUntypedAtomicTester.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ATUntypedAtomicTester.Po' tmpdepfile='$(DEPDIR)/ATUntypedAtomicTester.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ATUntypedAtomicTester.o `test -f 'src/samples/datatypes/ATUntypedAtomicTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATUntypedAtomicTester.cpp
-
-ATUntypedAtomicTester.obj: src/samples/datatypes/ATUntypedAtomicTester.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATUntypedAtomicTester.obj -MD -MP -MF "$(DEPDIR)/ATUntypedAtomicTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o ATUntypedAtomicTester.obj `if test -f 'src/samples/datatypes/ATUntypedAtomicTester.cpp'; then $(CYGPATH_W) 'src/samples/datatypes/ATUntypedAtomicTester.cpp'; else $(CYGPATH_W) '$(srcdir)/src/samples/datatypes/ATUntypedAtomicTester.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ATUntypedAtomicTester.Tpo" "$(DEPDIR)/ATUntypedAtomicTester.Po"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/ATUntypedAtomicTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/ATUntypedAtomicTester.cpp' object='ATUntypedAtomicTester.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ATUntypedAtomicTester.Po' tmpdepfile='$(DEPDIR)/ATUntypedAtomicTester.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ATUntypedAtomicTester.obj `if test -f 'src/samples/datatypes/ATUntypedAtomicTester.cpp'; then $(CYGPATH_W) 'src/samples/datatypes/ATUntypedAtomicTester.cpp'; else $(CYGPATH_W) '$(srcdir)/src/samples/datatypes/ATUntypedAtomicTester.cpp'; fi`
-
-ATUntypedAtomicTester.lo: src/samples/datatypes/ATUntypedAtomicTester.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATUntypedAtomicTester.lo -MD -MP -MF "$(DEPDIR)/ATUntypedAtomicTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o ATUntypedAtomicTester.lo `test -f 'src/samples/datatypes/ATUntypedAtomicTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATUntypedAtomicTester.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ATUntypedAtomicTester.Tpo" "$(DEPDIR)/ATUntypedAtomicTester.Plo"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/ATUntypedAtomicTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/ATUntypedAtomicTester.cpp' object='ATUntypedAtomicTester.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ATUntypedAtomicTester.Plo' tmpdepfile='$(DEPDIR)/ATUntypedAtomicTester.TPlo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ATUntypedAtomicTester.lo `test -f 'src/samples/datatypes/ATUntypedAtomicTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/ATUntypedAtomicTester.cpp
-
-CastAsTester.o: src/samples/datatypes/CastAsTester.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT CastAsTester.o -MD -MP -MF "$(DEPDIR)/CastAsTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o CastAsTester.o `test -f 'src/samples/datatypes/CastAsTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/CastAsTester.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/CastAsTester.Tpo" "$(DEPDIR)/CastAsTester.Po"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/CastAsTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/CastAsTester.cpp' object='CastAsTester.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/CastAsTester.Po' tmpdepfile='$(DEPDIR)/CastAsTester.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o CastAsTester.o `test -f 'src/samples/datatypes/CastAsTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/CastAsTester.cpp
-
-CastAsTester.obj: src/samples/datatypes/CastAsTester.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT CastAsTester.obj -MD -MP -MF "$(DEPDIR)/CastAsTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o CastAsTester.obj `if test -f 'src/samples/datatypes/CastAsTester.cpp'; then $(CYGPATH_W) 'src/samples/datatypes/CastAsTester.cpp'; else $(CYGPATH_W) '$(srcdir)/src/samples/datatypes/CastAsTester.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/CastAsTester.Tpo" "$(DEPDIR)/CastAsTester.Po"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/CastAsTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/CastAsTester.cpp' object='CastAsTester.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/CastAsTester.Po' tmpdepfile='$(DEPDIR)/CastAsTester.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o CastAsTester.obj `if test -f 'src/samples/datatypes/CastAsTester.cpp'; then $(CYGPATH_W) 'src/samples/datatypes/CastAsTester.cpp'; else $(CYGPATH_W) '$(srcdir)/src/samples/datatypes/CastAsTester.cpp'; fi`
-
-CastAsTester.lo: src/samples/datatypes/CastAsTester.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT CastAsTester.lo -MD -MP -MF "$(DEPDIR)/CastAsTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o CastAsTester.lo `test -f 'src/samples/datatypes/CastAsTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/CastAsTester.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/CastAsTester.Tpo" "$(DEPDIR)/CastAsTester.Plo"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/CastAsTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/CastAsTester.cpp' object='CastAsTester.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/CastAsTester.Plo' tmpdepfile='$(DEPDIR)/CastAsTester.TPlo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o CastAsTester.lo `test -f 'src/samples/datatypes/CastAsTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/CastAsTester.cpp
-
-DatatypeTester.o: src/samples/datatypes/DatatypeTester.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DatatypeTester.o -MD -MP -MF "$(DEPDIR)/DatatypeTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o DatatypeTester.o `test -f 'src/samples/datatypes/DatatypeTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/DatatypeTester.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/DatatypeTester.Tpo" "$(DEPDIR)/DatatypeTester.Po"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/DatatypeTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/DatatypeTester.cpp' object='DatatypeTester.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/DatatypeTester.Po' tmpdepfile='$(DEPDIR)/DatatypeTester.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DatatypeTester.o `test -f 'src/samples/datatypes/DatatypeTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/DatatypeTester.cpp
-
-DatatypeTester.obj: src/samples/datatypes/DatatypeTester.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DatatypeTester.obj -MD -MP -MF "$(DEPDIR)/DatatypeTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o DatatypeTester.obj `if test -f 'src/samples/datatypes/DatatypeTester.cpp'; then $(CYGPATH_W) 'src/samples/datatypes/DatatypeTester.cpp'; else $(CYGPATH_W) '$(srcdir)/src/samples/datatypes/DatatypeTester.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/DatatypeTester.Tpo" "$(DEPDIR)/DatatypeTester.Po"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/DatatypeTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/DatatypeTester.cpp' object='DatatypeTester.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/DatatypeTester.Po' tmpdepfile='$(DEPDIR)/DatatypeTester.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DatatypeTester.obj `if test -f 'src/samples/datatypes/DatatypeTester.cpp'; then $(CYGPATH_W) 'src/samples/datatypes/DatatypeTester.cpp'; else $(CYGPATH_W) '$(srcdir)/src/samples/datatypes/DatatypeTester.cpp'; fi`
-
-DatatypeTester.lo: src/samples/datatypes/DatatypeTester.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DatatypeTester.lo -MD -MP -MF "$(DEPDIR)/DatatypeTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o DatatypeTester.lo `test -f 'src/samples/datatypes/DatatypeTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/DatatypeTester.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/DatatypeTester.Tpo" "$(DEPDIR)/DatatypeTester.Plo"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/DatatypeTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/DatatypeTester.cpp' object='DatatypeTester.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/DatatypeTester.Plo' tmpdepfile='$(DEPDIR)/DatatypeTester.TPlo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DatatypeTester.lo `test -f 'src/samples/datatypes/DatatypeTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/DatatypeTester.cpp
-
-test-datatypes.o: src/samples/datatypes/test-datatypes.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test-datatypes.o -MD -MP -MF "$(DEPDIR)/test-datatypes.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o test-datatypes.o `test -f 'src/samples/datatypes/test-datatypes.cpp' || echo '$(srcdir)/'`src/samples/datatypes/test-datatypes.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/test-datatypes.Tpo" "$(DEPDIR)/test-datatypes.Po"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/test-datatypes.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/test-datatypes.cpp' object='test-datatypes.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/test-datatypes.Po' tmpdepfile='$(DEPDIR)/test-datatypes.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test-datatypes.o `test -f 'src/samples/datatypes/test-datatypes.cpp' || echo '$(srcdir)/'`src/samples/datatypes/test-datatypes.cpp
-
-test-datatypes.obj: src/samples/datatypes/test-datatypes.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test-datatypes.obj -MD -MP -MF "$(DEPDIR)/test-datatypes.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o test-datatypes.obj `if test -f 'src/samples/datatypes/test-datatypes.cpp'; then $(CYGPATH_W) 'src/samples/datatypes/test-datatypes.cpp'; else $(CYGPATH_W) '$(srcdir)/src/samples/datatypes/test-datatypes.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/test-datatypes.Tpo" "$(DEPDIR)/test-datatypes.Po"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/test-datatypes.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/test-datatypes.cpp' object='test-datatypes.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/test-datatypes.Po' tmpdepfile='$(DEPDIR)/test-datatypes.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test-datatypes.obj `if test -f 'src/samples/datatypes/test-datatypes.cpp'; then $(CYGPATH_W) 'src/samples/datatypes/test-datatypes.cpp'; else $(CYGPATH_W) '$(srcdir)/src/samples/datatypes/test-datatypes.cpp'; fi`
-
-test-datatypes.lo: src/samples/datatypes/test-datatypes.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test-datatypes.lo -MD -MP -MF "$(DEPDIR)/test-datatypes.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o test-datatypes.lo `test -f 'src/samples/datatypes/test-datatypes.cpp' || echo '$(srcdir)/'`src/samples/datatypes/test-datatypes.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/test-datatypes.Tpo" "$(DEPDIR)/test-datatypes.Plo"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/test-datatypes.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/test-datatypes.cpp' object='test-datatypes.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/test-datatypes.Plo' tmpdepfile='$(DEPDIR)/test-datatypes.TPlo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test-datatypes.lo `test -f 'src/samples/datatypes/test-datatypes.cpp' || echo '$(srcdir)/'`src/samples/datatypes/test-datatypes.cpp
-
-TypePromotionTester.o: src/samples/datatypes/TypePromotionTester.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT TypePromotionTester.o -MD -MP -MF "$(DEPDIR)/TypePromotionTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o TypePromotionTester.o `test -f 'src/samples/datatypes/TypePromotionTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/TypePromotionTester.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/TypePromotionTester.Tpo" "$(DEPDIR)/TypePromotionTester.Po"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/TypePromotionTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/TypePromotionTester.cpp' object='TypePromotionTester.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/TypePromotionTester.Po' tmpdepfile='$(DEPDIR)/TypePromotionTester.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o TypePromotionTester.o `test -f 'src/samples/datatypes/TypePromotionTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/TypePromotionTester.cpp
-
-TypePromotionTester.obj: src/samples/datatypes/TypePromotionTester.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT TypePromotionTester.obj -MD -MP -MF "$(DEPDIR)/TypePromotionTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o TypePromotionTester.obj `if test -f 'src/samples/datatypes/TypePromotionTester.cpp'; then $(CYGPATH_W) 'src/samples/datatypes/TypePromotionTester.cpp'; else $(CYGPATH_W) '$(srcdir)/src/samples/datatypes/TypePromotionTester.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/TypePromotionTester.Tpo" "$(DEPDIR)/TypePromotionTester.Po"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/TypePromotionTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/TypePromotionTester.cpp' object='TypePromotionTester.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/TypePromotionTester.Po' tmpdepfile='$(DEPDIR)/TypePromotionTester.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o TypePromotionTester.obj `if test -f 'src/samples/datatypes/TypePromotionTester.cpp'; then $(CYGPATH_W) 'src/samples/datatypes/TypePromotionTester.cpp'; else $(CYGPATH_W) '$(srcdir)/src/samples/datatypes/TypePromotionTester.cpp'; fi`
-
-TypePromotionTester.lo: src/samples/datatypes/TypePromotionTester.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT TypePromotionTester.lo -MD -MP -MF "$(DEPDIR)/TypePromotionTester.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o TypePromotionTester.lo `test -f 'src/samples/datatypes/TypePromotionTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/TypePromotionTester.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/TypePromotionTester.Tpo" "$(DEPDIR)/TypePromotionTester.Plo"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/TypePromotionTester.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/datatypes/TypePromotionTester.cpp' object='TypePromotionTester.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/TypePromotionTester.Plo' tmpdepfile='$(DEPDIR)/TypePromotionTester.TPlo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o TypePromotionTester.lo `test -f 'src/samples/datatypes/TypePromotionTester.cpp' || echo '$(srcdir)/'`src/samples/datatypes/TypePromotionTester.cpp
-
 xqilla-commandline.o: src/samples/xqilla/xqilla-commandline.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT xqilla-commandline.o -MD -MP -MF "$(DEPDIR)/xqilla-commandline.Tpo" \
 @am__fastdepCXX_TRUE@	  -c -o xqilla-commandline.o `test -f 'src/samples/xqilla/xqilla-commandline.cpp' || echo '$(srcdir)/'`src/samples/xqilla/xqilla-commandline.cpp; \
@@ -13240,79 +12365,6 @@ GTAGS:
 
 distclean-tags:
 	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH tags
-
-check-TESTS: $(TESTS)
-	@failed=0; all=0; xfail=0; xpass=0; skip=0; \
-	srcdir=$(srcdir); export srcdir; \
-	list='$(TESTS)'; \
-	if test -n "$$list"; then \
-	  for tst in $$list; do \
-	    if test -f ./$$tst; then dir=./; \
-	    elif test -f $$tst; then dir=; \
-	    else dir="$(srcdir)/"; fi; \
-	    if $(TESTS_ENVIRONMENT) $${dir}$$tst; then \
-	      all=`expr $$all + 1`; \
-	      case " $(XFAIL_TESTS) " in \
-	      *" $$tst "*) \
-	        xpass=`expr $$xpass + 1`; \
-	        failed=`expr $$failed + 1`; \
-	        echo "XPASS: $$tst"; \
-	      ;; \
-	      *) \
-	        echo "PASS: $$tst"; \
-	      ;; \
-	      esac; \
-	    elif test $$? -ne 77; then \
-	      all=`expr $$all + 1`; \
-	      case " $(XFAIL_TESTS) " in \
-	      *" $$tst "*) \
-	        xfail=`expr $$xfail + 1`; \
-	        echo "XFAIL: $$tst"; \
-	      ;; \
-	      *) \
-	        failed=`expr $$failed + 1`; \
-	        echo "FAIL: $$tst"; \
-	      ;; \
-	      esac; \
-	    else \
-	      skip=`expr $$skip + 1`; \
-	      echo "SKIP: $$tst"; \
-	    fi; \
-	  done; \
-	  if test "$$failed" -eq 0; then \
-	    if test "$$xfail" -eq 0; then \
-	      banner="All $$all tests passed"; \
-	    else \
-	      banner="All $$all tests behaved as expected ($$xfail expected failures)"; \
-	    fi; \
-	  else \
-	    if test "$$xpass" -eq 0; then \
-	      banner="$$failed of $$all tests failed"; \
-	    else \
-	      banner="$$failed of $$all tests did not behave as expected ($$xpass unexpected passes)"; \
-	    fi; \
-	  fi; \
-	  dashes="$$banner"; \
-	  skipped=""; \
-	  if test "$$skip" -ne 0; then \
-	    skipped="($$skip tests were not run)"; \
-	    test `echo "$$skipped" | wc -c` -gt `echo "$$banner" | wc -c` && \
-	      dashes="$$skipped"; \
-	  fi; \
-	  report=""; \
-	  if test "$$failed" -ne 0 && test -n "$(PACKAGE_BUGREPORT)"; then \
-	    report="Please report to $(PACKAGE_BUGREPORT)"; \
-	    test `echo "$$report" | wc -c` -gt `echo "$$banner" | wc -c` && \
-	      dashes="$$report"; \
-	  fi; \
-	  dashes=`echo "$$dashes" | sed s/./=/g`; \
-	  echo "$$dashes"; \
-	  echo "$$banner"; \
-	  test -n "$$skipped" && echo "$$skipped"; \
-	  test -n "$$report" && echo "$$report"; \
-	  echo "$$dashes"; \
-	  test "$$failed" -eq 0; \
-	else :; fi
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 
 top_distdir = .
@@ -13447,7 +12499,6 @@ distcleancheck: distclean
 	       $(distcleancheck_listfiles) ; \
 	       exit 1; } >&2
 check-am: all-am
-	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
 check: check-recursive
 all-am: Makefile $(LTLIBRARIES) $(PROGRAMS)
 install-binPROGRAMS: install-libLTLIBRARIES
@@ -13535,28 +12586,27 @@ uninstall-am: uninstall-binPROGRAMS uninstall-info-am \
 
 uninstall-info: uninstall-info-recursive
 
-.PHONY: $(RECURSIVE_TARGETS) CTAGS GTAGS all all-am check check-TESTS \
-	check-am clean clean-binPROGRAMS clean-generic \
-	clean-libLTLIBRARIES clean-libtool clean-noinstPROGRAMS \
-	clean-recursive ctags ctags-recursive dist dist-all dist-gzip \
-	dist-zip distcheck distclean distclean-compile \
-	distclean-generic distclean-hdr distclean-libtool \
-	distclean-recursive distclean-tags distcleancheck distdir \
-	distuninstallcheck dvi dvi-am dvi-recursive info info-am \
-	info-recursive install install-am install-binPROGRAMS \
-	install-data install-data-am install-data-recursive \
-	install-exec install-exec-am install-exec-recursive \
-	install-info install-info-am install-info-recursive \
-	install-libLTLIBRARIES install-man install-recursive \
-	install-strip installcheck installcheck-am installdirs \
-	installdirs-am installdirs-recursive maintainer-clean \
-	maintainer-clean-generic maintainer-clean-recursive mostlyclean \
-	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
-	mostlyclean-recursive pdf pdf-am pdf-recursive ps ps-am \
-	ps-recursive tags tags-recursive uninstall uninstall-am \
-	uninstall-binPROGRAMS uninstall-info-am \
-	uninstall-info-recursive uninstall-libLTLIBRARIES \
-	uninstall-recursive
+.PHONY: $(RECURSIVE_TARGETS) CTAGS GTAGS all all-am check check-am clean \
+	clean-binPROGRAMS clean-generic clean-libLTLIBRARIES \
+	clean-libtool clean-noinstPROGRAMS clean-recursive ctags \
+	ctags-recursive dist dist-all dist-gzip dist-zip distcheck \
+	distclean distclean-compile distclean-generic distclean-hdr \
+	distclean-libtool distclean-recursive distclean-tags \
+	distcleancheck distdir distuninstallcheck dvi dvi-am \
+	dvi-recursive info info-am info-recursive install install-am \
+	install-binPROGRAMS install-data install-data-am \
+	install-data-recursive install-exec install-exec-am \
+	install-exec-recursive install-info install-info-am \
+	install-info-recursive install-libLTLIBRARIES install-man \
+	install-recursive install-strip installcheck installcheck-am \
+	installdirs installdirs-am installdirs-recursive \
+	maintainer-clean maintainer-clean-generic \
+	maintainer-clean-recursive mostlyclean mostlyclean-compile \
+	mostlyclean-generic mostlyclean-libtool mostlyclean-recursive \
+	pdf pdf-am pdf-recursive ps ps-am ps-recursive tags \
+	tags-recursive uninstall uninstall-am uninstall-binPROGRAMS \
+	uninstall-info-am uninstall-info-recursive \
+	uninstall-libLTLIBRARIES uninstall-recursive
 
 
 $(XPLEXERFILE) : $(XPLEXTEMPLATE)
