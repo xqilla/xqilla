@@ -5,10 +5,8 @@ INCLUDES = -I $(top_srcdir)/include/ -I $(xerces_include) -I $(top_srcdir)/src/l
 LDFLAGS = -L$(xerces_lib) -R$(xerces_lib)
 LDADD = libxqilla.la -lxerces-c
 
-TESTS = testDatatypes
-
 bin_PROGRAMS = xqilla
-noinst_PROGRAMS = basicXQillaUsage testDatatypes xqtsRunner
+noinst_PROGRAMS = basicXQillaUsage xqtsRunner
 
 lib_LTLIBRARIES = libxqilla.la
 
@@ -408,53 +406,6 @@ src/samples/basic/basicXQillaUsage.cpp
 
 xqtsRunner_SOURCES = \
 tests/xqts/runner.cpp
-
-testDatatypes_SOURCES = \
-src/samples/datatypes/ATAnyURITester.cpp \
-src/samples/datatypes/ATAnyURITester.hpp \
-src/samples/datatypes/ATBase64BinaryTester.cpp \
-src/samples/datatypes/ATBase64BinaryTester.hpp \
-src/samples/datatypes/ATBooleanTester.cpp \
-src/samples/datatypes/ATBooleanTester.hpp \
-src/samples/datatypes/ATDateTester.cpp \
-src/samples/datatypes/ATDateTester.hpp \
-src/samples/datatypes/ATDateTimeTester.cpp \
-src/samples/datatypes/ATDateTimeTester.hpp \
-src/samples/datatypes/ATDecimalTester.cpp \
-src/samples/datatypes/ATDecimalTester.hpp \
-src/samples/datatypes/ATDoubleTester.cpp \
-src/samples/datatypes/ATDoubleTester.hpp \
-src/samples/datatypes/ATDurationTester.cpp \
-src/samples/datatypes/ATDurationTester.hpp \
-src/samples/datatypes/ATFloatTester.cpp \
-src/samples/datatypes/ATFloatTester.hpp \
-src/samples/datatypes/ATGDayTester.cpp \
-src/samples/datatypes/ATGDayTester.hpp \
-src/samples/datatypes/ATGMonthDayTester.cpp \
-src/samples/datatypes/ATGMonthDayTester.hpp \
-src/samples/datatypes/ATGMonthTester.cpp \
-src/samples/datatypes/ATGMonthTester.hpp \
-src/samples/datatypes/ATGYearMonthTester.cpp \
-src/samples/datatypes/ATGYearMonthTester.hpp \
-src/samples/datatypes/ATGYearTester.cpp \
-src/samples/datatypes/ATGYearTester.hpp \
-src/samples/datatypes/ATHexBinaryTester.cpp \
-src/samples/datatypes/ATHexBinaryTester.hpp \
-src/samples/datatypes/ATQNameTester.cpp \
-src/samples/datatypes/ATQNameTester.hpp \
-src/samples/datatypes/ATStringTester.cpp \
-src/samples/datatypes/ATStringTester.hpp \
-src/samples/datatypes/ATTimeTester.cpp \
-src/samples/datatypes/ATTimeTester.hpp \
-src/samples/datatypes/ATUntypedAtomicTester.cpp \
-src/samples/datatypes/ATUntypedAtomicTester.hpp \
-src/samples/datatypes/CastAsTester.cpp \
-src/samples/datatypes/CastAsTester.hpp \
-src/samples/datatypes/DatatypeTester.cpp \
-src/samples/datatypes/DatatypeTester.hpp \
-src/samples/datatypes/test-datatypes.cpp \
-src/samples/datatypes/TypePromotionTester.cpp \
-src/samples/datatypes/TypePromotionTester.hpp
 
 XPLEXERFILE   = $(top_srcdir)/src/lexer/XPath2Lexer.cpp
 XPLEXTEMPLATE   = $(top_srcdir)/src/lexer/XPath2Lexer.lex
