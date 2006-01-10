@@ -51,7 +51,7 @@ public:
 class XQILLA_API TestSuiteParser : private XERCES_CPP_NAMESPACE_QUALIFIER HandlerBase
 {
 public:
-  TestSuiteParser(std::string pathToTestSuite, TestSuiteRunner *runner);
+  TestSuiteParser(const std::string &pathToTestSuite, TestSuiteRunner *runner);
 
   void run();
 

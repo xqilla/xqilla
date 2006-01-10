@@ -45,7 +45,7 @@ XERCES_CPP_NAMESPACE_USE
 #endif
 using namespace std;
 
-TestSuiteParser::TestSuiteParser(string pathToTestSuite, TestSuiteRunner *runner)
+TestSuiteParser::TestSuiteParser(const string &pathToTestSuite, TestSuiteRunner *runner)
   : m_runner(runner)
 {
   string szXQTSLocation=string("file:///")+pathToTestSuite;

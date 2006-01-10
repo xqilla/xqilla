@@ -73,21 +73,142 @@ private:
   map<string, string> m_schemaFiles;
 };
 
+void usage(const char *progname)
+{
+  const char *name = progname;
+  while(*progname != 0) {
+    if(*progname == '/' || *progname == '\\') {
+      ++progname;
+      name = progname;
+    } else {
+      ++progname;
+    }
+  }
+
+  cout << "Usage: " << name << " [options] <location of the XQTS suite> (<test group or case name>)?" << endl << endl;
+  cout << "-e <file>      : Use the given file as a known error file" << endl;
+  cout << "-E <file>      : Output an error file" << endl;
+  cout << "-h             : Show this display" << endl;
+  cout << "-x             : Output results as XML" << endl;
+}
+
 int main(int argc, char *argv[])
 {
-  // First we parse the command line arguments
-  if(argc<2) {
-    cerr << "Usage: " << argv[0] << " <location of the XQTS suite>" << endl;
+  string testSuitePath;
+  string singleTest;
+  string errorFile;
+  string outputErrorFile;
+  bool xmlResults = false;
+
+  for(int i = 1; i < argc; ++i) {
+    if(*argv[i] == '-' && argv[i][2] == '\0' ){
+
+      switch(argv[i][1]) {
+      case 'h': {
+        usage(argv[0]);
+        return 0;
+      }
+      case 'e': {
+        i++;
+        if(i == argc) {
+          cout << "Missing argument to option 'e'" << endl;
+          return 1;
+        }
+        errorFile = argv[i];
+        break;
+      }
+      case 'E': {
+        i++;
+        if(i == argc) {
+          cout << "Missing argument to option 'E'" << endl;
+          return 1;
+        }
+        outputErrorFile = argv[i];
+        break;
+      }
+      case 'x': {
+        xmlResults = true;
+        break;
+      }
+      default: {
+        cout << "Unknown option: " << argv[i] << endl;
+        usage(argv[0]);
+        return 1;
+      }
+      }
+    }
+    else if(testSuitePath == "") {
+      testSuitePath = argv[i];
+    }
+    else if(singleTest == "") {
+      singleTest = argv[i];
+    }
+    else {
+      usage(argv[0]);
+      return 1;
+    }
+  }
+
+  if(testSuitePath == "") {
+    cout << "Test suite path not specified!" << endl;
+    usage(argv[0]);
     return 1;
   }
 
   XQilla xqilla;
-  ConsoleResultListener results;
-  XQillaTestSuiteRunner runner((argc > 2 ? argv[2] : ""), &results);
-  TestSuiteParser parser(argv[1], &runner);
+
+  Janitor<TestSuiteResultListener> results(0);
+  if(xmlResults) {
+    results.reset(new XMLReportResultListener());
+    XMLReportResultListener *xmlreport = (XMLReportResultListener*)results.get();
+    xmlreport->setImplementation("XQilla", "1.0");
+    xmlreport->setOrganization("XQilla", "http://xqilla.sourceforge.net");
+
+    xmlreport->addImplementationDefinedItem("expressionUnicode", "UTF-16");
+    xmlreport->addImplementationDefinedItem("implicitTimezone", "Defined by the system clock");
+    xmlreport->addImplementationDefinedItem("XMLVersion", "1.1");
+    xmlreport->addImplementationDefinedItem("axes", "Full axis support");
+    xmlreport->addImplementationDefinedItem("defaultOrderEmpty", "empty least");
+    xmlreport->addImplementationDefinedItem("normalizationForms", "NFC, NFD, NFKC, NFKD");
+    xmlreport->addImplementationDefinedItem("docProcessing", "schema validation");
+
+    xmlreport->addFeature("Minimal Conformance", true);
+    xmlreport->addFeature("Schema Import", true);
+    xmlreport->addFeature("Schema Validation", true);
+    xmlreport->addFeature("Static Typing", false);
+    xmlreport->addFeature("Static Typing Extensions", false);
+    xmlreport->addFeature("Full Axis", true);
+    xmlreport->addFeature("Module", true);
+    xmlreport->addFeature("Serialization", false);
+    xmlreport->addFeature("Trivial XML Embedding", false);
+  }
+  else {
+    results.reset(new ConsoleResultListener());
+  }
+
+  KnownErrorChecker knownErrors(results.get());
+  if(errorFile != "" && !knownErrors.loadErrors(errorFile)) {
+    return 1;
+  }
+
+  XQillaTestSuiteRunner runner(singleTest, &knownErrors);
+  TestSuiteParser parser(testSuitePath, &runner);
 
   parser.run();
-  results.printReport();
+
+  if(xmlResults) {
+    ((XMLReportResultListener*)results.get())->printReport();
+  }
+  else {
+    ((ConsoleResultListener*)results.get())->printReport();
+  }
+
+  knownErrors.printReport();
+
+  if(outputErrorFile != "" && !knownErrors.saveErrors(outputErrorFile)) {
+    cout << "Unable to open error file: " << outputErrorFile << endl;
+    return 1;
+  }
 
   return 0;
 }
@@ -136,12 +257,12 @@ void XQillaTestSuiteRunner::runTestCase(const TestCase &testCase)
 {
   if(m_szSingleTest != "" && testCase.name != m_szSingleTest &&
      m_szFullTestName.find(m_szSingleTest) == string::npos) {
-    m_results->reportSkip(testCase);
+    m_results->reportSkip(testCase, "Not run");
     return;
   }
 
   if(m_szFullTestName.substr(0,21)=="Optional:StaticTyping") {
-    m_results->reportSkip(testCase);
+    m_results->reportSkip(testCase, "Static typing not supported");
     return;
   }
 
