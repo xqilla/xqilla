@@ -360,7 +360,7 @@ void XQRemoteDebugger::SendNotification(DynamicContext* context, XERCES_CPP_NAME
             try 
             {
                 XQilla xqilla;
-                AutoDelete<XQQuery> pQuery(xqilla.parseXQuery(unicodeQuery, context));
+                AutoDelete<XQQuery> pQuery(xqilla.parse(unicodeQuery, XQilla::XQUERY, context));
                 Sequence result=pQuery->execute(context);
 
                 static const char* header="<xqe:items xmlns:xqe=\"http://www.stylusstudio.com/XQEngine\">";

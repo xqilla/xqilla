@@ -64,13 +64,7 @@ Item::Ptr Axis::next(DynamicContext *context)
         case DOMNode::ELEMENT_NODE: {
           if(!nodeTest_->getTypeWildcard() && nodeTest_->getNodeType() != Node::element_string) continue;
           if(!nodeTest_->getNameWildcard() && !XPath2Utils::equals(node->getLocalName(), nodeTest_->getNodeName())) continue;
-          if(!nodeTest_->getNamespaceWildcard())
-          {
-              const XMLCh *uri = nodeTest_->getNodeUri();
-              if(uri == 0)
-                uri = context->getDefaultElementAndTypeNS();
-              if(!XPath2Utils::equals(node->getNamespaceURI(), uri)) continue;
-          }
+          if(!nodeTest_->getNamespaceWildcard() && !XPath2Utils::equals(node->getNamespaceURI(), nodeTest_->getNodeUri())) continue;
           break;
         }
         case DOMNode::ATTRIBUTE_NODE: {

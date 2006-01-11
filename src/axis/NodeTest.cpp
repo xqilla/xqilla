@@ -183,14 +183,18 @@ void NodeTest::staticResolution(StaticContext *context)
   if(isNodePrefixSet()) {
     setNodeUri(context->getUriBoundToPrefix(getNodePrefix()));
   }
+  if(!_wildcardNamespace && _uri == 0 &&
+     !_wildcardType && _type == Node::element_string) {
+    _uri = context->getDefaultElementAndTypeNS();
+  }
 }
 
 bool NodeTest::isNodePrefixSet() const {
-	return _usePrefix;
+  return _usePrefix;
 }
 
 SequenceType::ItemType* NodeTest::getItemType() const {
-    return _itemType;
+  return _itemType;
 }
 
 void NodeTest::setItemType(SequenceType::ItemType* type) {

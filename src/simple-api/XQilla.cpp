@@ -81,26 +81,42 @@ XQQuery* XQilla::parseXQuery(const XMLCh* inputQuery, DynamicContext* context/*=
   return args._query;
 }
 
-XQQuery* XQilla::parseXQuery(const InputSource& querySrc, DynamicContext* context/*=0*/,
-                             unsigned int flags/*=0*/, MemoryManager *memMgr)
+XQQuery* XQilla::parse(const XMLCh* inputQuery, Language language, DynamicContext* context,
+                       const XMLCh* queryFile, unsigned int flags,
+                       MemoryManager *memMgr)
+{
+  switch(language) {
+  case XQUERY: {
+    return parseXQuery(inputQuery, context, queryFile, flags, memMgr);
+  }
+  case XPATH2: {
+    return parseXPath2(inputQuery, context, queryFile, flags, memMgr);
+  }
+  }
+                                                                                                                                                              
+  return 0;
+}
+
+XQQuery* XQilla::parse(const InputSource& querySrc, Language language, DynamicContext* context,
+                       unsigned int flags, MemoryManager *memMgr)
 {
   XMLBuffer moduleText;
   if(!readQuery(querySrc, memMgr, moduleText)) {
     XQThrow(ContextException,X("XQilla::parse"), X("Exception reading query content"));
   }
 
-  return parseXQuery(moduleText.getRawBuffer(), context, querySrc.getSystemId(), flags, memMgr);
+  return parse(moduleText.getRawBuffer(), language, context, querySrc.getSystemId(), flags, memMgr);
 }
 
-XQQuery* XQilla::parseXQueryFromURI(const XMLCh* queryFile, DynamicContext* context/*=0*/,
-                                    unsigned int flags/*=0*/, MemoryManager *memMgr)
+XQQuery* XQilla::parseFromURI(const XMLCh* queryFile, Language language, DynamicContext* context,
+                              unsigned int flags, MemoryManager *memMgr)
 {
   XMLBuffer moduleText;
   if(!readQuery(queryFile, memMgr, moduleText)) {
     XQThrow(ContextException,X("XQilla::parseFromUri"), X("Exception reading query content"));
   }
 
-  return parseXQuery(moduleText.getRawBuffer(), context, queryFile, flags, memMgr);
+  return parse(moduleText.getRawBuffer(), language, context, queryFile, flags, memMgr);
 }
 
 DynamicContext *XQilla::createContext(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr)

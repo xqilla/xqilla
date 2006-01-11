@@ -61,7 +61,7 @@ public:
   virtual void reportFailNoError(const TestCase &testCase, const std::string &actualResult);
   virtual void reportFailUnexpectedError(const TestCase &testCase, const std::string &unexpectedError);
 
-  void printReport() const;
+  bool printReport() const;
 
   bool loadErrors(const std::string &errorFile);
   bool saveErrors(const std::string &errorFile) const;
@@ -99,7 +99,7 @@ public:
   virtual void reportFailNoError(const TestCase &testCase, const std::string &actualResult);
   virtual void reportFailUnexpectedError(const TestCase &testCase, const std::string &unexpectedError);
 
-  void printReport() const;
+  bool printReport() const;
 
 private:
   void testCaseToErrorStream(const TestCase &testCase);
