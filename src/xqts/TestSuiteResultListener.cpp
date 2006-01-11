@@ -126,7 +126,7 @@ void KnownErrorChecker::reportFailUnexpectedError(const TestCase &testCase, cons
   results_->reportFailUnexpectedError(testCase, unexpectedError);
 }
 
-void KnownErrorChecker::printReport() const
+bool KnownErrorChecker::printReport() const
 {
   if(!nowFail_.empty() || !nowPass_.empty()) {
     cout << "************************************************************************" << endl;
@@ -144,6 +144,8 @@ void KnownErrorChecker::printReport() const
       }
     }
   }
+
+  return nowFail_.empty();
 }
 
 class ErrorFileHandler : public XERCES_CPP_NAMESPACE_QUALIFIER HandlerBase
@@ -330,7 +332,7 @@ void ConsoleResultListener::reportFailUnexpectedError(const TestCase &testCase, 
   errorStream_ << endl;
 }
 
-void ConsoleResultListener::printReport() const
+bool ConsoleResultListener::printReport() const
 {
   cout << "************************************************************************" << endl;
   cout << m_nTotalTests << " Tests, "
@@ -341,6 +343,8 @@ void ConsoleResultListener::printReport() const
   cout << " (" << ((float)m_nPassedTests)/(m_nTotalTests-m_nSkippedTests-m_nInspectTests)*100 << "%)" << endl;
 
   cerr << errorStream_.str();
+
+  return (m_nTotalTests - m_nPassedTests - m_nSkippedTests - m_nInspectTests) == 0;
 }
 
 void ConsoleResultListener::testCaseToErrorStream(const TestCase &testCase)

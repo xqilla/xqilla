@@ -75,25 +75,3 @@ XQQuery* XQilla::parseXPath2(const XMLCh* inputQuery, DynamicContext* context/*=
 
   return query;
 }
-
-XQQuery* XQilla::parseXPath2(const InputSource& querySrc, DynamicContext* context/*=0*/,
-                             unsigned int flags/*=0*/, MemoryManager *memMgr)
-{
-  XMLBuffer moduleText;
-  if(!readQuery(querySrc, memMgr, moduleText)) {
-    XQThrow(ContextException,X("XQilla::parse"), X("Exception reading query content"));
-  }
-
-  return parseXPath2(moduleText.getRawBuffer(), context, querySrc.getSystemId(), flags, memMgr);
-}
-
-XQQuery* XQilla::parseXPath2FromURI(const XMLCh* queryFile, DynamicContext* context/*=0*/,
-                                    unsigned int flags/*=0*/, MemoryManager *memMgr)
-{
-  XMLBuffer moduleText;
-  if(!readQuery(queryFile, memMgr, moduleText)) {
-    XQThrow(ContextException,X("XQilla::parseFromUri"), X("Exception reading query content"));
-  }
-
-  return parseXPath2(moduleText.getRawBuffer(), context, queryFile, flags, memMgr);
-}

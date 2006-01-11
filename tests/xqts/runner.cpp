@@ -184,21 +184,24 @@ int main(int argc, char *argv[])
 
   parser.run();
 
+  bool passed = true;
   if(xmlResults) {
     ((XMLReportResultListener*)results.get())->printReport();
   }
   else {
-    ((ConsoleResultListener*)results.get())->printReport();
+    passed = ((ConsoleResultListener*)results.get())->printReport();
   }
 
-  knownErrors.printReport();
+  if(errorFile != "") {
+    passed = knownErrors.printReport();
+  }
 
   if(outputErrorFile != "" && !knownErrors.saveErrors(outputErrorFile)) {
     cout << "Unable to open error file: " << outputErrorFile << endl;
     return 1;
   }
 
-  return 0;
+  return passed ? 0 : 1;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

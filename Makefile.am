@@ -5,8 +5,11 @@ INCLUDES = -I $(top_srcdir)/include/ -I $(xerces_include) -I $(top_srcdir)/src/l
 LDFLAGS = -L$(xerces_lib) -R$(xerces_lib)
 LDADD = libxqilla.la -lxerces-c
 
+TESTS = tests/runXQTSTestSuite.sh
+
 bin_PROGRAMS = xqilla
-noinst_PROGRAMS = basicXQillaUsage xqtsRunner
+noinst_PROGRAMS = basicXQillaUsage
+check_PROGRAMS = xqtsRunner
 
 lib_LTLIBRARIES = libxqilla.la
 
@@ -395,7 +398,10 @@ docs/dom3-api \
 Win32Projects/VC6/XQilla.dsp \
 Win32Projects/VC6/XQilla.dsw \
 Win32Projects/VC7.1/XQilla.sln \
-Win32Projects/VC7.1/XQilla.vcproj
+Win32Projects/VC7.1/XQilla.vcproj \
+tests/runXQTSTestSuite.sh \
+tests/xqts/testsuite/errors.xml \
+tests/xqts/testsuite/xqts.zip
 
 
 xqilla_SOURCES = \

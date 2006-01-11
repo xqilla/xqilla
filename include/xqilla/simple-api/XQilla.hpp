@@ -45,6 +45,12 @@ public:
     NO_ADOPT_CONTEXT = 0x2 ///< Don't adopt the context and delete it when the XQQuery is deleted
   };
 
+  /// Enumeration used to select a language to parse
+  enum Language {
+    XQUERY, ///< Parse an XQuery expression
+    XPATH2  ///< Parse an XPath 2.0 expression
+  };
+                                                                                                                                                              
   /**
    * Constructs the object. In the process, XQillaPlatformUtils::initialize() is
    * called to initialize XQilla and Xerces.
@@ -63,9 +69,10 @@ public:
 	// @{
 
   /**
-   * Parse the XQuery expression contained in the given query string.
+   * Parse the expression contained in the given query string.
    *
-   * @param query A string containing the XQuery expression to parse.
+   * @param query A string containing the expression to parse.
+   * @param language The language to parse the string as. Defaults to XQUERY.
    * @param context If specified, the context to use for parsing this expression. A
    * default context is used if this parameter is 0.
    * @param queryFile The name of the file that query originates in. This is passed
@@ -78,17 +85,19 @@ public:
    *
    * @exception XQException If a parse error occurs.
    */
-  XQQuery* parseXQuery(const XMLCh* query,
-                       DynamicContext* context = 0,
-                       const XMLCh* queryFile = NULL,
-                       unsigned int flags = 0,
-                       XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr =
-                       XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager);
+  XQQuery* parse(const XMLCh* query,
+                 Language language = XQUERY,
+                 DynamicContext* context = 0,
+                 const XMLCh* queryFile = NULL,
+                 unsigned int flags = 0,
+                 XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr =
+                 XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager);
 
   /**
-   * Parse the XQuery expression from the given InputSource.
+   * Parse the expression from the given InputSource.
    *
-   * @param querySrc An InputSource which the XQuery expression will be parsed from.
+   * @param querySrc An InputSource which the expression will be parsed from.
+   * @param language The language to parse the string as. Defaults to XQUERY.
    * @param context If specified, the context to use for parsing this expression. A
    * default context is used if this parameter is 0.
    * @param flags A bitwise OR of the Flags constants, that control aspects of how
@@ -99,16 +108,18 @@ public:
    *
    * @exception XQException If a parse error occurs.
    */
-  XQQuery* parseXQuery(const XERCES_CPP_NAMESPACE_QUALIFIER InputSource& querySrc,
-                       DynamicContext* context = 0,
-                       unsigned int flags = 0,
-                       XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr =
-                       XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager);
+  XQQuery* parse(const XERCES_CPP_NAMESPACE_QUALIFIER InputSource& querySrc,
+                 Language language = XQUERY,
+                 DynamicContext* context = 0,
+                 unsigned int flags = 0,
+                 XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr =
+                 XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager);
 
   /**
-   * Parse the XQuery expression residing at the given URL.
+   * Parse the expression residing at the given URL.
    *
-   * @param queryFile The URL of the XQuery expression to parse.
+   * @param queryFile The URL of the expression to parse.
+   * @param language The language to parse the string as. Defaults to XQUERY.
    * @param context If specified, the context to use for parsing this expression. A
    * default context is used if this parameter is 0.
    * @param flags A bitwise OR of the Flags constants, that control aspects of how
@@ -119,74 +130,13 @@ public:
    *
    * @exception XQException If a parse error occurs.
    */
-  XQQuery* parseXQueryFromURI(const XMLCh* queryFile,
-                              DynamicContext* context = 0,
-                              unsigned int flags = 0,
-                              XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr =
-                              XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager);
+  XQQuery* parseFromURI(const XMLCh* queryFile,
+                        Language language = XQUERY,
+                        DynamicContext* context = 0,
+                        unsigned int flags = 0,
+                        XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr =
+                        XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager);
 
-  /**
-   * Parse the XPath 2 expression contained in the given query string.
-   *
-   * @param query A string containing the XPath 2 expression to parse.
-   * @param context If specified, the context to use for parsing this expression. A
-   * default context is used if this parameter is 0.
-   * @param queryFile The name of the file that query originates in. This is passed
-   * back to the user in an XQException if an error occurs.
-   * @param flags A bitwise OR of the Flags constants, that control aspects of how
-   * the XQQuery object is created.
-   * @param memMgr If specified, the memory manager used to create the XQQuery object.
-   *
-   * @return The object that represents the parsed expression.
-   *
-   * @exception XQException If a parse error occurs.
-   */
-  XQQuery* parseXPath2(const XMLCh* query,
-                       DynamicContext* context = 0,
-                       const XMLCh* queryFile = NULL,
-                       unsigned int flags = 0,
-                       XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr =
-                       XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager);
-
-  /**
-   * Parse the XPath 2 expression from the given InputSource.
-   *
-   * @param querySrc An InputSource which the XPath 2 expression will be parsed from.
-   * @param context If specified, the context to use for parsing this expression. A
-   * default context is used if this parameter is 0.
-   * @param flags A bitwise OR of the Flags constants, that control aspects of how
-   * the XQQuery object is created.
-   * @param memMgr If specified, the memory manager used to create the XQQuery object.
-   *
-   * @return The object that represents the parsed expression.
-   *
-   * @exception XQException If a parse error occurs.
-   */
-  XQQuery* parseXPath2(const XERCES_CPP_NAMESPACE_QUALIFIER InputSource& querySrc,
-                       DynamicContext* context = 0,
-                       unsigned int flags = 0,
-                       XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr =
-                       XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager);
-
-  /**
-   * Parse the XPath 2 expression residing at the given URL.
-   *
-   * @param queryFile The URL of the XPath 2 expression to parse.
-   * @param context If specified, the context to use for parsing this expression. A
-   * default context is used if this parameter is 0.
-   * @param flags A bitwise OR of the Flags constants, that control aspects of how
-   * the XQQuery object is created.
-   * @param memMgr If specified, the memory manager used to create the XQQuery object.
-   *
-   * @return The object that represents the parsed expression.
-   *
-   * @exception XQException If a parse error occurs.
-   */
-  XQQuery* parseXPath2FromURI(const XMLCh* queryFile,
-                              DynamicContext* context = 0,
-                              unsigned int flags = 0,
-                              XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr =
-                              XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager);
 	//@}
 
 	/** @name Factory Methods */
@@ -209,6 +159,16 @@ private:
   static bool readQuery(const XERCES_CPP_NAMESPACE_QUALIFIER InputSource& querySrc, 
                         XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr, 
                         XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer& queryText);
+  XQQuery* parseXQuery(const XMLCh* query,
+                       DynamicContext* context,
+                       const XMLCh* queryFile,
+                       unsigned int flags,
+                       XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr);
+  XQQuery* parseXPath2(const XMLCh* query,
+                       DynamicContext* context,
+                       const XMLCh* queryFile,
+                       unsigned int flags,
+                       XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr);
 };
 
 #endif

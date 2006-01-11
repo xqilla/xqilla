@@ -223,7 +223,7 @@ void XQQuery::importModule(const XMLCh* szUri, VectorOfStrings* locations, Stati
       Janitor<InputSource> janIS(srcToUse);
       moduleCtx->setBaseURI(srcToUse->getSystemId());
       try {
-        AutoDelete<XQQuery> pParsedQuery(xqilla.parseXQuery(*srcToUse, moduleCtx, XQilla::NO_STATIC_RESOLUTION|XQilla::NO_ADOPT_CONTEXT));
+        AutoDelete<XQQuery> pParsedQuery(xqilla.parse(*srcToUse, XQilla::XQUERY, moduleCtx, XQilla::NO_STATIC_RESOLUTION|XQilla::NO_ADOPT_CONTEXT));
         if(!pParsedQuery->getIsLibraryModule()) {
           XMLBuffer errMsg;
           errMsg.set(X("The module at "));
