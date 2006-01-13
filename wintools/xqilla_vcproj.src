@@ -36,7 +36,6 @@
 				PrecompiledHeaderFile=".\Release/@project_name@.pch"
 				AssemblerListingLocation=".\Release/"
 				ObjectFile=".\Release/"
-				ProgramDataBaseFileName="@XQILLA_LIB@.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				CompileAs="0"/>
@@ -97,7 +96,6 @@
 				PrecompiledHeaderFile=".\Debug/@project_name@.pch"
 				AssemblerListingLocation=".\Debug/"
 				ObjectFile=".\Debug/"
-				ProgramDataBaseFileName="@XQILLA_LIB@.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="3"
