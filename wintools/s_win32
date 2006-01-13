@@ -1,0 +1,5 @@
+#!/bin/sh
+#	$Id$
+#
+sh ./s_win32_dsp
+sh ./s_win32_vcproj
