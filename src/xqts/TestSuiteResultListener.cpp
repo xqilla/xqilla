@@ -10,6 +10,9 @@
  *
  * $Id$
  */
+#ifdef _MSC_VER
+#pragma warning(disable: 4786)
+#endif
 
 #include <xqilla/xqts/TestSuiteResultListener.hpp>
 #include <xqilla/xqts/TestSuiteParser.hpp>
@@ -17,6 +20,9 @@
 #include <iostream>
 #include <fstream>
 #include <time.h>
+#ifdef _MSC_VER
+#define snprintf _snprintf
+#endif
 
 #include <xercesc/parsers/SAXParser.hpp>
 #include <xercesc/sax/AttributeList.hpp>
