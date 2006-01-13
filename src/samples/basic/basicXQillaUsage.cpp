@@ -13,9 +13,8 @@
 
 //System includes
 
-#if defined(WIN32) && !defined(__CYGWIN__)
-#include <iostream.h>
-#endif
+
+#include <iostream>
 
 //Xerces includes
 
