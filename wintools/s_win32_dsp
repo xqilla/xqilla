@@ -4,7 +4,7 @@
 # Build Windows .dsp (VS6) project files
 
 BUILDDIR=../Win32Projects/VC6
-OUTDIR=../build/win32/VC6
+OUTDIR=../../build/win32/VC6
 TEMPLATEDIR=.
 SRCFILES=srcfiles.in
 # for now, do not parameterize the filter templates
