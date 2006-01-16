@@ -33,12 +33,12 @@ RSC=rc.exe
 
 # PROP BASE Use_MFC 0
 # PROP BASE Use_Debug_Libraries 0
-# PROP BASE Output_Dir "../build/win32/VC6"
+# PROP BASE Output_Dir "../../build/win32/VC6"
 # PROP BASE Intermediate_Dir "Release\xqilla"
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 0
-# PROP Output_Dir "../build/win32/VC6"
+# PROP Output_Dir "../../build/win32/VC6"
 # PROP Intermediate_Dir "Release\xqilla"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
@@ -53,19 +53,19 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /machine:I386
-# ADD LINK32 /libpath:"../build/win32/VC6" xerces-c_2.lib /nologo /base:"0x69000000" /dll /machine:I386 /out:"../build/win32/VC6/release/xqilla10.dll" /implib:"../build/win32/VC6/xqilla10.lib" /libpath:"../../../xerces-c-src/Build/Win32/VC6/Release" /OPT:REF
+# ADD LINK32 /libpath:"../../build/win32/VC6" xerces-c_2.lib /nologo /base:"0x69000000" /dll /machine:I386 /out:"../../build/win32/VC6/release/xqilla10.dll" /implib:"../../build/win32/VC6/xqilla10.lib" /libpath:"../../../xerces-c-src/Build/Win32/VC6/Release" /OPT:REF
 # SUBTRACT LINK32 /pdb:none
 
 !ELSEIF  "$(CFG)" == "xqilla - Win32 Debug"
 
 # PROP BASE Use_MFC 0
 # PROP BASE Use_Debug_Libraries 1
-# PROP BASE Output_Dir "../build/win32/VC6"
+# PROP BASE Output_Dir "../../build/win32/VC6"
 # PROP BASE Intermediate_Dir "Debug\xqilla"
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 2
 # PROP Use_Debug_Libraries 1
-# PROP Output_Dir "../build/win32/VC6"
+# PROP Output_Dir "../../build/win32/VC6"
 # PROP Intermediate_Dir "Debug\xqilla"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
@@ -80,7 +80,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 /libpath:"../build/win32/VC6" xerces-c_2D.lib /nologo /base:"0x69000000" /dll /debug /machine:I386 /out:"../build/win32/VC6/debug/xqilla10d.dll" /implib:"../build/win32/VC6/xqilla10d.lib" /pdbtype:sept /pdb:"../build/win32/VC6/debug/xqilla10.pdb" /libpath:"../../../xerces-c-src/Build/Win32/VC6/Debug"
+# ADD LINK32 /libpath:"../../build/win32/VC6" xerces-c_2D.lib /nologo /base:"0x69000000" /dll /debug /machine:I386 /out:"../../build/win32/VC6/debug/xqilla10d.dll" /implib:"../../build/win32/VC6/xqilla10d.lib" /pdbtype:sept /pdb:"../../build/win32/VC6/debug/xqilla10.pdb" /libpath:"../../../xerces-c-src/Build/Win32/VC6/Debug"
 
 !ENDIF 
 
