@@ -38,7 +38,7 @@ bool compareNodes(DOMNode* node1, DOMNode* node2);
 void TestSuiteRunner::testResults(const TestCase &testCase, const std::string &xmlResult) const
 {
   if(testCase.outputFiles.empty() && !testCase.expectedErrors.empty()) {
-    m_results->reportFailNoError(testCase, xmlResult);
+    m_results->reportFailNoError(testCase, xmlResult, "");
   }
   else {
     bool passed = false;
@@ -81,13 +81,13 @@ void TestSuiteRunner::testResults(const TestCase &testCase, const std::string &x
     }
 
     if(passed) {
-      m_results->reportPass(testCase);
+      m_results->reportPass(testCase, "");
     }
     else if(compareMethod == "Inspect") {
-      m_results->reportInspect(testCase, xmlResult, expectedResult);
+      m_results->reportInspect(testCase, xmlResult, expectedResult, "");
     }
     else {
-      m_results->reportFail(testCase, outputResult, expectedResult);
+      m_results->reportFail(testCase, outputResult, expectedResult, "");
     }
   }
 }
@@ -95,7 +95,7 @@ void TestSuiteRunner::testResults(const TestCase &testCase, const std::string &x
 void TestSuiteRunner::testErrors(const TestCase &testCase, const std::string &actualError) const
 {
   if(testCase.expectedErrors.empty()) {
-    m_results->reportFailUnexpectedError(testCase, actualError);
+    m_results->reportFailUnexpectedError(testCase, actualError, "");
   }
   else {
     bool bFound = false;
@@ -107,10 +107,10 @@ void TestSuiteRunner::testErrors(const TestCase &testCase, const std::string &ac
     }
 
     if(bFound) {
-      m_results->reportPass(testCase);
+      m_results->reportPass(testCase, "");
     }
     else {
-      m_results->reportFailUnexpectedError(testCase, actualError);
+      m_results->reportFailUnexpectedError(testCase, actualError, "");
     }
   }
 }
