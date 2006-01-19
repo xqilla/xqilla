@@ -57,6 +57,7 @@ XQDynamicContextImpl::XQDynamicContextImpl(const StaticContext *staticContext, X
     _nsResolver(staticContext->getNSResolver()),
     _defaultCollation(0),
     _ordering(staticContext->getNodeSetOrdering()),
+    _defaultElementNS(staticContext->getDefaultElementAndTypeNS()),
     _contextItem(0),
     _contextPosition(1),
     _contextSize(1),
@@ -205,6 +206,15 @@ void XQDynamicContextImpl::setImplicitTimezone(const ATDurationOrDerived::Ptr &t
 XPath2MemoryManager* XQDynamicContextImpl::getMemoryManager() const
 {
   return _memMgr;
+}
+
+const XMLCh* XQDynamicContextImpl::getDefaultElementAndTypeNS() const
+{
+  return _defaultElementNS;
+}
+
+void XQDynamicContextImpl::setDefaultElementAndTypeNS(const XMLCh* newNS) {
+  _defaultElementNS = newNS;
 }
 
 XERCES_CPP_NAMESPACE::DOMDocument *XQDynamicContextImpl::createNewDocument() const

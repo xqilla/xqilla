@@ -177,7 +177,7 @@ Sequence XQDOMConstructor::collapseTreeInternal(DynamicContext *context, int fla
                   if(XPath2Utils::equals(node_name, XMLUni::fgXMLNSString))
                   {
                     locallyDefinedNamespaces.addNamespaceBinding(XMLUni::fgZeroLenString, node->dmStringValue(context));
-                    context->setNamespaceBinding(XMLUni::fgZeroLenString, node->dmStringValue(context));
+                    context->setDefaultElementAndTypeNS(node->dmStringValue(context));
                   }
                   else if(node_prefix && XPath2Utils::equals(node_prefix, XMLUni::fgXMLNSString))
                   {
@@ -579,7 +579,12 @@ ASTNode* XQDOMConstructor::staticResolution(StaticContext *context)
       if(XMLNSPrefix!=NULL) {
         // we are a namespace attribute: check that we have a constant value
         if(m_children->size()==0) { // TODO: supporting Namespace 1.1 would mean unsetting the binding...
-          context->setNamespaceBinding(XMLNSPrefix, XMLUni::fgZeroLenString);
+          if(XMLNSPrefix != XMLUni::fgZeroLenString) {
+            context->setNamespaceBinding(XMLNSPrefix, XMLUni::fgZeroLenString);
+          }
+          else {
+            context->setDefaultElementAndTypeNS(XMLUni::fgZeroLenString);
+          }
         }
         else if(m_children->size()>1 || (*m_children)[0]->getType()!=ASTNode::SEQUENCE) {
           XQThrow(StaticErrorException,X("DOM Constructor"),X("The value of a namespace declaration attribute must be a literal string [err:XQST0022]"));
@@ -599,7 +604,12 @@ ASTNode* XQDOMConstructor::staticResolution(StaticContext *context)
 
           if(nsUri == NULLRCP)
             XQThrow(StaticErrorException,X("DOM Constructor"),X("The value of a namespace declaration attribute must be a literal string [err:XQST0022]"));
-          context->setNamespaceBinding(XMLNSPrefix, nsUri->asString(dContext));
+          if(XMLNSPrefix != XMLUni::fgZeroLenString) {
+            context->setNamespaceBinding(XMLNSPrefix, nsUri->asString(dContext));
+          }
+          else {
+            context->setDefaultElementAndTypeNS(nsUri->asString(dContext));
+          }
         }
       }
     }

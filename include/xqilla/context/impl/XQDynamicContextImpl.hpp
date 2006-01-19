@@ -273,6 +273,12 @@ protected:
    * THIS OUGHT TO BE IN THE STATIC CONTEXT - jpcs */
   NodeSetOrdering _ordering;
 
+  /** Default element/type namespace. This is a namespace URI or "none". This
+   * namespace is used for any unprefixed QName appearing in a
+   * position where an element or type name is expected.
+   * THIS OUGHT TO BE IN THE STATIC CONTEXT - jpcs */
+  const XMLCh* _defaultElementNS;
+
   /** The context item is the item currently being processed. */
   Item::Ptr _contextItem;
 
@@ -337,8 +343,6 @@ inline void XQDynamicContextImpl::setBaseURI(const XMLCh* newURI)
 { XQThrow(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
 inline void XQDynamicContextImpl::addCustomFunction(FuncFactory *func)
 { XQThrow(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
-inline void XQDynamicContextImpl::setDefaultElementAndTypeNS(const XMLCh* newNS)
-{ XQThrow(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
 inline void XQDynamicContextImpl::addCollation(Collation* collation)
 { XQThrow(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
 inline void XQDynamicContextImpl::addSchemaLocation(const XMLCh* uri, VectorOfStrings* locations)
@@ -360,7 +364,6 @@ inline const StaticType &XQDynamicContextImpl::getContextItemType() const { retu
 inline bool XQDynamicContextImpl::getXPath1CompatibilityMode() const { return _staticContext->getXPath1CompatibilityMode(); }
 inline const XMLCh* XQDynamicContextImpl::getDefaultFuncNS() const { return _staticContext->getDefaultFuncNS(); }
 inline const XMLCh* XQDynamicContextImpl::getBaseURI() const { return _staticContext->getBaseURI(); }
-inline const XMLCh* XQDynamicContextImpl::getDefaultElementAndTypeNS() const { return _staticContext->getDefaultElementAndTypeNS(); }
 inline StaticContext::FLWOROrderingMode XQDynamicContextImpl::getDefaultFLWOROrderingMode() const { return _staticContext->getDefaultFLWOROrderingMode(); }
 inline bool XQDynamicContextImpl::getInheritNamespaces() const { return _staticContext->getInheritNamespaces(); }
 inline bool XQDynamicContextImpl::getPreserveNamespaces() const { return _staticContext->getPreserveNamespaces(); }
