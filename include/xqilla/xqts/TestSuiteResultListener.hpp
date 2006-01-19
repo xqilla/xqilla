@@ -31,14 +31,16 @@ public:
   virtual void startTestGroup(const std::string &name) = 0;
   virtual void endTestGroup() = 0;
 
-  virtual void reportPass(const TestCase &testCase) = 0;
+  virtual void reportPass(const TestCase &testCase, const std::string &comment) = 0;
   virtual void reportInspect(const TestCase &testCase, const std::string &actualResult,
-                             const std::string &expectedResult) = 0;
+                             const std::string &expectedResult, const std::string &comment) = 0;
   virtual void reportSkip(const TestCase &testCase, const std::string &comment) = 0;
   virtual void reportFail(const TestCase &testCase, const std::string &actualResult,
-                          const std::string &expectedResult) = 0;
-  virtual void reportFailNoError(const TestCase &testCase, const std::string &actualResult) = 0;
-  virtual void reportFailUnexpectedError(const TestCase &testCase, const std::string &unexpectedError) = 0;
+                          const std::string &expectedResult, const std::string &comment) = 0;
+  virtual void reportFailNoError(const TestCase &testCase, const std::string &actualResult,
+                                 const std::string &comment) = 0;
+  virtual void reportFailUnexpectedError(const TestCase &testCase, const std::string &unexpectedError,
+                                         const std::string &comment) = 0;
 
 protected:
   TestSuiteResultListener() {}
@@ -52,14 +54,16 @@ public:
   virtual void startTestGroup(const std::string &name);
   virtual void endTestGroup();
 
-  virtual void reportPass(const TestCase &testCase);
+  virtual void reportPass(const TestCase &testCase, const std::string &comment);
   virtual void reportInspect(const TestCase &testCase, const std::string &actualResult,
-                             const std::string &expectedResult);
+                             const std::string &expectedResult, const std::string &comment);
   virtual void reportSkip(const TestCase &testCase, const std::string &comment);
   virtual void reportFail(const TestCase &testCase, const std::string &actualResult,
-                          const std::string &expectedResult);
-  virtual void reportFailNoError(const TestCase &testCase, const std::string &actualResult);
-  virtual void reportFailUnexpectedError(const TestCase &testCase, const std::string &unexpectedError);
+                          const std::string &expectedResult, const std::string &comment);
+  virtual void reportFailNoError(const TestCase &testCase, const std::string &actualResult,
+                                 const std::string &comment);
+  virtual void reportFailUnexpectedError(const TestCase &testCase, const std::string &unexpectedError,
+                                         const std::string &comment);
 
   bool printReport() const;
 
@@ -90,14 +94,16 @@ public:
   virtual void startTestGroup(const std::string &name);
   virtual void endTestGroup();
 
-  virtual void reportPass(const TestCase &testCase);
+  virtual void reportPass(const TestCase &testCase, const std::string &comment);
   virtual void reportInspect(const TestCase &testCase, const std::string &actualResult,
-                             const std::string &expectedResult);
+                             const std::string &expectedResult, const std::string &comment);
   virtual void reportSkip(const TestCase &testCase, const std::string &comment);
   virtual void reportFail(const TestCase &testCase, const std::string &actualResult,
-                          const std::string &expectedResult);
-  virtual void reportFailNoError(const TestCase &testCase, const std::string &actualResult);
-  virtual void reportFailUnexpectedError(const TestCase &testCase, const std::string &unexpectedError);
+                          const std::string &expectedResult, const std::string &comment);
+  virtual void reportFailNoError(const TestCase &testCase, const std::string &actualResult,
+                                 const std::string &comment);
+  virtual void reportFailUnexpectedError(const TestCase &testCase, const std::string &unexpectedError,
+                                         const std::string &comment);
 
   bool printReport() const;
 
@@ -123,14 +129,16 @@ public:
   virtual void startTestGroup(const std::string &name);
   virtual void endTestGroup();
 
-  virtual void reportPass(const TestCase &testCase);
+  virtual void reportPass(const TestCase &testCase, const std::string &comment);
   virtual void reportInspect(const TestCase &testCase, const std::string &actualResult,
-                             const std::string &expectedResult);
+                             const std::string &expectedResult, const std::string &comment);
   virtual void reportSkip(const TestCase &testCase, const std::string &comment);
   virtual void reportFail(const TestCase &testCase, const std::string &actualResult,
-                          const std::string &expectedResult);
-  virtual void reportFailNoError(const TestCase &testCase, const std::string &actualResult);
-  virtual void reportFailUnexpectedError(const TestCase &testCase, const std::string &unexpectedError);
+                          const std::string &expectedResult, const std::string &comment);
+  virtual void reportFailNoError(const TestCase &testCase, const std::string &actualResult,
+                                 const std::string &comment);
+  virtual void reportFailUnexpectedError(const TestCase &testCase, const std::string &unexpectedError,
+                                         const std::string &comment);
 
   void setImplementation(const std::string &name, const std::string &version = "", const std::string &description = "");
   void setOrganization(const std::string &name, const std::string &website = "");
