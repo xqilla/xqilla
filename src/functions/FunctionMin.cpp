@@ -27,6 +27,7 @@
 #include <xqilla/items/ATDecimalOrDerived.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
+#include <xqilla/context/ContextHelpers.hpp>
 
 const XMLCh FunctionMin::name[] = {
   XERCES_CPP_NAMESPACE_QUALIFIER chLatin_m, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_i, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, 
@@ -43,8 +44,13 @@ const unsigned int FunctionMin::maxArgs = 2;
 FunctionMin::FunctionMin(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : AggregateFunction(name, minArgs, maxArgs, "anyAtomicType*, string", args, memMgr)
 {
+}
+
+ASTNode* FunctionMin::staticResolution(StaticContext *context) {
+  AutoNodeSetOrderingReset orderReset(context);
   // TBD - could do better here - jpcs
-  _src.getStaticType().flags = StaticType::NUMERIC_TYPE | StaticType::OTHER_TYPE;
+  _src.getStaticType().flags = StaticType::TYPED_ATOMIC_TYPE;
+  return resolveArguments(context);
 }
 
 Sequence FunctionMin::collapseTreeInternal(DynamicContext* context, int flags) const
@@ -53,7 +59,7 @@ Sequence FunctionMin::collapseTreeInternal(DynamicContext* context, int flags) c
 
     Sequence sequence(memMgr);  
     try {
-        sequence = validateSequence(getParamNumber(1,context,ASTNode::UNORDERED), context);
+        sequence = validateSequence(getParamNumber(1,context)->toSequence(context), context);
     } catch (IllegalArgumentException &e) {
         XQThrow(IllegalArgumentException, X("FunctionMin::collapseTreeInternal"), X("Invalid argument to fn:min() function [err:FORG0006]."));
     }
@@ -67,7 +73,7 @@ Sequence FunctionMin::collapseTreeInternal(DynamicContext* context, int flags) c
 
     Collation* collation=NULL;
     if (getNumArgs()>1) {
-        Sequence collArg = getParamNumber(2,context);
+        Sequence collArg = getParamNumber(2,context)->toSequence(context);
         const XMLCh* collName = collArg.first()->asString(context);
         try {
             context->getItemFactory()->createAnyURI(collName, context);
@@ -102,7 +108,7 @@ Sequence FunctionMin::collapseTreeInternal(DynamicContext* context, int flags) c
             gtArgs.push_back(&seq2);
             TotalOrderComparison gt(gtArgs, false, memMgr);
             try {
-                less = (const ATBooleanOrDerived::Ptr )gt.collapseTree(context).next(context);
+                less = (const ATBooleanOrDerived::Ptr )gt.collapseTree(context)->next(context);
             } catch (IllegalArgumentException &e) {
                 XQThrow(IllegalArgumentException, X("FunctionMin::collapseTreeInternal"), X("Invalid argument to fn:min() function [err:FORG0006]."));
             } catch (XPath2ErrorException &e) {

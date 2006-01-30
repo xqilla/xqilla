@@ -16,8 +16,7 @@
 #include <xqilla/runtime/SequenceResult.hpp>
 
 SequenceResult::SequenceResult(const Sequence &seq)
-  : ResultImpl(0),
-    seq_(seq)
+  : seq_(seq)
 {
   it_ = seq_.begin();
 }

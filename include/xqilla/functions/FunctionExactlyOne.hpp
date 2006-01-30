@@ -37,7 +37,7 @@ private:
   class ExactlyOneResult : public ResultImpl
   {
   public:
-    ExactlyOneResult(const FunctionExactlyOne *func, int flags, DynamicContext *context);
+    ExactlyOneResult(const FunctionExactlyOne *func, int flags);
 
     Item::Ptr next(DynamicContext *context);
     std::string asString(DynamicContext *context, int indent) const;

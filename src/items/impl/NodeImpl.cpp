@@ -731,7 +731,7 @@ Node::Ptr NodeImpl::dmParent(const DynamicContext* context) const
 Result NodeImpl::dmAttributes(const DynamicContext* context) const
 {
   if(fNode->getNodeType() == DOMNode::ELEMENT_NODE) {
-    return new AttributeAxis(fNode, this, NULL, const_cast<DynamicContext*>(context));
+    return new AttributeAxis(fNode, this, NULL);
   }
   return 0;
 }
@@ -739,7 +739,7 @@ Result NodeImpl::dmAttributes(const DynamicContext* context) const
 Result NodeImpl::dmNamespaceNodes(const DynamicContext* context) const
 {
   if(fNode->getNodeType() == DOMNode::ELEMENT_NODE) {
-    return new NamespaceAxis(fNode, this, NULL, const_cast<DynamicContext*>(context));
+    return new NamespaceAxis(fNode, this, NULL);
   }
   return 0;
 }
@@ -747,7 +747,7 @@ Result NodeImpl::dmNamespaceNodes(const DynamicContext* context) const
 Result NodeImpl::dmChildren(const DynamicContext *context) const
 {
   if(fNode->getNodeType() == DOMNode::ELEMENT_NODE || fNode->getNodeType() == DOMNode::DOCUMENT_NODE) {
-    return new ChildAxis(fNode, this, NULL, const_cast<DynamicContext*>(context));
+    return new ChildAxis(fNode, this, NULL);
   }
   return 0;
 }
@@ -756,57 +756,56 @@ Result NodeImpl::getAxisResult(XQStep::Axis axis, const NodeTest *nodeTest, cons
 {
   switch(axis) {
   case XQStep::ANCESTOR: {
-    return new AncestorAxis(fNode, this, nodeTest, const_cast<DynamicContext*>(context));
+    return new AncestorAxis(fNode, this, nodeTest);
   }
   case XQStep::ANCESTOR_OR_SELF: {
-    return new AncestorOrSelfAxis(fNode, this, nodeTest, const_cast<DynamicContext*>(context));
+    return new AncestorOrSelfAxis(fNode, this, nodeTest);
   }
   case XQStep::ATTRIBUTE: {
     if(fNode->getNodeType() == DOMNode::ELEMENT_NODE) {
-      return new AttributeAxis(fNode, this, nodeTest, const_cast<DynamicContext*>(context));
+      return new AttributeAxis(fNode, this, nodeTest);
     }
     break;
   }
   case XQStep::CHILD: {
     if(fNode->getNodeType() == DOMNode::ELEMENT_NODE || fNode->getNodeType() == DOMNode::DOCUMENT_NODE) {
-      return new ChildAxis(fNode, this, nodeTest, const_cast<DynamicContext*>(context));
+      return new ChildAxis(fNode, this, nodeTest);
     }
     break;
   }
   case XQStep::DESCENDANT: {
     if(fNode->getNodeType() == DOMNode::ELEMENT_NODE || fNode->getNodeType() == DOMNode::DOCUMENT_NODE) {
-      return new DescendantAxis(fNode, this, nodeTest, const_cast<DynamicContext*>(context));
+      return new DescendantAxis(fNode, this, nodeTest);
     }
     break;
   }
   case XQStep::DESCENDANT_OR_SELF: {
-    return new DescendantOrSelfAxis(fNode, this, nodeTest, const_cast<DynamicContext*>(context));
+    return new DescendantOrSelfAxis(fNode, this, nodeTest);
     break;
   }
   case XQStep::FOLLOWING: {
-    return new FollowingAxis(fNode, this, nodeTest, const_cast<DynamicContext*>(context));
+    return new FollowingAxis(fNode, this, nodeTest);
   }
   case XQStep::FOLLOWING_SIBLING: {
-    return new FollowingSiblingAxis(fNode, this, nodeTest, const_cast<DynamicContext*>(context));
+    return new FollowingSiblingAxis(fNode, this, nodeTest);
   }
   case XQStep::NAMESPACE: {
     if(fNode->getNodeType() == DOMNode::ELEMENT_NODE) {
-      return new NamespaceAxis(fNode, this, nodeTest, const_cast<DynamicContext*>(context));
+      return new NamespaceAxis(fNode, this, nodeTest);
     }
     break;
   }
   case XQStep::PARENT: {
-    return new ParentAxis(fNode, this, nodeTest, const_cast<DynamicContext*>(context));
+    return new ParentAxis(fNode, this, nodeTest);
   }
   case XQStep::PRECEDING: {
-    return new PrecedingAxis(fNode, this, nodeTest, const_cast<DynamicContext*>(context));
+    return new PrecedingAxis(fNode, this, nodeTest);
   }
   case XQStep::PRECEDING_SIBLING: {
-    return new PrecedingSiblingAxis(fNode, this, nodeTest, const_cast<DynamicContext*>(context));
+    return new PrecedingSiblingAxis(fNode, this, nodeTest);
   }
   case XQStep::SELF: {
-    return nodeTest->filterResult(new SelfAxis(this, const_cast<DynamicContext*>(context)),
-      const_cast<DynamicContext*>(context));
+    return nodeTest->filterResult(new SelfAxis(this));
   }
   }
 

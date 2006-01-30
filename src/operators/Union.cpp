@@ -20,31 +20,37 @@
 #include <xqilla/items/Node.hpp>
 #include <xqilla/exceptions/XPath2ErrorException.hpp>
 #include <xqilla/context/DynamicContext.hpp>
+#include <xqilla/ast/XQDocumentOrder.hpp>
 
 /*static*/ const XMLCh Union::name[]={ XERCES_CPP_NAMESPACE_QUALIFIER chLatin_u, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_i, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
 
 Union::Union(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQOperator(name, args, memMgr)
+  : XQOperator(name, args, memMgr),
+    sortAdded_(false)
 {
-  _src.setProperties(StaticResolutionContext::DOCORDER | StaticResolutionContext::GROUPED);
+}
+
+ASTNode* Union::staticResolution(StaticContext *context)
+{
+  if(!sortAdded_) {
+    sortAdded_ = true;
+    // Wrap ourselves in a document order sort
+    XPath2MemoryManager *mm = context->getMemoryManager();
+    return (new (mm) XQDocumentOrder(this, mm))->staticResolution(context);
+  }
+
   _src.getStaticType().flags = StaticType::NODE_TYPE;
+
+  return resolveASTNodes(_args, context, true);
 }
 
 Result Union::createResult(DynamicContext* context, int flags) const
 {
-  Result result(new UnionResult(this, flags, context));
-
-  if(context->getNodeSetOrdering()==StaticContext::ORDERING_UNORDERED || flags & ASTNode::UNORDERED) {
-    return result;
-  }
-  else {
-    return result.sortIntoDocumentOrder(context);
-  }
+  return new UnionResult(this, flags);
 }
 
-Union::UnionResult::UnionResult(const Union *op, int flags, DynamicContext *context)
-  : ResultImpl(context),
-    _op(op),
+Union::UnionResult::UnionResult(const Union *op, int flags)
+  : _op(op),
     _flags(flags),
     _index(0),
     _result(0)
@@ -55,7 +61,7 @@ Item::Ptr Union::UnionResult::next(DynamicContext *context)
 {
   Item::Ptr item = 0;
   while(true) {
-    item = _result.next(context);
+    item = _result->next(context);
 
     if(item == NULLRCP) {
       if(_index > 1) {

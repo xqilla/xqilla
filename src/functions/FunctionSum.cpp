@@ -24,6 +24,7 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/mapm/m_apm.h>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
+#include <xqilla/context/ContextHelpers.hpp>
 
 const XMLCh FunctionSum::name[] = {
   XERCES_CPP_NAMESPACE_QUALIFIER chLatin_s, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_u, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_m, 
@@ -40,8 +41,13 @@ const unsigned int FunctionSum::maxArgs = 2;
 FunctionSum::FunctionSum(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : AggregateFunction(name, minArgs, maxArgs, "anyAtomicType*,anyAtomicType?", args, memMgr)
 {
+}
+
+ASTNode* FunctionSum::staticResolution(StaticContext *context) {
+  AutoNodeSetOrderingReset orderReset(context);
   // TBD - could do better here - jpcs
-  _src.getStaticType().flags = StaticType::NUMERIC_TYPE | StaticType::OTHER_TYPE;
+  _src.getStaticType().flags = StaticType::TYPED_ATOMIC_TYPE;
+  return resolveArguments(context);
 }
 
 Sequence FunctionSum::collapseTreeInternal(DynamicContext* context, int flags) const
@@ -50,7 +56,7 @@ Sequence FunctionSum::collapseTreeInternal(DynamicContext* context, int flags) c
 
   Sequence sequence(memMgr);
   try {
-    sequence = validateSequence(getParamNumber(1,context,ASTNode::UNORDERED), context);
+    sequence = validateSequence(getParamNumber(1,context)->toSequence(context), context);
   } catch (IllegalArgumentException &e) {
     XQThrow(IllegalArgumentException, X("FunctionSum::collapseTreeInternal"), X("Invalid argument to fn:sum() function"));
   }
@@ -59,7 +65,7 @@ Sequence FunctionSum::collapseTreeInternal(DynamicContext* context, int flags) c
     if(getNumArgs() == 1)
       return Sequence(context->getItemFactory()->createDouble(0.0, context), memMgr);
     else
-      return getParamNumber(2,context);
+      return getParamNumber(2,context)->toSequence(context);
 
   // check for types that don't support addition
   const AnyAtomicType::Ptr atom = (const AnyAtomicType::Ptr )sequence.first();

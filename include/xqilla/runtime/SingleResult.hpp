@@ -20,7 +20,7 @@
 class XQILLA_API SingleResult : public ResultImpl
 {
 public:
-  SingleResult(DynamicContext *context);
+  SingleResult();
 
   virtual Item::Ptr next(DynamicContext *context);
 

@@ -34,13 +34,14 @@ public:
 
   Except(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
+  ASTNode* staticResolution(StaticContext *context);
   Result createResult(DynamicContext* context, int flags=0) const;
 
 private:
   class ExceptResult : public ResultImpl
   {
   public:
-    ExceptResult(const Except *op, int flags, DynamicContext *context);
+    ExceptResult(const Except *op, int flags);
 
     Item::Ptr next(DynamicContext *context);
     std::string asString(DynamicContext *context, int indent) const;  
@@ -51,6 +52,8 @@ private:
     Result _result;
     ResultBuffer _excpt;
   };
+
+  bool sortAdded_;
 };
 
 #endif 

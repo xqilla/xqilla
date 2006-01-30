@@ -70,8 +70,8 @@ Node::Ptr XQOperator::getNodeParam(unsigned int index, DynamicContext* context) 
 	// The result of a node comparison is defined by applying the following rules, in order:
 
 	// 1. Each operand must be either a single node or an empty sequence; otherwise a type error is raised.
-  Result arg_result(_args[index]->collapseTree(context, ASTNode::UNORDERED|ASTNode::RETURN_TWO));
-  const Item::Ptr first = arg_result.next(context);
+  Result arg_result(_args[index]->collapseTree(context));
+  const Item::Ptr first = arg_result->next(context);
 
   if(first == NULLRCP) return 0;
 
@@ -79,7 +79,7 @@ Node::Ptr XQOperator::getNodeParam(unsigned int index, DynamicContext* context) 
 		XQThrow(XPath2TypeCastException,X("XQOperator::getNodeParam"), X("A parameter of the operator is not a node or empty [err:XP0006]"));
   }
 
-  const Item::Ptr second = arg_result.next(context);
+  const Item::Ptr second = arg_result->next(context);
   if(second != NULLRCP) {
 		XQThrow(XPath2TypeCastException,X("XQOperator::getNodeParam"), X("A parameter of the operator is not a single node or empty [err:XP0006]"));
   }

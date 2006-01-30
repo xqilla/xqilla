@@ -47,16 +47,13 @@ ASTNode* XQQuantified::staticResolution(StaticContext* context) {
     if(_return->isConstant()) {
       AutoDelete<DynamicContext> dContext(context->createDynamicContext());
       dContext->setMemoryManager(context->getMemoryManager());
-      bool value = _return->collapseTree(dContext).getEffectiveBooleanValue(dContext);
+      bool value = _return->collapseTree(dContext)->getEffectiveBooleanValue(dContext);
       ASTNode *newBlock = new (getMemoryManager())
 	      XQSequence(dContext->getItemFactory()->createBoolean(value, dContext),
 			       dContext, getMemoryManager());
-      newBlock->addPredicates(getPredicates());
       return newBlock->staticResolution(context);
     }
-    else {
-      return resolvePredicates(context);
-    }
+    return this;
   }
   else {
     return constantFold(context);
@@ -65,7 +62,7 @@ ASTNode* XQQuantified::staticResolution(StaticContext* context) {
 
 Result XQQuantified::createResultImpl(VectorOfVariableBinding::const_iterator it, VectorOfVariableBinding::const_iterator end, DynamicContext* context, int flags) const
 {
-  return new QuantifiedResult(it, end, this, context);
+  return new QuantifiedResult(it, end, this);
 }
 
 XQQuantified::QuantifierType XQQuantified::getQuantifierType() const
@@ -74,12 +71,11 @@ XQQuantified::QuantifierType XQQuantified::getQuantifierType() const
 }
 
 XQQuantified::QuantifiedResult::QuantifiedResult(VectorOfVariableBinding::const_iterator it, VectorOfVariableBinding::const_iterator end,
-                                                 const XQQuantified *quantified, DynamicContext *context)
-  : SingleResult(context),
-    _quantified(quantified)
+                                                 const XQQuantified *quantified)
+  : _quantified(quantified)
 {
   for(; it != end; ++it) {
-    _ebs.push_back(ProductFactor(*it, context));
+    _ebs.push_back(ProductFactor(*it));
   }
 }
 
@@ -94,7 +90,7 @@ Item::Ptr XQQuantified::QuantifiedResult::getSingleResult(DynamicContext *contex
   varStore->addLogicalBlockScope();
   if(_quantified->nextState(ebs, context, true)) {
     do {
-      bool result = _quantified->getReturnExpr()->collapseTree(context, ASTNode::UNORDERED|ASTNode::RETURN_TWO).getEffectiveBooleanValue(context);
+      bool result = _quantified->getReturnExpr()->collapseTree(context)->getEffectiveBooleanValue(context);
       if(defaultResult != result) {
         defaultResult = result;
         break;

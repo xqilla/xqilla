@@ -55,6 +55,11 @@
 #include <xqilla/ast/XQValidate.hpp>
 #include <xqilla/ast/XQOrderingChange.hpp>
 #include <xqilla/ast/XQFunction.hpp>
+#include <xqilla/ast/XQAtomize.hpp>
+#include <xqilla/ast/XPath1Compat.hpp>
+#include <xqilla/ast/ConvertFunctionArg.hpp>
+#include <xqilla/ast/XQDocumentOrder.hpp>
+#include <xqilla/ast/XQPredicate.hpp>
 
 #include <xercesc/dom/DOMNode.hpp>
 #if defined(XERCES_HAS_CPP_NAMESPACE)
@@ -179,43 +184,71 @@ string PrintAST::printASTNode(const ASTNode *item, const DynamicContext *context
     return printContextItem((XQContextItem *)item, context, indent);
     break;
   }
-  case (ASTNode::DEBUG_HOOK): {
+  case ASTNode::DEBUG_HOOK: {
     return printDebugHook((XQDebugHook *)item, context, indent);
     break;
   }
-  case (ASTNode::FLWOR): {
+  case ASTNode::FLWOR: {
     return printFLWOR((XQFLWOR *)item, context, indent);
     break;
   }
-  case (ASTNode::FLWOR_QUANTIFIED): {
+  case ASTNode::FLWOR_QUANTIFIED: {
     return printFLWORQuantified((XQQuantified *)item, context, indent);
     break;
   }
-  case (ASTNode::TYPESWITCH): {
+  case ASTNode::TYPESWITCH: {
     return printTypeswitch((XQTypeswitch *)item, context, indent);
     break;
   }
-  case (ASTNode::VALIDATE): {
+  case ASTNode::VALIDATE: {
     return printValidate((XQValidate *)item, context, indent);
     break;
   }
-  case (ASTNode::VARIABLE_DEFINITION): {
+  case ASTNode::VARIABLE_DEFINITION: {
     return printGlobal((XQGlobalVariable *)item, context, indent);
     break;
   }
-  case (ASTNode::FUNCTION_CALL): {
+  case ASTNode::FUNCTION_CALL: {
     return printFunctionCall((XQFunctionCall *)item, context, indent);
     break;
   }
-  case (ASTNode::DOM_CONSTRUCTOR): {
+  case ASTNode::DOM_CONSTRUCTOR: {
     return printDOMConstructor((XQDOMConstructor *)item, context, indent);
     break;
   }
-  case (ASTNode::ORDERING_CHANGE): {
+  case ASTNode::ORDERING_CHANGE: {
     return printOrderingChange((XQOrderingChange *)item, context, indent);
     break;
   }
-  case (ASTNode::USER_FUNCTION): {
+  case ASTNode::ATOMIZE: {
+    return printAtomize((XQAtomize *)item, context, indent);
+    break;
+  }
+  case ASTNode::DOCUMENT_ORDER: {
+    return printDocumentOrder((XQDocumentOrder *)item, context, indent);
+    break;
+  }
+  case ASTNode::XPATH1_CONVERT: {
+    return printXPath1CompatConvertFunctionArg((XPath1CompatConvertFunctionArg *)item, context, indent);
+    break;
+  }
+  case ASTNode::PROMOTE_UNTYPED: {
+    return printPromoteUntyped((XQPromoteUntyped *)item, context, indent);
+    break;
+  }
+  case ASTNode::PROMOTE_NUMERIC: {
+    return printPromoteNumeric((XQPromoteNumeric *)item, context, indent);
+    break;
+  }
+  case ASTNode::PROMOTE_ANY_URI: {
+    return printPromoteAnyURI((XQPromoteAnyURI *)item, context, indent);
+    break;
+  }
+  case ASTNode::PREDICATE: {
+    return printPredicate((XQPredicate *)item, context, indent);
+    break;
+  }
+  case ASTNode::USER_FUNCTION: {
     return printUserFunction((XQUserFunction::XQFunctionEvaluator *)item, context, indent);
     break;
   }
@@ -240,7 +273,7 @@ string PrintAST::printFunction(const XQFunction *item, const DynamicContext *con
   name += UTF8(funName);
 
   const VectorOfASTNodes &args = item->getArguments();
-  if(args.empty() && !hasPredicates(item)) {
+  if(args.empty()) {
     s << in << "<Function name=\"" << name << "\"/>" << endl;
   }
   else {
@@ -248,7 +281,6 @@ string PrintAST::printFunction(const XQFunction *item, const DynamicContext *con
     for(VectorOfASTNodes::const_iterator i = args.begin(); i != args.end(); ++i) {
       s << printASTNode(*i, context, indent + INDENT);
     }
-    s << printPredicates(item, context, indent + INDENT);
     s << in << "</Function>" << endl;
   }
 
@@ -266,7 +298,7 @@ string PrintAST::printOperator(const XQOperator *item, const DynamicContext *con
   }
 
   const VectorOfASTNodes &args = item->getArguments();
-  if(args.empty() && !hasPredicates(item)) {
+  if(args.empty()) {
     s << in << "<Operator name=\"" << name << "\"/>" << endl;
   }
   else {
@@ -274,7 +306,6 @@ string PrintAST::printOperator(const XQOperator *item, const DynamicContext *con
     for(VectorOfASTNodes::const_iterator i = args.begin(); i != args.end(); ++i) {
       s << printASTNode(*i, context, indent + INDENT);
     }
-    s << printPredicates(item, context, indent + INDENT);
     s << in << "</Operator>" << endl;
   }
 
@@ -287,14 +318,7 @@ string PrintAST::printContextItem(const XQContextItem *item, const DynamicContex
 
   string in(getIndent(indent));
 
-  if(hasPredicates(item)) {    
-    s << in << "<ContextItem>" << endl;
-    s << printPredicates(item, context, indent + INDENT);
-    s << in << "</ContextItem>" << endl;
-  }
-  else {
-    s << in << "<ContextItem/>" << endl;
-  }
+  s << in << "<ContextItem/>" << endl;
 
   return s.str();
 }
@@ -307,7 +331,6 @@ string PrintAST::printLiteral(const XQLiteral *item, const DynamicContext *conte
 
   s << in << "<Literal>" << endl;
   s << in << "  " << item->getItemConstructor()->asString(context) << endl;
-  s << printPredicates(item, context, indent + INDENT);
   s << in << "</Literal>" << endl;
 
   return s.str();
@@ -318,21 +341,14 @@ string PrintAST::printNav(const XQNav *item, const DynamicContext *context, int 
   ostringstream s;
 
   string in(getIndent(indent));
-  string gotoRoot(item->getGotoRootFirst() ? " gotoRoot=\"true\"" : "");
 
   const XQNav::Steps &steps = item->getSteps();
 
-  if(steps.empty() && !hasPredicates(item)) {
-    s << in << "<Navigation" << gotoRoot << "/>" << endl;
+  s << in << "<Navigation>" << endl;
+  for(XQNav::Steps::const_iterator i = steps.begin(); i != steps.end(); ++i) {
+    s << printASTNode(i->step, context, indent + INDENT);
   }
-  else {
-    s << in << "<Navigation" << gotoRoot << ">" << endl;
-    for(XQNav::Steps::const_iterator i = steps.begin(); i != steps.end(); ++i) {
-      s << printASTNode(i->step, context, indent + INDENT);
-    }
-    s << printPredicates(item, context, indent + INDENT);
-    s << in << "</Navigation>" << endl;
-  }
+  s << in << "</Navigation>" << endl;
 
   return s.str();
 }
@@ -375,14 +391,13 @@ string PrintAST::printStep(const XQStep *item, const DynamicContext *context, in
     }
   }
 
-  if(hasPredicates(item) || type != 0) {
+  if(type != 0) {
     s << ">" << endl;
     if(type != 0) {
       s << in << "  <ItemType";
       s << printItemTypeAttrs(type, context);
       s << "/>" << endl;
     }
-    s << printPredicates(item, context, indent + INDENT);
     s << in << "</Step>" << endl;
   }
   else {
@@ -399,7 +414,7 @@ string PrintAST::printParenthesized(const XQParenthesizedExpr *item, const Dynam
   string in(getIndent(indent));
   const VectorOfASTNodes &children = item->getChildren();
 
-  if(children.empty() && !hasPredicates(item)) {
+  if(children.empty()) {
     s << in << "<Parenthesized/>" << endl;
   }
   else {
@@ -407,7 +422,6 @@ string PrintAST::printParenthesized(const XQParenthesizedExpr *item, const Dynam
     for(VectorOfASTNodes::const_iterator i = children.begin(); i != children.end(); ++i) {
       s << printASTNode(*i, context, indent + INDENT);
     }
-    s << printPredicates(item, context, indent + INDENT);
     s << in << "</Parenthesized>" << endl;
   }
 
@@ -429,7 +443,6 @@ string PrintAST::printSequence(const XQSequence *item, const DynamicContext *con
     for(ItemConstructor::Vector::const_iterator i = values.begin(); i != values.end(); ++i) {
       s << in << "  " << (*i)->asString(context) << endl;
     }
-    s << printPredicates(item, context, indent + INDENT);
     s << in << "</Sequence>" << endl;
   }
 
@@ -447,14 +460,7 @@ string PrintAST::printVariable(const XQVariable *item, const DynamicContext *con
     name = prefix + ":" + name;
   }
 
-  if(hasPredicates(item)) {    
-    s << in << "<Variable name=\"" << name << "\">" << endl;
-    s << printPredicates(item, context, indent + INDENT);
-    s << in << "</Variable>" << endl;
-  }
-  else {
-    s << in << "<Variable name=\"" << name << "\"/>" << endl;
-  }
+  s << in << "<Variable name=\"" << name << "\"/>" << endl;
 
   return s.str();
 }
@@ -475,7 +481,6 @@ string PrintAST::printIf(const XQIf *item, const DynamicContext *context, int in
   s << in << "  <Else>" << endl;
   s << printASTNode(item->getWhenFalse(), context, indent + INDENT + INDENT);
   s << in << "  </Else>" << endl;
-  s << printPredicates(item, context, indent + INDENT);
   s << in << "</If>" << endl;
 
   return s.str();
@@ -490,7 +495,6 @@ string PrintAST::printInstanceOf(const XQInstanceOf *item, const DynamicContext 
   s << in << "<InstanceOf>" << endl;
   s << printASTNode(item->getExpression(), context, indent + INDENT);
   s << printSequenceType(item->getSequenceType(), context, indent + INDENT);
-  s << printPredicates(item, context, indent + INDENT);
   s << in << "</InstanceOf>" << endl;
 
   return s.str();
@@ -505,7 +509,6 @@ string PrintAST::printCastableAs(const XQCastableAs *item, const DynamicContext 
   s << in << "<CastableAs>" << endl;
   s << printASTNode(item->getExpression(), context, indent + INDENT);
   s << printSequenceType(item->getSequenceType(), context, indent + INDENT);
-  s << printPredicates(item, context, indent + INDENT);
   s << in << "</CastableAs>" << endl;
 
   return s.str();
@@ -534,7 +537,6 @@ string PrintAST::printTreatAs(const XQTreatAs *item, const DynamicContext *conte
   s << in << "<TreatAs>" << endl;
   s << printASTNode(item->getExpression(), context, indent + INDENT);
   s << printSequenceType(item->getSequenceType(), context, indent + INDENT);
-  s << printPredicates(item, context, indent + INDENT);
   s << in << "</TreatAs>" << endl;
 
   return s.str();
@@ -573,7 +575,6 @@ string PrintAST::printUserFunction(const XQUserFunction::XQFunctionEvaluator *it
 //   s << in << "  <Body>" << endl;
 //   s << printASTNode(item->getFunctionDefinition()->getFunctionBody(), context, indent + INDENT + INDENT);
 //   s << in << "  </Body>" << endl;
-  s << printPredicates(item, context, indent + INDENT);
   s << in << "</UserFunction>" << endl;
 
   return s.str();
@@ -616,7 +617,6 @@ string PrintAST::printFLWOR(const XQFLWOR *item, const DynamicContext *context, 
   }
   if(sort) s << printSort(sort, context, indent + INDENT);
   s << printASTNode(item->getReturnExpr(), context, indent + INDENT);
-  s << printPredicates(item, context, indent + INDENT);
   s << in << "</FLWOR>" << endl;
 
   return s.str();
@@ -718,7 +718,6 @@ string PrintAST::printFLWORQuantified(const XQQuantified *item, const DynamicCon
     s << printXQVariableBinding(*i, context, indent + INDENT);
   }
   s << printASTNode(item->getReturnExpr(), context, indent + INDENT);
-  s << printPredicates(item, context, indent + INDENT);
   s << in << "</" << name << ">" << endl;
 
   return s.str();
@@ -738,7 +737,6 @@ string PrintAST::printTypeswitch(const XQTypeswitch *item, const DynamicContext 
     s << printClause(*i, context, indent + INDENT);
   }
   s << printClause(item->getDefaultClause(), context, indent + INDENT);
-  s << printPredicates(item, context, indent + INDENT);
   s << in << "</TypeSwitch>" << endl;
 
   return s.str();
@@ -792,7 +790,6 @@ string PrintAST::printValidate(const XQValidate *item, const DynamicContext *con
   }
   s << "\">" << endl;
   s << printASTNode(item->getExpression(), context, indent + INDENT);
-  s << printPredicates(item, context, indent + INDENT);
   s << in << "</Validate>" << endl;
 
   return s.str();
@@ -808,7 +805,7 @@ string PrintAST::printGlobal(const XQGlobalVariable *item, const DynamicContext 
   if(item->isExternal()) {
     s << " external=\"true\"";
   }
-  if(hasPredicates(item) || item->getSequenceType() || item->getVariableExpr()) {
+  if(item->getSequenceType() || item->getVariableExpr()) {
     s << ">" << endl;
     if(item->getSequenceType()) {
       s << printSequenceType(item->getSequenceType(), context, indent + INDENT);
@@ -816,7 +813,6 @@ string PrintAST::printGlobal(const XQGlobalVariable *item, const DynamicContext 
     if(item->getVariableExpr()) {
       s << printASTNode(item->getVariableExpr(), context, indent + INDENT);
     }
-    s << printPredicates(item, context, indent + INDENT);
     s << in << "</GlobalVar>" << endl;
   }
   else {
@@ -841,7 +837,7 @@ string PrintAST::printFunctionCall(const XQFunctionCall *item, const DynamicCont
   name += UTF8(funName);
 
   const VectorOfASTNodes &args = item->getArguments();
-  if(args.empty() && !hasPredicates(item)) {
+  if(args.empty()) {
     s << in << "<FunctionCall name=\"" << name << "\"/>" << endl;
   }
   else {
@@ -849,7 +845,6 @@ string PrintAST::printFunctionCall(const XQFunctionCall *item, const DynamicCont
     for(VectorOfASTNodes::const_iterator i = args.begin(); i != args.end(); ++i) {
       s << printASTNode(*i, context, indent + INDENT);
     }
-    s << printPredicates(item, context, indent + INDENT);
     s << in << "</FunctionCall>" << endl;
   }
 
@@ -863,7 +858,9 @@ string PrintAST::printDOMConstructor(const XQDOMConstructor *item, const Dynamic
   string in(getIndent(indent));
 
   s << in << "<DOMConstructor type=\"" << UTF8(item->getNodeType());
-  if(hasPredicates(item) || item->getName() || !item->getAttributes()->empty() || !item->getChildren()->empty()) {
+  if(item->getName() ||
+     (item->getAttributes() != 0 && !item->getAttributes()->empty()) ||
+     !item->getChildren()->empty()) {
     s << "\">" << endl;
     if(item->getName()) {
       s << in << "  <Name>" << endl;
@@ -886,7 +883,6 @@ string PrintAST::printDOMConstructor(const XQDOMConstructor *item, const Dynamic
       }
       s << in << "  </Children>" << endl;
     }
-    s << printPredicates(item, context, indent + INDENT);
     s << in << "</DOMConstructor>" << endl;
   }
   else {
@@ -909,6 +905,106 @@ string PrintAST::printOrderingChange(const XQOrderingChange *item, const Dynamic
   s << "\">" << endl;
   s << printASTNode(item->getExpr(), context, indent + INDENT);
   s << in << "</OrderingChange>" << endl;
+
+  return s.str();
+}
+
+string PrintAST::printAtomize(const XQAtomize *item, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  s << in << "<Atomize>" << endl;
+  s << printASTNode(item->getExpression(), context, indent + INDENT);
+  s << in << "</Atomize>" << endl;
+
+  return s.str();
+}
+
+string PrintAST::printDocumentOrder(const XQDocumentOrder *item, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+  string name(item->getUnordered() ? "UniqueNodes" : "DocumentOrder");
+
+  s << in << "<" << name << ">" << endl;
+  s << printASTNode(item->getExpression(), context, indent + INDENT);
+  s << in << "</" << name << ">" << endl;
+
+  return s.str();
+}
+
+string PrintAST::printXPath1CompatConvertFunctionArg(const XPath1CompatConvertFunctionArg *item, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  s << in << "<XPath1CompatConvertFunctionArg>" << endl;
+  s << printASTNode(item->getExpression(), context, indent + INDENT);
+  s << printSequenceType(item->getSequenceType(), context, indent + INDENT);
+  s << in << "</XPath1CompatConvertFunctionArg>" << endl;
+
+  return s.str();
+}
+
+string PrintAST::printPromoteUntyped(const XQPromoteUntyped *item, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  s << in << "<PromoteUntyped uri=\"" << UTF8(item->getTypeURI())
+    << "\" name=\"" << UTF8(item->getTypeName())
+    << "\">" << endl;
+  s << printASTNode(item->getExpression(), context, indent + INDENT);
+  s << in << "</PromoteUntyped>" << endl;
+
+  return s.str();
+}
+
+string PrintAST::printPromoteNumeric(const XQPromoteNumeric *item, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  s << in << "<PromoteNumeric uri=\"" << UTF8(item->getTypeURI())
+    << "\" name=\"" << UTF8(item->getTypeName())
+    << "\">" << endl;
+  s << printASTNode(item->getExpression(), context, indent + INDENT);
+  s << in << "</PromoteNumeric>" << endl;
+
+  return s.str();
+}
+
+string PrintAST::printPromoteAnyURI(const XQPromoteAnyURI *item, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  s << in << "<PromoteAnyURI uri=\"" << UTF8(item->getTypeURI())
+    << "\" name=\"" << UTF8(item->getTypeName())
+    << "\">" << endl;
+  s << printASTNode(item->getExpression(), context, indent + INDENT);
+  s << in << "</PromoteAnyURI>" << endl;
+
+  return s.str();
+}
+
+string PrintAST::printPredicate(const XQPredicate *item, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  s << in << "<Predicate>" << endl; 
+  s << printASTNode(item->getExpression(), context, indent + INDENT);
+  s << printASTNode(item->getPredicate(), context, indent + INDENT);
+  s << in << "</Predicate>" << endl;
 
   return s.str();
 }
@@ -990,31 +1086,6 @@ string PrintAST::printItem(const Item::Ptr item, const DynamicContext *context, 
       << UTF8(att->getTypeName());
   }
   s << "\"/>" << endl;
-
-  return s.str();
-}
-
-bool PrintAST::hasPredicates(const ASTNodeImpl *item)
-{
-  return !item->getPredicates().empty();
-}
-
-string PrintAST::printPredicates(const ASTNodeImpl *item, const DynamicContext *context, int indent)
-{
-  ostringstream s;
-
-  const ASTNode::Predicates &preds = item->getPredicates();
-
-  if(!preds.empty()) {
-    string in(getIndent(indent));
-    s << in << "<Predicates>" << endl;
-    
-    for(ASTNode::Predicates::const_iterator i = preds.begin(); i != preds.end(); ++i) {
-      s << printASTNode(i->pred, context, indent + INDENT);
-    }
-    
-    s << in << "</Predicates>" << endl;
-  }
 
   return s.str();
 }

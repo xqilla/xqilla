@@ -27,9 +27,8 @@ XERCES_CPP_NAMESPACE_USE
 AxisNodeFactoryTemplate<NodeImpl> Axis::gNodeImplFactory = AxisNodeFactoryTemplate<NodeImpl>();
 
 Axis::Axis(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *contextNode, const Node *nodeObj,
-	const NodeTest *nodeTest, DynamicContext *context, const AxisNodeFactory &factory)
-  : ResultImpl(context),
-    nodeObj_(nodeObj),
+	const NodeTest *nodeTest, const AxisNodeFactory &factory)
+  : nodeObj_(nodeObj),
     factory_(factory),
     contextNode_(contextNode),
     nodeTest_(nodeTest),
@@ -40,7 +39,7 @@ Axis::Axis(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *contextNode, const Node
 Item::Ptr Axis::next(DynamicContext *context)
 {
   const DOMNode *node = 0;
-  while((node = nextNode()) != 0)
+  while((node = nextNode(context)) != 0)
   {
     if(nodeTest_ == 0) return factory_.createNode(node, context);
 

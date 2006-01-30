@@ -40,17 +40,16 @@ FunctionRemove::FunctionRemove(const VectorOfASTNodes &args, XPath2MemoryManager
   : ConstantFoldingFunction(name, minArgs, maxArgs, "item()*, integer", args, memMgr)
 {
   // TBD - could do better here - jpcs
-  _src.getStaticType().flags = StaticType::NUMERIC_TYPE | StaticType::NODE_TYPE | StaticType::OTHER_TYPE;
+  _src.getStaticType().flags = StaticType::ITEM_TYPE;
 }
 
 Result FunctionRemove::createResult(DynamicContext* context, int flags) const
 {
-  return new RemoveResult(this, flags, context);
+  return new RemoveResult(this, flags);
 }
 
-FunctionRemove::RemoveResult::RemoveResult(const FunctionRemove *func, int flags, DynamicContext *context)
-  : ResultImpl(context),
-    _flags(flags),
+FunctionRemove::RemoveResult::RemoveResult(const FunctionRemove *func, int flags)
+  : _flags(flags),
     _func(func),
     _position(0),
     _one(0),
@@ -63,7 +62,7 @@ FunctionRemove::RemoveResult::RemoveResult(const FunctionRemove *func, int flags
 Item::Ptr FunctionRemove::RemoveResult::next(DynamicContext *context)
 {
   if(_position == NULLRCP) {
-    _position = ((const ATDecimalOrDerived::Ptr )_func->getParamNumber(2, context).next(context));
+    _position = ((const ATDecimalOrDerived::Ptr )_func->getParamNumber(2, context)->next(context));
     _one = context->getItemFactory()->createInteger(1, context);
     _i = _one;
     _target = _func->getParamNumber(1, context);
@@ -71,7 +70,7 @@ Item::Ptr FunctionRemove::RemoveResult::next(DynamicContext *context)
 
   if(!_removeDone) {
     if(_position->equals((const AnyAtomicType::Ptr)_i, context)) {
-      _target.next(context);
+      _target->next(context);
       _removeDone = true;
     }
     else {
@@ -79,7 +78,7 @@ Item::Ptr FunctionRemove::RemoveResult::next(DynamicContext *context)
     }
   }
 
-  return _target.next(context);
+  return _target->next(context);
 }
 
 std::string FunctionRemove::RemoveResult::asString(DynamicContext *context, int indent) const

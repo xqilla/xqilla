@@ -89,7 +89,7 @@ Result XQQuery::execute(DynamicContext* context) const
     return new DebugResult(this, context);
   }
   else {
-    return new QueryResult(this, context);
+    return new QueryResult(this);
   }
 }
 
@@ -97,6 +97,16 @@ void XQQuery::staticResolution(StaticContext *context)
 {
   if(context == 0) context = m_context;
 
+  // Run staticResolutionStage1 on the user defined functions,
+  // which gives them the static type they were defined with
+  UserFunctions::iterator i;
+  for(i = m_userDefFns.begin(); i != m_userDefFns.end(); ++i) {
+    if(getIsLibraryModule() && !XERCES_CPP_NAMESPACE::XMLString::equals((*i)->getURI(), getModuleTargetNamespace()))
+      XQThrow(StaticErrorException,X("XQQuery::staticResolution"), X("Every function in a module must be in the module namespace [err:XQST0048]."));
+    (*i)->staticResolutionStage1(context);
+  }
+
+  // Run staticResolution on the global variables
   if(!m_userDefVars.empty())
   {
     GlobalVariables::iterator itVar;
@@ -122,10 +132,12 @@ void XQQuery::staticResolution(StaticContext *context)
         }
       }
   }
-  for(UserFunctions::iterator i = m_userDefFns.begin(); i != m_userDefFns.end(); ++i) {
-    if(getIsLibraryModule() && !XERCES_CPP_NAMESPACE::XMLString::equals((*i)->getURI(), getModuleTargetNamespace()))
-      XQThrow(StaticErrorException,X("XQQuery::staticResolution"), X("Every function in a module must be in the module namespace [err:XQST0048]."));
-    (*i)->staticResolution(context);
+
+  // Run staticResolutionStage2 on the user defined functions,
+  // which calculates a better type for them, and statically
+  // resolves their function bodies
+  for(i = m_userDefFns.begin(); i != m_userDefFns.end(); ++i) {
+    (*i)->staticResolutionStage2(context);
   }
   if(m_query) m_query = m_query->staticResolution(context);
 }
@@ -282,9 +294,8 @@ const XMLCh* XQQuery::getQueryText() const
     return m_szQueryText;
 }
 
-XQQuery::QueryResult::QueryResult(const XQQuery *query, DynamicContext *context)
-  : ResultImpl(context),
-    _query(query),
+XQQuery::QueryResult::QueryResult(const XQQuery *query)
+  : _query(query),
     _parent(0),
     _toDo(true)
 {
@@ -297,13 +308,13 @@ Item::Ptr XQQuery::QueryResult::next(DynamicContext *context)
 
     // define global variables
     for(GlobalVariables::const_iterator it = _query->m_userDefVars.begin(); it != _query->m_userDefVars.end(); ++it)
-      (*it)->collapseTree(context).toSequence(context);
+      (*it)->collapseTree(context)->toSequence(context);
     if(_query->getQueryBody() != NULL) {
       _parent = _query->getQueryBody()->collapseTree(context);
     }
   }
 
-  Item::Ptr item = _parent.next(context);
+  Item::Ptr item = _parent->next(context);
 
   if(item == NULLRCP) {
     _parent = 0;
@@ -318,7 +329,7 @@ std::string XQQuery::QueryResult::asString(DynamicContext *context, int indent) 
   std::string in(getIndent(indent));
 
   oss << in << "<queryresult>" << std::endl;
-  oss << _parent.asString(context, indent + 1);
+  oss << _parent->asString(context, indent + 1);
   oss << in << "</queryresult>" << std::endl;
 
   return oss.str();
@@ -343,10 +354,10 @@ void XQQuery::DebugResult::getResult(Sequence &toFill, DynamicContext *context) 
   {
     // define global variables
     for(GlobalVariables::const_iterator it = _query->m_userDefVars.begin(); it != _query->m_userDefVars.end(); ++it)
-      (*it)->collapseTree(context).toSequence(context);
+      (*it)->collapseTree(context)->toSequence(context);
 
     if(_query->getQueryBody() != NULL) {
-      toFill = _query->getQueryBody()->collapseTree(context);
+      toFill = _query->getQueryBody()->collapseTree(context)->toSequence(context);
     }
   }
   catch(XQException& e)

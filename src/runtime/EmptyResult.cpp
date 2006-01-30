@@ -15,8 +15,7 @@
 #include <sstream>
 #include <xqilla/runtime/EmptyResult.hpp>
 
-EmptyResult::EmptyResult(DynamicContext *context)
-  : ResultImpl(context)
+EmptyResult::EmptyResult()
 {
 }
 

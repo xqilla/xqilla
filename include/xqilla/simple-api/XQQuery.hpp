@@ -161,7 +161,7 @@ private:
   class QueryResult : public ResultImpl
   {
   public:
-    QueryResult(const XQQuery *query, DynamicContext *context);
+    QueryResult(const XQQuery *query);
 
     Item::Ptr next(DynamicContext *context);
     std::string asString(DynamicContext *context, int indent) const;

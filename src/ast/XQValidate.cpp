@@ -44,9 +44,9 @@ XQValidate::XQValidate(ASTNode* valExpr, DocumentCache::ValidationMode valMode, 
 
 Sequence XQValidate::collapseTreeInternal(DynamicContext* context, int flags) const
 {
-  Result toBeValidated = _expr->collapseTree(context, ASTNode::UNORDERED|ASTNode::RETURN_TWO);
-  const Item::Ptr first = toBeValidated.next(context);
-  const Item::Ptr second = toBeValidated.next(context);
+  Result toBeValidated = _expr->collapseTree(context);
+  const Item::Ptr first = toBeValidated->next(context);
+  const Item::Ptr second = toBeValidated->next(context);
 
   if(first == NULLRCP || second != NULLRCP || !first->isNode())
     XQThrow(FunctionException,X("XQValidate::collapseTreeInternal"), X("The expression to be validated must evaluate to exactly one document or element node [err:XQTY0030]."));
@@ -71,7 +71,7 @@ ASTNode* XQValidate::staticResolution(StaticContext* ctx)
 
   _src.getStaticType().flags = StaticType::NODE_TYPE;
   _src.forceNoFolding(true);
-  return resolvePredicates(ctx); // Never constant fold
+  return this; // Never constant fold
 }
 
 const ASTNode *XQValidate::getExpression() const

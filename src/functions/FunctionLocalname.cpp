@@ -47,7 +47,7 @@ ASTNode* FunctionLocalname::staticResolution(StaticContext *context) {
   if(_args.empty()) {
     _src.contextItemUsed(true);
   }
-  return resolveASTNodes(_args, context, !_args.empty());
+  return resolveArguments(context);
 }
 
 Sequence FunctionLocalname::collapseTreeInternal(DynamicContext* context, int flags) const
@@ -56,7 +56,7 @@ Sequence FunctionLocalname::collapseTreeInternal(DynamicContext* context, int fl
 
   Node::Ptr ctxNode;
   if(getNumArgs() == 1) {
-    Sequence arg=getParamNumber(1,context);
+    Sequence arg=getParamNumber(1,context)->toSequence(context);
     if(arg.isEmpty())
       return Sequence(context->getItemFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context), memMgr);
     ctxNode=arg.first();

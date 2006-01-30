@@ -31,13 +31,18 @@ lib.filters=ast axis context dom-api exceptions framework functions items lexer 
 src/ast/ASTNodeImpl.cpp	lib
 src/ast/AggregateFunction.cpp	lib
 src/ast/ConstantFoldingFunction.cpp	lib
+src/ast/ConvertFunctionArg.cpp	lib
 src/ast/NumericFunction.cpp	lib
 src/ast/StaticResolutionContext.cpp	lib
+src/ast/StaticType.cpp	lib
+src/ast/XPath1Compat.cpp	lib
+src/ast/XQAtomize.cpp	lib
 src/ast/XQCastAs.cpp	lib
 src/ast/XQCastableAs.cpp	lib
 src/ast/XQContextItem.cpp	lib
 src/ast/XQDOMConstructor.cpp	lib
 src/ast/XQDebugHook.cpp	lib
+src/ast/XQDocumentOrder.cpp	lib
 src/ast/XQFLWOR.cpp	lib
 src/ast/XQFunction.cpp	lib
 src/ast/XQFunctionCall.cpp	lib
@@ -49,6 +54,7 @@ src/ast/XQNav.cpp	lib
 src/ast/XQOperator.cpp	lib
 src/ast/XQOrderingChange.cpp	lib
 src/ast/XQParenthesizedExpr.cpp	lib
+src/ast/XQPredicate.cpp	lib
 src/ast/XQQuantified.cpp	lib
 src/ast/XQSequence.cpp	lib
 src/ast/XQStep.cpp	lib
@@ -368,7 +374,6 @@ src/parser/XPath2Parser.hpp	lib
 src/parser/XPath2ParserControl.hpp	lib
 src/parser/XPath2Parser.y		lib
 src/parser/xquery.y			lib
-src/runtime/AtomizeResult.cpp	lib
 src/runtime/EmptyResult.cpp	lib
 src/runtime/LazySequenceResult.cpp	lib
 src/runtime/Result.cpp	lib
@@ -379,7 +384,6 @@ src/runtime/ResultImpl.cpp	lib
 src/runtime/Sequence.cpp	lib
 src/runtime/SequenceResult.cpp	lib
 src/runtime/SingleResult.cpp	lib
-src/runtime/SortIntoDocumentOrderResult.cpp	lib
 src/schema/AnyAtomicTypeDatatypeValidator.cpp	lib
 src/schema/DocumentCacheImpl.cpp	lib
 src/schema/SequenceType.cpp	lib
@@ -452,13 +456,18 @@ include/xqilla/ast/ASTNode.hpp	lib
 include/xqilla/ast/ASTNodeImpl.hpp	lib
 include/xqilla/ast/AggregateFunction.hpp	lib
 include/xqilla/ast/ConstantFoldingFunction.hpp	lib
+include/xqilla/ast/ConvertFunctionArg.hpp	lib
 include/xqilla/ast/NumericFunction.hpp	lib
 include/xqilla/ast/StaticResolutionContext.hpp	lib
+include/xqilla/ast/StaticType.hpp	lib
+include/xqilla/ast/XQPath1Compat.hpp	lib
+include/xqilla/ast/XQAtomize.hpp	lib
 include/xqilla/ast/XQCastAs.hpp	lib
 include/xqilla/ast/XQCastableAs.hpp	lib
 include/xqilla/ast/XQContextItem.hpp	lib
 include/xqilla/ast/XQDOMConstructor.hpp	lib
 include/xqilla/ast/XQDebugHook.hpp	lib
+include/xqilla/ast/XQDocumentOrder.hpp	lib
 include/xqilla/ast/XQFLWOR.hpp	lib
 include/xqilla/ast/XQFunction.hpp	lib
 include/xqilla/ast/XQFunctionCall.hpp	lib
@@ -470,6 +479,7 @@ include/xqilla/ast/XQNav.hpp	lib
 include/xqilla/ast/XQOperator.hpp	lib
 include/xqilla/ast/XQOrderingChange.hpp	lib
 include/xqilla/ast/XQParenthesizedExpr.hpp	lib
+include/xqilla/ast/XQPredicate.hpp	lib
 include/xqilla/ast/XQQuantified.hpp	lib
 include/xqilla/ast/XQSequence.hpp	lib
 include/xqilla/ast/XQStep.hpp	lib
@@ -494,6 +504,7 @@ include/xqilla/axis/PrecedingAxis.hpp	lib
 include/xqilla/axis/PrecedingSiblingAxis.hpp	lib
 include/xqilla/axis/SelfAxis.hpp	lib
 include/xqilla/context/Collation.hpp	lib
+include/xqilla/context/ContextHelpers.hpp	lib
 include/xqilla/context/DynamicContext.hpp	lib
 include/xqilla/context/ItemFactory.hpp	lib
 include/xqilla/context/Scope.hpp	lib
@@ -718,7 +729,6 @@ include/xqilla/operators/Range.hpp	lib
 include/xqilla/operators/UnaryMinus.hpp	lib
 include/xqilla/operators/Union.hpp	lib
 include/xqilla/parser/QName.hpp	lib
-include/xqilla/runtime/AtomizeResult.hpp	lib
 include/xqilla/runtime/EmptyResult.hpp	lib
 include/xqilla/runtime/LazySequenceResult.hpp	lib
 include/xqilla/runtime/Result.hpp	lib
@@ -727,7 +737,6 @@ include/xqilla/runtime/ResultImpl.hpp	lib
 include/xqilla/runtime/Sequence.hpp	lib
 include/xqilla/runtime/SequenceResult.hpp	lib
 include/xqilla/runtime/SingleResult.hpp	lib
-include/xqilla/runtime/SortIntoDocumentOrderResult.hpp	lib
 include/xqilla/schema/AnyAtomicTypeDatatypeValidator.hpp	lib
 include/xqilla/schema/DocumentCache.hpp	lib
 include/xqilla/schema/DocumentCacheImpl.hpp	lib

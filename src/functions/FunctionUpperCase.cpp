@@ -41,7 +41,7 @@ FunctionUpperCase::FunctionUpperCase(const VectorOfASTNodes &args, XPath2MemoryM
 Sequence FunctionUpperCase::collapseTreeInternal(DynamicContext* context, int flags) const
 {
   XPath2MemoryManager* memMgr = context->getMemoryManager();
-  Sequence arg=getParamNumber(1,context);
+  Sequence arg=getParamNumber(1,context)->toSequence(context);
   if(arg.isEmpty()) {
     return Sequence(context->getItemFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context), memMgr);
   }

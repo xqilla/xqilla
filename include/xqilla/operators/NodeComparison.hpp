@@ -33,7 +33,7 @@ private:
   class NodeComparisonResult : public SingleResult
   {
   public:
-    NodeComparisonResult(const NodeComparison *op, DynamicContext *context);
+    NodeComparisonResult(const NodeComparison *op);
 
     Item::Ptr getSingleResult(DynamicContext *context) const;
     std::string asString(DynamicContext *context, int indent) const;    

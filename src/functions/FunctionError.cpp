@@ -40,7 +40,7 @@ FunctionError::FunctionError(const VectorOfASTNodes &args, XPath2MemoryManager* 
 ASTNode* FunctionError::staticResolution(StaticContext *context)
 {
   _src.forceNoFolding(true);
-  return resolveASTNodes(_args, context, false);
+  return resolveArguments(context);
 }
 
 Sequence FunctionError::collapseTreeInternal(DynamicContext* context, int flags) const
@@ -53,12 +53,12 @@ Sequence FunctionError::collapseTreeInternal(DynamicContext* context, int flags)
             break;
     case 3: // TODO: extra storage in the exception object for the user object
     case 2: {
-                Sequence arg=getParamNumber(2,context);
+                Sequence arg=getParamNumber(2,context)->toSequence(context);
                 exc_name.append(X(": "));
                 exc_name.append(arg.first()->asString(context));
             }
     case 1: {
-                Sequence arg=getParamNumber(1,context);
+                Sequence arg=getParamNumber(1,context)->toSequence(context);
                 if(arg.isEmpty())
                     exc_name.set(X("The first argument of fn:error must be a valid QName"));
                 else

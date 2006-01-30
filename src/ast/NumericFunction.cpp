@@ -26,19 +26,16 @@ NumericFunction::NumericFunction(const XMLCh* name, unsigned int argsFrom, unsig
 { 
 }
 
-Result NumericFunction::getParamNumber(unsigned int number, DynamicContext* context, int flags) const 
+Numeric::Ptr NumericFunction::getNumericParam(unsigned int number, DynamicContext *context, int flags) const
 {
-	return getParamNumber(number,number,context,flags);
-}
+  Result arg = XQFunction::getParamNumber(number, context, flags);
+  Item::Ptr item = arg->next(context);
 
-Result NumericFunction::getParamNumber(unsigned int paramNumber, unsigned int signatureNumber, DynamicContext* context, int flags) const
-{
-  Sequence arg = XQFunction::getParamNumber(paramNumber, signatureNumber, context, flags).toSequence(context);
-
-  if (arg.isEmpty()) {
-    return arg;
-  } else  if (arg.first()->isAtomicValue() && ((const AnyAtomicType::Ptr)arg.first())->isNumericValue()) {
-    return arg;
+  if(item.isNull()) {
+    return 0;
+  }
+  else if(item->isAtomicValue() && ((const AnyAtomicType *)item.get())->isNumericValue()) {
+    return (const Numeric *)item.get();
   } else {
     XQThrow(FunctionException,X("NumericFunction::getParamNumber"), X("Non-numeric argument in numeric function [err:XPTY0004]"));
   }

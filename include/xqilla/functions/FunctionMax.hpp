@@ -33,6 +33,7 @@ public:
   ///Constructor. Sets arg def to NOT_OPTIONAL.
   FunctionMax(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
+  ASTNode* staticResolution(StaticContext *context);
   /** Returns the maximum value from the given sequence. **/
   Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
 

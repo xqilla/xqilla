@@ -216,7 +216,7 @@ XPath2FirstResultImpl::XPath2FirstResultImpl(const XQQuery *expression,
   : XPath2ResultImpl(contextNode, staticContext, memMgr, exprImpl)
 {
   try {
-    _currentItem = expression->execute(_context).next(_context);
+    _currentItem = expression->execute(_context)->next(_context);
   }
   catch(const XQException &e) {
     if(XQillaException::getDebug()) {
@@ -282,7 +282,7 @@ XPath2SnapshotResultImpl::XPath2SnapshotResultImpl(const XQQuery *expression,
     _sequence(0)
 {
   try {
-    _sequence = new (_createdWith) Sequence(expression->execute(_context).toSequence(_context));
+    _sequence = new (_createdWith) Sequence(expression->execute(_context)->toSequence(_context));
   }
   catch(const XQException &e) {
     if(XQillaException::getDebug()) {
@@ -420,7 +420,7 @@ bool XPath2IteratorResultImpl::iterateNext()
     throw DOMException(DOMException::INVALID_STATE_ERR, XMLString::transcode("Document has changed"));
   }//if
 
-  _currentItem = _results.next(_context);
+  _currentItem = _results->next(_context);
 
   if(_currentItem.isNull()) {
     _results = 0;

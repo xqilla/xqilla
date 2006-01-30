@@ -23,23 +23,6 @@
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/exceptions/XPath2TypeMatchException.hpp>
 
-ResultImpl::ResultImpl(DynamicContext *context)
-  : ReferenceCounted(),
-    context_(context)
-{
-  // Do nothing
-}
-
-ResultImpl::~ResultImpl()
-{
-  // Do nothing
-}
-
-void ResultImpl::skip()
-{
-  // Does nothing by default
-}
-
 static inline bool getEffectiveBooleanValueInternal(const Item::Ptr &first, const Item::Ptr &second, DynamicContext* context)
 {
   // If its operand is a singleton value ...
@@ -103,8 +86,6 @@ bool ResultImpl::getEffectiveBooleanValue(const Item::Ptr &first, const Item::Pt
 
 Sequence ResultImpl::toSequence(DynamicContext *context)
 {
-  if(context == 0) context = context_;
-
   Sequence result(context->getMemoryManager());
 
   Item::Ptr item = 0;

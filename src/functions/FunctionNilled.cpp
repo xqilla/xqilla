@@ -40,12 +40,12 @@ FunctionNilled::FunctionNilled(const VectorOfASTNodes &args, XPath2MemoryManager
 }
 
 ASTNode* FunctionNilled::staticResolution(StaticContext *context) {
-  return resolveASTNodes(_args, context, false);
+  return resolveArguments(context);
 }
 
 Sequence FunctionNilled::collapseTreeInternal(DynamicContext* context, int flags) const
 {
-  Sequence arg = getParamNumber(1, context);
+  Sequence arg = getParamNumber(1, context)->toSequence(context);
   // If the argument is the empty sequence, returns the empty sequence
   if(arg.isEmpty())
     return Sequence(context->getMemoryManager());

@@ -20,6 +20,7 @@
 #include <xqilla/exceptions/XPath2TypeCastException.hpp>
 #include <xqilla/items/Item.hpp>
 #include <xqilla/items/AnyAtomicType.hpp>
+#include <xqilla/ast/XQAtomize.hpp>
 
 ArithmeticOperator::ArithmeticOperator(const XMLCh* opName, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : XQOperator(opName, args, memMgr)
@@ -28,23 +29,18 @@ ArithmeticOperator::ArithmeticOperator(const XMLCh* opName, const VectorOfASTNod
 
 ASTNode* ArithmeticOperator::staticResolution(StaticContext *context)
 {
+  XPath2MemoryManager *mm = context->getMemoryManager();
+
   _src.getStaticType().flags = 0;
 
   bool allConstant = true;
   for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
+    *i = new (mm) XQAtomize(*i, mm);
     *i = (*i)->staticResolution(context);
 
-    if((*i)->getStaticResolutionContext().getStaticType().flags & StaticType::NODE_TYPE) {
-      _src.getStaticType().flags |= StaticType::NUMERIC_TYPE | StaticType::OTHER_TYPE;
-    }
-    if((*i)->getStaticResolutionContext().getStaticType().flags & StaticType::NUMERIC_TYPE) {
-      _src.getStaticType().flags |= StaticType::NUMERIC_TYPE;
-    }
-    if((*i)->getStaticResolutionContext().getStaticType().flags & StaticType::OTHER_TYPE) {
-      _src.getStaticType().flags |= StaticType::OTHER_TYPE;
-    }
-
+    _src.getStaticType().flags |= (*i)->getStaticResolutionContext().getStaticType().flags;
     _src.add((*i)->getStaticResolutionContext());
+
     if(!(*i)->isConstantAndHasTimezone(context)) {
       allConstant = false;
       if((*i)->isConstant()) {
@@ -56,14 +52,12 @@ ASTNode* ArithmeticOperator::staticResolution(StaticContext *context)
   if(allConstant) {
     return constantFold(context);
   }
-  else {
-    return resolvePredicates(context);
-  }
+  return this;
 }
 
 Result ArithmeticOperator::createResult(DynamicContext* context, int flags) const
 {
-  return new ArithmeticResult(this, context);
+  return new ArithmeticResult(this);
 }
 
 AnyAtomicType::Ptr ArithmeticOperator::getArgument(unsigned int index, DynamicContext *context) const
@@ -83,14 +77,10 @@ AnyAtomicType::Ptr ArithmeticOperator::getArgument(unsigned int index, DynamicCo
   //        Otherwise, a type error is raised.
   Result arg_result(_args[index]->collapseTree(context));
 
-  if(_args[index]->getStaticResolutionContext().getStaticType().flags & StaticType::NODE_TYPE) {
-	  arg_result = arg_result.atomize(context);
-  }
-
-  Item::Ptr first = arg_result.next(context);
+  Item::Ptr first = arg_result->next(context);
 
   if(!context->getXPath1CompatibilityMode()) {
-    Item::Ptr second = arg_result.next(context);
+    Item::Ptr second = arg_result->next(context);
 
     if(first != NULLRCP && second != NULLRCP) {
       XQThrow(XPath2TypeCastException,X("ArithmeticOperator::getArgument"),
@@ -117,9 +107,8 @@ AnyAtomicType::Ptr ArithmeticOperator::getArgument(unsigned int index, DynamicCo
   return (const AnyAtomicType::Ptr )first;
 }
 
-ArithmeticOperator::ArithmeticResult::ArithmeticResult(const ArithmeticOperator *op, DynamicContext *context)
-  : SingleResult(context),
-    _op(op)
+ArithmeticOperator::ArithmeticResult::ArithmeticResult(const ArithmeticOperator *op)
+  : _op(op)
 {
 }
 

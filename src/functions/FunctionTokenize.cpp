@@ -43,23 +43,22 @@ FunctionTokenize::FunctionTokenize(const VectorOfASTNodes &args, XPath2MemoryMan
 Sequence FunctionTokenize::collapseTreeInternal(DynamicContext* context, int flags) const
 {
 	XPath2MemoryManager* memMgr = context->getMemoryManager();
-	Sequence inputString=getParamNumber(1,context).toSequence(context);
-	Sequence patternString=getParamNumber(2,context).toSequence(context);
 
 	// If the value of $operand1 is the empty sequence, the empty sequence is returned.
-	if(inputString.isEmpty())
+  Item::Ptr inputString = getParamNumber(1,context)->next(context);
+	if(inputString.isNull())
 		return Sequence(memMgr);
 
-	const XMLCh *input=inputString.first()->asString(context);
+	const XMLCh *input=inputString->asString(context);
 	// If the value of $operand1 is the zero-length string, the empty sequence is returned.
     if(XPath2Utils::equals(input, XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString))
 		return Sequence(memMgr);
 
-	const XMLCh *pattern=patternString.first()->asString(context);
+	const XMLCh *pattern=getParamNumber(2,context)->next(context)->asString(context);
 
 	const XMLCh *options = XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString;
 	if(getNumArgs()>2)
-		options=getParamNumber(3,context).castAsSingleString(context);
+		options=getParamNumber(3,context)->next(context)->asString(context);
   
   //Check that the options are valid - throw an exception if not (can have s,m,i and x)
   //Note: Are allowed to duplicate the letters.

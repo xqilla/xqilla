@@ -36,8 +36,6 @@ public:
   virtual bool isSingleNumericConstant(StaticContext *context) const;
 
   virtual ASTNode* staticResolution(StaticContext *context);
-  virtual ASTNodeImpl *resolvePredicate(Predicates::reverse_iterator it, Predicates &newPreds, DynamicContext *context);
-
   virtual Result createResult(DynamicContext* context, int flags=0) const;
 
   const ItemConstructor::Vector &getItemConstructors() const
@@ -48,7 +46,7 @@ public:
 private:
   class SequenceResult : public ResultImpl {
   public:
-    SequenceResult(const XQSequence *seq, DynamicContext *context);
+    SequenceResult(const XQSequence *seq);
 
     Item::Ptr next(DynamicContext *context);
     std::string asString(DynamicContext *context, int indent) const;

@@ -36,15 +36,13 @@ FunctionAbs::FunctionAbs(const VectorOfASTNodes &args, XPath2MemoryManager* memM
 
 Sequence FunctionAbs::collapseTreeInternal(DynamicContext* context, int flags) const
 {
-  Sequence arg = getParamNumber(1, context);
+  Numeric::Ptr numericArg = getNumericParam(1, context);
 
   //If the argument is the empty sequence, the empty sequence is returned.
-  
-  if(arg.isEmpty()) {
+  if(numericArg.isNull()) {
     return Sequence(context->getMemoryManager());
   }
 
-  const Numeric::Ptr numericArg = (const Numeric::Ptr )arg.first();
   if(isNaN(numericArg))
     return Sequence(numericArg, context->getMemoryManager());
     

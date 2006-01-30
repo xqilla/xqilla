@@ -40,17 +40,16 @@ FunctionInsertBefore::FunctionInsertBefore(const VectorOfASTNodes &args, XPath2M
   : ConstantFoldingFunction(name, minArgs, maxArgs, "item()*, integer, item()*", args, memMgr)
 {
   // TBD - could do better here - jpcs
-  _src.getStaticType().flags = StaticType::NUMERIC_TYPE | StaticType::NODE_TYPE | StaticType::OTHER_TYPE;
+  _src.getStaticType().flags = StaticType::ITEM_TYPE;
 }
 
 Result FunctionInsertBefore::createResult(DynamicContext* context, int flags) const
 {
-  return new InsertBeforeResult(this, flags, context);
+  return new InsertBeforeResult(this, flags);
 }
 
-FunctionInsertBefore::InsertBeforeResult::InsertBeforeResult(const FunctionInsertBefore *func, int flags, DynamicContext *context)
-  : ResultImpl(context),
-    _flags(flags),
+FunctionInsertBefore::InsertBeforeResult::InsertBeforeResult(const FunctionInsertBefore *func, int flags)
+  : _flags(flags),
     _func(func),
     _position(0),
     _one(0),
@@ -64,7 +63,7 @@ FunctionInsertBefore::InsertBeforeResult::InsertBeforeResult(const FunctionInser
 Item::Ptr FunctionInsertBefore::InsertBeforeResult::next(DynamicContext *context)
 {
   if(_position == NULLRCP) {
-    _position = ((const ATDecimalOrDerived::Ptr )_func->getParamNumber(2, context).next(context));
+    _position = ((const ATDecimalOrDerived::Ptr )_func->getParamNumber(2, context)->next(context));
     _one = context->getItemFactory()->createInteger(1, context);
     _i = _one;
     _target = _func->getParamNumber(1, context, _flags);
@@ -77,14 +76,14 @@ Item::Ptr FunctionInsertBefore::InsertBeforeResult::next(DynamicContext *context
   Item::Ptr result = 0;
   while(result == NULLRCP) {
     if(!_inserts.isNull()) {
-      result = _inserts.next(context);
+      result = _inserts->next(context);
       if(result == NULLRCP) {
         _inserts = 0;
         _insertsDone = true;
       }
     }
     else {
-      result = _target.next(context);
+      result = _target->next(context);
       if(!_insertsDone) {
         _i = _i->add(_one, context);
         if(result == NULLRCP || _position->equals((const AnyAtomicType::Ptr)_i, context)) {

@@ -18,6 +18,7 @@
 #include <xqilla/runtime/Sequence.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/ast/StaticResolutionContext.hpp>
+#include <xqilla/context/ContextHelpers.hpp>
 
 XQIf::XQIf(ASTNode* test, ASTNode* whenTrue, ASTNode* whenFalse, XPath2MemoryManager* memMgr)
   : ASTNodeImpl(memMgr),
@@ -30,21 +31,22 @@ XQIf::XQIf(ASTNode* test, ASTNode* whenTrue, ASTNode* whenFalse, XPath2MemoryMan
 
 Result XQIf::createResult(DynamicContext* context, int flags) const
 {
-  return new IfResult(this, flags, context);
+  return new IfResult(this, flags);
 }
 
 ASTNode* XQIf::staticResolution(StaticContext *context) {
-  _test = _test->staticResolution(context);
+  {
+    AutoNodeSetOrderingReset orderReset(context);
+    _test = _test->staticResolution(context);
+  }
 
   if(_test->isConstant()) {
     AutoDelete<DynamicContext> dContext(context->createDynamicContext());
     dContext->setMemoryManager(context->getMemoryManager());
-    if(_test->collapseTree(dContext).getEffectiveBooleanValue(dContext)) {
-      _whenTrue->addPredicates(getPredicates());
+    if(_test->collapseTree(dContext)->getEffectiveBooleanValue(dContext)) {
       return _whenTrue->staticResolution(context);
     }
     else {
-      _whenFalse->addPredicates(getPredicates());
       return _whenFalse->staticResolution(context);
     }
   }
@@ -53,13 +55,15 @@ ASTNode* XQIf::staticResolution(StaticContext *context) {
 
     _whenTrue = _whenTrue->staticResolution(context);
     _src.getStaticType() = _whenTrue->getStaticResolutionContext().getStaticType();
+    _src.setProperties(_whenTrue->getStaticResolutionContext().getProperties());
     _src.add(_whenTrue->getStaticResolutionContext());
 
     _whenFalse = _whenFalse->staticResolution(context);
     _src.getStaticType().typeUnion(_whenFalse->getStaticResolutionContext().getStaticType());
+    _src.setProperties(_src.getProperties() & _whenFalse->getStaticResolutionContext().getProperties());
     _src.add(_whenFalse->getStaticResolutionContext());
 
-    return resolvePredicates(context);
+    return this;
   }
 }
 
@@ -90,9 +94,8 @@ void XQIf::setWhenFalse(ASTNode *item)
   _whenFalse = item;
 }
 
-XQIf::IfResult::IfResult(const XQIf *di, int flags, DynamicContext *context)
-  : ResultImpl(context),
-    _flags(flags),
+XQIf::IfResult::IfResult(const XQIf *di, int flags)
+  : _flags(flags),
     _di(di),
     _results(0)
 {
@@ -101,7 +104,7 @@ XQIf::IfResult::IfResult(const XQIf *di, int flags, DynamicContext *context)
 Item::Ptr XQIf::IfResult::next(DynamicContext *context)
 {
   if(_results.isNull()) {
-    if(_di->getTest()->collapseTree(context, ASTNode::UNORDERED|ASTNode::RETURN_TWO).getEffectiveBooleanValue(context)) {
+    if(_di->getTest()->collapseTree(context)->getEffectiveBooleanValue(context)) {
       _results = _di->getWhenTrue()->collapseTree(context, _flags);
     }
     else {
@@ -109,7 +112,7 @@ Item::Ptr XQIf::IfResult::next(DynamicContext *context)
     }
   }
 
-  return _results.next(context);
+  return _results->next(context);
 }
 
 std::string XQIf::IfResult::asString(DynamicContext *context, int indent) const

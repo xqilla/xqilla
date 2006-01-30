@@ -35,7 +35,7 @@ private:
   class OrderComparisonResult : public SingleResult
   {
   public:
-    OrderComparisonResult(const OrderComparison *op, DynamicContext *context);
+    OrderComparisonResult(const OrderComparison *op);
 
     Item::Ptr getSingleResult(DynamicContext *context) const;
     std::string asString(DynamicContext *context, int indent) const;    

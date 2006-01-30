@@ -361,7 +361,7 @@ void XQRemoteDebugger::SendNotification(DynamicContext* context, XERCES_CPP_NAME
             {
                 XQilla xqilla;
                 AutoDelete<XQQuery> pQuery(xqilla.parse(unicodeQuery, XQilla::XQUERY, context));
-                Sequence result=pQuery->execute(context);
+                Sequence result=pQuery->execute(context)->toSequence(context);
 
                 static const char* header="<xqe:items xmlns:xqe=\"http://www.stylusstudio.com/XQEngine\">";
                 static const unsigned int headerLen=XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(header);
@@ -812,7 +812,7 @@ void XQRemoteDebugger::SerializeNode(DynamicContext *context, const Node::Ptr &n
       // don't write the BOM, or we will produce invalid XML
       Result children = node->dmChildren(context);
       Node::Ptr child;
-      while((child = children.next(context)).notNull())
+      while((child = children->next(context)).notNull())
       {
           SerializeNode(context, child, bAddBackMapInfo);
       }
@@ -867,12 +867,12 @@ void XQRemoteDebugger::SerializeNode(DynamicContext *context, const Node::Ptr &n
             }
             Result attributes = node->dmAttributes(context);
             Node::Ptr attr;
-            while((attr = attributes.next(context)).notNull()) {
+            while((attr = attributes->next(context)).notNull()) {
                 m_messageFormatter << XERCES_CPP_NAMESPACE_QUALIFIER chSpace;
                 SerializeNode(context, attr, bAddBackMapInfo);
             }
             Result children = node->dmChildren(context);
-            Node::Ptr child = children.next(context);
+            Node::Ptr child = children->next(context);
             if (child.notNull())
             {
                 // There are children. Close start-tag, and output children.
@@ -883,7 +883,7 @@ void XQRemoteDebugger::SerializeNode(DynamicContext *context, const Node::Ptr &n
                 while (child.notNull())
                 {
                     SerializeNode(context, child, bAddBackMapInfo);
-                    child = children.next(context);
+                    child = children->next(context);
                 }
                 m_messageFormatter << XERCES_CPP_NAMESPACE_QUALIFIER XMLFormatter::NoEscapes 
                             << XERCES_CPP_NAMESPACE_QUALIFIER chOpenAngle

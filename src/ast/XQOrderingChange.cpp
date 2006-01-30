@@ -21,6 +21,7 @@
 #include <xqilla/ast/XQOrderingChange.hpp>
 
 #include <xqilla/context/DynamicContext.hpp>
+#include <xqilla/context/ContextHelpers.hpp>
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -36,69 +37,27 @@ XQOrderingChange::XQOrderingChange(StaticContext::NodeSetOrdering ordering, ASTN
 
 Result XQOrderingChange::createResult(DynamicContext *context, int flags/*=0*/) const
 {
-    return new OrderingChangeResult(this, flags, context);
+  assert(0);
+  return 0;
 }
 
 ASTNode* XQOrderingChange::staticResolution(StaticContext* context)
 {
-    StaticContext::NodeSetOrdering oldOrder=context->getNodeSetOrdering();
-    context->setNodeSetOrdering(m_nOrdering);
-
-    m_pExpr=m_pExpr->staticResolution(context);
-    _src.getStaticType() = m_pExpr->getStaticResolutionContext().getStaticType();
-    _src.add(m_pExpr->getStaticResolutionContext());
-
-    context->setNodeSetOrdering(oldOrder);
-
-    if(_src.isUsed()) {
-      return resolvePredicates(context);
-    }
-    else {
-      return constantFold(context);
-    }
+  AutoNodeSetOrderingReset orderReset(context, m_nOrdering);
+  return m_pExpr->staticResolution(context);
 }
 
 StaticContext::NodeSetOrdering XQOrderingChange::getOrderingValue() const
 {
-    return m_nOrdering;
+  return m_nOrdering;
 }
 
 ASTNode* XQOrderingChange::getExpr() const
 {
-    return m_pExpr;
+  return m_pExpr;
 }
 
 void XQOrderingChange::setExpr(ASTNode *expr)
 {
 	m_pExpr = expr;
 }
-
-XQOrderingChange::OrderingChangeResult::OrderingChangeResult(const XQOrderingChange* orderChange, int flags, DynamicContext *context)
-: ResultImpl(context),
-  _oc(orderChange),
-  _flags(flags),
-  _innerExpr(0)
-{
-}
-
-Item::Ptr XQOrderingChange::OrderingChangeResult::next(DynamicContext *context)
-{
-    StaticContext::NodeSetOrdering oldOrder=context->getNodeSetOrdering();
-    context->setNodeSetOrdering(_oc->getOrderingValue());
-    if(_innerExpr.isNull())
-        _innerExpr=_oc->getExpr()->collapseTree(context,_flags);
-    Item::Ptr result=_innerExpr.next(context);
-    context->setNodeSetOrdering(oldOrder);
-    return result;
-}
-
-std::string XQOrderingChange::OrderingChangeResult::asString(DynamicContext *context, int indent) const
-{
-  std::ostringstream oss;
-  std::string in(getIndent(indent));
-
-  oss << in << "<ordering_change/>" << std::endl;
-
-  return oss.str();
-}
-

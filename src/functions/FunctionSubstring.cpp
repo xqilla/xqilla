@@ -46,20 +46,20 @@ Sequence FunctionSubstring::collapseTreeInternal(DynamicContext* context, int fl
 {
 	XPath2MemoryManager* memMgr = context->getMemoryManager();
 
-	Sequence string=getParamNumber(1, context);
+	Sequence string=getParamNumber(1, context)->toSequence(context);
 	if(string.isEmpty())
 		return Sequence(context->getItemFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context), memMgr);
 	
   ATStringOrDerived::Ptr str = (const ATStringOrDerived::Ptr )string.first();
 
-	Sequence startingLoc=getParamNumber(2,context);
+	Sequence startingLoc=getParamNumber(2,context)->toSequence(context);
   const ATDoubleOrDerived::Ptr one = context->getItemFactory()->createDouble(1, context);
 	// The first character of a string is located at position 1 (not position 0).
 	ATDoubleOrDerived::Ptr index = (const ATDoubleOrDerived::Ptr )startingLoc.first();
 	ATDoubleOrDerived::Ptr subStrLength;
 	if(getNumArgs()>2)
 	{
-		Sequence length=getParamNumber(3,context);
+		Sequence length=getParamNumber(3,context)->toSequence(context);
 		subStrLength=(const ATDoubleOrDerived::Ptr )length.first();
 	}
 	else {

@@ -152,8 +152,8 @@ FunctionDeepEqual::FunctionDeepEqual(const VectorOfASTNodes &args, XPath2MemoryM
 
   // If either node has attributes, then the result is false if either node has an attribute that is not
   // deep-equal to an attribute of the other node, using the selected collation.
-  Sequence attrs1 = node1->dmAttributes(context).toSequence(context);
-  Sequence attrs2 = node2->dmAttributes(context).toSequence(context);
+  Sequence attrs1 = node1->dmAttributes(context)->toSequence(context);
+  Sequence attrs2 = node2->dmAttributes(context)->toSequence(context);
   if(attrs1.getLength() != attrs2.getLength()) return false;
 
   for(Sequence::iterator i = attrs1.begin(); i != attrs1.end(); ++i) {
@@ -178,7 +178,7 @@ FunctionDeepEqual::FunctionDeepEqual(const VectorOfASTNodes &args, XPath2MemoryM
   if(!children1.isNull() && !children2.isNull())
   {
     Node::Ptr child;
-    while((child = children1.next(context)).notNull()) {
+    while((child = children1->next(context)).notNull()) {
       if(child->dmNodeKind() == Node::element_string) {
         bHasSubElements1=true;
         sChildren1.addItem(child);
@@ -187,7 +187,7 @@ FunctionDeepEqual::FunctionDeepEqual(const VectorOfASTNodes &args, XPath2MemoryM
         sChildren1.addItem(child);
       }
     }
-    while((child = children2.next(context)).notNull()) {
+    while((child = children2->next(context)).notNull()) {
       if(child->dmNodeKind() == Node::element_string) {
         bHasSubElements2=true;
         sChildren2.addItem(child);
@@ -205,12 +205,12 @@ FunctionDeepEqual::FunctionDeepEqual(const VectorOfASTNodes &args, XPath2MemoryM
 
 Sequence FunctionDeepEqual::collapseTreeInternal(DynamicContext* context, int flags) const
 {
-	Sequence arg1=getParamNumber(1,context);
-	Sequence arg2=getParamNumber(2,context);
+	Sequence arg1=getParamNumber(1,context)->toSequence(context);
+	Sequence arg2=getParamNumber(2,context)->toSequence(context);
 
 	Collation* collation=NULL;
 	if(getNumArgs()>2) {
-      Sequence collArg = getParamNumber(3,context);
+      Sequence collArg = getParamNumber(3,context)->toSequence(context);
       const XMLCh* collName = collArg.first()->asString(context);
       try {
         context->getItemFactory()->createAnyURI(collName, context);

@@ -42,7 +42,7 @@ FunctionCurrentTime::FunctionCurrentTime(const VectorOfASTNodes &args, XPath2Mem
 
 ASTNode* FunctionCurrentTime::staticResolution(StaticContext *context) {
   _src.currentTimeUsed(true);
-  return resolveASTNodes(_args, context, false);
+  return resolveArguments(context);
 }
 
 Sequence FunctionCurrentTime::collapseTreeInternal(DynamicContext* context, int flags) const

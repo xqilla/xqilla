@@ -49,14 +49,14 @@ const XMLCh* FunctionStringLength::getString(DynamicContext* context) const {
   VectorOfASTNodes args=VectorOfASTNodes(XQillaAllocator<ASTNode*>(context->getMemoryManager()));
   FunctionString stringGrabber(args, memMgr);
   //call xf:string and extract result
-  return stringGrabber.collapseTree(context).next(context)->asString(context);
+  return stringGrabber.collapseTree(context)->next(context)->asString(context);
 }
 
 ASTNode* FunctionStringLength::staticResolution(StaticContext *context) {
   if(_args.empty()) {
     _src.contextItemUsed(true);
   }
-  return resolveASTNodes(_args, context, !_args.empty());
+  return resolveArguments(context);
 }
 
 Sequence FunctionStringLength::collapseTreeInternal(DynamicContext* context, int flags) const
@@ -67,7 +67,7 @@ Sequence FunctionStringLength::collapseTreeInternal(DynamicContext* context, int
         str = getString(context);
     } else {
 
-        Sequence strParm=getParamNumber(1,context);
+        Sequence strParm=getParamNumber(1,context)->toSequence(context);
         if(strParm.isEmpty())
             return Sequence(context->getItemFactory()->createInteger(0, context), memMgr);
 

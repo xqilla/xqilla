@@ -29,10 +29,6 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/exceptions/XPath2TypeMatchException.hpp>
 
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
-
 XQTypeswitch::XQTypeswitch(ASTNode* eval, VectorOfClause* clauses, Clause* defReturn, XPath2MemoryManager* expr)
   : ASTNodeImpl(expr)
 {
@@ -44,7 +40,7 @@ XQTypeswitch::XQTypeswitch(ASTNode* eval, VectorOfClause* clauses, Clause* defRe
 
 Result XQTypeswitch::createResult(DynamicContext *context, int flags) const
 {
-  return new TypeswitchResult(this, flags, context);
+  return new TypeswitchResult(this, flags);
 }
 
 ASTNode* XQTypeswitch::staticResolution(StaticContext *context)
@@ -60,24 +56,25 @@ ASTNode* XQTypeswitch::staticResolution(StaticContext *context)
     // (Until we static type resolution)
     _src.add(exprSrc);
 
+    _src.setProperties((unsigned int)-1);
     for(VectorOfClause::iterator it=_clauses->begin();it!=_clauses->end();++it) {
       (*it)->staticResolution(_expr->getStaticResolutionContext(), context, _src);
     }
 
     _default->staticResolution(_expr->getStaticResolutionContext(), context, _src);
 
-    return resolvePredicates(context);
+    return this;
   }
   else {
     // If it's constant, we can narrow it down to the correct clause
     AutoDelete<DynamicContext> dContext(context->createDynamicContext());
     dContext->setMemoryManager(context->getMemoryManager());
-    Sequence value = _expr->collapseTree(dContext);
+    Sequence value = _expr->collapseTree(dContext)->toSequence(dContext);
 
     Clause *match = 0;
     for(VectorOfClause::iterator it=_clauses->begin();it!=_clauses->end();++it) {
       try {
-        (*it)->_type->matches(value,dContext).toSequence(dContext);
+        (*it)->_type->matches(value)->toSequence(dContext);
         match = *it;
         break;
       }
@@ -98,12 +95,10 @@ ASTNode* XQTypeswitch::staticResolution(StaticContext *context)
     _default->staticResolution(_expr->getStaticResolutionContext(), context, _src);
 
     // Constant fold if possible
-    if(_src.isUsed()) {
-      return resolvePredicates(context);
-    }
-    else {
+    if(!_src.isUsed()) {
       return constantFold(context);
     }
+    return this;
   }
 }
 
@@ -132,6 +127,7 @@ void XQTypeswitch::Clause::staticResolution(const StaticResolutionContext &var_s
   }
 
   src.getStaticType().typeUnion(_expr->getStaticResolutionContext().getStaticType());
+  src.setProperties(src.getProperties() & _expr->getStaticResolutionContext().getProperties());
   src.add(newSrc);
 }
 
@@ -155,9 +151,8 @@ void XQTypeswitch::setExpression(ASTNode *expr)
   _expr = expr;
 }
 
-XQTypeswitch::TypeswitchResult::TypeswitchResult(const XQTypeswitch *di, int flags, DynamicContext *context)
-  : ResultImpl(context),
-    _flags(flags),
+XQTypeswitch::TypeswitchResult::TypeswitchResult(const XQTypeswitch *di, int flags)
+  : _flags(flags),
     _di(di),
     _scope(0),
     _result(0),
@@ -180,7 +175,7 @@ Item::Ptr XQTypeswitch::TypeswitchResult::next(DynamicContext *context)
     for(VectorOfClause::const_iterator it = _di->getClauses()->begin();
         it != _di->getClauses()->end(); ++it) {
       try {
-        value.createResult(context).matches((*it)->_type, context).toSequence(context);
+        (*it)->_type->matches(value.createResult(context))->toSequence(context);
         clause = *it;
         break;
       }
@@ -197,7 +192,7 @@ Item::Ptr XQTypeswitch::TypeswitchResult::next(DynamicContext *context)
     // Execute the clause
     if(clause->_variable != 0) {
       varStore->addLogicalBlockScope();
-      varStore->declareVar(clause->_uri, clause->_name, value.createResult(context).toSequence(context), context);
+      varStore->declareVar(clause->_uri, clause->_name, value.createResult(context)->toSequence(context), context);
       _scopeRemoved = false;
     }
 
@@ -207,7 +202,7 @@ Item::Ptr XQTypeswitch::TypeswitchResult::next(DynamicContext *context)
     varStore->setScopeState(_scope);
   }
 
-  const Item::Ptr item = _result.next(context);
+  const Item::Ptr item = _result->next(context);
 
   if(!_scopeRemoved) {
     if(item == NULLRCP) {

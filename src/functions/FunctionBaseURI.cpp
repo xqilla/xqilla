@@ -39,7 +39,8 @@ FunctionBaseURI::FunctionBaseURI(const VectorOfASTNodes &args, XPath2MemoryManag
 ASTNode* FunctionBaseURI::staticResolution(StaticContext *context) {
   if(_args.empty())
     _src.contextItemUsed(true);
-  return resolveASTNodes(_args, context, !_args.empty());
+  _src.getStaticType().flags = StaticType::ANY_URI_TYPE;
+  return resolveArguments(context);
 }
 
 Sequence FunctionBaseURI::collapseTreeInternal(DynamicContext* context, int flags) const
@@ -47,7 +48,7 @@ Sequence FunctionBaseURI::collapseTreeInternal(DynamicContext* context, int flag
   Node::Ptr node = NULL;
   if(getNumArgs() == 1)
   {
-    Sequence arg1=getParamNumber(1,context);
+    Sequence arg1=getParamNumber(1,context)->toSequence(context);
     if(arg1.isEmpty())
       return Sequence(context->getMemoryManager());
     node = (const Node::Ptr )arg1.first();

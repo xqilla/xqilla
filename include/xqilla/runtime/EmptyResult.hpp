@@ -19,7 +19,7 @@
 class XQILLA_API EmptyResult : public ResultImpl
 {
 public:
-  EmptyResult(DynamicContext *context);
+  EmptyResult();
 
   Item::Ptr next(DynamicContext *context);
 

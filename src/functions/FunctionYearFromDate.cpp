@@ -41,14 +41,14 @@ FunctionYearFromDate::FunctionYearFromDate(const VectorOfASTNodes &args, XPath2M
 
 ASTNode* FunctionYearFromDate::staticResolution(StaticContext *context)
 {
-  return resolveASTNodesForDateOrTime(_args, context, true);
+  return resolveArguments(context, /*checkTimezone*/true);
 }
 
 Sequence FunctionYearFromDate::collapseTreeInternal(DynamicContext* context, int flags) const
 {
 	XPath2MemoryManager* memMgr = context->getMemoryManager();
 
-  Sequence arg=getParamNumber(1,context);
+  Sequence arg=getParamNumber(1,context)->toSequence(context);
   if(arg.isEmpty())
     return Sequence(memMgr);
 

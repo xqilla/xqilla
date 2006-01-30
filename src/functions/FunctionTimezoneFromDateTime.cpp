@@ -44,7 +44,7 @@ Sequence FunctionTimezoneFromDateTime::collapseTreeInternal(DynamicContext* cont
 {
 	XPath2MemoryManager* memMgr = context->getMemoryManager();
 
-  Sequence arg=getParamNumber(1,context);
+  Sequence arg=getParamNumber(1,context)->toSequence(context);
   if(arg.isEmpty()) {
     return Sequence(memMgr);
   }

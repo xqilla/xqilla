@@ -77,13 +77,13 @@ Sequence FunctionIndexOf::indexOf(Sequence &list, const Item::Ptr &item, Collati
 Sequence FunctionIndexOf::collapseTreeInternal(DynamicContext* context, int flags) const
 {
 	XPath2MemoryManager* memMgr = context->getMemoryManager();
-	Sequence list=getParamNumber(1,context).toSequence(context);
+	Sequence list=getParamNumber(1,context)->toSequence(context);
 	if(list.isEmpty()) return Sequence(memMgr);
-  const Item::Ptr srchparam = (const Item::Ptr )getParamNumber(2,context).next(context);
+  const Item::Ptr srchparam = (const Item::Ptr )getParamNumber(2,context)->next(context);
   
   Collation* collation=NULL;
   if (getNumArgs() > 2) {
-    const XMLCh* collName=getParamNumber(3,context).next(context)->asString(context);
+    const XMLCh* collName=getParamNumber(3,context)->next(context)->asString(context);
     try {
       context->getItemFactory()->createAnyURI(collName, context);
     } catch(XPath2ErrorException &e) {

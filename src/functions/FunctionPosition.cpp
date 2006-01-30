@@ -39,7 +39,7 @@ FunctionPosition::FunctionPosition(const VectorOfASTNodes &args, XPath2MemoryMan
 ASTNode* FunctionPosition::staticResolution(StaticContext *context) {
   _src.getStaticType().flags = StaticType::NUMERIC_TYPE;
   _src.contextPositionUsed(true);
-  return resolveASTNodes(_args, context, false);
+  return resolveArguments(context);
 }
 
 Sequence FunctionPosition::collapseTreeInternal(DynamicContext* context, int flags) const

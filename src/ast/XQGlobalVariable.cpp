@@ -26,10 +26,7 @@
 #include <xqilla/exceptions/IllegalArgumentException.hpp>
 #include <xqilla/exceptions/XPath2TypeMatchException.hpp>
 #include <xercesc/framework/XMLBuffer.hpp>
-
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
+#include <xqilla/ast/XQTreatAs.hpp>
 
 XQGlobalVariable::XQGlobalVariable(const XMLCh* varQName, SequenceType* seqType, ASTNode* value, XPath2MemoryManager* expr)
   : ASTNodeImpl(expr),
@@ -45,37 +42,35 @@ XQGlobalVariable::XQGlobalVariable(const XMLCh* varQName, SequenceType* seqType,
 Sequence XQGlobalVariable::collapseTreeInternal(DynamicContext* context, int flags) const
 {
   VariableStore* varStore = context->getVariableStore();
-  Sequence variableValue(context->getMemoryManager());
-  if(m_Value==NULL) {
-    // It's an external declaration, so check the user has set the value in the variable store
-    std::pair<bool, Sequence> value=varStore->getGlobalVar(m_szURI, m_szLocalName, context);
-    if(!value.first) {
-      XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer errMsg;
-      errMsg.set(X("A value for the external variable '"));
-      errMsg.append(m_szQName);
-      errMsg.append(X("' has not been provided"));
-      XQThrow(IllegalArgumentException,X("XQGlobalVariable::collapseTreeInternal"),errMsg.getRawBuffer());
+  try {
+    if(m_Value==NULL) {
+      // It's an external declaration, so check the user has set the value in the variable store
+      std::pair<bool, Sequence> value=varStore->getGlobalVar(m_szURI, m_szLocalName, context);
+      if(!value.first) {
+        XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer errMsg;
+        errMsg.set(X("A value for the external variable '"));
+        errMsg.append(m_szQName);
+        errMsg.append(X("' has not been provided"));
+        XQThrow(IllegalArgumentException,X("XQGlobalVariable::collapseTreeInternal"),errMsg.getRawBuffer());
+      }
+      if(m_Type != NULL) {
+        // Check the external value's type
+        Result matchesRes = m_Type->matches(value.second);
+        while(matchesRes->next(context).notNull()) {}
+      }
     }
-    variableValue=value.second;
+    else {
+      varStore->setGlobalVar(m_szURI, m_szLocalName, m_Value->collapseTree(context)->
+                             toSequence(context), context);
+    }
   }
-  else {
-    variableValue=m_Value->collapseTree(context).toSequence(context);
-    varStore->setGlobalVar(m_szURI, m_szLocalName, variableValue, context);
-  }
-  if(m_Type!=NULL)
-  {
-    Result matchesRes=m_Type->matches(variableValue, context);
-    try {
-      while(matchesRes.next(context) != NULLRCP) {}
-    }
-    catch(const XPath2TypeMatchException &ex) {
-      XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer errMsg;
-      errMsg.set(X("The value for the global variable '"));
-      errMsg.append(m_szQName);
-      errMsg.append(X("' does not match the declared type: "));
-      errMsg.append(ex.getError());
-      XQThrow(XPath2TypeMatchException,X("XQGlobalVariable::collapseTreeInternal"),errMsg.getRawBuffer());
-    }
+  catch(const XPath2TypeMatchException &ex) {
+    XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer errMsg;
+    errMsg.set(X("The value for the global variable '"));
+    errMsg.append(m_szQName);
+    errMsg.append(X("' does not match the declared type: "));
+    errMsg.append(ex.getError());
+    XQThrow(XPath2TypeMatchException,X("XQGlobalVariable::collapseTreeInternal"),errMsg.getRawBuffer());
   }
 
   return Sequence(context->getMemoryManager());
@@ -83,13 +78,18 @@ Sequence XQGlobalVariable::collapseTreeInternal(DynamicContext* context, int fla
 
 ASTNode* XQGlobalVariable::staticResolution(StaticContext* context)
 {
+  XPath2MemoryManager *mm = context->getMemoryManager();
+
   // variables with no prefix are in no namespace
-  const XMLCh* prefix=XPath2NSUtils::getPrefix(m_szQName, context->getMemoryManager());
+  const XMLCh* prefix=XPath2NSUtils::getPrefix(m_szQName, mm);
   if(prefix && *prefix)
     m_szURI = context->getUriBoundToPrefix(prefix);
   m_szLocalName = XPath2NSUtils::getLocalName(m_szQName);
   VariableTypeStore* varStore = context->getVariableTypeStore();
   if(m_Value!=NULL) {
+    if(m_Type != NULL) {
+      m_Value = new (mm) XQTreatAs(m_Value, m_Type, mm);
+    }
     m_Value = m_Value->staticResolution(context);
     _src.add(m_Value->getStaticResolutionContext());
     varStore->declareGlobalVar(m_szURI, m_szLocalName, m_Value->getStaticResolutionContext());

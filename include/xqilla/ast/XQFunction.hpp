@@ -39,6 +39,11 @@ public:
   
   static const XMLCh XMLChFunctionURI[];
 
+  /** Wraps the arguments in the appropriate conversion functions,
+      calls static resolution on them, and constant folds if
+      this function's StaticResolutionContext is not used */
+  ASTNode *resolveArguments(StaticContext *context, bool checkTimezone = false);
+
   /** casts the expression given as a parameter into the appropriate type and returns the guaranteed correctly typed objects in a sequence  */
   virtual Result getParamNumber(unsigned int number, DynamicContext* context, int flags=0) const;
 
@@ -46,13 +51,8 @@ public:
   unsigned int getNumArgs() const;
 
 protected:
-  
-  /** casts the expression given as a parameter into the specified type and returns the guaranteed correctly typed objects in a sequence  */
-  virtual Result getParamNumber(unsigned int paramNumber, unsigned int signatureNumber, DynamicContext* context, int flags=0) const;
 
   /** Helper method, produces a single ATStringOrDerived from the output of getParamNumber(). If getParamNumber() returns anything other than a single string, an exception is thrown. */
-  ATStringOrDerived::Ptr getStringParam(unsigned int number, DynamicContext* context, int flags=0) const;
-
   static const unsigned int UNLIMITED;
 
   //parse the supplied string of comma separated arguments into vector of SequenceTypes

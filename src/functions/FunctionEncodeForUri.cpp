@@ -58,7 +58,7 @@ FunctionEncodeForUri::FunctionEncodeForUri(const VectorOfASTNodes &args, XPath2M
 
 Sequence FunctionEncodeForUri::collapseTreeInternal(DynamicContext* context, int flags) const
 {
-    Sequence uriPart=getParamNumber(1,context);
+    Sequence uriPart=getParamNumber(1,context)->toSequence(context);
     if(uriPart.isEmpty())
         return Sequence(context->getItemFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context), context->getMemoryManager());
 

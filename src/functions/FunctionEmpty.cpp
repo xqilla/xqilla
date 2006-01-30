@@ -17,6 +17,7 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/context/ItemFactory.hpp>
+#include <xqilla/context/ContextHelpers.hpp>
 
 const XMLCh FunctionEmpty::name[] = {
   XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_m, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_p, 
@@ -34,10 +35,15 @@ FunctionEmpty::FunctionEmpty(const VectorOfASTNodes &args, XPath2MemoryManager* 
 {
 }
 
+ASTNode* FunctionEmpty::staticResolution(StaticContext *context) {
+  AutoNodeSetOrderingReset orderReset(context);
+  return resolveArguments(context);
+}
+
 Sequence FunctionEmpty::collapseTreeInternal(DynamicContext* context, int flags) const
 {
-	Result items = getParamNumber(1,context,ASTNode::UNORDERED|ASTNode::RETURN_ONE);
-	return Sequence(context->getItemFactory()->createBoolean(items.next(context) == NULLRCP, context),
+	Result items = getParamNumber(1,context);
+	return Sequence(context->getItemFactory()->createBoolean(items->next(context) == NULLRCP, context),
                   context->getMemoryManager());
 }
 

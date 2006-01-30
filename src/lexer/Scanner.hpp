@@ -36,6 +36,7 @@
 #include <xqilla/ast/XQFLWOR.hpp>
 #include <xqilla/ast/XQVariableBinding.hpp>
 #include <xqilla/ast/XQTypeswitch.hpp>
+#include <xqilla/ast/XQPredicate.hpp>
 
 typedef union {
 	XMLCh* str;
@@ -50,6 +51,7 @@ typedef union {
 	SequenceType::OccurrenceIndicator occurrence;
 	SequenceType::ItemType* itemType;
 	VectorOfASTNodes* itemList;
+	VectorOfPredicates* predicates;
 	XQVariableBinding* variableBinding;
 	VectorOfVariableBinding* variableBindingList;
 	XQTypeswitch::Clause* clause;

@@ -26,5 +26,5 @@ ConstantFoldingFunction::~ConstantFoldingFunction()
 }
 
 ASTNode* ConstantFoldingFunction::staticResolution(StaticContext *context) {
-  return resolveASTNodes(_args, context, true);
+  return resolveArguments(context);
 }

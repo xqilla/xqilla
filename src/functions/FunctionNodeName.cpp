@@ -37,7 +37,7 @@ FunctionNodeName::FunctionNodeName(const VectorOfASTNodes &args, XPath2MemoryMan
 
 Sequence FunctionNodeName::collapseTreeInternal(DynamicContext* context, int flags) const
 {
-  Sequence items=getParamNumber(1,context);
+  Sequence items=getParamNumber(1,context)->toSequence(context);
   if(items.isEmpty())
     return Sequence(context->getMemoryManager());
   const Node::Ptr node = (const Node::Ptr )items.first();

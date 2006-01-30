@@ -51,7 +51,7 @@ ASTNode* FunctionCollection::staticResolution(StaticContext *context)
   _src.setProperties(StaticResolutionContext::DOCORDER | StaticResolutionContext::GROUPED | StaticResolutionContext::PEER | StaticResolutionContext::SUBTREE);
   _src.getStaticType().flags = StaticType::NODE_TYPE;
   _src.availableCollectionsUsed(true);
-  return resolveASTNodes(_args, context, false);
+  return resolveArguments(context);
 }
 
 Sequence FunctionCollection::collapseTreeInternal(DynamicContext* context, int flags) const
@@ -60,7 +60,7 @@ Sequence FunctionCollection::collapseTreeInternal(DynamicContext* context, int f
   if(getNumArgs()==0)
       return context->resolveDefaultCollection();
 
-  Sequence arg = getParamNumber(1, context);
+  Sequence arg = getParamNumber(1, context)->toSequence(context);
   if(arg.isEmpty())
     return Sequence(context->getMemoryManager());
   const XMLCh* currentUri = arg.first()->asString(context);

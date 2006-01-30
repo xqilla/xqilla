@@ -29,6 +29,7 @@
 #include <xqilla/utils/XPath2NSUtils.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/context/DynamicContext.hpp>
+#include <xqilla/ast/XQTreatAs.hpp>
 
 #include <xercesc/util/XMLString.hpp>
 #include <xercesc/framework/XMLBuffer.hpp>
@@ -69,6 +70,7 @@ XQUserFunction::XQUserFunction(const XMLCh* fnName, VectorOfFunctionParameters* 
     m_szFullName(fnName),
     m_szURI(NULL),
     m_pMemMgr(ctx->getMemoryManager()),
+    _src(ctx->getMemoryManager()),
     m_bStaticallyResolved(false)
 {
   int nColon=XERCES_CPP_NAMESPACE_QUALIFIER XMLString::indexOf(fnName,':');
@@ -167,11 +169,66 @@ ASTNode* XQUserFunction::createInstance(const VectorOfASTNodes &args, XPath2Memo
   return fnInstance;
 }
 
-void XQUserFunction::staticResolution(StaticContext *context)
+void XQUserFunction::staticResolutionStage1(StaticContext *context)
 {
-  if(m_bStaticallyResolved)
-      return;
-  m_bStaticallyResolved=true;
+  XPath2MemoryManager *mm = context->getMemoryManager();
+
+  // Resolve the parameter names
+  if(m_pParams) {
+    VectorOfFunctionParameters::iterator it;
+    for (it = m_pParams->begin(); it != m_pParams->end (); ++it) {
+      (*it)->_uri = context->getUriBoundToPrefix(XPath2NSUtils::getPrefix((*it)->_qname, mm));
+      (*it)->_name = XPath2NSUtils::getLocalName((*it)->_qname);
+    }
+    // check for duplicate parameters
+    for (it = m_pParams->begin(); it != m_pParams->end ()-1; ++it) {
+      for (VectorOfFunctionParameters::iterator it2 = it+1; it2 != m_pParams->end (); ++it2) {
+        if(XPath2Utils::equals((*it)->_uri,(*it2)->_uri) && 
+           XPath2Utils::equals((*it)->_name,(*it2)->_name)) {
+          XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buf;
+          buf.set(X("User-defined function '"));
+          buf.append(m_szName);
+          buf.append(X("' has two parameters named '"));
+          if((*it)->_uri && *((*it)->_uri)) {
+            buf.append(X("{"));
+            buf.append((*it)->_uri);
+            buf.append(X("}:"));
+          }
+          buf.append((*it)->_name);
+          buf.append(X("' [err:XQST0039]"));
+          XQThrow(StaticErrorException, X("XQUserFunction::staticResolution"), buf.getRawBuffer());
+        }
+      }
+    }
+  }
+
+  // Set up a default StaticType and StaticResolutionContext
+  if(m_pReturnPattern != NULL) {
+    if(m_body != NULL)
+      m_body = new (mm) XQTreatAs(m_body, m_pReturnPattern, mm);
+
+    const SequenceType::ItemType *itemType = m_pReturnPattern->getItemType();
+    if(itemType != 0) {
+      itemType->getStaticType(_src.getStaticType(), context);
+    }
+    else {
+      _src.getStaticType().flags = 0;
+    }
+  }
+  else {
+    // Default type is item()*
+    _src.getStaticType().flags = StaticType::ITEM_TYPE;
+  }
+  _src.forceNoFolding(true);
+}
+
+void XQUserFunction::staticResolutionStage2(StaticContext *context)
+{
+  if(m_bStaticallyResolved) return;
+  m_bStaticallyResolved = true;
+
+  XPath2MemoryManager *mm = context->getMemoryManager();
+
   // define the new variables in a new scope and assign them the proper values
   VariableTypeStore* varStore=context->getVariableTypeStore();
   varStore->addLocalScope();
@@ -179,41 +236,16 @@ void XQUserFunction::staticResolution(StaticContext *context)
   // Resolve the parameter names, and declare them
   if(m_pParams) {
     VectorOfFunctionParameters::iterator it;
-    for (it = m_pParams->begin(); it != m_pParams->end (); ++it) {
-      (*it)->_uri = context->getUriBoundToPrefix(XPath2NSUtils::getPrefix((*it)->_qname, context->getMemoryManager()));
-      (*it)->_name = XPath2NSUtils::getLocalName((*it)->_qname);
-    }
-    // check for duplicate parameters
-    for (it = m_pParams->begin(); it != m_pParams->end ()-1; ++it) 
-        for (VectorOfFunctionParameters::iterator it2 = it+1; it2 != m_pParams->end (); ++it2) 
-            if(XPath2Utils::equals((*it)->_uri,(*it2)->_uri) && 
-               XPath2Utils::equals((*it)->_name,(*it2)->_name))
-            {
-                XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buf;
-                buf.set(X("User-defined function '"));
-                buf.append(m_szName);
-                buf.append(X("' has two parameters named '"));
-                if((*it)->_uri && *((*it)->_uri))
-                {
-                    buf.append(X("{"));
-                    buf.append((*it)->_uri);
-                    buf.append(X("}:"));
-                }
-                buf.append((*it)->_name);
-                buf.append(X("' [err:XQST0039]"));
-                XQThrow(StaticErrorException, X("XQUserFunction::staticResolution"), buf.getRawBuffer());
-            }
-
-    for (it = m_pParams->begin(); it != m_pParams->end (); ++it) {
+    for(it = m_pParams->begin(); it != m_pParams->end (); ++it) {
       (*it)->m_pType->getItemType()->getStaticType((*it)->_src.getStaticType(), context);
       varStore->declareVar((*it)->_uri, (*it)->_name, (*it)->_src);
     }
   }
 
-  StaticResolutionContext m_src(context->getMemoryManager());
-  if(m_body!=NULL) {
+  StaticResolutionContext m_src(mm);
+  if(m_body != NULL) {
     m_body = m_body->staticResolution(context);
-    m_src.add(m_body->getStaticResolutionContext());
+    m_src.copy(m_body->getStaticResolutionContext());
   }
 
   // Remove the parameter variables from the stored StaticResolutionContext
@@ -225,6 +257,10 @@ void XQUserFunction::staticResolution(StaticContext *context)
       }
     }
   }
+
+  // Swap m_src with our StaticResolutionContext
+  _src.clear();
+  _src.copy(m_src);
 
   varStore->removeScope();
 }
@@ -255,10 +291,7 @@ XQUserFunction::XQFunctionEvaluator::XQFunctionEvaluator(const XQUserFunction* f
 
 Result XQUserFunction::XQFunctionEvaluator::createResult(DynamicContext* context, int flags) const
 {
-  Result result(new FunctionEvaluatorResult(this, flags, context));
-  if(m_pFuncDef->m_pReturnPattern)
-    return result.matches(m_pFuncDef->m_pReturnPattern, context);
-  return result;
+  return new FunctionEvaluatorResult(this, flags);
 }
 
 ASTNode* XQUserFunction::XQFunctionEvaluator::staticResolution(StaticContext* context)
@@ -272,10 +305,13 @@ ASTNode* XQUserFunction::XQFunctionEvaluator::staticResolution(StaticContext* co
     XQThrow(FunctionException,X("User-defined Function"), buf.getRawBuffer());
   }
 
-  if(m_pFuncDef->m_body)
-  {
-    _src.getStaticType() = m_pFuncDef->m_body->getStaticResolutionContext().getStaticType();
-    _src.add(m_pFuncDef->m_body->getStaticResolutionContext());
+  if(m_pFuncDef->m_body) {
+    // See if we can work out a better return type for the user defined function.
+    // This call will just return if staticResolutionStage2 has already been
+    // called, or is in our call stack.
+    const_cast<XQUserFunction*>(m_pFuncDef)->staticResolutionStage2(context);
+
+    _src.copy(m_pFuncDef->_src);
   }
 
   if(nDefinedArgs > 0) {
@@ -283,8 +319,9 @@ ASTNode* XQUserFunction::XQFunctionEvaluator::staticResolution(StaticContext* co
     for(VectorOfFunctionParameters::iterator defIt = m_pFuncDef->m_pParams->begin();
         defIt != m_pFuncDef->m_pParams->end() && argIt != _args.end(); ++defIt, ++argIt) {
       if((*defIt)->_qname || context->isDebuggingEnabled()) {
+        *argIt = (*defIt)->m_pType->convertFunctionArg(*argIt, context);
         *argIt = (*argIt)->staticResolution(context);
-	_src.add((*argIt)->getStaticResolutionContext());
+        _src.add((*argIt)->getStaticResolutionContext());
       }
       else {
         // Don't resolve the argument, since it isn't used by the function body
@@ -292,19 +329,14 @@ ASTNode* XQUserFunction::XQFunctionEvaluator::staticResolution(StaticContext* co
     }
   }
 
-  if(m_pFuncDef->m_body==0 || _src.isUsed()) {
-    return resolvePredicates(context);
-  }
-  else {
-    // as we are going to evaluate the user-defined function, be sure it has been statically resolved
-    const_cast<XQUserFunction*>(m_pFuncDef)->staticResolution(context);
+  if(m_pFuncDef->m_body!=0 && !_src.isUsed()) {
     return constantFold(context);
   }
+  return this;
 }
 
-XQUserFunction::XQFunctionEvaluator::FunctionEvaluatorResult::FunctionEvaluatorResult(const XQFunctionEvaluator *di, int flags, DynamicContext *context)
-  : ResultImpl(context),
-    _flags(flags),
+XQUserFunction::XQFunctionEvaluator::FunctionEvaluatorResult::FunctionEvaluatorResult(const XQFunctionEvaluator *di, int flags)
+  : _flags(flags),
     _di(di),
     _scope(0),
     _result(0),
@@ -328,9 +360,7 @@ Item::Ptr XQUserFunction::XQFunctionEvaluator::FunctionEvaluatorResult::next(Dyn
       for(VectorOfFunctionParameters::const_iterator it = _di->getFunctionDefinition()->getParams()->begin();
           it != _di->getFunctionDefinition()->getParams()->end(); ++it, ++index) {
         if((*it)->_qname || context->isDebuggingEnabled()) {
-          Sequence argValue(_di->getArguments()[index]->collapseTree(context)
-                            .convertFunctionArg((*it)->m_pType, _di->getArguments()[index]->getStaticResolutionContext().getStaticType(), context)
-                            .toSequence(context));
+          Sequence argValue(_di->getArguments()[index]->collapseTree(context)->toSequence(context));
           varValues.push_back(ParamBinding(*it, argValue));
         }
         else {
@@ -352,13 +382,13 @@ Item::Ptr XQUserFunction::XQFunctionEvaluator::FunctionEvaluatorResult::next(Dyn
       XQThrow(FunctionException,X("User-defined Function"), buf.getRawBuffer());
     }
 
-    _result = _di->getFunctionDefinition()->getFunctionBody()->collapseTree(context, _flags & ~(ASTNode::RETURN_ONE|ASTNode::RETURN_TWO));
+    _result = _di->getFunctionDefinition()->getFunctionBody()->collapseTree(context);
   }
   else if(_scope != 0) {
     varStore->setScopeState(_scope);
   }
 
-  const Item::Ptr item = _result.next(context);
+  const Item::Ptr item = _result->next(context);
 
   if(!_scopeRemoved) {
     if(item == NULLRCP) {

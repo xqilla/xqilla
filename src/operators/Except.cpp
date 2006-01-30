@@ -19,31 +19,37 @@
 #include <xqilla/exceptions/XPath2ErrorException.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/Node.hpp>
+#include <xqilla/ast/XQDocumentOrder.hpp>
 
 /*static*/ const XMLCh Except::name[]={ XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_x, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_c, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_p, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
 
 Except::Except(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQOperator(name, args, memMgr)
+  : XQOperator(name, args, memMgr),
+    sortAdded_(false)
 {
-  _src.setProperties(StaticResolutionContext::DOCORDER | StaticResolutionContext::GROUPED);
+}
+
+ASTNode* Except::staticResolution(StaticContext *context)
+{
+  if(!sortAdded_) {
+    sortAdded_ = true;
+    // Wrap ourselves in a document order sort
+    XPath2MemoryManager *mm = context->getMemoryManager();
+    return (new (mm) XQDocumentOrder(this, mm))->staticResolution(context);
+  }
+
   _src.getStaticType().flags = StaticType::NODE_TYPE;
+
+  return resolveASTNodes(_args, context, true);
 }
 
 Result Except::createResult(DynamicContext* context, int flags) const
 {
-  Result result(new ExceptResult(this, flags, context));
-
-  if(context->getNodeSetOrdering()==StaticContext::ORDERING_UNORDERED || flags & ASTNode::UNORDERED) {
-    return result;
-  }
-  else {
-    return result.sortIntoDocumentOrder(context);
-  }
+  return new ExceptResult(this, flags);
 }
 
-Except::ExceptResult::ExceptResult(const Except *op, int flags, DynamicContext *context)
-  : ResultImpl(context),
-    _op(op),
+Except::ExceptResult::ExceptResult(const Except *op, int flags)
+  : _op(op),
     _flags(flags),
     _toDo(true),
     _result(0),
@@ -56,16 +62,16 @@ Item::Ptr Except::ExceptResult::next(DynamicContext *context)
   if(_toDo) {
     _toDo = false;
     _result = _op->getArgument(0)->collapseTree(context, _flags);
-    _excpt = _op->getArgument(1)->collapseTree(context, ASTNode::UNORDERED);
+    _excpt = _op->getArgument(1)->collapseTree(context);
   }
 
-  Item::Ptr item = _result.next(context);
+  Item::Ptr item = _result->next(context);
   while(item != NULLRCP) {    
 
     bool found = false;
     Result except_result(_excpt.createResult(context));
     Item::Ptr except_item;
-    while((except_item = except_result.next(context)) != NULLRCP) {
+    while((except_item = except_result->next(context)) != NULLRCP) {
       // Check it's a node
       if(!except_item->isNode()) {
         XQThrow(XPath2ErrorException,X("Except::ExceptResult::next"), X("A parameter of operator 'except' contains an item that is not a node [err:XP0006]"));
@@ -84,7 +90,7 @@ Item::Ptr Except::ExceptResult::next(DynamicContext *context)
       break;
     }
 
-    item = _result.next(context);
+    item = _result->next(context);
   }
 
   if(item == NULLRCP) {

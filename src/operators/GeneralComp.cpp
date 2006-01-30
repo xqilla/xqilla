@@ -28,6 +28,8 @@
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 #include <xqilla/context/ItemFactory.hpp>
 #include <xqilla/context/impl/CodepointCollation.hpp>
+#include <xqilla/ast/XQAtomize.hpp>
+#include <xqilla/context/ContextHelpers.hpp>
 
 /*static*/ const XMLCh GeneralComp::name[]={ XERCES_CPP_NAMESPACE_QUALIFIER chLatin_c, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_m, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_p, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
 
@@ -102,32 +104,54 @@ bool GeneralComp::compare(GeneralComp::ComparisonOperation operation, AnyAtomicT
   return result;
 }
 
+ASTNode* GeneralComp::staticResolution(StaticContext *context)
+{
+  XPath2MemoryManager *mm = context->getMemoryManager();
+
+  AutoNodeSetOrderingReset orderReset(context);
+
+  bool allConstant = true;
+  for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
+    *i = new (mm) XQAtomize(*i, mm);
+    *i = (*i)->staticResolution(context);
+
+    _src.add((*i)->getStaticResolutionContext());
+
+    if(!(*i)->isConstantAndHasTimezone(context)) {
+      allConstant = false;
+      if((*i)->isConstant()) {
+        _src.implicitTimezoneUsed(true);
+      }
+    }
+  }
+
+  _src.getStaticType().flags = StaticType::OTHER_TYPE;
+
+  if(allConstant) {
+    return constantFold(context);
+  }
+  return this;
+}
+
 Result GeneralComp::createResult(DynamicContext* context, int flags) const
 {
-  return new GeneralCompResult(this, context);
+  return new GeneralCompResult(this);
 }
 
 GeneralComp::ComparisonOperation GeneralComp::getOperation() const {
   return _operation;
 }
 
-GeneralComp::GeneralCompResult::GeneralCompResult(const GeneralComp *op, DynamicContext *context)
-  : SingleResult(context),
-    _op(op)
+GeneralComp::GeneralCompResult::GeneralCompResult(const GeneralComp *op)
+  : _op(op)
 {
 }
 
 Item::Ptr GeneralComp::GeneralCompResult::getSingleResult(DynamicContext *context) const
 {
   // Atomization is applied to each operand of a general comparison.
-  Result arg1 = _op->getArgument(0)->collapseTree(context, ASTNode::UNORDERED);
-  if(_op->getArgument(0)->getStaticResolutionContext().getStaticType().flags & StaticType::NODE_TYPE) {
-	  arg1 = arg1.atomize(context);
-  }
-  Result arg2 = _op->getArgument(1)->collapseTree(context, ASTNode::UNORDERED).atomize(context);
-  if(_op->getArgument(1)->getStaticResolutionContext().getStaticType().flags & StaticType::NODE_TYPE) {
-	  arg2 = arg2.atomize(context);
-  }
+  Result arg1 = _op->getArgument(0)->collapseTree(context);
+  Result arg2 = _op->getArgument(1)->collapseTree(context);
 
   Collation* collation=context->getDefaultCollation();
   if(collation==NULL)
@@ -138,12 +162,12 @@ Item::Ptr GeneralComp::GeneralCompResult::getSingleResult(DynamicContext *contex
   // to the result of atomization of the second operand, that have the required magnitude relationship.
   // Otherwise the result of the general comparison is false.
 
-  AnyAtomicType::Ptr item1 = (const AnyAtomicType::Ptr)arg1.next(context);
+  AnyAtomicType::Ptr item1 = (const AnyAtomicType::Ptr)arg1->next(context);
   if(item1 != NULLRCP) {
     // The first time we loop over arg2, we store it in a sequence
     AnyAtomicType::Ptr item2;
     Sequence arg2_sequence(context->getMemoryManager());
-    while((item2 = (const AnyAtomicType::Ptr)arg2.next(context)) != NULLRCP) {
+    while((item2 = (const AnyAtomicType::Ptr)arg2->next(context)) != NULLRCP) {
       if(compare(_op->getOperation(), item1, item2, collation, context))
         return (const Item::Ptr)context->getItemFactory()->createBoolean(true, context);
       arg2_sequence.addItem(item2);
@@ -151,7 +175,7 @@ Item::Ptr GeneralComp::GeneralCompResult::getSingleResult(DynamicContext *contex
 
     // The second and subsequent times, we iterate over the sequence
     Sequence::iterator itSecond;
-    while((item1 = (const AnyAtomicType::Ptr)arg1.next(context)) != NULLRCP) {
+    while((item1 = (const AnyAtomicType::Ptr)arg1->next(context)) != NULLRCP) {
       for(itSecond = arg2_sequence.begin(); itSecond != arg2_sequence.end(); ++itSecond) {
         if(compare(_op->getOperation(), item1, (const AnyAtomicType::Ptr)*itSecond, collation, context))
           return (const Item::Ptr)context->getItemFactory()->createBoolean(true, context);

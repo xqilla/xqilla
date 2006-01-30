@@ -13,16 +13,11 @@
 
 #include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionConstructor.hpp>
-#include <xqilla/items/Node.hpp>
-#include <xqilla/items/AnyAtomicType.hpp>
 #include <xqilla/context/DynamicContext.hpp>
-#include <xqilla/exceptions/XPath2TypeCastException.hpp>
-#include <xqilla/exceptions/FunctionException.hpp>
-#include <xercesc/validators/schema/SchemaSymbols.hpp>
-#include <xercesc/framework/XMLBuffer.hpp>
-#include <xercesc/util/XMLString.hpp>
+#include <xqilla/ast/XQCastAs.hpp>
+#include <xqilla/schema/SequenceType.hpp>
+
 #include <xercesc/util/XMLUni.hpp>
-#include <assert.h>
 
 /**
  * pref:TYPE($arg as xdt:anyAtomicType) as pref:TYPE
@@ -65,59 +60,16 @@ const XMLCh FunctionConstructor::XMLChXPath2DatatypesURI[] =
 const XMLCh szColon[] = { XERCES_CPP_NAMESPACE_QUALIFIER chLatin_h, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
 
 FunctionConstructor::FunctionConstructor(const XMLCh* nsURI, const XMLCh* typeName,
-                                         AnyAtomicType::AtomicObjectType primitiveType,
                                          const VectorOfASTNodes &args, XPath2MemoryManager* memMgr) 
 : ConstantFoldingFunction( typeName, 1, 1, "item()", args, memMgr)
 {
-  _fURI=nsURI;
-
-  switch(primitiveType) {
-  case AnyAtomicType::DECIMAL:
-  case AnyAtomicType::DOUBLE:
-  case AnyAtomicType::FLOAT: {
-    _src.getStaticType().flags = StaticType::NUMERIC_TYPE;
-    break;
-  }
-  default: {
-    _src.getStaticType().flags = StaticType::OTHER_TYPE;
-    break;
-  }
-  }
+  _fURI = nsURI;
 }
 
-Sequence FunctionConstructor::collapseTreeInternal(DynamicContext* context, int flags) const
+ASTNode* FunctionConstructor::staticResolution(StaticContext *context)
 {
-  if (context->isTypeOrDerivedFromType(_fURI, _fName, XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,  XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgNotationString)) {
-      XQThrow(FunctionException, X("FunctionConstructor::collapseTreeInternal"), X("Construction of xs:NOTATION is forbidden"));    
-  }
+  XPath2MemoryManager *mm = context->getMemoryManager();  
 
-  Sequence arg = getParamNumber(1,context);
-	
-  const Item::Ptr argItem=arg.first();
-
-  if(argItem->isNode()) {
-    // get the typed value from the node
-    const Item::Ptr typedValue = ((Node*)(const Item*)argItem)->dmTypedValue(context).first();
-    assert(typedValue->isAtomicValue());
-    return Sequence(((AnyAtomicType*)(const Item*)typedValue)->castAs(_fURI, _fName, context),  context->getMemoryManager());
-    
-  } else if (argItem->isAtomicValue()) {
-    // cast the item to AnyAtomicType
-    try {
-      return Sequence(((AnyAtomicType*)(const Item*)argItem)->castAs(_fURI, _fName, context),  context->getMemoryManager());
-    } catch (XPath2TypeCastException &e) {
-      // Deviation from spec here: says to print "Illegal value for constructor"
-      // but that is particularly unhelpful -- crioux
-      XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer msg(1023, context->getMemoryManager());
-      msg.set(X("Invalid representation of "));
-      msg.append(_fName);
-      msg.append(X(" [err:FORG0001]"));
-      
-      XQThrow(FunctionException, X("FunctionConstructor::collapseTreeInternal"), msg.getRawBuffer());
-    }
-    
-  } 
-  // this should never happen
-  assert(false);
-  return Sequence(context->getMemoryManager());
+  return (new (mm) XQCastAs(_args[0], new (mm) SequenceType(_fURI, _fName), mm))->
+    staticResolution(context);
 }

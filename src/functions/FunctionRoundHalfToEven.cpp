@@ -42,24 +42,22 @@ FunctionRoundHalfToEven::FunctionRoundHalfToEven(const VectorOfASTNodes &args, X
 
 Sequence FunctionRoundHalfToEven::collapseTreeInternal(DynamicContext* context, int flags) const
 {
-	XPath2MemoryManager* memMgr = context->getMemoryManager();
+  XPath2MemoryManager* memMgr = context->getMemoryManager();
 
-  Sequence arg = getParamNumber(1, context);
+  Numeric::Ptr numericArg = getNumericParam(1, context);
     
   //If the argument is the empty sequence, the empty sequence is returned.
-
-  if(arg.isEmpty()) {
+  if(numericArg.isNull()) {
     return Sequence(memMgr);
   }
 
-  Numeric::Ptr numericArg = (const Numeric::Ptr )arg.first();
   if(isNaN(numericArg))
     return Sequence(numericArg, memMgr);
   if(isINF(numericArg))
     return Sequence(numericArg, memMgr);
   ATDecimalOrDerived::Ptr precision = NULL;
-  if (getNumArgs() > 1) {
-    Sequence precisionArg = getParamNumber(2,context);
+  if(getNumArgs() > 1) {
+    Sequence precisionArg = getParamNumber(2,context)->toSequence(context);
     precision = (const ATDecimalOrDerived::Ptr )precisionArg.first();
   }
   else

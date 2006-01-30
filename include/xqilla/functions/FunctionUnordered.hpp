@@ -27,20 +27,6 @@ public:
   
   virtual ASTNode* staticResolution(StaticContext *context);
   Result createResult(DynamicContext* context, int flags=0) const;
-
-private:
-  class UnorderedResult : public ResultImpl
-  {
-  public:
-    UnorderedResult(const FunctionUnordered *func, int flags, DynamicContext *context);
-
-    Item::Ptr next(DynamicContext *context);
-    std::string asString(DynamicContext *context, int indent) const;
-  private:
-    int _flags;
-    const FunctionUnordered *_func;
-    Result _arg;
-  };
 };
 
 #endif // _FUNCTIONUNORDERED_HPP

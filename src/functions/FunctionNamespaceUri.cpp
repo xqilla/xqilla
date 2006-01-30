@@ -46,7 +46,8 @@ ASTNode* FunctionNamespaceUri::staticResolution(StaticContext *context) {
   if(_args.empty()) {
     _src.contextItemUsed(true);
   }
-  return resolveASTNodes(_args, context, !_args.empty());
+  _src.getStaticType().flags = StaticType::ANY_URI_TYPE;
+  return resolveArguments(context);
 }
 
 Sequence FunctionNamespaceUri::collapseTreeInternal(DynamicContext* context, int flags) const
@@ -56,7 +57,7 @@ Sequence FunctionNamespaceUri::collapseTreeInternal(DynamicContext* context, int
   Node::Ptr ctxNode;
   if(getNumArgs() == 1)
   {
-    Sequence arg=getParamNumber(1,context);
+    Sequence arg=getParamNumber(1,context)->toSequence(context);
     if(arg.isEmpty())
       return Sequence(context->getItemFactory()->createAnyURI(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context), memMgr);
     ctxNode=arg.first();

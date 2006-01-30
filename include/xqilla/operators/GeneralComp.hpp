@@ -40,6 +40,7 @@ public:
 
   GeneralComp(ComparisonOperation operation, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
 
+  ASTNode* staticResolution(StaticContext *context);
   Result createResult(DynamicContext* context, int flags=0) const;
 
   ComparisonOperation getOperation() const;
@@ -52,7 +53,7 @@ protected:
   class GeneralCompResult : public SingleResult
   {
   public:
-    GeneralCompResult(const GeneralComp *op, DynamicContext *context);
+    GeneralCompResult(const GeneralComp *op);
 
     Item::Ptr getSingleResult(DynamicContext *context) const;
     std::string asString(DynamicContext *context, int indent) const;    

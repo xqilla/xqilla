@@ -18,6 +18,7 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/context/ItemFactory.hpp>
+#include <xqilla/context/ContextHelpers.hpp>
 
 const XMLCh FunctionCount::name[] = {
   XERCES_CPP_NAMESPACE_QUALIFIER chLatin_c, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_u, 
@@ -33,12 +34,23 @@ const unsigned int FunctionCount::maxArgs = 1;
 FunctionCount::FunctionCount(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "item()*", args, memMgr)
 {
+}
+
+ASTNode* FunctionCount::staticResolution(StaticContext *context) {
+  AutoNodeSetOrderingReset orderReset(context);
   _src.getStaticType().flags = StaticType::NUMERIC_TYPE;
+  return resolveArguments(context);
 }
 
 Sequence FunctionCount::collapseTreeInternal(DynamicContext* context, int flags) const
 {
-  Sequence arg = getParamNumber(1,context,ASTNode::UNORDERED);
-	return Sequence(context->getItemFactory()->createInteger((long)arg.getLength(), context), context->getMemoryManager());
+  Result arg = getParamNumber(1,context);
+
+  long length = 0;
+  while(arg->next(context).notNull()) {
+    ++length;
+  }
+
+  return Sequence(context->getItemFactory()->createInteger(length, context), context->getMemoryManager());
 }
 

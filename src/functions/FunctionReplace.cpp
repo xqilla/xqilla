@@ -43,15 +43,13 @@ FunctionReplace::FunctionReplace(const VectorOfASTNodes &args, XPath2MemoryManag
 Sequence FunctionReplace::collapseTreeInternal(DynamicContext* context, int flags) const
 {
 	XPath2MemoryManager* memMgr = context->getMemoryManager();
-	Sequence inputString=getParamNumber(1,context);
-	Sequence patternString=getParamNumber(2,context);
-	Sequence replacementString=getParamNumber(3,context);
 
  	const XMLCh* input = XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString;
-    if(!inputString.isEmpty())
-        input=inputString.first()->asString(context);
-	const XMLCh *pattern = patternString.first()->asString(context);
-	const XMLCh *replacement = replacementString.first()->asString(context);
+  Item::Ptr inputString = getParamNumber(1,context)->next(context);
+  if(inputString.notNull())
+    input = inputString->asString(context);
+	const XMLCh *pattern = getParamNumber(2,context)->next(context)->asString(context);
+	const XMLCh *replacement = getParamNumber(3,context)->next(context)->asString(context);
 
     bool notEscaped = true;
     const XMLCh* ptr;
@@ -80,7 +78,7 @@ Sequence FunctionReplace::collapseTreeInternal(DynamicContext* context, int flag
 
 	const XMLCh *options = XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString;
 	if(getNumArgs()>3)
-		options=getParamNumber(4,context).castAsSingleString(context);
+		options=getParamNumber(4,context)->next(context)->asString(context);
   
   //Check that the options are valid - throw an exception if not (can have s,m,i and x)
   //Note: Are allowed to duplicate the letters.

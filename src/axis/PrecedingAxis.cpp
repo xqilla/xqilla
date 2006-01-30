@@ -20,14 +20,14 @@
 #include <xercesc/dom/DOMElement.hpp>
 
 PrecedingAxis::PrecedingAxis(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *contextNode, const Node *nodeObj,
-       const NodeTest *nodeTest, DynamicContext *context, const AxisNodeFactory &factory)
-  : Axis(contextNode, nodeObj, nodeTest, context, factory),
+       const NodeTest *nodeTest, const AxisNodeFactory &factory)
+  : Axis(contextNode, nodeObj, nodeTest, factory),
     parent_(0),
     node_(0)
 {
 }
 
-const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *PrecedingAxis::nextNode()
+const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *PrecedingAxis::nextNode(DynamicContext *context)
 {
   if(toDo_) {
     // initialise

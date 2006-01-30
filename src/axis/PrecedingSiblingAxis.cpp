@@ -16,13 +16,13 @@
 #include <xercesc/dom/DOMNode.hpp>
 
 PrecedingSiblingAxis::PrecedingSiblingAxis(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *contextNode, const Node *nodeObj,
-       const NodeTest *nodeTest, DynamicContext *context, const AxisNodeFactory &factory)
-  : Axis(contextNode, nodeObj, nodeTest, context, factory),
+       const NodeTest *nodeTest, const AxisNodeFactory &factory)
+  : Axis(contextNode, nodeObj, nodeTest, factory),
     sibling_(0)
 {
 }
 
-const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *PrecedingSiblingAxis::nextNode()
+const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *PrecedingSiblingAxis::nextNode(DynamicContext *context)
 {
   if(toDo_) {
     // initialise

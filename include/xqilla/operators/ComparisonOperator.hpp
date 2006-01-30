@@ -24,6 +24,7 @@ class XQILLA_API ComparisonOperator : public XQOperator
 public:
   ComparisonOperator(const XMLCh* opName, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
 
+  ASTNode* staticResolution(StaticContext *context);
   Result createResult(DynamicContext* context, int flags=0) const;
 
   AnyAtomicType::Ptr getArgument(unsigned int index, DynamicContext *context) const;
@@ -35,7 +36,7 @@ protected:
   class ComparisonResult : public SingleResult
   {
   public:
-    ComparisonResult(const ComparisonOperator *op, DynamicContext *context);
+    ComparisonResult(const ComparisonOperator *op);
 
     Item::Ptr getSingleResult(DynamicContext *context) const;
     std::string asString(DynamicContext *context, int indent) const;    

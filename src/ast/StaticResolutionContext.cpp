@@ -242,16 +242,6 @@ void StaticResolutionContext::setProperties(unsigned int props)
 	_properties = props;
 }
 
-void StaticType::typeUnion(const StaticType &st)
-{
-  flags |= st.flags;
-}
-
-bool StaticType::isNodesOnly() const
-{
-  return (flags & ~NODE_TYPE) == 0;
-}
-
 const StaticType &StaticResolutionContext::getStaticType() const
 {
 	return _staticType;

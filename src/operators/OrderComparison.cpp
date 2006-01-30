@@ -37,12 +37,11 @@ bool OrderComparison::getTestBefore() const
 
 Result OrderComparison::createResult(DynamicContext* context, int flags) const
 {
-  return new OrderComparisonResult(this, context);
+  return new OrderComparisonResult(this);
 }
 
-OrderComparison::OrderComparisonResult::OrderComparisonResult(const OrderComparison *op, DynamicContext *context)
-  : SingleResult(context),
-    _op(op)
+OrderComparison::OrderComparisonResult::OrderComparisonResult(const OrderComparison *op)
+  : _op(op)
 {
 }
 

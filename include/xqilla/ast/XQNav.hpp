@@ -14,17 +14,11 @@
 #ifndef _XQNav_HPP
 #define _XQNav_HPP
 
-#include <set>
 #include <vector>
 #include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/ASTNodeImpl.hpp>
-#include <xqilla/runtime/Sequence.hpp>
-
-#include <xqilla/runtime/SingleResult.hpp>
-#include <xqilla/items/Node.hpp>
 #include <xqilla/ast/XQStep.hpp>
-#include <xercesc/dom/DOMNode.hpp>
 
 ///this class calculates a node list based on a context
 class XQILLA_API XQNav : public ASTNodeImpl
@@ -32,10 +26,8 @@ class XQILLA_API XQNav : public ASTNodeImpl
 public:
   class XQILLA_API StepInfo {
   public:
-    StepInfo() : usesContextSize(false), step(0) {}
-    StepInfo(ASTNode *s) : usesContextSize(false), step(s) {}
-    StepInfo(ASTNode *s, bool cs) : usesContextSize(cs), step(s) {}
-    bool usesContextSize;
+    StepInfo() : step(0) {}
+    StepInfo(ASTNode *s) : step(s) {}
     ASTNode *step;
   };
   typedef std::vector<StepInfo,XQillaAllocator<StepInfo> > Steps;
@@ -58,32 +50,22 @@ public:
       navigation steps to be performed.**/
   void addStepFront(ASTNode* step);
 
-  ///set the "go to root of tree first" flag.
-  void setGotoRootFirst(bool gotoRoot);
+  /// Add fn:root() treat as document-node() to the start of this navigation
+  void addInitialRootStep(XPath2MemoryManager *mm);
 
   virtual Result createResult(DynamicContext* context, int flags=0) const;
 
   virtual ASTNode* staticResolution(StaticContext *context);
 
-  bool getGotoRootFirst() const;
   const Steps &getSteps() const;
-  bool getIsSorted() const;
 
 protected:
   static unsigned int combineProperties(unsigned int prev_props, unsigned int step_props);
 
-  class XQILLA_API GotoRootResult : public SingleResult
-  {
-  public:
-    GotoRootResult(DynamicContext *context);
-    Item::Ptr getSingleResult(DynamicContext *context) const;
-    std::string asString(DynamicContext *context, int indent) const;
-  };
-
   class XQILLA_API StepResult : public ResultImpl
   {
   public:
-    StepResult(const Result &parent, ASTNode *step, unsigned int contextSize, int flags, DynamicContext *context);
+    StepResult(const Result &parent, ASTNode *step, unsigned int contextSize, int flags);
 
     Item::Ptr next(DynamicContext *context);
     void skip();
@@ -103,7 +85,7 @@ protected:
   class XQILLA_API IntermediateStepCheckResult : public ResultImpl
   {
   public:
-    IntermediateStepCheckResult(const Result &parent, DynamicContext *context);
+    IntermediateStepCheckResult(const Result &parent);
 
     Item::Ptr next(DynamicContext *context);
     void skip();
@@ -116,7 +98,7 @@ protected:
   class XQILLA_API LastStepCheckResult : public ResultImpl
   {
   public:
-    LastStepCheckResult(const Result &parent, DynamicContext *context);
+    LastStepCheckResult(const Result &parent);
 
     Item::Ptr next(DynamicContext *context);
     void skip();
@@ -127,36 +109,9 @@ protected:
     int _nTypeOfItemsInLastStep;
   };
 
-  class XQILLA_API UniqueNodesResult : public ResultImpl
-  {
-  public:
-    UniqueNodesResult(const Result &parent, DynamicContext *context);
-
-    Item::Ptr next(DynamicContext *context);
-    void skip();
-    std::string asString(DynamicContext *context, int indent) const;
-
-  private:
-    class uniqueLessThanCompareFn {
-    public:
-      uniqueLessThanCompareFn(const DynamicContext *context);
-      bool operator()(const Node::Ptr &first, const Node::Ptr &second);
-
-    private:
-      const DynamicContext *context_;
-    };
-    typedef std::set<Node::Ptr, uniqueLessThanCompareFn> NoDuplicatesSet;
-
-    Result parent_;
-    int nTypeOfItemsInLastStep_;
-    NoDuplicatesSet noDups_;
-  };
-
-  bool _gotoRoot;
-  mutable int _isSorted;
-  mutable unsigned int _properties;
   //list of steps to be performed.
   Steps _steps;
+  bool _sortAdded;
 };
 
 #endif

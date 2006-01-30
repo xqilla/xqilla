@@ -50,9 +50,9 @@ void *NodeTest::getInterface(const XMLCh *name) const
   return 0;
 }
 
-Result NodeTest::filterResult(const Result &toFilter, DynamicContext* context) const
+Result NodeTest::filterResult(const Result &toFilter) const
 {
-  return new FilterResult(toFilter, this, context);
+  return new FilterResult(toFilter, this);
 }
 
 bool NodeTest::filterNode(Node::Ptr node, DynamicContext* context) const
@@ -205,9 +205,8 @@ void NodeTest::setItemType(SequenceType::ItemType* type) {
 // FilterResult
 /////////////////////////////////////
 
-NodeTest::FilterResult::FilterResult(const Result &toFilter, const NodeTest *nodeTest, DynamicContext *context)
-  : ResultImpl(context),
-    toFilter_(toFilter),
+NodeTest::FilterResult::FilterResult(const Result &toFilter, const NodeTest *nodeTest)
+  : toFilter_(toFilter),
     nodeTest_(nodeTest)
 {
 }
@@ -215,7 +214,7 @@ NodeTest::FilterResult::FilterResult(const Result &toFilter, const NodeTest *nod
 Item::Ptr NodeTest::FilterResult::next(DynamicContext *context)
 {
   Node::Ptr result = 0;
-  while((result = toFilter_.next(context)).notNull() && !nodeTest_->filterNode(result, context)) {}
+  while((result = toFilter_->next(context)).notNull() && !nodeTest_->filterNode(result, context)) {}
 
   return result;
 }

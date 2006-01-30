@@ -32,14 +32,14 @@ public:
    */
   virtual ASTNode* staticResolution(StaticContext *context);
 
-	virtual Result createResult(DynamicContext* context, int flags=0) const;
+  virtual Result createResult(DynamicContext* context, int flags=0) const;
 
   class XQILLA_API ContextItemResult : public SingleResult
   {
   public:
-		ContextItemResult(DynamicContext *context);
-		Item::Ptr getSingleResult(DynamicContext *context) const;
-		std::string asString(DynamicContext *context, int indent) const;    
+    ContextItemResult();
+    Item::Ptr getSingleResult(DynamicContext *context) const;
+    std::string asString(DynamicContext *context, int indent) const;    
   };
 };
 

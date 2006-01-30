@@ -35,6 +35,7 @@ src/context/impl/XQContextImpl.cpp \
 src/context/impl/XQDynamicContextImpl.cpp \
 src/context/impl/ItemFactoryImpl.cpp \
 src/context/impl/XQRemoteDebugger.cpp \
+src/ast/XQAtomize.cpp \
 src/ast/XQCastableAs.cpp \
 src/ast/XQCastAs.cpp \
 src/ast/XQContextItem.cpp \
@@ -51,6 +52,7 @@ src/ast/XQStep.cpp \
 src/ast/XQTreatAs.cpp \
 src/ast/XQVariable.cpp \
 src/ast/StaticResolutionContext.cpp \
+src/ast/StaticType.cpp \
 src/ast/AggregateFunction.cpp \
 src/ast/ConstantFoldingFunction.cpp \
 src/ast/NumericFunction.cpp \
@@ -64,6 +66,10 @@ src/ast/XQQuantified.cpp \
 src/ast/XQValidate.cpp \
 src/ast/XQTypeswitch.cpp \
 src/ast/XQVariableBinding.cpp \
+src/ast/XPath1Compat.cpp \
+src/ast/ConvertFunctionArg.cpp \
+src/ast/XQDocumentOrder.cpp \
+src/ast/XQPredicate.cpp \
 src/dom-api/impl/XQillaBuilderImpl.cpp \
 src/dom-api/impl/XQillaBuilderImpl.hpp \
 src/dom-api/impl/XQillaDocumentImpl.cpp \
@@ -366,7 +372,6 @@ src/operators/Union.cpp \
 src/schema/DocumentCacheImpl.cpp \
 src/schema/SequenceType.cpp \
 src/schema/AnyAtomicTypeDatatypeValidator.cpp \
-src/runtime/AtomizeResult.cpp \
 src/runtime/EmptyResult.cpp \
 src/runtime/LazySequenceResult.cpp \
 src/runtime/ResultBuffer.cpp \
@@ -376,7 +381,6 @@ src/runtime/Result.cpp \
 src/runtime/ResultImpl.cpp \
 src/runtime/SequenceResult.cpp \
 src/runtime/SingleResult.cpp \
-src/runtime/SortIntoDocumentOrderResult.cpp \
 src/runtime/Sequence.cpp \
 src/config/xqilla_config.h \
 src/config/xqilla_config_win32.h \
@@ -393,15 +397,16 @@ src/parser/XPath2Parser.y \
 LICENSE \
 docs/Doxyfile.simpleapi.in \
 docs/Doxyfile.dom3api.in \
+docs/Doxyfile.devapi.in \
 docs/simple-api \
 docs/dom3-api \
-Win32Projects/VC6/XQilla.dsp \
+Win32Projects/VC6/xqilla.dsp \
 Win32Projects/VC6/XQilla.dsw \
 Win32Projects/VC7.1/XQilla.sln \
-Win32Projects/VC7.1/XQilla.vcproj \
+Win32Projects/VC7.1/xqilla.vcproj \
 tests/runXQTSTestSuite.sh \
-tests/xqts/testsuite/errors.xml \
-tests/xqts/testsuite/xqts.zip
+tests/xqts/xqts_testsuite/errors.xml \
+tests/xqts/xqts_testsuite/xqts.zip
 
 
 xqilla_SOURCES = \
@@ -455,5 +460,8 @@ test: check
 
 docs:
 	$(MAKE) -C include docs
+
+devdocs:
+	$(MAKE) -C include devdocs
 
 $(top_srcdir)/docs/simple-api: docs

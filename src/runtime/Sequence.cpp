@@ -36,8 +36,11 @@ Sequence::~Sequence()
 }
 
 Sequence::Sequence(const Item::Ptr &item, MemoryManager* memMgr)
-  : _itemList(1, item, XQillaAllocator<Item::Ptr>(memMgr))
+  : _itemList(XQillaAllocator<Item::Ptr>(memMgr))
 {
+  if(item.notNull()) {
+    addItem(item);
+  }
 }
 
 Sequence::Sequence(const Sequence &s)

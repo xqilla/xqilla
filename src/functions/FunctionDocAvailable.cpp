@@ -43,11 +43,11 @@ FunctionDocAvailable::FunctionDocAvailable(const VectorOfASTNodes &args, XPath2M
 
 ASTNode* FunctionDocAvailable::staticResolution(StaticContext *context) {
   _src.availableDocumentsUsed(true);
-  return resolveASTNodes(_args, context, false);
+  return resolveArguments(context);
 }
 
 Sequence FunctionDocAvailable::collapseTreeInternal(DynamicContext* context, int flags) const {
-  Sequence uriArg = getParamNumber(1,context);
+  Sequence uriArg = getParamNumber(1,context)->toSequence(context);
   
   if (uriArg.isEmpty()) {
     return Sequence(context->getMemoryManager());

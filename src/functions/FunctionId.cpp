@@ -46,7 +46,7 @@ ASTNode* FunctionId::staticResolution(StaticContext *context) {
   _src.getStaticType().flags = StaticType::NODE_TYPE;
   if(_args.size()==1)
     _src.contextItemUsed(true);
-  return resolveASTNodes(_args, context, _args.size()!=1);
+  return resolveArguments(context);
 }
 
 Sequence FunctionId::collapseTreeInternal(DynamicContext* context, int flags) const
@@ -54,7 +54,7 @@ Sequence FunctionId::collapseTreeInternal(DynamicContext* context, int flags) co
   Node::Ptr ctxNode;
   if(getNumArgs() == 2)
   {
-    Sequence arg=getParamNumber(2,context);
+    Sequence arg=getParamNumber(2,context)->toSequence(context);
     ctxNode=arg.first();
   }
   else
@@ -72,7 +72,7 @@ Sequence FunctionId::collapseTreeInternal(DynamicContext* context, int flags) co
     XQThrow(FunctionException,X("FunctionId::collapseTreeInternal"), X("Current context doesn't belong to a document [err:FODC0001]"));
   }
     
-  Sequence strings = getParamNumber(1, context);
+  Sequence strings = getParamNumber(1, context)->toSequence(context);
   if(strings.isEmpty())
     return Sequence(context->getMemoryManager());
   
@@ -95,7 +95,7 @@ Sequence FunctionId::collapseTreeInternal(DynamicContext* context, int flags) co
 
   std::vector<Result> resultStack;
   resultStack.push_back(root->dmChildren(context));
-  Node::Ptr child = resultStack.back().next(context);
+  Node::Ptr child = resultStack.back()->next(context);
   while(child.notNull()) {
     if(child->dmNodeKind() == Node::element_string) {
       bool added = false;
@@ -113,7 +113,7 @@ Sequence FunctionId::collapseTreeInternal(DynamicContext* context, int flags) co
       if(!added) {
         Result attrs = child->dmAttributes(context);
         Node::Ptr att;
-        while((att = (Node::Ptr)attrs.next(context)).notNull()) {
+        while((att = (Node::Ptr)attrs->next(context)).notNull()) {
           if(att->dmIsId(context)->isTrue()) {
             // att is of type xs:ID
             const XMLCh* id = att->dmStringValue(context);
@@ -129,7 +129,7 @@ Sequence FunctionId::collapseTreeInternal(DynamicContext* context, int flags) co
     }
 
     resultStack.push_back(child->dmChildren(context));
-    while(!resultStack.empty() && (child = resultStack.back().next(context)).isNull()) {
+    while(!resultStack.empty() && (child = resultStack.back()->next(context)).isNull()) {
       resultStack.pop_back();
     }
   }

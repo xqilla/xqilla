@@ -43,11 +43,11 @@ ASTNode* FunctionDoc::staticResolution(StaticContext *context)
   _src.setProperties(StaticResolutionContext::DOCORDER | StaticResolutionContext::GROUPED | StaticResolutionContext::PEER | StaticResolutionContext::SUBTREE | StaticResolutionContext::ONENODE);
   _src.getStaticType().flags = StaticType::NODE_TYPE;
   _src.availableDocumentsUsed(true);
-  return resolveASTNodes(_args, context, false);
+  return resolveArguments(context);
 }
 
 Sequence FunctionDoc::collapseTreeInternal(DynamicContext* context, int flags) const {
-  Sequence uriArg = getParamNumber(1,context);
+  Sequence uriArg = getParamNumber(1,context)->toSequence(context);
   
   if (uriArg.isEmpty()) {
     return Sequence(context->getMemoryManager());

@@ -14,9 +14,8 @@
 #include "../config/xqilla_config.h"
 #include <xqilla/runtime/SingleResult.hpp>
 
-SingleResult::SingleResult(DynamicContext *context)
-  : ResultImpl(context),
-    toDo_(true)
+SingleResult::SingleResult()
+  : toDo_(true)
 {
 }
 

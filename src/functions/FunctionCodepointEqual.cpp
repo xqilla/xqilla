@@ -40,8 +40,8 @@ FunctionCodepointEqual::FunctionCodepointEqual(const VectorOfASTNodes &args, XPa
 
 Sequence FunctionCodepointEqual::collapseTreeInternal(DynamicContext* context, int flags) const
 {
-    Sequence str1 = getParamNumber(1,context);
-    Sequence str2 = getParamNumber(2,context);
+    Sequence str1 = getParamNumber(1,context)->toSequence(context);
+    Sequence str2 = getParamNumber(2,context)->toSequence(context);
     if(str1.isEmpty() || str2.isEmpty())
         return Sequence(context->getMemoryManager());
 

@@ -32,13 +32,14 @@ public:
 
   Union(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
+  ASTNode* staticResolution(StaticContext *context);
   Result createResult(DynamicContext* context, int flags=0) const;
 
 private:
   class UnionResult : public ResultImpl
   {
   public:
-    UnionResult(const Union *op, int flags, DynamicContext *context);
+    UnionResult(const Union *op, int flags);
 
     Item::Ptr next(DynamicContext *context);
     std::string asString(DynamicContext *context, int indent) const;  
@@ -48,7 +49,9 @@ private:
     unsigned int _index;
     Result _result;
   };
+
+  bool sortAdded_;
 };
 
-#endif // _UNION_HPP
+#endif
 

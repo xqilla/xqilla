@@ -32,6 +32,7 @@
 #include <xqilla/ast/XQDebugHook.hpp>
 #include <xqilla/ast/XQFunctionCall.hpp>
 #include <xqilla/ast/XQOrderingChange.hpp>
+#include <xqilla/ast/XQDocumentOrder.hpp>
 
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 #include <xercesc/dom/DOMXPathNamespace.hpp>
@@ -182,7 +183,7 @@ static void merge_strings(DynamicContext* context, VectorOfASTNodes* vec, XMLCh*
     		AnyAtomicTypeConstructor(
 						XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 						XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
-            string, /*isNumeric*/false);
+            string, AnyAtomicType::STRING);
     	lit->setItemConstructor(ic);
 	}
 	else
@@ -191,7 +192,7 @@ static void merge_strings(DynamicContext* context, VectorOfASTNodes* vec, XMLCh*
       		AnyAtomicTypeConstructor(
 						XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 						XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
-				toBeAdded, /*isNumeric*/false);
+				toBeAdded, AnyAtomicType::STRING);
 
 		vec->push_back(new (context->getMemoryManager())
                    XQLiteral(ic, context->getMemoryManager()));
@@ -413,7 +414,8 @@ namespace XQuery {
 %type <astNode>			CompAttrConstructor WhereClause CompDocConstructor DoubleLiteral InstanceofExpr DirectConstructor 
 %type <astNode>			ContentExpr ExtensionExpr 
 %type <astNode>      		ForwardStep ReverseStep AbbrevForwardStep AbbrevReverseStep
-%type <itemList>			DirElementContent DirAttributeList QuotAttrValueContent AposAttrValueContent DirAttributeValue PredicateList FunctionCallArgumentList
+%type <itemList>			DirElementContent DirAttributeList QuotAttrValueContent AposAttrValueContent DirAttributeValue FunctionCallArgumentList
+%type <predicates>    PredicateList
 %type <axis>          		ForwardAxis ReverseAxis
 %type <nodeTest>			NodeTest NameTest KindTest AttributeTest SchemaAttributeTest
 %type <nodeTest>			Wildcard PITest CommentTest TextTest AnyKindTest ElementTest DocumentTest SchemaElementTest
@@ -1461,25 +1463,26 @@ PathExpr:
 	  _SLASH_
   		{
 			XQNav *nav = new (MEMMGR) XQNav(MEMMGR);
-			nav->setGotoRootFirst(true);
+			nav->addInitialRootStep(MEMMGR);
 			$$ = nav;
 		}
 	| _SLASH_ RelativePathExpr
   		{
 			XQNav* nav=getNavigation($2,MEMMGR);
-			nav->setGotoRootFirst(true);
+			nav->addInitialRootStep(MEMMGR);
 			$$ = nav;
 		}
 	| _SLASHSLASH_ RelativePathExpr
   		{
 			XQNav *newNavigation = getNavigation($2,MEMMGR);
-			newNavigation->setGotoRootFirst(true);
 
       NodeTest *step = new (MEMMGR) NodeTest();
       step->setTypeWildcard();
       step->setNameWildcard();
       step->setNamespaceWildcard();
-      newNavigation->addStepFront(new (MEMMGR) XQStep(XQStep::DESCENDANT_OR_SELF, step, MEMMGR));        
+      newNavigation->addStepFront(new (MEMMGR) XQStep(XQStep::DESCENDANT_OR_SELF, step, MEMMGR));
+
+			newNavigation->addInitialRootStep(MEMMGR);
 
 			$$ = newNavigation;
 		}
@@ -1520,13 +1523,12 @@ StepExpr:
 AxisStep:
 	  ForwardStep PredicateList
 		{
-			$1->addPredicates(*$2);
-			$$=$1;
+      $$ = XQPredicate::addPredicates($1, $2);
 		}
 	| ReverseStep PredicateList
 		{
-			$1->addPredicates(*$2);
-			$$=$1;
+      $$ = XQPredicate::addPredicates($1, $2);
+      $$ = WRAP(@1, new (MEMMGR) XQDocumentOrder($$, MEMMGR));
 		}
 	;
 
@@ -1727,8 +1729,7 @@ Wildcard:
 FilterExpr:
 	  PrimaryExpr PredicateList
 		{
-			$1->addPredicates(*$2);
-			$$=$1;
+      $$ = XQPredicate::addPredicates($1, $2);
 		}
 	;
 
@@ -1737,11 +1738,12 @@ FilterExpr:
 PredicateList:
 	  /* empty */
 		{
-	        $$ = new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
+	        $$ = new (MEMMGR) VectorOfPredicates(MEMMGR);
 		}
 	| PredicateList _LBRACK_ Expr _RBRACK_
 		{
-			$1->push_back($3);
+      XQPredicate *pred = new (MEMMGR) XQPredicate($3, MEMMGR);
+			$1->push_back(pred);
 			$$ = $1; 
 		}
 	;
@@ -1880,7 +1882,7 @@ DirElemConstructor:
                     new (MEMMGR) AnyAtomicTypeConstructor(
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
-										$2, /*isNumeric*/false),
+										$2, AnyAtomicType::STRING),
 										MEMMGR), 
 								$3, content, MEMMGR));
 		}
@@ -1908,7 +1910,7 @@ DirElemConstructor:
                     new (MEMMGR) AnyAtomicTypeConstructor(
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
-										$2, /*isNumeric*/false),
+										$2, AnyAtomicType::STRING),
 										MEMMGR), 
 							  $3, elemContent,MEMMGR));
 		}
@@ -1928,7 +1930,7 @@ DirAttributeList:
 						new (MEMMGR) AnyAtomicTypeConstructor(
 											XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 											XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
-											$2, /*isNumeric*/false),
+											$2, AnyAtomicType::STRING),
 											MEMMGR), 
 										  0, $4,MEMMGR));
 			if(XPath2Utils::equals($2, XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgXMLNSString) ||
@@ -2060,7 +2062,7 @@ DirElementContent:
     				AnyAtomicTypeConstructor(
 								XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 								XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
-					string, /*isNumeric*/false);
+					string, AnyAtomicType::STRING);
     			lit->setItemConstructor(ic);
 			}
 			else
@@ -2071,7 +2073,7 @@ DirElementContent:
       				AnyAtomicTypeConstructor(
 								XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 								XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
-						$2, /*isNumeric*/false);
+						$2, AnyAtomicType::STRING);
 
 				$$->push_back(new (MEMMGR) XQLiteral(ic, MEMMGR));
 			}
@@ -2086,7 +2088,7 @@ DirElementContent:
       			AnyAtomicTypeConstructor(
 							XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 							XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
-					$2, /*isNumeric*/false);
+					$2, AnyAtomicType::STRING);
 
 			$$->push_back(new (MEMMGR) XQLiteral(ic, MEMMGR));
 			$$->push_back(0);
@@ -2123,7 +2125,7 @@ DirElementContent:
       			AnyAtomicTypeConstructor(
 							XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 							XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
-					$2, /*isNumeric*/false);
+					$2, AnyAtomicType::STRING);
 
 			$$->push_back(new (MEMMGR) XQLiteral(ic, MEMMGR));
 			$$->push_back(0);
@@ -2155,7 +2157,7 @@ DirCommentConstructor:
                     new (MEMMGR) AnyAtomicTypeConstructor(
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
-										$1, /*isNumeric*/false),
+										$1, AnyAtomicType::STRING),
 										MEMMGR));
 			$$ = WRAP(@1, new (MEMMGR) XQDOMConstructor(Node::comment_string, 0, 0, content, MEMMGR));
 		}
@@ -2174,14 +2176,14 @@ DirPIConstructor:
                     new (MEMMGR) AnyAtomicTypeConstructor(
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
-										$3, /*isNumeric*/false),
+										$3, AnyAtomicType::STRING),
 										MEMMGR));
 			$$ = WRAP(@1, new (MEMMGR) XQDOMConstructor(Node::processing_instruction_string,
 								      new (MEMMGR) XQLiteral(
                     new (MEMMGR) AnyAtomicTypeConstructor(
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
-										$2, /*isNumeric*/false),
+										$2, AnyAtomicType::STRING),
 										MEMMGR), 
 									  empty, content, MEMMGR));
 		}
@@ -2223,7 +2225,7 @@ CompDocConstructor:
                     new (MEMMGR) AnyAtomicTypeConstructor(
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
-										XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, /*isNumeric*/false),
+										XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, AnyAtomicType::STRING),
 										MEMMGR), 
 								  empty, content,MEMMGR));
 		}
@@ -2241,7 +2243,7 @@ CompElemConstructor:
                     new (MEMMGR) AnyAtomicTypeConstructor(
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_QNAME,
-										$1, /*isNumeric*/false),
+										$1, AnyAtomicType::QNAME),
 										MEMMGR), 
 								  empty, content,MEMMGR));
 		}
@@ -2253,7 +2255,7 @@ CompElemConstructor:
                     new (MEMMGR) AnyAtomicTypeConstructor(
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_QNAME,
-										$1, /*isNumeric*/false),
+										$1, AnyAtomicType::QNAME),
 										MEMMGR), 
 								  empty, empty,MEMMGR));
 		}
@@ -2291,7 +2293,7 @@ CompAttrConstructor:
                     new (MEMMGR) AnyAtomicTypeConstructor(
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_QNAME,
-										$1, /*isNumeric*/false),
+										$1, AnyAtomicType::QNAME),
 										MEMMGR), 
 									  0, content,MEMMGR));
 		}
@@ -2303,7 +2305,7 @@ CompAttrConstructor:
                     new (MEMMGR) AnyAtomicTypeConstructor(
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_QNAME,
-										$1, /*isNumeric*/false),
+										$1, AnyAtomicType::QNAME),
 										MEMMGR), 
 									  0, empty,MEMMGR));
 		}
@@ -2355,7 +2357,7 @@ CompPIConstructor:
                     new (MEMMGR) AnyAtomicTypeConstructor(
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
-										$1, /*isNumeric*/false),
+										$1, AnyAtomicType::STRING),
 										MEMMGR), 
 									  0, content, MEMMGR));
 	  }
@@ -2367,7 +2369,7 @@ CompPIConstructor:
                     new (MEMMGR) AnyAtomicTypeConstructor(
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
-										$1, /*isNumeric*/false),
+										$1, AnyAtomicType::STRING),
 										MEMMGR), 
 									  0, empty, MEMMGR));
 	  }
@@ -2696,7 +2698,7 @@ IntegerLiteral:
                     new (MEMMGR) AnyAtomicTypeConstructor(
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_INTEGER,
-										$1, /*isNumeric*/true),
+										$1, AnyAtomicType::DECIMAL),
 										MEMMGR);
 		}
 	;
@@ -2709,7 +2711,7 @@ DecimalLiteral:
                     new (MEMMGR) AnyAtomicTypeConstructor(
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DECIMAL,
-										$1, /*isNumeric*/true),
+										$1, AnyAtomicType::DECIMAL),
 										MEMMGR);
 		}
 	;
@@ -2722,7 +2724,7 @@ DoubleLiteral:
                     new (MEMMGR) AnyAtomicTypeConstructor(
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DOUBLE,
-										$1, /*isNumeric*/true),
+										$1, AnyAtomicType::DOUBLE),
 										MEMMGR);
 		}
 	;
@@ -2746,7 +2748,7 @@ StringLiteral:
                     new (MEMMGR) AnyAtomicTypeConstructor(
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
-										$1, /*isNumeric*/false),
+										$1, AnyAtomicType::STRING),
 										MEMMGR);
 		}
 	;

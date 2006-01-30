@@ -42,7 +42,7 @@ private:
   class DistinctValueResult : public ResultImpl
   {
   public:
-    DistinctValueResult(const FunctionDistinctValues *fdv, DynamicContext *context);
+    DistinctValueResult(const FunctionDistinctValues *fdv, const DynamicContext *context);
     Item::Ptr next(DynamicContext *context);
     std::string asString(DynamicContext *context, int indent) const;
   private:

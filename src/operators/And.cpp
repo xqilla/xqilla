@@ -21,6 +21,7 @@
 #include <xqilla/ast/StaticResolutionContext.hpp>
 #include <xqilla/ast/XQSequence.hpp>
 #include <xqilla/context/ItemFactory.hpp>
+#include <xqilla/context/ContextHelpers.hpp>
 
 /*static*/ const XMLCh And::name[]={ XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_d, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
 
@@ -31,13 +32,14 @@ And::And(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
 
 Result And::createResult(DynamicContext* context, int flags) const
 {
-  return new AndResult(this, context);
+  return new AndResult(this);
 }
 
 ASTNode* And::staticResolution(StaticContext *context)
 {
   VectorOfASTNodes newArgs(XQillaAllocator<ASTNode*>(context->getMemoryManager()));
 
+  AutoNodeSetOrderingReset orderReset(context);
   for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
     *i = (*i)->staticResolution(context);
     const StaticResolutionContext &valueSrc = (*i)->getStaticResolutionContext();
@@ -49,24 +51,22 @@ ASTNode* And::staticResolution(StaticContext *context)
     else {
       AutoDelete<DynamicContext> dContext(context->createDynamicContext());
       dContext->setMemoryManager(context->getMemoryManager());
-      if(!(*i)->collapseTree(dContext, ASTNode::UNORDERED | ASTNode::RETURN_TWO).getEffectiveBooleanValue(dContext)) {
+      if(!(*i)->collapseTree(dContext)->getEffectiveBooleanValue(dContext)) {
         // It's constantly false, so this expression is false
         ASTNode* newBlock = new (getMemoryManager())
           XQSequence(dContext->getItemFactory()->createBoolean(false, dContext),
                            dContext, getMemoryManager());
-        newBlock->addPredicates(_predList);
         return newBlock->staticResolution(context);
       }
     }
   }
 
   _args = newArgs;
-  return resolvePredicates(context);
+  return this;
 }
 
-And::AndResult::AndResult(const And *op, DynamicContext *context)
-  : SingleResult(context),
-    _op(op)
+And::AndResult::AndResult(const And *op)
+  : _op(op)
 {
 }
 
@@ -74,7 +74,7 @@ Item::Ptr And::AndResult::getSingleResult(DynamicContext *context) const
 {
   unsigned int numArgs=_op->getNumArgs();
   for(unsigned int i=0;i<numArgs;i++) {
-    if(!_op->getArgument(i)->collapseTree(context, ASTNode::UNORDERED | ASTNode::RETURN_TWO).getEffectiveBooleanValue(context)) {
+    if(!_op->getArgument(i)->collapseTree(context)->getEffectiveBooleanValue(context)) {
       return (const Item::Ptr)context->getItemFactory()->createBoolean(false, context);
     }
   }

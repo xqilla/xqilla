@@ -22,10 +22,9 @@ class XQILLA_API AttributeAxis : public Axis
 {
 public:
   AttributeAxis(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *contextNode, const Node *nodeObj,
-       const NodeTest *nodeTest, DynamicContext *context,
-       const AxisNodeFactory &factory = Axis::gNodeImplFactory);
+       const NodeTest *nodeTest, const AxisNodeFactory &factory = Axis::gNodeImplFactory);
 
-  const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *nextNode();
+  const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *nextNode(DynamicContext *context);
   std::string asString(DynamicContext *context, int indent) const;
 
 private:

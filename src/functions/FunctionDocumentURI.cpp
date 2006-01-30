@@ -33,11 +33,12 @@ const unsigned int FunctionDocumentURI::maxArgs = 1;
 FunctionDocumentURI::FunctionDocumentURI(const VectorOfASTNodes  &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "node()?", args, memMgr)
 {
+  _src.getStaticType().flags = StaticType::ANY_URI_TYPE;
 }
 
 Sequence FunctionDocumentURI::collapseTreeInternal(DynamicContext* context, int flags) const
 {
-  Sequence arg = getParamNumber(1,context);
+  Sequence arg = getParamNumber(1,context)->toSequence(context);
   if(arg.isEmpty())
     return Sequence(context->getMemoryManager());
   return ((Node*)(const Item*)arg.first())->dmDocumentURI(context);

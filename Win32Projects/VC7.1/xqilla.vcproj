@@ -157,10 +157,22 @@
 				RelativePath="..\..\src\ast\ConstantFoldingFunction.cpp">
 			</File>
 			<File
+				RelativePath="..\..\src\ast\ConvertFunctionArg.cpp">
+			</File>
+			<File
 				RelativePath="..\..\src\ast\NumericFunction.cpp">
 			</File>
 			<File
 				RelativePath="..\..\src\ast\StaticResolutionContext.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\ast\StaticType.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\ast\XPath1Compat.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\ast\XQAtomize.cpp">
 			</File>
 			<File
 				RelativePath="..\..\src\ast\XQCastAs.cpp">
@@ -176,6 +188,9 @@
 			</File>
 			<File
 				RelativePath="..\..\src\ast\XQDebugHook.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\ast\XQDocumentOrder.cpp">
 			</File>
 			<File
 				RelativePath="..\..\src\ast\XQFLWOR.cpp">
@@ -209,6 +224,9 @@
 			</File>
 			<File
 				RelativePath="..\..\src\ast\XQParenthesizedExpr.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\ast\XQPredicate.cpp">
 			</File>
 			<File
 				RelativePath="..\..\src\ast\XQQuantified.cpp">
@@ -247,10 +265,22 @@
 				RelativePath="..\..\include\xqilla\ast\ConstantFoldingFunction.hpp">
 			</File>
 			<File
+				RelativePath="..\..\include\xqilla\ast\ConvertFunctionArg.hpp">
+			</File>
+			<File
 				RelativePath="..\..\include\xqilla\ast\NumericFunction.hpp">
 			</File>
 			<File
 				RelativePath="..\..\include\xqilla\ast\StaticResolutionContext.hpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\ast\StaticType.hpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\ast\XQPath1Compat.hpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\ast\XQAtomize.hpp">
 			</File>
 			<File
 				RelativePath="..\..\include\xqilla\ast\XQCastAs.hpp">
@@ -266,6 +296,9 @@
 			</File>
 			<File
 				RelativePath="..\..\include\xqilla\ast\XQDebugHook.hpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\ast\XQDocumentOrder.hpp">
 			</File>
 			<File
 				RelativePath="..\..\include\xqilla\ast\XQFLWOR.hpp">
@@ -299,6 +332,9 @@
 			</File>
 			<File
 				RelativePath="..\..\include\xqilla\ast\XQParenthesizedExpr.hpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\ast\XQPredicate.hpp">
 			</File>
 			<File
 				RelativePath="..\..\include\xqilla\ast\XQQuantified.hpp">
@@ -509,6 +545,9 @@
 			</File>
 			<File
 				RelativePath="..\..\include\xqilla\context\Collation.hpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\context\ContextHelpers.hpp">
 			</File>
 			<File
 				RelativePath="..\..\include\xqilla\context\DynamicContext.hpp">
@@ -2158,9 +2197,6 @@
 			Name="runtime"
 			Filter="">
 			<File
-				RelativePath="..\..\src\runtime\AtomizeResult.cpp">
-			</File>
-			<File
 				RelativePath="..\..\src\runtime\EmptyResult.cpp">
 			</File>
 			<File
@@ -2191,13 +2227,7 @@
 				RelativePath="..\..\src\runtime\SingleResult.cpp">
 			</File>
 			<File
-				RelativePath="..\..\src\runtime\SortIntoDocumentOrderResult.cpp">
-			</File>
-			<File
 				RelativePath="..\..\src\runtime\ResultBufferImpl.hpp">
-			</File>
-			<File
-				RelativePath="..\..\include\xqilla\runtime\AtomizeResult.hpp">
 			</File>
 			<File
 				RelativePath="..\..\include\xqilla\runtime\EmptyResult.hpp">
@@ -2222,9 +2252,6 @@
 			</File>
 			<File
 				RelativePath="..\..\include\xqilla\runtime\SingleResult.hpp">
-			</File>
-			<File
-				RelativePath="..\..\include\xqilla\runtime\SortIntoDocumentOrderResult.hpp">
 			</File>
 		</Filter>
 		<Filter

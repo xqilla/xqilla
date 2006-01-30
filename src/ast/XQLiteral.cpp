@@ -62,9 +62,8 @@ bool XQLiteral::isSingleNumericConstant(StaticContext *context) const
 }
 
 ASTNode* XQLiteral::staticResolution(StaticContext *context) {
-  ASTNode *result = new (getMemoryManager()) XQSequence(_itemConstructor, getMemoryManager());
-  result->addPredicates(getPredicates());
-  return result->staticResolution(context);
+  XPath2MemoryManager *mm = context->getMemoryManager();
+  return (new (mm) XQSequence(_itemConstructor, mm))->staticResolution(context);
 }
 
 Result XQLiteral::createResult(DynamicContext* context, int flags) const

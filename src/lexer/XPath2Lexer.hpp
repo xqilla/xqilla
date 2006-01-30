@@ -23,6 +23,7 @@
 
 #include <xqilla/ast/XQFLWOR.hpp>
 #include <xqilla/ast/XQStep.hpp>
+#include <xqilla/ast/XQPredicate.hpp>
 #include <xqilla/schema/SequenceType.hpp>
 
 #ifndef YY_CHAR
@@ -40,6 +41,7 @@ typedef union {
   XQStep::Axis axis;
   QualifiedName *qName;
   VectorOfASTNodes *astNodeStore;
+  VectorOfPredicates *predicates;
   SequenceType* sequenceType;
   SequenceType::OccurrenceIndicator occurrence;
   SequenceType::ItemType* itemType;

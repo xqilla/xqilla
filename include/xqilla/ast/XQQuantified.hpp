@@ -41,7 +41,7 @@ protected:
   {
   public:
     QuantifiedResult(VectorOfVariableBinding::const_iterator it, VectorOfVariableBinding::const_iterator end,
-                     const XQQuantified *quantified, DynamicContext *context);
+                     const XQQuantified *quantified);
 
     Item::Ptr getSingleResult(DynamicContext *context) const;
     std::string asString(DynamicContext *context, int indent) const;

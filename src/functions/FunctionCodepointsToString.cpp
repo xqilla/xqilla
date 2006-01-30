@@ -47,7 +47,7 @@ FunctionCodepointsToString::FunctionCodepointsToString(const VectorOfASTNodes &a
 Sequence FunctionCodepointsToString::collapseTreeInternal(DynamicContext* context, int flags) const
 {
   XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer result(1023, context->getMemoryManager());
-  Sequence arg = getParamNumber(1,context);
+  Sequence arg = getParamNumber(1,context)->toSequence(context);
   Sequence::iterator end = arg.end();
   for(Sequence::iterator i = arg.begin(); i != end; ++i) {
     result.append(((const ATDecimalOrDerived*)(const Item*)*i)->treatAsCodepoint(context));

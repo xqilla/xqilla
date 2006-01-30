@@ -20,29 +20,58 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/items/ATBooleanOrDerived.hpp>
-#include <xqilla/ast/XQSequence.hpp>
 #include <xqilla/exceptions/XPath2TypeMatchException.hpp>
 #include <xqilla/context/ItemFactory.hpp>
+#include <xqilla/ast/XQTreatAs.hpp>
+#include <xqilla/ast/XQSequence.hpp>
+#include <xqilla/items/AnyAtomicTypeConstructor.hpp>
+#include <xqilla/context/ContextHelpers.hpp>
 
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
+#include <xercesc/validators/schema/SchemaSymbols.hpp>
+
+#if defined(XERCES_HAS_CPP_NAMESPACE)
+XERCES_CPP_NAMESPACE_USE
+#endif
 
 XQInstanceOf::XQInstanceOf(ASTNode* expr, SequenceType* exprType, XPath2MemoryManager* memMgr)
   : ASTNodeImpl(memMgr),
   _expr(expr),
   _exprType(exprType)
 {
-	setType(ASTNode::INSTANCE_OF);
+  setType(ASTNode::INSTANCE_OF);
 }
 
 Result XQInstanceOf::createResult(DynamicContext* context, int flags) const
 {
-  return new InstanceOfResult(this, flags, context);
+  return new InstanceOfResult(this, flags);
 }
 
-ASTNode* XQInstanceOf::staticResolution(StaticContext *context) {
-  return resolveASTNode(_expr, context, true);
+ASTNode* XQInstanceOf::staticResolution(StaticContext *context)
+{
+  XPath2MemoryManager *mm = context->getMemoryManager();
+
+  _expr = new (mm) XQTreatAs(_expr, _exprType, mm);
+
+  try {
+    AutoNodeSetOrderingReset orderReset(context);
+    _expr = _expr->staticResolution(context);
+  }
+  catch(const XPath2TypeMatchException &ex) {
+    // The expression was constant folded, and the type matching failed.
+    AnyAtomicTypeConstructor *construct = 
+      new (mm) AnyAtomicTypeConstructor(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                                        SchemaSymbols::fgDT_BOOLEAN,
+                                        SchemaSymbols::fgATTVAL_FALSE,
+                                        AnyAtomicType::BOOLEAN);
+    return new (mm) XQSequence(construct, mm);
+  }
+
+  _src.getStaticType() = _expr->getStaticResolutionContext().getStaticType();
+  _src.add(_expr->getStaticResolutionContext());
+  if(_expr->isConstant()) {
+    return constantFold(context);
+  }
+  return this;
 }
 
 const ASTNode *XQInstanceOf::getExpression() const {
@@ -57,23 +86,17 @@ void XQInstanceOf::setExpression(ASTNode *item) {
   _expr = item;
 }
 
-XQInstanceOf::InstanceOfResult::InstanceOfResult(const XQInstanceOf *di, int flags, DynamicContext *context)
-  : SingleResult(context),
-    _flags(flags),
+XQInstanceOf::InstanceOfResult::InstanceOfResult(const XQInstanceOf *di, int flags)
+  : _flags(flags),
     _di(di)
 {
 }
 
 Item::Ptr XQInstanceOf::InstanceOfResult::getSingleResult(DynamicContext *context) const
 {
-  int flags = ASTNode::UNORDERED;
-  if(_di->getSequenceType()->getOccurrenceIndicator() == SequenceType::QUESTION_MARK ||
-     _di->getSequenceType()->getOccurrenceIndicator() == SequenceType::EXACTLY_ONE)
-    flags = ASTNode::RETURN_TWO;
-
-  Result result = _di->getExpression()->collapseTree(context, flags).matches(_di->getSequenceType(), context);
   try {
-    while(result.next(context) != NULLRCP) {}
+    Result result = _di->getExpression()->collapseTree(context);
+    while(result->next(context).notNull()) {}
   }
   catch(const XPath2TypeMatchException &ex) {
     return (const Item::Ptr)context->getItemFactory()->createBoolean(false, context);

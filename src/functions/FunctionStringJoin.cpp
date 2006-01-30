@@ -40,8 +40,8 @@ FunctionStringJoin::FunctionStringJoin(const VectorOfASTNodes &args, XPath2Memor
 Sequence FunctionStringJoin::collapseTreeInternal(DynamicContext* context, int flags) const {
 	XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer result(1023, context->getMemoryManager());
   XPath2MemoryManager* memMgr = context->getMemoryManager();
-  Sequence strSeq = getParamNumber(1, context);
-  const XMLCh* strSep = getParamNumber(2,context).next(context)->asString(context);
+  Sequence strSeq = getParamNumber(1, context)->toSequence(context);
+  const XMLCh* strSep = getParamNumber(2,context)->next(context)->asString(context);
 
   //if the sequence is non-empty, append the 1st string to the result
   if(!strSeq.isEmpty()) {

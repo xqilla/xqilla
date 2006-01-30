@@ -38,7 +38,7 @@ public:
   virtual void *getInterface(const XMLCh *name) const;
 
   /// Filters the given Result, returning only Items that match the NodeTest
-  Result filterResult(const Result &toFilter, DynamicContext* context) const;
+  Result filterResult(const Result &toFilter) const;
   ///check if a node has to be placed in the result set
   bool filterNode(Node::Ptr node, DynamicContext* context) const;
 
@@ -106,7 +106,7 @@ protected:
   class XQILLA_API FilterResult : public ResultImpl
   {
   public:
-    FilterResult(const Result &toFilter, const NodeTest *nodeTest, DynamicContext *context);
+    FilterResult(const Result &toFilter, const NodeTest *nodeTest);
     virtual ~FilterResult() {}
 
     Item::Ptr next(DynamicContext *context);

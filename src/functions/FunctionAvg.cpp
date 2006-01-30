@@ -42,14 +42,14 @@ FunctionAvg::FunctionAvg(const VectorOfASTNodes &args, XPath2MemoryManager* memM
   : AggregateFunction(name, minArgs, maxArgs, "anyAtomicType*", args, memMgr)
 {
   // TBD - could do better here - jpcs
-  _src.getStaticType().flags = StaticType::NUMERIC_TYPE | StaticType::OTHER_TYPE;
+  _src.getStaticType().flags = StaticType::TYPED_ATOMIC_TYPE;
 }
 
 Sequence FunctionAvg::collapseTreeInternal(DynamicContext* context, int flags) const
 {
   Sequence sequence(context->getMemoryManager());
   try {
-    sequence = validateSequence(getParamNumber(1,context), context);
+    sequence = validateSequence(getParamNumber(1,context)->toSequence(context), context);
   } catch (IllegalArgumentException &e) {
     XQThrow(IllegalArgumentException, X("FunctionAvg::collapseTreeInternal()"), X("Invalid argument to fn:avg() function [err:FORG0006]."));
   }

@@ -36,17 +36,16 @@ FunctionZeroOrOne::FunctionZeroOrOne(const VectorOfASTNodes &args, XPath2MemoryM
   : ConstantFoldingFunction(name, minArgs, maxArgs, "item()*", args, memMgr)
 {
   // TBD - could do better here - jpcs
-  _src.getStaticType().flags = StaticType::NUMERIC_TYPE | StaticType::NODE_TYPE | StaticType::OTHER_TYPE;
+  _src.getStaticType().flags = StaticType::ITEM_TYPE;
 }
 
 Result FunctionZeroOrOne::createResult(DynamicContext* context, int flags) const
 {
-  return new ZeroOrOneResult(this, flags, context);
+  return new ZeroOrOneResult(this, flags);
 }
 
-FunctionZeroOrOne::ZeroOrOneResult::ZeroOrOneResult(const FunctionZeroOrOne *func, int flags, DynamicContext *context)
-  : ResultImpl(context),
-    _flags(flags),
+FunctionZeroOrOne::ZeroOrOneResult::ZeroOrOneResult(const FunctionZeroOrOne *func, int flags)
+  : _flags(flags),
     _func(func),
     _arg(0),
     _argNo(0)
@@ -56,10 +55,10 @@ FunctionZeroOrOne::ZeroOrOneResult::ZeroOrOneResult(const FunctionZeroOrOne *fun
 Item::Ptr FunctionZeroOrOne::ZeroOrOneResult::next(DynamicContext *context)
 {
   if(_arg.isNull()) {
-    _arg = _func->getParamNumber(1, context, ASTNode::RETURN_TWO|(_flags & ~ASTNode::RETURN_ONE));
+    _arg = _func->getParamNumber(1, context);
   }
 
-  const Item::Ptr result = _arg.next(context);
+  const Item::Ptr result = _arg->next(context);
   ++_argNo;
 
   if(_argNo == 2 && result != NULLRCP) {

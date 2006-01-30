@@ -42,7 +42,7 @@ Sequence FunctionLowerCase::collapseTreeInternal(DynamicContext* context, int fl
 {
   XPath2MemoryManager* memMgr = context->getMemoryManager();
 
-  Sequence arg=getParamNumber(1,context);
+  Sequence arg=getParamNumber(1,context)->toSequence(context);
   if(arg.isEmpty()) {
     return Sequence(context->getItemFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context), memMgr);
   }

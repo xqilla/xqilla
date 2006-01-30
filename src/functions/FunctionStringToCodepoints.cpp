@@ -41,9 +41,9 @@ FunctionStringToCodepoints::FunctionStringToCodepoints(const VectorOfASTNodes &a
 
 Sequence FunctionStringToCodepoints::collapseTreeInternal(DynamicContext* context, int flags) const
 {	
-  Sequence param1 = getParamNumber(1,context).toSequence(context);
+  Sequence param1 = getParamNumber(1,context)->toSequence(context);
   if(param1.isEmpty()) return param1;
   const ATStringOrDerived::Ptr str = (const ATStringOrDerived::Ptr )param1.first();
 
-  return str->asCodepoints(context);
+  return str->asCodepoints(context)->toSequence(context);
 }

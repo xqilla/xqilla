@@ -21,6 +21,7 @@
 #include <xqilla/ast/StaticResolutionContext.hpp>
 #include <xqilla/ast/XQSequence.hpp>
 #include <xqilla/context/ItemFactory.hpp>
+#include <xqilla/context/ContextHelpers.hpp>
 
 /*static*/ const XMLCh Or::name[]={ XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_r, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
 
@@ -32,13 +33,14 @@ Or::Or(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
 
 Result Or::createResult(DynamicContext* context, int flags) const
 {
-  return new OrResult(this, context);
+  return new OrResult(this);
 }
 
 ASTNode* Or::staticResolution(StaticContext *context)
 {
   VectorOfASTNodes newArgs(XQillaAllocator<ASTNode*>(context->getMemoryManager()));
 
+  AutoNodeSetOrderingReset orderReset(context);
   for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
     *i = (*i)->staticResolution(context);
     const StaticResolutionContext &valueSrc = (*i)->getStaticResolutionContext();
@@ -50,24 +52,22 @@ ASTNode* Or::staticResolution(StaticContext *context)
     else {
       AutoDelete<DynamicContext> dContext(context->createDynamicContext());
       dContext->setMemoryManager(context->getMemoryManager());
-      if((*i)->collapseTree(dContext, ASTNode::UNORDERED | ASTNode::RETURN_TWO).getEffectiveBooleanValue(dContext)) {
+      if((*i)->collapseTree(dContext)->getEffectiveBooleanValue(dContext)) {
         // It's constantly true, so this expression is true
         ASTNode* newBlock = new (getMemoryManager())
           XQSequence(dContext->getItemFactory()->createBoolean(true, dContext),
                            dContext, getMemoryManager());
-        newBlock->addPredicates(_predList);
         return newBlock->staticResolution(context);
       }
     }
   }
 
   _args = newArgs;
-  return resolvePredicates(context);
+  return this;
 }
 
-Or::OrResult::OrResult(const Or *op, DynamicContext *context)
-  : SingleResult(context),
-    _op(op)
+Or::OrResult::OrResult(const Or *op)
+  : _op(op)
 {
 }
 
@@ -75,7 +75,7 @@ Item::Ptr Or::OrResult::getSingleResult(DynamicContext *context) const
 {
   unsigned int numArgs=_op->getNumArgs();
   for(unsigned int i=0;i<numArgs;i++) {
-    if(_op->getArgument(i)->collapseTree(context, ASTNode::UNORDERED | ASTNode::RETURN_TWO).getEffectiveBooleanValue(context)) {
+    if(_op->getArgument(i)->collapseTree(context)->getEffectiveBooleanValue(context)) {
       return (const Item::Ptr)context->getItemFactory()->createBoolean(true, context);
     }
   }

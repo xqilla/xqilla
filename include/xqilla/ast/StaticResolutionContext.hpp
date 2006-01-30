@@ -17,6 +17,7 @@
 #include <string>
 
 #include <xqilla/framework/XQillaExport.hpp>
+#include <xqilla/ast/StaticType.hpp>
 
 #include <xercesc/util/RefHash2KeysTableOf.hpp>
 #include <xercesc/util/StringPool.hpp>
@@ -25,26 +26,6 @@ class XPath2MemoryManager;
 
 typedef XERCES_CPP_NAMESPACE_QUALIFIER RefHash2KeysTableOf<int> VariableAccessSet;
 typedef XERCES_CPP_NAMESPACE_QUALIFIER RefHash2KeysTableOfEnumerator<int> VariableAccessSetEnumerator;
-
-/**
- * Class that represents the static type of a sub-expression
- */
-class XQILLA_API StaticType {
-public:
-  /**
-   * Flags that determine what item types are returned from a sub-expression
-   */
-  enum StaticTypeFlags {
-    NODE_TYPE    = 0x01, ///< Results can contain nodes
-    NUMERIC_TYPE = 0x02, ///< Results can contain numeric items
-    OTHER_TYPE   = 0x04  ///< Results can contain other items
-  };
-
-  void typeUnion(const StaticType &st);
-  bool isNodesOnly() const;
-
-  unsigned int flags;
-};
 
 /**
  * Records access to various parts of the context during static resolution.

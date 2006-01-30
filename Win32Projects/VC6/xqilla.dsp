@@ -105,11 +105,27 @@ SOURCE=..\..\src\ast\ConstantFoldingFunction.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\ast\ConvertFunctionArg.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\ast\NumericFunction.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\src\ast\StaticResolutionContext.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\ast\StaticType.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\ast\XPath1Compat.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\ast\XQAtomize.cpp
 # End Source File
 # Begin Source File
 
@@ -130,6 +146,10 @@ SOURCE=..\..\src\ast\XQDOMConstructor.cpp
 # Begin Source File
 
 SOURCE=..\..\src\ast\XQDebugHook.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\ast\XQDocumentOrder.cpp
 # End Source File
 # Begin Source File
 
@@ -174,6 +194,10 @@ SOURCE=..\..\src\ast\XQOrderingChange.cpp
 # Begin Source File
 
 SOURCE=..\..\src\ast\XQParenthesizedExpr.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\ast\XQPredicate.cpp
 # End Source File
 # Begin Source File
 
@@ -225,11 +249,27 @@ SOURCE=..\..\include\xqilla\ast\ConstantFoldingFunction.hpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\include\xqilla\ast\ConvertFunctionArg.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\include\xqilla\ast\NumericFunction.hpp
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\include\xqilla\ast\StaticResolutionContext.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\ast\StaticType.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\ast\XQPath1Compat.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\ast\XQAtomize.hpp
 # End Source File
 # Begin Source File
 
@@ -250,6 +290,10 @@ SOURCE=..\..\include\xqilla\ast\XQDOMConstructor.hpp
 # Begin Source File
 
 SOURCE=..\..\include\xqilla\ast\XQDebugHook.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\ast\XQDocumentOrder.hpp
 # End Source File
 # Begin Source File
 
@@ -294,6 +338,10 @@ SOURCE=..\..\include\xqilla\ast\XQOrderingChange.hpp
 # Begin Source File
 
 SOURCE=..\..\include\xqilla\ast\XQParenthesizedExpr.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\ast\XQPredicate.hpp
 # End Source File
 # Begin Source File
 
@@ -570,6 +618,10 @@ SOURCE=..\..\src\context\XQScopedNamespace.cpp
 # Begin Source File
 
 SOURCE=..\..\include\xqilla\context\Collation.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\context\ContextHelpers.hpp
 # End Source File
 # Begin Source File
 
@@ -2753,10 +2805,6 @@ SOURCE=..\..\include\xqilla\parser\QName.hpp
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\..\src\runtime\AtomizeResult.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\runtime\EmptyResult.cpp
 # End Source File
 # Begin Source File
@@ -2797,15 +2845,7 @@ SOURCE=..\..\src\runtime\SingleResult.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\runtime\SortIntoDocumentOrderResult.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\runtime\ResultBufferImpl.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\include\xqilla\runtime\AtomizeResult.hpp
 # End Source File
 # Begin Source File
 
@@ -2838,10 +2878,6 @@ SOURCE=..\..\include\xqilla\runtime\SequenceResult.hpp
 # Begin Source File
 
 SOURCE=..\..\include\xqilla\runtime\SingleResult.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\include\xqilla\runtime\SortIntoDocumentOrderResult.hpp
 # End Source File
 # End Group
 # Begin Group "schema"

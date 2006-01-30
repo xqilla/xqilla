@@ -31,12 +31,11 @@ NodeComparison::NodeComparison(const VectorOfASTNodes &args, XPath2MemoryManager
 
 Result NodeComparison::createResult(DynamicContext* context, int flags) const
 {
-  return new NodeComparisonResult(this, context);
+  return new NodeComparisonResult(this);
 }
 
-NodeComparison::NodeComparisonResult::NodeComparisonResult(const NodeComparison *op, DynamicContext *context)
-  : SingleResult(context),
-    _op(op)
+NodeComparison::NodeComparisonResult::NodeComparisonResult(const NodeComparison *op)
+  : _op(op)
 {
 }
 

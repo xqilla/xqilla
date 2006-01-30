@@ -49,12 +49,12 @@ Sequence FunctionSubstringBefore::collapseTreeInternal(DynamicContext* context, 
 {
 	XPath2MemoryManager* memMgr = context->getMemoryManager();
 
-	Sequence str1=getParamNumber(1,context);
-	Sequence str2=getParamNumber(2,context);
+	Sequence str1=getParamNumber(1,context)->toSequence(context);
+	Sequence str2=getParamNumber(2,context)->toSequence(context);
 
 	Collation* collation=NULL;
 	if(getNumArgs()>2) {
-    Sequence collArg = getParamNumber(3,context);
+    Sequence collArg = getParamNumber(3,context)->toSequence(context);
     const XMLCh* collName=collArg.first()->asString(context);
     try {
       context->getItemFactory()->createAnyURI(collName, context);

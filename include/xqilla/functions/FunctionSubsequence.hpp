@@ -27,13 +27,14 @@ public:
 
   FunctionSubsequence(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
+  ASTNode* staticResolution(StaticContext *context);
   Result createResult(DynamicContext* context, int flags=0) const;
 
 private:
   class SubsequenceResult : public ResultImpl
   {
   public:
-    SubsequenceResult(const FunctionSubsequence *func, int flags, DynamicContext *context);
+    SubsequenceResult(const FunctionSubsequence *func, int flags);
 
     Item::Ptr next(DynamicContext *context);
     std::string asString(DynamicContext *context, int indent) const;

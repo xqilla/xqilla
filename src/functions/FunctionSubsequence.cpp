@@ -40,18 +40,23 @@ const unsigned int FunctionSubsequence::maxArgs = 3;
 FunctionSubsequence::FunctionSubsequence(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "item()*, double, double", args, memMgr)
 {
-  // TBD - could do better here - jpcs
-  _src.getStaticType().flags = StaticType::NUMERIC_TYPE | StaticType::NODE_TYPE | StaticType::OTHER_TYPE;
 }
 
+ASTNode* FunctionSubsequence::staticResolution(StaticContext *context)
+{
+  ASTNode *result = resolveArguments(context);
+  if(result == this) {
+    _src.getStaticType() = _args.front()->getStaticResolutionContext().getStaticType();
+  }
+  return result;
+}
 Result FunctionSubsequence::createResult(DynamicContext* context, int flags) const
 {
-  return new SubsequenceResult(this, flags, context);
+  return new SubsequenceResult(this, flags);
 }
 
-FunctionSubsequence::SubsequenceResult::SubsequenceResult(const FunctionSubsequence *func, int flags, DynamicContext *context)
-  : ResultImpl(context),
-    _flags(flags),
+FunctionSubsequence::SubsequenceResult::SubsequenceResult(const FunctionSubsequence *func, int flags)
+  : _flags(flags),
     _func(func),
     _end(0),
     _one(0),
@@ -67,11 +72,11 @@ Item::Ptr FunctionSubsequence::SubsequenceResult::next(DynamicContext *context)
     _source = _func->getParamNumber(1, context);
 
     _i = _one;
-    const Numeric::Ptr position = ((const Numeric::Ptr )_func->getParamNumber(2, context).next(context))->round(context);
+    const Numeric::Ptr position = ((const Numeric::Ptr )_func->getParamNumber(2, context)->next(context))->round(context);
     if(_func->getNumArgs()>2)
-      _end = ((const Numeric::Ptr )_func->getParamNumber(3, context).next(context))->round(context)->add(position, context);
+      _end = ((const Numeric::Ptr )_func->getParamNumber(3, context)->next(context))->round(context)->add(position, context);
 
-    while(_i->lessThan(position, context) && _source.next(context) != NULLRCP) {
+    while(_i->lessThan(position, context) && _source->next(context) != NULLRCP) {
       _i = _i->add(_one, context);
     }
   }
@@ -81,7 +86,7 @@ Item::Ptr FunctionSubsequence::SubsequenceResult::next(DynamicContext *context)
   }
 
   _i = _i->add(_one, context);
-  return _source.next(context);
+  return _source->next(context);
 }
 
 std::string FunctionSubsequence::SubsequenceResult::asString(DynamicContext *context, int indent) const

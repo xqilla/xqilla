@@ -33,7 +33,7 @@ private:
   class RemoveResult : public ResultImpl
   {
   public:
-    RemoveResult(const FunctionRemove *func, int flags, DynamicContext *context);
+    RemoveResult(const FunctionRemove *func, int flags);
 
     Item::Ptr next(DynamicContext *context);
     std::string asString(DynamicContext *context, int indent) const;
