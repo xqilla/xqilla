@@ -46,10 +46,10 @@ public:
   static AxisNodeFactoryTemplate<NodeImpl> gNodeImplFactory;
 
   Axis(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *contextNode, const Node *nodeObj,
-       const NodeTest *nodeTest, DynamicContext *context, const AxisNodeFactory &factory);
+       const NodeTest *nodeTest, const AxisNodeFactory &factory);
   Item::Ptr next(DynamicContext *context);
 
-  virtual const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *nextNode() = 0;
+  virtual const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *nextNode(DynamicContext *context) = 0;
 
   static const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *getParent(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *node);
   static const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *getFirstChild(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *node);

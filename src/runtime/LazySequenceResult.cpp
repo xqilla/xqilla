@@ -17,8 +17,7 @@
 #include <xqilla/context/DynamicContext.hpp>
 
 LazySequenceResult::LazySequenceResult(DynamicContext *context)
-  : ResultImpl(context),
-    toInit_(true),
+  : toInit_(true),
     seq_(context->getMemoryManager())
 {
 }
@@ -43,7 +42,6 @@ Sequence LazySequenceResult::toSequence(DynamicContext *context)
 {
   if(toInit_) {
     toInit_ = false;
-    if(context == 0) context = context_;
     getResult(seq_, context);
     it_ = seq_.begin();
   }

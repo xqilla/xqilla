@@ -38,7 +38,7 @@ protected:
   class CastAsResult : public SingleResult
   {
   public:
-    CastAsResult(const XQCastAs *di, DynamicContext *context);
+    CastAsResult(const XQCastAs *di);
 
     Item::Ptr getSingleResult(DynamicContext *context) const;
     std::string asString(DynamicContext *context, int indent) const;

@@ -31,6 +31,7 @@ public:
 
   FunctionExists(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
 
+  ASTNode* staticResolution(StaticContext *context);
   Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
 };
 

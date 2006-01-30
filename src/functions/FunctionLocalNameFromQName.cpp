@@ -43,7 +43,7 @@ FunctionLocalNameFromQName::FunctionLocalNameFromQName(const VectorOfASTNodes &a
 
 Sequence FunctionLocalNameFromQName::collapseTreeInternal(DynamicContext* context, int flags) const
 {
-  Sequence arg=getParamNumber(1,context);
+  Sequence arg=getParamNumber(1,context)->toSequence(context);
   if(arg.isEmpty())
     return Sequence(context->getMemoryManager());
   return Sequence(context->getItemFactory()->createStringOrDerived(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,

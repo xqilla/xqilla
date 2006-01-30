@@ -29,15 +29,13 @@
 class XQILLA_API FunctionConstructor : public ConstantFoldingFunction
 {
 public:
-  ///Constructor. Sets arg def to NOT_OPTIONAL.
-  FunctionConstructor(const XMLCh* nsURI, const XMLCh* typeName,
-                      AnyAtomicType::AtomicObjectType primitiveType,
-                      const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
-  
-  virtual Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
-
   static const XMLCh XMLChConstructorURI[];
   static const XMLCh XMLChXPath2DatatypesURI[];
+
+  FunctionConstructor(const XMLCh* nsURI, const XMLCh* typeName,
+                      const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
+  
+  ASTNode* staticResolution(StaticContext *context);
 };
 
 #endif // _FUNCTIONCONSTRUCTOR_HPP

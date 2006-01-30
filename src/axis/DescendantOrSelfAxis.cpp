@@ -17,13 +17,13 @@
 #include <xqilla/items/Node.hpp>
 
 DescendantOrSelfAxis::DescendantOrSelfAxis(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *contextNode, const Node *nodeObj,
-       const NodeTest *nodeTest, DynamicContext *context, const AxisNodeFactory &factory)
-  : Axis(contextNode, nodeObj, nodeTest, context, factory),
+       const NodeTest *nodeTest, const AxisNodeFactory &factory)
+  : Axis(contextNode, nodeObj, nodeTest, factory),
     descendant_(0)
 {
 }
 
-const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *DescendantOrSelfAxis::nextNode()
+const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *DescendantOrSelfAxis::nextNode(DynamicContext *context)
 {
   if(toDo_) {
     // initialise

@@ -24,15 +24,43 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/context/ItemFactory.hpp>
+#include <xqilla/ast/XQAtomize.hpp>
 
 ComparisonOperator::ComparisonOperator(const XMLCh* opName, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : XQOperator(opName, args, memMgr)
 {
 }
 
+ASTNode* ComparisonOperator::staticResolution(StaticContext *context)
+{
+  XPath2MemoryManager *mm = context->getMemoryManager();
+
+  bool allConstant = true;
+  for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
+    *i = new (mm) XQAtomize(*i, mm);
+    *i = (*i)->staticResolution(context);
+
+    _src.add((*i)->getStaticResolutionContext());
+
+    if(!(*i)->isConstantAndHasTimezone(context)) {
+      allConstant = false;
+      if((*i)->isConstant()) {
+        _src.implicitTimezoneUsed(true);
+      }
+    }
+  }
+
+  _src.getStaticType().flags = StaticType::OTHER_TYPE;
+
+  if(allConstant) {
+    return constantFold(context);
+  }
+  return this;
+}
+
 Result ComparisonOperator::createResult(DynamicContext* context, int flags) const
 {
-  return new ComparisonResult(this, context);
+  return new ComparisonResult(this);
 }
 
 AnyAtomicType::Ptr ComparisonOperator::getArgument(unsigned int index, DynamicContext *context) const
@@ -46,11 +74,7 @@ AnyAtomicType::Ptr ComparisonOperator::getArgument(unsigned int index, DynamicCo
   //    exactly one atomic value, a type error is raised.
   Result arg_result(_args[index]->collapseTree(context));
 
-  if(_args[index]->getStaticResolutionContext().getStaticType().flags & StaticType::NODE_TYPE) {
-	  arg_result = arg_result.atomize(context);
-  }
-
-  Item::Ptr first = arg_result.next(context);
+  Item::Ptr first = arg_result->next(context);
 
   // 2. If the atomized operand is an empty sequence, the result of the value comparison is an empty sequence, 
   //    and the implementation need not evaluate the other operand or apply the operator. However, an 
@@ -59,7 +83,7 @@ AnyAtomicType::Ptr ComparisonOperator::getArgument(unsigned int index, DynamicCo
     return first;
 
   // 3. If the atomized operand is a sequence of length greater than one, a type error is raised [err:XPTY0004].
-  Item::Ptr second = arg_result.next(context);
+  Item::Ptr second = arg_result->next(context);
   if(second != NULLRCP) {
     XQThrow(XPath2TypeCastException,X("ComparisonOperator::getArgument"), X("A parameter of the operator is not a single atomic value [err:XPTY0004]"));
   }
@@ -73,9 +97,8 @@ AnyAtomicType::Ptr ComparisonOperator::getArgument(unsigned int index, DynamicCo
   return (const AnyAtomicType::Ptr )first;
 }
 
-ComparisonOperator::ComparisonResult::ComparisonResult(const ComparisonOperator *op, DynamicContext *context)
-  : SingleResult(context),
-    _op(op)
+ComparisonOperator::ComparisonResult::ComparisonResult(const ComparisonOperator *op)
+  : _op(op)
 {
 }
 

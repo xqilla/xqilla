@@ -112,7 +112,7 @@ public:
 
   class ProductFactor {
   public:
-    ProductFactor(const XQVariableBinding *vb, DynamicContext *context);
+    ProductFactor(const XQVariableBinding *vb);
 
     bool initialise(DynamicContext *context);
     bool next(DynamicContext *context);
@@ -161,7 +161,7 @@ protected:
   {
   public:
     FLWORResult(VectorOfVariableBinding::const_iterator it, VectorOfVariableBinding::const_iterator end,
-                const XQFLWOR *flwor, int flags, DynamicContext *context);
+                const XQFLWOR *flwor, int flags);
 
     Item::Ptr next(DynamicContext *context);
     std::string asString(DynamicContext *context, int indent) const;

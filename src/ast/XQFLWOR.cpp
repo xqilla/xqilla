@@ -35,6 +35,10 @@
 #include <xqilla/utils/XPath2NSUtils.hpp>
 #include <xqilla/schema/SequenceType.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>
+#include <xqilla/ast/XQAtomize.hpp>
+#include <xqilla/ast/XQTreatAs.hpp>
+#include <xqilla/context/ContextHelpers.hpp>
+
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 
 // needed to sort
@@ -135,13 +139,16 @@ XQSort::SortSpec::SortSpec(ASTNode* expr, sortModifier modifier, const XMLCh* co
 
 void XQSort::SortSpec::staticResolution(StaticContext *context, StaticResolutionContext &src)
 {
+  XPath2MemoryManager *mm = context->getMemoryManager();
+
+  _expr = new (mm) XQAtomize(_expr, mm);
   _expr = _expr->staticResolution(context);
   src.add(_expr->getStaticResolutionContext());
 }
 
 SortableItem XQSort::SortSpec::buildKey(DynamicContext* context)
 {
-  Sequence atomized=_expr->collapseTree(context).atomize(context);
+  Sequence atomized=_expr->collapseTree(context)->toSequence(context);
   SortableItem value;
   if(atomized.isEmpty())
     value.m_item=NULL;
@@ -262,7 +269,7 @@ const XQSort::VectorOfSortSpec *XQSort::getSortSpecs() const
 /////////////////////////////////////////////////////////////////////
 // ProductFactor
 
-XQFLWOR::ProductFactor::ProductFactor(const XQVariableBinding *vb, DynamicContext *context)
+XQFLWOR::ProductFactor::ProductFactor(const XQVariableBinding *vb)
   : _vb(vb),
     _values(0),
     _valuesBuffer(0),
@@ -291,27 +298,16 @@ bool XQFLWOR::ProductFactor::initialise(DynamicContext *context)
   if(context->getDebugCallback()) context->getDebugCallback()->IsBreakPointHit(context, _vb->_file, _vb->_line);
 
   if(_vb->_bindingType == XQVariableBinding::letBinding) {
-    if(_vb->_seqType!=NULL)
-      _values=_values.matches(_vb->_seqType, context);
-
     // Add a new scope, if needed
     if(_vb->_needsNewScope) {
       varStore->addLogicalBlockScope();
     }
 
     // If it's a let binding populate the variable with all of the values
-    varStore->declareVar(_vb->_vURI, _vb->_vName, _values.toSequence(context), context);
+    varStore->declareVar(_vb->_vURI, _vb->_vName, _values->toSequence(context), context);
   }
   else {
-    // the SequenceType has been specified for each item of the sequence, but we can only apply to the
-    // sequence itself, so allow it to match multiple matches
-    if(_vb->_seqType!=NULL)
-    {
-      _vb->_seqType->setOccurrence(SequenceType::STAR);
-      _values=_values.matches(_vb->_seqType, context);
-    }
-
-    const Item::Ptr item = _values.next(context);
+    const Item::Ptr item = _values->next(context);
 
     if(item == NULLRCP) {
       return false;
@@ -350,7 +346,7 @@ bool XQFLWOR::ProductFactor::next(DynamicContext *context)
     return false;
   }
   else {
-    const Item::Ptr item = _values.next(context);
+    const Item::Ptr item = _values->next(context);
 
     if(item == NULLRCP) {
       if(_vb->_needsNewScope) {
@@ -379,7 +375,7 @@ bool XQFLWOR::ProductFactor::next(DynamicContext *context)
 
 bool XQFLWOR::ProductFactor::checkWhere(DynamicContext *context)
 {
-  return _vb->_where == 0 || _vb->_where->collapseTree(context, ASTNode::UNORDERED|ASTNode::RETURN_TWO).getEffectiveBooleanValue(context);
+  return _vb->_where == 0 || _vb->_where->collapseTree(context)->getEffectiveBooleanValue(context);
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -471,7 +467,7 @@ bool XQFLWOR::nextState(ExecutionBindings &ebs, DynamicContext *context, bool in
 
 bool XQFLWOR::checkWhere(DynamicContext *context) const
 {
-  return _where == 0 || _where->collapseTree(context, ASTNode::UNORDERED|ASTNode::RETURN_TWO).getEffectiveBooleanValue(context);
+  return _where == 0 || _where->collapseTree(context)->getEffectiveBooleanValue(context);
 }
 
 VariableStore::Entry *XQFLWOR::getAccumulator(DynamicContext *context) const
@@ -518,12 +514,11 @@ Result XQFLWOR::createResult(DynamicContext* context, int flags) const
 Result XQFLWOR::createResultImpl(VectorOfVariableBinding::const_iterator it, VectorOfVariableBinding::const_iterator end,
                                  DynamicContext* context, int flags) const
 {
-  if((_sort && !(flags & ASTNode::UNORDERED)) ||
-     context->isDebuggingEnabled()) {
+  if((_sort) || context->isDebuggingEnabled()) {
     return new SortingFLWORResult(it, end, this, flags, context);
   }
   else {
-    return new FLWORResult(it, end, this, flags, context);
+    return new FLWORResult(it, end, this, flags);
   }
 }
 
@@ -531,17 +526,16 @@ ASTNode* XQFLWOR::staticResolution(StaticContext* context)
 {
   staticResolutionImpl(context);
 
-  if(_src.isUsed()) {
-    return resolvePredicates(context);
-  }
-  else {
-    _return->addPredicates(getPredicates());
+  if(!_src.isUsed()) {
     return _return->staticResolution(context);
   }
+  return this;
 }
 
 void XQFLWOR::staticResolutionImpl(StaticContext* context)
 {
+  XPath2MemoryManager *mm = context->getMemoryManager();
+
   VectorOfVariableBinding *newBindings =
     new (getMemoryManager()) VectorOfVariableBinding(XQillaAllocator<XQVariableBinding*>(getMemoryManager()));
 
@@ -553,12 +547,20 @@ void XQFLWOR::staticResolutionImpl(StaticContext* context)
     varStore->addLogicalBlockScope();
 
     // Work out the uri and localname of the variable binding
-    const XMLCh* prefix=XPath2NSUtils::getPrefix((*it0)->_variable, context->getMemoryManager());
+    const XMLCh* prefix=XPath2NSUtils::getPrefix((*it0)->_variable, mm);
     if(prefix && *prefix)
       (*it0)->_vURI = context->getUriBoundToPrefix(prefix);
     (*it0)->_vName = XPath2NSUtils::getLocalName((*it0)->_variable);
 
     // call static resolution on the value
+    if((*it0)->_seqType!=NULL) {
+      if((*it0)->_bindingType == XQVariableBinding::forBinding) {
+        // the SequenceType has been specified for each item of the sequence, but we can only apply to the
+        // sequence itself, so allow it to match multiple matches
+        (*it0)->_seqType->setOccurrence(SequenceType::STAR);
+      }
+      (*it0)->_allValues = new (mm) XQTreatAs((*it0)->_allValues, (*it0)->_seqType, mm);
+    }
     (*it0)->_allValues = (*it0)->_allValues->staticResolution(context);
     (*it0)->_src.getStaticType() = (*it0)->_allValues->getStaticResolutionContext().getStaticType();
 
@@ -574,7 +576,7 @@ void XQFLWOR::staticResolutionImpl(StaticContext* context)
 
     if((*it0)->_positionalVariable != NULL && *((*it0)->_positionalVariable) != 0) {
       // Work out the uri and localname of the positional variable binding
-      const XMLCh* prefix=XPath2NSUtils::getPrefix((*it0)->_positionalVariable, context->getMemoryManager());
+      const XMLCh* prefix=XPath2NSUtils::getPrefix((*it0)->_positionalVariable, mm);
       if(prefix && *prefix)
         (*it0)->_pURI = context->getUriBoundToPrefix(prefix);
       (*it0)->_pName = XPath2NSUtils::getLocalName((*it0)->_positionalVariable);
@@ -602,6 +604,7 @@ void XQFLWOR::staticResolutionImpl(StaticContext* context)
 
   // Call staticResolution on the where expression, if there is one
   if(_where) {
+    AutoNodeSetOrderingReset orderReset(context);
     _where = staticallyResolveWhere(_where, context);
     if(_where) _src.add(_where->getStaticResolutionContext());
   }
@@ -614,6 +617,7 @@ void XQFLWOR::staticResolutionImpl(StaticContext* context)
   // Call staticResolution on the return expression
   _return = _return->staticResolution(context);
   _src.getStaticType() = _return->getStaticResolutionContext().getStaticType();
+  _src.setProperties(_return->getStaticResolutionContext().getProperties());
   _src.add(_return->getStaticResolutionContext());
 
   VectorOfVariableBinding::reverse_iterator rend = _bindings->rend();
@@ -695,7 +699,7 @@ void XQFLWOR::staticResolutionImpl(StaticContext* context)
 
     if(!_src.isUsed()) {
       AutoDelete<DynamicContext> dContext(context->createDynamicContext());
-      dContext->setMemoryManager(context->getMemoryManager());
+      dContext->setMemoryManager(mm);
       Result result = createResultImpl(newBindings->begin(), newBindings->end(), dContext);
       _return = new (getMemoryManager()) XQSequence(result, dContext, getMemoryManager());
       newBindings->clear();
@@ -805,7 +809,7 @@ XQFLWOR::SortingFLWORResult::SortingFLWORResult(VectorOfVariableBinding::const_i
     _flags(flags)
 {
   for(; it != end; ++it) {
-    _ebs.push_back(ProductFactor(*it, context));
+    _ebs.push_back(ProductFactor(*it));
   }
 }
 
@@ -821,14 +825,12 @@ void XQFLWOR::SortingFLWORResult::getResult(Sequence &toFill, DynamicContext *co
   varStore->addLogicalBlockScope();
 
   VariableStore::Entry *accumulator = _flwor->getAccumulator(context);
-  bool sorting = _flwor->getSort() && !(_flags & ASTNode::UNORDERED);
+  bool sorting = _flwor->getSort();
 
-  unsigned int resultsSoFar = 0;
   PreSortResult toBeSorted;
   if(_flwor->nextState(const_cast<ExecutionBindings&>(_ebs), context, true)) {
     do {
-      Sequence result(_flwor->getReturnExpr()->collapseTree(context, _flags).toSequence(context));
-      resultsSoFar += result.getLength();
+      Sequence result(_flwor->getReturnExpr()->collapseTree(context, _flags)->toSequence(context));
 
       if(sorting) {
         toBeSorted.push_back(ResultPair(result, _flwor->getSort()->buildKeys(context)));
@@ -839,13 +841,6 @@ void XQFLWOR::SortingFLWORResult::getResult(Sequence &toFill, DynamicContext *co
 
       if(accumulator) _flwor->setAccumulator(accumulator, toBeSorted, context);
 
-      if(!sorting) {
-        // Try to short the for loop execution
-        if((_flags & ASTNode::RETURN_ONE) && resultsSoFar)
-          break;
-        if((_flags & ASTNode::RETURN_TWO) && resultsSoFar > 1)
-          break;
-      }
     } while(_flwor->nextState(const_cast<ExecutionBindings&>(_ebs), context, false));
   }
   varStore->removeScope();
@@ -880,16 +875,15 @@ std::string XQFLWOR::SortingFLWORResult::asString(DynamicContext *context, int i
 }
 
 XQFLWOR::FLWORResult::FLWORResult(VectorOfVariableBinding::const_iterator it, VectorOfVariableBinding::const_iterator end,
-                                  const XQFLWOR *flwor, int flags, DynamicContext *context)
-  : ResultImpl(context),
-    _flwor(flwor),
+                                  const XQFLWOR *flwor, int flags)
+  : _flwor(flwor),
     _flags(flags),
     _toInit(true),
     _scope(0),
     _returnResult(0)
 {
   for(; it != end; ++it) {
-    _ebs.push_back(ProductFactor(*it, context));
+    _ebs.push_back(ProductFactor(*it));
   }
 }
 
@@ -918,12 +912,12 @@ Item::Ptr XQFLWOR::FLWORResult::next(DynamicContext *context)
     varStore->setScopeState(_scope);
   }
 
-  Item::Ptr result = _returnResult.next(context);
+  Item::Ptr result = _returnResult->next(context);
 
   while(result == NULLRCP) {
     if(_flwor->nextState(_ebs, context, false)) {
       _returnResult = _flwor->getReturnExpr()->collapseTree(context, _flags);
-      result = _returnResult.next(context);
+      result = _returnResult->next(context);
     }
     else {
       varStore->removeScope();

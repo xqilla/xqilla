@@ -31,8 +31,11 @@ public:
 
   Intersect(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
-  /** exectutes the operator*/
+  ASTNode* staticResolution(StaticContext *context);
   Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
+
+private:
+  bool sortAdded_;
 };
 
 #endif 

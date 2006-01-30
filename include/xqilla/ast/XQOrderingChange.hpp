@@ -26,28 +26,14 @@ class XQILLA_API XQOrderingChange : public ASTNodeImpl
 public:
   XQOrderingChange(StaticContext::NodeSetOrdering ordering, ASTNode* astNode, XPath2MemoryManager* expr);
 
-	virtual Result createResult(DynamicContext *context, int flags=0) const;
-	virtual ASTNode* staticResolution(StaticContext *context);
+  virtual Result createResult(DynamicContext *context, int flags=0) const;
+  virtual ASTNode* staticResolution(StaticContext *context);
 
-	StaticContext::NodeSetOrdering getOrderingValue() const;
+  StaticContext::NodeSetOrdering getOrderingValue() const;
   ASTNode* getExpr() const;
   void setExpr(ASTNode *expr);
 
 protected:
-  class OrderingChangeResult : public ResultImpl
-  {
-  public:
-    OrderingChangeResult(const XQOrderingChange* orderChange, int flags, DynamicContext *context);
-
-    Item::Ptr next(DynamicContext *context);
-    std::string asString(DynamicContext *context, int indent) const;
-
-  private:
-    const XQOrderingChange* _oc;
-    int _flags;
-    Result _innerExpr;
-  };
-
   StaticContext::NodeSetOrdering m_nOrdering;
   ASTNode* m_pExpr;
 };

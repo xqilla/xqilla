@@ -48,14 +48,14 @@ FunctionInScopePrefixes::FunctionInScopePrefixes(const VectorOfASTNodes &args, X
 
 Sequence FunctionInScopePrefixes::collapseTreeInternal(DynamicContext* context, int flags) const
 {
-  Sequence arg1 = getParamNumber(1,context).toSequence(context);
+  Sequence arg1 = getParamNumber(1,context)->toSequence(context);
   Node::Ptr node = (Node::Ptr)arg1.first();
 
   Sequence returnSeq(context->getMemoryManager());
 
   Result namespaces = node->dmNamespaceNodes(context);
   Node::Ptr ns;
-  while((ns = (Node::Ptr)namespaces.next(context)).notNull()) {
+  while((ns = (Node::Ptr)namespaces->next(context)).notNull()) {
     ATQNameOrDerived::Ptr name = ns->dmNodeName(context);
     if(name.isNull()) {
       returnSeq.addItem(context->getItemFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context));

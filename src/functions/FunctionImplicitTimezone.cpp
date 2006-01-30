@@ -40,7 +40,7 @@ FunctionImplicitTimezone::FunctionImplicitTimezone(const VectorOfASTNodes &args,
 
 ASTNode* FunctionImplicitTimezone::staticResolution(StaticContext *context) {
   _src.implicitTimezoneUsed(true);
-  return resolveASTNodes(_args, context, false);
+  return resolveArguments(context);
 }
 
 Sequence FunctionImplicitTimezone::collapseTreeInternal(DynamicContext* context, int flags) const

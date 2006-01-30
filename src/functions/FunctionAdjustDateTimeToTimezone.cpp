@@ -52,7 +52,7 @@ ASTNode* FunctionAdjustDateTimeToTimezone::staticResolution(StaticContext *conte
   if(getNumArgs() == 1) {
     _src.implicitTimezoneUsed(true);
   }
-  return resolveASTNodes(_args, context, getNumArgs() > 1);
+  return resolveArguments(context);
 }
 
 Sequence FunctionAdjustDateTimeToTimezone::collapseTreeInternal(DynamicContext* context, int flags) const
@@ -60,7 +60,7 @@ Sequence FunctionAdjustDateTimeToTimezone::collapseTreeInternal(DynamicContext* 
 	XPath2MemoryManager* memMgr = context->getMemoryManager();
 
   //If $srcval is the empty sequence, then the result is the empty sequence.
-  Sequence op1 = getParamNumber(1, context);
+  Sequence op1 = getParamNumber(1, context)->toSequence(context);
   if (op1.isEmpty()) {
     return Sequence(memMgr);
   }
@@ -71,7 +71,7 @@ Sequence FunctionAdjustDateTimeToTimezone::collapseTreeInternal(DynamicContext* 
   ATDurationOrDerived::Ptr timezoneAsDuration = 0;
 
   if (getNumArgs() > 1) {
-    Sequence op2 = getParamNumber(2, context);
+    Sequence op2 = getParamNumber(2, context)->toSequence(context);
     if (op2.isEmpty()) {
       // unset the timezone
       return Sequence(dateTime->setTimezone(0, context), memMgr);

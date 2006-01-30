@@ -30,6 +30,7 @@
 #include <xqilla/functions/FunctionConstructor.hpp>
 #include <xqilla/schema/SequenceType.hpp>
 #include <xqilla/context/ItemFactory.hpp>
+#include <xqilla/context/ContextHelpers.hpp>
 
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 
@@ -60,27 +61,13 @@ FunctionDistinctValues::FunctionDistinctValues(const VectorOfASTNodes &args, XPa
 
 ASTNode* FunctionDistinctValues::staticResolution(StaticContext *context)
 {
-  bool allConstant = true;
-  for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
-    *i = (*i)->staticResolution(context);
-    _src.add((*i)->getStaticResolutionContext());
-    if(!(*i)->isConstant()) {
-      allConstant = false;
-    }
+  // Could set ordering to unordered here - jpcs
+//   AutoNodeSetOrderingReset orderReset(context);
+  ASTNode *result = resolveArguments(context);
+  if(result == this) {
+    _src.getStaticType() = _args.front()->getStaticResolutionContext().getStaticType();
   }
-
-  _src.getStaticType() = _args.front()->getStaticResolutionContext().getStaticType();
-  if(_src.getStaticType().flags & StaticType::NODE_TYPE) {
-    _src.getStaticType().flags &= ~StaticType::NODE_TYPE;
-    _src.getStaticType().flags |= StaticType::NUMERIC_TYPE | StaticType::OTHER_TYPE;
-  }
-
-  if(allConstant) {
-    return constantFold(context);
-  }
-  else {
-    return resolvePredicates(context);
-  }
+  return result;
 }
 
 Result FunctionDistinctValues::createResult(DynamicContext* context, int flags) const
@@ -88,9 +75,8 @@ Result FunctionDistinctValues::createResult(DynamicContext* context, int flags) 
   return new DistinctValueResult(this, context);
 }
 
-FunctionDistinctValues::DistinctValueResult::DistinctValueResult(const FunctionDistinctValues *fdv, DynamicContext *context)
-  : ResultImpl(context),
-    fdv_(fdv),
+FunctionDistinctValues::DistinctValueResult::DistinctValueResult(const FunctionDistinctValues *fdv, const DynamicContext *context)
+  : fdv_(fdv),
     parent_(0),
     collation_(0),
     toDo_(true),
@@ -103,10 +89,10 @@ Item::Ptr FunctionDistinctValues::DistinctValueResult::next(DynamicContext *cont
 {
   if(toDo_) {
     toDo_ = false;
-    parent_ = fdv_->getParamNumber(1, context, ASTNode::UNORDERED);
+    parent_ = fdv_->getParamNumber(1, context);
 
     if(fdv_->getNumArgs() > 1) {
-        const XMLCh* collName = fdv_->getParamNumber(2, context).next(context)->asString(context);
+        const XMLCh* collName = fdv_->getParamNumber(2, context)->next(context)->asString(context);
         try {
             context->getItemFactory()->createAnyURI(collName, context);
         } catch(XPath2ErrorException &e) {
@@ -124,7 +110,7 @@ Item::Ptr FunctionDistinctValues::DistinctValueResult::next(DynamicContext *cont
 
   AnyAtomicType::Ptr item;
   while(true) {
-    item = (const AnyAtomicType::Ptr )parent_.next(context);
+    item = (const AnyAtomicType::Ptr )parent_->next(context);
     if(item == NULLRCP) {
       parent_ = 0;
       return 0;

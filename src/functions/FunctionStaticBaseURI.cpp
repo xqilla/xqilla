@@ -41,7 +41,8 @@ FunctionStaticBaseURI::FunctionStaticBaseURI(const VectorOfASTNodes &args, XPath
 
 ASTNode* FunctionStaticBaseURI::staticResolution(StaticContext *context) {
   _src.staticBaseURIUsed(true);
-  return resolveASTNodes(_args, context, false);
+  _src.getStaticType().flags = StaticType::ANY_URI_TYPE;
+  return resolveArguments(context);
 }
 
 Sequence FunctionStaticBaseURI::collapseTreeInternal(DynamicContext* context, int flags) const

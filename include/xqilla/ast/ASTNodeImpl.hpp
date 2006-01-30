@@ -31,22 +31,17 @@ public:
 
   ASTNode::whichType getType(void) const;
 	
-  ///returns the predicate list to be applied to each node we select
-  const Predicates& getPredicates(void) const;
-  //these can create a step if there are none!!
-  virtual void addPredicates(const VectorOfASTNodes &steps);
-  virtual void addPredicates(const Predicates &steps);
-
-  /** Returns true if this ASTNode has no predicates, and is an instance of
-      XQSequence or XQLiteral */
+  /** Returns true if this ASTNode is an instance of XQSequence or XQLiteral */
   virtual bool isConstant() const;
-  /** Returns true if this ASTNode has no predicates, and is an instance of
+  /** Returns true if this ASTNode is an instance of
       XQSequence or XQLiteral. If the literal value of this ASTNode
       is a single DateOrTimeType, then hasTimezone() on it must return true,
       otherwise this method will return false. */
   virtual bool isConstantAndHasTimezone(StaticContext* context) const;
 
-  ///calls createResult and then checks predicates
+  virtual bool isSingleNumericConstant(StaticContext *context) const;
+
+  ///calls createResult
   virtual Result collapseTree(DynamicContext* context, int flags=0) const;
 
   /**
@@ -56,42 +51,24 @@ public:
   virtual Result createResult(DynamicContext* context, int flags=0) const;
 
   /**
-   * Can be overridden by derived classes to add an execution stage after
-   * predicate evaluation. This is mainly used by reverse axes to reorder
-   * their steps.
-   */
-  virtual Result postPredicateResultHook(Result &result, DynamicContext* context, int flags=0) const;
-
-  /**
    * Collapse the compiled expression based on context. Default implementation
    * returns an empty sequence.
    */
   virtual Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
 
-  Result createPredicateResult(Result &parent, const PredInfo &p, DynamicContext *context) const;
-  virtual bool isSingleNumericConstant(StaticContext *context) const;
-
   /** Calls staticResolution on the ASTNodes, then if isConstant() is true for
       all of them, and constantFold is true, returns the result of the
-      constantFold() method, otherwise returns the result of the resolvePredicates()
-      method. */
+      constantFold() method, otherwise returns this. */
   ASTNode *resolveASTNodes(VectorOfASTNodes &dis, StaticContext *context, bool constantFold);
   /** Calls staticResolution on the ASTNodes, then if isConstantAndHasTimezone() is true for
       all of them, and constantFold is true, returns the result of the
-      constantFold() method, otherwise returns the result of the resolvePredicates()
-      method. */
+      constantFold() method, otherwise returns this. */
   ASTNode *resolveASTNodesForDateOrTime(VectorOfASTNodes &dis, StaticContext *context, bool constantFold);
   /** Calls staticResolution on the ASTNode, then if isConstant() is true for
       it, and constantFold is true, returns the result of the
-      constantFold() method, otherwise returns the result of the resolvePredicates()
-      method. */
+      constantFold() method, otherwise returns this. */
   ASTNode *resolveASTNode(ASTNode *&di, StaticContext *context, bool constantFold);
-  /** Calls staticResolution on the predicates of this ASTNode, constant folding
-      if possible */
-  ASTNode *resolvePredicates(StaticContext *context);
-  virtual ASTNodeImpl *resolvePredicate(Predicates::reverse_iterator it, Predicates &newPreds, StaticContext *context);
-  /** Performs constant folding on this ASTNode, transfering any predicates to
-      the returned ASTNode */
+  /** Performs constant folding on this ASTNode. */
   ASTNode *constantFold(StaticContext *context) const;
 
   virtual const StaticResolutionContext &getStaticResolutionContext() const;
@@ -112,60 +89,6 @@ protected:
     int _flags;
     const ASTNodeImpl *_di;
   };
-
-  class PredicateFilterResult : public ResultImpl
-  {
-  public:
-    PredicateFilterResult(const Result &parent, const PredInfo &pred, unsigned int contextSize, DynamicContext *context);
-
-    Item::Ptr next(DynamicContext *context);
-    void skip();
-    std::string asString(DynamicContext *context, int indent) const;
-
-  private:
-    bool todo_;
-    Result parent_;
-    const PredInfo &pred_;
-    unsigned int contextPos_;
-    unsigned int contextSize_;
-    Item::Ptr first_;
-    Item::Ptr second_;
-  };
-
-  class NonNumericPredicateFilterResult : public ResultImpl
-  {
-  public:
-    NonNumericPredicateFilterResult(const Result &parent, const PredInfo &pred, unsigned int contextSize, DynamicContext *context);
-
-    Item::Ptr next(DynamicContext *context);
-    void skip();
-    std::string asString(DynamicContext *context, int indent) const;
-
-  private:
-    bool todo_;
-    Result parent_;
-    const PredInfo &pred_;
-    unsigned int contextPos_;
-    unsigned int contextSize_;
-  };
-
-  class NumericPredicateFilterResult : public ResultImpl
-  {
-  public:
-    NumericPredicateFilterResult(const Result &parent, const PredInfo &pred, unsigned int contextSize, DynamicContext *context);
-
-    Item::Ptr next(DynamicContext *context);
-    void skip();
-    std::string asString(DynamicContext *context, int indent) const;
-
-  private:
-    bool todo_;
-    Result parent_;
-    const PredInfo &pred_;
-    unsigned int contextSize_;
-  };
-
-  Predicates _predList;
 
   StaticResolutionContext _src;
 

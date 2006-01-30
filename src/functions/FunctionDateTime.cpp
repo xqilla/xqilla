@@ -39,14 +39,14 @@ FunctionDateTime::FunctionDateTime(const VectorOfASTNodes &args, XPath2MemoryMan
 
 ASTNode* FunctionDateTime::staticResolution(StaticContext *context)
 {
-  return resolveASTNodesForDateOrTime(_args, context, true);
+  return resolveArguments(context, /*checkTimezone*/true);
 }
 
 Sequence FunctionDateTime::collapseTreeInternal(DynamicContext* context, int flags) const
 {
-    Sequence arg1= getParamNumber(1, context);
+    Sequence arg1= getParamNumber(1, context)->toSequence(context);
     const ATDateOrDerived::Ptr date=arg1.first();
-    Sequence arg2= getParamNumber(2, context);
+    Sequence arg2= getParamNumber(2, context)->toSequence(context);
     const ATTimeOrDerived::Ptr time=arg2.first();
 
     Timezone::Ptr finalTZ;

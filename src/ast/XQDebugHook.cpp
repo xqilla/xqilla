@@ -56,7 +56,7 @@ Result XQDebugHook::collapseTree(DynamicContext *context, int flags) const
     {
       Result result=m_impl->collapseTree(context,flags);
       if(pDbgCallback) {
-        Sequence seqRes=result.toSequence(context);
+        Sequence seqRes=result->toSequence(context);
         pDbgCallback->ReportResult(context,m_szFile, m_nLine, m_nColumn, seqRes);
         if(m_szFunctionName) pDbgCallback->ExitFunction(context,m_szFunctionName);
         return seqRes;
@@ -74,11 +74,6 @@ Result XQDebugHook::collapseTree(DynamicContext *context, int flags) const
   // shouldn't get here
   assert(0);
   return Sequence(context->getMemoryManager());
-}
-
-void XQDebugHook::addPredicates(const VectorOfASTNodes& steps)
-{
-  m_impl->addPredicates(steps);
 }
 
 ASTNode* XQDebugHook::staticResolution(StaticContext *context) 

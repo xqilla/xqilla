@@ -55,13 +55,12 @@ ResultBuffer::~ResultBuffer()
 
 Result ResultBuffer::createResult(DynamicContext *context) const
 {
-  if(_impl) return new BufferedResult(_impl, context);
+  if(_impl) return new BufferedResult(_impl);
   else return Result(0);
 }
 
-ResultBuffer::BufferedResult::BufferedResult(ResultBufferImpl *impl, DynamicContext *context)
-  : ResultImpl(context),
-    _impl(impl),
+ResultBuffer::BufferedResult::BufferedResult(ResultBufferImpl *impl)
+  : _impl(impl),
     _pos(0)
 {
   _impl->incrementRefCount();

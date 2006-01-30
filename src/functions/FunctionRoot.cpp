@@ -57,7 +57,7 @@ ASTNode* FunctionRoot::staticResolution(StaticContext *context) {
   if(_args.empty()) {
     _src.contextItemUsed(true);
   }
-  return resolveASTNodes(_args, context, !_args.empty());
+  return resolveArguments(context);
 }
 
 Sequence FunctionRoot::collapseTreeInternal(DynamicContext* context, int flags) const
@@ -67,7 +67,7 @@ Sequence FunctionRoot::collapseTreeInternal(DynamicContext* context, int flags) 
   Node::Ptr node = NULL;
   if(getNumArgs() == 1)
   {
-    Sequence arg1=getParamNumber(1,context);
+    Sequence arg1=getParamNumber(1,context)->toSequence(context);
     if(arg1.isEmpty())
       return Sequence(memMgr);
     node = (const Node::Ptr )arg1.first();

@@ -20,12 +20,12 @@
 #include <xqilla/items/Node.hpp>
 
 ParentAxis::ParentAxis(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *contextNode, const Node *nodeObj,
-       const NodeTest *nodeTest, DynamicContext *context, const AxisNodeFactory &factory)
-  : Axis(contextNode, nodeObj, nodeTest, context, factory)
+       const NodeTest *nodeTest, const AxisNodeFactory &factory)
+  : Axis(contextNode, nodeObj, nodeTest, factory)
 {
 }
 
-const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *ParentAxis::nextNode()
+const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *ParentAxis::nextNode(DynamicContext *context)
 {
   if(toDo_) {
     // initialise

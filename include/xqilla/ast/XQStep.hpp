@@ -46,7 +46,6 @@ public:
 
   virtual ASTNode* staticResolution(StaticContext *context);
   virtual Result createResult(DynamicContext* context, int flags=0) const;
-  virtual Result postPredicateResultHook(Result &result, DynamicContext* context, int flags=0) const;
 
   const NodeTest *getNodeTest() const;
   void setNodeTest(NodeTest *nodeTest);
@@ -63,7 +62,7 @@ private:
   class StepResult : public ResultImpl
   {
   public:
-    StepResult(const XQStep *step, DynamicContext *context);
+    StepResult(const XQStep *step);
     virtual ~StepResult() {}
 
     Item::Ptr next(DynamicContext *context);

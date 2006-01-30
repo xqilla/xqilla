@@ -26,6 +26,8 @@
 #include <xqilla/items/ATBooleanOrDerived.hpp>
 #include <xqilla/items/ATDecimalOrDerived.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
+#include <xqilla/context/ContextHelpers.hpp>
+
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 
 const XMLCh FunctionMax::name[] = {
@@ -43,8 +45,13 @@ const unsigned int FunctionMax::maxArgs = 2;
 FunctionMax::FunctionMax(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : AggregateFunction(name, minArgs, maxArgs, "anyAtomicType*, string", args, memMgr)
 {
+}
+
+ASTNode* FunctionMax::staticResolution(StaticContext *context) {
+  AutoNodeSetOrderingReset orderReset(context);
   // TBD - could do better here - jpcs
-  _src.getStaticType().flags = StaticType::NUMERIC_TYPE | StaticType::OTHER_TYPE;
+  _src.getStaticType().flags = StaticType::TYPED_ATOMIC_TYPE;
+  return resolveArguments(context);
 }
 
 Sequence FunctionMax::collapseTreeInternal(DynamicContext* context, int flags) const
@@ -53,7 +60,7 @@ Sequence FunctionMax::collapseTreeInternal(DynamicContext* context, int flags) c
 
     Sequence sequence(memMgr);
     try {
-        sequence = validateSequence(getParamNumber(1,context,ASTNode::UNORDERED), context);
+        sequence = validateSequence(getParamNumber(1,context)->toSequence(context), context);
     } catch (IllegalArgumentException &e) {
         XQThrow(IllegalArgumentException, X("FunctionMax::collapseTreeInternal"), X("Invalid argument to fn:max() function [err:FORG0006]."));
     }
@@ -67,7 +74,7 @@ Sequence FunctionMax::collapseTreeInternal(DynamicContext* context, int flags) c
 
     Collation* collation=NULL;
     if (getNumArgs()>1) {
-        Sequence collArg = getParamNumber(2,context);
+        Sequence collArg = getParamNumber(2,context)->toSequence(context);
         const XMLCh* collName = collArg.first()->asString(context);
         try {
             context->getItemFactory()->createAnyURI(collName, context);
@@ -100,7 +107,7 @@ Sequence FunctionMax::collapseTreeInternal(DynamicContext* context, int flags) c
             gtArgs.push_back(&seq2);
             TotalOrderComparison gt(gtArgs, true, memMgr);
             try {
-                greater = (const ATBooleanOrDerived::Ptr )gt.collapseTree(context).next(context);
+                greater = (const ATBooleanOrDerived::Ptr )gt.collapseTree(context)->next(context);
             } catch (IllegalArgumentException &e) {
                 XQThrow(IllegalArgumentException, X("FunctionMax::collapseTreeInternal"), X("Invalid argument to fn:max() function [err:FORG0006]."));
             } catch (XPath2ErrorException &e) {

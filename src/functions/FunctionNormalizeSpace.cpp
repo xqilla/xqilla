@@ -49,14 +49,14 @@ const XMLCh* FunctionNormalizeSpace::getString(DynamicContext* context) const {
   VectorOfASTNodes args=VectorOfASTNodes(XQillaAllocator<ASTNode*>(memMgr));
   FunctionString stringGrabber(args, memMgr);
   //call xf:string and extract result
-  return stringGrabber.collapseTree(context).next(context)->asString(context);
+  return stringGrabber.collapseTree(context)->next(context)->asString(context);
 }
 
 ASTNode* FunctionNormalizeSpace::staticResolution(StaticContext *context) {
   if(_args.empty()) {
     _src.contextItemUsed(true);
   }
-  return resolveASTNodes(_args, context, !_args.empty());
+  return resolveArguments(context);
 }
 
 Sequence FunctionNormalizeSpace::collapseTreeInternal(DynamicContext* context, int flags) const
@@ -66,7 +66,7 @@ Sequence FunctionNormalizeSpace::collapseTreeInternal(DynamicContext* context, i
     if (getNumArgs() == 0) {
         str = getString(context);
     } else {
-        Sequence strParm=getParamNumber(1,context);
+        Sequence strParm=getParamNumber(1,context)->toSequence(context);
         if(strParm.isEmpty())
             return Sequence(context->getItemFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context), memMgr);
 

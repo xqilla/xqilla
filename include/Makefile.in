@@ -163,6 +163,7 @@ xqilla/ast/XQStep.hpp \
 xqilla/ast/XQTreatAs.hpp \
 xqilla/ast/XQVariable.hpp \
 xqilla/ast/StaticResolutionContext.hpp \
+xqilla/ast/StaticType.hpp \
 xqilla/ast/AggregateFunction.hpp \
 xqilla/ast/ConstantFoldingFunction.hpp \
 xqilla/ast/NumericFunction.hpp \
@@ -176,6 +177,11 @@ xqilla/ast/XQQuantified.hpp \
 xqilla/ast/XQTypeswitch.hpp \
 xqilla/ast/XQValidate.hpp \
 xqilla/ast/XQVariableBinding.hpp \
+xqilla/ast/XQAtomize.hpp \
+xqilla/ast/XPath1Compat.hpp \
+xqilla/ast/ConvertFunctionArg.hpp \
+xqilla/ast/XQDocumentOrder.hpp \
+xqilla/ast/XQPredicate.hpp \
 xqilla/axis/AncestorAxis.hpp \
 xqilla/axis/AncestorOrSelfAxis.hpp \
 xqilla/axis/AttributeAxis.hpp \
@@ -191,6 +197,7 @@ xqilla/axis/ParentAxis.hpp \
 xqilla/axis/PrecedingAxis.hpp \
 xqilla/axis/PrecedingSiblingAxis.hpp \
 xqilla/axis/SelfAxis.hpp \
+xqilla/context/ContextHelpers.hpp \
 xqilla/context/DynamicContext.hpp \
 xqilla/context/StaticContext.hpp \
 xqilla/context/ItemFactory.hpp \
@@ -413,12 +420,10 @@ xqilla/runtime/Sequence.hpp \
 xqilla/runtime/ResultBuffer.hpp \
 xqilla/runtime/Result.hpp \
 xqilla/runtime/ResultImpl.hpp \
-xqilla/runtime/SortIntoDocumentOrderResult.hpp \
 xqilla/runtime/SingleResult.hpp \
 xqilla/runtime/SequenceResult.hpp \
 xqilla/runtime/LazySequenceResult.hpp \
 xqilla/runtime/EmptyResult.hpp \
-xqilla/runtime/AtomizeResult.hpp \
 xqilla/schema/DocumentCache.hpp \
 xqilla/schema/SequenceType.hpp \
 xqilla/schema/AnyAtomicTypeDatatypeValidator.hpp \
@@ -682,6 +687,16 @@ $(top_srcdir)/docs/.dom3-api-timestamp: $(nobase_include_HEADERS) $(top_srcdir)/
 
 $(top_srcdir)/docs/Doxyfile.dom3api: $(top_srcdir)/docs/Doxyfile.dom3api.in
 	sed -e "s,%xerces_include%,$(xerces_include)," $(top_srcdir)/docs/Doxyfile.dom3api.in >$(top_srcdir)/docs/Doxyfile.dom3api
+
+devdocs: $(top_srcdir)/docs/.dev-api-timestamp
+
+$(top_srcdir)/docs/.dev-api-timestamp: $(nobase_include_HEADERS) $(top_srcdir)/docs/Doxyfile.devapi
+	cd $(top_srcdir)/docs && \
+		doxygen Doxyfile.devapi && \
+		touch .dev-api-timestamp
+
+$(top_srcdir)/docs/Doxyfile.devapi: $(top_srcdir)/docs/Doxyfile.devapi.in
+	sed -e "s,%xerces_include%,$(xerces_include)," $(top_srcdir)/docs/Doxyfile.devapi.in >$(top_srcdir)/docs/Doxyfile.devapi
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

@@ -16,8 +16,6 @@
 
 #include <xqilla/ast/ConstantFoldingFunction.hpp>
 
-class Numeric;
-
 /** Virtual interface class for functions */
 class XQILLA_API NumericFunction : public ConstantFoldingFunction
 {
@@ -27,12 +25,7 @@ public:
   NumericFunction(const XMLCh* name, unsigned int argsFrom, unsigned int argsTo, const char* paramDecl, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
 
 protected:
-
-	/** casts the expression given as a parameter into the appropriate type and returns the guaranteed correctly typed objects in a sequence  */
-	Result getParamNumber(unsigned int number, DynamicContext* context, int flags=0) const;
-
-	/** casts the expression given as a parameter into the specified type and returns the guaranteed correctly typed objects in a sequence  */
-	Result getParamNumber(unsigned int paramNumber, unsigned int signatureNumber, DynamicContext* context, int flags=0) const;
+  Numeric::Ptr getNumericParam(unsigned int number, DynamicContext *context, int flags=0) const;
 
   /** Checks if the given numer is a NaN */
   bool isNaN(const Numeric::Ptr &number) const;

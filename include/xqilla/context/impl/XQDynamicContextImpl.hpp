@@ -266,13 +266,6 @@ protected:
    * THIS OUGHT TO BE IN THE STATIC CONTEXT - jpcs */
   const XMLCh* _defaultCollation;
 
-  /** Ordering mode, which has the value ordered or unordered, affects
-   *  the ordering of the result sequence returned by path expressions,
-   *  union, intersect, and except expressions, and FLWOR expressions
-   *  that have no order by clause.
-   * THIS OUGHT TO BE IN THE STATIC CONTEXT - jpcs */
-  NodeSetOrdering _ordering;
-
   /** Default element/type namespace. This is a namespace URI or "none". This
    * namespace is used for any unprefixed QName appearing in a
    * position where an element or type name is expected.
@@ -358,6 +351,10 @@ inline void XQDynamicContextImpl::setDefaultFLWOROrderingMode(StaticContext::FLW
 inline void XQDynamicContextImpl::setInheritNamespaces(bool value) 
 { XQThrow(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
 inline void XQDynamicContextImpl::setPreserveNamespaces(bool value) 
+{ XQThrow(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
+inline StaticContext::NodeSetOrdering XQDynamicContextImpl::getNodeSetOrdering() const
+{ XQThrow(ContextException,X("XQDynamicContextImpl"), X("You cannot read the static context when using a proxying dynamic context")); return StaticContext::ORDERING_UNORDERED; }
+inline void XQDynamicContextImpl::setNodeSetOrdering(NodeSetOrdering newOrder)
 { XQThrow(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
 
 inline const StaticType &XQDynamicContextImpl::getContextItemType() const { return _staticContext->getContextItemType(); }

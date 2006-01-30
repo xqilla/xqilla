@@ -36,7 +36,7 @@ protected:
   class ArithmeticResult : public SingleResult
   {
   public:
-    ArithmeticResult(const ArithmeticOperator *op, DynamicContext *context);
+    ArithmeticResult(const ArithmeticOperator *op);
 
     Item::Ptr getSingleResult(DynamicContext *context) const;
     std::string asString(DynamicContext *context, int indent) const;    

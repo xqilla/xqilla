@@ -20,13 +20,13 @@
 #include <xercesc/dom/DOMElement.hpp>
 
 FollowingAxis::FollowingAxis(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *contextNode, const Node *nodeObj,
-       const NodeTest *nodeTest, DynamicContext *context, const AxisNodeFactory &factory)
-  : Axis(contextNode, nodeObj, nodeTest, context, factory),
+       const NodeTest *nodeTest, const AxisNodeFactory &factory)
+  : Axis(contextNode, nodeObj, nodeTest, factory),
     node_(0)
 {
 }
 
-const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *FollowingAxis::nextNode()
+const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *FollowingAxis::nextNode(DynamicContext *context)
 {
   if(toDo_) {
     // initialise

@@ -50,21 +50,22 @@ const unsigned int FunctionNamespaceURIForPrefix::maxArgs = 2;
 FunctionNamespaceURIForPrefix::FunctionNamespaceURIForPrefix(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "string, element()", args, memMgr)
 {
+  _src.getStaticType().flags = StaticType::ANY_URI_TYPE;
 }
 
 Sequence FunctionNamespaceURIForPrefix::collapseTreeInternal(DynamicContext* context, int flags) const
 {
-  const XMLCh* prefix = getParamNumber(1, context).next(context)->asString(context);
+  const XMLCh* prefix = getParamNumber(1, context)->next(context)->asString(context);
 
   if(XPath2Utils::equals(prefix, XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString)) {
     prefix = 0; 
   }
 
-  Node::Ptr node = (Node::Ptr)getParamNumber(2,context).next(context);
+  Node::Ptr node = (Node::Ptr)getParamNumber(2,context)->next(context);
 
   Result namespaces = node->dmNamespaceNodes(context);
   Node::Ptr ns;
-  while((ns = (Node::Ptr)namespaces.next(context)).notNull()) {
+  while((ns = (Node::Ptr)namespaces->next(context)).notNull()) {
     ATQNameOrDerived::Ptr name = ns->dmNodeName(context);
     if(name.isNull()) {
       if(prefix == 0) {

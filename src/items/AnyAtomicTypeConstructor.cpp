@@ -23,22 +23,18 @@
 AnyAtomicTypeConstructor::AnyAtomicTypeConstructor(const XMLCh* typeURI,
                                                    const XMLCh* typeName,
                                                    const XMLCh* value,
-                                                   bool numeric)
+                                                   AnyAtomicType::AtomicObjectType primitiveType)
   : _typeURI(typeURI),
     _typeName(typeName),
     _value(value),
-    _numeric(numeric)
+    _primitiveType(primitiveType)
 {
-}
-
-bool AnyAtomicTypeConstructor::isNumeric() const
-{
-  return _numeric;
+  _sType.flags = StaticType::getFlagsFor(primitiveType);
 }
 
 Item::Ptr AnyAtomicTypeConstructor::createItem(const DynamicContext* context) const
 {
-  return context->getItemFactory()->createDerivedFromAtomicType(_typeURI, _typeName, _value, context);
+  return context->getItemFactory()->createDerivedFromAtomicType(_primitiveType, _typeURI, _typeName, _value, context);
 }
 
 std::string AnyAtomicTypeConstructor::asString(const DynamicContext* context) const

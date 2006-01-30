@@ -144,34 +144,35 @@ const XMLCh* XQFunction::getFunctionSignature() const
   return _signature;
 }
 
-Result XQFunction::getParamNumber(unsigned int number, DynamicContext* context, int flags) const
+ASTNode *XQFunction::resolveArguments(StaticContext *context, bool checkTimezone)
 {
-	return getParamNumber(number,number,context,flags);
-}
+  unsigned int paramNumber = 0;
+  for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
+    *i = (*_paramDecl)[paramNumber]->convertFunctionArg(*i, context);
+    *i = (*i)->staticResolution(context);
+    _src.add((*i)->getStaticResolutionContext());
 
-Result XQFunction::getParamNumber(unsigned int paramNumber, unsigned int signatureNumber, DynamicContext* context, int flags) const
-{
-	assert(paramNumber > 0);
-	assert(paramNumber <= getNumArgs());
-	assert(signatureNumber > 0);
-	assert(signatureNumber <= _paramDecl->size());
+    if(checkTimezone && (*i)->isConstant() && !(*i)->isConstantAndHasTimezone(context)) {
+      _src.implicitTimezoneUsed(true);
+    }
 
-	return _args[paramNumber - 1]->collapseTree(context, flags).convertFunctionArg((*_paramDecl)[signatureNumber - 1],
-    _args[paramNumber - 1]->getStaticResolutionContext().getStaticType(),context);
-}
-
-ATStringOrDerived::Ptr XQFunction::getStringParam(unsigned int number, DynamicContext* context, int flags) const
-{
-  Result paramSeq(getParamNumber(number, context, flags));
-
-  const Item::Ptr first = paramSeq.next(context);
-  const Item::Ptr second = paramSeq.next(context);
-
-  if(second != NULLRCP) {
-    XQThrow(FunctionException,X("XQFunction::getStringParam"), X("getStringParam() called on a parameter which is a sequence of more than one item"));
+    ++paramNumber;
+    if(paramNumber >= _paramDecl->size()) {
+      paramNumber = _paramDecl->size() - 1;
+    }
   }
 
-  return (const ATStringOrDerived::Ptr)first;
+  if(!_src.isUsed()) {
+    return constantFold(context);
+  }
+  return this;
+}
+
+Result XQFunction::getParamNumber(unsigned int number, DynamicContext* context, int flags) const
+{
+	assert(number > 0);
+	assert(number <= getNumArgs());
+	return _args[number - 1]->collapseTree(context, flags);
 }
 
 unsigned int XQFunction::getNumArgs() const

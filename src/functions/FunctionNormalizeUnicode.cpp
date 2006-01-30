@@ -46,7 +46,7 @@ FunctionNormalizeUnicode::FunctionNormalizeUnicode(const VectorOfASTNodes &args,
 Sequence FunctionNormalizeUnicode::collapseTreeInternal(DynamicContext* context, int flags) const
 {
   XPath2MemoryManager* memMgr = context->getMemoryManager();
-  Sequence strParm=getParamNumber(1,context);
+  Sequence strParm=getParamNumber(1,context)->toSequence(context);
   if(strParm.isEmpty()) {
     return Sequence(context->getItemFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context), memMgr);
   }
@@ -67,7 +67,7 @@ Sequence FunctionNormalizeUnicode::collapseTreeInternal(DynamicContext* context,
   const XMLCh* normalization = fg_NFC;
   if(getNumArgs()==2)
   {
-    Sequence normParam=getParamNumber(2,context);
+    Sequence normParam=getParamNumber(2,context)->toSequence(context);
     const XMLCh *src = normParam.first()->asString(context);
     normalization = XPath2Utils::toUpper(src, memMgr);
 

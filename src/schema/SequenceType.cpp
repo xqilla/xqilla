@@ -34,6 +34,11 @@
 #include <xqilla/functions/FunctionString.hpp>
 #include <xqilla/functions/FunctionNumber.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
+#include <xqilla/ast/XQAtomize.hpp>
+#include <xqilla/ast/XQTreatAs.hpp>
+#include <xqilla/ast/XPath1Compat.hpp>
+#include <xqilla/ast/ConvertFunctionArg.hpp>
+
 #include <xercesc/dom/DOM.hpp>
 #include <xercesc/util/XMLUniDefs.hpp>
 #include <xercesc/validators/schema/SchemaAttDef.hpp>
@@ -69,9 +74,9 @@ SequenceType::~SequenceType()
 		delete m_pItemType;
 }
 
-Result SequenceType::matches(const Result &toBeTested, DynamicContext* context) const
+Result SequenceType::matches(const Result &toBeTested) const
 {
-  return new MatchesResult(toBeTested, this, context);
+  return new MatchesResult(toBeTested, this);
 }
 
 void SequenceType::setItemType(SequenceType::ItemType* itemType)
@@ -237,30 +242,19 @@ const XMLCh* SequenceType::ItemType::getNameURI(const StaticContext* context) co
 void SequenceType::ItemType::getStaticType(StaticType &st, const StaticContext *context) const
 {
   switch(m_nTestType) {
-      case SequenceType::ItemType::TEST_ANYTHING: {
-	      st.flags = StaticType::NODE_TYPE | StaticType::NUMERIC_TYPE | StaticType::OTHER_TYPE;
-	      break;
-      }
-      case SequenceType::ItemType::TEST_ATOMIC_TYPE: {
-	      switch(context->getItemFactory()->getPrimitiveTypeIndex(getTypeURI(context), getType()->getName())) {
-        case AnyAtomicType::DECIMAL:
-        case AnyAtomicType::DOUBLE:
-        case AnyAtomicType::FLOAT: {
-          st.flags = StaticType::NUMERIC_TYPE;
-          break;
-        }
-        default: {
-          st.flags = StaticType::OTHER_TYPE;
-          break;
-        }
-        }     
-        break;
-      }
-      default: {
-	      st.flags = StaticType::NODE_TYPE;
-	      break;
-      }
-      }
+  case SequenceType::ItemType::TEST_ANYTHING: {
+    st.flags = StaticType::ITEM_TYPE;
+    break;
+  }
+  case SequenceType::ItemType::TEST_ATOMIC_TYPE: {
+    st.flags = StaticType::getFlagsFor(getTypeURI(context), getType()->getName(), context);
+    break;
+  }
+  default: {
+    st.flags = StaticType::NODE_TYPE;
+    break;
+  }
+  }
 }
 
 bool SequenceType::ItemType::matchesNameType(const Item::Ptr &toBeTested, DynamicContext* context) const
@@ -475,7 +469,7 @@ bool SequenceType::ItemType::matches(const Node::Ptr &toBeTested, DynamicContext
           // if we have a constraint on name/type, they apply to the document element
           Result children = toBeTested->dmChildren(context);
           Node::Ptr docElement;
-          while((docElement = children.next(context)).notNull() &&
+          while((docElement = children->next(context)).notNull() &&
                 docElement->dmNodeKind() != Node::element_string) {}
 
           if(docElement.isNull()) return false;
@@ -505,10 +499,10 @@ bool SequenceType::ItemType::matches(const Item::Ptr &toBeTested, DynamicContext
     return matches((const Node::Ptr)toBeTested, context);
     
   switch(m_nTestType) {
-    case TEST_ELEMENT:  
-    case TEST_ATTRIBUTE: 
-    case TEST_SCHEMA_ELEMENT:  
-    case TEST_SCHEMA_ATTRIBUTE: 
+    case TEST_ELEMENT:
+    case TEST_ATTRIBUTE:
+    case TEST_SCHEMA_ELEMENT:
+    case TEST_SCHEMA_ATTRIBUTE:
     case TEST_NODE:
     case TEST_PI:
     case TEST_COMMENT:
@@ -535,14 +529,11 @@ bool SequenceType::ItemType::matches(const Item::Ptr &toBeTested, DynamicContext
 
         if(constrainingType != NULL)
         {
-            const XMLCh *uri = getTypeURI(context);
-            if(XPath2Utils::equals(uri,FunctionConstructor::XMLChXPath2DatatypesURI))
-            {
-                if(XPath2Utils::equals(constrainingType->getName(),AnyAtomicType::fgDT_ANYATOMICTYPE))
-                    return true;
-                else if(XPath2Utils::equals(constrainingType->getName(),ATUntypedAtomic::fgDT_UNTYPEDATOMIC))
-                    return true;
-            }
+          if((XPath2Utils::equals(constrainingType->getName(),AnyAtomicType::fgDT_ANYATOMICTYPE) ||
+              XPath2Utils::equals(constrainingType->getName(),ATUntypedAtomic::fgDT_UNTYPEDATOMIC)) &&
+             XPath2Utils::equals(getTypeURI(context),FunctionConstructor::XMLChXPath2DatatypesURI)) {
+            return true;
+          }
         }
         if(!matchesNameType(toBeTested, context))
             return false;
@@ -554,38 +545,46 @@ bool SequenceType::ItemType::matches(const Item::Ptr &toBeTested, DynamicContext
   return true;
 }
 
-Result SequenceType::convertFunctionArg(const Result &param, const StaticType &stype, DynamicContext* context) const {
+ASTNode *SequenceType::convertFunctionArg(ASTNode *arg, StaticContext *context) const
+{
+  XPath2MemoryManager *mm = context->getMemoryManager();
+
   // From XPath2 Spec, Section 3.1.5 (http://www.w3.org/TR/xpath20/#id-function-calls)
 
   // The function conversion rules are used to convert an argument value to its expected type; that is, to the
   // declared type of the function parameter. The expected type is expressed as a SequenceType. The function
   // conversion rules are applied to a given value as follows:
 
-  Result ret = param;
-
   // FS says we atomize first if the sequence type is atomic, and I think that's sensible - jpcs
-  if((stype.flags & StaticType::NODE_TYPE) && getItemTestType() == ItemType::TEST_ATOMIC_TYPE) {
-    ret = ret.atomize(context);
+  if(getItemTestType() == ItemType::TEST_ATOMIC_TYPE) {
+    arg = new (mm) XQAtomize(arg, mm);
   }
 
   // If XPath 1.0 compatibility mode is true and an argument is not of the expected type, then the following
   // conversions are applied sequentially to the argument value V:
   if(context->getXPath1CompatibilityMode()) {
-    ret = new XPath1CompatConvertFunctionArgResult(ret, this, context);
+	  if(m_nOccurrence == SequenceType::EXACTLY_ONE || m_nOccurrence == SequenceType::QUESTION_MARK) {
+      arg = new (mm) XPath1CompatConvertFunctionArg(arg, this, mm);
+    }
   }
 
   // If the expected type is a sequence of an atomic type (possibly with an occurrence indicator *, +, or ?),
   // the following conversions are applied:
   else if(getItemTestType() == ItemType::TEST_ATOMIC_TYPE) {
-    ret = new AtomicTypeConvertFunctionArgResult(ret, this, context);
+    const XMLCh *uri = m_pItemType->getTypeURI(context);
+    const XMLCh *name = m_pItemType->getType()->getName();
+
+    arg = new (mm) XQPromoteUntyped(arg, uri, name, mm);
+    arg = new (mm) XQPromoteNumeric(arg, uri, name, mm);
+    arg = new (mm) XQPromoteAnyURI(arg, uri, name, mm);
   }
 
   // If, after the above conversions, the resulting value does not match the expected type according to the
   // rules for SequenceType Matching, a type error is raised. [err:XPTY0004] Note that the rules for
   // SequenceType Matching permit a value of a derived type to be substituted for a value of its base type.
-  ret = ret.matches(this, context);
+  arg = new (mm) XQTreatAs(arg, this, mm);
 
-  return ret;
+  return arg;
 }
 
 const SequenceType::ItemType *SequenceType::getItemType() const {
@@ -593,170 +592,11 @@ const SequenceType::ItemType *SequenceType::getItemType() const {
 }
 
 ////////////////////////////////////////
-// AtomicTypeConvertFunctionArgResult
-////////////////////////////////////////
-
-SequenceType::AtomicTypeConvertFunctionArgResult::AtomicTypeConvertFunctionArgResult(const Result &parent, const SequenceType *seqType, DynamicContext *context)
-  : ResultImpl(context),
-    _seqType(seqType),
-    _parent(parent)
-{
-}
-
-Item::Ptr SequenceType::AtomicTypeConvertFunctionArgResult::next(DynamicContext *context)
-{
-  // If the expected type is a sequence of an atomic type (possibly with an occurrence indicator *, +, or ?),
-  // the following conversions are applied:
-  // 1. Atomization is applied to the given value, resulting in a sequence of atomic values.
-
-  AnyAtomicType::Ptr item = (const AnyAtomicType::Ptr )_parent.next(context);
-
-  if(item != NULLRCP) {
-    const XMLCh* typeURI = _seqType->getTypeURI(context);
-    const XMLCh* typeName = _seqType->getConstrainingType()->getName();
-
-    // 2. Each item in the atomic sequence that is of type xdt:untypedAtomic is cast to the expected atomic
-    //    type. For built-in functions where the expected type is specified as numeric, arguments of type
-    //    xdt:untypedAtomic are cast to xs:double.
-    // crioux thinks this should also add: unless the target type is anyAtomicType!
-    if(item->getPrimitiveTypeIndex() == AnyAtomicType::UNTYPED_ATOMIC &&
-       !(XPath2Utils::equals(typeName, AnyAtomicType::fgDT_ANYATOMICTYPE) && 
-         XPath2Utils::equals(typeURI, FunctionConstructor::XMLChXPath2DatatypesURI))) {
-      try {
-        item = item->castAs(typeURI, typeName, context);
-      }
-      catch (XPath2TypeCastException &e) {
-        XQThrow(XPath2ErrorException, X("SequenceType::AtomicTypeConvertFunctionArgResult::next"),
-                 X("Casting from xdt:untypedAtomic to required type failed."));
-      } catch (const XMLException& e) {
-        XQThrow(XPath2ErrorException, X("SequenceType::AtomicTypeConvertFunctionArgResult::next"),
-                 X("Casting from xdt:untypedAtomic to required type failed."));
-      }
-    }
-
-    // 3. For each numeric item in the atomic sequence that can be promoted to the expected atomic type using
-    //    the promotion rules in B.1 Type Promotion, the promotion is done.
-    else if(item->isNumericValue()) {
-      try {
-        const Numeric::Ptr promotedType = ((const Numeric*)item.get())->promoteTypeIfApplicable(typeURI, typeName, context);
-        if(promotedType != NULLRCP) {
-          item = (const AnyAtomicType::Ptr)promotedType;
-        }
-      } catch (XPath2TypeCastException &e) {
-        XQThrow(XPath2ErrorException, X("SequenceType::AtomicTypeConvertFunctionArgResult::next"),
-                 X("Numeric type promotion failed (for promotable type)"));
-      } catch (const XMLException& e) {
-        XQThrow(XPath2ErrorException, X("SequenceType::AtomicTypeConvertFunctionArgResult::next"),
-                 X("Numeric type promotion failed (for promotable type)"));
-      }
-    }
-
-    // 4. For each item of type xs:anyURI in the atomic sequence that can be promoted to the expected atomic
-    //    type using URI promotion as described in B.1 Type Promotion, the promotion is done.
-    else if(item->getPrimitiveTypeIndex() == AnyAtomicType::ANY_URI &&
-            XPath2Utils::equals(typeName, SchemaSymbols::fgDT_STRING) && 
-            XPath2Utils::equals(typeURI, SchemaSymbols::fgURI_SCHEMAFORSCHEMA)) {
-      try {
-        item = (const AnyAtomicType::Ptr)item->castAs(typeURI, typeName, context);
-      } catch (XPath2TypeCastException &e) {
-        XQThrow(XPath2ErrorException, X("SequenceType::AtomicTypeConvertFunctionArgResult::next"),
-                 X("AnyURI type promotion failed (for promotable type)"));
-      } catch (const XMLException& e) {
-        XQThrow(XPath2ErrorException, X("SequenceType::AtomicTypeConvertFunctionArgResult::next"),
-                 X("AnyURI type promotion failed (for promotable type)"));
-      }
-    }
-  }
-
-  return (const Item::Ptr)item;
-}
-
-std::string SequenceType::AtomicTypeConvertFunctionArgResult::asString(DynamicContext *context, int indent) const
-{
-  std::ostringstream oss;
-  std::string in(getIndent(indent));
-
-  oss << in << "<atomicconvertfunctionarg>" << std::endl;
-  oss << _parent.asString(context, indent + 1);
-  oss << in << "</atomicconvertfunctionarg>" << std::endl;
-
-  return oss.str();
-}
-
-////////////////////////////////////////
-// XPath1CompatConvertFunctionArgResult
-////////////////////////////////////////
-
-SequenceType::XPath1CompatConvertFunctionArgResult::XPath1CompatConvertFunctionArgResult(const Result &parent, const SequenceType *seqType, DynamicContext *context)
-  : ResultImpl(context),
-    _seqType(seqType),
-    _parent(parent),
-    _oneDone(false)
-{
-}
-
-Item::Ptr SequenceType::XPath1CompatConvertFunctionArgResult::next(DynamicContext *context)
-{
-  // If XPath 1.0 compatibility mode is true and an argument is not of the expected type, then the following
-  // conversions are applied sequentially to the argument value V:
-
-  if(_seqType->getOccurrenceIndicator() == SequenceType::EXACTLY_ONE || _seqType->getOccurrenceIndicator() == SequenceType::QUESTION_MARK) {
-    // 1. If the expected type calls for a single item or optional single item (examples: xs:string,
-    //    xs:string?, xdt:untypedAtomic, xdt:untypedAtomic?, node(), node()?, item(), item()?), then the
-    //    value V is effectively replaced by V[1].
-    if(_oneDone) {
-      return 0;
-    }
-
-    Item::Ptr item = _parent.next(context);
-
-    if(_seqType->getItemTestType() == ItemType::TEST_ATOMIC_TYPE) {
-      const XMLCh* typeURI = _seqType->getTypeURI(context);
-      const XMLCh* typeName = _seqType->getConstrainingType()->getName();
-
-      // 2. If the expected type is xs:string or xs:string?, then the value V is effectively replaced by
-      //    fn:string(V).
-      if(context->isTypeOrDerivedFromType(typeURI, typeName,
-                                          SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                                          SchemaSymbols::fgDT_STRING)) {
-        item = FunctionString::string(item, context);
-      }
-
-      // 3. If the expected type is a (possibly optional) numeric type, then the value V is effectively
-      //    replaced by fn:number(V).
-      if(context->isTypeOrDerivedFromType(typeURI, typeName,
-                                          SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                                          SchemaSymbols::fgDT_DOUBLE)) {
-        assert(item->isAtomicValue()); // Since atomization should have happened
-        item = FunctionNumber::number((const AnyAtomicType::Ptr )item, context);
-      }
-    }
-
-    return item;
-  }
-
-  return _parent.next(context);
-}
-
-std::string SequenceType::XPath1CompatConvertFunctionArgResult::asString(DynamicContext *context, int indent) const
-{
-  std::ostringstream oss;
-  std::string in(getIndent(indent));
-
-  oss << in << "<xpath1convertfunctionarg>" << std::endl;
-  oss << _parent.asString(context, indent + 1);
-  oss << in << "</xpath1convertfunctionarg>" << std::endl;
-
-  return oss.str();
-}
-
-////////////////////////////////////////
 // MatchesResult
 ////////////////////////////////////////
 
-SequenceType::MatchesResult::MatchesResult(const Result &parent, const SequenceType *seqType, DynamicContext *context)
-  : ResultImpl(context),
-    _seqType(seqType),
+SequenceType::MatchesResult::MatchesResult(const Result &parent, const SequenceType *seqType)
+  : _seqType(seqType),
     _parent(parent),
     _toDo(true)
 {
@@ -768,7 +608,7 @@ Item::Ptr SequenceType::MatchesResult::next(DynamicContext *context)
   if(_toDo) {
     _toDo = false;
 
-    item = _parent.next(context);
+    item = _parent->next(context);
 
     // "SequenceType matching between a given value and a given SequenceType is performed as follows:
     //  If the SequenceType is empty, the match succeeds only if the value is an empty sequence."
@@ -793,7 +633,7 @@ Item::Ptr SequenceType::MatchesResult::next(DynamicContext *context)
       // since often functions that cast to a single or
       // optional item only call next once. - jpcs
 
-      Item::Ptr second = _parent.next(context);
+      Item::Ptr second = _parent->next(context);
 
       if(second == NULLRCP) {
         _parent = 0;
@@ -805,7 +645,7 @@ Item::Ptr SequenceType::MatchesResult::next(DynamicContext *context)
     }
   }
   else {
-    item = _parent.next(context);
+    item = _parent->next(context);
   }
 
   // Now test that each item matches the ItemType
@@ -826,7 +666,7 @@ std::string SequenceType::MatchesResult::asString(DynamicContext *context, int i
   std::string in(getIndent(indent));
 
   oss << in << "<matches>" << std::endl;
-  oss << _parent.asString(context, indent + 1);
+  oss << _parent->asString(context, indent + 1);
   oss << in << "</matches>" << std::endl;
 
   return oss.str();

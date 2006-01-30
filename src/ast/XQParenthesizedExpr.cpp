@@ -27,7 +27,7 @@ XQParenthesizedExpr::XQParenthesizedExpr(XPath2MemoryManager* memMgr)
 
 Result XQParenthesizedExpr::createResult(DynamicContext* context, int flags) const
 {
-  return new ParenthesizedResult(this, flags, context);
+  return new ParenthesizedResult(this, flags);
 }
 
 void XQParenthesizedExpr::addItem(ASTNode* di) {
@@ -43,9 +43,7 @@ ASTNode* XQParenthesizedExpr::staticResolution(StaticContext *context) {
 
   // Dissolve ourselves if we have only one child
   if(_astNodes.size() == 1) {
-    ASTNode *result = _astNodes.front();
-    result->addPredicates(getPredicates());
-    return result->staticResolution(context);
+    return _astNodes.front()->staticResolution(context);
   }
 
   _src.getStaticType().flags = 0;
@@ -63,18 +61,15 @@ ASTNode* XQParenthesizedExpr::staticResolution(StaticContext *context) {
   if(allConstant) {
     return constantFold(context);
   }
-  else {
-    return resolvePredicates(context);
-  }
+  return this;
 }
 
 const VectorOfASTNodes &XQParenthesizedExpr::getChildren() const {
   return _astNodes;
 }
 
-XQParenthesizedExpr::ParenthesizedResult::ParenthesizedResult(const XQParenthesizedExpr *di, int flags, DynamicContext *context)
-  : ResultImpl(context),
-    _flags(flags),
+XQParenthesizedExpr::ParenthesizedResult::ParenthesizedResult(const XQParenthesizedExpr *di, int flags)
+  : _flags(flags),
     _di(di),
     _i(di->getChildren().begin()),
     _result(0)
@@ -83,12 +78,12 @@ XQParenthesizedExpr::ParenthesizedResult::ParenthesizedResult(const XQParenthesi
 
 Item::Ptr XQParenthesizedExpr::ParenthesizedResult::next(DynamicContext *context)
 {
-  Item::Ptr item = _result.next(context);
+  Item::Ptr item = _result->next(context);
 
   while(item == NULLRCP) {
     if(_i != _di->getChildren().end()) {
       _result = (*_i++)->collapseTree(context, _flags);
-      item = _result.next(context);
+      item = _result->next(context);
     }
     else {
       _result  = 0;

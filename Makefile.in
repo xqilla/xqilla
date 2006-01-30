@@ -179,6 +179,7 @@ src/context/impl/XQContextImpl.cpp \
 src/context/impl/XQDynamicContextImpl.cpp \
 src/context/impl/ItemFactoryImpl.cpp \
 src/context/impl/XQRemoteDebugger.cpp \
+src/ast/XQAtomize.cpp \
 src/ast/XQCastableAs.cpp \
 src/ast/XQCastAs.cpp \
 src/ast/XQContextItem.cpp \
@@ -195,6 +196,7 @@ src/ast/XQStep.cpp \
 src/ast/XQTreatAs.cpp \
 src/ast/XQVariable.cpp \
 src/ast/StaticResolutionContext.cpp \
+src/ast/StaticType.cpp \
 src/ast/AggregateFunction.cpp \
 src/ast/ConstantFoldingFunction.cpp \
 src/ast/NumericFunction.cpp \
@@ -208,6 +210,10 @@ src/ast/XQQuantified.cpp \
 src/ast/XQValidate.cpp \
 src/ast/XQTypeswitch.cpp \
 src/ast/XQVariableBinding.cpp \
+src/ast/XPath1Compat.cpp \
+src/ast/ConvertFunctionArg.cpp \
+src/ast/XQDocumentOrder.cpp \
+src/ast/XQPredicate.cpp \
 src/dom-api/impl/XQillaBuilderImpl.cpp \
 src/dom-api/impl/XQillaBuilderImpl.hpp \
 src/dom-api/impl/XQillaDocumentImpl.cpp \
@@ -510,7 +516,6 @@ src/operators/Union.cpp \
 src/schema/DocumentCacheImpl.cpp \
 src/schema/SequenceType.cpp \
 src/schema/AnyAtomicTypeDatatypeValidator.cpp \
-src/runtime/AtomizeResult.cpp \
 src/runtime/EmptyResult.cpp \
 src/runtime/LazySequenceResult.cpp \
 src/runtime/ResultBuffer.cpp \
@@ -520,7 +525,6 @@ src/runtime/Result.cpp \
 src/runtime/ResultImpl.cpp \
 src/runtime/SequenceResult.cpp \
 src/runtime/SingleResult.cpp \
-src/runtime/SortIntoDocumentOrderResult.cpp \
 src/runtime/Sequence.cpp \
 src/config/xqilla_config.h \
 src/config/xqilla_config_win32.h \
@@ -538,15 +542,16 @@ src/parser/XPath2Parser.y \
 LICENSE \
 docs/Doxyfile.simpleapi.in \
 docs/Doxyfile.dom3api.in \
+docs/Doxyfile.devapi.in \
 docs/simple-api \
 docs/dom3-api \
-Win32Projects/VC6/XQilla.dsp \
+Win32Projects/VC6/xqilla.dsp \
 Win32Projects/VC6/XQilla.dsw \
 Win32Projects/VC7.1/XQilla.sln \
-Win32Projects/VC7.1/XQilla.vcproj \
+Win32Projects/VC7.1/xqilla.vcproj \
 tests/runXQTSTestSuite.sh \
-tests/xqts/testsuite/errors.xml \
-tests/xqts/testsuite/xqts.zip
+tests/xqts/xqts_testsuite/errors.xml \
+tests/xqts/xqts_testsuite/xqts.zip
 
 
 xqilla_SOURCES = \
@@ -590,15 +595,17 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	UCANormalizer2.lo UCANormalizer.lo CodepointCollation.lo \
 	VarStoreImpl.lo VarTypeStoreImpl.lo VarHashEntryImpl.lo \
 	XQContextImpl.lo XQDynamicContextImpl.lo ItemFactoryImpl.lo \
-	XQRemoteDebugger.lo XQCastableAs.lo XQCastAs.lo \
+	XQRemoteDebugger.lo XQAtomize.lo XQCastableAs.lo XQCastAs.lo \
 	XQContextItem.lo XQFunction.lo XQIf.lo ASTNodeImpl.lo \
 	XQInstanceOf.lo XQLiteral.lo XQNav.lo XQOperator.lo \
 	XQParenthesizedExpr.lo XQSequence.lo XQStep.lo XQTreatAs.lo \
-	XQVariable.lo StaticResolutionContext.lo AggregateFunction.lo \
-	ConstantFoldingFunction.lo NumericFunction.lo XQDebugHook.lo \
-	XQDOMConstructor.lo XQFLWOR.lo XQFunctionCall.lo \
-	XQGlobalVariable.lo XQOrderingChange.lo XQQuantified.lo \
-	XQValidate.lo XQTypeswitch.lo XQVariableBinding.lo \
+	XQVariable.lo StaticResolutionContext.lo StaticType.lo \
+	AggregateFunction.lo ConstantFoldingFunction.lo \
+	NumericFunction.lo XQDebugHook.lo XQDOMConstructor.lo \
+	XQFLWOR.lo XQFunctionCall.lo XQGlobalVariable.lo \
+	XQOrderingChange.lo XQQuantified.lo XQValidate.lo \
+	XQTypeswitch.lo XQVariableBinding.lo XPath1Compat.lo \
+	ConvertFunctionArg.lo XQDocumentOrder.lo XQPredicate.lo \
 	XQillaBuilderImpl.lo XQillaDocumentImpl.lo \
 	XQillaExpressionImpl.lo XQillaNSResolverImpl.lo \
 	XQillaXMLGrammarPoolImpl.lo XPathNamespaceImpl.lo \
@@ -691,11 +698,10 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	Or.lo OrderComparison.lo Plus.lo Range.lo \
 	TotalOrderComparison.lo UnaryMinus.lo Union.lo \
 	DocumentCacheImpl.lo SequenceType.lo \
-	AnyAtomicTypeDatatypeValidator.lo AtomizeResult.lo \
-	EmptyResult.lo LazySequenceResult.lo ResultBuffer.lo \
-	ResultBufferImpl.lo Result.lo ResultImpl.lo SequenceResult.lo \
-	SingleResult.lo SortIntoDocumentOrderResult.lo Sequence.lo \
-	TestSuiteParser.lo TestSuiteResultListener.lo \
+	AnyAtomicTypeDatatypeValidator.lo EmptyResult.lo \
+	LazySequenceResult.lo ResultBuffer.lo ResultBufferImpl.lo \
+	Result.lo ResultImpl.lo SequenceResult.lo SingleResult.lo \
+	Sequence.lo TestSuiteParser.lo TestSuiteResultListener.lo \
 	TestSuiteRunner.lo
 libxqilla_la_OBJECTS = $(am_libxqilla_la_OBJECTS)
 bin_PROGRAMS = xqilla$(EXEEXT)
@@ -754,7 +760,6 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/AnyAtomicTypeConstructor.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/AnyAtomicTypeDatatypeValidator.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/ArithmeticOperator.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/AtomizeResult.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/AttributeAxis.Plo ./$(DEPDIR)/Axis.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/BaseMemoryManager.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/ChildAxis.Plo \
@@ -763,6 +768,7 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/ComparisonOperator.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/ConstantFoldingFunction.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/ContextUtils.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/ConvertFunctionArg.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/DatatypeFactory.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/DatatypeLookup.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/DateOrTimeType.Plo \
@@ -922,8 +928,8 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/SequenceResult.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/SequenceType.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/SingleResult.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/SortIntoDocumentOrderResult.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/StaticResolutionContext.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/StaticType.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/StringPool.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/TestSuiteParser.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/TestSuiteResultListener.Plo \
@@ -939,6 +945,7 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/VarStoreImpl.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/VarTypeStoreImpl.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XMLChCompare.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/XPath1Compat.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XPath2Lexer.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XPath2MemoryManagerImpl.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XPath2NSUtils.Plo \
@@ -947,12 +954,13 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/XPath2ResultImpl.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XPath2Utils.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XPathNamespaceImpl.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/XQCastAs.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/XQAtomize.Plo ./$(DEPDIR)/XQCastAs.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XQCastableAs.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XQContextImpl.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XQContextItem.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XQDOMConstructor.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XQDebugHook.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/XQDocumentOrder.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XQDynamicContextImpl.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XQException.Plo ./$(DEPDIR)/XQFLWOR.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XQFunction.Plo \
@@ -963,6 +971,7 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/XQOperator.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XQOrderingChange.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XQParenthesizedExpr.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/XQPredicate.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XQQuantified.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XQQuery.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/XQRemoteDebugger.Plo \
@@ -1196,7 +1205,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AnyAtomicTypeConstructor.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AnyAtomicTypeDatatypeValidator.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ArithmeticOperator.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AtomizeResult.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AttributeAxis.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Axis.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/BaseMemoryManager.Plo@am__quote@
@@ -1206,6 +1214,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ComparisonOperator.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ConstantFoldingFunction.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ContextUtils.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ConvertFunctionArg.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DatatypeFactory.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DatatypeLookup.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DateOrTimeType.Plo@am__quote@
@@ -1378,8 +1387,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SequenceResult.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SequenceType.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SingleResult.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SortIntoDocumentOrderResult.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/StaticResolutionContext.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/StaticType.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/StringPool.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TestSuiteParser.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TestSuiteResultListener.Plo@am__quote@
@@ -1396,6 +1405,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/VarStoreImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/VarTypeStoreImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XMLChCompare.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XPath1Compat.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XPath2Lexer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XPath2MemoryManagerImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XPath2NSUtils.Plo@am__quote@
@@ -1404,12 +1414,14 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XPath2ResultImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XPath2Utils.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XPathNamespaceImpl.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQAtomize.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQCastAs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQCastableAs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQContextImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQContextItem.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQDOMConstructor.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQDebugHook.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQDocumentOrder.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQDynamicContextImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQException.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQFLWOR.Plo@am__quote@
@@ -1423,6 +1435,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQOperator.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQOrderingChange.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQParenthesizedExpr.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQPredicate.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQQuantified.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQQuery.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQRemoteDebugger.Plo@am__quote@
@@ -3336,6 +3349,39 @@ XQRemoteDebugger.lo: src/context/impl/XQRemoteDebugger.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQRemoteDebugger.lo `test -f 'src/context/impl/XQRemoteDebugger.cpp' || echo '$(srcdir)/'`src/context/impl/XQRemoteDebugger.cpp
 
+XQAtomize.o: src/ast/XQAtomize.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQAtomize.o -MD -MP -MF "$(DEPDIR)/XQAtomize.Tpo" \
+@am__fastdepCXX_TRUE@	  -c -o XQAtomize.o `test -f 'src/ast/XQAtomize.cpp' || echo '$(srcdir)/'`src/ast/XQAtomize.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/XQAtomize.Tpo" "$(DEPDIR)/XQAtomize.Po"; \
+@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/XQAtomize.Tpo"; exit 1; \
+@am__fastdepCXX_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/ast/XQAtomize.cpp' object='XQAtomize.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/XQAtomize.Po' tmpdepfile='$(DEPDIR)/XQAtomize.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQAtomize.o `test -f 'src/ast/XQAtomize.cpp' || echo '$(srcdir)/'`src/ast/XQAtomize.cpp
+
+XQAtomize.obj: src/ast/XQAtomize.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQAtomize.obj -MD -MP -MF "$(DEPDIR)/XQAtomize.Tpo" \
+@am__fastdepCXX_TRUE@	  -c -o XQAtomize.obj `if test -f 'src/ast/XQAtomize.cpp'; then $(CYGPATH_W) 'src/ast/XQAtomize.cpp'; else $(CYGPATH_W) '$(srcdir)/src/ast/XQAtomize.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/XQAtomize.Tpo" "$(DEPDIR)/XQAtomize.Po"; \
+@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/XQAtomize.Tpo"; exit 1; \
+@am__fastdepCXX_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/ast/XQAtomize.cpp' object='XQAtomize.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/XQAtomize.Po' tmpdepfile='$(DEPDIR)/XQAtomize.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQAtomize.obj `if test -f 'src/ast/XQAtomize.cpp'; then $(CYGPATH_W) 'src/ast/XQAtomize.cpp'; else $(CYGPATH_W) '$(srcdir)/src/ast/XQAtomize.cpp'; fi`
+
+XQAtomize.lo: src/ast/XQAtomize.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQAtomize.lo -MD -MP -MF "$(DEPDIR)/XQAtomize.Tpo" \
+@am__fastdepCXX_TRUE@	  -c -o XQAtomize.lo `test -f 'src/ast/XQAtomize.cpp' || echo '$(srcdir)/'`src/ast/XQAtomize.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/XQAtomize.Tpo" "$(DEPDIR)/XQAtomize.Plo"; \
+@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/XQAtomize.Tpo"; exit 1; \
+@am__fastdepCXX_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/ast/XQAtomize.cpp' object='XQAtomize.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/XQAtomize.Plo' tmpdepfile='$(DEPDIR)/XQAtomize.TPlo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQAtomize.lo `test -f 'src/ast/XQAtomize.cpp' || echo '$(srcdir)/'`src/ast/XQAtomize.cpp
+
 XQCastableAs.o: src/ast/XQCastableAs.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQCastableAs.o -MD -MP -MF "$(DEPDIR)/XQCastableAs.Tpo" \
 @am__fastdepCXX_TRUE@	  -c -o XQCastableAs.o `test -f 'src/ast/XQCastableAs.cpp' || echo '$(srcdir)/'`src/ast/XQCastableAs.cpp; \
@@ -3864,6 +3910,39 @@ StaticResolutionContext.lo: src/ast/StaticResolutionContext.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o StaticResolutionContext.lo `test -f 'src/ast/StaticResolutionContext.cpp' || echo '$(srcdir)/'`src/ast/StaticResolutionContext.cpp
 
+StaticType.o: src/ast/StaticType.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT StaticType.o -MD -MP -MF "$(DEPDIR)/StaticType.Tpo" \
+@am__fastdepCXX_TRUE@	  -c -o StaticType.o `test -f 'src/ast/StaticType.cpp' || echo '$(srcdir)/'`src/ast/StaticType.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/StaticType.Tpo" "$(DEPDIR)/StaticType.Po"; \
+@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/StaticType.Tpo"; exit 1; \
+@am__fastdepCXX_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/ast/StaticType.cpp' object='StaticType.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/StaticType.Po' tmpdepfile='$(DEPDIR)/StaticType.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o StaticType.o `test -f 'src/ast/StaticType.cpp' || echo '$(srcdir)/'`src/ast/StaticType.cpp
+
+StaticType.obj: src/ast/StaticType.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT StaticType.obj -MD -MP -MF "$(DEPDIR)/StaticType.Tpo" \
+@am__fastdepCXX_TRUE@	  -c -o StaticType.obj `if test -f 'src/ast/StaticType.cpp'; then $(CYGPATH_W) 'src/ast/StaticType.cpp'; else $(CYGPATH_W) '$(srcdir)/src/ast/StaticType.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/StaticType.Tpo" "$(DEPDIR)/StaticType.Po"; \
+@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/StaticType.Tpo"; exit 1; \
+@am__fastdepCXX_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/ast/StaticType.cpp' object='StaticType.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/StaticType.Po' tmpdepfile='$(DEPDIR)/StaticType.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o StaticType.obj `if test -f 'src/ast/StaticType.cpp'; then $(CYGPATH_W) 'src/ast/StaticType.cpp'; else $(CYGPATH_W) '$(srcdir)/src/ast/StaticType.cpp'; fi`
+
+StaticType.lo: src/ast/StaticType.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT StaticType.lo -MD -MP -MF "$(DEPDIR)/StaticType.Tpo" \
+@am__fastdepCXX_TRUE@	  -c -o StaticType.lo `test -f 'src/ast/StaticType.cpp' || echo '$(srcdir)/'`src/ast/StaticType.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/StaticType.Tpo" "$(DEPDIR)/StaticType.Plo"; \
+@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/StaticType.Tpo"; exit 1; \
+@am__fastdepCXX_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/ast/StaticType.cpp' object='StaticType.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/StaticType.Plo' tmpdepfile='$(DEPDIR)/StaticType.TPlo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o StaticType.lo `test -f 'src/ast/StaticType.cpp' || echo '$(srcdir)/'`src/ast/StaticType.cpp
+
 AggregateFunction.o: src/ast/AggregateFunction.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT AggregateFunction.o -MD -MP -MF "$(DEPDIR)/AggregateFunction.Tpo" \
 @am__fastdepCXX_TRUE@	  -c -o AggregateFunction.o `test -f 'src/ast/AggregateFunction.cpp' || echo '$(srcdir)/'`src/ast/AggregateFunction.cpp; \
@@ -4292,6 +4371,138 @@ XQVariableBinding.lo: src/ast/XQVariableBinding.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/XQVariableBinding.Plo' tmpdepfile='$(DEPDIR)/XQVariableBinding.TPlo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQVariableBinding.lo `test -f 'src/ast/XQVariableBinding.cpp' || echo '$(srcdir)/'`src/ast/XQVariableBinding.cpp
+
+XPath1Compat.o: src/ast/XPath1Compat.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XPath1Compat.o -MD -MP -MF "$(DEPDIR)/XPath1Compat.Tpo" \
+@am__fastdepCXX_TRUE@	  -c -o XPath1Compat.o `test -f 'src/ast/XPath1Compat.cpp' || echo '$(srcdir)/'`src/ast/XPath1Compat.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/XPath1Compat.Tpo" "$(DEPDIR)/XPath1Compat.Po"; \
+@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/XPath1Compat.Tpo"; exit 1; \
+@am__fastdepCXX_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/ast/XPath1Compat.cpp' object='XPath1Compat.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/XPath1Compat.Po' tmpdepfile='$(DEPDIR)/XPath1Compat.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XPath1Compat.o `test -f 'src/ast/XPath1Compat.cpp' || echo '$(srcdir)/'`src/ast/XPath1Compat.cpp
+
+XPath1Compat.obj: src/ast/XPath1Compat.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XPath1Compat.obj -MD -MP -MF "$(DEPDIR)/XPath1Compat.Tpo" \
+@am__fastdepCXX_TRUE@	  -c -o XPath1Compat.obj `if test -f 'src/ast/XPath1Compat.cpp'; then $(CYGPATH_W) 'src/ast/XPath1Compat.cpp'; else $(CYGPATH_W) '$(srcdir)/src/ast/XPath1Compat.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/XPath1Compat.Tpo" "$(DEPDIR)/XPath1Compat.Po"; \
+@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/XPath1Compat.Tpo"; exit 1; \
+@am__fastdepCXX_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/ast/XPath1Compat.cpp' object='XPath1Compat.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/XPath1Compat.Po' tmpdepfile='$(DEPDIR)/XPath1Compat.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XPath1Compat.obj `if test -f 'src/ast/XPath1Compat.cpp'; then $(CYGPATH_W) 'src/ast/XPath1Compat.cpp'; else $(CYGPATH_W) '$(srcdir)/src/ast/XPath1Compat.cpp'; fi`
+
+XPath1Compat.lo: src/ast/XPath1Compat.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XPath1Compat.lo -MD -MP -MF "$(DEPDIR)/XPath1Compat.Tpo" \
+@am__fastdepCXX_TRUE@	  -c -o XPath1Compat.lo `test -f 'src/ast/XPath1Compat.cpp' || echo '$(srcdir)/'`src/ast/XPath1Compat.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/XPath1Compat.Tpo" "$(DEPDIR)/XPath1Compat.Plo"; \
+@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/XPath1Compat.Tpo"; exit 1; \
+@am__fastdepCXX_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/ast/XPath1Compat.cpp' object='XPath1Compat.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/XPath1Compat.Plo' tmpdepfile='$(DEPDIR)/XPath1Compat.TPlo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XPath1Compat.lo `test -f 'src/ast/XPath1Compat.cpp' || echo '$(srcdir)/'`src/ast/XPath1Compat.cpp
+
+ConvertFunctionArg.o: src/ast/ConvertFunctionArg.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ConvertFunctionArg.o -MD -MP -MF "$(DEPDIR)/ConvertFunctionArg.Tpo" \
+@am__fastdepCXX_TRUE@	  -c -o ConvertFunctionArg.o `test -f 'src/ast/ConvertFunctionArg.cpp' || echo '$(srcdir)/'`src/ast/ConvertFunctionArg.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ConvertFunctionArg.Tpo" "$(DEPDIR)/ConvertFunctionArg.Po"; \
+@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/ConvertFunctionArg.Tpo"; exit 1; \
+@am__fastdepCXX_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/ast/ConvertFunctionArg.cpp' object='ConvertFunctionArg.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ConvertFunctionArg.Po' tmpdepfile='$(DEPDIR)/ConvertFunctionArg.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ConvertFunctionArg.o `test -f 'src/ast/ConvertFunctionArg.cpp' || echo '$(srcdir)/'`src/ast/ConvertFunctionArg.cpp
+
+ConvertFunctionArg.obj: src/ast/ConvertFunctionArg.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ConvertFunctionArg.obj -MD -MP -MF "$(DEPDIR)/ConvertFunctionArg.Tpo" \
+@am__fastdepCXX_TRUE@	  -c -o ConvertFunctionArg.obj `if test -f 'src/ast/ConvertFunctionArg.cpp'; then $(CYGPATH_W) 'src/ast/ConvertFunctionArg.cpp'; else $(CYGPATH_W) '$(srcdir)/src/ast/ConvertFunctionArg.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ConvertFunctionArg.Tpo" "$(DEPDIR)/ConvertFunctionArg.Po"; \
+@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/ConvertFunctionArg.Tpo"; exit 1; \
+@am__fastdepCXX_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/ast/ConvertFunctionArg.cpp' object='ConvertFunctionArg.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ConvertFunctionArg.Po' tmpdepfile='$(DEPDIR)/ConvertFunctionArg.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ConvertFunctionArg.obj `if test -f 'src/ast/ConvertFunctionArg.cpp'; then $(CYGPATH_W) 'src/ast/ConvertFunctionArg.cpp'; else $(CYGPATH_W) '$(srcdir)/src/ast/ConvertFunctionArg.cpp'; fi`
+
+ConvertFunctionArg.lo: src/ast/ConvertFunctionArg.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ConvertFunctionArg.lo -MD -MP -MF "$(DEPDIR)/ConvertFunctionArg.Tpo" \
+@am__fastdepCXX_TRUE@	  -c -o ConvertFunctionArg.lo `test -f 'src/ast/ConvertFunctionArg.cpp' || echo '$(srcdir)/'`src/ast/ConvertFunctionArg.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ConvertFunctionArg.Tpo" "$(DEPDIR)/ConvertFunctionArg.Plo"; \
+@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/ConvertFunctionArg.Tpo"; exit 1; \
+@am__fastdepCXX_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/ast/ConvertFunctionArg.cpp' object='ConvertFunctionArg.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ConvertFunctionArg.Plo' tmpdepfile='$(DEPDIR)/ConvertFunctionArg.TPlo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ConvertFunctionArg.lo `test -f 'src/ast/ConvertFunctionArg.cpp' || echo '$(srcdir)/'`src/ast/ConvertFunctionArg.cpp
+
+XQDocumentOrder.o: src/ast/XQDocumentOrder.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQDocumentOrder.o -MD -MP -MF "$(DEPDIR)/XQDocumentOrder.Tpo" \
+@am__fastdepCXX_TRUE@	  -c -o XQDocumentOrder.o `test -f 'src/ast/XQDocumentOrder.cpp' || echo '$(srcdir)/'`src/ast/XQDocumentOrder.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/XQDocumentOrder.Tpo" "$(DEPDIR)/XQDocumentOrder.Po"; \
+@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/XQDocumentOrder.Tpo"; exit 1; \
+@am__fastdepCXX_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/ast/XQDocumentOrder.cpp' object='XQDocumentOrder.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/XQDocumentOrder.Po' tmpdepfile='$(DEPDIR)/XQDocumentOrder.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQDocumentOrder.o `test -f 'src/ast/XQDocumentOrder.cpp' || echo '$(srcdir)/'`src/ast/XQDocumentOrder.cpp
+
+XQDocumentOrder.obj: src/ast/XQDocumentOrder.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQDocumentOrder.obj -MD -MP -MF "$(DEPDIR)/XQDocumentOrder.Tpo" \
+@am__fastdepCXX_TRUE@	  -c -o XQDocumentOrder.obj `if test -f 'src/ast/XQDocumentOrder.cpp'; then $(CYGPATH_W) 'src/ast/XQDocumentOrder.cpp'; else $(CYGPATH_W) '$(srcdir)/src/ast/XQDocumentOrder.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/XQDocumentOrder.Tpo" "$(DEPDIR)/XQDocumentOrder.Po"; \
+@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/XQDocumentOrder.Tpo"; exit 1; \
+@am__fastdepCXX_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/ast/XQDocumentOrder.cpp' object='XQDocumentOrder.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/XQDocumentOrder.Po' tmpdepfile='$(DEPDIR)/XQDocumentOrder.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQDocumentOrder.obj `if test -f 'src/ast/XQDocumentOrder.cpp'; then $(CYGPATH_W) 'src/ast/XQDocumentOrder.cpp'; else $(CYGPATH_W) '$(srcdir)/src/ast/XQDocumentOrder.cpp'; fi`
+
+XQDocumentOrder.lo: src/ast/XQDocumentOrder.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQDocumentOrder.lo -MD -MP -MF "$(DEPDIR)/XQDocumentOrder.Tpo" \
+@am__fastdepCXX_TRUE@	  -c -o XQDocumentOrder.lo `test -f 'src/ast/XQDocumentOrder.cpp' || echo '$(srcdir)/'`src/ast/XQDocumentOrder.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/XQDocumentOrder.Tpo" "$(DEPDIR)/XQDocumentOrder.Plo"; \
+@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/XQDocumentOrder.Tpo"; exit 1; \
+@am__fastdepCXX_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/ast/XQDocumentOrder.cpp' object='XQDocumentOrder.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/XQDocumentOrder.Plo' tmpdepfile='$(DEPDIR)/XQDocumentOrder.TPlo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQDocumentOrder.lo `test -f 'src/ast/XQDocumentOrder.cpp' || echo '$(srcdir)/'`src/ast/XQDocumentOrder.cpp
+
+XQPredicate.o: src/ast/XQPredicate.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQPredicate.o -MD -MP -MF "$(DEPDIR)/XQPredicate.Tpo" \
+@am__fastdepCXX_TRUE@	  -c -o XQPredicate.o `test -f 'src/ast/XQPredicate.cpp' || echo '$(srcdir)/'`src/ast/XQPredicate.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/XQPredicate.Tpo" "$(DEPDIR)/XQPredicate.Po"; \
+@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/XQPredicate.Tpo"; exit 1; \
+@am__fastdepCXX_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/ast/XQPredicate.cpp' object='XQPredicate.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/XQPredicate.Po' tmpdepfile='$(DEPDIR)/XQPredicate.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQPredicate.o `test -f 'src/ast/XQPredicate.cpp' || echo '$(srcdir)/'`src/ast/XQPredicate.cpp
+
+XQPredicate.obj: src/ast/XQPredicate.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQPredicate.obj -MD -MP -MF "$(DEPDIR)/XQPredicate.Tpo" \
+@am__fastdepCXX_TRUE@	  -c -o XQPredicate.obj `if test -f 'src/ast/XQPredicate.cpp'; then $(CYGPATH_W) 'src/ast/XQPredicate.cpp'; else $(CYGPATH_W) '$(srcdir)/src/ast/XQPredicate.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/XQPredicate.Tpo" "$(DEPDIR)/XQPredicate.Po"; \
+@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/XQPredicate.Tpo"; exit 1; \
+@am__fastdepCXX_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/ast/XQPredicate.cpp' object='XQPredicate.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/XQPredicate.Po' tmpdepfile='$(DEPDIR)/XQPredicate.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQPredicate.obj `if test -f 'src/ast/XQPredicate.cpp'; then $(CYGPATH_W) 'src/ast/XQPredicate.cpp'; else $(CYGPATH_W) '$(srcdir)/src/ast/XQPredicate.cpp'; fi`
+
+XQPredicate.lo: src/ast/XQPredicate.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQPredicate.lo -MD -MP -MF "$(DEPDIR)/XQPredicate.Tpo" \
+@am__fastdepCXX_TRUE@	  -c -o XQPredicate.lo `test -f 'src/ast/XQPredicate.cpp' || echo '$(srcdir)/'`src/ast/XQPredicate.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/XQPredicate.Tpo" "$(DEPDIR)/XQPredicate.Plo"; \
+@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/XQPredicate.Tpo"; exit 1; \
+@am__fastdepCXX_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/ast/XQPredicate.cpp' object='XQPredicate.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/XQPredicate.Plo' tmpdepfile='$(DEPDIR)/XQPredicate.TPlo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQPredicate.lo `test -f 'src/ast/XQPredicate.cpp' || echo '$(srcdir)/'`src/ast/XQPredicate.cpp
 
 XQillaBuilderImpl.o: src/dom-api/impl/XQillaBuilderImpl.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQillaBuilderImpl.o -MD -MP -MF "$(DEPDIR)/XQillaBuilderImpl.Tpo" \
@@ -11685,39 +11896,6 @@ AnyAtomicTypeDatatypeValidator.lo: src/schema/AnyAtomicTypeDatatypeValidator.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o AnyAtomicTypeDatatypeValidator.lo `test -f 'src/schema/AnyAtomicTypeDatatypeValidator.cpp' || echo '$(srcdir)/'`src/schema/AnyAtomicTypeDatatypeValidator.cpp
 
-AtomizeResult.o: src/runtime/AtomizeResult.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT AtomizeResult.o -MD -MP -MF "$(DEPDIR)/AtomizeResult.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o AtomizeResult.o `test -f 'src/runtime/AtomizeResult.cpp' || echo '$(srcdir)/'`src/runtime/AtomizeResult.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/AtomizeResult.Tpo" "$(DEPDIR)/AtomizeResult.Po"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/AtomizeResult.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/runtime/AtomizeResult.cpp' object='AtomizeResult.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/AtomizeResult.Po' tmpdepfile='$(DEPDIR)/AtomizeResult.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o AtomizeResult.o `test -f 'src/runtime/AtomizeResult.cpp' || echo '$(srcdir)/'`src/runtime/AtomizeResult.cpp
-
-AtomizeResult.obj: src/runtime/AtomizeResult.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT AtomizeResult.obj -MD -MP -MF "$(DEPDIR)/AtomizeResult.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o AtomizeResult.obj `if test -f 'src/runtime/AtomizeResult.cpp'; then $(CYGPATH_W) 'src/runtime/AtomizeResult.cpp'; else $(CYGPATH_W) '$(srcdir)/src/runtime/AtomizeResult.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/AtomizeResult.Tpo" "$(DEPDIR)/AtomizeResult.Po"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/AtomizeResult.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/runtime/AtomizeResult.cpp' object='AtomizeResult.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/AtomizeResult.Po' tmpdepfile='$(DEPDIR)/AtomizeResult.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o AtomizeResult.obj `if test -f 'src/runtime/AtomizeResult.cpp'; then $(CYGPATH_W) 'src/runtime/AtomizeResult.cpp'; else $(CYGPATH_W) '$(srcdir)/src/runtime/AtomizeResult.cpp'; fi`
-
-AtomizeResult.lo: src/runtime/AtomizeResult.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT AtomizeResult.lo -MD -MP -MF "$(DEPDIR)/AtomizeResult.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o AtomizeResult.lo `test -f 'src/runtime/AtomizeResult.cpp' || echo '$(srcdir)/'`src/runtime/AtomizeResult.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/AtomizeResult.Tpo" "$(DEPDIR)/AtomizeResult.Plo"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/AtomizeResult.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/runtime/AtomizeResult.cpp' object='AtomizeResult.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/AtomizeResult.Plo' tmpdepfile='$(DEPDIR)/AtomizeResult.TPlo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o AtomizeResult.lo `test -f 'src/runtime/AtomizeResult.cpp' || echo '$(srcdir)/'`src/runtime/AtomizeResult.cpp
-
 EmptyResult.o: src/runtime/EmptyResult.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT EmptyResult.o -MD -MP -MF "$(DEPDIR)/EmptyResult.Tpo" \
 @am__fastdepCXX_TRUE@	  -c -o EmptyResult.o `test -f 'src/runtime/EmptyResult.cpp' || echo '$(srcdir)/'`src/runtime/EmptyResult.cpp; \
@@ -11981,39 +12159,6 @@ SingleResult.lo: src/runtime/SingleResult.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SingleResult.Plo' tmpdepfile='$(DEPDIR)/SingleResult.TPlo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SingleResult.lo `test -f 'src/runtime/SingleResult.cpp' || echo '$(srcdir)/'`src/runtime/SingleResult.cpp
-
-SortIntoDocumentOrderResult.o: src/runtime/SortIntoDocumentOrderResult.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SortIntoDocumentOrderResult.o -MD -MP -MF "$(DEPDIR)/SortIntoDocumentOrderResult.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o SortIntoDocumentOrderResult.o `test -f 'src/runtime/SortIntoDocumentOrderResult.cpp' || echo '$(srcdir)/'`src/runtime/SortIntoDocumentOrderResult.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SortIntoDocumentOrderResult.Tpo" "$(DEPDIR)/SortIntoDocumentOrderResult.Po"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/SortIntoDocumentOrderResult.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/runtime/SortIntoDocumentOrderResult.cpp' object='SortIntoDocumentOrderResult.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SortIntoDocumentOrderResult.Po' tmpdepfile='$(DEPDIR)/SortIntoDocumentOrderResult.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SortIntoDocumentOrderResult.o `test -f 'src/runtime/SortIntoDocumentOrderResult.cpp' || echo '$(srcdir)/'`src/runtime/SortIntoDocumentOrderResult.cpp
-
-SortIntoDocumentOrderResult.obj: src/runtime/SortIntoDocumentOrderResult.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SortIntoDocumentOrderResult.obj -MD -MP -MF "$(DEPDIR)/SortIntoDocumentOrderResult.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o SortIntoDocumentOrderResult.obj `if test -f 'src/runtime/SortIntoDocumentOrderResult.cpp'; then $(CYGPATH_W) 'src/runtime/SortIntoDocumentOrderResult.cpp'; else $(CYGPATH_W) '$(srcdir)/src/runtime/SortIntoDocumentOrderResult.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SortIntoDocumentOrderResult.Tpo" "$(DEPDIR)/SortIntoDocumentOrderResult.Po"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/SortIntoDocumentOrderResult.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/runtime/SortIntoDocumentOrderResult.cpp' object='SortIntoDocumentOrderResult.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SortIntoDocumentOrderResult.Po' tmpdepfile='$(DEPDIR)/SortIntoDocumentOrderResult.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SortIntoDocumentOrderResult.obj `if test -f 'src/runtime/SortIntoDocumentOrderResult.cpp'; then $(CYGPATH_W) 'src/runtime/SortIntoDocumentOrderResult.cpp'; else $(CYGPATH_W) '$(srcdir)/src/runtime/SortIntoDocumentOrderResult.cpp'; fi`
-
-SortIntoDocumentOrderResult.lo: src/runtime/SortIntoDocumentOrderResult.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SortIntoDocumentOrderResult.lo -MD -MP -MF "$(DEPDIR)/SortIntoDocumentOrderResult.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o SortIntoDocumentOrderResult.lo `test -f 'src/runtime/SortIntoDocumentOrderResult.cpp' || echo '$(srcdir)/'`src/runtime/SortIntoDocumentOrderResult.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SortIntoDocumentOrderResult.Tpo" "$(DEPDIR)/SortIntoDocumentOrderResult.Plo"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/SortIntoDocumentOrderResult.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/runtime/SortIntoDocumentOrderResult.cpp' object='SortIntoDocumentOrderResult.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SortIntoDocumentOrderResult.Plo' tmpdepfile='$(DEPDIR)/SortIntoDocumentOrderResult.TPlo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SortIntoDocumentOrderResult.lo `test -f 'src/runtime/SortIntoDocumentOrderResult.cpp' || echo '$(srcdir)/'`src/runtime/SortIntoDocumentOrderResult.cpp
 
 Sequence.o: src/runtime/Sequence.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT Sequence.o -MD -MP -MF "$(DEPDIR)/Sequence.Tpo" \
@@ -12469,7 +12614,7 @@ distcleancheck_listfiles = find . -type f -print
 distdir: $(DISTFILES)
 	$(am__remove_distdir)
 	mkdir $(distdir)
-	$(mkinstalldirs) $(distdir)/./src/config $(distdir)/Win32Projects/VC6 $(distdir)/Win32Projects/VC7.1 $(distdir)/autotools $(distdir)/docs $(distdir)/src/lexer $(distdir)/src/parser $(distdir)/tests $(distdir)/tests/xqts/testsuite
+	$(mkinstalldirs) $(distdir)/./src/config $(distdir)/Win32Projects/VC6 $(distdir)/Win32Projects/VC7.1 $(distdir)/autotools $(distdir)/docs $(distdir)/src/lexer $(distdir)/src/parser $(distdir)/tests $(distdir)/tests/xqts/xqts_testsuite
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \
@@ -12727,6 +12872,9 @@ test: check
 
 docs:
 	$(MAKE) -C include docs
+
+devdocs:
+	$(MAKE) -C include devdocs
 
 $(top_srcdir)/docs/simple-api: docs
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

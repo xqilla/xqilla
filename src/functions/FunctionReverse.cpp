@@ -31,14 +31,14 @@ FunctionReverse::FunctionReverse(const VectorOfASTNodes &args, XPath2MemoryManag
   : ConstantFoldingFunction(name, minArgs, maxArgs, "item()*", args, memMgr)
 {
   // TBD - could do better here - jpcs
-  _src.getStaticType().flags = StaticType::NUMERIC_TYPE | StaticType::NODE_TYPE | StaticType::OTHER_TYPE;
+  _src.getStaticType().flags = StaticType::ITEM_TYPE;
 }
 
 Sequence FunctionReverse::collapseTreeInternal(DynamicContext* context, int flags) const
 {
   XPath2MemoryManager* memMgr = context->getMemoryManager();
 
-  Sequence origSeq = getParamNumber(1, context).toSequence(context);
+  Sequence origSeq = getParamNumber(1, context)->toSequence(context);
   // empty or singleton sequences are identical when reversed
   unsigned int len=origSeq.getLength();
   if(len<2)

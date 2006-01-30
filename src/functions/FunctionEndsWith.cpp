@@ -50,8 +50,8 @@ FunctionEndsWith::FunctionEndsWith(const VectorOfASTNodes &args, XPath2MemoryMan
 
 Sequence FunctionEndsWith::collapseTreeInternal(DynamicContext* context, int flags) const
 {
-    Sequence sourceString=getParamNumber(1,context);
-    Sequence findString=getParamNumber(2,context);
+    Sequence sourceString=getParamNumber(1,context)->toSequence(context);
+    Sequence findString=getParamNumber(2,context)->toSequence(context);
 
     const XMLCh* source = XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString;
     if(!sourceString.isEmpty())
@@ -70,7 +70,7 @@ Sequence FunctionEndsWith::collapseTreeInternal(DynamicContext* context, int fla
 
     Collation* collation=NULL;
     if(getNumArgs()>2) {
-        Sequence collArg = getParamNumber(3,context);
+        Sequence collArg = getParamNumber(3,context)->toSequence(context);
         const XMLCh* collName = collArg.first()->asString(context);
         try {
             context->getItemFactory()->createAnyURI(collName, context);

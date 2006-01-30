@@ -22,6 +22,7 @@
 #include <xqilla/framework/XPath2MemoryManager.hpp>
 
 class DynamicContext;
+class StaticType;
 
 class XQILLA_API ItemConstructor {
 public:
@@ -29,7 +30,7 @@ public:
 
   virtual ~ItemConstructor() {}
 
-  virtual bool isNumeric() const = 0;
+  virtual const StaticType &getStaticType() const = 0;
 
   virtual Item::Ptr createItem(const DynamicContext* context) const = 0;
   virtual std::string asString(const DynamicContext* context) const = 0;

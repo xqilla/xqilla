@@ -43,8 +43,8 @@ FunctionQName::FunctionQName(const VectorOfASTNodes &args, XPath2MemoryManager* 
 }
 
 Sequence FunctionQName::collapseTreeInternal(DynamicContext* context, int flags) const {
-  Sequence paramURIseq = getParamNumber(1, context);
-  Sequence paramLocalseq = getParamNumber(2, context);
+  Sequence paramURIseq = getParamNumber(1, context)->toSequence(context);
+  Sequence paramLocalseq = getParamNumber(2, context)->toSequence(context);
 
   const XMLCh* uri = NULL;
   if(!paramURIseq.isEmpty())

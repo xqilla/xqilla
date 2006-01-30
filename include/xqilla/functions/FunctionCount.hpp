@@ -34,6 +34,7 @@ public:
   ///Constructor. Sets arg def to NOT_OPTIONAL.
   FunctionCount(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
+  ASTNode* staticResolution(StaticContext *context);
   /** Returns the number of nodes in the nodelist argument. **/
   Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
 };

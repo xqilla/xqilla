@@ -46,14 +46,14 @@ FunctionLang::FunctionLang(const VectorOfASTNodes &args, XPath2MemoryManager* me
 ASTNode* FunctionLang::staticResolution(StaticContext *context) {
   if(_args.size()==1)
     _src.contextItemUsed(true);
-  return resolveASTNodes(_args, context, _args.size()!=1);
+  return resolveArguments(context);
 }
 
 Sequence FunctionLang::collapseTreeInternal(DynamicContext* context, int flags) const
 {
     XPath2MemoryManager* memMgr = context->getMemoryManager();
 
-    Sequence arg1=getParamNumber(1, context);
+    Sequence arg1=getParamNumber(1, context)->toSequence(context);
     const XMLCh *param1 = XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString;
     if(!arg1.isEmpty())
         param1=arg1.first()->asString(context);
@@ -64,7 +64,7 @@ Sequence FunctionLang::collapseTreeInternal(DynamicContext* context, int flags) 
     Node::Ptr ctxNode;
     if(getNumArgs() == 2)
     {
-        Sequence arg=getParamNumber(2,context);
+        Sequence arg=getParamNumber(2,context)->toSequence(context);
         ctxNode=arg.first();
     }
     else
@@ -88,7 +88,7 @@ Sequence FunctionLang::collapseTreeInternal(DynamicContext* context, int flags) 
     {
       Result attrs = node->dmAttributes(context);
       Node::Ptr att;
-      while((att = (Node::Ptr)attrs.next(context)).notNull()) {
+      while((att = (Node::Ptr)attrs->next(context)).notNull()) {
         ATQNameOrDerived::Ptr name = att->dmNodeName(context);
         if(name.notNull()) {
           const XMLCh *node_uri = ((const ATQNameOrDerived*)name.get())->getURI();

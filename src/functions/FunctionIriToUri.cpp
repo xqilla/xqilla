@@ -61,7 +61,7 @@ FunctionIriToUri::FunctionIriToUri(const VectorOfASTNodes &args, XPath2MemoryMan
 
 Sequence FunctionIriToUri::collapseTreeInternal(DynamicContext* context, int flags) const
 {
-    Sequence uriPart=getParamNumber(1,context);
+    Sequence uriPart=getParamNumber(1,context)->toSequence(context);
     if(uriPart.isEmpty())
         return Sequence(context->getItemFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context), context->getMemoryManager());
 

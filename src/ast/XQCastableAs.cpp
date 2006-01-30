@@ -26,6 +26,8 @@
 #include <xqilla/items/ATBooleanOrDerived.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/context/ItemFactory.hpp>
+#include <xqilla/ast/XQAtomize.hpp>
+#include <xqilla/context/ContextHelpers.hpp>
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -41,10 +43,15 @@ XQCastableAs::XQCastableAs(ASTNode* expr, SequenceType* exprType, XPath2MemoryMa
 
 Result XQCastableAs::createResult(DynamicContext* context, int flags) const
 {
-  return new CastableAsResult(this, context);
+  return new CastableAsResult(this);
 }
 
-ASTNode* XQCastableAs::staticResolution(StaticContext *context) {
+ASTNode* XQCastableAs::staticResolution(StaticContext *context)
+{
+  XPath2MemoryManager *mm = context->getMemoryManager();
+  _expr = new (mm) XQAtomize(_expr, mm);
+
+  AutoNodeSetOrderingReset orderReset(context);
   return resolveASTNode(_expr, context, true);
 }
 
@@ -60,9 +67,8 @@ void XQCastableAs::setExpression(ASTNode *item) {
   _expr = item;
 }
 
-XQCastableAs::CastableAsResult::CastableAsResult(const XQCastableAs *di, DynamicContext *context)
-  : SingleResult(context),
-    _di(di)
+XQCastableAs::CastableAsResult::CastableAsResult(const XQCastableAs *di)
+  : _di(di)
 {
 }
 
@@ -70,13 +76,9 @@ Item::Ptr XQCastableAs::CastableAsResult::getSingleResult(DynamicContext *contex
 {
   // The semantics of the cast expression are as follows:
   //    1. Atomization is performed on the input expression.
-	Result toBeCasted(_di->getExpression()->collapseTree(context, ASTNode::RETURN_TWO|ASTNode::UNORDERED));
+  Result toBeCasted(_di->getExpression()->collapseTree(context));
 
-  if(_di->getExpression()->getStaticResolutionContext().getStaticType().flags & StaticType::NODE_TYPE) {
-    toBeCasted = toBeCasted.atomize(context);
-  }
-
-  const Item::Ptr first = toBeCasted.next(context);
+  const Item::Ptr first = toBeCasted->next(context);
 
   bool result = false;
 	if(first == NULLRCP) {
@@ -86,7 +88,7 @@ Item::Ptr XQCastableAs::CastableAsResult::getSingleResult(DynamicContext *contex
     result = _di->getSequenceType()->getOccurrenceIndicator() != SequenceType::EXACTLY_ONE;
   }
   else {
-    const Item::Ptr second = toBeCasted.next(context);
+    const Item::Ptr second = toBeCasted->next(context);
 
     //    2. If the result of atomization is a sequence of more than one atomic value, a type error is raised.[err:XP0004][err:XP0006]
     if(second != NULLRCP) {

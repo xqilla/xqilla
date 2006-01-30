@@ -18,6 +18,7 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/context/ItemFactory.hpp>
+#include <xqilla/context/ContextHelpers.hpp>
 
 const XMLCh FunctionBoolean::name[] = {
   XERCES_CPP_NAMESPACE_QUALIFIER chLatin_b, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, 
@@ -36,10 +37,14 @@ FunctionBoolean::FunctionBoolean(const VectorOfASTNodes &args, XPath2MemoryManag
 {
 }
 
+ASTNode* FunctionBoolean::staticResolution(StaticContext *context) {
+  AutoNodeSetOrderingReset orderReset(context);
+  return resolveArguments(context);
+}
+
 Sequence FunctionBoolean::collapseTreeInternal(DynamicContext* context, int flags) const
 {
-  bool result = getParamNumber(1,context,ASTNode::UNORDERED|ASTNode::RETURN_TWO)
-    .getEffectiveBooleanValue(context);
+  bool result = getParamNumber(1,context)->getEffectiveBooleanValue(context);
   return Sequence(context->getItemFactory()->createBoolean(result, context),
                   context->getMemoryManager());
 }

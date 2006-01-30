@@ -32,11 +32,7 @@ ATQNameConstructor::ATQNameConstructor(const XMLCh* typeURI,
     _prefix(prefix),
     _localname(localname)
 {
-}
-
-bool ATQNameConstructor::isNumeric() const
-{
-  return false;
+  _sType.flags = StaticType::OTHER_TYPE;
 }
 
 Item::Ptr ATQNameConstructor::createItem(const DynamicContext* context) const

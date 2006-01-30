@@ -16,6 +16,7 @@
 #include <xqilla/items/ATBooleanOrDerived.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
+#include <xqilla/context/ContextHelpers.hpp>
 
 const XMLCh FunctionNot::name[] = {
   XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t, 
@@ -33,9 +34,14 @@ FunctionNot::FunctionNot(const VectorOfASTNodes &args, XPath2MemoryManager* memM
 {
 }
 
+ASTNode* FunctionNot::staticResolution(StaticContext *context) {
+  AutoNodeSetOrderingReset orderReset(context);
+  return resolveArguments(context);
+}
+
 Sequence FunctionNot::collapseTreeInternal(DynamicContext* context, int flags) const
 {
-	bool result = !getParamNumber(1,context,ASTNode::UNORDERED|ASTNode::RETURN_TWO).getEffectiveBooleanValue(context);
+	bool result = !getParamNumber(1,context)->getEffectiveBooleanValue(context);
 	XPath2MemoryManager* memMgr = context->getMemoryManager();
 	return Sequence(context->getItemFactory()->createBoolean(result, context), memMgr);
 }

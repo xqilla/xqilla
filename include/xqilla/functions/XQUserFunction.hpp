@@ -67,7 +67,7 @@ public:
     class FunctionEvaluatorResult : public ResultImpl
     {
     public:
-      FunctionEvaluatorResult(const XQFunctionEvaluator *di, int flags, DynamicContext *context);
+      FunctionEvaluatorResult(const XQFunctionEvaluator *di, int flags);
 
       Item::Ptr next(DynamicContext *context);
       std::string asString(DynamicContext *context, int indent) const;
@@ -96,7 +96,10 @@ public:
   const VectorOfFunctionParameters* getParams() const;
   const SequenceType* getReturnValue() const;
 
-  void staticResolution(StaticContext* context);
+  /// Resolve URIs, give the function a default static type
+  void staticResolutionStage1(StaticContext* context);
+  /// Resolve the function body, work out a more static return type
+  void staticResolutionStage2(StaticContext* context);
 
   void setSignature(const XMLCh* signature);
   const XMLCh* getSignature();
@@ -116,6 +119,7 @@ protected:
   SequenceType* m_pReturnPattern;
   VectorOfFunctionParameters* m_pParams;
   XPath2MemoryManager* m_pMemMgr;
+  StaticResolutionContext _src;
   bool m_bStaticallyResolved;
 
   friend class XQFunctionEvaluator;

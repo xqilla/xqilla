@@ -45,14 +45,14 @@ FunctionCompare::FunctionCompare(const VectorOfASTNodes &args, XPath2MemoryManag
 
 Sequence FunctionCompare::collapseTreeInternal(DynamicContext* context, int flags) const
 {
-    Sequence str1 = getParamNumber(1,context);
-    Sequence str2 = getParamNumber(2,context);
+    Sequence str1 = getParamNumber(1,context)->toSequence(context);
+    Sequence str2 = getParamNumber(2,context)->toSequence(context);
     if(str1.isEmpty() || str2.isEmpty())
         return Sequence(context->getMemoryManager());
 
     Collation* collation = NULL;
     if(getNumArgs()>2) {
-        Sequence collArg = getParamNumber(3,context);
+        Sequence collArg = getParamNumber(3,context)->toSequence(context);
         const XMLCh* collName = collArg.first()->asString(context);
         try {
             context->getItemFactory()->createAnyURI(collName, context);

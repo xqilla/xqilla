@@ -36,7 +36,7 @@ private:
   class ParenthesizedResult : public ResultImpl
   {
   public:
-    ParenthesizedResult(const XQParenthesizedExpr *di, int flags, DynamicContext *context);
+    ParenthesizedResult(const XQParenthesizedExpr *di, int flags);
 
     Item::Ptr next(DynamicContext *context);
     std::string asString(DynamicContext *context, int indent) const;

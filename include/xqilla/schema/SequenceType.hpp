@@ -162,9 +162,9 @@ public:
    * Returns a Result that will throw an XPath2TypeMatchException if
    * the toBeTested Result doesn't match this SequenceType.
    */
-  Result matches(const Result &toBeTested, DynamicContext *context) const;
+  Result matches(const Result &toBeTested) const;
 
-  Result convertFunctionArg(const Result &param, const StaticType &stype, DynamicContext *context) const;
+  ASTNode *convertFunctionArg(ASTNode *arg, StaticContext *context) const;
 
   QualifiedName *getConstrainingType(void) const;
   QualifiedName *getConstrainingName(void) const;
@@ -189,35 +189,10 @@ protected:
   // The OccuranceIndicator of this SequenceType
   OccurrenceIndicator m_nOccurrence;
 
-  class AtomicTypeConvertFunctionArgResult : public ResultImpl
-  {
-  public:
-    AtomicTypeConvertFunctionArgResult(const Result &parent, const SequenceType *seqType, DynamicContext *context);
-
-    Item::Ptr next(DynamicContext *context);
-    std::string asString(DynamicContext *context, int indent) const;
-  private:
-    const SequenceType *_seqType;
-    Result _parent;
-  };
-
-  class XPath1CompatConvertFunctionArgResult : public ResultImpl
-  {
-  public:
-    XPath1CompatConvertFunctionArgResult(const Result &parent, const SequenceType *seqType, DynamicContext *context);
-
-    Item::Ptr next(DynamicContext *context);
-    std::string asString(DynamicContext *context, int indent) const;
-  private:
-    const SequenceType *_seqType;
-    Result _parent;
-    bool _oneDone;
-  };
-
   class MatchesResult : public ResultImpl
   {
   public:
-    MatchesResult(const Result &parent, const SequenceType *seqType, DynamicContext *context);
+    MatchesResult(const Result &parent, const SequenceType *seqType);
 
     Item::Ptr next(DynamicContext *context);
     std::string asString(DynamicContext *context, int indent) const;

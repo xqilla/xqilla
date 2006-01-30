@@ -61,7 +61,7 @@ protected:
   class TypeswitchResult : public ResultImpl
   {
   public:
-    TypeswitchResult(const XQTypeswitch *di, int flags, DynamicContext *context);
+    TypeswitchResult(const XQTypeswitch *di, int flags);
 
     Item::Ptr next(DynamicContext *context);
     std::string asString(DynamicContext *context, int indent) const;

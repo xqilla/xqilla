@@ -56,7 +56,6 @@ XQDynamicContextImpl::XQDynamicContextImpl(const StaticContext *staticContext, X
     _internalMM(memMgr),
     _nsResolver(staticContext->getNSResolver()),
     _defaultCollation(0),
-    _ordering(staticContext->getNodeSetOrdering()),
     _defaultElementNS(staticContext->getDefaultElementAndTypeNS()),
     _contextItem(0),
     _contextPosition(1),
@@ -387,14 +386,4 @@ Collation* XQDynamicContextImpl::getDefaultCollation() const
   else {
     return getCollation(_defaultCollation);
   }
-}
-
-StaticContext::NodeSetOrdering XQDynamicContextImpl::getNodeSetOrdering() const
-{
-    return _ordering;
-}
-
-void XQDynamicContextImpl::setNodeSetOrdering(NodeSetOrdering newOrder)
-{
-    _ordering=newOrder;
 }

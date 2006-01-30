@@ -44,13 +44,11 @@ Sequence FunctionMatches::collapseTreeInternal(DynamicContext* context, int flag
 {
   XPath2MemoryManager* memMgr = context->getMemoryManager();
 
-  Sequence inputString=getParamNumber(1,context);
-  Sequence patternString=getParamNumber(2,context);
-
   const XMLCh* input = XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString;
-  if(!inputString.isEmpty())
-    input=inputString.first()->asString(context);
-	const XMLCh* pattern = patternString.first()->asString(context);
+  Item::Ptr inputItem = getParamNumber(1,context)->next(context);
+  if(inputItem.notNull())
+    input=inputItem->asString(context);
+	const XMLCh* pattern = getParamNumber(2,context)->next(context)->asString(context);
 	// If the value of $operand1 is the zero-length string and the value of $operand2 is not the zero-length string,
 	// then the function returns false.
 	if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(input)==0 && XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(pattern)>0)
@@ -61,7 +59,7 @@ Sequence FunctionMatches::collapseTreeInternal(DynamicContext* context, int flag
 
 	const XMLCh* options = XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString;
 	if(getNumArgs()>2)
-		options=getParamNumber(3,context).castAsSingleString(context);
+		options=getParamNumber(3,context)->next(context)->asString(context);
 
   //Check that the options are valid - throw an exception if not (can have s,m,i and x)
   //Note: Are allowed to duplicate the letters.

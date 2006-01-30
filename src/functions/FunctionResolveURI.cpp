@@ -39,12 +39,13 @@ const unsigned int FunctionResolveURI::maxArgs = 2;
 FunctionResolveURI::FunctionResolveURI(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "string?, string", args, memMgr) 
 {
+  _src.getStaticType().flags = StaticType::ANY_URI_TYPE;
 }
 
 Sequence FunctionResolveURI::collapseTreeInternal(DynamicContext* context, int flags) const
 {
   XPath2MemoryManager* memMgr = context->getMemoryManager();
-  Sequence relativeSeq = getParamNumber(1, context);
+  Sequence relativeSeq = getParamNumber(1, context)->toSequence(context);
   if(relativeSeq.isEmpty())
     return Sequence(memMgr);
 
@@ -60,7 +61,7 @@ Sequence FunctionResolveURI::collapseTreeInternal(DynamicContext* context, int f
     }
     else 
     {
-      Sequence baseSeq = getParamNumber(2, context);
+      Sequence baseSeq = getParamNumber(2, context)->toSequence(context);
       baseURI = baseSeq.first()->asString(context);
     }
 

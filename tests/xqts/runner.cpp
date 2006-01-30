@@ -279,7 +279,7 @@ void XQillaTestSuiteRunner::runTestCase(const TestCase &testCase)
     time_t curTime;
     context->setCurrentTime(time(&curTime));
 
-    Sequence result=pParsedQuery->execute(context.get());
+    Sequence result=pParsedQuery->execute(context.get())->toSequence(context.get());
 
     testResults(testCase, serializeXMLResults(result, context.get()));
   }

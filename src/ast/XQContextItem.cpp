@@ -34,16 +34,15 @@ ASTNode* XQContextItem::staticResolution(StaticContext *context)
   _src.setProperties(StaticResolutionContext::DOCORDER | StaticResolutionContext::GROUPED | StaticResolutionContext::PEER | StaticResolutionContext::SUBTREE | StaticResolutionContext::SAMEDOC | StaticResolutionContext::ONENODE);
   _src.getStaticType() = context->getContextItemType();
   _src.contextItemUsed(true);
-  return resolvePredicates(context);
+  return this;
 }
 
 Result XQContextItem::createResult(DynamicContext* context, int flags) const
 {
-  return new ContextItemResult(context);
+  return new ContextItemResult();
 }
 
-XQContextItem::ContextItemResult::ContextItemResult(DynamicContext *context)
-  : SingleResult(context)
+XQContextItem::ContextItemResult::ContextItemResult()
 {
 }
 

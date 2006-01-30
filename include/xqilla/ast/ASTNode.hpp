@@ -14,7 +14,6 @@
 #ifndef _ASTNODE_HPP
 #define _ASTNODE_HPP
 
-
 #include <xqilla/framework/XQillaExport.hpp>
 #include <vector>
 #include <xqilla/framework/XPath2MemoryManager.hpp>
@@ -56,26 +55,20 @@ public:
     VARIABLE_DEFINITION,
     FUNCTION_CALL,
     USER_FUNCTION,
-    ORDERING_CHANGE
+    ORDERING_CHANGE,
+    XPATH1_CONVERT,
+    PROMOTE_UNTYPED,
+    PROMOTE_NUMERIC,
+    PROMOTE_ANY_URI,
+    DOCUMENT_ORDER,
+    PREDICATE,
+    ATOMIZE
   } whichType;
-
-  class PredInfo {
-  public:
-    PredInfo() : pred(0) {}
-    PredInfo(ASTNode *s) : pred(s) {}
-    ASTNode *pred;
-  };
-  typedef std::vector<PredInfo,XQillaAllocator<PredInfo> > Predicates;
-
-  enum executionFlags {
-    UNORDERED =0x01,
-    RETURN_ONE=0x02,
-    RETURN_TWO=0x04
-  };
 
   virtual ~ASTNode() {}
 
-  virtual Result collapseTree(DynamicContext* context, int flags=0) const = 0;
+  /// The flags parameter is currently unused
+  virtual Result collapseTree(DynamicContext *context, int flags=0) const = 0;
 
   /** Returns true if this ASTNode has no predicates, and is an instance of
       XQSequence or XQLiteral */
@@ -84,16 +77,12 @@ public:
       XQSequence or XQLiteral. If the literal value of this ASTNode
       is a single DateOrTimeType, then hasTimezone() on it must return true,
       otherwise this method will return false. */
-  virtual bool isConstantAndHasTimezone(StaticContext* context) const = 0;
+  virtual bool isConstantAndHasTimezone(StaticContext *context) const = 0;
   virtual bool isSingleNumericConstant(StaticContext *context) const = 0;
 
-  virtual void addPredicates(const VectorOfASTNodes &steps) = 0;
-  virtual void addPredicates(const Predicates &steps) = 0;
-
-  /// Returns the type of the ASTNodeImpl pointed to.
   virtual whichType getType(void) const = 0;
 
-  virtual ASTNode* staticResolution(StaticContext *context) = 0;
+  virtual ASTNode *staticResolution(StaticContext *context) = 0;
   /// Returns the StaticResolutionContext for this ASTNode
   virtual const StaticResolutionContext &getStaticResolutionContext() const = 0;
 };

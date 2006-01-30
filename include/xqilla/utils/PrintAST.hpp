@@ -51,6 +51,13 @@ class XQFunctionCall;
 class XQGlobalVariable;
 class XQValidate;
 class XQOrderingChange;
+class XQAtomize;
+class XPath1CompatConvertFunctionArg;
+class XQPromoteUntyped;
+class XQPromoteNumeric;
+class XQPromoteAnyURI;
+class XQDocumentOrder;
+class XQPredicate;
 class DynamicContext;
 class Item;
 
@@ -87,17 +94,22 @@ public:
   virtual std::string printFunctionCall(const XQFunctionCall *item, const DynamicContext *context, int indent);
   virtual std::string printDOMConstructor(const XQDOMConstructor *item, const DynamicContext *context, int indent);
   virtual std::string printOrderingChange(const XQOrderingChange *item, const DynamicContext *context, int indent);
+  virtual std::string printAtomize(const XQAtomize *item, const DynamicContext *context, int indent);
+  virtual std::string printXPath1CompatConvertFunctionArg(const XPath1CompatConvertFunctionArg *item, const DynamicContext *context, int indent);
+  virtual std::string printPromoteUntyped(const XQPromoteUntyped *item, const DynamicContext *context, int indent);
+  virtual std::string printPromoteNumeric(const XQPromoteNumeric *item, const DynamicContext *context, int indent);
+  virtual std::string printPromoteAnyURI(const XQPromoteAnyURI *item, const DynamicContext *context, int indent);
+  virtual std::string printDocumentOrder(const XQDocumentOrder *item, const DynamicContext *context, int indent);
+  virtual std::string printPredicate(const XQPredicate *item, const DynamicContext *context, int indent);
   virtual std::string printUserFunction(const XQUserFunction::XQFunctionEvaluator *item, const DynamicContext *context, int indent);
 
   virtual std::string printItem(const Item::Ptr item, const DynamicContext *context, int indent);
   virtual std::string printSequenceType(const SequenceType *type, const DynamicContext *context, int indent);
   virtual std::string printItemTypeAttrs(const SequenceType::ItemType *type, const DynamicContext *context);
-  virtual std::string printPredicates(const ASTNodeImpl *item, const DynamicContext *context, int indent);
   virtual std::string printXQVariableBinding(const XQVariableBinding *binding, const DynamicContext *context, int indent);
   virtual std::string printSort(const XQSort *sort, const DynamicContext *context, int indent);
   virtual std::string printClause(const XQTypeswitch::Clause *clause, const DynamicContext *context, int indent);
 
-  static bool hasPredicates(const ASTNodeImpl *item);
   static std::string getIndent(int indent);
   static std::string getAxisName(XQStep::Axis axis);
   static std::string getItemTestTypeName(int type);

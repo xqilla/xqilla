@@ -38,7 +38,7 @@ private:
   class InsertBeforeResult : public ResultImpl
   {
   public:
-    InsertBeforeResult(const FunctionInsertBefore *func, int flags, DynamicContext *context);
+    InsertBeforeResult(const FunctionInsertBefore *func, int flags);
 
     Item::Ptr next(DynamicContext *context);
     std::string asString(DynamicContext *context, int indent) const;

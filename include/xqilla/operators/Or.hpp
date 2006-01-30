@@ -33,7 +33,7 @@ private:
   class OrResult : public SingleResult
   {
   public:
-    OrResult(const Or *op, DynamicContext *context);
+    OrResult(const Or *op);
 
     Item::Ptr getSingleResult(DynamicContext *context) const;
     std::string asString(DynamicContext *context, int indent) const;    

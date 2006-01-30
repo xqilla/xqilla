@@ -33,7 +33,7 @@ private:
   class ZeroOrOneResult : public ResultImpl
   {
   public:
-    ZeroOrOneResult(const FunctionZeroOrOne *func, int flags, DynamicContext *context);
+    ZeroOrOneResult(const FunctionZeroOrOne *func, int flags);
 
     Item::Ptr next(DynamicContext *context);
     std::string asString(DynamicContext *context, int indent) const;

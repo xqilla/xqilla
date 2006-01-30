@@ -90,7 +90,7 @@ XQContextImpl::XQContextImpl(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMg
   ////////////////////
   // static context //
   ////////////////////
-  _contextItemType.flags = StaticType::NODE_TYPE | StaticType::NUMERIC_TYPE | StaticType::OTHER_TYPE;
+  _contextItemType.flags = StaticType::ITEM_TYPE;
   _xpath1Compatibility = false;    // according to Formal Semantics, § 4.1.1
   _ordering = ORDERING_ORDERED;
 
@@ -489,7 +489,6 @@ ASTNode* XQContextImpl::lookUpFunction(const XMLCh* prefix, const XMLCh* name, V
 
 		//not bound to anything - error
 		if(uri == 0) {
-
 			const XMLCh* msg = XPath2Utils::concatStrings(X("The prefix '"), prefix , X("' is not bound to a uri in the current context"), getMemoryManager());
 			XQThrow(NamespaceLookupException, X("XQContextImpl::lookUpFunction"), msg);
 		}
@@ -497,20 +496,18 @@ ASTNode* XQContextImpl::lookUpFunction(const XMLCh* prefix, const XMLCh* name, V
 
 	ASTNode* functionImpl=_functionTable->lookUpFunction(uri, name, v, getMemoryManager());
 
-    if(functionImpl == NULL && v.size() == 1)
-    {
-        // maybe it's not a function, but a datatype
-        try
-        {
-          functionImpl = new (getMemoryManager())
-		  FunctionConstructor(uri, name, _itemFactory->getPrimitiveTypeIndex(uri, name), v, getMemoryManager());
-        }
-        catch(TypeNotFoundException&)
-        {
-        // ignore this exception: it means the type has not been found
-        }
+  if(functionImpl == NULL && v.size() == 1) {
+    // maybe it's not a function, but a datatype
+    try {
+      _itemFactory->getPrimitiveTypeIndex(uri, name);
+      functionImpl = new (getMemoryManager())
+        FunctionConstructor(uri, name, v, getMemoryManager());
     }
-    return functionImpl;
+    catch(TypeNotFoundException&) {
+      // ignore this exception: it means the type has not been found
+    }
+  }
+  return functionImpl;
 }
 
 XERCES_CPP_NAMESPACE::DOMDocument *XQContextImpl::createNewDocument() const

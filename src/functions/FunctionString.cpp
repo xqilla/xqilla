@@ -46,7 +46,7 @@ ASTNode* FunctionString::staticResolution(StaticContext *context) {
   if(_args.empty()) {
     _src.contextItemUsed(true);
   }
-  return resolveASTNodes(_args, context, !_args.empty());
+  return resolveArguments(context);
 }
 
 Sequence FunctionString::collapseTreeInternal(DynamicContext* context, int flags) const
@@ -62,7 +62,7 @@ Sequence FunctionString::collapseTreeInternal(DynamicContext* context, int flags
     }
   }
 	else {
-		item = getParamNumber(1, context).next(context);
+		item = getParamNumber(1, context)->next(context);
 	}
 
   return Sequence(string(item, context), memMgr);

@@ -20,6 +20,7 @@
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/items/Item.hpp>
 #include <xqilla/runtime/ResultImpl.hpp>
+#include <xqilla/runtime/EmptyResult.hpp>
 
 class Sequence;
 class SequenceType;
@@ -36,56 +37,52 @@ public:
   Result &operator=(const Result &o);
   ~Result();
 
+  /// Returns the underlying ResultImpl object
+  ResultImpl *operator->();
+
+  /// Returns the underlying ResultImpl object
+  const ResultImpl *operator->() const;
+
+  /// Returns the underlying ResultImpl object
+  ResultImpl *get();
+
+  /// Returns the underlying ResultImpl object
+  const ResultImpl *get() const;
+
   /// Returns true if the underlying pointer is null
   bool isNull() const;
 
-  /// Get the next item from the iterator. Returns null if the is no next value.
-  Item::Ptr next(DynamicContext *context);
-
-  /// Performs iterator specific skip of results
-  void skip();
-
-  /// Cast as a specified type. Only works properly before next() has been called.
-  Result convertFunctionArg(const SequenceType* sequenceType, const StaticType &stype, DynamicContext* context);
-
-  /// castAs( X("string") ) asString(). Only works properly before next() has been called.
-  const XMLCh* castAsSingleString(DynamicContext* context);
-
-  /** Matches a specified type. Only works properly before next() has been called. Throws
-      XPath2TypeMatchException if the match fails. */
-  Result matches(const SequenceType* sequenceType, DynamicContext* context);
-
-  /// Perform atomization. Only works properly before next() has been called.
-  Result atomize(DynamicContext* context);
-
-  /// Returns the effective boolean value of the sequence. Only works properly before next() has been called.
-  bool getEffectiveBooleanValue(DynamicContext* context);
-
-  /// Sorts into document order
-  Result sortIntoDocumentOrder(DynamicContext *context);
-
-  /// Method to convert to a Sequence
-  Sequence toSequence(DynamicContext *context);
-
-  /// Cast operator to a Sequence. Only works properly before next() has been called.
-  operator Sequence();
-
-  /// Debug method to visualise the Result
-  std::string asString(DynamicContext *context, int indent = 0) const;
-
 private:
   ResultImpl *_impl;
+
+  static EmptyResult _empty;
 };
 
-inline Item::Ptr Result::next(DynamicContext *context)
+inline bool Result::isNull() const
 {
-  if(_impl) return _impl->next(context);
-  return 0;
+  return _impl == 0;
 }
 
-inline void Result::skip()
+inline ResultImpl *Result::get()
 {
-  if(_impl) _impl->skip();
+  if(_impl) return _impl;
+  return &_empty;
+}
+
+inline const ResultImpl *Result::get() const
+{
+  if(_impl) return _impl;
+  return &_empty;
+}
+
+inline ResultImpl *Result::operator->()
+{
+  return get();
+}
+
+inline const ResultImpl *Result::operator->() const
+{
+  return get();
 }
 
 inline Result &Result::operator=(const Result &o)

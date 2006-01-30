@@ -27,8 +27,15 @@
 #include <xqilla/items/ATUntypedAtomic.hpp>
 #include <xqilla/functions/FunctionConstructor.hpp>
 #include <xqilla/schema/SequenceType.hpp>
+#include <xqilla/exceptions/XPath2TypeCastException.hpp>
+
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 #include <xercesc/util/XMLString.hpp>
+#include <xercesc/util/XMLException.hpp>
+
+#if defined(XERCES_HAS_CPP_NAMESPACE)
+XERCES_CPP_NAMESPACE_USE
+#endif
 
 AggregateFunction::AggregateFunction(const XMLCh* name, unsigned int argsFrom, unsigned int argsTo, const char* paramDecl, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   :  ConstantFoldingFunction(name,argsFrom, argsTo, paramDecl, args, memMgr)
@@ -54,8 +61,8 @@ Sequence AggregateFunction::validateSequence(Sequence sequence, DynamicContext* 
     
     if (XPath2Utils::equals(atomTypeName, ATUntypedAtomic::fgDT_UNTYPEDATOMIC) &&
         XPath2Utils::equals(atomTypeURI, FunctionConstructor::XMLChXPath2DatatypesURI )) {
-      firstStep.addItem(atom->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                                     XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DOUBLE,
+      firstStep.addItem(atom->castAs(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                                     SchemaSymbols::fgDT_DOUBLE,
                                      context));
     }
     else if(isNumericNaN(*i))
@@ -80,8 +87,8 @@ Sequence AggregateFunction::validateSequence(Sequence sequence, DynamicContext* 
         // if the sequenceType is untypedAtomic then we are the first, so set the sequenceType to the atomType
         if (isNumericType(atomTypeURI, atomTypeName, context)) {
           sequenceTypeURI = atom->getPrimitiveTypeURI();
-          if(context->isTypeOrDerivedFromType(atomTypeURI, atomTypeName, XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA, XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_INTEGER)) {
-            sequenceTypeName = XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_INTEGER;
+          if(context->isTypeOrDerivedFromType(atomTypeURI, atomTypeName, SchemaSymbols::fgURI_SCHEMAFORSCHEMA, SchemaSymbols::fgDT_INTEGER)) {
+            sequenceTypeName = SchemaSymbols::fgDT_INTEGER;
           } else {
             sequenceTypeName = atom->getPrimitiveTypeName();
           }
@@ -97,43 +104,58 @@ Sequence AggregateFunction::validateSequence(Sequence sequence, DynamicContext* 
         // if the atomType is derived from the sequenceType let it pass to get dealt with by the SequenceType class
       } else if (isNumericType(sequenceTypeURI, sequenceTypeName, context) && isNumericType(atomTypeURI, atomTypeName, context)) {
         // if we are dealing with numerics determine which common type to promote to
-        if (XPath2Utils::equals(sequenceTypeName, XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DOUBLE)) {
+        if (XPath2Utils::equals(sequenceTypeName, SchemaSymbols::fgDT_DOUBLE)) {
           // sequenceType is double, so do nothing since double is king
-        } else if (XPath2Utils::equals(sequenceTypeName, XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_FLOAT)) {
+        } else if (XPath2Utils::equals(sequenceTypeName, SchemaSymbols::fgDT_FLOAT)) {
           // sequenceType is float, so if atomType is double then so is sequenceType
-          if (XPath2Utils::equals(atom->getPrimitiveTypeName(), XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DOUBLE))
+          if (XPath2Utils::equals(atom->getPrimitiveTypeName(), SchemaSymbols::fgDT_DOUBLE))
             sequenceTypeName = atom->getPrimitiveTypeName();
-        } else if (context->isTypeOrDerivedFromType(sequenceTypeURI, sequenceTypeName,  XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA, XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DECIMAL)) {
-          if (!context->isTypeOrDerivedFromType(atomTypeURI, atomTypeName, XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA, XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_INTEGER)) {
+        } else if (context->isTypeOrDerivedFromType(sequenceTypeURI, sequenceTypeName,  SchemaSymbols::fgURI_SCHEMAFORSCHEMA, SchemaSymbols::fgDT_DECIMAL)) {
+          if (!context->isTypeOrDerivedFromType(atomTypeURI, atomTypeName, SchemaSymbols::fgURI_SCHEMAFORSCHEMA, SchemaSymbols::fgDT_INTEGER)) {
             sequenceTypeName = atom->getPrimitiveTypeName();
           }          
         } else { 
           // we should never actually get here
-          XQThrow(IllegalArgumentException, X("AggregateFunction::validateSequence"), X("Invalid argument to aggregate function"));
+          XQThrow(::IllegalArgumentException, X("AggregateFunction::validateSequence"), X("Invalid argument to aggregate function"));
         }
       } else { // we have incompatible types
-        XQThrow(IllegalArgumentException, X("AggregateFunction::validateSequence"), X("Invalid argument to aggregate function"));
+        XQThrow(::IllegalArgumentException, X("AggregateFunction::validateSequence"), X("Invalid argument to aggregate function"));
       } 
     }
   }
- 
-  SequenceType sequenceType(sequenceTypeURI, sequenceTypeName, SequenceType::STAR);
-  Sequence castedSequence(context->getMemoryManager());
-  try {
-    StaticType stype;
-    stype.flags = StaticType::NODE_TYPE;
-    castedSequence = sequenceType.convertFunctionArg(firstStep, stype, context).toSequence(context);
-  } catch (XPath2ErrorException &e) {
-    XQThrow(IllegalArgumentException, X("AggregateFunction::validateSequence"), X("Invalid argument to aggregate function"));    
+
+  if(isNumericType(sequenceTypeURI, sequenceTypeName, context)) {
+    Sequence castedSequence(context->getMemoryManager());
+    try {
+      i = firstStep.begin();
+      for (; i != firstStep.end(); ++i) {
+        const AnyAtomicType::Ptr atomic = (const AnyAtomicType *)i->get();
+        if(atomic->isNumericValue()) {
+          const Numeric::Ptr promotedType = ((const Numeric*)atomic.get())->promoteTypeIfApplicable(sequenceTypeURI, sequenceTypeName, context);
+          if(promotedType != NULLRCP) {
+            castedSequence.addItem(promotedType);
+          }
+          else {
+            XQThrow(::IllegalArgumentException, X("AggregateFunction::validateSequence"), X("Invalid argument to aggregate function"));    
+          }
+        }
+      }
+    } catch (XPath2TypeCastException &e) {
+      XQThrow(::IllegalArgumentException, X("AggregateFunction::validateSequence"), X("Invalid argument to aggregate function"));    
+    } catch (const XMLException& e) {
+      XQThrow(::IllegalArgumentException, X("AggregateFunction::validateSequence"), X("Invalid argument to aggregate function"));    
+    }
+
+    return castedSequence;
   }
 
-  return castedSequence;
+  return firstStep;
 }
 
 bool AggregateFunction::isNumericType(const XMLCh* typeURI, const XMLCh* typeName, const DynamicContext* context) const {
-  return (context->isTypeOrDerivedFromType(typeURI,typeName, XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DECIMAL) || 
-          context->isTypeOrDerivedFromType(typeURI,typeName, XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_FLOAT) || 
-          context->isTypeOrDerivedFromType(typeURI,typeName, XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DOUBLE));
+  return (context->isTypeOrDerivedFromType(typeURI,typeName, SchemaSymbols::fgURI_SCHEMAFORSCHEMA, SchemaSymbols::fgDT_DECIMAL) || 
+          context->isTypeOrDerivedFromType(typeURI,typeName, SchemaSymbols::fgURI_SCHEMAFORSCHEMA, SchemaSymbols::fgDT_FLOAT) || 
+          context->isTypeOrDerivedFromType(typeURI,typeName, SchemaSymbols::fgURI_SCHEMAFORSCHEMA, SchemaSymbols::fgDT_DOUBLE));
 }  
 
 bool AggregateFunction::isNumericNaN(const Item::Ptr &item) const

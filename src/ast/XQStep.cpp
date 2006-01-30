@@ -23,9 +23,10 @@
 #include <xqilla/ast/StaticResolutionContext.hpp>
 #include <xqilla/exceptions/TypeErrorException.hpp>
 #include <xqilla/utils/PrintAST.hpp>
+#include <xqilla/ast/XQDocumentOrder.hpp>
 
 XQStep::XQStep(Axis axis, NodeTest* nodeTest, XPath2MemoryManager* memMgr)
-	: ASTNodeImpl(memMgr),
+  : ASTNodeImpl(memMgr),
     nodeTest_(nodeTest),
     axis_(axis)
 {
@@ -34,7 +35,6 @@ XQStep::XQStep(Axis axis, NodeTest* nodeTest, XPath2MemoryManager* memMgr)
 
 XQStep::~XQStep()
 {
-	//no-op
 }
 
 
@@ -65,18 +65,22 @@ ASTNode* XQStep::staticResolution(StaticContext *context)
   default:
     break;
   }
-  properties |= StaticResolutionContext::DOCORDER | StaticResolutionContext::GROUPED | StaticResolutionContext::SAMEDOC;
+  properties |= StaticResolutionContext::GROUPED | StaticResolutionContext::SAMEDOC;
+
+  if(isForwardAxis(axis_) || axis_ == PARENT) {
+    properties |= StaticResolutionContext::DOCORDER;
+  }
 
   _src.setProperties(properties);
   _src.getStaticType().flags = StaticType::NODE_TYPE;
   _src.contextItemUsed(true);
   nodeTest_->staticResolution(context);
-  return resolvePredicates(context);
+  return this;
 }
 
 Result XQStep::createResult(DynamicContext* context, int flags) const 
 {
-  return new StepResult(this, context);
+  return new StepResult(this);
 }
 
 bool XQStep::isForwardAxis(Axis axis)
@@ -102,19 +106,6 @@ bool XQStep::isForwardAxis(Axis axis)
   return false;
 }
 
-Result XQStep::postPredicateResultHook(Result &result, DynamicContext* context, int flags) const
-{
-  // parent axis doesn't need reordering
-  if(!(context->getNodeSetOrdering()==StaticContext::ORDERING_UNORDERED || flags & ASTNode::UNORDERED) &&
-     !isForwardAxis(axis_) && axis_ != PARENT) {
-    // Reorder reverse axis results
-    return result.sortIntoDocumentOrder(context);
-  }
-  else {
-    return result;
-  }
-}
-
 const NodeTest *XQStep::getNodeTest() const {
   return nodeTest_;
 }
@@ -131,9 +122,8 @@ void XQStep::setAxis(XQStep::Axis a) {
   axis_ = a;
 }
 
-XQStep::StepResult::StepResult(const XQStep *step, DynamicContext *context)
-  : ResultImpl(context),
-    toDo_(true),
+XQStep::StepResult::StepResult(const XQStep *step)
+  : toDo_(true),
     result_(0),
     step_(step)
 {
@@ -153,7 +143,7 @@ Item::Ptr XQStep::StepResult::next(DynamicContext *context)
     result_ = ((Node*)item.get())->getAxisResult(step_->getAxis(), step_->getNodeTest(), context);
   }
 
-  return result_.next(context);
+  return result_->next(context);
 }
 
 std::string XQStep::StepResult::asString(DynamicContext *context, int indent) const

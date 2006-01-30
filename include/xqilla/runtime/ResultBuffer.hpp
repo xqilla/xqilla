@@ -43,7 +43,7 @@ private:
   class BufferedResult : public ResultImpl
   {
   public:
-    BufferedResult(ResultBufferImpl *impl, DynamicContext *context);
+    BufferedResult(ResultBufferImpl *impl);
     ~BufferedResult();
 
     Item::Ptr next(DynamicContext *context);

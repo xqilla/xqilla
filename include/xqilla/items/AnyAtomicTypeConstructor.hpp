@@ -16,16 +16,17 @@
 
 #include <xqilla/items/ItemConstructor.hpp>
 #include <xercesc/util/XercesDefs.hpp>
+#include <xqilla/ast/StaticType.hpp>
 
 class XQILLA_API AnyAtomicTypeConstructor : public ItemConstructor {
 public:
   AnyAtomicTypeConstructor(const XMLCh* typeURI,
                            const XMLCh* typeName,
                            const XMLCh* value,
-                           bool numeric);
+                           AnyAtomicType::AtomicObjectType primitiveType);
   virtual ~AnyAtomicTypeConstructor() {}
 
-  virtual bool isNumeric() const;
+  virtual const StaticType &getStaticType() const { return _sType; }
 
   virtual Item::Ptr createItem(const DynamicContext* context) const;
   virtual std::string asString(const DynamicContext* context) const;
@@ -34,7 +35,8 @@ private:
   const XMLCh *_typeURI;
   const XMLCh *_typeName;
   const XMLCh *_value;
-  bool _numeric;
+  AnyAtomicType::AtomicObjectType _primitiveType;
+  StaticType _sType;
 };
 
 #endif

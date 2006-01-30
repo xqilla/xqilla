@@ -51,7 +51,7 @@ Sequence FunctionResolveQName::collapseTreeInternal(DynamicContext* context, int
 {
   XPath2MemoryManager* memMgr = context->getMemoryManager();
 
-  Sequence arg1=getParamNumber(1, context);
+  Sequence arg1=getParamNumber(1, context)->toSequence(context);
   if(arg1.isEmpty())
     return Sequence(memMgr);
     
@@ -62,7 +62,7 @@ Sequence FunctionResolveQName::collapseTreeInternal(DynamicContext* context, int
   const XMLCh* prefix = XPath2NSUtils::getPrefix(paramQName, memMgr);
   const XMLCh* localName = XPath2NSUtils::getLocalName(paramQName);
 
-  Sequence arg2=getParamNumber(2, context);
+  Sequence arg2=getParamNumber(2, context)->toSequence(context);
   Node::Ptr node = (Node::Ptr)arg2.first();
 
   bool noPrefix = XPath2Utils::equals(prefix, XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString);
@@ -70,7 +70,7 @@ Sequence FunctionResolveQName::collapseTreeInternal(DynamicContext* context, int
 
   Result namespaces = node->dmNamespaceNodes(context);
   Node::Ptr ns;
-  while((ns = (Node::Ptr)namespaces.next(context)).notNull()) {
+  while((ns = (Node::Ptr)namespaces->next(context)).notNull()) {
     ATQNameOrDerived::Ptr name = ns->dmNodeName(context);
     if(name.isNull()) {
       if(noPrefix) {

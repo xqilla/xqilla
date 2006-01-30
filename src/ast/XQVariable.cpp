@@ -80,7 +80,7 @@ ASTNode* XQVariable::staticResolution(StaticContext *context)
   _src.getStaticType() = var_src->getStaticType();
   _src.variableUsed(_uri, _name);
 
-  return resolvePredicates(context);
+  return this;
 }
 
 const XMLCh *XQVariable::getPrefix() const {

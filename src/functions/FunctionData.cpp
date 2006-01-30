@@ -13,10 +13,8 @@
 
 #include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionData.hpp>
-#include <xqilla/items/Node.hpp>
-#include <xqilla/items/Item.hpp>
-#include <xqilla/exceptions/FunctionException.hpp>
 #include <xqilla/context/DynamicContext.hpp>
+#include <xqilla/ast/XQAtomize.hpp>
 
 const XMLCh FunctionData::name[] = {
   XERCES_CPP_NAMESPACE_QUALIFIER chLatin_d, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t, 
@@ -36,38 +34,16 @@ FunctionData::FunctionData(const VectorOfASTNodes &args, XPath2MemoryManager* me
 
 ASTNode* FunctionData::staticResolution(StaticContext *context)
 {
-  bool allConstant = true;
-  for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
-    *i = (*i)->staticResolution(context);
-    _src.getStaticType() = (*i)->getStaticResolutionContext().getStaticType();
-    _src.add((*i)->getStaticResolutionContext());
-    if(!(*i)->isConstant()) {
-      allConstant = false;
-    }
-    break; // should only be one
-  }
+  XPath2MemoryManager *mm = context->getMemoryManager();
 
-  if(_src.getStaticType().flags & StaticType::NODE_TYPE) {
-    _src.getStaticType().flags &= ~StaticType::NODE_TYPE;
-    _src.getStaticType().flags |= StaticType::NUMERIC_TYPE | StaticType::OTHER_TYPE;
-  }
-  else {
-    // If the parameter has no nodes, this function does nothing
-    _args.front()->addPredicates(getPredicates());
-    return _args.front();
-  }
-
-  if(allConstant) {
-    return constantFold(context);
-  }
-  else {
-    return resolvePredicates(context);
-  }
+  return (new (mm) XQAtomize(_args.front(), mm))->staticResolution(context);
 }
 
 Result FunctionData::createResult(DynamicContext* context, int flags) const
 {
-  return getParamNumber(1, context, flags).atomize(context);
+  // Should never happen
+  assert(0);
+  return 0;
 }
 
 

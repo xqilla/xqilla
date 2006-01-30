@@ -43,14 +43,14 @@ FunctionTranslate::FunctionTranslate(const VectorOfASTNodes &args, XPath2MemoryM
 Sequence FunctionTranslate::collapseTreeInternal(DynamicContext* context, int flags) const
 {
 	XPath2MemoryManager* memMgr = context->getMemoryManager();
-	Sequence str1 = getParamNumber(1,context);
+	Sequence str1 = getParamNumber(1,context)->toSequence(context);
 
 	if(str1.isEmpty()) {
     return Sequence(context->getItemFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context), memMgr);
   }
  
-	Sequence str2 = getParamNumber(2,context);
-	Sequence str3 = getParamNumber(3,context);
+	Sequence str2 = getParamNumber(2,context)->toSequence(context);
+	Sequence str3 = getParamNumber(3,context)->toSequence(context);
 
 	const XMLCh* container = str1.first()->asString(context);
 	const XMLCh* search = str2.first()->asString(context);

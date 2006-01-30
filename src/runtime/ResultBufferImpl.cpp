@@ -42,7 +42,7 @@ void ResultBufferImpl::decrementRefCount()
 const Item::Ptr ResultBufferImpl::item(unsigned int index, DynamicContext *context)
 {
   while(!_done && index >= _items.size()) {
-    const Item::Ptr item = _result.next(context);
+    const Item::Ptr item = _result->next(context);
     if(item == NULLRCP) {
       _done = true;
     }

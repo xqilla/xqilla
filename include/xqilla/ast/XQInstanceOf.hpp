@@ -37,7 +37,7 @@ protected:
   class InstanceOfResult : public SingleResult
   {
   public:
-    InstanceOfResult(const XQInstanceOf *di, int flags, DynamicContext *context);
+    InstanceOfResult(const XQInstanceOf *di, int flags);
 
     Item::Ptr getSingleResult(DynamicContext *context) const;
     std::string asString(DynamicContext *context, int indent) const;
@@ -47,8 +47,8 @@ protected:
     const XQInstanceOf *_di;
   };
 
-	ASTNode* _expr;
-	SequenceType* _exprType;
+  ASTNode* _expr;
+  SequenceType* _exprType;
 };
 
 #endif

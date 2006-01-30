@@ -20,6 +20,8 @@
 #include <xqilla/exceptions/FunctionException.hpp>
 #include <xqilla/exceptions/XPath2TypeCastException.hpp>
 #include <xqilla/ast/StaticResolutionContext.hpp>
+#include <xqilla/exceptions/XPath2TypeMatchException.hpp>
+
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 #include <assert.h>
 
@@ -42,37 +44,47 @@ FunctionNumber::FunctionNumber(const VectorOfASTNodes &args, XPath2MemoryManager
   _src.getStaticType().flags = StaticType::NUMERIC_TYPE;
 }
 
-ASTNode* FunctionNumber::staticResolution(StaticContext *context) {
+ASTNode* FunctionNumber::staticResolution(StaticContext *context)
+{
   if(_args.empty()) {
     _src.contextItemUsed(true);
   }
-  return resolveASTNodes(_args, context, !_args.empty());
+  return resolveArguments(context);
 }
 
 Sequence FunctionNumber::collapseTreeInternal(DynamicContext* context, int flags) const
 {
   XPath2MemoryManager* memMgr = context->getMemoryManager();
-
+  
   Item::Ptr item = 0;
-	if(getNumArgs() == 0) {
-		item = context->getContextItem();
+  if(getNumArgs() == 0) {
+    item = context->getContextItem();
     if(item == NULLRCP) {
       XQThrow(FunctionException, X("FunctionNumber::collapseTreeInternal"),
-               X("Undefined context item in fn:number [err:FONC0001]"));
+              X("Undefined context item in fn:number [err:FONC0001]"));
     }
-    // Treat like the function parameter was "."
-    Sequence ci_seq(item, memMgr);
-    Result ci_result(ci_seq);
 
-    StaticType stype;
-    stype.flags = StaticType::NODE_TYPE;
-    item = ci_result.convertFunctionArg((*_paramDecl)[0], stype, context).next(context);
+    if(item->isNode()) {
+      Sequence typedValue = ((Node *)item.get())->dmTypedValue(context);
+      if(typedValue.getLength() < 1) {
+        XQThrow(XPath2TypeMatchException, X("FunctionNumber::collapseTreeInternal"),
+                X("SequenceType matching failed: the sequence does not contain items [err:XPTY0004]"));
+      }
+      if(typedValue.getLength() > 1) {
+        XQThrow(XPath2TypeMatchException, X("FunctionNumber::collapseTreeInternal"),
+                X("SequenceType matching failed: the sequence contains more than one item [err:XPTY0004]"));
+      }
+      item = typedValue.first();
+    }
   }
-	else {
-		item = getParamNumber(1, context).next(context);
-	}
-  
+  else {
+    item = getParamNumber(1, context)->next(context);
+  }
+
   return Sequence(number((const AnyAtomicType::Ptr )item, context), memMgr);
+
+  return Sequence(number((const AnyAtomicType *)getParamNumber(1, context)->next(context).get(), context),
+                  context->getMemoryManager());
 }
 
 Item::Ptr FunctionNumber::number(const AnyAtomicType::Ptr &item, DynamicContext *context)

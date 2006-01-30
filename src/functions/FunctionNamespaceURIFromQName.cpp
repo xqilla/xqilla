@@ -39,11 +39,12 @@ const unsigned int FunctionNamespaceURIFromQName::maxArgs = 1;
 FunctionNamespaceURIFromQName::FunctionNamespaceURIFromQName(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "QName?", args, memMgr)
 {
+  _src.getStaticType().flags = StaticType::ANY_URI_TYPE;
 }
 
 Sequence FunctionNamespaceURIFromQName::collapseTreeInternal(DynamicContext* context, int flags) const
 {
-  Sequence arg=getParamNumber(1,context);
+  Sequence arg=getParamNumber(1,context)->toSequence(context);
   if(arg.isEmpty())
     return Sequence(context->getMemoryManager());
   return Sequence(context->getItemFactory()->createAnyURI(((const ATQNameOrDerived*)arg.first().get())->getURI(), context),

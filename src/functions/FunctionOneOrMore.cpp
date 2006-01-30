@@ -36,17 +36,16 @@ FunctionOneOrMore::FunctionOneOrMore(const VectorOfASTNodes &args, XPath2MemoryM
   : ConstantFoldingFunction(name, minArgs, maxArgs, "item()*", args, memMgr)
 {
   // TBD - could do better here - jpcs
-  _src.getStaticType().flags = StaticType::NUMERIC_TYPE | StaticType::NODE_TYPE | StaticType::OTHER_TYPE;
+  _src.getStaticType().flags = StaticType::ITEM_TYPE;
 }
 
 Result FunctionOneOrMore::createResult(DynamicContext* context, int flags) const
 {
-  return new OneOrMoreResult(this, flags, context);
+  return new OneOrMoreResult(this, flags);
 }
 
-FunctionOneOrMore::OneOrMoreResult::OneOrMoreResult(const FunctionOneOrMore *func, int flags, DynamicContext *context)
-  : ResultImpl(context),
-    _flags(flags),
+FunctionOneOrMore::OneOrMoreResult::OneOrMoreResult(const FunctionOneOrMore *func, int flags)
+  : _flags(flags),
     _func(func),
     _arg(0),
     _argNo(0)
@@ -56,10 +55,10 @@ FunctionOneOrMore::OneOrMoreResult::OneOrMoreResult(const FunctionOneOrMore *fun
 Item::Ptr FunctionOneOrMore::OneOrMoreResult::next(DynamicContext *context)
 {
   if(_arg.isNull()) {
-    _arg = _func->getParamNumber(1, context, _flags & ~(ASTNode::RETURN_ONE|ASTNode::RETURN_TWO));
+    _arg = _func->getParamNumber(1, context);
   }
 
-  const Item::Ptr result = _arg.next(context);
+  const Item::Ptr result = _arg->next(context);
   ++_argNo;
 
   if(_argNo == 1 && result == NULLRCP) {

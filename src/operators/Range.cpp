@@ -25,7 +25,11 @@
 #include <xqilla/context/ItemFactory.hpp>
 #include <assert.h>
 
-/*static*/ const XMLCh Range::name[]={ XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
+#if defined(XERCES_HAS_CPP_NAMESPACE)
+XERCES_CPP_NAMESPACE_USE
+#endif
+
+/*static*/ const XMLCh Range::name[]={ chLatin_t, chLatin_o, chNull };
 
 Range::Range(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : XQOperator(name, args, memMgr)
@@ -34,8 +38,26 @@ Range::Range(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
 
 ASTNode* Range::staticResolution(StaticContext *context)
 {
+  static SequenceType integerType(SchemaSymbols::fgURI_SCHEMAFORSCHEMA, 
+                                  SchemaSymbols::fgDT_INTEGER,
+                                  SequenceType::QUESTION_MARK);
+
   _src.getStaticType().flags = StaticType::NUMERIC_TYPE;
-  return XQOperator::staticResolution(context);
+
+  for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
+    *i = integerType.convertFunctionArg(*i, context);
+    *i = (*i)->staticResolution(context);
+    _src.add((*i)->getStaticResolutionContext());
+
+    if((*i)->isConstant() && !(*i)->isConstantAndHasTimezone(context)) {
+      _src.implicitTimezoneUsed(true);
+    }
+  }
+
+  if(!_src.isUsed()) {
+    return constantFold(context);
+  }
+  return this;
 }
 
 Result Range::createResult(DynamicContext* context, int flags) const
@@ -44,8 +66,7 @@ Result Range::createResult(DynamicContext* context, int flags) const
 }
 
 Range::RangeResult::RangeResult(const Range *op, DynamicContext *context)
-  : ResultImpl(context),
-    _op(op),
+  : _op(op),
     _last(0),
     _step(context->getItemFactory()->createInteger(1, context)),
     _end(0)
@@ -54,16 +75,10 @@ Range::RangeResult::RangeResult(const Range *op, DynamicContext *context)
 
 Item::Ptr Range::RangeResult::next(DynamicContext *context)
 {
-  static SequenceType integerType(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA, 
-                                  XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_INTEGER,
-                                  SequenceType::QUESTION_MARK);
-
   if(_end == NULLRCP) {
     // initialise
-    _last = (const Numeric::Ptr )_op->getArgument(0)->collapseTree(context, ASTNode::UNORDERED|ASTNode::RETURN_TWO).
-      convertFunctionArg(&integerType, _op->getArgument(0)->getStaticResolutionContext().getStaticType(), context).next(context);
-    _end = (const Numeric::Ptr )_op->getArgument(1)->collapseTree(context, ASTNode::UNORDERED|ASTNode::RETURN_TWO).
-      convertFunctionArg(&integerType, _op->getArgument(1)->getStaticResolutionContext().getStaticType(), context).next(context);
+    _last = (const Numeric::Ptr )_op->getArgument(0)->collapseTree(context)->next(context);
+    _end = (const Numeric::Ptr )_op->getArgument(1)->collapseTree(context)->next(context);
     if(_last.isNull() || _end.isNull() || _last->greaterThan(_end, context))
       _last = 0;
   }

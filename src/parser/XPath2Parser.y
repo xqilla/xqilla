@@ -37,6 +37,7 @@
 #include <xqilla/ast/XQContextItem.hpp>
 #include <xqilla/ast/XQQuantified.hpp>
 #include <xqilla/ast/XQFLWOR.hpp>
+#include <xqilla/ast/XQDocumentOrder.hpp>
 
 #include <xqilla/utils/XPath2NSUtils.hpp>
 
@@ -138,14 +139,13 @@ void yyerror(const char* s);
 %type <astNodeImpl>			_ReverseStep
 %type <astNodeImpl>			_AbbrevForwardStep
 %type <astNodeImpl>			_AbbrevReverseStep
-%type <astNodeStore>			_PredicateList
+%type <predicates>			_PredicateList
 %type <astNodeStore>			_ArgumentList
 %type <astNodeImpl>		_NumericLiteral
 %type <astNodeImpl>		_Literal
 %type <astNodeImpl>		_ParenthesizedExpr
 %type <astNodeImpl>		_FunctionCall
 %type <astNodeImpl>        _ContextItemExpr
-%type <astNodeImpl>        _Predicate
 %type <sequenceType>		_SequenceType
 %type <sequenceType>		_SingleType
 %type <itemType>			_ItemType
@@ -743,7 +743,7 @@ _PathExpr:
 
   _SLASH_ {
 		XQNav *nav = new (((XPathParserControl *)parm)->memMgr) XQNav(((XPathParserControl *)parm)->memMgr);
-		nav->setGotoRootFirst(true);
+    nav->addInitialRootStep(((XPathParserControl *)parm)->memMgr);
 		$$ = nav;
   }
 
@@ -752,15 +752,15 @@ _PathExpr:
         // Optimization: if the _RelativePathExpr is already a XQNav, simply set the "go to root" flag
         if($2->getType()==ASTNode::NAVIGATION)
         {
-            ((XQNav*)$2)->setGotoRootFirst(true);
+            ((XQNav*)$2)->addInitialRootStep(((XPathParserControl *)parm)->memMgr);
             $$ = $2;
         }
         else
         {
 	        XQNav *nav = new (((XPathParserControl *)parm)->memMgr) XQNav(((XPathParserControl *)parm)->memMgr);
-		    nav->setGotoRootFirst(true);
-		    nav->addStep($2);
-		    $$ = nav;
+          nav->addInitialRootStep(((XPathParserControl *)parm)->memMgr);
+  		    nav->addStep($2);
+	  	    $$ = nav;
         }
   }
 
@@ -774,13 +774,13 @@ _PathExpr:
       nav->addStep($2);
     }
 
-    nav->setGotoRootFirst(true);
-
     NodeTest *step = new (((XPathParserControl *)parm)->memMgr) NodeTest();
     step->setTypeWildcard();
     step->setNameWildcard();
     step->setNamespaceWildcard();
     nav->addStepFront(new (((XPathParserControl *)parm)->memMgr) XQStep(XQStep::DESCENDANT_OR_SELF, step, ((XPathParserControl *)parm)->memMgr));
+
+    nav->addInitialRootStep(((XPathParserControl *)parm)->memMgr);
 
     $$ = nav;
 	}
@@ -865,14 +865,13 @@ _AxisStep:
 	*/
 
     _ForwardStep _PredicateList {
-        $1->addPredicates(*$2);
+        $$ = XQPredicate::addPredicates($1, $2);
         delete $2;
-        $$ = $1;
     }
     | _ReverseStep _PredicateList {
-        $1->addPredicates(*$2);
+        $$ = XQPredicate::addPredicates($1, $2);
         delete $2;
-        $$ = $1;
+        $$ = new (((XPathParserControl *)parm)->memMgr) XQDocumentOrder($$, ((XPathParserControl *)parm)->memMgr);
     }
 ;
 
@@ -1122,9 +1121,8 @@ _FilterExpr:
 	*/
 
     _PrimaryExpr _PredicateList {
-        $1->addPredicates(*$2);
+        $$ = XQPredicate::addPredicates($1, $2);
         delete $2;
-        $$ = $1;
     }
 
 ;
@@ -1132,25 +1130,16 @@ _FilterExpr:
 _PredicateList:
 	/*
 	[39]     Predicates     ::=     Predicate*
-	*/
-
-    /* empty */ {
-        $$ = new VectorOfASTNodes(XQillaAllocator<ASTNode*>(((XPathParserControl *)parm)->memMgr));
-    }
-	| _PredicateList _Predicate {
-        $1->push_back($2);
-        $$ = $1;
-	}
-
-;
-
-_Predicate:
-	/*
 	[40]     Predicate     ::=      "[" Expr "]"
 	*/
 
-	_LBRACK_ _Expr _RBRACK_ {
-        $$ = $2;
+    /* empty */ {
+        $$ = new VectorOfPredicates(((XPathParserControl *)parm)->memMgr);
+    }
+	| _PredicateList _LBRACK_ _Expr _RBRACK_ {
+        XQPredicate *pred = new (((XPathParserControl *)parm)->memMgr) XQPredicate($3, ((XPathParserControl *)parm)->memMgr);
+        $1->push_back(pred);
+        $$ = $1;
 	}
 
 ;
@@ -1198,7 +1187,8 @@ _Literal:
       AnyAtomicTypeConstructor(
 				XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 				XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
-				((XPathParserControl *)parm)->memMgr->getPooledString($1), /*isNumeric*/false);
+				((XPathParserControl *)parm)->memMgr->getPooledString($1),
+        AnyAtomicType::STRING);
 		XQLiteral *str_val  = new (((XPathParserControl *)parm)->memMgr)
       XQLiteral(ic, ((XPathParserControl *)parm)->memMgr);
 		$$ = str_val;
@@ -1218,7 +1208,8 @@ _NumericLiteral:
       AnyAtomicTypeConstructor(
 			XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 			XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_INTEGER,
-				((XPathParserControl *)parm)->memMgr->getPooledString($1), /*isNumeric*/true);
+				((XPathParserControl *)parm)->memMgr->getPooledString($1),
+      AnyAtomicType::DECIMAL);
     XQLiteral *did  = new (((XPathParserControl *)parm)->memMgr)
       XQLiteral(ic, ((XPathParserControl *)parm)->memMgr);
     delete [] $1;
@@ -1230,7 +1221,8 @@ _NumericLiteral:
       AnyAtomicTypeConstructor(
 			XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 			XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DECIMAL,
-				((XPathParserControl *)parm)->memMgr->getPooledString($1), /*isNumeric*/true);
+				((XPathParserControl *)parm)->memMgr->getPooledString($1),
+      AnyAtomicType::DECIMAL);
     XQLiteral *did  = new (((XPathParserControl *)parm)->memMgr)
       XQLiteral(ic, ((XPathParserControl *)parm)->memMgr);
     delete $1;
@@ -1242,7 +1234,8 @@ _NumericLiteral:
       AnyAtomicTypeConstructor(
 			XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 			XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DOUBLE,
-				((XPathParserControl *)parm)->memMgr->getPooledString($1), /*isNumeric*/true);
+				((XPathParserControl *)parm)->memMgr->getPooledString($1),
+      AnyAtomicType::DOUBLE);
     XQLiteral *did  = new (((XPathParserControl *)parm)->memMgr)
       XQLiteral(ic, ((XPathParserControl *)parm)->memMgr);
     delete $1;

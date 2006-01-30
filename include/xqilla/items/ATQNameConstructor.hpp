@@ -16,6 +16,7 @@
 
 #include <xqilla/items/ItemConstructor.hpp>
 #include <xercesc/util/XercesDefs.hpp>
+#include <xqilla/ast/StaticType.hpp>
 
 class XQILLA_API ATQNameConstructor : public ItemConstructor {
 public:
@@ -26,7 +27,7 @@ public:
                      const XMLCh* localname);
   virtual ~ATQNameConstructor() {}
 
-  virtual bool isNumeric() const;
+  virtual const StaticType &getStaticType() const { return _sType; }
 
   virtual Item::Ptr createItem(const DynamicContext* context) const;
   virtual std::string asString(const DynamicContext* context) const;
@@ -37,6 +38,7 @@ private:
   const XMLCh *_uri;
   const XMLCh *_prefix;
   const XMLCh *_localname;
+  StaticType _sType;
 };
 
 #endif

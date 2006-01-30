@@ -39,7 +39,7 @@ protected:
   class IfResult : public ResultImpl
   {
   public:
-    IfResult(const XQIf *di, int flags, DynamicContext *context);
+    IfResult(const XQIf *di, int flags);
 
     Item::Ptr next(DynamicContext *context);
     std::string asString(DynamicContext *context, int indent) const;

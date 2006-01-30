@@ -25,8 +25,8 @@ XERCES_CPP_NAMESPACE_USE
 #endif
 
 NamespaceAxis::NamespaceAxis(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *contextNode, const Node *nodeObj,
-       const NodeTest *nodeTest, DynamicContext *context, const AxisNodeFactory &factory)
-  : Axis(contextNode, nodeObj, nodeTest, context, factory),
+       const NodeTest *nodeTest, const AxisNodeFactory &factory)
+  : Axis(contextNode, nodeObj, nodeTest, factory),
     node_(contextNode),
     originalNode_(contextNode),
     nodeMap_(node_->getAttributes()),
@@ -35,7 +35,7 @@ NamespaceAxis::NamespaceAxis(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *conte
 {
 }
 
-const DOMNode *NamespaceAxis::nextNode()
+const DOMNode *NamespaceAxis::nextNode(DynamicContext *context)
 {
   const DOMNode *result = 0;
 
@@ -102,8 +102,8 @@ const DOMNode *NamespaceAxis::nextNode()
   if(result==0 && !defNsTested_)
   {
     defNsTested_=true;
-    if(context_->getDefaultElementAndTypeNS()!=0 && done_.insert(0).second)
-      result = XPathNamespaceImpl::createXPathNamespace(0, context_->getDefaultElementAndTypeNS(), static_cast<DOMElement*>(const_cast<DOMNode*>(originalNode_)));
+    if(context->getDefaultElementAndTypeNS()!=0 && done_.insert(0).second)
+      result = XPathNamespaceImpl::createXPathNamespace(0, context->getDefaultElementAndTypeNS(), static_cast<DOMElement*>(const_cast<DOMNode*>(originalNode_)));
   }
   return result;  
 }

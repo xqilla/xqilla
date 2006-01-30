@@ -67,8 +67,7 @@ ASTNode* XQFunctionCall::staticResolution(StaticContext *context)
     //cerr << "reason1: " << XERCES_CPP_NAMESPACE_QUALIFIER XMLString::transcode(buf.getRawBuffer()) << endl;
     XQThrow(StaticErrorException, X("XQFunctionCall::staticResolution"), buf.getRawBuffer());
   }
-  functionImpl->addPredicates(getPredicates());
-	return functionImpl->staticResolution(context);
+  return functionImpl->staticResolution(context);
 }
 
 const QualifiedName *XQFunctionCall::getName() const
