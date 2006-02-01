@@ -121,6 +121,12 @@ void *alloca (size_t);
 #define FNWRAP(pos,name,object)	(wrapForDebug((QP),(object),(name),(pos).first_line, (pos).first_column))
 
 #define BIT_ORDERING_SPECIFIED	0
+#define BIT_BOUNDARY_SPECIFIED	    1
+#define BIT_COLLATION_SPECIFIED	    2
+#define BIT_BASEURI_SPECIFIED	    3
+#define BIT_CONSTRUCTION_SPECIFIED	4
+#define BIT_EMPTYORDERING_SPECIFIED 5
+#define BIT_COPYNAMESPACE_SPECIFIED 6
 
 #undef yylex
 #define yylex QP->_scanner->yylex
@@ -135,6 +141,8 @@ static XMLCh szFLWOR[] =     { XERCES_CPP_NAMESPACE_QUALIFIER chLatin_F, XERCES_
                                XERCES_CPP_NAMESPACE_QUALIFIER chLatin_O, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_R, XERCES_CPP_NAMESPACE_QUALIFIER chNull }; 
 static XMLCh sz1_0[]=        { XERCES_CPP_NAMESPACE_QUALIFIER chDigit_1, XERCES_CPP_NAMESPACE_QUALIFIER chPeriod, XERCES_CPP_NAMESPACE_QUALIFIER chDigit_0, 
                                XERCES_CPP_NAMESPACE_QUALIFIER chNull };
+static XMLCh szTrue[]=       { XERCES_CPP_NAMESPACE_QUALIFIER chLatin_T, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
+static XMLCh szFalse[]=      { XERCES_CPP_NAMESPACE_QUALIFIER chLatin_F, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
 
 static inline bool isAllSpaces(const XMLCh* str)
 {
@@ -433,6 +441,7 @@ namespace XQuery {
 %type <sort>				OrderByClause
 %type <stringList>			ResourceLocations
 %type <str>					PositionalVar SchemaPrefix CommonContent CdataSection URILiteral
+%type <str>                 PreserveMode InheritMode
 
 %start Module
 
@@ -555,10 +564,16 @@ NamespaceDecl:
 BoundarySpaceDecl :
 	  _DECLARE_ _BOUNDARYSPACE_ _PRESERVE_
 		{
+		    if(QP->_flags.get(BIT_BOUNDARY_SPECIFIED))
+			    yyerror("Prolog contains more than one boundary space declaration [err:XQST0068]");
+		    QP->_flags.set(BIT_BOUNDARY_SPECIFIED);
 			CONTEXT->setPreserveBoundarySpace(true);
 		}
 	| _DECLARE_ _BOUNDARYSPACE_ _STRIP_
 		{
+		    if(QP->_flags.get(BIT_BOUNDARY_SPECIFIED))
+			    yyerror("Prolog contains more than one boundary space declaration [err:XQST0068]");
+		    QP->_flags.set(BIT_BOUNDARY_SPECIFIED);
 			CONTEXT->setPreserveBoundarySpace(false);
 		}
 	;
@@ -602,10 +617,16 @@ OrderingModeDecl:
 EmptyOrderDecl:
 	_DECLARE_ _DEFAULT_ORDER_ _EMPTY_GREATEST_
 	{ 
+		if(QP->_flags.get(BIT_EMPTYORDERING_SPECIFIED))
+			yyerror("Prolog contains more than one empty ordering mode declaration [err:XQST0069]");
+		QP->_flags.set(BIT_EMPTYORDERING_SPECIFIED);
 		CONTEXT->setDefaultFLWOROrderingMode(StaticContext::FLWOR_ORDER_EMPTY_GREATEST);
 	}
 	| _DECLARE_ _DEFAULT_ORDER_ _EMPTY_LEAST_
 	{ 
+		if(QP->_flags.get(BIT_EMPTYORDERING_SPECIFIED))
+			yyerror("Prolog contains more than one empty ordering mode declaration [err:XQST0069]");
+		QP->_flags.set(BIT_EMPTYORDERING_SPECIFIED);
 		CONTEXT->setDefaultFLWOROrderingMode(StaticContext::FLWOR_ORDER_EMPTY_LEAST);
 	}
 	;
@@ -613,17 +634,24 @@ EmptyOrderDecl:
 // [16]    CopyNamespacesDecl    ::=     <"declare" "copy-namespaces"> PreserveMode "," InheritMode
 CopyNamespacesDecl:
 	_DECLARE_ _COPY_NAMESPACES_ PreserveMode _COMMA_ InheritMode
+    {
+		if(QP->_flags.get(BIT_COPYNAMESPACE_SPECIFIED))
+			yyerror("Prolog contains more than one copy namespace declaration [err:XQST0055]");
+		QP->_flags.set(BIT_COPYNAMESPACE_SPECIFIED);
+		CONTEXT->setPreserveNamespaces(XPath2Utils::equals($3,szTrue));
+		CONTEXT->setInheritNamespaces(XPath2Utils::equals($5,szTrue));
+    }
 ;
 
 // [17]   	PreserveMode	   ::=   	"preserve" | "no-preserve"
 PreserveMode:
 	  _PRESERVE_
 	{
-		CONTEXT->setPreserveNamespaces(true);
+        $$ = szTrue;
 	}
 	| _NO_PRESERVE_
 	{
-		CONTEXT->setPreserveNamespaces(false);
+        $$ = szFalse;
 	}
 	;
 
@@ -631,11 +659,11 @@ PreserveMode:
 InheritMode:
 	  _INHERIT_
 	{
-		CONTEXT->setInheritNamespaces(true);
+        $$ = szTrue;
 	}
 	| _NO_INHERIT_
 	{
-		CONTEXT->setInheritNamespaces(false);
+        $$ = szFalse;
 	}
 	;
 
@@ -643,6 +671,9 @@ InheritMode:
 DefaultCollationDecl:
 		_DECLARE_ _DEFAULT_COLLATION_ URILiteral
 		{
+		    if(QP->_flags.get(BIT_COLLATION_SPECIFIED))
+			    yyerror("Prolog contains more than one default collation declaration [err:XQST0038]");
+		    QP->_flags.set(BIT_COLLATION_SPECIFIED);
 			CONTEXT->setDefaultCollation($3);
 		}
 	  ;
@@ -651,6 +682,9 @@ DefaultCollationDecl:
 BaseURIDecl:
 		_DECLARE_ _BASEURI_ URILiteral
 		{
+		    if(QP->_flags.get(BIT_BASEURI_SPECIFIED))
+			    yyerror("Prolog contains more than one base URI declaration [err:XQST0032]");
+		    QP->_flags.set(BIT_BASEURI_SPECIFIED);
 			CONTEXT->setBaseURI($3);
 		}
 	  ;
@@ -769,10 +803,16 @@ VarDecl:
 ConstructionDecl:
 	_DECLARE_ _CONSTRUCTION_ _PRESERVE_
 	{
+		if(QP->_flags.get(BIT_CONSTRUCTION_SPECIFIED))
+			yyerror("Prolog contains more than one construction mode declaration [err:XQST0067]");
+		QP->_flags.set(BIT_CONSTRUCTION_SPECIFIED);
 		CONTEXT->setConstructionMode(StaticContext::CONSTRUCTION_MODE_PRESERVE);
 	}
 	| _DECLARE_ _CONSTRUCTION_ _STRIP_
 	{
+		if(QP->_flags.get(BIT_CONSTRUCTION_SPECIFIED))
+			yyerror("Prolog contains more than one construction mode declaration [err:XQST0067]");
+		QP->_flags.set(BIT_CONSTRUCTION_SPECIFIED);
 		CONTEXT->setConstructionMode(StaticContext::CONSTRUCTION_MODE_STRIP);
 	}
 	;
@@ -1438,7 +1478,7 @@ ExtensionExpr:
 	  PragmaList _LBRACE_ _RBRACE_
 	{
 		// we don't support any pragma
-		yyerror("This pragma is not recognized, and no alternative expression is specified [err:XQ0079]");
+		yyerror("This pragma is not recognized, and no alternative expression is specified [err:XQST0079]");
 	}
 	| PragmaList _LBRACE_ Expr _RBRACE_
 	{
