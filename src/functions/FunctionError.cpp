@@ -60,7 +60,7 @@ Sequence FunctionError::collapseTreeInternal(DynamicContext* context, int flags)
     case 1: {
                 Sequence arg=getParamNumber(1,context)->toSequence(context);
                 if(arg.isEmpty())
-                    exc_name.set(X("The first argument of fn:error must be a valid QName"));
+                    exc_name.append(X(" [err:FOER0000]"));
                 else
                 {
                     exc_name.append(X(" ["));
