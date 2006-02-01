@@ -163,6 +163,9 @@ SortableItem XQSort::SortSpec::buildKey(DynamicContext* context)
       atom = atom->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                           XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING, context);
     value.m_item=atom;
+    // if it's a NaN, it must be treated as if it were the empty sequence
+    if(atom->isNumericValue() && XPath2Utils::equals(atom->asString(context), Numeric::NaN_string))
+      value.m_item=NULL;
   }
   value.m_bAscending=(_modifier & ascending) && !(_modifier & descending);
   if(value.m_item==NULLRCP)
