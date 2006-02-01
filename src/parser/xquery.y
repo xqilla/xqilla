@@ -83,6 +83,7 @@
 #include <xqilla/schema/SequenceType.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/exceptions/NamespaceLookupException.hpp>
+#include <xqilla/exceptions/ContextException.hpp>
 
 #include <xqilla/utils/XPath2Utils.hpp>
 #ifdef HAVE_CONFIG_H
@@ -674,6 +675,14 @@ DefaultCollationDecl:
 		    if(QP->_flags.get(BIT_COLLATION_SPECIFIED))
 			    yyerror("Prolog contains more than one default collation declaration [err:XQST0038]");
 		    QP->_flags.set(BIT_COLLATION_SPECIFIED);
+            try
+            {
+                CONTEXT->getCollation($3);
+            }
+            catch(ContextException&)
+            {
+			    yyerror("The specified collation does not exist [err:XQST0038]");
+            }
 			CONTEXT->setDefaultCollation($3);
 		}
 	  ;
