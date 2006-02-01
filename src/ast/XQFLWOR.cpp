@@ -828,7 +828,7 @@ void XQFLWOR::SortingFLWORResult::getResult(Sequence &toFill, DynamicContext *co
   varStore->addLogicalBlockScope();
 
   VariableStore::Entry *accumulator = _flwor->getAccumulator(context);
-  bool sorting = _flwor->getSort();
+  bool sorting = (_flwor->getSort() != 0);
 
   PreSortResult toBeSorted;
   if(_flwor->nextState(const_cast<ExecutionBindings&>(_ebs), context, true)) {
