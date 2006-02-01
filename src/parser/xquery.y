@@ -128,6 +128,8 @@ void *alloca (size_t);
 #define BIT_CONSTRUCTION_SPECIFIED	4
 #define BIT_EMPTYORDERING_SPECIFIED 5
 #define BIT_COPYNAMESPACE_SPECIFIED 6
+#define BIT_DEFAULTELEMENTNAMESPACE_SPECIFIED   7
+#define BIT_DEFAULTFUNCTIONNAMESPACE_SPECIFIED  8
 
 #undef yylex
 #define yylex QP->_scanner->yylex
@@ -583,10 +585,16 @@ BoundarySpaceDecl :
 DefaultNamespaceDecl:
 	  _DECLARE_ _DEFAULT_ELEMENT_ _NAMESPACE_ URILiteral
 		{
+		    if(QP->_flags.get(BIT_DEFAULTELEMENTNAMESPACE_SPECIFIED))
+			    yyerror("Prolog contains more than one default element namespace declaration [err:XQST0066]");
+		    QP->_flags.set(BIT_DEFAULTELEMENTNAMESPACE_SPECIFIED);
 			CONTEXT->setDefaultElementAndTypeNS($4);
 		}
 	| _DECLARE_ _DEFAULT_FUNCTION_ _NAMESPACE_ URILiteral
 		{ 
+		    if(QP->_flags.get(BIT_DEFAULTFUNCTIONNAMESPACE_SPECIFIED))
+			    yyerror("Prolog contains more than one default function namespace declaration [err:XQST0066]");
+		    QP->_flags.set(BIT_DEFAULTFUNCTIONNAMESPACE_SPECIFIED);
 			CONTEXT->setDefaultFuncNS($4);
 		}
 	;
@@ -1505,6 +1513,18 @@ PragmaList:
 // [66]   	PragmaContents	   ::=   	(Char* - (Char* '#)' Char*))
 Pragma:
 	  _PRAGMA_OPEN_ _PRAGMA_NAME_ _PRAGMA_CONTENT_ _PRAGMA_CLOSE_
+      {
+        // validate the QName
+		QualifiedName qName($2);
+		try
+		{
+			const XMLCh* uri = CONTEXT->getUriBoundToPrefix(qName.getPrefix());
+		}
+		catch(NamespaceLookupException&)
+		{
+			yyerror("The pragma name is using an undefined namespace prefix [err:XPST0081]");
+		}
+      }
 	;
 
 // [67]    PathExpr    ::=    ("/" RelativePathExpr?) |  ("//" RelativePathExpr) |  RelativePathExpr 
