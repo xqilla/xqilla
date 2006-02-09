@@ -79,6 +79,8 @@ src/dom-api/impl/XQillaExpressionImpl.hpp \
 src/dom-api/impl/XQillaNSResolverImpl.cpp \
 src/dom-api/impl/XQillaXMLGrammarPoolImpl.cpp \
 src/dom-api/impl/XQillaXMLGrammarPoolImpl.hpp \
+src/dom-api/impl/XPathDocumentImpl.cpp \
+src/dom-api/impl/XPathDocumentImpl.hpp \
 src/dom-api/impl/XPathNamespaceImpl.cpp \
 src/dom-api/impl/XPathNamespaceImpl.hpp \
 src/dom-api/impl/XPath2ResultImpl.cpp \

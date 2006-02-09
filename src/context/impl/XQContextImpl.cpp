@@ -57,6 +57,7 @@
 #include <xqilla/functions/XQUserFunction.hpp>
 #include <xqilla/schema/DocumentCacheImpl.hpp>
 #include <xqilla/dom-api/impl/XQillaNSResolverImpl.hpp>
+#include "../dom-api/impl/XPathDocumentImpl.hpp"
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -512,7 +513,7 @@ ASTNode* XQContextImpl::lookUpFunction(const XMLCh* prefix, const XMLCh* name, V
 
 XERCES_CPP_NAMESPACE::DOMDocument *XQContextImpl::createNewDocument() const
 {
-  return XERCES_CPP_NAMESPACE_QUALIFIER DOMImplementation::getImplementation()->createDocument(getMemoryManager());
+  return new (getMemoryManager()) XPathDocumentImpl(getMemoryManager());
 }
 
 void XQContextImpl::releaseDocument(XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *doc) const
