@@ -213,7 +213,7 @@ const DatatypeFactory* DatatypeLookup::lookupDatatype(const XMLCh* typeURI, cons
   buf.append(typeURI);
   buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chColon);
   buf.append(typeName);
-  buf.append(X(" not found"));
+  buf.append(X(" not found [err:XPST0051]"));
   XQThrow(TypeNotFoundException, X("DatatypeLookup::lookupDatatype"), buf.getRawBuffer());
 
 }
