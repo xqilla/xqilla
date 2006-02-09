@@ -43,8 +43,7 @@
 #include <xqilla/exceptions/XMLParseException.hpp>
 #include <xqilla/utils/ContextUtils.hpp>
 #include <xqilla/items/impl/NodeImpl.hpp>
-
-#include <xercesc/dom/DOMImplementation.hpp>
+#include "../dom-api/impl/XPathDocumentImpl.hpp"
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -218,7 +217,7 @@ void XQDynamicContextImpl::setDefaultElementAndTypeNS(const XMLCh* newNS) {
 
 XERCES_CPP_NAMESPACE::DOMDocument *XQDynamicContextImpl::createNewDocument() const
 {
-  return XERCES_CPP_NAMESPACE_QUALIFIER DOMImplementation::getImplementation()->createDocument(getMemoryManager());
+  return new (getMemoryManager()) XPathDocumentImpl(getMemoryManager());
 }
 
 void XQDynamicContextImpl::releaseDocument(XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *doc) const
