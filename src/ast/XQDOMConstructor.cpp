@@ -84,10 +84,12 @@ Sequence XQDOMConstructor::collapseTreeInternal(DynamicContext *context, int fla
           ASTNode* childItem=(*itCont);
           Result oneChild = childItem->collapseTree(context);
           Item::Ptr child;
+          bool lastWasAtomic = false;
           while((child = oneChild->next(context)) != NULLRCP)
           {
             if(child->isNode())
             {
+              lastWasAtomic = false;
               Node::Ptr sourceNode=(Node::Ptr)child;
               // If the content sequence contains an attribute node following a node that is not an attribute node, a type error is raised [err:XPTY0004].
               if(sourceNode->dmNodeKind()==Node::attribute_string)
@@ -112,19 +114,32 @@ Sequence XQDOMConstructor::collapseTreeInternal(DynamicContext *context, int fla
                 childList.push_back(context->getItemFactory()->createTextNode(buff, context));
               }
               else {
-                childList.push_back(sourceNode);
+                // if it's a text node, ensure it's not empty
+                if(!isTextNode(sourceNode) || !XPath2Utils::equals(sourceNode->dmStringValue(context),0))
+                  childList.push_back(sourceNode);
               }
             }
             else
             {
-              if(!childList.empty() && isTextNode(childList.back())) {
-                const XMLCh* buff=XPath2Utils::concatStrings(childList.back()->dmStringValue(context),child->asString(context),context->getMemoryManager());
-
-                childList.pop_back();
-                childList.push_back(context->getItemFactory()->createTextNode(buff, context));
+              const XMLCh* valueStr=child->asString(context);
+              if(lastWasAtomic)
+              {
+                XMLCh space[]={ ' ', 0 };
+                valueStr=XPath2Utils::concatStrings(space,valueStr,context->getMemoryManager());
               }
-              else {
-                childList.push_back(context->getItemFactory()->createTextNode(child->asString(context), context));
+              lastWasAtomic = true;
+              // empty strings are stripped
+              if(*valueStr)
+              {
+              if(!childList.empty() && isTextNode(childList.back())) {
+                  const XMLCh* buff=XPath2Utils::concatStrings(childList.back()->dmStringValue(context),valueStr,context->getMemoryManager());
+
+                  childList.pop_back();
+                  childList.push_back(context->getItemFactory()->createTextNode(buff, context));
+                }
+                else {
+                  childList.push_back(context->getItemFactory()->createTextNode(valueStr, context));
+                }
               }
             }
           }
