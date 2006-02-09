@@ -102,6 +102,8 @@ src/dom-api/XQillaImplementation.cpp	lib
 src/dom-api/XQillaImplementation.hpp	lib
 src/dom-api/impl/XPath2ResultImpl.cpp	lib
 src/dom-api/impl/XPath2ResultImpl.hpp	lib
+src/dom-api/impl/XPathDocumentImpl.cpp	lib
+src/dom-api/impl/XPathDocumentImpl.hpp	lib
 src/dom-api/impl/XPathNamespaceImpl.cpp	lib
 src/dom-api/impl/XPathNamespaceImpl.hpp	lib
 src/dom-api/impl/XQillaBuilderImpl.cpp	lib
