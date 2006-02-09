@@ -268,7 +268,7 @@ void XQillaTestSuiteRunner::runTestCase(const TestCase &testCase)
                                                          X("PT0S"), context.get()));
     context->setXMLEntityResolver(this);
 
-    XQQuery* pParsedQuery = xqilla.parse(X(testCase.query.c_str()), XQilla::XQUERY, context.get(), X(testCase.queryURL.c_str()));
+    XQQuery* pParsedQuery = xqilla.parseFromURI(X(testCase.queryURL.c_str()), XQilla::XQUERY, context.get());
 
     for(map<string, string>::const_iterator v=testCase.inputVars.begin();v!=testCase.inputVars.end();v++) {
       Sequence doc=context->resolveDocument(X(m_inputFiles[v->second].c_str()));
