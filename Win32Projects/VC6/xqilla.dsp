@@ -680,6 +680,14 @@ SOURCE=..\..\src\dom-api\impl\XPath2ResultImpl.hpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\dom-api\impl\XPathDocumentImpl.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\dom-api\impl\XPathDocumentImpl.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\dom-api\impl\XPathNamespaceImpl.cpp
 # End Source File
 # Begin Source File
