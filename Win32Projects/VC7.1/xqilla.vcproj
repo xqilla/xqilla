@@ -593,6 +593,12 @@
 				RelativePath="..\..\src\dom-api\impl\XPath2ResultImpl.hpp">
 			</File>
 			<File
+				RelativePath="..\..\src\dom-api\impl\XPathDocumentImpl.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\dom-api\impl\XPathDocumentImpl.hpp">
+			</File>
+			<File
 				RelativePath="..\..\src\dom-api\impl\XPathNamespaceImpl.cpp">
 			</File>
 			<File
