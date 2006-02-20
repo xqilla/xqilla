@@ -19,14 +19,21 @@
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/functions/FunctionConstructor.hpp>
 
-unsigned int StaticType::getFlagsFor(const XMLCh *uri, const XMLCh *name, const StaticContext *context)
+unsigned int StaticType::getFlagsFor(const XMLCh *uri, const XMLCh *name, const StaticContext *context,
+                                     bool &isExact)
 {
   if(XPath2Utils::equals(name, AnyAtomicType::fgDT_ANYATOMICTYPE) &&
      XPath2Utils::equals(uri, FunctionConstructor::XMLChXPath2DatatypesURI)) {
+    isExact = true;
     return ANY_ATOMIC_TYPE;
   }
   else {
-    return getFlagsFor(context->getItemFactory()->getPrimitiveTypeIndex(uri, name));
+    unsigned int result = getFlagsFor(context->getItemFactory()->
+                                      getPrimitiveTypeIndex(uri, name, /*isPrimitive*/isExact));
+    // Other and numeric are composite types, and are never exact
+    if(result == StaticType::OTHER_TYPE ||
+       result == StaticType::NUMERIC_TYPE) isExact = false;
+    return result;
   }
 }
 

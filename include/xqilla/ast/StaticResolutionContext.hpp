@@ -22,6 +22,8 @@
 #include <xercesc/util/RefHash2KeysTableOf.hpp>
 #include <xercesc/util/StringPool.hpp>
 
+#include <vector>
+
 class XPath2MemoryManager;
 
 typedef XERCES_CPP_NAMESPACE_QUALIFIER RefHash2KeysTableOf<int> VariableAccessSet;
@@ -65,6 +67,7 @@ public:
   void variableUsed(const XMLCh *namespaceURI, const XMLCh *name);
   bool removeVariable(const XMLCh *namespaceURI, const XMLCh *name);
   bool isVariableUsed(const XMLCh *namespaceURI, const XMLCh *name) const;
+  std::vector<std::pair<const XMLCh*, const XMLCh*> > variablesUsed() const;
 
   /** Sets the members of this StaticResolutionContext from the given StaticResolutionContext */
   void add(const StaticResolutionContext &o);
@@ -73,6 +76,9 @@ public:
   /** Returns true if flags are set, or variables have been used */
   bool isUsed() const;
   bool isUsedExceptContextFlags() const;
+
+  void creative(bool value);
+  bool isCreative() const;
 
   /**
    * Properties that allow optimisation regarding sorting or not.
@@ -108,6 +114,7 @@ private:
   bool _availableCollections;
   bool _staticBaseURI;
   bool _forceNoFolding;
+  bool _creative;
 
   unsigned int _properties;
   StaticType _staticType;

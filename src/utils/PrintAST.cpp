@@ -1025,6 +1025,8 @@ string PrintAST::printSequenceType(const SequenceType *type, const DynamicContex
 
 string PrintAST::printItemTypeAttrs(const SequenceType::ItemType *type, const DynamicContext *context)
 {
+  if(type == 0) return " testType=\"empty\"";
+
   ostringstream s;
 
   s << " testType=\"" << getItemTestTypeName(type->getItemTestType()) << "\"";

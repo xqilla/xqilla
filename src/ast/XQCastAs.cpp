@@ -47,7 +47,8 @@ ASTNode* XQCastAs::staticResolution(StaticContext *context)
 
   const SequenceType::ItemType *itemType = _exprType->getItemType();
   if(itemType != NULL) {
-    itemType->getStaticType(_src.getStaticType(), context);
+    bool isPrimitive;
+    itemType->getStaticType(_src.getStaticType(), context, isPrimitive);
   }
 
   _expr = new (mm) XQAtomize(_expr, mm);

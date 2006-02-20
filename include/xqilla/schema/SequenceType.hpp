@@ -77,7 +77,8 @@ public:
     const XMLCh* getTypeURI(const StaticContext* context) const;
     const XMLCh* getNameURI(const StaticContext* context) const;
 
-    void getStaticType(StaticType &st, const StaticContext *context) const;
+    void getStaticType(StaticType &st, const StaticContext *context,
+                       bool &isExact) const;
 
     bool matches(const Item::Ptr &toBeTested, DynamicContext* context) const;
     bool matches(const Node::Ptr &toBeTested, DynamicContext* context) const;
@@ -101,10 +102,10 @@ public:
 
 
   /**
-   * Number of occurances of the ItemType.
-   * STAR specifies zero or more occurances.
-   * PLUS specifies one or more occurances.
-   * QUESTION_MARK specifies zero or one occurance.
+   * Number of occurrences of the ItemType.
+   * STAR specifies zero or more occurrences.
+   * PLUS specifies one or more occurrences.
+   * QUESTION_MARK specifies zero or one occurrence.
    */
   typedef enum 
   {
@@ -163,6 +164,8 @@ public:
    * the toBeTested Result doesn't match this SequenceType.
    */
   Result matches(const Result &toBeTested) const;
+  Result occurrenceMatches(const Result &toBeTested) const;
+  Result typeMatches(const Result &toBeTested) const;
 
   ASTNode *convertFunctionArg(ASTNode *arg, StaticContext *context) const;
 
@@ -186,13 +189,13 @@ protected:
   // The ItemType of this SequenceType
   ItemType* m_pItemType;
   
-  // The OccuranceIndicator of this SequenceType
+  // The OccurrenceIndicator of this SequenceType
   OccurrenceIndicator m_nOccurrence;
 
-  class MatchesResult : public ResultImpl
+  class OccurrenceMatchesResult : public ResultImpl
   {
   public:
-    MatchesResult(const Result &parent, const SequenceType *seqType);
+    OccurrenceMatchesResult(const Result &parent, const SequenceType *seqType);
 
     Item::Ptr next(DynamicContext *context);
     std::string asString(DynamicContext *context, int indent) const;
@@ -200,6 +203,18 @@ protected:
     const SequenceType *_seqType;
     Result _parent;
     bool _toDo;
+  };
+
+  class TypeMatchesResult : public ResultImpl
+  {
+  public:
+    TypeMatchesResult(const Result &parent, const SequenceType *seqType);
+
+    Item::Ptr next(DynamicContext *context);
+    std::string asString(DynamicContext *context, int indent) const;
+  private:
+    const SequenceType *_seqType;
+    Result _parent;
   };
 };
 

@@ -34,48 +34,48 @@ public:
   bool getUnordered() const { return unordered_; }
 
 protected:
-  class XQILLA_API DocumentOrderResult : public LazySequenceResult
-  {
-  public:
-    DocumentOrderResult(const Result &parent, DynamicContext *context)
-      : LazySequenceResult(context), parent_(parent) {}
-    void getResult(Sequence &toFill, DynamicContext *context) const;
-    std::string asString(DynamicContext *context, int indent) const { return "documentorderresult"; }
-  private:
-    mutable Result parent_;
-  };
-
-  class XQILLA_API UniqueNodesResult : public ResultImpl
-  {
-  public:
-    UniqueNodesResult(const Result &parent, const DynamicContext *context)
-      : parent_(parent), nTypeOfItemsInLastStep_(0),
-        noDups_(uniqueLessThanCompareFn(context)) {}
-    Item::Ptr next(DynamicContext *context);
-    void skip() { parent_->skip(); }
-    std::string asString(DynamicContext *context, int indent) const { return "uniquenodesresult"; }
-
-  private:
-    class uniqueLessThanCompareFn {
-    public:
-      uniqueLessThanCompareFn(const DynamicContext *context)
-        : context_(context) {}
-      bool operator()(const Node::Ptr &first, const Node::Ptr &second)
-      {
-        return first->uniqueLessThan(second, context_);
-      }
-    private:
-      const DynamicContext *context_;
-    };
-    typedef std::set<Node::Ptr, uniqueLessThanCompareFn> NoDuplicatesSet;
-
-    Result parent_;
-    int nTypeOfItemsInLastStep_;
-    NoDuplicatesSet noDups_;
-  };
-
   ASTNode* expr_;
   bool unordered_;
+};
+
+class XQILLA_API DocumentOrderResult : public LazySequenceResult
+{
+public:
+  DocumentOrderResult(const Result &parent, DynamicContext *context)
+    : LazySequenceResult(context), parent_(parent) {}
+  void getResult(Sequence &toFill, DynamicContext *context) const;
+  std::string asString(DynamicContext *context, int indent) const { return "documentorderresult"; }
+private:
+  mutable Result parent_;
+};
+
+class XQILLA_API UniqueNodesResult : public ResultImpl
+{
+public:
+  UniqueNodesResult(const Result &parent, const DynamicContext *context)
+    : parent_(parent), nTypeOfItemsInLastStep_(0),
+      noDups_(uniqueLessThanCompareFn(context)) {}
+  Item::Ptr next(DynamicContext *context);
+  void skip() { parent_->skip(); }
+  std::string asString(DynamicContext *context, int indent) const { return "uniquenodesresult"; }
+
+private:
+  class uniqueLessThanCompareFn {
+  public:
+    uniqueLessThanCompareFn(const DynamicContext *context)
+      : context_(context) {}
+    bool operator()(const Node::Ptr &first, const Node::Ptr &second)
+    {
+      return first->uniqueLessThan(second, context_);
+    }
+  private:
+    const DynamicContext *context_;
+  };
+  typedef std::set<Node::Ptr, uniqueLessThanCompareFn> NoDuplicatesSet;
+
+  Result parent_;
+  int nTypeOfItemsInLastStep_;
+  NoDuplicatesSet noDups_;
 };
 
 #endif

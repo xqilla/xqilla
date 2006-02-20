@@ -624,6 +624,7 @@ ASTNode* XQDOMConstructor::staticResolution(StaticContext *context)
 
   _src.getStaticType().flags = StaticType::NODE_TYPE;
   _src.forceNoFolding(true);
+  _src.creative(true);
   return this; // Never constant fold
 }
 

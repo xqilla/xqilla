@@ -2,20 +2,8 @@
   <error id="Constr-attr-ws-3" reason="result failure"/>
   <error id="Constr-attr-ws-4" reason="result failure"/>
   <error id="Constr-attr-ws-5" reason="result failure"/>
-  <error id="Constr-compcomment-nested-3" reason="error failure"/>
   <error id="Constr-cont-nsmode-5" reason="no error failure"/>
   <error id="Constr-cont-nsmode-6" reason="no error failure"/>
-  <error id="Constr-docnode-adjtext-1" reason="error failure"/>
-  <error id="Constr-docnode-adjtext-2" reason="error failure"/>
-  <error id="Constr-docnode-adjtext-3" reason="error failure"/>
-  <error id="Constr-docnode-data-1" reason="error failure"/>
-  <error id="Constr-docnode-doc-1" reason="error failure"/>
-  <error id="Constr-docnode-enclexpr-2" reason="error failure"/>
-  <error id="Constr-docnode-enclexpr-3" reason="error failure"/>
-  <error id="Constr-docnode-enclexpr-4" reason="error failure"/>
-  <error id="Constr-docnode-nested-1" reason="error failure"/>
-  <error id="Constr-docnode-nodeid-5" reason="error failure"/>
-  <error id="Constr-docnode-string-1" reason="error failure"/>
   <error id="Constr-inscope-1" reason="inspect" action="pass"/>
   <error id="Constr-inscope-2" reason="inspect" action="pass"/>
   <error id="Constr-inscope-3" reason="inspect" action="pass"/>
@@ -24,18 +12,12 @@
   <error id="Constr-namespace-14" reason="no error failure"/>
   <error id="Constr-namespace-15" reason="no error failure"/>
   <error id="Constr-namespace-24" reason="no error failure"/>
-  <error id="Constr-text-adjtext-2" reason="error failure"/>
-  <error id="Constr-text-count-4" reason="error failure"/>
-  <error id="Constr-text-count-6" reason="error failure"/>
-  <error id="Constr-text-nested-3" reason="error failure"/>
   <error id="Constr-ws-adjchref-1" reason="result failure"/>
   <error id="Constr-ws-adjchref-2" reason="result failure"/>
   <error id="Constr-ws-adjchref-3" reason="result failure"/>
   <error id="ForExprType009" reason="result failure"/>
   <error id="ForExprType010" reason="error failure"/>
-  <error id="ForExprType011" reason="error failure"/>
   <error id="ForExprType031" reason="result failure"/>
-  <error id="ForExprType045" reason="error failure"/>
   <error id="ForExprType047" reason="error failure"/>
   <error id="LocalNameFromQNameFunc001" reason="error failure"/>
   <error id="LocalNameFromQNameFunc002" reason="error failure"/>
@@ -60,14 +42,12 @@
   <error id="NamespaceURIFromQNameFunc020" reason="error failure"/>
   <error id="NamespaceURIFromQNameFunc021" reason="error failure"/>
   <error id="abbreviatedSyntax-2" reason="result failure"/>
-  <error id="base-URI-1" reason="no error failure"/>
   <error id="base-URI-10" reason="result failure"/>
   <error id="base-URI-12" reason="error failure"/>
   <error id="base-URI-14" reason="error failure"/>
   <error id="base-URI-18" reason="result failure"/>
   <error id="base-URI-19" reason="error failure"/>
   <error id="base-URI-8" reason="no error failure"/>
-  <error id="boundaryspacedeclerr-1" reason="no error failure"/>
   <error id="casthc14" reason="result failure"/>
   <error id="casthc17" reason="result failure"/>
   <error id="casthc23" reason="result failure"/>
@@ -78,24 +58,6 @@
   <error id="casthcds8" reason="result failure"/>
   <error id="casthcds9" reason="result failure"/>
   <error id="constattrerr-1" reason="no error failure"/>
-  <error id="constprolog-1" reason="no error failure"/>
-  <error id="defaultcolldecl-1" reason="no error failure"/>
-  <error id="defaultcolldecl-2" reason="no error failure"/>
-  <error id="defaultnamespacedeclerr-1" reason="no error failure"/>
-  <error id="defaultnamespacedeclerr-2" reason="no error failure"/>
-  <error id="emptyorderdecl-1" reason="no error failure"/>
-  <error id="emptyorderdecl-12" reason="result failure"/>
-  <error id="emptyorderdecl-13" reason="result failure"/>
-  <error id="emptyorderdecl-16" reason="result failure"/>
-  <error id="emptyorderdecl-17" reason="result failure"/>
-  <error id="emptyorderdecl-23" reason="result failure"/>
-  <error id="emptyorderdecl-25" reason="result failure"/>
-  <error id="emptyorderdecl-27" reason="result failure"/>
-  <error id="emptyorderdecl-29" reason="result failure"/>
-  <error id="emptyorderdecl-4" reason="result failure"/>
-  <error id="emptyorderdecl-5" reason="result failure"/>
-  <error id="extexpr-2" reason="error failure"/>
-  <error id="extexpr-4" reason="no error failure"/>
   <error id="extexpr-6" reason="result failure"/>
   <error id="fn-abs-more-args-001" reason="result failure"/>
   <error id="fn-abs-more-args-008" reason="result failure"/>
@@ -184,13 +146,9 @@
   <error id="fn-document-uri-18" reason="result failure"/>
   <error id="fn-document-uri-19" reason="result failure"/>
   <error id="fn-document-uri-20" reason="result failure"/>
-  <error id="fn-encode-for-uri1args-2" reason="error failure"/>
   <error id="fn-error-2" reason="error failure"/>
-  <error id="fn-error-5" reason="error failure"/>
-  <error id="fn-error-6" reason="error failure"/>
   <error id="fn-escape-html-uri-20" reason="error failure"/>
   <error id="fn-escape-html-uri-21" reason="error failure"/>
-  <error id="fn-escape-html-uri1args-2" reason="error failure"/>
   <error id="fn-id-10" reason="error failure"/>
   <error id="fn-id-11" reason="error failure"/>
   <error id="fn-id-12" reason="error failure"/>
@@ -227,7 +185,6 @@
   <error id="fn-implicit-timezone-3" reason="inspect" action="pass"/>
   <error id="fn-implicit-timezone-5" reason="inspect" action="pass"/>
   <error id="fn-implicit-timezone-9" reason="result failure"/>
-  <error id="fn-iri-to-uri1args-2" reason="error failure"/>
   <error id="fn-lang-15" reason="error failure"/>
   <error id="fn-local-name-2" reason="error failure"/>
   <error id="fn-matches-25" reason="error failure"/>
@@ -241,10 +198,6 @@
   <error id="fn-nilled-5" reason="result failure"/>
   <error id="fn-nilled-7" reason="result failure"/>
   <error id="fn-nilled-9" reason="no error failure"/>
-  <error id="fn-node-name-14" reason="error failure"/>
-  <error id="fn-node-name-15" reason="error failure"/>
-  <error id="fn-node-name-16" reason="error failure"/>
-  <error id="fn-node-name-17" reason="error failure"/>
   <error id="fn-numberdec1args-1" reason="result failure"/>
   <error id="fn-numberdec1args-2" reason="result failure"/>
   <error id="fn-numberdec1args-3" reason="result failure"/>
@@ -280,7 +233,6 @@
   <error id="fn-resolve-uri-5" reason="error failure"/>
   <error id="fn-resolve-uri-9" reason="result failure"/>
   <error id="fn-root-2" reason="error failure"/>
-  <error id="fn-string-to-codepoints1args-4" reason="error failure"/>
   <error id="fn-trace-10" reason="inspect" action="pass"/>
   <error id="fn-trace-11" reason="error failure"/>
   <error id="fn-trace-12" reason="error failure"/>
@@ -321,5 +273,4 @@
   <error id="validateexpr-1" reason="error failure"/>
   <error id="vardeclwithtype-13" reason="error failure"/>
   <error id="vardeclwithtype-6" reason="result failure"/>
-  <error id="version_declaration-005" reason="error failure"/>
 </errors>

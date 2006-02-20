@@ -43,8 +43,9 @@ ASTNode* XQPromoteUntyped::staticResolution(StaticContext *context)
   _src.add(expr_->getStaticResolutionContext());
 
   if(_src.getStaticType().flags & StaticType::UNTYPED_ATOMIC_TYPE) {
+    bool isPrimitive;
     _src.getStaticType().flags &= ~StaticType::UNTYPED_ATOMIC_TYPE;
-    _src.getStaticType().flags |= StaticType::getFlagsFor(uri_, name_, context);
+    _src.getStaticType().flags |= StaticType::getFlagsFor(uri_, name_, context, isPrimitive);
   }
   else {
     return expr_;

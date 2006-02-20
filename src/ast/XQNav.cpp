@@ -134,7 +134,9 @@ ASTNode* XQNav::staticResolution(StaticContext *context)
 
     props = combineProperties(props, stepSrc.getProperties());
 
-    if(stepSrc.areContextFlagsUsed() || _src.isNoFoldingForced()) {
+    if(stepSrc.areContextFlagsUsed() || _src.isNoFoldingForced() ||
+	    (stepSrc.getStaticType().flags & StaticType::ANY_ATOMIC_TYPE) != 0 ||
+	    !stepSrc.isCreative()) {
       newSteps.push_back(step);
 
       if(it != begin) {
@@ -370,12 +372,12 @@ std::string XQNav::StepResult::asString(DynamicContext *context, int indent) con
   return oss.str();
 }
 
-XQNav::IntermediateStepCheckResult::IntermediateStepCheckResult(const Result &parent)
+IntermediateStepCheckResult::IntermediateStepCheckResult(const Result &parent)
   : parent_(parent)
 {
 }
 
-Item::Ptr XQNav::IntermediateStepCheckResult::next(DynamicContext *context)
+Item::Ptr IntermediateStepCheckResult::next(DynamicContext *context)
 {
   Item::Ptr result = parent_->next(context);
 
@@ -388,12 +390,12 @@ Item::Ptr XQNav::IntermediateStepCheckResult::next(DynamicContext *context)
   return result;
 }
 
-void XQNav::IntermediateStepCheckResult::skip()
+void IntermediateStepCheckResult::skip()
 {
 	parent_->skip();
 }
 
-std::string XQNav::IntermediateStepCheckResult::asString(DynamicContext *context, int indent) const
+std::string IntermediateStepCheckResult::asString(DynamicContext *context, int indent) const
 {
   std::ostringstream oss;
   std::string in(getIndent(indent));
@@ -409,13 +411,13 @@ std::string XQNav::IntermediateStepCheckResult::asString(DynamicContext *context
   return oss.str();
 }
 
-XQNav::LastStepCheckResult::LastStepCheckResult(const Result &parent)
+LastStepCheckResult::LastStepCheckResult(const Result &parent)
   : parent_(parent),
     _nTypeOfItemsInLastStep(0)
 {
 }
 
-Item::Ptr XQNav::LastStepCheckResult::next(DynamicContext *context)
+Item::Ptr LastStepCheckResult::next(DynamicContext *context)
 {
   Item::Ptr result = parent_->next(context);
 
@@ -424,11 +426,11 @@ Item::Ptr XQNav::LastStepCheckResult::next(DynamicContext *context)
     switch(_nTypeOfItemsInLastStep) {
     case 0: _nTypeOfItemsInLastStep=result->isNode()?1:2; break;
     case 1: if(!result->isNode()) 
-      XQThrow(TypeErrorException,X("XQNav::StepResult::next"),
+      XQThrow(TypeErrorException,X("LastStepCheckResult::next"),
                X("The result of the last step in a path expression contains both nodes and atomic values [err:XPTY0018]"));
       break;
     case 2: if(result->isNode()) 
-      XQThrow(TypeErrorException,X("XQNav::StepResult::next"),
+      XQThrow(TypeErrorException,X("LastStepCheckResult::next"),
                X("The result of the last step in a path expression contains both nodes and atomic values [err:XPTY0018]"));
       break;
     }
@@ -437,12 +439,12 @@ Item::Ptr XQNav::LastStepCheckResult::next(DynamicContext *context)
   return result;
 }
 
-void XQNav::LastStepCheckResult::skip()
+void LastStepCheckResult::skip()
 {
 	parent_->skip();
 }
 
-std::string XQNav::LastStepCheckResult::asString(DynamicContext *context, int indent) const
+std::string LastStepCheckResult::asString(DynamicContext *context, int indent) const
 {
   std::ostringstream oss;
   std::string in(getIndent(indent));

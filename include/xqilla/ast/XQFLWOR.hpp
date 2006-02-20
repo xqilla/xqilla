@@ -65,18 +65,20 @@ public:
     const ASTNode *getExpression() const;
     sortModifier getModifier() const;
     const XMLCh *getCollation() const;
+    const Collation *getCollationObject() const;
 
     void setExpression(ASTNode *expr);
 
 	protected:
 		ASTNode* _expr;
 		sortModifier _modifier;
-		const XMLCh* _collation;
+		const XMLCh* _collationURI;
+    Collation *_collation;
 	};
 
 	typedef std::vector<SortSpec*, XQillaAllocator<SortSpec*> > VectorOfSortSpec;
   typedef std::vector<SortableItem> SortItems;
-	typedef enum { stable, unstable } sortType;
+  typedef enum { stable, unstable } sortType;
 
 	XQSort(sortType type, VectorOfSortSpec* specList);
 	void staticResolution(StaticContext *context, StaticResolutionContext &src);

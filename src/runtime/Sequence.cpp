@@ -178,7 +178,7 @@ private:
 
 bool equalCompareFn(const Item::Ptr &first, const Item::Ptr &second)
 {
-	return ((Node*)(const Item*)first)->equals((const Node::Ptr )second);
+	return ((const Node*)first.get())->equals((const Node*)second.get());
 }
 
 void Sequence::sortIntoDocumentOrder(const DynamicContext *context)

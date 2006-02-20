@@ -34,7 +34,7 @@ public:
   virtual void clearDynamicContext() = 0;
 
   /** Get the context Item */
-  virtual const Item::Ptr &getContextItem() const = 0;
+  virtual Item::Ptr getContextItem() const = 0;
   /** Set the context item to item */
   virtual void setContextItem(const Item::Ptr &item) = 0;
   /** Sets the context item to an external document.
