@@ -154,7 +154,7 @@ void XQDynamicContextImpl::setContextPosition(unsigned int pos)
   _contextPosition = pos;
 }
 
-const Item::Ptr &XQDynamicContextImpl::getContextItem() const
+Item::Ptr XQDynamicContextImpl::getContextItem() const
 {
   return _contextItem;
 }

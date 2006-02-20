@@ -1518,7 +1518,7 @@ Pragma:
 		QualifiedName qName($2);
 		try
 		{
-			const XMLCh* uri = CONTEXT->getUriBoundToPrefix(qName.getPrefix());
+			CONTEXT->getUriBoundToPrefix(qName.getPrefix());
 		}
 		catch(NamespaceLookupException&)
 		{

@@ -209,7 +209,8 @@ void XQUserFunction::staticResolutionStage1(StaticContext *context)
 
     const SequenceType::ItemType *itemType = m_pReturnPattern->getItemType();
     if(itemType != 0) {
-      itemType->getStaticType(_src.getStaticType(), context);
+      bool isPrimitive;
+      itemType->getStaticType(_src.getStaticType(), context, isPrimitive);
     }
     else {
       _src.getStaticType().flags = 0;
@@ -233,11 +234,12 @@ void XQUserFunction::staticResolutionStage2(StaticContext *context)
   VariableTypeStore* varStore=context->getVariableTypeStore();
   varStore->addLocalScope();
 
-  // Resolve the parameter names, and declare them
+  // Declare the parameters
   if(m_pParams) {
     VectorOfFunctionParameters::iterator it;
     for(it = m_pParams->begin(); it != m_pParams->end (); ++it) {
-      (*it)->m_pType->getItemType()->getStaticType((*it)->_src.getStaticType(), context);
+      bool isPrimitive;
+      (*it)->m_pType->getItemType()->getStaticType((*it)->_src.getStaticType(), context, isPrimitive);
       varStore->declareVar((*it)->_uri, (*it)->_name, (*it)->_src);
     }
   }

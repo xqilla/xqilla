@@ -52,12 +52,47 @@ ASTNode* XQTypeswitch::staticResolution(StaticContext *context)
   _src.getStaticType().flags = 0;
 
   if(exprSrc.isUsed()) {
-    // If it's not constant, it could be any of the clauses.
-    // (Until we static type resolution)
     _src.add(exprSrc);
 
+    // Do basic static type checking on the clauses,
+    // to eliminate ones which will never be matches,
+    // and find ones which will always be matched.
+    VectorOfClause newClauses(XQillaAllocator<Clause*>(context->getMemoryManager()));
+    VectorOfClause::iterator it = _clauses->begin();
+    for(; it != _clauses->end(); ++it) {
+      const SequenceType::ItemType *itemType = (*it)->_type->getItemType();
+      if(itemType != NULL) {
+        const StaticType &sType = _expr->getStaticResolutionContext().getStaticType();
+
+        bool isExact;
+        StaticType clauseType;
+        itemType->getStaticType(clauseType, context, isExact);
+
+        if(isExact && (sType.flags & clauseType.flags) != 0 &&
+           (sType.flags & ~clauseType.flags) == 0 &&
+           (*it)->_type->getOccurrenceIndicator() == SequenceType::STAR) {
+          // It always matches, so set this clause as the
+          // default clause and remove all the others
+          newClauses.clear();
+          _default = *it;
+          _default->_type = 0;
+          break;
+        }
+        else if((sType.flags & clauseType.flags) == 0 &&
+                ((*it)->_type->getOccurrenceIndicator() == SequenceType::EXACTLY_ONE ||
+                 (*it)->_type->getOccurrenceIndicator() == SequenceType::PLUS)) {
+          // It never matches, so don't add it to the new clauses
+        }
+        else {
+          newClauses.push_back(*it);
+        }
+      }
+    }
+    *_clauses = newClauses;
+
+    // Call static resolution on the new clauses
     _src.setProperties((unsigned int)-1);
-    for(VectorOfClause::iterator it=_clauses->begin();it!=_clauses->end();++it) {
+    for(it = _clauses->begin(); it != _clauses->end(); ++it) {
       (*it)->staticResolution(_expr->getStaticResolutionContext(), context, _src);
     }
 

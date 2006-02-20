@@ -37,9 +37,14 @@
 #include <xqilla/exceptions/StaticErrorException.hpp>
 #include <xqilla/ast/XQAtomize.hpp>
 #include <xqilla/ast/XQTreatAs.hpp>
+#include <xqilla/ast/ConvertFunctionArg.hpp>
 #include <xqilla/context/ContextHelpers.hpp>
 
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
+
+#if defined(XERCES_HAS_CPP_NAMESPACE)
+XERCES_CPP_NAMESPACE_USE
+#endif
 
 // needed to sort
 #include <algorithm>
@@ -50,15 +55,15 @@
 
 using namespace std;
 
-static XMLCh szForLoopAccumulator[] = { XERCES_CPP_NAMESPACE_QUALIFIER chUnderscore, XERCES_CPP_NAMESPACE_QUALIFIER chUnderscore,
-                                        XERCES_CPP_NAMESPACE_QUALIFIER chLatin_R, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e,
-                                        XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_u,
-                                        XERCES_CPP_NAMESPACE_QUALIFIER chLatin_r,
-                                        XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, XERCES_CPP_NAMESPACE_QUALIFIER chUnderscore,
-                                        XERCES_CPP_NAMESPACE_QUALIFIER chLatin_V, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a,
-                                        XERCES_CPP_NAMESPACE_QUALIFIER chLatin_l, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_u,
-                                        XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, XERCES_CPP_NAMESPACE_QUALIFIER chUnderscore,
-                                        XERCES_CPP_NAMESPACE_QUALIFIER chNull };
+static XMLCh szForLoopAccumulator[] = { chUnderscore, chUnderscore,
+                                        chLatin_R, chLatin_e,
+                                        chLatin_t, chLatin_u,
+                                        chLatin_r,
+                                        chLatin_n, chUnderscore,
+                                        chLatin_V, chLatin_a,
+                                        chLatin_l, chLatin_u,
+                                        chLatin_e, chUnderscore,
+                                        chNull };
 
 /////////////////////////////////////////////////////////////////////
 // SortableItem
@@ -133,56 +138,56 @@ const long XQSort::SortSpec::empty_least=8;
 XQSort::SortSpec::SortSpec(ASTNode* expr, sortModifier modifier, const XMLCh* collation)
   : _expr(expr),
     _modifier(modifier),
-    _collation(collation)
+    _collationURI(collation),
+    _collation(0)
 {
 }
 
 void XQSort::SortSpec::staticResolution(StaticContext *context, StaticResolutionContext &src)
 {
+  static SequenceType zero_or_one(new SequenceType::ItemType(SequenceType::ItemType::TEST_ANYTHING),
+                                  SequenceType::QUESTION_MARK);
+
   XPath2MemoryManager *mm = context->getMemoryManager();
 
   _expr = new (mm) XQAtomize(_expr, mm);
+  _expr = new (mm) XQPromoteUntyped(_expr, SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                                    SchemaSymbols::fgDT_STRING, mm);
+  _expr = new XQTreatAs(_expr, &zero_or_one, mm);
   _expr = _expr->staticResolution(context);
   src.add(_expr->getStaticResolutionContext());
+
+  if(_collationURI == NULL)
+    _collation = context->getDefaultCollation();
+  else {
+    _collation = context->getCollation(_collationURI);
+  }
 }
 
 SortableItem XQSort::SortSpec::buildKey(DynamicContext* context)
 {
-  Sequence atomized=_expr->collapseTree(context)->toSequence(context);
+  Result atomized = _expr->collapseTree(context);
+
   SortableItem value;
-  if(atomized.isEmpty())
-    value.m_item=NULL;
-  else if(atomized.getLength()>1)
-    XQThrow(ItemException, X("XQSort::SortSpec::buildKey"), X("The specified key returns multiple values"));
-  else
-  {
-    AnyAtomicType::Ptr atom = (const AnyAtomicType::Ptr )atomized.first();
-    assert(atom->isAtomicValue());
-    // need to manually convert xdt:untypedAtomic to xs:string
-    if(atom->getPrimitiveTypeIndex() == AnyAtomicType::UNTYPED_ATOMIC)
-      atom = atom->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                          XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING, context);
-    value.m_item=atom;
+  value.m_item = atomized->next(context);
+
+  if(!value.m_item.isNull()) {
     // if it's a NaN, it must be treated as if it were the empty sequence
+    const AnyAtomicType *atom = (const AnyAtomicType*)value.m_item.get();
     if(atom->isNumericValue() && XPath2Utils::equals(atom->asString(context), Numeric::NaN_string))
-      value.m_item=NULL;
+      value.m_item = NULL;
   }
-  value.m_bAscending=(_modifier & ascending) && !(_modifier & descending);
-  if(value.m_item==NULLRCP)
-  {
-      value.m_bIsMax=(_modifier & empty_greatest) && !(_modifier & empty_least);
-      value.m_bIsMin=!(_modifier & empty_greatest) || (_modifier & empty_least);
+
+  value.m_bAscending = (_modifier & ascending) && !(_modifier & descending);
+
+  if(value.m_item.isNull()) {
+      value.m_bIsMax = (_modifier & empty_greatest) && !(_modifier & empty_least);
+      value.m_bIsMin = !(_modifier & empty_greatest) || (_modifier & empty_least);
   }
-  value.m_context=context;
-  if(_collation==NULL)
-    value.m_collation=context->getDefaultCollation();
-  else
-  {
-    Collation* collation=context->getCollation(_collation);
-    if(collation==NULL)
-      XQThrow(ItemException,X("XQSort::SortSpec::buildKey"),X("Collation object is not available"));
-    value.m_collation=collation;
-  }
+
+  value.m_context = context;
+  value.m_collation = _collation;
+
   return value;
 }
 
@@ -197,6 +202,11 @@ XQSort::SortSpec::sortModifier XQSort::SortSpec::getModifier() const
 }
 
 const XMLCh *XQSort::SortSpec::getCollation() const
+{
+  return _collationURI;
+}
+
+const Collation *XQSort::SortSpec::getCollationObject() const
 {
   return _collation;
 }
@@ -481,15 +491,15 @@ VariableStore::Entry *XQFLWOR::getAccumulator(DynamicContext *context) const
     // find a unique name for the variable to be used as accumulator for the result
     // use the line number, plus a counter if more than one "for" is on the same line
     XMLCh szNumBuff[20];
-    XERCES_CPP_NAMESPACE_QUALIFIER XMLString::binToText(_bindings->front()->_line, szNumBuff, 19, 10);
+    XMLString::binToText(_bindings->front()->_line, szNumBuff, 19, 10);
     const XMLCh *szInitialAccumulator, *szAccumulatorName;
     szInitialAccumulator = szAccumulatorName = XPath2Utils::concatStrings(szForLoopAccumulator, szNumBuff, context->getMemoryManager());
     long index = 1;
     while(varStore->getReferenceVar(szAccumulatorName, context) != NULL) {
-      static XMLCh szSpaceParent[] = { XERCES_CPP_NAMESPACE_QUALIFIER chSpace, XERCES_CPP_NAMESPACE_QUALIFIER chOpenParen, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
-      XERCES_CPP_NAMESPACE_QUALIFIER XMLString::binToText(index++, szNumBuff, 19, 10);
+      static XMLCh szSpaceParent[] = { chSpace, chOpenParen, chNull };
+      XMLString::binToText(index++, szNumBuff, 19, 10);
       szAccumulatorName = XPath2Utils::concatStrings(szInitialAccumulator, szSpaceParent, szNumBuff, context->getMemoryManager());
-      szAccumulatorName = XPath2Utils::concatStrings(szAccumulatorName, XERCES_CPP_NAMESPACE_QUALIFIER chCloseParen, context->getMemoryManager());
+      szAccumulatorName = XPath2Utils::concatStrings(szAccumulatorName, chCloseParen, context->getMemoryManager());
     }
 
     varStore->declareVar(szAccumulatorName, Sequence(context->getMemoryManager()), context);
@@ -588,7 +598,7 @@ void XQFLWOR::staticResolutionImpl(StaticContext* context)
       if(XPath2Utils::equals((*it0)->_pURI, (*it0)->_vURI) && 
          XPath2Utils::equals((*it0)->_pName, (*it0)->_vName))
       {
-        XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer errMsg;
+        XMLBuffer errMsg;
         errMsg.set(X("The positional variable with name {"));
         errMsg.append((*it0)->_pURI);
         errMsg.append(X("}"));

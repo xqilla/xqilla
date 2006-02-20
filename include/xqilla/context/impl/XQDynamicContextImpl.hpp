@@ -75,7 +75,7 @@ public:
   virtual void setItemFactory(ItemFactory *factory);
 
   /** Get the context Item */
-  virtual const Item::Ptr &getContextItem() const;
+  virtual Item::Ptr getContextItem() const;
   /** Set the context item to item */
   virtual void setContextItem(const Item::Ptr &item);
   /** Sets the context item to an external document.

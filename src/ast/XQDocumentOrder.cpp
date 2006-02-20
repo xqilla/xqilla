@@ -64,14 +64,14 @@ Result XQDocumentOrder::createResult(DynamicContext* context, int flags) const
   }
 }
 
-void XQDocumentOrder::DocumentOrderResult::getResult(Sequence &toFill, DynamicContext *context) const
+void DocumentOrderResult::getResult(Sequence &toFill, DynamicContext *context) const
 {
   toFill = parent_->toSequence(context);
   parent_ = 0;
   toFill.sortIntoDocumentOrder(context);
 }
 
-Item::Ptr XQDocumentOrder::UniqueNodesResult::next(DynamicContext *context)
+Item::Ptr UniqueNodesResult::next(DynamicContext *context)
 {
   Item::Ptr result = parent_->next(context);
 

@@ -54,6 +54,7 @@ public:
   void setAxis(Axis axis);
 
   static bool isForwardAxis(Axis axis);
+  static unsigned int getAxisProperties(Axis axis);
 
 private:
   /**

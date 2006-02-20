@@ -190,9 +190,8 @@ Node::Ptr ItemFactoryImpl::createDocumentNode(const std::vector<Node::Ptr> &chil
   return new NodeImpl(document, context);
 }
 
-AnyAtomicType::AtomicObjectType ItemFactoryImpl::getPrimitiveTypeIndex(const XMLCh* typeURI, const XMLCh* typeName) const
+AnyAtomicType::AtomicObjectType ItemFactoryImpl::getPrimitiveTypeIndex(const XMLCh* typeURI, const XMLCh* typeName, bool &isPrimitive) const
 {
-  bool isPrimitive;
   const DatatypeFactory* dtf = datatypeLookup_.lookupDatatype(typeURI, typeName, isPrimitive);
   return dtf->getPrimitiveTypeIndex();
 }

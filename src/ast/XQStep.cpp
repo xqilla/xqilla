@@ -37,12 +37,11 @@ XQStep::~XQStep()
 {
 }
 
-
-ASTNode* XQStep::staticResolution(StaticContext *context)
+unsigned int XQStep::getAxisProperties(Axis axis)
 {
   unsigned int properties = 0;
   // properties depend on the axis of the step
-  switch (axis_) {
+  switch (axis) {
   case SELF:
     properties |= StaticResolutionContext::ONENODE;
     // Fall through
@@ -67,11 +66,16 @@ ASTNode* XQStep::staticResolution(StaticContext *context)
   }
   properties |= StaticResolutionContext::GROUPED | StaticResolutionContext::SAMEDOC;
 
-  if(isForwardAxis(axis_) || axis_ == PARENT) {
+  if(isForwardAxis(axis) || axis == PARENT) {
     properties |= StaticResolutionContext::DOCORDER;
   }
 
-  _src.setProperties(properties);
+  return properties;
+}
+
+ASTNode* XQStep::staticResolution(StaticContext *context)
+{
+  _src.setProperties(getAxisProperties(axis_));
   _src.getStaticType().flags = StaticType::NODE_TYPE;
   _src.contextItemUsed(true);
   nodeTest_->staticResolution(context);

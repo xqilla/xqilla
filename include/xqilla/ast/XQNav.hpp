@@ -59,9 +59,9 @@ public:
 
   const Steps &getSteps() const;
 
-protected:
   static unsigned int combineProperties(unsigned int prev_props, unsigned int step_props);
 
+protected:
   class XQILLA_API StepResult : public ResultImpl
   {
   public:
@@ -82,36 +82,36 @@ protected:
     Item::Ptr contextItem_;
   };
 
-  class XQILLA_API IntermediateStepCheckResult : public ResultImpl
-  {
-  public:
-    IntermediateStepCheckResult(const Result &parent);
-
-    Item::Ptr next(DynamicContext *context);
-    void skip();
-    std::string asString(DynamicContext *context, int indent) const;
-
-  private:
-    Result parent_;
-  };
-
-  class XQILLA_API LastStepCheckResult : public ResultImpl
-  {
-  public:
-    LastStepCheckResult(const Result &parent);
-
-    Item::Ptr next(DynamicContext *context);
-    void skip();
-    std::string asString(DynamicContext *context, int indent) const;
-
-  private:
-    Result parent_;
-    int _nTypeOfItemsInLastStep;
-  };
-
   //list of steps to be performed.
   Steps _steps;
   bool _sortAdded;
+};
+
+class XQILLA_API IntermediateStepCheckResult : public ResultImpl
+{
+public:
+  IntermediateStepCheckResult(const Result &parent);
+
+  Item::Ptr next(DynamicContext *context);
+  void skip();
+  std::string asString(DynamicContext *context, int indent) const;
+
+private:
+  Result parent_;
+};
+
+class XQILLA_API LastStepCheckResult : public ResultImpl
+{
+public:
+  LastStepCheckResult(const Result &parent);
+
+  Item::Ptr next(DynamicContext *context);
+  void skip();
+  std::string asString(DynamicContext *context, int indent) const;
+
+private:
+  Result parent_;
+  int _nTypeOfItemsInLastStep;
 };
 
 #endif

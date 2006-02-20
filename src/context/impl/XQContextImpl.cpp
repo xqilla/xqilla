@@ -411,7 +411,7 @@ void XQContextImpl::setContextPosition(unsigned int pos)
   _contextPosition = pos;
 }
 
-const Item::Ptr &XQContextImpl::getContextItem() const
+Item::Ptr XQContextImpl::getContextItem() const
 {
   return _contextItem;
 }
@@ -500,7 +500,8 @@ ASTNode* XQContextImpl::lookUpFunction(const XMLCh* prefix, const XMLCh* name, V
   if(functionImpl == NULL && v.size() == 1) {
     // maybe it's not a function, but a datatype
     try {
-      _itemFactory->getPrimitiveTypeIndex(uri, name);
+      bool isPrimitive;
+      _itemFactory->getPrimitiveTypeIndex(uri, name, isPrimitive);
       functionImpl = new (getMemoryManager())
         FunctionConstructor(uri, name, v, getMemoryManager());
     }

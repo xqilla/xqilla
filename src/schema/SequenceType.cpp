@@ -74,9 +74,19 @@ SequenceType::~SequenceType()
 		delete m_pItemType;
 }
 
+Result SequenceType::occurrenceMatches(const Result &toBeTested) const
+{
+  return new OccurrenceMatchesResult(toBeTested, this);
+}
+
+Result SequenceType::typeMatches(const Result &toBeTested) const
+{
+  return new TypeMatchesResult(toBeTested, this);
+}
+
 Result SequenceType::matches(const Result &toBeTested) const
 {
-  return new MatchesResult(toBeTested, this);
+  return typeMatches(occurrenceMatches(toBeTested));
 }
 
 void SequenceType::setItemType(SequenceType::ItemType* itemType)
@@ -239,19 +249,26 @@ const XMLCh* SequenceType::ItemType::getNameURI(const StaticContext* context) co
     return 0;
 }
 
-void SequenceType::ItemType::getStaticType(StaticType &st, const StaticContext *context) const
+void SequenceType::ItemType::getStaticType(StaticType &st, const StaticContext *context, bool &isExact) const
 {
   switch(m_nTestType) {
-  case SequenceType::ItemType::TEST_ANYTHING: {
+  case TEST_ANYTHING: {
     st.flags = StaticType::ITEM_TYPE;
+    isExact = true;
     break;
   }
-  case SequenceType::ItemType::TEST_ATOMIC_TYPE: {
-    st.flags = StaticType::getFlagsFor(getTypeURI(context), getType()->getName(), context);
+  case TEST_ATOMIC_TYPE: {
+    st.flags = StaticType::getFlagsFor(getTypeURI(context), getType()->getName(), context, isExact);
+    break;
+  }
+  case TEST_NODE: {
+    st.flags = StaticType::NODE_TYPE;
+    isExact = true;
     break;
   }
   default: {
     st.flags = StaticType::NODE_TYPE;
+    isExact = false;
     break;
   }
   }
@@ -592,23 +609,21 @@ const SequenceType::ItemType *SequenceType::getItemType() const {
 }
 
 ////////////////////////////////////////
-// MatchesResult
+// OccurrenceMatchesResult
 ////////////////////////////////////////
 
-SequenceType::MatchesResult::MatchesResult(const Result &parent, const SequenceType *seqType)
+SequenceType::OccurrenceMatchesResult::OccurrenceMatchesResult(const Result &parent, const SequenceType *seqType)
   : _seqType(seqType),
     _parent(parent),
     _toDo(true)
 {
 }
 
-Item::Ptr SequenceType::MatchesResult::next(DynamicContext *context)
+Item::Ptr SequenceType::OccurrenceMatchesResult::next(DynamicContext *context)
 {
-  Item::Ptr item;
+  Item::Ptr item = _parent->next(context);
   if(_toDo) {
     _toDo = false;
-
-    item = _parent->next(context);
 
     // "SequenceType matching between a given value and a given SequenceType is performed as follows:
     //  If the SequenceType is empty, the match succeeds only if the value is an empty sequence."
@@ -644,11 +659,39 @@ Item::Ptr SequenceType::MatchesResult::next(DynamicContext *context)
       }
     }
   }
-  else {
-    item = _parent->next(context);
+
+  if(item == NULLRCP) {
+    _parent = 0;
   }
 
-  // Now test that each item matches the ItemType
+  return item;
+}
+
+std::string SequenceType::OccurrenceMatchesResult::asString(DynamicContext *context, int indent) const
+{
+  std::ostringstream oss;
+  std::string in(getIndent(indent));
+
+  oss << in << "<occurrence_matches>" << std::endl;
+  oss << _parent->asString(context, indent + 1);
+  oss << in << "</occurrence_matches>" << std::endl;
+
+  return oss.str();
+}
+
+////////////////////////////////////////
+// TypeMatchesResult
+////////////////////////////////////////
+
+SequenceType::TypeMatchesResult::TypeMatchesResult(const Result &parent, const SequenceType *seqType)
+  : _seqType(seqType),
+    _parent(parent)
+{
+}
+
+Item::Ptr SequenceType::TypeMatchesResult::next(DynamicContext *context)
+{
+  Item::Ptr item = _parent->next(context);
   if(item == NULLRCP) {
     _parent = 0;
   }
@@ -660,14 +703,14 @@ Item::Ptr SequenceType::MatchesResult::next(DynamicContext *context)
   return item;
 }
 
-std::string SequenceType::MatchesResult::asString(DynamicContext *context, int indent) const
+std::string SequenceType::TypeMatchesResult::asString(DynamicContext *context, int indent) const
 {
   std::ostringstream oss;
   std::string in(getIndent(indent));
 
-  oss << in << "<matches>" << std::endl;
+  oss << in << "<type_matches>" << std::endl;
   oss << _parent->asString(context, indent + 1);
-  oss << in << "</matches>" << std::endl;
+  oss << in << "</type_matches>" << std::endl;
 
   return oss.str();
 }

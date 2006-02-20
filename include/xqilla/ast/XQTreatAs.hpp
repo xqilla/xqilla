@@ -31,12 +31,14 @@ public:
 
   const ASTNode *getExpression() const;
   const SequenceType *getSequenceType() const;
+  bool getDoTypeCheck() const { return _doTypeCheck; }
 
   void setExpression(ASTNode *item);
 
 protected:
   ASTNode* _expr;
   const SequenceType* _exprType;
+  bool _doTypeCheck;
 };
 
 #endif

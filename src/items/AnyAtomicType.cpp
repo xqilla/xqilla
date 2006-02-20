@@ -91,7 +91,8 @@ const XMLCh* AnyAtomicType::getPrimitiveTypeURI() const{
 }
 
 AnyAtomicType::Ptr AnyAtomicType::castAs(const XMLCh* targetTypeURI, const XMLCh* targetTypeName, const DynamicContext* context) const {
-  AtomicObjectType targetIndex = context->getItemFactory()->getPrimitiveTypeIndex(targetTypeURI, targetTypeName);
+  bool isPrimitive;
+  AtomicObjectType targetIndex = context->getItemFactory()->getPrimitiveTypeIndex(targetTypeURI, targetTypeName, isPrimitive);
 
   if(!castIsSupported(targetIndex, context)) {
     XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buffer(1023, context->getMemoryManager());
@@ -136,17 +137,24 @@ AnyAtomicType::Ptr AnyAtomicType::castAsInternal(AtomicObjectType targetIndex, c
 
 /* Test if this type can be cast to the target type */
 bool AnyAtomicType::castable(const XMLCh* targetTypeURI, const XMLCh* targetTypeName, const DynamicContext* context) const {
-  AtomicObjectType targetIndex = context->getItemFactory()->getPrimitiveTypeIndex(targetTypeURI, targetTypeName);
+  bool isPrimitive;
+  AtomicObjectType targetIndex = context->getItemFactory()->getPrimitiveTypeIndex(targetTypeURI, targetTypeName, isPrimitive);
 
   if(!castIsSupported(targetIndex, context)) {
           return false;
   }
   // validate the data by calling castAs (can't use checkInstance)
   try {
-    this->castAs(targetTypeURI, targetTypeName, context);
-  } catch (IllegalArgumentException& e) {
+    this->castAsInternal(targetIndex, targetTypeURI, targetTypeName, context);
+  } catch (IllegalArgumentException &e) {
     return false;
   } catch (XPath2TypeCastException &e) {
+    return false;
+  } catch (TypeNotFoundException &e) {
+    return false;
+  } catch (InvalidLexicalSpaceException &e) {
+    return false;
+  } catch (NamespaceLookupException &e) {
     return false;
   }
   return true;

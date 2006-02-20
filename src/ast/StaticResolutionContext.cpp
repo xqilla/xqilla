@@ -19,6 +19,8 @@
 #include <xqilla/utils/XPath2NSUtils.hpp>
 #include <xqilla/utils/UTF8Str.hpp>
 
+using namespace std;
+
 StaticResolutionContext::StaticResolutionContext(XPath2MemoryManager* memMgr)
   : _dynamicVariables(17, false, memMgr),
     _uriPool(17, memMgr),
@@ -54,6 +56,7 @@ void StaticResolutionContext::clear()
   _availableCollections = false;
   _staticBaseURI = false;
   _forceNoFolding = false;
+  _creative = false;
 
   _properties = 0;
   _staticType.flags = StaticType::OTHER_TYPE;
@@ -142,8 +145,25 @@ void StaticResolutionContext::variableUsed(const XMLCh *namespaceURI, const XMLC
 {
   namespaceURI = _memMgr->getPooledString(namespaceURI);
   name = _memMgr->getPooledString(name);
-	unsigned int nsID = _uriPool.addOrFind(namespaceURI);
+  unsigned int nsID = _uriPool.addOrFind(namespaceURI);
   _dynamicVariables.put((void*)name, nsID, 0);
+}
+
+vector<pair<const XMLCh*, const XMLCh*> > StaticResolutionContext::variablesUsed() const
+{
+  vector<pair<const XMLCh*, const XMLCh*> > result;
+
+  const XMLCh* namespaceURI;
+  const XMLCh* name;
+  int nsID;
+  VariableAccessSetEnumerator it(const_cast<VariableAccessSet *>(&_dynamicVariables));
+  while(it.hasMoreElements()) {
+    it.nextElementKey((void*&)name, nsID);
+    namespaceURI = _uriPool.getValueForId(nsID);
+    result.push_back(pair<const XMLCh*, const XMLCh*>(namespaceURI, name));
+  }  
+
+  return result;
 }
 
 bool StaticResolutionContext::removeVariable(const XMLCh *namespaceURI, const XMLCh *name)
@@ -230,6 +250,16 @@ bool StaticResolutionContext::isUsedExceptContextFlags() const
   return _currentTime || _implicitTimezone || _availableCollections
     || _availableDocuments || _staticBaseURI || _forceNoFolding
     || !_dynamicVariables.isEmpty();
+}
+
+void StaticResolutionContext::creative(bool value)
+{
+  _creative = value;
+}
+
+bool StaticResolutionContext::isCreative() const
+{
+  return _creative;
 }
 
 unsigned int StaticResolutionContext::getProperties() const

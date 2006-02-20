@@ -37,7 +37,8 @@ public:
     ITEM_TYPE = (NODE_TYPE | ANY_ATOMIC_TYPE)
   };
 
-  static unsigned int getFlagsFor(const XMLCh *uri, const XMLCh *name, const StaticContext *context);
+  static unsigned int getFlagsFor(const XMLCh *uri, const XMLCh *name, const StaticContext *context,
+                                  bool &isExact);
   static unsigned int getFlagsFor(AnyAtomicType::AtomicObjectType primitiveType);
 
   void typeUnion(const StaticType &st);

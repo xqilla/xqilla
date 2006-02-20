@@ -95,7 +95,13 @@ ASTNode* XQGlobalVariable::staticResolution(StaticContext* context)
     varStore->declareGlobalVar(m_szURI, m_szLocalName, m_Value->getStaticResolutionContext());
   }
   else {
-    m_Type->getItemType()->getStaticType(_src.getStaticType(), context);
+    if(m_Type->getItemType() != NULL) {
+      bool isPrimitive;
+      m_Type->getItemType()->getStaticType(_src.getStaticType(), context, isPrimitive);
+    }
+    else {
+      _src.getStaticType().flags = 0;
+    }
     varStore->declareGlobalVar(m_szURI, m_szLocalName, _src);
   }
   return this;
