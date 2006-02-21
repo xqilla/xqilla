@@ -32,7 +32,9 @@ public:
   std::string queryURL;
   std::string query;
   std::map<std::string, std::string> inputVars;
+  std::map<std::string, std::string> extraVars;
   std::map<std::string, std::string> outputFiles;
+  std::map<std::string, std::string> moduleFiles;
   std::list<std::string> expectedErrors;
 };
 
@@ -68,7 +70,7 @@ private:
   bool m_bReadingChars;
   std::string m_szChars;
 
-  std::string m_szVariableBoundToInput, m_szCompareMethod;
+  std::string m_szVariableBoundToInput, m_szCompareMethod, m_szNamespace;
 
   TestCase m_testCase;
 };

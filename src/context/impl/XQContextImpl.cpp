@@ -26,7 +26,6 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/context/impl/XQContextImpl.hpp>
-#include <xqilla/context/impl/XQDynamicContextImpl.hpp>
 #include <xqilla/context/impl/ItemFactoryImpl.hpp>
 #include <xqilla/context/impl/XQDynamicContextImpl.hpp>
 #include <xqilla/context/impl/CodepointCollation.hpp>

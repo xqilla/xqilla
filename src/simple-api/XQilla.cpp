@@ -101,8 +101,19 @@ XQQuery* XQilla::parse(const InputSource& querySrc, Language language, DynamicCo
                        unsigned int flags, MemoryManager *memMgr)
 {
   XMLBuffer moduleText;
-  if(!readQuery(querySrc, memMgr, moduleText)) {
-    XQThrow(ContextException,X("XQilla::parse"), X("Exception reading query content"));
+  try {
+    if(!readQuery(querySrc, memMgr, moduleText))
+    {
+      XMLBuffer buf(1023,context->getMemoryManager());
+      buf.set(X("Cannot read query content from "));
+      buf.append(querySrc.getSystemId());
+      XQThrow(ContextException,X("XQilla::parse"), buf.getRawBuffer());
+    }
+  } catch(XMLException& e) {
+    XMLBuffer buf(1023,context->getMemoryManager());
+    buf.set(X("Exception reading query content: "));
+    buf.append(e.getMessage());
+    XQThrow(ContextException,X("XQilla::parse"), buf.getRawBuffer());
   }
 
   return parse(moduleText.getRawBuffer(), language, context, querySrc.getSystemId(), flags, memMgr);
@@ -112,8 +123,19 @@ XQQuery* XQilla::parseFromURI(const XMLCh* queryFile, Language language, Dynamic
                               unsigned int flags, MemoryManager *memMgr)
 {
   XMLBuffer moduleText;
-  if(!readQuery(queryFile, memMgr, moduleText)) {
-    XQThrow(ContextException,X("XQilla::parseFromUri"), X("Exception reading query content"));
+  try {
+    if(!readQuery(queryFile, memMgr, moduleText))
+    {
+      XMLBuffer buf(1023,context->getMemoryManager());
+      buf.set(X("Cannot read query content from "));
+      buf.append(queryFile);
+      XQThrow(ContextException,X("XQilla::parseFromURI"), buf.getRawBuffer());
+    }
+  } catch(XMLException& e) {
+    XMLBuffer buf(1023,context->getMemoryManager());
+    buf.set(X("Exception reading query content: "));
+    buf.append(e.getMessage());
+    XQThrow(ContextException,X("XQilla::parseFromURI"), buf.getRawBuffer());
   }
 
   return parse(moduleText.getRawBuffer(), language, context, queryFile, flags, memMgr);
@@ -147,7 +169,6 @@ bool XQilla::readQuery(const XMLCh* queryFile, MemoryManager* memMgr, XMLBuffer&
 
 bool XQilla::readQuery(const InputSource& querySrc, MemoryManager* memMgr, XMLBuffer& queryText)
 {
-	try {
     BinInputStream* stream=querySrc.makeStream();
     if(stream==NULL)
       return false;
@@ -181,9 +202,5 @@ bool XQilla::readQuery(const InputSource& querySrc, MemoryManager* memMgr, XMLBu
         memmove(buffer, buffer+bytesEaten, nRead-bytesEaten);
       }
     }
-	}
-	catch(...) {
-    return false;
-	}
-  return true;
+    return true;
 }
