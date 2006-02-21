@@ -42,6 +42,7 @@ public:
 
   virtual void addSource(const string &id, const string &filename, const string &schema);
   virtual void addSchema(const string &id, const string &filename, const string &uri);
+  virtual void addModule(const string &id, const string &filename);
 
   virtual void startTestGroup(const string &name);
   virtual void endTestGroup();
@@ -54,11 +55,14 @@ private:
 private:
   string m_szSingleTest;
   string m_szFullTestName;
+  const TestCase* m_pCurTestCase;
 
   // id -> filename
   map<string, string> m_inputFiles;
   // schemaURL -> filename
   map<string, string> m_schemaFiles;
+  // id -> filename
+  map<string, string> m_moduleFiles;
 };
 
 void usage(const char *progname)
@@ -210,7 +214,8 @@ string serializeXMLResults(const Sequence &result, const DynamicContext *context
 
 XQillaTestSuiteRunner::XQillaTestSuiteRunner(const string &singleTest, TestSuiteResultListener *results)
   : TestSuiteRunner(results),
-    m_szSingleTest(singleTest)
+    m_szSingleTest(singleTest),
+    m_pCurTestCase(NULL)
 {
 }
 
@@ -244,6 +249,11 @@ void XQillaTestSuiteRunner::addSchema(const string &id, const string &filename, 
   m_schemaFiles[uri] = filename;
 }
 
+void XQillaTestSuiteRunner::addModule(const string &id, const string &filename)
+{
+  m_moduleFiles[id] = filename;
+}
+
 void XQillaTestSuiteRunner::runTestCase(const TestCase &testCase)
 {
   if(m_szSingleTest != "" && testCase.name != m_szSingleTest &&
@@ -259,6 +269,7 @@ void XQillaTestSuiteRunner::runTestCase(const TestCase &testCase)
 
   XQilla xqilla;
 
+  m_pCurTestCase=&testCase;
   Janitor<DynamicContext> context(xqilla.createContext());
   try {
     context->setBaseURI(X(testCase.queryURL.c_str()));
@@ -270,7 +281,13 @@ void XQillaTestSuiteRunner::runTestCase(const TestCase &testCase)
 
     XQQuery* pParsedQuery = xqilla.parseFromURI(X(testCase.queryURL.c_str()), XQilla::XQUERY, context.get());
 
-    for(map<string, string>::const_iterator v=testCase.inputVars.begin();v!=testCase.inputVars.end();v++) {
+    map<string, string>::const_iterator v;
+    for(v=testCase.extraVars.begin();v!=testCase.extraVars.end();v++) {
+      XQQuery* pInnerQuery = xqilla.parseFromURI(X(v->second.c_str()), XQilla::XQUERY, context.get());
+      Sequence doc=pInnerQuery->execute(context.get())->toSequence(context.get());
+      context->getVariableStore()->setGlobalVar(X(v->first.c_str()),doc,context.get());
+    }
+    for(v=testCase.inputVars.begin();v!=testCase.inputVars.end();v++) {
       Sequence doc=context->resolveDocument(X(m_inputFiles[v->second].c_str()));
       context->getVariableStore()->setGlobalVar(X(v->first.c_str()),doc,context.get());
     }
@@ -292,6 +309,7 @@ void XQillaTestSuiteRunner::runTestCase(const TestCase &testCase)
   catch(...) {
     testErrors(testCase, "[Unknown exception]");
   }
+  m_pCurTestCase=NULL;
 }
 
 InputSource* XQillaTestSuiteRunner::resolveEntity(XMLResourceIdentifier* resourceIdentifier)
@@ -304,6 +322,17 @@ InputSource* XQillaTestSuiteRunner::resolveEntity(XMLResourceIdentifier* resourc
         m_schemaFiles.find(UTF8(resourceIdentifier->getNameSpace()));
       if(i != m_schemaFiles.end()) {
         return new URLInputSource(X(i->second.c_str()));
+      }
+    }
+    else if(resourceIdentifier->getResourceIdentifierType()==XMLResourceIdentifier::UnKnown) {
+      map<string, string>::const_iterator i =
+        m_pCurTestCase->moduleFiles.find(UTF8(resourceIdentifier->getNameSpace()));
+      if(i != m_pCurTestCase->moduleFiles.end()) {
+        map<string, string>::const_iterator i2 = m_moduleFiles.find(i->second);
+        if(i2 != m_moduleFiles.end()) {
+          string file=i2->second+".xq";
+          return new URLInputSource(X(file.c_str()));
+        }
       }
     }
     return NULL;

@@ -14,6 +14,7 @@
 #pragma warning(disable: 4786)
 #endif
 
+
 #include <xqilla/xqts/TestSuiteResultListener.hpp>
 #include <xqilla/xqts/TestSuiteParser.hpp>
 
@@ -389,15 +390,17 @@ void ConsoleResultListener::testCaseToErrorStream(const TestCase &testCase)
 {
   errorStream_ << "* Test-case '" << m_szFullTestName << ":" << testCase.name << "':" << endl;
   errorStream_ << "* Query URL: " << testCase.queryURL << endl;
-
-  for(std::map<std::string, std::string>::const_iterator i = testCase.inputVars.begin();
-      i != testCase.inputVars.end(); ++i) {
+  std::map<std::string, std::string>::const_iterator i;
+  for(i = testCase.inputVars.begin(); i != testCase.inputVars.end(); ++i) {
     errorStream_ << "* Input: " << i->first << " -> " << i->second << endl;
   }
 
-  for(std::map<std::string, std::string>::const_iterator j = testCase.outputFiles.begin();
-      j != testCase.outputFiles.end(); ++j) {
-    errorStream_ << "* Output: " << j->second << " -> " << j->first << endl;
+  for(i = testCase.extraVars.begin(); i != testCase.extraVars.end(); ++i) {
+    errorStream_ << "* Variable: " << i->first << " -> " << i->second << endl;
+  }
+
+  for(i = testCase.outputFiles.begin(); i != testCase.outputFiles.end(); ++i) {
+    errorStream_ << "* Output: " << i->second << " -> " << i->first << endl;
   }
 
   if(!testCase.expectedErrors.empty()) {

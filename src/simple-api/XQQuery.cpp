@@ -68,12 +68,15 @@ XQQuery::XQQuery(const XMLCh* queryText, DynamicContext *context, bool contextOw
     m_szQueryText(m_context->getMemoryManager()->getPooledString(queryText)),
     m_szCurrentFile(NULL),
     m_userDefFns(XQillaAllocator<XQUserFunction*>(memMgr)),
-    m_userDefVars(XQillaAllocator<XQGlobalVariable*>(memMgr))
+    m_userDefVars(XQillaAllocator<XQGlobalVariable*>(memMgr)),
+    m_importedContexts(XQillaAllocator<DynamicContext*>(memMgr))
 {
 }
 
 XQQuery::~XQQuery()
 {
+    for(Contexts::iterator it=m_importedContexts.begin();it!=m_importedContexts.end();it++)
+        delete *it;
 	if(m_contextOwned)
 		delete m_context;
 }
@@ -128,7 +131,7 @@ void XQQuery::staticResolution(StaticContext *context)
           errMsg.append(X("}"));
           errMsg.append((*it2)->getVariableLocalName());
           errMsg.append(X(" has already been declared [err:XQST0049]"));
-          XQThrow(StaticErrorException,X("XQQuery::ImportModule"), errMsg.getRawBuffer());
+          XQThrow(StaticErrorException,X("XQQuery::staticResolution"), errMsg.getRawBuffer());
         }
       }
   }
@@ -137,7 +140,18 @@ void XQQuery::staticResolution(StaticContext *context)
   // which calculates a better type for them, and statically
   // resolves their function bodies
   for(i = m_userDefFns.begin(); i != m_userDefFns.end(); ++i) {
-    (*i)->staticResolutionStage2(context);
+      try {
+        (*i)->staticResolutionStage2(context);
+      } catch(XQException& e) {
+        XMLBuffer errMsg;
+        errMsg.set(X("Error while running static resolution on user-defined function {"));
+        errMsg.append((*i)->getURI());
+        errMsg.append(X("}"));
+        errMsg.append((*i)->getName());
+        errMsg.append(X(": "));
+        errMsg.append(e.getError());
+        XQThrow(StaticErrorException,X("XQQuery::staticResolution"), errMsg.getRawBuffer());
+      }
   }
   if(m_query) m_query = m_query->staticResolution(context);
 }
@@ -187,21 +201,89 @@ const XMLCh* XQQuery::getModuleTargetNamespace() const
   return m_szTargetNamespace;
 }
 
-void XQQuery::importModule(const XMLCh* szUri, VectorOfStrings* locations, StaticContext* context)
+void XQQuery::importModuleImpl(const XMLCh* szUri, InputSource* location, StaticContext* context)
 {
   XQilla xqilla;
 
-  AutoDelete<DynamicContext> moduleCtx(xqilla.createContext(context->getMemoryManager()));
+  DynamicContext* moduleCtx=xqilla.createContext(context->getMemoryManager());
+  m_importedContexts.push_back(moduleCtx);
   // force the context to use our memory manager
   moduleCtx->setMemoryManager(context->getMemoryManager());
   // we also need to fix the namespace resolver, because it has already been initialized using the internal memory manager
   moduleCtx->setNSResolver(new (context->getMemoryManager()) XQScopedNamespace(context->getMemoryManager(), moduleCtx->getNSResolver()));
   // propagate debug settings
   moduleCtx->enableDebugging(context->isDebuggingEnabled());
+  moduleCtx->setBaseURI(location->getSystemId());
 
-  bool bFound=false;
-  for(VectorOfStrings::iterator it=locations->begin();it!=locations->end();it++)
+  AutoDelete<XQQuery> pParsedQuery(xqilla.parse(*location, XQilla::XQUERY, moduleCtx, XQilla::NO_ADOPT_CONTEXT));
+
+  if(!pParsedQuery->getIsLibraryModule()) {
+    XMLBuffer buf(1023,context->getMemoryManager());
+    buf.set(X("The module at "));
+    buf.append(location->getSystemId());
+    buf.append(X(" is not a module"));
+    XQThrow(StaticErrorException, X("XQQuery::ImportModule"), buf.getRawBuffer());
+  }
+  if(!XERCES_CPP_NAMESPACE::XMLString::equals(szUri,pParsedQuery->getModuleTargetNamespace())) {
+    XMLBuffer buf(1023,context->getMemoryManager());
+    buf.set(X("The module at "));
+    buf.append(location->getSystemId());
+    buf.append(X(" specifies a different namespace"));
+    XQThrow(StaticErrorException, X("XQQuery::ImportModule"), buf.getRawBuffer());
+  }
+  // now move the variable declarations and the function definitions into my context
+  for(UserFunctions::iterator itFn = pParsedQuery->m_userDefFns.begin(); itFn != pParsedQuery->m_userDefFns.end(); ++itFn) {
+    context->addCustomFunction(*itFn);
+  }
+  for(GlobalVariables::iterator itVar = pParsedQuery->m_userDefVars.begin(); itVar != pParsedQuery->m_userDefVars.end(); ++itVar) {
+    for(GlobalVariables::iterator it = m_userDefVars.begin(); it != m_userDefVars.end(); ++it) {
+      if(XPath2Utils::equals((*it)->getVariableURI(), (*itVar)->getVariableURI()) &&
+         XPath2Utils::equals((*it)->getVariableLocalName(), (*itVar)->getVariableLocalName()))
+      {
+        XMLBuffer buf(1023,context->getMemoryManager());
+        buf.set(X("An imported variable {"));
+        buf.append((*it)->getVariableURI());
+        buf.append(X("}"));
+        buf.append((*it)->getVariableLocalName());
+        buf.append(X(" conflicts with an already defined global variable [err:XQST0049]."));
+        XQThrow(StaticErrorException, X("XQQuery::ImportModule"), buf.getRawBuffer());
+      }
+    }
+    // Should this set a global variable in the context? - jpcs
+    m_userDefVars.push_back(*itVar);
+  }
+}
+
+void XQQuery::importModule(const XMLCh* szUri, VectorOfStrings* locations, StaticContext* context)
+{
+  XMLBuffer buf(1023,context->getMemoryManager());
+  if(locations==NULL)
   {
+      InputSource* srcToUse = 0;
+      if (context->getDocumentCache()->getXMLEntityResolver())
+      {
+        XMLResourceIdentifier resourceIdentifier(XMLResourceIdentifier::UnKnown,
+                                                 XMLUni::fgZeroLenString, szUri, XMLUni::fgZeroLenString, 
+                                                 context->getBaseURI());
+        srcToUse = context->getDocumentCache()->getXMLEntityResolver()->resolveEntity(&resourceIdentifier);
+      }
+      if(srcToUse==NULL)
+      {
+        XMLBuffer buf(1023,context->getMemoryManager());
+        buf.set(X("Cannot locate module for namespace "));
+        buf.append(szUri);
+        buf.append(X(" without the 'at <location>' keyword [err:XQST0059]"));
+		XQThrow(StaticErrorException,X("XQQuery::ImportModule"), buf.getRawBuffer());
+      }
+      Janitor<InputSource> janIS(srcToUse);
+      importModuleImpl(szUri, srcToUse, context);
+  }
+  else
+  {
+    XQException* lastExc=NULL;
+    bool bFound=false;
+    for(VectorOfStrings::iterator it=locations->begin();it!=locations->end();it++)
+    {
       InputSource* srcToUse = 0;
       if (context->getDocumentCache()->getXMLEntityResolver()){
         XMLResourceIdentifier resourceIdentifier(XMLResourceIdentifier::UnKnown,
@@ -212,71 +294,58 @@ void XQQuery::importModule(const XMLCh* szUri, VectorOfStrings* locations, Stati
 
       if(srcToUse==0)
       {
-          try {
-            XMLURL urlTmp(context->getBaseURI(), *it);
-            if (urlTmp.isRelative()) {
-              throw MalformedURLException(__FILE__, __LINE__, XMLExcepts::URL_NoProtocolPresent);
-            }
-            srcToUse = new URLInputSource(urlTmp);
+        try {
+          XMLURL urlTmp(context->getBaseURI(), *it);
+          if (urlTmp.isRelative()) {
+            throw MalformedURLException(__FILE__, __LINE__, XMLExcepts::URL_NoProtocolPresent);
           }
-          catch(const MalformedURLException&) {
-            // It's not a URL, so let's assume it's a local file name.
-            const XMLCh* baseUri=context->getBaseURI();
-            if(baseUri && baseUri[0]) {
-              XMLCh* tmpBuf = XMLPlatformUtils::weavePaths(baseUri, *it);
-              srcToUse = new LocalFileInputSource(tmpBuf);
-              XMLPlatformUtils::fgMemoryManager->deallocate(tmpBuf);
-            }
-            else {
-              srcToUse = new LocalFileInputSource(*it);
-            }
+          srcToUse = new URLInputSource(urlTmp);
+        }
+        catch(const MalformedURLException&) {
+          // It's not a URL, so let's assume it's a local file name.
+          const XMLCh* baseUri=context->getBaseURI();
+          if(baseUri && baseUri[0]) {
+            XMLCh* tmpBuf = XMLPlatformUtils::weavePaths(baseUri, *it);
+            srcToUse = new LocalFileInputSource(tmpBuf);
+            XMLPlatformUtils::fgMemoryManager->deallocate(tmpBuf);
           }
+          else {
+            srcToUse = new LocalFileInputSource(*it);
+          }
+        }
       }
       Janitor<InputSource> janIS(srcToUse);
-      moduleCtx->setBaseURI(srcToUse->getSystemId());
       try {
-        AutoDelete<XQQuery> pParsedQuery(xqilla.parse(*srcToUse, XQilla::XQUERY, moduleCtx, XQilla::NO_STATIC_RESOLUTION|XQilla::NO_ADOPT_CONTEXT));
-        if(!pParsedQuery->getIsLibraryModule()) {
-          XMLBuffer errMsg;
-          errMsg.set(X("The module at "));
-          errMsg.append(*it);
-          errMsg.append(X(" is not a module"));
-          XQThrow(StaticErrorException,X("XQQuery::ImportModule"), errMsg.getRawBuffer());
-        }
-        if(!XERCES_CPP_NAMESPACE::XMLString::equals(szUri,pParsedQuery->getModuleTargetNamespace())) {
-          XMLBuffer errMsg;
-          errMsg.set(X("The module at "));
-          errMsg.append(*it);
-          errMsg.append(X(" specifies a different namespace"));
-          XQThrow(StaticErrorException,X("XQQuery::ImportModule"), errMsg.getRawBuffer());
-        }
-        // now move the variable declarations and the function definitions into my context
-        for(UserFunctions::iterator itFn = pParsedQuery->m_userDefFns.begin(); itFn != pParsedQuery->m_userDefFns.end(); ++itFn) {
-          m_userDefFns.push_back(*itFn);
-          context->addCustomFunction(*itFn);
-        }
-        for(GlobalVariables::iterator itVar = pParsedQuery->m_userDefVars.begin(); itVar != pParsedQuery->m_userDefVars.end(); ++itVar) {
-          for(GlobalVariables::iterator it = m_userDefVars.begin(); it != m_userDefVars.end(); ++it) {
-             if(XERCES_CPP_NAMESPACE::XMLString::equals((*it)->getVariableURI(), (*itVar)->getVariableURI()) &&
-                XERCES_CPP_NAMESPACE::XMLString::equals((*it)->getVariableLocalName(), (*itVar)->getVariableLocalName()))
-               XQThrow(StaticErrorException, X("XQQuery::ImportModule"), X("An imported variable conflicts with an already defined global variable [err:XQST0049]."));
-          }
-          // Should this set a global variable in the context? - jpcs
-          m_userDefVars.push_back(*itVar);
-        }
+        importModuleImpl(szUri, srcToUse, context);
         bFound=true;
         break;
       }
       catch(XQException& e) {
-        if(e.getXQueryLine() != 0 ||
-            e.getXQueryColumn() != 0) {
-          // found module, parse error
-          throw;
-        }
+        if(lastExc!=NULL)
+          delete lastExc;
+        lastExc=new XQException(e);
       }
+    }
+    if(!bFound)
+    {
+      if(lastExc!=NULL)
+      {
+        XQException toThrow(*lastExc);
+        delete lastExc;
+        throw toThrow;
+      }
+      else
+      {
+        XMLBuffer buf(1023,context->getMemoryManager());
+        buf.set(X("Cannot locate the module for namespace \""));
+        buf.append(szUri);
+        buf.append(X("\" [err:XQST0059]"));
+        XQThrow(StaticErrorException,X("XQQuery::ImportModule"), buf.getRawBuffer());
+      }
+    }
+    else if(lastExc!=NULL)
+      delete lastExc;
   }
-  if(!bFound)
-      XQThrow(StaticErrorException,X("XQQuery::ImportModule"), X("Cannot locate the requested module [err:XQST0059]"));
 }
 
 const XMLCh* XQQuery::getFile() const

@@ -342,6 +342,7 @@ int XPath2Utils::indexNode(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *indexNo
 /*static*/ void XPath2Utils::setElementType(XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* pDoc, XERCES_CPP_NAMESPACE_QUALIFIER DOMElement *node, const XMLCh* uri, const XMLCh* name)
 {
     XERCES_CPP_NAMESPACE_QUALIFIER DOMTypeInfoImpl* pInfo=new (pDoc) XERCES_CPP_NAMESPACE_QUALIFIER DOMTypeInfoImpl(uri,name);
+    pInfo->setNumericProperty(XERCES_CPP_NAMESPACE_QUALIFIER DOMPSVITypeInfo::PSVI_Validity,XERCES_CPP_NAMESPACE_QUALIFIER PSVIItem::VALIDITY_VALID);
     ((XERCES_CPP_NAMESPACE_QUALIFIER DOMElementNSImpl*)node)->setTypeInfo(pInfo);
 }
 

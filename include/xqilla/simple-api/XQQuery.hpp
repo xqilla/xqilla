@@ -22,6 +22,7 @@
 #include <vector>
 #include <string>
 #include <xercesc/util/XMemory.hpp>
+#include <xercesc/sax/InputSource.hpp>
 #include <xqilla/runtime/ResultImpl.hpp>
 #include <xqilla/runtime/LazySequenceResult.hpp>
 #include <xqilla/context/StaticContext.hpp>
@@ -32,6 +33,7 @@ class XQGlobalVariable;
 
 typedef std::vector<XQUserFunction*, XQillaAllocator<XQUserFunction*> > UserFunctions;
 typedef std::vector<XQGlobalVariable*, XQillaAllocator<XQGlobalVariable*> > GlobalVariables;
+typedef std::vector<DynamicContext*, XQillaAllocator<DynamicContext*> > Contexts;
 
 /**
  * Encapsulates a query expression. XQQuery objects are thread safe, and can be
@@ -157,6 +159,8 @@ public:
 	//@}
 
 private:
+  void importModuleImpl(const XMLCh* szUri, XERCES_CPP_NAMESPACE_QUALIFIER InputSource* location, StaticContext* context);
+
   /// Top level lazy result iterator
   class QueryResult : public ResultImpl
   {
@@ -211,6 +215,7 @@ private:
 
   UserFunctions m_userDefFns;
   GlobalVariables m_userDefVars;
+  Contexts m_importedContexts;
 
   friend class QueryResult;
   friend class DebugResult;

@@ -97,6 +97,8 @@ XQUserFunction::XQUserFunction(const XMLCh* fnName, VectorOfFunctionParameters* 
   {
       XQThrow(FunctionException,X("User-defined Function"), X("A user defined function must not be in the namespaces xml, xsd, xsi, fn or xdt [err:XQST0045]"));
   }
+  else if(m_szURI==NULL || *m_szURI==0)
+      XQThrow(FunctionException,X("User-defined Function"), X("A user defined function must have a non-null namespaces [err:XQST0060]"));
 
   m_pReturnPattern=returnValue;
   m_pParams=params;

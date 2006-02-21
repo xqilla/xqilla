@@ -294,8 +294,11 @@ void DocumentCacheParser::clearStoredDocuments()
   _uriMap.removeAll();
 }
 
-bool DocumentCacheParser::loadSchema(const XMLCh* const uri, const XMLCh* const location, StaticContext *context)
+void DocumentCacheParser::loadSchema(const XMLCh* const uri, const XMLCh* const location, StaticContext *context)
 {
+  // if we are requested to load the XMLSchema schema, just return
+  if(XPath2Utils::equals(uri, XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA))
+    return;
   XERCES_CPP_NAMESPACE_QUALIFIER InputSource* srcToUse = 0;
   if (getXMLEntityResolver()){
     XERCES_CPP_NAMESPACE_QUALIFIER XMLResourceIdentifier resourceIdentifier(XERCES_CPP_NAMESPACE_QUALIFIER XMLResourceIdentifier::SchemaGrammar,
@@ -315,27 +318,19 @@ bool DocumentCacheParser::loadSchema(const XMLCh* const uri, const XMLCh* const 
   if(!isCachingGrammarFromParse())
     cacheGrammarFromParse(true);// hold the loaded schemas in the cache, so that can be reused
 
-  try {
-    if(srcToUse) {
-      getScanner()->loadGrammar(*srcToUse, XERCES_CPP_NAMESPACE_QUALIFIER Grammar::SchemaGrammarType, true);
-      return true;
-    }
-    else if(location) {
-      // Resolve the location against the base uri
-      const XMLCh *systemId = location;
-      XERCES_CPP_NAMESPACE_QUALIFIER XMLURL urlTmp(context->getMemoryManager());
-      if(urlTmp.setURL(context->getBaseURI(), location, urlTmp)) {
-        systemId = urlTmp.getURLText();
-      }
-
-      getScanner()->loadGrammar(systemId, XERCES_CPP_NAMESPACE_QUALIFIER Grammar::SchemaGrammarType, true);
-      return true;
-    }
+  if(srcToUse) {
+    getScanner()->loadGrammar(*srcToUse, XERCES_CPP_NAMESPACE_QUALIFIER Grammar::SchemaGrammarType, true);
   }
-  catch(...) {
-  }
+  else if(location) {
+    // Resolve the location against the base uri
+    const XMLCh *systemId = location;
+    XERCES_CPP_NAMESPACE_QUALIFIER XMLURL urlTmp(context->getMemoryManager());
+    if(urlTmp.setURL(context->getBaseURI(), location, urlTmp)) {
+      systemId = urlTmp.getURLText();
+    }
 
-  return false;
+    getScanner()->loadGrammar(systemId, XERCES_CPP_NAMESPACE_QUALIFIER Grammar::SchemaGrammarType, true);
+  }
 }
 
 unsigned int DocumentCacheParser::getSchemaUriId(const XMLCh* uri) const
@@ -702,22 +697,54 @@ bool DocumentCacheImpl::isTypeOrDerivedFromType(const XMLCh* const uri, const XM
 
 void DocumentCacheImpl::addSchemaLocation(const XMLCh* uri, VectorOfStrings* locations, StaticContext *context)
 {
+  XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buf(1023,context->getMemoryManager());
   if(_loadedSchemas->exists(uri))
-    XQThrow(StaticErrorException,X("DocumentCacheImpl::addSchemaLocation"), X("More than one 'import schema' specifies the same target namespace [err:XQST0058]"));
+  {
+    buf.set(X("More than one 'import schema' specifies the same target namespace \""));
+    buf.append(uri);
+    buf.append(X("\" [err:XQST0058]"));
+    XQThrow(StaticErrorException,X("DocumentCacheImpl::addSchemaLocation"), buf.getRawBuffer());
+  }
   _loadedSchemas->addOrFind(uri);
 
   bool bFoundSchema=false;
   if(locations==NULL) {
     // if no locations are given, try to see if the entity resolver can still find it
-    bFoundSchema = _parser.loadSchema(uri, 0, context);
+    try {
+      _parser.loadSchema(uri, 0, context);
+      bFoundSchema = true;
+    } catch(XERCES_CPP_NAMESPACE_QUALIFIER SAXParseException& e) {
+      buf.set(X("An error occurred while trying to load the schema for namespace \""));
+      buf.append(uri);
+      buf.append(X("\": "));
+      buf.append(e.getMessage());
+      buf.append(X(" [err:XQST0059]"));
+    }
   }
   else {
-    for(VectorOfStrings::iterator it=locations->begin(); it!=locations->end() && !bFoundSchema; it++) {
-      bFoundSchema = _parser.loadSchema(uri, *it, context);
+    for(VectorOfStrings::iterator it=locations->begin(); it!=locations->end(); it++) {
+      try {
+        _parser.loadSchema(uri, *it, context);
+        bFoundSchema = true;
+        break;
+      } catch(XERCES_CPP_NAMESPACE_QUALIFIER SAXParseException& e) {
+        buf.set(X("An error occurred while trying to load the schema for namespace \""));
+        buf.append(uri);
+        buf.append(X("\" from \""));
+        buf.append(*it);
+        buf.append(X("\": "));
+        buf.append(e.getMessage());
+        buf.append(X(" [err:XQST0059]"));
+      }
     }
   }
   if(!bFoundSchema)
-    XQThrow(StaticErrorException,X("DocumentCacheImpl::addSchemaLocation"), X("Schema not found [err:XQST0059]"));
+  {
+    if(buf.isEmpty())
+      XQThrow(StaticErrorException,X("DocumentCacheImpl::addSchemaLocation"), X("Schema not found [err:XQST0059]"));
+    else
+      XQThrow(StaticErrorException,X("DocumentCacheImpl::addSchemaLocation"), buf.getRawBuffer());
+  }
 }
 
 unsigned int DocumentCacheImpl::getSchemaUriId(const XMLCh* uri) const

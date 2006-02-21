@@ -96,8 +96,10 @@ void TestSuiteParser::startElement
         m_testCase.name = UTF8(attributes.getValue("name"));
         m_testCase.queryURL = "";
         m_testCase.inputVars.clear();
+        m_testCase.extraVars.clear();
         m_testCase.expectedErrors.clear();
         m_testCase.outputFiles.clear();
+        m_testCase.moduleFiles.clear();
 
         m_szVariableBoundToInput=m_szCompareMethod="";
         m_urlQuery=XMLURL();
@@ -121,6 +123,18 @@ void TestSuiteParser::startElement
         unsigned int dwSize=stream->getSize();
         m_testCase.query.resize(dwSize);
         stream->readBytes((XMLByte*)m_testCase.query.c_str(), dwSize);
+    }
+    else if(szName=="input-query")
+    {
+        XMLBuffer buff;
+        const XMLCh* name=attributes.getValue("name");
+        buff.set(name);
+        if(!XMLString::endsWith(name,X(".xq")))
+            buff.append(X(".xq"));
+        XMLURL urlQuery(m_urlBasePath,buff.getRawBuffer());
+        string varQuery = UTF8(urlQuery.getURLText());
+
+        m_testCase.extraVars[UTF8(attributes.getValue("variable"))]=varQuery;
     }
     else if(szName=="input-file")
     {
@@ -146,6 +160,19 @@ void TestSuiteParser::startElement
     else if(szName=="schema") {
         XMLURL realFile(m_urlXQTSDirectory, attributes.getValue("FileName"));
         m_runner->addSchema(UTF8(attributes.getValue("ID")), UTF8(realFile.getURLText()), UTF8(attributes.getValue("uri")));
+    }
+    else if(szName=="module") {
+        if(attributes.getValue("FileName")!=NULL)
+        {
+            XMLURL realFile(m_urlXQTSDirectory, attributes.getValue("FileName"));
+            m_runner->addModule(UTF8(attributes.getValue("ID")), UTF8(realFile.getURLText()));
+        }
+        else
+        {
+            m_bReadingChars=true;
+            m_szChars="";
+            m_szNamespace=UTF8(attributes.getValue("namespace"));
+        }
     }
 }
 
@@ -187,5 +214,10 @@ void TestSuiteParser::endElement(const XMLCh* const name)
     {
         m_bReadingChars=false;
         m_testCase.expectedErrors.push_back(m_szChars);
+    }
+    else if(szName == "module")
+    {
+        m_bReadingChars=false;
+        m_testCase.moduleFiles[m_szNamespace]=m_szChars;
     }
 }

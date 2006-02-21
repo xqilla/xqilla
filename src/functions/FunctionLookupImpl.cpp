@@ -36,7 +36,19 @@ void FunctionLookupImpl::insertFunction(FuncFactory *func)
     {
         unsigned int secondaryKey=uriId | (i << 16);
         if(_funcTable.containsKey((void*)func->getName(), secondaryKey))
-            XQThrow(StaticErrorException,X("FunctionLookupImpl::insertFunction"), X("Multiple functions have the same expanded QName and the same number of arguments. [err:XQST0034]"));
+        {
+            XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buf(1023,_memMgr);
+            buf.set(X("Multiple functions have the same expanded QName {"));
+            buf.append(func->getURI());
+            buf.append(X("}"));
+            buf.append(func->getName());
+            buf.append(X("/"));
+            XMLCh szInt[10];
+            XERCES_CPP_NAMESPACE_QUALIFIER XMLString::binToText(i,szInt,9,10,_memMgr);
+            buf.append(szInt);
+            buf.append(X(" [err:XQST0034]."));
+            XQThrow(StaticErrorException,X("FunctionLookupImpl::insertFunction"), buf.getRawBuffer());
+        }
         _funcTable.put((void*)func->getName(), secondaryKey, func);
     }
 }

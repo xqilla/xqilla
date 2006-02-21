@@ -37,6 +37,7 @@
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 #include <xercesc/dom/DOMXPathNamespace.hpp>
 #include <xercesc/dom/DOMNode.hpp>
+#include <xercesc/util/XMLUri.hpp>
 
 #include <xqilla/items/AnyAtomicTypeConstructor.hpp>
 
@@ -77,6 +78,8 @@
 #include <xqilla/operators/Or.hpp>
 #include <xqilla/operators/And.hpp>
 #include <xqilla/operators/Range.hpp>
+
+#include <xqilla/functions/FunctionConstructor.hpp>
 
 #include <xqilla/axis/NodeTest.hpp>
 
@@ -146,6 +149,9 @@ static XMLCh sz1_0[]=        { XERCES_CPP_NAMESPACE_QUALIFIER chDigit_1, XERCES_
                                XERCES_CPP_NAMESPACE_QUALIFIER chNull };
 static XMLCh szTrue[]=       { XERCES_CPP_NAMESPACE_QUALIFIER chLatin_T, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
 static XMLCh szFalse[]=      { XERCES_CPP_NAMESPACE_QUALIFIER chLatin_F, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
+static XMLCh szNOTATION[] =  { XERCES_CPP_NAMESPACE_QUALIFIER chLatin_N, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_O, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_T, 
+                               XERCES_CPP_NAMESPACE_QUALIFIER chLatin_A, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_T, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_I, 
+                               XERCES_CPP_NAMESPACE_QUALIFIER chLatin_O, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_N, XERCES_CPP_NAMESPACE_QUALIFIER chNull }; 
 
 static inline bool isAllSpaces(const XMLCh* str)
 {
@@ -213,7 +219,7 @@ static void merge_strings(DynamicContext* context, VectorOfASTNodes* vec, XMLCh*
 static ASTNode* wrapForDebug(XQueryParserArgs *qp, ASTNode* pObjToWrap,
                               const XMLCh* fnName, unsigned int line, unsigned int column)
 {
-  if(!CONTEXT->getDebugCallback())
+  if(!CONTEXT->isDebuggingEnabled() && !CONTEXT->getDebugCallback())
     return pObjToWrap;
   if(fnName==NULL && (unsigned int)pObjToWrap->getType()==ASTNode::DEBUG_HOOK)
     return pObjToWrap;
@@ -473,6 +479,27 @@ VersionDecl:
 	{
 		if(!XPath2Utils::equals($3,sz1_0))
 			yyerror("This XQuery processor only supports version 1.0 of the specs [err:XQST0031]");
+        bool bValidEnc=false;
+        if(($5[0] >= XERCES_CPP_NAMESPACE_QUALIFIER chLatin_A && $5[0] <= XERCES_CPP_NAMESPACE_QUALIFIER chLatin_Z) ||
+           ($5[0] >= XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a && $5[0] <= XERCES_CPP_NAMESPACE_QUALIFIER chLatin_z))
+        {
+            int nLen=XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen($5);
+            for(int i=1;i<nLen;i++)
+            {
+                if(($5[i] >= XERCES_CPP_NAMESPACE_QUALIFIER chLatin_A && $5[i] <= XERCES_CPP_NAMESPACE_QUALIFIER chLatin_Z) ||
+                   ($5[i] >= XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a && $5[i] <= XERCES_CPP_NAMESPACE_QUALIFIER chLatin_z) ||
+                   ($5[i] >= XERCES_CPP_NAMESPACE_QUALIFIER chDigit_0 && $5[i] <= XERCES_CPP_NAMESPACE_QUALIFIER chDigit_9) ||
+                   $5[i] == XERCES_CPP_NAMESPACE_QUALIFIER chPeriod ||
+                   $5[i] == XERCES_CPP_NAMESPACE_QUALIFIER chDash)
+                {
+                    continue;
+                }
+                bValidEnc=false;
+                break;
+            }
+        }
+        if(!bValidEnc)
+          yyerror("The specified encoding does not conform to the definition of EncName [err:XQST0087]");
 		// TODO: store the encoding somewhere
 	}
 	;
@@ -716,7 +743,13 @@ SchemaImport:
 				yyerror("A schema that has no target namespace cannot be bound to non-empty prefix [err:XQST0057]");
 			else
 				CONTEXT->setNamespaceBinding($2,$3);
-			CONTEXT->addSchemaLocation($3,NULL);
+            try {
+			  CONTEXT->addSchemaLocation($3,NULL);
+            } catch(XQException& e) {
+              if(e.getXQueryLine() == 0)
+                e.setXQueryPosition(QP->_query->getFile(), @1.first_line, @1.first_column);
+              throw e;
+            }
 		}
 	  | _IMPORT_SCHEMA_ SchemaPrefix URILiteral ResourceLocations
 		{
@@ -726,15 +759,33 @@ SchemaImport:
 				yyerror("A schema that has no target namespace cannot be bound to non-empty prefix [err:XQST0057]");
 			else
 				CONTEXT->setNamespaceBinding($2,$3);
-			CONTEXT->addSchemaLocation($3,$4);
+            try {
+			  CONTEXT->addSchemaLocation($3,$4);
+            } catch(XQException& e) {
+              if(e.getXQueryLine() == 0)
+                e.setXQueryPosition(QP->_query->getFile(), @1.first_line, @1.first_column);
+              throw e;
+            }
 		}
 	  | _IMPORT_SCHEMA_ URILiteral
 		{ 
-			CONTEXT->addSchemaLocation($2,NULL);
+            try {
+			  CONTEXT->addSchemaLocation($2,NULL);
+            } catch(XQException& e) {
+              if(e.getXQueryLine() == 0)
+                e.setXQueryPosition(QP->_query->getFile(), @1.first_line, @1.first_column);
+              throw e;
+            }
 		}
 	  | _IMPORT_SCHEMA_ URILiteral ResourceLocations
 		{
-			CONTEXT->addSchemaLocation($2,$3);
+            try {
+			  CONTEXT->addSchemaLocation($2,$3);
+            } catch(XQException& e) {
+              if(e.getXQueryLine() == 0)
+                e.setXQueryPosition(QP->_query->getFile(), @1.first_line, @1.first_column);
+              throw e;
+            }
 		}
 	  ;
 
@@ -770,25 +821,50 @@ ModuleImport:
 		if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen($5)==0)
 			yyerror("The literal that specifies the target namespace in a module import must not be of zero length [err:XQST0088]");
 		CONTEXT->setNamespaceBinding($3,$5);
-		QP->_query->importModule($5,$6,CONTEXT);
+        try {
+		  QP->_query->importModule($5,$6,CONTEXT);
+        } catch(XQException& e) {
+          if(e.getXQueryLine() == 0)
+            e.setXQueryPosition(QP->_query->getFile(), @1.first_line, @1.first_column);
+          throw e;
+        }
 	}
 	| _IMPORT_MODULE_ _NAMESPACE_ _NCNAME_ _EQUALS_ URILiteral 
 	{
 		if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen($5)==0)
 			yyerror("The literal that specifies the target namespace in a module import must not be of zero length [err:XQST0088]");
-		yyerror("Cannot locate module without the 'at <location>' keyword [err:XQST0059]");
+		CONTEXT->setNamespaceBinding($3,$5);
+        try {
+		  QP->_query->importModule($5,NULL,CONTEXT);
+        } catch(XQException& e) {
+          if(e.getXQueryLine() == 0)
+            e.setXQueryPosition(QP->_query->getFile(), @1.first_line, @1.first_column);
+          throw e;
+        }
 	}
 	| _IMPORT_MODULE_ URILiteral ResourceLocations
 	{
 		if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen($2)==0)
 			yyerror("The literal that specifies the target namespace in a module import must not be of zero length [err:XQST0088]");
-		QP->_query->importModule($2,$3,CONTEXT);
+        try {
+		  QP->_query->importModule($2,$3,CONTEXT);
+        } catch(XQException& e) {
+          if(e.getXQueryLine() == 0)
+            e.setXQueryPosition(QP->_query->getFile(), @1.first_line, @1.first_column);
+          throw e;
+        }
 	}
 	| _IMPORT_MODULE_ URILiteral 
 	{
 		if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen($2)==0)
 			yyerror("The literal that specifies the target namespace in a module import must not be of zero length [err:XQST0088]");
-		yyerror("Cannot locate module without the 'at <location>' keyword [err:XQST0059]");
+        try {
+		  QP->_query->importModule($2,NULL,CONTEXT);
+        } catch(XQException& e) {
+          if(e.getXQueryLine() == 0)
+            e.setXQueryPosition(QP->_query->getFile(), @1.first_line, @1.first_column);
+          throw e;
+        }
 	}
 	;
 
@@ -796,12 +872,12 @@ ModuleImport:
 VarDecl:
 	_DECLARE_VARIABLE_ _DOLLAR_SIGN_ _VARIABLE_ TypeDeclaration _COLON_EQ_ ExprSingle
 	{
-		XQGlobalVariable* var=new (MEMMGR) XQGlobalVariable($3,$4,$6,MEMMGR);
+		XQGlobalVariable* var=new (MEMMGR) XQGlobalVariable($3,$4,WRAP(@6, $6),MEMMGR);
 		QP->_query->addVariable(var);
 	}
 	| _DECLARE_VARIABLE_ _DOLLAR_SIGN_ _VARIABLE_ _COLON_EQ_ ExprSingle
 	{
-		XQGlobalVariable* var=new (MEMMGR) XQGlobalVariable($3,new (MEMMGR) SequenceType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ANYTHING), SequenceType::STAR),$5,MEMMGR);
+		XQGlobalVariable* var=new (MEMMGR) XQGlobalVariable($3,new (MEMMGR) SequenceType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ANYTHING), SequenceType::STAR),WRAP(@5, $5),MEMMGR);
 		QP->_query->addVariable(var);
 	}
 	| _DECLARE_VARIABLE_ _DOLLAR_SIGN_ _VARIABLE_ TypeDeclaration _EXTERNAL_
@@ -839,19 +915,19 @@ ConstructionDecl:
 FunctionDecl:
 	  _DECLARE_FUNCTION_ _FUNCTION_CALL_ ParamList _RPAR_ EnclosedExpr
 		{
-			$$ = new (MEMMGR) XQUserFunction($2,$3,$5,NULL, CONTEXT); 
+			$$ = new (MEMMGR) XQUserFunction($2,$3,WRAP(@5, $5),NULL, CONTEXT); 
 		}
 	| _DECLARE_FUNCTION_ _FUNCTION_CALL_ _RPAR_ EnclosedExpr
 		{
-			$$ = new (MEMMGR) XQUserFunction($2,NULL,$4,NULL, CONTEXT); 
+			$$ = new (MEMMGR) XQUserFunction($2,NULL,WRAP(@4, $4),NULL, CONTEXT); 
 		}
 	| _DECLARE_FUNCTION_ _FUNCTION_CALL_ ParamList _EXPR_AS_ SequenceType EnclosedExpr
 		{
-			$$ = new (MEMMGR) XQUserFunction($2,$3,$6,$5, CONTEXT); 
+			$$ = new (MEMMGR) XQUserFunction($2,$3,WRAP(@6, $6),$5, CONTEXT); 
 		}
 	| _DECLARE_FUNCTION_ _FUNCTION_CALL_ _EXPR_AS_ SequenceType EnclosedExpr
 		{
-			$$ = new (MEMMGR) XQUserFunction($2,NULL,$5,$4, CONTEXT); 
+			$$ = new (MEMMGR) XQUserFunction($2,NULL,WRAP(@5, $5),$4, CONTEXT); 
 		}
 	| _DECLARE_FUNCTION_ _FUNCTION_CALL_ ParamList _RPAR_ _EXTERNAL_
 		{
@@ -1120,6 +1196,14 @@ OrderSpec:
 		}
 	| ExprSingle OrderDirection EmptyHandling _COLLATION_ URILiteral
 		{
+            try
+            {
+                CONTEXT->getCollation($5);
+            }
+            catch(ContextException&)
+            {
+			    yyerror("The specified collation does not exist [err:XQST0076]");
+            }
 			$$ = new (MEMMGR) XQSort::SortSpec($1,$2+$3,$5);
 		}
 	;
@@ -1436,6 +1520,12 @@ TreatExpr:
 CastableExpr:
 	CastExpr _CASTABLE_AS_ SingleType
 	{
+        const SequenceType::ItemType* itemType=$3->getItemType();
+        if((XPath2Utils::equals(itemType->getTypeURI(CONTEXT), XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA) &&
+            XPath2Utils::equals(itemType->getType()->getName(), szNOTATION)) ||
+           (XPath2Utils::equals(itemType->getTypeURI(CONTEXT), FunctionConstructor::XMLChXPath2DatatypesURI) &&
+            XPath2Utils::equals(itemType->getType()->getName(), AnyAtomicType::fgDT_ANYATOMICTYPE)))
+          yyerror("The target type of a castable expression must be an atomic type that is in the in-scope schema types and is not xs:NOTATION or xdt:anyAtomicType [err:XPST0080]");
 		$$ = WRAP(@2, new (MEMMGR) XQCastableAs($1,$3,MEMMGR));
 	}
 	| CastExpr
@@ -1445,6 +1535,12 @@ CastableExpr:
 CastExpr:
 	UnaryExpr _CAST_AS_ SingleType
 	{
+        const SequenceType::ItemType* itemType=$3->getItemType();
+        if((XPath2Utils::equals(itemType->getTypeURI(CONTEXT), XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA) &&
+            XPath2Utils::equals(itemType->getType()->getName(), szNOTATION)) ||
+           (XPath2Utils::equals(itemType->getTypeURI(CONTEXT), FunctionConstructor::XMLChXPath2DatatypesURI) &&
+            XPath2Utils::equals(itemType->getType()->getName(), AnyAtomicType::fgDT_ANYATOMICTYPE)))
+          yyerror("The target type of a cast expression must be an atomic type that is in the in-scope schema types and is not xs:NOTATION or xdt:anyAtomicType [err:XPST0080]");
 		$$ = WRAP(@1, new (MEMMGR) XQCastAs($1,$3,MEMMGR));
 	}
 	| UnaryExpr
@@ -2804,6 +2900,8 @@ URILiteral:
 	{
 		// the string must be whitespace-normalized
 		XERCES_CPP_NAMESPACE_QUALIFIER XMLString::collapseWS($1, MEMMGR);
+        if($1 && *$1 && !XERCES_CPP_NAMESPACE_QUALIFIER XMLUri::isValidURI(true, $1))
+          yyerror("The URI literal is not a valid one [err:XQST0046]");
 		$$ = $1;
 	}
 	;

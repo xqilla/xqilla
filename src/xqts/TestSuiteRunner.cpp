@@ -72,7 +72,9 @@ void TestSuiteRunner::testResults(const TestCase &testCase, const std::string &x
         if(passed) break;
       }
       else if(compareMethod == "Inspect") {
-        // Do nothing - this is reported below
+        // Try if they match 
+        if(expectedResult==xmlResult)
+          passed=true;
       }
       else {
         // TODO
@@ -100,7 +102,7 @@ void TestSuiteRunner::testErrors(const TestCase &testCase, const std::string &ac
   else {
     bool bFound = false;
     for(list<string>::const_iterator i=testCase.expectedErrors.begin();i!=testCase.expectedErrors.end();i++) {
-      if(actualError.find(*i) != string::npos) {
+      if(*i=="*" || actualError.find(*i) != string::npos) {
         bFound = true;
         break;
       }

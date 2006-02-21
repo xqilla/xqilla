@@ -137,10 +137,11 @@ ASTNode *ASTNodeImpl::resolveASTNodesForDateOrTime(VectorOfASTNodes &dis, Static
 
 ASTNode *ASTNodeImpl::constantFold(StaticContext *context) const
 {
+  XPath2MemoryManager* mm=context->getMemoryManager();
   AutoDelete<DynamicContext> dContext(context->createDynamicContext());
-  dContext->setMemoryManager(context->getMemoryManager());
+  dContext->setMemoryManager(mm);
   Result result = createResult(dContext);
-  ASTNode* newBlock = new (getMemoryManager()) XQSequence(result, dContext, getMemoryManager());
+  ASTNode* newBlock = new (mm) XQSequence(result, dContext, mm);
   return newBlock->staticResolution(context);
 }
 
