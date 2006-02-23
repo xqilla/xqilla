@@ -526,6 +526,11 @@ void XQContextImpl::setXMLEntityResolver(XERCES_CPP_NAMESPACE_QUALIFIER XMLEntit
   _docCache->setXMLEntityResolver(handler);
 }
 
+XERCES_CPP_NAMESPACE_QUALIFIER XMLEntityResolver* XQContextImpl::getXMLEntityResolver() const
+{
+  return _docCache->getXMLEntityResolver();
+}
+
 void XQContextImpl::registerURIResolver(URIResolver *resolver)
 {
   if(resolver != 0) {
