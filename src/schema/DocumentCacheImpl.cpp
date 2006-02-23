@@ -627,6 +627,11 @@ bool DocumentCacheImpl::isTypeOrDerivedFromType(const XMLCh* const uri, const XM
      XPath2Utils::equals(uri,uriToCheck) )
     return true;
 
+  // xs:anyType matches anything
+  if(XPath2Utils::equals(uriToCheck, XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA) &&
+     XPath2Utils::equals(typeNameToCheck, XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgATTVAL_ANYTYPE))
+    return true;
+
   XERCES_CPP_NAMESPACE_QUALIFIER DatatypeValidator* dtvDerived=_parser.getGrammarResolver()->getDatatypeValidator(uri,typeName);
   if(dtvDerived==NULL)
     {
@@ -638,10 +643,6 @@ bool DocumentCacheImpl::isTypeOrDerivedFromType(const XMLCh* const uri, const XM
       if (cti) 
         {
           // if we are here, the type is a complex type
-          if(XPath2Utils::equals(uriToCheck, XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA) &&
-             XPath2Utils::equals(typeNameToCheck, XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgATTVAL_ANYTYPE))
-            return true;
-
           while(cti != 0) 
             {
               if(XPath2Utils::equals(uriToCheck, cti->getTypeUri()) && 
@@ -686,11 +687,6 @@ bool DocumentCacheImpl::isTypeOrDerivedFromType(const XMLCh* const uri, const XM
         return true;
       dtvDerived = dtvDerived->getBaseValidator();
     }
-
-  // if we are here, the type is a type
-  if(XPath2Utils::equals(uriToCheck, XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA) &&
-     XPath2Utils::equals(typeNameToCheck, XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgATTVAL_ANYTYPE))
-    return true;
 
   return false;
 }
