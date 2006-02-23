@@ -21,6 +21,7 @@
 #include <xqilla/items/ATDurationOrDerived.hpp>
 #include <xqilla/items/ATUntypedAtomic.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
+#include <xqilla/utils/XPath2NSUtils.hpp>
 #include <xqilla/exceptions/TypeNotFoundException.hpp>
 
 #include <xercesc/util/XMLString.hpp>
@@ -67,7 +68,16 @@ AnyAtomicType::Ptr DatatypeFactory::createInstance(const XMLCh* typeURI,
   }
 
   try {
-    validator->validate(value, 0, context->getMemoryManager());
+    const XMLCh* valueToValidate=value;
+    if(validator->getType()==XERCES_CPP_NAMESPACE_QUALIFIER DatatypeValidator::NOTATION)
+    {
+        const XMLCh* localPart = XPath2NSUtils::getLocalName(value);
+        const XMLCh* prefix = XPath2NSUtils::getPrefix(value, context->getMemoryManager());
+        const XMLCh* uriStr = (prefix && *prefix) ? context->getUriBoundToPrefix(prefix) : XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString;
+        XMLCh szColon[]={ XERCES_CPP_NAMESPACE_QUALIFIER chColon, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
+        valueToValidate=XPath2Utils::concatStrings(uriStr, szColon, localPart, context->getMemoryManager());
+    }
+    validator->validate(valueToValidate, 0, context->getMemoryManager());
   } catch (XERCES_CPP_NAMESPACE_QUALIFIER XMLException &e) {
     XQThrow(InvalidLexicalSpaceException, X("DatatypeFactory::createInstance"), e.getMessage());
   }
