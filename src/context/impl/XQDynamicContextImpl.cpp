@@ -372,6 +372,11 @@ void XQDynamicContextImpl::setXMLEntityResolver(XERCES_CPP_NAMESPACE_QUALIFIER X
   _docCache->setXMLEntityResolver(handler);
 }
 
+XERCES_CPP_NAMESPACE_QUALIFIER XMLEntityResolver* XQDynamicContextImpl::getXMLEntityResolver() const
+{
+  return _docCache->getXMLEntityResolver();
+}
+
 void XQDynamicContextImpl::setDefaultCollation(const XMLCh* URI)
 {
   _defaultCollation=getMemoryManager()->getPooledString(URI);

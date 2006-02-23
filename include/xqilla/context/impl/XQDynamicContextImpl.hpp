@@ -188,6 +188,9 @@ public:
    * it retrieves a DTD or XML Schema grammar.
    */
   virtual void setXMLEntityResolver(XERCES_CPP_NAMESPACE_QUALIFIER XMLEntityResolver* const handler);
+  /** Returns the entity resolver currently set */
+  virtual XERCES_CPP_NAMESPACE_QUALIFIER XMLEntityResolver* getXMLEntityResolver() const;
+
   /** add the location for the grammar of a specific namespace **/
   virtual void addSchemaLocation(const XMLCh* uri, VectorOfStrings* locations);
 
