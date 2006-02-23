@@ -272,7 +272,6 @@ void XQillaTestSuiteRunner::runTestCase(const TestCase &testCase)
   m_pCurTestCase=&testCase;
   Janitor<DynamicContext> context(xqilla.createContext());
   try {
-    context->setBaseURI(X(testCase.queryURL.c_str()));
     context->setImplicitTimezone(context->getItemFactory()->
                                  createDurationOrDerived(FunctionConstructor::XMLChXPath2DatatypesURI,
                                                          ATDurationOrDerived::fgDT_DAYTIMEDURATION,
