@@ -30,10 +30,14 @@
 class DynamicContext;
 class XQUserFunction;
 class XQGlobalVariable;
+class XQQuery;
 
 typedef std::vector<XQUserFunction*, XQillaAllocator<XQUserFunction*> > UserFunctions;
 typedef std::vector<XQGlobalVariable*, XQillaAllocator<XQGlobalVariable*> > GlobalVariables;
-typedef std::vector<DynamicContext*, XQillaAllocator<DynamicContext*> > Contexts;
+typedef std::pair<XQGlobalVariable*, DynamicContext*> ImportedVariable;
+typedef std::vector<ImportedVariable, XQillaAllocator<ImportedVariable> > ImportedVariables;
+typedef std::pair<XQQuery*, DynamicContext*> ImportedModule;
+typedef std::vector<ImportedModule, XQillaAllocator<ImportedModule> > ImportedModules;
 
 /**
  * Encapsulates a query expression. XQQuery objects are thread safe, and can be
@@ -215,7 +219,8 @@ private:
 
   UserFunctions m_userDefFns;
   GlobalVariables m_userDefVars;
-  Contexts m_importedContexts;
+  ImportedVariables m_importedUserDefVars;
+  ImportedModules m_importedModules;
 
   friend class QueryResult;
   friend class DebugResult;
