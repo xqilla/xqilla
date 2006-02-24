@@ -37,6 +37,8 @@ FunctionBaseURI::FunctionBaseURI(const VectorOfASTNodes &args, XPath2MemoryManag
 }
 
 ASTNode* FunctionBaseURI::staticResolution(StaticContext *context) {
+  if(!_args.empty() && (*_args.begin())->getType()==ASTNode::CONTEXT_ITEM)
+      _args.clear();
   if(_args.empty())
     _src.contextItemUsed(true);
   _src.getStaticType().flags = StaticType::ANY_URI_TYPE;
@@ -59,7 +61,7 @@ Sequence FunctionBaseURI::collapseTreeInternal(DynamicContext* context, int flag
     if(item==NULLRCP)
         XQThrow(FunctionException, X("FunctionBaseURI::collapseTreeInternal"),X("Undefined context item in fn:base-uri [err:FONC0001]"));
     if(!item->isNode())
-        XQThrow(FunctionException, X("FunctionBaseURI::collapseTreeInternal"),X("The context item is not a node [err:XPTY0006]"));
+        XQThrow(FunctionException, X("FunctionBaseURI::collapseTreeInternal"),X("The context item is not a node [err:FOTY0011]"));
     node = (const Node::Ptr )item;
   }
   return node->dmBaseURI(context);

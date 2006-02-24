@@ -19,6 +19,7 @@
 #include <xqilla/exceptions/FunctionException.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xercesc/util/regx/RegularExpression.hpp>
+#include <xercesc/util/ParseException.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 #include <xercesc/util/XMLUni.hpp>
 
@@ -76,10 +77,14 @@ Sequence FunctionMatches::collapseTreeInternal(DynamicContext* context, int flag
   try {
     XERCES_CPP_NAMESPACE_QUALIFIER RegularExpression regEx(pattern, options, memMgr);
     return Sequence(context->getItemFactory()->createBoolean(regEx.matches(input), context), memMgr);
+  } catch (XERCES_CPP_NAMESPACE_QUALIFIER ParseException &e){ 
+    XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buf(1023, memMgr);
+    buf.set(X("Invalid regular expression: "));
+    buf.append(e.getMessage());
+    buf.append(X(" [err:FORX0002]"));
+    XQThrow(FunctionException, X("FunctionMatches::collapseTreeInternal"), buf.getRawBuffer());
   } catch (XERCES_CPP_NAMESPACE_QUALIFIER XMLException &e){ 
     XQThrow(FunctionException, X("FunctionMatches::collapseTreeInternal"), e.getMessage());  
-  } catch (...){
-    XQThrow(FunctionException, X("FunctionMatches::collapseTreeInternal"),X("Invalid regular expression [err:FORX0002]."));
   }  
 
   //do not get here

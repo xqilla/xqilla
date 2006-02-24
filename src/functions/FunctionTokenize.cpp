@@ -20,6 +20,7 @@
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xercesc/util/RefArrayVectorOf.hpp>
 #include <xercesc/util/regx/RegularExpression.hpp>
+#include <xercesc/util/ParseException.hpp>
 #include <xercesc/util/XMLUni.hpp>
 
 const XMLCh FunctionTokenize::name[] = {
@@ -78,11 +79,17 @@ Sequence FunctionTokenize::collapseTreeInternal(DynamicContext* context, int fla
     if(regEx.matches(X("")))
       XQThrow(FunctionException, X("FunctionTokenize::collapseTreeInternal"), X("The pattern matches the zero-length string [err:FORX0003]"));
     toks = regEx.tokenize(input);
+  } catch (XERCES_CPP_NAMESPACE_QUALIFIER ParseException &e){ 
+    XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buf(1023, memMgr);
+    buf.set(X("Invalid regular expression: "));
+    buf.append(e.getMessage());
+    buf.append(X(" [err:FORX0002]"));
+    XQThrow(FunctionException, X("FunctionTokenize::collapseTreeInternal"), buf.getRawBuffer());
   } catch (XERCES_CPP_NAMESPACE_QUALIFIER RuntimeException &e){ 
     if(e.getCode()==XERCES_CPP_NAMESPACE_QUALIFIER XMLExcepts::Regex_InvalidRepPattern)
       XQThrow(FunctionException, X("FunctionTokenize::collapseTreeInternal"), X("Invalid replacement pattern [err:FORX0004]"));
     else 
-      XQThrow(FunctionException, X("FunctionTokenize::collapseTreeInternal"),X("Invalid regular expression [err:FORX0002]."));
+      XQThrow(FunctionException, X("FunctionTokenize::collapseTreeInternal"), e.getMessage());
   }
 
   Sequence resultSeq(toks -> size(),memMgr);

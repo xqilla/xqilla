@@ -158,6 +158,26 @@ SequenceType::ItemType::ItemType(ItemTestType test,QualifiedName* name /*=NULL*/
   m_pType=type;
   m_TypeURI=m_NameURI=NULL;
   m_bAllowNil=false;
+  if(m_nTestType==TEST_ATOMIC_TYPE && m_pType!=NULL)
+  {
+      // check if the type to be tested is really an atomic one
+      // TODO: use real namespaces
+      if(XPath2Utils::equals(m_pType->getPrefix(), X("xs")) &&
+         (XPath2Utils::equals(m_pType->getName(), XMLUni::fgIDRefsString) || 
+          XPath2Utils::equals(m_pType->getName(), XMLUni::fgNmTokensString) || 
+          XPath2Utils::equals(m_pType->getName(), XMLUni::fgEntitiesString)
+         )
+        )
+      {
+        XMLBuffer buf;
+        buf.set(X("Type "));
+        buf.append(m_pType->getPrefix());
+        buf.set(X(":"));
+        buf.append(m_pType->getName());
+        buf.set(X(" is not an atomic type [err:XPST0051]"));
+        XQThrow(StaticErrorException, X("ItemType::ItemType"), buf.getRawBuffer());
+      }
+  }
 }
 
 SequenceType::ItemType::~ItemType()

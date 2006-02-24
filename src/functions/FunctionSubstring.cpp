@@ -44,27 +44,25 @@ FunctionSubstring::FunctionSubstring(const VectorOfASTNodes &args, XPath2MemoryM
 
 Sequence FunctionSubstring::collapseTreeInternal(DynamicContext* context, int flags) const
 {
-	XPath2MemoryManager* memMgr = context->getMemoryManager();
+  XPath2MemoryManager* memMgr = context->getMemoryManager();
 
-	Sequence string=getParamNumber(1, context)->toSequence(context);
-	if(string.isEmpty())
-		return Sequence(context->getItemFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context), memMgr);
+  Sequence string=getParamNumber(1, context)->toSequence(context);
+  if(string.isEmpty())
+    return Sequence(context->getItemFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context), memMgr);
 	
   ATStringOrDerived::Ptr str = (const ATStringOrDerived::Ptr )string.first();
 
-	Sequence startingLoc=getParamNumber(2,context)->toSequence(context);
-  const ATDoubleOrDerived::Ptr one = context->getItemFactory()->createDouble(1, context);
-	// The first character of a string is located at position 1 (not position 0).
-	ATDoubleOrDerived::Ptr index = (const ATDoubleOrDerived::Ptr )startingLoc.first();
-	ATDoubleOrDerived::Ptr subStrLength;
-	if(getNumArgs()>2)
-	{
-		Sequence length=getParamNumber(3,context)->toSequence(context);
-		subStrLength=(const ATDoubleOrDerived::Ptr )length.first();
-	}
-	else {
-		subStrLength=(const ATDoubleOrDerived::Ptr )context->getItemFactory()->createDouble((long)((const ATStringOrDerived*)str)->getLength(), context)->subtract(index, context)->add(one, context);
+  Sequence startingLoc=getParamNumber(2,context)->toSequence(context);
+  ATDoubleOrDerived::Ptr index = (const ATDoubleOrDerived::Ptr )startingLoc.first();
+  ATDoubleOrDerived::Ptr subStrLength;
+  if(getNumArgs()>2)
+  {
+    Sequence length=getParamNumber(3,context)->toSequence(context);
+    subStrLength=(const ATDoubleOrDerived::Ptr )length.first();
+  }
+  else {
+    subStrLength=(const ATDoubleOrDerived::Ptr )context->getItemFactory()->createDouble((long)((const ATStringOrDerived*)str)->getLength(), context);
   }
   
-	return Sequence(((const ATStringOrDerived*)str)->substring(index, subStrLength, context), memMgr);
+  return Sequence(((const ATStringOrDerived*)str)->substring(index, subStrLength, context), memMgr);
 }

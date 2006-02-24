@@ -511,8 +511,8 @@ void XQQuery::DebugResult::getResult(Sequence &toFill, DynamicContext *context) 
         assert(value.first);
         context->getVariableStore()->setGlobalVar(it2->first->getVariableURI(), it2->first->getVariableLocalName(), value.second, context);
     }
-    for(GlobalVariables::const_iterator it2 = _query->m_userDefVars.begin(); it2 != _query->m_userDefVars.end(); ++it2)
-      (*it2)->collapseTree(context)->toSequence(context);
+    for(GlobalVariables::const_iterator it3 = _query->m_userDefVars.begin(); it3 != _query->m_userDefVars.end(); ++it3)
+      (*it3)->collapseTree(context)->toSequence(context);
 
     if(_query->getQueryBody() != NULL) {
       toFill = _query->getQueryBody()->collapseTree(context)->toSequence(context);

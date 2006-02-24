@@ -54,6 +54,8 @@ FunctionRoot::FunctionRoot(const VectorOfASTNodes &args, XPath2MemoryManager* me
 }
 
 ASTNode* FunctionRoot::staticResolution(StaticContext *context) {
+  if(!_args.empty() && (*_args.begin())->getType()==ASTNode::CONTEXT_ITEM)
+      _args.clear();
   if(_args.empty()) {
     _src.contextItemUsed(true);
   }
@@ -78,7 +80,7 @@ Sequence FunctionRoot::collapseTreeInternal(DynamicContext* context, int flags) 
     if(item==NULLRCP)
         XQThrow(FunctionException, X("FunctionRoot::collapseTreeInternal"),X("Undefined context item in fn:root [err:FONC0001]"));
     if(!item->isNode())
-        XQThrow(FunctionException, X("FunctionRoot::collapseTreeInternal"),X("The context item is not a node [err:XPTY0006]"));
+        XQThrow(FunctionException, X("FunctionRoot::collapseTreeInternal"),X("The context item is not a node [err:FOTY0011]"));
     node = (const Node::Ptr )item;
   }
   return Sequence(root(node, context), memMgr);

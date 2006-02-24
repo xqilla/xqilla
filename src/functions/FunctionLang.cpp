@@ -44,6 +44,8 @@ FunctionLang::FunctionLang(const VectorOfASTNodes &args, XPath2MemoryManager* me
 }
 
 ASTNode* FunctionLang::staticResolution(StaticContext *context) {
+  if(!_args.empty() && (*_args.begin())->getType()==ASTNode::CONTEXT_ITEM)
+      _args.clear();
   if(_args.size()==1)
     _src.contextItemUsed(true);
   return resolveArguments(context);
@@ -73,7 +75,7 @@ Sequence FunctionLang::collapseTreeInternal(DynamicContext* context, int flags) 
         if(item==NULLRCP)
             XQThrow(FunctionException, X("FunctionLang::collapseTreeInternal"),X("Undefined context item in fn:lang [err:FONC0001]"));
         if(!item->isNode())
-            XQThrow(FunctionException, X("FunctionLang::collapseTreeInternal"),X("The context item is not a node [err:XPTY0006]"));
+            XQThrow(FunctionException, X("FunctionLang::collapseTreeInternal"),X("The context item is not a node [err:FOTY0011]"));
         ctxNode=item;
     }
 

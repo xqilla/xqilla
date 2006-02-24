@@ -107,6 +107,7 @@ XQQuery* XQilla::parse(const InputSource& querySrc, Language language, DynamicCo
       XMLBuffer buf(1023,context->getMemoryManager());
       buf.set(X("Cannot read query content from "));
       buf.append(querySrc.getSystemId());
+      buf.append(X(" [err:XQST0059]"));
       XQThrow(ContextException,X("XQilla::parse"), buf.getRawBuffer());
     }
   } catch(XMLException& e) {
@@ -129,6 +130,7 @@ XQQuery* XQilla::parseFromURI(const XMLCh* queryFile, Language language, Dynamic
       XMLBuffer buf(1023,context->getMemoryManager());
       buf.set(X("Cannot read query content from "));
       buf.append(queryFile);
+      buf.append(X(" [err:XQST0059]"));
       XQThrow(ContextException,X("XQilla::parseFromURI"), buf.getRawBuffer());
     }
   } catch(XMLException& e) {

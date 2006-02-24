@@ -232,7 +232,14 @@ public:
                     }
                     if(!XERCES_CPP_NAMESPACE_QUALIFIER XMLChar1_0::isXMLChar(value))
                         LexerError("Entity reference is not a valid XML character");
-				    dst[j++]=value;
+                    if (value <= 0xFFFD)
+				        dst[j++]=value;
+                    else if (value >= 0x10000 && value <= 0x10FFFF)
+                    {
+                        value -= 0x10000;
+                        dst[j++]= XMLCh((value >> 10) + 0xD800);
+                        dst[j++]= XMLCh((value & 0x3FF) + 0xDC00);
+                    }
 				    i=k;
 			    } else
 				    LexerError("Invalid entity reference");

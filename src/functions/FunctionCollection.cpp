@@ -16,16 +16,8 @@
 
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/exceptions/FunctionException.hpp>
-#include <xqilla/exceptions/XPath2ErrorException.hpp>
-#include <xqilla/runtime/Sequence.hpp>
-#include <xqilla/items/Node.hpp>
-#include <xqilla/items/ATAnyURIOrDerived.hpp>
-#include <xqilla/items/ATStringOrDerived.hpp>
-#include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/ast/StaticResolutionContext.hpp>
-#include <xercesc/dom/DOMDocument.hpp>
-#include <xqilla/context/URIResolver.hpp>
-#include <xqilla/context/ItemFactory.hpp>
+#include <xercesc/util/XMLUri.hpp>
 
 const XMLCh FunctionCollection::name[] = {
   XERCES_CPP_NAMESPACE_QUALIFIER chLatin_c, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_l, 
@@ -65,11 +57,8 @@ Sequence FunctionCollection::collapseTreeInternal(DynamicContext* context, int f
     return Sequence(context->getMemoryManager());
   const XMLCh* currentUri = arg.first()->asString(context);
 
-  try {
-    context->getItemFactory()->createAnyURI(currentUri, context);
-  } catch(XPath2ErrorException &e) {
+  if(!XERCES_CPP_NAMESPACE_QUALIFIER XMLUri::isValidURI(true, currentUri))
     XQThrow(FunctionException, X("FunctionCollection::collapseTreeInternal"), X("Invalid URI format [err:FODC0002]"));
-  }
 
   return context->resolveCollection(currentUri);
 }
