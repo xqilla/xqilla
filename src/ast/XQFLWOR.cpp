@@ -603,7 +603,7 @@ void XQFLWOR::staticResolutionImpl(StaticContext* context)
         errMsg.append((*it0)->_pURI);
         errMsg.append(X("}"));
         errMsg.append((*it0)->_pName);
-        errMsg.append(X(" conflicts with the iteration variable [err:XPTY0019]"));
+        errMsg.append(X(" conflicts with the iteration variable [err:XQST0089]"));
         XQThrow(StaticErrorException,X("XQFLWOR::staticResolutionImpl"), errMsg.getRawBuffer());
       }
       // Declare the positional variable binding

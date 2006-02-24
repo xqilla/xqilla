@@ -249,8 +249,14 @@ Sequence XQDynamicContextImpl::resolveDocument(const XMLCh* uri)
     try {
       doc = _docCache->loadXMLDocument(uri, this);
     }
-    catch(const XMLParseException&) {
-      doc = 0;
+    catch(const XMLParseException& e) {
+      XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer errMsg;
+      errMsg.set(X("Error parsing resource: "));
+      errMsg.append(uri);
+      errMsg.append(X(". Error message: "));
+      errMsg.append(e.getError());
+      errMsg.append(X(" [err:FODC0002]"));
+      XQThrow(XMLParseException,X("XQDynamicContextImpl::resolveDocument"), errMsg.getRawBuffer());
     }
 
     if(doc != NULLRCP) {
@@ -260,6 +266,7 @@ Sequence XQDynamicContextImpl::resolveDocument(const XMLCh* uri)
       XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer errMsg;
       errMsg.set(X("Error retrieving resource: "));
       errMsg.append(uri);
+      errMsg.append(X(" [err:FODC0002]"));
       XQThrow(XMLParseException,X("XQDynamicContextImpl::resolveDocument"), errMsg.getRawBuffer());
     }
   }

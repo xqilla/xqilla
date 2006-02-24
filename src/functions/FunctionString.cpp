@@ -43,6 +43,8 @@ FunctionString::FunctionString(const VectorOfASTNodes &args, XPath2MemoryManager
 }
 
 ASTNode* FunctionString::staticResolution(StaticContext *context) {
+  if(!_args.empty() && (*_args.begin())->getType()==ASTNode::CONTEXT_ITEM)
+      _args.clear();
   if(_args.empty()) {
     _src.contextItemUsed(true);
   }

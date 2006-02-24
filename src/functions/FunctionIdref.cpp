@@ -47,6 +47,8 @@ FunctionIdref::FunctionIdref(const VectorOfASTNodes &args, XPath2MemoryManager* 
 }
 
 ASTNode* FunctionIdref::staticResolution(StaticContext *context) {
+  if(_args.size()==2 && _args.back()->getType()==ASTNode::CONTEXT_ITEM)
+      _args.pop_back();
   _src.getStaticType().flags = StaticType::NODE_TYPE;
   if(_args.size()==1)
     _src.contextItemUsed(true);
@@ -67,7 +69,7 @@ Sequence FunctionIdref::collapseTreeInternal(DynamicContext* context, int flags)
     if(item==NULLRCP)
       XQThrow(FunctionException, X("FunctionIdref::collapseTreeInternal"),X("Undefined context item in fn:idref [err:FONC0001]"));
     if(!item->isNode())
-      XQThrow(FunctionException, X("FunctionIdref::collapseTreeInternal"),X("The context item is not a node [err:XPTY0006]"));
+      XQThrow(FunctionException, X("FunctionIdref::collapseTreeInternal"),X("The context item is not a node [err:FOTY0011]"));
     ctxNode=item;
   }
 

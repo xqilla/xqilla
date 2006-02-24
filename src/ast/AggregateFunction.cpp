@@ -65,8 +65,6 @@ Sequence AggregateFunction::validateSequence(Sequence sequence, DynamicContext* 
                                      SchemaSymbols::fgDT_DOUBLE,
                                      context));
     }
-    else if(isNumericNaN(*i))
-      return Sequence(atom, context->getMemoryManager());
     else
       firstStep.addItem(atom);
   }  
@@ -133,6 +131,9 @@ Sequence AggregateFunction::validateSequence(Sequence sequence, DynamicContext* 
         if(atomic->isNumericValue()) {
           const Numeric::Ptr promotedType = ((const Numeric*)atomic.get())->promoteTypeIfApplicable(sequenceTypeURI, sequenceTypeName, context);
           if(promotedType != NULLRCP) {
+            if(isNumericNaN(promotedType))
+              return Sequence(promotedType, context->getMemoryManager());
+            else
             castedSequence.addItem(promotedType);
           }
           else {

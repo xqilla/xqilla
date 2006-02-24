@@ -19,6 +19,7 @@
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xercesc/util/regx/RegularExpression.hpp>
 #include <xercesc/util/XMLExceptMsgs.hpp>
+#include <xercesc/util/ParseException.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 #include <xercesc/util/XMLUni.hpp>
 
@@ -95,13 +96,19 @@ Sequence FunctionReplace::collapseTreeInternal(DynamicContext* context, int flag
   try {
     XERCES_CPP_NAMESPACE_QUALIFIER RegularExpression regEx(pattern, options, memMgr);
     result = regEx.replace(input, replacement);
+  } catch (XERCES_CPP_NAMESPACE_QUALIFIER ParseException &e){ 
+    XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buf(1023, memMgr);
+    buf.set(X("Invalid regular expression: "));
+    buf.append(e.getMessage());
+    buf.append(X(" [err:FORX0002]"));
+    XQThrow(FunctionException, X("FunctionReplace::collapseTreeInternal"), buf.getRawBuffer());
   } catch (XERCES_CPP_NAMESPACE_QUALIFIER RuntimeException &e){ 
     if(e.getCode()==XERCES_CPP_NAMESPACE_QUALIFIER XMLExcepts::Regex_RepPatMatchesZeroString)
       XQThrow(FunctionException, X("FunctionReplace::collapseTreeInternal"), X("The pattern matches the zero-length string [err:FORX0003]"));
     else if(e.getCode()==XERCES_CPP_NAMESPACE_QUALIFIER XMLExcepts::Regex_InvalidRepPattern)
       XQThrow(FunctionException, X("FunctionReplace::collapseTreeInternal"), X("Invalid replacement pattern [err:FORX0004]"));
     else 
-      XQThrow(FunctionException, X("FunctionReplace::collapseTreeInternal"),X("Invalid regular expression [err:FORX0002]."));
+      XQThrow(FunctionException, X("FunctionReplace::collapseTreeInternal"), e.getMessage());
   }  
 
   return Sequence(context->getItemFactory()->createString(result, context), memMgr);

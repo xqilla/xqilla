@@ -340,7 +340,7 @@ InputSource* XQillaTestSuiteRunner::resolveEntity(XMLResourceIdentifier* resourc
 string serializeXMLResults(const Sequence &result, const DynamicContext *context) {
   MemBufFormatTarget strTarget;
   {
-    XMLFormatter formatter("UTF-16", "1.0", &strTarget);
+    XMLFormatter formatter("UTF-8", "1.0", &strTarget, XMLFormatter::NoEscapes, XMLFormatter::UnRep_CharRef);
     for(unsigned int i=0;i<result.getLength();i++) {
       const Item* item=result.item(i);
       if(i>0 && !item->isNode() && !result.item(i-1)->isNode())
@@ -352,5 +352,5 @@ string serializeXMLResults(const Sequence &result, const DynamicContext *context
       formatter << item->asString(context);
     }
   }
-  return UTF8((XMLCh*)strTarget.getRawBuffer());
+  return (char*)strTarget.getRawBuffer();
 }

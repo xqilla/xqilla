@@ -561,6 +561,7 @@ Sequence XQContextImpl::resolveDocument(const XMLCh* uri)
       errMsg.append(uri);
       errMsg.append(X(". Error message: "));
       errMsg.append(e.getError());
+      errMsg.append(X(" [err:FODC0002]"));
       XQThrow(XMLParseException,X("XQContextImpl::resolveDocument"), errMsg.getRawBuffer());
     }
 

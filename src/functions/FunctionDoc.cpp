@@ -13,15 +13,11 @@
 #include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionDoc.hpp>
 #include <xqilla/context/DynamicContext.hpp>
-#include <xqilla/context/URIResolver.hpp>
-#include <xqilla/items/ATAnyURIOrDerived.hpp>
-#include <xqilla/exceptions/XPath2ErrorException.hpp>
 #include <xqilla/exceptions/FunctionException.hpp>
 #include <xqilla/exceptions/XMLParseException.hpp>
-#include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/ast/StaticResolutionContext.hpp>
-#include <xqilla/context/ItemFactory.hpp>
 #include <xercesc/util/XMLString.hpp>
+#include <xercesc/util/XMLUri.hpp>
 
 const XMLCh FunctionDoc::name[] = {
   XERCES_CPP_NAMESPACE_QUALIFIER chLatin_d, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_c, 
@@ -64,11 +60,8 @@ Sequence FunctionDoc::collapseTreeInternal(DynamicContext* context, int flags) c
 			  newUri[i]=XERCES_CPP_NAMESPACE_QUALIFIER chForwardSlash;
 	  uri=newUri;
   }
-  try {
-    context->getItemFactory()->createAnyURI(uri, context);
-  } catch(XPath2ErrorException &e) {
+  if(!XERCES_CPP_NAMESPACE_QUALIFIER XMLUri::isValidURI(true, uri))
     XQThrow(FunctionException, X("FunctionDoc::collapseTreeInternal"), X("Invalid argument to fn:doc function [err:FODC0005]"));
-  }
 
   try {
     return context->resolveDocument(uri);

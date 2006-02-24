@@ -586,6 +586,21 @@ Separator:
 NamespaceDecl:
 	  _DECLARE_ _NAMESPACE_ _NCNAME_ _EQUALS_ URILiteral 
 		{
+            if(!XPath2Utils::equals($3,X("xml")) && !XPath2Utils::equals($3,X("xmlns")) &&
+               !XPath2Utils::equals($3,X("xs")) && !XPath2Utils::equals($3,X("xsi")) &&
+               !XPath2Utils::equals($3,X("fn")) && !XPath2Utils::equals($3,X("xdt")) && 
+               !XPath2Utils::equals($3,X("local")) )
+            {
+		        try
+		        {
+			        CONTEXT->getUriBoundToPrefix($3);
+                    // if it has already bound, report an error
+                    yyerror("Namespace prefix has already been bound to a namespace [err:XQST0033]");
+		        }
+		        catch(NamespaceLookupException&)
+		        {
+                }
+            }
 			CONTEXT->setNamespaceBinding($3,$5);
 		}
 	;
@@ -629,6 +644,18 @@ DefaultNamespaceDecl:
 // [13]   	OptionDecl	   ::=   	<"declare" "option"> QName StringLiteral
 OptionDecl:
 	  _DECLARE_OPTION_ _QNAME_ _STRING_LITERAL_
+      {
+        // validate the QName
+		QualifiedName qName($2);
+		try
+		{
+			CONTEXT->getUriBoundToPrefix(qName.getPrefix());
+		}
+		catch(NamespaceLookupException&)
+		{
+			yyerror("The option name is using an undefined namespace prefix [err:XPST0081]");
+		}
+      }
 	;
 
 // [14]    OrderingModeDecl    ::=    <"declare" "ordering"> ("ordered" | "unordered") 
