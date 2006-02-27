@@ -522,6 +522,8 @@ LibraryModule:
 ModuleDecl:
 	_MODULE_NAMESPACE_ _NCNAME_ _EQUALS_ URILiteral Separator
 	{
+		if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen($4)==0)
+			yyerror("The literal that specifies the namespace of a module must not be of zero length [err:XQST0088]");
 		QP->_query->setIsLibraryModule();
 		QP->_query->setModuleTargetNamespace($4);
 		CONTEXT->setNamespaceBinding($2,$4);
