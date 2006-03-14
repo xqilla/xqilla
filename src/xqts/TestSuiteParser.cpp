@@ -17,6 +17,7 @@
 
 #include <xqilla/xqts/TestSuiteParser.hpp>
 #include <xqilla/xqts/TestSuiteRunner.hpp>
+#include <xqilla/xqts/TestSuiteResultListener.hpp>
 
 #include <iostream>
 
@@ -51,8 +52,6 @@ TestSuiteParser::TestSuiteParser(const string &pathToTestSuite, TestSuiteRunner 
     szXQTSLocation+='/';
 
   m_urlXQTSDirectory.setURL(X(szXQTSLocation.c_str()));
-  m_urlXQTSQueriesDirectory.setURL(m_urlXQTSDirectory, X("Queries/XQuery/"));
-  m_urlXQTSResultsDirectory.setURL(m_urlXQTSDirectory, X("ExpectedTestResults/"));
   m_bReadingChars=false;
 }
 
@@ -88,7 +87,13 @@ void TestSuiteParser::startElement
 )
 {
     string szName=UTF8(name);
-    if(szName=="test-group") {
+    if(szName=="test-suite") {
+      m_runner->getResultListener()->reportVersion(UTF8(attributes.getValue("version")));
+
+      m_urlXQTSQueriesDirectory.setURL(m_urlXQTSDirectory, attributes.getValue("XQueryQueryOffsetPath"));
+      m_urlXQTSResultsDirectory.setURL(m_urlXQTSDirectory, attributes.getValue("ResultOffsetPath"));
+    }
+    else if(szName=="test-group") {
         m_runner->startTestGroup(UTF8(attributes.getValue("name")));
     }
     else if(szName=="test-case")

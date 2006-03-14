@@ -34,10 +34,7 @@ class XQQuery;
 
 typedef std::vector<XQUserFunction*, XQillaAllocator<XQUserFunction*> > UserFunctions;
 typedef std::vector<XQGlobalVariable*, XQillaAllocator<XQGlobalVariable*> > GlobalVariables;
-typedef std::pair<XQGlobalVariable*, DynamicContext*> ImportedVariable;
-typedef std::vector<ImportedVariable, XQillaAllocator<ImportedVariable> > ImportedVariables;
-typedef std::pair<XQQuery*, DynamicContext*> ImportedModule;
-typedef std::vector<ImportedModule, XQillaAllocator<ImportedModule> > ImportedModules;
+typedef std::vector<XQQuery*, XQillaAllocator<XQQuery*> > ImportedModules;
 
 /**
  * Encapsulates a query expression. XQQuery objects are thread safe, and can be
@@ -139,10 +136,15 @@ public:
   /// Returns a vector of all XQGlobalVariable objects from the query
   const GlobalVariables &getVariables() const { return m_userDefVars; }
 
+  /// Returns a vector of all XQGlobalVariable objects from the query
+  const ImportedModules &getImportedModules() const { return m_importedModules; }
+
   /// Returns the name of the file that this query was parsed from.
   const XMLCh* getFile() const;
   /// Sets the name of the file that this query was parsed from.
   void setFile(const XMLCh* file);
+
+  const DynamicContext *getStaticContext() const { return m_context; }
 
 	//@}
 
@@ -219,7 +221,6 @@ private:
 
   UserFunctions m_userDefFns;
   GlobalVariables m_userDefVars;
-  ImportedVariables m_importedUserDefVars;
   ImportedModules m_importedModules;
 
   friend class QueryResult;

@@ -20,6 +20,7 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
+#include <xqilla/items/ATDurationOrDerived.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/functions/FunctionConstructor.hpp>
 #include "impl/ATStringOrDerivedImpl.hpp"
@@ -110,5 +111,46 @@ public:
 
 };
 
+template<class TYPE>
+class DayTimeDurationDatatypeFactory : public DatatypeFactoryTemplate<TYPE>
+{
+public:
+  DayTimeDurationDatatypeFactory(const DocumentCache* dc)
+    : DatatypeFactoryTemplate<TYPE>(dc) {}
+
+  AnyAtomicType::AtomicObjectType getPrimitiveTypeIndex() const
+  {
+    return AnyAtomicType::DAY_TIME_DURATION;
+  }
+
+  virtual const XMLCh* getPrimitiveTypeURI() const {
+    return FunctionConstructor::XMLChXPath2DatatypesURI;
+  }
+
+  const XMLCh* getPrimitiveTypeName() const {
+    return ATDurationOrDerived::fgDT_DAYTIMEDURATION;
+  }
+};
+
+template<class TYPE>
+class YearMonthDurationDatatypeFactory : public DatatypeFactoryTemplate<TYPE>
+{
+public:
+  YearMonthDurationDatatypeFactory(const DocumentCache* dc)
+    : DatatypeFactoryTemplate<TYPE>(dc) {}
+
+  AnyAtomicType::AtomicObjectType getPrimitiveTypeIndex() const
+  {
+    return AnyAtomicType::YEAR_MONTH_DURATION;
+  }
+
+  virtual const XMLCh* getPrimitiveTypeURI() const {
+    return FunctionConstructor::XMLChXPath2DatatypesURI;
+  }
+
+  const XMLCh* getPrimitiveTypeName() const {
+    return ATDurationOrDerived::fgDT_YEARMONTHDURATION;
+  }
+};
 
 #endif // _DatatypeFactoryTemplate_HPP

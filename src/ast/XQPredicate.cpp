@@ -89,13 +89,13 @@ Result XQPredicate::createResult(DynamicContext* context, int flags) const
     contextSize = seq.getLength();
     parent = new SequenceResult(seq);
   }
-  if(src.getStaticType().flags == StaticType::NUMERIC_TYPE &&
+  if(src.getStaticType().isType(StaticType::NUMERIC_TYPE) &&
      !src.isContextItemUsed() && !src.isContextPositionUsed()) {
     // It only contains numeric type results, and doesn't use the context
     // item or position
     return new NumericPredicateFilterResult(parent, predicate_, contextSize);
   }
-  else if((src.getStaticType().flags & StaticType::NUMERIC_TYPE) == 0) {
+  else if(!src.getStaticType().containsType(StaticType::NUMERIC_TYPE)) {
     // It only contains non-numeric results
     return new NonNumericPredicateFilterResult(parent, predicate_, contextSize);
   }

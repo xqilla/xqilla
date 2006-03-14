@@ -39,6 +39,7 @@ FunctionError::FunctionError(const VectorOfASTNodes &args, XPath2MemoryManager* 
 
 ASTNode* FunctionError::staticResolution(StaticContext *context)
 {
+  _src.getStaticType().flags = 0;
   _src.forceNoFolding(true);
   return resolveArguments(context);
 }

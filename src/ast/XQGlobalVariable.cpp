@@ -28,24 +28,23 @@
 #include <xercesc/framework/XMLBuffer.hpp>
 #include <xqilla/ast/XQTreatAs.hpp>
 
-XQGlobalVariable::XQGlobalVariable(const XMLCh* varQName, SequenceType* seqType, ASTNode* value, XPath2MemoryManager* expr)
-  : ASTNodeImpl(expr),
+XQGlobalVariable::XQGlobalVariable(const XMLCh* varQName, SequenceType* seqType, ASTNode* value, XPath2MemoryManager *mm)
+  : m_szQName(mm->getPooledString(varQName)),
     m_szURI(0),
     m_szLocalName(0),
     m_Type(seqType),
-    m_Value(value)
+    m_Value(value),
+    _src(mm)
 {
-  m_szQName=expr->getPooledString(varQName);
-  setType(ASTNode::VARIABLE_DEFINITION);
 }
 
-Sequence XQGlobalVariable::collapseTreeInternal(DynamicContext* context, int flags) const
+void XQGlobalVariable::execute(DynamicContext* context) const
 {
   VariableStore* varStore = context->getVariableStore();
   try {
-    if(m_Value==NULL) {
+    if(m_Value == NULL) {
       // It's an external declaration, so check the user has set the value in the variable store
-      std::pair<bool, Sequence> value=varStore->getGlobalVar(m_szURI, m_szLocalName, context);
+      std::pair<bool, Sequence> value = varStore->getGlobalVar(m_szURI, m_szLocalName, context);
       if(!value.first) {
         XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer errMsg;
         errMsg.set(X("A value for the external variable '"));
@@ -72,11 +71,9 @@ Sequence XQGlobalVariable::collapseTreeInternal(DynamicContext* context, int fla
     errMsg.append(ex.getError());
     XQThrow(XPath2TypeMatchException,X("XQGlobalVariable::collapseTreeInternal"),errMsg.getRawBuffer());
   }
-
-  return Sequence(context->getMemoryManager());
 }
 
-ASTNode* XQGlobalVariable::staticResolution(StaticContext* context)
+void XQGlobalVariable::staticResolution(StaticContext* context)
 {
   XPath2MemoryManager *mm = context->getMemoryManager();
 
@@ -86,13 +83,13 @@ ASTNode* XQGlobalVariable::staticResolution(StaticContext* context)
     m_szURI = context->getUriBoundToPrefix(prefix);
   m_szLocalName = XPath2NSUtils::getLocalName(m_szQName);
   VariableTypeStore* varStore = context->getVariableTypeStore();
-  if(m_Value!=NULL) {
+
+  if(m_Value != NULL) {
     if(m_Type != NULL) {
       m_Value = new (mm) XQTreatAs(m_Value, m_Type, mm);
     }
     m_Value = m_Value->staticResolution(context);
-    _src.add(m_Value->getStaticResolutionContext());
-    varStore->declareGlobalVar(m_szURI, m_szLocalName, m_Value->getStaticResolutionContext());
+    _src.copy(m_Value->getStaticResolutionContext());
   }
   else {
     if(m_Type->getItemType() != NULL) {
@@ -102,9 +99,8 @@ ASTNode* XQGlobalVariable::staticResolution(StaticContext* context)
     else {
       _src.getStaticType().flags = 0;
     }
-    varStore->declareGlobalVar(m_szURI, m_szLocalName, _src);
   }
-  return this;
+  varStore->declareGlobalVar(m_szURI, m_szLocalName, _src);
 }
 
 const XMLCh* XQGlobalVariable::getVariableName() const

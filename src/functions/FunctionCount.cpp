@@ -38,7 +38,7 @@ FunctionCount::FunctionCount(const VectorOfASTNodes &args, XPath2MemoryManager* 
 
 ASTNode* FunctionCount::staticResolution(StaticContext *context) {
   AutoNodeSetOrderingReset orderReset(context);
-  _src.getStaticType().flags = StaticType::NUMERIC_TYPE;
+  _src.getStaticType().flags = StaticType::DECIMAL_TYPE;
   return resolveArguments(context);
 }
 

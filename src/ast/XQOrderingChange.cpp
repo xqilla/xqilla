@@ -35,16 +35,16 @@ XQOrderingChange::XQOrderingChange(StaticContext::NodeSetOrdering ordering, ASTN
   setType(ASTNode::ORDERING_CHANGE);
 }
 
-Result XQOrderingChange::createResult(DynamicContext *context, int flags/*=0*/) const
+Result XQOrderingChange::createResult(DynamicContext *context, int flags) const
 {
-  assert(0);
-  return 0;
+  return m_pExpr->collapseTree(context);
 }
 
 ASTNode* XQOrderingChange::staticResolution(StaticContext* context)
 {
   AutoNodeSetOrderingReset orderReset(context, m_nOrdering);
-  return m_pExpr->staticResolution(context);
+  m_pExpr = m_pExpr->staticResolution(context);
+  return this;
 }
 
 StaticContext::NodeSetOrdering XQOrderingChange::getOrderingValue() const

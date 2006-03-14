@@ -47,6 +47,7 @@ FunctionAdjustTimeToTimezone::FunctionAdjustTimeToTimezone(const VectorOfASTNode
 }
 
 ASTNode* FunctionAdjustTimeToTimezone::staticResolution(StaticContext *context) {
+  _src.getStaticType().flags = StaticType::TIME_TYPE;
   if(getNumArgs() == 1) {
     _src.implicitTimezoneUsed(true);
   }

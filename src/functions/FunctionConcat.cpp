@@ -35,7 +35,7 @@ const unsigned int FunctionConcat::maxArgs = UNLIMITED;
 FunctionConcat::FunctionConcat(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "anyAtomicType?", args, memMgr) // Between 2 and UNLIMITED arguments
 {
-  // Nothing to do
+  _src.getStaticType().flags = StaticType::STRING_TYPE;
 }
 
 Sequence FunctionConcat::collapseTreeInternal(DynamicContext* context, int flags) const

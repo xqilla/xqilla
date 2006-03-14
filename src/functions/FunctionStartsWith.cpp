@@ -44,6 +44,7 @@ const unsigned int FunctionStartsWith::maxArgs = 3;
 FunctionStartsWith::FunctionStartsWith(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "string?, string?, string", args, memMgr)
 {
+  _src.getStaticType().flags = StaticType::BOOLEAN_TYPE;
 }
 
 Sequence FunctionStartsWith::collapseTreeInternal(DynamicContext* context, int flags) const

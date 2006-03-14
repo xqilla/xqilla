@@ -44,6 +44,7 @@ const unsigned int FunctionInScopePrefixes::maxArgs = 1;
 FunctionInScopePrefixes::FunctionInScopePrefixes(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "element()", args, memMgr)
 {
+  _src.getStaticType().flags = StaticType::STRING_TYPE;
 }
 
 Sequence FunctionInScopePrefixes::collapseTreeInternal(DynamicContext* context, int flags) const

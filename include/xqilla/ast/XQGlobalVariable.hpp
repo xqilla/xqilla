@@ -22,13 +22,13 @@
 
 class SequenceType;
 
-class XQILLA_API XQGlobalVariable : public ASTNodeImpl
+class XQILLA_API XQGlobalVariable
 {
 public:
-	XQGlobalVariable(const XMLCh* varQName, SequenceType* seqType, ASTNode* value, XPath2MemoryManager* expr);
+	XQGlobalVariable(const XMLCh* varQName, SequenceType* seqType, ASTNode* value, XPath2MemoryManager *mm);
 
-	virtual Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
-	virtual ASTNode* staticResolution(StaticContext *context);
+  void execute(DynamicContext* context) const;
+	void staticResolution(StaticContext *context);
 
 	const XMLCh* getVariableName() const;
 	bool isExternal() const;
@@ -38,6 +38,7 @@ public:
   const XMLCh *getVariableLocalName() const;
   const SequenceType *getSequenceType() const;
   const ASTNode *getVariableExpr() const;
+  const StaticResolutionContext &getStaticResolutionContext() const { return _src; }
 
 protected:
 	const XMLCh* m_szQName;
@@ -45,6 +46,7 @@ protected:
 	const XMLCh* m_szLocalName;
 	SequenceType* m_Type;
 	ASTNode* m_Value;
+  StaticResolutionContext _src;
 };
 
 #endif // !defined(AFXQ_XQGLOBALVARIABLE_H__A97FA5AD_5355_45CD_9092_ED94F5CD035B__INCLUDED_)

@@ -42,6 +42,7 @@ FunctionDocAvailable::FunctionDocAvailable(const VectorOfASTNodes &args, XPath2M
 }
 
 ASTNode* FunctionDocAvailable::staticResolution(StaticContext *context) {
+  _src.getStaticType().flags = StaticType::BOOLEAN_TYPE;
   _src.availableDocumentsUsed(true);
   return resolveArguments(context);
 }

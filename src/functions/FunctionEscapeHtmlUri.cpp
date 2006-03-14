@@ -47,6 +47,7 @@ static const XMLCh HEX_DIGITS[16] =
 FunctionEscapeHtmlUri::FunctionEscapeHtmlUri(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "string?", args, memMgr)
 {
+  _src.getStaticType().flags = StaticType::STRING_TYPE;
 }
 
 Sequence FunctionEscapeHtmlUri::collapseTreeInternal(DynamicContext* context, int flags) const

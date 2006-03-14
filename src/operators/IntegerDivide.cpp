@@ -28,6 +28,14 @@ IntegerDivide::IntegerDivide(const VectorOfASTNodes &args, XPath2MemoryManager* 
   // Nothing to do
 }
 
+void IntegerDivide::calculateStaticType()
+{
+  const StaticType &arg0 = _args[0]->getStaticResolutionContext().getStaticType();
+  if(arg0.containsType(StaticType::NUMERIC_TYPE)) {
+    _src.getStaticType().flags = StaticType::DECIMAL_TYPE;
+  }
+}
+
 Item::Ptr IntegerDivide::execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::Ptr &atom2, DynamicContext *context) const
 {
   if(atom1 == NULLRCP || atom2 == NULLRCP) return 0;

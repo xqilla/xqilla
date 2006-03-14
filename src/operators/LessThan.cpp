@@ -91,10 +91,14 @@ LessThan::LessThan(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
       return ((ATDateTimeOrDerived*)(const AnyAtomicType*)atom1)->lessThan((const ATDateTimeOrDerived::Ptr )atom2, context);
     }
     case AnyAtomicType::DURATION:
+    case AnyAtomicType::DAY_TIME_DURATION:
+    case AnyAtomicType::YEAR_MONTH_DURATION:
     {
       // op:yearMonthDuration-less-than(A, B)
       // op:dayTimeDuration-less-than(A, B)
-      if(atom2->getPrimitiveTypeIndex() != AnyAtomicType::DURATION) 
+      if(atom2->getPrimitiveTypeIndex() != AnyAtomicType::DURATION &&
+         atom2->getPrimitiveTypeIndex() != AnyAtomicType::DAY_TIME_DURATION &&
+         atom2->getPrimitiveTypeIndex() != AnyAtomicType::YEAR_MONTH_DURATION)
         XQThrow(XPath2ErrorException,X("LessThan::less_than"), X("An attempt to compare a duration type to a non duration type has occurred"));
       return ((ATDurationOrDerived*)(const AnyAtomicType*)atom1)->lessThan((const ATDurationOrDerived::Ptr )atom2, context);
     }

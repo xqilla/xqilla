@@ -38,6 +38,7 @@ const unsigned int FunctionDefaultCollation::maxArgs = 0;
 FunctionDefaultCollation::FunctionDefaultCollation(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "empty()", args, memMgr)
 {
+  _src.getStaticType().flags = StaticType::STRING_TYPE;
 }
 
 Sequence FunctionDefaultCollation::collapseTreeInternal(DynamicContext* context, int flags) const

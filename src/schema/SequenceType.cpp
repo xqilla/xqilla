@@ -582,7 +582,7 @@ bool SequenceType::ItemType::matches(const Item::Ptr &toBeTested, DynamicContext
   return true;
 }
 
-ASTNode *SequenceType::convertFunctionArg(ASTNode *arg, StaticContext *context) const
+ASTNode *SequenceType::convertFunctionArg(ASTNode *arg, StaticContext *context, bool numericFunction) const
 {
   XPath2MemoryManager *mm = context->getMemoryManager();
 
@@ -611,7 +611,16 @@ ASTNode *SequenceType::convertFunctionArg(ASTNode *arg, StaticContext *context) 
     const XMLCh *uri = m_pItemType->getTypeURI(context);
     const XMLCh *name = m_pItemType->getType()->getName();
 
-    arg = new (mm) XQPromoteUntyped(arg, uri, name, mm);
+    if(numericFunction &&
+       XPath2Utils::equals(uri, SchemaSymbols::fgURI_SCHEMAFORSCHEMA) &&
+       XPath2Utils::equals(name, SchemaSymbols::fgDT_ANYSIMPLETYPE)) {
+      arg = new (mm) XQPromoteUntyped(arg, SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                                      SchemaSymbols::fgDT_DOUBLE, mm);
+    }
+    else {
+      arg = new (mm) XQPromoteUntyped(arg, uri, name, mm);
+    }
+
     arg = new (mm) XQPromoteNumeric(arg, uri, name, mm);
     arg = new (mm) XQPromoteAnyURI(arg, uri, name, mm);
   }

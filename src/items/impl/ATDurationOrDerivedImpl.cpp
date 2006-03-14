@@ -78,7 +78,16 @@ void *ATDurationOrDerivedImpl::getInterface(const XMLCh *name) const
 
 /* Get the name of the primitive type (basic type) of this type 
  * (ie "decimal" for xs:decimal) */
-const XMLCh* ATDurationOrDerivedImpl::getPrimitiveTypeName() const {
+const XMLCh* ATDurationOrDerivedImpl::getPrimitiveTypeName() const
+{
+  switch(_durationType) {
+  case DAY_TIME_DURATION:
+    return fgDT_DAYTIMEDURATION;
+  case YEAR_MONTH_DURATION:
+    return fgDT_YEARMONTHDURATION;
+  default: break;
+  }
+
   return this->getPrimitiveName();
 }
 
@@ -293,33 +302,33 @@ bool ATDurationOrDerivedImpl::isYearMonthDuration() const {
 /* returns true if the two objects have the same boolean value
  * false otherwise */
 bool ATDurationOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const {
-  if(target->getPrimitiveTypeIndex()!=AnyAtomicType::DURATION)
-    XQThrow(IllegalArgumentException,X("ATDurationOrDerivedImpl::equals"), X("Equality operator for given types not supported"));
+  if(_durationType == DURATION || target->getPrimitiveTypeIndex() == DURATION) {
+    return dayTimeEquals((const ATDurationOrDerived*)target.get(), context) &&
+      yearMonthEquals((const ATDurationOrDerived*)target.get(), context);
+  }
+  else if(_durationType == DAY_TIME_DURATION && target->getPrimitiveTypeIndex() == DAY_TIME_DURATION) {
+    return dayTimeEquals((const ATDurationOrDerived*)target.get(), context);
+  }
+  else if(_durationType == YEAR_MONTH_DURATION && target->getPrimitiveTypeIndex() == YEAR_MONTH_DURATION) {
+    return yearMonthEquals((const ATDurationOrDerived*)target.get(), context);
+  }
 
-  ATDurationOrDerived::Ptr meAsYMD = ((const ATDurationOrDerived::Ptr )this->
-                                                castAs(FunctionConstructor::XMLChXPath2DatatypesURI, 
-                                                       ATDurationOrDerived::fgDT_YEARMONTHDURATION, context))->normalize(context);
-  ATDurationOrDerived::Ptr himAsYMD = ((const ATDurationOrDerived::Ptr )target->
-                                                castAs(FunctionConstructor::XMLChXPath2DatatypesURI, 
-                                                       ATDurationOrDerived::fgDT_YEARMONTHDURATION, context))->normalize(context);
-  if(meAsYMD->isNegative() != himAsYMD->isNegative() ||
-     !meAsYMD->getYears()->equals(himAsYMD->getYears(), context) ||
-     !meAsYMD->getMonths()->equals(himAsYMD->getMonths(), context))
-     return false;
-            
-  ATDurationOrDerived::Ptr meAsDTD = ((const ATDurationOrDerived::Ptr )this->
-                                                castAs(FunctionConstructor::XMLChXPath2DatatypesURI, 
-                                                       ATDurationOrDerived::fgDT_DAYTIMEDURATION, context))->normalize(context);
-  ATDurationOrDerived::Ptr himAsDTD = ((const ATDurationOrDerived::Ptr )target->
-                                                castAs(FunctionConstructor::XMLChXPath2DatatypesURI, 
-                                                       ATDurationOrDerived::fgDT_DAYTIMEDURATION, context))->normalize(context);
-  if(meAsDTD->isNegative() != himAsDTD->isNegative() ||
-     !meAsDTD->getDays()->equals(himAsDTD->getDays(), context) ||
-     !meAsDTD->getHours()->equals(himAsDTD->getHours(), context) || 
-     !meAsDTD->getMinutes()->equals(himAsDTD->getMinutes(), context) ||
-     !meAsDTD->getSeconds()->equals(himAsDTD->getSeconds(), context))
-     return false;
-  return true;
+  XQThrow(IllegalArgumentException,X("ATDurationOrDerivedImpl::equals"), X("Equality operator for given types not supported"));
+  return false;
+}
+
+bool ATDurationOrDerivedImpl::dayTimeEquals(const ATDurationOrDerived::Ptr &target, const DynamicContext* context) const {
+  return isNegative() == target->isNegative() &&
+    getDays()->equals(target->getDays(), context) &&
+    getHours()->equals(target->getHours(), context) &&
+    getMinutes()->equals(target->getMinutes(), context) &&
+    getSeconds()->equals(target->getSeconds(), context);
+}
+
+bool ATDurationOrDerivedImpl::yearMonthEquals(const ATDurationOrDerived::Ptr &target, const DynamicContext* context) const {
+  return isNegative() == target->isNegative() &&
+    getYears()->equals(target->getYears(), context) &&
+    getMonths()->equals(target->getMonths(), context);
 }
 
 bool ATDurationOrDerivedImpl::lessThan(const ATDurationOrDerived::Ptr &other, const DynamicContext* context) const {
@@ -537,7 +546,7 @@ ATDecimalOrDerived::Ptr ATDurationOrDerivedImpl::yearMonthDivide(const ATDuratio
 }
 
 AnyAtomicType::AtomicObjectType ATDurationOrDerivedImpl::getPrimitiveTypeIndex() const {
-  return this->getTypeIndex();
+  return _durationType;
 }
 
 /** Multiply this duration by a number -- only available for xdt:dayTimeDuration

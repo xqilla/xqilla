@@ -44,9 +44,10 @@ FunctionLang::FunctionLang(const VectorOfASTNodes &args, XPath2MemoryManager* me
 }
 
 ASTNode* FunctionLang::staticResolution(StaticContext *context) {
-  if(!_args.empty() && (*_args.begin())->getType()==ASTNode::CONTEXT_ITEM)
-      _args.clear();
-  if(_args.size()==1)
+  _src.getStaticType().flags = StaticType::BOOLEAN_TYPE;
+  if(_args.size() == 2 && _args[1]->getType() == ASTNode::CONTEXT_ITEM)
+    _args.pop_back();
+  if(_args.size() == 1)
     _src.contextItemUsed(true);
   return resolveArguments(context);
 }

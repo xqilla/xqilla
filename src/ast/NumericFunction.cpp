@@ -21,9 +21,17 @@
 #include <xqilla/items/ATDoubleOrDerived.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 
+#if defined(XERCES_HAS_CPP_NAMESPACE)
+XERCES_CPP_NAMESPACE_USE
+#endif
+
 NumericFunction::NumericFunction(const XMLCh* name, unsigned int argsFrom, unsigned int argsTo, const char* paramDecl, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name,argsFrom, argsTo, paramDecl, args, memMgr) 
 { 
+}
+
+ASTNode* NumericFunction::staticResolution(StaticContext *context) {
+  return resolveArguments(context, /*checkTimezone*/false, /*numericfunction*/true);
 }
 
 Numeric::Ptr NumericFunction::getNumericParam(unsigned int number, DynamicContext *context, int flags) const
@@ -44,10 +52,10 @@ Numeric::Ptr NumericFunction::getNumericParam(unsigned int number, DynamicContex
 bool NumericFunction::isNaN(const Numeric::Ptr &number) const
 {
   const XMLCh* numType=number->getPrimitiveTypeName();
-  if(XPath2Utils::equals(numType,XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_FLOAT) &&
+  if(XPath2Utils::equals(numType,SchemaSymbols::fgDT_FLOAT) &&
       ((const ATFloatOrDerived::Ptr)number)->isNaN())
      return true;
-  if(XPath2Utils::equals(numType,XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DOUBLE) &&
+  if(XPath2Utils::equals(numType,SchemaSymbols::fgDT_DOUBLE) &&
       ((const ATDoubleOrDerived::Ptr)number)->isNaN())
      return true;
   return false;
@@ -56,10 +64,10 @@ bool NumericFunction::isNaN(const Numeric::Ptr &number) const
 bool NumericFunction::isINF(const Numeric::Ptr &number) const
 {
   const XMLCh* numType=number->getPrimitiveTypeName();
-  if(XPath2Utils::equals(numType,XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_FLOAT) &&
+  if(XPath2Utils::equals(numType,SchemaSymbols::fgDT_FLOAT) &&
       ((const ATFloatOrDerived::Ptr)number)->isInfinite())
      return true;
-  if(XPath2Utils::equals(numType,XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DOUBLE) &&
+  if(XPath2Utils::equals(numType,SchemaSymbols::fgDT_DOUBLE) &&
       ((const ATDoubleOrDerived::Ptr)number)->isInfinite())
      return true;
   return false;

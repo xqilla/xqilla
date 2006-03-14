@@ -42,7 +42,7 @@ const unsigned int FunctionIndexOf::maxArgs = 3;
 FunctionIndexOf::FunctionIndexOf(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "anyAtomicType*, anyAtomicType, string", args, memMgr)
 {
-  _src.getStaticType().flags = StaticType::NUMERIC_TYPE;
+  _src.getStaticType().flags = StaticType::DECIMAL_TYPE;
 }
 
 Sequence FunctionIndexOf::indexOf(Sequence &list, const Item::Ptr &item, Collation* collation, DynamicContext* context) const

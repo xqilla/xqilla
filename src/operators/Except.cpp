@@ -69,7 +69,7 @@ Item::Ptr Except::ExceptResult::next(DynamicContext *context)
   while(item != NULLRCP) {    
 
     bool found = false;
-    Result except_result(_excpt.createResult(context));
+    Result except_result(_excpt.createResult());
     Item::Ptr except_item;
     while((except_item = except_result->next(context)) != NULLRCP) {
       // Check it's a node

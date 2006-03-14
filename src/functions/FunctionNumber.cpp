@@ -41,7 +41,7 @@ const unsigned int FunctionNumber::maxArgs = 1;
 FunctionNumber::FunctionNumber(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : XQFunction(name, minArgs, maxArgs, "anyAtomicType?", args, memMgr)
 {
-  _src.getStaticType().flags = StaticType::NUMERIC_TYPE;
+  _src.getStaticType().flags = StaticType::DOUBLE_TYPE;
 }
 
 ASTNode* FunctionNumber::staticResolution(StaticContext *context)

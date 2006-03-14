@@ -88,10 +88,14 @@ GreaterThan::GreaterThan(const VectorOfASTNodes &args, XPath2MemoryManager* memM
       return ((ATDateTimeOrDerived*)(const AnyAtomicType*)atom1)->greaterThan((const ATDateTimeOrDerived::Ptr )atom2, context);
     }
     case AnyAtomicType::DURATION:
+    case AnyAtomicType::DAY_TIME_DURATION:
+    case AnyAtomicType::YEAR_MONTH_DURATION:
     {
-      if(atom2->getPrimitiveTypeIndex() != AnyAtomicType::DURATION) 
+      if(atom2->getPrimitiveTypeIndex() != AnyAtomicType::DURATION &&
+         atom2->getPrimitiveTypeIndex() != AnyAtomicType::DAY_TIME_DURATION &&
+         atom2->getPrimitiveTypeIndex() != AnyAtomicType::YEAR_MONTH_DURATION)
         XQThrow(XPath2ErrorException,X("GreaterThan::greater_than"), X("An attempt to compare a duration type to a non duration type has occurred"));
-      return ((const ATDurationOrDerived*)(const AnyAtomicType*)atom1)->greaterThan((const ATDurationOrDerived*)(const AnyAtomicType*)atom2, context);
+      return ((const ATDurationOrDerived*)atom1.get())->greaterThan((const ATDurationOrDerived*)atom2.get(), context);
     }
     default:
       XQThrow(XPath2ErrorException,X("GreaterThan::greater_than"), X("Unexpected data type in operator 'gt'"));

@@ -26,7 +26,15 @@
 UnaryMinus::UnaryMinus(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ArithmeticOperator(name, args, memMgr)
 {
-	assert(_args.size() == 1);
+  assert(_args.size() == 1);
+}
+
+void UnaryMinus::calculateStaticType()
+{
+  const StaticType &arg0 = _args[0]->getStaticResolutionContext().getStaticType();
+  if(arg0.containsType(StaticType::NUMERIC_TYPE)) {
+    _src.getStaticType().flags = arg0.flags & StaticType::NUMERIC_TYPE;
+  }
 }
 
 Item::Ptr UnaryMinus::execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::Ptr &atom2, DynamicContext *context) const

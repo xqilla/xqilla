@@ -33,6 +33,7 @@ const unsigned int FunctionNodeName::maxArgs = 1;
 FunctionNodeName::FunctionNodeName(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "node()?", args, memMgr)
 {
+  _src.getStaticType().flags = StaticType::QNAME_TYPE;
 }
 
 Sequence FunctionNodeName::collapseTreeInternal(DynamicContext* context, int flags) const

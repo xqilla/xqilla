@@ -128,11 +128,15 @@ private:
                           const ATDecimalOrDerived::Ptr &day, const ATDecimalOrDerived::Ptr &hour, const ATDecimalOrDerived::Ptr &minute,
                           const ATDecimalOrDerived::Ptr &sec, bool isPositive, const DynamicContext* context);
 
+  /** Compare two dayTimeDurations, return true if this = other */
+  bool dayTimeEquals(const ATDurationOrDerived::Ptr &dayTimeDuration, const DynamicContext* context) const;
   /** Compare two dayTimeDurations, return true if this < other */
   bool dayTimeLessThan(const ATDurationOrDerived::Ptr &dayTimeDuration, const DynamicContext* context) const;
   /** Compare two dayTimeDurations, return true if this > other */
   bool dayTimeGreaterThan(const ATDurationOrDerived::Ptr &dayTimeDuration, const DynamicContext* context) const;
 
+  /** Compare two yearMonthDurations, return true if this = other */
+  bool yearMonthEquals(const ATDurationOrDerived::Ptr &yearMonthDuration, const DynamicContext* context) const;
   /** Compare two yearMonthDurations, return true if this < other */
   bool yearMonthLessThan(const ATDurationOrDerived::Ptr &yearMonthDuration, const DynamicContext* context) const;
   /** Compare two yearMonthDurations, return true if this > other */
@@ -174,8 +178,7 @@ private:
   ATDecimalOrDerived::Ptr _minute;// xs:nonNegativeIngeter
   ATDecimalOrDerived::Ptr _sec;   // xs:decimal
 
-  enum DurationType { DAY_TIME_DURATION, YEAR_MONTH_DURATION, DURATION };
-  DurationType _durationType;
+  AtomicObjectType _durationType;
   
   /* the name of this type */
   const XMLCh* _typeName;

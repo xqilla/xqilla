@@ -1,4 +1,10 @@
 <errors>
+  <error id="CastFOCA0001-1" reason="result failure"/>
+  <error id="CastFOCA0003-1" reason="result failure"/>
+  <error id="Catalog002" reason="result failure"/>
+  <error id="Comp-notation-2" reason="result failure"/>
+  <error id="Comp-notation-4" reason="error failure"/>
+  <error id="Comp-notation-6" reason="error failure"/>
   <error id="Constr-attr-ws-3" reason="result failure"/>
   <error id="Constr-attr-ws-4" reason="result failure"/>
   <error id="Constr-attr-ws-5" reason="result failure"/>
@@ -15,10 +21,10 @@
   <error id="Constr-ws-adjchref-1" reason="result failure"/>
   <error id="Constr-ws-adjchref-2" reason="result failure"/>
   <error id="Constr-ws-adjchref-3" reason="result failure"/>
+  <error id="ForExpr024" reason="error failure"/>
   <error id="ForExprType009" reason="result failure"/>
   <error id="ForExprType010" reason="error failure"/>
   <error id="ForExprType031" reason="result failure"/>
-  <error id="ForExprType047" reason="error failure"/>
   <error id="LocalNameFromQNameFunc001" reason="error failure"/>
   <error id="LocalNameFromQNameFunc002" reason="error failure"/>
   <error id="LocalNameFromQNameFunc003" reason="error failure"/>
@@ -41,14 +47,19 @@
   <error id="NamespaceURIFromQNameFunc019" reason="error failure"/>
   <error id="NamespaceURIFromQNameFunc020" reason="error failure"/>
   <error id="NamespaceURIFromQNameFunc021" reason="error failure"/>
-  <error id="abbreviatedSyntax-2" reason="result failure"/>
-  <error id="base-URI-10" reason="result failure"/>
-  <error id="base-URI-12" reason="error failure"/>
-  <error id="base-URI-14" reason="error failure"/>
-  <error id="base-URI-18" reason="result failure"/>
-  <error id="base-URI-19" reason="error failure"/>
-  <error id="base-URI-8" reason="no error failure"/>
-  <error id="casthc14" reason="result failure"/>
+  <error id="WhereExpr010" reason="error failure"/>
+  <error id="base-URI-2" reason="error failure"/>
+  <error id="base-URI-24" reason="error failure"/>
+  <error id="base-URI-3" reason="error failure"/>
+  <error id="base-URI-5" reason="error failure"/>
+  <error id="caselessmatch04" reason="result failure"/>
+  <error id="caselessmatch05" reason="result failure"/>
+  <error id="caselessmatch06" reason="result failure"/>
+  <error id="caselessmatch07" reason="result failure"/>
+  <error id="caselessmatch08" reason="error failure"/>
+  <error id="caselessmatch09" reason="error failure"/>
+  <error id="caselessmatch10" reason="error failure"/>
+  <error id="caselessmatch11" reason="error failure"/>
   <error id="casthc17" reason="result failure"/>
   <error id="casthc23" reason="result failure"/>
   <error id="casthcds10" reason="result failure"/>
@@ -58,87 +69,124 @@
   <error id="casthcds8" reason="result failure"/>
   <error id="casthcds9" reason="result failure"/>
   <error id="constattrerr-1" reason="no error failure"/>
-  <error id="extexpr-6" reason="result failure"/>
+  <error id="extvardeclwithouttype-18" reason="result failure"/>
+  <error id="extvardeclwithouttype-6" reason="result failure"/>
+  <error id="extvardeclwithtype-14" reason="error failure"/>
+  <error id="extvardeclwithtype-18" reason="error failure"/>
+  <error id="extvardeclwithtype-2" reason="error failure"/>
+  <error id="extvardeclwithtype-22" reason="error failure"/>
+  <error id="extvardeclwithtype-3" reason="error failure"/>
+  <error id="extvardeclwithtype-4" reason="error failure"/>
+  <error id="extvardeclwithtype-6" reason="error failure"/>
+  <error id="extvardeclwithtype-7" reason="error failure"/>
   <error id="fn-abs-more-args-001" reason="result failure"/>
   <error id="fn-abs-more-args-008" reason="result failure"/>
-  <error id="fn-avgdbl2args-4" reason="result failure"/>
+  <error id="fn-avg-1" reason="error failure"/>
+  <error id="fn-avg-mix-args-009" reason="result failure"/>
+  <error id="fn-avg-mix-args-012" reason="result failure"/>
+  <error id="fn-avg-mix-args-013" reason="result failure"/>
+  <error id="fn-avg-mix-args-014" reason="result failure"/>
+  <error id="fn-avg-mix-args-015" reason="result failure"/>
+  <error id="fn-avg-mix-args-020" reason="result failure"/>
+  <error id="fn-avg-mix-args-021" reason="result failure"/>
+  <error id="fn-avg-mix-args-022" reason="result failure"/>
+  <error id="fn-avg-mix-args-023" reason="result failure"/>
+  <error id="fn-avg-mix-args-028" reason="error failure"/>
+  <error id="fn-avg-mix-args-029" reason="error failure"/>
+  <error id="fn-avg-mix-args-030" reason="error failure"/>
+  <error id="fn-avg-mix-args-031" reason="error failure"/>
+  <error id="fn-avg-mix-args-032" reason="error failure"/>
+  <error id="fn-avg-mix-args-033" reason="error failure"/>
+  <error id="fn-avg-mix-args-034" reason="error failure"/>
+  <error id="fn-avg-mix-args-035" reason="error failure"/>
+  <error id="fn-avg-mix-args-036" reason="error failure"/>
+  <error id="fn-avg-mix-args-037" reason="error failure"/>
+  <error id="fn-avg-mix-args-038" reason="error failure"/>
+  <error id="fn-avg-mix-args-039" reason="error failure"/>
+  <error id="fn-avg-mix-args-040" reason="error failure"/>
+  <error id="fn-avg-mix-args-041" reason="error failure"/>
+  <error id="fn-avg-mix-args-042" reason="error failure"/>
+  <error id="fn-avg-mix-args-043" reason="error failure"/>
+  <error id="fn-avg-mix-args-044" reason="error failure"/>
+  <error id="fn-avg-mix-args-045" reason="error failure"/>
+  <error id="fn-avg-mix-args-046" reason="error failure"/>
+  <error id="fn-avg-mix-args-047" reason="error failure"/>
+  <error id="fn-avg-mix-args-048" reason="error failure"/>
+  <error id="fn-avg-mix-args-049" reason="error failure"/>
+  <error id="fn-avg-mix-args-050" reason="error failure"/>
+  <error id="fn-avg-mix-args-051" reason="error failure"/>
+  <error id="fn-avg-mix-args-052" reason="error failure"/>
+  <error id="fn-avg-mix-args-053" reason="error failure"/>
+  <error id="fn-avg-mix-args-054" reason="error failure"/>
+  <error id="fn-avg-mix-args-055" reason="error failure"/>
+  <error id="fn-avg-mix-args-056" reason="error failure"/>
+  <error id="fn-avg-mix-args-057" reason="error failure"/>
+  <error id="fn-avg-mix-args-058" reason="error failure"/>
+  <error id="fn-avg-mix-args-059" reason="error failure"/>
+  <error id="fn-avg-mix-args-060" reason="error failure"/>
+  <error id="fn-avg-mix-args-061" reason="error failure"/>
+  <error id="fn-avg-mix-args-062" reason="error failure"/>
+  <error id="fn-avg-mix-args-063" reason="error failure"/>
+  <error id="fn-avg-mix-args-064" reason="error failure"/>
+  <error id="fn-avg-mix-args-065" reason="error failure"/>
+  <error id="fn-avg-mix-args-066" reason="error failure"/>
   <error id="fn-avgflt2args-2" reason="result failure"/>
   <error id="fn-avgflt2args-4" reason="result failure"/>
-  <error id="fn-base-uri-10" reason="result failure"/>
-  <error id="fn-base-uri-14" reason="result failure"/>
-  <error id="fn-base-uri-15" reason="result failure"/>
-  <error id="fn-base-uri-16" reason="result failure"/>
   <error id="fn-base-uri-17" reason="result failure"/>
-  <error id="fn-base-uri-19" reason="result failure"/>
   <error id="fn-base-uri-2" reason="error failure"/>
   <error id="fn-base-uri-20" reason="result failure"/>
   <error id="fn-base-uri-21" reason="result failure"/>
-  <error id="fn-base-uri-4" reason="result failure"/>
-  <error id="fn-base-uri-5" reason="result failure"/>
-  <error id="fn-base-uri-6" reason="result failure"/>
+  <error id="fn-base-uri-7" reason="result failure"/>
+  <error id="fn-base-uri-8" reason="result failure"/>
   <error id="fn-base-uri-9" reason="error failure"/>
+  <error id="fn-boolean-mixed-args-049" reason="error failure"/>
   <error id="fn-current-date-1" reason="inspect" action="pass"/>
   <error id="fn-current-date-10" reason="inspect" action="pass"/>
   <error id="fn-current-date-11" reason="inspect" action="pass"/>
-  <error id="fn-current-date-12" reason="inspect" action="pass"/>
-  <error id="fn-current-date-13" reason="inspect" action="pass"/>
-  <error id="fn-current-date-14" reason="inspect" action="pass"/>
-  <error id="fn-current-date-15" reason="inspect" action="pass"/>
-  <error id="fn-current-date-16" reason="inspect" action="pass"/>
-  <error id="fn-current-date-17" reason="inspect" action="pass"/>
-  <error id="fn-current-date-18" reason="inspect" action="pass"/>
-  <error id="fn-current-date-19" reason="inspect" action="pass"/>
   <error id="fn-current-date-2" reason="inspect" action="pass"/>
-  <error id="fn-current-date-20" reason="inspect" action="pass"/>
   <error id="fn-current-date-21" reason="inspect" action="pass"/>
   <error id="fn-current-date-3" reason="inspect" action="pass"/>
   <error id="fn-current-date-4" reason="inspect" action="pass"/>
-  <error id="fn-current-date-5" reason="inspect" action="pass"/>
   <error id="fn-current-date-6" reason="inspect" action="pass"/>
   <error id="fn-current-date-7" reason="inspect" action="pass"/>
-  <error id="fn-current-date-9" reason="inspect" action="pass"/>
   <error id="fn-current-dateTime-1" reason="inspect" action="pass"/>
   <error id="fn-current-dateTime-10" reason="inspect" action="pass"/>
   <error id="fn-current-dateTime-11" reason="inspect" action="pass"/>
-  <error id="fn-current-dateTime-12" reason="inspect" action="pass"/>
-  <error id="fn-current-dateTime-13" reason="inspect" action="pass"/>
-  <error id="fn-current-dateTime-14" reason="inspect" action="pass"/>
-  <error id="fn-current-dateTime-15" reason="inspect" action="pass"/>
-  <error id="fn-current-dateTime-16" reason="inspect" action="pass"/>
-  <error id="fn-current-dateTime-17" reason="inspect" action="pass"/>
-  <error id="fn-current-dateTime-18" reason="inspect" action="pass"/>
-  <error id="fn-current-dateTime-19" reason="inspect" action="pass"/>
   <error id="fn-current-dateTime-2" reason="inspect" action="pass"/>
-  <error id="fn-current-dateTime-20" reason="inspect" action="pass"/>
   <error id="fn-current-dateTime-21" reason="inspect" action="pass"/>
   <error id="fn-current-dateTime-22" reason="inspect" action="pass"/>
   <error id="fn-current-dateTime-23" reason="inspect" action="pass"/>
   <error id="fn-current-dateTime-24" reason="inspect" action="pass"/>
   <error id="fn-current-dateTime-3" reason="inspect" action="pass"/>
   <error id="fn-current-dateTime-4" reason="inspect" action="pass"/>
-  <error id="fn-current-dateTime-5" reason="inspect" action="pass"/>
   <error id="fn-current-dateTime-6" reason="inspect" action="pass"/>
-  <error id="fn-current-dateTime-9" reason="inspect" action="pass"/>
   <error id="fn-current-datetime-7" reason="inspect" action="pass"/>
   <error id="fn-current-time-1" reason="inspect" action="pass"/>
   <error id="fn-current-time-10" reason="inspect" action="pass"/>
   <error id="fn-current-time-11" reason="inspect" action="pass"/>
-  <error id="fn-current-time-12" reason="inspect" action="pass"/>
-  <error id="fn-current-time-13" reason="inspect" action="pass"/>
-  <error id="fn-current-time-14" reason="inspect" action="pass"/>
-  <error id="fn-current-time-15" reason="inspect" action="pass"/>
   <error id="fn-current-time-2" reason="inspect" action="pass"/>
   <error id="fn-current-time-3" reason="inspect" action="pass"/>
   <error id="fn-current-time-4" reason="inspect" action="pass"/>
-  <error id="fn-current-time-5" reason="inspect" action="pass"/>
   <error id="fn-current-time-6" reason="inspect" action="pass"/>
   <error id="fn-current-time-7" reason="inspect" action="pass"/>
-  <error id="fn-current-time-9" reason="inspect" action="pass"/>
   <error id="fn-deep-equal-mix-args-011" reason="result failure"/>
   <error id="fn-deep-equal-mix-args-012" reason="result failure"/>
   <error id="fn-deep-equal-mix-args-019" reason="result failure"/>
-  <error id="fn-doc-1" reason="error failure"/>
-  <error id="fn-doc-3" reason="error failure"/>
+  <error id="fn-doc-10" reason="error failure"/>
+  <error id="fn-doc-11" reason="error failure"/>
+  <error id="fn-doc-12" reason="error failure"/>
+  <error id="fn-doc-13" reason="error failure"/>
+  <error id="fn-doc-14" reason="error failure"/>
+  <error id="fn-doc-15" reason="error failure"/>
+  <error id="fn-doc-16" reason="error failure"/>
+  <error id="fn-doc-18" reason="error failure"/>
+  <error id="fn-doc-19" reason="error failure"/>
+  <error id="fn-doc-22" reason="error failure"/>
+  <error id="fn-doc-5" reason="error failure"/>
+  <error id="fn-doc-6" reason="error failure"/>
+  <error id="fn-doc-7" reason="error failure"/>
+  <error id="fn-doc-8" reason="error failure"/>
+  <error id="fn-doc-9" reason="error failure"/>
   <error id="fn-document-uri-12" reason="result failure"/>
   <error id="fn-document-uri-15" reason="result failure"/>
   <error id="fn-document-uri-16" reason="result failure"/>
@@ -146,7 +194,7 @@
   <error id="fn-document-uri-18" reason="result failure"/>
   <error id="fn-document-uri-19" reason="result failure"/>
   <error id="fn-document-uri-20" reason="result failure"/>
-  <error id="fn-error-2" reason="error failure"/>
+  <error id="fn-document-uri-21" reason="result failure"/>
   <error id="fn-escape-html-uri-20" reason="error failure"/>
   <error id="fn-escape-html-uri-21" reason="error failure"/>
   <error id="fn-id-10" reason="error failure"/>
@@ -167,14 +215,29 @@
   <error id="fn-id-7" reason="error failure"/>
   <error id="fn-id-8" reason="error failure"/>
   <error id="fn-id-9" reason="error failure"/>
+  <error id="fn-idref-10" reason="error failure"/>
+  <error id="fn-idref-11" reason="error failure"/>
+  <error id="fn-idref-12" reason="error failure"/>
+  <error id="fn-idref-13" reason="error failure"/>
+  <error id="fn-idref-14" reason="error failure"/>
+  <error id="fn-idref-15" reason="error failure"/>
+  <error id="fn-idref-16" reason="error failure"/>
+  <error id="fn-idref-17" reason="error failure"/>
+  <error id="fn-idref-18" reason="error failure"/>
+  <error id="fn-idref-19" reason="error failure"/>
+  <error id="fn-idref-20" reason="error failure"/>
+  <error id="fn-idref-21" reason="error failure"/>
   <error id="fn-idref-3" reason="error failure"/>
+  <error id="fn-idref-5" reason="error failure"/>
+  <error id="fn-idref-6" reason="error failure"/>
+  <error id="fn-idref-7" reason="error failure"/>
+  <error id="fn-idref-8" reason="error failure"/>
+  <error id="fn-idref-9" reason="error failure"/>
   <error id="fn-implicit-timezone-11" reason="error failure"/>
   <error id="fn-implicit-timezone-12" reason="error failure"/>
-  <error id="fn-implicit-timezone-13" reason="error failure"/>
   <error id="fn-implicit-timezone-14" reason="inspect" action="pass"/>
   <error id="fn-implicit-timezone-15" reason="inspect" action="pass"/>
   <error id="fn-implicit-timezone-16" reason="inspect" action="pass"/>
-  <error id="fn-implicit-timezone-17" reason="inspect" action="pass"/>
   <error id="fn-implicit-timezone-18" reason="inspect" action="pass"/>
   <error id="fn-implicit-timezone-19" reason="inspect" action="pass"/>
   <error id="fn-implicit-timezone-2" reason="inspect" action="pass"/>
@@ -184,11 +247,9 @@
   <error id="fn-implicit-timezone-23" reason="inspect" action="pass"/>
   <error id="fn-implicit-timezone-3" reason="inspect" action="pass"/>
   <error id="fn-implicit-timezone-5" reason="inspect" action="pass"/>
-  <error id="fn-implicit-timezone-9" reason="result failure"/>
-  <error id="fn-lang-15" reason="error failure"/>
-  <error id="fn-local-name-2" reason="error failure"/>
-  <error id="fn-matches-25" reason="error failure"/>
-  <error id="fn-namespace-uri-3" reason="error failure"/>
+  <error id="fn-implicit-timezone-9" reason="inspect"/>
+  <error id="fn-max-1" reason="error failure"/>
+  <error id="fn-min-1" reason="error failure"/>
   <error id="fn-namespace-uri-for-prefix-4" reason="error failure"/>
   <error id="fn-nilled-11" reason="result failure"/>
   <error id="fn-nilled-12" reason="result failure"/>
@@ -198,6 +259,7 @@
   <error id="fn-nilled-5" reason="result failure"/>
   <error id="fn-nilled-7" reason="result failure"/>
   <error id="fn-nilled-9" reason="no error failure"/>
+  <error id="fn-normalize-unicode-2" reason="error failure"/>
   <error id="fn-numberdec1args-1" reason="result failure"/>
   <error id="fn-numberdec1args-2" reason="result failure"/>
   <error id="fn-numberdec1args-3" reason="result failure"/>
@@ -219,11 +281,32 @@
   <error id="fn-numberpint1args-3" reason="result failure"/>
   <error id="fn-numberulng1args-2" reason="result failure"/>
   <error id="fn-numberulng1args-3" reason="result failure"/>
+  <error id="fn-resolve-qname-1" reason="error failure"/>
+  <error id="fn-resolve-qname-10" reason="error failure"/>
+  <error id="fn-resolve-qname-11" reason="error failure"/>
+  <error id="fn-resolve-qname-12" reason="error failure"/>
+  <error id="fn-resolve-qname-13" reason="error failure"/>
+  <error id="fn-resolve-qname-14" reason="error failure"/>
+  <error id="fn-resolve-qname-15" reason="error failure"/>
+  <error id="fn-resolve-qname-16" reason="error failure"/>
+  <error id="fn-resolve-qname-17" reason="error failure"/>
+  <error id="fn-resolve-qname-18" reason="error failure"/>
+  <error id="fn-resolve-qname-19" reason="error failure"/>
+  <error id="fn-resolve-qname-2" reason="error failure"/>
+  <error id="fn-resolve-qname-20" reason="error failure"/>
+  <error id="fn-resolve-qname-21" reason="error failure"/>
+  <error id="fn-resolve-qname-22" reason="error failure"/>
+  <error id="fn-resolve-qname-3" reason="error failure"/>
+  <error id="fn-resolve-qname-4" reason="error failure"/>
+  <error id="fn-resolve-qname-5" reason="error failure"/>
+  <error id="fn-resolve-qname-6" reason="error failure"/>
+  <error id="fn-resolve-qname-7" reason="error failure"/>
+  <error id="fn-resolve-qname-8" reason="error failure"/>
+  <error id="fn-resolve-qname-9" reason="error failure"/>
   <error id="fn-resolve-uri-16" reason="error failure"/>
   <error id="fn-resolve-uri-17" reason="error failure"/>
   <error id="fn-resolve-uri-18" reason="error failure"/>
   <error id="fn-resolve-uri-19" reason="error failure"/>
-  <error id="fn-resolve-uri-2" reason="result failure"/>
   <error id="fn-resolve-uri-20" reason="error failure"/>
   <error id="fn-resolve-uri-21" reason="error failure"/>
   <error id="fn-resolve-uri-22" reason="error failure"/>
@@ -232,45 +315,39 @@
   <error id="fn-resolve-uri-4" reason="no error failure"/>
   <error id="fn-resolve-uri-5" reason="error failure"/>
   <error id="fn-resolve-uri-9" reason="result failure"/>
-  <error id="fn-root-2" reason="error failure"/>
-  <error id="fn-trace-10" reason="inspect" action="pass"/>
-  <error id="fn-trace-11" reason="error failure"/>
-  <error id="fn-trace-12" reason="error failure"/>
-  <error id="fn-trace-13" reason="inspect" action="pass"/>
-  <error id="fn-trace-14" reason="inspect" action="pass"/>
-  <error id="fn-trace-15" reason="inspect" action="pass"/>
-  <error id="fn-trace-16" reason="inspect" action="pass"/>
-  <error id="fn-trace-17" reason="inspect" action="pass"/>
-  <error id="fn-trace-18" reason="inspect" action="pass"/>
-  <error id="fn-trace-19" reason="inspect" action="pass"/>
-  <error id="fn-trace-2" reason="inspect" action="pass"/>
-  <error id="fn-trace-20" reason="inspect" action="pass"/>
-  <error id="fn-trace-21" reason="inspect" action="pass"/>
-  <error id="fn-trace-3" reason="inspect" action="pass"/>
-  <error id="fn-trace-4" reason="inspect" action="pass"/>
-  <error id="fn-trace-5" reason="inspect" action="pass"/>
-  <error id="fn-trace-6" reason="inspect" action="pass"/>
-  <error id="fn-trace-7" reason="inspect" action="pass"/>
-  <error id="fn-trace-8" reason="inspect" action="pass"/>
-  <error id="fn-trace-9" reason="inspect" action="pass"/>
-  <error id="fn-unordered-mix-args-004" reason="result failure"/>
   <error id="last-2" reason="error failure"/>
-  <error id="namespaceDecl-1" reason="error failure"/>
+  <error id="modules-1" reason="error failure"/>
+  <error id="modules-collide-fn-001" reason="no error failure"/>
+  <error id="modules-collide-var-001" reason="error failure"/>
+  <error id="modules-schema-context" reason="error failure"/>
+  <error id="modules-two-import-ok" reason="error failure"/>
   <error id="namespaceDecl-2" reason="error failure"/>
-  <error id="op-divide-dayTimeDuration-by-dTD-1" reason="result failure"/>
+  <error id="op-duration-equal-1" reason="result failure"/>
+  <error id="op-duration-equal-2" reason="result failure"/>
+  <error id="op-gYearMonth-equalNew-2" reason="result failure"/>
   <error id="op-numeric-dividenint2args-3" reason="result failure"/>
   <error id="op-numeric-dividepint2args-5" reason="result failure"/>
   <error id="op-numeric-dividesht2args-5" reason="result failure"/>
-  <error id="orderBy45" reason="result failure"/>
+  <error id="op-numeric-integer-divide-1" reason="error failure"/>
   <error id="orderBy55" reason="result failure"/>
-  <error id="orderbylocal-45" reason="result failure"/>
-  <error id="orderbylocal-55" reason="result failure"/>
-  <error id="preceding-8" reason="result failure"/>
   <error id="qName-1" reason="error failure"/>
-  <error id="schema-import-3" reason="error failure"/>
+  <error id="schema-import-10" reason="result failure"/>
+  <error id="schema-import-11" reason="result failure"/>
+  <error id="schema-import-14" reason="result failure"/>
+  <error id="schema-import-15" reason="result failure"/>
+  <error id="schema-import-18" reason="result failure"/>
+  <error id="schema-import-19" reason="result failure"/>
+  <error id="schema-import-26" reason="result failure"/>
+  <error id="schema-import-27" reason="result failure"/>
+  <error id="schema-import-6" reason="result failure"/>
+  <error id="schema-import-7" reason="result failure"/>
+  <error id="seq-queries-results-q5" reason="error failure"/>
+  <error id="surrogates01" reason="result failure"/>
+  <error id="surrogates02" reason="result failure"/>
+  <error id="surrogates06" reason="result failure"/>
+  <error id="surrogates07" reason="result failure"/>
+  <error id="surrogates08" reason="error failure"/>
   <error id="treat-as-1" reason="error failure"/>
-  <error id="unabbreviatedSyntax-5" reason="result failure"/>
-  <error id="validateexpr-1" reason="error failure"/>
-  <error id="vardeclwithtype-13" reason="error failure"/>
+  <error id="vardeclerr" reason="error failure"/>
   <error id="vardeclwithtype-6" reason="result failure"/>
 </errors>

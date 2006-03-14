@@ -41,6 +41,7 @@ FunctionCurrentTime::FunctionCurrentTime(const VectorOfASTNodes &args, XPath2Mem
 }
 
 ASTNode* FunctionCurrentTime::staticResolution(StaticContext *context) {
+  _src.getStaticType().flags = StaticType::TIME_TYPE;
   _src.currentTimeUsed(true);
   return resolveArguments(context);
 }

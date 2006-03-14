@@ -174,11 +174,18 @@ XQContextImpl::~XQContextImpl()
   delete _itemFactory;
 }
 
+DynamicContext *XQContextImpl::createModuleContext(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr) const
+{
+  DynamicContext* moduleCtx = new (memMgr) XQContextImpl(memMgr);
+  // force the context to use our memory manager
+  moduleCtx->setMemoryManager(getMemoryManager());
+  // propagate debug settings
+  moduleCtx->enableDebugging(isDebuggingEnabled());
+  return moduleCtx;
+}
+
 DynamicContext *XQContextImpl::createDynamicContext(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr) const
 {
-  if(memMgr == 0) {
-    return 0;
-  }
   return new (memMgr) XQDynamicContextImpl(this, memMgr);
 }
 

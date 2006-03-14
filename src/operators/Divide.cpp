@@ -29,6 +29,28 @@ Divide::Divide(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   // Nothing to do
 }
 
+void Divide::calculateStaticType()
+{
+  const StaticType &arg0 = _args[0]->getStaticResolutionContext().getStaticType();
+  const StaticType &arg1 = _args[1]->getStaticResolutionContext().getStaticType();
+
+  calculateStaticTypeForNumerics(arg0, arg1);
+
+  // Dividing a duration by a number
+  if(arg0.containsType(StaticType::DAY_TIME_DURATION_TYPE|StaticType::YEAR_MONTH_DURATION_TYPE)
+     && arg1.containsType(StaticType::NUMERIC_TYPE)) {
+    _src.getStaticType().flags |= arg0.flags & (StaticType::DAY_TIME_DURATION_TYPE|StaticType::YEAR_MONTH_DURATION_TYPE);
+  }
+
+  // Dividing a duration by a duration
+  if(arg0.containsType(StaticType::DAY_TIME_DURATION_TYPE) && arg1.containsType(StaticType::DAY_TIME_DURATION_TYPE)) {
+    _src.getStaticType().flags |= StaticType::DECIMAL_TYPE;
+  }
+  if(arg0.containsType(StaticType::YEAR_MONTH_DURATION_TYPE) && arg1.containsType(StaticType::YEAR_MONTH_DURATION_TYPE)) {
+    _src.getStaticType().flags |= StaticType::DECIMAL_TYPE;
+  }
+}
+
 Item::Ptr Divide::execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::Ptr &atom2, DynamicContext *context) const
 {
   if(atom1 == NULLRCP || atom2 == NULLRCP) return 0;
@@ -38,32 +60,26 @@ Item::Ptr Divide::execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::
       return (const Item::Ptr)((Numeric*)(const AnyAtomicType*)atom1)->divide((const Numeric::Ptr )atom2, context);
     }
     else {
-      XQThrow(XPath2ErrorException,X("Divide::collapseTreeInternal"), X("An attempt to divide a non numeric type to a numeric type has occurred [err:XPTY0004]"));
+      XQThrow(XPath2ErrorException,X("Divide::collapseTreeInternal"), X("An attempt to divide a numeric type by a non-numeric type has occurred [err:XPTY0004]"));
     }
   }
-  
-  if(atom1->getPrimitiveTypeIndex() == AnyAtomicType::DURATION) {
-    const ATDurationOrDerived* duration = (const ATDurationOrDerived*)(const AnyAtomicType*)atom1;
+
+  if(atom1->getPrimitiveTypeIndex() == AnyAtomicType::DAY_TIME_DURATION ||
+     atom1->getPrimitiveTypeIndex() == AnyAtomicType::YEAR_MONTH_DURATION) {
+    const ATDurationOrDerived* duration = (const ATDurationOrDerived*)atom1.get();
     if(atom2->isNumericValue()) {
-      const Numeric::Ptr num = (const Numeric::Ptr )atom2;
-      if(duration->isDayTimeDuration() || duration->isYearMonthDuration()) {
-        return (const Item::Ptr)duration->divide(num, context);
-      } else {
-        XQThrow(XPath2ErrorException,X("Divide::collapseTreeInternal"), X("An invalid attempt to divide an xs:duration by a decimal type has occurred [err:XPTY0004]"));
-      }
-    } else if(atom2->getPrimitiveTypeIndex() == AnyAtomicType::DURATION) {
-      const ATDurationOrDerived* divisor = (const ATDurationOrDerived*)(const AnyAtomicType*)atom2;
-      if((duration->isDayTimeDuration() && divisor->isDayTimeDuration()) || 
-         (duration->isYearMonthDuration() && divisor->isYearMonthDuration())) {
-          return (const Item::Ptr)duration->divide(divisor, context);
-      } else {
-        XQThrow(XPath2ErrorException,X("Divide::collapseTreeInternal"), X("An invalid attempt to divide an xs:duration by a duration type has occurred [err:XPTY0004]"));
-      }
-    } else {
-      XQThrow(XPath2ErrorException,X("Divide::collapseTreeInternal"), X("An invalid attempt to divide an xs:duration by a non-decimal type has occured [err:XPTY0004]"));
+      return (const Item::Ptr)duration->divide((const Numeric *)atom2.get(), context);
     }
-  } else {
-      XQThrow(XPath2ErrorException,X("Divide::collapseTreeInternal"), X("The operator div has been called on invalid operand types [err:XPTY0004]"));
+    else if(atom2->getPrimitiveTypeIndex() == AnyAtomicType::DAY_TIME_DURATION ||
+              atom2->getPrimitiveTypeIndex() == AnyAtomicType::YEAR_MONTH_DURATION) {
+      return (const Item::Ptr)duration->divide((const ATDurationOrDerived*)atom2.get(), context);
+    }
+    else {
+      XQThrow(XPath2ErrorException,X("Divide::collapseTreeInternal"), X("An attempt to divide an xs:duration by an invalid type has occured [err:XPTY0004]"));
+    }
+  }
+  else {
+    XQThrow(XPath2ErrorException,X("Divide::collapseTreeInternal"), X("The operator div has been called on invalid operand types [err:XPTY0004]"));
   }
 
   return 0;

@@ -21,6 +21,13 @@
 #include <xqilla/items/Item.hpp>
 #include <xqilla/items/AnyAtomicType.hpp>
 #include <xqilla/ast/XQAtomize.hpp>
+#include <xqilla/exceptions/XPath2ErrorException.hpp>
+
+#include <xercesc/framework/XMLBuffer.hpp>
+
+#if defined(XERCES_HAS_CPP_NAMESPACE)
+XERCES_CPP_NAMESPACE_USE
+#endif
 
 ArithmeticOperator::ArithmeticOperator(const XMLCh* opName, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : XQOperator(opName, args, memMgr)
@@ -31,14 +38,14 @@ ASTNode* ArithmeticOperator::staticResolution(StaticContext *context)
 {
   XPath2MemoryManager *mm = context->getMemoryManager();
 
-  _src.getStaticType().flags = 0;
-
+  bool emptyArgument = false;
   bool allConstant = true;
   for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
     *i = new (mm) XQAtomize(*i, mm);
     *i = (*i)->staticResolution(context);
 
-    _src.getStaticType().flags |= (*i)->getStaticResolutionContext().getStaticType().flags;
+    if((*i)->getStaticResolutionContext().getStaticType().flags == 0)
+      emptyArgument = true;
     _src.add((*i)->getStaticResolutionContext());
 
     if(!(*i)->isConstantAndHasTimezone(context)) {
@@ -49,10 +56,50 @@ ASTNode* ArithmeticOperator::staticResolution(StaticContext *context)
     }
   }
 
+  _src.getStaticType().flags = 0;
+  calculateStaticType();
+
+  if(!emptyArgument && _src.getStaticType().flags == 0) {
+    XMLBuffer errMsg;
+    errMsg.set(X("The operator "));
+    errMsg.append(_opName);
+    errMsg.append(X(" has been called on invalid operand types [err:XPTY0004]"));
+    XQThrow(XPath2ErrorException,X("ArithmeticOperator::staticResolution"), errMsg.getRawBuffer());
+  }
+
   if(allConstant) {
     return constantFold(context);
   }
   return this;
+}
+
+void ArithmeticOperator::calculateStaticTypeForNumerics(const StaticType &arg0, const StaticType &arg1)
+{
+  // Deal with numerics and numeric type promotion
+  if(arg0.containsType(StaticType::DECIMAL_TYPE)) {
+    if(arg1.containsType(StaticType::DECIMAL_TYPE)) {
+      _src.getStaticType().flags |= StaticType::DECIMAL_TYPE;
+    }
+    if(arg1.containsType(StaticType::FLOAT_TYPE)) {
+      _src.getStaticType().flags |= StaticType::FLOAT_TYPE;
+    }
+    if(arg1.containsType(StaticType::DOUBLE_TYPE)) {
+      _src.getStaticType().flags |= StaticType::DOUBLE_TYPE;
+    }
+  }
+  if(arg0.containsType(StaticType::FLOAT_TYPE)) {
+    if(arg1.containsType(StaticType::DECIMAL_TYPE|StaticType::FLOAT_TYPE)) {
+      _src.getStaticType().flags |= StaticType::FLOAT_TYPE;
+    }
+    if(arg1.containsType(StaticType::DOUBLE_TYPE)) {
+      _src.getStaticType().flags |= StaticType::DOUBLE_TYPE;
+    }
+  }
+  if(arg0.containsType(StaticType::DOUBLE_TYPE)) {
+    if(arg1.containsType(StaticType::DECIMAL_TYPE|StaticType::FLOAT_TYPE|StaticType::DOUBLE_TYPE)) {
+      _src.getStaticType().flags |= StaticType::DOUBLE_TYPE;
+    }
+  }
 }
 
 Result ArithmeticOperator::createResult(DynamicContext* context, int flags) const
@@ -94,8 +141,8 @@ AnyAtomicType::Ptr ArithmeticOperator::getArgument(unsigned int index, DynamicCo
   if(first != NULLRCP) {
     if(first->isAtomicValue()) {
       if(((const AnyAtomicType*)(const Item*)first)->getPrimitiveTypeIndex() == AnyAtomicType::UNTYPED_ATOMIC) {
-        first = (const Item::Ptr)((const AnyAtomicType*)(const Item*)first)->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                                                                                    XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DOUBLE, 
+        first = (const Item::Ptr)((const AnyAtomicType*)(const Item*)first)->castAs(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                                                                                    SchemaSymbols::fgDT_DOUBLE, 
                                                                                     context);
       }
     }

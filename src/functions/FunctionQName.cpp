@@ -40,6 +40,7 @@ const unsigned int FunctionQName::maxArgs = 2;
 FunctionQName::FunctionQName(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "string?, string", args, memMgr)
 {
+  _src.getStaticType().flags = StaticType::QNAME_TYPE;
 }
 
 Sequence FunctionQName::collapseTreeInternal(DynamicContext* context, int flags) const {

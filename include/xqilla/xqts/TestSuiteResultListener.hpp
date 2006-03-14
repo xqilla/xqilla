@@ -28,6 +28,8 @@ class XQILLA_API TestSuiteResultListener
 public:
   virtual ~TestSuiteResultListener() {}
 
+  virtual void reportVersion(const std::string &version) {}
+
   virtual void startTestGroup(const std::string &name) = 0;
   virtual void endTestGroup() = 0;
 
@@ -126,6 +128,8 @@ class XQILLA_API XMLReportResultListener : public TestSuiteResultListener
 public:
   XMLReportResultListener();
 
+  virtual void reportVersion(const std::string &version) { version_ = version; }
+
   virtual void startTestGroup(const std::string &name);
   virtual void endTestGroup();
 
@@ -151,6 +155,7 @@ public:
   void printReport() const;
 
 private:
+  std::string version_;
   std::string implName_, implVersion_, implDescription_;
   std::string orgName_, orgWebsite_;
   std::string submittorName_, submittorEmail_;

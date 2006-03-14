@@ -26,6 +26,14 @@ Mod::Mod(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
 {
 }
 
+void Mod::calculateStaticType()
+{
+  const StaticType &arg0 = _args[0]->getStaticResolutionContext().getStaticType();
+  const StaticType &arg1 = _args[1]->getStaticResolutionContext().getStaticType();
+
+  calculateStaticTypeForNumerics(arg0, arg1);
+}
+
 Item::Ptr Mod::execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::Ptr &atom2, DynamicContext *context) const
 {
   if(atom1 == NULLRCP || atom2 == NULLRCP) return 0;

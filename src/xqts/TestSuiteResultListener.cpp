@@ -55,7 +55,7 @@ void KnownErrorChecker::endTestGroup()
 void KnownErrorChecker::reportPass(const TestCase &testCase, const string &comment)
 {
   map<string, Error>::iterator i = errors_.find(testCase.name);
-  if(i != errors_.end()) {
+  if(i != errors_.end() && i->second.reason != "inspect") {
     nowPass_.push_back(testCase.name);
     errors_.erase(i);
   }
@@ -399,6 +399,10 @@ void ConsoleResultListener::testCaseToErrorStream(const TestCase &testCase)
     errorStream_ << "* Variable: " << i->first << " -> " << i->second << endl;
   }
 
+  for(i = testCase.moduleFiles.begin(); i != testCase.moduleFiles.end(); ++i) {
+    errorStream_ << "* Module: " << i->first << " -> " << i->second << endl;
+  }
+
   for(i = testCase.outputFiles.begin(); i != testCase.outputFiles.end(); ++i) {
     errorStream_ << "* Output: " << i->second << " -> " << i->first << endl;
   }
@@ -601,7 +605,7 @@ void XMLReportResultListener::printReport() const
   snprintf(szDate, 256,"%04d-%02d-%02d",curLocalDate->tm_year+1900, curLocalDate->tm_mon+1, curLocalDate->tm_mday);
 
   cout << "  <test-run dateRun=\"" << szDate << "\">" << endl;
-  cout << "    <test-suite version=\"0.8.4\"/>" << endl;
+  cout << "    <test-suite version=\"" << version_ << "\"/>" << endl;
   if(testTransformation_ != "")
     cout << "    <transformation>" << testTransformation_ << "</transformation>" << endl;
   cout << "    <comparison><p>XML and fragment comparisons are performed by serializing the results,";

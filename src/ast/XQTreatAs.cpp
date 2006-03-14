@@ -73,7 +73,7 @@ ASTNode* XQTreatAs::staticResolution(StaticContext *context)
     bool isExact;
     itemType->getStaticType(_src.getStaticType(), context, isExact);
 
-    if((sType.flags & _src.getStaticType().flags) == 0 &&
+    if(!sType.containsType(_src.getStaticType().flags) &&
        (_exprType->getOccurrenceIndicator() == SequenceType::EXACTLY_ONE ||
         _exprType->getOccurrenceIndicator() == SequenceType::PLUS)) {
       // It never matches
@@ -81,8 +81,7 @@ ASTNode* XQTreatAs::staticResolution(StaticContext *context)
               X("ItemType matching failed [err:XPTY0004]"));
     }
 
-    if(isExact && (sType.flags & _src.getStaticType().flags) != 0 &&
-       (sType.flags & ~_src.getStaticType().flags) == 0) {
+    if(isExact && sType.isType(_src.getStaticType().flags)) {
       if(_exprType->getOccurrenceIndicator() == SequenceType::STAR) {
         // It always matches
         return _expr;
@@ -90,13 +89,14 @@ ASTNode* XQTreatAs::staticResolution(StaticContext *context)
       _doTypeCheck = false;
     }
 
-    if(_src.getStaticType().flags == StaticType::ITEM_TYPE ||
-       _src.getStaticType().flags == StaticType::ANY_ATOMIC_TYPE) {
+    if((_src.getStaticType().flags == StaticType::ITEM_TYPE ||
+        _src.getStaticType().flags == StaticType::ANY_ATOMIC_TYPE) &&
+       sType.isType(_src.getStaticType().flags)) {
       // We can get a better type from our expression
-      _src.getStaticType() = _expr->getStaticResolutionContext().getStaticType();
+      _src.getStaticType() = _expr->getStaticResolutionContext().getStaticType();      
     }
 
-    if((_src.getStaticType().flags & StaticType::NODE_TYPE) != 0) {
+    if(_src.getStaticType().containsType(StaticType::NODE_TYPE)) {
       // Copy the properties if we return nodes
       _src.setProperties(_expr->getStaticResolutionContext().getProperties());
     }

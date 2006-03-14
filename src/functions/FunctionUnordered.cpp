@@ -39,10 +39,7 @@ FunctionUnordered::FunctionUnordered(const VectorOfASTNodes &args, XPath2MemoryM
 ASTNode* FunctionUnordered::staticResolution(StaticContext *context)
 {
   AutoNodeSetOrderingReset orderReset(context);
-  ASTNode *result = resolveArguments(context);
-  if(result == this)
-    return _args.front();
-  return result;
+  return resolveArguments(context);
 }
 
 Result FunctionUnordered::createResult(DynamicContext* context, int flags) const

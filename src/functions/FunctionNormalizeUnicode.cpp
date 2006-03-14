@@ -41,6 +41,7 @@ const unsigned int FunctionNormalizeUnicode::maxArgs = 2;
 FunctionNormalizeUnicode::FunctionNormalizeUnicode(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "string?,string", args, memMgr)
 {
+  _src.getStaticType().flags = StaticType::STRING_TYPE;
 }
 
 Sequence FunctionNormalizeUnicode::collapseTreeInternal(DynamicContext* context, int flags) const

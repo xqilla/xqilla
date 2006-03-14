@@ -38,6 +38,7 @@ FunctionBoolean::FunctionBoolean(const VectorOfASTNodes &args, XPath2MemoryManag
 }
 
 ASTNode* FunctionBoolean::staticResolution(StaticContext *context) {
+  _src.getStaticType().flags = StaticType::BOOLEAN_TYPE;
   AutoNodeSetOrderingReset orderReset(context);
   return resolveArguments(context);
 }

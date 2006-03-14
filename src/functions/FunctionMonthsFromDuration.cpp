@@ -38,7 +38,7 @@ const unsigned int FunctionMonthsFromDuration::maxArgs = 1;
 FunctionMonthsFromDuration::FunctionMonthsFromDuration(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "yearMonthDuration?", args, memMgr)
 {
-  _src.getStaticType().flags = StaticType::NUMERIC_TYPE;
+  _src.getStaticType().flags = StaticType::DECIMAL_TYPE;
 }
 
 Sequence FunctionMonthsFromDuration::collapseTreeInternal(DynamicContext* context, int flags) const

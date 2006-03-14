@@ -2833,10 +2833,6 @@ SOURCE=..\..\src\runtime\ResultBufferImpl.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\runtime\ResultBufferImpl.hpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\runtime\ResultImpl.cpp
 # End Source File
 # Begin Source File
@@ -2853,10 +2849,6 @@ SOURCE=..\..\src\runtime\SingleResult.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\runtime\ResultBufferImpl.hpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\include\xqilla\runtime\EmptyResult.hpp
 # End Source File
 # Begin Source File
@@ -2870,6 +2862,10 @@ SOURCE=..\..\include\xqilla\runtime\Result.hpp
 # Begin Source File
 
 SOURCE=..\..\include\xqilla\runtime\ResultBuffer.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\runtime\ResultBufferImpl.hpp
 # End Source File
 # Begin Source File
 

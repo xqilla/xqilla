@@ -38,6 +38,7 @@ FunctionCurrentDate::FunctionCurrentDate(const VectorOfASTNodes &args, XPath2Mem
 }
 
 ASTNode* FunctionCurrentDate::staticResolution(StaticContext *context) {
+  _src.getStaticType().flags = StaticType::DATE_TYPE;
   _src.currentTimeUsed(true);
   return resolveArguments(context);
 }

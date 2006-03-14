@@ -43,6 +43,7 @@ const unsigned int FunctionSubstringBefore::maxArgs = 3;
 FunctionSubstringBefore::FunctionSubstringBefore(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "string?,string?,string", args, memMgr)
 {
+  _src.getStaticType().flags = StaticType::STRING_TYPE;
 }
 
 Sequence FunctionSubstringBefore::collapseTreeInternal(DynamicContext* context, int flags) const

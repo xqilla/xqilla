@@ -29,9 +29,11 @@ public:
 
   AnyAtomicType::Ptr getArgument(unsigned int index, DynamicContext *context) const;
 
+  virtual void calculateStaticType() = 0;
   virtual Item::Ptr execute(const AnyAtomicType::Ptr &arg1, const AnyAtomicType::Ptr &arg2, DynamicContext *context) const = 0;
 
 protected:
+  void calculateStaticTypeForNumerics(const StaticType &arg0, const StaticType &arg1);
 
   class ArithmeticResult : public SingleResult
   {

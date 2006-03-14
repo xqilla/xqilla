@@ -71,18 +71,16 @@ XQQuery::XQQuery(const XMLCh* queryText, DynamicContext *context, bool contextOw
     m_szCurrentFile(NULL),
     m_userDefFns(XQillaAllocator<XQUserFunction*>(memMgr)),
     m_userDefVars(XQillaAllocator<XQGlobalVariable*>(memMgr)),
-    m_importedUserDefVars(XQillaAllocator<ImportedVariable>(memMgr)),
-    m_importedModules(XQillaAllocator<ImportedModule>(memMgr))
+    m_importedModules(XQillaAllocator<XQQuery*>(memMgr))
 {
 }
 
 XQQuery::~XQQuery()
 {
-    for(ImportedModules::iterator it=m_importedModules.begin();it!=m_importedModules.end();it++)
-    {
-        delete it->first;
-        delete it->second;
-    }
+  for(ImportedModules::iterator it = m_importedModules.begin();
+      it != m_importedModules.end(); ++it) {
+    delete *it;
+  }
 	if(m_contextOwned)
 		delete m_context;
 }
@@ -115,22 +113,29 @@ void XQQuery::staticResolution(StaticContext *context)
     (*i)->staticResolutionStage1(context);
   }
 
-  // Run staticResolution on the global variables
-  for(ImportedVariables::iterator it = m_importedUserDefVars.begin(); it != m_importedUserDefVars.end(); ++it) {
-    context->getVariableTypeStore()->declareGlobalVar(it->first->getVariableURI(), it->first->getVariableLocalName(), it->first->getVariableExpr()->getStaticResolutionContext());
+  // Define types for the imported variables
+  for(ImportedModules::const_iterator modIt = m_importedModules.begin();
+      modIt != m_importedModules.end(); ++modIt) {
+    for(GlobalVariables::const_iterator varIt = (*modIt)->m_userDefVars.begin();
+        varIt != (*modIt)->m_userDefVars.end(); ++varIt) {
+      context->getVariableTypeStore()->
+        declareGlobalVar((*varIt)->getVariableURI(), (*varIt)->getVariableLocalName(),
+                         (*varIt)->getStaticResolutionContext());
+    }
   }
+
+  // Run staticResolution on the global variables
   if(!m_userDefVars.empty())
   {
     GlobalVariables::iterator itVar;
     for(itVar = m_userDefVars.begin(); itVar != m_userDefVars.end(); ++itVar) {
-      (*itVar) = (XQGlobalVariable*)(*itVar)->staticResolution(context);
+      (*itVar)->staticResolution(context);
       if(getIsLibraryModule() && !XERCES_CPP_NAMESPACE::XMLString::equals((*itVar)->getVariableURI(), getModuleTargetNamespace()))
-      XQThrow(StaticErrorException,X("XQQuery::staticResolution"), X("Every global variable in a module must be in the module namespace [err:XQST0048]."));
+        XQThrow(StaticErrorException,X("XQQuery::staticResolution"), X("Every global variable in a module must be in the module namespace [err:XQST0048]."));
     }
     // check for duplicate variable declarations
     for(itVar = m_userDefVars.begin(); itVar != m_userDefVars.end(); ++itVar) 
     {
-      if(itVar != m_userDefVars.end())
       for (GlobalVariables::iterator it2 = itVar+1; it2 != m_userDefVars.end(); ++it2) 
       {
         if(XPath2Utils::equals((*itVar)->getVariableURI(), (*it2)->getVariableURI()) &&
@@ -145,18 +150,20 @@ void XQQuery::staticResolution(StaticContext *context)
           XQThrow(StaticErrorException,X("XQQuery::staticResolution"), errMsg.getRawBuffer());
         }
       }
-      for (ImportedVariables::iterator it3 = m_importedUserDefVars.begin(); it3 != m_importedUserDefVars.end(); ++it3) 
-      {
-        if(XPath2Utils::equals((*itVar)->getVariableURI(), (it3->first)->getVariableURI()) &&
-           XPath2Utils::equals((*itVar)->getVariableLocalName(), (it3->first)->getVariableLocalName()))
-        {
-          XMLBuffer errMsg;
-          errMsg.set(X("A variable with name {"));
-          errMsg.append((*itVar)->getVariableURI());
-          errMsg.append(X("}"));
-          errMsg.append((*itVar)->getVariableLocalName());
-          errMsg.append(X(" has already been imported from a module [err:XQST0049]"));
-          XQThrow(StaticErrorException,X("XQQuery::staticResolution"), errMsg.getRawBuffer());
+      for(ImportedModules::const_iterator modIt = m_importedModules.begin();
+          modIt != m_importedModules.end(); ++modIt) {
+        for(GlobalVariables::const_iterator varIt = (*modIt)->m_userDefVars.begin();
+            varIt != (*modIt)->m_userDefVars.end(); ++varIt) {
+          if(XPath2Utils::equals((*itVar)->getVariableURI(), (*varIt)->getVariableURI()) &&
+             XPath2Utils::equals((*itVar)->getVariableLocalName(), (*varIt)->getVariableLocalName())) {
+            XMLBuffer errMsg;
+            errMsg.set(X("A variable with name {"));
+            errMsg.append((*itVar)->getVariableURI());
+            errMsg.append(X("}"));
+            errMsg.append((*itVar)->getVariableLocalName());
+            errMsg.append(X(" has already been imported from a module [err:XQST0049]"));
+            XQThrow(StaticErrorException,X("XQQuery::staticResolution"), errMsg.getRawBuffer());
+          }
         }
       }
     }
@@ -261,19 +268,12 @@ void XQQuery::importModuleImpl(const XMLCh* szUri, InputSource* location, Static
 {
   XQilla xqilla;
 
-  DynamicContext* moduleCtx=xqilla.createContext(context->getMemoryManager());
-  // force the context to use our memory manager
-  moduleCtx->setMemoryManager(context->getMemoryManager());
-  // we also need to fix the namespace resolver, because it has already been initialized using the internal memory manager
-  moduleCtx->setNSResolver(new (context->getMemoryManager()) XQScopedNamespace(context->getMemoryManager(), moduleCtx->getNSResolver()));
-  // propagate debug settings
-  moduleCtx->enableDebugging(context->isDebuggingEnabled());
+  DynamicContext* moduleCtx = context->createModuleContext();
   moduleCtx->setBaseURI(location->getSystemId());
   LoopDetector loopDetector(context->getXMLEntityResolver(), szUri);
   moduleCtx->setXMLEntityResolver(&loopDetector);
 
-  XQQuery* pParsedQuery=xqilla.parse(*location, XQilla::XQUERY, moduleCtx, XQilla::NO_ADOPT_CONTEXT);
-  m_importedModules.push_back(ImportedModule(pParsedQuery, moduleCtx));
+  XQQuery* pParsedQuery = xqilla.parse(*location, XQilla::XQUERY, moduleCtx);
 
   if(!pParsedQuery->getIsLibraryModule()) {
     XMLBuffer buf(1023,context->getMemoryManager());
@@ -294,30 +294,33 @@ void XQQuery::importModuleImpl(const XMLCh* szUri, InputSource* location, Static
     context->addCustomFunction(*itFn);
   }
   for(GlobalVariables::iterator itVar = pParsedQuery->m_userDefVars.begin(); itVar != pParsedQuery->m_userDefVars.end(); ++itVar) {
-    for(ImportedVariables::iterator it = m_importedUserDefVars.begin(); it != m_importedUserDefVars.end(); ++it) {
-      if(XPath2Utils::equals((it->first)->getVariableURI(), (*itVar)->getVariableURI()) &&
-         XPath2Utils::equals((it->first)->getVariableLocalName(), (*itVar)->getVariableLocalName()))
-      {
-        XMLBuffer buf(1023,context->getMemoryManager());
-        buf.set(X("An imported variable {"));
-        buf.append((*itVar)->getVariableURI());
-        buf.append(X("}"));
-        buf.append((*itVar)->getVariableLocalName());
-        buf.append(X(" conflicts with an already defined global variable [err:XQST0049]."));
-        XQThrow(StaticErrorException, X("XQQuery::ImportModule"), buf.getRawBuffer());
+    for(ImportedModules::const_iterator modIt = m_importedModules.begin();
+        modIt != m_importedModules.end(); ++modIt) {
+      for(GlobalVariables::const_iterator varIt = (*modIt)->m_userDefVars.begin();
+          varIt != (*modIt)->m_userDefVars.end(); ++varIt) {
+        if(XPath2Utils::equals((*varIt)->getVariableURI(), (*itVar)->getVariableURI()) &&
+           XPath2Utils::equals((*varIt)->getVariableLocalName(), (*itVar)->getVariableLocalName())) {
+          XMLBuffer buf(1023,context->getMemoryManager());
+          buf.set(X("An imported variable {"));
+          buf.append((*itVar)->getVariableURI());
+          buf.append(X("}"));
+          buf.append((*itVar)->getVariableLocalName());
+          buf.append(X(" conflicts with an already defined global variable [err:XQST0049]."));
+          XQThrow(StaticErrorException, X("XQQuery::ImportModule"), buf.getRawBuffer());
+        }
       }
     }
-    // Should this set a global variable in the context? - jpcs
-    m_importedUserDefVars.push_back(ImportedVariable(*itVar, moduleCtx));
   }
+
   moduleCtx->setXMLEntityResolver(NULL);
+  m_importedModules.push_back(pParsedQuery);
 }
 
 void XQQuery::importModule(const XMLCh* szUri, VectorOfStrings* locations, StaticContext* context)
 {
-  for(ImportedModules::iterator it=m_importedModules.begin();it!=m_importedModules.end();it++)
-  {
-      if(XPath2Utils::equals(it->first->getModuleTargetNamespace(),szUri))
+  for(ImportedModules::iterator it = m_importedModules.begin();
+      it != m_importedModules.end(); ++it) {
+      if(XPath2Utils::equals((*it)->getModuleTargetNamespace(),szUri))
       {
           XMLBuffer buf(1023,context->getMemoryManager());
           buf.set(X("Module for namespace '"));
@@ -444,19 +447,32 @@ Item::Ptr XQQuery::QueryResult::next(DynamicContext *context)
   if(_toDo) {
     _toDo = false;
 
-    // define global variables
-    for(ImportedModules::const_iterator it = _query->m_importedModules.begin(); it != _query->m_importedModules.end(); ++it)
-    {
-        it->first->execute(it->second)->next(it->second);
-    }
-    for(ImportedVariables::const_iterator it2 = _query->m_importedUserDefVars.begin(); it2 != _query->m_importedUserDefVars.end(); ++it2)
-    {
-        std::pair<bool,Sequence> value=it2->second->getVariableStore()->getGlobalVar(it2->first->getVariableURI(), it2->first->getVariableLocalName(), it2->second);
+    // Execute the imported modules
+    for(ImportedModules::const_iterator modIt = _query->m_importedModules.begin();
+        modIt != _query->m_importedModules.end(); ++modIt) {
+
+      // Derive the module's execution context from it's static context
+      AutoDelete<DynamicContext> moduleCtx((*modIt)->createDynamicContext(context->getMemoryManager()));
+      moduleCtx->setMemoryManager(context->getMemoryManager());
+
+      (*modIt)->execute(moduleCtx)->next(moduleCtx);
+
+      // Copy the module's imported variables into our context
+      for(GlobalVariables::const_iterator varIt = (*modIt)->m_userDefVars.begin();
+          varIt != (*modIt)->m_userDefVars.end(); ++varIt) {
+        std::pair<bool, Sequence> value = moduleCtx->getVariableStore()->
+          getGlobalVar((*varIt)->getVariableURI(), (*varIt)->getVariableLocalName(), moduleCtx);
         assert(value.first);
-        context->getVariableStore()->setGlobalVar(it2->first->getVariableURI(), it2->first->getVariableLocalName(), value.second, context);
+        context->getVariableStore()->
+          setGlobalVar((*varIt)->getVariableURI(), (*varIt)->getVariableLocalName(), value.second, context);
+      }
     }
+
+    // define global variables
     for(GlobalVariables::const_iterator it3 = _query->m_userDefVars.begin(); it3 != _query->m_userDefVars.end(); ++it3)
-      (*it3)->collapseTree(context)->toSequence(context);
+      (*it3)->execute(context);
+
+    // execute the query body
     if(_query->getQueryBody() != NULL) {
       _parent = _query->getQueryBody()->collapseTree(context);
     }
@@ -500,20 +516,34 @@ void XQQuery::DebugResult::getResult(Sequence &toFill, DynamicContext *context) 
 
   try
   {
-    // define global variables
-    for(ImportedModules::const_iterator it = _query->m_importedModules.begin(); it != _query->m_importedModules.end(); ++it)
-    {
-        it->first->execute(it->second)->next(it->second);
-    }
-    for(ImportedVariables::const_iterator it2 = _query->m_importedUserDefVars.begin(); it2 != _query->m_importedUserDefVars.end(); ++it2)
-    {
-        std::pair<bool,Sequence> value=it2->second->getVariableStore()->getGlobalVar(it2->first->getVariableURI(), it2->first->getVariableLocalName(), it2->second);
-        assert(value.first);
-        context->getVariableStore()->setGlobalVar(it2->first->getVariableURI(), it2->first->getVariableLocalName(), value.second, context);
-    }
-    for(GlobalVariables::const_iterator it3 = _query->m_userDefVars.begin(); it3 != _query->m_userDefVars.end(); ++it3)
-      (*it3)->collapseTree(context)->toSequence(context);
+    // Execute the imported modules
+    for(ImportedModules::const_iterator modIt = _query->m_importedModules.begin();
+        modIt != _query->m_importedModules.end(); ++modIt) {
 
+      // Derive the module's execution context from it's static context
+      AutoDelete<DynamicContext> moduleCtx((*modIt)->createDynamicContext(context->getMemoryManager()));
+      moduleCtx->setMemoryManager(context->getMemoryManager());
+      // propagate debug settings
+      moduleCtx->setDebugCallback(context->getDebugCallback());
+
+      (*modIt)->execute(moduleCtx)->next(moduleCtx);
+
+      // Copy the module's imported variables into our context
+      for(GlobalVariables::const_iterator varIt = (*modIt)->m_userDefVars.begin();
+          varIt != (*modIt)->m_userDefVars.end(); ++varIt) {
+        std::pair<bool, Sequence> value = moduleCtx->getVariableStore()->
+          getGlobalVar((*varIt)->getVariableURI(), (*varIt)->getVariableLocalName(), moduleCtx);
+        assert(value.first);
+        context->getVariableStore()->
+          setGlobalVar((*varIt)->getVariableURI(), (*varIt)->getVariableLocalName(), value.second, context);
+      }
+    }
+
+    // define global variables
+    for(GlobalVariables::const_iterator it3 = _query->m_userDefVars.begin(); it3 != _query->m_userDefVars.end(); ++it3)
+      (*it3)->execute(context);
+
+    // execute the query body
     if(_query->getQueryBody() != NULL) {
       toFill = _query->getQueryBody()->collapseTree(context)->toSequence(context);
     }

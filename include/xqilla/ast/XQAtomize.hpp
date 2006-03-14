@@ -29,19 +29,19 @@ public:
   void setExpression(ASTNode *expr) { expr_ = expr; }
 
 protected:
-  class XQILLA_API AtomizeResult : public ResultImpl
-  {
-  public:
-    AtomizeResult(const Result &parent)
-      : _parent(parent), _sub(0) {}
-    Item::Ptr next(DynamicContext *context);
-    std::string asString(DynamicContext *context, int indent) const { return "atomizeresult"; }
-  private:
-    Result _parent;
-    Result _sub;
-  };
-
   ASTNode* expr_;
+};
+
+class XQILLA_API AtomizeResult : public ResultImpl
+{
+public:
+  AtomizeResult(const Result &parent)
+    : _parent(parent), _sub(0) {}
+  Item::Ptr next(DynamicContext *context);
+  std::string asString(DynamicContext *context, int indent) const { return "atomizeresult"; }
+private:
+  Result _parent;
+  Result _sub;
 };
 
 #endif

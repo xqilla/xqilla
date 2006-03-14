@@ -44,6 +44,7 @@ FunctionLocalname::FunctionLocalname(const VectorOfASTNodes &args, XPath2MemoryM
 }
 
 ASTNode* FunctionLocalname::staticResolution(StaticContext *context) {
+  _src.getStaticType().flags = StaticType::STRING_TYPE;
   if(!_args.empty() && (*_args.begin())->getType()==ASTNode::CONTEXT_ITEM)
       _args.clear();
   if(_args.empty()) {

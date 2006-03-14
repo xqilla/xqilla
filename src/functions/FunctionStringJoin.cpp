@@ -34,7 +34,7 @@ const unsigned int FunctionStringJoin::maxArgs = 2;
 FunctionStringJoin::FunctionStringJoin(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "string*, string", args, memMgr)
 {
-  // Nothing to do
+  _src.getStaticType().flags = StaticType::STRING_TYPE;
 }
 
 Sequence FunctionStringJoin::collapseTreeInternal(DynamicContext* context, int flags) const {

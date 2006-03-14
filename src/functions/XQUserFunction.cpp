@@ -323,7 +323,7 @@ ASTNode* XQUserFunction::XQFunctionEvaluator::staticResolution(StaticContext* co
     for(VectorOfFunctionParameters::iterator defIt = m_pFuncDef->m_pParams->begin();
         defIt != m_pFuncDef->m_pParams->end() && argIt != _args.end(); ++defIt, ++argIt) {
       if((*defIt)->_qname || context->isDebuggingEnabled()) {
-        *argIt = (*defIt)->m_pType->convertFunctionArg(*argIt, context);
+	      *argIt = (*defIt)->m_pType->convertFunctionArg(*argIt, context, /*numericfunction*/false);
         *argIt = (*argIt)->staticResolution(context);
         _src.add((*argIt)->getStaticResolutionContext());
       }

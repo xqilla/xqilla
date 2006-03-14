@@ -61,6 +61,8 @@ ASTNode* And::staticResolution(StaticContext *context)
     }
   }
 
+  _src.getStaticType().flags = StaticType::BOOLEAN_TYPE;
+
   _args = newArgs;
   return this;
 }
