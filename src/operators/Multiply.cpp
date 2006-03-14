@@ -29,19 +29,37 @@ Multiply::Multiply(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   // Nothing to do
 }
 
+void Multiply::calculateStaticType()
+{
+  const StaticType &arg0 = _args[0]->getStaticResolutionContext().getStaticType();
+  const StaticType &arg1 = _args[1]->getStaticResolutionContext().getStaticType();
+
+  calculateStaticTypeForNumerics(arg0, arg1);
+
+  // Multiplying a duration by a number
+  if(arg0.containsType(StaticType::DAY_TIME_DURATION_TYPE|StaticType::YEAR_MONTH_DURATION_TYPE)
+     && arg1.containsType(StaticType::NUMERIC_TYPE)) {
+    _src.getStaticType().flags |= arg0.flags & (StaticType::DAY_TIME_DURATION_TYPE|StaticType::YEAR_MONTH_DURATION_TYPE);
+  }
+}
+
 Item::Ptr Multiply::execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::Ptr &atom2, DynamicContext *context) const
 {
   if(atom1 == NULLRCP || atom2 == NULLRCP) return 0;
 
   // xs:double * xs:duration (only xdt:dayTimeDuration and xdt:yearMonthDuration)
   if(atom1->isNumericValue() &&
-     atom2->getPrimitiveTypeIndex() == AnyAtomicType::DURATION) {
-      return (const Item::Ptr)((const ATDurationOrDerived*)(const AnyAtomicType*)atom2)->multiply((const Numeric::Ptr)atom1, context);
+     (atom2->getPrimitiveTypeIndex() == AnyAtomicType::DURATION ||
+      atom2->getPrimitiveTypeIndex() == AnyAtomicType::DAY_TIME_DURATION ||
+      atom2->getPrimitiveTypeIndex() == AnyAtomicType::YEAR_MONTH_DURATION)) {
+      return (const Item::Ptr)((const ATDurationOrDerived*)atom2.get())->multiply((const Numeric::Ptr)atom1, context);
   }
   // xs:duration * xs:double (only xdt:dayTimeDuration and xdt:yearMonthDuration)
-  if(atom1->getPrimitiveTypeIndex() == AnyAtomicType::DURATION &&
-     atom2->isNumericValue()) {
-    return (const Item::Ptr)((const ATDurationOrDerived*)(const AnyAtomicType*)atom1)->multiply((const Numeric::Ptr)atom2, context);
+  if(atom2->isNumericValue() &&
+     (atom1->getPrimitiveTypeIndex() == AnyAtomicType::DURATION ||
+      atom1->getPrimitiveTypeIndex() == AnyAtomicType::DAY_TIME_DURATION ||
+      atom1->getPrimitiveTypeIndex() == AnyAtomicType::YEAR_MONTH_DURATION)) {
+    return (const Item::Ptr)((const ATDurationOrDerived*)atom1.get())->multiply((const Numeric::Ptr)atom2, context);
   }
 
   // numeric * numeric

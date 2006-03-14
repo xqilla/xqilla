@@ -54,7 +54,8 @@ Sequence FunctionCollection::collapseTreeInternal(DynamicContext* context, int f
 
   Sequence arg = getParamNumber(1, context)->toSequence(context);
   if(arg.isEmpty())
-    return Sequence(context->getMemoryManager());
+    return context->resolveDefaultCollection();
+
   const XMLCh* currentUri = arg.first()->asString(context);
 
   if(!XERCES_CPP_NAMESPACE_QUALIFIER XMLUri::isValidURI(true, currentUri))

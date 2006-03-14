@@ -52,7 +52,14 @@ ASTNode* XQCastableAs::staticResolution(StaticContext *context)
   _expr = new (mm) XQAtomize(_expr, mm);
 
   AutoNodeSetOrderingReset orderReset(context);
-  return resolveASTNode(_expr, context, true);
+
+  _expr = _expr->staticResolution(context);
+  _src.getStaticType().flags = StaticType::BOOLEAN_TYPE;
+  _src.add(_expr->getStaticResolutionContext());
+  if(_expr->isConstant()) {
+    return constantFold(context);
+  }
+  return this;
 }
 
 const ASTNode *XQCastableAs::getExpression() const {

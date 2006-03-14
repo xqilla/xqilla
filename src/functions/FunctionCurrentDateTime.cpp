@@ -39,6 +39,7 @@ FunctionCurrentDateTime::FunctionCurrentDateTime(const VectorOfASTNodes &args, X
 }
 
 ASTNode* FunctionCurrentDateTime::staticResolution(StaticContext *context) {
+  _src.getStaticType().flags = StaticType::DATE_TIME_TYPE;
   _src.currentTimeUsed(true);
   return resolveArguments(context);
 }

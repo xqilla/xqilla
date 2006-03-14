@@ -15,45 +15,26 @@
 #define _RESULTBUFFER_HPP
 
 #include <xqilla/framework/XQillaExport.hpp>
-#include <xqilla/runtime/ResultImpl.hpp>
-
-class Result;
-class ResultBufferImpl;
-class Item;
+#include <xqilla/runtime/ResultBufferImpl.hpp>
 
 /** A reference counting wrapper for the result buffer */
 class XQILLA_API ResultBuffer
 {
 public:
-  ResultBuffer(const Result &result);
+  ResultBuffer(const Result &result, unsigned int readCount = ResultBufferImpl::UNLIMITED_COUNT);
+  ResultBuffer(const Item::Ptr &item, unsigned int readCount = ResultBufferImpl::UNLIMITED_COUNT);
   ResultBuffer(ResultBufferImpl *impl);
-  ResultBuffer(const ResultBuffer &o);
-  ResultBuffer &operator=(const ResultBuffer &o);
-  ~ResultBuffer();
 
   /// Creates a result that returns the same items as the one used to construct this buffer
-  Result createResult(DynamicContext *context) const;
+  Result createResult();
 
   bool isNull() const
   {
-    return _impl == 0;
+    return _impl.isNull();
   }
 
 private:
-  class BufferedResult : public ResultImpl
-  {
-  public:
-    BufferedResult(ResultBufferImpl *impl);
-    ~BufferedResult();
-
-    Item::Ptr next(DynamicContext *context);
-    std::string asString(DynamicContext *context, int indent) const;
-  private:
-    ResultBufferImpl *_impl;
-    unsigned int _pos;
-  };
-
-  ResultBufferImpl *_impl;
+  ResultBufferImpl::Ptr _impl;
 };
 
 #endif

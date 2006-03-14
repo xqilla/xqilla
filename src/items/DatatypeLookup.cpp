@@ -49,7 +49,11 @@
 #include <xqilla/items/ATUntypedAtomic.hpp>
 #include <xqilla/schema/DocumentCache.hpp>
 
-DatatypeLookup::DatatypeLookup(const DocumentCache* dc, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr) :
+#if defined(XERCES_HAS_CPP_NAMESPACE)
+XERCES_CPP_NAMESPACE_USE
+#endif
+
+DatatypeLookup::DatatypeLookup(const DocumentCache* dc, MemoryManager* memMgr) :
     fDatatypeTable(30, false, memMgr),
     fDocumentCache(dc),
     fMemMgr(memMgr)
@@ -77,6 +81,10 @@ DatatypeLookup::DatatypeLookup(const DocumentCache* dc, XERCES_CPP_NAMESPACE_QUA
   // create a xs:dateTime
   dateTime_ = new (fMemMgr) DatatypeFactoryTemplate<ATDateTimeOrDerivedImpl>(fDocumentCache);
   insertDatatype(dateTime_);
+
+  // create a xdt:dayTimeDuration
+  dayTimeDuration_ = new (fMemMgr) DayTimeDurationDatatypeFactory<ATDurationOrDerivedImpl>(fDocumentCache);
+  insertDatatype(dayTimeDuration_);
 
   // create a xs:decimal
   decimal_ = new (fMemMgr) DatatypeFactoryTemplate<ATDecimalOrDerivedImpl>(fDocumentCache);
@@ -134,6 +142,10 @@ DatatypeLookup::DatatypeLookup(const DocumentCache* dc, XERCES_CPP_NAMESPACE_QUA
   time_ = new (fMemMgr) DatatypeFactoryTemplate<ATTimeOrDerivedImpl>(fDocumentCache);
   insertDatatype(time_);
   
+  // create a xdt:yearMonthDuration
+  yearMonthDuration_ = new (fMemMgr) YearMonthDurationDatatypeFactory<ATDurationOrDerivedImpl>(fDocumentCache);
+  insertDatatype(yearMonthDuration_);
+
   // create a xdt:untypedAtomic 
   untypedAtomic_ = new (fMemMgr) UntypedAtomicDatatypeFactory<ATUntypedAtomicImpl>(fDocumentCache);
   insertDatatype(untypedAtomic_);
@@ -157,7 +169,7 @@ const DatatypeFactory* DatatypeLookup::lookupDatatype(AnyAtomicType::AtomicObjec
   case AnyAtomicType::BOOLEAN: return boolean_;
   case AnyAtomicType::DATE: return date_;
   case AnyAtomicType::DATE_TIME: return dateTime_;
-  case AnyAtomicType::DAY_TIME_DURATION: return duration_;
+  case AnyAtomicType::DAY_TIME_DURATION: return dayTimeDuration_;
   case AnyAtomicType::DECIMAL: return decimal_;
   case AnyAtomicType::DOUBLE: return double_;
   case AnyAtomicType::DURATION: return duration_;
@@ -173,7 +185,7 @@ const DatatypeFactory* DatatypeLookup::lookupDatatype(AnyAtomicType::AtomicObjec
   case AnyAtomicType::STRING: return string_;
   case AnyAtomicType::TIME: return time_;
   case AnyAtomicType::UNTYPED_ATOMIC: return untypedAtomic_;
-  case AnyAtomicType::YEAR_MONTH_DURATION: return duration_;
+  case AnyAtomicType::YEAR_MONTH_DURATION: return yearMonthDuration_;
   default: break;
   }
 
@@ -186,7 +198,7 @@ const DatatypeFactory* DatatypeLookup::lookupDatatype(const XMLCh* typeURI, cons
   
   // in case we're lucky and we were given a primitive type
   if (pFactory) {
-    if(XPath2Utils::equals(typeURI, XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA) ||
+    if(XPath2Utils::equals(typeURI, SchemaSymbols::fgURI_SCHEMAFORSCHEMA) ||
       XPath2Utils::equals(typeName, ATUntypedAtomic::fgDT_UNTYPEDATOMIC) ) {
       isPrimitive = true;
       return pFactory;
@@ -194,24 +206,35 @@ const DatatypeFactory* DatatypeLookup::lookupDatatype(const XMLCh* typeURI, cons
   }
   isPrimitive = false;
   
-  const XERCES_CPP_NAMESPACE_QUALIFIER DatatypeValidator* validator = fDocumentCache->getDatatypeValidator(typeURI, typeName);
+  const DatatypeValidator* validator = fDocumentCache->getDatatypeValidator(typeURI, typeName);
+  const DatatypeValidator* previousValidator = 0;
 
   while(validator) {
-    const XERCES_CPP_NAMESPACE_QUALIFIER DatatypeValidator* tempVal = validator->getBaseValidator();
+    const DatatypeValidator* tempVal = validator->getBaseValidator();
     if(!tempVal) break;
-    else validator = tempVal;
+
+    previousValidator = validator;
+    validator = tempVal;
   }
 
   if(validator) {
-    pFactory=fDatatypeTable.get((void*)validator->getTypeLocalName());
-    if (pFactory)
+    pFactory = fDatatypeTable.get((void*)validator->getTypeLocalName());
+
+    if(pFactory) {
+      if(pFactory->getPrimitiveTypeIndex() == AnyAtomicType::DURATION && previousValidator != 0) {
+        // Find a more specific type for duration, if possible
+        const DatatypeFactory *tmp = fDatatypeTable.get((void*)previousValidator->getTypeLocalName());
+        if(tmp) pFactory = tmp;
+      }
+
       return pFactory;
+    }
   }
 
-  XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buf(1023, fMemMgr);
+  XMLBuffer buf(1023, fMemMgr);
   buf.append(X("Type "));
   buf.append(typeURI);
-  buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chColon);
+  buf.append(chColon);
   buf.append(typeName);
   buf.append(X(" not found [err:XPST0051]"));
   XQThrow(TypeNotFoundException, X("DatatypeLookup::lookupDatatype"), buf.getRawBuffer());
@@ -246,6 +269,11 @@ DatatypeFactory *DatatypeLookup::getDateFactory() const
 DatatypeFactory *DatatypeLookup::getDateTimeFactory() const
 {
   return dateTime_;
+}
+
+DatatypeFactory *DatatypeLookup::getDayTimeDurationFactory() const
+{
+  return dayTimeDuration_;
 }
 
 DatatypeFactory *DatatypeLookup::getDecimalFactory() const
@@ -316,6 +344,11 @@ DatatypeFactory *DatatypeLookup::getStringFactory() const
 DatatypeFactory *DatatypeLookup::getTimeFactory() const
 {
   return time_;
+}
+
+DatatypeFactory *DatatypeLookup::getYearMonthDurationFactory() const
+{
+  return yearMonthDuration_;
 }
 
 DatatypeFactory *DatatypeLookup::getUntypedAtomicFactory() const

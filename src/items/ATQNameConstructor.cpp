@@ -22,17 +22,17 @@
 #include <xqilla/utils/UTF8Str.hpp>
 
 ATQNameConstructor::ATQNameConstructor(const XMLCh* typeURI,
-				       const XMLCh* typeName,
-				       const XMLCh* uri,
-                       const XMLCh* prefix,
-				       const XMLCh* localname)
+                                       const XMLCh* typeName,
+                                       const XMLCh* uri,
+                                       const XMLCh* prefix,
+                                       const XMLCh* localname)
   : _typeURI(typeURI),
     _typeName(typeName),
     _uri(uri),
     _prefix(prefix),
     _localname(localname)
 {
-  _sType.flags = StaticType::OTHER_TYPE;
+  _sType.flags = StaticType::QNAME_TYPE;
 }
 
 Item::Ptr ATQNameConstructor::createItem(const DynamicContext* context) const

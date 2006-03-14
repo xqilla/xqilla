@@ -39,7 +39,7 @@ const unsigned int FunctionMinutesFromDuration::maxArgs = 1;
 FunctionMinutesFromDuration::FunctionMinutesFromDuration(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "dayTimeDuration?", args, memMgr)
 {
-  _src.getStaticType().flags = StaticType::NUMERIC_TYPE;
+  _src.getStaticType().flags = StaticType::DECIMAL_TYPE;
 }
 
 Sequence FunctionMinutesFromDuration::collapseTreeInternal(DynamicContext* context, int flags) const

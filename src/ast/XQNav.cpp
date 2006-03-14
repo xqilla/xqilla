@@ -65,13 +65,13 @@ Result XQNav::createResult(DynamicContext* context, int flags) const
     const StaticType &st = it->step->getStaticResolutionContext().getStaticType();
     if(it == (end-1)) {
       // the last step allows either nodes or atomic items
-      if((st.flags & StaticType::NODE_TYPE) &&
-         (st.flags & StaticType::ANY_ATOMIC_TYPE)) {
+      if(st.containsType(StaticType::NODE_TYPE) &&
+         st.containsType(StaticType::ANY_ATOMIC_TYPE)) {
         result = new LastStepCheckResult(result);
       }
     }
     else {
-      if(st.flags & StaticType::ANY_ATOMIC_TYPE) {
+      if(st.containsType(StaticType::ANY_ATOMIC_TYPE)) {
         result = new IntermediateStepCheckResult(result);
       }
     }
@@ -135,8 +135,8 @@ ASTNode* XQNav::staticResolution(StaticContext *context)
     props = combineProperties(props, stepSrc.getProperties());
 
     if(stepSrc.areContextFlagsUsed() || _src.isNoFoldingForced() ||
-	    (stepSrc.getStaticType().flags & StaticType::ANY_ATOMIC_TYPE) != 0 ||
-	    !stepSrc.isCreative()) {
+       stepSrc.getStaticType().containsType(StaticType::ANY_ATOMIC_TYPE) ||
+       !stepSrc.isCreative()) {
       newSteps.push_back(step);
 
       if(it != begin) {
@@ -179,7 +179,7 @@ ASTNode* XQNav::staticResolution(StaticContext *context)
           const XQPredicate *pred = (const XQPredicate*)peek;
           if(pred->getPredicate()->getStaticResolutionContext().isContextPositionUsed() ||
              pred->getPredicate()->getStaticResolutionContext().isContextSizeUsed() ||
-             pred->getPredicate()->getStaticResolutionContext().getStaticType().flags & StaticType::NUMERIC_TYPE) {
+             pred->getPredicate()->getStaticResolutionContext().getStaticType().containsType(StaticType::NUMERIC_TYPE)) {
             usesContextPositionOrSize = true;
           }
           peek = pred->getExpression();

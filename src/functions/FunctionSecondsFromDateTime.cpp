@@ -39,7 +39,7 @@ const unsigned int FunctionSecondsFromDateTime::maxArgs = 1;
 FunctionSecondsFromDateTime::FunctionSecondsFromDateTime(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : XQFunction(name, minArgs, maxArgs, "dateTime?", args, memMgr)
 {
-  _src.getStaticType().flags = StaticType::NUMERIC_TYPE;
+  _src.getStaticType().flags = StaticType::DECIMAL_TYPE;
 }
 
 ASTNode* FunctionSecondsFromDateTime::staticResolution(StaticContext *context)

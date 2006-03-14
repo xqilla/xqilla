@@ -37,6 +37,7 @@ FunctionExists::FunctionExists(const VectorOfASTNodes &args, XPath2MemoryManager
 }
 
 ASTNode* FunctionExists::staticResolution(StaticContext *context) {
+  _src.getStaticType().flags = StaticType::BOOLEAN_TYPE;
   AutoNodeSetOrderingReset orderReset(context);
   return resolveArguments(context);
 }

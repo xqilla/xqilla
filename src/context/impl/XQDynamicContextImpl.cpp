@@ -81,11 +81,13 @@ XQDynamicContextImpl::~XQDynamicContextImpl()
   delete _itemFactory;
 }
 
+DynamicContext *XQDynamicContextImpl::createModuleContext(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr) const
+{
+  return _staticContext->createModuleContext(memMgr);
+}
+
 DynamicContext *XQDynamicContextImpl::createDynamicContext(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr) const
 {
-  if(memMgr == 0) {
-    return 0;
-  }
   return _staticContext->createDynamicContext(memMgr);
 }
 

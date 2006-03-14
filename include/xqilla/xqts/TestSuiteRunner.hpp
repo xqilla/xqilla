@@ -28,6 +28,8 @@ class XQILLA_API TestSuiteRunner
 public:
   virtual ~TestSuiteRunner() {}
 
+  TestSuiteResultListener *getResultListener() { return m_results; }
+
   virtual void addSource(const std::string &id, const std::string &filename, const std::string &schema) = 0;
   virtual void addSchema(const std::string &id, const std::string &filename, const std::string &uri) = 0;
   virtual void addModule(const std::string &id, const std::string &filename) = 0;

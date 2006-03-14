@@ -273,6 +273,7 @@ xqilla/operators/Union.hpp \
 xqilla/parser/QName.hpp \
 xqilla/runtime/Sequence.hpp \
 xqilla/runtime/ResultBuffer.hpp \
+xqilla/runtime/ResultBufferImpl.hpp \
 xqilla/runtime/Result.hpp \
 xqilla/runtime/ResultImpl.hpp \
 xqilla/runtime/SingleResult.hpp \

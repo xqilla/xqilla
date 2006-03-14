@@ -56,22 +56,22 @@ public:
   virtual ~DatatypeFactory();
 
   ///Create instance of the base datatype
-  AnyAtomicType::Ptr createInstance(const XMLCh* value,
-                                    const DynamicContext* context) const;
+  virtual AnyAtomicType::Ptr createInstance(const XMLCh* value,
+                                            const DynamicContext* context) const;
 
   ///Create instance of a datatype, using DatatypeFactoryTemplate to determine type
-  AnyAtomicType::Ptr createInstance(const XMLCh* typeURI,
-                                    const XMLCh* typeName,
-                                    const XMLCh* value,
-                                    const DynamicContext* context) const;
+  virtual AnyAtomicType::Ptr createInstance(const XMLCh* typeURI,
+                                            const XMLCh* typeName,
+                                            const XMLCh* value,
+                                            const DynamicContext* context) const;
 
-  bool checkInstance(const XMLCh* value,
-                     const StaticContext* context) const;
+  virtual bool checkInstance(const XMLCh* value,
+                             XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mm) const;
 
-  bool checkInstance(const XMLCh* typeURI,
-                     const XMLCh* typeName,
-                     const XMLCh* value,
-                     const StaticContext* context) const;
+  virtual bool checkInstance(const XMLCh* typeURI,
+                             const XMLCh* typeName,
+                             const XMLCh* value,
+                             XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mm) const;
 
   ///Create instance of a datatype, using DatatypeFactoryTemplate to determine type
   virtual AnyAtomicType::Ptr createInstanceNoCheck(const XMLCh* typeURI,
@@ -84,7 +84,7 @@ public:
   virtual const XMLCh* getPrimitiveTypeURI() const = 0;
   virtual const XMLCh* getPrimitiveTypeName() const = 0;
 
-private:
+protected:
   XERCES_CPP_NAMESPACE_QUALIFIER DatatypeValidator *fBaseValidator;
   const DocumentCache *fDocumentCache;
 };

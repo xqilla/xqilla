@@ -53,6 +53,7 @@ const unsigned int FunctionDeepEqual::maxArgs = 3;
 FunctionDeepEqual::FunctionDeepEqual(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "item()*,item()*,string", args, memMgr)
 {
+  _src.getStaticType().flags = StaticType::BOOLEAN_TYPE;
 }
 
 /*static*/ bool FunctionDeepEqual::deep_equal(Sequence seq1, Sequence seq2, Collation* collation, DynamicContext* context)

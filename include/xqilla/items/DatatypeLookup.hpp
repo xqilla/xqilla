@@ -40,6 +40,7 @@ public:
   DatatypeFactory *getBooleanFactory() const;
   DatatypeFactory *getDateFactory() const;
   DatatypeFactory *getDateTimeFactory() const;
+  DatatypeFactory *getDayTimeDurationFactory() const;
   DatatypeFactory *getDecimalFactory() const;
   DatatypeFactory *getDoubleFactory() const;
   DatatypeFactory *getDurationFactory() const;
@@ -53,7 +54,8 @@ public:
   DatatypeFactory *getNotationFactory() const;
   DatatypeFactory *getQNameFactory() const;
   DatatypeFactory *getStringFactory() const;
-	DatatypeFactory *getTimeFactory() const;
+  DatatypeFactory *getTimeFactory() const;
+  DatatypeFactory *getYearMonthDurationFactory() const;
   DatatypeFactory *getUntypedAtomicFactory() const;
 
 private:
@@ -70,6 +72,7 @@ private:
   DatatypeFactory *boolean_;
   DatatypeFactory *date_;
   DatatypeFactory *dateTime_;
+  DatatypeFactory *dayTimeDuration_;
   DatatypeFactory *decimal_;
   DatatypeFactory *double_;
   DatatypeFactory *duration_;
@@ -83,7 +86,8 @@ private:
   DatatypeFactory *notation_;
   DatatypeFactory *qname_;
   DatatypeFactory *string_;
-	DatatypeFactory *time_;
+  DatatypeFactory *time_;
+  DatatypeFactory *yearMonthDuration_;
   DatatypeFactory *untypedAtomic_;
 
   XERCES_CPP_NAMESPACE_QUALIFIER RefHashTableOf< DatatypeFactory > fDatatypeTable;

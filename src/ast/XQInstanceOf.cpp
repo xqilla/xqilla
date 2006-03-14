@@ -66,7 +66,7 @@ ASTNode* XQInstanceOf::staticResolution(StaticContext *context)
     return new (mm) XQSequence(construct, mm);
   }
 
-  _src.getStaticType() = _expr->getStaticResolutionContext().getStaticType();
+  _src.getStaticType().flags = StaticType::BOOLEAN_TYPE;
   _src.add(_expr->getStaticResolutionContext());
   if(_expr->isConstant()) {
     return constantFold(context);

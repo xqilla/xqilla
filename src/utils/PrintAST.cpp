@@ -109,7 +109,7 @@ string PrintAST::print(const XQQuery *query, const DynamicContext *context, int 
   }
   for(vector<XQGlobalVariable*, XQillaAllocator<XQGlobalVariable*> >::const_iterator it = query->getVariables().begin();
       it != query->getVariables().end(); ++it) {
-    s << p.printASTNode(*it, context, indent);
+    s << p.printGlobal(*it, context, indent);
   }
   s << p.printASTNode(query->getQueryBody(), context, indent);
 
@@ -202,10 +202,6 @@ string PrintAST::printASTNode(const ASTNode *item, const DynamicContext *context
   }
   case ASTNode::VALIDATE: {
     return printValidate((XQValidate *)item, context, indent);
-    break;
-  }
-  case ASTNode::VARIABLE_DEFINITION: {
-    return printGlobal((XQGlobalVariable *)item, context, indent);
     break;
   }
   case ASTNode::FUNCTION_CALL: {

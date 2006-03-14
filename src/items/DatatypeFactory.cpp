@@ -27,7 +27,11 @@
 #include <xercesc/util/XMLString.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 
-DatatypeFactory::DatatypeFactory(const DocumentCache* dc, XERCES_CPP_NAMESPACE_QUALIFIER DatatypeValidator *baseValidator)
+#if defined(XERCES_HAS_CPP_NAMESPACE)
+XERCES_CPP_NAMESPACE_USE
+#endif
+
+DatatypeFactory::DatatypeFactory(const DocumentCache* dc, DatatypeValidator *baseValidator)
   : fBaseValidator(baseValidator),
     fDocumentCache(dc)
 {
@@ -42,7 +46,7 @@ AnyAtomicType::Ptr DatatypeFactory::createInstance(const XMLCh* value,
 {
   try {
     fBaseValidator->validate(value, 0, context->getMemoryManager());
-  } catch (XERCES_CPP_NAMESPACE_QUALIFIER XMLException &e) {
+  } catch (XMLException &e) {
     XQThrow(InvalidLexicalSpaceException, X("DatatypeFactory::createInstance"), e.getMessage());
   }
 
@@ -54,14 +58,14 @@ AnyAtomicType::Ptr DatatypeFactory::createInstance(const XMLCh* typeURI,
                                                    const XMLCh* value,
                                                    const DynamicContext* context) const
 {
-  XERCES_CPP_NAMESPACE_QUALIFIER DatatypeValidator* validator =
-    const_cast<XERCES_CPP_NAMESPACE_QUALIFIER DatatypeValidator*>(fDocumentCache->getDatatypeValidator(typeURI, typeName));
+  DatatypeValidator* validator =
+    const_cast<DatatypeValidator*>(fDocumentCache->getDatatypeValidator(typeURI, typeName));
 
   if(!validator) {
-    XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buf(1023, context->getMemoryManager());
+    XMLBuffer buf(1023, context->getMemoryManager());
     buf.append(X("Type "));
     buf.append(typeURI);
-    buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chColon);
+    buf.append(chColon);
     buf.append(typeName);
     buf.append(X(" not found"));
     XQThrow(TypeNotFoundException, X("DatatypeFactoryTemplate::createInstance"), buf.getRawBuffer());
@@ -69,16 +73,16 @@ AnyAtomicType::Ptr DatatypeFactory::createInstance(const XMLCh* typeURI,
 
   try {
     const XMLCh* valueToValidate=value;
-    if(validator->getType()==XERCES_CPP_NAMESPACE_QUALIFIER DatatypeValidator::NOTATION)
+    if(validator->getType()==DatatypeValidator::NOTATION)
     {
         const XMLCh* localPart = XPath2NSUtils::getLocalName(value);
         const XMLCh* prefix = XPath2NSUtils::getPrefix(value, context->getMemoryManager());
-        const XMLCh* uriStr = (prefix && *prefix) ? context->getUriBoundToPrefix(prefix) : XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString;
-        XMLCh szColon[]={ XERCES_CPP_NAMESPACE_QUALIFIER chColon, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
+        const XMLCh* uriStr = (prefix && *prefix) ? context->getUriBoundToPrefix(prefix) : XMLUni::fgZeroLenString;
+        XMLCh szColon[]={ chColon, chNull };
         valueToValidate=XPath2Utils::concatStrings(uriStr, szColon, localPart, context->getMemoryManager());
     }
     validator->validate(valueToValidate, 0, context->getMemoryManager());
-  } catch (XERCES_CPP_NAMESPACE_QUALIFIER XMLException &e) {
+  } catch (XMLException &e) {
     XQThrow(InvalidLexicalSpaceException, X("DatatypeFactory::createInstance"), e.getMessage());
   }
 
@@ -86,10 +90,10 @@ AnyAtomicType::Ptr DatatypeFactory::createInstance(const XMLCh* typeURI,
 }
 
 bool DatatypeFactory::checkInstance(const XMLCh* value,
-                                    const StaticContext* context) const {      
+                                    MemoryManager *mm) const {
   try {
-    fBaseValidator->validate(value, 0, context->getMemoryManager());
-  } catch (XERCES_CPP_NAMESPACE_QUALIFIER XMLException &e) {
+    fBaseValidator->validate(value, 0, mm);
+  } catch (XMLException &e) {
     return false;
   }
 
@@ -99,24 +103,24 @@ bool DatatypeFactory::checkInstance(const XMLCh* value,
 bool DatatypeFactory::checkInstance(const XMLCh* typeURI,
                                     const XMLCh* typeName,
                                     const XMLCh* value,
-                                    const StaticContext* context) const {
+                                    MemoryManager *mm) const {
       
-  XERCES_CPP_NAMESPACE_QUALIFIER DatatypeValidator* validator =
-    const_cast<XERCES_CPP_NAMESPACE_QUALIFIER DatatypeValidator*>(fDocumentCache->getDatatypeValidator(typeURI, typeName));
+  DatatypeValidator* validator =
+    const_cast<DatatypeValidator*>(fDocumentCache->getDatatypeValidator(typeURI, typeName));
 
   if(!validator) {
-    XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buf(1023, context->getMemoryManager());
+    XMLBuffer buf(1023, mm);
     buf.append(X("Type "));
     buf.append(typeURI);
-    buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chColon);
+    buf.append(chColon);
     buf.append(typeName);
     buf.append(X(" not found"));
     XQThrow(TypeNotFoundException, X("DatatypeFactoryTemplate::createInstance"), buf.getRawBuffer());
   }
 
   try {
-    validator->validate(value, 0, context->getMemoryManager());
-  } catch (XERCES_CPP_NAMESPACE_QUALIFIER XMLException &e) {
+    validator->validate(value, 0, mm);
+  } catch (XMLException &e) {
     return false;
   }
 

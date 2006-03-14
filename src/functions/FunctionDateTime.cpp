@@ -39,6 +39,7 @@ FunctionDateTime::FunctionDateTime(const VectorOfASTNodes &args, XPath2MemoryMan
 
 ASTNode* FunctionDateTime::staticResolution(StaticContext *context)
 {
+  _src.getStaticType().flags = StaticType::DATE_TIME_TYPE;
   return resolveArguments(context, /*checkTimezone*/true);
 }
 

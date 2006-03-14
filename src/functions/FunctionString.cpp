@@ -43,6 +43,7 @@ FunctionString::FunctionString(const VectorOfASTNodes &args, XPath2MemoryManager
 }
 
 ASTNode* FunctionString::staticResolution(StaticContext *context) {
+  _src.getStaticType().flags = StaticType::STRING_TYPE;
   if(!_args.empty() && (*_args.begin())->getType()==ASTNode::CONTEXT_ITEM)
       _args.clear();
   if(_args.empty()) {
@@ -53,19 +54,19 @@ ASTNode* FunctionString::staticResolution(StaticContext *context) {
 
 Sequence FunctionString::collapseTreeInternal(DynamicContext* context, int flags) const
 {
-	XPath2MemoryManager* memMgr = context->getMemoryManager();
+  XPath2MemoryManager* memMgr = context->getMemoryManager();
 
   Item::Ptr item = 0;
-	if(getNumArgs() == 0) {
-		item = context->getContextItem();
+  if(getNumArgs() == 0) {
+    item = context->getContextItem();
     if(item == NULLRCP) {
       XQThrow(FunctionException, X("FunctionString::collapseTreeInternal"),
-               X("Undefined context item in fn:string [err:FONC0001]"));
+              X("Undefined context item in fn:string [err:FONC0001]"));
     }
   }
-	else {
-		item = getParamNumber(1, context)->next(context);
-	}
+  else {
+    item = getParamNumber(1, context)->next(context);
+  }
 
   return Sequence(string(item, context), memMgr);
 }

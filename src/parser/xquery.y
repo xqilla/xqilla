@@ -2930,7 +2930,7 @@ URILiteral:
 		// the string must be whitespace-normalized
 		XERCES_CPP_NAMESPACE_QUALIFIER XMLString::collapseWS($1, MEMMGR);
         if($1 && *$1 && !XERCES_CPP_NAMESPACE_QUALIFIER XMLUri::isValidURI(true, $1))
-          yyerror("The URI literal is not a valid one [err:XQST0046]");
+          yyerror("The URI literal is not valid [err:XQST0046]");
 		$$ = $1;
 	}
 	;

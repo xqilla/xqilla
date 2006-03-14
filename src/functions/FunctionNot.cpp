@@ -35,6 +35,7 @@ FunctionNot::FunctionNot(const VectorOfASTNodes &args, XPath2MemoryManager* memM
 }
 
 ASTNode* FunctionNot::staticResolution(StaticContext *context) {
+  _src.getStaticType().flags = StaticType::BOOLEAN_TYPE;
   AutoNodeSetOrderingReset orderReset(context);
   return resolveArguments(context);
 }

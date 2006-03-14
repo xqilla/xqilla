@@ -43,7 +43,8 @@ unsigned int XQStep::getAxisProperties(Axis axis)
   // properties depend on the axis of the step
   switch (axis) {
   case SELF:
-    properties |= StaticResolutionContext::ONENODE;
+    properties |= StaticResolutionContext::ONENODE | StaticResolutionContext::DOCORDER |
+	    StaticResolutionContext::SUBTREE | StaticResolutionContext::PEER;
     // Fall through
   case CHILD:
   case ATTRIBUTE:

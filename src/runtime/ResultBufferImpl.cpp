@@ -12,14 +12,26 @@
  */
 
 #include "../config/xqilla_config.h"
-#include "ResultBufferImpl.hpp"
+#include <xqilla/runtime/ResultBufferImpl.hpp>
 
-ResultBufferImpl::ResultBufferImpl(const Result &result)
+const unsigned int ResultBufferImpl::UNLIMITED_COUNT = (unsigned int)-1;
+
+ResultBufferImpl::ResultBufferImpl(const Result &result, unsigned int readCount)
   : _refCount(0),
     _result(result),
-    _done(false)
+    _readCount(0),
+    _maxReadCount(readCount)
 {
   // Do nothing
+}
+
+ResultBufferImpl::ResultBufferImpl(const Item::Ptr &item, unsigned int readCount)
+  : _refCount(0),
+    _result(0),
+    _readCount(0),
+    _maxReadCount(readCount)
+{
+  _items.push_back(item);
 }
 
 ResultBufferImpl::~ResultBufferImpl()
@@ -27,24 +39,17 @@ ResultBufferImpl::~ResultBufferImpl()
   // Do nothing
 }
 
-void ResultBufferImpl::incrementRefCount()
+Result ResultBufferImpl::createResult()
 {
-  ++_refCount;
+  return new BufferedResult(this);
 }
 
-void ResultBufferImpl::decrementRefCount()
+Item::Ptr ResultBufferImpl::item(unsigned int index, DynamicContext *context)
 {
-  if(--_refCount == 0) {
-    delete this;
-  }
-}
-
-const Item::Ptr ResultBufferImpl::item(unsigned int index, DynamicContext *context)
-{
-  while(!_done && index >= _items.size()) {
+  while(!_result.isNull() && index >= _items.size()) {
     const Item::Ptr item = _result->next(context);
-    if(item == NULLRCP) {
-      _done = true;
+    if(item.isNull()) {
+      _result = 0;
     }
     else {
       _items.push_back(item);
@@ -57,4 +62,20 @@ const Item::Ptr ResultBufferImpl::item(unsigned int index, DynamicContext *conte
   else {
     return _items[index];
   }
+}
+
+ResultBufferImpl::BufferedResult::BufferedResult(ResultBufferImpl *impl)
+  : _impl(impl),
+    _pos(0)
+{
+}
+
+Item::Ptr ResultBufferImpl::BufferedResult::next(DynamicContext *context)
+{
+  return _impl->item(_pos++, context);
+}
+
+std::string ResultBufferImpl::BufferedResult::asString(DynamicContext *context, int indent) const
+{
+  return "bufferedresult";
 }

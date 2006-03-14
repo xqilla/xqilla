@@ -2218,9 +2218,6 @@
 				RelativePath="..\..\src\runtime\ResultBufferImpl.cpp">
 			</File>
 			<File
-				RelativePath="..\..\src\runtime\ResultBufferImpl.hpp">
-			</File>
-			<File
 				RelativePath="..\..\src\runtime\ResultImpl.cpp">
 			</File>
 			<File
@@ -2233,9 +2230,6 @@
 				RelativePath="..\..\src\runtime\SingleResult.cpp">
 			</File>
 			<File
-				RelativePath="..\..\src\runtime\ResultBufferImpl.hpp">
-			</File>
-			<File
 				RelativePath="..\..\include\xqilla\runtime\EmptyResult.hpp">
 			</File>
 			<File
@@ -2246,6 +2240,9 @@
 			</File>
 			<File
 				RelativePath="..\..\include\xqilla\runtime\ResultBuffer.hpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\runtime\ResultBufferImpl.hpp">
 			</File>
 			<File
 				RelativePath="..\..\include\xqilla\runtime\ResultImpl.hpp">

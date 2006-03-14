@@ -29,7 +29,7 @@ ASTNode* XQAtomize::staticResolution(StaticContext *context)
   _src.getStaticType() = expr_->getStaticResolutionContext().getStaticType();
   _src.add(expr_->getStaticResolutionContext());
 
-  if(_src.getStaticType().flags & StaticType::NODE_TYPE) {
+  if(_src.getStaticType().containsType(StaticType::NODE_TYPE)) {
     _src.getStaticType().flags = StaticType::ANY_ATOMIC_TYPE;
   }
   else {
@@ -48,7 +48,7 @@ Result XQAtomize::createResult(DynamicContext* context, int flags) const
   return new AtomizeResult(expr_->collapseTree(context, flags));
 }
 
-Item::Ptr XQAtomize::AtomizeResult::next(DynamicContext *context)
+Item::Ptr AtomizeResult::next(DynamicContext *context)
 {
   // for $item in (Expr) return
   //   typeswitch ($item)

@@ -42,7 +42,7 @@ ASTNode* XQPromoteUntyped::staticResolution(StaticContext *context)
   _src.getStaticType() = expr_->getStaticResolutionContext().getStaticType();
   _src.add(expr_->getStaticResolutionContext());
 
-  if(_src.getStaticType().flags & StaticType::UNTYPED_ATOMIC_TYPE) {
+  if(_src.getStaticType().containsType(StaticType::UNTYPED_ATOMIC_TYPE)) {
     bool isPrimitive;
     _src.getStaticType().flags &= ~StaticType::UNTYPED_ATOMIC_TYPE;
     _src.getStaticType().flags |= StaticType::getFlagsFor(uri_, name_, context, isPrimitive);
@@ -115,7 +115,20 @@ ASTNode* XQPromoteNumeric::staticResolution(StaticContext *context)
   _src.getStaticType() = expr_->getStaticResolutionContext().getStaticType();
   _src.add(expr_->getStaticResolutionContext());
 
-  if((_src.getStaticType().flags & StaticType::NUMERIC_TYPE) == 0) {
+  if(_src.getStaticType().containsType(StaticType::NUMERIC_TYPE)) {
+    bool isPrimitive;
+    unsigned int flags = StaticType::getFlagsFor(uri_, name_, context, isPrimitive);
+
+    if((flags & StaticType::DOUBLE_TYPE) != 0) {
+	    _src.getStaticType().flags &= ~(StaticType::DECIMAL_TYPE | StaticType::FLOAT_TYPE);
+	    _src.getStaticType().flags |= flags;
+    }
+    else if((flags & StaticType::FLOAT_TYPE) != 0) {
+	    _src.getStaticType().flags &= ~StaticType::DECIMAL_TYPE;
+	    _src.getStaticType().flags |= flags;
+    }
+  }
+  else {
     return expr_;
   }
 
@@ -186,7 +199,7 @@ ASTNode* XQPromoteAnyURI::staticResolution(StaticContext *context)
 
   if(_src.getStaticType().flags & StaticType::ANY_URI_TYPE) {
     _src.getStaticType().flags &= ~StaticType::ANY_URI_TYPE;
-    _src.getStaticType().flags |= StaticType::OTHER_TYPE;
+    _src.getStaticType().flags |= StaticType::STRING_TYPE;
   }
   else {
     return expr_;

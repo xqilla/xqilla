@@ -310,15 +310,21 @@ ATStringOrDerived::Ptr ItemFactoryImpl::createString(const XMLCh* value, const D
 //////////////////////////
 
 
+AnyAtomicType::Ptr ItemFactoryImpl::createDerivedFromAtomicType(AnyAtomicType::AtomicObjectType typeIndex, const XMLCh* value,
+                                                                const DynamicContext* context)
+{
+  return datatypeLookup_.lookupDatatype(typeIndex)->createInstance(value, context);
+}
+
 AnyAtomicType::Ptr ItemFactoryImpl::createDerivedFromAtomicType(AnyAtomicType::AtomicObjectType typeIndex, const XMLCh* typeURI,
-                                                                  const XMLCh* typeName, const XMLCh* value, const DynamicContext* context)
+                                                                const XMLCh* typeName, const XMLCh* value, const DynamicContext* context)
 {
   return datatypeLookup_.lookupDatatype(typeIndex)->createInstance(typeURI, typeName, value, context);
 }
 
 AnyAtomicType::Ptr ItemFactoryImpl::createDerivedFromAtomicType(const XMLCh* typeURI,
-                                                                  const XMLCh* typeName, 
-                                                                  const XMLCh* value, const DynamicContext* context) {
+                                                                const XMLCh* typeName, 
+                                                                const XMLCh* value, const DynamicContext* context) {
   bool isPrimitive;
   const DatatypeFactory* dtf = datatypeLookup_.lookupDatatype(typeURI, typeName, isPrimitive);
   if(isPrimitive) {
@@ -485,9 +491,9 @@ ATQNameOrDerived::Ptr ItemFactoryImpl::createQNameOrDerived(const XMLCh* typeURI
   ATQNameOrDerivedImpl* tmp =  new ATQNameOrDerivedImpl(typeURI, typeName, uri, prefix, name, context);
   
   const DatatypeFactory* dtf_anyURI = datatypeLookup_.getAnyURIFactory();
-  if(dtf_anyURI->checkInstance(uri, context)) {
+  if(dtf_anyURI->checkInstance(uri, context->getMemoryManager())) {
     const DatatypeFactory* dtf_NCName = datatypeLookup_.getStringFactory();
-    if (dtf_NCName->checkInstance(SchemaSymbols::fgURI_SCHEMAFORSCHEMA, SchemaSymbols::fgDT_NCNAME, name, context)) {
+    if (dtf_NCName->checkInstance(SchemaSymbols::fgURI_SCHEMAFORSCHEMA, SchemaSymbols::fgDT_NCNAME, name, context->getMemoryManager())) {
       return tmp;
     } else {
       // this call will obviously fail, but it is better for error reporting, 

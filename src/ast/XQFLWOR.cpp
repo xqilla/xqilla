@@ -302,7 +302,7 @@ bool XQFLWOR::ProductFactor::initialise(DynamicContext *context)
     if(_valuesBuffer.isNull()) {
       _valuesBuffer = _vb->_allValues->collapseTree(context);
     }
-    _values = _valuesBuffer.createResult(context);
+    _values = _valuesBuffer.createResult();
   }
 
   VariableStore* varStore = context->getVariableStore();
@@ -593,7 +593,7 @@ void XQFLWOR::staticResolutionImpl(StaticContext* context)
       if(prefix && *prefix)
         (*it0)->_pURI = context->getUriBoundToPrefix(prefix);
       (*it0)->_pName = XPath2NSUtils::getLocalName((*it0)->_positionalVariable);
-      (*it0)->_pSrc.getStaticType().flags = StaticType::NUMERIC_TYPE;
+      (*it0)->_pSrc.getStaticType().flags = StaticType::DECIMAL_TYPE;
 
       if(XPath2Utils::equals((*it0)->_pURI, (*it0)->_vURI) && 
          XPath2Utils::equals((*it0)->_pName, (*it0)->_vName))

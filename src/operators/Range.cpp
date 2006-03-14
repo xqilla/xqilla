@@ -42,10 +42,10 @@ ASTNode* Range::staticResolution(StaticContext *context)
                                   SchemaSymbols::fgDT_INTEGER,
                                   SequenceType::QUESTION_MARK);
 
-  _src.getStaticType().flags = StaticType::NUMERIC_TYPE;
+  _src.getStaticType().flags = StaticType::DECIMAL_TYPE;
 
   for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
-    *i = integerType.convertFunctionArg(*i, context);
+	  *i = integerType.convertFunctionArg(*i, context, /*numericfunction*/false);
     *i = (*i)->staticResolution(context);
     _src.add((*i)->getStaticResolutionContext());
 

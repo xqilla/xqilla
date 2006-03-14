@@ -82,9 +82,13 @@ bool TotalOrderComparison::execute(const AnyAtomicType::Ptr &atom1, const AnyAto
         return ((ATDateTimeOrDerived*)(const AnyAtomicType*)atom1)->lessThan((ATDateTimeOrDerived*)(const AnyAtomicType*)atom2, context);
       }
     }
+    case AnyAtomicType::DAY_TIME_DURATION:
+    case AnyAtomicType::YEAR_MONTH_DURATION:
     case AnyAtomicType::DURATION:
     {
-      if(atom2->getPrimitiveTypeIndex() != AnyAtomicType::DURATION)
+      if(atom2->getPrimitiveTypeIndex() != AnyAtomicType::DURATION &&
+         atom2->getPrimitiveTypeIndex() != AnyAtomicType::DAY_TIME_DURATION &&
+         atom2->getPrimitiveTypeIndex() != AnyAtomicType::YEAR_MONTH_DURATION)
         XQThrow(XPath2ErrorException,X("TotalOrderComparison::collapseTreeInternal"), X("An attempt to compare a duration type to a non duration type has occurred"));
       if (_greaterThan) {
         return ((ATDurationOrDerived*)(const AnyAtomicType*)atom1)->greaterThan((ATDurationOrDerived*)(const AnyAtomicType*)atom2, context);

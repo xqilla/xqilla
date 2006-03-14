@@ -210,7 +210,7 @@ Item::Ptr XQTypeswitch::TypeswitchResult::next(DynamicContext *context)
     for(VectorOfClause::const_iterator it = _di->getClauses()->begin();
         it != _di->getClauses()->end(); ++it) {
       try {
-        (*it)->_type->matches(value.createResult(context))->toSequence(context);
+        (*it)->_type->matches(value.createResult())->toSequence(context);
         clause = *it;
         break;
       }
@@ -227,7 +227,7 @@ Item::Ptr XQTypeswitch::TypeswitchResult::next(DynamicContext *context)
     // Execute the clause
     if(clause->_variable != 0) {
       varStore->addLogicalBlockScope();
-      varStore->declareVar(clause->_uri, clause->_name, value.createResult(context)->toSequence(context), context);
+      varStore->declareVar(clause->_uri, clause->_name, value.createResult()->toSequence(context), context);
       _scopeRemoved = false;
     }
 

@@ -74,7 +74,7 @@ AnyAtomicType::Ptr ATAnyURIOrDerivedImpl::castAsInternal(AtomicObjectType target
     case UNTYPED_ATOMIC:
       //anySimpleType and untypedAtomic follow the same casting rules as string.
     case STRING: {
-      return context->getItemFactory()->createDerivedFromAtomicType(targetURI, targetType, _uri, context);
+      return context->getItemFactory()->createDerivedFromAtomicType(targetIndex, targetURI, targetType, _uri, context);
     }
     default: return AnyAtomicType::castAsInternal(targetIndex, targetURI, targetType, context);
   }

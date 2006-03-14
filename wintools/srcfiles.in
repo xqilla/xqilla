@@ -381,7 +381,6 @@ src/runtime/LazySequenceResult.cpp	lib
 src/runtime/Result.cpp	lib
 src/runtime/ResultBuffer.cpp	lib
 src/runtime/ResultBufferImpl.cpp	lib
-src/runtime/ResultBufferImpl.hpp	lib
 src/runtime/ResultImpl.cpp	lib
 src/runtime/Sequence.cpp	lib
 src/runtime/SequenceResult.cpp	lib
@@ -452,7 +451,6 @@ src/operators/TotalOrderComparison.hpp	lib
 src/parser/Grammar.hpp	lib
 src/parser/XPath2Parser.hpp	lib
 src/parser/XPath2ParserControl.hpp	lib
-src/runtime/ResultBufferImpl.hpp	lib
 src/utils/DateUtils.hpp	lib
 include/xqilla/ast/ASTNode.hpp	lib
 include/xqilla/ast/ASTNodeImpl.hpp	lib
@@ -735,6 +733,7 @@ include/xqilla/runtime/EmptyResult.hpp	lib
 include/xqilla/runtime/LazySequenceResult.hpp	lib
 include/xqilla/runtime/Result.hpp	lib
 include/xqilla/runtime/ResultBuffer.hpp	lib
+include/xqilla/runtime/ResultBufferImpl.hpp	lib
 include/xqilla/runtime/ResultImpl.hpp	lib
 include/xqilla/runtime/Sequence.hpp	lib
 include/xqilla/runtime/SequenceResult.hpp	lib

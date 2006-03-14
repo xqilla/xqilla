@@ -167,7 +167,7 @@ public:
   Result occurrenceMatches(const Result &toBeTested) const;
   Result typeMatches(const Result &toBeTested) const;
 
-  ASTNode *convertFunctionArg(ASTNode *arg, StaticContext *context) const;
+  ASTNode *convertFunctionArg(ASTNode *arg, StaticContext *context, bool numericFunction) const;
 
   QualifiedName *getConstrainingType(void) const;
   QualifiedName *getConstrainingName(void) const;

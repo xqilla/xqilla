@@ -50,7 +50,7 @@ ASTNode* ComparisonOperator::staticResolution(StaticContext *context)
     }
   }
 
-  _src.getStaticType().flags = StaticType::OTHER_TYPE;
+  _src.getStaticType().flags = StaticType::BOOLEAN_TYPE;
 
   if(allConstant) {
     return constantFold(context);

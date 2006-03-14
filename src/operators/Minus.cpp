@@ -29,6 +29,34 @@ Minus::Minus(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
 {
 }
 
+void Minus::calculateStaticType()
+{
+  const StaticType &arg0 = _args[0]->getStaticResolutionContext().getStaticType();
+  const StaticType &arg1 = _args[1]->getStaticResolutionContext().getStaticType();
+
+  calculateStaticTypeForNumerics(arg0, arg1);
+
+  // Subtracting a duration from a date, dateTime, time, or duration
+  if(arg1.containsType(StaticType::DAY_TIME_DURATION_TYPE)) {
+    _src.getStaticType().flags |= arg0.flags & (StaticType::DATE_TYPE|StaticType::DATE_TIME_TYPE|StaticType::TIME_TYPE|
+                                                StaticType::DAY_TIME_DURATION_TYPE);
+  }
+  if(arg1.containsType(StaticType::YEAR_MONTH_DURATION_TYPE)) {
+    _src.getStaticType().flags |= arg0.flags & (StaticType::DATE_TYPE|StaticType::DATE_TIME_TYPE|StaticType::YEAR_MONTH_DURATION_TYPE);
+  }
+
+  // Subtracting date, dateTime and time
+  if(arg0.containsType(StaticType::DATE_TYPE) && arg1.containsType(StaticType::DATE_TYPE)) {
+    _src.getStaticType().flags |= StaticType::DAY_TIME_DURATION_TYPE;
+  }
+  if(arg0.containsType(StaticType::DATE_TIME_TYPE) && arg1.containsType(StaticType::DATE_TIME_TYPE)) {
+    _src.getStaticType().flags |= StaticType::DAY_TIME_DURATION_TYPE;
+  }
+  if(arg0.containsType(StaticType::TIME_TYPE) && arg1.containsType(StaticType::TIME_TYPE)) {
+    _src.getStaticType().flags |= StaticType::DAY_TIME_DURATION_TYPE;
+  }
+}
+
 Item::Ptr Minus::execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::Ptr &atom2, DynamicContext *context) const
 {
   if(atom1 == NULLRCP || atom2 == NULLRCP) return 0;
@@ -43,78 +71,74 @@ Item::Ptr Minus::execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::P
   }
   
   switch(atom1->getPrimitiveTypeIndex()) {
-    case AnyAtomicType::DATE : {
-      switch(atom2->getPrimitiveTypeIndex()) {
-        case AnyAtomicType::DURATION : {
-          const ATDurationOrDerived* duration = (const ATDurationOrDerived::Ptr )atom2;
-          if(duration->isYearMonthDuration()) {
-            return (const Item::Ptr)((ATDateOrDerived*)(const AnyAtomicType*)atom1)->subtractYearMonthDuration(duration, context);
-          }
-          else if(duration->isDayTimeDuration()) {
-            return (const Item::Ptr)((ATDateOrDerived*)(const AnyAtomicType*)atom1)->subtractDayTimeDuration(duration, context);
-          } else {
-            XQThrow(XPath2ErrorException,X("Minus::collapseTreeInternal"), X("An invalid attempt to subtract from xs:date type has occurred [err:XPTY0004]"));
-          }
-        }
-        case AnyAtomicType::DATE : {
-          return (const Item::Ptr)((ATDateOrDerived*)(const AnyAtomicType*)atom1)->subtractDate((const ATDateOrDerived::Ptr )atom2, context);
-        }
-        default: {
-          XQThrow(XPath2ErrorException,X("Minus::collapseTreeInternal"), X("An invalid attempt to subtract from xs:date type has occurred [err:XPTY0004]"));
-        }
-      }// switch
+  case AnyAtomicType::DATE : {
+    switch(atom2->getPrimitiveTypeIndex()) {
+    case AnyAtomicType::DAY_TIME_DURATION: {
+      return (const Item::Ptr)((ATDateOrDerived*)atom1.get())->subtractDayTimeDuration((const ATDurationOrDerived *)atom2.get(), context);
     }
-    case AnyAtomicType::TIME : {
-      switch(atom2->getPrimitiveTypeIndex()) {
-        case AnyAtomicType::DURATION : {
-          // assume dayTimeDuration, otherwise function will throw
-          return (const Item::Ptr)((ATTimeOrDerived*)(const AnyAtomicType*)atom1)->subtractDayTimeDuration( (const ATDurationOrDerived::Ptr )atom2, context );
-        }
-        case AnyAtomicType::TIME : {
-          return (const Item::Ptr)((ATTimeOrDerived*)(const AnyAtomicType*)atom1)->subtractTime((const ATTimeOrDerived::Ptr )atom2, context);
-        }
-        default: {
-          XQThrow(XPath2ErrorException,X("Minus::collapseTreeInternal"), X("An invalid attempt to subtract from xs:time type has occurred [err:XPTY0004]"));
-        }
-      }// switch
+    case AnyAtomicType::YEAR_MONTH_DURATION: {
+      return (const Item::Ptr)((ATDateOrDerived*)atom1.get())->subtractYearMonthDuration((const ATDurationOrDerived *)atom2.get(), context);
     }
-    case AnyAtomicType::DATE_TIME : {
-      switch(atom2->getPrimitiveTypeIndex()) {
-        case AnyAtomicType::DURATION : {
-          const ATDurationOrDerived* duration = (const ATDurationOrDerived*)(const AnyAtomicType*)atom2;
-          if(duration->isYearMonthDuration()) {
-            return (const Item::Ptr)((ATDateTimeOrDerived*)(const AnyAtomicType*)atom1)->subtractYearMonthDuration(duration, context);
-          }
-          else if(duration->isDayTimeDuration()) {
-            return (const Item::Ptr)((ATDateTimeOrDerived*)(const AnyAtomicType*)atom1)->subtractDayTimeDuration(duration, context);
-          } else {
-            XQThrow(XPath2ErrorException,X("Minus::collapseTreeInternal"), X("An invalid attempt to subtract from xs:dateTime type has occurred [err:XPTY0004]"));
-          }
-        }
-        case AnyAtomicType::DATE_TIME : {
-          return (const Item::Ptr)((ATDateTimeOrDerived*)(const AnyAtomicType*)atom1)->subtractDateTimeAsDayTimeDuration((const ATDateTimeOrDerived::Ptr )atom2, context);
-        }
-        default: {
-          XQThrow(XPath2ErrorException,X("Minus::collapseTreeInternal"), X("An invalid attempt to subtract from xs:dateTime type has occurred [err:XPTY0004]"));
-        }
-
-      }// switch
-    }
-    case AnyAtomicType::DURATION : {
-      switch(atom2->getPrimitiveTypeIndex()) {
-        case AnyAtomicType::DURATION : {
-          // this call will throw an error if the duration is of the wrong type
-          return (const Item::Ptr)((ATDurationOrDerived*)(const AnyAtomicType*)atom1)->subtract((const ATDurationOrDerived::Ptr )atom2, context);
-        }
-        default: {
-          XQThrow(XPath2ErrorException,X("Minus::collapseTreeInternal"), X("An invalid attempt to subtract from xs:duration type has occurred [err:XPTY0004]"));
-        }
-      }// switch
+    case AnyAtomicType::DATE: {
+      return (const Item::Ptr)((ATDateOrDerived*)atom1.get())->subtractDate((const ATDateOrDerived *)atom2.get(), context);
     }
     default: {
-      XQThrow(XPath2ErrorException,X("Minus::collapseTreeInternal"), X("The operator subtract ('-') has been called on invalid operand types [err:XPTY0004]"));
+      XQThrow(XPath2ErrorException,X("Minus::collapseTreeInternal"), X("An invalid attempt to subtract from xs:date type has occurred [err:XPTY0004]"));
     }
-  }// switch
-
+    }
+  }
+  case AnyAtomicType::TIME : {
+    switch(atom2->getPrimitiveTypeIndex()) {
+    case AnyAtomicType::DAY_TIME_DURATION : {
+      return (const Item::Ptr)((ATTimeOrDerived*)atom1.get())->subtractDayTimeDuration((const ATDurationOrDerived *)atom2.get(), context );
+    }
+    case AnyAtomicType::TIME : {
+      return (const Item::Ptr)((ATTimeOrDerived*)atom1.get())->subtractTime((const ATTimeOrDerived *)atom2.get(), context);
+    }
+    default: {
+      XQThrow(XPath2ErrorException,X("Minus::collapseTreeInternal"), X("An invalid attempt to subtract from xs:time type has occurred [err:XPTY0004]"));
+    }
+    }
+  }
+  case AnyAtomicType::DATE_TIME : {
+    switch(atom2->getPrimitiveTypeIndex()) {
+    case AnyAtomicType::DAY_TIME_DURATION: {
+      return (const Item::Ptr)((ATDateTimeOrDerived*)atom1.get())->subtractDayTimeDuration((const ATDurationOrDerived*)atom2.get(), context);
+    }
+    case AnyAtomicType::YEAR_MONTH_DURATION: {
+      return (const Item::Ptr)((ATDateTimeOrDerived*)atom1.get())->subtractYearMonthDuration((const ATDurationOrDerived*)atom2.get(), context);
+    }
+    case AnyAtomicType::DATE_TIME : {
+      return (const Item::Ptr)((ATDateTimeOrDerived*)(const AnyAtomicType*)atom1)->subtractDateTimeAsDayTimeDuration((const ATDateTimeOrDerived::Ptr )atom2, context);
+    }
+    default: {
+      XQThrow(XPath2ErrorException,X("Minus::collapseTreeInternal"), X("An invalid attempt to subtract from xs:dateTime type has occurred [err:XPTY0004]"));
+    }
+    }
+  }
+  case AnyAtomicType::DAY_TIME_DURATION: {
+    switch(atom2->getPrimitiveTypeIndex()) {
+    case AnyAtomicType::DAY_TIME_DURATION: {
+      return (const Item::Ptr)((ATDurationOrDerived*)atom1.get())->subtract((const ATDurationOrDerived *)atom2.get(), context);
+    }
+    default: {
+      XQThrow(XPath2ErrorException,X("Minus::collapseTreeInternal"), X("An invalid attempt to subtract from xdt:dayTimeDuration type has occurred [err:XPTY0004]"));
+    }
+    }
+  }
+  case AnyAtomicType::YEAR_MONTH_DURATION: {
+    switch(atom2->getPrimitiveTypeIndex()) {
+    case AnyAtomicType::YEAR_MONTH_DURATION: {
+      return (const Item::Ptr)((ATDurationOrDerived*)atom1.get())->subtract((const ATDurationOrDerived *)atom2.get(), context);
+    }
+    default: {
+      XQThrow(XPath2ErrorException,X("Minus::collapseTreeInternal"), X("An invalid attempt to subtract from xdt:yearMonthDuration type has occurred [err:XPTY0004]"));
+    }
+    }
+  }
+  default: {
+    XQThrow(XPath2ErrorException,X("Minus::collapseTreeInternal"), X("The operator subtract ('-') has been called on invalid operand types [err:XPTY0004]"));
+  }
+  }
 }
 

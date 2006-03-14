@@ -110,7 +110,7 @@ AnyAtomicType::Ptr ATTimeOrDerivedImpl::castAsInternal(AtomicObjectType targetIn
     case UNTYPED_ATOMIC:
       //anySimpleType and untypedAtomic follow the same casting rules as string.
     case STRING: {
-      return context->getItemFactory()->createDerivedFromAtomicType(targetURI, targetType, this->asString(context), context);
+      return context->getItemFactory()->createDerivedFromAtomicType(targetIndex, targetURI, targetType, this->asString(context), context);
 		}
     default: return AnyAtomicType::castAsInternal(targetIndex, targetURI, targetType, context);
   }

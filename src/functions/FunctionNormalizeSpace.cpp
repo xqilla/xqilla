@@ -53,6 +53,7 @@ const XMLCh* FunctionNormalizeSpace::getString(DynamicContext* context) const {
 }
 
 ASTNode* FunctionNormalizeSpace::staticResolution(StaticContext *context) {
+  _src.getStaticType().flags = StaticType::STRING_TYPE;
   if(_args.empty()) {
     _src.contextItemUsed(true);
   }
