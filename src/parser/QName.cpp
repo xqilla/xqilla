@@ -21,48 +21,65 @@
 //Parse qualifiedName into prefix and name
 QualifiedName::QualifiedName(const XMLCh* const qualifiedName, XPath2MemoryManager* memMgr) : _bDeleteStrings(false)
 {
-	int colonPos = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::indexOf(qualifiedName, XERCES_CPP_NAMESPACE_QUALIFIER chColon, 0);
-	if(colonPos == -1) {
-		_name = memMgr->getPooledString(qualifiedName);
-		_prefix = 0;
-	}
-	else {
-		XMLCh* tempPrefix = new XMLCh[colonPos + 1];
-		XERCES_CPP_NAMESPACE_QUALIFIER XMLString::subString(tempPrefix, qualifiedName, 0, colonPos);
-		tempPrefix[colonPos] = 0;
-		_prefix = memMgr->getPooledString(tempPrefix);
-		delete [] tempPrefix;
+  if(qualifiedName && *qualifiedName)
+  {
+    int colonPos = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::indexOf(qualifiedName, XERCES_CPP_NAMESPACE_QUALIFIER chColon, 0);
+    if(colonPos == -1) {
+      _name = memMgr->getPooledString(qualifiedName);
+      _prefix = 0;
+    }
+    else {
+      XMLCh* tempPrefix = new XMLCh[colonPos + 1];
+      XERCES_CPP_NAMESPACE_QUALIFIER XMLString::subString(tempPrefix, qualifiedName, 0, colonPos);
+      tempPrefix[colonPos] = 0;
+      _prefix = memMgr->getPooledString(tempPrefix);
+      delete [] tempPrefix;
 
-		unsigned int length = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(qualifiedName);
-		XMLCh* tempName = new XMLCh[length - colonPos];
-		XERCES_CPP_NAMESPACE_QUALIFIER XMLString::subString(tempName, qualifiedName, colonPos + 1, length);
-		tempName[length - colonPos - 1] = 0;
-		_name = memMgr->getPooledString(tempName);
-		delete [] tempName;
+      unsigned int length = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(qualifiedName);
+      XMLCh* tempName = new XMLCh[length - colonPos];
+      XERCES_CPP_NAMESPACE_QUALIFIER XMLString::subString(tempName, qualifiedName, colonPos + 1, length);
+      tempName[length - colonPos - 1] = 0;
+      _name = memMgr->getPooledString(tempName);
+      delete [] tempName;
+    }
+  }
+  else
+  {
+    _name = XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString;
+    _prefix = 0;
   }
 }
 
 QualifiedName::QualifiedName(const XMLCh* qualifiedName) : _bDeleteStrings(true)
 {
-  int colonPos = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::indexOf(qualifiedName, XERCES_CPP_NAMESPACE_QUALIFIER chColon, 0);
-  if(colonPos == -1) {
-    _name = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::replicate(qualifiedName);
-    _prefix = 0;
+  if(qualifiedName && *qualifiedName)
+  {
+    int colonPos=XERCES_CPP_NAMESPACE_QUALIFIER XMLString::indexOf(qualifiedName, XERCES_CPP_NAMESPACE_QUALIFIER chColon, 0);
+    if(colonPos == -1) {
+      _name = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::replicate(qualifiedName);
+      _prefix = 0;
+    }
+    else
+    {
+      XMLCh* tempPrefix = new XMLCh[colonPos + 1];
+      XERCES_CPP_NAMESPACE_QUALIFIER XMLString::subString(tempPrefix, qualifiedName, 0, colonPos);
+      tempPrefix[colonPos] = 0;
+      _prefix = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::replicate(tempPrefix);
+      delete [] tempPrefix;
+
+      unsigned int length = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(qualifiedName);
+      XMLCh* tempName = new XMLCh[length - colonPos];
+      XERCES_CPP_NAMESPACE_QUALIFIER XMLString::subString(tempName, qualifiedName, colonPos + 1, length);
+      tempName[length - colonPos - 1] = 0;
+      _name = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::replicate(tempName);
+      delete [] tempName;
+    }
   }
   else
   {
-    XMLCh* tempPrefix = new XMLCh[colonPos + 1];
-    XERCES_CPP_NAMESPACE_QUALIFIER XMLString::subString(tempPrefix, qualifiedName, 0, colonPos);
-    tempPrefix[colonPos] = 0;
-    _prefix = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::replicate(tempPrefix);
-    delete [] tempPrefix;
-
-    unsigned int length = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(qualifiedName);
-    XMLCh* tempName = new XMLCh[length - colonPos];
-    XERCES_CPP_NAMESPACE_QUALIFIER XMLString::subString(tempName, qualifiedName, colonPos + 1, length);
-    tempName[length - colonPos - 1] = 0;
-    _name = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::replicate(tempName);
-    delete [] tempName;
+    _name = XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString;
+    _prefix = 0;
+    _bDeleteStrings = false;
   }
 }
 
