@@ -39,6 +39,7 @@ public:
 	XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *getResolverNode(void);
 
 protected:
+  static const XMLCh g_nsBlocker[];
   XERCES_CPP_NAMESPACE_QUALIFIER RefHashTableOf< XMLCh > _namespaceBindings;
 	XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *_resolverNode;
   XPath2MemoryManager* _memMgr;
