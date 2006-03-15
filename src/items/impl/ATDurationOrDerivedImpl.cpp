@@ -318,17 +318,23 @@ bool ATDurationOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const Dyn
 }
 
 bool ATDurationOrDerivedImpl::dayTimeEquals(const ATDurationOrDerived::Ptr &target, const DynamicContext* context) const {
-  return isNegative() == target->isNegative() &&
-    getDays()->equals(target->getDays(), context) &&
-    getHours()->equals(target->getHours(), context) &&
-    getMinutes()->equals(target->getMinutes(), context) &&
-    getSeconds()->equals(target->getSeconds(), context);
+  MAPM ThisAsSeconds =_day->asMAPM() * DateUtils::g_secondsPerDay +
+                      _hour->asMAPM() * DateUtils::g_secondsPerHour +
+                      _minute->asMAPM() * DateUtils::g_secondsPerMinute +
+                      _sec->asMAPM();
+  MAPM TargetAsSeconds =target->getDays()->asMAPM() * DateUtils::g_secondsPerDay +
+                        target->getHours()->asMAPM() * DateUtils::g_secondsPerHour +
+                        target->getMinutes()->asMAPM() * DateUtils::g_secondsPerMinute +
+                        target->getSeconds()->asMAPM();
+  return isNegative() == target->isNegative() && ThisAsSeconds==TargetAsSeconds;
 }
 
 bool ATDurationOrDerivedImpl::yearMonthEquals(const ATDurationOrDerived::Ptr &target, const DynamicContext* context) const {
-  return isNegative() == target->isNegative() &&
-    getYears()->equals(target->getYears(), context) &&
-    getMonths()->equals(target->getMonths(), context);
+  MAPM ThisAsMonths =_year->asMAPM() * 12 +
+                      _month->asMAPM();
+  MAPM TargetAsMonths =target->getYears()->asMAPM() * 12 +
+                        target->getMonths()->asMAPM();
+  return isNegative() == target->isNegative() && ThisAsMonths==TargetAsMonths;
 }
 
 bool ATDurationOrDerivedImpl::lessThan(const ATDurationOrDerived::Ptr &other, const DynamicContext* context) const {
