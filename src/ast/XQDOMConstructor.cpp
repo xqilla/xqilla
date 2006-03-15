@@ -484,12 +484,6 @@ ASTNode* XQDOMConstructor::staticResolution(StaticContext *context)
 {
   XPath2MemoryManager *mm = context->getMemoryManager();
 
-  if(m_name != 0) {
-    m_name = new (mm) XQAtomize(m_name, mm);
-    m_name = m_name->staticResolution(context);
-    _src.add(m_name->getStaticResolutionContext());
-  }
-
   {
       // Add a new scope for the namespace definitions
       XQScopedNamespace newNSScope(context->getMemoryManager(), context->getNSResolver());
@@ -546,6 +540,51 @@ ASTNode* XQDOMConstructor::staticResolution(StaticContext *context)
       _src.add((*m_children)[i]->getStaticResolutionContext());
 
     }
+
+    // verify namespace prefixes for embedded node constructors
+    if(m_name && m_name->getType() == ASTNode::LITERAL) {
+      AutoDelete<DynamicContext> dContext(context->createDynamicContext());
+      dContext->setMemoryManager(context->getMemoryManager());
+
+      Item::Ptr item = ((XQLiteral*)m_name)->getItemConstructor()->createItem(dContext);
+      if(item != NULLRCP && item->isAtomicValue()) {
+        AnyAtomicType::Ptr atomName=item;
+        const XMLCh* strName=NULL;
+        if(atomName->getPrimitiveTypeIndex()==AnyAtomicType::QNAME)
+        {
+          const ATQNameOrDerived* pQName=(const ATQNameOrDerived*)(const AnyAtomicType*)atomName;
+          strName=pQName->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                                 XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING, dContext)->asString(dContext);
+        }
+        else if(atomName->getPrimitiveTypeIndex()==AnyAtomicType::STRING)
+          strName = atomName->asString(dContext);
+        if(strName)
+        {
+          QualifiedName name(strName);
+          if(name.getPrefix()!=0 && *name.getPrefix()!=0)
+          {
+            try 
+            {
+              dContext->getUriBoundToPrefix(name.getPrefix());
+            }
+            catch(NamespaceLookupException&) 
+            {
+              XMLBuffer buff(200, dContext->getMemoryManager());
+              buff.set(X("Undefined namespace prefix '"));
+              buff.append(name.getPrefix());
+              buff.append(X("' [err:XPST0008]"));
+              XQThrow(StaticErrorException,X("DOM Constructor"),buff.getRawBuffer());
+            }
+          }
+        }
+      }
+    }
+  }
+
+  if(m_name != 0) {
+    m_name = new (mm) XQAtomize(m_name, mm);
+    m_name = m_name->staticResolution(context);
+    _src.add(m_name->getStaticResolutionContext());
   }
 
   if(m_nodeType==Node::attribute_string && m_name->isConstant()) {

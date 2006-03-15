@@ -160,8 +160,9 @@ const XMLCh* ATQNameOrDerivedImpl::asLexicalString(const DynamicContext* context
     buffer.set(_name);
   } 
   else {
-    // if we have a prefix, use it, otherwise try looking at the in-scope namespaces
-    if(XPath2Utils::equals(_prefix,XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString))
+    // if we have a prefix, use it, otherwise try looking at the in-scope namespaces (unless the namespace is the default one)
+    if(XPath2Utils::equals(_prefix,XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString) && 
+       !XPath2Utils::equals(_uri, context->getDefaultElementAndTypeNS()))
         prefix = context->getPrefixBoundToUri(this->_uri);
     else
         prefix = _prefix;
