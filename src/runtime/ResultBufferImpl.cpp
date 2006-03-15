@@ -64,18 +64,18 @@ Item::Ptr ResultBufferImpl::item(unsigned int index, DynamicContext *context)
   }
 }
 
-ResultBufferImpl::BufferedResult::BufferedResult(ResultBufferImpl *impl)
+BufferedResult::BufferedResult(ResultBufferImpl *impl)
   : _impl(impl),
     _pos(0)
 {
 }
 
-Item::Ptr ResultBufferImpl::BufferedResult::next(DynamicContext *context)
+Item::Ptr BufferedResult::next(DynamicContext *context)
 {
   return _impl->item(_pos++, context);
 }
 
-std::string ResultBufferImpl::BufferedResult::asString(DynamicContext *context, int indent) const
+std::string BufferedResult::asString(DynamicContext *context, int indent) const
 {
   return "bufferedresult";
 }

@@ -48,17 +48,6 @@ private:
 
   Item::Ptr item(unsigned int index, DynamicContext *context);
 
-  class BufferedResult : public ResultImpl
-  {
-  public:
-    BufferedResult(ResultBufferImpl *impl);
-    Item::Ptr next(DynamicContext *context);
-    std::string asString(DynamicContext *context, int indent) const;
-  private:
-    ResultBufferImpl::Ptr _impl;
-    unsigned int _pos;
-  };
-
   friend class BufferedResult;
 
   typedef std::vector<Item::Ptr> ItemList;
@@ -70,5 +59,17 @@ private:
   unsigned int _readCount;
   unsigned int _maxReadCount;
 };
+
+class BufferedResult : public ResultImpl
+{
+public:
+  BufferedResult(ResultBufferImpl *impl);
+  Item::Ptr next(DynamicContext *context);
+  std::string asString(DynamicContext *context, int indent) const;
+private:
+  ResultBufferImpl::Ptr _impl;
+  unsigned int _pos;
+};
+
 
 #endif
