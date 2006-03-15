@@ -18,8 +18,14 @@
 #include <xqilla/utils/XPath2NSUtils.hpp>
 #include <xercesc/dom/DOMElement.hpp>
 #include <xercesc/util/XMLUni.hpp>
+#include <xercesc/util/XMLUniDefs.hpp>
 #include <xercesc/util/XMLString.hpp>
 #include <xercesc/dom/DOMNamedNodeMap.hpp>
+
+const XMLCh XQillaNSResolverImpl::g_nsBlocker[]={ XERCES_CPP_NAMESPACE_QUALIFIER chOpenSquare, XERCES_CPP_NAMESPACE_QUALIFIER chOpenSquare, 
+                                                  XERCES_CPP_NAMESPACE_QUALIFIER chCloseSquare, XERCES_CPP_NAMESPACE_QUALIFIER chCloseSquare, 
+                                                  XERCES_CPP_NAMESPACE_QUALIFIER chOpenCurly, XERCES_CPP_NAMESPACE_QUALIFIER chCloseCurly, 
+                                                  XERCES_CPP_NAMESPACE_QUALIFIER chNull };
 
 XQillaNSResolverImpl::XQillaNSResolverImpl(XPath2MemoryManager* memMgr, 
                                          XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *resolverNode) : 
@@ -45,10 +51,9 @@ XQillaNSResolverImpl::~XQillaNSResolverImpl()
 const XMLCh* XQillaNSResolverImpl::lookupNamespaceURI(const XMLCh* prefix) const
 {
   const XERCES_CPP_NAMESPACE_QUALIFIER DOMElement *parent = XPath2NSUtils::returnOwnerElement(_resolverNode);
-  const XMLCh* uri = 0;
 
   while(!parent == 0 && parent->getNodeType() != XERCES_CPP_NAMESPACE_QUALIFIER DOMNode::DOCUMENT_NODE) {
-    uri = parent->getAttributeNS(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgXMLNSURIName, prefix);
+    const XMLCh* uri = parent->getAttributeNS(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgXMLNSURIName, prefix);
 
     if (uri != NULL && *uri != 0) {
       return uri;
@@ -58,14 +63,15 @@ const XMLCh* XQillaNSResolverImpl::lookupNamespaceURI(const XMLCh* prefix) const
     parent = static_cast<const XERCES_CPP_NAMESPACE_QUALIFIER DOMElement *>(parent->getParentNode());
   }
 
-  if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(uri) == 0) {
-    const XMLCh* resolvedPrefix = _namespaceBindings.get((void*)prefix);
-    if(resolvedPrefix != NULL) {
-      return resolvedPrefix;
-    }
+  const XMLCh* resolvedURI = _namespaceBindings.get((void*)prefix);
+  if(resolvedURI != NULL) {
+    if(XPath2Utils::equals(resolvedURI, g_nsBlocker))
+      return NULL;
+    else
+      return resolvedURI;
   }
  
-  return 0;
+  return NULL;
 
 }//lookupNamespaceURI
 
@@ -111,12 +117,8 @@ const XMLCh* XQillaNSResolverImpl::lookupPrefix(const XMLCh* uri) const {
 
 void XQillaNSResolverImpl::addNamespaceBinding(const XMLCh* prefix, const XMLCh* uri) {
     if(uri==0 || *uri==0)
-    {
-        if(_namespaceBindings.containsKey((const void*)prefix))
-            _namespaceBindings.removeKey((const void*)prefix);
-    }
-    else
-        _namespaceBindings.put((void*)_memMgr->getPooledString(prefix),(XMLCh*)_memMgr->getPooledString(uri));
+        uri=g_nsBlocker;
+    _namespaceBindings.put((void*)_memMgr->getPooledString(prefix),(XMLCh*)_memMgr->getPooledString(uri));
 }
 
 void XQillaNSResolverImpl::release() {

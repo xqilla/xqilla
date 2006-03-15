@@ -16,6 +16,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include <xqilla/context/XQScopedNamespace.hpp>
+#include <xqilla/utils/XPath2Utils.hpp>
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -40,14 +41,18 @@ void XQScopedNamespace::setNodeContext(const XERCES_CPP_NAMESPACE_QUALIFIER DOMN
 
 const XMLCh* XQScopedNamespace::lookupNamespaceURI(const XMLCh* prefix) const
 {
-    const XMLCh* nsURI=XQillaNSResolverImpl::lookupNamespaceURI(prefix);
-    if(nsURI!=NULL)
-        return nsURI;
+    const XMLCh* resolvedURI = _namespaceBindings.get((void*)prefix);
+    if(resolvedURI != NULL) {
+      if(XPath2Utils::equals(resolvedURI, g_nsBlocker))
+        return NULL;
+      else
+        return resolvedURI;
+    }
     if(_ctxNode)
     {
-        nsURI=_ctxNode->lookupNamespaceURI(prefix);
-        if(nsURI)
-            return nsURI;
+        resolvedURI=_ctxNode->lookupNamespaceURI(prefix);
+        if(resolvedURI)
+            return resolvedURI;
     }
     if(_prevScope)
         return _prevScope->lookupNamespaceURI(prefix);
