@@ -25,14 +25,14 @@ class SequenceType;
 class XQILLA_API XQGlobalVariable
 {
 public:
-	XQGlobalVariable(const XMLCh* varQName, SequenceType* seqType, ASTNode* value, XPath2MemoryManager *mm);
+  XQGlobalVariable(const XMLCh* varQName, SequenceType* seqType, ASTNode* value, XPath2MemoryManager *mm);
 
   void execute(DynamicContext* context) const;
-	void staticResolution(StaticContext *context);
+  void staticResolution(StaticContext *context);
 
-	const XMLCh* getVariableName() const;
-	bool isExternal() const;
-	void setVariableExpr(ASTNode* value);
+  const XMLCh* getVariableName() const;
+  bool isExternal() const;
+  void setVariableExpr(ASTNode* value);
 
   const XMLCh *getVariableURI() const;
   const XMLCh *getVariableLocalName() const;
@@ -41,11 +41,11 @@ public:
   const StaticResolutionContext &getStaticResolutionContext() const { return _src; }
 
 protected:
-	const XMLCh* m_szQName;
-	const XMLCh* m_szURI;
-	const XMLCh* m_szLocalName;
-	SequenceType* m_Type;
-	ASTNode* m_Value;
+  const XMLCh* m_szQName;
+  const XMLCh* m_szURI;
+  const XMLCh* m_szLocalName;
+  SequenceType* m_Type;
+  ASTNode* m_Value;
   StaticResolutionContext _src;
 };
 
