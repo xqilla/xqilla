@@ -254,7 +254,7 @@
 
 
 /* Copy the first part of user declarations.  */
-#line 14 "../src/parser/XPath2Parser.y"
+#line 14 "XPath2Parser.y"
 
 
 #include "../config/xqilla_config.h"
@@ -282,6 +282,7 @@
 #include <xqilla/ast/XQQuantified.hpp>
 #include <xqilla/ast/XQFLWOR.hpp>
 #include <xqilla/ast/XQDocumentOrder.hpp>
+#include <xqilla/ast/XQFunctionCall.hpp>
 
 #include <xqilla/utils/XPath2NSUtils.hpp>
 
@@ -321,7 +322,28 @@
 #define YYPARSE_PARAM parm
 #define YYLEX_PARAM parm
 #define YYERROR_VERBOSE
-	
+
+// this removes a memory leak occurring when an error is found in the query (we throw an exception from inside
+// yyerror, preventing the bison-generated code from cleaning up the memory); by defining this macro we use 
+// stack-based memory instead of the heap
+#define YYSTACK_USE_ALLOCA	1
+#if HAVE_ALLOCA_H
+#include <alloca.h>
+#elif defined __GNUC__
+#undef alloca
+#define alloca __builtin_alloca
+#elif defined _AIX
+#define alloca __alloca
+#elif defined _MSC_VER
+#include <malloc.h>
+#else
+#include <stddef.h>
+#ifdef __cplusplus
+extern "C"
+#endif
+void *alloca (size_t);
+#endif
+
 inline VectorOfASTNodes packageArgs(ASTNode *arg1Impl, ASTNode *arg2Impl, XPath2MemoryManager* memMgr);
 void yyerror(const char* s);
 
@@ -329,6 +351,17 @@ void yyerror(const char* s);
 #include <xqilla/exceptions/StaticErrorException.hpp>
 
 #define YYDEBUG 1
+#define MEMMGR      (((XPathParserControl *)parm)->memMgr)
+
+static inline XQNav* getNavigation(ASTNode *possibleNav, XPath2MemoryManager * expr)
+{
+	if(possibleNav->getType()==ASTNode::NAVIGATION)
+		return (XQNav*)possibleNav;
+
+	XQNav* nav=new (expr) XQNav(expr);
+	nav->addStep(possibleNav);
+	return nav;
+}
 
 
 
@@ -363,7 +396,7 @@ typedef int YYSTYPE;
 
 
 /* Line 219 of yacc.c.  */
-#line 367 "../src/parser/XPath2Parser.cpp"
+#line 400 "XPath2Parser.cpp"
 
 #if ! defined (YYSIZE_T) && defined (__SIZE_TYPE__)
 # define YYSIZE_T __SIZE_TYPE__
@@ -655,24 +688,24 @@ static const short int yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const unsigned short int yyrline[] =
 {
-       0,   283,   283,   287,   298,   309,   320,   323,   326,   329,
-     340,   351,   361,   365,   372,   381,   398,   412,   416,   437,
-     441,   471,   475,   479,   483,   487,   491,   495,   499,   503,
-     507,   511,   515,   519,   523,   527,   531,   543,   547,   560,
-     564,   568,   580,   584,   588,   592,   596,   608,   612,   616,
-     628,   632,   636,   648,   652,   663,   666,   677,   681,   692,
-     695,   706,   710,   716,   732,   744,   750,   767,   788,   802,
-     806,   823,   854,   857,   867,   871,   884,   896,   915,   919,
-     923,   927,   931,   935,   939,   943,   955,   963,   985,   993,
-    1008,  1012,  1016,  1020,  1024,  1035,  1050,  1054,  1065,  1077,
-    1089,  1096,  1106,  1123,  1136,  1139,  1152,  1156,  1160,  1164,
-    1168,  1181,  1185,  1206,  1219,  1232,  1253,  1266,  1276,  1289,
-    1301,  1316,  1342,  1347,  1360,  1367,  1382,  1389,  1396,  1408,
-    1411,  1414,  1426,  1429,  1433,  1443,  1462,  1465,  1468,  1471,
-    1474,  1477,  1480,  1483,  1486,  1497,  1511,  1516,  1524,  1540,
-    1553,  1567,  1573,  1579,  1593,  1598,  1603,  1615,  1618,  1630,
-    1642,  1653,  1658,  1663,  1668,  1683,  1686,  1698,  1709,  1719,
-    1728,  1737,  1746
+       0,   316,   316,   320,   331,   342,   353,   356,   359,   362,
+     373,   384,   394,   398,   405,   414,   431,   445,   449,   470,
+     474,   504,   508,   512,   516,   520,   524,   528,   532,   536,
+     540,   544,   548,   552,   556,   560,   564,   576,   580,   593,
+     597,   601,   613,   617,   621,   625,   629,   641,   645,   649,
+     661,   665,   669,   681,   685,   696,   699,   710,   714,   725,
+     728,   739,   743,   749,   765,   777,   783,   789,   803,   815,
+     819,   825,   848,   851,   861,   865,   878,   890,   909,   913,
+     917,   921,   925,   929,   933,   937,   949,   957,   979,   987,
+    1002,  1006,  1010,  1014,  1018,  1029,  1044,  1048,  1059,  1065,
+    1077,  1084,  1092,  1108,  1121,  1124,  1137,  1141,  1145,  1149,
+    1153,  1166,  1170,  1191,  1204,  1217,  1238,  1251,  1261,  1274,
+    1286,  1293,  1311,  1316,  1329,  1336,  1351,  1358,  1365,  1377,
+    1380,  1383,  1395,  1398,  1402,  1412,  1431,  1434,  1437,  1440,
+    1443,  1446,  1449,  1452,  1455,  1466,  1480,  1485,  1493,  1509,
+    1522,  1536,  1542,  1548,  1562,  1567,  1572,  1584,  1587,  1599,
+    1611,  1622,  1627,  1632,  1637,  1652,  1655,  1667,  1678,  1688,
+    1697,  1706,  1715
 };
 #endif
 
@@ -1200,7 +1233,7 @@ do {					\
 
 /* Nonzero means print parse trace.  It is left uninitialized so that
    multiple parsers can coexist.  */
-int XQILLA_API yydebug;
+int yydebug;
 #else /* !YYDEBUG */
 # define YYDPRINTF(Args)
 # define YY_SYMBOL_PRINT(Title, Type, Value, Location)
@@ -1693,137 +1726,137 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 283 "../src/parser/XPath2Parser.y"
+#line 316 "XPath2Parser.y"
     {
-      ((XPathParserControl *)parm)->result = new (((XPathParserControl *)parm)->memMgr) XQSequence(((XPathParserControl *)parm)->memMgr);
-	}
+      ((XPathParserControl *)parm)->result = new (MEMMGR) XQSequence(MEMMGR);
+	;}
     break;
 
   case 3:
-#line 287 "../src/parser/XPath2Parser.y"
+#line 320 "XPath2Parser.y"
     {
       ((XPathParserControl *)parm)->result = (yyvsp[0].astNodeImpl);
-	}
+	;}
     break;
 
   case 4:
-#line 298 "../src/parser/XPath2Parser.y"
+#line 331 "XPath2Parser.y"
     {
 		if((yyvsp[-2].astNodeImpl)->getType()==ASTNode::PARENTHESIZED)
 			(yyval.astNodeImpl) = (yyvsp[-2].astNodeImpl);
 		else
 		{
-			XQParenthesizedExpr *dis = new (((XPathParserControl *)parm)->memMgr) XQParenthesizedExpr(((XPathParserControl *)parm)->memMgr);
+			XQParenthesizedExpr *dis = new (MEMMGR) XQParenthesizedExpr(MEMMGR);
 			dis->addItem((yyvsp[-2].astNodeImpl));
 			(yyval.astNodeImpl) = dis;
 		}
 		((XQParenthesizedExpr *)(yyval.astNodeImpl))->addItem((yyvsp[0].astNodeImpl));
-	}
+	;}
     break;
 
   case 5:
-#line 309 "../src/parser/XPath2Parser.y"
+#line 342 "XPath2Parser.y"
     {
 		(yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
-	}
+	;}
     break;
 
   case 6:
-#line 320 "../src/parser/XPath2Parser.y"
+#line 353 "XPath2Parser.y"
     {
         (yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
-    }
+    ;}
     break;
 
   case 7:
-#line 323 "../src/parser/XPath2Parser.y"
+#line 356 "XPath2Parser.y"
     {
         (yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
-    }
+    ;}
     break;
 
   case 8:
-#line 326 "../src/parser/XPath2Parser.y"
+#line 359 "XPath2Parser.y"
     {
         (yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
-    }
+    ;}
     break;
 
   case 9:
-#line 329 "../src/parser/XPath2Parser.y"
+#line 362 "XPath2Parser.y"
     {
         (yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
-    }
+    ;}
     break;
 
   case 10:
-#line 340 "../src/parser/XPath2Parser.y"
+#line 373 "XPath2Parser.y"
     {
-		(yyval.astNodeImpl) = new (((XPathParserControl *)parm)->memMgr) XQFLWOR((yyvsp[-2].variableBinding), NULL, NULL, (yyvsp[0].astNodeImpl), ((XPathParserControl *)parm)->memMgr);
-	}
+		(yyval.astNodeImpl) = new (MEMMGR) XQFLWOR((yyvsp[-2].variableBinding), NULL, NULL, (yyvsp[0].astNodeImpl), MEMMGR);
+	;}
     break;
 
   case 11:
-#line 351 "../src/parser/XPath2Parser.y"
+#line 384 "XPath2Parser.y"
     {
         (yyval.variableBinding) = (yyvsp[0].variableBinding);
-    }
+    ;}
     break;
 
   case 12:
-#line 361 "../src/parser/XPath2Parser.y"
+#line 394 "XPath2Parser.y"
     {
-		(yyval.astNodeImpl) = new (((XPathParserControl *)parm)->memMgr) XQQuantified(XQQuantified::some, (yyvsp[-2].variableBinding), (yyvsp[0].astNodeImpl), ((XPathParserControl *)parm)->memMgr);
-	}
+		(yyval.astNodeImpl) = new (MEMMGR) XQQuantified(XQQuantified::some, (yyvsp[-2].variableBinding), (yyvsp[0].astNodeImpl), MEMMGR);
+	;}
     break;
 
   case 13:
-#line 365 "../src/parser/XPath2Parser.y"
+#line 398 "XPath2Parser.y"
     {
-		(yyval.astNodeImpl) = new (((XPathParserControl *)parm)->memMgr) XQQuantified(XQQuantified::every, (yyvsp[-2].variableBinding), (yyvsp[0].astNodeImpl), ((XPathParserControl *)parm)->memMgr);
-	}
+		(yyval.astNodeImpl) = new (MEMMGR) XQQuantified(XQQuantified::every, (yyvsp[-2].variableBinding), (yyvsp[0].astNodeImpl), MEMMGR);
+	;}
     break;
 
   case 14:
-#line 372 "../src/parser/XPath2Parser.y"
+#line 405 "XPath2Parser.y"
     {
-		XQVariableBinding* bind=new (((XPathParserControl *)parm)->memMgr) XQVariableBinding(((XPathParserControl *)parm)->memMgr,
+		XQVariableBinding* bind=new (MEMMGR) XQVariableBinding(MEMMGR,
                                                                                          XQVariableBinding::forBinding,
-                                                                                         ((XPathParserControl *)parm)->memMgr->getPooledString((yyvsp[-2].wString)), (yyvsp[0].astNodeImpl));
+                                                                                         MEMMGR->getPooledString((yyvsp[-2].wString)), (yyvsp[0].astNodeImpl));
 		(yyvsp[-4].variableBinding)->push_back(bind);
 		(yyval.variableBinding) = (yyvsp[-4].variableBinding);
 		delete [] (yyvsp[-2].wString);
-	}
+	;}
     break;
 
   case 15:
-#line 381 "../src/parser/XPath2Parser.y"
+#line 414 "XPath2Parser.y"
     {
-		(yyval.variableBinding) = new (((XPathParserControl *)parm)->memMgr) VectorOfVariableBinding(XQillaAllocator<XQVariableBinding*>((((XPathParserControl *)parm)->memMgr)));
-		XQVariableBinding* bind=new (((XPathParserControl *)parm)->memMgr) XQVariableBinding(((XPathParserControl *)parm)->memMgr,
+		(yyval.variableBinding) = new (MEMMGR) VectorOfVariableBinding(XQillaAllocator<XQVariableBinding*>((MEMMGR)));
+		XQVariableBinding* bind=new (MEMMGR) XQVariableBinding(MEMMGR,
                                                                                          XQVariableBinding::forBinding,
-                                                                                         ((XPathParserControl *)parm)->memMgr->getPooledString((yyvsp[-2].wString)), (yyvsp[0].astNodeImpl));
+                                                                                         MEMMGR->getPooledString((yyvsp[-2].wString)), (yyvsp[0].astNodeImpl));
 		(yyval.variableBinding)->push_back(bind);
 		delete [] (yyvsp[-2].wString);
-	}
+	;}
     break;
 
   case 16:
-#line 398 "../src/parser/XPath2Parser.y"
+#line 431 "XPath2Parser.y"
     {
-		(yyval.astNodeImpl) = new (((XPathParserControl *)parm)->memMgr) XQIf((yyvsp[-5].astNodeImpl), (yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl), ((XPathParserControl *)parm)->memMgr);
-	}
+		(yyval.astNodeImpl) = new (MEMMGR) XQIf((yyvsp[-5].astNodeImpl), (yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl), MEMMGR);
+	;}
     break;
 
   case 17:
-#line 412 "../src/parser/XPath2Parser.y"
+#line 445 "XPath2Parser.y"
     {
 		(yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
-	}
+	;}
     break;
 
   case 18:
-#line 416 "../src/parser/XPath2Parser.y"
+#line 449 "XPath2Parser.y"
     {
     if((yyvsp[-2].astNodeImpl)->getType() == ASTNode::OPERATOR
        && (static_cast<XQOperator *>((yyvsp[-2].astNodeImpl)))->getOperatorName() == Or::name) {
@@ -1833,21 +1866,21 @@ yyreduce:
 		}
 		else
 		{
-			ASTNodeImpl *dii = new (((XPathParserControl *)parm)->memMgr) Or(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl), ((XPathParserControl *)parm)->memMgr), ((XPathParserControl *)parm)->memMgr);
+			ASTNodeImpl *dii = new (MEMMGR) Or(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl), MEMMGR), MEMMGR);
 			(yyval.astNodeImpl) = dii;
 		}
-	}
+	;}
     break;
 
   case 19:
-#line 437 "../src/parser/XPath2Parser.y"
+#line 470 "XPath2Parser.y"
     {
 		(yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
-	}
+	;}
     break;
 
   case 20:
-#line 441 "../src/parser/XPath2Parser.y"
+#line 474 "XPath2Parser.y"
     {
     if((yyvsp[-2].astNodeImpl)->getType() == ASTNode::OPERATOR
        && (static_cast<XQOperator *>((yyvsp[-2].astNodeImpl)))->getOperatorName() == And::name) {
@@ -1857,468 +1890,424 @@ yyreduce:
 		}
 		else
 		{
-			ASTNodeImpl *dii = new (((XPathParserControl *)parm)->memMgr) And(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl), ((XPathParserControl *)parm)->memMgr), ((XPathParserControl *)parm)->memMgr);
+			ASTNodeImpl *dii = new (MEMMGR) And(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl), MEMMGR), MEMMGR);
 			(yyval.astNodeImpl) = dii;
 		}
-	}
+	;}
     break;
 
   case 21:
-#line 471 "../src/parser/XPath2Parser.y"
+#line 504 "XPath2Parser.y"
     {
 		(yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
-	}
+	;}
     break;
 
   case 22:
-#line 475 "../src/parser/XPath2Parser.y"
+#line 508 "XPath2Parser.y"
     {
-		(yyval.astNodeImpl) = new (((XPathParserControl *)parm)->memMgr) GeneralComp(GeneralComp::EQUAL,packageArgs((yyvsp[-2].astNodeImpl),(yyvsp[0].astNodeImpl),((XPathParserControl *)parm)->memMgr),((XPathParserControl *)parm)->memMgr);
-	}
+		(yyval.astNodeImpl) = new (MEMMGR) GeneralComp(GeneralComp::EQUAL,packageArgs((yyvsp[-2].astNodeImpl),(yyvsp[0].astNodeImpl),MEMMGR),MEMMGR);
+	;}
     break;
 
   case 23:
-#line 479 "../src/parser/XPath2Parser.y"
+#line 512 "XPath2Parser.y"
     {
-		(yyval.astNodeImpl) = new (((XPathParserControl *)parm)->memMgr) GeneralComp(GeneralComp::NOT_EQUAL,packageArgs((yyvsp[-2].astNodeImpl),(yyvsp[0].astNodeImpl),((XPathParserControl *)parm)->memMgr),((XPathParserControl *)parm)->memMgr);
-	}
+		(yyval.astNodeImpl) = new (MEMMGR) GeneralComp(GeneralComp::NOT_EQUAL,packageArgs((yyvsp[-2].astNodeImpl),(yyvsp[0].astNodeImpl),MEMMGR),MEMMGR);
+	;}
     break;
 
   case 24:
-#line 483 "../src/parser/XPath2Parser.y"
+#line 516 "XPath2Parser.y"
     {
-		(yyval.astNodeImpl) = new (((XPathParserControl *)parm)->memMgr) GeneralComp(GeneralComp::LESS_THAN,packageArgs((yyvsp[-2].astNodeImpl),(yyvsp[0].astNodeImpl),((XPathParserControl *)parm)->memMgr),((XPathParserControl *)parm)->memMgr);
-	}
+		(yyval.astNodeImpl) = new (MEMMGR) GeneralComp(GeneralComp::LESS_THAN,packageArgs((yyvsp[-2].astNodeImpl),(yyvsp[0].astNodeImpl),MEMMGR),MEMMGR);
+	;}
     break;
 
   case 25:
-#line 487 "../src/parser/XPath2Parser.y"
+#line 520 "XPath2Parser.y"
     {
-		(yyval.astNodeImpl) = new (((XPathParserControl *)parm)->memMgr) GeneralComp(GeneralComp::LESS_THAN_EQUAL,packageArgs((yyvsp[-2].astNodeImpl),(yyvsp[0].astNodeImpl),((XPathParserControl *)parm)->memMgr),((XPathParserControl *)parm)->memMgr);
-	}
+		(yyval.astNodeImpl) = new (MEMMGR) GeneralComp(GeneralComp::LESS_THAN_EQUAL,packageArgs((yyvsp[-2].astNodeImpl),(yyvsp[0].astNodeImpl),MEMMGR),MEMMGR);
+	;}
     break;
 
   case 26:
-#line 491 "../src/parser/XPath2Parser.y"
+#line 524 "XPath2Parser.y"
     {
-		(yyval.astNodeImpl) = new (((XPathParserControl *)parm)->memMgr) GeneralComp(GeneralComp::GREATER_THAN,packageArgs((yyvsp[-2].astNodeImpl),(yyvsp[0].astNodeImpl),((XPathParserControl *)parm)->memMgr),((XPathParserControl *)parm)->memMgr);
-	}
+		(yyval.astNodeImpl) = new (MEMMGR) GeneralComp(GeneralComp::GREATER_THAN,packageArgs((yyvsp[-2].astNodeImpl),(yyvsp[0].astNodeImpl),MEMMGR),MEMMGR);
+	;}
     break;
 
   case 27:
-#line 495 "../src/parser/XPath2Parser.y"
+#line 528 "XPath2Parser.y"
     {
-		(yyval.astNodeImpl) = new (((XPathParserControl *)parm)->memMgr) GeneralComp(GeneralComp::GREATER_THAN_EQUAL,packageArgs((yyvsp[-2].astNodeImpl),(yyvsp[0].astNodeImpl),((XPathParserControl *)parm)->memMgr),((XPathParserControl *)parm)->memMgr);
-	}
+		(yyval.astNodeImpl) = new (MEMMGR) GeneralComp(GeneralComp::GREATER_THAN_EQUAL,packageArgs((yyvsp[-2].astNodeImpl),(yyvsp[0].astNodeImpl),MEMMGR),MEMMGR);
+	;}
     break;
 
   case 28:
-#line 499 "../src/parser/XPath2Parser.y"
+#line 532 "XPath2Parser.y"
     {
-		(yyval.astNodeImpl) = new (((XPathParserControl *)parm)->memMgr) Equals(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl),((XPathParserControl *)parm)->memMgr), ((XPathParserControl *)parm)->memMgr);
-	}
+		(yyval.astNodeImpl) = new (MEMMGR) Equals(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl),MEMMGR), MEMMGR);
+	;}
     break;
 
   case 29:
-#line 503 "../src/parser/XPath2Parser.y"
+#line 536 "XPath2Parser.y"
     {
-		(yyval.astNodeImpl) = new (((XPathParserControl *)parm)->memMgr) NotEquals(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl),((XPathParserControl *)parm)->memMgr), ((XPathParserControl *)parm)->memMgr);
-	}
+		(yyval.astNodeImpl) = new (MEMMGR) NotEquals(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl),MEMMGR), MEMMGR);
+	;}
     break;
 
   case 30:
-#line 507 "../src/parser/XPath2Parser.y"
+#line 540 "XPath2Parser.y"
     {
-		(yyval.astNodeImpl) = new (((XPathParserControl *)parm)->memMgr) LessThan(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl),((XPathParserControl *)parm)->memMgr), ((XPathParserControl *)parm)->memMgr);
-	}
+		(yyval.astNodeImpl) = new (MEMMGR) LessThan(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl),MEMMGR), MEMMGR);
+	;}
     break;
 
   case 31:
-#line 511 "../src/parser/XPath2Parser.y"
+#line 544 "XPath2Parser.y"
     {
-		(yyval.astNodeImpl) = new (((XPathParserControl *)parm)->memMgr) LessThanEqual(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl),((XPathParserControl *)parm)->memMgr), ((XPathParserControl *)parm)->memMgr);
-	}
+		(yyval.astNodeImpl) = new (MEMMGR) LessThanEqual(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl),MEMMGR), MEMMGR);
+	;}
     break;
 
   case 32:
-#line 515 "../src/parser/XPath2Parser.y"
+#line 548 "XPath2Parser.y"
     {
-		(yyval.astNodeImpl) = new (((XPathParserControl *)parm)->memMgr) GreaterThan(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl),((XPathParserControl *)parm)->memMgr), ((XPathParserControl *)parm)->memMgr);
-	}
+		(yyval.astNodeImpl) = new (MEMMGR) GreaterThan(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl),MEMMGR), MEMMGR);
+	;}
     break;
 
   case 33:
-#line 519 "../src/parser/XPath2Parser.y"
+#line 552 "XPath2Parser.y"
     {
-		(yyval.astNodeImpl) = new (((XPathParserControl *)parm)->memMgr) GreaterThanEqual(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl),((XPathParserControl *)parm)->memMgr), ((XPathParserControl *)parm)->memMgr);
-	}
+		(yyval.astNodeImpl) = new (MEMMGR) GreaterThanEqual(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl),MEMMGR), MEMMGR);
+	;}
     break;
 
   case 34:
-#line 523 "../src/parser/XPath2Parser.y"
+#line 556 "XPath2Parser.y"
     {
-		(yyval.astNodeImpl) = new (((XPathParserControl *)parm)->memMgr) NodeComparison(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl),((XPathParserControl *)parm)->memMgr), ((XPathParserControl *)parm)->memMgr);
-	}
+		(yyval.astNodeImpl) = new (MEMMGR) NodeComparison(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl),MEMMGR), MEMMGR);
+	;}
     break;
 
   case 35:
-#line 527 "../src/parser/XPath2Parser.y"
+#line 560 "XPath2Parser.y"
     {
-		(yyval.astNodeImpl) = new (((XPathParserControl *)parm)->memMgr) OrderComparison(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl),((XPathParserControl *)parm)->memMgr), true, ((XPathParserControl *)parm)->memMgr);
-	}
+		(yyval.astNodeImpl) = new (MEMMGR) OrderComparison(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl),MEMMGR), true, MEMMGR);
+	;}
     break;
 
   case 36:
-#line 531 "../src/parser/XPath2Parser.y"
+#line 564 "XPath2Parser.y"
     {
-		(yyval.astNodeImpl) = new (((XPathParserControl *)parm)->memMgr) OrderComparison(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl),((XPathParserControl *)parm)->memMgr), false, ((XPathParserControl *)parm)->memMgr);
-	}
+		(yyval.astNodeImpl) = new (MEMMGR) OrderComparison(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl),MEMMGR), false, MEMMGR);
+	;}
     break;
 
   case 37:
-#line 543 "../src/parser/XPath2Parser.y"
+#line 576 "XPath2Parser.y"
     {
 	  (yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
-	}
+	;}
     break;
 
   case 38:
-#line 547 "../src/parser/XPath2Parser.y"
+#line 580 "XPath2Parser.y"
     {
-		(yyval.astNodeImpl) = new (((XPathParserControl *)parm)->memMgr) Range(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl),((XPathParserControl *)parm)->memMgr), ((XPathParserControl *)parm)->memMgr);
-	}
+		(yyval.astNodeImpl) = new (MEMMGR) Range(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl),MEMMGR), MEMMGR);
+	;}
     break;
 
   case 39:
-#line 560 "../src/parser/XPath2Parser.y"
+#line 593 "XPath2Parser.y"
     {
 	  (yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
-	}
+	;}
     break;
 
   case 40:
-#line 564 "../src/parser/XPath2Parser.y"
+#line 597 "XPath2Parser.y"
     {
-		(yyval.astNodeImpl) = new (((XPathParserControl *)parm)->memMgr) Plus(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl),((XPathParserControl *)parm)->memMgr), ((XPathParserControl *)parm)->memMgr);
-	}
+		(yyval.astNodeImpl) = new (MEMMGR) Plus(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl),MEMMGR), MEMMGR);
+	;}
     break;
 
   case 41:
-#line 568 "../src/parser/XPath2Parser.y"
+#line 601 "XPath2Parser.y"
     {
-		(yyval.astNodeImpl) = new (((XPathParserControl *)parm)->memMgr) Minus(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl),((XPathParserControl *)parm)->memMgr), ((XPathParserControl *)parm)->memMgr);
-	}
+		(yyval.astNodeImpl) = new (MEMMGR) Minus(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl),MEMMGR), MEMMGR);
+	;}
     break;
 
   case 42:
-#line 580 "../src/parser/XPath2Parser.y"
+#line 613 "XPath2Parser.y"
     {
 	  (yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
-	}
+	;}
     break;
 
   case 43:
-#line 584 "../src/parser/XPath2Parser.y"
+#line 617 "XPath2Parser.y"
     {
-		(yyval.astNodeImpl) = new (((XPathParserControl *)parm)->memMgr) Multiply(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl),((XPathParserControl *)parm)->memMgr), ((XPathParserControl *)parm)->memMgr);
-	}
+		(yyval.astNodeImpl) = new (MEMMGR) Multiply(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl),MEMMGR), MEMMGR);
+	;}
     break;
 
   case 44:
-#line 588 "../src/parser/XPath2Parser.y"
+#line 621 "XPath2Parser.y"
     {
-		(yyval.astNodeImpl) = new (((XPathParserControl *)parm)->memMgr) Divide(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl),((XPathParserControl *)parm)->memMgr), ((XPathParserControl *)parm)->memMgr);
-	}
+		(yyval.astNodeImpl) = new (MEMMGR) Divide(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl),MEMMGR), MEMMGR);
+	;}
     break;
 
   case 45:
-#line 592 "../src/parser/XPath2Parser.y"
+#line 625 "XPath2Parser.y"
     {
-		(yyval.astNodeImpl) = new (((XPathParserControl *)parm)->memMgr) IntegerDivide(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl),((XPathParserControl *)parm)->memMgr), ((XPathParserControl *)parm)->memMgr);
-	}
+		(yyval.astNodeImpl) = new (MEMMGR) IntegerDivide(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl),MEMMGR), MEMMGR);
+	;}
     break;
 
   case 46:
-#line 596 "../src/parser/XPath2Parser.y"
+#line 629 "XPath2Parser.y"
     {
-		(yyval.astNodeImpl) = new (((XPathParserControl *)parm)->memMgr) Mod(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl),((XPathParserControl *)parm)->memMgr), ((XPathParserControl *)parm)->memMgr);
-	}
+		(yyval.astNodeImpl) = new (MEMMGR) Mod(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl),MEMMGR), MEMMGR);
+	;}
     break;
 
   case 47:
-#line 608 "../src/parser/XPath2Parser.y"
+#line 641 "XPath2Parser.y"
     {
 	  (yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
-	}
+	;}
     break;
 
   case 48:
-#line 612 "../src/parser/XPath2Parser.y"
+#line 645 "XPath2Parser.y"
     {
-		(yyval.astNodeImpl) = new (((XPathParserControl *)parm)->memMgr) Union(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl),((XPathParserControl *)parm)->memMgr), ((XPathParserControl *)parm)->memMgr);
-	}
+		(yyval.astNodeImpl) = new (MEMMGR) Union(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl),MEMMGR), MEMMGR);
+	;}
     break;
 
   case 49:
-#line 616 "../src/parser/XPath2Parser.y"
+#line 649 "XPath2Parser.y"
     {
-		(yyval.astNodeImpl) = new (((XPathParserControl *)parm)->memMgr) Union(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl),((XPathParserControl *)parm)->memMgr), ((XPathParserControl *)parm)->memMgr);
-	}
+		(yyval.astNodeImpl) = new (MEMMGR) Union(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl),MEMMGR), MEMMGR);
+	;}
     break;
 
   case 50:
-#line 628 "../src/parser/XPath2Parser.y"
+#line 661 "XPath2Parser.y"
     {
 	  (yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
-	}
+	;}
     break;
 
   case 51:
-#line 632 "../src/parser/XPath2Parser.y"
+#line 665 "XPath2Parser.y"
     {
-		(yyval.astNodeImpl) = new (((XPathParserControl *)parm)->memMgr) Intersect(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl),((XPathParserControl *)parm)->memMgr), ((XPathParserControl *)parm)->memMgr);
-	}
+		(yyval.astNodeImpl) = new (MEMMGR) Intersect(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl),MEMMGR), MEMMGR);
+	;}
     break;
 
   case 52:
-#line 636 "../src/parser/XPath2Parser.y"
+#line 669 "XPath2Parser.y"
     {
-		(yyval.astNodeImpl) = new (((XPathParserControl *)parm)->memMgr) Except(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl),((XPathParserControl *)parm)->memMgr), ((XPathParserControl *)parm)->memMgr);
-	}
+		(yyval.astNodeImpl) = new (MEMMGR) Except(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl),MEMMGR), MEMMGR);
+	;}
     break;
 
   case 53:
-#line 648 "../src/parser/XPath2Parser.y"
+#line 681 "XPath2Parser.y"
     {
 	  (yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
-	}
+	;}
     break;
 
   case 54:
-#line 652 "../src/parser/XPath2Parser.y"
+#line 685 "XPath2Parser.y"
     {
-		(yyval.astNodeImpl) = new (((XPathParserControl *)parm)->memMgr) XQInstanceOf((yyvsp[-2].astNodeImpl), (yyvsp[0].sequenceType), ((XPathParserControl *)parm)->memMgr);
-	}
+		(yyval.astNodeImpl) = new (MEMMGR) XQInstanceOf((yyvsp[-2].astNodeImpl), (yyvsp[0].sequenceType), MEMMGR);
+	;}
     break;
 
   case 55:
-#line 663 "../src/parser/XPath2Parser.y"
+#line 696 "XPath2Parser.y"
     {
         (yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
-    }
+    ;}
     break;
 
   case 56:
-#line 666 "../src/parser/XPath2Parser.y"
+#line 699 "XPath2Parser.y"
     {
-		(yyval.astNodeImpl) = new (((XPathParserControl *)parm)->memMgr) XQTreatAs((yyvsp[-2].astNodeImpl), (yyvsp[0].sequenceType), ((XPathParserControl *)parm)->memMgr);
-	}
+		(yyval.astNodeImpl) = new (MEMMGR) XQTreatAs((yyvsp[-2].astNodeImpl), (yyvsp[0].sequenceType), MEMMGR);
+	;}
     break;
 
   case 57:
-#line 677 "../src/parser/XPath2Parser.y"
+#line 710 "XPath2Parser.y"
     {
 	  (yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
-	}
+	;}
     break;
 
   case 58:
-#line 681 "../src/parser/XPath2Parser.y"
+#line 714 "XPath2Parser.y"
     {
-        (yyval.astNodeImpl) = new (((XPathParserControl *)parm)->memMgr) XQCastableAs((yyvsp[-2].astNodeImpl), (yyvsp[0].sequenceType),((XPathParserControl *)parm)->memMgr);
-	}
+        (yyval.astNodeImpl) = new (MEMMGR) XQCastableAs((yyvsp[-2].astNodeImpl), (yyvsp[0].sequenceType),MEMMGR);
+	;}
     break;
 
   case 59:
-#line 692 "../src/parser/XPath2Parser.y"
+#line 725 "XPath2Parser.y"
     {
         (yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
-    }
+    ;}
     break;
 
   case 60:
-#line 695 "../src/parser/XPath2Parser.y"
+#line 728 "XPath2Parser.y"
     {
-		(yyval.astNodeImpl) = new (((XPathParserControl *)parm)->memMgr) XQCastAs((yyvsp[-2].astNodeImpl), (yyvsp[0].sequenceType),((XPathParserControl *)parm)->memMgr);
-	}
+		(yyval.astNodeImpl) = new (MEMMGR) XQCastAs((yyvsp[-2].astNodeImpl), (yyvsp[0].sequenceType),MEMMGR);
+	;}
     break;
 
   case 61:
-#line 706 "../src/parser/XPath2Parser.y"
+#line 739 "XPath2Parser.y"
     {
 	  (yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
-	}
+	;}
     break;
 
   case 62:
-#line 710 "../src/parser/XPath2Parser.y"
+#line 743 "XPath2Parser.y"
     {
-	  VectorOfASTNodes args(XQillaAllocator<ASTNode*>(((XPathParserControl *)parm)->memMgr));
+	  VectorOfASTNodes args(XQillaAllocator<ASTNode*>(MEMMGR));
 	  args.push_back((yyvsp[0].astNodeImpl));
-	  (yyval.astNodeImpl) = new (((XPathParserControl *)parm)->memMgr) UnaryMinus(args, ((XPathParserControl *)parm)->memMgr);
-	}
+	  (yyval.astNodeImpl) = new (MEMMGR) UnaryMinus(args, MEMMGR);
+	;}
     break;
 
   case 63:
-#line 716 "../src/parser/XPath2Parser.y"
+#line 749 "XPath2Parser.y"
     {
 		//no need to do anything with unary plus
 		(yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
-	}
+	;}
     break;
 
   case 64:
-#line 732 "../src/parser/XPath2Parser.y"
+#line 765 "XPath2Parser.y"
     {
 		(yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
-	}
+	;}
     break;
 
   case 65:
-#line 744 "../src/parser/XPath2Parser.y"
+#line 777 "XPath2Parser.y"
     {
-		XQNav *nav = new (((XPathParserControl *)parm)->memMgr) XQNav(((XPathParserControl *)parm)->memMgr);
-    nav->addInitialRootStep(((XPathParserControl *)parm)->memMgr);
-		(yyval.astNodeImpl) = nav;
-  }
+        XQNav *nav = new (MEMMGR) XQNav(MEMMGR);
+        nav->addInitialRootStep(MEMMGR);
+        (yyval.astNodeImpl) = nav;
+    ;}
     break;
 
   case 66:
-#line 750 "../src/parser/XPath2Parser.y"
+#line 783 "XPath2Parser.y"
     {
-
-        // Optimization: if the _RelativePathExpr is already a XQNav, simply set the "go to root" flag
-        if((yyvsp[0].astNodeImpl)->getType()==ASTNode::NAVIGATION)
-        {
-            ((XQNav*)(yyvsp[0].astNodeImpl))->addInitialRootStep(((XPathParserControl *)parm)->memMgr);
-            (yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
-        }
-        else
-        {
-	        XQNav *nav = new (((XPathParserControl *)parm)->memMgr) XQNav(((XPathParserControl *)parm)->memMgr);
-          nav->addInitialRootStep(((XPathParserControl *)parm)->memMgr);
-  		    nav->addStep((yyvsp[0].astNodeImpl));
-	  	    (yyval.astNodeImpl) = nav;
-        }
-  }
+        XQNav* nav=getNavigation((yyvsp[0].astNodeImpl),MEMMGR);
+        nav->addInitialRootStep(MEMMGR);
+	    (yyval.astNodeImpl) = nav;
+    ;}
     break;
 
   case 67:
-#line 767 "../src/parser/XPath2Parser.y"
+#line 789 "XPath2Parser.y"
     {
-    XQNav *nav = 0;
-    if((yyvsp[0].astNodeImpl)->getType()==ASTNode::NAVIGATION) {
-      nav = (XQNav*)(yyvsp[0].astNodeImpl);
-    }
-    else {
-      nav = new (((XPathParserControl *)parm)->memMgr) XQNav(((XPathParserControl *)parm)->memMgr);
-      nav->addStep((yyvsp[0].astNodeImpl));
-    }
+        XQNav *nav = getNavigation((yyvsp[0].astNodeImpl),MEMMGR);
 
-    NodeTest *step = new (((XPathParserControl *)parm)->memMgr) NodeTest();
-    step->setTypeWildcard();
-    step->setNameWildcard();
-    step->setNamespaceWildcard();
-    nav->addStepFront(new (((XPathParserControl *)parm)->memMgr) XQStep(XQStep::DESCENDANT_OR_SELF, step, ((XPathParserControl *)parm)->memMgr));
+        NodeTest *step = new (MEMMGR) NodeTest();
+        step->setTypeWildcard();
+        step->setNameWildcard();
+        step->setNamespaceWildcard();
+        nav->addStepFront(new (MEMMGR) XQStep(XQStep::DESCENDANT_OR_SELF, step, MEMMGR));
 
-    nav->addInitialRootStep(((XPathParserControl *)parm)->memMgr);
+        nav->addInitialRootStep(MEMMGR);
 
-    (yyval.astNodeImpl) = nav;
-	}
-    break;
-
-  case 68:
-#line 788 "../src/parser/XPath2Parser.y"
-    {
-	  (yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
-  }
+        (yyval.astNodeImpl) = nav;
+	;}
     break;
 
   case 69:
-#line 802 "../src/parser/XPath2Parser.y"
+#line 815 "XPath2Parser.y"
     {
 	  (yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
-	}
+	;}
     break;
 
   case 70:
-#line 806 "../src/parser/XPath2Parser.y"
+#line 819 "XPath2Parser.y"
     {
-
-        // Optimization: if the _RelativePathExpr is already a XQNav, simply add the new step
-        if((yyvsp[-2].astNodeImpl)->getType()==ASTNode::NAVIGATION)
-        {
-            ((XQNav*)(yyvsp[-2].astNodeImpl))->addStep((yyvsp[0].astNodeImpl));
-            (yyval.astNodeImpl) = (yyvsp[-2].astNodeImpl);
-        }
-        else
-        {
-		    XQNav *nav = new (((XPathParserControl *)parm)->memMgr) XQNav(((XPathParserControl *)parm)->memMgr);
-		    nav->addStep((yyvsp[-2].astNodeImpl));
-		    nav->addStep((yyvsp[0].astNodeImpl));
-		    (yyval.astNodeImpl) = nav;
-        }
-	}
+		XQNav *nav = getNavigation((yyvsp[-2].astNodeImpl),MEMMGR);
+	    nav->addStep((yyvsp[0].astNodeImpl));
+		(yyval.astNodeImpl) = nav;
+	;}
     break;
 
   case 71:
-#line 823 "../src/parser/XPath2Parser.y"
+#line 825 "XPath2Parser.y"
     {
+        XQNav *nav = getNavigation((yyvsp[-2].astNodeImpl),MEMMGR);
 
-    XQNav *nav = 0;
-    if((yyvsp[-2].astNodeImpl)->getType()==ASTNode::NAVIGATION) {
-      nav = (XQNav*)(yyvsp[-2].astNodeImpl);
-    }
-    else {
-      nav = new (((XPathParserControl *)parm)->memMgr) XQNav(((XPathParserControl *)parm)->memMgr);
-      nav->addStep((yyvsp[-2].astNodeImpl));
-    }
+        NodeTest *step = new (MEMMGR) NodeTest();
+        step->setTypeWildcard();
+        step->setNameWildcard();
+        step->setNamespaceWildcard();
+        nav->addStep(XQStep::DESCENDANT_OR_SELF, step);
 
-    NodeTest *step = new (((XPathParserControl *)parm)->memMgr) NodeTest();
-    step->setTypeWildcard();
-    step->setNameWildcard();
-    step->setNamespaceWildcard();
-    nav->addStep(XQStep::DESCENDANT_OR_SELF, step);
+        nav->addStep((yyvsp[0].astNodeImpl));
 
-    nav->addStep((yyvsp[0].astNodeImpl));
-
-    (yyval.astNodeImpl) = nav;
-	}
+        (yyval.astNodeImpl) = nav;
+	;}
     break;
 
   case 72:
-#line 854 "../src/parser/XPath2Parser.y"
+#line 848 "XPath2Parser.y"
     {
         (yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
-    }
+    ;}
     break;
 
   case 73:
-#line 857 "../src/parser/XPath2Parser.y"
+#line 851 "XPath2Parser.y"
     {
         (yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
-    }
+    ;}
     break;
 
   case 74:
-#line 867 "../src/parser/XPath2Parser.y"
+#line 861 "XPath2Parser.y"
     {
         (yyval.astNodeImpl) = XQPredicate::addPredicates((yyvsp[-1].astNodeImpl), (yyvsp[0].predicates));
         delete (yyvsp[0].predicates);
-    }
+    ;}
     break;
 
   case 75:
-#line 871 "../src/parser/XPath2Parser.y"
+#line 865 "XPath2Parser.y"
     {
         (yyval.astNodeImpl) = XQPredicate::addPredicates((yyvsp[-1].astNodeImpl), (yyvsp[0].predicates));
         delete (yyvsp[0].predicates);
-        (yyval.astNodeImpl) = new (((XPathParserControl *)parm)->memMgr) XQDocumentOrder((yyval.astNodeImpl), ((XPathParserControl *)parm)->memMgr);
-    }
+        (yyval.astNodeImpl) = new (MEMMGR) XQDocumentOrder((yyval.astNodeImpl), MEMMGR);
+    ;}
     break;
 
   case 76:
-#line 884 "../src/parser/XPath2Parser.y"
+#line 878 "XPath2Parser.y"
     {
       if(!(yyvsp[0].nodeTest)->isNodeTypeSet()) {
         switch((yyvsp[-1].axis)) {
@@ -2328,86 +2317,86 @@ yyreduce:
         }
       }
 
-      (yyval.astNodeImpl) = new (((XPathParserControl *)parm)->memMgr) XQStep((yyvsp[-1].axis), (yyvsp[0].nodeTest), ((XPathParserControl *)parm)->memMgr);
-	}
+      (yyval.astNodeImpl) = new (MEMMGR) XQStep((yyvsp[-1].axis), (yyvsp[0].nodeTest), MEMMGR);
+	;}
     break;
 
   case 77:
-#line 896 "../src/parser/XPath2Parser.y"
+#line 890 "XPath2Parser.y"
     {
 		(yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
-	}
+	;}
     break;
 
   case 78:
-#line 915 "../src/parser/XPath2Parser.y"
+#line 909 "XPath2Parser.y"
     {
     (yyval.axis) = XQStep::CHILD;
-	}
+	;}
     break;
 
   case 79:
-#line 919 "../src/parser/XPath2Parser.y"
+#line 913 "XPath2Parser.y"
     {
     (yyval.axis) = XQStep::DESCENDANT;
-	}
+	;}
     break;
 
   case 80:
-#line 923 "../src/parser/XPath2Parser.y"
+#line 917 "XPath2Parser.y"
     {
     (yyval.axis) = XQStep::ATTRIBUTE;
-	}
+	;}
     break;
 
   case 81:
-#line 927 "../src/parser/XPath2Parser.y"
+#line 921 "XPath2Parser.y"
     {
     (yyval.axis) = XQStep::SELF;
-	}
+	;}
     break;
 
   case 82:
-#line 931 "../src/parser/XPath2Parser.y"
+#line 925 "XPath2Parser.y"
     {
     (yyval.axis) = XQStep::DESCENDANT_OR_SELF;
-	}
+	;}
     break;
 
   case 83:
-#line 935 "../src/parser/XPath2Parser.y"
+#line 929 "XPath2Parser.y"
     {
     (yyval.axis) = XQStep::FOLLOWING_SIBLING;
-	}
+	;}
     break;
 
   case 84:
-#line 939 "../src/parser/XPath2Parser.y"
+#line 933 "XPath2Parser.y"
     {
     (yyval.axis) = XQStep::FOLLOWING;
-	}
+	;}
     break;
 
   case 85:
-#line 943 "../src/parser/XPath2Parser.y"
+#line 937 "XPath2Parser.y"
     {
     (yyval.axis) = XQStep::NAMESPACE;
-	}
+	;}
     break;
 
   case 86:
-#line 955 "../src/parser/XPath2Parser.y"
+#line 949 "XPath2Parser.y"
     {
     if(!(yyvsp[0].nodeTest)->isNodeTypeSet()) {
       (yyvsp[0].nodeTest)->setNodeType(Node::attribute_string);
     }
 
-    (yyval.astNodeImpl) = new (((XPathParserControl *)parm)->memMgr) XQStep(XQStep::ATTRIBUTE, (yyvsp[0].nodeTest), ((XPathParserControl *)parm)->memMgr);
-	}
+    (yyval.astNodeImpl) = new (MEMMGR) XQStep(XQStep::ATTRIBUTE, (yyvsp[0].nodeTest), MEMMGR);
+	;}
     break;
 
   case 87:
-#line 963 "../src/parser/XPath2Parser.y"
+#line 957 "XPath2Parser.y"
     {
     XQStep::Axis axis = XQStep::CHILD;
     SequenceType::ItemType *itemtype = (yyvsp[0].nodeTest)->getItemType();
@@ -2419,767 +2408,742 @@ yyreduce:
       (yyvsp[0].nodeTest)->setNodeType(Node::element_string);
     }
 
-    (yyval.astNodeImpl) = new (((XPathParserControl *)parm)->memMgr) XQStep(axis, (yyvsp[0].nodeTest), ((XPathParserControl *)parm)->memMgr);
-	}
+    (yyval.astNodeImpl) = new (MEMMGR) XQStep(axis, (yyvsp[0].nodeTest), MEMMGR);
+	;}
     break;
 
   case 88:
-#line 985 "../src/parser/XPath2Parser.y"
+#line 979 "XPath2Parser.y"
     {
     if(!(yyvsp[0].nodeTest)->isNodeTypeSet()) {
       (yyvsp[0].nodeTest)->setNodeType(Node::element_string);
     }
 
-    (yyval.astNodeImpl) = new (((XPathParserControl *)parm)->memMgr) XQStep((yyvsp[-1].axis), (yyvsp[0].nodeTest), ((XPathParserControl *)parm)->memMgr);
-	}
+    (yyval.astNodeImpl) = new (MEMMGR) XQStep((yyvsp[-1].axis), (yyvsp[0].nodeTest), MEMMGR);
+	;}
     break;
 
   case 89:
-#line 993 "../src/parser/XPath2Parser.y"
+#line 987 "XPath2Parser.y"
     {
 		(yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
-	}
+	;}
     break;
 
   case 90:
-#line 1008 "../src/parser/XPath2Parser.y"
+#line 1002 "XPath2Parser.y"
     {
     (yyval.axis) = XQStep::PARENT;
-	}
+	;}
     break;
 
   case 91:
-#line 1012 "../src/parser/XPath2Parser.y"
+#line 1006 "XPath2Parser.y"
     {
     (yyval.axis) = XQStep::ANCESTOR;
-	}
+	;}
     break;
 
   case 92:
-#line 1016 "../src/parser/XPath2Parser.y"
+#line 1010 "XPath2Parser.y"
     {
     (yyval.axis) = XQStep::PRECEDING_SIBLING;
-	}
+	;}
     break;
 
   case 93:
-#line 1020 "../src/parser/XPath2Parser.y"
+#line 1014 "XPath2Parser.y"
     {
     (yyval.axis) = XQStep::PRECEDING;
-	}
+	;}
     break;
 
   case 94:
-#line 1024 "../src/parser/XPath2Parser.y"
+#line 1018 "XPath2Parser.y"
     {
     (yyval.axis) = XQStep::ANCESTOR_OR_SELF;
-	}
+	;}
     break;
 
   case 95:
-#line 1035 "../src/parser/XPath2Parser.y"
+#line 1029 "XPath2Parser.y"
     {
-		NodeTest *step = new (((XPathParserControl *)parm)->memMgr) NodeTest;
+		NodeTest *step = new (MEMMGR) NodeTest;
 		step->setNameWildcard();
 		step->setNamespaceWildcard();
 		step->setTypeWildcard();
-    (yyval.astNodeImpl) = new (((XPathParserControl *)parm)->memMgr) XQStep(XQStep::PARENT, step, ((XPathParserControl *)parm)->memMgr);
-	}
+    (yyval.astNodeImpl) = new (MEMMGR) XQStep(XQStep::PARENT, step, MEMMGR);
+	;}
     break;
 
   case 96:
-#line 1050 "../src/parser/XPath2Parser.y"
+#line 1044 "XPath2Parser.y"
     {
 		(yyval.nodeTest) = (yyvsp[0].nodeTest);
-	}
+	;}
     break;
 
   case 97:
-#line 1054 "../src/parser/XPath2Parser.y"
+#line 1048 "XPath2Parser.y"
     {
 		(yyval.nodeTest) = (yyvsp[0].nodeTest);
-	}
+	;}
     break;
 
   case 98:
-#line 1065 "../src/parser/XPath2Parser.y"
+#line 1059 "XPath2Parser.y"
     {
-        NodeTest *step = new (((XPathParserControl *)parm)->memMgr) NodeTest();
-
-        if((yyvsp[0].qName)->getPrefix() == NULL)
-            step->setNodeName((yyvsp[0].qName)->getName());
-        else {
-            step->setNodeName((yyvsp[0].qName)->getName());
-            const XMLCh *uri = ((XPathParserControl *)parm)->context->getUriBoundToPrefix((yyvsp[0].qName)->getPrefix());
-            step->setNodeUri(uri);
-        }
+        NodeTest *step = new (MEMMGR) NodeTest();
+		step->setNodePrefix((yyvsp[0].qName)->getPrefix());
+        step->setNodeName((yyvsp[0].qName)->getName());
         (yyval.nodeTest) = step;
-    }
+    ;}
     break;
 
   case 99:
-#line 1077 "../src/parser/XPath2Parser.y"
+#line 1065 "XPath2Parser.y"
     {
         (yyval.nodeTest) = (yyvsp[0].nodeTest);
-    }
+    ;}
     break;
 
   case 100:
-#line 1089 "../src/parser/XPath2Parser.y"
+#line 1077 "XPath2Parser.y"
     {
-		NodeTest *step = new (((XPathParserControl *)parm)->memMgr) NodeTest();
+		NodeTest *step = new (MEMMGR) NodeTest();
 		step->setNameWildcard();
 		step->setNamespaceWildcard();
 		(yyval.nodeTest) = step;
-	}
+	;}
     break;
 
   case 101:
-#line 1096 "../src/parser/XPath2Parser.y"
+#line 1084 "XPath2Parser.y"
     {
-		NodeTest *step = new (((XPathParserControl *)parm)->memMgr) NodeTest();
+		NodeTest *step = new (MEMMGR) NodeTest();
+		step->setNodePrefix(MEMMGR->getPooledString((yyvsp[0].wString)));
 		step->setNameWildcard();
-		const XMLCh* uri = ((XPathParserControl *)parm)->context->getUriBoundToPrefix((yyvsp[0].wString));
-		step->setNodeUri(uri);
-
 		(yyval.nodeTest) = step;
-    delete (yyvsp[0].wString);
-	}
+        delete (yyvsp[0].wString);
+	;}
     break;
 
   case 102:
-#line 1106 "../src/parser/XPath2Parser.y"
+#line 1092 "XPath2Parser.y"
     {
-		NodeTest *step = new (((XPathParserControl *)parm)->memMgr) NodeTest();
-    
-		step->setNodeName(((XPathParserControl *)parm)->memMgr->getPooledString((yyvsp[0].wString)));
-		step->setNamespaceWildcard();
-		(yyval.nodeTest) = step;
-    delete (yyvsp[0].wString);
-	}
+        NodeTest *step = new (MEMMGR) NodeTest();
+        step->setNodeName(MEMMGR->getPooledString((yyvsp[0].wString)));
+        step->setNamespaceWildcard();
+        (yyval.nodeTest) = step;
+        delete (yyvsp[0].wString);
+	;}
     break;
 
   case 103:
-#line 1123 "../src/parser/XPath2Parser.y"
+#line 1108 "XPath2Parser.y"
     {
         (yyval.astNodeImpl) = XQPredicate::addPredicates((yyvsp[-1].astNodeImpl), (yyvsp[0].predicates));
         delete (yyvsp[0].predicates);
-    }
+    ;}
     break;
 
   case 104:
-#line 1136 "../src/parser/XPath2Parser.y"
+#line 1121 "XPath2Parser.y"
     {
-        (yyval.predicates) = new VectorOfPredicates(((XPathParserControl *)parm)->memMgr);
-    }
+        (yyval.predicates) = new VectorOfPredicates(MEMMGR);
+    ;}
     break;
 
   case 105:
-#line 1139 "../src/parser/XPath2Parser.y"
+#line 1124 "XPath2Parser.y"
     {
-        XQPredicate *pred = new (((XPathParserControl *)parm)->memMgr) XQPredicate((yyvsp[-1].astNodeImpl), ((XPathParserControl *)parm)->memMgr);
+        XQPredicate *pred = new (MEMMGR) XQPredicate((yyvsp[-1].astNodeImpl), MEMMGR);
         (yyvsp[-3].predicates)->push_back(pred);
         (yyval.predicates) = (yyvsp[-3].predicates);
-	}
+	;}
     break;
 
   case 106:
-#line 1152 "../src/parser/XPath2Parser.y"
+#line 1137 "XPath2Parser.y"
     {
 		(yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
-	}
+	;}
     break;
 
   case 107:
-#line 1156 "../src/parser/XPath2Parser.y"
+#line 1141 "XPath2Parser.y"
     {
 		(yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
-	}
+	;}
     break;
 
   case 108:
-#line 1160 "../src/parser/XPath2Parser.y"
+#line 1145 "XPath2Parser.y"
     {
 		(yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
-	}
+	;}
     break;
 
   case 109:
-#line 1164 "../src/parser/XPath2Parser.y"
+#line 1149 "XPath2Parser.y"
     {
 		(yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
-	}
+	;}
     break;
 
   case 110:
-#line 1168 "../src/parser/XPath2Parser.y"
+#line 1153 "XPath2Parser.y"
     {
 		(yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
-	}
+	;}
     break;
 
   case 111:
-#line 1181 "../src/parser/XPath2Parser.y"
+#line 1166 "XPath2Parser.y"
     {
 		(yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
-	}
+	;}
     break;
 
   case 112:
-#line 1185 "../src/parser/XPath2Parser.y"
+#line 1170 "XPath2Parser.y"
     {
-    AnyAtomicTypeConstructor *ic = new (((XPathParserControl *)parm)->memMgr)
+    AnyAtomicTypeConstructor *ic = new (MEMMGR)
       AnyAtomicTypeConstructor(
 				XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 				XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
-				((XPathParserControl *)parm)->memMgr->getPooledString((yyvsp[0].wString)),
+				MEMMGR->getPooledString((yyvsp[0].wString)),
         AnyAtomicType::STRING);
-		XQLiteral *str_val  = new (((XPathParserControl *)parm)->memMgr)
-      XQLiteral(ic, ((XPathParserControl *)parm)->memMgr);
+		XQLiteral *str_val  = new (MEMMGR)
+      XQLiteral(ic, MEMMGR);
 		(yyval.astNodeImpl) = str_val;
         delete [] (yyvsp[0].wString);
-	}
+	;}
     break;
 
   case 113:
-#line 1206 "../src/parser/XPath2Parser.y"
+#line 1191 "XPath2Parser.y"
     {
-    AnyAtomicTypeConstructor *ic = new (((XPathParserControl *)parm)->memMgr)
+    AnyAtomicTypeConstructor *ic = new (MEMMGR)
       AnyAtomicTypeConstructor(
 			XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 			XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_INTEGER,
-				((XPathParserControl *)parm)->memMgr->getPooledString((yyvsp[0].wString)),
+				MEMMGR->getPooledString((yyvsp[0].wString)),
       AnyAtomicType::DECIMAL);
-    XQLiteral *did  = new (((XPathParserControl *)parm)->memMgr)
-      XQLiteral(ic, ((XPathParserControl *)parm)->memMgr);
+    XQLiteral *did  = new (MEMMGR)
+      XQLiteral(ic, MEMMGR);
     delete [] (yyvsp[0].wString);
     (yyval.astNodeImpl) = did;
-  }
+  ;}
     break;
 
   case 114:
-#line 1219 "../src/parser/XPath2Parser.y"
+#line 1204 "XPath2Parser.y"
     {
-    AnyAtomicTypeConstructor *ic = new (((XPathParserControl *)parm)->memMgr)
+    AnyAtomicTypeConstructor *ic = new (MEMMGR)
       AnyAtomicTypeConstructor(
 			XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 			XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DECIMAL,
-				((XPathParserControl *)parm)->memMgr->getPooledString((yyvsp[0].wString)),
+				MEMMGR->getPooledString((yyvsp[0].wString)),
       AnyAtomicType::DECIMAL);
-    XQLiteral *did  = new (((XPathParserControl *)parm)->memMgr)
-      XQLiteral(ic, ((XPathParserControl *)parm)->memMgr);
+    XQLiteral *did  = new (MEMMGR)
+      XQLiteral(ic, MEMMGR);
     delete (yyvsp[0].wString);
     (yyval.astNodeImpl) = did;
-  }
+  ;}
     break;
 
   case 115:
-#line 1232 "../src/parser/XPath2Parser.y"
+#line 1217 "XPath2Parser.y"
     {
-    AnyAtomicTypeConstructor *ic = new (((XPathParserControl *)parm)->memMgr)
+    AnyAtomicTypeConstructor *ic = new (MEMMGR)
       AnyAtomicTypeConstructor(
 			XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 			XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DOUBLE,
-				((XPathParserControl *)parm)->memMgr->getPooledString((yyvsp[0].wString)),
+				MEMMGR->getPooledString((yyvsp[0].wString)),
       AnyAtomicType::DOUBLE);
-    XQLiteral *did  = new (((XPathParserControl *)parm)->memMgr)
-      XQLiteral(ic, ((XPathParserControl *)parm)->memMgr);
+    XQLiteral *did  = new (MEMMGR)
+      XQLiteral(ic, MEMMGR);
     delete (yyvsp[0].wString);
     (yyval.astNodeImpl) = did;
-  }
+  ;}
     break;
 
   case 116:
-#line 1253 "../src/parser/XPath2Parser.y"
+#line 1238 "XPath2Parser.y"
     {
-		XQVariable *var = new (((XPathParserControl *)parm)->memMgr) XQVariable((yyvsp[0].wString), ((XPathParserControl *)parm)->memMgr);
+		XQVariable *var = new (MEMMGR) XQVariable((yyvsp[0].wString), MEMMGR);
 		delete [] (yyvsp[0].wString);
 		(yyval.astNodeImpl) = var;
-  }
+  ;}
     break;
 
   case 117:
-#line 1266 "../src/parser/XPath2Parser.y"
+#line 1251 "XPath2Parser.y"
     {
         if((yyvsp[-1].astNodeImpl)->getType()!=ASTNode::PARENTHESIZED)
         {
-          XQParenthesizedExpr *dis = new (((XPathParserControl *)parm)->memMgr) XQParenthesizedExpr(((XPathParserControl *)parm)->memMgr);
+          XQParenthesizedExpr *dis = new (MEMMGR) XQParenthesizedExpr(MEMMGR);
           dis->addItem((yyvsp[-1].astNodeImpl));
           (yyval.astNodeImpl) = dis;
         }
         else
           (yyval.astNodeImpl) = (yyvsp[-1].astNodeImpl);
-	}
+	;}
     break;
 
   case 118:
-#line 1276 "../src/parser/XPath2Parser.y"
+#line 1261 "XPath2Parser.y"
     {
-		(yyval.astNodeImpl) = new (((XPathParserControl *)parm)->memMgr) XQSequence(((XPathParserControl *)parm)->memMgr);
-	}
+		(yyval.astNodeImpl) = new (MEMMGR) XQSequence(MEMMGR);
+	;}
     break;
 
   case 119:
-#line 1289 "../src/parser/XPath2Parser.y"
+#line 1274 "XPath2Parser.y"
     {
-		(yyval.astNodeImpl) = new (((XPathParserControl *)parm)->memMgr) XQContextItem(((XPathParserControl *)parm)->memMgr);
-	}
+		(yyval.astNodeImpl) = new (MEMMGR) XQContextItem(MEMMGR);
+	;}
     break;
 
   case 120:
-#line 1301 "../src/parser/XPath2Parser.y"
+#line 1286 "XPath2Parser.y"
     {
-        QualifiedName *qname = new (((XPathParserControl *)parm)->memMgr) QualifiedName((yyvsp[-1].wString), ((XPathParserControl *)parm)->memMgr);
+        QualifiedName *qname = new (MEMMGR) QualifiedName((yyvsp[-1].wString), MEMMGR);
         delete (yyvsp[-1].wString);
-        VectorOfASTNodes tmp(XQillaAllocator<ASTNode*>(((XPathParserControl *)parm)->memMgr));
-        ASTNode* functionImpl = ((XPathParserControl*)parm)->context->lookUpFunction(qname->getPrefix(), qname->getName(), tmp);
-        if( functionImpl == NULL) {
-          XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buf(1023, ((XPathParserControl *)parm)->memMgr);
-          buf.set(X("Function '"));
-          buf.append(qname->getFullName(((XPathParserControl *)parm)->memMgr));
-          buf.append(X("' is undefined [err:XPST0017]"));
-          XQThrow(StaticErrorException, X("XPath2Parser.y"), buf.getRawBuffer());
-        }
-        (yyval.astNodeImpl) = functionImpl;
-	}
+        VectorOfASTNodes tmp(XQillaAllocator<ASTNode*>(MEMMGR));
+		(yyval.astNodeImpl) = new (MEMMGR) XQFunctionCall(qname, tmp, MEMMGR);
+	;}
     break;
 
   case 121:
-#line 1316 "../src/parser/XPath2Parser.y"
+#line 1293 "XPath2Parser.y"
     {
-        QualifiedName *qname = new (((XPathParserControl *)parm)->memMgr) QualifiedName((yyvsp[-2].wString), ((XPathParserControl *)parm)->memMgr);
+        QualifiedName *qname = new (MEMMGR) QualifiedName((yyvsp[-2].wString), MEMMGR);
         delete [] (yyvsp[-2].wString);
-        ASTNode* functionImpl = ((XPathParserControl*)parm)->context->lookUpFunction(qname->getPrefix(), qname->getName(), *(yyvsp[-1].astNodeStore));
-        if( functionImpl == NULL) {
-          XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buf(1023, ((XPathParserControl *)parm)->memMgr);
-          buf.set(X("Function '"));
-          buf.append(qname->getFullName(((XPathParserControl *)parm)->memMgr));
-          buf.append(X("' is undefined [err:XPST0017]"));
-          XQThrow(StaticErrorException, X("XPath2Parser.y"), buf.getRawBuffer());
-        }
-        (yyval.astNodeImpl) = functionImpl;
+		(yyval.astNodeImpl) = new (MEMMGR) XQFunctionCall(qname, *(yyvsp[-1].astNodeStore), MEMMGR);
         delete (yyvsp[-1].astNodeStore);
-	}
+	;}
     break;
 
   case 122:
-#line 1342 "../src/parser/XPath2Parser.y"
+#line 1311 "XPath2Parser.y"
     {
-        (yyval.astNodeStore) = new VectorOfASTNodes(XQillaAllocator<ASTNode*>(((XPathParserControl *)parm)->memMgr));
+        (yyval.astNodeStore) = new VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
         (yyval.astNodeStore)->push_back((yyvsp[0].astNodeImpl));
-	  }
+	  ;}
     break;
 
   case 123:
-#line 1347 "../src/parser/XPath2Parser.y"
+#line 1316 "XPath2Parser.y"
     {
         (yyvsp[-2].astNodeStore)->push_back((yyvsp[0].astNodeImpl));
 		(yyval.astNodeStore) = (yyvsp[-2].astNodeStore);
-	}
+	;}
     break;
 
   case 124:
-#line 1360 "../src/parser/XPath2Parser.y"
+#line 1329 "XPath2Parser.y"
     {
-		SequenceType* seq=new (((XPathParserControl *)parm)->memMgr) SequenceType();
-		seq->setItemType(new (((XPathParserControl *)parm)->memMgr) SequenceType::ItemType(SequenceType::ItemType::TEST_ATOMIC_TYPE, NULL, (yyvsp[0].qName)));
+		SequenceType* seq=new (MEMMGR) SequenceType();
+		seq->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ATOMIC_TYPE, NULL, (yyvsp[0].qName)));
 		seq->setOccurrence(SequenceType::EXACTLY_ONE);
 		(yyval.sequenceType) = seq;
-	}
+	;}
     break;
 
   case 125:
-#line 1367 "../src/parser/XPath2Parser.y"
+#line 1336 "XPath2Parser.y"
     {
-		SequenceType* seq=new (((XPathParserControl *)parm)->memMgr) SequenceType();
-		seq->setItemType(new (((XPathParserControl *)parm)->memMgr) SequenceType::ItemType(SequenceType::ItemType::TEST_ATOMIC_TYPE, NULL, (yyvsp[-1].qName)));
+		SequenceType* seq=new (MEMMGR) SequenceType();
+		seq->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ATOMIC_TYPE, NULL, (yyvsp[-1].qName)));
 		seq->setOccurrence(SequenceType::QUESTION_MARK);
 		(yyval.sequenceType) = seq;
-	}
+	;}
     break;
 
   case 126:
-#line 1382 "../src/parser/XPath2Parser.y"
+#line 1351 "XPath2Parser.y"
     {
-		SequenceType* seq=new (((XPathParserControl *)parm)->memMgr) SequenceType();
+		SequenceType* seq=new (MEMMGR) SequenceType();
 		seq->setItemType((yyvsp[-1].itemType));
 		seq->setOccurrence((yyvsp[0].occurrence));
 		(yyval.sequenceType) = seq;
-	}
+	;}
     break;
 
   case 127:
-#line 1389 "../src/parser/XPath2Parser.y"
+#line 1358 "XPath2Parser.y"
     {
-		SequenceType* seq=new (((XPathParserControl *)parm)->memMgr) SequenceType();
+		SequenceType* seq=new (MEMMGR) SequenceType();
 		seq->setItemType((yyvsp[0].itemType));
 		seq->setOccurrence(SequenceType::EXACTLY_ONE);
 		(yyval.sequenceType) = seq;
-	}
+	;}
     break;
 
   case 128:
-#line 1396 "../src/parser/XPath2Parser.y"
+#line 1365 "XPath2Parser.y"
     {
-		(yyval.sequenceType) = new (((XPathParserControl *)parm)->memMgr) SequenceType();
-	}
+		(yyval.sequenceType) = new (MEMMGR) SequenceType();
+	;}
     break;
 
   case 129:
-#line 1408 "../src/parser/XPath2Parser.y"
+#line 1377 "XPath2Parser.y"
     {
 		(yyval.occurrence) = SequenceType::STAR;
-	}
+	;}
     break;
 
   case 130:
-#line 1411 "../src/parser/XPath2Parser.y"
+#line 1380 "XPath2Parser.y"
     {
 		(yyval.occurrence) = SequenceType::PLUS;
-	}
+	;}
     break;
 
   case 131:
-#line 1414 "../src/parser/XPath2Parser.y"
+#line 1383 "XPath2Parser.y"
     {
 		(yyval.occurrence) = SequenceType::QUESTION_MARK;
-	}
+	;}
     break;
 
   case 132:
-#line 1426 "../src/parser/XPath2Parser.y"
+#line 1395 "XPath2Parser.y"
     {
-        (yyval.itemType) = new (((XPathParserControl *)parm)->memMgr) SequenceType::ItemType(SequenceType::ItemType::TEST_ATOMIC_TYPE, NULL, (yyvsp[0].qName));
-    }
+        (yyval.itemType) = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ATOMIC_TYPE, NULL, (yyvsp[0].qName));
+    ;}
     break;
 
   case 133:
-#line 1429 "../src/parser/XPath2Parser.y"
+#line 1398 "XPath2Parser.y"
     {
         (yyval.itemType) = (yyvsp[0].nodeTest)->getItemType();
         (yyvsp[0].nodeTest)->setItemType(NULL);
-    }
+    ;}
     break;
 
   case 134:
-#line 1433 "../src/parser/XPath2Parser.y"
+#line 1402 "XPath2Parser.y"
     {
-        (yyval.itemType) = new (((XPathParserControl *)parm)->memMgr) SequenceType::ItemType(SequenceType::ItemType::TEST_ANYTHING);
-    }
+        (yyval.itemType) = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ANYTHING);
+    ;}
     break;
 
   case 135:
-#line 1443 "../src/parser/XPath2Parser.y"
+#line 1412 "XPath2Parser.y"
     {
 		(yyval.qName) = (yyvsp[0].qName);
-	}
+	;}
     break;
 
   case 136:
-#line 1462 "../src/parser/XPath2Parser.y"
+#line 1431 "XPath2Parser.y"
     {
         (yyval.nodeTest) = (yyvsp[0].nodeTest);
-    }
+    ;}
     break;
 
   case 137:
-#line 1465 "../src/parser/XPath2Parser.y"
+#line 1434 "XPath2Parser.y"
     {
         (yyval.nodeTest) = (yyvsp[0].nodeTest);
-    }
+    ;}
     break;
 
   case 138:
-#line 1468 "../src/parser/XPath2Parser.y"
+#line 1437 "XPath2Parser.y"
     {
         (yyval.nodeTest) = (yyvsp[0].nodeTest);
-    }
+    ;}
     break;
 
   case 139:
-#line 1471 "../src/parser/XPath2Parser.y"
+#line 1440 "XPath2Parser.y"
     {
         (yyval.nodeTest) = (yyvsp[0].nodeTest);
-    }
+    ;}
     break;
 
   case 140:
-#line 1474 "../src/parser/XPath2Parser.y"
+#line 1443 "XPath2Parser.y"
     {
         (yyval.nodeTest) = (yyvsp[0].nodeTest);
-    }
+    ;}
     break;
 
   case 141:
-#line 1477 "../src/parser/XPath2Parser.y"
+#line 1446 "XPath2Parser.y"
     {
 		(yyval.nodeTest) = (yyvsp[0].nodeTest);
-	}
+	;}
     break;
 
   case 142:
-#line 1480 "../src/parser/XPath2Parser.y"
+#line 1449 "XPath2Parser.y"
     {
 		(yyval.nodeTest) = (yyvsp[0].nodeTest);
-	}
+	;}
     break;
 
   case 143:
-#line 1483 "../src/parser/XPath2Parser.y"
+#line 1452 "XPath2Parser.y"
     {
 		(yyval.nodeTest) = (yyvsp[0].nodeTest);
-	}
+	;}
     break;
 
   case 144:
-#line 1486 "../src/parser/XPath2Parser.y"
+#line 1455 "XPath2Parser.y"
     {
 		(yyval.nodeTest) = (yyvsp[0].nodeTest);
-	}
+	;}
     break;
 
   case 145:
-#line 1497 "../src/parser/XPath2Parser.y"
+#line 1466 "XPath2Parser.y"
     {
-		NodeTest *step = new (((XPathParserControl *)parm)->memMgr) NodeTest();
-        step->setItemType(new (((XPathParserControl *)parm)->memMgr) SequenceType::ItemType(SequenceType::ItemType::TEST_NODE));
+		NodeTest *step = new (MEMMGR) NodeTest();
+        step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_NODE));
 		(yyval.nodeTest) = step;
-	}
+	;}
     break;
 
   case 146:
-#line 1511 "../src/parser/XPath2Parser.y"
+#line 1480 "XPath2Parser.y"
     {
-		NodeTest *step = new (((XPathParserControl *)parm)->memMgr) NodeTest();
-        step->setItemType(new (((XPathParserControl *)parm)->memMgr) SequenceType::ItemType(SequenceType::ItemType::TEST_DOCUMENT));
+		NodeTest *step = new (MEMMGR) NodeTest();
+        step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_DOCUMENT));
 		(yyval.nodeTest) = step;
-	}
+	;}
     break;
 
   case 147:
-#line 1516 "../src/parser/XPath2Parser.y"
+#line 1485 "XPath2Parser.y"
     {
-		NodeTest *step = new (((XPathParserControl *)parm)->memMgr) NodeTest();
+		NodeTest *step = new (MEMMGR) NodeTest();
         SequenceType::ItemType* elemTest=(yyvsp[-1].nodeTest)->getItemType();
-        step->setItemType(new (((XPathParserControl *)parm)->memMgr) SequenceType::ItemType(SequenceType::ItemType::TEST_DOCUMENT,elemTest->getName(),elemTest->getType()));
+        step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_DOCUMENT,elemTest->getName(),elemTest->getType()));
         elemTest->setName(NULL);
         elemTest->setType(NULL);
 		(yyval.nodeTest) = step;
-	}
+	;}
     break;
 
   case 148:
-#line 1524 "../src/parser/XPath2Parser.y"
+#line 1493 "XPath2Parser.y"
     {
-		NodeTest *step = new (((XPathParserControl *)parm)->memMgr) NodeTest();
+		NodeTest *step = new (MEMMGR) NodeTest();
         SequenceType::ItemType* elemTest=(yyvsp[-1].nodeTest)->getItemType();
-        step->setItemType(new (((XPathParserControl *)parm)->memMgr) SequenceType::ItemType(SequenceType::ItemType::TEST_DOCUMENT,elemTest->getName(),elemTest->getType()));
+        step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_DOCUMENT,elemTest->getName(),elemTest->getType()));
         elemTest->setName(NULL);
         elemTest->setType(NULL);
 		(yyval.nodeTest) = step;
-	}
+	;}
     break;
 
   case 149:
-#line 1540 "../src/parser/XPath2Parser.y"
+#line 1509 "XPath2Parser.y"
     {
-		NodeTest *step = new (((XPathParserControl *)parm)->memMgr) NodeTest();
-        step->setItemType(new (((XPathParserControl *)parm)->memMgr) SequenceType::ItemType(SequenceType::ItemType::TEST_TEXT));
+		NodeTest *step = new (MEMMGR) NodeTest();
+        step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_TEXT));
 		(yyval.nodeTest) = step;
-	}
+	;}
     break;
 
   case 150:
-#line 1553 "../src/parser/XPath2Parser.y"
+#line 1522 "XPath2Parser.y"
     {
-		NodeTest *step = new (((XPathParserControl *)parm)->memMgr) NodeTest();
-        step->setItemType(new (((XPathParserControl *)parm)->memMgr) SequenceType::ItemType(SequenceType::ItemType::TEST_COMMENT));
+		NodeTest *step = new (MEMMGR) NodeTest();
+        step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_COMMENT));
 		(yyval.nodeTest) = step;
-	}
+	;}
     break;
 
   case 151:
-#line 1567 "../src/parser/XPath2Parser.y"
+#line 1536 "XPath2Parser.y"
     {
-		NodeTest *step = new (((XPathParserControl *)parm)->memMgr) NodeTest();
-        step->setItemType(new (((XPathParserControl *)parm)->memMgr) SequenceType::ItemType(SequenceType::ItemType::TEST_PI, new (((XPathParserControl *)parm)->memMgr) QualifiedName((yyvsp[-1].wString))));
+		NodeTest *step = new (MEMMGR) NodeTest();
+        step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_PI, new (MEMMGR) QualifiedName((yyvsp[-1].wString))));
 		(yyval.nodeTest) = step;
 		delete (yyvsp[-1].wString);
-	}
+	;}
     break;
 
   case 152:
-#line 1573 "../src/parser/XPath2Parser.y"
+#line 1542 "XPath2Parser.y"
     {
-		NodeTest *step = new (((XPathParserControl *)parm)->memMgr) NodeTest();
-        step->setItemType(new (((XPathParserControl *)parm)->memMgr) SequenceType::ItemType(SequenceType::ItemType::TEST_PI, new (((XPathParserControl *)parm)->memMgr) QualifiedName((yyvsp[-1].wString))));
+		NodeTest *step = new (MEMMGR) NodeTest();
+        step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_PI, new (MEMMGR) QualifiedName((yyvsp[-1].wString))));
 		(yyval.nodeTest) = step;
 		delete (yyvsp[-1].wString);
-	}
+	;}
     break;
 
   case 153:
-#line 1579 "../src/parser/XPath2Parser.y"
+#line 1548 "XPath2Parser.y"
     {
-		NodeTest *step = new (((XPathParserControl *)parm)->memMgr) NodeTest();
-        step->setItemType(new (((XPathParserControl *)parm)->memMgr) SequenceType::ItemType(SequenceType::ItemType::TEST_PI));
+		NodeTest *step = new (MEMMGR) NodeTest();
+        step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_PI));
 		(yyval.nodeTest) = step;
-	}
+	;}
     break;
 
   case 154:
-#line 1593 "../src/parser/XPath2Parser.y"
+#line 1562 "XPath2Parser.y"
     {
-		NodeTest *step = new (((XPathParserControl *)parm)->memMgr) NodeTest();
-        step->setItemType(new (((XPathParserControl *)parm)->memMgr) SequenceType::ItemType(SequenceType::ItemType::TEST_ATTRIBUTE));
+		NodeTest *step = new (MEMMGR) NodeTest();
+        step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ATTRIBUTE));
 		(yyval.nodeTest) = step;
-	}
+	;}
     break;
 
   case 155:
-#line 1598 "../src/parser/XPath2Parser.y"
+#line 1567 "XPath2Parser.y"
     {
-		NodeTest *step = new (((XPathParserControl *)parm)->memMgr) NodeTest();
-        step->setItemType(new (((XPathParserControl *)parm)->memMgr) SequenceType::ItemType(SequenceType::ItemType::TEST_ATTRIBUTE, (yyvsp[-1].qName)));
+		NodeTest *step = new (MEMMGR) NodeTest();
+        step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ATTRIBUTE, (yyvsp[-1].qName)));
 		(yyval.nodeTest) = step;
-	}
+	;}
     break;
 
   case 156:
-#line 1603 "../src/parser/XPath2Parser.y"
+#line 1572 "XPath2Parser.y"
     {
-		NodeTest *step = new (((XPathParserControl *)parm)->memMgr) NodeTest();
-        step->setItemType(new (((XPathParserControl *)parm)->memMgr) SequenceType::ItemType(SequenceType::ItemType::TEST_ATTRIBUTE, (yyvsp[-3].qName), (yyvsp[-1].qName)));
+		NodeTest *step = new (MEMMGR) NodeTest();
+        step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ATTRIBUTE, (yyvsp[-3].qName), (yyvsp[-1].qName)));
 		(yyval.nodeTest) = step;
-	}
+	;}
     break;
 
   case 157:
-#line 1615 "../src/parser/XPath2Parser.y"
+#line 1584 "XPath2Parser.y"
     {
     (yyval.qName) = (yyvsp[0].qName);
-  }
+  ;}
     break;
 
   case 158:
-#line 1618 "../src/parser/XPath2Parser.y"
+#line 1587 "XPath2Parser.y"
     {
     (yyval.qName)=NULL;
-  }
+  ;}
     break;
 
   case 159:
-#line 1630 "../src/parser/XPath2Parser.y"
+#line 1599 "XPath2Parser.y"
     {
-		NodeTest *step = new (((XPathParserControl *)parm)->memMgr) NodeTest();
-        step->setItemType(new (((XPathParserControl *)parm)->memMgr) SequenceType::ItemType(SequenceType::ItemType::TEST_SCHEMA_ATTRIBUTE, (yyvsp[-1].qName)));
+		NodeTest *step = new (MEMMGR) NodeTest();
+        step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_SCHEMA_ATTRIBUTE, (yyvsp[-1].qName)));
 		(yyval.nodeTest) = step;
-	}
+	;}
     break;
 
   case 160:
-#line 1642 "../src/parser/XPath2Parser.y"
+#line 1611 "XPath2Parser.y"
     {
     (yyval.qName) = (yyvsp[0].qName);
-  }
+  ;}
     break;
 
   case 161:
-#line 1653 "../src/parser/XPath2Parser.y"
+#line 1622 "XPath2Parser.y"
     {
-		NodeTest *step = new (((XPathParserControl *)parm)->memMgr) NodeTest();
-        step->setItemType(new (((XPathParserControl *)parm)->memMgr) SequenceType::ItemType(SequenceType::ItemType::TEST_ELEMENT));
+		NodeTest *step = new (MEMMGR) NodeTest();
+        step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ELEMENT));
 		(yyval.nodeTest) = step;
-	}
+	;}
     break;
 
   case 162:
-#line 1658 "../src/parser/XPath2Parser.y"
+#line 1627 "XPath2Parser.y"
     {
-		NodeTest *step = new (((XPathParserControl *)parm)->memMgr) NodeTest();
-        step->setItemType(new (((XPathParserControl *)parm)->memMgr) SequenceType::ItemType(SequenceType::ItemType::TEST_ELEMENT, (yyvsp[-1].qName)));
+		NodeTest *step = new (MEMMGR) NodeTest();
+        step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ELEMENT, (yyvsp[-1].qName)));
 		(yyval.nodeTest) = step;
-	}
+	;}
     break;
 
   case 163:
-#line 1663 "../src/parser/XPath2Parser.y"
+#line 1632 "XPath2Parser.y"
     {
-		NodeTest *step = new (((XPathParserControl *)parm)->memMgr) NodeTest();
-        step->setItemType(new (((XPathParserControl *)parm)->memMgr) SequenceType::ItemType(SequenceType::ItemType::TEST_ELEMENT, (yyvsp[-3].qName), (yyvsp[-1].qName)));
+		NodeTest *step = new (MEMMGR) NodeTest();
+        step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ELEMENT, (yyvsp[-3].qName), (yyvsp[-1].qName)));
 		(yyval.nodeTest) = step;
-	}
+	;}
     break;
 
   case 164:
-#line 1668 "../src/parser/XPath2Parser.y"
+#line 1637 "XPath2Parser.y"
     {
-		NodeTest *step = new (((XPathParserControl *)parm)->memMgr) NodeTest();
-        SequenceType::ItemType* pType=new (((XPathParserControl *)parm)->memMgr) SequenceType::ItemType(SequenceType::ItemType::TEST_ELEMENT, (yyvsp[-4].qName), (yyvsp[-2].qName));
+		NodeTest *step = new (MEMMGR) NodeTest();
+        SequenceType::ItemType* pType=new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ELEMENT, (yyvsp[-4].qName), (yyvsp[-2].qName));
         pType->setAllowNilled(true);
         step->setItemType(pType);
 		(yyval.nodeTest) = step;
-	}
+	;}
     break;
 
   case 165:
-#line 1683 "../src/parser/XPath2Parser.y"
+#line 1652 "XPath2Parser.y"
     {
     (yyval.qName) = (yyvsp[0].qName);
-  }
+  ;}
     break;
 
   case 166:
-#line 1686 "../src/parser/XPath2Parser.y"
+#line 1655 "XPath2Parser.y"
     {
     (yyval.qName)=NULL;
-  }
+  ;}
     break;
 
   case 167:
-#line 1698 "../src/parser/XPath2Parser.y"
+#line 1667 "XPath2Parser.y"
     {
-		NodeTest *step = new (((XPathParserControl *)parm)->memMgr) NodeTest();
-        step->setItemType(new (((XPathParserControl *)parm)->memMgr) SequenceType::ItemType(SequenceType::ItemType::TEST_SCHEMA_ELEMENT, (yyvsp[-1].qName)));
+		NodeTest *step = new (MEMMGR) NodeTest();
+        step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_SCHEMA_ELEMENT, (yyvsp[-1].qName)));
 		(yyval.nodeTest) = step;
-	}
+	;}
     break;
 
   case 168:
-#line 1709 "../src/parser/XPath2Parser.y"
+#line 1678 "XPath2Parser.y"
     {
     (yyval.qName) = (yyvsp[0].qName);
-  }
+  ;}
     break;
 
   case 169:
-#line 1719 "../src/parser/XPath2Parser.y"
+#line 1688 "XPath2Parser.y"
     {
        (yyval.qName) = (yyvsp[0].qName);
-   }
+   ;}
     break;
 
   case 170:
-#line 1728 "../src/parser/XPath2Parser.y"
+#line 1697 "XPath2Parser.y"
     {
        (yyval.qName) = (yyvsp[0].qName);
-   }
+   ;}
     break;
 
   case 171:
-#line 1737 "../src/parser/XPath2Parser.y"
+#line 1706 "XPath2Parser.y"
     {
        (yyval.qName) = (yyvsp[0].qName);
-   }
+   ;}
     break;
 
   case 172:
-#line 1746 "../src/parser/XPath2Parser.y"
+#line 1715 "XPath2Parser.y"
     {
-		QualifiedName *qn = new (((XPathParserControl *)parm)->memMgr) QualifiedName((yyvsp[0].wString), ((XPathParserControl *)parm)->memMgr);
+		QualifiedName *qn = new (MEMMGR) QualifiedName((yyvsp[0].wString), MEMMGR);
 		delete [] (yyvsp[0].wString);
 	  (yyval.qName) = qn;
-	}
+	;}
     break;
 
 
@@ -3187,7 +3151,7 @@ yyreduce:
     }
 
 /* Line 1126 of yacc.c.  */
-#line 3191 "../src/parser/XPath2Parser.cpp"
+#line 3155 "XPath2Parser.cpp"
 
   yyvsp -= yylen;
   yyssp -= yylen;
@@ -3455,7 +3419,7 @@ yyreturn:
 }
 
 
-#line 1754 "../src/parser/XPath2Parser.y"
+#line 1723 "XPath2Parser.y"
 
 
 void yyerror(const char *s)

@@ -124,13 +124,13 @@ void *alloca (size_t);
 #define WRAP(pos,object)		(wrapForDebug((QP),(object),NULL  ,(pos).first_line, (pos).first_column))
 #define FNWRAP(pos,name,object)	(wrapForDebug((QP),(object),(name),(pos).first_line, (pos).first_column))
 
-#define BIT_ORDERING_SPECIFIED	0
-#define BIT_BOUNDARY_SPECIFIED	    1
-#define BIT_COLLATION_SPECIFIED	    2
-#define BIT_BASEURI_SPECIFIED	    3
-#define BIT_CONSTRUCTION_SPECIFIED	4
-#define BIT_EMPTYORDERING_SPECIFIED 5
-#define BIT_COPYNAMESPACE_SPECIFIED 6
+#define BIT_ORDERING_SPECIFIED	                0
+#define BIT_BOUNDARY_SPECIFIED	                1
+#define BIT_COLLATION_SPECIFIED	                2
+#define BIT_BASEURI_SPECIFIED	                3
+#define BIT_CONSTRUCTION_SPECIFIED	            4
+#define BIT_EMPTYORDERING_SPECIFIED             5
+#define BIT_COPYNAMESPACE_SPECIFIED             6
 #define BIT_DEFAULTELEMENTNAMESPACE_SPECIFIED   7
 #define BIT_DEFAULTFUNCTIONNAMESPACE_SPECIFIED  8
 
@@ -603,7 +603,7 @@ NamespaceDecl:
 		        {
                 }
             }
-			CONTEXT->setNamespaceBinding($3,$5);
+            CONTEXT->setNamespaceBinding($3,$5);
 		}
 	;
 
@@ -1668,17 +1668,17 @@ PathExpr:
 		}
 	| _SLASHSLASH_ RelativePathExpr
   		{
-			XQNav *newNavigation = getNavigation($2,MEMMGR);
+            XQNav *newNavigation = getNavigation($2,MEMMGR);
 
-      NodeTest *step = new (MEMMGR) NodeTest();
-      step->setTypeWildcard();
-      step->setNameWildcard();
-      step->setNamespaceWildcard();
-      newNavigation->addStepFront(new (MEMMGR) XQStep(XQStep::DESCENDANT_OR_SELF, step, MEMMGR));
+            NodeTest *step = new (MEMMGR) NodeTest();
+            step->setTypeWildcard();
+            step->setNameWildcard();
+            step->setNamespaceWildcard();
+            newNavigation->addStepFront(new (MEMMGR) XQStep(XQStep::DESCENDANT_OR_SELF, step, MEMMGR));        
 
-			newNavigation->addInitialRootStep(MEMMGR);
+            newNavigation->addInitialRootStep(MEMMGR);
 
-			$$ = newNavigation;
+            $$ = newNavigation;
 		}
 	| RelativePathExpr
 	;
@@ -1871,15 +1871,7 @@ NameTest:
 	  QName
 		{
 			NodeTest *step = new (MEMMGR) NodeTest();
-			try
-			{
-				const XMLCh* uri = CONTEXT->getUriBoundToPrefix($1->getPrefix());
-				step->setNodeUri(uri);
-			}
-			catch(NamespaceLookupException&)
-			{
-				step->setNodePrefix($1->getPrefix());
-			}
+			step->setNodePrefix($1->getPrefix());
 			step->setNodeName($1->getName());
 			$$ = step;
 		}
@@ -1898,15 +1890,7 @@ Wildcard:
     | _NCNAME_COLON_STAR_
 		{
 			NodeTest *step = new (MEMMGR) NodeTest();
-			try
-			{
-				const XMLCh* uri = CONTEXT->getUriBoundToPrefix($1);
-				step->setNodeUri(uri);
-			}
-			catch(NamespaceLookupException&)
-			{
-				step->setNodePrefix($1);
-			}
+			step->setNodePrefix($1);
 			step->setNameWildcard();
 			$$ = step;
 		}
@@ -2116,27 +2100,27 @@ DirAttributeList:
 		{
 			$$ = new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 		}
-	  | DirAttributeList _ATTRIBUTE_NAME_ _VALUE_INDICATOR_ DirAttributeValue
-		{
-			$$ = $1;
-			ASTNode* attrItem=WRAP(@2, new (MEMMGR) XQDOMConstructor(Node::attribute_string,
-										   new (MEMMGR) XQLiteral(
-						new (MEMMGR) AnyAtomicTypeConstructor(
-											XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-											XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
-											$2, AnyAtomicType::STRING),
-											MEMMGR), 
-										  0, $4,MEMMGR));
-			if(XPath2Utils::equals($2, XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgXMLNSString) ||
-			   XERCES_CPP_NAMESPACE_QUALIFIER XMLString::startsWith($2, XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgXMLNSColonString))
-			{
-				$$->insert($$->begin(), attrItem);
-			}
-			else
-			{
-				$$->push_back(attrItem);
-			}
-		}
+      | DirAttributeList _ATTRIBUTE_NAME_ _VALUE_INDICATOR_ DirAttributeValue
+        {
+            $$ = $1;
+            ASTNode* attrItem=WRAP(@2, new (MEMMGR) XQDOMConstructor(Node::attribute_string,
+                                            new (MEMMGR) XQLiteral(
+                                                new (MEMMGR) AnyAtomicTypeConstructor(
+                                                    XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                                                    XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
+                                                    $2, AnyAtomicType::STRING),
+                                                MEMMGR), 
+                                            0, $4,MEMMGR));
+            if(XPath2Utils::equals($2, XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgXMLNSString) ||
+               XERCES_CPP_NAMESPACE_QUALIFIER XMLString::startsWith($2, XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgXMLNSColonString))
+            {
+                $$->insert($$->begin(), attrItem);
+            }
+            else
+            {
+                $$->push_back(attrItem);
+            }
+        }
 	  ;
 
 // [96]    DirAttributeValue    ::=    ('"' (EscapeQuot |  QuotAttrValueContent)* '"')

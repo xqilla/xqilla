@@ -38,6 +38,7 @@
 #include <xqilla/ast/XQQuantified.hpp>
 #include <xqilla/ast/XQFLWOR.hpp>
 #include <xqilla/ast/XQDocumentOrder.hpp>
+#include <xqilla/ast/XQFunctionCall.hpp>
 
 #include <xqilla/utils/XPath2NSUtils.hpp>
 
@@ -77,7 +78,28 @@
 #define YYPARSE_PARAM parm
 #define YYLEX_PARAM parm
 #define YYERROR_VERBOSE
-	
+
+// this removes a memory leak occurring when an error is found in the query (we throw an exception from inside
+// yyerror, preventing the bison-generated code from cleaning up the memory); by defining this macro we use 
+// stack-based memory instead of the heap
+#define YYSTACK_USE_ALLOCA	1
+#if HAVE_ALLOCA_H
+#include <alloca.h>
+#elif defined __GNUC__
+#undef alloca
+#define alloca __builtin_alloca
+#elif defined _AIX
+#define alloca __alloca
+#elif defined _MSC_VER
+#include <malloc.h>
+#else
+#include <stddef.h>
+#ifdef __cplusplus
+extern "C"
+#endif
+void *alloca (size_t);
+#endif
+
 inline VectorOfASTNodes packageArgs(ASTNode *arg1Impl, ASTNode *arg2Impl, XPath2MemoryManager* memMgr);
 void yyerror(const char* s);
 
@@ -85,6 +107,17 @@ void yyerror(const char* s);
 #include <xqilla/exceptions/StaticErrorException.hpp>
 
 #define YYDEBUG 1
+#define MEMMGR      (((XPathParserControl *)parm)->memMgr)
+
+static inline XQNav* getNavigation(ASTNode *possibleNav, XPath2MemoryManager * expr)
+{
+	if(possibleNav->getType()==ASTNode::NAVIGATION)
+		return (XQNav*)possibleNav;
+
+	XQNav* nav=new (expr) XQNav(expr);
+	nav->addStep(possibleNav);
+	return nav;
+}
 
 %}
 
@@ -281,7 +314,7 @@ _XPath:
 	*/
 
 	/* EMPTY */ {
-      ((XPathParserControl *)parm)->result = new (((XPathParserControl *)parm)->memMgr) XQSequence(((XPathParserControl *)parm)->memMgr);
+      ((XPathParserControl *)parm)->result = new (MEMMGR) XQSequence(MEMMGR);
 	}
 
 	| _Expr {
@@ -300,7 +333,7 @@ _Expr:
 			$$ = $1;
 		else
 		{
-			XQParenthesizedExpr *dis = new (((XPathParserControl *)parm)->memMgr) XQParenthesizedExpr(((XPathParserControl *)parm)->memMgr);
+			XQParenthesizedExpr *dis = new (MEMMGR) XQParenthesizedExpr(MEMMGR);
 			dis->addItem($1);
 			$$ = dis;
 		}
@@ -338,7 +371,7 @@ _ForExpr:
 	*/
 
 	_SimpleForClause _RETURN_ _ExprSingle {
-		$$ = new (((XPathParserControl *)parm)->memMgr) XQFLWOR($1, NULL, NULL, $3, ((XPathParserControl *)parm)->memMgr);
+		$$ = new (MEMMGR) XQFLWOR($1, NULL, NULL, $3, MEMMGR);
 	}
 
 ;
@@ -359,30 +392,30 @@ _QuantifiedExpr:
 	*/
 
 	_SOME_ _VariableBindingList _SATISFIES_ _ExprSingle {
-		$$ = new (((XPathParserControl *)parm)->memMgr) XQQuantified(XQQuantified::some, $2, $4, ((XPathParserControl *)parm)->memMgr);
+		$$ = new (MEMMGR) XQQuantified(XQQuantified::some, $2, $4, MEMMGR);
 	}
 
 	| _EVERY_ _VariableBindingList _SATISFIES_ _ExprSingle {
-		$$ = new (((XPathParserControl *)parm)->memMgr) XQQuantified(XQQuantified::every, $2, $4, ((XPathParserControl *)parm)->memMgr);
+		$$ = new (MEMMGR) XQQuantified(XQQuantified::every, $2, $4, MEMMGR);
 	}
 
 ;
 
 _VariableBindingList:
     _VariableBindingList _COMMA_ _VARNAME_ _IN_ _ExprSingle {
-		XQVariableBinding* bind=new (((XPathParserControl *)parm)->memMgr) XQVariableBinding(((XPathParserControl *)parm)->memMgr,
+		XQVariableBinding* bind=new (MEMMGR) XQVariableBinding(MEMMGR,
                                                                                          XQVariableBinding::forBinding,
-                                                                                         ((XPathParserControl *)parm)->memMgr->getPooledString($3), $5);
+                                                                                         MEMMGR->getPooledString($3), $5);
 		$1->push_back(bind);
 		$$ = $1;
 		delete [] $3;
 	}
 
     | _VARNAME_ _IN_ _ExprSingle {
-		$$ = new (((XPathParserControl *)parm)->memMgr) VectorOfVariableBinding(XQillaAllocator<XQVariableBinding*>((((XPathParserControl *)parm)->memMgr)));
-		XQVariableBinding* bind=new (((XPathParserControl *)parm)->memMgr) XQVariableBinding(((XPathParserControl *)parm)->memMgr,
+		$$ = new (MEMMGR) VectorOfVariableBinding(XQillaAllocator<XQVariableBinding*>((MEMMGR)));
+		XQVariableBinding* bind=new (MEMMGR) XQVariableBinding(MEMMGR,
                                                                                          XQVariableBinding::forBinding,
-                                                                                         ((XPathParserControl *)parm)->memMgr->getPooledString($1), $3);
+                                                                                         MEMMGR->getPooledString($1), $3);
 		$$->push_back(bind);
 		delete [] $1;
 	}
@@ -396,7 +429,7 @@ _IfExpr:
 	*/
 
 	_IF_LPAR_ _Expr _RPAR_ _THEN_ _ExprSingle _ELSE_ _ExprSingle {
-		$$ = new (((XPathParserControl *)parm)->memMgr) XQIf($2, $5, $7, ((XPathParserControl *)parm)->memMgr);
+		$$ = new (MEMMGR) XQIf($2, $5, $7, MEMMGR);
 	}
 
 ;
@@ -422,7 +455,7 @@ _OrExpr:
 		}
 		else
 		{
-			ASTNodeImpl *dii = new (((XPathParserControl *)parm)->memMgr) Or(packageArgs($1, $3, ((XPathParserControl *)parm)->memMgr), ((XPathParserControl *)parm)->memMgr);
+			ASTNodeImpl *dii = new (MEMMGR) Or(packageArgs($1, $3, MEMMGR), MEMMGR);
 			$$ = dii;
 		}
 	}
@@ -447,7 +480,7 @@ _AndExpr:
 		}
 		else
 		{
-			ASTNodeImpl *dii = new (((XPathParserControl *)parm)->memMgr) And(packageArgs($1, $3, ((XPathParserControl *)parm)->memMgr), ((XPathParserControl *)parm)->memMgr);
+			ASTNodeImpl *dii = new (MEMMGR) And(packageArgs($1, $3, MEMMGR), MEMMGR);
 			$$ = dii;
 		}
 	}
@@ -473,63 +506,63 @@ _ComparisonExpr:
 	}
 
 	| _RangeExpr _EQUALS_ _RangeExpr {
-		$$ = new (((XPathParserControl *)parm)->memMgr) GeneralComp(GeneralComp::EQUAL,packageArgs($1,$3,((XPathParserControl *)parm)->memMgr),((XPathParserControl *)parm)->memMgr);
+		$$ = new (MEMMGR) GeneralComp(GeneralComp::EQUAL,packageArgs($1,$3,MEMMGR),MEMMGR);
 	}
 
 	| _RangeExpr _NOT_EQUALS_ _RangeExpr {
-		$$ = new (((XPathParserControl *)parm)->memMgr) GeneralComp(GeneralComp::NOT_EQUAL,packageArgs($1,$3,((XPathParserControl *)parm)->memMgr),((XPathParserControl *)parm)->memMgr);
+		$$ = new (MEMMGR) GeneralComp(GeneralComp::NOT_EQUAL,packageArgs($1,$3,MEMMGR),MEMMGR);
 	}
 
 	| _RangeExpr _LT_ _RangeExpr {
-		$$ = new (((XPathParserControl *)parm)->memMgr) GeneralComp(GeneralComp::LESS_THAN,packageArgs($1,$3,((XPathParserControl *)parm)->memMgr),((XPathParserControl *)parm)->memMgr);
+		$$ = new (MEMMGR) GeneralComp(GeneralComp::LESS_THAN,packageArgs($1,$3,MEMMGR),MEMMGR);
 	}
 
 	| _RangeExpr _LT_EQUALS_ _RangeExpr {
-		$$ = new (((XPathParserControl *)parm)->memMgr) GeneralComp(GeneralComp::LESS_THAN_EQUAL,packageArgs($1,$3,((XPathParserControl *)parm)->memMgr),((XPathParserControl *)parm)->memMgr);
+		$$ = new (MEMMGR) GeneralComp(GeneralComp::LESS_THAN_EQUAL,packageArgs($1,$3,MEMMGR),MEMMGR);
 	}
 
 	| _RangeExpr _GT_ _RangeExpr {
-		$$ = new (((XPathParserControl *)parm)->memMgr) GeneralComp(GeneralComp::GREATER_THAN,packageArgs($1,$3,((XPathParserControl *)parm)->memMgr),((XPathParserControl *)parm)->memMgr);
+		$$ = new (MEMMGR) GeneralComp(GeneralComp::GREATER_THAN,packageArgs($1,$3,MEMMGR),MEMMGR);
 	}
 
 	| _RangeExpr _GT_EQUALS_ _RangeExpr {
-		$$ = new (((XPathParserControl *)parm)->memMgr) GeneralComp(GeneralComp::GREATER_THAN_EQUAL,packageArgs($1,$3,((XPathParserControl *)parm)->memMgr),((XPathParserControl *)parm)->memMgr);
+		$$ = new (MEMMGR) GeneralComp(GeneralComp::GREATER_THAN_EQUAL,packageArgs($1,$3,MEMMGR),MEMMGR);
 	}
 
 	| _RangeExpr _FORTRAN_EQ_ _RangeExpr {
-		$$ = new (((XPathParserControl *)parm)->memMgr) Equals(packageArgs($1, $3,((XPathParserControl *)parm)->memMgr), ((XPathParserControl *)parm)->memMgr);
+		$$ = new (MEMMGR) Equals(packageArgs($1, $3,MEMMGR), MEMMGR);
 	}
 
 	| _RangeExpr _FORTRAN_NE_ _RangeExpr {
-		$$ = new (((XPathParserControl *)parm)->memMgr) NotEquals(packageArgs($1, $3,((XPathParserControl *)parm)->memMgr), ((XPathParserControl *)parm)->memMgr);
+		$$ = new (MEMMGR) NotEquals(packageArgs($1, $3,MEMMGR), MEMMGR);
 	}
 
 	| _RangeExpr _FORTRAN_LT_ _RangeExpr {
-		$$ = new (((XPathParserControl *)parm)->memMgr) LessThan(packageArgs($1, $3,((XPathParserControl *)parm)->memMgr), ((XPathParserControl *)parm)->memMgr);
+		$$ = new (MEMMGR) LessThan(packageArgs($1, $3,MEMMGR), MEMMGR);
 	}
 
 	| _RangeExpr _FORTRAN_LE_ _RangeExpr {
-		$$ = new (((XPathParserControl *)parm)->memMgr) LessThanEqual(packageArgs($1, $3,((XPathParserControl *)parm)->memMgr), ((XPathParserControl *)parm)->memMgr);
+		$$ = new (MEMMGR) LessThanEqual(packageArgs($1, $3,MEMMGR), MEMMGR);
 	}
 
 	| _RangeExpr _FORTRAN_GT_ _RangeExpr {
-		$$ = new (((XPathParserControl *)parm)->memMgr) GreaterThan(packageArgs($1, $3,((XPathParserControl *)parm)->memMgr), ((XPathParserControl *)parm)->memMgr);
+		$$ = new (MEMMGR) GreaterThan(packageArgs($1, $3,MEMMGR), MEMMGR);
 	}
 
 	| _RangeExpr _FORTRAN_GE_ _RangeExpr {
-		$$ = new (((XPathParserControl *)parm)->memMgr) GreaterThanEqual(packageArgs($1, $3,((XPathParserControl *)parm)->memMgr), ((XPathParserControl *)parm)->memMgr);
+		$$ = new (MEMMGR) GreaterThanEqual(packageArgs($1, $3,MEMMGR), MEMMGR);
 	}
 
 	| _RangeExpr _IS_ _RangeExpr {
-		$$ = new (((XPathParserControl *)parm)->memMgr) NodeComparison(packageArgs($1, $3,((XPathParserControl *)parm)->memMgr), ((XPathParserControl *)parm)->memMgr);
+		$$ = new (MEMMGR) NodeComparison(packageArgs($1, $3,MEMMGR), MEMMGR);
 	}
 
 	| _RangeExpr _LT_LT_ _RangeExpr {
-		$$ = new (((XPathParserControl *)parm)->memMgr) OrderComparison(packageArgs($1, $3,((XPathParserControl *)parm)->memMgr), true, ((XPathParserControl *)parm)->memMgr);
+		$$ = new (MEMMGR) OrderComparison(packageArgs($1, $3,MEMMGR), true, MEMMGR);
 	}
 
 	| _RangeExpr _GT_GT_ _RangeExpr {
-		$$ = new (((XPathParserControl *)parm)->memMgr) OrderComparison(packageArgs($1, $3,((XPathParserControl *)parm)->memMgr), false, ((XPathParserControl *)parm)->memMgr);
+		$$ = new (MEMMGR) OrderComparison(packageArgs($1, $3,MEMMGR), false, MEMMGR);
 	}
 
 ;
@@ -545,7 +578,7 @@ _RangeExpr:
 	}
 
 	| _AdditiveExpr _TO_ _AdditiveExpr {
-		$$ = new (((XPathParserControl *)parm)->memMgr) Range(packageArgs($1, $3,((XPathParserControl *)parm)->memMgr), ((XPathParserControl *)parm)->memMgr);
+		$$ = new (MEMMGR) Range(packageArgs($1, $3,MEMMGR), MEMMGR);
 	}
 
 ;
@@ -562,11 +595,11 @@ _AdditiveExpr:
 	}
 
 	| _AdditiveExpr _PLUS_ _MultiplicativeExpr {
-		$$ = new (((XPathParserControl *)parm)->memMgr) Plus(packageArgs($1, $3,((XPathParserControl *)parm)->memMgr), ((XPathParserControl *)parm)->memMgr);
+		$$ = new (MEMMGR) Plus(packageArgs($1, $3,MEMMGR), MEMMGR);
 	}
 
 	| _AdditiveExpr _MINUS_ _MultiplicativeExpr {
-		$$ = new (((XPathParserControl *)parm)->memMgr) Minus(packageArgs($1, $3,((XPathParserControl *)parm)->memMgr), ((XPathParserControl *)parm)->memMgr);
+		$$ = new (MEMMGR) Minus(packageArgs($1, $3,MEMMGR), MEMMGR);
 	}
 
 ;
@@ -582,19 +615,19 @@ _MultiplicativeExpr:
 	}
 
 	| _MultiplicativeExpr _MULTIPLY_ _UnionExpr {
-		$$ = new (((XPathParserControl *)parm)->memMgr) Multiply(packageArgs($1, $3,((XPathParserControl *)parm)->memMgr), ((XPathParserControl *)parm)->memMgr);
+		$$ = new (MEMMGR) Multiply(packageArgs($1, $3,MEMMGR), MEMMGR);
 	}
 
 	| _MultiplicativeExpr _DIV_ _UnionExpr {
-		$$ = new (((XPathParserControl *)parm)->memMgr) Divide(packageArgs($1, $3,((XPathParserControl *)parm)->memMgr), ((XPathParserControl *)parm)->memMgr);
+		$$ = new (MEMMGR) Divide(packageArgs($1, $3,MEMMGR), MEMMGR);
 	}
 
 	| _MultiplicativeExpr _INTEGER_DIV_ _UnionExpr {
-		$$ = new (((XPathParserControl *)parm)->memMgr) IntegerDivide(packageArgs($1, $3,((XPathParserControl *)parm)->memMgr), ((XPathParserControl *)parm)->memMgr);
+		$$ = new (MEMMGR) IntegerDivide(packageArgs($1, $3,MEMMGR), MEMMGR);
 	}
 
 	| _MultiplicativeExpr _MOD_ _UnionExpr {
-		$$ = new (((XPathParserControl *)parm)->memMgr) Mod(packageArgs($1, $3,((XPathParserControl *)parm)->memMgr), ((XPathParserControl *)parm)->memMgr);
+		$$ = new (MEMMGR) Mod(packageArgs($1, $3,MEMMGR), MEMMGR);
 	}
 
 ;
@@ -610,11 +643,11 @@ _UnionExpr:
 	}
 
 	| _UnionExpr _UNION_ _IntersectExceptExpr {
-		$$ = new (((XPathParserControl *)parm)->memMgr) Union(packageArgs($1, $3,((XPathParserControl *)parm)->memMgr), ((XPathParserControl *)parm)->memMgr);
+		$$ = new (MEMMGR) Union(packageArgs($1, $3,MEMMGR), MEMMGR);
 	}
 
 	| _UnionExpr _VERTICAL_BAR_ _IntersectExceptExpr {
-		$$ = new (((XPathParserControl *)parm)->memMgr) Union(packageArgs($1, $3,((XPathParserControl *)parm)->memMgr), ((XPathParserControl *)parm)->memMgr);
+		$$ = new (MEMMGR) Union(packageArgs($1, $3,MEMMGR), MEMMGR);
 	}
 
 ;
@@ -630,11 +663,11 @@ _IntersectExceptExpr:
 	}
 
 	| _IntersectExceptExpr _INTERSECT_ _InstanceOfExpr {
-		$$ = new (((XPathParserControl *)parm)->memMgr) Intersect(packageArgs($1, $3,((XPathParserControl *)parm)->memMgr), ((XPathParserControl *)parm)->memMgr);
+		$$ = new (MEMMGR) Intersect(packageArgs($1, $3,MEMMGR), MEMMGR);
 	}
 
 	| _IntersectExceptExpr _EXCEPT_ _InstanceOfExpr {
-		$$ = new (((XPathParserControl *)parm)->memMgr) Except(packageArgs($1, $3,((XPathParserControl *)parm)->memMgr), ((XPathParserControl *)parm)->memMgr);
+		$$ = new (MEMMGR) Except(packageArgs($1, $3,MEMMGR), MEMMGR);
 	}
 
 ;
@@ -650,7 +683,7 @@ _InstanceOfExpr:
 	}
 
 	| _TreatExpr _INSTANCE_OF_ _SequenceType {
-		$$ = new (((XPathParserControl *)parm)->memMgr) XQInstanceOf($1, $3, ((XPathParserControl *)parm)->memMgr);
+		$$ = new (MEMMGR) XQInstanceOf($1, $3, MEMMGR);
 	}
 
 ;
@@ -664,7 +697,7 @@ _TreatExpr:
         $$ = $1;
     }
     | _CastableExpr _TREAT_AS_ _SequenceType {
-		$$ = new (((XPathParserControl *)parm)->memMgr) XQTreatAs($1, $3, ((XPathParserControl *)parm)->memMgr);
+		$$ = new (MEMMGR) XQTreatAs($1, $3, MEMMGR);
 	}
 ;
 
@@ -679,7 +712,7 @@ _CastableExpr:
 	}
 
 	| _CastExpr _CASTABLE_AS_ _SingleType {
-        $$ = new (((XPathParserControl *)parm)->memMgr) XQCastableAs($1, $3,((XPathParserControl *)parm)->memMgr);
+        $$ = new (MEMMGR) XQCastableAs($1, $3,MEMMGR);
 	}
 
 ;
@@ -693,7 +726,7 @@ _CastExpr:
         $$ = $1;
     }
     | _UnaryExpr _CAST_AS_ _SingleType {
-		$$ = new (((XPathParserControl *)parm)->memMgr) XQCastAs($1, $3,((XPathParserControl *)parm)->memMgr);
+		$$ = new (MEMMGR) XQCastAs($1, $3,MEMMGR);
 	}
 ;
 
@@ -708,9 +741,9 @@ _UnaryExpr:
 	}
 
 	| _MINUS_ _UnaryExpr {
-	  VectorOfASTNodes args(XQillaAllocator<ASTNode*>(((XPathParserControl *)parm)->memMgr));
+	  VectorOfASTNodes args(XQillaAllocator<ASTNode*>(MEMMGR));
 	  args.push_back($2);
-	  $$ = new (((XPathParserControl *)parm)->memMgr) UnaryMinus(args, ((XPathParserControl *)parm)->memMgr);
+	  $$ = new (MEMMGR) UnaryMinus(args, MEMMGR);
 	}
 
 	| _PLUS_ _UnaryExpr {
@@ -742,52 +775,32 @@ _PathExpr:
 	*/
 
   _SLASH_ {
-		XQNav *nav = new (((XPathParserControl *)parm)->memMgr) XQNav(((XPathParserControl *)parm)->memMgr);
-    nav->addInitialRootStep(((XPathParserControl *)parm)->memMgr);
-		$$ = nav;
-  }
+        XQNav *nav = new (MEMMGR) XQNav(MEMMGR);
+        nav->addInitialRootStep(MEMMGR);
+        $$ = nav;
+    }
 
 	| _SLASH_ _RelativePathExpr {
-
-        // Optimization: if the _RelativePathExpr is already a XQNav, simply set the "go to root" flag
-        if($2->getType()==ASTNode::NAVIGATION)
-        {
-            ((XQNav*)$2)->addInitialRootStep(((XPathParserControl *)parm)->memMgr);
-            $$ = $2;
-        }
-        else
-        {
-	        XQNav *nav = new (((XPathParserControl *)parm)->memMgr) XQNav(((XPathParserControl *)parm)->memMgr);
-          nav->addInitialRootStep(((XPathParserControl *)parm)->memMgr);
-  		    nav->addStep($2);
-	  	    $$ = nav;
-        }
-  }
+        XQNav* nav=getNavigation($2,MEMMGR);
+        nav->addInitialRootStep(MEMMGR);
+	    $$ = nav;
+    }
 
 	| _SLASHSLASH_ _RelativePathExpr {
-    XQNav *nav = 0;
-    if($2->getType()==ASTNode::NAVIGATION) {
-      nav = (XQNav*)$2;
-    }
-    else {
-      nav = new (((XPathParserControl *)parm)->memMgr) XQNav(((XPathParserControl *)parm)->memMgr);
-      nav->addStep($2);
-    }
+        XQNav *nav = getNavigation($2,MEMMGR);
 
-    NodeTest *step = new (((XPathParserControl *)parm)->memMgr) NodeTest();
-    step->setTypeWildcard();
-    step->setNameWildcard();
-    step->setNamespaceWildcard();
-    nav->addStepFront(new (((XPathParserControl *)parm)->memMgr) XQStep(XQStep::DESCENDANT_OR_SELF, step, ((XPathParserControl *)parm)->memMgr));
+        NodeTest *step = new (MEMMGR) NodeTest();
+        step->setTypeWildcard();
+        step->setNameWildcard();
+        step->setNamespaceWildcard();
+        nav->addStepFront(new (MEMMGR) XQStep(XQStep::DESCENDANT_OR_SELF, step, MEMMGR));
 
-    nav->addInitialRootStep(((XPathParserControl *)parm)->memMgr);
+        nav->addInitialRootStep(MEMMGR);
 
-    $$ = nav;
+        $$ = nav;
 	}
 
-	| _RelativePathExpr {
-	  $$ = $1;
-  }
+	| _RelativePathExpr
 
 ;
 
@@ -804,42 +817,23 @@ _RelativePathExpr:
 	}
 
 	| _RelativePathExpr _SLASH_ _StepExpr {
-
-        // Optimization: if the _RelativePathExpr is already a XQNav, simply add the new step
-        if($1->getType()==ASTNode::NAVIGATION)
-        {
-            ((XQNav*)$1)->addStep($3);
-            $$ = $1;
-        }
-        else
-        {
-		    XQNav *nav = new (((XPathParserControl *)parm)->memMgr) XQNav(((XPathParserControl *)parm)->memMgr);
-		    nav->addStep($1);
-		    nav->addStep($3);
-		    $$ = nav;
-        }
+		XQNav *nav = getNavigation($1,MEMMGR);
+	    nav->addStep($3);
+		$$ = nav;
 	}
 
 	| _RelativePathExpr _SLASHSLASH_ _StepExpr {
+        XQNav *nav = getNavigation($1,MEMMGR);
 
-    XQNav *nav = 0;
-    if($1->getType()==ASTNode::NAVIGATION) {
-      nav = (XQNav*)$1;
-    }
-    else {
-      nav = new (((XPathParserControl *)parm)->memMgr) XQNav(((XPathParserControl *)parm)->memMgr);
-      nav->addStep($1);
-    }
+        NodeTest *step = new (MEMMGR) NodeTest();
+        step->setTypeWildcard();
+        step->setNameWildcard();
+        step->setNamespaceWildcard();
+        nav->addStep(XQStep::DESCENDANT_OR_SELF, step);
 
-    NodeTest *step = new (((XPathParserControl *)parm)->memMgr) NodeTest();
-    step->setTypeWildcard();
-    step->setNameWildcard();
-    step->setNamespaceWildcard();
-    nav->addStep(XQStep::DESCENDANT_OR_SELF, step);
+        nav->addStep($3);
 
-    nav->addStep($3);
-
-    $$ = nav;
+        $$ = nav;
 	}
 
 ;
@@ -871,7 +865,7 @@ _AxisStep:
     | _ReverseStep _PredicateList {
         $$ = XQPredicate::addPredicates($1, $2);
         delete $2;
-        $$ = new (((XPathParserControl *)parm)->memMgr) XQDocumentOrder($$, ((XPathParserControl *)parm)->memMgr);
+        $$ = new (MEMMGR) XQDocumentOrder($$, MEMMGR);
     }
 ;
 
@@ -890,7 +884,7 @@ _ForwardStep:
         }
       }
 
-      $$ = new (((XPathParserControl *)parm)->memMgr) XQStep($1, $2, ((XPathParserControl *)parm)->memMgr);
+      $$ = new (MEMMGR) XQStep($1, $2, MEMMGR);
 	}
 
 	| _AbbrevForwardStep {
@@ -957,7 +951,7 @@ _AbbrevForwardStep:
       $2->setNodeType(Node::attribute_string);
     }
 
-    $$ = new (((XPathParserControl *)parm)->memMgr) XQStep(XQStep::ATTRIBUTE, $2, ((XPathParserControl *)parm)->memMgr);
+    $$ = new (MEMMGR) XQStep(XQStep::ATTRIBUTE, $2, MEMMGR);
 	}
 
 	| _NodeTest {
@@ -971,7 +965,7 @@ _AbbrevForwardStep:
       $1->setNodeType(Node::element_string);
     }
 
-    $$ = new (((XPathParserControl *)parm)->memMgr) XQStep(axis, $1, ((XPathParserControl *)parm)->memMgr);
+    $$ = new (MEMMGR) XQStep(axis, $1, MEMMGR);
 	}
 
 ;
@@ -987,7 +981,7 @@ _ReverseStep:
       $2->setNodeType(Node::element_string);
     }
 
-    $$ = new (((XPathParserControl *)parm)->memMgr) XQStep($1, $2, ((XPathParserControl *)parm)->memMgr);
+    $$ = new (MEMMGR) XQStep($1, $2, MEMMGR);
 	}
 
 	| _AbbrevReverseStep {
@@ -1033,11 +1027,11 @@ _AbbrevReverseStep:
 	*/
 
 	_DOT_DOT_ {
-		NodeTest *step = new (((XPathParserControl *)parm)->memMgr) NodeTest;
+		NodeTest *step = new (MEMMGR) NodeTest;
 		step->setNameWildcard();
 		step->setNamespaceWildcard();
 		step->setTypeWildcard();
-    $$ = new (((XPathParserControl *)parm)->memMgr) XQStep(XQStep::PARENT, step, ((XPathParserControl *)parm)->memMgr);
+    $$ = new (MEMMGR) XQStep(XQStep::PARENT, step, MEMMGR);
 	}
 
 ;
@@ -1063,15 +1057,9 @@ _NameTest:
 	*/
 
     _QName {
-        NodeTest *step = new (((XPathParserControl *)parm)->memMgr) NodeTest();
-
-        if($1->getPrefix() == NULL)
-            step->setNodeName($1->getName());
-        else {
-            step->setNodeName($1->getName());
-            const XMLCh *uri = ((XPathParserControl *)parm)->context->getUriBoundToPrefix($1->getPrefix());
-            step->setNodeUri(uri);
-        }
+        NodeTest *step = new (MEMMGR) NodeTest();
+		step->setNodePrefix($1->getPrefix());
+        step->setNodeName($1->getName());
         $$ = step;
     }
     | _Wildcard {
@@ -1087,29 +1075,26 @@ _Wildcard:
 	*/
 
 	_STAR_ {
-		NodeTest *step = new (((XPathParserControl *)parm)->memMgr) NodeTest();
+		NodeTest *step = new (MEMMGR) NodeTest();
 		step->setNameWildcard();
 		step->setNamespaceWildcard();
 		$$ = step;
 	}
 
 	| _NCNAME_COLON_STAR_ {
-		NodeTest *step = new (((XPathParserControl *)parm)->memMgr) NodeTest();
+		NodeTest *step = new (MEMMGR) NodeTest();
+		step->setNodePrefix(MEMMGR->getPooledString($1));
 		step->setNameWildcard();
-		const XMLCh* uri = ((XPathParserControl *)parm)->context->getUriBoundToPrefix($1);
-		step->setNodeUri(uri);
-
 		$$ = step;
-    delete $1;
+        delete $1;
 	}
 
 	| _STAR_COLON_NCNAME_ {
-		NodeTest *step = new (((XPathParserControl *)parm)->memMgr) NodeTest();
-    
-		step->setNodeName(((XPathParserControl *)parm)->memMgr->getPooledString($1));
-		step->setNamespaceWildcard();
-		$$ = step;
-    delete $1;
+        NodeTest *step = new (MEMMGR) NodeTest();
+        step->setNodeName(MEMMGR->getPooledString($1));
+        step->setNamespaceWildcard();
+        $$ = step;
+        delete $1;
 	}
 
 ;
@@ -1134,10 +1119,10 @@ _PredicateList:
 	*/
 
     /* empty */ {
-        $$ = new VectorOfPredicates(((XPathParserControl *)parm)->memMgr);
+        $$ = new VectorOfPredicates(MEMMGR);
     }
 	| _PredicateList _LBRACK_ _Expr _RBRACK_ {
-        XQPredicate *pred = new (((XPathParserControl *)parm)->memMgr) XQPredicate($3, ((XPathParserControl *)parm)->memMgr);
+        XQPredicate *pred = new (MEMMGR) XQPredicate($3, MEMMGR);
         $1->push_back(pred);
         $$ = $1;
 	}
@@ -1183,14 +1168,14 @@ _Literal:
 	}
 
 	| _STRING_LITERAL_ {
-    AnyAtomicTypeConstructor *ic = new (((XPathParserControl *)parm)->memMgr)
+    AnyAtomicTypeConstructor *ic = new (MEMMGR)
       AnyAtomicTypeConstructor(
 				XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 				XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
-				((XPathParserControl *)parm)->memMgr->getPooledString($1),
+				MEMMGR->getPooledString($1),
         AnyAtomicType::STRING);
-		XQLiteral *str_val  = new (((XPathParserControl *)parm)->memMgr)
-      XQLiteral(ic, ((XPathParserControl *)parm)->memMgr);
+		XQLiteral *str_val  = new (MEMMGR)
+      XQLiteral(ic, MEMMGR);
 		$$ = str_val;
         delete [] $1;
 	}
@@ -1204,40 +1189,40 @@ _NumericLiteral:
 	*/
 
   _INTEGER_LITERAL_ {
-    AnyAtomicTypeConstructor *ic = new (((XPathParserControl *)parm)->memMgr)
+    AnyAtomicTypeConstructor *ic = new (MEMMGR)
       AnyAtomicTypeConstructor(
 			XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 			XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_INTEGER,
-				((XPathParserControl *)parm)->memMgr->getPooledString($1),
+				MEMMGR->getPooledString($1),
       AnyAtomicType::DECIMAL);
-    XQLiteral *did  = new (((XPathParserControl *)parm)->memMgr)
-      XQLiteral(ic, ((XPathParserControl *)parm)->memMgr);
+    XQLiteral *did  = new (MEMMGR)
+      XQLiteral(ic, MEMMGR);
     delete [] $1;
     $$ = did;
   }
 
   | _DECIMAL_LITERAL_ {
-    AnyAtomicTypeConstructor *ic = new (((XPathParserControl *)parm)->memMgr)
+    AnyAtomicTypeConstructor *ic = new (MEMMGR)
       AnyAtomicTypeConstructor(
 			XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 			XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DECIMAL,
-				((XPathParserControl *)parm)->memMgr->getPooledString($1),
+				MEMMGR->getPooledString($1),
       AnyAtomicType::DECIMAL);
-    XQLiteral *did  = new (((XPathParserControl *)parm)->memMgr)
-      XQLiteral(ic, ((XPathParserControl *)parm)->memMgr);
+    XQLiteral *did  = new (MEMMGR)
+      XQLiteral(ic, MEMMGR);
     delete $1;
     $$ = did;
   }
 
   | _DOUBLE_LITERAL_ {
-    AnyAtomicTypeConstructor *ic = new (((XPathParserControl *)parm)->memMgr)
+    AnyAtomicTypeConstructor *ic = new (MEMMGR)
       AnyAtomicTypeConstructor(
 			XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 			XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DOUBLE,
-				((XPathParserControl *)parm)->memMgr->getPooledString($1),
+				MEMMGR->getPooledString($1),
       AnyAtomicType::DOUBLE);
-    XQLiteral *did  = new (((XPathParserControl *)parm)->memMgr)
-      XQLiteral(ic, ((XPathParserControl *)parm)->memMgr);
+    XQLiteral *did  = new (MEMMGR)
+      XQLiteral(ic, MEMMGR);
     delete $1;
     $$ = did;
   }
@@ -1251,7 +1236,7 @@ _VarRef:
   */
   
   _VARNAME_ {
-		XQVariable *var = new (((XPathParserControl *)parm)->memMgr) XQVariable($1, ((XPathParserControl *)parm)->memMgr);
+		XQVariable *var = new (MEMMGR) XQVariable($1, MEMMGR);
 		delete [] $1;
 		$$ = var;
   }
@@ -1266,7 +1251,7 @@ _ParenthesizedExpr:
 	_LPAR_ _Expr _RPAR_ {
         if($2->getType()!=ASTNode::PARENTHESIZED)
         {
-          XQParenthesizedExpr *dis = new (((XPathParserControl *)parm)->memMgr) XQParenthesizedExpr(((XPathParserControl *)parm)->memMgr);
+          XQParenthesizedExpr *dis = new (MEMMGR) XQParenthesizedExpr(MEMMGR);
           dis->addItem($2);
           $$ = dis;
         }
@@ -1274,7 +1259,7 @@ _ParenthesizedExpr:
           $$ = $2;
 	}
 	| _LPAR_ _RPAR_ {
-		$$ = new (((XPathParserControl *)parm)->memMgr) XQSequence(((XPathParserControl *)parm)->memMgr);
+		$$ = new (MEMMGR) XQSequence(MEMMGR);
 	}
 
 ;
@@ -1287,7 +1272,7 @@ _ContextItemExpr:
   */
 
 	_DOT_ {
-		$$ = new (((XPathParserControl *)parm)->memMgr) XQContextItem(((XPathParserControl *)parm)->memMgr);
+		$$ = new (MEMMGR) XQContextItem(MEMMGR);
 	}
 
 ;
@@ -1299,32 +1284,16 @@ _FunctionCall:
 	*/
 
 	_QNAME_LPAR_ _RPAR_ {
-        QualifiedName *qname = new (((XPathParserControl *)parm)->memMgr) QualifiedName($1, ((XPathParserControl *)parm)->memMgr);
+        QualifiedName *qname = new (MEMMGR) QualifiedName($1, MEMMGR);
         delete $1;
-        VectorOfASTNodes tmp(XQillaAllocator<ASTNode*>(((XPathParserControl *)parm)->memMgr));
-        ASTNode* functionImpl = ((XPathParserControl*)parm)->context->lookUpFunction(qname->getPrefix(), qname->getName(), tmp);
-        if( functionImpl == NULL) {
-          XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buf(1023, ((XPathParserControl *)parm)->memMgr);
-          buf.set(X("Function '"));
-          buf.append(qname->getFullName(((XPathParserControl *)parm)->memMgr));
-          buf.append(X("' is undefined [err:XPST0017]"));
-          XQThrow(StaticErrorException, X("XPath2Parser.y"), buf.getRawBuffer());
-        }
-        $$ = functionImpl;
+        VectorOfASTNodes tmp(XQillaAllocator<ASTNode*>(MEMMGR));
+		$$ = new (MEMMGR) XQFunctionCall(qname, tmp, MEMMGR);
 	}
 
 	| _QNAME_LPAR_ _ArgumentList _RPAR_ {
-        QualifiedName *qname = new (((XPathParserControl *)parm)->memMgr) QualifiedName($1, ((XPathParserControl *)parm)->memMgr);
+        QualifiedName *qname = new (MEMMGR) QualifiedName($1, MEMMGR);
         delete [] $1;
-        ASTNode* functionImpl = ((XPathParserControl*)parm)->context->lookUpFunction(qname->getPrefix(), qname->getName(), *$2);
-        if( functionImpl == NULL) {
-          XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buf(1023, ((XPathParserControl *)parm)->memMgr);
-          buf.set(X("Function '"));
-          buf.append(qname->getFullName(((XPathParserControl *)parm)->memMgr));
-          buf.append(X("' is undefined [err:XPST0017]"));
-          XQThrow(StaticErrorException, X("XPath2Parser.y"), buf.getRawBuffer());
-        }
-        $$ = functionImpl;
+		$$ = new (MEMMGR) XQFunctionCall(qname, *$2, MEMMGR);
         delete $2;
 	}
 
@@ -1340,7 +1309,7 @@ _ArgumentList:
 	*/
 
 	_ExprSingle {
-        $$ = new VectorOfASTNodes(XQillaAllocator<ASTNode*>(((XPathParserControl *)parm)->memMgr));
+        $$ = new VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
         $$->push_back($1);
 	  }
 
@@ -1358,15 +1327,15 @@ _SingleType:
 	*/
 
 	_AtomicType {
-		SequenceType* seq=new (((XPathParserControl *)parm)->memMgr) SequenceType();
-		seq->setItemType(new (((XPathParserControl *)parm)->memMgr) SequenceType::ItemType(SequenceType::ItemType::TEST_ATOMIC_TYPE, NULL, $1));
+		SequenceType* seq=new (MEMMGR) SequenceType();
+		seq->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ATOMIC_TYPE, NULL, $1));
 		seq->setOccurrence(SequenceType::EXACTLY_ONE);
 		$$ = seq;
 	}
 
 	| _AtomicType _QUESTION_ {
-		SequenceType* seq=new (((XPathParserControl *)parm)->memMgr) SequenceType();
-		seq->setItemType(new (((XPathParserControl *)parm)->memMgr) SequenceType::ItemType(SequenceType::ItemType::TEST_ATOMIC_TYPE, NULL, $1));
+		SequenceType* seq=new (MEMMGR) SequenceType();
+		seq->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ATOMIC_TYPE, NULL, $1));
 		seq->setOccurrence(SequenceType::QUESTION_MARK);
 		$$ = seq;
 	}
@@ -1380,21 +1349,21 @@ _SequenceType:
 	*/
 
 	_ItemType _OccurrenceIndicator {
-		SequenceType* seq=new (((XPathParserControl *)parm)->memMgr) SequenceType();
+		SequenceType* seq=new (MEMMGR) SequenceType();
 		seq->setItemType($1);
 		seq->setOccurrence($2);
 		$$ = seq;
 	}
 
 	| _ItemType {
-		SequenceType* seq=new (((XPathParserControl *)parm)->memMgr) SequenceType();
+		SequenceType* seq=new (MEMMGR) SequenceType();
 		seq->setItemType($1);
 		seq->setOccurrence(SequenceType::EXACTLY_ONE);
 		$$ = seq;
 	}
 
     | _EMPTY_ {
-		$$ = new (((XPathParserControl *)parm)->memMgr) SequenceType();
+		$$ = new (MEMMGR) SequenceType();
 	}
 
 ;
@@ -1424,14 +1393,14 @@ _ItemType:
 	*/
 
     _AtomicType {
-        $$ = new (((XPathParserControl *)parm)->memMgr) SequenceType::ItemType(SequenceType::ItemType::TEST_ATOMIC_TYPE, NULL, $1);
+        $$ = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ATOMIC_TYPE, NULL, $1);
     }
     | _KindTest {
         $$ = $1->getItemType();
         $1->setItemType(NULL);
     }
     | _ITEM_ {
-        $$ = new (((XPathParserControl *)parm)->memMgr) SequenceType::ItemType(SequenceType::ItemType::TEST_ANYTHING);
+        $$ = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ANYTHING);
     }
 ;
 
@@ -1495,8 +1464,8 @@ _AnyKindTest:
 	*/
 
 	_NODE_LPAR_ _RPAR_ {
-		NodeTest *step = new (((XPathParserControl *)parm)->memMgr) NodeTest();
-        step->setItemType(new (((XPathParserControl *)parm)->memMgr) SequenceType::ItemType(SequenceType::ItemType::TEST_NODE));
+		NodeTest *step = new (MEMMGR) NodeTest();
+        step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_NODE));
 		$$ = step;
 	}
 
@@ -1509,22 +1478,22 @@ _DocumentTest:
 	*/
 
 	_DOCUMENT_NODE_LPAR_ _RPAR_ {
-		NodeTest *step = new (((XPathParserControl *)parm)->memMgr) NodeTest();
-        step->setItemType(new (((XPathParserControl *)parm)->memMgr) SequenceType::ItemType(SequenceType::ItemType::TEST_DOCUMENT));
+		NodeTest *step = new (MEMMGR) NodeTest();
+        step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_DOCUMENT));
 		$$ = step;
 	}
 	| _DOCUMENT_NODE_LPAR_ _ElementTest _RPAR_ {
-		NodeTest *step = new (((XPathParserControl *)parm)->memMgr) NodeTest();
+		NodeTest *step = new (MEMMGR) NodeTest();
         SequenceType::ItemType* elemTest=$2->getItemType();
-        step->setItemType(new (((XPathParserControl *)parm)->memMgr) SequenceType::ItemType(SequenceType::ItemType::TEST_DOCUMENT,elemTest->getName(),elemTest->getType()));
+        step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_DOCUMENT,elemTest->getName(),elemTest->getType()));
         elemTest->setName(NULL);
         elemTest->setType(NULL);
 		$$ = step;
 	}
 	| _DOCUMENT_NODE_LPAR_ _SchemaElementTest _RPAR_ {
-		NodeTest *step = new (((XPathParserControl *)parm)->memMgr) NodeTest();
+		NodeTest *step = new (MEMMGR) NodeTest();
         SequenceType::ItemType* elemTest=$2->getItemType();
-        step->setItemType(new (((XPathParserControl *)parm)->memMgr) SequenceType::ItemType(SequenceType::ItemType::TEST_DOCUMENT,elemTest->getName(),elemTest->getType()));
+        step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_DOCUMENT,elemTest->getName(),elemTest->getType()));
         elemTest->setName(NULL);
         elemTest->setType(NULL);
 		$$ = step;
@@ -1538,8 +1507,8 @@ _TextTest:
 	*/
 
 	_TEXT_LPAR_ _RPAR_ {
-		NodeTest *step = new (((XPathParserControl *)parm)->memMgr) NodeTest();
-        step->setItemType(new (((XPathParserControl *)parm)->memMgr) SequenceType::ItemType(SequenceType::ItemType::TEST_TEXT));
+		NodeTest *step = new (MEMMGR) NodeTest();
+        step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_TEXT));
 		$$ = step;
 	}
 
@@ -1551,8 +1520,8 @@ _CommentTest:
 	*/
 
 	_COMMENT_LPAR_ _RPAR_ {
-		NodeTest *step = new (((XPathParserControl *)parm)->memMgr) NodeTest();
-        step->setItemType(new (((XPathParserControl *)parm)->memMgr) SequenceType::ItemType(SequenceType::ItemType::TEST_COMMENT));
+		NodeTest *step = new (MEMMGR) NodeTest();
+        step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_COMMENT));
 		$$ = step;
 	}
 
@@ -1565,20 +1534,20 @@ _PITest:
 	*/
 
     _PROCESSING_INSTRUCTION_LPAR_ _STRING_LITERAL_ _RPAR_ {
-		NodeTest *step = new (((XPathParserControl *)parm)->memMgr) NodeTest();
-        step->setItemType(new (((XPathParserControl *)parm)->memMgr) SequenceType::ItemType(SequenceType::ItemType::TEST_PI, new (((XPathParserControl *)parm)->memMgr) QualifiedName($2)));
+		NodeTest *step = new (MEMMGR) NodeTest();
+        step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_PI, new (MEMMGR) QualifiedName($2)));
 		$$ = step;
 		delete $2;
 	}
   | _PROCESSING_INSTRUCTION_LPAR_ _NCNAME_ _RPAR_ {
-		NodeTest *step = new (((XPathParserControl *)parm)->memMgr) NodeTest();
-        step->setItemType(new (((XPathParserControl *)parm)->memMgr) SequenceType::ItemType(SequenceType::ItemType::TEST_PI, new (((XPathParserControl *)parm)->memMgr) QualifiedName($2)));
+		NodeTest *step = new (MEMMGR) NodeTest();
+        step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_PI, new (MEMMGR) QualifiedName($2)));
 		$$ = step;
 		delete $2;
 	}
 	| _PROCESSING_INSTRUCTION_LPAR_  _RPAR_ {
-		NodeTest *step = new (((XPathParserControl *)parm)->memMgr) NodeTest();
-        step->setItemType(new (((XPathParserControl *)parm)->memMgr) SequenceType::ItemType(SequenceType::ItemType::TEST_PI));
+		NodeTest *step = new (MEMMGR) NodeTest();
+        step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_PI));
 		$$ = step;
 	}
 
@@ -1591,18 +1560,18 @@ _AttributeTest:
 	*/
 
 	_ATTRIBUTE_LPAR_ _RPAR_ {
-		NodeTest *step = new (((XPathParserControl *)parm)->memMgr) NodeTest();
-        step->setItemType(new (((XPathParserControl *)parm)->memMgr) SequenceType::ItemType(SequenceType::ItemType::TEST_ATTRIBUTE));
+		NodeTest *step = new (MEMMGR) NodeTest();
+        step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ATTRIBUTE));
 		$$ = step;
 	}
 	| _ATTRIBUTE_LPAR_ _AttribNameOrWildcard _RPAR_ {
-		NodeTest *step = new (((XPathParserControl *)parm)->memMgr) NodeTest();
-        step->setItemType(new (((XPathParserControl *)parm)->memMgr) SequenceType::ItemType(SequenceType::ItemType::TEST_ATTRIBUTE, $2));
+		NodeTest *step = new (MEMMGR) NodeTest();
+        step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ATTRIBUTE, $2));
 		$$ = step;
 	}
 	| _ATTRIBUTE_LPAR_ _AttribNameOrWildcard _COMMA_ _TypeName _RPAR_ {
-		NodeTest *step = new (((XPathParserControl *)parm)->memMgr) NodeTest();
-        step->setItemType(new (((XPathParserControl *)parm)->memMgr) SequenceType::ItemType(SequenceType::ItemType::TEST_ATTRIBUTE, $2, $4));
+		NodeTest *step = new (MEMMGR) NodeTest();
+        step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ATTRIBUTE, $2, $4));
 		$$ = step;
 	}
 ;
@@ -1628,8 +1597,8 @@ _SchemaAttributeTest:
 	*/
 
 	_SCHEMA_ATTRIBUTE_LPAR_ _AttributeDeclaration _RPAR_ {
-		NodeTest *step = new (((XPathParserControl *)parm)->memMgr) NodeTest();
-        step->setItemType(new (((XPathParserControl *)parm)->memMgr) SequenceType::ItemType(SequenceType::ItemType::TEST_SCHEMA_ATTRIBUTE, $2));
+		NodeTest *step = new (MEMMGR) NodeTest();
+        step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_SCHEMA_ATTRIBUTE, $2));
 		$$ = step;
 	}
 ;
@@ -1651,23 +1620,23 @@ _ElementTest:
 	[63]    ElementTest    ::=    <"element" "("> (ElementNameOrWildcard ("," TypeName "?"?)?)? ")"
 	*/
 	_ELEMENT_LPAR_ _RPAR_ {
-		NodeTest *step = new (((XPathParserControl *)parm)->memMgr) NodeTest();
-        step->setItemType(new (((XPathParserControl *)parm)->memMgr) SequenceType::ItemType(SequenceType::ItemType::TEST_ELEMENT));
+		NodeTest *step = new (MEMMGR) NodeTest();
+        step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ELEMENT));
 		$$ = step;
 	}
 	| _ELEMENT_LPAR_ _ElementNameOrWildcard _RPAR_ {
-		NodeTest *step = new (((XPathParserControl *)parm)->memMgr) NodeTest();
-        step->setItemType(new (((XPathParserControl *)parm)->memMgr) SequenceType::ItemType(SequenceType::ItemType::TEST_ELEMENT, $2));
+		NodeTest *step = new (MEMMGR) NodeTest();
+        step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ELEMENT, $2));
 		$$ = step;
 	}
 	| _ELEMENT_LPAR_ _ElementNameOrWildcard _COMMA_ _TypeName _RPAR_ {
-		NodeTest *step = new (((XPathParserControl *)parm)->memMgr) NodeTest();
-        step->setItemType(new (((XPathParserControl *)parm)->memMgr) SequenceType::ItemType(SequenceType::ItemType::TEST_ELEMENT, $2, $4));
+		NodeTest *step = new (MEMMGR) NodeTest();
+        step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ELEMENT, $2, $4));
 		$$ = step;
 	}
 	| _ELEMENT_LPAR_ _ElementNameOrWildcard _COMMA_ _TypeName _NILLABLE_ _RPAR_ {
-		NodeTest *step = new (((XPathParserControl *)parm)->memMgr) NodeTest();
-        SequenceType::ItemType* pType=new (((XPathParserControl *)parm)->memMgr) SequenceType::ItemType(SequenceType::ItemType::TEST_ELEMENT, $2, $4);
+		NodeTest *step = new (MEMMGR) NodeTest();
+        SequenceType::ItemType* pType=new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ELEMENT, $2, $4);
         pType->setAllowNilled(true);
         step->setItemType(pType);
 		$$ = step;
@@ -1696,8 +1665,8 @@ _SchemaElementTest:
 	*/
 
 	_SCHEMA_ELEMENT_LPAR_ _ElementDeclaration _RPAR_ {
-		NodeTest *step = new (((XPathParserControl *)parm)->memMgr) NodeTest();
-        step->setItemType(new (((XPathParserControl *)parm)->memMgr) SequenceType::ItemType(SequenceType::ItemType::TEST_SCHEMA_ELEMENT, $2));
+		NodeTest *step = new (MEMMGR) NodeTest();
+        step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_SCHEMA_ELEMENT, $2));
 		$$ = step;
 	}
 ;
@@ -1744,7 +1713,7 @@ _TypeName:
 _QName:
 
   _QNAME_ {
-		QualifiedName *qn = new (((XPathParserControl *)parm)->memMgr) QualifiedName($1, ((XPathParserControl *)parm)->memMgr);
+		QualifiedName *qn = new (MEMMGR) QualifiedName($1, MEMMGR);
 		delete [] $1;
 	  $$ = qn;
 	}
