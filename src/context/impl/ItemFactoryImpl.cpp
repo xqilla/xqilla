@@ -31,11 +31,13 @@
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/exceptions/TypeNotFoundException.hpp>
 #include <xqilla/exceptions/ASTException.hpp>
+#include "../dom-api/impl/XPathNamespaceImpl.hpp"
 
 #include <xercesc/util/XMLString.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 #include <xercesc/validators/datatype/DatatypeValidator.hpp>
 #include <xercesc/dom/DOM.hpp>
+#include <xercesc/dom/impl/DOMDocumentImpl.hpp>
 
 #if defined(XERCES_HAS_CPP_NAMESPACE)
 XERCES_CPP_NAMESPACE_USE
@@ -188,6 +190,15 @@ Node::Ptr ItemFactoryImpl::createDocumentNode(const std::vector<Node::Ptr> &chil
   }
 
   return new NodeImpl(document, context);
+}
+
+const DOMNode* ItemFactoryImpl::createNamespaceNode(const XMLCh* prefix, const XMLCh* uri, const DOMNode* parentNode, const DynamicContext *context) const
+{
+  if(parentNode->getNodeType()!=DOMNode::ELEMENT_NODE)
+      return NULL;
+
+  DOMDocument *ownerDocument = parentNode->getOwnerDocument();
+  return new ((DOMDocumentImpl *)ownerDocument, (DOMDocumentImpl::NodeObjectType)XPathNamespaceImpl::XPATH_NAMESPACE_OBJECT) XPathNamespaceImpl(prefix, uri, static_cast<DOMElement*>(const_cast<DOMNode*>(parentNode)), ownerDocument);
 }
 
 AnyAtomicType::AtomicObjectType ItemFactoryImpl::getPrimitiveTypeIndex(const XMLCh* typeURI, const XMLCh* typeName, bool &isPrimitive) const

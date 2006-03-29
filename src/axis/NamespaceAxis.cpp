@@ -15,7 +15,7 @@
 #include <xqilla/axis/NamespaceAxis.hpp>
 #include <xqilla/utils/XPath2NSUtils.hpp>
 #include <xqilla/context/DynamicContext.hpp>
-#include "../dom-api/impl/XPathNamespaceImpl.hpp"
+#include <xqilla/context/ItemFactory.hpp>
 
 #include <xercesc/util/XMLString.hpp>
 #include <xercesc/util/XMLUniDefs.hpp>
@@ -42,7 +42,7 @@ const DOMNode *NamespaceAxis::nextNode(DynamicContext *context)
   if(toDo_) {
     // Output the obligatory namespace node for the "xml" prefix
     toDo_ = false;
-    result = XPathNamespaceImpl::createXPathNamespace(XMLUni::fgXMLString, XMLUni::fgXMLURIName, static_cast<DOMElement*>(const_cast<DOMNode*>(originalNode_)));
+    result = context->getItemFactory()->createNamespaceNode(XMLUni::fgXMLString, XMLUni::fgXMLURIName, originalNode_, context);
   }
 
   while(node_!=0 && result == 0) {
@@ -95,7 +95,7 @@ const DOMNode *NamespaceAxis::nextNode(DynamicContext *context)
  
     // Add namespace, if not already there
     if(done_.insert(prefix).second) {
-      result = XPathNamespaceImpl::createXPathNamespace(prefix, uri, static_cast<DOMElement*>(const_cast<DOMNode*>(originalNode_)));
+      result = context->getItemFactory()->createNamespaceNode(prefix, uri, originalNode_, context);
     }
   }
 
@@ -103,7 +103,7 @@ const DOMNode *NamespaceAxis::nextNode(DynamicContext *context)
   {
     defNsTested_=true;
     if(context->getDefaultElementAndTypeNS()!=0 && done_.insert(0).second)
-      result = XPathNamespaceImpl::createXPathNamespace(0, context->getDefaultElementAndTypeNS(), static_cast<DOMElement*>(const_cast<DOMNode*>(originalNode_)));
+      result = context->getItemFactory()->createNamespaceNode(NULL, context->getDefaultElementAndTypeNS(), originalNode_, context);
   }
   return result;  
 }

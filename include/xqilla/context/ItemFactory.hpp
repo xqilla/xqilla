@@ -77,6 +77,7 @@ public:
                                       const std::vector<Node::Ptr> &attrList, const std::vector<ElementChild> &childList,
                                       const DynamicContext *context) const = 0;
   virtual Node::Ptr createDocumentNode(const std::vector<Node::Ptr> &childList, const DynamicContext *context) const = 0;
+  virtual const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* createNamespaceNode(const XMLCh* prefix, const XMLCh* uri, const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* parentNode, const DynamicContext *context) const = 0;
 
   /* @name Number factory methods */
 

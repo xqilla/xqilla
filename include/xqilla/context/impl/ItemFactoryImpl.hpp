@@ -39,6 +39,7 @@ public:
                                       const std::vector<Node::Ptr> &attrList, const std::vector<ItemFactory::ElementChild> &childList,
                                       const DynamicContext *context) const;
   virtual Node::Ptr createDocumentNode(const std::vector<Node::Ptr> &childList, const DynamicContext *context) const;
+  virtual const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* createNamespaceNode(const XMLCh* prefix, const XMLCh* uri, const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* parentNode, const DynamicContext *context) const;
 
   /* @name Atomic type factory methods */
 
