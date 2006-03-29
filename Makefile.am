@@ -446,8 +446,6 @@ $(XPLEXERFILE) : $(XPLEXTEMPLATE)
 
 $(XPPARSERCPP) $(XPPARSERHPP): $(XPPARSERFILE)
 	$(YACC) -d -v -p XPathyy  -o $(XPPARSERCPP) $(XPPARSERFILE)
-	${perl} -pi -e "s/yyparse\(YYPARSE_PARAM_ARG\)/XQILLA_API yyparse(YYPARSE_PARAM_ARG)/g" $(XPPARSERCPP)
-	${perl} -pi -e "s/int yydebug/int XQILLA_API yydebug/g" $(XPPARSERCPP)
 
 $(XQLEXERFILE): $(XQLEXTEMPLATE) $(XQLEXSKEL)
 	$(LEX) -BUs -S$(XQLEXSKEL) -o$(XQLEXERFILE) $(XQLEXTEMPLATE) # This can take a long time
