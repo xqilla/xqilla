@@ -140,7 +140,8 @@ public:
   virtual XERCES_CPP_NAMESPACE_QUALIFIER XMLEntityResolver* getXMLEntityResolver() const;
 
   /** load the DOM document from the requested URI (or get it from the cache) */
-  Node::Ptr loadXMLDocument(const XMLCh* Uri, DynamicContext *context);
+  virtual Node::Ptr loadXMLDocument(const XMLCh* Uri, DynamicContext *context);
+  virtual Node::Ptr loadXMLDocument(XERCES_CPP_NAMESPACE_QUALIFIER InputSource& inputSource, DynamicContext *context);
 
   /** Clear all the documents from the document cache */
   void clearStoredDocuments();
