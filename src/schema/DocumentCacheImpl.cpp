@@ -590,6 +590,26 @@ void DocumentCacheImpl::clearStoredDocuments()
   _parser.clearStoredDocuments();
 }
  
+Node::Ptr DocumentCacheImpl::loadXMLDocument(XERCES_CPP_NAMESPACE_QUALIFIER InputSource& inputSource, DynamicContext *context)
+{
+  Node::Ptr result;
+  try {
+    const XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *doc = _parser.parseWithContext(inputSource, context);
+    result = new NodeImpl(doc, context);
+  }
+  catch(const XERCES_CPP_NAMESPACE_QUALIFIER SAXException& toCatch) {
+    //TODO: Find a way to decipher whether the exception is actually because of a parsing problem or because the document can't be found
+    XQThrow(XMLParseException, X("DocumentCacheImpl::loadXMLDocument"), toCatch.getMessage());
+  }
+  catch(const XERCES_CPP_NAMESPACE_QUALIFIER DOMException& toCatch) {
+    XQThrow(XMLParseException,X("DocumentCacheImpl::loadXMLDocument"), toCatch.msg);
+  }
+  catch(const XERCES_CPP_NAMESPACE_QUALIFIER XMLException& toCatch) {
+    XQThrow(XMLParseException,X("DocumentCacheImpl::loadXMLDocument"), toCatch.getMessage());
+  }
+  return result;
+}
+ 
 Node::Ptr DocumentCacheImpl::loadXMLDocument(const XMLCh* uri, DynamicContext *context)
 {
   Node::Ptr result;
