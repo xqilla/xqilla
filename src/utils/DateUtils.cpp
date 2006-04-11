@@ -19,8 +19,10 @@
 #include <xqilla/framework/XPath2MemoryManager.hpp>
 #include <xqilla/items/ATDateOrDerived.hpp>
 #include <xqilla/items/ATDateTimeOrDerived.hpp>
+#include <xqilla/items/Timezone.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/context/ItemFactory.hpp>
+#include <xqilla/utils/ContextUtils.hpp>
 #include <xqilla/exceptions/XPath2TypeCastException.hpp>
 #include <math.h>
 
@@ -220,47 +222,67 @@ void DateUtils::convertAbsolute2DMY(MAPM absolute, MAPM& day, MAPM& month, MAPM&
 
 const ATDateOrDerived::Ptr DateUtils::getCurrentDate(const DynamicContext* context) 
 {
-  XPath2MemoryManager* memMgr = context->getMemoryManager();
   // We get the current time and adjust it to our timezone.  We then set
   // this timezone in the Date object.
-  time_t curDate=context->getCurrentTime();
+  time_t curDate = context->getCurrentTime();
   // Note using localtime uses the tzset() function used by
   // DateUtils::getImplicitTimezone.  This function and getImplicitTimezone
   // MUST get the same value in order for the correct time to be stored.
-  struct tm time_struct;
-  struct tm* curLocalDate=threadsafe_localtime(&curDate, &time_struct);
-  char szDate[256];
+  struct tm curLocalDate;
+  threadsafe_localtime(&curDate, &curLocalDate);
 
-  sprintf(szDate,"%04d-%02d-%02d",curLocalDate->tm_year+1900, curLocalDate->tm_mon+1, curLocalDate->tm_mday);
-  // no need to add timezone, it's already compensated for in localtime
-  // date.setTimezone(Timezone(XSDecimal(DateUtils::getImplicitTimezone(), context->getMemoryManager())));
-  return context->getItemFactory()->createDate(memMgr->getPooledString(szDate), context);
+  char szDate[256];
+  snprintf(szDate, 256,"%04d-%02d-%02d",
+           curLocalDate.tm_year+1900,
+           curLocalDate.tm_mon+1,
+           curLocalDate.tm_mday);
+
+  const ATDateOrDerived::Ptr date = context->getItemFactory()->
+    createDate(context->getMemoryManager()->getPooledString(szDate), context);
+  return date->setTimezone(new Timezone(ContextUtils::getTimezone()), context);
 }
 
 const ATDateTimeOrDerived::Ptr DateUtils::getCurrentDateTime(const DynamicContext* context) 
 {
-  XPath2MemoryManager* memMgr = context->getMemoryManager();
   // We get the current time and adjust it to our timezone.  We then set
   // this timezone in the DateTime object.
-  time_t curDate=context->getCurrentTime();
+  time_t curDate = context->getCurrentTime();
   // Note using localtime uses the tzset() function used by
   // DateUtils::getImplicitTimezone.  This function and getImplicitTimezone
   // MUST get the same value in order for the correct time to be stored.
-  struct tm time_struct;
-  struct tm* curLocalDate=threadsafe_localtime(&curDate, &time_struct);
+  struct tm curLocalDate;
+  threadsafe_localtime(&curDate, &curLocalDate);
+
   char szDate[256];
+  snprintf(szDate, 256,"%04d-%02d-%02dT%02d:%02d:%02d",
+           curLocalDate.tm_year+1900,
+           curLocalDate.tm_mon+1,
+           curLocalDate.tm_mday,
+           curLocalDate.tm_hour,
+           curLocalDate.tm_min,
+           curLocalDate.tm_sec);
 
-  sprintf(szDate,"%04d-%02d-%02dT%02d:%02d:%02dZ", 
-          curLocalDate->tm_year+1900,
-          curLocalDate->tm_mon+1,
-          curLocalDate->tm_mday,
-          curLocalDate->tm_hour,
-          curLocalDate->tm_min,
-          curLocalDate->tm_sec);
+  const ATDateTimeOrDerived::Ptr dateTime = context->getItemFactory()->
+    createDateTime(context->getMemoryManager()->getPooledString(szDate), context);
+  return dateTime->setTimezone(new Timezone(ContextUtils::getTimezone()), context);
+}
 
-  // no need to add timezone, it's already compensated for in localtime
-  // dateTime.setTimezone(Timezone(XSDecimal(DateUtils::getImplicitTimezone(), context->getMemoryManager())));
-  return context->getItemFactory()->createDateTime(memMgr->getPooledString(szDate), context);
+const ATTimeOrDerived::Ptr DateUtils::getCurrentTime(const DynamicContext* context) 
+{
+  time_t curDate = context->getCurrentTime();
+
+  struct tm curLocalDate;
+  threadsafe_localtime(&curDate, &curLocalDate);
+
+  char szDate[256];
+  snprintf(szDate, 256,"%02d:%02d:%02d",
+           curLocalDate.tm_hour,
+           curLocalDate.tm_min,
+           curLocalDate.tm_sec);
+
+  const ATTimeOrDerived::Ptr time = context->getItemFactory()->
+    createTime(context->getMemoryManager()->getPooledString(szDate), context);
+  return time->setTimezone(new Timezone(ContextUtils::getTimezone()), context);
 }
 
 static XERCES_CPP_NAMESPACE_QUALIFIER XMLMutex *time_mutex = 0;

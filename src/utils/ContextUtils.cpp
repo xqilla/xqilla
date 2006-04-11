@@ -23,7 +23,11 @@ int ContextUtils::getTimezone()
 	time(&tt);
 
 	struct tm tm;
-	struct tm *tm_p = DateUtils::threadsafe_gmtime(&tt, &tm);
+	DateUtils::threadsafe_gmtime(&tt, &tm);
 
-	return (int)mktime(tm_p) - (int)tt;
+	struct tm ltm;
+	DateUtils::threadsafe_localtime(&tt, &ltm);
+
+	return (int)tt - (int)mktime(&tm) +
+		/*daylight saving time*/(ltm.tm_isdst > 0 ? 1 * 60 * 60 : 0);
 }

@@ -8,15 +8,14 @@
   <error id="Constr-attr-ws-3" reason="result failure"/>
   <error id="Constr-attr-ws-4" reason="result failure"/>
   <error id="Constr-attr-ws-5" reason="result failure"/>
+  <error id="Constr-compattr-compname-14" reason="error failure"/>
+  <error id="Constr-compelem-compname-14" reason="error failure"/>
   <error id="Constr-cont-nsmode-5" reason="no error failure"/>
   <error id="Constr-cont-nsmode-6" reason="no error failure"/>
   <error id="Constr-inscope-1" reason="inspect" action="pass"/>
   <error id="Constr-inscope-2" reason="inspect" action="pass"/>
   <error id="Constr-inscope-3" reason="inspect" action="pass"/>
   <error id="Constr-inscope-4" reason="inspect" action="pass"/>
-  <error id="Constr-namespace-1" reason="error failure"/>
-  <error id="Constr-namespace-14" reason="no error failure"/>
-  <error id="Constr-namespace-15" reason="no error failure"/>
   <error id="Constr-namespace-24" reason="no error failure"/>
   <error id="Constr-ws-adjchref-1" reason="result failure"/>
   <error id="Constr-ws-adjchref-2" reason="result failure"/>
@@ -316,14 +315,11 @@
   <error id="fn-resolve-uri-5" reason="error failure"/>
   <error id="fn-resolve-uri-9" reason="result failure"/>
   <error id="last-2" reason="error failure"/>
-  <error id="modules-1" reason="error failure"/>
   <error id="modules-collide-fn-001" reason="no error failure"/>
   <error id="modules-collide-var-001" reason="error failure"/>
   <error id="modules-schema-context" reason="error failure"/>
   <error id="modules-two-import-ok" reason="error failure"/>
   <error id="namespaceDecl-2" reason="error failure"/>
-  <error id="op-duration-equal-1" reason="result failure"/>
-  <error id="op-duration-equal-2" reason="result failure"/>
   <error id="op-gYearMonth-equalNew-2" reason="result failure"/>
   <error id="op-numeric-dividenint2args-3" reason="result failure"/>
   <error id="op-numeric-dividepint2args-5" reason="result failure"/>

@@ -35,7 +35,7 @@ XQNav::XQNav(XPath2MemoryManager* memMgr)
     _steps(XQillaAllocator<StepInfo>(memMgr)),
     _sortAdded(false)
 {
-  setType(ASTNode::NAVIGATION);
+  setType(NAVIGATION);
 }
 
 
@@ -137,8 +137,6 @@ ASTNode* XQNav::staticResolution(StaticContext *context)
     if(stepSrc.areContextFlagsUsed() || _src.isNoFoldingForced() ||
        stepSrc.getStaticType().containsType(StaticType::ANY_ATOMIC_TYPE) ||
        !stepSrc.isCreative()) {
-      newSteps.push_back(step);
-
       if(it != begin) {
         // Remove context item usage
         _src.addExceptContextFlags(stepSrc);
@@ -154,8 +152,18 @@ ASTNode* XQNav::staticResolution(StaticContext *context)
       // duplicates are removed, which means we aren't forced to execute a constant
       // step a set number of times.
       newSteps.clear();
-      newSteps.push_back(step);
       _src.add(stepSrc);
+    }
+
+    if(step->getType() == NAVIGATION) {
+	    Steps &navSteps = ((XQNav*)step)->_steps;
+	    for(Steps::iterator it2 = navSteps.begin();
+		it2 != navSteps.end(); ++it2) {
+		    newSteps.push_back(it2->step);
+	    }
+    }
+    else {
+	    newSteps.push_back(step);
     }
   }
 
@@ -166,7 +174,7 @@ ASTNode* XQNav::staticResolution(StaticContext *context)
   end = _steps.end();
   for(; it != end; ++it) {
     // Special case, to optimise //foo or //descendant::foo
-    if(it->step->getType() == ASTNode::STEP) {
+    if(it->step->getType() == STEP) {
       XQStep *step = (XQStep*)it->step;
       NodeTest *nodetest = (NodeTest*)step->getNodeTest();
 
@@ -175,7 +183,7 @@ ASTNode* XQNav::staticResolution(StaticContext *context)
 
         bool usesContextPositionOrSize = false;
         const ASTNode *peek = (it + 1)->step;
-        while(peek->getType() == ASTNode::PREDICATE) {
+        while(peek->getType() == PREDICATE) {
           const XQPredicate *pred = (const XQPredicate*)peek;
           if(pred->getPredicate()->getStaticResolutionContext().isContextPositionUsed() ||
              pred->getPredicate()->getStaticResolutionContext().isContextSizeUsed() ||
@@ -185,7 +193,7 @@ ASTNode* XQNav::staticResolution(StaticContext *context)
           peek = pred->getExpression();
         }
 
-        if(peek->getType() == ASTNode::STEP) {
+        if(peek->getType() == STEP) {
           const XQStep *peekstep = (XQStep*)peek;
           // If the next node is CHILD or DESCENDANT axis, then
           // this step must have children

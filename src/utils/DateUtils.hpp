@@ -20,6 +20,7 @@
 #include <xqilla/mapm/m_apm.h>
 #include <xqilla/items/ATDateOrDerived.hpp>
 #include <xqilla/items/ATDateTimeOrDerived.hpp>
+#include <xqilla/items/ATTimeOrDerived.hpp>
 
 XERCES_CPP_NAMESPACE_BEGIN
 class XMLBuffer;
@@ -115,14 +116,19 @@ public:
   static void convertAbsolute2DMY(MAPM absolute, MAPM& day, MAPM& month, MAPM& year);
 
   /**
-   * Returns the current date as an ATDate
+   * Returns the current date as an ATDateOrDerived
    */
   static const ATDateOrDerived::Ptr getCurrentDate(const DynamicContext* context);
 
   /**
-   * Returns the current date and time as an ATDateTime
+   * Returns the current date and time as an ATDateTimeOrDerived
    */
   static const ATDateTimeOrDerived::Ptr getCurrentDateTime(const DynamicContext* context);
+
+  /**
+   * Returns the current time as an ATTimeOrDerived
+   */
+  static const ATTimeOrDerived::Ptr getCurrentTime(const DynamicContext* context);
 
   static void initialize();
   static void terminate();
