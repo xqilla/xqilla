@@ -48,16 +48,7 @@ ASTNode* FunctionCurrentTime::staticResolution(StaticContext *context) {
 
 Sequence FunctionCurrentTime::collapseTreeInternal(DynamicContext* context, int flags) const
 {
-  time_t curDate=context->getCurrentTime();
-  struct tm time_struct;
-  struct tm* curLocalDate=DateUtils::threadsafe_localtime(&curDate, &time_struct);
-  char szDate[128];
-  sprintf(szDate,"%02d:%02d:%02dZ",curLocalDate->tm_hour, curLocalDate->tm_min, curLocalDate->tm_sec);
-
-  const ATTimeOrDerived::Ptr time = context->getItemFactory()->createTime(context->getMemoryManager()->getPooledString(szDate), context);
-	// no need to add timezone, it's already compensated for in localtime
-	// time.setTimezone(Timezone(XSDecimal(DateUtils::getImplicitTimezone(), memMgr)));
-  return Sequence(time, context->getMemoryManager());
+  return Sequence(DateUtils::getCurrentTime(context), context->getMemoryManager());
 }
 
 
