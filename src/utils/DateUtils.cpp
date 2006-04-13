@@ -27,6 +27,9 @@
 #include <math.h>
 
 #include <xercesc/util/Mutexes.hpp>
+#if defined(WIN32) && !defined(__CYGWIN__)
+#define snprintf _snprintf
+#endif
 
 const int DateUtils::g_secondsPerMinute = 60;
 const int DateUtils::g_minutesPerHour = 60;
