@@ -182,7 +182,7 @@ void DocumentCacheParser::init()
   // hold the loaded schemas in the cache, so that can be reused    
   fGrammarResolver->cacheGrammarFromParse(true);
   fGrammarResolver->useCachedGrammarInParse(true);
-  useCachedGrammarInParse(true);
+  cacheGrammarFromParse(true);
 
   // set up the parser
   setDoSchema(true);// enable schema processing
