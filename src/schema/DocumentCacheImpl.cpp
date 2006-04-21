@@ -23,7 +23,6 @@
 #include <xercesc/dom/DOM.hpp>
 #include <xercesc/dom/impl/DOMDocumentImpl.hpp>
 #include <xercesc/validators/datatype/DatatypeValidatorFactory.hpp>
-#include <xercesc/validators/common/GrammarResolver.hpp>
 #include <xercesc/validators/common/Grammar.hpp>
 #include <xercesc/validators/common/ContentSpecNode.hpp>
 #include <xercesc/validators/schema/SchemaGrammar.hpp>
@@ -31,6 +30,7 @@
 #include <xercesc/framework/XMLSchemaDescription.hpp>
 #include <xercesc/framework/XMLGrammarPool.hpp>
 #include <xercesc/internal/XMLScanner.hpp>
+#include <xercesc/internal/XMLScannerResolver.hpp>
 #include <xercesc/util/HashPtr.hpp>
 
 #include <xqilla/exceptions/DynamicErrorException.hpp>
@@ -47,6 +47,69 @@
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/context/ItemFactory.hpp>
 #include <xqilla/items/impl/NodeImpl.hpp>
+
+class HackGrammarResolver : public XERCES_CPP_NAMESPACE_QUALIFIER XMemory
+{
+public:
+    bool                            fCacheGrammar;
+    bool                            fUseCachedGrammar;
+    bool                            fGrammarPoolFromExternalApplication;
+    XERCES_CPP_NAMESPACE_QUALIFIER XMLStringPool*                  fStringPool;
+    XERCES_CPP_NAMESPACE_QUALIFIER RefHashTableOf<XERCES_CPP_NAMESPACE_QUALIFIER Grammar>*        fGrammarBucket;
+    XERCES_CPP_NAMESPACE_QUALIFIER RefHashTableOf<XERCES_CPP_NAMESPACE_QUALIFIER Grammar>*        fGrammarFromPool;
+    XERCES_CPP_NAMESPACE_QUALIFIER DatatypeValidatorFactory*       fDataTypeReg;
+    XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager*                  fMemoryManager;
+    XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool*                 fGrammarPool;
+    XERCES_CPP_NAMESPACE_QUALIFIER XSModel*                        fXSModel;
+    XERCES_CPP_NAMESPACE_QUALIFIER XSModel*                        fGrammarPoolXSModel;
+    XERCES_CPP_NAMESPACE_QUALIFIER ValueVectorOf<XERCES_CPP_NAMESPACE_QUALIFIER SchemaGrammar*>*  fGrammarsToAddToXSModel;
+};
+
+XQillaGrammarResolver::XQillaGrammarResolver(
+                      XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool* const gramPool, 
+                      XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager*  const manager /*= XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager*/)
+: GrammarResolver(gramPool, manager)
+{
+  // trigger the creation of the fDataTypeReg data member
+  getDatatypeValidator(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA, XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING);
+
+  XERCES_CPP_NAMESPACE_QUALIFIER DatatypeValidatorFactory* dvdt=((HackGrammarResolver*)this)->fDataTypeReg;
+  // xdt:yearMonthDuration
+  XERCES_CPP_NAMESPACE_QUALIFIER RefHashTableOf<XERCES_CPP_NAMESPACE_QUALIFIER KVStringPair>* facets =
+    new (manager) XERCES_CPP_NAMESPACE_QUALIFIER RefHashTableOf<XERCES_CPP_NAMESPACE_QUALIFIER KVStringPair>(1,manager);
+  facets->put((void*) XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgELT_PATTERN,
+              new (manager) XERCES_CPP_NAMESPACE_QUALIFIER KVStringPair(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgELT_PATTERN, ATDurationOrDerived::pattern_DT_YEARMONTHDURATION,manager));
+    
+  dvdt->createDatatypeValidator(ATDurationOrDerived::fgDT_YEARMONTHDURATION, 
+                                dvdt->getDatatypeValidator(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DURATION),
+                                facets, 0, false, 0, true, manager);
+    
+  // xdt:dayTimeDuration
+  facets = new (manager) XERCES_CPP_NAMESPACE_QUALIFIER RefHashTableOf<XERCES_CPP_NAMESPACE_QUALIFIER KVStringPair>(1,manager);
+  facets->put((void*) XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgELT_PATTERN,
+              new (manager) XERCES_CPP_NAMESPACE_QUALIFIER KVStringPair(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgELT_PATTERN, ATDurationOrDerived::pattern_DT_DAYTIMEDURATION,manager));
+    
+  dvdt->createDatatypeValidator(ATDurationOrDerived::fgDT_DAYTIMEDURATION, 
+                                dvdt->getDatatypeValidator(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DURATION),
+                                facets, 0, false, 0, true, manager);
+
+  // xdt:anyAtomicType -- no facets.  We need to put this validator in the xerces memory manager, and put it in the registry ourselves
+  XERCES_CPP_NAMESPACE_QUALIFIER DVHashTable *defRegistry = dvdt->getBuiltInRegistry();
+  if(!defRegistry->containsKey((void*) AnyAtomicType::fgDT_ANYATOMICTYPE)) {
+    XERCES_CPP_NAMESPACE_QUALIFIER DatatypeValidator* dv = new (XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager) AnyAtomicTypeDatatypeValidator();
+    dv->setTypeName(AnyAtomicType::fgDT_ANYATOMICTYPE_XERCESHASH);
+    defRegistry->put((void*) AnyAtomicType::fgDT_ANYATOMICTYPE_XERCESHASH, dv);
+  }
+    
+  // xdt:untypedAtomic -- no facets
+  dvdt->createDatatypeValidator(ATUntypedAtomic::fgDT_UNTYPEDATOMIC, 
+                                dvdt->getDatatypeValidator(AnyAtomicType::fgDT_ANYATOMICTYPE_XERCESHASH),
+                                0, 0, false, 0, true, manager);
+}
+
+/////////////////////////////////////////////////////////////////
+//
+//
 
 void DocumentCacheErrorCatcher::warning(const XERCES_CPP_NAMESPACE_QUALIFIER SAXParseException& toCatch)
 {
@@ -72,57 +135,11 @@ void DocumentCacheErrorCatcher::resetErrors()
 //
 
 /* untyped */
-const XMLCh DocumentCacheParser::g_szUntyped[]=                   {XERCES_CPP_NAMESPACE_QUALIFIER chLatin_u, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_y,
-                                                                   XERCES_CPP_NAMESPACE_QUALIFIER chLatin_p, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_d, XERCES_CPP_NAMESPACE_QUALIFIER chNull};
-
-XERCES_CPP_NAMESPACE_QUALIFIER Grammar* DocumentCacheParser::createXQueryTypes(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mm, XERCES_CPP_NAMESPACE_QUALIFIER GrammarResolver *gr) {
-  XERCES_CPP_NAMESPACE_QUALIFIER SchemaGrammar *sg =  new (mm) XERCES_CPP_NAMESPACE_QUALIFIER SchemaGrammar(mm);
-
-  // TODO: These lines are not needed when Xerces fixes a bug in the XSModel::addGrammarToXSModel() - jpcs
-  sg->setComplexTypeRegistry(new (mm) XERCES_CPP_NAMESPACE_QUALIFIER RefHashTableOf<XERCES_CPP_NAMESPACE_QUALIFIER ComplexTypeInfo>(1,mm));
-  sg->setAttributeDeclRegistry(new (mm) XERCES_CPP_NAMESPACE_QUALIFIER RefHashTableOf<XERCES_CPP_NAMESPACE_QUALIFIER XMLAttDef>(1,mm));
-  sg->setAttGroupInfoRegistry(new (mm) XERCES_CPP_NAMESPACE_QUALIFIER RefHashTableOf<XERCES_CPP_NAMESPACE_QUALIFIER XercesAttGroupInfo>(1,mm));
-  sg->setGroupInfoRegistry(new (mm) XERCES_CPP_NAMESPACE_QUALIFIER RefHashTableOf<XERCES_CPP_NAMESPACE_QUALIFIER XercesGroupInfo>(1,mm));
-
-  sg->setTargetNamespace(FunctionConstructor::XMLChXPath2DatatypesURI);
-  sg->setGrammarDescription(gr->getGrammarPool()->createSchemaDescription(FunctionConstructor::XMLChXPath2DatatypesURI));
-
-  XERCES_CPP_NAMESPACE_QUALIFIER DatatypeValidatorFactory *dtvf = sg->getDatatypeRegistry();
-
-  // xdt:dayTimeDuration
-  XERCES_CPP_NAMESPACE_QUALIFIER RefHashTableOf<XERCES_CPP_NAMESPACE_QUALIFIER KVStringPair>* facets =
-    new (mm) XERCES_CPP_NAMESPACE_QUALIFIER RefHashTableOf<XERCES_CPP_NAMESPACE_QUALIFIER KVStringPair>(1,mm);
-  facets->put((void*) XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgELT_PATTERN,
-              new (mm) XERCES_CPP_NAMESPACE_QUALIFIER KVStringPair(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgELT_PATTERN, ATDurationOrDerived::pattern_DT_YEARMONTHDURATION,mm));
-    
-  dtvf->createDatatypeValidator(ATDurationOrDerived::fgDT_YEARMONTHDURATION_XERCESHASH, 
-                                dtvf->getDatatypeValidator(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DURATION),
-                                facets, 0, false, 0, true, mm);
-    
-  // xdt:yearMonthDuration
-  facets = new (mm) XERCES_CPP_NAMESPACE_QUALIFIER RefHashTableOf<XERCES_CPP_NAMESPACE_QUALIFIER KVStringPair>(1,mm);
-  facets->put((void*) XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgELT_PATTERN,
-              new (mm) XERCES_CPP_NAMESPACE_QUALIFIER KVStringPair(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgELT_PATTERN, ATDurationOrDerived::pattern_DT_DAYTIMEDURATION,mm));
-    
-  dtvf->createDatatypeValidator(ATDurationOrDerived::fgDT_DAYTIMEDURATION_XERCESHASH, 
-                                dtvf->getDatatypeValidator(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DURATION),
-                                facets, 0, false, 0, true, mm);
-
-  // xdt:anyAtomicType -- no facets.  We need to put this validator in the xerces memory manager, and put it in the registry ourselves
-  XERCES_CPP_NAMESPACE_QUALIFIER DVHashTable *defRegistry = dtvf->getBuiltInRegistry();
-  if(!defRegistry->containsKey((void*) AnyAtomicType::fgDT_ANYATOMICTYPE_XERCESHASH)) {
-    XERCES_CPP_NAMESPACE_QUALIFIER DatatypeValidator* dv = new (XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager) AnyAtomicTypeDatatypeValidator();
-    dv->setTypeName(AnyAtomicType::fgDT_ANYATOMICTYPE_XERCESHASH);
-    defRegistry->put((void*) AnyAtomicType::fgDT_ANYATOMICTYPE_XERCESHASH, dv);
-  }
-    
-  // xdt:untypedAtomic -- no facets
-  dtvf->createDatatypeValidator(ATUntypedAtomic::fgDT_UNTYPEDATOMIC_XERCESHASH, 
-                                dtvf->getDatatypeValidator(AnyAtomicType::fgDT_ANYATOMICTYPE_XERCESHASH),
-                                0, 0, false, 0, true, mm);
-
-  return sg;
-}
+const XMLCh DocumentCacheParser::g_szUntyped[]= {
+    XERCES_CPP_NAMESPACE_QUALIFIER chLatin_u, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t, 
+    XERCES_CPP_NAMESPACE_QUALIFIER chLatin_y, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_p, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, 
+    XERCES_CPP_NAMESPACE_QUALIFIER chLatin_d, XERCES_CPP_NAMESPACE_QUALIFIER chNull
+};
 
 DocumentCacheParser::DocumentCacheParser(const DocumentCacheParser &parent, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr)
   : XercesDOMParser(0, memMgr, parent.getGrammarResolver()->getGrammarPool()),
@@ -132,15 +149,6 @@ DocumentCacheParser::DocumentCacheParser(const DocumentCacheParser &parent, XERC
     _memMgr(memMgr)
 {
   init();
-
-  getGrammarResolver()->cacheGrammars();
-  getGrammarResolver()->useCachedGrammarInParse(true);
-
-  // also set these things to true.  Not sure if this is correct, but without
-  // them, all built-in types cannot be found (untypedAtomic, dayTimeDuration and yearMonthDuration) -- crioux
-  getGrammarResolver()->cacheGrammarFromParse(true);
-  if(!isCachingGrammarFromParse())
-    cacheGrammarFromParse(true);    // hold the loaded schemas in the cache, so that can be reused    
 }
 
 DocumentCacheParser::DocumentCacheParser(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr, XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool* xmlgr) :
@@ -151,18 +159,6 @@ DocumentCacheParser::DocumentCacheParser(XERCES_CPP_NAMESPACE_QUALIFIER MemoryMa
   _memMgr(memMgr)
 {
   init();
-
-  // add XPath2 types
-  getGrammarResolver()->putGrammar(createXQueryTypes(_memMgr, getGrammarResolver()));
-
-  getGrammarResolver()->cacheGrammars();
-  getGrammarResolver()->useCachedGrammarInParse(true);
-
-  // also set these things to true.  Not sure if this is correct, but without
-  // them, all built-in types cannot be found (untypedAtomic, dayTimeDuration and yearMonthDuration) -- crioux
-  getGrammarResolver()->cacheGrammarFromParse(true);
-  if(!isCachingGrammarFromParse())
-    cacheGrammarFromParse(true);    // hold the loaded schemas in the cache, so that can be reused    
 }
 
 DocumentCacheParser::~DocumentCacheParser()
@@ -171,8 +167,22 @@ DocumentCacheParser::~DocumentCacheParser()
 
 void DocumentCacheParser::init()
 {
-  //todo this does not need to happen now if these types are already in the cache!!! 
-  //also sort out what state to be in for the query - ie no cacheing to polute the grammar
+  delete fGrammarResolver; delete fScanner;
+  // re-init using this grammar resolver
+  fGrammarResolver = new (fMemoryManager) XQillaGrammarResolver(fGrammarPool, fMemoryManager);
+  fURIStringPool = fGrammarResolver->getStringPool();
+
+  //  Create a scanner and tell it what validator to use. Then set us
+  //  as the document event handler so we can fill the DOM document.
+  fScanner = XERCES_CPP_NAMESPACE_QUALIFIER XMLScannerResolver::getDefaultScanner(fValidator, fGrammarResolver, fMemoryManager);
+  fScanner->setDocHandler(this);
+  fScanner->setDocTypeHandler(this);
+  fScanner->setURIStringPool(fURIStringPool);
+
+  // hold the loaded schemas in the cache, so that can be reused    
+  fGrammarResolver->cacheGrammarFromParse(true);
+  fGrammarResolver->useCachedGrammarInParse(true);
+  useCachedGrammarInParse(true);
 
   // set up the parser
   setDoSchema(true);// enable schema processing
@@ -312,11 +322,6 @@ void DocumentCacheParser::loadSchema(const XMLCh* const uri, const XMLCh* const 
 
   // always validate, so that the preloaded schema can be matched even if the XML doesn't reference it    
   setValidationScheme(XERCES_CPP_NAMESPACE_QUALIFIER AbstractDOMParser::Val_Always);
-
-  // prepopulate the cache with the requested grammar, so that static typing can use it
-  // if needed, set the "use cached grammars" flag
-  if(!isCachingGrammarFromParse())
-    cacheGrammarFromParse(true);// hold the loaded schemas in the cache, so that can be reused
 
   if(srcToUse) {
     getScanner()->loadGrammar(*srcToUse, XERCES_CPP_NAMESPACE_QUALIFIER Grammar::SchemaGrammarType, true);

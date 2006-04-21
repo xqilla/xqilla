@@ -13,12 +13,12 @@
 
 #include "../../config/xqilla_config.h"
 #include "ATNotationOrDerivedImpl.hpp"
-#include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/exceptions/IllegalArgumentException.hpp>
-#include <xercesc/util/XMLUni.hpp>
-#include <xqilla/utils/XStr.hpp>
+#include <xqilla/exceptions/NamespaceLookupException.hpp>
+#include <xqilla/exceptions/StaticErrorException.hpp>
+#include <xqilla/utils/XPath2Utils.hpp>
+#include <xqilla/utils/XPath2NSUtils.hpp>
 #include <xqilla/framework/XPath2MemoryManager.hpp>
-#include <xercesc/util/XMLString.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 
 ATNotationOrDerivedImpl::
@@ -29,6 +29,25 @@ ATNotationOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh
     
   _notation = context->getMemoryManager()->getPooledString(value);
       
+  const XMLCh* prefix = XPath2NSUtils::getPrefix(_notation, context->getMemoryManager());
+  const XMLCh* uri;
+  if(prefix==0 || *prefix==0)
+    uri = 0;
+  else 
+  {
+    try
+    {
+      uri = context->getUriBoundToPrefix(prefix);
+    }
+    catch(NamespaceLookupException&)
+    {
+      XQThrow(StaticErrorException, X("ATNotationOrDerivedImpl::ATNotationOrDerivedImpl"),X("No namespace for prefix [err:XPST0081]"));
+    }
+  }
+
+  // _uri will be null if there is no default NS
+  _uri = context->getMemoryManager()->getPooledString(uri);
+  _name = context->getMemoryManager()->getPooledString(XPath2NSUtils::getLocalName(_notation));
 }
 
 void *ATNotationOrDerivedImpl::getInterface(const XMLCh *name) const
@@ -74,7 +93,8 @@ bool ATNotationOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const Dyn
   if(this->getPrimitiveTypeIndex() != target->getPrimitiveTypeIndex()) {
     XQThrow(IllegalArgumentException,X("ATNotationOrDerivedImpl::equals"), X("Equality operator for given types not supported"));
   }
-  return XPath2Utils::equals(target->asString(context), _notation);  
+  ATNotationOrDerivedImpl* other=(ATNotationOrDerivedImpl*)target->getInterface(Item::gXQilla);
+  return XPath2Utils::equals(other->_uri, _uri) && XPath2Utils::equals(other->_name, _name) ;
 }
 
 AnyAtomicType::AtomicObjectType ATNotationOrDerivedImpl::getPrimitiveTypeIndex() const {

@@ -28,18 +28,6 @@ const XMLCh FunctionIriToUri::name[] = {
 const unsigned int FunctionIriToUri::minArgs = 1;
 const unsigned int FunctionIriToUri::maxArgs = 1;
 
-static const XMLCh RESERVED_CHARACTERS[] =
-{
-    XERCES_CPP_NAMESPACE_QUALIFIER chPound, XERCES_CPP_NAMESPACE_QUALIFIER chDash, XERCES_CPP_NAMESPACE_QUALIFIER chUnderscore, 
-    XERCES_CPP_NAMESPACE_QUALIFIER chPeriod, XERCES_CPP_NAMESPACE_QUALIFIER chBang, XERCES_CPP_NAMESPACE_QUALIFIER chTilde,
-    XERCES_CPP_NAMESPACE_QUALIFIER chAsterisk, XERCES_CPP_NAMESPACE_QUALIFIER chSingleQuote, XERCES_CPP_NAMESPACE_QUALIFIER chOpenParen, 
-    XERCES_CPP_NAMESPACE_QUALIFIER chCloseParen, XERCES_CPP_NAMESPACE_QUALIFIER chSemiColon, XERCES_CPP_NAMESPACE_QUALIFIER chForwardSlash, 
-    XERCES_CPP_NAMESPACE_QUALIFIER chQuestion, XERCES_CPP_NAMESPACE_QUALIFIER chColon, XERCES_CPP_NAMESPACE_QUALIFIER chAt,
-    XERCES_CPP_NAMESPACE_QUALIFIER chAmpersand, XERCES_CPP_NAMESPACE_QUALIFIER chEqual, XERCES_CPP_NAMESPACE_QUALIFIER chPlus, 
-    XERCES_CPP_NAMESPACE_QUALIFIER chDollarSign, XERCES_CPP_NAMESPACE_QUALIFIER chComma, XERCES_CPP_NAMESPACE_QUALIFIER chOpenSquare,
-    XERCES_CPP_NAMESPACE_QUALIFIER chCloseSquare, XERCES_CPP_NAMESPACE_QUALIFIER chPercent, XERCES_CPP_NAMESPACE_QUALIFIER chNull
-};
-
 static const XMLCh HEX_DIGITS[16] = 
 { 
     XERCES_CPP_NAMESPACE_QUALIFIER chDigit_0, XERCES_CPP_NAMESPACE_QUALIFIER chDigit_1, XERCES_CPP_NAMESPACE_QUALIFIER chDigit_2, 
@@ -49,6 +37,21 @@ static const XMLCh HEX_DIGITS[16] =
     XERCES_CPP_NAMESPACE_QUALIFIER chLatin_C, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_D, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_E, 
     XERCES_CPP_NAMESPACE_QUALIFIER chLatin_F
 };
+
+static bool isUCSCharOrIPrivate(XMLCh ch)
+{
+    // TODO: handle non-BMP characters
+
+    //ucschar        = %xA0-D7FF / %xF900-FDCF / %xFDF0-FFEF
+    //                 / %x10000-1FFFD / %x20000-2FFFD / %x30000-3FFFD
+    //                 / %x40000-4FFFD / %x50000-5FFFD / %x60000-6FFFD
+    //                 / %x70000-7FFFD / %x80000-8FFFD / %x90000-9FFFD
+    //                 / %xA0000-AFFFD / %xB0000-BFFFD / %xC0000-CFFFD
+    //                 / %xD0000-DFFFD / %xE1000-EFFFD
+
+    //iprivate       = %xE000-F8FF / %xF0000-FFFFD / %x100000-10FFFD
+    return (ch>0xA0 && ch<0xD7FF) || (ch>0xF900 && ch<0xFDCF) || (ch>0xFDF0 && ch<0xFFEF) || (ch>0xE000 && ch<0xF8FF);
+}
 
 /*
   fn:iri-to-uri($uri-part as xs:string?) as xs:string  
@@ -72,10 +75,7 @@ Sequence FunctionIriToUri::collapseTreeInternal(DynamicContext* context, int fla
     XERCES_CPP_NAMESPACE_QUALIFIER XMLUTF8Transcoder utf8Trans(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgUTF8EncodingString, 10, context->getMemoryManager());
     for(unsigned i=0;i<len;i++)
     {
-        if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::isAlphaNum(source[i]) || 
-           XERCES_CPP_NAMESPACE_QUALIFIER XMLString::indexOf(RESERVED_CHARACTERS, source[i]) != -1)
-            outString.append(source[i]);
-        else
+        if(isUCSCharOrIPrivate(source[i]))
         {
             XMLByte utf8Str[8];
             unsigned int charsEaten;
@@ -87,6 +87,8 @@ Sequence FunctionIriToUri::collapseTreeInternal(DynamicContext* context, int fla
                 outString.append(HEX_DIGITS[utf8Str[j] & 0xF]);
             }
         }
+        else
+            outString.append(source[i]);
     }
 
     return Sequence(context->getItemFactory()->createString(outString.getRawBuffer(), context), context->getMemoryManager());

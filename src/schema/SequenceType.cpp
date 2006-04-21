@@ -385,7 +385,7 @@ bool SequenceType::ItemType::matches(const Node::Ptr &toBeTested, DynamicContext
         msg.append(elementNS);
         msg.append(X("}"));
         msg.append(elementName);
-        msg.append(X(" is not defined as a global element [err:XPST0008]"));
+        msg.append(X(" is not defined as a global element [err:XPST0081]"));
         XQThrow(StaticErrorException,X("SequenceType::ItemType::matches"), msg.getRawBuffer());
       }
       // 1. The name of the candidate node matches the specified ElementName or matches the name of an element in a 
@@ -451,7 +451,7 @@ bool SequenceType::ItemType::matches(const Node::Ptr &toBeTested, DynamicContext
         msg.append(attributeNS);
         msg.append(X("}"));
         msg.append(attributeName);
-        msg.append(X(" is not defined as a global attribute [err:XPST0008]"));
+        msg.append(X(" is not defined as a global attribute [err:XPST0081]"));
         XQThrow(StaticErrorException,X("SequenceType::ItemType::matches"), msg.getRawBuffer());
       }
       // 1. The name of the candidate node matches the specified AttributeName

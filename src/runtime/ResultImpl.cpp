@@ -17,9 +17,7 @@
 #include <xqilla/runtime/ResultImpl.hpp>
 #include <xqilla/runtime/SequenceResult.hpp>
 #include <xqilla/context/DynamicContext.hpp>
-#include <xqilla/items/ATFloatOrDerived.hpp>
-#include <xqilla/items/ATDoubleOrDerived.hpp>
-#include <xqilla/items/ATBooleanOrDerived.hpp>
+#include <xqilla/items/Numeric.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/exceptions/XPath2TypeMatchException.hpp>
 
@@ -27,30 +25,23 @@ static inline bool getEffectiveBooleanValueInternal(const Item::Ptr &first, cons
 {
   // If its operand is a singleton value ...
   if(second == NULLRCP && first->isAtomicValue()) {
-      const AnyAtomicType* atom=(const AnyAtomicType*)(const Item*)first;
+    const AnyAtomicType::Ptr atom=first;
     // ... of type xs:boolean or derived from xs:boolean, fn:boolean returns the value of its operand unchanged.
     if(atom->getPrimitiveTypeIndex() == AnyAtomicType::BOOLEAN)
-      return ((const ATBooleanOrDerived*)atom)->isTrue();
+        return ((const ATBooleanOrDerived::Ptr)atom)->isTrue();
 
     // ... of type xs:string, xdt:untypedAtomic, or a type derived from one of these, fn:boolean returns false 
     // if the operand value has zero length; otherwise it returns true.
-    if((atom->getPrimitiveTypeIndex() == AnyAtomicType::STRING || atom->getPrimitiveTypeIndex() == AnyAtomicType::UNTYPED_ATOMIC))
+    if((atom->getPrimitiveTypeIndex() == AnyAtomicType::STRING || 
+        atom->getPrimitiveTypeIndex() == AnyAtomicType::ANY_URI || 
+        atom->getPrimitiveTypeIndex() == AnyAtomicType::UNTYPED_ATOMIC))
       return !XPath2Utils::equals(atom->asString(context), XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString);
 
     // ... of any numeric type or derived from a numeric type, fn:boolean returns false if the operand value is 
     // NaN or is numerically equal to zero; otherwise it returns true.
     if(atom->isNumericValue()) {
-      if(((const Numeric*)atom)->isZero())
-        return false;
-
-      // The singleton xs:float or xs:double value NaN.
-      if(atom->getPrimitiveTypeIndex() == AnyAtomicType::FLOAT && ((const ATFloatOrDerived*)atom)->isNaN())
-        return false;
-
-      if(atom->getPrimitiveTypeIndex() == AnyAtomicType::DOUBLE && ((const ATDoubleOrDerived*)atom)->isNaN())
-        return false;
-
-      return true;
+      const Numeric::Ptr number=atom;
+      return (!number->isZero() && !number->isNaN());
     }
   }
 

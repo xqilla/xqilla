@@ -28,11 +28,5 @@ public:
 
 protected:
   Numeric::Ptr getNumericParam(unsigned int number, DynamicContext *context, int flags=0) const;
-
-  /** Checks if the given numer is a NaN */
-  bool isNaN(const Numeric::Ptr &number) const;
-
-  /** Checks if the given numer is an infinite number */
-  bool isINF(const Numeric::Ptr &number) const;
 };
 #endif // _NUMERICFUNCTION_HPP

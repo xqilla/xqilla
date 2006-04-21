@@ -572,7 +572,7 @@ ASTNode* XQDOMConstructor::staticResolution(StaticContext *context)
               XMLBuffer buff(200, dContext->getMemoryManager());
               buff.set(X("Undefined namespace prefix '"));
               buff.append(name.getPrefix());
-              buff.append(X("' [err:XPST0008]"));
+              buff.append(X("' [err:XPST0081]"));
               XQThrow(StaticErrorException,X("DOM Constructor"),buff.getRawBuffer());
             }
           }

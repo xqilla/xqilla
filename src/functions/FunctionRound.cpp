@@ -15,7 +15,6 @@
 #include <xqilla/functions/FunctionRound.hpp>
 
 #include <xqilla/items/Numeric.hpp>
-
 #include <xqilla/context/DynamicContext.hpp>
 
 const XMLCh FunctionRound::name[] = {
@@ -46,9 +45,7 @@ Sequence FunctionRound::collapseTreeInternal(DynamicContext* context, int flags)
     return Sequence(memMgr);
   }
 
-  if(isNaN(numericArg))
-    return Sequence(numericArg, memMgr);
-  if(isINF(numericArg))
+  if(numericArg->isNaN() || numericArg->isInfinite())
     return Sequence(numericArg, memMgr);
   return Sequence(numericArg->round(context), memMgr);
 }

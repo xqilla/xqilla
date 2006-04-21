@@ -43,9 +43,7 @@ Sequence FunctionFloor::collapseTreeInternal(DynamicContext* context, int flags)
     return Sequence(context->getMemoryManager());
   }
 
-  if(isNaN(numericArg))
-    return Sequence(numericArg, context->getMemoryManager());  
-  if(isINF(numericArg))
+  if(numericArg->isNaN() || numericArg->isInfinite())
     return Sequence(numericArg, context->getMemoryManager());
   return Sequence(numericArg->floor(context), context->getMemoryManager());
 }

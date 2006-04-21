@@ -51,9 +51,7 @@ Sequence FunctionRoundHalfToEven::collapseTreeInternal(DynamicContext* context, 
     return Sequence(memMgr);
   }
 
-  if(isNaN(numericArg))
-    return Sequence(numericArg, memMgr);
-  if(isINF(numericArg))
+  if(numericArg->isNaN() || numericArg->isInfinite())
     return Sequence(numericArg, memMgr);
   ATDecimalOrDerived::Ptr precision = NULL;
   if(getNumArgs() > 1) {

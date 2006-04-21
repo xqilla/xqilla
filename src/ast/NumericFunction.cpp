@@ -13,13 +13,8 @@
 
 #include "../config/xqilla_config.h"
 #include <xqilla/ast/NumericFunction.hpp>
-#include <xqilla/utils/XPath2Utils.hpp>
-#include <xqilla/exceptions/XQException.hpp>
 #include <xqilla/exceptions/FunctionException.hpp>
 #include <xqilla/items/AnyAtomicType.hpp>
-#include <xqilla/items/ATFloatOrDerived.hpp>
-#include <xqilla/items/ATDoubleOrDerived.hpp>
-#include <xercesc/validators/schema/SchemaSymbols.hpp>
 
 #if defined(XERCES_HAS_CPP_NAMESPACE)
 XERCES_CPP_NAMESPACE_USE
@@ -49,26 +44,3 @@ Numeric::Ptr NumericFunction::getNumericParam(unsigned int number, DynamicContex
   }
 }
 
-bool NumericFunction::isNaN(const Numeric::Ptr &number) const
-{
-  const XMLCh* numType=number->getPrimitiveTypeName();
-  if(XPath2Utils::equals(numType,SchemaSymbols::fgDT_FLOAT) &&
-      ((const ATFloatOrDerived::Ptr)number)->isNaN())
-     return true;
-  if(XPath2Utils::equals(numType,SchemaSymbols::fgDT_DOUBLE) &&
-      ((const ATDoubleOrDerived::Ptr)number)->isNaN())
-     return true;
-  return false;
-}
-
-bool NumericFunction::isINF(const Numeric::Ptr &number) const
-{
-  const XMLCh* numType=number->getPrimitiveTypeName();
-  if(XPath2Utils::equals(numType,SchemaSymbols::fgDT_FLOAT) &&
-      ((const ATFloatOrDerived::Ptr)number)->isInfinite())
-     return true;
-  if(XPath2Utils::equals(numType,SchemaSymbols::fgDT_DOUBLE) &&
-      ((const ATDoubleOrDerived::Ptr)number)->isInfinite())
-     return true;
-  return false;
-}

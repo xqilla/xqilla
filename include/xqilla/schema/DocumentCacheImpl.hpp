@@ -20,6 +20,7 @@
 #include <xercesc/sax/ErrorHandler.hpp>
 #include <xercesc/util/RefHashTableOf.hpp>
 #include <xercesc/util/ValueHashTableOf.hpp>
+#include <xercesc/validators/common/GrammarResolver.hpp>
 
 #include <xqilla/schema/DocumentCache.hpp>
 
@@ -32,6 +33,13 @@ class SchemaGrammar;
 class ContentSpecNode;
 class XMLGrammarPool;
 XERCES_CPP_NAMESPACE_END
+
+class XQILLA_API XQillaGrammarResolver : public XERCES_CPP_NAMESPACE_QUALIFIER GrammarResolver
+{
+public:
+    XQillaGrammarResolver(XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool* const gramPool, 
+                          XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager*  const manager = XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager);
+};
 
 // convert  errors into exceptions
 class XQILLA_API DocumentCacheErrorCatcher : public XERCES_CPP_NAMESPACE_QUALIFIER ErrorHandler
@@ -102,11 +110,6 @@ public:
    , const XMLSSize_t                  lineNum
    , const XMLSSize_t                  colNum
    );
-
-  /**
-   * Create and return the xquery datatypes
-   */
-  static XERCES_CPP_NAMESPACE_QUALIFIER Grammar* createXQueryTypes(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mm, XERCES_CPP_NAMESPACE_QUALIFIER GrammarResolver *gr);
 
   static const XMLCh g_szUntyped[];
 
