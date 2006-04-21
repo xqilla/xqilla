@@ -266,6 +266,10 @@ void XQillaTestSuiteRunner::runTestCase(const TestCase &testCase)
     m_results->reportSkip(testCase, "Static typing not supported");
     return;
   }
+  if(m_szFullTestName.substr(0,26)=="Optional:TrivialEmbedding") {
+    m_results->reportSkip(testCase, "TrivialEmbedding not supported");
+    return;
+  }
 
   XQilla xqilla;
 

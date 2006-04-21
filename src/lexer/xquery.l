@@ -532,7 +532,7 @@ NotColon			[^:]
 
 <EXPR_COMMENT>":)"											endComment(); POP(); if(m_bReportWhiteSpace) RECOGNIZE(_XQUERY_COMMENT_);
 
-<PRAGMA_CONTENT>{PragmaContents}							RECOGNIZE(_PRAGMA_CONTENT_);
+<PRAGMA_CONTENT>{S}{PragmaContents}							RECOGNIZE(_PRAGMA_CONTENT_);
 <PRAGMA_CONTENT>"#)"										BEGIN(INITIAL); RECOGNIZE(_PRAGMA_CLOSE_);
 
 <PROCESSING_INSTRUCTION>{PITarget}							{

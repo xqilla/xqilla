@@ -97,6 +97,12 @@ public:
   /** Is this Numeric positive? */
   virtual bool isPositive() const = 0;
 
+  /* Is this floating point value not a number? */
+  virtual bool isNaN() const { return false; }
+
+  /* Is this floating point value infinite? */
+  virtual bool isInfinite() const { return false; }
+
   /** Treat this decimal (must be integer) as a codepoint **/
   virtual XMLCh treatAsCodepoint(const DynamicContext* context) const = 0;
 

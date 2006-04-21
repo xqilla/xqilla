@@ -94,6 +94,12 @@ public:
   /** Is this Numeric negative? */
   virtual bool isNegative() const = 0;
 
+  /* Is this floating point value not a number? */
+  virtual bool isNaN() const = 0;
+
+  /* Is this floating point value infinite? */
+  virtual bool isInfinite() const = 0;
+
   virtual AnyAtomicType::AtomicObjectType getPrimitiveTypeIndex() const = 0;
 
   static const XMLCh NaN_string[];

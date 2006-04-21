@@ -45,9 +45,12 @@ Sequence FunctionPrefixFromQName::collapseTreeInternal(DynamicContext* context, 
   Sequence arg=getParamNumber(1,context)->toSequence(context);
   if(arg.isEmpty())
     return Sequence(context->getMemoryManager());
-  return Sequence(context->getItemFactory()->createStringOrDerived(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+  const XMLCh* prefix=((const ATQNameOrDerived*)(const Item*)arg.first())->getPrefix();
+  if(prefix && *prefix)
+    return Sequence(context->getItemFactory()->createStringOrDerived(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                                                                      XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_NCNAME,
-                                                                     ((const ATQNameOrDerived*)(const Item*)arg.first())->getPrefix(), 
+                                                                     prefix, 
                                                                      context),
-                  context->getMemoryManager());
+                    context->getMemoryManager());
+  return Sequence(context->getMemoryManager());
 }

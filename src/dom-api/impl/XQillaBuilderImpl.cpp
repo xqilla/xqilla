@@ -20,13 +20,12 @@
 #include <xercesc/framework/XMLGrammarPool.hpp>
 #include <xercesc/framework/Wrapper4DOMInputSource.hpp>
 #include <xercesc/framework/XMLValidator.hpp>
-#include <xercesc/validators/common/GrammarResolver.hpp>
 #include <xercesc/util/XMLUni.hpp>
 #include <xercesc/dom/impl/DOMDocumentImpl.hpp>
 #include <xercesc/framework/XMLGrammarDescription.hpp>
-
-
 #include <xercesc/framework/XMLSchemaDescription.hpp>
+#include <xercesc/internal/XMLScanner.hpp>
+#include <xercesc/internal/XMLScannerResolver.hpp>
 
 const XMLCh XQillaBuilderImpl::gXQilla[] =   // Points to "XPath2"
 {XERCES_CPP_NAMESPACE_QUALIFIER chLatin_X, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_P, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_h, XERCES_CPP_NAMESPACE_QUALIFIER chDigit_2, XERCES_CPP_NAMESPACE_QUALIFIER chNull};
@@ -40,6 +39,17 @@ XQillaBuilderImpl::XQillaBuilderImpl( XERCES_CPP_NAMESPACE_QUALIFIER XMLValidato
 
 DOMBuilderImpl(valToAdopt, manager, gramPool)
 {
+  delete fGrammarResolver; delete fScanner;
+  // re-init using this grammar resolver
+  fGrammarResolver = new (fMemoryManager) XQillaGrammarResolver(fGrammarPool, fMemoryManager);
+  fURIStringPool = fGrammarResolver->getStringPool();
+
+  //  Create a scanner and tell it what validator to use. Then set us
+  //  as the document event handler so we can fill the DOM document.
+  fScanner = XERCES_CPP_NAMESPACE_QUALIFIER XMLScannerResolver::getDefaultScanner(fValidator, fGrammarResolver, fMemoryManager);
+  fScanner->setDocHandler(this);
+  fScanner->setDocTypeHandler(this);
+  fScanner->setURIStringPool(fURIStringPool);
 }
 
 // ---------------------------------------------------------------------------
@@ -60,11 +70,6 @@ XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* XQillaBuilderImpl::parse(const XERCE
 void XQillaBuilderImpl::initParser() {
     //set it here in case someone has messed it up.
     setProperty(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgXercesParserUseDocumentFromImplementation, (void*)gXQilla);
- 
-    //add our specific ones in
-    XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool *xmlGr = getGrammarResolver()->getGrammarPool();
-    xmlGr->cacheGrammar(DocumentCacheParser::createXQueryTypes(getMemoryManager(), getGrammarResolver()));
-
 }
 
 

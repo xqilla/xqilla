@@ -483,6 +483,7 @@ VersionDecl:
         if(($5[0] >= XERCES_CPP_NAMESPACE_QUALIFIER chLatin_A && $5[0] <= XERCES_CPP_NAMESPACE_QUALIFIER chLatin_Z) ||
            ($5[0] >= XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a && $5[0] <= XERCES_CPP_NAMESPACE_QUALIFIER chLatin_z))
         {
+            bValidEnc=true;
             int nLen=XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen($5);
             for(int i=1;i<nLen;i++)
             {

@@ -62,6 +62,12 @@ private:
   /*The value of this NOTATION*/
   const XMLCh* _notation;
 
+  /*The uri value of this NOTATION*/
+  const XMLCh* _uri;
+
+  /*The local name value of this NOTATION */
+  const XMLCh* _name;
+
   /* the name of this type */
   const XMLCh* _typeName;
 

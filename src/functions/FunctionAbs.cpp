@@ -43,7 +43,7 @@ Sequence FunctionAbs::collapseTreeInternal(DynamicContext* context, int flags) c
     return Sequence(context->getMemoryManager());
   }
 
-  if(isNaN(numericArg))
+  if(numericArg->isNaN())
     return Sequence(numericArg, context->getMemoryManager());
     
   if(numericArg->isNegative())

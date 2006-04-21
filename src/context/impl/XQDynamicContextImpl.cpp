@@ -364,7 +364,7 @@ const XMLCh* XQDynamicContextImpl::getUriBoundToPrefix(const XMLCh* prefix) cons
   const XMLCh* uri = _nsResolver->lookupNamespaceURI(prefix);
 
 	if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(uri) == 0 && XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(prefix) > 0){
-		const XMLCh* msg = XPath2Utils::concatStrings(X("No namespace for prefix \'"), prefix, X("\' [err:XPST0008]"), getMemoryManager());
+		const XMLCh* msg = XPath2Utils::concatStrings(X("No namespace for prefix \'"), prefix, X("\' [err:XPST0081]"), getMemoryManager());
 		XQThrow(NamespaceLookupException, X("XQDynamicContextImpl::getUriBoundToPrefix"), msg);
 	}
 

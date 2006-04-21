@@ -164,9 +164,5 @@ bool AggregateFunction::isNumericNaN(const Item::Ptr &item) const
   if(item->isNode())
     return false;
   const AnyAtomicType::Ptr atom = (const AnyAtomicType::Ptr )item;
-  if(atom->getPrimitiveTypeIndex()==AnyAtomicType::DOUBLE && ((const ATDoubleOrDerived::Ptr)atom)->isNaN())
-    return true;
-  else if(atom->getPrimitiveTypeIndex()==AnyAtomicType::FLOAT && ((const ATFloatOrDerived::Ptr)atom)->isNaN())
-    return true;
-  return false;
+  return (atom->isNumericValue() && ((const Numeric::Ptr)atom)->isNaN());
 }
