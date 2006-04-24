@@ -30,6 +30,8 @@ public:
 
   ///adds a function to the custom function table
   virtual void insertFunction(FuncFactory *func) = 0;
+  /// replaces the implementation of an existing function
+  virtual void replaceFunction(FuncFactory *func) = 0;
   ///returns the approriate Function object
   virtual ASTNode* lookUpFunction(const XMLCh* URI, const XMLCh* fname, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr) const = 0;
 
