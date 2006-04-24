@@ -28,6 +28,17 @@ FunctionLookupImpl::~FunctionLookupImpl()
 {
 }
 
+void FunctionLookupImpl::replaceFunction(FuncFactory *func)
+{
+    unsigned int nMax=func->getMaxArgs();
+    unsigned int uriId=_uriPool.addOrFind(func->getURI());
+    for(unsigned int i=func->getMinArgs(); i<=nMax; i++)
+    {
+        unsigned int secondaryKey=uriId | (i << 16);
+        _funcTable.put((void*)func->getName(), secondaryKey, func);
+    }
+}
+
 void FunctionLookupImpl::insertFunction(FuncFactory *func)
 {
     unsigned int nMax=func->getMaxArgs();

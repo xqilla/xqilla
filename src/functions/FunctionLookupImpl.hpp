@@ -30,6 +30,9 @@ public:
   ///insert a new function factory
   virtual void insertFunction(FuncFactory *func);
 
+  /// replaces the implementation of an existing function
+  virtual void replaceFunction(FuncFactory *func);
+
   ///returns the approriate Function object
   virtual ASTNode* lookUpFunction(const XMLCh* URI, const XMLCh* fname, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr) const;
 
