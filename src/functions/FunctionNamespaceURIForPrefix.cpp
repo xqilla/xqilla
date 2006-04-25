@@ -40,7 +40,7 @@ const unsigned int FunctionNamespaceURIForPrefix::minArgs = 2;
 const unsigned int FunctionNamespaceURIForPrefix::maxArgs = 2;
 
 /**
- * fn:namespace-uri-for-prefix($prefix as xs:string, $element as element()) as xs:anyURI?
+ * fn:namespace-uri-for-prefix($prefix as xs:string?, $element as element()) as xs:anyURI?
 **/
 
 /** Returns the namespace URI of one of the in-scope namespaces for $element, identified 
@@ -48,14 +48,17 @@ const unsigned int FunctionNamespaceURIForPrefix::maxArgs = 2;
 **/
 
 FunctionNamespaceURIForPrefix::FunctionNamespaceURIForPrefix(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : ConstantFoldingFunction(name, minArgs, maxArgs, "string, element()", args, memMgr)
+  : ConstantFoldingFunction(name, minArgs, maxArgs, "string?, element()", args, memMgr)
 {
   _src.getStaticType().flags = StaticType::ANY_URI_TYPE;
 }
 
 Sequence FunctionNamespaceURIForPrefix::collapseTreeInternal(DynamicContext* context, int flags) const
 {
-  const XMLCh* prefix = getParamNumber(1, context)->next(context)->asString(context);
+  Item::Ptr first=getParamNumber(1, context)->next(context);
+  const XMLCh* prefix = 0;
+  if(first.notNull())
+    prefix=first->asString(context);
 
   if(XPath2Utils::equals(prefix, XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString)) {
     prefix = 0; 

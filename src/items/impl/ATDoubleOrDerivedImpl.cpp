@@ -25,6 +25,8 @@
 
 #include <assert.h>
 
+unsigned int ATDoubleOrDerivedImpl::g_nSignificantDigits=25;
+
 ATDoubleOrDerivedImpl::
 ATDoubleOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* value, const StaticContext* context): 
     ATDoubleOrDerived(), 
@@ -71,6 +73,8 @@ void ATDoubleOrDerivedImpl::checkLimits()
         }
         else if(exp<-308 || (exp==-308 && _double.abs()<MAPM(2.2250738585072014e-308)))
             _double=MM_Zero;
+        else if(_double.significant_digits()>g_nSignificantDigits)
+          _double = _double.round(g_nSignificantDigits);
     }
 }
 
@@ -162,14 +166,10 @@ const XMLCh* ATDoubleOrDerivedImpl::asString(const DynamicContext* context) cons
         else
         {
           char obuf[1024];
-          int precision = _double.significant_digits();
-          // we need to subtract 1 for the digit before the '.'
-          int outputPrecision = precision < DOUBLE_MAX_DIGITS ? precision-1 : DOUBLE_MAX_DIGITS;
-          // precision needs to be at least 1
-          if(outputPrecision == 0) {
-            outputPrecision++;
-          }
-          _double.toString(obuf, outputPrecision);
+          int precision = _double.significant_digits()-1;
+          if(precision==0)
+              precision++;
+          _double.toString(obuf, precision);
           return context->getMemoryManager()->getPooledString(obuf);
         }
       }

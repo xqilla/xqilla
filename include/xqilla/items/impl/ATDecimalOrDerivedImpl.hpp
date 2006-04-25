@@ -20,7 +20,6 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 
-#define DECIMAL_MAX_DIGITS 50
 class StaticContext;
 
 class XQILLA_API ATDecimalOrDerivedImpl : public ATDecimalOrDerived 
@@ -119,13 +118,16 @@ public:
   virtual XMLCh treatAsCodepoint(const DynamicContext* context) const;
 
   /* Get the primitive index associated with this type */
+  virtual AnyAtomicType::AtomicObjectType getPrimitiveTypeIndex() const;
+
+  /* Get the primitive index associated with this type */
   static AnyAtomicType::AtomicObjectType getTypeIndex(); 
 
   /* Get the primitive type name */
   static const XMLCh* getPrimitiveName();
   
-  /* Get the primitive index associated with this type */
-  virtual AnyAtomicType::AtomicObjectType getPrimitiveTypeIndex() const;
+  /* The significant digits */
+  static unsigned int g_nSignificantDigits;
 
 protected:
   //////////////////////////////////////
@@ -154,7 +156,6 @@ private:
 
   /* the uri of this type */
   const XMLCh* _typeURI;
- 
 };
 
 #endif // _ATDECIMALORDERIVEDIMPL_HPP

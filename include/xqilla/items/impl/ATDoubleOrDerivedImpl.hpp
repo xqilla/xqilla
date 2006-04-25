@@ -20,8 +20,6 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 
-#define DOUBLE_MAX_DIGITS 25
-
 class XQILLA_API ATDoubleOrDerivedImpl : public ATDoubleOrDerived 
 {
 
@@ -114,15 +112,19 @@ public:
   virtual bool isInfinite() const;
 
   /* Get the primitive index associated with this type */
+  virtual AnyAtomicType::AtomicObjectType getPrimitiveTypeIndex() const;
+
+  /* Get the primitive index associated with this type */
   static AnyAtomicType::AtomicObjectType getTypeIndex(); 
 
   /* Get the primitive type name */
   static const XMLCh* getPrimitiveName();
 
-  /* Get the primitive index associated with this type */
-  virtual AnyAtomicType::AtomicObjectType getPrimitiveTypeIndex() const;
-
   enum state {NUM, NaN, INF, NEG_INF};
+
+  /* The significant digits */
+  static unsigned int g_nSignificantDigits;
+  static bool g_bEnforceIEEE;
 
 protected:
   

@@ -27,6 +27,8 @@
 #include <xqilla/framework/XPath2MemoryManager.hpp>
 #include <xqilla/context/ItemFactory.hpp>
 
+unsigned int ATDecimalOrDerivedImpl::g_nSignificantDigits=50;
+
 ATDecimalOrDerivedImpl::
 ATDecimalOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* value, const StaticContext* context): 
     ATDecimalOrDerived(),
@@ -128,7 +130,7 @@ const XMLCh* ATDecimalOrDerivedImpl::asString(const StaticContext* context) cons
   if(_decimal.is_integer())
     _decimal.toIntegerString(obuf);
   else
-    _decimal.toFixPtString(obuf, DECIMAL_MAX_DIGITS);
+    _decimal.toFixPtString(obuf, g_nSignificantDigits);
 
   // Note in the canonical representation the decimal point is required
   // and there must be at least one digit to the right and one digit to 

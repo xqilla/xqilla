@@ -29,6 +29,7 @@
 #include <xqilla/xqilla-simple.hpp>
 #include <xqilla/context/VariableStore.hpp>
 #include <xqilla/functions/FunctionConstructor.hpp>
+#include <xqilla/utils/XQillaPlatformUtils.hpp>
 
 #if defined(XERCES_HAS_CPP_NAMESPACE)
 XERCES_CPP_NAMESPACE_USE
@@ -147,6 +148,7 @@ int main(int argc, char *argv[])
     return 1;
   }
 
+  XQillaPlatformUtils::enableExtendedPrecision(false);
   XQilla xqilla;
 
   Janitor<TestSuiteResultListener> results(0);

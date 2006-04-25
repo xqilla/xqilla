@@ -64,7 +64,7 @@ void KnownErrorChecker::reportPass(const TestCase &testCase, const string &comme
 }
 
 void KnownErrorChecker::reportInspect(const TestCase &testCase, const string &actualResult,
-                                      const string &expectedResult, const string &comment)
+                                      const std::list<std::string> &expectedResult, const string &comment)
 {
   string newComment = comment;
   map<string, Error>::iterator i = errors_.find(testCase.name);
@@ -92,7 +92,7 @@ void KnownErrorChecker::reportSkip(const TestCase &testCase, const std::string &
 }
 
 void KnownErrorChecker::reportFail(const TestCase &testCase, const string &actualResult,
-                                   const string &expectedResult, const string &comment)
+                                   const std::list<std::string> &expectedResult, const string &comment)
 {
   string newComment = comment;
   map<string, Error>::iterator i = errors_.find(testCase.name);
@@ -300,7 +300,7 @@ void ConsoleResultListener::reportPass(const TestCase &testCase, const string &c
 }
 
 void ConsoleResultListener::reportInspect(const TestCase &testCase, const string &actualResult,
-                                          const string &expectedResult, const string &comment)
+                                          const std::list<std::string> &expectedResult, const string &comment)
 {
   ++m_nTotalTests;
   ++m_nInspectTests;
@@ -313,9 +313,12 @@ void ConsoleResultListener::reportInspect(const TestCase &testCase, const string
   errorStream_ << "********** Actual result: **********" << endl;
   errorStream_ << actualResult << endl;;
   errorStream_ << endl;
-  errorStream_ << "********** Expected result: **********" << endl;;
-  errorStream_ << expectedResult << endl;
-  errorStream_ << endl;
+  for(std::list<std::string>::const_iterator it=expectedResult.begin();it!=expectedResult.end();it++)
+  {
+    errorStream_ << "********** Expected result: **********" << endl;;
+    errorStream_ << *it << endl;
+    errorStream_ << endl;
+  }
 }
 
 void ConsoleResultListener::reportSkip(const TestCase &testCase, const std::string &comment)
@@ -327,7 +330,7 @@ void ConsoleResultListener::reportSkip(const TestCase &testCase, const std::stri
 }
 
 void ConsoleResultListener::reportFail(const TestCase &testCase, const string &actualResult,
-                                       const string &expectedResult, const string &comment)
+                                       const std::list<std::string> &expectedResult, const string &comment)
 {
   ++m_nTotalTests;
 
@@ -338,9 +341,12 @@ void ConsoleResultListener::reportFail(const TestCase &testCase, const string &a
   errorStream_ << "********** Actual result: **********" << endl;
   errorStream_ << actualResult << endl;;
   errorStream_ << endl;
-  errorStream_ << "********** Expected result: **********" << endl;;
-  errorStream_ << expectedResult << endl;
-  errorStream_ << endl;
+  for(std::list<std::string>::const_iterator it=expectedResult.begin();it!=expectedResult.end();it++)
+  {
+    errorStream_ << "********** Expected result: **********" << endl;;
+    errorStream_ << *it << endl;
+    errorStream_ << endl;
+  }
 }
 
 void ConsoleResultListener::reportFailNoError(const TestCase &testCase, const string &actualResult,
@@ -447,7 +453,7 @@ void XMLReportResultListener::reportPass(const TestCase &testCase, const string 
 }
 
 void XMLReportResultListener::reportInspect(const TestCase &testCase, const std::string &actualResult,
-                                            const std::string &expectedResult, const string &comment)
+                                            const std::list<std::string> &expectedResult, const string &comment)
 {
   outputStream_ << "  <test-case";
   outputStream_ << " name=\"" << testCase.name << "\"";
@@ -470,7 +476,7 @@ void XMLReportResultListener::reportSkip(const TestCase &testCase, const std::st
 }
 
 void XMLReportResultListener::reportFail(const TestCase &testCase, const std::string &actualResult,
-                                         const std::string &expectedResult, const string &comment)
+                                         const std::list<std::string> &expectedResult, const string &comment)
 {
   outputStream_ << "  <test-case";
   outputStream_ << " name=\"" << testCase.name << "\"";

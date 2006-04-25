@@ -19,6 +19,9 @@
 
 #include <xqilla/utils/XQillaPlatformUtils.hpp>
 #include "../dom-api/XQillaImplementation.hpp"
+#include <xqilla/items/impl/ATDecimalOrDerivedImpl.hpp>
+#include <xqilla/items/impl/ATDoubleOrDerivedImpl.hpp>
+#include <xqilla/items/impl/ATFloatOrDerivedImpl.hpp>
 
 #include <xqilla/mapm/m_apm.h>
 #include "DateUtils.hpp"
@@ -50,4 +53,20 @@ void XQillaPlatformUtils::terminate() {
     XQillaImplementation::terminate();
     XMLPlatformUtils::Terminate();
   }
+}
+
+void XQillaPlatformUtils::enableExtendedPrecision(bool bEnable)
+{
+    if(bEnable)
+    {
+        ATDecimalOrDerivedImpl::g_nSignificantDigits=50;
+        ATFloatOrDerivedImpl::g_nSignificantDigits=25;
+        ATDoubleOrDerivedImpl::g_nSignificantDigits=25;
+    }
+    else
+    {
+        ATDecimalOrDerivedImpl::g_nSignificantDigits=18;
+        ATFloatOrDerivedImpl::g_nSignificantDigits=8;
+        ATDoubleOrDerivedImpl::g_nSignificantDigits=16;
+    }
 }
