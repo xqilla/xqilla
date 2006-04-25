@@ -15,6 +15,7 @@
 #define _TESTSUITERESULTLISTENER_HPP
 
 #include <string>
+#include <list>
 #include <sstream>
 #include <map>
 #include <vector>
