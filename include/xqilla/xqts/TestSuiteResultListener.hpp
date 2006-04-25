@@ -35,10 +35,10 @@ public:
 
   virtual void reportPass(const TestCase &testCase, const std::string &comment) = 0;
   virtual void reportInspect(const TestCase &testCase, const std::string &actualResult,
-                             const std::string &expectedResult, const std::string &comment) = 0;
+                          const std::list<std::string> &expectedResult, const std::string &comment) = 0;
   virtual void reportSkip(const TestCase &testCase, const std::string &comment) = 0;
   virtual void reportFail(const TestCase &testCase, const std::string &actualResult,
-                          const std::string &expectedResult, const std::string &comment) = 0;
+                          const std::list<std::string> &expectedResult, const std::string &comment) = 0;
   virtual void reportFailNoError(const TestCase &testCase, const std::string &actualResult,
                                  const std::string &comment) = 0;
   virtual void reportFailUnexpectedError(const TestCase &testCase, const std::string &unexpectedError,
@@ -58,10 +58,10 @@ public:
 
   virtual void reportPass(const TestCase &testCase, const std::string &comment);
   virtual void reportInspect(const TestCase &testCase, const std::string &actualResult,
-                             const std::string &expectedResult, const std::string &comment);
+                             const std::list<std::string> &expectedResult, const std::string &comment);
   virtual void reportSkip(const TestCase &testCase, const std::string &comment);
   virtual void reportFail(const TestCase &testCase, const std::string &actualResult,
-                          const std::string &expectedResult, const std::string &comment);
+                          const std::list<std::string> &expectedResult, const std::string &comment);
   virtual void reportFailNoError(const TestCase &testCase, const std::string &actualResult,
                                  const std::string &comment);
   virtual void reportFailUnexpectedError(const TestCase &testCase, const std::string &unexpectedError,
@@ -98,10 +98,10 @@ public:
 
   virtual void reportPass(const TestCase &testCase, const std::string &comment);
   virtual void reportInspect(const TestCase &testCase, const std::string &actualResult,
-                             const std::string &expectedResult, const std::string &comment);
+                             const std::list<std::string> &expectedResult, const std::string &comment);
   virtual void reportSkip(const TestCase &testCase, const std::string &comment);
   virtual void reportFail(const TestCase &testCase, const std::string &actualResult,
-                          const std::string &expectedResult, const std::string &comment);
+                          const std::list<std::string> &expectedResult, const std::string &comment);
   virtual void reportFailNoError(const TestCase &testCase, const std::string &actualResult,
                                  const std::string &comment);
   virtual void reportFailUnexpectedError(const TestCase &testCase, const std::string &unexpectedError,
@@ -135,10 +135,10 @@ public:
 
   virtual void reportPass(const TestCase &testCase, const std::string &comment);
   virtual void reportInspect(const TestCase &testCase, const std::string &actualResult,
-                             const std::string &expectedResult, const std::string &comment);
+                             const std::list<std::string> &expectedResult, const std::string &comment);
   virtual void reportSkip(const TestCase &testCase, const std::string &comment);
   virtual void reportFail(const TestCase &testCase, const std::string &actualResult,
-                          const std::string &expectedResult, const std::string &comment);
+                          const std::list<std::string> &expectedResult, const std::string &comment);
   virtual void reportFailNoError(const TestCase &testCase, const std::string &actualResult,
                                  const std::string &comment);
   virtual void reportFailUnexpectedError(const TestCase &testCase, const std::string &unexpectedError,

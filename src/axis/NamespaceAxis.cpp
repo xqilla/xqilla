@@ -51,6 +51,15 @@ const DOMNode *NamespaceAxis::nextNode(DynamicContext *context)
       if(node_ != 0) {
         nodeMap_ = node_->getAttributes();
         i_ = 0;
+        // check if this node has a namespace, but the prefix is not declared in the attribute map
+        const XMLCh* uri=node_->getNamespaceURI();
+        const XMLCh* prefix=node_->getPrefix();
+        if(uri && *uri && 
+           nodeMap_->getNamedItemNS(XMLUni::fgXMLNSString, prefix)==0 &&
+           done_.insert(prefix).second)
+        {
+           return result = context->getItemFactory()->createNamespaceNode(prefix, uri, originalNode_, context);
+        }
         continue;
       }
       else {

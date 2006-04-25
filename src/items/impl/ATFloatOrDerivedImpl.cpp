@@ -25,6 +25,8 @@
 #include <xqilla/context/ItemFactory.hpp>
 #include <assert.h>
 
+unsigned int ATFloatOrDerivedImpl::g_nSignificantDigits=25;
+
 ATFloatOrDerivedImpl::
 ATFloatOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* value, const StaticContext* context): 
     ATFloatOrDerived(),
@@ -71,6 +73,8 @@ void ATFloatOrDerivedImpl::checkLimits()
         }
         else if(exp<-38 || (exp==-38 && _float.abs()<MAPM(1.1754944e-38)))
             _float=MM_Zero;
+        else if(_float.significant_digits()>g_nSignificantDigits)
+          _float = _float.round(g_nSignificantDigits);
     }
 }
 
@@ -162,15 +166,10 @@ const XMLCh* ATFloatOrDerivedImpl::asString(const DynamicContext* context) const
         else
         {
           char obuf[1024];
-          int precision = _float.significant_digits();
-          // we need to subtract 1 for the digit before the '.'
-          int outputPrecision = precision < FLOAT_MAX_DIGITS ? precision-1 : FLOAT_MAX_DIGITS; 
-          // precision needs to be at least 1
-          if(outputPrecision == 0) {
-            outputPrecision++;
-          }
-          _float.toString(obuf, outputPrecision);
-
+          int precision = _float.significant_digits()-1;
+          if(precision==0)
+              precision++;
+          _float.toString(obuf, precision);
           return context->getMemoryManager()->getPooledString(obuf);
         }
       }

@@ -42,10 +42,11 @@ void TestSuiteRunner::testResults(const TestCase &testCase, const std::string &x
   }
   else {
     bool passed = false;
-    string compareMethod, expectedResult, outputResult;
-    for(map<string, string>::const_iterator i=testCase.outputFiles.begin();i!=testCase.outputFiles.end();i++) {
+    std::string compareMethod, outputResult;
+    std::list<std::string> allExpectedResults;
+    for(std::map<std::string, std::string>::const_iterator i=testCase.outputFiles.begin();i!=testCase.outputFiles.end();i++) {
       compareMethod=(*i).second;
-      expectedResult = loadExpectedResult((*i).first);
+      string expectedResult = loadExpectedResult((*i).first);
 
       if(compareMethod=="Text" || compareMethod=="Fragment" || compareMethod=="XML") {
         outputResult = xmlResult;
@@ -68,8 +69,6 @@ void TestSuiteRunner::testResults(const TestCase &testCase, const std::string &x
           passed = compareNodes(doc1, doc2);
         }
         catch(...) {}
-
-        if(passed) break;
       }
       else if(compareMethod == "Inspect") {
         // Try if they match 
@@ -80,16 +79,18 @@ void TestSuiteRunner::testResults(const TestCase &testCase, const std::string &x
         // TODO
         cout << "Test-case '" << testCase.name << "': Unsupported comparison method " << compareMethod << endl;
       }
+      allExpectedResults.push_back(expectedResult);
+      if(passed) break;
     }
 
     if(passed) {
       m_results->reportPass(testCase, "");
     }
     else if(compareMethod == "Inspect") {
-      m_results->reportInspect(testCase, xmlResult, expectedResult, "");
+      m_results->reportInspect(testCase, xmlResult, allExpectedResults, "");
     }
     else {
-      m_results->reportFail(testCase, outputResult, expectedResult, "");
+      m_results->reportFail(testCase, outputResult, allExpectedResults, "");
     }
   }
 }
