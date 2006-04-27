@@ -75,7 +75,7 @@ Item::Ptr Union::UnionResult::next(DynamicContext *context)
     else {
       // Check it's a node
       if(!item->isNode()) {
-        XQThrow(XPath2ErrorException,X("Union::UnionResult::next"), X("A parameter of operator 'union' contains an item that is not a node [err:XP0006]"));
+        XQThrow(XPath2ErrorException,X("Union::UnionResult::next"), X("A parameter of operator 'union' contains an item that is not a node [err:XPTY0004]"));
       }
 
       return item;

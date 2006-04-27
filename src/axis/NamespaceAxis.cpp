@@ -58,7 +58,7 @@ const DOMNode *NamespaceAxis::nextNode(DynamicContext *context)
            nodeMap_->getNamedItemNS(XMLUni::fgXMLNSString, prefix)==0 &&
            done_.insert(prefix).second)
         {
-           return result = context->getItemFactory()->createNamespaceNode(prefix, uri, originalNode_, context);
+           return context->getItemFactory()->createNamespaceNode(prefix, uri, originalNode_, context);
         }
         continue;
       }

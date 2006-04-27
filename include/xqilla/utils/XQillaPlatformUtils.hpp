@@ -50,8 +50,6 @@ public:
    *
    * When disabled, xs:decimal values will hold only 18 digits, xs:float 7 digits and xs:double 15 digits 
    * as mandated 
-   *
-   * Terminates Xerces
    */
   static void enableExtendedPrecision(bool bEnable);
 
