@@ -69,11 +69,8 @@ bool XQDOMConstructor::isTextNode(const Node::Ptr &node) const
 Sequence XQDOMConstructor::collapseTreeInternal(DynamicContext *context, int flags) const 
 {
     Node::Ptr result;
-#if defined(_DEBUG) || defined(DEBUG)
-    // in debug builds, I'd rather get the exception
     try
     {
-#endif
       // DOCUMENT node
       if(m_nodeType == Node::document_string)
       {
@@ -469,12 +466,10 @@ Sequence XQDOMConstructor::collapseTreeInternal(DynamicContext *context, int fla
       {
         assert(false);
       }
-#if defined(_DEBUG) || defined(DEBUG)
     }
     catch(DOMException& e) {
         XQThrow(ASTException,X("DOM Constructor"),e.getMessage());
     }
-#endif
     if(result.notNull())
         return Sequence(result, context->getMemoryManager());
     return Sequence(context->getMemoryManager());
