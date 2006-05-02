@@ -23,6 +23,8 @@ class DynamicContext;
 class XQILLA_API ATQNameOrDerived : public AnyAtomicType
 {
 public:
+  typedef RefCountPointer<const ATQNameOrDerived> Ptr;
+
   /* Get the name of the primitive type (basic type) of this type
    * (ie "decimal" for xs:decimal) */
   virtual const XMLCh* getPrimitiveTypeName() const = 0;
