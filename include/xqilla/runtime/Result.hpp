@@ -52,6 +52,8 @@ public:
   /// Returns true if the underlying pointer is null
   bool isNull() const;
 
+  EmptyResult* getEmpty() const;
+  
 private:
   ResultImpl *_impl;
 
@@ -66,13 +68,13 @@ inline bool Result::isNull() const
 inline ResultImpl *Result::get()
 {
   if(_impl) return _impl;
-  return &_empty;
+  return getEmpty();
 }
 
 inline const ResultImpl *Result::get() const
 {
   if(_impl) return _impl;
-  return &_empty;
+  return getEmpty();
 }
 
 inline ResultImpl *Result::operator->()

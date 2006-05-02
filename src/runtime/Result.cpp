@@ -49,3 +49,9 @@ Result::~Result()
 {
   if(_impl) _impl->decrementRefCount();
 }
+
+EmptyResult* Result::getEmpty() const
+{
+  return &_empty;
+}
+
