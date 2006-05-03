@@ -116,6 +116,8 @@ Node::Ptr ItemFactoryImpl::createElementNode(const XMLCh *uri, const XMLCh *pref
                                            const DynamicContext *context) const
 {
   StaticContext::ConstructionMode constrMode=context->getConstructionMode();
+  bool nsPreserveMode=context->getPreserveNamespaces();
+  bool nsInheritMode=context->getInheritNamespaces();
 
   DOMDocument *document = getOutputDocument(context);
   DOMElement *element = document->createElementNS(uri, name);
@@ -139,6 +141,49 @@ Node::Ptr ItemFactoryImpl::createElementNode(const XMLCh *uri, const XMLCh *pref
     element->setAttributeNodeNS(imported);
   }
 
+  std::vector<const XMLCh*> inScopePrefixes;
+  if(!nsInheritMode)
+  {
+    DOMNode* elt=element;
+    while(elt!=NULL)
+    {
+      // check if this node has a namespace, but the prefix is not declared in the attribute map
+      const XMLCh* uri=elt->getNamespaceURI();
+      if(uri && *uri)
+      {
+        const XMLCh* prefix=elt->getPrefix();
+        bool bFound=false;
+        for(std::vector<const XMLCh*>::iterator it=inScopePrefixes.begin();it!=inScopePrefixes.end();it++)
+          if(XPath2Utils::equals(*it, prefix))
+          {
+            bFound=true;
+            break;
+          }
+        if(!bFound)
+          inScopePrefixes.push_back(prefix);
+      }
+      DOMNamedNodeMap* attrMap=elt->getAttributes();
+      for(XMLSize_t i=0;i<attrMap->getLength();i++)
+      {
+        DOMNode* attr=attrMap->item(i);
+        if(XPath2Utils::equals(attr->getPrefix(), XMLUni::fgXMLNSString) || XPath2Utils::equals(attr->getNodeName(), XMLUni::fgXMLNSString))
+        {
+          const XMLCh* prefix=attr->getPrefix()==NULL?XMLUni::fgZeroLenString:attr->getLocalName();
+          bool bFound=false;
+          for(std::vector<const XMLCh*>::iterator it=inScopePrefixes.begin();it!=inScopePrefixes.end();it++)
+            if(XPath2Utils::equals(*it, prefix))
+            {
+              bFound=true;
+              break;
+            }
+          if(!bFound)
+            inScopePrefixes.push_back(prefix);
+        }
+      }
+      elt=elt->getParentNode();
+    }
+  }
+
   for(std::vector<ItemFactory::ElementChild>::const_iterator i = childList.begin(); i != childList.end(); ++i) {
     const NodeImpl *nodeImpl = (const NodeImpl *)(*i)->getInterface(Item::gXQilla);
     assert(nodeImpl != 0);
@@ -160,6 +205,57 @@ Node::Ptr ItemFactoryImpl::createElementNode(const XMLCh *uri, const XMLCh *pref
       if(constrMode == StaticContext::CONSTRUCTION_MODE_PRESERVE && nodeImpl->dmNodeKind()==Node::element_string)
         XPath2Utils::copyElementType(newChild->getOwnerDocument(), (DOMElement*)newChild, (DOMElement*)nodeImpl->getDOMNode());
       if(context->getDebugCallback()) context->getDebugCallback()->ReportClonedNode(const_cast<DynamicContext*>(context), nodeImpl->getDOMNode(), newChild);
+    }
+
+    if(!nsPreserveMode && newChild->getNodeType()==DOMNode::ELEMENT_NODE)
+    {
+      DOMNamedNodeMap* attrMap=newChild->getAttributes();
+      for(XMLSize_t i=0;i<attrMap->getLength();)
+      {
+        bool bPreserved=true;
+        DOMNode* attr=attrMap->item(i);
+        if(XPath2Utils::equals(attr->getPrefix(), XMLUni::fgXMLNSString) || XPath2Utils::equals(attr->getNodeName(), XMLUni::fgXMLNSString))
+        {
+          const XMLCh* prefix=attr->getPrefix()==NULL?XMLUni::fgZeroLenString:attr->getLocalName();
+          // copy this namespace only if needed by the element name...
+          if(!XPath2Utils::equals(element->getPrefix(), prefix))
+          {
+            bPreserved=false;
+            //... or by its attributes
+            for(XMLSize_t j=0;j<attrMap->getLength();j++)
+              if(XPath2Utils::equals(attrMap->item(j)->getPrefix(), prefix))
+              {
+                bPreserved=true;
+                break;
+              }
+            if(!bPreserved)
+              attrMap->removeNamedItemNS(attr->getNamespaceURI(), attr->getLocalName());
+          }
+        }
+        if(bPreserved)
+          i++;
+      }
+    }
+    if(!nsInheritMode && newChild->getNodeType()==DOMNode::ELEMENT_NODE)
+    {
+      DOMNamedNodeMap* attrMap=newChild->getAttributes();
+      // add empty namespace declarations for all the inherited namespaces
+      for(std::vector<const XMLCh*>::iterator it=inScopePrefixes.begin();it!=inScopePrefixes.end();it++)
+      {
+        const XMLCh* prefix=(*it);
+        if(prefix==0 || *prefix==0)
+            prefix=XMLUni::fgXMLNSString;
+        if(attrMap->getNamedItemNS(XMLUni::fgXMLNSURIName, prefix)==NULL && !XPath2Utils::equals(newChild->getPrefix(), prefix))
+        {
+          const XMLCh* fullName=NULL;
+          if((*it)==0 || (*it)[0]==0)
+            fullName=XMLUni::fgXMLNSString;
+          else
+            fullName=XPath2Utils::concatStrings(XMLUni::fgXMLNSColonString, *it, context->getMemoryManager());
+          DOMAttr *attr = getOutputDocument(context)->createAttributeNS(XMLUni::fgXMLNSURIName, fullName);
+          attrMap->setNamedItemNS(attr);
+        }
+      }
     }
 
     element->appendChild(newChild);

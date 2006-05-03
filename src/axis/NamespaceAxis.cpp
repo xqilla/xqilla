@@ -95,10 +95,9 @@ const DOMNode *NamespaceAxis::nextNode(DynamicContext *context)
       prefix = attrName + 6;
     }
 
-    // If the prefix wasn't empty, then the uri can't be empty
-    // In other words, consider the case of "" being a valid uri for a default binding
-    // when namespace 1.1 comes in this is not true!!!!REVISIT
-    if(prefix != 0 && uri == 0) {
+    // If the uri is empty, the prefix has been unset; add it to the map of "already reported" prefixes and go on
+    if(uri == 0 || *uri==0) {
+      done_.insert(prefix);
       continue;
     }
  
