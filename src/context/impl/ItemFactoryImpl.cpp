@@ -152,14 +152,7 @@ Node::Ptr ItemFactoryImpl::createElementNode(const XMLCh *uri, const XMLCh *pref
       if(uri && *uri)
       {
         const XMLCh* prefix=elt->getPrefix();
-        bool bFound=false;
-        for(std::vector<const XMLCh*>::iterator it=inScopePrefixes.begin();it!=inScopePrefixes.end();it++)
-          if(XPath2Utils::equals(*it, prefix))
-          {
-            bFound=true;
-            break;
-          }
-        if(!bFound)
+        if (!XPath2Utils::containsString(inScopePrefixes, prefix))
           inScopePrefixes.push_back(prefix);
       }
       DOMNamedNodeMap* attrMap=elt->getAttributes();
@@ -169,14 +162,7 @@ Node::Ptr ItemFactoryImpl::createElementNode(const XMLCh *uri, const XMLCh *pref
         if(XPath2Utils::equals(attr->getPrefix(), XMLUni::fgXMLNSString) || XPath2Utils::equals(attr->getNodeName(), XMLUni::fgXMLNSString))
         {
           const XMLCh* prefix=attr->getPrefix()==NULL?XMLUni::fgZeroLenString:attr->getLocalName();
-          bool bFound=false;
-          for(std::vector<const XMLCh*>::iterator it=inScopePrefixes.begin();it!=inScopePrefixes.end();it++)
-            if(XPath2Utils::equals(*it, prefix))
-            {
-              bFound=true;
-              break;
-            }
-          if(!bFound)
+          if (!XPath2Utils::containsString(inScopePrefixes, prefix))
             inScopePrefixes.push_back(prefix);
         }
       }
