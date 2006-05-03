@@ -825,7 +825,9 @@ ATBooleanOrDerived::Ptr NodeImpl::dmIsId(const DynamicContext* context) const
 
   if(typeInfo != 0 &&
      XPath2Utils::equals(typeInfo->getName(), XMLUni::fgIDString) &&
-     XPath2Utils::equals(typeInfo->getNamespace(), SchemaSymbols::fgURI_SCHEMAFORSCHEMA)) {
+     (XPath2Utils::equals(typeInfo->getNamespace(), SchemaSymbols::fgURI_SCHEMAFORSCHEMA) ||
+      XPath2Utils::equals(typeInfo->getNamespace(), XMLUni::fgInfosetURIName)))
+  {
     return context->getItemFactory()->createBoolean(true, context);
   }
 
@@ -846,7 +848,9 @@ ATBooleanOrDerived::Ptr NodeImpl::dmIsIdRefs(const DynamicContext* context) cons
   if(typeInfo != 0 &&
      (XPath2Utils::equals(typeInfo->getName(), XMLUni::fgIDRefString) ||
       XPath2Utils::equals(typeInfo->getName(), XMLUni::fgIDRefsString)) &&
-     XPath2Utils::equals(typeInfo->getNamespace(), SchemaSymbols::fgURI_SCHEMAFORSCHEMA)) {
+     (XPath2Utils::equals(typeInfo->getNamespace(), SchemaSymbols::fgURI_SCHEMAFORSCHEMA) ||
+      XPath2Utils::equals(typeInfo->getNamespace(), XMLUni::fgInfosetURIName)))
+  {
     return context->getItemFactory()->createBoolean(true, context);
   }
 
