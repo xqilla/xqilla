@@ -55,13 +55,15 @@ XQQuery* XQilla::parseXQuery(const XMLCh* inputQuery, DynamicContext* context/*=
     context = createContext();
   }
 
-  XQueryParserArgs args;
+  XERCES_CPP_NAMESPACE_QUALIFIER Janitor<XQQuery> query = new (memMgr) XQQuery(inputQuery, context, contextOwned, memMgr);
+
   try {
     CXQueryScanner scanner(context->getMemoryManager(), inputQuery);
 
+    XQueryParserArgs args;
     args._context=context;
     args._scanner=&scanner;
-    args._query=new (memMgr) XQQuery(inputQuery, context, contextOwned, memMgr);
+    args._query=query.get();
     args._query->setFile(queryFile);
 
     XQuery::yyparse(&args);
@@ -78,7 +80,7 @@ XQQuery* XQilla::parseXQuery(const XMLCh* inputQuery, DynamicContext* context/*=
     throw e;
   }
 
-  return args._query;
+  return query.release();
 }
 
 XQQuery* XQilla::parse(const XMLCh* inputQuery, Language language, DynamicContext* context,
