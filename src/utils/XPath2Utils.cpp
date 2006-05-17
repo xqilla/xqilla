@@ -18,6 +18,7 @@
 #include <xercesc/util/XMLString.hpp>
 #include <xercesc/util/XMLUniDefs.hpp>
 #include <xercesc/util/XMLUni.hpp>
+#include <xercesc/util/XMLUri.hpp>
 #include <xercesc/framework/XMLBuffer.hpp>
 #include <xercesc/framework/psvi/PSVIItem.hpp>
 #include <xercesc/dom/DOMPSVITypeInfo.hpp>
@@ -86,6 +87,25 @@ const XMLCh* XPath2Utils::escapeURI(const XMLCh* const str, bool escapeRes, XPat
   }//for  
 
   return memMgr->getPooledString(buf.getRawBuffer());
+}
+
+bool XPath2Utils::isValidURI(const XMLCh* const str, XPath2MemoryManager* memMgr)
+{
+  // XMLSchema specs say: "Spaces are, in principle, allowed in the lexical space of anyURI, however, 
+  // their use is highly discouraged (unless they are encoded by %20)"
+  // Xerces complains if a space is found, so let's encode it
+  const XMLCh escSpace[]={ XERCES_CPP_NAMESPACE_QUALIFIER chPercent, XERCES_CPP_NAMESPACE_QUALIFIER chDigit_2, XERCES_CPP_NAMESPACE_QUALIFIER chDigit_0, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
+  XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buff(1023, memMgr);
+  const XMLCh* pCursor=str;
+  while(*pCursor)
+  {
+    if(*pCursor==XERCES_CPP_NAMESPACE_QUALIFIER chSpace)
+      buff.append(escSpace);
+    else
+      buff.append(*pCursor);
+    pCursor++;
+  }
+  return XERCES_CPP_NAMESPACE_QUALIFIER XMLUri::isValidURI(true, buff.getRawBuffer());
 }
 
 const XMLCh* XPath2Utils::concatStrings(const XMLCh* src1, const XMLCh src, XPath2MemoryManager* memMgr) {

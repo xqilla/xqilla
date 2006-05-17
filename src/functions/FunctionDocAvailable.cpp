@@ -13,14 +13,11 @@
 #include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionDocAvailable.hpp>
 #include <xqilla/context/DynamicContext.hpp>
-#include <xqilla/context/URIResolver.hpp>
-#include <xqilla/items/ATAnyURIOrDerived.hpp>
-#include <xqilla/items/ATBooleanOrDerived.hpp>
-#include <xqilla/exceptions/XPath2ErrorException.hpp>
 #include <xqilla/exceptions/FunctionException.hpp>
-#include <xqilla/exceptions/XMLParseException.hpp>
+#include <xqilla/items/ATBooleanOrDerived.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/ast/StaticResolutionContext.hpp>
+#include <xqilla/utils/XPath2Utils.hpp>
 #include <xercesc/util/XMLString.hpp>
 
 const XMLCh FunctionDocAvailable::name[] = {
@@ -65,11 +62,8 @@ Sequence FunctionDocAvailable::collapseTreeInternal(DynamicContext* context, int
 			  newUri[i]=XERCES_CPP_NAMESPACE_QUALIFIER chForwardSlash;
 	  uri=newUri;
   }
-  try {
-    context->getItemFactory()->createAnyURI(uri, context);
-  } catch(XPath2ErrorException &e) {
+  if(!XPath2Utils::isValidURI(uri, context->getMemoryManager()))
     XQThrow(FunctionException, X("FunctionDocAvailable::collapseTreeInternal"), X("Invalid argument to fn:doc-available function [err:FODC0005]"));
-  }
 
   bool bSuccess=false;
   try {

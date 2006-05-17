@@ -16,8 +16,8 @@
 #include <xqilla/exceptions/FunctionException.hpp>
 #include <xqilla/exceptions/XMLParseException.hpp>
 #include <xqilla/ast/StaticResolutionContext.hpp>
+#include <xqilla/utils/XPath2Utils.hpp>
 #include <xercesc/util/XMLString.hpp>
-#include <xercesc/util/XMLUri.hpp>
 
 const XMLCh FunctionDoc::name[] = {
   XERCES_CPP_NAMESPACE_QUALIFIER chLatin_d, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_c, 
@@ -60,7 +60,7 @@ Sequence FunctionDoc::collapseTreeInternal(DynamicContext* context, int flags) c
 			  newUri[i]=XERCES_CPP_NAMESPACE_QUALIFIER chForwardSlash;
 	  uri=newUri;
   }
-  if(!XERCES_CPP_NAMESPACE_QUALIFIER XMLUri::isValidURI(true, uri))
+  if(!XPath2Utils::isValidURI(uri, context->getMemoryManager()))
     XQThrow(FunctionException, X("FunctionDoc::collapseTreeInternal"), X("Invalid argument to fn:doc function [err:FODC0005]"));
 
   try {
