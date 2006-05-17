@@ -28,6 +28,7 @@
 #include "../parser/XPath2ParserControl.hpp"
 
 #include <xercesc/framework/URLInputSource.hpp>
+#include <xercesc/util/Janitor.hpp>
 
 #if defined(XERCES_HAS_CPP_NAMESPACE)
 XERCES_CPP_NAMESPACE_USE
@@ -46,7 +47,7 @@ XQQuery* XQilla::parseXPath2(const XMLCh* inputQuery, DynamicContext* context/*=
     context = createContext();
   }
 
-  XQQuery *query = new (memMgr) XQQuery(inputQuery, context, contextOwned, memMgr);
+  XERCES_CPP_NAMESPACE_QUALIFIER Janitor<XQQuery> query = new (memMgr) XQQuery(inputQuery, context, contextOwned, memMgr);
   query->setFile(queryFile);
 
   try {
@@ -73,5 +74,5 @@ XQQuery* XQilla::parseXPath2(const XMLCh* inputQuery, DynamicContext* context/*=
     throw e;
   }
 
-  return query;
+  return query.release();
 }
