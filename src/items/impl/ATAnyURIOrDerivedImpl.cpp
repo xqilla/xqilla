@@ -88,7 +88,9 @@ const XMLCh* ATAnyURIOrDerivedImpl::asString(const DynamicContext* context) cons
 /* returns true if the two objects' URI are equal (string comparison)
    * false otherwise */
 bool ATAnyURIOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const {
-  if(this->getPrimitiveTypeIndex() != target->getPrimitiveTypeIndex()) {
+  if(this->getPrimitiveTypeIndex() != target->getPrimitiveTypeIndex() &&
+     target->getPrimitiveTypeIndex()!=STRING) 
+  {
     XQThrow(IllegalArgumentException,X("ATAnyURIOrDerivedImpl::equals"), X("Equality operator for given types not supported"));
   }
   return XPath2Utils::equals(target->asString(context), _uri);  
