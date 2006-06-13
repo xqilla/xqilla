@@ -48,14 +48,6 @@
 /* Using locations.  */
 #define YYLSP_NEEDED 0
 
-/* Substitute the variable and function names.  */
-#define yyparse XPathyyparse
-#define yylex   XPathyylex
-#define yyerror XPathyyerror
-#define yylval  XPathyylval
-#define yychar  XPathyychar
-#define yydebug XPathyydebug
-#define yynerrs XPathyynerrs
 
 
 /* Tokens.  */
@@ -64,200 +56,217 @@
    /* Put the tokens into the symbol table, so that GDB and other debuggers
       know about them.  */
    enum yytokentype {
-     _QUESTION_ = 258,
-     _LBRACK_ = 259,
-     _RBRACK_ = 260,
-     _PLUS_ = 261,
-     _MINUS_ = 262,
-     _STAR_ = 263,
-     _NCNAME_COLON_STAR_ = 264,
-     _STAR_COLON_NCNAME_ = 265,
-     _DOT_ = 266,
-     _DOT_DOT_ = 267,
-     _STRING_LITERAL_ = 268,
-     _SLASH_ = 269,
-     _SLASHSLASH_ = 270,
-     _AXIS_CHILD_ = 271,
-     _AXIS_DESCENDANT_ = 272,
-     _AXIS_PARENT_ = 273,
-     _AXIS_ATTRIBUTE_ = 274,
-     _AXIS_SELF_ = 275,
-     _AXIS_DESCENDANT_OR_SELF_ = 276,
-     _AXIS_ANCESTOR_ = 277,
-     _AXIS_FOLLOWING_SIBLING_ = 278,
-     _AXIS_PRECEDING_SIBLING_ = 279,
-     _AXIS_FOLLOWING_ = 280,
-     _AXIS_PRECEDING_ = 281,
-     _AXIS_NAMESPACE_ = 282,
-     _AXIS_ANCESTOR_OR_SELF_ = 283,
-     _AT_ = 284,
-     _CAST_AS_ = 285,
-     _TREAT_AS_ = 286,
-     _FOR_ = 287,
-     _SOME_ = 288,
-     _EVERY_ = 289,
-     _COMMA_ = 290,
-     _LPAR_ = 291,
-     _TEXT_LPAR_ = 292,
-     _COMMENT_LPAR_ = 293,
-     _NODE_LPAR_ = 294,
-     _PROCESSING_INSTRUCTION_LPAR_ = 295,
-     _ELEMENT_LPAR_ = 296,
-     _ATTRIBUTE_LPAR_ = 297,
-     _SCHEMA_ELEMENT_LPAR_ = 298,
-     _SCHEMA_ATTRIBUTE_LPAR_ = 299,
-     _DOCUMENT_NODE_LPAR_ = 300,
-     _IF_LPAR_ = 301,
-     _QNAME_LPAR_ = 302,
-     _RPAR_ = 303,
-     _MULTIPLY_ = 304,
-     _DIV_ = 305,
-     _INTEGER_DIV_ = 306,
-     _MOD_ = 307,
-     _AND_ = 308,
-     _OR_ = 309,
-     _RETURN_ = 310,
-     _THEN_ = 311,
-     _ELSE_ = 312,
-     _TO_ = 313,
-     _UNION_ = 314,
-     _INTERSECT_ = 315,
-     _EXCEPT_ = 316,
-     _EQUALS_ = 317,
-     _IS_ = 318,
-     _NOT_EQUALS_ = 319,
-     _LT_EQUALS_ = 320,
-     _GT_EQUALS_ = 321,
-     _LT_ = 322,
-     _GT_ = 323,
-     _VERTICAL_BAR_ = 324,
-     _LT_LT_ = 325,
-     _GT_GT_ = 326,
-     _FORTRAN_EQ_ = 327,
-     _FORTRAN_NE_ = 328,
-     _FORTRAN_GT_ = 329,
-     _FORTRAN_GE_ = 330,
-     _FORTRAN_LT_ = 331,
-     _FORTRAN_LE_ = 332,
-     _IN_ = 333,
-     _SATISFIES_ = 334,
+     MYEOF = 0,
+     _QNAME_ = 258,
+     _FUNCTION_CALL_ = 259,
+     _STRING_LITERAL_ = 260,
+     _VARIABLE_ = 261,
+     _NCNAME_COLON_STAR_ = 262,
+     _STAR_COLON_NCNAME_ = 263,
+     _NCNAME_ = 264,
+     _INTEGER_NUMBER_ = 265,
+     _DECIMAL_NUMBER_ = 266,
+     _DOUBLE_NUMBER_ = 267,
+     _XQUERY_COMMENT_ = 268,
+     _XQUERY_WHITESPACE_ = 269,
+     _XQUERY_ERROR_ = 270,
+     _COMMA_ = 271,
+     _RETURN_ = 272,
+     _FOR_ = 273,
+     _IN_ = 274,
+     _DOLLAR_SIGN_ = 275,
+     _SOME_ = 276,
+     _EVERY_ = 277,
+     _SATISFIES_ = 278,
+     _IF_ = 279,
+     _THEN_ = 280,
+     _ELSE_ = 281,
+     _OR_ = 282,
+     _AND_ = 283,
+     _INSTANCE_OF_ = 284,
+     _CASTABLE_AS_ = 285,
+     _TO_ = 286,
+     _PLUS_ = 287,
+     _MINUS_ = 288,
+     _MULTIPLY_ = 289,
+     _DIV_ = 290,
+     _INTEGER_DIV_ = 291,
+     _MOD_ = 292,
+     _UNION_ = 293,
+     _VERTICAL_BAR_ = 294,
+     _INTERSECT_ = 295,
+     _EXCEPT_ = 296,
+     _SLASH_ = 297,
+     _SLASHSLASH_ = 298,
+     _LBRACK_ = 299,
+     _RBRACK_ = 300,
+     _CAST_AS_ = 301,
+     _TREAT_AS_ = 302,
+     _EQUALS_ = 303,
+     _NOT_EQUALS_ = 304,
+     _LT_ = 305,
+     _LT_EQUALS_ = 306,
+     _GT_ = 307,
+     _GT_EQUALS_ = 308,
+     _FORTRAN_EQ_ = 309,
+     _FORTRAN_NE_ = 310,
+     _FORTRAN_LT_ = 311,
+     _FORTRAN_LE_ = 312,
+     _FORTRAN_GT_ = 313,
+     _FORTRAN_GE_ = 314,
+     _IS_ = 315,
+     _LT_LT_ = 316,
+     _GT_GT_ = 317,
+     _DOT_ = 318,
+     _AT_ = 319,
+     _DOT_DOT_ = 320,
+     _AXIS_CHILD_ = 321,
+     _AXIS_DESCENDANT_ = 322,
+     _AXIS_ATTRIBUTE_ = 323,
+     _AXIS_SELF_ = 324,
+     _AXIS_DESCENDANT_OR_SELF_ = 325,
+     _AXIS_PARENT_ = 326,
+     _STAR_ = 327,
+     _PROCESSING_INSTRUCTION_LPAR_ = 328,
+     _COMMENT_LPAR_ = 329,
+     _TEXT_LPAR_ = 330,
+     _NODE_LPAR_ = 331,
+     _LPAR_ = 332,
+     _RPAR_ = 333,
+     _EMPTY_ = 334,
      _ITEM_ = 335,
-     _EMPTY_ = 336,
-     _INSTANCE_OF_ = 337,
-     _CASTABLE_AS_ = 338,
-     _NILLABLE_ = 339,
-     _ZERO_OR_ONE_ = 340,
-     _ONE_OR_MORE_ = 341,
-     _ZERO_OR_MORE_ = 342,
-     _VARNAME_ = 343,
-     _QNAME_ = 344,
-     _NCNAME_ = 345,
-     _INTEGER_LITERAL_ = 346,
-     _DECIMAL_LITERAL_ = 347,
-     _DOUBLE_LITERAL_ = 348
+     _NILLABLE_ = 336,
+     _DOCUMENT_NODE_LPAR_ = 337,
+     _ATTRIBUTE_LPAR_ = 338,
+     _ELEMENT_LPAR_ = 339,
+     _AXIS_ANCESTOR_OR_SELF_ = 340,
+     _AXIS_ANCESTOR_ = 341,
+     _AXIS_FOLLOWING_SIBLING_ = 342,
+     _AXIS_FOLLOWING_ = 343,
+     _AXIS_PRECEDING_SIBLING_ = 344,
+     _AXIS_PRECEDING_ = 345,
+     _SCHEMA_ELEMENT_LPAR_ = 346,
+     _SCHEMA_ATTRIBUTE_LPAR_ = 347,
+     _ZERO_OR_ONE_ = 348,
+     _ONE_OR_MORE_ = 349,
+     _ZERO_OR_MORE_ = 350,
+     _AXIS_NAMESPACE_ = 351,
+     _EOF_ = 352
    };
 #endif
 /* Tokens.  */
-#define _QUESTION_ 258
-#define _LBRACK_ 259
-#define _RBRACK_ 260
-#define _PLUS_ 261
-#define _MINUS_ 262
-#define _STAR_ 263
-#define _NCNAME_COLON_STAR_ 264
-#define _STAR_COLON_NCNAME_ 265
-#define _DOT_ 266
-#define _DOT_DOT_ 267
-#define _STRING_LITERAL_ 268
-#define _SLASH_ 269
-#define _SLASHSLASH_ 270
-#define _AXIS_CHILD_ 271
-#define _AXIS_DESCENDANT_ 272
-#define _AXIS_PARENT_ 273
-#define _AXIS_ATTRIBUTE_ 274
-#define _AXIS_SELF_ 275
-#define _AXIS_DESCENDANT_OR_SELF_ 276
-#define _AXIS_ANCESTOR_ 277
-#define _AXIS_FOLLOWING_SIBLING_ 278
-#define _AXIS_PRECEDING_SIBLING_ 279
-#define _AXIS_FOLLOWING_ 280
-#define _AXIS_PRECEDING_ 281
-#define _AXIS_NAMESPACE_ 282
-#define _AXIS_ANCESTOR_OR_SELF_ 283
-#define _AT_ 284
-#define _CAST_AS_ 285
-#define _TREAT_AS_ 286
-#define _FOR_ 287
-#define _SOME_ 288
-#define _EVERY_ 289
-#define _COMMA_ 290
-#define _LPAR_ 291
-#define _TEXT_LPAR_ 292
-#define _COMMENT_LPAR_ 293
-#define _NODE_LPAR_ 294
-#define _PROCESSING_INSTRUCTION_LPAR_ 295
-#define _ELEMENT_LPAR_ 296
-#define _ATTRIBUTE_LPAR_ 297
-#define _SCHEMA_ELEMENT_LPAR_ 298
-#define _SCHEMA_ATTRIBUTE_LPAR_ 299
-#define _DOCUMENT_NODE_LPAR_ 300
-#define _IF_LPAR_ 301
-#define _QNAME_LPAR_ 302
-#define _RPAR_ 303
-#define _MULTIPLY_ 304
-#define _DIV_ 305
-#define _INTEGER_DIV_ 306
-#define _MOD_ 307
-#define _AND_ 308
-#define _OR_ 309
-#define _RETURN_ 310
-#define _THEN_ 311
-#define _ELSE_ 312
-#define _TO_ 313
-#define _UNION_ 314
-#define _INTERSECT_ 315
-#define _EXCEPT_ 316
-#define _EQUALS_ 317
-#define _IS_ 318
-#define _NOT_EQUALS_ 319
-#define _LT_EQUALS_ 320
-#define _GT_EQUALS_ 321
-#define _LT_ 322
-#define _GT_ 323
-#define _VERTICAL_BAR_ 324
-#define _LT_LT_ 325
-#define _GT_GT_ 326
-#define _FORTRAN_EQ_ 327
-#define _FORTRAN_NE_ 328
-#define _FORTRAN_GT_ 329
-#define _FORTRAN_GE_ 330
-#define _FORTRAN_LT_ 331
-#define _FORTRAN_LE_ 332
-#define _IN_ 333
-#define _SATISFIES_ 334
+#define MYEOF 0
+#define _QNAME_ 258
+#define _FUNCTION_CALL_ 259
+#define _STRING_LITERAL_ 260
+#define _VARIABLE_ 261
+#define _NCNAME_COLON_STAR_ 262
+#define _STAR_COLON_NCNAME_ 263
+#define _NCNAME_ 264
+#define _INTEGER_NUMBER_ 265
+#define _DECIMAL_NUMBER_ 266
+#define _DOUBLE_NUMBER_ 267
+#define _XQUERY_COMMENT_ 268
+#define _XQUERY_WHITESPACE_ 269
+#define _XQUERY_ERROR_ 270
+#define _COMMA_ 271
+#define _RETURN_ 272
+#define _FOR_ 273
+#define _IN_ 274
+#define _DOLLAR_SIGN_ 275
+#define _SOME_ 276
+#define _EVERY_ 277
+#define _SATISFIES_ 278
+#define _IF_ 279
+#define _THEN_ 280
+#define _ELSE_ 281
+#define _OR_ 282
+#define _AND_ 283
+#define _INSTANCE_OF_ 284
+#define _CASTABLE_AS_ 285
+#define _TO_ 286
+#define _PLUS_ 287
+#define _MINUS_ 288
+#define _MULTIPLY_ 289
+#define _DIV_ 290
+#define _INTEGER_DIV_ 291
+#define _MOD_ 292
+#define _UNION_ 293
+#define _VERTICAL_BAR_ 294
+#define _INTERSECT_ 295
+#define _EXCEPT_ 296
+#define _SLASH_ 297
+#define _SLASHSLASH_ 298
+#define _LBRACK_ 299
+#define _RBRACK_ 300
+#define _CAST_AS_ 301
+#define _TREAT_AS_ 302
+#define _EQUALS_ 303
+#define _NOT_EQUALS_ 304
+#define _LT_ 305
+#define _LT_EQUALS_ 306
+#define _GT_ 307
+#define _GT_EQUALS_ 308
+#define _FORTRAN_EQ_ 309
+#define _FORTRAN_NE_ 310
+#define _FORTRAN_LT_ 311
+#define _FORTRAN_LE_ 312
+#define _FORTRAN_GT_ 313
+#define _FORTRAN_GE_ 314
+#define _IS_ 315
+#define _LT_LT_ 316
+#define _GT_GT_ 317
+#define _DOT_ 318
+#define _AT_ 319
+#define _DOT_DOT_ 320
+#define _AXIS_CHILD_ 321
+#define _AXIS_DESCENDANT_ 322
+#define _AXIS_ATTRIBUTE_ 323
+#define _AXIS_SELF_ 324
+#define _AXIS_DESCENDANT_OR_SELF_ 325
+#define _AXIS_PARENT_ 326
+#define _STAR_ 327
+#define _PROCESSING_INSTRUCTION_LPAR_ 328
+#define _COMMENT_LPAR_ 329
+#define _TEXT_LPAR_ 330
+#define _NODE_LPAR_ 331
+#define _LPAR_ 332
+#define _RPAR_ 333
+#define _EMPTY_ 334
 #define _ITEM_ 335
-#define _EMPTY_ 336
-#define _INSTANCE_OF_ 337
-#define _CASTABLE_AS_ 338
-#define _NILLABLE_ 339
-#define _ZERO_OR_ONE_ 340
-#define _ONE_OR_MORE_ 341
-#define _ZERO_OR_MORE_ 342
-#define _VARNAME_ 343
-#define _QNAME_ 344
-#define _NCNAME_ 345
-#define _INTEGER_LITERAL_ 346
-#define _DECIMAL_LITERAL_ 347
-#define _DOUBLE_LITERAL_ 348
+#define _NILLABLE_ 336
+#define _DOCUMENT_NODE_LPAR_ 337
+#define _ATTRIBUTE_LPAR_ 338
+#define _ELEMENT_LPAR_ 339
+#define _AXIS_ANCESTOR_OR_SELF_ 340
+#define _AXIS_ANCESTOR_ 341
+#define _AXIS_FOLLOWING_SIBLING_ 342
+#define _AXIS_FOLLOWING_ 343
+#define _AXIS_PRECEDING_SIBLING_ 344
+#define _AXIS_PRECEDING_ 345
+#define _SCHEMA_ELEMENT_LPAR_ 346
+#define _SCHEMA_ATTRIBUTE_LPAR_ 347
+#define _ZERO_OR_ONE_ 348
+#define _ONE_OR_MORE_ 349
+#define _ZERO_OR_MORE_ 350
+#define _AXIS_NAMESPACE_ 351
+#define _EOF_ 352
 
 
 
 
 /* Copy the first part of user declarations.  */
-#line 14 "XPath2Parser.y"
+#line 14 "xpath.y"
 
 
-#include "../config/xqilla_config.h"
+#if defined(WIN32) && !defined(__CYGWIN__)
+// turn off the warnings "switch statement contains 'default' but no 'case' labels"
+//                       "'yyerrlab1' : unreferenced label"
+#pragma warning(disable : 4065 4102)
+#endif
+
+#include "../lexer/XPathScanner.hpp"
+
 #include <xercesc/util/XercesDefs.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 #include <xercesc/util/XMLString.hpp>
@@ -285,8 +294,6 @@
 #include <xqilla/ast/XQFunctionCall.hpp>
 
 #include <xqilla/utils/XPath2NSUtils.hpp>
-
-#include "../lexer/XPath2Lexer.hpp"
 
 #include <xqilla/axis/NodeTest.hpp>
 
@@ -319,8 +326,14 @@
 
 #include <xqilla/parser/QName.hpp>
 
-#define YYPARSE_PARAM parm
-#define YYLEX_PARAM parm
+#include <xqilla/exceptions/StaticErrorException.hpp>
+
+#ifdef HAVE_CONFIG_H
+#include "../config/xqilla_config.h"
+#endif
+
+#define YYPARSE_PARAM qp
+#define YYDEBUG 1
 #define YYERROR_VERBOSE
 
 // this removes a memory leak occurring when an error is found in the query (we throw an exception from inside
@@ -344,14 +357,14 @@ extern "C"
 void *alloca (size_t);
 #endif
 
-inline VectorOfASTNodes packageArgs(ASTNode *arg1Impl, ASTNode *arg2Impl, XPath2MemoryManager* memMgr);
-void yyerror(const char* s);
+#define QP						((XPath2ParserArgs*)qp)
+#define MEMMGR					(QP->_memMgr)
 
-#include "XPath2ParserControl.hpp"
-#include <xqilla/exceptions/StaticErrorException.hpp>
+#undef yylex
+#define yylex QP->_scanner->yylex
+#undef yyerror
+#define yyerror QP->_scanner->error
 
-#define YYDEBUG 1
-#define MEMMGR      (((XPathParserControl *)parm)->memMgr)
 
 static inline XQNav* getNavigation(ASTNode *possibleNav, XPath2MemoryManager * expr)
 {
@@ -362,6 +375,17 @@ static inline XQNav* getNavigation(ASTNode *possibleNav, XPath2MemoryManager * e
 	nav->addStep(possibleNav);
 	return nav;
 }
+
+static inline VectorOfASTNodes packageArgs(ASTNode *arg1Impl, ASTNode *arg2Impl, XPath2MemoryManager* memMgr)
+{
+	VectorOfASTNodes args=VectorOfASTNodes(2,(ASTNode*)NULL,XQillaAllocator<ASTNode*>(memMgr));
+	args[0]=arg1Impl;
+	args[1]=arg2Impl;
+
+	return args;
+}
+
+namespace XPath2 {
 
 
 
@@ -396,7 +420,7 @@ typedef int YYSTYPE;
 
 
 /* Line 219 of yacc.c.  */
-#line 400 "XPath2Parser.cpp"
+#line 424 "XPath2Parser.cpp"
 
 #if ! defined (YYSIZE_T) && defined (__SIZE_TYPE__)
 # define YYSIZE_T __SIZE_TYPE__
@@ -545,22 +569,22 @@ union yyalloc
 #endif
 
 /* YYFINAL -- State number of the termination state. */
-#define YYFINAL  136
+#define YYFINAL  137
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   498
+#define YYLAST   484
 
 /* YYNTOKENS -- Number of terminals. */
-#define YYNTOKENS  94
+#define YYNTOKENS  98
 /* YYNNTS -- Number of nonterminals. */
 #define YYNNTS  69
 /* YYNRULES -- Number of rules. */
 #define YYNRULES  172
 /* YYNRULES -- Number of states. */
-#define YYNSTATES  265
+#define YYNSTATES  269
 
 /* YYTRANSLATE(YYLEX) -- Bison symbol number corresponding to YYLEX.  */
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   348
+#define YYMAXUTOK   352
 
 #define YYTRANSLATE(YYX)						\
   ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
@@ -602,7 +626,8 @@ static const unsigned char yytranslate[] =
       55,    56,    57,    58,    59,    60,    61,    62,    63,    64,
       65,    66,    67,    68,    69,    70,    71,    72,    73,    74,
       75,    76,    77,    78,    79,    80,    81,    82,    83,    84,
-      85,    86,    87,    88,    89,    90,    91,    92,    93
+      85,    86,    87,    88,    89,    90,    91,    92,    93,    94,
+      95,    96,    97
 };
 
 #if YYDEBUG
@@ -611,101 +636,101 @@ static const unsigned char yytranslate[] =
 static const unsigned short int yyprhs[] =
 {
        0,     0,     3,     4,     6,    10,    12,    14,    16,    18,
-      20,    24,    27,    32,    37,    43,    47,    55,    57,    61,
-      63,    67,    69,    73,    77,    81,    85,    89,    93,    97,
-     101,   105,   109,   113,   117,   121,   125,   129,   131,   135,
-     137,   141,   145,   147,   151,   155,   159,   163,   165,   169,
-     173,   175,   179,   183,   185,   189,   191,   195,   197,   201,
-     203,   207,   209,   212,   215,   217,   219,   222,   225,   227,
-     229,   233,   237,   239,   241,   244,   247,   250,   252,   254,
-     256,   258,   260,   262,   264,   266,   268,   271,   273,   276,
-     278,   280,   282,   284,   286,   288,   290,   292,   294,   296,
-     298,   300,   302,   304,   307,   308,   313,   315,   317,   319,
-     321,   323,   325,   327,   329,   331,   333,   335,   339,   342,
-     344,   347,   351,   353,   357,   359,   362,   365,   367,   369,
-     371,   373,   375,   377,   379,   381,   383,   385,   387,   389,
-     391,   393,   395,   397,   399,   401,   404,   407,   411,   415,
-     418,   421,   425,   429,   432,   435,   439,   445,   447,   449,
-     453,   455,   458,   462,   468,   475,   477,   479,   483,   485,
-     487,   489,   491
+      20,    24,    27,    32,    37,    44,    49,    58,    60,    64,
+      66,    70,    72,    76,    80,    84,    88,    92,    96,   100,
+     104,   108,   112,   116,   120,   124,   128,   132,   134,   138,
+     140,   144,   148,   150,   154,   158,   162,   166,   168,   172,
+     176,   178,   182,   186,   188,   192,   194,   198,   200,   204,
+     206,   210,   212,   215,   218,   220,   222,   225,   228,   230,
+     232,   236,   240,   242,   244,   247,   250,   253,   255,   257,
+     259,   261,   263,   265,   267,   269,   271,   274,   276,   279,
+     281,   283,   285,   287,   289,   291,   293,   295,   297,   299,
+     301,   303,   305,   307,   310,   311,   316,   318,   320,   322,
+     324,   326,   328,   330,   332,   334,   336,   339,   343,   346,
+     348,   351,   355,   357,   361,   363,   366,   369,   371,   373,
+     375,   377,   379,   381,   383,   385,   387,   389,   391,   393,
+     395,   397,   399,   401,   403,   405,   408,   411,   415,   419,
+     422,   425,   429,   433,   436,   439,   443,   449,   451,   453,
+     457,   459,   462,   466,   472,   479,   481,   483,   487,   489,
+     491,   493,   495
 };
 
 /* YYRHS -- A `-1'-separated list of the rules' RHS. */
 static const short int yyrhs[] =
 {
-      95,     0,    -1,    -1,    96,    -1,    96,    35,    97,    -1,
-      97,    -1,    98,    -1,   100,    -1,   102,    -1,   103,    -1,
-      99,    55,    97,    -1,    32,   101,    -1,    33,   101,    79,
-      97,    -1,    34,   101,    79,    97,    -1,   101,    35,    88,
-      78,    97,    -1,    88,    78,    97,    -1,    46,    96,    48,
-      56,    97,    57,    97,    -1,   104,    -1,   103,    54,   104,
-      -1,   105,    -1,   104,    53,   105,    -1,   106,    -1,   106,
-      62,   106,    -1,   106,    64,   106,    -1,   106,    67,   106,
-      -1,   106,    65,   106,    -1,   106,    68,   106,    -1,   106,
-      66,   106,    -1,   106,    72,   106,    -1,   106,    73,   106,
-      -1,   106,    76,   106,    -1,   106,    77,   106,    -1,   106,
-      74,   106,    -1,   106,    75,   106,    -1,   106,    63,   106,
-      -1,   106,    70,   106,    -1,   106,    71,   106,    -1,   107,
-      -1,   107,    58,   107,    -1,   108,    -1,   107,     6,   108,
-      -1,   107,     7,   108,    -1,   109,    -1,   108,    49,   109,
-      -1,   108,    50,   109,    -1,   108,    51,   109,    -1,   108,
-      52,   109,    -1,   110,    -1,   109,    59,   110,    -1,   109,
-      69,   110,    -1,   111,    -1,   110,    60,   111,    -1,   110,
-      61,   111,    -1,   112,    -1,   112,    82,   141,    -1,   113,
-      -1,   113,    31,   141,    -1,   114,    -1,   114,    83,   140,
-      -1,   115,    -1,   115,    30,   140,    -1,   116,    -1,     7,
-     115,    -1,     6,   115,    -1,   117,    -1,    14,    -1,    14,
-     118,    -1,    15,   118,    -1,   118,    -1,   119,    -1,   118,
-      14,   119,    -1,   118,    15,   119,    -1,   120,    -1,   130,
-      -1,   121,   131,    -1,   124,   131,    -1,   122,   127,    -1,
-     123,    -1,    16,    -1,    17,    -1,    19,    -1,    20,    -1,
-      21,    -1,    23,    -1,    25,    -1,    27,    -1,    29,   127,
-      -1,   127,    -1,   125,   127,    -1,   126,    -1,    18,    -1,
-      22,    -1,    24,    -1,    26,    -1,    28,    -1,    12,    -1,
-     145,    -1,   128,    -1,   162,    -1,   129,    -1,     8,    -1,
-       9,    -1,    10,    -1,   132,   131,    -1,    -1,   131,     4,
-      96,     5,    -1,   133,    -1,   135,    -1,   136,    -1,   137,
-      -1,   138,    -1,   134,    -1,    13,    -1,    91,    -1,    92,
-      -1,    93,    -1,    88,    -1,    36,    96,    48,    -1,    36,
-      48,    -1,    11,    -1,    47,    48,    -1,    47,   139,    48,
-      -1,    97,    -1,   139,    35,    97,    -1,   144,    -1,   144,
-       3,    -1,   143,   142,    -1,   143,    -1,    81,    -1,    87,
-      -1,    86,    -1,    85,    -1,   144,    -1,   145,    -1,    80,
-      -1,   162,    -1,   147,    -1,   155,    -1,   151,    -1,   157,
-      -1,   153,    -1,   150,    -1,   149,    -1,   148,    -1,   146,
-      -1,    39,    48,    -1,    45,    48,    -1,    45,   155,    48,
-      -1,    45,   157,    48,    -1,    37,    48,    -1,    38,    48,
-      -1,    40,    13,    48,    -1,    40,    90,    48,    -1,    40,
-      48,    -1,    42,    48,    -1,    42,   152,    48,    -1,    42,
-     152,    35,   161,    48,    -1,   159,    -1,     8,    -1,    44,
-     154,    48,    -1,   159,    -1,    41,    48,    -1,    41,   156,
-      48,    -1,    41,   156,    35,   161,    48,    -1,    41,   156,
-      35,   161,    84,    48,    -1,   160,    -1,     8,    -1,    43,
-     158,    48,    -1,   160,    -1,   162,    -1,   162,    -1,   162,
-      -1,    89,    -1
+      99,     0,    -1,    -1,   100,    -1,   100,    16,   101,    -1,
+     101,    -1,   102,    -1,   104,    -1,   106,    -1,   107,    -1,
+     103,    17,   101,    -1,    18,   105,    -1,    21,   105,    23,
+     101,    -1,    22,   105,    23,   101,    -1,   105,    16,    20,
+       6,    19,   101,    -1,    20,     6,    19,   101,    -1,    24,
+      77,   100,    78,    25,   101,    26,   101,    -1,   108,    -1,
+     107,    27,   108,    -1,   109,    -1,   108,    28,   109,    -1,
+     110,    -1,   110,    48,   110,    -1,   110,    49,   110,    -1,
+     110,    50,   110,    -1,   110,    51,   110,    -1,   110,    52,
+     110,    -1,   110,    53,   110,    -1,   110,    54,   110,    -1,
+     110,    55,   110,    -1,   110,    56,   110,    -1,   110,    57,
+     110,    -1,   110,    58,   110,    -1,   110,    59,   110,    -1,
+     110,    60,   110,    -1,   110,    61,   110,    -1,   110,    62,
+     110,    -1,   111,    -1,   111,    31,   111,    -1,   112,    -1,
+     111,    32,   112,    -1,   111,    33,   112,    -1,   113,    -1,
+     112,    34,   113,    -1,   112,    35,   113,    -1,   112,    36,
+     113,    -1,   112,    37,   113,    -1,   114,    -1,   113,    38,
+     114,    -1,   113,    39,   114,    -1,   115,    -1,   114,    40,
+     115,    -1,   114,    41,   115,    -1,   116,    -1,   116,    29,
+     145,    -1,   117,    -1,   117,    47,   145,    -1,   118,    -1,
+     118,    30,   144,    -1,   119,    -1,   119,    46,   144,    -1,
+     120,    -1,    33,   119,    -1,    32,   119,    -1,   121,    -1,
+      42,    -1,    42,   122,    -1,    43,   122,    -1,   122,    -1,
+     123,    -1,   122,    42,   123,    -1,   122,    43,   123,    -1,
+     124,    -1,   134,    -1,   125,   135,    -1,   128,   135,    -1,
+     126,   131,    -1,   127,    -1,    66,    -1,    67,    -1,    68,
+      -1,    69,    -1,    70,    -1,    87,    -1,    88,    -1,    96,
+      -1,    64,   131,    -1,   131,    -1,   129,   131,    -1,   130,
+      -1,    71,    -1,    86,    -1,    89,    -1,    90,    -1,    85,
+      -1,    65,    -1,   149,    -1,   132,    -1,   166,    -1,   133,
+      -1,    72,    -1,     7,    -1,     8,    -1,   136,   135,    -1,
+      -1,   135,    44,   100,    45,    -1,   137,    -1,   139,    -1,
+     140,    -1,   141,    -1,   142,    -1,   138,    -1,     5,    -1,
+      10,    -1,    11,    -1,    12,    -1,    20,     6,    -1,    77,
+     100,    78,    -1,    77,    78,    -1,    63,    -1,     4,    78,
+      -1,     4,   143,    78,    -1,   101,    -1,   143,    16,   101,
+      -1,   148,    -1,   148,    93,    -1,   147,   146,    -1,   147,
+      -1,    79,    -1,    95,    -1,    94,    -1,    93,    -1,   148,
+      -1,   149,    -1,    80,    -1,   166,    -1,   151,    -1,   159,
+      -1,   155,    -1,   161,    -1,   157,    -1,   154,    -1,   153,
+      -1,   152,    -1,   150,    -1,    76,    78,    -1,    82,    78,
+      -1,    82,   159,    78,    -1,    82,   161,    78,    -1,    75,
+      78,    -1,    74,    78,    -1,    73,     5,    78,    -1,    73,
+       9,    78,    -1,    73,    78,    -1,    83,    78,    -1,    83,
+     156,    78,    -1,    83,   156,    16,   165,    78,    -1,   163,
+      -1,    72,    -1,    92,   158,    78,    -1,   163,    -1,    84,
+      78,    -1,    84,   160,    78,    -1,    84,   160,    16,   165,
+      78,    -1,    84,   160,    16,   165,    81,    78,    -1,   164,
+      -1,    72,    -1,    91,   162,    78,    -1,   164,    -1,   166,
+      -1,   166,    -1,   166,    -1,     3,    -1
 };
 
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const unsigned short int yyrline[] =
 {
-       0,   316,   316,   320,   331,   342,   353,   356,   359,   362,
-     373,   384,   394,   398,   405,   414,   431,   445,   449,   470,
-     474,   504,   508,   512,   516,   520,   524,   528,   532,   536,
-     540,   544,   548,   552,   556,   560,   564,   576,   580,   593,
-     597,   601,   613,   617,   621,   625,   629,   641,   645,   649,
-     661,   665,   669,   681,   685,   696,   699,   710,   714,   725,
-     728,   739,   743,   749,   765,   777,   783,   789,   803,   815,
-     819,   825,   848,   851,   861,   865,   878,   890,   909,   913,
-     917,   921,   925,   929,   933,   937,   949,   957,   979,   987,
-    1002,  1006,  1010,  1014,  1018,  1029,  1044,  1048,  1059,  1065,
-    1077,  1084,  1092,  1108,  1121,  1124,  1137,  1141,  1145,  1149,
-    1153,  1166,  1170,  1191,  1204,  1217,  1238,  1251,  1261,  1274,
-    1286,  1293,  1311,  1316,  1329,  1336,  1351,  1358,  1365,  1377,
-    1380,  1383,  1395,  1398,  1402,  1412,  1431,  1434,  1437,  1440,
-    1443,  1446,  1449,  1452,  1455,  1466,  1480,  1485,  1493,  1509,
-    1522,  1536,  1542,  1548,  1562,  1567,  1572,  1584,  1587,  1599,
-    1611,  1622,  1627,  1632,  1637,  1652,  1655,  1667,  1678,  1688,
-    1697,  1706,  1715
+       0,   330,   330,   334,   345,   356,   367,   370,   373,   376,
+     387,   398,   408,   412,   419,   427,   443,   457,   461,   482,
+     486,   516,   520,   524,   528,   532,   536,   540,   544,   548,
+     552,   556,   560,   564,   568,   572,   576,   588,   592,   605,
+     609,   613,   625,   629,   633,   637,   641,   653,   657,   661,
+     673,   677,   681,   693,   697,   708,   711,   722,   726,   737,
+     740,   751,   755,   761,   777,   789,   795,   801,   815,   827,
+     831,   837,   860,   863,   873,   877,   890,   902,   921,   925,
+     929,   933,   937,   941,   945,   949,   961,   969,   991,   999,
+    1014,  1018,  1022,  1026,  1030,  1041,  1056,  1060,  1071,  1077,
+    1089,  1096,  1103,  1118,  1131,  1134,  1147,  1151,  1155,  1159,
+    1163,  1176,  1180,  1200,  1212,  1224,  1244,  1256,  1266,  1279,
+    1291,  1297,  1314,  1319,  1332,  1339,  1354,  1361,  1368,  1380,
+    1383,  1386,  1398,  1401,  1405,  1415,  1434,  1437,  1440,  1443,
+    1446,  1449,  1452,  1455,  1458,  1469,  1483,  1488,  1496,  1512,
+    1525,  1539,  1544,  1549,  1563,  1568,  1573,  1585,  1588,  1600,
+    1612,  1623,  1628,  1633,  1638,  1653,  1656,  1668,  1679,  1689,
+    1698,  1707,  1716
 };
 #endif
 
@@ -714,36 +739,38 @@ static const unsigned short int yyrline[] =
    First, the terminals, then, starting at YYNTOKENS, nonterminals. */
 static const char *const yytname[] =
 {
-  "$end", "error", "$undefined", "_QUESTION_", "_LBRACK_", "_RBRACK_",
-  "_PLUS_", "_MINUS_", "_STAR_", "_NCNAME_COLON_STAR_",
-  "_STAR_COLON_NCNAME_", "_DOT_", "_DOT_DOT_", "_STRING_LITERAL_",
-  "_SLASH_", "_SLASHSLASH_", "_AXIS_CHILD_", "_AXIS_DESCENDANT_",
-  "_AXIS_PARENT_", "_AXIS_ATTRIBUTE_", "_AXIS_SELF_",
-  "_AXIS_DESCENDANT_OR_SELF_", "_AXIS_ANCESTOR_",
-  "_AXIS_FOLLOWING_SIBLING_", "_AXIS_PRECEDING_SIBLING_",
-  "_AXIS_FOLLOWING_", "_AXIS_PRECEDING_", "_AXIS_NAMESPACE_",
-  "_AXIS_ANCESTOR_OR_SELF_", "_AT_", "_CAST_AS_", "_TREAT_AS_", "_FOR_",
-  "_SOME_", "_EVERY_", "_COMMA_", "_LPAR_", "_TEXT_LPAR_",
-  "_COMMENT_LPAR_", "_NODE_LPAR_", "_PROCESSING_INSTRUCTION_LPAR_",
-  "_ELEMENT_LPAR_", "_ATTRIBUTE_LPAR_", "_SCHEMA_ELEMENT_LPAR_",
-  "_SCHEMA_ATTRIBUTE_LPAR_", "_DOCUMENT_NODE_LPAR_", "_IF_LPAR_",
-  "_QNAME_LPAR_", "_RPAR_", "_MULTIPLY_", "_DIV_", "_INTEGER_DIV_",
-  "_MOD_", "_AND_", "_OR_", "_RETURN_", "_THEN_", "_ELSE_", "_TO_",
-  "_UNION_", "_INTERSECT_", "_EXCEPT_", "_EQUALS_", "_IS_", "_NOT_EQUALS_",
-  "_LT_EQUALS_", "_GT_EQUALS_", "_LT_", "_GT_", "_VERTICAL_BAR_",
-  "_LT_LT_", "_GT_GT_", "_FORTRAN_EQ_", "_FORTRAN_NE_", "_FORTRAN_GT_",
-  "_FORTRAN_GE_", "_FORTRAN_LT_", "_FORTRAN_LE_", "_IN_", "_SATISFIES_",
-  "_ITEM_", "_EMPTY_", "_INSTANCE_OF_", "_CASTABLE_AS_", "_NILLABLE_",
-  "_ZERO_OR_ONE_", "_ONE_OR_MORE_", "_ZERO_OR_MORE_", "_VARNAME_",
-  "_QNAME_", "_NCNAME_", "_INTEGER_LITERAL_", "_DECIMAL_LITERAL_",
-  "_DOUBLE_LITERAL_", "$accept", "_XPath", "_Expr", "_ExprSingle",
-  "_ForExpr", "_SimpleForClause", "_QuantifiedExpr",
-  "_VariableBindingList", "_IfExpr", "_OrExpr", "_AndExpr",
-  "_ComparisonExpr", "_RangeExpr", "_AdditiveExpr", "_MultiplicativeExpr",
-  "_UnionExpr", "_IntersectExceptExpr", "_InstanceOfExpr", "_TreatExpr",
-  "_CastableExpr", "_CastExpr", "_UnaryExpr", "_ValueExpr", "_PathExpr",
-  "_RelativePathExpr", "_StepExpr", "_AxisStep", "_ForwardStep",
-  "_ForwardAxis", "_AbbrevForwardStep", "_ReverseStep", "_ReverseAxis",
+  "\"<end of file>\"", "error", "$undefined", "\"<qualified name>\"",
+  "\"<function>(\"", "\"'...'\"", "\"<variable name>\"", "\"<ns>:*\"",
+  "\"*:<local name>\"", "\"<local name>\"", "\"<integer number>\"",
+  "\"<decimal number>\"", "\"<double number>\"", "\"(: comment :)\"",
+  "_XQUERY_WHITESPACE_", "_XQUERY_ERROR_", "\",\"", "\"return\"",
+  "\"for\"", "\"in\"", "\"$\"", "\"some\"", "\"every\"", "\"satisfies\"",
+  "\"if\"", "\"then\"", "\"else\"", "\"or\"", "\"and\"", "\"instance of\"",
+  "\"castable as\"", "\"to\"", "\"+ (arithmetic operator)\"",
+  "\"- (arithmetic operator)\"", "\"* (arithmetic operator)\"", "\"div\"",
+  "\"idiv\"", "\"mod\"", "\"union\"", "\"|\"", "\"intersect\"",
+  "\"except\"", "\"/\"", "\"//\"", "\"[\"", "\"]\"", "\"cast as\"",
+  "\"treat as\"", "\"= (comparison operator)\"", "\"!=\"",
+  "\"< (comparison operator)\"", "\"<=\"", "\"> (comparison operator)\"",
+  "\">=\"", "\"eq\"", "\"ne\"", "\"lt\"", "\"le\"", "\"gt\"", "\"ge\"",
+  "\"is\"", "\"<<\"", "\">>\"", "\".\"", "\"@\"", "\"..\"", "\"child::\"",
+  "\"descendant::\"", "\"attribute::\"", "\"self::\"",
+  "\"descendant-or-self::\"", "\"parent::\"", "\"* (wildcard)\"",
+  "\"processing-instruction(\"", "\"comment(\"", "\"text(\"", "\"node(\"",
+  "\"(\"", "\")\"", "\"empty-sequence()\"", "\"item()\"", "\"?\"",
+  "\"document-node(\"", "\"attribute(\"", "\"element(\"",
+  "\"ancestor-or-self::\"", "\"ancestor::\"", "\"following-sibling::\"",
+  "\"following::\"", "\"preceding-sibling::\"", "\"preceding::\"",
+  "\"schema-element(\"", "\"schema-attribute(\"", "\"? (occurrence)\"",
+  "\"+ (occurrence)\"", "\"* (occurrence)\"", "\"namespace::\"", "_EOF_",
+  "$accept", "_XPath", "_Expr", "_ExprSingle", "_ForExpr",
+  "_SimpleForClause", "_QuantifiedExpr", "_VariableBindingList", "_IfExpr",
+  "_OrExpr", "_AndExpr", "_ComparisonExpr", "_RangeExpr", "_AdditiveExpr",
+  "_MultiplicativeExpr", "_UnionExpr", "_IntersectExceptExpr",
+  "_InstanceOfExpr", "_TreatExpr", "_CastableExpr", "_CastExpr",
+  "_UnaryExpr", "_ValueExpr", "_PathExpr", "_RelativePathExpr",
+  "_StepExpr", "_AxisStep", "_ForwardStep", "_ForwardAxis",
+  "_AbbrevForwardStep", "_ReverseStep", "_ReverseAxis",
   "_AbbrevReverseStep", "_NodeTest", "_NameTest", "_Wildcard",
   "_FilterExpr", "_PredicateList", "_PrimaryExpr", "_Literal",
   "_NumericLiteral", "_VarRef", "_ParenthesizedExpr", "_ContextItemExpr",
@@ -771,38 +798,38 @@ static const unsigned short int yytoknum[] =
      315,   316,   317,   318,   319,   320,   321,   322,   323,   324,
      325,   326,   327,   328,   329,   330,   331,   332,   333,   334,
      335,   336,   337,   338,   339,   340,   341,   342,   343,   344,
-     345,   346,   347,   348
+     345,   346,   347,   348,   349,   350,   351,   352
 };
 # endif
 
 /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const unsigned char yyr1[] =
 {
-       0,    94,    95,    95,    96,    96,    97,    97,    97,    97,
-      98,    99,   100,   100,   101,   101,   102,   103,   103,   104,
-     104,   105,   105,   105,   105,   105,   105,   105,   105,   105,
-     105,   105,   105,   105,   105,   105,   105,   106,   106,   107,
-     107,   107,   108,   108,   108,   108,   108,   109,   109,   109,
-     110,   110,   110,   111,   111,   112,   112,   113,   113,   114,
-     114,   115,   115,   115,   116,   117,   117,   117,   117,   118,
-     118,   118,   119,   119,   120,   120,   121,   121,   122,   122,
-     122,   122,   122,   122,   122,   122,   123,   123,   124,   124,
-     125,   125,   125,   125,   125,   126,   127,   127,   128,   128,
-     129,   129,   129,   130,   131,   131,   132,   132,   132,   132,
-     132,   133,   133,   134,   134,   134,   135,   136,   136,   137,
-     138,   138,   139,   139,   140,   140,   141,   141,   141,   142,
-     142,   142,   143,   143,   143,   144,   145,   145,   145,   145,
-     145,   145,   145,   145,   145,   146,   147,   147,   147,   148,
-     149,   150,   150,   150,   151,   151,   151,   152,   152,   153,
-     154,   155,   155,   155,   155,   156,   156,   157,   158,   159,
-     160,   161,   162
+       0,    98,    99,    99,   100,   100,   101,   101,   101,   101,
+     102,   103,   104,   104,   105,   105,   106,   107,   107,   108,
+     108,   109,   109,   109,   109,   109,   109,   109,   109,   109,
+     109,   109,   109,   109,   109,   109,   109,   110,   110,   111,
+     111,   111,   112,   112,   112,   112,   112,   113,   113,   113,
+     114,   114,   114,   115,   115,   116,   116,   117,   117,   118,
+     118,   119,   119,   119,   120,   121,   121,   121,   121,   122,
+     122,   122,   123,   123,   124,   124,   125,   125,   126,   126,
+     126,   126,   126,   126,   126,   126,   127,   127,   128,   128,
+     129,   129,   129,   129,   129,   130,   131,   131,   132,   132,
+     133,   133,   133,   134,   135,   135,   136,   136,   136,   136,
+     136,   137,   137,   138,   138,   138,   139,   140,   140,   141,
+     142,   142,   143,   143,   144,   144,   145,   145,   145,   146,
+     146,   146,   147,   147,   147,   148,   149,   149,   149,   149,
+     149,   149,   149,   149,   149,   150,   151,   151,   151,   152,
+     153,   154,   154,   154,   155,   155,   155,   156,   156,   157,
+     158,   159,   159,   159,   159,   160,   160,   161,   162,   163,
+     164,   165,   166
 };
 
 /* YYR2[YYN] -- Number of symbols composing right hand side of rule YYN.  */
 static const unsigned char yyr2[] =
 {
        0,     2,     0,     1,     3,     1,     1,     1,     1,     1,
-       3,     2,     4,     4,     5,     3,     7,     1,     3,     1,
+       3,     2,     4,     4,     6,     4,     8,     1,     3,     1,
        3,     1,     3,     3,     3,     3,     3,     3,     3,     3,
        3,     3,     3,     3,     3,     3,     3,     1,     3,     1,
        3,     3,     1,     3,     3,     3,     3,     1,     3,     3,
@@ -812,7 +839,7 @@ static const unsigned char yyr2[] =
        1,     1,     1,     1,     1,     1,     2,     1,     2,     1,
        1,     1,     1,     1,     1,     1,     1,     1,     1,     1,
        1,     1,     1,     2,     0,     4,     1,     1,     1,     1,
-       1,     1,     1,     1,     1,     1,     1,     3,     2,     1,
+       1,     1,     1,     1,     1,     1,     2,     3,     2,     1,
        2,     3,     1,     3,     1,     2,     2,     1,     1,     1,
        1,     1,     1,     1,     1,     1,     1,     1,     1,     1,
        1,     1,     1,     1,     1,     2,     2,     3,     3,     2,
@@ -826,91 +853,91 @@ static const unsigned char yyr2[] =
    means the default is an error.  */
 static const unsigned char yydefact[] =
 {
-       2,     0,     0,   100,   101,   102,   119,    95,   112,    65,
-       0,    78,    79,    90,    80,    81,    82,    91,    83,    92,
-      84,    93,    85,    94,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-     116,   172,   113,   114,   115,     0,     3,     5,     6,     0,
+       2,   172,     0,   112,   101,   102,   113,   114,   115,     0,
+       0,     0,     0,     0,     0,     0,    65,     0,   119,     0,
+      95,    78,    79,    80,    81,    82,    90,   100,     0,     0,
+       0,     0,     0,     0,     0,     0,    94,    91,    83,    84,
+      92,    93,     0,     0,    85,     0,     3,     5,     6,     0,
        7,     8,     9,    17,    19,    21,    37,    39,    42,    47,
       50,    53,    55,    57,    59,    61,    64,    68,    69,    72,
      104,     0,    77,   104,     0,    89,    87,    97,    99,    73,
      104,   106,   111,   107,   108,   109,   110,    96,   144,   136,
-     143,   142,   141,   138,   140,   137,   139,    98,    63,    62,
-      66,    67,    86,     0,    11,     0,     0,   118,     0,   149,
-     150,   145,     0,   153,     0,   166,   161,     0,   165,   170,
-     158,   154,     0,   157,   169,     0,   168,     0,   160,   146,
-       0,     0,     0,   120,   122,     0,     1,     0,     0,     0,
+     143,   142,   141,   138,   140,   137,   139,    98,   120,   122,
+       0,     0,    11,   116,     0,     0,     0,    63,    62,    66,
+      67,    86,     0,     0,   153,   150,   149,   145,   118,     0,
+     146,     0,     0,   158,   154,     0,   157,   169,   166,   161,
+       0,   165,   170,     0,   168,     0,   160,     1,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,    74,    76,    75,    88,   103,     0,     0,
-       0,     0,   117,   151,   152,     0,   162,     0,   155,   167,
-     159,   147,   148,     0,     0,   121,     4,    10,    18,    20,
-      22,    34,    23,    25,    27,    24,    26,    35,    36,    28,
-      29,    32,    33,    30,    31,    40,    41,    38,    43,    44,
-      45,    46,    48,    49,    51,    52,   134,   128,    54,   127,
-     132,   133,   135,    56,    58,   124,    60,    70,    71,     0,
-      15,     0,    12,    13,     0,   171,     0,     0,   123,   131,
-     130,   129,   126,   125,     0,     0,   163,     0,   156,     0,
-     105,    14,   164,     0,    16
+       0,     0,     0,     0,    74,    76,    75,    88,   103,     0,
+     121,     0,     0,     0,     0,     0,   151,   152,   117,   147,
+     148,     0,   155,     0,   162,   167,   159,     4,    10,    18,
+      20,    22,    23,    24,    25,    26,    27,    28,    29,    30,
+      31,    32,    33,    34,    35,    36,    38,    40,    41,    43,
+      44,    45,    46,    48,    49,    51,    52,   128,   134,    54,
+     127,   132,   133,   135,    56,    58,   124,    60,    70,    71,
+       0,   123,     0,     0,    12,    13,     0,     0,   171,     0,
+     131,   130,   129,   126,   125,     0,    15,     0,     0,   156,
+     163,     0,   105,     0,     0,   164,    14,     0,    16
 };
 
 /* YYDEFGOTO[NTERM-NUM]. */
 static const short int yydefgoto[] =
 {
-      -1,    45,    46,    47,    48,    49,    50,   104,    51,    52,
+      -1,    45,    46,    47,    48,    49,    50,   102,    51,    52,
       53,    54,    55,    56,    57,    58,    59,    60,    61,    62,
       63,    64,    65,    66,    67,    68,    69,    70,    71,    72,
-      73,    74,    75,    76,    77,    78,    79,   173,    80,    81,
-      82,    83,    84,    85,    86,   135,   234,   228,   252,   229,
-     230,    87,    88,    89,    90,    91,    92,    93,   122,    94,
-     127,    95,   117,    96,   125,   123,   118,   244,    97
+      73,    74,    75,    76,    77,    78,    79,   174,    80,    81,
+      82,    83,    84,    85,    86,   100,   235,   229,   253,   230,
+     231,    87,    88,    89,    90,    91,    92,    93,   125,    94,
+     135,    95,   130,    96,   133,   126,   131,   247,    97
 };
 
 /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
    STATE-NUM.  */
-#define YYPACT_NINF -45
+#define YYPACT_NINF -68
 static const short int yypact[] =
 {
-     307,   365,   365,   -45,   -45,   -45,   -45,   -45,   -45,   405,
-     405,   -45,   -45,   -45,   -45,   -45,   -45,   -45,   -45,   -45,
-     -45,   -45,   -45,   -45,    69,   -23,   -23,   -23,    12,    20,
-      22,    75,    34,    -6,    -5,     7,     7,    54,   307,   219,
-     -45,   -45,   -45,   -45,   -45,   138,   110,   -45,   -45,    85,
-     -45,   -45,    98,   112,   -45,   105,     3,   -44,    61,    13,
-     -45,    81,   143,   121,   177,   -45,   -45,   107,   -45,   -45,
-     -45,    69,   -45,   -45,    69,   -45,   -45,   -45,   -45,   -45,
-     -45,   -45,   -45,   -45,   -45,   -45,   -45,   -45,   -45,   -45,
-     -45,   -45,   -45,   -45,   -45,   -45,   -45,   -45,   -45,   -45,
-     107,   107,   -45,   131,   175,    36,    37,   -45,   -31,   -45,
-     -45,   -45,   163,   -45,   165,   -45,   -45,    27,   -45,   -45,
-     -45,   -45,    32,   -45,   -45,   166,   -45,   167,   -45,   -45,
-     169,   170,    83,   -45,   -45,    84,   -45,   307,   307,   365,
-     365,   365,   365,   365,   365,   365,   365,   365,   365,   365,
-     365,   365,   365,   365,   365,   365,   365,   365,   365,   365,
-     365,   365,   365,   365,   365,   365,   365,    48,    48,     7,
-       7,   405,   405,   215,   -45,   215,   -45,   215,   307,   132,
-     307,   307,   -45,   -45,   -45,     7,   -45,     7,   -45,   -45,
-     -45,   -45,   -45,   193,   307,   -45,   -45,   -45,   112,   -45,
-     -45,   -45,   -45,   -45,   -45,   -45,   -45,   -45,   -45,   -45,
-     -45,   -45,   -45,   -45,   -45,   -44,   -44,   137,    61,    61,
-      61,    61,    13,    13,   -45,   -45,   -45,   -45,   -45,    40,
-     -45,   -45,   -45,   -45,   -45,   218,   -45,   -45,   -45,   307,
-     -45,   144,   -45,   -45,    33,   -45,   202,   307,   -45,   -45,
-     -45,   -45,   -45,   -45,    59,   307,   -45,   206,   -45,   211,
-     -45,   -45,   -45,   307,   -45
+     242,   -68,    13,   -68,   -68,   -68,   -68,   -68,   -68,    10,
+       4,    10,    10,   -28,   332,   332,   373,   373,   -68,    40,
+     -68,   -68,   -68,   -68,   -68,   -68,   -68,   -68,    48,   -26,
+     -24,    32,   147,   -52,    39,    47,   -68,   -68,   -68,   -68,
+     -68,   -68,   103,   103,   -68,   118,   133,   -68,   -68,   136,
+     -68,   -68,   108,   128,   -68,   422,    61,    24,   -11,    22,
+     -68,   135,   113,   132,   120,   -68,   -68,    30,   -68,   -68,
+     -68,    40,   -68,   -68,    40,   -68,   -68,   -68,   -68,   -68,
+     -68,   -68,   -68,   -68,   -68,   -68,   -68,   -68,   -68,   -68,
+     -68,   -68,   -68,   -68,   -68,   -68,   -68,   -68,   -68,   -68,
+     -14,   164,   156,   -68,    -1,    28,   242,   -68,   -68,    30,
+      30,   -68,   100,   107,   -68,   -68,   -68,   -68,   -68,   -13,
+     -68,   109,   110,   -68,   -68,   -10,   -68,   -68,   -68,   -68,
+      -9,   -68,   -68,   114,   -68,   115,   -68,   -68,   242,   242,
+     332,   332,   332,   332,   332,   332,   332,   332,   332,   332,
+     332,   332,   332,   332,   332,   332,   332,   332,   332,   332,
+     332,   332,   332,   332,   332,   332,   332,   332,   197,   197,
+     103,   103,   373,   373,   142,   -68,   142,   -68,   142,   242,
+     -68,   172,   174,   242,   242,    -8,   -68,   -68,   -68,   -68,
+     -68,   103,   -68,   103,   -68,   -68,   -68,   -68,   -68,   128,
+     -68,   -68,   -68,   -68,   -68,   -68,   -68,   -68,   -68,   -68,
+     -68,   -68,   -68,   -68,   -68,   -68,     8,    24,    24,   -11,
+     -11,   -11,   -11,    22,    22,   -68,   -68,   -68,   -68,   -68,
+      49,   -68,   -68,   -68,   -68,   -68,   102,   -68,   -68,   -68,
+     242,   -68,   242,   190,   -68,   -68,   173,   121,   -68,   -67,
+     -68,   -68,   -68,   -68,   -68,    -7,   -68,   178,   242,   -68,
+     -68,   123,   -68,   242,   176,   -68,   -68,   242,   -68
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const short int yypgoto[] =
 {
-     -45,   -45,   -27,   -39,   -45,   -45,   -45,   124,   -45,   -45,
-     130,   133,    42,    65,    -3,   -26,    -7,    35,   -45,   -45,
-     -45,   158,   -45,   -45,   152,    31,   -45,   -45,   -45,   -45,
-     -45,   -45,   -45,    -8,   -45,   -45,   -45,    -4,   -45,   -45,
-     -45,   -45,   -45,   -45,   -45,   -45,   100,   103,   -45,   -45,
-      29,    38,   -45,   -45,   -45,   -45,   -45,   -45,   -45,   -45,
-     -45,   235,   -45,   237,   -45,   239,   241,    90,   -21
+     -68,   -68,   -31,    -2,   -68,   -68,   -68,    55,   -68,   -68,
+      63,    64,   148,    50,   -51,   -33,   -19,   -46,   -68,   -68,
+     -68,   119,   -68,   -68,   131,     1,   -68,   -68,   -68,   -68,
+     -68,   -68,   -68,     0,   -68,   -68,   -68,   -44,   -68,   -68,
+     -68,   -68,   -68,   -68,   -68,   -68,    33,    37,   -68,   -68,
+       5,    15,   -68,   -68,   -68,   -68,   -68,   -68,   -68,   -68,
+     -68,   175,   -68,   193,   -68,   184,   186,    51,   -30
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]].  What to do in state STATE-NUM.  If
@@ -920,143 +947,141 @@ static const short int yypgoto[] =
 #define YYTABLE_NINF -1
 static const unsigned short int yytable[] =
 {
-     134,   108,   115,   120,   137,   159,   160,   161,   162,   156,
-     157,   132,   119,   124,   119,   124,   102,   182,     1,     2,
-       3,     4,     5,     6,     7,     8,     9,    10,    11,    12,
-      13,    14,    15,    16,    17,    18,    19,    20,    21,    22,
-      23,    24,   116,   121,    25,    26,    27,   112,    28,    29,
-      30,    31,    32,    33,    34,    35,    36,    37,    38,    39,
-     107,   158,   185,   174,   260,   103,   176,   187,   109,   175,
-     110,   179,   179,   165,   166,   186,   177,     3,     4,     5,
-     188,   256,   113,    41,    41,    29,    30,    31,    32,    33,
-      34,    35,    36,    37,   137,    33,    41,    35,   196,   197,
-      40,    41,   129,    42,    43,    44,    29,    30,    31,    32,
-      33,    34,    35,    36,    37,   180,   181,   257,   137,   194,
-     163,   171,   172,   111,   114,   249,   250,   251,   226,   227,
-     164,   193,   195,   218,   219,   220,   221,    41,   136,   240,
-     138,   242,   243,   156,   157,   137,   232,   232,   232,   232,
-     105,   106,   139,   215,   216,   248,   222,   223,    41,    98,
-      99,   100,   101,   167,   245,   140,   245,   141,   142,   143,
-     144,   145,   146,   147,   168,   148,   149,   150,   151,   152,
-     153,   154,   155,   200,   201,   202,   203,   204,   205,   206,
-     207,   208,   209,   210,   211,   212,   213,   214,   235,   235,
-     224,   225,   237,   238,   169,   231,   231,   170,   259,   178,
-     179,   183,   254,   184,   189,   190,   261,   191,   192,   239,
-     241,   253,   255,   217,   264,     1,     2,     3,     4,     5,
-       6,     7,     8,     9,    10,    11,    12,    13,    14,    15,
-      16,    17,    18,    19,    20,    21,    22,    23,    24,   247,
-     258,    25,    26,    27,   262,    28,    29,    30,    31,    32,
-      33,    34,    35,    36,    37,    38,    39,   133,   263,   198,
-     236,   233,   130,   199,   131,   128,   126,   246,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,    40,    41,     0,
-      42,    43,    44,     1,     2,     3,     4,     5,     6,     7,
-       8,     9,    10,    11,    12,    13,    14,    15,    16,    17,
-      18,    19,    20,    21,    22,    23,    24,     0,     0,    25,
-      26,    27,     0,    28,    29,    30,    31,    32,    33,    34,
-      35,    36,    37,    38,    39,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     1,     2,     3,     4,     5,     6,     7,     8,     9,
-      10,    11,    12,    13,    14,    15,    16,    17,    18,    19,
-      20,    21,    22,    23,    24,    40,    41,     0,    42,    43,
-      44,    28,    29,    30,    31,    32,    33,    34,    35,    36,
-      37,     0,    39,     3,     4,     5,     6,     7,     8,     0,
-       0,    11,    12,    13,    14,    15,    16,    17,    18,    19,
-      20,    21,    22,    23,    24,     0,     0,     0,     0,     0,
-       0,    28,    29,    30,    31,    32,    33,    34,    35,    36,
-      37,     0,    39,    40,    41,     0,    42,    43,    44,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,    40,    41,     0,    42,    43,    44
+      99,   119,   179,   138,   127,   132,   191,   193,   138,   138,
+     103,   260,   132,   127,   261,   182,     1,     2,     3,   111,
+       4,     5,   183,     6,     7,     8,   120,   164,   165,   176,
+     101,     9,    35,    10,    11,    12,   178,    13,   262,    42,
+     158,   159,     1,     1,   182,    14,    15,     4,     5,   106,
+       1,   184,   115,   112,   116,    16,    17,   113,   160,   161,
+     162,   163,   166,   167,   180,   188,   104,   105,   192,   194,
+     246,   175,   172,   173,   177,   185,    18,    19,    20,    21,
+      22,    23,    24,    25,    26,    27,    28,    29,    30,    31,
+      32,    98,   157,   158,   159,    33,    34,    35,    36,    37,
+      38,    39,    40,    41,    42,    43,     1,   217,   218,    44,
+     117,   123,    27,    28,    29,    30,    31,   124,   137,   128,
+     225,   226,    33,    34,    35,   129,   114,   219,   220,   221,
+     222,    42,    43,   107,   108,   140,   197,   198,   233,   233,
+     233,   233,   250,   251,   252,   223,   224,   109,   110,   138,
+       1,     2,     3,   139,     4,     5,   141,     6,     7,     8,
+     169,   248,   170,   248,   168,     9,   171,    10,    11,    12,
+     181,    13,   182,   238,   239,   236,   236,   241,   186,    14,
+      15,   244,   245,   232,   232,   187,   240,   189,   190,    16,
+      17,   242,   195,   196,   243,   254,   257,   263,   258,   259,
+       1,   265,   267,   199,   237,   200,   234,   216,   121,   255,
+      18,    19,    20,    21,    22,    23,    24,    25,    26,    27,
+      28,    29,    30,    31,    32,   118,   122,   136,   134,    33,
+      34,    35,    36,    37,    38,    39,    40,    41,    42,    43,
+     256,     0,     0,    44,   249,     1,     2,     3,     0,     4,
+       5,     0,     6,     7,     8,     0,   264,     0,     0,     0,
+       9,   266,    10,    11,    12,   268,    13,     0,     0,     0,
+      28,    29,    30,    31,    14,    15,   227,   228,     0,    33,
+      34,    35,     0,     0,    16,    17,     0,     0,    42,    43,
+     201,   202,   203,   204,   205,   206,   207,   208,   209,   210,
+     211,   212,   213,   214,   215,    18,    19,    20,    21,    22,
+      23,    24,    25,    26,    27,    28,    29,    30,    31,    32,
+       0,     0,     0,     0,    33,    34,    35,    36,    37,    38,
+      39,    40,    41,    42,    43,     1,     2,     3,    44,     4,
+       5,     0,     6,     7,     8,     0,     0,     0,     0,     0,
+       0,     0,    10,     0,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,    14,    15,     0,     0,     0,     0,
+       0,     0,     0,     0,    16,    17,     1,     2,     3,     0,
+       4,     5,     0,     6,     7,     8,     0,     0,     0,     0,
+       0,     0,     0,    10,     0,    18,    19,    20,    21,    22,
+      23,    24,    25,    26,    27,    28,    29,    30,    31,    32,
+       0,     0,     0,     0,    33,    34,    35,    36,    37,    38,
+      39,    40,    41,    42,    43,     0,     0,     0,    44,     0,
+       0,     0,     0,     0,     0,     0,    18,    19,    20,    21,
+      22,    23,    24,    25,    26,    27,    28,    29,    30,    31,
+      32,     0,     0,     0,     0,    33,    34,    35,    36,    37,
+      38,    39,    40,    41,    42,    43,     0,     0,     0,    44,
+     142,   143,   144,   145,   146,   147,   148,   149,   150,   151,
+     152,   153,   154,   155,   156
 };
 
 static const short int yycheck[] =
 {
-      39,    28,     8,     8,    35,    49,    50,    51,    52,     6,
-       7,    38,    33,    34,    35,    36,    24,    48,     6,     7,
-       8,     9,    10,    11,    12,    13,    14,    15,    16,    17,
-      18,    19,    20,    21,    22,    23,    24,    25,    26,    27,
-      28,    29,    48,    48,    32,    33,    34,    13,    36,    37,
-      38,    39,    40,    41,    42,    43,    44,    45,    46,    47,
-      48,    58,    35,    71,     5,    88,    74,    35,    48,    73,
-      48,    35,    35,    60,    61,    48,    80,     8,     9,    10,
-      48,    48,    48,    89,    89,    37,    38,    39,    40,    41,
-      42,    43,    44,    45,    35,    41,    89,    43,   137,   138,
-      88,    89,    48,    91,    92,    93,    37,    38,    39,    40,
-      41,    42,    43,    44,    45,    79,    79,    84,    35,    35,
-      59,    14,    15,    48,    90,    85,    86,    87,    80,    81,
-      69,    48,    48,   159,   160,   161,   162,    89,     0,   178,
-      55,   180,   181,     6,     7,    35,   167,   168,   169,   170,
-      26,    27,    54,   156,   157,   194,   163,   164,    89,     1,
-       2,     9,    10,    82,   185,    53,   187,    62,    63,    64,
-      65,    66,    67,    68,    31,    70,    71,    72,    73,    74,
-      75,    76,    77,   141,   142,   143,   144,   145,   146,   147,
-     148,   149,   150,   151,   152,   153,   154,   155,   169,   170,
-     165,   166,   171,   172,    83,   167,   168,    30,   247,    78,
-      35,    48,   239,    48,    48,    48,   255,    48,    48,     4,
-      88,     3,    78,   158,   263,     6,     7,     8,     9,    10,
-      11,    12,    13,    14,    15,    16,    17,    18,    19,    20,
-      21,    22,    23,    24,    25,    26,    27,    28,    29,    56,
-      48,    32,    33,    34,    48,    36,    37,    38,    39,    40,
-      41,    42,    43,    44,    45,    46,    47,    48,    57,   139,
-     170,   168,    37,   140,    37,    36,    35,   187,    -1,    -1,
-      -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
-      -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
-      -1,    -1,    -1,    -1,    -1,    -1,    -1,    88,    89,    -1,
-      91,    92,    93,     6,     7,     8,     9,    10,    11,    12,
-      13,    14,    15,    16,    17,    18,    19,    20,    21,    22,
-      23,    24,    25,    26,    27,    28,    29,    -1,    -1,    32,
-      33,    34,    -1,    36,    37,    38,    39,    40,    41,    42,
-      43,    44,    45,    46,    47,    -1,    -1,    -1,    -1,    -1,
-      -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
-      -1,     6,     7,     8,     9,    10,    11,    12,    13,    14,
-      15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
-      25,    26,    27,    28,    29,    88,    89,    -1,    91,    92,
-      93,    36,    37,    38,    39,    40,    41,    42,    43,    44,
-      45,    -1,    47,     8,     9,    10,    11,    12,    13,    -1,
-      -1,    16,    17,    18,    19,    20,    21,    22,    23,    24,
-      25,    26,    27,    28,    29,    -1,    -1,    -1,    -1,    -1,
-      -1,    36,    37,    38,    39,    40,    41,    42,    43,    44,
-      45,    -1,    47,    88,    89,    -1,    91,    92,    93,    -1,
-      -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
-      -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
-      -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
-      -1,    -1,    -1,    88,    89,    -1,    91,    92,    93
+       2,    32,    16,    16,    34,    35,    16,    16,    16,    16,
+       6,    78,    42,    43,    81,    16,     3,     4,     5,    19,
+       7,     8,    23,    10,    11,    12,    78,    38,    39,    73,
+      20,    18,    84,    20,    21,    22,    80,    24,    45,    91,
+      32,    33,     3,     3,    16,    32,    33,     7,     8,    77,
+       3,    23,    78,     5,    78,    42,    43,     9,    34,    35,
+      36,    37,    40,    41,    78,    78,    11,    12,    78,    78,
+      78,    71,    42,    43,    74,   106,    63,    64,    65,    66,
+      67,    68,    69,    70,    71,    72,    73,    74,    75,    76,
+      77,    78,    31,    32,    33,    82,    83,    84,    85,    86,
+      87,    88,    89,    90,    91,    92,     3,   158,   159,    96,
+      78,    72,    72,    73,    74,    75,    76,    78,     0,    72,
+     166,   167,    82,    83,    84,    78,    78,   160,   161,   162,
+     163,    91,    92,    14,    15,    27,   138,   139,   168,   169,
+     170,   171,    93,    94,    95,   164,   165,    16,    17,    16,
+       3,     4,     5,    17,     7,     8,    28,    10,    11,    12,
+      47,   191,    30,   193,    29,    18,    46,    20,    21,    22,
+       6,    24,    16,   172,   173,   170,   171,   179,    78,    32,
+      33,   183,   184,   168,   169,    78,    44,    78,    78,    42,
+      43,    19,    78,    78,    20,    93,     6,    19,    25,    78,
+       3,    78,    26,   140,   171,   141,   169,   157,    33,   240,
+      63,    64,    65,    66,    67,    68,    69,    70,    71,    72,
+      73,    74,    75,    76,    77,    78,    33,    43,    42,    82,
+      83,    84,    85,    86,    87,    88,    89,    90,    91,    92,
+     242,    -1,    -1,    96,   193,     3,     4,     5,    -1,     7,
+       8,    -1,    10,    11,    12,    -1,   258,    -1,    -1,    -1,
+      18,   263,    20,    21,    22,   267,    24,    -1,    -1,    -1,
+      73,    74,    75,    76,    32,    33,    79,    80,    -1,    82,
+      83,    84,    -1,    -1,    42,    43,    -1,    -1,    91,    92,
+     142,   143,   144,   145,   146,   147,   148,   149,   150,   151,
+     152,   153,   154,   155,   156,    63,    64,    65,    66,    67,
+      68,    69,    70,    71,    72,    73,    74,    75,    76,    77,
+      -1,    -1,    -1,    -1,    82,    83,    84,    85,    86,    87,
+      88,    89,    90,    91,    92,     3,     4,     5,    96,     7,
+       8,    -1,    10,    11,    12,    -1,    -1,    -1,    -1,    -1,
+      -1,    -1,    20,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
+      -1,    -1,    -1,    -1,    32,    33,    -1,    -1,    -1,    -1,
+      -1,    -1,    -1,    -1,    42,    43,     3,     4,     5,    -1,
+       7,     8,    -1,    10,    11,    12,    -1,    -1,    -1,    -1,
+      -1,    -1,    -1,    20,    -1,    63,    64,    65,    66,    67,
+      68,    69,    70,    71,    72,    73,    74,    75,    76,    77,
+      -1,    -1,    -1,    -1,    82,    83,    84,    85,    86,    87,
+      88,    89,    90,    91,    92,    -1,    -1,    -1,    96,    -1,
+      -1,    -1,    -1,    -1,    -1,    -1,    63,    64,    65,    66,
+      67,    68,    69,    70,    71,    72,    73,    74,    75,    76,
+      77,    -1,    -1,    -1,    -1,    82,    83,    84,    85,    86,
+      87,    88,    89,    90,    91,    92,    -1,    -1,    -1,    96,
+      48,    49,    50,    51,    52,    53,    54,    55,    56,    57,
+      58,    59,    60,    61,    62
 };
 
 /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
    symbol of state STATE-NUM.  */
 static const unsigned char yystos[] =
 {
-       0,     6,     7,     8,     9,    10,    11,    12,    13,    14,
-      15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
-      25,    26,    27,    28,    29,    32,    33,    34,    36,    37,
-      38,    39,    40,    41,    42,    43,    44,    45,    46,    47,
-      88,    89,    91,    92,    93,    95,    96,    97,    98,    99,
-     100,   102,   103,   104,   105,   106,   107,   108,   109,   110,
-     111,   112,   113,   114,   115,   116,   117,   118,   119,   120,
-     121,   122,   123,   124,   125,   126,   127,   128,   129,   130,
-     132,   133,   134,   135,   136,   137,   138,   145,   146,   147,
-     148,   149,   150,   151,   153,   155,   157,   162,   115,   115,
-     118,   118,   127,    88,   101,   101,   101,    48,    96,    48,
-      48,    48,    13,    48,    90,     8,    48,   156,   160,   162,
-       8,    48,   152,   159,   162,   158,   160,   154,   159,    48,
-     155,   157,    96,    48,    97,   139,     0,    35,    55,    54,
-      53,    62,    63,    64,    65,    66,    67,    68,    70,    71,
-      72,    73,    74,    75,    76,    77,     6,     7,    58,    49,
-      50,    51,    52,    59,    69,    60,    61,    82,    31,    83,
-      30,    14,    15,   131,   127,   131,   127,   131,    78,    35,
-      79,    79,    48,    48,    48,    35,    48,    35,    48,    48,
-      48,    48,    48,    48,    35,    48,    97,    97,   104,   105,
-     106,   106,   106,   106,   106,   106,   106,   106,   106,   106,
-     106,   106,   106,   106,   106,   108,   108,   107,   109,   109,
-     109,   109,   110,   110,   111,   111,    80,    81,   141,   143,
-     144,   145,   162,   141,   140,   144,   140,   119,   119,     4,
-      97,    88,    97,    97,   161,   162,   161,    56,    97,    85,
-      86,    87,   142,     3,    96,    78,    48,    84,    48,    97,
-       5,    97,    48,    57,    97
+       0,     3,     4,     5,     7,     8,    10,    11,    12,    18,
+      20,    21,    22,    24,    32,    33,    42,    43,    63,    64,
+      65,    66,    67,    68,    69,    70,    71,    72,    73,    74,
+      75,    76,    77,    82,    83,    84,    85,    86,    87,    88,
+      89,    90,    91,    92,    96,    99,   100,   101,   102,   103,
+     104,   106,   107,   108,   109,   110,   111,   112,   113,   114,
+     115,   116,   117,   118,   119,   120,   121,   122,   123,   124,
+     125,   126,   127,   128,   129,   130,   131,   132,   133,   134,
+     136,   137,   138,   139,   140,   141,   142,   149,   150,   151,
+     152,   153,   154,   155,   157,   159,   161,   166,    78,   101,
+     143,    20,   105,     6,   105,   105,    77,   119,   119,   122,
+     122,   131,     5,     9,    78,    78,    78,    78,    78,   100,
+      78,   159,   161,    72,    78,   156,   163,   166,    72,    78,
+     160,   164,   166,   162,   164,   158,   163,     0,    16,    17,
+      27,    28,    48,    49,    50,    51,    52,    53,    54,    55,
+      56,    57,    58,    59,    60,    61,    62,    31,    32,    33,
+      34,    35,    36,    37,    38,    39,    40,    41,    29,    47,
+      30,    46,    42,    43,   135,   131,   135,   131,   135,    16,
+      78,     6,    16,    23,    23,   100,    78,    78,    78,    78,
+      78,    16,    78,    16,    78,    78,    78,   101,   101,   108,
+     109,   110,   110,   110,   110,   110,   110,   110,   110,   110,
+     110,   110,   110,   110,   110,   110,   111,   112,   112,   113,
+     113,   113,   113,   114,   114,   115,   115,    79,    80,   145,
+     147,   148,   149,   166,   145,   144,   148,   144,   123,   123,
+      44,   101,    19,    20,   101,   101,    78,   165,   166,   165,
+      93,    94,    95,   146,    93,   100,   101,     6,    25,    78,
+      78,    81,    45,    19,   101,    78,   101,    26,   101
 };
 
 #define yyerrok		(yyerrstatus = 0)
@@ -1726,21 +1751,21 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 316 "XPath2Parser.y"
+#line 330 "xpath.y"
     {
-      ((XPathParserControl *)parm)->result = new (MEMMGR) XQSequence(MEMMGR);
+      QP->_query->setQueryBody(new (MEMMGR) XQSequence(MEMMGR));
 	;}
     break;
 
   case 3:
-#line 320 "XPath2Parser.y"
+#line 334 "xpath.y"
     {
-      ((XPathParserControl *)parm)->result = (yyvsp[0].astNodeImpl);
+      QP->_query->setQueryBody((yyvsp[0].astNodeImpl));
 	;}
     break;
 
   case 4:
-#line 331 "XPath2Parser.y"
+#line 345 "xpath.y"
     {
 		if((yyvsp[-2].astNodeImpl)->getType()==ASTNode::PARENTHESIZED)
 			(yyval.astNodeImpl) = (yyvsp[-2].astNodeImpl);
@@ -1755,108 +1780,106 @@ yyreduce:
     break;
 
   case 5:
-#line 342 "XPath2Parser.y"
+#line 356 "xpath.y"
     {
 		(yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
 	;}
     break;
 
   case 6:
-#line 353 "XPath2Parser.y"
+#line 367 "xpath.y"
     {
         (yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
     ;}
     break;
 
   case 7:
-#line 356 "XPath2Parser.y"
+#line 370 "xpath.y"
     {
         (yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
     ;}
     break;
 
   case 8:
-#line 359 "XPath2Parser.y"
+#line 373 "xpath.y"
     {
         (yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
     ;}
     break;
 
   case 9:
-#line 362 "XPath2Parser.y"
+#line 376 "xpath.y"
     {
         (yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
     ;}
     break;
 
   case 10:
-#line 373 "XPath2Parser.y"
+#line 387 "xpath.y"
     {
 		(yyval.astNodeImpl) = new (MEMMGR) XQFLWOR((yyvsp[-2].variableBinding), NULL, NULL, (yyvsp[0].astNodeImpl), MEMMGR);
 	;}
     break;
 
   case 11:
-#line 384 "XPath2Parser.y"
+#line 398 "xpath.y"
     {
         (yyval.variableBinding) = (yyvsp[0].variableBinding);
     ;}
     break;
 
   case 12:
-#line 394 "XPath2Parser.y"
+#line 408 "xpath.y"
     {
 		(yyval.astNodeImpl) = new (MEMMGR) XQQuantified(XQQuantified::some, (yyvsp[-2].variableBinding), (yyvsp[0].astNodeImpl), MEMMGR);
 	;}
     break;
 
   case 13:
-#line 398 "XPath2Parser.y"
+#line 412 "xpath.y"
     {
 		(yyval.astNodeImpl) = new (MEMMGR) XQQuantified(XQQuantified::every, (yyvsp[-2].variableBinding), (yyvsp[0].astNodeImpl), MEMMGR);
 	;}
     break;
 
   case 14:
-#line 405 "XPath2Parser.y"
+#line 419 "xpath.y"
     {
 		XQVariableBinding* bind=new (MEMMGR) XQVariableBinding(MEMMGR,
-                                                                                         XQVariableBinding::forBinding,
-                                                                                         MEMMGR->getPooledString((yyvsp[-2].wString)), (yyvsp[0].astNodeImpl));
-		(yyvsp[-4].variableBinding)->push_back(bind);
-		(yyval.variableBinding) = (yyvsp[-4].variableBinding);
-		delete [] (yyvsp[-2].wString);
+                                                               XQVariableBinding::forBinding,
+                                                               MEMMGR->getPooledString((yyvsp[-2].str)), (yyvsp[0].astNodeImpl));
+		(yyvsp[-5].variableBinding)->push_back(bind);
+		(yyval.variableBinding) = (yyvsp[-5].variableBinding);
 	;}
     break;
 
   case 15:
-#line 414 "XPath2Parser.y"
+#line 427 "xpath.y"
     {
 		(yyval.variableBinding) = new (MEMMGR) VectorOfVariableBinding(XQillaAllocator<XQVariableBinding*>((MEMMGR)));
 		XQVariableBinding* bind=new (MEMMGR) XQVariableBinding(MEMMGR,
-                                                                                         XQVariableBinding::forBinding,
-                                                                                         MEMMGR->getPooledString((yyvsp[-2].wString)), (yyvsp[0].astNodeImpl));
+                                                               XQVariableBinding::forBinding,
+                                                               MEMMGR->getPooledString((yyvsp[-2].str)), (yyvsp[0].astNodeImpl));
 		(yyval.variableBinding)->push_back(bind);
-		delete [] (yyvsp[-2].wString);
 	;}
     break;
 
   case 16:
-#line 431 "XPath2Parser.y"
+#line 443 "xpath.y"
     {
 		(yyval.astNodeImpl) = new (MEMMGR) XQIf((yyvsp[-5].astNodeImpl), (yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl), MEMMGR);
 	;}
     break;
 
   case 17:
-#line 445 "XPath2Parser.y"
+#line 457 "xpath.y"
     {
 		(yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
 	;}
     break;
 
   case 18:
-#line 449 "XPath2Parser.y"
+#line 461 "xpath.y"
     {
     if((yyvsp[-2].astNodeImpl)->getType() == ASTNode::OPERATOR
        && (static_cast<XQOperator *>((yyvsp[-2].astNodeImpl)))->getOperatorName() == Or::name) {
@@ -1873,14 +1896,14 @@ yyreduce:
     break;
 
   case 19:
-#line 470 "XPath2Parser.y"
+#line 482 "xpath.y"
     {
 		(yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
 	;}
     break;
 
   case 20:
-#line 474 "XPath2Parser.y"
+#line 486 "xpath.y"
     {
     if((yyvsp[-2].astNodeImpl)->getType() == ASTNode::OPERATOR
        && (static_cast<XQOperator *>((yyvsp[-2].astNodeImpl)))->getOperatorName() == And::name) {
@@ -1897,294 +1920,294 @@ yyreduce:
     break;
 
   case 21:
-#line 504 "XPath2Parser.y"
+#line 516 "xpath.y"
     {
 		(yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
 	;}
     break;
 
   case 22:
-#line 508 "XPath2Parser.y"
+#line 520 "xpath.y"
     {
 		(yyval.astNodeImpl) = new (MEMMGR) GeneralComp(GeneralComp::EQUAL,packageArgs((yyvsp[-2].astNodeImpl),(yyvsp[0].astNodeImpl),MEMMGR),MEMMGR);
 	;}
     break;
 
   case 23:
-#line 512 "XPath2Parser.y"
+#line 524 "xpath.y"
     {
 		(yyval.astNodeImpl) = new (MEMMGR) GeneralComp(GeneralComp::NOT_EQUAL,packageArgs((yyvsp[-2].astNodeImpl),(yyvsp[0].astNodeImpl),MEMMGR),MEMMGR);
 	;}
     break;
 
   case 24:
-#line 516 "XPath2Parser.y"
+#line 528 "xpath.y"
     {
 		(yyval.astNodeImpl) = new (MEMMGR) GeneralComp(GeneralComp::LESS_THAN,packageArgs((yyvsp[-2].astNodeImpl),(yyvsp[0].astNodeImpl),MEMMGR),MEMMGR);
 	;}
     break;
 
   case 25:
-#line 520 "XPath2Parser.y"
+#line 532 "xpath.y"
     {
 		(yyval.astNodeImpl) = new (MEMMGR) GeneralComp(GeneralComp::LESS_THAN_EQUAL,packageArgs((yyvsp[-2].astNodeImpl),(yyvsp[0].astNodeImpl),MEMMGR),MEMMGR);
 	;}
     break;
 
   case 26:
-#line 524 "XPath2Parser.y"
+#line 536 "xpath.y"
     {
 		(yyval.astNodeImpl) = new (MEMMGR) GeneralComp(GeneralComp::GREATER_THAN,packageArgs((yyvsp[-2].astNodeImpl),(yyvsp[0].astNodeImpl),MEMMGR),MEMMGR);
 	;}
     break;
 
   case 27:
-#line 528 "XPath2Parser.y"
+#line 540 "xpath.y"
     {
 		(yyval.astNodeImpl) = new (MEMMGR) GeneralComp(GeneralComp::GREATER_THAN_EQUAL,packageArgs((yyvsp[-2].astNodeImpl),(yyvsp[0].astNodeImpl),MEMMGR),MEMMGR);
 	;}
     break;
 
   case 28:
-#line 532 "XPath2Parser.y"
+#line 544 "xpath.y"
     {
 		(yyval.astNodeImpl) = new (MEMMGR) Equals(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl),MEMMGR), MEMMGR);
 	;}
     break;
 
   case 29:
-#line 536 "XPath2Parser.y"
+#line 548 "xpath.y"
     {
 		(yyval.astNodeImpl) = new (MEMMGR) NotEquals(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl),MEMMGR), MEMMGR);
 	;}
     break;
 
   case 30:
-#line 540 "XPath2Parser.y"
+#line 552 "xpath.y"
     {
 		(yyval.astNodeImpl) = new (MEMMGR) LessThan(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl),MEMMGR), MEMMGR);
 	;}
     break;
 
   case 31:
-#line 544 "XPath2Parser.y"
+#line 556 "xpath.y"
     {
 		(yyval.astNodeImpl) = new (MEMMGR) LessThanEqual(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl),MEMMGR), MEMMGR);
 	;}
     break;
 
   case 32:
-#line 548 "XPath2Parser.y"
+#line 560 "xpath.y"
     {
 		(yyval.astNodeImpl) = new (MEMMGR) GreaterThan(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl),MEMMGR), MEMMGR);
 	;}
     break;
 
   case 33:
-#line 552 "XPath2Parser.y"
+#line 564 "xpath.y"
     {
 		(yyval.astNodeImpl) = new (MEMMGR) GreaterThanEqual(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl),MEMMGR), MEMMGR);
 	;}
     break;
 
   case 34:
-#line 556 "XPath2Parser.y"
+#line 568 "xpath.y"
     {
 		(yyval.astNodeImpl) = new (MEMMGR) NodeComparison(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl),MEMMGR), MEMMGR);
 	;}
     break;
 
   case 35:
-#line 560 "XPath2Parser.y"
+#line 572 "xpath.y"
     {
 		(yyval.astNodeImpl) = new (MEMMGR) OrderComparison(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl),MEMMGR), true, MEMMGR);
 	;}
     break;
 
   case 36:
-#line 564 "XPath2Parser.y"
+#line 576 "xpath.y"
     {
 		(yyval.astNodeImpl) = new (MEMMGR) OrderComparison(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl),MEMMGR), false, MEMMGR);
 	;}
     break;
 
   case 37:
-#line 576 "XPath2Parser.y"
+#line 588 "xpath.y"
     {
 	  (yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
 	;}
     break;
 
   case 38:
-#line 580 "XPath2Parser.y"
+#line 592 "xpath.y"
     {
 		(yyval.astNodeImpl) = new (MEMMGR) Range(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl),MEMMGR), MEMMGR);
 	;}
     break;
 
   case 39:
-#line 593 "XPath2Parser.y"
+#line 605 "xpath.y"
     {
 	  (yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
 	;}
     break;
 
   case 40:
-#line 597 "XPath2Parser.y"
+#line 609 "xpath.y"
     {
 		(yyval.astNodeImpl) = new (MEMMGR) Plus(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl),MEMMGR), MEMMGR);
 	;}
     break;
 
   case 41:
-#line 601 "XPath2Parser.y"
+#line 613 "xpath.y"
     {
 		(yyval.astNodeImpl) = new (MEMMGR) Minus(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl),MEMMGR), MEMMGR);
 	;}
     break;
 
   case 42:
-#line 613 "XPath2Parser.y"
+#line 625 "xpath.y"
     {
 	  (yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
 	;}
     break;
 
   case 43:
-#line 617 "XPath2Parser.y"
+#line 629 "xpath.y"
     {
 		(yyval.astNodeImpl) = new (MEMMGR) Multiply(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl),MEMMGR), MEMMGR);
 	;}
     break;
 
   case 44:
-#line 621 "XPath2Parser.y"
+#line 633 "xpath.y"
     {
 		(yyval.astNodeImpl) = new (MEMMGR) Divide(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl),MEMMGR), MEMMGR);
 	;}
     break;
 
   case 45:
-#line 625 "XPath2Parser.y"
+#line 637 "xpath.y"
     {
 		(yyval.astNodeImpl) = new (MEMMGR) IntegerDivide(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl),MEMMGR), MEMMGR);
 	;}
     break;
 
   case 46:
-#line 629 "XPath2Parser.y"
+#line 641 "xpath.y"
     {
 		(yyval.astNodeImpl) = new (MEMMGR) Mod(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl),MEMMGR), MEMMGR);
 	;}
     break;
 
   case 47:
-#line 641 "XPath2Parser.y"
+#line 653 "xpath.y"
     {
 	  (yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
 	;}
     break;
 
   case 48:
-#line 645 "XPath2Parser.y"
+#line 657 "xpath.y"
     {
 		(yyval.astNodeImpl) = new (MEMMGR) Union(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl),MEMMGR), MEMMGR);
 	;}
     break;
 
   case 49:
-#line 649 "XPath2Parser.y"
+#line 661 "xpath.y"
     {
 		(yyval.astNodeImpl) = new (MEMMGR) Union(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl),MEMMGR), MEMMGR);
 	;}
     break;
 
   case 50:
-#line 661 "XPath2Parser.y"
+#line 673 "xpath.y"
     {
 	  (yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
 	;}
     break;
 
   case 51:
-#line 665 "XPath2Parser.y"
+#line 677 "xpath.y"
     {
 		(yyval.astNodeImpl) = new (MEMMGR) Intersect(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl),MEMMGR), MEMMGR);
 	;}
     break;
 
   case 52:
-#line 669 "XPath2Parser.y"
+#line 681 "xpath.y"
     {
 		(yyval.astNodeImpl) = new (MEMMGR) Except(packageArgs((yyvsp[-2].astNodeImpl), (yyvsp[0].astNodeImpl),MEMMGR), MEMMGR);
 	;}
     break;
 
   case 53:
-#line 681 "XPath2Parser.y"
+#line 693 "xpath.y"
     {
 	  (yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
 	;}
     break;
 
   case 54:
-#line 685 "XPath2Parser.y"
+#line 697 "xpath.y"
     {
 		(yyval.astNodeImpl) = new (MEMMGR) XQInstanceOf((yyvsp[-2].astNodeImpl), (yyvsp[0].sequenceType), MEMMGR);
 	;}
     break;
 
   case 55:
-#line 696 "XPath2Parser.y"
+#line 708 "xpath.y"
     {
         (yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
     ;}
     break;
 
   case 56:
-#line 699 "XPath2Parser.y"
+#line 711 "xpath.y"
     {
 		(yyval.astNodeImpl) = new (MEMMGR) XQTreatAs((yyvsp[-2].astNodeImpl), (yyvsp[0].sequenceType), MEMMGR);
 	;}
     break;
 
   case 57:
-#line 710 "XPath2Parser.y"
+#line 722 "xpath.y"
     {
 	  (yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
 	;}
     break;
 
   case 58:
-#line 714 "XPath2Parser.y"
+#line 726 "xpath.y"
     {
         (yyval.astNodeImpl) = new (MEMMGR) XQCastableAs((yyvsp[-2].astNodeImpl), (yyvsp[0].sequenceType),MEMMGR);
 	;}
     break;
 
   case 59:
-#line 725 "XPath2Parser.y"
+#line 737 "xpath.y"
     {
         (yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
     ;}
     break;
 
   case 60:
-#line 728 "XPath2Parser.y"
+#line 740 "xpath.y"
     {
 		(yyval.astNodeImpl) = new (MEMMGR) XQCastAs((yyvsp[-2].astNodeImpl), (yyvsp[0].sequenceType),MEMMGR);
 	;}
     break;
 
   case 61:
-#line 739 "XPath2Parser.y"
+#line 751 "xpath.y"
     {
 	  (yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
 	;}
     break;
 
   case 62:
-#line 743 "XPath2Parser.y"
+#line 755 "xpath.y"
     {
 	  VectorOfASTNodes args(XQillaAllocator<ASTNode*>(MEMMGR));
 	  args.push_back((yyvsp[0].astNodeImpl));
@@ -2193,7 +2216,7 @@ yyreduce:
     break;
 
   case 63:
-#line 749 "XPath2Parser.y"
+#line 761 "xpath.y"
     {
 		//no need to do anything with unary plus
 		(yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
@@ -2201,14 +2224,14 @@ yyreduce:
     break;
 
   case 64:
-#line 765 "XPath2Parser.y"
+#line 777 "xpath.y"
     {
 		(yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
 	;}
     break;
 
   case 65:
-#line 777 "XPath2Parser.y"
+#line 789 "xpath.y"
     {
         XQNav *nav = new (MEMMGR) XQNav(MEMMGR);
         nav->addInitialRootStep(MEMMGR);
@@ -2217,7 +2240,7 @@ yyreduce:
     break;
 
   case 66:
-#line 783 "XPath2Parser.y"
+#line 795 "xpath.y"
     {
         XQNav* nav=getNavigation((yyvsp[0].astNodeImpl),MEMMGR);
         nav->addInitialRootStep(MEMMGR);
@@ -2226,7 +2249,7 @@ yyreduce:
     break;
 
   case 67:
-#line 789 "XPath2Parser.y"
+#line 801 "xpath.y"
     {
         XQNav *nav = getNavigation((yyvsp[0].astNodeImpl),MEMMGR);
 
@@ -2243,14 +2266,14 @@ yyreduce:
     break;
 
   case 69:
-#line 815 "XPath2Parser.y"
+#line 827 "xpath.y"
     {
 	  (yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
 	;}
     break;
 
   case 70:
-#line 819 "XPath2Parser.y"
+#line 831 "xpath.y"
     {
 		XQNav *nav = getNavigation((yyvsp[-2].astNodeImpl),MEMMGR);
 	    nav->addStep((yyvsp[0].astNodeImpl));
@@ -2259,7 +2282,7 @@ yyreduce:
     break;
 
   case 71:
-#line 825 "XPath2Parser.y"
+#line 837 "xpath.y"
     {
         XQNav *nav = getNavigation((yyvsp[-2].astNodeImpl),MEMMGR);
 
@@ -2276,21 +2299,21 @@ yyreduce:
     break;
 
   case 72:
-#line 848 "XPath2Parser.y"
+#line 860 "xpath.y"
     {
         (yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
     ;}
     break;
 
   case 73:
-#line 851 "XPath2Parser.y"
+#line 863 "xpath.y"
     {
         (yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
     ;}
     break;
 
   case 74:
-#line 861 "XPath2Parser.y"
+#line 873 "xpath.y"
     {
         (yyval.astNodeImpl) = XQPredicate::addPredicates((yyvsp[-1].astNodeImpl), (yyvsp[0].predicates));
         delete (yyvsp[0].predicates);
@@ -2298,7 +2321,7 @@ yyreduce:
     break;
 
   case 75:
-#line 865 "XPath2Parser.y"
+#line 877 "xpath.y"
     {
         (yyval.astNodeImpl) = XQPredicate::addPredicates((yyvsp[-1].astNodeImpl), (yyvsp[0].predicates));
         delete (yyvsp[0].predicates);
@@ -2307,7 +2330,7 @@ yyreduce:
     break;
 
   case 76:
-#line 878 "XPath2Parser.y"
+#line 890 "xpath.y"
     {
       if(!(yyvsp[0].nodeTest)->isNodeTypeSet()) {
         switch((yyvsp[-1].axis)) {
@@ -2322,70 +2345,70 @@ yyreduce:
     break;
 
   case 77:
-#line 890 "XPath2Parser.y"
+#line 902 "xpath.y"
     {
 		(yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
 	;}
     break;
 
   case 78:
-#line 909 "XPath2Parser.y"
+#line 921 "xpath.y"
     {
     (yyval.axis) = XQStep::CHILD;
 	;}
     break;
 
   case 79:
-#line 913 "XPath2Parser.y"
+#line 925 "xpath.y"
     {
     (yyval.axis) = XQStep::DESCENDANT;
 	;}
     break;
 
   case 80:
-#line 917 "XPath2Parser.y"
+#line 929 "xpath.y"
     {
     (yyval.axis) = XQStep::ATTRIBUTE;
 	;}
     break;
 
   case 81:
-#line 921 "XPath2Parser.y"
+#line 933 "xpath.y"
     {
     (yyval.axis) = XQStep::SELF;
 	;}
     break;
 
   case 82:
-#line 925 "XPath2Parser.y"
+#line 937 "xpath.y"
     {
     (yyval.axis) = XQStep::DESCENDANT_OR_SELF;
 	;}
     break;
 
   case 83:
-#line 929 "XPath2Parser.y"
+#line 941 "xpath.y"
     {
     (yyval.axis) = XQStep::FOLLOWING_SIBLING;
 	;}
     break;
 
   case 84:
-#line 933 "XPath2Parser.y"
+#line 945 "xpath.y"
     {
     (yyval.axis) = XQStep::FOLLOWING;
 	;}
     break;
 
   case 85:
-#line 937 "XPath2Parser.y"
+#line 949 "xpath.y"
     {
     (yyval.axis) = XQStep::NAMESPACE;
 	;}
     break;
 
   case 86:
-#line 949 "XPath2Parser.y"
+#line 961 "xpath.y"
     {
     if(!(yyvsp[0].nodeTest)->isNodeTypeSet()) {
       (yyvsp[0].nodeTest)->setNodeType(Node::attribute_string);
@@ -2396,7 +2419,7 @@ yyreduce:
     break;
 
   case 87:
-#line 957 "XPath2Parser.y"
+#line 969 "xpath.y"
     {
     XQStep::Axis axis = XQStep::CHILD;
     SequenceType::ItemType *itemtype = (yyvsp[0].nodeTest)->getItemType();
@@ -2413,7 +2436,7 @@ yyreduce:
     break;
 
   case 88:
-#line 979 "XPath2Parser.y"
+#line 991 "xpath.y"
     {
     if(!(yyvsp[0].nodeTest)->isNodeTypeSet()) {
       (yyvsp[0].nodeTest)->setNodeType(Node::element_string);
@@ -2424,49 +2447,49 @@ yyreduce:
     break;
 
   case 89:
-#line 987 "XPath2Parser.y"
+#line 999 "xpath.y"
     {
 		(yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
 	;}
     break;
 
   case 90:
-#line 1002 "XPath2Parser.y"
+#line 1014 "xpath.y"
     {
     (yyval.axis) = XQStep::PARENT;
 	;}
     break;
 
   case 91:
-#line 1006 "XPath2Parser.y"
+#line 1018 "xpath.y"
     {
     (yyval.axis) = XQStep::ANCESTOR;
 	;}
     break;
 
   case 92:
-#line 1010 "XPath2Parser.y"
+#line 1022 "xpath.y"
     {
     (yyval.axis) = XQStep::PRECEDING_SIBLING;
 	;}
     break;
 
   case 93:
-#line 1014 "XPath2Parser.y"
+#line 1026 "xpath.y"
     {
     (yyval.axis) = XQStep::PRECEDING;
 	;}
     break;
 
   case 94:
-#line 1018 "XPath2Parser.y"
+#line 1030 "xpath.y"
     {
     (yyval.axis) = XQStep::ANCESTOR_OR_SELF;
 	;}
     break;
 
   case 95:
-#line 1029 "XPath2Parser.y"
+#line 1041 "xpath.y"
     {
 		NodeTest *step = new (MEMMGR) NodeTest;
 		step->setNameWildcard();
@@ -2477,21 +2500,21 @@ yyreduce:
     break;
 
   case 96:
-#line 1044 "XPath2Parser.y"
+#line 1056 "xpath.y"
     {
 		(yyval.nodeTest) = (yyvsp[0].nodeTest);
 	;}
     break;
 
   case 97:
-#line 1048 "XPath2Parser.y"
+#line 1060 "xpath.y"
     {
 		(yyval.nodeTest) = (yyvsp[0].nodeTest);
 	;}
     break;
 
   case 98:
-#line 1059 "XPath2Parser.y"
+#line 1071 "xpath.y"
     {
         NodeTest *step = new (MEMMGR) NodeTest();
 		step->setNodePrefix((yyvsp[0].qName)->getPrefix());
@@ -2501,14 +2524,14 @@ yyreduce:
     break;
 
   case 99:
-#line 1065 "XPath2Parser.y"
+#line 1077 "xpath.y"
     {
         (yyval.nodeTest) = (yyvsp[0].nodeTest);
     ;}
     break;
 
   case 100:
-#line 1077 "XPath2Parser.y"
+#line 1089 "xpath.y"
     {
 		NodeTest *step = new (MEMMGR) NodeTest();
 		step->setNameWildcard();
@@ -2518,29 +2541,27 @@ yyreduce:
     break;
 
   case 101:
-#line 1084 "XPath2Parser.y"
+#line 1096 "xpath.y"
     {
 		NodeTest *step = new (MEMMGR) NodeTest();
-		step->setNodePrefix(MEMMGR->getPooledString((yyvsp[0].wString)));
+		step->setNodePrefix(MEMMGR->getPooledString((yyvsp[0].str)));
 		step->setNameWildcard();
 		(yyval.nodeTest) = step;
-        delete (yyvsp[0].wString);
 	;}
     break;
 
   case 102:
-#line 1092 "XPath2Parser.y"
+#line 1103 "xpath.y"
     {
         NodeTest *step = new (MEMMGR) NodeTest();
-        step->setNodeName(MEMMGR->getPooledString((yyvsp[0].wString)));
+        step->setNodeName(MEMMGR->getPooledString((yyvsp[0].str)));
         step->setNamespaceWildcard();
         (yyval.nodeTest) = step;
-        delete (yyvsp[0].wString);
 	;}
     break;
 
   case 103:
-#line 1108 "XPath2Parser.y"
+#line 1118 "xpath.y"
     {
         (yyval.astNodeImpl) = XQPredicate::addPredicates((yyvsp[-1].astNodeImpl), (yyvsp[0].predicates));
         delete (yyvsp[0].predicates);
@@ -2548,14 +2569,14 @@ yyreduce:
     break;
 
   case 104:
-#line 1121 "XPath2Parser.y"
+#line 1131 "xpath.y"
     {
         (yyval.predicates) = new VectorOfPredicates(MEMMGR);
     ;}
     break;
 
   case 105:
-#line 1124 "XPath2Parser.y"
+#line 1134 "xpath.y"
     {
         XQPredicate *pred = new (MEMMGR) XQPredicate((yyvsp[-1].astNodeImpl), MEMMGR);
         (yyvsp[-3].predicates)->push_back(pred);
@@ -2564,122 +2585,117 @@ yyreduce:
     break;
 
   case 106:
-#line 1137 "XPath2Parser.y"
+#line 1147 "xpath.y"
     {
 		(yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
 	;}
     break;
 
   case 107:
-#line 1141 "XPath2Parser.y"
+#line 1151 "xpath.y"
     {
 		(yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
 	;}
     break;
 
   case 108:
-#line 1145 "XPath2Parser.y"
+#line 1155 "xpath.y"
     {
 		(yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
 	;}
     break;
 
   case 109:
-#line 1149 "XPath2Parser.y"
+#line 1159 "xpath.y"
     {
 		(yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
 	;}
     break;
 
   case 110:
-#line 1153 "XPath2Parser.y"
+#line 1163 "xpath.y"
     {
 		(yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
 	;}
     break;
 
   case 111:
-#line 1166 "XPath2Parser.y"
+#line 1176 "xpath.y"
     {
 		(yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
 	;}
     break;
 
   case 112:
-#line 1170 "XPath2Parser.y"
+#line 1180 "xpath.y"
     {
-    AnyAtomicTypeConstructor *ic = new (MEMMGR)
+      AnyAtomicTypeConstructor *ic = new (MEMMGR)
       AnyAtomicTypeConstructor(
 				XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 				XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
-				MEMMGR->getPooledString((yyvsp[0].wString)),
+				MEMMGR->getPooledString((yyvsp[0].str)),
         AnyAtomicType::STRING);
 		XQLiteral *str_val  = new (MEMMGR)
-      XQLiteral(ic, MEMMGR);
+        XQLiteral(ic, MEMMGR);
 		(yyval.astNodeImpl) = str_val;
-        delete [] (yyvsp[0].wString);
 	;}
     break;
 
   case 113:
-#line 1191 "XPath2Parser.y"
+#line 1200 "xpath.y"
     {
-    AnyAtomicTypeConstructor *ic = new (MEMMGR)
+      AnyAtomicTypeConstructor *ic = new (MEMMGR)
       AnyAtomicTypeConstructor(
 			XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 			XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_INTEGER,
-				MEMMGR->getPooledString((yyvsp[0].wString)),
+				MEMMGR->getPooledString((yyvsp[0].str)),
       AnyAtomicType::DECIMAL);
-    XQLiteral *did  = new (MEMMGR)
+      XQLiteral *did  = new (MEMMGR)
       XQLiteral(ic, MEMMGR);
-    delete [] (yyvsp[0].wString);
-    (yyval.astNodeImpl) = did;
+      (yyval.astNodeImpl) = did;
   ;}
     break;
 
   case 114:
-#line 1204 "XPath2Parser.y"
+#line 1212 "xpath.y"
     {
-    AnyAtomicTypeConstructor *ic = new (MEMMGR)
+      AnyAtomicTypeConstructor *ic = new (MEMMGR)
       AnyAtomicTypeConstructor(
 			XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 			XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DECIMAL,
-				MEMMGR->getPooledString((yyvsp[0].wString)),
+				MEMMGR->getPooledString((yyvsp[0].str)),
       AnyAtomicType::DECIMAL);
-    XQLiteral *did  = new (MEMMGR)
+      XQLiteral *did  = new (MEMMGR)
       XQLiteral(ic, MEMMGR);
-    delete (yyvsp[0].wString);
-    (yyval.astNodeImpl) = did;
+      (yyval.astNodeImpl) = did;
   ;}
     break;
 
   case 115:
-#line 1217 "XPath2Parser.y"
+#line 1224 "xpath.y"
     {
-    AnyAtomicTypeConstructor *ic = new (MEMMGR)
+      AnyAtomicTypeConstructor *ic = new (MEMMGR)
       AnyAtomicTypeConstructor(
 			XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 			XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DOUBLE,
-				MEMMGR->getPooledString((yyvsp[0].wString)),
+				MEMMGR->getPooledString((yyvsp[0].str)),
       AnyAtomicType::DOUBLE);
-    XQLiteral *did  = new (MEMMGR)
+      XQLiteral *did  = new (MEMMGR)
       XQLiteral(ic, MEMMGR);
-    delete (yyvsp[0].wString);
-    (yyval.astNodeImpl) = did;
+      (yyval.astNodeImpl) = did;
   ;}
     break;
 
   case 116:
-#line 1238 "XPath2Parser.y"
+#line 1244 "xpath.y"
     {
-		XQVariable *var = new (MEMMGR) XQVariable((yyvsp[0].wString), MEMMGR);
-		delete [] (yyvsp[0].wString);
+		XQVariable *var = new (MEMMGR) XQVariable((yyvsp[0].str), MEMMGR);
 		(yyval.astNodeImpl) = var;
   ;}
     break;
 
   case 117:
-#line 1251 "XPath2Parser.y"
+#line 1256 "xpath.y"
     {
         if((yyvsp[-1].astNodeImpl)->getType()!=ASTNode::PARENTHESIZED)
         {
@@ -2693,41 +2709,39 @@ yyreduce:
     break;
 
   case 118:
-#line 1261 "XPath2Parser.y"
+#line 1266 "xpath.y"
     {
 		(yyval.astNodeImpl) = new (MEMMGR) XQSequence(MEMMGR);
 	;}
     break;
 
   case 119:
-#line 1274 "XPath2Parser.y"
+#line 1279 "xpath.y"
     {
 		(yyval.astNodeImpl) = new (MEMMGR) XQContextItem(MEMMGR);
 	;}
     break;
 
   case 120:
-#line 1286 "XPath2Parser.y"
+#line 1291 "xpath.y"
     {
-        QualifiedName *qname = new (MEMMGR) QualifiedName((yyvsp[-1].wString), MEMMGR);
-        delete (yyvsp[-1].wString);
+        QualifiedName *qname = new (MEMMGR) QualifiedName((yyvsp[-1].str), MEMMGR);
         VectorOfASTNodes tmp(XQillaAllocator<ASTNode*>(MEMMGR));
 		(yyval.astNodeImpl) = new (MEMMGR) XQFunctionCall(qname, tmp, MEMMGR);
 	;}
     break;
 
   case 121:
-#line 1293 "XPath2Parser.y"
+#line 1297 "xpath.y"
     {
-        QualifiedName *qname = new (MEMMGR) QualifiedName((yyvsp[-2].wString), MEMMGR);
-        delete [] (yyvsp[-2].wString);
+        QualifiedName *qname = new (MEMMGR) QualifiedName((yyvsp[-2].str), MEMMGR);
 		(yyval.astNodeImpl) = new (MEMMGR) XQFunctionCall(qname, *(yyvsp[-1].astNodeStore), MEMMGR);
         delete (yyvsp[-1].astNodeStore);
 	;}
     break;
 
   case 122:
-#line 1311 "XPath2Parser.y"
+#line 1314 "xpath.y"
     {
         (yyval.astNodeStore) = new VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
         (yyval.astNodeStore)->push_back((yyvsp[0].astNodeImpl));
@@ -2735,7 +2749,7 @@ yyreduce:
     break;
 
   case 123:
-#line 1316 "XPath2Parser.y"
+#line 1319 "xpath.y"
     {
         (yyvsp[-2].astNodeStore)->push_back((yyvsp[0].astNodeImpl));
 		(yyval.astNodeStore) = (yyvsp[-2].astNodeStore);
@@ -2743,7 +2757,7 @@ yyreduce:
     break;
 
   case 124:
-#line 1329 "XPath2Parser.y"
+#line 1332 "xpath.y"
     {
 		SequenceType* seq=new (MEMMGR) SequenceType();
 		seq->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ATOMIC_TYPE, NULL, (yyvsp[0].qName)));
@@ -2753,7 +2767,7 @@ yyreduce:
     break;
 
   case 125:
-#line 1336 "XPath2Parser.y"
+#line 1339 "xpath.y"
     {
 		SequenceType* seq=new (MEMMGR) SequenceType();
 		seq->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ATOMIC_TYPE, NULL, (yyvsp[-1].qName)));
@@ -2763,7 +2777,7 @@ yyreduce:
     break;
 
   case 126:
-#line 1351 "XPath2Parser.y"
+#line 1354 "xpath.y"
     {
 		SequenceType* seq=new (MEMMGR) SequenceType();
 		seq->setItemType((yyvsp[-1].itemType));
@@ -2773,7 +2787,7 @@ yyreduce:
     break;
 
   case 127:
-#line 1358 "XPath2Parser.y"
+#line 1361 "xpath.y"
     {
 		SequenceType* seq=new (MEMMGR) SequenceType();
 		seq->setItemType((yyvsp[0].itemType));
@@ -2783,42 +2797,42 @@ yyreduce:
     break;
 
   case 128:
-#line 1365 "XPath2Parser.y"
+#line 1368 "xpath.y"
     {
 		(yyval.sequenceType) = new (MEMMGR) SequenceType();
 	;}
     break;
 
   case 129:
-#line 1377 "XPath2Parser.y"
+#line 1380 "xpath.y"
     {
 		(yyval.occurrence) = SequenceType::STAR;
 	;}
     break;
 
   case 130:
-#line 1380 "XPath2Parser.y"
+#line 1383 "xpath.y"
     {
 		(yyval.occurrence) = SequenceType::PLUS;
 	;}
     break;
 
   case 131:
-#line 1383 "XPath2Parser.y"
+#line 1386 "xpath.y"
     {
 		(yyval.occurrence) = SequenceType::QUESTION_MARK;
 	;}
     break;
 
   case 132:
-#line 1395 "XPath2Parser.y"
+#line 1398 "xpath.y"
     {
         (yyval.itemType) = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ATOMIC_TYPE, NULL, (yyvsp[0].qName));
     ;}
     break;
 
   case 133:
-#line 1398 "XPath2Parser.y"
+#line 1401 "xpath.y"
     {
         (yyval.itemType) = (yyvsp[0].nodeTest)->getItemType();
         (yyvsp[0].nodeTest)->setItemType(NULL);
@@ -2826,84 +2840,84 @@ yyreduce:
     break;
 
   case 134:
-#line 1402 "XPath2Parser.y"
+#line 1405 "xpath.y"
     {
         (yyval.itemType) = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ANYTHING);
     ;}
     break;
 
   case 135:
-#line 1412 "XPath2Parser.y"
+#line 1415 "xpath.y"
     {
 		(yyval.qName) = (yyvsp[0].qName);
 	;}
     break;
 
   case 136:
-#line 1431 "XPath2Parser.y"
+#line 1434 "xpath.y"
     {
         (yyval.nodeTest) = (yyvsp[0].nodeTest);
     ;}
     break;
 
   case 137:
-#line 1434 "XPath2Parser.y"
+#line 1437 "xpath.y"
     {
         (yyval.nodeTest) = (yyvsp[0].nodeTest);
     ;}
     break;
 
   case 138:
-#line 1437 "XPath2Parser.y"
+#line 1440 "xpath.y"
     {
         (yyval.nodeTest) = (yyvsp[0].nodeTest);
     ;}
     break;
 
   case 139:
-#line 1440 "XPath2Parser.y"
+#line 1443 "xpath.y"
     {
         (yyval.nodeTest) = (yyvsp[0].nodeTest);
     ;}
     break;
 
   case 140:
-#line 1443 "XPath2Parser.y"
+#line 1446 "xpath.y"
     {
         (yyval.nodeTest) = (yyvsp[0].nodeTest);
     ;}
     break;
 
   case 141:
-#line 1446 "XPath2Parser.y"
+#line 1449 "xpath.y"
     {
 		(yyval.nodeTest) = (yyvsp[0].nodeTest);
 	;}
     break;
 
   case 142:
-#line 1449 "XPath2Parser.y"
+#line 1452 "xpath.y"
     {
 		(yyval.nodeTest) = (yyvsp[0].nodeTest);
 	;}
     break;
 
   case 143:
-#line 1452 "XPath2Parser.y"
+#line 1455 "xpath.y"
     {
 		(yyval.nodeTest) = (yyvsp[0].nodeTest);
 	;}
     break;
 
   case 144:
-#line 1455 "XPath2Parser.y"
+#line 1458 "xpath.y"
     {
 		(yyval.nodeTest) = (yyvsp[0].nodeTest);
 	;}
     break;
 
   case 145:
-#line 1466 "XPath2Parser.y"
+#line 1469 "xpath.y"
     {
 		NodeTest *step = new (MEMMGR) NodeTest();
         step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_NODE));
@@ -2912,7 +2926,7 @@ yyreduce:
     break;
 
   case 146:
-#line 1480 "XPath2Parser.y"
+#line 1483 "xpath.y"
     {
 		NodeTest *step = new (MEMMGR) NodeTest();
         step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_DOCUMENT));
@@ -2921,7 +2935,7 @@ yyreduce:
     break;
 
   case 147:
-#line 1485 "XPath2Parser.y"
+#line 1488 "xpath.y"
     {
 		NodeTest *step = new (MEMMGR) NodeTest();
         SequenceType::ItemType* elemTest=(yyvsp[-1].nodeTest)->getItemType();
@@ -2933,7 +2947,7 @@ yyreduce:
     break;
 
   case 148:
-#line 1493 "XPath2Parser.y"
+#line 1496 "xpath.y"
     {
 		NodeTest *step = new (MEMMGR) NodeTest();
         SequenceType::ItemType* elemTest=(yyvsp[-1].nodeTest)->getItemType();
@@ -2945,7 +2959,7 @@ yyreduce:
     break;
 
   case 149:
-#line 1509 "XPath2Parser.y"
+#line 1512 "xpath.y"
     {
 		NodeTest *step = new (MEMMGR) NodeTest();
         step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_TEXT));
@@ -2954,7 +2968,7 @@ yyreduce:
     break;
 
   case 150:
-#line 1522 "XPath2Parser.y"
+#line 1525 "xpath.y"
     {
 		NodeTest *step = new (MEMMGR) NodeTest();
         step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_COMMENT));
@@ -2963,27 +2977,25 @@ yyreduce:
     break;
 
   case 151:
-#line 1536 "XPath2Parser.y"
+#line 1539 "xpath.y"
     {
 		NodeTest *step = new (MEMMGR) NodeTest();
-        step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_PI, new (MEMMGR) QualifiedName((yyvsp[-1].wString))));
+        step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_PI, new (MEMMGR) QualifiedName((yyvsp[-1].str))));
 		(yyval.nodeTest) = step;
-		delete (yyvsp[-1].wString);
 	;}
     break;
 
   case 152:
-#line 1542 "XPath2Parser.y"
+#line 1544 "xpath.y"
     {
 		NodeTest *step = new (MEMMGR) NodeTest();
-        step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_PI, new (MEMMGR) QualifiedName((yyvsp[-1].wString))));
+        step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_PI, new (MEMMGR) QualifiedName((yyvsp[-1].str))));
 		(yyval.nodeTest) = step;
-		delete (yyvsp[-1].wString);
 	;}
     break;
 
   case 153:
-#line 1548 "XPath2Parser.y"
+#line 1549 "xpath.y"
     {
 		NodeTest *step = new (MEMMGR) NodeTest();
         step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_PI));
@@ -2992,7 +3004,7 @@ yyreduce:
     break;
 
   case 154:
-#line 1562 "XPath2Parser.y"
+#line 1563 "xpath.y"
     {
 		NodeTest *step = new (MEMMGR) NodeTest();
         step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ATTRIBUTE));
@@ -3001,7 +3013,7 @@ yyreduce:
     break;
 
   case 155:
-#line 1567 "XPath2Parser.y"
+#line 1568 "xpath.y"
     {
 		NodeTest *step = new (MEMMGR) NodeTest();
         step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ATTRIBUTE, (yyvsp[-1].qName)));
@@ -3010,7 +3022,7 @@ yyreduce:
     break;
 
   case 156:
-#line 1572 "XPath2Parser.y"
+#line 1573 "xpath.y"
     {
 		NodeTest *step = new (MEMMGR) NodeTest();
         step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ATTRIBUTE, (yyvsp[-3].qName), (yyvsp[-1].qName)));
@@ -3019,21 +3031,21 @@ yyreduce:
     break;
 
   case 157:
-#line 1584 "XPath2Parser.y"
+#line 1585 "xpath.y"
     {
     (yyval.qName) = (yyvsp[0].qName);
   ;}
     break;
 
   case 158:
-#line 1587 "XPath2Parser.y"
+#line 1588 "xpath.y"
     {
     (yyval.qName)=NULL;
   ;}
     break;
 
   case 159:
-#line 1599 "XPath2Parser.y"
+#line 1600 "xpath.y"
     {
 		NodeTest *step = new (MEMMGR) NodeTest();
         step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_SCHEMA_ATTRIBUTE, (yyvsp[-1].qName)));
@@ -3042,14 +3054,14 @@ yyreduce:
     break;
 
   case 160:
-#line 1611 "XPath2Parser.y"
+#line 1612 "xpath.y"
     {
     (yyval.qName) = (yyvsp[0].qName);
   ;}
     break;
 
   case 161:
-#line 1622 "XPath2Parser.y"
+#line 1623 "xpath.y"
     {
 		NodeTest *step = new (MEMMGR) NodeTest();
         step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ELEMENT));
@@ -3058,7 +3070,7 @@ yyreduce:
     break;
 
   case 162:
-#line 1627 "XPath2Parser.y"
+#line 1628 "xpath.y"
     {
 		NodeTest *step = new (MEMMGR) NodeTest();
         step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ELEMENT, (yyvsp[-1].qName)));
@@ -3067,7 +3079,7 @@ yyreduce:
     break;
 
   case 163:
-#line 1632 "XPath2Parser.y"
+#line 1633 "xpath.y"
     {
 		NodeTest *step = new (MEMMGR) NodeTest();
         step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ELEMENT, (yyvsp[-3].qName), (yyvsp[-1].qName)));
@@ -3076,7 +3088,7 @@ yyreduce:
     break;
 
   case 164:
-#line 1637 "XPath2Parser.y"
+#line 1638 "xpath.y"
     {
 		NodeTest *step = new (MEMMGR) NodeTest();
         SequenceType::ItemType* pType=new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ELEMENT, (yyvsp[-4].qName), (yyvsp[-2].qName));
@@ -3087,21 +3099,21 @@ yyreduce:
     break;
 
   case 165:
-#line 1652 "XPath2Parser.y"
+#line 1653 "xpath.y"
     {
     (yyval.qName) = (yyvsp[0].qName);
   ;}
     break;
 
   case 166:
-#line 1655 "XPath2Parser.y"
+#line 1656 "xpath.y"
     {
     (yyval.qName)=NULL;
   ;}
     break;
 
   case 167:
-#line 1667 "XPath2Parser.y"
+#line 1668 "xpath.y"
     {
 		NodeTest *step = new (MEMMGR) NodeTest();
         step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_SCHEMA_ELEMENT, (yyvsp[-1].qName)));
@@ -3110,38 +3122,37 @@ yyreduce:
     break;
 
   case 168:
-#line 1678 "XPath2Parser.y"
+#line 1679 "xpath.y"
     {
     (yyval.qName) = (yyvsp[0].qName);
   ;}
     break;
 
   case 169:
-#line 1688 "XPath2Parser.y"
+#line 1689 "xpath.y"
     {
        (yyval.qName) = (yyvsp[0].qName);
    ;}
     break;
 
   case 170:
-#line 1697 "XPath2Parser.y"
+#line 1698 "xpath.y"
     {
        (yyval.qName) = (yyvsp[0].qName);
    ;}
     break;
 
   case 171:
-#line 1706 "XPath2Parser.y"
+#line 1707 "xpath.y"
     {
        (yyval.qName) = (yyvsp[0].qName);
    ;}
     break;
 
   case 172:
-#line 1715 "XPath2Parser.y"
+#line 1716 "xpath.y"
     {
-		QualifiedName *qn = new (MEMMGR) QualifiedName((yyvsp[0].wString), MEMMGR);
-		delete [] (yyvsp[0].wString);
+      QualifiedName *qn = new (MEMMGR) QualifiedName((yyvsp[0].str), MEMMGR);
 	  (yyval.qName) = qn;
 	;}
     break;
@@ -3151,7 +3162,7 @@ yyreduce:
     }
 
 /* Line 1126 of yacc.c.  */
-#line 3155 "XPath2Parser.cpp"
+#line 3166 "XPath2Parser.cpp"
 
   yyvsp -= yylen;
   yyssp -= yylen;
@@ -3419,20 +3430,9 @@ yyreturn:
 }
 
 
-#line 1723 "XPath2Parser.y"
+#line 1723 "xpath.y"
 
 
-void yyerror(const char *s)
-{
-  XQThrow(StaticErrorException, X("XPath2Parser.y"), X(s));
-}
+}	// namespace XPath2
 
-inline VectorOfASTNodes packageArgs(ASTNode *arg1Impl, ASTNode *arg2Impl, XPath2MemoryManager* memMgr)
-{
-	VectorOfASTNodes args=VectorOfASTNodes(2,(ASTNode*)NULL,XQillaAllocator<ASTNode*>(memMgr));
-	args[0]=arg1Impl;
-	args[1]=arg2Impl;
-
-	return args;
-}
 

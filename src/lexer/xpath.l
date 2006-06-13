@@ -13,8 +13,8 @@
 
 %{
 
-#include "XQueryScanner.hpp"
-#include "../parser/XQueryParser.hpp"
+#include "XPathScanner.hpp"
+#include "../parser/XPath2Parser.hpp"
 
 #define YY_STACK_USED 1
 #define RECOGNIZE(token)	return token
@@ -47,17 +47,6 @@ Digit				([\x0030-\x0039]|[\x0660-\x0669]|[\x06F0-\x06F9]|[\x0966-\x096F]|[\x09E
 CombiningChar		([\x0300-\x0345]|[\x0360-\x0361]|[\x0483-\x0486]|[\x0591-\x05A1]|[\x05A3-\x05B9]|[\x05BB-\x05BD]|[\x05BF]|[\x05C1-\x05C2]|[\x05C4]|[\x064B-\x0652]|[\x0670]|[\x06D6-\x06DC]|[\x06DD-\x06DF]|[\x06E0-\x06E4]|[\x06E7-\x06E8]|[\x06EA-\x06ED]|[\x0901-\x0903]|[\x093C]|[\x093E-\x094C]|[\x094D]|[\x0951-\x0954]|[\x0962-\x0963]|[\x0981-\x0983]|[\x09BC]|[\x09BE]|[\x09BF]|[\x09C0-\x09C4]|[\x09C7-\x09C8]|[\x09CB-\x09CD]|[\x09D7]|[\x09E2-\x09E3]|[\x0A02]|[\x0A3C]|[\x0A3E]|[\x0A3F]|[\x0A40-\x0A42]|[\x0A47-\x0A48]|[\x0A4B-\x0A4D]|[\x0A70-\x0A71]|[\x0A81-\x0A83]|[\x0ABC]|[\x0ABE-\x0AC5]|[\x0AC7-\x0AC9]|[\x0ACB-\x0ACD]|[\x0B01-\x0B03]|[\x0B3C]|[\x0B3E-\x0B43]|[\x0B47-\x0B48]|[\x0B4B-\x0B4D]|[\x0B56-\x0B57]|[\x0B82-\x0B83]|[\x0BBE-\x0BC2]|[\x0BC6-\x0BC8]|[\x0BCA-\x0BCD]|[\x0BD7]|[\x0C01-\x0C03]|[\x0C3E-\x0C44]|[\x0C46-\x0C48]|[\x0C4A-\x0C4D]|[\x0C55-\x0C56]|[\x0C82-\x0C83]|[\x0CBE-\x0CC4]|[\x0CC6-\x0CC8]|[\x0CCA-\x0CCD]|[\x0CD5-\x0CD6]|[\x0D02-\x0D03]|[\x0D3E-\x0D43]|[\x0D46-\x0D48]|[\x0D4A-\x0D4D]|[\x0D57]|[\x0E31]|[\x0E34-\x0E3A]|[\x0E47-\x0E4E]|[\x0EB1]|[\x0EB4-\x0EB9]|[\x0EBB-\x0EBC]|[\x0EC8-\x0ECD]|[\x0F18-\x0F19]|[\x0F35]|[\x0F37]|[\x0F39]|[\x0F3E]|[\x0F3F]|[\x0F71-\x0F84]|[\x0F86-\x0F8B]|[\x0F90-\x0F95]|[\x0F97]|[\x0F99-\x0FAD]|[\x0FB1-\x0FB7]|[\x0FB9]|[\x20D0-\x20DC]|[\x20E1]|[\x302A-\x302F]|[\x3099]|[\x309A])
 Extender			([\x00B7]|[\x02D0]|[\x02D1]|[\x0387]|[\x0640]|[\x0E46]|[\x0EC6]|[\x3005]|[\x3031-\x3035]|[\x309D-\x309E]|[\x30FC-\x30FE])
 Letter				{BaseChar}|{Ideographic}
-/* [20]    CData    ::=    (Char* - (Char* ']]>' Char*))  */
-CharMinusBrack		([\x0009]|[\x000D]|[\x000A]|[\x0020-\x005C]|[\x005E-\xD7FF]|[\xE000-\xFFFD])
-CharMinusGT			([\x0009]|[\x000D]|[\x000A]|[\x0020-\x003D]|[\x003F-\xD7FF]|[\xE000-\xFFFD])
-CDATAContent		(({CharMinusBrack}|("]"{CharMinusBrack})|("]]"{CharMinusGT}))*)
-/* [16]    PI    ::=    '<?' PITarget (S (Char* - (Char* '?>' Char*)))? '?>' */
-CharMinusQuestion	([\x0009]|[\x000D]|[\x000A]|[\x0020-\x003E]|[\x0040-\xD7FF]|[\xE000-\xFFFD])
-PIContent			(({CharMinusQuestion}|("?"{CharMinusGT}))*)
-/* [66]    PragmaContents	   ::=   	(Char* - (Char* '#)' Char*)) */
-CharMinusSharp		([\x0009]|[\x000D]|[\x000A]|[\x0020-\x0022]|[\x0024-\xD7FF]|[\xE000-\xFFFD])
-CharMinusClosePar	([\x0009]|[\x000D]|[\x000A]|[\x0020-\x0028]|[\x002A-\xD7FF]|[\xE000-\xFFFD])
-PragmaContents		(({CharMinusSharp}|("#"{CharMinusClosePar}))*)
 
 /* from Namespace spec */
 NCNameChar			{Letter}|{Digit}|"."|"-"|"_"|{CombiningChar}|{Extender}
@@ -79,48 +68,28 @@ PredefinedEntityRef	"&"("lt"|"gt"|"amp"|"quot"|"apos")";"
 HexDigits			([0-9]|[a-f]|[A-F])+ 
 CharRef				"&#"({Digits}|("x"{HexDigits}))";"
 EscapeApos			"''"
-PITarget			{NCName}
-
-/* CommentChar := {Char} - "-" */
-CommentChar			([\x0009]|[\x000D]|[\x000A]|[\x0020-\x002C]|[\x002E-\xD7FF]|[\xE000-\xFFFD])
-CommentContent		(({CommentChar}|("-"{CommentChar}))*)
 
 NotColon			[^:]
 
 %option never-interactive
 %option noyywrap
-%option yyclass="CXQueryScanner"
-%option prefix="xquery"
+%option yyclass="CXPathScanner"
+%option prefix="xpath"
 %option c++
 
-%x ELEMENT_CONTENT
-%x PROCESSING_INSTRUCTION
-%x PROCESSING_INSTRUCTION_CONTENT 
-%x QUOT_ATTRIBUTE_CONTENT
-%x APOS_ATTRIBUTE_CONTENT
-%x START_TAG
-%x END_TAG
 %x OPERATOR
 %x ITEMTYPE
-%x NAMESPACEDECL
-%x NAMESPACEKEYWORD
-%x BOUNDARYSPACE_DECL
-%x COPYNAMESPACE_DECL
 %x VARNAME
-%x ATTRIBUTE_DECL
 %x KINDTEST
 %x KINDTESTFORPI
 %x CLOSEKINDTEST
 %x EXPR_COMMENT
 %x OCCURRENCEINDICATOR
 %x SINGLETYPE
-%x PRAGMA_NAME
-%x PRAGMA_CONTENT
-%x XQUERYDECL
 
 %%
 
-<INITIAL,OPERATOR,BOUNDARYSPACE_DECL,COPYNAMESPACE_DECL,XQUERYDECL,NAMESPACEDECL,NAMESPACEKEYWORD,KINDTEST,KINDTESTFORPI,CLOSEKINDTEST,ITEMTYPE,SINGLETYPE,ATTRIBUTE_DECL,PRAGMA_NAME>{S}		if(m_bReportWhiteSpace) RECOGNIZE(_XQUERY_WHITESPACE_);
+<INITIAL,OPERATOR,KINDTEST,KINDTESTFORPI,CLOSEKINDTEST,ITEMTYPE,SINGLETYPE>{S}		if(m_bReportWhiteSpace) RECOGNIZE(_XQUERY_WHITESPACE_);
 
 <INITIAL>{DecimalLiteral}									REJECT_IF_NOT_TERMINATED; yylval.str=allocate_string((XMLCh*)yytext); BEGIN(OPERATOR); RECOGNIZE(_DECIMAL_NUMBER_);
 <INITIAL>{DoubleLiteral}									REJECT_IF_NOT_TERMINATED; yylval.str=allocate_string((XMLCh*)yytext); BEGIN(OPERATOR); RECOGNIZE(_DOUBLE_NUMBER_);
@@ -157,50 +126,21 @@ NotColon			[^:]
 																case KINDTEST:				BEGIN(CLOSEKINDTEST); RECOGNIZE(_STAR_);
 																}
 															}
-<INITIAL,OPERATOR,XQUERYDECL,NAMESPACEDECL,NAMESPACEKEYWORD,KINDTESTFORPI>{StringLiteral}	{
-																							yylval.str=allocate_string_and_unescape(*yytext,(XMLCh*)(yytext+1),XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen((XMLCh*)yytext)-2);
-																							switch(YYSTATE)
-																							{
-																							case INITIAL:
-																							case OPERATOR:			BEGIN(OPERATOR); break;
-																							case KINDTESTFORPI:		break;
-																								case XQUERYDECL:
-																							case NAMESPACEDECL:
-																							case NAMESPACEKEYWORD:	BEGIN(INITIAL); break;
-																							}
-																							RECOGNIZE(_STRING_LITERAL_);
-																						}
-
-<INITIAL>"declare"											REJECT_IF_NOT_TERMINATED; RECOGNIZE(_DECLARE_);
-<INITIAL>"declare"{S}"option"								REJECT_IF_NOT_TERMINATED; RECOGNIZE(_DECLARE_OPTION_);
-<INITIAL>"declare"{S}"variable"								REJECT_IF_NOT_TERMINATED; RECOGNIZE(_DECLARE_VARIABLE_);
-<INITIAL>"declare"{S}"function"								REJECT_IF_NOT_TERMINATED; RECOGNIZE(_DECLARE_FUNCTION_);
-
-<INITIAL>"construction"										REJECT_IF_NOT_TERMINATED; BEGIN(OPERATOR); RECOGNIZE(_CONSTRUCTION_);
-<INITIAL>"ordering"											REJECT_IF_NOT_TERMINATED; BEGIN(OPERATOR); RECOGNIZE(_ORDERING_);
-<INITIAL>"default"{S}"order"								REJECT_IF_NOT_TERMINATED; BEGIN(OPERATOR); RECOGNIZE(_DEFAULT_ORDER_);
-
-<INITIAL>"copy-namespaces"									REJECT_IF_NOT_TERMINATED; BEGIN(COPYNAMESPACE_DECL); RECOGNIZE(_COPY_NAMESPACES_);
-
-<INITIAL>"default"{S}"collation"							REJECT_IF_NOT_TERMINATED; BEGIN(NAMESPACEDECL); RECOGNIZE(_DEFAULT_COLLATION_);
-<INITIAL>"namespace"										REJECT_IF_NOT_TERMINATED; BEGIN(NAMESPACEDECL); RECOGNIZE(_NAMESPACE_);
-<INITIAL>"base-uri"											REJECT_IF_NOT_TERMINATED; BEGIN(NAMESPACEDECL); RECOGNIZE(_BASEURI_);
-<INITIAL>"default"{S}"element"								REJECT_IF_NOT_TERMINATED; BEGIN(NAMESPACEKEYWORD); RECOGNIZE(_DEFAULT_ELEMENT_);
-<INITIAL>"default"{S}"function"								REJECT_IF_NOT_TERMINATED; BEGIN(NAMESPACEKEYWORD); RECOGNIZE(_DEFAULT_FUNCTION_);
-
-<INITIAL>"boundary-space"									REJECT_IF_NOT_TERMINATED; BEGIN(BOUNDARYSPACE_DECL); RECOGNIZE(_BOUNDARYSPACE_);
-
-<INITIAL>"module"{S}"namespace"								REJECT_IF_NOT_TERMINATED; BEGIN(NAMESPACEDECL); RECOGNIZE(_MODULE_NAMESPACE_);
-<INITIAL>"import"{S}"schema"								REJECT_IF_NOT_TERMINATED; BEGIN(NAMESPACEKEYWORD); RECOGNIZE(_IMPORT_SCHEMA_);
-<INITIAL>"import"{S}"module"								REJECT_IF_NOT_TERMINATED; BEGIN(NAMESPACEKEYWORD); RECOGNIZE(_IMPORT_MODULE_);
+<INITIAL,OPERATOR,KINDTESTFORPI>{StringLiteral}	            {
+																yylval.str=allocate_string_and_unescape(*yytext,(XMLCh*)(yytext+1),XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen((XMLCh*)yytext)-2);
+																switch(YYSTATE)
+																{
+																case INITIAL:
+																case OPERATOR:			BEGIN(OPERATOR); break;
+																case KINDTESTFORPI:		break;
+																}
+																RECOGNIZE(_STRING_LITERAL_);
+															}
 
 <INITIAL,OPERATOR,ITEMTYPE>"$"								BEGIN(VARNAME); RECOGNIZE(_DOLLAR_SIGN_);
 <INITIAL,OPERATOR>"for"										REJECT_IF_NOT_TERMINATED; REJECT_IF_NOT_FOLLOWED1(YYSTATE, _DOLLAR_SIGN_); RECOGNIZE(_FOR_);
-<INITIAL,OPERATOR>"let"										REJECT_IF_NOT_TERMINATED; REJECT_IF_NOT_FOLLOWED1(YYSTATE, _DOLLAR_SIGN_); RECOGNIZE(_LET_);
 <INITIAL>"some"												REJECT_IF_NOT_TERMINATED; REJECT_IF_NOT_FOLLOWED1(YYSTATE, _DOLLAR_SIGN_); RECOGNIZE(_SOME_);
 <INITIAL>"every"											REJECT_IF_NOT_TERMINATED; REJECT_IF_NOT_FOLLOWED1(YYSTATE, _DOLLAR_SIGN_); RECOGNIZE(_EVERY_);
-
-<INITIAL,OPERATOR,ITEMTYPE>")"{WhitespaceChar}*"as"			REJECT_IF_NOT_TERMINATED; BEGIN(ITEMTYPE); RECOGNIZE(_EXPR_AS_);
 
 <INITIAL,ITEMTYPE,KINDTEST>"element"{WhitespaceChar}*"("	{
 																REJECT_IF_COLON;
@@ -274,101 +214,9 @@ NotColon			[^:]
 																	RECOGNIZE(_PROCESSING_INSTRUCTION_LPAR_);
 																}
 
-<INITIAL,ELEMENT_CONTENT>"<!--"{CommentContent}"-->"		{
-																yylval.str=allocate_string((XMLCh*)(yytext+4),XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen((XMLCh*)(yytext+4))-3); 
-																if(YYSTATE==INITIAL)
-																	BEGIN(OPERATOR);
-																RECOGNIZE(_XML_COMMENT_);
-															}
+<OPERATOR,ITEMTYPE>"<"				                        BEGIN(INITIAL); RECOGNIZE(_LT_);
 
-<INITIAL,ELEMENT_CONTENT>"<?"								{
-																int stateToPush=(YYSTATE==INITIAL)?OPERATOR:YYSTATE;
-																PUSH(stateToPush);
-																BEGIN(PROCESSING_INSTRUCTION); 
-																RECOGNIZE(_PROCESSING_INSTRUCTION_START_);
-															}
-
-<INITIAL,ELEMENT_CONTENT>"<![CDATA["{CDATAContent}"]]>"		{
-																yylval.str=allocate_string((XMLCh*)(yytext+9),XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen((XMLCh*)(yytext+9))-3); 
-																if(YYSTATE==INITIAL)
-																	BEGIN(OPERATOR);
-																RECOGNIZE(_CDATA_SECTION_);
-															}
-
-<INITIAL,OPERATOR,ITEMTYPE,ELEMENT_CONTENT>"<"				{
-																switch(YYSTATE)
-																{
-																case INITIAL:
-																	PUSH(OPERATOR); BEGIN(START_TAG); RECOGNIZE(_START_TAG_OPEN_);
-																case OPERATOR:
-																case ITEMTYPE:
-																	BEGIN(INITIAL); RECOGNIZE(_LT_);
-																case ELEMENT_CONTENT:
-																	PUSH_CURRENT(); BEGIN(START_TAG); RECOGNIZE(_START_TAG_OPEN_);
-																}
-															}
-
-<INITIAL,OPERATOR>"}"										POP(); RECOGNIZE(_RBRACE_);
-
-<INITIAL>"validate"											REJECT_IF_NOT_TERMINATED; REJECT_IF_NOT_FOLLOWED1(YYSTATE, _LBRACE_); RECOGNIZE(_VALIDATE_CONTENT_);
-<INITIAL>"validate"{S}"lax"									PUSH(OPERATOR); REJECT_IF_NOT_FOLLOWED1(YYSTATE, _LBRACE_); RECOGNIZE(_VALIDATE_MODE_LAX_);
-<INITIAL>"validate"{S}"strict"								PUSH(OPERATOR); REJECT_IF_NOT_FOLLOWED1(YYSTATE, _LBRACE_); RECOGNIZE(_VALIDATE_MODE_STRICT_);
-
-<INITIAL>"typeswitch"										REJECT_IF_NOT_TERMINATED; REJECT_IF_NOT_FOLLOWED1(YYSTATE, _LPAR_); RECOGNIZE(_TYPESWITCH_);
-
-<INITIAL>"element"/{WhitespaceChar}*"{"						RECOGNIZE(_ELEMENT_CONSTR_);
-<INITIAL>"attribute"/{WhitespaceChar}*"{"					RECOGNIZE(_ATTRIBUTE_CONSTR_);
-
-<INITIAL>"attribute"{S}{QName}/{WhitespaceChar}*"{"			{
-																XMLCh* beginning=(XMLCh*)(yytext+9);
-																while(iswspace(*beginning)) beginning++;
-																yylval.str=allocate_string(beginning); 
-																RECOGNIZE(_NAMED_ATTRIBUTE_CONSTR_);
-															}
-<INITIAL>"element"{S}{QName}/{WhitespaceChar}*"{"			{
-																XMLCh* beginning=(XMLCh*)(yytext+7);
-																while(iswspace(*beginning)) beginning++;
-																yylval.str=allocate_string(beginning); 
-																RECOGNIZE(_NAMED_ELEMENT_CONSTR_);
-															}
-<INITIAL>"document"/{WhitespaceChar}*"{"					RECOGNIZE(_DOCUMENT_CONSTR_);
-<INITIAL>"text"/{WhitespaceChar}*"{"						RECOGNIZE(_TEXT_CONSTR_);
-<INITIAL>"processing-instruction"/{WhitespaceChar}*"{"		RECOGNIZE(_PROCESSING_INSTRUCTION_CONSTR_);
-<INITIAL>"processing-instruction"{S}{NCName}/{WhitespaceChar}*"{"	{
-																		XMLCh* beginning=(XMLCh*)(yytext+22);
-																		while(iswspace(*beginning)) beginning++;
-																		yylval.str=allocate_string(beginning); 
-																		RECOGNIZE(_NAMED_PROCESSING_INSTRUCTION_CONSTR_);
-																	}
-<INITIAL>"comment"/{WhitespaceChar}*"{"						RECOGNIZE(_COMMENT_CONSTR_);
-
-<INITIAL,OPERATOR,XQUERYDECL,NAMESPACEDECL,NAMESPACEKEYWORD,BOUNDARYSPACE_DECL,COPYNAMESPACE_DECL,SINGLETYPE,ITEMTYPE,KINDTEST,KINDTESTFORPI,CLOSEKINDTEST,OCCURRENCEINDICATOR,VARNAME,EXPR_COMMENT>"(:"						beginComment(); PUSH_CURRENT(); BEGIN(EXPR_COMMENT); if(m_bReportWhiteSpace) RECOGNIZE(_XQUERY_COMMENT_);
-
-<INITIAL>"(#"{WhitespaceChar}*								BEGIN(PRAGMA_NAME); RECOGNIZE(_PRAGMA_OPEN_);
-
-<INITIAL,OPERATOR,ITEMTYPE,XQUERYDECL>";"					BEGIN(INITIAL); RECOGNIZE(_SEMICOLON_);
-
-<INITIAL,OPERATOR,KINDTEST,CLOSEKINDTEST,ELEMENT_CONTENT,QUOT_ATTRIBUTE_CONTENT,APOS_ATTRIBUTE_CONTENT>"{"	{
-																switch(YYSTATE)
-																{
-																case ELEMENT_CONTENT:
-																case QUOT_ATTRIBUTE_CONTENT:
-																case APOS_ATTRIBUTE_CONTENT:	PUSH_CURRENT(); BEGIN(INITIAL); break;
-																case INITIAL:
-																case OPERATOR:
-																case KINDTEST:
-																case CLOSEKINDTEST:				PUSH(OPERATOR); BEGIN(INITIAL); break;
-																}
-																RECOGNIZE(_LBRACE_);
-															}
-
-<INITIAL>"ordered"/{WhitespaceChar}*"{"						PUSH(OPERATOR); BEGIN(INITIAL); RECOGNIZE(_ORDERED_);
-<INITIAL>"unordered"/{WhitespaceChar}*"{"					PUSH(OPERATOR); BEGIN(INITIAL); RECOGNIZE(_UNORDERED_);
-
-<INITIAL>"xquery"											REJECT_IF_NOT_TERMINATED; REJECT_IF_NOT_FOLLOWED1(XQUERYDECL, _VERSION_); BEGIN(XQUERYDECL); RECOGNIZE(_XQUERY_);
-<XQUERYDECL>"version"										REJECT_IF_NOT_TERMINATED; RECOGNIZE(_VERSION_);
-
-<INITIAL>"encoding"											REJECT_IF_NOT_TERMINATED; RECOGNIZE(_ENCODING_);
+<INITIAL,OPERATOR,SINGLETYPE,ITEMTYPE,KINDTEST,KINDTESTFORPI,CLOSEKINDTEST,OCCURRENCEINDICATOR,VARNAME,EXPR_COMMENT>"(:"						beginComment(); PUSH_CURRENT(); BEGIN(EXPR_COMMENT); if(m_bReportWhiteSpace) RECOGNIZE(_XQUERY_COMMENT_);
 
 <INITIAL>"@"												RECOGNIZE(_AT_);
 
@@ -384,7 +232,7 @@ NotColon			[^:]
 <INITIAL>"preceding-sibling"{WhitespaceChar}*"::"			RECOGNIZE(_AXIS_PRECEDING_SIBLING_);
 <INITIAL>"preceding"{WhitespaceChar}*"::"					RECOGNIZE(_AXIS_PRECEDING_);
 <INITIAL>"self"{WhitespaceChar}*"::"						RECOGNIZE(_AXIS_SELF_);
-<INITIAL>"namespace"{WhitespaceChar}*"::"					return error("Axis 'namespace' is not part of the XQuery language");
+<INITIAL>"namespace"{WhitespaceChar}*"::"					RECOGNIZE(_AXIS_NAMESPACE_);
 <INITIAL,OPERATOR,ITEMTYPE,CLOSEKINDTEST>","				{
 																if(YYSTATE==CLOSEKINDTEST)
 																	BEGIN(KINDTEST); 
@@ -395,7 +243,6 @@ NotColon			[^:]
 <INITIAL>"if"												REJECT_IF_NOT_TERMINATED; REJECT_IF_NOT_FOLLOWED1(YYSTATE, _LPAR_);RECOGNIZE(_IF_);
 <INITIAL,ITEMTYPE>"("										BEGIN(INITIAL); RECOGNIZE(_LPAR_);
 <INITIAL,OPERATOR,ITEMTYPE>"-"								BEGIN(INITIAL); RECOGNIZE(_MINUS_);
-<INITIAL,OPERATOR,ITEMTYPE>"at"								REJECT_IF_NOT_TERMINATED; BEGIN(INITIAL); RECOGNIZE(_AT_KEYWORD_);
 <INITIAL,OPERATOR,OCCURRENCEINDICATOR>"+"					{
 																if(YYSTATE==OCCURRENCEINDICATOR)
 																{
@@ -411,9 +258,7 @@ NotColon			[^:]
 
 <OPERATOR,ITEMTYPE>"then"									REJECT_IF_NOT_TERMINATED; BEGIN(INITIAL); RECOGNIZE(_THEN_);
 <OPERATOR,ITEMTYPE>"else"									REJECT_IF_NOT_TERMINATED; BEGIN(INITIAL); RECOGNIZE(_ELSE_);
-<OPERATOR,ITEMTYPE>"external"								REJECT_IF_NOT_TERMINATED; BEGIN(INITIAL); RECOGNIZE(_EXTERNAL_);
 <OPERATOR,ITEMTYPE>"and"									REJECT_IF_NOT_TERMINATED; BEGIN(INITIAL); RECOGNIZE(_AND_);
-<OPERATOR,ITEMTYPE>":="										BEGIN(INITIAL); RECOGNIZE(_COLON_EQ_);
 <OPERATOR,ITEMTYPE>"div"									REJECT_IF_NOT_TERMINATED; BEGIN(INITIAL); RECOGNIZE(_DIV_);
 <OPERATOR,ITEMTYPE>"="										BEGIN(INITIAL); RECOGNIZE(_EQUALS_);
 <OPERATOR,ITEMTYPE>"except"									REJECT_IF_NOT_TERMINATED; BEGIN(INITIAL); RECOGNIZE(_EXCEPT_);
@@ -435,54 +280,25 @@ NotColon			[^:]
 <OPERATOR,ITEMTYPE>"<<"										BEGIN(INITIAL); RECOGNIZE(_LT_LT_);
 <OPERATOR,ITEMTYPE>"mod"									REJECT_IF_NOT_TERMINATED; BEGIN(INITIAL); RECOGNIZE(_MOD_);
 <OPERATOR,ITEMTYPE>"!="										BEGIN(INITIAL); RECOGNIZE(_NOT_EQUALS_);
-<OPERATOR,ITEMTYPE>"order"{S}"by"							REJECT_IF_NOT_TERMINATED; BEGIN(INITIAL); RECOGNIZE(_ORDER_BY_);
-<OPERATOR,ITEMTYPE>"stable"{S}"order"{S}"by"				REJECT_IF_NOT_TERMINATED; BEGIN(INITIAL); RECOGNIZE(_STABLE_ORDER_BY_);
 <OPERATOR,ITEMTYPE>"or"										REJECT_IF_NOT_TERMINATED; BEGIN(INITIAL); RECOGNIZE(_OR_);
 <OPERATOR,ITEMTYPE>"return"									REJECT_IF_NOT_TERMINATED; BEGIN(INITIAL); RECOGNIZE(_RETURN_);
 <OPERATOR,ITEMTYPE>"satisfies"								REJECT_IF_NOT_TERMINATED; BEGIN(INITIAL); RECOGNIZE(_SATISFIES_);
 <OPERATOR,ITEMTYPE>"to"										REJECT_IF_NOT_TERMINATED; BEGIN(INITIAL); RECOGNIZE(_TO_);
 <OPERATOR,ITEMTYPE>"union"									REJECT_IF_NOT_TERMINATED; BEGIN(INITIAL); RECOGNIZE(_UNION_);
 <OPERATOR,ITEMTYPE>"|"										BEGIN(INITIAL); RECOGNIZE(_VERTICAL_BAR_);
-<OPERATOR,ITEMTYPE>"where"									REJECT_IF_NOT_TERMINATED; BEGIN(INITIAL); RECOGNIZE(_WHERE_);
-<OPERATOR>"preserve"										REJECT_IF_NOT_TERMINATED; BEGIN(INITIAL); RECOGNIZE(_PRESERVE_);
-<OPERATOR>"strip"											REJECT_IF_NOT_TERMINATED; BEGIN(INITIAL); RECOGNIZE(_STRIP_);
-<OPERATOR>"ordered"											REJECT_IF_NOT_TERMINATED; BEGIN(INITIAL); RECOGNIZE(_ORDERING_ORDERED_);
-<OPERATOR>"unordered"										REJECT_IF_NOT_TERMINATED; BEGIN(INITIAL); RECOGNIZE(_ORDERING_UNORDERED_);
 
 <OPERATOR,ITEMTYPE>"castable"{S}"as"						REJECT_IF_NOT_TERMINATED; BEGIN(SINGLETYPE); RECOGNIZE(_CASTABLE_AS_);
 <OPERATOR,ITEMTYPE>"cast"{S}"as"							REJECT_IF_NOT_TERMINATED; BEGIN(SINGLETYPE); RECOGNIZE(_CAST_AS_);
 
 <OPERATOR,ITEMTYPE>"instance"{S}"of"						REJECT_IF_NOT_TERMINATED; BEGIN(ITEMTYPE); RECOGNIZE(_INSTANCE_OF_);
 <OPERATOR,ITEMTYPE>"treat"{S}"as"							REJECT_IF_NOT_TERMINATED; BEGIN(ITEMTYPE); RECOGNIZE(_TREAT_AS_);
-<OPERATOR,ITEMTYPE>"case"									REJECT_IF_NOT_TERMINATED; BEGIN(ITEMTYPE); RECOGNIZE(_CASE_);
-<OPERATOR,ITEMTYPE>"as"										REJECT_IF_NOT_TERMINATED; BEGIN(ITEMTYPE); RECOGNIZE(_AS_);
 
 <OPERATOR,OCCURRENCEINDICATOR>"?"							BEGIN(OPERATOR); RECOGNIZE(_ZERO_OR_ONE_);
 
 <OPERATOR>"]"												RECOGNIZE(_RBRACK_);
-<OPERATOR>"collation"										REJECT_IF_NOT_TERMINATED; RECOGNIZE(_COLLATION_);
-<OPERATOR>"ascending"										REJECT_IF_NOT_TERMINATED; RECOGNIZE(_ASCENDING_);
-<OPERATOR>"descending"										REJECT_IF_NOT_TERMINATED; RECOGNIZE(_DESCENDING_);
-<OPERATOR>"empty"{S}"greatest"								REJECT_IF_NOT_TERMINATED; RECOGNIZE(_EMPTY_GREATEST_);
-<OPERATOR>"empty"{S}"least"									REJECT_IF_NOT_TERMINATED; RECOGNIZE(_EMPTY_LEAST_);
-<OPERATOR>"default"											REJECT_IF_NOT_TERMINATED; RECOGNIZE(_DEFAULT_);
 
-<NAMESPACEDECL>"="											RECOGNIZE(_EQUALS_);
-<NAMESPACEDECL,KINDTESTFORPI>{NCName}						REJECT_IF_NOT_TERMINATED; yylval.str=allocate_string((XMLCh*)yytext); RECOGNIZE(_NCNAME_);
+<KINDTESTFORPI>{NCName}						                REJECT_IF_NOT_TERMINATED; yylval.str=allocate_string((XMLCh*)yytext); RECOGNIZE(_NCNAME_);
 
-<NAMESPACEKEYWORD>"namespace"								REJECT_IF_NOT_TERMINATED; BEGIN(NAMESPACEDECL); RECOGNIZE(_NAMESPACE_);
-<NAMESPACEKEYWORD>"default"{S}"element"						REJECT_IF_NOT_TERMINATED; RECOGNIZE(_DEFAULT_ELEMENT_);
-
-<BOUNDARYSPACE_DECL>"preserve"								REJECT_IF_NOT_TERMINATED; BEGIN(INITIAL); RECOGNIZE(_PRESERVE_);
-<BOUNDARYSPACE_DECL>"strip"									REJECT_IF_NOT_TERMINATED; BEGIN(INITIAL); RECOGNIZE(_STRIP_);
-
-<COPYNAMESPACE_DECL>"preserve"								REJECT_IF_NOT_TERMINATED; RECOGNIZE(_PRESERVE_);
-<COPYNAMESPACE_DECL>"no-preserve"							REJECT_IF_NOT_TERMINATED; RECOGNIZE(_NO_PRESERVE_);
-<COPYNAMESPACE_DECL>","										RECOGNIZE(_COMMA_);
-<COPYNAMESPACE_DECL>"inherit"								REJECT_IF_NOT_TERMINATED; BEGIN(INITIAL); RECOGNIZE(_INHERIT_);
-<COPYNAMESPACE_DECL>"no-inherit"							REJECT_IF_NOT_TERMINATED; BEGIN(INITIAL); RECOGNIZE(_NO_INHERIT_);
-
-<ITEMTYPE>"void"{WhitespaceChar}*"("{WhitespaceChar}*")"	BEGIN(OPERATOR); RECOGNIZE(_EMPTY_);
 <ITEMTYPE>"empty-sequence"{WhitespaceChar}*"("{WhitespaceChar}*")"	BEGIN(OPERATOR); RECOGNIZE(_EMPTY_);
 
 <ITEMTYPE>"item"{WhitespaceChar}*"("{WhitespaceChar}*")"	BEGIN(OCCURRENCEINDICATOR); RECOGNIZE(_ITEM_);
@@ -495,80 +311,9 @@ NotColon			[^:]
 																yyless(0);
 															}
 
-<ATTRIBUTE_DECL>"/>"										POP(); RECOGNIZE(_EMPTY_TAG_CLOSE_);
-
-<ATTRIBUTE_DECL>">"											BEGIN(ELEMENT_CONTENT); RECOGNIZE(_TAG_CLOSE_);
-
-<ATTRIBUTE_DECL,QUOT_ATTRIBUTE_CONTENT>["]					{
-																if(YYSTATE==ATTRIBUTE_DECL)
-																{
-																	BEGIN(QUOT_ATTRIBUTE_CONTENT); RECOGNIZE(_OPEN_QUOT_);
-																}
-																else if(YYSTATE==QUOT_ATTRIBUTE_CONTENT)
-																{
-																	BEGIN(ATTRIBUTE_DECL); RECOGNIZE(_CLOSE_QUOT_);
-																}
-															}
-<ATTRIBUTE_DECL,APOS_ATTRIBUTE_CONTENT>[']					{
-																if(YYSTATE==ATTRIBUTE_DECL)
-																{
-																	BEGIN(APOS_ATTRIBUTE_CONTENT); RECOGNIZE(_OPEN_APOS_);
-																}
-																else if(YYSTATE==APOS_ATTRIBUTE_CONTENT)
-																{
-																	BEGIN(ATTRIBUTE_DECL); RECOGNIZE(_CLOSE_APOS_);
-																}
-															}
-
-<ATTRIBUTE_DECL>"="											RECOGNIZE(_VALUE_INDICATOR_);
-
-<ELEMENT_CONTENT>"</"										BEGIN(END_TAG); RECOGNIZE(_END_TAG_OPEN_);
-
-<ELEMENT_CONTENT,QUOT_ATTRIBUTE_CONTENT,APOS_ATTRIBUTE_CONTENT>{PredefinedEntityRef}	yylval.str=allocate_string_and_unescape(0, (XMLCh*)yytext, yyleng); RECOGNIZE(_PREDEFINED_ENTITY_REF_); 
-<ELEMENT_CONTENT,QUOT_ATTRIBUTE_CONTENT,APOS_ATTRIBUTE_CONTENT>{CharRef}				yylval.str=allocate_string_and_unescape(0, (XMLCh*)yytext, yyleng); RECOGNIZE(_CHAR_REF_);
-<ELEMENT_CONTENT,QUOT_ATTRIBUTE_CONTENT,APOS_ATTRIBUTE_CONTENT>"{{"						RECOGNIZE(_LCURLY_BRACE_ESCAPE_);
-<ELEMENT_CONTENT,QUOT_ATTRIBUTE_CONTENT,APOS_ATTRIBUTE_CONTENT>"}}"						RECOGNIZE(_RCURLY_BRACE_ESCAPE_);
-
-<END_TAG>{WhitespaceChar}*">"								POP(); RECOGNIZE(_TAG_CLOSE_);
-
 <EXPR_COMMENT>":)"											endComment(); POP(); if(m_bReportWhiteSpace) RECOGNIZE(_XQUERY_COMMENT_);
 
-<PRAGMA_CONTENT>{S}{PragmaContents}							RECOGNIZE(_PRAGMA_CONTENT_);
-<PRAGMA_CONTENT>"#)"										BEGIN(INITIAL); RECOGNIZE(_PRAGMA_CLOSE_);
-
-<PROCESSING_INSTRUCTION>{PITarget}							{
-																yylval.str=allocate_string((XMLCh*)yytext); 
-																BEGIN(PROCESSING_INSTRUCTION_CONTENT); RECOGNIZE(_PI_TARGET_); 
-															}
-
-<PROCESSING_INSTRUCTION_CONTENT>"?>"						{
-																yylval.str=(XMLCh*)XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString; 
-																POP(); 
-																RECOGNIZE(_PROCESSING_INSTRUCTION_CONTENT_);
-															}
-<PROCESSING_INSTRUCTION_CONTENT>{S}{PIContent}"?>"			{
-																yylval.str=allocate_string((XMLCh*)yytext,XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen((XMLCh*)yytext)-2); 
-																while(iswspace(*yylval.str)) yylval.str++;
-																POP(); 
-																RECOGNIZE(_PROCESSING_INSTRUCTION_CONTENT_);
-															}
-
-
-<QUOT_ATTRIBUTE_CONTENT>{EscapeQuot}						RECOGNIZE(_ESCAPE_QUOT_);
-
-<APOS_ATTRIBUTE_CONTENT>{EscapeApos}						RECOGNIZE(_ESCAPE_APOS_);
-
 <EXPR_COMMENT>{Char}										if(m_bReportWhiteSpace) RECOGNIZE(_XQUERY_COMMENT_);
-<ELEMENT_CONTENT,QUOT_ATTRIBUTE_CONTENT,APOS_ATTRIBUTE_CONTENT>{Char}	{
-																			if(*yytext=='&' || *yytext=='<' || *yytext=='{' || *yytext=='}')
-																				return error("Character not allowed in content");
-																			if(YYSTATE==QUOT_ATTRIBUTE_CONTENT && *yytext=='"')
-																				return error("Character not allowed in content");
-																			if(YYSTATE==APOS_ATTRIBUTE_CONTENT && *yytext=='\'')
-																				return error("Character not allowed in content");
-																			yylval.str=allocate_string((XMLCh*)yytext); 
-																			RECOGNIZE(_CHAR_);
-																		}
 
 <INITIAL>{QName}{WhitespaceChar}*"("						{
 																REJECT_IF_COLON;
@@ -612,22 +357,18 @@ NotColon			[^:]
 
 																RECOGNIZE(_FUNCTION_CALL_);
 															}
-<INITIAL,SINGLETYPE,ITEMTYPE,KINDTEST,VARNAME,START_TAG,ATTRIBUTE_DECL,END_TAG,PRAGMA_NAME>{QName}		{
-																											REJECT_IF_NOT_TERMINATED; 
-																											yylval.str=allocate_string((XMLCh*)yytext); 
-																											switch(YYSTATE)
-																											{
-																												case INITIAL:
-																												case SINGLETYPE:		BEGIN(OPERATOR); RECOGNIZE(_QNAME_);
-																												case ITEMTYPE:			BEGIN(OCCURRENCEINDICATOR); RECOGNIZE(_QNAME_);
-																												case KINDTEST:			BEGIN(CLOSEKINDTEST); RECOGNIZE(_QNAME_);
-																												case VARNAME:			BEGIN(OPERATOR); RECOGNIZE(_VARIABLE_);
-																												case START_TAG:			BEGIN(ATTRIBUTE_DECL); RECOGNIZE(_TAG_NAME_);
-																												case ATTRIBUTE_DECL:	RECOGNIZE(_ATTRIBUTE_NAME_);
-																												case END_TAG:			RECOGNIZE(_TAG_NAME_);
-																												case PRAGMA_NAME:		BEGIN(PRAGMA_CONTENT); RECOGNIZE(_PRAGMA_NAME_);
-																											}
-																										}
+<INITIAL,SINGLETYPE,ITEMTYPE,KINDTEST,VARNAME>{QName}		{
+																REJECT_IF_NOT_TERMINATED; 
+																yylval.str=allocate_string((XMLCh*)yytext); 
+																switch(YYSTATE)
+																{
+																	case INITIAL:
+																	case SINGLETYPE:		BEGIN(OPERATOR); RECOGNIZE(_QNAME_);
+																	case ITEMTYPE:			BEGIN(OCCURRENCEINDICATOR); RECOGNIZE(_QNAME_);
+																	case KINDTEST:			BEGIN(CLOSEKINDTEST); RECOGNIZE(_QNAME_);
+																	case VARNAME:			BEGIN(OPERATOR); RECOGNIZE(_VARIABLE_);
+																}
+															}
 
 <*><<EOF>>				{ 
 							if(m_bGenerateEOF) 

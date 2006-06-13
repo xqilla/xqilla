@@ -21,7 +21,7 @@
 #include <xqilla/exceptions/ContextException.hpp>
 #include <xqilla/context/impl/XQContextImpl.hpp>
 #include <xqilla/utils/XQillaPlatformUtils.hpp>
-#include "../lexer/Scanner.hpp"
+#include "../lexer/XQueryScanner.hpp"
 
 #include <xercesc/util/XMLURL.hpp>
 #include <xercesc/util/TransService.hpp>
