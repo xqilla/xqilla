@@ -123,7 +123,7 @@ public:
                     const StaticContext* context); 
 
   /** Gives human readable representation of the variable store */
-  XMLCh* print(XPath2MemoryManager* memMgr) const;
+  XMLCh* print(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr) const;
 
   /** Returns a vector with the names of the variable currently in scope */
   std::vector< std::pair<const XMLCh*, const XMLCh*> > getVars() const;

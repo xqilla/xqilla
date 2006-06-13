@@ -189,11 +189,14 @@ void VarStoreImpl::delGlobalVar( const XMLCh* namespaceURI, const XMLCh* name, c
 }
 
 
-XMLCh* VarStoreImpl::print(XPath2MemoryManager* memMgr) const
+XMLCh* VarStoreImpl::print(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr) const
 {
   XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buf(1023, memMgr);
   buf.set(X("<VariableStore>\n"));
   const Scope<Sequence>* index=_store.getCurrentScope();
+  if(index==NULL)
+    index=_store.getGlobalScope();
+
   XQContextImpl xp2c(memMgr, 0, 0);
 
   while(index)
