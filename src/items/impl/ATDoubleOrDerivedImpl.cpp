@@ -25,7 +25,7 @@
 
 #include <assert.h>
 
-unsigned int ATDoubleOrDerivedImpl::g_nSignificantDigits=25;
+int ATDoubleOrDerivedImpl::g_nSignificantDigits=25;
 
 ATDoubleOrDerivedImpl::
 ATDoubleOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* value, const StaticContext* context): 

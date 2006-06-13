@@ -120,7 +120,7 @@ public:
   enum state {NUM, NaN, INF, NEG_INF};
 
   /* The significant digits */
-  static unsigned int g_nSignificantDigits;
+  static int g_nSignificantDigits;
 
 protected:
   

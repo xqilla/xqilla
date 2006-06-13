@@ -25,7 +25,7 @@
 #include <xqilla/context/ItemFactory.hpp>
 #include <assert.h>
 
-unsigned int ATFloatOrDerivedImpl::g_nSignificantDigits=25;
+int ATFloatOrDerivedImpl::g_nSignificantDigits=25;
 
 ATFloatOrDerivedImpl::
 ATFloatOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* value, const StaticContext* context): 
