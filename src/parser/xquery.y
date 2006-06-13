@@ -19,7 +19,7 @@
 #pragma warning(disable : 4065 4102)
 #endif
 
-#include "../lexer/Scanner.hpp"
+#include "../lexer/XQueryScanner.hpp"
 
 #include <xqilla/simple-api/XQQuery.hpp>
 #include <xqilla/ast/XQFunction.hpp>

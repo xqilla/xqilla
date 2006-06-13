@@ -21,11 +21,7 @@
 #include <xqilla/context/XQDebugCallback.hpp>
 #include <xqilla/exceptions/ContextException.hpp>
 #include <xqilla/exceptions/XQException.hpp>
-#include "../lexer/LexerDOMStringStream.hpp"
-#define yyFlexLexer xxFlexLexer
-#include "../lexer/XPathFlexLexer.hpp"
-#undef yyFlexLexer
-#include "../parser/XPath2ParserControl.hpp"
+#include "../lexer/XPathScanner.hpp"
 
 #include <xercesc/framework/URLInputSource.hpp>
 #include <xercesc/util/Janitor.hpp>
@@ -33,9 +29,6 @@
 #if defined(XERCES_HAS_CPP_NAMESPACE)
 XERCES_CPP_NAMESPACE_USE
 #endif
-
-//Bison hooks
-extern int XPathyyparse(void *);
 
 XQQuery* XQilla::parseXPath2(const XMLCh* inputQuery, DynamicContext* context/*=0*/,
                              const XMLCh* queryFile/*=NULL*/, unsigned int flags/*=0*/,
@@ -48,19 +41,17 @@ XQQuery* XQilla::parseXPath2(const XMLCh* inputQuery, DynamicContext* context/*=
   }
 
   XERCES_CPP_NAMESPACE_QUALIFIER Janitor<XQQuery> query = new (memMgr) XQQuery(inputQuery, context, contextOwned, memMgr);
-  query->setFile(queryFile);
 
   try {
-    LexerDOMStringStream lexerStream(inputQuery);
-    xxFlexLexer lexer(&lexerStream, &std::cout);
+    CXPathScanner scanner(context->getMemoryManager(), inputQuery);
 
-    XPathParserControl args;
-    args.context = context;
-    args.lexer = &lexer;
-    args.memMgr = context->getMemoryManager();
+    XPath2ParserArgs args;
+    args._memMgr=context->getMemoryManager();
+    args._scanner=&scanner;
+    args._query=query.get();
+    args._query->setFile(queryFile);
 
-    XPathyyparse((void *)&args);
-    query->setQueryBody(args.result);
+    XPath2::yyparse(&args);
 
     // Perform static resolution, if requested
     if((flags & NO_STATIC_RESOLUTION) == 0) {

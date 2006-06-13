@@ -11,61 +11,17 @@
  * $Id$
  */
 
-#ifndef XQUERYSCANNER_H
-#define XQUERYSCANNER_H
+#ifndef XQILLA_LEXER_H
+#define XQILLA_LEXER_H
 
 #define YY_CHAR unsigned short
 
 #include <xqilla/framework/XQillaExport.hpp>
-#include "FlexLexer.h"
 #include <xercesc/util/XMLUniDefs.hpp>
-#include <xercesc/util/XMLString.hpp>
-#include <xercesc/util/BitSet.hpp>
 #include <xercesc/util/XMLChar.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
-#include <xqilla/simple-api/XQQuery.hpp>
-#include <xqilla/context/DynamicContext.hpp>
+#include <xqilla/framework/XPath2MemoryManager.hpp>
 #include <xqilla/exceptions/XQException.hpp>
-
-#ifndef YYSTYPE
-#include <xqilla/ast/ASTNode.hpp>
-#include <xqilla/ast/XQNav.hpp>
-#include <xqilla/schema/SequenceType.hpp>
-#include <xqilla/parser/QName.hpp>
-#include <xqilla/functions/XQUserFunction.hpp>
-#include <xqilla/ast/XQFLWOR.hpp>
-#include <xqilla/ast/XQVariableBinding.hpp>
-#include <xqilla/ast/XQTypeswitch.hpp>
-#include <xqilla/ast/XQPredicate.hpp>
-
-typedef union {
-	XMLCh* str;
-	ASTNode* astNode;
-	XQUserFunction* functDecl;
-	XQUserFunction::XQFunctionParameter* funcParam;
-	XQUserFunction::VectorOfFunctionParameters* funcParams;
-	NodeTest *nodeTest;
-	XQStep::Axis axis;
-	QualifiedName *qName;
-	SequenceType* sequenceType;
-	SequenceType::OccurrenceIndicator occurrence;
-	SequenceType::ItemType* itemType;
-	VectorOfASTNodes* itemList;
-	VectorOfPredicates* predicates;
-	XQVariableBinding* variableBinding;
-	VectorOfVariableBinding* variableBindingList;
-	XQTypeswitch::Clause* clause;
-	XQTypeswitch::VectorOfClause* clauseList;
-	XQSort::SortSpec::sortModifier sortModifier;
-	XQSort::VectorOfSortSpec* sortSpecList;
-	XQSort::SortSpec* sortSpec;
-	XQSort* sort;
-    VectorOfStrings* stringList;
-} yystype;
-#define YYSTYPE yystype
-#define YYSTYPE_IS_DECLARED 1
-#define YYSTYPE_IS_TRIVIAL 1
-#endif  // #ifndef YYSTYPE
 
 typedef struct yyltype
 {
@@ -82,9 +38,7 @@ typedef struct yyltype
 #define YYLTYPE_IS_DECLARED 1
 #define YYLTYPE_IS_TRIVIAL 1
 
-#define YY_USER_ACTION	userAction();
-
-#include "../parser/Grammar.hpp"	// to be included *after* defining YYSTYPE and YYLTYPE
+#define YY_USER_ACTION	userAction(yytext, yyleng);
 
 #define YYLLOC_DEFAULT(Current, Rhs, N)       	\
     do									\
@@ -108,10 +62,10 @@ typedef struct yyltype
 	}								\
     while (0)
 
-class XQILLA_API CXQueryScanner : public yyFlexLexer
+class XQILLA_API CXQillaLexer
 {
 public:
-	CXQueryScanner(XPath2MemoryManager* memMgr, const XMLCh* query)
+	CXQillaLexer(XPath2MemoryManager* memMgr, const XMLCh* query)
     {
 	    m_index=m_position=0;
 	    m_lineno=m_columnno=1;
@@ -122,31 +76,13 @@ public:
     	m_bGenerateEOF=m_bReportWhiteSpace=false;
     }
 
-	// Implemented in scanner.cpp, output of xquery.l
-	virtual int yylex();
-
     const XMLCh* getQueryString() { return m_szQuery; }
     void setGenerateEOF(bool bEnable) { m_bGenerateEOF=bEnable; }
     void setGenerateWhiteSpace(bool bEnable) { m_bReportWhiteSpace=bEnable; }
 
-    int yylex(YYSTYPE* pYYLVAL, YYLTYPE* pYYLOC)
-    {
-	    int nextToken=yylex();
-	    memcpy(pYYLVAL,&yylval,sizeof(YYSTYPE));
-	    memcpy(pYYLOC,&m_yyloc,sizeof(YYLTYPE));
-	    return nextToken;
-    }
-
-	int yylex(YYSTYPE* pYYLVAL)
-    {
-	    int nextToken=yylex();
-	    memcpy(pYYLVAL,&yylval,sizeof(YYSTYPE));
-	    return nextToken;
-    }
-
 	virtual int error(const char* message)
     {
-	    LexerError(message);
+	    Error(message);
 	    return 0;
     }
 
@@ -157,7 +93,7 @@ public:
     virtual void endComment()
     {
         if(m_nOpenComments==0)
-            LexerError("Unbalanced comment found");
+            Error("Unbalanced comment found");
         m_nOpenComments--;
     }
 
@@ -212,7 +148,7 @@ public:
 				    int k=i;
 				    while(k<len && src[k]!=';') k++;
 				    if(k==len)
-					    LexerError("Unterminated entity reference");
+					    Error("Unterminated entity reference");
                     for(int q=i;q<k;q++)
                     {
                         unsigned int nextVal;
@@ -224,16 +160,16 @@ public:
                         else if ((nextCh >= XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a) && (nextCh <= XERCES_CPP_NAMESPACE_QUALIFIER chLatin_f))
                             nextVal = (unsigned int)(10 + (nextCh - XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a));
                         else
-    					    LexerError("Unterminated entity reference");
+    					    Error("Unterminated entity reference");
                         if (nextVal >= radix)
-    					    LexerError("Invalid digit inside entity reference");
+    					    Error("Invalid digit inside entity reference");
                         else
                             value = (value * radix) + nextVal;
                     }
                     if(!XERCES_CPP_NAMESPACE_QUALIFIER XMLChar1_0::isXMLChar(value))
-                        LexerError("Entity reference is not a valid XML character");
+                        Error("Entity reference is not a valid XML character");
                     if (value <= 0xFFFD)
-				        dst[j++]=value;
+    				    dst[j++]=value;
                     else if (value >= 0x10000 && value <= 0x10FFFF)
                     {
                         value -= 0x10000;
@@ -242,7 +178,7 @@ public:
                     }
 				    i=k;
 			    } else
-				    LexerError("Invalid entity reference");
+				    Error("Invalid entity reference");
 		    }
 		    else
 			    dst[j++]=src[i];
@@ -254,7 +190,7 @@ public:
     }
 
 protected:
-	virtual int LexerInput( YY_CHAR* buf, int max_size )
+	virtual int Read( YY_CHAR* buf, int max_size )
     {
 	    int nToRead=m_nLength-m_position;
 	    if(nToRead==0)
@@ -267,12 +203,7 @@ protected:
 	    return nToRead;
 	}
 
-    virtual void LexerOutput( const YY_CHAR* buf, int size )
-	{
-	    // do nothing
-	}
-
-	virtual void LexerError( const char* msg )
+	virtual void Error( const char* msg )
     {
         if(strstr(msg, "[err:")!=NULL)
     	    XQSimpleThrow(X(msg), NULL, m_lineno, m_columnno);
@@ -280,31 +211,18 @@ protected:
 	    XQSimpleThrow(szMsg, NULL, m_lineno, m_columnno);
     }
 
-	virtual void yy_pop_state()
-    {
-        if(yy_start_stack_ptr==0)
-        {
-            XMLCh szMsg[256];
-            XERCES_CPP_NAMESPACE_QUALIFIER XMLString::copyString(szMsg, X("Unbalanced '"));
-            XERCES_CPP_NAMESPACE_QUALIFIER XMLString::catString(szMsg, (XMLCh*)yytext);
-            XERCES_CPP_NAMESPACE_QUALIFIER XMLString::catString(szMsg, X("' token"));
-	        XQSimpleThrow(szMsg, NULL, m_lineno, m_columnno);
-        }
-        yyFlexLexer::yy_pop_state();
-    }
-
-	virtual void userAction()
+	virtual void userAction(YY_CHAR* text, int length)
     {
 	    m_yyloc.first_line=m_lineno; m_yyloc.first_column=m_columnno; m_yyloc.first_offset=m_index;
-	    m_index+=yyleng;
-	    for(int i=0;i<yyleng;i++)
+	    m_index+=length;
+	    for(int i=0;i<length;i++)
         {
-            if(yytext[i]=='\n')
+            if(text[i]=='\n')
             {
                 m_lineno++;
                 m_columnno=1;
             }
-            else if(yytext[i]!='\r')
+            else if(text[i]!='\r')
                 m_columnno++;
         }
 		m_yyloc.last_line=m_lineno;
@@ -320,21 +238,6 @@ protected:
 	    m_index=m_yyloc.last_offset=m_yyloc.first_offset;
     }
 
-    virtual bool next_tokens(int state, int tok1, int tok2=0)
-    {
-        CXQueryScanner lookAhead(m_memMgr, m_szQuery+m_index);
-        lookAhead.yy_start=1 + 2 * state;
-
-        int nextToken1 = lookAhead.yylex();
-        if(tok1!=nextToken1)
-            return false;
-        int nextToken2 = 0;
-        if(tok2!=0)
-            nextToken2 = lookAhead.yylex();
-
-        return (tok2==nextToken2);
-    }
-
     const XMLCh* m_szQuery;
     unsigned int m_nLength;
 	int m_position,m_index;
@@ -342,28 +245,10 @@ protected:
 	int m_lineno,m_columnno;
 
     YYLTYPE m_yyloc;
-	YYSTYPE yylval;
 
     int m_nOpenComments;
 	bool m_bGenerateEOF, m_bReportWhiteSpace;
 };
 
-class XQueryParserArgs
-{
-public:
-    XQueryParserArgs() : _scanner(0), _context(0), _query(0), _flags(32) {}
-
-    CXQueryScanner* _scanner;
-    DynamicContext* _context;
-    XQQuery* _query;
-    XERCES_CPP_NAMESPACE_QUALIFIER BitSet _flags;
-};
-
-namespace XQuery {
-	extern int yyparse(void *);
-	extern int yydebug;
-}
-
-
-#endif // #ifdef XQUERYSCANNER_H
+#endif // #ifdef XQILLA_LEXER_H
 

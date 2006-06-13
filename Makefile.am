@@ -281,15 +281,12 @@ src/parser/XPath2Parser.cpp \
 src/parser/XPath2Parser.hpp \
 src/parser/Grammar.cpp \
 src/parser/Grammar.hpp \
-src/lexer/FlexLexer.hpp \
-src/lexer/LexerDOMStringStream.cpp \
-src/lexer/LexerDOMStringStream.hpp \
-src/lexer/XPath2Lexer.cpp \
-src/lexer/XPath2Lexer.hpp \
-src/lexer/XPathFlexLexer.hpp \
+src/lexer/XPathScanner.cpp \
+src/lexer/XPathScanner.hpp \
+src/lexer/XQillaLexer.hpp \
 src/lexer/FlexLexer.h \
-src/lexer/Scanner.cpp \
-src/lexer/Scanner.hpp \
+src/lexer/XQueryScanner.cpp \
+src/lexer/XQueryScanner.hpp \
 src/mapm/mapm5sin.c \
 src/mapm/mapm_add.c \
 src/mapm/mapmasin.c \
@@ -393,9 +390,9 @@ src/xqts/TestSuiteRunner.cpp
 EXTRA_DIST = \
 src/lexer/flex.skl \
 src/lexer/xquery.l \
-src/lexer/XPath2Lexer.lex \
+src/lexer/xpath.l \
 src/parser/xquery.y \
-src/parser/XPath2Parser.y \
+src/parser/xpath.y \
 LICENSE \
 docs/Doxyfile.simpleapi.in \
 docs/Doxyfile.dom3api.in \
@@ -420,35 +417,31 @@ src/samples/basic/basicXQillaUsage.cpp
 xqtsRunner_SOURCES = \
 tests/xqts/runner.cpp
 
-XPLEXERFILE   = $(top_srcdir)/src/lexer/XPath2Lexer.cpp
-XPLEXTEMPLATE   = $(top_srcdir)/src/lexer/XPath2Lexer.lex
+XQILLALEXSKEL = $(top_srcdir)/src/lexer/flex.skl
 
-XPPARSERFILE  = $(top_srcdir)/src/parser/XPath2Parser.y
+XPLEXERFILE   = $(top_srcdir)/src/lexer/XPathScanner.cpp
+XPLEXTEMPLATE = $(top_srcdir)/src/lexer/xpath.l
+
+XPPARSERFILE  = $(top_srcdir)/src/parser/xpath.y
 XPPARSERCPP   = $(top_srcdir)/src/parser/XPath2Parser.cpp
 XPPARSERHPP   = $(top_srcdir)/src/parser/XPath2Parser.hpp
 
-XQLEXERFILE   = $(top_srcdir)/src/lexer/Scanner.cpp
-XQLEXTEMPLATE   = $(top_srcdir)/src/lexer/xquery.l
-XQLEXSKEL   = $(top_srcdir)/src/lexer/flex.skl
+XQLEXERFILE   = $(top_srcdir)/src/lexer/XQueryScanner.cpp
+XQLEXTEMPLATE = $(top_srcdir)/src/lexer/xquery.l
 
 XQPARSERFILE  = $(top_srcdir)/src/parser/xquery.y
-XQPARSERCPP   = $(top_srcdir)/src/parser/Grammar.cpp
-XQPARSERHPP   = $(top_srcdir)/src/parser/Grammar.hpp
+XQPARSERCPP   = $(top_srcdir)/src/parser/XQueryParser.cpp
+XQPARSERHPP   = $(top_srcdir)/src/parser/XQueryParser.hpp
 
 $(XPLEXERFILE) : $(XPLEXTEMPLATE)
-	$(LEX) -BUs -Pxx -o$(XPLEXERFILE) $(XPLEXTEMPLATE) # This can take a long time
-	${perl} -pi -e 's/istream/LexerDOMStringStream/g' $(XPLEXERFILE)
-	${perl} -pi -e "s/yyin = \&cin/{\/\* Don't ever forget to declare yyin, or bad things will happen \*\/}/g" $(XPLEXERFILE) 
-	${perl} -pi -e "s/\#include \<FlexLexer\.h\>/\#include \"XPath2Lexer\.hpp\"/g" $(XPLEXERFILE)
-	${perl} -pi -e "s/\#include \<unistd\.h\>//g" $(XPLEXERFILE)
-	${perl} -pi -e "s/yyout->write\(\(unsigned char \*\)  buf/yyout->write\(\(const char \*\)buf/g" $(XPLEXERFILE)
-	${perl} -pi -e "s/delete yy_state_buf;/delete [] yy_state_buf; yy_flex_free\(yy_start_stack\);/g" $(XPLEXERFILE)
+	$(LEX) -BUs -S$(XQILLALEXSKEL) -o$(XPLEXERFILE) $(XPLEXTEMPLATE) # This can take a long time
+	${perl} -pi -e "s/delete yy_state_buf;/delete [] yy_state_buf;/g" $(XQLEXERFILE)
 
 $(XPPARSERCPP) $(XPPARSERHPP): $(XPPARSERFILE)
-	$(YACC) -d -v -p XPathyy  -o $(XPPARSERCPP) $(XPPARSERFILE)
+	$(YACC) -d -v -o $(XPPARSERCPP) $(XPPARSERFILE)
 
 $(XQLEXERFILE): $(XQLEXTEMPLATE) $(XQLEXSKEL)
-	$(LEX) -BUs -S$(XQLEXSKEL) -o$(XQLEXERFILE) $(XQLEXTEMPLATE) # This can take a long time
+	$(LEX) -BUs -S$(XQILLALEXSKEL) -o$(XQLEXERFILE) $(XQLEXTEMPLATE) # This can take a long time
 	${perl} -pi -e "s/delete yy_state_buf;/delete [] yy_state_buf;/g" $(XQLEXERFILE)
 
 $(XQPARSERCPP) $(XQPARSERHPP): $(XQPARSERFILE)

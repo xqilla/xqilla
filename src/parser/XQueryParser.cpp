@@ -439,7 +439,7 @@
 #pragma warning(disable : 4065 4102)
 #endif
 
-#include "../lexer/Scanner.hpp"
+#include "../lexer/XQueryScanner.hpp"
 
 #include <xqilla/simple-api/XQQuery.hpp>
 #include <xqilla/ast/XQFunction.hpp>
@@ -693,7 +693,7 @@ typedef struct YYLTYPE
 
 
 /* Line 219 of yacc.c.  */
-#line 697 "Grammar.cpp"
+#line 697 "XQueryParser.cpp"
 
 #if ! defined (YYSIZE_T) && defined (__SIZE_TYPE__)
 # define YYSIZE_T __SIZE_TYPE__
@@ -5312,7 +5312,7 @@ yyreduce:
     }
 
 /* Line 1126 of yacc.c.  */
-#line 5316 "Grammar.cpp"
+#line 5316 "XQueryParser.cpp"
 
   yyvsp -= yylen;
   yyssp -= yylen;

@@ -13,7 +13,14 @@
 
 %{
 
-#include "../config/xqilla_config.h"
+#if defined(WIN32) && !defined(__CYGWIN__)
+// turn off the warnings "switch statement contains 'default' but no 'case' labels"
+//                       "'yyerrlab1' : unreferenced label"
+#pragma warning(disable : 4065 4102)
+#endif
+
+#include "../lexer/XPathScanner.hpp"
+
 #include <xercesc/util/XercesDefs.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 #include <xercesc/util/XMLString.hpp>
@@ -41,8 +48,6 @@
 #include <xqilla/ast/XQFunctionCall.hpp>
 
 #include <xqilla/utils/XPath2NSUtils.hpp>
-
-#include "../lexer/XPath2Lexer.hpp"
 
 #include <xqilla/axis/NodeTest.hpp>
 
@@ -75,8 +80,14 @@
 
 #include <xqilla/parser/QName.hpp>
 
-#define YYPARSE_PARAM parm
-#define YYLEX_PARAM parm
+#include <xqilla/exceptions/StaticErrorException.hpp>
+
+#ifdef HAVE_CONFIG_H
+#include "../config/xqilla_config.h"
+#endif
+
+#define YYPARSE_PARAM qp
+#define YYDEBUG 1
 #define YYERROR_VERBOSE
 
 // this removes a memory leak occurring when an error is found in the query (we throw an exception from inside
@@ -100,14 +111,14 @@ extern "C"
 void *alloca (size_t);
 #endif
 
-inline VectorOfASTNodes packageArgs(ASTNode *arg1Impl, ASTNode *arg2Impl, XPath2MemoryManager* memMgr);
-void yyerror(const char* s);
+#define QP						((XPath2ParserArgs*)qp)
+#define MEMMGR					(QP->_memMgr)
 
-#include "XPath2ParserControl.hpp"
-#include <xqilla/exceptions/StaticErrorException.hpp>
+#undef yylex
+#define yylex QP->_scanner->yylex
+#undef yyerror
+#define yyerror QP->_scanner->error
 
-#define YYDEBUG 1
-#define MEMMGR      (((XPathParserControl *)parm)->memMgr)
 
 static inline XQNav* getNavigation(ASTNode *possibleNav, XPath2MemoryManager * expr)
 {
@@ -118,6 +129,17 @@ static inline XQNav* getNavigation(ASTNode *possibleNav, XPath2MemoryManager * e
 	nav->addStep(possibleNav);
 	return nav;
 }
+
+static inline VectorOfASTNodes packageArgs(ASTNode *arg1Impl, ASTNode *arg2Impl, XPath2MemoryManager* memMgr)
+{
+	VectorOfASTNodes args=VectorOfASTNodes(2,(ASTNode*)NULL,XQillaAllocator<ASTNode*>(memMgr));
+	args[0]=arg1Impl;
+	args[1]=arg2Impl;
+
+	return args;
+}
+
+namespace XPath2 {
 
 %}
 
@@ -194,116 +216,108 @@ static inline XQNav* getNavigation(ASTNode *possibleNav, XPath2MemoryManager * e
 %type <occurrence>			_OccurrenceIndicator
 %type <variableBinding>		_VariableBindingList
 %type <variableBinding>     _SimpleForClause
+
+/* this gives a nice name to the $end token */
+%token MYEOF 0										"<end of file>"
+
+/* str */
+%token <str> _QNAME_								"<qualified name>"
+%token <str> _FUNCTION_CALL_						"<function>("
+%token <str> _STRING_LITERAL_						"'...'"
+%token <str> _VARIABLE_								"<variable name>"
+%token <str> _NCNAME_COLON_STAR_					"<ns>:*"
+%token <str> _STAR_COLON_NCNAME_					"*:<local name>"
+%token <str> _NCNAME_								"<local name>"
+%token <str> _INTEGER_NUMBER_						"<integer number>"
+%token <str> _DECIMAL_NUMBER_						"<decimal number>"
+%token <str> _DOUBLE_NUMBER_						"<double number>"
  
-%token _QUESTION_
-%token _LBRACK_
-%token _RBRACK_
-%token _PLUS_
-%token _MINUS_
-
-%token _STAR_
-
-%token <wString> _NCNAME_COLON_STAR_
-%token <wString> _STAR_COLON_NCNAME_
-%token _DOT_
-%token _DOT_DOT_
-%token <wString> _STRING_LITERAL_
-
-%token _SLASH_
-%token _SLASHSLASH_
-%token _AXIS_CHILD_
-%token _AXIS_DESCENDANT_
-%token _AXIS_PARENT_
-%token _AXIS_ATTRIBUTE_
-%token _AXIS_SELF_
-%token _AXIS_DESCENDANT_OR_SELF_
-%token _AXIS_ANCESTOR_
-%token _AXIS_FOLLOWING_SIBLING_
-%token _AXIS_PRECEDING_SIBLING_
-%token _AXIS_FOLLOWING_
-%token _AXIS_PRECEDING_
-%token _AXIS_NAMESPACE_
-%token _AXIS_ANCESTOR_OR_SELF_
-%token _AT_
-
-%token _CAST_AS_
-%token _TREAT_AS_
-
-%token _FOR_
-%token _SOME_
-%token _EVERY_
-
-%token _COMMA_
-
-%token _LPAR_
-
-%token _TEXT_LPAR_
-%token _COMMENT_LPAR_
-%token _NODE_LPAR_
-%token _PROCESSING_INSTRUCTION_LPAR_
-%token _ELEMENT_LPAR_
-%token _ATTRIBUTE_LPAR_
-%token _SCHEMA_ELEMENT_LPAR_
-%token _SCHEMA_ATTRIBUTE_LPAR_
-%token _DOCUMENT_NODE_LPAR_
-
-%token _IF_LPAR_
-%token <wString> _QNAME_LPAR_
-
-%token _RPAR_
-
-%token _MULTIPLY_
-%token _DIV_
-%token _INTEGER_DIV_
-%token _MOD_
-%token _AND_
-%token _OR_
-%token _STAR_
-%token _RETURN_
-%token _THEN_
-%token _ELSE_
-%token _TO_
-%token _UNION_
-%token _INTERSECT_
-%token _EXCEPT_
-%token _EQUALS_
-%token _IS_
-%token _NOT_EQUALS_
-%token _LT_EQUALS_
-%token _GT_EQUALS_
-%token _LT_
-%token _GT_
-%token _VERTICAL_BAR_
-%token _LT_LT_
-%token _GT_GT_
-%token _FORTRAN_EQ_
-%token _FORTRAN_NE_
-%token _FORTRAN_GT_
-%token _FORTRAN_GE_
-%token _FORTRAN_LT_
-%token _FORTRAN_LE_
-%token _IN_
-%token _SATISFIES_
-
-%token _ITEM_
-%token _EMPTY_
-
-%token _INSTANCE_OF_
-%token _CASTABLE_AS_
-
-%token _NILLABLE_
-
-%token _ZERO_OR_ONE_ 
-%token _ONE_OR_MORE_ 
-%token _ZERO_OR_MORE_
-
-%token <wString> _VARNAME_
-
-%token <wString> _QNAME_
-%token <wString> _NCNAME_
-%token <wString> _INTEGER_LITERAL_
-%token <wString> _DECIMAL_LITERAL_
-%token <wString> _DOUBLE_LITERAL_
+/* tok */
+%token _XQUERY_COMMENT_					"(: comment :)"
+%token _XQUERY_WHITESPACE_ 
+%token _XQUERY_ERROR_ 
+%token _COMMA_							","
+%token _RETURN_							"return"
+%token _FOR_							"for"
+%token _IN_								"in"
+%token _DOLLAR_SIGN_					"$"
+%token _SOME_							"some"
+%token _EVERY_							"every"
+%token _SATISFIES_						"satisfies"
+%token _IF_								"if"
+%token _THEN_							"then"
+%token _ELSE_							"else"
+%token _OR_								"or"
+%token _AND_							"and"
+%token _INSTANCE_OF_					"instance of"
+%token _CASTABLE_AS_					"castable as"
+%token _TO_								"to"
+%token _PLUS_							"+ (arithmetic operator)"
+%token _MINUS_							"- (arithmetic operator)"
+%token _MULTIPLY_						"* (arithmetic operator)"
+%token _DIV_							"div"
+%token _INTEGER_DIV_					"idiv"
+%token _MOD_							"mod"
+%token _UNION_							"union"
+%token _VERTICAL_BAR_					"|"
+%token _INTERSECT_						"intersect"
+%token _EXCEPT_							"except"
+%token _SLASH_							"/"
+%token _SLASHSLASH_						"//"
+%token _LBRACK_							"["
+%token _RBRACK_							"]"
+%token _CAST_AS_						"cast as"
+%token _TREAT_AS_						"treat as"
+%token _EQUALS_							"= (comparison operator)"
+%token _NOT_EQUALS_						"!="
+%token _LT_								"< (comparison operator)"
+%token _LT_EQUALS_						"<="
+%token _GT_								"> (comparison operator)"
+%token _GT_EQUALS_						">="
+%token _FORTRAN_EQ_						"eq"
+%token _FORTRAN_NE_						"ne"
+%token _FORTRAN_LT_						"lt"
+%token _FORTRAN_LE_						"le"
+%token _FORTRAN_GT_						"gt"
+%token _FORTRAN_GE_						"ge"
+%token _IS_								"is"
+%token _LT_LT_							"<<"
+%token _GT_GT_							">>"
+%token _DOT_							"."
+%token _AT_								"@"
+%token _DOT_DOT_						".."
+%token _AXIS_CHILD_						"child::"
+%token _AXIS_DESCENDANT_				"descendant::"
+%token _AXIS_ATTRIBUTE_					"attribute::"
+%token _AXIS_SELF_						"self::"
+%token _AXIS_DESCENDANT_OR_SELF_		"descendant-or-self::"
+%token _AXIS_PARENT_					"parent::"
+%token _STAR_							"* (wildcard)"
+%token _PROCESSING_INSTRUCTION_LPAR_	"processing-instruction("
+%token _COMMENT_LPAR_					"comment("
+%token _TEXT_LPAR_						"text("
+%token _NODE_LPAR_						"node("
+%token _LPAR_							"("
+%token _RPAR_							")"
+%token _EMPTY_							"empty-sequence()"
+%token _ITEM_							"item()"
+%token _NILLABLE_						"?"
+%token _DOCUMENT_NODE_LPAR_				"document-node("
+%token _ATTRIBUTE_LPAR_					"attribute("
+%token _ELEMENT_LPAR_					"element("
+%token _AXIS_ANCESTOR_OR_SELF_			"ancestor-or-self::"
+%token _AXIS_ANCESTOR_					"ancestor::"
+%token _AXIS_FOLLOWING_SIBLING_			"following-sibling::"
+%token _AXIS_FOLLOWING_					"following::"
+%token _AXIS_PRECEDING_SIBLING_			"preceding-sibling::"
+%token _AXIS_PRECEDING_					"preceding::"
+%token _SCHEMA_ELEMENT_LPAR_			"schema-element("
+%token _SCHEMA_ATTRIBUTE_LPAR_			"schema-attribute("
+%token _ZERO_OR_ONE_					"? (occurrence)"
+%token _ONE_OR_MORE_					"+ (occurrence)"
+%token _ZERO_OR_MORE_					"* (occurrence)"
+%token _AXIS_NAMESPACE_                 "namespace::"
+%token _EOF_
 
 %%
 
@@ -314,11 +328,11 @@ _XPath:
 	*/
 
 	/* EMPTY */ {
-      ((XPathParserControl *)parm)->result = new (MEMMGR) XQSequence(MEMMGR);
+      QP->_query->setQueryBody(new (MEMMGR) XQSequence(MEMMGR));
 	}
 
 	| _Expr {
-      ((XPathParserControl *)parm)->result = $1;
+      QP->_query->setQueryBody($1);
 	}
 ;
 
@@ -402,22 +416,20 @@ _QuantifiedExpr:
 ;
 
 _VariableBindingList:
-    _VariableBindingList _COMMA_ _VARNAME_ _IN_ _ExprSingle {
+    _VariableBindingList _COMMA_ _DOLLAR_SIGN_ _VARIABLE_ _IN_ _ExprSingle {
 		XQVariableBinding* bind=new (MEMMGR) XQVariableBinding(MEMMGR,
-                                                                                         XQVariableBinding::forBinding,
-                                                                                         MEMMGR->getPooledString($3), $5);
+                                                               XQVariableBinding::forBinding,
+                                                               MEMMGR->getPooledString($4), $6);
 		$1->push_back(bind);
 		$$ = $1;
-		delete [] $3;
 	}
 
-    | _VARNAME_ _IN_ _ExprSingle {
+    | _DOLLAR_SIGN_ _VARIABLE_ _IN_ _ExprSingle {
 		$$ = new (MEMMGR) VectorOfVariableBinding(XQillaAllocator<XQVariableBinding*>((MEMMGR)));
 		XQVariableBinding* bind=new (MEMMGR) XQVariableBinding(MEMMGR,
-                                                                                         XQVariableBinding::forBinding,
-                                                                                         MEMMGR->getPooledString($1), $3);
+                                                               XQVariableBinding::forBinding,
+                                                               MEMMGR->getPooledString($2), $4);
 		$$->push_back(bind);
-		delete [] $1;
 	}
 ;
 
@@ -428,8 +440,8 @@ _IfExpr:
 	[7]     IfExpr     ::=     <"if" "("> Expr ")" "then" ExprSingle "else" ExprSingle
 	*/
 
-	_IF_LPAR_ _Expr _RPAR_ _THEN_ _ExprSingle _ELSE_ _ExprSingle {
-		$$ = new (MEMMGR) XQIf($2, $5, $7, MEMMGR);
+	_IF_ _LPAR_ _Expr _RPAR_ _THEN_ _ExprSingle _ELSE_ _ExprSingle {
+		$$ = new (MEMMGR) XQIf($3, $6, $8, MEMMGR);
 	}
 
 ;
@@ -1086,7 +1098,6 @@ _Wildcard:
 		step->setNodePrefix(MEMMGR->getPooledString($1));
 		step->setNameWildcard();
 		$$ = step;
-        delete $1;
 	}
 
 	| _STAR_COLON_NCNAME_ {
@@ -1094,7 +1105,6 @@ _Wildcard:
         step->setNodeName(MEMMGR->getPooledString($1));
         step->setNamespaceWildcard();
         $$ = step;
-        delete $1;
 	}
 
 ;
@@ -1168,16 +1178,15 @@ _Literal:
 	}
 
 	| _STRING_LITERAL_ {
-    AnyAtomicTypeConstructor *ic = new (MEMMGR)
+      AnyAtomicTypeConstructor *ic = new (MEMMGR)
       AnyAtomicTypeConstructor(
 				XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 				XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
 				MEMMGR->getPooledString($1),
         AnyAtomicType::STRING);
 		XQLiteral *str_val  = new (MEMMGR)
-      XQLiteral(ic, MEMMGR);
+        XQLiteral(ic, MEMMGR);
 		$$ = str_val;
-        delete [] $1;
 	}
 
 ;
@@ -1188,43 +1197,40 @@ _NumericLiteral:
 	[43]     NumericLiteral     ::=     IntegerLiteral |  DecimalLiteral |  DoubleLiteral
 	*/
 
-  _INTEGER_LITERAL_ {
-    AnyAtomicTypeConstructor *ic = new (MEMMGR)
+  _INTEGER_NUMBER_ {
+      AnyAtomicTypeConstructor *ic = new (MEMMGR)
       AnyAtomicTypeConstructor(
 			XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 			XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_INTEGER,
 				MEMMGR->getPooledString($1),
       AnyAtomicType::DECIMAL);
-    XQLiteral *did  = new (MEMMGR)
+      XQLiteral *did  = new (MEMMGR)
       XQLiteral(ic, MEMMGR);
-    delete [] $1;
-    $$ = did;
+      $$ = did;
   }
 
-  | _DECIMAL_LITERAL_ {
-    AnyAtomicTypeConstructor *ic = new (MEMMGR)
+  | _DECIMAL_NUMBER_ {
+      AnyAtomicTypeConstructor *ic = new (MEMMGR)
       AnyAtomicTypeConstructor(
 			XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 			XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DECIMAL,
 				MEMMGR->getPooledString($1),
       AnyAtomicType::DECIMAL);
-    XQLiteral *did  = new (MEMMGR)
+      XQLiteral *did  = new (MEMMGR)
       XQLiteral(ic, MEMMGR);
-    delete $1;
-    $$ = did;
+      $$ = did;
   }
 
-  | _DOUBLE_LITERAL_ {
-    AnyAtomicTypeConstructor *ic = new (MEMMGR)
+  | _DOUBLE_NUMBER_ {
+      AnyAtomicTypeConstructor *ic = new (MEMMGR)
       AnyAtomicTypeConstructor(
 			XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 			XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DOUBLE,
 				MEMMGR->getPooledString($1),
       AnyAtomicType::DOUBLE);
-    XQLiteral *did  = new (MEMMGR)
+      XQLiteral *did  = new (MEMMGR)
       XQLiteral(ic, MEMMGR);
-    delete $1;
-    $$ = did;
+      $$ = did;
   }
 ;
 
@@ -1235,9 +1241,8 @@ _VarRef:
   [44]    VarRef    ::=    "$" VarName
   */
   
-  _VARNAME_ {
-		XQVariable *var = new (MEMMGR) XQVariable($1, MEMMGR);
-		delete [] $1;
+  _DOLLAR_SIGN_ _VARIABLE_ {
+		XQVariable *var = new (MEMMGR) XQVariable($2, MEMMGR);
 		$$ = var;
   }
 
@@ -1283,16 +1288,14 @@ _FunctionCall:
 	[47]     FunctionCall     ::=     <QName "("> (ExprSingle ("," ExprSingle)*)? ")"
 	*/
 
-	_QNAME_LPAR_ _RPAR_ {
+	_FUNCTION_CALL_ _RPAR_ {
         QualifiedName *qname = new (MEMMGR) QualifiedName($1, MEMMGR);
-        delete $1;
         VectorOfASTNodes tmp(XQillaAllocator<ASTNode*>(MEMMGR));
 		$$ = new (MEMMGR) XQFunctionCall(qname, tmp, MEMMGR);
 	}
 
-	| _QNAME_LPAR_ _ArgumentList _RPAR_ {
+	| _FUNCTION_CALL_ _ArgumentList _RPAR_ {
         QualifiedName *qname = new (MEMMGR) QualifiedName($1, MEMMGR);
-        delete [] $1;
 		$$ = new (MEMMGR) XQFunctionCall(qname, *$2, MEMMGR);
         delete $2;
 	}
@@ -1333,7 +1336,7 @@ _SingleType:
 		$$ = seq;
 	}
 
-	| _AtomicType _QUESTION_ {
+	| _AtomicType _ZERO_OR_ONE_ {
 		SequenceType* seq=new (MEMMGR) SequenceType();
 		seq->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ATOMIC_TYPE, NULL, $1));
 		seq->setOccurrence(SequenceType::QUESTION_MARK);
@@ -1537,13 +1540,11 @@ _PITest:
 		NodeTest *step = new (MEMMGR) NodeTest();
         step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_PI, new (MEMMGR) QualifiedName($2)));
 		$$ = step;
-		delete $2;
 	}
   | _PROCESSING_INSTRUCTION_LPAR_ _NCNAME_ _RPAR_ {
 		NodeTest *step = new (MEMMGR) NodeTest();
         step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_PI, new (MEMMGR) QualifiedName($2)));
 		$$ = step;
-		delete $2;
 	}
 	| _PROCESSING_INSTRUCTION_LPAR_  _RPAR_ {
 		NodeTest *step = new (MEMMGR) NodeTest();
@@ -1713,8 +1714,7 @@ _TypeName:
 _QName:
 
   _QNAME_ {
-		QualifiedName *qn = new (MEMMGR) QualifiedName($1, MEMMGR);
-		delete [] $1;
+      QualifiedName *qn = new (MEMMGR) QualifiedName($1, MEMMGR);
 	  $$ = qn;
 	}
 
@@ -1722,16 +1722,5 @@ _QName:
 
 %%
 
-void yyerror(const char *s)
-{
-  XQThrow(StaticErrorException, X("XPath2Parser.y"), X(s));
-}
+}	// namespace XPath2
 
-inline VectorOfASTNodes packageArgs(ASTNode *arg1Impl, ASTNode *arg2Impl, XPath2MemoryManager* memMgr)
-{
-	VectorOfASTNodes args=VectorOfASTNodes(2,(ASTNode*)NULL,XQillaAllocator<ASTNode*>(memMgr));
-	args[0]=arg1Impl;
-	args[1]=arg2Impl;
-
-	return args;
-}
