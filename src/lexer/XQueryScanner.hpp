@@ -83,6 +83,8 @@ public:
 	    int nextToken=yylex();
 	    memcpy(pYYLVAL,&yylval,sizeof(YYSTYPE));
 	    memcpy(pYYLOC,&m_yyloc,sizeof(YYLTYPE));
+        if(nextToken==0 && !CXQillaLexer::isCommentClosed())
+            LexerError("Unterminated comment");
 	    return nextToken;
     }
 
@@ -90,6 +92,8 @@ public:
     {
 	    int nextToken=yylex();
 	    memcpy(pYYLVAL,&yylval,sizeof(YYSTYPE));
+        if(nextToken==0 && !CXQillaLexer::isCommentClosed())
+            LexerError("Unterminated comment");
 	    return nextToken;
     }
 
@@ -122,9 +126,10 @@ protected:
         yyFlexLexer::yy_pop_state();
     }
 
-    virtual bool next_tokens(int state, int tok1, int tok2=0)
+    virtual bool next_tokens(int state, int tok1, int tok2=0, int tok3=0)
     {
         CXQueryScanner lookAhead(m_memMgr, m_szQuery+m_index);
+        lookAhead.setGenerateEOF(m_bGenerateEOF);
         lookAhead.yy_start=1 + 2 * state;
 
         int nextToken1 = lookAhead.yylex();
@@ -133,10 +138,24 @@ protected:
         int nextToken2 = 0;
         if(tok2!=0)
             nextToken2 = lookAhead.yylex();
+        if(tok2!=nextToken2)
+            return false;
+        int nextToken3 = 0;
+        if(tok3!=0)
+            nextToken3 = lookAhead.yylex();
 
-        return (tok2==nextToken2);
+        return (tok3==nextToken3);
     }
 
+    virtual int next_token(int state)
+    {
+        CXQueryScanner lookAhead(m_memMgr, m_szQuery+m_index);
+        lookAhead.setGenerateEOF(m_bGenerateEOF);
+        lookAhead.yy_start=1 + 2 * state;
+
+        return lookAhead.yylex();
+    }
+    
 	YYSTYPE yylval;
 };
 

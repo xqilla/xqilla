@@ -96,6 +96,10 @@ public:
             Error("Unbalanced comment found");
         m_nOpenComments--;
     }
+    bool isCommentClosed()
+    {
+        return m_nOpenComments==0;
+    }
 
     XMLCh* allocate_string(const XMLCh* src, int len=-1)
     {
