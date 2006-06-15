@@ -37,7 +37,7 @@ public :
   /**
    * Constructor.  Sets _hh and _mm as specified.
    */
-  Timezone(int hour, int minute);
+  Timezone(bool positive, int hour, int minute);
 
 
   /**
@@ -62,11 +62,13 @@ public :
 
   /** Returns true if this is greater than other, 
    * false otherwise 
-   */  bool greaterThan(const Timezone::Ptr &other) const;
+   */  
+  bool greaterThan(const Timezone::Ptr &other) const;
 
   /** Returns true if this is greater than other, 
    * false otherwise 
-   */  bool lessThan(const Timezone::Ptr &other) const;
+   */  
+  bool lessThan(const Timezone::Ptr &other) const;
 
   ATDurationOrDerived::Ptr asDayTimeDuration(const DynamicContext* context) const;
   
@@ -83,18 +85,14 @@ public :
   const XMLCh* printTimezone(const DynamicContext* context) const;
   
   /**
-   * Returns _mm.
+   * Returns the whole timezone expressed in minutes, e.g. +02:00 is retruned as 120 
    */
-  const int getMinutes() const;
-
-  /**
-   * Returns _hh.
-   */
-  const int getHours() const;
+  const int getTimezoneAsMinutes() const;
 
 private:
   int _hh;    // time zone hour
   int _mm;    // time zone minute
+  bool _positive; 
 
   void init(int seconds);
   void validate() const;

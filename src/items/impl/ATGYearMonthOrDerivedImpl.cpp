@@ -351,12 +351,7 @@ void ATGYearMonthOrDerivedImpl::setGYearMonth(const XMLCh* const value, const Dy
 		XQThrow(XPath2TypeCastException,X("ATGYearMonthOrDerivedImpl::setGYearMonth"), X("Invalid representation of gYearMonth"));
 	}
 
-  // Create Timezone object, clean this up in future
-  if (zonepos == false) {
-    zonehh *= -1;
-    zonemm *= -1;
-  }
- timezone_ = new Timezone(zonehh, zonemm);
+  timezone_ = new Timezone(zonepos, zonehh, zonemm);
  
 
   _MM = context->getItemFactory()->createNonNegativeInteger(MM, context);  

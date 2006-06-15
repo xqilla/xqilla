@@ -570,12 +570,7 @@ void ATDateOrDerivedImpl::setDate(const XMLCh* const date, const DynamicContext*
     XQThrow(XPath2TypeCastException,X("ATDateOrDerivedImpl::setDate"), X("Invalid representation of date"));
   }
 
-  // Create Timezone object, clean this up in future
-  if (zonepos == false) {
-    zonehh *= -1;
-    zonemm *= -1;
-  }
-  timezone_ = new Timezone(zonehh, zonemm);
+  timezone_ = new Timezone(zonepos, zonehh, zonemm);
 
   _DD = context->getItemFactory()->createNonNegativeInteger(DD, context);
   _MM = context->getItemFactory()->createNonNegativeInteger(MM, context);
