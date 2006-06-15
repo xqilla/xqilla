@@ -43,7 +43,7 @@ GreaterThanEqual::GreaterThanEqual(const VectorOfASTNodes &args, XPath2MemoryMan
             return ((Numeric*)(const AnyAtomicType*)arg1)->greaterThan((const Numeric::Ptr )arg2, context) ||
                    ((Numeric*)(const AnyAtomicType*)arg1)->equals((const Numeric::Ptr )arg2, context) ;
         } else {
-            XQThrow(XPath2ErrorException,X("GreaterThanEqual::greater_than_equal"), X("An attempt to compare a numeric type to a non numeric type has occurred"));
+            XQThrow(XPath2ErrorException,X("GreaterThanEqual::greater_than_equal"), X("An attempt to compare a numeric type to a non numeric type has occurred [err:XPTY0004]"));
         }
     }
 

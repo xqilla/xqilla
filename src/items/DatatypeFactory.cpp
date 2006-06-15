@@ -83,7 +83,10 @@ AnyAtomicType::Ptr DatatypeFactory::createInstance(const XMLCh* typeURI,
     }
     validator->validate(valueToValidate, 0, context->getMemoryManager());
   } catch (XMLException &e) {
-    XQThrow(InvalidLexicalSpaceException, X("DatatypeFactory::createInstance"), e.getMessage());
+    XMLBuffer buf(1023, context->getMemoryManager());
+    buf.append(e.getMessage());
+    buf.append(X(" [err:FORG0001]"));
+    XQThrow(InvalidLexicalSpaceException, X("DatatypeFactory::createInstance"), buf.getRawBuffer());
   }
 
   return createInstanceNoCheck(typeURI, typeName, value, context);
