@@ -227,7 +227,7 @@ Numeric::Ptr ATDecimalOrDerivedImpl::promoteTypeIfApplicable(const XMLCh* typeUR
    * false otherwise */
 bool ATDecimalOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const {
   if(!target->isNumericValue()) {
-    XQThrow(IllegalArgumentException,X("ATDecimalOrDerivedImpl::equals"), X("Equality operator for given types not supported"));
+    XQThrow(IllegalArgumentException,X("ATDecimalOrDerivedImpl::equals"), X("Equality operator for given types not supported [err:XPTY0004]"));
   }
   if(this->getPrimitiveTypeIndex() != target->getPrimitiveTypeIndex()) {
     // if targer is not a decimal, then we need to promote this to a float or double

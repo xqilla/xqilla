@@ -130,7 +130,7 @@ const XMLCh* ATBooleanOrDerivedImpl::asString() const
  * false otherwise */
 bool ATBooleanOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const {
   if(this->getPrimitiveTypeIndex() != target->getPrimitiveTypeIndex()) {
-    XQThrow(IllegalArgumentException,X("ATBooleanOrDerivedImpl::equals"), X("Equality operator for given types not supported"));
+    XQThrow(IllegalArgumentException,X("ATBooleanOrDerivedImpl::equals"), X("Equality operator for given types not supported [err:XPTY0004]"));
   }
   return _value == ((const ATBooleanOrDerived::Ptr)target)->isTrue();
 }

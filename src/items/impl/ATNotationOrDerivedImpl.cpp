@@ -91,7 +91,7 @@ const XMLCh* ATNotationOrDerivedImpl::asString(const DynamicContext* context) co
    * false otherwise */
 bool ATNotationOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const {
   if(this->getPrimitiveTypeIndex() != target->getPrimitiveTypeIndex()) {
-    XQThrow(IllegalArgumentException,X("ATNotationOrDerivedImpl::equals"), X("Equality operator for given types not supported"));
+    XQThrow(IllegalArgumentException,X("ATNotationOrDerivedImpl::equals"), X("Equality operator for given types not supported [err:XPTY0004]"));
   }
   ATNotationOrDerivedImpl* other=(ATNotationOrDerivedImpl*)target->getInterface(Item::gXQilla);
   return XPath2Utils::equals(other->_uri, _uri) && XPath2Utils::equals(other->_name, _name) ;
