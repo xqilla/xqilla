@@ -435,14 +435,12 @@ XQPARSERHPP   = $(top_srcdir)/src/parser/XQueryParser.hpp
 
 $(XPLEXERFILE) : $(XPLEXTEMPLATE)
 	$(LEX) -BUs -S$(XQILLALEXSKEL) -o$(XPLEXERFILE) $(XPLEXTEMPLATE) # This can take a long time
-	${perl} -pi -e "s/delete yy_state_buf;/delete [] yy_state_buf;/g" $(XQLEXERFILE)
 
 $(XPPARSERCPP) $(XPPARSERHPP): $(XPPARSERFILE)
 	$(YACC) -d -v -o $(XPPARSERCPP) $(XPPARSERFILE)
 
 $(XQLEXERFILE): $(XQLEXTEMPLATE) $(XQLEXSKEL)
 	$(LEX) -BUs -S$(XQILLALEXSKEL) -o$(XQLEXERFILE) $(XQLEXTEMPLATE) # This can take a long time
-	${perl} -pi -e "s/delete yy_state_buf;/delete [] yy_state_buf;/g" $(XQLEXERFILE)
 
 $(XQPARSERCPP) $(XQPARSERHPP): $(XQPARSERFILE)
 	$(YACC) -d -v -o $(XQPARSERCPP) $(XQPARSERFILE)
