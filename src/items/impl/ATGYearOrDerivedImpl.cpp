@@ -92,8 +92,7 @@ const XMLCh* ATGYearOrDerivedImpl::asString(const DynamicContext* context) const
    * false otherwise */
 bool ATGYearOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const {
   if(this->getPrimitiveTypeIndex() != target->getPrimitiveTypeIndex()) {
-    XQThrow(IllegalArgumentException,X("ATGYearOrDerivedImpl::equals"), 
-        X("Equality operator for given types not supported"));
+    XQThrow(IllegalArgumentException,X("ATGYearOrDerivedImpl::equals"), X("Equality operator for given types not supported [err:XPTY0004]"));
   }
   ATGYearOrDerivedImpl* targetGYear = (ATGYearOrDerivedImpl*)(const AnyAtomicType*)target;
   if ( _hasTimezone == targetGYear->_hasTimezone) {

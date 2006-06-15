@@ -316,7 +316,7 @@ bool ATDurationOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const Dyn
           (_durationType == DAY_TIME_DURATION && target->getPrimitiveTypeIndex() == YEAR_MONTH_DURATION))
     return false;
 
-  XQThrow(IllegalArgumentException,X("ATDurationOrDerivedImpl::equals"), X("Equality operator for given types not supported"));
+  XQThrow(IllegalArgumentException,X("ATDurationOrDerivedImpl::equals"), X("Equality operator for given types not supported [err:XPTY0004]"));
   return false;
 }
 
@@ -352,7 +352,7 @@ bool ATDurationOrDerivedImpl::lessThan(const ATDurationOrDerived::Ptr &other, co
     
   } else {
     // if we are trying to compare anything else -- error //
-    XQThrow(IllegalArgumentException,X("ATDurationOrDerivedImpl::lessThan"), X("less-than operator for given types not supported"));
+    XQThrow(IllegalArgumentException,X("ATDurationOrDerivedImpl::lessThan"), X("less-than operator for given types not supported [err:XPTY0004]"));
   }
   
 }
@@ -370,7 +370,7 @@ bool ATDurationOrDerivedImpl::greaterThan(const ATDurationOrDerived::Ptr &other,
     
   } else {
     // if we are trying to compare anything else -- error //
-    XQThrow(IllegalArgumentException,X("ATDurationOrDerivedImpl::greaterThan"), X("greater-than operator for given types not supported"));
+    XQThrow(IllegalArgumentException,X("ATDurationOrDerivedImpl::greaterThan"), X("greater-than operator for given types not supported [err:XPTY0004]"));
   }
 }
 
@@ -806,7 +806,7 @@ void ATDurationOrDerivedImpl::setDuration(const XMLCh* const s, const DynamicCon
     unsigned int length = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(s);
  
   if(s == 0) {
-      XQThrow(XPath2TypeCastException,X("XSDurationImpl::setDuration"), X("Invalid representation of duration"));
+      XQThrow(XPath2TypeCastException,X("XSDurationImpl::setDuration"), X("Invalid representation of duration [err:FORG0001]"));
   }
   
   // State variables etc.
@@ -968,7 +968,7 @@ void ATDurationOrDerivedImpl::setDuration(const XMLCh* const s, const DynamicCon
 
   // check duration format
   if ( wrongformat || (Texist && state < 3) || gotDigit) {
-    XQThrow(XPath2TypeCastException,X("ATDurationOrDerivedImpl::setDuration"), X("Invalid representation of duration"));
+    XQThrow(XPath2TypeCastException,X("ATDurationOrDerivedImpl::setDuration"), X("Invalid representation of duration [err:FORG0001]"));
   }
 
   

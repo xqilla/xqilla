@@ -195,7 +195,7 @@ Numeric::Ptr ATDoubleOrDerivedImpl::promoteTypeIfApplicable(const XMLCh* typeURI
    * false otherwise */
 bool ATDoubleOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const {
   if(!target->isNumericValue()) {
-    XQThrow(IllegalArgumentException,X("ATDoubleOrDerivedImpl::equals"), X("Equality operator for given types not supported"));
+    XQThrow(IllegalArgumentException,X("ATDoubleOrDerivedImpl::equals"), X("Equality operator for given types not supported [err:XPTY0004]"));
   } 
 
   if(target->getPrimitiveTypeIndex() != AnyAtomicType::DOUBLE) {

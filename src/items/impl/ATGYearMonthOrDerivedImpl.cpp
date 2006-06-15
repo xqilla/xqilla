@@ -94,7 +94,7 @@ const XMLCh* ATGYearMonthOrDerivedImpl::asString(const DynamicContext* context) 
  */
 bool ATGYearMonthOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const {
   if(this->getPrimitiveTypeIndex() != target->getPrimitiveTypeIndex()) {
-        XQThrow(IllegalArgumentException,X("ATGYearMonthOrDerivedImpl::equals"), X("Equality operator for given types not supported"));
+        XQThrow(IllegalArgumentException,X("ATGYearMonthOrDerivedImpl::equals"), X("Equality operator for given types not supported [err:XPTY0004]"));
   }
   
     const XMLCh doubleZero[] = { XERCES_CPP_NAMESPACE_QUALIFIER chDigit_0, XERCES_CPP_NAMESPACE_QUALIFIER chDigit_0, XERCES_CPP_NAMESPACE_QUALIFIER chNull };

@@ -92,7 +92,7 @@ const XMLCh* ATGMonthDayOrDerivedImpl::asString(const DynamicContext* context) c
  */
 bool ATGMonthDayOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const {
   if(this->getPrimitiveTypeIndex() != target->getPrimitiveTypeIndex()) {
-        XQThrow(IllegalArgumentException,X("ATGMonthDayOrDerivedImpl::equals"), X("Equality operator for given types not supported"));
+        XQThrow(IllegalArgumentException,X("ATGMonthDayOrDerivedImpl::equals"), X("Equality operator for given types not supported [err:XPTY0004]"));
   }
   
   ATGMonthDayOrDerivedImpl* targetGMonthDay = (ATGMonthDayOrDerivedImpl*)(const AnyAtomicType*)target;

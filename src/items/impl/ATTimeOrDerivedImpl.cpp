@@ -165,7 +165,7 @@ ATDateTimeOrDerived::Ptr ATTimeOrDerivedImpl::buildReferenceDateTime(ATTimeOrDer
  */
 bool ATTimeOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const {
   if(this->getPrimitiveTypeIndex() != target->getPrimitiveTypeIndex()) {
-    XQThrow(IllegalArgumentException,X("ATTimeOrDerivedImpl::equals"), X("Equality operator for given types not supported"));
+    XQThrow(IllegalArgumentException,X("ATTimeOrDerivedImpl::equals"), X("Equality operator for given types not supported [err:XPTY0004]"));
   }
   ATDateTimeOrDerived::Ptr thisTime=buildReferenceDateTime(this, context);
   ATDateTimeOrDerived::Ptr otherTime=buildReferenceDateTime(target, context);
@@ -181,7 +181,7 @@ bool ATTimeOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const Dynamic
  */
 bool ATTimeOrDerivedImpl::greaterThan(const ATTimeOrDerived::Ptr &other, const DynamicContext* context) const {
   if(this->getPrimitiveTypeIndex() != other->getPrimitiveTypeIndex()) {
-    XQThrow(IllegalArgumentException,X("ATTimeOrDerivedImpl::equals"), X("GreaterThan operator for given types not supported"));
+    XQThrow(IllegalArgumentException,X("ATTimeOrDerivedImpl::equals"), X("GreaterThan operator for given types not supported [err:XPTY0004]"));
   } 
   ATDateTimeOrDerived::Ptr thisTime=buildReferenceDateTime(this, context);
   ATDateTimeOrDerived::Ptr otherTime=buildReferenceDateTime(other, context);
@@ -197,7 +197,7 @@ bool ATTimeOrDerivedImpl::greaterThan(const ATTimeOrDerived::Ptr &other, const D
  */
 bool ATTimeOrDerivedImpl::lessThan(const ATTimeOrDerived::Ptr &other,  const DynamicContext* context) const {
   if(this->getPrimitiveTypeIndex() != other->getPrimitiveTypeIndex()) {
-    XQThrow(IllegalArgumentException,X("ATTimeOrDerivedImpl::equals"), X("LessThan operator for given types not supported"));
+    XQThrow(IllegalArgumentException,X("ATTimeOrDerivedImpl::equals"), X("LessThan operator for given types not supported [err:XPTY0004]"));
   } 
   ATDateTimeOrDerived::Ptr thisTime=buildReferenceDateTime(this, context);
   ATDateTimeOrDerived::Ptr otherTime=buildReferenceDateTime(other, context);
