@@ -48,13 +48,26 @@ FunctionSubstringBefore::FunctionSubstringBefore(const VectorOfASTNodes &args, X
 
 Sequence FunctionSubstringBefore::collapseTreeInternal(DynamicContext* context, int flags) const
 {
-	XPath2MemoryManager* memMgr = context->getMemoryManager();
+  XPath2MemoryManager* memMgr = context->getMemoryManager();
 
-	Sequence str1=getParamNumber(1,context)->toSequence(context);
-	Sequence str2=getParamNumber(2,context)->toSequence(context);
+  Sequence str1=getParamNumber(1,context)->toSequence(context);
+  Sequence str2=getParamNumber(2,context)->toSequence(context);
 
-	Collation* collation=NULL;
-	if(getNumArgs()>2) {
+  ATStringOrDerived::Ptr container = NULL;
+  if(str1.isEmpty())
+    container=context->getItemFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context);
+  else
+    container=(const ATStringOrDerived::Ptr )str1.first();
+  ATStringOrDerived::Ptr pattern = NULL;
+  if(str2.isEmpty())
+    pattern=context->getItemFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context);
+  else
+    pattern=(const ATStringOrDerived::Ptr )str2.first();
+  if(pattern->getLength()==0)
+    return Sequence(pattern, memMgr);
+
+  Collation* collation=NULL;
+  if(getNumArgs()>2) {
     Sequence collArg = getParamNumber(3,context)->toSequence(context);
     const XMLCh* collName=collArg.first()->asString(context);
     try {
@@ -62,23 +75,12 @@ Sequence FunctionSubstringBefore::collapseTreeInternal(DynamicContext* context, 
     } catch(XPath2ErrorException &e) {
       XQThrow(FunctionException, X("FunctionSubstringAfter::collapseTreeInternal"), X("Invalid collationURI"));  
     }
-	  collation=context->getCollation(collName);
+    collation=context->getCollation(collName);
     if(collation==NULL)
       XQThrow(FunctionException,X("FunctionSubstringAfter::collapseTreeInternal"),X("Collation object is not available"));
   }
-	else
-		collation=context->getCollation(CodepointCollation::getCodepointCollationName());
-
-	ATStringOrDerived::Ptr container = NULL;
-  if(str1.isEmpty())
-    container=context->getItemFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context);
   else
-    container=(const ATStringOrDerived::Ptr )str1.first();
-	ATStringOrDerived::Ptr pattern = NULL;
-  if(str2.isEmpty())
-    pattern=context->getItemFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context);
-  else
-    pattern=(const ATStringOrDerived::Ptr )str2.first();
+    collation=context->getCollation(CodepointCollation::getCodepointCollationName());
 
   return Sequence(((const ATStringOrDerived*)container)->substringBefore(pattern, collation, context), memMgr);
 }
