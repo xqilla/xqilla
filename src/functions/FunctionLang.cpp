@@ -47,7 +47,7 @@ ASTNode* FunctionLang::staticResolution(StaticContext *context) {
   _src.getStaticType().flags = StaticType::BOOLEAN_TYPE;
   if(_args.size() == 2 && _args[1]->getType() == ASTNode::CONTEXT_ITEM)
     _args.pop_back();
-  if(_args.size() == 1)
+  if(_args.size()==1)
     _src.contextItemUsed(true);
   return resolveArguments(context);
 }
@@ -74,9 +74,9 @@ Sequence FunctionLang::collapseTreeInternal(DynamicContext* context, int flags) 
     {
         const Item::Ptr item = context->getContextItem();
         if(item==NULLRCP)
-            XQThrow(FunctionException, X("FunctionLang::collapseTreeInternal"),X("Undefined context item in fn:lang [err:FONC0001]"));
+            XQThrow(FunctionException, X("FunctionLang::collapseTreeInternal"),X("Undefined context item in fn:lang [err:XPDY0002]"));
         if(!item->isNode())
-            XQThrow(FunctionException, X("FunctionLang::collapseTreeInternal"),X("The context item is not a node [err:FOTY0011]"));
+            XQThrow(FunctionException, X("FunctionLang::collapseTreeInternal"),X("The context item is not a node [err:XPTY0004]"));
         ctxNode=item;
     }
 
