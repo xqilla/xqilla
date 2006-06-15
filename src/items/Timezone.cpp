@@ -38,8 +38,9 @@ Timezone::Timezone(int seconds) {
 }
 
 Timezone::Timezone(const ATDecimalOrDerived::Ptr &hour, const ATDecimalOrDerived::Ptr &minute, const DynamicContext* context) {
-  _hh=XERCES_CPP_NAMESPACE_QUALIFIER XMLString::parseInt(hour->asString(context));
-  _mm=XERCES_CPP_NAMESPACE_QUALIFIER XMLString::parseInt(minute->asString(context));
+  _hh=abs(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::parseInt(hour->asString(context)));
+  _mm=abs(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::parseInt(minute->asString(context)));
+  _positive = (!hour->isNegative() && !minute->isNegative());
   
   validate();
 }
@@ -57,20 +58,22 @@ Timezone::Timezone(const ATDurationOrDerived::Ptr &duration, const DynamicContex
   validate();
 }
 
-Timezone::Timezone(int hour, int minute) {
+Timezone::Timezone(bool positive, int hour, int minute) {
   _hh = hour;
   _mm = minute;
-
+  _positive = positive;
   validate();
 }
 
 void Timezone::init(int seconds)
 {
   // get hour : ( 60 * 60 sec = 3600)
-  _hh = seconds / DateUtils::g_secondsPerHour;
+  _hh = abs( seconds ) / DateUtils::g_secondsPerHour;
 
   // get minute : ( 60 sec = 60)
-  _mm = (seconds % DateUtils::g_secondsPerHour) / DateUtils::g_secondsPerMinute;
+  _mm = (abs( seconds ) % DateUtils::g_secondsPerHour) / DateUtils::g_secondsPerMinute;
+
+  _positive = (seconds>=0);
 }
 
 void Timezone::validate() const {
@@ -86,70 +89,51 @@ void Timezone::validate() const {
 Timezone::Timezone(const Timezone & other) {
   _hh = other._hh;
   _mm = other._mm;
+  _positive = other._positive;
 }
 
 bool Timezone::equals(const Timezone::Ptr &other) const {
-  return (_hh == other->_hh && _mm == other->_mm);
+  return (_hh == other->_hh && _mm == other->_mm && _positive == other->_positive);
 }
 
 bool Timezone::greaterThan(const Timezone::Ptr &other) const {
-  return (_hh > other->_hh ||
-          (_hh == other->_hh && _mm > other->_mm));
+  return (getTimezoneAsMinutes()>other->getTimezoneAsMinutes());
 }
 
 bool Timezone::lessThan(const Timezone::Ptr &other) const {
-  return (_hh < other->_hh ||
-          (_hh == other->_hh && _mm < other->_mm));
+  return (getTimezoneAsMinutes()<other->getTimezoneAsMinutes());
 }
 
-const int Timezone::getMinutes() const {
-  return _mm;
-}
-
-const int Timezone::getHours() const {
-  return _hh;
+const int Timezone::getTimezoneAsMinutes() const {
+  return (_hh*DateUtils::g_minutesPerHour+_mm) * (_positive?+1:-1);
 }
 
 ATDurationOrDerived::Ptr Timezone::asDayTimeDuration(const DynamicContext* context) const {
   XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buffer(1023, context->getMemoryManager());
-  if(_hh < 0) {
+  if(!_positive)
     buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-    buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_P);
-    buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_T);
-    DateUtils::formatNumber(-_hh,2,buffer);
-    buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_H);
-    DateUtils::formatNumber(-_mm,2,buffer);
-    buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_M);
-  } else {
-    buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_P);
-    buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_T);
-    DateUtils::formatNumber(_hh,2,buffer);
-    buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_H);
-    DateUtils::formatNumber(_mm,2,buffer);
-    buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_M);        
-  }
+  buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_P);
+  buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_T);
+  DateUtils::formatNumber(_hh,2,buffer);
+  buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_H);
+  DateUtils::formatNumber(_mm,2,buffer);
+  buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_M);        
 
   return context->getItemFactory()->createDayTimeDuration(buffer.getRawBuffer(), context);
-  
-
 }
 
 const XMLCh* Timezone::asString(const DynamicContext* context) const {
   if (_hh == 0 && _mm == 0)
 	  return XPath2Utils::asStr(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_Z,context->getMemoryManager());
   
-  
   XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buffer(1023, context->getMemoryManager());
-  if(_hh>0) {
+  if(_positive)
     buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chPlus);
-    DateUtils::formatNumber(_hh,2,buffer);
-    buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chColon);
-    DateUtils::formatNumber(_mm,2,buffer);
-  } else {
-    DateUtils::formatNumber(_hh,2,buffer);
-    buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chColon);
-    DateUtils::formatNumber(-_mm,2,buffer);
-  }
+  else
+    buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
+  DateUtils::formatNumber(_hh,2,buffer);
+  buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chColon);
+  DateUtils::formatNumber(_mm,2,buffer);
   
   return context->getMemoryManager()->getPooledString(buffer.getRawBuffer());
 }
@@ -157,14 +141,11 @@ const XMLCh* Timezone::asString(const DynamicContext* context) const {
 const XMLCh* Timezone::printTimezone(const DynamicContext* context) const {
   
   XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buffer(1023, context->getMemoryManager());
+  if(!_positive)
+    buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
   DateUtils::formatNumber(_hh,2,buffer);
   buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chColon);
-  
-  if(_hh > 0) {
-    DateUtils::formatNumber(_mm,2,buffer);
-  } else {
-    DateUtils::formatNumber(-_mm,2,buffer);
-  }
+  DateUtils::formatNumber(_mm,2,buffer);
   
   return context->getMemoryManager()->getPooledString(buffer.getRawBuffer());
 }

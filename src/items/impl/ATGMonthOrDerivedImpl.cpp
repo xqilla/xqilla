@@ -323,13 +323,8 @@ void ATGMonthOrDerivedImpl::setGMonth(const XMLCh* const value, const DynamicCon
 		XQThrow(XPath2TypeCastException,X("ATGMonthOrDerivedImpl::setGMonth"), X("Invalid representation of gMonth"));
 	}
 
-  // Create Timezone object, clean this up in future
-  if (zonepos == false) {
-    zonehh *= -1;
-    zonemm *= -1;
-  }
   _gMonth = context->getItemFactory()->createNonNegativeInteger(MM, context);
-  timezone_ = new Timezone(zonehh, zonemm);
+  timezone_ = new Timezone(zonepos, zonehh, zonemm);
   
 }
 

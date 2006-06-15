@@ -416,14 +416,13 @@ ATDateTimeOrDerived::Ptr ATDateTimeOrDerivedImpl::addTimezone(const ATDurationOr
     return this->setTimezone(tz, context);
   } else { //else convert the dateTime into an equivalent one with given timezone
     // Minutes
-    MAPM offset = tz->getMinutes()-timezone_->getMinutes();
+    MAPM offset = tz->getTimezoneAsMinutes()-timezone_->getTimezoneAsMinutes();
     MAPM temp = ((const ATDecimalOrDerived*)_mm)->asMAPM()+offset;
     MAPM mm = DateUtils::modulo(temp, DateUtils::g_minutesPerHour);
     MAPM carry = (temp / DateUtils::g_minutesPerHour).floor();
   
     // Hours
-    offset = tz->getHours()-timezone_->getHours();
-    temp = ((const ATDecimalOrDerived*)_hh)->asMAPM()+offset+carry;
+    temp = ((const ATDecimalOrDerived*)_hh)->asMAPM()+carry;
     MAPM hh = DateUtils::modulo(temp, DateUtils::g_hoursPerDay);
     carry = (temp / DateUtils::g_hoursPerDay).floor();
     
@@ -520,22 +519,20 @@ ATDateTimeOrDerived::Ptr ATDateTimeOrDerivedImpl::addDayTimeDuration(const ATDur
   
 ATDateTimeOrDerived::Ptr ATDateTimeOrDerivedImpl::normalize(const DynamicContext* context) const {  
 
-  Timezone::Ptr timezone;
+  MAPM tzMinutes;
   if (!_hasTimezone) {
-    timezone = new Timezone(context->getImplicitTimezone(), context);
+    tzMinutes = Timezone(context->getImplicitTimezone(), context).getTimezoneAsMinutes();
   } else {
-    timezone = this->timezone_;
+    tzMinutes = timezone_->getTimezoneAsMinutes();
   }
 
   // Minutes
-  MAPM tzMinutes = timezone->getMinutes();
   MAPM temp = ((const ATDecimalOrDerived*)_mm)->asMAPM() - tzMinutes;
   MAPM mm = DateUtils::modulo(temp, DateUtils::g_minutesPerHour);
   MAPM carry = (temp / DateUtils::g_minutesPerHour).floor();
   
   // Hours
-  MAPM tzHours = timezone->getHours();
-  temp = ((const ATDecimalOrDerived*)_hh)->asMAPM() - tzHours + carry;
+  temp = ((const ATDecimalOrDerived*)_hh)->asMAPM() + carry;
   MAPM hh = DateUtils::modulo(temp, DateUtils::g_hoursPerDay);
   carry = (temp / DateUtils::g_hoursPerDay).floor();
   
@@ -557,7 +554,7 @@ ATDateTimeOrDerived::Ptr ATDateTimeOrDerivedImpl::normalize(const DynamicContext
                         context->getItemFactory()->createNonNegativeInteger(hh, context),
                         context->getItemFactory()->createNonNegativeInteger(mm, context),
                         _ss,
-                        new Timezone(0, 0), true  // timezone set to UTC 
+                        new Timezone(true, 0, 0), true  // timezone set to UTC 
                         );
 }
 
@@ -948,12 +945,7 @@ void ATDateTimeOrDerivedImpl::setDateTime(const XMLCh* const dateTime, const Dyn
     XQThrow(XPath2TypeCastException,X("XSDateTimeImpl::setDateTime"), X("Invalid representation of dateTime"));
   }
 
-  // Create Timezone object, clean this up in future
-  if (zonepos == false) {
-    zonehh *= -1;
-    zonemm *= -1;
-  }
-  timezone_ = new Timezone(zonehh, zonemm);
+  timezone_ = new Timezone(zonepos, zonehh,zonemm);
   
   _YY = context->getItemFactory()->createInteger(YY, context);
   _MM = context->getItemFactory()->createNonNegativeInteger(MM, context);

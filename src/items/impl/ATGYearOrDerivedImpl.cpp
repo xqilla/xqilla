@@ -300,12 +300,7 @@ void ATGYearOrDerivedImpl::setGYear(const XMLCh* const value, const DynamicConte
 		XQThrow(XPath2TypeCastException,X("ATGYearOrDerivedImpl::setGYear"), X("Invalid representation of gYear"));
 	}
 
-  // Create Timezone object, clean this up in future
-  if (zonepos == false) {
-    zonehh *= -1;
-    zonemm *= -1;
-  }
-  timezone_ = new Timezone(zonehh, zonemm);
+  timezone_ = new Timezone(zonepos, zonehh, zonemm);
 
   _YY = context->getItemFactory()->createInteger(YY, context);
   

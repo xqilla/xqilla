@@ -344,11 +344,7 @@ void ATGMonthDayOrDerivedImpl::setGMonthDay(const XMLCh* const value, const Dyna
   }
   
   // Create Timezone object, clean this up in future
-  if (zonepos == false) {
-    zonehh *= -1;
-    zonemm *= -1;
-  }
-  timezone_ = new Timezone(zonehh, zonemm);
+  timezone_ = new Timezone(zonepos, zonehh, zonemm);
 
   _MM = context->getItemFactory()->createNonNegativeInteger(MM, context);  
   _DD = context->getItemFactory()->createNonNegativeInteger(DD, context);  

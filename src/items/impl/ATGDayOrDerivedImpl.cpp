@@ -316,12 +316,7 @@ void ATGDayOrDerivedImpl::setGDay(const XMLCh* const value, const DynamicContext
         X("Invalid representation of gDay"));
 	}
 
-  // Create Timezone object, clean this up in future
-  if (zonepos == false) {
-    zonehh *= -1;
-    zonemm *= -1;
-  }
-  timezone_ = new Timezone(zonehh, zonemm);
+  timezone_ = new Timezone(zonepos, zonehh, zonemm);
   _gDay = context->getItemFactory()->createNonNegativeInteger(DD, context);
   
 }

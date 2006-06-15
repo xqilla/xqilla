@@ -265,7 +265,7 @@ ATTimeOrDerived::Ptr ATTimeOrDerivedImpl::addTimezone(const ATDurationOrDerived:
     return timeCopy;
   } else { //else convert the time into an equivalent one with given timezone
     // Minutes
-    MAPM offset = tz->getMinutes()-timezone_->getMinutes();
+    MAPM offset = tz->getTimezoneAsMinutes()-timezone_->getTimezoneAsMinutes();
     MAPM temp = ((const ATDecimalOrDerived*)this->_mm)->asMAPM() + offset;
     const ATDecimalOrDerived::Ptr mm = context->getItemFactory()->createNonNegativeInteger(
                                                                                      DateUtils::modulo(temp, DateUtils::g_minutesPerHour),
@@ -273,8 +273,7 @@ ATTimeOrDerived::Ptr ATTimeOrDerivedImpl::addTimezone(const ATDurationOrDerived:
     MAPM carry = (temp / DateUtils::g_minutesPerHour).floor();
   
     // Hours
-    offset = tz->getHours()-timezone_->getHours();
-    temp = ((const ATDecimalOrDerived*)this->_hh)->asMAPM() + offset + carry;
+    temp = ((const ATDecimalOrDerived*)this->_hh)->asMAPM() + carry;
     const ATDecimalOrDerived::Ptr hh = context->getItemFactory()->createNonNegativeInteger(
                                                                                      DateUtils::modulo(temp, DateUtils::g_hoursPerDay),
                                                                                      context);
@@ -536,13 +535,7 @@ void ATTimeOrDerivedImpl::setTime(const XMLCh* const time, const DynamicContext*
 		XQThrow(XPath2TypeCastException,X("XSTimeImpl::setTime"), X("Invalid representation of time"));
 	}
 	
-  // Create Timezone object, clean this up in future
-  if (zonepos == false) {
-    zonehh *= -1;
-    zonemm *= -1;
-  }
-  
-  timezone_ = new Timezone(zonehh, zonemm);
+  timezone_ = new Timezone(zonepos, zonehh,zonemm);
   
   _hh = context->getItemFactory()->createNonNegativeInteger(hh, context);
   _mm = context->getItemFactory()->createNonNegativeInteger(mm, context);
