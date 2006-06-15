@@ -16,10 +16,11 @@
 #include <xqilla/items/Item.hpp>
 #include <xqilla/items/ATDecimalOrDerived.hpp>
 #include <xqilla/items/ATStringOrDerived.hpp>
-#include <xqilla/context/DynamicContext.hpp>
-#include <xqilla/utils/XStr.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
+#include <xqilla/context/DynamicContext.hpp>
+#include <xqilla/exceptions/XPath2ErrorException.hpp>
 #include <xercesc/framework/XMLBuffer.hpp>
+#include <xercesc/util/XMLChar.hpp>
 
 const XMLCh FunctionCodepointsToString::name[] = {
   XERCES_CPP_NAMESPACE_QUALIFIER chLatin_c, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_d, 
@@ -52,8 +53,19 @@ Sequence FunctionCodepointsToString::collapseTreeInternal(DynamicContext* contex
   for(Sequence::iterator i = arg.begin(); i != end; ++i) {
     result.append(((const ATDecimalOrDerived*)(const Item*)*i)->treatAsCodepoint(context));
   }
-
-  return Sequence(context->getItemFactory()->createString(result.getRawBuffer(), context),
+  unsigned int len=result.getLen();
+  const XMLCh* str=result.getRawBuffer();
+  for(unsigned int j=0;j<len;j++)
+  {
+      if(XERCES_CPP_NAMESPACE_QUALIFIER RegxUtil::isHighSurrogate(str[j]))
+        if((j+1)==len || !XERCES_CPP_NAMESPACE_QUALIFIER RegxUtil::isLowSurrogate(str[j+1]) || !XERCES_CPP_NAMESPACE_QUALIFIER XMLChar1_0::isXMLChar(str[j], str[j+1]))
+          XQThrow(XPath2ErrorException, X("FunctionCodepointsToString::collapseTreeInternal"), X("String contains an invalid XML character [err:FOCH0001]."));
+        else
+          j++;
+      else if(!XERCES_CPP_NAMESPACE_QUALIFIER XMLChar1_0::isXMLChar(str[j]))
+        XQThrow(XPath2ErrorException, X("FunctionCodepointsToString::collapseTreeInternal"), X("String contains an invalid XML character [err:FOCH0001]."));
+  }
+  return Sequence(context->getItemFactory()->createString(str, context),
                   context->getMemoryManager());
 }
 

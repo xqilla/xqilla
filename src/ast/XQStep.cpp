@@ -141,7 +141,10 @@ Item::Ptr XQStep::StepResult::next(DynamicContext *context)
 
     Item::Ptr item = context->getContextItem();
 
-    if(item == NULLRCP || !item->isNode()) {
+    if(item == NULLRCP) {
+      XQThrow(TypeErrorException,X("XQStep::StepResult::next"), X("It is an error for the context item to be undefined when using it [err:XPDY0002]"));
+    }
+    if(!item->isNode()) {
       XQThrow(TypeErrorException,X("XQStep::StepResult::next"), X("An attempt was made to perform an axis step when the Context Item was not a node [err:XPTY0020]"));
     }
 
