@@ -60,8 +60,7 @@ Sequence FunctionString::collapseTreeInternal(DynamicContext* context, int flags
   if(getNumArgs() == 0) {
     item = context->getContextItem();
     if(item == NULLRCP) {
-      XQThrow(FunctionException, X("FunctionString::collapseTreeInternal"),
-              X("Undefined context item in fn:string [err:FONC0001]"));
+      XQThrow(FunctionException, X("FunctionString::collapseTreeInternal"), X("Undefined context item in fn:string [err:XPDY0002]"));
     }
   }
   else {
@@ -76,13 +75,13 @@ Item::Ptr FunctionString::string(const Item::Ptr &item, DynamicContext *context)
   if(item == NULLRCP) {
     return (const Item::Ptr)context->getItemFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context);
   }
-	else if(item->isNode()) {
+  else if(item->isNode()) {
     return (const Item::Ptr)context->getItemFactory()->createString(((Node*)(const Item*)item)->dmStringValue(context), context);
   }
   else if(item->isAtomicValue()) {
     return (const Item::Ptr)((AnyAtomicType*)(const Item*)item)->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                                                                XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING, context);
-	}
+                                                                        XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING, context);
+  }
   assert(false);
   return 0;
 }
