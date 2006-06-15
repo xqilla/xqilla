@@ -74,7 +74,7 @@ Item::Ptr Except::ExceptResult::next(DynamicContext *context)
     while((except_item = except_result->next(context)) != NULLRCP) {
       // Check it's a node
       if(!except_item->isNode()) {
-        XQThrow(XPath2ErrorException,X("Except::ExceptResult::next"), X("A parameter of operator 'except' contains an item that is not a node [err:XP0006]"));
+        XQThrow(XPath2ErrorException,X("Except::ExceptResult::next"), X("A parameter of operator 'except' contains an item that is not a node [err:XPTY0004]"));
       }
       if(((Node*)(const Item*)item)->equals((const Node::Ptr )except_item)) {
         found = true;
@@ -85,7 +85,7 @@ Item::Ptr Except::ExceptResult::next(DynamicContext *context)
     if(!found) {
       // Check it's a node
       if(!item->isNode()) {
-        XQThrow(XPath2ErrorException,X("Except::ExceptResult::next"), X("A parameter of operator 'except' contains an item that is not a node [err:XP0006]"));
+        XQThrow(XPath2ErrorException,X("Except::ExceptResult::next"), X("A parameter of operator 'except' contains an item that is not a node [err:XPTY0004]"));
       }
       break;
     }
