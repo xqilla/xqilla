@@ -71,6 +71,19 @@ AnyAtomicType::Ptr DatatypeFactory::createInstance(const XMLCh* typeURI,
     XQThrow(TypeNotFoundException, X("DatatypeFactoryTemplate::createInstance"), buf.getRawBuffer());
   }
 
+  if(validator->getWSFacet()==DatatypeValidator::COLLAPSE && !XMLString::isWSCollapsed(value))
+  {
+      XMLCh* tempValue=XMLString::replicate(value, context->getMemoryManager());
+      XMLString::collapseWS(tempValue, context->getMemoryManager());
+      value=tempValue;
+  }
+  if(validator->getWSFacet()==DatatypeValidator::REPLACE && !XMLString::isWSReplaced(value))
+  {
+      XMLCh* tempValue=XMLString::replicate(value, context->getMemoryManager());
+      XMLString::replaceWS(tempValue, context->getMemoryManager());
+      value=tempValue;
+  }
+  
   try {
     const XMLCh* valueToValidate=value;
     if(validator->getType()==DatatypeValidator::NOTATION)
