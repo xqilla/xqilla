@@ -32,9 +32,10 @@ ATHexBinaryOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLC
     _typeName(typeName),
     _typeURI(typeURI) { 
     
-  // revisit: have to cast away the const.  a bit nasty. 
-  XERCES_CPP_NAMESPACE_QUALIFIER XMLString::upperCase(const_cast<XMLCh*>(value));
-  _hexBinaryData = context->getMemoryManager()->getPooledString(value);
+  XMLCh* tempValue=XERCES_CPP_NAMESPACE_QUALIFIER XMLString::replicate(value, context->getMemoryManager());
+  XERCES_CPP_NAMESPACE_QUALIFIER XMLString::upperCase(tempValue);
+  _hexBinaryData = context->getMemoryManager()->getPooledString(tempValue);
+  XERCES_CPP_NAMESPACE_QUALIFIER XMLString::release((void**)&tempValue, context->getMemoryManager());
 }
 
 void *ATHexBinaryOrDerivedImpl::getInterface(const XMLCh *name) const
