@@ -90,6 +90,10 @@ FunctionDeepEqual::FunctionDeepEqual(const VectorOfASTNodes &args, XPath2MemoryM
     else if(item1->isAtomicValue() && item2->isAtomicValue()) {
       AnyAtomicType::Ptr atom1 = (const AnyAtomicType::Ptr )item1;
       AnyAtomicType::Ptr atom2 = (const AnyAtomicType::Ptr )item2;
+      // if both are NaN, they are equal
+      if(atom1->isNumericValue() && atom2->isNumericValue() && 
+         ((Numeric::Ptr)atom1)->isNaN() && ((Numeric::Ptr)atom2)->isNaN())
+        return true;
       // need to manually convert xdt:untypedAtomic to xs:string
       if(atom1->getPrimitiveTypeIndex() == AnyAtomicType::UNTYPED_ATOMIC)
           atom1 = atom1->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
