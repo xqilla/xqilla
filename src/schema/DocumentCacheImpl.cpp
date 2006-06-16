@@ -336,6 +336,8 @@ void DocumentCacheParser::loadSchema(const XMLCh* const uri, const XMLCh* const 
 
     getScanner()->loadGrammar(systemId, XERCES_CPP_NAMESPACE_QUALIFIER Grammar::SchemaGrammarType, true);
   }
+  else
+    XQThrow(StaticErrorException,X("DocumentCacheParser::loadSchema"), X("Schema not found [err:XQST0059]"));
 }
 
 unsigned int DocumentCacheParser::getSchemaUriId(const XMLCh* uri) const
