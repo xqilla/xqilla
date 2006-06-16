@@ -302,19 +302,12 @@ bool ATDurationOrDerivedImpl::isYearMonthDuration() const {
 /* returns true if the two objects have the same boolean value
  * false otherwise */
 bool ATDurationOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const {
-  if(_durationType == DURATION || target->getPrimitiveTypeIndex() == DURATION) {
+  AnyAtomicType::AtomicObjectType myType=getPrimitiveTypeIndex();
+  AnyAtomicType::AtomicObjectType tgtType=target->getPrimitiveTypeIndex();
+  if((myType==DAY_TIME_DURATION || myType==YEAR_MONTH_DURATION || myType==DURATION) &&
+     (tgtType==DAY_TIME_DURATION || tgtType==YEAR_MONTH_DURATION || tgtType==DURATION))
     return dayTimeEquals((const ATDurationOrDerived*)target.get(), context) &&
       yearMonthEquals((const ATDurationOrDerived*)target.get(), context);
-  }
-  else if(_durationType == DAY_TIME_DURATION && target->getPrimitiveTypeIndex() == DAY_TIME_DURATION) {
-    return dayTimeEquals((const ATDurationOrDerived*)target.get(), context);
-  }
-  else if(_durationType == YEAR_MONTH_DURATION && target->getPrimitiveTypeIndex() == YEAR_MONTH_DURATION) {
-    return yearMonthEquals((const ATDurationOrDerived*)target.get(), context);
-  }
-  else if((_durationType == YEAR_MONTH_DURATION && target->getPrimitiveTypeIndex() == DAY_TIME_DURATION) ||
-          (_durationType == DAY_TIME_DURATION && target->getPrimitiveTypeIndex() == YEAR_MONTH_DURATION))
-    return false;
 
   XQThrow(IllegalArgumentException,X("ATDurationOrDerivedImpl::equals"), X("Equality operator for given types not supported [err:XPTY0004]"));
   return false;
@@ -571,19 +564,23 @@ ATDurationOrDerived::Ptr ATDurationOrDerivedImpl::multiply(const Numeric::Ptr &m
 
   if(_durationType == DAY_TIME_DURATION) {
     // multiplying an xdt:
-    ATDecimalOrDerived::Ptr asSeconds = (const ATDecimalOrDerived::Ptr )this->asSeconds(context)->multiply(multiplier, context)->
-                                        castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                                               XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DECIMAL, context);
+    Numeric::Ptr temp=asSeconds(context)->multiply(multiplier, context);
+    if(temp->isInfinite())
+      XQThrow(IllegalArgumentException,X("ATDurationOrDerivedImpl::multiply"), X("Overflow in duration operation [err:FODT0002]"));
+    ATDecimalOrDerived::Ptr asSeconds = (const ATDecimalOrDerived::Ptr )temp->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                                                                                     XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DECIMAL, context);
   
     return newDayTimeDuration(asSeconds, context);
   } else if(_durationType == YEAR_MONTH_DURATION) { 
     // multiplying an xdt:yearMonthDuration
     ATDecimalOrDerived::Ptr i12 = context->getItemFactory()->createInteger(12,context);
   
-    ATDecimalOrDerived::Ptr asMonths = (const ATDecimalOrDerived::Ptr )_year->multiply(i12, context)->
-                                       add(_month, context)->multiply(multiplier, context)->round(context)->
-                                       castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                                              XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DECIMAL, context);
+    Numeric::Ptr temp=_year->multiply(i12, context)->add(_month, context)->multiply(multiplier, context)->round(context);
+    if(temp->isInfinite())
+      XQThrow(IllegalArgumentException,X("ATDurationOrDerivedImpl::multiply"), X("Overflow in duration operation [err:FODT0002]"));
+
+    ATDecimalOrDerived::Ptr asMonths = (const ATDecimalOrDerived::Ptr )temp->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                                                                                    XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DECIMAL, context);
     if (this->isNegative()) {
       asMonths = (const ATDecimalOrDerived::Ptr )asMonths->invert(context);
     }
