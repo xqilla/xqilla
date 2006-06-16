@@ -31,7 +31,8 @@ IntegerDivide::IntegerDivide(const VectorOfASTNodes &args, XPath2MemoryManager* 
 void IntegerDivide::calculateStaticType()
 {
   const StaticType &arg0 = _args[0]->getStaticResolutionContext().getStaticType();
-  if(arg0.containsType(StaticType::NUMERIC_TYPE)) {
+  // untypedAtomic will be promoted to xs:double
+  if(arg0.containsType(StaticType::NUMERIC_TYPE|StaticType::UNTYPED_ATOMIC_TYPE)) {
     _src.getStaticType().flags = StaticType::DECIMAL_TYPE;
   }
 }

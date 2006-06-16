@@ -32,7 +32,8 @@ UnaryMinus::UnaryMinus(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr
 void UnaryMinus::calculateStaticType()
 {
   const StaticType &arg0 = _args[0]->getStaticResolutionContext().getStaticType();
-  if(arg0.containsType(StaticType::NUMERIC_TYPE)) {
+  // untypedAtomic will be promoted to xs:double
+  if(arg0.containsType(StaticType::NUMERIC_TYPE|StaticType::UNTYPED_ATOMIC_TYPE)) {
     _src.getStaticType().flags = arg0.flags & StaticType::NUMERIC_TYPE;
   }
 }
