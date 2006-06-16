@@ -83,7 +83,8 @@ void ArithmeticOperator::calculateStaticTypeForNumerics(const StaticType &arg0, 
     if(arg1.containsType(StaticType::FLOAT_TYPE)) {
       _src.getStaticType().flags |= StaticType::FLOAT_TYPE;
     }
-    if(arg1.containsType(StaticType::DOUBLE_TYPE)) {
+    // untypedAtomic will be promoted to xs:double
+    if(arg1.containsType(StaticType::DOUBLE_TYPE|StaticType::UNTYPED_ATOMIC_TYPE)) {
       _src.getStaticType().flags |= StaticType::DOUBLE_TYPE;
     }
   }
@@ -91,12 +92,14 @@ void ArithmeticOperator::calculateStaticTypeForNumerics(const StaticType &arg0, 
     if(arg1.containsType(StaticType::DECIMAL_TYPE|StaticType::FLOAT_TYPE)) {
       _src.getStaticType().flags |= StaticType::FLOAT_TYPE;
     }
-    if(arg1.containsType(StaticType::DOUBLE_TYPE)) {
+    // untypedAtomic will be promoted to xs:double
+    if(arg1.containsType(StaticType::DOUBLE_TYPE|StaticType::UNTYPED_ATOMIC_TYPE)) {
       _src.getStaticType().flags |= StaticType::DOUBLE_TYPE;
     }
   }
-  if(arg0.containsType(StaticType::DOUBLE_TYPE)) {
-    if(arg1.containsType(StaticType::DECIMAL_TYPE|StaticType::FLOAT_TYPE|StaticType::DOUBLE_TYPE)) {
+  // untypedAtomic will be promoted to xs:double
+  if(arg0.containsType(StaticType::DOUBLE_TYPE|StaticType::UNTYPED_ATOMIC_TYPE)) {
+    if(arg1.containsType(StaticType::DECIMAL_TYPE|StaticType::FLOAT_TYPE|StaticType::DOUBLE_TYPE|StaticType::UNTYPED_ATOMIC_TYPE)) {
       _src.getStaticType().flags |= StaticType::DOUBLE_TYPE;
     }
   }
