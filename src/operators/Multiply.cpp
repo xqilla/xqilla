@@ -37,10 +37,10 @@ void Multiply::calculateStaticType()
   calculateStaticTypeForNumerics(arg0, arg1);
 
   // Multiplying a duration by a number
-  if(arg0.containsType(StaticType::DAY_TIME_DURATION_TYPE|StaticType::YEAR_MONTH_DURATION_TYPE)
-     && arg1.containsType(StaticType::NUMERIC_TYPE)) {
+  if(arg0.containsType(StaticType::DAY_TIME_DURATION_TYPE|StaticType::YEAR_MONTH_DURATION_TYPE) && arg1.containsType(StaticType::NUMERIC_TYPE))
     _src.getStaticType().flags |= arg0.flags & (StaticType::DAY_TIME_DURATION_TYPE|StaticType::YEAR_MONTH_DURATION_TYPE);
-  }
+  if(arg0.containsType(StaticType::NUMERIC_TYPE) && arg1.containsType(StaticType::DAY_TIME_DURATION_TYPE|StaticType::YEAR_MONTH_DURATION_TYPE))
+    _src.getStaticType().flags |= arg1.flags & (StaticType::DAY_TIME_DURATION_TYPE|StaticType::YEAR_MONTH_DURATION_TYPE);
 }
 
 Item::Ptr Multiply::execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::Ptr &atom2, DynamicContext *context) const
