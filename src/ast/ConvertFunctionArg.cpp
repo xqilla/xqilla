@@ -84,10 +84,10 @@ Item::Ptr XQPromoteUntyped::PromoteUntypedResult::next(DynamicContext *context)
       }
       catch (XPath2TypeCastException &e) {
         XQThrow(XPath2ErrorException, X("SequenceType::AtomicTypeConvertFunctionArgResult::next"),
-                 X("Casting from xdt:untypedAtomic to required type failed."));
+                 X("Casting from xdt:untypedAtomic to required type failed [err:XPTY0004]."));
       } catch (const XMLException& e) {
         XQThrow(XPath2ErrorException, X("SequenceType::AtomicTypeConvertFunctionArgResult::next"),
-                 X("Casting from xdt:untypedAtomic to required type failed."));
+                 X("Casting from xdt:untypedAtomic to required type failed [err:XPTY0004]."));
       }
     }
   }
