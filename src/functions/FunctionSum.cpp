@@ -58,12 +58,12 @@ Sequence FunctionSum::collapseTreeInternal(DynamicContext* context, int flags) c
   try {
     sequence = validateSequence(getParamNumber(1,context)->toSequence(context), context);
   } catch (IllegalArgumentException &e) {
-    XQThrow(IllegalArgumentException, X("FunctionSum::collapseTreeInternal"), X("Invalid argument to fn:sum() function"));
+    XQThrow(IllegalArgumentException, X("FunctionSum::collapseTreeInternal"), X("Invalid argument to fn:sum() function [err:FORG0006]"));
   }
 
   if(sequence.isEmpty())
     if(getNumArgs() == 1)
-      return Sequence(context->getItemFactory()->createDouble(0.0, context), memMgr);
+      return Sequence(context->getItemFactory()->createInteger(0, context), memMgr);
     else
       return getParamNumber(2,context)->toSequence(context);
 
@@ -72,7 +72,7 @@ Sequence FunctionSum::collapseTreeInternal(DynamicContext* context, int flags) c
   if(!atom->isNumericValue() && 
      atom->getPrimitiveTypeIndex() != AnyAtomicType::DAY_TIME_DURATION &&
      atom->getPrimitiveTypeIndex() != AnyAtomicType::YEAR_MONTH_DURATION)
-    XQThrow(IllegalArgumentException, X("FunctionSum::collapseTreeInternal"), X("Invalid argument to fn:sum() function"));
+    XQThrow(IllegalArgumentException, X("FunctionSum::collapseTreeInternal"), X("Invalid argument to fn:sum() function [err:FORG0006]."));
 
   return Sequence(sum(sequence, context), memMgr);
 }
