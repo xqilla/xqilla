@@ -660,10 +660,10 @@ Item::Ptr SequenceType::OccurrenceMatchesResult::next(DynamicContext *context)
       XQThrow(XPath2TypeMatchException, X("SequenceType::MatchesResult::next"),
                X("SequenceType matching failed: the sequence is not empty [err:XPTY0004]"));
     }
-
     // "If the SequenceType contains an ItemType and an OccurrenceIndicator, the match succeeds only if 
     //  the number of items in the value matches the OccurrenceIndicator and each of these items matches the ItemType. "
-    if((_seqType->getOccurrenceIndicator() == PLUS || _seqType->getOccurrenceIndicator() == EXACTLY_ONE) &&
+    if(_seqType->getItemType() &&
+       (_seqType->getOccurrenceIndicator() == PLUS || _seqType->getOccurrenceIndicator() == EXACTLY_ONE) &&
        item == NULLRCP) {
       XQThrow(XPath2TypeMatchException, X("SequenceType::MatchesResult::next"),
                X("SequenceType matching failed: the sequence does not contain items [err:XPTY0004]"));
@@ -671,7 +671,8 @@ Item::Ptr SequenceType::OccurrenceMatchesResult::next(DynamicContext *context)
 
     // "If the SequenceType is an ItemType with no OccurrenceIndicator, the match succeeds only if 
     //  the value contains precisely one item and that item matches the ItemType "
-    if((_seqType->getOccurrenceIndicator() == EXACTLY_ONE || _seqType->getOccurrenceIndicator() == QUESTION_MARK) &&
+    if(_seqType->getItemType() &&
+       (_seqType->getOccurrenceIndicator() == EXACTLY_ONE || _seqType->getOccurrenceIndicator() == QUESTION_MARK) &&
        item != NULLRCP) {
       // Do the tests on the number of items up front,
       // since often functions that cast to a single or
