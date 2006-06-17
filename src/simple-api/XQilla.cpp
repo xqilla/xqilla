@@ -55,7 +55,7 @@ XQQuery* XQilla::parseXQuery(const XMLCh* inputQuery, DynamicContext* context/*=
     context = createContext();
   }
 
-  XERCES_CPP_NAMESPACE_QUALIFIER Janitor<XQQuery> query = new (memMgr) XQQuery(inputQuery, context, contextOwned, memMgr);
+  XERCES_CPP_NAMESPACE_QUALIFIER Janitor<XQQuery> query(new (memMgr) XQQuery(inputQuery, context, contextOwned, memMgr));
 
   try {
     CXQueryScanner scanner(context->getMemoryManager(), inputQuery);
