@@ -40,7 +40,7 @@ XQQuery* XQilla::parseXPath2(const XMLCh* inputQuery, DynamicContext* context/*=
     context = createContext();
   }
 
-  XERCES_CPP_NAMESPACE_QUALIFIER Janitor<XQQuery> query = new (memMgr) XQQuery(inputQuery, context, contextOwned, memMgr);
+  XERCES_CPP_NAMESPACE_QUALIFIER Janitor<XQQuery> query(new (memMgr) XQQuery(inputQuery, context, contextOwned, memMgr));
 
   try {
     CXPathScanner scanner(context->getMemoryManager(), inputQuery);

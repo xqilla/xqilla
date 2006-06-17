@@ -65,6 +65,7 @@ typedef struct yyltype
 class XQILLA_API CXQillaLexer
 {
 public:
+	virtual ~CXQillaLexer() {}
 	CXQillaLexer(XPath2MemoryManager* memMgr, const XMLCh* query)
     {
 	    m_index=m_position=0;
