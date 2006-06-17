@@ -279,8 +279,6 @@ src/parser/QName.cpp \
 src/parser/XPath2ParserControl.hpp \
 src/parser/XPath2Parser.cpp \
 src/parser/XPath2Parser.hpp \
-src/parser/Grammar.cpp \
-src/parser/Grammar.hpp \
 src/lexer/XPathScanner.cpp \
 src/lexer/XPathScanner.hpp \
 src/lexer/XQillaLexer.hpp \
