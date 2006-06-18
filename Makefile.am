@@ -276,6 +276,8 @@ src/items/Node.cpp \
 src/items/Numeric.cpp \
 src/items/Timezone.cpp \
 src/parser/QName.cpp \
+src/parser/XQueryParser.cpp \
+src/parser/XQueryParser.hpp \
 src/parser/XPath2ParserControl.hpp \
 src/parser/XPath2Parser.cpp \
 src/parser/XPath2Parser.hpp \

@@ -157,16 +157,16 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	AnyAtomicTypeConstructor.lo AnyAtomicType.lo \
 	ATDurationOrDerived.lo ATQNameConstructor.lo \
 	ATUntypedAtomic.lo DateOrTimeType.lo Item.lo Node.lo \
-	Numeric.lo Timezone.lo QName.lo XPath2Parser.lo \
-	XPathScanner.lo XQueryScanner.lo mapm5sin.lo mapm_add.lo \
-	mapmasin.lo mapmasn0.lo mapmcbrt.lo mapmcnst.lo mapm_cpi.lo \
-	m_apm.lo mapm_div.lo mapm_exp.lo mapmfact.lo mapm_fam.lo \
-	mapm_fft.lo mapm_flr.lo mapmfmul.lo mapm_fpf.lo mapm_gcd.lo \
-	mapmgues.lo mapmhasn.lo mapmhsin.lo mapmipwr.lo mapmistr.lo \
-	mapm_lg2.lo mapm_lg3.lo mapm_log.lo mapm_mt.lo mapm_mul.lo \
-	mapm_pow.lo mapmpwr2.lo mapm_rcp.lo mapm_rnd.lo mapmrsin.lo \
-	mapm_set.lo mapm_sin.lo mapmsqrt.lo mapmstck.lo mapmutil.lo \
-	mapmutl2.lo AncestorAxis.lo AncestorOrSelfAxis.lo \
+	Numeric.lo Timezone.lo QName.lo XQueryParser.lo \
+	XPath2Parser.lo XPathScanner.lo XQueryScanner.lo mapm5sin.lo \
+	mapm_add.lo mapmasin.lo mapmasn0.lo mapmcbrt.lo mapmcnst.lo \
+	mapm_cpi.lo m_apm.lo mapm_div.lo mapm_exp.lo mapmfact.lo \
+	mapm_fam.lo mapm_fft.lo mapm_flr.lo mapmfmul.lo mapm_fpf.lo \
+	mapm_gcd.lo mapmgues.lo mapmhasn.lo mapmhsin.lo mapmipwr.lo \
+	mapmistr.lo mapm_lg2.lo mapm_lg3.lo mapm_log.lo mapm_mt.lo \
+	mapm_mul.lo mapm_pow.lo mapmpwr2.lo mapm_rcp.lo mapm_rnd.lo \
+	mapmrsin.lo mapm_set.lo mapm_sin.lo mapmsqrt.lo mapmstck.lo \
+	mapmutil.lo mapmutl2.lo AncestorAxis.lo AncestorOrSelfAxis.lo \
 	AttributeAxis.lo Axis.lo ChildAxis.lo DescendantAxis.lo \
 	DescendantOrSelfAxis.lo FollowingAxis.lo \
 	FollowingSiblingAxis.lo NamespaceAxis.lo NodeTest.lo \
@@ -618,6 +618,8 @@ src/items/Node.cpp \
 src/items/Numeric.cpp \
 src/items/Timezone.cpp \
 src/parser/QName.cpp \
+src/parser/XQueryParser.cpp \
+src/parser/XQueryParser.hpp \
 src/parser/XPath2ParserControl.hpp \
 src/parser/XPath2Parser.cpp \
 src/parser/XPath2Parser.hpp \
@@ -1192,6 +1194,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQillaNSResolverImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQillaPlatformUtils.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQillaXMLGrammarPoolImpl.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQueryParser.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQueryScanner.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XStr.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/basicXQillaUsage.Po@am__quote@
@@ -3125,6 +3128,13 @@ QName.lo: src/parser/QName.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/parser/QName.cpp' object='QName.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o QName.lo `test -f 'src/parser/QName.cpp' || echo '$(srcdir)/'`src/parser/QName.cpp
+
+XQueryParser.lo: src/parser/XQueryParser.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQueryParser.lo -MD -MP -MF "$(DEPDIR)/XQueryParser.Tpo" -c -o XQueryParser.lo `test -f 'src/parser/XQueryParser.cpp' || echo '$(srcdir)/'`src/parser/XQueryParser.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/XQueryParser.Tpo" "$(DEPDIR)/XQueryParser.Plo"; else rm -f "$(DEPDIR)/XQueryParser.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/parser/XQueryParser.cpp' object='XQueryParser.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQueryParser.lo `test -f 'src/parser/XQueryParser.cpp' || echo '$(srcdir)/'`src/parser/XQueryParser.cpp
 
 XPath2Parser.lo: src/parser/XPath2Parser.cpp
 @am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XPath2Parser.lo -MD -MP -MF "$(DEPDIR)/XPath2Parser.Tpo" -c -o XPath2Parser.lo `test -f 'src/parser/XPath2Parser.cpp' || echo '$(srcdir)/'`src/parser/XPath2Parser.cpp; \
