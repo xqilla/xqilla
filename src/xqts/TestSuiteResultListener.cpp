@@ -397,6 +397,7 @@ void ConsoleResultListener::testCaseToErrorStream(const TestCase &testCase)
   errorStream_ << "* Test-case '" << m_szFullTestName << ":" << testCase.name << "':" << endl;
   errorStream_ << "* Query URL: " << testCase.queryURL << endl;
   std::map<std::string, std::string>::const_iterator i;
+  std::list<std::pair<std::string, std::string> >::const_iterator j;
   for(i = testCase.inputVars.begin(); i != testCase.inputVars.end(); ++i) {
     errorStream_ << "* Input: " << i->first << " -> " << i->second << endl;
   }
@@ -405,8 +406,8 @@ void ConsoleResultListener::testCaseToErrorStream(const TestCase &testCase)
     errorStream_ << "* Variable: " << i->first << " -> " << i->second << endl;
   }
 
-  for(i = testCase.moduleFiles.begin(); i != testCase.moduleFiles.end(); ++i) {
-    errorStream_ << "* Module: " << i->first << " -> " << i->second << endl;
+  for(j = testCase.moduleFiles.begin(); j != testCase.moduleFiles.end(); ++j) {
+    errorStream_ << "* Module: " << j->first << " -> " << j->second << endl;
   }
 
   for(i = testCase.outputFiles.begin(); i != testCase.outputFiles.end(); ++i) {

@@ -31,6 +31,7 @@ class Collation;
 class VariableTypeStore;
 class ItemFactory;
 class StaticType;
+class ModuleResolver;
 
 XERCES_CPP_NAMESPACE_BEGIN
 class DOMDocument;
@@ -121,6 +122,13 @@ public:
   virtual void setXMLEntityResolver(XERCES_CPP_NAMESPACE_QUALIFIER XMLEntityResolver* const handler) = 0;
   /** Returns the entity resolver currently set */
   virtual XERCES_CPP_NAMESPACE_QUALIFIER XMLEntityResolver* getXMLEntityResolver() const = 0;
+
+  /** Register a callback object for resolving module URIs */
+  virtual void setModuleResolver(ModuleResolver *resolver) = 0;
+  /** Returns the module resolver currently set */
+  virtual ModuleResolver *getModuleResolver() const = 0;
+  /* Retrieve a list of locations for the given module URI */
+  virtual VectorOfStrings* resolveModuleURI(const XMLCh* uri) const = 0;
 
   /** add the location for the grammar of a specific namespace **/
   virtual void addSchemaLocation(const XMLCh* uri, VectorOfStrings* locations) = 0;

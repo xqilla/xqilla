@@ -34,7 +34,7 @@ public:
   std::map<std::string, std::string> inputVars;
   std::map<std::string, std::string> extraVars;
   std::map<std::string, std::string> outputFiles;
-  std::map<std::string, std::string> moduleFiles;
+  std::list<std::pair<std::string, std::string> > moduleFiles;
   std::list<std::string> expectedErrors;
 };
 
