@@ -49,10 +49,17 @@ Sequence FunctionResolveURI::collapseTreeInternal(DynamicContext* context, int f
   if(relativeSeq.isEmpty())
     return Sequence(memMgr);
 
-  const XMLCh* baseURI;
+  const XMLCh* relativeURI = relativeSeq.first()->asString(context);
+  try {
+    if(XERCES_CPP_NAMESPACE_QUALIFIER XMLUri::isValidURI(false, relativeURI))
+      return Sequence(context->getItemFactory()->createAnyURI(relativeURI, context), memMgr); 
+  } catch(InvalidLexicalSpaceException &e){
+    XQThrow(FunctionException, X("FunctionResolveURI::collapseTreeInternal"), X("Invalid argument to resolve-uri [err:FORG0002]"));
+  }
 
   try {
 
+    const XMLCh* baseURI;
     if (getNumArgs() == 1) 
     {
       baseURI = context->getBaseURI();
@@ -65,15 +72,10 @@ Sequence FunctionResolveURI::collapseTreeInternal(DynamicContext* context, int f
       baseURI = baseSeq.first()->asString(context);
     }
 
-    const XMLCh* relativeURI = relativeSeq.first()->asString(context);
-    if(*relativeURI==0)   // empty string, return base
-      return Sequence(context->getItemFactory()->createAnyURI(baseURI, context), memMgr); 
-
-    try {
-      context->getItemFactory()->createAnyURI(relativeURI, context);
-    } catch(InvalidLexicalSpaceException &e) {
-      XQThrow(FunctionException, X("FunctionResolveURI::collapseTreeInternal"), X("Invalid argument to resolve-uri [err:FORG0002]"));
-    }
+    if(!XERCES_CPP_NAMESPACE_QUALIFIER XMLUri::isValidURI(true, relativeURI))
+      XQThrow(FunctionException, X("FunctionResolveURI::collapseTreeInternal"), X("Invalid relative uri argument to resolve-uri [err:FORG0002]"));
+    if(!XERCES_CPP_NAMESPACE_QUALIFIER XMLUri::isValidURI(false, baseURI))
+      XQThrow(FunctionException, X("FunctionResolveURI::collapseTreeInternal"), X("Invalid base-uri argument to resolve-uri [err:FORG0002]"));
   
     try {
       XERCES_CPP_NAMESPACE_QUALIFIER XMLUri base(baseURI);
