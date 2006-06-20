@@ -398,25 +398,52 @@ const XMLCh* NodeImpl::dmStringValue(const DynamicContext* context) const {
 	return XMLUni::fgZeroLenString;
 }
 
-
-
 Sequence NodeImpl::getListTypeTypedValue(DatatypeValidator *dtv, const DynamicContext* context) const {
 
     const XMLCh *stringVal = dmStringValue(context);
+    BaseRefVectorOf<XMLCh>* tokenVector = XMLString::tokenizeString(stringVal);
+    Sequence s(tokenVector->size(), context->getMemoryManager());
 
     //the actual type we want
     DatatypeValidator* theItemTypeDTV = ((ListDatatypeValidator*)dtv)->getItemTypeDTV();
-    BaseRefVectorOf<XMLCh>* tokenVector = XMLString::tokenizeString(stringVal);
+    if (theItemTypeDTV->getType() == DatatypeValidator::Union)
+    {
+        RefVectorOf<DatatypeValidator>* membersDV = ((UnionDatatypeValidator*)theItemTypeDTV)->getMemberTypeValidators();
+        unsigned int size = membersDV->size();
+        // find the first datatype in the union that validates the piece
+        for ( unsigned int j = 0; j < tokenVector->size(); j++ )
+        {
+            const XMLCh* szPiece=tokenVector->elementAt(j);
+            bool bFound=false;
+            for (unsigned int i=0; i<size; i++)
+            {
+                DatatypeValidator* pDV=membersDV->elementAt(i);
+                try
+                {
+                    pDV->validate(szPiece, NULL, context->getMemoryManager());
+                    const XMLCh* itemTypeDTVName = pDV->getTypeLocalName();
+                    const XMLCh* itemTypeDTVUri = pDV->getTypeUri();
+                    s.addItem(context->getItemFactory()->createDerivedFromAtomicType(itemTypeDTVUri, itemTypeDTVName, szPiece, context));
+                    bFound=true;
+                    break;
+                }
+                catch (XMLException&)
+                {
+                    //absorbed
+                }
+            }
+            if(!bFound)
+                XQThrow(ItemException, X("NodeImpl::getListTypeTypedValue"), X("Value in list doesn't validate with any of the componenets of the union type"));
+        }
+    } 
+    else
+    {
+        const XMLCh* itemTypeDTVName = theItemTypeDTV->getTypeLocalName();
+        const XMLCh* itemTypeDTVUri = theItemTypeDTV->getTypeUri();
 
-
-    const XMLCh* itemTypeDTVName = theItemTypeDTV->getTypeLocalName();
-    const XMLCh* itemTypeDTVUri = theItemTypeDTV->getTypeUri();
-    Sequence s(tokenVector->size(), context->getMemoryManager());
-
-
-    for ( unsigned int j = 0; j < tokenVector->size(); j++ )
-        s.addItem(context->getItemFactory()->createDerivedFromAtomicType(itemTypeDTVUri, itemTypeDTVName, tokenVector->elementAt(j), context));
-
+        for ( unsigned int j = 0; j < tokenVector->size(); j++ )
+            s.addItem(context->getItemFactory()->createDerivedFromAtomicType(itemTypeDTVUri, itemTypeDTVName, tokenVector->elementAt(j), context));
+    }
     return s;
  
 }
