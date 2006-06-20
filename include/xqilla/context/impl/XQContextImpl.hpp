@@ -205,6 +205,13 @@ public:
   /** Returns the entity resolver currently set */
   virtual XERCES_CPP_NAMESPACE_QUALIFIER XMLEntityResolver* getXMLEntityResolver() const;
 
+  /** Register a callback object for resolving module URIs */
+  virtual void setModuleResolver(ModuleResolver *resolver);
+  /** Returns the module resolver currently set */
+  virtual ModuleResolver *getModuleResolver() const;
+  /* Retrieve a list of locations for the given module URI */
+  virtual VectorOfStrings* resolveModuleURI(const XMLCh* uri) const;
+
   /** add the location for the grammar of a specific namespace **/
   virtual void addSchemaLocation(const XMLCh* uri, VectorOfStrings* locations);
 
@@ -416,6 +423,7 @@ protected:
 
   /// A stack of URIResolver pointers
   std::vector<URIResolver *, XQillaAllocator<URIResolver*> > _resolvers;
+  ModuleResolver *_moduleResolver;
 
   // used for memory management in expression evaluation
   XPath2MemoryManager* _memMgr;

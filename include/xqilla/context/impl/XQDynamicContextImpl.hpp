@@ -193,6 +193,13 @@ public:
   /** Returns the entity resolver currently set */
   virtual XERCES_CPP_NAMESPACE_QUALIFIER XMLEntityResolver* getXMLEntityResolver() const;
 
+  /** Register a callback object for resolving module URIs */
+  virtual void setModuleResolver(ModuleResolver *resolver);
+  /** Returns the module resolver currently set */
+  virtual ModuleResolver *getModuleResolver() const;
+  /* Retrieve a list of locations for the given module URI */
+  virtual VectorOfStrings* resolveModuleURI(const XMLCh* uri) const;
+
   /** add the location for the grammar of a specific namespace **/
   virtual void addSchemaLocation(const XMLCh* uri, VectorOfStrings* locations);
 
@@ -357,10 +364,11 @@ inline void XQDynamicContextImpl::setInheritNamespaces(bool value)
 { XQThrow(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
 inline void XQDynamicContextImpl::setPreserveNamespaces(bool value) 
 { XQThrow(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
-inline StaticContext::NodeSetOrdering XQDynamicContextImpl::getNodeSetOrdering() const
-{ XQThrow(ContextException,X("XQDynamicContextImpl"), X("You cannot read the static context when using a proxying dynamic context")); return StaticContext::ORDERING_UNORDERED; }
 inline void XQDynamicContextImpl::setNodeSetOrdering(NodeSetOrdering newOrder)
 { XQThrow(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
+inline void XQDynamicContextImpl::setModuleResolver(ModuleResolver *resolver)
+{ XQThrow(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
+
 
 inline const StaticType &XQDynamicContextImpl::getContextItemType() const { return _staticContext->getContextItemType(); }
 inline bool XQDynamicContextImpl::getXPath1CompatibilityMode() const { return _staticContext->getXPath1CompatibilityMode(); }
@@ -369,6 +377,8 @@ inline const XMLCh* XQDynamicContextImpl::getBaseURI() const { return _staticCon
 inline StaticContext::FLWOROrderingMode XQDynamicContextImpl::getDefaultFLWOROrderingMode() const { return _staticContext->getDefaultFLWOROrderingMode(); }
 inline bool XQDynamicContextImpl::getInheritNamespaces() const { return _staticContext->getInheritNamespaces(); }
 inline bool XQDynamicContextImpl::getPreserveNamespaces() const { return _staticContext->getPreserveNamespaces(); }
+inline StaticContext::NodeSetOrdering XQDynamicContextImpl::getNodeSetOrdering() const { return _staticContext->getNodeSetOrdering(); }
+inline ModuleResolver * XQDynamicContextImpl::getModuleResolver() const { return _staticContext->getModuleResolver(); }
 
 inline Collation* XQDynamicContextImpl::getCollation(const XMLCh* URI) const { return _staticContext->getCollation(URI); }
 inline ASTNode* XQDynamicContextImpl::lookUpFunction(const XMLCh* prefix, const XMLCh* name, VectorOfASTNodes& v) const { return _staticContext->lookUpFunction(prefix, name, v); }

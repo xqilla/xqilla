@@ -497,6 +497,7 @@ include/xqilla/context/ItemFactory.hpp	lib
 include/xqilla/context/Scope.hpp	lib
 include/xqilla/context/StaticContext.hpp	lib
 include/xqilla/context/URIResolver.hpp	lib
+include/xqilla/context/ModuleResolver.hpp	lib
 include/xqilla/context/VarHashEntry.hpp	lib
 include/xqilla/context/VariableStore.hpp	lib
 include/xqilla/context/VariableTypeStore.hpp	lib

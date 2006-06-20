@@ -33,6 +33,7 @@
 #include <xqilla/context/VariableStore.hpp>
 #include <xqilla/context/VariableTypeStore.hpp>
 #include <xqilla/context/URIResolver.hpp>
+#include <xqilla/context/ModuleResolver.hpp>
 #include <xqilla/context/Collation.hpp>
 #include <xqilla/ast/XQDebugHook.hpp>
 #include <xqilla/ast/XQFunction.hpp>
@@ -84,7 +85,8 @@ XQContextImpl::XQContextImpl(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMg
     _constructionMode(CONSTRUCTION_MODE_PRESERVE),
     _bPreserveBoundarySpace(false),
     _varStore(0),
-    _resolvers(XQillaAllocator<URIResolver*>(&_internalMM))
+    _resolvers(XQillaAllocator<URIResolver*>(&_internalMM)),
+    _moduleResolver(0)
 {
   _memMgr = &_internalMM;
 
@@ -265,6 +267,7 @@ void XQContextImpl::clearDynamicContext()
   _varStore->clear();
   _implicitTimezone = 0;
   _resolvers.clear();
+  _moduleResolver = 0;
   _docCache->clearStoredDocuments();
   time(&_currentTime);
 }
@@ -650,6 +653,23 @@ Sequence XQContextImpl::resolveDefaultCollection()
     }
   }
   return result;
+}
+
+void XQContextImpl::setModuleResolver(ModuleResolver *resolver)
+{
+  _moduleResolver=resolver;
+}
+
+ModuleResolver * XQContextImpl::getModuleResolver() const
+{
+  return _moduleResolver;
+}
+
+VectorOfStrings* XQContextImpl::resolveModuleURI(const XMLCh* uri) const
+{
+  VectorOfStrings* vect=new (getMemoryManager()) VectorOfStrings(XQillaAllocator<const XMLCh*>(getMemoryManager()));
+  _moduleResolver->resolveModuleLocation(vect, uri, this);
+  return vect;
 }
 
 /*

@@ -15,10 +15,10 @@
 #define _TESTSUITERESULTLISTENER_HPP
 
 #include <string>
-#include <list>
 #include <sstream>
 #include <map>
 #include <vector>
+#include <list>
 
 #include <xqilla/framework/XQillaExport.hpp>
 

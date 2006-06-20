@@ -223,6 +223,6 @@ void TestSuiteParser::endElement(const XMLCh* const name)
     else if(szName == "module")
     {
         m_bReadingChars=false;
-        m_testCase.moduleFiles[m_szNamespace]=m_szChars;
+        m_testCase.moduleFiles.push_back(std::pair<std::string, std::string>(m_szNamespace, m_szChars));
     }
 }

@@ -323,6 +323,11 @@ Sequence XQDynamicContextImpl::resolveDefaultCollection()
   return result;
 }
 
+VectorOfStrings* XQDynamicContextImpl::resolveModuleURI(const XMLCh* uri) const
+{
+  return _staticContext->resolveModuleURI(uri);
+}
+
 Node::Ptr XQDynamicContextImpl::validate(const Node::Ptr &node, DocumentCache::ValidationMode valMode)
 {
   return _docCache->validate(node, valMode, this);
