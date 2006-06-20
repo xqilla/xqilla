@@ -16,10 +16,6 @@
 #define _FUNCTIONRESOLVEURI_HPP
 
 #include <xqilla/framework/XQillaExport.hpp>
-#include <xercesc/util/XMLUTF8Transcoder.hpp>
-#include <xercesc/util/TransService.hpp>
-#include <xercesc/util/XMLUri.hpp>
-
 #include <xqilla/ast/ConstantFoldingFunction.hpp>
 
 /***
