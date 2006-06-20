@@ -22,7 +22,6 @@
 #include <xercesc/util/XercesDefs.hpp>
 
 class DynamicContext;
-class DynamicContext;
 
 class XQILLA_API Timezone : public ReferenceCounted
 {
@@ -39,11 +38,10 @@ public :
    */
   Timezone(bool positive, int hour, int minute);
 
-
   /**
    * Constructor. Creates a Timezone representing the given number of seconds.
    */
-  Timezone(int seconds);
+  Timezone(int minutes);
 
   /**
    * Constructor. Creates a Timezone representing the given duration.
@@ -94,7 +92,7 @@ private:
   int _mm;    // time zone minute
   bool _positive; 
 
-  void init(int seconds);
+  void init(int minutes);
   void validate() const;
 };
 
