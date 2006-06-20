@@ -323,8 +323,9 @@ void DocumentCacheParser::loadSchema(const XMLCh* const uri, const XMLCh* const 
   // always validate, so that the preloaded schema can be matched even if the XML doesn't reference it    
   setValidationScheme(XERCES_CPP_NAMESPACE_QUALIFIER AbstractDOMParser::Val_Always);
 
+  XERCES_CPP_NAMESPACE_QUALIFIER Grammar* grammar=NULL;
   if(srcToUse) {
-    getScanner()->loadGrammar(*srcToUse, XERCES_CPP_NAMESPACE_QUALIFIER Grammar::SchemaGrammarType, true);
+    grammar=getScanner()->loadGrammar(*srcToUse, XERCES_CPP_NAMESPACE_QUALIFIER Grammar::SchemaGrammarType, true);
   }
   else if(location) {
     // Resolve the location against the base uri
@@ -334,9 +335,9 @@ void DocumentCacheParser::loadSchema(const XMLCh* const uri, const XMLCh* const 
       systemId = urlTmp.getURLText();
     }
 
-    getScanner()->loadGrammar(systemId, XERCES_CPP_NAMESPACE_QUALIFIER Grammar::SchemaGrammarType, true);
+    grammar=getScanner()->loadGrammar(systemId, XERCES_CPP_NAMESPACE_QUALIFIER Grammar::SchemaGrammarType, true);
   }
-  else
+  if(grammar==NULL)
     XQThrow(StaticErrorException,X("DocumentCacheParser::loadSchema"), X("Schema not found [err:XQST0059]"));
 }
 
