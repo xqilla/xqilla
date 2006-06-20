@@ -39,7 +39,8 @@ FunctionError::FunctionError(const VectorOfASTNodes &args, XPath2MemoryManager* 
 
 ASTNode* FunctionError::staticResolution(StaticContext *context)
 {
-  _src.getStaticType().flags = 0;
+  // we need to specify ITEM_TYPE, or a sequence type applied on us will always fail
+  _src.getStaticType().flags = StaticType::ITEM_TYPE;
   _src.forceNoFolding(true);
   return resolveArguments(context);
 }
@@ -50,8 +51,7 @@ Sequence FunctionError::collapseTreeInternal(DynamicContext* context, int flags)
     exc_name.set(X("User-requested error"));
     switch(getNumArgs())
     {
-    case 0: exc_name.append(X(" [err:FOER0000]"));
-            break;
+    case 0: break;
     case 3: // TODO: extra storage in the exception object for the user object
     case 2: {
                 Sequence arg=getParamNumber(2,context)->toSequence(context);
@@ -61,7 +61,10 @@ Sequence FunctionError::collapseTreeInternal(DynamicContext* context, int flags)
     case 1: {
                 Sequence arg=getParamNumber(1,context)->toSequence(context);
                 if(arg.isEmpty())
-                    exc_name.append(X(" [err:FOER0000]"));
+                {
+                    if(getNumArgs()==1)
+                        XQThrow(XPath2ErrorException, X("FunctionError::collapseTreeInternal"), X("ItemType matching failed [err:XPTY0004]"));
+                }
                 else
                 {
                     exc_name.append(X(" ["));
@@ -70,6 +73,7 @@ Sequence FunctionError::collapseTreeInternal(DynamicContext* context, int flags)
                 }
             }
     }
+    exc_name.append(X(" [err:FOER0000]"));
     XQThrow(XPath2ErrorException, X("FunctionError::collapseTreeInternal"), exc_name.getRawBuffer());
 }
 
