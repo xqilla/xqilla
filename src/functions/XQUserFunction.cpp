@@ -89,7 +89,7 @@ XQUserFunction::XQUserFunction(const XMLCh* fnName, VectorOfFunctionParameters* 
       m_szURI=ctx->getUriBoundToPrefix(m_szPrefix);
       m_szName=m_pMemMgr->getPooledString(fnName+nColon+1);
   }
-  if(XPath2Utils::equals(m_szURI, XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgXMLString) ||
+  if(XPath2Utils::equals(m_szURI, XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgXMLURIName) ||
      XPath2Utils::equals(m_szURI, XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA) ||
      XPath2Utils::equals(m_szURI, XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_XSI) ||
      XPath2Utils::equals(m_szURI, XQFunction::XMLChFunctionURI) ||
