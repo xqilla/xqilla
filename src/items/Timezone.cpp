@@ -29,11 +29,10 @@
 #include <xercesc/util/XMLUniDefs.hpp>
 #include <xercesc/framework/XMLBuffer.hpp>
 
-static const int g_minHour = -12;
 static const int g_maxHour = 14;
 
-Timezone::Timezone(int seconds) {
-  init(seconds);
+Timezone::Timezone(int minutes) {
+  init(minutes);
   validate();
 }
 
@@ -46,15 +45,16 @@ Timezone::Timezone(const ATDecimalOrDerived::Ptr &hour, const ATDecimalOrDerived
 }
 
 Timezone::Timezone(const ATDurationOrDerived::Ptr &duration, const DynamicContext* context) {
-  int seconds=XERCES_CPP_NAMESPACE_QUALIFIER XMLString::parseInt(duration->getDays()->asString(context)) * DateUtils::g_secondsPerDay +
-              XERCES_CPP_NAMESPACE_QUALIFIER XMLString::parseInt(duration->getHours()->asString(context)) * DateUtils::g_secondsPerHour +
-              XERCES_CPP_NAMESPACE_QUALIFIER XMLString::parseInt(duration->getMinutes()->asString(context)) * DateUtils::g_secondsPerMinute +
-              XERCES_CPP_NAMESPACE_QUALIFIER XMLString::parseInt(duration->getSeconds()->asString(context));
+  if(!duration->getSeconds()->isZero())
+    XQThrow(XPath2TypeCastException ,X("Timezone::Timezone"), X("Timezone must have an integral number of minutes [err:FODT0003]."));
+  int minutes=XERCES_CPP_NAMESPACE_QUALIFIER XMLString::parseInt(duration->getDays()->asString(context)) * DateUtils::g_minutesPerHour * DateUtils::g_hoursPerDay +
+              XERCES_CPP_NAMESPACE_QUALIFIER XMLString::parseInt(duration->getHours()->asString(context)) * DateUtils::g_minutesPerHour +
+              XERCES_CPP_NAMESPACE_QUALIFIER XMLString::parseInt(duration->getMinutes()->asString(context));
 
-  if (((const ATDurationOrDerived*)duration)->isNegative())
-    seconds = -seconds;
+  if (duration->isNegative())
+    minutes = -minutes;
 
-  init(seconds);
+  init(minutes);
   validate();
 }
 
@@ -65,20 +65,20 @@ Timezone::Timezone(bool positive, int hour, int minute) {
   validate();
 }
 
-void Timezone::init(int seconds)
+void Timezone::init(int minutes)
 {
-  // get hour : ( 60 * 60 sec = 3600)
-  _hh = abs( seconds ) / DateUtils::g_secondsPerHour;
+  // get hour
+  _hh = abs( minutes ) / DateUtils::g_minutesPerHour;
 
-  // get minute : ( 60 sec = 60)
-  _mm = (abs( seconds ) % DateUtils::g_secondsPerHour) / DateUtils::g_secondsPerMinute;
+  // get minute
+  _mm = abs( minutes ) % DateUtils::g_minutesPerHour;
 
-  _positive = (seconds>=0);
+  _positive = (minutes>=0);
 }
 
 void Timezone::validate() const {
   // Check that we have a valid timezone
-  if ( _hh > g_maxHour || (_hh == g_maxHour && _mm > 0) || _hh < g_minHour || (_hh == g_minHour && _mm < 0)) {
+  if ( _hh > g_maxHour || (_hh == g_maxHour && _mm > 0)) {
     XQThrow(XPath2TypeCastException ,X("Timezone::Timezone"), X("Timezone outside of valid range created [err:FODT0003]."));
   }
   if ( (_hh > 0 && _mm < 0) || (_hh < 0 && _mm > 0)) {
