@@ -271,6 +271,12 @@ const XMLCh* SequenceType::ItemType::getNameURI(const StaticContext* context) co
 
 void SequenceType::ItemType::getStaticType(StaticType &st, const StaticContext *context, bool &isExact) const
 {
+  if(this==NULL)
+  {
+    st.flags = 0;
+    isExact = true;
+    return;
+  }
   switch(m_nTestType) {
   case TEST_ANYTHING: {
     st.flags = StaticType::ITEM_TYPE;
@@ -592,39 +598,40 @@ ASTNode *SequenceType::convertFunctionArg(ASTNode *arg, StaticContext *context, 
   // declared type of the function parameter. The expected type is expressed as a SequenceType. The function
   // conversion rules are applied to a given value as follows:
 
-  // FS says we atomize first if the sequence type is atomic, and I think that's sensible - jpcs
-  if(getItemTestType() == ItemType::TEST_ATOMIC_TYPE) {
-    arg = new (mm) XQAtomize(arg, mm);
-  }
+  if(m_pItemType!=NULL)
+  {
+    SequenceType::ItemType::ItemTestType testType = getItemTestType();
+    // FS says we atomize first if the sequence type is atomic, and I think that's sensible - jpcs
+    if( testType == ItemType::TEST_ATOMIC_TYPE)
+      arg = new (mm) XQAtomize(arg, mm);
 
-  // If XPath 1.0 compatibility mode is true and an argument is not of the expected type, then the following
-  // conversions are applied sequentially to the argument value V:
-  if(context->getXPath1CompatibilityMode()) {
-	  if(m_nOccurrence == SequenceType::EXACTLY_ONE || m_nOccurrence == SequenceType::QUESTION_MARK) {
-      arg = new (mm) XPath1CompatConvertFunctionArg(arg, this, mm);
+    // If XPath 1.0 compatibility mode is true and an argument is not of the expected type, then the following
+    // conversions are applied sequentially to the argument value V:
+    if(context->getXPath1CompatibilityMode()) {
+	    if(m_nOccurrence == SequenceType::EXACTLY_ONE || m_nOccurrence == SequenceType::QUESTION_MARK)
+          arg = new (mm) XPath1CompatConvertFunctionArg(arg, this, mm);
+    }
+    // If the expected type is a sequence of an atomic type (possibly with an occurrence indicator *, +, or ?),
+    // the following conversions are applied:
+    else if(testType == ItemType::TEST_ATOMIC_TYPE) {
+      const XMLCh *uri = m_pItemType->getTypeURI(context);
+      const XMLCh *name = m_pItemType->getType()->getName();
+
+      if(numericFunction &&
+         XPath2Utils::equals(uri, SchemaSymbols::fgURI_SCHEMAFORSCHEMA) &&
+         XPath2Utils::equals(name, SchemaSymbols::fgDT_ANYSIMPLETYPE)) {
+        arg = new (mm) XQPromoteUntyped(arg, 
+                                        SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                                        SchemaSymbols::fgDT_DOUBLE, 
+                                        mm);
+      }
+      else
+        arg = new (mm) XQPromoteUntyped(arg, uri, name, mm);
+
+      arg = new (mm) XQPromoteNumeric(arg, uri, name, mm);
+      arg = new (mm) XQPromoteAnyURI(arg, uri, name, mm);
     }
   }
-
-  // If the expected type is a sequence of an atomic type (possibly with an occurrence indicator *, +, or ?),
-  // the following conversions are applied:
-  else if(getItemTestType() == ItemType::TEST_ATOMIC_TYPE) {
-    const XMLCh *uri = m_pItemType->getTypeURI(context);
-    const XMLCh *name = m_pItemType->getType()->getName();
-
-    if(numericFunction &&
-       XPath2Utils::equals(uri, SchemaSymbols::fgURI_SCHEMAFORSCHEMA) &&
-       XPath2Utils::equals(name, SchemaSymbols::fgDT_ANYSIMPLETYPE)) {
-      arg = new (mm) XQPromoteUntyped(arg, SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                                      SchemaSymbols::fgDT_DOUBLE, mm);
-    }
-    else {
-      arg = new (mm) XQPromoteUntyped(arg, uri, name, mm);
-    }
-
-    arg = new (mm) XQPromoteNumeric(arg, uri, name, mm);
-    arg = new (mm) XQPromoteAnyURI(arg, uri, name, mm);
-  }
-
   // If, after the above conversions, the resulting value does not match the expected type according to the
   // rules for SequenceType Matching, a type error is raised. [err:XPTY0004] Note that the rules for
   // SequenceType Matching permit a value of a derived type to be substituted for a value of its base type.
