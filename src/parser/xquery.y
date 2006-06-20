@@ -35,9 +35,6 @@
 #include <xqilla/ast/XQDocumentOrder.hpp>
 
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
-#include <xercesc/dom/DOMXPathNamespace.hpp>
-#include <xercesc/dom/DOMNode.hpp>
-#include <xercesc/util/XMLUri.hpp>
 
 #include <xqilla/items/AnyAtomicTypeConstructor.hpp>
 
@@ -373,8 +370,8 @@ namespace XQuery {
 %token _STRIP_							"strip"
 %token _NAMESPACE_						"namespace"
 %token _EXPR_AS_						") as"
-%token _EMPTY_							"empty-sequence()"
-%token _ITEM_							"item()"
+%token _EMPTY_							"empty-sequence"
+%token _ITEM_							"item"
 %token _NILLABLE_						"?"
 %token _DOCUMENT_NODE_LPAR_				"document-node("
 %token _ATTRIBUTE_LPAR_					"attribute("
@@ -2655,7 +2652,7 @@ SequenceType:
 			seq->setOccurrence(SequenceType::EXACTLY_ONE);
 			$$ = seq;
 		}
-	  | _EMPTY_
+	  | _EMPTY_ _LPAR_ _RPAR_
 		{ 
 			$$ = new (MEMMGR) SequenceType(); 
 		}
@@ -2683,7 +2680,7 @@ ItemType:
 		$$ = $1->getItemType();
 		$1->setItemType(NULL);
 	}
-	| _ITEM_ 
+	| _ITEM_ _LPAR_ _RPAR_
 	{
 		$$ = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ANYTHING);
 	}

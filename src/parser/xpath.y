@@ -299,8 +299,8 @@ namespace XPath2 {
 %token _NODE_LPAR_						"node("
 %token _LPAR_							"("
 %token _RPAR_							")"
-%token _EMPTY_							"empty-sequence()"
-%token _ITEM_							"item()"
+%token _EMPTY_							"empty-sequence"
+%token _ITEM_							"item"
 %token _NILLABLE_						"?"
 %token _DOCUMENT_NODE_LPAR_				"document-node("
 %token _ATTRIBUTE_LPAR_					"attribute("
@@ -1365,7 +1365,7 @@ _SequenceType:
 		$$ = seq;
 	}
 
-    | _EMPTY_ {
+    | _EMPTY_ _LPAR_ _RPAR_ {
 		$$ = new (MEMMGR) SequenceType();
 	}
 
@@ -1402,7 +1402,7 @@ _ItemType:
         $$ = $1->getItemType();
         $1->setItemType(NULL);
     }
-    | _ITEM_ {
+    | _ITEM_ _LPAR_ _RPAR_ {
         $$ = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ANYTHING);
     }
 ;
