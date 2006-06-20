@@ -680,23 +680,6 @@ bool ATDurationOrDerivedImpl::isNegative() const {
 }
 
 ATDurationOrDerived::Ptr ATDurationOrDerivedImpl::normalize(const DynamicContext* context) const {
-  if(_durationType == DAY_TIME_DURATION) {
-    // if we are comparing xdt:dayTimeDurations //
-    return normalizeDayTimeDuration(context);
-  
-  } else if(_durationType == YEAR_MONTH_DURATION) {
-    // if we are comparing xdt:yearMonthDuration's //
-    return normalizeYearMonthDuration(context);
-    
-  } else {
-    // if we are trying to compare anything else -- error //
-    XQThrow(IllegalArgumentException,X("ATDurationOrDerivedImpl::normalize"), X("normalize for given type not supported"));
-  }
-}
-
-ATDurationOrDerived::Ptr ATDurationOrDerivedImpl::normalizeDayTimeDuration(const DynamicContext* context) const {
-  const ATDecimalOrDerived::Ptr zero = context->getItemFactory()->createInteger(0,context);
-
   // normalize
   MAPM asSeconds =((const ATDecimalOrDerived*)_day)->asMAPM() * DateUtils::g_secondsPerDay +
                   ((const ATDecimalOrDerived*)_hour)->asMAPM() * DateUtils::g_secondsPerHour +
@@ -714,17 +697,6 @@ ATDurationOrDerived::Ptr ATDurationOrDerivedImpl::normalizeDayTimeDuration(const
 
   MAPM sec = remainder + ((const ATDecimalOrDerived*)_sec)->asMAPM() - ((const ATDecimalOrDerived*)_sec)->asMAPM().floor();  // add frac. secs
 
-  return new
-      ATDurationOrDerivedImpl(this->getTypeURI(), this->getTypeName(), zero, zero,
-                              context->getItemFactory()->createInteger(day, context),
-                              context->getItemFactory()->createInteger(hour, context),
-                              context->getItemFactory()->createInteger(minute, context),
-                              context->getItemFactory()->createDecimal(sec, context),
-                              _isPositive, context);
-}
-
-ATDurationOrDerived::Ptr ATDurationOrDerivedImpl::normalizeYearMonthDuration(const DynamicContext* context) const {
-  const ATDecimalOrDerived::Ptr zero = context->getItemFactory()->createInteger(0,context);
   MAPM year = ((const ATDecimalOrDerived*)_year)->asMAPM()+(((const ATDecimalOrDerived*)_month)->asMAPM() / 12).floor();
 
   MAPM month = DateUtils::modulo(((const ATDecimalOrDerived*)_month)->asMAPM(),12);
@@ -733,7 +705,11 @@ ATDurationOrDerived::Ptr ATDurationOrDerivedImpl::normalizeYearMonthDuration(con
       ATDurationOrDerivedImpl(this->getTypeURI(), this->getTypeName(),
                               context->getItemFactory()->createInteger(year, context),
                               context->getItemFactory()->createInteger(month, context),
-                              zero, zero, zero, zero, _isPositive, context);
+                              context->getItemFactory()->createInteger(day, context),
+                              context->getItemFactory()->createInteger(hour, context),
+                              context->getItemFactory()->createInteger(minute, context),
+                              context->getItemFactory()->createDecimal(sec, context),
+                              _isPositive, context);
 }
 
 /* return this duration in forms of seconds -- only for dayTimeDuration */

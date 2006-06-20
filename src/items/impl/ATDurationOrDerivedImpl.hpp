@@ -154,12 +154,6 @@ private:
   /* Divide a xdt:yearMonthDuration by an xdt:yearMonthDuration */  
   ATDecimalOrDerived::Ptr yearMonthDivide(const ATDurationOrDerived::Ptr &divisor, const DynamicContext* context) const;
 
-  /* normalize xdt:dayTimeDurations */
-  ATDurationOrDerived::Ptr normalizeDayTimeDuration(const DynamicContext* context) const;
-
-  /* normalize xdt:yearMonthDurations */
-  ATDurationOrDerived::Ptr normalizeYearMonthDuration(const DynamicContext* context) const;  
-
   /* return this duration in forms of seconds */
   ATDecimalOrDerived::Ptr asSeconds(const DynamicContext* context) const;
 
