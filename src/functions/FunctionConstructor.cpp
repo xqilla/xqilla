@@ -69,6 +69,6 @@ ASTNode* FunctionConstructor::staticResolution(StaticContext *context)
 {
   XPath2MemoryManager *mm = context->getMemoryManager();  
 
-  return (new (mm) XQCastAs(_args[0], new (mm) SequenceType(_fURI, _fName), mm))->
+  return (new (mm) XQCastAs(_args[0], new (mm) SequenceType(_fURI, _fName, SequenceType::QUESTION_MARK), mm))->
     staticResolution(context);
 }
