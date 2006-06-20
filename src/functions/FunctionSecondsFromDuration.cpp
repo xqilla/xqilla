@@ -33,11 +33,11 @@ const unsigned int FunctionSecondsFromDuration::minArgs = 1;
 const unsigned int FunctionSecondsFromDuration::maxArgs = 1;
 
 /*
- * fn:seconds-from-dayTimeDuration($arg as xdt:dayTimeDuration?) as xs:decimal?
+ * fn:seconds-from-dayTimeDuration($arg as xs:duration?) as xs:decimal?
  */
 
 FunctionSecondsFromDuration::FunctionSecondsFromDuration(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : ConstantFoldingFunction(name, minArgs, maxArgs, "dayTimeDuration?", args, memMgr)
+  : ConstantFoldingFunction(name, minArgs, maxArgs, "duration?", args, memMgr)
 {
   _src.getStaticType().flags = StaticType::DECIMAL_TYPE;
 }
