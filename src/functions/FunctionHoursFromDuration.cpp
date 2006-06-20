@@ -32,11 +32,11 @@ const unsigned int FunctionHoursFromDuration::minArgs = 1;
 const unsigned int FunctionHoursFromDuration::maxArgs = 1;
 
 /*
- * fn:hours-from-duration($arg as xdt:dayTimeDuration?) as xs:integer?
+ * fn:hours-from-duration($arg as xs:duration?) as xs:integer?
  */
 
 FunctionHoursFromDuration::FunctionHoursFromDuration(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : ConstantFoldingFunction(name, minArgs, maxArgs, "dayTimeDuration?", args, memMgr)
+  : ConstantFoldingFunction(name, minArgs, maxArgs, "duration?", args, memMgr)
 {
   _src.getStaticType().flags = StaticType::DECIMAL_TYPE;
 }
