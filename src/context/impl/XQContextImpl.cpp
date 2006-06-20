@@ -23,6 +23,7 @@
 #include <xercesc/sax/SAXException.hpp>
 #include <xercesc/framework/MemBufInputSource.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
+#include <xercesc/util/XMLUri.hpp>
 
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/context/impl/XQContextImpl.hpp>
@@ -468,10 +469,26 @@ void XQContextImpl::setDefaultCollation(const XMLCh* URI)
 
 Collation* XQContextImpl::getCollation(const XMLCh* URI) const
 {
+  if(!XERCES_CPP_NAMESPACE_QUALIFIER XMLUri::isValidURI(false, URI))
+  {
+    const XMLCh* baseURI=getBaseURI();
+    if(baseURI && *baseURI)
+    {
+      try
+      {
+        XERCES_CPP_NAMESPACE_QUALIFIER XMLUri base(baseURI, getMemoryManager());
+        XERCES_CPP_NAMESPACE_QUALIFIER XMLUri full(&base, URI, getMemoryManager());
+        URI = getMemoryManager()->getPooledString(full.getUriText());
+      }
+      catch(XERCES_CPP_NAMESPACE_QUALIFIER XMLException &e)
+      {
+        //if can't build, assume it's because there was an invalid base URI, so use the original URI
+      }
+    }
+  }
   for(std::vector<Collation*, XQillaAllocator<Collation*> >::const_iterator it= _collations.begin(); it!=_collations.end(); ++it)
     if(XPath2Utils::equals((*it)->getCollationName(), URI))
       return (*it);
-
   const XMLCh* msg = XPath2Utils::concatStrings(X("The requested collation ('"), URI, X("') is not defined [err:FOCH0002]"), getMemoryManager());
 
   XQThrow(ContextException, X("XQContextImpl::getCollation"), msg);
