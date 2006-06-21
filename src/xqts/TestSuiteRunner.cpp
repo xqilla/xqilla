@@ -170,16 +170,6 @@ bool compareNodes(DOMNode* node1, DOMNode* node2)
         //TRACE(_T("node type %d (%s value %s) != node type %d (%s value %s)\n"),node1->getNodeType(), node1->getNodeName(), node1->getNodeValue(), node2->getNodeType(), node2->getNodeName(), node2->getNodeValue());
         return false;
     }
-    if(!XMLString::equals(node1->getNodeName(),node2->getNodeName()))
-    {
-        //TRACE(_T("node %s value %s != node %s value %s\n"),node1->getNodeName(), node1->getNodeValue(),node2->getNodeName(), node2->getNodeValue());
-        return false;
-    }
-    if(!XMLString::equals(node1->getNodeValue(),node2->getNodeValue()))
-    {
-        //TRACE(_T("node %s value %s != node %s value %s\n"),node1->getNodeName(), node1->getNodeValue(),node2->getNodeName(), node2->getNodeValue());
-        return false;
-    }
     if(node1->hasChildNodes() != node2->hasChildNodes())
     {
         //TRACE(_T("node %s has %d children != node %s has %d children\n"),node1->getNodeName(), node1->hasChildNodes(), node2->getNodeName(), node2->hasChildNodes());
@@ -189,6 +179,16 @@ bool compareNodes(DOMNode* node1, DOMNode* node2)
     {
         DOMElement* e1=(DOMElement*)node1;
         DOMElement* e2=(DOMElement*)node2;
+        if(!XMLString::equals(e1->getNamespaceURI(), e2->getNamespaceURI()))
+        {
+            //TRACE(_T("node %s namespace %s != node %s namespace %s\n"),e1->getNodeName(), e1->getNamespaceURI(), e2->getNodeName(), e2->getNamespaceURI());
+            return false;
+        }
+        if(!XMLString::equals(e1->getLocalName(), e2->getLocalName()))
+        {
+            //TRACE(_T("node %s local part %s != node %s local part %s\n"),e1->getNodeName(), e1->getLocalName(), e2->getNodeName(), e2->getLocalName());
+            return false;
+        }
         DOMNamedNodeMap* map1=e1->getAttributes();
         DOMNamedNodeMap* map2=e2->getAttributes();
         // remove namespace nodes
@@ -222,6 +222,19 @@ bool compareNodes(DOMNode* node1, DOMNode* node2)
             }
             if(!compareNodes(a1,a2))
                 return false;
+        }
+    }
+    else
+    {
+        if(!XMLString::equals(node1->getNodeName(),node2->getNodeName()))
+        {
+            //TRACE(_T("node %s != node %s\n"), node1->getNodeValue(), node2->getNodeValue());
+            return false;
+        }
+        if(!XMLString::equals(node1->getNodeValue(),node2->getNodeValue()))
+        {
+            //TRACE(_T("node %s value %s != node %s value %s\n"),node1->getNodeName(), node1->getNodeValue(),node2->getNodeName(), node2->getNodeValue());
+            return false;
         }
     }
     DOMNode* n1=node1->getFirstChild();
