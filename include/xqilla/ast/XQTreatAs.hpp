@@ -29,6 +29,7 @@ public:
   virtual Result createResult(DynamicContext* context, int flags=0) const;
   virtual ASTNode* staticResolution(StaticContext *context);
 
+  void setIsTreatAsStatement(bool bValue) { _isTreatAs=bValue; }
   const ASTNode *getExpression() const;
   const SequenceType *getSequenceType() const;
   bool getDoTypeCheck() const { return _doTypeCheck; }
@@ -38,7 +39,7 @@ public:
 protected:
   ASTNode* _expr;
   const SequenceType* _exprType;
-  bool _doTypeCheck;
+  bool _doTypeCheck, _isTreatAs;
 };
 
 #endif

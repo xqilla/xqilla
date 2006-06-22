@@ -1561,7 +1561,9 @@ InstanceofExpr:
 TreatExpr:
 	CastableExpr _TREAT_ _AS_ SequenceType
 	{
-		$$ = WRAP(@2, new (MEMMGR) XQTreatAs($1,$4,MEMMGR));
+        XQTreatAs* treatAs = new (MEMMGR) XQTreatAs($1,$4,MEMMGR);
+        treatAs->setIsTreatAsStatement(true);
+		$$ = WRAP(@2, treatAs);
 	}
 	| CastableExpr
 	;

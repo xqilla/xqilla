@@ -719,19 +719,19 @@ static const unsigned short int yyrline[] =
      486,   516,   520,   524,   528,   532,   536,   540,   544,   548,
      552,   556,   560,   564,   568,   572,   576,   588,   592,   605,
      609,   613,   625,   629,   633,   637,   641,   653,   657,   661,
-     673,   677,   681,   693,   697,   708,   711,   722,   726,   737,
-     740,   751,   755,   761,   777,   789,   795,   801,   815,   827,
-     831,   837,   860,   863,   873,   877,   890,   902,   921,   925,
-     929,   933,   937,   941,   945,   949,   961,   969,   991,   999,
-    1014,  1018,  1022,  1026,  1030,  1041,  1056,  1060,  1071,  1077,
-    1089,  1096,  1103,  1118,  1131,  1134,  1147,  1151,  1155,  1159,
-    1163,  1176,  1180,  1200,  1212,  1224,  1244,  1256,  1266,  1279,
-    1291,  1297,  1314,  1319,  1332,  1339,  1354,  1361,  1368,  1380,
-    1383,  1386,  1398,  1401,  1405,  1415,  1434,  1437,  1440,  1443,
-    1446,  1449,  1452,  1455,  1458,  1469,  1483,  1488,  1496,  1512,
-    1525,  1539,  1544,  1549,  1563,  1568,  1573,  1585,  1588,  1600,
-    1612,  1623,  1628,  1633,  1638,  1653,  1656,  1668,  1679,  1689,
-    1698,  1707,  1716
+     673,   677,   681,   693,   697,   708,   711,   724,   728,   739,
+     742,   753,   757,   763,   779,   791,   797,   803,   817,   829,
+     833,   839,   862,   865,   875,   879,   892,   904,   923,   927,
+     931,   935,   939,   943,   947,   951,   963,   971,   993,  1001,
+    1016,  1020,  1024,  1028,  1032,  1043,  1058,  1062,  1073,  1079,
+    1091,  1098,  1105,  1120,  1133,  1136,  1149,  1153,  1157,  1161,
+    1165,  1178,  1182,  1202,  1214,  1226,  1246,  1258,  1268,  1281,
+    1293,  1299,  1316,  1321,  1334,  1341,  1356,  1363,  1370,  1382,
+    1385,  1388,  1400,  1403,  1407,  1417,  1436,  1439,  1442,  1445,
+    1448,  1451,  1454,  1457,  1460,  1471,  1485,  1490,  1498,  1514,
+    1527,  1541,  1546,  1551,  1565,  1570,  1575,  1587,  1590,  1602,
+    1614,  1625,  1630,  1635,  1640,  1655,  1658,  1670,  1681,  1691,
+    1700,  1709,  1718
 };
 #endif
 
@@ -2171,47 +2171,49 @@ yyreduce:
   case 56:
 #line 711 ".\\src\\parser\\xpath.y"
     {
-		(yyval.astNodeImpl) = new (MEMMGR) XQTreatAs((yyvsp[-2].astNodeImpl), (yyvsp[0].sequenceType), MEMMGR);
+        XQTreatAs* treatAs = new (MEMMGR) XQTreatAs((yyvsp[-2].astNodeImpl),(yyvsp[0].sequenceType),MEMMGR);
+        treatAs->setIsTreatAsStatement(true);
+		(yyval.astNodeImpl) = treatAs;
 	;}
     break;
 
   case 57:
-#line 722 ".\\src\\parser\\xpath.y"
+#line 724 ".\\src\\parser\\xpath.y"
     {
 	  (yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
 	;}
     break;
 
   case 58:
-#line 726 ".\\src\\parser\\xpath.y"
+#line 728 ".\\src\\parser\\xpath.y"
     {
         (yyval.astNodeImpl) = new (MEMMGR) XQCastableAs((yyvsp[-2].astNodeImpl), (yyvsp[0].sequenceType),MEMMGR);
 	;}
     break;
 
   case 59:
-#line 737 ".\\src\\parser\\xpath.y"
+#line 739 ".\\src\\parser\\xpath.y"
     {
         (yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
     ;}
     break;
 
   case 60:
-#line 740 ".\\src\\parser\\xpath.y"
+#line 742 ".\\src\\parser\\xpath.y"
     {
 		(yyval.astNodeImpl) = new (MEMMGR) XQCastAs((yyvsp[-2].astNodeImpl), (yyvsp[0].sequenceType),MEMMGR);
 	;}
     break;
 
   case 61:
-#line 751 ".\\src\\parser\\xpath.y"
+#line 753 ".\\src\\parser\\xpath.y"
     {
 	  (yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
 	;}
     break;
 
   case 62:
-#line 755 ".\\src\\parser\\xpath.y"
+#line 757 ".\\src\\parser\\xpath.y"
     {
 	  VectorOfASTNodes args(XQillaAllocator<ASTNode*>(MEMMGR));
 	  args.push_back((yyvsp[0].astNodeImpl));
@@ -2220,7 +2222,7 @@ yyreduce:
     break;
 
   case 63:
-#line 761 ".\\src\\parser\\xpath.y"
+#line 763 ".\\src\\parser\\xpath.y"
     {
 		//no need to do anything with unary plus
 		(yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
@@ -2228,14 +2230,14 @@ yyreduce:
     break;
 
   case 64:
-#line 777 ".\\src\\parser\\xpath.y"
+#line 779 ".\\src\\parser\\xpath.y"
     {
 		(yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
 	;}
     break;
 
   case 65:
-#line 789 ".\\src\\parser\\xpath.y"
+#line 791 ".\\src\\parser\\xpath.y"
     {
         XQNav *nav = new (MEMMGR) XQNav(MEMMGR);
         nav->addInitialRootStep(MEMMGR);
@@ -2244,7 +2246,7 @@ yyreduce:
     break;
 
   case 66:
-#line 795 ".\\src\\parser\\xpath.y"
+#line 797 ".\\src\\parser\\xpath.y"
     {
         XQNav* nav=getNavigation((yyvsp[0].astNodeImpl),MEMMGR);
         nav->addInitialRootStep(MEMMGR);
@@ -2253,7 +2255,7 @@ yyreduce:
     break;
 
   case 67:
-#line 801 ".\\src\\parser\\xpath.y"
+#line 803 ".\\src\\parser\\xpath.y"
     {
         XQNav *nav = getNavigation((yyvsp[0].astNodeImpl),MEMMGR);
 
@@ -2270,14 +2272,14 @@ yyreduce:
     break;
 
   case 69:
-#line 827 ".\\src\\parser\\xpath.y"
+#line 829 ".\\src\\parser\\xpath.y"
     {
 	  (yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
 	;}
     break;
 
   case 70:
-#line 831 ".\\src\\parser\\xpath.y"
+#line 833 ".\\src\\parser\\xpath.y"
     {
 		XQNav *nav = getNavigation((yyvsp[-2].astNodeImpl),MEMMGR);
 	    nav->addStep((yyvsp[0].astNodeImpl));
@@ -2286,7 +2288,7 @@ yyreduce:
     break;
 
   case 71:
-#line 837 ".\\src\\parser\\xpath.y"
+#line 839 ".\\src\\parser\\xpath.y"
     {
         XQNav *nav = getNavigation((yyvsp[-2].astNodeImpl),MEMMGR);
 
@@ -2303,21 +2305,21 @@ yyreduce:
     break;
 
   case 72:
-#line 860 ".\\src\\parser\\xpath.y"
+#line 862 ".\\src\\parser\\xpath.y"
     {
         (yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
     ;}
     break;
 
   case 73:
-#line 863 ".\\src\\parser\\xpath.y"
+#line 865 ".\\src\\parser\\xpath.y"
     {
         (yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
     ;}
     break;
 
   case 74:
-#line 873 ".\\src\\parser\\xpath.y"
+#line 875 ".\\src\\parser\\xpath.y"
     {
         (yyval.astNodeImpl) = XQPredicate::addPredicates((yyvsp[-1].astNodeImpl), (yyvsp[0].predicates));
         delete (yyvsp[0].predicates);
@@ -2325,7 +2327,7 @@ yyreduce:
     break;
 
   case 75:
-#line 877 ".\\src\\parser\\xpath.y"
+#line 879 ".\\src\\parser\\xpath.y"
     {
         (yyval.astNodeImpl) = XQPredicate::addPredicates((yyvsp[-1].astNodeImpl), (yyvsp[0].predicates));
         delete (yyvsp[0].predicates);
@@ -2334,7 +2336,7 @@ yyreduce:
     break;
 
   case 76:
-#line 890 ".\\src\\parser\\xpath.y"
+#line 892 ".\\src\\parser\\xpath.y"
     {
       if(!(yyvsp[0].nodeTest)->isNodeTypeSet()) {
         switch((yyvsp[-1].axis)) {
@@ -2349,70 +2351,70 @@ yyreduce:
     break;
 
   case 77:
-#line 902 ".\\src\\parser\\xpath.y"
+#line 904 ".\\src\\parser\\xpath.y"
     {
 		(yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
 	;}
     break;
 
   case 78:
-#line 921 ".\\src\\parser\\xpath.y"
+#line 923 ".\\src\\parser\\xpath.y"
     {
     (yyval.axis) = XQStep::CHILD;
 	;}
     break;
 
   case 79:
-#line 925 ".\\src\\parser\\xpath.y"
+#line 927 ".\\src\\parser\\xpath.y"
     {
     (yyval.axis) = XQStep::DESCENDANT;
 	;}
     break;
 
   case 80:
-#line 929 ".\\src\\parser\\xpath.y"
+#line 931 ".\\src\\parser\\xpath.y"
     {
     (yyval.axis) = XQStep::ATTRIBUTE;
 	;}
     break;
 
   case 81:
-#line 933 ".\\src\\parser\\xpath.y"
+#line 935 ".\\src\\parser\\xpath.y"
     {
     (yyval.axis) = XQStep::SELF;
 	;}
     break;
 
   case 82:
-#line 937 ".\\src\\parser\\xpath.y"
+#line 939 ".\\src\\parser\\xpath.y"
     {
     (yyval.axis) = XQStep::DESCENDANT_OR_SELF;
 	;}
     break;
 
   case 83:
-#line 941 ".\\src\\parser\\xpath.y"
+#line 943 ".\\src\\parser\\xpath.y"
     {
     (yyval.axis) = XQStep::FOLLOWING_SIBLING;
 	;}
     break;
 
   case 84:
-#line 945 ".\\src\\parser\\xpath.y"
+#line 947 ".\\src\\parser\\xpath.y"
     {
     (yyval.axis) = XQStep::FOLLOWING;
 	;}
     break;
 
   case 85:
-#line 949 ".\\src\\parser\\xpath.y"
+#line 951 ".\\src\\parser\\xpath.y"
     {
     (yyval.axis) = XQStep::NAMESPACE;
 	;}
     break;
 
   case 86:
-#line 961 ".\\src\\parser\\xpath.y"
+#line 963 ".\\src\\parser\\xpath.y"
     {
     if(!(yyvsp[0].nodeTest)->isNodeTypeSet()) {
       (yyvsp[0].nodeTest)->setNodeType(Node::attribute_string);
@@ -2423,7 +2425,7 @@ yyreduce:
     break;
 
   case 87:
-#line 969 ".\\src\\parser\\xpath.y"
+#line 971 ".\\src\\parser\\xpath.y"
     {
     XQStep::Axis axis = XQStep::CHILD;
     SequenceType::ItemType *itemtype = (yyvsp[0].nodeTest)->getItemType();
@@ -2440,7 +2442,7 @@ yyreduce:
     break;
 
   case 88:
-#line 991 ".\\src\\parser\\xpath.y"
+#line 993 ".\\src\\parser\\xpath.y"
     {
     if(!(yyvsp[0].nodeTest)->isNodeTypeSet()) {
       (yyvsp[0].nodeTest)->setNodeType(Node::element_string);
@@ -2451,49 +2453,49 @@ yyreduce:
     break;
 
   case 89:
-#line 999 ".\\src\\parser\\xpath.y"
+#line 1001 ".\\src\\parser\\xpath.y"
     {
 		(yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
 	;}
     break;
 
   case 90:
-#line 1014 ".\\src\\parser\\xpath.y"
+#line 1016 ".\\src\\parser\\xpath.y"
     {
     (yyval.axis) = XQStep::PARENT;
 	;}
     break;
 
   case 91:
-#line 1018 ".\\src\\parser\\xpath.y"
+#line 1020 ".\\src\\parser\\xpath.y"
     {
     (yyval.axis) = XQStep::ANCESTOR;
 	;}
     break;
 
   case 92:
-#line 1022 ".\\src\\parser\\xpath.y"
+#line 1024 ".\\src\\parser\\xpath.y"
     {
     (yyval.axis) = XQStep::PRECEDING_SIBLING;
 	;}
     break;
 
   case 93:
-#line 1026 ".\\src\\parser\\xpath.y"
+#line 1028 ".\\src\\parser\\xpath.y"
     {
     (yyval.axis) = XQStep::PRECEDING;
 	;}
     break;
 
   case 94:
-#line 1030 ".\\src\\parser\\xpath.y"
+#line 1032 ".\\src\\parser\\xpath.y"
     {
     (yyval.axis) = XQStep::ANCESTOR_OR_SELF;
 	;}
     break;
 
   case 95:
-#line 1041 ".\\src\\parser\\xpath.y"
+#line 1043 ".\\src\\parser\\xpath.y"
     {
 		NodeTest *step = new (MEMMGR) NodeTest;
 		step->setNameWildcard();
@@ -2504,21 +2506,21 @@ yyreduce:
     break;
 
   case 96:
-#line 1056 ".\\src\\parser\\xpath.y"
+#line 1058 ".\\src\\parser\\xpath.y"
     {
 		(yyval.nodeTest) = (yyvsp[0].nodeTest);
 	;}
     break;
 
   case 97:
-#line 1060 ".\\src\\parser\\xpath.y"
+#line 1062 ".\\src\\parser\\xpath.y"
     {
 		(yyval.nodeTest) = (yyvsp[0].nodeTest);
 	;}
     break;
 
   case 98:
-#line 1071 ".\\src\\parser\\xpath.y"
+#line 1073 ".\\src\\parser\\xpath.y"
     {
         NodeTest *step = new (MEMMGR) NodeTest();
 		step->setNodePrefix((yyvsp[0].qName)->getPrefix());
@@ -2528,14 +2530,14 @@ yyreduce:
     break;
 
   case 99:
-#line 1077 ".\\src\\parser\\xpath.y"
+#line 1079 ".\\src\\parser\\xpath.y"
     {
         (yyval.nodeTest) = (yyvsp[0].nodeTest);
     ;}
     break;
 
   case 100:
-#line 1089 ".\\src\\parser\\xpath.y"
+#line 1091 ".\\src\\parser\\xpath.y"
     {
 		NodeTest *step = new (MEMMGR) NodeTest();
 		step->setNameWildcard();
@@ -2545,7 +2547,7 @@ yyreduce:
     break;
 
   case 101:
-#line 1096 ".\\src\\parser\\xpath.y"
+#line 1098 ".\\src\\parser\\xpath.y"
     {
 		NodeTest *step = new (MEMMGR) NodeTest();
 		step->setNodePrefix(MEMMGR->getPooledString((yyvsp[0].str)));
@@ -2555,7 +2557,7 @@ yyreduce:
     break;
 
   case 102:
-#line 1103 ".\\src\\parser\\xpath.y"
+#line 1105 ".\\src\\parser\\xpath.y"
     {
         NodeTest *step = new (MEMMGR) NodeTest();
         step->setNodeName(MEMMGR->getPooledString((yyvsp[0].str)));
@@ -2565,7 +2567,7 @@ yyreduce:
     break;
 
   case 103:
-#line 1118 ".\\src\\parser\\xpath.y"
+#line 1120 ".\\src\\parser\\xpath.y"
     {
         (yyval.astNodeImpl) = XQPredicate::addPredicates((yyvsp[-1].astNodeImpl), (yyvsp[0].predicates));
         delete (yyvsp[0].predicates);
@@ -2573,14 +2575,14 @@ yyreduce:
     break;
 
   case 104:
-#line 1131 ".\\src\\parser\\xpath.y"
+#line 1133 ".\\src\\parser\\xpath.y"
     {
         (yyval.predicates) = new VectorOfPredicates(MEMMGR);
     ;}
     break;
 
   case 105:
-#line 1134 ".\\src\\parser\\xpath.y"
+#line 1136 ".\\src\\parser\\xpath.y"
     {
         XQPredicate *pred = new (MEMMGR) XQPredicate((yyvsp[-1].astNodeImpl), MEMMGR);
         (yyvsp[-3].predicates)->push_back(pred);
@@ -2589,49 +2591,49 @@ yyreduce:
     break;
 
   case 106:
-#line 1147 ".\\src\\parser\\xpath.y"
+#line 1149 ".\\src\\parser\\xpath.y"
     {
 		(yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
 	;}
     break;
 
   case 107:
-#line 1151 ".\\src\\parser\\xpath.y"
+#line 1153 ".\\src\\parser\\xpath.y"
     {
 		(yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
 	;}
     break;
 
   case 108:
-#line 1155 ".\\src\\parser\\xpath.y"
+#line 1157 ".\\src\\parser\\xpath.y"
     {
 		(yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
 	;}
     break;
 
   case 109:
-#line 1159 ".\\src\\parser\\xpath.y"
+#line 1161 ".\\src\\parser\\xpath.y"
     {
 		(yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
 	;}
     break;
 
   case 110:
-#line 1163 ".\\src\\parser\\xpath.y"
+#line 1165 ".\\src\\parser\\xpath.y"
     {
 		(yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
 	;}
     break;
 
   case 111:
-#line 1176 ".\\src\\parser\\xpath.y"
+#line 1178 ".\\src\\parser\\xpath.y"
     {
 		(yyval.astNodeImpl) = (yyvsp[0].astNodeImpl);
 	;}
     break;
 
   case 112:
-#line 1180 ".\\src\\parser\\xpath.y"
+#line 1182 ".\\src\\parser\\xpath.y"
     {
       AnyAtomicTypeConstructor *ic = new (MEMMGR)
       AnyAtomicTypeConstructor(
@@ -2646,7 +2648,7 @@ yyreduce:
     break;
 
   case 113:
-#line 1200 ".\\src\\parser\\xpath.y"
+#line 1202 ".\\src\\parser\\xpath.y"
     {
       AnyAtomicTypeConstructor *ic = new (MEMMGR)
       AnyAtomicTypeConstructor(
@@ -2661,7 +2663,7 @@ yyreduce:
     break;
 
   case 114:
-#line 1212 ".\\src\\parser\\xpath.y"
+#line 1214 ".\\src\\parser\\xpath.y"
     {
       AnyAtomicTypeConstructor *ic = new (MEMMGR)
       AnyAtomicTypeConstructor(
@@ -2676,7 +2678,7 @@ yyreduce:
     break;
 
   case 115:
-#line 1224 ".\\src\\parser\\xpath.y"
+#line 1226 ".\\src\\parser\\xpath.y"
     {
       AnyAtomicTypeConstructor *ic = new (MEMMGR)
       AnyAtomicTypeConstructor(
@@ -2691,7 +2693,7 @@ yyreduce:
     break;
 
   case 116:
-#line 1244 ".\\src\\parser\\xpath.y"
+#line 1246 ".\\src\\parser\\xpath.y"
     {
 		XQVariable *var = new (MEMMGR) XQVariable((yyvsp[0].str), MEMMGR);
 		(yyval.astNodeImpl) = var;
@@ -2699,7 +2701,7 @@ yyreduce:
     break;
 
   case 117:
-#line 1256 ".\\src\\parser\\xpath.y"
+#line 1258 ".\\src\\parser\\xpath.y"
     {
         if((yyvsp[-1].astNodeImpl)->getType()!=ASTNode::PARENTHESIZED)
         {
@@ -2713,21 +2715,21 @@ yyreduce:
     break;
 
   case 118:
-#line 1266 ".\\src\\parser\\xpath.y"
+#line 1268 ".\\src\\parser\\xpath.y"
     {
 		(yyval.astNodeImpl) = new (MEMMGR) XQSequence(MEMMGR);
 	;}
     break;
 
   case 119:
-#line 1279 ".\\src\\parser\\xpath.y"
+#line 1281 ".\\src\\parser\\xpath.y"
     {
 		(yyval.astNodeImpl) = new (MEMMGR) XQContextItem(MEMMGR);
 	;}
     break;
 
   case 120:
-#line 1291 ".\\src\\parser\\xpath.y"
+#line 1293 ".\\src\\parser\\xpath.y"
     {
         QualifiedName *qname = new (MEMMGR) QualifiedName((yyvsp[-1].str), MEMMGR);
         VectorOfASTNodes tmp(XQillaAllocator<ASTNode*>(MEMMGR));
@@ -2736,7 +2738,7 @@ yyreduce:
     break;
 
   case 121:
-#line 1297 ".\\src\\parser\\xpath.y"
+#line 1299 ".\\src\\parser\\xpath.y"
     {
         QualifiedName *qname = new (MEMMGR) QualifiedName((yyvsp[-2].str), MEMMGR);
 		(yyval.astNodeImpl) = new (MEMMGR) XQFunctionCall(qname, *(yyvsp[-1].astNodeStore), MEMMGR);
@@ -2745,7 +2747,7 @@ yyreduce:
     break;
 
   case 122:
-#line 1314 ".\\src\\parser\\xpath.y"
+#line 1316 ".\\src\\parser\\xpath.y"
     {
         (yyval.astNodeStore) = new VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
         (yyval.astNodeStore)->push_back((yyvsp[0].astNodeImpl));
@@ -2753,7 +2755,7 @@ yyreduce:
     break;
 
   case 123:
-#line 1319 ".\\src\\parser\\xpath.y"
+#line 1321 ".\\src\\parser\\xpath.y"
     {
         (yyvsp[-2].astNodeStore)->push_back((yyvsp[0].astNodeImpl));
 		(yyval.astNodeStore) = (yyvsp[-2].astNodeStore);
@@ -2761,7 +2763,7 @@ yyreduce:
     break;
 
   case 124:
-#line 1332 ".\\src\\parser\\xpath.y"
+#line 1334 ".\\src\\parser\\xpath.y"
     {
 		SequenceType* seq=new (MEMMGR) SequenceType();
 		seq->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ATOMIC_TYPE, NULL, (yyvsp[0].qName)));
@@ -2771,7 +2773,7 @@ yyreduce:
     break;
 
   case 125:
-#line 1339 ".\\src\\parser\\xpath.y"
+#line 1341 ".\\src\\parser\\xpath.y"
     {
 		SequenceType* seq=new (MEMMGR) SequenceType();
 		seq->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ATOMIC_TYPE, NULL, (yyvsp[-1].qName)));
@@ -2781,7 +2783,7 @@ yyreduce:
     break;
 
   case 126:
-#line 1354 ".\\src\\parser\\xpath.y"
+#line 1356 ".\\src\\parser\\xpath.y"
     {
 		SequenceType* seq=new (MEMMGR) SequenceType();
 		seq->setItemType((yyvsp[-1].itemType));
@@ -2791,7 +2793,7 @@ yyreduce:
     break;
 
   case 127:
-#line 1361 ".\\src\\parser\\xpath.y"
+#line 1363 ".\\src\\parser\\xpath.y"
     {
 		SequenceType* seq=new (MEMMGR) SequenceType();
 		seq->setItemType((yyvsp[0].itemType));
@@ -2801,42 +2803,42 @@ yyreduce:
     break;
 
   case 128:
-#line 1368 ".\\src\\parser\\xpath.y"
+#line 1370 ".\\src\\parser\\xpath.y"
     {
 		(yyval.sequenceType) = new (MEMMGR) SequenceType();
 	;}
     break;
 
   case 129:
-#line 1380 ".\\src\\parser\\xpath.y"
+#line 1382 ".\\src\\parser\\xpath.y"
     {
 		(yyval.occurrence) = SequenceType::STAR;
 	;}
     break;
 
   case 130:
-#line 1383 ".\\src\\parser\\xpath.y"
+#line 1385 ".\\src\\parser\\xpath.y"
     {
 		(yyval.occurrence) = SequenceType::PLUS;
 	;}
     break;
 
   case 131:
-#line 1386 ".\\src\\parser\\xpath.y"
+#line 1388 ".\\src\\parser\\xpath.y"
     {
 		(yyval.occurrence) = SequenceType::QUESTION_MARK;
 	;}
     break;
 
   case 132:
-#line 1398 ".\\src\\parser\\xpath.y"
+#line 1400 ".\\src\\parser\\xpath.y"
     {
         (yyval.itemType) = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ATOMIC_TYPE, NULL, (yyvsp[0].qName));
     ;}
     break;
 
   case 133:
-#line 1401 ".\\src\\parser\\xpath.y"
+#line 1403 ".\\src\\parser\\xpath.y"
     {
         (yyval.itemType) = (yyvsp[0].nodeTest)->getItemType();
         (yyvsp[0].nodeTest)->setItemType(NULL);
@@ -2844,84 +2846,84 @@ yyreduce:
     break;
 
   case 134:
-#line 1405 ".\\src\\parser\\xpath.y"
+#line 1407 ".\\src\\parser\\xpath.y"
     {
         (yyval.itemType) = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ANYTHING);
     ;}
     break;
 
   case 135:
-#line 1415 ".\\src\\parser\\xpath.y"
+#line 1417 ".\\src\\parser\\xpath.y"
     {
 		(yyval.qName) = (yyvsp[0].qName);
 	;}
     break;
 
   case 136:
-#line 1434 ".\\src\\parser\\xpath.y"
+#line 1436 ".\\src\\parser\\xpath.y"
     {
         (yyval.nodeTest) = (yyvsp[0].nodeTest);
     ;}
     break;
 
   case 137:
-#line 1437 ".\\src\\parser\\xpath.y"
+#line 1439 ".\\src\\parser\\xpath.y"
     {
         (yyval.nodeTest) = (yyvsp[0].nodeTest);
     ;}
     break;
 
   case 138:
-#line 1440 ".\\src\\parser\\xpath.y"
+#line 1442 ".\\src\\parser\\xpath.y"
     {
         (yyval.nodeTest) = (yyvsp[0].nodeTest);
     ;}
     break;
 
   case 139:
-#line 1443 ".\\src\\parser\\xpath.y"
+#line 1445 ".\\src\\parser\\xpath.y"
     {
         (yyval.nodeTest) = (yyvsp[0].nodeTest);
     ;}
     break;
 
   case 140:
-#line 1446 ".\\src\\parser\\xpath.y"
+#line 1448 ".\\src\\parser\\xpath.y"
     {
         (yyval.nodeTest) = (yyvsp[0].nodeTest);
     ;}
     break;
 
   case 141:
-#line 1449 ".\\src\\parser\\xpath.y"
+#line 1451 ".\\src\\parser\\xpath.y"
     {
 		(yyval.nodeTest) = (yyvsp[0].nodeTest);
 	;}
     break;
 
   case 142:
-#line 1452 ".\\src\\parser\\xpath.y"
+#line 1454 ".\\src\\parser\\xpath.y"
     {
 		(yyval.nodeTest) = (yyvsp[0].nodeTest);
 	;}
     break;
 
   case 143:
-#line 1455 ".\\src\\parser\\xpath.y"
+#line 1457 ".\\src\\parser\\xpath.y"
     {
 		(yyval.nodeTest) = (yyvsp[0].nodeTest);
 	;}
     break;
 
   case 144:
-#line 1458 ".\\src\\parser\\xpath.y"
+#line 1460 ".\\src\\parser\\xpath.y"
     {
 		(yyval.nodeTest) = (yyvsp[0].nodeTest);
 	;}
     break;
 
   case 145:
-#line 1469 ".\\src\\parser\\xpath.y"
+#line 1471 ".\\src\\parser\\xpath.y"
     {
 		NodeTest *step = new (MEMMGR) NodeTest();
         step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_NODE));
@@ -2930,7 +2932,7 @@ yyreduce:
     break;
 
   case 146:
-#line 1483 ".\\src\\parser\\xpath.y"
+#line 1485 ".\\src\\parser\\xpath.y"
     {
 		NodeTest *step = new (MEMMGR) NodeTest();
         step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_DOCUMENT));
@@ -2939,7 +2941,7 @@ yyreduce:
     break;
 
   case 147:
-#line 1488 ".\\src\\parser\\xpath.y"
+#line 1490 ".\\src\\parser\\xpath.y"
     {
 		NodeTest *step = new (MEMMGR) NodeTest();
         SequenceType::ItemType* elemTest=(yyvsp[-1].nodeTest)->getItemType();
@@ -2951,7 +2953,7 @@ yyreduce:
     break;
 
   case 148:
-#line 1496 ".\\src\\parser\\xpath.y"
+#line 1498 ".\\src\\parser\\xpath.y"
     {
 		NodeTest *step = new (MEMMGR) NodeTest();
         SequenceType::ItemType* elemTest=(yyvsp[-1].nodeTest)->getItemType();
@@ -2963,7 +2965,7 @@ yyreduce:
     break;
 
   case 149:
-#line 1512 ".\\src\\parser\\xpath.y"
+#line 1514 ".\\src\\parser\\xpath.y"
     {
 		NodeTest *step = new (MEMMGR) NodeTest();
         step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_TEXT));
@@ -2972,7 +2974,7 @@ yyreduce:
     break;
 
   case 150:
-#line 1525 ".\\src\\parser\\xpath.y"
+#line 1527 ".\\src\\parser\\xpath.y"
     {
 		NodeTest *step = new (MEMMGR) NodeTest();
         step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_COMMENT));
@@ -2981,7 +2983,7 @@ yyreduce:
     break;
 
   case 151:
-#line 1539 ".\\src\\parser\\xpath.y"
+#line 1541 ".\\src\\parser\\xpath.y"
     {
 		NodeTest *step = new (MEMMGR) NodeTest();
         step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_PI, new (MEMMGR) QualifiedName((yyvsp[-1].str))));
@@ -2990,7 +2992,7 @@ yyreduce:
     break;
 
   case 152:
-#line 1544 ".\\src\\parser\\xpath.y"
+#line 1546 ".\\src\\parser\\xpath.y"
     {
 		NodeTest *step = new (MEMMGR) NodeTest();
         step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_PI, new (MEMMGR) QualifiedName((yyvsp[-1].str))));
@@ -2999,7 +3001,7 @@ yyreduce:
     break;
 
   case 153:
-#line 1549 ".\\src\\parser\\xpath.y"
+#line 1551 ".\\src\\parser\\xpath.y"
     {
 		NodeTest *step = new (MEMMGR) NodeTest();
         step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_PI));
@@ -3008,7 +3010,7 @@ yyreduce:
     break;
 
   case 154:
-#line 1563 ".\\src\\parser\\xpath.y"
+#line 1565 ".\\src\\parser\\xpath.y"
     {
 		NodeTest *step = new (MEMMGR) NodeTest();
         step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ATTRIBUTE));
@@ -3017,7 +3019,7 @@ yyreduce:
     break;
 
   case 155:
-#line 1568 ".\\src\\parser\\xpath.y"
+#line 1570 ".\\src\\parser\\xpath.y"
     {
 		NodeTest *step = new (MEMMGR) NodeTest();
         step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ATTRIBUTE, (yyvsp[-1].qName)));
@@ -3026,7 +3028,7 @@ yyreduce:
     break;
 
   case 156:
-#line 1573 ".\\src\\parser\\xpath.y"
+#line 1575 ".\\src\\parser\\xpath.y"
     {
 		NodeTest *step = new (MEMMGR) NodeTest();
         step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ATTRIBUTE, (yyvsp[-3].qName), (yyvsp[-1].qName)));
@@ -3035,21 +3037,21 @@ yyreduce:
     break;
 
   case 157:
-#line 1585 ".\\src\\parser\\xpath.y"
+#line 1587 ".\\src\\parser\\xpath.y"
     {
     (yyval.qName) = (yyvsp[0].qName);
   ;}
     break;
 
   case 158:
-#line 1588 ".\\src\\parser\\xpath.y"
+#line 1590 ".\\src\\parser\\xpath.y"
     {
     (yyval.qName)=NULL;
   ;}
     break;
 
   case 159:
-#line 1600 ".\\src\\parser\\xpath.y"
+#line 1602 ".\\src\\parser\\xpath.y"
     {
 		NodeTest *step = new (MEMMGR) NodeTest();
         step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_SCHEMA_ATTRIBUTE, (yyvsp[-1].qName)));
@@ -3058,14 +3060,14 @@ yyreduce:
     break;
 
   case 160:
-#line 1612 ".\\src\\parser\\xpath.y"
+#line 1614 ".\\src\\parser\\xpath.y"
     {
     (yyval.qName) = (yyvsp[0].qName);
   ;}
     break;
 
   case 161:
-#line 1623 ".\\src\\parser\\xpath.y"
+#line 1625 ".\\src\\parser\\xpath.y"
     {
 		NodeTest *step = new (MEMMGR) NodeTest();
         step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ELEMENT));
@@ -3074,7 +3076,7 @@ yyreduce:
     break;
 
   case 162:
-#line 1628 ".\\src\\parser\\xpath.y"
+#line 1630 ".\\src\\parser\\xpath.y"
     {
 		NodeTest *step = new (MEMMGR) NodeTest();
         step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ELEMENT, (yyvsp[-1].qName)));
@@ -3083,7 +3085,7 @@ yyreduce:
     break;
 
   case 163:
-#line 1633 ".\\src\\parser\\xpath.y"
+#line 1635 ".\\src\\parser\\xpath.y"
     {
 		NodeTest *step = new (MEMMGR) NodeTest();
         step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ELEMENT, (yyvsp[-3].qName), (yyvsp[-1].qName)));
@@ -3092,7 +3094,7 @@ yyreduce:
     break;
 
   case 164:
-#line 1638 ".\\src\\parser\\xpath.y"
+#line 1640 ".\\src\\parser\\xpath.y"
     {
 		NodeTest *step = new (MEMMGR) NodeTest();
         SequenceType::ItemType* pType=new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ELEMENT, (yyvsp[-4].qName), (yyvsp[-2].qName));
@@ -3103,21 +3105,21 @@ yyreduce:
     break;
 
   case 165:
-#line 1653 ".\\src\\parser\\xpath.y"
+#line 1655 ".\\src\\parser\\xpath.y"
     {
     (yyval.qName) = (yyvsp[0].qName);
   ;}
     break;
 
   case 166:
-#line 1656 ".\\src\\parser\\xpath.y"
+#line 1658 ".\\src\\parser\\xpath.y"
     {
     (yyval.qName)=NULL;
   ;}
     break;
 
   case 167:
-#line 1668 ".\\src\\parser\\xpath.y"
+#line 1670 ".\\src\\parser\\xpath.y"
     {
 		NodeTest *step = new (MEMMGR) NodeTest();
         step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_SCHEMA_ELEMENT, (yyvsp[-1].qName)));
@@ -3126,35 +3128,35 @@ yyreduce:
     break;
 
   case 168:
-#line 1679 ".\\src\\parser\\xpath.y"
+#line 1681 ".\\src\\parser\\xpath.y"
     {
     (yyval.qName) = (yyvsp[0].qName);
   ;}
     break;
 
   case 169:
-#line 1689 ".\\src\\parser\\xpath.y"
+#line 1691 ".\\src\\parser\\xpath.y"
     {
        (yyval.qName) = (yyvsp[0].qName);
    ;}
     break;
 
   case 170:
-#line 1698 ".\\src\\parser\\xpath.y"
+#line 1700 ".\\src\\parser\\xpath.y"
     {
        (yyval.qName) = (yyvsp[0].qName);
    ;}
     break;
 
   case 171:
-#line 1707 ".\\src\\parser\\xpath.y"
+#line 1709 ".\\src\\parser\\xpath.y"
     {
        (yyval.qName) = (yyvsp[0].qName);
    ;}
     break;
 
   case 172:
-#line 1716 ".\\src\\parser\\xpath.y"
+#line 1718 ".\\src\\parser\\xpath.y"
     {
       QualifiedName *qn = new (MEMMGR) QualifiedName((yyvsp[0].str), MEMMGR);
 	  (yyval.qName) = qn;
@@ -3166,7 +3168,7 @@ yyreduce:
     }
 
 /* Line 1126 of yacc.c.  */
-#line 3170 "src/parser/XPath2Parser.cpp"
+#line 3172 "src/parser/XPath2Parser.cpp"
 
   yyvsp -= yylen;
   yyssp -= yylen;
@@ -3434,7 +3436,7 @@ yyreturn:
 }
 
 
-#line 1723 ".\\src\\parser\\xpath.y"
+#line 1725 ".\\src\\parser\\xpath.y"
 
 
 }	// namespace XPath2

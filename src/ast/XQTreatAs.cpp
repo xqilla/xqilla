@@ -35,7 +35,8 @@ XQTreatAs::XQTreatAs(ASTNode* expr, const SequenceType* exprType, XPath2MemoryMa
   : ASTNodeImpl(memMgr),
     _expr(expr),
     _exprType(exprType),
-    _doTypeCheck(true)
+    _doTypeCheck(true),
+    _isTreatAs(false)
 {
   setType(ASTNode::TREAT_AS);
 }
@@ -78,7 +79,8 @@ ASTNode* XQTreatAs::staticResolution(StaticContext *context)
         _exprType->getOccurrenceIndicator() == SequenceType::PLUS)) {
       // It never matches
       XQThrow(XPath2TypeMatchException, X("XQTreatAs::staticResolution"),
-              X("ItemType matching failed [err:XPTY0004]"));
+          _isTreatAs?X("The type of the expression doesn't match the sequence type specified in the 'treat as' expression [err:XPDY0050]"):
+                     X("ItemType matching failed [err:XPTY0004]"));
     }
 
     if(isExact && sType.isType(_src.getStaticType().flags)) {
