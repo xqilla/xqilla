@@ -75,11 +75,13 @@ public:
         m_nLength=XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(m_szQuery);
         m_nOpenComments=0;
     	m_bGenerateEOF=m_bReportWhiteSpace=false;
+        m_bGenerateErrorException=true;
     }
 
     const XMLCh* getQueryString() { return m_szQuery; }
     void setGenerateEOF(bool bEnable) { m_bGenerateEOF=bEnable; }
     void setGenerateWhiteSpace(bool bEnable) { m_bReportWhiteSpace=bEnable; }
+    void setGenerateErrorException(bool bEnable) { m_bGenerateErrorException=bEnable; }
 
 	virtual int error(const char* message)
     {
@@ -210,6 +212,8 @@ protected:
 
 	virtual void Error( const char* msg )
     {
+        if(!m_bGenerateErrorException)
+            return;
         if(strstr(msg, "[err:")!=NULL)
     	    XQSimpleThrow(X(msg), NULL, m_lineno, m_columnno);
         const XMLCh* szMsg=XPath2Utils::concatStrings(X(msg), X(" [err:XPST0003]"), m_memMgr);
@@ -252,7 +256,7 @@ protected:
     YYLTYPE m_yyloc;
 
     int m_nOpenComments;
-	bool m_bGenerateEOF, m_bReportWhiteSpace;
+	bool m_bGenerateEOF, m_bReportWhiteSpace, m_bGenerateErrorException;
 };
 
 #endif // #ifdef XQILLA_LEXER_H
