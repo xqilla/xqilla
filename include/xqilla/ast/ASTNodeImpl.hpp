@@ -33,11 +33,11 @@ public:
 	
   /** Returns true if this ASTNode is an instance of XQSequence or XQLiteral */
   virtual bool isConstant() const;
-  /** Returns true if this ASTNode is an instance of
+  /** Returns true if this ASTNode has no predicates, and is an instance of
       XQSequence or XQLiteral. If the literal value of this ASTNode
-      is a single DateOrTimeType, then hasTimezone() on it must return true,
+      is a single DateOrTimeType, then !hasTimezone() on it must return true,
       otherwise this method will return false. */
-  virtual bool isConstantAndHasTimezone(StaticContext* context) const;
+  virtual bool isDateOrTimeAndHasNoTimezone(StaticContext* context) const;
 
   virtual bool isSingleNumericConstant(StaticContext *context) const;
 
@@ -60,8 +60,8 @@ public:
       all of them, and constantFold is true, returns the result of the
       constantFold() method, otherwise returns this. */
   ASTNode *resolveASTNodes(VectorOfASTNodes &dis, StaticContext *context, bool constantFold);
-  /** Calls staticResolution on the ASTNodes, then if isConstantAndHasTimezone() is true for
-      all of them, and constantFold is true, returns the result of the
+  /** Calls staticResolution on the ASTNodes, then if isConstant() and isDateOrTimeAndHasNoTimezone() 
+      is true for all of them, and constantFold is true, returns the result of the
       constantFold() method, otherwise returns this. */
   ASTNode *resolveASTNodesForDateOrTime(VectorOfASTNodes &dis, StaticContext *context, bool constantFold);
   /** Calls staticResolution on the ASTNode, then if isConstant() is true for

@@ -52,7 +52,7 @@ bool ASTNodeImpl::isConstant() const
 }
 
 /** Overridden in XQSequence and XQLiteral */
-bool ASTNodeImpl::isConstantAndHasTimezone(StaticContext *context) const
+bool ASTNodeImpl::isDateOrTimeAndHasNoTimezone(StaticContext *context) const
 {
   return false;
 }
@@ -121,12 +121,10 @@ ASTNode *ASTNodeImpl::resolveASTNodesForDateOrTime(VectorOfASTNodes &dis, Static
   for(VectorOfASTNodes::iterator i = dis.begin(); i != dis.end(); ++i) {
     *i = (*i)->staticResolution(context);
     _src.add((*i)->getStaticResolutionContext());
-    if(!(*i)->isConstantAndHasTimezone(context)) {
+    if(!(*i)->isConstant())
       allConstant = false;
-      if((*i)->isConstant()) {
-        _src.implicitTimezoneUsed(true);
-      }
-    }
+    else if((*i)->isDateOrTimeAndHasNoTimezone(context))
+      _src.implicitTimezoneUsed(true);
   }
 
   if(allConstant && cf) {

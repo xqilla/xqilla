@@ -152,9 +152,8 @@ ASTNode *XQFunction::resolveArguments(StaticContext *context, bool checkTimezone
     *i = (*i)->staticResolution(context);
     _src.add((*i)->getStaticResolutionContext());
 
-    if(checkTimezone && (*i)->isConstant() && !(*i)->isConstantAndHasTimezone(context)) {
+    if(checkTimezone && (*i)->isDateOrTimeAndHasNoTimezone(context))
       _src.implicitTimezoneUsed(true);
-    }
 
     ++paramNumber;
     if(paramNumber >= _paramDecl->size()) {

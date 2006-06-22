@@ -26,7 +26,7 @@ class XQILLA_API XQLiteral : public ASTNodeImpl
 public:
   XQLiteral(ItemConstructor *ic, XPath2MemoryManager* memMgr);
 
-  virtual bool isConstantAndHasTimezone(StaticContext* context) const;
+  virtual bool isDateOrTimeAndHasNoTimezone(StaticContext* context) const;
   virtual bool isSingleNumericConstant(StaticContext *context) const;
 
   virtual ASTNode* staticResolution(StaticContext *context);

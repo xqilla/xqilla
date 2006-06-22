@@ -42,12 +42,10 @@ ASTNode* ComparisonOperator::staticResolution(StaticContext *context)
 
     _src.add((*i)->getStaticResolutionContext());
 
-    if(!(*i)->isConstantAndHasTimezone(context)) {
+    if(!(*i)->isConstant())
       allConstant = false;
-      if((*i)->isConstant()) {
-        _src.implicitTimezoneUsed(true);
-      }
-    }
+    else if((*i)->isDateOrTimeAndHasNoTimezone(context))
+      _src.implicitTimezoneUsed(true);
   }
 
   _src.getStaticType().flags = StaticType::BOOLEAN_TYPE;

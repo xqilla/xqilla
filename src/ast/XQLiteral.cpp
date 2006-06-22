@@ -28,35 +28,31 @@ XQLiteral::XQLiteral(ItemConstructor *ic, XPath2MemoryManager* memMgr)
 
 /** Returns true if this XQ has no predicates, and is an instance of
     XQSequence or XQLiteral. If the literal value of this XQ
-    is a single DateOrTimeType, then hasTimezone() on it must return true,
+    is a single DateOrTimeType, then !hasTimezone() on it must return true,
     otherwise this method will return false. */
-bool XQLiteral::isConstantAndHasTimezone(StaticContext *context) const
+bool XQLiteral::isDateOrTimeAndHasNoTimezone(StaticContext *context) const
 {
-  if(isConstant()) {
-    AutoDelete<DynamicContext> dContext(context->createDynamicContext());
-    dContext->setMemoryManager(context->getMemoryManager());
+  AutoDelete<DynamicContext> dContext(context->createDynamicContext());
+  dContext->setMemoryManager(context->getMemoryManager());
 
-    Item::Ptr item = _itemConstructor->createItem(dContext);
-    if(item->isAtomicValue() &&
-       ((const AnyAtomicType::Ptr)item)->isDateOrTimeTypeValue() &&
-       ((const DateOrTimeType::Ptr)item)->hasTimezone()) {
-      return true;
-    }
+  Item::Ptr item = _itemConstructor->createItem(dContext);
+  if(item->isAtomicValue() &&
+     ((const AnyAtomicType::Ptr)item)->isDateOrTimeTypeValue() &&
+     !((const DateOrTimeType::Ptr)item)->hasTimezone()) {
+    return true;
   }
   return false;
 }
 
 bool XQLiteral::isSingleNumericConstant(StaticContext *context) const
 {
-  if(isConstant()) {
-    AutoDelete<DynamicContext> dContext(context->createDynamicContext());
-    dContext->setMemoryManager(context->getMemoryManager());
+  AutoDelete<DynamicContext> dContext(context->createDynamicContext());
+  dContext->setMemoryManager(context->getMemoryManager());
 
-    Item::Ptr item = _itemConstructor->createItem(dContext);
-    if(item->isAtomicValue() &&
-       ((const AnyAtomicType::Ptr)item)->isNumericValue()) {
-      return true;
-    }
+  Item::Ptr item = _itemConstructor->createItem(dContext);
+  if(item->isAtomicValue() &&
+     ((const AnyAtomicType::Ptr)item)->isNumericValue()) {
+    return true;
   }
   return false;
 }
