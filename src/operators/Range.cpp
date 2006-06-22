@@ -49,9 +49,8 @@ ASTNode* Range::staticResolution(StaticContext *context)
     *i = (*i)->staticResolution(context);
     _src.add((*i)->getStaticResolutionContext());
 
-    if((*i)->isConstant() && !(*i)->isConstantAndHasTimezone(context)) {
+    if((*i)->isDateOrTimeAndHasNoTimezone(context))
       _src.implicitTimezoneUsed(true);
-    }
   }
 
   if(!_src.isUsed()) {

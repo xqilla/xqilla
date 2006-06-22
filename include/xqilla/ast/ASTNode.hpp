@@ -74,9 +74,9 @@ public:
   virtual bool isConstant() const = 0;
   /** Returns true if this ASTNode has no predicates, and is an instance of
       XQSequence or XQLiteral. If the literal value of this ASTNode
-      is a single DateOrTimeType, then hasTimezone() on it must return true,
+      is a single DateOrTimeType, then !hasTimezone() on it must return true,
       otherwise this method will return false. */
-  virtual bool isConstantAndHasTimezone(StaticContext *context) const = 0;
+  virtual bool isDateOrTimeAndHasNoTimezone(StaticContext* context) const = 0;
   virtual bool isSingleNumericConstant(StaticContext *context) const = 0;
 
   virtual whichType getType(void) const = 0;

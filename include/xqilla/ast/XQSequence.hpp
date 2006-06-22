@@ -32,7 +32,7 @@ public:
 
   ~XQSequence();
 
-  virtual bool isConstantAndHasTimezone(StaticContext* context) const;
+  virtual bool isDateOrTimeAndHasNoTimezone(StaticContext* context) const;
   virtual bool isSingleNumericConstant(StaticContext *context) const;
 
   virtual ASTNode* staticResolution(StaticContext *context);

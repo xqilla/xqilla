@@ -118,18 +118,19 @@ Result XQSequence::createResult(DynamicContext* context, int flags) const
 
 /** Returns true if this XQ has no predicates, and is an instance of
     XQSequence or XQLiteral. If the literal value of this XQ
-    is a single DateOrTimeType, then hasTimezone() on it must return true,
+    is a single DateOrTimeType, then !hasTimezone() on it must return true,
     otherwise this method will return false. */
-bool XQSequence::isConstantAndHasTimezone(StaticContext *context) const
+bool XQSequence::isDateOrTimeAndHasNoTimezone(StaticContext *context) const
 {
-  if(isConstant() && _itemConstructors.size() == 1) {
-    AutoDelete<DynamicContext> dContext(context->createDynamicContext());
-    dContext->setMemoryManager(context->getMemoryManager());
+  AutoDelete<DynamicContext> dContext(context->createDynamicContext());
+  dContext->setMemoryManager(context->getMemoryManager());
 
-    Item::Ptr item = _itemConstructors[0]->createItem(dContext);
+  ItemConstructor::Vector::const_iterator it = _itemConstructors.begin();
+  for(; it != _itemConstructors.end(); ++it) {
+    Item::Ptr item = (*it)->createItem(dContext);
     if(item->isAtomicValue() &&
        ((const AnyAtomicType::Ptr)item)->isDateOrTimeTypeValue() &&
-       ((const DateOrTimeType::Ptr)item)->hasTimezone()) {
+       !((const DateOrTimeType::Ptr)item)->hasTimezone()) {
       return true;
     }
   }
@@ -138,7 +139,7 @@ bool XQSequence::isConstantAndHasTimezone(StaticContext *context) const
 
 bool XQSequence::isSingleNumericConstant(StaticContext *context) const
 {
-  if(isConstant() && _itemConstructors.size() == 1) {
+  if(_itemConstructors.size() == 1) {
     AutoDelete<DynamicContext> dContext(context->createDynamicContext());
     dContext->setMemoryManager(context->getMemoryManager());
 
