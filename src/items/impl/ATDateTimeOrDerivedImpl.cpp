@@ -935,14 +935,14 @@ void ATDateTimeOrDerivedImpl::setDateTime(const XMLCh* const dateTime, const Dyn
   } 
   
   // check time format
-  if(MM > 12 || YY == 0 || DD > DateUtils::maximumDayInMonthFor(YY, MM) || hh > 24 || mm > 60 || ss >= 61 || zonehh > 24 || zonemm > 60 ) 
+  if(MM > 12 || YY == 0 || DD > DateUtils::maximumDayInMonthFor(YY, MM) || hh > 24 || mm > 59 || ss > 59 || zonehh > 24 || zonemm > 59 ) 
     {
     wrongformat = true;
     }
 
   if (wrongformat) 
   {
-    XQThrow(XPath2TypeCastException,X("XSDateTimeImpl::setDateTime"), X("Invalid representation of dateTime"));
+    XQThrow(XPath2TypeCastException,X("XSDateTimeImpl::setDateTime"), X("Invalid representation of dateTime [err:FORG0001]"));
   }
 
   timezone_ = new Timezone(zonepos, zonehh,zonemm);

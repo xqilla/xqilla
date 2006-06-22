@@ -526,13 +526,13 @@ void ATTimeOrDerivedImpl::setTime(const XMLCh* const time, const DynamicContext*
 		}
 	} 
 
-    if ( hh > 24 || mm > 60 || ss >= 61 || zonehh > 24 || zonemm > 60 )
+    if ( hh > 24 || mm > 59 || ss > 59 || zonehh > 24 || zonemm > 59 )
         wrongformat = true;
     if(hh==24 && mm==0 && ss==0)
         hh=0;
 
 	if ( wrongformat) {
-		XQThrow(XPath2TypeCastException,X("XSTimeImpl::setTime"), X("Invalid representation of time"));
+		XQThrow(XPath2TypeCastException,X("XSTimeImpl::setTime"), X("Invalid representation of time [err:FORG0001]"));
 	}
 	
   timezone_ = new Timezone(zonepos, zonehh,zonemm);
