@@ -709,7 +709,9 @@ _TreatExpr:
         $$ = $1;
     }
     | _CastableExpr _TREAT_AS_ _SequenceType {
-		$$ = new (MEMMGR) XQTreatAs($1, $3, MEMMGR);
+        XQTreatAs* treatAs = new (MEMMGR) XQTreatAs($1,$3,MEMMGR);
+        treatAs->setIsTreatAsStatement(true);
+		$$ = treatAs;
 	}
 ;
 
