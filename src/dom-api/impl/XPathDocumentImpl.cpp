@@ -29,6 +29,7 @@ XPathDocumentImpl::XPathDocumentImpl(MemoryManager* memMgr)
     fMyDocType(NULL),
     fMyDocElement(NULL)
 {
+    setVersion(XMLUni::fgVersion1_1);
 }//constructor
 
 
