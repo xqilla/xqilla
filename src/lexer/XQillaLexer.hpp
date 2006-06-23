@@ -111,6 +111,41 @@ public:
         return (XMLCh*)XPath2Utils::subString(src,0,len,m_memMgr);
     }
 
+    void checkCharRef(XMLCh* text, int len)
+    {
+        if(len<2 || text[0]!=XERCES_CPP_NAMESPACE_QUALIFIER chAmpersand || text[1]!=XERCES_CPP_NAMESPACE_QUALIFIER chPound)
+			Error("Invalid entity reference");
+        if(text[len-1]!=XERCES_CPP_NAMESPACE_QUALIFIER chSemiColon)
+			Error("Unterminated entity reference");
+	    int i=2;
+        unsigned int radix = 10;
+        if(text[i]==XERCES_CPP_NAMESPACE_QUALIFIER chLatin_x)
+        {
+            i++;
+            radix=16;
+        }
+        unsigned int value = 0;
+        for(int q=i;q<len-1;q++)
+        {
+            unsigned int nextVal;
+            XMLCh nextCh=text[q];
+            if ((nextCh >= XERCES_CPP_NAMESPACE_QUALIFIER chDigit_0) && (nextCh <= XERCES_CPP_NAMESPACE_QUALIFIER chDigit_9))
+                nextVal = (unsigned int)(nextCh - XERCES_CPP_NAMESPACE_QUALIFIER chDigit_0);
+            else if ((nextCh >= XERCES_CPP_NAMESPACE_QUALIFIER chLatin_A) && (nextCh <= XERCES_CPP_NAMESPACE_QUALIFIER chLatin_F))
+                nextVal= (unsigned int)(10 + (nextCh - XERCES_CPP_NAMESPACE_QUALIFIER chLatin_A));
+            else if ((nextCh >= XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a) && (nextCh <= XERCES_CPP_NAMESPACE_QUALIFIER chLatin_f))
+                nextVal = (unsigned int)(10 + (nextCh - XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a));
+            else
+    			Error("Unterminated entity reference");
+            if (nextVal >= radix)
+    			Error("Invalid digit inside entity reference");
+            else
+                value = (value * radix) + nextVal;
+        }
+        if(!XERCES_CPP_NAMESPACE_QUALIFIER XMLChar1_0::isXMLChar(value))
+            Error("Entity reference is not a valid XML character [err:XQST0090]");
+    }
+
     XMLCh* allocate_string_and_unescape(XMLCh toBeUnescaped, const XMLCh* src, int len)
     {
 	    int j=0;
