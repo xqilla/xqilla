@@ -579,7 +579,7 @@ Sequence NodeImpl::dmTypedValue(DynamicContext* context) const {
                 // The typed-value of such an element is undefined. Attempting to access this property with the dm:typed-value 
                 // accessor always raises an error.
                 if(cti->getContentType() == SchemaElementDecl::Children) 
-                    XQThrow(ItemException, X("NodeImpl::dmTypedValue"), X("Attempt to get typed value from a complex type with non-mixed complex content"));
+                    XQThrow(ItemException, X("NodeImpl::dmTypedValue"), X("Attempt to get typed value from a complex type with non-mixed complex content [err:FOTY0012]"));
             }
             else 
             {
