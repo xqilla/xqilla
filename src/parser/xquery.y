@@ -188,7 +188,7 @@ static inline VectorOfASTNodes packageArgs(ASTNode *arg1Impl, ASTNode *arg2Impl,
 
 static void merge_strings(DynamicContext* context, VectorOfASTNodes* vec, XMLCh* toBeAdded)
 {
-	if(vec->size()>0 && vec->back()->getType()==ASTNode::LITERAL)
+	if(vec->size()>0 && vec->back()!=0 && vec->back()->getType()==ASTNode::LITERAL)
 	{
 		XQLiteral *lit = (XQLiteral*)vec->back();
 		const XMLCh* string=lit->getItemConstructor()->createItem(context)->asString(context);
@@ -203,6 +203,8 @@ static void merge_strings(DynamicContext* context, VectorOfASTNodes* vec, XMLCh*
 	}
 	else
 	{
+        if(vec->size()>0 && vec->back()==0)
+			vec->pop_back();
     	AnyAtomicTypeConstructor *ic = new (context->getMemoryManager())
       		AnyAtomicTypeConstructor(
 						XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
@@ -427,8 +429,8 @@ namespace XQuery {
 %type <astNode>			CastableExpr Constructor ComputedConstructor DirElemConstructor DirCommentConstructor DirPIConstructor  
 %type <astNode>			CompElemConstructor CompTextConstructor CompPIConstructor CompCommentConstructor OrderedExpr UnorderedExpr
 %type <astNode>			CompAttrConstructor WhereClause CompDocConstructor DoubleLiteral InstanceofExpr DirectConstructor 
-%type <astNode>			ContentExpr ExtensionExpr 
-%type <astNode>      		ForwardStep ReverseStep AbbrevForwardStep AbbrevReverseStep
+%type <astNode>			ContentExpr ExtensionExpr CdataSection
+%type <astNode>      		ForwardStep ReverseStep AbbrevForwardStep AbbrevReverseStep 
 %type <itemList>			DirElementContent DirAttributeList QuotAttrValueContent AposAttrValueContent DirAttributeValue FunctionCallArgumentList
 %type <predicates>    PredicateList
 %type <axis>          		ForwardAxis ReverseAxis
@@ -447,7 +449,7 @@ namespace XQuery {
 %type <sortSpec>			OrderSpec
 %type <sort>				OrderByClause
 %type <stringList>			ResourceLocations
-%type <str>					PositionalVar SchemaPrefix CommonContent CdataSection URILiteral
+%type <str>					PositionalVar SchemaPrefix CommonContent URILiteral
 %type <str>                 PreserveMode InheritMode
 
 %start Module
@@ -2120,12 +2122,21 @@ DirElemConstructor:
 					elemContent->pop_back();
 				else if(!CONTEXT->getPreserveBoundarySpace() &&
 					    elemContent->back()->getType()==ASTNode::LITERAL)
-				{
-					Item::Ptr litVal = ((XQLiteral*)elemContent->back())->getItemConstructor()->createItem(CONTEXT);
-					if(((AnyAtomicType*)(const Item*)litVal)->getPrimitiveTypeIndex()==AnyAtomicType::STRING &&
-					   isAllSpaces(litVal->asString(CONTEXT)))
-						elemContent->pop_back();
-				}
+			    {
+                    ASTNode* last=elemContent->back();
+				    Item::Ptr litVal = ((XQLiteral*)last)->getItemConstructor()->createItem(CONTEXT);
+				    if(((AnyAtomicType*)(const Item*)litVal)->getPrimitiveTypeIndex()==AnyAtomicType::STRING &&
+				       isAllSpaces(litVal->asString(CONTEXT)))
+                    {
+					    elemContent->pop_back();
+                        // special case: if the previous node was a CDATA, put it back
+                        if(elemContent->size()>0 && elemContent->back()->getType()==ASTNode::DOM_CONSTRUCTOR &&
+                           ((XQDOMConstructor*)elemContent->back())->getNodeType()==Node::cdata_string)
+                        {
+                            elemContent->push_back(last);
+                        }
+                    }
+			    }
 			}
 			$$ = WRAP(@1, new (MEMMGR) XQDOMConstructor(Node::element_string,
 							  new (MEMMGR) XQLiteral(
@@ -2147,6 +2158,17 @@ DirAttributeList:
       | DirAttributeList _ATTRIBUTE_NAME_ _VALUE_INDICATOR_ DirAttributeValue
         {
             $$ = $1;
+            bool bInsertAtFront=false;
+            if(XPath2Utils::equals($2, XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgXMLNSString) ||
+               XERCES_CPP_NAMESPACE_QUALIFIER XMLString::startsWith($2, XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgXMLNSColonString))
+            {
+                // check that the value of an xmlns attribute is a stirng literal
+                if($4->size()>1 || ($4->size()==1 && $4->front()->getType()!=ASTNode::LITERAL))
+                    yyerror("Namespace URI of a namespace declaration must be a literal [err:XQST0022]");
+                bInsertAtFront=true;
+            }
+            if($4->size()>0 && $4->back()==0)
+                $4->pop_back();
             ASTNode* attrItem=WRAP(@2, new (MEMMGR) XQDOMConstructor(Node::attribute_string,
                                             new (MEMMGR) XQLiteral(
                                                 new (MEMMGR) AnyAtomicTypeConstructor(
@@ -2155,15 +2177,10 @@ DirAttributeList:
                                                     $2, AnyAtomicType::STRING),
                                                 MEMMGR), 
                                             0, $4,MEMMGR));
-            if(XPath2Utils::equals($2, XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgXMLNSString) ||
-               XERCES_CPP_NAMESPACE_QUALIFIER XMLString::startsWith($2, XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgXMLNSColonString))
-            {
+            if(bInsertAtFront)
                 $$->insert($$->begin(), attrItem);
-            }
             else
-            {
                 $$->push_back(attrItem);
-            }
         }
 	  ;
 
@@ -2190,7 +2207,10 @@ QuotAttrValueContent:
       | QuotAttrValueContent EnclosedExpr
 		{
 			$$ = $1;
+            if($$->size()>0 && $$->back()==0)
+			    $$->pop_back();
 			$$->push_back($2);
+			$$->push_back(0);
 		}
       | QuotAttrValueContent _ESCAPE_QUOT_
 		{
@@ -2219,7 +2239,10 @@ AposAttrValueContent:
       | AposAttrValueContent EnclosedExpr
 		{
 			$$ = $1;
+            if($$->size()>0 && $$->back()==0)
+			    $$->pop_back();
 			$$->push_back($2);
+			$$->push_back(0);
 		}
       | AposAttrValueContent _ESCAPE_APOS_
 		{
@@ -2260,14 +2283,14 @@ DirElementContent:
 				if($$->back()==0)
 					$$->pop_back();
 				else if($$->back()->getType()==ASTNode::LITERAL)
-				{
-					const XMLCh* lastString=NULL;
-					Item::Ptr litVal = ((XQLiteral*)$$->back())->getItemConstructor()->createItem(CONTEXT);
-					if(((AnyAtomicType*)(const Item*)litVal)->getPrimitiveTypeIndex()==AnyAtomicType::STRING)
-						lastString=litVal->asString(CONTEXT);
-					if(lastString!=NULL && XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(lastString)>0 && isAllSpaces(lastString) && !CONTEXT->getPreserveBoundarySpace())
-						$$->pop_back();
-				}
+			    {
+				    const XMLCh* lastString=NULL;
+				    Item::Ptr litVal = ((XQLiteral*)$$->back())->getItemConstructor()->createItem(CONTEXT);
+				    if(((AnyAtomicType*)(const Item*)litVal)->getPrimitiveTypeIndex()==AnyAtomicType::STRING)
+					    lastString=litVal->asString(CONTEXT);
+				    if(lastString!=NULL && XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(lastString)>0 && isAllSpaces(lastString) && !CONTEXT->getPreserveBoundarySpace())
+					    $$->pop_back();
+			    }
 			}
 			$$->push_back($2);
 		}
@@ -2306,14 +2329,18 @@ DirElementContent:
 			if($$->size()>0 && $$->back()==0)
 				$$->pop_back();
 
-    		AnyAtomicTypeConstructor *ic = new (MEMMGR)
-      			AnyAtomicTypeConstructor(
-							XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-							XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
-					$2, AnyAtomicType::STRING);
-
-			$$->push_back(new (MEMMGR) XQLiteral(ic, MEMMGR));
-			$$->push_back(0);
+			// if the last token was a string literal made of whitespace and
+			// we are adding a node constructor, and the context tells us to strip whitespace, remove it
+			if($$->size()>0 && $$->back()->getType()==ASTNode::LITERAL)
+			{
+				const XMLCh* lastString=NULL;
+				Item::Ptr litVal = ((XQLiteral*)$$->back())->getItemConstructor()->createItem(CONTEXT);
+				if(((AnyAtomicType*)(const Item*)litVal)->getPrimitiveTypeIndex()==AnyAtomicType::STRING)
+					lastString=litVal->asString(CONTEXT);
+				if(lastString!=NULL && XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(lastString)>0 && isAllSpaces(lastString) && !CONTEXT->getPreserveBoundarySpace())
+					$$->pop_back();
+			}
+			$$->push_back($2);
 		}
 	  | DirElementContent EnclosedExpr
 		{
@@ -2325,14 +2352,14 @@ DirElementContent:
 				if($$->back()==0)
 					$$->pop_back();
 				else if($$->back()->getType()==ASTNode::LITERAL)
-				{
-					const XMLCh* lastString=NULL;
-					Item::Ptr litVal = ((XQLiteral*)$$->back())->getItemConstructor()->createItem(CONTEXT);
-					if(((AnyAtomicType*)(const Item*)litVal)->getPrimitiveTypeIndex()==AnyAtomicType::STRING)
-						lastString=litVal->asString(CONTEXT);
-					if(lastString!=NULL && XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(lastString)>0 && isAllSpaces(lastString) && !CONTEXT->getPreserveBoundarySpace())
-						$$->pop_back();
-				}
+			  {
+				  const XMLCh* lastString=NULL;
+				  Item::Ptr litVal = ((XQLiteral*)$$->back())->getItemConstructor()->createItem(CONTEXT);
+				  if(((AnyAtomicType*)(const Item*)litVal)->getPrimitiveTypeIndex()==AnyAtomicType::STRING)
+					  lastString=litVal->asString(CONTEXT);
+				  if(lastString!=NULL && XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(lastString)>0 && isAllSpaces(lastString) && !CONTEXT->getPreserveBoundarySpace())
+					  $$->pop_back();
+			  }
 			}
 			$$->push_back($2);
 			$$->push_back(0);
@@ -2340,9 +2367,6 @@ DirElementContent:
 	  | DirElementContent CommonContent
 		{
 			$$ = $1;
-			if($$->size()>0 && $$->back()==0)
-				$$->pop_back();
-
     		AnyAtomicTypeConstructor *ic = new (MEMMGR)
       			AnyAtomicTypeConstructor(
 							XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
@@ -2350,7 +2374,6 @@ DirElementContent:
 					$2, AnyAtomicType::STRING);
 
 			$$->push_back(new (MEMMGR) XQLiteral(ic, MEMMGR));
-			$$->push_back(0);
 		}
 	;
 
@@ -2416,7 +2439,14 @@ DirPIConstructor:
 CdataSection:
 	  _CDATA_SECTION_
 		{
-			$$ = $1;
+			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
+			content->push_back(new (MEMMGR) XQLiteral(
+                    new (MEMMGR) AnyAtomicTypeConstructor(
+										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
+										$1, AnyAtomicType::STRING),
+										MEMMGR));
+			$$ = WRAP(@1, new (MEMMGR) XQDOMConstructor(Node::cdata_string, 0, 0, content, MEMMGR));
 		}
 	;
 

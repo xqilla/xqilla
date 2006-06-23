@@ -33,6 +33,7 @@
 #include <xqilla/utils/XMLChCompare.hpp>
 #include <xqilla/items/Node.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
+#include <xqilla/items/AnyAtomicTypeConstructor.hpp>
 #include <xqilla/ast/XQAtomize.hpp>
 
 #include <xercesc/dom/DOM.hpp>
@@ -372,8 +373,6 @@ Sequence XQDOMConstructor::collapseTreeInternal(DynamicContext *context, int fla
 
         XMLBuffer value;
         getStringValue(value, context);
-        XMLString::replaceWS(value.getRawBuffer(), context->getMemoryManager());
-
         result = context->getItemFactory()->createAttributeNode(nodeUri, nodePrefix, nodeName, value.getRawBuffer(), context);
       }
 
@@ -462,6 +461,13 @@ Sequence XQDOMConstructor::collapseTreeInternal(DynamicContext *context, int fla
         if(getStringValue(value, context))
           result = context->getItemFactory()->createTextNode(value.getRawBuffer(), context);
       }
+      // CDATA node
+      else if(m_nodeType == Node::cdata_string)
+      {
+        XMLBuffer value;
+        if(getStringValue(value, context))
+          result = context->getItemFactory()->createTextNode(value.getRawBuffer(), context);
+      }
       else
       {
         assert(false);
@@ -525,10 +531,35 @@ ASTNode* XQDOMConstructor::staticResolution(StaticContext *context)
         }
       }
     for (i=0;i<m_children->size();i++) {
+      // normalize whitespace and expand entities in string literals
+      if((m_nodeType == Node::attribute_string || m_nodeType == Node::element_string)
+          && (*m_children)[i]->getType()==LITERAL)
+      {
+        AutoDelete<DynamicContext> dContext(context->createDynamicContext());
+        dContext->setMemoryManager(mm);
+		XQLiteral *lit = (XQLiteral*)(*m_children)[i];
+        Item::Ptr item = lit->getItemConstructor()->createItem(dContext);
+		if(((AnyAtomicType*)(const Item*)item)->getPrimitiveTypeIndex()==AnyAtomicType::STRING)
+        {
+            const XMLCh* str=item->asString(dContext);
+            XMLBuffer buff(XMLString::stringLen(str)+1, mm);
+            buff.append(str);
+            if(m_nodeType == Node::attribute_string)
+                XMLString::replaceWS(buff.getRawBuffer(), mm);
+            unescapeEntities(buff);
+		    AnyAtomicTypeConstructor *newIC = new (mm)
+    		    AnyAtomicTypeConstructor(
+						    XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+						    XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
+                mm->getPooledString(buff.getRawBuffer()), AnyAtomicType::STRING);
+            lit->setItemConstructor(newIC);
+        }
+      }
       if(m_nodeType == Node::attribute_string ||
          m_nodeType == Node::processing_instruction_string ||
          m_nodeType == Node::comment_string ||
-         m_nodeType == Node::text_string) {
+         m_nodeType == Node::text_string ||
+         m_nodeType == Node::cdata_string) {
         (*m_children)[i] = new (mm) XQAtomize((*m_children)[i], mm);
       }
       (*m_children)[i] = (*m_children)[i]->staticResolution(context);
@@ -746,4 +777,74 @@ const VectorOfASTNodes *XQDOMConstructor::getChildren() const
 void XQDOMConstructor::setName(ASTNode *name)
 {
   m_name = name;
+}
+
+void XQDOMConstructor::unescapeEntities(XMLBuffer& buff) const
+{
+    const XMLCh* value=buff.getRawBuffer();
+    unsigned int len=buff.getLen();
+	int j=0;
+	XMLCh* dst=(XMLCh*)value;
+	for(int i=0;i<len;i++)
+	{
+		if(value[i]==chAmpersand) // entity reference
+		{
+            if(XMLString::compareNString(value+i+1,XMLUni::fgAmp,3)==0 && *(value+i+1+3)==chSemiColon) {
+				dst[j++]=chAmpersand; i+=4;
+            } else if(XMLString::compareNString(value+i+1,XMLUni::fgQuot,4)==0 && *(value+i+1+4)==chSemiColon) {
+				dst[j++]=chDoubleQuote; i+=5;
+			} else if(XMLString::compareNString(value+i+1,XMLUni::fgApos,4)==0 && *(value+i+1+4)==chSemiColon) {
+				dst[j++]=chSingleQuote; i+=5;
+			} else if(XMLString::compareNString(value+i+1,XMLUni::fgLT,2)==0 && *(value+i+1+2)==chSemiColon) {
+				dst[j++]=chOpenAngle; i+=3;
+            } else if(XMLString::compareNString(value+i+1,XMLUni::fgGT,2)==0 && *(value+i+1+2)==chSemiColon) {
+				dst[j++]=chCloseAngle; i+=3;
+			} else if(*(value+i+1)==chPound) {
+                unsigned int number = 0;
+                unsigned int radix = 10;
+				i+=2;
+                if(*(value+i)==chLatin_x)
+                {
+                    i++;
+                    radix=16;
+                }
+				int k=i;
+				while(k<len && value[k]!=chSemiColon) k++;
+				if(k==len)
+					XQThrow(ASTException,X("DOM Constructor"),X("Unterminated entity reference [err:XPST0003]."));
+                for(int q=i;q<k;q++)
+                {
+                    unsigned int nextVal;
+                    XMLCh nextCh=*(value+q);
+                    if ((nextCh >= chDigit_0) && (nextCh <= chDigit_9))
+                        nextVal = (unsigned int)(nextCh - chDigit_0);
+                    else if ((nextCh >= chLatin_A) && (nextCh <= chLatin_F))
+                        nextVal= (unsigned int)(10 + (nextCh - chLatin_A));
+                    else if ((nextCh >= chLatin_a) && (nextCh <= chLatin_f))
+                        nextVal = (unsigned int)(10 + (nextCh - chLatin_a));
+                    else
+    					XQThrow(ASTException,X("DOM Constructor"),X("Unterminated entity reference [err:XPST0003]."));
+                    if (nextVal >= radix)
+    					XQThrow(ASTException,X("DOM Constructor"),X("Invalid digit inside entity reference [err:XPST0003]."));
+                    else
+                        number = (number * radix) + nextVal;
+                }
+                if(!XMLChar1_0::isXMLChar(number))
+    				XQThrow(ASTException,X("DOM Constructor"),X("Entity reference is not a valid XML character [err:XPST0003]."));
+                if (number <= 0xFFFD)
+    				dst[j++]=number;
+                else if (number >= 0x10000 && number <= 0x10FFFF)
+                {
+                    number -= 0x10000;
+                    dst[j++]= XMLCh((number >> 10) + 0xD800);
+                    dst[j++]= XMLCh((number & 0x3FF) + 0xDC00);
+                }
+				i=k;
+			} else
+    			XQThrow(ASTException,X("DOM Constructor"),X("Invalid entity reference [err:XPST0003]."));
+		}
+        else
+            dst[j++]=value[i];
+	}
+	dst[j++]=0;
 }

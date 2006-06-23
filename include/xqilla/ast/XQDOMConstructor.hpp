@@ -43,6 +43,7 @@ public:
 protected:
   bool isTextNode(const Node::Ptr &node) const;
     bool getStringValue(XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &value, DynamicContext *context) const;
+  void unescapeEntities(XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer& buff) const;
 
 protected:
 	const XMLCh* m_nodeType;
