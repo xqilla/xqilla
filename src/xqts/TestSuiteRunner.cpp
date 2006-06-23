@@ -54,6 +54,9 @@ void TestSuiteRunner::testResults(const TestCase &testCase, const std::string &x
           expectedResult="<wrapper>"+expectedResult+"</wrapper>";
           outputResult="<wrapper>"+outputResult+"</wrapper>";
         }
+        // force XML 1.1 parsing
+        outputResult = "<?xml version='1.1'?>" + outputResult;
+        expectedResult = "<?xml version='1.1'?>" + expectedResult;
 
         try {
           XercesDOMParser parser;
