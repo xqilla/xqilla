@@ -14355,12 +14355,12 @@ BEGIN(END_TAG); RECOGNIZE(_END_TAG_OPEN_);
 case 177:
 YY_RULE_SETUP
 #line 567 "xquery.l"
-yylval.str=allocate_string_and_unescape(0, (XMLCh*)yytext, yyleng); RECOGNIZE(_PREDEFINED_ENTITY_REF_); 
+yylval.str=allocate_string((XMLCh*)yytext, yyleng); RECOGNIZE(_PREDEFINED_ENTITY_REF_); 
 	YY_BREAK
 case 178:
 YY_RULE_SETUP
 #line 568 "xquery.l"
-yylval.str=allocate_string_and_unescape(0, (XMLCh*)yytext, yyleng); RECOGNIZE(_CHAR_REF_);
+checkCharRef((XMLCh*)yytext, yyleng); yylval.str=allocate_string((XMLCh*)yytext, yyleng); RECOGNIZE(_CHAR_REF_);
 	YY_BREAK
 case 179:
 YY_RULE_SETUP
