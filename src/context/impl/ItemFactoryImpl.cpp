@@ -195,11 +195,48 @@ Node::Ptr ItemFactoryImpl::createElementNode(const XMLCh *uri, const XMLCh *pref
 
     if(!nsPreserveMode && newChild->getNodeType()==DOMNode::ELEMENT_NODE)
     {
+      // it's an error if the data type is namespace sensitive, e.g. QName or NOTATION
+      try
+      {
+        const DOMTypeInfo *psviType=((DOMElement*)newChild)->getTypeInfo();
+        if(psviType)
+        {
+            const XMLCh* typeURI=psviType->getNamespace();
+            const XMLCh* typeName=psviType->getName();
+            if(XPath2Utils::equals(typeURI, SchemaSymbols::fgURI_SCHEMAFORSCHEMA) &&
+                (
+                 XPath2Utils::equals(typeName, SchemaSymbols::fgDT_QNAME) ||
+                 XPath2Utils::equals(typeName, XMLUni::fgNotationString)
+                )
+              )
+                XQThrow(ASTException,X("ItemFactoryImpl::createElementNode"),X("An element has a content that is namespace sensitive, and cannot be copied when copy-namespace is set to no-preserve [err:XQTY0086]"));
+        }
+      } catch(DOMException&) {
+      }
+      
       DOMNamedNodeMap* attrMap=newChild->getAttributes();
       for(XMLSize_t i=0;i<attrMap->getLength();)
       {
         bool bPreserved=true;
         DOMNode* attr=attrMap->item(i);
+        try
+        {
+          const DOMTypeInfo *psviType=((DOMAttr*)attr)->getTypeInfo();
+          if(psviType)
+          {
+            const XMLCh* typeURI=psviType->getNamespace();
+            const XMLCh* typeName=psviType->getName();
+            if(XPath2Utils::equals(typeURI, SchemaSymbols::fgURI_SCHEMAFORSCHEMA) &&
+                (
+                 XPath2Utils::equals(typeName, SchemaSymbols::fgDT_QNAME) ||
+                 XPath2Utils::equals(typeName, XMLUni::fgNotationString)
+                )
+              )
+                XQThrow(ASTException,X("ItemFactoryImpl::createElementNode"),X("An element has a content that is namespace sensitive, and cannot be copied when copy-namespace is set to no-preserve [err:XQTY0086]"));
+          }
+        } catch(DOMException&) {
+        }
+
         if(XPath2Utils::equals(attr->getPrefix(), XMLUni::fgXMLNSString) || XPath2Utils::equals(attr->getNodeName(), XMLUni::fgXMLNSString))
         {
           const XMLCh* prefix=attr->getPrefix()==NULL?XMLUni::fgZeroLenString:attr->getLocalName();
@@ -222,6 +259,7 @@ Node::Ptr ItemFactoryImpl::createElementNode(const XMLCh *uri, const XMLCh *pref
           i++;
       }
     }
+
     if(!nsInheritMode && newChild->getNodeType()==DOMNode::ELEMENT_NODE)
     {
       DOMNamedNodeMap* attrMap=newChild->getAttributes();
