@@ -785,7 +785,7 @@ void XQDOMConstructor::unescapeEntities(XMLBuffer& buff) const
     unsigned int len=buff.getLen();
 	int j=0;
 	XMLCh* dst=(XMLCh*)value;
-	for(int i=0;i<len;i++)
+	for(unsigned int i=0;i<len;i++)
 	{
 		if(value[i]==chAmpersand) // entity reference
 		{
@@ -808,11 +808,11 @@ void XQDOMConstructor::unescapeEntities(XMLBuffer& buff) const
                     i++;
                     radix=16;
                 }
-				int k=i;
+				unsigned int k=i;
 				while(k<len && value[k]!=chSemiColon) k++;
 				if(k==len)
 					XQThrow(ASTException,X("DOM Constructor"),X("Unterminated entity reference [err:XPST0003]."));
-                for(int q=i;q<k;q++)
+                for(unsigned int q=i;q<k;q++)
                 {
                     unsigned int nextVal;
                     XMLCh nextCh=*(value+q);
