@@ -63,6 +63,45 @@ DOMDocument *ItemFactoryImpl::getOutputDocument(const DynamicContext *context) c
 	return (DOMDocument*)outputDocument_->getDOMNode();
 }
 
+Node::Ptr ItemFactoryImpl::cloneNode(const Node::Ptr node, const DynamicContext *context) const
+{
+  DOMNode* xNode=(DOMNode*)node->getInterface(Node::gXerces);
+  assert(xNode!=NULL);
+  if(xNode->getNodeType()==DOMNode::DOCUMENT_NODE)
+  {
+    DOMDocument *document = context->createNewDocument();
+
+    DOMNode* child=xNode->getFirstChild();
+    while(child)
+    {
+      DOMNode *newChild = document->importNode(child,true);
+      if(child->getNodeType()==DOMNode::ELEMENT_NODE)
+        XPath2Utils::copyElementType(document, (DOMElement*)newChild, (const DOMElement*)child);
+      if(context->getDebugCallback()) context->getDebugCallback()->ReportClonedNode(const_cast<DynamicContext*>(context), child, newChild);
+      document->appendChild(newChild);
+      child=child->getNextSibling();
+    }
+    return new NodeImpl(document, context);
+  }
+  else if(xNode->getNodeType()==DOMXPathNamespace::XPATH_NAMESPACE_NODE)
+  {
+    // TODO
+    XQThrow(ASTException,X("ItemFactoryImpl::cloneNode"),X("Cannot clone a namespace node"));
+    return NULL;
+  }
+  else
+  {
+    DOMDocument* mainDoc=getOutputDocument(context);
+    DOMNode* newNode=mainDoc->importNode(xNode, true);
+    if(xNode->getNodeType()==DOMNode::ATTRIBUTE_NODE)
+      XPath2Utils::copyAttributeType(mainDoc, (DOMAttr*)newNode, (const DOMAttr*)xNode);
+    else if(xNode->getNodeType()==DOMNode::ELEMENT_NODE)
+      XPath2Utils::copyElementType(mainDoc, (DOMElement*)newNode, (const DOMElement*)xNode);
+    if(context->getDebugCallback()) context->getDebugCallback()->ReportClonedNode(const_cast<DynamicContext*>(context), xNode, newNode);
+    return new NodeImpl(newNode, context);
+  }
+}
+
 Node::Ptr ItemFactoryImpl::createTextNode(const XMLCh *value, const DynamicContext *context) const
 {
   return new NodeImpl(getOutputDocument(context)->createTextNode(value), context);

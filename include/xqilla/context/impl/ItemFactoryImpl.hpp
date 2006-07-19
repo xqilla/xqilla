@@ -30,6 +30,7 @@ public:
 
   /* @name Node factory methods */
 
+  virtual Node::Ptr cloneNode(const Node::Ptr node, const DynamicContext *context) const;
   virtual Node::Ptr createTextNode(const XMLCh *value, const DynamicContext *context) const;
   virtual Node::Ptr createCommentNode(const XMLCh *value, const DynamicContext *context) const;
   virtual Node::Ptr createPINode(const XMLCh *name, const XMLCh *value, const DynamicContext *context) const;
