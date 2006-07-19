@@ -68,6 +68,7 @@ public:
     bool clone;
   };
 
+  virtual Node::Ptr cloneNode(const Node::Ptr node, const DynamicContext *context) const = 0;
   virtual Node::Ptr createTextNode(const XMLCh *value, const DynamicContext *context) const = 0;
   virtual Node::Ptr createCommentNode(const XMLCh *value, const DynamicContext *context) const = 0;
   virtual Node::Ptr createPINode(const XMLCh *name, const XMLCh *value, const DynamicContext *context) const = 0;

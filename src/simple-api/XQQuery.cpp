@@ -429,8 +429,14 @@ Item::Ptr XQQuery::QueryResult::next(DynamicContext *context)
         std::pair<bool, Sequence> value = moduleCtx->getVariableStore()->
           getGlobalVar((*varIt)->getVariableURI(), (*varIt)->getVariableLocalName(), moduleCtx);
         assert(value.first);
+        Sequence newSeq(value.second.getLength());
+        for(Sequence::iterator it=value.second.begin(); it!=value.second.end(); it++)
+          if((*it)->isNode())
+            newSeq.addItem(context->getItemFactory()->cloneNode((const Node::Ptr)(*it), context));
+          else
+            newSeq.addItem(*it);
         context->getVariableStore()->
-          setGlobalVar((*varIt)->getVariableURI(), (*varIt)->getVariableLocalName(), value.second, context);
+          setGlobalVar((*varIt)->getVariableURI(), (*varIt)->getVariableLocalName(), newSeq, context);
       }
     }
 
@@ -500,8 +506,14 @@ void XQQuery::DebugResult::getResult(Sequence &toFill, DynamicContext *context) 
         std::pair<bool, Sequence> value = moduleCtx->getVariableStore()->
           getGlobalVar((*varIt)->getVariableURI(), (*varIt)->getVariableLocalName(), moduleCtx);
         assert(value.first);
+        Sequence newSeq(value.second.getLength());
+        for(Sequence::iterator it=value.second.begin(); it!=value.second.end(); it++)
+          if((*it)->isNode())
+            newSeq.addItem(context->getItemFactory()->cloneNode((const Node::Ptr)(*it), context));
+          else
+            newSeq.addItem(*it);
         context->getVariableStore()->
-          setGlobalVar((*varIt)->getVariableURI(), (*varIt)->getVariableLocalName(), value.second, context);
+          setGlobalVar((*varIt)->getVariableURI(), (*varIt)->getVariableLocalName(), newSeq, context);
       }
     }
 
