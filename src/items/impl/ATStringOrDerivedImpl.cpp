@@ -27,9 +27,10 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/context/ItemFactory.hpp>
 
-#include <xercesc/util/XMLString.hpp>
 #include <xercesc/framework/XMLBuffer.hpp>
+#include <xercesc/util/XMLString.hpp>
 #include <xercesc/util/XMLUni.hpp>
+#include <xercesc/util/regx/RegxUtil.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 
 
@@ -100,6 +101,13 @@ Result ATStringOrDerivedImpl::asCodepoints(const DynamicContext* context) const 
   unsigned int length = this->getLength();
   Sequence result(length,context->getMemoryManager());
   for(unsigned int i=0; i<length; i++) {
+    if(XERCES_CPP_NAMESPACE_QUALIFIER RegxUtil::isHighSurrogate(_value[i]) && (i+1)<length && 
+       XERCES_CPP_NAMESPACE_QUALIFIER RegxUtil::isLowSurrogate(_value[i+1]))
+    {
+      result.addItem(context->getItemFactory()->createInteger((long int)XERCES_CPP_NAMESPACE_QUALIFIER RegxUtil::composeFromSurrogate(_value[i], _value[i+1]), context));
+      i++;
+    }
+    else
      result.addItem(context->getItemFactory()->createInteger((long int)_value[i], context));
   } 
   return result;
@@ -108,30 +116,41 @@ Result ATStringOrDerivedImpl::asCodepoints(const DynamicContext* context) const 
 /* returns the substring starting at startingLoc of given length */
 ATStringOrDerived::Ptr ATStringOrDerivedImpl::substring(const Numeric::Ptr &startingLoc, const Numeric::Ptr &length, const DynamicContext* context) const {
   const ATDecimalOrDerived::Ptr one = context->getItemFactory()->createInteger(1, context);
-  const ATDecimalOrDerived::Ptr strLength = context->getItemFactory()->createInteger((long)this->getLength(), context); 
+  long nLength=this->getLength();
+  const ATDecimalOrDerived::Ptr strLength = context->getItemFactory()->createInteger(nLength, context); 
  
-	// More specifically, returns the characters in $sourceString whose position $p obeys:
-	//    fn:round($startingLoc) <= $p < fn:round($startingLoc) + fn:round($length)
-	const Numeric::Ptr startIndex = startingLoc->round(context);
-	const Numeric::Ptr endIndex = startIndex->add(length->round(context), context);
+  // More specifically, returns the characters in $sourceString whose position $p obeys:
+  //    fn:round($startingLoc) <= $p < fn:round($startingLoc) + fn:round($length)
+  const Numeric::Ptr startIndex = startingLoc->round(context);
+  const Numeric::Ptr endIndex = startIndex->add(length->round(context), context);
 
   if(startIndex->greaterThan(strLength, context) || startIndex->greaterThan(endIndex, context)) {
     return context->getItemFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context);
   }
 
-	XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buffer(1023, context->getMemoryManager());
-  Numeric::Ptr index = one;//context->getItemFactory()->createInteger(0, context);
+  XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buffer(1023, context->getMemoryManager());
+  Numeric::Ptr index = one;
 
   // i is kept at one less than index, since XMLCh* start at index 0
   int i = 0;
   // for(index = one; index <= strLength; index++)
-	for(; !index->greaterThan(strLength, context); index = index->add(one, context), i++) {
+  for(; !index->greaterThan(strLength, context); index = index->add(one, context), i++) {
     // if (index >= startIndex and index < endIndex), add the char at i
-		if(!index->lessThan(startIndex, context) && index->lessThan(endIndex, context))
+    if(!index->lessThan(startIndex, context) && index->lessThan(endIndex, context))
+    {
       buffer.append(_value[i]);
+      // if it's a non-BMP char, add the following too
+      if(XERCES_CPP_NAMESPACE_QUALIFIER RegxUtil::isHighSurrogate(_value[i]) && (i+1)<nLength && 
+         XERCES_CPP_NAMESPACE_QUALIFIER RegxUtil::isLowSurrogate(_value[i+1]))
+        buffer.append(_value[++i]);
+    }
+    // otherwise, skip the next one too
+    else if(XERCES_CPP_NAMESPACE_QUALIFIER RegxUtil::isHighSurrogate(_value[i]) && (i+1)<nLength && 
+            XERCES_CPP_NAMESPACE_QUALIFIER RegxUtil::isLowSurrogate(_value[i+1]))
+      i++;
   }
 
-	return context->getItemFactory()->createString(buffer.getRawBuffer(), context);
+  return context->getItemFactory()->createString(buffer.getRawBuffer(), context);
 }
 
 /* returns the substring that occurs after the first occurence of pattern */
