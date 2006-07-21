@@ -16,8 +16,10 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/ast/XQCastAs.hpp>
 #include <xqilla/schema/SequenceType.hpp>
+#include <xqilla/exceptions/StaticErrorException.hpp>
 
 #include <xercesc/util/XMLUni.hpp>
+#include <xercesc/validators/schema/SchemaSymbols.hpp>
 
 /**
  * pref:TYPE($arg as xdt:anyAtomicType) as pref:TYPE
@@ -67,6 +69,10 @@ FunctionConstructor::FunctionConstructor(const XMLCh* nsURI, const XMLCh* typeNa
 
 ASTNode* FunctionConstructor::staticResolution(StaticContext *context)
 {
+  if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::equals(_fName, XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgNotationString) &&
+     XERCES_CPP_NAMESPACE_QUALIFIER XMLString::equals(_fURI, XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA))
+    XQThrow(StaticErrorException,X("FunctionConstructor::staticResolution"), X("Only subtypes of xs:NOTATION items can be created [err:XPST0017]"));
+
   XPath2MemoryManager *mm = context->getMemoryManager();  
 
   return (new (mm) XQCastAs(_args[0], new (mm) SequenceType(_fURI, _fName, SequenceType::QUESTION_MARK), mm))->
