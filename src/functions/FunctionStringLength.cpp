@@ -19,8 +19,10 @@
 #include <xqilla/items/ATStringOrDerived.hpp>
 #include <xqilla/items/ATDecimalOrDerived.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xercesc/util/XMLString.hpp>
 #include <xqilla/ast/StaticResolutionContext.hpp>
+
+#include <xercesc/util/XMLString.hpp>
+#include <xercesc/util/regx/RegxUtil.hpp>
 
 const XMLCh FunctionStringLength::name[] = {
   XERCES_CPP_NAMESPACE_QUALIFIER chLatin_s, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_r, 
@@ -73,6 +75,15 @@ Sequence FunctionStringLength::collapseTreeInternal(DynamicContext* context, int
 
         str = strParm.first()->asString(context);
     }
-    const ATDecimalOrDerived::Ptr length = context->getItemFactory()->createInteger((long)XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(str), context);
-    return Sequence(length, memMgr);
+    const XMLCh* cursor=str;
+    long length=0;
+    while(*cursor)
+    {
+        length++;
+        if(XERCES_CPP_NAMESPACE_QUALIFIER RegxUtil::isHighSurrogate(*cursor) && 
+           XERCES_CPP_NAMESPACE_QUALIFIER RegxUtil::isLowSurrogate(*(cursor+1)))
+            cursor++;
+        cursor++;
+    }
+    return Sequence(context->getItemFactory()->createInteger(length, context), memMgr);
 }

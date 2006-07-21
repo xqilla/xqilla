@@ -57,33 +57,71 @@ Sequence FunctionTranslate::collapseTreeInternal(DynamicContext* context, int fl
 	const XMLCh* search = str2.first()->asString(context);
 	const XMLCh* replace = str3.first()->asString(context);
 
-	const XMLCh* newString = XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString;
-
   if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(search)==0)
     return Sequence(context->getItemFactory()->createString(container, context), memMgr);
 
-  std::map<XMLCh,XMLCh> Change;
-
-	for ( unsigned int i = 0; i < XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(search) ; i++)
+  std::map<XMLInt32,XMLInt32> Change;
+  const XMLCh* cursorS=search;
+  const XMLCh* cursorR=replace;
+  while(*cursorS)
   {
-    if(Change.find(search[i])!=Change.end())
-      continue;
-		if(i<XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(replace))
-			Change[search[i]] = replace[i];
-		else
-			Change[search[i]] = 0;
+    XMLInt32 chS=*cursorS;
+    if(XERCES_CPP_NAMESPACE_QUALIFIER RegxUtil::isHighSurrogate(*cursorS) && 
+       XERCES_CPP_NAMESPACE_QUALIFIER RegxUtil::isLowSurrogate(*(cursorS+1)))
+    {
+      chS=XERCES_CPP_NAMESPACE_QUALIFIER RegxUtil::composeFromSurrogate(*cursorS, *(cursorS+1));
+      cursorS++;
+    }
+    XMLInt32 chR=0;
+    if(*cursorR)
+    {
+      if(XERCES_CPP_NAMESPACE_QUALIFIER RegxUtil::isHighSurrogate(*cursorR) && 
+         XERCES_CPP_NAMESPACE_QUALIFIER RegxUtil::isLowSurrogate(*(cursorR+1)))
+      {
+        chR=XERCES_CPP_NAMESPACE_QUALIFIER RegxUtil::composeFromSurrogate(*cursorR, *(cursorR+1));
+        cursorR++;
+      }
+      else
+        chR=*cursorR;
+    }
+    if(Change.find(chS)==Change.end())
+      Change[chS] = chR;
+    cursorS++;
+    if(*cursorR)
+      cursorR++;
   }
   
-	for (unsigned int j = 0; j < XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(container) ; j++) 
-	{
-		if (Change.find(container[j]) == Change.end()) {
-		  newString = XPath2Utils::concatStrings(newString, container[j], memMgr);
-		}
-		else
-			if (Change[container[j]] != 0 ) {
-			  newString = XPath2Utils::concatStrings(newString, Change[container[j]], memMgr);
-			}
+  XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer result(1023, context->getMemoryManager());
+  const XMLCh* cursor=container;
+  while(*cursor)
+  {
+    XMLInt32 ch=*cursor;
+    if(XERCES_CPP_NAMESPACE_QUALIFIER RegxUtil::isHighSurrogate(*cursor) && 
+       XERCES_CPP_NAMESPACE_QUALIFIER RegxUtil::isLowSurrogate(*(cursor+1)))
+    {
+      ch=XERCES_CPP_NAMESPACE_QUALIFIER RegxUtil::composeFromSurrogate(*cursor, *(cursor+1));
+      cursor++;
     }
+    std::map<XMLInt32,XMLInt32>::iterator it=Change.find(ch);
+    XMLInt32 newCh=0;
+    if (it == Change.end())
+      newCh=ch;
+    else
+      newCh=it->second;
+    if(newCh!=0)
+    {
+      if ( newCh >= 0x10000) 
+      {
+        XMLCh one, two;
+        XERCES_CPP_NAMESPACE_QUALIFIER RegxUtil::decomposeToSurrogates(newCh, one, two);
+        result.append(one);
+        result.append(two);
+    }
+    else
+        result.append(newCh);
+    }
+    cursor++;
+  }
 
-	return Sequence(context->getItemFactory()->createString(newString, context), memMgr);
+  return Sequence(context->getItemFactory()->createString(result.getRawBuffer(), context), memMgr);
 }
