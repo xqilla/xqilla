@@ -126,22 +126,23 @@ protected:
         yyFlexLexer::yy_pop_state();
     }
 
-    virtual bool next_tokens(int state, int tok1, int tok2=0, int tok3=0)
+    virtual bool next_tokens(int state, int tok1, int tok2=-1, int tok3=-1)
     {
         CXQueryScanner lookAhead(m_memMgr, m_szQuery+m_index);
         lookAhead.setGenerateEOF(m_bGenerateEOF);
+        lookAhead.setGenerateErrorException(false);
         lookAhead.yy_start=1 + 2 * state;
 
         int nextToken1 = lookAhead.yylex();
         if(tok1!=nextToken1)
             return false;
-        int nextToken2 = 0;
-        if(tok2!=0)
+        int nextToken2 = -1;
+        if(tok2!=-1)
             nextToken2 = lookAhead.yylex();
         if(tok2!=nextToken2)
             return false;
-        int nextToken3 = 0;
-        if(tok3!=0)
+        int nextToken3 = -1;
+        if(tok3!=-1)
             nextToken3 = lookAhead.yylex();
 
         return (tok3==nextToken3);
@@ -151,6 +152,7 @@ protected:
     {
         CXQueryScanner lookAhead(m_memMgr, m_szQuery+m_index);
         lookAhead.setGenerateEOF(m_bGenerateEOF);
+        lookAhead.setGenerateErrorException(false);
         lookAhead.yy_start=1 + 2 * state;
 
         return lookAhead.yylex();
