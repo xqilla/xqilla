@@ -407,9 +407,33 @@ Node::Ptr DocumentCacheParser::validate(const Node::Ptr &node,
 {
     XERCES_CPP_NAMESPACE_QUALIFIER AbstractDOMParser::ValSchemes oldValScheme=getValidationScheme();
     try {
+        if(node->dmNodeKind() == Node::document_string)
+        {
+            Result children = node->dmChildren(context);
+            Node::Ptr child;
+            bool bSeenElement=false;
+            while((child=children->next(context)).notNull())
+            {
+              if(child->dmNodeKind()==Node::element_string)
+                if(bSeenElement)
+                  XQThrow(DynamicErrorException,X("DocumentCacheParser::validate"), X("A document being validate must have exactly one child element [err:XQDY0061]"));
+                else
+                  bSeenElement=true;
+              else if(child->dmNodeKind()!=Node::processing_instruction_string && 
+                      child->dmNodeKind()!=Node::comment_string)
+                XQThrow(DynamicErrorException,X("DocumentCacheParser::validate"), X("A document being validate can only have element, comments and processing instructions as children [err:XQDY0061]"));
+            }
+            if(!bSeenElement)
+              XQThrow(DynamicErrorException,X("DocumentCacheParser::validate"), X("A document being validate must have exactly one child element [err:XQDY0061]"));
+        }
+
         // if validation is strict, there must be a schema for the root node
         if(valMode==DocumentCache::VALIDATION_STRICT) {
-            ATQNameOrDerived::Ptr name = node->dmNodeName(context);
+            ATQNameOrDerived::Ptr name;
+            if(node->dmNodeKind() == Node::document_string)
+                name = ((const Node::Ptr)(node->dmChildren(context)->next(context)))->dmNodeName(context);
+            else
+                name = node->dmNodeName(context);
             const XMLCh *node_uri = ((const ATQNameOrDerived*)name.get())->getURI();
             const XMLCh *node_name = ((const ATQNameOrDerived*)name.get())->getName();
 
