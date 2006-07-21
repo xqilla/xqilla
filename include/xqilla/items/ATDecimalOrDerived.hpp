@@ -104,7 +104,7 @@ public:
   virtual bool isInfinite() const { return false; }
 
   /** Treat this decimal (must be integer) as a codepoint **/
-  virtual XMLCh treatAsCodepoint(const DynamicContext* context) const = 0;
+  virtual XMLInt32 treatAsCodepoint(const DynamicContext* context) const = 0;
 
   virtual AnyAtomicType::AtomicObjectType getPrimitiveTypeIndex() const = 0;
 

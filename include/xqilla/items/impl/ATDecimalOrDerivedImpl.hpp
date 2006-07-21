@@ -115,7 +115,7 @@ public:
   virtual bool isPositive() const;
 
   /** Treat this decimal (must be integer) as a codepoint **/
-  virtual XMLCh treatAsCodepoint(const DynamicContext* context) const;
+  virtual XMLInt32 treatAsCodepoint(const DynamicContext* context) const;
 
   /* Get the primitive index associated with this type */
   virtual AnyAtomicType::AtomicObjectType getPrimitiveTypeIndex() const;

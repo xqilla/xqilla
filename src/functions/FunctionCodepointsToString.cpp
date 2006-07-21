@@ -51,7 +51,16 @@ Sequence FunctionCodepointsToString::collapseTreeInternal(DynamicContext* contex
   Sequence arg = getParamNumber(1,context)->toSequence(context);
   Sequence::iterator end = arg.end();
   for(Sequence::iterator i = arg.begin(); i != end; ++i) {
-    result.append(((const ATDecimalOrDerived*)(const Item*)*i)->treatAsCodepoint(context));
+    XMLInt32 ch=((const ATDecimalOrDerived::Ptr)*i)->treatAsCodepoint(context);
+	if ( ch >= 0x10000) 
+    {
+        XMLCh one, two;
+        XERCES_CPP_NAMESPACE_QUALIFIER RegxUtil::decomposeToSurrogates(ch, one, two);
+        result.append(one);
+        result.append(two);
+	}
+    else
+        result.append((XMLCh)ch);
   }
   unsigned int len=result.getLen();
   const XMLCh* str=result.getRawBuffer();
