@@ -21,8 +21,7 @@
 
 #include <iostream>
 
-#include <xercesc/parsers/SAXParser.hpp>
-#include <xercesc/sax/AttributeList.hpp>
+#include <xercesc/sax2/XMLReaderFactory.hpp>
 #include <xercesc/framework/URLInputSource.hpp>
 #include <xercesc/util/BinFileInputStream.hpp>
 
@@ -57,17 +56,18 @@ TestSuiteParser::TestSuiteParser(const string &pathToTestSuite, TestSuiteRunner 
 
 void TestSuiteParser::run()
 {
+  SAX2XMLReader* parser=XMLReaderFactory::createXMLReader();
   try {
-    SAXParser parser;
-    parser.setDocumentHandler(this);
-    parser.setErrorHandler(this);
+    parser->setContentHandler(this);
+    parser->setErrorHandler(this);
     XMLURL url(m_urlXQTSDirectory,"XQTSCatalog.xml");
     URLInputSource is(url);
-    parser.parse(is);
+    parser->parse(is);
   }
   catch(const XMLException& e) {
     cerr << "Error while reading test catalog: " << UTF8(e.getMessage()) << endl;
   }
+  delete parser;
 }
 
 void TestSuiteParser::error(const SAXParseException& exc)
@@ -82,25 +82,37 @@ void TestSuiteParser::fatalError(const SAXParseException& exc)
 
 void TestSuiteParser::startElement
 (
-    const   XMLCh* const    name
-    ,       AttributeList&  attributes
+    const XMLCh* const uri,
+    const XMLCh* const localname,
+    const XMLCh* const qname,
+    const Attributes&  attributes
 )
 {
-    string szName=UTF8(name);
-    if(szName=="test-suite") {
-      m_runner->getResultListener()->reportVersion(UTF8(attributes.getValue("version")));
-
-      m_urlXQTSQueriesDirectory.setURL(m_urlXQTSDirectory, attributes.getValue("XQueryQueryOffsetPath"));
-      m_urlXQTSResultsDirectory.setURL(m_urlXQTSDirectory, attributes.getValue("ResultOffsetPath"));
-    }
-    else if(szName=="test-group") {
-        m_runner->startTestGroup(UTF8(attributes.getValue("name")));
-    }
-    else if(szName=="test-case")
+    static XMLCh g_szName[]  = { chLatin_n, chLatin_a, chLatin_m, chLatin_e, chNull };
+    static XMLCh g_szPath[]  = { chLatin_F, chLatin_i, chLatin_l, chLatin_e, chLatin_P, chLatin_a, chLatin_t, chLatin_h, chNull };
+    static XMLCh g_szVar[]   = { chLatin_v, chLatin_a, chLatin_r, chLatin_i, chLatin_a, chLatin_b, chLatin_l, chLatin_e, chNull };
+    static XMLCh g_szDotXQ[] = { chPeriod, chLatin_x, chLatin_q, chNull };
+    static XMLCh g_szComp[]  = { chLatin_c, chLatin_o, chLatin_m, chLatin_p, chLatin_a, chLatin_r, chLatin_e, chNull };
+    static XMLCh g_szContext[] = { chLatin_c, chLatin_o, chLatin_n, chLatin_t, chLatin_e, chLatin_x, chLatin_t, chNull };
+    string szName=UTF8(localname);
+    string szURI=UTF8(uri);
+    if(szURI=="http://www.w3.org/2005/02/query-test-XQTSCatalog")
     {
-        m_testCase.name = UTF8(attributes.getValue("name"));
+      if(szName=="test-suite") {
+        m_runner->getResultListener()->reportVersion(UTF8(attributes.getValue(X("version"))));
+
+        m_urlXQTSQueriesDirectory.setURL(m_urlXQTSDirectory, attributes.getValue(X("XQueryQueryOffsetPath")));
+        m_urlXQTSResultsDirectory.setURL(m_urlXQTSDirectory, attributes.getValue(X("ResultOffsetPath")));
+      }
+      else if(szName=="test-group") {
+        m_runner->startTestGroup(UTF8(attributes.getValue(g_szName)));
+      }
+      else if(szName=="test-case")
+      {
+        m_testCase.name = UTF8(attributes.getValue(g_szName));
         m_testCase.queryURL = "";
         m_testCase.inputVars.clear();
+        m_testCase.inputVarsContext.clear();
         m_testCase.extraVars.clear();
         m_testCase.expectedErrors.clear();
         m_testCase.outputFiles.clear();
@@ -109,18 +121,18 @@ void TestSuiteParser::startElement
         m_szVariableBoundToInput=m_szCompareMethod="";
         m_urlQuery=XMLURL();
         XMLBuffer buff;
-        buff.set(attributes.getValue("FilePath"));
+        buff.set(attributes.getValue(g_szPath));
         buff.append('/');
         m_urlBasePath.setURL(m_urlXQTSQueriesDirectory, buff.getRawBuffer());
         m_urlBasePathReferenceFiles.setURL(m_urlXQTSResultsDirectory, buff.getRawBuffer());
-    }
-    else if(szName=="query")
-    {
+      }
+      else if(szName=="query")
+      {
         XMLBuffer buff;
-        const XMLCh* name=attributes.getValue("name");
+        const XMLCh* name=attributes.getValue(g_szName);
         buff.set(name);
-        if(!XMLString::endsWith(name,X(".xq")))
-            buff.append(X(".xq"));
+        if(!XMLString::endsWith(name,g_szDotXQ))
+            buff.append(g_szDotXQ);
         m_urlQuery.setURL(m_urlBasePath,buff.getRawBuffer());
         m_testCase.queryURL = UTF8(m_urlQuery.getURLText());
 
@@ -128,56 +140,65 @@ void TestSuiteParser::startElement
         unsigned int dwSize=stream->getSize();
         m_testCase.query.resize(dwSize);
         stream->readBytes((XMLByte*)m_testCase.query.c_str(), dwSize);
-    }
-    else if(szName=="input-query")
-    {
+      }
+      else if(szName=="input-query")
+      {
         XMLBuffer buff;
-        const XMLCh* name=attributes.getValue("name");
+        const XMLCh* name=attributes.getValue(g_szName);
         buff.set(name);
-        if(!XMLString::endsWith(name,X(".xq")))
-            buff.append(X(".xq"));
+        if(!XMLString::endsWith(name,g_szDotXQ))
+            buff.append(g_szDotXQ);
         XMLURL urlQuery(m_urlBasePath,buff.getRawBuffer());
         string varQuery = UTF8(urlQuery.getURLText());
 
-        m_testCase.extraVars[UTF8(attributes.getValue("variable"))]=varQuery;
-    }
-    else if(szName=="input-file")
-    {
+        m_testCase.extraVars[UTF8(attributes.getValue(g_szVar))]=varQuery;
+      }
+      else if(szName=="input-file")
+      {
         m_bReadingChars=true;
         m_szChars="";
-        m_szVariableBoundToInput=UTF8(attributes.getValue("variable"));
-    }
-    else if(szName=="output-file")
-    {
+        m_szVariableBoundToInput=UTF8(attributes.getValue(g_szVar));
+        m_szVariableContext=UTF8(attributes.getValue(g_szContext));
+      }
+      else if(szName=="output-file")
+      {
         m_bReadingChars=true;
         m_szChars="";
-        m_szCompareMethod=UTF8(attributes.getValue("compare"));
-    }
-    else if(szName=="expected-error")
-    {
+        m_szCompareMethod=UTF8(attributes.getValue(g_szComp));
+      }
+      else if(szName=="expected-error")
+      {
         m_bReadingChars=true;
         m_szChars="";
-    }
-    else if(szName=="source") {
-        XMLURL realFile(m_urlXQTSDirectory, attributes.getValue("FileName"));
-        m_runner->addSource(UTF8(attributes.getValue("ID")), UTF8(realFile.getURLText()), UTF8(attributes.getValue("schema")));
-    }
-    else if(szName=="schema") {
-        XMLURL realFile(m_urlXQTSDirectory, attributes.getValue("FileName"));
-        m_runner->addSchema(UTF8(attributes.getValue("ID")), UTF8(realFile.getURLText()), UTF8(attributes.getValue("uri")));
-    }
-    else if(szName=="module") {
-        if(attributes.getValue("FileName")!=NULL)
+      }
+      else if(szName=="source") {
+        XMLURL realFile(m_urlXQTSDirectory, attributes.getValue(X("FileName")));
+        m_runner->addSource(UTF8(attributes.getValue(X("ID"))), UTF8(realFile.getURLText()), UTF8(attributes.getValue(X("schema"))));
+      }
+      else if(szName=="schema") {
+        XMLURL realFile(m_urlXQTSDirectory, attributes.getValue(X("FileName")));
+        m_runner->addSchema(UTF8(attributes.getValue(X("ID"))), UTF8(realFile.getURLText()), UTF8(attributes.getValue(X("uri"))));
+      }
+      else if(szName=="module") {
+        if(attributes.getValue(X("FileName"))!=NULL)
         {
-            XMLURL realFile(m_urlXQTSDirectory, attributes.getValue("FileName"));
-            m_runner->addModule(UTF8(attributes.getValue("ID")), UTF8(realFile.getURLText()));
+            XMLURL realFile(m_urlXQTSDirectory, attributes.getValue(X("FileName")));
+            m_runner->addModule(UTF8(attributes.getValue(X("ID"))), UTF8(realFile.getURLText()));
         }
         else
         {
             m_bReadingChars=true;
             m_szChars="";
-            m_szNamespace=UTF8(attributes.getValue("namespace"));
+            m_szNamespace=UTF8(attributes.getValue(X("namespace")));
         }
+      }
+      else if(szName=="collection") {
+        m_szCollectionID = UTF8(attributes.getValue(X("ID")));
+      }
+      else if(!m_szCollectionID.empty() && szName=="input-document") {
+        m_bReadingChars=true;
+        m_szChars="";
+      }
     }
 }
 
@@ -193,36 +214,53 @@ void TestSuiteParser::characters
         m_szChars+=UTF8(buff.getRawBuffer());
 }
 
-void TestSuiteParser::endElement(const XMLCh* const name)
+void TestSuiteParser::endElement
+(
+	const XMLCh* const uri,
+	const XMLCh* const localname,
+	const XMLCh* const qname
+)
 {
-    string szName=UTF8(name);
-    if(szName == "test-group") {
-        m_runner->endTestGroup();
-    }
-    else if(szName == "test-case") {
-        m_runner->runTestCase(m_testCase);
-    }
-    else if(szName == "input-file")
+    string szName=UTF8(localname);
+    string szURI=UTF8(uri);
+    if(szURI=="http://www.w3.org/2005/02/query-test-XQTSCatalog")
     {
+      if(szName == "test-group") {
+        m_runner->endTestGroup();
+      }
+      else if(szName == "test-case") {
+        m_runner->runTestCase(m_testCase);
+      }
+      else if(szName == "input-file")
+      {
         m_bReadingChars=false;
         m_testCase.inputVars[m_szVariableBoundToInput]=m_szChars;
+        m_testCase.inputVarsContext[m_szVariableBoundToInput]=m_szVariableContext;
         m_szVariableBoundToInput="";
-    }
-    else if(szName == "output-file")
-    {
+      }
+      else if(szName == "output-file")
+      {
         m_bReadingChars=false;
         m_szChars=UTF8(XMLURL(m_urlBasePathReferenceFiles, m_szChars.c_str()).getURLText());
         m_testCase.outputFiles[m_szChars]=m_szCompareMethod;
         m_szCompareMethod="";
-    }
-    else if(szName == "expected-error")
-    {
+      }
+      else if(szName == "expected-error")
+      {
         m_bReadingChars=false;
         m_testCase.expectedErrors.push_back(m_szChars);
-    }
-    else if(szName == "module")
-    {
+      }
+      else if(szName == "module")
+      {
         m_bReadingChars=false;
         m_testCase.moduleFiles.push_back(std::pair<std::string, std::string>(m_szNamespace, m_szChars));
+      }
+      else if(szName=="collection") {
+        m_szCollectionID = "";
+      }
+      else if(!m_szCollectionID.empty() && szName=="input-document") {
+        m_bReadingChars=false;
+        m_runner->addCollection(m_szCollectionID, m_szChars);
+      }
     }
 }

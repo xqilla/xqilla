@@ -33,6 +33,7 @@ public:
   virtual void addSource(const std::string &id, const std::string &filename, const std::string &schema) = 0;
   virtual void addSchema(const std::string &id, const std::string &filename, const std::string &uri) = 0;
   virtual void addModule(const std::string &id, const std::string &filename) = 0;
+  virtual void addCollection(const std::string &id, const std::string &filename) = 0;
 
   virtual void startTestGroup(const std::string &name) = 0;
   virtual void endTestGroup() = 0;

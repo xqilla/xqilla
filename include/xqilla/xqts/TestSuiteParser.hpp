@@ -18,7 +18,7 @@
 #include <list>
 #include <map>
 
-#include <xercesc/sax/HandlerBase.hpp>
+#include <xercesc/sax2/DefaultHandler.hpp>
 #include <xercesc/util/XMLURL.hpp>
 
 #include <xqilla/framework/XQillaExport.hpp>
@@ -32,13 +32,14 @@ public:
   std::string queryURL;
   std::string query;
   std::map<std::string, std::string> inputVars;
+  std::map<std::string, std::string> inputVarsContext;
   std::map<std::string, std::string> extraVars;
   std::map<std::string, std::string> outputFiles;
   std::list<std::pair<std::string, std::string> > moduleFiles;
   std::list<std::string> expectedErrors;
 };
 
-class XQILLA_API TestSuiteParser : private XERCES_CPP_NAMESPACE_QUALIFIER HandlerBase
+class XQILLA_API TestSuiteParser : private XERCES_CPP_NAMESPACE_QUALIFIER DefaultHandler
 {
 public:
   TestSuiteParser(const std::string &pathToTestSuite, TestSuiteRunner *runner);
@@ -48,14 +49,21 @@ public:
 private:
   virtual void startElement
   (
-   const   XMLCh* const    name
-   ,       XERCES_CPP_NAMESPACE_QUALIFIER AttributeList&  attributes
+    const XMLCh* const uri,
+    const XMLCh* const localname,
+    const XMLCh* const qname,
+    const XERCES_CPP_NAMESPACE_QUALIFIER Attributes&	attrs
+  );
+  virtual void endElement
+  (
+	const XMLCh* const uri,
+	const XMLCh* const localname,
+	const XMLCh* const qname
    );
-  virtual void endElement(const XMLCh* const name);
   virtual void characters
   (
-   const   XMLCh* const    chars
-   , const unsigned int    length
+    const XMLCh* const chars,
+    const unsigned int length
    );
 
   virtual void error(const XERCES_CPP_NAMESPACE_QUALIFIER SAXParseException& exc);
@@ -70,7 +78,7 @@ private:
   bool m_bReadingChars;
   std::string m_szChars;
 
-  std::string m_szVariableBoundToInput, m_szCompareMethod, m_szNamespace;
+  std::string m_szVariableBoundToInput, m_szVariableContext, m_szCompareMethod, m_szNamespace, m_szCollectionID;
 
   TestCase m_testCase;
 };
