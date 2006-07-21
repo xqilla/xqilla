@@ -28,6 +28,7 @@
 
 #include <xqilla/xqilla-simple.hpp>
 #include <xqilla/context/VariableStore.hpp>
+#include <xqilla/context/ModuleResolver.hpp>
 #include <xqilla/functions/FunctionConstructor.hpp>
 #include <xqilla/utils/XQillaPlatformUtils.hpp>
 
@@ -36,7 +37,7 @@ XERCES_CPP_NAMESPACE_USE
 #endif
 using namespace std;
 
-class XQillaTestSuiteRunner : public TestSuiteRunner, private XMLEntityResolver
+class XQillaTestSuiteRunner : public TestSuiteRunner, private XMLEntityResolver, private ModuleResolver, private URIResolver
 {
 public:
   XQillaTestSuiteRunner(const string &singleTest, TestSuiteResultListener *results);
@@ -44,6 +45,7 @@ public:
   virtual void addSource(const string &id, const string &filename, const string &schema);
   virtual void addSchema(const string &id, const string &filename, const string &uri);
   virtual void addModule(const string &id, const string &filename);
+  virtual void addCollection(const string &id, const string &filename);
 
   virtual void startTestGroup(const string &name);
   virtual void endTestGroup();
@@ -52,6 +54,10 @@ public:
 
 private:
   virtual InputSource* resolveEntity(XMLResourceIdentifier* resourceIdentifier);
+  virtual bool resolveModuleLocation(VectorOfStrings* result, const XMLCh* nsUri, const StaticContext* context);
+  virtual bool resolveDocument(Sequence &result, const XMLCh* uri, DynamicContext* context);
+  virtual bool resolveCollection(Sequence &result, const XMLCh* uri, DynamicContext* context);
+  virtual bool resolveDefaultCollection(Sequence &result, DynamicContext* context) { return false; }
 
 private:
   string m_szSingleTest;
@@ -64,6 +70,8 @@ private:
   map<string, string> m_schemaFiles;
   // id -> filename
   map<string, string> m_moduleFiles;
+  // id -> list of inputFiles ID
+  map<string, list<string> > m_collections;
 };
 
 void usage(const char *progname)
@@ -256,6 +264,11 @@ void XQillaTestSuiteRunner::addModule(const string &id, const string &filename)
   m_moduleFiles[id] = filename;
 }
 
+void XQillaTestSuiteRunner::addCollection(const string &id, const string &filename)
+{
+  m_collections[id].push_back(filename);
+}
+
 void XQillaTestSuiteRunner::runTestCase(const TestCase &testCase)
 {
   if(m_szSingleTest != "" && testCase.name != m_szSingleTest &&
@@ -283,6 +296,8 @@ void XQillaTestSuiteRunner::runTestCase(const TestCase &testCase)
                                                          ATDurationOrDerived::fgDT_DAYTIMEDURATION,
                                                          X("PT0S"), context.get()));
     context->setXMLEntityResolver(this);
+    context->setModuleResolver(this);
+    context->registerURIResolver(this);
 
     Janitor<XQQuery> pParsedQuery(xqilla.parseFromURI(X(testCase.queryURL.c_str()), XQilla::XQUERY, context.get(), XQilla::NO_ADOPT_CONTEXT));
 
@@ -293,7 +308,12 @@ void XQillaTestSuiteRunner::runTestCase(const TestCase &testCase)
       context->getVariableStore()->setGlobalVar(X(v->first.c_str()),doc,context.get());
     }
     for(v=testCase.inputVars.begin();v!=testCase.inputVars.end();v++) {
-      Sequence doc=context->resolveDocument(X(m_inputFiles[v->second].c_str()));
+      std::string iCtx=testCase.inputVarsContext.find(v->first)->second;
+      Sequence doc;
+      if(iCtx=="collection" || iCtx=="default collection")
+        doc=context->resolveCollection(X(v->second.c_str()));
+      else
+        doc=context->resolveDocument(X(v->second.c_str()));
       context->getVariableStore()->setGlobalVar(X(v->first.c_str()),doc,context.get());
     }
     context->setContextPosition(1);
@@ -330,17 +350,61 @@ InputSource* XQillaTestSuiteRunner::resolveEntity(XMLResourceIdentifier* resourc
       }
     }
     else if(resourceIdentifier->getResourceIdentifierType()==XMLResourceIdentifier::UnKnown) {
-      map<string, string>::const_iterator i =
-        m_pCurTestCase->moduleFiles.find(UTF8(resourceIdentifier->getNameSpace()));
-      if(i != m_pCurTestCase->moduleFiles.end()) {
-        map<string, string>::const_iterator i2 = m_moduleFiles.find(i->second);
-        if(i2 != m_moduleFiles.end()) {
-          string file=i2->second+".xq";
-          return new URLInputSource(X(file.c_str()));
+      list<std::pair<string, string> >::const_iterator i;
+      for(i=m_pCurTestCase->moduleFiles.begin(); i!=m_pCurTestCase->moduleFiles.end(); i++)
+      {
+        if(i->first == UTF8(resourceIdentifier->getNameSpace()) && 
+           i->second == UTF8(resourceIdentifier->getSystemId()))
+        {
+          map<string, string>::const_iterator i2 = m_moduleFiles.find(i->second);
+          if(i2 != m_moduleFiles.end()) {
+            string file=i2->second+".xq";
+            return new URLInputSource(X(file.c_str()));
+          }
         }
       }
     }
     return NULL;
+}
+
+bool XQillaTestSuiteRunner::resolveModuleLocation(VectorOfStrings* result, const XMLCh* nsUri, const StaticContext* context)
+{
+  bool bFound=false;
+  list<std::pair<string, string> >::const_iterator i;
+  for(i=m_pCurTestCase->moduleFiles.begin(); i!=m_pCurTestCase->moduleFiles.end(); i++)
+  {
+    if(i->first == UTF8(nsUri))
+    {
+      result->push_back(context->getMemoryManager()->getPooledString(i->second.c_str()));
+      bFound=true;
+    }
+  }
+  return bFound;
+}
+
+bool XQillaTestSuiteRunner::resolveDocument(Sequence &result, const XMLCh* uri, DynamicContext* context)
+{
+  std::map<std::string, std::string>::iterator it=m_inputFiles.find(UTF8(uri));
+  if(it!=m_inputFiles.end())
+  {
+    result=context->resolveDocument(X(it->second.c_str()));
+    return true;
+  }
+  return false;
+}
+
+bool XQillaTestSuiteRunner::resolveCollection(Sequence &result, const XMLCh* uri, DynamicContext* context)
+{
+  std::map<std::string, std::list<std::string> >::iterator it=m_collections.find(UTF8(uri));
+  if(it!=m_collections.end())
+  {
+    for(std::list<std::string>::iterator s=it->second.begin();s!=it->second.end();s++)
+    {
+      result.joinSequence(context->resolveDocument(X(s->c_str())));
+    }
+    return true;
+  }
+  return false;
 }
 
 string serializeXMLResults(const Sequence &result, const DynamicContext *context) {

@@ -27,6 +27,7 @@
 
 #include <xercesc/parsers/SAXParser.hpp>
 #include <xercesc/sax/AttributeList.hpp>
+#include <xercesc/sax/HandlerBase.hpp>
 #include <xercesc/framework/LocalFileInputSource.hpp>
 
 #include <xqilla/utils/XStr.hpp>
@@ -185,7 +186,7 @@ bool KnownErrorChecker::printReport() const
   return nowFail_.empty();
 }
 
-class ErrorFileHandler : public XERCES_CPP_NAMESPACE_QUALIFIER HandlerBase
+class ErrorFileHandler : public HandlerBase
 {
 public:
   ErrorFileHandler(map<string, KnownErrorChecker::Error> &errors)
@@ -399,7 +400,11 @@ void ConsoleResultListener::testCaseToErrorStream(const TestCase &testCase)
   std::map<std::string, std::string>::const_iterator i;
   std::list<std::pair<std::string, std::string> >::const_iterator j;
   for(i = testCase.inputVars.begin(); i != testCase.inputVars.end(); ++i) {
-    errorStream_ << "* Input: " << i->first << " -> " << i->second << endl;
+    errorStream_ << "* Input: " << i->first << " -> " << i->second;
+    std::string iCtx=testCase.inputVarsContext.find(i->first)->second;
+    if(!iCtx.empty())
+      errorStream_ << " ( context = "<< iCtx << ")";
+    errorStream_  << endl;
   }
 
   for(i = testCase.extraVars.begin(); i != testCase.extraVars.end(); ++i) {
