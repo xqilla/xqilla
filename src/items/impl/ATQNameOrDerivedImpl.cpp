@@ -52,7 +52,7 @@ ATQNameOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* v
     }
     catch(NamespaceLookupException&)
     {
-      XQThrow(StaticErrorException, X("ATQNameOrDerivedImpl::ATQNameOrDerivedImpl"),X("No namespace for prefix [err:XPST0081]"));
+      XQThrow(StaticErrorException, X("ATQNameOrDerivedImpl::ATQNameOrDerivedImpl"),X("No namespace for prefix [err:FONS0004]"));
     }
   }
 
@@ -140,8 +140,8 @@ AnyAtomicType::Ptr ATQNameOrDerivedImpl::castAsInternal(AtomicObjectType targetI
 /* returns the XMLCh* (canonical) representation of this type */
 const XMLCh* ATQNameOrDerivedImpl::asString(const DynamicContext* context) const {
   XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buffer(1023, context->getMemoryManager());
-  if(_uri != 0 && *_uri != 0) {
-	  buffer.set(_uri);
+  if(_prefix != 0 && *_prefix != 0) {
+    buffer.set(_prefix);
 	  buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chColon);
   }
   buffer.append(_name);
