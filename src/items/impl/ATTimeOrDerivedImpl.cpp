@@ -33,6 +33,10 @@
 
 #include "../../utils/DateUtils.hpp"
 
+#if defined(XERCES_HAS_CPP_NAMESPACE)
+XERCES_CPP_NAMESPACE_USE
+#endif
+
 ATTimeOrDerivedImpl::
 ATTimeOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* value, const DynamicContext* context): 
     ATTimeOrDerived(),
@@ -69,7 +73,7 @@ const XMLCh* ATTimeOrDerivedImpl::getPrimitiveTypeName() const {
 }
 
 const XMLCh* ATTimeOrDerivedImpl::getPrimitiveName()  {
-  return XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_TIME;
+  return SchemaSymbols::fgDT_TIME;
 }
 
 /* Get the name of this type  (ie "integer" for xs:integer) */
@@ -88,7 +92,7 @@ AnyAtomicType::AtomicObjectType ATTimeOrDerivedImpl::getTypeIndex() {
 
 /* If possible, cast this type to the target type */
 AnyAtomicType::Ptr ATTimeOrDerivedImpl::castAsInternal(AtomicObjectType targetIndex, const XMLCh* targetURI, const XMLCh* targetType, const DynamicContext* context) const {
-  XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buf(1023, context->getMemoryManager());
+  XMLBuffer buf(1023, context->getMemoryManager());
 
   switch (targetIndex) {
     case DATE_TIME: {
@@ -98,11 +102,11 @@ AnyAtomicType::Ptr ATTimeOrDerivedImpl::castAsInternal(AtomicObjectType targetIn
       } else {
         buf.set(currentDate->getYears()->asString(4, context)); //pad to 4 digits
       }
-      buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
+      buf.append(chDash);
       buf.append(currentDate->getMonths()->asString(2, context));
-      buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
+      buf.append(chDash);
       buf.append(currentDate->getDays()->asString(2, context));
-      buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_T);
+      buf.append(chLatin_T);
       buf.append(this->asString(context));
       return context->getItemFactory()->createDateTimeOrDerived(targetURI, targetType, buf.getRawBuffer(), context);
     }
@@ -118,16 +122,16 @@ AnyAtomicType::Ptr ATTimeOrDerivedImpl::castAsInternal(AtomicObjectType targetIn
 
 /* returns the XMLCh* (canonical) representation of this type */
 const XMLCh* ATTimeOrDerivedImpl::asString(const DynamicContext* context) const {
-  XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buffer(1023, context->getMemoryManager());
+  XMLBuffer buffer(1023, context->getMemoryManager());
   buffer.append(_hh->asString(2, context));
-  buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chColon);
+  buffer.append(chColon);
   buffer.append(_mm->asString(2, context));
-  buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chColon);
+  buffer.append(chColon);
   if(_ss->asMAPM() < MM_Ten) { // TODO: deal with precision in a better way!
-    buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chDigit_0);
+    buffer.append(chDigit_0);
   }
   if (_ss->equals(_ss->floor(context), context)) {
-    const ATDecimalOrDerived::Ptr int_ss = (const ATDecimalOrDerived::Ptr ) _ss->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA, XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_INTEGER, context);
+    const ATDecimalOrDerived::Ptr int_ss = (const ATDecimalOrDerived::Ptr ) _ss->castAs(SchemaSymbols::fgURI_SCHEMAFORSCHEMA, SchemaSymbols::fgDT_INTEGER, context);
     buffer.append(int_ss->asString(context));
   } else {
     buffer.append(_ss->asString(context));  
@@ -142,16 +146,9 @@ const XMLCh* ATTimeOrDerivedImpl::asString(const DynamicContext* context) const 
 
 ATDateTimeOrDerived::Ptr ATTimeOrDerivedImpl::buildReferenceDateTime(ATTimeOrDerived::Ptr time, const DynamicContext* context) const
 {
-  const XMLCh s1972[] = { XERCES_CPP_NAMESPACE_QUALIFIER chDigit_1, XERCES_CPP_NAMESPACE_QUALIFIER chDigit_9, XERCES_CPP_NAMESPACE_QUALIFIER chDigit_7, XERCES_CPP_NAMESPACE_QUALIFIER chDigit_2, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
-  const XMLCh s12[] = { XERCES_CPP_NAMESPACE_QUALIFIER chDigit_1, XERCES_CPP_NAMESPACE_QUALIFIER chDigit_2, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
-  const XMLCh s31[] = { XERCES_CPP_NAMESPACE_QUALIFIER chDigit_3, XERCES_CPP_NAMESPACE_QUALIFIER chDigit_1, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
-  XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buf(1023, context->getMemoryManager());
-  buf.set(s1972);
-  buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-  buf.append(s12);
-  buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-  buf.append(s31);
-  buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_T);
+  const XMLCh s1972_12_31[] = { chDigit_1, chDigit_9, chDigit_7, chDigit_2, chDash, chDigit_1, chDigit_2, chDash, chDigit_3, chDigit_1, chLatin_T, chNull };
+  XMLBuffer buf(1023, context->getMemoryManager());
+  buf.set(s1972_12_31);
   buf.append(time->asString(context));
   return context->getItemFactory()->createDateTime(buf.getRawBuffer(), context);
 }
@@ -165,7 +162,7 @@ ATDateTimeOrDerived::Ptr ATTimeOrDerivedImpl::buildReferenceDateTime(ATTimeOrDer
  */
 bool ATTimeOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const {
   if(this->getPrimitiveTypeIndex() != target->getPrimitiveTypeIndex()) {
-    XQThrow(IllegalArgumentException,X("ATTimeOrDerivedImpl::equals"), X("Equality operator for given types not supported [err:XPTY0004]"));
+    XQThrow(::IllegalArgumentException,X("ATTimeOrDerivedImpl::equals"), X("Equality operator for given types not supported [err:XPTY0004]"));
   }
   ATDateTimeOrDerived::Ptr thisTime=buildReferenceDateTime(this, context);
   ATDateTimeOrDerived::Ptr otherTime=buildReferenceDateTime(target, context);
@@ -180,9 +177,6 @@ bool ATTimeOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const Dynamic
  * The two xs:dateTime values are compared using op:dateTime-greater-than.
  */
 bool ATTimeOrDerivedImpl::greaterThan(const ATTimeOrDerived::Ptr &other, const DynamicContext* context) const {
-  if(this->getPrimitiveTypeIndex() != other->getPrimitiveTypeIndex()) {
-    XQThrow(IllegalArgumentException,X("ATTimeOrDerivedImpl::equals"), X("GreaterThan operator for given types not supported [err:XPTY0004]"));
-  } 
   ATDateTimeOrDerived::Ptr thisTime=buildReferenceDateTime(this, context);
   ATDateTimeOrDerived::Ptr otherTime=buildReferenceDateTime(other, context);
   return thisTime->greaterThan(otherTime, context);
@@ -196,9 +190,6 @@ bool ATTimeOrDerivedImpl::greaterThan(const ATTimeOrDerived::Ptr &other, const D
  * The two xs:dateTime values are compared using op:dateTime-less-than.
  */
 bool ATTimeOrDerivedImpl::lessThan(const ATTimeOrDerived::Ptr &other,  const DynamicContext* context) const {
-  if(this->getPrimitiveTypeIndex() != other->getPrimitiveTypeIndex()) {
-    XQThrow(IllegalArgumentException,X("ATTimeOrDerivedImpl::equals"), X("LessThan operator for given types not supported [err:XPTY0004]"));
-  } 
   ATDateTimeOrDerived::Ptr thisTime=buildReferenceDateTime(this, context);
   ATDateTimeOrDerived::Ptr otherTime=buildReferenceDateTime(other, context);
   return thisTime->lessThan(otherTime, context);
@@ -367,7 +358,7 @@ AnyAtomicType::AtomicObjectType ATTimeOrDerivedImpl::getPrimitiveTypeIndex() con
 }
 
 void ATTimeOrDerivedImpl::setTime(const XMLCh* const time, const DynamicContext* context) {
-	unsigned int length = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(time);
+	unsigned int length = XMLString::stringLen(time);
  
 	if(time == NULL) {
 			XQThrow(XPath2TypeCastException,X("XSTimeImpl::setTime"), X("Invalid representation of time"));
