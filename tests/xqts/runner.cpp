@@ -29,6 +29,7 @@
 #include <xqilla/xqilla-simple.hpp>
 #include <xqilla/context/VariableStore.hpp>
 #include <xqilla/context/ModuleResolver.hpp>
+#include <xqilla/context/URIResolver.hpp>
 #include <xqilla/functions/FunctionConstructor.hpp>
 #include <xqilla/utils/XQillaPlatformUtils.hpp>
 

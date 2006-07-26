@@ -23,10 +23,14 @@
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 #include <xercesc/util/XMLUni.hpp>
 
+#if defined(XERCES_HAS_CPP_NAMESPACE)
+XERCES_CPP_NAMESPACE_USE
+#endif
+
 const XMLCh FunctionMatches::name[] = {
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_m, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_c, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_h, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_s, XERCES_CPP_NAMESPACE_QUALIFIER chNull 
+  chLatin_m, chLatin_a, chLatin_t, 
+  chLatin_c, chLatin_h, chLatin_e, 
+  chLatin_s, chNull 
 };
 const unsigned int FunctionMatches::minArgs = 2;
 const unsigned int FunctionMatches::maxArgs = 3;
@@ -46,45 +50,53 @@ Sequence FunctionMatches::collapseTreeInternal(DynamicContext* context, int flag
 {
   XPath2MemoryManager* memMgr = context->getMemoryManager();
 
-  const XMLCh* input = XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString;
+  const XMLCh* input = XMLUni::fgZeroLenString;
   Item::Ptr inputItem = getParamNumber(1,context)->next(context);
   if(inputItem.notNull())
     input=inputItem->asString(context);
-	const XMLCh* pattern = getParamNumber(2,context)->next(context)->asString(context);
-	// If the value of $operand1 is the zero-length string and the value of $operand2 is not the zero-length string,
-	// then the function returns false.
-	if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(input)==0 && XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(pattern)>0)
-		return Sequence(context->getItemFactory()->createBoolean(false, context), memMgr);
-	// If the value of $operand2 is the zero-length string, then the function returns true
-	if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(pattern)==0)
-		return Sequence(context->getItemFactory()->createBoolean(true, context), memMgr);
+  const XMLCh* pattern = getParamNumber(2,context)->next(context)->asString(context);
+  // If the value of $operand1 is the zero-length string and the value of $operand2 is not the zero-length string,
+  // then the function returns false.
+  if(XMLString::stringLen(input)==0 && XMLString::stringLen(pattern)>0)
+    return Sequence(context->getItemFactory()->createBoolean(false, context), memMgr);
+  // If the value of $operand2 is the zero-length string, then the function returns true
+  if(XMLString::stringLen(pattern)==0)
+    return Sequence(context->getItemFactory()->createBoolean(true, context), memMgr);
 
-	const XMLCh* options = XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString;
-	if(getNumArgs()>2)
-		options=getParamNumber(3,context)->next(context)->asString(context);
+  const XMLCh* options = XMLUni::fgZeroLenString;
+  if(getNumArgs()>2)
+    options=getParamNumber(3,context)->next(context)->asString(context);
 
   //Check that the options are valid - throw an exception if not (can have s,m,i and x)
   //Note: Are allowed to duplicate the letters.
-  for (unsigned int i=0; i< XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(options); i ++){
-   if (options[i]!= XERCES_CPP_NAMESPACE_QUALIFIER chLatin_s && 
-       options[i]!= XERCES_CPP_NAMESPACE_QUALIFIER chLatin_m &&
-       options[i]!= XERCES_CPP_NAMESPACE_QUALIFIER chLatin_i &&
-       options[i]!= XERCES_CPP_NAMESPACE_QUALIFIER chLatin_x) 
-     
-    XQThrow(FunctionException, X("FunctionMatches::collapseTreeInternal"),X("Invalid regular expression flags [err:FORX0001]."));
+  for(; *options != 0; ++options){
+    switch(*options) {
+    case chLatin_s:
+    case chLatin_m:
+    case chLatin_i:
+    case chLatin_x:
+      break;
+    default:
+      XQThrow(FunctionException, X("FunctionMatches::collapseTreeInternal"),X("Invalid regular expression flags [err:FORX0001]."));
+    }
   }
 
   //Build the Regular Expression
   try {
-    XERCES_CPP_NAMESPACE_QUALIFIER RegularExpression regEx(pattern, options, memMgr);
+    // Always turn off head character optimisation, since it is broken
+    XMLBuffer optionsBuf(1023, context->getMemoryManager());
+    optionsBuf.set(options);
+    optionsBuf.append(chLatin_H);
+
+    RegularExpression regEx(pattern, optionsBuf.getRawBuffer(), memMgr);
     return Sequence(context->getItemFactory()->createBoolean(regEx.matches(input), context), memMgr);
-  } catch (XERCES_CPP_NAMESPACE_QUALIFIER ParseException &e){ 
-    XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buf(1023, memMgr);
+  } catch (ParseException &e){ 
+    XMLBuffer buf(1023, memMgr);
     buf.set(X("Invalid regular expression: "));
     buf.append(e.getMessage());
     buf.append(X(" [err:FORX0002]"));
     XQThrow(FunctionException, X("FunctionMatches::collapseTreeInternal"), buf.getRawBuffer());
-  } catch (XERCES_CPP_NAMESPACE_QUALIFIER XMLException &e){ 
+  } catch (XMLException &e){ 
     XQThrow(FunctionException, X("FunctionMatches::collapseTreeInternal"), e.getMessage());  
   }  
 
