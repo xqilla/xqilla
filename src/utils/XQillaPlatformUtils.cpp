@@ -66,7 +66,7 @@ void XQillaPlatformUtils::enableExtendedPrecision(bool bEnable)
     else
     {
         ATDecimalOrDerivedImpl::g_nSignificantDigits=18;
-        ATFloatOrDerivedImpl::g_nSignificantDigits=8;
+        ATFloatOrDerivedImpl::g_nSignificantDigits=7;
         ATDoubleOrDerivedImpl::g_nSignificantDigits=16;
     }
 }
