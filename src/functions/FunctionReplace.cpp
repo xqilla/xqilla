@@ -88,8 +88,9 @@ Sequence FunctionReplace::collapseTreeInternal(DynamicContext* context, int flag
   
   //Check that the options are valid - throw an exception if not (can have s,m,i and x)
   //Note: Are allowed to duplicate the letters.
-  for(; *options != 0; ++options){
-    switch(*options) {
+  const XMLCh* cursor=options;
+  for(; *cursor != 0; ++cursor){
+    switch(*cursor) {
     case chLatin_s:
     case chLatin_m:
     case chLatin_i:
