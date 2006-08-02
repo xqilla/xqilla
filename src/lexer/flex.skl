@@ -334,13 +334,13 @@ static int input YY_PROTO(( void ));
 
 #if YY_STACK_USED
 #ifndef YY_NO_PUSH_STATE
-static void yy_push_state YY_PROTO(( int new_state ));
+/* static void yy_push_state YY_PROTO(( int new_state )); */
 #endif
 #ifndef YY_NO_POP_STATE
-static void yy_pop_state YY_PROTO(( void ));
+/* static void yy_pop_state YY_PROTO(( void )); */
 #endif
 #ifndef YY_NO_TOP_STATE
-static int yy_top_state YY_PROTO(( void ));
+/* static int yy_top_state YY_PROTO(( void )); */
 #endif
 
 #else

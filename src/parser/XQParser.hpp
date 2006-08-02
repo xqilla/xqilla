@@ -211,7 +211,59 @@
      _MODULE_ = 436,
      _ELEMENT_ = 437,
      _FUNCTION_ = 438,
-     _EOF_ = 439
+     _SCORE_ = 439,
+     _FTCONTAINS_ = 440,
+     _WEIGHT_ = 441,
+     _DECLARE_FT_OPTION_ = 442,
+     _DOUBLE_VERTICAL_BAR_ = 443,
+     _DOUBLE_AMPERSAND_ = 444,
+     _NOT_IN_ = 445,
+     _BANG_ = 446,
+     _WINDOW_ = 447,
+     _DISTANCE_ = 448,
+     _OCCURS_ = 449,
+     _TIMES_ = 450,
+     _SAME_ = 451,
+     _DIFFERENT_ = 452,
+     _AT_START_ = 453,
+     _AT_END_ = 454,
+     _ENTIRE_CONTENT_ = 455,
+     _LOWERCASE_ = 456,
+     _UPPERCASE_ = 457,
+     _CASE_INSENSITIVE_ = 458,
+     _CASE_SENSITIVE_ = 459,
+     _WITH_DIACRITICS_ = 460,
+     _WITHOUT_DIACRITICS_ = 461,
+     _DIACRITICS_SENSITIVE_ = 462,
+     _DIACRITICS_INSENSITIVE_ = 463,
+     _WITH_STEMMING_ = 464,
+     _WITHOUT_STEMMING_ = 465,
+     _WITH_THESAURUS_ = 466,
+     _WITHOUT_THESAURUS_ = 467,
+     _RELATIONSHIP_ = 468,
+     _LEVELS_ = 469,
+     _WITH_STOP_WORDS_ = 470,
+     _WITHOUT_STOP_WORDS_ = 471,
+     _WITH_DEFAULT_STOP_WORDS_ = 472,
+     _LANGUAGE_ = 473,
+     _WITH_WILDCARDS_ = 474,
+     _WITHOUT_WILDCARDS_ = 475,
+     _ANY_ = 476,
+     _ANY_WORD_ = 477,
+     _ALL_ = 478,
+     _ALL_WORDS_ = 479,
+     _PHRASE_ = 480,
+     _EXACTLY_ = 481,
+     _AT_LEAST_ = 482,
+     _AT_MOST_ = 483,
+     _FROM_ = 484,
+     _WORDS_ = 485,
+     _SENTENCES_ = 486,
+     _PARAGRAPHS_ = 487,
+     _SENTENCE_ = 488,
+     _PARAGRAPH_ = 489,
+     _WITHOUT_CONTENT_ = 490,
+     _EOF_ = 491
    };
 #endif
 /* Tokens.  */
@@ -397,7 +449,59 @@
 #define _MODULE_ 436
 #define _ELEMENT_ 437
 #define _FUNCTION_ 438
-#define _EOF_ 439
+#define _SCORE_ 439
+#define _FTCONTAINS_ 440
+#define _WEIGHT_ 441
+#define _DECLARE_FT_OPTION_ 442
+#define _DOUBLE_VERTICAL_BAR_ 443
+#define _DOUBLE_AMPERSAND_ 444
+#define _NOT_IN_ 445
+#define _BANG_ 446
+#define _WINDOW_ 447
+#define _DISTANCE_ 448
+#define _OCCURS_ 449
+#define _TIMES_ 450
+#define _SAME_ 451
+#define _DIFFERENT_ 452
+#define _AT_START_ 453
+#define _AT_END_ 454
+#define _ENTIRE_CONTENT_ 455
+#define _LOWERCASE_ 456
+#define _UPPERCASE_ 457
+#define _CASE_INSENSITIVE_ 458
+#define _CASE_SENSITIVE_ 459
+#define _WITH_DIACRITICS_ 460
+#define _WITHOUT_DIACRITICS_ 461
+#define _DIACRITICS_SENSITIVE_ 462
+#define _DIACRITICS_INSENSITIVE_ 463
+#define _WITH_STEMMING_ 464
+#define _WITHOUT_STEMMING_ 465
+#define _WITH_THESAURUS_ 466
+#define _WITHOUT_THESAURUS_ 467
+#define _RELATIONSHIP_ 468
+#define _LEVELS_ 469
+#define _WITH_STOP_WORDS_ 470
+#define _WITHOUT_STOP_WORDS_ 471
+#define _WITH_DEFAULT_STOP_WORDS_ 472
+#define _LANGUAGE_ 473
+#define _WITH_WILDCARDS_ 474
+#define _WITHOUT_WILDCARDS_ 475
+#define _ANY_ 476
+#define _ANY_WORD_ 477
+#define _ALL_ 478
+#define _ALL_WORDS_ 479
+#define _PHRASE_ 480
+#define _EXACTLY_ 481
+#define _AT_LEAST_ 482
+#define _AT_MOST_ 483
+#define _FROM_ 484
+#define _WORDS_ 485
+#define _SENTENCES_ 486
+#define _PARAGRAPHS_ 487
+#define _SENTENCE_ 488
+#define _PARAGRAPH_ 489
+#define _WITHOUT_CONTENT_ 490
+#define _EOF_ 491
 
 
 

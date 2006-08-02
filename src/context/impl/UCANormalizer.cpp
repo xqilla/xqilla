@@ -13,134 +13,270 @@
 
 #include "../../config/xqilla_config.h"
 #include "UCANormalizer.hpp"
-#include <xqilla/utils/XPath2Utils.hpp>
 #include <xercesc/framework/XMLBuffer.hpp>
 #include <xercesc/util/XMLString.hpp>
-#include <xqilla/framework/XPath2MemoryManager.hpp>
 
-static const XMLCh NOT_COMPOSITE = 0xFFFF;
+#define NO_COMPOSITION 0xFFFFFFFF
 
-const XMLCh* Normalizer::getRecursiveDecomposition(bool bCanonical, XMLCh ch, XPath2MemoryManager* memMgr)
+using namespace std;
+#if defined(XERCES_HAS_CPP_NAMESPACE)
+XERCES_CPP_NAMESPACE_USE
+#endif
+
+void NormalizeTransform::pushChar(unsigned int ch)
 {
-	XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buf(1023, memMgr);
+  if(ch == 0) {
+    composeCache();
+  }
+  else {
+    getRecursiveDecomposition(ch);
+  }
+}
 
-	wchar_t* decomp=g_decompose[ch];
-	int tblIndex=ch/32;
-	int bitIndex=ch%32;
-	if(decomp!=0 && !(bCanonical && (g_isCompatibility[tblIndex] & (1<<bitIndex))!=0) )
-		{
-			for (int i = 0; decomp[i]!=0; ++i)
-				buf.append(getRecursiveDecomposition(bCanonical,decomp[i], memMgr));
-    } 
-	else 
-		{                    // if no decomp, append
-			buf.append(XPath2Utils::asStr(ch, memMgr));
+void NormalizeTransform::getRecursiveDecomposition(unsigned int ch)
+{
+  unsigned int *decomp = getDecomposition(ch);
+  if(decomp != 0) {
+    for(; *decomp != 0; ++decomp)
+      getRecursiveDecomposition(*decomp);
+  } 
+  else if(!decomposeHangul(ch)) {
+    unsigned int chClass = getCanonicalCombiningClass(ch);
+    if(chClass != 0) {
+      if(cache_.empty()) {
+        cache_.push_back(ch);
+      }
+      else {
+        // Find the correct position for the combining char
+        vector<unsigned int>::iterator begin = cache_.begin();
+        vector<unsigned int>::iterator pos = cache_.end();
+        while(pos != begin) {
+          --pos;
+          if(getCanonicalCombiningClass(*pos) <= chClass) {
+            ++pos;
+            break;
+          }
+        }
+        cache_.insert(pos, ch);
+      }
     }
-	return memMgr->getPooledString(buf.getRawBuffer());
+    else {
+      composeCache();
+      cache_.push_back(ch);
+    }
+  }
 }
 
-int Normalizer::getCanonicalClass(XMLCh ch)
+// Performs composition on the cached characters if required,
+// and sends them to the destination
+void NormalizeTransform::composeCache()
 {
-	return g_canonicalClass[ch];
-}
+  if(cache_.empty()) return;
 
-XMLCh Normalizer::getPairwiseComposition(XMLCh first, XMLCh second)
-{
-	int key=((first << 16) | second);
-	std::map<int,int>::iterator it=g_composeMap.find(key);
-	if(it!=g_composeMap.end())
-		return (*it).second;
-	return NOT_COMPOSITE;
-}
+  vector<unsigned int>::iterator starterPos = cache_.begin();
+  vector<unsigned int>::iterator end = cache_.end();
+  unsigned int starterCh = *starterPos;
+  int lastClass = getCanonicalCombiningClass(starterCh);
 
-const XMLCh* Normalizer::internalDecompose(bool bCanonical, const XMLCh* source, XPath2MemoryManager* memMgr)
-{
-	const XMLCh* target = 0;
-	// first decompose it
-	for (unsigned int i = 0; i < XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(source); ++i) 
-	{
-		const XMLCh* buffer=getRecursiveDecomposition(bCanonical,source[i], memMgr);
+  if(!compose_ || lastClass != 0) {
+    // Unbuffer the chars in the cache
+    for(; starterPos != end; ++starterPos) {
+      dest_->pushChar(*starterPos);
+    }
+  }
+  else {
+    vector<unsigned int>::iterator target = starterPos;
+    ++target;
 
-		// add all of the characters in the decomposition.
-		// (may be just the original character, if there was
-		// no decomposition mapping)
-
-		for (unsigned int j = 0; j < XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(buffer); ++j) 
-		{
-			XMLCh ch = buffer[j];
-			int chClass = getCanonicalClass(ch);
-			int k = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(target); // insertion point
-			if (chClass != 0) 
-			{
-				// bubble-sort combining marks as necessary
-				for (; k > 0; --k) 
-				{
-					if (getCanonicalClass(target[k-1]) <= chClass) 
-						break;
-				}
-			}
-			target = XPath2Utils::insertData(target, ch, k, memMgr);
-		}
-	}
-
-	return target;
-}
-
-XMLCh* Normalizer::internalCompose(const XMLCh* source, XPath2MemoryManager* memMgr)
-{
-    XMLCh* target = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::replicate(source);
-    unsigned int starterPos = 0, compPos = 1;
-    XMLCh starterCh = target[0];
-    int lastClass = getCanonicalClass(starterCh);
-    if (lastClass != 0) 
-		lastClass = 256; // fix for irregular combining sequence
-    
     // Loop on the decomposed characters, combining where possible
-    for (unsigned int decompPos = 1; decompPos < XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(target); ++decompPos) 
-	{
-        XMLCh ch = target[decompPos];
-        int chClass = getCanonicalClass(ch);
-        XMLCh composite = getPairwiseComposition(starterCh, ch);
-        if (composite != NOT_COMPOSITE && (lastClass < chClass || lastClass == 0)) 
-		{
-            target[starterPos] = composite;
-            starterCh = composite;
+    for(vector<unsigned int>::iterator source = target; source != end; ++source) {
+      unsigned int ch = *source;
+
+      int chClass = getCanonicalCombiningClass(ch);
+      if(lastClass < chClass) {
+
+        unsigned int composite = getComposition(starterCh, ch);
+        if(composite == NO_COMPOSITION)
+          composite = composeHangul(starterCh, ch);
+
+        if(composite != NO_COMPOSITION) {
+          *starterPos = composite;
+          starterCh = composite;
+          continue;
         }
-		else 
-		{
-            if (chClass == 0) 
-			{
-                starterPos = compPos;
-                starterCh  = ch;
-            }
-            lastClass = chClass;
-            target[compPos++] = ch;
-        }
+      }
+      else {
+        lastClass = chClass;
+        *target++ = ch;
+      }
     }
-    target[compPos] = 0;
-	return target;
+
+    for(starterPos = cache_.begin(); starterPos != target; ++starterPos) {
+      dest_->pushChar(*starterPos);
+    }
+  }
+
+  cache_.clear();
 }
 
-XMLCh* Normalizer::NormalizeC(const XMLCh* source, XPath2MemoryManager* memMgr)
+// Hangul constants
+static const unsigned int SBase = 0xAC00, LBase = 0x1100, VBase = 0x1161, TBase = 0x11A7,
+	LCount = 19, VCount = 21, TCount = 28,
+	NCount = VCount * TCount,   // 588
+	SCount = LCount * NCount;   // 11172
+
+bool NormalizeTransform::decomposeHangul(unsigned int s)
 {
-	const XMLCh* target=internalDecompose(true,source, memMgr);
-	XMLCh* result=internalCompose(target, memMgr);
-	return result;
+  if(s < SBase) return false;
+
+  unsigned int SIndex = s - SBase;
+  if(SIndex >= SCount) return false;
+
+  unsigned int l = LBase + SIndex / NCount;
+  getRecursiveDecomposition(l);
+
+  unsigned int v = VBase + (SIndex % NCount) / TCount;
+  getRecursiveDecomposition(v);
+
+  unsigned int t = TBase + SIndex % TCount;
+  if(t != TBase)
+    getRecursiveDecomposition(t);
+
+  return true;
 }
 
-const XMLCh* Normalizer::NormalizeD(const XMLCh* source, XPath2MemoryManager* memMgr)
+unsigned int NormalizeTransform::composeHangul(unsigned int first, unsigned int second)
 {
-	return internalDecompose(true,source, memMgr);
+  // 1. check to see if two current characters are L and V
+  if(first >= LBase && second >= VBase) {
+    unsigned int LIndex = first - LBase;
+    unsigned int VIndex = second - VBase;
+    if(LIndex < LCount && VIndex < VCount) {
+      // make syllable of form LV
+      return SBase + (LIndex * VCount + VIndex) * TCount;
+    }
+  }
+
+  // 2. check to see if two current characters are LV and T
+  if(first >= SBase && second > TBase) {
+    unsigned int SIndex = first - SBase;
+    unsigned int TIndex = second - TBase;
+    if(SIndex < SCount && (SIndex % TCount) == 0 && TIndex < TCount) {
+      // make syllable of form LVT
+      return first + TIndex;
+    }
+  }
+
+  return NO_COMPOSITION;
 }
 
-XMLCh* Normalizer::NormalizeKC(const XMLCh* source, XPath2MemoryManager* memMgr)
+void RemoveDiacriticsTransform::pushChar(unsigned int ch)
 {
-	const XMLCh* target=internalDecompose(false,source, memMgr);
-	XMLCh* result=internalCompose(target, memMgr);
-	return result;
+  if(ch == 0 || !isDiacritic(ch)) {
+    dest_->pushChar(ch);
+  }
 }
 
-const XMLCh* Normalizer::NormalizeKD(const XMLCh* source, XPath2MemoryManager* memMgr)
+void CaseFoldTransform::pushChar(unsigned int ch)
 {
-	return internalDecompose(false,source, memMgr);
+  if(ch != 0) {
+    unsigned int *value = getCaseFold(ch);
+    if(value != 0) {
+      while(*value != 0) {
+        dest_->pushChar(*value);
+        ++value;
+      }
+      return;
+    }
+  }
+
+  dest_->pushChar(ch);
+}
+
+void XMLBufferTransform::pushChar(unsigned int ch)
+{
+  if(!(ch & 0xFFFF0000)) {
+    if(ch != 0)
+      buffer_.append((XMLCh)ch);
+  }
+  else {
+    assert(ch <= 0x10FFFF);
+
+    // Store the leading surrogate char
+    ch -= 0x10000;
+    buffer_.append((XMLCh)((ch >> 10) | 0xD800));
+
+    // the trailing char
+    buffer_.append((XMLCh)((ch & 0x3FF) | 0xDC00));
+  }
+}
+
+void StringTransformer::transformUTF16(const XMLCh *source, StringTransform *transform)
+{
+  while(*source != 0) {
+    unsigned int ch = *source;
+    ++source;
+
+    if((ch & 0xDC00) == 0xD800) {
+	    if(*source) break;
+	    ch = ((ch & 0x3FF) << 10) | (*source & 0x3FF);
+	    ch += 0x10000;
+	    ++source;
+    }
+
+    transform->pushChar(ch);
+  }
+  transform->pushChar(0);
+}
+
+void Normalizer::normalizeC(const XMLCh* source, XMLBuffer &dest)
+{
+  XMLBufferTransform buf(dest);
+  NormalizeTransform normalize(true, true, &buf);
+  StringTransformer::transformUTF16(source, &normalize);
+}
+
+void Normalizer::normalizeD(const XMLCh* source, XMLBuffer &dest)
+{
+  XMLBufferTransform buf(dest);
+  NormalizeTransform normalize(true, false, &buf);
+  StringTransformer::transformUTF16(source, &normalize);
+}
+
+void Normalizer::normalizeKC(const XMLCh* source, XMLBuffer &dest)
+{
+  XMLBufferTransform buf(dest);
+  NormalizeTransform normalize(false, true, &buf);
+  StringTransformer::transformUTF16(source, &normalize);
+}
+
+void Normalizer::normalizeKD(const XMLCh* source, XMLBuffer &dest)
+{
+  XMLBufferTransform buf(dest);
+  NormalizeTransform normalize(false, false, &buf);
+  StringTransformer::transformUTF16(source, &normalize);
+}
+
+void Normalizer::removeDiacritics(const XMLCh* source, XMLBuffer &dest)
+{
+  XMLBufferTransform buf(dest);
+  RemoveDiacriticsTransform diacritics(&buf);
+  NormalizeTransform normalize(true, false, &diacritics);
+  StringTransformer::transformUTF16(source, &normalize);
+}
+
+void Normalizer::caseFold(const XMLCh* source, XMLBuffer &dest)
+{
+  XMLBufferTransform buf(dest);
+  CaseFoldTransform caseFold(&buf);
+  StringTransformer::transformUTF16(source, &caseFold);
+}
+
+void Normalizer::caseFoldAndRemoveDiacritics(const XMLCh* source, XMLBuffer &dest)
+{
+  XMLBufferTransform buf(dest);
+  CaseFoldTransform caseFold(&buf);
+  RemoveDiacriticsTransform diacritics(&caseFold);
+  NormalizeTransform normalize(true, false, &diacritics);
+  StringTransformer::transformUTF16(source, &normalize);
 }

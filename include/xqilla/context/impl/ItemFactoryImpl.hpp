@@ -65,6 +65,7 @@ public:
 
   virtual ATDecimalOrDerived::Ptr createInteger(const int value, const DynamicContext* context);
   virtual ATDecimalOrDerived::Ptr createInteger(const MAPM value, const DynamicContext* context);
+  virtual ATDecimalOrDerived::Ptr createInteger(const XMLCh* value, const DynamicContext* context);
   virtual ATDecimalOrDerived::Ptr createNonNegativeInteger(const MAPM value, const DynamicContext* context);
 
   virtual ATDecimalOrDerived::Ptr createDecimal(const MAPM value, const DynamicContext* context);

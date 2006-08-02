@@ -21,7 +21,9 @@
 #include <xqilla/exceptions/ContextException.hpp>
 #include <xqilla/context/impl/XQContextImpl.hpp>
 #include <xqilla/utils/XQillaPlatformUtils.hpp>
-#include "../lexer/XQueryScanner.hpp"
+#include <xqilla/context/DynamicContext.hpp>
+#include <xqilla/exceptions/XQException.hpp>
+#include "../lexer/XQLexer.hpp"
 
 #include <xercesc/util/XMLURL.hpp>
 #include <xercesc/util/TransService.hpp>
@@ -45,9 +47,9 @@ XQilla::~XQilla()
   XQillaPlatformUtils::terminate();
 }
 
-XQQuery* XQilla::parseXQuery(const XMLCh* inputQuery, DynamicContext* context/*=0*/,
-                             const XMLCh* queryFile/*=NULL*/, unsigned int flags/*=0*/,
-                             MemoryManager *memMgr)
+XQQuery* XQilla::parse(const XMLCh* inputQuery, Language language, DynamicContext* context,
+                       const XMLCh* queryFile, unsigned int flags,
+                       MemoryManager *memMgr)
 {
   bool contextOwned = (flags & NO_ADOPT_CONTEXT) == 0;
   if(context == 0) {
@@ -55,18 +57,18 @@ XQQuery* XQilla::parseXQuery(const XMLCh* inputQuery, DynamicContext* context/*=
     context = createContext();
   }
 
-  XERCES_CPP_NAMESPACE_QUALIFIER Janitor<XQQuery> query(new (memMgr) XQQuery(inputQuery, context, contextOwned, memMgr));
+  Janitor<XQQuery> query(new (memMgr) XQQuery(inputQuery, context, contextOwned, memMgr));
 
   try {
-    CXQueryScanner scanner(context->getMemoryManager(), inputQuery);
+    XQLexer lexer(context->getMemoryManager(), inputQuery, language);
 
-    XQueryParserArgs args;
+    XQParserArgs args;
     args._context=context;
-    args._scanner=&scanner;
+    args._lexer=&lexer;
     args._query=query.get();
     args._query->setFile(queryFile);
 
-    XQuery::yyparse(&args);
+    XQParser::yyparse(&args);
 
     // Perform static resolution, if requested
     if((flags & NO_STATIC_RESOLUTION) == 0) {
@@ -81,22 +83,6 @@ XQQuery* XQilla::parseXQuery(const XMLCh* inputQuery, DynamicContext* context/*=
   }
 
   return query.release();
-}
-
-XQQuery* XQilla::parse(const XMLCh* inputQuery, Language language, DynamicContext* context,
-                       const XMLCh* queryFile, unsigned int flags,
-                       MemoryManager *memMgr)
-{
-  switch(language) {
-  case XQUERY: {
-    return parseXQuery(inputQuery, context, queryFile, flags, memMgr);
-  }
-  case XPATH2: {
-    return parseXPath2(inputQuery, context, queryFile, flags, memMgr);
-  }
-  }
-                                                                                                                                                              
-  return 0;
 }
 
 XQQuery* XQilla::parse(const InputSource& querySrc, Language language, DynamicContext* context,

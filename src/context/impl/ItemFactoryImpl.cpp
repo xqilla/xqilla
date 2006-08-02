@@ -31,7 +31,7 @@
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/exceptions/TypeNotFoundException.hpp>
 #include <xqilla/exceptions/ASTException.hpp>
-#include "../dom-api/impl/XPathNamespaceImpl.hpp"
+#include "../../dom-api/impl/XPathNamespaceImpl.hpp"
 
 #include <xercesc/util/XMLString.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
@@ -419,6 +419,13 @@ ATDecimalOrDerived::Ptr ItemFactoryImpl::createInteger(const int value, const Dy
 }
 
 ATDecimalOrDerived::Ptr ItemFactoryImpl::createInteger(const MAPM value, const DynamicContext* context) {
+  return createDecimalOrDerived(
+    SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+    SchemaSymbols::fgDT_INTEGER,
+    value, context);
+}
+
+ATDecimalOrDerived::Ptr ItemFactoryImpl::createInteger(const XMLCh* value, const DynamicContext* context) {
   return createDecimalOrDerived(
     SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
     SchemaSymbols::fgDT_INTEGER,

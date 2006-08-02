@@ -61,7 +61,8 @@ public:
     PROMOTE_ANY_URI,
     DOCUMENT_ORDER,
     PREDICATE,
-    ATOMIZE
+    ATOMIZE,
+    FTCONTAINS
   } whichType;
 
   virtual ~ASTNode() {}

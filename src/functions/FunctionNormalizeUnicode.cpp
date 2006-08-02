@@ -22,13 +22,17 @@
 #include <xqilla/framework/XPath2MemoryManager.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 
+#if defined(XERCES_HAS_CPP_NAMESPACE)
+XERCES_CPP_NAMESPACE_USE
+#endif
+
 const XMLCh FunctionNormalizeUnicode::name[] = {
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_r, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_m, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_l, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_i, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_z, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chDash,    XERCES_CPP_NAMESPACE_QUALIFIER chLatin_u, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_i, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_c, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_d, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, XERCES_CPP_NAMESPACE_QUALIFIER chNull 
+  chLatin_n, chLatin_o, chLatin_r, 
+  chLatin_m, chLatin_a, chLatin_l, 
+  chLatin_i, chLatin_z, chLatin_e, 
+  chDash,    chLatin_u, chLatin_n, 
+  chLatin_i, chLatin_c, chLatin_o, 
+  chLatin_d, chLatin_e, chNull 
 };
 const unsigned int FunctionNormalizeUnicode::minArgs = 1;
 const unsigned int FunctionNormalizeUnicode::maxArgs = 2;
@@ -49,21 +53,21 @@ Sequence FunctionNormalizeUnicode::collapseTreeInternal(DynamicContext* context,
   XPath2MemoryManager* memMgr = context->getMemoryManager();
   Sequence strParm=getParamNumber(1,context)->toSequence(context);
   if(strParm.isEmpty()) {
-    return Sequence(context->getItemFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context), memMgr);
+    return Sequence(context->getItemFactory()->createString(XMLUni::fgZeroLenString, context), memMgr);
   }
 
   const XMLCh *str = strParm.first()->asString(context);
 
-  static const XMLCh fg_NFC[] = { XERCES_CPP_NAMESPACE_QUALIFIER chLatin_N, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_F, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_C, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
-  static const XMLCh fg_NFD[] = { XERCES_CPP_NAMESPACE_QUALIFIER chLatin_N, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_F, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_D, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
-  static const XMLCh fg_NFKC[] = { XERCES_CPP_NAMESPACE_QUALIFIER chLatin_N, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_F, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_K, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_C, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
-  static const XMLCh fg_NFKD[] = { XERCES_CPP_NAMESPACE_QUALIFIER chLatin_N, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_F, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_K, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_D, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
-  static const XMLCh fg_fully[] = { XERCES_CPP_NAMESPACE_QUALIFIER chLatin_F, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_U, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_L,
-                                    XERCES_CPP_NAMESPACE_QUALIFIER chLatin_L, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_Y, XERCES_CPP_NAMESPACE_QUALIFIER chDash,
-                                    XERCES_CPP_NAMESPACE_QUALIFIER chLatin_N, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_O, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_R,
-                                    XERCES_CPP_NAMESPACE_QUALIFIER chLatin_M, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_A, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_L,
-                                    XERCES_CPP_NAMESPACE_QUALIFIER chLatin_I, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_Z, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_E,
-                                    XERCES_CPP_NAMESPACE_QUALIFIER chLatin_D, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
+  static const XMLCh fg_NFC[] = { chLatin_N, chLatin_F, chLatin_C, chNull };
+  static const XMLCh fg_NFD[] = { chLatin_N, chLatin_F, chLatin_D, chNull };
+  static const XMLCh fg_NFKC[] = { chLatin_N, chLatin_F, chLatin_K, chLatin_C, chNull };
+  static const XMLCh fg_NFKD[] = { chLatin_N, chLatin_F, chLatin_K, chLatin_D, chNull };
+  static const XMLCh fg_fully[] = { chLatin_F, chLatin_U, chLatin_L,
+                                    chLatin_L, chLatin_Y, chDash,
+                                    chLatin_N, chLatin_O, chLatin_R,
+                                    chLatin_M, chLatin_A, chLatin_L,
+                                    chLatin_I, chLatin_Z, chLatin_E,
+                                    chLatin_D, chNull };
 
   const XMLCh* normalization = fg_NFC;
   if(getNumArgs()==2)
@@ -72,20 +76,20 @@ Sequence FunctionNormalizeUnicode::collapseTreeInternal(DynamicContext* context,
     const XMLCh *src = normParam.first()->asString(context);
     normalization = XPath2Utils::toUpper(src, memMgr);
 
-    if (XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(normalization) > 0)
+    if (XMLString::stringLen(normalization) > 0)
     {
       unsigned int i;
       // remove leading spaces
-      for(i = 0; i < XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(normalization); i++) 
+      for(i = 0; i < XMLString::stringLen(normalization); i++) 
       {
         XMLCh ch = normalization[i];
         if((ch != 0x9) && (ch != 0xA) && (ch != 0xD) && (ch != 0x20))
           break;
       }
-      const XMLCh *frontChop = XPath2Utils::subString(normalization, i,XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(normalization)-i, memMgr);
+      const XMLCh *frontChop = XPath2Utils::subString(normalization, i,XMLString::stringLen(normalization)-i, memMgr);
 
       // remove trailing spaces
-      for(i = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(frontChop)-1; i !=0 ; i--) 
+      for(i = XMLString::stringLen(frontChop)-1; i !=0 ; i--) 
       {
         XMLCh ch = frontChop[i];
         if((ch != 0x9) && (ch != 0xA) && (ch != 0xD) && (ch != 0x20))
@@ -95,38 +99,34 @@ Sequence FunctionNormalizeUnicode::collapseTreeInternal(DynamicContext* context,
     }
   }
 
-  if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(normalization) == 0) {
+  if(XMLString::stringLen(normalization) == 0) {
     return Sequence(context->getItemFactory()->createString(str, context), memMgr);
   }
-  else if(XPath2Utils::equals(normalization, fg_NFC)) {
-    XMLCh *normalizedString = Normalizer::NormalizeC(str, context->getMemoryManager());
+  else {
+    XMLBuffer buf(1023, context->getMemoryManager());
 
-    Sequence result = Sequence(context->getItemFactory()->createString(normalizedString , context), memMgr);
-    XERCES_CPP_NAMESPACE_QUALIFIER XMLString::release(&normalizedString);
-    return result;
-  }
-  else if(XPath2Utils::equals(normalization, fg_NFD)) {
-    const XMLCh *normalizedString = Normalizer::NormalizeD(str, context->getMemoryManager());
+    if(XPath2Utils::equals(normalization, fg_NFC)) {
+      Normalizer::normalizeC(str, buf);
+    }
+    else if(XPath2Utils::equals(normalization, fg_NFD)) {
+      Normalizer::normalizeD(str, buf);
+    }
+    else if(XPath2Utils::equals(normalization, fg_NFKC)) {
+      Normalizer::normalizeKC(str, buf);
+    }
+    else if(XPath2Utils::equals(normalization, fg_NFKD)) {
+      Normalizer::normalizeKD(str, buf);
+    }
+    else if(XPath2Utils::equals(normalization, fg_fully)) {
+      XQThrow(FunctionException, X("FunctionNormalizeUnicode::collapseTreeInternal"), X("Unsupported normalization form [err:FOCH0003]."));
+    }
+    else { 
+      XQThrow(FunctionException, X("FunctionNormalizeUnicode::collapseTreeInternal"), X("Invalid normalization form [err:FOCH0003]."));
+   }
 
-    Sequence result(context->getItemFactory()->createString(normalizedString, context), memMgr);
-    return result;
+    return Sequence(context->getItemFactory()->createString(buf.getRawBuffer(), context), memMgr);
   }
-  else if(XPath2Utils::equals(normalization, fg_NFKC)) {
-    XMLCh *normalizedString = Normalizer::NormalizeKC(str, context->getMemoryManager());
 
-    Sequence result(context->getItemFactory()->createString(normalizedString, context), memMgr);
-    XERCES_CPP_NAMESPACE_QUALIFIER XMLString::release(&normalizedString);
-    return result;
-  }
-  else if(XPath2Utils::equals(normalization, fg_NFKD)) {
-
-	const XMLCh *normalizedString = Normalizer::NormalizeKD(str, context->getMemoryManager());
-	Sequence result(context->getItemFactory()->createString(normalizedString, context), memMgr);
-	return result;
-  }
-  else if(XPath2Utils::equals(normalization, fg_fully)) {
-    XQThrow(FunctionException, X("FunctionNormalizeUnicode::collapseTreeInternal"), X("Unsupported normalization form [err:FOCH0003]."));
-  }
-	
-  XQThrow(FunctionException, X("FunctionNormalizeUnicode::collapseTreeInternal"), X("Invalid normalization form [err:FOCH0003]."));
+  // Never reached
+	return Sequence(memMgr);
 }

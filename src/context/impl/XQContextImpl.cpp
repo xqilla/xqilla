@@ -58,7 +58,7 @@
 #include <xqilla/functions/XQUserFunction.hpp>
 #include <xqilla/schema/DocumentCacheImpl.hpp>
 #include <xqilla/dom-api/impl/XQillaNSResolverImpl.hpp>
-#include "../dom-api/impl/XPathDocumentImpl.hpp"
+#include "../../dom-api/impl/XPathDocumentImpl.hpp"
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction

@@ -156,7 +156,6 @@ localstatedir = @localstatedir@
 mandir = @mandir@
 mkdir_p = @mkdir_p@
 oldincludedir = @oldincludedir@
-perl = @perl@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
 sbindir = @sbindir@
@@ -208,6 +207,27 @@ xqilla/ast/XPath1Compat.hpp \
 xqilla/ast/ConvertFunctionArg.hpp \
 xqilla/ast/XQDocumentOrder.hpp \
 xqilla/ast/XQPredicate.hpp \
+xqilla/fulltext/FTContains.hpp \
+xqilla/fulltext/FTSelection.hpp \
+xqilla/fulltext/FTWords.hpp \
+xqilla/fulltext/FTOr.hpp \
+xqilla/fulltext/FTAnd.hpp \
+xqilla/fulltext/FTMildnot.hpp \
+xqilla/fulltext/FTUnaryNot.hpp \
+xqilla/fulltext/AllMatches.hpp \
+xqilla/fulltext/Match.hpp \
+xqilla/fulltext/TokenInfo.hpp \
+xqilla/fulltext/Tokenizer.hpp \
+xqilla/fulltext/DefaultTokenizer.hpp \
+xqilla/fulltext/TokenStore.hpp \
+xqilla/fulltext/DefaultTokenStore.hpp \
+xqilla/fulltext/FTOption.hpp \
+xqilla/fulltext/FTOrder.hpp \
+xqilla/fulltext/FTRange.hpp \
+xqilla/fulltext/FTDistance.hpp \
+xqilla/fulltext/FTScope.hpp \
+xqilla/fulltext/FTContent.hpp \
+xqilla/fulltext/FTWindow.hpp \
 xqilla/axis/AncestorAxis.hpp \
 xqilla/axis/AncestorOrSelfAxis.hpp \
 xqilla/axis/AttributeAxis.hpp \
@@ -489,9 +509,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  include/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  include/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu  include/Makefile
+	  $(AUTOMAKE) --foreign  include/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -588,7 +608,7 @@ distclean-tags:
 	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH tags
 
 distdir: $(DISTFILES)
-	$(mkdir_p) $(distdir)/xqilla $(distdir)/xqilla/ast $(distdir)/xqilla/axis $(distdir)/xqilla/context $(distdir)/xqilla/context/impl $(distdir)/xqilla/dom-api $(distdir)/xqilla/dom-api/impl $(distdir)/xqilla/exceptions $(distdir)/xqilla/framework $(distdir)/xqilla/functions $(distdir)/xqilla/items $(distdir)/xqilla/items/impl $(distdir)/xqilla/mapm $(distdir)/xqilla/operators $(distdir)/xqilla/parser $(distdir)/xqilla/runtime $(distdir)/xqilla/schema $(distdir)/xqilla/simple-api $(distdir)/xqilla/utils $(distdir)/xqilla/xqts
+	$(mkdir_p) $(distdir)/xqilla $(distdir)/xqilla/ast $(distdir)/xqilla/axis $(distdir)/xqilla/context $(distdir)/xqilla/context/impl $(distdir)/xqilla/dom-api $(distdir)/xqilla/dom-api/impl $(distdir)/xqilla/exceptions $(distdir)/xqilla/framework $(distdir)/xqilla/fulltext $(distdir)/xqilla/functions $(distdir)/xqilla/items $(distdir)/xqilla/items/impl $(distdir)/xqilla/mapm $(distdir)/xqilla/operators $(distdir)/xqilla/parser $(distdir)/xqilla/runtime $(distdir)/xqilla/schema $(distdir)/xqilla/simple-api $(distdir)/xqilla/utils $(distdir)/xqilla/xqts
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \

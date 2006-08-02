@@ -56,10 +56,6 @@ public:
    */
   static const XMLCh* subString( const XMLCh* srcStr, unsigned int offset, unsigned int count, XPath2MemoryManager* memMgr);
 
-  static const XMLCh* insertData( const XMLCh* target, const XMLCh * src, unsigned int offset, XPath2MemoryManager* memMgr);
-
-  static const XMLCh* insertData( const XMLCh* target, const XMLCh src, unsigned int offset, XPath2MemoryManager* memMgr);
-
   static const XMLCh* deleteData( const XMLCh* const target, unsigned int offset, unsigned int count, XPath2MemoryManager* memMgr );
 
   static const XMLCh* toLower(const XMLCh* const target, XPath2MemoryManager* memMgr);

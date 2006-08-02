@@ -23,6 +23,8 @@
 #include <xqilla/operators/GeneralComp.hpp>
 #include <xqilla/ast/XQTypeswitch.hpp>
 #include <xqilla/functions/XQUserFunction.hpp>
+#include <xqilla/fulltext/FTOption.hpp>
+#include <xqilla/fulltext/FTRange.hpp>
 
 class XQillaExpression;
 class XQFunction;
@@ -60,6 +62,21 @@ class XQDocumentOrder;
 class XQPredicate;
 class DynamicContext;
 class Item;
+class FTContains;
+class FTSelection;
+class FTWords;
+class FTWord;
+class FTOr;
+class FTAnd;
+class FTMildnot;
+class FTUnaryNot;
+class FTOrder;
+class FTDistance;
+class FTDistanceLiteral;
+class FTScope;
+class FTContent;
+class FTWindow;
+class FTWindowLiteral;
 
 class XQILLA_API PrintAST
 {
@@ -103,6 +120,24 @@ public:
   virtual std::string printPredicate(const XQPredicate *item, const DynamicContext *context, int indent);
   virtual std::string printUserFunction(const XQUserFunction::XQFunctionEvaluator *item, const DynamicContext *context, int indent);
 
+  virtual std::string printFTContains(const FTContains *item, const DynamicContext *context, int indent);
+  virtual std::string printFTSelection(const FTSelection *selection, const DynamicContext *context, int indent);
+  virtual std::string printFTWords(const FTWords *selection, const DynamicContext *context, int indent);
+  virtual std::string printFTWord(const FTWord *selection, const DynamicContext *context, int indent);
+  virtual std::string printFTOr(const FTOr *selection, const DynamicContext *context, int indent);
+  virtual std::string printFTAnd(const FTAnd *selection, const DynamicContext *context, int indent);
+  virtual std::string printFTMildnot(const FTMildnot *selection, const DynamicContext *context, int indent);
+  virtual std::string printFTUnaryNot(const FTUnaryNot *selection, const DynamicContext *context, int indent);
+  virtual std::string printFTOrder(const FTOrder *selection, const DynamicContext *context, int indent);
+  virtual std::string printFTDistance(const FTDistance *selection, const DynamicContext *context, int indent);
+  virtual std::string printFTDistanceLiteral(const FTDistanceLiteral *selection, const DynamicContext *context, int indent);
+  virtual std::string printFTScope(const FTScope *selection, const DynamicContext *context, int indent);
+  virtual std::string printFTContent(const FTContent *selection, const DynamicContext *context, int indent);
+  virtual std::string printFTWindow(const FTWindow *selection, const DynamicContext *context, int indent);
+  virtual std::string printFTWindowLiteral(const FTWindowLiteral *selection, const DynamicContext *context, int indent);
+
+  virtual std::string printFTRange(const FTRange &range, const DynamicContext *context, int indent);
+
   virtual std::string printItem(const Item::Ptr item, const DynamicContext *context, int indent);
   virtual std::string printSequenceType(const SequenceType *type, const DynamicContext *context, int indent);
   virtual std::string printItemTypeAttrs(const SequenceType::ItemType *type, const DynamicContext *context);
@@ -115,6 +150,8 @@ public:
   static std::string getItemTestTypeName(int type);
   static std::string getOccurrenceIndicatorName(SequenceType::OccurrenceIndicator oi);
   static std::string getComparisonOperationName(GeneralComp::ComparisonOperation co);
+  static std::string getFTUnitName(FTOption::FTUnit unit);
+  static std::string getFTRangeTypeName(FTRange::Type type);
 };
 
 #endif
