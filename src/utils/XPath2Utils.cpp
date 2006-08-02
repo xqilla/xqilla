@@ -151,31 +151,6 @@ const XMLCh* XPath2Utils::subString(const XMLCh* src, unsigned int offset, unsig
   return retval;
 }
 
-const XMLCh* XPath2Utils::insertData(const XMLCh* target, const XMLCh *src, unsigned int offset, XPath2MemoryManager* memMgr) {
-
-  unsigned int targetLength = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(target);
-  unsigned int srcLength = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(src);
-  unsigned int newSize = targetLength + srcLength;
-
-  XMLCh *newString = new XMLCh [newSize + 1];
-
-  if(targetLength) {
-      XERCES_CPP_NAMESPACE_QUALIFIER XMLString::copyNString(newString, target, offset);
-  }
-
-  XERCES_CPP_NAMESPACE_QUALIFIER XMLString::copyNString(newString + offset, src, srcLength);
-
-  newString[newSize] = XERCES_CPP_NAMESPACE_QUALIFIER chNull;
-  const XMLCh* retval=memMgr->getPooledString(newString);
-  delete newString;
-  return retval;
-}
-
-const XMLCh* XPath2Utils::insertData( const XMLCh* target, const XMLCh src, unsigned int offset, XPath2MemoryManager* memMgr) {
-  XMLCh newStr[2] = {src, XERCES_CPP_NAMESPACE_QUALIFIER chNull};
-  return insertData(target, newStr, offset, memMgr);
-  }
-
 const XMLCh* XPath2Utils::deleteData( const XMLCh* const target, unsigned int offset, unsigned int count, XPath2MemoryManager* memMgr) {
 
   if (target == 0) {
@@ -184,13 +159,13 @@ const XMLCh* XPath2Utils::deleteData( const XMLCh* const target, unsigned int of
 
   unsigned int targetSize = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(target); 
   unsigned int newSize =  targetSize - count;
-  XMLCh *newString = new XMLCh [newSize + 1];
+  AutoDelete<XMLCh> stringGuard(new XMLCh [newSize + 1]);
+  XMLCh *newString = stringGuard;
 
   XERCES_CPP_NAMESPACE_QUALIFIER XMLString::copyNString(newString, target, offset);// * sizeof(XMLCh));
-  XERCES_CPP_NAMESPACE_QUALIFIER XMLString::copyNString(newString + offset, target + count, ( targetSize - offset - count));//*sizeof(XMLCh));
+  XERCES_CPP_NAMESPACE_QUALIFIER XMLString::copyNString(newString + offset, target + offset + count, ( targetSize - offset - count));//*sizeof(XMLCh));
   newString[newSize] = 0;
-  const XMLCh* retval=memMgr->getPooledString(newString);
-  delete newString;
+  const XMLCh* retval = memMgr->getPooledString(newString);
   return retval;
 }
 

@@ -70,49 +70,52 @@ libxqilla_la_LIBADD =
 am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	ProxyMemoryManager.lo StringPool.lo XPath2MemoryManagerImpl.lo \
 	XQScopedNamespace.lo CollationImpl.lo UCANormalizer1.lo \
-	UCANormalizer2.lo UCANormalizer.lo CodepointCollation.lo \
-	VarStoreImpl.lo VarTypeStoreImpl.lo VarHashEntryImpl.lo \
-	XQContextImpl.lo XQDynamicContextImpl.lo ItemFactoryImpl.lo \
-	XQRemoteDebugger.lo XQAtomize.lo XQCastableAs.lo XQCastAs.lo \
-	XQContextItem.lo XQFunction.lo XQIf.lo ASTNodeImpl.lo \
-	XQInstanceOf.lo XQLiteral.lo XQNav.lo XQOperator.lo \
-	XQParenthesizedExpr.lo XQSequence.lo XQStep.lo XQTreatAs.lo \
-	XQVariable.lo StaticResolutionContext.lo StaticType.lo \
-	AggregateFunction.lo ConstantFoldingFunction.lo \
+	UCANormalizer2.lo UCANormalizer3.lo UCANormalizer.lo \
+	CodepointCollation.lo VarStoreImpl.lo VarTypeStoreImpl.lo \
+	VarHashEntryImpl.lo XQContextImpl.lo XQDynamicContextImpl.lo \
+	ItemFactoryImpl.lo XQRemoteDebugger.lo XQAtomize.lo \
+	XQCastableAs.lo XQCastAs.lo XQContextItem.lo XQFunction.lo \
+	XQIf.lo ASTNodeImpl.lo XQInstanceOf.lo XQLiteral.lo XQNav.lo \
+	XQOperator.lo XQParenthesizedExpr.lo XQSequence.lo XQStep.lo \
+	XQTreatAs.lo XQVariable.lo StaticResolutionContext.lo \
+	StaticType.lo AggregateFunction.lo ConstantFoldingFunction.lo \
 	NumericFunction.lo XQDebugHook.lo XQDOMConstructor.lo \
 	XQFLWOR.lo XQFunctionCall.lo XQGlobalVariable.lo \
 	XQOrderingChange.lo XQQuantified.lo XQValidate.lo \
 	XQTypeswitch.lo XQVariableBinding.lo XPath1Compat.lo \
 	ConvertFunctionArg.lo XQDocumentOrder.lo XQPredicate.lo \
+	FTContains.lo FTWords.lo FTOr.lo FTAnd.lo FTMildnot.lo \
+	FTUnaryNot.lo DefaultTokenizer.lo DefaultTokenStore.lo \
+	FTOrder.lo FTDistance.lo FTScope.lo FTContent.lo FTWindow.lo \
 	XQillaBuilderImpl.lo XQillaDocumentImpl.lo \
 	XQillaExpressionImpl.lo XQillaNSResolverImpl.lo \
 	XQillaXMLGrammarPoolImpl.lo XPathDocumentImpl.lo \
 	XPathNamespaceImpl.lo XPath2ResultImpl.lo \
 	XQillaImplementation.lo XPath2NodeSerializer.lo XQilla.lo \
-	XQilla2.lo XQQuery.lo UTF8Str.lo XMLChCompare.lo XStr.lo \
-	ContextUtils.lo DateUtils.lo NumUtils.lo \
-	XQillaPlatformUtils.lo PrintAST.lo XPath2NSUtils.lo \
-	XPath2Utils.lo XQillaException.lo XQException.lo \
-	FuncFactory.lo FunctionLookupImpl.lo FunctionAbs.lo \
-	FunctionAvg.lo FunctionBaseURI.lo FunctionBoolean.lo \
-	FunctionCeiling.lo FunctionCodepointEqual.lo \
-	FunctionCodepointsToString.lo FunctionCollection.lo \
-	FunctionCompare.lo FunctionConcat.lo FunctionConstructor.lo \
-	FunctionContains.lo FunctionCount.lo FunctionCurrentDate.lo \
-	FunctionCurrentDateTime.lo FunctionCurrentTime.lo \
-	FunctionData.lo FunctionDateTime.lo FunctionDeepEqual.lo \
-	FunctionDefaultCollation.lo FunctionDistinctValues.lo \
-	FunctionDocAvailable.lo FunctionDoc.lo FunctionDocumentURI.lo \
-	FunctionEmpty.lo FunctionEncodeForUri.lo FunctionEndsWith.lo \
-	FunctionError.lo FunctionEscapeHtmlUri.lo \
-	FunctionExactlyOne.lo FunctionExists.lo FunctionFalse.lo \
-	FunctionFloor.lo FunctionId.lo FunctionIdref.lo \
-	FunctionImplicitTimezone.lo FunctionIndexOf.lo \
-	FunctionInScopePrefixes.lo FunctionInsertBefore.lo \
-	FunctionIriToUri.lo FunctionLang.lo FunctionLast.lo \
-	FunctionLocalname.lo FunctionLocalNameFromQName.lo \
-	FunctionLowerCase.lo FunctionMatches.lo FunctionMax.lo \
-	FunctionMin.lo FunctionName.lo FunctionNamespaceUri.lo \
+	XQQuery.lo UTF8Str.lo XMLChCompare.lo XStr.lo ContextUtils.lo \
+	DateUtils.lo NumUtils.lo XQillaPlatformUtils.lo PrintAST.lo \
+	XPath2NSUtils.lo XPath2Utils.lo XQillaException.lo \
+	XQException.lo FuncFactory.lo FunctionLookupImpl.lo \
+	FunctionAbs.lo FunctionAvg.lo FunctionBaseURI.lo \
+	FunctionBoolean.lo FunctionCeiling.lo \
+	FunctionCodepointEqual.lo FunctionCodepointsToString.lo \
+	FunctionCollection.lo FunctionCompare.lo FunctionConcat.lo \
+	FunctionConstructor.lo FunctionContains.lo FunctionCount.lo \
+	FunctionCurrentDate.lo FunctionCurrentDateTime.lo \
+	FunctionCurrentTime.lo FunctionData.lo FunctionDateTime.lo \
+	FunctionDeepEqual.lo FunctionDefaultCollation.lo \
+	FunctionDistinctValues.lo FunctionDocAvailable.lo \
+	FunctionDoc.lo FunctionDocumentURI.lo FunctionEmpty.lo \
+	FunctionEncodeForUri.lo FunctionEndsWith.lo FunctionError.lo \
+	FunctionEscapeHtmlUri.lo FunctionExactlyOne.lo \
+	FunctionExists.lo FunctionFalse.lo FunctionFloor.lo \
+	FunctionId.lo FunctionIdref.lo FunctionImplicitTimezone.lo \
+	FunctionIndexOf.lo FunctionInScopePrefixes.lo \
+	FunctionInsertBefore.lo FunctionIriToUri.lo FunctionLang.lo \
+	FunctionLast.lo FunctionLocalname.lo \
+	FunctionLocalNameFromQName.lo FunctionLowerCase.lo \
+	FunctionMatches.lo FunctionMax.lo FunctionMin.lo \
+	FunctionName.lo FunctionNamespaceUri.lo \
 	FunctionNamespaceURIForPrefix.lo \
 	FunctionNamespaceURIFromQName.lo FunctionNilled.lo \
 	FunctionNodeName.lo FunctionNormalizeSpace.lo \
@@ -157,18 +160,17 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	AnyAtomicTypeConstructor.lo AnyAtomicType.lo \
 	ATDurationOrDerived.lo ATQNameConstructor.lo \
 	ATUntypedAtomic.lo DateOrTimeType.lo Item.lo Node.lo \
-	Numeric.lo Timezone.lo QName.lo XQueryParser.lo \
-	XPath2Parser.lo XPathScanner.lo XQueryScanner.lo mapm5sin.lo \
-	mapm_add.lo mapmasin.lo mapmasn0.lo mapmcbrt.lo mapmcnst.lo \
-	mapm_cpi.lo m_apm.lo mapm_div.lo mapm_exp.lo mapmfact.lo \
-	mapm_fam.lo mapm_fft.lo mapm_flr.lo mapmfmul.lo mapm_fpf.lo \
-	mapm_gcd.lo mapmgues.lo mapmhasn.lo mapmhsin.lo mapmipwr.lo \
-	mapmistr.lo mapm_lg2.lo mapm_lg3.lo mapm_log.lo mapm_mt.lo \
-	mapm_mul.lo mapm_pow.lo mapmpwr2.lo mapm_rcp.lo mapm_rnd.lo \
-	mapmrsin.lo mapm_set.lo mapm_sin.lo mapmsqrt.lo mapmstck.lo \
-	mapmutil.lo mapmutl2.lo AncestorAxis.lo AncestorOrSelfAxis.lo \
-	AttributeAxis.lo Axis.lo ChildAxis.lo DescendantAxis.lo \
-	DescendantOrSelfAxis.lo FollowingAxis.lo \
+	Numeric.lo Timezone.lo QName.lo XQParser.lo XQLexer.lo \
+	mapm5sin.lo mapm_add.lo mapmasin.lo mapmasn0.lo mapmcbrt.lo \
+	mapmcnst.lo mapm_cpi.lo m_apm.lo mapm_div.lo mapm_exp.lo \
+	mapmfact.lo mapm_fam.lo mapm_fft.lo mapm_flr.lo mapmfmul.lo \
+	mapm_fpf.lo mapm_gcd.lo mapmgues.lo mapmhasn.lo mapmhsin.lo \
+	mapmipwr.lo mapmistr.lo mapm_lg2.lo mapm_lg3.lo mapm_log.lo \
+	mapm_mt.lo mapm_mul.lo mapm_pow.lo mapmpwr2.lo mapm_rcp.lo \
+	mapm_rnd.lo mapmrsin.lo mapm_set.lo mapm_sin.lo mapmsqrt.lo \
+	mapmstck.lo mapmutil.lo mapmutl2.lo AncestorAxis.lo \
+	AncestorOrSelfAxis.lo AttributeAxis.lo Axis.lo ChildAxis.lo \
+	DescendantAxis.lo DescendantOrSelfAxis.lo FollowingAxis.lo \
 	FollowingSiblingAxis.lo NamespaceAxis.lo NodeTest.lo \
 	ParentAxis.lo PrecedingAxis.lo PrecedingSiblingAxis.lo \
 	SelfAxis.lo And.lo ArithmeticOperator.lo ComparisonOperator.lo \
@@ -336,7 +338,6 @@ localstatedir = @localstatedir@
 mandir = @mandir@
 mkdir_p = @mkdir_p@
 oldincludedir = @oldincludedir@
-perl = @perl@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
 sbindir = @sbindir@
@@ -365,6 +366,7 @@ src/context/XQScopedNamespace.cpp \
 src/context/impl/CollationImpl.cpp \
 src/context/impl/UCANormalizer1.cpp \
 src/context/impl/UCANormalizer2.cpp \
+src/context/impl/UCANormalizer3.cpp \
 src/context/impl/UCANormalizer.cpp \
 src/context/impl/UCANormalizer.hpp \
 src/context/impl/CodepointCollation.cpp \
@@ -412,6 +414,19 @@ src/ast/XPath1Compat.cpp \
 src/ast/ConvertFunctionArg.cpp \
 src/ast/XQDocumentOrder.cpp \
 src/ast/XQPredicate.cpp \
+src/fulltext/FTContains.cpp \
+src/fulltext/FTWords.cpp \
+src/fulltext/FTOr.cpp \
+src/fulltext/FTAnd.cpp \
+src/fulltext/FTMildnot.cpp \
+src/fulltext/FTUnaryNot.cpp \
+src/fulltext/DefaultTokenizer.cpp \
+src/fulltext/DefaultTokenStore.cpp \
+src/fulltext/FTOrder.cpp \
+src/fulltext/FTDistance.cpp \
+src/fulltext/FTScope.cpp \
+src/fulltext/FTContent.cpp \
+src/fulltext/FTWindow.cpp \
 src/dom-api/impl/XQillaBuilderImpl.cpp \
 src/dom-api/impl/XQillaBuilderImpl.hpp \
 src/dom-api/impl/XQillaDocumentImpl.cpp \
@@ -432,7 +447,6 @@ src/dom-api/XQillaImplementation.hpp \
 src/dom-api/XPath2NodeSerializer.cpp \
 src/dom-api/XPath2NodeSerializer.hpp \
 src/simple-api/XQilla.cpp \
-src/simple-api/XQilla2.cpp \
 src/simple-api/XQQuery.cpp \
 src/utils/UTF8Str.cpp \
 src/utils/XMLChCompare.cpp \
@@ -618,16 +632,12 @@ src/items/Node.cpp \
 src/items/Numeric.cpp \
 src/items/Timezone.cpp \
 src/parser/QName.cpp \
-src/parser/XQueryParser.cpp \
-src/parser/XQueryParser.hpp \
-src/parser/XPath2Parser.cpp \
-src/parser/XPath2Parser.hpp \
-src/lexer/XPathScanner.cpp \
-src/lexer/XPathScanner.hpp \
-src/lexer/XQillaLexer.hpp \
+src/parser/XQParser.cpp \
+src/parser/XQParser.hpp \
 src/lexer/FlexLexer.h \
-src/lexer/XQueryScanner.cpp \
-src/lexer/XQueryScanner.hpp \
+src/lexer/XQillaLexer.h \
+src/lexer/XQLexer.cpp \
+src/lexer/XQLexer.hpp \
 src/mapm/mapm5sin.c \
 src/mapm/mapm_add.c \
 src/mapm/mapmasin.c \
@@ -730,10 +740,8 @@ src/xqts/TestSuiteRunner.cpp
 
 EXTRA_DIST = \
 src/lexer/flex.skl \
-src/lexer/xquery.l \
-src/lexer/xpath.l \
-src/parser/xquery.y \
-src/parser/xpath.y \
+src/lexer/XQLexer.l \
+src/parser/XQParser.y \
 LICENSE \
 docs/Doxyfile.simpleapi.in \
 docs/Doxyfile.dom3api.in \
@@ -741,12 +749,38 @@ docs/Doxyfile.devapi.in \
 docs/simple-api \
 docs/dom3-api \
 Win32Projects/VC6/xqilla.dsp \
+Win32Projects/VC6/xqilla_cmd.dsp \
+Win32Projects/VC6/basicXQillaUsage.dsp \
+Win32Projects/VC6/xqtsRunner.dsp \
 Win32Projects/VC6/XQilla.dsw \
-Win32Projects/VC7.1/XQilla.sln \
 Win32Projects/VC7.1/xqilla.vcproj \
+Win32Projects/VC7.1/xqilla_cmd.vcproj \
+Win32Projects/VC7.1/basicXQillaUsage.vcproj \
+Win32Projects/VC7.1/xqtsRunner.vcproj \
+Win32Projects/VC7.1/XQilla.sln \
 tests/runXQTSTestSuite.sh \
 tests/xqts/xqts_testsuite/errors.xml \
-tests/xqts/xqts_testsuite/xqts.zip
+tests/xqts/xqts_testsuite/xqts.zip \
+wintools/app_dsp.src \
+wintools/app_vcproj.src \
+wintools/filter_dsp.end \
+wintools/filter_dsp.start \
+wintools/filter_vcproj.end \
+wintools/filter_vcproj.start \
+wintools/lib_paths.sed \
+wintools/README \
+wintools/srcfile_dsp.src \
+wintools/srcfile_filt_vcproj.src \
+wintools/srcfiles.in \
+wintools/srcfile_vcproj.src \
+wintools/s_win32 \
+wintools/s_win32_common \
+wintools/s_win32_dsp \
+wintools/s_win32_vcproj \
+wintools/xqilla_cmd.dsp.src \
+wintools/xqilla_cmd.vcproj.src \
+wintools/xqilla_dsp.src \
+wintools/xqilla_vcproj.src
 
 xqilla_SOURCES = \
 src/samples/xqilla/xqilla-commandline.cpp
@@ -757,17 +791,12 @@ src/samples/basic/basicXQillaUsage.cpp
 xqtsRunner_SOURCES = \
 tests/xqts/runner.cpp
 
-XQILLALEXSKEL = $(top_srcdir)/src/lexer/flex.skl
-XPLEXERFILE = $(top_srcdir)/src/lexer/XPathScanner.cpp
-XPLEXTEMPLATE = $(top_srcdir)/src/lexer/xpath.l
-XPPARSERFILE = $(top_srcdir)/src/parser/xpath.y
-XPPARSERCPP = $(top_srcdir)/src/parser/XPath2Parser.cpp
-XPPARSERHPP = $(top_srcdir)/src/parser/XPath2Parser.hpp
-XQLEXERFILE = $(top_srcdir)/src/lexer/XQueryScanner.cpp
-XQLEXTEMPLATE = $(top_srcdir)/src/lexer/xquery.l
-XQPARSERFILE = $(top_srcdir)/src/parser/xquery.y
-XQPARSERCPP = $(top_srcdir)/src/parser/XQueryParser.cpp
-XQPARSERHPP = $(top_srcdir)/src/parser/XQueryParser.hpp
+LEXERFILE = $(top_srcdir)/src/lexer/XQLexer.cpp
+LEXTEMPLATE = $(top_srcdir)/src/lexer/XQLexer.l
+LEXSKEL = $(top_srcdir)/src/lexer/flex.skl
+PARSERFILE = $(top_srcdir)/src/parser/XQParser.y
+PARSERCPP = $(top_srcdir)/src/parser/XQParser.cpp
+PARSERHPP = $(top_srcdir)/src/parser/XQParser.hpp
 all: all-recursive
 
 .SUFFIXES:
@@ -956,6 +985,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DatatypeLookup.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DateOrTimeType.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DateUtils.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DefaultTokenStore.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DefaultTokenizer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DescendantAxis.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DescendantOrSelfAxis.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Divide.Plo@am__quote@
@@ -963,6 +994,17 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/EmptyResult.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Equals.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Except.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FTAnd.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FTContains.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FTContent.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FTDistance.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FTMildnot.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FTOr.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FTOrder.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FTScope.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FTUnaryNot.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FTWindow.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FTWords.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FollowingAxis.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FollowingSiblingAxis.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FuncFactory.Plo@am__quote@
@@ -1132,6 +1174,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UCANormalizer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UCANormalizer1.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UCANormalizer2.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UCANormalizer3.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UTF8Str.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UnaryMinus.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Union.Plo@am__quote@
@@ -1143,12 +1186,10 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XPath2MemoryManagerImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XPath2NSUtils.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XPath2NodeSerializer.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XPath2Parser.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XPath2ResultImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XPath2Utils.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XPathDocumentImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XPathNamespaceImpl.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XPathScanner.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQAtomize.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQCastAs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQCastableAs.Plo@am__quote@
@@ -1165,11 +1206,13 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQGlobalVariable.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQIf.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQInstanceOf.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQLexer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQLiteral.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQNav.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQOperator.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQOrderingChange.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQParenthesizedExpr.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQParser.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQPredicate.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQQuantified.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQQuery.Plo@am__quote@
@@ -1184,7 +1227,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQVariable.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQVariableBinding.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQilla.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQilla2.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQillaBuilderImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQillaDocumentImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQillaException.Plo@am__quote@
@@ -1193,8 +1235,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQillaNSResolverImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQillaPlatformUtils.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQillaXMLGrammarPoolImpl.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQueryParser.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQueryScanner.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XStr.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/basicXQillaUsage.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/m_apm.Plo@am__quote@
@@ -1595,6 +1635,13 @@ UCANormalizer2.lo: src/context/impl/UCANormalizer2.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o UCANormalizer2.lo `test -f 'src/context/impl/UCANormalizer2.cpp' || echo '$(srcdir)/'`src/context/impl/UCANormalizer2.cpp
 
+UCANormalizer3.lo: src/context/impl/UCANormalizer3.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT UCANormalizer3.lo -MD -MP -MF "$(DEPDIR)/UCANormalizer3.Tpo" -c -o UCANormalizer3.lo `test -f 'src/context/impl/UCANormalizer3.cpp' || echo '$(srcdir)/'`src/context/impl/UCANormalizer3.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/UCANormalizer3.Tpo" "$(DEPDIR)/UCANormalizer3.Plo"; else rm -f "$(DEPDIR)/UCANormalizer3.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/context/impl/UCANormalizer3.cpp' object='UCANormalizer3.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o UCANormalizer3.lo `test -f 'src/context/impl/UCANormalizer3.cpp' || echo '$(srcdir)/'`src/context/impl/UCANormalizer3.cpp
+
 UCANormalizer.lo: src/context/impl/UCANormalizer.cpp
 @am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT UCANormalizer.lo -MD -MP -MF "$(DEPDIR)/UCANormalizer.Tpo" -c -o UCANormalizer.lo `test -f 'src/context/impl/UCANormalizer.cpp' || echo '$(srcdir)/'`src/context/impl/UCANormalizer.cpp; \
 @am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/UCANormalizer.Tpo" "$(DEPDIR)/UCANormalizer.Plo"; else rm -f "$(DEPDIR)/UCANormalizer.Tpo"; exit 1; fi
@@ -1903,6 +1950,97 @@ XQPredicate.lo: src/ast/XQPredicate.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQPredicate.lo `test -f 'src/ast/XQPredicate.cpp' || echo '$(srcdir)/'`src/ast/XQPredicate.cpp
 
+FTContains.lo: src/fulltext/FTContains.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FTContains.lo -MD -MP -MF "$(DEPDIR)/FTContains.Tpo" -c -o FTContains.lo `test -f 'src/fulltext/FTContains.cpp' || echo '$(srcdir)/'`src/fulltext/FTContains.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/FTContains.Tpo" "$(DEPDIR)/FTContains.Plo"; else rm -f "$(DEPDIR)/FTContains.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/fulltext/FTContains.cpp' object='FTContains.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FTContains.lo `test -f 'src/fulltext/FTContains.cpp' || echo '$(srcdir)/'`src/fulltext/FTContains.cpp
+
+FTWords.lo: src/fulltext/FTWords.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FTWords.lo -MD -MP -MF "$(DEPDIR)/FTWords.Tpo" -c -o FTWords.lo `test -f 'src/fulltext/FTWords.cpp' || echo '$(srcdir)/'`src/fulltext/FTWords.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/FTWords.Tpo" "$(DEPDIR)/FTWords.Plo"; else rm -f "$(DEPDIR)/FTWords.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/fulltext/FTWords.cpp' object='FTWords.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FTWords.lo `test -f 'src/fulltext/FTWords.cpp' || echo '$(srcdir)/'`src/fulltext/FTWords.cpp
+
+FTOr.lo: src/fulltext/FTOr.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FTOr.lo -MD -MP -MF "$(DEPDIR)/FTOr.Tpo" -c -o FTOr.lo `test -f 'src/fulltext/FTOr.cpp' || echo '$(srcdir)/'`src/fulltext/FTOr.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/FTOr.Tpo" "$(DEPDIR)/FTOr.Plo"; else rm -f "$(DEPDIR)/FTOr.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/fulltext/FTOr.cpp' object='FTOr.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FTOr.lo `test -f 'src/fulltext/FTOr.cpp' || echo '$(srcdir)/'`src/fulltext/FTOr.cpp
+
+FTAnd.lo: src/fulltext/FTAnd.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FTAnd.lo -MD -MP -MF "$(DEPDIR)/FTAnd.Tpo" -c -o FTAnd.lo `test -f 'src/fulltext/FTAnd.cpp' || echo '$(srcdir)/'`src/fulltext/FTAnd.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/FTAnd.Tpo" "$(DEPDIR)/FTAnd.Plo"; else rm -f "$(DEPDIR)/FTAnd.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/fulltext/FTAnd.cpp' object='FTAnd.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FTAnd.lo `test -f 'src/fulltext/FTAnd.cpp' || echo '$(srcdir)/'`src/fulltext/FTAnd.cpp
+
+FTMildnot.lo: src/fulltext/FTMildnot.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FTMildnot.lo -MD -MP -MF "$(DEPDIR)/FTMildnot.Tpo" -c -o FTMildnot.lo `test -f 'src/fulltext/FTMildnot.cpp' || echo '$(srcdir)/'`src/fulltext/FTMildnot.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/FTMildnot.Tpo" "$(DEPDIR)/FTMildnot.Plo"; else rm -f "$(DEPDIR)/FTMildnot.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/fulltext/FTMildnot.cpp' object='FTMildnot.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FTMildnot.lo `test -f 'src/fulltext/FTMildnot.cpp' || echo '$(srcdir)/'`src/fulltext/FTMildnot.cpp
+
+FTUnaryNot.lo: src/fulltext/FTUnaryNot.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FTUnaryNot.lo -MD -MP -MF "$(DEPDIR)/FTUnaryNot.Tpo" -c -o FTUnaryNot.lo `test -f 'src/fulltext/FTUnaryNot.cpp' || echo '$(srcdir)/'`src/fulltext/FTUnaryNot.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/FTUnaryNot.Tpo" "$(DEPDIR)/FTUnaryNot.Plo"; else rm -f "$(DEPDIR)/FTUnaryNot.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/fulltext/FTUnaryNot.cpp' object='FTUnaryNot.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FTUnaryNot.lo `test -f 'src/fulltext/FTUnaryNot.cpp' || echo '$(srcdir)/'`src/fulltext/FTUnaryNot.cpp
+
+DefaultTokenizer.lo: src/fulltext/DefaultTokenizer.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DefaultTokenizer.lo -MD -MP -MF "$(DEPDIR)/DefaultTokenizer.Tpo" -c -o DefaultTokenizer.lo `test -f 'src/fulltext/DefaultTokenizer.cpp' || echo '$(srcdir)/'`src/fulltext/DefaultTokenizer.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/DefaultTokenizer.Tpo" "$(DEPDIR)/DefaultTokenizer.Plo"; else rm -f "$(DEPDIR)/DefaultTokenizer.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/fulltext/DefaultTokenizer.cpp' object='DefaultTokenizer.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DefaultTokenizer.lo `test -f 'src/fulltext/DefaultTokenizer.cpp' || echo '$(srcdir)/'`src/fulltext/DefaultTokenizer.cpp
+
+DefaultTokenStore.lo: src/fulltext/DefaultTokenStore.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DefaultTokenStore.lo -MD -MP -MF "$(DEPDIR)/DefaultTokenStore.Tpo" -c -o DefaultTokenStore.lo `test -f 'src/fulltext/DefaultTokenStore.cpp' || echo '$(srcdir)/'`src/fulltext/DefaultTokenStore.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/DefaultTokenStore.Tpo" "$(DEPDIR)/DefaultTokenStore.Plo"; else rm -f "$(DEPDIR)/DefaultTokenStore.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/fulltext/DefaultTokenStore.cpp' object='DefaultTokenStore.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DefaultTokenStore.lo `test -f 'src/fulltext/DefaultTokenStore.cpp' || echo '$(srcdir)/'`src/fulltext/DefaultTokenStore.cpp
+
+FTOrder.lo: src/fulltext/FTOrder.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FTOrder.lo -MD -MP -MF "$(DEPDIR)/FTOrder.Tpo" -c -o FTOrder.lo `test -f 'src/fulltext/FTOrder.cpp' || echo '$(srcdir)/'`src/fulltext/FTOrder.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/FTOrder.Tpo" "$(DEPDIR)/FTOrder.Plo"; else rm -f "$(DEPDIR)/FTOrder.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/fulltext/FTOrder.cpp' object='FTOrder.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FTOrder.lo `test -f 'src/fulltext/FTOrder.cpp' || echo '$(srcdir)/'`src/fulltext/FTOrder.cpp
+
+FTDistance.lo: src/fulltext/FTDistance.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FTDistance.lo -MD -MP -MF "$(DEPDIR)/FTDistance.Tpo" -c -o FTDistance.lo `test -f 'src/fulltext/FTDistance.cpp' || echo '$(srcdir)/'`src/fulltext/FTDistance.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/FTDistance.Tpo" "$(DEPDIR)/FTDistance.Plo"; else rm -f "$(DEPDIR)/FTDistance.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/fulltext/FTDistance.cpp' object='FTDistance.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FTDistance.lo `test -f 'src/fulltext/FTDistance.cpp' || echo '$(srcdir)/'`src/fulltext/FTDistance.cpp
+
+FTScope.lo: src/fulltext/FTScope.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FTScope.lo -MD -MP -MF "$(DEPDIR)/FTScope.Tpo" -c -o FTScope.lo `test -f 'src/fulltext/FTScope.cpp' || echo '$(srcdir)/'`src/fulltext/FTScope.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/FTScope.Tpo" "$(DEPDIR)/FTScope.Plo"; else rm -f "$(DEPDIR)/FTScope.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/fulltext/FTScope.cpp' object='FTScope.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FTScope.lo `test -f 'src/fulltext/FTScope.cpp' || echo '$(srcdir)/'`src/fulltext/FTScope.cpp
+
+FTContent.lo: src/fulltext/FTContent.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FTContent.lo -MD -MP -MF "$(DEPDIR)/FTContent.Tpo" -c -o FTContent.lo `test -f 'src/fulltext/FTContent.cpp' || echo '$(srcdir)/'`src/fulltext/FTContent.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/FTContent.Tpo" "$(DEPDIR)/FTContent.Plo"; else rm -f "$(DEPDIR)/FTContent.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/fulltext/FTContent.cpp' object='FTContent.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FTContent.lo `test -f 'src/fulltext/FTContent.cpp' || echo '$(srcdir)/'`src/fulltext/FTContent.cpp
+
+FTWindow.lo: src/fulltext/FTWindow.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FTWindow.lo -MD -MP -MF "$(DEPDIR)/FTWindow.Tpo" -c -o FTWindow.lo `test -f 'src/fulltext/FTWindow.cpp' || echo '$(srcdir)/'`src/fulltext/FTWindow.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/FTWindow.Tpo" "$(DEPDIR)/FTWindow.Plo"; else rm -f "$(DEPDIR)/FTWindow.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/fulltext/FTWindow.cpp' object='FTWindow.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FTWindow.lo `test -f 'src/fulltext/FTWindow.cpp' || echo '$(srcdir)/'`src/fulltext/FTWindow.cpp
+
 XQillaBuilderImpl.lo: src/dom-api/impl/XQillaBuilderImpl.cpp
 @am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQillaBuilderImpl.lo -MD -MP -MF "$(DEPDIR)/XQillaBuilderImpl.Tpo" -c -o XQillaBuilderImpl.lo `test -f 'src/dom-api/impl/XQillaBuilderImpl.cpp' || echo '$(srcdir)/'`src/dom-api/impl/XQillaBuilderImpl.cpp; \
 @am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/XQillaBuilderImpl.Tpo" "$(DEPDIR)/XQillaBuilderImpl.Plo"; else rm -f "$(DEPDIR)/XQillaBuilderImpl.Tpo"; exit 1; fi
@@ -1979,13 +2117,6 @@ XQilla.lo: src/simple-api/XQilla.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/simple-api/XQilla.cpp' object='XQilla.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQilla.lo `test -f 'src/simple-api/XQilla.cpp' || echo '$(srcdir)/'`src/simple-api/XQilla.cpp
-
-XQilla2.lo: src/simple-api/XQilla2.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQilla2.lo -MD -MP -MF "$(DEPDIR)/XQilla2.Tpo" -c -o XQilla2.lo `test -f 'src/simple-api/XQilla2.cpp' || echo '$(srcdir)/'`src/simple-api/XQilla2.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/XQilla2.Tpo" "$(DEPDIR)/XQilla2.Plo"; else rm -f "$(DEPDIR)/XQilla2.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/simple-api/XQilla2.cpp' object='XQilla2.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQilla2.lo `test -f 'src/simple-api/XQilla2.cpp' || echo '$(srcdir)/'`src/simple-api/XQilla2.cpp
 
 XQQuery.lo: src/simple-api/XQQuery.cpp
 @am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQQuery.lo -MD -MP -MF "$(DEPDIR)/XQQuery.Tpo" -c -o XQQuery.lo `test -f 'src/simple-api/XQQuery.cpp' || echo '$(srcdir)/'`src/simple-api/XQQuery.cpp; \
@@ -3128,33 +3259,19 @@ QName.lo: src/parser/QName.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o QName.lo `test -f 'src/parser/QName.cpp' || echo '$(srcdir)/'`src/parser/QName.cpp
 
-XQueryParser.lo: src/parser/XQueryParser.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQueryParser.lo -MD -MP -MF "$(DEPDIR)/XQueryParser.Tpo" -c -o XQueryParser.lo `test -f 'src/parser/XQueryParser.cpp' || echo '$(srcdir)/'`src/parser/XQueryParser.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/XQueryParser.Tpo" "$(DEPDIR)/XQueryParser.Plo"; else rm -f "$(DEPDIR)/XQueryParser.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/parser/XQueryParser.cpp' object='XQueryParser.lo' libtool=yes @AMDEPBACKSLASH@
+XQParser.lo: src/parser/XQParser.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQParser.lo -MD -MP -MF "$(DEPDIR)/XQParser.Tpo" -c -o XQParser.lo `test -f 'src/parser/XQParser.cpp' || echo '$(srcdir)/'`src/parser/XQParser.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/XQParser.Tpo" "$(DEPDIR)/XQParser.Plo"; else rm -f "$(DEPDIR)/XQParser.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/parser/XQParser.cpp' object='XQParser.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQueryParser.lo `test -f 'src/parser/XQueryParser.cpp' || echo '$(srcdir)/'`src/parser/XQueryParser.cpp
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQParser.lo `test -f 'src/parser/XQParser.cpp' || echo '$(srcdir)/'`src/parser/XQParser.cpp
 
-XPath2Parser.lo: src/parser/XPath2Parser.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XPath2Parser.lo -MD -MP -MF "$(DEPDIR)/XPath2Parser.Tpo" -c -o XPath2Parser.lo `test -f 'src/parser/XPath2Parser.cpp' || echo '$(srcdir)/'`src/parser/XPath2Parser.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/XPath2Parser.Tpo" "$(DEPDIR)/XPath2Parser.Plo"; else rm -f "$(DEPDIR)/XPath2Parser.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/parser/XPath2Parser.cpp' object='XPath2Parser.lo' libtool=yes @AMDEPBACKSLASH@
+XQLexer.lo: src/lexer/XQLexer.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQLexer.lo -MD -MP -MF "$(DEPDIR)/XQLexer.Tpo" -c -o XQLexer.lo `test -f 'src/lexer/XQLexer.cpp' || echo '$(srcdir)/'`src/lexer/XQLexer.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/XQLexer.Tpo" "$(DEPDIR)/XQLexer.Plo"; else rm -f "$(DEPDIR)/XQLexer.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/lexer/XQLexer.cpp' object='XQLexer.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XPath2Parser.lo `test -f 'src/parser/XPath2Parser.cpp' || echo '$(srcdir)/'`src/parser/XPath2Parser.cpp
-
-XPathScanner.lo: src/lexer/XPathScanner.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XPathScanner.lo -MD -MP -MF "$(DEPDIR)/XPathScanner.Tpo" -c -o XPathScanner.lo `test -f 'src/lexer/XPathScanner.cpp' || echo '$(srcdir)/'`src/lexer/XPathScanner.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/XPathScanner.Tpo" "$(DEPDIR)/XPathScanner.Plo"; else rm -f "$(DEPDIR)/XPathScanner.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/lexer/XPathScanner.cpp' object='XPathScanner.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XPathScanner.lo `test -f 'src/lexer/XPathScanner.cpp' || echo '$(srcdir)/'`src/lexer/XPathScanner.cpp
-
-XQueryScanner.lo: src/lexer/XQueryScanner.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQueryScanner.lo -MD -MP -MF "$(DEPDIR)/XQueryScanner.Tpo" -c -o XQueryScanner.lo `test -f 'src/lexer/XQueryScanner.cpp' || echo '$(srcdir)/'`src/lexer/XQueryScanner.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/XQueryScanner.Tpo" "$(DEPDIR)/XQueryScanner.Plo"; else rm -f "$(DEPDIR)/XQueryScanner.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/lexer/XQueryScanner.cpp' object='XQueryScanner.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQueryScanner.lo `test -f 'src/lexer/XQueryScanner.cpp' || echo '$(srcdir)/'`src/lexer/XQueryScanner.cpp
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQLexer.lo `test -f 'src/lexer/XQLexer.cpp' || echo '$(srcdir)/'`src/lexer/XQLexer.cpp
 
 m_apm.lo: src/mapm/m_apm.cpp
 @am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT m_apm.lo -MD -MP -MF "$(DEPDIR)/m_apm.Tpo" -c -o m_apm.lo `test -f 'src/mapm/m_apm.cpp' || echo '$(srcdir)/'`src/mapm/m_apm.cpp; \
@@ -3815,7 +3932,7 @@ check-TESTS: $(TESTS)
 distdir: $(DISTFILES)
 	$(am__remove_distdir)
 	mkdir $(distdir)
-	$(mkdir_p) $(distdir)/Win32Projects/VC6 $(distdir)/Win32Projects/VC7.1 $(distdir)/autotools $(distdir)/docs $(distdir)/src/config $(distdir)/src/lexer $(distdir)/src/parser $(distdir)/tests $(distdir)/tests/xqts/xqts_testsuite
+	$(mkdir_p) $(distdir)/Win32Projects/VC6 $(distdir)/Win32Projects/VC7.1 $(distdir)/autotools $(distdir)/docs $(distdir)/src/config $(distdir)/src/lexer $(distdir)/src/parser $(distdir)/tests $(distdir)/tests/xqts/xqts_testsuite $(distdir)/wintools
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \
@@ -4070,17 +4187,11 @@ uninstall-info: uninstall-info-recursive
 	uninstall-libLTLIBRARIES
 
 
-$(XPLEXERFILE) : $(XPLEXTEMPLATE)
-	$(LEX) -BUs -S$(XQILLALEXSKEL) -o$(XPLEXERFILE) $(XPLEXTEMPLATE) # This can take a long time
+$(LEXERFILE): $(LEXTEMPLATE) $(LEXSKEL)
+	$(LEX) -BUs -Pxq -S$(LEXSKEL) -o$(LEXERFILE) $(LEXTEMPLATE) # This can take a long time
 
-$(XPPARSERCPP) $(XPPARSERHPP): $(XPPARSERFILE)
-	$(YACC) -d -v -o $(XPPARSERCPP) $(XPPARSERFILE)
-
-$(XQLEXERFILE): $(XQLEXTEMPLATE) $(XQLEXSKEL)
-	$(LEX) -BUs -S$(XQILLALEXSKEL) -o$(XQLEXERFILE) $(XQLEXTEMPLATE) # This can take a long time
-
-$(XQPARSERCPP) $(XQPARSERHPP): $(XQPARSERFILE)
-	$(YACC) -d -v -o $(XQPARSERCPP) $(XQPARSERFILE)
+$(PARSERCPP) $(PARSERHPP): $(PARSERFILE)
+	$(YACC) -d -v -o $(PARSERCPP) $(PARSERFILE)
 
 .PHONY: test docs
 

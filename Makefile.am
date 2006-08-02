@@ -23,6 +23,7 @@ src/context/XQScopedNamespace.cpp \
 src/context/impl/CollationImpl.cpp \
 src/context/impl/UCANormalizer1.cpp \
 src/context/impl/UCANormalizer2.cpp \
+src/context/impl/UCANormalizer3.cpp \
 src/context/impl/UCANormalizer.cpp \
 src/context/impl/UCANormalizer.hpp \
 src/context/impl/CodepointCollation.cpp \
@@ -70,6 +71,19 @@ src/ast/XPath1Compat.cpp \
 src/ast/ConvertFunctionArg.cpp \
 src/ast/XQDocumentOrder.cpp \
 src/ast/XQPredicate.cpp \
+src/fulltext/FTContains.cpp \
+src/fulltext/FTWords.cpp \
+src/fulltext/FTOr.cpp \
+src/fulltext/FTAnd.cpp \
+src/fulltext/FTMildnot.cpp \
+src/fulltext/FTUnaryNot.cpp \
+src/fulltext/DefaultTokenizer.cpp \
+src/fulltext/DefaultTokenStore.cpp \
+src/fulltext/FTOrder.cpp \
+src/fulltext/FTDistance.cpp \
+src/fulltext/FTScope.cpp \
+src/fulltext/FTContent.cpp \
+src/fulltext/FTWindow.cpp \
 src/dom-api/impl/XQillaBuilderImpl.cpp \
 src/dom-api/impl/XQillaBuilderImpl.hpp \
 src/dom-api/impl/XQillaDocumentImpl.cpp \
@@ -90,7 +104,6 @@ src/dom-api/XQillaImplementation.hpp \
 src/dom-api/XPath2NodeSerializer.cpp \
 src/dom-api/XPath2NodeSerializer.hpp \
 src/simple-api/XQilla.cpp \
-src/simple-api/XQilla2.cpp \
 src/simple-api/XQQuery.cpp \
 src/utils/UTF8Str.cpp \
 src/utils/XMLChCompare.cpp \
@@ -276,16 +289,12 @@ src/items/Node.cpp \
 src/items/Numeric.cpp \
 src/items/Timezone.cpp \
 src/parser/QName.cpp \
-src/parser/XQueryParser.cpp \
-src/parser/XQueryParser.hpp \
-src/parser/XPath2Parser.cpp \
-src/parser/XPath2Parser.hpp \
-src/lexer/XPathScanner.cpp \
-src/lexer/XPathScanner.hpp \
-src/lexer/XQillaLexer.hpp \
+src/parser/XQParser.cpp \
+src/parser/XQParser.hpp \
 src/lexer/FlexLexer.h \
-src/lexer/XQueryScanner.cpp \
-src/lexer/XQueryScanner.hpp \
+src/lexer/XQillaLexer.h \
+src/lexer/XQLexer.cpp \
+src/lexer/XQLexer.hpp \
 src/mapm/mapm5sin.c \
 src/mapm/mapm_add.c \
 src/mapm/mapmasin.c \
@@ -388,10 +397,8 @@ src/xqts/TestSuiteRunner.cpp
 
 EXTRA_DIST = \
 src/lexer/flex.skl \
-src/lexer/xquery.l \
-src/lexer/xpath.l \
-src/parser/xquery.y \
-src/parser/xpath.y \
+src/lexer/XQLexer.l \
+src/parser/XQParser.y \
 LICENSE \
 docs/Doxyfile.simpleapi.in \
 docs/Doxyfile.dom3api.in \
@@ -399,12 +406,38 @@ docs/Doxyfile.devapi.in \
 docs/simple-api \
 docs/dom3-api \
 Win32Projects/VC6/xqilla.dsp \
+Win32Projects/VC6/xqilla_cmd.dsp \
+Win32Projects/VC6/basicXQillaUsage.dsp \
+Win32Projects/VC6/xqtsRunner.dsp \
 Win32Projects/VC6/XQilla.dsw \
-Win32Projects/VC7.1/XQilla.sln \
 Win32Projects/VC7.1/xqilla.vcproj \
+Win32Projects/VC7.1/xqilla_cmd.vcproj \
+Win32Projects/VC7.1/basicXQillaUsage.vcproj \
+Win32Projects/VC7.1/xqtsRunner.vcproj \
+Win32Projects/VC7.1/XQilla.sln \
 tests/runXQTSTestSuite.sh \
 tests/xqts/xqts_testsuite/errors.xml \
-tests/xqts/xqts_testsuite/xqts.zip
+tests/xqts/xqts_testsuite/xqts.zip \
+wintools/app_dsp.src \
+wintools/app_vcproj.src \
+wintools/filter_dsp.end \
+wintools/filter_dsp.start \
+wintools/filter_vcproj.end \
+wintools/filter_vcproj.start \
+wintools/lib_paths.sed \
+wintools/README \
+wintools/srcfile_dsp.src \
+wintools/srcfile_filt_vcproj.src \
+wintools/srcfiles.in \
+wintools/srcfile_vcproj.src \
+wintools/s_win32 \
+wintools/s_win32_common \
+wintools/s_win32_dsp \
+wintools/s_win32_vcproj \
+wintools/xqilla_cmd.dsp.src \
+wintools/xqilla_cmd.vcproj.src \
+wintools/xqilla_dsp.src \
+wintools/xqilla_vcproj.src
 
 
 xqilla_SOURCES = \
@@ -416,33 +449,19 @@ src/samples/basic/basicXQillaUsage.cpp
 xqtsRunner_SOURCES = \
 tests/xqts/runner.cpp
 
-XQILLALEXSKEL = $(top_srcdir)/src/lexer/flex.skl
+LEXERFILE   = $(top_srcdir)/src/lexer/XQLexer.cpp
+LEXTEMPLATE = $(top_srcdir)/src/lexer/XQLexer.l
+LEXSKEL     = $(top_srcdir)/src/lexer/flex.skl
 
-XPLEXERFILE   = $(top_srcdir)/src/lexer/XPathScanner.cpp
-XPLEXTEMPLATE = $(top_srcdir)/src/lexer/xpath.l
+PARSERFILE  = $(top_srcdir)/src/parser/XQParser.y
+PARSERCPP   = $(top_srcdir)/src/parser/XQParser.cpp
+PARSERHPP   = $(top_srcdir)/src/parser/XQParser.hpp
 
-XPPARSERFILE  = $(top_srcdir)/src/parser/xpath.y
-XPPARSERCPP   = $(top_srcdir)/src/parser/XPath2Parser.cpp
-XPPARSERHPP   = $(top_srcdir)/src/parser/XPath2Parser.hpp
+$(LEXERFILE): $(LEXTEMPLATE) $(LEXSKEL)
+	$(LEX) -BUs -Pxq -S$(LEXSKEL) -o$(LEXERFILE) $(LEXTEMPLATE) # This can take a long time
 
-XQLEXERFILE   = $(top_srcdir)/src/lexer/XQueryScanner.cpp
-XQLEXTEMPLATE = $(top_srcdir)/src/lexer/xquery.l
-
-XQPARSERFILE  = $(top_srcdir)/src/parser/xquery.y
-XQPARSERCPP   = $(top_srcdir)/src/parser/XQueryParser.cpp
-XQPARSERHPP   = $(top_srcdir)/src/parser/XQueryParser.hpp
-
-$(XPLEXERFILE) : $(XPLEXTEMPLATE)
-	$(LEX) -BUs -S$(XQILLALEXSKEL) -o$(XPLEXERFILE) $(XPLEXTEMPLATE) # This can take a long time
-
-$(XPPARSERCPP) $(XPPARSERHPP): $(XPPARSERFILE)
-	$(YACC) -d -v -o $(XPPARSERCPP) $(XPPARSERFILE)
-
-$(XQLEXERFILE): $(XQLEXTEMPLATE) $(XQLEXSKEL)
-	$(LEX) -BUs -S$(XQILLALEXSKEL) -o$(XQLEXERFILE) $(XQLEXTEMPLATE) # This can take a long time
-
-$(XQPARSERCPP) $(XQPARSERHPP): $(XQPARSERFILE)
-	$(YACC) -d -v -o $(XQPARSERCPP) $(XQPARSERFILE)
+$(PARSERCPP) $(PARSERHPP): $(PARSERFILE)
+	$(YACC) -d -v -o $(PARSERCPP) $(PARSERFILE)
 
 .PHONY: test docs
 

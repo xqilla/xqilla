@@ -133,7 +133,6 @@
   <error id="NamespaceURIFromQNameFunc020" reason="error failure"/>
   <error id="base-URI-19" reason="error failure"/>
   <error id="base-URI-24" reason="error failure"/>
-  <error id="caselessmatch01" reason="result failure"/>
   <error id="caselessmatch04" reason="result failure"/>
   <error id="caselessmatch05" reason="result failure"/>
   <error id="caselessmatch06" reason="result failure"/>
@@ -142,7 +141,6 @@
   <error id="caselessmatch09" reason="error failure"/>
   <error id="caselessmatch10" reason="error failure"/>
   <error id="caselessmatch11" reason="error failure"/>
-  <error id="caselessmatch13" reason="result failure"/>
   <error id="casthcds10" reason="result failure"/>
   <error id="casthcds9" reason="result failure"/>
   <error id="combined-errors-1" reason="error failure"/>
@@ -277,7 +275,6 @@
   <error id="fn-root-2" reason="error failure"/>
   <error id="fn-string-1" reason="error failure"/>
   <error id="fn-string-length-18" reason="error failure"/>
-  <error id="fn-tokenize-5" reason="result failure"/>
   <error id="internalcontextitem-1" reason="error failure"/>
   <error id="last-2" reason="error failure"/>
   <error id="modules-17" reason="error failure"/>

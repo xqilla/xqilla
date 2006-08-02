@@ -111,13 +111,6 @@ if test "$?" -eq "0"
         else AC_MSG_WARN([not found. XQilla requires a version of flex supporting the -U (16-bit unicode) flag if you need to rebuild the lexer.])
 fi
 
-# Check for perl (TODO remove this dependency)
-AC_CHECK_PROG(perl, perl, perl, error)
-if test "$perl" != "perl"
-	then AC_MSG_ERROR([perl not found. Required to build Pathan.])
-fi
-AC_SUBST(perl)
-
 # Set up extra compiler flags for GCC
 if test "$GXX" = "yes"; then
   if test "$xqilla_cv_debug" = "yes"; then

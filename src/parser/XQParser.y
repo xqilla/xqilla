@@ -5,8 +5,20 @@
  *     Progress Software Corporation. All rights reserved.
  * Copyright (c) 2004-2006
  *     Sleepycat Software. All rights reserved.
+ * Copyright (c) 2004-2006
+ *     Parthenon Computing Ltd. All rights reserved.
  *
- * See the file LICENSE for redistribution information.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  * $Id$
  */
@@ -19,7 +31,10 @@
 #pragma warning(disable : 4065 4102)
 #endif
 
-#include "../lexer/XQueryScanner.hpp"
+#include <iostream>
+#include <xqilla/utils/UTF8Str.hpp>
+
+#include "../lexer/XQLexer.hpp"
 
 #include <xqilla/simple-api/XQQuery.hpp>
 #include <xqilla/ast/XQFunction.hpp>
@@ -50,6 +65,18 @@
 #include <xqilla/ast/XQTreatAs.hpp>
 #include <xqilla/ast/XQIf.hpp>
 #include <xqilla/ast/XQContextItem.hpp>
+#include <xqilla/ast/XQPredicate.hpp>
+
+#include <xqilla/fulltext/FTContains.hpp>
+#include <xqilla/fulltext/FTOr.hpp>
+#include <xqilla/fulltext/FTAnd.hpp>
+#include <xqilla/fulltext/FTMildnot.hpp>
+#include <xqilla/fulltext/FTUnaryNot.hpp>
+#include <xqilla/fulltext/FTOrder.hpp>
+#include <xqilla/fulltext/FTDistance.hpp>
+#include <xqilla/fulltext/FTScope.hpp>
+#include <xqilla/fulltext/FTContent.hpp>
+#include <xqilla/fulltext/FTWindow.hpp>
 
 #include <xqilla/parser/QName.hpp>
 
@@ -115,13 +142,20 @@ extern "C"
 void *alloca (size_t);
 #endif
 
-#define QP						((XQueryParserArgs*)qp)
+#define QP						((XQParserArgs*)qp)
 #define CONTEXT					(QP->_context)
+#define LANGUAGE					(QP->_lexer->getLanguage())
 #define MEMMGR					(CONTEXT->getMemoryManager())
+
+#define REJECT_NOT_XQUERY(where,pos) if(!QP->_lexer->isXQuery()) { yyerror(LANGUAGE, #where, (pos).first_line, (pos).first_column); }
+#define REJECT_NOT_FULLTEXT(where,pos) if(!QP->_lexer->isFullText()) { yyerror(LANGUAGE, #where, (pos).first_line, (pos).first_column); }
+
 #define WRAP(pos,object)		(wrapForDebug((QP),(object),NULL  ,(pos).first_line, (pos).first_column))
 #define FNWRAP(pos,name,object)	(wrapForDebug((QP),(object),(name),(pos).first_line, (pos).first_column))
+#define FTWRAP(pos,object)		(wrapForDebugFT((QP), (object), (pos).first_line, (pos).first_column))
+#define FTOPTIONWRAP(pos,object)		((FTOption*)wrapForDebugFT((QP), (object), (pos).first_line, (pos).first_column))
 
-#define BIT_ORDERING_SPECIFIED	                0
+#define BIT_ORDERING_SPECIFIED	0
 #define BIT_BOUNDARY_SPECIFIED	                1
 #define BIT_COLLATION_SPECIFIED	                2
 #define BIT_BASEURI_SPECIFIED	                3
@@ -133,9 +167,9 @@ void *alloca (size_t);
 #define BIT_DECLARE_SECOND_STEP                 9
 
 #undef yylex
-#define yylex QP->_scanner->yylex
+#define yylex QP->_lexer->yylex
 #undef yyerror
-#define yyerror QP->_scanner->error
+#define yyerror QP->_lexer->error
 
 static XMLCh szQuote[]=		 { XERCES_CPP_NAMESPACE_QUALIFIER chDoubleQuote, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
 static XMLCh szApos[]=		 { XERCES_CPP_NAMESPACE_QUALIFIER chSingleQuote, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
@@ -150,6 +184,7 @@ static XMLCh szFalse[]=      { XERCES_CPP_NAMESPACE_QUALIFIER chLatin_F, XERCES_
 static XMLCh szNOTATION[] =  { XERCES_CPP_NAMESPACE_QUALIFIER chLatin_N, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_O, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_T, 
                                XERCES_CPP_NAMESPACE_QUALIFIER chLatin_A, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_T, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_I, 
                                XERCES_CPP_NAMESPACE_QUALIFIER chLatin_O, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_N, XERCES_CPP_NAMESPACE_QUALIFIER chNull }; 
+
 
 static inline bool isAllSpaces(const XMLCh* str)
 {
@@ -203,7 +238,7 @@ static void merge_strings(DynamicContext* context, VectorOfASTNodes* vec, XMLCh*
 	}
 	else
 	{
-        if(vec->size()>0 && vec->back()==0)
+    if(vec->size()>0 && vec->back()==0)
 			vec->pop_back();
     	AnyAtomicTypeConstructor *ic = new (context->getMemoryManager())
       		AnyAtomicTypeConstructor(
@@ -216,7 +251,7 @@ static void merge_strings(DynamicContext* context, VectorOfASTNodes* vec, XMLCh*
 	}
 }
 
-static ASTNode* wrapForDebug(XQueryParserArgs *qp, ASTNode* pObjToWrap,
+static ASTNode* wrapForDebug(XQParserArgs *qp, ASTNode* pObjToWrap,
                               const XMLCh* fnName, unsigned int line, unsigned int column)
 {
   if(!CONTEXT->isDebuggingEnabled() && !CONTEXT->getDebugCallback())
@@ -226,7 +261,14 @@ static ASTNode* wrapForDebug(XQueryParserArgs *qp, ASTNode* pObjToWrap,
   return new (MEMMGR) XQDebugHook(QP->_query->getFile(), line, column, pObjToWrap, fnName, MEMMGR);
 }
 
-namespace XQuery {
+static FTSelection *wrapForDebugFT(XQParserArgs *qp, FTSelection *pObjToWrap,
+                                   unsigned int line, unsigned int column)
+{
+  pObjToWrap->setDebugInfo(QP->_query->getFile(), line, column);
+  return pObjToWrap;
+}
+
+namespace XQParser {
 
 %}
 
@@ -406,7 +448,7 @@ namespace XQuery {
 %token _BASEURI_						"base-uri"
 %token _CONSTRUCTION_					"construction"
 %token _ORDERING_						"ordering"
-%token _DEFAULT_					    "default"
+%token _DEFAULT_					"default"
 %token _COPY_NAMESPACES_				"copy-namespaces"
 %token _VARIABLE_KEYWORD_				"variable"
 %token _OPTION_					        "option"
@@ -417,6 +459,58 @@ namespace XQuery {
 %token _MODULE_					        "module"
 %token _ELEMENT_				        "element"
 %token _FUNCTION_				        "function"
+%token _SCORE_                                          "score"
+%token _FTCONTAINS_                                     "ftcontains"
+%token _WEIGHT_                                         "weight"
+%token _DECLARE_FT_OPTION_                              "declare ft-option"
+%token _DOUBLE_VERTICAL_BAR_                            "||"
+%token _DOUBLE_AMPERSAND_                               "&&"
+%token _NOT_IN_                                         "not in"
+%token _BANG_                                           "!"
+%token _WINDOW_                                         "window"
+%token _DISTANCE_                                       "distance"
+%token _OCCURS_                                         "occurs"
+%token _TIMES_                                          "times"
+%token _SAME_                                           "same"
+%token _DIFFERENT_                                      "different"
+%token _AT_START_                                       "at start"
+%token _AT_END_                                         "at end"
+%token _ENTIRE_CONTENT_                                 "entire content"
+%token _LOWERCASE_                                      "lowercase"
+%token _UPPERCASE_                                      "uppercase"
+%token _CASE_INSENSITIVE_                               "case insensitive"
+%token _CASE_SENSITIVE_                                 "case sensitive"
+%token _WITH_DIACRITICS_                                "with diacritics"
+%token _WITHOUT_DIACRITICS_                             "without diacritics"
+%token _DIACRITICS_SENSITIVE_                           "diacritics sensitive"
+%token _DIACRITICS_INSENSITIVE_                         "diacritics insensitive"
+%token _WITH_STEMMING_                                  "with stemming"
+%token _WITHOUT_STEMMING_                               "without stemming"
+%token _WITH_THESAURUS_                                 "with thesaurus"
+%token _WITHOUT_THESAURUS_                              "without thesaurus"
+%token _RELATIONSHIP_                                   "relationship"
+%token _LEVELS_                                         "levels"
+%token _WITH_STOP_WORDS_                                "with stop words"
+%token _WITHOUT_STOP_WORDS_                             "without stop words"
+%token _WITH_DEFAULT_STOP_WORDS_                        "with default stop words"
+%token _LANGUAGE_                                       "language"
+%token _WITH_WILDCARDS_                                 "with wildcards"
+%token _WITHOUT_WILDCARDS_                              "without wildcards"
+%token _ANY_                                            "any"
+%token _ANY_WORD_                                       "any word"
+%token _ALL_                                            "all"
+%token _ALL_WORDS_                                      "all words"
+%token _PHRASE_                                         "phrase"
+%token _EXACTLY_                                        "exactly"
+%token _AT_LEAST_                                       "at least"
+%token _AT_MOST_                                        "at most"
+%token _FROM_                                           "from"
+%token _WORDS_                                          "words"
+%token _SENTENCES_                                      "sentences"
+%token _PARAGRAPHS_                                     "paragraphs"
+%token _SENTENCE_                                       "sentence"
+%token _PARAGRAPH_                                      "paragraph"
+%token _WITHOUT_CONTENT_                                "without content"
 %token _EOF_
 
 %type <functDecl>			FunctionDecl 
@@ -429,8 +523,16 @@ namespace XQuery {
 %type <astNode>			CastableExpr Constructor ComputedConstructor DirElemConstructor DirCommentConstructor DirPIConstructor  
 %type <astNode>			CompElemConstructor CompTextConstructor CompPIConstructor CompCommentConstructor OrderedExpr UnorderedExpr
 %type <astNode>			CompAttrConstructor WhereClause CompDocConstructor DoubleLiteral InstanceofExpr DirectConstructor 
-%type <astNode>			ContentExpr ExtensionExpr CdataSection
-%type <astNode>      		ForwardStep ReverseStep AbbrevForwardStep AbbrevReverseStep 
+%type <astNode>			ContentExpr ExtensionExpr CdataSection FTContainsExpr FTIgnoreOption
+%type <astNode>      		ForwardStep ReverseStep AbbrevForwardStep AbbrevReverseStep
+
+%type <ftselection>     FTSelection FTWords FTWordsSelection FTUnaryNot FTMildnot FTAnd FTOr
+%type <ftoption>        FTProximity
+%type <ftoptionlist>    FTSelectionOptions
+%type <ftanyalloption>  FTAnyallOption
+%type <ftrange>         FTRange
+%type <ftunit>          FTUnit FTBigUnit
+
 %type <itemList>			DirElementContent DirAttributeList QuotAttrValueContent AposAttrValueContent DirAttributeValue FunctionCallArgumentList
 %type <predicates>    PredicateList
 %type <axis>          		ForwardAxis ReverseAxis
@@ -449,7 +551,7 @@ namespace XQuery {
 %type <sortSpec>			OrderSpec
 %type <sort>				OrderByClause
 %type <stringList>			ResourceLocations
-%type <str>					PositionalVar SchemaPrefix CommonContent URILiteral
+%type <str>					PositionalVar SchemaPrefix CommonContent URILiteral FTScoreVar
 %type <str>                 PreserveMode InheritMode
 
 %start Module
@@ -472,11 +574,15 @@ Module:
 VersionDecl:
 	_XQUERY_ _VERSION_ _STRING_LITERAL_ Separator
 	{
+    REJECT_NOT_XQUERY(VersionDecl, @1);
+
 		if(!XPath2Utils::equals($3,sz1_0))
 			yyerror("This XQuery processor only supports version 1.0 of the specs [err:XQST0031]");
 	}
 	| _XQUERY_ _VERSION_ _STRING_LITERAL_ _ENCODING_ _STRING_LITERAL_ Separator
 	{
+    REJECT_NOT_XQUERY(VersionDecl, @1);
+
 		if(!XPath2Utils::equals($3,sz1_0))
 			yyerror("This XQuery processor only supports version 1.0 of the specs [err:XQST0031]");
         bool bValidEnc=false;
@@ -532,7 +638,7 @@ ModuleDecl:
 	;
 
 // [6]    Prolog    ::=    ((Setter | Import | NamespaceDecl | DefaultNamespaceDecl) Separator)* 
-//						   ((VarDecl | FunctionDecl | OptionDecl) Separator)*
+//						   ((VarDecl | FunctionDecl | OptionDecl | FTOptionDecl) Separator)*
 Prolog:
 	/* empty */
 	| Prolog Setter Separator
@@ -570,6 +676,10 @@ Prolog:
     {
 		QP->_flags.set(BIT_DECLARE_SECOND_STEP);
     }
+	| Prolog FTOptionDecl Separator
+  {
+		QP->_flags.set(BIT_DECLARE_SECOND_STEP);
+  }
 ;
 
 // [7]    Setter    ::=   BoundarySpaceDecl  
@@ -604,6 +714,8 @@ Separator:
 NamespaceDecl:
 	  _DECLARE_ _NAMESPACE_ _NCNAME_ _EQUALS_ URILiteral 
 		{
+      REJECT_NOT_XQUERY(NamespaceDecl, @1);
+
             if(!XPath2Utils::equals($3,X("xml")) && !XPath2Utils::equals($3,X("xmlns")) &&
                !XPath2Utils::equals($3,X("xs")) && !XPath2Utils::equals($3,X("xsi")) &&
                !XPath2Utils::equals($3,X("fn")) && !XPath2Utils::equals($3,X("xdt")) && 
@@ -627,6 +739,8 @@ NamespaceDecl:
 BoundarySpaceDecl :
 	  _DECLARE_ _BOUNDARYSPACE_ _PRESERVE_
 		{
+      REJECT_NOT_XQUERY(BoundarySpaceDecl, @1);
+
 		    if(QP->_flags.get(BIT_BOUNDARY_SPECIFIED))
 			    yyerror("Prolog contains more than one boundary space declaration [err:XQST0068]");
 		    QP->_flags.set(BIT_BOUNDARY_SPECIFIED);
@@ -634,6 +748,8 @@ BoundarySpaceDecl :
 		}
 	| _DECLARE_ _BOUNDARYSPACE_ _STRIP_
 		{
+      REJECT_NOT_XQUERY(BoundarySpaceDecl, @1);
+
 		    if(QP->_flags.get(BIT_BOUNDARY_SPECIFIED))
 			    yyerror("Prolog contains more than one boundary space declaration [err:XQST0068]");
 		    QP->_flags.set(BIT_BOUNDARY_SPECIFIED);
@@ -645,6 +761,8 @@ BoundarySpaceDecl :
 DefaultNamespaceDecl:
 	  _DECLARE_ _DEFAULT_ _ELEMENT_ _NAMESPACE_ URILiteral
 		{
+      REJECT_NOT_XQUERY(DefaultNamespaceDecl, @1);
+
 		    if(QP->_flags.get(BIT_DEFAULTELEMENTNAMESPACE_SPECIFIED))
 			    yyerror("Prolog contains more than one default element namespace declaration [err:XQST0066]");
 		    QP->_flags.set(BIT_DEFAULTELEMENTNAMESPACE_SPECIFIED);
@@ -652,6 +770,8 @@ DefaultNamespaceDecl:
 		}
 	| _DECLARE_ _DEFAULT_ _FUNCTION_ _NAMESPACE_ URILiteral
 		{ 
+      REJECT_NOT_XQUERY(DefaultNamespaceDecl, @1);
+
 		    if(QP->_flags.get(BIT_DEFAULTFUNCTIONNAMESPACE_SPECIFIED))
 			    yyerror("Prolog contains more than one default function namespace declaration [err:XQST0066]");
 		    QP->_flags.set(BIT_DEFAULTFUNCTIONNAMESPACE_SPECIFIED);
@@ -663,6 +783,8 @@ DefaultNamespaceDecl:
 OptionDecl:
 	  _DECLARE_ _OPTION_ _QNAME_ _STRING_LITERAL_
       {
+      REJECT_NOT_XQUERY(OptionDecl, @1);
+
         // validate the QName
 		QualifiedName qName($3);
         const XMLCh* prefix=qName.getPrefix();
@@ -680,10 +802,21 @@ OptionDecl:
       }
 	;
 
-// [14]    OrderingModeDecl    ::=    <"declare" "ordering"> ("ordered" | "unordered") 
+// [14]    FTOptionDecl    ::=    "declare" "ft-option" FTMatchOption
+FTOptionDecl:
+	  _DECLARE_FT_OPTION_ FTMatchOption
+	{
+      REJECT_NOT_XQUERY(FTOptionDecl, @1);
+      REJECT_NOT_FULLTEXT(FTOptionDecl, @1);
+	}
+	;
+
+// [15]    OrderingModeDecl    ::=    <"declare" "ordering"> ("ordered" | "unordered") 
 OrderingModeDecl:
 	_DECLARE_ _ORDERING_ _ORDERING_ORDERED_
 	{
+    REJECT_NOT_XQUERY(OrderingModeDecl, @1);
+
 		if(QP->_flags.get(BIT_ORDERING_SPECIFIED))
 			yyerror("Prolog contains more than one ordering mode declaration [err:XQST0065]");
 		QP->_flags.set(BIT_ORDERING_SPECIFIED);
@@ -691,6 +824,8 @@ OrderingModeDecl:
 	}
 	| _DECLARE_ _ORDERING_ _ORDERING_UNORDERED_
 	{
+    REJECT_NOT_XQUERY(OrderingModeDecl, @1);
+
 		if(QP->_flags.get(BIT_ORDERING_SPECIFIED))
 			yyerror("Prolog contains more than one ordering mode declaration [err:XQST0065]");
 		QP->_flags.set(BIT_ORDERING_SPECIFIED);
@@ -698,10 +833,12 @@ OrderingModeDecl:
 	}
 	;
 
-// [15]    EmptyOrderDecl    ::=    <"declare" "default" "order"> (<"empty" "greatest"> | <"empty" "least">) 
+// [16]    EmptyOrderDecl    ::=    "declare" "default" "order" "empty" ("greatest" | "least")
 EmptyOrderDecl:
 	_DECLARE_ _DEFAULT_ _ORDER_ _EMPTY_KEYWORD_ _GREATEST_
 	{ 
+    REJECT_NOT_XQUERY(EmptyOrderDecl, @1);
+
 		if(QP->_flags.get(BIT_EMPTYORDERING_SPECIFIED))
 			yyerror("Prolog contains more than one empty ordering mode declaration [err:XQST0069]");
 		QP->_flags.set(BIT_EMPTYORDERING_SPECIFIED);
@@ -709,6 +846,8 @@ EmptyOrderDecl:
 	}
 	| _DECLARE_ _DEFAULT_ _ORDER_ _EMPTY_KEYWORD_ _LEAST_
 	{ 
+    REJECT_NOT_XQUERY(EmptyOrderDecl, @1);
+
 		if(QP->_flags.get(BIT_EMPTYORDERING_SPECIFIED))
 			yyerror("Prolog contains more than one empty ordering mode declaration [err:XQST0069]");
 		QP->_flags.set(BIT_EMPTYORDERING_SPECIFIED);
@@ -716,10 +855,12 @@ EmptyOrderDecl:
 	}
 	;
 
-// [16]    CopyNamespacesDecl    ::=     <"declare" "copy-namespaces"> PreserveMode "," InheritMode
+// [17]    CopyNamespacesDecl    ::=     <"declare" "copy-namespaces"> PreserveMode "," InheritMode
 CopyNamespacesDecl:
 	_DECLARE_ _COPY_NAMESPACES_ PreserveMode _COMMA_ InheritMode
     {
+    REJECT_NOT_XQUERY(CopyNamespacesDecl, @1);
+
 		if(QP->_flags.get(BIT_COPYNAMESPACE_SPECIFIED))
 			yyerror("Prolog contains more than one copy namespace declaration [err:XQST0055]");
 		QP->_flags.set(BIT_COPYNAMESPACE_SPECIFIED);
@@ -728,7 +869,7 @@ CopyNamespacesDecl:
     }
 ;
 
-// [17]   	PreserveMode	   ::=   	"preserve" | "no-preserve"
+// [18]   	PreserveMode	   ::=   	"preserve" | "no-preserve"
 PreserveMode:
 	  _PRESERVE_
 	{
@@ -740,7 +881,7 @@ PreserveMode:
 	}
 	;
 
-// [18]   	InheritMode	   ::=   	"inherit" | "no-inherit"
+// [19]   	InheritMode	   ::=   	"inherit" | "no-inherit"
 InheritMode:
 	  _INHERIT_
 	{
@@ -752,10 +893,12 @@ InheritMode:
 	}
 	;
 
-// [19]    DefaultCollationDecl    ::=    <"declare" "default" "collation"> URILiteral 
+// [20]    DefaultCollationDecl    ::=    <"declare" "default" "collation"> URILiteral 
 DefaultCollationDecl:
 		_DECLARE_ _DEFAULT_ _COLLATION_ URILiteral
 		{
+      REJECT_NOT_XQUERY(DefaultCollationDecl, @1);
+
 		    if(QP->_flags.get(BIT_COLLATION_SPECIFIED))
 			    yyerror("Prolog contains more than one default collation declaration [err:XQST0038]");
 		    QP->_flags.set(BIT_COLLATION_SPECIFIED);
@@ -771,10 +914,12 @@ DefaultCollationDecl:
 		}
 	  ;
 
-// [20]    BaseURIDecl    ::=    <"declare" "base-uri"> URILiteral
+// [21]    BaseURIDecl    ::=    <"declare" "base-uri"> URILiteral
 BaseURIDecl:
 		_DECLARE_ _BASEURI_ URILiteral
 		{
+      REJECT_NOT_XQUERY(BaseURIDecl, @1);
+
 		    if(QP->_flags.get(BIT_BASEURI_SPECIFIED))
 			    yyerror("Prolog contains more than one base URI declaration [err:XQST0032]");
 		    QP->_flags.set(BIT_BASEURI_SPECIFIED);
@@ -782,10 +927,12 @@ BaseURIDecl:
 		}
 	  ;
 
-// [21]    SchemaImport    ::=    <"import" "schema"> SchemaPrefix? URILiteral (<"at" URILiteral> ("," URILiteral)*)?
+// [22]    SchemaImport    ::=    <"import" "schema"> SchemaPrefix? URILiteral (<"at" URILiteral> ("," URILiteral)*)?
 SchemaImport:
         _IMPORT_ _SCHEMA_ SchemaPrefix URILiteral
 		{
+      REJECT_NOT_XQUERY(SchemaImport, @1);
+
 			if(XPath2Utils::equals($3, XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString))
 				CONTEXT->setDefaultElementAndTypeNS($4);
 			else if(XPath2Utils::equals($4, XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString))
@@ -802,6 +949,8 @@ SchemaImport:
 		}
 	  | _IMPORT_ _SCHEMA_ SchemaPrefix URILiteral ResourceLocations
 		{
+      REJECT_NOT_XQUERY(SchemaImport, @1);
+
 			if(XPath2Utils::equals($3, XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString))
 				CONTEXT->setDefaultElementAndTypeNS($4);
 			else if(XPath2Utils::equals($4, XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString))
@@ -818,6 +967,8 @@ SchemaImport:
 		}
 	  | _IMPORT_ _SCHEMA_ URILiteral
 		{ 
+      REJECT_NOT_XQUERY(SchemaImport, @1);
+
             try {
 			  CONTEXT->addSchemaLocation($3,NULL);
             } catch(XQException& e) {
@@ -828,6 +979,8 @@ SchemaImport:
 		}
 	  | _IMPORT_ _SCHEMA_ URILiteral ResourceLocations
 		{
+      REJECT_NOT_XQUERY(SchemaImport, @1);
+
             try {
 			  CONTEXT->addSchemaLocation($3,$4);
             } catch(XQException& e) {
@@ -851,7 +1004,7 @@ ResourceLocations:
 	}
 ;
 
-// [22]    SchemaPrefix    ::=    ("namespace" NCName "=") |  (<"default" "element"> "namespace") 
+// [23]    SchemaPrefix    ::=    ("namespace" NCName "=") |  (<"default" "element"> "namespace") 
 SchemaPrefix:
 	  _NAMESPACE_ _NCNAME_ _EQUALS_
 		{
@@ -863,10 +1016,12 @@ SchemaPrefix:
 		}
 	;
 
-// [23]    ModuleImport    ::=    <"import" "module"> ("namespace" NCName "=")? URILiteral (<"at" URILiteral> ("," URILiteral)*)?
+// [24]    ModuleImport    ::=    <"import" "module"> ("namespace" NCName "=")? URILiteral (<"at" URILiteral> ("," URILiteral)*)?
 ModuleImport:
 	_IMPORT_ _MODULE_ _NAMESPACE_ _NCNAME_ _EQUALS_ URILiteral ResourceLocations
 	{
+    REJECT_NOT_XQUERY(ModuleImport, @1);
+
 		if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen($6)==0)
 			yyerror("The literal that specifies the target namespace in a module import must not be of zero length [err:XQST0088]");
 		CONTEXT->setNamespaceBinding($4,$6);
@@ -880,6 +1035,8 @@ ModuleImport:
 	}
 	| _IMPORT_ _MODULE_ _NAMESPACE_ _NCNAME_ _EQUALS_ URILiteral 
 	{
+    REJECT_NOT_XQUERY(ModuleImport, @1);
+
 		if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen($6)==0)
 			yyerror("The literal that specifies the target namespace in a module import must not be of zero length [err:XQST0088]");
 		CONTEXT->setNamespaceBinding($4,$6);
@@ -893,6 +1050,8 @@ ModuleImport:
 	}
 	| _IMPORT_ _MODULE_ URILiteral ResourceLocations
 	{
+    REJECT_NOT_XQUERY(ModuleImport, @1);
+
 		if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen($3)==0)
 			yyerror("The literal that specifies the target namespace in a module import must not be of zero length [err:XQST0088]");
         try {
@@ -905,6 +1064,8 @@ ModuleImport:
 	}
 	| _IMPORT_ _MODULE_ URILiteral 
 	{
+    REJECT_NOT_XQUERY(ModuleImport, @1);
+
 		if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen($3)==0)
 			yyerror("The literal that specifies the target namespace in a module import must not be of zero length [err:XQST0088]");
         try {
@@ -917,37 +1078,47 @@ ModuleImport:
 	}
 	;
 
-// [24]    VarDecl    ::=    <"declare" "variable" "$"> VarName TypeDeclaration? ((":=" ExprSingle) | "external")
+// [25]    VarDecl    ::=    <"declare" "variable" "$"> VarName TypeDeclaration? ((":=" ExprSingle) | "external")
 VarDecl:
 	_DECLARE_ _VARIABLE_KEYWORD_ _DOLLAR_SIGN_ _VARIABLE_ TypeDeclaration _COLON_EQ_ ExprSingle
 	{
+    REJECT_NOT_XQUERY(VarDecl, @1);
+
 		XQGlobalVariable* var=new (MEMMGR) XQGlobalVariable($4,$5,
                                                             WRAP(@7, $7),MEMMGR);
 		QP->_query->addVariable(var);
 	}
 	| _DECLARE_ _VARIABLE_KEYWORD_ _DOLLAR_SIGN_ _VARIABLE_ _COLON_EQ_ ExprSingle
 	{
+    REJECT_NOT_XQUERY(VarDecl, @1);
+
 		XQGlobalVariable* var=new (MEMMGR) XQGlobalVariable($4,new (MEMMGR) SequenceType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ANYTHING), SequenceType::STAR),
                                                             WRAP(@6, $6),MEMMGR);
 		QP->_query->addVariable(var);
 	}
 	| _DECLARE_ _VARIABLE_KEYWORD_ _DOLLAR_SIGN_ _VARIABLE_ TypeDeclaration _EXTERNAL_
 	{
+    REJECT_NOT_XQUERY(VarDecl, @1);
+
 		XQGlobalVariable* var=new (MEMMGR) XQGlobalVariable($4,$5,NULL,MEMMGR);
 		QP->_query->addVariable(var);
 	}
 	| _DECLARE_ _VARIABLE_KEYWORD_ _DOLLAR_SIGN_ _VARIABLE_ _EXTERNAL_
 	{
+    REJECT_NOT_XQUERY(VarDecl, @1);
+
 		XQGlobalVariable* var=new (MEMMGR) XQGlobalVariable($4,new (MEMMGR) SequenceType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ANYTHING), SequenceType::STAR),
                                                             NULL,MEMMGR);
 		QP->_query->addVariable(var);
 	}
 	;
 
-// [25]    ConstructionDecl    ::=    <"declare" "construction"> ("preserve" | "strip") 
+// [26]    ConstructionDecl    ::=    <"declare" "construction"> ("preserve" | "strip") 
 ConstructionDecl:
 	_DECLARE_ _CONSTRUCTION_ _PRESERVE_
 	{
+    REJECT_NOT_XQUERY(ConstructionDecl, @1);
+
 		if(QP->_flags.get(BIT_CONSTRUCTION_SPECIFIED))
 			yyerror("Prolog contains more than one construction mode declaration [err:XQST0067]");
 		QP->_flags.set(BIT_CONSTRUCTION_SPECIFIED);
@@ -955,6 +1126,8 @@ ConstructionDecl:
 	}
 	| _DECLARE_ _CONSTRUCTION_ _STRIP_
 	{
+    REJECT_NOT_XQUERY(ConstructionDecl, @1);
+
 		if(QP->_flags.get(BIT_CONSTRUCTION_SPECIFIED))
 			yyerror("Prolog contains more than one construction mode declaration [err:XQST0067]");
 		QP->_flags.set(BIT_CONSTRUCTION_SPECIFIED);
@@ -962,44 +1135,60 @@ ConstructionDecl:
 	}
 	;
 
-// [26]    FunctionDecl    ::=    <"declare" "function"> <QName "("> ParamList? (")" |  (<")" "as"> SequenceType)) 
+// [27]    FunctionDecl    ::=    <"declare" "function"> <QName "("> ParamList? (")" |  (<")" "as"> SequenceType)) 
 //										(EnclosedExpr | "external")
 FunctionDecl:
 	  _DECLARE_ _FUNCTION_ _FUNCTION_CALL_ ParamList _RPAR_ EnclosedExpr
 		{
+      REJECT_NOT_XQUERY(FunctionDecl, @1);
+
 			$$ = new (MEMMGR) XQUserFunction($3,$4,WRAP(@6, $6),NULL, CONTEXT); 
 		}
 	| _DECLARE_ _FUNCTION_ _FUNCTION_CALL_ _RPAR_ EnclosedExpr
 		{
+      REJECT_NOT_XQUERY(FunctionDecl, @1);
+
 			$$ = new (MEMMGR) XQUserFunction($3,NULL,WRAP(@5, $5),NULL, CONTEXT); 
 		}
 	| _DECLARE_ _FUNCTION_ _FUNCTION_CALL_ ParamList _EXPR_AS_ SequenceType EnclosedExpr
 		{
+      REJECT_NOT_XQUERY(FunctionDecl, @1);
+
 			$$ = new (MEMMGR) XQUserFunction($3,$4,WRAP(@7, $7),$6, CONTEXT); 
 		}
 	| _DECLARE_ _FUNCTION_ _FUNCTION_CALL_ _EXPR_AS_ SequenceType EnclosedExpr
 		{
+      REJECT_NOT_XQUERY(FunctionDecl, @1);
+
 			$$ = new (MEMMGR) XQUserFunction($3,NULL,WRAP(@6, $6),$5, CONTEXT); 
 		}
 	| _DECLARE_ _FUNCTION_ _FUNCTION_CALL_ ParamList _RPAR_ _EXTERNAL_
 		{
+      REJECT_NOT_XQUERY(FunctionDecl, @1);
+
 			$$ = new (MEMMGR) XQUserFunction($3,$4,NULL,NULL, CONTEXT); 
 		}
 	| _DECLARE_ _FUNCTION_ _FUNCTION_CALL_ _RPAR_ _EXTERNAL_
 		{
+      REJECT_NOT_XQUERY(FunctionDecl, @1);
+
 			$$ = new (MEMMGR) XQUserFunction($3,NULL,NULL,NULL, CONTEXT); 
 		}
 	| _DECLARE_ _FUNCTION_ _FUNCTION_CALL_ ParamList _EXPR_AS_ SequenceType _EXTERNAL_
 		{
+      REJECT_NOT_XQUERY(FunctionDecl, @1);
+
 			$$ = new (MEMMGR) XQUserFunction($3,$4,NULL,$6, CONTEXT); 
 		}
 	| _DECLARE_ _FUNCTION_ _FUNCTION_CALL_ _EXPR_AS_ SequenceType _EXTERNAL_
 		{
+      REJECT_NOT_XQUERY(FunctionDecl, @1);
+
 			$$ = new (MEMMGR) XQUserFunction($3,NULL,NULL,$5, CONTEXT); 
 		}
 	;
 
-// [27]    ParamList    ::=    Param ("," Param)* 
+// [28]    ParamList    ::=    Param ("," Param)* 
 ParamList:
         ParamList _COMMA_ Param
 		{
@@ -1014,7 +1203,7 @@ ParamList:
 		}
       ;
 
-// [28]    Param    ::=    "$" VarName TypeDeclaration? 
+// [29]    Param    ::=    "$" VarName TypeDeclaration? 
 Param:
         _DOLLAR_SIGN_ _VARIABLE_ TypeDeclaration
 		{
@@ -1026,7 +1215,7 @@ Param:
 		}
       ;
 
-// [29]    EnclosedExpr    ::=    "{" Expr "}" 
+// [30]    EnclosedExpr    ::=    "{" Expr "}" 
 EnclosedExpr:
 		_LBRACE_ Expr _RBRACE_
 		{ 
@@ -1034,7 +1223,7 @@ EnclosedExpr:
 		}
       ;
 
-// [30]    QueryBody    ::=    Expr
+// [31]    QueryBody    ::=    Expr
 QueryBody:
 	Expr
 	{
@@ -1042,7 +1231,7 @@ QueryBody:
 	}
 	;
 
-// [31]    Expr    ::=    ExprSingle ("," ExprSingle)* 
+// [32]    Expr    ::=    ExprSingle ("," ExprSingle)* 
 Expr:
 		Expr _COMMA_ ExprSingle
 		{
@@ -1068,7 +1257,7 @@ Expr:
 		}
 	  ;
 
-// [32]     ExprSingle    ::=    FLWORExpr |  QuantifiedExpr |  TypeswitchExpr |  IfExpr |  OrExpr 
+// [33]     ExprSingle    ::=    FLWORExpr |  QuantifiedExpr |  TypeswitchExpr |  IfExpr |  OrExpr 
 ExprSingle:
 		FLWORExpr
 	  | QuantifiedExpr
@@ -1077,7 +1266,7 @@ ExprSingle:
 	  | OrExpr
 	  ;
 
-// [33]    FLWORExpr    ::=    (ForClause |  LetClause)+ WhereClause? OrderByClause? "return" ExprSingle 
+// [34]    FLWORExpr    ::=    (ForClause |  LetClause)+ WhereClause? OrderByClause? "return" ExprSingle 
 FLWORExpr:
 	    FlworExprForLetList WhereClause OrderByClause _RETURN_ ExprSingle
 		{
@@ -1112,8 +1301,8 @@ ForOrLetClause:
       | LetClause
       ;
 
-// [34]    ForClause    ::=    <"for" "$"> VarName TypeDeclaration? PositionalVar? "in" ExprSingle 
-//								  ("," "$" VarName TypeDeclaration? PositionalVar? "in" ExprSingle)* 
+// [35]    ForClause    ::=    "for" "$" VarName TypeDeclaration? PositionalVar? FTScoreVar? "in" ExprSingle
+//                                        ("," "$" VarName TypeDeclaration? PositionalVar? FTScoreVar? "in" ExprSingle)*
 ForClause:
 		_FOR_ ForBindingList
 		{
@@ -1140,9 +1329,22 @@ ForBinding:
 			$$->_line=@1.first_line;
 			$$->_file=QP->_query->getFile();
 		}
+	  | _DOLLAR_SIGN_ _VARIABLE_ FTScoreVar _IN_ ExprSingle 
+		{
+      // TBD FTScoreVar
+			$$ = new (MEMMGR) XQVariableBinding(MEMMGR, XQVariableBinding::forBinding,$2,$5);
+			$$->_line=@1.first_line;
+			$$->_file=QP->_query->getFile();
+		}
 	  | _DOLLAR_SIGN_ _VARIABLE_ PositionalVar _IN_ ExprSingle 
 		{
 			$$ = new (MEMMGR) XQVariableBinding(MEMMGR, XQVariableBinding::forBinding,$2,$5,$3);
+			$$->_line=@1.first_line;
+			$$->_file=QP->_query->getFile();
+		}
+	  | _DOLLAR_SIGN_ _VARIABLE_ PositionalVar FTScoreVar _IN_ ExprSingle 
+		{
+			$$ = new (MEMMGR) XQVariableBinding(MEMMGR, XQVariableBinding::forBinding,$2,$6,$3);
 			$$->_line=@1.first_line;
 			$$->_file=QP->_query->getFile();
 		}
@@ -1152,27 +1354,54 @@ ForBinding:
 			$$->_line=@1.first_line;
 			$$->_file=QP->_query->getFile();
 		}
+	  |	_DOLLAR_SIGN_ _VARIABLE_ TypeDeclaration FTScoreVar _IN_ ExprSingle 
+		{
+			$$ = new (MEMMGR) XQVariableBinding(MEMMGR, XQVariableBinding::forBinding,$2,$6,NULL,$3);
+			$$->_line=@1.first_line;
+			$$->_file=QP->_query->getFile();
+		}
 	  |	_DOLLAR_SIGN_ _VARIABLE_ TypeDeclaration PositionalVar _IN_ ExprSingle 
 		{
 			$$ = new (MEMMGR) XQVariableBinding(MEMMGR, XQVariableBinding::forBinding,$2,$6,$4,$3);
 			$$->_line=@1.first_line;
 			$$->_file=QP->_query->getFile();
 		}
+	  |	_DOLLAR_SIGN_ _VARIABLE_ TypeDeclaration PositionalVar FTScoreVar _IN_ ExprSingle 
+		{
+			$$ = new (MEMMGR) XQVariableBinding(MEMMGR, XQVariableBinding::forBinding,$2,$7,$4,$3);
+			$$->_line=@1.first_line;
+			$$->_file=QP->_query->getFile();
+		}
 	  ;
 
-// [35]    PositionalVar    ::=    "at" "$" VarName 
+// [36]    PositionalVar    ::=    "at" "$" VarName 
 PositionalVar:
       _AT_KEYWORD_ _DOLLAR_SIGN_ _VARIABLE_
 		{ 
+      REJECT_NOT_XQUERY(PositionalVar, @1);
+
 			$$ = $3; 
 		}
     ;
 
-// [36]    LetClause    ::=    <"let" "$"> VarName TypeDeclaration? ":=" ExprSingle 
-//								  ("," "$" VarName TypeDeclaration? ":=" ExprSingle)* 
+// [37]    FTScoreVar    ::=    "score" "$" VarName
+FTScoreVar:
+    _SCORE_ _DOLLAR_SIGN_ _VARIABLE_
+    {
+      REJECT_NOT_FULLTEXT(FTScoreVar, @1);
+
+      $$ = $3;
+    }
+    ;
+
+// [38]    LetClause    ::= (("let" "$" VarName TypeDeclaration? FTScoreVar?) |
+//                               ("let" "score" "$" VarName)) ":=" ExprSingle
+//                               ("," (("$" VarName TypeDeclaration? FTScoreVar?) | FTScoreVar) ":=" ExprSingle)*
 LetClause:
 		_LET_ LetBindingList
 		{
+      REJECT_NOT_XQUERY(LetClause, @1);
+
 			$$ = $2;
 		}
 	  ;
@@ -1191,9 +1420,15 @@ LetBindingList:
     ;
 
 LetBinding:
-      _DOLLAR_SIGN_ _VARIABLE_ _COLON_EQ_ ExprSingle
+        _DOLLAR_SIGN_ _VARIABLE_ _COLON_EQ_ ExprSingle
 		{
 			$$ = new (MEMMGR) XQVariableBinding(MEMMGR, XQVariableBinding::letBinding,$2,$4);
+			$$->_line=@1.first_line;
+			$$->_file=QP->_query->getFile();
+		}
+        | _DOLLAR_SIGN_ _VARIABLE_ FTScoreVar _COLON_EQ_ ExprSingle
+		{
+			$$ = new (MEMMGR) XQVariableBinding(MEMMGR, XQVariableBinding::letBinding,$2,$5);
 			$$->_line=@1.first_line;
 			$$->_file=QP->_query->getFile();
 		}
@@ -1203,29 +1438,44 @@ LetBinding:
 			$$->_line=@1.first_line;
 			$$->_file=QP->_query->getFile();
 		}
+	| _DOLLAR_SIGN_ _VARIABLE_ TypeDeclaration FTScoreVar _COLON_EQ_ ExprSingle
+		{
+			$$ = new (MEMMGR) XQVariableBinding(MEMMGR, XQVariableBinding::letBinding,$2,$6,NULL,$3);
+			$$->_line=@1.first_line;
+			$$->_file=QP->_query->getFile();
+		}
+	| FTScoreVar _COLON_EQ_ ExprSingle
+		{
+		}
     ;
 
-// [37]    WhereClause    ::=    "where" ExprSingle 
+// [39]    WhereClause    ::=    "where" ExprSingle 
 WhereClause:
       _WHERE_ ExprSingle
 		{ 
+      REJECT_NOT_XQUERY(WhereClause, @1);
+
 			$$ = WRAP(@1, $2);
 		}
     ;
 
-// [38]    OrderByClause    ::=    (<"order" "by"> |  <"stable" "order" "by">) OrderSpecList 
+// [40]    OrderByClause    ::=    (<"order" "by"> |  <"stable" "order" "by">) OrderSpecList 
 OrderByClause:
 	  _ORDER_ _BY_ OrderSpecList
 		{
+      REJECT_NOT_XQUERY(OrderByClause, @1);
+
 			$$=new (MEMMGR) XQSort(XQSort::unstable,$3);
 		}
 	| _STABLE_ _ORDER_ _BY_ OrderSpecList
 		{
+      REJECT_NOT_XQUERY(OrderByClause, @1);
+
 			$$=new (MEMMGR) XQSort(XQSort::stable,$4);
 		}
 	;
 
-// [39]    OrderSpecList    ::=    OrderSpec ("," OrderSpec)* 
+// [41]    OrderSpecList    ::=    OrderSpec ("," OrderSpec)* 
 OrderSpecList:
 	  OrderSpecList _COMMA_ OrderSpec
 		{
@@ -1239,8 +1489,8 @@ OrderSpecList:
 		}
 	;
 
-// [40]    OrderSpec    ::=    ExprSingle OrderModifier 
-// [41]    OrderModifier    ::=    ("ascending" |  "descending")? (<"empty" "greatest"> |  <"empty" "least">)? ("collation" URILiteral)? 
+// [42]    OrderSpec    ::=    ExprSingle OrderModifier 
+// [43]    OrderModifier    ::=    ("ascending" |  "descending")? (<"empty" "greatest"> |  <"empty" "least">)? ("collation" URILiteral)? 
 OrderSpec:
 	  ExprSingle OrderDirection EmptyHandling
 		{
@@ -1286,7 +1536,7 @@ EmptyHandling:
 		{ $$ = XQSort::SortSpec::empty_least; }
 	;
 
-// [42]    QuantifiedExpr    ::=    (<"some" "$"> |  <"every" "$">) VarName TypeDeclaration? "in" ExprSingle 
+// [44]    QuantifiedExpr    ::=    (<"some" "$"> |  <"every" "$">) VarName TypeDeclaration? "in" ExprSingle 
 //										("," "$" VarName TypeDeclaration? "in" ExprSingle)* "satisfies" ExprSingle 
 QuantifiedExpr:
 	_SOME_ QuantifyBindingList _SATISFIES_ ExprSingle
@@ -1326,15 +1576,19 @@ QuantifyBinding:
 		}
 	  ;
 
-// [43]    TypeswitchExpr    ::=    <"typeswitch" "("> Expr ")" CaseClause+ "default" ("$" VarName)? "return" ExprSingle 
+// [45]    TypeswitchExpr    ::=    <"typeswitch" "("> Expr ")" CaseClause+ "default" ("$" VarName)? "return" ExprSingle 
 TypeswitchExpr:
 		_TYPESWITCH_ _LPAR_ Expr _RPAR_ CaseClauseList _DEFAULT_ _DOLLAR_SIGN_ _VARIABLE_ _RETURN_ ExprSingle
 		{
+      REJECT_NOT_XQUERY(TypeswitchExpr, @1);
+
 			XQTypeswitch::Clause* defClause=new (MEMMGR) XQTypeswitch::Clause(NULL,WRAP(@6, $10),MEMMGR->getPooledString($8));
 			$$ = new (MEMMGR) XQTypeswitch( WRAP(@1, $3), $5, defClause, MEMMGR);
 		}
 	  | _TYPESWITCH_ _LPAR_ Expr _RPAR_ CaseClauseList _DEFAULT_ _RETURN_ ExprSingle
 		{
+      REJECT_NOT_XQUERY(TypeswitchExpr, @1);
+
 			XQTypeswitch::Clause* defClause=new (MEMMGR) XQTypeswitch::Clause(NULL,WRAP(@6, $8),NULL);
 			$$ = new (MEMMGR) XQTypeswitch( WRAP(@1, $3), $5, defClause, MEMMGR);
 		}
@@ -1353,7 +1607,7 @@ CaseClauseList:
 		}
 	  ;
 
-// [44]    CaseClause    ::=    "case" ("$" VarName "as")? SequenceType "return" ExprSingle
+// [46]    CaseClause    ::=    "case" ("$" VarName "as")? SequenceType "return" ExprSingle
 CaseClause:
 	  _CASE_ SequenceType _RETURN_ ExprSingle
 		{ 
@@ -1365,7 +1619,7 @@ CaseClause:
 		}
 	;
 
-// [45]    IfExpr    ::=    <"if" "("> Expr ")" "then" ExprSingle "else" ExprSingle 
+// [47]    IfExpr    ::=    <"if" "("> Expr ")" "then" ExprSingle "else" ExprSingle 
 IfExpr:
 	  _IF_ _LPAR_ Expr _RPAR_ _THEN_ ExprSingle _ELSE_ ExprSingle
 		{ 
@@ -1373,7 +1627,7 @@ IfExpr:
 		}
 	;
 
-// [46]    OrExpr    ::=    AndExpr ( "or"  AndExpr )* 
+// [48]    OrExpr    ::=    AndExpr ( "or"  AndExpr )* 
 OrExpr:
 		OrExpr _OR_ AndExpr
 		{
@@ -1392,7 +1646,7 @@ OrExpr:
 	  | AndExpr
 	  ;
 
-// [47]    AndExpr    ::=    ComparisonExpr ( "and" ComparisonExpr )* 
+// [49]    AndExpr    ::=    ComparisonExpr ( "and" ComparisonExpr )* 
 AndExpr:
 		AndExpr _AND_ ComparisonExpr
 		{
@@ -1411,77 +1665,94 @@ AndExpr:
 	  | ComparisonExpr
       ;
 
-// [48]    ComparisonExpr    ::=    RangeExpr ( (ValueComp 
+// [50]    ComparisonExpr    ::=    FTContainsExpr ( (ValueComp 
 //									|  GeneralComp 
-//									|  NodeComp)  RangeExpr )? 
-// [60]    GeneralComp    ::=    "=" |  "!=" |  "<" |  "<=" |  ">" |  ">=" 
-// [61]    ValueComp    ::=    "eq" |  "ne" |  "lt" |  "le" |  "gt" |  "ge" 
-// [62]    NodeComp    ::=    "is" |  "<<" |  ">>" 
+//									|  NodeComp)  FTContainsExpr )? 
+// [63]    GeneralComp    ::=    "=" |  "!=" |  "<" |  "<=" |  ">" |  ">=" 
+// [64]    ValueComp    ::=    "eq" |  "ne" |  "lt" |  "le" |  "gt" |  "ge" 
+// [65]    NodeComp    ::=    "is" |  "<<" |  ">>" 
 ComparisonExpr:
-	  RangeExpr _EQUALS_ RangeExpr
+	  FTContainsExpr _EQUALS_ FTContainsExpr
 		{
 			$$ = WRAP(@2, new (MEMMGR) GeneralComp(GeneralComp::EQUAL,packageArgs($1,$3, MEMMGR),MEMMGR));
 		}	
-	| RangeExpr _NOT_EQUALS_ RangeExpr
+	| FTContainsExpr _NOT_EQUALS_ FTContainsExpr
 		{
 			$$ = WRAP(@2, new (MEMMGR) GeneralComp(GeneralComp::NOT_EQUAL,packageArgs($1,$3, MEMMGR),MEMMGR));
 		}	
-	| RangeExpr _LT_ RangeExpr
+	| FTContainsExpr _LT_ FTContainsExpr
 		{
 			$$ = WRAP(@2, new (MEMMGR) GeneralComp(GeneralComp::LESS_THAN,packageArgs($1,$3, MEMMGR),MEMMGR));
 		}	
-	| RangeExpr _LT_EQUALS_ RangeExpr
+	| FTContainsExpr _LT_EQUALS_ FTContainsExpr
 		{
 			$$ = WRAP(@2, new (MEMMGR) GeneralComp(GeneralComp::LESS_THAN_EQUAL,packageArgs($1,$3, MEMMGR),MEMMGR));
 		}	
-	| RangeExpr _GT_ RangeExpr
+	| FTContainsExpr _GT_ FTContainsExpr
 		{
 			$$ = WRAP(@2, new (MEMMGR) GeneralComp(GeneralComp::GREATER_THAN,packageArgs($1,$3, MEMMGR),MEMMGR));
 		}	
-	| RangeExpr _GT_EQUALS_ RangeExpr
+	| FTContainsExpr _GT_EQUALS_ FTContainsExpr
 		{
 			$$ = WRAP(@2, new (MEMMGR) GeneralComp(GeneralComp::GREATER_THAN_EQUAL,packageArgs($1,$3, MEMMGR),MEMMGR));
 		}	
-	| RangeExpr _FORTRAN_EQ_ RangeExpr
+	| FTContainsExpr _FORTRAN_EQ_ FTContainsExpr
 		{
 			$$ = WRAP(@2, new (MEMMGR) Equals(packageArgs($1, $3, MEMMGR),MEMMGR));
 		}	
-	| RangeExpr _FORTRAN_NE_ RangeExpr
+	| FTContainsExpr _FORTRAN_NE_ FTContainsExpr
 		{
 			$$ = WRAP(@2, new (MEMMGR) NotEquals(packageArgs($1, $3, MEMMGR),MEMMGR));
 		}	
-	| RangeExpr _FORTRAN_LT_ RangeExpr
+	| FTContainsExpr _FORTRAN_LT_ FTContainsExpr
 		{
 			$$ = WRAP(@2, new (MEMMGR) LessThan(packageArgs($1, $3, MEMMGR),MEMMGR));
 		}	
-	| RangeExpr _FORTRAN_LE_ RangeExpr
+	| FTContainsExpr _FORTRAN_LE_ FTContainsExpr
 		{
 			$$ = WRAP(@2, new (MEMMGR) LessThanEqual(packageArgs($1, $3, MEMMGR),MEMMGR));
 		}	
-	| RangeExpr _FORTRAN_GT_ RangeExpr
+	| FTContainsExpr _FORTRAN_GT_ FTContainsExpr
 		{
 			$$ = WRAP(@2, new (MEMMGR) GreaterThan(packageArgs($1, $3, MEMMGR),MEMMGR));
 		}	
-	| RangeExpr _FORTRAN_GE_ RangeExpr
+	| FTContainsExpr _FORTRAN_GE_ FTContainsExpr
 		{
 			$$ = WRAP(@2, new (MEMMGR) GreaterThanEqual(packageArgs($1, $3, MEMMGR),MEMMGR));
 		}	
-	| RangeExpr _IS_ RangeExpr
+	| FTContainsExpr _IS_ FTContainsExpr
 		{
 			$$ = WRAP(@2, new (MEMMGR) NodeComparison(packageArgs($1, $3, MEMMGR), MEMMGR));
 		}
-	| RangeExpr _LT_LT_ RangeExpr
+	| FTContainsExpr _LT_LT_ FTContainsExpr
 		{
 			$$ = WRAP(@2, new (MEMMGR) OrderComparison(packageArgs($1, $3, MEMMGR), true, MEMMGR));
 		}
-	| RangeExpr _GT_GT_ RangeExpr
+	| FTContainsExpr _GT_GT_ FTContainsExpr
 		{
 			$$ = WRAP(@2, new (MEMMGR) OrderComparison(packageArgs($1, $3, MEMMGR), false,MEMMGR));
 		}
-	| RangeExpr
+	| FTContainsExpr
 	;
 
-// [49]    RangeExpr    ::=    AdditiveExpr ( "to"  AdditiveExpr )?
+// [51]    FTContainsExpr    ::=    RangeExpr ( "ftcontains" FTSelection FTIgnoreOption? )?
+FTContainsExpr:
+      RangeExpr _FTCONTAINS_ FTSelection
+      {
+        REJECT_NOT_FULLTEXT(FTContainsExpr, @1);
+
+        $$ = WRAP(@2, new (MEMMGR) FTContains($1, $3, NULL, MEMMGR));
+      }
+      | RangeExpr _FTCONTAINS_ FTSelection FTIgnoreOption
+      {
+        REJECT_NOT_FULLTEXT(FTContainsExpr, @1);
+
+        $$ = WRAP(@2, new (MEMMGR) FTContains($1, $3, $4, MEMMGR));
+      }
+      | RangeExpr
+      ;
+
+// [52]    RangeExpr    ::=    AdditiveExpr ( "to"  AdditiveExpr )?
 RangeExpr:
       AdditiveExpr _TO_ AdditiveExpr
 		{
@@ -1490,7 +1761,7 @@ RangeExpr:
 	| AdditiveExpr
     ;
 
-// [50]    AdditiveExpr    ::=    MultiplicativeExpr ( ("+" |  "-")  MultiplicativeExpr )* 
+// [53]    AdditiveExpr    ::=    MultiplicativeExpr ( ("+" |  "-")  MultiplicativeExpr )* 
 AdditiveExpr:
       AdditiveExpr _PLUS_ MultiplicativeExpr
 		{
@@ -1503,7 +1774,7 @@ AdditiveExpr:
 	| MultiplicativeExpr
     ;
 
-// [51]    MultiplicativeExpr    ::=    UnionExpr ( ("*" |  "div" |  "idiv" |  "mod")  UnionExpr )* 
+// [54]    MultiplicativeExpr    ::=    UnionExpr ( ("*" |  "div" |  "idiv" |  "mod")  UnionExpr )* 
 MultiplicativeExpr:
       MultiplicativeExpr _MULTIPLY_ UnionExpr 
 		{
@@ -1524,7 +1795,7 @@ MultiplicativeExpr:
 	| UnionExpr 
     ;
 
-// [52]    UnionExpr    ::=    IntersectExceptExpr ( ("union" |  "|")  IntersectExceptExpr )* 
+// [55]    UnionExpr    ::=    IntersectExceptExpr ( ("union" |  "|")  IntersectExceptExpr )* 
 UnionExpr:
       UnionExpr _VERTICAL_BAR_ IntersectExceptExpr
 		{
@@ -1537,7 +1808,7 @@ UnionExpr:
 	| IntersectExceptExpr
     ;
 
-// [53]    IntersectExceptExpr    ::=    InstanceofExpr ( ("intersect" |  "except")  InstanceofExpr )* 
+// [56]    IntersectExceptExpr    ::=    InstanceofExpr ( ("intersect" |  "except")  InstanceofExpr )* 
 IntersectExceptExpr:
       IntersectExceptExpr _INTERSECT_ InstanceofExpr
 		{
@@ -1550,7 +1821,7 @@ IntersectExceptExpr:
 	| InstanceofExpr
     ;
 
-// [54]    InstanceofExpr    ::=    TreatExpr ( <"instance" "of"> SequenceType )? 
+// [57]    InstanceofExpr    ::=    TreatExpr ( <"instance" "of"> SequenceType )? 
 InstanceofExpr:
 	TreatExpr _INSTANCE_ _OF_ SequenceType
 	{
@@ -1559,7 +1830,7 @@ InstanceofExpr:
 	| TreatExpr
 	;
 
-// [55]    TreatExpr    ::=    CastableExpr ( <"treat" "as"> SequenceType )? 
+// [58]    TreatExpr    ::=    CastableExpr ( <"treat" "as"> SequenceType )? 
 TreatExpr:
 	CastableExpr _TREAT_ _AS_ SequenceType
 	{
@@ -1570,7 +1841,7 @@ TreatExpr:
 	| CastableExpr
 	;
 
-// [56]    CastableExpr    ::=    CastExpr ( <"castable" "as"> SingleType )? 
+// [59]    CastableExpr    ::=    CastExpr ( <"castable" "as"> SingleType )? 
 CastableExpr:
 	CastExpr _CASTABLE_ _AS_ SingleType
 	{
@@ -1585,7 +1856,7 @@ CastableExpr:
 	| CastExpr
 	;
 
-// [57]    CastExpr    ::=    UnaryExpr (<"cast" "as"> SingleType)?
+// [60]    CastExpr    ::=    UnaryExpr (<"cast" "as"> SingleType)?
 CastExpr:
 	UnaryExpr _CAST_ _AS_ SingleType
 	{
@@ -1600,7 +1871,7 @@ CastExpr:
 	| UnaryExpr
 	;
 
-// [58]    UnaryExpr    ::=    ("-" |  "+")* ValueExpr 
+// [61]    UnaryExpr    ::=    ("-" |  "+")* ValueExpr 
 UnaryExpr:
       _MINUS_ UnaryExpr
 		{
@@ -1615,16 +1886,17 @@ UnaryExpr:
 	| ValueExpr 
     ;
 
-// [59]    ValueExpr    ::=    ValidateExpr | PathExpr | ExtensionExpr
+// [62]    ValueExpr    ::=    ValidateExpr | PathExpr | ExtensionExpr
 ValueExpr:
 	  ValidateExpr
 	| PathExpr
 	| ExtensionExpr
 	;
 
-// [63]    ValidateExpr    ::=    (<"validate" "{"> |  
+// [66]    ValidateExpr    ::=    (<"validate" "{"> |  
 //								   (<"validate" ValidationMode> "{")
 //								  ) Expr "}" 
+// [67]    ValidationMode    ::=    "lax" | "strict"
 ValidateExpr:
 	  _VALIDATE_ _LBRACE_ Expr _RBRACE_
 		{
@@ -1640,15 +1912,19 @@ ValidateExpr:
 		}
 	;
 
-// [64]   	ExtensionExpr	   ::=   	Pragma+ "{" Expr? "}"
+// [68]   	ExtensionExpr	   ::=   	Pragma+ "{" Expr? "}"
 ExtensionExpr:
 	  PragmaList _LBRACE_ _RBRACE_
 	{
+    REJECT_NOT_XQUERY(ExtensionExpr, @1);
+
 		// we don't support any pragma
 		yyerror("This pragma is not recognized, and no alternative expression is specified [err:XQST0079]");
 	}
 	| PragmaList _LBRACE_ Expr _RBRACE_
 	{
+    REJECT_NOT_XQUERY(ExtensionExpr, @1);
+
 		// we don't support any pragma
 		$$ = $3;
 	}
@@ -1659,8 +1935,8 @@ PragmaList:
 	| PragmaList Pragma
 	;
 
-// [65]   	Pragma	   ::=   	"(#" S? QName PragmaContents "#)"
-// [66]   	PragmaContents	   ::=   	(Char* - (Char* '#)' Char*))
+// [69]   	Pragma	   ::=   	"(#" S? QName PragmaContents "#)"
+// [70]   	PragmaContents	   ::=   	(Char* - (Char* '#)' Char*))
 Pragma:
 	  _PRAGMA_OPEN_ _PRAGMA_NAME_ _PRAGMA_CONTENT_ _PRAGMA_CLOSE_
       {
@@ -1698,7 +1974,7 @@ Pragma:
       }
 	;
 
-// [67]    PathExpr    ::=    ("/" RelativePathExpr?) |  ("//" RelativePathExpr) |  RelativePathExpr 
+// [71]    PathExpr    ::=    ("/" RelativePathExpr?) |  ("//" RelativePathExpr) |  RelativePathExpr 
 PathExpr:
 	  _SLASH_
   		{
@@ -1714,22 +1990,22 @@ PathExpr:
 		}
 	| _SLASHSLASH_ RelativePathExpr
   		{
-            XQNav *newNavigation = getNavigation($2,MEMMGR);
+			XQNav *nav = getNavigation($2,MEMMGR);
 
-            NodeTest *step = new (MEMMGR) NodeTest();
-            step->setTypeWildcard();
-            step->setNameWildcard();
-            step->setNamespaceWildcard();
-            newNavigation->addStepFront(new (MEMMGR) XQStep(XQStep::DESCENDANT_OR_SELF, step, MEMMGR));        
+      NodeTest *step = new (MEMMGR) NodeTest();
+      step->setTypeWildcard();
+      step->setNameWildcard();
+      step->setNamespaceWildcard();
+      nav->addStepFront(new (MEMMGR) XQStep(XQStep::DESCENDANT_OR_SELF, step, MEMMGR));        
 
-            newNavigation->addInitialRootStep(MEMMGR);
+			nav->addInitialRootStep(MEMMGR);
 
-            $$ = newNavigation;
+			$$ = nav;
 		}
 	| RelativePathExpr
 	;
 
-// [68]    RelativePathExpr    ::=    StepExpr (("/" |  "//") StepExpr)* 
+// [72]    RelativePathExpr    ::=    StepExpr (("/" |  "//") StepExpr)* 
 RelativePathExpr:
 	  RelativePathExpr _SLASH_ StepExpr
   		{
@@ -1753,13 +2029,13 @@ RelativePathExpr:
 	| StepExpr
 	;
 
-// [69]    StepExpr    ::=    AxisStep |  FilterExpr 
+// [73]    StepExpr    ::=    AxisStep |  FilterExpr 
 StepExpr:
 	  AxisStep
 	| FilterExpr
 	;
 
-// [70]    AxisStep    ::=    (ForwardStep |  ReverseStep) PredicateList 
+// [74]    AxisStep    ::=    (ForwardStep |  ReverseStep) PredicateList 
 AxisStep:
 	  ForwardStep PredicateList
 		{
@@ -1772,7 +2048,7 @@ AxisStep:
 		}
 	;
 
-// [71]    ForwardStep    ::=    (ForwardAxis NodeTest) |  AbbrevForwardStep 
+// [75]    ForwardStep    ::=    (ForwardAxis NodeTest) |  AbbrevForwardStep 
 ForwardStep:
 	  ForwardAxis NodeTest
 		{
@@ -1789,7 +2065,7 @@ ForwardStep:
 	| AbbrevForwardStep
 	;
 
-// [72]    ForwardAxis    ::=    <"child" "::">
+// [76]    ForwardAxis    ::=    <"child" "::">
 //								|  <"descendant" "::">
 //								|  <"attribute" "::">
 //								|  <"self" "::">
@@ -1827,7 +2103,7 @@ ForwardAxis:
 		}
 	;
 
-// [73]    AbbrevForwardStep    ::=    "@"? NodeTest
+// [77]    AbbrevForwardStep    ::=    "@"? NodeTest
 AbbrevForwardStep:
 	_AT_ NodeTest
 		{
@@ -1853,7 +2129,7 @@ AbbrevForwardStep:
 		}
 	;
 
-// [74]    ReverseStep    ::=    (ReverseAxis NodeTest) |  AbbrevReverseStep 
+// [78]    ReverseStep    ::=    (ReverseAxis NodeTest) |  AbbrevReverseStep 
 ReverseStep:
 	  ReverseAxis NodeTest
 		{
@@ -1866,7 +2142,7 @@ ReverseStep:
 	| AbbrevReverseStep 
 	;
 
-// [75]    ReverseAxis    ::=    <"parent" "::"> 
+// [79]    ReverseAxis    ::=    <"parent" "::"> 
 //								| <"ancestor" "::">
 //								| <"preceding-sibling" "::">
 //								| <"preceding" "::">
@@ -1894,7 +2170,7 @@ ReverseAxis:
 		}
 	;
 
-// [76]    AbbrevReverseStep    ::=    ".." 
+// [80]    AbbrevReverseStep    ::=    ".." 
 AbbrevReverseStep:
 	  _DOT_DOT_
 		{
@@ -1906,25 +2182,25 @@ AbbrevReverseStep:
 		}	
 	;
 
-// [77]    NodeTest    ::=    KindTest |  NameTest 
+// [81]    NodeTest    ::=    KindTest |  NameTest 
 NodeTest:
 	  KindTest 
 	| NameTest
 	;
 
-// [78]    NameTest    ::=    QName |  Wildcard 
+// [82]    NameTest    ::=    QName |  Wildcard 
 NameTest:
 	  QName
 		{
 			NodeTest *step = new (MEMMGR) NodeTest();
-			step->setNodePrefix($1->getPrefix());
+      step->setNodePrefix($1->getPrefix());
 			step->setNodeName($1->getName());
 			$$ = step;
 		}
 	| Wildcard
 	;
 
-// [79]    Wildcard    ::=    "*" |  <NCName ":" "*"> |  <"*" ":" NCName> 
+// [83]    Wildcard    ::=    "*" |  <NCName ":" "*"> |  <"*" ":" NCName> 
 Wildcard:
       _STAR_
 		{
@@ -1936,7 +2212,7 @@ Wildcard:
     | _NCNAME_COLON_STAR_
 		{
 			NodeTest *step = new (MEMMGR) NodeTest();
-			step->setNodePrefix($1);
+      step->setNodePrefix($1);
 			step->setNameWildcard();
 			$$ = step;
 		}
@@ -1949,7 +2225,7 @@ Wildcard:
 		}
 	;
 
-// [80]    FilterExpr    ::=    PrimaryExpr PredicateList 
+// [84]    FilterExpr    ::=    PrimaryExpr PredicateList 
 FilterExpr:
 	  PrimaryExpr PredicateList
 		{
@@ -1957,8 +2233,8 @@ FilterExpr:
 		}
 	;
 
-// [81]    PredicateList    ::=    Predicate* 
-// [82]    Predicate    ::=    "[" Expr "]" 
+// [85]    PredicateList    ::=    Predicate* 
+// [86]    Predicate    ::=    "[" Expr "]" 
 PredicateList:
 	  /* empty */
 		{
@@ -1972,7 +2248,7 @@ PredicateList:
 		}
 	;
 
-// [83]    PrimaryExpr    ::=    Literal |  VarRef | ParenthesizedExpr | ContextItemExpr | FunctionCall | Constructor | OrderedExpr | UnorderedExpr
+// [87]    PrimaryExpr    ::=    Literal |  VarRef | ParenthesizedExpr | ContextItemExpr | FunctionCall | Constructor | OrderedExpr | UnorderedExpr
 PrimaryExpr:
 	   Literal 
 	|  VarRef
@@ -1984,20 +2260,21 @@ PrimaryExpr:
 	|  UnorderedExpr
 	;
 
-// [84]    Literal    ::=    NumericLiteral |  StringLiteral 
+// [88]    Literal    ::=    NumericLiteral |  StringLiteral 
 Literal:
 	  NumericLiteral 
 	| StringLiteral 
 	;
 
-// [85]    NumericLiteral    ::=    IntegerLiteral |  DecimalLiteral |  DoubleLiteral 
+// [89]    NumericLiteral    ::=    IntegerLiteral |  DecimalLiteral |  DoubleLiteral 
 NumericLiteral:
 	  IntegerLiteral 
 	| DecimalLiteral 
 	| DoubleLiteral 
 	;
 
-// [86]    VarRef    ::=    "$" VarName 
+// [90]    VarRef    ::=    "$" VarName 
+// [91]    VarName    ::=    QName
 VarRef:
 	_DOLLAR_SIGN_ _VARIABLE_
 		{
@@ -2009,7 +2286,7 @@ VarRef:
 		}
 	;
 		
-// [87]    ParenthesizedExpr    ::=    "(" Expr? ")" 
+// [92]    ParenthesizedExpr    ::=    "(" Expr? ")" 
 ParenthesizedExpr:
       _LPAR_ Expr _RPAR_
 		{ 
@@ -2031,7 +2308,7 @@ ParenthesizedExpr:
 		}
     ;
 
-// [88]    ContextItemExpr    ::=    "." 
+// [93]    ContextItemExpr    ::=    "." 
 ContextItemExpr:
 	  _DOT_
 		{
@@ -2039,23 +2316,27 @@ ContextItemExpr:
 		}
 	;
 
-// [89]    OrderedExpr    ::=    <"ordered" "{"> Expr "}" 
+// [94]    OrderedExpr    ::=    <"ordered" "{"> Expr "}" 
 OrderedExpr:
 	_ORDERED_ _LBRACE_ Expr _RBRACE_
 		{
-			$$ = new (MEMMGR) XQOrderingChange(StaticContext::ORDERING_ORDERED, $3, MEMMGR);
+      REJECT_NOT_XQUERY(OrderedExpr, @1);
+
+			$$ = WRAP(@1, new (MEMMGR) XQOrderingChange(StaticContext::ORDERING_ORDERED, $3, MEMMGR));
 		}
 	;
 
-// [90]    UnorderedExpr    ::=    <"unordered" "{"> Expr "}" 
+// [95]    UnorderedExpr    ::=    <"unordered" "{"> Expr "}" 
 UnorderedExpr:
 	_UNORDERED_ _LBRACE_ Expr _RBRACE_
 		{
-			$$ = new (MEMMGR) XQOrderingChange(StaticContext::ORDERING_UNORDERED, $3, MEMMGR);
+      REJECT_NOT_XQUERY(UnorderedExpr, @1);
+
+			$$ = WRAP(@1, new (MEMMGR) XQOrderingChange(StaticContext::ORDERING_UNORDERED, $3, MEMMGR));
 		}
 	;
 
-// [91]    FunctionCall    ::=    <QName "("> (ExprSingle ("," ExprSingle)*)? ")" 
+// [96]    FunctionCall    ::=    <QName "("> (ExprSingle ("," ExprSingle)*)? ")" 
 FunctionCall:
 	  _FUNCTION_CALL_ _RPAR_
 		{
@@ -2081,13 +2362,19 @@ FunctionCallArgumentList:
 		}	
 	;
 
-// [92]    Constructor    ::=    DirectConstructor | ComputedConstructor 
+// [97]    Constructor    ::=    DirectConstructor | ComputedConstructor 
 Constructor:
 	  DirectConstructor
+    {
+      REJECT_NOT_XQUERY(Constructor, @1);
+    }
 	| ComputedConstructor
+    {
+      REJECT_NOT_XQUERY(Constructor, @1);
+    }
 	;
 
-// [93]    DirectConstructor    ::=    DirElemConstructor
+// [98]    DirectConstructor    ::=    DirElemConstructor
 //									 | DirCommentConstructor
 //									 | DirPIConstructor 
 DirectConstructor:
@@ -2096,7 +2383,7 @@ DirectConstructor:
 	| DirPIConstructor
 	;
 
-// [94]    DirElemConstructor    ::=    "<" QName DirAttributeList ("/>" |  (">" DirElementContent* "</" QName S? ">")) 
+// [99]    DirElemConstructor    ::=    "<" QName DirAttributeList ("/>" |  (">" DirElementContent* "</" QName S? ">")) 
 DirElemConstructor:
       _START_TAG_OPEN_ _TAG_NAME_ DirAttributeList _EMPTY_TAG_CLOSE_
 		{ 
@@ -2122,13 +2409,13 @@ DirElemConstructor:
 					elemContent->pop_back();
 				else if(!CONTEXT->getPreserveBoundarySpace() &&
 					    elemContent->back()->getType()==ASTNode::LITERAL)
-			    {
+				{
                     ASTNode* last=elemContent->back();
 				    Item::Ptr litVal = ((XQLiteral*)last)->getItemConstructor()->createItem(CONTEXT);
-				    if(((AnyAtomicType*)(const Item*)litVal)->getPrimitiveTypeIndex()==AnyAtomicType::STRING &&
-				       isAllSpaces(litVal->asString(CONTEXT)))
+					if(((AnyAtomicType*)(const Item*)litVal)->getPrimitiveTypeIndex()==AnyAtomicType::STRING &&
+					   isAllSpaces(litVal->asString(CONTEXT)))
                     {
-					    elemContent->pop_back();
+						elemContent->pop_back();
                         // special case: if the previous node was a CDATA, put it back
                         if(elemContent->size()>0 && elemContent->back()->getType()==ASTNode::DOM_CONSTRUCTOR &&
                            ((XQDOMConstructor*)elemContent->back())->getNodeType()==Node::cdata_string)
@@ -2136,7 +2423,7 @@ DirElemConstructor:
                             elemContent->push_back(last);
                         }
                     }
-			    }
+				}
 			}
 			$$ = WRAP(@1, new (MEMMGR) XQDOMConstructor(Node::element_string,
 							  new (MEMMGR) XQLiteral(
@@ -2149,7 +2436,7 @@ DirElemConstructor:
 		}
 	;
 
-// [95]    DirAttributeList    ::=    (S (QName S? "=" S? DirAttributeValue)?)* 
+// [100]    DirAttributeList    ::=    (S (QName S? "=" S? DirAttributeValue)?)* 
 DirAttributeList: 
 		/* empty */
 		{
@@ -2184,7 +2471,7 @@ DirAttributeList:
         }
 	  ;
 
-// [96]    DirAttributeValue    ::=    ('"' (EscapeQuot |  QuotAttrValueContent)* '"')
+// [101]    DirAttributeValue    ::=    ('"' (EscapeQuot |  QuotAttrValueContent)* '"')
 //								 |  ("'" (EscapeApos |  AposAttrValueContent)* "'") 
 DirAttributeValue:
 		_OPEN_QUOT_ QuotAttrValueContent _CLOSE_QUOT_
@@ -2197,7 +2484,7 @@ DirAttributeValue:
 		}
 	;
 
-// [97]    QuotAttrValueContent    ::=    QuotAttContentChar
+// [102]    QuotAttrValueContent    ::=    QuotAttContentChar
 //										|  CommonContent
 QuotAttrValueContent:
 		/* empty */
@@ -2229,7 +2516,7 @@ QuotAttrValueContent:
 		}
 	;
 
-// [98]    AposAttrValueContent    ::=    AposAttContentChar
+// [103]    AposAttrValueContent    ::=    AposAttContentChar
 //										|  CommonContent
 AposAttrValueContent:
 		/* empty */
@@ -2261,7 +2548,7 @@ AposAttrValueContent:
 		}
 	  ;
 
-// [99]    DirElementContent    ::=    DirectConstructor 
+// [104]    DirElementContent    ::=    DirectConstructor 
 //									|  ElementContentChar
 //									|  CdataSection 
 //									|  CommonContent
@@ -2283,14 +2570,14 @@ DirElementContent:
 				if($$->back()==0)
 					$$->pop_back();
 				else if($$->back()->getType()==ASTNode::LITERAL)
-			    {
-				    const XMLCh* lastString=NULL;
-				    Item::Ptr litVal = ((XQLiteral*)$$->back())->getItemConstructor()->createItem(CONTEXT);
-				    if(((AnyAtomicType*)(const Item*)litVal)->getPrimitiveTypeIndex()==AnyAtomicType::STRING)
-					    lastString=litVal->asString(CONTEXT);
-				    if(lastString!=NULL && XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(lastString)>0 && isAllSpaces(lastString) && !CONTEXT->getPreserveBoundarySpace())
-					    $$->pop_back();
-			    }
+				{
+					const XMLCh* lastString=NULL;
+					Item::Ptr litVal = ((XQLiteral*)$$->back())->getItemConstructor()->createItem(CONTEXT);
+					if(((AnyAtomicType*)(const Item*)litVal)->getPrimitiveTypeIndex()==AnyAtomicType::STRING)
+						lastString=litVal->asString(CONTEXT);
+					if(lastString!=NULL && XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(lastString)>0 && isAllSpaces(lastString) && !CONTEXT->getPreserveBoundarySpace())
+						$$->pop_back();
+				}
 			}
 			$$->push_back($2);
 		}
@@ -2352,14 +2639,14 @@ DirElementContent:
 				if($$->back()==0)
 					$$->pop_back();
 				else if($$->back()->getType()==ASTNode::LITERAL)
-			  {
-				  const XMLCh* lastString=NULL;
-				  Item::Ptr litVal = ((XQLiteral*)$$->back())->getItemConstructor()->createItem(CONTEXT);
-				  if(((AnyAtomicType*)(const Item*)litVal)->getPrimitiveTypeIndex()==AnyAtomicType::STRING)
-					  lastString=litVal->asString(CONTEXT);
-				  if(lastString!=NULL && XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(lastString)>0 && isAllSpaces(lastString) && !CONTEXT->getPreserveBoundarySpace())
-					  $$->pop_back();
-			  }
+				{
+					const XMLCh* lastString=NULL;
+					Item::Ptr litVal = ((XQLiteral*)$$->back())->getItemConstructor()->createItem(CONTEXT);
+					if(((AnyAtomicType*)(const Item*)litVal)->getPrimitiveTypeIndex()==AnyAtomicType::STRING)
+						lastString=litVal->asString(CONTEXT);
+					if(lastString!=NULL && XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(lastString)>0 && isAllSpaces(lastString) && !CONTEXT->getPreserveBoundarySpace())
+						$$->pop_back();
+				}
 			}
 			$$->push_back($2);
 			$$->push_back(0);
@@ -2377,7 +2664,7 @@ DirElementContent:
 		}
 	;
 
-// [100]    CommonContent    ::=    PredefinedEntityRef | CharRef | "{{" | "}}" | EnclosedExpr 
+// [105]    CommonContent    ::=    PredefinedEntityRef | CharRef | "{{" | "}}" | EnclosedExpr 
 // we choose to remove the EnclosedExpr, so that the type can be a string
 CommonContent:
 	_PREDEFINED_ENTITY_REF_
@@ -2392,8 +2679,8 @@ CommonContent:
 	} 
 	;
 
-// [101]    DirCommentConstructor    ::=    "<!--" DirCommentContents "-->"
-// [102]    DirCommentContents    ::=    ((Char - '-') | <'-' (Char - '-')>)* 
+// [106]    DirCommentConstructor    ::=    "<!--" DirCommentContents "-->"
+// [107]    DirCommentContents    ::=    ((Char - '-') | <'-' (Char - '-')>)* 
 DirCommentConstructor:
 	_XML_COMMENT_
 		{
@@ -2408,8 +2695,8 @@ DirCommentConstructor:
 		}
 	;
 
-// [103]    DirPIConstructor    ::=    "<?" PITarget (S DirPIContents)? "?>"
-// [104]    DirPIContents    ::=    (Char* - (Char* '?>' Char*)) 
+// [108]    DirPIConstructor    ::=    "<?" PITarget (S DirPIContents)? "?>"
+// [109]    DirPIContents    ::=    (Char* - (Char* '?>' Char*)) 
 DirPIConstructor:
 	_PROCESSING_INSTRUCTION_START_ _PI_TARGET_ _PROCESSING_INSTRUCTION_CONTENT_
 		{
@@ -2434,8 +2721,8 @@ DirPIConstructor:
 		}
 	;
 
-// [105]    CDataSection    ::=    "<![CDATA[" CDataSectionContents "]]>"
-// [106]    CDataSectionContents    ::=    (Char* - (Char* ']]>' Char*)) 
+// [110]    CDataSection    ::=    "<![CDATA[" CDataSectionContents "]]>"
+// [111]    CDataSectionContents    ::=    (Char* - (Char* ']]>' Char*)) 
 CdataSection:
 	  _CDATA_SECTION_
 		{
@@ -2450,7 +2737,7 @@ CdataSection:
 		}
 	;
 
-// [107]    ComputedConstructor    ::=   CompDocConstructor
+// [112]    ComputedConstructor    ::=   CompDocConstructor
 //									   | CompElemConstructor
 //									   | CompAttrConstructor
 //									   | CompTextConstructor
@@ -2465,7 +2752,7 @@ ComputedConstructor:
 	| CompPIConstructor 
 	;
 
-// [108]    CompDocConstructor    ::=    <"document" "{"> Expr "}" 
+// [113]    CompDocConstructor    ::=    <"document" "{"> Expr "}" 
 CompDocConstructor:
 	  _DOCUMENT_CONSTR_ _LBRACE_ Expr _RBRACE_
 		{
@@ -2483,7 +2770,7 @@ CompDocConstructor:
 		}
 	;
 
-// [109]    CompElemConstructor    ::=    (<"element" QName "{"> |  (<"element" "{"> Expr "}" "{")) ContentExpr? "}" 
+// [114]    CompElemConstructor    ::=    (<"element" QName "{"> |  (<"element" "{"> Expr "}" "{")) ContentExpr? "}" 
 CompElemConstructor:
 	  _NAMED_ELEMENT_CONSTR_ _LBRACE_ ContentExpr _RBRACE_ 
 		{
@@ -2529,12 +2816,12 @@ CompElemConstructor:
 		}
 	;
 
-// [110]    ContentExpr    ::=    Expr
+// [115]    ContentExpr    ::=    Expr
 ContentExpr:
 	Expr
 	;
 
-// [111]    CompAttrConstructor    ::=    (<"attribute" QName "{"> |  (<"attribute" "{"> Expr "}" "{")) Expr? "}" 
+// [116]    CompAttrConstructor    ::=    (<"attribute" QName "{"> |  (<"attribute" "{"> Expr "}" "{")) Expr? "}" 
 CompAttrConstructor:
 	  _NAMED_ATTRIBUTE_CONSTR_ _LBRACE_ Expr _RBRACE_ 
 		{
@@ -2578,7 +2865,7 @@ CompAttrConstructor:
 		}
 	;
 
-// [112]    CompTextConstructor    ::=    <"text" "{"> Expr "}" 
+// [117]    CompTextConstructor    ::=    <"text" "{"> Expr "}" 
 CompTextConstructor:
 	  _TEXT_CONSTR_ _LBRACE_ Expr _RBRACE_
 		{
@@ -2588,7 +2875,7 @@ CompTextConstructor:
 		}
 	;
 
-// [113]    CompCommentConstructor    ::=    <"comment" "{"> Expr "}" 
+// [118]    CompCommentConstructor    ::=    <"comment" "{"> Expr "}" 
 CompCommentConstructor:
 	  _COMMENT_CONSTR_ _LBRACE_ Expr _RBRACE_
 		{
@@ -2598,7 +2885,7 @@ CompCommentConstructor:
 		}
 	;
 
-// [114]    CompPIConstructor    ::=    (<"processing-instruction" NCName "{"> | (<"processing-instruction" "{"> Expr "}" "{")) Expr? "}" 
+// [119]    CompPIConstructor    ::=    (<"processing-instruction" NCName "{"> | (<"processing-instruction" "{"> Expr "}" "{")) Expr? "}" 
 CompPIConstructor:
 	  _NAMED_PROCESSING_INSTRUCTION_CONSTR_ _LBRACE_ Expr _RBRACE_
 	  {
@@ -2642,7 +2929,7 @@ CompPIConstructor:
 	  }
 	;
 
-// [115]    SingleType    ::=    AtomicType "?"? 
+// [120]    SingleType    ::=    AtomicType "?"? 
 SingleType:
 		AtomicType _ZERO_OR_ONE_
 	    {
@@ -2660,15 +2947,17 @@ SingleType:
 		}
 	;
 
-// [116]    TypeDeclaration    ::=    "as" SequenceType 
+// [121]    TypeDeclaration    ::=    "as" SequenceType 
 TypeDeclaration:
 	  _AS_ SequenceType
 		{
+      REJECT_NOT_XQUERY(TypeDeclaration, @1);
+
 			$$ = $2;
 		}
 	;
 
-// [117]    SequenceType    ::=    (ItemType OccurrenceIndicator?) |  <" empty-sequence" "(" ")">
+// [122]    SequenceType    ::=    (ItemType OccurrenceIndicator?) |  <" empty-sequence" "(" ")">
 SequenceType:
 	    ItemType OccurrenceIndicator
 		{
@@ -2691,7 +2980,7 @@ SequenceType:
 	  ;
 
 
-// [118]    OccurrenceIndicator    ::=    "*" |  "+" |  "?"
+// [123]    OccurrenceIndicator    ::=    "*" |  "+" |  "?"
 OccurrenceIndicator:
 	_ZERO_OR_MORE_
 	{ $$ = SequenceType::STAR; }
@@ -2701,7 +2990,7 @@ OccurrenceIndicator:
 	{ $$ = SequenceType::QUESTION_MARK; }
 	;
 
-// [119]    ItemType    ::=    AtomicType | KindTest | <"item" "(" ")"> 
+// [124]    ItemType    ::=    AtomicType | KindTest | <"item" "(" ")"> 
 ItemType:
 	AtomicType 
 	{
@@ -2718,7 +3007,7 @@ ItemType:
 	}
 	;
 
-// [120]    AtomicType    ::=    QName 
+// [125]    AtomicType    ::=    QName 
 AtomicType:
 	QName
 	{
@@ -2726,7 +3015,7 @@ AtomicType:
 	}
 	;
 
-// [121]    KindTest    ::=    DocumentTest
+// [126]    KindTest    ::=    DocumentTest
 //							|  ElementTest
 //							|  AttributeTest
 //							|  SchemaElementTest
@@ -2747,7 +3036,7 @@ KindTest:
 	|  AnyKindTest
 	;
 
-// [122]    AnyKindTest    ::=    <"node" "("> ")" 
+// [127]    AnyKindTest    ::=    <"node" "("> ")" 
 AnyKindTest:
 	_NODE_LPAR_ _RPAR_
 	{
@@ -2757,7 +3046,7 @@ AnyKindTest:
 	}
 	;
 
-// [123]    DocumentTest    ::=    <"document-node" "("> (ElementTest | SchemaElementTest)? ")"
+// [128]    DocumentTest    ::=    <"document-node" "("> (ElementTest | SchemaElementTest)? ")"
 DocumentTest:
 	_DOCUMENT_NODE_LPAR_ _RPAR_ 
 	{
@@ -2785,7 +3074,7 @@ DocumentTest:
 	}
 	;
 	
-// [124]    TextTest    ::=    <"text" "("> ")" 
+// [129]    TextTest    ::=    <"text" "("> ")" 
 TextTest:
 	_TEXT_LPAR_ _RPAR_
 	{
@@ -2795,7 +3084,7 @@ TextTest:
 	}
 	;
 
-// [125]    CommentTest    ::=    <"comment" "("> ")" 
+// [130]    CommentTest    ::=    <"comment" "("> ")" 
 CommentTest: 
 	_COMMENT_LPAR_ _RPAR_
 	{
@@ -2805,7 +3094,7 @@ CommentTest:
 	}
 	;
 
-// [126]    PITest    ::=    <"processing-instruction" "("> (NCName | StringLiteral)? ")" 
+// [131]    PITest    ::=    <"processing-instruction" "("> (NCName | StringLiteral)? ")" 
 PITest:
 	_PROCESSING_INSTRUCTION_LPAR_ _RPAR_
 	{
@@ -2827,7 +3116,7 @@ PITest:
 	}
 	;
 
-// [127]    AttributeTest    ::=    <"attribute" "("> (AttribNameOrWildcard ("," TypeName)?)? ")" 
+// [132]    AttributeTest    ::=    <"attribute" "("> (AttribNameOrWildcard ("," TypeName)?)? ")" 
 AttributeTest:
 	_ATTRIBUTE_LPAR_ _RPAR_ 
 	{
@@ -2849,7 +3138,7 @@ AttributeTest:
 	}
 	;
 
-// [128]    AttribNameOrWildcard    ::=    AttributeName | "*" 
+// [133]    AttribNameOrWildcard    ::=    AttributeName | "*" 
 AttribNameOrWildcard:
 	AttributeName
 	| _STAR_
@@ -2858,7 +3147,7 @@ AttribNameOrWildcard:
 	}
 	;
 
-// [129]    SchemaAttributeTest    ::=    <"schema-attribute" "("> AttributeDeclaration ")" 
+// [134]    SchemaAttributeTest    ::=    <"schema-attribute" "("> AttributeDeclaration ")" 
 SchemaAttributeTest:
 	_SCHEMA_ATTRIBUTE_LPAR_ AttributeDeclaration _RPAR_
 	{
@@ -2868,12 +3157,12 @@ SchemaAttributeTest:
 	}
 	;
 
-// [130]    AttributeDeclaration    ::=    AttributeName 
+// [135]    AttributeDeclaration    ::=    AttributeName 
 AttributeDeclaration:
 	AttributeName 
 	;
 
-// [131]    ElementTest    ::=    <"element" "("> (ElementNameOrWildcard ("," TypeName "?"?)?)? ")" 
+// [136]    ElementTest    ::=    <"element" "("> (ElementNameOrWildcard ("," TypeName "?"?)?)? ")" 
 ElementTest:
 	_ELEMENT_LPAR_ _RPAR_ 
 	{
@@ -2903,7 +3192,7 @@ ElementTest:
 	}
 	;
 
-// [132]    ElementNameOrWildcard    ::=    ElementName | "*" 
+// [137]    ElementNameOrWildcard    ::=    ElementName | "*" 
 ElementNameOrWildcard:
 	ElementName
 	| _STAR_
@@ -2912,7 +3201,7 @@ ElementNameOrWildcard:
 	}
 	;
 
-// [133]    SchemaElementTest    ::=    <"schema-element" "("> ElementDeclaration ")" 
+// [138]    SchemaElementTest    ::=    <"schema-element" "("> ElementDeclaration ")" 
 SchemaElementTest:
 	_SCHEMA_ELEMENT_LPAR_ ElementDeclaration _RPAR_
 	{
@@ -2922,27 +3211,521 @@ SchemaElementTest:
 	}
 	;
 
-// [134]    ElementDeclaration    ::=    ElementName 
+// [139]    ElementDeclaration    ::=    ElementName 
 ElementDeclaration:
 	ElementName 
 	;
 
-// [135]    AttributeName    ::=    QName
+// [140]    AttributeName    ::=    QName
 AttributeName:
 	QName
 	;
 
-// [136]    ElementName    ::=    QName
+// [141]    ElementName    ::=    QName
 ElementName:
 	QName
 	;
 
-// [137]    TypeName    ::=    QName
+// [142]    TypeName    ::=    QName
 TypeName:
 	QName
 	;
 
-// [138]   	IntegerLiteral	   ::=   	Digits
+// [143]   	URILiteral	   ::=   	StringLiteral
+URILiteral:
+	_STRING_LITERAL_
+	{
+		// the string must be whitespace-normalized
+		XERCES_CPP_NAMESPACE_QUALIFIER XMLString::collapseWS($1, MEMMGR);
+        if($1 && *$1 && !XPath2Utils::isValidURI($1, MEMMGR))
+          yyerror("The URI literal is not valid [err:XQST0046]");
+		$$ = $1;
+	}
+	;
+
+// [144]    FTSelection    ::=    FTOr (FTMatchOption | FTProximity)* ("weight" DecimalLiteral)?
+FTSelection:
+	FTOr FTSelectionOptions _WEIGHT_ DecimalLiteral
+	{
+    // TBD FTSelectionOptions and weight
+    $$ = $1;
+
+    for(VectorOfFTOptions::iterator i = $2->begin();
+        i != $2->end(); ++i) {
+      (*i)->setArgument($$);
+      $$ = *i;
+    }
+    delete $2;
+	}
+	| FTOr FTSelectionOptions
+	{
+    $$ = $1;
+
+    for(VectorOfFTOptions::iterator i = $2->begin();
+        i != $2->end(); ++i) {
+      (*i)->setArgument($$);
+      $$ = *i;
+    }
+    delete $2;
+	}
+	;
+
+FTSelectionOptions:
+	/* empty */
+	{
+    $$ = new (MEMMGR) VectorOfFTOptions(MEMMGR);
+	}
+	| FTSelectionOptions FTMatchOption
+	{
+    $$ = $1;
+	}
+	| FTSelectionOptions FTProximity
+	{
+    if($2 != NULL)
+      $1->push_back($2);
+    $$ = $1;
+	}
+	;
+
+// [145]    FTOr    ::=    FTAnd ( "||" FTAnd )*
+FTOr:
+	FTOr _DOUBLE_VERTICAL_BAR_ FTAnd
+	{
+    if($1->getType() == FTSelection::OR) {
+      FTOr *op = (FTOr*)$1;
+      op->addArg($3);
+      $$ = op;
+    }
+    else {
+      $$ = FTWRAP(@2, new (MEMMGR) FTOr($1, $3, MEMMGR));
+    }
+	}
+	| FTAnd
+	;
+
+// [146]    FTAnd    ::=    FTMildnot ( "&&" FTMildnot )*
+FTAnd:
+	FTAnd _DOUBLE_AMPERSAND_ FTMildnot
+	{
+    if($1->getType() == FTSelection::AND) {
+      FTAnd *op = (FTAnd*)$1;
+      op->addArg($3);
+      $$ = op;
+    }
+    else {
+      $$ = FTWRAP(@2, new (MEMMGR) FTAnd($1, $3, MEMMGR));
+    }
+	}
+	| FTMildnot
+	;
+
+// [147]    FTMildnot    ::=    FTUnaryNot ( "not" "in" FTUnaryNot )*
+FTMildnot:
+	FTMildnot _NOT_IN_ FTUnaryNot
+	{
+    $$ = FTWRAP(@2, new (MEMMGR) FTMildnot($1, $3, MEMMGR));
+	}
+	| FTUnaryNot
+	;
+
+// [148]    FTUnaryNot    ::=    ("!")? FTWordsSelection
+FTUnaryNot:
+	_BANG_ FTWordsSelection
+	{
+    $$ = FTWRAP(@1, new (MEMMGR) FTUnaryNot($2, MEMMGR));
+	}
+	| FTWordsSelection
+	;
+
+// [149]    FTWordsSelection    ::=    FTWords | ("(" FTSelection ")")
+FTWordsSelection:
+	_LPAR_ FTSelection _RPAR_
+	{
+    $$ = $2;
+	}
+	| FTWords
+	;
+
+// [150]    FTWords    ::=    (Literal | VarRef | ContextItemExpr | FunctionCall | ("{" Expr "}")) FTAnyallOption?
+FTWords:
+	Literal FTAnyallOption
+	{
+    $$ = FTWRAP(@1, new (MEMMGR) FTWords($1, $2, MEMMGR));
+	}
+	| VarRef FTAnyallOption
+	{
+    $$ = FTWRAP(@1, new (MEMMGR) FTWords($1, $2, MEMMGR));
+	}
+	| ContextItemExpr FTAnyallOption
+	{
+    $$ = FTWRAP(@1, new (MEMMGR) FTWords($1, $2, MEMMGR));
+	}
+	| FunctionCall FTAnyallOption
+	{
+    $$ = FTWRAP(@1, new (MEMMGR) FTWords($1, $2, MEMMGR));
+	}
+	| _LBRACE_ Expr _RBRACE_ FTAnyallOption
+	{
+    $$ = FTWRAP(@2, new (MEMMGR) FTWords($2, $4, MEMMGR));
+	}
+	;
+
+// [151]    FTProximity    ::=    FTOrderedIndicator | FTWindow | FTDistance | FTTimes | FTScope | FTContent
+// [152]    FTOrderedIndicator    ::=    "ordered"
+// [164]    FTContent    ::=    ("at" "start") | ("at" "end") | ("entire" "content")
+// [167]    FTDistance    ::=    "distance" FTRange FTUnit
+// [168]    FTWindow    ::=    "window" UnionExpr FTUnit
+// [169]    FTTimes    ::=    "occurs" FTRange "times"
+// [170]    FTScope    ::=    ("same" | "different") FTBigUnit
+FTProximity:
+	_ORDERING_ORDERED_
+	{
+    $$ = FTOPTIONWRAP(@1, new (MEMMGR) FTOrder(MEMMGR));
+	}
+	| _WINDOW_ UnionExpr FTUnit
+	{
+    $$ = FTOPTIONWRAP(@1, new (MEMMGR) FTWindow($2, $3, MEMMGR));
+	}
+	| _DISTANCE_ FTRange FTUnit
+	{
+    $$ = FTOPTIONWRAP(@1, new (MEMMGR) FTDistance($2, $3, MEMMGR));
+	}
+	| _OCCURS_ FTRange _TIMES_
+	{
+    std::cerr << "occurs" << std::endl;
+    $$ = NULL;
+	}
+	| _SAME_ FTBigUnit
+	{
+    $$ = FTOPTIONWRAP(@1, new (MEMMGR) FTScope(FTScope::SAME, $2, MEMMGR));
+	}
+	| _DIFFERENT_ FTBigUnit
+	{
+    $$ = FTOPTIONWRAP(@1, new (MEMMGR) FTScope(FTScope::DIFFERENT, $2, MEMMGR));
+	}
+	| _AT_START_
+	{
+    $$ = FTOPTIONWRAP(@1, new (MEMMGR) FTContent(FTContent::AT_START, MEMMGR));
+	}
+	| _AT_END_
+	{
+    $$ = FTOPTIONWRAP(@1, new (MEMMGR) FTContent(FTContent::AT_END, MEMMGR));
+	}
+	| _ENTIRE_CONTENT_
+	{
+    $$ = FTOPTIONWRAP(@1, new (MEMMGR) FTContent(FTContent::ENTIRE_CONTENT, MEMMGR));
+	}
+	;
+
+// [153]    FTMatchOption    ::=    FTCaseOption
+//                                  | FTDiacriticsOption
+//                                  | FTStemOption
+//                                  | FTThesaurusOption
+//                                  | FTStopwordOption
+//                                  | FTLanguageOption
+//                                  | FTWildCardOption
+FTMatchOption:
+	FTCaseOption
+	| FTDiacriticsOption
+	| FTStemOption
+	| FTThesaurusOption
+	| FTStopwordOption
+	| FTLanguageOption
+	| FTWildCardOption
+	;
+
+// [154]    FTCaseOption    ::=    "lowercase"
+//                                 | "uppercase"
+//                                 | ("case" "sensitive")
+//                                 | ("case" "insensitive")
+FTCaseOption:
+	_LOWERCASE_
+	{
+    std::cerr << "lowercase" << std::endl;
+	}
+	| _UPPERCASE_
+	{
+    std::cerr << "uppercase" << std::endl;
+	}
+	| _CASE_SENSITIVE_
+	{
+    std::cerr << "case sensitive" << std::endl;
+	}
+	| _CASE_INSENSITIVE_
+	{
+    std::cerr << "case insensitive" << std::endl;
+	}
+	;
+
+// [155]    FTDiacriticsOption    ::=    ("with" "diacritics")
+//                                       | ("without" "diacritics")
+//                                       | ("diacritics" "sensitive")
+//                                       | ("diacritics" "insensitive")
+FTDiacriticsOption:
+	_WITH_DIACRITICS_
+	{
+    std::cerr << "with diacritics" << std::endl;
+	}
+	| _WITHOUT_DIACRITICS_
+	{
+    std::cerr << "without diacritics" << std::endl;
+	}
+	| _DIACRITICS_SENSITIVE_
+	{
+    std::cerr << "diacritics sensitive" << std::endl;
+	}
+	| _DIACRITICS_INSENSITIVE_
+	{
+    std::cerr << "diacritics insensitive" << std::endl;
+	}
+	;
+
+//      [156]    FTStemOption    ::=    ("with" "stemming") | ("without" "stemming")
+FTStemOption:
+	_WITH_STEMMING_
+	{
+    std::cerr << "with stemming" << std::endl;
+	}
+	| _WITHOUT_STEMMING_
+	{
+    std::cerr << "without stemming" << std::endl;
+	}
+	;
+
+// [157]    FTThesaurusOption    ::=    ("with" "thesaurus" (FTThesaurusID | "default"))
+//                                    | ("with" "thesaurus" "(" (FTThesaurusID | "default") ("," FTThesaurusID)* ")")
+//                                    | ("without" "thesaurus")
+FTThesaurusOption:
+	_WITH_THESAURUS_ FTThesaurusID
+	{
+    std::cerr << "with thesaurus" << std::endl;
+	}
+	| _WITH_THESAURUS_ _DEFAULT_
+	{
+    std::cerr << "with thesaurus default" << std::endl;
+	}
+	| _WITH_THESAURUS_ _LPAR_ FTThesaurusID FTThesaurusIDList _RPAR_
+	{
+    std::cerr << "with thesaurus ()" << std::endl;
+	}
+	| _WITH_THESAURUS_ _LPAR_ _DEFAULT_ FTThesaurusIDList _RPAR_
+	{
+    std::cerr << "with thesaurus (default)" << std::endl;
+	}
+	| _WITHOUT_THESAURUS_
+	{
+    std::cerr << "without thesaurus" << std::endl;
+	}
+	;
+
+FTThesaurusIDList:
+	/* empty */
+	{
+	}
+	| FTThesaurusIDList _COMMA_ FTThesaurusID
+	{
+	}
+	;
+
+// [158]    FTThesaurusID    ::=    "at" StringLiteral ("relationship" StringLiteral)? (FTRange "levels")?
+FTThesaurusID:
+	_AT_KEYWORD_ StringLiteral
+	{
+    std::cerr << "at StringLiteral" << std::endl;
+	}
+	| _AT_KEYWORD_ StringLiteral _RELATIONSHIP_ StringLiteral
+	{
+    std::cerr << "at StringLiteral relationship StringLiteral" << std::endl;
+	}
+	| _AT_KEYWORD_ StringLiteral FTRange _LEVELS_
+	{
+    std::cerr << "at StringLiteral levels" << std::endl;
+	}
+	| _AT_KEYWORD_ StringLiteral _RELATIONSHIP_ StringLiteral FTRange _LEVELS_
+	{
+    std::cerr << "at StringLiteral relationship StringLiteral levels" << std::endl;
+	}
+	;
+
+// [159]    FTStopwordOption    ::=    ("with" "stop" "words" FTRefOrList FTInclExclStringLiteral*)
+//                                   | ("without" "stop" "words")
+//                                   | ("with" "default" "stop" "words" FTInclExclStringLiteral*)
+FTStopwordOption:
+	_WITH_STOP_WORDS_ FTRefOrList FTInclExclStringLiteralList
+	{
+    std::cerr << "with stop words" << std::endl;
+	}
+	| _WITHOUT_STOP_WORDS_
+	{
+    std::cerr << "without stop words" << std::endl;
+	}
+	| _WITH_DEFAULT_STOP_WORDS_ FTInclExclStringLiteralList
+	{
+    std::cerr << "with default stop words" << std::endl;
+	}
+	;
+
+FTInclExclStringLiteralList:
+	/* empty */
+	{
+	}
+	| FTInclExclStringLiteralList FTInclExclStringLiteral
+	{
+	}
+	;
+
+// [160]    FTRefOrList    ::=    ("at" StringLiteral)
+//                              | ("(" StringLiteral ("," StringLiteral)* ")")
+FTRefOrList:
+	_AT_KEYWORD_ StringLiteral
+	{
+    std::cerr << "at StringLiteral" << std::endl;
+	}
+	| _LPAR_ FTRefOrListStringList _RPAR_
+	{
+    std::cerr << "()" << std::endl;
+	}
+	;
+
+FTRefOrListStringList:
+	StringLiteral
+	{
+    std::cerr << "StringLiteral" << std::endl;
+	}
+	| FTRefOrListStringList _COMMA_ StringLiteral
+	{
+    std::cerr << ", StringLiteral" << std::endl;
+	}
+	;
+
+// [161]    FTInclExclStringLiteral    ::=    ("union" | "except") FTRefOrList
+FTInclExclStringLiteral:
+	_UNION_ FTRefOrList
+	{
+    std::cerr << "union" << std::endl;
+	}
+	| _EXCEPT_ FTRefOrList
+	{
+    std::cerr << "except" << std::endl;
+	}
+	;
+
+// [162]    FTLanguageOption    ::=    "language" StringLiteral
+FTLanguageOption:
+	_LANGUAGE_ StringLiteral
+	{
+    std::cerr << "language StringLiteral" << std::endl;
+	}
+	;
+
+// [163]    FTWildCardOption    ::=    ("with" "wildcards") | ("without" "wildcards")
+FTWildCardOption:
+	_WITH_WILDCARDS_
+	{
+    std::cerr << "with wildcards" << std::endl;
+	}
+	| _WITHOUT_WILDCARDS_
+	{
+    std::cerr << "without wildcards" << std::endl;
+	}
+	;
+
+// [165]    FTAnyallOption    ::=    ("any" "word"?) | ("all" "words"?) | "phrase"
+FTAnyallOption:
+	/* empty */
+	{
+    $$ = FTWords::ANY;
+	}
+	| _ANY_
+	{
+    $$ = FTWords::ANY;
+	}
+	| _ANY_WORD_
+	{
+    $$ = FTWords::ANY_WORD;
+	}
+	| _ALL_
+	{
+    $$ = FTWords::ALL;
+	}
+	| _ALL_WORDS_
+	{
+    $$ = FTWords::ALL_WORDS;
+	}
+	| _PHRASE_
+	{
+    $$ = FTWords::PHRASE;
+	}
+	;
+
+// [166]    FTRange    ::=    ("exactly" UnionExpr)
+//                          | ("at" "least" UnionExpr)
+//                          | ("at" "most" UnionExpr)
+//                          | ("from" UnionExpr "to" UnionExpr)
+FTRange:
+	_EXACTLY_ UnionExpr
+	{
+    $$.type = FTRange::EXACTLY;
+    $$.arg1 = $2;
+    $$.arg2 = 0;
+	}
+	| _AT_LEAST_ UnionExpr
+	{
+    $$.type = FTRange::AT_LEAST;
+    $$.arg1 = $2;
+    $$.arg2 = 0;
+	}
+	| _AT_MOST_ UnionExpr
+	{
+    $$.type = FTRange::AT_MOST;
+    $$.arg1 = $2;
+    $$.arg2 = 0;
+	}
+	| _FROM_ UnionExpr _TO_ UnionExpr
+	{
+    $$.type = FTRange::FROM_TO;
+    $$.arg1 = $2;
+    $$.arg2 = $4;
+	}
+	;
+
+// [171]    FTUnit    ::=    "words" | "sentences" | "paragraphs"
+FTUnit:
+	_WORDS_
+	{
+    $$ = FTOption::WORDS;
+	}
+	| _SENTENCES_
+	{
+    $$ = FTOption::SENTENCES;
+	}
+	| _PARAGRAPHS_
+	{
+    $$ = FTOption::PARAGRAPHS;
+	}
+	;
+
+// [172]    FTBigUnit    ::=    "sentence" | "paragraph"
+FTBigUnit:
+	_SENTENCE_
+	{
+    $$ = FTOption::SENTENCES;
+	}
+	| _PARAGRAPH_
+	{
+    $$ = FTOption::PARAGRAPHS;
+	}
+	;
+
+// [173]    FTIgnoreOption    ::=    "without" "content" UnionExpr
+FTIgnoreOption:
+	_WITHOUT_CONTENT_ UnionExpr
+	{
+    $$ = $2;
+	}
+	;
+
+// [174]   	IntegerLiteral	   ::=   	Digits
 IntegerLiteral:
       _INTEGER_NUMBER_
 		{
@@ -2955,7 +3738,7 @@ IntegerLiteral:
 		}
 	;
 
-// [139]   	DecimalLiteral	   ::=   	("." Digits) | (Digits "." [0-9]*)
+// [175]   	DecimalLiteral	   ::=   	("." Digits) | (Digits "." [0-9]*)
 DecimalLiteral:
       _DECIMAL_NUMBER_
 		{
@@ -2968,7 +3751,7 @@ DecimalLiteral:
 		}
 	;
 
-// [140]   	DoubleLiteral	   ::=   	(("." Digits) | (Digits ("." [0-9]*)?)) [eE] [+-]? Digits
+// [176]   	DoubleLiteral	   ::=   	(("." Digits) | (Digits ("." [0-9]*)?)) [eE] [+-]? Digits
 DoubleLiteral:
       _DOUBLE_NUMBER_
 		{
@@ -2981,19 +3764,7 @@ DoubleLiteral:
 		}
 	;
 
-// [141]   	URILiteral	   ::=   	StringLiteral
-URILiteral:
-	_STRING_LITERAL_
-	{
-		// the string must be whitespace-normalized
-		XERCES_CPP_NAMESPACE_QUALIFIER XMLString::collapseWS($1, MEMMGR);
-        if($1 && *$1 && !XPath2Utils::isValidURI($1, MEMMGR))
-          yyerror("The URI literal is not valid [err:XQST0046]");
-		$$ = $1;
-	}
-	;
-
-// [142]   	StringLiteral	   ::=   	('"' (PredefinedEntityRef | CharRef | ('"' '"') | [^"&])* '"') | 
+// [177]   	StringLiteral	   ::=   	('"' (PredefinedEntityRef | CharRef | ('"' '"') | [^"&])* '"') | 
 //										("'" (PredefinedEntityRef | CharRef | ("'" "'") | [^'&])* "'")
 StringLiteral:
       _STRING_LITERAL_
@@ -3016,6 +3787,6 @@ QName:
 	;
 %%
 
-}	// namespace XQuery
+}	// namespace XQParser
 
 

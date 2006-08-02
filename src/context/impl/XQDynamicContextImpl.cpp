@@ -43,7 +43,7 @@
 #include <xqilla/exceptions/XMLParseException.hpp>
 #include <xqilla/utils/ContextUtils.hpp>
 #include <xqilla/items/impl/NodeImpl.hpp>
-#include "../dom-api/impl/XPathDocumentImpl.hpp"
+#include "../../dom-api/impl/XPathDocumentImpl.hpp"
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction

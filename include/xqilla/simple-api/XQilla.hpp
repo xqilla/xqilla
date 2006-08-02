@@ -47,8 +47,10 @@ public:
 
   /// Enumeration used to select a language to parse
   enum Language {
-    XQUERY, ///< Parse an XQuery expression
-    XPATH2  ///< Parse an XPath 2.0 expression
+    XQUERY,          ///< Parse an XQuery expression
+    XPATH2,          ///< Parse an XPath 2.0 expression
+    XQUERY_FULLTEXT, ///< Parse an XQuery Full-Text expression
+    XPATH2_FULLTEXT  ///< Parse an XPath 2.0 Full-Text expression
   };
                                                                                                                                                               
   /**
@@ -137,10 +139,10 @@ public:
                         XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr =
                         XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager);
 
-	//@}
+  //@}
 
-	/** @name Factory Methods */
-	// @{
+  /** @name Factory Methods */
+  // @{
 
   /**
    * Creates a context suitable for parsing an expression with.
@@ -150,7 +152,7 @@ public:
   DynamicContext *createContext(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr =
                                 XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager);
 
-	//@}
+  //@}
 
 private:
   static bool readQuery(const XMLCh* queryFile, 
@@ -159,16 +161,6 @@ private:
   static bool readQuery(const XERCES_CPP_NAMESPACE_QUALIFIER InputSource& querySrc, 
                         XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr, 
                         XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer& queryText);
-  XQQuery* parseXQuery(const XMLCh* query,
-                       DynamicContext* context,
-                       const XMLCh* queryFile,
-                       unsigned int flags,
-                       XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr);
-  XQQuery* parseXPath2(const XMLCh* query,
-                       DynamicContext* context,
-                       const XMLCh* queryFile,
-                       unsigned int flags,
-                       XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr);
 };
 
 #endif

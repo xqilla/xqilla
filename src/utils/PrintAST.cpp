@@ -60,6 +60,19 @@
 #include <xqilla/ast/ConvertFunctionArg.hpp>
 #include <xqilla/ast/XQDocumentOrder.hpp>
 #include <xqilla/ast/XQPredicate.hpp>
+#include <xqilla/fulltext/FTContains.hpp>
+#include <xqilla/fulltext/FTSelection.hpp>
+#include <xqilla/fulltext/FTWords.hpp>
+#include <xqilla/fulltext/FTOr.hpp>
+#include <xqilla/fulltext/FTAnd.hpp>
+#include <xqilla/fulltext/FTMildnot.hpp>
+#include <xqilla/fulltext/FTUnaryNot.hpp>
+#include <xqilla/fulltext/FTOrder.hpp>
+#include <xqilla/fulltext/FTDistance.hpp>
+#include <xqilla/fulltext/FTRange.hpp>
+#include <xqilla/fulltext/FTScope.hpp>
+#include <xqilla/fulltext/FTContent.hpp>
+#include <xqilla/fulltext/FTWindow.hpp>
 
 #include <xercesc/dom/DOMNode.hpp>
 #if defined(XERCES_HAS_CPP_NAMESPACE)
@@ -246,6 +259,10 @@ string PrintAST::printASTNode(const ASTNode *item, const DynamicContext *context
   }
   case ASTNode::USER_FUNCTION: {
     return printUserFunction((XQUserFunction::XQFunctionEvaluator *)item, context, indent);
+    break;
+  }
+  case ASTNode::FTCONTAINS: {
+    return printFTContains((FTContains *)item, context, indent);
     break;
   }
   default:
@@ -903,6 +920,323 @@ string PrintAST::printOrderingChange(const XQOrderingChange *item, const Dynamic
   s << in << "</OrderingChange>" << endl;
 
   return s.str();
+}
+
+string PrintAST::printFTContains(const FTContains *item, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  s << in << "<FTContains>" << endl;
+  s << printASTNode(item->getArgument(), context, indent + INDENT);
+  s << printFTSelection(item->getSelection(), context, indent + INDENT);
+  if(item->getIgnore() != NULL) {
+    s << in << "  <ignore>" << endl;
+    s << printASTNode(item->getIgnore(), context, indent + INDENT + INDENT);
+    s << in << "  </ignore>" << endl;
+  }
+  s << in << "</FTContains>" << endl;
+
+  return s.str();
+}
+
+string PrintAST::printFTSelection(const FTSelection *selection, const DynamicContext *context, int indent)
+{
+  switch(selection->getType()) {
+  case FTSelection::OR: {
+    return printFTOr((FTOr*)selection, context, indent);
+    break;
+  }
+  case FTSelection::AND: {
+    return printFTAnd((FTAnd*)selection, context, indent);
+    break;
+  }
+  case FTSelection::MILD_NOT: {
+    return printFTMildnot((FTMildnot*)selection, context, indent);
+    break;
+  }
+  case FTSelection::UNARY_NOT: {
+    return printFTUnaryNot((FTUnaryNot*)selection, context, indent);
+    break;
+  }
+  case FTSelection::WORDS: {
+    return printFTWords((FTWords*)selection, context, indent);
+    break;
+  }
+  case FTSelection::WORD: {
+    return printFTWord((FTWord*)selection, context, indent);
+    break;
+  }
+  case FTSelection::ORDER: {
+    return printFTOrder((FTOrder*)selection, context, indent);
+    break;
+  }
+  case FTSelection::DISTANCE: {
+    return printFTDistance((FTDistance*)selection, context, indent);
+    break;
+  }
+  case FTSelection::DISTANCE_LITERAL: {
+    return printFTDistanceLiteral((FTDistanceLiteral*)selection, context, indent);
+    break;
+  }
+  case FTSelection::SCOPE: {
+    return printFTScope((FTScope*)selection, context, indent);
+    break;
+  }
+  case FTSelection::CONTENT: {
+    return printFTContent((FTContent*)selection, context, indent);
+    break;
+  }
+  case FTSelection::WINDOW: {
+    return printFTWindow((FTWindow*)selection, context, indent);
+    break;
+  }
+  case FTSelection::WINDOW_LITERAL: {
+    return printFTWindowLiteral((FTWindowLiteral*)selection, context, indent);
+    break;
+  }
+  default:
+    break;
+  }
+  return getIndent(indent) + "<Unknown/>\n";
+}
+
+string PrintAST::printFTWords(const FTWords *selection, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  s << in << "<FTWords option=\"";
+  switch(selection->getOption()) {
+  case FTWords::ANY: s << "any"; break;
+  case FTWords::ANY_WORD: s << "any word"; break;
+  case FTWords::ALL: s << "all"; break;
+  case FTWords::ALL_WORDS: s << "all words"; break;
+  case FTWords::PHRASE: s << "phrase"; break;
+  }
+  s << "\">" << endl;
+  s << printASTNode(selection->getExpr(), context, indent + INDENT);
+  s << in << "</FTWords>" << endl;
+
+  return s.str();
+}
+
+string PrintAST::printFTWord(const FTWord *selection, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  s << in << "<FTWord>" << UTF8(selection->getQueryString()) << "</FTWord>" << endl;
+
+  return s.str();
+}
+
+string PrintAST::printFTOr(const FTOr *selection, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  s << in << "<FTOr>" << endl;
+  for(VectorOfFTSelections::const_iterator i = selection->getArguments().begin();
+      i != selection->getArguments().end(); ++i) {
+    s << printFTSelection(*i, context, indent + INDENT);
+  }
+  s << in << "</FTOr>" << endl;
+
+  return s.str();
+}
+
+string PrintAST::printFTAnd(const FTAnd *selection, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  s << in << "<FTAnd>" << endl;
+  for(VectorOfFTSelections::const_iterator i = selection->getArguments().begin();
+      i != selection->getArguments().end(); ++i) {
+    s << printFTSelection(*i, context, indent + INDENT);
+  }
+  s << in << "</FTAnd>" << endl;
+
+  return s.str();
+}
+
+string PrintAST::printFTMildnot(const FTMildnot *selection, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  s << in << "<FTMildnot>" << endl;
+  s << printFTSelection(selection->getLeft(), context, indent + INDENT);
+  s << printFTSelection(selection->getRight(), context, indent + INDENT);
+  s << in << "</FTMildnot>" << endl;
+
+  return s.str();
+}
+
+string PrintAST::printFTUnaryNot(const FTUnaryNot *selection, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  s << in << "<FTUnaryNot>" << endl;
+  s << printFTSelection(selection->getArgument(), context, indent + INDENT);
+  s << in << "</FTUnaryNot>" << endl;
+
+  return s.str();
+}
+
+string PrintAST::printFTOrder(const FTOrder *selection, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  s << in << "<FTOrder>" << endl;
+  s << printFTSelection(selection->getArgument(), context, indent + INDENT);
+  s << in << "</FTOrder>" << endl;
+
+  return s.str();
+}
+
+string PrintAST::printFTDistance(const FTDistance *selection, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  s << in << "<FTDistance units=\"" << getFTUnitName(selection->getUnit()) << "\">" << endl;
+  s << printFTSelection(selection->getArgument(), context, indent + INDENT);
+  s << printFTRange(selection->getRange(), context, indent + INDENT);
+  s << in << "</FTDistance>" << endl;
+
+  return s.str();
+}
+
+string PrintAST::printFTDistanceLiteral(const FTDistanceLiteral *selection, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  s << in << "<FTDistanceLiteral type=\"" << getFTRangeTypeName(selection->getType())
+    << "\" distance=\"" << selection->getDistance();
+  if(selection->getType() == FTRange::FROM_TO) {
+    s << "\" distance2=\"" << selection->getDistance2();
+  }
+  s << "\" units=\"" << getFTUnitName(selection->getUnit()) << "\">" << endl;
+  s << printFTSelection(selection->getArgument(), context, indent + INDENT);
+  s << in << "</FTDistanceLiteral>" << endl;
+
+  return s.str();
+}
+
+string PrintAST::printFTScope(const FTScope *selection, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  s << in << "<FTScope type=\"";
+  switch(selection->getType()) {
+  case FTScope::SAME: s << "same"; break;
+  case FTScope::DIFFERENT: s << "different"; break;
+  }
+  s << "\" units=\"" << getFTUnitName(selection->getUnit()) << "\">" << endl;
+  s << printFTSelection(selection->getArgument(), context, indent + INDENT);
+  s << in << "</FTScope>" << endl;
+
+  return s.str();
+}
+
+string PrintAST::printFTContent(const FTContent *selection, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  s << in << "<FTContent type=\"";
+  switch(selection->getType()) {
+  case FTContent::AT_START: s << "at start"; break;
+  case FTContent::AT_END: s << "at end"; break;
+  case FTContent::ENTIRE_CONTENT: s << "entire content"; break;
+  }
+  s << "\">" << endl;
+  s << printFTSelection(selection->getArgument(), context, indent + INDENT);
+  s << in << "</FTContent>" << endl;
+
+  return s.str();
+}
+
+string PrintAST::printFTWindow(const FTWindow *selection, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  s << in << "<FTWindow units=\"" << getFTUnitName(selection->getUnit()) << "\">" << endl;
+  s << printFTSelection(selection->getArgument(), context, indent + INDENT);
+  s << printASTNode(selection->getExpr(), context, indent + INDENT);
+  s << in << "</FTWindow>" << endl;
+
+  return s.str();
+}
+
+string PrintAST::printFTWindowLiteral(const FTWindowLiteral *selection, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  s << in << "<FTWindowLiteral distance=\"" << selection->getDistance();
+  s << "\" units=\"" << getFTUnitName(selection->getUnit()) << "\">" << endl;
+  s << printFTSelection(selection->getArgument(), context, indent + INDENT);
+  s << in << "</FTWindowLiteral>" << endl;
+
+  return s.str();
+}
+
+string PrintAST::printFTRange(const FTRange &range, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  s << in << "<FTRange type=\"" << getFTRangeTypeName(range.type) << "\">" << endl;
+  s << printASTNode(range.arg1, context, indent + INDENT);
+  if(range.arg2 != 0)
+    s << printASTNode(range.arg2, context, indent + INDENT);
+  s << in << "</FTRange>" << endl;
+
+  return s.str();
+}
+
+string PrintAST::getFTRangeTypeName(FTRange::Type type)
+{
+  switch(type) {
+  case FTRange::EXACTLY: return "exactly";
+  case FTRange::AT_LEAST: return "at least";
+  case FTRange::AT_MOST: return "at most";
+  case FTRange::FROM_TO: return "from to";
+  }
+  return "unknown";
+}
+
+string PrintAST::getFTUnitName(FTOption::FTUnit unit)
+{
+  switch(unit) {
+  case FTOption::WORDS: return "words";
+  case FTOption::SENTENCES: return "sentences";
+  case FTOption::PARAGRAPHS: return "paragraphs";
+  }
+  return "unknown";
 }
 
 string PrintAST::printAtomize(const XQAtomize *item, const DynamicContext *context, int indent)

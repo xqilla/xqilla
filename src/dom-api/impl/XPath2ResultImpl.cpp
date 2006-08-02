@@ -11,7 +11,7 @@
  * $Id$
  */
 
-#include "../config/xqilla_config.h"
+#include "../../config/xqilla_config.h"
 #include "XPath2ResultImpl.hpp"
 #include "XQillaExpressionImpl.hpp"
 #include <string>

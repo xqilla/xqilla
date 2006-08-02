@@ -15,36 +15,106 @@
 #define AFXQ_NORMALIZER_H__6BA76C4A_0A5B_480B_9870_86A89A118100__INCLUDED_
 
 #include <xqilla/framework/XQillaExport.hpp>
-#include <xercesc/util/XercesDefs.hpp>
+#include <xercesc/framework/XMLBuffer.hpp>
 #include <map>
+#include <vector>
 
-class XPath2MemoryManager;
-
-class XQILLA_API Normalizer 
+///
+class XQILLA_API StringTransform
 {
-protected:
-	static wchar_t* g_decompose[];
-	static std::map<int,int> g_composeMap;
-	static unsigned char g_canonicalClass[];
-	static unsigned int g_isCompatibility[];
-
-	static const XMLCh* getRecursiveDecomposition(bool bCanonical, XMLCh ch, XPath2MemoryManager* memMgr);
-	static const XMLCh* internalDecompose(bool bCanonical, const XMLCh* source, XPath2MemoryManager* memMgr);
-
-  /**
-   * NOTE: The returned buffer is dynamically allocated and is the
-   * responsibility of the caller to delete it when not longer needed.
-   */
-  static XMLCh* internalCompose(const XMLCh* source, XPath2MemoryManager* memMgr);
-
-  static int getCanonicalClass(XMLCh ch);
-  static XMLCh getPairwiseComposition(XMLCh first, XMLCh second);
-
 public:
-	static XMLCh* NormalizeC(const XMLCh* source, XPath2MemoryManager* memMgr);
-	static const XMLCh* NormalizeD(const XMLCh* source, XPath2MemoryManager* memMgr);
-	static XMLCh* NormalizeKC(const XMLCh* source, XPath2MemoryManager* memMgr);
-	static const XMLCh* NormalizeKD(const XMLCh* source, XPath2MemoryManager* memMgr);
+  virtual ~StringTransform() {}
+
+  virtual void pushChar(unsigned int ch) = 0;
+};
+
+///
+class XQILLA_API NormalizeTransform : public StringTransform
+{
+public:
+  NormalizeTransform(bool canonical, bool compose, StringTransform *destination)
+    : canonical_(canonical), compose_(compose), dest_(destination) {}
+
+  virtual void pushChar(unsigned int ch);
+
+private:
+  void getRecursiveDecomposition(unsigned int ch);
+  bool decomposeHangul(unsigned int s);
+  unsigned int *getDecomposition(unsigned int ch);
+
+  void composeCache();
+  static unsigned int composeHangul(unsigned int first, unsigned int second);
+  static unsigned int getComposition(unsigned int first, unsigned int second);
+
+  static unsigned int getCanonicalCombiningClass(unsigned int ch);
+
+  bool canonical_, compose_;
+  StringTransform *dest_;
+  std::vector<unsigned int> cache_;
+};
+
+///
+class XQILLA_API RemoveDiacriticsTransform : public StringTransform
+{
+public:
+  RemoveDiacriticsTransform(StringTransform *destination)
+    : dest_(destination) {}
+
+  virtual void pushChar(unsigned int ch);
+
+private:
+  static bool isDiacritic(unsigned int ch);
+
+  StringTransform *dest_;
+};
+
+///
+class XQILLA_API CaseFoldTransform : public StringTransform
+{
+public:
+  CaseFoldTransform(StringTransform *destination)
+    : dest_(destination) {}
+
+  virtual void pushChar(unsigned int ch);
+
+private:
+  static unsigned int *getCaseFold(unsigned int ch);
+
+  StringTransform *dest_;
+};
+
+///
+class XQILLA_API XMLBufferTransform : public StringTransform
+{
+public:
+  XMLBufferTransform(XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &buffer)
+    : buffer_(buffer) {}
+
+  virtual void pushChar(unsigned int ch);
+
+private:
+  XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &buffer_;
+};
+
+///
+class XQILLA_API StringTransformer
+{
+public:
+  static void transformUTF16(const XMLCh *source, StringTransform *transform);
+};
+
+///
+class XQILLA_API Normalizer
+{
+public:
+  static void normalizeC(const XMLCh* source, XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &dest);
+  static void normalizeD(const XMLCh* source, XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &dest);
+  static void normalizeKC(const XMLCh* source, XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &dest);
+  static void normalizeKD(const XMLCh* source, XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &dest);
+
+  static void removeDiacritics(const XMLCh* source, XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &dest);
+  static void caseFold(const XMLCh* source, XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &dest);
+  static void caseFoldAndRemoveDiacritics(const XMLCh* source, XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &dest);
 };
 
 #endif // !defined(AFXQ_NORMALIZER_H__6BA76C4A_0A5B_480B_9870_86A89A118100__INCLUDED_)
