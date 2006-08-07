@@ -62,9 +62,11 @@ LessThan::LessThan(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
       return ((const ATBooleanOrDerived*)(const AnyAtomicType*)atom1)->lessThan((const ATBooleanOrDerived*)(const AnyAtomicType*)atom2, context);
     }
     case AnyAtomicType::STRING:
+    case AnyAtomicType::ANY_URI:
     {
       // op:numeric-less-than(fn:compare(A, B), 0)
-      if(atom2->getPrimitiveTypeIndex() != AnyAtomicType::STRING)
+      if(atom2->getPrimitiveTypeIndex() != AnyAtomicType::STRING &&
+         atom2->getPrimitiveTypeIndex() != AnyAtomicType::ANY_URI)
         XQThrow(XPath2ErrorException,X("LessThan::less_than"), X("An attempt to compare a string type to a non string type has occurred [err:XPTY0004]"));
       // if the function returns -1, then atom1 is less
       return collation->compare(arg1->asString(context),arg2->asString(context))<0;

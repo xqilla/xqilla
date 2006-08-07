@@ -59,9 +59,11 @@ GreaterThan::GreaterThan(const VectorOfASTNodes &args, XPath2MemoryManager* memM
       return ((const ATBooleanOrDerived*)(const AnyAtomicType*)atom1)->greaterThan((const ATBooleanOrDerived*)(const AnyAtomicType*)atom2, context);
     }
     case AnyAtomicType::STRING:
+    case AnyAtomicType::ANY_URI:
     {
       // use function compare
-      if(atom2->getPrimitiveTypeIndex() != AnyAtomicType::STRING)
+      if(atom2->getPrimitiveTypeIndex() != AnyAtomicType::STRING && 
+         atom2->getPrimitiveTypeIndex() != AnyAtomicType::ANY_URI)
         XQThrow(XPath2ErrorException,X("GreaterThan::greater_than"), X("An attempt to compare a string type to a non string type has occurred [err:XPTY0004]"));
       // if the function returns 1, then atom1 is greater
       return collation->compare(atom1->asString(context),atom2->asString(context))>0;
