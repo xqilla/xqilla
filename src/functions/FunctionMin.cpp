@@ -91,16 +91,19 @@ Sequence FunctionMin::collapseTreeInternal(DynamicContext* context, int flags) c
 
     Sequence::iterator i = sequence.begin();
     Item::Ptr minItem = *i;
-
-    if(((AnyAtomicType*)(const Item*)(*i))->getPrimitiveTypeIndex() == AnyAtomicType::STRING) {
-        for (++i; i != sequence.end(); i++) {
-          if(collation->compare((*i)->asString(context),minItem->asString(context))<0) {
-            minItem = *i;
-          }
-        }
-    } else {
-        ATBooleanOrDerived::Ptr less;
-        for (++i; i != sequence.end(); i++) {
+    ++i;
+    // if we have just one item, force entering the 'for' loop, or we will not test if the type had a total order
+    if(i==sequence.end())
+        i--;
+    for (; i != sequence.end(); ++i) {
+        const AnyAtomicType *atomic = (const AnyAtomicType *)(const Item*)(*i);
+        if(atomic->getPrimitiveTypeIndex() == AnyAtomicType::STRING || 
+           atomic->getPrimitiveTypeIndex() == AnyAtomicType::ANY_URI) 
+        {
+            if(collation->compare((*i)->asString(context),minItem->asString(context))<0)
+                minItem = *i;
+        } else {
+    	    ATBooleanOrDerived::Ptr less;
             VectorOfASTNodes gtArgs = VectorOfASTNodes(XQillaAllocator<ASTNode*>(memMgr));
             XQSequence seq1(*i, context, memMgr);
             gtArgs.push_back(&seq1);
