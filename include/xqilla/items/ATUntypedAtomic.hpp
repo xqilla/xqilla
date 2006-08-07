@@ -43,7 +43,6 @@ public:
   virtual AnyAtomicType::AtomicObjectType getPrimitiveTypeIndex() const = 0;
 
   static const XMLCh fgDT_UNTYPEDATOMIC[];
-  static const XMLCh fgDT_UNTYPEDATOMIC_XERCESHASH[];
 };
 
 #endif //  _ATUNTYPEDATOMIC_HPP
