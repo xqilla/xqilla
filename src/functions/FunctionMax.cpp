@@ -93,11 +93,16 @@ Sequence FunctionMax::collapseTreeInternal(DynamicContext* context, int flags) c
     Sequence::iterator i = sequence.begin();
     Item::Ptr maxItem = *i;
     ++i;
+    // if we have just one item, force entering the 'for' loop, or we will not test if the type had a total order
+    if(i==sequence.end())
+        i--;
     for (; i != sequence.end(); ++i) {
-        if(((AnyAtomicType*)(const Item*)(*i))->getPrimitiveTypeIndex() == AnyAtomicType::STRING) {
-          if(collation->compare((*i)->asString(context),maxItem->asString(context))>0) {
-            maxItem = *i;
-          }
+        const AnyAtomicType *atomic = (const AnyAtomicType *)(const Item*)(*i);
+        if(atomic->getPrimitiveTypeIndex() == AnyAtomicType::STRING || 
+           atomic->getPrimitiveTypeIndex() == AnyAtomicType::ANY_URI) 
+        {
+            if(collation->compare((*i)->asString(context),maxItem->asString(context))>0)
+                maxItem = *i;
         } else {
             ATBooleanOrDerived::Ptr greater;
             VectorOfASTNodes gtArgs = VectorOfASTNodes(XQillaAllocator<ASTNode*>(memMgr));
