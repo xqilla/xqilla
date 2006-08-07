@@ -110,7 +110,26 @@ ASTNode* XQTreatAs::staticResolution(StaticContext *context)
   _src.add(_expr->getStaticResolutionContext());
 
   if(_expr->isConstant()) {
-    return constantFold(context);
+    try
+    {
+      return constantFold(context);
+    }
+    catch(XQException& e)
+    {
+      if(_isTreatAs)
+      {
+        XMLBuffer buff(1023, context->getMemoryManager());
+        buff.set(e.getError());
+        int index=XMLString::indexOf(buff.getRawBuffer(),chOpenSquare);
+        if(index!=-1)
+          XMLString::copyString(buff.getRawBuffer()+index, X("[err:XPDY0050]"));
+        else
+          buff.append(X("[err:XPDY0050]"));
+        XQThrow(XPath2TypeMatchException, X("XQTreatAs::staticResolution"), buff.getRawBuffer());
+      }
+      else
+        throw;
+    }
   }
   return this;
 }
