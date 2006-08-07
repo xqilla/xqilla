@@ -31,8 +31,10 @@ public:
   std::string name;
   std::string queryURL;
   std::string query;
+  std::string contextItem;
+  std::string defaultCollection;
+  std::map<std::string, std::string> inputURIVars;
   std::map<std::string, std::string> inputVars;
-  std::map<std::string, std::string> inputVarsContext;
   std::map<std::string, std::string> extraVars;
   std::map<std::string, std::string> outputFiles;
   std::list<std::pair<std::string, std::string> > moduleFiles;
@@ -78,7 +80,7 @@ private:
   bool m_bReadingChars;
   std::string m_szChars;
 
-  std::string m_szVariableBoundToInput, m_szVariableContext, m_szCompareMethod, m_szNamespace, m_szCollectionID;
+  std::string m_szVariableBoundToInput, m_szCompareMethod, m_szNamespace, m_szCollectionID;
 
   TestCase m_testCase;
 };

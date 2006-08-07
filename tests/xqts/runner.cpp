@@ -58,7 +58,7 @@ private:
   virtual bool resolveModuleLocation(VectorOfStrings* result, const XMLCh* nsUri, const StaticContext* context);
   virtual bool resolveDocument(Sequence &result, const XMLCh* uri, DynamicContext* context);
   virtual bool resolveCollection(Sequence &result, const XMLCh* uri, DynamicContext* context);
-  virtual bool resolveDefaultCollection(Sequence &result, DynamicContext* context) { return false; }
+  virtual bool resolveDefaultCollection(Sequence &result, DynamicContext* context);
 
 private:
   string m_szSingleTest;
@@ -309,13 +309,17 @@ void XQillaTestSuiteRunner::runTestCase(const TestCase &testCase)
       context->getVariableStore()->setGlobalVar(X(v->first.c_str()),doc,context.get());
     }
     for(v=testCase.inputVars.begin();v!=testCase.inputVars.end();v++) {
-      std::string iCtx=testCase.inputVarsContext.find(v->first)->second;
-      Sequence doc;
-      if(iCtx=="collection" || iCtx=="default collection")
-        doc=context->resolveCollection(X(v->second.c_str()));
-      else
-        doc=context->resolveDocument(X(v->second.c_str()));
+      Sequence doc=context->resolveDocument(X(v->second.c_str()));
       context->getVariableStore()->setGlobalVar(X(v->first.c_str()),doc,context.get());
+    }
+    for(v=testCase.inputURIVars.begin();v!=testCase.inputURIVars.end();v++) {
+      Item::Ptr uri = context->getItemFactory()->createString(X(v->second.c_str()),context.get());
+      context->getVariableStore()->setGlobalVar(X(v->first.c_str()), uri, context.get());
+    }
+    if(!testCase.contextItem.empty())
+    {
+      Sequence doc=context->resolveDocument(X(testCase.contextItem.c_str()));
+      context->setContextItem(doc.first());
     }
     context->setContextPosition(1);
     context->setContextSize(1);
@@ -405,6 +409,13 @@ bool XQillaTestSuiteRunner::resolveCollection(Sequence &result, const XMLCh* uri
     }
     return true;
   }
+  return false;
+}
+
+bool XQillaTestSuiteRunner::resolveDefaultCollection(Sequence &result, DynamicContext* context)
+{
+  if(!m_pCurTestCase->defaultCollection.empty())
+    return resolveCollection(result, X(m_pCurTestCase->defaultCollection.c_str()), context);
   return false;
 }
 

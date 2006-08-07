@@ -397,14 +397,18 @@ void ConsoleResultListener::testCaseToErrorStream(const TestCase &testCase)
 {
   errorStream_ << "* Test-case '" << m_szFullTestName << ":" << testCase.name << "':" << endl;
   errorStream_ << "* Query URL: " << testCase.queryURL << endl;
+  if(!testCase.contextItem.empty())
+    errorStream_ << "* Context Item: " << testCase.contextItem << endl;
+  if(!testCase.defaultCollection.empty())
+    errorStream_ << "* Default collection: " << testCase.defaultCollection << endl;
   std::map<std::string, std::string>::const_iterator i;
   std::list<std::pair<std::string, std::string> >::const_iterator j;
   for(i = testCase.inputVars.begin(); i != testCase.inputVars.end(); ++i) {
-    errorStream_ << "* Input: " << i->first << " -> " << i->second;
-    std::string iCtx=testCase.inputVarsContext.find(i->first)->second;
-    if(!iCtx.empty())
-      errorStream_ << " ( context = "<< iCtx << ")";
-    errorStream_  << endl;
+    errorStream_ << "* Input: " << i->first << " -> " << i->second << endl;
+  }
+
+  for(i = testCase.inputURIVars.begin(); i != testCase.inputURIVars.end(); ++i) {
+    errorStream_ << "* Input URI: " << i->first << " -> " << i->second << endl;
   }
 
   for(i = testCase.extraVars.begin(); i != testCase.extraVars.end(); ++i) {

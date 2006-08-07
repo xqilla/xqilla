@@ -93,7 +93,6 @@ void TestSuiteParser::startElement
     static XMLCh g_szVar[]   = { chLatin_v, chLatin_a, chLatin_r, chLatin_i, chLatin_a, chLatin_b, chLatin_l, chLatin_e, chNull };
     static XMLCh g_szDotXQ[] = { chPeriod, chLatin_x, chLatin_q, chNull };
     static XMLCh g_szComp[]  = { chLatin_c, chLatin_o, chLatin_m, chLatin_p, chLatin_a, chLatin_r, chLatin_e, chNull };
-    static XMLCh g_szContext[] = { chLatin_c, chLatin_o, chLatin_n, chLatin_t, chLatin_e, chLatin_x, chLatin_t, chNull };
     string szName=UTF8(localname);
     string szURI=UTF8(uri);
     if(szURI=="http://www.w3.org/2005/02/query-test-XQTSCatalog")
@@ -111,8 +110,10 @@ void TestSuiteParser::startElement
       {
         m_testCase.name = UTF8(attributes.getValue(g_szName));
         m_testCase.queryURL = "";
+        m_testCase.contextItem = "";
+        m_testCase.defaultCollection = "";
+        m_testCase.inputURIVars.clear();
         m_testCase.inputVars.clear();
-        m_testCase.inputVarsContext.clear();
         m_testCase.extraVars.clear();
         m_testCase.expectedErrors.clear();
         m_testCase.outputFiles.clear();
@@ -158,7 +159,22 @@ void TestSuiteParser::startElement
         m_bReadingChars=true;
         m_szChars="";
         m_szVariableBoundToInput=UTF8(attributes.getValue(g_szVar));
-        m_szVariableContext=UTF8(attributes.getValue(g_szContext));
+      }
+      else if(szName=="input-URI")
+      {
+        m_bReadingChars=true;
+        m_szChars="";
+        m_szVariableBoundToInput=UTF8(attributes.getValue(g_szVar));
+      }
+      else if(szName=="contextItem")
+      {
+        m_bReadingChars=true;
+        m_szChars="";
+      }
+      else if(szName=="defaultCollection")
+      {
+        m_bReadingChars=true;
+        m_szChars="";
       }
       else if(szName=="output-file")
       {
@@ -235,8 +251,23 @@ void TestSuiteParser::endElement
       {
         m_bReadingChars=false;
         m_testCase.inputVars[m_szVariableBoundToInput]=m_szChars;
-        m_testCase.inputVarsContext[m_szVariableBoundToInput]=m_szVariableContext;
         m_szVariableBoundToInput="";
+      }
+      else if(szName=="input-URI")
+      {
+        m_bReadingChars=false;
+        m_testCase.inputURIVars[m_szVariableBoundToInput]=m_szChars;
+        m_szVariableBoundToInput="";
+      }
+      else if(szName=="contextItem")
+      {
+        m_bReadingChars=false;
+        m_testCase.contextItem=m_szChars;
+      }
+      else if(szName=="defaultCollection")
+      {
+        m_bReadingChars=false;
+        m_testCase.defaultCollection=m_szChars;
       }
       else if(szName == "output-file")
       {
