@@ -335,6 +335,7 @@ public:
 	bool operator<=(const MAPM &m) const;
 	bool operator>(const MAPM &m) const;
 	bool operator>=(const MAPM &m) const;
+	int compare(const MAPM &m) const;
 	
 	/* Basic arithmetic operators */
 	friend MAPM operator+(const MAPM &a,const MAPM &b);

@@ -5,11 +5,8 @@ INCLUDES = -I $(top_srcdir)/include/ -I $(xerces_include) -I $(top_srcdir)/src/l
 LDFLAGS = -L$(xerces_lib) -R$(xerces_lib)
 LDADD = libxqilla.la -lxerces-c
 
-TESTS = tests/runXQTSTestSuite.sh
-
 bin_PROGRAMS = xqilla
-noinst_PROGRAMS = basicXQillaUsage
-check_PROGRAMS = xqtsRunner
+noinst_PROGRAMS = basicXQillaUsage xqtsRunner
 
 lib_LTLIBRARIES = libxqilla.la
 
@@ -415,9 +412,7 @@ Win32Projects/VC7.1/xqilla_cmd.vcproj \
 Win32Projects/VC7.1/basicXQillaUsage.vcproj \
 Win32Projects/VC7.1/xqtsRunner.vcproj \
 Win32Projects/VC7.1/XQilla.sln \
-tests/runXQTSTestSuite.sh \
 tests/xqts/xqts_testsuite/errors.xml \
-tests/xqts/xqts_testsuite/xqts.zip \
 wintools/app_dsp.src \
 wintools/app_vcproj.src \
 wintools/filter_dsp.end \
@@ -464,8 +459,6 @@ $(PARSERCPP) $(PARSERHPP): $(PARSERFILE)
 	$(YACC) -d -v -o $(PARSERCPP) $(PARSERFILE)
 
 .PHONY: test docs
-
-test: check
 
 docs:
 	$(MAKE) -C include docs
