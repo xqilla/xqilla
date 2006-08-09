@@ -259,6 +259,11 @@ bool MAPM::operator>=(const MAPM &m) const
     return m_apm_compare_mt(cval(),m.cval())>=0;
 }
 
+int MAPM::compare(const MAPM &m) const
+{
+    return m_apm_compare_mt(cval(),m.cval());
+}
+
 MAPM operator+(const MAPM &a,const MAPM &b)
 {
     MAPM ret;
