@@ -164,6 +164,7 @@ protected:
   public:
     FLWORResult(VectorOfVariableBinding::const_iterator it, VectorOfVariableBinding::const_iterator end,
                 const XQFLWOR *flwor, int flags);
+    virtual ~FLWORResult();
 
     Item::Ptr next(DynamicContext *context);
     std::string asString(DynamicContext *context, int indent) const;
