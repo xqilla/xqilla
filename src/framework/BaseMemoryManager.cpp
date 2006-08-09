@@ -285,9 +285,10 @@ ATDecimalOrDerived* BaseMemoryManager::createInteger(int value) {
   if (!fIntegerPool)
     fIntegerPool = new (this) RefHashTableOf<ATDecimalOrDerived>(53,true, new (this) HashPtr(),this);
 
-  if(fIntegerPool->containsKey((const void*)value))
-      return fIntegerPool->get((const void*)value);
-  ATDecimalOrDerivedImpl* itemValue=new ATDecimalOrDerivedImpl(value);
+  ATDecimalOrDerived* itemValue=fIntegerPool->get((const void*)value);
+  if(itemValue!=NULL)
+      return itemValue;
+  itemValue=new ATDecimalOrDerivedImpl(value);
   itemValue->incrementRefCount();
   fIntegerPool->put((void*)value, itemValue);
   return itemValue;

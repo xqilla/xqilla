@@ -275,7 +275,7 @@ Item::Ptr XQPredicate::NumericPredicateFilterResult::next(DynamicContext *contex
   if(todo_) {
     todo_ = false;
 
-    Numeric::Ptr one = context->getItemFactory()->createInteger(1, context);
+    ItemFactory* pFactory=context->getItemFactory();
 
     AutoContextInfoReset autoReset(context);
     context->setContextSize(contextSize_);
@@ -283,7 +283,7 @@ Item::Ptr XQPredicate::NumericPredicateFilterResult::next(DynamicContext *contex
     // Set the context item to something other than null,
     // since fn:last() checks to see that there is actually
     // a context item
-    context->setContextItem(one);
+    context->setContextItem(pFactory->createInteger(1, context));
 
     Result pred_result = pred_->collapseTree(context);
     Numeric::Ptr first = (Numeric::Ptr)pred_result->next(context);
@@ -304,12 +304,12 @@ Item::Ptr XQPredicate::NumericPredicateFilterResult::next(DynamicContext *contex
 
     autoReset.resetContextInfo();
 
-    Numeric::Ptr pos = one;
-    while(pos->lessThan(first, context) && parent_->next(context) != NULLRCP) {
-      pos = pos->add(one, context);
+    int pos = 1;
+    while(pFactory->createInteger(pos, context)->lessThan(first, context) && parent_->next(context) != NULLRCP) {
+      pos++;
     }
 
-    if(pos->equals(first, context)) {
+    if(pFactory->createInteger(pos, context)->equals(first, context)) {
       Item::Ptr result = parent_->next(context);
       parent_ = 0;
       return result;
