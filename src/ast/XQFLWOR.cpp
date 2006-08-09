@@ -27,6 +27,7 @@
 #include <xqilla/context/VariableStore.hpp>
 #include <xqilla/context/VariableTypeStore.hpp>
 #include <xqilla/context/VarHashEntry.hpp>
+#include <xqilla/context/Scope.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/context/ItemFactory.hpp>
 #include <xqilla/operators/And.hpp>
@@ -898,6 +899,11 @@ XQFLWOR::FLWORResult::FLWORResult(VectorOfVariableBinding::const_iterator it, Ve
   for(; it != end; ++it) {
     _ebs.push_back(ProductFactor(*it));
   }
+}
+
+XQFLWOR::FLWORResult::~FLWORResult()
+{
+  if(_scope) delete _scope;
 }
 
 Item::Ptr XQFLWOR::FLWORResult::next(DynamicContext *context)
