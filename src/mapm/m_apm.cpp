@@ -51,7 +51,7 @@ M_APM MAPM::val(void)
             */
 	M_APM oldVal=myVal;
 	myVal=makeNew();
-	m_apm_copy_mt(myVal,oldVal);
+	m_apm_copy(myVal,oldVal);
 	unref(oldVal);
 	return myVal;
 }
@@ -78,64 +78,48 @@ int MAPM::digits(const MAPM &otherVal) const
 
 MAPM::MAPM(void)
 {
-    m_apm_enter();
     create();
-    m_apm_leave();
 }
 
 MAPM::MAPM(const MAPM &m)
 {
-    m_apm_enter();
     myVal=(M_APM)m.cval();
     ref(myVal);
-    m_apm_leave();
 }
 
 MAPM::MAPM(M_APM m)
 {
-    m_apm_enter();
     myVal=(M_APM)m;
     ref(myVal);
-    m_apm_leave();
 }
 
 MAPM::MAPM(const char *s)
 {
-    m_apm_enter();
     create();
     m_apm_set_string_mt(val(),(char *)s);
-    m_apm_leave();
 }
 
 MAPM::MAPM(double d)
 {
-    m_apm_enter();
     create();
     m_apm_set_double_mt(val(),d);
-    m_apm_leave();
 }
 
 MAPM::MAPM(int l)
 {
-    m_apm_enter();
     create();
-    m_apm_set_long_mt(val(),l);
-    m_apm_leave();
+    m_apm_set_long(val(),l);
 }
 
 MAPM::MAPM(long l)
 {
-    m_apm_enter();
     create();
-    m_apm_set_long_mt(val(),l);
-    m_apm_leave();
+    m_apm_set_long(val(),l);
 }
 
 MAPM::~MAPM() 
 {
-    m_apm_enter();
     destroy();
-    m_apm_leave();
 }
 
 void MAPM::toString(char *dest,int decimalPlaces) const
@@ -160,7 +144,7 @@ char* MAPM::toFixPtStringExp(int dp,char a,char b,int c) const
 
 void MAPM::toIntegerString(char *dest) const
 {
-    m_apm_to_integer_string_mt(dest,cval());
+    m_apm_to_integer_string(dest,cval());
 }
 	
 MAPM & MAPM::operator=(const MAPM &m)
@@ -185,13 +169,13 @@ MAPM & MAPM::operator=(double d)
 
 MAPM & MAPM::operator=(int l)
 {
-    m_apm_set_long_mt(val(),l);
+    m_apm_set_long(val(),l);
     return *this;
 }
 
 MAPM & MAPM::operator=(long l)
 {
-    m_apm_set_long_mt(val(),l);
+    m_apm_set_long(val(),l);
     return *this;
 }
 
@@ -231,37 +215,37 @@ const MAPM MAPM::operator--(int)
 	
 bool MAPM::operator==(const MAPM &m) const
 {
-    return m_apm_compare_mt(cval(),m.cval())==0;
+    return m_apm_compare(cval(),m.cval())==0;
 }
 
 bool MAPM::operator!=(const MAPM &m) const
 {
-    return m_apm_compare_mt(cval(),m.cval())!=0;
+    return m_apm_compare(cval(),m.cval())!=0;
 }
 
 bool MAPM::operator<(const MAPM &m) const
 {
-    return m_apm_compare_mt(cval(),m.cval())<0;
+    return m_apm_compare(cval(),m.cval())<0;
 }
 
 bool MAPM::operator<=(const MAPM &m) const
 {
-    return m_apm_compare_mt(cval(),m.cval())<=0;
+    return m_apm_compare(cval(),m.cval())<=0;
 }
 
 bool MAPM::operator>(const MAPM &m) const
 {
-    return m_apm_compare_mt(cval(),m.cval())>0;
+    return m_apm_compare(cval(),m.cval())>0;
 }
 
 bool MAPM::operator>=(const MAPM &m) const
 {
-    return m_apm_compare_mt(cval(),m.cval())>=0;
+    return m_apm_compare(cval(),m.cval())>=0;
 }
 
 int MAPM::compare(const MAPM &m) const
 {
-    return m_apm_compare_mt(cval(),m.cval());
+    return m_apm_compare(cval(),m.cval());
 }
 
 MAPM operator+(const MAPM &a,const MAPM &b)
@@ -328,45 +312,45 @@ MAPM & MAPM::operator/=(const MAPM &m)
 
 int MAPM::sign(void) const
 {
-    return m_apm_sign_mt(cval());
+    return m_apm_sign(cval());
 }
 
 int MAPM::exponent(void) const 
 {
-    return m_apm_exponent_mt(cval());
+    return m_apm_exponent(cval());
 }
 
 int MAPM::significant_digits(void) const 
 {
-    return m_apm_significant_digits_mt(cval());
+    return m_apm_significant_digits(cval());
 }
 
 int MAPM::is_integer(void) const 
 {
-    return m_apm_is_integer_mt(cval());
+    return m_apm_is_integer(cval());
 }
 
 int MAPM::is_even(void) const 
 {
-    return m_apm_is_even_mt(cval());
+    return m_apm_is_even(cval());
 }
 
 int MAPM::is_odd(void) const 
 {
-    return m_apm_is_odd_mt(cval());
+    return m_apm_is_odd(cval());
 }
 
 MAPM MAPM::abs(void) const
 {
     MAPM ret;
-    m_apm_absolute_value_mt(ret.val(),cval());
+    m_apm_absolute_value(ret.val(),cval());
     return ret;
 }
 
 MAPM MAPM::neg(void) const
 {
     MAPM ret;
-    m_apm_negate_mt(ret.val(),cval());
+    m_apm_negate(ret.val(),cval());
     return ret;
 }
 
