@@ -27,6 +27,10 @@
 #include <xqilla/framework/XPath2MemoryManager.hpp>
 #include <xqilla/context/ItemFactory.hpp>
 
+#if defined(XERCES_HAS_CPP_NAMESPACE)
+XERCES_CPP_NAMESPACE_USE
+#endif
+
 unsigned int ATDecimalOrDerivedImpl::g_nSignificantDigits=50;
 
 ATDecimalOrDerivedImpl::
@@ -36,8 +40,8 @@ ATDecimalOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh*
     _typeURI(typeURI) { 
     
   setDecimal(value, context);
-  if(this->isInstanceOfType (XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                             XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_INTEGER, context)) {
+  if(this->isInstanceOfType (SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                             SchemaSymbols::fgDT_INTEGER, context)) {
     _isInteger = true;
   } else {
     _isInteger = false;
@@ -51,8 +55,8 @@ ATDecimalOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const MAPM v
     _typeURI(typeURI) { 
     
   _decimal = value;
-  if(this->isInstanceOfType (XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                             XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_INTEGER, context)) {
+  if(this->isInstanceOfType (SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                             SchemaSymbols::fgDT_INTEGER, context)) {
     _isInteger = true;
   } else {
     _isInteger = false;
@@ -62,8 +66,8 @@ ATDecimalOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const MAPM v
 ATDecimalOrDerivedImpl::
 ATDecimalOrDerivedImpl(int value):
     ATDecimalOrDerived(),
-    _typeName(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_INTEGER),
-    _typeURI(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA) { 
+    _typeName(SchemaSymbols::fgDT_INTEGER),
+    _typeURI(SchemaSymbols::fgURI_SCHEMAFORSCHEMA) { 
 
   _decimal = value;
   _isInteger = true;
@@ -84,7 +88,7 @@ const XMLCh* ATDecimalOrDerivedImpl::getPrimitiveTypeName() const {
 }
 
 const XMLCh* ATDecimalOrDerivedImpl::getPrimitiveName() {
-  return XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DECIMAL;
+  return SchemaSymbols::fgDT_DECIMAL;
 }
 
 /* Get the name of this type  (ie "integer" for xs:integer) */
@@ -101,52 +105,15 @@ AnyAtomicType::AtomicObjectType ATDecimalOrDerivedImpl::getTypeIndex() {
   return AnyAtomicType::DECIMAL;
 } 
 
-AnyAtomicType::Ptr ATDecimalOrDerivedImpl::castAsInternal(AtomicObjectType targetIndex, const XMLCh* targetURI, const XMLCh* targetType, const DynamicContext* context) const {
-
-  if(context->isTypeOrDerivedFromType(targetURI, targetType, 
-                                      XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA, 
-                                      XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_INTEGER)) {
-    char obuf[1024];
-    _decimal.toIntegerString(obuf);
-    return (const AnyAtomicType::Ptr)context->getItemFactory()->createDecimalOrDerived(targetURI, targetType, obuf, context);
-  } else if (targetIndex == BOOLEAN) {
-    if (this->isZero()) {
-      return context->getItemFactory()->createBooleanOrDerived(targetURI, targetType, false, context);
-    } else {
-      return context->getItemFactory()->createBooleanOrDerived(targetURI, targetType, true, context);
-    }
-  } else {
-    return AnyAtomicType::castAsInternal(targetIndex, targetURI, targetType, context);
-  }
-}
-
 /* returns the XMLCh* (canonical) representation of this type */
-const XMLCh* ATDecimalOrDerivedImpl::asString(const DynamicContext* context) const {
-  return asString((StaticContext*)context);
+const XMLCh* ATDecimalOrDerivedImpl::asString(const DynamicContext* context) const
+{
+  return asDecimalString(g_nSignificantDigits, (StaticContext*)context);
 }
 
-const XMLCh* ATDecimalOrDerivedImpl::asString(const StaticContext* context) const {
-  char obuf[1024];
-  if(_decimal.is_integer())
-    _decimal.toIntegerString(obuf);
-  else
-    _decimal.toFixPtString(obuf, g_nSignificantDigits);
-
-  // Note in the canonical representation the decimal point is required
-  // and there must be at least one digit to the right and one digit to 
-  // the left of the decimal point (which may be 0)
-  if(strchr(obuf,'.')!=0)
-  {
-    // remove trailing 0's
-    char* lastChar=obuf+strlen(obuf)-1;
-    while(*lastChar=='0') {
-      *lastChar--=0;
-    }
-    // remove decimal point, if there are no digits after it
-    if(*lastChar=='.')
-      *lastChar=0;
-  }
-  return context->getMemoryManager()->getPooledString(obuf);
+const XMLCh* ATDecimalOrDerivedImpl::asString(const StaticContext* context) const
+{
+  return asDecimalString(g_nSignificantDigits, context);
 }
 
  /* returns an XMLCh* representation of this Numeric with precision signinficant digits */
@@ -158,12 +125,12 @@ const XMLCh* ATDecimalOrDerivedImpl::asString(int precision, const DynamicContex
     decimal.toFixPtString(obuf, 0);  // no significant digits
     int length = strlen(obuf);
     if(length<precision) {  // pad with 0s
-      XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buf(1023, context->getMemoryManager());
+      XMLBuffer buf(1023, context->getMemoryManager());
       if(this->isNegative()) {
-        buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
+        buf.append(chDash);
       } 
       for(int i = length; i<precision; i++) 
-        buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chDigit_0);
+        buf.append(chDigit_0);
       buf.append(context->getMemoryManager()->getPooledString(obuf));
       return context->getMemoryManager()->getPooledString(buf.getRawBuffer());
     } else if (length>precision) { // chop off the end
@@ -172,15 +139,15 @@ const XMLCh* ATDecimalOrDerivedImpl::asString(int precision, const DynamicContex
         *lastChar--=0;
       }
       if(this->isNegative()) {
-        XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buf(1023, context->getMemoryManager());
-        buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
+        XMLBuffer buf(1023, context->getMemoryManager());
+        buf.append(chDash);
         buf.append(context->getMemoryManager()->getPooledString(obuf));
         return context->getMemoryManager()->getPooledString(buf.getRawBuffer());
       }
     } else {
       if(this->isNegative()) {
-        XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buf(1023, context->getMemoryManager());
-        buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
+        XMLBuffer buf(1023, context->getMemoryManager());
+        buf.append(chDash);
         buf.append(context->getMemoryManager()->getPooledString(obuf));
         return context->getMemoryManager()->getPooledString(buf.getRawBuffer());      
       }
@@ -196,8 +163,8 @@ const XMLCh* ATDecimalOrDerivedImpl::asString(int precision, const DynamicContex
     } else if (digitsBeforeDot < precision) {  // then we want precision - digitsBeforeDot significant digits
       obuf[digitsBeforeDot+1+precision] = 0;  // +1 for the .
       if(this->isNegative()) {
-        XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buf;
-        buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
+        XMLBuffer buf;
+        buf.append(chDash);
         buf.append(context->getMemoryManager()->getPooledString(obuf));
         return context->getMemoryManager()->getPooledString(buf.getRawBuffer());
       }
@@ -213,51 +180,14 @@ Numeric::Ptr ATDecimalOrDerivedImpl::promoteTypeIfApplicable(const XMLCh* typeUR
   // if target is instance of xs:decimal, or if typeName == double or if typeName == float, cast
   if( this->isInstanceOfType(typeURI, typeName, context) ) {
     return this;  // no need to promote, we are already a decimal (or possibly anyAtomicType, anySimpleType, anyType)
-  } else if( (XPath2Utils::equals(typeName, XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DOUBLE) &&      
-      XPath2Utils::equals(typeURI, XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA)) ||
-     (XPath2Utils::equals(typeName, XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_FLOAT) &&      
-      XPath2Utils::equals(typeURI, XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA)) ) {
+  } else if( (XPath2Utils::equals(typeName, SchemaSymbols::fgDT_DOUBLE) &&      
+      XPath2Utils::equals(typeURI, SchemaSymbols::fgURI_SCHEMAFORSCHEMA)) ||
+     (XPath2Utils::equals(typeName, SchemaSymbols::fgDT_FLOAT) &&      
+      XPath2Utils::equals(typeURI, SchemaSymbols::fgURI_SCHEMAFORSCHEMA)) ) {
     return (const Numeric::Ptr )this->castAs(typeURI, typeName, context);
   } else {
     return 0;
   }  
-}
-
-/* returns true if the two objects' value are equal
-   * false otherwise */
-bool ATDecimalOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const {
-  if(!target->isNumericValue()) {
-    XQThrow(IllegalArgumentException,X("ATDecimalOrDerivedImpl::equals"), X("Equality operator for given types not supported [err:XPTY0004]"));
-  }
-  if(this->getPrimitiveTypeIndex() != target->getPrimitiveTypeIndex()) {
-    // if targer is not a decimal, then we need to promote this to a float or double
-    return this->castAs(target->getPrimitiveTypeURI(), target->getPrimitiveTypeName(), context)->equals(target, context);
-  } else {
-    ATDecimalOrDerivedImpl* otherImpl = (ATDecimalOrDerivedImpl*)(const AnyAtomicType*)target;
-    return _decimal == otherImpl->_decimal;
-  }
-}
-
-/** Returns true if this is less than other, false otherwise */
-bool ATDecimalOrDerivedImpl::lessThan(const Numeric::Ptr &other, const DynamicContext* context) const { 
-  if(this->getPrimitiveTypeIndex() != other->getPrimitiveTypeIndex()) {
-    // if other is not a decimal, then we need to promote this to a float or double
-    return ((const Numeric::Ptr )this->castAs(other->getPrimitiveTypeURI(), other->getPrimitiveTypeName(), context))->lessThan(other, context);
-  } else {
-    ATDecimalOrDerivedImpl* otherImpl = (ATDecimalOrDerivedImpl*)(const Numeric*)other;
-    return _decimal < otherImpl->_decimal;
-  }
-}
-
-/** Returns true if this is greater than other, false otherwise */
-bool ATDecimalOrDerivedImpl::greaterThan(const Numeric::Ptr &other, const DynamicContext* context) const {
-  if(this->getPrimitiveTypeIndex() != other->getPrimitiveTypeIndex()) {
-    // if other is not a decimal, then we need to promote this to a float or double
-    return ((const Numeric::Ptr )this->castAs(other->getPrimitiveTypeURI(), other->getPrimitiveTypeName(), context))->greaterThan(other, context);
-  } else {
-    ATDecimalOrDerivedImpl* otherImpl = (ATDecimalOrDerivedImpl*)(const Numeric*)other;
-    return _decimal > otherImpl->_decimal;
-  }
 }
 
 /** Returns a Numeric object which is the sum of this and other */
@@ -289,19 +219,19 @@ Numeric::Ptr ATDecimalOrDerivedImpl::add(const Numeric::Ptr &other, const Dynami
     ATDecimalOrDerived::Ptr first;
     ATDecimalOrDerived::Ptr second;
     if(this->_isInteger) {
-      first = (const ATDecimalOrDerived::Ptr )this->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                           XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_INTEGER, context);
+      first = (const ATDecimalOrDerived::Ptr )this->castAs(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                           SchemaSymbols::fgDT_INTEGER, context);
     } else {
-      first = (const ATDecimalOrDerived::Ptr )this->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                          XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DECIMAL, context);
+      first = (const ATDecimalOrDerived::Ptr )this->castAs(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                          SchemaSymbols::fgDT_DECIMAL, context);
     }
 
     if(((ATDecimalOrDerivedImpl*)(const Numeric*)other)->_isInteger) {
-      second = (const ATDecimalOrDerived::Ptr )other->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                            XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_INTEGER, context);
+      second = (const ATDecimalOrDerived::Ptr )other->castAs(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                            SchemaSymbols::fgDT_INTEGER, context);
     } else {
-      second = (const ATDecimalOrDerived::Ptr )other->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                          XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DECIMAL, context);
+      second = (const ATDecimalOrDerived::Ptr )other->castAs(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                          SchemaSymbols::fgDT_DECIMAL, context);
     }
     return first->add(second, context);
   }
@@ -339,19 +269,19 @@ Numeric::Ptr ATDecimalOrDerivedImpl::subtract(const Numeric::Ptr &other, const D
     ATDecimalOrDerived::Ptr first; 
     ATDecimalOrDerived::Ptr second; 
     if(this->_isInteger) {
-      first = (const ATDecimalOrDerived::Ptr )this->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                           XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_INTEGER, context);
+      first = (const ATDecimalOrDerived::Ptr )this->castAs(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                           SchemaSymbols::fgDT_INTEGER, context);
     } else {
-      first = (const ATDecimalOrDerived::Ptr )this->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                          XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DECIMAL, context);
+      first = (const ATDecimalOrDerived::Ptr )this->castAs(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                          SchemaSymbols::fgDT_DECIMAL, context);
     }
 
     if(((ATDecimalOrDerivedImpl*)(const Numeric*)other)->_isInteger) {
-      second = (const ATDecimalOrDerived::Ptr )other->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                            XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_INTEGER, context);
+      second = (const ATDecimalOrDerived::Ptr )other->castAs(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                            SchemaSymbols::fgDT_INTEGER, context);
     } else {
-      second = (const ATDecimalOrDerived::Ptr )other->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                          XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DECIMAL, context);
+      second = (const ATDecimalOrDerived::Ptr )other->castAs(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                          SchemaSymbols::fgDT_DECIMAL, context);
     }
     return first->subtract(second, context);
   }
@@ -387,19 +317,19 @@ Numeric::Ptr ATDecimalOrDerivedImpl::multiply(const Numeric::Ptr &other, const D
     ATDecimalOrDerived::Ptr first;
     ATDecimalOrDerived::Ptr second; 
     if(this->_isInteger) {
-      first = (const ATDecimalOrDerived::Ptr )this->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                           XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_INTEGER, context);
+      first = (const ATDecimalOrDerived::Ptr )this->castAs(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                           SchemaSymbols::fgDT_INTEGER, context);
     } else {
-      first = (const ATDecimalOrDerived::Ptr )this->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                          XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DECIMAL, context);
+      first = (const ATDecimalOrDerived::Ptr )this->castAs(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                          SchemaSymbols::fgDT_DECIMAL, context);
     }
     
     if(((ATDecimalOrDerivedImpl*)(const Numeric*)other)->_isInteger) {
-      second = (const ATDecimalOrDerived::Ptr )other->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                            XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_INTEGER, context);
+      second = (const ATDecimalOrDerived::Ptr )other->castAs(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                            SchemaSymbols::fgDT_INTEGER, context);
     } else {
-      second = (const ATDecimalOrDerived::Ptr )other->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                          XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DECIMAL, context);
+      second = (const ATDecimalOrDerived::Ptr )other->castAs(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                          SchemaSymbols::fgDT_DECIMAL, context);
     }
     return first->multiply(second, context);
   }
@@ -436,19 +366,19 @@ Numeric::Ptr ATDecimalOrDerivedImpl::divide(const Numeric::Ptr &other, const Dyn
     ATDecimalOrDerived::Ptr first;
     ATDecimalOrDerived::Ptr second; 
     if(this->_isInteger) {
-      first = (const ATDecimalOrDerived::Ptr )this->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                           XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_INTEGER, context);
+      first = (const ATDecimalOrDerived::Ptr )this->castAs(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                           SchemaSymbols::fgDT_INTEGER, context);
     } else {
-      first = (const ATDecimalOrDerived::Ptr )this->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                          XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DECIMAL, context);
+      first = (const ATDecimalOrDerived::Ptr )this->castAs(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                          SchemaSymbols::fgDT_DECIMAL, context);
     }
     
     if(((ATDecimalOrDerivedImpl*)(const Numeric*)other)->_isInteger) {
-      second = (const ATDecimalOrDerived::Ptr )other->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                            XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_INTEGER, context);
+      second = (const ATDecimalOrDerived::Ptr )other->castAs(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                            SchemaSymbols::fgDT_INTEGER, context);
     } else {
-      second = (const ATDecimalOrDerived::Ptr )other->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                          XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DECIMAL, context);
+      second = (const ATDecimalOrDerived::Ptr )other->castAs(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                          SchemaSymbols::fgDT_DECIMAL, context);
     }
     return first->divide(second, context);
   }
@@ -462,7 +392,7 @@ Numeric::Ptr ATDecimalOrDerivedImpl::mod(const Numeric::Ptr &other, const Dynami
     const ATDecimalOrDerivedImpl* otherImpl = (ATDecimalOrDerivedImpl*)(const Numeric*)other;
   
     if(otherImpl->isZero()) {
-      XQThrow(IllegalArgumentException, X("ATDecimalOrDerivedImpl::mod"), X("Division by zero [err:FOAR0001]"));
+      XQThrow(::IllegalArgumentException, X("ATDecimalOrDerivedImpl::mod"), X("Division by zero [err:FOAR0001]"));
     }
   
     MAPM result = _decimal;
@@ -492,19 +422,19 @@ Numeric::Ptr ATDecimalOrDerivedImpl::mod(const Numeric::Ptr &other, const Dynami
     ATDecimalOrDerived::Ptr first;
     ATDecimalOrDerived::Ptr second; 
     if(this->_isInteger) {
-      first = (const ATDecimalOrDerived::Ptr )this->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                           XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_INTEGER, context);
+      first = (const ATDecimalOrDerived::Ptr )this->castAs(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                           SchemaSymbols::fgDT_INTEGER, context);
     } else {
-      first = (const ATDecimalOrDerived::Ptr )this->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                          XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DECIMAL, context);
+      first = (const ATDecimalOrDerived::Ptr )this->castAs(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                          SchemaSymbols::fgDT_DECIMAL, context);
     }
     
     if(((ATDecimalOrDerivedImpl*)(const Numeric*)other)->_isInteger) {
-      second = (const ATDecimalOrDerived::Ptr )other->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                            XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_INTEGER, context);
+      second = (const ATDecimalOrDerived::Ptr )other->castAs(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                            SchemaSymbols::fgDT_INTEGER, context);
     } else {
-      second = (const ATDecimalOrDerived::Ptr )other->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                          XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DECIMAL, context);
+      second = (const ATDecimalOrDerived::Ptr )other->castAs(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                          SchemaSymbols::fgDT_DECIMAL, context);
     }
     return first->mod(second, context);
   }
@@ -515,8 +445,8 @@ Numeric::Ptr ATDecimalOrDerivedImpl::mod(const Numeric::Ptr &other, const Dynami
 Numeric::Ptr ATDecimalOrDerivedImpl::floor(const DynamicContext* context) const {
   // if integer, return xs:integer, otherwise xs:decimal    
   if(_isInteger) {
-    return (const Numeric::Ptr )this->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                        XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_INTEGER, context);
+    return (const Numeric::Ptr )this->castAs(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                        SchemaSymbols::fgDT_INTEGER, context);
   }
   return context->getItemFactory()->createDecimal(_decimal.floor(), context);
 
@@ -526,8 +456,8 @@ Numeric::Ptr ATDecimalOrDerivedImpl::floor(const DynamicContext* context) const 
 Numeric::Ptr ATDecimalOrDerivedImpl::ceiling(const DynamicContext* context) const {
   // if integer, return xs:integer, otherwise xs:decimal    
   if(_isInteger) {
-    return (const Numeric::Ptr )this->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                        XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_INTEGER, context);
+    return (const Numeric::Ptr )this->castAs(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                        SchemaSymbols::fgDT_INTEGER, context);
   }
   return context->getItemFactory()->createDecimal(_decimal.ceil(), context);
 
@@ -537,8 +467,8 @@ Numeric::Ptr ATDecimalOrDerivedImpl::ceiling(const DynamicContext* context) cons
 Numeric::Ptr ATDecimalOrDerivedImpl::round(const DynamicContext* context) const {
   // if integer, return xs:integer, otherwise xs:decimal    
   if(_isInteger) {
-    return (const Numeric::Ptr )this->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                        XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_INTEGER, context);
+    return (const Numeric::Ptr )this->castAs(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                        SchemaSymbols::fgDT_INTEGER, context);
   }
   MAPM value = _decimal + 0.5;
   return context->getItemFactory()->createDecimal(value.floor(), context);
@@ -587,17 +517,17 @@ Numeric::Ptr ATDecimalOrDerivedImpl::abs(const DynamicContext* context) const {
 
 /** Does this Numeric have value 0? */
 bool ATDecimalOrDerivedImpl::isZero() const {
-  return _decimal == MM_Zero;
+  return _decimal.sign() == 0;
 }
 
 /** Is this Numeric negative? */
 bool ATDecimalOrDerivedImpl::isNegative() const {
-  return _decimal < MM_Zero;
+  return _decimal.sign() < 0;
 }
 
 /** Is this Numeric positive? */
 bool ATDecimalOrDerivedImpl::isPositive() const {
-  return _decimal > MM_Zero;
+  return _decimal.sign() > 0;
 }
 
 /** Treat this decimal (must be integer) as a codepoint **/
@@ -620,21 +550,13 @@ AnyAtomicType::AtomicObjectType ATDecimalOrDerivedImpl::getPrimitiveTypeIndex() 
   return this->getTypeIndex();
 }
 
-//////////////////////////////////////
-// Horrible Hack to make Dates      //
-// work for now. Loss of Precision! //
-//////////////////////////////////////
-MAPM ATDecimalOrDerivedImpl::asMAPM() const {
-  return _decimal;
-}
-
 void ATDecimalOrDerivedImpl::setDecimal(const XMLCh* const value, const StaticContext *context) {
 
   if(value == NULL) {
     XQThrow(XPath2TypeCastException,X("ATDecimalOrDerivedImpl::setDecimal"), X("Invalid representation of decimal"));
   }
   
-  unsigned int length=XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(value) + 1;
+  unsigned int length=XMLString::stringLen(value) + 1;
 
   AutoDeallocate<char> buffer(context->getMemoryManager(), length * sizeof(char));
 

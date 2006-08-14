@@ -39,16 +39,6 @@ public:
   /* Promote this to the given type, if possible */
   virtual Numeric::Ptr promoteTypeIfApplicable(const XMLCh* typeURI, const XMLCh* typeName, const DynamicContext* context) const = 0;
   
-  /* returns true if the two objects are equal (MAPM comparison)
-   * false otherwise */
-  virtual bool equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const = 0;
-
-  /** Returns true if this is less than other, false otherwise */
-  virtual bool lessThan(const Numeric::Ptr &other, const DynamicContext* context) const = 0;
-
-  /** Returns true if this is greater than other, false otherwise */
-  virtual bool greaterThan(const Numeric::Ptr &other, const DynamicContext* context) const = 0;
-
   /** Returns a Numeric object which is the sum of this and other */
   virtual Numeric::Ptr add(const Numeric::Ptr &other, const DynamicContext* context) const = 0;
 
@@ -96,6 +86,10 @@ public:
   virtual bool isPositive() const = 0;
 
   virtual AnyAtomicType::AtomicObjectType getPrimitiveTypeIndex() const = 0;
+
+  virtual const MAPM &asMAPM() const = 0;
+
+  virtual State getState() const = 0;
 };
 
 #endif //  _ATDOUBLEORDERIVED_HPP

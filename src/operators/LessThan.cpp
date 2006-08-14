@@ -47,7 +47,7 @@ LessThan::LessThan(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   // take care of Numeric types first
   if(atom1->isNumericValue()) {
     if(atom2->isNumericValue()) {
-      return ((Numeric*)(const AnyAtomicType*)atom1)->lessThan((const Numeric::Ptr )atom2, context);
+      return ((Numeric*)atom1.get())->lessThan((Numeric*)atom2.get(), context);
     } else {
       XQThrow(XPath2ErrorException,X("LessThan::less_than"), X("An attempt to compare a numeric type to a non numeric type has occurred [err:XPTY0004]"));
     }

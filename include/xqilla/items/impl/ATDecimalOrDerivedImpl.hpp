@@ -61,16 +61,6 @@ public:
   /* Promote this to the given type, if possible */
   virtual Numeric::Ptr promoteTypeIfApplicable(const XMLCh* typeURI, const XMLCh* typeName, const DynamicContext* context) const;
   
-  /* returns true if the two objects' decimal values are equal
-   * false otherwise */
-  virtual bool equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const;
-
-  /** Returns true if this is less than other, false otherwise */
-  virtual bool lessThan(const Numeric::Ptr &other, const DynamicContext* context) const;
-
-  /** Returns true if this is greater than other, false otherwise */
-  virtual bool greaterThan(const Numeric::Ptr &other, const DynamicContext* context) const;
-
   /** Returns a Numeric object which is the sum of this and other */
   virtual Numeric::Ptr add(const Numeric::Ptr &other, const DynamicContext* context) const;
 
@@ -126,18 +116,12 @@ public:
   /* Get the primitive type name */
   static const XMLCh* getPrimitiveName();
   
+  virtual const MAPM &asMAPM() const { return _decimal; }
+
+  virtual State getState() const { return isNegative()? NEG_NUM : NUM; }
+
   /* The significant digits */
   static unsigned int g_nSignificantDigits;
-
-protected:
-  //////////////////////////////////////
-  // Horrible Hack to make Dates      //
-  // work for now. Loss of Precision! //
-  //////////////////////////////////////  
-  virtual MAPM asMAPM() const;
-  
-  /* If possible, cast this type to the target type */
-  virtual AnyAtomicType::Ptr castAsInternal(AtomicObjectType targetIndex, const XMLCh* targetURI, const XMLCh* targetType, const DynamicContext* context) const;
 
 private:
 

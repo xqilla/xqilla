@@ -272,7 +272,8 @@ void XQillaTestSuiteRunner::addCollection(const string &id, const string &filena
 
 void XQillaTestSuiteRunner::runTestCase(const TestCase &testCase)
 {
-  if(m_szSingleTest != "" && testCase.name != m_szSingleTest &&
+  if(m_szSingleTest != "" &&
+     testCase.name.find(m_szSingleTest) == string::npos &&
      m_szFullTestName.find(m_szSingleTest) == string::npos) {
     m_results->reportSkip(testCase, "Not run");
     return;

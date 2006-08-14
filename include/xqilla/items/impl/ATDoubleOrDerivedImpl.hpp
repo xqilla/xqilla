@@ -52,16 +52,6 @@ public:
   /* Promote this to the given type, if possible */
   virtual Numeric::Ptr promoteTypeIfApplicable(const XMLCh* typeURI, const XMLCh* typeName, const DynamicContext* context) const;
   
-  /* returns true if the two objects' decimal values are equal
-   * false otherwise */
-  virtual bool equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const;
-
-  /** Returns true if this is less than other, false otherwise */
-  virtual bool lessThan(const Numeric::Ptr &other, const DynamicContext* context) const;
-
-  /** Returns true if this is greater than other, false otherwise */
-  virtual bool greaterThan(const Numeric::Ptr &other, const DynamicContext* context) const;
-
   /** Returns a Numeric object which is the sum of this and other */
   virtual Numeric::Ptr add(const Numeric::Ptr &other, const DynamicContext* context) const;
 
@@ -120,24 +110,18 @@ public:
   /* Get the primitive type name */
   static const XMLCh* getPrimitiveName();
 
-  enum state {NUM, NaN, INF, NEG_INF};
+  virtual const MAPM &asMAPM() const { return _double; }
+
+  virtual State getState() const { return _state; }
 
   /* The significant digits */
   static int g_nSignificantDigits;
   static bool g_bEnforceIEEE;
 
-protected:
-  
-  /* If possible, cast this type to the target type */
-  virtual AnyAtomicType::Ptr castAsInternal(AtomicObjectType targetIndex, const XMLCh* targetURI, const XMLCh* targetType, const DynamicContext* context) const;
-
 private:
 
   /* set the value of this decimal */
   void setDouble(const XMLCh* const value, const StaticContext *context);
-
-  /* check if the value is a valid xs:float */
-  void checkLimits();
 
   /* returns a new infinity ATDoubleOrDerived*/
   ATDoubleOrDerived::Ptr infinity(const DynamicContext* context) const;
@@ -158,10 +142,7 @@ private:
   MAPM _double;
 
   /* is it NaN, INF, NegINF, or just a double (NUM) */
-  state _state;
-
-  /* whether or not this value is negative */
-  bool _isNegative;
+  State _state;
 
   /* the name of this type */
   const XMLCh* _typeName;

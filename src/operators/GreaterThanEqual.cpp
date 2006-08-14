@@ -29,25 +29,21 @@ GreaterThanEqual::GreaterThanEqual(const VectorOfASTNodes &args, XPath2MemoryMan
 
 /*static*/ bool GreaterThanEqual::greater_than_equal(const AnyAtomicType::Ptr &arg1, const AnyAtomicType::Ptr &arg2, Collation* collation, DynamicContext* context)
 {
-    // A ge B numeric               numeric                 op:numeric-greater-than(A, B) or op:numeric-equal(A, B)
-    // A ge B xs:boolean            xs:boolean              fn:not(op:boolean-less-than(A, B))
-    // A ge B xs:string             xs:string               op:numeric-greater-than(fn:compare(A, B), -1)
-    // A ge B xs:date               xs:date                 fn:not(op:date-less-than(A, B))
-    // A ge B xs:time               xs:time                 fn:not(op:time-less-than(A, B))
-    // A ge B xs:dateTime           xs:dateTime             fn:not(op:datetime-less-than(A, B))
-    // A ge B xdt:yearMonthDuration xdt:yearMonthDuration   fn:not(op:yearMonthDuration-less-than(A, B))
-    // A ge B xdt:dayTimeDuration   xdt:dayTimeDuration     fn:not(op:dayTimeDuration-less-than(A, B))
-    // numeric values need a special comparison, for the others we can just rely on LessThan
-    if(arg1->isNumericValue()) {
-        if(arg2->isNumericValue()) {
-            return ((Numeric*)(const AnyAtomicType*)arg1)->greaterThan((const Numeric::Ptr )arg2, context) ||
-                   ((Numeric*)(const AnyAtomicType*)arg1)->equals((const Numeric::Ptr )arg2, context) ;
-        } else {
-            XQThrow(XPath2ErrorException,X("GreaterThanEqual::greater_than_equal"), X("An attempt to compare a numeric type to a non numeric type has occurred [err:XPTY0004]"));
-        }
-    }
+  // A ge B numeric               numeric                 op:numeric-greater-than(A, B) or op:numeric-equal(A, B)
+  // A ge B xs:boolean            xs:boolean              fn:not(op:boolean-less-than(A, B))
+  // A ge B xs:string             xs:string               op:numeric-greater-than(fn:compare(A, B), -1)
+  // A ge B xs:date               xs:date                 fn:not(op:date-less-than(A, B))
+  // A ge B xs:time               xs:time                 fn:not(op:time-less-than(A, B))
+  // A ge B xs:dateTime           xs:dateTime             fn:not(op:datetime-less-than(A, B))
+  // A ge B xdt:yearMonthDuration xdt:yearMonthDuration   fn:not(op:yearMonthDuration-less-than(A, B))
+  // A ge B xdt:dayTimeDuration   xdt:dayTimeDuration     fn:not(op:dayTimeDuration-less-than(A, B))
+  // numeric values need a special comparison, for the others we can just rely on LessThan
+  if(arg1->isNumericValue() && arg2->isNumericValue()) {
+    if(((Numeric*)arg1.get())->getState() == Numeric::NaN ||
+       ((Numeric*)arg2.get())->getState() == Numeric::NaN) return false;
+  }
 
-    return !LessThan::less_than(arg1,arg2,collation,context);
+  return !LessThan::less_than(arg1,arg2,collation,context);
 }
 
 bool GreaterThanEqual::execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::Ptr &atom2, DynamicContext *context) const

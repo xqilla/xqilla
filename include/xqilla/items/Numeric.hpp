@@ -19,6 +19,8 @@
 #include <xqilla/items/AnyAtomicType.hpp>
 
 class DynamicContext;
+class StaticContext;
+class MAPM;
 
 class XQILLA_API Numeric : public AnyAtomicType
 {
@@ -46,13 +48,17 @@ public:
   
   /* returns true if the two Numeric values are equal 
    * false otherwise */
-  virtual bool equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const = 0;
+  virtual bool equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const;
 
   /** Returns true if this is less than other, false otherwise */
-  virtual bool lessThan(const Numeric::Ptr &other, const DynamicContext* context) const = 0;
+  virtual bool lessThan(const Numeric::Ptr &other, const DynamicContext* context) const;
 
   /** Returns true if this is greater than other, false otherwise */
-  virtual bool greaterThan(const Numeric::Ptr &other, const DynamicContext* context) const = 0;
+  virtual bool greaterThan(const Numeric::Ptr &other, const DynamicContext* context) const;
+
+  /** Returns less than 0 if this is less that other,
+      0 if they are the same, and greater than 0 otherwise */
+  virtual int compare(const Numeric::Ptr &other, const DynamicContext *context) const;
 
   /** Returns a Numeric object which is the sum of this and other */
   virtual Numeric::Ptr add(const Numeric::Ptr &other, const DynamicContext* context) const = 0;
@@ -102,12 +108,26 @@ public:
 
   virtual AnyAtomicType::AtomicObjectType getPrimitiveTypeIndex() const = 0;
 
+  virtual const MAPM &asMAPM() const = 0;
+
+  enum State {NUM, NEG_NUM, NaN, INF, NEG_INF};
+
+  virtual State getState() const = 0;
+
   static const XMLCh NaN_string[];
   static const XMLCh NAN_string[];
   static const XMLCh INF_string[];
   static const XMLCh NegINF_string[];
   static const XMLCh NegZero_string[];
   static const XMLCh PosZero_string[];
+
+protected:
+  virtual AnyAtomicType::Ptr castAsInternal(AtomicObjectType targetIndex, const XMLCh* targetURI,
+                                            const XMLCh* targetType, const DynamicContext* context) const;
+
+  const XMLCh *asDecimalString(int significantDigits, const StaticContext* context) const;
+  const XMLCh *asDoubleString(int significantDigits, const StaticContext* context) const;
+  
 };
 
 #endif //  __NUMERIC_HPP

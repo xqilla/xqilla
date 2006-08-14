@@ -85,10 +85,10 @@
   <error id="constattrerr-1" reason="no error failure"/>
   <error id="fn-avg-mix-args-012" reason="result failure"/>
   <error id="fn-avg-mix-args-013" reason="result failure"/>
-  <error id="fn-avg-mix-args-014" reason="result failure"/>
   <error id="fn-avg-mix-args-015" reason="result failure"/>
   <error id="fn-avg-mix-args-020" reason="result failure"/>
   <error id="fn-avg-mix-args-022" reason="result failure"/>
+  <error id="fn-avgflt2args-1" reason="result failure"/>
   <error id="fn-avgflt2args-2" reason="result failure"/>
   <error id="fn-avgflt2args-4" reason="result failure"/>
   <error id="fn-base-uri-17" reason="result failure"/>
@@ -191,12 +191,12 @@
   <error id="fn-numberulng1args-3" reason="result failure"/>
   <error id="fn-resolve-uri-4" reason="no error failure"/>
   <error id="fn-resolve-uri-9" reason="result failure"/>
+  <error id="fn-sumdbl3args-6" reason="result failure"/>
   <error id="modules-schema-context" reason="error failure"/>
   <error id="namespaceDecl-2" reason="error failure"/>
   <error id="normalization-1" reason="no error failure"/>
   <error id="orderBy22" reason="result failure"/>
   <error id="orderBy52" reason="result failure"/>
-  <error id="schema-import-25" reason="result failure"/>
   <error id="static-context-1" reason="no error failure"/>
   <error id="vardeclerr" reason="error failure"/>
 </errors>
