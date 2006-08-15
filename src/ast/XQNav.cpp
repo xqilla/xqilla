@@ -55,7 +55,8 @@ Result XQNav::createResult(DynamicContext* context, int flags) const
       Sequence seq(result->toSequence(context));
       result = new StepResult(new SequenceResult(seq), it->step, seq.getLength(), flags);
     }
-    else if(!it->step->getStaticResolutionContext().areContextFlagsUsed()) {
+    // this will ignore any previous result, so it can be done only at the first iteration
+    else if(result.isNull() && !it->step->getStaticResolutionContext().areContextFlagsUsed()) {
       result = it->step->collapseTree(context, flags);
     }
     else {
