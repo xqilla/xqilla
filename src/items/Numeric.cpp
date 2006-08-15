@@ -276,11 +276,16 @@ AnyAtomicType::Ptr Numeric::castAsInternal(AtomicObjectType targetIndex, const X
 
 const XMLCh *Numeric::asDecimalString(int significantDigits, const StaticContext* context) const
 {
+  return asDecimalString(asMAPM(), significantDigits, context);
+}
+
+const XMLCh *Numeric::asDecimalString(const MAPM &number, int significantDigits, const StaticContext* context)
+{
   char obuf[1024];
-  if(asMAPM().is_integer())
-    asMAPM().toIntegerString(obuf);
+  if(number.is_integer())
+    number.toIntegerString(obuf);
   else {
-    asMAPM().toFixPtString(obuf, significantDigits);
+    number.toFixPtString(obuf, significantDigits);
 
     // Note in the canonical representation the decimal point is required
     // and there must be at least one digit to the right and one digit to 
@@ -314,6 +319,11 @@ const XMLCh *Numeric::asDoubleString(int significantDigits, const StaticContext*
   default: break;
   }
 
+  return asDoubleString(state1, value1, significantDigits, context);
+}
+
+const XMLCh *Numeric::asDoubleString(State state1, const MAPM &value1, int significantDigits, const StaticContext* context)
+{
   switch(state1) {
   case NaN:     return NaN_string;
   case INF:     return INF_string;
@@ -329,7 +339,7 @@ const XMLCh *Numeric::asDoubleString(int significantDigits, const StaticContext*
   MAPM absVal = value1.abs();
   MAPM lower(0.000001), upper(1000000);
   if(absVal < upper && absVal >= lower) {
-    return asDecimalString(significantDigits, context);
+    return asDecimalString(value1, significantDigits, context);
   }
   else {
     char obuf[1024];

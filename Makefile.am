@@ -248,7 +248,6 @@ src/items/impl/ATDateTimeOrDerivedImpl.hpp \
 src/items/impl/ATDecimalOrDerivedImpl.cpp \
 src/items/impl/ATDoubleOrDerivedImpl.cpp \
 src/items/impl/ATDurationOrDerivedImpl.cpp \
-src/items/impl/ATDurationOrDerivedImpl.hpp \
 src/items/impl/ATFloatOrDerivedImpl.cpp \
 src/items/impl/ATGDayOrDerivedImpl.cpp \
 src/items/impl/ATGDayOrDerivedImpl.hpp \
@@ -369,8 +368,6 @@ src/operators/Or.cpp \
 src/operators/OrderComparison.cpp \
 src/operators/Plus.cpp \
 src/operators/Range.cpp \
-src/operators/TotalOrderComparison.cpp \
-src/operators/TotalOrderComparison.hpp \
 src/operators/UnaryMinus.cpp \
 src/operators/Union.cpp \
 src/schema/DocumentCacheImpl.cpp \

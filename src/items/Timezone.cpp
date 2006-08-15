@@ -45,14 +45,10 @@ Timezone::Timezone(const ATDecimalOrDerived::Ptr &hour, const ATDecimalOrDerived
 }
 
 Timezone::Timezone(const ATDurationOrDerived::Ptr &duration, const DynamicContext* context) {
-  if(!duration->getSeconds()->isZero())
+  if(!duration->getSeconds(context)->isZero())
     XQThrow(XPath2TypeCastException ,X("Timezone::Timezone"), X("Timezone must have an integral number of minutes [err:FODT0003]."));
-  int minutes=XERCES_CPP_NAMESPACE_QUALIFIER XMLString::parseInt(duration->getDays()->asString(context)) * DateUtils::g_minutesPerHour * DateUtils::g_hoursPerDay +
-              XERCES_CPP_NAMESPACE_QUALIFIER XMLString::parseInt(duration->getHours()->asString(context)) * DateUtils::g_minutesPerHour +
-              XERCES_CPP_NAMESPACE_QUALIFIER XMLString::parseInt(duration->getMinutes()->asString(context));
-
-  if (duration->isNegative())
-    minutes = -minutes;
+  int minutes = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::parseInt(duration->asSeconds(context)->asString(context));
+  minutes = minutes / DateUtils::g_secondsPerMinute;
 
   init(minutes);
   validate();

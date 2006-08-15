@@ -17,7 +17,7 @@
 #include <xqilla/ast/XQSequence.hpp>
 #include <xqilla/context/Collation.hpp>
 #include <xqilla/context/impl/CodepointCollation.hpp>
-#include "../operators/TotalOrderComparison.hpp"
+#include <xqilla/operators/GreaterThan.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/exceptions/FunctionException.hpp>
 #include <xqilla/exceptions/XPath2ErrorException.hpp>
@@ -91,36 +91,23 @@ Sequence FunctionMax::collapseTreeInternal(DynamicContext* context, int flags) c
         collation=context->getCollation(CodepointCollation::getCodepointCollationName());
 
     Sequence::iterator i = sequence.begin();
-    Item::Ptr maxItem = *i;
+    AnyAtomicType::Ptr maxItem = (const AnyAtomicType *)i->get();
     ++i;
     // if we have just one item, force entering the 'for' loop, or we will not test if the type had a total order
-    if(i==sequence.end())
-        i--;
-    for (; i != sequence.end(); ++i) {
-        const AnyAtomicType *atomic = (const AnyAtomicType *)(const Item*)(*i);
-        if(atomic->getPrimitiveTypeIndex() == AnyAtomicType::STRING || 
-           atomic->getPrimitiveTypeIndex() == AnyAtomicType::ANY_URI) 
-        {
-            if(collation->compare((*i)->asString(context),maxItem->asString(context))>0)
-                maxItem = *i;
-        } else {
-            ATBooleanOrDerived::Ptr greater;
-            VectorOfASTNodes gtArgs = VectorOfASTNodes(XQillaAllocator<ASTNode*>(memMgr));
-            XQSequence seq1(*i, context, memMgr);
-            gtArgs.push_back(&seq1);
-            XQSequence seq2(maxItem, context, memMgr);
-            gtArgs.push_back(&seq2);
-            TotalOrderComparison gt(gtArgs, true, memMgr);
-            try {
-                greater = (const ATBooleanOrDerived::Ptr )gt.collapseTree(context)->next(context);
-            } catch (IllegalArgumentException &e) {
-                XQThrow(IllegalArgumentException, X("FunctionMax::collapseTreeInternal"), X("Invalid argument to fn:max() function [err:FORG0006]."));
-            } catch (XPath2ErrorException &e) {
-                XQThrow(IllegalArgumentException, X("FunctionMax::collapseTreeInternal"), X("Invalid argument to fn:max() function [err:FORG0006]."));
-            }
-            if(((const ATBooleanOrDerived*)greater)->isTrue()) {
-              maxItem = *i;
-            }
+    if(i == sequence.end()) --i;
+    for(; i != sequence.end(); ++i) {
+        const AnyAtomicType *atomic = (const AnyAtomicType *)i->get();
+        try {
+          if(GreaterThan::greater_than(atomic, maxItem, collation, context))
+            maxItem = atomic;
+        }
+        catch (IllegalArgumentException &e) {
+          XQThrow(IllegalArgumentException, X("FunctionMax::collapseTreeInternal"),
+                  X("Invalid argument to fn:max() function [err:FORG0006]."));
+        }
+        catch (XPath2ErrorException &e) {
+          XQThrow(IllegalArgumentException, X("FunctionMax::collapseTreeInternal"),
+                  X("Invalid argument to fn:max() function [err:FORG0006]."));
         }
     }
     return Sequence(maxItem, memMgr);

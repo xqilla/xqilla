@@ -51,12 +51,10 @@ public:
    * false otherwise */
   virtual bool equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const = 0;
 
-  /** greaterThan -- only defined for fn:dayTimeDuration and fn:yearMonthDuration */
-  virtual bool greaterThan(const ATDurationOrDerived::Ptr &other, const DynamicContext* context) const = 0;
-
-  /** lessThan -- only defined for fn:dayTimeDuration and fn:yearMonthDuration */
-  virtual bool lessThan(const ATDurationOrDerived::Ptr &other, const DynamicContext* context) const = 0;
-
+  /** Returns less than 0 if this is less that other,
+      0 if they are the same, and greater than 0 otherwise */
+  virtual int compare(const ATDurationOrDerived::Ptr &other, const DynamicContext *context) const = 0;
+  
   /** Divide this duration by a number -- only available for xdt:dayTimeDuration
    *  and xdt:yearMonthDuration */
   virtual ATDurationOrDerived::Ptr divide(const Numeric::Ptr &divisor, const DynamicContext* context) const = 0;
@@ -78,27 +76,28 @@ public:
   virtual ATDurationOrDerived::Ptr subtract(const ATDurationOrDerived::Ptr &other, const DynamicContext* context) const = 0;
 
   /** Returns the year portion of this duration */
-  virtual const ATDecimalOrDerived::Ptr &getYears() const = 0;
+  virtual ATDecimalOrDerived::Ptr getYears(const DynamicContext* context) const = 0;
 
   /** Returns the month portion of this duration */
-  virtual const ATDecimalOrDerived::Ptr &getMonths() const = 0;
+  virtual ATDecimalOrDerived::Ptr getMonths(const DynamicContext* context) const = 0;
 
   /** Returns the days portion of this duration */
-  virtual const ATDecimalOrDerived::Ptr &getDays() const = 0;
+  virtual ATDecimalOrDerived::Ptr getDays(const DynamicContext* context) const = 0;
 
   /** Returns the hours portion of this duration */
-  virtual const ATDecimalOrDerived::Ptr &getHours() const = 0;
+  virtual ATDecimalOrDerived::Ptr getHours(const DynamicContext* context) const = 0;
 
   /** Returns the minutes portion of this duration */
-  virtual const ATDecimalOrDerived::Ptr &getMinutes() const = 0;
+  virtual ATDecimalOrDerived::Ptr getMinutes(const DynamicContext* context) const = 0;
 
   /** Returns the seconds portion of this duration */
-  virtual const ATDecimalOrDerived::Ptr &getSeconds() const = 0;
+  virtual ATDecimalOrDerived::Ptr getSeconds(const DynamicContext* context) const = 0;
 
-  /** normalize this duration (only available for xdt:dayTimeDuration and
-   * xdt:yearMonthDuration 
-   **/
-  virtual ATDurationOrDerived::Ptr normalize(const DynamicContext* context) const = 0;
+  /* return this duration in forms of seconds */
+  virtual ATDecimalOrDerived::Ptr asSeconds(const DynamicContext* context) const = 0;
+
+  /* return this duration in forms of months */
+  virtual ATDecimalOrDerived::Ptr asMonths(const DynamicContext* context) const = 0;
 
   /** Returns true if this Duration is negative, false otherwise */
   virtual bool isNegative() const = 0;

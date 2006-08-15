@@ -53,14 +53,9 @@ public:
    * false otherwise */
   virtual bool equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const;
 
-  /* returns true if 'this' is true and 'other' is false, otherwise
-   * returns false */
-  virtual bool greaterThan(const ATBooleanOrDerived::Ptr &other, const DynamicContext* context) const;
-
-
-  /* returns true if 'other' is true and 'this' is false, otherwise
-   * returns false */
-  virtual bool lessThan(const ATBooleanOrDerived::Ptr &other, const DynamicContext* context) const;
+  /** Returns less than 0 if this is less that other,
+      0 if they are the same, and greater than 0 otherwise */
+  virtual int compare(const ATBooleanOrDerived::Ptr &other, const DynamicContext *context) const;
 
 
   /* returns true if boolean value evaluates to true

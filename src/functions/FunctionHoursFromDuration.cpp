@@ -43,17 +43,12 @@ FunctionHoursFromDuration::FunctionHoursFromDuration(const VectorOfASTNodes &arg
 
 Sequence FunctionHoursFromDuration::collapseTreeInternal(DynamicContext* context, int flags) const
 {
-	XPath2MemoryManager* memMgr = context->getMemoryManager();
+  XPath2MemoryManager* memMgr = context->getMemoryManager();
 
-  Sequence arg=getParamNumber(1,context)->toSequence(context);
-  if(arg.isEmpty())
-    return Sequence(memMgr);
+  Item::Ptr arg = getParamNumber(1, context)->next(context);
+  if(arg.isNull()) return Sequence(memMgr);
 
-  const ATDurationOrDerived::Ptr dayTime = ((const ATDurationOrDerived*)(const Item*)arg.first())->normalize(context);
-  if(dayTime->isNegative())
-    return Sequence(dayTime->getHours()->invert(context), memMgr);
-
-  return Sequence(dayTime->getHours(), memMgr);
+  return Sequence(((const ATDurationOrDerived*)arg.get())->getHours(context), memMgr);
 }
 
 

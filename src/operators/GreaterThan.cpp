@@ -56,7 +56,7 @@ GreaterThan::GreaterThan(const VectorOfASTNodes &args, XPath2MemoryManager* memM
       // op:boolean-greater-than(A, B)
       if(atom2->getPrimitiveTypeIndex() != AnyAtomicType::BOOLEAN) 
         XQThrow(XPath2ErrorException,X("GreaterThan::greater_than"), X("An attempt to compare a boolean type to a non boolean type has occurred [err:XPTY0004]"));
-      return ((const ATBooleanOrDerived*)(const AnyAtomicType*)atom1)->greaterThan((const ATBooleanOrDerived*)(const AnyAtomicType*)atom2, context);
+      return ((const ATBooleanOrDerived*)atom1.get())->compare((const ATBooleanOrDerived*)atom2.get(), context) > 0;
     }
     case AnyAtomicType::STRING:
     case AnyAtomicType::ANY_URI:
@@ -97,7 +97,7 @@ GreaterThan::GreaterThan(const VectorOfASTNodes &args, XPath2MemoryManager* memM
          atom2->getPrimitiveTypeIndex() != AnyAtomicType::DAY_TIME_DURATION &&
          atom2->getPrimitiveTypeIndex() != AnyAtomicType::YEAR_MONTH_DURATION)
         XQThrow(XPath2ErrorException,X("GreaterThan::greater_than"), X("An attempt to compare a duration type to a non duration type has occurred [err:XPTY0004]"));
-      return ((const ATDurationOrDerived*)atom1.get())->greaterThan((const ATDurationOrDerived*)atom2.get(), context);
+      return ((const ATDurationOrDerived*)atom1.get())->compare((const ATDurationOrDerived*)atom2.get(), context) > 0;
     }
     default:
       XQThrow(XPath2ErrorException,X("GreaterThan::greater_than"), X("Unexpected data type in operator 'gt' [err:XPTY0004]"));

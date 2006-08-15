@@ -12,7 +12,8 @@
  */
 
 #include "../../config/xqilla_config.h"
-#include "ATDurationOrDerivedImpl.hpp"
+#include <xqilla/items/impl/ATDurationOrDerivedImpl.hpp>
+#include <xqilla/items/impl/ATDecimalOrDerivedImpl.hpp>
 #include <xqilla/items/ATDecimalOrDerived.hpp>
 #include <xqilla/items/ATDoubleOrDerived.hpp>
 #include <xqilla/exceptions/XPath2TypeCastException.hpp>
@@ -27,6 +28,10 @@
 #include <xqilla/mapm/m_apm.h>
 #include "../../utils/DateUtils.hpp"
 
+#if defined(XERCES_HAS_CPP_NAMESPACE)
+XERCES_CPP_NAMESPACE_USE
+#endif
+
 ATDurationOrDerivedImpl::
 ATDurationOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* value, const DynamicContext* context): 
     ATDurationOrDerived(),
@@ -37,9 +42,11 @@ ATDurationOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh
 
   setDuration(value, context);
   
-  if(this->isInstanceOfType (FunctionConstructor::XMLChXPath2DatatypesURI, ATDurationOrDerived::fgDT_DAYTIMEDURATION, context)) {
+  if(this->isInstanceOfType (FunctionConstructor::XMLChXPath2DatatypesURI,
+                             ATDurationOrDerived::fgDT_DAYTIMEDURATION, context)) {
     _durationType = DAY_TIME_DURATION;
-  } else if (this->isInstanceOfType (FunctionConstructor::XMLChXPath2DatatypesURI, ATDurationOrDerived::fgDT_YEARMONTHDURATION, context)) {
+  } else if (this->isInstanceOfType (FunctionConstructor::XMLChXPath2DatatypesURI,
+                                     ATDurationOrDerived::fgDT_YEARMONTHDURATION, context)) {
     _durationType = YEAR_MONTH_DURATION;
   } else {
     _durationType = DURATION;
@@ -47,21 +54,28 @@ ATDurationOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh
 }
 
 ATDurationOrDerivedImpl::
-ATDurationOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, 
-                    const ATDecimalOrDerived::Ptr &year,const ATDecimalOrDerived::Ptr &month, 
-                    const ATDecimalOrDerived::Ptr &day, const ATDecimalOrDerived::Ptr &hour, 
-                    const ATDecimalOrDerived::Ptr &minute, const ATDecimalOrDerived::Ptr &sec,
-                    bool isPositive, 
-                    const DynamicContext* context):
-    ATDurationOrDerived(),
-    _isPositive(isPositive),
-    _year(year), _month(month),
-    _day(day), _hour(hour),
-    _minute(minute), _sec(sec),
-    _typeName(typeName), _typeURI(typeURI){
-  if(this->isInstanceOfType (FunctionConstructor::XMLChXPath2DatatypesURI, ATDurationOrDerived::fgDT_DAYTIMEDURATION, context)) {
+ATDurationOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const MAPM &months, const MAPM &seconds,
+                        const DynamicContext* context)
+  : _isPositive(true),
+    _months(months),
+    _seconds(seconds),
+    _typeName(typeName),
+    _typeURI(typeURI)
+{
+  if(_months.sign() < 0) {
+    _isPositive = false;
+    _months = _months.neg();
+  }
+  if(_seconds.sign() < 0) {
+    _isPositive = false;
+    _seconds = _seconds.neg();
+  }
+
+  if(this->isInstanceOfType (FunctionConstructor::XMLChXPath2DatatypesURI,
+                             ATDurationOrDerived::fgDT_DAYTIMEDURATION, context)) {
     _durationType = DAY_TIME_DURATION;
-  } else if (this->isInstanceOfType (FunctionConstructor::XMLChXPath2DatatypesURI, ATDurationOrDerived::fgDT_YEARMONTHDURATION, context)) {
+  } else if (this->isInstanceOfType (FunctionConstructor::XMLChXPath2DatatypesURI,
+                                     ATDurationOrDerived::fgDT_YEARMONTHDURATION, context)) {
     _durationType = YEAR_MONTH_DURATION;
   } else {
     _durationType = DURATION;
@@ -92,7 +106,7 @@ const XMLCh* ATDurationOrDerivedImpl::getPrimitiveTypeName() const
 }
 
 const XMLCh* ATDurationOrDerivedImpl::getPrimitiveName()  {
-  return XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DURATION;
+  return SchemaSymbols::fgDT_DURATION;
 }
 
 /* Get the name of this type  (ie "integer" for xs:integer) */
@@ -110,8 +124,9 @@ AnyAtomicType::AtomicObjectType ATDurationOrDerivedImpl::getTypeIndex() {
 }
 
 /* If possible, cast this type to the target type */
-AnyAtomicType::Ptr ATDurationOrDerivedImpl::castAsInternal(AtomicObjectType targetIndex, const XMLCh* targetURI, const XMLCh* targetType, const DynamicContext* context) const {
-  XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buf(1023, context->getMemoryManager());
+AnyAtomicType::Ptr ATDurationOrDerivedImpl::castAsInternal(AtomicObjectType targetIndex, const XMLCh* targetURI,
+                                                           const XMLCh* targetType, const DynamicContext* context) const {
+  XMLBuffer buf(1023, context->getMemoryManager());
   // checking if what we're casting to by using isTypeOrDerivedFrom is expensive so we will 
   // determine what we are casting to and then what type we actually are.
 
@@ -123,32 +138,34 @@ AnyAtomicType::Ptr ATDurationOrDerivedImpl::castAsInternal(AtomicObjectType targ
     if (_durationType == DAY_TIME_DURATION) {
       // If ST is xdt:dayTimeDuration and TT is xdt:yearMonthDuration, the cast is permitted and returns a 
       // xdt:yearMonthDuration with value 0 months.
-      buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_P);
-      buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chDigit_0);
-      buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_M);         
+      buf.append(chLatin_P);
+      buf.append(chDigit_0);
+      buf.append(chLatin_M);         
       return context->getItemFactory()->createDurationOrDerived(targetURI, targetType, buf.getRawBuffer(), context);
     } else if (_durationType == YEAR_MONTH_DURATION) {
       return context->getItemFactory()->createDurationOrDerived(targetURI, targetType, this->asString(context), context);
     } else {
       //else we're a duration and we must remove the day and time components
-      if(this->_year->isZero()   && this->_month->isZero()) {
-        buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_P);
-        buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chDigit_0);
-        buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_M);         
+      if(_months.sign() == 0) {
+        buf.append(chLatin_P);
+        buf.append(chDigit_0);
+        buf.append(chLatin_M);         
       } else {
-        if ( !_isPositive ) {
-          buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash); 
+        if(!_isPositive) {
+          buf.append(chDash); 
         }   
-        buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_P);   
+        buf.append(chLatin_P);
 
-        if(!this->_year->isZero()) {
-          buf.append(this->_year->asString(context));
-          buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_Y);
+        MAPM yrs = _months.integer_divide(12);
+        MAPM mths = DateUtils::modulo(_months, 12);
+        if(yrs.sign() != 0) {
+          buf.append(Numeric::asDecimalString(yrs, ATDecimalOrDerivedImpl::g_nSignificantDigits, context));
+          buf.append(chLatin_Y);
         }
-        if(!this->_month->isZero()) {
-          buf.append(this->_month->asString(context));
-          buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_M);
-        }   
+        if(mths.sign() != 0) {
+          buf.append(Numeric::asDecimalString(mths, ATDecimalOrDerivedImpl::g_nSignificantDigits, context));
+          buf.append(chLatin_M);
+        }
       }
       return context->getItemFactory()->createDurationOrDerived(targetURI, targetType, buf.getRawBuffer(), context);
     }
@@ -161,48 +178,51 @@ AnyAtomicType::Ptr ATDurationOrDerivedImpl::castAsInternal(AtomicObjectType targ
     if (_durationType == YEAR_MONTH_DURATION) {
       // If ST is xdt:yearMonthDuration and TT is xdt:dayTimeDuration, the cast is permitted and returns a 
       // xdt:dayTimeDuration with value 0.0 seconds.
-      buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_P);
-      buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_T);
-      buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chDigit_0);
-      buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_M);         
+      buf.append(chLatin_P);
+      buf.append(chLatin_T);
+      buf.append(chDigit_0);
+      buf.append(chLatin_M);         
       return context->getItemFactory()->createDurationOrDerived(targetURI, targetType, buf.getRawBuffer(), context);
     } else if (_durationType == DAY_TIME_DURATION) {
       return context->getItemFactory()->createDurationOrDerived(targetURI, targetType, this->asString(context), context);
     } else {
       //else we're a duration and we must remove the year and month components
-      if (this->_day->isZero()    && this->_hour->isZero()  &&
-          this->_minute->isZero() && this->_sec->isZero() ) {
-        buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_P);
-        buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_T);
-        buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chDigit_0);
-        buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_S);
+      if (_seconds.sign() == 0) {
+        buf.append(chLatin_P);
+        buf.append(chLatin_T);
+        buf.append(chDigit_0);
+        buf.append(chLatin_S);
       } else {
-        if ( !_isPositive ) {
-          buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash); 
+        if(!_isPositive) {
+          buf.append(chDash); 
         }   
-        buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_P);   
+        buf.append(chLatin_P);   
 
-        if(!this->_day->isZero()) {
-          buf.append(this->_day->asString(context));
-          buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_D);
+        MAPM days = _seconds.integer_divide(DateUtils::g_secondsPerDay);
+        MAPM hrs = DateUtils::modulo(_seconds, DateUtils::g_secondsPerDay).integer_divide(DateUtils::g_secondsPerHour);
+        MAPM mnts = DateUtils::modulo(_seconds, DateUtils::g_secondsPerHour).integer_divide(DateUtils::g_secondsPerMinute);
+        MAPM secs = DateUtils::modulo(_seconds, DateUtils::g_secondsPerMinute);
+        if(days.sign() != 0) {
+          buf.append(Numeric::asDecimalString(days, ATDecimalOrDerivedImpl::g_nSignificantDigits, context));
+          buf.append(chLatin_D);
         }
         
         // mandatory center 'T', if the time is not zero
-        if(!(this->_hour->isZero() && this->_minute->isZero() && this->_sec->isZero())) {
-          buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_T);
-  
-          if(!this->_hour->isZero()) {
-            buf.append(this->_hour->asString(context));
-            buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_H);
+        if(hrs.sign() != 0 || mnts.sign() != 0 || secs.sign() != 0) {
+          buf.append(chLatin_T);
+        
+          if(hrs.sign() != 0) {
+            buf.append(Numeric::asDecimalString(hrs, ATDecimalOrDerivedImpl::g_nSignificantDigits, context));
+            buf.append(chLatin_H);
           } 
-          if(!this->_minute->isZero()) {
-            buf.append(this->_minute->asString(context));
-            buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_M);
-          }
-          if(!this->_sec->isZero()) {
-            buf.append(this->_sec->asString(context));
-            buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_S);
-          }
+          if(mnts.sign() != 0) {
+            buf.append(Numeric::asDecimalString(mnts, ATDecimalOrDerivedImpl::g_nSignificantDigits, context));
+            buf.append(chLatin_M);
+          } 
+          if(secs.sign() != 0) {
+            buf.append(Numeric::asDecimalString(secs, ATDecimalOrDerivedImpl::g_nSignificantDigits, context));
+            buf.append(chLatin_S);
+          } 
         }
       }
       return context->getItemFactory()->createDurationOrDerived(targetURI, targetType, buf.getRawBuffer(), context);
@@ -218,71 +238,69 @@ AnyAtomicType::Ptr ATDurationOrDerivedImpl::castAsInternal(AtomicObjectType targ
 
 /* returns the XMLCh* (canonical) representation of this type */
 const XMLCh* ATDurationOrDerivedImpl::asString(const DynamicContext* context) const {
-  XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buffer(1023, context->getMemoryManager());
-  ATDurationOrDerived::Ptr toSerialize;
-  if(_durationType != DURATION) {
-    toSerialize = this->normalize(context);
-  } else {
-    toSerialize = this;
-  } 
-  
+  XMLBuffer buffer(1023, context->getMemoryManager());
   
   // if the value of this duration is zero, return 'PT0S' or 'P0M'
-  if(toSerialize->getYears()->isZero()   && toSerialize->getMonths()->isZero() &&
-     toSerialize->getDays()->isZero()    && toSerialize->getHours()->isZero()  &&
-     toSerialize->getMinutes()->isZero() && toSerialize->getSeconds()->isZero() ) {
-
+  if(_months.sign() == 0 && _seconds.sign() == 0) {
     if(_durationType == YEAR_MONTH_DURATION) {
-      buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_P);
-      buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chDigit_0);
-      buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_M);
+      buffer.append(chLatin_P);
+      buffer.append(chDigit_0);
+      buffer.append(chLatin_M);
     } else {
-      buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_P);
-      buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_T);
-      buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chDigit_0);
-      buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_S);
-    }
-    
-  } else {
+      buffer.append(chLatin_P);
+      buffer.append(chLatin_T);
+      buffer.append(chDigit_0);
+      buffer.append(chLatin_S);
+    }    
+  }
+  else {
     if ( !_isPositive ) {
-      buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
+      buffer.append(chDash);
     }
   
     // madatory leading 'P'
-    buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_P);
+    buffer.append(chLatin_P);
 
-    if(!toSerialize->getYears()->isZero()) {
-      buffer.append(toSerialize->getYears()->asString(context));
-      buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_Y);
-    }
-    if(!toSerialize->getMonths()->isZero()) {
-      buffer.append(toSerialize->getMonths()->asString(context));
-      buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_M);
+    if(_durationType != DAY_TIME_DURATION) {
+      MAPM yrs = _months.integer_divide(12);
+      MAPM mths = DateUtils::modulo(_months, 12);
+      if(yrs.sign() != 0) {
+        buffer.append(Numeric::asDecimalString(yrs, ATDecimalOrDerivedImpl::g_nSignificantDigits, context));
+        buffer.append(chLatin_Y);
+      }
+      if(mths.sign() != 0) {
+        buffer.append(Numeric::asDecimalString(mths, ATDecimalOrDerivedImpl::g_nSignificantDigits, context));
+        buffer.append(chLatin_M);
+      }
     }
     
     // append the day and time information if this is not a yearMonthDuration
     if(_durationType != YEAR_MONTH_DURATION) {
-      if(!toSerialize->getDays()->isZero()) {
-        buffer.append(toSerialize->getDays()->asString(context));
-        buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_D);
+      MAPM days = _seconds.integer_divide(DateUtils::g_secondsPerDay);
+      MAPM hrs = DateUtils::modulo(_seconds, DateUtils::g_secondsPerDay).integer_divide(DateUtils::g_secondsPerHour);
+      MAPM mnts = DateUtils::modulo(_seconds, DateUtils::g_secondsPerHour).integer_divide(DateUtils::g_secondsPerMinute);
+      MAPM secs = DateUtils::modulo(_seconds, DateUtils::g_secondsPerMinute);
+      if(days.sign() != 0) {
+        buffer.append(Numeric::asDecimalString(days, ATDecimalOrDerivedImpl::g_nSignificantDigits, context));
+        buffer.append(chLatin_D);
       }
-  
+        
       // mandatory center 'T', if the time is not zero
-      if(!(toSerialize->getHours()->isZero() && toSerialize->getMinutes()->isZero() && toSerialize->getSeconds()->isZero())) {
-        buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_T);
-            
-        if(!toSerialize->getHours()->isZero()) {
-          buffer.append(toSerialize->getHours()->asString(context));
-          buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_H);
+      if(hrs.sign() != 0 || mnts.sign() != 0 || secs.sign() != 0) {
+        buffer.append(chLatin_T);
+        
+        if(hrs.sign() != 0) {
+          buffer.append(Numeric::asDecimalString(hrs, ATDecimalOrDerivedImpl::g_nSignificantDigits, context));
+          buffer.append(chLatin_H);
         } 
-        if(!toSerialize->getMinutes()->isZero()) {
-          buffer.append(toSerialize->getMinutes()->asString(context));
-          buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_M);
-        }
-        if(!toSerialize->getSeconds()->isZero()) {
-          buffer.append(toSerialize->getSeconds()->asString(context));
-          buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_S);
-        }
+        if(mnts.sign() != 0) {
+          buffer.append(Numeric::asDecimalString(mnts, ATDecimalOrDerivedImpl::g_nSignificantDigits, context));
+          buffer.append(chLatin_M);
+        } 
+        if(secs.sign() != 0) {
+          buffer.append(Numeric::asDecimalString(secs, ATDecimalOrDerivedImpl::g_nSignificantDigits, context));
+          buffer.append(chLatin_S);
+        } 
       }
     }
   }
@@ -301,255 +319,117 @@ bool ATDurationOrDerivedImpl::isYearMonthDuration() const {
 
 /* returns true if the two objects have the same boolean value
  * false otherwise */
-bool ATDurationOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const {
-  AnyAtomicType::AtomicObjectType myType=getPrimitiveTypeIndex();
-  AnyAtomicType::AtomicObjectType tgtType=target->getPrimitiveTypeIndex();
-  if((myType==DAY_TIME_DURATION || myType==YEAR_MONTH_DURATION || myType==DURATION) &&
-     (tgtType==DAY_TIME_DURATION || tgtType==YEAR_MONTH_DURATION || tgtType==DURATION))
+bool ATDurationOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const
+{
+  switch(target->getPrimitiveTypeIndex()) {
+  case DAY_TIME_DURATION:
+  case YEAR_MONTH_DURATION:
+  case DURATION: {
     return dayTimeEquals((const ATDurationOrDerived*)target.get(), context) &&
       yearMonthEquals((const ATDurationOrDerived*)target.get(), context);
-
-  XQThrow(IllegalArgumentException,X("ATDurationOrDerivedImpl::equals"), X("Equality operator for given types not supported [err:XPTY0004]"));
+  }
+  default:
+    XQThrow(::IllegalArgumentException,X("ATDurationOrDerivedImpl::equals"),
+            X("Equality operator for given types not supported [err:XPTY0004]"));
+  }
   return false;
 }
 
-bool ATDurationOrDerivedImpl::dayTimeEquals(const ATDurationOrDerived::Ptr &target, const DynamicContext* context) const {
-  MAPM ThisAsSeconds =_day->asMAPM() * DateUtils::g_secondsPerDay +
-                      _hour->asMAPM() * DateUtils::g_secondsPerHour +
-                      _minute->asMAPM() * DateUtils::g_secondsPerMinute +
-                      _sec->asMAPM();
-  MAPM TargetAsSeconds =target->getDays()->asMAPM() * DateUtils::g_secondsPerDay +
-                        target->getHours()->asMAPM() * DateUtils::g_secondsPerHour +
-                        target->getMinutes()->asMAPM() * DateUtils::g_secondsPerMinute +
-                        target->getSeconds()->asMAPM();
-  return isNegative() == target->isNegative() && ThisAsSeconds==TargetAsSeconds;
+bool ATDurationOrDerivedImpl::dayTimeEquals(const ATDurationOrDerived::Ptr &target, const DynamicContext* context) const
+{
+  return isNegative() == target->isNegative() && _seconds == ((const ATDurationOrDerivedImpl*)target.get())->_seconds;
 }
 
-bool ATDurationOrDerivedImpl::yearMonthEquals(const ATDurationOrDerived::Ptr &target, const DynamicContext* context) const {
-  MAPM ThisAsMonths =_year->asMAPM() * 12 +
-                      _month->asMAPM();
-  MAPM TargetAsMonths =target->getYears()->asMAPM() * 12 +
-                        target->getMonths()->asMAPM();
-  return isNegative() == target->isNegative() && ThisAsMonths==TargetAsMonths;
+bool ATDurationOrDerivedImpl::yearMonthEquals(const ATDurationOrDerived::Ptr &target, const DynamicContext* context) const
+{
+  return isNegative() == target->isNegative() && _months == ((const ATDurationOrDerivedImpl*)target.get())->_months;
 }
 
-bool ATDurationOrDerivedImpl::lessThan(const ATDurationOrDerived::Ptr &other, const DynamicContext* context) const {
+int ATDurationOrDerivedImpl::compare(const ATDurationOrDerived::Ptr &other, const DynamicContext* context) const
+{
+  if(_durationType == DAY_TIME_DURATION && other->getPrimitiveTypeIndex() == DAY_TIME_DURATION ) {
+    const ATDurationOrDerivedImpl* otherImpl = (const ATDurationOrDerivedImpl*)other.get();
 
-  const ATDurationOrDerivedImpl* otherImpl = (ATDurationOrDerivedImpl*)(const ATDurationOrDerived*)other;
-  if(_durationType == DAY_TIME_DURATION && otherImpl->_durationType == DAY_TIME_DURATION ) {
-    // if we are comparing xdt:dayTimeDurations //
-    return dayTimeLessThan(other, context);
-  } else if(_durationType == YEAR_MONTH_DURATION && otherImpl->_durationType == YEAR_MONTH_DURATION) {
-    // if we are comparing xdt:yearMonthDuration's //
-    return yearMonthLessThan(other, context);
-    
-  } else {
-    // if we are trying to compare anything else -- error //
-    XQThrow(IllegalArgumentException,X("ATDurationOrDerivedImpl::lessThan"), X("less-than operator for given types not supported [err:XPTY0004]"));
+    int cmp = _isPositive - otherImpl->_isPositive;
+    if(cmp != 0) return cmp;
+    return _seconds.compare(otherImpl->_seconds) * (_isPositive ? 1 : -1);
   }
-  
-}
+  else if(_durationType == YEAR_MONTH_DURATION && other->getPrimitiveTypeIndex() == YEAR_MONTH_DURATION) {
+    const ATDurationOrDerivedImpl* otherImpl = (const ATDurationOrDerivedImpl*)other.get();
 
-bool ATDurationOrDerivedImpl::greaterThan(const ATDurationOrDerived::Ptr &other, const DynamicContext* context) const {
-
-  const ATDurationOrDerivedImpl* otherImpl = (ATDurationOrDerivedImpl*)(const ATDurationOrDerived*)other;
-  if(_durationType == DAY_TIME_DURATION && otherImpl->_durationType == DAY_TIME_DURATION) {
-    // if we are comparing xdt:dayTimeDurations //
-    return dayTimeGreaterThan(other, context);
-  
-  } else if(_durationType == YEAR_MONTH_DURATION && otherImpl->_durationType == YEAR_MONTH_DURATION) {
-    // if we are comparing xdt:yearMonthDuration's //
-    return yearMonthGreaterThan(other, context);
-    
-  } else {
-    // if we are trying to compare anything else -- error //
-    XQThrow(IllegalArgumentException,X("ATDurationOrDerivedImpl::greaterThan"), X("greater-than operator for given types not supported [err:XPTY0004]"));
+    int cmp = _isPositive - otherImpl->_isPositive;
+    if(cmp != 0) return cmp;
+    return _months.compare(otherImpl->_months) * (_isPositive ? 1 : -1);
+  }
+  else {
+    // if we are trying to compare anything else -- error
+    XQThrow(::IllegalArgumentException,X("ATDurationOrDerivedImpl::compare"),
+            X("comparison operator for given types not supported [err:XPTY0004]"));
   }
 }
 
-/** Compare two dayTimeDurations, return true if this < duration */
-bool ATDurationOrDerivedImpl::dayTimeLessThan(const ATDurationOrDerived::Ptr &dayTimeDuration, const DynamicContext* context) const {
-  ATDurationOrDerived::Ptr tdn = this->normalize(context);
-  const ATDurationOrDerivedImpl* thisDurationNorm = (ATDurationOrDerivedImpl*)(const ATDurationOrDerived*)tdn;
-  ATDurationOrDerived::Ptr odn = dayTimeDuration->normalize(context);
-  const ATDurationOrDerivedImpl* otherDurationNorm = (ATDurationOrDerivedImpl*)(const ATDurationOrDerived*)odn;
-  if ( thisDurationNorm->_isPositive != otherDurationNorm->_isPositive)
-    return !_isPositive;  // if one is positive and the other is negative, then the lesser one is the negative one
+static inline ATDurationOrDerived::Ptr newDayTimeDuration(const Numeric::Ptr &valueSeconds,
+                                                          const DynamicContext* context)
+{
+  if(valueSeconds->getState() != Numeric::NUM &&
+     valueSeconds->getState() != Numeric::NEG_NUM)
+    XQThrow(::IllegalArgumentException,X("newDayTimeDuration"),
+            X("Overflow in duration operation [err:FODT0002]"));
 
-  // now we know both 'this' and 'duration' have the same sign.
-  // since the variables are always stored as non-negative integers,
-  // if(this >= duration) {
-  //   return false if we are positive
-  //   return true  if we are negative
-  // }
-  // ie if(this >= duration) return !_isPositive
-  if(( thisDurationNorm->_day->greaterThan(otherDurationNorm->_day, context)) ||
-     ( thisDurationNorm->_day->equals((const AnyAtomicType::Ptr)otherDurationNorm->_day, context) && thisDurationNorm->_hour->greaterThan(otherDurationNorm->_hour, context)) ||
-     ( thisDurationNorm->_day->equals((const AnyAtomicType::Ptr)otherDurationNorm->_day, context) && thisDurationNorm->_hour->equals((const AnyAtomicType::Ptr)otherDurationNorm->_hour, context) && thisDurationNorm->_minute->greaterThan(otherDurationNorm->_minute, context) ) ||
-     ( thisDurationNorm->_day->equals((const AnyAtomicType::Ptr)otherDurationNorm->_day, context) && thisDurationNorm->_hour->equals((const AnyAtomicType::Ptr)otherDurationNorm->_hour, context) && thisDurationNorm->_minute->equals((const AnyAtomicType::Ptr)otherDurationNorm->_minute, context) && !(thisDurationNorm->_sec->lessThan(otherDurationNorm->_sec, context)) ) ) {
-    return !_isPositive;
-  }
-
-  return _isPositive;
+  return context->getItemFactory()->createDayTimeDuration(valueSeconds->asMAPM(), context);
 }
 
-/** Compare two dayTimeDurations, return true if this > duration */
-bool ATDurationOrDerivedImpl::dayTimeGreaterThan(const ATDurationOrDerived::Ptr &dayTimeDuration, const DynamicContext* context) const {
-  ATDurationOrDerived::Ptr tdn = this->normalize(context);
-  const ATDurationOrDerivedImpl* thisDurationNorm = (ATDurationOrDerivedImpl*)(const ATDurationOrDerived*)tdn;
-  ATDurationOrDerived::Ptr odn = dayTimeDuration->normalize(context);
-  const ATDurationOrDerivedImpl* otherDurationNorm = (ATDurationOrDerivedImpl*)(const ATDurationOrDerived*)odn;
-  if ( thisDurationNorm->_isPositive != otherDurationNorm->_isPositive)
-    return _isPositive;  // if one is positive and the other is negative, the greater one is the positive one
+static inline ATDurationOrDerived::Ptr newYearMonthDuration(const Numeric::Ptr &valueMonth,
+                                                            const DynamicContext* context)
+{
+  if(valueMonth->getState() != Numeric::NUM &&
+     valueMonth->getState() != Numeric::NEG_NUM)
+    XQThrow(::IllegalArgumentException,X("newYearMonthDuration"),
+            X("Overflow in duration operation [err:FODT0002]"));
 
-  // now we know both 'this' and 'duration' have the same sign.
-  // since the variables are always stored as non-negative integers,
-  // if(this <= duration) {
-  //   return false if we are positive
-  //   return true  if we are negative
-  // }
-  // ie if(this <= duration) return !_isPositive
-  if(( thisDurationNorm->_day->lessThan(otherDurationNorm->_day, context)) ||
-     ( thisDurationNorm->_day->equals((const AnyAtomicType::Ptr)otherDurationNorm->_day, context) && thisDurationNorm->_hour->lessThan(otherDurationNorm->_hour, context)) ||
-     ( thisDurationNorm->_day->equals((const AnyAtomicType::Ptr)otherDurationNorm->_day, context) && thisDurationNorm->_hour->equals((const AnyAtomicType::Ptr)otherDurationNorm->_hour, context) && thisDurationNorm->_minute->lessThan(otherDurationNorm->_minute, context) ) ||
-     ( thisDurationNorm->_day->equals((const AnyAtomicType::Ptr)otherDurationNorm->_day, context) && thisDurationNorm->_hour->equals((const AnyAtomicType::Ptr)otherDurationNorm->_hour, context) && thisDurationNorm->_minute->equals((const AnyAtomicType::Ptr)otherDurationNorm->_minute, context) && !(thisDurationNorm->_sec->greaterThan(otherDurationNorm->_sec, context)) ) ) 
-    return !_isPositive;
-	
-  return _isPositive;
-}
-
-
-/** Compare two yearMonthDurations, return true if this < duration */
-bool ATDurationOrDerivedImpl::yearMonthLessThan(const ATDurationOrDerived::Ptr &yearMonthDuration, const DynamicContext* context) const {
-  ATDurationOrDerived::Ptr tdn = this->normalize(context);
-  const ATDurationOrDerivedImpl* thisDurationNorm = (ATDurationOrDerivedImpl*)(const ATDurationOrDerived*)tdn;
-  ATDurationOrDerived::Ptr odn = yearMonthDuration->normalize(context);
-  const ATDurationOrDerivedImpl* otherDurationNorm = (ATDurationOrDerivedImpl*)(const ATDurationOrDerived*)odn;
-  if ( _isPositive != otherDurationNorm->_isPositive)
-    return !_isPositive;  // if one is positive and the other is negative, then the lesser one is the negative one
-
-  // now we know both 'this' and 'duration' have the same sign.
-  if ( thisDurationNorm->getYears()->greaterThan(otherDurationNorm->getYears(), context) ) {
-    return !_isPositive;
-  }
-  else if ( thisDurationNorm->getYears()->equals((const AnyAtomicType::Ptr)otherDurationNorm->getYears(), context) && 
-          !(thisDurationNorm->getMonths()->lessThan(otherDurationNorm->getMonths(), context) ) ) {
-    return !_isPositive;
-  }
-
-  return _isPositive;  
-}
-
-/** Compare two yearMonthDurations, return true if this > duration */
-bool ATDurationOrDerivedImpl::yearMonthGreaterThan(const ATDurationOrDerived::Ptr &yearMonthDuration, const DynamicContext* context) const {
-  ATDurationOrDerived::Ptr tdn = this->normalize(context);
-  const ATDurationOrDerivedImpl* thisDurationNorm = (ATDurationOrDerivedImpl*)(const ATDurationOrDerived*)tdn;
-  ATDurationOrDerived::Ptr odn = yearMonthDuration->normalize(context);
-  const ATDurationOrDerivedImpl* otherDurationNorm = (ATDurationOrDerivedImpl*)(const ATDurationOrDerived*)odn;
-  
-  if ( _isPositive != otherDurationNorm->_isPositive)
-    return _isPositive;  // if one is positive and the other is negative, the greater one is the positive one
-  
-  // now we know both 'this' and 'duration' have the same sign.
-  if ( thisDurationNorm->getYears()->lessThan(otherDurationNorm->getYears(), context) ) {
-    return !_isPositive;
-  }
-  else if ( thisDurationNorm->getYears()->equals((const AnyAtomicType::Ptr)otherDurationNorm->getYears(), context) && 
-          !(thisDurationNorm->getMonths()->greaterThan(otherDurationNorm->getMonths(), context) ) ) {
-    return !_isPositive;
-  }
-  return _isPositive; 
+  return context->getItemFactory()->createYearMonthDuration(valueMonth->asMAPM(), context);
 }
 
 /** Divide this duration by a number -- only available for xdt:dayTimeDuration
  *  and xdt:yearMonthDuration */
-ATDurationOrDerived::Ptr ATDurationOrDerivedImpl::divide(const Numeric::Ptr &divisor, const DynamicContext* context) const {
+ATDurationOrDerived::Ptr ATDurationOrDerivedImpl::divide(const Numeric::Ptr &divisor,
+                                                         const DynamicContext* context) const {
   if(divisor->isNaN())
-      XQThrow(IllegalArgumentException,X("ATDurationOrDerivedImpl::multiply"), X("Cannot multiply a duration by NaN [err:FOCA0005]."));
+      XQThrow(::IllegalArgumentException,X("ATDurationOrDerivedImpl::divide"),
+              X("Cannot divide a duration by NaN [err:FOCA0005]."));
+
+  if(divisor->isZero())
+    XQThrow(::IllegalArgumentException,X("ATDurationOrDerivedImpl::divide"),
+            X("Overflow in duration operation [err:FODT0002]"));
 
   if(_durationType == DAY_TIME_DURATION) {
-    // if we are dividing a xdt:dayTimeDurations //
-    return dayTimeDivide(divisor, context);
-  
-  } else if(_durationType == YEAR_MONTH_DURATION) { 
-    // if we are comparing xdt:yearMonthDuration's //
-    return yearMonthDivide(divisor, context);
-    
-  } else {
-    // if we are trying to compare anything else -- error //
-    XQThrow(IllegalArgumentException,X("ATDurationOrDerivedImpl::divide"), X("divide operator for given types not supported"));
+    return newDayTimeDuration(asSeconds(context)->divide(divisor, context), context);
   }
-
+  else if(_durationType == YEAR_MONTH_DURATION) { 
+    return newYearMonthDuration(asMonths(context)->divide(divisor, context)->round(context), context);
+  }
+  else {
+    // if we are trying to compare anything else -- error //
+    XQThrow(::IllegalArgumentException,X("ATDurationOrDerivedImpl::divide"),
+            X("divide operator for given types not supported"));
+  }
 }
 
 /** Divide this duration by a duration -- only available for xdt:dayTimeDuration
 *  and xdt:yearMonthDuration */
-ATDecimalOrDerived::Ptr ATDurationOrDerivedImpl::divide(const ATDurationOrDerived::Ptr &divisor, const DynamicContext* context) const {
+ATDecimalOrDerived::Ptr ATDurationOrDerivedImpl::divide(const ATDurationOrDerived::Ptr &divisor,
+                                                        const DynamicContext* context) const {
   if(_durationType == DAY_TIME_DURATION) {
-    // if we are dividing a xdt:dayTimeDurations //
-    return dayTimeDivide(divisor, context);
-  
-  } else if(_durationType == YEAR_MONTH_DURATION) { 
-    // if we are comparing xdt:yearMonthDuration's //
-    return yearMonthDivide(divisor, context);
-    
-  } else {
+    return this->asSeconds(context)->divide(divisor->asSeconds(context), context);
+  }
+  else if(_durationType == YEAR_MONTH_DURATION) { 
+    return this->asMonths(context)->divide(divisor->asMonths(context), context);
+  }
+  else {
     // if we are trying to compare anything else -- error //
-    XQThrow(IllegalArgumentException,X("ATDurationOrDerivedImpl::divide"), X("divide operator for given types not supported"));
+    XQThrow(::IllegalArgumentException,X("ATDurationOrDerivedImpl::divide"),
+            X("divide operator for given types not supported"));
   }
-}
-
-
-/* Divide a xdt:dayTimeDuration by a xs:decimal */
-ATDurationOrDerived::Ptr ATDurationOrDerivedImpl::dayTimeDivide(const Numeric::Ptr &divisor, const DynamicContext* context) const {
-
-  if(divisor->isZero())
-    XQThrow(IllegalArgumentException,X("ATDurationOrDerivedImpl::divide"), X("Overflow in duration operation [err:FODT0002]"));
-
-  ATDecimalOrDerived::Ptr asSeconds = (const ATDecimalOrDerived::Ptr )this->asSeconds(context)->divide(divisor, context)->
-                                       castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                                              XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DECIMAL, context);
-
-  return newDayTimeDuration(asSeconds, context);  
-}
-
-/* Divide a xdt:dayTimeDuration by a xdt:dayTimeDuration */
-ATDecimalOrDerived::Ptr ATDurationOrDerivedImpl::dayTimeDivide(const ATDurationOrDerived::Ptr &divisor, const DynamicContext* context) const {
-  ATDecimalOrDerived::Ptr result = (const ATDecimalOrDerived::Ptr )this->asSeconds(context)->divide(((const ATDurationOrDerivedImpl*)(const ATDurationOrDerived*)divisor)->asSeconds(context), context);
-  return result;
-}
-
-/* Divide a xdt:yearMonthDuration by an xs:decimal */  
-ATDurationOrDerived::Ptr ATDurationOrDerivedImpl::yearMonthDivide(const Numeric::Ptr &divisor, const DynamicContext* context) const {
-  if(divisor->isZero())
-    XQThrow(IllegalArgumentException,X("ATDurationOrDerivedImpl::divide"), X("Overflow in duration operation [err:FODT0002]"));
-
-  ATDecimalOrDerived::Ptr i12 = context->getItemFactory()->createInteger(12,context);
-
-  ATDecimalOrDerived::Ptr asMonths = (const ATDecimalOrDerived::Ptr )_year->multiply(i12, context)->
-                                       add(_month, context)->divide(divisor, context)->round(context)->
-                                       castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                                              XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DECIMAL, context);
-  
-  if (this->isNegative()) {
-    asMonths = (const ATDecimalOrDerived::Ptr )asMonths->invert(context);
-  }
-  
-  return newYearMonthDuration(asMonths, context);
-}
-
-/* Divide a xdt:yearMonthDuration by an xdt:yearMonthDuration */  
-ATDecimalOrDerived::Ptr ATDurationOrDerivedImpl::yearMonthDivide(const ATDurationOrDerived::Ptr &divisor, const DynamicContext* context) const {
-  MAPM asMonths1 = _year->asMAPM() * 12 + _month->asMAPM();
-  if (this->isNegative()) {
-    asMonths1 = asMonths1.neg();
-  }
-  MAPM asMonths2 = divisor->getYears()->asMAPM() * 12 + divisor->getMonths()->asMAPM();
-  if (divisor->isNegative()) {
-    asMonths2 = asMonths2.neg();
-  }
-  MAPM result = asMonths1 / asMonths2;
-  return context->getItemFactory()->createDecimal(result, context);
 }
 
 AnyAtomicType::AtomicObjectType ATDurationOrDerivedImpl::getPrimitiveTypeIndex() const {
@@ -560,36 +440,19 @@ AnyAtomicType::AtomicObjectType ATDurationOrDerivedImpl::getPrimitiveTypeIndex()
  *  and xdt:yearMonthDuration */
 ATDurationOrDerived::Ptr ATDurationOrDerivedImpl::multiply(const Numeric::Ptr &multiplier, const DynamicContext* context) const {
   if(multiplier->isNaN())
-      XQThrow(IllegalArgumentException,X("ATDurationOrDerivedImpl::multiply"), X("Cannot multiply a duration by NaN [err:FOCA0005]."));
+      XQThrow(::IllegalArgumentException,X("ATDurationOrDerivedImpl::multiply"),
+              X("Cannot multiply a duration by NaN [err:FOCA0005]."));
 
   if(_durationType == DAY_TIME_DURATION) {
-    // multiplying an xdt:
-    Numeric::Ptr temp=asSeconds(context)->multiply(multiplier, context);
-    if(temp->isInfinite())
-      XQThrow(IllegalArgumentException,X("ATDurationOrDerivedImpl::multiply"), X("Overflow in duration operation [err:FODT0002]"));
-    ATDecimalOrDerived::Ptr asSeconds = (const ATDecimalOrDerived::Ptr )temp->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                                                                                     XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DECIMAL, context);
-  
-    return newDayTimeDuration(asSeconds, context);
-  } else if(_durationType == YEAR_MONTH_DURATION) { 
-    // multiplying an xdt:yearMonthDuration
-    ATDecimalOrDerived::Ptr i12 = context->getItemFactory()->createInteger(12,context);
-  
-    Numeric::Ptr temp=_year->multiply(i12, context)->add(_month, context)->multiply(multiplier, context)->round(context);
-    if(temp->isInfinite())
-      XQThrow(IllegalArgumentException,X("ATDurationOrDerivedImpl::multiply"), X("Overflow in duration operation [err:FODT0002]"));
-
-    ATDecimalOrDerived::Ptr asMonths = (const ATDecimalOrDerived::Ptr )temp->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                                                                                    XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DECIMAL, context);
-    if (this->isNegative()) {
-      asMonths = (const ATDecimalOrDerived::Ptr )asMonths->invert(context);
-    }
-     
-    return newYearMonthDuration(asMonths, context);
-
-  } else {
+    return newDayTimeDuration(asSeconds(context)->multiply(multiplier, context), context);
+  }
+  else if(_durationType == YEAR_MONTH_DURATION) { 
+    return newYearMonthDuration(asMonths(context)->multiply(multiplier, context)->round(context), context);
+  }
+  else {
     // if we are trying to compare anything else -- error //
-    XQThrow(IllegalArgumentException,X("ATDurationOrDerivedImpl::multiply"), X("multiply operator for given types not supported"));
+    XQThrow(::IllegalArgumentException,X("ATDurationOrDerivedImpl::multiply"),
+            X("multiply operator for given types not supported"));
   }
 
 }
@@ -598,188 +461,97 @@ ATDurationOrDerived::Ptr ATDurationOrDerivedImpl::multiply(const Numeric::Ptr &m
  *  and xdt:yearMonthDuration */
 ATDurationOrDerived::Ptr ATDurationOrDerivedImpl::add(const ATDurationOrDerived::Ptr &other, const DynamicContext* context) const {
   if(this->isDayTimeDuration() && ((const ATDurationOrDerived*)other)->isDayTimeDuration()) {
-    const ATDurationOrDerivedImpl* otherImpl = (ATDurationOrDerivedImpl*)(const ATDurationOrDerived*)other;
-    Numeric::Ptr thisSeconds = this->asSeconds(context);
-    Numeric::Ptr otherSeconds = otherImpl->asSeconds(context);
-    Numeric::Ptr sum = thisSeconds->add(otherSeconds, context);
-      
-    return newDayTimeDuration(sum, context);
-    
-  } else if(this->isYearMonthDuration() && ((const ATDurationOrDerived*)other)->isYearMonthDuration() ) {
-    const ATDecimalOrDerived::Ptr i12 = context->getItemFactory()->createInteger(12,context);
-  
-    Numeric::Ptr thisMonths = _year->multiply(i12, context)->add(_month, context);
-    if(this->isNegative()) { thisMonths = thisMonths->invert(context); }
-    
-    Numeric::Ptr otherMonths = ((const ATDurationOrDerived*)other)->getYears()->multiply(i12, context)->add(((const ATDurationOrDerived*)other)->getMonths(), context);
-    if(((const ATDurationOrDerived*)other)->isNegative()) { otherMonths = otherMonths->invert(context); }
-
-    Numeric::Ptr sum = thisMonths->add(otherMonths, context);
-       
-    return newYearMonthDuration(sum, context);
-  } else {
-    XQThrow(IllegalArgumentException, X("ATDurationOrDerivedImpl::add"), X("add operation not supported for given types"));
+    return newDayTimeDuration(asSeconds(context)->add(other->asSeconds(context), context), context);
   }
-
+  else if(this->isYearMonthDuration() && ((const ATDurationOrDerived*)other)->isYearMonthDuration() ) {
+    return newYearMonthDuration(asMonths(context)->add(other->asMonths(context), context), context);
+  }
+  else {
+    XQThrow(::IllegalArgumentException, X("ATDurationOrDerivedImpl::add"),
+            X("add operation not supported for given types"));
+  }
 }
 
 /** Subtract a duration from this duration -- only available for xdt:dayTimeDuration
  *  and xdt:yearMonthDuration */
 ATDurationOrDerived::Ptr ATDurationOrDerivedImpl::subtract(const ATDurationOrDerived::Ptr &other, const DynamicContext* context) const {
   if(this->isDayTimeDuration() && ((const ATDurationOrDerived*)other)->isDayTimeDuration()) {
-    const ATDurationOrDerivedImpl* otherImpl = (ATDurationOrDerivedImpl*)(const ATDurationOrDerived*)other;
-    Numeric::Ptr thisSeconds = this->asSeconds(context);
-    Numeric::Ptr otherSeconds = otherImpl->asSeconds(context);
-    Numeric::Ptr diff = thisSeconds->subtract(otherSeconds, context);
-      
-    return newDayTimeDuration(diff, context);
-    
+    return newDayTimeDuration(asSeconds(context)->subtract(other->asSeconds(context), context), context);        
   } else if(this->isYearMonthDuration() && ((const ATDurationOrDerived*)other)->isYearMonthDuration() ) {
-    const ATDecimalOrDerived::Ptr i12 = context->getItemFactory()->createInteger(12,context);
-  
-    Numeric::Ptr thisMonths = _year->multiply(i12, context)->add(_month, context);
-    if(this->isNegative()) { thisMonths = thisMonths->invert(context); }
-    
-    Numeric::Ptr otherMonths = ((const ATDurationOrDerived*)other)->getYears()->multiply(i12, context)->add(((const ATDurationOrDerived*)other)->getMonths(), context);
-    if(((const ATDurationOrDerived*)other)->isNegative()) { otherMonths = otherMonths->invert(context); }
-
-    Numeric::Ptr diff = thisMonths->subtract(otherMonths, context);
-    return newYearMonthDuration(diff, context);
-       
+    return newYearMonthDuration(asMonths(context)->subtract(other->asMonths(context), context), context);
   } else {
-    XQThrow(IllegalArgumentException, X("ATDurationOrDerivedImpl::subtract"), X("subtract operation not supported for given types"));
+    XQThrow(::IllegalArgumentException, X("ATDurationOrDerivedImpl::subtract"),
+            X("subtract operation not supported for given types"));
   }
 }
 
-const ATDecimalOrDerived::Ptr &ATDurationOrDerivedImpl::getYears() const {
-  return _year;
+ATDecimalOrDerived::Ptr ATDurationOrDerivedImpl::getYears(const DynamicContext* context) const
+{
+  MAPM result = _months.integer_divide(12);
+  if(!_isPositive) result = result.neg();
+  return context->getItemFactory()->createInteger(result, context);
 }
 
-const ATDecimalOrDerived::Ptr &ATDurationOrDerivedImpl::getMonths() const {
-  return _month;
+ATDecimalOrDerived::Ptr ATDurationOrDerivedImpl::getMonths(const DynamicContext* context) const
+{
+  MAPM result = DateUtils::modulo(_months, 12);
+  if(!_isPositive) result = result.neg();
+  return context->getItemFactory()->createInteger(result, context);
 }
 
-const ATDecimalOrDerived::Ptr &ATDurationOrDerivedImpl::getDays() const {
-  return _day;
+ATDecimalOrDerived::Ptr ATDurationOrDerivedImpl::getDays(const DynamicContext* context) const
+{
+  MAPM result = _seconds.integer_divide(DateUtils::g_secondsPerDay);
+  if(!_isPositive) result = result.neg();
+  return context->getItemFactory()->createInteger(result, context);
 }
 
-const ATDecimalOrDerived::Ptr &ATDurationOrDerivedImpl::getHours() const {
-  return _hour;
+ATDecimalOrDerived::Ptr ATDurationOrDerivedImpl::getHours(const DynamicContext* context) const
+{
+  MAPM result = DateUtils::modulo(_seconds, DateUtils::g_secondsPerDay).integer_divide(DateUtils::g_secondsPerHour);
+  if(!_isPositive) result = result.neg();
+  return context->getItemFactory()->createInteger(result, context);
 }
 
-const ATDecimalOrDerived::Ptr &ATDurationOrDerivedImpl::getMinutes() const {
-  return _minute;
+ATDecimalOrDerived::Ptr ATDurationOrDerivedImpl::getMinutes(const DynamicContext* context) const
+{
+  MAPM result = DateUtils::modulo(_seconds, DateUtils::g_secondsPerHour).integer_divide(DateUtils::g_secondsPerMinute);
+  if(!_isPositive) result = result.neg();
+  return context->getItemFactory()->createInteger(result, context);
 }
 
-const ATDecimalOrDerived::Ptr &ATDurationOrDerivedImpl::getSeconds() const {
-  return _sec;
+ATDecimalOrDerived::Ptr ATDurationOrDerivedImpl::getSeconds(const DynamicContext* context) const
+{
+  MAPM result = DateUtils::modulo(_seconds, DateUtils::g_secondsPerMinute);
+  if(!_isPositive) result = result.neg();
+  return context->getItemFactory()->createDecimal(result, context);
 }
 
 bool ATDurationOrDerivedImpl::isNegative() const {
   return !_isPositive;
 }
 
-ATDurationOrDerived::Ptr ATDurationOrDerivedImpl::normalize(const DynamicContext* context) const {
-  // normalize
-  MAPM asSeconds =((const ATDecimalOrDerived*)_day)->asMAPM() * DateUtils::g_secondsPerDay +
-                  ((const ATDecimalOrDerived*)_hour)->asMAPM() * DateUtils::g_secondsPerHour +
-                  ((const ATDecimalOrDerived*)_minute)->asMAPM() * DateUtils::g_secondsPerMinute +
-                  ((const ATDecimalOrDerived*)_sec)->asMAPM().floor();  // take care of fractional seconds later
-  
-  MAPM day = (asSeconds / DateUtils::g_secondsPerDay).floor();
-  MAPM remainder = DateUtils::modulo(asSeconds, DateUtils::g_secondsPerDay);
-
-  MAPM hour = (remainder / DateUtils::g_secondsPerHour).floor();
-  remainder = DateUtils::modulo(remainder, DateUtils::g_secondsPerHour);
-
-  MAPM minute = (remainder / DateUtils::g_secondsPerMinute).floor();
-  remainder = DateUtils::modulo(remainder, DateUtils::g_secondsPerMinute);
-
-  MAPM sec = remainder + ((const ATDecimalOrDerived*)_sec)->asMAPM() - ((const ATDecimalOrDerived*)_sec)->asMAPM().floor();  // add frac. secs
-
-  MAPM year = ((const ATDecimalOrDerived*)_year)->asMAPM()+(((const ATDecimalOrDerived*)_month)->asMAPM() / 12).floor();
-
-  MAPM month = DateUtils::modulo(((const ATDecimalOrDerived*)_month)->asMAPM(),12);
-  
-  return new
-      ATDurationOrDerivedImpl(this->getTypeURI(), this->getTypeName(),
-                              context->getItemFactory()->createInteger(year, context),
-                              context->getItemFactory()->createInteger(month, context),
-                              context->getItemFactory()->createInteger(day, context),
-                              context->getItemFactory()->createInteger(hour, context),
-                              context->getItemFactory()->createInteger(minute, context),
-                              context->getItemFactory()->createDecimal(sec, context),
-                              _isPositive, context);
-}
-
 /* return this duration in forms of seconds -- only for dayTimeDuration */
-ATDecimalOrDerived::Ptr ATDurationOrDerivedImpl::asSeconds(const DynamicContext* context) const {
-  if(_durationType != DAY_TIME_DURATION) {
-    XQThrow(IllegalArgumentException, X("ATDurationOrDerivedImpl::asSeconds"), X("asSeconds for given type not supported"));
-  }
-  
-  MAPM asSeconds =((const ATDecimalOrDerived*)_day)->asMAPM() * DateUtils::g_secondsPerDay +
-                  ((const ATDecimalOrDerived*)_hour)->asMAPM() * DateUtils::g_secondsPerHour +
-                  ((const ATDecimalOrDerived*)_minute)->asMAPM() * DateUtils::g_secondsPerMinute +
-                  ((const ATDecimalOrDerived*)_sec)->asMAPM();
-
-  if(this->isNegative())
-    asSeconds=asSeconds.neg();
-  return context->getItemFactory()->createDecimal(asSeconds, context);
+ATDecimalOrDerived::Ptr ATDurationOrDerivedImpl::asSeconds(const DynamicContext* context) const
+{
+  MAPM result = _seconds;
+  if(!_isPositive) result = result.neg();
+  return context->getItemFactory()->createDecimal(result, context);
 }
 
-ATDurationOrDerived::Ptr ATDurationOrDerivedImpl::newDayTimeDuration(ATDecimalOrDerived::Ptr valueSeconds, const DynamicContext* context) const
+ATDecimalOrDerived::Ptr ATDurationOrDerivedImpl::asMonths(const DynamicContext* context) const
 {
-  XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buf(1023, context->getMemoryManager());
-  if(valueSeconds->isZero())
-  {
-    buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_P);
-    buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_T);
-    buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chDigit_0);
-    buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_S);
-  }
-  else
-  {
-    if (valueSeconds->isNegative()) {
-      buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-      valueSeconds = (const ATDecimalOrDerived::Ptr )valueSeconds->invert(context);
-    }
-    buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_P);
-    buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_T);
-    buf.append(valueSeconds->asString(context));
-    buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_S);
-  }
-  return context->getItemFactory()->createDayTimeDuration(buf.getRawBuffer(), context);
-}
-
-ATDurationOrDerived::Ptr ATDurationOrDerivedImpl::newYearMonthDuration(ATDecimalOrDerived::Ptr valueMonth, const DynamicContext* context) const
-{
-  XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buf(1023, context->getMemoryManager());
-  if(valueMonth->isZero())
-  {
-    buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_P);
-    buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chDigit_0);
-    buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_M);
-  }
-  else
-  {
-    if (valueMonth->isNegative()) {
-      buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-      valueMonth = (const ATDecimalOrDerived::Ptr )valueMonth->invert(context);
-    }
-    buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_P);
-    buf.append(valueMonth->asString(context));
-    buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_M);
-  }
-
-  return context->getItemFactory()->createYearMonthDuration(buf.getRawBuffer(), context);
+  MAPM result = _months;
+  if(!_isPositive) result = result.neg();
+  return context->getItemFactory()->createDecimal(result, context);
 }
 
 void ATDurationOrDerivedImpl::setDuration(const XMLCh* const s, const DynamicContext* context) {
-    unsigned int length = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(s);
+  unsigned int length = XMLString::stringLen(s);
  
   if(s == 0) {
-      XQThrow(XPath2TypeCastException,X("XSDurationImpl::setDuration"), X("Invalid representation of duration [err:FORG0001]"));
+      XQThrow(XPath2TypeCastException,X("XSDurationImpl::setDuration"),
+              X("Invalid representation of duration [err:FORG0001]"));
   }
   
   // State variables etc.
@@ -941,15 +713,15 @@ void ATDurationOrDerivedImpl::setDuration(const XMLCh* const s, const DynamicCon
 
   // check duration format
   if ( wrongformat || (Texist && state < 3) || gotDigit) {
-    XQThrow(XPath2TypeCastException,X("ATDurationOrDerivedImpl::setDuration"), X("Invalid representation of duration [err:FORG0001]"));
+    XQThrow(XPath2TypeCastException,X("ATDurationOrDerivedImpl::setDuration"),
+            X("Invalid representation of duration [err:FORG0001]"));
   }
 
-  
-  _year = context->getItemFactory()->createNonNegativeInteger(year, context);
-  _month = context->getItemFactory()->createNonNegativeInteger(month, context);
-  _day = context->getItemFactory()->createNonNegativeInteger(day, context);
-  _hour = context->getItemFactory()->createNonNegativeInteger(hour, context);
-  _minute = context->getItemFactory()->createNonNegativeInteger(minute, context);
-  
-  _sec = context->getItemFactory()->createDecimal(sec, context);
+  _months = year * 12 + month;
+
+  _seconds = day * DateUtils::g_secondsPerDay +
+    hour * DateUtils::g_secondsPerHour +
+    minute * DateUtils::g_secondsPerMinute +
+    sec;
+
 }

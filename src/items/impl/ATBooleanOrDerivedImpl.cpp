@@ -128,30 +128,19 @@ const XMLCh* ATBooleanOrDerivedImpl::asString() const
 
 /* returns true if the two objects have the same boolean value
  * false otherwise */
-bool ATBooleanOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const {
+bool ATBooleanOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const
+{
   if(this->getPrimitiveTypeIndex() != target->getPrimitiveTypeIndex()) {
-    XQThrow(IllegalArgumentException,X("ATBooleanOrDerivedImpl::equals"), X("Equality operator for given types not supported [err:XPTY0004]"));
+    XQThrow(IllegalArgumentException,X("ATBooleanOrDerivedImpl::equals"),
+            X("Equality operator for given types not supported [err:XPTY0004]"));
   }
-  return _value == ((const ATBooleanOrDerived::Ptr)target)->isTrue();
+
+  return compare((const ATBooleanOrDerived*)target.get(), context) == 0;
 }
 
-/* returns true if 'this' is true and 'other' is false, otherwise
- * returns false */
-bool ATBooleanOrDerivedImpl::greaterThan(const ATBooleanOrDerived::Ptr &other, const DynamicContext* context) const {
-  if(this->isTrue() && ((const ATBooleanOrDerived*)other)->isFalse()) {
-    return true;
-  }
-  return false;
-}
-
-
-/* returns true if 'other' is true and 'this' is false, otherwise
- * returns false */
-bool ATBooleanOrDerivedImpl::lessThan(const ATBooleanOrDerived::Ptr &other, const DynamicContext* context) const {
-  if(this->isFalse() && ((const ATBooleanOrDerived*)other)->isTrue()) {
-    return true;
-  }
-  return false;
+int ATBooleanOrDerivedImpl::compare(const ATBooleanOrDerived::Ptr &other, const DynamicContext *context) const
+{
+  return (int)_value - (int)other->isTrue();
 }
 
 /* returns true if boolean value evaluates to true

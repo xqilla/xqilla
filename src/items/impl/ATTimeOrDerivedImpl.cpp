@@ -284,31 +284,18 @@ ATTimeOrDerived::Ptr ATTimeOrDerivedImpl::addTimezone(const ATDurationOrDerived:
  * Returns a time with the given dayTimeDuration added to it
  */
 ATTimeOrDerived::Ptr ATTimeOrDerivedImpl::addDayTimeDuration(const ATDurationOrDerived::Ptr &dayTime, const DynamicContext* context) const {
-  if(((const ATDurationOrDerived*)dayTime)->isNegative()) {
-    return subtractDayTimeDuration(((const ATDecimalOrDerived*)((const ATDurationOrDerived*)dayTime)->getHours())->asMAPM(),
-                                   ((const ATDecimalOrDerived*)((const ATDurationOrDerived*)dayTime)->getMinutes())->asMAPM(),
-                                   ((const ATDecimalOrDerived*)((const ATDurationOrDerived*)dayTime)->getSeconds())->asMAPM(), context);
-  } else {
-    return addDayTimeDuration(((const ATDecimalOrDerived*)((const ATDurationOrDerived*)dayTime)->getHours())->asMAPM(),
-                              ((const ATDecimalOrDerived*)((const ATDurationOrDerived*)dayTime)->getMinutes())->asMAPM(),
-                              ((const ATDecimalOrDerived*)((const ATDurationOrDerived*)dayTime)->getSeconds())->asMAPM(), context);
-  }
+  return addDayTimeDuration(dayTime->getHours(context)->asMAPM(),
+                            dayTime->getMinutes(context)->asMAPM(),
+                            dayTime->getSeconds(context)->asMAPM(), context);
 }
   
 /**
  * Returns a time with the given dayTimeDuration subtracted from it
  */
 ATTimeOrDerived::Ptr ATTimeOrDerivedImpl::subtractDayTimeDuration(const ATDurationOrDerived::Ptr &dayTime, const DynamicContext* context) const {
-  if(((const ATDurationOrDerived*)dayTime)->isNegative()) {
-    return addDayTimeDuration(((const ATDecimalOrDerived*)((const ATDurationOrDerived*)dayTime)->getHours())->asMAPM(),
-                              ((const ATDecimalOrDerived*)((const ATDurationOrDerived*)dayTime)->getMinutes())->asMAPM(),
-                              ((const ATDecimalOrDerived*)((const ATDurationOrDerived*)dayTime)->getSeconds())->asMAPM(), context);
-  } else {
-    return subtractDayTimeDuration(((const ATDecimalOrDerived*)((const ATDurationOrDerived*)dayTime)->getHours())->asMAPM(),
-                                   ((const ATDecimalOrDerived*)((const ATDurationOrDerived*)dayTime)->getMinutes())->asMAPM(),
-                                   ((const ATDecimalOrDerived*)((const ATDurationOrDerived*)dayTime)->getSeconds())->asMAPM(), context);
-  }
-  
+  return subtractDayTimeDuration(dayTime->getHours(context)->asMAPM(),
+                                 dayTime->getMinutes(context)->asMAPM(),
+                                 dayTime->getSeconds(context)->asMAPM(), context);
 }
 
 ATTimeOrDerived::Ptr ATTimeOrDerivedImpl::addDayTimeDuration(MAPM hours, MAPM minutes, MAPM seconds, const DynamicContext* context) const {

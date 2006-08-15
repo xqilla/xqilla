@@ -33,7 +33,7 @@
 #include "impl/ATDateTimeOrDerivedImpl.hpp"
 #include <xqilla/items/impl/ATDecimalOrDerivedImpl.hpp>
 #include <xqilla/items/impl/ATDoubleOrDerivedImpl.hpp>
-#include "impl/ATDurationOrDerivedImpl.hpp"
+#include <xqilla/items/impl/ATDurationOrDerivedImpl.hpp>
 #include <xqilla/items/impl/ATFloatOrDerivedImpl.hpp>
 #include "impl/ATGDayOrDerivedImpl.hpp"
 #include "impl/ATGMonthOrDerivedImpl.hpp"
