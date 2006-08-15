@@ -433,6 +433,7 @@ xqilla/items/DatatypeFactory.hpp \
 xqilla/items/impl/ATBooleanOrDerivedImpl.hpp \
 xqilla/items/impl/ATDecimalOrDerivedImpl.hpp \
 xqilla/items/impl/ATDoubleOrDerivedImpl.hpp \
+xqilla/items/impl/ATDurationOrDerivedImpl.hpp \
 xqilla/items/impl/ATFloatOrDerivedImpl.hpp \
 xqilla/items/impl/ATQNameOrDerivedImpl.hpp \
 xqilla/items/impl/NodeImpl.hpp \

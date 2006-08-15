@@ -25,6 +25,7 @@
 #include <xqilla/items/impl/ATDoubleOrDerivedImpl.hpp>
 #include <xqilla/items/impl/ATFloatOrDerivedImpl.hpp>
 #include <xqilla/items/impl/ATQNameOrDerivedImpl.hpp>
+#include <xqilla/items/impl/ATDurationOrDerivedImpl.hpp>
 #include <xqilla/items/impl/NodeImpl.hpp>
 #include <xqilla/items/ATDurationOrDerived.hpp>
 #include <xqilla/items/ATUntypedAtomic.hpp>
@@ -456,10 +457,24 @@ ATDurationOrDerived::Ptr ItemFactoryImpl::createDayTimeDuration(const XMLCh* val
                    ATDurationOrDerived::fgDT_DAYTIMEDURATION, value, context);
 }
 
+ATDurationOrDerived::Ptr ItemFactoryImpl::createDayTimeDuration(const MAPM &seconds, const DynamicContext* context)
+{
+  return new ATDurationOrDerivedImpl(FunctionConstructor::XMLChXPath2DatatypesURI,
+                                     ATDurationOrDerived::fgDT_DAYTIMEDURATION,
+                                     0, seconds, context);
+}
+
 ATDurationOrDerived::Ptr ItemFactoryImpl::createYearMonthDuration(const XMLCh* value, const DynamicContext* context) {
   return datatypeLookup_.getDurationFactory()->
     createInstance(FunctionConstructor::XMLChXPath2DatatypesURI, 
                    ATDurationOrDerived::fgDT_YEARMONTHDURATION, value, context);
+}
+
+ATDurationOrDerived::Ptr ItemFactoryImpl::createYearMonthDuration(const MAPM &months, const DynamicContext* context)
+{
+  return new ATDurationOrDerivedImpl(FunctionConstructor::XMLChXPath2DatatypesURI,
+                                     ATDurationOrDerived::fgDT_YEARMONTHDURATION,
+                                     months, 0, context);
 }
 
 ATDateOrDerived::Ptr ItemFactoryImpl::createDate(const XMLCh* value, const DynamicContext* context) {

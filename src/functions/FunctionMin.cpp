@@ -17,7 +17,7 @@
 #include <xqilla/ast/XQSequence.hpp>
 #include <xqilla/context/Collation.hpp>
 #include <xqilla/context/impl/CodepointCollation.hpp>
-#include "../operators/TotalOrderComparison.hpp"
+#include <xqilla/operators/LessThan.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/exceptions/FunctionException.hpp>
 #include <xqilla/exceptions/XPath2ErrorException.hpp>
@@ -90,37 +90,24 @@ Sequence FunctionMin::collapseTreeInternal(DynamicContext* context, int flags) c
         collation=context->getCollation(CodepointCollation::getCodepointCollationName());
 
     Sequence::iterator i = sequence.begin();
-    Item::Ptr minItem = *i;
+    AnyAtomicType::Ptr minItem = (const AnyAtomicType *)i->get();
     ++i;
     // if we have just one item, force entering the 'for' loop, or we will not test if the type had a total order
-    if(i==sequence.end())
-        i--;
+    if(i == sequence.end()) --i;
     for (; i != sequence.end(); ++i) {
-        const AnyAtomicType *atomic = (const AnyAtomicType *)(const Item*)(*i);
-        if(atomic->getPrimitiveTypeIndex() == AnyAtomicType::STRING || 
-           atomic->getPrimitiveTypeIndex() == AnyAtomicType::ANY_URI) 
-        {
-            if(collation->compare((*i)->asString(context),minItem->asString(context))<0)
-                minItem = *i;
-        } else {
-    	    ATBooleanOrDerived::Ptr less;
-            VectorOfASTNodes gtArgs = VectorOfASTNodes(XQillaAllocator<ASTNode*>(memMgr));
-            XQSequence seq1(*i, context, memMgr);
-            gtArgs.push_back(&seq1);
-            XQSequence seq2(minItem, context, memMgr);
-            gtArgs.push_back(&seq2);
-            TotalOrderComparison gt(gtArgs, false, memMgr);
-            try {
-                less = (const ATBooleanOrDerived::Ptr )gt.collapseTree(context)->next(context);
-            } catch (IllegalArgumentException &e) {
-                XQThrow(IllegalArgumentException, X("FunctionMin::collapseTreeInternal"), X("Invalid argument to fn:min() function [err:FORG0006]."));
-            } catch (XPath2ErrorException &e) {
-                XQThrow(IllegalArgumentException, X("FunctionMin::collapseTreeInternal"), X("Invalid argument to fn:min() function [err:FORG0006]."));
-            }
-            if(((const ATBooleanOrDerived*)less)->isTrue()) {
-              minItem = *i;
-            }
-        }
+        const AnyAtomicType *atomic = (const AnyAtomicType *)i->get();
+        try {
+          if(LessThan::less_than(atomic, minItem, collation, context))
+            minItem = atomic;
+	}
+	catch (IllegalArgumentException &e) {
+                XQThrow(IllegalArgumentException, X("FunctionMin::collapseTreeInternal"),
+			X("Invalid argument to fn:min() function [err:FORG0006]."));
+	}
+	catch (XPath2ErrorException &e) {
+                XQThrow(IllegalArgumentException, X("FunctionMin::collapseTreeInternal"),
+			X("Invalid argument to fn:min() function [err:FORG0006]."));
+	}
     }
     return Sequence(minItem, memMgr);
 }

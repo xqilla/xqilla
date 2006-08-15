@@ -448,14 +448,10 @@ ATDateTimeOrDerived::Ptr ATDateTimeOrDerivedImpl::addTimezone(const ATDurationOr
 /**
  * Returns a date with the given yearMonthDuration added to it
  */
-ATDateTimeOrDerived::Ptr ATDateTimeOrDerivedImpl::addYearMonthDuration(const ATDurationOrDerived::Ptr &yearMonth,  const DynamicContext* context) const {
-  MAPM year=yearMonth->getYears()->asMAPM();
-  MAPM month=yearMonth->getMonths()->asMAPM();
-  if(yearMonth->isNegative()) {
-    year=year.neg();
-    month=month.neg();
-  }
-  return addYearMonthDuration(year, month, context);
+ATDateTimeOrDerived::Ptr ATDateTimeOrDerivedImpl::addYearMonthDuration(const ATDurationOrDerived::Ptr &yearMonth,
+                                                                       const DynamicContext* context) const {
+  return addYearMonthDuration(yearMonth->getYears(context)->asMAPM(),
+                              yearMonth->getMonths(context)->asMAPM(), context);
 }
 
 /**
@@ -503,18 +499,10 @@ ATDateTimeOrDerived::Ptr ATDateTimeOrDerivedImpl::addYearMonthDuration(MAPM year
  * Returns a date with the given dayTimeDuration added to it
  */
 ATDateTimeOrDerived::Ptr ATDateTimeOrDerivedImpl::addDayTimeDuration(const ATDurationOrDerived::Ptr &dayTime, const DynamicContext* context) const {
-  if(dayTime->isNegative()) {
-    return addDayTimeDuration(dayTime->getDays()->asMAPM().neg(), 
-                              dayTime->getHours()->asMAPM().neg(), 
-                              dayTime->getMinutes()->asMAPM().neg(), 
-                              dayTime->getSeconds()->asMAPM().neg(), 
-                              context);
-  } else {
-    return addDayTimeDuration(dayTime->getDays()->asMAPM(),
-                              dayTime->getHours()->asMAPM(),
-                              dayTime->getMinutes()->asMAPM(),
-                              dayTime->getSeconds()->asMAPM(), context);
-  }
+  return addDayTimeDuration(dayTime->getDays(context)->asMAPM(),
+                            dayTime->getHours(context)->asMAPM(),
+                            dayTime->getMinutes(context)->asMAPM(),
+                            dayTime->getSeconds(context)->asMAPM(), context);
 }
   
 ATDateTimeOrDerived::Ptr ATDateTimeOrDerivedImpl::normalize(const DynamicContext* context) const {  
@@ -562,32 +550,21 @@ ATDateTimeOrDerived::Ptr ATDateTimeOrDerivedImpl::normalize(const DynamicContext
 /**
  * Returns a date with the given yearMonthDuration subtracted from it
  */
-ATDateTimeOrDerived::Ptr ATDateTimeOrDerivedImpl::subtractYearMonthDuration(const ATDurationOrDerived::Ptr &yearMonth, const DynamicContext* context) const {
-  MAPM year=yearMonth->getYears()->asMAPM();
-  MAPM month=yearMonth->getMonths()->asMAPM();
-  if(!yearMonth->isNegative()) {
-    year=year.neg();
-    month=month.neg();
-  }
-  return addYearMonthDuration(year, month, context);
+ATDateTimeOrDerived::Ptr ATDateTimeOrDerivedImpl::subtractYearMonthDuration(const ATDurationOrDerived::Ptr &yearMonth,
+                                                                            const DynamicContext* context) const {
+  return addYearMonthDuration(yearMonth->getYears(context)->asMAPM().neg(),
+                              yearMonth->getMonths(context)->asMAPM().neg(), context);
 }
 
 /**
  * Returns a date with the given dayTimeDuration subtracted from it
  */
-ATDateTimeOrDerived::Ptr ATDateTimeOrDerivedImpl::subtractDayTimeDuration(const ATDurationOrDerived::Ptr &dayTime, const DynamicContext* context) const {
-  if(dayTime->isNegative()) {
-    return addDayTimeDuration(dayTime->getDays()->asMAPM(),
-                              dayTime->getHours()->asMAPM(),
-                              dayTime->getMinutes()->asMAPM(),
-                              dayTime->getSeconds()->asMAPM(), context);
-  } else {
-    return addDayTimeDuration(dayTime->getDays()->asMAPM().neg(),
-                              dayTime->getHours()->asMAPM().neg(),
-                              dayTime->getMinutes()->asMAPM().neg(),
-                              dayTime->getSeconds()->asMAPM().neg(), context);
-  }
-  
+ATDateTimeOrDerived::Ptr ATDateTimeOrDerivedImpl::subtractDayTimeDuration(const ATDurationOrDerived::Ptr &dayTime,
+                                                                          const DynamicContext* context) const {
+  return addDayTimeDuration(dayTime->getDays(context)->asMAPM().neg(),
+                            dayTime->getHours(context)->asMAPM().neg(),
+                            dayTime->getMinutes(context)->asMAPM().neg(),
+                            dayTime->getSeconds(context)->asMAPM().neg(), context);
 }
 
 ATDateTimeOrDerived::Ptr ATDateTimeOrDerivedImpl::addDayTimeDuration(MAPM days, MAPM hours, MAPM minutes, MAPM seconds, const DynamicContext* context) const {
@@ -706,9 +683,7 @@ ATDurationOrDerived::Ptr ATDateTimeOrDerivedImpl::subtractDateTimeAsYearMonthDur
   const ATDurationOrDerived::Ptr dayTimeDiff = ((const ATDateTimeOrDerived*)thisDate)->subtractDateTimeAsDayTimeDuration(((const ATDateTimeOrDerived*)otherDate), context);
 
   // put it into yearMonthDuration form
-  MAPM days = dayTimeDiff->getDays()->asMAPM();
-  if(dayTimeDiff->isNegative()) 
-    days = days.neg();
+  MAPM days = dayTimeDiff->getDays(context)->asMAPM();
   
   MAPM months = MM_Zero;
   // Get number of months

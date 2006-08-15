@@ -268,7 +268,6 @@ src/items/impl/ATDateTimeOrDerivedImpl.hpp	lib
 src/items/impl/ATDecimalOrDerivedImpl.cpp	lib
 src/items/impl/ATDoubleOrDerivedImpl.cpp	lib
 src/items/impl/ATDurationOrDerivedImpl.cpp	lib
-src/items/impl/ATDurationOrDerivedImpl.hpp	lib
 src/items/impl/ATFloatOrDerivedImpl.cpp	lib
 src/items/impl/ATGDayOrDerivedImpl.cpp	lib
 src/items/impl/ATGDayOrDerivedImpl.hpp	lib
@@ -361,8 +360,6 @@ src/operators/Or.cpp	lib
 src/operators/OrderComparison.cpp	lib
 src/operators/Plus.cpp	lib
 src/operators/Range.cpp	lib
-src/operators/TotalOrderComparison.cpp	lib
-src/operators/TotalOrderComparison.hpp	lib
 src/operators/UnaryMinus.cpp	lib
 src/operators/Union.cpp	lib
 src/parser/QName.cpp	lib
@@ -437,7 +434,6 @@ src/items/impl/ATStringOrDerivedImpl.hpp	lib
 src/items/impl/ATTimeOrDerivedImpl.hpp	lib
 src/items/impl/ATUntypedAtomicImpl.hpp	lib
 src/mapm/m_apm_lc.h	lib
-src/operators/TotalOrderComparison.hpp	lib
 src/utils/DateUtils.hpp	lib
 include/xqilla/ast/ASTNode.hpp	lib
 include/xqilla/ast/ASTNodeImpl.hpp	lib
@@ -688,6 +684,7 @@ include/xqilla/items/Timezone.hpp	lib
 include/xqilla/items/impl/ATBooleanOrDerivedImpl.hpp	lib
 include/xqilla/items/impl/ATDecimalOrDerivedImpl.hpp	lib
 include/xqilla/items/impl/ATDoubleOrDerivedImpl.hpp	lib
+include/xqilla/items/impl/ATDurationOrDerivedImpl.hpp	lib
 include/xqilla/items/impl/ATFloatOrDerivedImpl.hpp	lib
 include/xqilla/items/impl/ATQNameOrDerivedImpl.hpp	lib
 include/xqilla/items/impl/NodeImpl.hpp	lib

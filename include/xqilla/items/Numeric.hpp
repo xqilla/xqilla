@@ -121,6 +121,9 @@ public:
   static const XMLCh NegZero_string[];
   static const XMLCh PosZero_string[];
 
+  static const XMLCh *asDecimalString(const MAPM &value, int significantDigits, const StaticContext* context);
+  static const XMLCh *asDoubleString(State state, const MAPM &value, int significantDigits, const StaticContext* context);
+
 protected:
   virtual AnyAtomicType::Ptr castAsInternal(AtomicObjectType targetIndex, const XMLCh* targetURI,
                                             const XMLCh* targetType, const DynamicContext* context) const;

@@ -592,7 +592,6 @@ src/items/impl/ATDateTimeOrDerivedImpl.hpp \
 src/items/impl/ATDecimalOrDerivedImpl.cpp \
 src/items/impl/ATDoubleOrDerivedImpl.cpp \
 src/items/impl/ATDurationOrDerivedImpl.cpp \
-src/items/impl/ATDurationOrDerivedImpl.hpp \
 src/items/impl/ATFloatOrDerivedImpl.cpp \
 src/items/impl/ATGDayOrDerivedImpl.cpp \
 src/items/impl/ATGDayOrDerivedImpl.hpp \
