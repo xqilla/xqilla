@@ -560,28 +560,9 @@ bool SequenceType::ItemType::matches(const Item::Ptr &toBeTested, DynamicContext
       return true;
     }
 
-    ///this is wrong said nfg and gareth -- we have non atomic types now.  crioux thinks this is correct (we no longer have non-atomic types)
-
-    // "A named atomic type matches a value if the dynamic type of the value is the same as the named atomic type or is derived 
-    //  from the named atomic type by restriction. For example, the ItemType xs:decimal matches the value 12.34 (a decimal literal); 
-    //  it also matches a value whose dynamic type is shoesize, if shoesize is a user-defined atomic type derived from xs:decimal. "
     case TEST_ATOMIC_TYPE:
     {
-        // the constraining type could be one of the special XPath 2 types
-        QualifiedName *constrainingType = getType();
-
-        if(constrainingType != NULL)
-        {
-          if((XPath2Utils::equals(constrainingType->getName(),AnyAtomicType::fgDT_ANYATOMICTYPE) ||
-              XPath2Utils::equals(constrainingType->getName(),ATUntypedAtomic::fgDT_UNTYPEDATOMIC)) &&
-             XPath2Utils::equals(getTypeURI(context),FunctionConstructor::XMLChXPath2DatatypesURI)) {
-            return true;
-          }
-        }
-        if(!matchesNameType(toBeTested, context))
-            return false;
-
-        return true;
+        return matchesNameType(toBeTested, context);
     }//case
 
   }//switch
