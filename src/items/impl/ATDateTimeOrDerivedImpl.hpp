@@ -54,49 +54,39 @@ public:
    * false otherwise */
   virtual bool equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const;
 
-  /**
-   * Returns true if and only if this date is greater than the given date. 
-   * The order relation on date values is the order relation on their 
-   * starting instants.
-   */
-  virtual bool greaterThan(const ATDateTimeOrDerived::Ptr &date, const DynamicContext* context) const;
-
-  /**
-   * Returns true if and only if this date is less than the given date. 
-   * The order relation on date values is the order relation on their
-   * starting instants.
-   */
-  virtual bool lessThan(const ATDateTimeOrDerived::Ptr &date, const DynamicContext* context) const;
+  /** Returns less than 0 if this is less that other,
+      0 if they are the same, and greater than 0 otherwise */
+  virtual int compare(const ATDateTimeOrDerived::Ptr &other, const DynamicContext *context) const;
 
   /** 
    * Returns an integer representing the year component  of this object
    */
-  virtual const ATDecimalOrDerived::Ptr &getYears() const;
+  virtual ATDecimalOrDerived::Ptr getYears(const DynamicContext *context) const;
 
   /** 
    * Returns an integer representing the month component  of this object
    */
-  virtual const ATDecimalOrDerived::Ptr &getMonths() const;
+  virtual ATDecimalOrDerived::Ptr getMonths(const DynamicContext *context) const;
 
   /** 
    * Returns an integer representing the day component  of this object
    */
-  virtual const ATDecimalOrDerived::Ptr &getDays() const;
+  virtual ATDecimalOrDerived::Ptr getDays(const DynamicContext *context) const;
 
   /** 
    * Returns an integer representing the hour component of this object
    */
-  virtual const ATDecimalOrDerived::Ptr &getHours() const;
+  virtual ATDecimalOrDerived::Ptr getHours(const DynamicContext *context) const;
 
   /** 
    * Returns an integer representing the minute component of this object
    */
-  virtual const ATDecimalOrDerived::Ptr &getMinutes() const;
+  virtual ATDecimalOrDerived::Ptr getMinutes(const DynamicContext *context) const;
 
   /** 
    * Returns an decimal representing the second component of this object
    */
-  virtual const ATDecimalOrDerived::Ptr &getSeconds() const;
+  virtual ATDecimalOrDerived::Ptr getSeconds(const DynamicContext *context) const;
 
   /**
    * Returns the timezone associated with this object, or
@@ -170,25 +160,17 @@ protected:
 
 private:
   // private constructor for use with clone()
-  ATDateTimeOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const ATDecimalOrDerived::Ptr &YY, 
-                      const ATDecimalOrDerived::Ptr &MM, const ATDecimalOrDerived::Ptr &DD, const ATDecimalOrDerived::Ptr &hh, 
-                      const ATDecimalOrDerived::Ptr &mm, const ATDecimalOrDerived::Ptr &ss,
-                      const Timezone::Ptr &timezone, bool hasTimezone);
+  ATDateTimeOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const MAPM &seconds, 
+                          const Timezone::Ptr &timezone, bool hasTimezone);
 
   void setDateTime(const XMLCh* const date, const DynamicContext* context);
 
-  ATDateTimeOrDerived::Ptr addDayTimeDuration(MAPM days, MAPM hours, MAPM minutes, MAPM seconds, const DynamicContext* context) const;
+  ATDateTimeOrDerived::Ptr addDayTimeDuration(const MAPM &seconds, const DynamicContext* context) const;
 
-  ATDateTimeOrDerived::Ptr addYearMonthDuration(MAPM years, MAPM months, const DynamicContext* context) const;
+  ATDateTimeOrDerived::Ptr addYearMonthDuration(const MAPM &months, const DynamicContext* context) const;
 
-  /*The value of this date*/
-  ATDecimalOrDerived::Ptr _YY;  // year as xs:integer
-  ATDecimalOrDerived::Ptr _MM;  // month as xs:nonNegativeInteger
-  ATDecimalOrDerived::Ptr _DD;  // day as xs:nonNegativeInteger
-  
-  ATDecimalOrDerived::Ptr _hh;  // hours as xs:nonNegativeInteger
-  ATDecimalOrDerived::Ptr _mm;  // minutes as xs:nonNegativeInteger
-  ATDecimalOrDerived::Ptr _ss;  // seconds xs:decimal
+  /*The value of this date, in seconds since the EPOC, always normalized*/
+  MAPM seconds_;
   
   /* the timezone associated with this ATDateTimeOrDerived */
   Timezone::Ptr timezone_;

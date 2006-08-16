@@ -54,6 +54,26 @@ void DateUtils::formatNumber(int value, int minDigits, XERCES_CPP_NAMESPACE_QUAL
   buffer.append(tmpBuff);
 }
 
+void DateUtils::formatNumber(const MAPM &value, int minDigits, XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &buffer)
+{
+  char obuf[1024];
+  value.toIntegerString(obuf);
+
+  char *str = obuf;
+  if(value.sign() < 0) {
+    ++str;
+    buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
+  }
+
+  int length = strlen(str);
+  for(int i = length; i < minDigits; ++i) {
+    buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chDigit_0);
+  }
+
+  buffer.append(X(str));
+}
+
+
 int DateUtils::fQuotient( int a, int b) {
   if (b == 0)
     return 0;
@@ -86,14 +106,14 @@ int DateUtils::modulo(int a, int low, int high ) {
 
 // modulo(a,b) = a - (floor(a / b) * b)
 MAPM DateUtils::modulo( MAPM a, MAPM b)  {
-  MAPM quotient=a/b;
-  MAPM result=a - (quotient.floor() * b);
-  return result;
+  return a - ((a/b).floor() * b);
 }
 
 int DateUtils::maximumDayInMonthFor(MAPM yearValue, MAPM monthValue) {
-    int year=asInt(yearValue);
-    int month=asInt(monthValue);
+  return maximumDayInMonthFor(asInt(yearValue), asInt(monthValue));
+}
+
+int DateUtils::maximumDayInMonthFor(int year, int month) {
     int M = modulo(month,1,13);
     int Y = year + fQuotient(month,1,13);
   if ( M == 1 || M == 3 || M == 5 || M == 7 || M == 8 || M == 10 || M == 12 )
@@ -106,16 +126,9 @@ int DateUtils::maximumDayInMonthFor(MAPM yearValue, MAPM monthValue) {
     return 28;
 }
 
-int DateUtils::daysInYear(int yearValue) {
-  if (isLeapYear(yearValue))
-    return 366;
-  else 
-    return 365;
-}
-
 bool DateUtils::isLeapYear(MAPM year)
 {
-    return modulo(year,4) == 0 && ( modulo(year,400) == 0 || modulo(year,100) != 0 );
+  return modulo(year,4) == 0 && ( modulo(year,400) == 0 || modulo(year,100) != 0 );
 }
 
 int DateUtils::asInt(MAPM num) 
@@ -158,14 +171,17 @@ static int days_before_month_leap[] = { 0,
 
 MAPM DateUtils::convertDMY2Absolute(MAPM day, MAPM month, MAPM year)
 {
-    MAPM prevYear = year-1;
-    MAPM absolute = ( prevYear * 365 ) + ( prevYear / 4 ).floor() - (prevYear / 100).floor() + (prevYear / 400).floor();
-    if(isLeapYear(year))
-        absolute+=days_before_month_leap[asInt(month)-1];
-    else
-        absolute+=days_before_month[asInt(month)-1];
-    absolute+=day;
-    return absolute;
+  MAPM prevYear = year - 1;
+  if(year.sign() < 0) ++prevYear;
+  MAPM absolute = ( prevYear * 365 ) + prevYear.integer_divide(4) - prevYear.integer_divide(100) +
+    prevYear.integer_divide(400);
+
+  if(isLeapYear(year))
+    absolute+=days_before_month_leap[asInt(month)-1];
+  else
+    absolute+=days_before_month[asInt(month)-1];
+  absolute+= day;
+  return absolute - 1;
 }
 
 static int days_in_400_years = 400*365 + 400/4 - 400/100 + 400/400;
@@ -173,54 +189,67 @@ static int days_in_100_years = 100*365 + 100/4 - 100/100;
 static int days_in_4_years   = 4*365 + 4/4;
 static int days_in_1_years   = 1*365;
 
+static inline int daysInYear(const MAPM &year)
+{
+  return DateUtils::isLeapYear(year) ? 366 : 365;
+}
+
 void DateUtils::convertAbsolute2DMY(MAPM absolute, MAPM& day, MAPM& month, MAPM& year)
 {
-    bool bBC=false;
-    if(absolute<0)
-    {
-        bBC=true;
-        absolute=absolute.abs();
+  absolute += 1;
+
+  bool bc = absolute.sign() <= 0;
+  bool fix = false;
+
+  MAPM div, rem;
+  absolute.integer_div_rem(days_in_400_years, div, rem);
+
+  year = div * 400;
+  absolute = rem;
+
+  absolute.integer_div_rem(days_in_100_years, div, rem);
+
+  if(div <= -4) fix = true;
+  year += div * 100;
+  absolute = rem;
+
+  absolute.integer_div_rem(days_in_4_years, div, rem);
+
+  year += div * 4;
+  absolute = rem;
+
+  absolute.integer_div_rem(days_in_1_years, div, rem);
+
+  if(div <= -4) fix = true;
+  year += div;
+  absolute = rem;
+
+  if(bc) {
+    if(fix && absolute.sign() == 0) {
+      // Correct off by one error
+      absolute += 1;
     }
-    month=12;
-    day=31;
-    year = (absolute / days_in_400_years).floor() * 400;
-    absolute = modulo(absolute, days_in_400_years);
-
-    year += (absolute / days_in_100_years).floor() * 100;
-    absolute = modulo(absolute, days_in_100_years);
-
-    year += (absolute / days_in_4_years).floor() * 4;
-    absolute = modulo(absolute, days_in_4_years);
-
-    if(absolute != 0)
-    {
-        for(int i=0;i<3;i++)
-        {
-            if(absolute < days_in_1_years)
-                break;
-            year++;
-            absolute-=days_in_1_years;
-        }
-
-        if(absolute != 0)
-        {
-            year++;
-            if(bBC)
-                absolute=daysInYear(asInt(year))-absolute;
-            int* days=isLeapYear(year)?days_before_month_leap:days_before_month;
-            for(int i=11; i>=0; i--)
-            {
-                if(absolute > days[i])
-                {
-                    month = i+1;
-                    day = absolute-days[i];
-                    break;
-                }
-            }
-        }
+    else {
+      --year;
+      absolute += daysInYear(year);
     }
-    if(bBC)
-        year=year.neg();
+  }
+  else {
+    if(absolute.sign() != 0) {
+      ++year;
+    }
+  }
+
+  month = 12;
+  day = 31;
+  int *days = isLeapYear(year) ? days_before_month_leap : days_before_month;
+  for(int i = 11; i >= 0; --i) {
+    if(absolute > days[i]) {
+      month = i + 1;
+      day = absolute - days[i];
+      break;
+    }
+  }
 }
 
 const ATDateOrDerived::Ptr DateUtils::getCurrentDate(const DynamicContext* context) 

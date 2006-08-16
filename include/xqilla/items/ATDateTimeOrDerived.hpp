@@ -44,50 +44,39 @@ public:
    * false otherwise */
   virtual bool equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const = 0;
 
-
-  /**
-   * Returns true if and only if this date is greater than the given date. 
-   * The order relation on date values is the order relation on their 
-   * starting instants.
-   */
-  virtual bool greaterThan(const ATDateTimeOrDerived::Ptr &date, const DynamicContext* context) const = 0;
-
-  /**
-   * Returns true if and only if this date is less than the given date. 
-   * The order relation on date values is the order relation on their
-   * starting instants.
-   */
-  virtual bool lessThan(const ATDateTimeOrDerived::Ptr &date, const DynamicContext* context) const = 0;
+  /** Returns less than 0 if this is less that other,
+      0 if they are the same, and greater than 0 otherwise */
+  virtual int compare(const ATDateTimeOrDerived::Ptr &other, const DynamicContext *context) const = 0;
  
   /** 
    * Returns an integer representing the year component  of this object
    */
-  virtual const ATDecimalOrDerived::Ptr &getYears() const = 0;
+  virtual ATDecimalOrDerived::Ptr getYears(const DynamicContext *context) const = 0;
 
   /** 
    * Returns an integer representing the month component  of this object
    */
-  virtual const ATDecimalOrDerived::Ptr &getMonths() const = 0;
+  virtual ATDecimalOrDerived::Ptr getMonths(const DynamicContext *context) const = 0;
 
   /** 
    * Returns an integer representing the day component  of this object
    */
-  virtual const ATDecimalOrDerived::Ptr &getDays() const = 0;
+  virtual ATDecimalOrDerived::Ptr getDays(const DynamicContext *context) const = 0;
 
   /** 
    * Returns an integer representing the hour component of this object
    */
-  virtual const ATDecimalOrDerived::Ptr &getHours() const = 0;
+  virtual ATDecimalOrDerived::Ptr getHours(const DynamicContext *context) const = 0;
 
   /** 
    * Returns an integer representing the minute component of this object
    */
-  virtual const ATDecimalOrDerived::Ptr &getMinutes() const = 0;
+  virtual ATDecimalOrDerived::Ptr getMinutes(const DynamicContext *context) const = 0;
 
   /** 
    * Returns a decimal representing the second component of this object
    */
-  virtual const ATDecimalOrDerived::Ptr &getSeconds() const = 0;
+  virtual ATDecimalOrDerived::Ptr getSeconds(const DynamicContext *context) const = 0;
 
   /** 
    * Returns a timezone object representing the timezone component of this object

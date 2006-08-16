@@ -87,7 +87,7 @@ GreaterThan::GreaterThan(const VectorOfASTNodes &args, XPath2MemoryManager* memM
       // op:datetime-greater-than(A, B)
       if(atom2->getPrimitiveTypeIndex() != AnyAtomicType::DATE_TIME)
         XQThrow(XPath2ErrorException,X("GreaterThan::greater_than"), X("An attempt to compare a dateTime type to a non dateTime type has occurred [err:XPTY0004]"));
-      return ((ATDateTimeOrDerived*)(const AnyAtomicType*)atom1)->greaterThan((const ATDateTimeOrDerived::Ptr )atom2, context);
+      return ((ATDateTimeOrDerived*)atom1.get())->compare((const ATDateTimeOrDerived::Ptr)atom2, context) > 0;
     }
     case AnyAtomicType::DURATION:
     case AnyAtomicType::DAY_TIME_DURATION:

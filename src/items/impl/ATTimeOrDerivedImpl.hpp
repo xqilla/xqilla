@@ -144,9 +144,7 @@ private:
 
   void setTime(const XMLCh* const time, const DynamicContext* context);
 
-  ATTimeOrDerived::Ptr addDayTimeDuration(MAPM hours, MAPM minutes, MAPM seconds, const DynamicContext* context) const;
-
-  ATTimeOrDerived::Ptr subtractDayTimeDuration(MAPM hours, MAPM minutes, MAPM seconds, const DynamicContext* context) const;
+  ATTimeOrDerived::Ptr addDayTimeDuration(const MAPM &seconds, const DynamicContext* context) const;
 
   ATDateTimeOrDerived::Ptr buildReferenceDateTime(ATTimeOrDerived::Ptr time, const DynamicContext* context) const;
 

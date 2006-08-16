@@ -32,7 +32,6 @@
   <error id="K-SeqExprCast-127" reason="result failure"/>
   <error id="K-SeqExprCast-1496" reason="error failure"/>
   <error id="K-SeqExprCast-1497" reason="error failure"/>
-  <error id="K-SeqExprCast-352" reason="result failure"/>
   <error id="K-SeqExprCast-4" reason="error failure"/>
   <error id="K-SeqExprCastable-5" reason="no error failure"/>
   <error id="K-SeqSUMFunc-24" reason="error failure"/>
