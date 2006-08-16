@@ -30,6 +30,10 @@
 
 #include <xercesc/util/XMLString.hpp>
 
+#if defined(XERCES_HAS_CPP_NAMESPACE)
+XERCES_CPP_NAMESPACE_USE
+#endif
+
 ATGDayOrDerivedImpl::
 ATGDayOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* value, const DynamicContext* context): 
     ATGDayOrDerived(),
@@ -54,7 +58,7 @@ const XMLCh* ATGDayOrDerivedImpl::getPrimitiveTypeName() const {
 }
 
 const XMLCh* ATGDayOrDerivedImpl::getPrimitiveName()  {
-  return XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DAY;
+  return SchemaSymbols::fgDT_DAY;
 }
 
 /* Get the name of this type  (ie "integer" for xs:integer) */
@@ -73,15 +77,38 @@ AnyAtomicType::AtomicObjectType ATGDayOrDerivedImpl::getTypeIndex() {
 
 /* returns the XMLCh* (canonical) representation of this type */
 const XMLCh* ATGDayOrDerivedImpl::asString(const DynamicContext* context) const {
-  XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buffer(1023, context->getMemoryManager());
-  buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-  buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-  buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-  buffer.append(_gDay->asString(2, context));
-  if ( _hasTimezone == true ) {
+  XMLBuffer buffer(1023, context->getMemoryManager());
+  buffer.append(chDash);
+  buffer.append(chDash);
+  buffer.append(chDash);
+  DateUtils::formatNumber(_gDay->asMAPM(), 2, buffer);
+  if(_hasTimezone) {
     buffer.append(timezone_->asString(context));
   }
   return context->getMemoryManager()->getPooledString(buffer.getRawBuffer());
+}
+
+ATDateTimeOrDerived::Ptr ATGDayOrDerivedImpl::buildDateTime(const DynamicContext *context) const
+{
+  static const XMLCh doubleZero[] = { chDigit_0, chDigit_0, chNull };
+
+  XMLBuffer buffer(1023, context->getMemoryManager());
+
+  DateUtils::formatNumber(1972, 4, buffer);
+  buffer.append(chDash);
+  DateUtils::formatNumber(12, 2, buffer);
+  buffer.append(chDash);
+  DateUtils::formatNumber(_gDay->asMAPM(), 2, buffer);
+  buffer.append(chLatin_T);
+  buffer.append(doubleZero);
+  buffer.append(chColon);
+  buffer.append(doubleZero);
+  buffer.append(chColon);
+  buffer.append(doubleZero);
+  if(_hasTimezone) {
+    buffer.append(timezone_->asString(context));
+  }
+  return context->getItemFactory()->createDateTime(buffer.getRawBuffer(), context);
 }
 
 /* Returns true if and only if the xs:dateTimes representing the starting instants of equivalent occurrences of $arg1 and $arg2 
@@ -90,77 +117,14 @@ const XMLCh* ATGDayOrDerivedImpl::asString(const DynamicContext* context) const 
  */
 bool ATGDayOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const {
   if(this->getPrimitiveTypeIndex() != target->getPrimitiveTypeIndex()) {
-        XQThrow(IllegalArgumentException,X("ATGDayOrDerivedImpl::equals"), X("Equality operator for given types not supported [err:XPTY0004]"));
+        XQThrow(::IllegalArgumentException,X("ATGDayOrDerivedImpl::equals"), X("Equality operator for given types not supported [err:XPTY0004]"));
   }
-  ATGDayOrDerivedImpl* targetGDay = (ATGDayOrDerivedImpl*)(const AnyAtomicType*)target;
-
-    const XMLCh s1972[] = { XERCES_CPP_NAMESPACE_QUALIFIER chDigit_1, XERCES_CPP_NAMESPACE_QUALIFIER chDigit_9, XERCES_CPP_NAMESPACE_QUALIFIER chDigit_7, XERCES_CPP_NAMESPACE_QUALIFIER chDigit_2, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
-    const XMLCh s12[] = { XERCES_CPP_NAMESPACE_QUALIFIER chDigit_1, XERCES_CPP_NAMESPACE_QUALIFIER chDigit_2, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
-    const XMLCh doubleZero[] = { XERCES_CPP_NAMESPACE_QUALIFIER chDigit_0, XERCES_CPP_NAMESPACE_QUALIFIER chDigit_0, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
-    XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buffer(1023, context->getMemoryManager());
-    buffer.set(s1972);
-    buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-    buffer.append(s12);
-    buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-    buffer.append(_gDay->asString(2, context));
-    buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_T);
-    buffer.append(doubleZero);
-    buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chColon);
-    buffer.append(doubleZero);
-    buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chColon);
-    buffer.append(doubleZero);
-    if ( _hasTimezone == true ) {
-        buffer.append(timezone_->asString(context));
-  }
-    ATDateTimeOrDerived::Ptr myValue=context->getItemFactory()->createDateTime(buffer.getRawBuffer(), context);
-
-    buffer.set(s1972);
-    buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-    buffer.append(s12);
-    buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-    buffer.append(targetGDay->_gDay->asString(2, context));
-    buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_T);
-    buffer.append(doubleZero);
-    buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chColon);
-    buffer.append(doubleZero);
-    buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chColon);
-    buffer.append(doubleZero);
-    if ( targetGDay->_hasTimezone == true ) {
-        buffer.append(targetGDay->timezone_->asString(context));
-  }
-    ATDateTimeOrDerived::Ptr targetValue=context->getItemFactory()->createDateTime(buffer.getRawBuffer(), context);
-
-    return myValue->equals(targetValue, context);
+  return compare((const ATGDayOrDerived *)target.get(), context) == 0;
 }
 
-/** Returns true if this is greater than other.  Ignores timezones.
- * Returns false otherwise. */
-bool ATGDayOrDerivedImpl::greaterThan(const ATGDayOrDerived::Ptr &other, const DynamicContext* context) const {
-  ATGDayOrDerived::Ptr thisNorm = this;
-  ATGDayOrDerived::Ptr otherNorm = other;
-  if (!thisNorm->hasTimezone())
-    thisNorm = thisNorm->setTimezone(new Timezone(context->getImplicitTimezone(), context), context);
-  if (!otherNorm->hasTimezone())
-    otherNorm = otherNorm->setTimezone(new Timezone(context->getImplicitTimezone(), context), context);
-  ATGDayOrDerivedImpl* thisImpl=(ATGDayOrDerivedImpl*)(const ATGDayOrDerived*)thisNorm;
-  ATGDayOrDerivedImpl* otherImpl=(ATGDayOrDerivedImpl*)(const ATGDayOrDerived*)otherNorm;
-  return (thisImpl->_gDay->greaterThan(otherImpl->_gDay, context) ||
-         (thisImpl->_gDay->equals(otherImpl->_gDay, context) && thisImpl->timezone_->greaterThan(otherImpl->timezone_)));
-}
-
-/** Returns true if this is less than other.  Ignores timezones.
- * Returns false otherwise. */
-bool ATGDayOrDerivedImpl::lessThan(const ATGDayOrDerived::Ptr &other, const DynamicContext* context) const {
-  ATGDayOrDerived::Ptr thisNorm = this;
-  ATGDayOrDerived::Ptr otherNorm = other;
-  if (!thisNorm->hasTimezone())
-    thisNorm = thisNorm->setTimezone(new Timezone(context->getImplicitTimezone(), context), context);
-  if (!otherNorm->hasTimezone())
-    otherNorm = otherNorm->setTimezone(new Timezone(context->getImplicitTimezone(), context), context);
-  ATGDayOrDerivedImpl* thisImpl=(ATGDayOrDerivedImpl*)(const ATGDayOrDerived*)thisNorm;
-  ATGDayOrDerivedImpl* otherImpl=(ATGDayOrDerivedImpl*)(const ATGDayOrDerived*)otherNorm;
-  return (thisImpl->_gDay->lessThan(otherImpl->_gDay, context) ||
-         (thisImpl->_gDay->equals(otherImpl->_gDay, context) && thisImpl->timezone_->lessThan(otherImpl->timezone_)));
+int ATGDayOrDerivedImpl::compare(const ATGDayOrDerived::Ptr &other, const DynamicContext *context) const
+{
+  return buildDateTime(context)->compare(((const ATGDayOrDerivedImpl *)other.get())->buildDateTime(context), context);
 }
 
 /** Returns true if a timezone is defined for this.  False otherwise.*/
@@ -170,16 +134,15 @@ bool ATGDayOrDerivedImpl::hasTimezone() const {
 
 /** Sets the timezone to the given timezone.*/
 ATGDayOrDerived::Ptr ATGDayOrDerivedImpl::setTimezone(const Timezone::Ptr &timezone, const DynamicContext* context) const {
-  bool hasTimezone = timezone == NULLRCP ? false : true;
-  XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buffer(1023, context->getMemoryManager());
-  buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-  buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-  buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-  buffer.append(_gDay->asString(2, context));
-  if (hasTimezone) 
+  XMLBuffer buffer(1023, context->getMemoryManager());
+
+  buffer.append(chDash);
+  buffer.append(chDash);
+  buffer.append(chDash);
+  DateUtils::formatNumber(_gDay->asMAPM(), 2, buffer);
+  if(timezone != NULLRCP) 
     buffer.append(timezone->asString(context));
-  const XMLCh* gDay = context->getMemoryManager()->getPooledString(buffer.getRawBuffer());
-  return context->getItemFactory()->createGDayOrDerived(this->getTypeURI(), this->getTypeName(), gDay, context);        
+  return context->getItemFactory()->createGDayOrDerived(this->getTypeURI(), this->getTypeName(), buffer.getRawBuffer(), context);
 }
 
 
@@ -194,7 +157,7 @@ void ATGDayOrDerivedImpl::setGDay(const XMLCh* const value, const DynamicContext
 			XQThrow(XPath2TypeCastException,X("ATGDayOrDerivedImpl::setGDay"), 
           X("Invalid representation of gDay"));
 	}
-  unsigned int length = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(value);
+  unsigned int length = XMLString::stringLen(value);
 	
 	// State variables etc.
 	bool gotDigit = false;

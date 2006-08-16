@@ -43,14 +43,10 @@ public:
    * false otherwise */
   virtual bool equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const = 0;
 
-  /** Returns true if this is greater than other.  Ignores timezones.
-   * Returns false otherwise. */
-  virtual bool greaterThan(const ATGMonthOrDerived::Ptr &other, const DynamicContext* context) const = 0;
-
-  /** Returns true if this is less than other.  Ignores timezones.
-   * Returns false otherwise. */
-  virtual bool lessThan(const ATGMonthOrDerived::Ptr &other, const DynamicContext* context) const = 0;
-
+  /** Returns less than 0 if this is less that other,
+      0 if they are the same, and greater than 0 otherwise */
+  virtual int compare(const ATGMonthOrDerived::Ptr &other, const DynamicContext *context) const = 0;
+ 
   /** Returns true if a timezone is defined for this.  False otherwise.*/
   virtual bool hasTimezone() const = 0;
 

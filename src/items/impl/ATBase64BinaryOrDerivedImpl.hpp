@@ -48,6 +48,10 @@ public:
    *  are equal (string comparison) false otherwise */
   virtual bool equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const;
   
+  /** Returns less than 0 if this is less that other,
+      0 if they are the same, and greater than 0 otherwise */
+  virtual int compare(const ATBase64BinaryOrDerived::Ptr &other, const DynamicContext *context) const;
+ 
   static AnyAtomicType::AtomicObjectType getTypeIndex(); 
 
   /* Get the primitive type name */

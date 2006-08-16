@@ -21,6 +21,10 @@
 #include <xqilla/framework/XPath2MemoryManager.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 
+#if defined(XERCES_HAS_CPP_NAMESPACE)
+XERCES_CPP_NAMESPACE_USE
+#endif
+
 ATNotationOrDerivedImpl::
 ATNotationOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* value, const StaticContext* context): 
     ATNotationOrDerived(),
@@ -65,7 +69,7 @@ const XMLCh* ATNotationOrDerivedImpl::getPrimitiveTypeName() const {
 }
 
 const XMLCh* ATNotationOrDerivedImpl::getPrimitiveName()  {
-  return XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgNotationString;
+  return XMLUni::fgNotationString;
 }
 
 /* Get the name of this type  (ie "integer" for xs:integer) */
@@ -91,10 +95,21 @@ const XMLCh* ATNotationOrDerivedImpl::asString(const DynamicContext* context) co
    * false otherwise */
 bool ATNotationOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const {
   if(this->getPrimitiveTypeIndex() != target->getPrimitiveTypeIndex()) {
-    XQThrow(IllegalArgumentException,X("ATNotationOrDerivedImpl::equals"), X("Equality operator for given types not supported [err:XPTY0004]"));
+    XQThrow(::IllegalArgumentException,X("ATNotationOrDerivedImpl::equals"),
+	    X("Equality operator for given types not supported [err:XPTY0004]"));
   }
-  ATNotationOrDerivedImpl* other=(ATNotationOrDerivedImpl*)target->getInterface(Item::gXQilla);
-  return XPath2Utils::equals(other->_uri, _uri) && XPath2Utils::equals(other->_name, _name) ;
+
+  return compare((const ATNotationOrDerived *)target.get(), context) == 0;
+}
+
+int ATNotationOrDerivedImpl::compare(const ATNotationOrDerivedImpl::Ptr &other, const DynamicContext *context) const
+{
+  const ATNotationOrDerivedImpl *otherImpl = (const ATNotationOrDerivedImpl *)other.get();
+
+  int cmp = XPath2Utils::compare(_name, otherImpl->_name);
+  if(cmp != 0) return cmp;
+
+  return XPath2Utils::compare(_uri, otherImpl->_uri);
 }
 
 AnyAtomicType::AtomicObjectType ATNotationOrDerivedImpl::getPrimitiveTypeIndex() const {

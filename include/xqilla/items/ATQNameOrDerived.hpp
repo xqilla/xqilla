@@ -35,14 +35,14 @@ public:
   /* Get the name of this type  (ie "integer" for xs:integer) */
   virtual const XMLCh* getTypeName() const = 0;
 
-	/* returns the URI */
-	virtual const XMLCh* getURI(void) const = 0;
+  /* returns the URI */
+  virtual const XMLCh* getURI() const = 0;
 
-	/* returns the prefix */
-	virtual const XMLCh* getPrefix(void) const = 0;
+  /* returns the prefix */
+  virtual const XMLCh* getPrefix() const = 0;
 
-	/* returns the name */
-	virtual const XMLCh* getName(void) const = 0;
+  /* returns the name */
+  virtual const XMLCh* getName() const = 0;
 
   /* returns the XMLCh* (canonical) representation of this type */
   virtual const XMLCh* asString(const DynamicContext* context) const = 0;
@@ -51,6 +51,10 @@ public:
    * false otherwise */
   virtual bool equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const = 0;
 
+  /** Returns less than 0 if this is less that other,
+      0 if they are the same, and greater than 0 otherwise */
+  virtual int compare(const ATQNameOrDerived::Ptr &other, const DynamicContext *context) const = 0;
+ 
   virtual AnyAtomicType::AtomicObjectType getPrimitiveTypeIndex() const = 0;
 };
 

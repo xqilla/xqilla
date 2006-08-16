@@ -50,6 +50,7 @@ public:
   static const XMLCh* asStr(const XMLCh src, XPath2MemoryManager* memMgr);
 
   static bool equals(const XMLCh *const str1, const XMLCh *const str2);
+  static int compare(const XMLCh *str1, const XMLCh *str2);
 
   /**
    * Return the specified substring.
@@ -108,6 +109,24 @@ inline bool XPath2Utils::equals(const XMLCh *const str1, const XMLCh *const str2
     ++psz2;
   }
   return false;
+}
+
+inline int XPath2Utils::compare(const XMLCh *str1, const XMLCh *str2) {
+  if(str1 == str2) return 0;
+
+  if(str1 == 0) return -*str2; // str2 == 0 is handled by the first line
+  if(str2 == 0) return *str1; // str1 == 0 is handled by the first line
+
+  register int cmp;
+  while((cmp = *str1 - *str2) == 0) {
+    // If either has ended, then they both ended, so equal
+    if(*str1 == 0) break;
+
+    // Move upwards for the next round
+    ++str1;
+    ++str2;
+  }
+  return cmp;
 }
 
 inline const XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *XPath2Utils::getOwnerDoc(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *node) {

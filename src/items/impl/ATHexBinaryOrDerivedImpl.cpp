@@ -26,16 +26,20 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/context/ItemFactory.hpp>
 
+#if defined(XERCES_HAS_CPP_NAMESPACE)
+XERCES_CPP_NAMESPACE_USE
+#endif
+
 ATHexBinaryOrDerivedImpl::
 ATHexBinaryOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* value, const StaticContext* context): 
     ATHexBinaryOrDerived(),
     _typeName(typeName),
     _typeURI(typeURI) { 
     
-  XMLCh* tempValue=XERCES_CPP_NAMESPACE_QUALIFIER XMLString::replicate(value, context->getMemoryManager());
-  XERCES_CPP_NAMESPACE_QUALIFIER XMLString::upperCase(tempValue);
+  XMLCh* tempValue=XMLString::replicate(value, context->getMemoryManager());
+  XMLString::upperCase(tempValue);
   _hexBinaryData = context->getMemoryManager()->getPooledString(tempValue);
-  XERCES_CPP_NAMESPACE_QUALIFIER XMLString::release((void**)&tempValue, context->getMemoryManager());
+  XMLString::release((void**)&tempValue, context->getMemoryManager());
 }
 
 void *ATHexBinaryOrDerivedImpl::getInterface(const XMLCh *name) const
@@ -53,7 +57,7 @@ const XMLCh* ATHexBinaryOrDerivedImpl::getPrimitiveTypeName() const {
 }
 
 const XMLCh* ATHexBinaryOrDerivedImpl::getPrimitiveName()  {
-  return XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_HEXBINARY;
+  return SchemaSymbols::fgDT_HEXBINARY;
 }
 
 /* Get the name of this type  (ie "integer" for xs:integer) */
@@ -75,10 +79,10 @@ AnyAtomicType::Ptr ATHexBinaryOrDerivedImpl::castAsInternal(AtomicObjectType tar
 {
   switch(targetIndex) {
     case BASE_64_BINARY: {
-      XMLByte* binData=XERCES_CPP_NAMESPACE_QUALIFIER HexBin::decodeToXMLByte(_hexBinaryData, context->getMemoryManager());
+      XMLByte* binData=HexBin::decodeToXMLByte(_hexBinaryData, context->getMemoryManager());
       unsigned int length=0;
-      XMLByte* base64Data=XERCES_CPP_NAMESPACE_QUALIFIER Base64::encode(binData, 
-                                                                        XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(_hexBinaryData)/2, 
+      XMLByte* base64Data=Base64::encode(binData, 
+                                                                        XMLString::stringLen(_hexBinaryData)/2, 
                                                                         &length, 
                                                                         context->getMemoryManager()); 
       XMLCh* uniBase64=(XMLCh*)context->getMemoryManager()->allocate((length+1)*sizeof(XMLCh));
@@ -87,7 +91,7 @@ AnyAtomicType::Ptr ATHexBinaryOrDerivedImpl::castAsInternal(AtomicObjectType tar
           uniBase64[i]=(XMLCh)base64Data[i];
       uniBase64[i]=0;
       // replace #xA with #x20, collapse multiple spaces
-      XERCES_CPP_NAMESPACE_QUALIFIER XMLString::collapseWS(uniBase64, context->getMemoryManager());
+      XMLString::collapseWS(uniBase64, context->getMemoryManager());
       ATBase64BinaryOrDerivedImpl* retVal=new ATBase64BinaryOrDerivedImpl(targetURI, targetType, uniBase64, context);
       context->getMemoryManager()->deallocate(uniBase64);
       context->getMemoryManager()->deallocate(binData);
@@ -109,9 +113,15 @@ const XMLCh* ATHexBinaryOrDerivedImpl::asString(const DynamicContext* context) c
    * false otherwise */
 bool ATHexBinaryOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const {
   if(this->getPrimitiveTypeIndex() != target->getPrimitiveTypeIndex()) {
-    XQThrow(IllegalArgumentException,X("ATHexBinaryOrDerivedImpl::equals"), X("Equality operator for given types not supported [err:XPTY0004]"));
+    XQThrow(::IllegalArgumentException,X("ATHexBinaryOrDerivedImpl::equals"),
+            X("Equality operator for given types not supported [err:XPTY0004]"));
   }
-  return XPath2Utils::equals(target->asString(context), _hexBinaryData);
+  return compare((const ATHexBinaryOrDerived *)target.get(), context) == 0;
+}
+
+int ATHexBinaryOrDerivedImpl::compare(const ATHexBinaryOrDerived::Ptr &other, const DynamicContext *context) const
+{
+  return XPath2Utils::compare(_hexBinaryData, ((const ATHexBinaryOrDerivedImpl *)other.get())->_hexBinaryData);
 }
 
 AnyAtomicType::AtomicObjectType ATHexBinaryOrDerivedImpl::getPrimitiveTypeIndex() const {

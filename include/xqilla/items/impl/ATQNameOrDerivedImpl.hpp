@@ -42,13 +42,13 @@ public:
   virtual const XMLCh* getTypeName() const;
 
   /* returns the URI */
-	virtual const XMLCh* getURI(void) const;
+  virtual const XMLCh* getURI() const;
 
-	/* returns the prefix */
-	virtual const XMLCh* getPrefix(void) const;
+  /* returns the prefix */
+  virtual const XMLCh* getPrefix() const;
 
-	/* returns the name */
-	virtual const XMLCh* getName(void) const;
+  /* returns the name */
+  virtual const XMLCh* getName() const;
 
   /* returns the XMLCh* (canonical) representation of this type */
   virtual const XMLCh* asString(const DynamicContext* context) const;
@@ -60,6 +60,10 @@ public:
    * false otherwise */
   virtual bool equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const;
   
+  /** Returns less than 0 if this is less that other,
+      0 if they are the same, and greater than 0 otherwise */
+  virtual int compare(const ATQNameOrDerived::Ptr &other, const DynamicContext *context) const;
+ 
   /* Get the primitive index associated with this type */
   static AnyAtomicType::AtomicObjectType getTypeIndex(); 
 

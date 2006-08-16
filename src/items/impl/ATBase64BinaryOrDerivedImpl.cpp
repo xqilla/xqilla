@@ -25,6 +25,10 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/context/ItemFactory.hpp>
 
+#if defined(XERCES_HAS_CPP_NAMESPACE)
+XERCES_CPP_NAMESPACE_USE
+#endif
+
 ATBase64BinaryOrDerivedImpl::
 ATBase64BinaryOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* value, const StaticContext* context): 
     _typeName(typeName),
@@ -47,7 +51,7 @@ const XMLCh* ATBase64BinaryOrDerivedImpl::getPrimitiveTypeName() const {
 }
 
 const XMLCh* ATBase64BinaryOrDerivedImpl::getPrimitiveName()  {
-  return XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_BASE64BINARY;
+  return SchemaSymbols::fgDT_BASE64BINARY;
 }
 
 /* Get the name of this type  (ie "integer" for xs:integer) */
@@ -69,9 +73,9 @@ AnyAtomicType::Ptr ATBase64BinaryOrDerivedImpl::castAsInternal(AtomicObjectType 
 {
   switch(targetIndex) {
     case HEX_BINARY: {
-      unsigned int srcLen = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(_base64Data);
+      unsigned int srcLen = XMLString::stringLen(_base64Data);
       XMLByte *dataInByte = (XMLByte*) context->getMemoryManager()->allocate((srcLen+1) * sizeof(XMLByte));
-      XERCES_CPP_NAMESPACE_QUALIFIER ArrayJanitor<XMLByte> janFill(dataInByte, context->getMemoryManager());
+      ArrayJanitor<XMLByte> janFill(dataInByte, context->getMemoryManager());
 
       unsigned int i;
       for (i = 0; i < srcLen; i++)
@@ -80,19 +84,19 @@ AnyAtomicType::Ptr ATBase64BinaryOrDerivedImpl::castAsInternal(AtomicObjectType 
 	  dataInByte[srcLen] = 0;
 
       unsigned int length=0;
-      XMLByte* decodedBinary=XERCES_CPP_NAMESPACE_QUALIFIER Base64::decode(dataInByte, 
+      XMLByte* decodedBinary=Base64::decode(dataInByte, 
                                                                            &length, 
                                                                            context->getMemoryManager(), 
-                                                                           XERCES_CPP_NAMESPACE_QUALIFIER Base64::Conf_Schema); 
-      XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buf(length*2, context->getMemoryManager());
-      XMLCh hexDigits[]={ XERCES_CPP_NAMESPACE_QUALIFIER chDigit_0, XERCES_CPP_NAMESPACE_QUALIFIER chDigit_1,
-                          XERCES_CPP_NAMESPACE_QUALIFIER chDigit_2, XERCES_CPP_NAMESPACE_QUALIFIER chDigit_3,
-                          XERCES_CPP_NAMESPACE_QUALIFIER chDigit_4, XERCES_CPP_NAMESPACE_QUALIFIER chDigit_5,
-                          XERCES_CPP_NAMESPACE_QUALIFIER chDigit_6, XERCES_CPP_NAMESPACE_QUALIFIER chDigit_7,
-                          XERCES_CPP_NAMESPACE_QUALIFIER chDigit_8, XERCES_CPP_NAMESPACE_QUALIFIER chDigit_9,
-                          XERCES_CPP_NAMESPACE_QUALIFIER chLatin_A, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_B,
-                          XERCES_CPP_NAMESPACE_QUALIFIER chLatin_C, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_D,
-                          XERCES_CPP_NAMESPACE_QUALIFIER chLatin_E, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_F
+                                                                           Base64::Conf_Schema); 
+      XMLBuffer buf(length*2, context->getMemoryManager());
+      XMLCh hexDigits[]={ chDigit_0, chDigit_1,
+                          chDigit_2, chDigit_3,
+                          chDigit_4, chDigit_5,
+                          chDigit_6, chDigit_7,
+                          chDigit_8, chDigit_9,
+                          chLatin_A, chLatin_B,
+                          chLatin_C, chLatin_D,
+                          chLatin_E, chLatin_F
       }                 ;
       for(i=0;i<length;i++)
       {
@@ -115,9 +119,14 @@ const XMLCh* ATBase64BinaryOrDerivedImpl::asString(const DynamicContext* context
 
 bool ATBase64BinaryOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const {
   if(this->getPrimitiveTypeIndex() != target->getPrimitiveTypeIndex()) {
-    XQThrow(IllegalArgumentException,X("ATBase64BinaryOrDerivedImpl::equals"), X("Equality operator for given types not supported [err:XPTY0004]"));
+    XQThrow(::IllegalArgumentException,X("ATBase64BinaryOrDerivedImpl::equals"), X("Equality operator for given types not supported [err:XPTY0004]"));
   }
-  return XPath2Utils::equals(target->asString(context), _base64Data);  
+  return compare((const ATBase64BinaryOrDerived *)target.get(), context) == 0;
+}
+
+int ATBase64BinaryOrDerivedImpl::compare(const ATBase64BinaryOrDerived::Ptr &other, const DynamicContext *context) const
+{
+  return XPath2Utils::compare(_base64Data, ((const ATBase64BinaryOrDerivedImpl *)other.get())->_base64Data);
 }
 
 AnyAtomicType::AtomicObjectType ATBase64BinaryOrDerivedImpl::getPrimitiveTypeIndex() const {
