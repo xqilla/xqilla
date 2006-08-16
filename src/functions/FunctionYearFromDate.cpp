@@ -46,14 +46,12 @@ ASTNode* FunctionYearFromDate::staticResolution(StaticContext *context)
 
 Sequence FunctionYearFromDate::collapseTreeInternal(DynamicContext* context, int flags) const
 {
-	XPath2MemoryManager* memMgr = context->getMemoryManager();
+  XPath2MemoryManager* memMgr = context->getMemoryManager();
 
-  Sequence arg=getParamNumber(1,context)->toSequence(context);
-  if(arg.isEmpty())
-    return Sequence(memMgr);
+  Item::Ptr arg = getParamNumber(1, context)->next(context);
+  if(arg.isNull()) return Sequence(memMgr);
 
-  
-  return Sequence(((const ATDateOrDerived*)(const Item*)arg.first())->getYears(), memMgr);
+  return Sequence(((const ATDateOrDerived*)arg.get())->getYears(context), memMgr);
 }
 
 

@@ -275,7 +275,7 @@ const XMLCh* ATDateTimeOrDerivedImpl::asString(const DynamicContext* context) co
   buffer.append(chColon);
   DateUtils::formatNumber(minute, 2, buffer);
   buffer.append(chColon);
-  if(second < 10)
+  if(second < MM_Ten)
     buffer.append(chDigit_0);
   buffer.append(Numeric::asDecimalString(second, ATDecimalOrDerivedImpl::g_nSignificantDigits, context));
   // Add timezone if exists 
@@ -292,7 +292,6 @@ bool ATDateTimeOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const Dyn
     XQThrow(::IllegalArgumentException,X("ATDateTimeOrDerivedImpl::equals"),
             X("Equality operator for given types not supported [err:XPTY0004]"));
   }
-
   return compare((const ATDateTimeOrDerivedImpl *)target.get(), context) == 0;
 }
 
@@ -389,11 +388,10 @@ ATDateTimeOrDerived::Ptr ATDateTimeOrDerivedImpl::setTimezone(const Timezone::Pt
 /**
  * Returns an ATDateTimeOrDerived with a timezone added to it
  */
-ATDateTimeOrDerived::Ptr ATDateTimeOrDerivedImpl::addTimezone(const ATDurationOrDerived::Ptr &timezone, const DynamicContext* context) const {
-
+ATDateTimeOrDerived::Ptr ATDateTimeOrDerivedImpl::addTimezone(const ATDurationOrDerived::Ptr &timezone,
+	const DynamicContext* context) const
+{
   if(!_hasTimezone) return setTimezone(new Timezone(timezone, context), context);
-  
-  Timezone::Ptr tz = new Timezone(timezone, context);
   return new ATDateTimeOrDerivedImpl(_typeURI, _typeName, seconds_, new Timezone(timezone, context), true);
 }
 
@@ -410,8 +408,14 @@ ATDateTimeOrDerived::Ptr ATDateTimeOrDerivedImpl::addYearMonthDuration(const ATD
  */
 ATDateTimeOrDerived::Ptr ATDateTimeOrDerivedImpl::addYearMonthDuration(const MAPM &monthsToAdd,
                                                                        const DynamicContext* context) const {
+  return new ATDateTimeOrDerivedImpl(_typeURI, _typeName, addYearMonthDuration(seconds_, monthsToAdd),
+                                     timezone_, _hasTimezone);
+}
+
+MAPM ATDateTimeOrDerivedImpl::addYearMonthDuration(const MAPM &seconds, const MAPM &monthsToAdd)
+{
   MAPM year, month, day, hour, minute, second;
-  decomposeSeconds(seconds_, year, month, day, hour, minute, second);
+  decomposeSeconds(seconds, year, month, day, hour, minute, second);
 
   MAPM totalMonths = month + monthsToAdd - MM_One;
   
@@ -436,8 +440,7 @@ ATDateTimeOrDerived::Ptr ATDateTimeOrDerivedImpl::addYearMonthDuration(const MAP
   if(day > maxDay)
       day = maxDay;
 
-  return new ATDateTimeOrDerivedImpl(_typeURI, _typeName, composeSeconds(YY, MM, day, hour, minute, second),
-                                     timezone_, _hasTimezone);
+  return composeSeconds(YY, MM, day, hour, minute, second);
 }
 
 /**

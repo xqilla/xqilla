@@ -73,14 +73,14 @@ LessThan::LessThan(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
       // op:date-less-than(A, B)
       if(atom2->getPrimitiveTypeIndex() != AnyAtomicType::DATE)
         XQThrow(XPath2ErrorException,X("LessThan::less_than"), X("An attempt to compare a date type to a non date type has occurred [err:XPTY0004]"));
-      return ((ATDateOrDerived*)(const AnyAtomicType*)atom1)->lessThan((const ATDateOrDerived::Ptr )atom2, context);
+      return ((ATDateOrDerived*)atom1.get())->compare((const ATDateOrDerived::Ptr )atom2, context) < 0;
     }
     case AnyAtomicType::TIME:
     {
       // op:time-less-than(A, B)
       if(atom2->getPrimitiveTypeIndex() != AnyAtomicType::TIME) 
         XQThrow(XPath2ErrorException,X("LessThan::less_than"), X("An attempt to compare a time type to a non time type has occurred [err:XPTY0004]"));
-      return ((ATTimeOrDerived*)(const AnyAtomicType*)atom1)->lessThan((const ATTimeOrDerived::Ptr )atom2, context);
+      return ((ATTimeOrDerived*)atom1.get())->compare((const ATTimeOrDerived::Ptr )atom2, context) < 0;
     }
     case AnyAtomicType::DATE_TIME:
     {

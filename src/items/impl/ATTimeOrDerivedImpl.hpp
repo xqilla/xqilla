@@ -54,34 +54,24 @@ public:
    * false otherwise */
   virtual bool equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const;
 
-  /**
-   * Returns true if and only if this time is greater than the given time. 
-   * The order relation on time values is the order relation on their 
-   * starting instants.
-   */
-  virtual bool greaterThan(const ATTimeOrDerived::Ptr &time, const DynamicContext* context) const;
-
-  /**
-   * Returns true if and only if this time is less than the given time. 
-   * The order relation on time values is the order relation on their
-   * starting instants.
-   */
-  virtual bool lessThan(const ATTimeOrDerived::Ptr &time, const DynamicContext* context) const;
-
+  /** Returns less than 0 if this is less that other,
+      0 if they are the same, and greater than 0 otherwise */
+  virtual int compare(const ATTimeOrDerived::Ptr &other, const DynamicContext *context) const;
+ 
   /** 
    * Returns an integer representing the hour component of this object
    */
-  virtual const ATDecimalOrDerived::Ptr &getHours() const;
+  virtual ATDecimalOrDerived::Ptr getHours(const DynamicContext *context) const;
 
   /** 
    * Returns an integer representing the minute component of this object
    */
-  virtual const ATDecimalOrDerived::Ptr &getMinutes() const;
+  virtual ATDecimalOrDerived::Ptr getMinutes(const DynamicContext *context) const;
 
   /** 
    * Returns an decimal representing the second component of this object
    */
-  virtual const ATDecimalOrDerived::Ptr &getSeconds() const;
+  virtual ATDecimalOrDerived::Ptr getSeconds(const DynamicContext *context) const;
 
   /**
    * Returns the timezone associated with this object, or
@@ -137,21 +127,17 @@ protected:
 
 private:
   // private constructor for use with clone()
-  ATTimeOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, 
-                      const ATDecimalOrDerived::Ptr &hh, 
-                      const ATDecimalOrDerived::Ptr &mm, const ATDecimalOrDerived::Ptr &ss,
+  ATTimeOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const MAPM &seconds,
                       const Timezone::Ptr &timezone, bool hasTimezone);
 
   void setTime(const XMLCh* const time, const DynamicContext* context);
 
   ATTimeOrDerived::Ptr addDayTimeDuration(const MAPM &seconds, const DynamicContext* context) const;
 
-  ATDateTimeOrDerived::Ptr buildReferenceDateTime(ATTimeOrDerived::Ptr time, const DynamicContext* context) const;
+  MAPM buildReferenceDateTime(const DynamicContext* context) const;
 
-  /*The value of this time*/
-  ATDecimalOrDerived::Ptr _hh;  // hours
-  ATDecimalOrDerived::Ptr _mm;  // minutes
-  ATDecimalOrDerived::Ptr _ss;  // seconds
+  /*The value of this date, in seconds since 00:00:00*/
+  MAPM seconds_;
   
   /* the timezone associated with this ATTimeOrDerived */
   Timezone::Ptr timezone_;

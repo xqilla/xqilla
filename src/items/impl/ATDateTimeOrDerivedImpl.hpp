@@ -153,6 +153,8 @@ public:
   /* Get the primitive index associated with this type */
   virtual AnyAtomicType::AtomicObjectType getPrimitiveTypeIndex() const;
 
+  static MAPM addYearMonthDuration(const MAPM &seconds, const MAPM &monthsToAdd);
+
 protected:
   
   /* If possible, cast this type to the target type */
@@ -169,7 +171,8 @@ private:
 
   ATDateTimeOrDerived::Ptr addYearMonthDuration(const MAPM &months, const DynamicContext* context) const;
 
-  /*The value of this date, in seconds since the EPOC, always normalized*/
+  /*The value of this dateTime, in seconds since 0001-01-01T00:00:00,
+    always normalized if a timezone is present*/
   MAPM seconds_;
   
   /* the timezone associated with this ATDateTimeOrDerived */
