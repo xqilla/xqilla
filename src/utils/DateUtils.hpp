@@ -41,6 +41,12 @@ public:
    * to the buffer (by adding 0s before the number so that it always has minDigits digits)
    */
   static void formatNumber(int value, int minDigits, XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer& buffer);
+
+  /**
+   * Helper function that appends the specified number with the requested precision
+   * to the buffer (by adding 0s before the number so that it always has minDigits digits)
+   */
+  static void formatNumber(const MAPM &value, int minDigits, XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer& buffer);
   
   /** 
    * Helper function for adding durations to dateTimes
@@ -89,16 +95,12 @@ public:
    * month - Value between 1 (January) and 12 (December)
    */
   static int maximumDayInMonthFor(MAPM yearValue, MAPM monthValue);
+  static int maximumDayInMonthFor(int yearValue, int monthValue);
 
   /**
    * Returns whether the yer is a leap year
    */
   static bool isLeapYear(MAPM year);
-
-  /**
-   * Returns the number of days in the given year
-   */
-  static int daysInYear(int yearValue);
 
   /**
    * Convert a MAPM to an int (to be used on small numbers!!!

@@ -179,7 +179,7 @@ bool ATTimeOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const Dynamic
 bool ATTimeOrDerivedImpl::greaterThan(const ATTimeOrDerived::Ptr &other, const DynamicContext* context) const {
   ATDateTimeOrDerived::Ptr thisTime=buildReferenceDateTime(this, context);
   ATDateTimeOrDerived::Ptr otherTime=buildReferenceDateTime(other, context);
-  return thisTime->greaterThan(otherTime, context);
+  return thisTime->compare(otherTime, context) > 0;
 }
 
 /**
@@ -192,7 +192,7 @@ bool ATTimeOrDerivedImpl::greaterThan(const ATTimeOrDerived::Ptr &other, const D
 bool ATTimeOrDerivedImpl::lessThan(const ATTimeOrDerived::Ptr &other,  const DynamicContext* context) const {
   ATDateTimeOrDerived::Ptr thisTime=buildReferenceDateTime(this, context);
   ATDateTimeOrDerived::Ptr otherTime=buildReferenceDateTime(other, context);
-  return thisTime->lessThan(otherTime, context);
+  return thisTime->compare(otherTime, context) < 0;
 }
 
 /** 
@@ -284,21 +284,17 @@ ATTimeOrDerived::Ptr ATTimeOrDerivedImpl::addTimezone(const ATDurationOrDerived:
  * Returns a time with the given dayTimeDuration added to it
  */
 ATTimeOrDerived::Ptr ATTimeOrDerivedImpl::addDayTimeDuration(const ATDurationOrDerived::Ptr &dayTime, const DynamicContext* context) const {
-  return addDayTimeDuration(dayTime->getHours(context)->asMAPM(),
-                            dayTime->getMinutes(context)->asMAPM(),
-                            dayTime->getSeconds(context)->asMAPM(), context);
+  return addDayTimeDuration(dayTime->asSeconds(context)->asMAPM(), context);
 }
   
 /**
  * Returns a time with the given dayTimeDuration subtracted from it
  */
 ATTimeOrDerived::Ptr ATTimeOrDerivedImpl::subtractDayTimeDuration(const ATDurationOrDerived::Ptr &dayTime, const DynamicContext* context) const {
-  return subtractDayTimeDuration(dayTime->getHours(context)->asMAPM(),
-                                 dayTime->getMinutes(context)->asMAPM(),
-                                 dayTime->getSeconds(context)->asMAPM(), context);
+  return addDayTimeDuration(dayTime->asSeconds(context)->asMAPM().neg(), context);
 }
 
-ATTimeOrDerived::Ptr ATTimeOrDerivedImpl::addDayTimeDuration(MAPM hours, MAPM minutes, MAPM seconds, const DynamicContext* context) const {
+ATTimeOrDerived::Ptr ATTimeOrDerivedImpl::addDayTimeDuration(const MAPM &seconds, const DynamicContext* context) const {
   
   // Seconds
   MAPM temp = getSeconds()->asMAPM() + seconds;
@@ -306,12 +302,12 @@ ATTimeOrDerived::Ptr ATTimeOrDerivedImpl::addDayTimeDuration(MAPM hours, MAPM mi
   MAPM carry = (temp/DateUtils::g_secondsPerMinute).floor();
 
   // Minutes
-  temp = getMinutes()->asMAPM() + minutes + carry;
+  temp = getMinutes()->asMAPM() + carry;
   MAPM mm = DateUtils::modulo(temp, DateUtils::g_minutesPerHour);
   carry = (temp/DateUtils::g_minutesPerHour).floor();
 
   // Hours
-  temp = getHours()->asMAPM() + hours + carry;
+  temp = getHours()->asMAPM() + carry;
   MAPM hh = DateUtils::modulo(temp, DateUtils::g_hoursPerDay);
   
   return new
@@ -322,10 +318,6 @@ ATTimeOrDerived::Ptr ATTimeOrDerivedImpl::addDayTimeDuration(MAPM hours, MAPM mi
                         context->getItemFactory()->createDecimal(ss, context),
                         getTimezone(), 
                         hasTimezone());
-}
-
-ATTimeOrDerived::Ptr ATTimeOrDerivedImpl::subtractDayTimeDuration(MAPM hours, MAPM minutes, MAPM seconds, const DynamicContext* context) const {
-  return this->addDayTimeDuration(hours.neg(), minutes.neg(), seconds.neg(), context);
 }
 
 /**

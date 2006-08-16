@@ -233,7 +233,7 @@ bool ATDateOrDerivedImpl::greaterThan(const ATDateOrDerived::Ptr &other, const D
   ATDateTimeOrDerived::Ptr otherDateTime=other->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA, 
                                              XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DATETIME, 
                                              context);
-  return myDateTime->greaterThan(otherDateTime, context);
+  return myDateTime->compare(otherDateTime, context) > 0;
 }
 
 /**
@@ -248,7 +248,7 @@ bool ATDateOrDerivedImpl::lessThan(const ATDateOrDerived::Ptr &other,  const Dyn
   ATDateTimeOrDerived::Ptr otherDateTime=other->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA, 
                                              XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DATETIME, 
                                              context);
-  return myDateTime->lessThan(otherDateTime, context);
+  return myDateTime->compare(otherDateTime, context) < 0;
 }
 
 /** 

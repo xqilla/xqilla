@@ -177,8 +177,7 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	GreaterThanEqual.lo IntegerDivide.lo Intersect.lo LessThan.lo \
 	LessThanEqual.lo Minus.lo Mod.lo Multiply.lo NodeComparison.lo \
 	NotEquals.lo Or.lo OrderComparison.lo Plus.lo Range.lo \
-	TotalOrderComparison.lo UnaryMinus.lo Union.lo \
-	DocumentCacheImpl.lo SequenceType.lo \
+	UnaryMinus.lo Union.lo DocumentCacheImpl.lo SequenceType.lo \
 	AnyAtomicTypeDatatypeValidator.lo EmptyResult.lo \
 	LazySequenceResult.lo ResultBuffer.lo ResultBufferImpl.lo \
 	Result.lo ResultImpl.lo SequenceResult.lo SingleResult.lo \
@@ -712,8 +711,6 @@ src/operators/Or.cpp \
 src/operators/OrderComparison.cpp \
 src/operators/Plus.cpp \
 src/operators/Range.cpp \
-src/operators/TotalOrderComparison.cpp \
-src/operators/TotalOrderComparison.hpp \
 src/operators/UnaryMinus.cpp \
 src/operators/Union.cpp \
 src/schema/DocumentCacheImpl.cpp \
@@ -1158,7 +1155,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TestSuiteResultListener.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TestSuiteRunner.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Timezone.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TotalOrderComparison.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UCANormalizer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UCANormalizer1.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UCANormalizer2.Plo@am__quote@
@@ -3533,13 +3529,6 @@ Range.lo: src/operators/Range.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/operators/Range.cpp' object='Range.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o Range.lo `test -f 'src/operators/Range.cpp' || echo '$(srcdir)/'`src/operators/Range.cpp
-
-TotalOrderComparison.lo: src/operators/TotalOrderComparison.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT TotalOrderComparison.lo -MD -MP -MF "$(DEPDIR)/TotalOrderComparison.Tpo" -c -o TotalOrderComparison.lo `test -f 'src/operators/TotalOrderComparison.cpp' || echo '$(srcdir)/'`src/operators/TotalOrderComparison.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/TotalOrderComparison.Tpo" "$(DEPDIR)/TotalOrderComparison.Plo"; else rm -f "$(DEPDIR)/TotalOrderComparison.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/operators/TotalOrderComparison.cpp' object='TotalOrderComparison.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o TotalOrderComparison.lo `test -f 'src/operators/TotalOrderComparison.cpp' || echo '$(srcdir)/'`src/operators/TotalOrderComparison.cpp
 
 UnaryMinus.lo: src/operators/UnaryMinus.cpp
 @am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT UnaryMinus.lo -MD -MP -MF "$(DEPDIR)/UnaryMinus.Tpo" -c -o UnaryMinus.lo `test -f 'src/operators/UnaryMinus.cpp' || echo '$(srcdir)/'`src/operators/UnaryMinus.cpp; \

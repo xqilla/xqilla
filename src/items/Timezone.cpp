@@ -105,17 +105,10 @@ const int Timezone::getTimezoneAsMinutes() const {
 }
 
 ATDurationOrDerived::Ptr Timezone::asDayTimeDuration(const DynamicContext* context) const {
-  XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buffer(1023, context->getMemoryManager());
-  if(!_positive)
-    buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-  buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_P);
-  buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_T);
-  DateUtils::formatNumber(_hh,2,buffer);
-  buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_H);
-  DateUtils::formatNumber(_mm,2,buffer);
-  buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_M);        
-
-  return context->getItemFactory()->createDayTimeDuration(buffer.getRawBuffer(), context);
+  int secs = _hh * DateUtils::g_secondsPerHour;
+  secs += _mm * DateUtils::g_secondsPerMinute;
+  if(!_positive) secs = -secs;
+  return context->getItemFactory()->createDayTimeDuration(secs, context);
 }
 
 const XMLCh* Timezone::asString(const DynamicContext* context) const {

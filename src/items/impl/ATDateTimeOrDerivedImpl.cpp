@@ -32,6 +32,7 @@
 #include <xqilla/items/ATTimeOrDerived.hpp>
 #include <xqilla/items/AnyAtomicType.hpp>
 #include <xqilla/items/Timezone.hpp>
+#include <xqilla/items/impl/ATDecimalOrDerivedImpl.hpp>
 #include <xqilla/context/ItemFactory.hpp>
 
 #include <limits.h>   // for INT_MIN and INT_MAX
@@ -39,6 +40,10 @@
 #include <assert.h>
 
 #include "../../utils/DateUtils.hpp"
+
+#if defined(XERCES_HAS_CPP_NAMESPACE)
+XERCES_CPP_NAMESPACE_USE
+#endif
 
 ATDateTimeOrDerivedImpl::
 ATDateTimeOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* value, const DynamicContext* context): 
@@ -49,15 +54,14 @@ ATDateTimeOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh
 }
 
 // private constructor for internal use
-ATDateTimeOrDerivedImpl::ATDateTimeOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, 
-    const ATDecimalOrDerived::Ptr &YY, const ATDecimalOrDerived::Ptr &MM, const ATDecimalOrDerived::Ptr &DD, 
-    const ATDecimalOrDerived::Ptr &hh, const ATDecimalOrDerived::Ptr &mm, const ATDecimalOrDerived::Ptr &ss, 
-    const Timezone::Ptr &timezone, bool hasTimezone) : 
-    _YY(YY), _MM(MM), _DD(DD),
-    _hh(hh), _mm(mm), _ss(ss),
-    timezone_(timezone), _hasTimezone(hasTimezone),
+ATDateTimeOrDerivedImpl::ATDateTimeOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const MAPM &seconds,
+                                                 const Timezone::Ptr &timezone, bool hasTimezone)
+  : seconds_(seconds),
+    timezone_(timezone),
+    _hasTimezone(hasTimezone),
     _typeName(typeName),
-    _typeURI(typeURI) {
+    _typeURI(typeURI)
+{
 }
 
 void *ATDateTimeOrDerivedImpl::getInterface(const XMLCh *name) const
@@ -75,7 +79,7 @@ const XMLCh* ATDateTimeOrDerivedImpl::getPrimitiveTypeName() const {
 }
 
 const XMLCh* ATDateTimeOrDerivedImpl::getPrimitiveName()  {
-  return XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DATETIME;
+  return SchemaSymbols::fgDT_DATETIME;
 }
 
 /* Get the name of this type  (ie "integer" for xs:integer) */
@@ -92,21 +96,70 @@ AnyAtomicType::AtomicObjectType ATDateTimeOrDerivedImpl::getTypeIndex() {
   return AnyAtomicType::DATE_TIME;
 } 
 
+static inline MAPM hourFromSeconds(const MAPM &value)
+{
+  return DateUtils::modulo(value, DateUtils::g_secondsPerDay).integer_divide(DateUtils::g_secondsPerHour);
+}
+
+static inline MAPM minuteFromSeconds(const MAPM &value)
+{
+  return DateUtils::modulo(value, DateUtils::g_secondsPerHour).integer_divide(DateUtils::g_secondsPerMinute);
+}
+
+static inline MAPM secondFromSeconds(const MAPM &value)
+{
+  return DateUtils::modulo(value, DateUtils::g_secondsPerMinute);
+}
+
+static inline void dateFromSeconds(const MAPM &value, MAPM &year, MAPM &month, MAPM &day)
+{
+  DateUtils::convertAbsolute2DMY((value/DateUtils::g_secondsPerDay).floor(), day, month, year);
+}
+
+static inline void decomposeSeconds(const MAPM &value, MAPM &year, MAPM &month, MAPM &day,
+                                    MAPM &hour, MAPM &minute, MAPM &second)
+{
+  hour = hourFromSeconds(value);
+  minute = minuteFromSeconds(value);
+  second = secondFromSeconds(value);
+  dateFromSeconds(value, year, month, day);
+}
+
+static inline MAPM composeSeconds(MAPM &YY, MAPM &MM, MAPM &DD,
+                                  MAPM &hh, MAPM &mm, MAPM &ss)
+{
+  return DateUtils::convertDMY2Absolute(DD, MM, YY) * DateUtils::g_secondsPerDay +
+    hh * DateUtils::g_secondsPerHour +
+    mm * DateUtils::g_secondsPerMinute +
+    ss;
+}
+
+static inline MAPM tzLocalize(bool hasTimezone, const MAPM &value, const Timezone::Ptr &timezone)
+{
+  if(!hasTimezone) return value;
+  return value + (timezone->getTimezoneAsMinutes() * DateUtils::g_secondsPerMinute);
+}
+
+static inline MAPM tzNormalize(bool hasTimezone, const MAPM &value, const DynamicContext *context)
+{
+  if(hasTimezone) return value;
+  return value - context->getImplicitTimezone()->asSeconds(context)->asMAPM();
+}
+
 /* If possible, cast this type to the target type */
 AnyAtomicType::Ptr ATDateTimeOrDerivedImpl::castAsInternal(AtomicObjectType targetIndex, const XMLCh* targetURI, const XMLCh* targetType, const DynamicContext* context) const {
-  XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buf(1023, context->getMemoryManager());
+  XMLBuffer buf(1023, context->getMemoryManager());
   
   switch (targetIndex) {
     case DATE: {
-      if(_YY->asMAPM() > 9999) {
-        buf.set(_YY->asString(context));
-      } else {
-        buf.set(_YY->asString(4, context)); //pad to 4 digits
-      }
-      buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-      buf.append(_MM->asString(2, context));
-      buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-      buf.append(_DD->asString(2, context));
+      MAPM year, month, day;
+      dateFromSeconds(tzLocalize(_hasTimezone, seconds_, timezone_), year, month, day);
+
+      DateUtils::formatNumber(year, 4, buf);
+      buf.append(chDash);
+      DateUtils::formatNumber(month, 2, buf);
+      buf.append(chDash);
+      DateUtils::formatNumber(day, 2, buf);
       // Add timezone if exists
       if (_hasTimezone) {
         buf.append(timezone_->asString(context));
@@ -114,68 +167,80 @@ AnyAtomicType::Ptr ATDateTimeOrDerivedImpl::castAsInternal(AtomicObjectType targ
       return context->getItemFactory()->createDateOrDerived(targetURI, targetType, buf.getRawBuffer(), context);
     }
     case G_DAY: {
-      buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-      buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-      buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-      buf.append(_DD->asString(2, context));
+      MAPM year, month, day;
+      dateFromSeconds(tzLocalize(_hasTimezone, seconds_, timezone_), year, month, day);
+
+      buf.append(chDash);
+      buf.append(chDash);
+      buf.append(chDash);
+      DateUtils::formatNumber(day, 2, buf);
       if (_hasTimezone) {
         buf.append(timezone_->asString(context));
       }
       return context->getItemFactory()->createGDayOrDerived(targetURI, targetType, buf.getRawBuffer(), context);
     }
     case G_MONTH_DAY: {
-      buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-      buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-      buf.append(_MM->asString(2, context));
-      buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-      buf.append(_DD->asString(2, context));
+      MAPM year, month, day;
+      dateFromSeconds(tzLocalize(_hasTimezone, seconds_, timezone_), year, month, day);
+
+      buf.append(chDash);
+      buf.append(chDash);
+      DateUtils::formatNumber(month, 2, buf);
+      buf.append(chDash);
+      DateUtils::formatNumber(day, 2, buf);
       if (_hasTimezone) {
         buf.append(timezone_->asString(context));
       }
       return context->getItemFactory()->createGMonthDayOrDerived(targetURI, targetType, buf.getRawBuffer(), context);
     } 
     case G_MONTH: {
-      buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-      buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-      buf.append(_MM->asString(2, context));
+      MAPM year, month, day;
+      dateFromSeconds(tzLocalize(_hasTimezone, seconds_, timezone_), year, month, day);
+
+      buf.append(chDash);
+      buf.append(chDash);
+      DateUtils::formatNumber(month, 2, buf);
       if (_hasTimezone) {
         buf.append(timezone_->asString(context));
       }
       return context->getItemFactory()->createGMonthOrDerived(targetURI, targetType, buf.getRawBuffer(), context);
     } 
     case TIME: {
-      buf.append(_hh->asString(2, context));
-      buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chColon);
-      buf.append(_mm->asString(2, context));
-      buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chColon);
-      if(_ss->lessThan(context->getItemFactory()->createDecimal(10, context), context)) {
-        buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chDigit_0);
-      }
-      buf.append(_ss->asString(context));
+      MAPM value = tzLocalize(_hasTimezone, seconds_, timezone_);
+
+      MAPM hour = hourFromSeconds(value);
+      MAPM minute = minuteFromSeconds(value);
+      MAPM second = secondFromSeconds(value);
+
+      DateUtils::formatNumber(hour, 2, buf);
+      buf.append(chColon);
+      DateUtils::formatNumber(minute, 2, buf);
+      buf.append(chColon);
+      if(second < 10)
+        buf.append(chDigit_0);
+      buf.append(Numeric::asDecimalString(second, ATDecimalOrDerivedImpl::g_nSignificantDigits, context));
       if (_hasTimezone) {
         buf.append(timezone_->asString(context));
       }
       return context->getItemFactory()->createTimeOrDerived(targetURI, targetType, buf.getRawBuffer(), context);
     } 
     case G_YEAR_MONTH: {
-      if(_YY->asMAPM() > 9999) {
-        buf.set(_YY->asString(context));
-      } else {
-        buf.set(_YY->asString(4, context)); //pad to 4 digits
-      }
-      buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-      buf.append(_MM->asString(2, context));
+      MAPM year, month, day;
+      dateFromSeconds(tzLocalize(_hasTimezone, seconds_, timezone_), year, month, day);
+
+      DateUtils::formatNumber(year, 4, buf);
+      buf.append(chDash);
+      DateUtils::formatNumber(month, 2, buf);
       if (_hasTimezone) {
         buf.append(timezone_->asString(context));
       }
       return context->getItemFactory()->createGYearMonthOrDerived(targetURI, targetType, buf.getRawBuffer(), context);
     } 
     case G_YEAR: {
-      if(_YY->asMAPM() > 9999) {
-        buf.set(_YY->asString(context));
-      } else {
-        buf.set(_YY->asString(4, context)); //pad to 4 digits
-      }
+      MAPM year, month, day;
+      dateFromSeconds(tzLocalize(_hasTimezone, seconds_, timezone_), year, month, day);
+
+      DateUtils::formatNumber(year, 4, buf);
       if (_hasTimezone) {
         buf.append(timezone_->asString(context));
       }
@@ -195,32 +260,26 @@ AnyAtomicType::Ptr ATDateTimeOrDerivedImpl::castAsInternal(AtomicObjectType targ
 
 /* returns the XMLCh* (canonical) representation of this type */
 const XMLCh* ATDateTimeOrDerivedImpl::asString(const DynamicContext* context) const {
-  XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buffer(1023, context->getMemoryManager());
-  if(_YY->asMAPM() > 9999 || _YY->asMAPM() < -9999) {
-    buffer.set(_YY->asString(context));
-  } else {
-    buffer.set(_YY->asString(4, context)); //pad to 4 digits
-  }
-  buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-  buffer.append(_MM->asString(2, context));
-  buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-  buffer.append(_DD->asString(2, context));
-  buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_T);
-  buffer.append(_hh->asString(2, context));
-  buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chColon);
-  buffer.append(_mm->asString(2, context));
-  buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chColon);
-  if(_ss->asMAPM() < MM_Ten) { // TODO: deal with precision in a better way!
-    buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chDigit_0);
-  }
-  if (_ss->equals(_ss->floor(context), context)) {
-    const ATDecimalOrDerived::Ptr int_ss = (const ATDecimalOrDerived::Ptr ) _ss->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA, XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_INTEGER, context);
-   buffer.append(int_ss->asString(context));
-  } else {
-    buffer.append(_ss->asString(context));  
-  }
+  XMLBuffer buffer(1023, context->getMemoryManager());
+
+  MAPM year, month, day, hour, minute, second;
+  decomposeSeconds(tzLocalize(_hasTimezone, seconds_, timezone_), year, month, day, hour, minute, second);
+
+  DateUtils::formatNumber(year, 4, buffer);
+  buffer.append(chDash);
+  DateUtils::formatNumber(month, 2, buffer);
+  buffer.append(chDash);
+  DateUtils::formatNumber(day, 2, buffer);
+  buffer.append(chLatin_T);
+  DateUtils::formatNumber(hour, 2, buffer);
+  buffer.append(chColon);
+  DateUtils::formatNumber(minute, 2, buffer);
+  buffer.append(chColon);
+  if(second < 10)
+    buffer.append(chDigit_0);
+  buffer.append(Numeric::asDecimalString(second, ATDecimalOrDerivedImpl::g_nSignificantDigits, context));
   // Add timezone if exists 
-  if (_hasTimezone) {
+  if(_hasTimezone) {
     buffer.append(timezone_->asString(context));
   }
   return context->getMemoryManager()->getPooledString(buffer.getRawBuffer());
@@ -230,149 +289,72 @@ const XMLCh* ATDateTimeOrDerivedImpl::asString(const DynamicContext* context) co
  * false otherwise */
 bool ATDateTimeOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const {
   if(this->getPrimitiveTypeIndex() != target->getPrimitiveTypeIndex()) {
-    XQThrow(IllegalArgumentException,X("ATDateTimeOrDerivedImpl::equals"), X("Equality operator for given types not supported [err:XPTY0004]"));
+    XQThrow(::IllegalArgumentException,X("ATDateTimeOrDerivedImpl::equals"),
+            X("Equality operator for given types not supported [err:XPTY0004]"));
   }
-  ATDateTimeOrDerived::Ptr myDateTimeCopy = this;
-  ATDateTimeOrDerived::Ptr otherDateTimeCopy = (const ATDateTimeOrDerived::Ptr )target;
-  if(myDateTimeCopy->hasTimezone() || otherDateTimeCopy->hasTimezone())
-  {
-    myDateTimeCopy = myDateTimeCopy->normalize(context);
-    otherDateTimeCopy = otherDateTimeCopy->normalize(context);
-  }
-  return (myDateTimeCopy->getYears()->equals(otherDateTimeCopy->getYears(), context) &&
-          myDateTimeCopy->getMonths()->equals(otherDateTimeCopy->getMonths(), context) &&
-          myDateTimeCopy->getDays()->equals(otherDateTimeCopy->getDays(), context) &&
-          myDateTimeCopy->getHours()->equals(otherDateTimeCopy->getHours(), context) &&
-          myDateTimeCopy->getMinutes()->equals(otherDateTimeCopy->getMinutes(), context) &&
-          myDateTimeCopy->getSeconds()->equals(otherDateTimeCopy->getSeconds(), context) );
+
+  return compare((const ATDateTimeOrDerivedImpl *)target.get(), context) == 0;
 }
 
-/**
- * Returns true if and only if this date is greater than the given date. 
- * The order relation on date values is the order relation on their 
- * starting instants.
- */
-bool ATDateTimeOrDerivedImpl::greaterThan(const ATDateTimeOrDerived::Ptr &other, const DynamicContext* context) const {
-  
-  ATDateTimeOrDerived::Ptr myDateTimeCopy = this;
-  ATDateTimeOrDerived::Ptr otherDateTimeCopy = other;
-  if(myDateTimeCopy->hasTimezone() || otherDateTimeCopy->hasTimezone())
-  {
-    myDateTimeCopy = myDateTimeCopy->normalize(context);
-    otherDateTimeCopy = otherDateTimeCopy->normalize(context);
-  }
+int ATDateTimeOrDerivedImpl::compare(const ATDateTimeOrDerived::Ptr &target, const DynamicContext* context) const
+{
+  const ATDateTimeOrDerivedImpl *other = (const ATDateTimeOrDerivedImpl *)target.get();
 
-  if(myDateTimeCopy->getYears()->greaterThan(otherDateTimeCopy->getYears(), context))
-      return true;
-  else if(myDateTimeCopy->getYears()->lessThan(otherDateTimeCopy->getYears(), context))
-      return false;
-    
-  if(myDateTimeCopy->getMonths()->greaterThan(otherDateTimeCopy->getMonths(), context))
-      return true;
-  else if(myDateTimeCopy->getMonths()->lessThan(otherDateTimeCopy->getMonths(), context))
-      return false;
-
-  if(myDateTimeCopy->getDays()->greaterThan(otherDateTimeCopy->getDays(), context))
-      return true;
-  else if(myDateTimeCopy->getDays()->lessThan(otherDateTimeCopy->getDays(), context))
-      return false;
-
-  if(myDateTimeCopy->getHours()->greaterThan(otherDateTimeCopy->getHours(), context))
-      return true;
-  else if(myDateTimeCopy->getHours()->lessThan(otherDateTimeCopy->getHours(), context))
-      return false;
-
-  if(myDateTimeCopy->getMinutes()->greaterThan(otherDateTimeCopy->getMinutes(), context))
-      return true;
-  else if(myDateTimeCopy->getMinutes()->lessThan(otherDateTimeCopy->getMinutes(), context)) 
-      return false;
-
-  return myDateTimeCopy->getSeconds()->greaterThan(otherDateTimeCopy->getSeconds(), context);
-}
-
-/**
- * Returns true if and only if this date is less than the given date. 
- * The order relation on date values is the order relation on their
- * starting instants.
- */
-bool ATDateTimeOrDerivedImpl::lessThan(const ATDateTimeOrDerived::Ptr &other,  const DynamicContext* context) const {
-
-  ATDateTimeOrDerived::Ptr myDateTimeCopy = this;
-  ATDateTimeOrDerived::Ptr otherDateTimeCopy = other;
-  if(myDateTimeCopy->hasTimezone() || otherDateTimeCopy->hasTimezone())
-  {
-    myDateTimeCopy = myDateTimeCopy->normalize(context);
-    otherDateTimeCopy = otherDateTimeCopy->normalize(context);
-  }
-
-  if(myDateTimeCopy->getYears()->greaterThan(otherDateTimeCopy->getYears(), context))
-      return false;
-  else if(myDateTimeCopy->getYears()->lessThan(otherDateTimeCopy->getYears(), context))
-      return true;
-
-  if(myDateTimeCopy->getMonths()->greaterThan(otherDateTimeCopy->getMonths(), context))
-      return false;
-  else if(myDateTimeCopy->getMonths()->lessThan(otherDateTimeCopy->getMonths(), context))
-      return true;
-
-  if(myDateTimeCopy->getDays()->greaterThan(otherDateTimeCopy->getDays(), context))
-      return false;
-  else if(myDateTimeCopy->getDays()->lessThan(otherDateTimeCopy->getDays(), context))
-      return true;
-
-  if(myDateTimeCopy->getHours()->greaterThan(otherDateTimeCopy->getHours(), context))
-      return false;
-  else if(myDateTimeCopy->getHours()->lessThan(otherDateTimeCopy->getHours(), context))
-      return true;
-
-  if(myDateTimeCopy->getMinutes()->greaterThan(otherDateTimeCopy->getMinutes(), context))
-      return false;
-  else if(myDateTimeCopy->getMinutes()->lessThan(otherDateTimeCopy->getMinutes(), context))
-      return true;
-
-  return myDateTimeCopy->getSeconds()->lessThan(otherDateTimeCopy->getSeconds(), context);
+  return tzNormalize(_hasTimezone, seconds_, context).compare(tzNormalize(other->_hasTimezone, other->seconds_, context));
 }
 
 /** 
  * Returns an integer representing the year component of this object
  */
-const ATDecimalOrDerived::Ptr &ATDateTimeOrDerivedImpl::getYears() const {
-  return _YY;
+ATDecimalOrDerived::Ptr ATDateTimeOrDerivedImpl::getYears(const DynamicContext *context) const {
+  MAPM year, month, day;
+  dateFromSeconds(tzLocalize(_hasTimezone, seconds_, timezone_), year, month, day);
+
+  return context->getItemFactory()->createInteger(year, context);
 }
 
 /** 
  * Returns an integer representing the month component of this object
  */
-const ATDecimalOrDerived::Ptr &ATDateTimeOrDerivedImpl::getMonths() const {
- return _MM;
+ATDecimalOrDerived::Ptr ATDateTimeOrDerivedImpl::getMonths(const DynamicContext *context) const {
+  MAPM year, month, day;
+  dateFromSeconds(tzLocalize(_hasTimezone, seconds_, timezone_), year, month, day);
+
+  return context->getItemFactory()->createNonNegativeInteger(month, context);
 }
 
 /** 
  * Returns an integer representing the day component of this object
  */
-const ATDecimalOrDerived::Ptr &ATDateTimeOrDerivedImpl::getDays() const {
-  return _DD;
+ATDecimalOrDerived::Ptr ATDateTimeOrDerivedImpl::getDays(const DynamicContext *context) const {
+  MAPM year, month, day;
+  dateFromSeconds(tzLocalize(_hasTimezone, seconds_, timezone_), year, month, day);
+
+  return context->getItemFactory()->createNonNegativeInteger(day, context);
 }
 
 /** 
  * Returns an integer representing the hour component of this object
  */
-const ATDecimalOrDerived::Ptr &ATDateTimeOrDerivedImpl::getHours() const {
-  return _hh;
+ATDecimalOrDerived::Ptr ATDateTimeOrDerivedImpl::getHours(const DynamicContext *context) const {
+  return context->getItemFactory()->
+    createNonNegativeInteger(hourFromSeconds(tzLocalize(_hasTimezone, seconds_, timezone_)), context);
 }
 
 /** 
  * Returns an integer representing the minute component of this object
  */
-const ATDecimalOrDerived::Ptr &ATDateTimeOrDerivedImpl::getMinutes() const {
- return _mm;
+ATDecimalOrDerived::Ptr ATDateTimeOrDerivedImpl::getMinutes(const DynamicContext *context) const {
+  return context->getItemFactory()->
+    createNonNegativeInteger(minuteFromSeconds(tzLocalize(_hasTimezone, seconds_, timezone_)), context);
 }
 
 /** 
  * Returns an decimal representing the second component of this object
  */
-const ATDecimalOrDerived::Ptr &ATDateTimeOrDerivedImpl::getSeconds() const {
-  return _ss;
+ATDecimalOrDerived::Ptr ATDateTimeOrDerivedImpl::getSeconds(const DynamicContext *context) const {
+  return context->getItemFactory()->
+    createDecimal(secondFromSeconds(tzLocalize(_hasTimezone, seconds_, timezone_)), context);
 }
 
 /**
@@ -394,55 +376,25 @@ bool ATDateTimeOrDerivedImpl::hasTimezone() const {
  * Setter for timezone.  Overrides the current timezone. (Not to be 
  * confused with addTimezone().  If passed null, timezone is removed (unset)
  */
-ATDateTimeOrDerived::Ptr ATDateTimeOrDerivedImpl::setTimezone(const Timezone::Ptr &timezone, const DynamicContext* context) const {
-  bool hasTimezone = timezone == NULLRCP ? false : true;
-  return new
-    ATDateTimeOrDerivedImpl(this->_typeURI, 
-                        this->_typeName, 
-                        this->_YY, this->_MM, this->_DD, 
-                        this->_hh, this->_mm, this->_ss, 
-                        timezone, hasTimezone);
+ATDateTimeOrDerived::Ptr ATDateTimeOrDerivedImpl::setTimezone(const Timezone::Ptr &timezone,
+                                                              const DynamicContext* context) const
+{
+  MAPM result = seconds_;
+  if(_hasTimezone) result += (timezone_->getTimezoneAsMinutes() * DateUtils::g_secondsPerMinute);
+  if(timezone != NULLRCP) result -= (timezone->getTimezoneAsMinutes() * DateUtils::g_secondsPerMinute);
+
+  return new ATDateTimeOrDerivedImpl(_typeURI, _typeName, result, timezone, timezone != NULLRCP);
 }
 
 /**
  * Returns an ATDateTimeOrDerived with a timezone added to it
  */
 ATDateTimeOrDerived::Ptr ATDateTimeOrDerivedImpl::addTimezone(const ATDurationOrDerived::Ptr &timezone, const DynamicContext* context) const {
-  
-  Timezone::Ptr tz = new Timezone(timezone, context);  
 
-  // If this dateTime does not have a timezone, add the given timezone
-  if (!_hasTimezone) {
-    return this->setTimezone(tz, context);
-  } else { //else convert the dateTime into an equivalent one with given timezone
-    // Minutes
-    MAPM offset = tz->getTimezoneAsMinutes()-timezone_->getTimezoneAsMinutes();
-    MAPM temp = ((const ATDecimalOrDerived*)_mm)->asMAPM()+offset;
-    MAPM mm = DateUtils::modulo(temp, DateUtils::g_minutesPerHour);
-    MAPM carry = (temp / DateUtils::g_minutesPerHour).floor();
+  if(!_hasTimezone) return setTimezone(new Timezone(timezone, context), context);
   
-    // Hours
-    temp = ((const ATDecimalOrDerived*)_hh)->asMAPM()+carry;
-    MAPM hh = DateUtils::modulo(temp, DateUtils::g_hoursPerDay);
-    carry = (temp / DateUtils::g_hoursPerDay).floor();
-    
-    MAPM sumDate = DateUtils::convertDMY2Absolute(_DD->asMAPM(),_MM->asMAPM(),_YY->asMAPM())+carry;
-    
-    MAPM day,month,year;
-    DateUtils::convertAbsolute2DMY(sumDate, day,month,year);
-    return new
-      ATDateTimeOrDerivedImpl(this->getTypeURI(), 
-                              this->getTypeName(), 
-                              context->getItemFactory()->createInteger(year, context),
-                              context->getItemFactory()->createNonNegativeInteger(month, context),
-                              context->getItemFactory()->createNonNegativeInteger(day, context),
-                              context->getItemFactory()->createNonNegativeInteger(hh, context),
-                              context->getItemFactory()->createNonNegativeInteger(mm, context),
-                              _ss, 
-                              tz, 
-                              true);
-  }  
-
+  Timezone::Ptr tz = new Timezone(timezone, context);
+  return new ATDateTimeOrDerivedImpl(_typeURI, _typeName, seconds_, new Timezone(timezone, context), true);
 }
 
 /**
@@ -450,100 +402,55 @@ ATDateTimeOrDerived::Ptr ATDateTimeOrDerivedImpl::addTimezone(const ATDurationOr
  */
 ATDateTimeOrDerived::Ptr ATDateTimeOrDerivedImpl::addYearMonthDuration(const ATDurationOrDerived::Ptr &yearMonth,
                                                                        const DynamicContext* context) const {
-  return addYearMonthDuration(yearMonth->getYears(context)->asMAPM(),
-                              yearMonth->getMonths(context)->asMAPM(), context);
+  return addYearMonthDuration(yearMonth->asMonths(context)->asMAPM(), context);
 }
 
 /**
  * Returns a date with the given yearMonthDuration added to it
  */
-ATDateTimeOrDerived::Ptr ATDateTimeOrDerivedImpl::addYearMonthDuration(MAPM years, MAPM months, const DynamicContext* context) const {
-  MAPM totalMonths = getMonths()->asMAPM()+months-MM_One;
+ATDateTimeOrDerived::Ptr ATDateTimeOrDerivedImpl::addYearMonthDuration(const MAPM &monthsToAdd,
+                                                                       const DynamicContext* context) const {
+  MAPM year, month, day, hour, minute, second;
+  decomposeSeconds(seconds_, year, month, day, hour, minute, second);
+
+  MAPM totalMonths = month + monthsToAdd - MM_One;
   
-  MAPM MM = DateUtils::modulo(totalMonths, 12)+MM_One;
+  MAPM MM = DateUtils::modulo(totalMonths, 12) + MM_One;
   MAPM carry = (totalMonths / 12).floor();
-  MAPM finalYears = carry + years + getYears()->asMAPM(); 
+  MAPM finalYears = carry + year;
   
-  assert(!getYears()->isZero());  // We should never have _YY = 0000
+  assert(year.sign() != 0);  // We should never have _YY = 0000
 
   MAPM YY;
   // Fix year 0000 problem
-  if ( finalYears <= MM_Zero && getYears()->isPositive()) {
+  if(finalYears.sign() <= 0 && year.sign() >= 0) {
     YY = finalYears - MM_One;
   }
-  else if (finalYears >= MM_Zero && getYears()->isNegative()) {
-    YY = finalYears+ MM_One;
+  else if(finalYears.sign() >= 0 && year.sign() < 0) {
+    YY = finalYears + MM_One;
   } else {
     YY = finalYears;
   }
 
-  MAPM DD = getDays()->asMAPM();
-  int maxDay=DateUtils::maximumDayInMonthFor(YY, MM);
-  if(DD > maxDay)
-      DD = maxDay;
+  int maxDay = DateUtils::maximumDayInMonthFor(YY, MM);
+  if(day > maxDay)
+      day = maxDay;
 
-  return new
-    ATDateTimeOrDerivedImpl(getTypeURI(), 
-                            getTypeName(), 
-                            context->getItemFactory()->createInteger(YY, context),
-                            context->getItemFactory()->createNonNegativeInteger(MM, context),
-                            context->getItemFactory()->createNonNegativeInteger(DD, context),
-                            getHours(),
-                            getMinutes(),
-                            getSeconds(),
-                            getTimezone(), 
-                            hasTimezone());
+  return new ATDateTimeOrDerivedImpl(_typeURI, _typeName, composeSeconds(YY, MM, day, hour, minute, second),
+                                     timezone_, _hasTimezone);
 }
 
 /**
  * Returns a date with the given dayTimeDuration added to it
  */
 ATDateTimeOrDerived::Ptr ATDateTimeOrDerivedImpl::addDayTimeDuration(const ATDurationOrDerived::Ptr &dayTime, const DynamicContext* context) const {
-  return addDayTimeDuration(dayTime->getDays(context)->asMAPM(),
-                            dayTime->getHours(context)->asMAPM(),
-                            dayTime->getMinutes(context)->asMAPM(),
-                            dayTime->getSeconds(context)->asMAPM(), context);
+  return addDayTimeDuration(dayTime->asSeconds(context)->asMAPM(), context);
 }
   
 ATDateTimeOrDerived::Ptr ATDateTimeOrDerivedImpl::normalize(const DynamicContext* context) const {  
 
-  MAPM tzMinutes;
-  if (!_hasTimezone) {
-    tzMinutes = Timezone(context->getImplicitTimezone(), context).getTimezoneAsMinutes();
-  } else {
-    tzMinutes = timezone_->getTimezoneAsMinutes();
-  }
-
-  // Minutes
-  MAPM temp = ((const ATDecimalOrDerived*)_mm)->asMAPM() - tzMinutes;
-  MAPM mm = DateUtils::modulo(temp, DateUtils::g_minutesPerHour);
-  MAPM carry = (temp / DateUtils::g_minutesPerHour).floor();
-  
-  // Hours
-  temp = ((const ATDecimalOrDerived*)_hh)->asMAPM() + carry;
-  MAPM hh = DateUtils::modulo(temp, DateUtils::g_hoursPerDay);
-  carry = (temp / DateUtils::g_hoursPerDay).floor();
-  
-  MAPM day=_DD->asMAPM();
-  MAPM month=_MM->asMAPM();
-  MAPM year=_YY->asMAPM();
-  if(carry != 0)
-  {
-    MAPM sumDate = DateUtils::convertDMY2Absolute(day,month,year)+carry;
-    DateUtils::convertAbsolute2DMY(sumDate, day,month,year);
-  }
-  
-  return new
-    ATDateTimeOrDerivedImpl(this->getTypeURI(), 
-                        this->getTypeName(), 
-                        context->getItemFactory()->createInteger(year, context),
-                        context->getItemFactory()->createNonNegativeInteger(month, context),
-                        context->getItemFactory()->createNonNegativeInteger(day, context),
-                        context->getItemFactory()->createNonNegativeInteger(hh, context),
-                        context->getItemFactory()->createNonNegativeInteger(mm, context),
-                        _ss,
-                        new Timezone(true, 0, 0), true  // timezone set to UTC 
-                        );
+  return new ATDateTimeOrDerivedImpl(_typeURI, _typeName, tzNormalize(_hasTimezone, seconds_, context),
+                                     new Timezone(true, 0, 0), true);
 }
 
 
@@ -552,8 +459,7 @@ ATDateTimeOrDerived::Ptr ATDateTimeOrDerivedImpl::normalize(const DynamicContext
  */
 ATDateTimeOrDerived::Ptr ATDateTimeOrDerivedImpl::subtractYearMonthDuration(const ATDurationOrDerived::Ptr &yearMonth,
                                                                             const DynamicContext* context) const {
-  return addYearMonthDuration(yearMonth->getYears(context)->asMAPM().neg(),
-                              yearMonth->getMonths(context)->asMAPM().neg(), context);
+  return addYearMonthDuration(yearMonth->asMonths(context)->asMAPM().neg(), context);
 }
 
 /**
@@ -561,157 +467,72 @@ ATDateTimeOrDerived::Ptr ATDateTimeOrDerivedImpl::subtractYearMonthDuration(cons
  */
 ATDateTimeOrDerived::Ptr ATDateTimeOrDerivedImpl::subtractDayTimeDuration(const ATDurationOrDerived::Ptr &dayTime,
                                                                           const DynamicContext* context) const {
-  return addDayTimeDuration(dayTime->getDays(context)->asMAPM().neg(),
-                            dayTime->getHours(context)->asMAPM().neg(),
-                            dayTime->getMinutes(context)->asMAPM().neg(),
-                            dayTime->getSeconds(context)->asMAPM().neg(), context);
+  return addDayTimeDuration(dayTime->asSeconds(context)->asMAPM().neg(), context);
 }
 
-ATDateTimeOrDerived::Ptr ATDateTimeOrDerivedImpl::addDayTimeDuration(MAPM days, MAPM hours, MAPM minutes, MAPM seconds, const DynamicContext* context) const {
-  // This algorithm is according to spec from http://www.w3.org/TR/xmlschema-2/#adding-durations-to-dateTimes
-  // Seconds
-  MAPM temp = getSeconds()->asMAPM() + seconds;
-  MAPM ss = DateUtils::modulo(temp, DateUtils::g_secondsPerMinute);
-  MAPM carry = (temp / DateUtils::g_secondsPerMinute).floor();
+ATDateTimeOrDerived::Ptr ATDateTimeOrDerivedImpl::addDayTimeDuration(const MAPM &secondsToAdd,
+                                                                     const DynamicContext* context) const {
 
-  // Minutes
-  temp = getMinutes()->asMAPM()+minutes+carry;
-  MAPM mm = DateUtils::modulo(temp, DateUtils::g_minutesPerHour);
-  carry = (temp/DateUtils::g_minutesPerHour).floor();
-	
-  // Hours
-  temp = getHours()->asMAPM()+hours+carry;
-  MAPM hh = DateUtils::modulo(temp, DateUtils::g_hoursPerDay);
-  carry = (temp / DateUtils::g_hoursPerDay).floor();
-
-  days += carry;
-
-  MAPM day=_DD->asMAPM();
-  MAPM month=_MM->asMAPM();
-  MAPM year=_YY->asMAPM();
-  if(days != 0)
-  {
-    MAPM sumDate = DateUtils::convertDMY2Absolute(day,month,year)+days;
-    DateUtils::convertAbsolute2DMY(sumDate, day,month,year);
-  }
-  
-  return new
-    ATDateTimeOrDerivedImpl(_typeURI, 
-                            _typeName, 
-                            context->getItemFactory()->createInteger(year, context),
-                            context->getItemFactory()->createNonNegativeInteger(month, context),
-                            context->getItemFactory()->createNonNegativeInteger(day, context),
-                            context->getItemFactory()->createNonNegativeInteger(hh, context),
-                            context->getItemFactory()->createNonNegativeInteger(mm, context),
-                            context->getItemFactory()->createDecimal(ss, context),
-                            getTimezone(), hasTimezone());
+  return new ATDateTimeOrDerivedImpl(_typeURI, _typeName, seconds_ + secondsToAdd,
+                                     timezone_, _hasTimezone);
 }
 
 /**
  * Returns a dayTimeDuration corresponding to the difference between this
  * and the given ATDateTimeOrDerived*
  */
-ATDurationOrDerived::Ptr ATDateTimeOrDerivedImpl::subtractDateTimeAsDayTimeDuration(const ATDateTimeOrDerived::Ptr &date, const DynamicContext* context) const {
-  // normalize both dates first
-  const ATDateTimeOrDerived::Ptr thisDate = this->normalize(context);
-  const ATDateTimeOrDerived::Ptr otherDate = date->normalize(context);
-  
-  // this as number of days
-  MAPM dateThis = DateUtils::convertDMY2Absolute(thisDate->getDays()->asMAPM(),thisDate->getMonths()->asMAPM(),thisDate->getYears()->asMAPM());
-  // other date as number of days
-  MAPM dateOther = DateUtils::convertDMY2Absolute(otherDate->getDays()->asMAPM(),otherDate->getMonths()->asMAPM(),otherDate->getYears()->asMAPM());
-    
-  // difference in days
-  MAPM dateDiff = dateThis - dateOther;
+ATDurationOrDerived::Ptr ATDateTimeOrDerivedImpl::subtractDateTimeAsDayTimeDuration(const ATDateTimeOrDerived::Ptr &date,
+                                                                                    const DynamicContext* context) const {
+  const ATDateTimeOrDerivedImpl *other = (const ATDateTimeOrDerivedImpl *)date.get();
 
-  MAPM dateDiffInSeconds = dateDiff*DateUtils::g_secondsPerDay;
-  
-  // calculate the differences in seconds
-  MAPM thisSeconds = thisDate->getHours()->asMAPM() * DateUtils::g_secondsPerHour +
-                     thisDate->getMinutes()->asMAPM() * DateUtils::g_secondsPerMinute +
-                     thisDate->getSeconds()->asMAPM();
-  MAPM otherSeconds = otherDate->getHours()->asMAPM() * DateUtils::g_secondsPerHour +
-                      otherDate->getMinutes()->asMAPM() * DateUtils::g_secondsPerMinute +
-                      otherDate->getSeconds()->asMAPM();
+  MAPM secDiff = tzNormalize(_hasTimezone, seconds_, context) -
+    tzNormalize(other->_hasTimezone, other->seconds_, context);
 
-  MAPM secDiff = thisSeconds - otherSeconds + dateDiffInSeconds;
-
-  bool isNegative = (secDiff < MM_Zero);
-  MAPM endDiff = secDiff.abs();
-
-  // getDays 
-  const ATDecimalOrDerived::Ptr DD = context->getItemFactory()->createInteger((endDiff / DateUtils::g_secondsPerDay).floor(), context);
-  MAPM carry = DateUtils::modulo(endDiff,DateUtils::g_secondsPerDay);
-
-  // get hour
-  const ATDecimalOrDerived::Ptr hh = context->getItemFactory()->createInteger((carry/DateUtils::g_secondsPerHour).floor(), context);
-
-  // get minute
-  const ATDecimalOrDerived::Ptr mm = context->getItemFactory()->createInteger((DateUtils::modulo(carry,DateUtils::g_secondsPerHour)/DateUtils::g_secondsPerMinute).floor(), context);
-
-  // get seconds
-  const ATDecimalOrDerived::Ptr ss = context->getItemFactory()->createDecimal(DateUtils::modulo( DateUtils::modulo(carry,DateUtils::g_secondsPerHour), DateUtils::g_secondsPerMinute) , context);
-  
-  XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buffer(1023, context->getMemoryManager());
-  if(isNegative) {
-    buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-  }
-  buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_P);
-  buffer.append(DD->asString(context));
-  buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_D);
-  buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_T);
-  buffer.append(hh->asString(context));
-  buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_H);
-  buffer.append(mm->asString(context));
-  buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_M);
-  buffer.append(ss->asString(context));
-  buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_S);
-  return context->getItemFactory()->createDayTimeDuration(buffer.getRawBuffer(), context);
+  return context->getItemFactory()->createDayTimeDuration(secDiff, context);
 }
 
 /**
  * Returns a dayTimeDuration corresponding to the difference between this
  * and the given ATDateTimeOrDerived*
  */
-ATDurationOrDerived::Ptr ATDateTimeOrDerivedImpl::subtractDateTimeAsYearMonthDuration(const ATDateTimeOrDerived::Ptr &date, const DynamicContext* context) const {
+ATDurationOrDerived::Ptr ATDateTimeOrDerivedImpl::subtractDateTimeAsYearMonthDuration(const ATDateTimeOrDerived::Ptr &date,
+                                                                                      const DynamicContext* context) const {
 
-  // normalize both dates first
-  const ATDateTimeOrDerived::Ptr thisDate = this->normalize(context);
-  const ATDateTimeOrDerived::Ptr otherDate = ((const ATDateTimeOrDerived*)date)->normalize(context);
+  const ATDateTimeOrDerivedImpl *other = (const ATDateTimeOrDerivedImpl *)date.get();
 
-  // Call getDayTimeDuration
-  const ATDurationOrDerived::Ptr dayTimeDiff = ((const ATDateTimeOrDerived*)thisDate)->subtractDateTimeAsDayTimeDuration(((const ATDateTimeOrDerived*)otherDate), context);
+  // Call subtractDateTimeAsDayTimeDuration
+  const ATDurationOrDerived::Ptr dayTimeDiff = subtractDateTimeAsDayTimeDuration(date, context);
 
   // put it into yearMonthDuration form
   MAPM days = dayTimeDiff->getDays(context)->asMAPM();
   
   MAPM months = MM_Zero;
   // Get number of months
-  ATDateTimeOrDerived::Ptr cur = (ATDateTimeOrDerivedImpl::Ptr)date;
-  while (true)
-  {
-    int currentDaysInMonth = DateUtils::maximumDayInMonthFor(cur->getYears()->asMAPM(), cur->getMonths()->asMAPM());
-    int daysToNextMonth = currentDaysInMonth-DateUtils::asInt(cur->getDays()->asMAPM())+1;
+  MAPM YY, MM, DD;
+  dateFromSeconds(tzNormalize(other->_hasTimezone, other->seconds_, context), YY, MM, DD);
+
+  int curYear = DateUtils::asInt(YY);
+  int curMonth = DateUtils::asInt(MM);
+  int curDays = DateUtils::asInt(DD) - 1;
+  while (true) {
+    int currentDaysInMonth = DateUtils::maximumDayInMonthFor(curYear, curMonth);
+    int daysToNextMonth = currentDaysInMonth - curDays;
     if (days > daysToNextMonth) {
       days = days - daysToNextMonth;
-      months = months + MM_One;
-      cur = ((const ATDateTimeOrDerivedImpl*)(const ATDateTimeOrDerived*)cur)->addDayTimeDuration(daysToNextMonth, MM_Zero, MM_Zero, MM_Zero, context);
+      ++months;
+
+      ++curMonth;
+      if(curMonth > 12) {
+        ++curYear;
+        curMonth = 1;
+        curDays = 0;
+      }
     }
     else
       break;
-  }//while
-  // Get year and month
-
-  XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buffer(1023, context->getMemoryManager());
-  if(months < MM_Zero) {
-    buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-    months=months.neg();
   }
-  const ATDecimalOrDerived::Ptr MM=context->getItemFactory()->createInteger(months, context);
-  buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_P);
-  buffer.append(MM->asString(context));
-  buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_M);
-  return context->getItemFactory()->createYearMonthDuration(buffer.getRawBuffer(), context);
+
+  return context->getItemFactory()->createYearMonthDuration(months, context);
 }
 
 AnyAtomicType::AtomicObjectType ATDateTimeOrDerivedImpl::getPrimitiveTypeIndex() const {
@@ -719,7 +540,7 @@ AnyAtomicType::AtomicObjectType ATDateTimeOrDerivedImpl::getPrimitiveTypeIndex()
 }
 
 void ATDateTimeOrDerivedImpl::setDateTime(const XMLCh* const dateTime, const DynamicContext* context) {
-  unsigned int length = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(dateTime);
+  unsigned int length = XMLString::stringLen(dateTime);
 
   if(dateTime == 0) {
           XQThrow(XPath2TypeCastException,X("ATDateTimeOrDerivedImpl::setDateTime"), X("Invalid representation of dateTime"));
@@ -920,13 +741,13 @@ void ATDateTimeOrDerivedImpl::setDateTime(const XMLCh* const dateTime, const Dyn
     XQThrow(XPath2TypeCastException,X("XSDateTimeImpl::setDateTime"), X("Invalid representation of dateTime [err:FORG0001]"));
   }
 
-  timezone_ = new Timezone(zonepos, zonehh,zonemm);
-  
-  _YY = context->getItemFactory()->createInteger(YY, context);
-  _MM = context->getItemFactory()->createNonNegativeInteger(MM, context);
-  _DD = context->getItemFactory()->createNonNegativeInteger(DD, context);
-  _hh = context->getItemFactory()->createNonNegativeInteger(hh, context);
-  _mm = context->getItemFactory()->createNonNegativeInteger(mm, context);
-  _ss = context->getItemFactory()->createDecimal(ss, context);
+  timezone_ = new Timezone(zonepos, zonehh, zonemm);
+
+  seconds_ = composeSeconds(YY, MM, DD, hh, mm, ss);
+
+  if(_hasTimezone) {
+    // If we have a timezone, then seconds_ needs to be normalized
+    seconds_ -= (timezone_->getTimezoneAsMinutes() * DateUtils::g_secondsPerMinute);
+  }
 }
 

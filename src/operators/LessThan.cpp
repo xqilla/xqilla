@@ -39,11 +39,8 @@ LessThan::LessThan(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
 {
 }
 
-/*static*/ bool LessThan::less_than(const AnyAtomicType::Ptr &arg1, const AnyAtomicType::Ptr &arg2, Collation* collation, DynamicContext* context)
+/*static*/ bool LessThan::less_than(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::Ptr &atom2, Collation* collation, DynamicContext* context)
 {
-  const AnyAtomicType::Ptr atom1 = (const AnyAtomicType::Ptr )arg1;  
-  const AnyAtomicType::Ptr atom2 = (const AnyAtomicType::Ptr )arg2;  
-
   // take care of Numeric types first
   if(atom1->isNumericValue()) {
     if(atom2->isNumericValue()) {
@@ -69,7 +66,7 @@ LessThan::LessThan(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
          atom2->getPrimitiveTypeIndex() != AnyAtomicType::ANY_URI)
         XQThrow(XPath2ErrorException,X("LessThan::less_than"), X("An attempt to compare a string type to a non string type has occurred [err:XPTY0004]"));
       // if the function returns -1, then atom1 is less
-      return collation->compare(arg1->asString(context),arg2->asString(context))<0;
+      return collation->compare(atom1->asString(context),atom2->asString(context))<0;
     }
     case AnyAtomicType::DATE:
     {
@@ -90,7 +87,7 @@ LessThan::LessThan(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
       // op:datetime-less-than(A, B)
       if(atom2->getPrimitiveTypeIndex() != AnyAtomicType::DATE_TIME)
         XQThrow(XPath2ErrorException,X("LessThan::less_than"), X("An attempt to compare a dateTime type to a non dateTime type has occurred [err:XPTY0004]"));
-      return ((ATDateTimeOrDerived*)(const AnyAtomicType*)atom1)->lessThan((const ATDateTimeOrDerived::Ptr )atom2, context);
+      return ((ATDateTimeOrDerived*)atom1.get())->compare((const ATDateTimeOrDerived::Ptr)atom2, context) < 0;
     }
     case AnyAtomicType::DURATION:
     case AnyAtomicType::DAY_TIME_DURATION:
