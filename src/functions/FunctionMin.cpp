@@ -99,15 +99,15 @@ Sequence FunctionMin::collapseTreeInternal(DynamicContext* context, int flags) c
         try {
           if(LessThan::less_than(atomic, minItem, collation, context))
             minItem = atomic;
-	}
-	catch (IllegalArgumentException &e) {
-                XQThrow(IllegalArgumentException, X("FunctionMin::collapseTreeInternal"),
-			X("Invalid argument to fn:min() function [err:FORG0006]."));
-	}
-	catch (XPath2ErrorException &e) {
-                XQThrow(IllegalArgumentException, X("FunctionMin::collapseTreeInternal"),
-			X("Invalid argument to fn:min() function [err:FORG0006]."));
-	}
+        }
+        catch (IllegalArgumentException &e) {
+            XQThrow(IllegalArgumentException, X("FunctionMin::collapseTreeInternal"),
+                    X("Invalid argument to fn:min() function [err:FORG0006]."));
+        }
+        catch (XPath2ErrorException &e) {
+            XQThrow(IllegalArgumentException, X("FunctionMin::collapseTreeInternal"),
+                    X("Invalid argument to fn:min() function [err:FORG0006]."));
+        }
     }
     return Sequence(minItem, memMgr);
 }
