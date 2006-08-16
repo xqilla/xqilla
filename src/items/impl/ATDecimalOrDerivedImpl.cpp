@@ -108,71 +108,7 @@ AnyAtomicType::AtomicObjectType ATDecimalOrDerivedImpl::getTypeIndex() {
 /* returns the XMLCh* (canonical) representation of this type */
 const XMLCh* ATDecimalOrDerivedImpl::asString(const DynamicContext* context) const
 {
-  return asDecimalString(g_nSignificantDigits, (StaticContext*)context);
-}
-
-const XMLCh* ATDecimalOrDerivedImpl::asString(const StaticContext* context) const
-{
   return asDecimalString(g_nSignificantDigits, context);
-}
-
- /* returns an XMLCh* representation of this Numeric with precision signinficant digits */
-const XMLCh* ATDecimalOrDerivedImpl::asString(int precision, const DynamicContext* context) const {
-  MAPM decimal = _decimal.abs();
-  char obuf[1024];
-  
-  if(decimal.is_integer()) {
-    decimal.toFixPtString(obuf, 0);  // no significant digits
-    int length = strlen(obuf);
-    if(length<precision) {  // pad with 0s
-      XMLBuffer buf(1023, context->getMemoryManager());
-      if(this->isNegative()) {
-        buf.append(chDash);
-      } 
-      for(int i = length; i<precision; i++) 
-        buf.append(chDigit_0);
-      buf.append(context->getMemoryManager()->getPooledString(obuf));
-      return context->getMemoryManager()->getPooledString(buf.getRawBuffer());
-    } else if (length>precision) { // chop off the end
-      char* lastChar=obuf+length-1;
-      for(int i = precision; i<length; i++) {
-        *lastChar--=0;
-      }
-      if(this->isNegative()) {
-        XMLBuffer buf(1023, context->getMemoryManager());
-        buf.append(chDash);
-        buf.append(context->getMemoryManager()->getPooledString(obuf));
-        return context->getMemoryManager()->getPooledString(buf.getRawBuffer());
-      }
-    } else {
-      if(this->isNegative()) {
-        XMLBuffer buf(1023, context->getMemoryManager());
-        buf.append(chDash);
-        buf.append(context->getMemoryManager()->getPooledString(obuf));
-        return context->getMemoryManager()->getPooledString(buf.getRawBuffer());      
-      }
-    }
-  } else {
-    // Don't support this for now, unless we see a need for it
-    return this->asString(context);
-    
-    /*decimal.toFixPtString(obuf, precision);
-    int digitsBeforeDot = 2; //strchr(obuf, '.'); // TODO: FIX THIS!  Find an index of for char*
-    if(digitsBeforeDot > precision) { // chop off the end
-      obuf[precision] = 0;
-    } else if (digitsBeforeDot < precision) {  // then we want precision - digitsBeforeDot significant digits
-      obuf[digitsBeforeDot+1+precision] = 0;  // +1 for the .
-      if(this->isNegative()) {
-        XMLBuffer buf;
-        buf.append(chDash);
-        buf.append(context->getMemoryManager()->getPooledString(obuf));
-        return context->getMemoryManager()->getPooledString(buf.getRawBuffer());
-      }
-    }*/
-  }
-  
-  return context->getMemoryManager()->getPooledString(obuf);
-  
 }
 
 /* Promote this to the given type, if possible */

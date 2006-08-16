@@ -37,10 +37,6 @@ public:
 
   /* returns the XMLCh* (canonical) representation of this type */
   virtual const XMLCh* asString(const DynamicContext* context) const = 0;
-  virtual const XMLCh* asString(const StaticContext* context) const = 0;
-  
-  /* returns an XMLCh* representation of this Numeric with precision signinficant digits */
-  virtual const XMLCh* asString(int precision, const DynamicContext* context) const = 0;
 
   /* Promote this to the given type, if possible */
   virtual Numeric::Ptr promoteTypeIfApplicable(const XMLCh* typeURI, const XMLCh* typeName, const DynamicContext* context) const = 0;

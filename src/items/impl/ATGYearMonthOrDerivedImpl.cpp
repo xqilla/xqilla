@@ -30,6 +30,10 @@
 
 #include <xercesc/util/XMLString.hpp>
 
+#if defined(XERCES_HAS_CPP_NAMESPACE)
+XERCES_CPP_NAMESPACE_USE
+#endif
+
 ATGYearMonthOrDerivedImpl::
 ATGYearMonthOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* value, const DynamicContext* context): 
     ATGYearMonthOrDerived(),
@@ -54,7 +58,7 @@ const XMLCh* ATGYearMonthOrDerivedImpl::getPrimitiveTypeName() const {
 }
 
 const XMLCh* ATGYearMonthOrDerivedImpl::getPrimitiveName()  {
-  return XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_YEARMONTH;
+  return SchemaSymbols::fgDT_YEARMONTH;
 }
 
 /* Get the name of this type  (ie "integer" for xs:integer) */
@@ -73,18 +77,38 @@ AnyAtomicType::AtomicObjectType ATGYearMonthOrDerivedImpl::getTypeIndex() {
 
 /* returns the XMLCh* (canonical) representation of this type */
 const XMLCh* ATGYearMonthOrDerivedImpl::asString(const DynamicContext* context) const {
-    XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buffer(1023, context->getMemoryManager());
-    if(_YY->asMAPM() > 9999 || _YY->asMAPM() < -9999) {
-        buffer.set(_YY->asString(context));
-    } else {
-        buffer.set(_YY->asString(4, context)); //pad to 4 digits
-    }
-    buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-    buffer.append(_MM->asString(2, context));
-    if ( _hasTimezone == true ) {
-        buffer.append(timezone_->asString(context));
-    }
-    return context->getMemoryManager()->getPooledString(buffer.getRawBuffer());
+  XMLBuffer buffer(1023, context->getMemoryManager());
+
+  DateUtils::formatNumber(_YY->asMAPM(), 4, buffer);
+  buffer.append(chDash);
+  DateUtils::formatNumber(_MM->asMAPM(), 2, buffer);
+  if( _hasTimezone) {
+    buffer.append(timezone_->asString(context));
+  }
+  return context->getMemoryManager()->getPooledString(buffer.getRawBuffer());
+}
+
+ATDateTimeOrDerived::Ptr ATGYearMonthOrDerivedImpl::buildDateTime(const DynamicContext *context) const
+{
+  static const XMLCh doubleZero[] = { chDigit_0, chDigit_0, chNull };
+
+  XMLBuffer buffer(1023, context->getMemoryManager());
+
+  DateUtils::formatNumber(_YY->asMAPM(), 4, buffer);
+  buffer.append(chDash);
+  DateUtils::formatNumber(_MM->asMAPM(), 2, buffer);
+  buffer.append(chDash);
+  DateUtils::formatNumber(DateUtils::maximumDayInMonthFor(_YY->asMAPM(), _MM->asMAPM()),2,buffer);
+  buffer.append(chLatin_T);
+  buffer.append(doubleZero);
+  buffer.append(chColon);
+  buffer.append(doubleZero);
+  buffer.append(chColon);
+  buffer.append(doubleZero);
+  if(_hasTimezone) {
+    buffer.append(timezone_->asString(context));
+  }
+  return context->getItemFactory()->createDateTime(buffer.getRawBuffer(), context);
 }
 
 /* Returns true if and only if the xs:dateTimes representing the starting instants of $arg1 and $arg2 compare equal. 
@@ -92,87 +116,17 @@ const XMLCh* ATGYearMonthOrDerivedImpl::asString(const DynamicContext* context) 
  * the xs:dateTime template xxxx-xx-ddT00:00:00 where dd represents the last day of the month component in $arg1 or $arg2. 
  * Returns false otherwise.
  */
-bool ATGYearMonthOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const {
+bool ATGYearMonthOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const
+{
   if(this->getPrimitiveTypeIndex() != target->getPrimitiveTypeIndex()) {
-        XQThrow(IllegalArgumentException,X("ATGYearMonthOrDerivedImpl::equals"), X("Equality operator for given types not supported [err:XPTY0004]"));
+    XQThrow(::IllegalArgumentException,X("ATGYearMonthOrDerivedImpl::equals"), X("Equality operator for given types not supported [err:XPTY0004]"));
   }
-  
-    const XMLCh doubleZero[] = { XERCES_CPP_NAMESPACE_QUALIFIER chDigit_0, XERCES_CPP_NAMESPACE_QUALIFIER chDigit_0, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
-    XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buffer(1023, context->getMemoryManager());
-    if(_YY->asMAPM() > 9999 || _YY->asMAPM() < -9999) {
-        buffer.set(_YY->asString(context));
-    } else {
-        buffer.set(_YY->asString(4, context)); //pad to 4 digits
-    }
-    buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-    buffer.append(_MM->asString(2, context));
-    buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-    DateUtils::formatNumber(DateUtils::maximumDayInMonthFor(_YY->asMAPM(), _MM->asMAPM()),2,buffer);
-    buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_T);
-    buffer.append(doubleZero);
-    buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chColon);
-    buffer.append(doubleZero);
-    buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chColon);
-    buffer.append(doubleZero);
-    if ( _hasTimezone == true ) {
-        buffer.append(timezone_->asString(context));
-    }
-    ATDateTimeOrDerived::Ptr myValue=context->getItemFactory()->createDateTime(buffer.getRawBuffer(), context);
-
-  ATGYearMonthOrDerivedImpl* targetGYearMonth = (ATGYearMonthOrDerivedImpl*)(const AnyAtomicType*)target;
-    if(targetGYearMonth->_YY->asMAPM() > 9999 || targetGYearMonth->_YY->asMAPM() < -9999) {
-        buffer.set(targetGYearMonth->_YY->asString(context));
-    } else {
-        buffer.set(targetGYearMonth->_YY->asString(4, context)); //pad to 4 digits
-  }
-    buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-    buffer.append(targetGYearMonth->_MM->asString(2, context));
-    buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-    DateUtils::formatNumber(DateUtils::maximumDayInMonthFor(targetGYearMonth->_YY->asMAPM(), targetGYearMonth->_MM->asMAPM()),2,buffer);
-    buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_T);
-    buffer.append(doubleZero);
-    buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chColon);
-    buffer.append(doubleZero);
-    buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chColon);
-    buffer.append(doubleZero);
-    if ( targetGYearMonth->_hasTimezone == true ) {
-        buffer.append(targetGYearMonth->timezone_->asString(context));
-  }
-    ATDateTimeOrDerived::Ptr targetValue=context->getItemFactory()->createDateTime(buffer.getRawBuffer(), context);
-
-    return myValue->equals(targetValue, context);
+  return compare((const ATGYearMonthOrDerived *)target.get(), context) == 0;
 }
 
-/** Returns true if this is greater than other.  Ignores timezones.
- * Returns false otherwise. */
-bool ATGYearMonthOrDerivedImpl::greaterThan(const ATGYearMonthOrDerived::Ptr &other, const DynamicContext* context) const {
-  ATGYearMonthOrDerived::Ptr thisNorm = this;
-  ATGYearMonthOrDerived::Ptr otherNorm = other;
-  if (!thisNorm->hasTimezone())
-    thisNorm = thisNorm->setTimezone(new Timezone(context->getImplicitTimezone(), context), context);
-  if (!otherNorm->hasTimezone())
-    otherNorm = otherNorm->setTimezone(new Timezone(context->getImplicitTimezone(), context), context);
-  ATGYearMonthOrDerivedImpl* thisImpl=(ATGYearMonthOrDerivedImpl*)(const ATGYearMonthOrDerived*)thisNorm;
-  ATGYearMonthOrDerivedImpl* otherImpl=(ATGYearMonthOrDerivedImpl*)(const ATGYearMonthOrDerived*)otherNorm;
-  return (thisImpl->_YY->greaterThan(otherImpl->_YY, context) || 
-         (thisImpl->_YY->equals(otherImpl->_YY, context) && thisImpl->_MM->greaterThan(otherImpl->_MM, context)) ||
-         (thisImpl->_YY->equals(otherImpl->_YY, context) && thisImpl->_MM->equals(otherImpl->_MM, context) && thisImpl->timezone_->greaterThan(otherImpl->timezone_)));
-}
-
-/** Returns true if this is less than other.  Ignores timezones.
- * Returns false otherwise. */
-bool ATGYearMonthOrDerivedImpl::lessThan(const ATGYearMonthOrDerived::Ptr &other, const DynamicContext* context) const {
-  ATGYearMonthOrDerived::Ptr thisNorm = this;
-  ATGYearMonthOrDerived::Ptr otherNorm = other;
-  if (!thisNorm->hasTimezone())
-    thisNorm = thisNorm->setTimezone(new Timezone(context->getImplicitTimezone(), context), context);
-  if (!otherNorm->hasTimezone())
-    otherNorm = otherNorm->setTimezone(new Timezone(context->getImplicitTimezone(), context), context);
-  ATGYearMonthOrDerivedImpl* thisImpl=(ATGYearMonthOrDerivedImpl*)(const ATGYearMonthOrDerived*)thisNorm;
-  ATGYearMonthOrDerivedImpl* otherImpl=(ATGYearMonthOrDerivedImpl*)(const ATGYearMonthOrDerived*)otherNorm;
-  return (thisImpl->_YY->lessThan(otherImpl->_YY, context) || 
-         (thisImpl->_YY->equals(otherImpl->_YY, context) && thisImpl->_MM->lessThan(otherImpl->_MM, context)) ||
-         (thisImpl->_YY->equals(otherImpl->_YY, context) && thisImpl->_MM->equals(otherImpl->_MM, context) && thisImpl->timezone_->lessThan(otherImpl->timezone_)));
+int ATGYearMonthOrDerivedImpl::compare(const ATGYearMonthOrDerived::Ptr &other, const DynamicContext *context) const
+{
+  return buildDateTime(context)->compare(((const ATGYearMonthOrDerivedImpl *)other.get())->buildDateTime(context), context);
 }
 
 /** Returns true if a timezone is defined for this.  False otherwise.*/
@@ -181,20 +135,16 @@ bool ATGYearMonthOrDerivedImpl::hasTimezone() const {
 }
 
 /** Sets the timezone to the given timezone.*/
-ATGYearMonthOrDerived::Ptr ATGYearMonthOrDerivedImpl::setTimezone(const Timezone::Ptr &timezone, const DynamicContext* context) const {
-    bool hasTimezone = timezone == NULLRCP ? false : true;
-    XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buffer(1023, context->getMemoryManager());
-    if(_YY->asMAPM() > 9999 || _YY->asMAPM() < -9999) {
-        buffer.set(_YY->asString(context));
-    } else {
-        buffer.set(_YY->asString(4, context)); //pad to 4 digits
-    }
-    buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-    buffer.append(_MM->asString(2, context));
-    if (hasTimezone) 
-        buffer.append(timezone->asString(context));
-    const XMLCh* gYearMonth = context->getMemoryManager()->getPooledString(buffer.getRawBuffer());
-    return context->getItemFactory()->createGYearMonthOrDerived(this->getTypeURI(), this->getTypeName(), gYearMonth, context);        
+ATGYearMonthOrDerived::Ptr ATGYearMonthOrDerivedImpl::setTimezone(const Timezone::Ptr &timezone, const DynamicContext* context) const
+{
+  XMLBuffer buffer(1023, context->getMemoryManager());
+
+  DateUtils::formatNumber(_YY->asMAPM(), 4, buffer);
+  buffer.append(chDash);
+  DateUtils::formatNumber(_MM->asMAPM(), 2, buffer);
+  if(timezone != NULLRCP) 
+    buffer.append(timezone->asString(context));
+  return context->getItemFactory()->createGYearMonthOrDerived(this->getTypeURI(), this->getTypeName(), buffer.getRawBuffer(), context);
 }
 
 
@@ -204,7 +154,7 @@ AnyAtomicType::AtomicObjectType ATGYearMonthOrDerivedImpl::getPrimitiveTypeIndex
 
 /* parse the gYearMonth */
 void ATGYearMonthOrDerivedImpl::setGYearMonth(const XMLCh* const value, const DynamicContext* context) {
- unsigned int length = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(value);
+ unsigned int length = XMLString::stringLen(value);
  
 	if(value == NULL) {
 			XQThrow(XPath2TypeCastException,X("ATGYearMonthOrDerivedImpl::setGYearMonth"), X("Invalid representation of gYearMonth"));

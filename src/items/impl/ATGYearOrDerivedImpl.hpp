@@ -16,6 +16,7 @@
 
 #include <xercesc/util/XercesDefs.hpp>
 #include <xqilla/items/ATGYearOrDerived.hpp>
+#include <xqilla/items/ATDateTimeOrDerived.hpp>
 
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/items/ATDecimalOrDerived.hpp>
@@ -50,14 +51,10 @@ public:
    * false otherwise */
   virtual bool equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const;
   
-  /** Returns true if this is greater than other.  Ignores timezones.
-   * Returns false otherwise. */
-  virtual bool greaterThan(const ATGYearOrDerived::Ptr &other, const DynamicContext* context) const;
-
-  /** Returns true if this is less than other.  Ignores timezones.
-   * Returns false otherwise. */
-  virtual bool lessThan(const ATGYearOrDerived::Ptr &other, const DynamicContext* context) const;
-
+  /** Returns less than 0 if this is less that other,
+      0 if they are the same, and greater than 0 otherwise */
+  virtual int compare(const ATGYearOrDerived::Ptr &other, const DynamicContext *context) const;
+ 
   /** Returns true if a timezone is defined for this.  False otherwise.*/
   virtual bool hasTimezone() const;
 
@@ -77,6 +74,8 @@ private:
 
   /* parse the gDay */
   void setGYear(const XMLCh* const value, const DynamicContext* context);
+
+  ATDateTimeOrDerived::Ptr buildDateTime(const DynamicContext *context) const;
   
   /*The value of this gDay*/
   ATDecimalOrDerived::Ptr _YY;

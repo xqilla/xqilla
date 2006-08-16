@@ -32,27 +32,30 @@
 
 #include <xercesc/util/XMLString.hpp>
 
+#if defined(XERCES_HAS_CPP_NAMESPACE)
+XERCES_CPP_NAMESPACE_USE
+#endif
+
 ATQNameOrDerivedImpl::
-ATQNameOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* value, const StaticContext* context): 
-    ATQNameOrDerived(),
+ATQNameOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* value, const StaticContext* context)
+  : ATQNameOrDerived(),
     _typeName(typeName),
-    _typeURI(typeURI) { 
-  
+    _typeURI(typeURI)
+{
   const XMLCh* prefix = XPath2NSUtils::getPrefix(value, context->getMemoryManager());
   const XMLCh* uri;
-  if(XPath2Utils::equals(prefix, XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString)) {
-  // If $qname has no prefix
+  if(XPath2Utils::equals(prefix, XMLUni::fgZeroLenString)) {
+    // If $qname has no prefix
     uri = context->getDefaultElementAndTypeNS();
   }
   // If $qname has a prefix
   else {
-    try
-    {
+    try {
       uri = context->getUriBoundToPrefix(prefix);
     }
-    catch(NamespaceLookupException&)
-    {
-      XQThrow(StaticErrorException, X("ATQNameOrDerivedImpl::ATQNameOrDerivedImpl"),X("No namespace for prefix [err:FONS0004]"));
+    catch(NamespaceLookupException&) {
+      XQThrow(StaticErrorException, X("ATQNameOrDerivedImpl::ATQNameOrDerivedImpl"),
+              X("No namespace for prefix [err:FONS0004]"));
     }
   }
 
@@ -64,11 +67,12 @@ ATQNameOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* v
 }
 
 ATQNameOrDerivedImpl::
-ATQNameOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* uri, const XMLCh* prefix, const XMLCh* name, const StaticContext* context): 
-    ATQNameOrDerived(),
+ATQNameOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* uri, const XMLCh* prefix,
+                     const XMLCh* name, const StaticContext* context)
+  : ATQNameOrDerived(),
     _typeName(typeName),
-    _typeURI(typeURI) { 
-  
+    _typeURI(typeURI)
+{
   // if uri is NULL, so will _uri
   _uri = context->getMemoryManager()->getPooledString(uri);
   _prefix = context->getMemoryManager()->getPooledString(prefix);
@@ -122,13 +126,16 @@ AnyAtomicType::AtomicObjectType ATQNameOrDerivedImpl::getTypeIndex() {
 } 
 
 /* If possible, cast this type to the target type */
-AnyAtomicType::Ptr ATQNameOrDerivedImpl::castAsInternal(AtomicObjectType targetIndex, const XMLCh* targetURI, const XMLCh* targetType, const DynamicContext* context) const {
+AnyAtomicType::Ptr ATQNameOrDerivedImpl::castAsInternal(AtomicObjectType targetIndex, const XMLCh* targetURI,
+                                                        const XMLCh* targetType, const DynamicContext* context) const
+{
   switch (targetIndex) {
     case ANY_SIMPLE_TYPE:
     case UNTYPED_ATOMIC:
       //anySimpleType and untypedAtomic follow the same casting rules as string.
     case STRING: {
-      return context->getItemFactory()->createDerivedFromAtomicType(targetIndex, targetURI, targetType, this->asLexicalString(context), context);
+      return context->getItemFactory()->createDerivedFromAtomicType(targetIndex, targetURI, targetType,
+                                                                    this->asLexicalString(context), context);
     } 
     case QNAME: {
       return context->getItemFactory()->createQNameOrDerived(targetURI, targetType, _uri, _prefix, _name, context);
@@ -139,10 +146,10 @@ AnyAtomicType::Ptr ATQNameOrDerivedImpl::castAsInternal(AtomicObjectType targetI
 
 /* returns the XMLCh* (canonical) representation of this type */
 const XMLCh* ATQNameOrDerivedImpl::asString(const DynamicContext* context) const {
-  XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buffer(1023, context->getMemoryManager());
+  XMLBuffer buffer(1023, context->getMemoryManager());
   if(_prefix != 0 && *_prefix != 0) {
     buffer.set(_prefix);
-	  buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chColon);
+	  buffer.append(chColon);
   }
   buffer.append(_name);
 
@@ -151,49 +158,61 @@ const XMLCh* ATQNameOrDerivedImpl::asString(const DynamicContext* context) const
 
 /* returns the XMLCh* (lexical => prefix:localname) representation of this type */
 const XMLCh* ATQNameOrDerivedImpl::asLexicalString(const DynamicContext* context) const {
-  XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buffer(1023, context->getMemoryManager());
+  XMLBuffer buffer(1023, context->getMemoryManager());
   const XMLCh* prefix;
-  if(this->_uri == 0 || XPath2Utils::equals(_uri, XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString)) {
+  if(this->_uri == 0 || XPath2Utils::equals(_uri, XMLUni::fgZeroLenString)) {
     if(context->getDefaultElementAndTypeNS() != 0) {
-      XQThrow(NamespaceLookupException,X("ATQNameOrDerivedImpl::asLexicalString"), X("Default namespace is defined: casting a QName that has no namespace is ambiguous"));
+      XQThrow(NamespaceLookupException,X("ATQNameOrDerivedImpl::asLexicalString"),
+              X("Default namespace is defined: casting a QName that has no namespace is ambiguous"));
     }
     buffer.set(_name);
   } 
   else {
-    // if we have a prefix, use it, otherwise try looking at the in-scope namespaces (unless the namespace is the default one)
-    if(XPath2Utils::equals(_prefix,XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString) && 
+    // if we have a prefix, use it, otherwise try looking at the in-scope namespaces
+    // (unless the namespace is the default one)
+    if(XPath2Utils::equals(_prefix,XMLUni::fgZeroLenString) && 
        !XPath2Utils::equals(_uri, context->getDefaultElementAndTypeNS()))
         prefix = context->getPrefixBoundToUri(this->_uri);
     else
         prefix = _prefix;
     if (prefix == 0) {
-      XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer msg(1023, context->getMemoryManager());
+      XMLBuffer msg(1023, context->getMemoryManager());
       msg.set(X("No prefix defined for namespace '"));
       msg.append(_uri);
       msg.append(X("'"));
       XQThrow(NamespaceLookupException,X("ATQNameOrDerivedImpl::asLexicalString"), msg.getRawBuffer());
     }
     buffer.set(prefix);
-    buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chColon);
+    buffer.append(chColon);
     buffer.append(_name);    
   }
   return context->getMemoryManager()->getPooledString(buffer.getRawBuffer());
 }
 
 /* returns true if the two objects' URI are equal (string comparison)
-   * false otherwise */
-bool ATQNameOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const {
+ * false otherwise */
+bool ATQNameOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const
+{
   if(this->getPrimitiveTypeIndex() != target->getPrimitiveTypeIndex()) {
-    XQThrow(IllegalArgumentException,X("ATQNameOrDerivedImpl::equals"), X("Equality operator for given types not supported [err:XPTY0004]"));
+    XQThrow(::IllegalArgumentException,X("ATQNameOrDerivedImpl::equals"),
+            X("Equality operator for given types not supported [err:XPTY0004]"));
   }
 
-  return XPath2Utils::equals(((ATQNameOrDerivedImpl*)(const AnyAtomicType*)target)->_name, _name) &&
-         XPath2Utils::equals(((ATQNameOrDerivedImpl*)(const AnyAtomicType*)target)->_uri, _uri) ;  
-  
+  return compare((const ATQNameOrDerived *)target.get(), context) == 0;
+}
+
+int ATQNameOrDerivedImpl::compare(const ATQNameOrDerived::Ptr &other, const DynamicContext *context) const
+{
+  const ATQNameOrDerivedImpl *otherImpl = (const ATQNameOrDerivedImpl *)other.get();
+
+  int cmp = XPath2Utils::compare(_name, otherImpl->_name);
+  if(cmp != 0) return cmp;
+
+  return XPath2Utils::compare(_uri, otherImpl->_uri);
 }
 
 const XMLCh* ATQNameOrDerivedImpl::getPrimitiveName()  {
-  return XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_QNAME;
+  return SchemaSymbols::fgDT_QNAME;
 }
 
 AnyAtomicType::AtomicObjectType ATQNameOrDerivedImpl::getPrimitiveTypeIndex() const {
