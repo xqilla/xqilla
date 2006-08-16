@@ -569,39 +569,28 @@ ASTNode* XQDOMConstructor::staticResolution(StaticContext *context)
 
     // verify namespace prefixes for embedded node constructors
     if(m_name && m_name->getType() == ASTNode::LITERAL) {
-      AutoDelete<DynamicContext> dContext(context->createDynamicContext());
-      dContext->setMemoryManager(context->getMemoryManager());
-
-      Item::Ptr item = ((XQLiteral*)m_name)->getItemConstructor()->createItem(dContext);
-      if(item != NULLRCP && item->isAtomicValue()) {
-        AnyAtomicType::Ptr atomName=item;
-        const XMLCh* strName=NULL;
-        if(atomName->getPrimitiveTypeIndex()==AnyAtomicType::QNAME)
+      const ItemConstructor* itemConstr=((XQLiteral*)m_name)->getItemConstructor();
+      // if the type is xs:QName, it was a named constructor, and it must be checked
+      if(XPath2Utils::equals(itemConstr->getTypeURI(),XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA) &&
+         XPath2Utils::equals(itemConstr->getTypeName(),XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_QNAME)) 
+      {
+        // createItem will throw an exception if the prefix is undefined
+        try 
         {
-          const ATQNameOrDerived* pQName=(const ATQNameOrDerived*)(const AnyAtomicType*)atomName;
-          strName=pQName->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                                 XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING, dContext)->asString(dContext);
+          AutoDelete<DynamicContext> dContext(context->createDynamicContext());
+          dContext->setMemoryManager(context->getMemoryManager());
+          AnyAtomicType::Ptr atomName = itemConstr->createItem(dContext);
         }
-        else if(atomName->getPrimitiveTypeIndex()==AnyAtomicType::STRING)
-          strName = atomName->asString(dContext);
-        if(strName)
-        {
-          QualifiedName name(strName);
-          if(name.getPrefix()!=0 && *name.getPrefix()!=0)
-          {
-            try 
+        catch(XQException& e)
             {
-              dContext->getUriBoundToPrefix(name.getPrefix());
-            }
-            catch(NamespaceLookupException&) 
-            {
-              XMLBuffer buff(200, dContext->getMemoryManager());
-              buff.set(X("Undefined namespace prefix '"));
-              buff.append(name.getPrefix());
-              buff.append(X("' [err:XPST0081]"));
-              XQThrow(StaticErrorException,X("DOM Constructor"),buff.getRawBuffer());
-            }
-          }
+          XMLBuffer buff(1023, context->getMemoryManager());
+          buff.set(e.getError());
+          int index=XMLString::indexOf(buff.getRawBuffer(),chOpenSquare);
+          if(index!=-1)
+            XMLString::copyString(buff.getRawBuffer()+index, X("[err:XPST0081]"));
+          else
+            buff.append(X("[err:XPST0081]"));
+          XQThrow(StaticErrorException, X("XQDOMConstructor::staticResolution"), buff.getRawBuffer());
         }
       }
     }

@@ -31,6 +31,9 @@ public:
   virtual Item::Ptr createItem(const DynamicContext* context) const;
   virtual std::string asString(const DynamicContext* context) const;
 
+  virtual const XMLCh* getTypeURI() const { return _typeURI; }
+  virtual const XMLCh* getTypeName() const { return _typeName; }
+
 private:
   const XMLCh *_typeURI;
   const XMLCh *_typeName;
