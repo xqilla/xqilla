@@ -15,7 +15,7 @@
 #include "UCANormalizer.hpp"
 
 static const unsigned int diacriticDirectTableSize = 64;
-static const u_int32_t diacriticDirectTable[64] = {
+static const unsigned long diacriticDirectTable[64] = {
   0x00000000, 0x00000000, 0x40000000, 0x00000001, 0x00000000, 0x01908100, 0x00000000, 0x00000000,
   0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
   0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0xFFFF0000, 0xFFFFFFFF, 0xFFFFFFFF,
