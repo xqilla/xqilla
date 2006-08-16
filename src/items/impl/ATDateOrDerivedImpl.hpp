@@ -54,34 +54,24 @@ public:
    * false otherwise */
   virtual bool equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const;
 
-  /**
-   * Returns true if and only if this date is greater than the given date. 
-   * The order relation on date values is the order relation on their 
-   * starting instants.
-   */
-  virtual bool greaterThan(const ATDateOrDerived::Ptr &date, const DynamicContext* context) const;
-
-  /**
-   * Returns true if and only if this date is less than the given date. 
-   * The order relation on date values is the order relation on their
-   * starting instants.
-   */
-  virtual bool lessThan(const ATDateOrDerived::Ptr &date, const DynamicContext* context) const;
+  /** Returns less than 0 if this is less that other,
+      0 if they are the same, and greater than 0 otherwise */
+  virtual int compare(const ATDateOrDerived::Ptr &other, const DynamicContext *context) const;
 
   /** 
    * Returns an integer representing the year component  of this object
    */
-  virtual const ATDecimalOrDerived::Ptr &getYears() const;
+  virtual ATDecimalOrDerived::Ptr getYears(const DynamicContext *context) const;
 
   /** 
    * Returns an integer representing the month component  of this object
    */
-  virtual const ATDecimalOrDerived::Ptr &getMonths() const;
+  virtual ATDecimalOrDerived::Ptr getMonths(const DynamicContext *context) const;
 
   /** 
    * Returns an integer representing the day component  of this object
    */
-  virtual const ATDecimalOrDerived::Ptr &getDays() const;
+  virtual ATDecimalOrDerived::Ptr getDays(const DynamicContext *context) const;
   
   /**
    * Returns the timezone associated with this object, or
@@ -108,22 +98,26 @@ public:
   /**
    * Returns a date with the given yearMonthDuration added to it
    */
-  virtual ATDateOrDerived::Ptr addYearMonthDuration(const ATDurationOrDerived::Ptr &yearMonth,  const DynamicContext* context) const;
+  virtual ATDateOrDerived::Ptr addYearMonthDuration(const ATDurationOrDerived::Ptr &yearMonth,
+                                                    const DynamicContext* context) const;
 
   /**
    * Returns a date with the given dayTimeDuration added to it
    */
-  virtual ATDateOrDerived::Ptr addDayTimeDuration(const ATDurationOrDerived::Ptr &dayTime, const DynamicContext* context) const;
+  virtual ATDateOrDerived::Ptr addDayTimeDuration(const ATDurationOrDerived::Ptr &dayTime,
+                                                  const DynamicContext* context) const;
   
   /**
    * Returns a date with the given yearMonthDuration subtracted from it
    */
-  virtual ATDateOrDerived::Ptr subtractYearMonthDuration(const ATDurationOrDerived::Ptr &yearMonth, const DynamicContext* context) const;
+  virtual ATDateOrDerived::Ptr subtractYearMonthDuration(const ATDurationOrDerived::Ptr &yearMonth,
+                                                         const DynamicContext* context) const;
 
   /**
    * Returns a date with the given dayTimeDuration subtracted from it
    */
-  virtual ATDateOrDerived::Ptr subtractDayTimeDuration(const ATDurationOrDerived::Ptr &dayTime, const DynamicContext* context) const;
+  virtual ATDateOrDerived::Ptr subtractDayTimeDuration(const ATDurationOrDerived::Ptr &dayTime,
+                                                       const DynamicContext* context) const;
 
   /**
    * Returns a dayTimeDuration corresponding to the difference between this
@@ -147,16 +141,14 @@ protected:
 
 private:
   // private constructor for use with clone()
-  ATDateOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const ATDecimalOrDerived::Ptr &YY, 
-                      const ATDecimalOrDerived::Ptr &MM, const ATDecimalOrDerived::Ptr &DD, 
+  ATDateOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const MAPM &seconds, 
                       const Timezone::Ptr &timezone, bool hasTimezone);
 
   void setDate(const XMLCh* const date, const DynamicContext* context);
 
-  /*The value of this date*/
-  ATDecimalOrDerived::Ptr _YY;  // year
-  ATDecimalOrDerived::Ptr _MM;  // month
-  ATDecimalOrDerived::Ptr _DD;  // day
+  /*The value of this date, in seconds since 0001-01-01T00:00:00,
+    always normalized if a timezone is present*/
+  MAPM seconds_;
   
   /* the timezone associated with this ATDateOrDerived */
   Timezone::Ptr timezone_;

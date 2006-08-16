@@ -44,35 +44,24 @@ public:
    * false otherwise */
   virtual bool equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const = 0;
 
-
-  /**
-   * Returns true if and only if this date is greater than the given date. 
-   * The order relation on date values is the order relation on their 
-   * starting instants.
-   */
-  virtual bool greaterThan(const ATDateOrDerived::Ptr &date, const DynamicContext* context) const = 0;
-
-  /**
-   * Returns true if and only if this date is less than the given date. 
-   * The order relation on date values is the order relation on their
-   * starting instants.
-   */
-  virtual bool lessThan(const ATDateOrDerived::Ptr &date, const DynamicContext* context) const = 0;
+  /** Returns less than 0 if this is less that other,
+      0 if they are the same, and greater than 0 otherwise */
+  virtual int compare(const ATDateOrDerived::Ptr &other, const DynamicContext *context) const = 0;
  
   /** 
    * Returns an integer representing the year component  of this object
    */
-  virtual const ATDecimalOrDerived::Ptr &getYears() const = 0;
+  virtual ATDecimalOrDerived::Ptr getYears(const DynamicContext *context) const = 0;
 
   /** 
    * Returns an integer representing the month component  of this object
    */
-  virtual const ATDecimalOrDerived::Ptr &getMonths() const = 0;
+  virtual ATDecimalOrDerived::Ptr getMonths(const DynamicContext *context) const = 0;
 
   /** 
    * Returns an integer representing the day component  of this object
    */
-  virtual const ATDecimalOrDerived::Ptr &getDays() const = 0;
+  virtual ATDecimalOrDerived::Ptr getDays(const DynamicContext *context) const = 0;
 
   /** 
    * Returns a timezone object representing the timezone component of this object
@@ -93,12 +82,14 @@ public:
   /**
    * Returns an ATDateOrDerived with a timezone added to it
    */
-  virtual ATDateOrDerived::Ptr addTimezone(const ATDurationOrDerived::Ptr &timezone, const DynamicContext* context) const = 0;
+  virtual ATDateOrDerived::Ptr addTimezone(const ATDurationOrDerived::Ptr &timezone,
+                                           const DynamicContext* context) const = 0;
 
   /**
    * Returns a date with the given yearMonthDuration added to it
    */
-  virtual ATDateOrDerived::Ptr addYearMonthDuration(const ATDurationOrDerived::Ptr &yearMonth,  const DynamicContext* context) const = 0;
+  virtual ATDateOrDerived::Ptr addYearMonthDuration(const ATDurationOrDerived::Ptr &yearMonth,
+                                                    const DynamicContext* context) const = 0;
 
   /**
    * Returns a date with the given dayTimeDuration added to it
@@ -108,13 +99,14 @@ public:
   /**
    * Returns a date with the given yearMonthDuration subtracted from it
    */
-  virtual ATDateOrDerived::Ptr subtractYearMonthDuration(const ATDurationOrDerived::Ptr &yearMonth,  const DynamicContext* context) const = 0;
+  virtual ATDateOrDerived::Ptr subtractYearMonthDuration(const ATDurationOrDerived::Ptr &yearMonth,
+                                                         const DynamicContext* context) const = 0;
 
   /**
    * Returns a date with the given dayTimeDuration subtracted from it
    */
-  virtual ATDateOrDerived::Ptr subtractDayTimeDuration(const ATDurationOrDerived::Ptr &dayTime,  const DynamicContext* context) const = 0;
-
+  virtual ATDateOrDerived::Ptr subtractDayTimeDuration(const ATDurationOrDerived::Ptr &dayTime,
+                                                       const DynamicContext* context) const = 0;
   /**
    * Returns a dayTimeDuration corresponding to the difference between this
    * and the given ATDateOrDerived*

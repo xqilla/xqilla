@@ -21,7 +21,7 @@
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/exceptions/IllegalArgumentException.hpp>
 #include <xqilla/exceptions/XPath2TypeCastException.hpp>
-#include <xqilla/items/ATDateTimeOrDerived.hpp>
+#include "ATDateTimeOrDerivedImpl.hpp"
 #include <xqilla/items/ATDecimalOrDerived.hpp>
 #include <xqilla/items/ATDurationOrDerived.hpp>
 #include <xqilla/items/ATGDayOrDerived.hpp>
@@ -38,21 +38,27 @@
 
 #include "../../utils/DateUtils.hpp"
 
+#if defined(XERCES_HAS_CPP_NAMESPACE)
+XERCES_CPP_NAMESPACE_USE
+#endif
 
 ATDateOrDerivedImpl::
-ATDateOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* value, const DynamicContext* context): 
-    _typeName(typeName),
-    _typeURI(typeURI) { 
-    
+ATDateOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* value, const DynamicContext* context)
+  : _typeName(typeName),
+    _typeURI(typeURI)
+{    
   setDate(value, context);    
 }
 
 // private constructor for internal use()
-ATDateOrDerivedImpl::ATDateOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const ATDecimalOrDerived::Ptr &YY, const ATDecimalOrDerived::Ptr &MM, const ATDecimalOrDerived::Ptr &DD, const Timezone::Ptr &timezone, bool hasTimezone) : 
-    _YY(YY), _MM(MM), _DD(DD),
-    timezone_(timezone), _hasTimezone(hasTimezone),
+ATDateOrDerivedImpl::ATDateOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const MAPM &seconds,
+                                         const Timezone::Ptr &timezone, bool hasTimezone)
+  : seconds_(seconds),
+    timezone_(timezone),
+    _hasTimezone(hasTimezone),
     _typeName(typeName),
-    _typeURI(typeURI) {
+    _typeURI(typeURI)
+{
 }
 
 void *ATDateOrDerivedImpl::getInterface(const XMLCh *name) const
@@ -70,7 +76,7 @@ const XMLCh* ATDateOrDerivedImpl::getPrimitiveTypeName() const {
 }
 
 const XMLCh* ATDateOrDerivedImpl::getPrimitiveName()  {
-  return XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DATE;
+  return SchemaSymbols::fgDT_DATE;
 }
 
 /* Get the name of this type  (ie "integer" for xs:integer) */
@@ -87,28 +93,51 @@ AnyAtomicType::AtomicObjectType ATDateOrDerivedImpl::getTypeIndex() {
   return AnyAtomicType::DATE;
 } 
 
+static inline void decomposeSeconds(const MAPM &value, MAPM &year, MAPM &month, MAPM &day)
+{
+  DateUtils::convertAbsolute2DMY((value/DateUtils::g_secondsPerDay).floor(), day, month, year);
+}
+
+static inline MAPM composeSeconds(MAPM &YY, MAPM &MM, MAPM &DD)
+{
+  return DateUtils::convertDMY2Absolute(DD, MM, YY) * DateUtils::g_secondsPerDay;
+}
+
+static inline MAPM tzLocalize(bool hasTimezone, const MAPM &value, const Timezone::Ptr &timezone)
+{
+  if(!hasTimezone) return value;
+  return value + (timezone->getTimezoneAsMinutes() * DateUtils::g_secondsPerMinute);
+}
+
+static inline MAPM tzNormalize(bool hasTimezone, const MAPM &value, const DynamicContext *context)
+{
+  if(hasTimezone) return value;
+  return value - context->getImplicitTimezone()->asSeconds(context)->asMAPM();
+}
+
 /* If possible, cast this type to the target type */
-AnyAtomicType::Ptr ATDateOrDerivedImpl::castAsInternal(AtomicObjectType targetIndex, const XMLCh* targetURI, const XMLCh* targetType, const DynamicContext* context) const {
-  XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buf(1023, context->getMemoryManager());
+AnyAtomicType::Ptr ATDateOrDerivedImpl::castAsInternal(AtomicObjectType targetIndex, const XMLCh* targetURI,
+                                                       const XMLCh* targetType, const DynamicContext* context) const
+{
+  XMLBuffer buf(1023, context->getMemoryManager());
   
-  const XMLCh doubleZero[] = { XERCES_CPP_NAMESPACE_QUALIFIER chDigit_0, XERCES_CPP_NAMESPACE_QUALIFIER chDigit_0, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
+  const XMLCh doubleZero[] = { chDigit_0, chDigit_0, chNull };
 
   switch (targetIndex) {
     case DATE_TIME: {
-      if(_YY->asMAPM() > 9999) {
-        buf.set(_YY->asString(context));
-      } else {
-        buf.set(_YY->asString(4, context)); //pad to 4 digits
-      }
-      buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-      buf.append(_MM->asString(2, context));
-      buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-      buf.append(_DD->asString(2, context));
-      buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_T);
+      MAPM year, month, day;
+      decomposeSeconds(tzLocalize(_hasTimezone, seconds_, timezone_), year, month, day);
+
+      DateUtils::formatNumber(year, 4, buf);
+      buf.append(chDash);
+      DateUtils::formatNumber(month, 2, buf);
+      buf.append(chDash);
+      DateUtils::formatNumber(day, 2, buf);
+      buf.append(chLatin_T);
       buf.append(doubleZero);
-      buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chColon);
+      buf.append(chColon);
       buf.append(doubleZero);
-      buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chColon);
+      buf.append(chColon);
       buf.append(doubleZero);
       
       // Add timezone if exists
@@ -118,54 +147,61 @@ AnyAtomicType::Ptr ATDateOrDerivedImpl::castAsInternal(AtomicObjectType targetIn
       return context->getItemFactory()->createDateTimeOrDerived(targetURI, targetType, buf.getRawBuffer(), context);
     }
     case G_DAY: {
-      buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-      buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-      buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-      buf.append(_DD->asString(2, context));
+      MAPM year, month, day;
+      decomposeSeconds(tzLocalize(_hasTimezone, seconds_, timezone_), year, month, day);
+
+      buf.append(chDash);
+      buf.append(chDash);
+      buf.append(chDash);
+      DateUtils::formatNumber(day, 2, buf);
       if (_hasTimezone) {
         buf.append(timezone_->asString(context));
       }
       return context->getItemFactory()->createGDayOrDerived(targetURI, targetType, buf.getRawBuffer(), context);
     }
     case G_MONTH_DAY: {
-      buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-      buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-      buf.append(_MM->asString(2, context));
-      buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-      buf.append(_DD->asString(2, context));
+      MAPM year, month, day;
+      decomposeSeconds(tzLocalize(_hasTimezone, seconds_, timezone_), year, month, day);
+
+      buf.append(chDash);
+      buf.append(chDash);
+      DateUtils::formatNumber(month, 2, buf);
+      buf.append(chDash);
+      DateUtils::formatNumber(day, 2, buf);
       if (_hasTimezone) {
         buf.append(timezone_->asString(context));
       }
       return context->getItemFactory()->createGMonthDayOrDerived(targetURI, targetType, buf.getRawBuffer(), context);
     } 
     case G_MONTH: {
-      buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-      buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-      buf.append(_MM->asString(2, context));
+      MAPM year, month, day;
+      decomposeSeconds(tzLocalize(_hasTimezone, seconds_, timezone_), year, month, day);
+
+      buf.append(chDash);
+      buf.append(chDash);
+      DateUtils::formatNumber(month, 2, buf);
       if (_hasTimezone) {
         buf.append(timezone_->asString(context));
       }
       return context->getItemFactory()->createGMonthOrDerived(targetURI, targetType, buf.getRawBuffer(), context);
     } 
     case G_YEAR_MONTH: {
-      if(_YY->asMAPM() > 9999) {
-        buf.set(_YY->asString(context));
-      } else {
-        buf.set(_YY->asString(4, context)); //pad to 4 digits
-      }
-      buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-      buf.append(_MM->asString(2, context));
+      MAPM year, month, day;
+      decomposeSeconds(tzLocalize(_hasTimezone, seconds_, timezone_), year, month, day);
+
+      DateUtils::formatNumber(year, 4, buf);
+      buf.append(chDash);
+      DateUtils::formatNumber(month, 2, buf);
       if (_hasTimezone) {
         buf.append(timezone_->asString(context));
       }
       return context->getItemFactory()->createGYearMonthOrDerived(targetURI, targetType, buf.getRawBuffer(), context);
     } 
     case G_YEAR: {
-      if(_YY->asMAPM() > 9999) {
-        buf.set(_YY->asString(context));
-      } else {
-        buf.set(_YY->asString(4, context)); //pad to 4 digits
-      }
+      MAPM year, month, day;
+      decomposeSeconds(tzLocalize(_hasTimezone, seconds_, timezone_), year, month, day);
+
+      DateUtils::formatNumber(year, 4, buf);
       if (_hasTimezone) {
         buf.append(timezone_->asString(context));
       }
@@ -184,92 +220,70 @@ AnyAtomicType::Ptr ATDateOrDerivedImpl::castAsInternal(AtomicObjectType targetIn
 }
 
 /* returns the XMLCh* (canonical) representation of this type */
-const XMLCh* ATDateOrDerivedImpl::asString(const DynamicContext* context) const {
-    XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buffer(1023, context->getMemoryManager());
-    if(_YY->asMAPM() > 9999 || _YY->asMAPM() < -9999) {
-      buffer.set(_YY->asString(context));
-    } else {
-      buffer.set(_YY->asString(4, context)); //pad to 4 digits
-    }
-    buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-    buffer.append(_MM->asString(2, context));
-    buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-    buffer.append(_DD->asString(2, context));
+const XMLCh* ATDateOrDerivedImpl::asString(const DynamicContext* context) const
+{
+  XMLBuffer buffer(1023, context->getMemoryManager());
 
-    // Add timezone if exists
-    if (_hasTimezone) {
-      buffer.append(timezone_->asString(context));
-    }
-    return context->getMemoryManager()->getPooledString(buffer.getRawBuffer());
+  MAPM year, month, day;
+  decomposeSeconds(tzLocalize(_hasTimezone, seconds_, timezone_), year, month, day);
+
+  DateUtils::formatNumber(year, 4, buffer);
+  buffer.append(chDash);
+  DateUtils::formatNumber(month, 2, buffer);
+  buffer.append(chDash);
+  DateUtils::formatNumber(day, 2, buffer);
+  // Add timezone if exists
+  if (_hasTimezone) {
+    buffer.append(timezone_->asString(context));
+  }
+  return context->getMemoryManager()->getPooledString(buffer.getRawBuffer());
 }
 
 /* returns true if the two objects represent the same date,
  * false otherwise */
 bool ATDateOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const {
   if(getPrimitiveTypeIndex() != target->getPrimitiveTypeIndex()) {
-    XQThrow(IllegalArgumentException,X("ATDateOrDerivedImpl::equals"), X("Equality operator for given types not supported [err:XPTY0004]"));
+    XQThrow(::IllegalArgumentException,X("ATDateOrDerivedImpl::equals"),
+            X("Equality operator for given types not supported [err:XPTY0004]"));
   }
-  const ATDateOrDerivedImpl* targetDate = (ATDateOrDerivedImpl*)(const AnyAtomicType*)target;
-  if ( _hasTimezone == targetDate->_hasTimezone ) {  // must be in the same state
-    return ( (!_hasTimezone || timezone_->equals(targetDate->timezone_))
-          && _YY->equals(targetDate->_YY, context) &&
-             _MM->equals(targetDate->_MM, context) &&
-             _DD->equals(targetDate->_DD, context) ); 
-  }
-  else {
-    return false;
-  }
+  return compare((const ATDateOrDerivedImpl *)target.get(), context) == 0;
 }
 
-/**
- * Returns true if and only if the starting instant of $arg1 is greater than the starting instant of $arg2. 
- * Returns false otherwise.
- * The starting instant of an xs:date is the xs:dateTime at time 00:00:00 on that date.
- */
-bool ATDateOrDerivedImpl::greaterThan(const ATDateOrDerived::Ptr &other, const DynamicContext* context) const {
-  ATDateTimeOrDerived::Ptr myDateTime=castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA, 
-                                             XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DATETIME, 
-                                             context);
-  ATDateTimeOrDerived::Ptr otherDateTime=other->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA, 
-                                             XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DATETIME, 
-                                             context);
-  return myDateTime->compare(otherDateTime, context) > 0;
-}
+int ATDateOrDerivedImpl::compare(const ATDateOrDerived::Ptr &target, const DynamicContext *context) const
+{
+  const ATDateOrDerivedImpl *other = (const ATDateOrDerivedImpl *)target.get();
 
-/**
- * Returns true if and only if the starting instant of $arg1 is less than the starting instant of $arg2. 
- * Returns false otherwise.
- * The starting instant of an xs:date is the xs:dateTime at time 00:00:00 on that date.
- */
-bool ATDateOrDerivedImpl::lessThan(const ATDateOrDerived::Ptr &other,  const DynamicContext* context) const {
-  ATDateTimeOrDerived::Ptr myDateTime=castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA, 
-                                             XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DATETIME, 
-                                             context);
-  ATDateTimeOrDerived::Ptr otherDateTime=other->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA, 
-                                             XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DATETIME, 
-                                             context);
-  return myDateTime->compare(otherDateTime, context) < 0;
+  return tzNormalize(_hasTimezone, seconds_, context).compare(tzNormalize(other->_hasTimezone, other->seconds_, context));
 }
 
 /** 
  * Returns an integer representing the year component  of this object
  */
-const ATDecimalOrDerived::Ptr &ATDateOrDerivedImpl::getYears() const {
-  return _YY;
+ATDecimalOrDerived::Ptr ATDateOrDerivedImpl::getYears(const DynamicContext *context) const {
+  MAPM year, month, day;
+  decomposeSeconds(tzLocalize(_hasTimezone, seconds_, timezone_), year, month, day);
+
+  return context->getItemFactory()->createInteger(year, context);
 }
 
 /** 
  * Returns an integer representing the month component  of this object
  */
-const ATDecimalOrDerived::Ptr &ATDateOrDerivedImpl::getMonths() const {
- return _MM;
+ATDecimalOrDerived::Ptr ATDateOrDerivedImpl::getMonths(const DynamicContext *context) const {
+  MAPM year, month, day;
+  decomposeSeconds(tzLocalize(_hasTimezone, seconds_, timezone_), year, month, day);
+
+  return context->getItemFactory()->createNonNegativeInteger(month, context);
 }
 
 /** 
  * Returns an integer representing the day component  of this object
  */
-const ATDecimalOrDerived::Ptr &ATDateOrDerivedImpl::getDays() const {
-  return _DD;
+ATDecimalOrDerived::Ptr ATDateOrDerivedImpl::getDays(const DynamicContext *context) const {
+  MAPM year, month, day;
+  decomposeSeconds(tzLocalize(_hasTimezone, seconds_, timezone_), year, month, day);
+
+  return context->getItemFactory()->createNonNegativeInteger(day, context);
 }
 
 /**
@@ -292,107 +306,86 @@ bool ATDateOrDerivedImpl::hasTimezone() const {
  * Setter for timezone.  Overrides the current timezone. (Not to be 
  * confused with addTimezone(). If passed NULL, timezone is removed (unset)
  */
-ATDateOrDerived::Ptr ATDateOrDerivedImpl::setTimezone(const Timezone::Ptr &timezone, const DynamicContext* context) const {
-  bool hasTimezone = timezone == NULLRCP ? false : true;
-  return new
-    ATDateOrDerivedImpl(this->_typeURI, 
-                        this->_typeName, 
-                        this->_YY, this->_MM, this->_DD, 
-                        timezone, hasTimezone);
+ATDateOrDerived::Ptr ATDateOrDerivedImpl::setTimezone(const Timezone::Ptr &timezone, const DynamicContext* context) const
+{
+  MAPM result = seconds_;
+  if(_hasTimezone) result += (timezone_->getTimezoneAsMinutes() * DateUtils::g_secondsPerMinute);
+  if(timezone != NULLRCP) result -= (timezone->getTimezoneAsMinutes() * DateUtils::g_secondsPerMinute);
+
+  return new ATDateOrDerivedImpl(_typeURI, _typeName, result, timezone, timezone != NULLRCP);
 }
 
 /**
  * Returns an ATDateOrDerived with a timezone added to it
  */
-ATDateOrDerived::Ptr ATDateOrDerivedImpl::addTimezone(const ATDurationOrDerived::Ptr &timezone, const DynamicContext* context) const {
-  // For purposes of timezone adjustment, an xs:date is treated as an xs:dateTime with time 00:00:00.
-  ATDateTimeOrDerived::Ptr dateTime=castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA, 
-                                           XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DATETIME, 
-                                           context);
-  ATDateTimeOrDerived::Ptr dateTimeTz=dateTime->addTimezone(timezone, context);
-  return dateTimeTz->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA, 
-                            XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DATE, 
-                            context);
+ATDateOrDerived::Ptr ATDateOrDerivedImpl::addTimezone(const ATDurationOrDerived::Ptr &timezone,
+                                                      const DynamicContext* context) const
+{
+  Timezone::Ptr tz = new Timezone(timezone, context);
+
+  if(!_hasTimezone) return setTimezone(tz, context);
+
+  // Keep the time components as 00:00:00
+  MAPM result = seconds_ + (tz->getTimezoneAsMinutes() * DateUtils::g_secondsPerMinute);
+  result = (result / DateUtils::g_secondsPerDay).floor() * DateUtils::g_secondsPerDay;
+  result -= (tz->getTimezoneAsMinutes() * DateUtils::g_secondsPerMinute);
+
+  return new ATDateOrDerivedImpl(_typeURI, _typeName, result, tz, true);
 }
 
 /**
  * Returns a date with the given yearMonthDuration added to it
  */
-ATDateOrDerived::Ptr ATDateOrDerivedImpl::addYearMonthDuration(const ATDurationOrDerived::Ptr &yearMonth,  const DynamicContext* context) const {
-  if(!yearMonth->isYearMonthDuration()) {
-    XQThrow(IllegalArgumentException,X("ATDateOrDerivedImpl::addYearMonthDuration"), X("addYearMonthDuration for given type not supported"));
-  }
-  ATDateTimeOrDerived::Ptr myDateTime=castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA, 
-                                             XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DATETIME, 
-                                             context);
-  return myDateTime->addYearMonthDuration(yearMonth, context)
-                   ->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA, 
-                            XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DATE, 
-                            context);
+ATDateOrDerived::Ptr ATDateOrDerivedImpl::addYearMonthDuration(const ATDurationOrDerived::Ptr &yearMonth,
+                                                               const DynamicContext* context) const
+{
+  MAPM result = ATDateTimeOrDerivedImpl::addYearMonthDuration(seconds_, yearMonth->asMonths(context)->asMAPM());
+  return new ATDateOrDerivedImpl(_typeURI, _typeName, result, timezone_, _hasTimezone);
 }
 
 /**
  * Returns a date with the given dayTimeDuration added to it
  */
-ATDateOrDerived::Ptr ATDateOrDerivedImpl::addDayTimeDuration(const ATDurationOrDerived::Ptr &dayTime, const DynamicContext* context) const {
-  if(!dayTime->isDayTimeDuration()) {
-    XQThrow(IllegalArgumentException,X("ATDateOrDerivedImpl::addDayTimeDuration"),  X("addDayTimeDuration for given type not supported"));
-  }
-  ATDateTimeOrDerived::Ptr myDateTime=castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA, 
-                                             XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DATETIME, 
-                                             context);
-  return myDateTime->addDayTimeDuration(dayTime, context)
-                   ->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA, 
-                            XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DATE, 
-                            context);
+ATDateOrDerived::Ptr ATDateOrDerivedImpl::addDayTimeDuration(const ATDurationOrDerived::Ptr &dayTime,
+                                                             const DynamicContext* context) const
+{
+  MAPM result = seconds_ + dayTime->asSeconds(context)->asMAPM();
+  return new ATDateOrDerivedImpl(_typeURI, _typeName, result, timezone_, _hasTimezone);
 }
   
 /**
  * Returns a date with the given yearMonthDuration subtracted from it
  */
-ATDateOrDerived::Ptr ATDateOrDerivedImpl::subtractYearMonthDuration(const ATDurationOrDerived::Ptr &yearMonth, const DynamicContext* context) const {
-  if(!((const ATDurationOrDerived*)yearMonth)->isYearMonthDuration()) {
-    XQThrow(IllegalArgumentException,X("ATDateOrDerivedImpl::subtractYearMonthDuration"), X("subtractYearMonthDuration for given type not supported")); 
-  }
-  
-  ATDateTimeOrDerived::Ptr myDateTime=castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA, 
-                                             XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DATETIME, 
-                                             context);
-  return myDateTime->subtractYearMonthDuration(yearMonth, context)
-                   ->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA, 
-                            XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DATE, 
-                            context);
+ATDateOrDerived::Ptr ATDateOrDerivedImpl::subtractYearMonthDuration(const ATDurationOrDerived::Ptr &yearMonth,
+                                                                    const DynamicContext* context) const
+{
+  MAPM result = ATDateTimeOrDerivedImpl::addYearMonthDuration(seconds_, yearMonth->asMonths(context)->asMAPM().neg());
+  return new ATDateOrDerivedImpl(_typeURI, _typeName, result, timezone_, _hasTimezone);
 }
 
 /**
  * Returns a date with the given dayTimeDuration subtracted from it
  */
-ATDateOrDerived::Ptr ATDateOrDerivedImpl::subtractDayTimeDuration(const ATDurationOrDerived::Ptr &dayTime, const DynamicContext* context) const {
-  if(!((const ATDurationOrDerived*)dayTime)->isDayTimeDuration()) {
-    XQThrow(IllegalArgumentException,X("ATDateOrDerivedImpl::subtractDayTimeDuration"),  X("subtractDayTimeDuration for given type not supported"));
-  }
-  
-  ATDateTimeOrDerived::Ptr myDateTime=castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA, 
-                                             XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DATETIME, 
-                                             context);
-  return myDateTime->subtractDayTimeDuration(dayTime, context)
-                   ->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA, 
-                            XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DATE, 
-                            context);
+ATDateOrDerived::Ptr ATDateOrDerivedImpl::subtractDayTimeDuration(const ATDurationOrDerived::Ptr &dayTime,
+                                                                  const DynamicContext* context) const
+{
+  MAPM result = seconds_ - dayTime->asSeconds(context)->asMAPM();
+  return new ATDateOrDerivedImpl(_typeURI, _typeName, result, timezone_, _hasTimezone);
 }
 
 /**
  * Returns a dayTimeDuration corresponding to the difference between this
  * and the given ATDateOrDerived*
  */
-ATDurationOrDerived::Ptr ATDateOrDerivedImpl::subtractDate(const ATDateOrDerived::Ptr &other, const DynamicContext* context) const {
-  ATDateTimeOrDerived::Ptr myDateTime=castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA, 
-                                             XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DATETIME, 
-                                             context);
-  ATDateTimeOrDerived::Ptr otherDateTime=other->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA, 
-                                             XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DATETIME, 
-                                             context);
-  return myDateTime->subtractDateTimeAsDayTimeDuration(otherDateTime, context);
+ATDurationOrDerived::Ptr ATDateOrDerivedImpl::subtractDate(const ATDateOrDerived::Ptr &date,
+                                                           const DynamicContext* context) const
+{
+  const ATDateOrDerivedImpl *other = (const ATDateOrDerivedImpl *)date.get();
+
+  MAPM secDiff = tzNormalize(_hasTimezone, seconds_, context) -
+    tzNormalize(other->_hasTimezone, other->seconds_, context);
+
+  return context->getItemFactory()->createDayTimeDuration(secDiff, context);
 }
 
 
@@ -401,7 +394,7 @@ AnyAtomicType::AtomicObjectType ATDateOrDerivedImpl::getPrimitiveTypeIndex() con
 }
 
 void ATDateOrDerivedImpl::setDate(const XMLCh* const date, const DynamicContext* context) {
-  unsigned int length = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(date);
+  unsigned int length = XMLString::stringLen(date);
  
   if(date == 0) {
       XQThrow(XPath2TypeCastException,X("ATDateOrDerived::setDate"), X("Invalid representation of date"));
@@ -572,8 +565,11 @@ void ATDateOrDerivedImpl::setDate(const XMLCh* const date, const DynamicContext*
 
   timezone_ = new Timezone(zonepos, zonehh, zonemm);
 
-  _DD = context->getItemFactory()->createNonNegativeInteger(DD, context);
-  _MM = context->getItemFactory()->createNonNegativeInteger(MM, context);
-  _YY = context->getItemFactory()->createInteger(YY, context);
+  seconds_ = composeSeconds(YY, MM, DD);
+
+  if(_hasTimezone) {
+    // If we have a timezone, then seconds_ needs to be normalized
+    seconds_ -= (timezone_->getTimezoneAsMinutes() * DateUtils::g_secondsPerMinute);
+  }
 }
 

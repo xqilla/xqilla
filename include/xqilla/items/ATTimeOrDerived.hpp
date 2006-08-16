@@ -44,34 +44,24 @@ public:
    * false otherwise */
   virtual bool equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const = 0;
 
-  /**
-   * Returns true if and only if this time is greater than the given time. 
-   * The order relation on time values is the order relation on their 
-   * starting instants.
-   */
-  virtual bool greaterThan(const ATTimeOrDerived::Ptr &time, const DynamicContext* context) const = 0;
-
-  /**
-   * Returns true if and only if this time is less than the given time. 
-   * The order relation on time values is the order relation on their
-   * starting instants.
-   */
-  virtual bool lessThan(const ATTimeOrDerived::Ptr &time, const DynamicContext* context) const = 0;
+  /** Returns less than 0 if this is less that other,
+      0 if they are the same, and greater than 0 otherwise */
+  virtual int compare(const ATTimeOrDerived::Ptr &other, const DynamicContext *context) const = 0;
  
   /** 
    * Returns an integer representing the hour component of this object
    */
-  virtual const ATDecimalOrDerived::Ptr &getHours() const = 0;
+  virtual ATDecimalOrDerived::Ptr getHours(const DynamicContext *context) const = 0;
 
   /** 
    * Returns an integer representing the minute component of this object
    */
-  virtual const ATDecimalOrDerived::Ptr &getMinutes() const = 0;
+  virtual ATDecimalOrDerived::Ptr getMinutes(const DynamicContext *context) const = 0;
 
   /** 
    * Returns an decimal representing the second component of this object
    */
-  virtual const ATDecimalOrDerived::Ptr &getSeconds() const = 0;
+  virtual ATDecimalOrDerived::Ptr getSeconds(const DynamicContext *context) const = 0;
 
   /** 
    * Returns a timezone object representing the timezone component of this object
@@ -92,23 +82,26 @@ public:
   /**
    * Returns an ATTimeOrDerived with a timezone added to it
    */
-  virtual ATTimeOrDerived::Ptr addTimezone(const ATDurationOrDerived::Ptr &timezone, const DynamicContext* context) const = 0;
+  virtual ATTimeOrDerived::Ptr addTimezone(const ATDurationOrDerived::Ptr &timezone,
+                                           const DynamicContext* context) const = 0;
 
   /**
    * Returns a time with the given dayTimeDuration added to it
    */
-  virtual ATTimeOrDerived::Ptr addDayTimeDuration(const ATDurationOrDerived::Ptr &dayTime,  const DynamicContext* context) const = 0;
+  virtual ATTimeOrDerived::Ptr addDayTimeDuration(const ATDurationOrDerived::Ptr &dayTime,
+                                                  const DynamicContext* context) const = 0;
   
   /**
    * Returns a time with the given dayTimeDuration subtracted from it
    */
-  virtual ATTimeOrDerived::Ptr subtractDayTimeDuration(const ATDurationOrDerived::Ptr &dayTime,  const DynamicContext* context) const = 0;
+  virtual ATTimeOrDerived::Ptr subtractDayTimeDuration(const ATDurationOrDerived::Ptr &dayTime,
+                                                       const DynamicContext* context) const = 0;
 
   /**
    * Returns a dayTimeDuration corresponding to the difference between this
    * and the given ATTimeOrDerived*
    */
-  virtual ATDurationOrDerived::Ptr subtractTime(const ATTimeOrDerived::Ptr &time,  const DynamicContext* context) const = 0;
+  virtual ATDurationOrDerived::Ptr subtractTime(const ATTimeOrDerived::Ptr &time, const DynamicContext* context) const = 0;
 
   virtual AnyAtomicType::AtomicObjectType getPrimitiveTypeIndex() const = 0;
 };
