@@ -89,15 +89,17 @@ LessThan::LessThan(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
         XQThrow(XPath2ErrorException,X("LessThan::less_than"), X("An attempt to compare a dateTime type to a non dateTime type has occurred [err:XPTY0004]"));
       return ((ATDateTimeOrDerived*)atom1.get())->compare((const ATDateTimeOrDerived::Ptr)atom2, context) < 0;
     }
-    case AnyAtomicType::DURATION:
     case AnyAtomicType::DAY_TIME_DURATION:
+    {
+      // op:dayTimeDuration-less-than(A, B)
+      if(atom2->getPrimitiveTypeIndex() != AnyAtomicType::DAY_TIME_DURATION)
+        XQThrow(XPath2ErrorException,X("LessThan::less_than"), X("An attempt to compare a duration type to a non duration type has occurred [err:XPTY0004]"));
+      return ((ATDurationOrDerived*)atom1.get())->compare((const ATDurationOrDerived::Ptr )atom2, context) < 0;
+    }
     case AnyAtomicType::YEAR_MONTH_DURATION:
     {
       // op:yearMonthDuration-less-than(A, B)
-      // op:dayTimeDuration-less-than(A, B)
-      if(atom2->getPrimitiveTypeIndex() != AnyAtomicType::DURATION &&
-         atom2->getPrimitiveTypeIndex() != AnyAtomicType::DAY_TIME_DURATION &&
-         atom2->getPrimitiveTypeIndex() != AnyAtomicType::YEAR_MONTH_DURATION)
+      if(atom2->getPrimitiveTypeIndex() != AnyAtomicType::YEAR_MONTH_DURATION)
         XQThrow(XPath2ErrorException,X("LessThan::less_than"), X("An attempt to compare a duration type to a non duration type has occurred [err:XPTY0004]"));
       return ((ATDurationOrDerived*)atom1.get())->compare((const ATDurationOrDerived::Ptr )atom2, context) < 0;
     }

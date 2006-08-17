@@ -92,14 +92,6 @@ bool Timezone::equals(const Timezone::Ptr &other) const {
   return (_hh == other->_hh && _mm == other->_mm && _positive == other->_positive);
 }
 
-bool Timezone::greaterThan(const Timezone::Ptr &other) const {
-  return (getTimezoneAsMinutes()>other->getTimezoneAsMinutes());
-}
-
-bool Timezone::lessThan(const Timezone::Ptr &other) const {
-  return (getTimezoneAsMinutes()<other->getTimezoneAsMinutes());
-}
-
 const int Timezone::getTimezoneAsMinutes() const {
   return (_hh*DateUtils::g_minutesPerHour+_mm) * (_positive?+1:-1);
 }

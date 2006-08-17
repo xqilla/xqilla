@@ -58,16 +58,6 @@ public :
    */
   bool equals(const Timezone::Ptr &other) const;
 
-  /** Returns true if this is greater than other, 
-   * false otherwise 
-   */  
-  bool greaterThan(const Timezone::Ptr &other) const;
-
-  /** Returns true if this is greater than other, 
-   * false otherwise 
-   */  
-  bool lessThan(const Timezone::Ptr &other) const;
-
   ATDurationOrDerived::Ptr asDayTimeDuration(const DynamicContext* context) const;
   
   /**

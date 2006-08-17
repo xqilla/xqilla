@@ -325,8 +325,7 @@ bool ATDurationOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const Dyn
   case DAY_TIME_DURATION:
   case YEAR_MONTH_DURATION:
   case DURATION: {
-    return dayTimeEquals((const ATDurationOrDerived*)target.get(), context) &&
-      yearMonthEquals((const ATDurationOrDerived*)target.get(), context);
+    return compare((const ATDurationOrDerived*)target.get(), context) == 0;
   }
   default:
     XQThrow(::IllegalArgumentException,X("ATDurationOrDerivedImpl::equals"),
@@ -335,37 +334,17 @@ bool ATDurationOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const Dyn
   return false;
 }
 
-bool ATDurationOrDerivedImpl::dayTimeEquals(const ATDurationOrDerived::Ptr &target, const DynamicContext* context) const
-{
-  return isNegative() == target->isNegative() && _seconds == ((const ATDurationOrDerivedImpl*)target.get())->_seconds;
-}
-
-bool ATDurationOrDerivedImpl::yearMonthEquals(const ATDurationOrDerived::Ptr &target, const DynamicContext* context) const
-{
-  return isNegative() == target->isNegative() && _months == ((const ATDurationOrDerivedImpl*)target.get())->_months;
-}
-
 int ATDurationOrDerivedImpl::compare(const ATDurationOrDerived::Ptr &other, const DynamicContext* context) const
 {
-  if(_durationType == DAY_TIME_DURATION && other->getPrimitiveTypeIndex() == DAY_TIME_DURATION ) {
-    const ATDurationOrDerivedImpl* otherImpl = (const ATDurationOrDerivedImpl*)other.get();
+  const ATDurationOrDerivedImpl* otherImpl = (const ATDurationOrDerivedImpl*)other.get();
 
-    int cmp = _isPositive - otherImpl->_isPositive;
-    if(cmp != 0) return cmp;
-    return _seconds.compare(otherImpl->_seconds) * (_isPositive ? 1 : -1);
-  }
-  else if(_durationType == YEAR_MONTH_DURATION && other->getPrimitiveTypeIndex() == YEAR_MONTH_DURATION) {
-    const ATDurationOrDerivedImpl* otherImpl = (const ATDurationOrDerivedImpl*)other.get();
+  int cmp = _isPositive - otherImpl->_isPositive;
+  if(cmp != 0) return cmp;
 
-    int cmp = _isPositive - otherImpl->_isPositive;
-    if(cmp != 0) return cmp;
-    return _months.compare(otherImpl->_months) * (_isPositive ? 1 : -1);
-  }
-  else {
-    // if we are trying to compare anything else -- error
-    XQThrow(::IllegalArgumentException,X("ATDurationOrDerivedImpl::compare"),
-            X("comparison operator for given types not supported [err:XPTY0004]"));
-  }
+  cmp = _months.compare(otherImpl->_months) * (_isPositive ? 1 : -1);
+  if(cmp != 0) return cmp;
+
+  return _seconds.compare(otherImpl->_seconds) * (_isPositive ? 1 : -1);
 }
 
 static inline ATDurationOrDerived::Ptr newDayTimeDuration(const Numeric::Ptr &valueSeconds,
