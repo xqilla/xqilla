@@ -27,7 +27,7 @@
 #	the module's source listing
 #	o all matching files will be placed in that folder
 # 
-lib.filters=ast axis context dom-api exceptions framework functions items lexer mapm operators parser runtime schema simple-api utils xqts
+lib.filters=ast axis context dom-api exceptions framework fulltext functions items lexer mapm operators parser runtime schema simple-api utils xqts
 src/ast/ASTNodeImpl.cpp	lib
 src/ast/AggregateFunction.cpp	lib
 src/ast/ConstantFoldingFunction.cpp	lib

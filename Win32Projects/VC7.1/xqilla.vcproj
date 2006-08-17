@@ -795,6 +795,49 @@
 			</File>
 		</Filter>
 		<Filter
+			Name="fulltext"
+			Filter="">
+			<File
+				RelativePath="..\..\src\fulltext\FTContains.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\fulltext\FTWords.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\fulltext\FTOr.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\fulltext\FTAnd.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\fulltext\FTMildnot.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\fulltext\FTUnaryNot.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\fulltext\DefaultTokenizer.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\fulltext\DefaultTokenStore.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\fulltext\FTOrder.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\fulltext\FTDistance.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\fulltext\FTScope.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\fulltext\FTContent.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\fulltext\FTWindow.cpp">
+			</File>
+		</Filter>
+		<Filter
 			Name="functions"
 			Filter="">
 			<File
