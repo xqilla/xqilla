@@ -56,7 +56,8 @@ XQDOMConstructor::XQDOMConstructor(const XMLCh* nodeType, ASTNode* name, VectorO
   ASTNodeImpl(expr),
   m_name(name),
   m_attrList(attrList),
-  m_children(children)
+  m_children(children),
+  m_namespaces(NULL)
 {
   m_nodeType=nodeType;
   setType(ASTNode::DOM_CONSTRUCTOR);
@@ -154,6 +155,27 @@ Sequence XQDOMConstructor::collapseTreeInternal(DynamicContext *context, int fla
         AutoNsScopeReset jan(context, &newNSScope);
 
         std::vector<Node::Ptr> attrList;
+        if(m_namespaces != 0) {
+          RefHashTableOfEnumerator<XMLCh> nsEnumVal(m_namespaces, false, context->getMemoryManager());
+          RefHashTableOfEnumerator<XMLCh> nsEnumKey(m_namespaces, false, context->getMemoryManager());
+          while(nsEnumVal.hasMoreElements())
+          {
+            XMLCh* uri=&nsEnumVal.nextElement();
+            XMLCh* prefix=(XMLCh*)nsEnumKey.nextElementKey();
+            locallyDefinedNamespaces.addNamespaceBinding(prefix, uri);
+            Node::Ptr node;
+            if(XPath2Utils::equals(prefix, XMLUni::fgZeroLenString)) {
+              context->setDefaultElementAndTypeNS(uri);
+              node = context->getItemFactory()->createAttributeNode(XMLUni::fgXMLNSURIName, XMLUni::fgZeroLenString, XMLUni::fgXMLNSString, uri, context);
+            }
+            else {
+              context->setNamespaceBinding(prefix, uri);
+              node = context->getItemFactory()->createAttributeNode(XMLUni::fgXMLNSURIName, XMLUni::fgXMLNSString, prefix, uri, context);
+            }
+
+            attrList.push_back(node);
+          }
+        }
         if(m_attrList != 0) {
           for(VectorOfASTNodes::const_iterator itAttr = m_attrList->begin(); itAttr != m_attrList->end (); ++itAttr) {
             Result oneAttribute = (*itAttr)->collapseTree(context);
@@ -360,12 +382,9 @@ Sequence XQDOMConstructor::collapseTreeInternal(DynamicContext *context, int fla
         else
           XQThrow(ASTException,X("DOM Constructor"),X("The name for the attribute must be either a xs:QName, xs:string or xs:untypedAtomic [err:XPTY0004]"));
 
-        if(nodeUri==NULL && XPath2Utils::equals(nodeName, XMLUni::fgXMLNSString))
-          nodeUri=XMLUni::fgXMLNSURIName;
-        // TODO: add a flag to distinguish between direct attribute constructors and computed constructor: this test must
-        // be done only on computed attribute constuctors
-        //if(XPath2Utils::equals(nodeUri, XMLUni::fgXMLNSURIName))
-        //    XQThrow(ASTException,X("DOM Constructor"),X("A computed attribute constructor cannot create a namespace declaration [err:XQ0044]"));
+        if((nodeUri==NULL && XPath2Utils::equals(nodeName, XMLUni::fgXMLNSString)) ||
+           XPath2Utils::equals(nodeUri, XMLUni::fgXMLNSURIName))
+          XQThrow(ASTException,X("DOM Constructor"),X("A computed attribute constructor cannot create a namespace declaration [err:XQDY0044]"));
 
         // TODO: what error should we return if the string is empty?
         if(XMLString::stringLen(nodeName)==0)
@@ -485,104 +504,130 @@ ASTNode* XQDOMConstructor::staticResolution(StaticContext *context)
 {
   XPath2MemoryManager *mm = context->getMemoryManager();
 
-  {
-      // Add a new scope for the namespace definitions
-      XQScopedNamespace newNSScope(context->getMemoryManager(), context->getNSResolver());
-      AutoNsScopeReset jan(context, &newNSScope);
-      unsigned int i;
-      if(m_attrList != 0) {
-        for (i=0;i<m_attrList->size();i++) {
-          (*m_attrList)[i] = (*m_attrList)[i]->staticResolution(context);
-          _src.add((*m_attrList)[i]->getStaticResolutionContext()); 
-        }
-        // after we have added all the namespace declaration, check for duplicate attributes
-        std::set<const XMLCh*, XMLChSort> attrNames;
-        AutoDelete<DynamicContext> dContext(context->createDynamicContext());
-        dContext->setMemoryManager(context->getMemoryManager());
-        for (i=0;i<m_attrList->size();i++) 
-        {
-          if((*m_attrList)[i]->getType()==ASTNode::DOM_CONSTRUCTOR)
-          {
-            const ASTNode* dItem=((XQDOMConstructor*)(*m_attrList)[i])->getName();
-            if(dItem->getType()==ASTNode::SEQUENCE)
-            {
-              const ItemConstructor::Vector &ics = ((XQSequence*)dItem)->getItemConstructors();
-              if(ics.size() == 1) {
-                Item::Ptr item = ics[0]->createItem(dContext);
-                QualifiedName attrName(item->asString(dContext));
-                XMLBuffer buff(200, dContext->getMemoryManager());
-                if(attrName.getPrefix()!=0 && *attrName.getPrefix()!=0)
-                {
-                    buff.append(chOpenCurly);
-                    buff.append(dContext->getUriBoundToPrefix(attrName.getPrefix()));
-                    buff.append(chCloseCurly);
-                }
-                buff.append(attrName.getName());
-                if(attrNames.find(buff.getRawBuffer())!=attrNames.end())
-                    if(XPath2Utils::equals(attrName.getFullName(dContext->getMemoryManager()), XMLUni::fgXMLNSString) ||
-                       XPath2Utils::equals(attrName.getPrefix(), XMLUni::fgXMLNSString))
-                      XQThrow(StaticErrorException,X("DOM Constructor"),X("Two namespace declaration attributes specified by a direct element constructor do not have distinct names. [err:XQST0071]"));
-                    else
-                      XQThrow(StaticErrorException,X("DOM Constructor"),X("Two attributes specified by a direct element constructor do not have distinct expanded QNames. [err:XQST0040]"));
-                attrNames.insert(XMLString::replicate(buff.getRawBuffer(), dContext->getMemoryManager()));
-              }
-            }
-          }
-        }
-      }
-    for (i=0;i<m_children->size();i++) {
-      // normalize whitespace and expand entities in string literals
-      if((m_nodeType == Node::attribute_string || m_nodeType == Node::element_string)
-          && (*m_children)[i]->getType()==LITERAL)
-      {
-        AutoDelete<DynamicContext> dContext(context->createDynamicContext());
-        dContext->setMemoryManager(mm);
-		XQLiteral *lit = (XQLiteral*)(*m_children)[i];
-        Item::Ptr item = lit->getItemConstructor()->createItem(dContext);
-		if(((AnyAtomicType*)(const Item*)item)->getPrimitiveTypeIndex()==AnyAtomicType::STRING)
-        {
-            const XMLCh* str=item->asString(dContext);
-            XMLBuffer buff(XMLString::stringLen(str)+1, mm);
-            buff.append(str);
-            if(m_nodeType == Node::attribute_string)
-                XMLString::replaceWS(buff.getRawBuffer(), mm);
-            unescapeEntities(buff);
-		    AnyAtomicTypeConstructor *newIC = new (mm)
-    		    AnyAtomicTypeConstructor(
-						    XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-						    XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
-                mm->getPooledString(buff.getRawBuffer()), AnyAtomicType::STRING);
-            lit->setItemConstructor(newIC);
-        }
-      }
-      if(m_nodeType == Node::attribute_string ||
-         m_nodeType == Node::processing_instruction_string ||
-         m_nodeType == Node::comment_string ||
-         m_nodeType == Node::text_string ||
-         m_nodeType == Node::cdata_string) {
-        (*m_children)[i] = new (mm) XQAtomize((*m_children)[i], mm);
-      }
-      (*m_children)[i] = (*m_children)[i]->staticResolution(context);
-      _src.add((*m_children)[i]->getStaticResolutionContext());
+  // Add a new scope for the namespace definitions
+  XQScopedNamespace newNSScope(context->getMemoryManager(), context->getNSResolver());
+  AutoNsScopeReset jan(context, &newNSScope);
+  unsigned int i;
 
+  if(m_attrList != 0) {
+    AutoDelete<DynamicContext> dContext(context->createDynamicContext());
+    dContext->setMemoryManager(context->getMemoryManager());
+    // process the namespace attributes (they are all at the beginning of the list)
+    for (VectorOfASTNodes::iterator it=m_attrList->begin();it!=m_attrList->end();) 
+    {
+      assert((*it)->getType()==ASTNode::DOM_CONSTRUCTOR && 
+             ((XQDOMConstructor*)(*it))->getNodeType()==Node::attribute_string);
+      XQDOMConstructor* attrConstructor=(XQDOMConstructor*)(*it);
+      const ASTNode* dItem=attrConstructor->getName();
+      assert(dItem!=NULL && dItem->getType() == ASTNode::LITERAL);
+      const ItemConstructor* itemConstr=((XQLiteral*)dItem)->getItemConstructor();
+      assert(XPath2Utils::equals(itemConstr->getTypeURI(),XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA) &&
+             XPath2Utils::equals(itemConstr->getTypeName(),XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_QNAME));
+
+      // createItem will throw an exception if the prefix is undefined
+      AnyAtomicType::Ptr atomName;
+      try
+      {
+        atomName = itemConstr->createItem(dContext);
+      }
+      catch(XQException& e)
+      {
+        // this is a normal attribute, there are no more namespace declarations
+        break;
+      }
+
+      const ATQNameOrDerived* pQName=(const ATQNameOrDerived*)(const AnyAtomicType*)atomName;
+      const XMLCh* XMLNSPrefix=NULL;
+      if((pQName->getPrefix()==NULL || *pQName->getPrefix()==0) &&
+         XPath2Utils::equals(pQName->getName(),XMLUni::fgXMLNSString)) {
+        XMLNSPrefix=XMLUni::fgZeroLenString;
+      }
+      else if(XPath2Utils::equals(pQName->getPrefix(), XMLUni::fgXMLNSString)) {
+        XMLNSPrefix=pQName->getName();
+      }
+      else
+        // no more namespace declaration
+        break;
+      // we are a namespace attribute: check that we have a constant value
+      const VectorOfASTNodes *children=attrConstructor->getChildren();
+      const XMLCh* uri=NULL;
+      if(children->size()==0) { // supporting Namespace 1.1 means unsetting the binding...
+        uri=XMLUni::fgZeroLenString;
+      }
+      else if(children->size()>1 || (*children)[0]->getType()!=ASTNode::LITERAL) {
+        XQThrow(StaticErrorException,X("DOM Constructor"),X("The value of a namespace declaration attribute must be a literal string [err:XQST0022]"));
+      }
+      else {
+        Item::Ptr nsUri = ((XQLiteral*)(*children)[0])->getItemConstructor()->createItem(dContext);
+        if(nsUri == NULLRCP)
+          XQThrow(StaticErrorException,X("DOM Constructor"),X("The value of a namespace declaration attribute must be a literal string [err:XQST0022]"));
+        uri=nsUri->asString(dContext);
+      }
+      if(XMLNSPrefix != XMLUni::fgZeroLenString) {
+        context->setNamespaceBinding(XMLNSPrefix, uri);
+      }
+      else {
+        context->setDefaultElementAndTypeNS(uri);
+      }
+      if(m_namespaces==NULL)
+        m_namespaces = new (mm) RefHashTableOf< XMLCh >(5, false, mm);
+
+      if(m_namespaces->containsKey(XMLNSPrefix))
+        XQThrow(StaticErrorException,X("DOM Constructor"),X("Two namespace declaration attributes specified by a direct element constructor do not have distinct names. [err:XQST0071]"));
+      m_namespaces->put((void*)mm->getPooledString(XMLNSPrefix), (XMLCh*)mm->getPooledString(uri));
+      it=m_attrList->erase(it);
     }
 
-    // verify namespace prefixes for embedded node constructors
-    if(m_name && m_name->getType() == ASTNode::LITERAL) {
+    // now run static resolution on the real attributes
+    for (i=0;i<m_attrList->size();i++) {
+      (*m_attrList)[i] = (*m_attrList)[i]->staticResolution(context);
+      _src.add((*m_attrList)[i]->getStaticResolutionContext()); 
+    }
+    // now that we have added the local namespace declaration, check for duplicate attribute names
+    std::set<const XMLCh*, XMLChSort> attrNames;
+    for (i=0;i<m_attrList->size();i++) 
+    {
+      assert((*m_attrList)[i]->getType()==ASTNode::DOM_CONSTRUCTOR && 
+             ((XQDOMConstructor*)(*m_attrList)[i])->getNodeType()==Node::attribute_string);
+      XQDOMConstructor* attrConstructor=(XQDOMConstructor*)(*m_attrList)[i];
+      const ASTNode* dItem=attrConstructor->getName();
+      assert(dItem->getType()==ASTNode::SEQUENCE); 
+      const ItemConstructor::Vector &ics = ((XQSequence*)dItem)->getItemConstructors();
+      assert(ics.size() == 1);
+      Item::Ptr item = ics[0]->createItem(dContext);
+      QualifiedName attrName(item->asString(dContext));
+      XMLBuffer buff(200, dContext->getMemoryManager());
+      if(attrName.getPrefix()!=0 && *attrName.getPrefix()!=0)
+      {
+        buff.append(chOpenCurly);
+        buff.append(dContext->getUriBoundToPrefix(attrName.getPrefix()));
+        buff.append(chCloseCurly);
+      }
+      buff.append(attrName.getName());
+      if(attrNames.find(buff.getRawBuffer())!=attrNames.end())
+        XQThrow(StaticErrorException,X("DOM Constructor"),X("Two attributes specified by a direct element constructor do not have distinct expanded QNames. [err:XQST0040]"));
+      attrNames.insert(XMLString::replicate(buff.getRawBuffer(), dContext->getMemoryManager()));
+    }
+  }
+  if(m_name)
+  {
+    // verify the namespace prefix used by the node name
+    if(m_name->getType() == ASTNode::LITERAL) {
       const ItemConstructor* itemConstr=((XQLiteral*)m_name)->getItemConstructor();
       // if the type is xs:QName, it was a named constructor, and it must be checked
       if(XPath2Utils::equals(itemConstr->getTypeURI(),XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA) &&
          XPath2Utils::equals(itemConstr->getTypeName(),XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_QNAME)) 
       {
+        AutoDelete<DynamicContext> dContext(context->createDynamicContext());
+        dContext->setMemoryManager(context->getMemoryManager());
         // createItem will throw an exception if the prefix is undefined
-        try 
+        AnyAtomicType::Ptr atomName;
+        try
         {
-          AutoDelete<DynamicContext> dContext(context->createDynamicContext());
-          dContext->setMemoryManager(context->getMemoryManager());
-          AnyAtomicType::Ptr atomName = itemConstr->createItem(dContext);
+          atomName = itemConstr->createItem(dContext);
         }
         catch(XQException& e)
-            {
+        {
           XMLBuffer buff(1023, context->getMemoryManager());
           buff.set(e.getError());
           int index=XMLString::indexOf(buff.getRawBuffer(),chOpenSquare);
@@ -594,86 +639,49 @@ ASTNode* XQDOMConstructor::staticResolution(StaticContext *context)
         }
       }
     }
-  }
-
-  if(m_name != 0) {
+    // and run static resolution
     m_name = new (mm) XQAtomize(m_name, mm);
     m_name = m_name->staticResolution(context);
     _src.add(m_name->getStaticResolutionContext());
   }
 
-  if(m_nodeType==Node::attribute_string && m_name->isConstant()) {
-    AutoDelete<DynamicContext> dContext(context->createDynamicContext());
-    dContext->setMemoryManager(context->getMemoryManager());
 
-    Item::Ptr item;
-    if(m_name->getType() == ASTNode::LITERAL) {
-      item = ((XQLiteral*)m_name)->getItemConstructor()->createItem(dContext);
-    }
-    else if(m_name->getType() == ASTNode::SEQUENCE) {
-      const ItemConstructor::Vector &ics = ((XQSequence*)m_name)->getItemConstructors();
-      if(ics.size() == 1) {
-        item = ics[0]->createItem(dContext);
-      }
-    }
-
-    if(item != NULLRCP && item->isAtomicValue()) {
-      AnyAtomicType::Ptr atomName=item;
-      const XMLCh* strName;
-      if(atomName->getPrimitiveTypeIndex()==AnyAtomicType::QNAME)
+  for (i=0;i<m_children->size();i++) {
+    // normalize whitespace and expand entities in string literals
+    if((m_nodeType == Node::attribute_string || m_nodeType == Node::element_string)
+        && (*m_children)[i]->getType()==LITERAL)
+    {
+      AutoDelete<DynamicContext> dContext(context->createDynamicContext());
+      dContext->setMemoryManager(mm);
+      XQLiteral *lit = (XQLiteral*)(*m_children)[i];
+      Item::Ptr item = lit->getItemConstructor()->createItem(dContext);
+      if(((AnyAtomicType*)(const Item*)item)->getPrimitiveTypeIndex()==AnyAtomicType::STRING)
       {
-        const ATQNameOrDerived* pQName=(const ATQNameOrDerived*)(const AnyAtomicType*)atomName;
-        strName=pQName->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                               XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING, dContext)->asString(dContext);
-      }
-      else
-        strName = atomName->asString(dContext);
-      const XMLCh* XMLNSPrefix=NULL;
-      if(XPath2Utils::equals(strName,XMLUni::fgXMLNSString)) {
-        XMLNSPrefix=XMLUni::fgZeroLenString;
-      }
-      else if(XPath2Utils::equals(XPath2NSUtils::getPrefix(strName, context->getMemoryManager()),
-                                                               XMLUni::fgXMLNSString)) {
-        XMLNSPrefix=XPath2NSUtils::getLocalName(strName);
-      }
-
-      if(XMLNSPrefix!=NULL) {
-        // we are a namespace attribute: check that we have a constant value
-        if(m_children->size()==0) { // TODO: supporting Namespace 1.1 would mean unsetting the binding...
-          if(XMLNSPrefix != XMLUni::fgZeroLenString) {
-            context->setNamespaceBinding(XMLNSPrefix, XMLUni::fgZeroLenString);
-          }
-          else {
-            context->setDefaultElementAndTypeNS(XMLUni::fgZeroLenString);
-          }
-        }
-        else if(m_children->size()>1 || (*m_children)[0]->getType()!=ASTNode::SEQUENCE) {
-          XQThrow(StaticErrorException,X("DOM Constructor"),X("The value of a namespace declaration attribute must be a literal string [err:XQST0022]"));
-        }
-        else {
-          ASTNode *child = (*m_children)[0];
-          Item::Ptr nsUri;
-          if(child->getType() == ASTNode::LITERAL) {
-            nsUri = ((XQLiteral*)child)->getItemConstructor()->createItem(dContext);
-          }
-          else if(child->getType() == ASTNode::SEQUENCE) {
-            const ItemConstructor::Vector &ics = ((XQSequence*)child)->getItemConstructors();
-            if(ics.size() == 1) {
-              nsUri = ics[0]->createItem(dContext);
-            }
-          }
-
-          if(nsUri == NULLRCP)
-            XQThrow(StaticErrorException,X("DOM Constructor"),X("The value of a namespace declaration attribute must be a literal string [err:XQST0022]"));
-          if(XMLNSPrefix != XMLUni::fgZeroLenString) {
-            context->setNamespaceBinding(XMLNSPrefix, nsUri->asString(dContext));
-          }
-          else {
-            context->setDefaultElementAndTypeNS(nsUri->asString(dContext));
-          }
-        }
+        const XMLCh* str=item->asString(dContext);
+        XMLBuffer buff(XMLString::stringLen(str)+1, mm);
+        buff.append(str);
+        if(m_nodeType == Node::attribute_string)
+          XMLString::replaceWS(buff.getRawBuffer(), mm);
+        unescapeEntities(buff);
+        AnyAtomicTypeConstructor *newIC = new (mm)
+                        AnyAtomicTypeConstructor(
+                            XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                            XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
+                mm->getPooledString(buff.getRawBuffer()), AnyAtomicType::STRING);
+        lit->setItemConstructor(newIC);
       }
     }
+    // atomize content and run static resolution 
+    if(m_nodeType == Node::attribute_string ||
+       m_nodeType == Node::processing_instruction_string ||
+       m_nodeType == Node::comment_string ||
+       m_nodeType == Node::text_string ||
+       m_nodeType == Node::cdata_string) {
+      (*m_children)[i] = new (mm) XQAtomize((*m_children)[i], mm);
+    }
+    (*m_children)[i] = (*m_children)[i]->staticResolution(context);
+    _src.add((*m_children)[i]->getStaticResolutionContext());
+
   }
 
   _src.getStaticType().flags = StaticType::NODE_TYPE;
