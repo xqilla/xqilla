@@ -5048,8 +5048,8 @@ yyreduce:
 								new (MEMMGR) XQLiteral(
                     new (MEMMGR) AnyAtomicTypeConstructor(
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
-										(yyvsp[-2].str), AnyAtomicType::STRING),
+										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_QNAME,
+										(yyvsp[-2].str), AnyAtomicType::QNAME),
 										MEMMGR), 
 								(yyvsp[-1].itemList), content, MEMMGR));
 		}
@@ -5088,8 +5088,8 @@ yyreduce:
 							  new (MEMMGR) XQLiteral(
                     new (MEMMGR) AnyAtomicTypeConstructor(
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
-										(yyvsp[-6].str), AnyAtomicType::STRING),
+										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_QNAME,
+										(yyvsp[-6].str), AnyAtomicType::QNAME),
 										MEMMGR), 
 							  (yyvsp[-5].itemList), elemContent,MEMMGR));
 		}
@@ -5121,8 +5121,8 @@ yyreduce:
                                             new (MEMMGR) XQLiteral(
                                                 new (MEMMGR) AnyAtomicTypeConstructor(
                                                     XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                                                    XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
-                                                    (yyvsp[-2].str), AnyAtomicType::STRING),
+										            XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_QNAME,
+										            (yyvsp[-2].str), AnyAtomicType::QNAME),
                                                 MEMMGR), 
                                             0, (yyvsp[0].itemList),MEMMGR));
             if(bInsertAtFront)
