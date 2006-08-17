@@ -11,8 +11,6 @@
  * $Id$
  */
 
-#include <set>
-
 #include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionDistinctValues.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
@@ -35,6 +33,8 @@
 #include <xqilla/context/ContextHelpers.hpp>
 
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
+
+#include <set>
 
 #if defined(XERCES_HAS_CPP_NAMESPACE)
 XERCES_CPP_NAMESPACE_USE
