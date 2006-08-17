@@ -11,6 +11,8 @@
  * $Id$
  */
 
+#include <set>
+
 #include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionDistinctValues.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
@@ -70,27 +72,136 @@ ASTNode* FunctionDistinctValues::staticResolution(StaticContext *context)
   return result;
 }
 
-Result FunctionDistinctValues::createResult(DynamicContext* context, int flags) const
+static inline AnyAtomicType::AtomicObjectType getSortType(const AnyAtomicType::Ptr &a)
 {
-  return new DistinctValueResult(this, context);
+  switch(a->getPrimitiveTypeIndex()) {
+  case AnyAtomicType::ANY_URI:
+  case AnyAtomicType::UNTYPED_ATOMIC:
+  case AnyAtomicType::STRING: return AnyAtomicType::STRING;
+
+  case AnyAtomicType::DECIMAL:
+  case AnyAtomicType::FLOAT:
+  case AnyAtomicType::DOUBLE: return AnyAtomicType::DOUBLE;
+
+  case AnyAtomicType::DAY_TIME_DURATION:
+  case AnyAtomicType::YEAR_MONTH_DURATION:
+  case AnyAtomicType::DURATION: return AnyAtomicType::DURATION;
+
+  case AnyAtomicType::BASE_64_BINARY: return AnyAtomicType::BASE_64_BINARY;
+  case AnyAtomicType::BOOLEAN: return AnyAtomicType::BOOLEAN;
+  case AnyAtomicType::DATE: return AnyAtomicType::DATE;
+  case AnyAtomicType::DATE_TIME: return AnyAtomicType::DATE_TIME;
+  case AnyAtomicType::G_DAY: return AnyAtomicType::G_DAY;
+  case AnyAtomicType::G_MONTH: return AnyAtomicType::G_MONTH;
+  case AnyAtomicType::G_MONTH_DAY: return AnyAtomicType::G_MONTH_DAY;
+  case AnyAtomicType::G_YEAR: return AnyAtomicType::G_YEAR;
+  case AnyAtomicType::G_YEAR_MONTH: return AnyAtomicType::G_YEAR_MONTH;
+  case AnyAtomicType::HEX_BINARY: return AnyAtomicType::HEX_BINARY;
+  case AnyAtomicType::NOTATION: return AnyAtomicType::NOTATION;
+  case AnyAtomicType::QNAME: return AnyAtomicType::QNAME;
+  case AnyAtomicType::TIME: return AnyAtomicType::TIME;
+
+  default: break;
+  }
+
+  assert(false); // Not supported
+  return AnyAtomicType::STRING;
 }
 
-FunctionDistinctValues::DistinctValueResult::DistinctValueResult(const FunctionDistinctValues *fdv, const DynamicContext *context)
+struct dvCompare
+{
+  dvCompare(const Collation *collation, const DynamicContext *context)
+    : collation_(collation), context_(context) {}
+
+  bool operator()(const AnyAtomicType::Ptr &a, const AnyAtomicType::Ptr &b) const
+  {
+    AnyAtomicType::AtomicObjectType atype = getSortType(a);
+    AnyAtomicType::AtomicObjectType btype = getSortType(b);
+
+    if(atype != btype) return atype < btype;
+
+    // Items are comparable
+    switch(atype) {
+    case AnyAtomicType::STRING:
+      return collation_->compare(a->asString(context_), b->asString(context_)) < 0;
+    case AnyAtomicType::DOUBLE:
+      return ((const Numeric *)a.get())->compare((const Numeric *)b.get(), context_) < 0;
+    case AnyAtomicType::DURATION:
+      return ((const ATDurationOrDerived *)a.get())->compare((const ATDurationOrDerived *)b.get(), context_) < 0;
+    case AnyAtomicType::BASE_64_BINARY:
+      return ((const ATBase64BinaryOrDerived *)a.get())->compare((const ATBase64BinaryOrDerived *)b.get(), context_) < 0;
+    case AnyAtomicType::BOOLEAN:
+      return ((const ATBooleanOrDerived *)a.get())->compare((const ATBooleanOrDerived *)b.get(), context_) < 0;
+    case AnyAtomicType::DATE:
+      return ((const ATDateOrDerived *)a.get())->compare((const ATDateOrDerived *)b.get(), context_) < 0;
+    case AnyAtomicType::DATE_TIME:
+      return ((const ATDateTimeOrDerived *)a.get())->compare((const ATDateTimeOrDerived *)b.get(), context_) < 0;
+    case AnyAtomicType::G_DAY:
+      return ((const ATGDayOrDerived *)a.get())->compare((const ATGDayOrDerived *)b.get(), context_) < 0;
+    case AnyAtomicType::G_MONTH:
+      return ((const ATGMonthOrDerived *)a.get())->compare((const ATGMonthOrDerived *)b.get(), context_) < 0;
+    case AnyAtomicType::G_MONTH_DAY:
+      return ((const ATGMonthDayOrDerived *)a.get())->compare((const ATGMonthDayOrDerived *)b.get(), context_) < 0;
+    case AnyAtomicType::G_YEAR:
+      return ((const ATGYearOrDerived *)a.get())->compare((const ATGYearOrDerived *)b.get(), context_) < 0;
+    case AnyAtomicType::G_YEAR_MONTH:
+      return ((const ATGYearMonthOrDerived *)a.get())->compare((const ATGYearMonthOrDerived *)b.get(), context_) < 0;
+    case AnyAtomicType::HEX_BINARY:
+      return ((const ATHexBinaryOrDerived *)a.get())->compare((const ATHexBinaryOrDerived *)b.get(), context_) < 0;
+    case AnyAtomicType::NOTATION:
+      return ((const ATNotationOrDerived *)a.get())->compare((const ATNotationOrDerived *)b.get(), context_) < 0;
+    case AnyAtomicType::QNAME:
+      return ((const ATQNameOrDerived *)a.get())->compare((const ATQNameOrDerived *)b.get(), context_) < 0;
+    case AnyAtomicType::TIME:
+      return ((const ATTimeOrDerived *)a.get())->compare((const ATTimeOrDerived *)b.get(), context_) < 0;
+    default: break;
+    }
+
+    assert(false);
+    return false;
+  }
+
+  const Collation *collation_;
+  const DynamicContext *context_;
+};
+
+typedef std::set<AnyAtomicType::Ptr, dvCompare> DistinctSet;
+
+class DistinctValueResult : public ResultImpl
+{
+public:
+  DistinctValueResult(const FunctionDistinctValues *fdv, const DynamicContext *context);
+  ~DistinctValueResult();
+  Item::Ptr next(DynamicContext *context);
+  std::string asString(DynamicContext *context, int indent) const;
+private:
+  const FunctionDistinctValues *fdv_;
+  Result parent_;
+  bool toDo_;
+
+  DistinctSet *alreadySeen_;
+};
+
+DistinctValueResult::DistinctValueResult(const FunctionDistinctValues *fdv, const DynamicContext *context)
   : fdv_(fdv),
     parent_(0),
-    collation_(0),
     toDo_(true),
-    seenNan_(false),
-    alreadySeen_(context->getMemoryManager())
+    alreadySeen_(0)
 {
 }
 
-Item::Ptr FunctionDistinctValues::DistinctValueResult::next(DynamicContext *context)
+DistinctValueResult::~DistinctValueResult()
+{
+  delete alreadySeen_;
+}
+
+Item::Ptr DistinctValueResult::next(DynamicContext *context)
 {
   if(toDo_) {
     toDo_ = false;
     parent_ = fdv_->getParamNumber(1, context);
 
+    Collation *collation;
     if(fdv_->getNumArgs() > 1) {
         const XMLCh* collName = fdv_->getParamNumber(2, context)->next(context)->asString(context);
         try {
@@ -98,79 +209,40 @@ Item::Ptr FunctionDistinctValues::DistinctValueResult::next(DynamicContext *cont
         } catch(XPath2ErrorException &e) {
             XQThrow(FunctionException, X("FunctionDistinctValues::DistinctValueResult::next"), X("Invalid collationURI"));  
         }
-        collation_ = context->getCollation(collName);
-        if(collation_ == NULL)
+        collation = context->getCollation(collName);
+        if(collation == NULL)
             XQThrow(FunctionException,X("FunctionDistinctValues::DistinctValueResult::next"),X("Collation object is not available"));
     }
     else
-        collation_ = context->getDefaultCollation();
-    if(collation_ == NULL)
-        collation_ = context->getCollation(CodepointCollation::getCodepointCollationName());
+        collation = context->getDefaultCollation();
+    if(collation == NULL)
+        collation = context->getCollation(CodepointCollation::getCodepointCollationName());
+
+    alreadySeen_ = new DistinctSet(dvCompare(collation, context));
   }
 
   AnyAtomicType::Ptr item;
   while(true) {
-    item = (const AnyAtomicType::Ptr )parent_->next(context);
+    item = (const AnyAtomicType *)parent_->next(context).get();
     if(item == NULLRCP) {
       parent_ = 0;
       return 0;
     }
 
-    AnyAtomicType::Ptr toCompare = item;
-    if(item->getPrimitiveTypeIndex() == AnyAtomicType::UNTYPED_ATOMIC) {
-      toCompare = item->castAs(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                               SchemaSymbols::fgDT_STRING, context);
-    }
-    else if(item->getPrimitiveTypeIndex() == AnyAtomicType::DOUBLE) {
-      ATDoubleOrDerived* dbl = (ATDoubleOrDerived*)item.get();
-      if(dbl->isZero() && dbl->isNegative()) {
-        toCompare = context->getItemFactory()->createDouble(0.0, context);
-      }
-      else if(dbl->isNaN()) {
-        if(!seenNan_) {
-          seenNan_ = true;
-          return item;
-        }
-        continue;
-      }
-    }
-    else if(item->getPrimitiveTypeIndex() == AnyAtomicType::FLOAT) {
-      ATFloatOrDerived* flt = (ATFloatOrDerived*)item.get();
-      if(flt->isZero() && flt->isNegative()) {
-        toCompare = context->getItemFactory()->createFloat(0.0, context);
-      }
-      else if(flt->isNaN()) {
-        if(!seenNan_) {
-          seenNan_ = true;
-          return item;
-        }
-        continue;
-      }
-    }
-
-    bool bFound = false;
-    Sequence::iterator it = alreadySeen_.begin();
-    for(;it != alreadySeen_.end(); ++it) {
-      AnyAtomicType::Ptr other = (const AnyAtomicType::Ptr )*it;
-      try {
-        bFound = Equals::equals(other, toCompare, collation_, context);
-      } catch (::IllegalArgumentException &e) {
-        // if eq is not defined, they are different
-      } catch (XPath2ErrorException &e) {
-        // if eq is not defined, they are different
-      }
-      if(bFound) break;
-    }
-    if(!bFound) {
-      alreadySeen_.addItem(toCompare);
+    if(alreadySeen_->insert(item).second)
       return item;
-    }
   }
 
   return 0;
 }
 
-std::string FunctionDistinctValues::DistinctValueResult::asString(DynamicContext *context, int indent) const
+std::string DistinctValueResult::asString(DynamicContext *context, int indent) const
 {
-  return "<FunctionDistinctValues_DistinctValueResult/>";
+  return "<DistinctValueResult/>";
 }
+
+Result FunctionDistinctValues::createResult(DynamicContext* context, int flags) const
+{
+  return new DistinctValueResult(this, context);
+}
+

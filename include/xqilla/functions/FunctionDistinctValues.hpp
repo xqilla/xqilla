@@ -36,25 +36,7 @@ public:
   FunctionDistinctValues(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   virtual ASTNode* staticResolution(StaticContext *context);
-	virtual Result createResult(DynamicContext* context, int flags=0) const;
-
-private:  
-  class DistinctValueResult : public ResultImpl
-  {
-  public:
-    DistinctValueResult(const FunctionDistinctValues *fdv, const DynamicContext *context);
-    Item::Ptr next(DynamicContext *context);
-    std::string asString(DynamicContext *context, int indent) const;
-  private:
-    const FunctionDistinctValues *fdv_;
-    Result parent_;
-    Collation *collation_;
-    bool toDo_;
-
-    bool seenNan_;
-    Sequence alreadySeen_;
-  };
-
+  virtual Result createResult(DynamicContext* context, int flags=0) const;
 };
 
 #endif // _FUNCTIONDISTINCTVALUES_HPP

@@ -125,20 +125,6 @@ protected:
   virtual AnyAtomicType::Ptr castAsInternal(AtomicObjectType targetIndex, const XMLCh* targetURI, const XMLCh* targetType, const DynamicContext* context) const;
 
 private:
-  /** Compare two dayTimeDurations, return true if this = other */
-  bool dayTimeEquals(const ATDurationOrDerived::Ptr &dayTimeDuration, const DynamicContext* context) const;
-  /** Compare two dayTimeDurations, return true if this < other */
-  bool dayTimeLessThan(const ATDurationOrDerived::Ptr &dayTimeDuration, const DynamicContext* context) const;
-  /** Compare two dayTimeDurations, return true if this > other */
-  bool dayTimeGreaterThan(const ATDurationOrDerived::Ptr &dayTimeDuration, const DynamicContext* context) const;
-
-  /** Compare two yearMonthDurations, return true if this = other */
-  bool yearMonthEquals(const ATDurationOrDerived::Ptr &yearMonthDuration, const DynamicContext* context) const;
-  /** Compare two yearMonthDurations, return true if this < other */
-  bool yearMonthLessThan(const ATDurationOrDerived::Ptr &yearMonthDuration, const DynamicContext* context) const;
-  /** Compare two yearMonthDurations, return true if this > other */
-  bool yearMonthGreaterThan(const ATDurationOrDerived::Ptr &yearMonthDuration, const DynamicContext* context) const;
-
   /*The values that make up this duration */
   bool _isPositive;
   MAPM _months;
