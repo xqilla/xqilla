@@ -75,7 +75,15 @@ Sequence FunctionIriToUri::collapseTreeInternal(DynamicContext* context, int fla
     XERCES_CPP_NAMESPACE_QUALIFIER XMLUTF8Transcoder utf8Trans(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgUTF8EncodingString, 10, context->getMemoryManager());
     for(unsigned i=0;i<len;i++)
     {
-        if(isUCSCharOrIPrivate(source[i]))
+        // If $uri-part contains a character that is invalid in an IRI, such as a space character, the invalid character is 
+        // replaced by its percent-encoded form as described in [RFC 3986] before the conversion is performed.
+        if(source[i]==XERCES_CPP_NAMESPACE_QUALIFIER chSpace)
+        {
+            outString.append(XERCES_CPP_NAMESPACE_QUALIFIER chPercent);
+            outString.append(XERCES_CPP_NAMESPACE_QUALIFIER chDigit_2);
+            outString.append(XERCES_CPP_NAMESPACE_QUALIFIER chDigit_0);
+        }
+        else if(isUCSCharOrIPrivate(source[i]))
         {
             XMLByte utf8Str[8];
             unsigned int charsEaten;
