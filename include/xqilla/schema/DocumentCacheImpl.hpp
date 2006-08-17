@@ -160,6 +160,7 @@ public:
    */ 
   virtual bool isTypeOrDerivedFromType(const XMLCh* const uri, const XMLCh* const typeName, 
                                        const XMLCh* const uriToCheck, const XMLCh* const typeNameToCheck) const; 
+  virtual bool isTypeDefined(const XMLCh* const uri, const XMLCh* const typeName) const; 
 
   virtual void addSchemaLocation(const XMLCh* uri, VectorOfStrings* locations, StaticContext *context);
 

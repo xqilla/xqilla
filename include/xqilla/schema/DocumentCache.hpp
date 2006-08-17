@@ -80,6 +80,7 @@ public:
    * (except of course, call with URIs, not prefixes!)
    */ 
   virtual bool isTypeOrDerivedFromType(const XMLCh* const uri, const XMLCh* const typeName, const XMLCh* const uriToCheck, const XMLCh* const typeNameToCheck) const = 0; 
+  virtual bool isTypeDefined(const XMLCh* const uri, const XMLCh* const typeName) const = 0; 
 
   virtual void addSchemaLocation(const XMLCh* uri, VectorOfStrings* locations, StaticContext *context) = 0;
 

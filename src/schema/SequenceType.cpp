@@ -329,6 +329,16 @@ bool SequenceType::ItemType::matchesNameType(const Item::Ptr &toBeTested, Dynami
   //atomic type derived from xs:decimal.
 
   if(m_pType) {
+    if(!context->getDocumentCache()->isTypeDefined(getTypeURI(context), m_pType->getName()))
+    {
+      XMLBuffer msg(1023, context->getMemoryManager());
+      msg.set(X("Type {"));
+      msg.append(getTypeURI(context));
+      msg.append(X("}"));
+      msg.append(m_pType->getName());
+      msg.append(X(" is not defined [err:XPTY0004]"));
+      XQThrow(XPath2ErrorException,X("SequenceType::ItemType::matchesNameType"), msg.getRawBuffer());
+    }
     bool result;
     if(toBeTested->isAtomicValue()) {
       result = ((AnyAtomicType*)(const Item*)toBeTested)->isInstanceOfType(getTypeURI(context), m_pType->getName(), context);
