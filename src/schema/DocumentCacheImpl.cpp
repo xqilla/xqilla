@@ -743,6 +743,25 @@ bool DocumentCacheImpl::isTypeOrDerivedFromType(const XMLCh* const uri, const XM
   return false;
 }
 
+bool DocumentCacheImpl::isTypeDefined(const XMLCh* const uri, const XMLCh* const typeName) const
+{
+  if(getComplexTypeInfo(uri, typeName) != NULL)
+      return true;
+
+  if(_parser.getGrammarResolver()->getDatatypeValidator(uri,typeName) != NULL)
+      return true;
+
+  // these types are not present in the XMLSchema grammar, but they are defined
+  if(XPath2Utils::equals(uri, XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA))
+  {
+      return (XPath2Utils::equals(typeName, AnyAtomicType::fgDT_ANYATOMICTYPE) ||
+              XPath2Utils::equals(typeName, ATUntypedAtomic::fgDT_UNTYPEDATOMIC) ||
+              XPath2Utils::equals(typeName, DocumentCacheParser::g_szUntyped) ||
+              XPath2Utils::equals(typeName, XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgATTVAL_ANYTYPE));
+  }
+  return false;
+}
+
 void DocumentCacheImpl::addSchemaLocation(const XMLCh* uri, VectorOfStrings* locations, StaticContext *context)
 {
   XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buf(1023,context->getMemoryManager());
