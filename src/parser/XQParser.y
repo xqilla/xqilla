@@ -2380,8 +2380,8 @@ DirElemConstructor:
 								new (MEMMGR) XQLiteral(
                     new (MEMMGR) AnyAtomicTypeConstructor(
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
-										$2, AnyAtomicType::STRING),
+										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_QNAME,
+										$2, AnyAtomicType::QNAME),
 										MEMMGR), 
 								$3, content, MEMMGR));
 		}
@@ -2417,8 +2417,8 @@ DirElemConstructor:
 							  new (MEMMGR) XQLiteral(
                     new (MEMMGR) AnyAtomicTypeConstructor(
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
-										$2, AnyAtomicType::STRING),
+										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_QNAME,
+										$2, AnyAtomicType::QNAME),
 										MEMMGR), 
 							  $3, elemContent,MEMMGR));
 		}
@@ -2448,8 +2448,8 @@ DirAttributeList:
                                             new (MEMMGR) XQLiteral(
                                                 new (MEMMGR) AnyAtomicTypeConstructor(
                                                     XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                                                    XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
-                                                    $2, AnyAtomicType::STRING),
+										            XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_QNAME,
+										            $2, AnyAtomicType::QNAME),
                                                 MEMMGR), 
                                             0, $4,MEMMGR));
             if(bInsertAtFront)

@@ -148,19 +148,12 @@ Sequence XQDOMConstructor::collapseTreeInternal(DynamicContext *context, int fla
       // ELEMENT node
       else if(m_nodeType == Node::element_string)
       {
-        Result resName=m_name->collapseTree(context);
-        AnyAtomicType::Ptr itemName=resName->next(context);
-        if(itemName==NULLRCP || resName->next(context)!=NULLRCP)
-          XQThrow(ASTException,X("DOM Constructor"),X("The name for the element must be a single xs:QName, xs:string or xs:untypedAtomic item [err:XPTY0004]"));
-
-        std::vector<Node::Ptr> attrList;
-        std::vector<ItemFactory::ElementChild> childList;
-
         // Add a new scope for the namespace definitions, before we try to assign a URI to the name of the element
         XQScopedNamespace locallyDefinedNamespaces(context->getMemoryManager(), NULL);
         XQScopedNamespace newNSScope(context->getMemoryManager(), context->getNSResolver());
         AutoNsScopeReset jan(context, &newNSScope);
 
+        std::vector<Node::Ptr> attrList;
         if(m_attrList != 0) {
           for(VectorOfASTNodes::const_iterator itAttr = m_attrList->begin(); itAttr != m_attrList->end (); ++itAttr) {
             Result oneAttribute = (*itAttr)->collapseTree(context);
@@ -188,6 +181,12 @@ Sequence XQDOMConstructor::collapseTreeInternal(DynamicContext *context, int fla
             }
           }
         }
+
+        // Now that we have converted our namespace attributes into namespace bindings, resolve the name
+        Result resName=m_name->collapseTree(context);
+        AnyAtomicType::Ptr itemName=resName->next(context);
+        if(itemName==NULLRCP || resName->next(context)!=NULLRCP)
+          XQThrow(ASTException,X("DOM Constructor"),X("The name for the element must be a single xs:QName, xs:string or xs:untypedAtomic item [err:XPTY0004]"));
 
         const XMLCh* nodeUri=NULL, *nodePrefix=NULL, *nodeName=NULL;
         if(itemName->getPrimitiveTypeIndex()==AnyAtomicType::QNAME)
@@ -225,6 +224,7 @@ Sequence XQDOMConstructor::collapseTreeInternal(DynamicContext *context, int fla
         if(XMLString::stringLen(nodeName)==0)
           XQThrow(ASTException,X("DOM Constructor"),X("The name for the element is empty"));
 
+        std::vector<ItemFactory::ElementChild> childList;
         for (VectorOfASTNodes::const_iterator itCont = m_children->begin(); itCont != m_children->end (); ++itCont)
         {
           ASTNode* childItem=(*itCont);
