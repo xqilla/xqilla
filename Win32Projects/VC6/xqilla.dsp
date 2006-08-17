@@ -944,6 +944,62 @@ SOURCE=..\..\include\xqilla\framework\XPath2MemoryManagerImpl.hpp
 SOURCE=..\..\include\xqilla\framework\XQillaExport.hpp
 # End Source File
 # End Group
+# Begin Group "fulltext"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\src\fulltext\FTContains.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\fulltext\FTWords.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\fulltext\FTOr.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\fulltext\FTAnd.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\fulltext\FTMildnot.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\fulltext\FTUnaryNot.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\fulltext\DefaultTokenizer.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\fulltext\DefaultTokenStore.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\fulltext\FTOrder.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\fulltext\FTDistance.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\fulltext\FTScope.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\fulltext\FTContent.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\fulltext\FTWindow.cpp
+# End Source File
+# End Group
 # Begin Group "functions"
 
 # PROP Default_Filter ""
