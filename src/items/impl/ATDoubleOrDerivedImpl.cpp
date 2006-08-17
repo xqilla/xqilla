@@ -146,7 +146,24 @@ Numeric::Ptr ATDoubleOrDerivedImpl::add(const Numeric::Ptr &other, const Dynamic
           case INF: return infinity(context);
           case NEG_INF: return negInfinity(context);
           case NEG_NUM:
-          case NUM: return newDouble(_double + otherImpl->_double, context);
+          case NUM: 
+              {
+                // Handle positive and negative zero
+                if(_double.sign()==0 && otherImpl->_double!=0)
+                  return other;
+                else if(_double.sign()!=0 && otherImpl->_double==0)
+                  return this;
+                else if(_double.sign()==0 && otherImpl->_double==0)
+                {
+                  if(_state==otherImpl->_state)
+                    // sum of two zero of the same sign -> result is equal to any of the two items
+                    return this;
+                  else
+                    // sum of two zero of different sign -> result is equal to +0
+                    return newDouble(MM_Zero, context);
+                }
+                return newDouble(_double + otherImpl->_double, context);
+              }
           default: assert(false); return 0; // should never get here 
         }
       }

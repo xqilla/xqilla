@@ -153,7 +153,24 @@ Numeric::Ptr ATFloatOrDerivedImpl::add(const Numeric::Ptr &other, const DynamicC
           case INF: return infinity(context);
           case NEG_INF: return negInfinity(context);
           case NEG_NUM:
-          case NUM: return newFloat(_float + otherImpl->_float, context);
+          case NUM:
+              {
+                // Handle positive and negative zero
+                if(_float.sign()==0 && otherImpl->_float!=0)
+                  return other;
+                else if(_float.sign()!=0 && otherImpl->_float==0)
+                  return this;
+                else if(_float.sign()==0 && otherImpl->_float==0)
+                {
+                  if(_state==otherImpl->_state)
+                    // sum of two zero of the same sign -> result is equal to any of the two items
+                    return this;
+                  else
+                    // sum of two zero of different sign -> result is equal to +0
+                    return newFloat(MM_Zero, context);
+                }
+                return newFloat(_float + otherImpl->_float, context);
+              }
           default: assert(false); return 0; // should never get here 
         }
       }
