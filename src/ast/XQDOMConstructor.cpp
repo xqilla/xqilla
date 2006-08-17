@@ -515,9 +515,12 @@ ASTNode* XQDOMConstructor::staticResolution(StaticContext *context)
     // process the namespace attributes (they are all at the beginning of the list)
     for (VectorOfASTNodes::iterator it=m_attrList->begin();it!=m_attrList->end();) 
     {
-      assert((*it)->getType()==ASTNode::DOM_CONSTRUCTOR && 
-             ((XQDOMConstructor*)(*it))->getNodeType()==Node::attribute_string);
-      XQDOMConstructor* attrConstructor=(XQDOMConstructor*)(*it);
+      ASTNode* astNode=*it;
+      if(astNode->getType()==ASTNode::DEBUG_HOOK)
+          astNode=((XQDebugHook*)astNode)->m_impl;
+      assert(astNode->getType()==ASTNode::DOM_CONSTRUCTOR && 
+             ((XQDOMConstructor*)astNode)->getNodeType()==Node::attribute_string);
+      XQDOMConstructor* attrConstructor=(XQDOMConstructor*)astNode;
       const ASTNode* dItem=attrConstructor->getName();
       assert(dItem!=NULL && dItem->getType() == ASTNode::LITERAL);
       const ItemConstructor* itemConstr=((XQLiteral*)dItem)->getItemConstructor();
@@ -587,9 +590,12 @@ ASTNode* XQDOMConstructor::staticResolution(StaticContext *context)
     std::set<const XMLCh*, XMLChSort> attrNames;
     for (i=0;i<m_attrList->size();i++) 
     {
-      assert((*m_attrList)[i]->getType()==ASTNode::DOM_CONSTRUCTOR && 
-             ((XQDOMConstructor*)(*m_attrList)[i])->getNodeType()==Node::attribute_string);
-      XQDOMConstructor* attrConstructor=(XQDOMConstructor*)(*m_attrList)[i];
+      ASTNode* astNode=(*m_attrList)[i];
+      if(astNode->getType()==ASTNode::DEBUG_HOOK)
+          astNode=((XQDebugHook*)astNode)->m_impl;
+      assert(astNode->getType()==ASTNode::DOM_CONSTRUCTOR && 
+             ((XQDOMConstructor*)astNode)->getNodeType()==Node::attribute_string);
+      XQDOMConstructor* attrConstructor=(XQDOMConstructor*)astNode;
       const ASTNode* dItem=attrConstructor->getName();
       assert(dItem->getType()==ASTNode::SEQUENCE); 
       const ItemConstructor::Vector &ics = ((XQSequence*)dItem)->getItemConstructors();
