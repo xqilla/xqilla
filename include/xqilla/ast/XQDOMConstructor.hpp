@@ -24,14 +24,15 @@
 #include <xqilla/items/Node.hpp>
 
 #include <xercesc/framework/XMLBuffer.hpp>
+#include <xercesc/util/RefHashTableOf.hpp>
 
 class XQILLA_API XQDOMConstructor : public ASTNodeImpl
 {
 public:
-	XQDOMConstructor(const XMLCh* nodeType, ASTNode* name, VectorOfASTNodes* attrList, VectorOfASTNodes* children, XPath2MemoryManager* expr);
+  XQDOMConstructor(const XMLCh* nodeType, ASTNode* name, VectorOfASTNodes* attrList, VectorOfASTNodes* children, XPath2MemoryManager* expr);
 
-	virtual Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
-	virtual ASTNode* staticResolution(StaticContext *context);
+  virtual Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
+  virtual ASTNode* staticResolution(StaticContext *context);
 
   const XMLCh* getNodeType() const;
   const ASTNode *getName() const;
@@ -42,13 +43,14 @@ public:
 
 protected:
   bool isTextNode(const Node::Ptr &node) const;
-    bool getStringValue(XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &value, DynamicContext *context) const;
+  bool getStringValue(XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &value, DynamicContext *context) const;
   void unescapeEntities(XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer& buff) const;
 
 protected:
-	const XMLCh* m_nodeType;
-	ASTNode* m_name;
-	VectorOfASTNodes* m_attrList, *m_children;
+  const XMLCh* m_nodeType;
+  ASTNode* m_name;
+  VectorOfASTNodes* m_attrList, *m_children;
+  XERCES_CPP_NAMESPACE_QUALIFIER RefHashTableOf< XMLCh >* m_namespaces;
 };
 
 #endif // !defined(AFXQ_XQDOMCONSTRUCTOR_H__56E97972_3896_49D3_B055_36CC3E9E550A__INCLUDED_)
