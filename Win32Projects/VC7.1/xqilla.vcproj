@@ -1833,25 +1833,16 @@
 				RelativePath="..\..\src\lexer\FlexLexer.h">
 			</File>
 			<File
-				RelativePath="..\..\src\lexer\xpath.l">
+				RelativePath="..\..\src\lexer\XQLexer.l">
 			</File>
 			<File
-				RelativePath="..\..\src\lexer\XPathScanner.cpp">
+				RelativePath="..\..\src\lexer\XQLexer.cpp">
 			</File>
 			<File
-				RelativePath="..\..\src\lexer\XPathScanner.hpp">
+				RelativePath="..\..\src\lexer\XQLexer.hpp">
 			</File>
 			<File
 				RelativePath="..\..\src\lexer\XQillaLexer.hpp">
-			</File>
-			<File
-				RelativePath="..\..\src\lexer\xquery.l">
-			</File>
-			<File
-				RelativePath="..\..\src\lexer\XQueryScanner.cpp">
-			</File>
-			<File
-				RelativePath="..\..\src\lexer\XQueryScanner.hpp">
 			</File>
 		</Filter>
 		<Filter
@@ -2136,22 +2127,13 @@
 				RelativePath="..\..\src\parser\QName.cpp">
 			</File>
 			<File
-				RelativePath="..\..\src\parser\xpath.y">
+				RelativePath="..\..\src\parser\XQParser.y">
 			</File>
 			<File
-				RelativePath="..\..\src\parser\XPath2Parser.cpp">
+				RelativePath="..\..\src\parser\XQParser.cpp">
 			</File>
 			<File
-				RelativePath="..\..\src\parser\XPath2Parser.hpp">
-			</File>
-			<File
-				RelativePath="..\..\src\parser\xquery.y">
-			</File>
-			<File
-				RelativePath="..\..\src\parser\XQueryParser.cpp">
-			</File>
-			<File
-				RelativePath="..\..\src\parser\XQueryParser.hpp">
+				RelativePath="..\..\src\parser\XQParser.hpp">
 			</File>
 			<File
 				RelativePath="..\..\include\xqilla\parser\QName.hpp">
