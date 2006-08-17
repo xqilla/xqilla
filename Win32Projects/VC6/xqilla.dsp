@@ -2325,31 +2325,19 @@ SOURCE=..\..\src\lexer\FlexLexer.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\lexer\xpath.l
+SOURCE=..\..\src\lexer\XQLexer.l
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\lexer\XPathScanner.cpp
+SOURCE=..\..\src\lexer\XQLexer.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\lexer\XPathScanner.hpp
+SOURCE=..\..\src\lexer\XQLexer.hpp
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\src\lexer\XQillaLexer.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\lexer\xquery.l
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\lexer\XQueryScanner.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\lexer\XQueryScanner.hpp
 # End Source File
 # End Group
 # Begin Group "mapm"
@@ -2725,27 +2713,15 @@ SOURCE=..\..\src\parser\QName.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\parser\xpath.y
+SOURCE=..\..\src\parser\XQParser.y
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\parser\XPath2Parser.cpp
+SOURCE=..\..\src\parser\XQParser.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\parser\XPath2Parser.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\parser\xquery.y
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\parser\XQueryParser.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\parser\XQueryParser.hpp
+SOURCE=..\..\src\parser\XQParser.hpp
 # End Source File
 # Begin Source File
 
