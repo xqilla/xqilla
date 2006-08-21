@@ -11,23 +11,22 @@
  * $Id$
  */
 
-#ifndef _ATGMONTHDAYORDERIVEDIMPL_HPP
-#define _ATGMONTHDAYORDERIVEDIMPL_HPP
+#ifndef _ATGMONTHORDERIVEDIMPL_HPP
+#define _ATGMONTHORDERIVEDIMPL_HPP
 
 #include <xercesc/util/XercesDefs.hpp>
-#include <xqilla/items/ATGMonthDayOrDerived.hpp>
-#include <xqilla/items/ATDateTimeOrDerived.hpp>
+#include <xqilla/items/ATGMonthOrDerived.hpp>
 
 #include <xqilla/framework/XQillaExport.hpp>
-#include <xqilla/items/ATDecimalOrDerived.hpp>
+#include <xqilla/mapm/m_apm.h>
 #include <xqilla/items/Timezone.hpp>
 
-class XQILLA_API ATGMonthDayOrDerivedImpl : public ATGMonthDayOrDerived 
+class XQILLA_API ATGMonthOrDerivedImpl : public ATGMonthOrDerived 
 {
 
 public:
   /* constructor */
-  ATGMonthDayOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* value, const DynamicContext* context);
+  ATGMonthOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* value, const DynamicContext* context = 0);
 
   virtual void *getInterface(const XMLCh *name) const;
 
@@ -50,35 +49,36 @@ public:
   
   /** Returns less than 0 if this is less that other,
       0 if they are the same, and greater than 0 otherwise */
-  virtual int compare(const ATGMonthDayOrDerived::Ptr &other, const DynamicContext *context) const;
+  virtual int compare(const ATGMonthOrDerived::Ptr &other, const DynamicContext *context) const;
  
   /** Returns true if a timezone is defined for this.  False otherwise.*/
   virtual bool hasTimezone() const;
 
   /** Sets the timezone to the given timezone.*/
-  virtual ATGMonthDayOrDerived::Ptr setTimezone(const Timezone::Ptr &timezone, const DynamicContext* context) const;
+  virtual ATGMonthOrDerived::Ptr setTimezone(const Timezone::Ptr &timezone, const DynamicContext* context) const;
   
   /* Get the primitive index associated with this type */
   static AnyAtomicType::AtomicObjectType getTypeIndex(); 
-  
+
   /* Get the primitive type name */
   static const XMLCh* getPrimitiveName();
 
   /* Get the primitive index associated with this type */
   virtual AnyAtomicType::AtomicObjectType getPrimitiveTypeIndex() const;
 
+  static MAPM parseGMonth(const XMLCh* const value, const MAPM &implicitTimezone);
+
 private:
 
-  /* parse the gMonthDay */
-  void setGMonthDay(const XMLCh* const value, const DynamicContext* context);
+  /* parse the gDay */
+  void setGMonth(const XMLCh* const value);
   
-  ATDateTimeOrDerived::Ptr buildDateTime(const DynamicContext *context) const;
+  MAPM buildReferenceDateTime(const DynamicContext *context) const;
   
-  /*The values of this gMonthDay*/
-  ATDecimalOrDerived::Ptr _DD;  // as nonNegativeInteger
-  ATDecimalOrDerived::Ptr _MM;  // as nonNegativeInteger
+  /*The value of this gDay*/
+  MAPM _gMonth; // as nonNegativeInteger
 
-  /* whether this gMonthDay has a timezone value*/
+  /* whether this gDay has a timezone value*/
   bool _hasTimezone;
 
   /* the timezone value, if it exist */
@@ -92,4 +92,4 @@ private:
  
 };
 
-#endif // _ATGMONTHDAYORDERIVEDIMPL_HPP
+#endif // _ATGMONTHORDERIVEDIMPL_HPP

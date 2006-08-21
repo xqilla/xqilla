@@ -132,7 +132,7 @@ AnyAtomicType::Ptr ArithmeticOperator::getArgument(unsigned int index, DynamicCo
 
     if(first != NULLRCP && second != NULLRCP) {
       XQThrow(XPath2TypeCastException,X("ArithmeticOperator::getArgument"),
-               X("A parameter of the operator is not an empty sequence or a single atomic value [err:XPTY0004]"));
+              X("A parameter of the operator is not an empty sequence or a single atomic value [err:XPTY0004]"));
     }
   }
     
@@ -141,14 +141,14 @@ AnyAtomicType::Ptr ArithmeticOperator::getArgument(unsigned int index, DynamicCo
   //
   if(first != NULLRCP) {
     if(first->isAtomicValue()) {
-      if(((const AnyAtomicType*)(const Item*)first)->getPrimitiveTypeIndex() == AnyAtomicType::UNTYPED_ATOMIC) {
-        first = (const Item::Ptr)((const AnyAtomicType*)(const Item*)first)->castAs(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                                                                                    SchemaSymbols::fgDT_DOUBLE, 
-                                                                                    context);
+      if(((const AnyAtomicType*)first.get())->getPrimitiveTypeIndex() == AnyAtomicType::UNTYPED_ATOMIC) {
+        first = ((const AnyAtomicType*)first.get())->castAs(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                                                            SchemaSymbols::fgDT_DOUBLE, context);
       }
     }
     else {
-      XQThrow(XPath2TypeCastException,X("ArithmeticOperator::getArgument"), X("A parameter of the operator is not an atomic value"));
+      XQThrow(XPath2TypeCastException,X("ArithmeticOperator::getArgument"),
+              X("A parameter of the operator is not an atomic value"));
     }
   }
 

@@ -31,9 +31,8 @@ class XQILLA_API ATDateOrDerivedImpl : public ATDateOrDerived
 {
 
 public:
-
   /* constructor */
-  ATDateOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* value, const DynamicContext* context);
+  ATDateOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* value, const DynamicContext* context = 0);
 
   virtual void *getInterface(const XMLCh *name) const;
 
@@ -134,6 +133,8 @@ public:
   /* Get the primitive index associated with this type */
   virtual AnyAtomicType::AtomicObjectType getPrimitiveTypeIndex() const;
   
+  static MAPM parseDate(const XMLCh* const date, const MAPM &implicitTimezone);
+
 protected:
   
   /* If possible, cast this type to the target type */
@@ -144,7 +145,7 @@ private:
   ATDateOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const MAPM &seconds, 
                       const Timezone::Ptr &timezone, bool hasTimezone);
 
-  void setDate(const XMLCh* const date, const DynamicContext* context);
+  void setDate(const XMLCh* const date);
 
   /*The value of this date, in seconds since 0001-01-01T00:00:00,
     always normalized if a timezone is present*/

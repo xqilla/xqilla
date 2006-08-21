@@ -12,7 +12,7 @@
  */
 
 #include "../../config/xqilla_config.h"
-#include "ATDateTimeOrDerivedImpl.hpp"
+#include <xqilla/items/impl/ATDateTimeOrDerivedImpl.hpp>
 #include <xercesc/util/XMLUniDefs.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 #include <xercesc/framework/XMLBuffer.hpp>
@@ -50,7 +50,7 @@ ATDateTimeOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh
     _typeName(typeName),
     _typeURI(typeURI) { 
     
-  setDateTime(value, context);
+  setDateTime(value);
 }
 
 // private constructor for internal use
@@ -137,7 +137,7 @@ static inline MAPM composeSeconds(MAPM &YY, MAPM &MM, MAPM &DD,
 static inline MAPM tzLocalize(bool hasTimezone, const MAPM &value, const Timezone::Ptr &timezone)
 {
   if(!hasTimezone) return value;
-  return value + (timezone->getTimezoneAsMinutes() * DateUtils::g_secondsPerMinute);
+  return value + timezone->asSeconds();
 }
 
 static inline MAPM tzNormalize(bool hasTimezone, const MAPM &value, const DynamicContext *context)
@@ -379,8 +379,8 @@ ATDateTimeOrDerived::Ptr ATDateTimeOrDerivedImpl::setTimezone(const Timezone::Pt
                                                               const DynamicContext* context) const
 {
   MAPM result = seconds_;
-  if(_hasTimezone) result += (timezone_->getTimezoneAsMinutes() * DateUtils::g_secondsPerMinute);
-  if(timezone != NULLRCP) result -= (timezone->getTimezoneAsMinutes() * DateUtils::g_secondsPerMinute);
+  if(_hasTimezone) result += timezone_->asSeconds();
+  if(timezone != NULLRCP) result -= timezone->asSeconds();
 
   return new ATDateTimeOrDerivedImpl(_typeURI, _typeName, result, timezone, timezone != NULLRCP);
 }
@@ -450,13 +450,6 @@ ATDateTimeOrDerived::Ptr ATDateTimeOrDerivedImpl::addDayTimeDuration(const ATDur
   return addDayTimeDuration(dayTime->asSeconds(context)->asMAPM(), context);
 }
   
-ATDateTimeOrDerived::Ptr ATDateTimeOrDerivedImpl::normalize(const DynamicContext* context) const {  
-
-  return new ATDateTimeOrDerivedImpl(_typeURI, _typeName, tzNormalize(_hasTimezone, seconds_, context),
-                                     new Timezone(true, 0, 0), true);
-}
-
-
 /**
  * Returns a date with the given yearMonthDuration subtracted from it
  */
@@ -542,7 +535,7 @@ AnyAtomicType::AtomicObjectType ATDateTimeOrDerivedImpl::getPrimitiveTypeIndex()
   return this->getTypeIndex();
 }
 
-void ATDateTimeOrDerivedImpl::setDateTime(const XMLCh* const dateTime, const DynamicContext* context) {
+void ATDateTimeOrDerivedImpl::setDateTime(const XMLCh* const dateTime) {
   unsigned int length = XMLString::stringLen(dateTime);
 
   if(dateTime == 0) {
@@ -744,13 +737,20 @@ void ATDateTimeOrDerivedImpl::setDateTime(const XMLCh* const dateTime, const Dyn
     XQThrow(XPath2TypeCastException,X("XSDateTimeImpl::setDateTime"), X("Invalid representation of dateTime [err:FORG0001]"));
   }
 
-  timezone_ = new Timezone(zonepos, zonehh, zonemm);
+  timezone_ = new Timezone(Timezone::convert(zonepos, zonehh, zonemm));
 
   seconds_ = composeSeconds(YY, MM, DD, hh, mm, ss);
 
   if(_hasTimezone) {
     // If we have a timezone, then seconds_ needs to be normalized
-    seconds_ -= (timezone_->getTimezoneAsMinutes() * DateUtils::g_secondsPerMinute);
+    seconds_ -= timezone_->asSeconds();
   }
 }
 
+MAPM ATDateTimeOrDerivedImpl::parseDateTime(const XMLCh* const dateTime, const MAPM &implicitTimezone)
+{
+  ATDateTimeOrDerivedImpl dt(0, 0, dateTime);
+  if(!dt._hasTimezone)
+    return dt.seconds_ - implicitTimezone;
+  return dt.seconds_;
+}

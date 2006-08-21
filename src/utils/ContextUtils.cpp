@@ -28,6 +28,7 @@ int ContextUtils::getTimezone()
 	struct tm ltm;
 	DateUtils::threadsafe_localtime(&tt, &ltm);
 
-	return ((int)tt - (int)mktime(&tm)) / 60 +
-		/*daylight saving time*/(ltm.tm_isdst > 0 ? 1 * 60 : 0);
+	return (((int)tt - (int)mktime(&tm)) / 60 +
+		/*daylight saving time*/(ltm.tm_isdst > 0 ? 1 * 60 : 0)) *
+		DateUtils::g_secondsPerMinute;
 }

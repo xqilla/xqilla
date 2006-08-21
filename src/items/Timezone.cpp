@@ -31,104 +31,63 @@
 
 static const int g_maxHour = 14;
 
-Timezone::Timezone(int minutes) {
-  init(minutes);
-  validate();
-}
-
-Timezone::Timezone(const ATDecimalOrDerived::Ptr &hour, const ATDecimalOrDerived::Ptr &minute, const DynamicContext* context) {
-  _hh=abs(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::parseInt(hour->asString(context)));
-  _mm=abs(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::parseInt(minute->asString(context)));
-  _positive = (!hour->isNegative() && !minute->isNegative());
-  
-  validate();
-}
-
-Timezone::Timezone(const ATDurationOrDerived::Ptr &duration, const DynamicContext* context) {
-  if(!duration->getSeconds(context)->isZero())
-    XQThrow(XPath2TypeCastException ,X("Timezone::Timezone"), X("Timezone must have an integral number of minutes [err:FODT0003]."));
-  int minutes = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::parseInt(duration->asSeconds(context)->asString(context));
-  minutes = minutes / DateUtils::g_secondsPerMinute;
-
-  init(minutes);
-  validate();
-}
-
-Timezone::Timezone(bool positive, int hour, int minute) {
-  _hh = hour;
-  _mm = minute;
-  _positive = positive;
-  validate();
-}
-
-void Timezone::init(int minutes)
+Timezone::Timezone(const MAPM &seconds)
+  : seconds_(seconds)
 {
-  // get hour
-  _hh = abs( minutes ) / DateUtils::g_minutesPerHour;
+  validate();
+}
 
-  // get minute
-  _mm = abs( minutes ) % DateUtils::g_minutesPerHour;
+Timezone::Timezone(const ATDurationOrDerived::Ptr &duration, const DynamicContext* context)
+  : seconds_(duration->asSeconds(context)->asMAPM())
+{
+  validate();
+}
 
-  _positive = (minutes>=0);
+MAPM Timezone::convert(bool positive, int hour, int minute)
+{
+  return (hour * DateUtils::g_secondsPerHour + minute * DateUtils::g_secondsPerMinute) * (positive ? +1 : -1);
 }
 
 void Timezone::validate() const {
   // Check that we have a valid timezone
-  if ( _hh > g_maxHour || (_hh == g_maxHour && _mm > 0)) {
+  if(seconds_.abs() > (g_maxHour * DateUtils::g_secondsPerHour)) {
     XQThrow(XPath2TypeCastException ,X("Timezone::Timezone"), X("Timezone outside of valid range created [err:FODT0003]."));
   }
-  if ( (_hh > 0 && _mm < 0) || (_hh < 0 && _mm > 0)) {
-    XQThrow(XPath2TypeCastException ,X("Timezone::Timezone"), X("Invalid timezone [err:FODT0003]."));
+  if(seconds_.rem(DateUtils::g_secondsPerMinute).sign() != 0) {
+    XQThrow(XPath2TypeCastException ,X("Timezone::Timezone"),
+            X("Timezone must have an integral number of minutes [err:FODT0003]."));
   }
 }
 
-Timezone::Timezone(const Timezone & other) {
-  _hh = other._hh;
-  _mm = other._mm;
-  _positive = other._positive;
+bool Timezone::equals(const Timezone::Ptr &other) const
+{
+  return seconds_ == other->seconds_;
 }
 
-bool Timezone::equals(const Timezone::Ptr &other) const {
-  return (_hh == other->_hh && _mm == other->_mm && _positive == other->_positive);
-}
-
-const int Timezone::getTimezoneAsMinutes() const {
-  return (_hh*DateUtils::g_minutesPerHour+_mm) * (_positive?+1:-1);
-}
-
-ATDurationOrDerived::Ptr Timezone::asDayTimeDuration(const DynamicContext* context) const {
-  int secs = _hh * DateUtils::g_secondsPerHour;
-  secs += _mm * DateUtils::g_secondsPerMinute;
-  if(!_positive) secs = -secs;
-  return context->getItemFactory()->createDayTimeDuration(secs, context);
+ATDurationOrDerived::Ptr Timezone::asDayTimeDuration(const DynamicContext* context) const
+{
+  return context->getItemFactory()->createDayTimeDuration(seconds_, context);
 }
 
 const XMLCh* Timezone::asString(const DynamicContext* context) const {
-  if (_hh == 0 && _mm == 0)
-	  return XPath2Utils::asStr(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_Z,context->getMemoryManager());
-  
+  if(seconds_.sign() == 0)
+    return XPath2Utils::asStr(XERCES_CPP_NAMESPACE_QUALIFIER chLatin_Z,context->getMemoryManager());
+
+  MAPM hours, minutes;
+  seconds_.integer_div_rem(DateUtils::g_secondsPerHour, hours, minutes);
+  minutes = minutes.integer_divide(DateUtils::g_secondsPerMinute);
+
   XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buffer(1023, context->getMemoryManager());
-  if(_positive)
+  if(seconds_.sign() > 0)
     buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chPlus);
-  else
+  else {
     buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-  DateUtils::formatNumber(_hh,2,buffer);
+    hours = hours.abs();
+    minutes = minutes.abs();
+  }
+  DateUtils::formatNumber(hours,2,buffer);
   buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chColon);
-  DateUtils::formatNumber(_mm,2,buffer);
+  DateUtils::formatNumber(minutes,2,buffer);
   
   return context->getMemoryManager()->getPooledString(buffer.getRawBuffer());
 }
-
-const XMLCh* Timezone::printTimezone(const DynamicContext* context) const {
-  
-  XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buffer(1023, context->getMemoryManager());
-  if(!_positive)
-    buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-  DateUtils::formatNumber(_hh,2,buffer);
-  buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chColon);
-  DateUtils::formatNumber(_mm,2,buffer);
-  
-  return context->getMemoryManager()->getPooledString(buffer.getRawBuffer());
-}
-
-

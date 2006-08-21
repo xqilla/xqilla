@@ -12,7 +12,7 @@
  */
 
 #include "../../config/xqilla_config.h"
-#include "ATGYearOrDerivedImpl.hpp"
+#include <xqilla/items/impl/ATGYearOrDerivedImpl.hpp>
 #include <xqilla/exceptions/IllegalArgumentException.hpp>
 #include <xqilla/exceptions/XPath2TypeCastException.hpp>
 #include <xercesc/util/XMLUni.hpp>
@@ -40,7 +40,7 @@ ATGYearOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* v
     _typeName(typeName),
     _typeURI(typeURI) { 
     
-     setGYear(value, context); 
+     setGYear(value);
 }
 
 void *ATGYearOrDerivedImpl::getInterface(const XMLCh *name) const
@@ -79,35 +79,32 @@ AnyAtomicType::AtomicObjectType ATGYearOrDerivedImpl::getTypeIndex() {
 const XMLCh* ATGYearOrDerivedImpl::asString(const DynamicContext* context) const {
   XMLBuffer buffer(1023, context->getMemoryManager());
 
-  DateUtils::formatNumber(_YY->asMAPM(), 4, buffer);
+  DateUtils::formatNumber(_YY, 4, buffer);
   if(_hasTimezone) {
     buffer.append(timezone_->asString(context));
   }
   return context->getMemoryManager()->getPooledString(buffer.getRawBuffer());
 }
 
-ATDateTimeOrDerived::Ptr ATGYearOrDerivedImpl::buildDateTime(const DynamicContext *context) const
+static inline MAPM referenceDateTime(const MAPM &YY, bool hasTimezone, const Timezone::Ptr &timezone)
 {
-  static const XMLCh doubleZero[] = { chDigit_0, chDigit_0, chNull };
-  static const XMLCh zeroOne[] = { chDigit_0, chDigit_1, chNull };
+  MAPM result = DateUtils::convertDMY2Absolute(1, 1, YY) * DateUtils::g_secondsPerDay;
 
-  XMLBuffer buffer(1023, context->getMemoryManager());
-
-  DateUtils::formatNumber(_YY->asMAPM(), 4, buffer);
-  buffer.append(chDash);
-  buffer.append(zeroOne);
-  buffer.append(chDash);
-  buffer.append(zeroOne);
-  buffer.append(chLatin_T);
-  buffer.append(doubleZero);
-  buffer.append(chColon);
-  buffer.append(doubleZero);
-  buffer.append(chColon);
-  buffer.append(doubleZero);
-  if(_hasTimezone) {
-    buffer.append(timezone_->asString(context));
+  if(hasTimezone) {
+    result -= timezone->asSeconds();
   }
-  return context->getItemFactory()->createDateTime(buffer.getRawBuffer(), context);
+
+  return result;
+}
+
+MAPM ATGYearOrDerivedImpl::buildReferenceDateTime(const DynamicContext *context) const
+{
+  MAPM result = referenceDateTime(_YY, _hasTimezone, timezone_);
+
+  if(!_hasTimezone)
+    result -= context->getImplicitTimezone()->asSeconds(context)->asMAPM();
+
+  return result;
 }
 
 /* returns true if the two objects
@@ -122,7 +119,7 @@ bool ATGYearOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const Dynami
 
 int ATGYearOrDerivedImpl::compare(const ATGYearOrDerived::Ptr &other, const DynamicContext *context) const
 {
-  return buildDateTime(context)->compare(((const ATGYearOrDerivedImpl *)other.get())->buildDateTime(context), context);
+  return buildReferenceDateTime(context).compare(((const ATGYearOrDerivedImpl *)other.get())->buildReferenceDateTime(context));
 }
 
 /** Returns true if a timezone is defined for this.  False otherwise.*/
@@ -134,7 +131,7 @@ bool ATGYearOrDerivedImpl::hasTimezone() const {
 ATGYearOrDerived::Ptr ATGYearOrDerivedImpl::setTimezone(const Timezone::Ptr &timezone, const DynamicContext* context) const {
   XMLBuffer buffer(1023, context->getMemoryManager());
 
-  DateUtils::formatNumber(_YY->asMAPM(), 4, buffer);
+  DateUtils::formatNumber(_YY, 4, buffer);
   if(timezone != NULLRCP) 
     buffer.append(timezone->asString(context));
   return context->getItemFactory()->createGYearOrDerived(this->getTypeURI(), this->getTypeName(), buffer.getRawBuffer(), context);
@@ -146,7 +143,7 @@ AnyAtomicType::AtomicObjectType ATGYearOrDerivedImpl::getPrimitiveTypeIndex() co
 }
 
 /* parse the gYear */
-void ATGYearOrDerivedImpl::setGYear(const XMLCh* const value, const DynamicContext* context) {
+void ATGYearOrDerivedImpl::setGYear(const XMLCh* const value) {
  
   unsigned int length = XMLString::stringLen(value);
   if(value == NULL) {
@@ -285,8 +282,19 @@ void ATGYearOrDerivedImpl::setGYear(const XMLCh* const value, const DynamicConte
 		XQThrow(XPath2TypeCastException,X("ATGYearOrDerivedImpl::setGYear"), X("Invalid representation of gYear"));
 	}
 
-  timezone_ = new Timezone(zonepos, zonehh, zonemm);
+  timezone_ = new Timezone(Timezone::convert(zonepos, zonehh, zonemm));
 
-  _YY = context->getItemFactory()->createInteger(YY, context);
-  
+  _YY = YY;
+}
+
+MAPM ATGYearOrDerivedImpl::parseGYear(const XMLCh* const value, const MAPM &implicitTimezone)
+{
+  ATGYearOrDerivedImpl dt(0, 0, value);
+
+  MAPM result = referenceDateTime(dt._YY, dt._hasTimezone, dt.timezone_);
+
+  if(!dt._hasTimezone)
+    result -= implicitTimezone;
+
+  return result;
 }

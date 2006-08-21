@@ -12,7 +12,7 @@
  */
 
 #include "../../config/xqilla_config.h"
-#include "ATDateOrDerivedImpl.hpp"
+#include <xqilla/items/impl/ATDateOrDerivedImpl.hpp>
 #include <xercesc/util/XMLUniDefs.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 #include <xercesc/framework/XMLBuffer.hpp>
@@ -21,7 +21,7 @@
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/exceptions/IllegalArgumentException.hpp>
 #include <xqilla/exceptions/XPath2TypeCastException.hpp>
-#include "ATDateTimeOrDerivedImpl.hpp"
+#include <xqilla/items/impl/ATDateTimeOrDerivedImpl.hpp>
 #include <xqilla/items/ATDecimalOrDerived.hpp>
 #include <xqilla/items/ATDurationOrDerived.hpp>
 #include <xqilla/items/ATGDayOrDerived.hpp>
@@ -47,7 +47,7 @@ ATDateOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* va
   : _typeName(typeName),
     _typeURI(typeURI)
 {    
-  setDate(value, context);    
+  setDate(value);
 }
 
 // private constructor for internal use()
@@ -106,7 +106,7 @@ static inline MAPM composeSeconds(MAPM &YY, MAPM &MM, MAPM &DD)
 static inline MAPM tzLocalize(bool hasTimezone, const MAPM &value, const Timezone::Ptr &timezone)
 {
   if(!hasTimezone) return value;
-  return value + (timezone->getTimezoneAsMinutes() * DateUtils::g_secondsPerMinute);
+  return value + timezone->asSeconds();
 }
 
 static inline MAPM tzNormalize(bool hasTimezone, const MAPM &value, const DynamicContext *context)
@@ -309,8 +309,8 @@ bool ATDateOrDerivedImpl::hasTimezone() const {
 ATDateOrDerived::Ptr ATDateOrDerivedImpl::setTimezone(const Timezone::Ptr &timezone, const DynamicContext* context) const
 {
   MAPM result = seconds_;
-  if(_hasTimezone) result += (timezone_->getTimezoneAsMinutes() * DateUtils::g_secondsPerMinute);
-  if(timezone != NULLRCP) result -= (timezone->getTimezoneAsMinutes() * DateUtils::g_secondsPerMinute);
+  if(_hasTimezone) result += timezone_->asSeconds();
+  if(timezone != NULLRCP) result -= timezone->asSeconds();
 
   return new ATDateOrDerivedImpl(_typeURI, _typeName, result, timezone, timezone != NULLRCP);
 }
@@ -326,9 +326,9 @@ ATDateOrDerived::Ptr ATDateOrDerivedImpl::addTimezone(const ATDurationOrDerived:
   if(!_hasTimezone) return setTimezone(tz, context);
 
   // Keep the time components as 00:00:00
-  MAPM result = seconds_ + (tz->getTimezoneAsMinutes() * DateUtils::g_secondsPerMinute);
+  MAPM result = seconds_ + tz->asSeconds();
   result = (result / DateUtils::g_secondsPerDay).floor() * DateUtils::g_secondsPerDay;
-  result -= (tz->getTimezoneAsMinutes() * DateUtils::g_secondsPerMinute);
+  result -= tz->asSeconds();
 
   return new ATDateOrDerivedImpl(_typeURI, _typeName, result, tz, true);
 }
@@ -393,7 +393,7 @@ AnyAtomicType::AtomicObjectType ATDateOrDerivedImpl::getPrimitiveTypeIndex() con
   return this->getTypeIndex();
 }
 
-void ATDateOrDerivedImpl::setDate(const XMLCh* const date, const DynamicContext* context) {
+void ATDateOrDerivedImpl::setDate(const XMLCh* const date) {
   unsigned int length = XMLString::stringLen(date);
  
   if(date == 0) {
@@ -537,39 +537,30 @@ void ATDateOrDerivedImpl::setDate(const XMLCh* const date, const DynamicContext*
 
   // Verify date
   if ( MM > 12 || YY == 0 || zonehh > 24 || zonemm > 59 ) 
-  {
     wrongformat = true;
-  }
+  else if(DD > DateUtils::maximumDayInMonthFor(YY, MM))
+    wrongformat = true;
 
-  else if ( DD > 28)
-  {
-    bool leapyear = false;
-
-    // the mod operator on mapm is called rem
-    if ( YY.rem(400) == 0 || ( (YY.rem(100) != 0 ) && (YY.rem(4) == 0 ) ) ) 
-      leapyear = true;
-
-    if ( (MM == 2 && leapyear && DD > 29 ) || (MM == 2 && !leapyear && DD > 28 ) ||
-      ( ( MM == 1 || MM == 3 || MM == 5 || MM == 7 || MM == 8 || MM == 10 || MM ==12 ) && DD > 31 ) ||
-      ( (MM == 4 || MM == 6 || MM == 9 || MM == 11) && DD > 30 ) ||
-    zonehh > 24 || zonemm > 60 || YY == 0) 
-      {
-        wrongformat = true;
-      }
-  }
-
-  if ( wrongformat) 
+  if(wrongformat) 
   {
     XQThrow(XPath2TypeCastException,X("ATDateOrDerivedImpl::setDate"), X("Invalid representation of date"));
   }
 
-  timezone_ = new Timezone(zonepos, zonehh, zonemm);
+  timezone_ = new Timezone(Timezone::convert(zonepos, zonehh, zonemm));
 
   seconds_ = composeSeconds(YY, MM, DD);
 
   if(_hasTimezone) {
     // If we have a timezone, then seconds_ needs to be normalized
-    seconds_ -= (timezone_->getTimezoneAsMinutes() * DateUtils::g_secondsPerMinute);
+    seconds_ -= timezone_->asSeconds();
   }
+}
+
+MAPM ATDateOrDerivedImpl::parseDate(const XMLCh* const date, const MAPM &implicitTimezone)
+{
+  ATDateOrDerivedImpl dt(0, 0, date);
+  if(!dt._hasTimezone)
+    return dt.seconds_ - implicitTimezone;
+  return dt.seconds_;
 }
 

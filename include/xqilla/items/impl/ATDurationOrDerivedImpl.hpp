@@ -119,6 +119,8 @@ public:
   
   virtual AnyAtomicType::AtomicObjectType getPrimitiveTypeIndex() const;
 
+  static void parseDuration(const XMLCh *const s, MAPM &months, MAPM &seconds);
+
 protected:
   
   /* If possible, cast this type to the target type */
@@ -138,7 +140,8 @@ private:
   /* the uri of this type */
   const XMLCh* _typeURI;
 
-  void setDuration(const XMLCh* const value, const DynamicContext* context);
+  void init(const DynamicContext* context);
+  void setDuration(const XMLCh* const value);
  
 };
 

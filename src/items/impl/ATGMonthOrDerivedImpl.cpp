@@ -12,7 +12,7 @@
  */
 
 #include "../../config/xqilla_config.h"
-#include "ATGMonthOrDerivedImpl.hpp"
+#include <xqilla/items/impl/ATGMonthOrDerivedImpl.hpp>
 #include <xqilla/exceptions/IllegalArgumentException.hpp>
 #include <xqilla/exceptions/XPath2TypeCastException.hpp>
 #include <xercesc/util/XMLUni.hpp>
@@ -40,7 +40,7 @@ ATGMonthOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* 
     _typeName(typeName),
     _typeURI(typeURI) { 
     
-     setGMonth(value, context); 
+     setGMonth(value);
 }
 
 void *ATGMonthOrDerivedImpl::getInterface(const XMLCh *name) const
@@ -82,34 +82,32 @@ const XMLCh* ATGMonthOrDerivedImpl::asString(const DynamicContext* context) cons
   XMLBuffer buffer(1023, context->getMemoryManager());
   buffer.append(chDash);
   buffer.append(chDash);
-  DateUtils::formatNumber(_gMonth->asMAPM(), 2, buffer);
+  DateUtils::formatNumber(_gMonth, 2, buffer);
   if(_hasTimezone) {
     buffer.append(timezone_->asString(context));
   }
   return context->getMemoryManager()->getPooledString(buffer.getRawBuffer());
 }
 
-ATDateTimeOrDerived::Ptr ATGMonthOrDerivedImpl::buildDateTime(const DynamicContext *context) const
+static inline MAPM referenceDateTime(const MAPM &MM, bool hasTimezone, const Timezone::Ptr &timezone)
 {
-  static const XMLCh doubleZero[] = { chDigit_0, chDigit_0, chNull };
+  MAPM result = DateUtils::convertDMY2Absolute(DateUtils::maximumDayInMonthFor(1972, MM), MM, 1972) * DateUtils::g_secondsPerDay;
 
-  XMLBuffer buffer(1023, context->getMemoryManager());
-
-  DateUtils::formatNumber(1972, 4, buffer);
-  buffer.append(chDash);
-  DateUtils::formatNumber(_gMonth->asMAPM(), 2, buffer);
-  buffer.append(chDash);
-  DateUtils::formatNumber(DateUtils::maximumDayInMonthFor(1972, _gMonth->asMAPM()), 2, buffer);
-  buffer.append(chLatin_T);
-  buffer.append(doubleZero);
-  buffer.append(chColon);
-  buffer.append(doubleZero);
-  buffer.append(chColon);
-  buffer.append(doubleZero);
-  if(_hasTimezone) {
-    buffer.append(timezone_->asString(context));
+  if(hasTimezone) {
+    result -= timezone->asSeconds();
   }
-  return context->getItemFactory()->createDateTime(buffer.getRawBuffer(), context);
+
+  return result;
+}
+
+MAPM ATGMonthOrDerivedImpl::buildReferenceDateTime(const DynamicContext *context) const
+{
+  MAPM result = referenceDateTime(_gMonth, _hasTimezone, timezone_);
+
+  if(!_hasTimezone)
+    result -= context->getImplicitTimezone()->asSeconds(context)->asMAPM();
+
+  return result;
 }
 
 /* Returns true if and only if the xs:dateTimes representing the starting instants of equivalent occurrences of $arg1 and $arg2 
@@ -126,7 +124,7 @@ bool ATGMonthOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const Dynam
 
 int ATGMonthOrDerivedImpl::compare(const ATGMonthOrDerived::Ptr &other, const DynamicContext *context) const
 {
-  return buildDateTime(context)->compare(((const ATGMonthOrDerivedImpl *)other.get())->buildDateTime(context), context);
+  return buildReferenceDateTime(context).compare(((const ATGMonthOrDerivedImpl *)other.get())->buildReferenceDateTime(context));
 }
 
 /** Returns true if a timezone is defined for this.  False otherwise.*/
@@ -140,7 +138,7 @@ ATGMonthOrDerived::Ptr ATGMonthOrDerivedImpl::setTimezone(const Timezone::Ptr &t
 
   buffer.append(chDash);
   buffer.append(chDash);
-  DateUtils::formatNumber(_gMonth->asMAPM(), 2, buffer);
+  DateUtils::formatNumber(_gMonth, 2, buffer);
   if(timezone != NULLRCP) 
     buffer.append(timezone->asString(context));
   return context->getItemFactory()->createGMonthOrDerived(this->getTypeURI(), this->getTypeName(), buffer.getRawBuffer(), context);
@@ -152,7 +150,7 @@ AnyAtomicType::AtomicObjectType ATGMonthOrDerivedImpl::getPrimitiveTypeIndex() c
 }
 
 /* parse the gMonth */
-void ATGMonthOrDerivedImpl::setGMonth(const XMLCh* const value, const DynamicContext* context) {
+void ATGMonthOrDerivedImpl::setGMonth(const XMLCh* const value) {
  
    unsigned int length = XMLString::stringLen(value);
  
@@ -286,8 +284,19 @@ void ATGMonthOrDerivedImpl::setGMonth(const XMLCh* const value, const DynamicCon
 		XQThrow(XPath2TypeCastException,X("ATGMonthOrDerivedImpl::setGMonth"), X("Invalid representation of gMonth"));
 	}
 
-  _gMonth = context->getItemFactory()->createNonNegativeInteger(MM, context);
-  timezone_ = new Timezone(zonepos, zonehh, zonemm);
+  _gMonth = MM;
+  timezone_ = new Timezone(Timezone::convert(zonepos, zonehh, zonemm));
   
 }
 
+MAPM ATGMonthOrDerivedImpl::parseGMonth(const XMLCh* const value, const MAPM &implicitTimezone)
+{
+  ATGMonthOrDerivedImpl dt(0, 0, value);
+
+  MAPM result = referenceDateTime(dt._gMonth, dt._hasTimezone, dt.timezone_);
+
+  if(!dt._hasTimezone)
+    result -= implicitTimezone;
+
+  return result;
+}
