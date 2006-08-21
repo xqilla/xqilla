@@ -1574,13 +1574,7 @@
 				RelativePath="..\..\src\items\impl\ATDateOrDerivedImpl.cpp">
 			</File>
 			<File
-				RelativePath="..\..\src\items\impl\ATDateOrDerivedImpl.hpp">
-			</File>
-			<File
 				RelativePath="..\..\src\items\impl\ATDateTimeOrDerivedImpl.cpp">
-			</File>
-			<File
-				RelativePath="..\..\src\items\impl\ATDateTimeOrDerivedImpl.hpp">
 			</File>
 			<File
 				RelativePath="..\..\src\items\impl\ATDecimalOrDerivedImpl.cpp">
@@ -1598,31 +1592,16 @@
 				RelativePath="..\..\src\items\impl\ATGDayOrDerivedImpl.cpp">
 			</File>
 			<File
-				RelativePath="..\..\src\items\impl\ATGDayOrDerivedImpl.hpp">
-			</File>
-			<File
 				RelativePath="..\..\src\items\impl\ATGMonthDayOrDerivedImpl.cpp">
-			</File>
-			<File
-				RelativePath="..\..\src\items\impl\ATGMonthDayOrDerivedImpl.hpp">
 			</File>
 			<File
 				RelativePath="..\..\src\items\impl\ATGMonthOrDerivedImpl.cpp">
 			</File>
 			<File
-				RelativePath="..\..\src\items\impl\ATGMonthOrDerivedImpl.hpp">
-			</File>
-			<File
 				RelativePath="..\..\src\items\impl\ATGYearMonthOrDerivedImpl.cpp">
 			</File>
 			<File
-				RelativePath="..\..\src\items\impl\ATGYearMonthOrDerivedImpl.hpp">
-			</File>
-			<File
 				RelativePath="..\..\src\items\impl\ATGYearOrDerivedImpl.cpp">
-			</File>
-			<File
-				RelativePath="..\..\src\items\impl\ATGYearOrDerivedImpl.hpp">
 			</File>
 			<File
 				RelativePath="..\..\src\items\impl\ATHexBinaryOrDerivedImpl.cpp">
@@ -1647,9 +1626,6 @@
 			</File>
 			<File
 				RelativePath="..\..\src\items\impl\ATTimeOrDerivedImpl.cpp">
-			</File>
-			<File
-				RelativePath="..\..\src\items\impl\ATTimeOrDerivedImpl.hpp">
 			</File>
 			<File
 				RelativePath="..\..\src\items\impl\ATUntypedAtomicImpl.cpp">
@@ -1718,9 +1694,6 @@
 				RelativePath="..\..\include\xqilla\items\impl\ATDoubleOrDerivedImpl.hpp">
 			</File>
 			<File
-				RelativePath="..\..\include\xqilla\items\impl\ATDurationOrDerivedImpl.hpp">
-			</File>
-			<File
 				RelativePath="..\..\include\xqilla\items\impl\ATFloatOrDerivedImpl.hpp">
 			</File>
 			<File
@@ -1728,6 +1701,33 @@
 			</File>
 			<File
 				RelativePath="..\..\include\xqilla\items\impl\NodeImpl.hpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\items\impl\ATDurationOrDerivedImpl.hpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\items\impl\ATDateTimeOrDerivedImpl.hpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\items\impl\ATDateOrDerivedImpl.hpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\items\impl\ATTimeOrDerivedImpl.hpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\items\impl\ATGDayOrDerivedImpl.hpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\items\impl\ATGMonthDayOrDerivedImpl.hpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\items\impl\ATGMonthOrDerivedImpl.hpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\items\impl\ATGYearMonthOrDerivedImpl.hpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\items\impl\ATGYearOrDerivedImpl.hpp">
 			</File>
 		</Filter>
 			<File

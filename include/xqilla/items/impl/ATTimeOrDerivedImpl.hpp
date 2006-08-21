@@ -31,9 +31,8 @@ class XQILLA_API ATTimeOrDerivedImpl : public ATTimeOrDerived
 {
 
 public:
-
   /* constructor */
-  ATTimeOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* value, const DynamicContext* context);
+  ATTimeOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* value, const DynamicContext* context = 0);
 
   virtual void *getInterface(const XMLCh *name) const;
 
@@ -120,6 +119,8 @@ public:
   /* Get the primitive index associated with this type */
   virtual AnyAtomicType::AtomicObjectType getPrimitiveTypeIndex() const;
 
+  static MAPM parseTime(const XMLCh* const time, const MAPM &implicitTimezone);
+
 protected:
   
   /* If possible, cast this type to the target type */
@@ -130,7 +131,7 @@ private:
   ATTimeOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const MAPM &seconds,
                       const Timezone::Ptr &timezone, bool hasTimezone);
 
-  void setTime(const XMLCh* const time, const DynamicContext* context);
+  void setTime(const XMLCh* const time);
 
   ATTimeOrDerived::Ptr addDayTimeDuration(const MAPM &seconds, const DynamicContext* context) const;
 

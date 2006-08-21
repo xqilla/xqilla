@@ -118,10 +118,12 @@ public:
   static int g_nSignificantDigits;
   static bool g_bEnforceIEEE;
 
+  static MAPM parseDouble(const XMLCh* const value, State &state);
+
 private:
 
   /* set the value of this decimal */
-  void setDouble(const XMLCh* const value, const StaticContext *context);
+  void setDouble(const XMLCh* const value);
 
   /* returns a new infinity ATDoubleOrDerived*/
   ATDoubleOrDerived::Ptr infinity(const DynamicContext* context) const;

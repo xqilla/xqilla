@@ -12,7 +12,7 @@
  */
 
 #include "../../config/xqilla_config.h"
-#include "ATTimeOrDerivedImpl.hpp"
+#include <xqilla/items/impl/ATTimeOrDerivedImpl.hpp>
 #include <xercesc/util/XMLUniDefs.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 #include <xercesc/framework/XMLBuffer.hpp>
@@ -44,7 +44,7 @@ ATTimeOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* va
     _typeName(typeName),
     _typeURI(typeURI)
 {
-  setTime(value, context);    
+  setTime(value);
 }
 
 
@@ -170,17 +170,24 @@ const XMLCh* ATTimeOrDerivedImpl::asString(const DynamicContext* context) const
   return context->getMemoryManager()->getPooledString(buffer.getRawBuffer());
 }
 
-MAPM ATTimeOrDerivedImpl::buildReferenceDateTime(const DynamicContext *context) const
+static inline MAPM referenceDateTime(const MAPM &seconds, bool hasTimezone, const Timezone::Ptr &timezone)
 {
   MAPM result = DateUtils::convertDMY2Absolute(31, 12, 1972) * DateUtils::g_secondsPerDay;
-  result += seconds_;
+  result += seconds;
 
-  if(_hasTimezone) {
-    result -= (timezone_->getTimezoneAsMinutes() * DateUtils::g_secondsPerMinute);
+  if(hasTimezone) {
+    result -= timezone->asSeconds();
   }
-  else {
+
+  return result;
+}
+
+MAPM ATTimeOrDerivedImpl::buildReferenceDateTime(const DynamicContext *context) const
+{
+  MAPM result = referenceDateTime(seconds_, _hasTimezone, timezone_);
+
+  if(!_hasTimezone)
     result -= context->getImplicitTimezone()->asSeconds(context)->asMAPM();
-  }
 
   return result;
 }
@@ -262,8 +269,8 @@ ATTimeOrDerived::Ptr ATTimeOrDerivedImpl::addTimezone(const ATDurationOrDerived:
   if(!_hasTimezone) return setTimezone(tz, context);
 
   MAPM result = seconds_;
-  result -= (timezone_->getTimezoneAsMinutes() * DateUtils::g_secondsPerMinute);
-  result += (tz->getTimezoneAsMinutes() * DateUtils::g_secondsPerMinute);
+  result -= timezone_->asSeconds();
+  result += tz->asSeconds();
 
   return new ATTimeOrDerivedImpl(_typeURI, _typeName, result, tz, true);
 }
@@ -307,7 +314,7 @@ AnyAtomicType::AtomicObjectType ATTimeOrDerivedImpl::getPrimitiveTypeIndex() con
   return this->getTypeIndex();
 }
 
-void ATTimeOrDerivedImpl::setTime(const XMLCh* const time, const DynamicContext* context) {
+void ATTimeOrDerivedImpl::setTime(const XMLCh* const time) {
 	unsigned int length = XMLString::stringLen(time);
  
 	if(time == NULL) {
@@ -476,7 +483,19 @@ void ATTimeOrDerivedImpl::setTime(const XMLCh* const time, const DynamicContext*
 		XQThrow(XPath2TypeCastException,X("XSTimeImpl::setTime"), X("Invalid representation of time [err:FORG0001]"));
 	}
 	
-  timezone_ = new Timezone(zonepos, zonehh,zonemm);
+  timezone_ = new Timezone(Timezone::convert(zonepos, zonehh,zonemm));
 
   seconds_ = composeSeconds(hh, mm, ss);
+}
+
+MAPM ATTimeOrDerivedImpl::parseTime(const XMLCh* const time, const MAPM &implicitTimezone)
+{
+  ATTimeOrDerivedImpl dt(0, 0, time);
+
+  MAPM result = referenceDateTime(dt.seconds_, dt._hasTimezone, dt.timezone_);
+
+  if(!dt._hasTimezone)
+    result -= implicitTimezone;
+
+  return result;
 }

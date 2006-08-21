@@ -309,6 +309,8 @@ public:
 	MAPM(long l); /* Constructor from long int */
 	/* Destructor */
 	~MAPM();
+
+  const M_APM c_struct() const { return myVal; }
 	
 	/* Extracting string descriptions: */
 	void toString(char *dest,int decimalPlaces) const;

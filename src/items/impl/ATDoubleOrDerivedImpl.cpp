@@ -32,20 +32,11 @@ XERCES_CPP_NAMESPACE_USE
 int ATDoubleOrDerivedImpl::g_nSignificantDigits=25;
 
 ATDoubleOrDerivedImpl::
-ATDoubleOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* value, const StaticContext* context): 
-    ATDoubleOrDerived(), 
-    _typeName(typeName),
-    _typeURI(typeURI) { 
-      
-  setDouble(value, context);
-  // if state is NaN, it could be because it should be INF or -INF
-  if(_state == NaN) {
-    if(XPath2Utils::equals(value, Numeric::NegINF_string)) {
-      _state = NEG_INF;
-    } else if (XPath2Utils::equals(value, Numeric::INF_string)) {
-      _state = INF;
-    }
-  }
+ATDoubleOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* value, const StaticContext* context)
+  : _typeName(typeName),
+    _typeURI(typeURI)
+{
+  setDouble(value);
 }
 
 ATDoubleOrDerivedImpl::
@@ -597,18 +588,22 @@ ATDoubleOrDerived::Ptr ATDoubleOrDerivedImpl::newDouble(MAPM value, const Dynami
   return context->getItemFactory()->createDouble(value, context);
 }
 
-void ATDoubleOrDerivedImpl::setDouble(const XMLCh* const value, const StaticContext *context) {
+void ATDoubleOrDerivedImpl::setDouble(const XMLCh* const value)
+{
+  _double = parseDouble(value, _state);
+}
 
+MAPM ATDoubleOrDerivedImpl::parseDouble(const XMLCh* const value, State &state)
+{
   if(value == NULL) {
     // Not a Number
-    _double = MM_Zero;
-    _state = NaN;
-    return;
-  }//if
+    state = NaN;
+    return MM_Zero;
+  }
   
   unsigned int length=XMLString::stringLen(value) + 1;
 
-  AutoDeallocate<char> buffer(context->getMemoryManager(), length * sizeof(char));
+  AutoDeleteArray<char> buffer(new char[length]);
 
   bool gotBase = false;
   bool gotPoint = false;
@@ -624,7 +619,7 @@ void ATDoubleOrDerivedImpl::setDouble(const XMLCh* const value, const StaticCont
   while(!stop && *src != 0) {
     tmpChar = *src++;
     
-    switch(tmpChar) {/*{{{*/
+    switch(tmpChar) {
 
     case L'+': {
       *dest++ = '+';
@@ -672,7 +667,6 @@ void ATDoubleOrDerivedImpl::setDouble(const XMLCh* const value, const StaticCont
       break;
     }
              
-      /* All the numerals defined by XML standard */
     case 0x0030:
     case 0x0031:
     case 0x0032:
@@ -685,217 +679,6 @@ void ATDoubleOrDerivedImpl::setDouble(const XMLCh* const value, const StaticCont
     case 0x0039: {
       gotDigit = true;
       *dest++ = (char)(tmpChar - 0x0030) + '0';
-      break;
-    }
-             
-    case 0x0660:
-    case 0x0661:
-    case 0x0662:
-    case 0x0663:
-    case 0x0664:
-    case 0x0665:
-    case 0x0666:
-    case 0x0667:
-    case 0x0668:
-    case 0x0669: {
-      gotDigit = true;
-      *dest++ = (char)(tmpChar - 0x0660) + '0';
-      break;
-    }
-             
-    case 0x06f0:
-    case 0x06f1:
-    case 0x06f2:
-    case 0x06f3:
-    case 0x06f4:
-    case 0x06f5:
-    case 0x06f6:
-    case 0x06f7:
-    case 0x06f8:
-    case 0x06f9: {
-      gotDigit = true;
-      *dest++ = (char)(tmpChar - 0x06f0) + '0';
-      break;
-    }
-             
-    case 0x0966:
-    case 0x0967:
-    case 0x0968:
-    case 0x0969:
-    case 0x096a:
-    case 0x096b:
-    case 0x096c:
-    case 0x096d:
-    case 0x096e:
-    case 0x096f: {
-      gotDigit = true;
-      *dest++ = (char)(tmpChar - 0x0966) + '0';
-      break;
-    }
-             
-    case 0x09e6:
-    case 0x09e7:
-    case 0x09e8:
-    case 0x09e9:
-    case 0x09ea:
-    case 0x09eb:
-    case 0x09ec:
-    case 0x09ed:
-    case 0x09ee:
-    case 0x09ef: {
-      gotDigit = true;
-      *dest++ = (char)(tmpChar - 0x09e6) + '0';
-      break;
-    }
-             
-    case 0x0a66:
-    case 0x0a67:
-    case 0x0a68:
-    case 0x0a69:
-    case 0x0a6a:
-    case 0x0a6b:
-    case 0x0a6c:
-    case 0x0a6d:
-    case 0x0a6e:
-    case 0x0a6f: {
-      gotDigit = true;
-      *dest++ = (char)(tmpChar - 0x0a66) + '0';
-      break;
-    }
-             
-    case 0x0ae6:
-    case 0x0ae7:
-    case 0x0ae8:
-    case 0x0ae9:
-    case 0x0aea:
-    case 0x0aeb:
-    case 0x0aec:
-    case 0x0aed:
-    case 0x0aee:
-    case 0x0aef: {
-      gotDigit = true;
-      *dest++ = (char)(tmpChar - 0x0ae6) + '0';
-      break;
-    }
-             
-    case 0x0b66:
-    case 0x0b67:
-    case 0x0b68:
-    case 0x0b69:
-    case 0x0b6a:
-    case 0x0b6b:
-    case 0x0b6c:
-    case 0x0b6d:
-    case 0x0b6e:
-    case 0x0b6f: {
-      gotDigit = true;
-      *dest++ = (char)(tmpChar - 0x0b66) + '0';
-      break;
-    }
-             
-      //Note: For this language, there appears to be no zero
-      //case 0x0be6
-    case 0x0be7:
-    case 0x0be8:
-    case 0x0be9:
-    case 0x0bea:
-    case 0x0beb:
-    case 0x0bec:
-    case 0x0bed:
-    case 0x0bee:
-    case 0x0bef: {
-      gotDigit = true;
-      *dest++ = (char)(tmpChar - 0x0be6) + '0';
-      break;
-    }
-             
-    case 0x0c66:
-    case 0x0c67:
-    case 0x0c68:
-    case 0x0c69:
-    case 0x0c6a:
-    case 0x0c6b:
-    case 0x0c6c:
-    case 0x0c6d:
-    case 0x0c6e:
-    case 0x0c6f: {
-      gotDigit = true;
-      *dest++ = (char)(tmpChar - 0x0c66) + '0';
-      break;
-    }
-             
-    case 0x0ce6:
-    case 0x0ce7:
-    case 0x0ce8:
-    case 0x0ce9:
-    case 0x0cea:
-    case 0x0ceb:
-    case 0x0cec:
-    case 0x0ced:
-    case 0x0cee:
-    case 0x0cef: {
-      gotDigit = true;
-      *dest++ = (char)(tmpChar - 0x0ce6) + '0';
-      break;
-    }
-             
-    case 0x0d66:
-    case 0x0d67:
-    case 0x0d68:
-    case 0x0d69:
-    case 0x0d6a:
-    case 0x0d6b:
-    case 0x0d6c:
-    case 0x0d6d:
-    case 0x0d6e:
-    case 0x0d6f: {
-      gotDigit = true;
-      *dest++ = (char)(tmpChar - 0x0d66) + '0';
-      break;
-    }
-             
-    case 0x0e50:
-    case 0x0e51:
-    case 0x0e52:
-    case 0x0e53:
-    case 0x0e54:
-    case 0x0e55:
-    case 0x0e56:
-    case 0x0e57:
-    case 0x0e58:
-    case 0x0e59: {
-      gotDigit = true;
-      *dest++ = (char)(tmpChar - 0x0e50) + '0';
-      break;
-    }
-             
-    case 0x0ed0:
-    case 0x0ed1:
-    case 0x0ed2:
-    case 0x0ed3:
-    case 0x0ed4:
-    case 0x0ed5:
-    case 0x0ed6:
-    case 0x0ed7:
-    case 0x0ed8:
-    case 0x0ed9: {
-      gotDigit = true;
-      *dest++ = (char)(tmpChar - 0x0ed0) + '0';
-      break;
-    }
-             
-    case 0x0f20:
-    case 0x0f21:
-    case 0x0f22:
-    case 0x0f23:
-    case 0x0f24:
-    case 0x0f25:
-    case 0x0f26:
-    case 0x0f27:
-    case 0x0f28:
-    case 0x0f29: {
-      gotDigit = true;
-      *dest++ = (char)(tmpChar - 0x0f20) + '0';
       break;
     }
              
@@ -925,8 +708,8 @@ void ATDoubleOrDerivedImpl::setDouble(const XMLCh* const value, const StaticCont
             stop = true;
           }
         }
-        }//switch
-      }//while
+        }
+      }
       break;
     }
              
@@ -934,22 +717,25 @@ void ATDoubleOrDerivedImpl::setDouble(const XMLCh* const value, const StaticCont
       stop = true;
       break;
              
-    }//switch
-    /*}}}*/
-    
-  }//while
+    }
+  }
 
   if(!gotDigit || stop) {
-    // Not a Number
-    _double = MM_Zero;
-    _state = NaN;
-    return;
+    if(XPath2Utils::equals(value, Numeric::NegINF_string)) {
+      state = NEG_INF;
+    }
+    else if (XPath2Utils::equals(value, Numeric::INF_string)) {
+      state = INF;
+    }
+    else {
+      state = NaN;
+    }
+    return MM_Zero;
   }
 
   *dest++ = 0; // Null terminate  
-  _double = (char*)buffer;
-  if(isNegative) _state = NEG_NUM;
-  else _state = NUM;
-}
- 
+  if(isNegative) state = NEG_NUM;
+  else state = NUM;
 
+  return (char*)buffer;
+}

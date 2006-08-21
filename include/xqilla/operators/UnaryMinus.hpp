@@ -27,10 +27,17 @@ class XQILLA_API UnaryMinus : public ArithmeticOperator
 public:
   static const XMLCh name[];
 
-  UnaryMinus(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
+  UnaryMinus(bool positive, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
+  virtual ASTNode* staticResolution(StaticContext *context);
+
   void calculateStaticType();
   Item::Ptr execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::Ptr &atom2, DynamicContext *context) const;
+
+  bool getIsPositive() const { return positive_; }
+
+private:
+  bool positive_;
 };
 
 #endif // _UNARYMINUS_HPP

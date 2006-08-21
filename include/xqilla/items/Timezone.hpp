@@ -17,7 +17,7 @@
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/framework/ReferenceCounted.hpp>
 #include <xqilla/items/ATDurationOrDerived.hpp>
-#include <xqilla/items/ATDecimalOrDerived.hpp>
+#include <xqilla/mapm/m_apm.h>
 
 #include <xercesc/util/XercesDefs.hpp>
 
@@ -29,29 +29,14 @@ public :
   typedef RefCountPointer<const Timezone> Ptr;
 
   /**
-   * Constructor.  Sets _hh and _mm as specified.
-   */
-  Timezone(const ATDecimalOrDerived::Ptr &hour, const ATDecimalOrDerived::Ptr &minute, const DynamicContext* context);
-
-  /**
-   * Constructor.  Sets _hh and _mm as specified.
-   */
-  Timezone(bool positive, int hour, int minute);
-
-  /**
    * Constructor. Creates a Timezone representing the given number of seconds.
    */
-  Timezone(int minutes);
+  Timezone(const MAPM &seconds);
 
   /**
    * Constructor. Creates a Timezone representing the given duration.
    */
   Timezone(const ATDurationOrDerived::Ptr &duration, const DynamicContext* context);
-
-  /**
-   * Copy constructor.
-   */
-  Timezone(const Timezone & other);
 
   /** Returns true if other is equal to this, 
    * false otherwise 
@@ -67,22 +52,15 @@ public :
   const XMLCh* asString(const DynamicContext* context) const;
 
   /**
-   * Returns a string representation of this Timezone.  If positive, does not
-   * print leading '+' sign, and if UTC prints 00:00.
+   * Returns the whole timezone expressed in seconds
    */
-  const XMLCh* printTimezone(const DynamicContext* context) const;
-  
-  /**
-   * Returns the whole timezone expressed in minutes, e.g. +02:00 is retruned as 120 
-   */
-  const int getTimezoneAsMinutes() const;
+  const MAPM &asSeconds() const { return seconds_; }
+
+  static MAPM convert(bool positive, int hour, int minute);
 
 private:
-  int _hh;    // time zone hour
-  int _mm;    // time zone minute
-  bool _positive; 
+  MAPM seconds_;
 
-  void init(int minutes);
   void validate() const;
 };
 

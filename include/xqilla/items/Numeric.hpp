@@ -110,7 +110,13 @@ public:
 
   virtual const MAPM &asMAPM() const = 0;
 
-  enum State {NUM, NEG_NUM, NaN, INF, NEG_INF};
+  enum State {
+	  NEG_INF = 0,
+	  NEG_NUM = 1,
+	  NUM = 2,
+	  INF = 3,
+	  NaN = 4
+  };
 
   virtual State getState() const = 0;
 

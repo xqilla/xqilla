@@ -12,7 +12,7 @@
  */
 
 #include "../../config/xqilla_config.h"
-#include "ATGYearMonthOrDerivedImpl.hpp"
+#include <xqilla/items/impl/ATGYearMonthOrDerivedImpl.hpp>
 #include <xqilla/exceptions/IllegalArgumentException.hpp>
 #include <xqilla/exceptions/XPath2TypeCastException.hpp>
 #include <xercesc/util/XMLUni.hpp>
@@ -40,7 +40,7 @@ ATGYearMonthOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XML
     _typeName(typeName),
     _typeURI(typeURI) { 
     
-     setGYearMonth(value, context); 
+     setGYearMonth(value);
 }
 
 void *ATGYearMonthOrDerivedImpl::getInterface(const XMLCh *name) const
@@ -79,36 +79,34 @@ AnyAtomicType::AtomicObjectType ATGYearMonthOrDerivedImpl::getTypeIndex() {
 const XMLCh* ATGYearMonthOrDerivedImpl::asString(const DynamicContext* context) const {
   XMLBuffer buffer(1023, context->getMemoryManager());
 
-  DateUtils::formatNumber(_YY->asMAPM(), 4, buffer);
+  DateUtils::formatNumber(_YY, 4, buffer);
   buffer.append(chDash);
-  DateUtils::formatNumber(_MM->asMAPM(), 2, buffer);
+  DateUtils::formatNumber(_MM, 2, buffer);
   if( _hasTimezone) {
     buffer.append(timezone_->asString(context));
   }
   return context->getMemoryManager()->getPooledString(buffer.getRawBuffer());
 }
 
-ATDateTimeOrDerived::Ptr ATGYearMonthOrDerivedImpl::buildDateTime(const DynamicContext *context) const
+static inline MAPM referenceDateTime(const MAPM &YY, const MAPM &MM, bool hasTimezone, const Timezone::Ptr &timezone)
 {
-  static const XMLCh doubleZero[] = { chDigit_0, chDigit_0, chNull };
+  MAPM result = DateUtils::convertDMY2Absolute(DateUtils::maximumDayInMonthFor(YY, MM), MM, YY) * DateUtils::g_secondsPerDay;
 
-  XMLBuffer buffer(1023, context->getMemoryManager());
-
-  DateUtils::formatNumber(_YY->asMAPM(), 4, buffer);
-  buffer.append(chDash);
-  DateUtils::formatNumber(_MM->asMAPM(), 2, buffer);
-  buffer.append(chDash);
-  DateUtils::formatNumber(DateUtils::maximumDayInMonthFor(_YY->asMAPM(), _MM->asMAPM()),2,buffer);
-  buffer.append(chLatin_T);
-  buffer.append(doubleZero);
-  buffer.append(chColon);
-  buffer.append(doubleZero);
-  buffer.append(chColon);
-  buffer.append(doubleZero);
-  if(_hasTimezone) {
-    buffer.append(timezone_->asString(context));
+  if(hasTimezone) {
+    result -= timezone->asSeconds();
   }
-  return context->getItemFactory()->createDateTime(buffer.getRawBuffer(), context);
+
+  return result;
+}
+
+MAPM ATGYearMonthOrDerivedImpl::buildReferenceDateTime(const DynamicContext *context) const
+{
+  MAPM result = referenceDateTime(_YY, _MM, _hasTimezone, timezone_);
+
+  if(!_hasTimezone)
+    result -= context->getImplicitTimezone()->asSeconds(context)->asMAPM();
+
+  return result;
 }
 
 /* Returns true if and only if the xs:dateTimes representing the starting instants of $arg1 and $arg2 compare equal. 
@@ -126,7 +124,7 @@ bool ATGYearMonthOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const D
 
 int ATGYearMonthOrDerivedImpl::compare(const ATGYearMonthOrDerived::Ptr &other, const DynamicContext *context) const
 {
-  return buildDateTime(context)->compare(((const ATGYearMonthOrDerivedImpl *)other.get())->buildDateTime(context), context);
+  return buildReferenceDateTime(context).compare(((const ATGYearMonthOrDerivedImpl *)other.get())->buildReferenceDateTime(context));
 }
 
 /** Returns true if a timezone is defined for this.  False otherwise.*/
@@ -139,9 +137,9 @@ ATGYearMonthOrDerived::Ptr ATGYearMonthOrDerivedImpl::setTimezone(const Timezone
 {
   XMLBuffer buffer(1023, context->getMemoryManager());
 
-  DateUtils::formatNumber(_YY->asMAPM(), 4, buffer);
+  DateUtils::formatNumber(_YY, 4, buffer);
   buffer.append(chDash);
-  DateUtils::formatNumber(_MM->asMAPM(), 2, buffer);
+  DateUtils::formatNumber(_MM, 2, buffer);
   if(timezone != NULLRCP) 
     buffer.append(timezone->asString(context));
   return context->getItemFactory()->createGYearMonthOrDerived(this->getTypeURI(), this->getTypeName(), buffer.getRawBuffer(), context);
@@ -153,7 +151,7 @@ AnyAtomicType::AtomicObjectType ATGYearMonthOrDerivedImpl::getPrimitiveTypeIndex
 }
 
 /* parse the gYearMonth */
-void ATGYearMonthOrDerivedImpl::setGYearMonth(const XMLCh* const value, const DynamicContext* context) {
+void ATGYearMonthOrDerivedImpl::setGYearMonth(const XMLCh* const value) {
  unsigned int length = XMLString::stringLen(value);
  
 	if(value == NULL) {
@@ -301,10 +299,21 @@ void ATGYearMonthOrDerivedImpl::setGYearMonth(const XMLCh* const value, const Dy
 		XQThrow(XPath2TypeCastException,X("ATGYearMonthOrDerivedImpl::setGYearMonth"), X("Invalid representation of gYearMonth"));
 	}
 
-  timezone_ = new Timezone(zonepos, zonehh, zonemm);
+  timezone_ = new Timezone(Timezone::convert(zonepos, zonehh, zonemm));
  
 
-  _MM = context->getItemFactory()->createNonNegativeInteger(MM, context);  
-  _YY = context->getItemFactory()->createInteger(YY, context);  
+  _MM = MM;
+  _YY = YY;
 }
 
+MAPM ATGYearMonthOrDerivedImpl::parseGYearMonth(const XMLCh* const value, const MAPM &implicitTimezone)
+{
+  ATGYearMonthOrDerivedImpl dt(0, 0, value);
+
+  MAPM result = referenceDateTime(dt._YY, dt._MM, dt._hasTimezone, dt.timezone_);
+
+  if(!dt._hasTimezone)
+    result -= implicitTimezone;
+
+  return result;
+}

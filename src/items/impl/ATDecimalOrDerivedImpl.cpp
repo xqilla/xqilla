@@ -39,7 +39,7 @@ ATDecimalOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh*
     _typeName(typeName),
     _typeURI(typeURI) { 
     
-  setDecimal(value, context);
+  setDecimal(value);
   if(this->isInstanceOfType (SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                              SchemaSymbols::fgDT_INTEGER, context)) {
     _isInteger = true;
@@ -486,15 +486,20 @@ AnyAtomicType::AtomicObjectType ATDecimalOrDerivedImpl::getPrimitiveTypeIndex() 
   return this->getTypeIndex();
 }
 
-void ATDecimalOrDerivedImpl::setDecimal(const XMLCh* const value, const StaticContext *context) {
+void ATDecimalOrDerivedImpl::setDecimal(const XMLCh* const value)
+{
+  _decimal = parseDecimal(value);
+}
 
+MAPM ATDecimalOrDerivedImpl::parseDecimal(const XMLCh* const value)
+{
   if(value == NULL) {
     XQThrow(XPath2TypeCastException,X("ATDecimalOrDerivedImpl::setDecimal"), X("Invalid representation of decimal"));
   }
   
   unsigned int length=XMLString::stringLen(value) + 1;
 
-  AutoDeallocate<char> buffer(context->getMemoryManager(), length * sizeof(char));
+  AutoDeleteArray<char> buffer(new char[length]);
 
   bool gotPoint = false;
   bool gotSign = false;
@@ -601,7 +606,6 @@ void ATDecimalOrDerivedImpl::setDecimal(const XMLCh* const value, const StaticCo
 		XQThrow(XPath2TypeCastException,X("ATDecimalOrDerivedImpl::setDecimal"), X("Invalid representation of decimal"));
   }
 
-  *dest++ = 0; // Null terminate  
-  _decimal = (char*)buffer;
+  *dest++ = 0; // Null terminate
+  return (char*)buffer;
 }
-

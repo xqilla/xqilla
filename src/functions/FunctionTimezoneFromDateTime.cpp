@@ -43,22 +43,20 @@ FunctionTimezoneFromDateTime::FunctionTimezoneFromDateTime(const VectorOfASTNode
 
 Sequence FunctionTimezoneFromDateTime::collapseTreeInternal(DynamicContext* context, int flags) const
 {
-	XPath2MemoryManager* memMgr = context->getMemoryManager();
+  XPath2MemoryManager* memMgr = context->getMemoryManager();
 
-  Sequence arg=getParamNumber(1,context)->toSequence(context);
-  if(arg.isEmpty()) {
+  Item::Ptr arg = getParamNumber(1, context)->next(context);
+  if(arg.isNull()) {
     return Sequence(memMgr);
   }
 
-  const ATDateTimeOrDerived * dateTime = (const ATDateTimeOrDerived *)(const Item*)arg.first();
+  const ATDateTimeOrDerived * dateTime = (const ATDateTimeOrDerived *)arg.get();
   // If $srcval does not contain a timezone, the result is the empty sequence
-  if (dateTime->hasTimezone() == false) {
+  if(dateTime->hasTimezone() == false) {
     return Sequence(memMgr);
   }
 
-  const Timezone::Ptr timezone = dateTime->getTimezone();
-  return Sequence( (const Item::Ptr )timezone->asDayTimeDuration(context), memMgr );
-
+  return Sequence(dateTime->getTimezone()->asDayTimeDuration(context), memMgr);
 }
 
 

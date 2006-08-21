@@ -119,10 +119,12 @@ public:
   /* The significant digits */
   static unsigned int g_nSignificantDigits;
 
+  static MAPM parseDecimal(const XMLCh* const value);
+
 private:
 
   /* set the value of this decimal */
-  void setDecimal(const XMLCh* const value, const StaticContext *context);
+  void setDecimal(const XMLCh* const value);
 
   /* flag to note that we are an Integer -- to avoid many calls to
    * isInstanceOfType */

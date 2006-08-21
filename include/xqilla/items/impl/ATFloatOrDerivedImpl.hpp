@@ -24,7 +24,6 @@ class XQILLA_API ATFloatOrDerivedImpl : public ATFloatOrDerived
 {
 
 public:
-
   /* constructor */
   ATFloatOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* value, const StaticContext* context);
 
@@ -114,10 +113,12 @@ public:
   /* The significant digits */
   static int g_nSignificantDigits;
 
+  static MAPM parseFloat(const XMLCh* const value, State &state);
+
 private:
 
   /* set the value of this decimal */
-  void setFloat(const XMLCh* const value, const StaticContext *context);
+  void setFloat(const XMLCh* const value);
 
   /* returns a new infinity ATFloatOrDerived*/
   ATFloatOrDerived::Ptr infinity(const DynamicContext* context) const;

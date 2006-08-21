@@ -1980,15 +1980,7 @@ SOURCE=..\..\src\items\impl\ATDateOrDerivedImpl.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\items\impl\ATDateOrDerivedImpl.hpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\items\impl\ATDateTimeOrDerivedImpl.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\items\impl\ATDateTimeOrDerivedImpl.hpp
 # End Source File
 # Begin Source File
 
@@ -2012,15 +2004,7 @@ SOURCE=..\..\src\items\impl\ATGDayOrDerivedImpl.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\items\impl\ATGDayOrDerivedImpl.hpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\items\impl\ATGMonthDayOrDerivedImpl.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\items\impl\ATGMonthDayOrDerivedImpl.hpp
 # End Source File
 # Begin Source File
 
@@ -2028,23 +2012,11 @@ SOURCE=..\..\src\items\impl\ATGMonthOrDerivedImpl.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\items\impl\ATGMonthOrDerivedImpl.hpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\items\impl\ATGYearMonthOrDerivedImpl.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\items\impl\ATGYearMonthOrDerivedImpl.hpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\items\impl\ATGYearOrDerivedImpl.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\items\impl\ATGYearOrDerivedImpl.hpp
 # End Source File
 # Begin Source File
 
@@ -2077,10 +2049,6 @@ SOURCE=..\..\src\items\impl\ATStringOrDerivedImpl.hpp
 # Begin Source File
 
 SOURCE=..\..\src\items\impl\ATTimeOrDerivedImpl.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\items\impl\ATTimeOrDerivedImpl.hpp
 # End Source File
 # Begin Source File
 
@@ -2172,10 +2140,6 @@ SOURCE=..\..\include\xqilla\items\impl\ATDoubleOrDerivedImpl.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\include\xqilla\items\impl\ATDurationOrDerivedImpl.hpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\include\xqilla\items\impl\ATFloatOrDerivedImpl.hpp
 # End Source File
 # Begin Source File
@@ -2185,6 +2149,42 @@ SOURCE=..\..\include\xqilla\items\impl\ATQNameOrDerivedImpl.hpp
 # Begin Source File
 
 SOURCE=..\..\include\xqilla\items\impl\NodeImpl.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\items\impl\ATDurationOrDerivedImpl.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\items\impl\ATDateTimeOrDerivedImpl.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\items\impl\ATDateOrDerivedImpl.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\items\impl\ATTimeOrDerivedImpl.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\items\impl\ATGDayOrDerivedImpl.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\items\impl\ATGMonthDayOrDerivedImpl.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\items\impl\ATGMonthOrDerivedImpl.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\items\impl\ATGYearMonthOrDerivedImpl.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\items\impl\ATGYearOrDerivedImpl.hpp
 # End Source File
 # End Group
 # Begin Source File

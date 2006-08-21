@@ -2,10 +2,6 @@
   <error id="CastableAs648" reason="result failure"/>
   <error id="Constr-attr-ws-3" reason="result failure"/>
   <error id="Constr-attr-ws-5" reason="result failure"/>
-  <error id="Constr-compattr-compname-14" reason="error failure"/>
-  <error id="Constr-compattr-name-3" reason="error failure"/>
-  <error id="Constr-compelem-compname-14" reason="error failure"/>
-  <error id="Constr-compelem-name-3" reason="error failure"/>
   <error id="Constr-inscope-1" reason="inspect" action="pass"/>
   <error id="Constr-inscope-10" reason="result failure"/>
   <error id="Constr-inscope-12" reason="result failure"/>
@@ -25,7 +21,6 @@
   <error id="K-InternalVariablesWith-23" reason="error failure"/>
   <error id="K-NumericAdd-5" reason="result failure"/>
   <error id="K-NumericAdd-6" reason="result failure"/>
-  <error id="K-NumericUnaryPlus-1" reason="no error failure"/>
   <error id="K-SeqAVGFunc-32" reason="error failure"/>
   <error id="K-SeqAVGFunc-33" reason="error failure"/>
   <error id="K-SeqExprCast-1217" reason="no error failure"/>
@@ -37,9 +32,6 @@
   <error id="K-SeqSUMFunc-24" reason="error failure"/>
   <error id="K-SeqSUMFunc-25" reason="error failure"/>
   <error id="K-SeqSUMFunc-26" reason="error failure"/>
-  <error id="K-sequenceExprTypeswitch-3" reason="result failure"/>
-  <error id="K2-DirectConElemContent-11" reason="result failure"/>
-  <error id="K2-DirectConElemContent-6" reason="result failure"/>
   <error id="K2-FunctionProlog-7" reason="error failure"/>
   <error id="K2-InternalVariablesWithout-1" reason="error failure"/>
   <error id="K2-InternalVariablesWithout-2" reason="error failure"/>
@@ -79,7 +71,6 @@
   <error id="caselessmatch10" reason="error failure"/>
   <error id="caselessmatch11" reason="error failure"/>
   <error id="casthcds9" reason="result failure"/>
-  <error id="constattrerr-1" reason="no error failure"/>
   <error id="fn-avg-mix-args-012" reason="result failure"/>
   <error id="fn-avg-mix-args-013" reason="result failure"/>
   <error id="fn-avg-mix-args-015" reason="result failure"/>
@@ -179,7 +170,6 @@
   <error id="fn-implicit-timezone-5" reason="inspect" action="pass"/>
   <error id="fn-implicit-timezone-9" reason="inspect" action="pass"/>
   <error id="fn-indexof-mix-args-013" reason="result failure"/>
-  <error id="fn-iri-to-uri-26" reason="result failure"/>
   <error id="fn-numberflt1args-1" reason="result failure"/>
   <error id="fn-numberflt1args-3" reason="result failure"/>
   <error id="fn-numberlng1args-1" reason="result failure"/>
@@ -190,10 +180,6 @@
   <error id="fn-resolve-uri-9" reason="result failure"/>
   <error id="fn-sumdbl3args-6" reason="result failure"/>
   <error id="modules-schema-context" reason="error failure"/>
-  <error id="namespaceDecl-2" reason="error failure"/>
   <error id="normalization-1" reason="no error failure"/>
-  <error id="orderBy22" reason="result failure"/>
-  <error id="orderBy52" reason="result failure"/>
-  <error id="static-context-1" reason="no error failure"/>
   <error id="vardeclerr" reason="error failure"/>
 </errors>

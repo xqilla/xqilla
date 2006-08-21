@@ -23,31 +23,52 @@
 
 /*static*/ const XMLCh UnaryMinus::name[]={ XERCES_CPP_NAMESPACE_QUALIFIER chLatin_u, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_m, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_i, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_u, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_s, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
 
-UnaryMinus::UnaryMinus(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : ArithmeticOperator(name, args, memMgr)
+UnaryMinus::UnaryMinus(bool positive, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
+  : ArithmeticOperator(name, args, memMgr),
+    positive_(positive)
 {
   assert(_args.size() == 1);
+}
+
+ASTNode* UnaryMinus::staticResolution(StaticContext *context)
+{
+  ASTNode *result = ArithmeticOperator::staticResolution(context);
+
+  if(result == this && positive_) {
+    // constant fold unary plus after type checking
+    result = *_args.begin();
+  }
+
+  return result;
 }
 
 void UnaryMinus::calculateStaticType()
 {
   const StaticType &arg0 = _args[0]->getStaticResolutionContext().getStaticType();
   // untypedAtomic will be promoted to xs:double
-  if(arg0.containsType(StaticType::NUMERIC_TYPE|StaticType::UNTYPED_ATOMIC_TYPE)) {
+  if(arg0.containsType(StaticType::NUMERIC_TYPE)) {
     _src.getStaticType().flags = arg0.flags & StaticType::NUMERIC_TYPE;
+  }
+  if(arg0.containsType(StaticType::UNTYPED_ATOMIC_TYPE)) {
+    _src.getStaticType().flags |= StaticType::DOUBLE_TYPE;
   }
 }
 
-Item::Ptr UnaryMinus::execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::Ptr &atom2, DynamicContext *context) const
+Item::Ptr UnaryMinus::execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::Ptr &atom2,
+                              DynamicContext *context) const
 {
-  assert(atom2 == NULLRCP);
+  assert(atom2.isNull());
 
-  if(atom1 == NULLRCP) return 0;
+  if(atom1.isNull()) return 0;
 
   // only works on Numeric types
   if(atom1->isNumericValue()) {
-    return (const Item::Ptr)((Numeric*)(const AnyAtomicType*)atom1)->invert(context);
+    if(positive_)
+      return atom1;
+    else
+      return ((const Numeric*)atom1.get())->invert(context);
   } else {
-    XQThrow(XPath2ErrorException,X("UnaryMinus::collapseTreeInternal"), X("An attempt to apply unary minus a non numeric type has occurred [err:XPTY0004]"));
+    XQThrow(XPath2ErrorException,X("UnaryMinus::collapseTreeInternal"),
+            X("An attempt to apply unary minus a non numeric type has occurred [err:XPTY0004]"));
   }
 }

@@ -1865,11 +1865,13 @@ UnaryExpr:
 		{
 			VectorOfASTNodes args(XQillaAllocator<ASTNode*>(MEMMGR));
 			args.push_back($2);
-			$$ = new (MEMMGR) UnaryMinus(args, MEMMGR);
+			$$ = new (MEMMGR) UnaryMinus(/*positive*/false, args, MEMMGR);
 		}
     | _PLUS_ UnaryExpr
 		{
-			$$ = $2;
+			VectorOfASTNodes args(XQillaAllocator<ASTNode*>(MEMMGR));
+			args.push_back($2);
+			$$ = new (MEMMGR) UnaryMinus(/*positive*/true, args, MEMMGR);
 		}
 	| ValueExpr 
     ;

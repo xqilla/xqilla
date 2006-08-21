@@ -33,7 +33,7 @@ class XQILLA_API ATDateTimeOrDerivedImpl : public ATDateTimeOrDerived
 public:
 
   /* constructor */
-  ATDateTimeOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* value, const DynamicContext* context);
+  ATDateTimeOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* value, const DynamicContext* context = 0);
 
   virtual void *getInterface(const XMLCh *name) const;
 
@@ -105,8 +105,6 @@ public:
    */
   virtual ATDateTimeOrDerived::Ptr setTimezone(const Timezone::Ptr &timezone, const DynamicContext* context) const;
 
-  virtual ATDateTimeOrDerived::Ptr normalize(const DynamicContext* context) const;
-
   /**
    * Returns an ATDateTimeOrDerived with a timezone added to it
    */
@@ -154,6 +152,8 @@ public:
   virtual AnyAtomicType::AtomicObjectType getPrimitiveTypeIndex() const;
 
   static MAPM addYearMonthDuration(const MAPM &seconds, const MAPM &monthsToAdd);
+	
+  static MAPM parseDateTime(const XMLCh* const dateTime, const MAPM &implicitTimezone);
 
 protected:
   
@@ -165,7 +165,7 @@ private:
   ATDateTimeOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const MAPM &seconds, 
                           const Timezone::Ptr &timezone, bool hasTimezone);
 
-  void setDateTime(const XMLCh* const date, const DynamicContext* context);
+  void setDateTime(const XMLCh* const date);
 
   ATDateTimeOrDerived::Ptr addDayTimeDuration(const MAPM &seconds, const DynamicContext* context) const;
 

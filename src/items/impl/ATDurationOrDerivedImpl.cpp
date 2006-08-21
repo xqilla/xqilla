@@ -33,24 +33,13 @@ XERCES_CPP_NAMESPACE_USE
 #endif
 
 ATDurationOrDerivedImpl::
-ATDurationOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* value, const DynamicContext* context): 
-    ATDurationOrDerived(),
-    _typeName(typeName),
-    _typeURI(typeURI) { 
-    
-  // Lexical representation : PnYnMnDTnHnMnS
-
-  setDuration(value, context);
-  
-  if(this->isInstanceOfType (FunctionConstructor::XMLChXPath2DatatypesURI,
-                             ATDurationOrDerived::fgDT_DAYTIMEDURATION, context)) {
-    _durationType = DAY_TIME_DURATION;
-  } else if (this->isInstanceOfType (FunctionConstructor::XMLChXPath2DatatypesURI,
-                                     ATDurationOrDerived::fgDT_YEARMONTHDURATION, context)) {
-    _durationType = YEAR_MONTH_DURATION;
-  } else {
-    _durationType = DURATION;
-  }
+ATDurationOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* value, const DynamicContext* context)
+  :_isPositive(true),
+   _typeName(typeName),
+   _typeURI(typeURI)
+{
+  setDuration(value);
+  init(context);
 }
 
 ATDurationOrDerivedImpl::
@@ -61,6 +50,11 @@ ATDurationOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const MAPM 
     _seconds(seconds),
     _typeName(typeName),
     _typeURI(typeURI)
+{
+  init(context);
+}
+
+void ATDurationOrDerivedImpl::init(const DynamicContext* context)
 {
   if(_months.sign() < 0) {
     _isPositive = false;
@@ -525,7 +519,13 @@ ATDecimalOrDerived::Ptr ATDurationOrDerivedImpl::asMonths(const DynamicContext* 
   return context->getItemFactory()->createDecimal(result, context);
 }
 
-void ATDurationOrDerivedImpl::setDuration(const XMLCh* const s, const DynamicContext* context) {
+void ATDurationOrDerivedImpl::setDuration(const XMLCh* const s)
+{
+  parseDuration(s, _months, _seconds);
+}
+
+void ATDurationOrDerivedImpl::parseDuration(const XMLCh *const s, MAPM &months, MAPM &seconds)
+{
   unsigned int length = XMLString::stringLen(s);
  
   if(s == 0) {
@@ -544,7 +544,7 @@ void ATDurationOrDerivedImpl::setDuration(const XMLCh* const s, const DynamicCon
   double tmpdec = 0;
 
   // defaulting values
-  _isPositive = true;
+  bool isPositive = true;
   MAPM year = 0;
   MAPM month = 0;
   MAPM day = 0;
@@ -560,10 +560,10 @@ void ATDurationOrDerivedImpl::setDuration(const XMLCh* const s, const DynamicCon
   // check initial 'negative' sign and the P character
 
   if ( length > 1 && s[0] == L'-' && s[1] == L'P' ) {
-    _isPositive = false;
+    isPositive = false;
     pos = 2;
   } else if (  length > 1 && s[0] == L'P' ) {
-    _isPositive = true;
+    isPositive = true;
     pos = 1;
   } else {
     wrongformat = true;
@@ -696,11 +696,15 @@ void ATDurationOrDerivedImpl::setDuration(const XMLCh* const s, const DynamicCon
             X("Invalid representation of duration [err:FORG0001]"));
   }
 
-  _months = year * 12 + month;
+  months = year * 12 + month;
 
-  _seconds = day * DateUtils::g_secondsPerDay +
+  seconds = day * DateUtils::g_secondsPerDay +
     hour * DateUtils::g_secondsPerHour +
     minute * DateUtils::g_secondsPerMinute +
     sec;
 
+  if(!isPositive) {
+    months = months.neg();
+    seconds = seconds.neg();
+  }
 }

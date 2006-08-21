@@ -12,7 +12,7 @@
  */
 
 #include "../../config/xqilla_config.h"
-#include "ATGDayOrDerivedImpl.hpp"
+#include <xqilla/items/impl/ATGDayOrDerivedImpl.hpp>
 #include <xqilla/exceptions/IllegalArgumentException.hpp>
 #include <xqilla/exceptions/XPath2TypeCastException.hpp>
 #include <xercesc/util/XMLUni.hpp>
@@ -40,7 +40,7 @@ ATGDayOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* va
     _typeName(typeName),
     _typeURI(typeURI) { 
     
-     setGDay(value, context); 
+     setGDay(value);
 }
 
 void *ATGDayOrDerivedImpl::getInterface(const XMLCh *name) const
@@ -81,34 +81,32 @@ const XMLCh* ATGDayOrDerivedImpl::asString(const DynamicContext* context) const 
   buffer.append(chDash);
   buffer.append(chDash);
   buffer.append(chDash);
-  DateUtils::formatNumber(_gDay->asMAPM(), 2, buffer);
+  DateUtils::formatNumber(_gDay, 2, buffer);
   if(_hasTimezone) {
     buffer.append(timezone_->asString(context));
   }
   return context->getMemoryManager()->getPooledString(buffer.getRawBuffer());
 }
 
-ATDateTimeOrDerived::Ptr ATGDayOrDerivedImpl::buildDateTime(const DynamicContext *context) const
+static inline MAPM referenceDateTime(const MAPM &DD, bool hasTimezone, const Timezone::Ptr &timezone)
 {
-  static const XMLCh doubleZero[] = { chDigit_0, chDigit_0, chNull };
+  MAPM result = DateUtils::convertDMY2Absolute(DD, 12, 1972) * DateUtils::g_secondsPerDay;
 
-  XMLBuffer buffer(1023, context->getMemoryManager());
-
-  DateUtils::formatNumber(1972, 4, buffer);
-  buffer.append(chDash);
-  DateUtils::formatNumber(12, 2, buffer);
-  buffer.append(chDash);
-  DateUtils::formatNumber(_gDay->asMAPM(), 2, buffer);
-  buffer.append(chLatin_T);
-  buffer.append(doubleZero);
-  buffer.append(chColon);
-  buffer.append(doubleZero);
-  buffer.append(chColon);
-  buffer.append(doubleZero);
-  if(_hasTimezone) {
-    buffer.append(timezone_->asString(context));
+  if(hasTimezone) {
+    result -= timezone->asSeconds();
   }
-  return context->getItemFactory()->createDateTime(buffer.getRawBuffer(), context);
+
+  return result;
+}
+
+MAPM ATGDayOrDerivedImpl::buildReferenceDateTime(const DynamicContext *context) const
+{
+  MAPM result = referenceDateTime(_gDay, _hasTimezone, timezone_);
+
+  if(!_hasTimezone)
+    result -= context->getImplicitTimezone()->asSeconds(context)->asMAPM();
+
+  return result;
 }
 
 /* Returns true if and only if the xs:dateTimes representing the starting instants of equivalent occurrences of $arg1 and $arg2 
@@ -124,7 +122,7 @@ bool ATGDayOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const Dynamic
 
 int ATGDayOrDerivedImpl::compare(const ATGDayOrDerived::Ptr &other, const DynamicContext *context) const
 {
-  return buildDateTime(context)->compare(((const ATGDayOrDerivedImpl *)other.get())->buildDateTime(context), context);
+  return buildReferenceDateTime(context).compare(((const ATGDayOrDerivedImpl *)other.get())->buildReferenceDateTime(context));
 }
 
 /** Returns true if a timezone is defined for this.  False otherwise.*/
@@ -139,7 +137,7 @@ ATGDayOrDerived::Ptr ATGDayOrDerivedImpl::setTimezone(const Timezone::Ptr &timez
   buffer.append(chDash);
   buffer.append(chDash);
   buffer.append(chDash);
-  DateUtils::formatNumber(_gDay->asMAPM(), 2, buffer);
+  DateUtils::formatNumber(_gDay, 2, buffer);
   if(timezone != NULLRCP) 
     buffer.append(timezone->asString(context));
   return context->getItemFactory()->createGDayOrDerived(this->getTypeURI(), this->getTypeName(), buffer.getRawBuffer(), context);
@@ -151,7 +149,7 @@ AnyAtomicType::AtomicObjectType ATGDayOrDerivedImpl::getPrimitiveTypeIndex() con
 }
 
 /* parse the gDay */
-void ATGDayOrDerivedImpl::setGDay(const XMLCh* const value, const DynamicContext* context) {
+void ATGDayOrDerivedImpl::setGDay(const XMLCh* const value) {
  
 	if(value == NULL) {
 			XQThrow(XPath2TypeCastException,X("ATGDayOrDerivedImpl::setGDay"), 
@@ -279,7 +277,19 @@ void ATGDayOrDerivedImpl::setGDay(const XMLCh* const value, const DynamicContext
         X("Invalid representation of gDay"));
 	}
 
-  timezone_ = new Timezone(zonepos, zonehh, zonemm);
-  _gDay = context->getItemFactory()->createNonNegativeInteger(DD, context);
+  timezone_ = new Timezone(Timezone::convert(zonepos, zonehh, zonemm));
+  _gDay = DD;
   
+}
+
+MAPM ATGDayOrDerivedImpl::parseGDay(const XMLCh* const value, const MAPM &implicitTimezone)
+{
+  ATGDayOrDerivedImpl dt(0, 0, value);
+
+  MAPM result = referenceDateTime(dt._gDay, dt._hasTimezone, dt.timezone_);
+
+  if(!dt._hasTimezone)
+    result -= implicitTimezone;
+
+  return result;
 }

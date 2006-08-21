@@ -80,44 +80,17 @@ inline int compare(Numeric::State state1, const MAPM &value1, Numeric::State sta
 {
   // Arbitrarily ranks NaN as greater than all other states
 
+  int cmp = state1 - state2;
+  if(cmp != 0) return cmp;
+
   switch(state1) {
-  case Numeric::NaN: {
-    switch(state2) {
-    case Numeric::NaN: return 0;
-    case Numeric::INF:
-    case Numeric::NUM:
-    case Numeric::NEG_NUM:
-    case Numeric::NEG_INF: return +1;
-    }
-  }
-  case Numeric::INF: {
-    switch(state2) {
-    case Numeric::NaN: return -1;
-    case Numeric::INF: return 0;
-    case Numeric::NUM:
-    case Numeric::NEG_NUM:
-    case Numeric::NEG_INF: return +1;
-    }
-  }
+  case Numeric::NaN:
+  case Numeric::INF:
+  case Numeric::NEG_INF:
+    return 0;
   case Numeric::NUM:
-  case Numeric::NEG_NUM: {
-    switch(state2) {
-    case Numeric::NaN:
-    case Numeric::INF: return -1;
-    case Numeric::NUM:
-    case Numeric::NEG_NUM: return value1.compare(value2);
-    case Numeric::NEG_INF: return +1;
-    }
-  }
-  case Numeric::NEG_INF: {
-    switch(state2) {
-    case Numeric::NaN:
-    case Numeric::INF:
-    case Numeric::NUM:
-    case Numeric::NEG_NUM: return -1;
-    case Numeric::NEG_INF: return 0;
-    }
-  }
+  case Numeric::NEG_NUM:
+    return value1.compare(value2);
   }
 
   assert(false); // should never get here
