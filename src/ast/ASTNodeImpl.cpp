@@ -14,7 +14,6 @@
 #include "../config/xqilla_config.h"
 #include <sstream>
 
-#include <xqilla/utils/PrintAST.hpp>
 #include <xqilla/ast/ASTNodeImpl.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/utils/NumUtils.hpp>

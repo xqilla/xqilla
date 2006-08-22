@@ -15,7 +15,6 @@
 #include <assert.h>
 #include <sstream>
 
-#include <xqilla/utils/PrintAST.hpp>
 #include <xqilla/axis/NodeTest.hpp>
 
 #include <xqilla/utils/XPath2Utils.hpp>
