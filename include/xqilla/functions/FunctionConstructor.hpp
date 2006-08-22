@@ -25,11 +25,9 @@
 
 #include <xercesc/util/XercesDefs.hpp>
 
-
 class XQILLA_API FunctionConstructor : public ConstantFoldingFunction
 {
 public:
-  static const XMLCh XMLChConstructorURI[];
   static const XMLCh XMLChXPath2DatatypesURI[];
 
   FunctionConstructor(const XMLCh* nsURI, const XMLCh* typeName,
