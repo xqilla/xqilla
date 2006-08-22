@@ -506,7 +506,12 @@ char *xqGetStateName(int state)
 <INITIAL>"preceding-sibling"{WhitespaceChar}*"::"			RECOGNIZE(_AXIS_PRECEDING_SIBLING_);
 <INITIAL>"preceding"{WhitespaceChar}*"::"					RECOGNIZE(_AXIS_PRECEDING_);
 <INITIAL>"self"{WhitespaceChar}*"::"						RECOGNIZE(_AXIS_SELF_);
-<INITIAL>"namespace"{WhitespaceChar}*"::"					return error("Axis 'namespace' is not part of the XQuery language");
+<INITIAL>"namespace"{WhitespaceChar}*"::"					{
+                                                            if(isXQuery()) 
+                                                                return error("Axis 'namespace' is not part of the XQuery language"); 
+                                                            else
+                                                                RECOGNIZE(_AXIS_NAMESPACE_); 
+                                                            }
 <INITIAL,OPERATOR,ITEMTYPE,CLOSEKINDTEST,THESAURUS2,STOPWORDS>","				{
 																switch(YYSTATE) {
 																case CLOSEKINDTEST: CHANGE_STATE(KINDTEST); break;
