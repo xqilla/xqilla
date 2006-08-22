@@ -243,6 +243,7 @@ public:
   XQilla::Language getLanguage() const { return m_language; }
   bool isFullText() const { return m_language == XQilla::XQUERY_FULLTEXT || m_language == XQilla::XPATH2_FULLTEXT; }
   bool isXQuery() const { return m_language == XQilla::XQUERY || m_language == XQilla::XQUERY_FULLTEXT; }
+  bool isXPath() const { return m_language == XQilla::XPATH2 || m_language == XQilla::XPATH2_FULLTEXT; }
 
 protected:
   virtual int Read( YY_CHAR* buf, int max_size )

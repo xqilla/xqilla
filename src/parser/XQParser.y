@@ -136,6 +136,7 @@ void *alloca (size_t);
 #define MEMMGR					(CONTEXT->getMemoryManager())
 
 #define REJECT_NOT_XQUERY(where,pos) if(!QP->_lexer->isXQuery()) { yyerror(LANGUAGE, #where, (pos).first_line, (pos).first_column); }
+#define REJECT_NOT_XPATH(where,pos) if(!QP->_lexer->isXPath()) { yyerror(LANGUAGE, #where, (pos).first_line, (pos).first_column); }
 #define REJECT_NOT_FULLTEXT(where,pos) if(!QP->_lexer->isFullText()) { yyerror(LANGUAGE, #where, (pos).first_line, (pos).first_column); }
 
 #define WRAP(pos,object)		(wrapForDebug((QP),(object),NULL  ,(pos).first_line, (pos).first_column))
@@ -373,6 +374,7 @@ namespace XQParser {
 %token _AXIS_SELF_						"self::"
 %token _AXIS_DESCENDANT_OR_SELF_		"descendant-or-self::"
 %token _AXIS_PARENT_					"parent::"
+%token _AXIS_NAMESPACE_					"namespace::"
 %token _STAR_							"* (wildcard)"
 %token _PROCESSING_INSTRUCTION_LPAR_	"processing-instruction("
 %token _COMMENT_LPAR_					"comment("
@@ -2091,6 +2093,11 @@ ForwardAxis:
 		{
       $$ = XQStep::FOLLOWING;
 		}
+    | _AXIS_NAMESPACE_
+        {
+        REJECT_NOT_XPATH(AxisNamespace, @1);
+      $$ = XQStep::NAMESPACE;
+        }
 	;
 
 // [77]    AbbrevForwardStep    ::=    "@"? NodeTest
