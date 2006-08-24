@@ -153,6 +153,29 @@ DatatypeLookup::DatatypeLookup(const DocumentCache* dc, MemoryManager* memMgr) :
 
 DatatypeLookup::~DatatypeLookup()
 {
+	fMemMgr->deallocate(anySimpleType_);
+	fMemMgr->deallocate(anyURI_);
+	fMemMgr->deallocate(base64Binary_);
+	fMemMgr->deallocate(boolean_);
+	fMemMgr->deallocate(date_);
+	fMemMgr->deallocate(dateTime_);
+	fMemMgr->deallocate(dayTimeDuration_);
+	fMemMgr->deallocate(decimal_);
+	fMemMgr->deallocate(double_);
+	fMemMgr->deallocate(duration_);
+	fMemMgr->deallocate(float_);
+	fMemMgr->deallocate(gDay_);
+	fMemMgr->deallocate(gMonth_);
+	fMemMgr->deallocate(gMonthDay_);
+	fMemMgr->deallocate(gYear_);
+	fMemMgr->deallocate(gYearMonth_);
+	fMemMgr->deallocate(hexBinary_);
+	fMemMgr->deallocate(notation_);
+	fMemMgr->deallocate(qname_);
+	fMemMgr->deallocate(string_);
+	fMemMgr->deallocate(time_);
+	fMemMgr->deallocate(yearMonthDuration_);
+	fMemMgr->deallocate(untypedAtomic_);
 }
 
 void DatatypeLookup::insertDatatype(DatatypeFactory *datatype)

@@ -91,6 +91,8 @@ Result SequenceType::matches(const Result &toBeTested) const
 
 void SequenceType::setItemType(SequenceType::ItemType* itemType)
 {
+  if(m_pItemType)
+    delete m_pItemType;
   m_pItemType=itemType;
 }
 
