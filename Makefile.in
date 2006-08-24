@@ -623,7 +623,7 @@ src/parser/QName.cpp \
 src/parser/XQParser.cpp \
 src/parser/XQParser.hpp \
 src/lexer/FlexLexer.h \
-src/lexer/XQillaLexer.h \
+src/lexer/XQillaLexer.hpp \
 src/lexer/XQLexer.cpp \
 src/lexer/XQLexer.hpp \
 src/mapm/mapm5sin.c \
@@ -712,7 +712,6 @@ src/runtime/EmptyResult.cpp \
 src/runtime/LazySequenceResult.cpp \
 src/runtime/ResultBuffer.cpp \
 src/runtime/ResultBufferImpl.cpp \
-src/runtime/ResultBufferImpl.hpp \
 src/runtime/Result.cpp \
 src/runtime/ResultImpl.cpp \
 src/runtime/SequenceResult.cpp \
