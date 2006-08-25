@@ -255,6 +255,7 @@ xqilla/context/XQDebugCallback.hpp \
 xqilla/context/VariableTypeStore.hpp \
 xqilla/context/Collation.hpp \
 xqilla/context/XQScopedNamespace.hpp \
+xqilla/context/ModuleResolver.hpp \
 xqilla/context/impl/CollationImpl.hpp \
 xqilla/context/impl/VarHashEntryImpl.hpp \
 xqilla/context/impl/VariableStoreTemplate.hpp \
