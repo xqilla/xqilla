@@ -60,6 +60,7 @@ static char szDelimiters[]       ="\t\n\r <>?*$)({/=!|@[],;%\"'&}:.-+";
 
 #define REJECT_NOT_XQUERY { if(!isXQuery()) { undoUserAction(); REJECT; } }
 #define REJECT_NOT_FULLTEXT { if(!isFullText()) { undoUserAction(); REJECT; } }
+#define REJECT_XQUERY { if(isXQuery()) { undoUserAction(); REJECT; } }
 #define REJECT_IF_XPATH { if(getLanguage() == XQilla::XPATH2) { undoUserAction(); REJECT; } }
 
 %}
@@ -506,12 +507,8 @@ char *xqGetStateName(int state)
 <INITIAL>"preceding-sibling"{WhitespaceChar}*"::"			RECOGNIZE(_AXIS_PRECEDING_SIBLING_);
 <INITIAL>"preceding"{WhitespaceChar}*"::"					RECOGNIZE(_AXIS_PRECEDING_);
 <INITIAL>"self"{WhitespaceChar}*"::"						RECOGNIZE(_AXIS_SELF_);
-<INITIAL>"namespace"{WhitespaceChar}*"::"					{
-                                                            if(isXQuery()) 
-                                                                return error("Axis 'namespace' is not part of the XQuery language"); 
-                                                            else
-                                                                RECOGNIZE(_AXIS_NAMESPACE_); 
-                                                            }
+<INITIAL>"namespace"{WhitespaceChar}*"::"					REJECT_XQUERY; RECOGNIZE(_AXIS_NAMESPACE_);
+
 <INITIAL,OPERATOR,ITEMTYPE,CLOSEKINDTEST,THESAURUS2,STOPWORDS>","				{
 																switch(YYSTATE) {
 																case CLOSEKINDTEST: CHANGE_STATE(KINDTEST); break;

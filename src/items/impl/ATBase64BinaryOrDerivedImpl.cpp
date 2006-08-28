@@ -71,6 +71,15 @@ AnyAtomicType::AtomicObjectType ATBase64BinaryOrDerivedImpl::getTypeIndex() {
 /* If possible, cast this type to the target type */
 AnyAtomicType::Ptr ATBase64BinaryOrDerivedImpl::castAsInternal(AtomicObjectType targetIndex, const XMLCh* targetURI, const XMLCh* targetType, const DynamicContext* context) const
 {
+  static const XMLCh hexDigits[]={ chDigit_0, chDigit_1,
+                                   chDigit_2, chDigit_3,
+                                   chDigit_4, chDigit_5,
+                                   chDigit_6, chDigit_7,
+                                   chDigit_8, chDigit_9,
+                                   chLatin_A, chLatin_B,
+                                   chLatin_C, chLatin_D,
+                                   chLatin_E, chLatin_F };
+
   switch(targetIndex) {
     case HEX_BINARY: {
       unsigned int srcLen = XMLString::stringLen(_base64Data);
@@ -81,29 +90,18 @@ AnyAtomicType::Ptr ATBase64BinaryOrDerivedImpl::castAsInternal(AtomicObjectType 
       for (i = 0; i < srcLen; i++)
         dataInByte[i] = (XMLByte)_base64Data[i];
 
-	  dataInByte[srcLen] = 0;
+      dataInByte[srcLen] = 0;
 
       unsigned int length=0;
-      XMLByte* decodedBinary=Base64::decode(dataInByte, 
-                                                                           &length, 
-                                                                           context->getMemoryManager(), 
-                                                                           Base64::Conf_Schema); 
+      AutoDeallocate<XMLByte> decodedBinary(Base64::decode(dataInByte, &length, context->getMemoryManager(),
+                                                           Base64::Conf_Schema), context->getMemoryManager());
+
       XMLBuffer buf(length*2, context->getMemoryManager());
-      XMLCh hexDigits[]={ chDigit_0, chDigit_1,
-                          chDigit_2, chDigit_3,
-                          chDigit_4, chDigit_5,
-                          chDigit_6, chDigit_7,
-                          chDigit_8, chDigit_9,
-                          chLatin_A, chLatin_B,
-                          chLatin_C, chLatin_D,
-                          chLatin_E, chLatin_F
-      }                 ;
       for(i=0;i<length;i++)
       {
           buf.append(hexDigits[decodedBinary[i]/16]);
           buf.append(hexDigits[decodedBinary[i]%16]);
       }
-      context->getMemoryManager()->deallocate(decodedBinary);
       return new ATHexBinaryOrDerivedImpl(targetURI, targetType, buf.getRawBuffer(), context);
     }
     default: {
@@ -119,7 +117,8 @@ const XMLCh* ATBase64BinaryOrDerivedImpl::asString(const DynamicContext* context
 
 bool ATBase64BinaryOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const {
   if(this->getPrimitiveTypeIndex() != target->getPrimitiveTypeIndex()) {
-    XQThrow(::IllegalArgumentException,X("ATBase64BinaryOrDerivedImpl::equals"), X("Equality operator for given types not supported [err:XPTY0004]"));
+    XQThrow(::IllegalArgumentException,X("ATBase64BinaryOrDerivedImpl::equals"),
+            X("Equality operator for given types not supported [err:XPTY0004]"));
   }
   return compare((const ATBase64BinaryOrDerived *)target.get(), context) == 0;
 }

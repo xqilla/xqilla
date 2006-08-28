@@ -588,16 +588,11 @@ ATDoubleOrDerived::Ptr ATDoubleOrDerivedImpl::newDouble(MAPM value, const Dynami
   return context->getItemFactory()->createDouble(value, context);
 }
 
-void ATDoubleOrDerivedImpl::setDouble(const XMLCh* const value)
-{
-  _double = parseDouble(value, _state);
-}
-
-MAPM ATDoubleOrDerivedImpl::parseDouble(const XMLCh* const value, State &state)
+static MAPM parse(const XMLCh* const value, Numeric::State &state)
 {
   if(value == NULL) {
     // Not a Number
-    state = NaN;
+    state = Numeric::NaN;
     return MM_Zero;
   }
   
@@ -722,20 +717,32 @@ MAPM ATDoubleOrDerivedImpl::parseDouble(const XMLCh* const value, State &state)
 
   if(!gotDigit || stop) {
     if(XPath2Utils::equals(value, Numeric::NegINF_string)) {
-      state = NEG_INF;
+      state = Numeric::NEG_INF;
     }
     else if (XPath2Utils::equals(value, Numeric::INF_string)) {
-      state = INF;
+      state = Numeric::INF;
     }
     else {
-      state = NaN;
+      state = Numeric::NaN;
     }
     return MM_Zero;
   }
 
   *dest++ = 0; // Null terminate  
-  if(isNegative) state = NEG_NUM;
-  else state = NUM;
+  if(isNegative) state = Numeric::NEG_NUM;
+  else state = Numeric::NUM;
 
   return (char*)buffer;
+}
+
+void ATDoubleOrDerivedImpl::setDouble(const XMLCh* const value)
+{
+  _double = parse(value, _state);
+}
+
+MAPM ATDoubleOrDerivedImpl::parseDouble(const XMLCh* const value, State &state)
+{
+  MAPM result = parse(value, state);
+  Numeric::checkDoubleLimits(state, result);
+  return result;
 }

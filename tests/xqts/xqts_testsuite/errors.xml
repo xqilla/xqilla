@@ -8,9 +8,7 @@
   <error id="Constr-inscope-2" reason="inspect" action="pass"/>
   <error id="Constr-inscope-3" reason="inspect" action="pass"/>
   <error id="Constr-inscope-4" reason="inspect" action="pass"/>
-  <error id="ForExprType010" reason="error failure"/>
   <error id="K-FunctionProlog-12" reason="no error failure"/>
-  <error id="K-FunctionProlog-58" reason="no error failure"/>
   <error id="K-InternalVariablesWith-16" reason="error failure"/>
   <error id="K-InternalVariablesWith-17" reason="no error failure"/>
   <error id="K-InternalVariablesWith-18" reason="error failure"/>
@@ -44,22 +42,6 @@
   <error id="K2-InternalVariablesWithout-9" reason="error failure"/>
   <error id="K2-LetExprWithout-1" reason="result failure"/>
   <error id="K2-NamespaceProlog-2" reason="no error failure"/>
-  <error id="LocalNameFromQNameFunc001" reason="error failure"/>
-  <error id="LocalNameFromQNameFunc002" reason="error failure"/>
-  <error id="LocalNameFromQNameFunc003" reason="error failure"/>
-  <error id="LocalNameFromQNameFunc004" reason="error failure"/>
-  <error id="LocalNameFromQNameFunc005" reason="error failure"/>
-  <error id="LocalNameFromQNameFunc018" reason="error failure"/>
-  <error id="LocalNameFromQNameFunc019" reason="error failure"/>
-  <error id="LocalNameFromQNameFunc020" reason="error failure"/>
-  <error id="NamespaceURIFromQNameFunc001" reason="error failure"/>
-  <error id="NamespaceURIFromQNameFunc002" reason="error failure"/>
-  <error id="NamespaceURIFromQNameFunc003" reason="error failure"/>
-  <error id="NamespaceURIFromQNameFunc004" reason="error failure"/>
-  <error id="NamespaceURIFromQNameFunc005" reason="error failure"/>
-  <error id="NamespaceURIFromQNameFunc018" reason="error failure"/>
-  <error id="NamespaceURIFromQNameFunc019" reason="error failure"/>
-  <error id="NamespaceURIFromQNameFunc020" reason="error failure"/>
   <error id="base-URI-19" reason="error failure"/>
   <error id="base-URI-24" reason="error failure"/>
   <error id="caselessmatch04" reason="result failure"/>

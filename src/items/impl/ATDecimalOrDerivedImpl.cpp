@@ -603,7 +603,8 @@ MAPM ATDecimalOrDerivedImpl::parseDecimal(const XMLCh* const value)
   }//while
 
   if(!gotDigit || stop) {
-		XQThrow(XPath2TypeCastException,X("ATDecimalOrDerivedImpl::setDecimal"), X("Invalid representation of decimal"));
+		XQThrow(XPath2TypeCastException,X("ATDecimalOrDerivedImpl::setDecimal"),
+			X("Invalid representation of decimal"));
   }
 
   *dest++ = 0; // Null terminate

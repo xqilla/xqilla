@@ -111,11 +111,11 @@ public:
   virtual const MAPM &asMAPM() const = 0;
 
   enum State {
-	  NEG_INF = 0,
-	  NEG_NUM = 1,
-	  NUM = 2,
-	  INF = 3,
-	  NaN = 4
+    NEG_INF = 0,
+    NEG_NUM = 1,
+    NUM = 2,
+    INF = 3,
+    NaN = 4
   };
 
   virtual State getState() const = 0;
@@ -126,6 +126,9 @@ public:
   static const XMLCh NegINF_string[];
   static const XMLCh NegZero_string[];
   static const XMLCh PosZero_string[];
+
+  static void checkFloatLimits(Numeric::State &state, MAPM &value);
+  static void checkDoubleLimits(Numeric::State &state, MAPM &value);
 
   static const XMLCh *asDecimalString(const MAPM &value, int significantDigits, const StaticContext* context);
   static const XMLCh *asDoubleString(State state, const MAPM &value, int significantDigits, const StaticContext* context);
