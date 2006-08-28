@@ -2566,13 +2566,13 @@ DirElementContent:
 			{
 				if($$->back()==0)
 					$$->pop_back();
-				else if($$->back()->getType()==ASTNode::LITERAL)
+				else if(!CONTEXT->getPreserveBoundarySpace() && $$->back()->getType()==ASTNode::LITERAL)
 				{
 					const XMLCh* lastString=NULL;
 					Item::Ptr litVal = ((XQLiteral*)$$->back())->getItemConstructor()->createItem(CONTEXT);
 					if(((AnyAtomicType*)(const Item*)litVal)->getPrimitiveTypeIndex()==AnyAtomicType::STRING)
 						lastString=litVal->asString(CONTEXT);
-					if(lastString!=NULL && XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(lastString)>0 && isAllSpaces(lastString) && !CONTEXT->getPreserveBoundarySpace())
+					if(lastString!=NULL && *lastString!=0 && isAllSpaces(lastString))
 						$$->pop_back();
 				}
 			}
@@ -2615,13 +2615,13 @@ DirElementContent:
 
 			// if the last token was a string literal made of whitespace and
 			// we are adding a node constructor, and the context tells us to strip whitespace, remove it
-			if($$->size()>0 && $$->back()->getType()==ASTNode::LITERAL)
+			if(!CONTEXT->getPreserveBoundarySpace() && $$->size()>0 && $$->back()->getType()==ASTNode::LITERAL)
 			{
 				const XMLCh* lastString=NULL;
 				Item::Ptr litVal = ((XQLiteral*)$$->back())->getItemConstructor()->createItem(CONTEXT);
 				if(((AnyAtomicType*)(const Item*)litVal)->getPrimitiveTypeIndex()==AnyAtomicType::STRING)
 					lastString=litVal->asString(CONTEXT);
-				if(lastString!=NULL && XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(lastString)>0 && isAllSpaces(lastString) && !CONTEXT->getPreserveBoundarySpace())
+				if(lastString!=NULL && *lastString!=0 && isAllSpaces(lastString))
 					$$->pop_back();
 			}
 			$$->push_back($2);
@@ -2635,13 +2635,13 @@ DirElementContent:
 			{
 				if($$->back()==0)
 					$$->pop_back();
-				else if($$->back()->getType()==ASTNode::LITERAL)
+				else if(!CONTEXT->getPreserveBoundarySpace() && $$->back()->getType()==ASTNode::LITERAL)
 				{
 					const XMLCh* lastString=NULL;
 					Item::Ptr litVal = ((XQLiteral*)$$->back())->getItemConstructor()->createItem(CONTEXT);
 					if(((AnyAtomicType*)(const Item*)litVal)->getPrimitiveTypeIndex()==AnyAtomicType::STRING)
 						lastString=litVal->asString(CONTEXT);
-					if(lastString!=NULL && XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(lastString)>0 && isAllSpaces(lastString) && !CONTEXT->getPreserveBoundarySpace())
+					if(lastString!=NULL && *lastString!=0 && isAllSpaces(lastString))
 						$$->pop_back();
 				}
 			}
@@ -2651,6 +2651,9 @@ DirElementContent:
 	  | DirElementContent CommonContent
 		{
 			$$ = $1;
+			if($$->size()>0 && $$->back()==0)
+				$$->pop_back();
+
     		AnyAtomicTypeConstructor *ic = new (MEMMGR)
       			AnyAtomicTypeConstructor(
 							XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
