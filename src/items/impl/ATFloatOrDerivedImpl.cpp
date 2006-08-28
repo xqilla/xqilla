@@ -612,16 +612,11 @@ ATFloatOrDerived::Ptr ATFloatOrDerivedImpl::newFloat(MAPM value, const DynamicCo
   return context->getItemFactory()->createFloat(value, context);
 }
 
-void ATFloatOrDerivedImpl::setFloat(const XMLCh* const value)
-{
-  _float = parseFloat(value, _state);
-}
-
-MAPM ATFloatOrDerivedImpl::parseFloat(const XMLCh* const value, State &state)
+static MAPM parse(const XMLCh* const value, Numeric::State &state)
 {
   if(value == NULL) {
     // Not a Number
-    state = NaN;
+    state = Numeric::NaN;
     return MM_Zero;
   }
   
@@ -747,22 +742,33 @@ MAPM ATFloatOrDerivedImpl::parseFloat(const XMLCh* const value, State &state)
 
   if(!gotDigit || stop) {
     if(XPath2Utils::equals(value, Numeric::NegINF_string)) {
-      state = NEG_INF;
+      state = Numeric::NEG_INF;
     }
     else if (XPath2Utils::equals(value, Numeric::INF_string)) {
-      state = INF;
+      state = Numeric::INF;
     }
     else {
-      state = NaN;
+      state = Numeric::NaN;
     }
     return MM_Zero;
   }
 
   *dest++ = 0; // Null terminate  
-  if(isNegative) state = NEG_NUM;
-  else state = NUM;
+  if(isNegative) state = Numeric::NEG_NUM;
+  else state = Numeric::NUM;
 
   return (char*)buffer;
 }
  
 
+void ATFloatOrDerivedImpl::setFloat(const XMLCh* const value)
+{
+  _float = parse(value, _state);
+}
+
+MAPM ATFloatOrDerivedImpl::parseFloat(const XMLCh* const value, State &state)
+{
+  MAPM result = parse(value, state);
+  Numeric::checkFloatLimits(state, result);
+  return result;
+}

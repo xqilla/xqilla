@@ -48,29 +48,31 @@ const XMLCh Numeric::NegZero_string[] =
 const XMLCh Numeric::PosZero_string[] =
 { chDigit_0, chNull };
 
-inline void checkFloatLimits(Numeric::State &state, MAPM &value)
+void Numeric::checkFloatLimits(Numeric::State &state, MAPM &value)
 {
-  if(state==Numeric::NUM || state==Numeric::NEG_NUM) {
+  if(state==NUM || state==NEG_NUM) {
     int exp=value.exponent();
-    if(exp>38 || (exp==38 && value.abs()>MAPM(3.4028235e+38))) {
-      state=(state==Numeric::NEG_NUM)?Numeric::NEG_INF:Numeric::INF;
+    if(exp>38 || (exp==38 && value.abs()>MAPM("3.4028235e+38"))) {
+      state=(state==NEG_NUM)?NEG_INF:INF;
+      value = MM_Zero;
     }
-    else if(exp<-38 || (exp==-38 && value.abs()<MAPM(1.1754944e-38)))
+    else if(exp<-38 || (exp==-38 && value.abs()<MAPM("1.1754944e-38")))
       value=MM_Zero;
     else if(value.significant_digits()>ATFloatOrDerivedImpl::g_nSignificantDigits)
       value = value.round(ATFloatOrDerivedImpl::g_nSignificantDigits);
   }
 }
 
-inline void checkDoubleLimits(Numeric::State &state, MAPM &value)
+void Numeric::checkDoubleLimits(Numeric::State &state, MAPM &value)
 {
-  if(state==Numeric::NUM || state==Numeric::NEG_NUM) {
+  if(state==NUM || state==NEG_NUM) {
     int exp=value.exponent();
-    if(exp>308 || (exp==308 && value.abs()>MAPM(1.7976931348623157e+308))) {
-      state=(state==Numeric::NEG_NUM)?Numeric::NEG_INF:Numeric::INF;
+    if(exp>308 || (exp==308 && value.abs()>MAPM("1.7976931348623157e+308"))) {
+      state=(state==NEG_NUM)?NEG_INF:INF;
+      value = MM_Zero;
     }
-    else if(exp<-308 || (exp==-308 && value.abs()<MAPM(2.2250738585072014e-308)))
-      value=MM_Zero;
+    else if(exp<-308 || (exp==-308 && value.abs()<MAPM("2.2250738585072014e-308")))
+      value = MM_Zero;
     else if(value.significant_digits()>ATDoubleOrDerivedImpl::g_nSignificantDigits)
       value = value.round(ATDoubleOrDerivedImpl::g_nSignificantDigits);
   }
@@ -111,12 +113,12 @@ inline int typePromoteCompare(const Numeric::Ptr &num1, const Numeric::Ptr &num2
     case AnyAtomicType::DECIMAL:
       break;
     case AnyAtomicType::FLOAT:
-      checkFloatLimits(state1, value1);
-      checkFloatLimits(state2, value2);
+      Numeric::checkFloatLimits(state1, value1);
+      Numeric::checkFloatLimits(state2, value2);
       break;
     case AnyAtomicType::DOUBLE:
-      checkDoubleLimits(state1, value1);
-      checkDoubleLimits(state2, value2);
+      Numeric::checkDoubleLimits(state1, value1);
+      Numeric::checkDoubleLimits(state2, value2);
       break;
     default: break;
     }
@@ -125,19 +127,19 @@ inline int typePromoteCompare(const Numeric::Ptr &num1, const Numeric::Ptr &num2
     switch(num2->getPrimitiveTypeIndex()) {
     case AnyAtomicType::DECIMAL:
     case AnyAtomicType::FLOAT:
-      checkFloatLimits(state1, value1);
-      checkFloatLimits(state2, value2);
+      Numeric::checkFloatLimits(state1, value1);
+      Numeric::checkFloatLimits(state2, value2);
       break;
     case AnyAtomicType::DOUBLE:
-      checkDoubleLimits(state1, value1);
-      checkDoubleLimits(state2, value2);
+      Numeric::checkDoubleLimits(state1, value1);
+      Numeric::checkDoubleLimits(state2, value2);
       break;
     default: break;
     }
     break;
   case AnyAtomicType::DOUBLE:
-    checkDoubleLimits(state1, value1);
-    checkDoubleLimits(state2, value2);
+    Numeric::checkDoubleLimits(state1, value1);
+    Numeric::checkDoubleLimits(state2, value2);
     break;
   default: break;
   }
@@ -154,7 +156,7 @@ bool Numeric::equals(const AnyAtomicType::Ptr &target, const DynamicContext* con
 {
   if(!target->isNumericValue()) {
     XQThrow(::IllegalArgumentException,X("Numeric::equals"),
-	    X("Equality operator for given types not supported [err:XPTY0004]"));
+            X("Equality operator for given types not supported [err:XPTY0004]"));
   } 
 
   const Numeric *otherImpl = (const Numeric*)target.get();

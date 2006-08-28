@@ -218,7 +218,7 @@ void StringTransformer::transformUTF16(const XMLCh *source, StringTransform *tra
     ++source;
 
     if((ch & 0xDC00) == 0xD800) {
-	    if(*source) break;
+	    if(*source == 0) break;
 	    ch = ((ch & 0x3FF) << 10) | (*source & 0x3FF);
 	    ch += 0x10000;
 	    ++source;
