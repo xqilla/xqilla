@@ -61,7 +61,7 @@ public:
   virtual void setCurrentTime(time_t newTime) = 0;
 
   /** Return the implicit timezone for this system.*/
-  virtual const ATDurationOrDerived::Ptr &getImplicitTimezone() const = 0;
+  virtual ATDurationOrDerived::Ptr getImplicitTimezone() const = 0;
   /** Set the implicit timezone */
   virtual void setImplicitTimezone(const ATDurationOrDerived::Ptr &timezoneAsDuration) = 0;
 
