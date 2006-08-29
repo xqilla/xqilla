@@ -352,12 +352,12 @@ void XQContextImpl::setCurrentTime(time_t newTime)
   _currentTime=newTime;
 }
 
-const ATDurationOrDerived::Ptr &XQContextImpl::getImplicitTimezone() const {
+ATDurationOrDerived::Ptr XQContextImpl::getImplicitTimezone() const {
 	if(_implicitTimezone == NULLRCP) {
 		// validate tzone
 		Timezone tzone(ContextUtils::getTimezone());
-        // c-style the const away since we are in a const method
-        ((XQContextImpl*)this)->_implicitTimezone = tzone.asDayTimeDuration(this);
+    // c-style the const away since we are in a const method
+    ((XQContextImpl*)this)->_implicitTimezone = tzone.asDayTimeDuration(this);
 	}
 
 	return _implicitTimezone;

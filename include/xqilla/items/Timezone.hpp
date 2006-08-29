@@ -58,10 +58,10 @@ public :
 
   static MAPM convert(bool positive, int hour, int minute);
 
+  static void validate(const MAPM &tz);
+
 private:
   MAPM seconds_;
-
-  void validate() const;
 };
 
 #endif // _TZONE_HPP

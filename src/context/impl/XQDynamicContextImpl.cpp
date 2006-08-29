@@ -186,7 +186,7 @@ void XQDynamicContextImpl::setCurrentTime(time_t newTime)
   _currentTime=newTime;
 }
 
-const ATDurationOrDerived::Ptr &XQDynamicContextImpl::getImplicitTimezone() const {
+ATDurationOrDerived::Ptr XQDynamicContextImpl::getImplicitTimezone() const {
   if(_implicitTimezone == NULLRCP) {
     // validate tzone
     Timezone tzone(ContextUtils::getTimezone());

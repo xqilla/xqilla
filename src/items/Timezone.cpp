@@ -34,13 +34,13 @@ static const int g_maxHour = 14;
 Timezone::Timezone(const MAPM &seconds)
   : seconds_(seconds)
 {
-  validate();
+  validate(seconds_);
 }
 
 Timezone::Timezone(const ATDurationOrDerived::Ptr &duration, const DynamicContext* context)
   : seconds_(duration->asSeconds(context)->asMAPM())
 {
-  validate();
+  validate(seconds_);
 }
 
 MAPM Timezone::convert(bool positive, int hour, int minute)
@@ -48,12 +48,13 @@ MAPM Timezone::convert(bool positive, int hour, int minute)
   return (hour * DateUtils::g_secondsPerHour + minute * DateUtils::g_secondsPerMinute) * (positive ? +1 : -1);
 }
 
-void Timezone::validate() const {
+void Timezone::validate(const MAPM &tz) {
   // Check that we have a valid timezone
-  if(seconds_.abs() > (g_maxHour * DateUtils::g_secondsPerHour)) {
-    XQThrow(XPath2TypeCastException ,X("Timezone::Timezone"), X("Timezone outside of valid range created [err:FODT0003]."));
+  if(tz.abs() > (g_maxHour * DateUtils::g_secondsPerHour)) {
+    XQThrow(XPath2TypeCastException ,X("Timezone::Timezone"),
+	    X("Timezone outside of valid range created [err:FODT0003]."));
   }
-  if(seconds_.rem(DateUtils::g_secondsPerMinute).sign() != 0) {
+  if(tz.rem(DateUtils::g_secondsPerMinute).sign() != 0) {
     XQThrow(XPath2TypeCastException ,X("Timezone::Timezone"),
             X("Timezone must have an integral number of minutes [err:FODT0003]."));
   }
