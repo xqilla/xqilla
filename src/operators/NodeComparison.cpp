@@ -29,6 +29,12 @@ NodeComparison::NodeComparison(const VectorOfASTNodes &args, XPath2MemoryManager
 {
 }
 
+ASTNode* NodeComparison::staticResolution(StaticContext *context)
+{
+  _src.getStaticType().flags = StaticType::BOOLEAN_TYPE;
+  return resolveASTNodes(_args, context, true);
+}
+
 Result NodeComparison::createResult(DynamicContext* context, int flags) const
 {
   return new NodeComparisonResult(this);

@@ -96,10 +96,6 @@ bool XQOperator::checkSequenceIsNodes(const Sequence &s) {
 	return true;
 }
 
-ASTNode* XQOperator::staticResolution(StaticContext *context) {
-  return resolveASTNodesForDateOrTime(_args, context, true);
-}
-
 const VectorOfASTNodes &XQOperator::getArguments() const {
   return _args;
 }

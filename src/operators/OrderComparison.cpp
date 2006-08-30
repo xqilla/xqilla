@@ -35,6 +35,12 @@ bool OrderComparison::getTestBefore() const
     return _testBefore;
 }
 
+ASTNode* OrderComparison::staticResolution(StaticContext *context)
+{
+  _src.getStaticType().flags = StaticType::BOOLEAN_TYPE;
+  return resolveASTNodes(_args, context, true);
+}
+
 Result OrderComparison::createResult(DynamicContext* context, int flags) const
 {
   return new OrderComparisonResult(this);
