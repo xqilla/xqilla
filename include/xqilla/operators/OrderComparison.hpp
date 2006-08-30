@@ -27,6 +27,7 @@ public:
   ///testBefore should be set to true if you want to test that the first parameter is before the second.
   OrderComparison(const VectorOfASTNodes &args, bool testBefore, XPath2MemoryManager* memMgr);
 
+  ASTNode* staticResolution(StaticContext *context);
   Result createResult(DynamicContext* context, int flags=0) const;
 
   bool getTestBefore() const;

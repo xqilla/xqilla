@@ -29,8 +29,6 @@ public:
   /// constructor, checks for the correct number of arguments.
   XQOperator(const XMLCh* opName, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
 
-  virtual ASTNode* staticResolution(StaticContext *context);
-
   /** used to manipulate arguments */
   void addArgument(ASTNode* arg);
   void removeArgument(unsigned int index);
