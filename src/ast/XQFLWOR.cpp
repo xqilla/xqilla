@@ -675,8 +675,9 @@ void XQFLWOR::staticResolutionImpl(StaticContext* context)
         break;
       }
     }
-    // DbXQml optimises collection() and doc(), so they have to be recalculated
-    if(valueSrc.areDocsOrCollectionsUsed()) {
+    // DbXQml optimises collection() and doc(), so they have to be recalculated.
+    // Creative expressions must be re-evaluated to get a new node identity.
+    if(valueSrc.areDocsOrCollectionsUsed() || valueSrc.isCreative()) {
       newVB->_valuesResultMustBeRecalculated = true;
     }
 
