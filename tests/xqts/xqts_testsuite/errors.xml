@@ -40,7 +40,6 @@
   <error id="K2-InternalVariablesWithout-7" reason="error failure"/>
   <error id="K2-InternalVariablesWithout-8" reason="error failure"/>
   <error id="K2-InternalVariablesWithout-9" reason="error failure"/>
-  <error id="K2-LetExprWithout-1" reason="result failure"/>
   <error id="K2-NamespaceProlog-2" reason="no error failure"/>
   <error id="base-URI-19" reason="error failure"/>
   <error id="base-URI-24" reason="error failure"/>
