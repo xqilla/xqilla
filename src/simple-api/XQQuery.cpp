@@ -128,6 +128,19 @@ void XQQuery::staticResolution(StaticContext *context)
   if(!m_userDefVars.empty())
   {
     GlobalVariables::iterator itVar;
+    // declare all the global variables with a special StaticResolutionContext, in order to recognize 'variable is defined later' errors 
+    // instead of more generic 'variable not found'
+    StaticResolutionContext forwardRef(context->getMemoryManager());
+    forwardRef.setProperties(StaticResolutionContext::FORWARDREF);
+    for(itVar = m_userDefVars.begin(); itVar != m_userDefVars.end(); ++itVar) {
+      const XMLCh* varName=(*itVar)->getVariableName();
+      const XMLCh* prefix=XPath2NSUtils::getPrefix(varName, context->getMemoryManager());
+      const XMLCh* uri=NULL;
+      if(prefix && *prefix)
+        uri = context->getUriBoundToPrefix(prefix);
+      const XMLCh* name= XPath2NSUtils::getLocalName(varName);
+      context->getVariableTypeStore()->declareGlobalVar(uri, name, forwardRef);
+    }
     for(itVar = m_userDefVars.begin(); itVar != m_userDefVars.end(); ++itVar) {
       (*itVar)->staticResolution(context);
       if(getIsLibraryModule() && !XERCES_CPP_NAMESPACE::XMLString::equals((*itVar)->getVariableURI(), getModuleTargetNamespace()))
@@ -141,7 +154,7 @@ void XQQuery::staticResolution(StaticContext *context)
         if(XPath2Utils::equals((*itVar)->getVariableURI(), (*it2)->getVariableURI()) &&
            XPath2Utils::equals((*itVar)->getVariableLocalName(), (*it2)->getVariableLocalName()))
         {
-          XMLBuffer errMsg;
+          XMLBuffer errMsg(1023, context->getMemoryManager());
           errMsg.set(X("A variable with name {"));
             errMsg.append((*itVar)->getVariableURI());
           errMsg.append(X("}"));
@@ -156,7 +169,7 @@ void XQQuery::staticResolution(StaticContext *context)
             varIt != (*modIt)->m_userDefVars.end(); ++varIt) {
           if(XPath2Utils::equals((*itVar)->getVariableURI(), (*varIt)->getVariableURI()) &&
              XPath2Utils::equals((*itVar)->getVariableLocalName(), (*varIt)->getVariableLocalName())) {
-            XMLBuffer errMsg;
+            XMLBuffer errMsg(1023, context->getMemoryManager());
             errMsg.set(X("A variable with name {"));
             errMsg.append((*itVar)->getVariableURI());
             errMsg.append(X("}"));
@@ -176,7 +189,7 @@ void XQQuery::staticResolution(StaticContext *context)
       try {
         (*i)->staticResolutionStage2(context);
       } catch(XQException& e) {
-        XMLBuffer errMsg;
+        XMLBuffer errMsg(1023, context->getMemoryManager());
         errMsg.set(X("Error while running static resolution on user-defined function {"));
         errMsg.append((*i)->getURI());
         errMsg.append(X("}"));

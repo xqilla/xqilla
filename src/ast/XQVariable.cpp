@@ -24,6 +24,7 @@
 #include <xqilla/exceptions/StaticErrorException.hpp>
 #include <xqilla/exceptions/DynamicErrorException.hpp>
 #include <xqilla/ast/StaticResolutionContext.hpp>
+#include <xercesc/framework/XMLBuffer.hpp>
 
 XQVariable::XQVariable(const XMLCh *qualifiedName, XPath2MemoryManager* memMgr)
   : ASTNodeImpl(memMgr),
@@ -75,6 +76,15 @@ ASTNode* XQVariable::staticResolution(StaticContext *context)
     const XMLCh* qname = XPath2NSUtils::qualifyName(_prefix, _name, context->getMemoryManager());
     const XMLCh* msg = XPath2Utils::concatStrings(X("Variable "), qname, X(" does not exist [err:XPST0008]"), context->getMemoryManager());
     XQThrow(StaticErrorException, X("XQVariable::staticResolution"), msg);
+  }
+  if((var_src->getProperties() & StaticResolutionContext::FORWARDREF)!=0) {
+    XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer errMsg(1023, context->getMemoryManager());
+    errMsg.set(X("Cannot refer to global variable with name {"));
+    errMsg.append(_uri);
+    errMsg.append(X("}"));
+    errMsg.append(_name);
+    errMsg.append(X(" because it is declared later [err:XQST0054]"));
+    XQThrow(StaticErrorException,X("XQVariable::staticResolution"), errMsg.getRawBuffer());
   }
   _src.setProperties(var_src->getProperties() & ~(StaticResolutionContext::SUBTREE|StaticResolutionContext::SAMEDOC));
   _src.getStaticType() = var_src->getStaticType();

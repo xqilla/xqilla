@@ -328,7 +328,8 @@ ASTNode* XQUserFunction::XQFunctionEvaluator::staticResolution(StaticContext* co
         _src.add((*argIt)->getStaticResolutionContext());
       }
       else {
-        // Don't resolve the argument, since it isn't used by the function body
+        // Don't resolve the argument, since it isn't used by the function body, but at least run staticResolution to catch static errors
+        (*argIt)->staticResolution(context);
       }
     }
   }
