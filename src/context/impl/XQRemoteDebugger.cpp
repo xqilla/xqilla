@@ -26,7 +26,6 @@
 #include <xqilla/items/Node.hpp>
 #include <xqilla/items/AnyAtomicType.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
-#include <xqilla/schema/SequenceType.hpp>
 #include <xqilla/context/VariableTypeStore.hpp>
 #include <xqilla/items/impl/NodeImpl.hpp>
 #include <xercesc/util/BinInputStream.hpp>

@@ -21,7 +21,6 @@
 #include <xqilla/items/ATBooleanOrDerived.hpp>
 #include <xqilla/items/Node.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xqilla/schema/SequenceType.hpp>
 
 XQOperator::XQOperator(const XMLCh* opName, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ASTNodeImpl(memMgr),
