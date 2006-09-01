@@ -75,6 +75,8 @@ void XQGlobalVariable::execute(DynamicContext* context) const
 
 void XQGlobalVariable::staticResolution(StaticContext* context)
 {
+  if(m_Type)
+    m_Type->staticResolution(context);
   XPath2MemoryManager *mm = context->getMemoryManager();
 
   // variables with no prefix are in no namespace

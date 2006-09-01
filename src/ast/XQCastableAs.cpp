@@ -48,6 +48,7 @@ Result XQCastableAs::createResult(DynamicContext* context, int flags) const
 
 ASTNode* XQCastableAs::staticResolution(StaticContext *context)
 {
+  _exprType->staticResolution(context);
   XPath2MemoryManager *mm = context->getMemoryManager();
   _expr = new (mm) XQAtomize(_expr, mm);
 

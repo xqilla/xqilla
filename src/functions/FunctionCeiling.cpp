@@ -29,7 +29,7 @@ const unsigned int FunctionCeiling::maxArgs = 1;
  */
 
 FunctionCeiling::FunctionCeiling(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : NumericFunction(name, minArgs, maxArgs, "anySimpleType?", args, memMgr)
+  : NumericFunction(name, minArgs, maxArgs, "anyAtomicType?", args, memMgr)
 {
   _src.getStaticType().flags = StaticType::NUMERIC_TYPE;
 }

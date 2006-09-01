@@ -60,6 +60,7 @@ ASTNode* XQTypeswitch::staticResolution(StaticContext *context)
     VectorOfClause newClauses(XQillaAllocator<Clause*>(context->getMemoryManager()));
     VectorOfClause::iterator it = _clauses->begin();
     for(; it != _clauses->end(); ++it) {
+      (*it)->_type->staticResolution(context);
       const SequenceType::ItemType *itemType = (*it)->_type->getItemType();
       if(itemType != NULL) {
         const StaticType &sType = _expr->getStaticResolutionContext().getStaticType();

@@ -38,5 +38,7 @@ public:
       const int finalSet, 
       XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* const manager);
 
+  virtual bool isAtomic() const { return true; }
+
 };
 

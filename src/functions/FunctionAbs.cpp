@@ -29,7 +29,7 @@ const unsigned int FunctionAbs::maxArgs = 1;
  */
 
 FunctionAbs::FunctionAbs(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : NumericFunction(name, minArgs, maxArgs, "anySimpleType?", args, memMgr)
+  : NumericFunction(name, minArgs, maxArgs, "anyAtomicType?", args, memMgr)
 {
   _src.getStaticType().flags = StaticType::NUMERIC_TYPE;
 }

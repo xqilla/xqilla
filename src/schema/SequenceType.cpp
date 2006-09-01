@@ -153,6 +153,37 @@ QualifiedName *SequenceType::getConstrainingType(void) const {
   return m_pItemType->getType();
 }
 
+void SequenceType::staticResolution(StaticContext* context) const
+{
+  if(m_pItemType!=NULL && m_pItemType->getItemTestType()==ItemType::TEST_ATOMIC_TYPE && m_pItemType->getType()!=NULL)
+  {
+      // check if the type to be tested is defined and is really an atomic one
+      const XMLCh* uriToCheck=m_pItemType->getTypeURI(context);
+      const XMLCh* nameToCheck=m_pItemType->getType()->getName();
+      if(!context->getDocumentCache()->isTypeDefined(uriToCheck, nameToCheck))
+      {
+        XMLBuffer buf;
+        buf.set(X("Type {"));
+        buf.append(uriToCheck);
+        buf.append(X("}:"));
+        buf.append(nameToCheck);
+        buf.append(X(" is not defined [err:XPST0051]"));
+        XQThrow(StaticErrorException, X("SequenceType::staticResolution"), buf.getRawBuffer());
+      }
+      if(!context->getDocumentCache()->isTypeOrDerivedFromType(uriToCheck, nameToCheck,
+                                                               FunctionConstructor::XMLChXPath2DatatypesURI, AnyAtomicType::fgDT_ANYATOMICTYPE)) 
+      {
+        XMLBuffer buf;
+        buf.set(X("Type {"));
+        buf.append(uriToCheck);
+        buf.append(X("}:"));
+        buf.append(nameToCheck);
+        buf.append(X(" is not an atomic type [err:XPST0051]"));
+        XQThrow(StaticErrorException, X("SequenceType::staticResolution"), buf.getRawBuffer());
+      }
+  }
+}
+
 SequenceType::ItemType::ItemType(ItemTestType test,QualifiedName* name /*=NULL*/, QualifiedName* type /*=NULL*/)
 {
   m_nTestType=test;
@@ -160,26 +191,6 @@ SequenceType::ItemType::ItemType(ItemTestType test,QualifiedName* name /*=NULL*/
   m_pType=type;
   m_TypeURI=m_NameURI=NULL;
   m_bAllowNil=false;
-  if(m_nTestType==TEST_ATOMIC_TYPE && m_pType!=NULL)
-  {
-      // check if the type to be tested is really an atomic one
-      // TODO: use real namespaces
-      if(XPath2Utils::equals(m_pType->getPrefix(), X("xs")) &&
-         (XPath2Utils::equals(m_pType->getName(), XMLUni::fgIDRefsString) || 
-          XPath2Utils::equals(m_pType->getName(), XMLUni::fgNmTokensString) || 
-          XPath2Utils::equals(m_pType->getName(), XMLUni::fgEntitiesString)
-         )
-        )
-      {
-        XMLBuffer buf;
-        buf.set(X("Type "));
-        buf.append(m_pType->getPrefix());
-        buf.set(X(":"));
-        buf.append(m_pType->getName());
-        buf.set(X(" is not an atomic type [err:XPST0051]"));
-        XQThrow(StaticErrorException, X("ItemType::ItemType"), buf.getRawBuffer());
-      }
-  }
 }
 
 SequenceType::ItemType::~ItemType()
