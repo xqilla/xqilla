@@ -97,7 +97,7 @@ static inline MAPM referenceDateTime(const MAPM &DD, bool hasTimezone, const Tim
   }
 
   return result;
-}
+  }
 
 MAPM ATGDayOrDerivedImpl::buildReferenceDateTime(const DynamicContext *context) const
 {
@@ -151,131 +151,127 @@ AnyAtomicType::AtomicObjectType ATGDayOrDerivedImpl::getPrimitiveTypeIndex() con
 /* parse the gDay */
 void ATGDayOrDerivedImpl::setGDay(const XMLCh* const value) {
  
-	if(value == NULL) {
-			XQThrow(XPath2TypeCastException,X("ATGDayOrDerivedImpl::setGDay"), 
-          X("Invalid representation of gDay"));
-	}
+  if(value == NULL) {
+      XQThrow(XPath2TypeCastException,X("ATGDayOrDerivedImpl::setGDay"), X("Invalid representation of gDay [err:FORG0001]"));
+  }
   unsigned int length = XMLString::stringLen(value);
 	
-	// State variables etc.
-	bool gotDigit = false;
-	unsigned int pos = 0;
-	long int tmpnum = 0;
+  // State variables etc.
+  bool gotDigit = false;
+  unsigned int pos = 0;
+  long int tmpnum = 0;
 
-	// defaulting values
-	MAPM DD = 0;
-	_hasTimezone = false;
-	bool zonepos = false;
-	int zonehh = 0;
-	int zonemm = 0;
+  // defaulting values
+  MAPM DD = 0;
+  _hasTimezone = false;
+  bool zonepos = false;
+  int zonehh = 0;
+  int zonemm = 0;
 
-	int state = 0 ; // 0 = year / 1 = month / 2 = day / 3 = hour 
-	                 // 4 = minutes / 5 = sec / 6 = timezonehour / 7 = timezonemin
-	XMLCh tmpChar;
-	
-	bool wrongformat = false;
+  int state = 0 ; // 0 = year / 1 = month / 2 = day / 3 = hour 
+  // 4 = minutes / 5 = sec / 6 = timezonehour / 7 = timezonemin
+  XMLCh tmpChar;
 
-	if ( length < 5 || value[0] != L'-' || value[1] != L'-' || value[2] != L'-') {
-		wrongformat = true;
-	}else{
-		pos = 3;
-		state = 1;
-	} 
-		
-	while ( ! wrongformat && pos < length) {
-		tmpChar = value[pos];
-		pos++;
-		switch(tmpChar) {
-		case 0x0030:
-		case 0x0031:
-		case 0x0032:
-		case 0x0033:
-		case 0x0034:
-		case 0x0035:
-		case 0x0036:
-		case 0x0037:
-		case 0x0038:
-		case 0x0039: {
-			tmpnum *= 10;
-			tmpnum +=  static_cast<int>(tmpChar - 0x0030);
-			gotDigit = true;
-			
-			break;
-		}
-		case L':' : {
-			if (gotDigit &&  state == 6 ) {
-				zonehh = tmpnum;
-				tmpnum = 0;
-				gotDigit = false;				
-				state ++;
-			}else {
-				wrongformat = true;
-			}
-			break;
-		}		
-		case L'-' : {
-			if ( gotDigit && state == 1 ) {
-				DD = tmpnum;		
-				state = 6;
-				gotDigit = false;			
-				_hasTimezone = true;
-				zonepos = false;
-				tmpnum = 0;
-			} else {
-				wrongformat = true;
-			}			
-			break;			
-		}
-    case L'+' : {
-			if ( gotDigit && state == 1 ) {
-				DD = tmpnum;
-				state = 6; 
-				gotDigit = false;			
-				_hasTimezone = true;
-				zonepos = true;
-				tmpnum = 0;
-			} else {
-				wrongformat = true;
-			}
-			break;
-		}
-		case L'Z' : {
-			if (gotDigit && state == 1 ) {
-				DD = tmpnum;
-				state = 8; // final state
-				_hasTimezone = true;
-				gotDigit = false;
-				tmpnum = 0;
-			} else {
-				wrongformat = true;
-			}
-			break;
-		}
-		default:
-			wrongformat = true;
-		}	
-	}
+  bool wrongformat = false;
 
-	if (gotDigit) {
-		if ( gotDigit && state == 7 ) {
-			zonemm = tmpnum;
-		}else if ( gotDigit && state == 1 ) {
-			DD = tmpnum;
-		}else {
-			wrongformat = true;
-		}
-	} 
-	
-	// check time format
+  if ( length < 5 || value[0] != L'-' || value[1] != L'-' || value[2] != L'-') {
+    wrongformat = true;
+  }else{
+    pos = 3;
+    state = 1;
+  } 
 
-	if ( DD > 31  || zonehh > 24 || zonemm > 60 ) {
-			wrongformat = true;
-	}
+  while ( ! wrongformat && pos < length) {
+    tmpChar = value[pos];
+    pos++;
+    switch(tmpChar) {
+      case 0x0030:
+      case 0x0031:
+      case 0x0032:
+      case 0x0033:
+      case 0x0034:
+      case 0x0035:
+      case 0x0036:
+      case 0x0037:
+      case 0x0038:
+      case 0x0039:  {
+                      tmpnum *= 10;
+                      tmpnum +=  static_cast<int>(tmpChar - 0x0030);
+                      gotDigit = true;
+                      break;
+                    }
+      case L':' : {
+                    if (gotDigit &&  state == 6 ) {
+                      zonehh = tmpnum;
+                      tmpnum = 0;
+                      gotDigit = false;				
+                      state ++;
+                    }else {
+                      wrongformat = true;
+                    }
+                    break;
+                  }		
+      case L'-' : {
+                    if ( gotDigit && state == 1 ) {
+                      DD = tmpnum;		
+                      state = 6;
+                      gotDigit = false;			
+                      _hasTimezone = true;
+                      zonepos = false;
+                      tmpnum = 0;
+                    } else {
+                      wrongformat = true;
+                    }			
+                    break;			
+                  }
+      case L'+' : {
+                    if ( gotDigit && state == 1 ) {
+                      DD = tmpnum;
+                      state = 6; 
+                      gotDigit = false;			
+                      _hasTimezone = true;
+                      zonepos = true;
+                      tmpnum = 0;
+                    } else {
+                      wrongformat = true;
+                    }
+                    break;
+                  }
+      case L'Z' : {
+                    if (gotDigit && state == 1 ) {
+                      DD = tmpnum;
+                      state = 8; // final state
+                      _hasTimezone = true;
+                      gotDigit = false;
+                      tmpnum = 0;
+                    } else {
+                      wrongformat = true;
+                    }
+                    break;
+                  }
+      default:
+                    wrongformat = true;
+    }	
+  }
 
-	if ( wrongformat) {
-		XQThrow(XPath2TypeCastException,X("ATGDayOrDerivedImpl::setGDay"), 
-        X("Invalid representation of gDay"));
-	}
+  if (gotDigit) {
+    if ( gotDigit && state == 7 ) {
+      zonemm = tmpnum;
+    }else if ( gotDigit && state == 1 ) {
+      DD = tmpnum;
+    }else {
+      wrongformat = true;
+    }
+  } 
+
+  // check time format
+  if ( DD > 31  || zonehh > 24 || zonemm > 60 ) {
+    wrongformat = true;
+  }
+
+  if ( wrongformat) {
+    XQThrow(XPath2TypeCastException,X("ATGDayOrDerivedImpl::setGDay"), X("Invalid representation of gDay [err:FORG0001]"));
+  }
 
   timezone_ = new Timezone(Timezone::convert(zonepos, zonehh, zonemm));
   _gDay = DD;

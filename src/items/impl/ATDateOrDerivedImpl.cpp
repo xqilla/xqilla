@@ -397,7 +397,7 @@ void ATDateOrDerivedImpl::setDate(const XMLCh* const date) {
   unsigned int length = XMLString::stringLen(date);
  
   if(date == 0) {
-      XQThrow(XPath2TypeCastException,X("ATDateOrDerived::setDate"), X("Invalid representation of date"));
+      XQThrow(XPath2TypeCastException,X("ATDateOrDerived::setDate"), X("Invalid representation of date [err:FORG0001]"));
   }
   
   // State variables etc.
@@ -541,9 +541,9 @@ void ATDateOrDerivedImpl::setDate(const XMLCh* const date) {
   else if(DD > DateUtils::maximumDayInMonthFor(YY, MM))
     wrongformat = true;
 
-  if(wrongformat) 
+  if ( wrongformat) 
   {
-    XQThrow(XPath2TypeCastException,X("ATDateOrDerivedImpl::setDate"), X("Invalid representation of date"));
+    XQThrow(XPath2TypeCastException,X("ATDateOrDerivedImpl::setDate"), X("Invalid representation of date [err:FORG0001]"));
   }
 
   timezone_ = new Timezone(Timezone::convert(zonepos, zonehh, zonemm));

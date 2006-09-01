@@ -35,7 +35,7 @@ XERCES_CPP_NAMESPACE_USE
 ATDurationOrDerivedImpl::
 ATDurationOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* value, const DynamicContext* context)
   :_isPositive(true),
-   _typeName(typeName),
+    _typeName(typeName),
    _typeURI(typeURI)
 {
   setDuration(value);
@@ -529,8 +529,7 @@ void ATDurationOrDerivedImpl::parseDuration(const XMLCh *const s, MAPM &months, 
   unsigned int length = XMLString::stringLen(s);
  
   if(s == 0) {
-      XQThrow(XPath2TypeCastException,X("XSDurationImpl::setDuration"),
-              X("Invalid representation of duration [err:FORG0001]"));
+    XQThrow(XPath2TypeCastException,X("XSDurationImpl::setDuration"), X("Invalid representation of duration [err:FORG0001]"));
   }
   
   // State variables etc.
@@ -692,8 +691,7 @@ void ATDurationOrDerivedImpl::parseDuration(const XMLCh *const s, MAPM &months, 
 
   // check duration format
   if ( wrongformat || (Texist && state < 3) || gotDigit) {
-    XQThrow(XPath2TypeCastException,X("ATDurationOrDerivedImpl::setDuration"),
-            X("Invalid representation of duration [err:FORG0001]"));
+    XQThrow(XPath2TypeCastException,X("ATDurationOrDerivedImpl::setDuration"), X("Invalid representation of duration [err:FORG0001]"));
   }
 
   months = year * 12 + month;

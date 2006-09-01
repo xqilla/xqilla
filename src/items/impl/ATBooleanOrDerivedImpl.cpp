@@ -33,16 +33,16 @@ ATBooleanOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh*
     _typeName(typeName),
     _typeURI(typeURI) { 
     
-  // canonical value "0"
-  static const XMLCh zero[] = {XERCES_CPP_NAMESPACE_QUALIFIER chDigit_0,
-                               XERCES_CPP_NAMESPACE_QUALIFIER chNull };
+  // canonical values
+  static const XMLCh zero[] = {XERCES_CPP_NAMESPACE_QUALIFIER chDigit_0, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
+  static const XMLCh one[] = {XERCES_CPP_NAMESPACE_QUALIFIER chDigit_1, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
   
-  if( XPath2Utils::equals(value, zero) || 
-      XPath2Utils::equals(value, 
-        XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgATTVAL_FALSE)) {
+  if( XPath2Utils::equals(value, zero) || XPath2Utils::equals(value, XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgATTVAL_FALSE)) {
     _value = false;
-  } else {
+  } else if(XPath2Utils::equals(value, one) || XPath2Utils::equals(value, XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgATTVAL_TRUE)) {
     _value = true;
+  } else {
+    XQThrow(XPath2TypeCastException,X("ATBooleanOrDerivedImpl::ATBooleanOrDerivedImpl"), X("Invalid representation of boolean [err:FORG0001]"));
   }  
 }
 

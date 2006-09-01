@@ -147,8 +147,8 @@ void ATGYearOrDerivedImpl::setGYear(const XMLCh* const value) {
  
   unsigned int length = XMLString::stringLen(value);
   if(value == NULL) {
-			XQThrow(XPath2TypeCastException,X("ATGYearOrDerivedImpl::setGYear"), X("Invalid representation of gYear"));
-	}
+    XQThrow(XPath2TypeCastException,X("ATGYearOrDerivedImpl::setGYear"), X("Invalid representation of gYear [err:FORG0001]"));
+  }
 	
 	// State variables etc.
 	bool gotDigit = false;
@@ -279,7 +279,7 @@ void ATGYearOrDerivedImpl::setGYear(const XMLCh* const value) {
 	// check time format
 
 	if (wrongformat) {
-		XQThrow(XPath2TypeCastException,X("ATGYearOrDerivedImpl::setGYear"), X("Invalid representation of gYear"));
+	  XQThrow(XPath2TypeCastException,X("ATGYearOrDerivedImpl::setGYear"), X("Invalid representation of gYear [err:FORG0001]"));
 	}
 
   timezone_ = new Timezone(Timezone::convert(zonepos, zonehh, zonemm));
