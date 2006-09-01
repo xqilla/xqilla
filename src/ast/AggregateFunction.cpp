@@ -26,7 +26,6 @@
 #include <xqilla/items/ATTimeOrDerived.hpp>
 #include <xqilla/items/ATUntypedAtomic.hpp>
 #include <xqilla/functions/FunctionConstructor.hpp>
-#include <xqilla/schema/SequenceType.hpp>
 #include <xqilla/exceptions/XPath2TypeCastException.hpp>
 
 #include <xercesc/validators/schema/SchemaSymbols.hpp>

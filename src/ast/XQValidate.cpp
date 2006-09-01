@@ -21,7 +21,6 @@
 #include <xqilla/exceptions/FunctionException.hpp>
 #include <xqilla/items/Node.hpp>
 #include <xqilla/context/DynamicContext.hpp>
-#include <xqilla/schema/SequenceType.hpp>
 #include <xercesc/dom/DOMNode.hpp>
 #include <xercesc/util/XMLString.hpp>
 #include <xercesc/validators/schema/SchemaGrammar.hpp>

@@ -27,7 +27,6 @@
 #include <xqilla/exceptions/ASTException.hpp>
 #include <xqilla/exceptions/NamespaceLookupException.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>
-#include <xqilla/schema/SequenceType.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/utils/XPath2NSUtils.hpp>
 #include <xqilla/utils/XMLChCompare.hpp>
@@ -35,6 +34,7 @@
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/items/AnyAtomicTypeConstructor.hpp>
 #include <xqilla/ast/XQAtomize.hpp>
+#include <xqilla/parser/QName.hpp>
 
 #include <xercesc/dom/DOM.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
