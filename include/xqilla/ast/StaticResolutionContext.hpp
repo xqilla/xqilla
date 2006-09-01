@@ -90,7 +90,8 @@ public:
     SUBTREE  = 0x04, ///< Results are members of the set of descendants of the context node
     GROUPED  = 0x08, ///< Results are grouped by the document they come from
     SAMEDOC  = 0x10, ///< Results are from the same document as the context node
-    ONENODE  = 0x20  ///< Only ever returns one node
+    ONENODE   = 0x20, ///< Only ever returns one node
+    FORWARDREF= 0x40  ///< This is a forward reference for a global variable that is declared later
   };
 
   unsigned int getProperties() const;
