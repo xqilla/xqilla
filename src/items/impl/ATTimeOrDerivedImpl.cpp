@@ -318,7 +318,7 @@ void ATTimeOrDerivedImpl::setTime(const XMLCh* const time) {
 	unsigned int length = XMLString::stringLen(time);
  
 	if(time == NULL) {
-			XQThrow(XPath2TypeCastException,X("XSTimeImpl::setTime"), X("Invalid representation of time"));
+	  XQThrow(XPath2TypeCastException,X("XSTimeImpl::setTime"), X("Invalid representation of time [err:FORG0001]"));
 	}
 	
 	// State variables etc.

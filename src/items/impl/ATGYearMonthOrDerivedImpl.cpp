@@ -155,7 +155,7 @@ void ATGYearMonthOrDerivedImpl::setGYearMonth(const XMLCh* const value) {
  unsigned int length = XMLString::stringLen(value);
  
 	if(value == NULL) {
-			XQThrow(XPath2TypeCastException,X("ATGYearMonthOrDerivedImpl::setGYearMonth"), X("Invalid representation of gYearMonth"));
+ 	  XQThrow(XPath2TypeCastException,X("ATGYearMonthOrDerivedImpl::setGYearMonth"), X("Invalid representation of gYearMonth [err:FORG0001]"));
 	}
 	
 	// State variables etc.
@@ -296,7 +296,7 @@ void ATGYearMonthOrDerivedImpl::setGYearMonth(const XMLCh* const value) {
 	}
 
 	if ( wrongformat) {
-		XQThrow(XPath2TypeCastException,X("ATGYearMonthOrDerivedImpl::setGYearMonth"), X("Invalid representation of gYearMonth"));
+	  XQThrow(XPath2TypeCastException,X("ATGYearMonthOrDerivedImpl::setGYearMonth"), X("Invalid representation of gYearMonth [err:FORG0001]"));
 	}
 
   timezone_ = new Timezone(Timezone::convert(zonepos, zonehh, zonemm));

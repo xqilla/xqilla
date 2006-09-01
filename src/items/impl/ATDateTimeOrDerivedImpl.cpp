@@ -539,7 +539,7 @@ void ATDateTimeOrDerivedImpl::setDateTime(const XMLCh* const dateTime) {
   unsigned int length = XMLString::stringLen(dateTime);
 
   if(dateTime == 0) {
-          XQThrow(XPath2TypeCastException,X("ATDateTimeOrDerivedImpl::setDateTime"), X("Invalid representation of dateTime"));
+    XQThrow(XPath2TypeCastException,X("ATDateTimeOrDerivedImpl::setDateTime"), X("Invalid representation of dateTime [err:FORG0001]"));
   }
   
   // State variables etc.

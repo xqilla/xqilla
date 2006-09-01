@@ -155,7 +155,7 @@ void ATGMonthOrDerivedImpl::setGMonth(const XMLCh* const value) {
    unsigned int length = XMLString::stringLen(value);
  
   if(value == NULL) {
-    XQThrow(XPath2TypeCastException,X("XSGMonthImpl::setGMonth"), X("Invalid representation of gMonth"));
+    XQThrow(XPath2TypeCastException,X("XSGMonthImpl::setGMonth"), X("Invalid representation of gMonth [err:FORG0001]"));
   }
 	
 	// State variables etc.
@@ -281,7 +281,7 @@ void ATGMonthOrDerivedImpl::setGMonth(const XMLCh* const value) {
 	}
 
 	if ( wrongformat) {
-		XQThrow(XPath2TypeCastException,X("ATGMonthOrDerivedImpl::setGMonth"), X("Invalid representation of gMonth"));
+      XQThrow(XPath2TypeCastException,X("ATGMonthOrDerivedImpl::setGMonth"), X("Invalid representation of gMonth [err:FORG0001]"));
 	}
 
   _gMonth = MM;

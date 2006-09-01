@@ -494,7 +494,7 @@ void ATDecimalOrDerivedImpl::setDecimal(const XMLCh* const value)
 MAPM ATDecimalOrDerivedImpl::parseDecimal(const XMLCh* const value)
 {
   if(value == NULL) {
-    XQThrow(XPath2TypeCastException,X("ATDecimalOrDerivedImpl::setDecimal"), X("Invalid representation of decimal"));
+    XQThrow(XPath2TypeCastException,X("ATDecimalOrDerivedImpl::setDecimal"), X("Invalid representation of decimal [err:FORG0001]"));
   }
   
   unsigned int length=XMLString::stringLen(value) + 1;
@@ -603,10 +603,9 @@ MAPM ATDecimalOrDerivedImpl::parseDecimal(const XMLCh* const value)
   }//while
 
   if(!gotDigit || stop) {
-		XQThrow(XPath2TypeCastException,X("ATDecimalOrDerivedImpl::setDecimal"),
-			X("Invalid representation of decimal"));
+	XQThrow(XPath2TypeCastException,X("ATDecimalOrDerivedImpl::setDecimal"), X("Invalid representation of decimal [err:FORG0001]"));
   }
 
-  *dest++ = 0; // Null terminate
+  *dest++ = 0; // Null terminate  
   return (char*)buffer;
 }

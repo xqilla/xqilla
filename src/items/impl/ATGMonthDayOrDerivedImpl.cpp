@@ -99,7 +99,7 @@ static inline MAPM referenceDateTime(const MAPM &MM, const MAPM &DD, bool hasTim
   }
 
   return result;
-}
+  }
 
 MAPM ATGMonthDayOrDerivedImpl::buildReferenceDateTime(const DynamicContext *context) const
 {
@@ -157,7 +157,7 @@ void ATGMonthDayOrDerivedImpl::setGMonthDay(const XMLCh* const value) {
   unsigned int length = XMLString::stringLen(value);
  
   if(value == NULL) {
-      XQThrow(XPath2TypeCastException,X("XSGMonthDayImpl::setGMonthDay"), X("Invalid representation of gMonthDay"));
+    XQThrow(XPath2TypeCastException,X("XSGMonthDayImpl::setGMonthDay"), X("Invalid representation of gMonthDay [err:FORG0001]"));
   }
   
   // State variables etc.
@@ -299,7 +299,7 @@ void ATGMonthDayOrDerivedImpl::setGMonthDay(const XMLCh* const value) {
   }
 
   if (wrongformat) {
-    XQThrow(XPath2TypeCastException,X("XSGMonthDayImpl::setGMonthDay"), X("Invalid representation of gMonthDay"));
+    XQThrow(XPath2TypeCastException,X("XSGMonthDayImpl::setGMonthDay"), X("Invalid representation of gMonthDay [err:FORG0001]"));
   }
   
   // Create Timezone object, clean this up in future
