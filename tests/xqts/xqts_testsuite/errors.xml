@@ -9,37 +9,22 @@
   <error id="Constr-inscope-3" reason="inspect" action="pass"/>
   <error id="Constr-inscope-4" reason="inspect" action="pass"/>
   <error id="K-FunctionProlog-12" reason="no error failure"/>
-  <error id="K-InternalVariablesWith-16" reason="error failure"/>
-  <error id="K-InternalVariablesWith-17" reason="no error failure"/>
-  <error id="K-InternalVariablesWith-18" reason="error failure"/>
-  <error id="K-InternalVariablesWith-19" reason="error failure"/>
-  <error id="K-InternalVariablesWith-20" reason="error failure"/>
+  <error id="K-InternalVariablesWith-15" reason="error failure"/>
   <error id="K-InternalVariablesWith-21" reason="error failure"/>
   <error id="K-InternalVariablesWith-22" reason="error failure"/>
   <error id="K-InternalVariablesWith-23" reason="error failure"/>
+  <error id="K-InternalVariablesWith-6" reason="error failure"/>
+  <error id="K-InternalVariablesWith-9" reason="error failure"/>
   <error id="K-NumericAdd-5" reason="result failure"/>
   <error id="K-NumericAdd-6" reason="result failure"/>
   <error id="K-SeqAVGFunc-32" reason="error failure"/>
   <error id="K-SeqAVGFunc-33" reason="error failure"/>
-  <error id="K-SeqExprCast-1217" reason="no error failure"/>
   <error id="K-SeqExprCast-127" reason="result failure"/>
   <error id="K-SeqExprCast-1496" reason="error failure"/>
   <error id="K-SeqExprCast-1497" reason="error failure"/>
-  <error id="K-SeqExprCast-4" reason="error failure"/>
-  <error id="K-SeqExprCastable-5" reason="no error failure"/>
   <error id="K-SeqSUMFunc-24" reason="error failure"/>
   <error id="K-SeqSUMFunc-25" reason="error failure"/>
   <error id="K-SeqSUMFunc-26" reason="error failure"/>
-  <error id="K2-FunctionProlog-7" reason="error failure"/>
-  <error id="K2-InternalVariablesWithout-1" reason="error failure"/>
-  <error id="K2-InternalVariablesWithout-2" reason="error failure"/>
-  <error id="K2-InternalVariablesWithout-3" reason="error failure"/>
-  <error id="K2-InternalVariablesWithout-4" reason="error failure"/>
-  <error id="K2-InternalVariablesWithout-5" reason="error failure"/>
-  <error id="K2-InternalVariablesWithout-6" reason="error failure"/>
-  <error id="K2-InternalVariablesWithout-7" reason="error failure"/>
-  <error id="K2-InternalVariablesWithout-8" reason="error failure"/>
-  <error id="K2-InternalVariablesWithout-9" reason="error failure"/>
   <error id="K2-NamespaceProlog-2" reason="no error failure"/>
   <error id="base-URI-19" reason="error failure"/>
   <error id="base-URI-24" reason="error failure"/>
@@ -162,5 +147,5 @@
   <error id="fn-sumdbl3args-6" reason="result failure"/>
   <error id="modules-schema-context" reason="error failure"/>
   <error id="normalization-1" reason="no error failure"/>
-  <error id="vardeclerr" reason="error failure"/>
+  <error id="vardeclwithtype-15" reason="error failure"/>
 </errors>

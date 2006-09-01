@@ -623,7 +623,7 @@ ASTNode *SequenceType::convertFunctionArg(ASTNode *arg, StaticContext *context, 
 
       if(numericFunction &&
          XPath2Utils::equals(uri, SchemaSymbols::fgURI_SCHEMAFORSCHEMA) &&
-         XPath2Utils::equals(name, SchemaSymbols::fgDT_ANYSIMPLETYPE)) {
+         XPath2Utils::equals(name, AnyAtomicType::fgDT_ANYATOMICTYPE)) {
         arg = new (mm) XQPromoteUntyped(arg, 
                                         SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                                         SchemaSymbols::fgDT_DOUBLE, 
