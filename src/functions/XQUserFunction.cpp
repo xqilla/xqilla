@@ -207,7 +207,7 @@ void XQUserFunction::staticResolutionStage1(StaticContext *context)
   // Set up a default StaticType and StaticResolutionContext
   if(m_pReturnPattern != NULL) {
     if(m_body != NULL)
-      m_body = new (mm) XQTreatAs(m_body, m_pReturnPattern, mm);
+      m_body = m_pReturnPattern->convertFunctionArg(m_body, context, /*numericfunction*/false);
 
     const SequenceType::ItemType *itemType = m_pReturnPattern->getItemType();
     if(itemType != 0) {
