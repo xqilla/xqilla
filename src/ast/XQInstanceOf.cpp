@@ -48,6 +48,7 @@ Result XQInstanceOf::createResult(DynamicContext* context, int flags) const
 
 ASTNode* XQInstanceOf::staticResolution(StaticContext *context)
 {
+  _exprType->staticResolution(context);
   XPath2MemoryManager *mm = context->getMemoryManager();
 
   _expr = new (mm) XQTreatAs(_expr, _exprType, mm);

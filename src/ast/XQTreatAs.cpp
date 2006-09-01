@@ -56,6 +56,7 @@ Result XQTreatAs::createResult(DynamicContext* context, int flags) const
 
 ASTNode* XQTreatAs::staticResolution(StaticContext *context)
 {
+  _exprType->staticResolution(context);
   if(_exprType->getOccurrenceIndicator() == SequenceType::QUESTION_MARK ||
      _exprType->getOccurrenceIndicator() == SequenceType::EXACTLY_ONE) {
     AutoNodeSetOrderingReset orderReset(context);

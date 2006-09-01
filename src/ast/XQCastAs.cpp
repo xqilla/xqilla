@@ -43,6 +43,8 @@ Result XQCastAs::createResult(DynamicContext* context, int flags) const
 
 ASTNode* XQCastAs::staticResolution(StaticContext *context)
 {
+  _exprType->staticResolution(context);
+
   XPath2MemoryManager *mm = context->getMemoryManager();
 
   const SequenceType::ItemType *itemType = _exprType->getItemType();

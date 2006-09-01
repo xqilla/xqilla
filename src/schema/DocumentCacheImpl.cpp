@@ -723,11 +723,13 @@ bool DocumentCacheImpl::isTypeOrDerivedFromType(const XMLCh* const uri, const XM
     }
 
   // if we are here, the type is a simple type
-  if( (XPath2Utils::equals(typeNameToCheck, XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_ANYSIMPLETYPE) &&
-       XPath2Utils::equals(uriToCheck, XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA) ) ||
-      (XPath2Utils::equals(typeNameToCheck, AnyAtomicType::fgDT_ANYATOMICTYPE) &&
-       XPath2Utils::equals(uriToCheck, FunctionConstructor::XMLChXPath2DatatypesURI) ) )
+  if(XPath2Utils::equals(typeNameToCheck, XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_ANYSIMPLETYPE) &&
+     XPath2Utils::equals(uriToCheck, XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA))
     return true;
+
+  if(XPath2Utils::equals(typeNameToCheck, AnyAtomicType::fgDT_ANYATOMICTYPE) &&
+     XPath2Utils::equals(uriToCheck, FunctionConstructor::XMLChXPath2DatatypesURI) )
+    return dtvDerived->isAtomic();
 
   XERCES_CPP_NAMESPACE_QUALIFIER DatatypeValidator* dtvBase=_parser.getGrammarResolver()->getDatatypeValidator(uriToCheck,typeNameToCheck);
   if(dtvBase==NULL)

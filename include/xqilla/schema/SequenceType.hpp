@@ -184,6 +184,8 @@ public:
 
   const ItemType *getItemType() const;
 
+  void staticResolution(StaticContext* context) const;
+
 protected:
 
   // The ItemType of this SequenceType
