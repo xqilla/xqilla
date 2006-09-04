@@ -19,9 +19,9 @@
 #include <xercesc/dom/DOMXPathNamespace.hpp>
 #include <xqilla/items/Node.hpp>
 
-ParentAxis::ParentAxis(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *contextNode, const Node *nodeObj,
+ParentAxis::ParentAxis(const LocationInfo *info, const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *contextNode, const Node *nodeObj,
        const NodeTest *nodeTest, const AxisNodeFactory &factory)
-  : Axis(contextNode, nodeObj, nodeTest, factory)
+  : Axis(info, contextNode, nodeObj, nodeTest, factory)
 {
 }
 

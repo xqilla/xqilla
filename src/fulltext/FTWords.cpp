@@ -43,14 +43,17 @@ FTWords::FTWords(ASTNode *expr, FTAnyallOption option, XPath2MemoryManager *memM
 
 FTSelection *FTWords::staticResolution(StaticContext *context)
 {
-  static SequenceType seqType(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                              SchemaSymbols::fgDT_STRING,
-                              SequenceType::STAR);
-
   XPath2MemoryManager *mm = context->getMemoryManager();
 
+  SequenceType *seqType = new (mm) SequenceType(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                                                SchemaSymbols::fgDT_STRING,
+                                                SequenceType::STAR, mm);
+  seqType->setLocationInfo(this);
+
   expr_ = new (mm) XQAtomize(expr_, mm);
-  expr_ = new XQTreatAs(expr_, &seqType, mm);
+  expr_->setLocationInfo(this);
+  expr_ = new (mm) XQTreatAs(expr_, seqType, mm);
+  expr_->setLocationInfo(this);
   expr_ = expr_->staticResolution(context);
 
   src_.add(expr_->getStaticResolutionContext());
@@ -93,11 +96,12 @@ FTSelection *FTWords::optimize(FTContext *ftcontext, bool execute) const
   return const_cast<FTWords*>(this);
 }
 
-FTSelection *FTWords::optimizeAnyWord(Result strings, FTContext *ftcontext)
+FTSelection *FTWords::optimizeAnyWord(Result strings, FTContext *ftcontext) const
 {
   XPath2MemoryManager *mm = ftcontext->context->getMemoryManager();
 
   FTOr *ftor = new (mm) FTOr(mm);
+  ftor->setLocationInfo(this);
 
   Item::Ptr item;
   while((item = strings->next(ftcontext->context)).notNull()) {
@@ -105,18 +109,21 @@ FTSelection *FTWords::optimizeAnyWord(Result strings, FTContext *ftcontext)
       tokenize(item->asString(ftcontext->context), ftcontext->context->getMemoryManager());
     TokenInfo::Ptr token;
     while((token = stream->next()).notNull()) {
-      ftor->addArg(new (mm) FTWord(token->getWord(), mm));
+      FTSelection *word = new (mm) FTWord(token->getWord(), mm);
+      word->setLocationInfo(this);
+      ftor->addArg(word);
     }
   }
 
   return ftor;
 }
 
-FTSelection *FTWords::optimizeAllWords(Result strings, FTContext *ftcontext)
+FTSelection *FTWords::optimizeAllWords(Result strings, FTContext *ftcontext) const
 {
   XPath2MemoryManager *mm = ftcontext->context->getMemoryManager();
 
   FTAnd *ftand = new (mm) FTAnd(mm);
+  ftand->setLocationInfo(this);
 
   Item::Ptr item;
   while((item = strings->next(ftcontext->context)).notNull()) {
@@ -124,26 +131,34 @@ FTSelection *FTWords::optimizeAllWords(Result strings, FTContext *ftcontext)
       tokenize(item->asString(ftcontext->context), ftcontext->context->getMemoryManager());
     TokenInfo::Ptr token;
     while((token = stream->next()).notNull()) {
-      ftand->addArg(new (mm) FTWord(token->getWord(), mm));
+      FTSelection *word = new (mm) FTWord(token->getWord(), mm);
+      word->setLocationInfo(this);
+      ftand->addArg(word);
     }
   }
 
   return ftand;
 }
 
-FTSelection *FTWords::optimizePhrase(Result strings, FTContext *ftcontext)
+FTSelection *FTWords::optimizePhrase(Result strings, FTContext *ftcontext) const
 {
   XPath2MemoryManager *mm = ftcontext->context->getMemoryManager();
 
-  return new (mm) FTDistanceLiteral(new (mm) FTOrder(optimizeAllWords(strings, ftcontext), mm),
-                                    FTRange::EXACTLY, 0, 0, FTOption::WORDS, mm);
+  FTSelection *result = new (mm) FTOrder(optimizeAllWords(strings, ftcontext), mm);
+  result->setLocationInfo(this);
+
+  result = new (mm) FTDistanceLiteral(result, FTRange::EXACTLY, 0, 0, FTOption::WORDS, mm);
+  result->setLocationInfo(this);
+
+  return result;
 }
 
-FTSelection *FTWords::optimizeAny(Result strings, FTContext *ftcontext)
+FTSelection *FTWords::optimizeAny(Result strings, FTContext *ftcontext) const
 {
   XPath2MemoryManager *mm = ftcontext->context->getMemoryManager();
 
   FTOr *ftor = new (mm) FTOr(mm);
+  ftor->setLocationInfo(this);
 
   Item::Ptr item;
   while((item = strings->next(ftcontext->context)).notNull()) {
@@ -153,11 +168,12 @@ FTSelection *FTWords::optimizeAny(Result strings, FTContext *ftcontext)
   return ftor;
 }
 
-FTSelection *FTWords::optimizeAll(Result strings, FTContext *ftcontext)
+FTSelection *FTWords::optimizeAll(Result strings, FTContext *ftcontext) const
 {
   XPath2MemoryManager *mm = ftcontext->context->getMemoryManager();
 
   FTAnd *ftand = new (mm) FTAnd(mm);
+  ftand->setLocationInfo(this);
 
   Item::Ptr item;
   while((item = strings->next(ftcontext->context)).notNull()) {
@@ -193,13 +209,14 @@ FTSelection *FTWord::optimize(FTContext *context, bool execute) const
 
 AllMatches::Ptr FTWord::execute(FTContext *ftcontext) const
 {
-  return new FTStringSearchMatches(queryString_, ftcontext);
+  return new FTStringSearchMatches(this, queryString_, ftcontext);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-FTStringSearchMatches::FTStringSearchMatches(const XMLCh *queryString, FTContext *ftcontext)
-  : queryString_(queryString),
+FTStringSearchMatches::FTStringSearchMatches(const LocationInfo *info, const XMLCh *queryString, FTContext *ftcontext)
+  : AllMatches(info),
+    queryString_(queryString),
     queryPos_(ftcontext->queryPos++),
     tokenStream_(ftcontext->tokenStore->findTokens(queryString))
 {

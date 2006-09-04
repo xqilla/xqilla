@@ -45,7 +45,7 @@ class XQILLA_API Axis : public ResultImpl
 public:
   static AxisNodeFactoryTemplate<NodeImpl> gNodeImplFactory;
 
-  Axis(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *contextNode, const Node *nodeObj,
+  Axis(const LocationInfo *info, const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *contextNode, const Node *nodeObj,
        const NodeTest *nodeTest, const AxisNodeFactory &factory);
   Item::Ptr next(DynamicContext *context);
 

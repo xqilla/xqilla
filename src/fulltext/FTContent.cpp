@@ -33,20 +33,27 @@ FTSelection *FTContent::optimize(FTContext *ftcontext, bool execute) const
 
   if(type_ == ENTIRE_CONTENT) {
     newarg = new (mm) FTDistanceLiteral(newarg, FTRange::EXACTLY, 0, 0, FTOption::WORDS, mm);
+    newarg->setLocationInfo(this);
     newarg = new (mm) FTContent(newarg, AT_START, mm);
-    return new (mm) FTContent(newarg, AT_END, mm);
+    newarg->setLocationInfo(this);
+    newarg = new (mm) FTContent(newarg, AT_END, mm);
+    newarg->setLocationInfo(this);
+  }
+  else {
+	  newarg = new (mm) FTContent(newarg, type_, mm);
+	  newarg->setLocationInfo(this);
   }
 
-  return new (mm) FTContent(newarg, type_, mm);
+  return newarg;
 }
 
 AllMatches::Ptr FTContent::execute(FTContext *ftcontext) const
 {
   switch(type_) {
   case AT_START:
-    return new FTContentAtStartMatches(arg_->execute(ftcontext));
+    return new FTContentAtStartMatches(this, arg_->execute(ftcontext));
   case AT_END:
-    return new FTContentAtEndMatches(arg_->execute(ftcontext));
+    return new FTContentAtEndMatches(this, arg_->execute(ftcontext));
   default:
     // ENTIRE_CONTENT is handled by optimize()
     assert(0);

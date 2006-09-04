@@ -42,12 +42,13 @@ public:
 	DynamicContext* m_context;
 	Collation* m_collation;
 	AnyAtomicType::Ptr m_item;
+  const LocationInfo *m_info;
 };
 
 class XQILLA_API XQSort
 {
 public:
-	class XQILLA_API SortSpec
+	class XQILLA_API SortSpec : public LocationInfo
 	{
 	public:
 		static const long ascending;

@@ -81,8 +81,8 @@ typedef union {
 class XQILLA_API XQLexer : public CXQillaLexer, public yyFlexLexer
 {
 public:
-  XQLexer(XPath2MemoryManager* memMgr, const XMLCh* query, XQilla::Language lang)
-    :CXQillaLexer(memMgr, query, lang)
+  XQLexer(XPath2MemoryManager* memMgr, const XMLCh *queryFile, const XMLCh* query, XQilla::Language lang)
+    :CXQillaLexer(memMgr, queryFile, query, lang)
   {
   }
 
@@ -121,7 +121,7 @@ protected:
 
   virtual void LexerError( const char* msg )
   {
-    CXQillaLexer::Error(msg);
+    CXQillaLexer::error(msg);
   }
 
   virtual void yy_pop_state()
@@ -139,7 +139,7 @@ protected:
 
   virtual bool next_tokens(int state, int tok1, int tok2=-1, int tok3=-1)
   {
-    XQLexer lookAhead(m_memMgr, m_szQuery+m_index, m_language);
+    XQLexer lookAhead(m_memMgr, m_szQueryFile, m_szQuery+m_index, m_language);
     lookAhead.setGenerateEOF(m_bGenerateEOF);
     lookAhead.setGenerateErrorException(false);
     lookAhead.yy_start=1 + 2 * state;
@@ -161,7 +161,7 @@ protected:
 
   virtual int next_token(int state)
   {
-    XQLexer lookAhead(m_memMgr, m_szQuery+m_index, m_language);
+    XQLexer lookAhead(m_memMgr, m_szQueryFile, m_szQuery+m_index, m_language);
     lookAhead.setGenerateEOF(m_bGenerateEOF);
     lookAhead.setGenerateErrorException(false);
     lookAhead.yy_start=1 + 2 * state;

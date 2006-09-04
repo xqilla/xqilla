@@ -14,8 +14,9 @@
 #include "../config/xqilla_config.h"
 #include <xqilla/runtime/SingleResult.hpp>
 
-SingleResult::SingleResult()
-  : toDo_(true)
+SingleResult::SingleResult(const LocationInfo *o)
+  : ResultImpl(o),
+    toDo_(true)
 {
 }
 

@@ -98,7 +98,7 @@ const XMLCh* ATUntypedAtomicImpl::asString(const DynamicContext* context) const 
    * false otherwise */
 bool ATUntypedAtomicImpl::equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const {
   if(this->getPrimitiveTypeIndex() != target->getPrimitiveTypeIndex()) {
-    XQThrow(IllegalArgumentException,X("ATUntypedAtomicImpl::equals"), X("Equality operator for given types not supported [err:XPTY0004]"));
+    XQThrow2(IllegalArgumentException,X("ATUntypedAtomicImpl::equals"), X("Equality operator for given types not supported [err:XPTY0004]"));
   }
   return XPath2Utils::equals(target->asString(context), _value);
 }

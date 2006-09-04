@@ -279,7 +279,7 @@ Numeric::Ptr ATDecimalOrDerivedImpl::divide(const Numeric::Ptr &other, const Dyn
     ATDecimalOrDerivedImpl* otherImpl = (ATDecimalOrDerivedImpl*)(const Numeric*)other;
   
     if(otherImpl->_decimal == MM_Zero) {
-      XQThrow(XPath2ErrorException, X("ATDecimalOrDerivedImpl::divide"), X("Division by zero [err:FOAR0001]"));
+      XQThrow2(XPath2ErrorException, X("ATDecimalOrDerivedImpl::divide"), X("Division by zero [err:FOAR0001]"));
     }
   
     // return a xs:decimal, regardless of the actual types of the operands
@@ -328,7 +328,7 @@ Numeric::Ptr ATDecimalOrDerivedImpl::mod(const Numeric::Ptr &other, const Dynami
     const ATDecimalOrDerivedImpl* otherImpl = (ATDecimalOrDerivedImpl*)(const Numeric*)other;
   
     if(otherImpl->isZero()) {
-      XQThrow(::IllegalArgumentException, X("ATDecimalOrDerivedImpl::mod"), X("Division by zero [err:FOAR0001]"));
+      XQThrow2(::IllegalArgumentException, X("ATDecimalOrDerivedImpl::mod"), X("Division by zero [err:FOAR0001]"));
     }
   
     MAPM result = _decimal;
@@ -474,11 +474,11 @@ XMLInt32 ATDecimalOrDerivedImpl::treatAsCodepoint(const DynamicContext* context)
     int integer = atoi(out_string);
     XMLInt32 ch = (XMLInt32)integer;
     if(integer<=0 || (int)ch != integer) { // negative or lost some info
-      XQThrow(XPath2ErrorException, X("ATDecimalOrDerivedImpl::treatAsCodepoint"), X("Codepoint not legal [err:FOCH0001]."));
+      XQThrow2(XPath2ErrorException, X("ATDecimalOrDerivedImpl::treatAsCodepoint"), X("Codepoint not legal [err:FOCH0001]."));
     }
     return ch;
   } else {
-    XQThrow(XPath2ErrorException, X("ATDecimalOrDerivedImpl::treatAsCodepoint"), X("Only integers can be treated as codepoints."));
+    XQThrow2(XPath2ErrorException, X("ATDecimalOrDerivedImpl::treatAsCodepoint"), X("Only integers can be treated as codepoints."));
   }
 }
 
@@ -494,7 +494,7 @@ void ATDecimalOrDerivedImpl::setDecimal(const XMLCh* const value)
 MAPM ATDecimalOrDerivedImpl::parseDecimal(const XMLCh* const value)
 {
   if(value == NULL) {
-    XQThrow(XPath2TypeCastException,X("ATDecimalOrDerivedImpl::setDecimal"), X("Invalid representation of decimal [err:FORG0001]"));
+    XQThrow2(XPath2TypeCastException,X("ATDecimalOrDerivedImpl::setDecimal"), X("Invalid representation of decimal [err:FORG0001]"));
   }
   
   unsigned int length=XMLString::stringLen(value) + 1;
@@ -603,7 +603,7 @@ MAPM ATDecimalOrDerivedImpl::parseDecimal(const XMLCh* const value)
   }//while
 
   if(!gotDigit || stop) {
-	XQThrow(XPath2TypeCastException,X("ATDecimalOrDerivedImpl::setDecimal"), X("Invalid representation of decimal [err:FORG0001]"));
+    XQThrow2(XPath2TypeCastException,X("ATDecimalOrDerivedImpl::setDecimal"), X("Invalid representation of decimal [err:FORG0001]"));
   }
 
   *dest++ = 0; // Null terminate  

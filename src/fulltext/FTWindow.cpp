@@ -29,16 +29,20 @@ XERCES_CPP_NAMESPACE_USE
 
 FTSelection *FTWindow::staticResolution(StaticContext *context)
 {
-  static SequenceType seqType(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                              SchemaSymbols::fgDT_INTEGER);
-
   XPath2MemoryManager *mm = context->getMemoryManager();
+
+  SequenceType *seqType = new (mm) SequenceType(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                                                SchemaSymbols::fgDT_INTEGER,
+                                                SequenceType::EXACTLY_ONE, mm);
+  seqType->setLocationInfo(this);
 
   arg_ = arg_->staticResolution(context);
   src_.add(arg_->getStaticResolutionContext());
 
   expr_ = new (mm) XQAtomize(expr_, mm);
-  expr_ = new XQTreatAs(expr_, &seqType, mm);
+  expr_->setLocationInfo(this);
+  expr_ = new (mm) XQTreatAs(expr_, seqType, mm);
+  expr_->setLocationInfo(this);
   expr_ = expr_->staticResolution(context);
   src_.add(expr_->getStaticResolutionContext());
 
@@ -55,8 +59,9 @@ FTSelection *FTWindow::optimize(FTContext *ftcontext, bool execute) const
 
     long distance = ::atol(UTF8(num->asString(ftcontext->context)));
 
-    return (new (mm) FTWindowLiteral(arg_, (unsigned int)distance, unit_, mm))->
-      optimize(ftcontext, execute);
+    FTSelection *result = new (mm) FTWindowLiteral(arg_, (unsigned int)distance, unit_, mm);
+    result->setLocationInfo(this);
+    return result->optimize(ftcontext, execute);
   }
 
   FTSelection *newarg = arg_->optimize(ftcontext, execute);
@@ -65,7 +70,10 @@ FTSelection *FTWindow::optimize(FTContext *ftcontext, bool execute) const
   if(newarg->getType() == WORD) {
     return newarg;
   }
-  return new (mm) FTWindow(newarg, expr_, unit_, mm);
+
+  newarg = new (mm) FTWindow(newarg, expr_, unit_, mm);
+  newarg->setLocationInfo(this);
+  return newarg;
 }
 
 AllMatches::Ptr FTWindow::execute(FTContext *ftcontext) const
@@ -94,12 +102,15 @@ FTSelection *FTWindowLiteral::optimize(FTContext *ftcontext, bool execute) const
   if(newarg->getType() == WORD) {
     return newarg;
   }
-  return new (mm) FTWindowLiteral(newarg, distance_, unit_, mm);
+
+  newarg = new (mm) FTWindowLiteral(newarg, distance_, unit_, mm);
+  newarg->setLocationInfo(this);
+  return newarg;
 }
 
 AllMatches::Ptr FTWindowLiteral::execute(FTContext *ftcontext) const
 {
-  return new FTWindowMatches(distance_, unit_, arg_->execute(ftcontext));
+  return new FTWindowMatches(this, distance_, unit_, arg_->execute(ftcontext));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

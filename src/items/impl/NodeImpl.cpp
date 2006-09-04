@@ -171,7 +171,7 @@ Sequence NodeImpl::dmBaseURI(const DynamicContext* context) const {
             }
             catch(MalformedURLException& e)
             {
-                XQThrow(ItemException, X("NodeImpl::dmBaseURI"), X("Base-URI is a malformed URL"));
+                XQThrow2(ItemException, X("NodeImpl::dmBaseURI"), X("Base-URI is a malformed URL"));
             }
         }
         else 
@@ -217,7 +217,7 @@ const XMLCh* NodeImpl::dmNodeKind(void) const {
         return namespace_string;
 	}
     
-  XQThrow(ItemException, X("NodeImpl::dmNodeKind"), X("Unknown node type."));
+  XQThrow2(ItemException, X("NodeImpl::dmNodeKind"), X("Unknown node type."));
 }
 
 
@@ -433,7 +433,7 @@ Sequence NodeImpl::getListTypeTypedValue(DatatypeValidator *dtv, const DynamicCo
                 }
             }
             if(!bFound)
-                XQThrow(ItemException, X("NodeImpl::getListTypeTypedValue"), X("Value in list doesn't validate with any of the componenets of the union type"));
+                XQThrow2(ItemException, X("NodeImpl::getListTypeTypedValue"), X("Value in list doesn't validate with any of the componenets of the union type"));
         }
     } 
     else
@@ -500,7 +500,7 @@ Sequence NodeImpl::dmTypedValue(DynamicContext* context) const {
                     msg.append(X("}"));
                     msg.append(typeName);
                     msg.append(X(" is unknown"));
-                    XQThrow(XPath2TypeCastException,X("NodeImpl::dmTypedValue"), msg.getRawBuffer());
+                    XQThrow2(XPath2TypeCastException,X("NodeImpl::dmTypedValue"), msg.getRawBuffer());
                 } 
 
                 if(dtv->getType() == DatatypeValidator::List)
@@ -579,7 +579,7 @@ Sequence NodeImpl::dmTypedValue(DynamicContext* context) const {
                 // The typed-value of such an element is undefined. Attempting to access this property with the dm:typed-value 
                 // accessor always raises an error.
                 if(cti->getContentType() == SchemaElementDecl::Children) 
-                    XQThrow(ItemException, X("NodeImpl::dmTypedValue"), X("Attempt to get typed value from a complex type with non-mixed complex content [err:FOTY0012]"));
+                    XQThrow2(ItemException, X("NodeImpl::dmTypedValue"), X("Attempt to get typed value from a complex type with non-mixed complex content [err:FOTY0012]"));
             }
             else 
             {
@@ -755,84 +755,84 @@ Node::Ptr NodeImpl::dmParent(const DynamicContext* context) const
   return new NodeImpl(parent, context);
 }
 
-Result NodeImpl::dmAttributes(const DynamicContext* context) const
+Result NodeImpl::dmAttributes(const DynamicContext* context, const LocationInfo *info) const
 {
   if(fNode->getNodeType() == DOMNode::ELEMENT_NODE) {
-    return new AttributeAxis(fNode, this, NULL);
+    return new AttributeAxis(info, fNode, this, NULL);
   }
   return 0;
 }
 
-Result NodeImpl::dmNamespaceNodes(const DynamicContext* context) const
+Result NodeImpl::dmNamespaceNodes(const DynamicContext* context, const LocationInfo *info) const
 {
   if(fNode->getNodeType() == DOMNode::ELEMENT_NODE) {
-    return new NamespaceAxis(fNode, this, NULL);
+    return new NamespaceAxis(info, fNode, this, NULL);
   }
   return 0;
 }
 
-Result NodeImpl::dmChildren(const DynamicContext *context) const
+Result NodeImpl::dmChildren(const DynamicContext *context, const LocationInfo *info) const
 {
   if(fNode->getNodeType() == DOMNode::ELEMENT_NODE || fNode->getNodeType() == DOMNode::DOCUMENT_NODE) {
-    return new ChildAxis(fNode, this, NULL);
+    return new ChildAxis(info, fNode, this, NULL);
   }
   return 0;
 }
 
-Result NodeImpl::getAxisResult(XQStep::Axis axis, const NodeTest *nodeTest, const DynamicContext *context) const
+Result NodeImpl::getAxisResult(XQStep::Axis axis, const NodeTest *nodeTest, const DynamicContext *context, const LocationInfo *info) const
 {
   switch(axis) {
   case XQStep::ANCESTOR: {
-    return new AncestorAxis(fNode, this, nodeTest);
+    return new AncestorAxis(info, fNode, this, nodeTest);
   }
   case XQStep::ANCESTOR_OR_SELF: {
-    return new AncestorOrSelfAxis(fNode, this, nodeTest);
+    return new AncestorOrSelfAxis(info, fNode, this, nodeTest);
   }
   case XQStep::ATTRIBUTE: {
     if(fNode->getNodeType() == DOMNode::ELEMENT_NODE) {
-      return new AttributeAxis(fNode, this, nodeTest);
+      return new AttributeAxis(info, fNode, this, nodeTest);
     }
     break;
   }
   case XQStep::CHILD: {
     if(fNode->getNodeType() == DOMNode::ELEMENT_NODE || fNode->getNodeType() == DOMNode::DOCUMENT_NODE) {
-      return new ChildAxis(fNode, this, nodeTest);
+      return new ChildAxis(info, fNode, this, nodeTest);
     }
     break;
   }
   case XQStep::DESCENDANT: {
     if(fNode->getNodeType() == DOMNode::ELEMENT_NODE || fNode->getNodeType() == DOMNode::DOCUMENT_NODE) {
-      return new DescendantAxis(fNode, this, nodeTest);
+      return new DescendantAxis(info, fNode, this, nodeTest);
     }
     break;
   }
   case XQStep::DESCENDANT_OR_SELF: {
-    return new DescendantOrSelfAxis(fNode, this, nodeTest);
+    return new DescendantOrSelfAxis(info, fNode, this, nodeTest);
     break;
   }
   case XQStep::FOLLOWING: {
-    return new FollowingAxis(fNode, this, nodeTest);
+    return new FollowingAxis(info, fNode, this, nodeTest);
   }
   case XQStep::FOLLOWING_SIBLING: {
-    return new FollowingSiblingAxis(fNode, this, nodeTest);
+    return new FollowingSiblingAxis(info, fNode, this, nodeTest);
   }
   case XQStep::NAMESPACE: {
     if(fNode->getNodeType() == DOMNode::ELEMENT_NODE) {
-      return new NamespaceAxis(fNode, this, nodeTest);
+      return new NamespaceAxis(info, fNode, this, nodeTest);
     }
     break;
   }
   case XQStep::PARENT: {
-    return new ParentAxis(fNode, this, nodeTest);
+    return new ParentAxis(info, fNode, this, nodeTest);
   }
   case XQStep::PRECEDING: {
-    return new PrecedingAxis(fNode, this, nodeTest);
+    return new PrecedingAxis(info, fNode, this, nodeTest);
   }
   case XQStep::PRECEDING_SIBLING: {
-    return new PrecedingSiblingAxis(fNode, this, nodeTest);
+    return new PrecedingSiblingAxis(info, fNode, this, nodeTest);
   }
   case XQStep::SELF: {
-    return nodeTest->filterResult(new SelfAxis(this));
+    return nodeTest->filterResult(new SelfAxis(info, this), info);
   }
   }
 
@@ -980,7 +980,7 @@ void NodeImpl::getTypeUriAndName(const XMLCh*& uri, const XMLCh*& name) const
         name=ATUntypedAtomic::fgDT_UNTYPEDATOMIC;
         return;
     }
-    XQThrow(ItemException, X("NodeImpl::getTypeUriAndName"), X("Tried to get type informations on Node other than DOMElement, DOMAttribute or DOMText"));
+    XQThrow2(ItemException, X("NodeImpl::getTypeUriAndName"), X("Tried to get type informations on Node other than DOMElement, DOMAttribute or DOMText"));
 }
 
 const XMLCh* NodeImpl::getTypeName() const {

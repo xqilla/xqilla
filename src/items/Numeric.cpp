@@ -155,8 +155,8 @@ int Numeric::compare(const Numeric::Ptr &other, const DynamicContext *context) c
 bool Numeric::equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const
 {
   if(!target->isNumericValue()) {
-    XQThrow(::IllegalArgumentException,X("Numeric::equals"),
-            X("Equality operator for given types not supported [err:XPTY0004]"));
+    XQThrow2(::IllegalArgumentException,X("Numeric::equals"),
+	    X("Equality operator for given types not supported [err:XPTY0004]"));
   } 
 
   const Numeric *otherImpl = (const Numeric*)target.get();
@@ -188,7 +188,7 @@ AnyAtomicType::Ptr Numeric::castAsInternal(AtomicObjectType targetIndex, const X
     case NaN:
     case INF:
     case NEG_INF:
-      XQThrow(::IllegalArgumentException, X("Numeric::castAsInternal"),
+      XQThrow2(::IllegalArgumentException, X("Numeric::castAsInternal"),
               X("Special values like NaN, INF or -INF cannot be cast to decimal [err:FOCA0002]"));
     case NUM:
     case NEG_NUM:

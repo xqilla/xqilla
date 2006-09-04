@@ -148,7 +148,7 @@ ASTNode *XQFunction::resolveArguments(StaticContext *context, bool checkTimezone
 {
   unsigned int paramNumber = 0;
   for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
-    *i = (*_paramDecl)[paramNumber]->convertFunctionArg(*i, context, numericFunction);
+    *i = (*_paramDecl)[paramNumber]->convertFunctionArg(*i, context, numericFunction, *i);
     *i = (*i)->staticResolution(context);
     _src.add((*i)->getStaticResolutionContext());
 

@@ -1,6 +1,7 @@
 nobase_include_HEADERS = \
 xqilla/xqilla-dom3.hpp \
 xqilla/xqilla-simple.hpp \
+xqilla/ast/LocationInfo.hpp \
 xqilla/ast/XQCastableAs.hpp \
 xqilla/ast/XQCastAs.hpp \
 xqilla/ast/XQContextItem.hpp \
@@ -77,6 +78,7 @@ xqilla/context/ContextHelpers.hpp \
 xqilla/context/DynamicContext.hpp \
 xqilla/context/StaticContext.hpp \
 xqilla/context/ItemFactory.hpp \
+xqilla/context/ModuleResolver.hpp \
 xqilla/context/URIResolver.hpp \
 xqilla/context/VariableStore.hpp \
 xqilla/context/Scope.hpp \

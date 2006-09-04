@@ -25,18 +25,15 @@ NotEquals::NotEquals(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
 {
 }
 
-/*static*/ bool NotEquals::not_equals(const AnyAtomicType::Ptr &arg1, const AnyAtomicType::Ptr &arg2, Collation* collation, DynamicContext* context)
+/*static*/ bool NotEquals::not_equals(const AnyAtomicType::Ptr &arg1, const AnyAtomicType::Ptr &arg2, Collation* collation, DynamicContext* context, const LocationInfo *info)
 {
   // define "ne" as "!eq"
-  return !Equals::equals(arg1,arg2,collation,context);
+  return !Equals::equals(arg1,arg2,collation,context, info);
 }
 
 bool NotEquals::execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::Ptr &atom2, DynamicContext *context) const
 {
-  Collation* collation=context->getDefaultCollation();
-  if(collation==NULL)
-    collation=context->getCollation(CodepointCollation::getCodepointCollationName());
-  return not_equals(atom1, atom2, collation, context);
+  return not_equals(atom1, atom2, context->getDefaultCollation(this), context, this);
 }
 
 

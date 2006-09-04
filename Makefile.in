@@ -69,27 +69,27 @@ libxqilla_la_LIBADD =
 am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	ProxyMemoryManager.lo StringPool.lo XPath2MemoryManagerImpl.lo \
 	XQScopedNamespace.lo CollationImpl.lo UCANormalizer1.lo \
-	UCANormalizer2.lo UCANormalizer3.lo UCANormalizer.lo \
-	CodepointCollation.lo VarStoreImpl.lo VarTypeStoreImpl.lo \
-	VarHashEntryImpl.lo XQContextImpl.lo XQDynamicContextImpl.lo \
-	ItemFactoryImpl.lo XQRemoteDebugger.lo XQAtomize.lo \
-	XQCastableAs.lo XQCastAs.lo XQContextItem.lo XQFunction.lo \
-	XQIf.lo ASTNodeImpl.lo XQInstanceOf.lo XQLiteral.lo XQNav.lo \
-	XQOperator.lo XQParenthesizedExpr.lo XQSequence.lo XQStep.lo \
-	XQTreatAs.lo XQVariable.lo StaticResolutionContext.lo \
-	StaticType.lo AggregateFunction.lo ConstantFoldingFunction.lo \
-	NumericFunction.lo XQDebugHook.lo XQDOMConstructor.lo \
-	XQFLWOR.lo XQFunctionCall.lo XQGlobalVariable.lo \
-	XQOrderingChange.lo XQQuantified.lo XQValidate.lo \
-	XQTypeswitch.lo XQVariableBinding.lo XPath1Compat.lo \
-	ConvertFunctionArg.lo XQDocumentOrder.lo XQPredicate.lo \
-	FTContains.lo FTWords.lo FTOr.lo FTAnd.lo FTMildnot.lo \
-	FTUnaryNot.lo DefaultTokenizer.lo DefaultTokenStore.lo \
-	FTOrder.lo FTDistance.lo FTScope.lo FTContent.lo FTWindow.lo \
-	XQillaBuilderImpl.lo XQillaDocumentImpl.lo \
-	XQillaExpressionImpl.lo XQillaNSResolverImpl.lo \
-	XQillaXMLGrammarPoolImpl.lo XPathDocumentImpl.lo \
-	XPathNamespaceImpl.lo XPath2ResultImpl.lo \
+	UCANormalizer2.lo UCANormalizer3.lo UCANormalizer4.lo \
+	UCANormalizer.lo CodepointCollation.lo VarStoreImpl.lo \
+	VarTypeStoreImpl.lo VarHashEntryImpl.lo XQContextImpl.lo \
+	XQDynamicContextImpl.lo ItemFactoryImpl.lo XQRemoteDebugger.lo \
+	XQAtomize.lo XQCastableAs.lo XQCastAs.lo XQContextItem.lo \
+	XQFunction.lo XQIf.lo ASTNodeImpl.lo XQInstanceOf.lo \
+	XQLiteral.lo XQNav.lo XQOperator.lo XQParenthesizedExpr.lo \
+	XQSequence.lo XQStep.lo XQTreatAs.lo XQVariable.lo \
+	StaticResolutionContext.lo StaticType.lo AggregateFunction.lo \
+	ConstantFoldingFunction.lo NumericFunction.lo XQDebugHook.lo \
+	XQDOMConstructor.lo XQFLWOR.lo XQFunctionCall.lo \
+	XQGlobalVariable.lo XQOrderingChange.lo XQQuantified.lo \
+	XQValidate.lo XQTypeswitch.lo XQVariableBinding.lo \
+	XPath1Compat.lo ConvertFunctionArg.lo XQDocumentOrder.lo \
+	XQPredicate.lo FTContains.lo FTWords.lo FTOr.lo FTAnd.lo \
+	FTMildnot.lo FTUnaryNot.lo DefaultTokenizer.lo \
+	DefaultTokenStore.lo FTOrder.lo FTDistance.lo FTScope.lo \
+	FTContent.lo FTWindow.lo XQillaBuilderImpl.lo \
+	XQillaDocumentImpl.lo XQillaExpressionImpl.lo \
+	XQillaNSResolverImpl.lo XQillaXMLGrammarPoolImpl.lo \
+	XPathDocumentImpl.lo XPathNamespaceImpl.lo XPath2ResultImpl.lo \
 	XQillaImplementation.lo XPath2NodeSerializer.lo XQilla.lo \
 	XQQuery.lo UTF8Str.lo XMLChCompare.lo XStr.lo ContextUtils.lo \
 	DateUtils.lo NumUtils.lo XQillaPlatformUtils.lo PrintAST.lo \
@@ -364,6 +364,7 @@ src/context/impl/CollationImpl.cpp \
 src/context/impl/UCANormalizer1.cpp \
 src/context/impl/UCANormalizer2.cpp \
 src/context/impl/UCANormalizer3.cpp \
+src/context/impl/UCANormalizer4.cpp \
 src/context/impl/UCANormalizer.cpp \
 src/context/impl/UCANormalizer.hpp \
 src/context/impl/CodepointCollation.cpp \
@@ -1150,6 +1151,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UCANormalizer1.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UCANormalizer2.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UCANormalizer3.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UCANormalizer4.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UTF8Str.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UnaryMinus.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Union.Plo@am__quote@
@@ -1616,6 +1618,13 @@ UCANormalizer3.lo: src/context/impl/UCANormalizer3.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/context/impl/UCANormalizer3.cpp' object='UCANormalizer3.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o UCANormalizer3.lo `test -f 'src/context/impl/UCANormalizer3.cpp' || echo '$(srcdir)/'`src/context/impl/UCANormalizer3.cpp
+
+UCANormalizer4.lo: src/context/impl/UCANormalizer4.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT UCANormalizer4.lo -MD -MP -MF "$(DEPDIR)/UCANormalizer4.Tpo" -c -o UCANormalizer4.lo `test -f 'src/context/impl/UCANormalizer4.cpp' || echo '$(srcdir)/'`src/context/impl/UCANormalizer4.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/UCANormalizer4.Tpo" "$(DEPDIR)/UCANormalizer4.Plo"; else rm -f "$(DEPDIR)/UCANormalizer4.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/context/impl/UCANormalizer4.cpp' object='UCANormalizer4.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o UCANormalizer4.lo `test -f 'src/context/impl/UCANormalizer4.cpp' || echo '$(srcdir)/'`src/context/impl/UCANormalizer4.cpp
 
 UCANormalizer.lo: src/context/impl/UCANormalizer.cpp
 @am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT UCANormalizer.lo -MD -MP -MF "$(DEPDIR)/UCANormalizer.Tpo" -c -o UCANormalizer.lo `test -f 'src/context/impl/UCANormalizer.cpp' || echo '$(srcdir)/'`src/context/impl/UCANormalizer.cpp; \
@@ -4094,6 +4103,8 @@ devdocs:
 	$(MAKE) -C include devdocs
 
 $(top_srcdir)/docs/simple-api: docs
+
+$(top_srcdir)/docs/dom3-api: docs
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

@@ -29,8 +29,8 @@ class XQILLA_API XPath2TypeMatchException : public XQException
 {
 public:
 
-  XPath2TypeMatchException(const XMLCh *functionName, const XMLCh *reason, const char *file, int line)
-    : XQException(X("XPath2TypeCastException"), functionName, reason, file, line) {};
+  XPath2TypeMatchException(const XMLCh *functionName, const XMLCh *reason, const LocationInfo *info, const char *file, int line)
+    : XQException(X("XPath2TypeCastException"), functionName, reason, info, file, line) {};
 };
 
 #endif // _XPATH2TYPEMATCHEXCEPTION_HPP

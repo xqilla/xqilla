@@ -38,11 +38,11 @@ public:
   virtual void *getInterface(const XMLCh *name) const;
 
   /// Filters the given Result, returning only Items that match the NodeTest
-  Result filterResult(const Result &toFilter) const;
+  Result filterResult(const Result &toFilter, const LocationInfo *info) const;
   ///check if a node has to be placed in the result set
-  bool filterNode(Node::Ptr node, DynamicContext* context) const;
+  bool filterNode(Node::Ptr node, DynamicContext* context, const LocationInfo *info) const;
 
-  void staticResolution(StaticContext *context);
+  void staticResolution(StaticContext *context, const LocationInfo *location);
 
   ///gets the sequence type used to match the nodes
   SequenceType::ItemType* getItemType() const;
@@ -106,7 +106,7 @@ protected:
   class XQILLA_API FilterResult : public ResultImpl
   {
   public:
-    FilterResult(const Result &toFilter, const NodeTest *nodeTest);
+    FilterResult(const LocationInfo *info, const Result &toFilter, const NodeTest *nodeTest);
     virtual ~FilterResult() {}
 
     Item::Ptr next(DynamicContext *context);

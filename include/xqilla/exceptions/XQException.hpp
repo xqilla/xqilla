@@ -21,8 +21,12 @@
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/utils/XStr.hpp>
 
-#define XQThrow(type, function, reason) throw type(function, reason, __FILE__, __LINE__)
-#define XQSimpleThrow(reason, xqfile, xqline, xqcolumn) throw XQException(reason, xqfile, xqline, xqcolumn, __FILE__, __LINE__)
+#define XQThrow(type, function, reason) throw type(function, reason, this, __FILE__, __LINE__)
+#define XQThrow2(type, function, reason) throw type(function, reason, 0, __FILE__, __LINE__)
+#define XQThrow3(type, function, reason, location) throw type(function, reason, location, __FILE__, __LINE__)
+#define XQSimpleThrow(reason, xqfile, xqline, xqcolumn) throw XQException(reason, xqfile, xqline, (unsigned int)xqcolumn, __FILE__, __LINE__)
+
+class LocationInfo;
 
 class XQILLA_API XQException
 {
@@ -39,15 +43,20 @@ public:
   unsigned int getXQueryColumn() const { return m_xqColumn; }
 
   void setXQueryPosition(const XMLCh *file, unsigned int line, unsigned int column);
+  void setXQueryPosition(const LocationInfo *info);
 
   const XMLCh *getCppFunction() const { return m_cppFunction; }
   const char *getCppFile() const { return m_cppFile; }
   unsigned int getCppLine() const { return m_cppLine; }
 
+  /// For debugger
+  bool isErrorReported() const { return m_errorReported; }
+  void setErrorReported(bool value = true) { m_errorReported = value; }
+
   void printDebug(const XMLCh* const context) const;
 
 protected:
-  XQException(const XMLCh* const type, const XMLCh* const functionName, const XMLCh* const reason, const char *cppFile, unsigned int cppLine);
+  XQException(const XMLCh* const type, const XMLCh* const functionName, const XMLCh* const reason, const LocationInfo *info, const char *cppFile, unsigned int cppLine);
 
 private:
   XQException &operator=(const XQException &);
@@ -61,6 +70,8 @@ private:
 
   unsigned int m_xqLine, m_xqColumn;
   XMLCh* m_xqFile;
+
+  bool m_errorReported;
 };
 
 #endif // !defined(AFXQ_XQEXCEPTION_H__446AD191_E9D0_4658_BD8C_032D29DA123E__INCLUDED_)

@@ -36,12 +36,14 @@ FTSelection *FTUnaryNot::optimize(FTContext *ftcontext, bool execute) const
   FTSelection *newarg = arg_->optimize(ftcontext, execute);
   if(newarg == 0) return 0;
 
-  return new (mm) FTUnaryNot(newarg, mm);
+  newarg = new (mm) FTUnaryNot(newarg, mm);
+  newarg->setLocationInfo(this);
+  return newarg;
 }
 
 AllMatches::Ptr FTUnaryNot::execute(FTContext *ftcontext) const
 {
-  return new FTUnaryNotMatches(arg_->execute(ftcontext));
+  return new FTUnaryNotMatches(this, arg_->execute(ftcontext));
 }
 
 Match::Ptr FTUnaryNotMatches::next(DynamicContext *context)

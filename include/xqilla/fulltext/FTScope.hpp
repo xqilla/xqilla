@@ -47,8 +47,8 @@ private:
 class FTScopeSameMatches : public AllMatches
 {
 public:
-  FTScopeSameMatches(FTOption::FTUnit unit, const AllMatches::Ptr &arg)
-    : unit_(unit), arg_(arg) {}
+  FTScopeSameMatches(const LocationInfo *info, FTOption::FTUnit unit, const AllMatches::Ptr &arg)
+    : AllMatches(info), unit_(unit), arg_(arg) {}
   Match::Ptr next(DynamicContext *context);
 
 private:
@@ -59,8 +59,8 @@ private:
 class FTScopeDifferentMatches : public AllMatches
 {
 public:
-  FTScopeDifferentMatches(FTOption::FTUnit unit, const AllMatches::Ptr &arg)
-    : unit_(unit), arg_(arg) {}
+  FTScopeDifferentMatches(const LocationInfo *info, FTOption::FTUnit unit, const AllMatches::Ptr &arg)
+    : AllMatches(info), unit_(unit), arg_(arg) {}
   Match::Ptr next(DynamicContext *context);
 
 private:

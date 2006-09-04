@@ -16,8 +16,9 @@
 #include <xqilla/runtime/LazySequenceResult.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 
-LazySequenceResult::LazySequenceResult(DynamicContext *context)
-  : toInit_(true),
+LazySequenceResult::LazySequenceResult(const LocationInfo *o, DynamicContext *context)
+  : ResultImpl(o),
+    toInit_(true),
     seq_(context->getMemoryManager())
 {
 }

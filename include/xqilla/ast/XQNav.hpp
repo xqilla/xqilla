@@ -41,17 +41,9 @@ public:
       turn themselves into an optimised, reusable navigation. **/
   void addStep(const StepInfo &step);
 
-  /** Add a new NavigationStep to the sequence of navigation steps to
-      be performed. This operation is used by parse tree classes to
-      turn themselves into an optimised, reusable navigation. **/
-  void addStep(XQStep::Axis axis, NodeTest* nodeTest);
-
   /** Add a new NavigationStep to the start of the sequence of
       navigation steps to be performed.**/
   void addStepFront(ASTNode* step);
-
-  /// Add fn:root() treat as document-node() to the start of this navigation
-  void addInitialRootStep(XPath2MemoryManager *mm);
 
   virtual Result createResult(DynamicContext* context, int flags=0) const;
 
@@ -90,7 +82,7 @@ protected:
 class XQILLA_API IntermediateStepCheckResult : public ResultImpl
 {
 public:
-  IntermediateStepCheckResult(const Result &parent);
+  IntermediateStepCheckResult(const LocationInfo *o, const Result &parent);
 
   Item::Ptr next(DynamicContext *context);
   void skip();
@@ -103,7 +95,7 @@ private:
 class XQILLA_API LastStepCheckResult : public ResultImpl
 {
 public:
-  LastStepCheckResult(const Result &parent);
+  LastStepCheckResult(const LocationInfo *o, const Result &parent);
 
   Item::Ptr next(DynamicContext *context);
   void skip();

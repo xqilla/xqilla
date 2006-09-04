@@ -32,7 +32,7 @@ public:
 
   GreaterThanEqual(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
-  static bool greater_than_equal(const AnyAtomicType::Ptr &arg1, const AnyAtomicType::Ptr &arg2, Collation* collation, DynamicContext* context);
+  static bool greater_than_equal(const AnyAtomicType::Ptr &arg1, const AnyAtomicType::Ptr &arg2, Collation* collation, DynamicContext* context, const LocationInfo *info);
 
   bool execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::Ptr &atom2, DynamicContext *context) const;
 };

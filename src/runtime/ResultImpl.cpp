@@ -21,7 +21,7 @@
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/exceptions/XPath2TypeMatchException.hpp>
 
-static inline bool getEffectiveBooleanValueInternal(const Item::Ptr &first, const Item::Ptr &second, DynamicContext* context)
+static inline bool getEffectiveBooleanValueInternal(const Item::Ptr &first, const Item::Ptr &second, DynamicContext* context, const LocationInfo *info)
 {
   // If its operand is a singleton value ...
   if(second == NULLRCP && first->isAtomicValue()) {
@@ -46,19 +46,19 @@ static inline bool getEffectiveBooleanValueInternal(const Item::Ptr &first, cons
   }
 
   // In all other cases, fn:boolean raises a type error. 
-  XQThrow(XPath2TypeMatchException,X("ResultImpl::getEffectiveBooleanValue"), X("Effective Boolean Value cannot be extracted from this type [err:FORG0006]"));
+  XQThrow3(XPath2TypeMatchException,X("ResultImpl::getEffectiveBooleanValue"), X("Effective Boolean Value cannot be extracted from this type [err:FORG0006]"), info);
   return true;
 }
 
-bool ResultImpl::getEffectiveBooleanValue(DynamicContext* context)
+bool ResultImpl::getEffectiveBooleanValue(DynamicContext* context, const LocationInfo *info)
 {
   const Item::Ptr first = next(context);
   if(first == NULLRCP) return false;
   if(first->isNode()) return true;
-  return getEffectiveBooleanValueInternal(first, next(context), context);
+  return getEffectiveBooleanValueInternal(first, next(context), context, info);
 }
 
-bool ResultImpl::getEffectiveBooleanValue(const Item::Ptr &first, const Item::Ptr &second, DynamicContext* context)
+bool ResultImpl::getEffectiveBooleanValue(const Item::Ptr &first, const Item::Ptr &second, DynamicContext* context, const LocationInfo *info)
 {
   // From $ 15.1.4 of the F&O specs:
   // The effective boolean value of an operand is defined as follows:
@@ -72,7 +72,7 @@ bool ResultImpl::getEffectiveBooleanValue(const Item::Ptr &first, const Item::Pt
   if(first->isNode())
     return true;
 
-  return getEffectiveBooleanValueInternal(first, second, context);
+  return getEffectiveBooleanValueInternal(first, second, context, info);
 }
 
 Sequence ResultImpl::toSequence(DynamicContext *context)

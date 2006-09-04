@@ -47,12 +47,13 @@ ASTNode* XPath1CompatConvertFunctionArg::staticResolution(StaticContext *context
 
 Result XPath1CompatConvertFunctionArg::createResult(DynamicContext* context, int flags) const
 {
-  return new XPath1CompatConvertFunctionArgResult(expr_->collapseTree(context, flags), seqType_);
+  return new XPath1CompatConvertFunctionArgResult(this, expr_->collapseTree(context, flags), seqType_);
 }
 
 XPath1CompatConvertFunctionArg::XPath1CompatConvertFunctionArgResult::
-XPath1CompatConvertFunctionArgResult(const Result &parent, const SequenceType *seqType)
-  : seqType_(seqType),
+XPath1CompatConvertFunctionArgResult(const XPath1CompatConvertFunctionArg *di, const Result &parent, const SequenceType *seqType)
+  : ResultImpl(di),
+    seqType_(seqType),
     parent_(parent),
     oneDone_(false)
 {

@@ -66,7 +66,7 @@ Sequence FunctionNamespaceURIForPrefix::collapseTreeInternal(DynamicContext* con
 
   Node::Ptr node = (Node::Ptr)getParamNumber(2,context)->next(context);
 
-  Result namespaces = node->dmNamespaceNodes(context);
+  Result namespaces = node->dmNamespaceNodes(context, this);
   Node::Ptr ns;
   while((ns = (Node::Ptr)namespaces->next(context)).notNull()) {
     ATQNameOrDerived::Ptr name = ns->dmNodeName(context);

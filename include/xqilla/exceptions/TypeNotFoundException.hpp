@@ -22,8 +22,8 @@ class XQILLA_API TypeNotFoundException : public XQException
 {
 public:
   
-  TypeNotFoundException(const XMLCh *functionName, const XMLCh *reason, const char *file, int line)
-    : XQException(X("TypeNotFoundException"), functionName, reason, file, line) {};
+  TypeNotFoundException(const XMLCh *functionName, const XMLCh *reason, const LocationInfo *info, const char *file, int line)
+    : XQException(X("TypeNotFoundException"), functionName, reason, info, file, line) {};
 };
 
 #endif // _TYPENOTFOUNDEXCEPTION_HPP

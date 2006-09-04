@@ -52,6 +52,7 @@ ASTNode* XQInstanceOf::staticResolution(StaticContext *context)
   XPath2MemoryManager *mm = context->getMemoryManager();
 
   _expr = new (mm) XQTreatAs(_expr, _exprType, mm);
+  _expr->setLocationInfo(this);
 
   try {
     AutoNodeSetOrderingReset orderReset(context);
@@ -64,7 +65,9 @@ ASTNode* XQInstanceOf::staticResolution(StaticContext *context)
                                         SchemaSymbols::fgDT_BOOLEAN,
                                         SchemaSymbols::fgATTVAL_FALSE,
                                         AnyAtomicType::BOOLEAN);
-    return new (mm) XQSequence(construct, mm);
+    ASTNode *result = new (mm) XQSequence(construct, mm);
+    result->setLocationInfo(this);
+    return result;
   }
 
   _src.getStaticType().flags = StaticType::BOOLEAN_TYPE;
@@ -88,7 +91,8 @@ void XQInstanceOf::setExpression(ASTNode *item) {
 }
 
 XQInstanceOf::InstanceOfResult::InstanceOfResult(const XQInstanceOf *di, int flags)
-  : _flags(flags),
+  : SingleResult(di),
+    _flags(flags),
     _di(di)
 {
 }

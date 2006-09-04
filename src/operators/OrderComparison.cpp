@@ -47,7 +47,8 @@ Result OrderComparison::createResult(DynamicContext* context, int flags) const
 }
 
 OrderComparison::OrderComparisonResult::OrderComparisonResult(const OrderComparison *op)
-  : _op(op)
+  : SingleResult(op),
+    _op(op)
 {
 }
 

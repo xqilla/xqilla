@@ -54,7 +54,7 @@ Sequence FunctionInScopePrefixes::collapseTreeInternal(DynamicContext* context, 
 
   Sequence returnSeq(context->getMemoryManager());
 
-  Result namespaces = node->dmNamespaceNodes(context);
+  Result namespaces = node->dmNamespaceNodes(context, this);
   Node::Ptr ns;
   while((ns = (Node::Ptr)namespaces->next(context)).notNull()) {
     ATQNameOrDerived::Ptr name = ns->dmNodeName(context);

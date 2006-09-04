@@ -30,8 +30,8 @@ class XQILLA_API NamespaceLookupException : public XQException
 {
 public:
 
-  NamespaceLookupException(const XMLCh *functionName, const XMLCh *reason, const char *file, int line)
-    : XQException(X("NamespaceLookupException"), functionName, reason, file, line) {};
+  NamespaceLookupException(const XMLCh *functionName, const XMLCh *reason, const LocationInfo *info, const char *file, int line)
+    : XQException(X("NamespaceLookupException"), functionName, reason, info, file, line) {};
 };
 
 #endif // _XPATHPARSEEXCEPTION_HPP

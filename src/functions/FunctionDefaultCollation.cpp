@@ -43,7 +43,7 @@ FunctionDefaultCollation::FunctionDefaultCollation(const VectorOfASTNodes &args,
 
 Sequence FunctionDefaultCollation::collapseTreeInternal(DynamicContext* context, int flags) const
 {
-  Collation* collation = context->getDefaultCollation();
+  Collation* collation = context->getDefaultCollation(this);
   if(collation != NULL)
     return Sequence(context->getItemFactory()->createString(collation->getCollationName(), context),
                     context->getMemoryManager());

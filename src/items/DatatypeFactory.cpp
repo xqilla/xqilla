@@ -47,7 +47,7 @@ AnyAtomicType::Ptr DatatypeFactory::createInstance(const XMLCh* value,
   try {
     fBaseValidator->validate(value, 0, context->getMemoryManager());
   } catch (XMLException &e) {
-    XQThrow(InvalidLexicalSpaceException, X("DatatypeFactory::createInstance"), e.getMessage());
+    XQThrow2(InvalidLexicalSpaceException, X("DatatypeFactory::createInstance"), e.getMessage());
   }
 
   return createInstanceNoCheck(getPrimitiveTypeURI(), getPrimitiveTypeName(), value, context);
@@ -68,7 +68,7 @@ AnyAtomicType::Ptr DatatypeFactory::createInstance(const XMLCh* typeURI,
     buf.append(chColon);
     buf.append(typeName);
     buf.append(X(" not found"));
-    XQThrow(TypeNotFoundException, X("DatatypeFactoryTemplate::createInstance"), buf.getRawBuffer());
+    XQThrow2(TypeNotFoundException, X("DatatypeFactoryTemplate::createInstance"), buf.getRawBuffer());
   }
 
   if(validator->getWSFacet()==DatatypeValidator::COLLAPSE && !XMLString::isWSCollapsed(value))
@@ -90,7 +90,7 @@ AnyAtomicType::Ptr DatatypeFactory::createInstance(const XMLCh* typeURI,
     {
         const XMLCh* localPart = XPath2NSUtils::getLocalName(value);
         const XMLCh* prefix = XPath2NSUtils::getPrefix(value, context->getMemoryManager());
-        const XMLCh* uriStr = (prefix && *prefix) ? context->getUriBoundToPrefix(prefix) : XMLUni::fgZeroLenString;
+        const XMLCh* uriStr = (prefix && *prefix) ? context->getUriBoundToPrefix(prefix, 0) : XMLUni::fgZeroLenString;
         XMLCh szColon[]={ chColon, chNull };
         valueToValidate=XPath2Utils::concatStrings(uriStr, szColon, localPart, context->getMemoryManager());
     }
@@ -99,7 +99,7 @@ AnyAtomicType::Ptr DatatypeFactory::createInstance(const XMLCh* typeURI,
     XMLBuffer buf(1023, context->getMemoryManager());
     buf.append(e.getMessage());
     buf.append(X(" [err:FORG0001]"));
-    XQThrow(InvalidLexicalSpaceException, X("DatatypeFactory::createInstance"), buf.getRawBuffer());
+    XQThrow2(InvalidLexicalSpaceException, X("DatatypeFactory::createInstance"), buf.getRawBuffer());
   }
 
   return createInstanceNoCheck(typeURI, typeName, value, context);
@@ -131,7 +131,7 @@ bool DatatypeFactory::checkInstance(const XMLCh* typeURI,
     buf.append(chColon);
     buf.append(typeName);
     buf.append(X(" not found"));
-    XQThrow(TypeNotFoundException, X("DatatypeFactoryTemplate::createInstance"), buf.getRawBuffer());
+    XQThrow2(TypeNotFoundException, X("DatatypeFactoryTemplate::createInstance"), buf.getRawBuffer());
   }
 
   try {

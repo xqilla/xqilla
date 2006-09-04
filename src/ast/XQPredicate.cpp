@@ -57,13 +57,15 @@ ASTNode* XQPredicate::staticResolution(StaticContext *context)
     // It's not a numeric constant
     AutoDelete<DynamicContext> dContext(context->createDynamicContext());
     dContext->setMemoryManager(mm);
-    if(predicate_->collapseTree(dContext)->getEffectiveBooleanValue(dContext)) {
+    if(predicate_->collapseTree(dContext)->getEffectiveBooleanValue(dContext, this)) {
       // We have a true predicate
       return expr_;
     }
     else {
       // We have a false predicate, which is constant folded to an empty sequence
-      return new (mm) XQSequence(mm);
+      ASTNode *result = new (mm) XQSequence(mm);
+      result->setLocationInfo(expr_);
+      return result;
     }
   }
 
@@ -87,7 +89,7 @@ Result XQPredicate::createResult(DynamicContext* context, int flags) const
     // We need the context size, so convert to a Sequence to work it out
     Sequence seq(parent->toSequence(context));
     contextSize = seq.getLength();
-    parent = new SequenceResult(seq);
+    parent = new SequenceResult(this, seq);
   }
   if(src.getStaticType().isType(StaticType::NUMERIC_TYPE) &&
      !src.isContextItemUsed() && !src.isContextPositionUsed()) {
@@ -120,7 +122,8 @@ ASTNode *XQPredicate::addPredicates(ASTNode *expr, VectorOfPredicates *preds)
 /////////////////////////////////////
 
 XQPredicate::PredicateFilterResult::PredicateFilterResult(const Result &parent, const ASTNode *pred, unsigned int contextSize)
-  : todo_(true),
+  : ResultImpl(pred),
+    todo_(true),
     parent_(parent),
     pred_(pred),
     contextPos_(0),
@@ -177,7 +180,7 @@ Item::Ptr XQPredicate::PredicateFilterResult::next(DynamicContext *context)
     }
     else {
       // 2) Otherwise, the predicate truth value is the effective boolean value of the predicate expression
-      if(!ResultImpl::getEffectiveBooleanValue(first_, second_, context)) {
+      if(!ResultImpl::getEffectiveBooleanValue(first_, second_, context, this)) {
         result = 0;
       }
     }
@@ -201,7 +204,8 @@ std::string XQPredicate::PredicateFilterResult::asString(DynamicContext *context
 /////////////////////////////////////
 
 XQPredicate::NonNumericPredicateFilterResult::NonNumericPredicateFilterResult(const Result &parent, const ASTNode *pred, unsigned int contextSize)
-  : todo_(true),
+  : ResultImpl(pred),
+    todo_(true),
     parent_(parent),
     pred_(pred),
     contextPos_(0),
@@ -234,7 +238,7 @@ Item::Ptr XQPredicate::NonNumericPredicateFilterResult::next(DynamicContext *con
       context->setContextItem(result);
 
       // 2) Otherwise, the predicate truth value is the effective boolean value of the predicate expression
-      if(!pred_->collapseTree(context)->getEffectiveBooleanValue(context)) {
+      if(!pred_->collapseTree(context)->getEffectiveBooleanValue(context, this)) {
         result = 0;
         if(!contextUsed) {
           parent_ = 0;
@@ -263,7 +267,8 @@ std::string XQPredicate::NonNumericPredicateFilterResult::asString(DynamicContex
 /////////////////////////////////////
 
 XQPredicate::NumericPredicateFilterResult::NumericPredicateFilterResult(const Result &parent, const ASTNode *pred, unsigned int contextSize)
-  : todo_(true),
+  : ResultImpl(pred),
+    todo_(true),
     parent_(parent),
     pred_(pred),
     contextSize_(contextSize)
@@ -298,7 +303,7 @@ Item::Ptr XQPredicate::NumericPredicateFilterResult::next(DynamicContext *contex
       // The effective boolean value causes an error -
       // so call it to get the correct error
       parent_ = 0;
-      ResultImpl::getEffectiveBooleanValue(first, second, context);
+      ResultImpl::getEffectiveBooleanValue(first, second, context, this);
       return 0;
     }
 

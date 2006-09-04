@@ -44,14 +44,16 @@ FTSelection *FTMildnot::optimize(FTContext *ftcontext, bool execute) const
   FTSelection *newright = right_->optimize(ftcontext, execute);
   if(newright == 0) return newleft;
 
-  return new (mm) FTMildnot(newleft, newright, mm);
+  FTSelection *result = new (mm) FTMildnot(newleft, newright, mm);
+  result->setLocationInfo(this);
+  return result;
 }
 
 AllMatches::Ptr FTMildnot::execute(FTContext *ftcontext) const
 {
   AllMatches::Ptr leftMatches = left_->execute(ftcontext);
   AllMatches::Ptr rightMatches = right_->execute(ftcontext);
-  return new FTMildnotMatches(leftMatches, rightMatches);
+  return new FTMildnotMatches(this, leftMatches, rightMatches);
 }
 
 Match::Ptr FTMildnotMatches::next(DynamicContext *context)

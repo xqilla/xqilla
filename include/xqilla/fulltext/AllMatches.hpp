@@ -21,7 +21,7 @@
 
 class DynamicContext;
 
-class XQILLA_API AllMatches : public ReferenceCounted
+class XQILLA_API AllMatches : public ReferenceCounted, public LocationInfo
 {
 public:
   typedef RefCountPointer<AllMatches> Ptr;
@@ -32,7 +32,10 @@ public:
   virtual Match::Ptr next(DynamicContext *context) = 0;
 
 protected:
-  AllMatches() {}
+  AllMatches(const LocationInfo *o)
+  {
+    setLocationInfo(o);
+  }
 };
 
 #endif

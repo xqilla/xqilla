@@ -74,10 +74,10 @@ Sequence FunctionSum::collapseTreeInternal(DynamicContext* context, int flags) c
      atom->getPrimitiveTypeIndex() != AnyAtomicType::YEAR_MONTH_DURATION)
     XQThrow(IllegalArgumentException, X("FunctionSum::collapseTreeInternal"), X("Invalid argument to fn:sum() function [err:FORG0006]."));
 
-  return Sequence(sum(sequence, context), memMgr);
+  return Sequence(sum(sequence, context, this), memMgr);
 }
 
-Item::Ptr FunctionSum::sum(const Sequence &sequence, DynamicContext *context)
+Item::Ptr FunctionSum::sum(const Sequence &sequence, DynamicContext *context, const LocationInfo *info)
 {
   if(sequence.getLength() == 1)
     return sequence.first();
@@ -88,9 +88,9 @@ Item::Ptr FunctionSum::sum(const Sequence &sequence, DynamicContext *context)
 
   for(; i != sequence.end(); ++i) {
     try {
-      sum = Plus::plus(*i, sum, context);
+      sum = Plus::plus(*i, sum, context, info);
     } catch (IllegalArgumentException &e) {
-      XQThrow(IllegalArgumentException, X("FunctionSum::collapseTreeInternal"), X("Invalid argument to fn:sum() function"));
+      XQThrow3(IllegalArgumentException, X("FunctionSum::collapseTreeInternal"), X("Invalid argument to fn:sum() function"), info);
     }  
   } 
 

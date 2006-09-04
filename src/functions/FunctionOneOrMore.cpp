@@ -45,7 +45,8 @@ Result FunctionOneOrMore::createResult(DynamicContext* context, int flags) const
 }
 
 FunctionOneOrMore::OneOrMoreResult::OneOrMoreResult(const FunctionOneOrMore *func, int flags)
-  : _flags(flags),
+  : ResultImpl(func),
+    _flags(flags),
     _func(func),
     _arg(0),
     _argNo(0)

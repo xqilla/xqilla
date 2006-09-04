@@ -36,7 +36,10 @@ ASTNode* FunctionData::staticResolution(StaticContext *context)
 {
   XPath2MemoryManager *mm = context->getMemoryManager();
 
-  return (new (mm) XQAtomize(_args.front(), mm))->staticResolution(context);
+  ASTNode *result = new (mm) XQAtomize(_args.front(), mm);
+  result->setLocationInfo(this);
+
+  return result->staticResolution(context);
 }
 
 Result FunctionData::createResult(DynamicContext* context, int flags) const

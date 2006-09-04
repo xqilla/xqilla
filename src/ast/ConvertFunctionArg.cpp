@@ -65,7 +65,7 @@ ASTNode* XQPromoteUntyped::staticResolution(StaticContext *context)
 
 Result XQPromoteUntyped::createResult(DynamicContext* context, int flags) const
 {
-  return new PromoteUntypedResult(expr_->collapseTree(context, flags), uri_, name_);
+  return new PromoteUntypedResult(this, expr_->collapseTree(context, flags), uri_, name_);
 }
 
 Item::Ptr XQPromoteUntyped::PromoteUntypedResult::next(DynamicContext *context)
@@ -146,7 +146,7 @@ ASTNode* XQPromoteNumeric::staticResolution(StaticContext *context)
 
 Result XQPromoteNumeric::createResult(DynamicContext* context, int flags) const
 {
-  return new PromoteNumericResult(expr_->collapseTree(context, flags), uri_, name_);
+  return new PromoteNumericResult(this, expr_->collapseTree(context, flags), uri_, name_);
 }
 
 Item::Ptr XQPromoteNumeric::PromoteNumericResult::next(DynamicContext *context)
@@ -218,7 +218,7 @@ ASTNode* XQPromoteAnyURI::staticResolution(StaticContext *context)
 
 Result XQPromoteAnyURI::createResult(DynamicContext* context, int flags) const
 {
-  return new PromoteAnyURIResult(expr_->collapseTree(context, flags));
+  return new PromoteAnyURIResult(this, expr_->collapseTree(context, flags));
 }
 
 Item::Ptr XQPromoteAnyURI::PromoteAnyURIResult::next(DynamicContext *context)

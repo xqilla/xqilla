@@ -84,6 +84,36 @@ private:
 };
 
 ///
+class XQILLA_API LowerCaseTransform : public StringTransform
+{
+public:
+  LowerCaseTransform(StringTransform *destination)
+    : dest_(destination) {}
+
+  virtual void pushChar(unsigned int ch);
+
+private:
+  static unsigned int *getLowerCase(unsigned int ch);
+
+  StringTransform *dest_;
+};
+
+///
+class XQILLA_API UpperCaseTransform : public StringTransform
+{
+public:
+  UpperCaseTransform(StringTransform *destination)
+    : dest_(destination) {}
+
+  virtual void pushChar(unsigned int ch);
+
+private:
+  static unsigned int *getUpperCase(unsigned int ch);
+
+  StringTransform *dest_;
+};
+
+///
 class XQILLA_API XMLBufferTransform : public StringTransform
 {
 public:
@@ -115,6 +145,9 @@ public:
   static void removeDiacritics(const XMLCh* source, XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &dest);
   static void caseFold(const XMLCh* source, XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &dest);
   static void caseFoldAndRemoveDiacritics(const XMLCh* source, XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &dest);
+
+  static void lowerCase(const XMLCh* source, XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &dest);
+  static void upperCase(const XMLCh* source, XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &dest);
 };
 
 #endif // !defined(AFXQ_NORMALIZER_H__6BA76C4A_0A5B_480B_9870_86A89A118100__INCLUDED_)

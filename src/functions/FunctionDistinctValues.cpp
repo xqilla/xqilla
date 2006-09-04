@@ -182,7 +182,8 @@ private:
 };
 
 DistinctValueResult::DistinctValueResult(const FunctionDistinctValues *fdv, const DynamicContext *context)
-  : fdv_(fdv),
+  : ResultImpl(fdv),
+    fdv_(fdv),
     parent_(0),
     toDo_(true),
     alreadySeen_(0)
@@ -208,14 +209,10 @@ Item::Ptr DistinctValueResult::next(DynamicContext *context)
         } catch(XPath2ErrorException &e) {
             XQThrow(FunctionException, X("FunctionDistinctValues::DistinctValueResult::next"), X("Invalid collationURI"));  
         }
-        collation = context->getCollation(collName);
-        if(collation == NULL)
-            XQThrow(FunctionException,X("FunctionDistinctValues::DistinctValueResult::next"),X("Collation object is not available"));
+        collation = context->getCollation(collName, this);
     }
     else
-        collation = context->getDefaultCollation();
-    if(collation == NULL)
-        collation = context->getCollation(CodepointCollation::getCodepointCollationName());
+        collation = context->getDefaultCollation(this);
 
     alreadySeen_ = new DistinctSet(dvCompare(collation, context));
   }

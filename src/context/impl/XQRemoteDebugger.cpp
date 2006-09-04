@@ -809,7 +809,7 @@ void XQRemoteDebugger::SerializeNode(DynamicContext *context, const Node::Ptr &n
     }
     else if(node->dmNodeKind() == Node::document_string) {
       // don't write the BOM, or we will produce invalid XML
-      Result children = node->dmChildren(context);
+      Result children = node->dmChildren(context, 0);
       Node::Ptr child;
       while((child = children->next(context)).notNull())
       {
@@ -864,13 +864,13 @@ void XQRemoteDebugger::SerializeNode(DynamicContext *context, const Node::Ptr &n
                              << XERCES_CPP_NAMESPACE_QUALIFIER XMLFormatter::NoEscapes
                              << XERCES_CPP_NAMESPACE_QUALIFIER chDoubleQuote;
             }
-            Result attributes = node->dmAttributes(context);
+            Result attributes = node->dmAttributes(context, 0);
             Node::Ptr attr;
             while((attr = attributes->next(context)).notNull()) {
                 m_messageFormatter << XERCES_CPP_NAMESPACE_QUALIFIER chSpace;
                 SerializeNode(context, attr, bAddBackMapInfo);
             }
-            Result children = node->dmChildren(context);
+            Result children = node->dmChildren(context, 0);
             Node::Ptr child = children->next(context);
             if (child.notNull())
             {

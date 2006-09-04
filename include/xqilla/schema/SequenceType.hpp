@@ -24,7 +24,7 @@
 class Item;
 class XPath2MemoryManager;
 
-class XQILLA_API SequenceType  
+class XQILLA_API SequenceType : public LocationInfo
 {
 public:
 
@@ -74,15 +74,15 @@ public:
     void setTypeURI(const XMLCh* const typeURI);
 
     //Return a URI, firstly the overriding URI string, if not, the URI bond to the QName prefix
-    const XMLCh* getTypeURI(const StaticContext* context) const;
-    const XMLCh* getNameURI(const StaticContext* context) const;
+    const XMLCh* getTypeURI(const StaticContext* context, const LocationInfo *location) const;
+    const XMLCh* getNameURI(const StaticContext* context, const LocationInfo *location) const;
 
     void getStaticType(StaticType &st, const StaticContext *context,
-                       bool &isExact) const;
+                       bool &isExact, const LocationInfo *location) const;
 
-    bool matches(const Item::Ptr &toBeTested, DynamicContext* context) const;
-    bool matches(const Node::Ptr &toBeTested, DynamicContext* context) const;
-    bool matchesNameType(const Item::Ptr &toBeTested, DynamicContext* context) const;
+    bool matches(const Item::Ptr &toBeTested, DynamicContext* context, const LocationInfo *location) const;
+    bool matches(const Node::Ptr &toBeTested, DynamicContext* context, const LocationInfo *location) const;
+    bool matchesNameType(const Item::Ptr &toBeTested, DynamicContext* context, const LocationInfo *location) const;
 
   protected:
 
@@ -118,7 +118,7 @@ public:
   /**
    * Constructor for atomic types
    */
-  SequenceType(const XMLCh* typeURI,const XMLCh* typeName, OccurrenceIndicator occur = EXACTLY_ONE);
+  SequenceType(const XMLCh* typeURI,const XMLCh* typeName, OccurrenceIndicator occur, XPath2MemoryManager *mm);
 
   /**
    * Generic constructor.
@@ -163,11 +163,11 @@ public:
    * Returns a Result that will throw an XPath2TypeMatchException if
    * the toBeTested Result doesn't match this SequenceType.
    */
-  Result matches(const Result &toBeTested) const;
-  Result occurrenceMatches(const Result &toBeTested) const;
-  Result typeMatches(const Result &toBeTested) const;
+  Result matches(const Result &toBeTested, const LocationInfo *location) const;
+  Result occurrenceMatches(const Result &toBeTested, const LocationInfo *location) const;
+  Result typeMatches(const Result &toBeTested, const LocationInfo *location) const;
 
-  ASTNode *convertFunctionArg(ASTNode *arg, StaticContext *context, bool numericFunction) const;
+  ASTNode *convertFunctionArg(ASTNode *arg, StaticContext *context, bool numericFunction, const LocationInfo *location) const;
 
   QualifiedName *getConstrainingType(void) const;
   QualifiedName *getConstrainingName(void) const;
@@ -197,7 +197,7 @@ protected:
   class OccurrenceMatchesResult : public ResultImpl
   {
   public:
-    OccurrenceMatchesResult(const Result &parent, const SequenceType *seqType);
+    OccurrenceMatchesResult(const Result &parent, const SequenceType *seqType, const LocationInfo *location);
 
     Item::Ptr next(DynamicContext *context);
     std::string asString(DynamicContext *context, int indent) const;
@@ -210,7 +210,7 @@ protected:
   class TypeMatchesResult : public ResultImpl
   {
   public:
-    TypeMatchesResult(const Result &parent, const SequenceType *seqType);
+    TypeMatchesResult(const Result &parent, const SequenceType *seqType, const LocationInfo *location);
 
     Item::Ptr next(DynamicContext *context);
     std::string asString(DynamicContext *context, int indent) const;

@@ -322,7 +322,7 @@ bool ATDurationOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const Dyn
     return compare((const ATDurationOrDerived*)target.get(), context) == 0;
   }
   default:
-    XQThrow(::IllegalArgumentException,X("ATDurationOrDerivedImpl::equals"),
+    XQThrow2(::IllegalArgumentException,X("ATDurationOrDerivedImpl::equals"),
             X("Equality operator for given types not supported [err:XPTY0004]"));
   }
   return false;
@@ -346,7 +346,7 @@ static inline ATDurationOrDerived::Ptr newDayTimeDuration(const Numeric::Ptr &va
 {
   if(valueSeconds->getState() != Numeric::NUM &&
      valueSeconds->getState() != Numeric::NEG_NUM)
-    XQThrow(::IllegalArgumentException,X("newDayTimeDuration"),
+    XQThrow2(::IllegalArgumentException,X("newDayTimeDuration"),
             X("Overflow in duration operation [err:FODT0002]"));
 
   return context->getItemFactory()->createDayTimeDuration(valueSeconds->asMAPM(), context);
@@ -357,7 +357,7 @@ static inline ATDurationOrDerived::Ptr newYearMonthDuration(const Numeric::Ptr &
 {
   if(valueMonth->getState() != Numeric::NUM &&
      valueMonth->getState() != Numeric::NEG_NUM)
-    XQThrow(::IllegalArgumentException,X("newYearMonthDuration"),
+    XQThrow2(::IllegalArgumentException,X("newYearMonthDuration"),
             X("Overflow in duration operation [err:FODT0002]"));
 
   return context->getItemFactory()->createYearMonthDuration(valueMonth->asMAPM(), context);
@@ -368,11 +368,11 @@ static inline ATDurationOrDerived::Ptr newYearMonthDuration(const Numeric::Ptr &
 ATDurationOrDerived::Ptr ATDurationOrDerivedImpl::divide(const Numeric::Ptr &divisor,
                                                          const DynamicContext* context) const {
   if(divisor->isNaN())
-      XQThrow(::IllegalArgumentException,X("ATDurationOrDerivedImpl::divide"),
+      XQThrow2(::IllegalArgumentException,X("ATDurationOrDerivedImpl::divide"),
               X("Cannot divide a duration by NaN [err:FOCA0005]."));
 
   if(divisor->isZero())
-    XQThrow(::IllegalArgumentException,X("ATDurationOrDerivedImpl::divide"),
+    XQThrow2(::IllegalArgumentException,X("ATDurationOrDerivedImpl::divide"),
             X("Overflow in duration operation [err:FODT0002]"));
 
   if(_durationType == DAY_TIME_DURATION) {
@@ -383,7 +383,7 @@ ATDurationOrDerived::Ptr ATDurationOrDerivedImpl::divide(const Numeric::Ptr &div
   }
   else {
     // if we are trying to compare anything else -- error //
-    XQThrow(::IllegalArgumentException,X("ATDurationOrDerivedImpl::divide"),
+    XQThrow2(::IllegalArgumentException,X("ATDurationOrDerivedImpl::divide"),
             X("divide operator for given types not supported"));
   }
 }
@@ -400,7 +400,7 @@ ATDecimalOrDerived::Ptr ATDurationOrDerivedImpl::divide(const ATDurationOrDerive
   }
   else {
     // if we are trying to compare anything else -- error //
-    XQThrow(::IllegalArgumentException,X("ATDurationOrDerivedImpl::divide"),
+    XQThrow2(::IllegalArgumentException,X("ATDurationOrDerivedImpl::divide"),
             X("divide operator for given types not supported"));
   }
 }
@@ -413,7 +413,7 @@ AnyAtomicType::AtomicObjectType ATDurationOrDerivedImpl::getPrimitiveTypeIndex()
  *  and xdt:yearMonthDuration */
 ATDurationOrDerived::Ptr ATDurationOrDerivedImpl::multiply(const Numeric::Ptr &multiplier, const DynamicContext* context) const {
   if(multiplier->isNaN())
-      XQThrow(::IllegalArgumentException,X("ATDurationOrDerivedImpl::multiply"),
+      XQThrow2(::IllegalArgumentException,X("ATDurationOrDerivedImpl::multiply"),
               X("Cannot multiply a duration by NaN [err:FOCA0005]."));
 
   if(_durationType == DAY_TIME_DURATION) {
@@ -424,7 +424,7 @@ ATDurationOrDerived::Ptr ATDurationOrDerivedImpl::multiply(const Numeric::Ptr &m
   }
   else {
     // if we are trying to compare anything else -- error //
-    XQThrow(::IllegalArgumentException,X("ATDurationOrDerivedImpl::multiply"),
+    XQThrow2(::IllegalArgumentException,X("ATDurationOrDerivedImpl::multiply"),
             X("multiply operator for given types not supported"));
   }
 
@@ -440,7 +440,7 @@ ATDurationOrDerived::Ptr ATDurationOrDerivedImpl::add(const ATDurationOrDerived:
     return newYearMonthDuration(asMonths(context)->add(other->asMonths(context), context), context);
   }
   else {
-    XQThrow(::IllegalArgumentException, X("ATDurationOrDerivedImpl::add"),
+    XQThrow2(::IllegalArgumentException, X("ATDurationOrDerivedImpl::add"),
             X("add operation not supported for given types"));
   }
 }
@@ -453,7 +453,7 @@ ATDurationOrDerived::Ptr ATDurationOrDerivedImpl::subtract(const ATDurationOrDer
   } else if(this->isYearMonthDuration() && ((const ATDurationOrDerived*)other)->isYearMonthDuration() ) {
     return newYearMonthDuration(asMonths(context)->subtract(other->asMonths(context), context), context);
   } else {
-    XQThrow(::IllegalArgumentException, X("ATDurationOrDerivedImpl::subtract"),
+    XQThrow2(::IllegalArgumentException, X("ATDurationOrDerivedImpl::subtract"),
             X("subtract operation not supported for given types"));
   }
 }
@@ -529,7 +529,7 @@ void ATDurationOrDerivedImpl::parseDuration(const XMLCh *const s, MAPM &months, 
   unsigned int length = XMLString::stringLen(s);
  
   if(s == 0) {
-    XQThrow(XPath2TypeCastException,X("XSDurationImpl::setDuration"), X("Invalid representation of duration [err:FORG0001]"));
+    XQThrow2(XPath2TypeCastException,X("XSDurationImpl::setDuration"), X("Invalid representation of duration [err:FORG0001]"));
   }
   
   // State variables etc.
@@ -691,7 +691,7 @@ void ATDurationOrDerivedImpl::parseDuration(const XMLCh *const s, MAPM &months, 
 
   // check duration format
   if ( wrongformat || (Texist && state < 3) || gotDigit) {
-    XQThrow(XPath2TypeCastException,X("ATDurationOrDerivedImpl::setDuration"), X("Invalid representation of duration [err:FORG0001]"));
+    XQThrow2(XPath2TypeCastException,X("ATDurationOrDerivedImpl::setDuration"), X("Invalid representation of duration [err:FORG0001]"));
   }
 
   months = year * 12 + month;

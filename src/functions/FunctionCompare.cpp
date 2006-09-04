@@ -59,14 +59,14 @@ Sequence FunctionCompare::collapseTreeInternal(DynamicContext* context, int flag
         } catch(XPath2ErrorException &e) {
             XQThrow(FunctionException, X("FunctionCompare::collapseTreeInternal"), X("Invalid argument to compare function"));  
         }
-        collation = context->getCollation(collName);
+        collation = context->getCollation(collName, this);
         if(collation == NULL)
             XQThrow(FunctionException,X("FunctionCompare::collapseTreeInternal"),X("Collation object is not available"));
     }
     else
-        collation = context->getDefaultCollation();
+        collation = context->getDefaultCollation(this);
     if(collation == NULL)
-        collation = context->getCollation(CodepointCollation::getCodepointCollationName());
+        collation = context->getCollation(CodepointCollation::getCodepointCollationName(), this);
 
     const XMLCh* string1 = str1.first()->asString(context);
     const XMLCh* string2 = str2.first()->asString(context);

@@ -21,7 +21,7 @@
 class XQILLA_API SelfAxis : public ResultImpl
 {
 public:
-  SelfAxis(Node::Ptr contextNode);
+  SelfAxis(const LocationInfo *info, Node::Ptr contextNode);
   Item::Ptr next(DynamicContext *context);
   std::string asString(DynamicContext *context, int indent) const;
 private:

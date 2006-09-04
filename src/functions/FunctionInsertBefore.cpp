@@ -49,7 +49,8 @@ Result FunctionInsertBefore::createResult(DynamicContext* context, int flags) co
 }
 
 FunctionInsertBefore::InsertBeforeResult::InsertBeforeResult(const FunctionInsertBefore *func, int flags)
-  : _flags(flags),
+  : ResultImpl(func),
+    _flags(flags),
     _func(func),
     _position(0),
     _one(0),

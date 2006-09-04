@@ -84,7 +84,7 @@ public:
   virtual const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver* getNSResolver() const = 0;
   /** returns the URI that is bound in prefix in the current scope or zero
       length string otherwise */
-  virtual const XMLCh* getUriBoundToPrefix(const XMLCh* prefix) const = 0;
+  virtual const XMLCh* getUriBoundToPrefix(const XMLCh* prefix, const LocationInfo *location) const = 0;
   /** returns the prefix that is bound in uri in the current scope or zero
       length string otherwise */
   virtual const XMLCh* getPrefixBoundToUri(const XMLCh* uri) const = 0;
@@ -139,15 +139,16 @@ public:
   /** adds a custom function to the function table */
   virtual void addCustomFunction(FuncFactory *func) = 0;
 	/** returns a function with name name in the namespace represented by prefix */
-  virtual ASTNode* lookUpFunction(const XMLCh* prefix, const XMLCh* name, VectorOfASTNodes& v) const = 0;
+  virtual ASTNode* lookUpFunction(const XMLCh* prefix, const XMLCh* name, VectorOfASTNodes& v,
+                                  const LocationInfo *location) const = 0;
 
   /** Get the implementation for the specified collation */
-  virtual Collation* getCollation(const XMLCh* const URI) const = 0;
+  virtual Collation* getCollation(const XMLCh* const URI, const LocationInfo *location) const = 0;
   /** Add a collation	*/
   virtual void addCollation(Collation* collation) = 0;
   
   /** Get the default collation */
-  virtual Collation* getDefaultCollation() const = 0;
+  virtual Collation* getDefaultCollation(const LocationInfo *location) const = 0;
   /** Specify which collation is the default one */
   virtual void setDefaultCollation(const XMLCh* const URI) = 0;
 

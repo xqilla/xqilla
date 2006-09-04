@@ -289,7 +289,7 @@ const XMLCh* ATDateTimeOrDerivedImpl::asString(const DynamicContext* context) co
  * false otherwise */
 bool ATDateTimeOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const {
   if(this->getPrimitiveTypeIndex() != target->getPrimitiveTypeIndex()) {
-    XQThrow(::IllegalArgumentException,X("ATDateTimeOrDerivedImpl::equals"),
+    XQThrow2(::IllegalArgumentException,X("ATDateTimeOrDerivedImpl::equals"),
             X("Equality operator for given types not supported [err:XPTY0004]"));
   }
   return compare((const ATDateTimeOrDerivedImpl *)target.get(), context) == 0;
@@ -539,7 +539,7 @@ void ATDateTimeOrDerivedImpl::setDateTime(const XMLCh* const dateTime) {
   unsigned int length = XMLString::stringLen(dateTime);
 
   if(dateTime == 0) {
-    XQThrow(XPath2TypeCastException,X("ATDateTimeOrDerivedImpl::setDateTime"), X("Invalid representation of dateTime [err:FORG0001]"));
+    XQThrow2(XPath2TypeCastException,X("ATDateTimeOrDerivedImpl::setDateTime"), X("Invalid representation of dateTime [err:FORG0001]"));
   }
   
   // State variables etc.
@@ -734,7 +734,7 @@ void ATDateTimeOrDerivedImpl::setDateTime(const XMLCh* const dateTime) {
 
   if (wrongformat) 
   {
-    XQThrow(XPath2TypeCastException,X("XSDateTimeImpl::setDateTime"), X("Invalid representation of dateTime [err:FORG0001]"));
+    XQThrow2(XPath2TypeCastException,X("XSDateTimeImpl::setDateTime"), X("Invalid representation of dateTime [err:FORG0001]"));
   }
 
   timezone_ = new Timezone(Timezone::convert(zonepos, zonehh, zonemm));

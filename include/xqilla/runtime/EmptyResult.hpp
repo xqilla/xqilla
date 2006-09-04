@@ -19,7 +19,7 @@
 class XQILLA_API EmptyResult : public ResultImpl
 {
 public:
-  EmptyResult();
+  EmptyResult(const LocationInfo *o);
 
   Item::Ptr next(DynamicContext *context);
 

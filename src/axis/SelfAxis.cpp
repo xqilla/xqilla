@@ -16,8 +16,9 @@
 
 #include <xqilla/items/Node.hpp>
 
-SelfAxis::SelfAxis(Node::Ptr contextNode)
-  : toDo_(true),
+SelfAxis::SelfAxis(const LocationInfo *info, Node::Ptr contextNode)
+  : ResultImpl(info),
+    toDo_(true),
     contextNode_(contextNode)
 {
 }

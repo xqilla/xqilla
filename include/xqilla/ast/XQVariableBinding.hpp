@@ -22,7 +22,9 @@
 #include <xqilla/ast/ASTNode.hpp>
 #include <xqilla/ast/StaticResolutionContext.hpp>
 
-class XQILLA_API XQVariableBinding
+class SequenceType;
+
+class XQILLA_API XQVariableBinding : public LocationInfo
 {
 public:
 	typedef enum
@@ -51,9 +53,6 @@ public:
   bool _needsNewScope;
 
   ASTNode *_where;
-
-	unsigned long _line;
-	const XMLCh* _file;
 
   XPath2MemoryManager *_memMgr;
 

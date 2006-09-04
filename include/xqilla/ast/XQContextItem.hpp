@@ -37,7 +37,7 @@ public:
   class XQILLA_API ContextItemResult : public SingleResult
   {
   public:
-    ContextItemResult();
+    ContextItemResult(const LocationInfo *location);
     Item::Ptr getSingleResult(DynamicContext *context) const;
     std::string asString(DynamicContext *context, int indent) const;    
   };

@@ -25,7 +25,7 @@
 #include <xqilla/ast/StaticResolutionContext.hpp>
 #include <xqilla/context/Scope.hpp>
 
-class XQILLA_API XQUserFunction : public FuncFactory
+class XQILLA_API XQUserFunction : public FuncFactory, public LocationInfo
 {
 public:
   class XQFunctionParameter

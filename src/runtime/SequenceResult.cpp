@@ -15,8 +15,9 @@
 #include <sstream>
 #include <xqilla/runtime/SequenceResult.hpp>
 
-SequenceResult::SequenceResult(const Sequence &seq)
-  : seq_(seq)
+SequenceResult::SequenceResult(const LocationInfo *o, const Sequence &seq)
+  : ResultImpl(o),
+    seq_(seq)
 {
   it_ = seq_.begin();
 }

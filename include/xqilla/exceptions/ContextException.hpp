@@ -31,8 +31,8 @@ class XQILLA_API ContextException : public XQException
 {
 public:
 
-  ContextException(const XMLCh *functionName, const XMLCh *reason, const char *file, int line)
-    : XQException(X("ContextException"), functionName, reason, file, line) {};
+  ContextException(const XMLCh *functionName, const XMLCh *reason, const LocationInfo *info, const char *file, int line)
+    : XQException(X("ContextException"), functionName, reason, info, file, line) {};
 };
 
 #endif // _CONTEXTEXCEPTION_HPP

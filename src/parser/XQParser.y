@@ -92,6 +92,7 @@
 #include <xqilla/operators/Range.hpp>
 
 #include <xqilla/functions/FunctionConstructor.hpp>
+#include <xqilla/functions/FunctionRoot.hpp>
 
 #include <xqilla/axis/NodeTest.hpp>
 
@@ -139,10 +140,10 @@ void *alloca (size_t);
 #define REJECT_NOT_XPATH(where,pos) if(!QP->_lexer->isXPath()) { yyerror(LANGUAGE, #where, (pos).first_line, (pos).first_column); }
 #define REJECT_NOT_FULLTEXT(where,pos) if(!QP->_lexer->isFullText()) { yyerror(LANGUAGE, #where, (pos).first_line, (pos).first_column); }
 
-#define WRAP(pos,object)		(wrapForDebug((QP),(object),NULL  ,(pos).first_line, (pos).first_column))
+#define WRAP(pos,object)		(wrapForDebug((QP), (object), NULL, (pos).first_line, (pos).first_column))
 #define FNWRAP(pos,name,object)	(wrapForDebug((QP),(object),(name),(pos).first_line, (pos).first_column))
-#define FTWRAP(pos,object)		(wrapForDebugFT((QP), (object), (pos).first_line, (pos).first_column))
-#define FTOPTIONWRAP(pos,object)		((FTOption*)wrapForDebugFT((QP), (object), (pos).first_line, (pos).first_column))
+
+#define LOCATION(pos,name) LocationInfo name(QP->_query->getFile(), (pos).first_line, (pos).first_column)
 
 #define BIT_ORDERING_SPECIFIED	0
 #define BIT_BOUNDARY_SPECIFIED	                1
@@ -170,10 +171,6 @@ static XMLCh sz1_0[]=        { XERCES_CPP_NAMESPACE_QUALIFIER chDigit_1, XERCES_
                                XERCES_CPP_NAMESPACE_QUALIFIER chNull };
 static XMLCh szTrue[]=       { XERCES_CPP_NAMESPACE_QUALIFIER chLatin_T, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
 static XMLCh szFalse[]=      { XERCES_CPP_NAMESPACE_QUALIFIER chLatin_F, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
-static XMLCh szNOTATION[] =  { XERCES_CPP_NAMESPACE_QUALIFIER chLatin_N, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_O, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_T, 
-                               XERCES_CPP_NAMESPACE_QUALIFIER chLatin_A, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_T, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_I, 
-                               XERCES_CPP_NAMESPACE_QUALIFIER chLatin_O, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_N, XERCES_CPP_NAMESPACE_QUALIFIER chNull }; 
-
 
 static inline bool isAllSpaces(const XMLCh* str)
 {
@@ -240,21 +237,25 @@ static void merge_strings(DynamicContext* context, VectorOfASTNodes* vec, XMLCh*
 	}
 }
 
-static ASTNode* wrapForDebug(XQParserArgs *qp, ASTNode* pObjToWrap,
-                              const XMLCh* fnName, unsigned int line, unsigned int column)
+template<typename TYPE>
+static TYPE *wrapForDebug(XQParserArgs *qp, TYPE* pObjToWrap,
+                          const XMLCh* fnName, unsigned int line, unsigned int column)
 {
+  pObjToWrap->setLocationInfo(QP->_query->getFile(), line, column);
+  return pObjToWrap;
+}
+
+template<>
+static ASTNode *wrapForDebug(XQParserArgs *qp, ASTNode* pObjToWrap,
+                             const XMLCh* fnName, unsigned int line, unsigned int column)
+{
+  pObjToWrap->setLocationInfo(QP->_query->getFile(), line, column);
+
   if(!CONTEXT->isDebuggingEnabled() && !CONTEXT->getDebugCallback())
     return pObjToWrap;
   if(fnName==NULL && (unsigned int)pObjToWrap->getType()==ASTNode::DEBUG_HOOK)
     return pObjToWrap;
   return new (MEMMGR) XQDebugHook(QP->_query->getFile(), line, column, pObjToWrap, fnName, MEMMGR);
-}
-
-static FTSelection *wrapForDebugFT(XQParserArgs *qp, FTSelection *pObjToWrap,
-                                   unsigned int line, unsigned int column)
-{
-  pObjToWrap->setDebugInfo(QP->_query->getFile(), line, column);
-  return pObjToWrap;
 }
 
 namespace XQParser {
@@ -567,14 +568,14 @@ VersionDecl:
     REJECT_NOT_XQUERY(VersionDecl, @1);
 
 		if(!XPath2Utils::equals($3,sz1_0))
-			yyerror("This XQuery processor only supports version 1.0 of the specs [err:XQST0031]");
+			yyerror(@2, "This XQuery processor only supports version 1.0 of the specs [err:XQST0031]");
 	}
 	| _XQUERY_ _VERSION_ _STRING_LITERAL_ _ENCODING_ _STRING_LITERAL_ Separator
 	{
     REJECT_NOT_XQUERY(VersionDecl, @1);
 
 		if(!XPath2Utils::equals($3,sz1_0))
-			yyerror("This XQuery processor only supports version 1.0 of the specs [err:XQST0031]");
+			yyerror(@2, "This XQuery processor only supports version 1.0 of the specs [err:XQST0031]");
         bool bValidEnc=false;
         if(($5[0] >= XERCES_CPP_NAMESPACE_QUALIFIER chLatin_A && $5[0] <= XERCES_CPP_NAMESPACE_QUALIFIER chLatin_Z) ||
            ($5[0] >= XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a && $5[0] <= XERCES_CPP_NAMESPACE_QUALIFIER chLatin_z))
@@ -596,7 +597,7 @@ VersionDecl:
             }
         }
         if(!bValidEnc)
-          yyerror("The specified encoding does not conform to the definition of EncName [err:XQST0087]");
+          yyerror(@5, "The specified encoding does not conform to the definition of EncName [err:XQST0087]");
 		// TODO: store the encoding somewhere
 	}
 	;
@@ -620,7 +621,7 @@ ModuleDecl:
 	_MODULE_ _NAMESPACE_ _NCNAME_ _EQUALS_ URILiteral Separator
 	{
 		if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen($5)==0)
-			yyerror("The literal that specifies the namespace of a module must not be of zero length [err:XQST0088]");
+			yyerror(@5, "The literal that specifies the namespace of a module must not be of zero length [err:XQST0088]");
 		QP->_query->setIsLibraryModule();
 		QP->_query->setModuleTargetNamespace($5);
 		CONTEXT->setNamespaceBinding($3,$5);
@@ -634,22 +635,22 @@ Prolog:
 	| Prolog Setter Separator
     {
 		if(QP->_flags.get(BIT_DECLARE_SECOND_STEP))
-			yyerror("Prolog contains a setter declaration after a variable, function or option declaration");
+			yyerror(@2, "Prolog contains a setter declaration after a variable, function or option declaration");
     }
 	| Prolog Import Separator
     {
 		if(QP->_flags.get(BIT_DECLARE_SECOND_STEP))
-			yyerror("Prolog contains an import declaration after a variable, function or option declaration");
+			yyerror(@2, "Prolog contains an import declaration after a variable, function or option declaration");
     }
 	| Prolog NamespaceDecl Separator
     {
 		if(QP->_flags.get(BIT_DECLARE_SECOND_STEP))
-			yyerror("Prolog contains a namespace declaration after a variable, function or option declaration");
+			yyerror(@2, "Prolog contains a namespace declaration after a variable, function or option declaration");
     }
 	| Prolog DefaultNamespaceDecl Separator
     {
 		if(QP->_flags.get(BIT_DECLARE_SECOND_STEP))
-			yyerror("Prolog contains a default namespace declaration after a variable, function or option declaration");
+			yyerror(@2, "Prolog contains a default namespace declaration after a variable, function or option declaration");
     }
 	| Prolog VarDecl Separator
     {
@@ -713,9 +714,10 @@ NamespaceDecl:
             {
 		        try
 		        {
-			        CONTEXT->getUriBoundToPrefix($3);
+              LOCATION(@3, loc);
+			        CONTEXT->getUriBoundToPrefix($3, &loc);
                     // if it has already bound, report an error
-                    yyerror("Namespace prefix has already been bound to a namespace [err:XQST0033]");
+                    yyerror(@3, "Namespace prefix has already been bound to a namespace [err:XQST0033]");
 		        }
 		        catch(NamespaceLookupException&)
 		        {
@@ -732,7 +734,7 @@ BoundarySpaceDecl :
       REJECT_NOT_XQUERY(BoundarySpaceDecl, @1);
 
 		    if(QP->_flags.get(BIT_BOUNDARY_SPECIFIED))
-			    yyerror("Prolog contains more than one boundary space declaration [err:XQST0068]");
+			    yyerror(@1, "Prolog contains more than one boundary space declaration [err:XQST0068]");
 		    QP->_flags.set(BIT_BOUNDARY_SPECIFIED);
 			CONTEXT->setPreserveBoundarySpace(true);
 		}
@@ -741,7 +743,7 @@ BoundarySpaceDecl :
       REJECT_NOT_XQUERY(BoundarySpaceDecl, @1);
 
 		    if(QP->_flags.get(BIT_BOUNDARY_SPECIFIED))
-			    yyerror("Prolog contains more than one boundary space declaration [err:XQST0068]");
+			    yyerror(@1, "Prolog contains more than one boundary space declaration [err:XQST0068]");
 		    QP->_flags.set(BIT_BOUNDARY_SPECIFIED);
 			CONTEXT->setPreserveBoundarySpace(false);
 		}
@@ -754,7 +756,7 @@ DefaultNamespaceDecl:
       REJECT_NOT_XQUERY(DefaultNamespaceDecl, @1);
 
 		    if(QP->_flags.get(BIT_DEFAULTELEMENTNAMESPACE_SPECIFIED))
-			    yyerror("Prolog contains more than one default element namespace declaration [err:XQST0066]");
+			    yyerror(@1, "Prolog contains more than one default element namespace declaration [err:XQST0066]");
 		    QP->_flags.set(BIT_DEFAULTELEMENTNAMESPACE_SPECIFIED);
 			CONTEXT->setDefaultElementAndTypeNS($5);
 		}
@@ -763,7 +765,7 @@ DefaultNamespaceDecl:
       REJECT_NOT_XQUERY(DefaultNamespaceDecl, @1);
 
 		    if(QP->_flags.get(BIT_DEFAULTFUNCTIONNAMESPACE_SPECIFIED))
-			    yyerror("Prolog contains more than one default function namespace declaration [err:XQST0066]");
+			    yyerror(@1, "Prolog contains more than one default function namespace declaration [err:XQST0066]");
 		    QP->_flags.set(BIT_DEFAULTFUNCTIONNAMESPACE_SPECIFIED);
 			CONTEXT->setDefaultFuncNS($5);
 		}
@@ -779,15 +781,16 @@ OptionDecl:
 		QualifiedName qName($3);
         const XMLCh* prefix=qName.getPrefix();
         if(prefix==NULL || *prefix==0)
-			yyerror("The option name must have a prefix [err:XPST0081]");
+			yyerror(@3, "The option name must have a prefix [err:XPST0081]");
 
 		try
 		{
-			CONTEXT->getUriBoundToPrefix(prefix);
+      LOCATION(@3, loc);
+			CONTEXT->getUriBoundToPrefix(prefix, &loc);
 		}
 		catch(NamespaceLookupException&)
 		{
-			yyerror("The option name is using an undefined namespace prefix [err:XPST0081]");
+			yyerror(@3, "The option name is using an undefined namespace prefix [err:XPST0081]");
 		}
       }
 	;
@@ -808,7 +811,7 @@ OrderingModeDecl:
     REJECT_NOT_XQUERY(OrderingModeDecl, @1);
 
 		if(QP->_flags.get(BIT_ORDERING_SPECIFIED))
-			yyerror("Prolog contains more than one ordering mode declaration [err:XQST0065]");
+			yyerror(@1, "Prolog contains more than one ordering mode declaration [err:XQST0065]");
 		QP->_flags.set(BIT_ORDERING_SPECIFIED);
 		CONTEXT->setNodeSetOrdering(StaticContext::ORDERING_ORDERED);
 	}
@@ -817,7 +820,7 @@ OrderingModeDecl:
     REJECT_NOT_XQUERY(OrderingModeDecl, @1);
 
 		if(QP->_flags.get(BIT_ORDERING_SPECIFIED))
-			yyerror("Prolog contains more than one ordering mode declaration [err:XQST0065]");
+			yyerror(@1, "Prolog contains more than one ordering mode declaration [err:XQST0065]");
 		QP->_flags.set(BIT_ORDERING_SPECIFIED);
 		CONTEXT->setNodeSetOrdering(StaticContext::ORDERING_UNORDERED);
 	}
@@ -830,7 +833,7 @@ EmptyOrderDecl:
     REJECT_NOT_XQUERY(EmptyOrderDecl, @1);
 
 		if(QP->_flags.get(BIT_EMPTYORDERING_SPECIFIED))
-			yyerror("Prolog contains more than one empty ordering mode declaration [err:XQST0069]");
+			yyerror(@1, "Prolog contains more than one empty ordering mode declaration [err:XQST0069]");
 		QP->_flags.set(BIT_EMPTYORDERING_SPECIFIED);
 		CONTEXT->setDefaultFLWOROrderingMode(StaticContext::FLWOR_ORDER_EMPTY_GREATEST);
 	}
@@ -839,7 +842,7 @@ EmptyOrderDecl:
     REJECT_NOT_XQUERY(EmptyOrderDecl, @1);
 
 		if(QP->_flags.get(BIT_EMPTYORDERING_SPECIFIED))
-			yyerror("Prolog contains more than one empty ordering mode declaration [err:XQST0069]");
+			yyerror(@1, "Prolog contains more than one empty ordering mode declaration [err:XQST0069]");
 		QP->_flags.set(BIT_EMPTYORDERING_SPECIFIED);
 		CONTEXT->setDefaultFLWOROrderingMode(StaticContext::FLWOR_ORDER_EMPTY_LEAST);
 	}
@@ -852,7 +855,7 @@ CopyNamespacesDecl:
     REJECT_NOT_XQUERY(CopyNamespacesDecl, @1);
 
 		if(QP->_flags.get(BIT_COPYNAMESPACE_SPECIFIED))
-			yyerror("Prolog contains more than one copy namespace declaration [err:XQST0055]");
+			yyerror(@1, "Prolog contains more than one copy namespace declaration [err:XQST0055]");
 		QP->_flags.set(BIT_COPYNAMESPACE_SPECIFIED);
 		CONTEXT->setPreserveNamespaces(XPath2Utils::equals($3,szTrue));
 		CONTEXT->setInheritNamespaces(XPath2Utils::equals($5,szTrue));
@@ -890,15 +893,16 @@ DefaultCollationDecl:
       REJECT_NOT_XQUERY(DefaultCollationDecl, @1);
 
 		    if(QP->_flags.get(BIT_COLLATION_SPECIFIED))
-			    yyerror("Prolog contains more than one default collation declaration [err:XQST0038]");
+			    yyerror(@1, "Prolog contains more than one default collation declaration [err:XQST0038]");
 		    QP->_flags.set(BIT_COLLATION_SPECIFIED);
             try
             {
-                CONTEXT->getCollation($4);
+              LOCATION(@4, loc);
+                CONTEXT->getCollation($4, &loc);
             }
             catch(ContextException&)
             {
-			    yyerror("The specified collation does not exist [err:XQST0038]");
+			    yyerror(@4, "The specified collation does not exist [err:XQST0038]");
             }
 			CONTEXT->setDefaultCollation($4);
 		}
@@ -911,7 +915,7 @@ BaseURIDecl:
       REJECT_NOT_XQUERY(BaseURIDecl, @1);
 
 		    if(QP->_flags.get(BIT_BASEURI_SPECIFIED))
-			    yyerror("Prolog contains more than one base URI declaration [err:XQST0032]");
+			    yyerror(@1, "Prolog contains more than one base URI declaration [err:XQST0032]");
 		    QP->_flags.set(BIT_BASEURI_SPECIFIED);
 			CONTEXT->setBaseURI($3);
 		}
@@ -926,7 +930,7 @@ SchemaImport:
 			if(XPath2Utils::equals($3, XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString))
 				CONTEXT->setDefaultElementAndTypeNS($4);
 			else if(XPath2Utils::equals($4, XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString))
-				yyerror("A schema that has no target namespace cannot be bound to non-empty prefix [err:XQST0057]");
+				yyerror(@1, "A schema that has no target namespace cannot be bound to non-empty prefix [err:XQST0057]");
 			else
 				CONTEXT->setNamespaceBinding($3,$4);
             try {
@@ -944,7 +948,7 @@ SchemaImport:
 			if(XPath2Utils::equals($3, XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString))
 				CONTEXT->setDefaultElementAndTypeNS($4);
 			else if(XPath2Utils::equals($4, XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString))
-				yyerror("A schema that has no target namespace cannot be bound to non-empty prefix [err:XQST0057]");
+				yyerror(@1, "A schema that has no target namespace cannot be bound to non-empty prefix [err:XQST0057]");
 			else
 				CONTEXT->setNamespaceBinding($3,$4);
             try {
@@ -1013,7 +1017,7 @@ ModuleImport:
     REJECT_NOT_XQUERY(ModuleImport, @1);
 
 		if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen($6)==0)
-			yyerror("The literal that specifies the target namespace in a module import must not be of zero length [err:XQST0088]");
+			yyerror(@6, "The literal that specifies the target namespace in a module import must not be of zero length [err:XQST0088]");
 		CONTEXT->setNamespaceBinding($4,$6);
         try {
 		  QP->_query->importModule($6,$7,CONTEXT);
@@ -1028,7 +1032,7 @@ ModuleImport:
     REJECT_NOT_XQUERY(ModuleImport, @1);
 
 		if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen($6)==0)
-			yyerror("The literal that specifies the target namespace in a module import must not be of zero length [err:XQST0088]");
+			yyerror(@6, "The literal that specifies the target namespace in a module import must not be of zero length [err:XQST0088]");
 		CONTEXT->setNamespaceBinding($4,$6);
         try {
 		  QP->_query->importModule($6,NULL,CONTEXT);
@@ -1043,7 +1047,7 @@ ModuleImport:
     REJECT_NOT_XQUERY(ModuleImport, @1);
 
 		if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen($3)==0)
-			yyerror("The literal that specifies the target namespace in a module import must not be of zero length [err:XQST0088]");
+			yyerror(@3, "The literal that specifies the target namespace in a module import must not be of zero length [err:XQST0088]");
         try {
 		  QP->_query->importModule($3,$4,CONTEXT);
         } catch(XQException& e) {
@@ -1057,7 +1061,7 @@ ModuleImport:
     REJECT_NOT_XQUERY(ModuleImport, @1);
 
 		if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen($3)==0)
-			yyerror("The literal that specifies the target namespace in a module import must not be of zero length [err:XQST0088]");
+			yyerror(@3, "The literal that specifies the target namespace in a module import must not be of zero length [err:XQST0088]");
         try {
 		  QP->_query->importModule($3,NULL,CONTEXT);
         } catch(XQException& e) {
@@ -1074,31 +1078,30 @@ VarDecl:
 	{
     REJECT_NOT_XQUERY(VarDecl, @1);
 
-		XQGlobalVariable* var=new (MEMMGR) XQGlobalVariable($4,$5,
-                                                            WRAP(@7, $7),MEMMGR);
+		XQGlobalVariable* var=WRAP(@1, new (MEMMGR) XQGlobalVariable($4,$5, WRAP(@7, $7),MEMMGR));
 		QP->_query->addVariable(var);
 	}
 	| _DECLARE_ _VARIABLE_KEYWORD_ _DOLLAR_SIGN_ _VARIABLE_ _COLON_EQ_ ExprSingle
 	{
     REJECT_NOT_XQUERY(VarDecl, @1);
 
-		XQGlobalVariable* var=new (MEMMGR) XQGlobalVariable($4,new (MEMMGR) SequenceType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ANYTHING), SequenceType::STAR),
-                                                            WRAP(@6, $6),MEMMGR);
+		XQGlobalVariable* var=WRAP(@1, new (MEMMGR) XQGlobalVariable($4,WRAP(@1, new (MEMMGR) SequenceType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ANYTHING), SequenceType::STAR)),
+                                                            WRAP(@6, $6),MEMMGR));
 		QP->_query->addVariable(var);
 	}
 	| _DECLARE_ _VARIABLE_KEYWORD_ _DOLLAR_SIGN_ _VARIABLE_ TypeDeclaration _EXTERNAL_
 	{
     REJECT_NOT_XQUERY(VarDecl, @1);
 
-		XQGlobalVariable* var=new (MEMMGR) XQGlobalVariable($4,$5,NULL,MEMMGR);
+		XQGlobalVariable* var=WRAP(@1, new (MEMMGR) XQGlobalVariable($4,$5,NULL,MEMMGR));
 		QP->_query->addVariable(var);
 	}
 	| _DECLARE_ _VARIABLE_KEYWORD_ _DOLLAR_SIGN_ _VARIABLE_ _EXTERNAL_
 	{
     REJECT_NOT_XQUERY(VarDecl, @1);
 
-		XQGlobalVariable* var=new (MEMMGR) XQGlobalVariable($4,new (MEMMGR) SequenceType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ANYTHING), SequenceType::STAR),
-                                                            NULL,MEMMGR);
+		XQGlobalVariable* var=WRAP(@1, new (MEMMGR) XQGlobalVariable($4,WRAP(@1, new (MEMMGR) SequenceType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ANYTHING), SequenceType::STAR)),
+                                                            NULL,MEMMGR));
 		QP->_query->addVariable(var);
 	}
 	;
@@ -1110,7 +1113,7 @@ ConstructionDecl:
     REJECT_NOT_XQUERY(ConstructionDecl, @1);
 
 		if(QP->_flags.get(BIT_CONSTRUCTION_SPECIFIED))
-			yyerror("Prolog contains more than one construction mode declaration [err:XQST0067]");
+			yyerror(@1, "Prolog contains more than one construction mode declaration [err:XQST0067]");
 		QP->_flags.set(BIT_CONSTRUCTION_SPECIFIED);
 		CONTEXT->setConstructionMode(StaticContext::CONSTRUCTION_MODE_PRESERVE);
 	}
@@ -1119,7 +1122,7 @@ ConstructionDecl:
     REJECT_NOT_XQUERY(ConstructionDecl, @1);
 
 		if(QP->_flags.get(BIT_CONSTRUCTION_SPECIFIED))
-			yyerror("Prolog contains more than one construction mode declaration [err:XQST0067]");
+			yyerror(@1, "Prolog contains more than one construction mode declaration [err:XQST0067]");
 		QP->_flags.set(BIT_CONSTRUCTION_SPECIFIED);
 		CONTEXT->setConstructionMode(StaticContext::CONSTRUCTION_MODE_STRIP);
 	}
@@ -1132,49 +1135,49 @@ FunctionDecl:
 		{
       REJECT_NOT_XQUERY(FunctionDecl, @1);
 
-			$$ = new (MEMMGR) XQUserFunction($3,$4,WRAP(@6, $6),NULL, CONTEXT); 
+			$$ = WRAP(@1, new (MEMMGR) XQUserFunction($3,$4,WRAP(@6, $6),NULL, CONTEXT));
 		}
 	| _DECLARE_ _FUNCTION_ _FUNCTION_CALL_ _RPAR_ EnclosedExpr
 		{
       REJECT_NOT_XQUERY(FunctionDecl, @1);
 
-			$$ = new (MEMMGR) XQUserFunction($3,NULL,WRAP(@5, $5),NULL, CONTEXT); 
+			$$ = WRAP(@1, new (MEMMGR) XQUserFunction($3,NULL,WRAP(@5, $5),NULL, CONTEXT));
 		}
 	| _DECLARE_ _FUNCTION_ _FUNCTION_CALL_ ParamList _EXPR_AS_ SequenceType EnclosedExpr
 		{
       REJECT_NOT_XQUERY(FunctionDecl, @1);
 
-			$$ = new (MEMMGR) XQUserFunction($3,$4,WRAP(@7, $7),$6, CONTEXT); 
+			$$ = WRAP(@1, new (MEMMGR) XQUserFunction($3,$4,WRAP(@7, $7),$6, CONTEXT));
 		}
 	| _DECLARE_ _FUNCTION_ _FUNCTION_CALL_ _EXPR_AS_ SequenceType EnclosedExpr
 		{
       REJECT_NOT_XQUERY(FunctionDecl, @1);
 
-			$$ = new (MEMMGR) XQUserFunction($3,NULL,WRAP(@6, $6),$5, CONTEXT); 
+			$$ = WRAP(@1, new (MEMMGR) XQUserFunction($3,NULL,WRAP(@6, $6),$5, CONTEXT));
 		}
 	| _DECLARE_ _FUNCTION_ _FUNCTION_CALL_ ParamList _RPAR_ _EXTERNAL_
 		{
       REJECT_NOT_XQUERY(FunctionDecl, @1);
 
-			$$ = new (MEMMGR) XQUserFunction($3,$4,NULL,NULL, CONTEXT); 
+			$$ = WRAP(@1, new (MEMMGR) XQUserFunction($3,$4,NULL,NULL, CONTEXT));
 		}
 	| _DECLARE_ _FUNCTION_ _FUNCTION_CALL_ _RPAR_ _EXTERNAL_
 		{
       REJECT_NOT_XQUERY(FunctionDecl, @1);
 
-			$$ = new (MEMMGR) XQUserFunction($3,NULL,NULL,NULL, CONTEXT); 
+			$$ = WRAP(@1, new (MEMMGR) XQUserFunction($3,NULL,NULL,NULL, CONTEXT));
 		}
 	| _DECLARE_ _FUNCTION_ _FUNCTION_CALL_ ParamList _EXPR_AS_ SequenceType _EXTERNAL_
 		{
       REJECT_NOT_XQUERY(FunctionDecl, @1);
 
-			$$ = new (MEMMGR) XQUserFunction($3,$4,NULL,$6, CONTEXT); 
+			$$ = WRAP(@1, new (MEMMGR) XQUserFunction($3,$4,NULL,$6, CONTEXT));
 		}
 	| _DECLARE_ _FUNCTION_ _FUNCTION_CALL_ _EXPR_AS_ SequenceType _EXTERNAL_
 		{
       REJECT_NOT_XQUERY(FunctionDecl, @1);
 
-			$$ = new (MEMMGR) XQUserFunction($3,NULL,NULL,$5, CONTEXT); 
+			$$ = WRAP(@1, new (MEMMGR) XQUserFunction($3,NULL,NULL,$5, CONTEXT));
 		}
 	;
 
@@ -1201,7 +1204,7 @@ Param:
 		}
 	  | _DOLLAR_SIGN_ _VARIABLE_
 		{
-			$$ = new (MEMMGR) XQUserFunction::XQFunctionParameter($2,new (MEMMGR) SequenceType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ANYTHING), SequenceType::STAR) ,MEMMGR);
+			$$ = new (MEMMGR) XQUserFunction::XQFunctionParameter($2,WRAP(@1, new (MEMMGR) SequenceType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ANYTHING), SequenceType::STAR)) ,MEMMGR);
 		}
       ;
 
@@ -1315,52 +1318,36 @@ ForBindingList:
 ForBinding:
 	    _DOLLAR_SIGN_ _VARIABLE_ _IN_ ExprSingle 
 		{
-			$$ = new (MEMMGR) XQVariableBinding(MEMMGR, XQVariableBinding::forBinding,$2,$4);
-			$$->_line=@1.first_line;
-			$$->_file=QP->_query->getFile();
+			$$ = WRAP(@1, new (MEMMGR) XQVariableBinding(MEMMGR, XQVariableBinding::forBinding,$2,$4));
 		}
 	  | _DOLLAR_SIGN_ _VARIABLE_ FTScoreVar _IN_ ExprSingle 
 		{
       // TBD FTScoreVar
-			$$ = new (MEMMGR) XQVariableBinding(MEMMGR, XQVariableBinding::forBinding,$2,$5);
-			$$->_line=@1.first_line;
-			$$->_file=QP->_query->getFile();
+			$$ = WRAP(@1, new (MEMMGR) XQVariableBinding(MEMMGR, XQVariableBinding::forBinding,$2,$5));
 		}
 	  | _DOLLAR_SIGN_ _VARIABLE_ PositionalVar _IN_ ExprSingle 
 		{
-			$$ = new (MEMMGR) XQVariableBinding(MEMMGR, XQVariableBinding::forBinding,$2,$5,$3);
-			$$->_line=@1.first_line;
-			$$->_file=QP->_query->getFile();
+			$$ = WRAP(@1, new (MEMMGR) XQVariableBinding(MEMMGR, XQVariableBinding::forBinding,$2,$5,$3));
 		}
 	  | _DOLLAR_SIGN_ _VARIABLE_ PositionalVar FTScoreVar _IN_ ExprSingle 
 		{
-			$$ = new (MEMMGR) XQVariableBinding(MEMMGR, XQVariableBinding::forBinding,$2,$6,$3);
-			$$->_line=@1.first_line;
-			$$->_file=QP->_query->getFile();
+			$$ = WRAP(@1, new (MEMMGR) XQVariableBinding(MEMMGR, XQVariableBinding::forBinding,$2,$6,$3));
 		}
 	  |	_DOLLAR_SIGN_ _VARIABLE_ TypeDeclaration _IN_ ExprSingle 
 		{
-			$$ = new (MEMMGR) XQVariableBinding(MEMMGR, XQVariableBinding::forBinding,$2,$5,NULL,$3);
-			$$->_line=@1.first_line;
-			$$->_file=QP->_query->getFile();
+			$$ = WRAP(@1, new (MEMMGR) XQVariableBinding(MEMMGR, XQVariableBinding::forBinding,$2,$5,NULL,$3));
 		}
 	  |	_DOLLAR_SIGN_ _VARIABLE_ TypeDeclaration FTScoreVar _IN_ ExprSingle 
 		{
-			$$ = new (MEMMGR) XQVariableBinding(MEMMGR, XQVariableBinding::forBinding,$2,$6,NULL,$3);
-			$$->_line=@1.first_line;
-			$$->_file=QP->_query->getFile();
+			$$ = WRAP(@1, new (MEMMGR) XQVariableBinding(MEMMGR, XQVariableBinding::forBinding,$2,$6,NULL,$3));
 		}
 	  |	_DOLLAR_SIGN_ _VARIABLE_ TypeDeclaration PositionalVar _IN_ ExprSingle 
 		{
-			$$ = new (MEMMGR) XQVariableBinding(MEMMGR, XQVariableBinding::forBinding,$2,$6,$4,$3);
-			$$->_line=@1.first_line;
-			$$->_file=QP->_query->getFile();
+			$$ = WRAP(@1, new (MEMMGR) XQVariableBinding(MEMMGR, XQVariableBinding::forBinding,$2,$6,$4,$3));
 		}
 	  |	_DOLLAR_SIGN_ _VARIABLE_ TypeDeclaration PositionalVar FTScoreVar _IN_ ExprSingle 
 		{
-			$$ = new (MEMMGR) XQVariableBinding(MEMMGR, XQVariableBinding::forBinding,$2,$7,$4,$3);
-			$$->_line=@1.first_line;
-			$$->_file=QP->_query->getFile();
+			$$ = WRAP(@1, new (MEMMGR) XQVariableBinding(MEMMGR, XQVariableBinding::forBinding,$2,$7,$4,$3));
 		}
 	  ;
 
@@ -1412,27 +1399,19 @@ LetBindingList:
 LetBinding:
         _DOLLAR_SIGN_ _VARIABLE_ _COLON_EQ_ ExprSingle
 		{
-			$$ = new (MEMMGR) XQVariableBinding(MEMMGR, XQVariableBinding::letBinding,$2,$4);
-			$$->_line=@1.first_line;
-			$$->_file=QP->_query->getFile();
+			$$ = WRAP(@1, new (MEMMGR) XQVariableBinding(MEMMGR, XQVariableBinding::letBinding,$2,$4));
 		}
         | _DOLLAR_SIGN_ _VARIABLE_ FTScoreVar _COLON_EQ_ ExprSingle
 		{
-			$$ = new (MEMMGR) XQVariableBinding(MEMMGR, XQVariableBinding::letBinding,$2,$5);
-			$$->_line=@1.first_line;
-			$$->_file=QP->_query->getFile();
+			$$ = WRAP(@1, new (MEMMGR) XQVariableBinding(MEMMGR, XQVariableBinding::letBinding,$2,$5));
 		}
 	| _DOLLAR_SIGN_ _VARIABLE_ TypeDeclaration _COLON_EQ_ ExprSingle
 		{
-			$$ = new (MEMMGR) XQVariableBinding(MEMMGR, XQVariableBinding::letBinding,$2,$5,NULL,$3);
-			$$->_line=@1.first_line;
-			$$->_file=QP->_query->getFile();
+			$$ = WRAP(@1, new (MEMMGR) XQVariableBinding(MEMMGR, XQVariableBinding::letBinding,$2,$5,NULL,$3));
 		}
 	| _DOLLAR_SIGN_ _VARIABLE_ TypeDeclaration FTScoreVar _COLON_EQ_ ExprSingle
 		{
-			$$ = new (MEMMGR) XQVariableBinding(MEMMGR, XQVariableBinding::letBinding,$2,$6,NULL,$3);
-			$$->_line=@1.first_line;
-			$$->_file=QP->_query->getFile();
+			$$ = WRAP(@1, new (MEMMGR) XQVariableBinding(MEMMGR, XQVariableBinding::letBinding,$2,$6,NULL,$3));
 		}
 	| FTScoreVar _COLON_EQ_ ExprSingle
 		{
@@ -1484,19 +1463,20 @@ OrderSpecList:
 OrderSpec:
 	  ExprSingle OrderDirection EmptyHandling
 		{
-			$$ = new (MEMMGR) XQSort::SortSpec($1,$2+$3,NULL);
+			$$ = WRAP(@1, new (MEMMGR) XQSort::SortSpec($1,$2+$3,NULL));
 		}
 	| ExprSingle OrderDirection EmptyHandling _COLLATION_ URILiteral
 		{
             try
             {
-                CONTEXT->getCollation($5);
+              LOCATION(@5, loc);
+                CONTEXT->getCollation($5, &loc);
             }
             catch(ContextException&)
             {
-			    yyerror("The specified collation does not exist [err:XQST0076]");
+			    yyerror(@5, "The specified collation does not exist [err:XQST0076]");
             }
-			$$ = new (MEMMGR) XQSort::SortSpec($1,$2+$3,$5);
+			$$ = WRAP(@1, new (MEMMGR) XQSort::SortSpec($1,$2+$3,$5));
 		}
 	;
 
@@ -1554,15 +1534,11 @@ QuantifyBindingList:
 QuantifyBinding:
 	    _DOLLAR_SIGN_ _VARIABLE_ _IN_ ExprSingle 
 		{
-			$$ = new (MEMMGR) XQVariableBinding(MEMMGR, XQVariableBinding::forBinding,$2,$4);
-			$$->_line=@1.first_line;
-			$$->_file=QP->_query->getFile();
+			$$ = WRAP(@1, new (MEMMGR) XQVariableBinding(MEMMGR, XQVariableBinding::forBinding,$2,$4));
 		}
 	  |	_DOLLAR_SIGN_ _VARIABLE_ TypeDeclaration _IN_ ExprSingle 
 		{
-			$$ = new (MEMMGR) XQVariableBinding(MEMMGR, XQVariableBinding::forBinding,$2,$5,NULL,$3);
-			$$->_line=@1.first_line;
-			$$->_file=QP->_query->getFile();
+			$$ = WRAP(@1, new (MEMMGR) XQVariableBinding(MEMMGR, XQVariableBinding::forBinding,$2,$5,NULL,$3));
 		}
 	  ;
 
@@ -1572,14 +1548,14 @@ TypeswitchExpr:
 		{
       REJECT_NOT_XQUERY(TypeswitchExpr, @1);
 
-			XQTypeswitch::Clause* defClause=new (MEMMGR) XQTypeswitch::Clause(NULL,WRAP(@6, $10),MEMMGR->getPooledString($8));
+			XQTypeswitch::Clause* defClause=WRAP(@6, new (MEMMGR) XQTypeswitch::Clause(NULL,$10,MEMMGR->getPooledString($8)));
 			$$ = new (MEMMGR) XQTypeswitch( WRAP(@1, $3), $5, defClause, MEMMGR);
 		}
 	  | _TYPESWITCH_ _LPAR_ Expr _RPAR_ CaseClauseList _DEFAULT_ _RETURN_ ExprSingle
 		{
       REJECT_NOT_XQUERY(TypeswitchExpr, @1);
 
-			XQTypeswitch::Clause* defClause=new (MEMMGR) XQTypeswitch::Clause(NULL,WRAP(@6, $8),NULL);
+			XQTypeswitch::Clause* defClause=WRAP(@6, new (MEMMGR) XQTypeswitch::Clause(NULL,$8,NULL));
 			$$ = new (MEMMGR) XQTypeswitch( WRAP(@1, $3), $5, defClause, MEMMGR);
 		}
 	  ;
@@ -1601,11 +1577,11 @@ CaseClauseList:
 CaseClause:
 	  _CASE_ SequenceType _RETURN_ ExprSingle
 		{ 
-			$$ = new (MEMMGR) XQTypeswitch::Clause($2, WRAP(@1, $4), NULL);
+			$$ = WRAP(@1, new (MEMMGR) XQTypeswitch::Clause($2, $4, NULL));
 		}
 	|  _CASE_ _DOLLAR_SIGN_ _VARIABLE_ _AS_ SequenceType _RETURN_ ExprSingle
 		{ 
-			$$ = new (MEMMGR) XQTypeswitch::Clause($5, WRAP(@1, $7), MEMMGR->getPooledString($3));
+			$$ = WRAP(@1, new (MEMMGR) XQTypeswitch::Clause($5, $7, MEMMGR->getPooledString($3)));
 		}
 	;
 
@@ -1835,12 +1811,6 @@ TreatExpr:
 CastableExpr:
 	CastExpr _CASTABLE_ _AS_ SingleType
 	{
-        const SequenceType::ItemType* itemType=$4->getItemType();
-        if((XPath2Utils::equals(itemType->getTypeURI(CONTEXT), XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA) &&
-            XPath2Utils::equals(itemType->getType()->getName(), szNOTATION)) ||
-           (XPath2Utils::equals(itemType->getTypeURI(CONTEXT), FunctionConstructor::XMLChXPath2DatatypesURI) &&
-            XPath2Utils::equals(itemType->getType()->getName(), AnyAtomicType::fgDT_ANYATOMICTYPE)))
-          yyerror("The target type of a castable expression must be an atomic type that is in the in-scope schema types and is not xs:NOTATION or xdt:anyAtomicType [err:XPST0080]");
 		$$ = WRAP(@2, new (MEMMGR) XQCastableAs($1,$4,MEMMGR));
 	}
 	| CastExpr
@@ -1850,12 +1820,6 @@ CastableExpr:
 CastExpr:
 	UnaryExpr _CAST_ _AS_ SingleType
 	{
-        const SequenceType::ItemType* itemType=$4->getItemType();
-        if((XPath2Utils::equals(itemType->getTypeURI(CONTEXT), XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA) &&
-            XPath2Utils::equals(itemType->getType()->getName(), szNOTATION)) ||
-           (XPath2Utils::equals(itemType->getTypeURI(CONTEXT), FunctionConstructor::XMLChXPath2DatatypesURI) &&
-            XPath2Utils::equals(itemType->getType()->getName(), AnyAtomicType::fgDT_ANYATOMICTYPE)))
-          yyerror("The target type of a cast expression must be an atomic type that is in the in-scope schema types and is not xs:NOTATION or xdt:anyAtomicType [err:XPST0080]");
 		$$ = WRAP(@1, new (MEMMGR) XQCastAs($1,$4,MEMMGR));
 	}
 	| UnaryExpr
@@ -1867,13 +1831,13 @@ UnaryExpr:
 		{
 			VectorOfASTNodes args(XQillaAllocator<ASTNode*>(MEMMGR));
 			args.push_back($2);
-			$$ = new (MEMMGR) UnaryMinus(/*positive*/false, args, MEMMGR);
+			$$ = WRAP(@1, new (MEMMGR) UnaryMinus(/*positive*/false, args, MEMMGR));
 		}
     | _PLUS_ UnaryExpr
 		{
 			VectorOfASTNodes args(XQillaAllocator<ASTNode*>(MEMMGR));
 			args.push_back($2);
-			$$ = new (MEMMGR) UnaryMinus(/*positive*/true, args, MEMMGR);
+			$$ = WRAP(@1, new (MEMMGR) UnaryMinus(/*positive*/true, args, MEMMGR));
 		}
 	| ValueExpr 
     ;
@@ -1911,7 +1875,7 @@ ExtensionExpr:
     REJECT_NOT_XQUERY(ExtensionExpr, @1);
 
 		// we don't support any pragma
-		yyerror("This pragma is not recognized, and no alternative expression is specified [err:XQST0079]");
+		yyerror(@1, "This pragma is not recognized, and no alternative expression is specified [err:XQST0079]");
 	}
 	| PragmaList _LBRACE_ Expr _RBRACE_
 	{
@@ -1936,15 +1900,16 @@ Pragma:
 		QualifiedName qName($2);
         const XMLCh* prefix=qName.getPrefix();
         if(prefix==NULL || *prefix==0)
-			yyerror("The pragma name must have a prefix [err:XPST0081]");
+			yyerror(@2, "The pragma name must have a prefix [err:XPST0081]");
 
 		try
 		{
-			CONTEXT->getUriBoundToPrefix(prefix);
+			LOCATION(@2, loc);
+			CONTEXT->getUriBoundToPrefix(prefix, &loc);
 		}
 		catch(NamespaceLookupException&)
 		{
-			yyerror("The pragma name is using an undefined namespace prefix [err:XPST0081]");
+			yyerror(@2, "The pragma name is using an undefined namespace prefix [err:XPST0081]");
 		}
       }
     |  _PRAGMA_OPEN_ _PRAGMA_NAME_ _PRAGMA_CLOSE_
@@ -1953,15 +1918,16 @@ Pragma:
 		QualifiedName qName($2);
         const XMLCh* prefix=qName.getPrefix();
         if(prefix==NULL || *prefix==0)
-			yyerror("The pragma name must have a prefix [err:XPST0081]");
+			yyerror(@2, "The pragma name must have a prefix [err:XPST0081]");
 
 		try
 		{
-			CONTEXT->getUriBoundToPrefix(prefix);
+			LOCATION(@2, loc);
+			CONTEXT->getUriBoundToPrefix(prefix, &loc);
 		}
 		catch(NamespaceLookupException&)
 		{
-			yyerror("The pragma name is using an undefined namespace prefix [err:XPST0081]");
+			yyerror(@2, "The pragma name is using an undefined namespace prefix [err:XPST0081]");
 		}
       }
 	;
@@ -1971,13 +1937,31 @@ PathExpr:
 	  _SLASH_
   		{
 			XQNav *nav = new (MEMMGR) XQNav(MEMMGR);
-			nav->addInitialRootStep(MEMMGR);
+
+      VectorOfASTNodes args(XQillaAllocator<ASTNode*>(MEMMGR));
+      FunctionRoot *root = WRAP(@1, new (MEMMGR) FunctionRoot(args, MEMMGR));
+
+      SequenceType *documentNode = WRAP(@1, new (MEMMGR)
+        SequenceType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_DOCUMENT)));
+
+      XQTreatAs *treat = WRAP(@1, new (MEMMGR) XQTreatAs(root, documentNode, MEMMGR));
+      nav->addStepFront(treat);
+
 			$$ = nav;
 		}
 	| _SLASH_ RelativePathExpr
   		{
 			XQNav* nav=getNavigation($2,MEMMGR);
-			nav->addInitialRootStep(MEMMGR);
+
+      VectorOfASTNodes args(XQillaAllocator<ASTNode*>(MEMMGR));
+      FunctionRoot *root = WRAP(@1, new (MEMMGR) FunctionRoot(args, MEMMGR));
+
+      SequenceType *documentNode = WRAP(@1, new (MEMMGR)
+        SequenceType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_DOCUMENT)));
+
+      XQTreatAs *treat = WRAP(@1, new (MEMMGR) XQTreatAs(root, documentNode, MEMMGR));
+      nav->addStepFront(treat);
+
 			$$ = nav;
 		}
 	| _SLASHSLASH_ RelativePathExpr
@@ -1988,9 +1972,16 @@ PathExpr:
       step->setTypeWildcard();
       step->setNameWildcard();
       step->setNamespaceWildcard();
-      nav->addStepFront(new (MEMMGR) XQStep(XQStep::DESCENDANT_OR_SELF, step, MEMMGR));        
+      nav->addStepFront(WRAP(@1, new (MEMMGR) XQStep(XQStep::DESCENDANT_OR_SELF, step, MEMMGR)));
 
-			nav->addInitialRootStep(MEMMGR);
+      VectorOfASTNodes args(XQillaAllocator<ASTNode*>(MEMMGR));
+      FunctionRoot *root = WRAP(@1, new (MEMMGR) FunctionRoot(args, MEMMGR));
+
+      SequenceType *documentNode = WRAP(@1, new (MEMMGR)
+        SequenceType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_DOCUMENT)));
+
+      XQTreatAs *treat = WRAP(@1, new (MEMMGR) XQTreatAs(root, documentNode, MEMMGR));
+      nav->addStepFront(treat);
 
 			$$ = nav;
 		}
@@ -2013,7 +2004,7 @@ RelativePathExpr:
             step->setTypeWildcard();
             step->setNameWildcard();
             step->setNamespaceWildcard();
-            nav->addStep(XQStep::DESCENDANT_OR_SELF, step);
+            nav->addStep(WRAP(@2, new (MEMMGR) XQStep(XQStep::DESCENDANT_OR_SELF, step, MEMMGR)));
 			nav->addStep($3);
 
 			$$ = nav;
@@ -2052,7 +2043,7 @@ ForwardStep:
         }
       }
 
-			$$ = new (MEMMGR) XQStep($1,$2,MEMMGR);
+			$$ = WRAP(@1, new (MEMMGR) XQStep($1,$2,MEMMGR));
 		}
 	| AbbrevForwardStep
 	;
@@ -2108,7 +2099,7 @@ AbbrevForwardStep:
         $2->setNodeType(Node::attribute_string);
       }
 
-      $$ = new (MEMMGR) XQStep(XQStep::ATTRIBUTE, $2, MEMMGR);
+      $$ = WRAP(@1, new (MEMMGR) XQStep(XQStep::ATTRIBUTE, $2, MEMMGR));
 		}
 	| NodeTest
 		{
@@ -2122,7 +2113,7 @@ AbbrevForwardStep:
         $1->setNodeType(Node::element_string);
       }
 
-      $$ = new (MEMMGR) XQStep(axis, $1, MEMMGR);
+      $$ = WRAP(@1, new (MEMMGR) XQStep(axis, $1, MEMMGR));
 		}
 	;
 
@@ -2134,7 +2125,7 @@ ReverseStep:
         $2->setNodeType(Node::element_string);
       }
 
-      $$ = new (MEMMGR) XQStep($1, $2, MEMMGR);
+      $$ = WRAP(@1, new (MEMMGR) XQStep($1, $2, MEMMGR));
 		}
 	| AbbrevReverseStep 
 	;
@@ -2175,7 +2166,7 @@ AbbrevReverseStep:
 			step->setNameWildcard();
 			step->setNamespaceWildcard();
 			step->setTypeWildcard();
-			$$ = new (MEMMGR) XQStep(XQStep::PARENT, step, MEMMGR);
+			$$ = WRAP(@1, new (MEMMGR) XQStep(XQStep::PARENT, step, MEMMGR));
 		}	
 	;
 
@@ -2239,7 +2230,7 @@ PredicateList:
 		}
 	| PredicateList _LBRACK_ Expr _RBRACK_
 		{
-      XQPredicate *pred = new (MEMMGR) XQPredicate($3, MEMMGR);
+      XQPredicate *pred = WRAP(@2, new (MEMMGR) XQPredicate($3, MEMMGR));
 			$1->push_back(pred);
 			$$ = $1; 
 		}
@@ -2309,7 +2300,7 @@ ParenthesizedExpr:
 ContextItemExpr:
 	  _DOT_
 		{
-			$$ = new (MEMMGR) XQContextItem(MEMMGR);
+			$$ = WRAP(@1, new (MEMMGR) XQContextItem(MEMMGR));
 		}
 	;
 
@@ -2397,7 +2388,7 @@ DirElemConstructor:
 	| _START_TAG_OPEN_ _TAG_NAME_ DirAttributeList _TAG_CLOSE_ DirElementContent _END_TAG_OPEN_ _TAG_NAME_ _TAG_CLOSE_
 		{ 
 			if(!XPath2Utils::equals($2,$7))
-				yyerror("Close tag does not match open tag");
+				yyerror(@7, "Close tag does not match open tag");
 			// if we are requested to strip whitespace-only nodes, check if the last element content should be removed
 			VectorOfASTNodes* elemContent=$5;
 			if(elemContent->size()>0)
@@ -2448,7 +2439,7 @@ DirAttributeList:
             {
                 // check that the value of an xmlns attribute is a stirng literal
                 if($4->size()>1 || ($4->size()==1 && $4->front()->getType()!=ASTNode::LITERAL))
-                    yyerror("Namespace URI of a namespace declaration must be a literal [err:XQST0022]");
+                    yyerror(@4, "Namespace URI of a namespace declaration must be a literal [err:XQST0022]");
                 bInsertAtFront=true;
             }
             if($4->size()>0 && $4->back()==0)
@@ -2701,7 +2692,7 @@ DirPIConstructor:
 	_PROCESSING_INSTRUCTION_START_ _PI_TARGET_ _PROCESSING_INSTRUCTION_CONTENT_
 		{
 			if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::compareIString($2, XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgXMLString)==0)
-			  yyerror("The target for the processing instruction must not be 'XML'");
+			  yyerror(@2, "The target for the processing instruction must not be 'XML'");
 			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 			content->push_back(new (MEMMGR) XQLiteral(
@@ -2933,14 +2924,14 @@ CompPIConstructor:
 SingleType:
 		AtomicType _ZERO_OR_ONE_
 	    {
-			SequenceType* seq=new (MEMMGR) SequenceType();
+			SequenceType* seq=WRAP(@1, new (MEMMGR) SequenceType());
 			seq->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ATOMIC_TYPE,NULL,$1));
 			seq->setOccurrence(SequenceType::QUESTION_MARK);
 			$$ = seq;
 		}
 	  | AtomicType
 	    {
-			SequenceType* seq=new (MEMMGR) SequenceType();
+			SequenceType* seq=WRAP(@1, new (MEMMGR) SequenceType());
 			seq->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ATOMIC_TYPE,NULL,$1));
 			seq->setOccurrence(SequenceType::EXACTLY_ONE);
 			$$ = seq;
@@ -2961,21 +2952,21 @@ TypeDeclaration:
 SequenceType:
 	    ItemType OccurrenceIndicator
 		{
-			SequenceType* seq=new (MEMMGR) SequenceType();
+			SequenceType* seq=WRAP(@1, new (MEMMGR) SequenceType());
 			seq->setItemType($1);
 			seq->setOccurrence($2);
 			$$ = seq;
 		}
 	  | ItemType 
 		{
-			SequenceType* seq=new (MEMMGR) SequenceType();
+			SequenceType* seq=WRAP(@1, new (MEMMGR) SequenceType());
 			seq->setItemType($1);
 			seq->setOccurrence(SequenceType::EXACTLY_ONE);
 			$$ = seq;
 		}
 	  | _EMPTY_ _LPAR_ _RPAR_
 		{ 
-			$$ = new (MEMMGR) SequenceType(); 
+			$$ = WRAP(@1, new (MEMMGR) SequenceType()); 
 		}
 	  ;
 
@@ -3238,7 +3229,7 @@ URILiteral:
 		// the string must be whitespace-normalized
 		XERCES_CPP_NAMESPACE_QUALIFIER XMLString::collapseWS($1, MEMMGR);
         if($1 && *$1 && !XPath2Utils::isValidURI($1, MEMMGR))
-          yyerror("The URI literal is not valid [err:XQST0046]");
+          yyerror(@1, "The URI literal is not valid [err:XQST0046]");
 		$$ = $1;
 	}
 	;
@@ -3297,7 +3288,7 @@ FTOr:
       $$ = op;
     }
     else {
-      $$ = FTWRAP(@2, new (MEMMGR) FTOr($1, $3, MEMMGR));
+      $$ = WRAP(@2, new (MEMMGR) FTOr($1, $3, MEMMGR));
     }
 	}
 	| FTAnd
@@ -3313,7 +3304,7 @@ FTAnd:
       $$ = op;
     }
     else {
-      $$ = FTWRAP(@2, new (MEMMGR) FTAnd($1, $3, MEMMGR));
+      $$ = WRAP(@2, new (MEMMGR) FTAnd($1, $3, MEMMGR));
     }
 	}
 	| FTMildnot
@@ -3323,7 +3314,7 @@ FTAnd:
 FTMildnot:
 	FTMildnot _NOT_IN_ FTUnaryNot
 	{
-    $$ = FTWRAP(@2, new (MEMMGR) FTMildnot($1, $3, MEMMGR));
+    $$ = WRAP(@2, new (MEMMGR) FTMildnot($1, $3, MEMMGR));
 	}
 	| FTUnaryNot
 	;
@@ -3332,7 +3323,7 @@ FTMildnot:
 FTUnaryNot:
 	_BANG_ FTWordsSelection
 	{
-    $$ = FTWRAP(@1, new (MEMMGR) FTUnaryNot($2, MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) FTUnaryNot($2, MEMMGR));
 	}
 	| FTWordsSelection
 	;
@@ -3350,23 +3341,23 @@ FTWordsSelection:
 FTWords:
 	Literal FTAnyallOption
 	{
-    $$ = FTWRAP(@1, new (MEMMGR) FTWords($1, $2, MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) FTWords($1, $2, MEMMGR));
 	}
 	| VarRef FTAnyallOption
 	{
-    $$ = FTWRAP(@1, new (MEMMGR) FTWords($1, $2, MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) FTWords($1, $2, MEMMGR));
 	}
 	| ContextItemExpr FTAnyallOption
 	{
-    $$ = FTWRAP(@1, new (MEMMGR) FTWords($1, $2, MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) FTWords($1, $2, MEMMGR));
 	}
 	| FunctionCall FTAnyallOption
 	{
-    $$ = FTWRAP(@1, new (MEMMGR) FTWords($1, $2, MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) FTWords($1, $2, MEMMGR));
 	}
 	| _LBRACE_ Expr _RBRACE_ FTAnyallOption
 	{
-    $$ = FTWRAP(@2, new (MEMMGR) FTWords($2, $4, MEMMGR));
+    $$ = WRAP(@2, new (MEMMGR) FTWords($2, $4, MEMMGR));
 	}
 	;
 
@@ -3380,15 +3371,15 @@ FTWords:
 FTProximity:
 	_ORDERING_ORDERED_
 	{
-    $$ = FTOPTIONWRAP(@1, new (MEMMGR) FTOrder(MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) FTOrder(MEMMGR));
 	}
 	| _WINDOW_ UnionExpr FTUnit
 	{
-    $$ = FTOPTIONWRAP(@1, new (MEMMGR) FTWindow($2, $3, MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) FTWindow($2, $3, MEMMGR));
 	}
 	| _DISTANCE_ FTRange FTUnit
 	{
-    $$ = FTOPTIONWRAP(@1, new (MEMMGR) FTDistance($2, $3, MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) FTDistance($2, $3, MEMMGR));
 	}
 	| _OCCURS_ FTRange _TIMES_
 	{
@@ -3397,23 +3388,23 @@ FTProximity:
 	}
 	| _SAME_ FTBigUnit
 	{
-    $$ = FTOPTIONWRAP(@1, new (MEMMGR) FTScope(FTScope::SAME, $2, MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) FTScope(FTScope::SAME, $2, MEMMGR));
 	}
 	| _DIFFERENT_ FTBigUnit
 	{
-    $$ = FTOPTIONWRAP(@1, new (MEMMGR) FTScope(FTScope::DIFFERENT, $2, MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) FTScope(FTScope::DIFFERENT, $2, MEMMGR));
 	}
 	| _AT_START_
 	{
-    $$ = FTOPTIONWRAP(@1, new (MEMMGR) FTContent(FTContent::AT_START, MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) FTContent(FTContent::AT_START, MEMMGR));
 	}
 	| _AT_END_
 	{
-    $$ = FTOPTIONWRAP(@1, new (MEMMGR) FTContent(FTContent::AT_END, MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) FTContent(FTContent::AT_END, MEMMGR));
 	}
 	| _ENTIRE_CONTENT_
 	{
-    $$ = FTOPTIONWRAP(@1, new (MEMMGR) FTContent(FTContent::ENTIRE_CONTENT, MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) FTContent(FTContent::ENTIRE_CONTENT, MEMMGR));
 	}
 	;
 

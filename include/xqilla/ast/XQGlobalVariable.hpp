@@ -22,7 +22,7 @@
 
 class SequenceType;
 
-class XQILLA_API XQGlobalVariable
+class XQILLA_API XQGlobalVariable : public LocationInfo
 {
 public:
   XQGlobalVariable(const XMLCh* varQName, SequenceType* seqType, ASTNode* value, XPath2MemoryManager *mm);

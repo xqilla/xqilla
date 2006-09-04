@@ -86,7 +86,7 @@ XQUserFunction::XQUserFunction(const XMLCh* fnName, VectorOfFunctionParameters* 
       tempPrefix[nColon] = 0;
       m_szPrefix = m_pMemMgr->getPooledString(tempPrefix);
       delete [] tempPrefix;
-      m_szURI=ctx->getUriBoundToPrefix(m_szPrefix);
+      m_szURI=ctx->getUriBoundToPrefix(m_szPrefix, this);
       m_szName=m_pMemMgr->getPooledString(fnName+nColon+1);
   }
   if(XPath2Utils::equals(m_szURI, XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgXMLURIName) ||
@@ -179,7 +179,7 @@ void XQUserFunction::staticResolutionStage1(StaticContext *context)
   if(m_pParams) {
     VectorOfFunctionParameters::iterator it;
     for (it = m_pParams->begin(); it != m_pParams->end (); ++it) {
-      (*it)->_uri = context->getUriBoundToPrefix(XPath2NSUtils::getPrefix((*it)->_qname, mm));
+      (*it)->_uri = context->getUriBoundToPrefix(XPath2NSUtils::getPrefix((*it)->_qname, mm), this);
       (*it)->_name = XPath2NSUtils::getLocalName((*it)->_qname);
     }
     // check for duplicate parameters
@@ -207,12 +207,12 @@ void XQUserFunction::staticResolutionStage1(StaticContext *context)
   // Set up a default StaticType and StaticResolutionContext
   if(m_pReturnPattern != NULL) {
     if(m_body != NULL)
-      m_body = m_pReturnPattern->convertFunctionArg(m_body, context, /*numericfunction*/false);
+      m_body = m_pReturnPattern->convertFunctionArg(m_body, context, /*numericfunction*/false, m_pReturnPattern);
 
     const SequenceType::ItemType *itemType = m_pReturnPattern->getItemType();
     if(itemType != 0) {
       bool isPrimitive;
-      itemType->getStaticType(_src.getStaticType(), context, isPrimitive);
+      itemType->getStaticType(_src.getStaticType(), context, isPrimitive, m_pReturnPattern);
     }
     else {
       _src.getStaticType().flags = 0;
@@ -241,7 +241,7 @@ void XQUserFunction::staticResolutionStage2(StaticContext *context)
     VectorOfFunctionParameters::iterator it;
     for(it = m_pParams->begin(); it != m_pParams->end (); ++it) {
       bool isPrimitive;
-      (*it)->m_pType->getItemType()->getStaticType((*it)->_src.getStaticType(), context, isPrimitive);
+      (*it)->m_pType->getItemType()->getStaticType((*it)->_src.getStaticType(), context, isPrimitive, (*it)->m_pType);
       varStore->declareVar((*it)->_uri, (*it)->_name, (*it)->_src);
     }
   }
@@ -323,7 +323,7 @@ ASTNode* XQUserFunction::XQFunctionEvaluator::staticResolution(StaticContext* co
     for(VectorOfFunctionParameters::iterator defIt = m_pFuncDef->m_pParams->begin();
         defIt != m_pFuncDef->m_pParams->end() && argIt != _args.end(); ++defIt, ++argIt) {
       if((*defIt)->_qname || context->isDebuggingEnabled()) {
-	      *argIt = (*defIt)->m_pType->convertFunctionArg(*argIt, context, /*numericfunction*/false);
+	      *argIt = (*defIt)->m_pType->convertFunctionArg(*argIt, context, /*numericfunction*/false, *argIt);
         *argIt = (*argIt)->staticResolution(context);
         _src.add((*argIt)->getStaticResolutionContext());
       }
@@ -341,7 +341,8 @@ ASTNode* XQUserFunction::XQFunctionEvaluator::staticResolution(StaticContext* co
 }
 
 XQUserFunction::XQFunctionEvaluator::FunctionEvaluatorResult::FunctionEvaluatorResult(const XQFunctionEvaluator *di, int flags)
-  : _flags(flags),
+  : ResultImpl(di),
+    _flags(flags),
     _di(di),
     _scope(0),
     _result(0),

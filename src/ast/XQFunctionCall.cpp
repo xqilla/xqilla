@@ -44,10 +44,11 @@ Result XQFunctionCall::createResult(DynamicContext* ctx, int flags) const
 
 ASTNode* XQFunctionCall::staticResolution(StaticContext *context) 
 {
-  ASTNode* functionImpl=context->lookUpFunction(_qname->getPrefix(),_qname->getName(), _args);
+  ASTNode* functionImpl=context->lookUpFunction(_qname->getPrefix(),_qname->getName(), _args, this);
+
   if(functionImpl==NULL) {
     // get the uri for debugging purposes
-    const XMLCh* uri = context->getUriBoundToPrefix(_qname->getPrefix());
+    const XMLCh* uri = context->getUriBoundToPrefix(_qname->getPrefix(), this);
 
     if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(uri) == 0 && XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(_qname->getPrefix()) == 0)
       uri=context->getDefaultFuncNS();
@@ -67,6 +68,7 @@ ASTNode* XQFunctionCall::staticResolution(StaticContext *context)
     //cerr << "reason1: " << XERCES_CPP_NAMESPACE_QUALIFIER XMLString::transcode(buf.getRawBuffer()) << endl;
     XQThrow(StaticErrorException, X("XQFunctionCall::staticResolution"), buf.getRawBuffer());
   }
+  functionImpl->setLocationInfo(this);
   return functionImpl->staticResolution(context);
 }
 

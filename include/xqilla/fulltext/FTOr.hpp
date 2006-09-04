@@ -38,7 +38,7 @@ private:
 class FTDisjunctionMatches : public AllMatches
 {
 public:
-  FTDisjunctionMatches();
+  FTDisjunctionMatches(const LocationInfo *info);
 
   void addMatches(const AllMatches::Ptr &m)
   {

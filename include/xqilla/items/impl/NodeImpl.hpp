@@ -63,11 +63,11 @@ public:
   virtual const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* getDOMNode() const;
 
   virtual Node::Ptr dmParent(const DynamicContext* context) const;
-  virtual Result dmAttributes(const DynamicContext* context) const;
-  virtual Result dmNamespaceNodes(const DynamicContext* context) const;
-  virtual Result dmChildren(const DynamicContext *context) const;
+  virtual Result dmAttributes(const DynamicContext* context, const LocationInfo *info) const;
+  virtual Result dmNamespaceNodes(const DynamicContext* context, const LocationInfo *info) const;
+  virtual Result dmChildren(const DynamicContext *context, const LocationInfo *info) const;
 
-  virtual Result getAxisResult(XQStep::Axis axis, const NodeTest *nodeTest, const DynamicContext *context) const;
+  virtual Result getAxisResult(XQStep::Axis axis, const NodeTest *nodeTest, const DynamicContext *context, const LocationInfo *info) const;
 
   virtual ATBooleanOrDerived::Ptr dmIsId(const DynamicContext* context) const;
   virtual ATBooleanOrDerived::Ptr dmIsIdRefs(const DynamicContext* context) const;

@@ -69,7 +69,7 @@ Sequence FunctionAvg::collapseTreeInternal(DynamicContext* context, int flags) c
 
   AnyAtomicType::Ptr sum;
   try {
-    sum = (AnyAtomicType::Ptr)FunctionSum::sum(sequence, context);
+    sum = (AnyAtomicType::Ptr)FunctionSum::sum(sequence, context, this);
   }
   catch(IllegalArgumentException &) {
     XQThrow(IllegalArgumentException, X("FunctionAvg::collapseTreeInternal()"), X("Invalid argument to fn:avg() function [err:FORG0006]."));

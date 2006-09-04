@@ -32,11 +32,9 @@ XQDebugHook::XQDebugHook(const XMLCh* szFile, unsigned int nLine, unsigned int n
   : ASTNodeImpl(memMgr)
 {
   m_impl=impl;
-  m_nLine=nLine;
-  m_nColumn=nColumn;
-  m_szFile=szFile;
   m_szFunctionName=functionName;
   setType(ASTNode::DEBUG_HOOK);
+  setLocationInfo(szFile, nLine, nColumn);
 }
 
 Result XQDebugHook::collapseTree(DynamicContext *context, int flags) const
@@ -47,17 +45,17 @@ Result XQDebugHook::collapseTree(DynamicContext *context, int flags) const
     {
       if(context->isDebuggingEnabled()) 
         {
-          pDbgCallback->IsBreakPointHit(context,m_szFile,m_nLine);
+          pDbgCallback->IsBreakPointHit(context,getFile(),getLine());
           flags=0;    // disable optimizations returning data partially or in a different order
         }
-      if(m_szFunctionName) pDbgCallback->EnterFunction(context,m_szFile,m_szFunctionName,m_nLine,m_nColumn);
+      if(m_szFunctionName) pDbgCallback->EnterFunction(context,getFile(),m_szFunctionName,getLine(),getColumn());
     }
   try
     {
       Result result=m_impl->collapseTree(context,flags);
       if(pDbgCallback) {
         Sequence seqRes=result->toSequence(context);
-        pDbgCallback->ReportResult(context,m_szFile, m_nLine, m_nColumn, seqRes);
+        pDbgCallback->ReportResult(context,getFile(), getLine(), getColumn(), seqRes);
         if(m_szFunctionName) pDbgCallback->ExitFunction(context,m_szFunctionName);
         return seqRes;
       }
@@ -65,9 +63,12 @@ Result XQDebugHook::collapseTree(DynamicContext *context, int flags) const
         return result;
     }
   catch(XQException& e) {
-    if(e.getXQueryFile() == NULL) {
-      if(pDbgCallback && context->isDebuggingEnabled()) pDbgCallback->ReportFirstError(context,e.getError(), m_szFile, m_nLine);
-      e.setXQueryPosition(m_szFile,m_nLine,m_nColumn);
+    if(!e.isErrorReported()) {
+      if(pDbgCallback && context->isDebuggingEnabled())
+        pDbgCallback->ReportFirstError(context, e.getError(), getFile(), getLine());
+      e.setErrorReported();
+      if(e.getXQueryFile() == NULL)
+        e.setXQueryPosition(this);
     }
     throw e;
   }
@@ -83,7 +84,7 @@ ASTNode* XQDebugHook::staticResolution(StaticContext *context)
   }
   catch(XQException& e) {
     if(e.getXQueryFile() == NULL) {
-      e.setXQueryPosition(m_szFile,m_nLine,m_nColumn);
+      e.setXQueryPosition(this);
     }
     throw e;
   }
@@ -98,19 +99,4 @@ const StaticResolutionContext &XQDebugHook::getStaticResolutionContext() const
 const XMLCh *XQDebugHook::getFunctionName() const
 {
   return m_szFunctionName;
-}
-
-int XQDebugHook::getLine() const
-{
-  return m_nLine;
-}
-
-int XQDebugHook::getColumn() const
-{
-  return m_nColumn;
-}
-
-const XMLCh *XQDebugHook::getFile() const
-{
-  return m_szFile;
 }

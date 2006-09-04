@@ -47,6 +47,7 @@ FTSelection *FTOr::optimize(FTContext *ftcontext, bool execute) const
   XPath2MemoryManager *mm = ftcontext->context->getMemoryManager();
 
   FTOr *ftor = new (mm) FTOr(mm);
+  ftor->setLocationInfo(this);
 
   for(VectorOfFTSelections::const_iterator i = args_.begin();
       i != args_.end(); ++i) {
@@ -67,7 +68,7 @@ FTSelection *FTOr::optimize(FTContext *ftcontext, bool execute) const
 
 AllMatches::Ptr FTOr::execute(FTContext *ftcontext) const
 {
-  FTDisjunctionMatches *disjunction = new FTDisjunctionMatches();
+  FTDisjunctionMatches *disjunction = new FTDisjunctionMatches(this);
   AllMatches::Ptr result(disjunction);
 
   for(VectorOfFTSelections::const_iterator i = args_.begin();
@@ -78,8 +79,9 @@ AllMatches::Ptr FTOr::execute(FTContext *ftcontext) const
   return result;
 }
 
-FTDisjunctionMatches::FTDisjunctionMatches()
-  : toDo_(true)
+FTDisjunctionMatches::FTDisjunctionMatches(const LocationInfo *info)
+  : AllMatches(info),
+    toDo_(true)
 {
 }
 

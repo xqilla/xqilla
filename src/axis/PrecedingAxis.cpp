@@ -19,9 +19,9 @@
 #include <xercesc/dom/DOMAttr.hpp>
 #include <xercesc/dom/DOMElement.hpp>
 
-PrecedingAxis::PrecedingAxis(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *contextNode, const Node *nodeObj,
+PrecedingAxis::PrecedingAxis(const LocationInfo *info, const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *contextNode, const Node *nodeObj,
        const NodeTest *nodeTest, const AxisNodeFactory &factory)
-  : Axis(contextNode, nodeObj, nodeTest, factory),
+  : Axis(info, contextNode, nodeObj, nodeTest, factory),
     parent_(0),
     node_(0)
 {

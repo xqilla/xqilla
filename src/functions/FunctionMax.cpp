@@ -81,14 +81,10 @@ Sequence FunctionMax::collapseTreeInternal(DynamicContext* context, int flags) c
         } catch(XPath2ErrorException &e) {
             XQThrow(FunctionException, X("FunctionMax::collapseTreeInternal"), X("Invalid collationURI"));  
         }
-        collation=context->getCollation(collName);
-        if (collation==NULL)
-            XQThrow(FunctionException,X("FunctionMax::collapseTreeInternal"),X("Collation object is not available"));
+        collation=context->getCollation(collName, this);
     }
     else
-        collation=context->getDefaultCollation();
-    if(collation==NULL)
-        collation=context->getCollation(CodepointCollation::getCodepointCollationName());
+        collation=context->getDefaultCollation(this);
 
     Sequence::iterator i = sequence.begin();
     AnyAtomicType::Ptr maxItem = (const AnyAtomicType *)i->get();
@@ -98,7 +94,7 @@ Sequence FunctionMax::collapseTreeInternal(DynamicContext* context, int flags) c
     for(; i != sequence.end(); ++i) {
         const AnyAtomicType *atomic = (const AnyAtomicType *)i->get();
         try {
-          if(GreaterThan::greater_than(atomic, maxItem, collation, context))
+          if(GreaterThan::greater_than(atomic, maxItem, collation, context, this))
             maxItem = atomic;
         }
         catch (IllegalArgumentException &e) {

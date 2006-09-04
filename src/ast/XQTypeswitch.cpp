@@ -67,7 +67,7 @@ ASTNode* XQTypeswitch::staticResolution(StaticContext *context)
 
         bool isExact;
         StaticType clauseType;
-        itemType->getStaticType(clauseType, context, isExact);
+        itemType->getStaticType(clauseType, context, isExact, *it);
 
         if(isExact && (sType.flags & clauseType.flags) != 0 &&
            (sType.flags & ~clauseType.flags) == 0 &&
@@ -110,7 +110,7 @@ ASTNode* XQTypeswitch::staticResolution(StaticContext *context)
     Clause *match = 0;
     for(VectorOfClause::iterator it=_clauses->begin();it!=_clauses->end();++it) {
       try {
-        (*it)->_type->matches(value)->toSequence(dContext);
+        (*it)->_type->matches(value, (*it)->_type)->toSequence(dContext);
         match = *it;
         break;
       }
@@ -144,7 +144,7 @@ void XQTypeswitch::Clause::staticResolution(const StaticResolutionContext &var_s
 
   if(_variable != 0) {
     varStore->addLogicalBlockScope();
-    _uri = context->getUriBoundToPrefix(XPath2NSUtils::getPrefix(_variable, context->getMemoryManager()));
+    _uri = context->getUriBoundToPrefix(XPath2NSUtils::getPrefix(_variable, context->getMemoryManager()), this);
     _name = XPath2NSUtils::getLocalName(_variable);
     varStore->declareVar(_uri, _name, var_src);
   }
@@ -188,7 +188,8 @@ void XQTypeswitch::setExpression(ASTNode *expr)
 }
 
 XQTypeswitch::TypeswitchResult::TypeswitchResult(const XQTypeswitch *di, int flags)
-  : _flags(flags),
+  : ResultImpl(di),
+    _flags(flags),
     _di(di),
     _scope(0),
     _result(0),
@@ -211,7 +212,7 @@ Item::Ptr XQTypeswitch::TypeswitchResult::next(DynamicContext *context)
     for(VectorOfClause::const_iterator it = _di->getClauses()->begin();
         it != _di->getClauses()->end(); ++it) {
       try {
-        (*it)->_type->matches(value.createResult())->toSequence(context);
+        (*it)->_type->matches(value.createResult(), (*it)->_type)->toSequence(context);
         clause = *it;
         break;
       }

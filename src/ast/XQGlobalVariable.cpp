@@ -54,7 +54,7 @@ void XQGlobalVariable::execute(DynamicContext* context) const
       }
       if(m_Type != NULL) {
         // Check the external value's type
-        Result matchesRes = m_Type->matches(value.second);
+        Result matchesRes = m_Type->matches(value.second, m_Type);
         while(matchesRes->next(context).notNull()) {}
       }
     }
@@ -82,13 +82,14 @@ void XQGlobalVariable::staticResolution(StaticContext* context)
   // variables with no prefix are in no namespace
   const XMLCh* prefix=XPath2NSUtils::getPrefix(m_szQName, mm);
   if(prefix && *prefix)
-    m_szURI = context->getUriBoundToPrefix(prefix);
+    m_szURI = context->getUriBoundToPrefix(prefix, this);
   m_szLocalName = XPath2NSUtils::getLocalName(m_szQName);
   VariableTypeStore* varStore = context->getVariableTypeStore();
 
   if(m_Value != NULL) {
     if(m_Type != NULL) {
       m_Value = new (mm) XQTreatAs(m_Value, m_Type, mm);
+      m_Value->setLocationInfo(this);
     }
     m_Value = m_Value->staticResolution(context);
     _src.copy(m_Value->getStaticResolutionContext());
@@ -96,7 +97,7 @@ void XQGlobalVariable::staticResolution(StaticContext* context)
   else {
     if(m_Type->getItemType() != NULL) {
       bool isPrimitive;
-      m_Type->getItemType()->getStaticType(_src.getStaticType(), context, isPrimitive);
+      m_Type->getItemType()->getStaticType(_src.getStaticType(), context, isPrimitive, m_Type);
     }
     else {
       _src.getStaticType().flags = 0;

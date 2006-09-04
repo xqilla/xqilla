@@ -62,12 +62,10 @@ Sequence FunctionSubstringAfter::collapseTreeInternal(DynamicContext* context, i
         } catch(XPath2ErrorException &e) {
             XQThrow(FunctionException, X("FunctionSubstringAfter::collapseTreeInternal"), X("Invalid collationURI"));  
         }
-        collation=context->getCollation(collName);
-        if(collation==NULL)
-            XQThrow(FunctionException,X("FunctionSubstringAfter::collapseTreeInternal"),X("Collation object is not available"));
+        collation=context->getCollation(collName, this);
     }
     else
-        collation=context->getCollation(CodepointCollation::getCodepointCollationName());
+        collation=context->getDefaultCollation(this);
 
     ATStringOrDerived::Ptr container = NULL;
     if(str1.isEmpty())

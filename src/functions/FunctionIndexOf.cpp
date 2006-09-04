@@ -62,7 +62,7 @@ Sequence FunctionIndexOf::indexOf(Sequence &list, const Item::Ptr &item, Collati
             current = current->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                                       XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING, context);
 
-        if(Equals::equals(current,atom,collation,context))
+        if(Equals::equals(current,atom,collation,context,this))
         result.addItem(context->getItemFactory()->createInteger(index, context));
     } catch (IllegalArgumentException &e) {
         // if eq is not defined, they are different
@@ -89,13 +89,9 @@ Sequence FunctionIndexOf::collapseTreeInternal(DynamicContext* context, int flag
     } catch(XPath2ErrorException &e) {
       XQThrow(FunctionException, X("FunctionIndexOf::collapseTreeInternal"), X("Invalid collationURI"));  
     }
-	  collation=context->getCollation(collName);
-    if (collation==NULL)
-      XQThrow(FunctionException, X("FunctionIndexOf::collapseTreeInternal"), X("Collation object is not available"));
+	  collation=context->getCollation(collName, this);
   }
   else
-    collation = context->getDefaultCollation();
-  if(collation==NULL)
-    collation = context->getCollation(CodepointCollation::getCodepointCollationName());
+    collation = context->getDefaultCollation(this);
   return indexOf(list, srchparam, collation, context);
 }

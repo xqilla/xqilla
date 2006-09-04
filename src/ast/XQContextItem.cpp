@@ -39,10 +39,11 @@ ASTNode* XQContextItem::staticResolution(StaticContext *context)
 
 Result XQContextItem::createResult(DynamicContext* context, int flags) const
 {
-  return new ContextItemResult();
+  return new ContextItemResult(this);
 }
 
-XQContextItem::ContextItemResult::ContextItemResult()
+XQContextItem::ContextItemResult::ContextItemResult(const LocationInfo *location)
+  : SingleResult(location)
 {
 }
 

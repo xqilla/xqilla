@@ -29,8 +29,8 @@ class XQILLA_API ItemException : public XQException
 {
 public:
   
-  ItemException(const XMLCh *functionName, const XMLCh *reason, const char *file, int line)
-    : XQException(X("ItemException"), functionName, reason, file, line) {};
+  ItemException(const XMLCh *functionName, const XMLCh *reason, const LocationInfo *info, const char *file, int line)
+    : XQException(X("ItemException"), functionName, reason, info, file, line) {};
 };
 
 #endif // _ITEMEXCEPTION_HPP

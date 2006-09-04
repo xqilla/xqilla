@@ -15,7 +15,8 @@
 #include <sstream>
 #include <xqilla/runtime/EmptyResult.hpp>
 
-EmptyResult::EmptyResult()
+EmptyResult::EmptyResult(const LocationInfo *o)
+  : ResultImpl(o)
 {
 }
 

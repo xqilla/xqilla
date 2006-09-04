@@ -113,7 +113,7 @@ const XMLCh* ATHexBinaryOrDerivedImpl::asString(const DynamicContext* context) c
    * false otherwise */
 bool ATHexBinaryOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const {
   if(this->getPrimitiveTypeIndex() != target->getPrimitiveTypeIndex()) {
-    XQThrow(::IllegalArgumentException,X("ATHexBinaryOrDerivedImpl::equals"),
+    XQThrow2(::IllegalArgumentException,X("ATHexBinaryOrDerivedImpl::equals"),
             X("Equality operator for given types not supported [err:XPTY0004]"));
   }
   return compare((const ATHexBinaryOrDerived *)target.get(), context) == 0;

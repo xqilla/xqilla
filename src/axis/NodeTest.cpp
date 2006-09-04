@@ -49,14 +49,14 @@ void *NodeTest::getInterface(const XMLCh *name) const
   return 0;
 }
 
-Result NodeTest::filterResult(const Result &toFilter) const
+Result NodeTest::filterResult(const Result &toFilter, const LocationInfo *info) const
 {
-  return new FilterResult(toFilter, this);
+  return new FilterResult(info, toFilter, this);
 }
 
-bool NodeTest::filterNode(Node::Ptr node, DynamicContext* context) const
+bool NodeTest::filterNode(Node::Ptr node, DynamicContext* context, const LocationInfo *info) const
 {
-  if(_itemType) return _itemType->matches(node, context);
+  if(_itemType) return _itemType->matches(node, context, info);
   else return checkNodeType(node) && checkNodeName(node, context);
 }
 
@@ -177,10 +177,10 @@ bool NodeTest::isNodeTypeSet() const
   return _type != 0;
 }
 
-void NodeTest::staticResolution(StaticContext *context)
+void NodeTest::staticResolution(StaticContext *context, const LocationInfo *location)
 {
   if(isNodePrefixSet()) {
-    setNodeUri(context->getUriBoundToPrefix(getNodePrefix()));
+    setNodeUri(context->getUriBoundToPrefix(getNodePrefix(), location));
   }
   if(!_wildcardNamespace && _uri == 0 &&
      !_wildcardType && _type == Node::element_string) {
@@ -204,8 +204,9 @@ void NodeTest::setItemType(SequenceType::ItemType* type) {
 // FilterResult
 /////////////////////////////////////
 
-NodeTest::FilterResult::FilterResult(const Result &toFilter, const NodeTest *nodeTest)
-  : toFilter_(toFilter),
+NodeTest::FilterResult::FilterResult(const LocationInfo *info, const Result &toFilter, const NodeTest *nodeTest)
+  : ResultImpl(info),
+    toFilter_(toFilter),
     nodeTest_(nodeTest)
 {
 }
@@ -213,7 +214,7 @@ NodeTest::FilterResult::FilterResult(const Result &toFilter, const NodeTest *nod
 Item::Ptr NodeTest::FilterResult::next(DynamicContext *context)
 {
   Node::Ptr result = 0;
-  while((result = toFilter_->next(context)).notNull() && !nodeTest_->filterNode(result, context)) {}
+  while((result = toFilter_->next(context)).notNull() && !nodeTest_->filterNode(result, context, this)) {}
 
   return result;
 }

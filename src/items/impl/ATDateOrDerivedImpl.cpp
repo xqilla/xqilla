@@ -243,7 +243,7 @@ const XMLCh* ATDateOrDerivedImpl::asString(const DynamicContext* context) const
  * false otherwise */
 bool ATDateOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const {
   if(getPrimitiveTypeIndex() != target->getPrimitiveTypeIndex()) {
-    XQThrow(::IllegalArgumentException,X("ATDateOrDerivedImpl::equals"),
+    XQThrow2(::IllegalArgumentException,X("ATDateOrDerivedImpl::equals"),
             X("Equality operator for given types not supported [err:XPTY0004]"));
   }
   return compare((const ATDateOrDerivedImpl *)target.get(), context) == 0;
@@ -397,7 +397,7 @@ void ATDateOrDerivedImpl::setDate(const XMLCh* const date) {
   unsigned int length = XMLString::stringLen(date);
  
   if(date == 0) {
-      XQThrow(XPath2TypeCastException,X("ATDateOrDerived::setDate"), X("Invalid representation of date [err:FORG0001]"));
+      XQThrow2(XPath2TypeCastException,X("ATDateOrDerived::setDate"), X("Invalid representation of date [err:FORG0001]"));
   }
   
   // State variables etc.
@@ -543,7 +543,7 @@ void ATDateOrDerivedImpl::setDate(const XMLCh* const date) {
 
   if ( wrongformat) 
   {
-    XQThrow(XPath2TypeCastException,X("ATDateOrDerivedImpl::setDate"), X("Invalid representation of date [err:FORG0001]"));
+    XQThrow2(XPath2TypeCastException,X("ATDateOrDerivedImpl::setDate"), X("Invalid representation of date [err:FORG0001]"));
   }
 
   timezone_ = new Timezone(Timezone::convert(zonepos, zonehh, zonemm));

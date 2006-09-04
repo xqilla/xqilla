@@ -193,6 +193,38 @@ void CaseFoldTransform::pushChar(unsigned int ch)
   dest_->pushChar(ch);
 }
 
+void LowerCaseTransform::pushChar(unsigned int ch)
+{
+  if(ch != 0) {
+    unsigned int *value = getLowerCase(ch);
+    if(value != 0) {
+      while(*value != 0) {
+        dest_->pushChar(*value);
+        ++value;
+      }
+      return;
+    }
+  }
+
+  dest_->pushChar(ch);
+}
+
+void UpperCaseTransform::pushChar(unsigned int ch)
+{
+  if(ch != 0) {
+    unsigned int *value = getUpperCase(ch);
+    if(value != 0) {
+      while(*value != 0) {
+        dest_->pushChar(*value);
+        ++value;
+      }
+      return;
+    }
+  }
+
+  dest_->pushChar(ch);
+}
+
 void XMLBufferTransform::pushChar(unsigned int ch)
 {
   if(!(ch & 0xFFFF0000)) {
@@ -279,4 +311,18 @@ void Normalizer::caseFoldAndRemoveDiacritics(const XMLCh* source, XMLBuffer &des
   RemoveDiacriticsTransform diacritics(&caseFold);
   NormalizeTransform normalize(true, false, &diacritics);
   StringTransformer::transformUTF16(source, &normalize);
+}
+
+void Normalizer::lowerCase(const XMLCh* source, XMLBuffer &dest)
+{
+  XMLBufferTransform buf(dest);
+  LowerCaseTransform caseFold(&buf);
+  StringTransformer::transformUTF16(source, &caseFold);
+}
+
+void Normalizer::upperCase(const XMLCh* source, XMLBuffer &dest)
+{
+  XMLBufferTransform buf(dest);
+  UpperCaseTransform caseFold(&buf);
+  StringTransformer::transformUTF16(source, &caseFold);
 }

@@ -45,7 +45,7 @@ ASTNode* FunctionBoolean::staticResolution(StaticContext *context) {
 
 Sequence FunctionBoolean::collapseTreeInternal(DynamicContext* context, int flags) const
 {
-  bool result = getParamNumber(1,context)->getEffectiveBooleanValue(context);
+  bool result = getParamNumber(1,context)->getEffectiveBooleanValue(context, this);
   return Sequence(context->getItemFactory()->createBoolean(result, context),
                   context->getMemoryManager());
 }

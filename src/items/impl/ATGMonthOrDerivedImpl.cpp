@@ -117,7 +117,7 @@ MAPM ATGMonthOrDerivedImpl::buildReferenceDateTime(const DynamicContext *context
  */
 bool ATGMonthOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const {
   if(this->getPrimitiveTypeIndex() != target->getPrimitiveTypeIndex()) {
-        XQThrow(::IllegalArgumentException,X("ATGMonthOrDerivedImpl::equals"), X("Equality operator for given types not supported [err:XPTY0004]"));
+        XQThrow2(::IllegalArgumentException,X("ATGMonthOrDerivedImpl::equals"), X("Equality operator for given types not supported [err:XPTY0004]"));
   }
   return compare((const ATGMonthOrDerived *)target.get(), context) == 0;
 }
@@ -155,7 +155,7 @@ void ATGMonthOrDerivedImpl::setGMonth(const XMLCh* const value) {
    unsigned int length = XMLString::stringLen(value);
  
   if(value == NULL) {
-    XQThrow(XPath2TypeCastException,X("XSGMonthImpl::setGMonth"), X("Invalid representation of gMonth [err:FORG0001]"));
+    XQThrow2(XPath2TypeCastException,X("XSGMonthImpl::setGMonth"), X("Invalid representation of gMonth [err:FORG0001]"));
   }
 	
 	// State variables etc.
@@ -281,7 +281,7 @@ void ATGMonthOrDerivedImpl::setGMonth(const XMLCh* const value) {
 	}
 
 	if ( wrongformat) {
-      XQThrow(XPath2TypeCastException,X("ATGMonthOrDerivedImpl::setGMonth"), X("Invalid representation of gMonth [err:FORG0001]"));
+      XQThrow2(XPath2TypeCastException,X("ATGMonthOrDerivedImpl::setGMonth"), X("Invalid representation of gMonth [err:FORG0001]"));
 	}
 
   _gMonth = MM;

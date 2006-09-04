@@ -17,6 +17,7 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/ast/StaticResolutionContext.hpp>
+#include <xqilla/ast/LocationInfo.hpp>
 #include <xqilla/fulltext/AllMatches.hpp>
 #include <xqilla/fulltext/TokenStore.hpp>
 #include <xqilla/framework/XPath2MemoryManager.hpp>
@@ -38,7 +39,7 @@ public:
   DynamicContext *context;
 };
 
-class XQILLA_API FTSelection
+class XQILLA_API FTSelection : public LocationInfo
 {
 public:
   /// The type of the FTSelection node
@@ -62,22 +63,6 @@ public:
 
   Type getType() const { return type_; }
 
-  const XMLCh *getFile() const { return file_; }
-  unsigned int getLine() const { return line_; }
-  unsigned int getColumn() const { return column_; }
-  void setDebugInfo(const XMLCh *file, unsigned int line, unsigned int column)
-  {
-    file_ = file;
-    line_ = line;
-    column_ = column;
-  }
-  void setDebugInfo(FTSelection *o)
-  {
-    file_ = o->file_;
-    line_ = o->line_;
-    column_ = o->column_;
-  }
-
   virtual const StaticResolutionContext &getStaticResolutionContext() const { return src_; }
 
   virtual FTSelection *staticResolution(StaticContext *context) = 0;
@@ -86,7 +71,7 @@ public:
 
 protected:
   FTSelection(Type type, XPath2MemoryManager *memMgr)
-    : src_(memMgr), type_(type), memMgr_(memMgr), file_(0), line_(0), column_(0) {}
+    : src_(memMgr), type_(type), memMgr_(memMgr) {}
 
   XPath2MemoryManager *getMemoryManager() const { return memMgr_; }
 
@@ -95,9 +80,6 @@ protected:
 private:
   Type type_;
   XPath2MemoryManager *memMgr_;
-
-  const XMLCh *file_;
-  unsigned int line_, column_;
 };
 
 class XQILLA_API VectorOfFTSelections : public std::vector<FTSelection*,XQillaAllocator<FTSelection*> >, public XERCES_CPP_NAMESPACE_QUALIFIER XMemory

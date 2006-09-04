@@ -41,7 +41,8 @@ Result NodeComparison::createResult(DynamicContext* context, int flags) const
 }
 
 NodeComparison::NodeComparisonResult::NodeComparisonResult(const NodeComparison *op)
-  : _op(op)
+  : SingleResult(op),
+    _op(op)
 {
 }
 

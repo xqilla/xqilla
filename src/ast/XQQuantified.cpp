@@ -47,10 +47,11 @@ ASTNode* XQQuantified::staticResolution(StaticContext* context) {
     if(_return->isConstant()) {
       AutoDelete<DynamicContext> dContext(context->createDynamicContext());
       dContext->setMemoryManager(context->getMemoryManager());
-      bool value = _return->collapseTree(dContext)->getEffectiveBooleanValue(dContext);
+      bool value = _return->collapseTree(dContext)->getEffectiveBooleanValue(dContext, _return);
       ASTNode *newBlock = new (getMemoryManager())
 	      XQSequence(dContext->getItemFactory()->createBoolean(value, dContext),
 			       dContext, getMemoryManager());
+      newBlock->setLocationInfo(this);
       return newBlock->staticResolution(context);
     }
     return this;
@@ -72,7 +73,8 @@ XQQuantified::QuantifierType XQQuantified::getQuantifierType() const
 
 XQQuantified::QuantifiedResult::QuantifiedResult(VectorOfVariableBinding::const_iterator it, VectorOfVariableBinding::const_iterator end,
                                                  const XQQuantified *quantified)
-  : _quantified(quantified)
+  : SingleResult(quantified),
+    _quantified(quantified)
 {
   for(; it != end; ++it) {
     _ebs.push_back(ProductFactor(*it));
@@ -90,7 +92,7 @@ Item::Ptr XQQuantified::QuantifiedResult::getSingleResult(DynamicContext *contex
   varStore->addLogicalBlockScope();
   if(_quantified->nextState(ebs, context, true)) {
     do {
-      bool result = _quantified->getReturnExpr()->collapseTree(context)->getEffectiveBooleanValue(context);
+      bool result = _quantified->getReturnExpr()->collapseTree(context)->getEffectiveBooleanValue(context, _quantified->getReturnExpr());
       if(defaultResult != result) {
         defaultResult = result;
         break;

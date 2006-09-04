@@ -338,7 +338,7 @@ void DocumentCacheParser::loadSchema(const XMLCh* const uri, const XMLCh* const 
     grammar=getScanner()->loadGrammar(systemId, XERCES_CPP_NAMESPACE_QUALIFIER Grammar::SchemaGrammarType, true);
   }
   if(grammar==NULL)
-    XQThrow(StaticErrorException,X("DocumentCacheParser::loadSchema"), X("Schema not found [err:XQST0059]"));
+    XQThrow2(StaticErrorException,X("DocumentCacheParser::loadSchema"), X("Schema not found [err:XQST0059]"));
 }
 
 unsigned int DocumentCacheParser::getSchemaUriId(const XMLCh* uri) const
@@ -409,29 +409,29 @@ Node::Ptr DocumentCacheParser::validate(const Node::Ptr &node,
     try {
         if(node->dmNodeKind() == Node::document_string)
         {
-            Result children = node->dmChildren(context);
+            Result children = node->dmChildren(context,0);
             Node::Ptr child;
             bool bSeenElement=false;
             while((child=children->next(context)).notNull())
             {
               if(child->dmNodeKind()==Node::element_string)
                 if(bSeenElement)
-                  XQThrow(DynamicErrorException,X("DocumentCacheParser::validate"), X("A document being validate must have exactly one child element [err:XQDY0061]"));
+                  XQThrow2(DynamicErrorException,X("DocumentCacheParser::validate"), X("A document being validate must have exactly one child element [err:XQDY0061]"));
                 else
                   bSeenElement=true;
               else if(child->dmNodeKind()!=Node::processing_instruction_string && 
                       child->dmNodeKind()!=Node::comment_string)
-                XQThrow(DynamicErrorException,X("DocumentCacheParser::validate"), X("A document being validate can only have element, comments and processing instructions as children [err:XQDY0061]"));
+                XQThrow2(DynamicErrorException,X("DocumentCacheParser::validate"), X("A document being validate can only have element, comments and processing instructions as children [err:XQDY0061]"));
             }
             if(!bSeenElement)
-              XQThrow(DynamicErrorException,X("DocumentCacheParser::validate"), X("A document being validate must have exactly one child element [err:XQDY0061]"));
+              XQThrow2(DynamicErrorException,X("DocumentCacheParser::validate"), X("A document being validate must have exactly one child element [err:XQDY0061]"));
         }
 
         // if validation is strict, there must be a schema for the root node
         if(valMode==DocumentCache::VALIDATION_STRICT) {
             ATQNameOrDerived::Ptr name;
             if(node->dmNodeKind() == Node::document_string)
-                name = ((const Node::Ptr)(node->dmChildren(context)->next(context)))->dmNodeName(context);
+                name = ((const Node::Ptr)(node->dmChildren(context,0)->next(context)))->dmNodeName(context);
             else
                 name = node->dmNodeName(context);
             const XMLCh *node_uri = ((const ATQNameOrDerived*)name.get())->getURI();
@@ -445,7 +445,7 @@ Node::Ptr DocumentCacheParser::validate(const Node::Ptr &node,
                 msg.append(X("}"));
                 msg.append(node_name);
                 msg.append(X(" is not defined as a global element [err:XQDY0084]"));
-                XQThrow(DynamicErrorException,X("DocumentCacheParser::validate"), msg.getRawBuffer());
+                XQThrow2(DynamicErrorException,X("DocumentCacheParser::validate"), msg.getRawBuffer());
             }
         }
         // - build a textual representation of the element
@@ -489,7 +489,7 @@ Node::Ptr DocumentCacheParser::validate(const Node::Ptr &node,
         exc_msg.set(X("Validation failed: "));
         exc_msg.append(toCatch.getMessage());
         exc_msg.append(X(" [err:XQDY0027]"));
-        XQThrow(DynamicErrorException,X("DocumentCacheParser::validate"), exc_msg.getRawBuffer());
+        XQThrow2(DynamicErrorException,X("DocumentCacheParser::validate"), exc_msg.getRawBuffer());
     }
 	catch (const XERCES_CPP_NAMESPACE_QUALIFIER DOMException& toCatch) {
         setValidationConstraintFatal(false);
@@ -498,7 +498,7 @@ Node::Ptr DocumentCacheParser::validate(const Node::Ptr &node,
         exc_msg.set(X("Validation failed: "));
         exc_msg.append(toCatch.msg);
         exc_msg.append(X(" [err:XQDY0027]"));
-        XQThrow(DynamicErrorException,X("DocumentCacheParser::validate"), exc_msg.getRawBuffer());
+        XQThrow2(DynamicErrorException,X("DocumentCacheParser::validate"), exc_msg.getRawBuffer());
     }
     catch (const XERCES_CPP_NAMESPACE_QUALIFIER XMLException& toCatch) {
         setValidationConstraintFatal(false);
@@ -507,7 +507,7 @@ Node::Ptr DocumentCacheParser::validate(const Node::Ptr &node,
         exc_msg.set(X("Validation failed: "));
         exc_msg.append(toCatch.getMessage());
         exc_msg.append(X(" [err:XQDY0027]"));
-        XQThrow(DynamicErrorException,X("DocumentCacheParser::validate"), exc_msg.getRawBuffer());
+        XQThrow2(DynamicErrorException,X("DocumentCacheParser::validate"), exc_msg.getRawBuffer());
     }
     return NULL;
 }
@@ -631,13 +631,13 @@ Node::Ptr DocumentCacheImpl::loadXMLDocument(XERCES_CPP_NAMESPACE_QUALIFIER Inpu
   }
   catch(const XERCES_CPP_NAMESPACE_QUALIFIER SAXException& toCatch) {
     //TODO: Find a way to decipher whether the exception is actually because of a parsing problem or because the document can't be found
-    XQThrow(XMLParseException, X("DocumentCacheImpl::loadXMLDocument"), toCatch.getMessage());
+    XQThrow2(XMLParseException, X("DocumentCacheImpl::loadXMLDocument"), toCatch.getMessage());
   }
   catch(const XERCES_CPP_NAMESPACE_QUALIFIER DOMException& toCatch) {
-    XQThrow(XMLParseException,X("DocumentCacheImpl::loadXMLDocument"), toCatch.msg);
+    XQThrow2(XMLParseException,X("DocumentCacheImpl::loadXMLDocument"), toCatch.msg);
   }
   catch(const XERCES_CPP_NAMESPACE_QUALIFIER XMLException& toCatch) {
-    XQThrow(XMLParseException,X("DocumentCacheImpl::loadXMLDocument"), toCatch.getMessage());
+    XQThrow2(XMLParseException,X("DocumentCacheImpl::loadXMLDocument"), toCatch.getMessage());
   }
   return result;
 }
@@ -651,13 +651,13 @@ Node::Ptr DocumentCacheImpl::loadXMLDocument(const XMLCh* uri, DynamicContext *c
   }
   catch(const XERCES_CPP_NAMESPACE_QUALIFIER SAXException& toCatch) {
     //TODO: Find a way to decipher whether the exception is actually because of a parsing problem or because the document can't be found
-    XQThrow(XMLParseException, X("DocumentCacheImpl::loadXMLDocument"), toCatch.getMessage());
+    XQThrow2(XMLParseException, X("DocumentCacheImpl::loadXMLDocument"), toCatch.getMessage());
   }
   catch(const XERCES_CPP_NAMESPACE_QUALIFIER DOMException& toCatch) {
-    XQThrow(XMLParseException,X("DocumentCacheImpl::loadXMLDocument"), toCatch.msg);
+    XQThrow2(XMLParseException,X("DocumentCacheImpl::loadXMLDocument"), toCatch.msg);
   }
   catch(const XERCES_CPP_NAMESPACE_QUALIFIER XMLException& toCatch) {
-    XQThrow(XMLParseException,X("DocumentCacheImpl::loadXMLDocument"), toCatch.getMessage());
+    XQThrow2(XMLParseException,X("DocumentCacheImpl::loadXMLDocument"), toCatch.getMessage());
   }
   return result;
 }
@@ -772,7 +772,7 @@ void DocumentCacheImpl::addSchemaLocation(const XMLCh* uri, VectorOfStrings* loc
     buf.set(X("More than one 'import schema' specifies the same target namespace \""));
     buf.append(uri);
     buf.append(X("\" [err:XQST0058]"));
-    XQThrow(StaticErrorException,X("DocumentCacheImpl::addSchemaLocation"), buf.getRawBuffer());
+    XQThrow2(StaticErrorException,X("DocumentCacheImpl::addSchemaLocation"), buf.getRawBuffer());
   }
   _loadedSchemas->addOrFind(uri);
 
@@ -810,9 +810,9 @@ void DocumentCacheImpl::addSchemaLocation(const XMLCh* uri, VectorOfStrings* loc
   if(!bFoundSchema)
   {
     if(buf.isEmpty())
-      XQThrow(StaticErrorException,X("DocumentCacheImpl::addSchemaLocation"), X("Schema not found [err:XQST0059]"));
+      XQThrow2(StaticErrorException,X("DocumentCacheImpl::addSchemaLocation"), X("Schema not found [err:XQST0059]"));
     else
-      XQThrow(StaticErrorException,X("DocumentCacheImpl::addSchemaLocation"), buf.getRawBuffer());
+      XQThrow2(StaticErrorException,X("DocumentCacheImpl::addSchemaLocation"), buf.getRawBuffer());
   }
 }
 

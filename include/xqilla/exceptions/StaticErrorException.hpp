@@ -26,8 +26,8 @@
 class XQILLA_API StaticErrorException : public XQException
 {
 public:
-  StaticErrorException(const XMLCh* const functionName, const XMLCh* const reason, const char *file, int line)
-    : XQException(X("StaticErrorException"), functionName, reason, file, line) {};
+  StaticErrorException(const XMLCh* const functionName, const XMLCh* const reason, const LocationInfo *info, const char *file, int line)
+    : XQException(X("StaticErrorException"), functionName, reason, info, file, line) {};
 };
 
 #endif // _STATICERROREXCEPTION_HPP

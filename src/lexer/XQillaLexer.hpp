@@ -68,11 +68,12 @@ class XQILLA_API CXQillaLexer
 {
 public:
   virtual ~CXQillaLexer() {}
-  CXQillaLexer(XPath2MemoryManager* memMgr, const XMLCh* query, XQilla::Language lang)
+  CXQillaLexer(XPath2MemoryManager* memMgr, const XMLCh *queryFile, const XMLCh* query, XQilla::Language lang)
   {
     m_index=m_position=0;
     m_lineno=m_columnno=1;
     m_memMgr=memMgr;
+    m_szQueryFile=queryFile;
     m_szQuery=XPath2Utils::normalizeEOL(query, m_memMgr);
     m_nLength=XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(m_szQuery);
     m_nOpenComments=0;
@@ -88,7 +89,13 @@ public:
 
   virtual int error(const char* message)
   {
-    Error(message);
+    Error(message, m_lineno, m_columnno);
+    return 0;
+  }
+
+  virtual int error(const yyltype &pos, const char* message)
+  {
+    Error(message, pos.first_line, pos.first_column);
     return 0;
   }
 
@@ -105,7 +112,7 @@ public:
   virtual void endComment()
   {
     if(m_nOpenComments==0)
-      Error("Unbalanced comment found");
+      error("Unbalanced comment found");
     m_nOpenComments--;
   }
   bool isCommentClosed()
@@ -123,9 +130,9 @@ public:
   void checkCharRef(XMLCh* text, int len)
   {
     if(len<2 || text[0]!=XERCES_CPP_NAMESPACE_QUALIFIER chAmpersand || text[1]!=XERCES_CPP_NAMESPACE_QUALIFIER chPound)
-      Error("Invalid entity reference");
+      error("Invalid entity reference");
     if(text[len-1]!=XERCES_CPP_NAMESPACE_QUALIFIER chSemiColon)
-      Error("Unterminated entity reference");
+      error("Unterminated entity reference");
     int i=2;
     unsigned int radix = 10;
     if(text[i]==XERCES_CPP_NAMESPACE_QUALIFIER chLatin_x)
@@ -145,14 +152,14 @@ public:
         else if ((nextCh >= XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a) && (nextCh <= XERCES_CPP_NAMESPACE_QUALIFIER chLatin_f))
           nextVal = (unsigned int)(10 + (nextCh - XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a));
         else
-          Error("Unterminated entity reference");
+          error("Unterminated entity reference");
         if (nextVal >= radix)
-          Error("Invalid digit inside entity reference");
+          error("Invalid digit inside entity reference");
         else
           value = (value * radix) + nextVal;
       }
     if(!XERCES_CPP_NAMESPACE_QUALIFIER XMLChar1_0::isXMLChar(value))
-      Error("Entity reference is not a valid XML character [err:XQST0090]");
+      error("Entity reference is not a valid XML character [err:XQST0090]");
   }
 
   XMLCh* allocate_string_and_unescape(XMLCh toBeUnescaped, const XMLCh* src, int len)
@@ -199,7 +206,7 @@ public:
               int k=i;
               while(k<len && src[k]!=';') k++;
               if(k==len)
-                Error("Unterminated entity reference");
+                error("Unterminated entity reference");
               for(int q=i;q<k;q++)
                 {
                   unsigned int nextVal;
@@ -211,14 +218,14 @@ public:
                   else if ((nextCh >= XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a) && (nextCh <= XERCES_CPP_NAMESPACE_QUALIFIER chLatin_f))
                     nextVal = (unsigned int)(10 + (nextCh - XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a));
                   else
-                    Error("Unterminated entity reference");
+                    error("Unterminated entity reference");
                   if (nextVal >= radix)
-                    Error("Invalid digit inside entity reference");
+                    error("Invalid digit inside entity reference");
                   else
                     value = (value * radix) + nextVal;
                 }
               if(!XERCES_CPP_NAMESPACE_QUALIFIER XMLChar1_0::isXMLChar(value))
-                Error("Entity reference is not a valid XML character");
+                error("Entity reference is not a valid XML character");
               if (value <= 0xFFFD)
                 dst[j++]=value;
               else if (value >= 0x10000 && value <= 0x10FFFF)
@@ -229,7 +236,7 @@ public:
                 }
               i=k;
             } else
-              Error("Invalid entity reference");
+              error("Invalid entity reference");
           }
         else
           dst[j++]=src[i];
@@ -259,14 +266,14 @@ protected:
     return nToRead;
   }
 
-  virtual void Error( const char* msg )
+  virtual void Error( const char* msg, int line, int col )
   {
     if(!m_bGenerateErrorException)
       return;
     if(strstr(msg, "[err:")!=NULL)
-      XQSimpleThrow(X(msg), NULL, m_lineno, m_columnno);
+      XQSimpleThrow(X(msg), m_szQueryFile, m_lineno, m_columnno);
     const XMLCh* szMsg=XPath2Utils::concatStrings(X(msg), X(" [err:XPST0003]"), m_memMgr);
-    XQSimpleThrow(szMsg, NULL, m_lineno, m_columnno);
+    XQSimpleThrow(szMsg, m_szQueryFile, m_lineno, m_columnno);
   }
 
   virtual void Error(XQilla::Language lang, const char *where, unsigned int line, unsigned int col)
@@ -283,7 +290,7 @@ protected:
 
     const XMLCh *szMsg = XPath2Utils::concatStrings(X("Invalid "), X(l), X(" syntax: "), m_memMgr);
     szMsg = XPath2Utils::concatStrings(szMsg, X(where), X(" [err:XPST0003]"), m_memMgr);
-    XQSimpleThrow(szMsg, NULL, line, col);
+    XQSimpleThrow(szMsg, m_szQueryFile, line, col);
   }
 
   virtual void userAction(YY_CHAR* text, int length)
@@ -313,6 +320,7 @@ protected:
     m_index=m_yyloc.last_offset=m_yyloc.first_offset;
   }
 
+  const XMLCh* m_szQueryFile;
   const XMLCh* m_szQuery;
   unsigned int m_nLength;
   int m_position,m_index;

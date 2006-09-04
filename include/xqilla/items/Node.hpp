@@ -98,20 +98,20 @@ public:
   virtual Node::Ptr dmParent(const DynamicContext* context) const = 0;
 
   /** Returns the attributes of this node */
-  virtual Result dmAttributes(const DynamicContext* context) const = 0;
+  virtual Result dmAttributes(const DynamicContext* context, const LocationInfo *info) const = 0;
 
   /** Returns the namespace nodes of this node */
-  virtual Result dmNamespaceNodes(const DynamicContext* context) const = 0;
+  virtual Result dmNamespaceNodes(const DynamicContext* context, const LocationInfo *info) const = 0;
 
   /** Returns the children of this node */
-  virtual Result dmChildren(const DynamicContext *context) const = 0;
+  virtual Result dmChildren(const DynamicContext *context, const LocationInfo *info) const = 0;
 
   /**
    * Returns a Result containing the nodes in the axis given, relative to this node.
    * Forward axis results should be in document order.
    * Reverse axis results should be in reverse document order.
    */
-  virtual Result getAxisResult(XQStep::Axis axis, const NodeTest *nodeTest, const DynamicContext *context) const = 0;
+  virtual Result getAxisResult(XQStep::Axis axis, const NodeTest *nodeTest, const DynamicContext *context, const LocationInfo *info) const = 0;
 
   /** Returns if the node is an id node or not */
   virtual ATBooleanOrDerived::Ptr dmIsId(const DynamicContext* context) const = 0;

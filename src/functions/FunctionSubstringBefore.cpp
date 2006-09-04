@@ -75,12 +75,10 @@ Sequence FunctionSubstringBefore::collapseTreeInternal(DynamicContext* context, 
     } catch(XPath2ErrorException &e) {
       XQThrow(FunctionException, X("FunctionSubstringAfter::collapseTreeInternal"), X("Invalid collationURI"));  
     }
-    collation=context->getCollation(collName);
-    if(collation==NULL)
-      XQThrow(FunctionException,X("FunctionSubstringAfter::collapseTreeInternal"),X("Collation object is not available"));
+    collation=context->getCollation(collName, this);
   }
   else
-    collation=context->getCollation(CodepointCollation::getCodepointCollationName());
+    collation=context->getDefaultCollation(this);
 
   return Sequence(((const ATStringOrDerived*)container)->substringBefore(pattern, collation, context), memMgr);
 }

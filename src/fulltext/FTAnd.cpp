@@ -47,6 +47,7 @@ FTSelection *FTAnd::optimize(FTContext *ftcontext, bool execute) const
   XPath2MemoryManager *mm = ftcontext->context->getMemoryManager();
 
   FTAnd *ftand = new (mm) FTAnd(mm);
+  ftand->setLocationInfo(this);
 
   for(VectorOfFTSelections::const_iterator i = args_.begin();
       i != args_.end(); ++i) {
@@ -67,7 +68,7 @@ FTSelection *FTAnd::optimize(FTContext *ftcontext, bool execute) const
 
 AllMatches::Ptr FTAnd::execute(FTContext *ftcontext) const
 {
-  FTConjunctionMatches *conjunction = new FTConjunctionMatches();
+  FTConjunctionMatches *conjunction = new FTConjunctionMatches(this);
   AllMatches::Ptr result(conjunction);
 
   for(VectorOfFTSelections::const_iterator i = args_.begin();
@@ -78,8 +79,9 @@ AllMatches::Ptr FTAnd::execute(FTContext *ftcontext) const
   return result;
 }
 
-BufferedMatches::BufferedMatches(const AllMatches::Ptr matches)
-  : matches_(matches),
+BufferedMatches::BufferedMatches(const LocationInfo *info, const AllMatches::Ptr matches)
+  : AllMatches(info),
+    matches_(matches),
     buffer_(),
     it_(buffer_.begin())
 {
@@ -116,14 +118,15 @@ void BufferedMatches::reset()
   it_ = buffer_.begin();
 }
 
-FTConjunctionMatches::FTConjunctionMatches()
-  : toDo_(true)
+FTConjunctionMatches::FTConjunctionMatches(const LocationInfo *info)
+  : AllMatches(info),
+    toDo_(true)
 {
 }
 
 void FTConjunctionMatches::addMatches(const AllMatches::Ptr &m)
 {
-  args_.push_back(m.notNull() ? new BufferedMatches(m) : 0);
+  args_.push_back(m.notNull() ? new BufferedMatches(this, m) : 0);
 }
 
 Match::Ptr FTConjunctionMatches::next(DynamicContext *context)

@@ -57,10 +57,10 @@ ASTNode* XQDocumentOrder::staticResolution(StaticContext *context)
 Result XQDocumentOrder::createResult(DynamicContext* context, int flags) const
 {
   if(unordered_) {
-    return new UniqueNodesResult(expr_->collapseTree(context, flags), context);
+    return new UniqueNodesResult(this, expr_->collapseTree(context, flags), context);
   }
   else {
-    return new DocumentOrderResult(expr_->collapseTree(context, flags), context);
+    return new DocumentOrderResult(this, expr_->collapseTree(context, flags), context);
   }
 }
 

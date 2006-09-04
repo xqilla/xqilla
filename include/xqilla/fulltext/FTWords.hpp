@@ -41,11 +41,11 @@ public:
   FTAnyallOption getOption() const { return option_; }
 
 private:
-  static FTSelection *optimizeAnyWord(Result strings, FTContext *ftcontext);
-  static FTSelection *optimizeAllWords(Result strings, FTContext *ftcontext);
-  static FTSelection *optimizePhrase(Result strings, FTContext *ftcontext);
-  static FTSelection *optimizeAny(Result strings, FTContext *ftcontext);
-  static FTSelection *optimizeAll(Result strings, FTContext *ftcontext);
+  FTSelection *optimizeAnyWord(Result strings, FTContext *ftcontext) const;
+  FTSelection *optimizeAllWords(Result strings, FTContext *ftcontext) const;
+  FTSelection *optimizePhrase(Result strings, FTContext *ftcontext) const;
+  FTSelection *optimizeAny(Result strings, FTContext *ftcontext) const;
+  FTSelection *optimizeAll(Result strings, FTContext *ftcontext) const;
 
   ASTNode *expr_;
   FTAnyallOption option_;
@@ -69,7 +69,7 @@ private:
 class FTStringSearchMatches : public AllMatches
 {
 public:
-  FTStringSearchMatches(const XMLCh *queryString, FTContext *ftcontext);
+  FTStringSearchMatches(const LocationInfo *info, const XMLCh *queryString, FTContext *ftcontext);
   Match::Ptr next(DynamicContext *context);
   AllMatches::Ptr optimize();
 

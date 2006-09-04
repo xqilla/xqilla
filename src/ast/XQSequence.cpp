@@ -37,7 +37,7 @@
 inline ItemConstructor *itemToItemConstructor(const Item::Ptr &item, DynamicContext *context, XPath2MemoryManager *memMgr)
 {
   if(item->isNode()) {
-    XQThrow(IllegalArgumentException, X("itemToItemConstructor"), X("Cannot create an ItemConstructor for a Node"));
+    XQThrow2(IllegalArgumentException, X("itemToItemConstructor"), X("Cannot create an ItemConstructor for a Node"));
   }
   else {
     const AnyAtomicType *atom = (const AnyAtomicType*)item.get();
@@ -153,7 +153,8 @@ bool XQSequence::isSingleNumericConstant(StaticContext *context) const
 }
 
 XQSequence::SequenceResult::SequenceResult(const XQSequence *seq)
-  : _seq(seq),
+  : ResultImpl(seq),
+    _seq(seq),
     _it(seq->getItemConstructors().begin())
 {
 }

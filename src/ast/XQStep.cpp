@@ -79,7 +79,7 @@ ASTNode* XQStep::staticResolution(StaticContext *context)
   _src.setProperties(getAxisProperties(axis_));
   _src.getStaticType().flags = StaticType::NODE_TYPE;
   _src.contextItemUsed(true);
-  nodeTest_->staticResolution(context);
+  nodeTest_->staticResolution(context, this);
   return this;
 }
 
@@ -128,7 +128,8 @@ void XQStep::setAxis(XQStep::Axis a) {
 }
 
 XQStep::StepResult::StepResult(const XQStep *step)
-  : toDo_(true),
+  : ResultImpl(step),
+    toDo_(true),
     result_(0),
     step_(step)
 {
@@ -148,7 +149,7 @@ Item::Ptr XQStep::StepResult::next(DynamicContext *context)
       XQThrow(TypeErrorException,X("XQStep::StepResult::next"), X("An attempt was made to perform an axis step when the Context Item was not a node [err:XPTY0020]"));
     }
 
-    result_ = ((Node*)item.get())->getAxisResult(step_->getAxis(), step_->getNodeTest(), context);
+    result_ = ((Node*)item.get())->getAxisResult(step_->getAxis(), step_->getNodeTest(), context, this);
   }
 
   return result_->next(context);

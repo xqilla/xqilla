@@ -27,7 +27,7 @@ GreaterThanEqual::GreaterThanEqual(const VectorOfASTNodes &args, XPath2MemoryMan
 {
 }
 
-/*static*/ bool GreaterThanEqual::greater_than_equal(const AnyAtomicType::Ptr &arg1, const AnyAtomicType::Ptr &arg2, Collation* collation, DynamicContext* context)
+/*static*/ bool GreaterThanEqual::greater_than_equal(const AnyAtomicType::Ptr &arg1, const AnyAtomicType::Ptr &arg2, Collation* collation, DynamicContext* context, const LocationInfo *info)
 {
   // A ge B numeric               numeric                 op:numeric-greater-than(A, B) or op:numeric-equal(A, B)
   // A ge B xs:boolean            xs:boolean              fn:not(op:boolean-less-than(A, B))
@@ -43,14 +43,11 @@ GreaterThanEqual::GreaterThanEqual(const VectorOfASTNodes &args, XPath2MemoryMan
        ((Numeric*)arg2.get())->getState() == Numeric::NaN) return false;
   }
 
-  return !LessThan::less_than(arg1,arg2,collation,context);
+  return !LessThan::less_than(arg1,arg2,collation,context, info);
 }
 
 bool GreaterThanEqual::execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::Ptr &atom2, DynamicContext *context) const
 {
-  Collation* collation=context->getDefaultCollation();
-  if(collation==NULL)
-    collation=context->getCollation(CodepointCollation::getCodepointCollationName());
-  return greater_than_equal(atom1,atom2,collation,context);
+  return greater_than_equal(atom1,atom2,context->getDefaultCollation(this),context, this);
 }
 
