@@ -59,7 +59,8 @@ public:
   /** Declares and/or sets a variable in the top level scope. */
   void setVar(const XMLCh* ident,
               const Sequence &value,
-              const StaticContext* context);
+              const StaticContext* context,
+              const LocationInfo *location);
   void setVar(const XMLCh* namespaceURI,
               const XMLCh* name,
               const Sequence &value,
@@ -67,7 +68,8 @@ public:
   /** Declares and/or sets a variable in the global scope. */
   void setGlobalVar(const XMLCh* ident,
                     const Sequence &value,
-                    const StaticContext* context);
+                    const StaticContext* context,
+                    const LocationInfo *location);
   void setGlobalVar(const XMLCh* namespaceURI,
                     const XMLCh* name,
                     const Sequence &value,
@@ -77,7 +79,8 @@ public:
   ///Declares a var in the top level scope
   void declareVar(const XMLCh* ident,
                   const Sequence &value,
-                  const StaticContext* context);
+                  const StaticContext* context,
+                  const LocationInfo *location);
   void declareVar(const XMLCh* namespaceURI,
                   const XMLCh* name,
                   const Sequence &value,
@@ -88,14 +91,16 @@ public:
       Returns a boolean (true if successful), and the Sequence
       value of the variable*/
   const std::pair<bool, Sequence> getVar(const XMLCh* ident,
-                              const StaticContext* context) const;
+                                         const StaticContext* context,
+                                         const LocationInfo *location) const;
   const std::pair<bool, Sequence> getVar(const XMLCh* namespaceURI,
                               const XMLCh* name,
                               const StaticContext* context) const;
   /** Looks up the value of a variable in the current scope.
       Returns the VariableStore::Entry for the variable, or null*/
   VariableStore::Entry* getReferenceVar(const XMLCh* ident,
-                               const StaticContext* context) const;
+                                        const StaticContext* context,
+                                        const LocationInfo *location) const;
   VariableStore::Entry* getReferenceVar(const XMLCh* namespaceURI,
                                const XMLCh* name,
                                const StaticContext* context) const;
@@ -103,7 +108,8 @@ public:
       Returns a boolean (true if successful), and the Sequence
       value of the variable*/
   const std::pair<bool, Sequence> getGlobalVar(const XMLCh* ident,
-                                    const StaticContext* context) const;
+                                               const StaticContext* context,
+                                               const LocationInfo *location) const;
   const std::pair<bool, Sequence> getGlobalVar(const XMLCh* namespaceURI,
                                     const XMLCh* name,
                                     const StaticContext* context) const;
@@ -111,13 +117,15 @@ public:
 
   /** Deletes a variable from the current scope. */
   void delVar(const XMLCh* ident,
-              const StaticContext* context);
+              const StaticContext* context,
+              const LocationInfo *location);
   void delVar(const XMLCh* namespaceURI,
               const XMLCh* name,
               const StaticContext* context);
   /** Deletes a variable from the global scope. */
   void delGlobalVar(const XMLCh* ident,
-                    const StaticContext* context);
+                    const StaticContext* context,
+                    const LocationInfo *location);
   void delGlobalVar(const XMLCh* namespaceURI,
                     const XMLCh* name,
                     const StaticContext* context); 
@@ -128,7 +136,7 @@ public:
   /** Returns a vector with the names of the variable currently in scope */
   std::vector< std::pair<const XMLCh*, const XMLCh*> > getVars() const;
 
-  const XMLCh* getVariableNsURI(const XMLCh* qName, const StaticContext* context) const;
+  const XMLCh* getVariableNsURI(const XMLCh* qName, const StaticContext* context, const LocationInfo *location) const;
 
 private:
   VariableStoreTemplate<Sequence> _store;

@@ -42,7 +42,7 @@ ATBooleanOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh*
   } else if(XPath2Utils::equals(value, one) || XPath2Utils::equals(value, XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgATTVAL_TRUE)) {
     _value = true;
   } else {
-    XQThrow(XPath2TypeCastException,X("ATBooleanOrDerivedImpl::ATBooleanOrDerivedImpl"), X("Invalid representation of boolean [err:FORG0001]"));
+    XQThrow2(XPath2TypeCastException,X("ATBooleanOrDerivedImpl::ATBooleanOrDerivedImpl"), X("Invalid representation of boolean [err:FORG0001]"));
   }  
 }
 
@@ -131,7 +131,7 @@ const XMLCh* ATBooleanOrDerivedImpl::asString() const
 bool ATBooleanOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const
 {
   if(this->getPrimitiveTypeIndex() != target->getPrimitiveTypeIndex()) {
-    XQThrow(IllegalArgumentException,X("ATBooleanOrDerivedImpl::equals"),
+    XQThrow2(IllegalArgumentException,X("ATBooleanOrDerivedImpl::equals"),
             X("Equality operator for given types not supported [err:XPTY0004]"));
   }
 

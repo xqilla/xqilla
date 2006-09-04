@@ -21,9 +21,9 @@
 XERCES_CPP_NAMESPACE_USE
 #endif
 
-AttributeAxis::AttributeAxis(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *contextNode, const Node *nodeObj,
+AttributeAxis::AttributeAxis(const LocationInfo *info, const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *contextNode, const Node *nodeObj,
        const NodeTest *nodeTest, const AxisNodeFactory &factory)
-  : Axis(contextNode, nodeObj, nodeTest, factory),
+  : Axis(info, contextNode, nodeObj, nodeTest, factory),
     nodeMap_(contextNode->getAttributes()),
     i_(0)
 {

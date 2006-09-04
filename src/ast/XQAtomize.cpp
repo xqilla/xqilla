@@ -45,7 +45,7 @@ ASTNode* XQAtomize::staticResolution(StaticContext *context)
 
 Result XQAtomize::createResult(DynamicContext* context, int flags) const
 {
-  return new AtomizeResult(expr_->collapseTree(context, flags));
+  return new AtomizeResult(this, expr_->collapseTree(context, flags));
 }
 
 Item::Ptr AtomizeResult::next(DynamicContext *context)

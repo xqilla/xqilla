@@ -35,7 +35,7 @@ public:
   /** Takes a list of nodes and sums their values */
   Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
 
-  static Item::Ptr sum(const Sequence &sequence, DynamicContext *context);
+  static Item::Ptr sum(const Sequence &sequence, DynamicContext *context, const LocationInfo *info);
 
 };
 #endif // _FUNCTIONSUM_HPP

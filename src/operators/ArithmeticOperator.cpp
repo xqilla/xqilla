@@ -42,6 +42,7 @@ ASTNode* ArithmeticOperator::staticResolution(StaticContext *context)
   bool allConstant = true;
   for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
     *i = new (mm) XQAtomize(*i, mm);
+    (*i)->setLocationInfo(this);
     *i = (*i)->staticResolution(context);
 
     if((*i)->getStaticResolutionContext().getStaticType().flags == 0)
@@ -156,13 +157,21 @@ AnyAtomicType::Ptr ArithmeticOperator::getArgument(unsigned int index, DynamicCo
 }
 
 ArithmeticOperator::ArithmeticResult::ArithmeticResult(const ArithmeticOperator *op)
-  : _op(op)
+  : SingleResult(op),
+    _op(op)
 {
 }
 
 Item::Ptr ArithmeticOperator::ArithmeticResult::getSingleResult(DynamicContext *context) const
 {
-  return _op->execute(_op->getArgument(0, context), _op->getArgument(1, context), context);
+  try {
+    return _op->execute(_op->getArgument(0, context), _op->getArgument(1, context), context);
+  }
+  catch(XQException &e) {
+      if(e.getXQueryFile() == NULL)
+        e.setXQueryPosition(this);
+      throw;
+  }
 }
 
 std::string ArithmeticOperator::ArithmeticResult::asString(DynamicContext *context, int indent) const

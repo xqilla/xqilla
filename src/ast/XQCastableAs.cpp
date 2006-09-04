@@ -15,7 +15,6 @@
 #include <assert.h>
 #include <sstream>
 
-#include <xercesc/validators/schema/SchemaSymbols.hpp>
 #include <xqilla/ast/XQCastableAs.hpp>
 #include <xqilla/schema/SequenceType.hpp>
 #include <xqilla/parser/QName.hpp>
@@ -28,6 +27,10 @@
 #include <xqilla/context/ItemFactory.hpp>
 #include <xqilla/ast/XQAtomize.hpp>
 #include <xqilla/context/ContextHelpers.hpp>
+#include <xqilla/utils/XPath2Utils.hpp>
+#include <xqilla/functions/FunctionConstructor.hpp>
+
+#include <xercesc/validators/schema/SchemaSymbols.hpp>
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -46,11 +49,25 @@ Result XQCastableAs::createResult(DynamicContext* context, int flags) const
   return new CastableAsResult(this);
 }
 
+static XMLCh szNOTATION[] =  { XERCES_CPP_NAMESPACE_QUALIFIER chLatin_N, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_O, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_T, 
+                               XERCES_CPP_NAMESPACE_QUALIFIER chLatin_A, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_T, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_I, 
+                               XERCES_CPP_NAMESPACE_QUALIFIER chLatin_O, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_N, XERCES_CPP_NAMESPACE_QUALIFIER chNull }; 
+
 ASTNode* XQCastableAs::staticResolution(StaticContext *context)
 {
   _exprType->staticResolution(context);
   XPath2MemoryManager *mm = context->getMemoryManager();
+
+  const SequenceType::ItemType* itemType = _exprType->getItemType();
+  if((XPath2Utils::equals(itemType->getTypeURI(context, this), XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA) &&
+      XPath2Utils::equals(itemType->getType()->getName(), szNOTATION)) ||
+     (XPath2Utils::equals(itemType->getTypeURI(context, this), FunctionConstructor::XMLChXPath2DatatypesURI) &&
+		  XPath2Utils::equals(itemType->getType()->getName(), AnyAtomicType::fgDT_ANYATOMICTYPE)))
+    XQThrow(TypeErrorException,X("XQCastableAs::staticResolution"),
+            X("The target type of a castable expression must be an atomic type that is in the in-scope schema types and is not xs:NOTATION or xdt:anyAtomicType [err:XPST0080]"));
+
   _expr = new (mm) XQAtomize(_expr, mm);
+  _expr->setLocationInfo(this);
 
   AutoNodeSetOrderingReset orderReset(context);
 
@@ -76,7 +93,8 @@ void XQCastableAs::setExpression(ASTNode *item) {
 }
 
 XQCastableAs::CastableAsResult::CastableAsResult(const XQCastableAs *di)
-  : _di(di)
+  : SingleResult(di),
+    _di(di)
 {
 }
 

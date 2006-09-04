@@ -38,7 +38,9 @@ void XQParenthesizedExpr::addItem(ASTNode* di) {
 ASTNode* XQParenthesizedExpr::staticResolution(StaticContext *context) {
   // Return a blank XQSequence if we have no children
   if(_astNodes.empty()) {
-    return new (getMemoryManager()) XQSequence(getMemoryManager());
+    ASTNode *result = new (getMemoryManager()) XQSequence(getMemoryManager());
+    result->setLocationInfo(this);
+    return result;
   }
 
   // Dissolve ourselves if we have only one child
@@ -69,7 +71,8 @@ const VectorOfASTNodes &XQParenthesizedExpr::getChildren() const {
 }
 
 XQParenthesizedExpr::ParenthesizedResult::ParenthesizedResult(const XQParenthesizedExpr *di, int flags)
-  : _flags(flags),
+  : ResultImpl(di),
+    _flags(flags),
     _di(di),
     _i(di->getChildren().begin()),
     _result(0)

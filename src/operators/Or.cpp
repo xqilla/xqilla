@@ -52,11 +52,12 @@ ASTNode* Or::staticResolution(StaticContext *context)
     else {
       AutoDelete<DynamicContext> dContext(context->createDynamicContext());
       dContext->setMemoryManager(context->getMemoryManager());
-      if((*i)->collapseTree(dContext)->getEffectiveBooleanValue(dContext)) {
+      if((*i)->collapseTree(dContext)->getEffectiveBooleanValue(dContext, *i)) {
         // It's constantly true, so this expression is true
         ASTNode* newBlock = new (getMemoryManager())
           XQSequence(dContext->getItemFactory()->createBoolean(true, dContext),
                            dContext, getMemoryManager());
+	newBlock->setLocationInfo(this);
         return newBlock->staticResolution(context);
       }
     }
@@ -69,7 +70,8 @@ ASTNode* Or::staticResolution(StaticContext *context)
 }
 
 Or::OrResult::OrResult(const Or *op)
-  : _op(op)
+  : SingleResult(op),
+    _op(op)
 {
 }
 
@@ -77,7 +79,7 @@ Item::Ptr Or::OrResult::getSingleResult(DynamicContext *context) const
 {
   unsigned int numArgs=_op->getNumArgs();
   for(unsigned int i=0;i<numArgs;i++) {
-    if(_op->getArgument(i)->collapseTree(context)->getEffectiveBooleanValue(context)) {
+    if(_op->getArgument(i)->collapseTree(context)->getEffectiveBooleanValue(context, _op->getArgument(i))) {
       return (const Item::Ptr)context->getItemFactory()->createBoolean(true, context);
     }
   }

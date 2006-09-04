@@ -38,14 +38,17 @@ Range::Range(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
 
 ASTNode* Range::staticResolution(StaticContext *context)
 {
-  static SequenceType integerType(SchemaSymbols::fgURI_SCHEMAFORSCHEMA, 
-                                  SchemaSymbols::fgDT_INTEGER,
-                                  SequenceType::QUESTION_MARK);
+  XPath2MemoryManager *mm = context->getMemoryManager();
+
+  SequenceType *integerType = new (mm) SequenceType(SchemaSymbols::fgURI_SCHEMAFORSCHEMA, 
+                                                    SchemaSymbols::fgDT_INTEGER,
+                                                    SequenceType::QUESTION_MARK, mm);
+  integerType->setLocationInfo(this);
 
   _src.getStaticType().flags = StaticType::DECIMAL_TYPE;
 
   for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
-	  *i = integerType.convertFunctionArg(*i, context, /*numericfunction*/false);
+	  *i = integerType->convertFunctionArg(*i, context, /*numericfunction*/false, *i);
     *i = (*i)->staticResolution(context);
     _src.add((*i)->getStaticResolutionContext());
 
@@ -65,7 +68,8 @@ Result Range::createResult(DynamicContext* context, int flags) const
 }
 
 Range::RangeResult::RangeResult(const Range *op, DynamicContext *context)
-  : _op(op),
+  : ResultImpl(op),
+    _op(op),
     _last(0),
     _step(context->getItemFactory()->createInteger(1, context)),
     _end(0)

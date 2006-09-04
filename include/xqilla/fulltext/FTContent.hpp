@@ -46,8 +46,8 @@ private:
 class FTContentAtStartMatches : public AllMatches
 {
 public:
-  FTContentAtStartMatches(const AllMatches::Ptr &arg)
-    : arg_(arg) {}
+  FTContentAtStartMatches(const LocationInfo *info, const AllMatches::Ptr &arg)
+    : AllMatches(info), arg_(arg) {}
   Match::Ptr next(DynamicContext *context);
 
 private:
@@ -57,8 +57,8 @@ private:
 class FTContentAtEndMatches : public AllMatches
 {
 public:
-  FTContentAtEndMatches(const AllMatches::Ptr &arg)
-    : arg_(arg) {}
+  FTContentAtEndMatches(const LocationInfo *info, const AllMatches::Ptr &arg)
+    : AllMatches(info), arg_(arg) {}
   Match::Ptr next(DynamicContext *context);
 
 private:

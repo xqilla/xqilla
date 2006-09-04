@@ -38,8 +38,8 @@ private:
 class FTOrderMatches : public AllMatches
 {
 public:
-  FTOrderMatches(const AllMatches::Ptr &arg)
-    : arg_(arg) {}
+  FTOrderMatches(const FTOrder *ft, const AllMatches::Ptr &arg)
+    : AllMatches(ft), arg_(arg) {}
   Match::Ptr next(DynamicContext *context);
 
 private:

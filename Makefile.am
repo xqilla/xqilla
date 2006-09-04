@@ -21,6 +21,7 @@ src/context/impl/CollationImpl.cpp \
 src/context/impl/UCANormalizer1.cpp \
 src/context/impl/UCANormalizer2.cpp \
 src/context/impl/UCANormalizer3.cpp \
+src/context/impl/UCANormalizer4.cpp \
 src/context/impl/UCANormalizer.cpp \
 src/context/impl/UCANormalizer.hpp \
 src/context/impl/CodepointCollation.cpp \
@@ -455,3 +456,5 @@ devdocs:
 	$(MAKE) -C include devdocs
 
 $(top_srcdir)/docs/simple-api: docs
+
+$(top_srcdir)/docs/dom3-api: docs

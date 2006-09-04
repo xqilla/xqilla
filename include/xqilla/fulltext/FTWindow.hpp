@@ -69,8 +69,8 @@ private:
 class FTWindowMatches : public AllMatches
 {
 public:
-  FTWindowMatches(unsigned int distance, FTOption::FTUnit unit, const AllMatches::Ptr &arg)
-    : distance_(distance), unit_(unit), arg_(arg) {}
+  FTWindowMatches(const LocationInfo *info, unsigned int distance, FTOption::FTUnit unit, const AllMatches::Ptr &arg)
+    : AllMatches(info), distance_(distance), unit_(unit), arg_(arg) {}
   Match::Ptr next(DynamicContext *context);
 
 private:

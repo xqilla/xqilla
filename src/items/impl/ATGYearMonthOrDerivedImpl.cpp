@@ -117,7 +117,7 @@ MAPM ATGYearMonthOrDerivedImpl::buildReferenceDateTime(const DynamicContext *con
 bool ATGYearMonthOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const
 {
   if(this->getPrimitiveTypeIndex() != target->getPrimitiveTypeIndex()) {
-    XQThrow(::IllegalArgumentException,X("ATGYearMonthOrDerivedImpl::equals"), X("Equality operator for given types not supported [err:XPTY0004]"));
+    XQThrow2(::IllegalArgumentException,X("ATGYearMonthOrDerivedImpl::equals"), X("Equality operator for given types not supported [err:XPTY0004]"));
   }
   return compare((const ATGYearMonthOrDerived *)target.get(), context) == 0;
 }
@@ -155,7 +155,7 @@ void ATGYearMonthOrDerivedImpl::setGYearMonth(const XMLCh* const value) {
  unsigned int length = XMLString::stringLen(value);
  
 	if(value == NULL) {
- 	  XQThrow(XPath2TypeCastException,X("ATGYearMonthOrDerivedImpl::setGYearMonth"), X("Invalid representation of gYearMonth [err:FORG0001]"));
+ 	  XQThrow2(XPath2TypeCastException,X("ATGYearMonthOrDerivedImpl::setGYearMonth"), X("Invalid representation of gYearMonth [err:FORG0001]"));
 	}
 	
 	// State variables etc.
@@ -296,7 +296,7 @@ void ATGYearMonthOrDerivedImpl::setGYearMonth(const XMLCh* const value) {
 	}
 
 	if ( wrongformat) {
-	  XQThrow(XPath2TypeCastException,X("ATGYearMonthOrDerivedImpl::setGYearMonth"), X("Invalid representation of gYearMonth [err:FORG0001]"));
+	  XQThrow2(XPath2TypeCastException,X("ATGYearMonthOrDerivedImpl::setGYearMonth"), X("Invalid representation of gYearMonth [err:FORG0001]"));
 	}
 
   timezone_ = new Timezone(Timezone::convert(zonepos, zonehh, zonemm));

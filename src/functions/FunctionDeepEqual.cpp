@@ -56,7 +56,7 @@ FunctionDeepEqual::FunctionDeepEqual(const VectorOfASTNodes &args, XPath2MemoryM
   _src.getStaticType().flags = StaticType::BOOLEAN_TYPE;
 }
 
-/*static*/ bool FunctionDeepEqual::deep_equal(Sequence seq1, Sequence seq2, Collation* collation, DynamicContext* context)
+/*static*/ bool FunctionDeepEqual::deep_equal(Sequence seq1, Sequence seq2, Collation* collation, DynamicContext* context, const LocationInfo *info)
 {
   // if both of the arguments are the empty sequence, return true
   if(seq1.isEmpty() && seq2.isEmpty()) { 
@@ -83,7 +83,7 @@ FunctionDeepEqual::FunctionDeepEqual(const VectorOfASTNodes &args, XPath2MemoryM
 
  		if(item1->isNode() && item2->isNode())
     {
-      if(!node_deep_equal((const Node::Ptr )item1, (const Node::Ptr )item2, collation, context)) {
+      if(!node_deep_equal((const Node::Ptr )item1, (const Node::Ptr )item2, collation, context, info)) {
         return false;
       }
     }
@@ -102,7 +102,7 @@ FunctionDeepEqual::FunctionDeepEqual(const VectorOfASTNodes &args, XPath2MemoryM
           atom2 = atom2->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                                 XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING, context);
       try {
-        if(!Equals::equals(atom1,atom2,collation,context)) {
+        if(!Equals::equals(atom1,atom2,collation,context, info)) {
           return false;
         }
       } catch (XPath2ErrorException &e) {
@@ -119,7 +119,7 @@ FunctionDeepEqual::FunctionDeepEqual(const VectorOfASTNodes &args, XPath2MemoryM
 }
 
 
-/*static*/ bool FunctionDeepEqual::node_deep_equal(const Node::Ptr &node1, const Node::Ptr &node2, Collation* collation, DynamicContext* context)
+/*static*/ bool FunctionDeepEqual::node_deep_equal(const Node::Ptr &node1, const Node::Ptr &node2, Collation* collation, DynamicContext* context, const LocationInfo *info)
 {
 	// If the two nodes are of different node-kinds, the result is false.
 	if(!(XPath2Utils::equals(node1->dmNodeKind(), node2->dmNodeKind()))) {
@@ -148,23 +148,23 @@ FunctionDeepEqual::FunctionDeepEqual(const VectorOfASTNodes &args, XPath2MemoryM
     const XMLCh *node1str = node1->dmStringValue(context);
     const XMLCh *node2str = node2->dmStringValue(context);
 
-    return context->getDefaultCollation()->compare(node1str, node2str) == 0;
+    return context->getDefaultCollation(info)->compare(node1str, node2str) == 0;
   }
 
   if(XPath2Utils::equals(nodeType, Node::attribute_string)) {
-    return deep_equal(node1->dmTypedValue(context), node2->dmTypedValue(context), collation, context);
+    return deep_equal(node1->dmTypedValue(context), node2->dmTypedValue(context), collation, context, info);
   }
 
   // If either node has attributes, then the result is false if either node has an attribute that is not
   // deep-equal to an attribute of the other node, using the selected collation.
-  Sequence attrs1 = node1->dmAttributes(context)->toSequence(context);
-  Sequence attrs2 = node2->dmAttributes(context)->toSequence(context);
+  Sequence attrs1 = node1->dmAttributes(context, info)->toSequence(context);
+  Sequence attrs2 = node2->dmAttributes(context, info)->toSequence(context);
   if(attrs1.getLength() != attrs2.getLength()) return false;
 
   for(Sequence::iterator i = attrs1.begin(); i != attrs1.end(); ++i) {
     bool result = false;
     for(Sequence::iterator j = attrs2.begin(); j != attrs2.end(); ++j) {
-      result = node_deep_equal((const Node::Ptr)*i, (const Node::Ptr)*j, collation, context);
+      result = node_deep_equal((const Node::Ptr)*i, (const Node::Ptr)*j, collation, context, info);
       if(result) break;
     }
     if(!result) return false;
@@ -173,8 +173,8 @@ FunctionDeepEqual::FunctionDeepEqual(const VectorOfASTNodes &args, XPath2MemoryM
   // content, and if the simple content of the two nodes (that is, the result of the xf:data function) is
   // equal under the rules for the xf:deep-equal function, using the selected collation.
   // (Note: attributes always have simple content.)
-  Result children1 = node1->dmChildren(context);
-  Result children2 = node2->dmChildren(context);
+  Result children1 = node1->dmChildren(context, info);
+  Result children2 = node2->dmChildren(context, info);
   bool bHasSubElements1 = false, bHasSubElements2 = false;
 
   Sequence sChildren1 = Sequence(context->getMemoryManager());
@@ -203,9 +203,9 @@ FunctionDeepEqual::FunctionDeepEqual(const VectorOfASTNodes &args, XPath2MemoryM
     }
   }
   if(!bHasSubElements1 && !bHasSubElements2) {
-    return deep_equal(node1->dmTypedValue(context),node2->dmTypedValue(context), collation, context);
+    return deep_equal(node1->dmTypedValue(context),node2->dmTypedValue(context), collation, context, info);
   }
-  return deep_equal(sChildren1,sChildren2,collation,context);
+  return deep_equal(sChildren1,sChildren2,collation,context, info);
 }
 
 Sequence FunctionDeepEqual::collapseTreeInternal(DynamicContext* context, int flags) const
@@ -222,16 +222,16 @@ Sequence FunctionDeepEqual::collapseTreeInternal(DynamicContext* context, int fl
       } catch(InvalidLexicalSpaceException &e) {
         XQThrow(FunctionException, X("FunctionDeepEqual::collapseTreeInternal"), X("Invalid collationURI"));  
       }
-      collation=context->getCollation(collName);
+      collation=context->getCollation(collName, this);
       if(collation==NULL)
         XQThrow(FunctionException,X("FunctionDeepEqual::collapseTreeInternal"),X("Collation object is not available"));
 	}
 	else
-      collation=context->getDefaultCollation();
+      collation=context->getDefaultCollation(this);
     if(collation==NULL)
-      collation=context->getCollation(CodepointCollation::getCodepointCollationName());
+      collation=context->getCollation(CodepointCollation::getCodepointCollationName(), this);
 
-    bool bEqual=deep_equal(arg1, arg2, collation, context);
+    bool bEqual=deep_equal(arg1, arg2, collation, context, this);
 
 	return Sequence(context->getItemFactory()->createBoolean(bEqual, context),
                   context->getMemoryManager());

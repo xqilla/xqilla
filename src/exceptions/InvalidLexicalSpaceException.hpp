@@ -29,8 +29,8 @@ class XQILLA_API InvalidLexicalSpaceException : public XQException
 {
 public:
   
-  InvalidLexicalSpaceException(const XMLCh *functionName, const XMLCh *reason, const char *file, int line)
-    : XQException(X("InvalidLexicalSpaceException"), functionName, reason, file, line) {};
+  InvalidLexicalSpaceException(const XMLCh *functionName, const XMLCh *reason, const LocationInfo *info, const char *file, int line)
+    : XQException(X("InvalidLexicalSpaceException"), functionName, reason, info, file, line) {};
 };
 
 #endif // _INVALIDLEXICALSPACEEXCEPTION_HPP

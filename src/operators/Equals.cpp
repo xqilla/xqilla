@@ -31,32 +31,36 @@ Equals::Equals(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
 {
 }
 
-/*static*/ bool Equals::equals(const Item::Ptr &arg1, const Item::Ptr &arg2, Collation* collation, DynamicContext* context)
+/*static*/ bool Equals::equals(const Item::Ptr &arg1, const Item::Ptr &arg2, Collation* collation, DynamicContext* context, const LocationInfo *info)
 {
   assert(arg1->isAtomicValue() && arg2->isAtomicValue());
-  return equals((const AnyAtomicType::Ptr)arg1, (const AnyAtomicType::Ptr)arg2, collation, context);
+  return equals((const AnyAtomicType::Ptr)arg1, (const AnyAtomicType::Ptr)arg2, collation, context, info);
 }
 
-/*static*/ bool Equals::equals(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::Ptr &atom2, Collation* collation, DynamicContext* context) 
+/*static*/ bool Equals::equals(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::Ptr &atom2, Collation* collation, DynamicContext* context, const LocationInfo *info)
 {
+  try {
     // take care of the special case first
     if(atom1->getPrimitiveTypeIndex() == AnyAtomicType::STRING) {
         if(atom2->getPrimitiveTypeIndex() != AnyAtomicType::STRING &&
            atom2->getPrimitiveTypeIndex() != AnyAtomicType::ANY_URI) {
-            XQThrow(XPath2ErrorException,X("Equals::equals"), X("An attempt to compare a string type to a non string type has occurred [err:XPTY0004]"));
+            XQThrow3(XPath2ErrorException,X("Equals::equals"), X("An attempt to compare a string type to a non string type has occurred [err:XPTY0004]"), info);
         }
         // if the function returns 0, then they are equal
         return (collation->compare(atom1->asString(context),atom2->asString(context))==0);
     } 
 
     return atom1->equals(atom2, context);
+  }
+  catch(XQException &e) {
+      if(e.getXQueryFile() == NULL)
+        e.setXQueryPosition(info);
+      throw;
+  }
 }
 
 bool Equals::execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::Ptr &atom2, DynamicContext *context) const
 {
-  Collation* collation=context->getDefaultCollation();
-  if(collation==NULL)
-    collation=context->getCollation(CodepointCollation::getCodepointCollationName());
-  return equals(atom1, atom2, collation, context);
+  return equals(atom1, atom2, context->getDefaultCollation(this), context, this);
 }
 

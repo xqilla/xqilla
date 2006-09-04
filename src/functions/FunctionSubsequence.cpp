@@ -56,7 +56,8 @@ Result FunctionSubsequence::createResult(DynamicContext* context, int flags) con
 }
 
 FunctionSubsequence::SubsequenceResult::SubsequenceResult(const FunctionSubsequence *func, int flags)
-  : _flags(flags),
+  : ResultImpl(func),
+    _flags(flags),
     _func(func),
     _end(0),
     _one(0),

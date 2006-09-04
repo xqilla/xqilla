@@ -35,7 +35,7 @@ protected:
   class XPath1CompatConvertFunctionArgResult : public ResultImpl
   {
   public:
-    XPath1CompatConvertFunctionArgResult(const Result &parent, const SequenceType *seqType);
+    XPath1CompatConvertFunctionArgResult(const XPath1CompatConvertFunctionArg *di, const Result &parent, const SequenceType *seqType);
 
     Item::Ptr next(DynamicContext *context);
     std::string asString(DynamicContext *context, int indent) const;

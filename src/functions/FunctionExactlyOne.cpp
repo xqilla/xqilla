@@ -45,7 +45,8 @@ Result FunctionExactlyOne::createResult(DynamicContext* context, int flags) cons
 }
 
 FunctionExactlyOne::ExactlyOneResult::ExactlyOneResult(const FunctionExactlyOne *func, int flags)
-  : _flags(flags),
+  : ResultImpl(func),
+    _flags(flags),
     _func(func),
     _arg(0),
     _argNo(0)

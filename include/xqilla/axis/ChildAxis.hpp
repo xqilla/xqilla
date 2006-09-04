@@ -22,7 +22,7 @@ This class implements the ChildAxis axis as defined by the XPath spec
 class XQILLA_API ChildAxis : public Axis
 {
 public:
-  ChildAxis(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *contextNode, const Node *nodeObj,
+  ChildAxis(const LocationInfo *info, const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *contextNode, const Node *nodeObj,
        const NodeTest *nodeTest, const AxisNodeFactory &factory = Axis::gNodeImplFactory);
   const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *nextNode(DynamicContext *context);
   std::string asString(DynamicContext *context, int indent) const;

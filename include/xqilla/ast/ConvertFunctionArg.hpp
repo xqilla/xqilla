@@ -34,8 +34,8 @@ protected:
   class PromoteUntypedResult : public ResultImpl
   {
   public:
-    PromoteUntypedResult(const Result &parent, const XMLCh *uri, const XMLCh *name)
-      : parent_(parent), uri_(uri), name_(name) {}
+    PromoteUntypedResult(const XQPromoteUntyped *di, const Result &parent, const XMLCh *uri, const XMLCh *name)
+      : ResultImpl(di), parent_(parent), uri_(uri), name_(name) {}
 
     Item::Ptr next(DynamicContext *context);
     std::string asString(DynamicContext *context, int indent) const { return "promoteuntypedresult"; }
@@ -67,8 +67,8 @@ protected:
   class PromoteNumericResult : public ResultImpl
   {
   public:
-    PromoteNumericResult(const Result &parent, const XMLCh *uri, const XMLCh *name)
-      : parent_(parent), uri_(uri), name_(name) {}
+    PromoteNumericResult(const XQPromoteNumeric *di, const Result &parent, const XMLCh *uri, const XMLCh *name)
+      : ResultImpl(di), parent_(parent), uri_(uri), name_(name) {}
 
     Item::Ptr next(DynamicContext *context);
     std::string asString(DynamicContext *context, int indent) const { return "promotenumericresult"; }
@@ -100,8 +100,8 @@ protected:
   class PromoteAnyURIResult : public ResultImpl
   {
   public:
-    PromoteAnyURIResult(const Result &parent)
-      : parent_(parent) {}
+    PromoteAnyURIResult(const XQPromoteAnyURI *di, const Result &parent)
+      : ResultImpl(di), parent_(parent) {}
 
     Item::Ptr next(DynamicContext *context);
     std::string asString(DynamicContext *context, int indent) const { return "promoteanyuriresult"; }

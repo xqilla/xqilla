@@ -33,7 +33,9 @@ ASTNode* Intersect::staticResolution(StaticContext *context)
     sortAdded_ = true;
     // Wrap ourselves in a document order sort
     XPath2MemoryManager *mm = context->getMemoryManager();
-    return (new (mm) XQDocumentOrder(this, mm))->staticResolution(context);
+    ASTNode *result = new (mm) XQDocumentOrder(this, mm);
+    result->setLocationInfo(this);
+    return result->staticResolution(context);
   }
 
   _src.getStaticType().flags = StaticType::NODE_TYPE;

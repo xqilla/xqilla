@@ -30,8 +30,8 @@ class XQILLA_API XPath2ErrorException : public XQException
 {
 public:
   
-  XPath2ErrorException(const XMLCh* const functionName, const XMLCh* const reason, const char *file, int line)
-    : XQException(X("XPath2ErrorException"), functionName, reason, file, line) {};
+  XPath2ErrorException(const XMLCh* const functionName, const XMLCh* const reason, const LocationInfo *info, const char *file, int line)
+    : XQException(X("XPath2ErrorException"), functionName, reason, info, file, line) {};
 };
 
 #endif // _XPATH2ERROREXCEPTON_HPP

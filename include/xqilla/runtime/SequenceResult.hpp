@@ -21,7 +21,7 @@
 class XQILLA_API SequenceResult : public ResultImpl
 {
 public:
-  SequenceResult(const Sequence &seq);
+  SequenceResult(const LocationInfo *o, const Sequence &seq);
 
   /// Get the next item from the iterator
   virtual Item::Ptr next(DynamicContext *context);

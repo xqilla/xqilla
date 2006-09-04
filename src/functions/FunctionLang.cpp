@@ -89,7 +89,7 @@ Sequence FunctionLang::collapseTreeInternal(DynamicContext* context, int flags) 
     Node::Ptr node = ctxNode;
     while(node.notNull())
     {
-      Result attrs = node->dmAttributes(context);
+      Result attrs = node->dmAttributes(context, this);
       Node::Ptr att;
       while((att = (Node::Ptr)attrs->next(context)).notNull()) {
         ATQNameOrDerived::Ptr name = att->dmNodeName(context);

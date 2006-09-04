@@ -33,12 +33,15 @@ FTSelection *FTOrder::optimize(FTContext *ftcontext, bool execute) const
   if(newarg->getType() == WORD) {
     return newarg;
   }
-  return new (mm) FTOrder(newarg, mm);
+
+  newarg = new (mm) FTOrder(newarg, mm);
+  newarg->setLocationInfo(this);
+  return newarg;
 }
 
 AllMatches::Ptr FTOrder::execute(FTContext *ftcontext) const
 {
-  return new FTOrderMatches(arg_->execute(ftcontext));
+  return new FTOrderMatches(this, arg_->execute(ftcontext));
 }
 
 Match::Ptr FTOrderMatches::next(DynamicContext *context)

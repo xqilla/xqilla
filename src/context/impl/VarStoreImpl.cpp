@@ -64,20 +64,22 @@ void VarStoreImpl::setScopeState(VariableStore::MyScope *state)
   _store.setCurrentScope(state);
 }
 
-const XMLCh* VarStoreImpl::getVariableNsURI(const XMLCh* qName, const StaticContext* context) const
+const XMLCh* VarStoreImpl::getVariableNsURI(const XMLCh* qName, const StaticContext* context,
+                                            const LocationInfo *location) const
 {
   const XMLCh* uri=NULL;
   const XMLCh* prefix=XPath2NSUtils::getPrefix(qName, context->getMemoryManager());
   if(prefix && *prefix)
-    uri = context->getUriBoundToPrefix(prefix);
+    uri = context->getUriBoundToPrefix(prefix, location);
   return uri;
 }
 
 void VarStoreImpl::setGlobalVar(const XMLCh* ident,
                                 const Sequence& value,
-                                const StaticContext* context)
+                                const StaticContext* context,
+                                const LocationInfo *location)
 {
-  _store.setGlobalVar(getVariableNsURI(ident, context), XPath2NSUtils::getLocalName(ident), value);
+  _store.setGlobalVar(getVariableNsURI(ident, context, location), XPath2NSUtils::getLocalName(ident), value);
 }
 
 void VarStoreImpl::setGlobalVar(const XMLCh* namespaceURI,
@@ -89,10 +91,11 @@ void VarStoreImpl::setGlobalVar(const XMLCh* namespaceURI,
 }
 
 void VarStoreImpl::setVar(const XMLCh* ident,
-                           const Sequence &value,
-                           const StaticContext* context)
+                          const Sequence &value,
+                          const StaticContext* context,
+                          const LocationInfo *location)
 {
-  _store.setVar(getVariableNsURI(ident, context), XPath2NSUtils::getLocalName(ident), value);
+  _store.setVar(getVariableNsURI(ident, context, location), XPath2NSUtils::getLocalName(ident), value);
 }
 
 void VarStoreImpl::setVar(const XMLCh* namespaceURI,
@@ -104,10 +107,11 @@ void VarStoreImpl::setVar(const XMLCh* namespaceURI,
 }
 
 void VarStoreImpl::declareVar(const XMLCh* ident,
-                               const Sequence &value,
-                               const StaticContext* context)
+                              const Sequence &value,
+                              const StaticContext* context,
+                              const LocationInfo *location)
 {
-  _store.declareVar(getVariableNsURI(ident, context), XPath2NSUtils::getLocalName(ident), value);
+  _store.declareVar(getVariableNsURI(ident, context, location), XPath2NSUtils::getLocalName(ident), value);
 }
 
 void VarStoreImpl::declareVar(const XMLCh* namespaceURI,
@@ -119,9 +123,10 @@ void VarStoreImpl::declareVar(const XMLCh* namespaceURI,
 }
 
 const std::pair<bool, Sequence> VarStoreImpl::getVar(const XMLCh* ident,
-                                                 const StaticContext* context) const
+                                                     const StaticContext* context,
+                                                     const LocationInfo *location) const
 {
-  return getVar(getVariableNsURI(ident, context), XPath2NSUtils::getLocalName(ident), context);
+  return getVar(getVariableNsURI(ident, context, location), XPath2NSUtils::getLocalName(ident), context);
 }
 
 const std::pair<bool, Sequence> VarStoreImpl::getVar(const XMLCh* namespaceURI,
@@ -135,9 +140,10 @@ const std::pair<bool, Sequence> VarStoreImpl::getVar(const XMLCh* namespaceURI,
 }
 
 VariableStore::Entry* VarStoreImpl::getReferenceVar(const XMLCh* ident,
-                                                        const StaticContext* context) const
+                                                    const StaticContext* context,
+                                                    const LocationInfo *location) const
 {
-  return _store.getVar(getVariableNsURI(ident, context), XPath2NSUtils::getLocalName(ident));
+  return _store.getVar(getVariableNsURI(ident, context, location), XPath2NSUtils::getLocalName(ident));
 }
 
 /** Returns a null VarHashEntry if unsuccessful */
@@ -151,9 +157,10 @@ VariableStore::Entry* VarStoreImpl::getReferenceVar(const XMLCh* namespaceURI,
 /** Change getGlobalVar to return a null Sequence, rather than
     a pair with sucess boolean... */
 const std::pair<bool, Sequence> VarStoreImpl::getGlobalVar(const XMLCh* ident,
-                                                             const StaticContext* context) const
+                                                           const StaticContext* context,
+                                                           const LocationInfo *location) const
 {
-  return getGlobalVar(getVariableNsURI(ident, context), XPath2NSUtils::getLocalName(ident), context);
+  return getGlobalVar(getVariableNsURI(ident, context, location), XPath2NSUtils::getLocalName(ident), context);
 }
 
 const std::pair<bool, Sequence> VarStoreImpl::getGlobalVar(const XMLCh* namespaceURI,
@@ -167,9 +174,10 @@ const std::pair<bool, Sequence> VarStoreImpl::getGlobalVar(const XMLCh* namespac
 }
 
 void VarStoreImpl::delVar(const XMLCh* ident,
-                           const StaticContext* context)
+                          const StaticContext* context,
+                          const LocationInfo *location)
 {
-  _store.delVar(getVariableNsURI(ident, context), XPath2NSUtils::getLocalName(ident));
+  _store.delVar(getVariableNsURI(ident, context, location), XPath2NSUtils::getLocalName(ident));
 }
 
 void VarStoreImpl::delVar( const XMLCh* namespaceURI, const XMLCh* name, const StaticContext* context )
@@ -178,9 +186,10 @@ void VarStoreImpl::delVar( const XMLCh* namespaceURI, const XMLCh* name, const S
 }
 
 void VarStoreImpl::delGlobalVar(const XMLCh* ident,
-                                 const StaticContext* context)
+                                const StaticContext* context,
+                                const LocationInfo *location)
 {
-  _store.delGlobalVar(getVariableNsURI(ident, context), XPath2NSUtils::getLocalName(ident));
+  _store.delGlobalVar(getVariableNsURI(ident, context, location), XPath2NSUtils::getLocalName(ident));
 }
 
 void VarStoreImpl::delGlobalVar( const XMLCh* namespaceURI, const XMLCh* name, const StaticContext* context )

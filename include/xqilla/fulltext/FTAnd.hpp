@@ -40,7 +40,7 @@ class BufferedMatches : public AllMatches
 public:
   typedef RefCountPointer<BufferedMatches> Ptr;
 
-  BufferedMatches(const AllMatches::Ptr matches);
+  BufferedMatches(const LocationInfo *info, const AllMatches::Ptr matches);
 
   Match::Ptr current();
   Match::Ptr next(DynamicContext *context);
@@ -55,7 +55,7 @@ private:
 class FTConjunctionMatches : public AllMatches
 {
 public:
-  FTConjunctionMatches();
+  FTConjunctionMatches(const LocationInfo *info);
 
   void addMatches(const AllMatches::Ptr &m);
 

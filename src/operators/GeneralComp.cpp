@@ -39,7 +39,7 @@ GeneralComp::GeneralComp(ComparisonOperation operation, const VectorOfASTNodes &
   _operation=operation;
 }
 
-bool GeneralComp::compare(GeneralComp::ComparisonOperation operation, AnyAtomicType::Ptr first, AnyAtomicType::Ptr second, Collation* collation, DynamicContext *context)
+bool GeneralComp::compare(GeneralComp::ComparisonOperation operation, AnyAtomicType::Ptr first, AnyAtomicType::Ptr second, Collation* collation, DynamicContext *context, const LocationInfo *info)
 {
   // The magnitude relationship between two atomic values is determined as follows:
   // 1) If either atomic value has the dynamic type xdt:untypedAtomic, that value is cast to a required type, 
@@ -92,12 +92,12 @@ bool GeneralComp::compare(GeneralComp::ComparisonOperation operation, AnyAtomicT
   }
   bool result = false;
   switch(operation) {
-  case GeneralComp::EQUAL:              result = Equals::equals(first,second,collation,context); break;
-  case GeneralComp::NOT_EQUAL:          result = NotEquals::not_equals(first,second,collation,context); break;
-  case GeneralComp::LESS_THAN:          result = LessThan::less_than(first,second,collation,context); break;
-  case GeneralComp::LESS_THAN_EQUAL:    result = LessThanEqual::less_than_equal(first,second,collation,context); break;
-  case GeneralComp::GREATER_THAN:       result = GreaterThan::greater_than(first,second,collation,context); break;
-  case GeneralComp::GREATER_THAN_EQUAL: result = GreaterThanEqual::greater_than_equal(first,second,collation,context); break;
+  case GeneralComp::EQUAL:              result = Equals::equals(first,second,collation,context,info); break;
+  case GeneralComp::NOT_EQUAL:          result = NotEquals::not_equals(first,second,collation,context,info); break;
+  case GeneralComp::LESS_THAN:          result = LessThan::less_than(first,second,collation,context,info); break;
+  case GeneralComp::LESS_THAN_EQUAL:    result = LessThanEqual::less_than_equal(first,second,collation,context,info); break;
+  case GeneralComp::GREATER_THAN:       result = GreaterThan::greater_than(first,second,collation,context,info); break;
+  case GeneralComp::GREATER_THAN_EQUAL: result = GreaterThanEqual::greater_than_equal(first,second,collation,context,info); break;
   default:                 assert(false);
   }
 
@@ -113,6 +113,7 @@ ASTNode* GeneralComp::staticResolution(StaticContext *context)
   bool allConstant = true;
   for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
     *i = new (mm) XQAtomize(*i, mm);
+    (*i)->setLocationInfo(this);
     *i = (*i)->staticResolution(context);
 
     _src.add((*i)->getStaticResolutionContext());
@@ -141,7 +142,8 @@ GeneralComp::ComparisonOperation GeneralComp::getOperation() const {
 }
 
 GeneralComp::GeneralCompResult::GeneralCompResult(const GeneralComp *op)
-  : _op(op)
+  : SingleResult(op),
+    _op(op)
 {
 }
 
@@ -151,9 +153,7 @@ Item::Ptr GeneralComp::GeneralCompResult::getSingleResult(DynamicContext *contex
   Result arg1 = _op->getArgument(0)->collapseTree(context);
   Result arg2 = _op->getArgument(1)->collapseTree(context);
 
-  Collation* collation=context->getDefaultCollation();
-  if(collation==NULL)
-    collation=context->getCollation(CodepointCollation::getCodepointCollationName());
+  Collation* collation=context->getDefaultCollation(this);
 
   // The result of the comparison is true if and only if there is a pair of atomic values, 
   // one belonging to the result of atomization of the first operand and the other belonging 
@@ -166,7 +166,7 @@ Item::Ptr GeneralComp::GeneralCompResult::getSingleResult(DynamicContext *contex
     AnyAtomicType::Ptr item2;
     Sequence arg2_sequence(context->getMemoryManager());
     while((item2 = (const AnyAtomicType::Ptr)arg2->next(context)) != NULLRCP) {
-      if(compare(_op->getOperation(), item1, item2, collation, context))
+      if(compare(_op->getOperation(), item1, item2, collation, context, this))
         return (const Item::Ptr)context->getItemFactory()->createBoolean(true, context);
       arg2_sequence.addItem(item2);
     }
@@ -175,7 +175,7 @@ Item::Ptr GeneralComp::GeneralCompResult::getSingleResult(DynamicContext *contex
     Sequence::iterator itSecond;
     while((item1 = (const AnyAtomicType::Ptr)arg1->next(context)) != NULLRCP) {
       for(itSecond = arg2_sequence.begin(); itSecond != arg2_sequence.end(); ++itSecond) {
-        if(compare(_op->getOperation(), item1, (const AnyAtomicType::Ptr)*itSecond, collation, context))
+        if(compare(_op->getOperation(), item1, (const AnyAtomicType::Ptr)*itSecond, collation, context, this))
           return (const Item::Ptr)context->getItemFactory()->createBoolean(true, context);
       }
     }

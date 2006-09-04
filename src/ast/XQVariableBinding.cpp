@@ -45,8 +45,6 @@ XQVariableBinding::XQVariableBinding(XPath2MemoryManager* memMgr,
     _valuesResultMustBeRecalculated(false),
     _needsNewScope(false),
     _where(0),
-    _line(0),
-    _file(0),
     _memMgr(memMgr)
 {
 }
@@ -66,8 +64,6 @@ XQVariableBinding::XQVariableBinding(XPath2MemoryManager *memMgr, const XQVariab
     _valuesResultMustBeRecalculated(o._valuesResultMustBeRecalculated),
     _needsNewScope(o._needsNewScope),
     _where(o._where),
-    _line(o._line),
-    _file(o._file),
     _memMgr(o._memMgr)
 {
 }
@@ -90,5 +86,6 @@ void XQVariableBinding::addWhereCondition(ASTNode *condition)
     args[0] = _where;
     args[1] = condition;
     _where = new (_memMgr) And(args, _memMgr);
+    _where->setLocationInfo(this);
   }
 }

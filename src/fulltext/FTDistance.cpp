@@ -31,22 +31,28 @@ XERCES_CPP_NAMESPACE_USE
 
 FTSelection *FTDistance::staticResolution(StaticContext *context)
 {
-  static SequenceType seqType(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                              SchemaSymbols::fgDT_INTEGER);
-
   XPath2MemoryManager *mm = context->getMemoryManager();
+
+  SequenceType *seqType = new (mm) SequenceType(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                                                SchemaSymbols::fgDT_INTEGER,
+                                                SequenceType::EXACTLY_ONE, mm);
+  seqType->setLocationInfo(this);
 
   arg_ = arg_->staticResolution(context);
   src_.add(arg_->getStaticResolutionContext());
 
   range_.arg1 = new (mm) XQAtomize(range_.arg1, mm);
-  range_.arg1 = new XQTreatAs(range_.arg1, &seqType, mm);
+  range_.arg1->setLocationInfo(this);
+  range_.arg1 = new (mm) XQTreatAs(range_.arg1, seqType, mm);
+  range_.arg1->setLocationInfo(this);
   range_.arg1 = range_.arg1->staticResolution(context);
   src_.add(range_.arg1->getStaticResolutionContext());
 
   if(range_.arg2 != NULL) {
     range_.arg2 = new (mm) XQAtomize(range_.arg2, mm);
-    range_.arg2 = new XQTreatAs(range_.arg2, &seqType, mm);
+    range_.arg2->setLocationInfo(this);
+    range_.arg2 = new (mm) XQTreatAs(range_.arg2, seqType, mm);
+    range_.arg2->setLocationInfo(this);
     range_.arg2 = range_.arg2->staticResolution(context);
     src_.add(range_.arg2->getStaticResolutionContext());
   }
@@ -65,27 +71,28 @@ FTSelection *FTDistance::optimize(FTContext *ftcontext, bool execute) const
 
     switch(range_.type) {
     case FTRange::EXACTLY: {
-      return (new (mm) FTDistanceLiteral(arg_, FTRange::EXACTLY, distance, 0, unit_, mm))->
-        optimize(ftcontext, execute);
+      FTSelection *result = new (mm) FTDistanceLiteral(arg_, FTRange::EXACTLY, distance, 0, unit_, mm);
+      result->setLocationInfo(this);
+      return result->optimize(ftcontext, execute);
     }
     case FTRange::AT_LEAST: {
-      return (new (mm) FTDistanceLiteral(arg_, FTRange::AT_LEAST, distance, 0, unit_, mm))->
-        optimize(ftcontext, execute);
-      break;
+      FTSelection *result = new (mm) FTDistanceLiteral(arg_, FTRange::AT_LEAST, distance, 0, unit_, mm);
+      result->setLocationInfo(this);
+      return result->optimize(ftcontext, execute);
     }
     case FTRange::AT_MOST: {
-      return (new (mm) FTDistanceLiteral(arg_, FTRange::AT_MOST, distance, 0, unit_, mm))->
-        optimize(ftcontext, execute);
-      break;
+      FTSelection *result = new (mm) FTDistanceLiteral(arg_, FTRange::AT_MOST, distance, 0, unit_, mm);
+      result->setLocationInfo(this);
+      return result->optimize(ftcontext, execute);
     }
     case FTRange::FROM_TO: {
       Result rangeResult2 = range_.arg2->collapseTree(ftcontext->context);
       Numeric::Ptr num2 = (Numeric::Ptr)rangeResult2->next(ftcontext->context);
       long distance2 = ::atol(UTF8(num->asString(ftcontext->context)));
 
-      return (new (mm) FTDistanceLiteral(arg_, FTRange::FROM_TO, distance, distance2, unit_, mm))->
-        optimize(ftcontext, execute);
-      break;
+      FTSelection *result = new (mm) FTDistanceLiteral(arg_, FTRange::FROM_TO, distance, distance2, unit_, mm);
+      result->setLocationInfo(this);
+      return result->optimize(ftcontext, execute);
     }
     }
   }
@@ -97,7 +104,9 @@ FTSelection *FTDistance::optimize(FTContext *ftcontext, bool execute) const
     return newarg;
   }
 
-  return new (mm) FTDistance(range_, unit_, newarg, mm);
+  newarg = new (mm) FTDistance(range_, unit_, newarg, mm);
+  newarg->setLocationInfo(this);
+  return newarg;
 }
 
 AllMatches::Ptr FTDistance::execute(FTContext *ftcontext) const
@@ -126,23 +135,26 @@ FTSelection *FTDistanceLiteral::optimize(FTContext *ftcontext, bool execute) con
   if(newarg->getType() == WORD) {
     return newarg;
   }
-  return new (mm) FTDistanceLiteral(newarg, type_, distance_, distance2_, unit_, mm);
+  
+  newarg = new (mm) FTDistanceLiteral(newarg, type_, distance_, distance2_, unit_, mm);
+  newarg->setLocationInfo(this);
+  return newarg;
 }
 
 AllMatches::Ptr FTDistanceLiteral::execute(FTContext *ftcontext) const
 {
     switch(type_) {
     case FTRange::EXACTLY: {
-      return new FTDistanceExactlyMatches(distance_, unit_, arg_->execute(ftcontext));
+      return new FTDistanceExactlyMatches(this, distance_, unit_, arg_->execute(ftcontext));
     }
     case FTRange::AT_LEAST: {
-      return new FTDistanceAtLeastMatches(distance_, unit_, arg_->execute(ftcontext));
+      return new FTDistanceAtLeastMatches(this, distance_, unit_, arg_->execute(ftcontext));
     }
     case FTRange::AT_MOST: {
-      return new FTDistanceAtMostMatches(distance_, unit_, arg_->execute(ftcontext));
+      return new FTDistanceAtMostMatches(this, distance_, unit_, arg_->execute(ftcontext));
     }
     case FTRange::FROM_TO: {
-      return new FTDistanceFromToMatches(distance_, distance2_, unit_, arg_->execute(ftcontext));
+      return new FTDistanceFromToMatches(this, distance_, distance2_, unit_, arg_->execute(ftcontext));
     }
     default:
       assert(0);

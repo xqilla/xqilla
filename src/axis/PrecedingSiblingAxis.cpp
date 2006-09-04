@@ -15,9 +15,9 @@
 #include <xqilla/axis/PrecedingSiblingAxis.hpp>
 #include <xercesc/dom/DOMNode.hpp>
 
-PrecedingSiblingAxis::PrecedingSiblingAxis(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *contextNode, const Node *nodeObj,
+PrecedingSiblingAxis::PrecedingSiblingAxis(const LocationInfo *info, const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *contextNode, const Node *nodeObj,
        const NodeTest *nodeTest, const AxisNodeFactory &factory)
-  : Axis(contextNode, nodeObj, nodeTest, factory),
+  : Axis(info, contextNode, nodeObj, nodeTest, factory),
     sibling_(0)
 {
 }

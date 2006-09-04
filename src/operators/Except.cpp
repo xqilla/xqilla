@@ -35,7 +35,9 @@ ASTNode* Except::staticResolution(StaticContext *context)
     sortAdded_ = true;
     // Wrap ourselves in a document order sort
     XPath2MemoryManager *mm = context->getMemoryManager();
-    return (new (mm) XQDocumentOrder(this, mm))->staticResolution(context);
+    ASTNode *result = new (mm) XQDocumentOrder(this, mm);
+    result->setLocationInfo(this);
+    return result->staticResolution(context);
   }
 
   _src.getStaticType().flags = StaticType::NODE_TYPE;
@@ -49,7 +51,8 @@ Result Except::createResult(DynamicContext* context, int flags) const
 }
 
 Except::ExceptResult::ExceptResult(const Except *op, int flags)
-  : _op(op),
+  : ResultImpl(op),
+    _op(op),
     _flags(flags),
     _toDo(true),
     _result(0),

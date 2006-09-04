@@ -51,10 +51,10 @@ ATQNameOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* v
   // If $qname has a prefix
   else {
     try {
-      uri = context->getUriBoundToPrefix(prefix);
+      uri = context->getUriBoundToPrefix(prefix, 0);
     }
     catch(NamespaceLookupException&) {
-      XQThrow(StaticErrorException, X("ATQNameOrDerivedImpl::ATQNameOrDerivedImpl"),
+      XQThrow2(StaticErrorException, X("ATQNameOrDerivedImpl::ATQNameOrDerivedImpl"),
               X("No namespace for prefix [err:FONS0004]"));
     }
   }
@@ -162,7 +162,7 @@ const XMLCh* ATQNameOrDerivedImpl::asLexicalString(const DynamicContext* context
   const XMLCh* prefix;
   if(this->_uri == 0 || XPath2Utils::equals(_uri, XMLUni::fgZeroLenString)) {
     if(context->getDefaultElementAndTypeNS() != 0) {
-      XQThrow(NamespaceLookupException,X("ATQNameOrDerivedImpl::asLexicalString"),
+      XQThrow2(NamespaceLookupException,X("ATQNameOrDerivedImpl::asLexicalString"),
               X("Default namespace is defined: casting a QName that has no namespace is ambiguous"));
     }
     buffer.set(_name);
@@ -180,7 +180,7 @@ const XMLCh* ATQNameOrDerivedImpl::asLexicalString(const DynamicContext* context
       msg.set(X("No prefix defined for namespace '"));
       msg.append(_uri);
       msg.append(X("'"));
-      XQThrow(NamespaceLookupException,X("ATQNameOrDerivedImpl::asLexicalString"), msg.getRawBuffer());
+      XQThrow2(NamespaceLookupException,X("ATQNameOrDerivedImpl::asLexicalString"), msg.getRawBuffer());
     }
     buffer.set(prefix);
     buffer.append(chColon);
@@ -194,7 +194,7 @@ const XMLCh* ATQNameOrDerivedImpl::asLexicalString(const DynamicContext* context
 bool ATQNameOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const
 {
   if(this->getPrimitiveTypeIndex() != target->getPrimitiveTypeIndex()) {
-    XQThrow(::IllegalArgumentException,X("ATQNameOrDerivedImpl::equals"),
+    XQThrow2(::IllegalArgumentException,X("ATQNameOrDerivedImpl::equals"),
             X("Equality operator for given types not supported [err:XPTY0004]"));
   }
 

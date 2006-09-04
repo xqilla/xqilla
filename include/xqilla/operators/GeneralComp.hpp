@@ -47,7 +47,7 @@ public:
 
   static bool compare(GeneralComp::ComparisonOperation operation,
                       AnyAtomicType::Ptr first, AnyAtomicType::Ptr second,
-                      Collation* collation, DynamicContext *context);
+                      Collation* collation, DynamicContext *context, const LocationInfo *info);
 
 protected:
   class GeneralCompResult : public SingleResult

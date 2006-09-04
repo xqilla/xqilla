@@ -60,7 +60,7 @@ XQQuery* XQilla::parse(const XMLCh* inputQuery, Language language, DynamicContex
   Janitor<XQQuery> query(new (memMgr) XQQuery(inputQuery, context, contextOwned, memMgr));
 
   try {
-    XQLexer lexer(context->getMemoryManager(), inputQuery, language);
+    XQLexer lexer(context->getMemoryManager(), queryFile, inputQuery, language);
 
     XQParserArgs args;
     args._context=context;
@@ -96,13 +96,13 @@ XQQuery* XQilla::parse(const InputSource& querySrc, Language language, DynamicCo
       buf.set(X("Cannot read query content from "));
       buf.append(querySrc.getSystemId());
       buf.append(X(" [err:XQST0059]"));
-      XQThrow(ContextException,X("XQilla::parse"), buf.getRawBuffer());
+      XQThrow2(ContextException,X("XQilla::parse"), buf.getRawBuffer());
     }
   } catch(XMLException& e) {
     XMLBuffer buf(1023,context->getMemoryManager());
     buf.set(X("Exception reading query content: "));
     buf.append(e.getMessage());
-    XQThrow(ContextException,X("XQilla::parse"), buf.getRawBuffer());
+    XQThrow2(ContextException,X("XQilla::parse"), buf.getRawBuffer());
   }
 
   return parse(moduleText.getRawBuffer(), language, context, querySrc.getSystemId(), flags, memMgr);
@@ -119,13 +119,13 @@ XQQuery* XQilla::parseFromURI(const XMLCh* queryFile, Language language, Dynamic
       buf.set(X("Cannot read query content from "));
       buf.append(queryFile);
       buf.append(X(" [err:XQST0059]"));
-      XQThrow(ContextException,X("XQilla::parseFromURI"), buf.getRawBuffer());
+      XQThrow2(ContextException,X("XQilla::parseFromURI"), buf.getRawBuffer());
     }
   } catch(XMLException& e) {
     XMLBuffer buf(1023,context->getMemoryManager());
     buf.set(X("Exception reading query content: "));
     buf.append(e.getMessage());
-    XQThrow(ContextException,X("XQilla::parseFromURI"), buf.getRawBuffer());
+    XQThrow2(ContextException,X("XQilla::parseFromURI"), buf.getRawBuffer());
   }
 
   return parse(moduleText.getRawBuffer(), language, context, queryFile, flags, memMgr);

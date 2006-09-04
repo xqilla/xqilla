@@ -41,11 +41,11 @@ ATNotationOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh
   {
     try
     {
-      uri = context->getUriBoundToPrefix(prefix);
+      uri = context->getUriBoundToPrefix(prefix, 0);
     }
     catch(NamespaceLookupException&)
     {
-      XQThrow(StaticErrorException, X("ATNotationOrDerivedImpl::ATNotationOrDerivedImpl"),X("No namespace for prefix [err:XPST0081]"));
+      XQThrow2(StaticErrorException, X("ATNotationOrDerivedImpl::ATNotationOrDerivedImpl"),X("No namespace for prefix [err:XPST0081]"));
     }
   }
 
@@ -95,7 +95,7 @@ const XMLCh* ATNotationOrDerivedImpl::asString(const DynamicContext* context) co
    * false otherwise */
 bool ATNotationOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const {
   if(this->getPrimitiveTypeIndex() != target->getPrimitiveTypeIndex()) {
-    XQThrow(::IllegalArgumentException,X("ATNotationOrDerivedImpl::equals"),
+    XQThrow2(::IllegalArgumentException,X("ATNotationOrDerivedImpl::equals"),
 	    X("Equality operator for given types not supported [err:XPTY0004]"));
   }
 

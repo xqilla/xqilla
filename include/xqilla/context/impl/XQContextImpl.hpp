@@ -135,10 +135,10 @@ public:
   virtual void registerURIResolver(URIResolver *resolver);
   /* Resolve the given uri (and baseUri) to a DOMDocument. If the uri
      is relative, the base uri is obtained from the context. */
-  virtual Sequence resolveDocument(const XMLCh* uri);
+  virtual Sequence resolveDocument(const XMLCh* uri, const LocationInfo *location);
   /* Resolve the given uri (and baseUri) to a list of DOMNode objects. If
      the uri is relative, the base uri is obtained from the context. */
-  virtual Sequence resolveCollection(const XMLCh* uri);
+  virtual Sequence resolveCollection(const XMLCh* uri, const LocationInfo *location);
   virtual Sequence resolveDefaultCollection();
 
   /** Used whenever we need to create a new document (including parsing in documents) */
@@ -166,7 +166,7 @@ public:
   virtual const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver* getNSResolver() const;
   /** returns the URI that is bound in prefix in the current scope or zero
       length string otherwise */
-  virtual const XMLCh* getUriBoundToPrefix(const XMLCh* prefix) const;
+  virtual const XMLCh* getUriBoundToPrefix(const XMLCh* prefix, const LocationInfo *location) const;
   /** returns the prefix that is bound in uri in the current scope or zero
       length string otherwise */
   virtual const XMLCh* getPrefixBoundToUri(const XMLCh* uri) const;
@@ -221,15 +221,16 @@ public:
   /** adds a custom function to the function table */
   virtual void addCustomFunction(FuncFactory *func);
 	/** returns a function with name name in the namespace represented by prefix */
-  virtual ASTNode* lookUpFunction(const XMLCh* prefix, const XMLCh* name, VectorOfASTNodes& v) const;
+  virtual ASTNode* lookUpFunction(const XMLCh* prefix, const XMLCh* name, VectorOfASTNodes& v,
+                                  const LocationInfo *location) const;
 
   /** Get the implementation for the specified collation */
-  virtual Collation* getCollation(const XMLCh* const URI) const;
+  virtual Collation* getCollation(const XMLCh* const URI, const LocationInfo *location) const;
   /** Add a collation	*/
   virtual void addCollation(Collation* collation);
 
   /** Get the default collation */
-  virtual Collation* getDefaultCollation() const;
+  virtual Collation* getDefaultCollation(const LocationInfo *location) const;
   /** Specify which collation is the default one */
   virtual void setDefaultCollation(const XMLCh* const URI);
 

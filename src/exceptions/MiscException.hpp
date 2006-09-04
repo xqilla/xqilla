@@ -30,8 +30,8 @@ class XQILLA_API MiscException : public XQException
 {
 public:
   
-  MiscException(const XMLCh *functionName, const XMLCh *reason, const char *file, int line)
-    : XQException(X("MiscException"), functionName, reason, file, line) {};
+  MiscException(const XMLCh *functionName, const XMLCh *reason, const LocationInfo *info, const char *file, int line)
+    : XQException(X("MiscException"), functionName, reason, info, file, line) {};
 };
 
 #endif // _MISCEXCEPTION_HPP

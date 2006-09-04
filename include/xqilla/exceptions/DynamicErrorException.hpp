@@ -26,8 +26,8 @@
 class XQILLA_API DynamicErrorException : public XQException
 {
 public:
-  DynamicErrorException(const XMLCh* const functionName, const XMLCh* const reason, const char *file, int line)
-    : XQException(X("DynamicErrorException"), functionName, reason, file, line) {};
+  DynamicErrorException(const XMLCh* const functionName, const XMLCh* const reason, const LocationInfo *info, const char *file, int line)
+    : XQException(X("DynamicErrorException"), functionName, reason, info, file, line) {};
 };
 
 #endif // _DYNAMICERROREXCEPTION_HPP

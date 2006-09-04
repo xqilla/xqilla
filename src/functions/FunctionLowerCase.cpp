@@ -13,18 +13,20 @@
 
 #include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionLowerCase.hpp>
-#include <xqilla/items/ATStringOrDerived.hpp>
 #include <xqilla/context/DynamicContext.hpp>
-#include <xqilla/utils/XPath2Utils.hpp>
-#include <xqilla/items/DatatypeFactory.hpp>
+#include "../context/impl/UCANormalizer.hpp"
+
 #include <xercesc/util/XMLUni.hpp>
-#include <xercesc/util/XMLString.hpp>
+
+#if defined(XERCES_HAS_CPP_NAMESPACE)
+XERCES_CPP_NAMESPACE_USE
+#endif
 
 const XMLCh FunctionLowerCase::name[] = {
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_l, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_w, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_r, XERCES_CPP_NAMESPACE_QUALIFIER chDash, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_c, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_s, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, XERCES_CPP_NAMESPACE_QUALIFIER chNull 
+  chLatin_l, chLatin_o, chLatin_w, 
+  chLatin_e, chLatin_r, chDash, 
+  chLatin_c, chLatin_a, chLatin_s, 
+  chLatin_e, chNull 
 };
 const unsigned int FunctionLowerCase::minArgs = 1;
 const unsigned int FunctionLowerCase::maxArgs = 1;
@@ -41,16 +43,16 @@ FunctionLowerCase::FunctionLowerCase(const VectorOfASTNodes &args, XPath2MemoryM
 
 Sequence FunctionLowerCase::collapseTreeInternal(DynamicContext* context, int flags) const
 {
-  XPath2MemoryManager* memMgr = context->getMemoryManager();
+  XPath2MemoryManager *memMgr = context->getMemoryManager();
 
-  Sequence arg=getParamNumber(1,context)->toSequence(context);
-  if(arg.isEmpty()) {
-    return Sequence(context->getItemFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context), memMgr);
+  Item::Ptr arg = getParamNumber(1, context)->next(context);
+  if(arg.isNull()) {
+    return Sequence(context->getItemFactory()->createString(XMLUni::fgZeroLenString, context), memMgr);
   }
-  const XMLCh *src = arg.first()->asString(context);
-  const XMLCh* str = XPath2Utils::toLower(src, memMgr);
 
-  return Sequence(context->getItemFactory()->createString(str, context), memMgr);
+  XMLBuffer buf(1023, context->getMemoryManager());
+  Normalizer::lowerCase(arg->asString(context), buf);
+  return Sequence(context->getItemFactory()->createString(buf.getRawBuffer(), context), memMgr);
 }
 
 

@@ -91,7 +91,7 @@ bool ATAnyURIOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const Dynam
   if(this->getPrimitiveTypeIndex() != target->getPrimitiveTypeIndex() &&
      target->getPrimitiveTypeIndex()!=STRING) 
   {
-    XQThrow(IllegalArgumentException,X("ATAnyURIOrDerivedImpl::equals"), X("Equality operator for given types not supported [err:XPTY0004]"));
+    XQThrow2(IllegalArgumentException,X("ATAnyURIOrDerivedImpl::equals"), X("Equality operator for given types not supported [err:XPTY0004]"));
   }
   return XPath2Utils::equals(target->asString(context), _uri);
 }

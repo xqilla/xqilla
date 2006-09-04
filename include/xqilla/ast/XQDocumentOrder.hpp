@@ -41,8 +41,8 @@ protected:
 class XQILLA_API DocumentOrderResult : public LazySequenceResult
 {
 public:
-  DocumentOrderResult(const Result &parent, DynamicContext *context)
-    : LazySequenceResult(context), parent_(parent) {}
+  DocumentOrderResult(const XQDocumentOrder *doc, const Result &parent, DynamicContext *context)
+    : LazySequenceResult(doc, context), parent_(parent) {}
   void getResult(Sequence &toFill, DynamicContext *context) const;
   std::string asString(DynamicContext *context, int indent) const { return "documentorderresult"; }
 private:
@@ -52,8 +52,8 @@ private:
 class XQILLA_API UniqueNodesResult : public ResultImpl
 {
 public:
-  UniqueNodesResult(const Result &parent, const DynamicContext *context)
-    : parent_(parent), nTypeOfItemsInLastStep_(0),
+  UniqueNodesResult(const XQDocumentOrder *doc, const Result &parent, const DynamicContext *context)
+    : ResultImpl(doc), parent_(parent), nTypeOfItemsInLastStep_(0),
       noDups_(uniqueLessThanCompareFn(context)) {}
   Item::Ptr next(DynamicContext *context);
   void skip() { parent_->skip(); }

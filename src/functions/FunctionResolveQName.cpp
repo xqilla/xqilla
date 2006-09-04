@@ -69,7 +69,7 @@ Sequence FunctionResolveQName::collapseTreeInternal(DynamicContext* context, int
   bool noPrefix = XPath2Utils::equals(prefix, XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString);
   const XMLCh* namespaceURI = 0;
 
-  Result namespaces = node->dmNamespaceNodes(context);
+  Result namespaces = node->dmNamespaceNodes(context, this);
   Node::Ptr ns;
   while((ns = (Node::Ptr)namespaces->next(context)).notNull()) {
     ATQNameOrDerived::Ptr name = ns->dmNodeName(context);

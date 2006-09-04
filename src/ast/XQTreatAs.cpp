@@ -46,10 +46,10 @@ Result XQTreatAs::createResult(DynamicContext* context, int flags) const
   Result result = _expr->collapseTree(context, flags);
   if(_exprType->getOccurrenceIndicator() != SequenceType::STAR ||
      _exprType->getItemType() == NULL) {
-    result = _exprType->occurrenceMatches(result);
+    result = _exprType->occurrenceMatches(result, this);
   }
   if(_doTypeCheck) {
-    result = _exprType->typeMatches(result);
+    result = _exprType->typeMatches(result, this);
   }
   return result;
 }
@@ -73,7 +73,7 @@ ASTNode* XQTreatAs::staticResolution(StaticContext *context)
     const StaticType &sType = _expr->getStaticResolutionContext().getStaticType();
 
     bool isExact;
-    itemType->getStaticType(_src.getStaticType(), context, isExact);
+    itemType->getStaticType(_src.getStaticType(), context, isExact, this);
 
     if(!sType.containsType(_src.getStaticType().flags) &&
        (_exprType->getOccurrenceIndicator() == SequenceType::EXACTLY_ONE ||

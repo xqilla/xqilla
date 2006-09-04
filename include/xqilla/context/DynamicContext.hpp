@@ -80,10 +80,10 @@ public:
   virtual void registerURIResolver(URIResolver *resolver) = 0;
   /* Resolve the given uri (and baseUri) to a DOMDocument. If the uri
      is relative, the base uri is obtained from the context. */
-  virtual Sequence resolveDocument(const XMLCh* uri) = 0;
+  virtual Sequence resolveDocument(const XMLCh* uri, const LocationInfo *location) = 0;
   /* Resolve the given uri (and baseUri) to a ist of DOMNode objects. If the uri
      is relative, the base uri is obtained from the context. */
-  virtual Sequence resolveCollection(const XMLCh* uri) = 0;
+  virtual Sequence resolveCollection(const XMLCh* uri, const LocationInfo *location) = 0;
   virtual Sequence resolveDefaultCollection() = 0;
   /** returns the validated node */
   virtual Node::Ptr validate(const Node::Ptr &node, DocumentCache::ValidationMode valMode) = 0;

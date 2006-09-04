@@ -37,8 +37,8 @@ private:
 class FTMildnotMatches : public AllMatches
 {
 public:
-  FTMildnotMatches(const AllMatches::Ptr &left, const AllMatches::Ptr &right)
-    : left_(left), right_(right) {}
+  FTMildnotMatches(const LocationInfo *info, const AllMatches::Ptr &left, const AllMatches::Ptr &right)
+    : AllMatches(info), left_(left), right_(right) {}
   Match::Ptr next(DynamicContext *context);
 
 private:

@@ -51,12 +51,12 @@ MAPM Timezone::convert(bool positive, int hour, int minute)
 void Timezone::validate(const MAPM &tz) {
   // Check that we have a valid timezone
   if(tz.abs() > (g_maxHour * DateUtils::g_secondsPerHour)) {
-    XQThrow(XPath2TypeCastException ,X("Timezone::Timezone"),
-	    X("Timezone outside of valid range created [err:FODT0003]."));
+    XQThrow2(XPath2TypeCastException ,X("Timezone::Timezone"),
+             X("Timezone outside of valid range created [err:FODT0003]."));
   }
   if(tz.rem(DateUtils::g_secondsPerMinute).sign() != 0) {
-    XQThrow(XPath2TypeCastException ,X("Timezone::Timezone"),
-            X("Timezone must have an integral number of minutes [err:FODT0003]."));
+    XQThrow2(XPath2TypeCastException ,X("Timezone::Timezone"),
+             X("Timezone must have an integral number of minutes [err:FODT0003]."));
   }
 }
 

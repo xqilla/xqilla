@@ -80,14 +80,10 @@ Sequence FunctionMin::collapseTreeInternal(DynamicContext* context, int flags) c
         } catch(XPath2ErrorException &e) {
             XQThrow(FunctionException, X("FunctionMin::collapseTreeInternal"), X("Invalid collationURI"));  
         }
-        collation=context->getCollation(collName);
-        if (collation==NULL)
-            XQThrow(FunctionException,X("FunctionMin::collapseTreeInternal"),X("Collation object is not available"));
+        collation=context->getCollation(collName, this);
     }
     else
-        collation=context->getDefaultCollation();
-    if(collation==NULL)
-        collation=context->getCollation(CodepointCollation::getCodepointCollationName());
+        collation=context->getDefaultCollation(this);
 
     Sequence::iterator i = sequence.begin();
     AnyAtomicType::Ptr minItem = (const AnyAtomicType *)i->get();
@@ -97,7 +93,7 @@ Sequence FunctionMin::collapseTreeInternal(DynamicContext* context, int flags) c
     for (; i != sequence.end(); ++i) {
         const AnyAtomicType *atomic = (const AnyAtomicType *)i->get();
         try {
-          if(LessThan::less_than(atomic, minItem, collation, context))
+          if(LessThan::less_than(atomic, minItem, collation, context, this))
             minItem = atomic;
         }
         catch (IllegalArgumentException &e) {

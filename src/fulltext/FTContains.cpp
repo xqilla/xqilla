@@ -68,7 +68,8 @@ Result FTContains::createResult(DynamicContext* context, int flags) const
 }
 
 FTContains::FTContainsResult::FTContainsResult(const FTContains *parent)
-  : parent_(parent)
+  : SingleResult(parent),
+    parent_(parent)
 {
 }
 

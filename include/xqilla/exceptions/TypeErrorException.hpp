@@ -26,8 +26,8 @@
 class XQILLA_API TypeErrorException : public XQException
 {
 public:
-  TypeErrorException(const XMLCh* const functionName, const XMLCh* const reason, const char *file, int line)
-    : XQException(X("TypeErrorException"), functionName, reason, file, line) {};
+  TypeErrorException(const XMLCh* const functionName, const XMLCh* const reason, const LocationInfo *info, const char *file, int line)
+    : XQException(X("TypeErrorException"), functionName, reason, info, file, line) {};
 };
 
 #endif // _TYPEERROREXCEPTION_HPP

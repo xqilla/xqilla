@@ -37,16 +37,19 @@ FTSelection *FTScope::optimize(FTContext *ftcontext, bool execute) const
   if(newarg->getType() == WORD) {
     return newarg;
   }
-  return new (mm) FTScope(newarg, type_, unit_, mm);
+
+  newarg = new (mm) FTScope(newarg, type_, unit_, mm);
+  newarg->setLocationInfo(this);
+  return newarg;
 }
 
 AllMatches::Ptr FTScope::execute(FTContext *ftcontext) const
 {
   switch(type_) {
   case SAME:
-    return new FTScopeSameMatches(unit_, arg_->execute(ftcontext));
+    return new FTScopeSameMatches(this, unit_, arg_->execute(ftcontext));
   case DIFFERENT:
-    return new FTScopeDifferentMatches(unit_, arg_->execute(ftcontext));
+    return new FTScopeDifferentMatches(this, unit_, arg_->execute(ftcontext));
   default:
     assert(0);
     break;

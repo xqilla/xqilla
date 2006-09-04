@@ -64,7 +64,7 @@ Sequence FunctionDoc::collapseTreeInternal(DynamicContext* context, int flags) c
     XQThrow(FunctionException, X("FunctionDoc::collapseTreeInternal"), X("Invalid argument to fn:doc function [err:FODC0005]"));
 
   try {
-    return context->resolveDocument(uri);
+    return context->resolveDocument(uri, this);
   } 
   //TODO:  once DocumentCacheImpl can throw different errors, we should be able to throw the correct corresponding error messages.
   catch(XMLParseException &e) {

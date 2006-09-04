@@ -14,20 +14,18 @@
 #ifndef _ASTNODE_HPP
 #define _ASTNODE_HPP
 
-#include <xqilla/framework/XQillaExport.hpp>
 #include <vector>
+
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/framework/XPath2MemoryManager.hpp>
+#include <xqilla/ast/LocationInfo.hpp>
 
 class DynamicContext;
 class StaticContext;
 class Result;
-class ASTNode;
 class StaticResolutionContext;
-class SequenceType;
 
-typedef std::vector<ASTNode*,XQillaAllocator<ASTNode*> > VectorOfASTNodes;
-
-class XQILLA_API ASTNode
+class XQILLA_API ASTNode : public LocationInfo
 {
 public:
   ///enum for data types
@@ -86,6 +84,8 @@ public:
   /// Returns the StaticResolutionContext for this ASTNode
   virtual const StaticResolutionContext &getStaticResolutionContext() const = 0;
 };
+
+typedef std::vector<ASTNode*,XQillaAllocator<ASTNode*> > VectorOfASTNodes;
 
 #endif
 

@@ -32,15 +32,10 @@ public:
   virtual const StaticResolutionContext &getStaticResolutionContext() const;
 
   const XMLCh *getFunctionName() const;
-  int getLine() const;
-  int getColumn() const;
-  const XMLCh *getFile() const;
 
   ASTNode* m_impl;
 protected:
   const XMLCh* m_szFunctionName;
-  unsigned int m_nLine,m_nColumn;
-  const XMLCh* m_szFile; 
 };
 
 #endif // !defined(AFXQ_XQDEBUGHOOK_H__446AD191_E9D0_4658_BD8C_032D29DA123C__INCLUDED_)

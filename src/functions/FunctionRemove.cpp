@@ -49,7 +49,8 @@ Result FunctionRemove::createResult(DynamicContext* context, int flags) const
 }
 
 FunctionRemove::RemoveResult::RemoveResult(const FunctionRemove *func, int flags)
-  : _flags(flags),
+  : ResultImpl(func),
+    _flags(flags),
     _func(func),
     _position(0),
     _one(0),

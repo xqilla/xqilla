@@ -30,8 +30,8 @@ class XQILLA_API XMLParseException : public XQException
 {
 public:
 
-  XMLParseException(const XMLCh* const functionName, const XMLCh* const reason, const char *file, int line)
-    : XQException(X("XMLParseException"), functionName, reason, file, line) {};
+  XMLParseException(const XMLCh* const functionName, const XMLCh* const reason, const LocationInfo *info, const char *file, int line)
+    : XQException(X("XMLParseException"), functionName, reason, info, file, line) {};
 };
 
 #endif // _XMLPARSEEXCEPTION_HPP

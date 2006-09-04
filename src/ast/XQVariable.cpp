@@ -70,7 +70,7 @@ ASTNode* XQVariable::staticResolution(StaticContext *context)
 {
   // An unprefixed variable reference is in no namespace.
   if(_prefix && *_prefix)
-    _uri = context->getUriBoundToPrefix(_prefix);
+    _uri = context->getUriBoundToPrefix(_prefix, this);
   const StaticResolutionContext *var_src = context->getVariableTypeStore()->getVar(_uri, _name);
   if(var_src == NULL) {
     const XMLCh* qname = XPath2NSUtils::qualifyName(_prefix, _name, context->getMemoryManager());

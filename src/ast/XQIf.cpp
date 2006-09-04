@@ -43,7 +43,7 @@ ASTNode* XQIf::staticResolution(StaticContext *context) {
   if(_test->isConstant()) {
     AutoDelete<DynamicContext> dContext(context->createDynamicContext());
     dContext->setMemoryManager(context->getMemoryManager());
-    if(_test->collapseTree(dContext)->getEffectiveBooleanValue(dContext)) {
+    if(_test->collapseTree(dContext)->getEffectiveBooleanValue(dContext, this)) {
       return _whenTrue->staticResolution(context);
     }
     else {
@@ -62,9 +62,9 @@ ASTNode* XQIf::staticResolution(StaticContext *context) {
     _src.getStaticType().typeUnion(_whenFalse->getStaticResolutionContext().getStaticType());
     _src.setProperties(_src.getProperties() & _whenFalse->getStaticResolutionContext().getProperties());
     _src.add(_whenFalse->getStaticResolutionContext());
-
-    return this;
   }
+
+  return this;
 }
 
 const ASTNode *XQIf::getTest() const {
@@ -95,7 +95,8 @@ void XQIf::setWhenFalse(ASTNode *item)
 }
 
 XQIf::IfResult::IfResult(const XQIf *di, int flags)
-  : _flags(flags),
+  : ResultImpl(di),
+    _flags(flags),
     _di(di),
     _results(0)
 {
@@ -104,7 +105,7 @@ XQIf::IfResult::IfResult(const XQIf *di, int flags)
 Item::Ptr XQIf::IfResult::next(DynamicContext *context)
 {
   if(_results.isNull()) {
-    if(_di->getTest()->collapseTree(context)->getEffectiveBooleanValue(context)) {
+    if(_di->getTest()->collapseTree(context)->getEffectiveBooleanValue(context, this)) {
       _results = _di->getWhenTrue()->collapseTree(context, _flags);
     }
     else {

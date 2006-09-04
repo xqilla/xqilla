@@ -65,7 +65,8 @@ Item::Ptr ResultBufferImpl::item(unsigned int index, DynamicContext *context)
 }
 
 BufferedResult::BufferedResult(ResultBufferImpl *impl)
-  : _impl(impl),
+  : ResultImpl(0),
+    _impl(impl),
     _pos(0)
 {
 }

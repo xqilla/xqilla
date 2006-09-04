@@ -36,7 +36,8 @@ ASTNode* Union::staticResolution(StaticContext *context)
     sortAdded_ = true;
     // Wrap ourselves in a document order sort
     XPath2MemoryManager *mm = context->getMemoryManager();
-    return (new (mm) XQDocumentOrder(this, mm))->staticResolution(context);
+    ASTNode *result = new (mm) XQDocumentOrder(this, mm);
+    return result->staticResolution(context);
   }
 
   _src.getStaticType().flags = StaticType::NODE_TYPE;
@@ -50,7 +51,8 @@ Result Union::createResult(DynamicContext* context, int flags) const
 }
 
 Union::UnionResult::UnionResult(const Union *op, int flags)
-  : _op(op),
+  : ResultImpl(op),
+    _op(op),
     _flags(flags),
     _index(0),
     _result(0)

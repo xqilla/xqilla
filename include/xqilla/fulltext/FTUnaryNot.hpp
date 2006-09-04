@@ -34,8 +34,8 @@ private:
 class FTUnaryNotMatches : public AllMatches
 {
 public:
-  FTUnaryNotMatches(const AllMatches::Ptr &arg)
-    : toDo_(true), arg_(arg) {}
+  FTUnaryNotMatches(const LocationInfo *info, const AllMatches::Ptr &arg)
+    : AllMatches(info), toDo_(true), arg_(arg) {}
   Match::Ptr next(DynamicContext *context);
 
 private:

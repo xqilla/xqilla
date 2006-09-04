@@ -123,10 +123,10 @@ public:
   virtual void registerURIResolver(URIResolver *resolver);
   /* Resolve the given uri (and baseUri) to a DOMDocument. If the uri
      is relative, the base uri is obtained from the context. */
-  virtual Sequence resolveDocument(const XMLCh* uri);
+  virtual Sequence resolveDocument(const XMLCh* uri, const LocationInfo *location);
   /* Resolve the given uri (and baseUri) to a list of DOMNode objects. If
      the uri is relative, the base uri is obtained from the context. */
-  virtual Sequence resolveCollection(const XMLCh* uri);
+  virtual Sequence resolveCollection(const XMLCh* uri, const LocationInfo *location);
   virtual Sequence resolveDefaultCollection();
 
   /** Used whenever we need to create a new document (including parsing in documents) */
@@ -154,7 +154,7 @@ public:
   virtual const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver* getNSResolver() const;
   /** returns the URI that is bound in prefix in the current scope or zero
       length string otherwise */
-  virtual const XMLCh* getUriBoundToPrefix(const XMLCh* prefix) const;
+  virtual const XMLCh* getUriBoundToPrefix(const XMLCh* prefix, const LocationInfo *location) const;
   /** returns the prefix that is bound in uri in the current scope or zero
       length string otherwise */
   virtual const XMLCh* getPrefixBoundToUri(const XMLCh* uri) const;
@@ -209,15 +209,16 @@ public:
   /** adds a custom function to the function table */
   virtual void addCustomFunction(FuncFactory *func);
 	/** returns a function with name name in the namespace represented by prefix */
-  virtual ASTNode* lookUpFunction(const XMLCh* prefix, const XMLCh* name, VectorOfASTNodes& v) const;
+  virtual ASTNode* lookUpFunction(const XMLCh* prefix, const XMLCh* name, VectorOfASTNodes& v,
+                                  const LocationInfo *location) const;
 
   /** Get the implementation for the specified collation */
-  virtual Collation* getCollation(const XMLCh* const URI) const;
+  virtual Collation* getCollation(const XMLCh* const URI, const LocationInfo *location) const;
   /** Add a collation	*/
   virtual void addCollation(Collation* collation);
 
   /** Get the default collation */
-  virtual Collation* getDefaultCollation() const;
+  virtual Collation* getDefaultCollation(const LocationInfo *location) const;
   /** Specify which collation is the default one */
   virtual void setDefaultCollation(const XMLCh* const URI);
 
@@ -339,35 +340,35 @@ protected:
 
 
 inline void XQDynamicContextImpl::setContextItemType(const StaticType &)
-{ XQThrow(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
+{ XQThrow2(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
 inline void XQDynamicContextImpl::setXPath1CompatibilityMode(bool newMode)
-{ XQThrow(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
+{ XQThrow2(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
 inline void XQDynamicContextImpl::setDefaultFuncNS(const XMLCh* newNS)
-{ XQThrow(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
+{ XQThrow2(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
 inline void XQDynamicContextImpl::setBaseURI(const XMLCh* newURI)
-{ XQThrow(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
+{ XQThrow2(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
 inline void XQDynamicContextImpl::addCustomFunction(FuncFactory *func)
-{ XQThrow(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
+{ XQThrow2(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
 inline void XQDynamicContextImpl::addCollation(Collation* collation)
-{ XQThrow(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
+{ XQThrow2(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
 inline void XQDynamicContextImpl::addSchemaLocation(const XMLCh* uri, VectorOfStrings* locations)
-{ XQThrow(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
+{ XQThrow2(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
 inline VariableTypeStore* XQDynamicContextImpl::getVariableTypeStore()
-{ XQThrow(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); return 0; }
+{ XQThrow2(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); return 0; }
 inline void XQDynamicContextImpl::setConstructionMode(StaticContext::ConstructionMode newMode)
-{ XQThrow(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
+{ XQThrow2(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
 inline void XQDynamicContextImpl::setPreserveBoundarySpace(bool value)
-{ XQThrow(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
+{ XQThrow2(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
 inline void XQDynamicContextImpl::setDefaultFLWOROrderingMode(StaticContext::FLWOROrderingMode newMode)
-{ XQThrow(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
+{ XQThrow2(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
 inline void XQDynamicContextImpl::setInheritNamespaces(bool value) 
-{ XQThrow(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
+{ XQThrow2(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
 inline void XQDynamicContextImpl::setPreserveNamespaces(bool value) 
-{ XQThrow(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
+{ XQThrow2(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
 inline void XQDynamicContextImpl::setNodeSetOrdering(NodeSetOrdering newOrder)
-{ XQThrow(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
+{ XQThrow2(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
 inline void XQDynamicContextImpl::setModuleResolver(ModuleResolver *resolver)
-{ XQThrow(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
+{ XQThrow2(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
 
 
 inline const StaticType &XQDynamicContextImpl::getContextItemType() const { return _staticContext->getContextItemType(); }
@@ -380,8 +381,8 @@ inline bool XQDynamicContextImpl::getPreserveNamespaces() const { return _static
 inline StaticContext::NodeSetOrdering XQDynamicContextImpl::getNodeSetOrdering() const { return _staticContext->getNodeSetOrdering(); }
 inline ModuleResolver * XQDynamicContextImpl::getModuleResolver() const { return _staticContext->getModuleResolver(); }
 
-inline Collation* XQDynamicContextImpl::getCollation(const XMLCh* URI) const { return _staticContext->getCollation(URI); }
-inline ASTNode* XQDynamicContextImpl::lookUpFunction(const XMLCh* prefix, const XMLCh* name, VectorOfASTNodes& v) const { return _staticContext->lookUpFunction(prefix, name, v); }
+inline Collation* XQDynamicContextImpl::getCollation(const XMLCh* URI, const LocationInfo *location) const { return _staticContext->getCollation(URI, location); }
+inline ASTNode* XQDynamicContextImpl::lookUpFunction(const XMLCh* prefix, const XMLCh* name, VectorOfASTNodes& v, const LocationInfo *location) const { return _staticContext->lookUpFunction(prefix, name, v, location); }
 inline bool XQDynamicContextImpl::isTypeOrDerivedFromType(const XMLCh* uri, const XMLCh* typeName, const XMLCh* uriToCheck, const XMLCh* typeNameToCheck) const { return _staticContext->isTypeOrDerivedFromType(uri, typeName, uriToCheck, typeNameToCheck); }
 
 inline StaticContext::ConstructionMode XQDynamicContextImpl::getConstructionMode() const { return _staticContext->getConstructionMode(); }

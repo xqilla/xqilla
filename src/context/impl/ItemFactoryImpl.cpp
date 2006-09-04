@@ -87,7 +87,7 @@ Node::Ptr ItemFactoryImpl::cloneNode(const Node::Ptr node, const DynamicContext 
   else if(xNode->getNodeType()==DOMXPathNamespace::XPATH_NAMESPACE_NODE)
   {
     // TODO
-    XQThrow(ASTException,X("ItemFactoryImpl::cloneNode"),X("Cannot clone a namespace node"));
+    XQThrow2(ASTException,X("ItemFactoryImpl::cloneNode"),X("Cannot clone a namespace node"));
     return NULL;
   }
   else
@@ -171,7 +171,7 @@ Node::Ptr ItemFactoryImpl::createElementNode(const XMLCh *uri, const XMLCh *pref
     const DOMNode* attr=nodeImpl->getDOMNode();
     DOMAttr* exists=element->getAttributeNodeNS(attr->getNamespaceURI(), attr->getLocalName());
     if(exists!=0)
-      XQThrow(ASTException,X("ItemFactoryImpl::createElementNode"),X("An element has two attributes with the same expanded name [err:XQDY0025]"));
+      XQThrow2(ASTException,X("ItemFactoryImpl::createElementNode"),X("An element has two attributes with the same expanded name [err:XQDY0025]"));
 
     DOMAttr* imported = (DOMAttr*)document->importNode(const_cast<DOMNode*>(attr),true);
     if(constrMode == StaticContext::CONSTRUCTION_MODE_PRESERVE)
@@ -249,7 +249,7 @@ Node::Ptr ItemFactoryImpl::createElementNode(const XMLCh *uri, const XMLCh *pref
                  XPath2Utils::equals(typeName, XMLUni::fgNotationString)
                 )
               )
-                XQThrow(ASTException,X("ItemFactoryImpl::createElementNode"),X("An element has a content that is namespace sensitive, and cannot be copied when copy-namespace is set to no-preserve [err:XQTY0086]"));
+                XQThrow2(ASTException,X("ItemFactoryImpl::createElementNode"),X("An element has a content that is namespace sensitive, and cannot be copied when copy-namespace is set to no-preserve [err:XQTY0086]"));
         }
       } catch(DOMException&) {
       }
@@ -272,7 +272,7 @@ Node::Ptr ItemFactoryImpl::createElementNode(const XMLCh *uri, const XMLCh *pref
                  XPath2Utils::equals(typeName, XMLUni::fgNotationString)
                 )
               )
-                XQThrow(ASTException,X("ItemFactoryImpl::createElementNode"),X("An element has a content that is namespace sensitive, and cannot be copied when copy-namespace is set to no-preserve [err:XQTY0086]"));
+                XQThrow2(ASTException,X("ItemFactoryImpl::createElementNode"),X("An element has a content that is namespace sensitive, and cannot be copied when copy-namespace is set to no-preserve [err:XQTY0086]"));
           }
         } catch(DOMException&) {
         }

@@ -134,7 +134,7 @@ bool DateUtils::isLeapYear(MAPM year)
 int DateUtils::asInt(MAPM num) 
 {
   if(num < INT_MIN || num > INT_MAX) {
-    XQThrow(XPath2TypeCastException, X("DateUtils::asInt"), X("Invalid representation of an int [err:FORG0001]"));
+    XQThrow2(XPath2TypeCastException, X("DateUtils::asInt"), X("Invalid representation of an int [err:FORG0001]"));
   } else {
     char out_string[256];
     num.toIntegerString(out_string);

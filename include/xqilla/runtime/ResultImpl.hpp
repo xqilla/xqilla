@@ -20,13 +20,14 @@
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/items/Item.hpp>
 #include <xqilla/framework/ReferenceCounted.hpp>
+#include <xqilla/ast/LocationInfo.hpp>
 
 class SequenceType;
 class DynamicContext;
 class Sequence;
 
 /** A lazily evaluated query result */
-class XQILLA_API ResultImpl : public ReferenceCounted
+class XQILLA_API ResultImpl : public ReferenceCounted, public LocationInfo
 {
 public:
   virtual ~ResultImpl() {}
@@ -38,9 +39,9 @@ public:
   virtual void skip() {}
 
   /// Returns the effective boolean value of the sequence. Only works properly before next() has been called.
-  virtual bool getEffectiveBooleanValue(DynamicContext* context);
+  virtual bool getEffectiveBooleanValue(DynamicContext* context, const LocationInfo *info);
   /// Returns the effective boolean value of the sequence.
-  static bool getEffectiveBooleanValue(const Item::Ptr &first, const Item::Ptr &second, DynamicContext* context);
+  static bool getEffectiveBooleanValue(const Item::Ptr &first, const Item::Ptr &second, DynamicContext* context, const LocationInfo *info);
 
   /// Cast operator to a Sequence. Only works properly before next() has been called.
   virtual Sequence toSequence(DynamicContext *context);
@@ -55,7 +56,10 @@ protected:
    * Do not allocate this object from a memory manager!
    * It must be created using the heap.
    */
-  ResultImpl() {}
+  ResultImpl(const LocationInfo *o)
+  {
+    setLocationInfo(o);
+  }
 
 private:
   ResultImpl(const ResultImpl &) {};

@@ -307,19 +307,19 @@ void XQillaTestSuiteRunner::runTestCase(const TestCase &testCase)
     for(v=testCase.extraVars.begin();v!=testCase.extraVars.end();v++) {
       XQQuery* pInnerQuery = xqilla.parseFromURI(X(v->second.c_str()), XQilla::XQUERY, context.get());
       Sequence doc=pInnerQuery->execute(context.get())->toSequence(context.get());
-      context->getVariableStore()->setGlobalVar(X(v->first.c_str()),doc,context.get());
+      context->getVariableStore()->setGlobalVar(X(v->first.c_str()),doc,context.get(), 0);
     }
     for(v=testCase.inputVars.begin();v!=testCase.inputVars.end();v++) {
-      Sequence doc=context->resolveDocument(X(v->second.c_str()));
-      context->getVariableStore()->setGlobalVar(X(v->first.c_str()),doc,context.get());
+      Sequence doc=context->resolveDocument(X(v->second.c_str()), 0);
+      context->getVariableStore()->setGlobalVar(X(v->first.c_str()),doc,context.get(), 0);
     }
     for(v=testCase.inputURIVars.begin();v!=testCase.inputURIVars.end();v++) {
       Item::Ptr uri = context->getItemFactory()->createString(X(v->second.c_str()),context.get());
-      context->getVariableStore()->setGlobalVar(X(v->first.c_str()), uri, context.get());
+      context->getVariableStore()->setGlobalVar(X(v->first.c_str()), uri, context.get(), 0);
     }
     if(!testCase.contextItem.empty())
     {
-      Sequence doc=context->resolveDocument(X(testCase.contextItem.c_str()));
+      Sequence doc=context->resolveDocument(X(testCase.contextItem.c_str()), 0);
       context->setContextItem(doc.first());
     }
     context->setContextPosition(1);
@@ -332,7 +332,31 @@ void XQillaTestSuiteRunner::runTestCase(const TestCase &testCase)
     testResults(testCase, serializeXMLResults(result, context.get()));
   }
   catch(XQException& e) {
-    testErrors(testCase, UTF8(e.getError()));
+    ostringstream oss;
+//     if(e.getXQueryLine() == 0) {
+//       oss << "No line number:" << std::endl << UTF8(e.getError()) << std::endl;
+//       oss << "at " << UTF8(e.getXQueryFile()) << ":" << e.getXQueryLine() << ":" << e.getXQueryColumn() << std::endl;
+//       oss << "at " << e.getCppFile() << ":" << e.getCppLine() << std::endl;
+//       m_results->reportFailUnexpectedError(testCase, oss.str(), "XXX");
+//     }
+//     else if(e.getXQueryColumn() == 0) {
+//       oss << "No column number:" << std::endl << UTF8(e.getError()) << std::endl;
+//       oss << "at " << UTF8(e.getXQueryFile()) << ":" << e.getXQueryLine() << ":" << e.getXQueryColumn() << std::endl;
+//       oss << "at " << e.getCppFile() << ":" << e.getCppLine() << std::endl;
+//       m_results->reportFailUnexpectedError(testCase, oss.str(), "XXX");
+//     }
+//     else if(e.getXQueryFile() == 0) {
+//       oss << "No file name:" << std::endl << UTF8(e.getError()) << std::endl;
+//       oss << "at " << UTF8(e.getXQueryFile()) << ":" << e.getXQueryLine() << ":" << e.getXQueryColumn() << std::endl;
+//       oss << "at " << e.getCppFile() << ":" << e.getCppLine() << std::endl;
+//       m_results->reportFailUnexpectedError(testCase, oss.str(), "XXX");
+//     }
+//     else {
+      oss << UTF8(e.getError()) << std::endl;
+      oss << "at " << UTF8(e.getXQueryFile()) << ":" << e.getXQueryLine() << ":" << e.getXQueryColumn() << std::endl;
+      oss << "at " << e.getCppFile() << ":" << e.getCppLine() << std::endl;
+      testErrors(testCase, oss.str());
+//     }
   }
   catch(DOMException &de) {
     testErrors(testCase, string("DOMException: ") + UTF8(de.getMessage()));
@@ -393,7 +417,7 @@ bool XQillaTestSuiteRunner::resolveDocument(Sequence &result, const XMLCh* uri, 
   std::map<std::string, std::string>::iterator it=m_inputFiles.find(UTF8(uri));
   if(it!=m_inputFiles.end())
   {
-    result=context->resolveDocument(X(it->second.c_str()));
+    result=context->resolveDocument(X(it->second.c_str()), 0);
     return true;
   }
   return false;
@@ -406,7 +430,7 @@ bool XQillaTestSuiteRunner::resolveCollection(Sequence &result, const XMLCh* uri
   {
     for(std::list<std::string>::iterator s=it->second.begin();s!=it->second.end();s++)
     {
-      result.joinSequence(context->resolveDocument(X(s->c_str())));
+      result.joinSequence(context->resolveDocument(X(s->c_str()), 0));
     }
     return true;
   }

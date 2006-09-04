@@ -234,7 +234,7 @@ void XQDynamicContextImpl::registerURIResolver(URIResolver *resolver)
   }
 }
 
-Sequence XQDynamicContextImpl::resolveDocument(const XMLCh* uri)
+Sequence XQDynamicContextImpl::resolveDocument(const XMLCh* uri, const LocationInfo *location)
 {
   bool found = false;
   Sequence result(getMemoryManager());
@@ -258,7 +258,7 @@ Sequence XQDynamicContextImpl::resolveDocument(const XMLCh* uri)
       errMsg.append(X(". Error message: "));
       errMsg.append(e.getError());
       errMsg.append(X(" [err:FODC0002]"));
-      XQThrow(XMLParseException,X("XQDynamicContextImpl::resolveDocument"), errMsg.getRawBuffer());
+      XQThrow3(XMLParseException,X("XQDynamicContextImpl::resolveDocument"), errMsg.getRawBuffer(), location);
     }
 
     if(doc != NULLRCP) {
@@ -269,14 +269,14 @@ Sequence XQDynamicContextImpl::resolveDocument(const XMLCh* uri)
       errMsg.set(X("Error retrieving resource: "));
       errMsg.append(uri);
       errMsg.append(X(" [err:FODC0002]"));
-      XQThrow(XMLParseException,X("XQDynamicContextImpl::resolveDocument"), errMsg.getRawBuffer());
+      XQThrow3(XMLParseException,X("XQDynamicContextImpl::resolveDocument"), errMsg.getRawBuffer(), location);
     }
   }
 
   return result;
 }
 
-Sequence XQDynamicContextImpl::resolveCollection(const XMLCh* uri)
+Sequence XQDynamicContextImpl::resolveCollection(const XMLCh* uri, const LocationInfo *location)
 {
   bool found = false;
   Sequence result(getMemoryManager());
@@ -304,7 +304,7 @@ Sequence XQDynamicContextImpl::resolveCollection(const XMLCh* uri)
       XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer errMsg;
       errMsg.set(X("Error retrieving resource: "));
       errMsg.append(uri);
-      XQThrow(XMLParseException,X("XQDynamicContextImpl::resolveDocument"), errMsg.getRawBuffer());
+      XQThrow3(XMLParseException,X("XQDynamicContextImpl::resolveDocument"), errMsg.getRawBuffer(), location);
     }
   }
 
@@ -364,13 +364,13 @@ const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver* XQDynamicContextImpl::g
   return _nsResolver;
 }
 
-const XMLCh* XQDynamicContextImpl::getUriBoundToPrefix(const XMLCh* prefix) const
+const XMLCh* XQDynamicContextImpl::getUriBoundToPrefix(const XMLCh* prefix, const LocationInfo *location) const
 {
   const XMLCh* uri = _nsResolver->lookupNamespaceURI(prefix);
 
 	if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(uri) == 0 && XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(prefix) > 0){
 		const XMLCh* msg = XPath2Utils::concatStrings(X("No namespace for prefix \'"), prefix, X("\' [err:XPST0081]"), getMemoryManager());
-		XQThrow(NamespaceLookupException, X("XQDynamicContextImpl::getUriBoundToPrefix"), msg);
+		XQThrow3(NamespaceLookupException, X("XQDynamicContextImpl::getUriBoundToPrefix"), msg, location);
 	}
 
 	return uri;
@@ -396,12 +396,12 @@ void XQDynamicContextImpl::setDefaultCollation(const XMLCh* URI)
   _defaultCollation=getMemoryManager()->getPooledString(URI);
 }
 
-Collation* XQDynamicContextImpl::getDefaultCollation() const
+Collation* XQDynamicContextImpl::getDefaultCollation(const LocationInfo *location) const
 {
   if(_defaultCollation == 0) {
-    return _staticContext->getDefaultCollation();
+    return _staticContext->getDefaultCollation(location);
   }
   else {
-    return getCollation(_defaultCollation);
+    return getCollation(_defaultCollation, location);
   }
 }

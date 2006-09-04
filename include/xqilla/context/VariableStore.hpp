@@ -24,6 +24,7 @@ template<class TYPE> class VarHashEntry;
 template<class TYPE> class Scope;
 class StaticContext;
 class XPath2MemoryManager;
+class LocationInfo;
 
 /** This is the wrapper class for the variable store, which implements the 
     lookup and scoping of simple variables. */
@@ -54,21 +55,24 @@ public:
 
   /** Declares and/or sets a variable in the global scope. */
   virtual void setGlobalVar(const XMLCh* ident, const Sequence &value,
-		    const StaticContext* context) = 0;
+                            const StaticContext* context,
+                            const LocationInfo *location) = 0;
   virtual void setGlobalVar(const XMLCh* namespaceURI, const XMLCh* name, const Sequence &value,
 		    const StaticContext* context) = 0;
 
   /** Declares and/or sets a variable in the top level scope. */
   virtual void setVar(const XMLCh* ident, const Sequence &value,
-	      const StaticContext* context) = 0;
+                      const StaticContext* context,
+                      const LocationInfo *location) = 0;
   virtual void setVar(const XMLCh* namespaceURI, const XMLCh* name, const Sequence &value,
 	      const StaticContext* context) = 0;
 
   /** Declare a var in the top level scope (A full set of
       these namespaceURI/name pair methods should be made) */
   virtual void declareVar(const XMLCh* ident, 
-                  const Sequence &value,
-                  const StaticContext* context) = 0;
+                          const Sequence &value,
+                          const StaticContext* context,
+                          const LocationInfo *location) = 0;
   virtual void declareVar(const XMLCh* namespaceURI,
                   const XMLCh* name,
                   const Sequence &value,
@@ -78,7 +82,8 @@ public:
       qname. Returns a boolean (true if successful), and the Sequence value
       of the variable*/
   virtual const std::pair<bool, Sequence> getVar(const XMLCh* ident,
-                                    const StaticContext* context) const = 0;
+                                                 const StaticContext* context,
+                                                 const LocationInfo *location) const = 0;
   virtual const std::pair<bool, Sequence> getVar(const XMLCh* namespaceURI,
                                     const XMLCh* name,
                                     const StaticContext* context) const = 0;
@@ -87,24 +92,28 @@ public:
       qname. Returns the VariableStore::Entry for the variable, or null if it doesn't
       exist*/
   virtual Entry* getReferenceVar(const XMLCh* ident,
-                                    const StaticContext* context) const = 0;
+                                 const StaticContext* context,
+                                 const LocationInfo *location) const = 0;
   virtual Entry* getReferenceVar(const XMLCh* namespaceURI,
                                     const XMLCh* name,
                                     const StaticContext* context) const = 0;
 
   /** Gets a variable from the global scope */
   virtual const std::pair<bool, Sequence> getGlobalVar(const XMLCh* ident,
-                                    const StaticContext* context) const = 0;
+                                                       const StaticContext* context,
+                                                       const LocationInfo *location) const = 0;
   virtual const std::pair<bool, Sequence> getGlobalVar(const XMLCh* namespaceURI,
                                     const XMLCh* name,
                                     const StaticContext* context) const = 0;
 
   /** Deletes a variable from the current scope. */
-  virtual void delVar(const XMLCh* ident, const StaticContext* context) = 0;
+  virtual void delVar(const XMLCh* ident, const StaticContext* context,
+                      const LocationInfo *location) = 0;
   virtual void delVar(const XMLCh* namespaceURI, const XMLCh* name, const StaticContext* context) = 0;
 
   /** Deletes a variable from the global scope. */
-  virtual void delGlobalVar(const XMLCh* ident, const StaticContext* context) = 0;
+  virtual void delGlobalVar(const XMLCh* ident, const StaticContext* context,
+                            const LocationInfo *location) = 0;
 
   /** Gives human readable representation of the variable store */
   virtual XMLCh* print(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr) const = 0;

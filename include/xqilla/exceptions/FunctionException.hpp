@@ -29,8 +29,8 @@ class XQILLA_API FunctionException : public XQException
 {
 public:
 
-  FunctionException(const XMLCh* const functionName, const XMLCh* const reason, const char *file, int line)
-    : XQException(X("FunctionException"), functionName, reason, file, line) {};
+  FunctionException(const XMLCh* const functionName, const XMLCh* const reason, const LocationInfo *info, const char *file, int line)
+    : XQException(X("FunctionException"), functionName, reason, info, file, line) {};
 };
 
 #endif // _FUNCTIONEXCEPTION_HPP

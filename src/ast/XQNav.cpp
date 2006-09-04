@@ -22,7 +22,6 @@
 #include <xercesc/dom/DOMDocument.hpp>
 #include <xqilla/exceptions/TypeErrorException.hpp>
 #include <xqilla/items/Node.hpp>
-#include <xqilla/functions/FunctionRoot.hpp>
 #include <xqilla/ast/StaticResolutionContext.hpp>
 #include <xqilla/ast/XQTreatAs.hpp>
 #include <xqilla/ast/XQDocumentOrder.hpp>
@@ -53,7 +52,7 @@ Result XQNav::createResult(DynamicContext* context, int flags) const
     if(it->step->getStaticResolutionContext().isContextSizeUsed()) {
       // We need the context size, so convert to a Sequence to work it out
       Sequence seq(result->toSequence(context));
-      result = new StepResult(new SequenceResult(seq), it->step, seq.getLength(), flags);
+      result = new StepResult(new SequenceResult(it->step, seq), it->step, seq.getLength(), flags);
     }
     // this will ignore any previous result, so it can be done only at the first iteration
     else if(result.isNull() && !it->step->getStaticResolutionContext().areContextFlagsUsed()) {
@@ -68,22 +67,17 @@ Result XQNav::createResult(DynamicContext* context, int flags) const
       // the last step allows either nodes or atomic items
       if(st.containsType(StaticType::NODE_TYPE) &&
          st.containsType(StaticType::ANY_ATOMIC_TYPE)) {
-        result = new LastStepCheckResult(result);
+        result = new LastStepCheckResult(it->step, result);
       }
     }
     else {
       if(st.containsType(StaticType::ANY_ATOMIC_TYPE)) {
-        result = new IntermediateStepCheckResult(result);
+        result = new IntermediateStepCheckResult(it->step, result);
       }
     }
   }
 
   return result;
-}
-
-void XQNav::addStep(XQStep::Axis axis, NodeTest* nodeTest)
-{
-  _steps.push_back(new (getMemoryManager()) XQStep(axis, nodeTest, getMemoryManager()));
 }
 
 void XQNav::addStep(const StepInfo &step)
@@ -96,25 +90,17 @@ void XQNav::addStepFront(ASTNode* step)
   _steps.insert(_steps.begin(), step);
 }
 
-void XQNav::addInitialRootStep(XPath2MemoryManager *memMgr)
-{
-  VectorOfASTNodes args(XQillaAllocator<ASTNode*>((XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager*)memMgr));
-  FunctionRoot *root = new (memMgr) FunctionRoot(args, memMgr);
-
-  SequenceType *documentNode = new (memMgr)
-    SequenceType(new (memMgr) SequenceType::ItemType(SequenceType::ItemType::TEST_DOCUMENT));
-
-  XQTreatAs *treat = new (memMgr) XQTreatAs(root, documentNode, memMgr);
-  addStepFront(treat);
-}
-
 ASTNode* XQNav::staticResolution(StaticContext *context)
 {
   if(!_sortAdded) {
     _sortAdded = true;
     // Wrap ourselves in a document order sort
     XPath2MemoryManager *mm = context->getMemoryManager();
-    return (new (mm) XQDocumentOrder(this, mm))->staticResolution(context);
+
+    ASTNode *result = new (mm) XQDocumentOrder(this, mm);
+    result->setLocationInfo((--_steps.end())->step);
+    
+    return result->staticResolution(context);
   }
 
   StaticType oldContextItemType = context->getContextItemType();
@@ -294,7 +280,8 @@ unsigned int XQNav::combineProperties(unsigned int prev_props, unsigned int step
 /////////////////////////////////////
 
 XQNav::StepResult::StepResult(const Result &parent, ASTNode *step, unsigned int contextSize, int flags)
-  : initialised_(false),
+  : ResultImpl(step),
+    initialised_(false),
     flags_(flags),
     parent_(parent),
     step_(step),
@@ -381,8 +368,9 @@ std::string XQNav::StepResult::asString(DynamicContext *context, int indent) con
   return oss.str();
 }
 
-IntermediateStepCheckResult::IntermediateStepCheckResult(const Result &parent)
-  : parent_(parent)
+IntermediateStepCheckResult::IntermediateStepCheckResult(const LocationInfo *o, const Result &parent)
+  : ResultImpl(o),
+    parent_(parent)
 {
 }
 
@@ -420,8 +408,9 @@ std::string IntermediateStepCheckResult::asString(DynamicContext *context, int i
   return oss.str();
 }
 
-LastStepCheckResult::LastStepCheckResult(const Result &parent)
-  : parent_(parent),
+LastStepCheckResult::LastStepCheckResult(const LocationInfo *o, const Result &parent)
+  : ResultImpl(o),
+    parent_(parent),
     _nTypeOfItemsInLastStep(0)
 {
 }

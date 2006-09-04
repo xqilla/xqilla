@@ -15,6 +15,7 @@
 
 #include <xercesc/util/XMLString.hpp>
 #include <xqilla/utils/UTF8Str.hpp>
+#include <xqilla/ast/LocationInfo.hpp>
 #include <iostream>
 
 #if defined(XERCES_HAS_CPP_NAMESPACE)
@@ -29,11 +30,12 @@ XQException::XQException(const XMLCh *reason, const XMLCh* file, unsigned int li
     m_cppLine(cppLine),
     m_xqLine(line),
     m_xqColumn(column),
-    m_xqFile(XMLString::replicate(file))
+    m_xqFile(XMLString::replicate(file)),
+    m_errorReported(false)
 {
 }
 
-XQException::XQException(const XMLCh* const type, const XMLCh* const functionName, const XMLCh* const reason, const char *cppFile, unsigned int cppLine)
+XQException::XQException(const XMLCh* const type, const XMLCh* const functionName, const XMLCh* const reason, const LocationInfo *info, const char *cppFile, unsigned int cppLine)
   : m_type(XMLString::replicate(type)),
     m_error(XMLString::replicate(reason)),
     m_cppFunction(XMLString::replicate(functionName)),
@@ -41,8 +43,10 @@ XQException::XQException(const XMLCh* const type, const XMLCh* const functionNam
     m_cppLine(cppLine),
     m_xqLine(0),
     m_xqColumn(0),
-    m_xqFile(0)
+    m_xqFile(0),
+    m_errorReported(false)
 {
+  if(info != 0) setXQueryPosition(info);
 }
 
 XQException::XQException(const XQException &o)
@@ -53,7 +57,8 @@ XQException::XQException(const XQException &o)
     m_cppLine(o.m_cppLine),
     m_xqLine(o.m_xqLine),
     m_xqColumn(o.m_xqColumn),
-    m_xqFile(XMLString::replicate(o.m_xqFile))
+    m_xqFile(XMLString::replicate(o.m_xqFile)),
+    m_errorReported(o.m_errorReported)
 {
 }
 
@@ -71,6 +76,14 @@ void XQException::setXQueryPosition(const XMLCh *file, unsigned int line, unsign
   m_xqFile = XMLString::replicate(file);
   m_xqLine = line;
   m_xqColumn = column;
+}
+
+void XQException::setXQueryPosition(const LocationInfo *info)
+{
+  XMLString::release(&m_xqFile);
+  m_xqFile = XMLString::replicate(info->getFile());
+  m_xqLine = info->getLine();
+  m_xqColumn = info->getColumn();
 }
 
 void XQException::printDebug(const XMLCh* const context) const

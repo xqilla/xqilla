@@ -25,10 +25,10 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/schema/SequenceType.hpp>
 
-EmptyResult Result::_empty;
+EmptyResult Result::_empty(0);
 
 Result::Result(const Sequence &seq)
-  : _impl(new SequenceResult(seq))
+  : _impl(new SequenceResult(0, seq))
 {
   _impl->incrementRefCount();
 }

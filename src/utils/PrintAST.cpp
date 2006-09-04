@@ -1366,7 +1366,7 @@ string PrintAST::printItemTypeAttrs(const SequenceType::ItemType *type, const Dy
   }
 
   try {
-    const XMLCh *nameURI = type->getNameURI((DynamicContext *)context);
+    const XMLCh *nameURI = type->getNameURI((DynamicContext *)context, 0);
     if(type->getName() != 0) {
       s << " name=\"{" << UTF8(nameURI)
         << "}:" << UTF8(type->getName()->getName()) << "\"";
@@ -1383,7 +1383,7 @@ string PrintAST::printItemTypeAttrs(const SequenceType::ItemType *type, const Dy
   }
 
   try {
-    const XMLCh *typeURI = type->getTypeURI((DynamicContext *)context);
+    const XMLCh *typeURI = type->getTypeURI((DynamicContext *)context, 0);
     if(type->getType() != 0) {
       s << " type=\"" << UTF8(typeURI)
         << ":" << UTF8(type->getType()->getName()) << "\"";

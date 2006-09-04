@@ -67,7 +67,7 @@ Sequence FunctionDocAvailable::collapseTreeInternal(DynamicContext* context, int
 
   bool bSuccess=false;
   try {
-    bSuccess = !context->resolveDocument(uri).isEmpty();
+    bSuccess = !context->resolveDocument(uri, this).isEmpty();
   } 
   catch(...) {
   }

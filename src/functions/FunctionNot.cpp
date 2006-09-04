@@ -42,7 +42,7 @@ ASTNode* FunctionNot::staticResolution(StaticContext *context) {
 
 Sequence FunctionNot::collapseTreeInternal(DynamicContext* context, int flags) const
 {
-	bool result = !getParamNumber(1,context)->getEffectiveBooleanValue(context);
+	bool result = !getParamNumber(1,context)->getEffectiveBooleanValue(context, this);
 	XPath2MemoryManager* memMgr = context->getMemoryManager();
 	return Sequence(context->getItemFactory()->createBoolean(result, context), memMgr);
 }

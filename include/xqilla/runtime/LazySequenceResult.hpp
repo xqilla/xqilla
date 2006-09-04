@@ -21,7 +21,7 @@
 class XQILLA_API LazySequenceResult : public ResultImpl
 {
 public:
-  LazySequenceResult(DynamicContext *context);
+  LazySequenceResult(const LocationInfo *o, DynamicContext *context);
 
   /// Get the next item from the iterator
   virtual Item::Ptr next(DynamicContext *context);

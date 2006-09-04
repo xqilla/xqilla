@@ -141,7 +141,7 @@ const XMLCh* XPath2Utils::asStr(const XMLCh ch, XPath2MemoryManager* memMgr) {
 const XMLCh* XPath2Utils::subString(const XMLCh* src, unsigned int offset, unsigned int count, XPath2MemoryManager* memMgr) {
 
   if (src == 0) {
-    XQThrow(MiscException,X("XPath2Utils:subString"),X("Cannot take substring of null string"));
+    XQThrow2(MiscException,X("XPath2Utils:subString"),X("Cannot take substring of null string"));
   }
 
 	XMLCh *newStr = new XMLCh [ count + 1 ];
@@ -327,7 +327,7 @@ int XPath2Utils::indexNode(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *indexNo
   }
   default:
     assert("n" == "Unhandled node type in XPath2Utils::indexNode");
-    XQThrow(MiscException,X("XPath2Utils::indexNode"), X("Unhandled node type"));
+    XQThrow2(MiscException,X("XPath2Utils::indexNode"), X("Unhandled node type"));
   }
   
 

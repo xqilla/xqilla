@@ -115,7 +115,7 @@ MAPM ATGDayOrDerivedImpl::buildReferenceDateTime(const DynamicContext *context) 
  */
 bool ATGDayOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const {
   if(this->getPrimitiveTypeIndex() != target->getPrimitiveTypeIndex()) {
-        XQThrow(::IllegalArgumentException,X("ATGDayOrDerivedImpl::equals"), X("Equality operator for given types not supported [err:XPTY0004]"));
+        XQThrow2(::IllegalArgumentException,X("ATGDayOrDerivedImpl::equals"), X("Equality operator for given types not supported [err:XPTY0004]"));
   }
   return compare((const ATGDayOrDerived *)target.get(), context) == 0;
 }
@@ -152,7 +152,8 @@ AnyAtomicType::AtomicObjectType ATGDayOrDerivedImpl::getPrimitiveTypeIndex() con
 void ATGDayOrDerivedImpl::setGDay(const XMLCh* const value) {
  
   if(value == NULL) {
-      XQThrow(XPath2TypeCastException,X("ATGDayOrDerivedImpl::setGDay"), X("Invalid representation of gDay [err:FORG0001]"));
+      XQThrow2(XPath2TypeCastException,X("ATGDayOrDerivedImpl::setGDay"),
+               X("Invalid representation of gDay [err:FORG0001]"));
   }
   unsigned int length = XMLString::stringLen(value);
 	
@@ -270,7 +271,8 @@ void ATGDayOrDerivedImpl::setGDay(const XMLCh* const value) {
   }
 
   if ( wrongformat) {
-    XQThrow(XPath2TypeCastException,X("ATGDayOrDerivedImpl::setGDay"), X("Invalid representation of gDay [err:FORG0001]"));
+    XQThrow2(XPath2TypeCastException,X("ATGDayOrDerivedImpl::setGDay"),
+             X("Invalid representation of gDay [err:FORG0001]"));
   }
 
   timezone_ = new Timezone(Timezone::convert(zonepos, zonehh, zonemm));

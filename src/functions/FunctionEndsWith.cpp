@@ -78,12 +78,10 @@ Sequence FunctionEndsWith::collapseTreeInternal(DynamicContext* context, int fla
         } catch(XPath2ErrorException &e) {
             XQThrow(FunctionException, X("FunctionEndsWith::collapseTreeInternal"), X("Invalid collationURI"));  
         }
-        collation=context->getCollation(collName);
-        if(collation==NULL)
-            XQThrow(FunctionException,X("FunctionEndsWith::collapseTreeInternal"),X("Cannot find requested collation"));
+        collation=context->getCollation(collName, this);
     }
     else
-        collation=context->getCollation(CodepointCollation::getCodepointCollationName());
+        collation=context->getDefaultCollation(this);
 
 	// Returns a boolean indicating whether or not the value of $operand1 ends with a string that is equal to the value
 	// of $operand2 according to the specified collation

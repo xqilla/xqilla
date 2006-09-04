@@ -139,6 +139,7 @@ ASTNode *ASTNodeImpl::constantFold(StaticContext *context) const
   dContext->setMemoryManager(mm);
   Result result = createResult(dContext);
   ASTNode* newBlock = new (mm) XQSequence(result, dContext, mm);
+  newBlock->setLocationInfo(this);
   return newBlock->staticResolution(context);
 }
 
@@ -157,7 +158,7 @@ const StaticResolutionContext &ASTNodeImpl::getStaticResolutionContext() const
 /////////////////////////////////////
 
 ASTNodeImpl::CollapseTreeInternalResult::CollapseTreeInternalResult(const ASTNodeImpl *di, int flags, DynamicContext *context)
-  : LazySequenceResult(context),
+  : LazySequenceResult(di, context),
     _flags(flags),
     _di(di)
 {
@@ -165,7 +166,14 @@ ASTNodeImpl::CollapseTreeInternalResult::CollapseTreeInternalResult(const ASTNod
 
 void ASTNodeImpl::CollapseTreeInternalResult::getResult(Sequence &toFill, DynamicContext *context) const
 {
-  toFill = _di->collapseTreeInternal(context, _flags);
+  try {
+    toFill = _di->collapseTreeInternal(context, _flags);
+  }
+  catch(XQException &e) {
+      if(e.getXQueryFile() == NULL)
+        e.setXQueryPosition(this);
+      throw e;
+  }
 }
 
 std::string ASTNodeImpl::CollapseTreeInternalResult::asString(DynamicContext *context, int indent) const

@@ -31,8 +31,8 @@ class XQILLA_API ASTException : public XQException
 {
 public:
 
-  ASTException(const XMLCh *functionName, const XMLCh *reason, const char *file, int line)
-    : XQException(X("ASTException"), functionName, reason, file, line) {};
+  ASTException(const XMLCh *functionName, const XMLCh *reason, const LocationInfo *info, const char *file, int line)
+    : XQException(X("ASTException"), functionName, reason, info, file, line) {};
 };
 
 #endif

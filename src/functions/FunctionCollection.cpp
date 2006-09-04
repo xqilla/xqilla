@@ -60,5 +60,5 @@ Sequence FunctionCollection::collapseTreeInternal(DynamicContext* context, int f
   if(!XPath2Utils::isValidURI(currentUri, context->getMemoryManager()))
     XQThrow(FunctionException, X("FunctionCollection::collapseTreeInternal"), X("Invalid URI format [err:FODC0002]"));
 
-  return context->resolveCollection(currentUri);
+  return context->resolveCollection(currentUri, this);
 }

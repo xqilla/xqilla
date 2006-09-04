@@ -29,8 +29,8 @@ class XQILLA_API IllegalArgumentException : public XQException
 {
 public:
   
-  IllegalArgumentException(const XMLCh *functionName, const XMLCh *reason, const char *file, int line)
-    : XQException(X("IllegalArgumentException"), functionName, reason, file, line) {};
+  IllegalArgumentException(const XMLCh *functionName, const XMLCh *reason, const LocationInfo *info, const char *file, int line)
+    : XQException(X("IllegalArgumentException"), functionName, reason, info, file, line) {};
 };
 
 #endif // _ILLEGALARGUMENTEXCEPTION_HPP

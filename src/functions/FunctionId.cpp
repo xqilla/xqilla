@@ -96,7 +96,7 @@ Sequence FunctionId::collapseTreeInternal(DynamicContext* context, int flags) co
   std::vector<const XMLCh*> returnedVals;
 
   std::vector<Result> resultStack;
-  resultStack.push_back(root->dmChildren(context));
+  resultStack.push_back(root->dmChildren(context, this));
   Node::Ptr child = resultStack.back()->next(context);
   while(child.notNull()) {
     if(child->dmNodeKind() == Node::element_string) {
@@ -113,7 +113,7 @@ Sequence FunctionId::collapseTreeInternal(DynamicContext* context, int flags) co
       }
 
       if(!added) {
-        Result attrs = child->dmAttributes(context);
+        Result attrs = child->dmAttributes(context, this);
         Node::Ptr att;
         while((att = (Node::Ptr)attrs->next(context)).notNull()) {
           if(att->dmIsId(context)->isTrue()) {
@@ -130,7 +130,7 @@ Sequence FunctionId::collapseTreeInternal(DynamicContext* context, int flags) co
       }
     }
 
-    resultStack.push_back(child->dmChildren(context));
+    resultStack.push_back(child->dmChildren(context, this));
     while(!resultStack.empty() && (child = resultStack.back()->next(context)).isNull()) {
       resultStack.pop_back();
     }

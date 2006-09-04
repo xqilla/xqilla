@@ -60,12 +60,12 @@ Sequence FunctionContains::collapseTreeInternal(DynamicContext* context, int fla
         } catch(XPath2ErrorException &e) {
             XQThrow(FunctionException, X("FunctionContains::collapseTreeInternal"), X("Invalid collationURI"));  
         }
-        collation=context->getCollation(collName);
+        collation=context->getCollation(collName, this);
         if(collation==NULL)
             XQThrow(FunctionException,X("FunctionContains::collapseTreeInternal"),X("Collation object is not available"));
     }
     else
-        collation=context->getCollation(CodepointCollation::getCodepointCollationName());
+        collation=context->getCollation(CodepointCollation::getCodepointCollationName(), this);
 
     const XMLCh* container = XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString;
     if(!str1.isEmpty())

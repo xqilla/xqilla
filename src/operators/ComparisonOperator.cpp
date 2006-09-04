@@ -38,6 +38,7 @@ ASTNode* ComparisonOperator::staticResolution(StaticContext *context)
   bool allConstant = true;
   for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
     *i = new (mm) XQAtomize(*i, mm);
+    (*i)->setLocationInfo(this);
     *i = (*i)->staticResolution(context);
 
     _src.add((*i)->getStaticResolutionContext());
@@ -96,20 +97,26 @@ AnyAtomicType::Ptr ComparisonOperator::getArgument(unsigned int index, DynamicCo
 }
 
 ComparisonOperator::ComparisonResult::ComparisonResult(const ComparisonOperator *op)
-  : _op(op)
+  : SingleResult(op),
+    _op(op)
 {
 }
 
 Item::Ptr ComparisonOperator::ComparisonResult::getSingleResult(DynamicContext *context) const
 {
-  AnyAtomicType::Ptr left=_op->getArgument(0, context);
-  if(left==NULLRCP)
-    return left;
-  AnyAtomicType::Ptr right=_op->getArgument(1, context);
-  if(right==NULLRCP)
-    return right;
-  bool result = _op->execute(left, right, context);
-  return (const Item::Ptr)context->getItemFactory()->createBoolean(result, context);
+  try {
+    AnyAtomicType::Ptr left=_op->getArgument(0, context);
+    if(left==NULLRCP) return left;
+    AnyAtomicType::Ptr right=_op->getArgument(1, context);
+    if(right==NULLRCP) return right;
+    bool result = _op->execute(left, right, context);
+    return (const Item::Ptr)context->getItemFactory()->createBoolean(result, context);
+  }
+  catch(XQException &e) {
+      if(e.getXQueryFile() == NULL)
+        e.setXQueryPosition(this);
+      throw;
+  }
 }
 
 std::string ComparisonOperator::ComparisonResult::asString(DynamicContext *context, int indent) const

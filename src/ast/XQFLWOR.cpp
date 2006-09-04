@@ -96,7 +96,7 @@ bool SortableItem::operator==(const SortableItem& other) const
   if(m_bIsMin && other.m_bIsMin)
     return true;
   if(!m_bIsMax && !m_bIsMin && !other.m_bIsMax && !other.m_bIsMin)
-    return Equals::equals(m_item,other.m_item,m_collation,m_context);
+    return Equals::equals(m_item,other.m_item,m_collation,m_context,m_info);
   return false;
 }
 
@@ -106,7 +106,7 @@ bool SortableItem::operator>(const SortableItem& other) const
     return false;
   if(m_bIsMax || other.m_bIsMin)
     return true;
-  return GreaterThan::greater_than(m_item,other.m_item,m_collation,m_context);
+  return GreaterThan::greater_than(m_item,other.m_item,m_collation,m_context,m_info);
 }
 
 static bool compareHelper(const XQFLWOR::ResultPair &firstArg, const XQFLWOR::ResultPair &secondArg)
@@ -146,22 +146,26 @@ XQSort::SortSpec::SortSpec(ASTNode* expr, sortModifier modifier, const XMLCh* co
 
 void XQSort::SortSpec::staticResolution(StaticContext *context, StaticResolutionContext &src)
 {
-  static SequenceType zero_or_one(new SequenceType::ItemType(SequenceType::ItemType::TEST_ANYTHING),
-                                  SequenceType::QUESTION_MARK);
-
   XPath2MemoryManager *mm = context->getMemoryManager();
 
+  SequenceType *zero_or_one = new (mm) SequenceType(new (mm) SequenceType::ItemType(SequenceType::ItemType::TEST_ANYTHING),
+                                                    SequenceType::QUESTION_MARK);
+  zero_or_one->setLocationInfo(this);
+
   _expr = new (mm) XQAtomize(_expr, mm);
+  _expr->setLocationInfo(this);
   _expr = new (mm) XQPromoteUntyped(_expr, SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                                     SchemaSymbols::fgDT_STRING, mm);
-  _expr = new XQTreatAs(_expr, &zero_or_one, mm);
+  _expr->setLocationInfo(this);
+  _expr = new XQTreatAs(_expr, zero_or_one, mm);
+  _expr->setLocationInfo(this);
   _expr = _expr->staticResolution(context);
   src.add(_expr->getStaticResolutionContext());
 
   if(_collationURI == NULL)
-    _collation = context->getDefaultCollation();
+    _collation = context->getDefaultCollation(this);
   else {
-    _collation = context->getCollation(_collationURI);
+    _collation = context->getCollation(_collationURI, this);
   }
 }
 
@@ -170,6 +174,7 @@ SortableItem XQSort::SortSpec::buildKey(DynamicContext* context)
   Result atomized = _expr->collapseTree(context);
 
   SortableItem value;
+  value.m_info = this;
   value.m_item = atomized->next(context);
 
   if(!value.m_item.isNull()) {
@@ -262,7 +267,7 @@ XQSort::SortItems XQSort::buildKeys(DynamicContext *context) const
       if(*typeIt==AnyAtomicType::UNTYPED_ATOMIC)
         *typeIt=keyType;
       else if(keyType!=AnyAtomicType::UNTYPED_ATOMIC && *typeIt!=keyType)
-        XQThrow(ItemException, X("XQSort::buildKeys"), X("Ordering item is not of the required type"));
+        XQThrow3(ItemException, X("XQSort::buildKeys"), X("Ordering item is not of the required type"), *it);
 
       keys.push_back(orderingItem);
     }
@@ -309,7 +314,7 @@ bool XQFLWOR::ProductFactor::initialise(DynamicContext *context)
   VariableStore* varStore = context->getVariableStore();
 
   // Make debug callback before declaring the variable
-  if(context->getDebugCallback()) context->getDebugCallback()->IsBreakPointHit(context, _vb->_file, _vb->_line);
+  if(context->getDebugCallback()) context->getDebugCallback()->IsBreakPointHit(context, _vb->getFile(), _vb->getLine());
 
   if(_vb->_bindingType == XQVariableBinding::letBinding) {
     // Add a new scope, if needed
@@ -370,7 +375,7 @@ bool XQFLWOR::ProductFactor::next(DynamicContext *context)
     }
 
     // Make debug callback before declaring the variable
-    if(context->getDebugCallback()) context->getDebugCallback()->IsBreakPointHit(context, _vb->_file, _vb->_line);
+    if(context->getDebugCallback()) context->getDebugCallback()->IsBreakPointHit(context, _vb->getFile(), _vb->getLine());
 
     // Set the binding variable value
     if(_vb->_variable) {
@@ -389,7 +394,7 @@ bool XQFLWOR::ProductFactor::next(DynamicContext *context)
 
 bool XQFLWOR::ProductFactor::checkWhere(DynamicContext *context)
 {
-  return _vb->_where == 0 || _vb->_where->collapseTree(context)->getEffectiveBooleanValue(context);
+  return _vb->_where == 0 || _vb->_where->collapseTree(context)->getEffectiveBooleanValue(context, _vb->_where);
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -481,7 +486,7 @@ bool XQFLWOR::nextState(ExecutionBindings &ebs, DynamicContext *context, bool in
 
 bool XQFLWOR::checkWhere(DynamicContext *context) const
 {
-  return _where == 0 || _where->collapseTree(context)->getEffectiveBooleanValue(context);
+  return _where == 0 || _where->collapseTree(context)->getEffectiveBooleanValue(context, _where);
 }
 
 VariableStore::Entry *XQFLWOR::getAccumulator(DynamicContext *context) const
@@ -492,19 +497,19 @@ VariableStore::Entry *XQFLWOR::getAccumulator(DynamicContext *context) const
     // find a unique name for the variable to be used as accumulator for the result
     // use the line number, plus a counter if more than one "for" is on the same line
     XMLCh szNumBuff[20];
-    XMLString::binToText(_bindings->front()->_line, szNumBuff, 19, 10);
+    XMLString::binToText(_bindings->front()->getLine(), szNumBuff, 19, 10);
     const XMLCh *szInitialAccumulator, *szAccumulatorName;
     szInitialAccumulator = szAccumulatorName = XPath2Utils::concatStrings(szForLoopAccumulator, szNumBuff, context->getMemoryManager());
     long index = 1;
-    while(varStore->getReferenceVar(szAccumulatorName, context) != NULL) {
+    while(varStore->getReferenceVar(szAccumulatorName, context, this) != NULL) {
       static XMLCh szSpaceParent[] = { chSpace, chOpenParen, chNull };
       XMLString::binToText(index++, szNumBuff, 19, 10);
       szAccumulatorName = XPath2Utils::concatStrings(szInitialAccumulator, szSpaceParent, szNumBuff, context->getMemoryManager());
       szAccumulatorName = XPath2Utils::concatStrings(szAccumulatorName, chCloseParen, context->getMemoryManager());
     }
 
-    varStore->declareVar(szAccumulatorName, Sequence(context->getMemoryManager()), context);
-    return varStore->getReferenceVar(szAccumulatorName, context);
+    varStore->declareVar(szAccumulatorName, Sequence(context->getMemoryManager()), context, this);
+    return varStore->getReferenceVar(szAccumulatorName, context, this);
   }
 
   return 0;
@@ -563,7 +568,7 @@ void XQFLWOR::staticResolutionImpl(StaticContext* context)
     // Work out the uri and localname of the variable binding
     const XMLCh* prefix=XPath2NSUtils::getPrefix((*it0)->_variable, mm);
     if(prefix && *prefix)
-      (*it0)->_vURI = context->getUriBoundToPrefix(prefix);
+      (*it0)->_vURI = context->getUriBoundToPrefix(prefix, this);
     (*it0)->_vName = XPath2NSUtils::getLocalName((*it0)->_variable);
 
     // call static resolution on the value
@@ -574,6 +579,7 @@ void XQFLWOR::staticResolutionImpl(StaticContext* context)
         (*it0)->_seqType->setOccurrence(SequenceType::STAR);
       }
       (*it0)->_allValues = new (mm) XQTreatAs((*it0)->_allValues, (*it0)->_seqType, mm);
+      (*it0)->_allValues->setLocationInfo(this);
     }
     (*it0)->_allValues = (*it0)->_allValues->staticResolution(context);
     (*it0)->_src.getStaticType() = (*it0)->_allValues->getStaticResolutionContext().getStaticType();
@@ -592,7 +598,7 @@ void XQFLWOR::staticResolutionImpl(StaticContext* context)
       // Work out the uri and localname of the positional variable binding
       const XMLCh* prefix=XPath2NSUtils::getPrefix((*it0)->_positionalVariable, mm);
       if(prefix && *prefix)
-        (*it0)->_pURI = context->getUriBoundToPrefix(prefix);
+        (*it0)->_pURI = context->getUriBoundToPrefix(prefix, this);
       (*it0)->_pName = XPath2NSUtils::getLocalName((*it0)->_positionalVariable);
       (*it0)->_pSrc.getStaticType().flags = StaticType::DECIMAL_TYPE;
 
@@ -717,6 +723,7 @@ void XQFLWOR::staticResolutionImpl(StaticContext* context)
       dContext->setMemoryManager(mm);
       Result result = createResultImpl(newBindings->begin(), newBindings->end(), dContext);
       _return = new (getMemoryManager()) XQSequence(result, dContext, getMemoryManager());
+      _return->setLocationInfo(this);
       newBindings->clear();
     }
   }
@@ -819,7 +826,7 @@ void XQFLWOR::setReturnExpr(ASTNode *ret)
 
 XQFLWOR::SortingFLWORResult::SortingFLWORResult(VectorOfVariableBinding::const_iterator it, VectorOfVariableBinding::const_iterator end,
                                                 const XQFLWOR *flwor, int flags, DynamicContext *context)
-  : LazySequenceResult(context),
+  : LazySequenceResult(flwor, context),
     _flwor(flwor),
     _flags(flags)
 {
@@ -891,7 +898,8 @@ std::string XQFLWOR::SortingFLWORResult::asString(DynamicContext *context, int i
 
 XQFLWOR::FLWORResult::FLWORResult(VectorOfVariableBinding::const_iterator it, VectorOfVariableBinding::const_iterator end,
                                   const XQFLWOR *flwor, int flags)
-  : _flwor(flwor),
+  : ResultImpl(flwor),
+    _flwor(flwor),
     _flags(flags),
     _toInit(true),
     _scope(0),
@@ -930,6 +938,7 @@ Item::Ptr XQFLWOR::FLWORResult::next(DynamicContext *context)
       return 0;
     }
     varStore->setScopeState(_scope);
+    _scope = 0;
   }
 
   Item::Ptr result = _returnResult->next(context);

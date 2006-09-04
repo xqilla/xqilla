@@ -58,7 +58,7 @@ void FunctionLookupImpl::insertFunction(FuncFactory *func)
             XERCES_CPP_NAMESPACE_QUALIFIER XMLString::binToText(i,szInt,9,10,_memMgr);
             buf.append(szInt);
             buf.append(X(" [err:XQST0034]."));
-            XQThrow(StaticErrorException,X("FunctionLookupImpl::insertFunction"), buf.getRawBuffer());
+            XQThrow2(StaticErrorException,X("FunctionLookupImpl::insertFunction"), buf.getRawBuffer());
         }
         _funcTable.put((void*)func->getName(), secondaryKey, func);
     }

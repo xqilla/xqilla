@@ -29,7 +29,7 @@ template<class TYPE> class Scope;
 class XQILLA_API XQTypeswitch : public ASTNodeImpl
 {
 public:
-  class Clause
+  class Clause : public LocationInfo
   {
   public:
     Clause(SequenceType* type, ASTNode* expr, const XMLCh* variable)

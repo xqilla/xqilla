@@ -96,7 +96,7 @@ Sequence XQDOMConstructor::collapseTreeInternal(DynamicContext *context, int fla
               // If the content sequence contains a document node, the document node is replaced in the content 
               // sequence by its children.
               else if(sourceNode->dmNodeKind()==Node::document_string) {
-                Result children = sourceNode->dmChildren(context);
+                Result children = sourceNode->dmChildren(context, this);
                 Node::Ptr childNode;
                 while((childNode = children->next(context)).notNull()) {
                   childList.push_back(childNode);
@@ -227,7 +227,7 @@ Sequence XQDOMConstructor::collapseTreeInternal(DynamicContext *context, int fla
           nodePrefix=XPath2NSUtils::getPrefix(pString, context->getMemoryManager());
           try
           {
-            nodeUri=context->getUriBoundToPrefix(nodePrefix);
+            nodeUri=context->getUriBoundToPrefix(nodePrefix, this);
           }
           catch(NamespaceLookupException&)
           {
@@ -263,7 +263,7 @@ Sequence XQDOMConstructor::collapseTreeInternal(DynamicContext *context, int fla
               // DOCUMENT node
               if(sourceNode->dmNodeKind() == Node::document_string)
               {
-                Result children = sourceNode->dmChildren(context);
+                Result children = sourceNode->dmChildren(context, this);
                 Node::Ptr childNode;
                 while((childNode = children->next(context)).notNull()) {
                   childList.push_back(childNode);
@@ -370,7 +370,7 @@ Sequence XQDOMConstructor::collapseTreeInternal(DynamicContext *context, int fla
           else
             try
             {
-              nodeUri=context->getUriBoundToPrefix(nodePrefix);
+              nodeUri=context->getUriBoundToPrefix(nodePrefix, this);
             }
             catch(NamespaceLookupException&)
             {
@@ -606,7 +606,7 @@ ASTNode* XQDOMConstructor::staticResolution(StaticContext *context)
       if(attrName.getPrefix()!=0 && *attrName.getPrefix()!=0)
       {
         buff.append(chOpenCurly);
-        buff.append(dContext->getUriBoundToPrefix(attrName.getPrefix()));
+        buff.append(dContext->getUriBoundToPrefix(attrName.getPrefix(), this));
         buff.append(chCloseCurly);
       }
       buff.append(attrName.getName());
@@ -647,6 +647,7 @@ ASTNode* XQDOMConstructor::staticResolution(StaticContext *context)
     }
     // and run static resolution
     m_name = new (mm) XQAtomize(m_name, mm);
+    m_name->setLocationInfo(this);
     m_name = m_name->staticResolution(context);
     _src.add(m_name->getStaticResolutionContext());
   }
@@ -684,6 +685,7 @@ ASTNode* XQDOMConstructor::staticResolution(StaticContext *context)
        m_nodeType == Node::text_string ||
        m_nodeType == Node::cdata_string) {
       (*m_children)[i] = new (mm) XQAtomize((*m_children)[i], mm);
+      (*m_children)[i]->setLocationInfo(this);
     }
     (*m_children)[i] = (*m_children)[i]->staticResolution(context);
     _src.add((*m_children)[i]->getStaticResolutionContext());
