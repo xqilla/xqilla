@@ -44,10 +44,12 @@ public:
   Result createResult(DynamicContext* context, int flags=0) const;
 
   ComparisonOperation getOperation() const;
+  bool getXPath1CompatibilityMode() const { return xpath1compat_; }
 
   static bool compare(GeneralComp::ComparisonOperation operation,
                       AnyAtomicType::Ptr first, AnyAtomicType::Ptr second,
-                      Collation* collation, DynamicContext *context, const LocationInfo *info);
+                      Collation* collation, DynamicContext *context,
+                      bool xpath1compat, const LocationInfo *info);
 
 protected:
   class GeneralCompResult : public SingleResult
@@ -62,6 +64,7 @@ protected:
   };
 
   ComparisonOperation _operation;
+  bool xpath1compat_;
 };
 
 #endif // _GENERALCOMP_HPP

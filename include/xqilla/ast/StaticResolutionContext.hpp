@@ -62,7 +62,6 @@ public:
   void availableDocumentsUsed(bool value);
   void availableCollectionsUsed(bool value);
   bool areDocsOrCollectionsUsed() const;
-  void staticBaseURIUsed(bool value);
 
   void variableUsed(const XMLCh *namespaceURI, const XMLCh *name);
   bool removeVariable(const XMLCh *namespaceURI, const XMLCh *name);
@@ -113,7 +112,6 @@ private:
   bool _implicitTimezone;
   bool _availableDocuments;
   bool _availableCollections;
-  bool _staticBaseURI;
   bool _forceNoFolding;
   bool _creative;
 

@@ -14,18 +14,23 @@
 #include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionStaticBaseURI.hpp>
 #include <xqilla/context/DynamicContext.hpp>
-#include <xqilla/ast/StaticResolutionContext.hpp>
-#include <xqilla/items/ATAnyURIOrDerived.hpp>
-#include <xqilla/items/DatatypeFactory.hpp>
+#include <xqilla/items/AnyAtomicTypeConstructor.hpp>
+#include <xqilla/ast/XQSequence.hpp>
+
 #include <xercesc/util/XMLUni.hpp>
+#include <xercesc/validators/schema/SchemaSymbols.hpp>
+
+#if defined(XERCES_HAS_CPP_NAMESPACE)
+XERCES_CPP_NAMESPACE_USE
+#endif
 
 const XMLCh FunctionStaticBaseURI::name[] = {
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_s, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_i, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_c, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chDash,    XERCES_CPP_NAMESPACE_QUALIFIER chLatin_b, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_s, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, XERCES_CPP_NAMESPACE_QUALIFIER chDash, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_u, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_r, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_i, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chNull 
+  chLatin_s, chLatin_t, chLatin_a, 
+  chLatin_t, chLatin_i, chLatin_c, 
+  chDash,    chLatin_b, chLatin_a, 
+  chLatin_s, chLatin_e, chDash, 
+  chLatin_u, chLatin_r, chLatin_i, 
+  chNull 
 };
 const unsigned int FunctionStaticBaseURI::minArgs = 0;
 const unsigned int FunctionStaticBaseURI::maxArgs = 0;
@@ -40,16 +45,20 @@ FunctionStaticBaseURI::FunctionStaticBaseURI(const VectorOfASTNodes &args, XPath
 }
 
 ASTNode* FunctionStaticBaseURI::staticResolution(StaticContext *context) {
-  _src.staticBaseURIUsed(true);
-  _src.getStaticType().flags = StaticType::ANY_URI_TYPE;
-  return resolveArguments(context);
+  XPath2MemoryManager* mm=context->getMemoryManager();
+
+  ItemConstructor *item = new (mm) AnyAtomicTypeConstructor(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                                                            SchemaSymbols::fgDT_ANYURI,
+                                                            context->getBaseURI(),
+                                                            AnyAtomicType::ANY_URI);
+  ASTNode* newBlock = new (mm) XQSequence(item, mm);
+  newBlock->setLocationInfo(this);
+
+  return newBlock->staticResolution(context);
 }
 
 Sequence FunctionStaticBaseURI::collapseTreeInternal(DynamicContext* context, int flags) const
 {
-    const XMLCh* uri = context->getBaseURI();
-    if(uri==NULL)
-        return Sequence(context->getMemoryManager());
-
-    return Sequence(context->getItemFactory()->createAnyURI(uri, context), context->getMemoryManager());
+  // Always constant folded
+  return Sequence(context->getMemoryManager());
 }

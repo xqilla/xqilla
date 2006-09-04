@@ -35,8 +35,8 @@ protected:
 class XQILLA_API AtomizeResult : public ResultImpl
 {
 public:
-  AtomizeResult(const XQAtomize *atomize, const Result &parent)
-    : ResultImpl(atomize), _parent(parent), _sub(0) {}
+  AtomizeResult(const LocationInfo *location, const Result &parent)
+    : ResultImpl(location), _parent(parent), _sub(0) {}
   Item::Ptr next(DynamicContext *context);
   std::string asString(DynamicContext *context, int indent) const { return "atomizeresult"; }
 private:

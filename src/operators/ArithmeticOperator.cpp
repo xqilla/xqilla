@@ -30,13 +30,16 @@ XERCES_CPP_NAMESPACE_USE
 #endif
 
 ArithmeticOperator::ArithmeticOperator(const XMLCh* opName, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQOperator(opName, args, memMgr)
+  : XQOperator(opName, args, memMgr),
+    xpath1mode_(false)
 {
 }
 
 ASTNode* ArithmeticOperator::staticResolution(StaticContext *context)
 {
   XPath2MemoryManager *mm = context->getMemoryManager();
+
+  xpath1mode_ = context->getXPath1CompatibilityMode();
 
   bool emptyArgument = false;
   bool allConstant = true;
@@ -128,7 +131,7 @@ AnyAtomicType::Ptr ArithmeticOperator::getArgument(unsigned int index, DynamicCo
 
   Item::Ptr first = arg_result->next(context);
 
-  if(!context->getXPath1CompatibilityMode()) {
+  if(!xpath1mode_) {
     Item::Ptr second = arg_result->next(context);
 
     if(first != NULLRCP && second != NULLRCP) {

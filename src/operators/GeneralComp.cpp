@@ -34,12 +34,14 @@
 /*static*/ const XMLCh GeneralComp::name[]={ XERCES_CPP_NAMESPACE_QUALIFIER chLatin_c, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_m, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_p, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
 
 GeneralComp::GeneralComp(ComparisonOperation operation, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQOperator(name, args, memMgr)
+  : XQOperator(name, args, memMgr),
+    xpath1compat_(false)
 {
   _operation=operation;
 }
 
-bool GeneralComp::compare(GeneralComp::ComparisonOperation operation, AnyAtomicType::Ptr first, AnyAtomicType::Ptr second, Collation* collation, DynamicContext *context, const LocationInfo *info)
+bool GeneralComp::compare(GeneralComp::ComparisonOperation operation, AnyAtomicType::Ptr first, AnyAtomicType::Ptr second,
+                          Collation* collation, DynamicContext *context, bool xpath1compat, const LocationInfo *info)
 {
   // The magnitude relationship between two atomic values is determined as follows:
   // 1) If either atomic value has the dynamic type xdt:untypedAtomic, that value is cast to a required type, 
@@ -83,8 +85,7 @@ bool GeneralComp::compare(GeneralComp::ComparisonOperation operation, AnyAtomicT
                               first->getTypeName(), context);
     }
   }
-  if(context->getXPath1CompatibilityMode() &&
-     (first->isNumericValue() || second->isNumericValue())) {
+  if(xpath1compat && (first->isNumericValue() || second->isNumericValue())) {
     first = first->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                           XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DOUBLE, context);
     second = second->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
@@ -107,6 +108,8 @@ bool GeneralComp::compare(GeneralComp::ComparisonOperation operation, AnyAtomicT
 ASTNode* GeneralComp::staticResolution(StaticContext *context)
 {
   XPath2MemoryManager *mm = context->getMemoryManager();
+
+  xpath1compat_ = context->getXPath1CompatibilityMode();
 
   AutoNodeSetOrderingReset orderReset(context);
 
@@ -166,7 +169,7 @@ Item::Ptr GeneralComp::GeneralCompResult::getSingleResult(DynamicContext *contex
     AnyAtomicType::Ptr item2;
     Sequence arg2_sequence(context->getMemoryManager());
     while((item2 = (const AnyAtomicType::Ptr)arg2->next(context)) != NULLRCP) {
-      if(compare(_op->getOperation(), item1, item2, collation, context, this))
+      if(compare(_op->getOperation(), item1, item2, collation, context, _op->getXPath1CompatibilityMode(), this))
         return (const Item::Ptr)context->getItemFactory()->createBoolean(true, context);
       arg2_sequence.addItem(item2);
     }
@@ -175,7 +178,8 @@ Item::Ptr GeneralComp::GeneralCompResult::getSingleResult(DynamicContext *contex
     Sequence::iterator itSecond;
     while((item1 = (const AnyAtomicType::Ptr)arg1->next(context)) != NULLRCP) {
       for(itSecond = arg2_sequence.begin(); itSecond != arg2_sequence.end(); ++itSecond) {
-        if(compare(_op->getOperation(), item1, (const AnyAtomicType::Ptr)*itSecond, collation, context, this))
+        if(compare(_op->getOperation(), item1, (const AnyAtomicType::Ptr)*itSecond, collation, context,
+                   _op->getXPath1CompatibilityMode(), this))
           return (const Item::Ptr)context->getItemFactory()->createBoolean(true, context);
       }
     }
