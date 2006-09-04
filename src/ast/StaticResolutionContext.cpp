@@ -54,7 +54,6 @@ void StaticResolutionContext::clear()
   _implicitTimezone = false;
   _availableDocuments = false;
   _availableCollections = false;
-  _staticBaseURI = false;
   _forceNoFolding = false;
   _creative = false;
 
@@ -125,11 +124,6 @@ bool StaticResolutionContext::areDocsOrCollectionsUsed() const
   return _availableDocuments || _availableCollections;
 }
 
-void StaticResolutionContext::staticBaseURIUsed(bool value)
-{
-  _staticBaseURI = value;
-}
-
 void StaticResolutionContext::forceNoFolding(bool value)
 {
   _forceNoFolding = value;
@@ -198,7 +192,6 @@ void StaticResolutionContext::add(const StaticResolutionContext &o)
   if(o._implicitTimezone) _implicitTimezone = true;
   if(o._availableDocuments) _availableDocuments = true;
   if(o._availableCollections) _availableCollections = true;
-  if(o._staticBaseURI) _staticBaseURI = true;
   if(o._forceNoFolding) _forceNoFolding = true;
 
   const XMLCh* namespaceURI;
@@ -219,7 +212,6 @@ void StaticResolutionContext::addExceptContextFlags(const StaticResolutionContex
   if(o._implicitTimezone) _implicitTimezone = true;
   if(o._availableDocuments) _availableDocuments = true;
   if(o._availableCollections) _availableCollections = true;
-  if(o._staticBaseURI) _staticBaseURI = true;
   if(o._forceNoFolding) _forceNoFolding = true;
 
   const XMLCh* namespaceURI;
@@ -240,15 +232,13 @@ bool StaticResolutionContext::isUsed() const
 {
   return _contextItem || _contextPosition || _contextSize
     || _currentTime || _implicitTimezone || _availableCollections
-    || _availableDocuments || _staticBaseURI || _forceNoFolding
-    || !_dynamicVariables.isEmpty();
+    || _availableDocuments || _forceNoFolding || !_dynamicVariables.isEmpty();
 }
 
 bool StaticResolutionContext::isUsedExceptContextFlags() const
 {
   return _currentTime || _implicitTimezone || _availableCollections
-    || _availableDocuments || _staticBaseURI || _forceNoFolding
-    || !_dynamicVariables.isEmpty();
+    || _availableDocuments || _forceNoFolding || !_dynamicVariables.isEmpty();
 }
 
 void StaticResolutionContext::creative(bool value)
@@ -292,7 +282,6 @@ std::string StaticResolutionContext::toString() const
   s << "Implicit Timezone:     " << (_implicitTimezone ? "true" : "false") << std::endl;
   s << "Available Documents:   " << (_availableDocuments ? "true" : "false") << std::endl;
   s << "Available Collections: " << (_availableCollections ? "true" : "false") << std::endl;
-  s << "Static Base-uri:       " << (_staticBaseURI ? "true" : "false") << std::endl;
   s << "Force No Folding:      " << (_forceNoFolding ? "true" : "false") << std::endl;
 
   s << "Variables Used: [";

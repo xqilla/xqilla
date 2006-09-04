@@ -370,22 +370,21 @@ inline void XQDynamicContextImpl::setNodeSetOrdering(NodeSetOrdering newOrder)
 inline void XQDynamicContextImpl::setModuleResolver(ModuleResolver *resolver)
 { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
 
+inline const StaticType &XQDynamicContextImpl::getContextItemType() const { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("The static context is not available from a proxying dynamic context")); }
+inline const XMLCh* XQDynamicContextImpl::getDefaultFuncNS() const { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("The static context is not available from a proxying dynamic context")); }
+inline StaticContext::NodeSetOrdering XQDynamicContextImpl::getNodeSetOrdering() const { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("The static context is not available from a proxying dynamic context")); }
+inline ModuleResolver * XQDynamicContextImpl::getModuleResolver() const { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("The static context is not available from a proxying dynamic context")); }
+inline ASTNode* XQDynamicContextImpl::lookUpFunction(const XMLCh* prefix, const XMLCh* name, VectorOfASTNodes& v, const LocationInfo *location) const { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("The static context is not available from a proxying dynamic context")); }
+inline StaticContext::FLWOROrderingMode XQDynamicContextImpl::getDefaultFLWOROrderingMode() const { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("The static context is not available from a proxying dynamic context")); }
+inline bool XQDynamicContextImpl::getXPath1CompatibilityMode() const { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("The static context is not available from a proxying dynamic context")); }
+inline bool XQDynamicContextImpl::getPreserveBoundarySpace() const { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("The static context is not available from a proxying dynamic context")); }
 
-inline const StaticType &XQDynamicContextImpl::getContextItemType() const { return _staticContext->getContextItemType(); }
-inline bool XQDynamicContextImpl::getXPath1CompatibilityMode() const { return _staticContext->getXPath1CompatibilityMode(); }
-inline const XMLCh* XQDynamicContextImpl::getDefaultFuncNS() const { return _staticContext->getDefaultFuncNS(); }
+
 inline const XMLCh* XQDynamicContextImpl::getBaseURI() const { return _staticContext->getBaseURI(); }
-inline StaticContext::FLWOROrderingMode XQDynamicContextImpl::getDefaultFLWOROrderingMode() const { return _staticContext->getDefaultFLWOROrderingMode(); }
+inline Collation* XQDynamicContextImpl::getCollation(const XMLCh* URI, const LocationInfo *location) const { return _staticContext->getCollation(URI, location); }
+inline bool XQDynamicContextImpl::isTypeOrDerivedFromType(const XMLCh* uri, const XMLCh* typeName, const XMLCh* uriToCheck, const XMLCh* typeNameToCheck) const { return _staticContext->isTypeOrDerivedFromType(uri, typeName, uriToCheck, typeNameToCheck); }
 inline bool XQDynamicContextImpl::getInheritNamespaces() const { return _staticContext->getInheritNamespaces(); }
 inline bool XQDynamicContextImpl::getPreserveNamespaces() const { return _staticContext->getPreserveNamespaces(); }
-inline StaticContext::NodeSetOrdering XQDynamicContextImpl::getNodeSetOrdering() const { return _staticContext->getNodeSetOrdering(); }
-inline ModuleResolver * XQDynamicContextImpl::getModuleResolver() const { return _staticContext->getModuleResolver(); }
-
-inline Collation* XQDynamicContextImpl::getCollation(const XMLCh* URI, const LocationInfo *location) const { return _staticContext->getCollation(URI, location); }
-inline ASTNode* XQDynamicContextImpl::lookUpFunction(const XMLCh* prefix, const XMLCh* name, VectorOfASTNodes& v, const LocationInfo *location) const { return _staticContext->lookUpFunction(prefix, name, v, location); }
-inline bool XQDynamicContextImpl::isTypeOrDerivedFromType(const XMLCh* uri, const XMLCh* typeName, const XMLCh* uriToCheck, const XMLCh* typeNameToCheck) const { return _staticContext->isTypeOrDerivedFromType(uri, typeName, uriToCheck, typeNameToCheck); }
-
 inline StaticContext::ConstructionMode XQDynamicContextImpl::getConstructionMode() const { return _staticContext->getConstructionMode(); }
-inline bool XQDynamicContextImpl::getPreserveBoundarySpace() const { return _staticContext->getPreserveBoundarySpace(); }
 
 #endif // !defined(AFXQ_XQDYNAMICCONTEXTIMPL_H__D608B994_E090_4206_9473_81F3D7350410__INCLUDED_)

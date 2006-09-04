@@ -16,7 +16,7 @@
 #define _FUNCTIONRESOLVEURI_HPP
 
 #include <xqilla/framework/XQillaExport.hpp>
-#include <xqilla/ast/ConstantFoldingFunction.hpp>
+#include <xqilla/ast/XQFunction.hpp>
 
 /***
  *  Returns an absolute anyURI given a base URI and a relative URI.
@@ -24,7 +24,7 @@
  *  fn:resolve-uri(anyURI $relative) => anyURI
  *  fn:resolve-uri(anyURI $relative, anyURI $base) => anyURI
  */
-class XQILLA_API FunctionResolveURI : public ConstantFoldingFunction
+class XQILLA_API FunctionResolveURI : public XQFunction
 {
 public:
   static const XMLCh name[];
@@ -33,11 +33,15 @@ public:
 
   FunctionResolveURI(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
+  ASTNode* staticResolution(StaticContext *context);
+
  /** 
   * Returns an absolute anyURI given a base URI and a relative URI.
   **/
   Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
 
+private:
+  const XMLCh *baseURI_;
 };
 
 #endif // _FUNCTIONRESOLVEURI_HPP

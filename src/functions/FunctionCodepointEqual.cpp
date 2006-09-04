@@ -34,21 +34,29 @@ const unsigned int FunctionCodepointEqual::maxArgs = 2;
 **/
 
 FunctionCodepointEqual::FunctionCodepointEqual(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : ConstantFoldingFunction(name, minArgs, maxArgs, "string?,string?", args, memMgr)
+  : XQFunction(name, minArgs, maxArgs, "string?,string?", args, memMgr)
+{
+}
+
+ASTNode* FunctionCodepointEqual::staticResolution(StaticContext *context)
 {
   _src.getStaticType().flags = StaticType::BOOLEAN_TYPE;
+
+  collation_ = context->getCollation(CodepointCollation::getCodepointCollationName(), this);
+
+  return resolveArguments(context);
 }
 
 Sequence FunctionCodepointEqual::collapseTreeInternal(DynamicContext* context, int flags) const
 {
-    Sequence str1 = getParamNumber(1,context)->toSequence(context);
-    Sequence str2 = getParamNumber(2,context)->toSequence(context);
-    if(str1.isEmpty() || str2.isEmpty())
+    Item::Ptr str1 = getParamNumber(1,context)->next(context);
+    Item::Ptr str2 = getParamNumber(2,context)->next(context);
+    if(str1.isNull() || str2.isNull())
         return Sequence(context->getMemoryManager());
 
-    const XMLCh* string1 = str1.first()->asString(context);
-    const XMLCh* string2 = str2.first()->asString(context);
+    const XMLCh* string1 = str1->asString(context);
+    const XMLCh* string2 = str2->asString(context);
     
-    Collation* collation=context->getCollation(CodepointCollation::getCodepointCollationName(), this);
-    return Sequence(context->getItemFactory()->createBoolean(collation->compare(string1,string2)==0, context), context->getMemoryManager());
+    return Sequence(context->getItemFactory()->createBoolean(collation_->compare(string1,string2)==0, context),
+                    context->getMemoryManager());
 }

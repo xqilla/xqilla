@@ -246,10 +246,8 @@ void SequenceType::ItemType::setTypeURI(const XMLCh* const typeURI) {
 const XMLCh* SequenceType::ItemType::getTypeURI(const StaticContext* context, const LocationInfo *location) const
 {
     if(m_TypeURI!=0 && *m_TypeURI!=0) {
-        // cerr << "NameTypeConstrain: Returning m_TypeURI: " << XMLString::transcode(m_TypeURI) << endl;
         return m_TypeURI;
     }
-    // cerr << "NameTypeConstrain: Returning getUriBoundToPrefix: " << " prefix is: " << XMLString::transcode(m_pType->getPrefix()) << " result is: " << XMLString::transcode(context->getUriBoundToPrefix(m_pType->getPrefix())) <<  " default uri is " << XMLString::transcode(context->getDefaultFuncNS()) << endl;
     if(m_pType != 0)
     {
         const XMLCh* prefix=m_pType->getPrefix();
@@ -594,7 +592,8 @@ bool SequenceType::ItemType::matches(const Item::Ptr &toBeTested, DynamicContext
   return true;
 }
 
-ASTNode *SequenceType::convertFunctionArg(ASTNode *arg, StaticContext *context, bool numericFunction, const LocationInfo *location) const
+ASTNode *SequenceType::convertFunctionArg(ASTNode *arg, StaticContext *context, bool numericFunction,
+                                          const LocationInfo *location) const
 {
   XPath2MemoryManager *mm = context->getMemoryManager();
 

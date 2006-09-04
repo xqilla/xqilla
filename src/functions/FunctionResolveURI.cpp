@@ -37,9 +37,20 @@ const unsigned int FunctionResolveURI::maxArgs = 2;
  **/
 
 FunctionResolveURI::FunctionResolveURI(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : ConstantFoldingFunction(name, minArgs, maxArgs, "string?, string", args, memMgr) 
+  : XQFunction(name, minArgs, maxArgs, "string?, string", args, memMgr),
+    baseURI_(0)
+{
+}
+
+ASTNode* FunctionResolveURI::staticResolution(StaticContext *context)
 {
   _src.getStaticType().flags = StaticType::ANY_URI_TYPE;
+
+  if (getNumArgs() == 1) {
+    baseURI_ = context->getBaseURI();
+  }
+
+  return resolveArguments(context);
 }
 
 Sequence FunctionResolveURI::collapseTreeInternal(DynamicContext* context, int flags) const
@@ -62,9 +73,10 @@ Sequence FunctionResolveURI::collapseTreeInternal(DynamicContext* context, int f
     const XMLCh* baseURI;
     if (getNumArgs() == 1) 
     {
-      baseURI = context->getBaseURI();
+      baseURI = baseURI_;
       if (!baseURI)
-        XQThrow(FunctionException, X("FunctionResolveURI::collapseTreeInternal"), X("Base uri undefined in the static context [err:FONS0005]"));
+        XQThrow(FunctionException, X("FunctionResolveURI::collapseTreeInternal"),
+                X("Base uri undefined in the static context [err:FONS0005]"));
     }
     else 
     {
@@ -73,9 +85,11 @@ Sequence FunctionResolveURI::collapseTreeInternal(DynamicContext* context, int f
     }
 
     if(!XERCES_CPP_NAMESPACE_QUALIFIER XMLUri::isValidURI(true, relativeURI))
-      XQThrow(FunctionException, X("FunctionResolveURI::collapseTreeInternal"), X("Invalid relative uri argument to resolve-uri [err:FORG0002]"));
+      XQThrow(FunctionException, X("FunctionResolveURI::collapseTreeInternal"),
+              X("Invalid relative uri argument to resolve-uri [err:FORG0002]"));
     if(!XERCES_CPP_NAMESPACE_QUALIFIER XMLUri::isValidURI(false, baseURI))
-      XQThrow(FunctionException, X("FunctionResolveURI::collapseTreeInternal"), X("Invalid base-uri argument to resolve-uri [err:FORG0002]"));
+      XQThrow(FunctionException, X("FunctionResolveURI::collapseTreeInternal"),
+              X("Invalid base-uri argument to resolve-uri [err:FORG0002]"));
   
     try {
       XERCES_CPP_NAMESPACE_QUALIFIER XMLUri base(baseURI);

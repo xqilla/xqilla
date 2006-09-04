@@ -22,7 +22,7 @@
 
 #include <xqilla/ast/ConstantFoldingFunction.hpp>
 
-class XQILLA_API FunctionCodepointEqual : public ConstantFoldingFunction
+class XQILLA_API FunctionCodepointEqual : public XQFunction
 {
 public:
   static const XMLCh name[];
@@ -30,8 +30,12 @@ public:
   static const unsigned int maxArgs;
 
   FunctionCodepointEqual(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
-  
+
+  ASTNode* staticResolution(StaticContext *context);  
   Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
+
+private:
+  Collation *collation_;
 };
 
 #endif // _FUNCTION_CODEPOINT_EQUAL_HPP

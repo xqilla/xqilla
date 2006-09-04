@@ -617,7 +617,7 @@ static MAPM parse(const XMLCh* const value, Numeric::State &state)
   if(value == NULL) {
     // Not a Number
     state = Numeric::NaN;
-    return MM_Zero;
+    return 0;
   }
   
   unsigned int length=XMLString::stringLen(value) + 1;
@@ -750,7 +750,7 @@ static MAPM parse(const XMLCh* const value, Numeric::State &state)
     else {
       state = Numeric::NaN;
     }
-    return MM_Zero;
+    return 0;
   }
 
   *dest++ = 0; // Null terminate  

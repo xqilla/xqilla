@@ -54,10 +54,10 @@ void Numeric::checkFloatLimits(Numeric::State &state, MAPM &value)
     int exp=value.exponent();
     if(exp>38 || (exp==38 && value.abs()>MAPM("3.4028235e+38"))) {
       state=(state==NEG_NUM)?NEG_INF:INF;
-      value = MM_Zero;
+      value = 0;
     }
     else if(exp<-38 || (exp==-38 && value.abs()<MAPM("1.1754944e-38")))
-      value=MM_Zero;
+      value=0;
     else if(value.significant_digits()>ATFloatOrDerivedImpl::g_nSignificantDigits)
       value = value.round(ATFloatOrDerivedImpl::g_nSignificantDigits);
   }
@@ -69,10 +69,10 @@ void Numeric::checkDoubleLimits(Numeric::State &state, MAPM &value)
     int exp=value.exponent();
     if(exp>308 || (exp==308 && value.abs()>MAPM("1.7976931348623157e+308"))) {
       state=(state==NEG_NUM)?NEG_INF:INF;
-      value = MM_Zero;
+      value = 0;
     }
     else if(exp<-308 || (exp==-308 && value.abs()<MAPM("2.2250738585072014e-308")))
-      value = MM_Zero;
+      value = 0;
     else if(value.significant_digits()>ATDoubleOrDerivedImpl::g_nSignificantDigits)
       value = value.round(ATDoubleOrDerivedImpl::g_nSignificantDigits);
   }
