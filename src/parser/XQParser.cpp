@@ -4949,9 +4949,9 @@ yyreduce:
     {
 		    int nColon=XERCES_CPP_NAMESPACE_QUALIFIER XMLString::indexOf((yyvsp[0].str),':');
 			if(nColon!=-1)
-  				(yyval.astNode) = new (MEMMGR) XQVariable((yyvsp[0].str),MEMMGR);
+  				(yyval.astNode) = WRAP((yylsp[-1]), new (MEMMGR) XQVariable((yyvsp[0].str),MEMMGR));
 			else
-				(yyval.astNode) = new (MEMMGR) XQVariable(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, (yyvsp[0].str),MEMMGR);
+				(yyval.astNode) = WRAP((yylsp[-1]), new (MEMMGR) XQVariable(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, (yyvsp[0].str),MEMMGR));
 		}
     break;
 

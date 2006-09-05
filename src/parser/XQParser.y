@@ -2268,9 +2268,9 @@ VarRef:
 		{
 		    int nColon=XERCES_CPP_NAMESPACE_QUALIFIER XMLString::indexOf($2,':');
 			if(nColon!=-1)
-  				$$ = new (MEMMGR) XQVariable($2,MEMMGR);
+  				$$ = WRAP(@1, new (MEMMGR) XQVariable($2,MEMMGR));
 			else
-				$$ = new (MEMMGR) XQVariable(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, $2,MEMMGR);
+				$$ = WRAP(@1, new (MEMMGR) XQVariable(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, $2,MEMMGR));
 		}
 	;
 		
