@@ -82,7 +82,16 @@ Result XQNav::createResult(DynamicContext* context, int flags) const
 
 void XQNav::addStep(const StepInfo &step)
 {
-  _steps.push_back(step);
+  if(step.step->getType() == NAVIGATION) {
+    Steps &navSteps = ((XQNav*)step.step)->_steps;
+    for(Steps::iterator it2 = navSteps.begin();
+        it2 != navSteps.end(); ++it2) {
+      _steps.push_back(*it2);
+    }
+  }
+  else {
+    _steps.push_back(step);
+  }
 }
 
 void XQNav::addStepFront(ASTNode* step)
@@ -105,8 +114,9 @@ ASTNode* XQNav::staticResolution(StaticContext *context)
 
   StaticType oldContextItemType = context->getContextItemType();
 
-  unsigned int props = StaticResolutionContext::DOCORDER | StaticResolutionContext::GROUPED | StaticResolutionContext::PEER |
-    StaticResolutionContext::SUBTREE | StaticResolutionContext::SAMEDOC | StaticResolutionContext::ONENODE;
+  unsigned int props = StaticResolutionContext::DOCORDER | StaticResolutionContext::GROUPED |
+    StaticResolutionContext::PEER | StaticResolutionContext::SUBTREE | StaticResolutionContext::SAMEDOC |
+    StaticResolutionContext::ONENODE;
 
   Steps newSteps(XQillaAllocator<StepInfo>(context->getMemoryManager()));
 
@@ -145,7 +155,7 @@ ASTNode* XQNav::staticResolution(StaticContext *context)
     if(step->getType() == NAVIGATION) {
 	    Steps &navSteps = ((XQNav*)step)->_steps;
 	    for(Steps::iterator it2 = navSteps.begin();
-		it2 != navSteps.end(); ++it2) {
+          it2 != navSteps.end(); ++it2) {
 		    newSteps.push_back(it2->step);
 	    }
     }
