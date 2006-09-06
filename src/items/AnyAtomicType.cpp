@@ -112,8 +112,6 @@ AnyAtomicType::Ptr AnyAtomicType::castAs(const XMLCh* targetTypeURI, const XMLCh
   } catch (TypeNotFoundException &e) {
     XQThrow2(XPath2TypeCastException, X("AnyAtomicType::castAs"), e.getError());
   } catch (InvalidLexicalSpaceException &e) {
-    XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buf(1023, context->getMemoryManager());
-
     if(this->getPrimitiveTypeIndex() == UNTYPED_ATOMIC ||
        this->getPrimitiveTypeIndex() == ANY_SIMPLE_TYPE || 
        this->getPrimitiveTypeIndex() == STRING) {

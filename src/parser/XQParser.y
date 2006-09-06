@@ -241,7 +241,8 @@ template<typename TYPE>
 static TYPE *wrapForDebug(XQParserArgs *qp, TYPE* pObjToWrap,
                           const XMLCh* fnName, unsigned int line, unsigned int column)
 {
-  pObjToWrap->setLocationInfo(QP->_query->getFile(), line, column);
+  if(pObjToWrap->getLine() == 0)
+    pObjToWrap->setLocationInfo(QP->_query->getFile(), line, column);
   return pObjToWrap;
 }
 
@@ -249,7 +250,8 @@ template<>
 static ASTNode *wrapForDebug(XQParserArgs *qp, ASTNode* pObjToWrap,
                              const XMLCh* fnName, unsigned int line, unsigned int column)
 {
-  pObjToWrap->setLocationInfo(QP->_query->getFile(), line, column);
+  if(pObjToWrap->getLine() == 0)
+    pObjToWrap->setLocationInfo(QP->_query->getFile(), line, column);
 
   if(!CONTEXT->isDebuggingEnabled() && !CONTEXT->getDebugCallback())
     return pObjToWrap;

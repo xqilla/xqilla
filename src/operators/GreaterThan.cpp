@@ -108,7 +108,7 @@ GreaterThan::GreaterThan(const VectorOfASTNodes &args, XPath2MemoryManager* memM
     XQThrow2(FunctionException,X("GreaterThan::greater_than"), X("An equality operator is not defined for the provided arguments [err:XPTY0004]"));
   }
   catch(XQException &e) {
-      if(e.getXQueryFile() == NULL)
+      if(e.getXQueryLine() == 0)
         e.setXQueryPosition(info);
       throw;
   }

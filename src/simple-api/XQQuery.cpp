@@ -546,8 +546,8 @@ void XQQuery::DebugResult::getResult(Sequence &toFill, DynamicContext *context) 
       if(context->getDebugCallback() && context->isDebuggingEnabled()) 
         context->getDebugCallback()->ReportFirstError(context, e.getError(), _query->getFile(), 0);
       e.setErrorReported();
-      if(e.getXQueryFile() == NULL) {
-        e.setXQueryPosition(_query->getFile(), 0, 0);
+      if(e.getXQueryLine() == 0) {
+        e.setXQueryPosition(_query->getFile(), 1, 1);
       }
     }
     throw e;

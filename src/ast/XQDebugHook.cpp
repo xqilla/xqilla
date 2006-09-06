@@ -67,7 +67,7 @@ Result XQDebugHook::collapseTree(DynamicContext *context, int flags) const
       if(pDbgCallback && context->isDebuggingEnabled())
         pDbgCallback->ReportFirstError(context, e.getError(), getFile(), getLine());
       e.setErrorReported();
-      if(e.getXQueryFile() == NULL)
+      if(e.getXQueryLine() == 0)
         e.setXQueryPosition(this);
     }
     throw e;
@@ -83,7 +83,7 @@ ASTNode* XQDebugHook::staticResolution(StaticContext *context)
     m_impl=m_impl->staticResolution(context);
   }
   catch(XQException& e) {
-    if(e.getXQueryFile() == NULL) {
+    if(e.getXQueryLine() == 0) {
       e.setXQueryPosition(this);
     }
     throw e;

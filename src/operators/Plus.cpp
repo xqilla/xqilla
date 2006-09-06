@@ -151,7 +151,7 @@ Item::Ptr Plus::plus(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::Ptr &
     }
   }
   catch(XQException &e) {
-      if(e.getXQueryFile() == NULL)
+      if(e.getXQueryLine() == 0)
         e.setXQueryPosition(info);
       throw;
   }

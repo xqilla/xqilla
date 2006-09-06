@@ -113,7 +113,7 @@ Item::Ptr ComparisonOperator::ComparisonResult::getSingleResult(DynamicContext *
     return (const Item::Ptr)context->getItemFactory()->createBoolean(result, context);
   }
   catch(XQException &e) {
-      if(e.getXQueryFile() == NULL)
+      if(e.getXQueryLine() == 0)
         e.setXQueryPosition(this);
       throw;
   }
