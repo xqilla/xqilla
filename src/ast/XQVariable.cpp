@@ -72,7 +72,7 @@ ASTNode* XQVariable::staticResolution(StaticContext *context)
   if(_prefix && *_prefix)
     _uri = context->getUriBoundToPrefix(_prefix, this);
   const StaticResolutionContext *var_src = context->getVariableTypeStore()->getVar(_uri, _name);
-  if(var_src == NULL) {
+  if(var_src == NULL || (var_src->getProperties() & StaticResolutionContext::UNDEFINEDVAR)!=0) {
     const XMLCh* qname = XPath2NSUtils::qualifyName(_prefix, _name, context->getMemoryManager());
     const XMLCh* msg = XPath2Utils::concatStrings(X("Variable "), qname, X(" does not exist [err:XPST0008]"), context->getMemoryManager());
     XQThrow(StaticErrorException, X("XQVariable::staticResolution"), msg);

@@ -127,9 +127,12 @@ void XQQuery::staticResolution(StaticContext *context)
   // Run staticResolution on the global variables
   if(!m_userDefVars.empty())
   {
-    GlobalVariables::iterator itVar;
+    GlobalVariables::iterator itVar, itVar2;
     // declare all the global variables with a special StaticResolutionContext, in order to recognize 'variable is defined later' errors 
     // instead of more generic 'variable not found'
+    // In order to catch references to not yet defined variables (but when no recursion happens) we also create a scope where we undefine
+    // the rest of the variables (once we enter in a function call, the scope will disappear and the forward references to the global variables 
+    // will happear)
     StaticResolutionContext forwardRef(context->getMemoryManager());
     forwardRef.setProperties(StaticResolutionContext::FORWARDREF);
     for(itVar = m_userDefVars.begin(); itVar != m_userDefVars.end(); ++itVar) {
@@ -141,8 +144,21 @@ void XQQuery::staticResolution(StaticContext *context)
       const XMLCh* name= XPath2NSUtils::getLocalName(varName);
       context->getVariableTypeStore()->declareGlobalVar(uri, name, forwardRef);
     }
+    StaticResolutionContext forwardRef2(context->getMemoryManager());
+    forwardRef2.setProperties(StaticResolutionContext::UNDEFINEDVAR);
     for(itVar = m_userDefVars.begin(); itVar != m_userDefVars.end(); ++itVar) {
+      context->getVariableTypeStore()->addLogicalBlockScope();
+      for(itVar2 = itVar; itVar2 != m_userDefVars.end(); ++itVar2) {
+          const XMLCh* varName=(*itVar2)->getVariableName();
+          const XMLCh* prefix=XPath2NSUtils::getPrefix(varName, context->getMemoryManager());
+          const XMLCh* uri=NULL;
+          if(prefix && *prefix)
+            uri = context->getUriBoundToPrefix(prefix, *itVar2);
+          const XMLCh* name= XPath2NSUtils::getLocalName(varName);
+          context->getVariableTypeStore()->declareVar(uri,name,forwardRef2);
+      }
       (*itVar)->staticResolution(context);
+      context->getVariableTypeStore()->removeScope();
       if(getIsLibraryModule() && !XERCES_CPP_NAMESPACE::XMLString::equals((*itVar)->getVariableURI(), getModuleTargetNamespace()))
         XQThrow3(StaticErrorException,X("XQQuery::staticResolution"), X("Every global variable in a module must be in the module namespace [err:XQST0048]."), *itVar);
     }
