@@ -707,25 +707,13 @@ Separator:
 NamespaceDecl:
 	  _DECLARE_ _NAMESPACE_ _NCNAME_ _EQUALS_ URILiteral 
 		{
-      REJECT_NOT_XQUERY(NamespaceDecl, @1);
 
-            if(!XPath2Utils::equals($3,X("xml")) && !XPath2Utils::equals($3,X("xmlns")) &&
-               !XPath2Utils::equals($3,X("xs")) && !XPath2Utils::equals($3,X("xsi")) &&
-               !XPath2Utils::equals($3,X("fn")) && !XPath2Utils::equals($3,X("xdt")) && 
-               !XPath2Utils::equals($3,X("local")) )
-            {
-		        try
-		        {
-              LOCATION(@3, loc);
-			        CONTEXT->getUriBoundToPrefix($3, &loc);
-                    // if it has already bound, report an error
-                    yyerror(@3, "Namespace prefix has already been bound to a namespace [err:XQST0033]");
-		        }
-		        catch(NamespaceLookupException&)
-		        {
-                }
-            }
-            CONTEXT->setNamespaceBinding($3,$5);
+          REJECT_NOT_XQUERY(NamespaceDecl, @1);
+          // if it has already bound, report an error
+          if(QP->_namespaceDecls.containsKey($3))
+            yyerror(@3, "Namespace prefix has already been bound to a namespace [err:XQST0033]");
+          QP->_namespaceDecls.put($3,NULL);
+          CONTEXT->setNamespaceBinding($3,$5);
 		}
 	;
 
