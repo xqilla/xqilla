@@ -171,7 +171,7 @@ Item::Ptr ArithmeticOperator::ArithmeticResult::getSingleResult(DynamicContext *
     return _op->execute(_op->getArgument(0, context), _op->getArgument(1, context), context);
   }
   catch(XQException &e) {
-      if(e.getXQueryFile() == NULL)
+      if(e.getXQueryLine() == 0)
         e.setXQueryPosition(this);
       throw;
   }

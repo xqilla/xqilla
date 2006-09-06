@@ -170,7 +170,7 @@ void ASTNodeImpl::CollapseTreeInternalResult::getResult(Sequence &toFill, Dynami
     toFill = _di->collapseTreeInternal(context, _flags);
   }
   catch(XQException &e) {
-      if(e.getXQueryFile() == NULL)
+      if(e.getXQueryLine() == 0)
         e.setXQueryPosition(this);
       throw e;
   }

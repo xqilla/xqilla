@@ -53,7 +53,7 @@ Equals::Equals(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
     return atom1->equals(atom2, context);
   }
   catch(XQException &e) {
-      if(e.getXQueryFile() == NULL)
+      if(e.getXQueryLine() == 0)
         e.setXQueryPosition(info);
       throw;
   }
