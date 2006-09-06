@@ -23,6 +23,7 @@
 #endif
 
 #include <xercesc/util/BitSet.hpp>
+#include <xercesc/util/RefHashTableOf.hpp>
 #include <xqilla/simple-api/XQQuery.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 
@@ -176,12 +177,13 @@ class XQParserArgs
 {
 public:
   XQParserArgs()
-    : _lexer(0), _context(0), _query(0), _flags(32) {}
+    : _lexer(0), _context(0), _query(0), _flags(32), _namespaceDecls(13) {}
 
   XQLexer* _lexer;
   DynamicContext* _context;
   XQQuery* _query;
   XERCES_CPP_NAMESPACE_QUALIFIER BitSet _flags;
+  XERCES_CPP_NAMESPACE_QUALIFIER RefHashTableOf<XMLCh> _namespaceDecls;
 };
 
 namespace XQParser {
