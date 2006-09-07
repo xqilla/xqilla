@@ -483,6 +483,8 @@ include/xqilla/exceptions/FunctionException.hpp	lib
 include/xqilla/exceptions/IllegalArgumentException.hpp	lib
 include/xqilla/exceptions/ItemException.hpp	lib
 include/xqilla/exceptions/NamespaceLookupException.hpp	lib
+include/xqilla/exceptions/QueryInterruptedException.hpp	lib
+include/xqilla/exceptions/QueryTimeoutException.hpp	lib
 include/xqilla/exceptions/StaticErrorException.hpp	lib
 include/xqilla/exceptions/TypeErrorException.hpp	lib
 include/xqilla/exceptions/TypeNotFoundException.hpp	lib

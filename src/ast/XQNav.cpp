@@ -314,6 +314,7 @@ Item::Ptr XQNav::StepResult::next(DynamicContext *context)
 
   Item::Ptr result = 0;
   while(true) {
+    context->testInterrupt();
     result = stepResult_->next(context);
     if(result == NULLRCP) {
       if(!initialised_ && parent_.isNull()) {

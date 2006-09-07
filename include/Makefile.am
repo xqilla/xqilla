@@ -116,6 +116,8 @@ xqilla/exceptions/XPath2ErrorException.hpp \
 xqilla/exceptions/XPath2TypeCastException.hpp \
 xqilla/exceptions/XPath2TypeMatchException.hpp \
 xqilla/exceptions/XQException.hpp \
+xqilla/exceptions/QueryInterruptedException.hpp \
+xqilla/exceptions/QueryTimeoutException.hpp \
 xqilla/functions/FunctionLookup.hpp \
 xqilla/functions/FunctionAbs.hpp \
 xqilla/functions/FunctionAdjustDateTimeToTimezone.hpp \
