@@ -536,6 +536,10 @@ SOURCE=..\..\src\context\impl\UCANormalizer2.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\context\impl\UCANormalizer3.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\context\impl\VarHashEntryImpl.cpp
 # End Source File
 # Begin Source File
@@ -565,18 +569,6 @@ SOURCE=..\..\src\context\impl\XQDynamicContextImpl.cpp
 # Begin Source File
 
 SOURCE=..\..\src\context\impl\XQRemoteDebugger.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\context\impl\UCANormalizer.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\context\impl\VarStoreImpl.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\context\impl\VarTypeStoreImpl.hpp
 # End Source File
 # Begin Source File
 
@@ -736,30 +728,6 @@ SOURCE=..\..\src\dom-api\impl\XQillaXMLGrammarPoolImpl.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\dom-api\impl\XPath2ResultImpl.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\dom-api\impl\XPathNamespaceImpl.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\dom-api\impl\XQillaBuilderImpl.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\dom-api\impl\XQillaDocumentImpl.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\dom-api\impl\XQillaExpressionImpl.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\dom-api\impl\XQillaXMLGrammarPoolImpl.hpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\include\xqilla\dom-api\impl\XQillaNSResolverImpl.hpp
 # End Source File
 # End Group
@@ -774,14 +742,6 @@ SOURCE=..\..\src\dom-api\XPath2NodeSerializer.hpp
 # Begin Source File
 
 SOURCE=..\..\src\dom-api\XQillaImplementation.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\dom-api\XQillaImplementation.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\dom-api\XPath2NodeSerializer.hpp
 # End Source File
 # Begin Source File
 
@@ -821,14 +781,6 @@ SOURCE=..\..\src\exceptions\XQillaException.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\exceptions\InvalidLexicalSpaceException.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\exceptions\MiscException.hpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\include\xqilla\exceptions\ASTException.hpp
 # End Source File
 # Begin Source File
@@ -854,6 +806,14 @@ SOURCE=..\..\include\xqilla\exceptions\ItemException.hpp
 # Begin Source File
 
 SOURCE=..\..\include\xqilla\exceptions\NamespaceLookupException.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\exceptions\QueryInterruptedException.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\exceptions\QueryTimeoutException.hpp
 # End Source File
 # Begin Source File
 
@@ -1473,14 +1433,6 @@ SOURCE=..\..\src\functions\XQUserFunction.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\functions\FuncFactoryTemplate.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\functions\FunctionLookupImpl.hpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\include\xqilla\functions\FuncFactory.hpp
 # End Source File
 # Begin Source File
@@ -2064,70 +2016,6 @@ SOURCE=..\..\src\items\impl\NodeImpl.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\items\impl\ATAnySimpleTypeImpl.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\items\impl\ATAnyURIOrDerivedImpl.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\items\impl\ATBase64BinaryOrDerivedImpl.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\items\impl\ATDateOrDerivedImpl.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\items\impl\ATDateTimeOrDerivedImpl.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\items\impl\ATDurationOrDerivedImpl.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\items\impl\ATGDayOrDerivedImpl.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\items\impl\ATGMonthDayOrDerivedImpl.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\items\impl\ATGMonthOrDerivedImpl.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\items\impl\ATGYearMonthOrDerivedImpl.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\items\impl\ATGYearOrDerivedImpl.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\items\impl\ATHexBinaryOrDerivedImpl.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\items\impl\ATNotationOrDerivedImpl.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\items\impl\ATStringOrDerivedImpl.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\items\impl\ATTimeOrDerivedImpl.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\items\impl\ATUntypedAtomicImpl.hpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\include\xqilla\items\impl\ATBooleanOrDerivedImpl.hpp
 # End Source File
 # Begin Source File
@@ -2238,10 +2126,6 @@ SOURCE=..\..\src\items\Numeric.cpp
 # Begin Source File
 
 SOURCE=..\..\src\items\Timezone.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\items\DatatypeFactoryTemplate.hpp
 # End Source File
 # Begin Source File
 
@@ -2554,10 +2438,6 @@ SOURCE=..\..\src\mapm\mapmutil.c
 # Begin Source File
 
 SOURCE=..\..\src\mapm\mapmutl2.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\mapm\m_apm_lc.h
 # End Source File
 # Begin Source File
 
@@ -2905,10 +2785,6 @@ SOURCE=..\..\src\simple-api\XQilla.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\simple-api\XQilla2.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\include\xqilla\simple-api\XQQuery.hpp
 # End Source File
 # Begin Source File
@@ -2962,10 +2838,6 @@ SOURCE=..\..\src\utils\XQillaPlatformUtils.cpp
 # Begin Source File
 
 SOURCE=..\..\src\utils\XStr.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\utils\DateUtils.hpp
 # End Source File
 # Begin Source File
 

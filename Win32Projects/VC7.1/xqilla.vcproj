@@ -483,6 +483,9 @@
 				RelativePath="..\..\src\context\impl\UCANormalizer2.cpp">
 			</File>
 			<File
+				RelativePath="..\..\src\context\impl\UCANormalizer3.cpp">
+			</File>
+			<File
 				RelativePath="..\..\src\context\impl\VarHashEntryImpl.cpp">
 			</File>
 			<File
@@ -505,15 +508,6 @@
 			</File>
 			<File
 				RelativePath="..\..\src\context\impl\XQRemoteDebugger.cpp">
-			</File>
-			<File
-				RelativePath="..\..\src\context\impl\UCANormalizer.hpp">
-			</File>
-			<File
-				RelativePath="..\..\src\context\impl\VarStoreImpl.hpp">
-			</File>
-			<File
-				RelativePath="..\..\src\context\impl\VarTypeStoreImpl.hpp">
 			</File>
 			<File
 				RelativePath="..\..\include\xqilla\context\impl\CodepointCollation.hpp">
@@ -635,24 +629,6 @@
 				RelativePath="..\..\src\dom-api\impl\XQillaXMLGrammarPoolImpl.hpp">
 			</File>
 			<File
-				RelativePath="..\..\src\dom-api\impl\XPath2ResultImpl.hpp">
-			</File>
-			<File
-				RelativePath="..\..\src\dom-api\impl\XPathNamespaceImpl.hpp">
-			</File>
-			<File
-				RelativePath="..\..\src\dom-api\impl\XQillaBuilderImpl.hpp">
-			</File>
-			<File
-				RelativePath="..\..\src\dom-api\impl\XQillaDocumentImpl.hpp">
-			</File>
-			<File
-				RelativePath="..\..\src\dom-api\impl\XQillaExpressionImpl.hpp">
-			</File>
-			<File
-				RelativePath="..\..\src\dom-api\impl\XQillaXMLGrammarPoolImpl.hpp">
-			</File>
-			<File
 				RelativePath="..\..\include\xqilla\dom-api\impl\XQillaNSResolverImpl.hpp">
 			</File>
 		</Filter>
@@ -664,12 +640,6 @@
 			</File>
 			<File
 				RelativePath="..\..\src\dom-api\XQillaImplementation.cpp">
-			</File>
-			<File
-				RelativePath="..\..\src\dom-api\XQillaImplementation.hpp">
-			</File>
-			<File
-				RelativePath="..\..\src\dom-api\XPath2NodeSerializer.hpp">
 			</File>
 			<File
 				RelativePath="..\..\src\dom-api\XQillaImplementation.hpp">
@@ -700,12 +670,6 @@
 				RelativePath="..\..\src\exceptions\XQillaException.cpp">
 			</File>
 			<File
-				RelativePath="..\..\src\exceptions\InvalidLexicalSpaceException.hpp">
-			</File>
-			<File
-				RelativePath="..\..\src\exceptions\MiscException.hpp">
-			</File>
-			<File
 				RelativePath="..\..\include\xqilla\exceptions\ASTException.hpp">
 			</File>
 			<File
@@ -725,6 +689,12 @@
 			</File>
 			<File
 				RelativePath="..\..\include\xqilla\exceptions\NamespaceLookupException.hpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\exceptions\QueryInterruptedException.hpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\exceptions\QueryTimeoutException.hpp">
 			</File>
 			<File
 				RelativePath="..\..\include\xqilla\exceptions\StaticErrorException.hpp">
@@ -1192,12 +1162,6 @@
 				RelativePath="..\..\src\functions\XQUserFunction.cpp">
 			</File>
 			<File
-				RelativePath="..\..\src\functions\FuncFactoryTemplate.hpp">
-			</File>
-			<File
-				RelativePath="..\..\src\functions\FunctionLookupImpl.hpp">
-			</File>
-			<File
 				RelativePath="..\..\include\xqilla\functions\FuncFactory.hpp">
 			</File>
 			<File
@@ -1637,54 +1601,6 @@
 				RelativePath="..\..\src\items\impl\NodeImpl.cpp">
 			</File>
 			<File
-				RelativePath="..\..\src\items\impl\ATAnySimpleTypeImpl.hpp">
-			</File>
-			<File
-				RelativePath="..\..\src\items\impl\ATAnyURIOrDerivedImpl.hpp">
-			</File>
-			<File
-				RelativePath="..\..\src\items\impl\ATBase64BinaryOrDerivedImpl.hpp">
-			</File>
-			<File
-				RelativePath="..\..\src\items\impl\ATDateOrDerivedImpl.hpp">
-			</File>
-			<File
-				RelativePath="..\..\src\items\impl\ATDateTimeOrDerivedImpl.hpp">
-			</File>
-			<File
-				RelativePath="..\..\src\items\impl\ATDurationOrDerivedImpl.hpp">
-			</File>
-			<File
-				RelativePath="..\..\src\items\impl\ATGDayOrDerivedImpl.hpp">
-			</File>
-			<File
-				RelativePath="..\..\src\items\impl\ATGMonthDayOrDerivedImpl.hpp">
-			</File>
-			<File
-				RelativePath="..\..\src\items\impl\ATGMonthOrDerivedImpl.hpp">
-			</File>
-			<File
-				RelativePath="..\..\src\items\impl\ATGYearMonthOrDerivedImpl.hpp">
-			</File>
-			<File
-				RelativePath="..\..\src\items\impl\ATGYearOrDerivedImpl.hpp">
-			</File>
-			<File
-				RelativePath="..\..\src\items\impl\ATHexBinaryOrDerivedImpl.hpp">
-			</File>
-			<File
-				RelativePath="..\..\src\items\impl\ATNotationOrDerivedImpl.hpp">
-			</File>
-			<File
-				RelativePath="..\..\src\items\impl\ATStringOrDerivedImpl.hpp">
-			</File>
-			<File
-				RelativePath="..\..\src\items\impl\ATTimeOrDerivedImpl.hpp">
-			</File>
-			<File
-				RelativePath="..\..\src\items\impl\ATUntypedAtomicImpl.hpp">
-			</File>
-			<File
 				RelativePath="..\..\include\xqilla\items\impl\ATBooleanOrDerivedImpl.hpp">
 			</File>
 			<File
@@ -1768,9 +1684,6 @@
 			</File>
 			<File
 				RelativePath="..\..\src\items\Timezone.cpp">
-			</File>
-			<File
-				RelativePath="..\..\src\items\DatatypeFactoryTemplate.hpp">
 			</File>
 			<File
 				RelativePath="..\..\include\xqilla\items\ATAnySimpleType.hpp">
@@ -2007,9 +1920,6 @@
 			</File>
 			<File
 				RelativePath="..\..\src\mapm\mapmutl2.c">
-			</File>
-			<File
-				RelativePath="..\..\src\mapm\m_apm_lc.h">
 			</File>
 			<File
 				RelativePath="..\..\include\xqilla\mapm\m_apm.h">
@@ -2275,9 +2185,6 @@
 				RelativePath="..\..\src\simple-api\XQilla.cpp">
 			</File>
 			<File
-				RelativePath="..\..\src\simple-api\XQilla2.cpp">
-			</File>
-			<File
 				RelativePath="..\..\include\xqilla\simple-api\XQQuery.hpp">
 			</File>
 			<File
@@ -2319,9 +2226,6 @@
 			</File>
 			<File
 				RelativePath="..\..\src\utils\XStr.cpp">
-			</File>
-			<File
-				RelativePath="..\..\src\utils\DateUtils.hpp">
 			</File>
 			<File
 				RelativePath="..\..\include\xqilla\utils\ContextUtils.hpp">

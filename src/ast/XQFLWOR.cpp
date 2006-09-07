@@ -944,6 +944,7 @@ Item::Ptr XQFLWOR::FLWORResult::next(DynamicContext *context)
   Item::Ptr result = _returnResult->next(context);
 
   while(result == NULLRCP) {
+    context->testInterrupt();	  
     if(_flwor->nextState(_ebs, context, false)) {
       _returnResult = _flwor->getReturnExpr()->collapseTree(context, _flags);
       result = _returnResult->next(context);

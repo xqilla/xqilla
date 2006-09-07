@@ -352,6 +352,7 @@ XQUserFunction::XQFunctionEvaluator::FunctionEvaluatorResult::FunctionEvaluatorR
 
 Item::Ptr XQUserFunction::XQFunctionEvaluator::FunctionEvaluatorResult::next(DynamicContext *context)
 {
+  context->testInterrupt();	
   VariableStore* varStore=context->getVariableStore();
   Scope<Sequence> *oldScope = varStore->getScopeState();
 

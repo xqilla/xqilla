@@ -95,6 +95,12 @@ public:
   virtual void setDebugCallback(XQDebugCallback* callback) = 0;
   /** Get the object to be used for debugging callbacks */
   virtual XQDebugCallback* getDebugCallback() const = 0;
+
+  /**
+     Test if the query should be interrupted, and throw if so.
+     This method has a default implementation of no-op.
+   */
+  virtual void testInterrupt() const {} 
 };
 
 #endif
