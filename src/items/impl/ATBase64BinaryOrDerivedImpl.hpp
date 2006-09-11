@@ -67,7 +67,7 @@ protected:
 private:
 
   /*The value of this base 64 value*/
-  const XMLCh* _base64Data;
+  XMLCh* _base64Data;
 
   /* the name of this type */
   const XMLCh* _typeName;

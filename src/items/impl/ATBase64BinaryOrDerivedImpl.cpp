@@ -19,6 +19,7 @@
 #include <xercesc/util/XMLUni.hpp>
 #include <xercesc/util/Base64.hpp>
 #include <xercesc/util/XMLString.hpp>
+#include <xercesc/util/XMLChar.hpp>
 #include <xercesc/util/Janitor.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 #include <xqilla/framework/XPath2MemoryManager.hpp>
@@ -34,7 +35,26 @@ ATBase64BinaryOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const X
     _typeName(typeName),
     _typeURI(typeURI){ 
     
-  _base64Data = context->getMemoryManager()->getPooledString(value);
+  // check if it's a valid base64 sequence, and then make it canonical by stripping whitespace
+  MemoryManager* mm = context->getMemoryManager();
+  unsigned int srcLen = XMLString::stringLen(value);
+  XMLByte *dataInByte = (XMLByte*) mm->allocate((srcLen+1) * sizeof(XMLByte));
+  ArrayJanitor<XMLByte> janFill(dataInByte, mm);
+  unsigned int i;
+  for (i = 0; i < srcLen; i++)
+    dataInByte[i] = (XMLByte)value[i];
+
+  dataInByte[srcLen] = 0;
+
+  unsigned int length=0, outLength=0;
+  AutoDeallocate<XMLByte> decodedBinary(Base64::decode(dataInByte, &length, mm, Base64::Conf_Schema), mm);
+  AutoDeallocate<XMLByte> encodedBase64(Base64::encode(decodedBinary, length, &outLength, mm), mm);
+  _base64Data = (XMLCh*) mm->allocate((outLength+1) * sizeof(XMLCh));
+  XMLCh* cursor=_base64Data;
+  for (i = 0; i < outLength; i++)
+    if(!XMLChar1_0::isWhitespace(encodedBase64[i]))
+      *cursor++ = encodedBase64[i];
+  *cursor = 0;
 }
 
 void *ATBase64BinaryOrDerivedImpl::getInterface(const XMLCh *name) const
