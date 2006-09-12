@@ -18,6 +18,8 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/Node.hpp>
 #include <xqilla/ast/XQDocumentOrder.hpp>
+#include <xqilla/ast/XQTreatAs.hpp>
+#include <xqilla/schema/SequenceType.hpp>
 
 /*static*/ const XMLCh Intersect::name[]={ XERCES_CPP_NAMESPACE_QUALIFIER chLatin_i, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_r, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_s, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_c, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
 
@@ -29,10 +31,11 @@ Intersect::Intersect(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
 
 ASTNode* Intersect::staticResolution(StaticContext *context)
 {
+  XPath2MemoryManager *mm = context->getMemoryManager();
+
   if(!sortAdded_) {
     sortAdded_ = true;
     // Wrap ourselves in a document order sort
-    XPath2MemoryManager *mm = context->getMemoryManager();
     ASTNode *result = new (mm) XQDocumentOrder(this, mm);
     result->setLocationInfo(this);
     return result->staticResolution(context);
@@ -40,19 +43,25 @@ ASTNode* Intersect::staticResolution(StaticContext *context)
 
   _src.getStaticType().flags = StaticType::NODE_TYPE;
 
-  return resolveASTNodes(_args, context, true);
+  for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
+    SequenceType *seqType = new (mm) SequenceType(new (mm) SequenceType::ItemType(SequenceType::ItemType::TEST_NODE),
+                                                  SequenceType::STAR);
+    seqType->setLocationInfo(this);
+
+    *i = new (mm) XQTreatAs(*i, seqType, mm);
+    (*i)->setLocationInfo(this);
+
+    *i = (*i)->staticResolution(context);
+    _src.add((*i)->getStaticResolutionContext());
+  }
+
+  return this;
 }
 
 Sequence Intersect::collapseTreeInternal(DynamicContext* context, int flags) const
 {
 	Sequence param1 = _args[0]->collapseTree(context, flags)->toSequence(context);
-	if(!checkSequenceIsNodes(param1)) {
-		XQThrow(XPath2ErrorException,X("Intersect::collapseTreeInternal"), X("The operator 'intersect' has been called with a parameter that is not just nodes [err:XPTY0004]"));
-	}
 	Sequence param2 = _args[1]->collapseTree(context, flags)->toSequence(context);
-	if(!checkSequenceIsNodes(param2)) {
-		XQThrow(XPath2ErrorException,X("Intersect::collapseTreeInternal"), X("The operator 'intersect' has been called with a parameter that is not just nodes [err:XPTY0004]"));
-	}
 
 	XPath2MemoryManager* memMgr = context->getMemoryManager();
 	Sequence result(param1.getLength(),memMgr);
@@ -64,7 +73,7 @@ Sequence Intersect::collapseTreeInternal(DynamicContext* context, int flags) con
 
 	for(;p1It != end1; ++p1It) {
 		for(p2It = param2.begin();p2It != end2; ++p2It) {
-			if(((Node*)(const Item*)(*p1It))->equals((const Node::Ptr )*p2It)) {
+			if(((Node*)p1It->get())->equals((Node*)p2It->get())) {
 				result.addItem(*p2It);
 			}
 		}

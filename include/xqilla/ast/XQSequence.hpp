@@ -25,7 +25,6 @@ class DynamicContext;
 class XQILLA_API XQSequence : public ASTNodeImpl
 {
 public:
-  XQSequence(Result &result, DynamicContext *context, XPath2MemoryManager* memMgr);
   XQSequence(const Item::Ptr &item, DynamicContext *context, XPath2MemoryManager* memMgr);
   XQSequence(ItemConstructor *ic, XPath2MemoryManager* memMgr);
   XQSequence(XPath2MemoryManager* memMgr);
@@ -42,6 +41,8 @@ public:
   {
     return _itemConstructors;
   }
+
+  static XQSequence *constantFold(Result &result, DynamicContext *context, XPath2MemoryManager* memMgr);
 
 private:
   class SequenceResult : public ResultImpl {

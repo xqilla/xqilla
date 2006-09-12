@@ -57,26 +57,28 @@ public:
   static unsigned int getAxisProperties(Axis axis);
 
 private:
-  /**
-   * Lazily apply an axis and NodeTest filter to the context node
-   */
-  class StepResult : public ResultImpl
-  {
-  public:
-    StepResult(const XQStep *step);
-    virtual ~StepResult() {}
-
-    Item::Ptr next(DynamicContext *context);
-    std::string asString(DynamicContext *context, int indent) const;
-
-  protected:
-    bool toDo_;
-    Result result_;
-    const XQStep *step_;
-  };
-
   NodeTest* nodeTest_;
   Axis axis_;
+};
+
+/**
+ * Lazily apply an axis and NodeTest filter to the context node
+ */
+class StepResult : public ResultImpl
+{
+public:
+  StepResult(XQStep::Axis axis, const NodeTest *nt, const LocationInfo *location);
+  virtual ~StepResult() {}
+
+  Item::Ptr next(DynamicContext *context);
+  std::string asString(DynamicContext *context, int indent) const;
+
+protected:
+  bool toDo_;
+  Result result_;
+
+  XQStep::Axis axis_;
+  const NodeTest *nodeTest_;
 };
 
 #endif

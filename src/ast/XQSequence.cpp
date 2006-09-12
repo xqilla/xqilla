@@ -59,19 +59,19 @@ inline ItemConstructor *itemToItemConstructor(const Item::Ptr &item, DynamicCont
   }
 }
 
-inline void resultToItemConstructors(Result &result, DynamicContext *context, ItemConstructor::Vector &ics, XPath2MemoryManager *memMgr)
-{
-  Item::Ptr item;
-  while((item = result->next(context)) != NULLRCP) {
-    ics.push_back(itemToItemConstructor(item, context, memMgr));
-  }
-}
+static const int CONSTANT_FOLD_LIMIT = 30;
 
-XQSequence::XQSequence(Result &result, DynamicContext *context, XPath2MemoryManager* memMgr)
-  : ASTNodeImpl(memMgr), _itemConstructors(XQillaAllocator<ItemConstructor*>(memMgr))
+XQSequence *XQSequence::constantFold(Result &result, DynamicContext *context, XPath2MemoryManager* memMgr)
 {
-  setType(ASTNode::SEQUENCE);
-  resultToItemConstructors(result, context, _itemConstructors, memMgr);
+  XQSequence *seq = new (memMgr) XQSequence(memMgr);
+
+  Item::Ptr item;
+  while((item = result->next(context)).notNull()) {
+    if(seq->_itemConstructors.size() > CONSTANT_FOLD_LIMIT) return 0;
+    seq->_itemConstructors.push_back(itemToItemConstructor(item, context, memMgr));
+  }
+
+  return seq;
 }
 
 XQSequence::XQSequence(const Item::Ptr &item, DynamicContext *context, XPath2MemoryManager* memMgr)

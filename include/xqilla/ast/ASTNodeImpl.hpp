@@ -69,7 +69,7 @@ public:
       constantFold() method, otherwise returns this. */
   ASTNode *resolveASTNode(ASTNode *&di, StaticContext *context, bool constantFold);
   /** Performs constant folding on this ASTNode. */
-  ASTNode *constantFold(StaticContext *context) const;
+  ASTNode *constantFold(StaticContext *context);
 
   virtual const StaticResolutionContext &getStaticResolutionContext() const;
 

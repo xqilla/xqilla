@@ -85,7 +85,7 @@ ASTNode* XQStep::staticResolution(StaticContext *context)
 
 Result XQStep::createResult(DynamicContext* context, int flags) const 
 {
-  return new StepResult(this);
+  return new StepResult(axis_, nodeTest_, this);
 }
 
 bool XQStep::isForwardAxis(Axis axis)
@@ -127,15 +127,16 @@ void XQStep::setAxis(XQStep::Axis a) {
   axis_ = a;
 }
 
-XQStep::StepResult::StepResult(const XQStep *step)
-  : ResultImpl(step),
+StepResult::StepResult(XQStep::Axis axis, const NodeTest *nt, const LocationInfo *location)
+  : ResultImpl(location),
     toDo_(true),
     result_(0),
-    step_(step)
+    axis_(axis),
+    nodeTest_(nt)
 {
 }
 
-Item::Ptr XQStep::StepResult::next(DynamicContext *context)
+Item::Ptr StepResult::next(DynamicContext *context)
 {
   if(toDo_) {
     toDo_ = false;
@@ -143,24 +144,24 @@ Item::Ptr XQStep::StepResult::next(DynamicContext *context)
     Item::Ptr item = context->getContextItem();
 
     if(item == NULLRCP) {
-      XQThrow(TypeErrorException,X("XQStep::StepResult::next"), X("It is an error for the context item to be undefined when using it [err:XPDY0002]"));
+      XQThrow(TypeErrorException,X("StepResult::next"), X("It is an error for the context item to be undefined when using it [err:XPDY0002]"));
     }
     if(!item->isNode()) {
-      XQThrow(TypeErrorException,X("XQStep::StepResult::next"), X("An attempt was made to perform an axis step when the Context Item was not a node [err:XPTY0020]"));
+      XQThrow(TypeErrorException,X("StepResult::next"), X("An attempt was made to perform an axis step when the Context Item was not a node [err:XPTY0020]"));
     }
 
-    result_ = ((Node*)item.get())->getAxisResult(step_->getAxis(), step_->getNodeTest(), context, this);
+    result_ = ((Node*)item.get())->getAxisResult(axis_, nodeTest_, context, this);
   }
 
   return result_->next(context);
 }
 
-std::string XQStep::StepResult::asString(DynamicContext *context, int indent) const
+std::string StepResult::asString(DynamicContext *context, int indent) const
 {
   std::ostringstream oss;
   std::string in(getIndent(indent));
 
-  oss << in << "<step name=\"" << PrintAST::getAxisName(step_->getAxis()) << "\"/>" << std::endl;
+  oss << in << "<step name=\"" << PrintAST::getAxisName(axis_) << "\"/>" << std::endl;
 
   return oss.str();
 }
