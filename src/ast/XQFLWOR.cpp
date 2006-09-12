@@ -643,6 +643,7 @@ void XQFLWOR::staticResolutionImpl(StaticContext* context)
   VectorOfVariableBinding::reverse_iterator rend = _bindings->rend();
   for(VectorOfVariableBinding::reverse_iterator it = _bindings->rbegin(); it != rend; ++it) {
     XQVariableBinding *newVB = new (getMemoryManager()) XQVariableBinding(getMemoryManager(), **it);
+    newVB->setLocationInfo(*it);
 
     // Statically resolve any binding specific where conditions, if we have them
     if(newVB->_where) {
@@ -722,9 +723,14 @@ void XQFLWOR::staticResolutionImpl(StaticContext* context)
       AutoDelete<DynamicContext> dContext(context->createDynamicContext());
       dContext->setMemoryManager(mm);
       Result result = createResultImpl(newBindings->begin(), newBindings->end(), dContext);
-      _return = new (getMemoryManager()) XQSequence(result, dContext, getMemoryManager());
-      _return->setLocationInfo(this);
-      newBindings->clear();
+
+      XQSequence *newReturn = XQSequence::constantFold(result, dContext, getMemoryManager());
+      if(newReturn != 0) {
+        // Constant folding succeeded
+        _return = newReturn;
+        _return->setLocationInfo(*it);
+        newBindings->clear();
+      }
     }
   }
 

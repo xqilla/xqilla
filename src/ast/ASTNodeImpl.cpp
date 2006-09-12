@@ -132,13 +132,16 @@ ASTNode *ASTNodeImpl::resolveASTNodesForDateOrTime(VectorOfASTNodes &dis, Static
   return this;
 }
 
-ASTNode *ASTNodeImpl::constantFold(StaticContext *context) const
+ASTNode *ASTNodeImpl::constantFold(StaticContext *context)
 {
-  XPath2MemoryManager* mm=context->getMemoryManager();
+  XPath2MemoryManager* mm = context->getMemoryManager();
   AutoDelete<DynamicContext> dContext(context->createDynamicContext());
   dContext->setMemoryManager(mm);
+
   Result result = createResult(dContext);
-  ASTNode* newBlock = new (mm) XQSequence(result, dContext, mm);
+  ASTNode *newBlock = XQSequence::constantFold(result, dContext, mm);
+  if(newBlock == 0) return this; // Constant folding failed
+
   newBlock->setLocationInfo(this);
   return newBlock->staticResolution(context);
 }

@@ -41,8 +41,8 @@ protected:
 class XQILLA_API DocumentOrderResult : public LazySequenceResult
 {
 public:
-  DocumentOrderResult(const XQDocumentOrder *doc, const Result &parent, DynamicContext *context)
-    : LazySequenceResult(doc, context), parent_(parent) {}
+  DocumentOrderResult(const LocationInfo *location, const Result &parent, DynamicContext *context)
+    : LazySequenceResult(location, context), parent_(parent) {}
   void getResult(Sequence &toFill, DynamicContext *context) const;
   std::string asString(DynamicContext *context, int indent) const { return "documentorderresult"; }
 private:

@@ -22,6 +22,9 @@
 #include <xqilla/items/AnyAtomicType.hpp>
 #include <xqilla/ast/XQAtomize.hpp>
 #include <xqilla/exceptions/XPath2ErrorException.hpp>
+#include <xqilla/ast/XQTreatAs.hpp>
+#include <xqilla/schema/SequenceType.hpp>
+#include <xqilla/ast/ConvertFunctionArg.hpp>
 
 #include <xercesc/framework/XMLBuffer.hpp>
 
@@ -30,8 +33,7 @@ XERCES_CPP_NAMESPACE_USE
 #endif
 
 ArithmeticOperator::ArithmeticOperator(const XMLCh* opName, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQOperator(opName, args, memMgr),
-    xpath1mode_(false)
+  : XQOperator(opName, args, memMgr)
 {
 }
 
@@ -39,13 +41,38 @@ ASTNode* ArithmeticOperator::staticResolution(StaticContext *context)
 {
   XPath2MemoryManager *mm = context->getMemoryManager();
 
-  xpath1mode_ = context->getXPath1CompatibilityMode();
-
   bool emptyArgument = false;
   bool allConstant = true;
   for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
+    // An arithmetic expression is evaluated by applying the following rules, in order,
+    // until an error is raised or a value is computed:
+
+    // 1. Atomization is applied to each operand.
+
     *i = new (mm) XQAtomize(*i, mm);
     (*i)->setLocationInfo(this);
+
+    // 2. If either operand is an empty sequence, the result of the operation is an empty sequence.
+    // 3. If either operand is now a sequence of length greater than one, then:
+    //      * If XPath 1.0 compatibility mode is true, any items after the first item in the sequence are discarded.
+    //        Otherwise, a type error is raised.
+
+    if(!context->getXPath1CompatibilityMode()) {
+      SequenceType *seqType = new (mm) SequenceType(new (mm) SequenceType::ItemType(SequenceType::ItemType::TEST_ANYTHING),
+                                                    SequenceType::QUESTION_MARK);
+      seqType->setLocationInfo(*i);
+
+      *i = new (mm) XQTreatAs(*i, seqType, mm);
+      (*i)->setLocationInfo(this);
+    }
+
+    // 4. If either operand is now of type xdt:untypedAtomic, it is cast to the default type for the given operator.
+    //    If the cast fails, a type error is raised.
+
+    *i = new (mm) XQPromoteUntyped(*i, SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                                   SchemaSymbols::fgDT_DOUBLE, mm);
+    (*i)->setLocationInfo(this);
+
     *i = (*i)->staticResolution(context);
 
     if((*i)->getStaticResolutionContext().getStaticType().flags == 0)
@@ -114,49 +141,8 @@ Result ArithmeticOperator::createResult(DynamicContext* context, int flags) cons
 
 AnyAtomicType::Ptr ArithmeticOperator::getArgument(unsigned int index, DynamicContext *context) const
 {
-  if(getNumArgs() <= index) {
-    return 0;
-  }
-
-  // An arithmetic expression is evaluated by applying the following rules, in order,
-  // until an error is raised or a value is computed:
-
-  // 1. Atomization is applied to each operand.
-  // 2. If either operand is an empty sequence, the result of the operation is an empty sequence.
-  // (to be enforced by the caller)
-  // 3. If either operand is now a sequence of length greater than one, then:
-  //      * If XPath 1.0 compatibility mode is true, any items after the first item in the sequence are discarded.
-  //        Otherwise, a type error is raised.
-  Result arg_result(_args[index]->collapseTree(context));
-
-  Item::Ptr first = arg_result->next(context);
-
-  if(!xpath1mode_) {
-    Item::Ptr second = arg_result->next(context);
-
-    if(first != NULLRCP && second != NULLRCP) {
-      XQThrow(XPath2TypeCastException,X("ArithmeticOperator::getArgument"),
-              X("A parameter of the operator is not an empty sequence or a single atomic value [err:XPTY0004]"));
-    }
-  }
-    
-  // 4. If either operand is now of type xdt:untypedAtomic, it is cast to the default type for the given operator.
-  //    If the cast fails, a type error is raised.
-  //
-  if(first != NULLRCP) {
-    if(first->isAtomicValue()) {
-      if(((const AnyAtomicType*)first.get())->getPrimitiveTypeIndex() == AnyAtomicType::UNTYPED_ATOMIC) {
-        first = ((const AnyAtomicType*)first.get())->castAs(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                                                            SchemaSymbols::fgDT_DOUBLE, context);
-      }
-    }
-    else {
-      XQThrow(XPath2TypeCastException,X("ArithmeticOperator::getArgument"),
-              X("A parameter of the operator is not an atomic value"));
-    }
-  }
-
-  return (const AnyAtomicType::Ptr )first;
+  if(getNumArgs() <= index) return 0;
+  return (const AnyAtomicType::Ptr )_args[index]->collapseTree(context)->next(context);
 }
 
 ArithmeticOperator::ArithmeticResult::ArithmeticResult(const ArithmeticOperator *op)

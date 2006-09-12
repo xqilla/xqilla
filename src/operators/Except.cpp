@@ -20,6 +20,8 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/Node.hpp>
 #include <xqilla/ast/XQDocumentOrder.hpp>
+#include <xqilla/ast/XQTreatAs.hpp>
+#include <xqilla/schema/SequenceType.hpp>
 
 /*static*/ const XMLCh Except::name[]={ XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_x, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_c, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_p, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
 
@@ -31,10 +33,11 @@ Except::Except(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
 
 ASTNode* Except::staticResolution(StaticContext *context)
 {
+  XPath2MemoryManager *mm = context->getMemoryManager();
+
   if(!sortAdded_) {
     sortAdded_ = true;
     // Wrap ourselves in a document order sort
-    XPath2MemoryManager *mm = context->getMemoryManager();
     ASTNode *result = new (mm) XQDocumentOrder(this, mm);
     result->setLocationInfo(this);
     return result->staticResolution(context);
@@ -42,7 +45,19 @@ ASTNode* Except::staticResolution(StaticContext *context)
 
   _src.getStaticType().flags = StaticType::NODE_TYPE;
 
-  return resolveASTNodes(_args, context, true);
+  for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
+    SequenceType *seqType = new (mm) SequenceType(new (mm) SequenceType::ItemType(SequenceType::ItemType::TEST_NODE),
+                                                  SequenceType::STAR);
+    seqType->setLocationInfo(this);
+
+    *i = new (mm) XQTreatAs(*i, seqType, mm);
+    (*i)->setLocationInfo(this);
+
+    *i = (*i)->staticResolution(context);
+    _src.add((*i)->getStaticResolutionContext());
+  }
+
+  return this;
 }
 
 Result Except::createResult(DynamicContext* context, int flags) const
@@ -75,21 +90,13 @@ Item::Ptr Except::ExceptResult::next(DynamicContext *context)
     Result except_result(_excpt.createResult());
     Item::Ptr except_item;
     while((except_item = except_result->next(context)) != NULLRCP) {
-      // Check it's a node
-      if(!except_item->isNode()) {
-        XQThrow(XPath2ErrorException,X("Except::ExceptResult::next"), X("A parameter of operator 'except' contains an item that is not a node [err:XPTY0004]"));
-      }
-      if(((Node*)(const Item*)item)->equals((const Node::Ptr )except_item)) {
+      if(((Node*)item.get())->equals((Node*)except_item.get())) {
         found = true;
         break;
       }
     }
 
     if(!found) {
-      // Check it's a node
-      if(!item->isNode()) {
-        XQThrow(XPath2ErrorException,X("Except::ExceptResult::next"), X("A parameter of operator 'except' contains an item that is not a node [err:XPTY0004]"));
-      }
       break;
     }
 

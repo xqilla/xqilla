@@ -21,6 +21,8 @@
 #include <xqilla/exceptions/XPath2ErrorException.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/ast/XQDocumentOrder.hpp>
+#include <xqilla/ast/XQTreatAs.hpp>
+#include <xqilla/schema/SequenceType.hpp>
 
 /*static*/ const XMLCh Union::name[]={ XERCES_CPP_NAMESPACE_QUALIFIER chLatin_u, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_i, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
 
@@ -32,17 +34,30 @@ Union::Union(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
 
 ASTNode* Union::staticResolution(StaticContext *context)
 {
+  XPath2MemoryManager *mm = context->getMemoryManager();
+
   if(!sortAdded_) {
     sortAdded_ = true;
     // Wrap ourselves in a document order sort
-    XPath2MemoryManager *mm = context->getMemoryManager();
     ASTNode *result = new (mm) XQDocumentOrder(this, mm);
     return result->staticResolution(context);
   }
 
   _src.getStaticType().flags = StaticType::NODE_TYPE;
 
-  return resolveASTNodes(_args, context, true);
+  for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
+    SequenceType *seqType = new (mm) SequenceType(new (mm) SequenceType::ItemType(SequenceType::ItemType::TEST_NODE),
+                                                  SequenceType::STAR);
+    seqType->setLocationInfo(this);
+
+    *i = new (mm) XQTreatAs(*i, seqType, mm);
+    (*i)->setLocationInfo(*i);
+
+    *i = (*i)->staticResolution(context);
+    _src.add((*i)->getStaticResolutionContext());
+  }
+
+  return this;
 }
 
 Result Union::createResult(DynamicContext* context, int flags) const
@@ -75,11 +90,6 @@ Item::Ptr Union::UnionResult::next(DynamicContext *context)
       }
     }
     else {
-      // Check it's a node
-      if(!item->isNode()) {
-        XQThrow(XPath2ErrorException,X("Union::UnionResult::next"), X("A parameter of operator 'union' contains an item that is not a node [err:XPTY0004]"));
-      }
-
       return item;
     }
   }

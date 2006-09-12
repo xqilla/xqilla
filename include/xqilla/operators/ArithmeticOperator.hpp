@@ -45,8 +45,6 @@ protected:
   private:
     const ArithmeticOperator *_op;
   };
-
-  bool xpath1mode_;
 };
 
 #endif // _ARITHMETICOPERATOR_HPP

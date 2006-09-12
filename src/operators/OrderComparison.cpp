@@ -21,6 +21,8 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/context/ItemFactory.hpp>
+#include <xqilla/ast/XQTreatAs.hpp>
+#include <xqilla/schema/SequenceType.hpp>
 
 /*static*/ const XMLCh OrderComparison::name[]={ XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_d, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, XERCES_CPP_NAMESPACE_QUALIFIER chDash, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_r, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_d, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_r, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
 
@@ -37,8 +39,23 @@ bool OrderComparison::getTestBefore() const
 
 ASTNode* OrderComparison::staticResolution(StaticContext *context)
 {
+  XPath2MemoryManager *mm = context->getMemoryManager();
+
   _src.getStaticType().flags = StaticType::BOOLEAN_TYPE;
-  return resolveASTNodes(_args, context, true);
+
+  for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
+    SequenceType *seqType = new (mm) SequenceType(new (mm) SequenceType::ItemType(SequenceType::ItemType::TEST_NODE),
+                                                  SequenceType::QUESTION_MARK);
+    seqType->setLocationInfo(this);
+
+    *i = new (mm) XQTreatAs(*i, seqType, mm);
+    (*i)->setLocationInfo(this);
+
+    *i = (*i)->staticResolution(context);
+    _src.add((*i)->getStaticResolutionContext());
+  }
+
+  return this;
 }
 
 Result OrderComparison::createResult(DynamicContext* context, int flags) const
@@ -54,15 +71,15 @@ OrderComparison::OrderComparisonResult::OrderComparisonResult(const OrderCompari
 
 Item::Ptr OrderComparison::OrderComparisonResult::getSingleResult(DynamicContext *context) const
 {
-	const Node::Ptr arg1 = _op->getNodeParam(0,context);
-  if(arg1 == NULLRCP) return 0;
-	const Node::Ptr arg2 = _op->getNodeParam(1,context);
-  if(arg2 == NULLRCP) return 0;
-
+  Item::Ptr arg1 = _op->getArgument(0)->collapseTree(context)->next(context);
+  if(arg1.isNull()) return 0;
+  Item::Ptr arg2 = _op->getArgument(1)->collapseTree(context)->next(context);
+  if(arg2.isNull()) return 0;
+  
 	if(_op->getTestBefore())
-    return (const Item::Ptr)context->getItemFactory()->createBoolean(arg1->lessThan(arg2, context), context);
+    return context->getItemFactory()->createBoolean(((Node*)arg1.get())->lessThan((Node*)arg2.get(), context), context);
 
-	return (const Item::Ptr)context->getItemFactory()->createBoolean(arg2->lessThan(arg1, context), context);
+  return context->getItemFactory()->createBoolean(((Node*)arg2.get())->lessThan((Node*)arg1.get(), context), context);
 }
 
 std::string OrderComparison::OrderComparisonResult::asString(DynamicContext *context, int indent) const

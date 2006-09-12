@@ -135,7 +135,7 @@ Item::Ptr XQCastAs::CastAsResult::getSingleResult(DynamicContext *context) const
   catch(XPath2TypeCastException &e) {
     if(e.getXQueryLine() == 0)
       e.setXQueryPosition(this);
-    throw e;
+    throw;
   }
 }
 

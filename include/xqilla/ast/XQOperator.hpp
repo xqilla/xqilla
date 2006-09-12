@@ -41,13 +41,7 @@ public:
   virtual const XMLCh* getOperatorName() const;
   const VectorOfASTNodes &getArguments() const;
   
-  /** Helper function for node operators */
-  Node::Ptr getNodeParam(unsigned int index,DynamicContext* context) const;
-
 protected:
-  /** Helper function for operators on sequences of nodes */
-  static bool checkSequenceIsNodes(const Sequence &s);
-
   VectorOfASTNodes _args; // The real store for arguments
 
   const XMLCh* _opName;
