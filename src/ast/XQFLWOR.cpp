@@ -545,7 +545,7 @@ ASTNode* XQFLWOR::staticResolution(StaticContext* context)
 {
   staticResolutionImpl(context);
 
-  if(!_src.isUsed()) {
+  if(_bindings->empty()) {
     return _return->staticResolution(context);
   }
   return this;
@@ -682,7 +682,7 @@ void XQFLWOR::staticResolutionImpl(StaticContext* context)
         break;
       }
     }
-    // DbXQml optimises collection() and doc(), so they have to be recalculated.
+    // DbXml optimises collection() and doc(), so they have to be recalculated.
     // Creative expressions must be re-evaluated to get a new node identity.
     if(valueSrc.areDocsOrCollectionsUsed() || valueSrc.isCreative()) {
       newVB->_valuesResultMustBeRecalculated = true;
