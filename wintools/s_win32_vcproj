@@ -5,7 +5,7 @@
 # be upgraded to Visual Studio 8 (2005) format by VS itself
 
 BUILDDIR=../Win32Projects/VC7.1
-OUTDIR=../../build/win32/VC7.1
+OUTDIR=../../build/windows/VC7.1
 TEMPLATEDIR=.
 SRCFILES=srcfiles.in
 # for now, do not parameterize the filter templates

@@ -17,8 +17,8 @@
 	<Configurations>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="../../build/win32/VC7.1/release"
-			IntermediateDirectory=".\Release\xqilla"
+			OutputDirectory="../../build/windows/VC7.1/$(ConfigurationName)"
+			IntermediateDirectory=".\$(ConfigurationName)\xqilla"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -33,9 +33,9 @@
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="TRUE"
 				UsePrecompiledHeader="2"
-				PrecompiledHeaderFile=".\Release/xqilla.pch"
-				AssemblerListingLocation=".\Release/"
-				ObjectFile=".\Release/"
+				PrecompiledHeaderFile=".\$(ConfigurationName)/xqilla.pch"
+				AssemblerListingLocation=".\$(ConfigurationName)/"
+				ObjectFile=".\$(ConfigurationName)/"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				CompileAs="0"/>
@@ -44,11 +44,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="xerces-c_2.lib"
-				AdditionalLibraryDirectories="../../build/win32/VC7.1;../../../xerces-c-src/Build/Win32/VC7.1/Release"
-				OutputFile="../../build/win32/VC7.1/release/xqilla10.dll"
+				AdditionalLibraryDirectories="../../build/windows/VC7.1/$(ConfigurationName);../../../xerces-c-src/Build/Win32/VC7.1/Release"
+				OutputFile="../../build/windows/VC7.1/$(ConfigurationName)/xqilla10.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				ImportLibrary="../../build/win32/VC7.1/xqilla10.lib"
+				ImportLibrary="../../build/windows/VC7.1/$(ConfigurationName)/xqilla10.lib"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"
@@ -56,7 +56,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName=".\Release/xqilla.tlb"
+				TypeLibraryName=".\$(ConfigurationName)/xqilla.tlb"
 				HeaderFileName=""/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -79,8 +79,8 @@
 		</Configuration>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="../../build/win32/VC7.1/debug"
-			IntermediateDirectory=".\Debug\xqilla"
+			OutputDirectory="../../build/windows/VC7.1/$(ConfigurationName)"
+			IntermediateDirectory=".\$(ConfigurationName)\xqilla"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -93,9 +93,9 @@
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="2"
-				PrecompiledHeaderFile=".\Debug/xqilla.pch"
-				AssemblerListingLocation=".\Debug/"
-				ObjectFile=".\Debug/"
+				PrecompiledHeaderFile=".\$(ConfigurationName)/xqilla.pch"
+				AssemblerListingLocation=".\$(ConfigurationName)/"
+				ObjectFile=".\$(ConfigurationName)/"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="3"
@@ -105,13 +105,13 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="xerces-c_2d.lib"
-				AdditionalLibraryDirectories="../../build/win32/VC7.1;../../../xerces-c-src/Build/Win32/VC7.1/Debug"
-				OutputFile="../../build/win32/VC7.1/debug/xqilla10d.dll"
+				AdditionalLibraryDirectories="../../build/windows/VC7.1/$(ConfigurationName);../../../xerces-c-src/Build/Win32/VC7.1/Debug"
+				OutputFile="../../build/windows/VC7.1/$(ConfigurationName)/xqilla10d.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				GenerateDebugInformation="TRUE"
 				ProgramDataBaseFile="$(OutDir)/xqilla10.pdb"
-				ImportLibrary="../../build/win32/VC7.1/xqilla10d.lib"
+				ImportLibrary="../../build/windows/VC7.1/$(ConfigurationName)/xqilla10d.lib"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"
@@ -119,7 +119,257 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName=".\Debug/xqilla.tlb"
+				TypeLibraryName=".\$(ConfigurationName)/xqilla.tlb"
+				HeaderFileName=""/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG"
+				Culture="1033"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
+				Name="VCWebDeploymentTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+		</Configuration>
+		<Configuration
+			Name="Release AMD64|Win32"
+			OutputDirectory="../../build/windows/VC7.1/$(ConfigurationName)"
+			IntermediateDirectory=".\$(ConfigurationName)\xqilla"
+			ConfigurationType="2"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="FALSE"
+			CharacterSet="2">
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="2"
+				InlineFunctionExpansion="1"
+				AdditionalIncludeDirectories="../../include,../../src/lexer,../../../xerces-c-src/include,../../../xerces-c-src/src,../../include"
+				PreprocessorDefinitions="NDEBUG;WIN32;_WINDOWS;XQILLA_APIS;_CRT_SECURE_NO_DEPRECATE=1"
+				StringPooling="TRUE"
+				RuntimeLibrary="2"
+				EnableFunctionLevelLinking="TRUE"
+				UsePrecompiledHeader="2"
+				PrecompiledHeaderFile=".\$(ConfigurationName)/xqilla.pch"
+				AssemblerListingLocation=".\$(ConfigurationName)/"
+				ObjectFile=".\$(ConfigurationName)/"
+				WarningLevel="3"
+				SuppressStartupBanner="TRUE"
+				CompileAs="0"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="xerces-c_2.lib"
+				AdditionalLibraryDirectories="../../build/windows/VC7.1/$(ConfigurationName);../../../xerces-c-src/Build/Win32/VC7.1/Release"
+				OutputFile="../../build/windows/VC7.1/$(ConfigurationName)/xqilla10.dll"
+				LinkIncremental="1"
+				SuppressStartupBanner="TRUE"
+				ImportLibrary="../../build/windows/VC7.1/$(ConfigurationName)/xqilla10.lib"
+				TargetMachine="1"/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="NDEBUG"
+				MkTypLibCompatible="TRUE"
+				SuppressStartupBanner="TRUE"
+				TargetEnvironment="1"
+				TypeLibraryName=".\$(ConfigurationName)/xqilla.tlb"
+				HeaderFileName=""/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG"
+				Culture="1033"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
+				Name="VCWebDeploymentTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+		</Configuration>
+		<Configuration
+			Name="Debug AMD64|Win32"
+			OutputDirectory="../../build/windows/VC7.1/$(ConfigurationName)"
+			IntermediateDirectory=".\$(ConfigurationName)\xqilla"
+			ConfigurationType="2"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="FALSE"
+			CharacterSet="2">
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="0"
+				AdditionalIncludeDirectories="../../include,../../src/lexer,../../../xerces-c-src/include,../../../xerces-c-src/src,../../include"
+				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;XQILLA_APIS;_CRT_SECURE_NO_DEPRECATE=1"
+				BasicRuntimeChecks="3"
+				RuntimeLibrary="3"
+				UsePrecompiledHeader="2"
+				PrecompiledHeaderFile=".\$(ConfigurationName)/xqilla.pch"
+				AssemblerListingLocation=".\$(ConfigurationName)/"
+				ObjectFile=".\$(ConfigurationName)/"
+				WarningLevel="3"
+				SuppressStartupBanner="TRUE"
+				DebugInformationFormat="3"
+				CompileAs="0"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="xerces-c_2d.lib"
+				AdditionalLibraryDirectories="../../build/windows/VC7.1/$(ConfigurationName);../../../xerces-c-src/Build/Win32/VC7.1/Debug"
+				OutputFile="../../build/windows/VC7.1/$(ConfigurationName)/xqilla10d.dll"
+				LinkIncremental="2"
+				SuppressStartupBanner="TRUE"
+				GenerateDebugInformation="TRUE"
+				ProgramDataBaseFile="$(OutDir)/xqilla10.pdb"
+				ImportLibrary="../../build/windows/VC7.1/$(ConfigurationName)/xqilla10d.lib"
+				TargetMachine="1"/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG"
+				MkTypLibCompatible="TRUE"
+				SuppressStartupBanner="TRUE"
+				TargetEnvironment="1"
+				TypeLibraryName=".\$(ConfigurationName)/xqilla.tlb"
+				HeaderFileName=""/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG"
+				Culture="1033"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
+				Name="VCWebDeploymentTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+		</Configuration>
+		<Configuration
+			Name="Release IA64|Win32"
+			OutputDirectory="../../build/windows/VC7.1/$(ConfigurationName)"
+			IntermediateDirectory=".\$(ConfigurationName)\xqilla"
+			ConfigurationType="2"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="FALSE"
+			CharacterSet="2">
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="2"
+				InlineFunctionExpansion="1"
+				AdditionalIncludeDirectories="../../include,../../src/lexer,../../../xerces-c-src/include,../../../xerces-c-src/src,../../include"
+				PreprocessorDefinitions="NDEBUG;WIN32;_WINDOWS;XQILLA_APIS;_CRT_SECURE_NO_DEPRECATE=1"
+				StringPooling="TRUE"
+				RuntimeLibrary="2"
+				EnableFunctionLevelLinking="TRUE"
+				UsePrecompiledHeader="2"
+				PrecompiledHeaderFile=".\$(ConfigurationName)/xqilla.pch"
+				AssemblerListingLocation=".\$(ConfigurationName)/"
+				ObjectFile=".\$(ConfigurationName)/"
+				WarningLevel="3"
+				SuppressStartupBanner="TRUE"
+				CompileAs="0"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="xerces-c_2.lib"
+				AdditionalLibraryDirectories="../../build/windows/VC7.1/$(ConfigurationName);../../../xerces-c-src/Build/Win32/VC7.1/Release"
+				OutputFile="../../build/windows/VC7.1/$(ConfigurationName)/xqilla10.dll"
+				LinkIncremental="1"
+				SuppressStartupBanner="TRUE"
+				ImportLibrary="../../build/windows/VC7.1/$(ConfigurationName)/xqilla10.lib"
+				TargetMachine="1"/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="NDEBUG"
+				MkTypLibCompatible="TRUE"
+				SuppressStartupBanner="TRUE"
+				TargetEnvironment="1"
+				TypeLibraryName=".\$(ConfigurationName)/xqilla.tlb"
+				HeaderFileName=""/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG"
+				Culture="1033"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
+				Name="VCWebDeploymentTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+		</Configuration>
+		<Configuration
+			Name="Debug IA64|Win32"
+			OutputDirectory="../../build/windows/VC7.1/$(ConfigurationName)"
+			IntermediateDirectory=".\$(ConfigurationName)\xqilla"
+			ConfigurationType="2"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="FALSE"
+			CharacterSet="2">
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="0"
+				AdditionalIncludeDirectories="../../include,../../src/lexer,../../../xerces-c-src/include,../../../xerces-c-src/src,../../include"
+				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;XQILLA_APIS;_CRT_SECURE_NO_DEPRECATE=1"
+				BasicRuntimeChecks="3"
+				RuntimeLibrary="3"
+				UsePrecompiledHeader="2"
+				PrecompiledHeaderFile=".\$(ConfigurationName)/xqilla.pch"
+				AssemblerListingLocation=".\$(ConfigurationName)/"
+				ObjectFile=".\$(ConfigurationName)/"
+				WarningLevel="3"
+				SuppressStartupBanner="TRUE"
+				DebugInformationFormat="3"
+				CompileAs="0"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="xerces-c_2d.lib"
+				AdditionalLibraryDirectories="../../build/windows/VC7.1/$(ConfigurationName);../../../xerces-c-src/Build/Win32/VC7.1/Debug"
+				OutputFile="../../build/windows/VC7.1/$(ConfigurationName)/xqilla10d.dll"
+				LinkIncremental="2"
+				SuppressStartupBanner="TRUE"
+				GenerateDebugInformation="TRUE"
+				ProgramDataBaseFile="$(OutDir)/xqilla10.pdb"
+				ImportLibrary="../../build/windows/VC7.1/$(ConfigurationName)/xqilla10d.lib"
+				TargetMachine="1"/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG"
+				MkTypLibCompatible="TRUE"
+				SuppressStartupBanner="TRUE"
+				TargetEnvironment="1"
+				TypeLibraryName=".\$(ConfigurationName)/xqilla.tlb"
 				HeaderFileName=""/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -268,6 +518,9 @@
 				RelativePath="..\..\include\xqilla\ast\ConvertFunctionArg.hpp">
 			</File>
 			<File
+				RelativePath="..\..\include\xqilla\ast\LocationInfo.hpp">
+			</File>
+			<File
 				RelativePath="..\..\include\xqilla\ast\NumericFunction.hpp">
 			</File>
 			<File
@@ -277,7 +530,7 @@
 				RelativePath="..\..\include\xqilla\ast\StaticType.hpp">
 			</File>
 			<File
-				RelativePath="..\..\include\xqilla\ast\XQPath1Compat.hpp">
+				RelativePath="..\..\include\xqilla\ast\XPath1Compat.hpp">
 			</File>
 			<File
 				RelativePath="..\..\include\xqilla\ast\XQAtomize.hpp">
@@ -484,6 +737,9 @@
 			</File>
 			<File
 				RelativePath="..\..\src\context\impl\UCANormalizer3.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\context\impl\UCANormalizer4.cpp">
 			</File>
 			<File
 				RelativePath="..\..\src\context\impl\VarHashEntryImpl.cpp">
@@ -805,6 +1061,69 @@
 			</File>
 			<File
 				RelativePath="..\..\src\fulltext\FTWindow.cpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\fulltext\AllMatches.hpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\fulltext\DefaultTokenizer.hpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\fulltext\DefaultTokenStore.hpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\fulltext\FTAnd.hpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\fulltext\FTContains.hpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\fulltext\FTContent.hpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\fulltext\FTDistance.hpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\fulltext\FTMildnot.hpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\fulltext\FTOption.hpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\fulltext\FTOr.hpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\fulltext\FTOrder.hpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\fulltext\FTRange.hpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\fulltext\FTScope.hpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\fulltext\FTSelection.hpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\fulltext\FTUnaryNot.hpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\fulltext\FTWindow.hpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\fulltext\FTWords.hpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\fulltext\Match.hpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\fulltext\TokenInfo.hpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\fulltext\Tokenizer.hpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\fulltext\TokenStore.hpp">
 			</File>
 		</Filter>
 		<Filter

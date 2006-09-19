@@ -5942,7 +5942,7 @@ yyreduce:
   case 376:
 #line 3256 "XQParser.y"
     {
-    (yyval.ftoptionlist) = new (MEMMGR) VectorOfFTOptions(MEMMGR);
+    (yyval.ftoptionlist) = new (MEMMGR) VectorOfFTOptions(XQillaAllocator<FTOption*>(MEMMGR));
 	;}
     break;
 

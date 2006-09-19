@@ -18,7 +18,7 @@
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory="@bin_rel_dest@"
-			IntermediateDirectory=".\Release\@project_name@"
+			IntermediateDirectory=".\$(ConfigurationName)\@project_name@"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -33,9 +33,9 @@
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="TRUE"
 				UsePrecompiledHeader="2"
-				PrecompiledHeaderFile=".\Release/@project_name@.pch"
-				AssemblerListingLocation=".\Release/"
-				ObjectFile=".\Release/"
+				PrecompiledHeaderFile=".\$(ConfigurationName)/@project_name@.pch"
+				AssemblerListingLocation=".\$(ConfigurationName)/"
+				ObjectFile=".\$(ConfigurationName)/"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				CompileAs="0"/>
@@ -56,7 +56,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName=".\Release/@project_name@.tlb"
+				TypeLibraryName=".\$(ConfigurationName)/@project_name@.tlb"
 				HeaderFileName=""/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -80,7 +80,7 @@
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory="@bin_debug_dest@"
-			IntermediateDirectory=".\Debug\@project_name@"
+			IntermediateDirectory=".\$(ConfigurationName)\@project_name@"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -93,9 +93,9 @@
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="2"
-				PrecompiledHeaderFile=".\Debug/@project_name@.pch"
-				AssemblerListingLocation=".\Debug/"
-				ObjectFile=".\Debug/"
+				PrecompiledHeaderFile=".\$(ConfigurationName)/@project_name@.pch"
+				AssemblerListingLocation=".\$(ConfigurationName)/"
+				ObjectFile=".\$(ConfigurationName)/"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="3"
@@ -119,7 +119,257 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName=".\Debug/@project_name@.tlb"
+				TypeLibraryName=".\$(ConfigurationName)/@project_name@.tlb"
+				HeaderFileName=""/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG"
+				Culture="1033"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
+				Name="VCWebDeploymentTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+		</Configuration>
+		<Configuration
+			Name="Release AMD64|Win32"
+			OutputDirectory="@bin_rel_dest@"
+			IntermediateDirectory=".\$(ConfigurationName)\@project_name@"
+			ConfigurationType="2"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="FALSE"
+			CharacterSet="2">
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="2"
+				InlineFunctionExpansion="1"
+				AdditionalIncludeDirectories="../../include,../../src/lexer,@XERCES_WINHOME@/include,@XERCES_WINHOME@/src,@include@"
+				PreprocessorDefinitions="NDEBUG;WIN32;_WINDOWS;XQILLA_APIS;_CRT_SECURE_NO_DEPRECATE=1"
+				StringPooling="TRUE"
+				RuntimeLibrary="2"
+				EnableFunctionLevelLinking="TRUE"
+				UsePrecompiledHeader="2"
+				PrecompiledHeaderFile=".\$(ConfigurationName)/@project_name@.pch"
+				AssemblerListingLocation=".\$(ConfigurationName)/"
+				ObjectFile=".\$(ConfigurationName)/"
+				WarningLevel="3"
+				SuppressStartupBanner="TRUE"
+				CompileAs="0"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="@XERCES_LIB@.lib"
+				AdditionalLibraryDirectories="@lib_dest@;@XERCES_LIBHOME7@/Release"
+				OutputFile="@bin_rel_dest@/@XQILLA_LIB@.dll"
+				LinkIncremental="1"
+				SuppressStartupBanner="TRUE"
+				ImportLibrary="@lib_dest@/@XQILLA_LIB@.lib"
+				TargetMachine="1"/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="NDEBUG"
+				MkTypLibCompatible="TRUE"
+				SuppressStartupBanner="TRUE"
+				TargetEnvironment="1"
+				TypeLibraryName=".\$(ConfigurationName)/@project_name@.tlb"
+				HeaderFileName=""/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG"
+				Culture="1033"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
+				Name="VCWebDeploymentTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+		</Configuration>
+		<Configuration
+			Name="Debug AMD64|Win32"
+			OutputDirectory="@bin_debug_dest@"
+			IntermediateDirectory=".\$(ConfigurationName)\@project_name@"
+			ConfigurationType="2"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="FALSE"
+			CharacterSet="2">
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="0"
+				AdditionalIncludeDirectories="../../include,../../src/lexer,@XERCES_WINHOME@/include,@XERCES_WINHOME@/src,@include@"
+				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;XQILLA_APIS;_CRT_SECURE_NO_DEPRECATE=1"
+				BasicRuntimeChecks="3"
+				RuntimeLibrary="3"
+				UsePrecompiledHeader="2"
+				PrecompiledHeaderFile=".\$(ConfigurationName)/@project_name@.pch"
+				AssemblerListingLocation=".\$(ConfigurationName)/"
+				ObjectFile=".\$(ConfigurationName)/"
+				WarningLevel="3"
+				SuppressStartupBanner="TRUE"
+				DebugInformationFormat="3"
+				CompileAs="0"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="@XERCES_LIB@d.lib"
+				AdditionalLibraryDirectories="@lib_dest@;@XERCES_LIBHOME7@/Debug"
+				OutputFile="@bin_debug_dest@/@XQILLA_LIB@d.dll"
+				LinkIncremental="2"
+				SuppressStartupBanner="TRUE"
+				GenerateDebugInformation="TRUE"
+				ProgramDataBaseFile="$(OutDir)/@XQILLA_LIB@.pdb"
+				ImportLibrary="@lib_dest@/@XQILLA_LIB@d.lib"
+				TargetMachine="1"/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG"
+				MkTypLibCompatible="TRUE"
+				SuppressStartupBanner="TRUE"
+				TargetEnvironment="1"
+				TypeLibraryName=".\$(ConfigurationName)/@project_name@.tlb"
+				HeaderFileName=""/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG"
+				Culture="1033"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
+				Name="VCWebDeploymentTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+		</Configuration>
+		<Configuration
+			Name="Release IA64|Win32"
+			OutputDirectory="@bin_rel_dest@"
+			IntermediateDirectory=".\$(ConfigurationName)\@project_name@"
+			ConfigurationType="2"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="FALSE"
+			CharacterSet="2">
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="2"
+				InlineFunctionExpansion="1"
+				AdditionalIncludeDirectories="../../include,../../src/lexer,@XERCES_WINHOME@/include,@XERCES_WINHOME@/src,@include@"
+				PreprocessorDefinitions="NDEBUG;WIN32;_WINDOWS;XQILLA_APIS;_CRT_SECURE_NO_DEPRECATE=1"
+				StringPooling="TRUE"
+				RuntimeLibrary="2"
+				EnableFunctionLevelLinking="TRUE"
+				UsePrecompiledHeader="2"
+				PrecompiledHeaderFile=".\$(ConfigurationName)/@project_name@.pch"
+				AssemblerListingLocation=".\$(ConfigurationName)/"
+				ObjectFile=".\$(ConfigurationName)/"
+				WarningLevel="3"
+				SuppressStartupBanner="TRUE"
+				CompileAs="0"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="@XERCES_LIB@.lib"
+				AdditionalLibraryDirectories="@lib_dest@;@XERCES_LIBHOME7@/Release"
+				OutputFile="@bin_rel_dest@/@XQILLA_LIB@.dll"
+				LinkIncremental="1"
+				SuppressStartupBanner="TRUE"
+				ImportLibrary="@lib_dest@/@XQILLA_LIB@.lib"
+				TargetMachine="1"/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="NDEBUG"
+				MkTypLibCompatible="TRUE"
+				SuppressStartupBanner="TRUE"
+				TargetEnvironment="1"
+				TypeLibraryName=".\$(ConfigurationName)/@project_name@.tlb"
+				HeaderFileName=""/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG"
+				Culture="1033"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
+				Name="VCWebDeploymentTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+		</Configuration>
+		<Configuration
+			Name="Debug IA64|Win32"
+			OutputDirectory="@bin_debug_dest@"
+			IntermediateDirectory=".\$(ConfigurationName)\@project_name@"
+			ConfigurationType="2"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="FALSE"
+			CharacterSet="2">
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="0"
+				AdditionalIncludeDirectories="../../include,../../src/lexer,@XERCES_WINHOME@/include,@XERCES_WINHOME@/src,@include@"
+				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;XQILLA_APIS;_CRT_SECURE_NO_DEPRECATE=1"
+				BasicRuntimeChecks="3"
+				RuntimeLibrary="3"
+				UsePrecompiledHeader="2"
+				PrecompiledHeaderFile=".\$(ConfigurationName)/@project_name@.pch"
+				AssemblerListingLocation=".\$(ConfigurationName)/"
+				ObjectFile=".\$(ConfigurationName)/"
+				WarningLevel="3"
+				SuppressStartupBanner="TRUE"
+				DebugInformationFormat="3"
+				CompileAs="0"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="@XERCES_LIB@d.lib"
+				AdditionalLibraryDirectories="@lib_dest@;@XERCES_LIBHOME7@/Debug"
+				OutputFile="@bin_debug_dest@/@XQILLA_LIB@d.dll"
+				LinkIncremental="2"
+				SuppressStartupBanner="TRUE"
+				GenerateDebugInformation="TRUE"
+				ProgramDataBaseFile="$(OutDir)/@XQILLA_LIB@.pdb"
+				ImportLibrary="@lib_dest@/@XQILLA_LIB@d.lib"
+				TargetMachine="1"/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG"
+				MkTypLibCompatible="TRUE"
+				SuppressStartupBanner="TRUE"
+				TargetEnvironment="1"
+				TypeLibraryName=".\$(ConfigurationName)/@project_name@.tlb"
 				HeaderFileName=""/>
 			<Tool
 				Name="VCPreBuildEventTool"/>

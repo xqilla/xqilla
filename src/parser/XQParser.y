@@ -3254,7 +3254,7 @@ FTSelection:
 FTSelectionOptions:
 	/* empty */
 	{
-    $$ = new (MEMMGR) VectorOfFTOptions(MEMMGR);
+    $$ = new (MEMMGR) VectorOfFTOptions(XQillaAllocator<FTOption*>(MEMMGR));
 	}
 	| FTSelectionOptions FTMatchOption
 	{

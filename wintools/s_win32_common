@@ -97,9 +97,9 @@ create_project()
 
     # destination targets for build components
     # OUTDIR must be defined in the driving script
-    libDest="$OUTDIR"
-    binRelDest="$OUTDIR/release"
-    binDebugDest="$OUTDIR/debug"
+    libDest="$OUTDIR/\$(ConfigurationName)"
+    binRelDest="$OUTDIR/\$(ConfigurationName)"
+    binDebugDest="$OUTDIR/\$(ConfigurationName)"
     jarDest="$OUTDIR/release"
     jarDebugDest="$OUTDIR/debug"
     # incl is a placeholder for additional includes.
