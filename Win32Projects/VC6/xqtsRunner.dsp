@@ -32,12 +32,12 @@ RSC=rc.exe
 
 # PROP BASE Use_MFC 0
 # PROP BASE Use_Debug_Libraries 0
-# PROP BASE Output_Dir "../../build/win32/VC6/release"
+# PROP BASE Output_Dir "../../build/win32/VC6/$(ConfigurationName)"
 # PROP BASE Intermediate_Dir "Release\xqtsRunner"
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 0
-# PROP Output_Dir "../../build/win32/VC6/release"
+# PROP Output_Dir "../../build/win32/VC6/$(ConfigurationName)"
 # PROP Intermediate_Dir "Release\xqtsRunner"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
@@ -50,18 +50,18 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386
-# ADD LINK32  /libpath:../../build/win32/VC6 xerces-c_2.lib xqilla10.lib /libpath:Release /libpath:../../../xerces-c-src/Build/Win32/VC6/Release /nologo /out:../../build/win32/VC6/release/xqtsRunner.exe /subsystem:console /machine:I386 /nodefaultlib:"libcmt"
+# ADD LINK32  /libpath:../../build/win32/VC6/$(ConfigurationName) xerces-c_2.lib xqilla10.lib /libpath:Release /libpath:../../../xerces-c-src/Build/Win32/VC6/Release /nologo /out:../../build/win32/VC6/$(ConfigurationName)/xqtsRunner.exe /subsystem:console /machine:I386 /nodefaultlib:"libcmt"
 
 !ELSEIF  "$(CFG)" == "xqtsRunner - Win32 Debug"
 
 # PROP BASE Use_MFC 0
 # PROP BASE Use_Debug_Libraries 1
-# PROP BASE Output_Dir "../../build/win32/VC6/debug"
+# PROP BASE Output_Dir "../../build/win32/VC6/$(ConfigurationName)"
 # PROP BASE Intermediate_Dir "Debug\xqtsRunner"
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 1
-# PROP Output_Dir "../../build/win32/VC6/debug"
+# PROP Output_Dir "../../build/win32/VC6/$(ConfigurationName)"
 # PROP Intermediate_Dir "Debug\xqtsRunner"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
@@ -74,7 +74,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
-# ADD LINK32  /libpath:../../build/win32/VC6 xerces-c_2d.lib xqilla10d.lib /libpath:Debug /libpath:../../../xerces-c-src/Build/Win32/VC6/Debug /nologo /out:../../build/win32/VC6/debug/xqtsRunner.exe /pdb:"../../build/win32/VC6/debug/xqtsRunner.pdb" /subsystem:console /debug /machine:I386 /nodefaultlib:"libcmt"
+# ADD LINK32  /libpath:../../build/win32/VC6/$(ConfigurationName) xerces-c_2d.lib xqilla10d.lib /libpath:Debug /libpath:../../../xerces-c-src/Build/Win32/VC6/Debug /nologo /out:../../build/win32/VC6/$(ConfigurationName)/xqtsRunner.exe /pdb:"../../build/win32/VC6/$(ConfigurationName)/xqtsRunner.pdb" /subsystem:console /debug /machine:I386 /nodefaultlib:"libcmt"
 
 !ENDIF 
 

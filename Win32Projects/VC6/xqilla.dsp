@@ -33,12 +33,12 @@ RSC=rc.exe
 
 # PROP BASE Use_MFC 0
 # PROP BASE Use_Debug_Libraries 0
-# PROP BASE Output_Dir "../../build/win32/VC6"
+# PROP BASE Output_Dir "../../build/win32/VC6/$(ConfigurationName)"
 # PROP BASE Intermediate_Dir "Release\xqilla"
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 0
-# PROP Output_Dir "../../build/win32/VC6"
+# PROP Output_Dir "../../build/win32/VC6/$(ConfigurationName)"
 # PROP Intermediate_Dir "Release\xqilla"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
@@ -53,19 +53,19 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /machine:I386
-# ADD LINK32 /libpath:"../../build/win32/VC6" xerces-c_2.lib /nologo /base:"0x69000000" /dll /machine:I386 /out:"../../build/win32/VC6/release/xqilla10.dll" /implib:"../../build/win32/VC6/xqilla10.lib" /libpath:"../../../xerces-c-src/Build/Win32/VC6/Release" /OPT:REF
+# ADD LINK32 /libpath:"../../build/win32/VC6/$(ConfigurationName)" xerces-c_2.lib /nologo /base:"0x69000000" /dll /machine:I386 /out:"../../build/win32/VC6/$(ConfigurationName)/xqilla10.dll" /implib:"../../build/win32/VC6/$(ConfigurationName)/xqilla10.lib" /libpath:"../../../xerces-c-src/Build/Win32/VC6/Release" /OPT:REF
 # SUBTRACT LINK32 /pdb:none
 
 !ELSEIF  "$(CFG)" == "xqilla - Win32 Debug"
 
 # PROP BASE Use_MFC 0
 # PROP BASE Use_Debug_Libraries 1
-# PROP BASE Output_Dir "../../build/win32/VC6"
+# PROP BASE Output_Dir "../../build/win32/VC6/$(ConfigurationName)"
 # PROP BASE Intermediate_Dir "Debug\xqilla"
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 2
 # PROP Use_Debug_Libraries 1
-# PROP Output_Dir "../../build/win32/VC6"
+# PROP Output_Dir "../../build/win32/VC6/$(ConfigurationName)"
 # PROP Intermediate_Dir "Debug\xqilla"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
@@ -80,7 +80,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 /libpath:"../../build/win32/VC6" xerces-c_2D.lib /nologo /base:"0x69000000" /dll /debug /machine:I386 /out:"../../build/win32/VC6/debug/xqilla10d.dll" /implib:"../../build/win32/VC6/xqilla10d.lib" /pdbtype:sept /pdb:"../../build/win32/VC6/debug/xqilla10.pdb" /libpath:"../../../xerces-c-src/Build/Win32/VC6/Debug"
+# ADD LINK32 /libpath:"../../build/win32/VC6/$(ConfigurationName)" xerces-c_2D.lib /nologo /base:"0x69000000" /dll /debug /machine:I386 /out:"../../build/win32/VC6/$(ConfigurationName)/xqilla10d.dll" /implib:"../../build/win32/VC6/$(ConfigurationName)/xqilla10d.lib" /pdbtype:sept /pdb:"../../build/win32/VC6/$(ConfigurationName)/xqilla10.pdb" /libpath:"../../../xerces-c-src/Build/Win32/VC6/Debug"
 
 !ENDIF 
 
@@ -253,6 +253,10 @@ SOURCE=..\..\include\xqilla\ast\ConvertFunctionArg.hpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\include\xqilla\ast\LocationInfo.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\include\xqilla\ast\NumericFunction.hpp
 # End Source File
 # Begin Source File
@@ -265,7 +269,7 @@ SOURCE=..\..\include\xqilla\ast\StaticType.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\include\xqilla\ast\XQPath1Compat.hpp
+SOURCE=..\..\include\xqilla\ast\XPath1Compat.hpp
 # End Source File
 # Begin Source File
 
@@ -537,6 +541,10 @@ SOURCE=..\..\src\context\impl\UCANormalizer2.cpp
 # Begin Source File
 
 SOURCE=..\..\src\context\impl\UCANormalizer3.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\context\impl\UCANormalizer4.cpp
 # End Source File
 # Begin Source File
 
@@ -958,6 +966,90 @@ SOURCE=..\..\src\fulltext\FTContent.cpp
 # Begin Source File
 
 SOURCE=..\..\src\fulltext\FTWindow.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\fulltext\AllMatches.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\fulltext\DefaultTokenizer.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\fulltext\DefaultTokenStore.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\fulltext\FTAnd.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\fulltext\FTContains.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\fulltext\FTContent.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\fulltext\FTDistance.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\fulltext\FTMildnot.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\fulltext\FTOption.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\fulltext\FTOr.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\fulltext\FTOrder.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\fulltext\FTRange.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\fulltext\FTScope.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\fulltext\FTSelection.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\fulltext\FTUnaryNot.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\fulltext\FTWindow.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\fulltext\FTWords.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\fulltext\Match.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\fulltext\TokenInfo.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\fulltext\Tokenizer.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\fulltext\TokenStore.hpp
 # End Source File
 # End Group
 # Begin Group "functions"

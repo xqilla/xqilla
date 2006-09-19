@@ -59,11 +59,6 @@ protected:
     : FTSelection(type, memMgr) {}
 };
 
-class XQILLA_API VectorOfFTOptions : public std::vector<FTOption*,XQillaAllocator<FTOption*> >, public XERCES_CPP_NAMESPACE_QUALIFIER XMemory
-{
-public:
-  VectorOfFTOptions(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mm)
-    : std::vector<FTOption*,XQillaAllocator<FTOption*> >(XQillaAllocator<FTOption*>(mm)) {}
-};
+typedef std::vector<FTOption*,XQillaAllocator<FTOption*> > VectorOfFTOptions;
 
 #endif

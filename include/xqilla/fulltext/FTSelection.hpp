@@ -82,11 +82,6 @@ private:
   XPath2MemoryManager *memMgr_;
 };
 
-class XQILLA_API VectorOfFTSelections : public std::vector<FTSelection*,XQillaAllocator<FTSelection*> >, public XERCES_CPP_NAMESPACE_QUALIFIER XMemory
-{
-public:
-  VectorOfFTSelections(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mm)
-    : std::vector<FTSelection*,XQillaAllocator<FTSelection*> >(XQillaAllocator<FTSelection*>(mm)) {}
-};
+typedef std::vector<FTSelection*,XQillaAllocator<FTSelection*> > VectorOfFTSelections;
 
 #endif
