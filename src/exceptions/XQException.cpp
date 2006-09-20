@@ -18,6 +18,20 @@
 #include <xqilla/ast/LocationInfo.hpp>
 #include <iostream>
 
+// This is only for Windows, to force export of
+// symbols for the two exceptions -- they are not used
+// elsewhere within XQilla at this time
+#include <xqilla/exceptions/QueryTimeoutException.hpp>
+#include <xqilla/exceptions/QueryInterruptedException.hpp>
+void __exceptionDummy() {
+	try {
+		// do something that won't be optimized away
+		::strcmp("a","b");
+	}
+	catch (QueryTimeoutException &qte) {}
+	catch (QueryInterruptedException &qie) {}
+}
+
 #if defined(XERCES_HAS_CPP_NAMESPACE)
 XERCES_CPP_NAMESPACE_USE
 #endif

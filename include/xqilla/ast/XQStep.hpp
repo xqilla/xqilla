@@ -65,7 +65,7 @@ private:
 /**
  * Lazily apply an axis and NodeTest filter to the context node
  */
-class StepResult : public ResultImpl
+class XQILLA_API StepResult : public ResultImpl
 {
 public:
   StepResult(XQStep::Axis axis, const NodeTest *nt, const LocationInfo *location);
