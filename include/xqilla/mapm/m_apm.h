@@ -77,7 +77,7 @@ extern void m_apm_mt_terminate(void);
 extern	void	m_apm_enter(void);
 extern	void	m_apm_leave(void);
 
-extern	M_APM	m_apm_init(void);
+extern	XQILLA_API M_APM	m_apm_init(void);
 extern	void	m_apm_free(M_APM);
 extern	void	m_apm_free_all_mem(void);
 extern	void	m_apm_trim_mem_usage(void);
@@ -94,9 +94,9 @@ extern  void    m_apm_to_integer_string(char *, M_APM);
 
 extern	void	m_apm_absolute_value(M_APM, M_APM);
 extern	void	m_apm_negate(M_APM, M_APM);
-extern	void	m_apm_copy(M_APM, M_APM);
+extern	XQILLA_API void	m_apm_copy(M_APM, M_APM);
 extern	void	m_apm_round(M_APM, int, M_APM);
-extern	int	m_apm_compare(M_APM, M_APM);
+extern	XQILLA_API int	m_apm_compare(M_APM, M_APM);
 extern	int	m_apm_sign(M_APM);
 extern	int	m_apm_exponent(M_APM);
 extern	int	m_apm_significant_digits(M_APM);
