@@ -21,6 +21,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
+				MinimalRebuild="TRUE"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="../../include,@XERCES_WINHOME@/include,@XERCES_WINHOME@/src,@include@"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE=1"
@@ -83,6 +84,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
+				MinimalRebuild="TRUE"
 				AdditionalIncludeDirectories="../../include,@XERCES_WINHOME@/include,@XERCES_WINHOME@/src,@include@"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE=1"
 				RuntimeLibrary="3"
@@ -145,6 +147,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
+				MinimalRebuild="TRUE"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="../../include,@XERCES_WINHOME@/include,@XERCES_WINHOME@/src,@include@"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE=1"
@@ -207,6 +210,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
+				MinimalRebuild="TRUE"
 				AdditionalIncludeDirectories="../../include,@XERCES_WINHOME@/include,@XERCES_WINHOME@/src,@include@"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE=1"
 				RuntimeLibrary="3"
@@ -269,6 +273,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
+				MinimalRebuild="TRUE"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="../../include,@XERCES_WINHOME@/include,@XERCES_WINHOME@/src,@include@"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE=1"
@@ -331,6 +336,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
+				MinimalRebuild="TRUE"
 				AdditionalIncludeDirectories="../../include,@XERCES_WINHOME@/include,@XERCES_WINHOME@/src,@include@"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE=1"
 				RuntimeLibrary="3"

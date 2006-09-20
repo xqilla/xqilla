@@ -26,6 +26,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
+				MinimalRebuild="TRUE"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="../../include,../../src/lexer,@XERCES_WINHOME@/include,@XERCES_WINHOME@/src,@include@"
 				PreprocessorDefinitions="NDEBUG;WIN32;_WINDOWS;XQILLA_APIS;_CRT_SECURE_NO_DEPRECATE=1"
@@ -88,6 +89,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
+				MinimalRebuild="TRUE"
 				AdditionalIncludeDirectories="../../include,../../src/lexer,@XERCES_WINHOME@/include,@XERCES_WINHOME@/src,@include@"
 				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;XQILLA_APIS;_CRT_SECURE_NO_DEPRECATE=1"
 				BasicRuntimeChecks="3"
@@ -151,6 +153,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
+				MinimalRebuild="TRUE"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="../../include,../../src/lexer,@XERCES_WINHOME@/include,@XERCES_WINHOME@/src,@include@"
 				PreprocessorDefinitions="NDEBUG;WIN32;_WINDOWS;XQILLA_APIS;_CRT_SECURE_NO_DEPRECATE=1"
@@ -213,6 +216,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
+				MinimalRebuild="TRUE"
 				AdditionalIncludeDirectories="../../include,../../src/lexer,@XERCES_WINHOME@/include,@XERCES_WINHOME@/src,@include@"
 				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;XQILLA_APIS;_CRT_SECURE_NO_DEPRECATE=1"
 				BasicRuntimeChecks="3"
@@ -276,6 +280,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
+				MinimalRebuild="TRUE"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="../../include,../../src/lexer,@XERCES_WINHOME@/include,@XERCES_WINHOME@/src,@include@"
 				PreprocessorDefinitions="NDEBUG;WIN32;_WINDOWS;XQILLA_APIS;_CRT_SECURE_NO_DEPRECATE=1"
@@ -338,6 +343,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
+				MinimalRebuild="TRUE"
 				AdditionalIncludeDirectories="../../include,../../src/lexer,@XERCES_WINHOME@/include,@XERCES_WINHOME@/src,@include@"
 				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;XQILLA_APIS;_CRT_SECURE_NO_DEPRECATE=1"
 				BasicRuntimeChecks="3"
