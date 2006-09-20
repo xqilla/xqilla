@@ -53,11 +53,18 @@ const XMLCh* FunctionNormalizeSpace::getString(DynamicContext* context) const {
 }
 
 ASTNode* FunctionNormalizeSpace::staticResolution(StaticContext *context) {
+  return resolveArguments(context);
+}
+
+ASTNode *FunctionNormalizeSpace::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
   _src.getStaticType().flags = StaticType::STRING_TYPE;
   if(_args.empty()) {
     _src.contextItemUsed(true);
   }
-  return resolveArguments(context);
+  return calculateSRCForArguments(context);
 }
 
 Sequence FunctionNormalizeSpace::collapseTreeInternal(DynamicContext* context, int flags) const

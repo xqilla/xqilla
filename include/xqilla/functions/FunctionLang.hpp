@@ -35,6 +35,7 @@ public:
   FunctionLang(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   virtual ASTNode* staticResolution(StaticContext *context);
+  virtual ASTNode *staticTyping(StaticContext *context);
 
   /** The lang function returns true or false depending on whether the language of
       the context node as specified by xml:lang attributes is the same as or is a

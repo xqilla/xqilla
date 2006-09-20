@@ -84,14 +84,15 @@ public:
    * The values are OR'd as flags, so they must be distinct bits
    */
   enum Properties {
-    DOCORDER     = 0x01, ///< Results are returned in document order
-    PEER         = 0x02, ///< Results do not appear in the descendants of other results
-    SUBTREE      = 0x04, ///< Results are members of the set of descendants of the context node
-    GROUPED      = 0x08, ///< Results are grouped by the document they come from
-    SAMEDOC      = 0x10, ///< Results are from the same document as the context node
-    ONENODE      = 0x20, ///< Only ever returns one node
-    FORWARDREF   = 0x40, ///< This is a forward reference for a global variable that is declared later
-    UNDEFINEDVAR = 0x80  ///< This is a variable that has been undefined
+    DOCORDER     = 0x001, ///< Results are returned in document order
+    PEER         = 0x002, ///< Results do not appear in the descendants of other results
+    SUBTREE      = 0x004, ///< Results are members of the set of descendants of the context node
+    GROUPED      = 0x008, ///< Results are grouped by the document they come from
+    SAMEDOC      = 0x010, ///< Results are from the same document as the context node
+    ONENODE      = 0x020, ///< Only ever returns one node
+    SELF         = 0x040, ///< Only ever returns the context node
+    FORWARDREF   = 0x080, ///< This is a forward reference for a global variable that is declared later
+    UNDEFINEDVAR = 0x100  ///< This is a variable that has been undefined
   };
 
   unsigned int getProperties() const;

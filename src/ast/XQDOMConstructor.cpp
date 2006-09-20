@@ -524,8 +524,10 @@ ASTNode* XQDOMConstructor::staticResolution(StaticContext *context)
       const ASTNode* dItem=attrConstructor->getName();
       assert(dItem!=NULL && dItem->getType() == ASTNode::LITERAL);
       const ItemConstructor* itemConstr=((XQLiteral*)dItem)->getItemConstructor();
-      assert(XPath2Utils::equals(itemConstr->getTypeURI(),XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA) &&
-             XPath2Utils::equals(itemConstr->getTypeName(),XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_QNAME));
+      assert(XPath2Utils::equals(itemConstr->getTypeURI(),
+                                 XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA) &&
+             XPath2Utils::equals(itemConstr->getTypeName(),
+                                 XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_QNAME));
 
       // createItem will throw an exception if the prefix is undefined
       AnyAtomicType::Ptr atomName;
@@ -539,7 +541,7 @@ ASTNode* XQDOMConstructor::staticResolution(StaticContext *context)
         break;
       }
 
-      const ATQNameOrDerived* pQName=(const ATQNameOrDerived*)(const AnyAtomicType*)atomName;
+      const ATQNameOrDerived* pQName=(const ATQNameOrDerived*)atomName.get();
       const XMLCh* XMLNSPrefix=NULL;
       if((pQName->getPrefix()==NULL || *pQName->getPrefix()==0) &&
          XPath2Utils::equals(pQName->getName(),XMLUni::fgXMLNSString)) {
@@ -557,7 +559,8 @@ ASTNode* XQDOMConstructor::staticResolution(StaticContext *context)
       if(children->size()==0) { // supporting Namespace 1.1 means unsetting the binding...
         uri=XMLUni::fgZeroLenString;
       }
-      else if(children->size()>1 || (*children)[0]->getType()!=ASTNode::LITERAL) {
+      else if(children->size()>1 || ((*children)[0]->getType()!=ASTNode::LITERAL &&
+                                     (*children)[0]->getType()!=ASTNode::SEQUENCE)) {
         XQThrow(StaticErrorException,X("DOM Constructor"),X("The value of a namespace declaration attribute must be a literal string [err:XQST0022]"));
       }
       else {
@@ -574,7 +577,7 @@ ASTNode* XQDOMConstructor::staticResolution(StaticContext *context)
       }
       if(m_namespaces==NULL)
         m_namespaces = new (mm) RefHashTableOf< XMLCh >(5, false, mm);
-
+      
       if(m_namespaces->containsKey(XMLNSPrefix))
         XQThrow(StaticErrorException,X("DOM Constructor"),X("Two namespace declaration attributes specified by a direct element constructor do not have distinct names. [err:XQST0071]"));
       m_namespaces->put((void*)mm->getPooledString(XMLNSPrefix), (XMLCh*)mm->getPooledString(uri));
@@ -584,7 +587,6 @@ ASTNode* XQDOMConstructor::staticResolution(StaticContext *context)
     // now run static resolution on the real attributes
     for (i=0;i<m_attrList->size();i++) {
       (*m_attrList)[i] = (*m_attrList)[i]->staticResolution(context);
-      _src.add((*m_attrList)[i]->getStaticResolutionContext()); 
     }
     // now that we have added the local namespace declaration, check for duplicate attribute names
     std::set<const XMLCh*, XMLChSort> attrNames;
@@ -597,6 +599,9 @@ ASTNode* XQDOMConstructor::staticResolution(StaticContext *context)
              ((XQDOMConstructor*)astNode)->getNodeType()==Node::attribute_string);
       XQDOMConstructor* attrConstructor=(XQDOMConstructor*)astNode;
       const ASTNode* dItem=attrConstructor->getName();
+      if(dItem->getType() == ASTNode::ATOMIZE) {
+	      dItem = ((XQAtomize*)dItem)->getExpression();
+      }
       assert(dItem->getType()==ASTNode::SEQUENCE); 
       const ItemConstructor::Vector &ics = ((XQSequence*)dItem)->getItemConstructors();
       assert(ics.size() == 1);
@@ -649,7 +654,6 @@ ASTNode* XQDOMConstructor::staticResolution(StaticContext *context)
     m_name = new (mm) XQAtomize(m_name, mm);
     m_name->setLocationInfo(this);
     m_name = m_name->staticResolution(context);
-    _src.add(m_name->getStaticResolutionContext());
   }
 
 
@@ -688,11 +692,73 @@ ASTNode* XQDOMConstructor::staticResolution(StaticContext *context)
       (*m_children)[i]->setLocationInfo(this);
     }
     (*m_children)[i] = (*m_children)[i]->staticResolution(context);
-    _src.add((*m_children)[i]->getStaticResolutionContext());
 
   }
 
-  _src.getStaticType().flags = StaticType::NODE_TYPE;
+  return this;
+}
+
+ASTNode* XQDOMConstructor::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
+  // Add a new scope for the namespace definitions
+  XQScopedNamespace newNSScope(context->getMemoryManager(), context->getNSResolver());
+  AutoNsScopeReset jan(context, &newNSScope);
+
+  if(m_namespaces != 0) {
+    RefHashTableOfEnumerator<XMLCh> nsEnumVal(m_namespaces, false, context->getMemoryManager());
+    RefHashTableOfEnumerator<XMLCh> nsEnumKey(m_namespaces, false, context->getMemoryManager());
+    while(nsEnumVal.hasMoreElements()) {
+      XMLCh *prefix = (XMLCh*)nsEnumKey.nextElementKey();
+      XMLCh *uri = &nsEnumVal.nextElement();
+      if(XPath2Utils::equals(prefix, XMLUni::fgZeroLenString)) {
+        context->setDefaultElementAndTypeNS(uri);
+      }
+      else {
+        context->setNamespaceBinding(prefix, uri);
+      }
+    }
+  }
+
+  unsigned int i;
+  if(m_attrList != 0) {
+    for(i = 0; i < m_attrList->size(); ++i) {
+      (*m_attrList)[i] = (*m_attrList)[i]->staticTyping(context);
+      _src.add((*m_attrList)[i]->getStaticResolutionContext()); 
+    }
+  }
+
+  if(m_name) {
+    m_name = m_name->staticTyping(context);
+    _src.add(m_name->getStaticResolutionContext());
+  }
+
+  for(i = 0; i < m_children->size(); ++i) {
+    (*m_children)[i] = (*m_children)[i]->staticTyping(context);
+    _src.add((*m_children)[i]->getStaticResolutionContext());
+  }
+
+  if(m_nodeType == Node::document_string) {
+    _src.getStaticType().flags = StaticType::DOCUMENT_TYPE;
+  }
+  else if(m_nodeType == Node::element_string) {
+    _src.getStaticType().flags = StaticType::ELEMENT_TYPE;
+  }
+  else if(m_nodeType == Node::attribute_string) {
+    _src.getStaticType().flags = StaticType::ATTRIBUTE_TYPE;
+  }
+  else if(m_nodeType == Node::processing_instruction_string) {
+    _src.getStaticType().flags = StaticType::PI_TYPE;
+  }
+  else if(m_nodeType == Node::comment_string) {
+    _src.getStaticType().flags = StaticType::COMMENT_TYPE;
+  }
+  else if(m_nodeType == Node::text_string ||
+          m_nodeType == Node::cdata_string) {
+    _src.getStaticType().flags = StaticType::TEXT_TYPE;
+  }
+
   _src.forceNoFolding(true);
   _src.creative(true);
   return this; // Never constant fold

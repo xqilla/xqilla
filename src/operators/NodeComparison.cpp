@@ -35,8 +35,6 @@ ASTNode* NodeComparison::staticResolution(StaticContext *context)
 {
   XPath2MemoryManager *mm = context->getMemoryManager();
 
-  _src.getStaticType().flags = StaticType::BOOLEAN_TYPE;
-
   for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
     SequenceType *seqType = new (mm) SequenceType(new (mm) SequenceType::ItemType(SequenceType::ItemType::TEST_NODE),
                                                   SequenceType::QUESTION_MARK);
@@ -46,6 +44,19 @@ ASTNode* NodeComparison::staticResolution(StaticContext *context)
     (*i)->setLocationInfo(this);
 
     *i = (*i)->staticResolution(context);
+  }
+
+  return this;
+}
+
+ASTNode* NodeComparison::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
+  _src.getStaticType().flags = StaticType::BOOLEAN_TYPE;
+
+  for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
+    *i = (*i)->staticTyping(context);
     _src.add((*i)->getStaticResolutionContext());
   }
 

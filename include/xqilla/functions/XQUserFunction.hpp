@@ -57,6 +57,7 @@ public:
 
     Result createResult(DynamicContext* context, int flags=0) const;
     ASTNode* staticResolution(StaticContext* context);
+    virtual ASTNode *staticTyping(StaticContext *context);
 
     const XQUserFunction *getFunctionDefinition() const
     {
@@ -100,6 +101,7 @@ public:
   void staticResolutionStage1(StaticContext* context);
   /// Resolve the function body, work out a more static return type
   void staticResolutionStage2(StaticContext* context);
+  void staticTyping(StaticContext *context);
 
   void setSignature(const XMLCh* signature);
   const XMLCh* getSignature();
@@ -120,7 +122,7 @@ protected:
   VectorOfFunctionParameters* m_pParams;
   XPath2MemoryManager* m_pMemMgr;
   StaticResolutionContext _src;
-  bool m_bStaticallyResolved;
+  bool m_bCalculatingSRC;
 
   friend class XQFunctionEvaluator;
 };

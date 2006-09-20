@@ -39,14 +39,12 @@ FTSelection *FTDistance::staticResolution(StaticContext *context)
   seqType->setLocationInfo(this);
 
   arg_ = arg_->staticResolution(context);
-  src_.add(arg_->getStaticResolutionContext());
 
   range_.arg1 = new (mm) XQAtomize(range_.arg1, mm);
   range_.arg1->setLocationInfo(this);
   range_.arg1 = new (mm) XQTreatAs(range_.arg1, seqType, mm);
   range_.arg1->setLocationInfo(this);
   range_.arg1 = range_.arg1->staticResolution(context);
-  src_.add(range_.arg1->getStaticResolutionContext());
 
   if(range_.arg2 != NULL) {
     range_.arg2 = new (mm) XQAtomize(range_.arg2, mm);
@@ -54,6 +52,23 @@ FTSelection *FTDistance::staticResolution(StaticContext *context)
     range_.arg2 = new (mm) XQTreatAs(range_.arg2, seqType, mm);
     range_.arg2->setLocationInfo(this);
     range_.arg2 = range_.arg2->staticResolution(context);
+  }
+
+  return this;
+}
+
+FTSelection *FTDistance::staticTyping(StaticContext *context)
+{
+  src_.clear();
+
+  arg_ = arg_->staticTyping(context);
+  src_.add(arg_->getStaticResolutionContext());
+
+  range_.arg1 = range_.arg1->staticTyping(context);
+  src_.add(range_.arg1->getStaticResolutionContext());
+
+  if(range_.arg2 != NULL) {
+    range_.arg2 = range_.arg2->staticTyping(context);
     src_.add(range_.arg2->getStaticResolutionContext());
   }
 
@@ -120,6 +135,14 @@ AllMatches::Ptr FTDistance::execute(FTContext *ftcontext) const
 FTSelection *FTDistanceLiteral::staticResolution(StaticContext *context)
 {
   arg_ = arg_->staticResolution(context);
+  return this;
+}
+
+FTSelection *FTDistanceLiteral::staticTyping(StaticContext *context)
+{
+  src_.clear();
+
+  arg_ = arg_->staticTyping(context);
   src_.add(arg_->getStaticResolutionContext());
 
   return this;

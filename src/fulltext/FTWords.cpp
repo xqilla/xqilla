@@ -56,6 +56,14 @@ FTSelection *FTWords::staticResolution(StaticContext *context)
   expr_->setLocationInfo(this);
   expr_ = expr_->staticResolution(context);
 
+  return this;
+}
+
+FTSelection *FTWords::staticTyping(StaticContext *context)
+{
+  src_.clear();
+
+  expr_ = expr_->staticTyping(context);
   src_.add(expr_->getStaticResolutionContext());
 
   return this;
@@ -199,6 +207,12 @@ FTWord::FTWord(const XMLCh *queryString, XPath2MemoryManager *memMgr)
 
 FTSelection *FTWord::staticResolution(StaticContext *context)
 {
+  return this;
+}
+
+FTSelection *FTWord::staticTyping(StaticContext *context)
+{
+  src_.clear();
   return this;
 }
 

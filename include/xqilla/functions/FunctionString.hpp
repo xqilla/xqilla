@@ -40,6 +40,7 @@ public:
    * is constant.
    */
   virtual ASTNode* staticResolution(StaticContext *context);
+  virtual ASTNode *staticTyping(StaticContext *context);
 
   /** Returns the argument as a String **/
   Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;

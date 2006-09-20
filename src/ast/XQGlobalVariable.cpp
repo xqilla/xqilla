@@ -75,16 +75,15 @@ void XQGlobalVariable::execute(DynamicContext* context) const
 
 void XQGlobalVariable::staticResolution(StaticContext* context)
 {
-  if(m_Type)
-    m_Type->staticResolution(context);
   XPath2MemoryManager *mm = context->getMemoryManager();
+
+  if(m_Type) m_Type->staticResolution(context);
 
   // variables with no prefix are in no namespace
   const XMLCh* prefix=XPath2NSUtils::getPrefix(m_szQName, mm);
   if(prefix && *prefix)
     m_szURI = context->getUriBoundToPrefix(prefix, this);
   m_szLocalName = XPath2NSUtils::getLocalName(m_szQName);
-  VariableTypeStore* varStore = context->getVariableTypeStore();
 
   if(m_Value != NULL) {
     if(m_Type != NULL) {
@@ -92,6 +91,15 @@ void XQGlobalVariable::staticResolution(StaticContext* context)
       m_Value->setLocationInfo(this);
     }
     m_Value = m_Value->staticResolution(context);
+  }
+}
+
+void XQGlobalVariable::staticTyping(StaticContext* context)
+{
+  VariableTypeStore* varStore = context->getVariableTypeStore();
+
+  if(m_Value != NULL) {
+    m_Value = m_Value->staticTyping(context);
     _src.copy(m_Value->getStaticResolutionContext());
   }
   else {

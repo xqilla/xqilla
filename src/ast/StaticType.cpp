@@ -69,9 +69,9 @@ void StaticType::typeUnion(const StaticType &st)
   flags |= st.flags;
 }
 
-bool StaticType::isNodesOnly() const
+void StaticType::typeIntersect(const StaticType &st)
 {
-  return (flags & ~NODE_TYPE) == 0;
+  flags &= st.flags;
 }
 
 bool StaticType::containsType(unsigned int type) const

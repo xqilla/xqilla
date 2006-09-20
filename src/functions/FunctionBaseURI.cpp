@@ -39,10 +39,17 @@ FunctionBaseURI::FunctionBaseURI(const VectorOfASTNodes &args, XPath2MemoryManag
 ASTNode* FunctionBaseURI::staticResolution(StaticContext *context) {
   if(!_args.empty() && (*_args.begin())->getType()==ASTNode::CONTEXT_ITEM)
       _args.clear();
+  return resolveArguments(context);
+}
+
+ASTNode *FunctionBaseURI::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
   if(_args.empty())
     _src.contextItemUsed(true);
   _src.getStaticType().flags = StaticType::ANY_URI_TYPE;
-  return resolveArguments(context);
+  return calculateSRCForArguments(context);
 }
 
 Sequence FunctionBaseURI::collapseTreeInternal(DynamicContext* context, int flags) const

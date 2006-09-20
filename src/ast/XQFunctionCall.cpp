@@ -72,6 +72,12 @@ ASTNode* XQFunctionCall::staticResolution(StaticContext *context)
   return functionImpl->staticResolution(context);
 }
 
+ASTNode *XQFunctionCall::staticTyping(StaticContext *context)
+{
+  // Should never happen
+  return this;
+}
+
 const QualifiedName *XQFunctionCall::getName() const
 {
   return _qname;

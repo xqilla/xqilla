@@ -28,6 +28,7 @@ public:
   
   Result createResult(DynamicContext* context, int flags=0) const;
   virtual ASTNode* staticResolution(StaticContext *context);
+  virtual ASTNode *staticTyping(StaticContext *context);
 
 private:
   class OrResult : public SingleResult

@@ -31,7 +31,16 @@ XQContextItem::~XQContextItem() {
 
 ASTNode* XQContextItem::staticResolution(StaticContext *context)
 {
-  _src.setProperties(StaticResolutionContext::DOCORDER | StaticResolutionContext::GROUPED | StaticResolutionContext::PEER | StaticResolutionContext::SUBTREE | StaticResolutionContext::SAMEDOC | StaticResolutionContext::ONENODE);
+  return this;
+}
+
+ASTNode *XQContextItem::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
+  _src.setProperties(StaticResolutionContext::DOCORDER | StaticResolutionContext::GROUPED |
+	  StaticResolutionContext::PEER | StaticResolutionContext::SUBTREE | StaticResolutionContext::SAMEDOC |
+	  StaticResolutionContext::ONENODE | StaticResolutionContext::SELF);
   _src.getStaticType() = context->getContextItemType();
   _src.contextItemUsed(true);
   return this;

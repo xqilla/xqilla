@@ -118,7 +118,18 @@ ASTNode* GeneralComp::staticResolution(StaticContext *context)
     *i = new (mm) XQAtomize(*i, mm);
     (*i)->setLocationInfo(this);
     *i = (*i)->staticResolution(context);
+  }
 
+  return this;
+}
+
+ASTNode* GeneralComp::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
+  bool allConstant = true;
+  for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
+    *i = (*i)->staticTyping(context);
     _src.add((*i)->getStaticResolutionContext());
 
     if(!(*i)->isConstant())

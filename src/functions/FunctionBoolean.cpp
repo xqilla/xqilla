@@ -38,9 +38,16 @@ FunctionBoolean::FunctionBoolean(const VectorOfASTNodes &args, XPath2MemoryManag
 }
 
 ASTNode* FunctionBoolean::staticResolution(StaticContext *context) {
-  _src.getStaticType().flags = StaticType::BOOLEAN_TYPE;
   AutoNodeSetOrderingReset orderReset(context);
   return resolveArguments(context);
+}
+
+ASTNode *FunctionBoolean::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
+  _src.getStaticType().flags = StaticType::BOOLEAN_TYPE;
+  return calculateSRCForArguments(context);
 }
 
 Sequence FunctionBoolean::collapseTreeInternal(DynamicContext* context, int flags) const

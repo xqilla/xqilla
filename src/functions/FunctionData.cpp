@@ -42,6 +42,12 @@ ASTNode* FunctionData::staticResolution(StaticContext *context)
   return result->staticResolution(context);
 }
 
+ASTNode *FunctionData::staticTyping(StaticContext *context)
+{
+  // Should never happen
+  return this;
+}
+
 Result FunctionData::createResult(DynamicContext* context, int flags) const
 {
   // Should never happen

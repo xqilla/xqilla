@@ -61,6 +61,7 @@ public:
 		SortSpec(ASTNode* expr, sortModifier modifier, const XMLCh* collation);
 
 		void staticResolution(StaticContext *context, StaticResolutionContext &src);
+		void staticTyping(StaticContext *context, StaticResolutionContext &src);
 		SortableItem buildKey(DynamicContext* context);
 
     const ASTNode *getExpression() const;
@@ -83,6 +84,7 @@ public:
 
 	XQSort(sortType type, VectorOfSortSpec* specList);
 	void staticResolution(StaticContext *context, StaticResolutionContext &src);
+	void staticTyping(StaticContext *context, StaticResolutionContext &src);
 
 	SortItems buildKeys(DynamicContext *context) const;
 
@@ -102,6 +104,7 @@ public:
 
   virtual Result createResult(DynamicContext *context, int flags=0) const;
   virtual ASTNode* staticResolution(StaticContext *context);
+  virtual ASTNode *staticTyping(StaticContext *context);
 
   const VectorOfVariableBinding *getBindings() const;
   const ASTNode *getWhereExpr() const;
@@ -143,7 +146,8 @@ protected:
   virtual Result createResultImpl(VectorOfVariableBinding::const_iterator it, VectorOfVariableBinding::const_iterator end,
                                   DynamicContext* context, int flags = 0) const;
   void staticResolutionImpl(StaticContext* context);
-  ASTNode *staticallyResolveWhere(ASTNode *where, StaticContext* context);
+  void staticTypingImpl(StaticContext* context);
+  ASTNode *calculateSRCForWhere(ASTNode *where, StaticContext *context);
 
   class SortingFLWORResult : public LazySequenceResult
   {

@@ -34,6 +34,7 @@ public:
   FunctionMin(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   ASTNode* staticResolution(StaticContext *context);
+  virtual ASTNode *staticTyping(StaticContext *context);
   /** Returns the maximum value from the given sequence. **/
   Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
 

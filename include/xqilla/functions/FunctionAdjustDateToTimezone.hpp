@@ -42,6 +42,7 @@ public:
    * they are constant.
    */
   virtual ASTNode* staticResolution(StaticContext *context);
+  virtual ASTNode *staticTyping(StaticContext *context);
 
   /**
    * Adjusts a date to a specific timezone, or to no timezone at all

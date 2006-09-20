@@ -150,15 +150,24 @@ ASTNode *XQFunction::resolveArguments(StaticContext *context, bool checkTimezone
   for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
     *i = (*_paramDecl)[paramNumber]->convertFunctionArg(*i, context, numericFunction, *i);
     *i = (*i)->staticResolution(context);
-    _src.add((*i)->getStaticResolutionContext());
-
-    if(checkTimezone && (*i)->isDateOrTimeAndHasNoTimezone(context))
-      _src.implicitTimezoneUsed(true);
 
     ++paramNumber;
     if(paramNumber >= _paramDecl->size()) {
       paramNumber = _paramDecl->size() - 1;
     }
+  }
+
+  return this;
+}
+
+ASTNode *XQFunction::calculateSRCForArguments(StaticContext *context, bool checkTimezone, bool numericFunction)
+{
+  for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
+    *i = (*i)->staticTyping(context);
+    _src.add((*i)->getStaticResolutionContext());
+
+    if(checkTimezone && (*i)->isDateOrTimeAndHasNoTimezone(context))
+      _src.implicitTimezoneUsed(true);
   }
 
   if(!_src.isUsed()) {

@@ -36,6 +36,7 @@ public:
    *  Will perform the binding with the real function body
    */
   virtual ASTNode* staticResolution(StaticContext *context);
+  virtual ASTNode *staticTyping(StaticContext *context);
 
   const QualifiedName *getName() const;
   const VectorOfASTNodes &getArguments() const;

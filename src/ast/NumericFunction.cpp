@@ -29,6 +29,11 @@ ASTNode* NumericFunction::staticResolution(StaticContext *context) {
   return resolveArguments(context, /*checkTimezone*/false, /*numericfunction*/true);
 }
 
+ASTNode *NumericFunction::staticTyping(StaticContext *context)
+{
+  return calculateSRCForArguments(context, /*checkTimezone*/false, /*numericfunction*/true);
+}
+
 Numeric::Ptr NumericFunction::getNumericParam(unsigned int number, DynamicContext *context, int flags) const
 {
   Result arg = XQFunction::getParamNumber(number, context, flags);

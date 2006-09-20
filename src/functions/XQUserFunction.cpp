@@ -71,7 +71,7 @@ XQUserFunction::XQUserFunction(const XMLCh* fnName, VectorOfFunctionParameters* 
     m_szURI(NULL),
     m_pMemMgr(ctx->getMemoryManager()),
     _src(ctx->getMemoryManager()),
-    m_bStaticallyResolved(false)
+    m_bCalculatingSRC(false)
 {
   int nColon=XERCES_CPP_NAMESPACE_QUALIFIER XMLString::indexOf(fnName,':');
   if(nColon==-1)
@@ -206,8 +206,9 @@ void XQUserFunction::staticResolutionStage1(StaticContext *context)
 
   // Set up a default StaticType and StaticResolutionContext
   if(m_pReturnPattern != NULL) {
-    if(m_body != NULL)
+    if(m_body != NULL) {
       m_body = m_pReturnPattern->convertFunctionArg(m_body, context, /*numericfunction*/false, m_pReturnPattern);
+    }
 
     const SequenceType::ItemType *itemType = m_pReturnPattern->getItemType();
     if(itemType != 0) {
@@ -227,8 +228,16 @@ void XQUserFunction::staticResolutionStage1(StaticContext *context)
 
 void XQUserFunction::staticResolutionStage2(StaticContext *context)
 {
-  if(m_bStaticallyResolved) return;
-  m_bStaticallyResolved = true;
+  if(m_body != NULL) {
+    m_body = m_body->staticResolution(context);
+  }
+}
+
+void XQUserFunction::staticTyping(StaticContext *context)
+{
+  // Avoid inifinite recursion for recursive functions
+  if(m_bCalculatingSRC) return;
+  m_bCalculatingSRC = true;
 
   XPath2MemoryManager *mm = context->getMemoryManager();
 
@@ -248,7 +257,7 @@ void XQUserFunction::staticResolutionStage2(StaticContext *context)
 
   StaticResolutionContext m_src(mm);
   if(m_body != NULL) {
-    m_body = m_body->staticResolution(context);
+    m_body = m_body->staticTyping(context);
     m_src.copy(m_body->getStaticResolutionContext());
   }
 
@@ -267,6 +276,8 @@ void XQUserFunction::staticResolutionStage2(StaticContext *context)
   _src.copy(m_src);
 
   varStore->removeScope();
+
+  m_bCalculatingSRC = false;
 }
 
 void XQUserFunction::setSignature(const XMLCh* signature)
@@ -309,15 +320,6 @@ ASTNode* XQUserFunction::XQFunctionEvaluator::staticResolution(StaticContext* co
     XQThrow(FunctionException,X("User-defined Function"), buf.getRawBuffer());
   }
 
-  if(m_pFuncDef->m_body) {
-    // See if we can work out a better return type for the user defined function.
-    // This call will just return if staticResolutionStage2 has already been
-    // called, or is in our call stack.
-    const_cast<XQUserFunction*>(m_pFuncDef)->staticResolutionStage2(context);
-
-    _src.copy(m_pFuncDef->_src);
-  }
-
   if(nDefinedArgs > 0) {
     VectorOfASTNodes::iterator argIt = _args.begin();
     for(VectorOfFunctionParameters::iterator defIt = m_pFuncDef->m_pParams->begin();
@@ -325,11 +327,40 @@ ASTNode* XQUserFunction::XQFunctionEvaluator::staticResolution(StaticContext* co
       if((*defIt)->_qname || context->isDebuggingEnabled()) {
 	      *argIt = (*defIt)->m_pType->convertFunctionArg(*argIt, context, /*numericfunction*/false, *argIt);
         *argIt = (*argIt)->staticResolution(context);
-        _src.add((*argIt)->getStaticResolutionContext());
       }
       else {
         // Don't resolve the argument, since it isn't used by the function body, but at least run staticResolution to catch static errors
         (*argIt)->staticResolution(context);
+      }
+    }
+  }
+
+  return this;
+}
+
+ASTNode* XQUserFunction::XQFunctionEvaluator::staticTyping(StaticContext* context)
+{
+  _src.clear();
+
+  if(m_pFuncDef->m_body) {
+    // See if we can work out a better return type for the user defined function.
+    // This call will just return if staticTyping is in our call stack.
+    const_cast<XQUserFunction*>(m_pFuncDef)->staticTyping(context);
+    _src.copy(m_pFuncDef->_src);
+  }
+
+  unsigned int nDefinedArgs = m_pFuncDef->m_pParams ? m_pFuncDef->m_pParams->size() : 0;
+  if(nDefinedArgs > 0) {
+    VectorOfASTNodes::iterator argIt = _args.begin();
+    for(VectorOfFunctionParameters::iterator defIt = m_pFuncDef->m_pParams->begin();
+        defIt != m_pFuncDef->m_pParams->end() && argIt != _args.end(); ++defIt, ++argIt) {
+      if((*defIt)->_qname || context->isDebuggingEnabled()) {
+        *argIt = (*argIt)->staticTyping(context);
+        _src.add((*argIt)->getStaticResolutionContext());
+      }
+      else {
+        // Don't resolve the argument, since it isn't used by the function body, but at least run staticResolution to catch static errors
+        (*argIt)->staticTyping(context);
       }
     }
   }

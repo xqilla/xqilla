@@ -43,8 +43,6 @@ ASTNode* Union::staticResolution(StaticContext *context)
     return result->staticResolution(context);
   }
 
-  _src.getStaticType().flags = StaticType::NODE_TYPE;
-
   for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
     SequenceType *seqType = new (mm) SequenceType(new (mm) SequenceType::ItemType(SequenceType::ItemType::TEST_NODE),
                                                   SequenceType::STAR);
@@ -54,8 +52,22 @@ ASTNode* Union::staticResolution(StaticContext *context)
     (*i)->setLocationInfo(*i);
 
     *i = (*i)->staticResolution(context);
-    _src.add((*i)->getStaticResolutionContext());
   }
+
+  return this;
+}
+
+ASTNode* Union::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
+  _args[0] = _args[0]->staticTyping(context);
+  _src.add(_args[0]->getStaticResolutionContext());
+  _src.getStaticType() = _args[0]->getStaticResolutionContext().getStaticType();
+
+  _args[1] = _args[1]->staticTyping(context);
+  _src.add(_args[1]->getStaticResolutionContext());
+  _src.getStaticType().typeUnion(_args[1]->getStaticResolutionContext().getStaticType());
 
   return this;
 }

@@ -66,6 +66,7 @@ public:
   virtual const StaticResolutionContext &getStaticResolutionContext() const { return src_; }
 
   virtual FTSelection *staticResolution(StaticContext *context) = 0;
+  virtual FTSelection *staticTyping(StaticContext *context) = 0;
   virtual FTSelection *optimize(FTContext *context, bool execute) const = 0;
   virtual AllMatches::Ptr execute(FTContext *ftcontext) const = 0;
 

@@ -37,6 +37,7 @@ public:
   FunctionBoolean(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   ASTNode* staticResolution(StaticContext *context);
+  virtual ASTNode *staticTyping(StaticContext *context);
   /** Returns the argument as a boolean. Sets result to value of getNextBool() **/
   Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
 };

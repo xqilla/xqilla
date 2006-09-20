@@ -36,9 +36,16 @@ FunctionLast::FunctionLast(const VectorOfASTNodes &args, XPath2MemoryManager* me
 }
 
 ASTNode* FunctionLast::staticResolution(StaticContext *context) {
+  return resolveArguments(context);
+}
+
+ASTNode *FunctionLast::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
   _src.getStaticType().flags = StaticType::DECIMAL_TYPE;
   _src.contextSizeUsed(true);
-  return resolveArguments(context);
+  return calculateSRCForArguments(context);
 }
 
 Sequence FunctionLast::collapseTreeInternal(DynamicContext* context, int flags) const

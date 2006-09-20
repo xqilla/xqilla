@@ -38,9 +38,16 @@ FunctionCurrentDate::FunctionCurrentDate(const VectorOfASTNodes &args, XPath2Mem
 }
 
 ASTNode* FunctionCurrentDate::staticResolution(StaticContext *context) {
+  return resolveArguments(context);
+}
+
+ASTNode *FunctionCurrentDate::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
   _src.getStaticType().flags = StaticType::DATE_TYPE;
   _src.currentTimeUsed(true);
-  return resolveArguments(context);
+  return calculateSRCForArguments(context);
 }
 
 Sequence FunctionCurrentDate::collapseTreeInternal(DynamicContext* context, int flags) const

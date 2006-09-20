@@ -40,11 +40,18 @@ FunctionCodepointEqual::FunctionCodepointEqual(const VectorOfASTNodes &args, XPa
 
 ASTNode* FunctionCodepointEqual::staticResolution(StaticContext *context)
 {
-  _src.getStaticType().flags = StaticType::BOOLEAN_TYPE;
-
   collation_ = context->getCollation(CodepointCollation::getCodepointCollationName(), this);
 
   return resolveArguments(context);
+}
+
+ASTNode *FunctionCodepointEqual::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
+  _src.getStaticType().flags = StaticType::BOOLEAN_TYPE;
+
+  return calculateSRCForArguments(context);
 }
 
 Sequence FunctionCodepointEqual::collapseTreeInternal(DynamicContext* context, int flags) const

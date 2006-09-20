@@ -37,6 +37,14 @@ ASTNode* XPath1CompatConvertFunctionArg::staticResolution(StaticContext *context
 {
   seqType_->staticResolution(context);
   expr_ = expr_->staticResolution(context);
+  return this;
+}
+
+ASTNode *XPath1CompatConvertFunctionArg::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
+  expr_ = expr_->staticTyping(context);
   _src.copy(expr_->getStaticResolutionContext());
 
   if(expr_->isConstant()) {

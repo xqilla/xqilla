@@ -64,7 +64,14 @@ ASTNode* FunctionDistinctValues::staticResolution(StaticContext *context)
 {
   // Could set ordering to unordered here - jpcs
 //   AutoNodeSetOrderingReset orderReset(context);
-  ASTNode *result = resolveArguments(context);
+  return resolveArguments(context);
+}
+
+ASTNode *FunctionDistinctValues::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
+  ASTNode *result = calculateSRCForArguments(context);
   if(result == this) {
     _src.getStaticType() = _args.front()->getStaticResolutionContext().getStaticType();
   }

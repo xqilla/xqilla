@@ -49,9 +49,16 @@ FunctionMax::FunctionMax(const VectorOfASTNodes &args, XPath2MemoryManager* memM
 
 ASTNode* FunctionMax::staticResolution(StaticContext *context) {
   AutoNodeSetOrderingReset orderReset(context);
+  return resolveArguments(context);
+}
+
+ASTNode *FunctionMax::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
   // TBD - could do better here - jpcs
   _src.getStaticType().flags = StaticType::TYPED_ATOMIC_TYPE;
-  return resolveArguments(context);
+  return calculateSRCForArguments(context);
 }
 
 Sequence FunctionMax::collapseTreeInternal(DynamicContext* context, int flags) const

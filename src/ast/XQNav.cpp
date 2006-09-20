@@ -28,6 +28,7 @@
 #include <xqilla/ast/XQPredicate.hpp>
 #include <xqilla/runtime/SequenceResult.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
+#include <xqilla/context/ContextHelpers.hpp>
 
 XQNav::XQNav(XPath2MemoryManager* memMgr)
   : ASTNodeImpl(memMgr),
@@ -52,14 +53,14 @@ Result XQNav::createResult(DynamicContext* context, int flags) const
     if(it->step->getStaticResolutionContext().isContextSizeUsed()) {
       // We need the context size, so convert to a Sequence to work it out
       Sequence seq(result->toSequence(context));
-      result = new StepResult(new SequenceResult(it->step, seq), it->step, seq.getLength(), flags);
+      result = new NavStepResult(new SequenceResult(it->step, seq), it->step, seq.getLength(), flags);
     }
     // this will ignore any previous result, so it can be done only at the first iteration
     else if(result.isNull() && !it->step->getStaticResolutionContext().areContextFlagsUsed()) {
       result = it->step->collapseTree(context, flags);
     }
     else {
-      result = new StepResult(result, it->step, 0, flags);
+      result = new NavStepResult(result, it->step, 0, flags);
     }
 
     const StaticType &st = it->step->getStaticResolutionContext().getStaticType();
@@ -96,7 +97,16 @@ void XQNav::addStep(const StepInfo &step)
 
 void XQNav::addStepFront(ASTNode* step)
 {
-  _steps.insert(_steps.begin(), step);
+  if(step->getType() == NAVIGATION) {
+    Steps &navSteps = ((XQNav*)step)->_steps;
+    for(Steps::reverse_iterator it2 = navSteps.rbegin();
+        it2 != navSteps.rend(); ++it2) {
+      _steps.insert(_steps.begin(), *it2);
+    }
+  }
+  else {
+    _steps.insert(_steps.begin(), step);
+  }
 }
 
 ASTNode* XQNav::staticResolution(StaticContext *context)
@@ -112,7 +122,22 @@ ASTNode* XQNav::staticResolution(StaticContext *context)
     return result->staticResolution(context);
   }
 
-  StaticType oldContextItemType = context->getContextItemType();
+  Steps::iterator begin = _steps.begin();
+  Steps::iterator end = _steps.end();
+  Steps::iterator it = begin;
+  for(; it != end; ++it) {
+    // Statically resolve our step
+    it->step = it->step->staticResolution(context);
+  }
+
+  return this;
+}
+
+ASTNode* XQNav::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
+  AutoContextItemTypeReset contextTypeReset(context, context->getContextItemType());
 
   unsigned int props = StaticResolutionContext::DOCORDER | StaticResolutionContext::GROUPED |
     StaticResolutionContext::PEER | StaticResolutionContext::SUBTREE | StaticResolutionContext::SAMEDOC |
@@ -125,7 +150,7 @@ ASTNode* XQNav::staticResolution(StaticContext *context)
   Steps::iterator it = begin;
   for(; it != end; ++it) {
     // Statically resolve our step
-    ASTNode *step = it->step->staticResolution(context);
+    ASTNode *step = it->step->staticTyping(context);
     const StaticResolutionContext &stepSrc = step->getStaticResolutionContext();
     context->setContextItemType(stepSrc.getStaticType());
 
@@ -143,8 +168,7 @@ ASTNode* XQNav::staticResolution(StaticContext *context)
       }
     }
     else {
-      // Constant fold, by clearing all our previous steps (and the root pseudo-step)
-      // and just having our most recent step.
+      // Constant fold, by clearing all our previous steps and just having our most recent step.
       // This is only possible because the result of steps has to be nodes, and
       // duplicates are removed, which means we aren't forced to execute a constant
       // step a set number of times.
@@ -153,11 +177,11 @@ ASTNode* XQNav::staticResolution(StaticContext *context)
     }
 
     if(step->getType() == NAVIGATION) {
-	    Steps &navSteps = ((XQNav*)step)->_steps;
-	    for(Steps::iterator it2 = navSteps.begin();
+      Steps &navSteps = ((XQNav*)step)->_steps;
+      for(Steps::iterator it2 = navSteps.begin();
           it2 != navSteps.end(); ++it2) {
-		    newSteps.push_back(it2->step);
-	    }
+        newSteps.push_back(it2->step);
+      }
     }
     else {
 	    newSteps.push_back(step);
@@ -232,8 +256,6 @@ ASTNode* XQNav::staticResolution(StaticContext *context)
 
   _src.setProperties(props);
 
-  context->setContextItemType(oldContextItemType);
-
   if(!_src.isUsed()) {
     return constantFold(context);
   }
@@ -247,6 +269,11 @@ const XQNav::Steps &XQNav::getSteps() const {
 unsigned int XQNav::combineProperties(unsigned int prev_props, unsigned int step_props)
 {
   unsigned int new_props = 0;
+
+  if((step_props & StaticResolutionContext::SELF)) {
+    new_props |= step_props;
+  }
+
   if((prev_props & StaticResolutionContext::ONENODE) && (step_props & StaticResolutionContext::DOCORDER)) {
     // If there was only one input node, and the step is in document order
     // then we are still in document order
@@ -286,10 +313,10 @@ unsigned int XQNav::combineProperties(unsigned int prev_props, unsigned int step
 }
 
 /////////////////////////////////////
-// StepResult
+// NavStepResult
 /////////////////////////////////////
 
-XQNav::StepResult::StepResult(const Result &parent, ASTNode *step, unsigned int contextSize, int flags)
+NavStepResult::NavStepResult(const Result &parent, ASTNode *step, unsigned int contextSize, int flags)
   : ResultImpl(step),
     initialised_(false),
     flags_(flags),
@@ -302,7 +329,7 @@ XQNav::StepResult::StepResult(const Result &parent, ASTNode *step, unsigned int 
 {
 }
 
-Item::Ptr XQNav::StepResult::next(DynamicContext *context)
+Item::Ptr NavStepResult::next(DynamicContext *context)
 {
   unsigned int oldContextSize = context->getContextSize();
   unsigned int oldContextPosition = context->getContextPosition();
@@ -356,13 +383,13 @@ Item::Ptr XQNav::StepResult::next(DynamicContext *context)
   return 0;
 }
 
-void XQNav::StepResult::skip()
+void NavStepResult::skip()
 {
 	stepResult_ = 0;
 	parent_->skip();
 }
 
-std::string XQNav::StepResult::asString(DynamicContext *context, int indent) const
+std::string NavStepResult::asString(DynamicContext *context, int indent) const
 {
   std::ostringstream oss;
   std::string in(getIndent(indent));
@@ -391,7 +418,7 @@ Item::Ptr IntermediateStepCheckResult::next(DynamicContext *context)
 
   // Check it's a node
   if(result != NULLRCP && !result->isNode()) {
-    XQThrow(TypeErrorException,X("XQNav::StepResult::next"),
+    XQThrow(TypeErrorException,X("NavStepResult::next"),
              X("The result of a step expression (StepExpr) is not a sequence of nodes [err:XPTY0019]"));
   }
 

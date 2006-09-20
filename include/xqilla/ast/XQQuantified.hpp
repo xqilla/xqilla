@@ -29,7 +29,7 @@ public:
 
 	XQQuantified(QuantifierType qType, VectorOfVariableBinding* bindings, ASTNode* returnExpr, XPath2MemoryManager *expr);
 
-  virtual ASTNode* staticResolution(StaticContext* context);
+  virtual ASTNode *staticTyping(StaticContext *context);
 
   QuantifierType getQuantifierType() const;
 

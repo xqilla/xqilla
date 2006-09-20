@@ -35,6 +35,7 @@ public:
   FunctionNot(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   ASTNode* staticResolution(StaticContext *context);
+  virtual ASTNode *staticTyping(StaticContext *context);
   /** negates the argument **/
   Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
 

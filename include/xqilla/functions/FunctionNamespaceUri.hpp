@@ -40,6 +40,7 @@ public:
    * is constant.
    */
   virtual ASTNode* staticResolution(StaticContext *context);
+  virtual ASTNode *staticTyping(StaticContext *context);
 
   /** Returns the namespace of the node. Takes an optional node,
       and returns an empty string if the node has no name. Uses the current context

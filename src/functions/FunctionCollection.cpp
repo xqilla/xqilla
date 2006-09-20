@@ -40,10 +40,18 @@ FunctionCollection::FunctionCollection(const VectorOfASTNodes &args, XPath2Memor
 
 ASTNode* FunctionCollection::staticResolution(StaticContext *context)
 {
-  _src.setProperties(StaticResolutionContext::DOCORDER | StaticResolutionContext::GROUPED | StaticResolutionContext::PEER | StaticResolutionContext::SUBTREE);
+  return resolveArguments(context);
+}
+
+ASTNode *FunctionCollection::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
+  _src.setProperties(StaticResolutionContext::DOCORDER | StaticResolutionContext::GROUPED |
+                     StaticResolutionContext::PEER | StaticResolutionContext::SUBTREE);
   _src.getStaticType().flags = StaticType::NODE_TYPE;
   _src.availableCollectionsUsed(true);
-  return resolveArguments(context);
+  return calculateSRCForArguments(context);
 }
 
 Sequence FunctionCollection::collapseTreeInternal(DynamicContext* context, int flags) const

@@ -287,6 +287,7 @@ void SequenceType::ItemType::getStaticType(StaticType &st, const StaticContext *
     isExact = true;
     return;
   }
+
   switch(m_nTestType) {
   case TEST_ANYTHING: {
     st.flags = StaticType::ITEM_TYPE;
@@ -297,14 +298,57 @@ void SequenceType::ItemType::getStaticType(StaticType &st, const StaticContext *
     st.flags = StaticType::getFlagsFor(getTypeURI(context, location), getType()->getName(), context, isExact);
     break;
   }
-  case TEST_NODE: {
-    st.flags = StaticType::NODE_TYPE;
+  case TEST_DOCUMENT: {
+    st.flags = StaticType::DOCUMENT_TYPE;
+    if(m_pName == NULL && m_pType == NULL)
+	    isExact = true;
+    else isExact = false;
+    break;
+  }
+  case TEST_ELEMENT: {
+    st.flags = StaticType::ELEMENT_TYPE;
+    if(m_pName == NULL && m_pType == NULL)
+	    isExact = true;
+    else isExact = false;
+    break;
+  }
+  case TEST_ATTRIBUTE: {
+    st.flags = StaticType::ATTRIBUTE_TYPE;
+    if(m_pName == NULL && m_pType == NULL)
+	    isExact = true;
+    else isExact = false;
+    break;
+  }
+  case TEST_PI: {
+    st.flags = StaticType::PI_TYPE;
+    if(m_pName == NULL && m_pType == NULL)
+	    isExact = true;
+    else isExact = false;
+    break;
+  }
+  case TEST_SCHEMA_ELEMENT: {
+    st.flags = StaticType::ELEMENT_TYPE;
+    isExact = false;
+    break;
+  }
+  case TEST_SCHEMA_ATTRIBUTE: {
+    st.flags = StaticType::ATTRIBUTE_TYPE;
+    isExact = false;
+    break;
+  }
+  case TEST_COMMENT: {
+    st.flags = StaticType::COMMENT_TYPE;
     isExact = true;
     break;
   }
-  default: {
+  case TEST_TEXT: {
+    st.flags = StaticType::TEXT_TYPE;
+    isExact = true;
+    break;
+  }
+  case TEST_NODE: {
     st.flags = StaticType::NODE_TYPE;
-    isExact = false;
+    isExact = true;
     break;
   }
   }

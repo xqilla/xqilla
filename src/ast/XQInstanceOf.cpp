@@ -48,15 +48,29 @@ Result XQInstanceOf::createResult(DynamicContext* context, int flags) const
 
 ASTNode* XQInstanceOf::staticResolution(StaticContext *context)
 {
-  _exprType->staticResolution(context);
   XPath2MemoryManager *mm = context->getMemoryManager();
+
+  _exprType->staticResolution(context);
 
   _expr = new (mm) XQTreatAs(_expr, _exprType, mm);
   _expr->setLocationInfo(this);
 
-  try {
+  {
     AutoNodeSetOrderingReset orderReset(context);
     _expr = _expr->staticResolution(context);
+  }
+
+  return this;
+}
+
+ASTNode *XQInstanceOf::staticTyping(StaticContext *context)
+{
+  XPath2MemoryManager *mm = context->getMemoryManager();
+
+  _src.clear();
+
+  try {
+    _expr = _expr->staticTyping(context);
   }
   catch(const XPath2TypeMatchException &ex) {
     // The expression was constant folded, and the type matching failed.
@@ -67,11 +81,12 @@ ASTNode* XQInstanceOf::staticResolution(StaticContext *context)
                                         AnyAtomicType::BOOLEAN);
     ASTNode *result = new (mm) XQSequence(construct, mm);
     result->setLocationInfo(this);
-    return result;
+    return result->staticTyping(context);
   }
 
-  _src.getStaticType().flags = StaticType::BOOLEAN_TYPE;
   _src.add(_expr->getStaticResolutionContext());
+  _src.getStaticType().flags = StaticType::BOOLEAN_TYPE;
+
   if(_expr->isConstant()) {
     return constantFold(context);
   }

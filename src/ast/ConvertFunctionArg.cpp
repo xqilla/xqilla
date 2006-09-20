@@ -39,6 +39,14 @@ XQPromoteUntyped::XQPromoteUntyped(ASTNode* expr, const XMLCh *uri, const XMLCh 
 ASTNode* XQPromoteUntyped::staticResolution(StaticContext *context)
 {
   expr_ = expr_->staticResolution(context);
+  return this;
+}
+
+ASTNode* XQPromoteUntyped::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
+  expr_ = expr_->staticTyping(context);
   _src.getStaticType() = expr_->getStaticResolutionContext().getStaticType();
   _src.add(expr_->getStaticResolutionContext());
 
@@ -110,6 +118,14 @@ XQPromoteNumeric::XQPromoteNumeric(ASTNode* expr, const XMLCh *uri, const XMLCh 
 ASTNode* XQPromoteNumeric::staticResolution(StaticContext *context)
 {
   expr_ = expr_->staticResolution(context);
+  return this;
+}
+
+ASTNode* XQPromoteNumeric::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
+  expr_ = expr_->staticTyping(context);
   _src.getStaticType() = expr_->getStaticResolutionContext().getStaticType();
   _src.add(expr_->getStaticResolutionContext());
 
@@ -192,6 +208,14 @@ XQPromoteAnyURI::XQPromoteAnyURI(ASTNode* expr, const XMLCh *uri, const XMLCh *n
 ASTNode* XQPromoteAnyURI::staticResolution(StaticContext *context)
 {
   expr_ = expr_->staticResolution(context);
+  return this;
+}
+
+ASTNode *XQPromoteAnyURI::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
+  expr_ = expr_->staticTyping(context);
   _src.getStaticType() = expr_->getStaticResolutionContext().getStaticType();
   _src.add(expr_->getStaticResolutionContext());
 

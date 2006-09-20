@@ -26,9 +26,18 @@ FTMildnot::FTMildnot(FTSelection *left, FTSelection *right, XPath2MemoryManager 
 FTSelection *FTMildnot::staticResolution(StaticContext *context)
 {
   left_ = left_->staticResolution(context);
+  right_ = right_->staticResolution(context);
+  return this;
+}
+
+FTSelection *FTMildnot::staticTyping(StaticContext *context)
+{
+  src_.clear();
+
+  left_ = left_->staticTyping(context);
   src_.add(left_->getStaticResolutionContext());
 
-  right_ = right_->staticResolution(context);
+  right_ = right_->staticTyping(context);
   src_.add(right_->getStaticResolutionContext());
 
   return this;

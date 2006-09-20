@@ -40,6 +40,22 @@ ASTNode* XQPredicate::staticResolution(StaticContext *context)
   XPath2MemoryManager *mm = context->getMemoryManager();
 
   expr_ = expr_->staticResolution(context);
+
+  {
+    AutoNodeSetOrderingReset orderReset(context);
+    predicate_ = predicate_->staticResolution(context);
+  }
+
+  return this;
+}
+
+ASTNode* XQPredicate::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
+  XPath2MemoryManager *mm = context->getMemoryManager();
+
+  expr_ = expr_->staticTyping(context);
   _src.copy(expr_->getStaticResolutionContext());
 
   if(expr_->getType() == SEQUENCE &&
@@ -48,9 +64,8 @@ ASTNode* XQPredicate::staticResolution(StaticContext *context)
   }
 
   AutoContextItemTypeReset contextTypeReset(context, expr_->getStaticResolutionContext().getStaticType());
-  AutoNodeSetOrderingReset orderReset(context);
 
-  predicate_ = predicate_->staticResolution(context);
+  predicate_ = predicate_->staticTyping(context);
   const StaticResolutionContext &newSrc = predicate_->getStaticResolutionContext();
 
   if(!newSrc.isUsed() && !predicate_->isSingleNumericConstant(context)) {

@@ -44,12 +44,19 @@ FunctionLang::FunctionLang(const VectorOfASTNodes &args, XPath2MemoryManager* me
 }
 
 ASTNode* FunctionLang::staticResolution(StaticContext *context) {
-  _src.getStaticType().flags = StaticType::BOOLEAN_TYPE;
   if(_args.size() == 2 && _args[1]->getType() == ASTNode::CONTEXT_ITEM)
     _args.pop_back();
+  return resolveArguments(context);
+}
+
+ASTNode *FunctionLang::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
+  _src.getStaticType().flags = StaticType::BOOLEAN_TYPE;
   if(_args.size()==1)
     _src.contextItemUsed(true);
-  return resolveArguments(context);
+  return calculateSRCForArguments(context);
 }
 
 Sequence FunctionLang::collapseTreeInternal(DynamicContext* context, int flags) const

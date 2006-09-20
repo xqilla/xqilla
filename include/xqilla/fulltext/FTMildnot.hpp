@@ -24,6 +24,7 @@ public:
   FTMildnot(FTSelection *left, FTSelection *right, XPath2MemoryManager *memMgr);
 
   virtual FTSelection *staticResolution(StaticContext *context);
+  virtual FTSelection *staticTyping(StaticContext *context);
   virtual FTSelection *optimize(FTContext *context, bool execute) const;
   virtual AllMatches::Ptr execute(FTContext *ftcontext) const;
 

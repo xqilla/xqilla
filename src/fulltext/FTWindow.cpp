@@ -37,13 +37,24 @@ FTSelection *FTWindow::staticResolution(StaticContext *context)
   seqType->setLocationInfo(this);
 
   arg_ = arg_->staticResolution(context);
-  src_.add(arg_->getStaticResolutionContext());
 
   expr_ = new (mm) XQAtomize(expr_, mm);
   expr_->setLocationInfo(this);
   expr_ = new (mm) XQTreatAs(expr_, seqType, mm);
   expr_->setLocationInfo(this);
   expr_ = expr_->staticResolution(context);
+
+  return this;
+}
+
+FTSelection *FTWindow::staticTyping(StaticContext *context)
+{
+  src_.clear();
+
+  arg_ = arg_->staticTyping(context);
+  src_.add(arg_->getStaticResolutionContext());
+
+  expr_ = expr_->staticTyping(context);
   src_.add(expr_->getStaticResolutionContext());
 
   return this;
@@ -87,6 +98,14 @@ AllMatches::Ptr FTWindow::execute(FTContext *ftcontext) const
 FTSelection *FTWindowLiteral::staticResolution(StaticContext *context)
 {
   arg_ = arg_->staticResolution(context);
+  return this;
+}
+
+FTSelection *FTWindowLiteral::staticTyping(StaticContext *context)
+{
+  src_.clear();
+
+  arg_ = arg_->staticTyping(context);
   src_.add(arg_->getStaticResolutionContext());
 
   return this;

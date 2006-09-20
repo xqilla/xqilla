@@ -49,6 +49,47 @@ void *NodeTest::getInterface(const XMLCh *name) const
   return 0;
 }
 
+void NodeTest::getStaticType(StaticType &st, const StaticContext *context,
+	bool &isExact, const LocationInfo *location) const
+{
+  if(_itemType) {
+	  _itemType->getStaticType(st, context, isExact, location);
+  }
+  else {
+    if(_wildcardType) {
+      if(_hasChildren) {
+        st.flags = StaticType::ELEMENT_TYPE | StaticType::DOCUMENT_TYPE;
+      }
+      else {
+        st.flags = StaticType::NODE_TYPE;
+      }
+    }
+    else if(_type == Node::document_string) {
+      st.flags = StaticType::DOCUMENT_TYPE;
+    }
+    else if(_type == Node::element_string) {
+      st.flags = StaticType::ELEMENT_TYPE;
+    }
+    else if(_type == Node::attribute_string) {
+      st.flags = StaticType::ATTRIBUTE_TYPE;
+    }
+    else if(_type == Node::processing_instruction_string) {
+      st.flags = StaticType::PI_TYPE;
+    }
+    else if(_type == Node::comment_string) {
+      st.flags = StaticType::COMMENT_TYPE;
+    }
+    else if(_type == Node::text_string ||
+            _type == Node::cdata_string) {
+      st.flags = StaticType::TEXT_TYPE;
+    }
+
+    if(_wildcardName && _wildcardNamespace)
+      isExact = true;
+    else isExact = false;
+  }
+}
+
 Result NodeTest::filterResult(const Result &toFilter, const LocationInfo *info) const
 {
   return new FilterResult(info, toFilter, this);

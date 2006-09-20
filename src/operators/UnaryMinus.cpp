@@ -32,7 +32,14 @@ UnaryMinus::UnaryMinus(bool positive, const VectorOfASTNodes &args, XPath2Memory
 
 ASTNode* UnaryMinus::staticResolution(StaticContext *context)
 {
-  ASTNode *result = ArithmeticOperator::staticResolution(context);
+  return ArithmeticOperator::staticResolution(context);
+}
+
+ASTNode* UnaryMinus::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
+  ASTNode *result = ArithmeticOperator::staticTyping(context);
 
   if(result == this && positive_) {
     // constant fold unary plus after type checking

@@ -39,9 +39,16 @@ FunctionDocAvailable::FunctionDocAvailable(const VectorOfASTNodes &args, XPath2M
 }
 
 ASTNode* FunctionDocAvailable::staticResolution(StaticContext *context) {
+  return resolveArguments(context);
+}
+
+ASTNode *FunctionDocAvailable::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
   _src.getStaticType().flags = StaticType::BOOLEAN_TYPE;
   _src.availableDocumentsUsed(true);
-  return resolveArguments(context);
+  return calculateSRCForArguments(context);
 }
 
 Sequence FunctionDocAvailable::collapseTreeInternal(DynamicContext* context, int flags) const {

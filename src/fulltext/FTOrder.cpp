@@ -18,6 +18,14 @@
 FTSelection *FTOrder::staticResolution(StaticContext *context)
 {
   arg_ = arg_->staticResolution(context);
+  return this;
+}
+
+FTSelection *FTOrder::staticTyping(StaticContext *context)
+{
+  src_.clear();
+
+  arg_ = arg_->staticTyping(context);
   src_.add(arg_->getStaticResolutionContext());
 
   return this;

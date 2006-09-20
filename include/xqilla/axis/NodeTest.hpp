@@ -93,6 +93,9 @@ public:
   /// sets whether the following step is a child axis
   void setHasChildren(bool value = true);
 
+  void getStaticType(StaticType &st, const StaticContext *context,
+                     bool &isExact, const LocationInfo *location) const;
+
 protected:
   ///check a node's type against _type, considers wildcard
   bool checkNodeType(Node::Ptr node) const;

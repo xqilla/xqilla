@@ -45,11 +45,18 @@ FunctionNamespaceUri::FunctionNamespaceUri(const VectorOfASTNodes &args, XPath2M
 ASTNode* FunctionNamespaceUri::staticResolution(StaticContext *context) {
   if(!_args.empty() && (*_args.begin())->getType()==ASTNode::CONTEXT_ITEM)
       _args.clear();
+  return resolveArguments(context);
+}
+
+ASTNode *FunctionNamespaceUri::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
   if(_args.empty()) {
     _src.contextItemUsed(true);
   }
   _src.getStaticType().flags = StaticType::ANY_URI_TYPE;
-  return resolveArguments(context);
+  return calculateSRCForArguments(context);
 }
 
 Sequence FunctionNamespaceUri::collapseTreeInternal(DynamicContext* context, int flags) const

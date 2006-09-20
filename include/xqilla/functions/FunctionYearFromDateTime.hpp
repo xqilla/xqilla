@@ -36,6 +36,7 @@ public:
   FunctionYearFromDateTime(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
 
   ASTNode* staticResolution(StaticContext *context);
+  virtual ASTNode *staticTyping(StaticContext *context);
 
   /**
    * Returns an integer representing the year component in the value of 

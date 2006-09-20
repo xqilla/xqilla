@@ -86,52 +86,6 @@ Sequence ASTNodeImpl::collapseTreeInternal(DynamicContext* context, int flags) c
   return Sequence(context->getMemoryManager());
 }
 
-ASTNode *ASTNodeImpl::resolveASTNode(ASTNode *&di, StaticContext *context, bool cf)
-{
-  di = di->staticResolution(context);
-  _src.getStaticType() = di->getStaticResolutionContext().getStaticType();
-  _src.add(di->getStaticResolutionContext());
-  if(di->isConstant() && cf) {
-    return constantFold(context);
-  }
-  return this;
-}
-
-ASTNode *ASTNodeImpl::resolveASTNodes(VectorOfASTNodes &dis, StaticContext *context, bool cf)
-{
-  bool allConstant = true;
-  for(VectorOfASTNodes::iterator i = dis.begin(); i != dis.end(); ++i) {
-    *i = (*i)->staticResolution(context);
-    _src.add((*i)->getStaticResolutionContext());
-    if(!(*i)->isConstant()) {
-      allConstant = false;
-    }
-  }
-
-  if(allConstant && cf) {
-    return constantFold(context);
-  }
-  return this;
-}
-
-ASTNode *ASTNodeImpl::resolveASTNodesForDateOrTime(VectorOfASTNodes &dis, StaticContext *context, bool cf)
-{
-  bool allConstant = true;
-  for(VectorOfASTNodes::iterator i = dis.begin(); i != dis.end(); ++i) {
-    *i = (*i)->staticResolution(context);
-    _src.add((*i)->getStaticResolutionContext());
-    if(!(*i)->isConstant())
-      allConstant = false;
-    else if((*i)->isDateOrTimeAndHasNoTimezone(context))
-      _src.implicitTimezoneUsed(true);
-  }
-
-  if(allConstant && cf) {
-    return constantFold(context);
-  }
-  return this;
-}
-
 ASTNode *ASTNodeImpl::constantFold(StaticContext *context)
 {
   XPath2MemoryManager* mm = context->getMemoryManager();
@@ -143,7 +97,7 @@ ASTNode *ASTNodeImpl::constantFold(StaticContext *context)
   if(newBlock == 0) return this; // Constant folding failed
 
   newBlock->setLocationInfo(this);
-  return newBlock->staticResolution(context);
+  return newBlock->staticTyping(context);
 }
 
 XPath2MemoryManager* ASTNodeImpl::getMemoryManager(void) const {

@@ -48,35 +48,39 @@ public:
   virtual Result createResult(DynamicContext* context, int flags=0) const;
 
   virtual ASTNode* staticResolution(StaticContext *context);
+  virtual ASTNode *staticTyping(StaticContext *context);
 
   const Steps &getSteps() const;
+
+  bool getSortAdded() const { return _sortAdded; }
+  void setSortAdded(bool value) { _sortAdded = value; }
 
   static unsigned int combineProperties(unsigned int prev_props, unsigned int step_props);
 
 protected:
-  class XQILLA_API StepResult : public ResultImpl
-  {
-  public:
-    StepResult(const Result &parent, ASTNode *step, unsigned int contextSize, int flags);
-
-    Item::Ptr next(DynamicContext *context);
-    void skip();
-    std::string asString(DynamicContext *context, int indent) const;
-
-  private:
-    bool initialised_;
-    int flags_;
-    Result parent_;
-    const ASTNode *step_;
-    Result stepResult_;
-    unsigned int contextPos_;
-    unsigned int contextSize_;
-    Item::Ptr contextItem_;
-  };
-
   //list of steps to be performed.
   Steps _steps;
   bool _sortAdded;
+};
+
+class XQILLA_API NavStepResult : public ResultImpl
+{
+public:
+  NavStepResult(const Result &parent, ASTNode *step, unsigned int contextSize, int flags);
+
+  Item::Ptr next(DynamicContext *context);
+  void skip();
+  std::string asString(DynamicContext *context, int indent) const;
+
+private:
+  bool initialised_;
+  int flags_;
+  Result parent_;
+  const ASTNode *step_;
+  Result stepResult_;
+  unsigned int contextPos_;
+  unsigned int contextSize_;
+  Item::Ptr contextItem_;
 };
 
 class XQILLA_API IntermediateStepCheckResult : public ResultImpl

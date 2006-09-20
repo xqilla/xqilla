@@ -55,8 +55,9 @@ static XMLCh szNOTATION[] =  { XERCES_CPP_NAMESPACE_QUALIFIER chLatin_N, XERCES_
 
 ASTNode* XQCastableAs::staticResolution(StaticContext *context)
 {
-  _exprType->staticResolution(context);
   XPath2MemoryManager *mm = context->getMemoryManager();
+
+  _exprType->staticResolution(context);
 
   const SequenceType::ItemType* itemType = _exprType->getItemType();
   if((XPath2Utils::equals(itemType->getTypeURI(context, this), XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA) &&
@@ -69,9 +70,20 @@ ASTNode* XQCastableAs::staticResolution(StaticContext *context)
   _expr = new (mm) XQAtomize(_expr, mm);
   _expr->setLocationInfo(this);
 
-  AutoNodeSetOrderingReset orderReset(context);
+  {
+    AutoNodeSetOrderingReset orderReset(context);
+    _expr = _expr->staticResolution(context);
+  }
+
+  return this;
+}
+
+ASTNode *XQCastableAs::staticTyping(StaticContext *context)
+{
+  _src.clear();
 
   _expr = _expr->staticResolution(context);
+
   _src.getStaticType().flags = StaticType::BOOLEAN_TYPE;
   _src.add(_expr->getStaticResolutionContext());
   if(_expr->isConstant()) {

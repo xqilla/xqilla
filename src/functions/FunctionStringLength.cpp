@@ -42,7 +42,6 @@ const unsigned int FunctionStringLength::maxArgs = 1;
 FunctionStringLength::FunctionStringLength(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : XQFunction(name, minArgs, maxArgs, "string?", args, memMgr)
 {
-  _src.getStaticType().flags = StaticType::DECIMAL_TYPE;
 }
 
 const XMLCh* FunctionStringLength::getString(DynamicContext* context) const {
@@ -55,10 +54,18 @@ const XMLCh* FunctionStringLength::getString(DynamicContext* context) const {
 }
 
 ASTNode* FunctionStringLength::staticResolution(StaticContext *context) {
+  return resolveArguments(context);
+}
+
+ASTNode *FunctionStringLength::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
   if(_args.empty()) {
     _src.contextItemUsed(true);
   }
-  return resolveArguments(context);
+  _src.getStaticType().flags = StaticType::DECIMAL_TYPE;
+  return calculateSRCForArguments(context);
 }
 
 Sequence FunctionStringLength::collapseTreeInternal(DynamicContext* context, int flags) const

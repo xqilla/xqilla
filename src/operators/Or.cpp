@@ -38,11 +38,21 @@ Result Or::createResult(DynamicContext* context, int flags) const
 
 ASTNode* Or::staticResolution(StaticContext *context)
 {
-  VectorOfASTNodes newArgs(XQillaAllocator<ASTNode*>(context->getMemoryManager()));
-
   AutoNodeSetOrderingReset orderReset(context);
   for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
     *i = (*i)->staticResolution(context);
+  }
+  return this;
+}
+
+ASTNode* Or::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
+  VectorOfASTNodes newArgs(XQillaAllocator<ASTNode*>(context->getMemoryManager()));
+
+  for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
+    *i = (*i)->staticTyping(context);
     const StaticResolutionContext &valueSrc = (*i)->getStaticResolutionContext();
 
     if(valueSrc.isUsed()) {

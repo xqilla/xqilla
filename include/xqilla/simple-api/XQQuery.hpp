@@ -105,6 +105,20 @@ public:
    */
   void staticResolution(StaticContext *context = 0);
 
+  /**
+   * Perform type calculation and related optimizations. This operation
+   * is safe to call multiple times.
+   *
+   * Normally this step is done as part of static resolution.
+   *
+   * @param context If specified, the StaticContext to use to statically
+   * resolve this object. By default, the context used to parse the query
+   * is used. This should not need to be changed under normal usage.
+   *
+   * @exception XQException If a static resolution time error occurs
+   */
+  void staticTyping(StaticContext *context = 0);
+
 	//@}
 
 	/** @name Query Information */

@@ -44,12 +44,20 @@ FunctionSubsequence::FunctionSubsequence(const VectorOfASTNodes &args, XPath2Mem
 
 ASTNode* FunctionSubsequence::staticResolution(StaticContext *context)
 {
-  ASTNode *result = resolveArguments(context);
+  return resolveArguments(context);
+}
+
+ASTNode *FunctionSubsequence::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
+  ASTNode *result = calculateSRCForArguments(context);
   if(result == this) {
     _src.getStaticType() = _args.front()->getStaticResolutionContext().getStaticType();
   }
   return result;
 }
+
 Result FunctionSubsequence::createResult(DynamicContext* context, int flags) const
 {
   return new SubsequenceResult(this, flags);

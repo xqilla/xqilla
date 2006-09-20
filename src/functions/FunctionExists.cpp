@@ -37,9 +37,16 @@ FunctionExists::FunctionExists(const VectorOfASTNodes &args, XPath2MemoryManager
 }
 
 ASTNode* FunctionExists::staticResolution(StaticContext *context) {
-  _src.getStaticType().flags = StaticType::BOOLEAN_TYPE;
   AutoNodeSetOrderingReset orderReset(context);
   return resolveArguments(context);
+}
+
+ASTNode *FunctionExists::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
+  _src.getStaticType().flags = StaticType::BOOLEAN_TYPE;
+  return calculateSRCForArguments(context);
 }
 
 Sequence FunctionExists::collapseTreeInternal(DynamicContext* context, int flags) const

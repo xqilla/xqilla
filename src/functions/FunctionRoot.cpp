@@ -38,8 +38,6 @@ const unsigned int FunctionRoot::maxArgs = 1;
 FunctionRoot::FunctionRoot(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : XQFunction(name, minArgs, maxArgs, "node()?", args, memMgr)
 {
-  _src.setProperties(StaticResolutionContext::DOCORDER | StaticResolutionContext::GROUPED | StaticResolutionContext::PEER | StaticResolutionContext::SAMEDOC | StaticResolutionContext::ONENODE);
-  _src.getStaticType().flags = StaticType::NODE_TYPE;
 }
 
 /*static*/ Node::Ptr FunctionRoot::root(const Node::Ptr &node, const DynamicContext *context) 
@@ -56,10 +54,21 @@ FunctionRoot::FunctionRoot(const VectorOfASTNodes &args, XPath2MemoryManager* me
 ASTNode* FunctionRoot::staticResolution(StaticContext *context) {
   if(!_args.empty() && (*_args.begin())->getType()==ASTNode::CONTEXT_ITEM)
       _args.clear();
+  return resolveArguments(context);
+}
+
+ASTNode *FunctionRoot::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
+  _src.setProperties(StaticResolutionContext::DOCORDER | StaticResolutionContext::GROUPED |
+	  StaticResolutionContext::PEER | StaticResolutionContext::SAMEDOC | StaticResolutionContext::ONENODE);
+  _src.getStaticType().flags = StaticType::NODE_TYPE;
+
   if(_args.empty()) {
     _src.contextItemUsed(true);
   }
-  return resolveArguments(context);
+  return calculateSRCForArguments(context);
 }
 
 Sequence FunctionRoot::collapseTreeInternal(DynamicContext* context, int flags) const

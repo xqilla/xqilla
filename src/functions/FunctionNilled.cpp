@@ -37,11 +37,18 @@ const unsigned int FunctionNilled::maxArgs = 1;
 FunctionNilled::FunctionNilled(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : XQFunction(name, minArgs, maxArgs, "node()?", args, memMgr)
 {
-  _src.getStaticType().flags = StaticType::BOOLEAN_TYPE;
 }
 
 ASTNode* FunctionNilled::staticResolution(StaticContext *context) {
   return resolveArguments(context);
+}
+
+ASTNode *FunctionNilled::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
+  _src.getStaticType().flags = StaticType::BOOLEAN_TYPE;
+  return calculateSRCForArguments(context);
 }
 
 Sequence FunctionNilled::collapseTreeInternal(DynamicContext* context, int flags) const
