@@ -64,6 +64,12 @@ ASTNode* XQLiteral::staticResolution(StaticContext *context) {
   return result->staticResolution(context);
 }
 
+ASTNode *XQLiteral::staticTyping(StaticContext *context)
+{
+  // Should never happen
+  return this;
+}
+
 Result XQLiteral::createResult(DynamicContext* context, int flags) const
 {
   return Sequence(_itemConstructor->createItem(context), context->getMemoryManager());

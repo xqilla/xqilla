@@ -40,6 +40,7 @@ public:
   FunctionIdref(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   virtual ASTNode* staticResolution(StaticContext *context);
+  virtual ASTNode *staticTyping(StaticContext *context);
 
   /** 
    * Returns the sequence of elements nodes having either an IDREF attribute 

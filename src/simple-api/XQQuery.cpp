@@ -127,40 +127,13 @@ void XQQuery::staticResolution(StaticContext *context)
   // Run staticResolution on the global variables
   if(!m_userDefVars.empty())
   {
-    GlobalVariables::iterator itVar, itVar2;
-    // declare all the global variables with a special StaticResolutionContext, in order to recognize 'variable is defined later' errors 
-    // instead of more generic 'variable not found'
-    // In order to catch references to not yet defined variables (but when no recursion happens) we also create a scope where we undefine
-    // the rest of the variables (once we enter in a function call, the scope will disappear and the forward references to the global variables 
-    // will happear)
-    StaticResolutionContext forwardRef(context->getMemoryManager());
-    forwardRef.setProperties(StaticResolutionContext::FORWARDREF);
+    GlobalVariables::iterator itVar;
     for(itVar = m_userDefVars.begin(); itVar != m_userDefVars.end(); ++itVar) {
-      const XMLCh* varName=(*itVar)->getVariableName();
-      const XMLCh* prefix=XPath2NSUtils::getPrefix(varName, context->getMemoryManager());
-      const XMLCh* uri=NULL;
-      if(prefix && *prefix)
-        uri = context->getUriBoundToPrefix(prefix, *itVar);
-      const XMLCh* name= XPath2NSUtils::getLocalName(varName);
-      context->getVariableTypeStore()->declareGlobalVar(uri, name, forwardRef);
-    }
-    StaticResolutionContext forwardRef2(context->getMemoryManager());
-    forwardRef2.setProperties(StaticResolutionContext::UNDEFINEDVAR);
-    for(itVar = m_userDefVars.begin(); itVar != m_userDefVars.end(); ++itVar) {
-      context->getVariableTypeStore()->addLogicalBlockScope();
-      for(itVar2 = itVar; itVar2 != m_userDefVars.end(); ++itVar2) {
-          const XMLCh* varName=(*itVar2)->getVariableName();
-          const XMLCh* prefix=XPath2NSUtils::getPrefix(varName, context->getMemoryManager());
-          const XMLCh* uri=NULL;
-          if(prefix && *prefix)
-            uri = context->getUriBoundToPrefix(prefix, *itVar2);
-          const XMLCh* name= XPath2NSUtils::getLocalName(varName);
-          context->getVariableTypeStore()->declareVar(uri,name,forwardRef2);
-      }
       (*itVar)->staticResolution(context);
-      context->getVariableTypeStore()->removeScope();
-      if(getIsLibraryModule() && !XERCES_CPP_NAMESPACE::XMLString::equals((*itVar)->getVariableURI(), getModuleTargetNamespace()))
-        XQThrow3(StaticErrorException,X("XQQuery::staticResolution"), X("Every global variable in a module must be in the module namespace [err:XQST0048]."), *itVar);
+      if(getIsLibraryModule() && !XERCES_CPP_NAMESPACE::XMLString::equals((*itVar)->getVariableURI(),
+		 getModuleTargetNamespace()))
+        XQThrow3(StaticErrorException,X("XQQuery::staticResolution"),
+		X("Every global variable in a module must be in the module namespace [err:XQST0048]."), *itVar);
     }
     // check for duplicate variable declarations
     for(itVar = m_userDefVars.begin(); itVar != m_userDefVars.end(); ++itVar) 
@@ -199,8 +172,7 @@ void XQQuery::staticResolution(StaticContext *context)
   }
 
   // Run staticResolutionStage2 on the user defined functions,
-  // which calculates a better type for them, and statically
-  // resolves their function bodies
+  // which statically resolves their function bodies
   for(i = m_userDefFns.begin(); i != m_userDefFns.end(); ++i) {
       try {
         (*i)->staticResolutionStage2(context);
@@ -216,6 +188,75 @@ void XQQuery::staticResolution(StaticContext *context)
       }
   }
   if(m_query) m_query = m_query->staticResolution(context);
+
+  staticTyping(context);
+}
+
+void XQQuery::staticTyping(StaticContext *context)
+{
+  if(context == 0) context = m_context;
+
+  VariableTypeStore* varStore = context->getVariableTypeStore();
+
+  // Define types for the imported variables
+  for(ImportedModules::const_iterator modIt = m_importedModules.begin();
+      modIt != m_importedModules.end(); ++modIt) {
+    for(GlobalVariables::const_iterator varIt = (*modIt)->m_userDefVars.begin();
+        varIt != (*modIt)->m_userDefVars.end(); ++varIt) {
+      varStore->declareGlobalVar((*varIt)->getVariableURI(), (*varIt)->getVariableLocalName(),
+                                 (*varIt)->getStaticResolutionContext());
+    }
+  }
+
+  // Run staticTyping on the global variables
+  if(!m_userDefVars.empty())
+  {
+    // declare all the global variables with a special StaticResolutionContext, in order to recognize 'variable is defined
+    // later' errors instead of more generic 'variable not found'. In order to catch references to not yet defined
+    // variables (but when no recursion happens) we also create a scope where we undefine the rest of the variables (once
+    // we enter in a function call, the scope will disappear and the forward references to the global variables will
+    // appear).
+    StaticResolutionContext forwardRef(context->getMemoryManager());
+    forwardRef.setProperties(StaticResolutionContext::FORWARDREF);
+
+    StaticResolutionContext undefinedVar(context->getMemoryManager());
+    undefinedVar.setProperties(StaticResolutionContext::UNDEFINEDVAR);
+
+    GlobalVariables::iterator itVar, itVar2;
+    for(itVar = m_userDefVars.begin(); itVar != m_userDefVars.end(); ++itVar) {
+      varStore->declareGlobalVar((*itVar)->getVariableURI(), (*itVar)->getVariableLocalName(),
+                                 forwardRef);
+    }
+
+    for(itVar = m_userDefVars.begin(); itVar != m_userDefVars.end(); ++itVar) {
+      varStore->addLogicalBlockScope();
+      for(itVar2 = itVar; itVar2 != m_userDefVars.end(); ++itVar2) {
+        varStore->declareVar((*itVar2)->getVariableURI(), (*itVar2)->getVariableLocalName(),
+                             undefinedVar);
+      }
+      (*itVar)->staticTyping(context);
+      varStore->removeScope();
+    }
+  }
+
+  // Run staticTyping on the user defined functions,
+  // which calculates a better type for them
+  UserFunctions::iterator i;
+  for(i = m_userDefFns.begin(); i != m_userDefFns.end(); ++i) {
+      try {
+        (*i)->staticTyping(context);
+      } catch(XQException& e) {
+        XMLBuffer errMsg(1023, context->getMemoryManager());
+        errMsg.set(X("Error while calculating static type of user-defined function {"));
+        errMsg.append((*i)->getURI());
+        errMsg.append(X("}"));
+        errMsg.append((*i)->getName());
+        errMsg.append(X(": "));
+        errMsg.append(e.getError());
+        XQThrow3(StaticErrorException,X("XQQuery::staticTyping"), errMsg.getRawBuffer(), *i);
+      }
+  }
+  if(m_query) m_query = m_query->staticTyping(context);
 }
 
 std::string XQQuery::getQueryPlan() const

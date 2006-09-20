@@ -38,12 +38,19 @@ const unsigned int FunctionMonthFromDateTime::maxArgs = 1;
 FunctionMonthFromDateTime::FunctionMonthFromDateTime(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : XQFunction(name, minArgs, maxArgs, "dateTime?", args, memMgr)
 {
-  _src.getStaticType().flags = StaticType::DECIMAL_TYPE;
 }
 
 ASTNode* FunctionMonthFromDateTime::staticResolution(StaticContext *context)
 {
   return resolveArguments(context, /*checkTimezone*/true);
+}
+
+ASTNode *FunctionMonthFromDateTime::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
+  _src.getStaticType().flags = StaticType::DECIMAL_TYPE;
+  return calculateSRCForArguments(context, /*checkTimezone*/true);
 }
 
 Sequence FunctionMonthFromDateTime::collapseTreeInternal(DynamicContext* context, int flags) const

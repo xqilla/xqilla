@@ -38,12 +38,19 @@ const unsigned int FunctionYearFromDateTime::maxArgs = 1;
 FunctionYearFromDateTime::FunctionYearFromDateTime(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : XQFunction(name, minArgs, maxArgs, "dateTime?", args, memMgr)
 {
-  _src.getStaticType().flags = StaticType::DECIMAL_TYPE;
 }
 
 ASTNode* FunctionYearFromDateTime::staticResolution(StaticContext *context)
 {
   return resolveArguments(context, /*checkTimezone*/true);
+}
+
+ASTNode *FunctionYearFromDateTime::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
+  _src.getStaticType().flags = StaticType::DECIMAL_TYPE;
+  return calculateSRCForArguments(context, /*checkTimezone*/true);
 }
 
 Sequence FunctionYearFromDateTime::collapseTreeInternal(DynamicContext* context, int flags) const

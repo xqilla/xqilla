@@ -38,12 +38,15 @@ XQQuantified::XQQuantified(XQQuantified::QuantifierType qType, VectorOfVariableB
     setType(ASTNode::FLWOR_QUANTIFIED);
 }
 
-ASTNode* XQQuantified::staticResolution(StaticContext* context) {
-  XQFLWOR::staticResolutionImpl(context);
+ASTNode *XQQuantified::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
+  XQFLWOR::staticTypingImpl(context);
 
   _src.getStaticType().flags = StaticType::BOOLEAN_TYPE;
 
-  if(_src.isUsed()) {
+  if(!_bindings->empty()) {
     if(_return->isConstant()) {
       AutoDelete<DynamicContext> dContext(context->createDynamicContext());
       dContext->setMemoryManager(context->getMemoryManager());

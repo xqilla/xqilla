@@ -35,8 +35,15 @@ FunctionTrace::FunctionTrace(const VectorOfASTNodes &args, XPath2MemoryManager* 
 }
 
 ASTNode* FunctionTrace::staticResolution(StaticContext *context) {
+  return resolveArguments(context);
+}
+
+ASTNode *FunctionTrace::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
   _src.forceNoFolding(true);
-  ASTNode *result = resolveArguments(context);
+  ASTNode *result = calculateSRCForArguments(context);
   if(result == this) {
     _src.getStaticType() = _args.front()->getStaticResolutionContext().getStaticType();
   }

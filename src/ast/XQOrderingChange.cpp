@@ -47,6 +47,14 @@ ASTNode* XQOrderingChange::staticResolution(StaticContext* context)
   return this;
 }
 
+ASTNode *XQOrderingChange::staticTyping(StaticContext *context)
+{
+  _src.clear();
+  m_pExpr = m_pExpr->staticTyping(context);
+  _src.copy(m_pExpr->getStaticResolutionContext());
+  return this;
+}
+
 StaticContext::NodeSetOrdering XQOrderingChange::getOrderingValue() const
 {
   return m_nOrdering;

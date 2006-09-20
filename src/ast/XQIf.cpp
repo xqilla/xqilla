@@ -40,25 +40,37 @@ ASTNode* XQIf::staticResolution(StaticContext *context) {
     _test = _test->staticResolution(context);
   }
 
+  _whenTrue = _whenTrue->staticResolution(context);
+  _whenFalse = _whenFalse->staticResolution(context);
+
+  return this;
+}
+
+ASTNode *XQIf::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
+  _test = _test->staticTyping(context);
+
   if(_test->isConstant()) {
     AutoDelete<DynamicContext> dContext(context->createDynamicContext());
     dContext->setMemoryManager(context->getMemoryManager());
     if(_test->collapseTree(dContext)->getEffectiveBooleanValue(dContext, this)) {
-      return _whenTrue->staticResolution(context);
+      return _whenTrue->staticTyping(context);
     }
     else {
-      return _whenFalse->staticResolution(context);
+      return _whenFalse->staticTyping(context);
     }
   }
   else {
     _src.add(_test->getStaticResolutionContext());
 
-    _whenTrue = _whenTrue->staticResolution(context);
+    _whenTrue = _whenTrue->staticTyping(context);
     _src.getStaticType() = _whenTrue->getStaticResolutionContext().getStaticType();
     _src.setProperties(_whenTrue->getStaticResolutionContext().getProperties());
     _src.add(_whenTrue->getStaticResolutionContext());
 
-    _whenFalse = _whenFalse->staticResolution(context);
+    _whenFalse = _whenFalse->staticTyping(context);
     _src.getStaticType().typeUnion(_whenFalse->getStaticResolutionContext().getStaticType());
     _src.setProperties(_src.getProperties() & _whenFalse->getStaticResolutionContext().getProperties());
     _src.add(_whenFalse->getStaticResolutionContext());

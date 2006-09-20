@@ -26,15 +26,37 @@ XQAtomize::XQAtomize(ASTNode* expr, XPath2MemoryManager* memMgr)
 ASTNode* XQAtomize::staticResolution(StaticContext *context)
 {
   expr_ = expr_->staticResolution(context);
+  return this;
+}
+
+ASTNode *XQAtomize::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
+  expr_ = expr_->staticTyping(context);
   _src.getStaticType() = expr_->getStaticResolutionContext().getStaticType();
   _src.add(expr_->getStaticResolutionContext());
 
-  if(_src.getStaticType().containsType(StaticType::NODE_TYPE)) {
-    _src.getStaticType().flags = StaticType::ANY_ATOMIC_TYPE;
-  }
-  else {
+  if(!_src.getStaticType().containsType(StaticType::NODE_TYPE)) {
     // If the expression has no nodes, this function does nothing
     return expr_;
+  }
+
+  static const unsigned int anytype_types = StaticType::ELEMENT_TYPE | StaticType::ATTRIBUTE_TYPE;
+  static const unsigned int untyped_types = StaticType::DOCUMENT_TYPE | StaticType::TEXT_TYPE;
+  static const unsigned int string_types = StaticType::NAMESPACE_TYPE | StaticType::COMMENT_TYPE | StaticType::PI_TYPE;
+
+  if(_src.getStaticType().containsType(anytype_types)) {
+    _src.getStaticType().flags &= ~anytype_types;
+    _src.getStaticType().flags |= StaticType::ANY_ATOMIC_TYPE;
+  }
+  if(_src.getStaticType().containsType(untyped_types)) {
+    _src.getStaticType().flags &= ~untyped_types;
+    _src.getStaticType().flags |= StaticType::UNTYPED_ATOMIC_TYPE;
+  }
+  if(_src.getStaticType().containsType(string_types)) {
+    _src.getStaticType().flags &= ~string_types;
+    _src.getStaticType().flags |= StaticType::STRING_TYPE;
   }
 
   if(expr_->isConstant()) {

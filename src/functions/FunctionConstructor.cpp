@@ -64,3 +64,10 @@ ASTNode* FunctionConstructor::staticResolution(StaticContext *context)
 
   return result->staticResolution(context);
 }
+
+ASTNode *FunctionConstructor::staticTyping(StaticContext *context)
+{
+  // Should never be called
+  return this;
+}
+

@@ -32,6 +32,7 @@ public:
   FunctionSum(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   ASTNode* staticResolution(StaticContext *context);
+  virtual ASTNode *staticTyping(StaticContext *context);
   /** Takes a list of nodes and sums their values */
   Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
 

@@ -28,3 +28,7 @@ ConstantFoldingFunction::~ConstantFoldingFunction()
 ASTNode* ConstantFoldingFunction::staticResolution(StaticContext *context) {
   return resolveArguments(context);
 }
+
+ASTNode* ConstantFoldingFunction::staticTyping(StaticContext *context) {
+  return calculateSRCForArguments(context);
+}

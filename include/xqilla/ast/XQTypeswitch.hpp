@@ -36,6 +36,8 @@ public:
       : _expr(expr), _type(type), _variable(variable), _uri(0), _name(0) {}
 
     void staticResolution(const StaticResolutionContext &var_src, StaticContext* context, StaticResolutionContext &src);
+    void staticTyping(const StaticResolutionContext &var_src, StaticContext* context,
+                                          StaticResolutionContext &src);
 
     ASTNode* _expr;
     SequenceType* _type;
@@ -50,6 +52,7 @@ public:
 
   Result createResult(DynamicContext* context, int flags=0) const;
   ASTNode* staticResolution(StaticContext *context);
+  virtual ASTNode *staticTyping(StaticContext *context);
 
   const ASTNode *getExpression() const;
   const Clause *getDefaultClause() const;

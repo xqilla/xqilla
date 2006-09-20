@@ -43,8 +43,15 @@ FunctionDateTime::FunctionDateTime(const VectorOfASTNodes &args, XPath2MemoryMan
 
 ASTNode* FunctionDateTime::staticResolution(StaticContext *context)
 {
-  _src.getStaticType().flags = StaticType::DATE_TIME_TYPE;
   return resolveArguments(context, /*checkTimezone*/true);
+}
+
+ASTNode *FunctionDateTime::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
+  _src.getStaticType().flags = StaticType::DATE_TIME_TYPE;
+  return calculateSRCForArguments(context, /*checkTimezone*/true);
 }
 
 Sequence FunctionDateTime::collapseTreeInternal(DynamicContext* context, int flags) const

@@ -44,13 +44,19 @@ FunctionResolveURI::FunctionResolveURI(const VectorOfASTNodes &args, XPath2Memor
 
 ASTNode* FunctionResolveURI::staticResolution(StaticContext *context)
 {
-  _src.getStaticType().flags = StaticType::ANY_URI_TYPE;
-
   if (getNumArgs() == 1) {
     baseURI_ = context->getBaseURI();
   }
 
   return resolveArguments(context);
+}
+
+ASTNode *FunctionResolveURI::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
+  _src.getStaticType().flags = StaticType::ANY_URI_TYPE;
+  return calculateSRCForArguments(context);
 }
 
 Sequence FunctionResolveURI::collapseTreeInternal(DynamicContext* context, int flags) const

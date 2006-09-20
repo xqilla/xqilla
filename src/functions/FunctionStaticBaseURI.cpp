@@ -57,6 +57,12 @@ ASTNode* FunctionStaticBaseURI::staticResolution(StaticContext *context) {
   return newBlock->staticResolution(context);
 }
 
+ASTNode *FunctionStaticBaseURI::staticTyping(StaticContext *context)
+{
+  // Should never happen
+  return this;
+}
+
 Sequence FunctionStaticBaseURI::collapseTreeInternal(DynamicContext* context, int flags) const
 {
   // Always constant folded

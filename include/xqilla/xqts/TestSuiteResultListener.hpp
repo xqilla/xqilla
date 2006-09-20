@@ -149,6 +149,7 @@ public:
   void setOrganization(const std::string &name, const std::string &website = "");
   void setSubmittor(const std::string &name, const std::string &email = "");
   void setTestRun(const std::string &transformation, const std::string &comments = "");
+  void setAnonymous(bool anon);
   void addImplementationDefinedItem(const std::string &name, const std::string &value);
   void addFeature(const std::string &name, bool supported);
   void addContextProperty(const std::string &name, const std::string &contextType, const std::string &value);
@@ -161,6 +162,7 @@ private:
   std::string orgName_, orgWebsite_;
   std::string submittorName_, submittorEmail_;
   std::string testTransformation_, testComments_;
+  bool anonymous_;
 
   std::map<std::string, std::string> implDefinedItems_;
   std::map<std::string, bool> features_;

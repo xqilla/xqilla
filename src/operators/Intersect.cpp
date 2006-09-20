@@ -41,8 +41,6 @@ ASTNode* Intersect::staticResolution(StaticContext *context)
     return result->staticResolution(context);
   }
 
-  _src.getStaticType().flags = StaticType::NODE_TYPE;
-
   for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
     SequenceType *seqType = new (mm) SequenceType(new (mm) SequenceType::ItemType(SequenceType::ItemType::TEST_NODE),
                                                   SequenceType::STAR);
@@ -52,8 +50,21 @@ ASTNode* Intersect::staticResolution(StaticContext *context)
     (*i)->setLocationInfo(this);
 
     *i = (*i)->staticResolution(context);
-    _src.add((*i)->getStaticResolutionContext());
   }
+
+  return this;
+}
+
+ASTNode* Intersect::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
+  _args[0] = _args[0]->staticTyping(context);
+  _src.copy(_args[0]->getStaticResolutionContext());
+
+  _args[1] = _args[1]->staticTyping(context);
+  _src.add(_args[1]->getStaticResolutionContext());
+  _src.getStaticType().typeIntersect(_args[1]->getStaticResolutionContext().getStaticType());
 
   return this;
 }
@@ -74,7 +85,7 @@ Sequence Intersect::collapseTreeInternal(DynamicContext* context, int flags) con
 	for(;p1It != end1; ++p1It) {
 		for(p2It = param2.begin();p2It != end2; ++p2It) {
 			if(((Node*)p1It->get())->equals((Node*)p2It->get())) {
-				result.addItem(*p2It);
+				result.addItem(*p1It);
 			}
 		}
 	}

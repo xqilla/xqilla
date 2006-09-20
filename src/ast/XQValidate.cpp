@@ -44,16 +44,18 @@ XQValidate::XQValidate(ASTNode* valExpr, DocumentCache::ValidationMode valMode, 
 Sequence XQValidate::collapseTreeInternal(DynamicContext* context, int flags) const
 {
   Result toBeValidated = _expr->collapseTree(context);
-  const Item::Ptr first = toBeValidated->next(context);
-  const Item::Ptr second = toBeValidated->next(context);
+  Item::Ptr first = toBeValidated->next(context);
+  Item::Ptr second = toBeValidated->next(context);
 
-  if(first == NULLRCP || second != NULLRCP || !first->isNode())
-    XQThrow(FunctionException,X("XQValidate::collapseTreeInternal"), X("The expression to be validated must evaluate to exactly one document or element node [err:XQTY0030]."));
+  if(first.isNull() || !second.isNull() || !first->isNode())
+    XQThrow(FunctionException,X("XQValidate::collapseTreeInternal"),
+            X("The expression to be validated must evaluate to exactly one document or element node [err:XQTY0030]."));
 
   Node::Ptr node = (Node::Ptr)first;
   if(node->dmNodeKind() != Node::element_string &&
      node->dmNodeKind() != Node::document_string)
-    XQThrow(FunctionException,X("XQValidate::collapseTreeInternal"), X("The expression to be validated must evaluate to exactly one document or element node [err:XQTY0030]."));
+    XQThrow(FunctionException,X("XQValidate::collapseTreeInternal"),
+            X("The expression to be validated must evaluate to exactly one document or element node [err:XQTY0030]."));
 
   // perform validation on this item
   Node::Ptr validatedElt = context->validate(node, _validationMode);
@@ -66,9 +68,24 @@ Sequence XQValidate::collapseTreeInternal(DynamicContext* context, int flags) co
 ASTNode* XQValidate::staticResolution(StaticContext* ctx)
 {
   _expr = _expr->staticResolution(ctx);
+  return this;
+}
+
+ASTNode *XQValidate::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
+  _expr = _expr->staticTyping(context);
   _src.add(_expr->getStaticResolutionContext());
 
-  _src.getStaticType().flags = StaticType::NODE_TYPE;
+  _src.getStaticType() = _expr->getStaticResolutionContext().getStaticType();
+  _src.getStaticType().typeIntersect(StaticType::DOCUMENT_TYPE | StaticType::ELEMENT_TYPE);
+
+  if(_src.getStaticType().isType(StaticType::EMPTY_TYPE)) {
+    XQThrow(FunctionException, X("XQValidate::collapseTreeInternal"),
+            X("The expression to be validated must evaluate to exactly one document or element node [err:XQTY0030]."));
+  }
+
   _src.forceNoFolding(true);
   return this; // Never constant fold
 }

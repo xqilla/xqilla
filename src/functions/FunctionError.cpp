@@ -39,10 +39,17 @@ FunctionError::FunctionError(const VectorOfASTNodes &args, XPath2MemoryManager* 
 
 ASTNode* FunctionError::staticResolution(StaticContext *context)
 {
+  return resolveArguments(context);
+}
+
+ASTNode *FunctionError::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
   // we need to specify ITEM_TYPE, or a sequence type applied on us will always fail
   _src.getStaticType().flags = StaticType::ITEM_TYPE;
   _src.forceNoFolding(true);
-  return resolveArguments(context);
+  return calculateSRCForArguments(context);
 }
 
 Sequence FunctionError::collapseTreeInternal(DynamicContext* context, int flags) const

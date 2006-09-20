@@ -38,8 +38,15 @@ FunctionCount::FunctionCount(const VectorOfASTNodes &args, XPath2MemoryManager* 
 
 ASTNode* FunctionCount::staticResolution(StaticContext *context) {
   AutoNodeSetOrderingReset orderReset(context);
-  _src.getStaticType().flags = StaticType::DECIMAL_TYPE;
   return resolveArguments(context);
+}
+
+ASTNode *FunctionCount::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
+  _src.getStaticType().flags = StaticType::DECIMAL_TYPE;
+  return calculateSRCForArguments(context);
 }
 
 Sequence FunctionCount::collapseTreeInternal(DynamicContext* context, int flags) const

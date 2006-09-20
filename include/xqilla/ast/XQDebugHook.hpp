@@ -28,6 +28,7 @@ public:
 	
   virtual Result collapseTree(DynamicContext* context, int flags=0) const;
   virtual ASTNode* staticResolution(StaticContext *context);
+  virtual ASTNode *staticTyping(StaticContext *context);
 
   virtual const StaticResolutionContext &getStaticResolutionContext() const;
 

@@ -36,6 +36,7 @@ public:
   FunctionYearFromDate(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
 
   ASTNode* staticResolution(StaticContext *context);
+  virtual ASTNode *staticTyping(StaticContext *context);
 
   /**
    * Returns the integer representing the year in the value of $srcval

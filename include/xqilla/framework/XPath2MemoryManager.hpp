@@ -91,8 +91,6 @@ public:
     typedef XQillaAllocator<_Tp1> other;
   };
 
-  XQillaAllocator<_Tp>() :_memMgr(0) {}
-
   XQillaAllocator(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr)
   {
     _memMgr=memMgr;

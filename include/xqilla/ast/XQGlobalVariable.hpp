@@ -29,6 +29,7 @@ public:
 
   void execute(DynamicContext* context) const;
   void staticResolution(StaticContext *context);
+  void staticTyping(StaticContext *context);
 
   const XMLCh* getVariableName() const;
   bool isExternal() const;

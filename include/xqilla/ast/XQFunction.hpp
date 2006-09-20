@@ -43,6 +43,7 @@ public:
       calls static resolution on them, and constant folds if
       this function's StaticResolutionContext is not used */
   ASTNode *resolveArguments(StaticContext *context, bool checkTimezone = false, bool numericFunction = false);
+  ASTNode *calculateSRCForArguments(StaticContext *context, bool checkTimezone = false, bool numericFunction = false);
 
   /** casts the expression given as a parameter into the appropriate type and returns the guaranteed correctly typed objects in a sequence  */
   virtual Result getParamNumber(unsigned int number, DynamicContext* context, int flags=0) const;

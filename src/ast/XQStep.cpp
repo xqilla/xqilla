@@ -43,8 +43,7 @@ unsigned int XQStep::getAxisProperties(Axis axis)
   // properties depend on the axis of the step
   switch (axis) {
   case SELF:
-    properties |= StaticResolutionContext::ONENODE | StaticResolutionContext::DOCORDER |
-	    StaticResolutionContext::SUBTREE | StaticResolutionContext::PEER;
+    properties |= StaticResolutionContext::ONENODE | StaticResolutionContext::SELF;
     // Fall through
   case CHILD:
   case ATTRIBUTE:
@@ -76,10 +75,49 @@ unsigned int XQStep::getAxisProperties(Axis axis)
 
 ASTNode* XQStep::staticResolution(StaticContext *context)
 {
-  _src.setProperties(getAxisProperties(axis_));
-  _src.getStaticType().flags = StaticType::NODE_TYPE;
-  _src.contextItemUsed(true);
   nodeTest_->staticResolution(context, this);
+  return this;
+}
+
+ASTNode *XQStep::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
+  _src.setProperties(getAxisProperties(axis_));
+  _src.contextItemUsed(true);
+
+  bool isExact;
+  nodeTest_->getStaticType(_src.getStaticType(), context, isExact, this);
+
+  switch(axis_) {
+  case SELF:
+    _src.getStaticType().typeIntersect(context->getContextItemType());
+    break;
+  case ATTRIBUTE:
+    _src.getStaticType().typeIntersect(StaticType::ATTRIBUTE_TYPE);
+    break;
+  case NAMESPACE:
+    _src.getStaticType().typeIntersect(StaticType::NAMESPACE_TYPE);
+    break;
+  case CHILD:
+  case DESCENDANT:
+  case FOLLOWING:
+  case FOLLOWING_SIBLING:
+  case PRECEDING:
+  case PRECEDING_SIBLING:
+    _src.getStaticType().typeIntersect(StaticType::ELEMENT_TYPE | StaticType::TEXT_TYPE | StaticType::PI_TYPE |
+                                       StaticType::COMMENT_TYPE);
+    break;
+  case ANCESTOR:
+  case PARENT:
+    _src.getStaticType().typeIntersect(StaticType::DOCUMENT_TYPE | StaticType::ELEMENT_TYPE);
+    break;
+  case DESCENDANT_OR_SELF:
+  case ANCESTOR_OR_SELF:
+    // Could be any type
+    break;
+  }
+
   return this;
 }
 

@@ -36,6 +36,7 @@ public:
   FunctionBaseURI(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   virtual ASTNode* staticResolution(StaticContext *context);
+  virtual ASTNode *staticTyping(StaticContext *context);
 
 	/* returns the base-URI property of document or element nodes,
 	 * and the empty sequence for all other kinds of nodes */

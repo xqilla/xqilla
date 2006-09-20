@@ -48,9 +48,16 @@ FunctionMin::FunctionMin(const VectorOfASTNodes &args, XPath2MemoryManager* memM
 
 ASTNode* FunctionMin::staticResolution(StaticContext *context) {
   AutoNodeSetOrderingReset orderReset(context);
+  return resolveArguments(context);
+}
+
+ASTNode *FunctionMin::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
   // TBD - could do better here - jpcs
   _src.getStaticType().flags = StaticType::TYPED_ATOMIC_TYPE;
-  return resolveArguments(context);
+  return calculateSRCForArguments(context);
 }
 
 Sequence FunctionMin::collapseTreeInternal(DynamicContext* context, int flags) const

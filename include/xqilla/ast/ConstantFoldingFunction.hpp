@@ -31,6 +31,7 @@ public:
    * all constant.
    */
   virtual ASTNode* staticResolution(StaticContext *context);
+  virtual ASTNode *staticTyping(StaticContext *context);
 };
 
 #endif

@@ -36,6 +36,7 @@ public:
    *  not an appropriate error is thrown.
    */
   virtual ASTNode* staticResolution(StaticContext *context);
+  virtual ASTNode *staticTyping(StaticContext *context);
 
   const ASTNode *getExpression() const;
   DocumentCache::ValidationMode getValidationMode() const;

@@ -28,6 +28,7 @@ public:
 
   virtual bool isDateOrTimeAndHasNoTimezone(StaticContext* context) const;
   virtual bool isSingleNumericConstant(StaticContext *context) const;
+  virtual ASTNode *staticTyping(StaticContext *context);
 
   virtual ASTNode* staticResolution(StaticContext *context);
   virtual Result createResult(DynamicContext* context, int flags=0) const;

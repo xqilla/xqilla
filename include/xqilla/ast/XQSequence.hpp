@@ -35,6 +35,7 @@ public:
   virtual bool isSingleNumericConstant(StaticContext *context) const;
 
   virtual ASTNode* staticResolution(StaticContext *context);
+  virtual ASTNode *staticTyping(StaticContext *context);
   virtual Result createResult(DynamicContext* context, int flags=0) const;
 
   const ItemConstructor::Vector &getItemConstructors() const

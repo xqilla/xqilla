@@ -56,18 +56,6 @@ public:
    */
   virtual Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
 
-  /** Calls staticResolution on the ASTNodes, then if isConstant() is true for
-      all of them, and constantFold is true, returns the result of the
-      constantFold() method, otherwise returns this. */
-  ASTNode *resolveASTNodes(VectorOfASTNodes &dis, StaticContext *context, bool constantFold);
-  /** Calls staticResolution on the ASTNodes, then if isConstant() and isDateOrTimeAndHasNoTimezone() 
-      is true for all of them, and constantFold is true, returns the result of the
-      constantFold() method, otherwise returns this. */
-  ASTNode *resolveASTNodesForDateOrTime(VectorOfASTNodes &dis, StaticContext *context, bool constantFold);
-  /** Calls staticResolution on the ASTNode, then if isConstant() is true for
-      it, and constantFold is true, returns the result of the
-      constantFold() method, otherwise returns this. */
-  ASTNode *resolveASTNode(ASTNode *&di, StaticContext *context, bool constantFold);
   /** Performs constant folding on this ASTNode. */
   ASTNode *constantFold(StaticContext *context);
 

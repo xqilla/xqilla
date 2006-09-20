@@ -41,8 +41,6 @@ ASTNode* ArithmeticOperator::staticResolution(StaticContext *context)
 {
   XPath2MemoryManager *mm = context->getMemoryManager();
 
-  bool emptyArgument = false;
-  bool allConstant = true;
   for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
     // An arithmetic expression is evaluated by applying the following rules, in order,
     // until an error is raised or a value is computed:
@@ -74,6 +72,19 @@ ASTNode* ArithmeticOperator::staticResolution(StaticContext *context)
     (*i)->setLocationInfo(this);
 
     *i = (*i)->staticResolution(context);
+  }
+
+  return this;
+}
+
+ASTNode* ArithmeticOperator::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
+  bool emptyArgument = false;
+  bool allConstant = true;
+  for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
+    *i = (*i)->staticTyping(context);
 
     if((*i)->getStaticResolutionContext().getStaticType().flags == 0)
       emptyArgument = true;

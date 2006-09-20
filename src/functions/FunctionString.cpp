@@ -43,13 +43,20 @@ FunctionString::FunctionString(const VectorOfASTNodes &args, XPath2MemoryManager
 }
 
 ASTNode* FunctionString::staticResolution(StaticContext *context) {
-  _src.getStaticType().flags = StaticType::STRING_TYPE;
   if(!_args.empty() && (*_args.begin())->getType()==ASTNode::CONTEXT_ITEM)
       _args.clear();
+  return resolveArguments(context);
+}
+
+ASTNode *FunctionString::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
+  _src.getStaticType().flags = StaticType::STRING_TYPE;
   if(_args.empty()) {
     _src.contextItemUsed(true);
   }
-  return resolveArguments(context);
+  return calculateSRCForArguments(context);
 }
 
 Sequence FunctionString::collapseTreeInternal(DynamicContext* context, int flags) const

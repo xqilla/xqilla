@@ -160,6 +160,11 @@ void XQSort::SortSpec::staticResolution(StaticContext *context, StaticResolution
   _expr = new XQTreatAs(_expr, zero_or_one, mm);
   _expr->setLocationInfo(this);
   _expr = _expr->staticResolution(context);
+}
+
+void XQSort::SortSpec::staticTyping(StaticContext *context, StaticResolutionContext &src)
+{
+  _expr = _expr->staticTyping(context);
   src.add(_expr->getStaticResolutionContext());
 
   if(_collationURI == NULL)
@@ -236,6 +241,13 @@ void XQSort::staticResolution(StaticContext *context, StaticResolutionContext &s
 {
   for(VectorOfSortSpec::iterator it = _specList->begin(); it != _specList->end(); ++it) {
     (*it)->staticResolution(context, src);
+  }
+}
+
+void XQSort::staticTyping(StaticContext *context, StaticResolutionContext &src)
+{
+  for(VectorOfSortSpec::iterator it = _specList->begin(); it != _specList->end(); ++it) {
+    (*it)->staticTyping(context, src);
   }
 }
 
@@ -544,9 +556,17 @@ Result XQFLWOR::createResultImpl(VectorOfVariableBinding::const_iterator it, Vec
 ASTNode* XQFLWOR::staticResolution(StaticContext* context)
 {
   staticResolutionImpl(context);
+  return this;
+}
+
+ASTNode *XQFLWOR::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
+  staticTypingImpl(context);
 
   if(_bindings->empty()) {
-    return _return->staticResolution(context);
+    return _return->staticTyping(context);
   }
   return this;
 }
@@ -555,16 +575,9 @@ void XQFLWOR::staticResolutionImpl(StaticContext* context)
 {
   XPath2MemoryManager *mm = context->getMemoryManager();
 
-  VectorOfVariableBinding *newBindings =
-    new (getMemoryManager()) VectorOfVariableBinding(XQillaAllocator<XQVariableBinding*>(getMemoryManager()));
-
-  VariableTypeStore* varStore = context->getVariableTypeStore();
-
   // Add all the binding variables to the new scope
   VectorOfVariableBinding::iterator end = _bindings->end();
   for(VectorOfVariableBinding::iterator it0 = _bindings->begin(); it0 != end; ++it0) {
-    varStore->addLogicalBlockScope();
-
     // Work out the uri and localname of the variable binding
     const XMLCh* prefix=XPath2NSUtils::getPrefix((*it0)->_variable, mm);
     if(prefix && *prefix)
@@ -582,17 +595,6 @@ void XQFLWOR::staticResolutionImpl(StaticContext* context)
       (*it0)->_allValues->setLocationInfo(this);
     }
     (*it0)->_allValues = (*it0)->_allValues->staticResolution(context);
-    (*it0)->_src.getStaticType() = (*it0)->_allValues->getStaticResolutionContext().getStaticType();
-
-    // Declare the variable binding
-    if((*it0)->_bindingType == XQVariableBinding::letBinding) {
-      (*it0)->_src.setProperties((*it0)->_allValues->getStaticResolutionContext().getProperties());
-      varStore->declareVar((*it0)->_vURI, (*it0)->_vName, (*it0)->_src);
-    }
-    else {
-      (*it0)->_src.setProperties(StaticResolutionContext::DOCORDER | StaticResolutionContext::GROUPED | StaticResolutionContext::PEER | StaticResolutionContext::SUBTREE | StaticResolutionContext::ONENODE);
-      varStore->declareVar((*it0)->_vURI, (*it0)->_vName, (*it0)->_src);
-    }
 
     if((*it0)->_positionalVariable != NULL && *((*it0)->_positionalVariable) != 0) {
       // Work out the uri and localname of the positional variable binding
@@ -613,8 +615,6 @@ void XQFLWOR::staticResolutionImpl(StaticContext* context)
         errMsg.append(X(" conflicts with the iteration variable [err:XQST0089]"));
         XQThrow(StaticErrorException,X("XQFLWOR::staticResolutionImpl"), errMsg.getRawBuffer());
       }
-      // Declare the positional variable binding
-      varStore->declareVar((*it0)->_pURI, (*it0)->_pName, (*it0)->_pSrc);
     }
     else {
       // Make life easier when we execute
@@ -625,8 +625,7 @@ void XQFLWOR::staticResolutionImpl(StaticContext* context)
   // Call staticResolution on the where expression, if there is one
   if(_where) {
     AutoNodeSetOrderingReset orderReset(context);
-    _where = staticallyResolveWhere(_where, context);
-    if(_where) _src.add(_where->getStaticResolutionContext());
+    _where = _where->staticResolution(context);
   }
 
   // Call staticResolution on the sort specifications, if there are some
@@ -636,6 +635,59 @@ void XQFLWOR::staticResolutionImpl(StaticContext* context)
 
   // Call staticResolution on the return expression
   _return = _return->staticResolution(context);
+}
+
+void XQFLWOR::staticTypingImpl(StaticContext* context)
+{
+  XPath2MemoryManager *mm = context->getMemoryManager();
+
+  VectorOfVariableBinding *newBindings =
+    new (getMemoryManager()) VectorOfVariableBinding(XQillaAllocator<XQVariableBinding*>(getMemoryManager()));
+
+  VariableTypeStore* varStore = context->getVariableTypeStore();
+
+  // Add all the binding variables to the new scope
+  VectorOfVariableBinding::iterator end = _bindings->end();
+  for(VectorOfVariableBinding::iterator it0 = _bindings->begin(); it0 != end; ++it0) {
+    varStore->addLogicalBlockScope();
+
+    // call static resolution on the value
+    (*it0)->_allValues = (*it0)->_allValues->staticTyping(context);
+    (*it0)->_src.getStaticType() = (*it0)->_allValues->getStaticResolutionContext().getStaticType();
+
+    // Declare the variable binding
+    if((*it0)->_bindingType == XQVariableBinding::letBinding) {
+      (*it0)->_src.setProperties((*it0)->_allValues->getStaticResolutionContext().getProperties());
+      varStore->declareVar((*it0)->_vURI, (*it0)->_vName, (*it0)->_src);
+    }
+    else {
+      (*it0)->_src.setProperties(StaticResolutionContext::DOCORDER | StaticResolutionContext::GROUPED |
+	      StaticResolutionContext::PEER | StaticResolutionContext::SUBTREE | StaticResolutionContext::ONENODE);
+      varStore->declareVar((*it0)->_vURI, (*it0)->_vName, (*it0)->_src);
+    }
+
+    if((*it0)->_positionalVariable != NULL) {
+      (*it0)->_pSrc.getStaticType().flags = StaticType::DECIMAL_TYPE;
+
+      // Declare the positional variable binding
+      varStore->declareVar((*it0)->_pURI, (*it0)->_pName, (*it0)->_pSrc);
+    }
+  }
+
+  // Call staticResolution on the where expression, if there is one
+  if(_where) {
+    AutoNodeSetOrderingReset orderReset(context);
+    _where = calculateSRCForWhere(_where, context);
+    if(_where) _src.add(_where->getStaticResolutionContext());
+  }
+
+  // Call staticResolution on the sort specifications, if there are some
+  if(_sort) {
+    _sort->staticTyping(context, _src);
+  }
+
+  // Call staticResolution on the return expression
+  _return = _return->staticTyping(context);
   _src.getStaticType() = _return->getStaticResolutionContext().getStaticType();
   _src.setProperties(_return->getStaticResolutionContext().getProperties());
   _src.add(_return->getStaticResolutionContext());
@@ -647,7 +699,7 @@ void XQFLWOR::staticResolutionImpl(StaticContext* context)
 
     // Statically resolve any binding specific where conditions, if we have them
     if(newVB->_where) {
-      newVB->_where = newVB->_where->staticResolution(context);
+      newVB->_where = newVB->_where->staticTyping(context);
       _src.add(newVB->_where->getStaticResolutionContext());
     }
 
@@ -738,11 +790,11 @@ void XQFLWOR::staticResolutionImpl(StaticContext* context)
   _bindings = newBindings;
 }
 
-ASTNode *XQFLWOR::staticallyResolveWhere(ASTNode *where, StaticContext *context)
+ASTNode *XQFLWOR::calculateSRCForWhere(ASTNode *where, StaticContext *context)
 {
   if(context->isDebuggingEnabled()) {
     // Don't do anything special if this is a debug build
-    where = where->staticResolution(context);
+    where = where->staticTyping(context);
   }
   else {
     if(where->getType()==ASTNode::OPERATOR &&
@@ -752,7 +804,7 @@ ASTNode *XQFLWOR::staticallyResolveWhere(ASTNode *where, StaticContext *context)
       And* fAnd = (And*)where;
       unsigned int index = 0;
       while(index < fAnd->getNumArgs()) {
-        ASTNode* subWhere = staticallyResolveWhere(fAnd->getArgument(index), context);
+        ASTNode* subWhere = calculateSRCForWhere(fAnd->getArgument(index), context);
         if(subWhere) {
           fAnd->setArgument(index, subWhere);
           ++index;
@@ -769,7 +821,7 @@ ASTNode *XQFLWOR::staticallyResolveWhere(ASTNode *where, StaticContext *context)
     }
     else {
       // Try to send the condition to the outer most condition possible
-      where = where->staticResolution(context);
+      where = where->staticTyping(context);
       const StaticResolutionContext &whereSrc = where->getStaticResolutionContext();
 
       VectorOfVariableBinding::reverse_iterator rend = _bindings->rend();

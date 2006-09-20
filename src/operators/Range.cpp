@@ -40,8 +40,6 @@ ASTNode* Range::staticResolution(StaticContext *context)
 {
   XPath2MemoryManager *mm = context->getMemoryManager();
 
-  _src.getStaticType().flags = StaticType::DECIMAL_TYPE;
-
   for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
     SequenceType *integerType = new (mm) SequenceType(SchemaSymbols::fgURI_SCHEMAFORSCHEMA, 
                                                       SchemaSymbols::fgDT_INTEGER,
@@ -51,6 +49,19 @@ ASTNode* Range::staticResolution(StaticContext *context)
     *i = integerType->convertFunctionArg(*i, context, /*numericfunction*/false, *i);
 
     *i = (*i)->staticResolution(context);
+  }
+
+  return this;
+}
+
+ASTNode* Range::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
+  _src.getStaticType().flags = StaticType::DECIMAL_TYPE;
+
+  for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
+    *i = (*i)->staticTyping(context);
     _src.add((*i)->getStaticResolutionContext());
 
     if((*i)->isDateOrTimeAndHasNoTimezone(context))

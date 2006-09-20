@@ -35,6 +35,7 @@ public:
   FunctionCount(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   ASTNode* staticResolution(StaticContext *context);
+  virtual ASTNode *staticTyping(StaticContext *context);
   /** Returns the number of nodes in the nodelist argument. **/
   Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
 };

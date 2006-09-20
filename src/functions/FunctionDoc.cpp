@@ -36,10 +36,19 @@ FunctionDoc::FunctionDoc(const VectorOfASTNodes &args, XPath2MemoryManager* memM
 
 ASTNode* FunctionDoc::staticResolution(StaticContext *context)
 {
-  _src.setProperties(StaticResolutionContext::DOCORDER | StaticResolutionContext::GROUPED | StaticResolutionContext::PEER | StaticResolutionContext::SUBTREE | StaticResolutionContext::ONENODE);
-  _src.getStaticType().flags = StaticType::NODE_TYPE;
-  _src.availableDocumentsUsed(true);
   return resolveArguments(context);
+}
+
+ASTNode *FunctionDoc::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
+  _src.setProperties(StaticResolutionContext::DOCORDER | StaticResolutionContext::GROUPED |
+                     StaticResolutionContext::PEER | StaticResolutionContext::SUBTREE | StaticResolutionContext::ONENODE);
+  _src.getStaticType().flags = StaticType::DOCUMENT_TYPE;
+  _src.availableDocumentsUsed(true);
+
+  return calculateSRCForArguments(context);
 }
 
 Sequence FunctionDoc::collapseTreeInternal(DynamicContext* context, int flags) const {

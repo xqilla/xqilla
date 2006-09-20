@@ -49,11 +49,18 @@ FunctionAdjustDateTimeToTimezone::FunctionAdjustDateTimeToTimezone(const VectorO
 }
 
 ASTNode* FunctionAdjustDateTimeToTimezone::staticResolution(StaticContext *context) {
+  return resolveArguments(context);
+}
+
+ASTNode *FunctionAdjustDateTimeToTimezone::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
   _src.getStaticType().flags = StaticType::DATE_TIME_TYPE;
   if(getNumArgs() == 1) {
     _src.implicitTimezoneUsed(true);
   }
-  return resolveArguments(context);
+  return calculateSRCForArguments(context);
 }
 
 Sequence FunctionAdjustDateTimeToTimezone::collapseTreeInternal(DynamicContext* context, int flags) const

@@ -47,6 +47,24 @@ ASTNode* XQTypeswitch::staticResolution(StaticContext *context)
 {
   // Statically resolve the test expression
   _expr = _expr->staticResolution(context);
+
+  // Call static resolution on the clauses
+  for(VectorOfClause::iterator it = _clauses->begin(); it != _clauses->end(); ++it) {
+    (*it)->_type->staticResolution(context);
+    (*it)->staticResolution(_expr->getStaticResolutionContext(), context, _src);
+  }
+
+  _default->staticResolution(_expr->getStaticResolutionContext(), context, _src);
+
+  return this;
+}
+
+ASTNode* XQTypeswitch::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
+  // Statically resolve the test expression
+  _expr = _expr->staticTyping(context);
   const StaticResolutionContext &exprSrc = _expr->getStaticResolutionContext();
 
   _src.getStaticType().flags = 0;
@@ -60,7 +78,6 @@ ASTNode* XQTypeswitch::staticResolution(StaticContext *context)
     VectorOfClause newClauses(XQillaAllocator<Clause*>(context->getMemoryManager()));
     VectorOfClause::iterator it = _clauses->begin();
     for(; it != _clauses->end(); ++it) {
-      (*it)->_type->staticResolution(context);
       const SequenceType::ItemType *itemType = (*it)->_type->getItemType();
       if(itemType != NULL) {
         const StaticType &sType = _expr->getStaticResolutionContext().getStaticType();
@@ -94,10 +111,10 @@ ASTNode* XQTypeswitch::staticResolution(StaticContext *context)
     // Call static resolution on the new clauses
     _src.setProperties((unsigned int)-1);
     for(it = _clauses->begin(); it != _clauses->end(); ++it) {
-      (*it)->staticResolution(_expr->getStaticResolutionContext(), context, _src);
+      (*it)->staticTyping(_expr->getStaticResolutionContext(), context, _src);
     }
 
-    _default->staticResolution(_expr->getStaticResolutionContext(), context, _src);
+    _default->staticTyping(_expr->getStaticResolutionContext(), context, _src);
 
     return this;
   }
@@ -128,7 +145,7 @@ ASTNode* XQTypeswitch::staticResolution(StaticContext *context)
     _clauses->clear();
 
     // Statically resolve the default clause
-    _default->staticResolution(_expr->getStaticResolutionContext(), context, _src);
+    _default->staticTyping(_expr->getStaticResolutionContext(), context, _src);
 
     // Constant fold if possible
     if(!_src.isUsed()) {
@@ -140,6 +157,12 @@ ASTNode* XQTypeswitch::staticResolution(StaticContext *context)
 
 void XQTypeswitch::Clause::staticResolution(const StaticResolutionContext &var_src, StaticContext* context, StaticResolutionContext &src)
 {
+  _expr = _expr->staticResolution(context);
+}
+
+void XQTypeswitch::Clause::staticTyping(const StaticResolutionContext &var_src, StaticContext* context,
+                                                            StaticResolutionContext &src)
+{
   VariableTypeStore* varStore=context->getVariableTypeStore();
 
   if(_variable != 0) {
@@ -150,7 +173,7 @@ void XQTypeswitch::Clause::staticResolution(const StaticResolutionContext &var_s
   }
 
   StaticResolutionContext newSrc(context->getMemoryManager());
-  _expr = _expr->staticResolution(context);
+  _expr = _expr->staticTyping(context);
   newSrc.add(_expr->getStaticResolutionContext());
 
   if(_variable != 0) {

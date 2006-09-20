@@ -30,11 +30,20 @@ ASTNode* XQDocumentOrder::staticResolution(StaticContext *context)
   unordered_ = context->getNodeSetOrdering() == StaticContext::ORDERING_UNORDERED;
 
   expr_ = expr_->staticResolution(context);
+
+  return this;
+}
+
+ASTNode *XQDocumentOrder::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
+  expr_ = expr_->staticTyping(context);
   _src.getStaticType() = expr_->getStaticResolutionContext().getStaticType();
   _src.add(expr_->getStaticResolutionContext());
 
   // Check if nodes will be returned
-  if((_src.getStaticType().flags & StaticType::NODE_TYPE) == 0) {
+  if(!_src.getStaticType().containsType(StaticType::NODE_TYPE)) {
     return expr_;
   }
 

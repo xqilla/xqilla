@@ -52,9 +52,9 @@ static XMLCh szNOTATION[] =  { XERCES_CPP_NAMESPACE_QUALIFIER chLatin_N, XERCES_
 
 ASTNode* XQCastAs::staticResolution(StaticContext *context)
 {
-  _exprType->staticResolution(context);
-
   XPath2MemoryManager *mm = context->getMemoryManager();
+
+  _exprType->staticResolution(context);
 
   const SequenceType::ItemType *itemType = _exprType->getItemType();
   if(itemType != NULL) {
@@ -64,14 +64,26 @@ ASTNode* XQCastAs::staticResolution(StaticContext *context)
         XPath2Utils::equals(itemType->getType()->getName(), AnyAtomicType::fgDT_ANYATOMICTYPE)))
       XQThrow(TypeErrorException,X("XQCastAs::CastAsResult::getSingleResult"),
               X("The target type of a cast expression must be an atomic type that is in the in-scope schema types and is not xs:NOTATION or xdt:anyAtomicType [err:XPST0080]"));
-
-    bool isPrimitive;
-    itemType->getStaticType(_src.getStaticType(), context, isPrimitive, this);
   }
 
   _expr = new (mm) XQAtomize(_expr, mm);
   _expr->setLocationInfo(this);
   _expr = _expr->staticResolution(context);
+
+  return this;
+}
+
+ASTNode *XQCastAs::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
+  const SequenceType::ItemType *itemType = _exprType->getItemType();
+  if(itemType != NULL) {
+    bool isPrimitive;
+    itemType->getStaticType(_src.getStaticType(), context, isPrimitive, this);
+  }
+
+  _expr = _expr->staticTyping(context);
   _src.add(_expr->getStaticResolutionContext());
 
   if(_expr->isConstant()) {

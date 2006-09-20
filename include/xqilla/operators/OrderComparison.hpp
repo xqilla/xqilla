@@ -28,6 +28,7 @@ public:
   OrderComparison(const VectorOfASTNodes &args, bool testBefore, XPath2MemoryManager* memMgr);
 
   ASTNode* staticResolution(StaticContext *context);
+  virtual ASTNode *staticTyping(StaticContext *context);
   Result createResult(DynamicContext* context, int flags=0) const;
 
   bool getTestBefore() const;

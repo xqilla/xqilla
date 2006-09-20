@@ -58,6 +58,7 @@ void StaticResolutionContext::clear()
   _creative = false;
 
   _properties = 0;
+  _staticType = StaticType();
 
   _dynamicVariables.removeAll();
   _uriPool.flushAll();

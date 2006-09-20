@@ -37,12 +37,19 @@ const unsigned int FunctionSecondsFromTime::maxArgs = 1;
 FunctionSecondsFromTime::FunctionSecondsFromTime(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : XQFunction(name, minArgs, maxArgs, "time?", args, memMgr)
 {
-  _src.getStaticType().flags = StaticType::DECIMAL_TYPE;
 }
 
 ASTNode* FunctionSecondsFromTime::staticResolution(StaticContext *context)
 {
   return resolveArguments(context, /*checkTimezone*/true);
+}
+
+ASTNode *FunctionSecondsFromTime::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
+  _src.getStaticType().flags = StaticType::DECIMAL_TYPE;
+  return calculateSRCForArguments(context, /*checkTimezone*/true);
 }
 
 Sequence FunctionSecondsFromTime::collapseTreeInternal(DynamicContext* context, int flags) const

@@ -57,6 +57,7 @@ Result XQTreatAs::createResult(DynamicContext* context, int flags) const
 ASTNode* XQTreatAs::staticResolution(StaticContext *context)
 {
   _exprType->staticResolution(context);
+
   if(_exprType->getOccurrenceIndicator() == SequenceType::QUESTION_MARK ||
      _exprType->getOccurrenceIndicator() == SequenceType::EXACTLY_ONE) {
     AutoNodeSetOrderingReset orderReset(context);
@@ -65,6 +66,15 @@ ASTNode* XQTreatAs::staticResolution(StaticContext *context)
   else {
     _expr = _expr->staticResolution(context);
   }
+
+  return this;
+}
+
+ASTNode *XQTreatAs::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
+  _expr = _expr->staticTyping(context);
 
   // Do as much static time type checking as we can, given the
   // limited static typing that we implement
@@ -79,9 +89,10 @@ ASTNode* XQTreatAs::staticResolution(StaticContext *context)
        (_exprType->getOccurrenceIndicator() == SequenceType::EXACTLY_ONE ||
         _exprType->getOccurrenceIndicator() == SequenceType::PLUS)) {
       // It never matches
-      XQThrow(XPath2TypeMatchException, X("XQTreatAs::staticResolution"),
-          _isTreatAs?X("The type of the expression doesn't match the sequence type specified in the 'treat as' expression [err:XPDY0050]"):
-                     X("ItemType matching failed [err:XPTY0004]"));
+      XQThrow(XPath2TypeMatchException, X("XQTreatAs::staticResolution"), _isTreatAs ?
+              X("The type of the expression doesn't match the sequence type specified in the 'treat as' expression"
+                " [err:XPDY0050]") :
+              X("ItemType matching failed [err:XPTY0004]"));
     }
 
     if(isExact && sType.isType(_src.getStaticType().flags)) {
@@ -92,12 +103,8 @@ ASTNode* XQTreatAs::staticResolution(StaticContext *context)
       _doTypeCheck = false;
     }
 
-    if((_src.getStaticType().flags == StaticType::ITEM_TYPE ||
-        _src.getStaticType().flags == StaticType::ANY_ATOMIC_TYPE) &&
-       sType.isType(_src.getStaticType().flags)) {
-      // We can get a better type from our expression
-      _src.getStaticType() = _expr->getStaticResolutionContext().getStaticType();      
-    }
+    // Get a better static type by looking at our expression's type too
+    _src.getStaticType().typeIntersect(_expr->getStaticResolutionContext().getStaticType());
 
     if(_src.getStaticType().containsType(StaticType::NODE_TYPE)) {
       // Copy the properties if we return nodes

@@ -49,10 +49,17 @@ FunctionIdref::FunctionIdref(const VectorOfASTNodes &args, XPath2MemoryManager* 
 ASTNode* FunctionIdref::staticResolution(StaticContext *context) {
   if(_args.size()==2 && _args.back()->getType()==ASTNode::CONTEXT_ITEM)
       _args.pop_back();
+  return resolveArguments(context);
+}
+
+ASTNode *FunctionIdref::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
   _src.getStaticType().flags = StaticType::NODE_TYPE;
   if(_args.size()==1)
     _src.contextItemUsed(true);
-  return resolveArguments(context);
+  return calculateSRCForArguments(context);
 }
 
 Sequence FunctionIdref::collapseTreeInternal(DynamicContext* context, int flags) const

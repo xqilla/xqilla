@@ -26,6 +26,7 @@ public:
     : FTOption(FTSelection::DISTANCE, memMgr), arg_(arg), range_(range), unit_(unit) {}
 
   virtual FTSelection *staticResolution(StaticContext *context);
+  virtual FTSelection *staticTyping(StaticContext *context);
   virtual FTSelection *optimize(FTContext *context, bool execute) const;
   virtual AllMatches::Ptr execute(FTContext *ftcontext) const;
 
@@ -53,6 +54,7 @@ public:
       distance2_(distance2), unit_(unit) {}
 
   virtual FTSelection *staticResolution(StaticContext *context);
+  virtual FTSelection *staticTyping(StaticContext *context);
   virtual FTSelection *optimize(FTContext *context, bool execute) const;
   virtual AllMatches::Ptr execute(FTContext *ftcontext) const;
 

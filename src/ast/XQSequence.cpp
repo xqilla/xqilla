@@ -59,7 +59,7 @@ inline ItemConstructor *itemToItemConstructor(const Item::Ptr &item, DynamicCont
   }
 }
 
-static const int CONSTANT_FOLD_LIMIT = 30;
+static const unsigned int CONSTANT_FOLD_LIMIT = 30;
 
 XQSequence *XQSequence::constantFold(Result &result, DynamicContext *context, XPath2MemoryManager* memMgr)
 {
@@ -101,6 +101,13 @@ XQSequence::~XQSequence()
 
 ASTNode* XQSequence::staticResolution(StaticContext *context)
 {
+  return this;
+}
+
+ASTNode *XQSequence::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
   _src.getStaticType().flags = 0;
 
   ItemConstructor::Vector::iterator it = _itemConstructors.begin();

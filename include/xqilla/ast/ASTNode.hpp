@@ -81,6 +81,7 @@ public:
   virtual whichType getType(void) const = 0;
 
   virtual ASTNode *staticResolution(StaticContext *context) = 0;
+  virtual ASTNode *staticTyping(StaticContext *context) = 0;
   /// Returns the StaticResolutionContext for this ASTNode
   virtual const StaticResolutionContext &getStaticResolutionContext() const = 0;
 };

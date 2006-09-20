@@ -48,11 +48,19 @@ ASTNode* XQParenthesizedExpr::staticResolution(StaticContext *context) {
     return _astNodes.front()->staticResolution(context);
   }
 
+  for(VectorOfASTNodes::iterator i = _astNodes.begin(); i != _astNodes.end(); ++i) {
+    *i = (*i)->staticResolution(context);
+  }
+
+  return this;
+}
+
+ASTNode* XQParenthesizedExpr::staticTyping(StaticContext *context) {
   _src.getStaticType().flags = 0;
 
   bool allConstant = true;
   for(VectorOfASTNodes::iterator i = _astNodes.begin(); i != _astNodes.end(); ++i) {
-    *i = (*i)->staticResolution(context);
+    *i = (*i)->staticTyping(context);
     _src.getStaticType().typeUnion((*i)->getStaticResolutionContext().getStaticType());
     _src.add((*i)->getStaticResolutionContext());
     if(!(*i)->isConstant()) {

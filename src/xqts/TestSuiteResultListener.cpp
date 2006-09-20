@@ -441,6 +441,7 @@ void ConsoleResultListener::testCaseToErrorStream(const TestCase &testCase)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 XMLReportResultListener::XMLReportResultListener()
+  : anonymous_(false)
 {
 }
 
@@ -543,6 +544,11 @@ void XMLReportResultListener::setTestRun(const std::string &transformation, cons
   testComments_ = comments;
 }
 
+void XMLReportResultListener::setAnonymous(bool anon)
+{
+  anonymous_ = anon;
+}
+
 void XMLReportResultListener::addImplementationDefinedItem(const std::string &name, const std::string &value)
 {
   implDefinedItems_[name] = value;
@@ -566,11 +572,15 @@ void XMLReportResultListener::printReport() const
   cout << "  <implementation name=\"" << implName_ << "\"";
   if(implVersion_ != "")
     cout << " version=\"" << implVersion_ << "\"";
+  if(anonymous_)
+    cout << " anonymous-result-column=\"true\"";
   cout << ">" << endl;
   cout << endl;
   cout << "    <organization name=\"" << orgName_ << "\"";
   if(orgWebsite_ != "")
     cout << " website=\"" << orgWebsite_ << "\"";
+  if(anonymous_)
+    cout << " anonymous=\"true\"";
   cout << "/>" << endl;
   cout << endl;
   cout << "    <submittor name=\"" << submittorName_ << "\"";

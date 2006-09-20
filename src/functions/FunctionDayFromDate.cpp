@@ -36,12 +36,19 @@ const unsigned int FunctionDayFromDate::maxArgs = 1;
 FunctionDayFromDate::FunctionDayFromDate(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : XQFunction(name, minArgs, maxArgs, "date?", args, memMgr)
 {
-  _src.getStaticType().flags = StaticType::DECIMAL_TYPE;
 }
 
 ASTNode* FunctionDayFromDate::staticResolution(StaticContext *context)
 {
   return resolveArguments(context, /*checkTimezone*/true);
+}
+
+ASTNode *FunctionDayFromDate::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
+  _src.getStaticType().flags = StaticType::DECIMAL_TYPE;
+  return calculateSRCForArguments(context, /*checkTimezone*/true);
 }
 
 Sequence FunctionDayFromDate::collapseTreeInternal(DynamicContext* context, int flags) const

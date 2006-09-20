@@ -38,12 +38,26 @@ FTContains::~FTContains()
 
 ASTNode* FTContains::staticResolution(StaticContext *context)
 {
+  argument_ = argument_->staticResolution(context);
+  selection_ = selection_->staticResolution(context);
+
+  if(ignore_ != NULL) {
+    ignore_ = ignore_->staticResolution(context);
+  }
+
+  return this;
+}
+
+ASTNode *FTContains::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
   _src.getStaticType().flags = StaticType::BOOLEAN_TYPE;
 
-  argument_ = argument_->staticResolution(context);
+  argument_ = argument_->staticTyping(context);
   _src.add(argument_->getStaticResolutionContext());
 
-  selection_ = selection_->staticResolution(context);
+  selection_ = selection_->staticTyping(context);
   _src.add(selection_->getStaticResolutionContext());
 
   {
@@ -55,7 +69,7 @@ ASTNode* FTContains::staticResolution(StaticContext *context)
   }
 
   if(ignore_ != NULL) {
-    ignore_ = ignore_->staticResolution(context);
+    ignore_ = ignore_->staticTyping(context);
     _src.add(ignore_->getStaticResolutionContext());
   }
 

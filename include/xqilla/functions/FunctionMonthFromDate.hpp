@@ -36,6 +36,7 @@ public:
   FunctionMonthFromDate(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
 
   ASTNode* staticResolution(StaticContext *context);
+  virtual ASTNode *staticTyping(StaticContext *context);
 
   /**
    * Returns the integer representing the month in the value of $srcval

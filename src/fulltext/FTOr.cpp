@@ -36,6 +36,18 @@ FTSelection *FTOr::staticResolution(StaticContext *context)
   for(VectorOfFTSelections::iterator i = args_.begin();
       i != args_.end(); ++i) {
     *i = (*i)->staticResolution(context);
+  }
+
+  return this;
+}
+
+FTSelection *FTOr::staticTyping(StaticContext *context)
+{
+  src_.clear();
+
+  for(VectorOfFTSelections::iterator i = args_.begin();
+      i != args_.end(); ++i) {
+    *i = (*i)->staticTyping(context);
     src_.add((*i)->getStaticResolutionContext());
   }
 

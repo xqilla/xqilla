@@ -42,6 +42,17 @@ ASTNode* FunctionUnordered::staticResolution(StaticContext *context)
   return resolveArguments(context);
 }
 
+ASTNode *FunctionUnordered::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
+  ASTNode *result = calculateSRCForArguments(context);
+  if(result == this) {
+    _src.getStaticType() = _args.front()->getStaticResolutionContext().getStaticType();
+  }
+  return result;
+}
+
 Result FunctionUnordered::createResult(DynamicContext* context, int flags) const
 {
   return getParamNumber(1,context);

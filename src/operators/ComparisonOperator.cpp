@@ -42,7 +42,6 @@ ASTNode* ComparisonOperator::staticResolution(StaticContext *context)
 {
   XPath2MemoryManager *mm = context->getMemoryManager();
 
-  bool allConstant = true;
   for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
     // Value comparisons are intended for comparing single values. The result of a value comparison is
     // defined by applying the following rules, in order:
@@ -69,7 +68,18 @@ ASTNode* ComparisonOperator::staticResolution(StaticContext *context)
     (*i)->setLocationInfo(this);
 
     *i = (*i)->staticResolution(context);
+  }
 
+  return this;
+}
+
+ASTNode* ComparisonOperator::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
+  bool allConstant = true;
+  for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
+    *i = (*i)->staticTyping(context);
     _src.add((*i)->getStaticResolutionContext());
 
     if(!(*i)->isConstant())

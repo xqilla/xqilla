@@ -45,10 +45,17 @@ FunctionId::FunctionId(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr
 ASTNode* FunctionId::staticResolution(StaticContext *context) {
   if(_args.size()==2 && _args.back()->getType()==ASTNode::CONTEXT_ITEM)
       _args.pop_back();
-  _src.getStaticType().flags = StaticType::NODE_TYPE;
+  return resolveArguments(context);
+}
+
+ASTNode *FunctionId::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
+  _src.getStaticType().flags = StaticType::ELEMENT_TYPE;
   if(_args.size()==1)
     _src.contextItemUsed(true);
-  return resolveArguments(context);
+  return calculateSRCForArguments(context);
 }
 
 Sequence FunctionId::collapseTreeInternal(DynamicContext* context, int flags) const

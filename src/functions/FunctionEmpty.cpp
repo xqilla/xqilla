@@ -36,9 +36,16 @@ FunctionEmpty::FunctionEmpty(const VectorOfASTNodes &args, XPath2MemoryManager* 
 }
 
 ASTNode* FunctionEmpty::staticResolution(StaticContext *context) {
-  _src.getStaticType().flags = StaticType::BOOLEAN_TYPE;
   AutoNodeSetOrderingReset orderReset(context);
   return resolveArguments(context);
+}
+
+ASTNode *FunctionEmpty::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
+  _src.getStaticType().flags = StaticType::BOOLEAN_TYPE;
+  return calculateSRCForArguments(context);
 }
 
 Sequence FunctionEmpty::collapseTreeInternal(DynamicContext* context, int flags) const

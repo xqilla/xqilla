@@ -91,6 +91,20 @@ ASTNode* XQDebugHook::staticResolution(StaticContext *context)
   return this;
 }
 
+ASTNode* XQDebugHook::staticTyping(StaticContext *context) 
+{
+  try {
+    m_impl=m_impl->staticTyping(context);
+  }
+  catch(XQException& e) {
+    if(e.getXQueryLine() == 0) {
+      e.setXQueryPosition(this);
+    }
+    throw e;
+  }
+  return this;
+}
+
 const StaticResolutionContext &XQDebugHook::getStaticResolutionContext() const
 {
   return m_impl->getStaticResolutionContext();
