@@ -100,8 +100,7 @@ create_project()
     libDest="$OUTDIR/\$(ConfigurationName)"
     binRelDest="$OUTDIR/\$(ConfigurationName)"
     binDebugDest="$OUTDIR/\$(ConfigurationName)"
-    jarDest="$OUTDIR/release"
-    jarDebugDest="$OUTDIR/debug"
+    jarDest="$OUTDIR"
     # incl is a placeholder for additional includes.
     # right now, it's redundant
     incl="../../include"
@@ -116,8 +115,7 @@ create_project()
         -e "s!@lib_dest@!$libDest!g" \
         -e "s!@bin_rel_dest@!$binRelDest!g" \
         -e "s!@bin_debug_dest@!$binDebugDest!g" \
-        -e "s!@jar_rel_dest@!$jarDest!g" \
-        -e "s!@jar_debug_dest@!$jarDebugDest!g" \
+        -e "s!@jar_dest@!$jarDest!g" \
         -e "s!@include@!$incl!g" \
         -e "s/@XQILLA_VERSION_MAJOR@/$XQILLA_VERSION_MAJOR/g" \
         -e "s/@XQILLA_VERSION_MINOR@/$XQILLA_VERSION_MINOR/g" \
