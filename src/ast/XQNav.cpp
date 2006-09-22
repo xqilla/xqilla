@@ -117,7 +117,7 @@ ASTNode* XQNav::staticResolution(StaticContext *context)
     XPath2MemoryManager *mm = context->getMemoryManager();
 
     ASTNode *result = new (mm) XQDocumentOrder(this, mm);
-    result->setLocationInfo((--_steps.end())->step);
+    result->setLocationInfo(_steps.back().step);
     
     return result->staticResolution(context);
   }
