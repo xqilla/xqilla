@@ -46,6 +46,7 @@ ATFloatOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* v
       _state = INF;
     }
   }
+  checkFloatLimits(_state, _float);
 }
 
 ATFloatOrDerivedImpl::
@@ -58,6 +59,7 @@ ATFloatOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const MAPM val
   _state = NUM;
   if (value.sign() < 0) 
     _state = NEG_NUM;
+  checkFloatLimits(_state, _float);
 }
 
 void *ATFloatOrDerivedImpl::getInterface(const XMLCh *name) const

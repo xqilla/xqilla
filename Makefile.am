@@ -276,6 +276,7 @@ src/items/DateOrTimeType.cpp \
 src/items/Item.cpp \
 src/items/Node.cpp \
 src/items/Numeric.cpp \
+src/items/NumericTypeConstructor.cpp \
 src/items/Timezone.cpp \
 src/parser/QName.cpp \
 src/parser/XQParser.cpp \

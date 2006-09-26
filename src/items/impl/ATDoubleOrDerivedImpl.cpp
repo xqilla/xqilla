@@ -37,6 +37,7 @@ ATDoubleOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* 
     _typeURI(typeURI)
 {
   setDouble(value);
+  checkDoubleLimits(_state, _double);
 }
 
 ATDoubleOrDerivedImpl::
@@ -49,6 +50,7 @@ ATDoubleOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const MAPM va
   _state = NUM;
   if(value.sign() < 0) 
     _state = NEG_NUM;
+  checkDoubleLimits(_state, _double);
 }
 
 void *ATDoubleOrDerivedImpl::getInterface(const XMLCh *name) const

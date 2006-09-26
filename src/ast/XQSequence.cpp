@@ -22,16 +22,17 @@
 #define snprintf _snprintf
 #endif
 
+#include <xqilla/ast/StaticResolutionContext.hpp>
 #include <xqilla/runtime/Sequence.hpp>
+#include <xqilla/runtime/SequenceResult.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/Item.hpp>
-#include <xqilla/ast/StaticResolutionContext.hpp>
-#include <xqilla/runtime/SequenceResult.hpp>
 #include <xqilla/items/AnyAtomicTypeConstructor.hpp>
+#include <xqilla/items/NumericTypeConstructor.hpp>
 #include <xqilla/items/ATQNameConstructor.hpp>
-#include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/items/ATQNameOrDerived.hpp>
 #include <xqilla/items/DateOrTimeType.hpp>
+#include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/exceptions/IllegalArgumentException.hpp>
 
 inline ItemConstructor *itemToItemConstructor(const Item::Ptr &item, DynamicContext *context, XPath2MemoryManager *memMgr)
@@ -41,20 +42,38 @@ inline ItemConstructor *itemToItemConstructor(const Item::Ptr &item, DynamicCont
   }
   else {
     const AnyAtomicType *atom = (const AnyAtomicType*)item.get();
-
-    if(atom->getPrimitiveTypeIndex() == AnyAtomicType::QNAME) {
-      const ATQNameOrDerived *qname = (const ATQNameOrDerived*)atom;
-      return new (memMgr) ATQNameConstructor(atom->getTypeURI(),
-                                             atom->getTypeName(),
-                                             qname->getURI(),
-                                             qname->getPrefix(),
-                                             qname->getName());
-    }
-    else {
-      return new (memMgr) AnyAtomicTypeConstructor(atom->getTypeURI(),
-                                                   atom->getTypeName(),
-                                                   atom->asString(context),
-                                                   atom->getPrimitiveTypeIndex());
+    switch(atom->getPrimitiveTypeIndex())
+    {
+    case AnyAtomicType::QNAME: 
+        {
+          const ATQNameOrDerived *qname = (const ATQNameOrDerived*)atom;
+          return new (memMgr) ATQNameConstructor(atom->getTypeURI(),
+                                                 atom->getTypeName(),
+                                                 qname->getURI(),
+                                                 qname->getPrefix(),
+                                                 qname->getName());
+        }
+    case AnyAtomicType::DECIMAL:
+    case AnyAtomicType::DOUBLE:
+    case AnyAtomicType::FLOAT:
+        {
+          const Numeric *number = (const Numeric*)atom;
+          if((number->getState()==Numeric::NUM || number->getState()==Numeric::NEG_NUM) && !number->isZero())
+            return new (memMgr) NumericTypeConstructor(number->getTypeURI(),
+                                                       number->getTypeName(),
+                                                       number->asMAPM(),
+                                                       number->getPrimitiveTypeIndex());
+          else
+            return new (memMgr) AnyAtomicTypeConstructor(number->getTypeURI(),
+                                                         number->getTypeName(),
+                                                         number->asString(context),
+                                                         number->getPrimitiveTypeIndex());
+        }
+    default:
+          return new (memMgr) AnyAtomicTypeConstructor(atom->getTypeURI(),
+                                                       atom->getTypeName(),
+                                                       atom->asString(context),
+                                                       atom->getPrimitiveTypeIndex());
     }
   }
 }

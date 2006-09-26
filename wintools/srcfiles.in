@@ -268,6 +268,7 @@ src/items/DateOrTimeType.cpp	lib
 src/items/Item.cpp	lib
 src/items/Node.cpp	lib
 src/items/Numeric.cpp	lib
+src/items/NumericTypeConstructor.cpp	lib
 src/items/Timezone.cpp	lib
 src/items/impl/ATAnySimpleTypeImpl.cpp	lib
 src/items/impl/ATAnySimpleTypeImpl.hpp	lib
@@ -670,6 +671,7 @@ include/xqilla/items/Item.hpp	lib
 include/xqilla/items/ItemConstructor.hpp	lib
 include/xqilla/items/Node.hpp	lib
 include/xqilla/items/Numeric.hpp	lib
+include/xqilla/items/NumericTypeConstructor.hpp	lib
 include/xqilla/items/Timezone.hpp	lib
 include/xqilla/items/impl/ATBooleanOrDerivedImpl.hpp lib
 include/xqilla/items/impl/ATDecimalOrDerivedImpl.hpp lib
