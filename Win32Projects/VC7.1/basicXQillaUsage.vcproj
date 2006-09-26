@@ -12,8 +12,8 @@
 	<Configurations>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="../../build/windows/VC7.1/$(ConfigurationName)"
-			IntermediateDirectory=".\$(ConfigurationName)\basicXQillaUsage"
+			OutputDirectory="../../build/windows/VC7.1\$(ConfigurationName)"
+			IntermediateDirectory=".\$(OutDir)\basicXQillaUsage"
 			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -29,9 +29,9 @@
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="TRUE"
 				UsePrecompiledHeader="2"
-				PrecompiledHeaderFile=".\$(ConfigurationName)/basicXQillaUsage.pch"
-				AssemblerListingLocation=".\$(ConfigurationName)/"
-				ObjectFile=".\$(ConfigurationName)/"
+				PrecompiledHeaderFile=".\$(OutDir)/basicXQillaUsage.pch"
+				AssemblerListingLocation=".\$(OutDir)/"
+				ObjectFile=".\$(OutDir)/"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				CompileAs="0"/>
@@ -41,8 +41,8 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/FIXED:NO"
 				AdditionalDependencies="xqilla10.lib xerces-c_2.lib"
-				AdditionalLibraryDirectories="$(ConfigurationName);../../build/windows/VC7.1/$(ConfigurationName),../../../xerces-c-src/Build/Win32/VC7.1/Release"
-				OutputFile="../../build/windows/VC7.1/$(ConfigurationName)/basicXQillaUsage.exe"
+				AdditionalLibraryDirectories="$(OutDir);../../../xerces-c-src/Build/Win32/VC7.1/$(ConfigurationName)"
+				OutputFile="$(OutDir)/basicXQillaUsage.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				IgnoreDefaultLibraryNames="libcmt"
@@ -50,7 +50,7 @@
 				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"
-				TypeLibraryName=".\$(ConfigurationName)/basicXQillaUsage.tlb"
+				TypeLibraryName=".\$(OutDir)/basicXQillaUsage.tlb"
 				HeaderFileName=""/>
 			<Tool
 				Name="VCPostBuildEventTool"/>
@@ -75,8 +75,8 @@
 		</Configuration>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="../../build/windows/VC7.1/$(ConfigurationName)"
-			IntermediateDirectory=".\$(ConfigurationName)\basicXQillaUsage"
+			OutputDirectory="../../build/windows/VC7.1\$(ConfigurationName)"
+			IntermediateDirectory=".\$(OutDir)\basicXQillaUsage"
 			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -89,9 +89,9 @@
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE=1"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="2"
-				PrecompiledHeaderFile=".\$(ConfigurationName)/basicXQillaUsage.pch"
-				AssemblerListingLocation=".\$(ConfigurationName)/"
-				ObjectFile=".\$(ConfigurationName)/"
+				PrecompiledHeaderFile=".\$(OutDir)/basicXQillaUsage.pch"
+				AssemblerListingLocation=".\$(OutDir)/"
+				ObjectFile=".\$(OutDir)/"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="3"
@@ -102,8 +102,8 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/FIXED:NO"
 				AdditionalDependencies="xqilla10d.lib xerces-c_2d.lib"
-				AdditionalLibraryDirectories="$(ConfigurationName);../../build/windows/VC7.1/$(ConfigurationName),../../../xerces-c-src/Build/Win32/VC7.1/Debug"
-				OutputFile="../../build/windows/VC7.1/$(ConfigurationName)/basicXQillaUsage.exe"
+				AdditionalLibraryDirectories="$(OutDir);../../../xerces-c-src/Build/Win32/VC7.1/$(ConfigurationName)"
+				OutputFile="$(OutDir)/basicXQillaUsage.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				IgnoreDefaultLibraryNames="libcmtd"
@@ -113,7 +113,7 @@
 				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"
-				TypeLibraryName=".\$(ConfigurationName)/basicXQillaUsage.tlb"
+				TypeLibraryName=".\$(OutDir)/basicXQillaUsage.tlb"
 				HeaderFileName=""/>
 			<Tool
 				Name="VCPostBuildEventTool"/>
@@ -138,8 +138,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release AMD64|Win32"
-			OutputDirectory="../../build/windows/VC7.1/$(ConfigurationName)"
-			IntermediateDirectory=".\$(ConfigurationName)\basicXQillaUsage"
+			OutputDirectory="../../build/windows/VC7.1\$(ConfigurationName)"
+			IntermediateDirectory=".\$(OutDir)\basicXQillaUsage"
 			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -155,9 +155,9 @@
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="TRUE"
 				UsePrecompiledHeader="2"
-				PrecompiledHeaderFile=".\$(ConfigurationName)/basicXQillaUsage.pch"
-				AssemblerListingLocation=".\$(ConfigurationName)/"
-				ObjectFile=".\$(ConfigurationName)/"
+				PrecompiledHeaderFile=".\$(OutDir)/basicXQillaUsage.pch"
+				AssemblerListingLocation=".\$(OutDir)/"
+				ObjectFile=".\$(OutDir)/"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				CompileAs="0"/>
@@ -167,8 +167,8 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/FIXED:NO"
 				AdditionalDependencies="xqilla10.lib xerces-c_2.lib"
-				AdditionalLibraryDirectories="$(ConfigurationName);../../build/windows/VC7.1/$(ConfigurationName),../../../xerces-c-src/Build/Win32/VC7.1/Release"
-				OutputFile="../../build/windows/VC7.1/$(ConfigurationName)/basicXQillaUsage.exe"
+				AdditionalLibraryDirectories="$(OutDir);../../../xerces-c-src/Build/Win32/VC7.1/$(ConfigurationName)"
+				OutputFile="$(OutDir)/basicXQillaUsage.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				IgnoreDefaultLibraryNames="libcmt"
@@ -176,7 +176,7 @@
 				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"
-				TypeLibraryName=".\$(ConfigurationName)/basicXQillaUsage.tlb"
+				TypeLibraryName=".\$(OutDir)/basicXQillaUsage.tlb"
 				HeaderFileName=""/>
 			<Tool
 				Name="VCPostBuildEventTool"/>
@@ -201,8 +201,8 @@
 		</Configuration>
 		<Configuration
 			Name="Debug AMD64|Win32"
-			OutputDirectory="../../build/windows/VC7.1/$(ConfigurationName)"
-			IntermediateDirectory=".\$(ConfigurationName)\basicXQillaUsage"
+			OutputDirectory="../../build/windows/VC7.1\$(ConfigurationName)"
+			IntermediateDirectory=".\$(OutDir)\basicXQillaUsage"
 			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -215,9 +215,9 @@
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE=1"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="2"
-				PrecompiledHeaderFile=".\$(ConfigurationName)/basicXQillaUsage.pch"
-				AssemblerListingLocation=".\$(ConfigurationName)/"
-				ObjectFile=".\$(ConfigurationName)/"
+				PrecompiledHeaderFile=".\$(OutDir)/basicXQillaUsage.pch"
+				AssemblerListingLocation=".\$(OutDir)/"
+				ObjectFile=".\$(OutDir)/"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="3"
@@ -228,8 +228,8 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/FIXED:NO"
 				AdditionalDependencies="xqilla10d.lib xerces-c_2d.lib"
-				AdditionalLibraryDirectories="$(ConfigurationName);../../build/windows/VC7.1/$(ConfigurationName),../../../xerces-c-src/Build/Win32/VC7.1/Debug"
-				OutputFile="../../build/windows/VC7.1/$(ConfigurationName)/basicXQillaUsage.exe"
+				AdditionalLibraryDirectories="$(OutDir);../../../xerces-c-src/Build/Win32/VC7.1/$(ConfigurationName)"
+				OutputFile="$(OutDir)/basicXQillaUsage.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				IgnoreDefaultLibraryNames="libcmtd"
@@ -239,7 +239,7 @@
 				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"
-				TypeLibraryName=".\$(ConfigurationName)/basicXQillaUsage.tlb"
+				TypeLibraryName=".\$(OutDir)/basicXQillaUsage.tlb"
 				HeaderFileName=""/>
 			<Tool
 				Name="VCPostBuildEventTool"/>
@@ -264,8 +264,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release IA64|Win32"
-			OutputDirectory="../../build/windows/VC7.1/$(ConfigurationName)"
-			IntermediateDirectory=".\$(ConfigurationName)\basicXQillaUsage"
+			OutputDirectory="../../build/windows/VC7.1\$(ConfigurationName)"
+			IntermediateDirectory=".\$(OutDir)\basicXQillaUsage"
 			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -281,9 +281,9 @@
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="TRUE"
 				UsePrecompiledHeader="2"
-				PrecompiledHeaderFile=".\$(ConfigurationName)/basicXQillaUsage.pch"
-				AssemblerListingLocation=".\$(ConfigurationName)/"
-				ObjectFile=".\$(ConfigurationName)/"
+				PrecompiledHeaderFile=".\$(OutDir)/basicXQillaUsage.pch"
+				AssemblerListingLocation=".\$(OutDir)/"
+				ObjectFile=".\$(OutDir)/"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				CompileAs="0"/>
@@ -293,8 +293,8 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/FIXED:NO"
 				AdditionalDependencies="xqilla10.lib xerces-c_2.lib"
-				AdditionalLibraryDirectories="$(ConfigurationName);../../build/windows/VC7.1/$(ConfigurationName),../../../xerces-c-src/Build/Win32/VC7.1/Release"
-				OutputFile="../../build/windows/VC7.1/$(ConfigurationName)/basicXQillaUsage.exe"
+				AdditionalLibraryDirectories="$(OutDir);../../../xerces-c-src/Build/Win32/VC7.1/$(ConfigurationName)"
+				OutputFile="$(OutDir)/basicXQillaUsage.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				IgnoreDefaultLibraryNames="libcmt"
@@ -302,7 +302,7 @@
 				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"
-				TypeLibraryName=".\$(ConfigurationName)/basicXQillaUsage.tlb"
+				TypeLibraryName=".\$(OutDir)/basicXQillaUsage.tlb"
 				HeaderFileName=""/>
 			<Tool
 				Name="VCPostBuildEventTool"/>
@@ -327,8 +327,8 @@
 		</Configuration>
 		<Configuration
 			Name="Debug IA64|Win32"
-			OutputDirectory="../../build/windows/VC7.1/$(ConfigurationName)"
-			IntermediateDirectory=".\$(ConfigurationName)\basicXQillaUsage"
+			OutputDirectory="../../build/windows/VC7.1\$(ConfigurationName)"
+			IntermediateDirectory=".\$(OutDir)\basicXQillaUsage"
 			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -341,9 +341,9 @@
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE=1"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="2"
-				PrecompiledHeaderFile=".\$(ConfigurationName)/basicXQillaUsage.pch"
-				AssemblerListingLocation=".\$(ConfigurationName)/"
-				ObjectFile=".\$(ConfigurationName)/"
+				PrecompiledHeaderFile=".\$(OutDir)/basicXQillaUsage.pch"
+				AssemblerListingLocation=".\$(OutDir)/"
+				ObjectFile=".\$(OutDir)/"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="3"
@@ -354,8 +354,8 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/FIXED:NO"
 				AdditionalDependencies="xqilla10d.lib xerces-c_2d.lib"
-				AdditionalLibraryDirectories="$(ConfigurationName);../../build/windows/VC7.1/$(ConfigurationName),../../../xerces-c-src/Build/Win32/VC7.1/Debug"
-				OutputFile="../../build/windows/VC7.1/$(ConfigurationName)/basicXQillaUsage.exe"
+				AdditionalLibraryDirectories="$(OutDir);../../../xerces-c-src/Build/Win32/VC7.1/$(ConfigurationName)"
+				OutputFile="$(OutDir)/basicXQillaUsage.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				IgnoreDefaultLibraryNames="libcmtd"
@@ -365,7 +365,7 @@
 				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"
-				TypeLibraryName=".\$(ConfigurationName)/basicXQillaUsage.tlb"
+				TypeLibraryName=".\$(OutDir)/basicXQillaUsage.tlb"
 				HeaderFileName=""/>
 			<Tool
 				Name="VCPostBuildEventTool"/>

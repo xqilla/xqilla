@@ -17,8 +17,8 @@
 	<Configurations>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="@bin_rel_dest@"
-			IntermediateDirectory=".\$(ConfigurationName)\@project_name@"
+			OutputDirectory="@outdir@\$(ConfigurationName)"
+			IntermediateDirectory=".\$(OutDir)\@project_name@"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -34,9 +34,9 @@
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="TRUE"
 				UsePrecompiledHeader="2"
-				PrecompiledHeaderFile=".\$(ConfigurationName)/@project_name@.pch"
-				AssemblerListingLocation=".\$(ConfigurationName)/"
-				ObjectFile=".\$(ConfigurationName)/"
+				PrecompiledHeaderFile=".\$(OutDir)/@project_name@.pch"
+				AssemblerListingLocation=".\$(OutDir)/"
+				ObjectFile=".\$(OutDir)/"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				CompileAs="0"/>
@@ -45,11 +45,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="@XERCES_LIB@.lib"
-				AdditionalLibraryDirectories="@lib_dest@;@XERCES_LIBHOME7@/Release"
-				OutputFile="@bin_rel_dest@/@XQILLA_LIB@.dll"
+				AdditionalLibraryDirectories="$(OutDir);@XERCES_LIBHOME7@/$(ConfigurationName)"
+				OutputFile="$(OutDir)/@XQILLA_LIB@.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				ImportLibrary="@lib_dest@/@XQILLA_LIB@.lib"
+				ImportLibrary="$(OutDir)/@XQILLA_LIB@.lib"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"
@@ -57,7 +57,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName=".\$(ConfigurationName)/@project_name@.tlb"
+				TypeLibraryName=".\$(OutDir)/@project_name@.tlb"
 				HeaderFileName=""/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -80,8 +80,8 @@
 		</Configuration>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="@bin_debug_dest@"
-			IntermediateDirectory=".\$(ConfigurationName)\@project_name@"
+			OutputDirectory="@outdir@\$(ConfigurationName)"
+			IntermediateDirectory=".\$(OutDir)\@project_name@"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -95,9 +95,9 @@
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="2"
-				PrecompiledHeaderFile=".\$(ConfigurationName)/@project_name@.pch"
-				AssemblerListingLocation=".\$(ConfigurationName)/"
-				ObjectFile=".\$(ConfigurationName)/"
+				PrecompiledHeaderFile=".\$(OutDir)/@project_name@.pch"
+				AssemblerListingLocation=".\$(OutDir)/"
+				ObjectFile=".\$(OutDir)/"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="3"
@@ -107,13 +107,13 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="@XERCES_LIB@d.lib"
-				AdditionalLibraryDirectories="@lib_dest@;@XERCES_LIBHOME7@/Debug"
-				OutputFile="@bin_debug_dest@/@XQILLA_LIB@d.dll"
+				AdditionalLibraryDirectories="$(OutDir);@XERCES_LIBHOME7@/$(ConfigurationName)"
+				OutputFile="$(OutDir)/@XQILLA_LIB@d.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				GenerateDebugInformation="TRUE"
 				ProgramDataBaseFile="$(OutDir)/@XQILLA_LIB@.pdb"
-				ImportLibrary="@lib_dest@/@XQILLA_LIB@d.lib"
+				ImportLibrary="$(OutDir)/@XQILLA_LIB@d.lib"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"
@@ -121,7 +121,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName=".\$(ConfigurationName)/@project_name@.tlb"
+				TypeLibraryName=".\$(OutDir)/@project_name@.tlb"
 				HeaderFileName=""/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -144,8 +144,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release AMD64|Win32"
-			OutputDirectory="@bin_rel_dest@"
-			IntermediateDirectory=".\$(ConfigurationName)\@project_name@"
+			OutputDirectory="@outdir@\$(ConfigurationName)"
+			IntermediateDirectory=".\$(OutDir)\@project_name@"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -161,9 +161,9 @@
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="TRUE"
 				UsePrecompiledHeader="2"
-				PrecompiledHeaderFile=".\$(ConfigurationName)/@project_name@.pch"
-				AssemblerListingLocation=".\$(ConfigurationName)/"
-				ObjectFile=".\$(ConfigurationName)/"
+				PrecompiledHeaderFile=".\$(OutDir)/@project_name@.pch"
+				AssemblerListingLocation=".\$(OutDir)/"
+				ObjectFile=".\$(OutDir)/"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				CompileAs="0"/>
@@ -172,11 +172,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="@XERCES_LIB@.lib"
-				AdditionalLibraryDirectories="@lib_dest@;@XERCES_LIBHOME7@/Release"
-				OutputFile="@bin_rel_dest@/@XQILLA_LIB@.dll"
+				AdditionalLibraryDirectories="$(OutDir);@XERCES_LIBHOME7@/$(ConfigurationName)"
+				OutputFile="$(OutDir)/@XQILLA_LIB@.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				ImportLibrary="@lib_dest@/@XQILLA_LIB@.lib"
+				ImportLibrary="$(OutDir)/@XQILLA_LIB@.lib"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"
@@ -184,7 +184,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName=".\$(ConfigurationName)/@project_name@.tlb"
+				TypeLibraryName=".\$(OutDir)/@project_name@.tlb"
 				HeaderFileName=""/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -207,8 +207,8 @@
 		</Configuration>
 		<Configuration
 			Name="Debug AMD64|Win32"
-			OutputDirectory="@bin_debug_dest@"
-			IntermediateDirectory=".\$(ConfigurationName)\@project_name@"
+			OutputDirectory="@outdir@\$(ConfigurationName)"
+			IntermediateDirectory=".\$(OutDir)\@project_name@"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -222,9 +222,9 @@
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="2"
-				PrecompiledHeaderFile=".\$(ConfigurationName)/@project_name@.pch"
-				AssemblerListingLocation=".\$(ConfigurationName)/"
-				ObjectFile=".\$(ConfigurationName)/"
+				PrecompiledHeaderFile=".\$(OutDir)/@project_name@.pch"
+				AssemblerListingLocation=".\$(OutDir)/"
+				ObjectFile=".\$(OutDir)/"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="3"
@@ -234,13 +234,13 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="@XERCES_LIB@d.lib"
-				AdditionalLibraryDirectories="@lib_dest@;@XERCES_LIBHOME7@/Debug"
-				OutputFile="@bin_debug_dest@/@XQILLA_LIB@d.dll"
+				AdditionalLibraryDirectories="$(OutDir);@XERCES_LIBHOME7@/$(ConfigurationName)"
+				OutputFile="$(OutDir)/@XQILLA_LIB@d.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				GenerateDebugInformation="TRUE"
 				ProgramDataBaseFile="$(OutDir)/@XQILLA_LIB@.pdb"
-				ImportLibrary="@lib_dest@/@XQILLA_LIB@d.lib"
+				ImportLibrary="$(OutDir)/@XQILLA_LIB@d.lib"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"
@@ -248,7 +248,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName=".\$(ConfigurationName)/@project_name@.tlb"
+				TypeLibraryName=".\$(OutDir)/@project_name@.tlb"
 				HeaderFileName=""/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -271,8 +271,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release IA64|Win32"
-			OutputDirectory="@bin_rel_dest@"
-			IntermediateDirectory=".\$(ConfigurationName)\@project_name@"
+			OutputDirectory="@outdir@\$(ConfigurationName)"
+			IntermediateDirectory=".\$(OutDir)\@project_name@"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -288,9 +288,9 @@
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="TRUE"
 				UsePrecompiledHeader="2"
-				PrecompiledHeaderFile=".\$(ConfigurationName)/@project_name@.pch"
-				AssemblerListingLocation=".\$(ConfigurationName)/"
-				ObjectFile=".\$(ConfigurationName)/"
+				PrecompiledHeaderFile=".\$(OutDir)/@project_name@.pch"
+				AssemblerListingLocation=".\$(OutDir)/"
+				ObjectFile=".\$(OutDir)/"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				CompileAs="0"/>
@@ -299,11 +299,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="@XERCES_LIB@.lib"
-				AdditionalLibraryDirectories="@lib_dest@;@XERCES_LIBHOME7@/Release"
-				OutputFile="@bin_rel_dest@/@XQILLA_LIB@.dll"
+				AdditionalLibraryDirectories="$(OutDir);@XERCES_LIBHOME7@/$(ConfigurationName)"
+				OutputFile="$(OutDir)/@XQILLA_LIB@.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				ImportLibrary="@lib_dest@/@XQILLA_LIB@.lib"
+				ImportLibrary="$(OutDir)/@XQILLA_LIB@.lib"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"
@@ -311,7 +311,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName=".\$(ConfigurationName)/@project_name@.tlb"
+				TypeLibraryName=".\$(OutDir)/@project_name@.tlb"
 				HeaderFileName=""/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -334,8 +334,8 @@
 		</Configuration>
 		<Configuration
 			Name="Debug IA64|Win32"
-			OutputDirectory="@bin_debug_dest@"
-			IntermediateDirectory=".\$(ConfigurationName)\@project_name@"
+			OutputDirectory="@outdir@\$(ConfigurationName)"
+			IntermediateDirectory=".\$(OutDir)\@project_name@"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -349,9 +349,9 @@
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="2"
-				PrecompiledHeaderFile=".\$(ConfigurationName)/@project_name@.pch"
-				AssemblerListingLocation=".\$(ConfigurationName)/"
-				ObjectFile=".\$(ConfigurationName)/"
+				PrecompiledHeaderFile=".\$(OutDir)/@project_name@.pch"
+				AssemblerListingLocation=".\$(OutDir)/"
+				ObjectFile=".\$(OutDir)/"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="3"
@@ -361,13 +361,13 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="@XERCES_LIB@d.lib"
-				AdditionalLibraryDirectories="@lib_dest@;@XERCES_LIBHOME7@/Debug"
-				OutputFile="@bin_debug_dest@/@XQILLA_LIB@d.dll"
+				AdditionalLibraryDirectories="$(OutDir);@XERCES_LIBHOME7@/$(ConfigurationName)"
+				OutputFile="$(OutDir)/@XQILLA_LIB@d.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				GenerateDebugInformation="TRUE"
 				ProgramDataBaseFile="$(OutDir)/@XQILLA_LIB@.pdb"
-				ImportLibrary="@lib_dest@/@XQILLA_LIB@d.lib"
+				ImportLibrary="$(OutDir)/@XQILLA_LIB@d.lib"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"
@@ -375,7 +375,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName=".\$(ConfigurationName)/@project_name@.tlb"
+				TypeLibraryName=".\$(OutDir)/@project_name@.tlb"
 				HeaderFileName=""/>
 			<Tool
 				Name="VCPreBuildEventTool"/>

@@ -17,8 +17,8 @@
 	<Configurations>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="../../build/windows/VC7.1/$(ConfigurationName)"
-			IntermediateDirectory=".\$(ConfigurationName)\xqilla"
+			OutputDirectory="../../build/windows/VC7.1\$(ConfigurationName)"
+			IntermediateDirectory=".\$(OutDir)\xqilla"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -34,9 +34,9 @@
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="TRUE"
 				UsePrecompiledHeader="2"
-				PrecompiledHeaderFile=".\$(ConfigurationName)/xqilla.pch"
-				AssemblerListingLocation=".\$(ConfigurationName)/"
-				ObjectFile=".\$(ConfigurationName)/"
+				PrecompiledHeaderFile=".\$(OutDir)/xqilla.pch"
+				AssemblerListingLocation=".\$(OutDir)/"
+				ObjectFile=".\$(OutDir)/"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				CompileAs="0"/>
@@ -45,11 +45,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="xerces-c_2.lib"
-				AdditionalLibraryDirectories="../../build/windows/VC7.1/$(ConfigurationName);../../../xerces-c-src/Build/Win32/VC7.1/Release"
-				OutputFile="../../build/windows/VC7.1/$(ConfigurationName)/xqilla10.dll"
+				AdditionalLibraryDirectories="$(OutDir);../../../xerces-c-src/Build/Win32/VC7.1/$(ConfigurationName)"
+				OutputFile="$(OutDir)/xqilla10.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				ImportLibrary="../../build/windows/VC7.1/$(ConfigurationName)/xqilla10.lib"
+				ImportLibrary="$(OutDir)/xqilla10.lib"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"
@@ -57,7 +57,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName=".\$(ConfigurationName)/xqilla.tlb"
+				TypeLibraryName=".\$(OutDir)/xqilla.tlb"
 				HeaderFileName=""/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -80,8 +80,8 @@
 		</Configuration>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="../../build/windows/VC7.1/$(ConfigurationName)"
-			IntermediateDirectory=".\$(ConfigurationName)\xqilla"
+			OutputDirectory="../../build/windows/VC7.1\$(ConfigurationName)"
+			IntermediateDirectory=".\$(OutDir)\xqilla"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -95,9 +95,9 @@
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="2"
-				PrecompiledHeaderFile=".\$(ConfigurationName)/xqilla.pch"
-				AssemblerListingLocation=".\$(ConfigurationName)/"
-				ObjectFile=".\$(ConfigurationName)/"
+				PrecompiledHeaderFile=".\$(OutDir)/xqilla.pch"
+				AssemblerListingLocation=".\$(OutDir)/"
+				ObjectFile=".\$(OutDir)/"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="3"
@@ -107,13 +107,13 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="xerces-c_2d.lib"
-				AdditionalLibraryDirectories="../../build/windows/VC7.1/$(ConfigurationName);../../../xerces-c-src/Build/Win32/VC7.1/Debug"
-				OutputFile="../../build/windows/VC7.1/$(ConfigurationName)/xqilla10d.dll"
+				AdditionalLibraryDirectories="$(OutDir);../../../xerces-c-src/Build/Win32/VC7.1/$(ConfigurationName)"
+				OutputFile="$(OutDir)/xqilla10d.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				GenerateDebugInformation="TRUE"
 				ProgramDataBaseFile="$(OutDir)/xqilla10.pdb"
-				ImportLibrary="../../build/windows/VC7.1/$(ConfigurationName)/xqilla10d.lib"
+				ImportLibrary="$(OutDir)/xqilla10d.lib"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"
@@ -121,7 +121,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName=".\$(ConfigurationName)/xqilla.tlb"
+				TypeLibraryName=".\$(OutDir)/xqilla.tlb"
 				HeaderFileName=""/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -144,8 +144,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release AMD64|Win32"
-			OutputDirectory="../../build/windows/VC7.1/$(ConfigurationName)"
-			IntermediateDirectory=".\$(ConfigurationName)\xqilla"
+			OutputDirectory="../../build/windows/VC7.1\$(ConfigurationName)"
+			IntermediateDirectory=".\$(OutDir)\xqilla"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -161,9 +161,9 @@
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="TRUE"
 				UsePrecompiledHeader="2"
-				PrecompiledHeaderFile=".\$(ConfigurationName)/xqilla.pch"
-				AssemblerListingLocation=".\$(ConfigurationName)/"
-				ObjectFile=".\$(ConfigurationName)/"
+				PrecompiledHeaderFile=".\$(OutDir)/xqilla.pch"
+				AssemblerListingLocation=".\$(OutDir)/"
+				ObjectFile=".\$(OutDir)/"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				CompileAs="0"/>
@@ -172,11 +172,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="xerces-c_2.lib"
-				AdditionalLibraryDirectories="../../build/windows/VC7.1/$(ConfigurationName);../../../xerces-c-src/Build/Win32/VC7.1/Release"
-				OutputFile="../../build/windows/VC7.1/$(ConfigurationName)/xqilla10.dll"
+				AdditionalLibraryDirectories="$(OutDir);../../../xerces-c-src/Build/Win32/VC7.1/$(ConfigurationName)"
+				OutputFile="$(OutDir)/xqilla10.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				ImportLibrary="../../build/windows/VC7.1/$(ConfigurationName)/xqilla10.lib"
+				ImportLibrary="$(OutDir)/xqilla10.lib"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"
@@ -184,7 +184,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName=".\$(ConfigurationName)/xqilla.tlb"
+				TypeLibraryName=".\$(OutDir)/xqilla.tlb"
 				HeaderFileName=""/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -207,8 +207,8 @@
 		</Configuration>
 		<Configuration
 			Name="Debug AMD64|Win32"
-			OutputDirectory="../../build/windows/VC7.1/$(ConfigurationName)"
-			IntermediateDirectory=".\$(ConfigurationName)\xqilla"
+			OutputDirectory="../../build/windows/VC7.1\$(ConfigurationName)"
+			IntermediateDirectory=".\$(OutDir)\xqilla"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -222,9 +222,9 @@
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="2"
-				PrecompiledHeaderFile=".\$(ConfigurationName)/xqilla.pch"
-				AssemblerListingLocation=".\$(ConfigurationName)/"
-				ObjectFile=".\$(ConfigurationName)/"
+				PrecompiledHeaderFile=".\$(OutDir)/xqilla.pch"
+				AssemblerListingLocation=".\$(OutDir)/"
+				ObjectFile=".\$(OutDir)/"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="3"
@@ -234,13 +234,13 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="xerces-c_2d.lib"
-				AdditionalLibraryDirectories="../../build/windows/VC7.1/$(ConfigurationName);../../../xerces-c-src/Build/Win32/VC7.1/Debug"
-				OutputFile="../../build/windows/VC7.1/$(ConfigurationName)/xqilla10d.dll"
+				AdditionalLibraryDirectories="$(OutDir);../../../xerces-c-src/Build/Win32/VC7.1/$(ConfigurationName)"
+				OutputFile="$(OutDir)/xqilla10d.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				GenerateDebugInformation="TRUE"
 				ProgramDataBaseFile="$(OutDir)/xqilla10.pdb"
-				ImportLibrary="../../build/windows/VC7.1/$(ConfigurationName)/xqilla10d.lib"
+				ImportLibrary="$(OutDir)/xqilla10d.lib"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"
@@ -248,7 +248,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName=".\$(ConfigurationName)/xqilla.tlb"
+				TypeLibraryName=".\$(OutDir)/xqilla.tlb"
 				HeaderFileName=""/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -271,8 +271,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release IA64|Win32"
-			OutputDirectory="../../build/windows/VC7.1/$(ConfigurationName)"
-			IntermediateDirectory=".\$(ConfigurationName)\xqilla"
+			OutputDirectory="../../build/windows/VC7.1\$(ConfigurationName)"
+			IntermediateDirectory=".\$(OutDir)\xqilla"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -288,9 +288,9 @@
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="TRUE"
 				UsePrecompiledHeader="2"
-				PrecompiledHeaderFile=".\$(ConfigurationName)/xqilla.pch"
-				AssemblerListingLocation=".\$(ConfigurationName)/"
-				ObjectFile=".\$(ConfigurationName)/"
+				PrecompiledHeaderFile=".\$(OutDir)/xqilla.pch"
+				AssemblerListingLocation=".\$(OutDir)/"
+				ObjectFile=".\$(OutDir)/"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				CompileAs="0"/>
@@ -299,11 +299,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="xerces-c_2.lib"
-				AdditionalLibraryDirectories="../../build/windows/VC7.1/$(ConfigurationName);../../../xerces-c-src/Build/Win32/VC7.1/Release"
-				OutputFile="../../build/windows/VC7.1/$(ConfigurationName)/xqilla10.dll"
+				AdditionalLibraryDirectories="$(OutDir);../../../xerces-c-src/Build/Win32/VC7.1/$(ConfigurationName)"
+				OutputFile="$(OutDir)/xqilla10.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				ImportLibrary="../../build/windows/VC7.1/$(ConfigurationName)/xqilla10.lib"
+				ImportLibrary="$(OutDir)/xqilla10.lib"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"
@@ -311,7 +311,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName=".\$(ConfigurationName)/xqilla.tlb"
+				TypeLibraryName=".\$(OutDir)/xqilla.tlb"
 				HeaderFileName=""/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -334,8 +334,8 @@
 		</Configuration>
 		<Configuration
 			Name="Debug IA64|Win32"
-			OutputDirectory="../../build/windows/VC7.1/$(ConfigurationName)"
-			IntermediateDirectory=".\$(ConfigurationName)\xqilla"
+			OutputDirectory="../../build/windows/VC7.1\$(ConfigurationName)"
+			IntermediateDirectory=".\$(OutDir)\xqilla"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -349,9 +349,9 @@
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="2"
-				PrecompiledHeaderFile=".\$(ConfigurationName)/xqilla.pch"
-				AssemblerListingLocation=".\$(ConfigurationName)/"
-				ObjectFile=".\$(ConfigurationName)/"
+				PrecompiledHeaderFile=".\$(OutDir)/xqilla.pch"
+				AssemblerListingLocation=".\$(OutDir)/"
+				ObjectFile=".\$(OutDir)/"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="3"
@@ -361,13 +361,13 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="xerces-c_2d.lib"
-				AdditionalLibraryDirectories="../../build/windows/VC7.1/$(ConfigurationName);../../../xerces-c-src/Build/Win32/VC7.1/Debug"
-				OutputFile="../../build/windows/VC7.1/$(ConfigurationName)/xqilla10d.dll"
+				AdditionalLibraryDirectories="$(OutDir);../../../xerces-c-src/Build/Win32/VC7.1/$(ConfigurationName)"
+				OutputFile="$(OutDir)/xqilla10d.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				GenerateDebugInformation="TRUE"
 				ProgramDataBaseFile="$(OutDir)/xqilla10.pdb"
-				ImportLibrary="../../build/windows/VC7.1/$(ConfigurationName)/xqilla10d.lib"
+				ImportLibrary="$(OutDir)/xqilla10d.lib"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"
@@ -375,7 +375,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName=".\$(ConfigurationName)/xqilla.tlb"
+				TypeLibraryName=".\$(OutDir)/xqilla.tlb"
 				HeaderFileName=""/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
