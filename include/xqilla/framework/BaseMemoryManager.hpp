@@ -26,6 +26,9 @@
 // with larger data sets. - jpcs
 #define ALLOCATE_IN_CHUNKS 0
 
+#define DEBUG_MEMORY_ALLOCD 0x88884444
+#define DEBUG_MEMORY_FREED  0x44442222
+
 XERCES_CPP_NAMESPACE_BEGIN
 class DOMNode;
 XERCES_CPP_NAMESPACE_END
@@ -93,6 +96,9 @@ protected:
 #if ALLOCATE_IN_CHUNKS
     size_t remaining;
     unsigned int allocCount;
+#endif
+#if DEBUG_MEMORY
+    unsigned long magic;
 #endif
   };
 
