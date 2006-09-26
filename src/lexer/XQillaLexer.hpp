@@ -112,7 +112,10 @@ public:
   virtual void endComment()
   {
     if(m_nOpenComments==0)
+    {
       error("Unbalanced comment found");
+      return;
+    }
     m_nOpenComments--;
   }
   bool isCommentClosed()
@@ -130,9 +133,15 @@ public:
   void checkCharRef(XMLCh* text, int len)
   {
     if(len<2 || text[0]!=XERCES_CPP_NAMESPACE_QUALIFIER chAmpersand || text[1]!=XERCES_CPP_NAMESPACE_QUALIFIER chPound)
+    {
       error("Invalid entity reference");
+      return;
+    }
     if(text[len-1]!=XERCES_CPP_NAMESPACE_QUALIFIER chSemiColon)
+    {
       error("Unterminated entity reference");
+      return;
+    }
     int i=2;
     unsigned int radix = 10;
     if(text[i]==XERCES_CPP_NAMESPACE_QUALIFIER chLatin_x)
@@ -142,22 +151,28 @@ public:
     }
     unsigned int value = 0;
     for(int q=i;q<len-1;q++)
-      {
-        unsigned int nextVal;
-        XMLCh nextCh=text[q];
-        if ((nextCh >= XERCES_CPP_NAMESPACE_QUALIFIER chDigit_0) && (nextCh <= XERCES_CPP_NAMESPACE_QUALIFIER chDigit_9))
-          nextVal = (unsigned int)(nextCh - XERCES_CPP_NAMESPACE_QUALIFIER chDigit_0);
-        else if ((nextCh >= XERCES_CPP_NAMESPACE_QUALIFIER chLatin_A) && (nextCh <= XERCES_CPP_NAMESPACE_QUALIFIER chLatin_F))
-          nextVal= (unsigned int)(10 + (nextCh - XERCES_CPP_NAMESPACE_QUALIFIER chLatin_A));
-        else if ((nextCh >= XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a) && (nextCh <= XERCES_CPP_NAMESPACE_QUALIFIER chLatin_f))
-          nextVal = (unsigned int)(10 + (nextCh - XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a));
-        else
-          error("Unterminated entity reference");
-        if (nextVal >= radix)
-          error("Invalid digit inside entity reference");
-        else
-          value = (value * radix) + nextVal;
-      }
+    {
+      unsigned int nextVal;
+      XMLCh nextCh=text[q];
+      if ((nextCh >= XERCES_CPP_NAMESPACE_QUALIFIER chDigit_0) && (nextCh <= XERCES_CPP_NAMESPACE_QUALIFIER chDigit_9))
+        nextVal = (unsigned int)(nextCh - XERCES_CPP_NAMESPACE_QUALIFIER chDigit_0);
+      else if ((nextCh >= XERCES_CPP_NAMESPACE_QUALIFIER chLatin_A) && (nextCh <= XERCES_CPP_NAMESPACE_QUALIFIER chLatin_F))
+        nextVal= (unsigned int)(10 + (nextCh - XERCES_CPP_NAMESPACE_QUALIFIER chLatin_A));
+      else if ((nextCh >= XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a) && (nextCh <= XERCES_CPP_NAMESPACE_QUALIFIER chLatin_f))
+        nextVal = (unsigned int)(10 + (nextCh - XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a));
+      else
+    {
+      error("Unterminated entity reference");
+      return;
+    }
+    if (nextVal >= radix)
+    {
+      error("Invalid digit inside entity reference");
+      return;
+    }
+    else
+      value = (value * radix) + nextVal;
+    }
     if(!XERCES_CPP_NAMESPACE_QUALIFIER XMLChar1_0::isXMLChar(value))
       error("Entity reference is not a valid XML character [err:XQST0090]");
   }
@@ -167,82 +182,88 @@ public:
     int j=0;
     XMLCh* dst=(XMLCh*)m_memMgr->allocate((len+1)*sizeof(XMLCh));
     for(int i=0;i<len;i++)
+    {
+      if(src[i]=='&')
       {
-        if(src[i]=='&')
+        static XMLCh szAmp[]={  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_m,
+                                XERCES_CPP_NAMESPACE_QUALIFIER chLatin_p, XERCES_CPP_NAMESPACE_QUALIFIER chSemiColon,
+                                XERCES_CPP_NAMESPACE_QUALIFIER chNull };
+        static XMLCh szQuot[]={ XERCES_CPP_NAMESPACE_QUALIFIER chLatin_q, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_u,
+                                XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t,
+                                XERCES_CPP_NAMESPACE_QUALIFIER chSemiColon, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
+        static XMLCh szApos[]={ XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_p,
+                                XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_s,
+                                XERCES_CPP_NAMESPACE_QUALIFIER chSemiColon, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
+        static XMLCh szLt[]={   XERCES_CPP_NAMESPACE_QUALIFIER chLatin_l, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t,
+                                XERCES_CPP_NAMESPACE_QUALIFIER chSemiColon, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
+        static XMLCh szGt[]={   XERCES_CPP_NAMESPACE_QUALIFIER chLatin_g, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t,
+                                XERCES_CPP_NAMESPACE_QUALIFIER chSemiColon, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
+        // entity reference
+        if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::compareNString(src+i+1,szAmp,4)==0) {
+          dst[j++]='&'; i+=4;
+        } else if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::compareNString(src+i+1,szQuot,5)==0) {
+          dst[j++]='"'; i+=5;
+        } else if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::compareNString(src+i+1,szApos,5)==0) {
+          dst[j++]='\''; i+=5;
+        } else if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::compareNString(src+i+1,szLt,3)==0) {
+          dst[j++]='<'; i+=3;
+        } else if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::compareNString(src+i+1,szGt,3)==0) {
+          dst[j++]='>'; i+=3;
+        } else if(*(src+i+1)==XERCES_CPP_NAMESPACE_QUALIFIER chPound) {
+          unsigned int value = 0;
+          unsigned int radix = 10;
+          i+=2;
+          if(*(src+i)==XERCES_CPP_NAMESPACE_QUALIFIER chLatin_x)
           {
-            static XMLCh szAmp[]={  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_m,
-                  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_p, XERCES_CPP_NAMESPACE_QUALIFIER chSemiColon,
-                  XERCES_CPP_NAMESPACE_QUALIFIER chNull };
-            static XMLCh szQuot[]={ XERCES_CPP_NAMESPACE_QUALIFIER chLatin_q, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_u,
-                  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t,
-                  XERCES_CPP_NAMESPACE_QUALIFIER chSemiColon, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
-            static XMLCh szApos[]={ XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_p,
-                  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_s,
-                  XERCES_CPP_NAMESPACE_QUALIFIER chSemiColon, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
-            static XMLCh szLt[]={   XERCES_CPP_NAMESPACE_QUALIFIER chLatin_l, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t,
-                  XERCES_CPP_NAMESPACE_QUALIFIER chSemiColon, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
-            static XMLCh szGt[]={   XERCES_CPP_NAMESPACE_QUALIFIER chLatin_g, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t,
-                  XERCES_CPP_NAMESPACE_QUALIFIER chSemiColon, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
-            // entity reference
-            if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::compareNString(src+i+1,szAmp,4)==0) {
-              dst[j++]='&'; i+=4;
-            } else if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::compareNString(src+i+1,szQuot,5)==0) {
-              dst[j++]='"'; i+=5;
-            } else if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::compareNString(src+i+1,szApos,5)==0) {
-              dst[j++]='\''; i+=5;
-            } else if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::compareNString(src+i+1,szLt,3)==0) {
-              dst[j++]='<'; i+=3;
-            } else if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::compareNString(src+i+1,szGt,3)==0) {
-              dst[j++]='>'; i+=3;
-            } else if(*(src+i+1)==XERCES_CPP_NAMESPACE_QUALIFIER chPound) {
-              unsigned int value = 0;
-              unsigned int radix = 10;
-              i+=2;
-              if(*(src+i)==XERCES_CPP_NAMESPACE_QUALIFIER chLatin_x)
-                {
-                  i++;
-                  radix=16;
-                }
-              int k=i;
-              while(k<len && src[k]!=';') k++;
-              if(k==len)
-                error("Unterminated entity reference");
-              for(int q=i;q<k;q++)
-                {
-                  unsigned int nextVal;
-                  XMLCh nextCh=*(src+q);
-                  if ((nextCh >= XERCES_CPP_NAMESPACE_QUALIFIER chDigit_0) && (nextCh <= XERCES_CPP_NAMESPACE_QUALIFIER chDigit_9))
-                    nextVal = (unsigned int)(nextCh - XERCES_CPP_NAMESPACE_QUALIFIER chDigit_0);
-                  else if ((nextCh >= XERCES_CPP_NAMESPACE_QUALIFIER chLatin_A) && (nextCh <= XERCES_CPP_NAMESPACE_QUALIFIER chLatin_F))
-                    nextVal= (unsigned int)(10 + (nextCh - XERCES_CPP_NAMESPACE_QUALIFIER chLatin_A));
-                  else if ((nextCh >= XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a) && (nextCh <= XERCES_CPP_NAMESPACE_QUALIFIER chLatin_f))
-                    nextVal = (unsigned int)(10 + (nextCh - XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a));
-                  else
-                    error("Unterminated entity reference");
-                  if (nextVal >= radix)
-                    error("Invalid digit inside entity reference");
-                  else
-                    value = (value * radix) + nextVal;
-                }
-              if(!XERCES_CPP_NAMESPACE_QUALIFIER XMLChar1_0::isXMLChar(value))
-                error("Entity reference is not a valid XML character");
+            i++;
+            radix=16;
+          }
+          int k=i;
+          while(k<len && src[k]!=';') k++;
+          if(k==len)
+            error("Unterminated entity reference");
+          else
+          {
+            for(int q=i;q<k;q++)
+            {
+              unsigned int nextVal=255;
+              XMLCh nextCh=*(src+q);
+              if ((nextCh >= XERCES_CPP_NAMESPACE_QUALIFIER chDigit_0) && (nextCh <= XERCES_CPP_NAMESPACE_QUALIFIER chDigit_9))
+                nextVal = (unsigned int)(nextCh - XERCES_CPP_NAMESPACE_QUALIFIER chDigit_0);
+              else if ((nextCh >= XERCES_CPP_NAMESPACE_QUALIFIER chLatin_A) && (nextCh <= XERCES_CPP_NAMESPACE_QUALIFIER chLatin_F))
+                nextVal= (unsigned int)(10 + (nextCh - XERCES_CPP_NAMESPACE_QUALIFIER chLatin_A));
+              else if ((nextCh >= XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a) && (nextCh <= XERCES_CPP_NAMESPACE_QUALIFIER chLatin_f))
+                nextVal = (unsigned int)(10 + (nextCh - XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a));
+              else
+                error("Invalid character inside entity reference");
+              if (nextVal >= radix)
+                error("Invalid digit inside entity reference");
+              else
+                value = (value * radix) + nextVal;
+            }
+            if(!XERCES_CPP_NAMESPACE_QUALIFIER XMLChar1_0::isXMLChar(value))
+              error("Entity reference is not a valid XML character");
+            else
+            {
               if (value <= 0xFFFD)
                 dst[j++]=value;
               else if (value >= 0x10000 && value <= 0x10FFFF)
-                {
-                  value -= 0x10000;
-                  dst[j++]= XMLCh((value >> 10) + 0xD800);
-                  dst[j++]= XMLCh((value & 0x3FF) + 0xDC00);
-                }
-              i=k;
-            } else
-              error("Invalid entity reference");
+              {
+                value -= 0x10000;
+                dst[j++]= XMLCh((value >> 10) + 0xD800);
+                dst[j++]= XMLCh((value & 0x3FF) + 0xDC00);
+              }
+            }
+            i=k;
           }
-        else
-          dst[j++]=src[i];
-        if(src[i]==toBeUnescaped && (i+1)<len && src[i]==src[i+1])
-          i++;
+        } else
+	      error("Invalid entity reference");
       }
+	  else
+        dst[j++]=src[i];
+      if(src[i]==toBeUnescaped && (i+1)<len && src[i]==src[i+1])
+        i++;
+    }
     dst[j++]=0;
     return dst;
   }
