@@ -54,12 +54,10 @@ void Numeric::checkFloatLimits(Numeric::State &state, MAPM &value)
     int exp=value.exponent();
     if(exp>38 || (exp==38 && value.abs()>MAPM("3.4028235e+38"))) {
       state=(state==NEG_NUM)?NEG_INF:INF;
-      value = 0;
+      value = MM_Zero;
     }
     else if(exp<-38 || (exp==-38 && value.abs()<MAPM("1.1754944e-38")))
-      value=0;
-    else if(value.significant_digits()>ATFloatOrDerivedImpl::g_nSignificantDigits)
-      value = value.round(ATFloatOrDerivedImpl::g_nSignificantDigits);
+      value=MM_Zero;
   }
 }
 
@@ -69,12 +67,10 @@ void Numeric::checkDoubleLimits(Numeric::State &state, MAPM &value)
     int exp=value.exponent();
     if(exp>308 || (exp==308 && value.abs()>MAPM("1.7976931348623157e+308"))) {
       state=(state==NEG_NUM)?NEG_INF:INF;
-      value = 0;
+      value = MM_Zero;
     }
     else if(exp<-308 || (exp==-308 && value.abs()<MAPM("2.2250738585072014e-308")))
-      value = 0;
-    else if(value.significant_digits()>ATDoubleOrDerivedImpl::g_nSignificantDigits)
-      value = value.round(ATDoubleOrDerivedImpl::g_nSignificantDigits);
+      value=MM_Zero;
   }
 }
 
@@ -312,12 +308,34 @@ const XMLCh *Numeric::asDoubleString(State state1, const MAPM &value1, int signi
   }
 
   MAPM absVal = value1.abs();
-  MAPM lower(0.000001), upper(1000000);
+  MAPM lower("0.000001"), upper("1000000");
   if(absVal < upper && absVal >= lower) {
     return asDecimalString(value1, significantDigits, context);
   }
   else {
     char obuf[1024];
+    if(significantDigits==7)
+    {
+      value1.toString(obuf, 25);
+      double num=atof(obuf);
+      sprintf(obuf, "%.*G", min(8,value1.significant_digits()), num);
+      MAPM val=obuf;
+      int precision = val.significant_digits() - 1;
+      if(precision <= 0) precision = 1;
+      val.toString(obuf, precision);
+      return context->getMemoryManager()->getPooledString(obuf);
+    }
+    else if(significantDigits==16)
+    {
+      value1.toString(obuf, 25);
+      double num=atof(obuf);
+      sprintf(obuf, "%.*G", min(17,value1.significant_digits()), num);
+      MAPM val=obuf;
+      int precision = val.significant_digits() - 1;
+      if(precision <= 0) precision = 1;
+      val.toString(obuf, precision);
+      return context->getMemoryManager()->getPooledString(obuf);
+    }
     int precision = value1.significant_digits() - 1;
     if(precision > significantDigits) precision = significantDigits;
     if(precision <= 0) precision = 1;
