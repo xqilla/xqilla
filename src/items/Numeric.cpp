@@ -26,6 +26,10 @@
 #include <xercesc/util/XMLUniDefs.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 
+#ifndef min
+#define min(a,b) ((a) < (b) ? (a) : (b))
+#endif
+
 #if defined(XERCES_HAS_CPP_NAMESPACE)
 XERCES_CPP_NAMESPACE_USE
 #endif
