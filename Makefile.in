@@ -159,21 +159,22 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	AnyAtomicTypeConstructor.lo AnyAtomicType.lo \
 	ATDurationOrDerived.lo ATQNameConstructor.lo \
 	ATUntypedAtomic.lo DateOrTimeType.lo Item.lo Node.lo \
-	Numeric.lo Timezone.lo QName.lo XQParser.lo XQLexer.lo \
-	mapm5sin.lo mapm_add.lo mapmasin.lo mapmasn0.lo mapmcbrt.lo \
-	mapmcnst.lo mapm_cpi.lo m_apm.lo mapm_div.lo mapm_exp.lo \
-	mapmfact.lo mapm_fam.lo mapm_fft.lo mapm_flr.lo mapmfmul.lo \
-	mapm_fpf.lo mapm_gcd.lo mapmgues.lo mapmhasn.lo mapmhsin.lo \
-	mapmipwr.lo mapmistr.lo mapm_lg2.lo mapm_lg3.lo mapm_log.lo \
-	mapm_mt.lo mapm_mul.lo mapm_pow.lo mapmpwr2.lo mapm_rcp.lo \
-	mapm_rnd.lo mapmrsin.lo mapm_set.lo mapm_sin.lo mapmsqrt.lo \
-	mapmstck.lo mapmutil.lo mapmutl2.lo AncestorAxis.lo \
-	AncestorOrSelfAxis.lo AttributeAxis.lo Axis.lo ChildAxis.lo \
-	DescendantAxis.lo DescendantOrSelfAxis.lo FollowingAxis.lo \
-	FollowingSiblingAxis.lo NamespaceAxis.lo NodeTest.lo \
-	ParentAxis.lo PrecedingAxis.lo PrecedingSiblingAxis.lo \
-	SelfAxis.lo And.lo ArithmeticOperator.lo ComparisonOperator.lo \
-	Divide.lo Equals.lo Except.lo GeneralComp.lo GreaterThan.lo \
+	Numeric.lo NumericTypeConstructor.lo Timezone.lo QName.lo \
+	XQParser.lo XQLexer.lo mapm5sin.lo mapm_add.lo mapmasin.lo \
+	mapmasn0.lo mapmcbrt.lo mapmcnst.lo mapm_cpi.lo m_apm.lo \
+	mapm_div.lo mapm_exp.lo mapmfact.lo mapm_fam.lo mapm_fft.lo \
+	mapm_flr.lo mapmfmul.lo mapm_fpf.lo mapm_gcd.lo mapmgues.lo \
+	mapmhasn.lo mapmhsin.lo mapmipwr.lo mapmistr.lo mapm_lg2.lo \
+	mapm_lg3.lo mapm_log.lo mapm_mt.lo mapm_mul.lo mapm_pow.lo \
+	mapmpwr2.lo mapm_rcp.lo mapm_rnd.lo mapmrsin.lo mapm_set.lo \
+	mapm_sin.lo mapmsqrt.lo mapmstck.lo mapmutil.lo mapmutl2.lo \
+	AncestorAxis.lo AncestorOrSelfAxis.lo AttributeAxis.lo Axis.lo \
+	ChildAxis.lo DescendantAxis.lo DescendantOrSelfAxis.lo \
+	FollowingAxis.lo FollowingSiblingAxis.lo NamespaceAxis.lo \
+	NodeTest.lo ParentAxis.lo PrecedingAxis.lo \
+	PrecedingSiblingAxis.lo SelfAxis.lo And.lo \
+	ArithmeticOperator.lo ComparisonOperator.lo Divide.lo \
+	Equals.lo Except.lo GeneralComp.lo GreaterThan.lo \
 	GreaterThanEqual.lo IntegerDivide.lo Intersect.lo LessThan.lo \
 	LessThanEqual.lo Minus.lo Mod.lo Multiply.lo NodeComparison.lo \
 	NotEquals.lo Or.lo OrderComparison.lo Plus.lo Range.lo \
@@ -619,6 +620,7 @@ src/items/DateOrTimeType.cpp \
 src/items/Item.cpp \
 src/items/Node.cpp \
 src/items/Numeric.cpp \
+src/items/NumericTypeConstructor.cpp \
 src/items/Timezone.cpp \
 src/parser/QName.cpp \
 src/parser/XQParser.cpp \
@@ -1120,6 +1122,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NumUtils.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Numeric.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NumericFunction.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NumericTypeConstructor.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Or.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/OrderComparison.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ParentAxis.Plo@am__quote@
@@ -3228,6 +3231,13 @@ Numeric.lo: src/items/Numeric.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/items/Numeric.cpp' object='Numeric.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o Numeric.lo `test -f 'src/items/Numeric.cpp' || echo '$(srcdir)/'`src/items/Numeric.cpp
+
+NumericTypeConstructor.lo: src/items/NumericTypeConstructor.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT NumericTypeConstructor.lo -MD -MP -MF "$(DEPDIR)/NumericTypeConstructor.Tpo" -c -o NumericTypeConstructor.lo `test -f 'src/items/NumericTypeConstructor.cpp' || echo '$(srcdir)/'`src/items/NumericTypeConstructor.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/NumericTypeConstructor.Tpo" "$(DEPDIR)/NumericTypeConstructor.Plo"; else rm -f "$(DEPDIR)/NumericTypeConstructor.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/items/NumericTypeConstructor.cpp' object='NumericTypeConstructor.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o NumericTypeConstructor.lo `test -f 'src/items/NumericTypeConstructor.cpp' || echo '$(srcdir)/'`src/items/NumericTypeConstructor.cpp
 
 Timezone.lo: src/items/Timezone.cpp
 @am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT Timezone.lo -MD -MP -MF "$(DEPDIR)/Timezone.Tpo" -c -o Timezone.lo `test -f 'src/items/Timezone.cpp' || echo '$(srcdir)/'`src/items/Timezone.cpp; \
