@@ -262,6 +262,7 @@ xqilla/items/ItemConstructor.hpp \
 xqilla/items/Item.hpp \
 xqilla/items/Node.hpp \
 xqilla/items/Numeric.hpp \
+xqilla/items/NumericTypeConstructor.hpp \
 xqilla/items/Timezone.hpp \
 xqilla/items/DatatypeLookup.hpp \
 xqilla/items/DatatypeFactory.hpp \
