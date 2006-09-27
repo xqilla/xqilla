@@ -21,6 +21,7 @@
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/functions/FuncFactory.hpp>
 #include <xqilla/schema/SequenceType.hpp>
+#include <xqilla/schema/DocumentCache.hpp>
 #include <xqilla/ast/XQFunction.hpp>
 #include <xqilla/ast/StaticResolutionContext.hpp>
 #include <xqilla/context/Scope.hpp>
@@ -107,11 +108,13 @@ public:
   const XMLCh* getSignature();
   bool isExternal() const;
   void setFunctionBody(ASTNode* value);
+  void setModuleDocumentCache(DocumentCache* docCache);
 
   void setURI(const XMLCh* uri);
   const XMLCh *getPrefix() const;
 
   const ASTNode *getFunctionBody() const;
+  DocumentCache* getModuleDocumentCache() const;
 
   static const XMLCh XMLChXQueryLocalFunctionsURI[];
 
@@ -123,6 +126,7 @@ protected:
   XPath2MemoryManager* m_pMemMgr;
   StaticResolutionContext _src;
   bool m_bCalculatingSRC;
+  DocumentCache* m_moduleDocCache;
 
   friend class XQFunctionEvaluator;
 };

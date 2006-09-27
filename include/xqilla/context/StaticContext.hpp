@@ -105,6 +105,9 @@ public:
 
   /** retrieve the repository for the grammars **/
   virtual const DocumentCache* getDocumentCache() const = 0;
+  /** sets the repository for the grammars **/
+  virtual void setDocumentCache(DocumentCache* docCache) = 0;
+
   /** returns true if the type represented by uri:typename is an instance of uriToCheck:typeNameToCheck 
    *
    * ie: to check 

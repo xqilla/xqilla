@@ -61,10 +61,13 @@ XQDynamicContextImpl::XQDynamicContextImpl(const StaticContext *staticContext, X
     _contextSize(1),
     _implicitTimezone(0),
     _resolvers(XQillaAllocator<URIResolver*>(&_internalMM)),
-    _docCache(staticContext->getDocumentCache()->createDerivedCache(&_internalMM))
+    _docCache(staticContext->getDocumentCache()->createDerivedCache(&_internalMM)),
+    _documentMap(3,false,&_internalMM),
+    _uriMap(3,false, new (&_internalMM) XERCES_CPP_NAMESPACE_QUALIFIER HashPtr(), &_internalMM)
 {
   time(&_currentTime);
   _memMgr = &_internalMM;
+  _firstDocRefCount=new (&_internalMM) DocRefCount();
   _varStore = _internalMM.createVariableStore();
   _itemFactory = new (&_internalMM) ItemFactoryImpl(_docCache, &_internalMM);
 
@@ -79,6 +82,13 @@ XQDynamicContextImpl::~XQDynamicContextImpl()
 
   delete _varStore;
   delete _itemFactory;
+
+  DocRefCount *drc;
+  while(_firstDocRefCount != 0) {
+    drc = _firstDocRefCount;
+    _firstDocRefCount = _firstDocRefCount->next;
+    _internalMM.deallocate(drc);
+  }
 }
 
 DynamicContext *XQDynamicContextImpl::createModuleContext(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr) const
@@ -116,6 +126,71 @@ bool XQDynamicContextImpl::isDebuggingEnabled() const
     return m_bEnableDebugging;
 }
 
+void XQDynamicContextImpl::incrementDocumentRefCount(const XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* document) const
+{
+  assert(document != 0);
+
+  XQDynamicContextImpl* me=const_cast<XQDynamicContextImpl*>(this);
+
+  DocRefCount *found = _firstDocRefCount;
+  while(found->doc != 0 && found->doc != document) {
+    found = found->next;
+  }
+
+  if(found->doc == 0) {
+    found->doc = document;
+    found->next = new (&me->_internalMM) DocRefCount();
+  }
+  else {
+    ++found->ref_count;
+  }
+}
+
+void XQDynamicContextImpl::decrementDocumentRefCount(const XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* document) const
+{
+  assert(document != 0);
+
+  XQDynamicContextImpl* me=const_cast<XQDynamicContextImpl*>(this);
+
+  DocRefCount *prev = 0;
+  DocRefCount *found = _firstDocRefCount;
+  while(found->doc != 0 && found->doc != document) {
+    prev = found;
+    found = found->next;
+  }
+
+  if(found->doc != 0) {
+    if(--found->ref_count == 0) {
+      if(prev == 0) {
+        me->_firstDocRefCount = found->next;
+      }
+      else {
+        prev->next = found->next;
+      }
+      me->_internalMM.deallocate(found);
+      XMLCh *uri = me->_uriMap.get((void*)document);
+      if(uri != 0) {
+        me->_uriMap.removeKey((void*)document);
+        me->_documentMap.removeKey((void*)uri);
+      }
+      releaseDocument(const_cast<XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument*>(document));
+    }
+  }
+}
+
+XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* XQDynamicContextImpl::retrieveDocument(const XMLCh* uri)
+{
+  XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *doc = _documentMap.get((void*)uri);
+  return doc;
+}
+
+void XQDynamicContextImpl::storeDocument(const XMLCh* uri, XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* document)
+{
+  uri=_internalMM.getPooledString(uri);
+  _documentMap.put((void*)uri, document);
+  _uriMap.put((void*)document, const_cast<XMLCh*>(uri));
+}
+
 void XQDynamicContextImpl::clearDynamicContext()
 {
   _nsResolver = _staticContext->getNSResolver();
@@ -125,13 +200,19 @@ void XQDynamicContextImpl::clearDynamicContext()
   _varStore->clear();
   _implicitTimezone = 0;
   _resolvers.clear();
-  _docCache->clearStoredDocuments();
+  _documentMap.removeAll();
+  _uriMap.removeAll();
   time(&_currentTime);
 }
 
 const DocumentCache *XQDynamicContextImpl::getDocumentCache() const
 {
   return _docCache;
+}
+
+void XQDynamicContextImpl::setDocumentCache(DocumentCache* docCache)
+{
+  _docCache=docCache;
 }
 
 void XQDynamicContextImpl::setContextItem(const Item::Ptr &item)
@@ -142,7 +223,7 @@ void XQDynamicContextImpl::setContextItem(const Item::Ptr &item)
 void XQDynamicContextImpl::setExternalContextNode(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *node)
 {
   // bump the document reference count, so that it will never reach zero...
-  _docCache->incrementDocumentRefCount(XPath2Utils::getOwnerDoc(node));
+  incrementDocumentRefCount(XPath2Utils::getOwnerDoc(node));
   setContextItem(new NodeImpl(node, this));
 }
 

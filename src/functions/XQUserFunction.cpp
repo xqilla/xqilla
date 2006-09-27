@@ -34,8 +34,7 @@
 #include <xercesc/util/XMLString.hpp>
 #include <xercesc/framework/XMLBuffer.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
-
-using namespace std;
+#include <xercesc/validators/datatype/DatatypeValidator.hpp>
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -71,7 +70,8 @@ XQUserFunction::XQUserFunction(const XMLCh* fnName, VectorOfFunctionParameters* 
     m_szURI(NULL),
     m_pMemMgr(ctx->getMemoryManager()),
     _src(ctx->getMemoryManager()),
-    m_bCalculatingSRC(false)
+    m_bCalculatingSRC(false),
+    m_moduleDocCache(NULL)
 {
   int nColon=XERCES_CPP_NAMESPACE_QUALIFIER XMLString::indexOf(fnName,':');
   if(nColon==-1)
@@ -159,9 +159,19 @@ void XQUserFunction::setFunctionBody(ASTNode* value)
   m_body=value;
 }
 
+void XQUserFunction::setModuleDocumentCache(DocumentCache* docCache)
+{
+  m_moduleDocCache=docCache;
+}
+
 const ASTNode *XQUserFunction::getFunctionBody() const
 {
   return m_body;
+}
+
+DocumentCache* XQUserFunction::getModuleDocumentCache() const
+{
+  return m_moduleDocCache;
 }
 
 ASTNode* XQUserFunction::createInstance(const VectorOfASTNodes &args, XPath2MemoryManager* expr) const
@@ -293,8 +303,8 @@ const XMLCh* XQUserFunction::getSignature()
 ///////////////////////////////////////////////////////////////
 // XQUserFunction::XQFunctionEvaluator
 
-typedef pair<XQUserFunction::XQFunctionParameter*, Sequence> ParamBinding;
-typedef vector<ParamBinding> VectorOfParamBindings;
+typedef std::pair<XQUserFunction::XQFunctionParameter*, Sequence> ParamBinding;
+typedef std::vector<ParamBinding> VectorOfParamBindings;
 
 XQUserFunction::XQFunctionEvaluator::XQFunctionEvaluator(const XQUserFunction* funcDef, const VectorOfASTNodes& args, XPath2MemoryManager* expr) 
   : XQFunction(funcDef->getName(),0,UNLIMITED,"",args,expr)
@@ -365,7 +375,8 @@ ASTNode* XQUserFunction::XQFunctionEvaluator::staticTyping(StaticContext* contex
     }
   }
 
-  if(m_pFuncDef->m_body!=0 && !_src.isUsed()) {
+  // don't constant fold if it's an imported or an external function
+  if(m_pFuncDef->m_moduleDocCache==NULL && m_pFuncDef->m_body!=0 && !_src.isUsed()) {
     return constantFold(context);
   }
   return this;
@@ -387,6 +398,13 @@ Item::Ptr XQUserFunction::XQFunctionEvaluator::FunctionEvaluatorResult::next(Dyn
   VariableStore* varStore=context->getVariableStore();
   Scope<Sequence> *oldScope = varStore->getScopeState();
 
+  DocumentCache* docCache=_di->getFunctionDefinition()->getModuleDocumentCache();
+  DocumentCache* origDocCache=NULL;
+  if(docCache!=NULL)
+  {
+    origDocCache=const_cast<DocumentCache*>(context->getDocumentCache());
+    context->setDocumentCache(docCache);
+  }
   if(_result.isNull()) {
     int nDefinedArgs = _di->getFunctionDefinition()->getParams() ? _di->getFunctionDefinition()->getParams()->size() : 0;
 
@@ -426,7 +444,7 @@ Item::Ptr XQUserFunction::XQFunctionEvaluator::FunctionEvaluatorResult::next(Dyn
     varStore->setScopeState(_scope);
   }
 
-  const Item::Ptr item = _result->next(context);
+  Item::Ptr item = _result->next(context);
 
   if(!_scopeRemoved) {
     if(item == NULLRCP) {
@@ -439,6 +457,35 @@ Item::Ptr XQUserFunction::XQFunctionEvaluator::FunctionEvaluatorResult::next(Dyn
     }
   }
 
+  // if we had to switch document cache, check that the returned types are known also in the original context; if not, upgrade them to the base type 
+  if(origDocCache!=NULL)
+  {
+    if(item!=NULLRCP && !origDocCache->isTypeDefined(item->getTypeURI(), item->getTypeName()))
+    {
+      if(item->isNode())
+      {
+        Node::Ptr node=item;
+        // TODO: change the annotation in the DOM elements and attributes
+      }
+      else
+      {
+        AnyAtomicType::Ptr atom=item;
+        const XMLCh* uri=atom->getTypeURI(), *name=atom->getTypeName();
+        while(!origDocCache->isTypeDefined(uri, name))
+        {
+            XERCES_CPP_NAMESPACE_QUALIFIER DatatypeValidator* pDV=docCache->getDatatypeValidator(uri, name);
+            assert(pDV!=NULL);
+            XERCES_CPP_NAMESPACE_QUALIFIER DatatypeValidator* pBaseDV=pDV->getBaseValidator();
+            if(pBaseDV==NULL)
+                break;
+            uri=pBaseDV->getTypeUri();
+            name=pBaseDV->getTypeLocalName();
+        }
+        item=context->getItemFactory()->createDerivedFromAtomicType(uri, name, atom->asString(context), context);
+      }
+    }
+    context->setDocumentCache(origDocCache);
+  }
   return item;
 }
 

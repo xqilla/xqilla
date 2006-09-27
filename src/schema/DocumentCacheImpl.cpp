@@ -24,7 +24,6 @@
 #include <xercesc/dom/impl/DOMDocumentImpl.hpp>
 #include <xercesc/validators/datatype/DatatypeValidatorFactory.hpp>
 #include <xercesc/validators/common/Grammar.hpp>
-#include <xercesc/validators/common/ContentSpecNode.hpp>
 #include <xercesc/validators/schema/SchemaGrammar.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 #include <xercesc/framework/XMLSchemaDescription.hpp>
@@ -143,20 +142,14 @@ const XMLCh DocumentCacheParser::g_szUntyped[]= {
 
 DocumentCacheParser::DocumentCacheParser(const DocumentCacheParser &parent, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr)
   : XercesDOMParser(0, memMgr, parent.getGrammarResolver()->getGrammarPool()),
-    _documentMap(3,false,memMgr),
-    _uriMap(3,false, new (memMgr) XERCES_CPP_NAMESPACE_QUALIFIER HashPtr(), memMgr),
-    _context(0),
-    _memMgr(memMgr)
+    _context(0)
 {
   init();
 }
 
 DocumentCacheParser::DocumentCacheParser(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr, XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool* xmlgr) :
   XercesDOMParser(0,memMgr, xmlgr),
-  _documentMap(3,false,memMgr),
-  _uriMap(3,false, new (memMgr) XERCES_CPP_NAMESPACE_QUALIFIER HashPtr(), memMgr),
-  _context(0),
-  _memMgr(memMgr)
+  _context(0)
 {
   init();
 }
@@ -216,7 +209,7 @@ void DocumentCacheParser::startDocument()
   fDocument->setActualEncoding(fScanner->getReaderMgr()->getCurrentEncodingStr());
 }
 
-XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *DocumentCacheParser::parseWithContext(const XERCES_CPP_NAMESPACE_QUALIFIER InputSource &source, StaticContext *context)
+XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *DocumentCacheParser::parseWithContext(const XERCES_CPP_NAMESPACE_QUALIFIER InputSource &source, DynamicContext *context)
 {
   _context = context;
   try {
@@ -230,7 +223,7 @@ XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *DocumentCacheParser::parseWithContex
   return adoptDocument();
 }
 
-const XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *DocumentCacheParser::parseWithContext(const XMLCh* const uri, StaticContext *context)
+const XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *DocumentCacheParser::parseWithContext(const XMLCh* const uri, DynamicContext *context)
 {
   XERCES_CPP_NAMESPACE_QUALIFIER InputSource* srcToUse = 0;
   if (getXMLEntityResolver()){
@@ -256,7 +249,7 @@ const XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *DocumentCacheParser::parseWith
     }
   }
 
-  XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *cachedDoc = retrieveDocument(systemId);
+  XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *cachedDoc = context->retrieveDocument(systemId);
   if(cachedDoc) {
     return cachedDoc;
   }
@@ -267,7 +260,7 @@ const XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *DocumentCacheParser::parseWith
       parse(*srcToUse);
     else
       parse(systemId);
-    storeDocument(context->getMemoryManager()->getPooledString(systemId), getDocument());
+    context->storeDocument(systemId, getDocument());
   }
   catch(...) {
     _context = 0;
@@ -275,33 +268,6 @@ const XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *DocumentCacheParser::parseWith
   }
   _context = 0;
   return adoptDocument();
-}
-
-XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* DocumentCacheParser::retrieveDocument(const XMLCh* uri)
-{
-  XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *doc = _documentMap.get((void*)uri);
-  return doc;
-}
-
-void DocumentCacheParser::storeDocument(const XMLCh* uri, XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* document)
-{
-  _documentMap.put((void*)uri, document);
-  _uriMap.put((void*)document, const_cast<XMLCh*>(uri));
-}
-
-void DocumentCacheParser::removeDocument(XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* document)
-{
-  XMLCh *uri = _uriMap.get((void*)document);
-  if(uri != 0) {
-    _uriMap.removeKey((void*)document);
-    _documentMap.removeKey((void*)uri);
-  }
-}
-
-void DocumentCacheParser::clearStoredDocuments()
-{
-  _documentMap.removeAll();
-  _uriMap.removeAll();
 }
 
 void DocumentCacheParser::loadSchema(const XMLCh* const uri, const XMLCh* const location, StaticContext *context)
@@ -353,25 +319,6 @@ const XMLCh* DocumentCacheParser::getSchemaUri(unsigned int id) const
   // This is a kind of hack... I should directly use fURIStringPool, but it's private.
   // So I ask the scanner to give me back the string pool I gave him before....
   return getScanner()->getURIStringPool()->getValueForId(id);
-}
-
-bool DocumentCacheParser::isChildElement( XERCES_CPP_NAMESPACE_QUALIFIER ContentSpecNode *topContentSpec, unsigned int uriId, const XMLCh* localPart ) const
-{
-  if(topContentSpec){
-    if(topContentSpec->getType()==XERCES_CPP_NAMESPACE_QUALIFIER ContentSpecNode::Leaf)
-      {
-        XERCES_CPP_NAMESPACE_QUALIFIER QName* qName=topContentSpec->getElement();
-        if(qName->getURI()==uriId && XPath2Utils::equals(qName->getLocalPart(),localPart))
-          return true;
-      }
-    else 
-      {
-        if(isChildElement(topContentSpec->getFirst(), uriId, localPart) || 
-           isChildElement(topContentSpec->getSecond(), uriId, localPart))
-          return true;
-      }
-  }
-  return false;
 }
 
 XERCES_CPP_NAMESPACE_QUALIFIER SchemaElementDecl* DocumentCacheParser::getElementDecl(const XMLCh* elementUri, const XMLCh* elementName) const {
@@ -534,7 +481,6 @@ void DocumentCacheParser::error(const   unsigned int                errCode
 
 DocumentCacheImpl::DocumentCacheImpl(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr, XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool* xmlgr) :
   _parser(memMgr, xmlgr),
-  _firstDocRefCount(new (memMgr) DocRefCount()),
   _loadedSchemas(0),
   _memMgr(memMgr)
 {
@@ -543,7 +489,6 @@ DocumentCacheImpl::DocumentCacheImpl(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManage
 
 DocumentCacheImpl::DocumentCacheImpl(const DocumentCacheImpl *parent, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr)
   : _parser(parent->_parser, memMgr),
-    _firstDocRefCount(new (memMgr) DocRefCount()),
     _loadedSchemas(0),
     _memMgr(memMgr)
 {
@@ -551,60 +496,8 @@ DocumentCacheImpl::DocumentCacheImpl(const DocumentCacheImpl *parent, XERCES_CPP
 
 DocumentCacheImpl::~DocumentCacheImpl()
 {
-  DocRefCount *drc;
-  while(_firstDocRefCount != 0) {
-    drc = _firstDocRefCount;
-    _firstDocRefCount = _firstDocRefCount->next;
-    _memMgr->deallocate(drc);
-  }
   if(_loadedSchemas)
 	  delete _loadedSchemas;
-}
-
-void DocumentCacheImpl::incrementDocumentRefCount(const XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* document) const
-{
-  assert(document != 0);
-
-  DocRefCount *found = _firstDocRefCount;
-  while(found->doc != 0 && found->doc != document) {
-    found = found->next;
-  }
-
-  if(found->doc == 0) {
-    found->doc = document;
-    found->next = new (_memMgr) DocRefCount();
-  }
-  else {
-    ++found->ref_count;
-  }
-}
-
-void DocumentCacheImpl::decrementDocumentRefCount(const XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* document, const StaticContext *context) const
-{
-  assert(document != 0);
-
-  DocumentCacheImpl *me = const_cast<DocumentCacheImpl*>(this);
-
-  DocRefCount *prev = 0;
-  DocRefCount *found = _firstDocRefCount;
-  while(found->doc != 0 && found->doc != document) {
-    prev = found;
-    found = found->next;
-  }
-
-  if(found->doc != 0) {
-    if(--found->ref_count == 0) {
-      if(prev == 0) {
-        me->_firstDocRefCount = found->next;
-      }
-      else {
-        prev->next = found->next;
-      }
-      _memMgr->deallocate(found);
-      me->_parser.removeDocument(const_cast<XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument*>(document));
-      context->releaseDocument(const_cast<XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument*>(document));
-    }
-  }
 }
 
 void DocumentCacheImpl::setXMLEntityResolver(XERCES_CPP_NAMESPACE_QUALIFIER XMLEntityResolver* const handler)
@@ -617,11 +510,6 @@ XERCES_CPP_NAMESPACE_QUALIFIER XMLEntityResolver* DocumentCacheImpl::getXMLEntit
     return const_cast<XERCES_CPP_NAMESPACE_QUALIFIER XMLEntityResolver*>(_parser.getXMLEntityResolver());
 }
 
-void DocumentCacheImpl::clearStoredDocuments()
-{
-  _parser.clearStoredDocuments();
-}
- 
 Node::Ptr DocumentCacheImpl::loadXMLDocument(XERCES_CPP_NAMESPACE_QUALIFIER InputSource& inputSource, DynamicContext *context)
 {
   Node::Ptr result;
