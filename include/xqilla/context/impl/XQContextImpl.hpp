@@ -80,6 +80,15 @@ public:
   // Dynamic Context Accessors    //
   //////////////////////////////////
 
+  /** Register a new reference to the document */
+  virtual void incrementDocumentRefCount(const XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* document) const;
+  /** Register a closed reference to the document */
+  virtual void decrementDocumentRefCount(const XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* document) const;
+  /** Retrieve a document from the cache of loaded documents */
+  virtual XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* retrieveDocument(const XMLCh* uri);
+  /** Store a document in the cache of loaded documents */
+  virtual void storeDocument(const XMLCh* uri,XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* document);
+
   /** Resets the dynamic context, as if it had never been used */
   virtual void clearDynamicContext();
 
@@ -185,6 +194,8 @@ public:
 
   /** retrieve the repository for the grammars **/
   virtual const DocumentCache* getDocumentCache() const;
+  /** sets the repository for the grammars **/
+  virtual void setDocumentCache(DocumentCache* docCache);
   /** returns the validated node */
   virtual Node::Ptr validate(const Node::Ptr &node, DocumentCache::ValidationMode valMode);
   /** returns true if the type represented by uri:typename is an instance of uriToCheck:typeNameToCheck
@@ -417,6 +428,19 @@ protected:
    * a constructor function in the in-scope functions. Constructor 
    * functions are discussed in 3.10.4 Constructor Functions */
   ItemFactory* _itemFactory;
+
+  class DocRefCount {
+  public:
+    DocRefCount() : doc(0), ref_count(1), next(0) {}
+
+    const XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *doc;
+    unsigned int ref_count;
+    DocRefCount *next;
+  };
+
+  DocRefCount *_firstDocRefCount;
+  XERCES_CPP_NAMESPACE_QUALIFIER RefHashTableOf< XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument > _documentMap;
+  XERCES_CPP_NAMESPACE_QUALIFIER RefHashTableOf< XMLCh > _uriMap;
 
   ////////////////////////////////////////
   //  XQilla Context specific variables //

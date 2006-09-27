@@ -30,7 +30,6 @@ class QualifiedName;
 XERCES_CPP_NAMESPACE_BEGIN
 class DOMDocument;
 class SchemaGrammar;
-class ContentSpecNode;
 class XMLGrammarPool;
 XERCES_CPP_NAMESPACE_END
 
@@ -71,17 +70,12 @@ public:
    * Overload the parse method, to create the document from a different memory manager.
    * NB the Grammar info in the tree will still be in the same memory manager as the parser.
    */
-  virtual const XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *parseWithContext(const XMLCh* const uri, StaticContext *context);
+  virtual const XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *parseWithContext(const XMLCh* const uri, DynamicContext *context);
   /**
    * Overload the parse method, to create the document from a different memory manager.
    * NB the Grammar info in the tree will still be in the same memory manager as the parser.
    */
-  virtual XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *parseWithContext(const XERCES_CPP_NAMESPACE_QUALIFIER InputSource &source, StaticContext *context);
-
-  XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* retrieveDocument(const XMLCh* uri);
-  void storeDocument(const XMLCh* uri,XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* document);
-  void removeDocument(XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* document);
-  void clearStoredDocuments();
+  virtual XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *parseWithContext(const XERCES_CPP_NAMESPACE_QUALIFIER InputSource &source, DynamicContext *context);
 
   XERCES_CPP_NAMESPACE_QUALIFIER GrammarResolver* getGrammarResolver() const
   {
@@ -117,10 +111,7 @@ protected:
   bool isChildElement( XERCES_CPP_NAMESPACE_QUALIFIER ContentSpecNode *topContentSpec, unsigned int uriId, const XMLCh* localPart ) const;
 
   DocumentCacheErrorCatcher _errorHandler;
-  XERCES_CPP_NAMESPACE_QUALIFIER RefHashTableOf< XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument > _documentMap;
-  XERCES_CPP_NAMESPACE_QUALIFIER RefHashTableOf< XMLCh > _uriMap;
-  StaticContext *_context;
-  XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* _memMgr;
+  DynamicContext *_context;
 };
 
 /// The class that performs the (cached) parsing of input documents
@@ -130,9 +121,6 @@ public:
   DocumentCacheImpl(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr, XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool* xmlgr = 0);
   DocumentCacheImpl(const DocumentCacheImpl *parent, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr);
   ~DocumentCacheImpl();
-
-  virtual void incrementDocumentRefCount(const XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* document) const;
-  virtual void decrementDocumentRefCount(const XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* document, const StaticContext *context) const;
 
   /**
    * Sets the XMLEntityResolver that is used by Xerces when it is used
@@ -145,9 +133,6 @@ public:
   /** load the DOM document from the requested URI (or get it from the cache) */
   virtual Node::Ptr loadXMLDocument(const XMLCh* Uri, DynamicContext *context);
   virtual Node::Ptr loadXMLDocument(XERCES_CPP_NAMESPACE_QUALIFIER InputSource& inputSource, DynamicContext *context);
-
-  /** Clear all the documents from the document cache */
-  void clearStoredDocuments();
 
   /*
    * returns true if the type represented by uri:typename is an instance of uriToCheck:typeNameToCheck 
@@ -181,18 +166,7 @@ public:
   virtual DocumentCache *createDerivedCache(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr) const;
 
 protected:
-  class DocRefCount {
-  public:
-    DocRefCount() : doc(0), ref_count(1), next(0) {}
-
-    const XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *doc;
-    unsigned int ref_count;
-    DocRefCount *next;
-  };
-
   DocumentCacheParser _parser;
-  DocRefCount *_firstDocRefCount;
-//   XERCES_CPP_NAMESPACE_QUALIFIER ValueHashTableOf<unsigned int> _docRefCountMap; // mutable
   XERCES_CPP_NAMESPACE_QUALIFIER XMLStringPool* _loadedSchemas;
   XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* _memMgr;
 };

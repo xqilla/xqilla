@@ -74,7 +74,7 @@ NodeImpl::NodeImpl(const DOMNode *node, const DynamicContext *context) :
     context_(context)
 {  
   assert(node!=0);
-  context_->getDocumentCache()->incrementDocumentRefCount(XPath2Utils::getOwnerDoc(fNode));
+  context_->incrementDocumentRefCount(XPath2Utils::getOwnerDoc(fNode));
 }
 
 NodeImpl::NodeImpl(const DOMNode *node)
@@ -88,7 +88,7 @@ NodeImpl::NodeImpl(const DOMNode *node)
 NodeImpl::~NodeImpl()
 {
   if(context_ != 0) {
-    context_->getDocumentCache()->decrementDocumentRefCount(XPath2Utils::getOwnerDoc(fNode), context_);
+    context_->decrementDocumentRefCount(XPath2Utils::getOwnerDoc(fNode));
   }
   if(fSerializer != 0) {
 	  fSerializer->release();

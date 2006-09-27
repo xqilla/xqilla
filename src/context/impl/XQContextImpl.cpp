@@ -85,10 +85,13 @@ XQContextImpl::XQContextImpl(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMg
     _constructionMode(CONSTRUCTION_MODE_PRESERVE),
     _bPreserveBoundarySpace(false),
     _varStore(0),
+    _documentMap(3,false,&_internalMM),
+    _uriMap(3,false, new (&_internalMM) XERCES_CPP_NAMESPACE_QUALIFIER HashPtr(), &_internalMM),
     _resolvers(XQillaAllocator<URIResolver*>(&_internalMM)),
     _moduleResolver(0)
 {
   _memMgr = &_internalMM;
+  _firstDocRefCount=new (&_internalMM) DocRefCount();
 
   ////////////////////
   // static context //
@@ -175,6 +178,13 @@ XQContextImpl::~XQContextImpl()
   delete _varStore;
   delete _varTypeStore;
   delete _itemFactory;
+
+  DocRefCount *drc;
+  while(_firstDocRefCount != 0) {
+    drc = _firstDocRefCount;
+    _firstDocRefCount = _firstDocRefCount->next;
+    _internalMM.deallocate(drc);
+  }
 }
 
 DynamicContext *XQContextImpl::createModuleContext(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr) const
@@ -258,6 +268,71 @@ bool XQContextImpl::isDebuggingEnabled() const
     return m_bEnableDebugging;
 }
 
+void XQContextImpl::incrementDocumentRefCount(const XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* document) const
+{
+  assert(document != 0);
+
+  XQContextImpl* me=const_cast<XQContextImpl*>(this);
+
+  DocRefCount *found = _firstDocRefCount;
+  while(found->doc != 0 && found->doc != document) {
+    found = found->next;
+  }
+
+  if(found->doc == 0) {
+    found->doc = document;
+    found->next = new (&me->_internalMM) DocRefCount();
+  }
+  else {
+    ++found->ref_count;
+  }
+}
+
+void XQContextImpl::decrementDocumentRefCount(const XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* document) const
+{
+  assert(document != 0);
+
+  XQContextImpl* me=const_cast<XQContextImpl*>(this);
+
+  DocRefCount *prev = 0;
+  DocRefCount *found = _firstDocRefCount;
+  while(found->doc != 0 && found->doc != document) {
+    prev = found;
+    found = found->next;
+  }
+
+  if(found->doc != 0) {
+    if(--found->ref_count == 0) {
+      if(prev == 0) {
+        me->_firstDocRefCount = found->next;
+      }
+      else {
+        prev->next = found->next;
+      }
+      me->_internalMM.deallocate(found);
+      XMLCh *uri = me->_uriMap.get((void*)document);
+      if(uri != 0) {
+        me->_uriMap.removeKey((void*)document);
+        me->_documentMap.removeKey((void*)uri);
+      }
+      releaseDocument(const_cast<XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument*>(document));
+    }
+  }
+}
+
+XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* XQContextImpl::retrieveDocument(const XMLCh* uri)
+{
+  XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *doc = _documentMap.get((void*)uri);
+  return doc;
+}
+
+void XQContextImpl::storeDocument(const XMLCh* uri, XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* document)
+{
+  uri=_internalMM.getPooledString(uri);
+  _documentMap.put((void*)uri, document);
+  _uriMap.put((void*)document, const_cast<XMLCh*>(uri));
+}
+
 void XQContextImpl::clearDynamicContext()
 {
   _nsResolver = _globalNSResolver;
@@ -268,7 +343,8 @@ void XQContextImpl::clearDynamicContext()
   _implicitTimezone = 0;
   _resolvers.clear();
   _moduleResolver = 0;
-  _docCache->clearStoredDocuments();
+  _documentMap.removeAll();
+  _uriMap.removeAll();
   time(&_currentTime);
 }
 
@@ -402,7 +478,7 @@ void XQContextImpl::setContextItem(const Item::Ptr &item)
 void XQContextImpl::setExternalContextNode(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *node)
 {
   // bump the document reference count, so that it will never reach zero...
-  getDocumentCache()->incrementDocumentRefCount(XPath2Utils::getOwnerDoc(node));
+  incrementDocumentRefCount(XPath2Utils::getOwnerDoc(node));
   setContextItem(new NodeImpl(node, this));
 }
 
@@ -695,6 +771,11 @@ void XQContextImpl::addSchemaLocation(const XMLCh* uri, VectorOfStrings* locatio
 const DocumentCache* XQContextImpl::getDocumentCache() const
 {
 	return _docCache;
+}
+
+void XQContextImpl::setDocumentCache(DocumentCache* docCache)
+{
+    _docCache = docCache;
 }
 
 Node::Ptr XQContextImpl::validate(const Node::Ptr &node, DocumentCache::ValidationMode valMode)

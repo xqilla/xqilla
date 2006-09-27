@@ -30,6 +30,15 @@ class XQILLA_API DynamicContext : public StaticContext
 public:
   virtual ~DynamicContext() {};
 
+  /** Register a new reference to the document */
+  virtual void incrementDocumentRefCount(const XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* document) const = 0;
+  /** Register a closed reference to the document */
+  virtual void decrementDocumentRefCount(const XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* document) const = 0;
+  /** Retrieve a document from the cache of loaded documents */
+  virtual XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* retrieveDocument(const XMLCh* uri) = 0;
+  /** Store a document in the cache of loaded documents */
+  virtual void storeDocument(const XMLCh* uri,XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* document) = 0;
+
   /** Resets the dynamic context, as if it had never been used */
   virtual void clearDynamicContext() = 0;
 

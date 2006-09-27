@@ -50,17 +50,9 @@ public:
   /** virtual destructor */
   virtual ~DocumentCache() {}
 
-  /** Register a new reference to the document */
-  virtual void incrementDocumentRefCount(const XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* document) const = 0;
-  /** Register a closed reference to the document */
-  virtual void decrementDocumentRefCount(const XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* document, const StaticContext *context) const = 0;
-
   /** load the DOM document from the requested URI (or get it from the cache) */
   virtual Node::Ptr loadXMLDocument(const XMLCh* Uri, DynamicContext *context) = 0;
   virtual Node::Ptr loadXMLDocument(XERCES_CPP_NAMESPACE_QUALIFIER InputSource& inputSource, DynamicContext *context) = 0;
-
-  /** Clear all the documents from the document cache */
-  virtual void clearStoredDocuments() = 0;
 
   /**
    * Sets the XMLEntityResolver that is used by Xerces when it is used
