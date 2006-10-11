@@ -49,7 +49,7 @@ void XQGlobalVariable::execute(DynamicContext* context) const
         XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer errMsg;
         errMsg.set(X("A value for the external variable '"));
         errMsg.append(m_szQName);
-        errMsg.append(X("' has not been provided"));
+        errMsg.append(X("' has not been provided [err:XPTY0002]"));
         XQThrow(IllegalArgumentException,X("XQGlobalVariable::collapseTreeInternal"),errMsg.getRawBuffer());
       }
       if(m_Type != NULL) {
