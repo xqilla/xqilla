@@ -99,7 +99,16 @@ Sequence XQDOMConstructor::collapseTreeInternal(DynamicContext *context, int fla
                 Result children = sourceNode->dmChildren(context, this);
                 Node::Ptr childNode;
                 while((childNode = children->next(context)).notNull()) {
-                  childList.push_back(childNode);
+                  // merge consecutive text nodes
+                  if(isTextNode(childNode) && !childList.empty() && isTextNode(childList.back())) {
+                    const XMLCh* buff=XPath2Utils::concatStrings(childList.back()->dmStringValue(context),
+                                                                 childNode->dmStringValue(context),
+                                                                 context->getMemoryManager());
+                    childList.pop_back();
+                    childList.push_back(context->getItemFactory()->createTextNode(buff, context));
+                  }
+                  else
+                    childList.push_back(childNode);
                 }
               }
               // Adjacent text nodes in the content sequence are merged into a single text node by concatenating 
@@ -266,7 +275,16 @@ Sequence XQDOMConstructor::collapseTreeInternal(DynamicContext *context, int fla
                 Result children = sourceNode->dmChildren(context, this);
                 Node::Ptr childNode;
                 while((childNode = children->next(context)).notNull()) {
-                  childList.push_back(childNode);
+                  // merge consecutive text nodes
+                  if(isTextNode(childNode) && !childList.empty() && isTextNode(childList.back())) {
+                    const XMLCh* buff=XPath2Utils::concatStrings(childList.back()->dmStringValue(context),
+                                                                 childNode->dmStringValue(context),
+                                                                 context->getMemoryManager());
+                    childList.pop_back();
+                    childList.push_back(context->getItemFactory()->createTextNode(buff, context));
+                  }
+                  else
+                    childList.push_back(childNode);
                 }
               }
 
