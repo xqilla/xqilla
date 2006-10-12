@@ -51,8 +51,10 @@ public:
   virtual ~DocumentCache() {}
 
   /** load the DOM document from the requested URI (or get it from the cache) */
-  virtual Node::Ptr loadXMLDocument(const XMLCh* Uri, DynamicContext *context) = 0;
-  virtual Node::Ptr loadXMLDocument(XERCES_CPP_NAMESPACE_QUALIFIER InputSource& inputSource, DynamicContext *context) = 0;
+  virtual XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *loadXMLDocument(const XMLCh* Uri, DynamicContext *context) = 0;
+  virtual XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *loadXMLDocument(XERCES_CPP_NAMESPACE_QUALIFIER
+                                                                      InputSource& inputSource,
+                                                                      DynamicContext *context) = 0;
 
   /**
    * Sets the XMLEntityResolver that is used by Xerces when it is used

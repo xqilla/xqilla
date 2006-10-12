@@ -140,7 +140,7 @@ void XQQuery::staticResolution(StaticContext *context)
       const XMLCh* prefix=XPath2NSUtils::getPrefix(varName, context->getMemoryManager());
       const XMLCh* uri=NULL;
       if(prefix && *prefix)
-        uri = context->getUriBoundToPrefix(prefix);
+        uri = context->getUriBoundToPrefix(prefix, *itVar);
       const XMLCh* name= XPath2NSUtils::getLocalName(varName);
       context->getVariableTypeStore()->declareGlobalVar(uri, name, forwardRef);
     }
@@ -153,7 +153,7 @@ void XQQuery::staticResolution(StaticContext *context)
           const XMLCh* prefix=XPath2NSUtils::getPrefix(varName, context->getMemoryManager());
           const XMLCh* uri=NULL;
           if(prefix && *prefix)
-            uri = context->getUriBoundToPrefix(prefix);
+            uri = context->getUriBoundToPrefix(prefix, *itVar2);
           const XMLCh* name= XPath2NSUtils::getLocalName(varName);
           context->getVariableTypeStore()->declareVar(uri,name,forwardRef2);
       }

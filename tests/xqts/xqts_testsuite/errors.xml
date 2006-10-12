@@ -1,5 +1,5 @@
 <errors>
-  <error id="CastableAs648" reason="result failure"/>
+  <error id="CastableAs648" reason="error failure"/>
   <error id="Constr-attr-ws-3" reason="result failure"/>
   <error id="Constr-attr-ws-5" reason="result failure"/>
   <error id="Constr-inscope-1" reason="inspect" action="pass"/>
@@ -8,6 +8,8 @@
   <error id="Constr-inscope-2" reason="inspect" action="pass"/>
   <error id="Constr-inscope-3" reason="inspect" action="pass"/>
   <error id="Constr-inscope-4" reason="inspect" action="pass"/>
+  <error id="K-DateTimeFunc-4" reason="no error failure"/>
+  <error id="K-DateTimeFunc-5" reason="no error failure"/>
   <error id="K-FunctionProlog-12" reason="no error failure"/>
   <error id="K-InternalVariablesWith-21" reason="error failure"/>
   <error id="K-InternalVariablesWith-22" reason="error failure"/>
@@ -21,8 +23,9 @@
   <error id="K-SeqSUMFunc-24" reason="error failure"/>
   <error id="K-SeqSUMFunc-25" reason="error failure"/>
   <error id="K-SeqSUMFunc-26" reason="error failure"/>
-  <error id="base-URI-19" reason="error failure"/>
+  <error id="base-URI-18" reason="error failure"/>
   <error id="base-URI-24" reason="error failure"/>
+  <error id="base-uri-29" reason="result failure"/>
   <error id="caselessmatch04" reason="result failure"/>
   <error id="caselessmatch05" reason="result failure"/>
   <error id="caselessmatch06" reason="result failure"/>
@@ -37,9 +40,6 @@
   <error id="fn-avg-mix-args-015" reason="result failure"/>
   <error id="fn-avg-mix-args-020" reason="result failure"/>
   <error id="fn-avg-mix-args-022" reason="result failure"/>
-  <error id="fn-avgflt2args-1" reason="result failure"/>
-  <error id="fn-avgflt2args-2" reason="result failure"/>
-  <error id="fn-avgflt2args-4" reason="result failure"/>
   <error id="fn-base-uri-17" reason="result failure"/>
   <error id="fn-base-uri-20" reason="result failure"/>
   <error id="fn-base-uri-21" reason="result failure"/>
@@ -130,16 +130,11 @@
   <error id="fn-implicit-timezone-3" reason="inspect" action="pass"/>
   <error id="fn-implicit-timezone-5" reason="inspect" action="pass"/>
   <error id="fn-implicit-timezone-9" reason="inspect" action="pass"/>
-  <error id="fn-indexof-mix-args-013" reason="result failure"/>
+  <error id="fn-matches-26" reason="result failure"/>
   <error id="fn-numberflt1args-1" reason="result failure"/>
   <error id="fn-numberflt1args-3" reason="result failure"/>
-  <error id="fn-numberlng1args-1" reason="result failure"/>
-  <error id="fn-numberlng1args-3" reason="result failure"/>
-  <error id="fn-numberulng1args-2" reason="result failure"/>
   <error id="fn-numberulng1args-3" reason="result failure"/>
   <error id="fn-resolve-uri-4" reason="no error failure"/>
   <error id="fn-resolve-uri-9" reason="result failure"/>
-  <error id="fn-sumdbl3args-6" reason="result failure"/>
-  <error id="modules-schema-context" reason="error failure"/>
   <error id="normalization-1" reason="no error failure"/>
 </errors>
