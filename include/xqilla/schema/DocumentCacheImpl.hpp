@@ -70,7 +70,7 @@ public:
    * Overload the parse method, to create the document from a different memory manager.
    * NB the Grammar info in the tree will still be in the same memory manager as the parser.
    */
-  virtual const XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *parseWithContext(const XMLCh* const uri, DynamicContext *context);
+  virtual XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *parseWithContext(const XMLCh* const uri, DynamicContext *context);
   /**
    * Overload the parse method, to create the document from a different memory manager.
    * NB the Grammar info in the tree will still be in the same memory manager as the parser.
@@ -131,8 +131,9 @@ public:
   virtual XERCES_CPP_NAMESPACE_QUALIFIER XMLEntityResolver* getXMLEntityResolver() const;
 
   /** load the DOM document from the requested URI (or get it from the cache) */
-  virtual Node::Ptr loadXMLDocument(const XMLCh* Uri, DynamicContext *context);
-  virtual Node::Ptr loadXMLDocument(XERCES_CPP_NAMESPACE_QUALIFIER InputSource& inputSource, DynamicContext *context);
+  virtual XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *loadXMLDocument(const XMLCh* Uri, DynamicContext *context);
+  virtual XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *loadXMLDocument(XERCES_CPP_NAMESPACE_QUALIFIER
+                                                                      InputSource& inputSource, DynamicContext *context);
 
   /*
    * returns true if the type represented by uri:typename is an instance of uriToCheck:typeNameToCheck 

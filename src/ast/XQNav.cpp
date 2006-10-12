@@ -271,7 +271,7 @@ unsigned int XQNav::combineProperties(unsigned int prev_props, unsigned int step
   unsigned int new_props = 0;
 
   if((step_props & StaticResolutionContext::SELF)) {
-    new_props |= step_props;
+    new_props |= prev_props;
   }
 
   if((prev_props & StaticResolutionContext::ONENODE) && (step_props & StaticResolutionContext::DOCORDER)) {

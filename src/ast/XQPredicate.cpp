@@ -66,6 +66,7 @@ ASTNode* XQPredicate::staticTyping(StaticContext *context)
   AutoContextItemTypeReset contextTypeReset(context, expr_->getStaticResolutionContext().getStaticType());
 
   predicate_ = predicate_->staticTyping(context);
+
   const StaticResolutionContext &newSrc = predicate_->getStaticResolutionContext();
 
   if(!newSrc.isUsed() && !predicate_->isSingleNumericConstant(context)) {

@@ -223,44 +223,31 @@ XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *DocumentCacheParser::parseWithContex
   return adoptDocument();
 }
 
-const XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *DocumentCacheParser::parseWithContext(const XMLCh* const uri, DynamicContext *context)
+XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *DocumentCacheParser::parseWithContext(const XMLCh* const uri, DynamicContext *context)
 {
   XERCES_CPP_NAMESPACE_QUALIFIER InputSource* srcToUse = 0;
-  if (getXMLEntityResolver()){
-    XERCES_CPP_NAMESPACE_QUALIFIER XMLResourceIdentifier resourceIdentifier(XERCES_CPP_NAMESPACE_QUALIFIER XMLResourceIdentifier::UnKnown,
-                                                                            uri, 
-                                                                            0, 
-                                                                            XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, 
-                                                                            context->getBaseURI());
+  if(getXMLEntityResolver()){
+    XERCES_CPP_NAMESPACE_QUALIFIER XMLResourceIdentifier
+      resourceIdentifier(XERCES_CPP_NAMESPACE_QUALIFIER XMLResourceIdentifier::UnKnown, uri, 0,
+                         XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context->getBaseURI());
     srcToUse = getXMLEntityResolver()->resolveEntity(&resourceIdentifier);
   }
   XERCES_CPP_NAMESPACE_QUALIFIER Janitor<XERCES_CPP_NAMESPACE_QUALIFIER InputSource> janIS(srcToUse);
-
-  // Resolve the uri against the base uri
-  const XMLCh *systemId = 0;
-  if(srcToUse)
-    systemId=srcToUse->getSystemId();
-  else
-  {
-    systemId=uri;
-    XERCES_CPP_NAMESPACE_QUALIFIER XMLURL urlTmp(context->getMemoryManager());
-    if(urlTmp.setURL(context->getBaseURI(), uri, urlTmp)) {
-      systemId = context->getMemoryManager()->getPooledString(urlTmp.getURLText());
-    }
-  }
-
-  XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *cachedDoc = context->retrieveDocument(systemId);
-  if(cachedDoc) {
-    return cachedDoc;
-  }
 
   _context = context;
   try {
     if(srcToUse)
       parse(*srcToUse);
-    else
+    else {
+      // Resolve the uri against the base uri
+      const XMLCh *systemId = uri;
+      XERCES_CPP_NAMESPACE_QUALIFIER XMLURL urlTmp(context->getMemoryManager());
+      if(urlTmp.setURL(context->getBaseURI(), uri, urlTmp)) {
+        systemId = context->getMemoryManager()->getPooledString(urlTmp.getURLText());
+      }
+
       parse(systemId);
-    context->storeDocument(systemId, getDocument());
+    }
   }
   catch(...) {
     _context = 0;
@@ -510,12 +497,13 @@ XERCES_CPP_NAMESPACE_QUALIFIER XMLEntityResolver* DocumentCacheImpl::getXMLEntit
     return const_cast<XERCES_CPP_NAMESPACE_QUALIFIER XMLEntityResolver*>(_parser.getXMLEntityResolver());
 }
 
-Node::Ptr DocumentCacheImpl::loadXMLDocument(XERCES_CPP_NAMESPACE_QUALIFIER InputSource& inputSource, DynamicContext *context)
+XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *DocumentCacheImpl::loadXMLDocument(XERCES_CPP_NAMESPACE_QUALIFIER
+                                                                               InputSource& inputSource,
+                                                                               DynamicContext *context)
 {
-  Node::Ptr result;
+  XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *doc = 0;
   try {
-    const XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *doc = _parser.parseWithContext(inputSource, context);
-    result = new NodeImpl(doc, context);
+    doc = _parser.parseWithContext(inputSource, context);
   }
   catch(const XERCES_CPP_NAMESPACE_QUALIFIER SAXException& toCatch) {
     //TODO: Find a way to decipher whether the exception is actually because of a parsing problem or because the document can't be found
@@ -527,15 +515,14 @@ Node::Ptr DocumentCacheImpl::loadXMLDocument(XERCES_CPP_NAMESPACE_QUALIFIER Inpu
   catch(const XERCES_CPP_NAMESPACE_QUALIFIER XMLException& toCatch) {
     XQThrow2(XMLParseException,X("DocumentCacheImpl::loadXMLDocument"), toCatch.getMessage());
   }
-  return result;
+  return doc;
 }
  
-Node::Ptr DocumentCacheImpl::loadXMLDocument(const XMLCh* uri, DynamicContext *context)
+XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *DocumentCacheImpl::loadXMLDocument(const XMLCh* uri, DynamicContext *context)
 {
-  Node::Ptr result;
+  XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *doc = 0;
   try {
-    const XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *doc = _parser.parseWithContext(uri, context);
-    result = new NodeImpl(doc, context);
+    doc = _parser.parseWithContext(uri, context);
   }
   catch(const XERCES_CPP_NAMESPACE_QUALIFIER SAXException& toCatch) {
     //TODO: Find a way to decipher whether the exception is actually because of a parsing problem or because the document can't be found
@@ -547,7 +534,7 @@ Node::Ptr DocumentCacheImpl::loadXMLDocument(const XMLCh* uri, DynamicContext *c
   catch(const XERCES_CPP_NAMESPACE_QUALIFIER XMLException& toCatch) {
     XQThrow2(XMLParseException,X("DocumentCacheImpl::loadXMLDocument"), toCatch.getMessage());
   }
-  return result;
+  return doc;
 }
 
 /*

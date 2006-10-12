@@ -113,7 +113,6 @@ ASTNode* GeneralComp::staticResolution(StaticContext *context)
 
   AutoNodeSetOrderingReset orderReset(context);
 
-  bool allConstant = true;
   for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
     *i = new (mm) XQAtomize(*i, mm);
     (*i)->setLocationInfo(this);

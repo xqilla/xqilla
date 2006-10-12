@@ -24,6 +24,7 @@
 #include <xercesc/framework/MemBufInputSource.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 #include <xercesc/util/XMLUri.hpp>
+#include <xercesc/util/XMLURL.hpp>
 
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/context/impl/XQContextImpl.hpp>
@@ -644,33 +645,48 @@ void XQContextImpl::registerURIResolver(URIResolver *resolver)
 
 Sequence XQContextImpl::resolveDocument(const XMLCh* uri, const LocationInfo *location)
 {
-  bool found = false;
   Sequence result(getMemoryManager());
+
+  // Check the URIResolver objects
+  bool found = false;
   std::vector<URIResolver *, XQillaAllocator<URIResolver*> >::reverse_iterator end = _resolvers.rend();
-  for(std::vector<URIResolver *, XQillaAllocator<URIResolver*> >::reverse_iterator i = _resolvers.rbegin(); i != end; ++i) {
-    if((*i)->resolveDocument(result, uri, this)) {
-      found = true;
-      break;
-    }
+  for(std::vector<URIResolver *, XQillaAllocator<URIResolver*> >::reverse_iterator i = _resolvers.rbegin();
+      !found && i != end; ++i) {
+    found = (*i)->resolveDocument(result, uri, this);
   }
 
   if(!found) {
-    Node::Ptr doc;
-    try {
-      doc = _docCache->loadXMLDocument(uri, this);
-    }
-    catch(const XMLParseException& e) {
-      XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer errMsg;
-      errMsg.set(X("Error parsing resource: "));
-      errMsg.append(uri);
-      errMsg.append(X(". Error message: "));
-      errMsg.append(e.getError());
-      errMsg.append(X(" [err:FODC0002]"));
-      XQThrow3(XMLParseException,X("XQContextImpl::resolveDocument"), errMsg.getRawBuffer(), location);
+    XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *doc = 0;
+
+    // Resolve the uri against the base uri
+    const XMLCh *systemId = uri;
+    XERCES_CPP_NAMESPACE_QUALIFIER XMLURL urlTmp(&_internalMM);
+    if(urlTmp.setURL(getBaseURI(), uri, urlTmp)) {
+      systemId = _internalMM.getPooledString(urlTmp.getURLText());
     }
 
-    if(doc != NULLRCP) {
-      result.addItem(doc);
+    // Check in the cache
+    doc = retrieveDocument(systemId);
+
+    // Check to see if we can locate and parse the document
+    if(!doc) {
+      try {
+        doc = _docCache->loadXMLDocument(uri, this);
+        storeDocument(systemId, doc);
+      }
+      catch(const XMLParseException& e) {
+        XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer errMsg;
+        errMsg.set(X("Error parsing resource: "));
+        errMsg.append(uri);
+        errMsg.append(X(". Error message: "));
+        errMsg.append(e.getError());
+        errMsg.append(X(" [err:FODC0002]"));
+        XQThrow3(XMLParseException,X("XQContextImpl::resolveDocument"), errMsg.getRawBuffer(), location);
+      }
+    }
+
+    if(doc) {
+      result.addItem(new NodeImpl(doc, this));
     }
     else {
       XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer errMsg;
@@ -686,34 +702,49 @@ Sequence XQContextImpl::resolveDocument(const XMLCh* uri, const LocationInfo *lo
 
 Sequence XQContextImpl::resolveCollection(const XMLCh* uri, const LocationInfo *location)
 {
-  bool found = false;
   Sequence result(getMemoryManager());
+
+  // Check the URIResolver objects
+  bool found = false;
   std::vector<URIResolver *, XQillaAllocator<URIResolver*> >::reverse_iterator end = _resolvers.rend();
-  for(std::vector<URIResolver *, XQillaAllocator<URIResolver*> >::reverse_iterator i = _resolvers.rbegin(); i != end; ++i) {
-    if((*i)->resolveCollection(result, uri, this)) {
-      found = true;
-      break;
-    }
+  for(std::vector<URIResolver *, XQillaAllocator<URIResolver*> >::reverse_iterator i = _resolvers.rbegin();
+      !found && i != end; ++i) {
+    found = (*i)->resolveCollection(result, uri, this);
   }
 
   if(!found) {
-    Node::Ptr doc;
-    try {
-      doc = _docCache->loadXMLDocument(uri, this);
-    }
-    catch(const XMLParseException&) {
-      doc = 0;
+    XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *doc = 0;
+
+    // Resolve the uri against the base uri
+    const XMLCh *systemId = uri;
+    XERCES_CPP_NAMESPACE_QUALIFIER XMLURL urlTmp(&_internalMM);
+    if(urlTmp.setURL(getBaseURI(), uri, urlTmp)) {
+      systemId = _internalMM.getPooledString(urlTmp.getURLText());
     }
 
-    if(doc != NULLRCP) {
-      result.addItem(doc);
+    // Check in the cache
+    doc = retrieveDocument(systemId);
+
+    // Check to see if we can locate and parse the document
+    if(!doc) {
+      try {
+        doc = _docCache->loadXMLDocument(uri, this);
+        storeDocument(systemId, doc);
+      }
+      catch(const XMLParseException& e) {
+        doc = 0;
+      }
+    }
+
+    if(doc) {
+      result.addItem(new NodeImpl(doc, this));
     }
     else {
       XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer errMsg;
       errMsg.set(X("Error retrieving resource: "));
       errMsg.append(uri);
       errMsg.append(X(" [err:FODC0004]"));
-      XQThrow3(XMLParseException,X("XQContextImpl::resolveDocument"), errMsg.getRawBuffer(), location);
+      XQThrow3(XMLParseException,X("XQContextImpl::resolveCollection"), errMsg.getRawBuffer(), location);
     }
   }
 
