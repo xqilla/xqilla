@@ -33,11 +33,11 @@ const unsigned int FunctionDateTime::minArgs = 2;
 const unsigned int FunctionDateTime::maxArgs = 2;
 
 /**
- * fn:dateTime($arg1 as xs:date, $arg2 as xs:time) as xs:dateTime
+ * fn:dateTime($arg1 as xs:date?, $arg2 as xs:time?) as xs:dateTime?
 **/
 
 FunctionDateTime::FunctionDateTime(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQFunction(name, minArgs, maxArgs, "date, time", args, memMgr)
+  : XQFunction(name, minArgs, maxArgs, "date?, time?", args, memMgr)
 {
 }
 
@@ -57,7 +57,11 @@ ASTNode *FunctionDateTime::staticTyping(StaticContext *context)
 Sequence FunctionDateTime::collapseTreeInternal(DynamicContext* context, int flags) const
 {
     ATDateOrDerived::Ptr date = (const ATDateOrDerived *)getParamNumber(1, context)->next(context).get();
+    if(date.isNull())
+        return Sequence(context->getMemoryManager());
     ATTimeOrDerived::Ptr time = (const ATTimeOrDerived *)getParamNumber(2, context)->next(context).get();
+    if(time.isNull())
+        return Sequence(context->getMemoryManager());
 
     Timezone::Ptr finalTZ;
     // determine the timezone of the result
