@@ -19,7 +19,7 @@
 #include <xercesc/util/XMLString.hpp>
 
 //Parse qualifiedName into prefix and name
-QualifiedName::QualifiedName(const XMLCh* const qualifiedName, XPath2MemoryManager* memMgr) : _bDeleteStrings(false)
+QualifiedName::QualifiedName(const XMLCh* qualifiedName, XPath2MemoryManager* memMgr) : _bDeleteStrings(false)
 {
   if(qualifiedName && *qualifiedName)
   {
@@ -83,7 +83,7 @@ QualifiedName::QualifiedName(const XMLCh* qualifiedName) : _bDeleteStrings(true)
   }
 }
 
-QualifiedName::QualifiedName(const XMLCh* const prefix, const XMLCh* const name) : _bDeleteStrings(false)
+QualifiedName::QualifiedName(const XMLCh* prefix, const XMLCh* name) : _bDeleteStrings(false)
 {
   _prefix = prefix;
   _name = name;
