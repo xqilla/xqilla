@@ -27,7 +27,7 @@ class XQILLA_API QualifiedName {
 public:
 	QualifiedName(const XMLCh* qualifiedName, XPath2MemoryManager* memMgr);
 	// This constructor should be used on persistent strings (no memory manager involved)
-	QualifiedName(const XMLCh* const prefix, const XMLCh* const name);
+	QualifiedName(const XMLCh* prefix, const XMLCh* name);
 	QualifiedName(const XMLCh* fullName);
 	~QualifiedName();
 
