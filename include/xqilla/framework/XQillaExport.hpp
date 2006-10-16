@@ -14,21 +14,24 @@
 #ifndef __XQILLAEXPORT_HPP
 #define __XQILLAEXPORT_HPP
 
-// This define tells VS8 not to give a warning when we use strcpy()
-// instead of the MS secure function strcpy_s().
+/*
+ * This define tells VS8 not to give a warning when we use strcpy()
+ * instead of the MS secure function strcpy_s().
+ */
 
 #ifdef _MSC_VER
 #define _CRT_SECURE_NO_DEPRECATE 1
 #endif
 
-// The following ifdef block is the standard way of creating macros which
-// make exporting from a DLL simpler. All files within this DLL are
-// compiled with the XQILLA_APIS symbol defined on the command line.
-// this symbol should not be defined on any project that uses this DLL.
-// This way any other project whose source files include this file see
-// XQILLA_API functions as being imported from a DLL, wheras this DLL
-// sees symbols defined with this macro as being exported.
-
+/*
+ * The following ifdef block is the standard way of creating macros which
+ * make exporting from a DLL simpler. All files within this DLL are
+ * compiled with the XQILLA_APIS symbol defined on the command line.
+ * this symbol should not be defined on any project that uses this DLL.
+ * This way any other project whose source files include this file see
+ * XQILLA_API functions as being imported from a DLL, wheras this DLL
+ * sees symbols defined with this macro as being exported.
+ */
 #if defined(WIN32) && !defined(__CYGWIN__)
   #ifdef XQILLA_APIS
     #define XQILLA_API __declspec(dllexport)
