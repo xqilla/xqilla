@@ -1,7 +1,7 @@
 AUTOMAKE_OPTIONS = foreign dist-zip
 SUBDIRS = include
 
-INCLUDES = -I $(top_srcdir)/include/ -I $(xerces_include) -I $(top_srcdir)/src/lexer/
+INCLUDES = -I$(top_srcdir)/include/ -I$(xerces_include) -I$(top_srcdir)/src/lexer/
 LDFLAGS = -L$(xerces_lib) -R$(xerces_lib)
 LDADD = libxqilla.la -lxerces-c
 
