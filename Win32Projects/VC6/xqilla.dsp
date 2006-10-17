@@ -2217,6 +2217,10 @@ SOURCE=..\..\src\items\Numeric.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\items\NumericTypeConstructor.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\items\Timezone.cpp
 # End Source File
 # Begin Source File
@@ -2342,6 +2346,10 @@ SOURCE=..\..\include\xqilla\items\Node.hpp
 # Begin Source File
 
 SOURCE=..\..\include\xqilla\items\Numeric.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\items\NumericTypeConstructor.hpp
 # End Source File
 # Begin Source File
 
