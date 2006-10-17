@@ -2008,6 +2008,9 @@
 				RelativePath="..\..\src\items\Numeric.cpp">
 			</File>
 			<File
+				RelativePath="..\..\src\items\NumericTypeConstructor.cpp">
+			</File>
+			<File
 				RelativePath="..\..\src\items\Timezone.cpp">
 			</File>
 			<File
@@ -2102,6 +2105,9 @@
 			</File>
 			<File
 				RelativePath="..\..\include\xqilla\items\Numeric.hpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\items\NumericTypeConstructor.hpp">
 			</File>
 			<File
 				RelativePath="..\..\include\xqilla\items\Timezone.hpp">
