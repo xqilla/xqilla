@@ -90,6 +90,8 @@ Range::RangeResult::RangeResult(const Range *op, DynamicContext *context)
 
 Item::Ptr Range::RangeResult::next(DynamicContext *context)
 {
+  context->testInterrupt();
+
   if(_end == NULLRCP) {
     // initialise
     _last = (const Numeric::Ptr )_op->getArgument(0)->collapseTree(context)->next(context);
