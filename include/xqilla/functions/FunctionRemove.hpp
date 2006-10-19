@@ -27,18 +27,19 @@ public:
 
   FunctionRemove(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
+  ASTNode* staticResolution(StaticContext *context);
+  ASTNode *staticTyping(StaticContext *context);
   Result createResult(DynamicContext* context, int flags=0) const;
 
 private:
   class RemoveResult : public ResultImpl
   {
   public:
-    RemoveResult(const FunctionRemove *func, int flags);
+    RemoveResult(const FunctionRemove *func);
 
     Item::Ptr next(DynamicContext *context);
     std::string asString(DynamicContext *context, int indent) const;
   private:
-    int _flags;
     const FunctionRemove *_func;
     Numeric::Ptr _position;
     Numeric::Ptr _one;

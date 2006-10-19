@@ -46,35 +46,39 @@ XQNav::~XQNav()
 
 Result XQNav::createResult(DynamicContext* context, int flags) const
 {
-  Result result(0);
-
   Steps::const_iterator end = _steps.end();
-  for(Steps::const_iterator it = _steps.begin(); it != end; ++it) {
-    if(it->step->getStaticResolutionContext().isContextSizeUsed()) {
-      // We need the context size, so convert to a Sequence to work it out
-      Sequence seq(result->toSequence(context));
-      result = new NavStepResult(new SequenceResult(it->step, seq), it->step, seq.getLength(), flags);
-    }
-    // this will ignore any previous result, so it can be done only at the first iteration
-    else if(result.isNull() && !it->step->getStaticResolutionContext().areContextFlagsUsed()) {
-      result = it->step->collapseTree(context, flags);
-    }
-    else {
-      result = new NavStepResult(result, it->step, 0, flags);
+  Steps::const_iterator it = _steps.begin();
+
+  Result result(0);
+  if(it != end) {
+    ASTNode *step = it->step;
+
+    result = step->collapseTree(context, flags);
+    StaticType st = step->getStaticResolutionContext().getStaticType();
+
+    for(++it; it != end; ++it) {
+      if(st.containsType(StaticType::ANY_ATOMIC_TYPE)) {
+        result = new IntermediateStepCheckResult(step, result);
+      }
+
+      step = it->step;
+
+      if(step->getStaticResolutionContext().isContextSizeUsed()) {
+        // We need the context size, so convert to a Sequence to work it out
+        Sequence seq(result->toSequence(context));
+        result = new NavStepResult(new SequenceResult(step, seq), step, seq.getLength());
+      }
+      else {
+        result = new NavStepResult(result, step, 0);
+      }
+
+      st = step->getStaticResolutionContext().getStaticType();
     }
 
-    const StaticType &st = it->step->getStaticResolutionContext().getStaticType();
-    if(it == (end-1)) {
-      // the last step allows either nodes or atomic items
-      if(st.containsType(StaticType::NODE_TYPE) &&
-         st.containsType(StaticType::ANY_ATOMIC_TYPE)) {
-        result = new LastStepCheckResult(it->step, result);
-      }
-    }
-    else {
-      if(st.containsType(StaticType::ANY_ATOMIC_TYPE)) {
-        result = new IntermediateStepCheckResult(it->step, result);
-      }
+    // the last step allows either nodes or atomic items
+    if(st.containsType(StaticType::NODE_TYPE) &&
+       st.containsType(StaticType::ANY_ATOMIC_TYPE)) {
+      result = new LastStepCheckResult(step, result);
     }
   }
 
@@ -316,10 +320,9 @@ unsigned int XQNav::combineProperties(unsigned int prev_props, unsigned int step
 // NavStepResult
 /////////////////////////////////////
 
-NavStepResult::NavStepResult(const Result &parent, ASTNode *step, unsigned int contextSize, int flags)
+NavStepResult::NavStepResult(const Result &parent, ASTNode *step, unsigned int contextSize)
   : ResultImpl(step),
     initialised_(false),
-    flags_(flags),
     parent_(parent),
     step_(step),
     stepResult_(0),
@@ -331,62 +334,34 @@ NavStepResult::NavStepResult(const Result &parent, ASTNode *step, unsigned int c
 
 Item::Ptr NavStepResult::next(DynamicContext *context)
 {
-  unsigned int oldContextSize = context->getContextSize();
-  unsigned int oldContextPosition = context->getContextPosition();
-  const Item::Ptr oldContextItem = context->getContextItem();
+  AutoContextInfoReset autoReset(context);
 
   context->setContextSize(contextSize_);
   context->setContextPosition(contextPos_);
   context->setContextItem(contextItem_);
 
-  Item::Ptr result = 0;
-  while(true) {
+  Item::Ptr result = stepResult_->next(context);
+  while(result.isNull()) {
     context->testInterrupt();
+
+    autoReset.resetContextInfo();
+
+    contextItem_ = parent_->next(context);
+    if(contextItem_.isNull()) {
+      parent_ = 0;
+      return 0;
+    }
+    ++contextPos_;
+
+    context->setContextSize(contextSize_);
+    context->setContextPosition(contextPos_);
+    context->setContextItem(contextItem_);
+
+    stepResult_ = step_->collapseTree(context);
     result = stepResult_->next(context);
-    if(result == NULLRCP) {
-      if(!initialised_ && parent_.isNull()) {
-        initialised_ = true;
-        // We have no parent step, so navigate from the context item
-        contextItem_ = oldContextItem;
-        contextPos_ = oldContextPosition;
-        contextSize_ = oldContextSize;
-      }
-      else {
-        context->setContextSize(oldContextSize);
-        context->setContextPosition(oldContextPosition);
-        context->setContextItem(oldContextItem);
-
-        contextItem_ = parent_->next(context);
-        if(contextItem_ == NULLRCP) {
-          parent_ = 0;
-          stepResult_ = 0;
-          return 0;
-        }
-        ++contextPos_;
-      }
-
-      context->setContextSize(contextSize_);
-      context->setContextPosition(contextPos_);
-      context->setContextItem(contextItem_);
-
-      stepResult_ = step_->collapseTree(context, flags_);
-    }
-    else {
-      // no duplicate check
-      context->setContextSize(oldContextSize);
-      context->setContextPosition(oldContextPosition);
-      context->setContextItem(oldContextItem);
-      return result;
-    }
   }
 
-  return 0;
-}
-
-void NavStepResult::skip()
-{
-	stepResult_ = 0;
-	parent_->skip();
+  return result;
 }
 
 std::string NavStepResult::asString(DynamicContext *context, int indent) const
@@ -423,11 +398,6 @@ Item::Ptr IntermediateStepCheckResult::next(DynamicContext *context)
   }
 
   return result;
-}
-
-void IntermediateStepCheckResult::skip()
-{
-	parent_->skip();
 }
 
 std::string IntermediateStepCheckResult::asString(DynamicContext *context, int indent) const
@@ -473,11 +443,6 @@ Item::Ptr LastStepCheckResult::next(DynamicContext *context)
   }
 
   return result;
-}
-
-void LastStepCheckResult::skip()
-{
-	parent_->skip();
 }
 
 std::string LastStepCheckResult::asString(DynamicContext *context, int indent) const

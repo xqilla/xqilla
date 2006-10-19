@@ -39,18 +39,32 @@ const unsigned int FunctionInsertBefore::maxArgs = 3;
 FunctionInsertBefore::FunctionInsertBefore(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "item()*, integer, item()*", args, memMgr)
 {
-  // TBD - could do better here - jpcs
-  _src.getStaticType().flags = StaticType::ITEM_TYPE;
+}
+
+ASTNode* FunctionInsertBefore::staticResolution(StaticContext *context)
+{
+  return resolveArguments(context);
+}
+
+ASTNode *FunctionInsertBefore::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
+  ASTNode *result = calculateSRCForArguments(context);
+  if(result == this) {
+    _src.getStaticType() = _args[0]->getStaticResolutionContext().getStaticType();
+    _src.getStaticType().typeUnion(_args[2]->getStaticResolutionContext().getStaticType());
+  }
+  return result;
 }
 
 Result FunctionInsertBefore::createResult(DynamicContext* context, int flags) const
 {
-  return new InsertBeforeResult(this, flags);
+  return new InsertBeforeResult(this);
 }
 
-FunctionInsertBefore::InsertBeforeResult::InsertBeforeResult(const FunctionInsertBefore *func, int flags)
+FunctionInsertBefore::InsertBeforeResult::InsertBeforeResult(const FunctionInsertBefore *func)
   : ResultImpl(func),
-    _flags(flags),
     _func(func),
     _position(0),
     _one(0),
@@ -67,10 +81,10 @@ Item::Ptr FunctionInsertBefore::InsertBeforeResult::next(DynamicContext *context
     _position = ((const ATDecimalOrDerived::Ptr )_func->getParamNumber(2, context)->next(context));
     _one = context->getItemFactory()->createInteger(1, context);
     _i = _one;
-    _target = _func->getParamNumber(1, context, _flags);
+    _target = _func->getParamNumber(1, context);
 
     if(!_position->greaterThan(_one, context)) {
-      _inserts = _func->getParamNumber(3, context, _flags);
+      _inserts = _func->getParamNumber(3, context);
     }
   }
 
@@ -88,7 +102,7 @@ Item::Ptr FunctionInsertBefore::InsertBeforeResult::next(DynamicContext *context
       if(!_insertsDone) {
         _i = _i->add(_one, context);
         if(result == NULLRCP || _position->equals((const AnyAtomicType::Ptr)_i, context)) {
-          _inserts = _func->getParamNumber(3, context, _flags);
+          _inserts = _func->getParamNumber(3, context);
         }
       }
       else if(result == NULLRCP) {

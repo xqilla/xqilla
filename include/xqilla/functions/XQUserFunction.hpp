@@ -69,13 +69,13 @@ public:
     class FunctionEvaluatorResult : public ResultImpl
     {
     public:
-      FunctionEvaluatorResult(const XQFunctionEvaluator *di, int flags);
+      FunctionEvaluatorResult(const XQFunctionEvaluator *di);
 
       Item::Ptr next(DynamicContext *context);
       std::string asString(DynamicContext *context, int indent) const;
     private:
-      int _flags;
       const XQFunctionEvaluator *_di;
+      bool _toDo;
 
       Scope<Sequence> *_scope;
       Result _result;

@@ -39,18 +39,31 @@ const unsigned int FunctionRemove::maxArgs = 2;
 FunctionRemove::FunctionRemove(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "item()*, integer", args, memMgr)
 {
-  // TBD - could do better here - jpcs
-  _src.getStaticType().flags = StaticType::ITEM_TYPE;
+}
+
+ASTNode* FunctionRemove::staticResolution(StaticContext *context)
+{
+  return resolveArguments(context);
+}
+
+ASTNode *FunctionRemove::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
+  ASTNode *result = calculateSRCForArguments(context);
+  if(result == this) {
+    _src.getStaticType() = _args[0]->getStaticResolutionContext().getStaticType();
+  }
+  return result;
 }
 
 Result FunctionRemove::createResult(DynamicContext* context, int flags) const
 {
-  return new RemoveResult(this, flags);
+  return new RemoveResult(this);
 }
 
-FunctionRemove::RemoveResult::RemoveResult(const FunctionRemove *func, int flags)
+FunctionRemove::RemoveResult::RemoveResult(const FunctionRemove *func)
   : ResultImpl(func),
-    _flags(flags),
     _func(func),
     _position(0),
     _one(0),
