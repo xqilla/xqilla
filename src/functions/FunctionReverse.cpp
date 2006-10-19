@@ -30,8 +30,22 @@ const unsigned int FunctionReverse::maxArgs = 1;
 FunctionReverse::FunctionReverse(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "item()*", args, memMgr)
 {
-  // TBD - could do better here - jpcs
-  _src.getStaticType().flags = StaticType::ITEM_TYPE;
+}
+
+ASTNode* FunctionReverse::staticResolution(StaticContext *context)
+{
+  return resolveArguments(context);
+}
+
+ASTNode *FunctionReverse::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
+  ASTNode *result = calculateSRCForArguments(context);
+  if(result == this) {
+    _src.getStaticType() = _args[0]->getStaticResolutionContext().getStaticType();
+  }
+  return result;
 }
 
 Sequence FunctionReverse::collapseTreeInternal(DynamicContext* context, int flags) const

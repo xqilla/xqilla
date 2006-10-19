@@ -316,7 +316,7 @@ XQUserFunction::XQFunctionEvaluator::XQFunctionEvaluator(const XQUserFunction* f
 
 Result XQUserFunction::XQFunctionEvaluator::createResult(DynamicContext* context, int flags) const
 {
-  return new FunctionEvaluatorResult(this, flags);
+  return new FunctionEvaluatorResult(this);
 }
 
 ASTNode* XQUserFunction::XQFunctionEvaluator::staticResolution(StaticContext* context)
@@ -382,10 +382,10 @@ ASTNode* XQUserFunction::XQFunctionEvaluator::staticTyping(StaticContext* contex
   return this;
 }
 
-XQUserFunction::XQFunctionEvaluator::FunctionEvaluatorResult::FunctionEvaluatorResult(const XQFunctionEvaluator *di, int flags)
+XQUserFunction::XQFunctionEvaluator::FunctionEvaluatorResult::FunctionEvaluatorResult(const XQFunctionEvaluator *di)
   : ResultImpl(di),
-    _flags(flags),
     _di(di),
+    _toDo(true),
     _scope(0),
     _result(0),
     _scopeRemoved(false)
@@ -405,7 +405,9 @@ Item::Ptr XQUserFunction::XQFunctionEvaluator::FunctionEvaluatorResult::next(Dyn
     origDocCache=const_cast<DocumentCache*>(context->getDocumentCache());
     context->setDocumentCache(docCache);
   }
-  if(_result.isNull()) {
+  if(_toDo) {
+    _toDo = false;
+
     int nDefinedArgs = _di->getFunctionDefinition()->getParams() ? _di->getFunctionDefinition()->getParams()->size() : 0;
 
     VectorOfParamBindings varValues;

@@ -29,21 +29,21 @@ public:
   static const unsigned int minArgs;
   static const unsigned int maxArgs;
 
-  ///Constructor. Sets arg def to NOT_OPTIONAL.
   FunctionInsertBefore(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
+  ASTNode* staticResolution(StaticContext *context);
+  ASTNode *staticTyping(StaticContext *context);
   Result createResult(DynamicContext* context, int flags=0) const;
 
 private:
   class InsertBeforeResult : public ResultImpl
   {
   public:
-    InsertBeforeResult(const FunctionInsertBefore *func, int flags);
+    InsertBeforeResult(const FunctionInsertBefore *func);
 
     Item::Ptr next(DynamicContext *context);
     std::string asString(DynamicContext *context, int indent) const;
   private:
-    int _flags;
     const FunctionInsertBefore *_func;
     Numeric::Ptr _position;
     Numeric::Ptr _one;

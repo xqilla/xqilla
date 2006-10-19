@@ -66,15 +66,13 @@ protected:
 class XQILLA_API NavStepResult : public ResultImpl
 {
 public:
-  NavStepResult(const Result &parent, ASTNode *step, unsigned int contextSize, int flags);
+  NavStepResult(const Result &parent, ASTNode *step, unsigned int contextSize);
 
   Item::Ptr next(DynamicContext *context);
-  void skip();
   std::string asString(DynamicContext *context, int indent) const;
 
 private:
   bool initialised_;
-  int flags_;
   Result parent_;
   const ASTNode *step_;
   Result stepResult_;
@@ -89,7 +87,6 @@ public:
   IntermediateStepCheckResult(const LocationInfo *o, const Result &parent);
 
   Item::Ptr next(DynamicContext *context);
-  void skip();
   std::string asString(DynamicContext *context, int indent) const;
 
 private:
@@ -102,7 +99,6 @@ public:
   LastStepCheckResult(const LocationInfo *o, const Result &parent);
 
   Item::Ptr next(DynamicContext *context);
-  void skip();
   std::string asString(DynamicContext *context, int indent) const;
 
 private:

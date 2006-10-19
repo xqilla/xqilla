@@ -29,9 +29,10 @@ public:
   static const unsigned int minArgs;
   static const unsigned int maxArgs;
 
-  ///Constructor. Sets arg def to NOT_OPTIONAL.
   FunctionReverse(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
+  ASTNode* staticResolution(StaticContext *context);
+  ASTNode *staticTyping(StaticContext *context);
   Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
 
 };
