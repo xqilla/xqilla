@@ -82,7 +82,7 @@ ASTNode *XQCastableAs::staticTyping(StaticContext *context)
 {
   _src.clear();
 
-  _expr = _expr->staticResolution(context);
+  _expr = _expr->staticTyping(context);
 
   _src.getStaticType().flags = StaticType::BOOLEAN_TYPE;
   _src.add(_expr->getStaticResolutionContext());
