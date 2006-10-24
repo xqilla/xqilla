@@ -80,9 +80,11 @@ inline ItemConstructor *itemToItemConstructor(const Item::Ptr &item, DynamicCont
 
 static const unsigned int CONSTANT_FOLD_LIMIT = 30;
 
-XQSequence *XQSequence::constantFold(Result &result, DynamicContext *context, XPath2MemoryManager* memMgr)
+XQSequence *XQSequence::constantFold(Result &result, DynamicContext *context, XPath2MemoryManager* memMgr,
+	const LocationInfo *location)
 {
   XQSequence *seq = new (memMgr) XQSequence(memMgr);
+  seq->setLocationInfo(location);
 
   Item::Ptr item;
   while((item = result->next(context)).notNull()) {
