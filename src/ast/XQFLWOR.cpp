@@ -776,7 +776,7 @@ void XQFLWOR::staticTypingImpl(StaticContext* context)
       dContext->setMemoryManager(mm);
       Result result = createResultImpl(newBindings->begin(), newBindings->end(), dContext);
 
-      XQSequence *newReturn = XQSequence::constantFold(result, dContext, getMemoryManager());
+      XQSequence *newReturn = XQSequence::constantFold(result, dContext, getMemoryManager(), *it);
       if(newReturn != 0) {
         // Constant folding succeeded
         _return = newReturn;

@@ -43,7 +43,8 @@ public:
     return _itemConstructors;
   }
 
-  static XQSequence *constantFold(Result &result, DynamicContext *context, XPath2MemoryManager* memMgr);
+  static XQSequence *constantFold(Result &result, DynamicContext *context, XPath2MemoryManager* memMgr,
+	  const LocationInfo *location);
 
 private:
   class SequenceResult : public ResultImpl {

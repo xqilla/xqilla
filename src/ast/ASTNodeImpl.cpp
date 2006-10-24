@@ -93,7 +93,7 @@ ASTNode *ASTNodeImpl::constantFold(StaticContext *context)
   dContext->setMemoryManager(mm);
 
   Result result = createResult(dContext);
-  ASTNode *newBlock = XQSequence::constantFold(result, dContext, mm);
+  ASTNode *newBlock = XQSequence::constantFold(result, dContext, mm, this);
   if(newBlock == 0) return this; // Constant folding failed
 
   newBlock->setLocationInfo(this);

@@ -37,8 +37,6 @@ XQPredicate::XQPredicate(ASTNode* expr, ASTNode *predicate, XPath2MemoryManager*
 
 ASTNode* XQPredicate::staticResolution(StaticContext *context)
 {
-  XPath2MemoryManager *mm = context->getMemoryManager();
-
   expr_ = expr_->staticResolution(context);
 
   {
