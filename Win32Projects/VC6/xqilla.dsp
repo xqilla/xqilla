@@ -524,30 +524,6 @@ SOURCE=..\..\src\context\impl\ItemFactoryImpl.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\context\impl\UCANormalizer.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\context\impl\UCANormalizer.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\context\impl\UCANormalizer1.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\context\impl\UCANormalizer2.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\context\impl\UCANormalizer3.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\context\impl\UCANormalizer4.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\context\impl\VarHashEntryImpl.cpp
 # End Source File
 # Begin Source File
@@ -2917,6 +2893,26 @@ SOURCE=..\..\src\utils\PrintAST.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\utils\UCANormalizer.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\utils\UCANormalizer1.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\utils\UCANormalizer2.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\utils\UCANormalizer3.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\utils\UCANormalizer4.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\utils\UTF8Str.cpp
 # End Source File
 # Begin Source File
@@ -2950,6 +2946,10 @@ SOURCE=..\..\include\xqilla\utils\NumUtils.hpp
 # Begin Source File
 
 SOURCE=..\..\include\xqilla\utils\PrintAST.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\utils\UCANormalizer.hpp
 # End Source File
 # Begin Source File
 

@@ -11,8 +11,8 @@
  * $Id$
  */
 
-#include "../../config/xqilla_config.h"
-#include "UCANormalizer.hpp"
+#include "../config/xqilla_config.h"
+#include <xqilla/utils/UCANormalizer.hpp>
 
 #define NO_COMPOSITION 0xFFFFFFFF
 

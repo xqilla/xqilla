@@ -11,8 +11,8 @@
  * $Id$
  */
 
-#include "../../config/xqilla_config.h"
-#include "UCANormalizer.hpp"
+#include "../config/xqilla_config.h"
+#include <xqilla/utils/UCANormalizer.hpp>
 
 static unsigned int lc00041[] = { 0x00061, 0x00000 };
 static unsigned int lc00042[] = { 0x00062, 0x00000 };

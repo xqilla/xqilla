@@ -16,7 +16,7 @@
 #include <xqilla/fulltext/Tokenizer.hpp>
 #include <xqilla/framework/XPath2MemoryManager.hpp>
 #include <xqilla/context/DynamicContext.hpp>
-#include "../context/impl/UCANormalizer.hpp"
+#include <xqilla/utils/UCANormalizer.hpp>
 
 #include <xercesc/util/XMLString.hpp>
 

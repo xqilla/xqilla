@@ -18,12 +18,6 @@ src/framework/StringPool.cpp \
 src/framework/XPath2MemoryManagerImpl.cpp \
 src/context/XQScopedNamespace.cpp \
 src/context/impl/CollationImpl.cpp \
-src/context/impl/UCANormalizer1.cpp \
-src/context/impl/UCANormalizer2.cpp \
-src/context/impl/UCANormalizer3.cpp \
-src/context/impl/UCANormalizer4.cpp \
-src/context/impl/UCANormalizer.cpp \
-src/context/impl/UCANormalizer.hpp \
 src/context/impl/CodepointCollation.cpp \
 src/context/impl/VarStoreImpl.hpp \
 src/context/impl/VarStoreImpl.cpp \
@@ -114,6 +108,11 @@ src/utils/XQillaPlatformUtils.cpp \
 src/utils/PrintAST.cpp \
 src/utils/XPath2NSUtils.cpp \
 src/utils/XPath2Utils.cpp \
+src/utils/UCANormalizer1.cpp \
+src/utils/UCANormalizer2.cpp \
+src/utils/UCANormalizer3.cpp \
+src/utils/UCANormalizer4.cpp \
+src/utils/UCANormalizer.cpp \
 src/exceptions/XQillaException.cpp \
 src/exceptions/XQException.cpp \
 src/exceptions/InvalidLexicalSpaceException.hpp \

@@ -68,53 +68,53 @@ LTLIBRARIES = $(lib_LTLIBRARIES)
 libxqilla_la_LIBADD =
 am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	ProxyMemoryManager.lo StringPool.lo XPath2MemoryManagerImpl.lo \
-	XQScopedNamespace.lo CollationImpl.lo UCANormalizer1.lo \
-	UCANormalizer2.lo UCANormalizer3.lo UCANormalizer4.lo \
-	UCANormalizer.lo CodepointCollation.lo VarStoreImpl.lo \
-	VarTypeStoreImpl.lo VarHashEntryImpl.lo XQContextImpl.lo \
-	XQDynamicContextImpl.lo ItemFactoryImpl.lo XQRemoteDebugger.lo \
-	XQAtomize.lo XQCastableAs.lo XQCastAs.lo XQContextItem.lo \
-	XQFunction.lo XQIf.lo ASTNodeImpl.lo XQInstanceOf.lo \
-	XQLiteral.lo XQNav.lo XQOperator.lo XQParenthesizedExpr.lo \
-	XQSequence.lo XQStep.lo XQTreatAs.lo XQVariable.lo \
-	StaticResolutionContext.lo StaticType.lo AggregateFunction.lo \
-	ConstantFoldingFunction.lo NumericFunction.lo XQDebugHook.lo \
-	XQDOMConstructor.lo XQFLWOR.lo XQFunctionCall.lo \
-	XQGlobalVariable.lo XQOrderingChange.lo XQQuantified.lo \
-	XQValidate.lo XQTypeswitch.lo XQVariableBinding.lo \
-	XPath1Compat.lo ConvertFunctionArg.lo XQDocumentOrder.lo \
-	XQPredicate.lo FTContains.lo FTWords.lo FTOr.lo FTAnd.lo \
-	FTMildnot.lo FTUnaryNot.lo DefaultTokenizer.lo \
-	DefaultTokenStore.lo FTOrder.lo FTDistance.lo FTScope.lo \
-	FTContent.lo FTWindow.lo XQillaBuilderImpl.lo \
-	XQillaDocumentImpl.lo XQillaExpressionImpl.lo \
-	XQillaNSResolverImpl.lo XQillaXMLGrammarPoolImpl.lo \
-	XPathDocumentImpl.lo XPathNamespaceImpl.lo XPath2ResultImpl.lo \
+	XQScopedNamespace.lo CollationImpl.lo CodepointCollation.lo \
+	VarStoreImpl.lo VarTypeStoreImpl.lo VarHashEntryImpl.lo \
+	XQContextImpl.lo XQDynamicContextImpl.lo ItemFactoryImpl.lo \
+	XQRemoteDebugger.lo XQAtomize.lo XQCastableAs.lo XQCastAs.lo \
+	XQContextItem.lo XQFunction.lo XQIf.lo ASTNodeImpl.lo \
+	XQInstanceOf.lo XQLiteral.lo XQNav.lo XQOperator.lo \
+	XQParenthesizedExpr.lo XQSequence.lo XQStep.lo XQTreatAs.lo \
+	XQVariable.lo StaticResolutionContext.lo StaticType.lo \
+	AggregateFunction.lo ConstantFoldingFunction.lo \
+	NumericFunction.lo XQDebugHook.lo XQDOMConstructor.lo \
+	XQFLWOR.lo XQFunctionCall.lo XQGlobalVariable.lo \
+	XQOrderingChange.lo XQQuantified.lo XQValidate.lo \
+	XQTypeswitch.lo XQVariableBinding.lo XPath1Compat.lo \
+	ConvertFunctionArg.lo XQDocumentOrder.lo XQPredicate.lo \
+	FTContains.lo FTWords.lo FTOr.lo FTAnd.lo FTMildnot.lo \
+	FTUnaryNot.lo DefaultTokenizer.lo DefaultTokenStore.lo \
+	FTOrder.lo FTDistance.lo FTScope.lo FTContent.lo FTWindow.lo \
+	XQillaBuilderImpl.lo XQillaDocumentImpl.lo \
+	XQillaExpressionImpl.lo XQillaNSResolverImpl.lo \
+	XQillaXMLGrammarPoolImpl.lo XPathDocumentImpl.lo \
+	XPathNamespaceImpl.lo XPath2ResultImpl.lo \
 	XQillaImplementation.lo XPath2NodeSerializer.lo XQilla.lo \
 	XQQuery.lo UTF8Str.lo XMLChCompare.lo XStr.lo ContextUtils.lo \
 	DateUtils.lo NumUtils.lo XQillaPlatformUtils.lo PrintAST.lo \
-	XPath2NSUtils.lo XPath2Utils.lo XQillaException.lo \
-	XQException.lo FuncFactory.lo FunctionLookupImpl.lo \
-	FunctionAbs.lo FunctionAvg.lo FunctionBaseURI.lo \
-	FunctionBoolean.lo FunctionCeiling.lo \
-	FunctionCodepointEqual.lo FunctionCodepointsToString.lo \
-	FunctionCollection.lo FunctionCompare.lo FunctionConcat.lo \
-	FunctionConstructor.lo FunctionContains.lo FunctionCount.lo \
-	FunctionCurrentDate.lo FunctionCurrentDateTime.lo \
-	FunctionCurrentTime.lo FunctionData.lo FunctionDateTime.lo \
-	FunctionDeepEqual.lo FunctionDefaultCollation.lo \
-	FunctionDistinctValues.lo FunctionDocAvailable.lo \
-	FunctionDoc.lo FunctionDocumentURI.lo FunctionEmpty.lo \
-	FunctionEncodeForUri.lo FunctionEndsWith.lo FunctionError.lo \
-	FunctionEscapeHtmlUri.lo FunctionExactlyOne.lo \
-	FunctionExists.lo FunctionFalse.lo FunctionFloor.lo \
-	FunctionId.lo FunctionIdref.lo FunctionImplicitTimezone.lo \
-	FunctionIndexOf.lo FunctionInScopePrefixes.lo \
-	FunctionInsertBefore.lo FunctionIriToUri.lo FunctionLang.lo \
-	FunctionLast.lo FunctionLocalname.lo \
-	FunctionLocalNameFromQName.lo FunctionLowerCase.lo \
-	FunctionMatches.lo FunctionMax.lo FunctionMin.lo \
-	FunctionName.lo FunctionNamespaceUri.lo \
+	XPath2NSUtils.lo XPath2Utils.lo UCANormalizer1.lo \
+	UCANormalizer2.lo UCANormalizer3.lo UCANormalizer4.lo \
+	UCANormalizer.lo XQillaException.lo XQException.lo \
+	FuncFactory.lo FunctionLookupImpl.lo FunctionAbs.lo \
+	FunctionAvg.lo FunctionBaseURI.lo FunctionBoolean.lo \
+	FunctionCeiling.lo FunctionCodepointEqual.lo \
+	FunctionCodepointsToString.lo FunctionCollection.lo \
+	FunctionCompare.lo FunctionConcat.lo FunctionConstructor.lo \
+	FunctionContains.lo FunctionCount.lo FunctionCurrentDate.lo \
+	FunctionCurrentDateTime.lo FunctionCurrentTime.lo \
+	FunctionData.lo FunctionDateTime.lo FunctionDeepEqual.lo \
+	FunctionDefaultCollation.lo FunctionDistinctValues.lo \
+	FunctionDocAvailable.lo FunctionDoc.lo FunctionDocumentURI.lo \
+	FunctionEmpty.lo FunctionEncodeForUri.lo FunctionEndsWith.lo \
+	FunctionError.lo FunctionEscapeHtmlUri.lo \
+	FunctionExactlyOne.lo FunctionExists.lo FunctionFalse.lo \
+	FunctionFloor.lo FunctionId.lo FunctionIdref.lo \
+	FunctionImplicitTimezone.lo FunctionIndexOf.lo \
+	FunctionInScopePrefixes.lo FunctionInsertBefore.lo \
+	FunctionIriToUri.lo FunctionLang.lo FunctionLast.lo \
+	FunctionLocalname.lo FunctionLocalNameFromQName.lo \
+	FunctionLowerCase.lo FunctionMatches.lo FunctionMax.lo \
+	FunctionMin.lo FunctionName.lo FunctionNamespaceUri.lo \
 	FunctionNamespaceURIForPrefix.lo \
 	FunctionNamespaceURIFromQName.lo FunctionNilled.lo \
 	FunctionNodeName.lo FunctionNormalizeSpace.lo \
@@ -362,12 +362,6 @@ src/framework/StringPool.cpp \
 src/framework/XPath2MemoryManagerImpl.cpp \
 src/context/XQScopedNamespace.cpp \
 src/context/impl/CollationImpl.cpp \
-src/context/impl/UCANormalizer1.cpp \
-src/context/impl/UCANormalizer2.cpp \
-src/context/impl/UCANormalizer3.cpp \
-src/context/impl/UCANormalizer4.cpp \
-src/context/impl/UCANormalizer.cpp \
-src/context/impl/UCANormalizer.hpp \
 src/context/impl/CodepointCollation.cpp \
 src/context/impl/VarStoreImpl.hpp \
 src/context/impl/VarStoreImpl.cpp \
@@ -458,6 +452,11 @@ src/utils/XQillaPlatformUtils.cpp \
 src/utils/PrintAST.cpp \
 src/utils/XPath2NSUtils.cpp \
 src/utils/XPath2Utils.cpp \
+src/utils/UCANormalizer1.cpp \
+src/utils/UCANormalizer2.cpp \
+src/utils/UCANormalizer3.cpp \
+src/utils/UCANormalizer4.cpp \
+src/utils/UCANormalizer.cpp \
 src/exceptions/XQillaException.cpp \
 src/exceptions/XQException.cpp \
 src/exceptions/InvalidLexicalSpaceException.hpp \
@@ -1601,41 +1600,6 @@ CollationImpl.lo: src/context/impl/CollationImpl.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o CollationImpl.lo `test -f 'src/context/impl/CollationImpl.cpp' || echo '$(srcdir)/'`src/context/impl/CollationImpl.cpp
 
-UCANormalizer1.lo: src/context/impl/UCANormalizer1.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT UCANormalizer1.lo -MD -MP -MF "$(DEPDIR)/UCANormalizer1.Tpo" -c -o UCANormalizer1.lo `test -f 'src/context/impl/UCANormalizer1.cpp' || echo '$(srcdir)/'`src/context/impl/UCANormalizer1.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/UCANormalizer1.Tpo" "$(DEPDIR)/UCANormalizer1.Plo"; else rm -f "$(DEPDIR)/UCANormalizer1.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/context/impl/UCANormalizer1.cpp' object='UCANormalizer1.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o UCANormalizer1.lo `test -f 'src/context/impl/UCANormalizer1.cpp' || echo '$(srcdir)/'`src/context/impl/UCANormalizer1.cpp
-
-UCANormalizer2.lo: src/context/impl/UCANormalizer2.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT UCANormalizer2.lo -MD -MP -MF "$(DEPDIR)/UCANormalizer2.Tpo" -c -o UCANormalizer2.lo `test -f 'src/context/impl/UCANormalizer2.cpp' || echo '$(srcdir)/'`src/context/impl/UCANormalizer2.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/UCANormalizer2.Tpo" "$(DEPDIR)/UCANormalizer2.Plo"; else rm -f "$(DEPDIR)/UCANormalizer2.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/context/impl/UCANormalizer2.cpp' object='UCANormalizer2.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o UCANormalizer2.lo `test -f 'src/context/impl/UCANormalizer2.cpp' || echo '$(srcdir)/'`src/context/impl/UCANormalizer2.cpp
-
-UCANormalizer3.lo: src/context/impl/UCANormalizer3.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT UCANormalizer3.lo -MD -MP -MF "$(DEPDIR)/UCANormalizer3.Tpo" -c -o UCANormalizer3.lo `test -f 'src/context/impl/UCANormalizer3.cpp' || echo '$(srcdir)/'`src/context/impl/UCANormalizer3.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/UCANormalizer3.Tpo" "$(DEPDIR)/UCANormalizer3.Plo"; else rm -f "$(DEPDIR)/UCANormalizer3.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/context/impl/UCANormalizer3.cpp' object='UCANormalizer3.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o UCANormalizer3.lo `test -f 'src/context/impl/UCANormalizer3.cpp' || echo '$(srcdir)/'`src/context/impl/UCANormalizer3.cpp
-
-UCANormalizer4.lo: src/context/impl/UCANormalizer4.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT UCANormalizer4.lo -MD -MP -MF "$(DEPDIR)/UCANormalizer4.Tpo" -c -o UCANormalizer4.lo `test -f 'src/context/impl/UCANormalizer4.cpp' || echo '$(srcdir)/'`src/context/impl/UCANormalizer4.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/UCANormalizer4.Tpo" "$(DEPDIR)/UCANormalizer4.Plo"; else rm -f "$(DEPDIR)/UCANormalizer4.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/context/impl/UCANormalizer4.cpp' object='UCANormalizer4.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o UCANormalizer4.lo `test -f 'src/context/impl/UCANormalizer4.cpp' || echo '$(srcdir)/'`src/context/impl/UCANormalizer4.cpp
-
-UCANormalizer.lo: src/context/impl/UCANormalizer.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT UCANormalizer.lo -MD -MP -MF "$(DEPDIR)/UCANormalizer.Tpo" -c -o UCANormalizer.lo `test -f 'src/context/impl/UCANormalizer.cpp' || echo '$(srcdir)/'`src/context/impl/UCANormalizer.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/UCANormalizer.Tpo" "$(DEPDIR)/UCANormalizer.Plo"; else rm -f "$(DEPDIR)/UCANormalizer.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/context/impl/UCANormalizer.cpp' object='UCANormalizer.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o UCANormalizer.lo `test -f 'src/context/impl/UCANormalizer.cpp' || echo '$(srcdir)/'`src/context/impl/UCANormalizer.cpp
-
 CodepointCollation.lo: src/context/impl/CodepointCollation.cpp
 @am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT CodepointCollation.lo -MD -MP -MF "$(DEPDIR)/CodepointCollation.Tpo" -c -o CodepointCollation.lo `test -f 'src/context/impl/CodepointCollation.cpp' || echo '$(srcdir)/'`src/context/impl/CodepointCollation.cpp; \
 @am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/CodepointCollation.Tpo" "$(DEPDIR)/CodepointCollation.Plo"; else rm -f "$(DEPDIR)/CodepointCollation.Tpo"; exit 1; fi
@@ -2181,6 +2145,41 @@ XPath2Utils.lo: src/utils/XPath2Utils.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/utils/XPath2Utils.cpp' object='XPath2Utils.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XPath2Utils.lo `test -f 'src/utils/XPath2Utils.cpp' || echo '$(srcdir)/'`src/utils/XPath2Utils.cpp
+
+UCANormalizer1.lo: src/utils/UCANormalizer1.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT UCANormalizer1.lo -MD -MP -MF "$(DEPDIR)/UCANormalizer1.Tpo" -c -o UCANormalizer1.lo `test -f 'src/utils/UCANormalizer1.cpp' || echo '$(srcdir)/'`src/utils/UCANormalizer1.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/UCANormalizer1.Tpo" "$(DEPDIR)/UCANormalizer1.Plo"; else rm -f "$(DEPDIR)/UCANormalizer1.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/utils/UCANormalizer1.cpp' object='UCANormalizer1.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o UCANormalizer1.lo `test -f 'src/utils/UCANormalizer1.cpp' || echo '$(srcdir)/'`src/utils/UCANormalizer1.cpp
+
+UCANormalizer2.lo: src/utils/UCANormalizer2.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT UCANormalizer2.lo -MD -MP -MF "$(DEPDIR)/UCANormalizer2.Tpo" -c -o UCANormalizer2.lo `test -f 'src/utils/UCANormalizer2.cpp' || echo '$(srcdir)/'`src/utils/UCANormalizer2.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/UCANormalizer2.Tpo" "$(DEPDIR)/UCANormalizer2.Plo"; else rm -f "$(DEPDIR)/UCANormalizer2.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/utils/UCANormalizer2.cpp' object='UCANormalizer2.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o UCANormalizer2.lo `test -f 'src/utils/UCANormalizer2.cpp' || echo '$(srcdir)/'`src/utils/UCANormalizer2.cpp
+
+UCANormalizer3.lo: src/utils/UCANormalizer3.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT UCANormalizer3.lo -MD -MP -MF "$(DEPDIR)/UCANormalizer3.Tpo" -c -o UCANormalizer3.lo `test -f 'src/utils/UCANormalizer3.cpp' || echo '$(srcdir)/'`src/utils/UCANormalizer3.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/UCANormalizer3.Tpo" "$(DEPDIR)/UCANormalizer3.Plo"; else rm -f "$(DEPDIR)/UCANormalizer3.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/utils/UCANormalizer3.cpp' object='UCANormalizer3.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o UCANormalizer3.lo `test -f 'src/utils/UCANormalizer3.cpp' || echo '$(srcdir)/'`src/utils/UCANormalizer3.cpp
+
+UCANormalizer4.lo: src/utils/UCANormalizer4.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT UCANormalizer4.lo -MD -MP -MF "$(DEPDIR)/UCANormalizer4.Tpo" -c -o UCANormalizer4.lo `test -f 'src/utils/UCANormalizer4.cpp' || echo '$(srcdir)/'`src/utils/UCANormalizer4.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/UCANormalizer4.Tpo" "$(DEPDIR)/UCANormalizer4.Plo"; else rm -f "$(DEPDIR)/UCANormalizer4.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/utils/UCANormalizer4.cpp' object='UCANormalizer4.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o UCANormalizer4.lo `test -f 'src/utils/UCANormalizer4.cpp' || echo '$(srcdir)/'`src/utils/UCANormalizer4.cpp
+
+UCANormalizer.lo: src/utils/UCANormalizer.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT UCANormalizer.lo -MD -MP -MF "$(DEPDIR)/UCANormalizer.Tpo" -c -o UCANormalizer.lo `test -f 'src/utils/UCANormalizer.cpp' || echo '$(srcdir)/'`src/utils/UCANormalizer.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/UCANormalizer.Tpo" "$(DEPDIR)/UCANormalizer.Plo"; else rm -f "$(DEPDIR)/UCANormalizer.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/utils/UCANormalizer.cpp' object='UCANormalizer.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o UCANormalizer.lo `test -f 'src/utils/UCANormalizer.cpp' || echo '$(srcdir)/'`src/utils/UCANormalizer.cpp
 
 XQillaException.lo: src/exceptions/XQillaException.cpp
 @am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQillaException.lo -MD -MP -MF "$(DEPDIR)/XQillaException.Tpo" -c -o XQillaException.lo `test -f 'src/exceptions/XQillaException.cpp' || echo '$(srcdir)/'`src/exceptions/XQillaException.cpp; \

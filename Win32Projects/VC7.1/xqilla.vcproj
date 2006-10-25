@@ -730,24 +730,6 @@
 				RelativePath="..\..\src\context\impl\ItemFactoryImpl.cpp">
 			</File>
 			<File
-				RelativePath="..\..\src\context\impl\UCANormalizer.cpp">
-			</File>
-			<File
-				RelativePath="..\..\src\context\impl\UCANormalizer.hpp">
-			</File>
-			<File
-				RelativePath="..\..\src\context\impl\UCANormalizer1.cpp">
-			</File>
-			<File
-				RelativePath="..\..\src\context\impl\UCANormalizer2.cpp">
-			</File>
-			<File
-				RelativePath="..\..\src\context\impl\UCANormalizer3.cpp">
-			</File>
-			<File
-				RelativePath="..\..\src\context\impl\UCANormalizer4.cpp">
-			</File>
-			<File
 				RelativePath="..\..\src\context\impl\VarHashEntryImpl.cpp">
 			</File>
 			<File
@@ -2541,6 +2523,21 @@
 				RelativePath="..\..\src\utils\PrintAST.cpp">
 			</File>
 			<File
+				RelativePath="..\..\src\utils\UCANormalizer.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\utils\UCANormalizer1.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\utils\UCANormalizer2.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\utils\UCANormalizer3.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\utils\UCANormalizer4.cpp">
+			</File>
+			<File
 				RelativePath="..\..\src\utils\UTF8Str.cpp">
 			</File>
 			<File
@@ -2566,6 +2563,9 @@
 			</File>
 			<File
 				RelativePath="..\..\include\xqilla\utils\PrintAST.hpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\utils\UCANormalizer.hpp">
 			</File>
 			<File
 				RelativePath="..\..\include\xqilla\utils\UTF8Str.hpp">

@@ -14,7 +14,7 @@
 #include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionUpperCase.hpp>
 #include <xqilla/context/DynamicContext.hpp>
-#include "../context/impl/UCANormalizer.hpp"
+#include <xqilla/utils/UCANormalizer.hpp>
 
 #include <xercesc/util/XMLUni.hpp>
 

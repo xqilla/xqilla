@@ -16,7 +16,6 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xercesc/framework/XMLBuffer.hpp>
-#include <map>
 #include <vector>
 
 ///
