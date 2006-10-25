@@ -331,6 +331,7 @@ xqilla/utils/ContextUtils.hpp \
 xqilla/utils/PrintAST.hpp \
 xqilla/utils/UTF8Str.hpp \
 xqilla/utils/XQillaPlatformUtils.hpp \
+xqilla/utils/UCANormalizer.hpp \
 xqilla/framework/ReferenceCounted.hpp \
 xqilla/framework/XPath2MemoryManager.hpp \
 xqilla/framework/BaseMemoryManager.hpp \

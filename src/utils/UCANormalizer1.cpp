@@ -11,8 +11,8 @@
  * $Id$
  */
 
-#include "../../config/xqilla_config.h"
-#include "UCANormalizer.hpp"
+#include "../config/xqilla_config.h"
+#include <xqilla/utils/UCANormalizer.hpp>
 
 static unsigned int de000A0[] = { 0x00020, 0x00000 };
 static unsigned int de000A8[] = { 0x00020, 0x00308, 0x00000 };

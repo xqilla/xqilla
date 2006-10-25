@@ -17,7 +17,7 @@
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/ATStringOrDerived.hpp>
-#include "../context/impl/UCANormalizer.hpp"
+#include <xqilla/utils/UCANormalizer.hpp>
 #include <xqilla/exceptions/FunctionException.hpp>
 #include <xqilla/framework/XPath2MemoryManager.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>

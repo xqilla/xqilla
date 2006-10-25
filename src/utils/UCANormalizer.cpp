@@ -11,8 +11,8 @@
  * $Id$
  */
 
-#include "../../config/xqilla_config.h"
-#include "UCANormalizer.hpp"
+#include "../config/xqilla_config.h"
+#include <xqilla/utils/UCANormalizer.hpp>
 #include <xercesc/framework/XMLBuffer.hpp>
 #include <xercesc/util/XMLString.hpp>
 
@@ -27,6 +27,7 @@ void NormalizeTransform::pushChar(unsigned int ch)
 {
   if(ch == 0) {
     composeCache();
+    dest_->pushChar(ch);
   }
   else {
     getRecursiveDecomposition(ch);
