@@ -242,6 +242,11 @@ bool StaticResolutionContext::isUsedExceptContextFlags() const
     || _availableDocuments || _forceNoFolding || !_dynamicVariables.isEmpty();
 }
 
+bool StaticResolutionContext::areContextTimeUsed() const
+{
+  return _currentTime || _implicitTimezone;
+}
+
 void StaticResolutionContext::creative(bool value)
 {
   _creative = value;

@@ -88,6 +88,10 @@ Sequence ASTNodeImpl::collapseTreeInternal(DynamicContext* context, int flags) c
 
 ASTNode *ASTNodeImpl::constantFold(StaticContext *context)
 {
+  // if the node uses the current time or implicit timezone, constant folding will use
+  // the default values created by the temporary dynamic context
+  if(_src.areContextTimeUsed())
+      return const_cast<ASTNodeImpl*>(this);
   XPath2MemoryManager* mm = context->getMemoryManager();
   AutoDelete<DynamicContext> dContext(context->createDynamicContext());
   dContext->setMemoryManager(mm);
