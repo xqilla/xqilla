@@ -137,7 +137,7 @@ Sequence XQDOMConstructor::collapseTreeInternal(DynamicContext *context, int fla
               }
               lastWasAtomic = true;
               // empty strings are stripped
-              if(*valueStr)
+              if(valueStr && *valueStr)
               {
               if(!childList.empty() && isTextNode(childList.back())) {
                   const XMLCh* buff=XPath2Utils::concatStrings(childList.back()->dmStringValue(context),valueStr,context->getMemoryManager());
@@ -252,7 +252,7 @@ Sequence XQDOMConstructor::collapseTreeInternal(DynamicContext *context, int fla
           XQThrow(ASTException,X("DOM Constructor"),X("The name for the element must be either a xs:QName, xs:string or xs:untypedAtomic [err:XPTY0004]"));
 
         // TODO: what error should we return if the string is empty?
-        if(XMLString::stringLen(nodeName)==0)
+        if(nodeName==NULL || *nodeName==0)
           XQThrow(ASTException,X("DOM Constructor"),X("The name for the element is empty"));
 
         std::vector<ItemFactory::ElementChild> childList;
@@ -340,7 +340,7 @@ Sequence XQDOMConstructor::collapseTreeInternal(DynamicContext *context, int fla
               }
               lastWasAtomic = true;
               // empty strings are stripped
-              if(*valueStr)
+              if(valueStr && *valueStr)
               {
                 if(!childList.empty() && isTextNode(childList.back())) {
                   const XMLCh* buff=XPath2Utils::concatStrings(childList.back()->dmStringValue(context),valueStr,context->getMemoryManager());
@@ -405,7 +405,7 @@ Sequence XQDOMConstructor::collapseTreeInternal(DynamicContext *context, int fla
           XQThrow(ASTException,X("DOM Constructor"),X("A computed attribute constructor cannot create a namespace declaration [err:XQDY0044]"));
 
         // TODO: what error should we return if the string is empty?
-        if(XMLString::stringLen(nodeName)==0)
+        if(nodeName==NULL || *nodeName==0)
           XQThrow(ASTException,X("DOM Constructor"),X("The name for the attribute is empty"));
 
         XMLBuffer value;
@@ -443,7 +443,7 @@ Sequence XQDOMConstructor::collapseTreeInternal(DynamicContext *context, int fla
           nIndex=XMLString::indexOf(nodeName, chQuestion, nIndex+1);
         }
 
-        if(XMLString::stringLen(nodeName)==0)
+        if(nodeName==NULL || *nodeName==0)
           XQThrow(ASTException,X("DOM Constructor"),X("The name for the processing instruction is empty"));
         XMLBuffer value;
         getStringValue(value, context);
