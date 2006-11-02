@@ -47,13 +47,15 @@ ASTNodeImpl::~ASTNodeImpl(void)
 
 bool ASTNodeImpl::isConstant() const
 {
-  return _type == ASTNode::SEQUENCE || _type == ASTNode::LITERAL;
+  return !_src.isUsed();
 }
 
 /** Overridden in XQSequence and XQLiteral */
 bool ASTNodeImpl::isDateOrTimeAndHasNoTimezone(StaticContext *context) const
 {
-  return false;
+  // To be safe, assume any value that contains a timezone might
+  // not have one specified.
+  return _src.getStaticType().containsType(StaticType::TIMEZONE_TYPE);
 }
 
 ASTNode::whichType ASTNodeImpl::getType(void) const
@@ -88,10 +90,6 @@ Sequence ASTNodeImpl::collapseTreeInternal(DynamicContext* context, int flags) c
 
 ASTNode *ASTNodeImpl::constantFold(StaticContext *context)
 {
-  // if the node uses the current time or implicit timezone, constant folding will use
-  // the default values created by the temporary dynamic context
-  if(_src.areContextTimeUsed())
-      return const_cast<ASTNodeImpl*>(this);
   XPath2MemoryManager* mm = context->getMemoryManager();
   AutoDelete<DynamicContext> dContext(context->createDynamicContext());
   dContext->setMemoryManager(mm);

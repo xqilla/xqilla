@@ -82,7 +82,6 @@ ASTNode* ArithmeticOperator::staticTyping(StaticContext *context)
   _src.clear();
 
   bool emptyArgument = false;
-  bool allConstant = true;
   for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
     *i = (*i)->staticTyping(context);
 
@@ -90,9 +89,7 @@ ASTNode* ArithmeticOperator::staticTyping(StaticContext *context)
       emptyArgument = true;
     _src.add((*i)->getStaticResolutionContext());
 
-    if(!(*i)->isConstant())
-      allConstant = false;
-    else if((*i)->isDateOrTimeAndHasNoTimezone(context))
+    if((*i)->isDateOrTimeAndHasNoTimezone(context))
       _src.implicitTimezoneUsed(true);
   }
 
@@ -107,7 +104,7 @@ ASTNode* ArithmeticOperator::staticTyping(StaticContext *context)
     XQThrow(XPath2ErrorException,X("ArithmeticOperator::staticResolution"), errMsg.getRawBuffer());
   }
 
-  if(allConstant) {
+  if(!_src.isUsed()) {
     return constantFold(context);
   }
   return this;

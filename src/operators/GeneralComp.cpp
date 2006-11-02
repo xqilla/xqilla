@@ -126,20 +126,17 @@ ASTNode* GeneralComp::staticTyping(StaticContext *context)
 {
   _src.clear();
 
-  bool allConstant = true;
   for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
     *i = (*i)->staticTyping(context);
     _src.add((*i)->getStaticResolutionContext());
 
-    if(!(*i)->isConstant())
-      allConstant = false;
-    else if((*i)->isDateOrTimeAndHasNoTimezone(context))
+    if((*i)->isDateOrTimeAndHasNoTimezone(context))
       _src.implicitTimezoneUsed(true);
   }
 
   _src.getStaticType().flags = StaticType::BOOLEAN_TYPE;
 
-  if(allConstant) {
+  if(!_src.isUsed()) {
     return constantFold(context);
   }
   return this;

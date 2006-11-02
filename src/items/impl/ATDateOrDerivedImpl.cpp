@@ -252,7 +252,6 @@ bool ATDateOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const Dynamic
 int ATDateOrDerivedImpl::compare(const ATDateOrDerived::Ptr &target, const DynamicContext *context) const
 {
   const ATDateOrDerivedImpl *other = (const ATDateOrDerivedImpl *)target.get();
-
   return tzNormalize(_hasTimezone, seconds_, context).compare(tzNormalize(other->_hasTimezone, other->seconds_, context));
 }
 
@@ -350,6 +349,7 @@ ATDateOrDerived::Ptr ATDateOrDerivedImpl::addDayTimeDuration(const ATDurationOrD
                                                              const DynamicContext* context) const
 {
   MAPM result = seconds_ + dayTime->asSeconds(context)->asMAPM();
+  result = (result / DateUtils::g_secondsPerDay).floor() * DateUtils::g_secondsPerDay;
   return new ATDateOrDerivedImpl(_typeURI, _typeName, result, timezone_, _hasTimezone);
 }
   
@@ -370,6 +370,7 @@ ATDateOrDerived::Ptr ATDateOrDerivedImpl::subtractDayTimeDuration(const ATDurati
                                                                   const DynamicContext* context) const
 {
   MAPM result = seconds_ - dayTime->asSeconds(context)->asMAPM();
+  result = (result / DateUtils::g_secondsPerDay).floor() * DateUtils::g_secondsPerDay;
   return new ATDateOrDerivedImpl(_typeURI, _typeName, result, timezone_, _hasTimezone);
 }
 
