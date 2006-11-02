@@ -235,10 +235,11 @@ Node::Ptr ItemFactoryImpl::createElementNode(const XMLCh *uri, const XMLCh *pref
 
     if(!nsPreserveMode && newChild->getNodeType()==DOMNode::ELEMENT_NODE)
     {
+      DOMElement* childElem=(DOMElement*)newChild;
       // it's an error if the data type is namespace sensitive, e.g. QName or NOTATION
       try
       {
-        const DOMTypeInfo *psviType=((DOMElement*)newChild)->getTypeInfo();
+        const DOMTypeInfo *psviType=childElem->getTypeInfo();
         if(psviType)
         {
             const XMLCh* typeURI=psviType->getNamespace();
@@ -254,7 +255,7 @@ Node::Ptr ItemFactoryImpl::createElementNode(const XMLCh *uri, const XMLCh *pref
       } catch(DOMException&) {
       }
       
-      DOMNamedNodeMap* attrMap=newChild->getAttributes();
+      DOMNamedNodeMap* attrMap=childElem->getAttributes();
       for(XMLSize_t i=0;i<attrMap->getLength();)
       {
         bool bPreserved=true;
@@ -281,7 +282,7 @@ Node::Ptr ItemFactoryImpl::createElementNode(const XMLCh *uri, const XMLCh *pref
         {
           const XMLCh* prefix=attr->getPrefix()==NULL?XMLUni::fgZeroLenString:attr->getLocalName();
           // copy this namespace only if needed by the element name...
-          if(!XPath2Utils::equals(element->getPrefix(), prefix))
+          if(!XPath2Utils::equals(childElem->getPrefix(), prefix))
           {
             bPreserved=false;
             //... or by its attributes
@@ -334,6 +335,7 @@ Node::Ptr ItemFactoryImpl::createElementNode(const XMLCh *uri, const XMLCh *pref
 Node::Ptr ItemFactoryImpl::createDocumentNode(const std::vector<Node::Ptr> &childList, const DynamicContext *context) const
 {
   StaticContext::ConstructionMode constrMode=context->getConstructionMode();
+  bool nsPreserveMode=context->getPreserveNamespaces();
 
   DOMDocument *document = context->createNewDocument();
 
@@ -345,6 +347,74 @@ Node::Ptr ItemFactoryImpl::createDocumentNode(const std::vector<Node::Ptr> &chil
     if(constrMode == StaticContext::CONSTRUCTION_MODE_PRESERVE && nodeImpl->dmNodeKind()==Node::element_string)
       XPath2Utils::copyElementType(newChild->getOwnerDocument(), (DOMElement*)newChild, (DOMElement*)nodeImpl->getDOMNode());
     if(context->getDebugCallback()) context->getDebugCallback()->ReportClonedNode(const_cast<DynamicContext*>(context), nodeImpl->getDOMNode(), newChild);
+
+    if(!nsPreserveMode && newChild->getNodeType()==DOMNode::ELEMENT_NODE)
+    {
+      DOMElement* childElem=(DOMElement*)newChild;
+      // it's an error if the data type is namespace sensitive, e.g. QName or NOTATION
+      try
+      {
+        const DOMTypeInfo *psviType=childElem->getTypeInfo();
+        if(psviType)
+        {
+            const XMLCh* typeURI=psviType->getNamespace();
+            const XMLCh* typeName=psviType->getName();
+            if(XPath2Utils::equals(typeURI, SchemaSymbols::fgURI_SCHEMAFORSCHEMA) &&
+                (
+                 XPath2Utils::equals(typeName, SchemaSymbols::fgDT_QNAME) ||
+                 XPath2Utils::equals(typeName, XMLUni::fgNotationString)
+                )
+              )
+                XQThrow2(ASTException,X("ItemFactoryImpl::createElementNode"),X("An element has a content that is namespace sensitive, and cannot be copied when copy-namespace is set to no-preserve [err:XQTY0086]"));
+        }
+      } catch(DOMException&) {
+      }
+      
+      DOMNamedNodeMap* attrMap=childElem->getAttributes();
+      for(XMLSize_t i=0;i<attrMap->getLength();)
+      {
+        bool bPreserved=true;
+        DOMNode* attr=attrMap->item(i);
+        try
+        {
+          const DOMTypeInfo *psviType=((DOMAttr*)attr)->getTypeInfo();
+          if(psviType)
+          {
+            const XMLCh* typeURI=psviType->getNamespace();
+            const XMLCh* typeName=psviType->getName();
+            if(XPath2Utils::equals(typeURI, SchemaSymbols::fgURI_SCHEMAFORSCHEMA) &&
+                (
+                 XPath2Utils::equals(typeName, SchemaSymbols::fgDT_QNAME) ||
+                 XPath2Utils::equals(typeName, XMLUni::fgNotationString)
+                )
+              )
+                XQThrow2(ASTException,X("ItemFactoryImpl::createElementNode"),X("An element has a content that is namespace sensitive, and cannot be copied when copy-namespace is set to no-preserve [err:XQTY0086]"));
+          }
+        } catch(DOMException&) {
+        }
+
+        if(XPath2Utils::equals(attr->getPrefix(), XMLUni::fgXMLNSString) || XPath2Utils::equals(attr->getNodeName(), XMLUni::fgXMLNSString))
+        {
+          const XMLCh* prefix=attr->getPrefix()==NULL?XMLUni::fgZeroLenString:attr->getLocalName();
+          // copy this namespace only if needed by the element name...
+          if(!XPath2Utils::equals(childElem->getPrefix(), prefix))
+          {
+            bPreserved=false;
+            //... or by its attributes
+            for(XMLSize_t j=0;j<attrMap->getLength();j++)
+              if(XPath2Utils::equals(attrMap->item(j)->getPrefix(), prefix))
+              {
+                bPreserved=true;
+                break;
+              }
+            if(!bPreserved)
+              attrMap->removeNamedItemNS(attr->getNamespaceURI(), attr->getLocalName());
+          }
+        }
+        if(bPreserved)
+          i++;
+      }
+    }
 
     document->appendChild(newChild);
   }
