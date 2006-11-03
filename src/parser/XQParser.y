@@ -26,7 +26,12 @@
 
 #include <xqilla/simple-api/XQQuery.hpp>
 #include <xqilla/ast/XQFunction.hpp>
-#include <xqilla/ast/XQDOMConstructor.hpp>
+#include <xqilla/ast/XQDocumentConstructor.hpp>
+#include <xqilla/ast/XQElementConstructor.hpp>
+#include <xqilla/ast/XQAttributeConstructor.hpp>
+#include <xqilla/ast/XQPIConstructor.hpp>
+#include <xqilla/ast/XQCommentConstructor.hpp>
+#include <xqilla/ast/XQTextConstructor.hpp>
 #include <xqilla/ast/XQFLWOR.hpp>
 #include <xqilla/ast/XQQuantified.hpp>
 #include <xqilla/ast/XQTypeswitch.hpp>
@@ -2366,7 +2371,7 @@ DirElemConstructor:
       _START_TAG_OPEN_ _TAG_NAME_ DirAttributeList _EMPTY_TAG_CLOSE_
 		{ 
 			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
-			$$ = WRAP(@1, new (MEMMGR) XQDOMConstructor(Node::element_string,
+			$$ = WRAP(@1, new (MEMMGR) XQElementConstructor(
 								new (MEMMGR) XQLiteral(
                     new (MEMMGR) AnyAtomicTypeConstructor(
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
@@ -2403,7 +2408,7 @@ DirElemConstructor:
                     }
 				}
 			}
-			$$ = WRAP(@1, new (MEMMGR) XQDOMConstructor(Node::element_string,
+			$$ = WRAP(@1, new (MEMMGR) XQElementConstructor(
 							  new (MEMMGR) XQLiteral(
                     new (MEMMGR) AnyAtomicTypeConstructor(
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
@@ -2434,14 +2439,14 @@ DirAttributeList:
             }
             if($4->size()>0 && $4->back()==0)
                 $4->pop_back();
-            ASTNode* attrItem=WRAP(@2, new (MEMMGR) XQDOMConstructor(Node::attribute_string,
+            ASTNode* attrItem=WRAP(@2, new (MEMMGR) XQAttributeConstructor(
                                             new (MEMMGR) XQLiteral(
                                                 new (MEMMGR) AnyAtomicTypeConstructor(
                                                     XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 										            XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_QNAME,
 										            $2, AnyAtomicType::QNAME),
                                                 MEMMGR), 
-                                            0, $4,MEMMGR));
+                                            $4,MEMMGR));
             if(bInsertAtFront)
                 $$->insert($$->begin(), attrItem);
             else
@@ -2665,14 +2670,13 @@ CommonContent:
 DirCommentConstructor:
 	_XML_COMMENT_
 		{
-			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
-			content->push_back(new (MEMMGR) XQLiteral(
+			ASTNode *value = WRAP(@1, new (MEMMGR) XQLiteral(
                     new (MEMMGR) AnyAtomicTypeConstructor(
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
 										$1, AnyAtomicType::STRING),
 										MEMMGR));
-			$$ = WRAP(@1, new (MEMMGR) XQDOMConstructor(Node::comment_string, 0, 0, content, MEMMGR));
+			$$ = WRAP(@1, new (MEMMGR) XQCommentConstructor(value, MEMMGR));
 		}
 	;
 
@@ -2683,22 +2687,20 @@ DirPIConstructor:
 		{
 			if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::compareIString($2, XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgXMLString)==0)
 			  yyerror(@2, "The target for the processing instruction must not be 'XML'");
-			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
-			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
-			content->push_back(new (MEMMGR) XQLiteral(
+			ASTNode *value = WRAP(@3, new (MEMMGR) XQLiteral(
                     new (MEMMGR) AnyAtomicTypeConstructor(
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
 										$3, AnyAtomicType::STRING),
 										MEMMGR));
-			$$ = WRAP(@1, new (MEMMGR) XQDOMConstructor(Node::processing_instruction_string,
-								      new (MEMMGR) XQLiteral(
+			$$ = WRAP(@1, new (MEMMGR) XQPIConstructor(
+								      WRAP(@2, new (MEMMGR) XQLiteral(
                     new (MEMMGR) AnyAtomicTypeConstructor(
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
 										$2, AnyAtomicType::STRING),
-										MEMMGR), 
-									  empty, content, MEMMGR));
+										MEMMGR)), 
+									  value, MEMMGR));
 		}
 	;
 
@@ -2707,14 +2709,13 @@ DirPIConstructor:
 CdataSection:
 	  _CDATA_SECTION_
 		{
-			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
-			content->push_back(new (MEMMGR) XQLiteral(
+			ASTNode *value = new (MEMMGR) XQLiteral(
                     new (MEMMGR) AnyAtomicTypeConstructor(
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
 										$1, AnyAtomicType::STRING),
-										MEMMGR));
-			$$ = WRAP(@1, new (MEMMGR) XQDOMConstructor(Node::cdata_string, 0, 0, content, MEMMGR));
+										MEMMGR);
+			$$ = WRAP(@1, new (MEMMGR) XQTextConstructor(/*isCDATA*/true, value, MEMMGR));
 		}
 	;
 
@@ -2737,17 +2738,7 @@ ComputedConstructor:
 CompDocConstructor:
 	  _DOCUMENT_CONSTR_ _LBRACE_ Expr _RBRACE_
 		{
-			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
-			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
-			content->push_back(WRAP(@3, $3));
-			$$ = WRAP(@1, new (MEMMGR) XQDOMConstructor(Node::document_string,
-								  new (MEMMGR) XQLiteral(
-                    new (MEMMGR) AnyAtomicTypeConstructor(
-										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
-										XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, AnyAtomicType::STRING),
-										MEMMGR), 
-								  empty, content,MEMMGR));
+			$$ = WRAP(@1, new (MEMMGR) XQDocumentConstructor(WRAP(@3, $3),MEMMGR));
 		}
 	;
 
@@ -2758,7 +2749,7 @@ CompElemConstructor:
 			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 			content->push_back(WRAP(@3, $3));
-			$$ = WRAP(@1, new (MEMMGR) XQDOMConstructor(Node::element_string,
+			$$ = WRAP(@1, new (MEMMGR) XQElementConstructor(
 								  new (MEMMGR) XQLiteral(
                     new (MEMMGR) AnyAtomicTypeConstructor(
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
@@ -2770,7 +2761,7 @@ CompElemConstructor:
 	| _NAMED_ELEMENT_CONSTR_ _LBRACE_ _RBRACE_ 
 		{
 			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
-			$$ = WRAP(@1, new (MEMMGR) XQDOMConstructor(Node::element_string,
+			$$ = WRAP(@1, new (MEMMGR) XQElementConstructor(
 								  new (MEMMGR) XQLiteral(
                     new (MEMMGR) AnyAtomicTypeConstructor(
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
@@ -2784,14 +2775,14 @@ CompElemConstructor:
 			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 			content->push_back(WRAP(@6, $6));
-			$$ = WRAP(@1, new (MEMMGR) XQDOMConstructor(Node::element_string,
+			$$ = WRAP(@1, new (MEMMGR) XQElementConstructor(
 								  WRAP(@3, $3), 
 								  empty, content, MEMMGR));
 		}
 	| _ELEMENT_CONSTR_ _LBRACE_ Expr _RBRACE_ _LBRACE_ _RBRACE_ 
 		{
 			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
-			$$ = WRAP(@1, new (MEMMGR) XQDOMConstructor(Node::element_string,
+			$$ = WRAP(@1, new (MEMMGR) XQElementConstructor(
 								  WRAP(@3, $3), 
 								  empty, empty, MEMMGR));
 		}
@@ -2808,41 +2799,41 @@ CompAttrConstructor:
 		{
 			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 			content->push_back(WRAP(@3, $3));
-			$$ = WRAP(@1, new (MEMMGR) XQDOMConstructor(Node::attribute_string,
+			$$ = WRAP(@1, new (MEMMGR) XQAttributeConstructor(
 								      new (MEMMGR) XQLiteral(
                     new (MEMMGR) AnyAtomicTypeConstructor(
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_QNAME,
 										$1, AnyAtomicType::QNAME),
 										MEMMGR), 
-									  0, content,MEMMGR));
+									  content,MEMMGR));
 		}
 	| _NAMED_ATTRIBUTE_CONSTR_ _LBRACE_ _RBRACE_ 
 		{
 			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
-			$$ = WRAP(@1, new (MEMMGR) XQDOMConstructor(Node::attribute_string,
+			$$ = WRAP(@1, new (MEMMGR) XQAttributeConstructor(
 								      new (MEMMGR) XQLiteral(
                     new (MEMMGR) AnyAtomicTypeConstructor(
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_QNAME,
 										$1, AnyAtomicType::QNAME),
 										MEMMGR), 
-									  0, empty,MEMMGR));
+									  empty,MEMMGR));
 		}
 	| _ATTRIBUTE_CONSTR_ _LBRACE_ Expr _RBRACE_ _LBRACE_ Expr _RBRACE_ 
 		{
 			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 			content->push_back(WRAP(@6, $6));
-			$$ = WRAP(@1, new (MEMMGR) XQDOMConstructor(Node::attribute_string,
+			$$ = WRAP(@1, new (MEMMGR) XQAttributeConstructor(
 									  WRAP(@3, $3), 
-									  0, content, MEMMGR));
+									  content, MEMMGR));
 		}
 	| _ATTRIBUTE_CONSTR_ _LBRACE_ Expr _RBRACE_ _LBRACE_ _RBRACE_ 
 		{
 			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
-			$$ = WRAP(@1, new (MEMMGR) XQDOMConstructor(Node::attribute_string,
+			$$ = WRAP(@1, new (MEMMGR) XQAttributeConstructor(
 									  WRAP(@3, $3), 
-									  0, empty, MEMMGR));
+									  empty, MEMMGR));
 		}
 	;
 
@@ -2850,9 +2841,7 @@ CompAttrConstructor:
 CompTextConstructor:
 	  _TEXT_CONSTR_ _LBRACE_ Expr _RBRACE_
 		{
-			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
-			content->push_back(WRAP(@3, $3));
-			$$ = WRAP(@1, new (MEMMGR) XQDOMConstructor(Node::text_string, 0, 0, content, MEMMGR));
+			$$ = WRAP(@1, new (MEMMGR) XQTextConstructor(/*isCDATA*/false, WRAP(@3, $3), MEMMGR));
 		}
 	;
 
@@ -2860,9 +2849,7 @@ CompTextConstructor:
 CompCommentConstructor:
 	  _COMMENT_CONSTR_ _LBRACE_ Expr _RBRACE_
 		{
-			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
-			content->push_back(WRAP(@3, $3));
-			$$ = WRAP(@1, new (MEMMGR) XQDOMConstructor(Node::comment_string, 0, 0, content, MEMMGR));
+			$$ = WRAP(@1, new (MEMMGR) XQCommentConstructor(WRAP(@3, $3), MEMMGR));
 		}
 	;
 
@@ -2870,43 +2857,37 @@ CompCommentConstructor:
 CompPIConstructor:
 	  _NAMED_PROCESSING_INSTRUCTION_CONSTR_ _LBRACE_ Expr _RBRACE_
 	  {
-			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
-			content->push_back(WRAP(@3, $3));
-			$$ = WRAP(@1, new (MEMMGR) XQDOMConstructor(Node::processing_instruction_string,
+			$$ = WRAP(@1, new (MEMMGR) XQPIConstructor(
 								      new (MEMMGR) XQLiteral(
                     new (MEMMGR) AnyAtomicTypeConstructor(
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
 										$1, AnyAtomicType::STRING),
 										MEMMGR), 
-									  0, content, MEMMGR));
+									  WRAP(@3, $3), MEMMGR));
 	  }
 	| _NAMED_PROCESSING_INSTRUCTION_CONSTR_ _LBRACE_ _RBRACE_
 	  {
-			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
-			$$ = WRAP(@1, new (MEMMGR) XQDOMConstructor(Node::processing_instruction_string,
+			$$ = WRAP(@1, new (MEMMGR) XQPIConstructor(
 								      new (MEMMGR) XQLiteral(
                     new (MEMMGR) AnyAtomicTypeConstructor(
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
 										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING,
 										$1, AnyAtomicType::STRING),
 										MEMMGR), 
-									  0, empty, MEMMGR));
+									  new (MEMMGR) XQSequence(MEMMGR), MEMMGR));
 	  }
 	| _PROCESSING_INSTRUCTION_CONSTR_ _LBRACE_ Expr _RBRACE_ _LBRACE_ Expr _RBRACE_
 	  {
-			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
-			content->push_back(WRAP(@6, $6));
-			$$ = WRAP(@1, new (MEMMGR) XQDOMConstructor(Node::processing_instruction_string,
+			$$ = WRAP(@1, new (MEMMGR) XQPIConstructor(
 									  WRAP(@3, $3), 
-									  0, content, MEMMGR));
+									  WRAP(@6, $6), MEMMGR));
 	  }
 	| _PROCESSING_INSTRUCTION_CONSTR_ _LBRACE_ Expr _RBRACE_ _LBRACE_ _RBRACE_
 	  {
-			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
-			$$ = WRAP(@1, new (MEMMGR) XQDOMConstructor(Node::processing_instruction_string,
+			$$ = WRAP(@1, new (MEMMGR) XQPIConstructor(
 									  WRAP(@3, $3), 
-									  0, empty, MEMMGR));
+									  new (MEMMGR) XQSequence(MEMMGR), MEMMGR));
 	  }
 	;
 

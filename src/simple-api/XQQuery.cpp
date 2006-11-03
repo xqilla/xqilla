@@ -21,7 +21,6 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/context/impl/XQContextImpl.hpp>
 #include <xqilla/context/XQDebugCallback.hpp>
-#include <xqilla/context/XQScopedNamespace.hpp>
 #include <xqilla/context/VariableStore.hpp>
 #include <xqilla/context/VariableTypeStore.hpp>
 #include <xqilla/functions/FunctionLookup.hpp>

@@ -888,12 +888,17 @@ string PrintAST::printDOMConstructor(const XQDOMConstructor *item, const Dynamic
       }
       s << in << "  </Attributes>" << endl;
     }
-    if(!item->getChildren()->empty()) {
+    if(item->getChildren() != 0 && !item->getChildren()->empty()) {
       s << in << "  <Children>" << endl;
       for(VectorOfASTNodes::const_iterator i = item->getChildren()->begin();
           i != item->getChildren()->end(); ++i) {
         s << printASTNode(*i, context, indent + INDENT + INDENT);
       }
+      s << in << "  </Children>" << endl;
+    }
+    if(item->getValue() != 0) {
+      s << in << "  <Children>" << endl;
+      s << printASTNode(item->getValue(), context, indent + INDENT + INDENT);
       s << in << "  </Children>" << endl;
     }
     s << in << "</DOMConstructor>" << endl;

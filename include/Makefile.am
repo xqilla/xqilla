@@ -25,6 +25,12 @@ xqilla/ast/ConstantFoldingFunction.hpp \
 xqilla/ast/NumericFunction.hpp \
 xqilla/ast/XQDebugHook.hpp \
 xqilla/ast/XQDOMConstructor.hpp \
+xqilla/ast/XQDocumentConstructor.hpp \
+xqilla/ast/XQElementConstructor.hpp \
+xqilla/ast/XQAttributeConstructor.hpp \
+xqilla/ast/XQPIConstructor.hpp \
+xqilla/ast/XQCommentConstructor.hpp \
+xqilla/ast/XQTextConstructor.hpp \
 xqilla/ast/XQFLWOR.hpp \
 xqilla/ast/XQFunctionCall.hpp \
 xqilla/ast/XQGlobalVariable.hpp \

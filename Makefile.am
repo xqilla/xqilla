@@ -51,6 +51,12 @@ src/ast/ConstantFoldingFunction.cpp \
 src/ast/NumericFunction.cpp \
 src/ast/XQDebugHook.cpp \
 src/ast/XQDOMConstructor.cpp \
+src/ast/XQDocumentConstructor.cpp \
+src/ast/XQElementConstructor.cpp \
+src/ast/XQAttributeConstructor.cpp \
+src/ast/XQPIConstructor.cpp \
+src/ast/XQCommentConstructor.cpp \
+src/ast/XQTextConstructor.cpp \
 src/ast/XQFLWOR.cpp \
 src/ast/XQFunctionCall.cpp \
 src/ast/XQGlobalVariable.cpp \

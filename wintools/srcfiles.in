@@ -41,6 +41,12 @@ src/ast/XQCastAs.cpp	lib
 src/ast/XQCastableAs.cpp	lib
 src/ast/XQContextItem.cpp	lib
 src/ast/XQDOMConstructor.cpp	lib
+src/ast/XQDocumentConstructor.cpp lib
+src/ast/XQElementConstructor.cpp lib
+src/ast/XQAttributeConstructor.cpp lib
+src/ast/XQPIConstructor.cpp lib
+src/ast/XQCommentConstructor.cpp lib
+src/ast/XQTextConstructor.cpp lib
 src/ast/XQDebugHook.cpp	lib
 src/ast/XQDocumentOrder.cpp	lib
 src/ast/XQFLWOR.cpp	lib
@@ -416,6 +422,12 @@ include/xqilla/ast/XQCastAs.hpp	lib
 include/xqilla/ast/XQCastableAs.hpp	lib
 include/xqilla/ast/XQContextItem.hpp	lib
 include/xqilla/ast/XQDOMConstructor.hpp	lib
+include/xqilla/ast/XQDocumentConstructor.hpp lib
+include/xqilla/ast/XQElementConstructor.hpp lib
+include/xqilla/ast/XQAttributeConstructor.hpp lib
+include/xqilla/ast/XQPIConstructor.hpp lib
+include/xqilla/ast/XQCommentConstructor.hpp lib
+include/xqilla/ast/XQTextConstructor.hpp lib
 include/xqilla/ast/XQDebugHook.hpp	lib
 include/xqilla/ast/XQDocumentOrder.hpp	lib
 include/xqilla/ast/XQFLWOR.hpp	lib
