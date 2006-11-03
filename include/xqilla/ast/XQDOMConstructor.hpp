@@ -11,14 +11,8 @@
  * $Id$
  */
 
-//////////////////////////////////////////////////////////////////////
-// XQDOMConstructor.hpp: interface for the XQDOMConstructor class.
-//////////////////////////////////////////////////////////////////////
-
 #if !defined(AFXQ_XQDOMCONSTRUCTOR_H__56E97972_3896_49D3_B055_36CC3E9E550A__INCLUDED_)
 #define AFXQ_XQDOMCONSTRUCTOR_H__56E97972_3896_49D3_B055_36CC3E9E550A__INCLUDED_
-
-#include <vector>
 
 #include <xqilla/ast/ASTNodeImpl.hpp>
 #include <xqilla/items/Node.hpp>
@@ -29,29 +23,23 @@
 class XQILLA_API XQDOMConstructor : public ASTNodeImpl
 {
 public:
-  XQDOMConstructor(const XMLCh* nodeType, ASTNode* name, VectorOfASTNodes* attrList, VectorOfASTNodes* children, XPath2MemoryManager* expr);
+  XQDOMConstructor(XPath2MemoryManager* mm);
 
-  virtual Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
-  virtual ASTNode* staticResolution(StaticContext *context);
-  virtual ASTNode *staticTyping(StaticContext *context);
+  virtual const XMLCh* getNodeType() const = 0;
+  virtual const ASTNode *getName() const { return 0; }
+  virtual const VectorOfASTNodes *getAttributes() const { return 0; }
+  virtual const VectorOfASTNodes *getChildren() const { return 0; }
+  virtual const ASTNode *getValue() const { return 0; }
 
-  const XMLCh* getNodeType() const;
-  const ASTNode *getName() const;
-  const VectorOfASTNodes *getAttributes() const;
-  const VectorOfASTNodes *getChildren() const;
-
-  void setName(ASTNode *name);
+  virtual void setName(ASTNode *name) {}
+  virtual void setValue(ASTNode *value) {}
 
 protected:
-  bool isTextNode(const Node::Ptr &node) const;
-  bool getStringValue(XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &value, DynamicContext *context) const;
+  static bool getStringValue(const VectorOfASTNodes* m_children, XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &value,
+                             DynamicContext *context);
+  static bool getStringValue(const ASTNode *child, XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &value,
+                             DynamicContext *context);
   void unescapeEntities(XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer& buff) const;
-
-protected:
-  const XMLCh* m_nodeType;
-  ASTNode* m_name;
-  VectorOfASTNodes* m_attrList, *m_children;
-  XERCES_CPP_NAMESPACE_QUALIFIER RefHashTableOf< XMLCh >* m_namespaces;
 };
 
-#endif // !defined(AFXQ_XQDOMCONSTRUCTOR_H__56E97972_3896_49D3_B055_36CC3E9E550A__INCLUDED_)
+#endif

@@ -78,13 +78,16 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	XQVariable.lo StaticResolutionContext.lo StaticType.lo \
 	AggregateFunction.lo ConstantFoldingFunction.lo \
 	NumericFunction.lo XQDebugHook.lo XQDOMConstructor.lo \
-	XQFLWOR.lo XQFunctionCall.lo XQGlobalVariable.lo \
-	XQOrderingChange.lo XQQuantified.lo XQValidate.lo \
-	XQTypeswitch.lo XQVariableBinding.lo XPath1Compat.lo \
-	ConvertFunctionArg.lo XQDocumentOrder.lo XQPredicate.lo \
-	FTContains.lo FTWords.lo FTOr.lo FTAnd.lo FTMildnot.lo \
-	FTUnaryNot.lo DefaultTokenizer.lo DefaultTokenStore.lo \
-	FTOrder.lo FTDistance.lo FTScope.lo FTContent.lo FTWindow.lo \
+	XQDocumentConstructor.lo XQElementConstructor.lo \
+	XQAttributeConstructor.lo XQPIConstructor.lo \
+	XQCommentConstructor.lo XQTextConstructor.lo XQFLWOR.lo \
+	XQFunctionCall.lo XQGlobalVariable.lo XQOrderingChange.lo \
+	XQQuantified.lo XQValidate.lo XQTypeswitch.lo \
+	XQVariableBinding.lo XPath1Compat.lo ConvertFunctionArg.lo \
+	XQDocumentOrder.lo XQPredicate.lo FTContains.lo FTWords.lo \
+	FTOr.lo FTAnd.lo FTMildnot.lo FTUnaryNot.lo \
+	DefaultTokenizer.lo DefaultTokenStore.lo FTOrder.lo \
+	FTDistance.lo FTScope.lo FTContent.lo FTWindow.lo \
 	XQillaBuilderImpl.lo XQillaDocumentImpl.lo \
 	XQillaExpressionImpl.lo XQillaNSResolverImpl.lo \
 	XQillaXMLGrammarPoolImpl.lo XPathDocumentImpl.lo \
@@ -395,6 +398,12 @@ src/ast/ConstantFoldingFunction.cpp \
 src/ast/NumericFunction.cpp \
 src/ast/XQDebugHook.cpp \
 src/ast/XQDOMConstructor.cpp \
+src/ast/XQDocumentConstructor.cpp \
+src/ast/XQElementConstructor.cpp \
+src/ast/XQAttributeConstructor.cpp \
+src/ast/XQPIConstructor.cpp \
+src/ast/XQCommentConstructor.cpp \
+src/ast/XQTextConstructor.cpp \
 src/ast/XQFLWOR.cpp \
 src/ast/XQFunctionCall.cpp \
 src/ast/XQGlobalVariable.cpp \
@@ -1170,14 +1179,18 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XPathDocumentImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XPathNamespaceImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQAtomize.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQAttributeConstructor.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQCastAs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQCastableAs.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQCommentConstructor.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQContextImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQContextItem.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQDOMConstructor.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQDebugHook.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQDocumentConstructor.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQDocumentOrder.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQDynamicContextImpl.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQElementConstructor.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQException.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQFLWOR.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQFunction.Plo@am__quote@
@@ -1190,6 +1203,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQNav.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQOperator.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQOrderingChange.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQPIConstructor.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQParenthesizedExpr.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQParser.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQPredicate.Plo@am__quote@
@@ -1199,6 +1213,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQScopedNamespace.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQSequence.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQStep.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQTextConstructor.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQTreatAs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQTypeswitch.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQUserFunction.Plo@am__quote@
@@ -1816,6 +1831,48 @@ XQDOMConstructor.lo: src/ast/XQDOMConstructor.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/ast/XQDOMConstructor.cpp' object='XQDOMConstructor.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQDOMConstructor.lo `test -f 'src/ast/XQDOMConstructor.cpp' || echo '$(srcdir)/'`src/ast/XQDOMConstructor.cpp
+
+XQDocumentConstructor.lo: src/ast/XQDocumentConstructor.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQDocumentConstructor.lo -MD -MP -MF "$(DEPDIR)/XQDocumentConstructor.Tpo" -c -o XQDocumentConstructor.lo `test -f 'src/ast/XQDocumentConstructor.cpp' || echo '$(srcdir)/'`src/ast/XQDocumentConstructor.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/XQDocumentConstructor.Tpo" "$(DEPDIR)/XQDocumentConstructor.Plo"; else rm -f "$(DEPDIR)/XQDocumentConstructor.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/ast/XQDocumentConstructor.cpp' object='XQDocumentConstructor.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQDocumentConstructor.lo `test -f 'src/ast/XQDocumentConstructor.cpp' || echo '$(srcdir)/'`src/ast/XQDocumentConstructor.cpp
+
+XQElementConstructor.lo: src/ast/XQElementConstructor.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQElementConstructor.lo -MD -MP -MF "$(DEPDIR)/XQElementConstructor.Tpo" -c -o XQElementConstructor.lo `test -f 'src/ast/XQElementConstructor.cpp' || echo '$(srcdir)/'`src/ast/XQElementConstructor.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/XQElementConstructor.Tpo" "$(DEPDIR)/XQElementConstructor.Plo"; else rm -f "$(DEPDIR)/XQElementConstructor.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/ast/XQElementConstructor.cpp' object='XQElementConstructor.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQElementConstructor.lo `test -f 'src/ast/XQElementConstructor.cpp' || echo '$(srcdir)/'`src/ast/XQElementConstructor.cpp
+
+XQAttributeConstructor.lo: src/ast/XQAttributeConstructor.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQAttributeConstructor.lo -MD -MP -MF "$(DEPDIR)/XQAttributeConstructor.Tpo" -c -o XQAttributeConstructor.lo `test -f 'src/ast/XQAttributeConstructor.cpp' || echo '$(srcdir)/'`src/ast/XQAttributeConstructor.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/XQAttributeConstructor.Tpo" "$(DEPDIR)/XQAttributeConstructor.Plo"; else rm -f "$(DEPDIR)/XQAttributeConstructor.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/ast/XQAttributeConstructor.cpp' object='XQAttributeConstructor.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQAttributeConstructor.lo `test -f 'src/ast/XQAttributeConstructor.cpp' || echo '$(srcdir)/'`src/ast/XQAttributeConstructor.cpp
+
+XQPIConstructor.lo: src/ast/XQPIConstructor.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQPIConstructor.lo -MD -MP -MF "$(DEPDIR)/XQPIConstructor.Tpo" -c -o XQPIConstructor.lo `test -f 'src/ast/XQPIConstructor.cpp' || echo '$(srcdir)/'`src/ast/XQPIConstructor.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/XQPIConstructor.Tpo" "$(DEPDIR)/XQPIConstructor.Plo"; else rm -f "$(DEPDIR)/XQPIConstructor.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/ast/XQPIConstructor.cpp' object='XQPIConstructor.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQPIConstructor.lo `test -f 'src/ast/XQPIConstructor.cpp' || echo '$(srcdir)/'`src/ast/XQPIConstructor.cpp
+
+XQCommentConstructor.lo: src/ast/XQCommentConstructor.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQCommentConstructor.lo -MD -MP -MF "$(DEPDIR)/XQCommentConstructor.Tpo" -c -o XQCommentConstructor.lo `test -f 'src/ast/XQCommentConstructor.cpp' || echo '$(srcdir)/'`src/ast/XQCommentConstructor.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/XQCommentConstructor.Tpo" "$(DEPDIR)/XQCommentConstructor.Plo"; else rm -f "$(DEPDIR)/XQCommentConstructor.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/ast/XQCommentConstructor.cpp' object='XQCommentConstructor.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQCommentConstructor.lo `test -f 'src/ast/XQCommentConstructor.cpp' || echo '$(srcdir)/'`src/ast/XQCommentConstructor.cpp
+
+XQTextConstructor.lo: src/ast/XQTextConstructor.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQTextConstructor.lo -MD -MP -MF "$(DEPDIR)/XQTextConstructor.Tpo" -c -o XQTextConstructor.lo `test -f 'src/ast/XQTextConstructor.cpp' || echo '$(srcdir)/'`src/ast/XQTextConstructor.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/XQTextConstructor.Tpo" "$(DEPDIR)/XQTextConstructor.Plo"; else rm -f "$(DEPDIR)/XQTextConstructor.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/ast/XQTextConstructor.cpp' object='XQTextConstructor.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQTextConstructor.lo `test -f 'src/ast/XQTextConstructor.cpp' || echo '$(srcdir)/'`src/ast/XQTextConstructor.cpp
 
 XQFLWOR.lo: src/ast/XQFLWOR.cpp
 @am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQFLWOR.lo -MD -MP -MF "$(DEPDIR)/XQFLWOR.Tpo" -c -o XQFLWOR.lo `test -f 'src/ast/XQFLWOR.cpp' || echo '$(srcdir)/'`src/ast/XQFLWOR.cpp; \

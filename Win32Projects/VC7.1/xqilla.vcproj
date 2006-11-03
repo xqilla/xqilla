@@ -443,6 +443,24 @@
 				RelativePath="..\..\src\ast\XQDOMConstructor.cpp">
 			</File>
 			<File
+				RelativePath="..\..\src\ast\XQDocumentConstructor.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\ast\XQElementConstructor.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\ast\XQAttributeConstructor.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\ast\XQPIConstructor.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\ast\XQCommentConstructor.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\ast\XQTextConstructor.cpp">
+			</File>
+			<File
 				RelativePath="..\..\src\ast\XQDebugHook.cpp">
 			</File>
 			<File
@@ -552,6 +570,24 @@
 			</File>
 			<File
 				RelativePath="..\..\include\xqilla\ast\XQDOMConstructor.hpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\ast\XQDocumentConstructor.hpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\ast\XQElementConstructor.hpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\ast\XQAttributeConstructor.hpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\ast\XQPIConstructor.hpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\ast\XQCommentConstructor.hpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\ast\XQTextConstructor.hpp">
 			</File>
 			<File
 				RelativePath="..\..\include\xqilla\ast\XQDebugHook.hpp">

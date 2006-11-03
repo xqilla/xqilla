@@ -145,6 +145,30 @@ SOURCE=..\..\src\ast\XQDOMConstructor.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\ast\XQDocumentConstructor.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\ast\XQElementConstructor.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\ast\XQAttributeConstructor.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\ast\XQPIConstructor.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\ast\XQCommentConstructor.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\ast\XQTextConstructor.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\ast\XQDebugHook.cpp
 # End Source File
 # Begin Source File
@@ -290,6 +314,30 @@ SOURCE=..\..\include\xqilla\ast\XQContextItem.hpp
 # Begin Source File
 
 SOURCE=..\..\include\xqilla\ast\XQDOMConstructor.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\ast\XQDocumentConstructor.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\ast\XQElementConstructor.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\ast\XQAttributeConstructor.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\ast\XQPIConstructor.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\ast\XQCommentConstructor.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\ast\XQTextConstructor.hpp
 # End Source File
 # Begin Source File
 
