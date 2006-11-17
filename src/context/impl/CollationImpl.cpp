@@ -45,7 +45,7 @@ Sequence CollationImpl::sort(Sequence data, const DynamicContext* context) const
   Sequence stringSeq = Sequence(data.getLength(), context->getMemoryManager());
   for(Sequence::iterator it=data.begin(); it!=data.end(); ++it) {
     const XMLCh *str = (*it)->asString(context);
-    stringSeq.addItem(context->getItemFactory()->createString(str, context));
+    stringSeq.addItem(context->getItemFactory()->createString(str, context).get());
   }
 
   stringSeq.sortWithCollation(this, context);

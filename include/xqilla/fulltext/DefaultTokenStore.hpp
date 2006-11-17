@@ -29,16 +29,6 @@ class DynamicContext;
 class XQILLA_API DefaultTokenStore : public TokenStore
 {
 public:
-  DefaultTokenStore(const Node::Ptr &node, const Tokenizer *tokenizer,
-                    DynamicContext *context);
-  DefaultTokenStore(XPath2MemoryManager *mm);
-
-  virtual TokenStream::Ptr findTokens(const XMLCh *searchString) const;
-
-  virtual unsigned int getStartTokenPosition() const { return 0; }
-  virtual unsigned int getEndTokenPosition() const { return numTokens_ - 1; }
-
-private:
   typedef std::vector<TokenInfo::Ptr> Tokens;
 
   class TokenEntryStream : public TokenStream
@@ -59,6 +49,16 @@ private:
     Tokens::const_iterator end_;
   };
 
+  DefaultTokenStore(const Node::Ptr &node, const Tokenizer *tokenizer,
+                    DynamicContext *context);
+  DefaultTokenStore(XPath2MemoryManager *mm);
+
+  virtual TokenStream::Ptr findTokens(const XMLCh *searchString) const;
+
+  virtual unsigned int getStartTokenPosition() const { return 0; }
+  virtual unsigned int getEndTokenPosition() const { return numTokens_ - 1; }
+
+private:
   class TokenEntry
   {
   public:

@@ -24,7 +24,8 @@ public:
   NumericTypeConstructor(const XMLCh* typeURI,
                          const XMLCh* typeName,
                          const MAPM& value,
-                         AnyAtomicType::AtomicObjectType primitiveType);
+                         AnyAtomicType::AtomicObjectType primitiveType,
+                         XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mm);
   virtual ~NumericTypeConstructor() {}
 
   virtual const StaticType &getStaticType() const { return _sType; }
@@ -38,7 +39,7 @@ public:
 private:
   const XMLCh *_typeURI;
   const XMLCh *_typeName;
-  MAPM _value;
+  M_APM_struct _value;
   AnyAtomicType::AtomicObjectType _primitiveType;
   StaticType _sType;
 };

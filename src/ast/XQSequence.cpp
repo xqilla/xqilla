@@ -62,7 +62,8 @@ inline ItemConstructor *itemToItemConstructor(const Item::Ptr &item, DynamicCont
             return new (memMgr) NumericTypeConstructor(number->getTypeURI(),
                                                        number->getTypeName(),
                                                        number->asMAPM(),
-                                                       number->getPrimitiveTypeIndex());
+                                                       number->getPrimitiveTypeIndex(),
+                                                       memMgr);
           else
             return new (memMgr) AnyAtomicTypeConstructor(number->getTypeURI(),
                                                          number->getTypeName(),

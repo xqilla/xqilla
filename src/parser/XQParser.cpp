@@ -769,8 +769,8 @@ static void merge_strings(DynamicContext* context, VectorOfASTNodes* vec, XMLCh*
 }
 
 template<typename TYPE>
-static TYPE *wrapForDebug(XQParserArgs *qp, TYPE* pObjToWrap,
-                          const XMLCh* fnName, unsigned int line, unsigned int column)
+TYPE *wrapForDebug(XQParserArgs *qp, TYPE* pObjToWrap,
+                   const XMLCh* fnName, unsigned int line, unsigned int column)
 {
   if(pObjToWrap->getLine() == 0)
     pObjToWrap->setLocationInfo(QP->_query->getFile(), line, column);
@@ -778,8 +778,8 @@ static TYPE *wrapForDebug(XQParserArgs *qp, TYPE* pObjToWrap,
 }
 
 template<>
-static ASTNode *wrapForDebug(XQParserArgs *qp, ASTNode* pObjToWrap,
-                             const XMLCh* fnName, unsigned int line, unsigned int column)
+ASTNode *wrapForDebug(XQParserArgs *qp, ASTNode* pObjToWrap,
+                      const XMLCh* fnName, unsigned int line, unsigned int column)
 {
   if(pObjToWrap->getLine() == 0)
     pObjToWrap->setLocationInfo(QP->_query->getFile(), line, column);
