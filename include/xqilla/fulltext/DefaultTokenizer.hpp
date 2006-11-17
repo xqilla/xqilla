@@ -20,12 +20,6 @@
 class XQILLA_API DefaultTokenizer : public Tokenizer
 {
 public:
-  DefaultTokenizer() {}
-
-  virtual TokenStream::Ptr tokenize(const Node::Ptr &node, DynamicContext *context) const;
-  virtual TokenStream::Ptr tokenize(const XMLCh *str, XPath2MemoryManager *mm) const;
-
-private:
   class DefaultTokenInfo : public TokenInfo
   {
   public:
@@ -44,6 +38,12 @@ private:
     unsigned int paragraph_;    
   };
 
+  DefaultTokenizer() {}
+
+  virtual TokenStream::Ptr tokenize(const Node::Ptr &node, DynamicContext *context) const;
+  virtual TokenStream::Ptr tokenize(const XMLCh *str, XPath2MemoryManager *mm) const;
+
+private:
   class DefaultTokenStream : public TokenStream
   {
   public:

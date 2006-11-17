@@ -23,36 +23,63 @@
 #include <xqilla/exceptions/TypeNotFoundException.hpp>
 #include "../exceptions/InvalidLexicalSpaceException.hpp"
 
+#if defined(XERCES_HAS_CPP_NAMESPACE)
+XERCES_CPP_NAMESPACE_USE
+#endif
+
 NumericTypeConstructor::NumericTypeConstructor(const XMLCh* typeURI,
                                                const XMLCh* typeName,
                                                const MAPM& value,
-                                               AnyAtomicType::AtomicObjectType primitiveType)
+                                               AnyAtomicType::AtomicObjectType primitiveType,
+                                               MemoryManager *mm)
   : _typeURI(typeURI),
     _typeName(typeName),
-    _value(value),
     _primitiveType(primitiveType)
 {
-  _sType.flags = StaticType::getFlagsFor(primitiveType);
+  _sType.flags = StaticType::getFlagsFor(_primitiveType);
+
+  memset(&_value, 0, sizeof(_value));
+
+	const M_APM cval = value.c_struct();
+
+  _value.m_apm_datalength = cval->m_apm_datalength;
+  _value.m_apm_exponent = cval->m_apm_exponent;
+  _value.m_apm_sign = cval->m_apm_sign;
+
+  int len = (cval->m_apm_datalength + 1) >> 1;
+  _value.m_apm_data = (UCHAR*)mm->allocate(len);
+
+  memcpy(_value.m_apm_data, cval->m_apm_data, len);
 }
 
 Item::Ptr NumericTypeConstructor::createItem(const DynamicContext* context) const
 {
+  // Use the C API to copy our fake MAPM
+  MAPM copy;
+	m_apm_copy(const_cast<M_APM>(copy.c_struct()), const_cast<M_APM>(&_value));
+
   Numeric::Ptr retVal;
-  if(_primitiveType==AnyAtomicType::DECIMAL)
-    retVal=context->getItemFactory()->createDecimalOrDerived(_typeURI, _typeName, _value, context);
-  else if(_primitiveType==AnyAtomicType::FLOAT)
-    retVal=context->getItemFactory()->createFloatOrDerived(_typeURI, _typeName, _value, context);
-  else if(_primitiveType==AnyAtomicType::DOUBLE)
-    retVal=context->getItemFactory()->createDoubleOrDerived(_typeURI, _typeName, _value, context);
-  else
+  switch(_primitiveType) {
+  case AnyAtomicType::DECIMAL:
+    retVal = context->getItemFactory()->createDecimalOrDerived(_typeURI, _typeName, copy, context);
+    break;
+  case AnyAtomicType::FLOAT:
+    retVal = context->getItemFactory()->createFloatOrDerived(_typeURI, _typeName, copy, context);
+    break;
+  case AnyAtomicType::DOUBLE:
+    retVal = context->getItemFactory()->createDoubleOrDerived(_typeURI, _typeName, copy, context);
+    break;
+  default:
     assert(false);
+    break;
+  }
   // check if it's a valid instance
-  XERCES_CPP_NAMESPACE_QUALIFIER DatatypeValidator* validator=context->getDocumentCache()->getDatatypeValidator(_typeURI, _typeName);
+  DatatypeValidator* validator=context->getDocumentCache()->getDatatypeValidator(_typeURI, _typeName);
   if(!validator) {
-    XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buf(1023, context->getMemoryManager());
+    XMLBuffer buf(1023, context->getMemoryManager());
     buf.append(X("Type "));
     buf.append(_typeURI);
-    buf.append(XERCES_CPP_NAMESPACE_QUALIFIER chColon);
+    buf.append(chColon);
     buf.append(_typeName);
     buf.append(X(" not found"));
     XQThrow2(TypeNotFoundException, X("NumericTypeConstructor::createItem"), buf.getRawBuffer());
@@ -60,8 +87,8 @@ Item::Ptr NumericTypeConstructor::createItem(const DynamicContext* context) cons
   try {
     const XMLCh* valueToValidate=retVal->asString(context);
     validator->validate(valueToValidate, 0, context->getMemoryManager());
-  } catch (XERCES_CPP_NAMESPACE_QUALIFIER XMLException &e) {
-    XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buf(1023, context->getMemoryManager());
+  } catch (XMLException &e) {
+    XMLBuffer buf(1023, context->getMemoryManager());
     buf.append(e.getMessage());
     buf.append(X(" [err:FORG0001]"));
     XQThrow2(InvalidLexicalSpaceException, X("NumericTypeConstructor::createItem"), buf.getRawBuffer());
@@ -75,7 +102,7 @@ std::string NumericTypeConstructor::asString(const DynamicContext* context) cons
 
   s << "<NumericTypeConstructor";
   char obuf[1024];
-  _value.toString(obuf, _value.significant_digits());
+  m_apm_to_string_mt(obuf, _value.m_apm_datalength, const_cast<M_APM>(&_value));
   s << " value=\"" << obuf;
   s << "\" typeuri=\"" << UTF8(_typeURI);
   s << "\" typename=\"" << UTF8(_typeName);

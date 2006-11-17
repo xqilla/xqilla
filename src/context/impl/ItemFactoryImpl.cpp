@@ -460,7 +460,7 @@ ATDoubleOrDerived::Ptr ItemFactoryImpl::createDouble(const MAPM value, const Dyn
 }
 
 ATDoubleOrDerived::Ptr ItemFactoryImpl::createDouble(const XMLCh* value, const DynamicContext* context) {
-  return datatypeLookup_.getDoubleFactory()->createInstance(value, context);
+  return (ATDoubleOrDerived*)datatypeLookup_.getDoubleFactory()->createInstance(value, context).get();
 }
 
 ATFloatOrDerived::Ptr ItemFactoryImpl::createFloat(const MAPM value, const DynamicContext* context) {
@@ -471,7 +471,7 @@ ATFloatOrDerived::Ptr ItemFactoryImpl::createFloat(const MAPM value, const Dynam
 }
 
 ATFloatOrDerived::Ptr ItemFactoryImpl::createFloat(const XMLCh* value, const DynamicContext* context) {
-  return datatypeLookup_.getFloatFactory()->createInstance(value, context);
+  return (ATFloatOrDerived*)datatypeLookup_.getFloatFactory()->createInstance(value, context).get();
 }
 
 ATDecimalOrDerived::Ptr ItemFactoryImpl::createDecimal(const MAPM value, const DynamicContext* context) {
@@ -482,7 +482,7 @@ ATDecimalOrDerived::Ptr ItemFactoryImpl::createDecimal(const MAPM value, const D
 }
 
 ATDecimalOrDerived::Ptr ItemFactoryImpl::createDecimal(const XMLCh* value, const DynamicContext* context) {
-  return datatypeLookup_.getDecimalFactory()->createInstance(value, context);
+  return (ATDecimalOrDerived*)datatypeLookup_.getDecimalFactory()->createInstance(value, context).get();
 }
 
 ATDecimalOrDerived::Ptr ItemFactoryImpl::createInteger(const int value, const DynamicContext* context) {
@@ -511,7 +511,7 @@ ATBooleanOrDerived::Ptr ItemFactoryImpl::createBoolean(bool value, const Dynamic
 }
 
 ATBooleanOrDerived::Ptr ItemFactoryImpl::createBoolean(const XMLCh* value, const DynamicContext* context) {
-  return datatypeLookup_.getBooleanFactory()->createInstance(value, context);
+  return (ATBooleanOrDerived*)datatypeLookup_.getBooleanFactory()->createInstance(value, context).get();
 }
 
 ATDecimalOrDerived::Ptr ItemFactoryImpl::createNonNegativeInteger(const MAPM value, const DynamicContext* context) {
@@ -522,9 +522,9 @@ ATDecimalOrDerived::Ptr ItemFactoryImpl::createNonNegativeInteger(const MAPM val
 }
       
 ATDurationOrDerived::Ptr ItemFactoryImpl::createDayTimeDuration(const XMLCh* value, const DynamicContext* context) {
-  return datatypeLookup_.getDurationFactory()->
+  return (ATDurationOrDerived*)datatypeLookup_.getDurationFactory()->
     createInstance(FunctionConstructor::XMLChXPath2DatatypesURI, 
-                   ATDurationOrDerived::fgDT_DAYTIMEDURATION, value, context);
+                   ATDurationOrDerived::fgDT_DAYTIMEDURATION, value, context).get();
 }
 
 ATDurationOrDerived::Ptr ItemFactoryImpl::createDayTimeDuration(const MAPM &seconds, const DynamicContext* context)
@@ -535,9 +535,9 @@ ATDurationOrDerived::Ptr ItemFactoryImpl::createDayTimeDuration(const MAPM &seco
 }
 
 ATDurationOrDerived::Ptr ItemFactoryImpl::createYearMonthDuration(const XMLCh* value, const DynamicContext* context) {
-  return datatypeLookup_.getDurationFactory()->
+  return (ATDurationOrDerived*)datatypeLookup_.getDurationFactory()->
     createInstance(FunctionConstructor::XMLChXPath2DatatypesURI, 
-                   ATDurationOrDerived::fgDT_YEARMONTHDURATION, value, context);
+                   ATDurationOrDerived::fgDT_YEARMONTHDURATION, value, context).get();
 }
 
 ATDurationOrDerived::Ptr ItemFactoryImpl::createYearMonthDuration(const MAPM &months, const DynamicContext* context)
@@ -548,15 +548,15 @@ ATDurationOrDerived::Ptr ItemFactoryImpl::createYearMonthDuration(const MAPM &mo
 }
 
 ATDateOrDerived::Ptr ItemFactoryImpl::createDate(const XMLCh* value, const DynamicContext* context) {
-  return datatypeLookup_.getDateFactory()->createInstance(value, context);
+  return (ATDateOrDerived*)datatypeLookup_.getDateFactory()->createInstance(value, context).get();
 }
 
 ATDateTimeOrDerived::Ptr ItemFactoryImpl::createDateTime(const XMLCh* value, const DynamicContext* context) {
-  return datatypeLookup_.getDateTimeFactory()->createInstance(value, context);
+  return (ATDateTimeOrDerived*)datatypeLookup_.getDateTimeFactory()->createInstance(value, context).get();
 }
 
 ATTimeOrDerived::Ptr ItemFactoryImpl::createTime(const XMLCh* value, const DynamicContext* context) {
-  return datatypeLookup_.getTimeFactory()->createInstance(value, context);
+  return (ATTimeOrDerived*)datatypeLookup_.getTimeFactory()->createInstance(value, context).get();
 }
 
 ATAnyURIOrDerived::Ptr ItemFactoryImpl::createAnyURI(const XMLCh* value, const DynamicContext* context) {
@@ -564,7 +564,7 @@ ATAnyURIOrDerived::Ptr ItemFactoryImpl::createAnyURI(const XMLCh* value, const D
 }
 
 ATStringOrDerived::Ptr ItemFactoryImpl::createString(const XMLCh* value, const DynamicContext* context) {
-  return datatypeLookup_.getStringFactory()->createInstance(value, context);
+  return (ATStringOrDerived*)datatypeLookup_.getStringFactory()->createInstance(value, context).get();
 }
 
 //////////////////////////
@@ -602,7 +602,7 @@ ATBooleanOrDerived::Ptr ItemFactoryImpl::createBooleanOrDerived(const XMLCh* typ
                                                                   const XMLCh* typeName,
                                                                   const XMLCh* value, 
                                                                   const DynamicContext* context) {
-  return (const ATBooleanOrDerived::Ptr)datatypeLookup_.getBooleanFactory()->createInstance(typeURI, typeName, value, context);
+  return (const ATBooleanOrDerived*)datatypeLookup_.getBooleanFactory()->createInstance(typeURI, typeName, value, context).get();
 }
 
 /** create a xs:boolean with a bool value */
@@ -619,7 +619,7 @@ ATDateOrDerived::Ptr ItemFactoryImpl::createDateOrDerived(const XMLCh* typeURI,
                                                             const XMLCh* typeName,
                                                             const XMLCh* value, 
                                                             const DynamicContext* context){
-  return (const ATDateOrDerived::Ptr)datatypeLookup_.getDateFactory()->createInstance(typeURI, typeName, value, context);
+  return (const ATDateOrDerived*)datatypeLookup_.getDateFactory()->createInstance(typeURI, typeName, value, context).get();
 }
 
 
@@ -628,7 +628,7 @@ ATDateTimeOrDerived::Ptr ItemFactoryImpl::createDateTimeOrDerived(const XMLCh* t
                                                                     const XMLCh* typeName,
                                                                     const XMLCh* value,
                                                                     const DynamicContext* context){
-  return (const ATDateTimeOrDerived::Ptr)datatypeLookup_.getDateTimeFactory()->createInstance(typeURI, typeName, value, context);
+  return (const ATDateTimeOrDerived*)datatypeLookup_.getDateTimeFactory()->createInstance(typeURI, typeName, value, context).get();
 }
 
 /** create a xs:decimal */
@@ -636,7 +636,7 @@ ATDecimalOrDerived::Ptr ItemFactoryImpl::createDecimalOrDerived(const XMLCh* typ
                                                                   const XMLCh* typeName,
                                                                   const XMLCh* value,
                                                                   const DynamicContext* context){
-  return (const ATDecimalOrDerived::Ptr)datatypeLookup_.getDecimalFactory()->createInstance(typeURI, typeName, value, context);
+  return (const ATDecimalOrDerived*)datatypeLookup_.getDecimalFactory()->createInstance(typeURI, typeName, value, context).get();
 }
 
 /** create a xs:decimal with a MAPM */
@@ -657,7 +657,7 @@ ATDoubleOrDerived::Ptr ItemFactoryImpl::createDoubleOrDerived(const XMLCh* typeU
   if(XPath2Utils::equals(value, Numeric::NAN_string)) {
     value= Numeric::NaN_string;
   }
-  return (const ATDoubleOrDerived::Ptr)datatypeLookup_.getDoubleFactory()->createInstance(typeURI, typeName, value, context);
+  return (const ATDoubleOrDerived*)datatypeLookup_.getDoubleFactory()->createInstance(typeURI, typeName, value, context).get();
 }
 
 /** create a xs:double with a MAPM */
