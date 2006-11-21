@@ -173,31 +173,47 @@ class AutoRelease
 {
 public:
   AutoRelease(TYPE *p)
-    : _p(p) {}
+    : p_(p) {}
   ~AutoRelease()
   {
-    _p->release();
+    if(p_ != 0)
+      p_->release();
   }
 
   TYPE &operator*() const
   {
-    return *_p;
+    return *p_;
   }
   TYPE *operator->() const
   {
-    return _p;
+    return p_;
   }
-
   operator TYPE*() const
   {
-    return _p;
+    return p_;
+  }
+  TYPE *get() const
+  {
+    return p_;
+  }
+  TYPE *adopt()
+  {
+    TYPE *tmp = p_;
+    p_ = 0;
+    return tmp;
+  }
+  void set(TYPE *p)
+  {
+    if(p_ != 0)
+      p_->release();
+    p_ = p;
   }
 
 private:
   AutoRelease(const AutoRelease<TYPE> &);
   AutoRelease<TYPE> &operator=(const AutoRelease<TYPE> &);
 
-  TYPE *_p;
+  TYPE *p_;
 };
 
 template<class TYPE>
@@ -205,31 +221,45 @@ class AutoDelete
 {
 public:
   AutoDelete(TYPE *p)
-    : _p(p) {}
+    : p_(p) {}
   ~AutoDelete()
   {
-    delete _p;
+    delete p_;
   }
 
   TYPE &operator*() const
   {
-    return *_p;
+    return *p_;
   }
   TYPE *operator->() const
   {
-    return _p;
+    return p_;
   }
-
   operator TYPE*() const
   {
-    return _p;
+    return p_;
+  }
+  TYPE *get() const
+  {
+    return p_;
+  }
+  TYPE *adopt()
+  {
+    TYPE *tmp = p_;
+    p_ = 0;
+    return tmp;
+  }
+  void set(TYPE *p)
+  {
+    delete p_;
+    p_ = p;
   }
 
 private:
   AutoDelete(const AutoDelete<TYPE> &);
   AutoDelete<TYPE> &operator=(const AutoDelete<TYPE> &);
 
-  TYPE *_p;
+  TYPE *p_;
 };
 
 template<class TYPE>
@@ -237,68 +267,98 @@ class AutoDeleteArray
 {
 public:
   AutoDeleteArray(TYPE *p)
-    : _p(p) {}
+    : p_(p) {}
   ~AutoDeleteArray()
   {
-    delete [] _p;
+    delete [] p_;
   }
 
   TYPE &operator*() const
   {
-    return *_p;
+    return *p_;
   }
   TYPE *operator->() const
   {
-    return _p;
+    return p_;
   }
-
   operator TYPE*() const
   {
-    return _p;
+    return p_;
+  }
+  TYPE *get() const
+  {
+    return p_;
+  }
+  TYPE *adopt()
+  {
+    TYPE *tmp = p_;
+    p_ = 0;
+    return tmp;
+  }
+  void set(TYPE *p)
+  {
+    delete [] p_;
+    p_ = p;
   }
 
 private:
   AutoDeleteArray(const AutoDeleteArray<TYPE> &);
   AutoDeleteArray<TYPE> &operator=(const AutoDeleteArray<TYPE> &);
 
-  TYPE *_p;
+  TYPE *p_;
 };
 
 template<class TYPE>
 class AutoDeallocate
 {
 public:
-	AutoDeallocate(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mmgr, size_t size = sizeof(TYPE))
-		: p_(0), mmgr_(mmgr) {
-		p_ = (TYPE*)mmgr_->allocate(size);
-	}
-	AutoDeallocate(TYPE *p, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mmgr)
-		: p_(p), mmgr_(mmgr) {}
-	~AutoDeallocate()
-	{
-		mmgr_->deallocate((void*)p_);
-	}
+  AutoDeallocate(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mmgr, size_t size = sizeof(TYPE))
+    : p_(0), mmgr_(mmgr) {
+    p_ = (TYPE*)mmgr_->allocate(size);
+  }
+  AutoDeallocate(TYPE *p, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mmgr)
+    : p_(p), mmgr_(mmgr) {}
+  ~AutoDeallocate()
+  {
+    if(p_ != 0)
+      mmgr_->deallocate((void*)p_);
+  }
 
-	TYPE &operator*() const
-	{
-		return *p_;
-	}
-	TYPE *operator->() const
-	{
-		return p_;
-	}
-
-	operator TYPE*() const
-	{
-		return p_;
-	}
+  TYPE &operator*() const
+  {
+    return *p_;
+  }
+  TYPE *operator->() const
+  {
+    return p_;
+  }
+  operator TYPE*() const
+  {
+    return p_;
+  }
+  TYPE *get() const
+  {
+    return p_;
+  }
+  TYPE *adopt()
+  {
+    TYPE *tmp = p_;
+    p_ = 0;
+    return tmp;
+  }
+  void set(TYPE *p)
+  {
+    if(p_ != 0)
+      mmgr_->deallocate((void*)p_);
+    p_ = p;
+  }
 
 private:
-	AutoDeallocate(const AutoDeallocate<TYPE> &);
-	AutoDeallocate<TYPE> &operator=(const AutoDeallocate<TYPE> &);
+  AutoDeallocate(const AutoDeallocate<TYPE> &);
+  AutoDeallocate<TYPE> &operator=(const AutoDeallocate<TYPE> &);
 
-	TYPE *p_;
-	XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mmgr_;
+  TYPE *p_;
+  XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mmgr_;
 };
 
 #endif //__XPATH2MEMORYMANAGER_HPP
