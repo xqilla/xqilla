@@ -107,9 +107,7 @@
 #include <xqilla/exceptions/ContextException.hpp>
 
 #include <xqilla/utils/XPath2Utils.hpp>
-#ifdef HAVE_CONFIG_H
 #include "../config/xqilla_config.h"
-#endif
 
 #define YYPARSE_PARAM qp
 #define YYDEBUG 1
