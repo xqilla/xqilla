@@ -15,6 +15,7 @@
 #define __XPATH2MEMORYMANAGER_HPP
 
 #include <algorithm>
+#include <assert.h>
 
 #include <xqilla/framework/XQillaExport.hpp>
 
@@ -90,6 +91,12 @@ public:
   template <class _Tp1> struct rebind {
     typedef XQillaAllocator<_Tp1> other;
   };
+
+  // Should never be used - for compiling on AIX only
+  XQillaAllocator()
+  {
+    assert(false);
+  }
 
   XQillaAllocator(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr)
   {
