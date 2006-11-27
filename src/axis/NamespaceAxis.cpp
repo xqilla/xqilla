@@ -31,19 +31,14 @@ NamespaceAxis::NamespaceAxis(const LocationInfo *info, const XERCES_CPP_NAMESPAC
     originalNode_(contextNode),
     nodeMap_(node_->getAttributes()),
     i_(0),
-    defNsTested_(false)
+	defNsTested_(false),
+    defXmlNs_(false)
 {
 }
 
 const DOMNode *NamespaceAxis::nextNode(DynamicContext *context)
 {
   const DOMNode *result = 0;
-
-  if(toDo_) {
-    // Output the obligatory namespace node for the "xml" prefix
-    toDo_ = false;
-    result = context->getItemFactory()->createNamespaceNode(XMLUni::fgXMLString, XMLUni::fgXMLURIName, originalNode_, context);
-  }
 
   while(node_!=0 && result == 0) {
     if(nodeMap_ == 0 || i_ >= nodeMap_->getLength()) {
@@ -112,6 +107,12 @@ const DOMNode *NamespaceAxis::nextNode(DynamicContext *context)
     defNsTested_=true;
     if(context->getDefaultElementAndTypeNS()!=0 && done_.insert(0).second)
       result = context->getItemFactory()->createNamespaceNode(NULL, context->getDefaultElementAndTypeNS(), originalNode_, context);
+  }
+  if(result==0 && !defXmlNs_)
+  {
+	defXmlNs_=true;
+    // Output the obligatory namespace node for the "xml" prefix
+    result = context->getItemFactory()->createNamespaceNode(XMLUni::fgXMLString, XMLUni::fgXMLURIName, originalNode_, context);
   }
   return result;  
 }
