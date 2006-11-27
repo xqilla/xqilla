@@ -36,7 +36,7 @@ private:
 
   typedef std::set<const XMLCh*, XMLChSort> DoneSet;
   DoneSet done_;
-  bool defNsTested_;
+  bool defNsTested_, defXmlNs_;
 };
 
 #endif
