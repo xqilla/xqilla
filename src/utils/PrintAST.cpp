@@ -873,7 +873,7 @@ string PrintAST::printDOMConstructor(const XQDOMConstructor *item, const Dynamic
   s << in << "<DOMConstructor type=\"" << UTF8(item->getNodeType());
   if(item->getName() ||
      (item->getAttributes() != 0 && !item->getAttributes()->empty()) ||
-     !item->getChildren()->empty()) {
+     (item->getChildren() != 0 && !item->getChildren()->empty())) {
     s << "\">" << endl;
     if(item->getName()) {
       s << in << "  <Name>" << endl;
