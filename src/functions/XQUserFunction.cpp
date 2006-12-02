@@ -62,7 +62,8 @@ const XMLCh XQUserFunction::XMLChXQueryLocalFunctionsURI[] =
 };
 
 XQUserFunction::XQUserFunction(const XMLCh* fnName, VectorOfFunctionParameters* params, ASTNode* body, SequenceType* returnValue, StaticContext* ctx)
-	: m_body(body),
+  : m_body(body),
+    exFunc_(NULL),
     m_szPrefix(NULL),
     m_szName(NULL),
     m_szSignature(NULL),
@@ -169,6 +170,11 @@ const ASTNode *XQUserFunction::getFunctionBody() const
   return m_body;
 }
 
+const ExternalFunction *XQUserFunction::getExternalFunction() const
+{
+  return exFunc_;
+}
+
 DocumentCache* XQUserFunction::getModuleDocumentCache() const
 {
   return m_moduleDocCache;
@@ -184,6 +190,26 @@ ASTNode* XQUserFunction::createInstance(const VectorOfASTNodes &args, XPath2Memo
 void XQUserFunction::staticResolutionStage1(StaticContext *context)
 {
   XPath2MemoryManager *mm = context->getMemoryManager();
+
+  // Check for the implementation of an external function
+  if(m_body == NULL) {
+    unsigned int nArgs = m_pParams ? m_pParams->size() : 0;
+    exFunc_ = context->lookUpExternalFunction(m_szURI, m_szName, nArgs);
+
+    if(exFunc_ == NULL) {
+      XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buf;
+      buf.set(X("External function '{"));
+      buf.append(m_szURI);
+      buf.append(X("}"));
+      buf.append(m_szName);
+      buf.append(X("' with "));
+      XMLCh szNumBuff[20];
+      XERCES_CPP_NAMESPACE_QUALIFIER XMLString::binToText(nArgs, szNumBuff, 19, 10);
+      buf.append(szNumBuff);
+      buf.append(X(" argument(s) has not been bound to an implementation"));
+      XQThrow(FunctionException,X("User-defined Function"), buf.getRawBuffer());
+    }
+  }
 
   // Resolve the parameter names
   if(m_pParams) {
@@ -245,6 +271,9 @@ void XQUserFunction::staticResolutionStage2(StaticContext *context)
 
 void XQUserFunction::staticTyping(StaticContext *context)
 {
+  // Nothing more to do for external functions
+  if(m_body == NULL) return;
+
   // Avoid inifinite recursion for recursive functions
   if(m_bCalculatingSRC) return;
   m_bCalculatingSRC = true;
@@ -266,10 +295,8 @@ void XQUserFunction::staticTyping(StaticContext *context)
   }
 
   StaticResolutionContext m_src(mm);
-  if(m_body != NULL) {
-    m_body = m_body->staticTyping(context);
-    m_src.copy(m_body->getStaticResolutionContext());
-  }
+  m_body = m_body->staticTyping(context);
+  m_src.copy(m_body->getStaticResolutionContext());
 
   // Remove the parameter variables from the stored StaticResolutionContext
   if(m_pParams) {
@@ -307,28 +334,46 @@ typedef std::pair<XQUserFunction::XQFunctionParameter*, Sequence> ParamBinding;
 typedef std::vector<ParamBinding> VectorOfParamBindings;
 
 XQUserFunction::XQFunctionEvaluator::XQFunctionEvaluator(const XQUserFunction* funcDef, const VectorOfASTNodes& args, XPath2MemoryManager* expr) 
-  : XQFunction(funcDef->getName(),0,UNLIMITED,"",args,expr)
+  : XQFunction(funcDef->getName(),0,UNLIMITED,"",args,expr),
+    addReturnCheck_(funcDef->m_body == NULL && funcDef->m_pReturnPattern != NULL),
+    m_pFuncDef(funcDef)
 {
   setType(ASTNode::USER_FUNCTION);
-  m_pFuncDef = funcDef;
   _fURI = funcDef->getURI();
+}
+
+Result XQUserFunction::XQFunctionEvaluator::getArgument(unsigned int index, DynamicContext *context) const
+{
+  unsigned int nDefinedArgs = m_pFuncDef->m_pParams ? m_pFuncDef->m_pParams->size() : 0;
+
+  if(index >= nDefinedArgs) return 0;
+
+  return _args[index]->collapseTree(context);
 }
 
 Result XQUserFunction::XQFunctionEvaluator::createResult(DynamicContext* context, int flags) const
 {
-  return new FunctionEvaluatorResult(this);
+  if(m_pFuncDef->m_body != NULL) {
+    return new FunctionEvaluatorResult(this);
+  } else {
+    return new ExternalFunctionEvaluatorResult(this);
+  }
 }
 
 ASTNode* XQUserFunction::XQFunctionEvaluator::staticResolution(StaticContext* context)
 {
-  unsigned int nDefinedArgs = m_pFuncDef->m_pParams ? m_pFuncDef->m_pParams->size() : 0;
-  if(_args.size() != nDefinedArgs) {
-    XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buf;
-    buf.set(X("Function '"));
-    buf.append(m_pFuncDef->m_szName);
-    buf.append(X("' has been called with a number of arguments that doesn't match the function signature"));
-    XQThrow(FunctionException,X("User-defined Function"), buf.getRawBuffer());
+  XPath2MemoryManager *mm = context->getMemoryManager();
+
+  // We don't trust external functions, so check their return type
+  if(addReturnCheck_) {
+    addReturnCheck_ = false;
+    XQTreatAs *treatAs = new (mm) XQTreatAs(this, m_pFuncDef->m_pReturnPattern, mm);
+    treatAs->setLocationInfo(m_pFuncDef->m_pReturnPattern);
+    return treatAs->staticResolution(context);
   }
+
+  unsigned int nDefinedArgs = m_pFuncDef->m_pParams ? m_pFuncDef->m_pParams->size() : 0;
+  assert(_args.size() == nDefinedArgs);
 
   if(nDefinedArgs > 0) {
     VectorOfASTNodes::iterator argIt = _args.begin();
@@ -352,11 +397,15 @@ ASTNode* XQUserFunction::XQFunctionEvaluator::staticTyping(StaticContext* contex
 {
   _src.clear();
 
-  if(m_pFuncDef->m_body) {
+  if(m_pFuncDef->m_body != NULL) {
     // See if we can work out a better return type for the user defined function.
     // This call will just return if staticTyping is in our call stack.
     const_cast<XQUserFunction*>(m_pFuncDef)->staticTyping(context);
     _src.copy(m_pFuncDef->_src);
+  } else {
+    // Force the type check to happen, by declaring our type as item()*
+    _src.getStaticType() = StaticType::ITEM_TYPE;
+    _src.forceNoFolding(true);
   }
 
   unsigned int nDefinedArgs = m_pFuncDef->m_pParams ? m_pFuncDef->m_pParams->size() : 0;
@@ -376,7 +425,7 @@ ASTNode* XQUserFunction::XQFunctionEvaluator::staticTyping(StaticContext* contex
   }
 
   // don't constant fold if it's an imported or an external function
-  if(m_pFuncDef->m_moduleDocCache==NULL && m_pFuncDef->m_body!=0 && !_src.isUsed()) {
+  if(m_pFuncDef->m_moduleDocCache==NULL && m_pFuncDef->m_body != NULL && !_src.isUsed()) {
     return constantFold(context);
   }
   return this;
@@ -430,14 +479,6 @@ Item::Ptr XQUserFunction::XQFunctionEvaluator::FunctionEvaluatorResult::next(Dyn
     varStore->addLocalScope();
     for(VectorOfParamBindings::iterator it2 = varValues.begin(); it2 != varValues.end(); ++it2) {
       varStore->declareVar(it2->first->_uri, it2->first->_name, it2->second, context);
-    }
-
-    if(_di->getFunctionDefinition()->getFunctionBody() == NULL) {
-      XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buf;
-      buf.set(X("External function '"));
-      buf.append(_di->getFunctionDefinition()->getName());
-      buf.append(X("' has not been bound to an implementation"));
-      XQThrow(FunctionException,X("User-defined Function"), buf.getRawBuffer());
     }
 
     _result = _di->getFunctionDefinition()->getFunctionBody()->collapseTree(context);
@@ -499,4 +540,33 @@ std::string XQUserFunction::XQFunctionEvaluator::FunctionEvaluatorResult::asStri
   oss << in << "<functionevaluator/>" << std::endl;
 
   return oss.str();
+}
+
+XQUserFunction::XQFunctionEvaluator::ExternalFunctionEvaluatorResult::ExternalFunctionEvaluatorResult(const XQFunctionEvaluator *di)
+  : ResultImpl(di),
+    _di(di),
+    _toDo(true),
+    _result(0)
+{
+}
+
+Item::Ptr XQUserFunction::XQFunctionEvaluator::ExternalFunctionEvaluatorResult::next(DynamicContext *context)
+{
+  context->testInterrupt();	
+
+  if(_toDo) {
+    _toDo = false;
+    _result = _di->getFunctionDefinition()->getExternalFunction()->execute(_di, context);
+  }
+
+  Item::Ptr item = _result->next(context);
+  if(item.isNull()) {
+    _result = 0;
+  }
+  return item;
+}
+
+std::string XQUserFunction::XQFunctionEvaluator::ExternalFunctionEvaluatorResult::asString(DynamicContext *context, int indent) const
+{
+  return "";
 }

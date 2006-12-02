@@ -616,6 +616,16 @@ ASTNode* XQContextImpl::lookUpFunction(const XMLCh* prefix, const XMLCh* name, V
   return functionImpl;
 }
 
+void XQContextImpl::addExternalFunction(const ExternalFunction *func)
+{
+  _functionTable->insertExternalFunction(func);
+}
+
+const ExternalFunction *XQContextImpl::lookUpExternalFunction(const XMLCh *uri, const XMLCh *name, unsigned int numArgs) const
+{
+  return _functionTable->lookUpExternalFunction(uri, name, numArgs);
+}
+
 XERCES_CPP_NAMESPACE::DOMDocument *XQContextImpl::createNewDocument() const
 {
   return new (getMemoryManager()) XPathDocumentImpl(getMemoryManager());

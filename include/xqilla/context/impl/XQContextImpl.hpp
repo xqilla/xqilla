@@ -235,6 +235,11 @@ public:
   virtual ASTNode* lookUpFunction(const XMLCh* prefix, const XMLCh* name, VectorOfASTNodes& v,
                                   const LocationInfo *location) const;
 
+  /** adds an external function implementation to the function table */
+  virtual void addExternalFunction(const ExternalFunction *func);
+  /** returns an external function implementation for the given uri and localname */
+  virtual const ExternalFunction *lookUpExternalFunction(const XMLCh *uri, const XMLCh *name, unsigned int numArgs) const;
+
   /** Get the implementation for the specified collation */
   virtual Collation* getCollation(const XMLCh* const URI, const LocationInfo *location) const;
   /** Add a collation	*/

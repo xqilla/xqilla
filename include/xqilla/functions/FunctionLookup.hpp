@@ -22,6 +22,7 @@
 
 class FuncFactory;
 class XPath2MemoryManager;
+class ExternalFunction;
 
 class XQILLA_API FunctionLookup
 {
@@ -34,6 +35,11 @@ public:
   virtual void replaceFunction(FuncFactory *func) = 0;
   ///returns the approriate Function object
   virtual ASTNode* lookUpFunction(const XMLCh* URI, const XMLCh* fname, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr) const = 0;
+
+  ///adds a function to the external function table
+  virtual void insertExternalFunction(const ExternalFunction *func) = 0;
+  ///returns the approriate ExternalFunction object
+  virtual const ExternalFunction *lookUpExternalFunction(const XMLCh* URI, const XMLCh* fname, unsigned int numArgs) const = 0;
 
   /// returns all the defined functions
   virtual std::vector< std::pair<const XMLCh*,const XMLCh*> > getFunctions() const = 0;

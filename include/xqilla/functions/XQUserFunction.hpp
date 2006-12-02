@@ -20,6 +20,7 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/functions/FuncFactory.hpp>
+#include <xqilla/functions/ExternalFunction.hpp>
 #include <xqilla/schema/SequenceType.hpp>
 #include <xqilla/schema/DocumentCache.hpp>
 #include <xqilla/ast/XQFunction.hpp>
@@ -46,7 +47,7 @@ public:
 
   typedef std::vector<XQFunctionParameter*,XQillaAllocator<XQFunctionParameter*> > VectorOfFunctionParameters;
 
-  class XQFunctionEvaluator : public XQFunction
+  class XQFunctionEvaluator : public XQFunction, public ExternalFunction::Arguments
   {
   public:
     XQFunctionEvaluator(const XQUserFunction* funcDef, const VectorOfASTNodes& args, XPath2MemoryManager* expr);
@@ -55,6 +56,8 @@ public:
     {
       _signature=signature;
     }
+
+    virtual Result getArgument(unsigned int index, DynamicContext *context) const;
 
     Result createResult(DynamicContext* context, int flags=0) const;
     ASTNode* staticResolution(StaticContext* context);
@@ -82,6 +85,21 @@ public:
       bool _scopeRemoved;
     };
 
+    class ExternalFunctionEvaluatorResult : public ResultImpl
+    {
+    public:
+      ExternalFunctionEvaluatorResult(const XQFunctionEvaluator *di);
+
+      Item::Ptr next(DynamicContext *context);
+      std::string asString(DynamicContext *context, int indent) const;
+    private:
+      const XQFunctionEvaluator *_di;
+      bool _toDo;
+
+      Result _result;
+    };
+
+    bool addReturnCheck_;
     const XQUserFunction* m_pFuncDef;
   };
 
@@ -114,12 +132,14 @@ public:
   const XMLCh *getPrefix() const;
 
   const ASTNode *getFunctionBody() const;
+  const ExternalFunction *getExternalFunction() const;
   DocumentCache* getModuleDocumentCache() const;
 
   static const XMLCh XMLChXQueryLocalFunctionsURI[];
 
 protected:
   ASTNode* m_body;
+  const ExternalFunction *exFunc_;
   const XMLCh* m_szPrefix,*m_szName,*m_szSignature,*m_szFullName,*m_szURI;
   SequenceType* m_pReturnPattern;
   VectorOfFunctionParameters* m_pParams;
