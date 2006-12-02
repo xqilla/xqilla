@@ -206,7 +206,7 @@ XMLCh* VarStoreImpl::print(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr)
   if(index==NULL)
     index=_store.getGlobalScope();
 
-  XQContextImpl xp2c(memMgr, 0, 0);
+  XQContextImpl xp2c(XQilla::XPATH2, memMgr, 0, 0);
 
   while(index)
     {

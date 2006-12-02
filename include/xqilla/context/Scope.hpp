@@ -19,6 +19,7 @@
 #define _SCOPE_HPP
 
 #include <xqilla/framework/XQillaExport.hpp>
+#include <xqilla/context/VarHashEntry.hpp>
 #include <vector>
 #include <xercesc/util/RefHash2KeysTableOf.hpp>
 #include <xercesc/util/XMemory.hpp>

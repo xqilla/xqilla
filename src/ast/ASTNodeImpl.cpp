@@ -32,6 +32,7 @@
 #include <xqilla/runtime/SequenceResult.hpp>
 #include <xqilla/context/ItemFactory.hpp>
 #include <xqilla/context/ContextHelpers.hpp>
+#include <xqilla/update/PendingUpdateList.hpp>
 
 ASTNodeImpl::ASTNodeImpl(XPath2MemoryManager* memMgr)
   : _src(memMgr),
@@ -76,6 +77,11 @@ bool ASTNodeImpl::isSingleNumericConstant(StaticContext *context) const
 Result ASTNodeImpl::collapseTree(DynamicContext* context, int flags) const
 {
   return createResult(context, flags);
+}
+
+PendingUpdateList ASTNodeImpl::createUpdateList(DynamicContext *context) const
+{
+  return PendingUpdateList();
 }
 
 Result ASTNodeImpl::createResult(DynamicContext* context, int flags) const

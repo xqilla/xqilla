@@ -28,7 +28,6 @@ XERCES_CPP_NAMESPACE_END
 
 class VariableStore;
 class VariableTypeStore;
-class FunctionLookup;
 class DynamicContext;
 class Collation;
 class CollationHelper;
@@ -63,9 +62,6 @@ public:
 
   /** create a store for variables */
   virtual VariableTypeStore* createVariableTypeStore() = 0;
-
-  /** create a function table */
-  virtual FunctionLookup* createFunctionTable() = 0;
 
   /** create a ATDecimalOrDerived for the given integer */
   virtual ATDecimalOrDerived* createInteger(int value) = 0;

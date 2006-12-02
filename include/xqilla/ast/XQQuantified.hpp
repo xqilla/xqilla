@@ -25,9 +25,9 @@
 class XQILLA_API XQQuantified : public XQFLWOR
 {
 public:
-	typedef enum {some, every} QuantifierType;
+  typedef enum {some, every} QuantifierType;
 
-	XQQuantified(QuantifierType qType, VectorOfVariableBinding* bindings, ASTNode* returnExpr, XPath2MemoryManager *expr);
+  XQQuantified(QuantifierType qType, VectorOfVariableBinding* bindings, ASTNode* returnExpr, XPath2MemoryManager *expr);
 
   virtual ASTNode *staticTyping(StaticContext *context);
 
@@ -51,7 +51,7 @@ protected:
     ExecutionBindings _ebs; // mutable
   };
 
-	QuantifierType _qType;
+  QuantifierType _qType;
 };
 
 #endif // !defined(AFXQ_XQUANTIFIED_H__2B6902E9_A4FA_4AB3_9C69_08A8E77E70DA__INCLUDED_)

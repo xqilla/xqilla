@@ -350,15 +350,15 @@ Node::Ptr DocumentCacheParser::validate(const Node::Ptr &node,
             {
               if(child->dmNodeKind()==Node::element_string)
                 if(bSeenElement)
-                  XQThrow2(DynamicErrorException,X("DocumentCacheParser::validate"), X("A document being validate must have exactly one child element [err:XQDY0061]"));
+                  XQThrow2(DynamicErrorException,X("DocumentCacheParser::validate"), X("A document being validated must have exactly one child element [err:XQDY0061]"));
                 else
                   bSeenElement=true;
               else if(child->dmNodeKind()!=Node::processing_instruction_string && 
                       child->dmNodeKind()!=Node::comment_string)
-                XQThrow2(DynamicErrorException,X("DocumentCacheParser::validate"), X("A document being validate can only have element, comments and processing instructions as children [err:XQDY0061]"));
+                XQThrow2(DynamicErrorException,X("DocumentCacheParser::validate"), X("A document being validated can only have element, comments and processing instructions as children [err:XQDY0061]"));
             }
             if(!bSeenElement)
-              XQThrow2(DynamicErrorException,X("DocumentCacheParser::validate"), X("A document being validate must have exactly one child element [err:XQDY0061]"));
+              XQThrow2(DynamicErrorException,X("DocumentCacheParser::validate"), X("A document being validated must have exactly one child element [err:XQDY0061]"));
         }
 
         // if validation is strict, there must be a schema for the root node
@@ -425,7 +425,7 @@ Node::Ptr DocumentCacheParser::validate(const Node::Ptr &node,
         exc_msg.append(X(" [err:XQDY0027]"));
         XQThrow2(DynamicErrorException,X("DocumentCacheParser::validate"), exc_msg.getRawBuffer());
     }
-	catch (const XERCES_CPP_NAMESPACE_QUALIFIER DOMException& toCatch) {
+    catch (const XERCES_CPP_NAMESPACE_QUALIFIER DOMException& toCatch) {
         setValidationConstraintFatal(false);
         setValidationScheme(oldValScheme);
         XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer exc_msg(1023, context->getMemoryManager());

@@ -30,6 +30,8 @@
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/ast/XQTreatAs.hpp>
+#include <xqilla/update/PendingUpdateList.hpp>
+#include <xqilla/exceptions/StaticErrorException.hpp>
 
 #include <xercesc/util/XMLString.hpp>
 #include <xercesc/framework/XMLBuffer.hpp>
@@ -61,7 +63,7 @@ const XMLCh XQUserFunction::XMLChXQueryLocalFunctionsURI[] =
     XERCES_CPP_NAMESPACE_QUALIFIER chNull
 };
 
-XQUserFunction::XQUserFunction(const XMLCh* fnName, VectorOfFunctionParameters* params, ASTNode* body, SequenceType* returnValue, StaticContext* ctx)
+XQUserFunction::XQUserFunction(const XMLCh* fnName, VectorOfFunctionParameters* params, ASTNode* body, SequenceType* returnValue, bool isUpdating, StaticContext* ctx)
   : m_body(body),
     exFunc_(NULL),
     m_szPrefix(NULL),
@@ -69,6 +71,7 @@ XQUserFunction::XQUserFunction(const XMLCh* fnName, VectorOfFunctionParameters* 
     m_szSignature(NULL),
     m_szFullName(fnName),
     m_szURI(NULL),
+    isUpdating_(isUpdating),
     m_pMemMgr(ctx->getMemoryManager()),
     _src(ctx->getMemoryManager()),
     m_bCalculatingSRC(false),
@@ -259,6 +262,11 @@ void XQUserFunction::staticResolutionStage1(StaticContext *context)
     // Default type is item()*
     _src.getStaticType().flags = StaticType::ITEM_TYPE;
   }
+
+  if(isUpdating_) {
+    _src.updating(true);
+  }
+
   _src.forceNoFolding(true);
 }
 
@@ -280,6 +288,11 @@ void XQUserFunction::staticTyping(StaticContext *context)
 
   XPath2MemoryManager *mm = context->getMemoryManager();
 
+  if(isUpdating_ && m_pReturnPattern != NULL) {
+    XQThrow(StaticErrorException,X("XQUserFunction::staticTyping"),
+              X("It is a static error for an updating function to declare a return type [err:TBD]"));
+  }
+
   // define the new variables in a new scope and assign them the proper values
   VariableTypeStore* varStore=context->getVariableTypeStore();
   varStore->addLocalScope();
@@ -297,6 +310,20 @@ void XQUserFunction::staticTyping(StaticContext *context)
   StaticResolutionContext m_src(mm);
   m_body = m_body->staticTyping(context);
   m_src.copy(m_body->getStaticResolutionContext());
+
+  if(isUpdating_) {
+    if(!m_body->getStaticResolutionContext().isUpdating() &&
+       m_body->getStaticResolutionContext().getStaticType().containsType(StaticType::ITEM_TYPE))
+      XQThrow(StaticErrorException,X("XQUserFunction::staticTyping"),
+              X("It is a static error for the body expression of an user defined updating function "
+                "not to be an updating expression [err:XUST0002]"));
+  }
+  else {
+    if(m_body->getStaticResolutionContext().isUpdating())
+      XQThrow(StaticErrorException,X("XQUserFunction::staticTyping"),
+              X("It is a static error for the body expression of an user defined function "
+                "to be an updating expression [err:XUST0001]"));
+  }
 
   // Remove the parameter variables from the stored StaticResolutionContext
   if(m_pParams) {
@@ -413,13 +440,17 @@ ASTNode* XQUserFunction::XQFunctionEvaluator::staticTyping(StaticContext* contex
     VectorOfASTNodes::iterator argIt = _args.begin();
     for(VectorOfFunctionParameters::iterator defIt = m_pFuncDef->m_pParams->begin();
         defIt != m_pFuncDef->m_pParams->end() && argIt != _args.end(); ++defIt, ++argIt) {
-      if((*defIt)->_qname || context->isDebuggingEnabled()) {
-        *argIt = (*argIt)->staticTyping(context);
-        _src.add((*argIt)->getStaticResolutionContext());
+      // always run staticTyping to catch static errors
+      *argIt = (*argIt)->staticTyping(context);
+
+      if((*argIt)->getStaticResolutionContext().isUpdating()) {
+        XQThrow(StaticErrorException,X("XQUserFunction::XQFunctionEvaluator::staticTyping"),
+                X("It is a static error for the argument expression of a function call expression "
+                  "to be an updating expression [err:XUST0001]"));
       }
-      else {
-        // Don't resolve the argument, since it isn't used by the function body, but at least run staticResolution to catch static errors
-        (*argIt)->staticTyping(context);
+
+      if((*defIt)->_qname || context->isDebuggingEnabled()) {
+        _src.add((*argIt)->getStaticResolutionContext());
       }
     }
   }
@@ -429,6 +460,60 @@ ASTNode* XQUserFunction::XQFunctionEvaluator::staticTyping(StaticContext* contex
     return constantFold(context);
   }
   return this;
+}
+
+void XQUserFunction::XQFunctionEvaluator::evaluateArguments(DynamicContext *context) const
+{
+  VariableStore* varStore=context->getVariableStore();
+
+  int nDefinedArgs = m_pFuncDef->getParams() ? m_pFuncDef->getParams()->size() : 0;
+
+  VectorOfParamBindings varValues;
+  if(nDefinedArgs > 0) {
+    // the variables should be evaluated in the calling context
+    // (before the VariableStore::addLocalScope call: after this call, the variables that can be seen are only the local ones)
+    int index = 0;
+    for(VectorOfFunctionParameters::const_iterator it = m_pFuncDef->getParams()->begin();
+        it != m_pFuncDef->getParams()->end(); ++it, ++index) {
+      if((*it)->_qname || context->isDebuggingEnabled()) {
+        Sequence argValue(getArguments()[index]->collapseTree(context)->toSequence(context));
+        varValues.push_back(ParamBinding(*it, argValue));
+      }
+      else {
+        // Skip evaluation of the parameter, since it isn't used, and debugging isn't enabled
+      }
+    }
+  }
+  // define the new variables in a new scope and assign them the proper values
+  varStore->addLocalScope();
+  for(VectorOfParamBindings::iterator it2 = varValues.begin(); it2 != varValues.end(); ++it2) {
+    varStore->declareVar(it2->first->_uri, it2->first->_name, it2->second, context);
+  }
+}
+
+PendingUpdateList XQUserFunction::XQFunctionEvaluator::createUpdateList(DynamicContext *context) const
+{
+  context->testInterrupt();
+  VariableStore* varStore = context->getVariableStore();
+
+  DocumentCache* docCache = m_pFuncDef->getModuleDocumentCache();
+  DocumentCache* origDocCache = NULL;
+  if(docCache != NULL) {
+    origDocCache = const_cast<DocumentCache*>(context->getDocumentCache());
+    context->setDocumentCache(docCache);
+  }
+
+  evaluateArguments(context);
+
+  PendingUpdateList result = m_pFuncDef->getFunctionBody()->createUpdateList(context);
+
+  varStore->removeScope();
+
+  if(origDocCache != NULL) {
+    context->setDocumentCache(origDocCache);
+  }
+
+  return result;
 }
 
 XQUserFunction::XQFunctionEvaluator::FunctionEvaluatorResult::FunctionEvaluatorResult(const XQFunctionEvaluator *di)
@@ -443,7 +528,7 @@ XQUserFunction::XQFunctionEvaluator::FunctionEvaluatorResult::FunctionEvaluatorR
 
 Item::Ptr XQUserFunction::XQFunctionEvaluator::FunctionEvaluatorResult::next(DynamicContext *context)
 {
-  context->testInterrupt();	
+  context->testInterrupt();
   VariableStore* varStore=context->getVariableStore();
   Scope<Sequence> *oldScope = varStore->getScopeState();
 
@@ -456,31 +541,7 @@ Item::Ptr XQUserFunction::XQFunctionEvaluator::FunctionEvaluatorResult::next(Dyn
   }
   if(_toDo) {
     _toDo = false;
-
-    int nDefinedArgs = _di->getFunctionDefinition()->getParams() ? _di->getFunctionDefinition()->getParams()->size() : 0;
-
-    VectorOfParamBindings varValues;
-    if(nDefinedArgs > 0) {
-      // the variables should be evaluated in the calling context
-      // (before the VariableStore::addLocalScope call: after this call, the variables that can be seen are only the local ones)
-      int index = 0;
-      for(VectorOfFunctionParameters::const_iterator it = _di->getFunctionDefinition()->getParams()->begin();
-          it != _di->getFunctionDefinition()->getParams()->end(); ++it, ++index) {
-        if((*it)->_qname || context->isDebuggingEnabled()) {
-          Sequence argValue(_di->getArguments()[index]->collapseTree(context)->toSequence(context));
-          varValues.push_back(ParamBinding(*it, argValue));
-        }
-        else {
-          // Skip evaluation of the parameter, since it isn't used, and debugging isn't enabled
-        }
-      }
-    }
-    // define the new variables in a new scope and assign them the proper values
-    varStore->addLocalScope();
-    for(VectorOfParamBindings::iterator it2 = varValues.begin(); it2 != varValues.end(); ++it2) {
-      varStore->declareVar(it2->first->_uri, it2->first->_name, it2->second, context);
-    }
-
+    _di->evaluateArguments(context);
     _result = _di->getFunctionDefinition()->getFunctionBody()->collapseTree(context);
   }
   else if(_scope != 0) {

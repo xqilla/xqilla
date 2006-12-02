@@ -37,6 +37,7 @@ public:
   virtual ASTNode *staticTyping(StaticContext *context);
 
   Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
+  virtual PendingUpdateList createUpdateList(DynamicContext *context) const;
 };
 
 #endif // _FUNCTIONError_HPP

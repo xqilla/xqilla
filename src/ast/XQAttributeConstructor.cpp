@@ -48,52 +48,15 @@ Sequence XQAttributeConstructor::collapseTreeInternal(DynamicContext *context, i
   Node::Ptr result;
   try
   {
-    Result resName=m_name->collapseTree(context);
-    AnyAtomicType::Ptr itemName=resName->next(context);
-    if(itemName==NULLRCP || resName->next(context)!=NULLRCP)
-      XQThrow(ASTException,X("DOM Constructor"),X("The name for the attribute must be a single xs:QName, xs:string or xs:untypedAtomic item [err:XPTY0004]"));
-
-    const XMLCh* nodeUri=NULL, *nodePrefix=NULL, *nodeName=NULL;
-    if(itemName->getPrimitiveTypeIndex()==AnyAtomicType::QNAME)
-    {
-      const ATQNameOrDerived* pQName=(const ATQNameOrDerived*)(const AnyAtomicType*)itemName;
-      nodePrefix=pQName->getPrefix();
-      // ignore the URI unless we have a prefix (xs:QName created by the parser 
-      if(nodePrefix!=NULL && *nodePrefix!=0)
-        nodeUri=pQName->getURI();
-      nodeName=pQName->getName();
-    }
-    else if(itemName->getPrimitiveTypeIndex()==AnyAtomicType::STRING || itemName->getPrimitiveTypeIndex()==AnyAtomicType::UNTYPED_ATOMIC)
-    {
-      const XMLCh* pString=itemName->asString(context);
-      if(!XMLChar1_0::isValidQName(pString, XMLString::stringLen(pString)))
-        XQThrow(ASTException,X("DOM Constructor"),X("The name for the attribute cannot be converted to a xs:QName [err:XQDY0074]"));
-      nodePrefix=XPath2NSUtils::getPrefix(pString, context->getMemoryManager());
-      // if the prefix was empty we are in no namespace
-      if(nodePrefix==0 || *nodePrefix==0)
-        nodeUri=NULL;
-      else
-        try
-        {
-          nodeUri=context->getUriBoundToPrefix(nodePrefix, this);
-        }
-        catch(NamespaceLookupException&)
-        {
-          XQThrow(ASTException,X("DOM Constructor"),X("The name for the attribute cannot be converted to a xs:QName because the prefix is undefined [err:XQDY0074]"));
-        }
-      // keep the specified prefix in the node name
-      nodeName=pString;
-    }
-    else
-      XQThrow(ASTException,X("DOM Constructor"),X("The name for the attribute must be either a xs:QName, xs:string or xs:untypedAtomic [err:XPTY0004]"));
+    AnyAtomicType::Ptr itemName = m_name->collapseTree(context)->next(context);
+    const ATQNameOrDerived* pQName = (const ATQNameOrDerived*)itemName.get();
+    const XMLCh *nodePrefix = pQName->getPrefix();
+    const XMLCh *nodeUri = pQName->getURI();
+    const XMLCh *nodeName = pQName->getName();
 
     if((nodeUri==NULL && XPath2Utils::equals(nodeName, XMLUni::fgXMLNSString)) ||
        XPath2Utils::equals(nodeUri, XMLUni::fgXMLNSURIName))
       XQThrow(ASTException,X("DOM Constructor"),X("A computed attribute constructor cannot create a namespace declaration [err:XQDY0044]"));
-
-    // TODO: what error should we return if the string is empty?
-    if(nodeName==NULL || *nodeName==0)
-      XQThrow(ASTException,X("DOM Constructor"),X("The name for the attribute is empty"));
 
     XMLBuffer value;
     getStringValue(m_children, value, context);
@@ -112,41 +75,10 @@ ASTNode* XQAttributeConstructor::staticResolution(StaticContext *context)
 {
   XPath2MemoryManager *mm = context->getMemoryManager();
 
-  if(m_name)
-  {
-    // verify the namespace prefix used by the node name
-    if(m_name->getType() == ASTNode::LITERAL) {
-      const ItemConstructor* itemConstr=((XQLiteral*)m_name)->getItemConstructor();
-      // if the type is xs:QName, it was a named constructor, and it must be checked
-      if(XPath2Utils::equals(itemConstr->getTypeURI(),SchemaSymbols::fgURI_SCHEMAFORSCHEMA) &&
-         XPath2Utils::equals(itemConstr->getTypeName(),SchemaSymbols::fgDT_QNAME)) 
-      {
-        AutoDelete<DynamicContext> dContext(context->createDynamicContext());
-        dContext->setMemoryManager(context->getMemoryManager());
-        // createItem will throw an exception if the prefix is undefined
-        AnyAtomicType::Ptr atomName;
-        try
-        {
-          atomName = itemConstr->createItem(dContext);
-        }
-        catch(XQException& e)
-        {
-          XMLBuffer buff(1023, context->getMemoryManager());
-          buff.set(e.getError());
-          int index=XMLString::indexOf(buff.getRawBuffer(),chOpenSquare);
-          if(index!=-1)
-            XMLString::copyString(buff.getRawBuffer()+index, X("[err:XPST0081]"));
-          else
-            buff.append(X("[err:XPST0081]"));
-          XQThrow(StaticErrorException, X("XQAttributeConstructor::staticResolution"), buff.getRawBuffer());
-        }
-      }
-    }
-    // and run static resolution
-    m_name = new (mm) XQAtomize(m_name, mm);
-    m_name->setLocationInfo(this);
-    m_name = m_name->staticResolution(context);
-  }
+  // and run static resolution
+  m_name = new (mm) XQNameExpression(m_name, mm);
+  m_name->setLocationInfo(this);
+  m_name = m_name->staticResolution(context);
 
   unsigned int i;
   for (i=0;i<m_children->size();i++) {
@@ -186,10 +118,8 @@ ASTNode* XQAttributeConstructor::staticTyping(StaticContext *context)
 {
   _src.clear();
 
-  if(m_name) {
-    m_name = m_name->staticTyping(context);
-    _src.add(m_name->getStaticResolutionContext());
-  }
+  m_name = m_name->staticTyping(context);
+  _src.add(m_name->getStaticResolutionContext());
 
   unsigned int i;
   for(i = 0; i < m_children->size(); ++i) {

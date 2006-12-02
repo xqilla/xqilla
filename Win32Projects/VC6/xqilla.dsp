@@ -592,6 +592,10 @@ SOURCE=..\..\src\context\impl\VarTypeStoreImpl.hpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\context\impl\XercesUpdateFactory.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\context\impl\XQContextImpl.cpp
 # End Source File
 # Begin Source File
@@ -624,6 +628,10 @@ SOURCE=..\..\include\xqilla\context\impl\VariableStoreTemplate.hpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\include\xqilla\context\impl\XercesUpdateFactory.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\include\xqilla\context\impl\XQContextImpl.hpp
 # End Source File
 # Begin Source File
@@ -635,6 +643,10 @@ SOURCE=..\..\include\xqilla\context\impl\XQDynamicContextImpl.hpp
 SOURCE=..\..\include\xqilla\context\impl\XQRemoteDebugger.hpp
 # End Source File
 # End Group
+# Begin Source File
+
+SOURCE=..\..\src\context\UpdateFactory.cpp
+# End Source File
 # Begin Source File
 
 SOURCE=..\..\src\context\XQScopedNamespace.cpp
@@ -669,7 +681,15 @@ SOURCE=..\..\include\xqilla\context\URIResolver.hpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\include\xqilla\context\MessageListener.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\include\xqilla\context\ModuleResolver.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\context\UpdateFactory.hpp
 # End Source File
 # Begin Source File
 

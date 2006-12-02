@@ -56,6 +56,7 @@ void StaticResolutionContext::clear()
   _availableCollections = false;
   _forceNoFolding = false;
   _creative = false;
+  _updating = false;
 
   _properties = 0;
   _staticType = StaticType();
@@ -194,6 +195,8 @@ void StaticResolutionContext::add(const StaticResolutionContext &o)
   if(o._availableDocuments) _availableDocuments = true;
   if(o._availableCollections) _availableCollections = true;
   if(o._forceNoFolding) _forceNoFolding = true;
+  if(o._creative) _creative = true;
+  if(o._updating) _updating = true;
 
   const XMLCh* namespaceURI;
   const XMLCh* name;
@@ -214,6 +217,8 @@ void StaticResolutionContext::addExceptContextFlags(const StaticResolutionContex
   if(o._availableDocuments) _availableDocuments = true;
   if(o._availableCollections) _availableCollections = true;
   if(o._forceNoFolding) _forceNoFolding = true;
+  if(o._creative) _creative = true;
+  if(o._updating) _updating = true;
 
   const XMLCh* namespaceURI;
   const XMLCh* name;
@@ -252,6 +257,16 @@ bool StaticResolutionContext::isCreative() const
   return _creative;
 }
 
+void StaticResolutionContext::updating(bool value)
+{
+  _updating = value;
+}
+
+bool StaticResolutionContext::isUpdating() const
+{
+  return _updating;
+}
+
 unsigned int StaticResolutionContext::getProperties() const
 {
 	return _properties;
@@ -284,6 +299,8 @@ std::string StaticResolutionContext::toString() const
   s << "Available Documents:   " << (_availableDocuments ? "true" : "false") << std::endl;
   s << "Available Collections: " << (_availableCollections ? "true" : "false") << std::endl;
   s << "Force No Folding:      " << (_forceNoFolding ? "true" : "false") << std::endl;
+  s << "Creative:              " << (_creative ? "true" : "false") << std::endl;
+  s << "Updating:              " << (_updating ? "true" : "false") << std::endl;
 
   s << "Variables Used: [";
   const XMLCh* namespaceURI;

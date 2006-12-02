@@ -138,8 +138,9 @@ public:
   virtual XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *createNewDocument() const;
   virtual void releaseDocument(XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *doc) const;
 
-  /** send a pair of strings to the "trace" data set */
-  virtual void trace(const XMLCh* message1, const XMLCh* message2);
+  /** Creates a new UpdateFactory, used for performing updates.
+      Caller owns the returned object, and should delete it */
+  virtual UpdateFactory *createUpdateFactory() const;
 
   //////////////////////////////////
   // Static Context Accessors     //
@@ -264,6 +265,16 @@ public:
   /** Get the policy for namespace copy */
   virtual bool getPreserveNamespaces() const;
 
+  /** Set the revalidation mode */
+  virtual void setRevalidationMode(DocumentCache::ValidationMode mode);
+  /** Get the revalidation mode */
+  virtual DocumentCache::ValidationMode getRevalidationMode() const;
+
+  /** Set the listener for warning and trace messages */
+  virtual void setMessageListener(MessageListener *listener);
+  /** Gets the listener for warning and trace messages */
+  virtual MessageListener *getMessageListener() const;
+
   /////////////////////////////////////////
   //  XQilla context specific accessors  //
   /////////////////////////////////////////
@@ -338,6 +349,9 @@ protected:
    * load xml documents for resolveCollection and resolveDocument */
   DocumentCache* _docCache;
 
+  /** The message listener, for warnings and trace messages */
+  MessageListener *_messageListener;
+
   class DocRefCount {
   public:
     DocRefCount() : doc(0), ref_count(1), next(0) {}
@@ -396,6 +410,9 @@ inline void XQDynamicContextImpl::setNodeSetOrdering(NodeSetOrdering newOrder)
 { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
 inline void XQDynamicContextImpl::setModuleResolver(ModuleResolver *resolver)
 { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
+inline void XQDynamicContextImpl::setRevalidationMode(DocumentCache::ValidationMode mode)
+{ XQThrow2(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
+
 
 inline const StaticType &XQDynamicContextImpl::getContextItemType() const { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("The static context is not available from a proxying dynamic context")); }
 inline const XMLCh* XQDynamicContextImpl::getDefaultFuncNS() const { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("The static context is not available from a proxying dynamic context")); }
@@ -406,6 +423,7 @@ inline const ExternalFunction *XQDynamicContextImpl::lookUpExternalFunction(cons
 inline StaticContext::FLWOROrderingMode XQDynamicContextImpl::getDefaultFLWOROrderingMode() const { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("The static context is not available from a proxying dynamic context")); }
 inline bool XQDynamicContextImpl::getXPath1CompatibilityMode() const { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("The static context is not available from a proxying dynamic context")); }
 inline bool XQDynamicContextImpl::getPreserveBoundarySpace() const { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("The static context is not available from a proxying dynamic context")); }
+inline DocumentCache::ValidationMode XQDynamicContextImpl::getRevalidationMode() const { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("The static context is not available from a proxying dynamic context")); }
 
 
 inline const XMLCh* XQDynamicContextImpl::getBaseURI() const { return _staticContext->getBaseURI(); }

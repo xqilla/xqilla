@@ -10,6 +10,9 @@ noinst_PROGRAMS = basicXQillaUsage xqtsRunner
 
 lib_LTLIBRARIES = libxqilla.la
 
+# Library version, see http://sourceware.org/autobook/autobook/autobook_91.html
+libxqilla_la_LDFLAGS = -version-info 1:0:0
+
 libxqilla_la_SOURCES = \
 src/framework/ReferenceCounted.cpp \
 src/framework/BaseMemoryManager.cpp \
@@ -17,6 +20,7 @@ src/framework/ProxyMemoryManager.cpp \
 src/framework/StringPool.cpp \
 src/framework/XPath2MemoryManagerImpl.cpp \
 src/context/XQScopedNamespace.cpp \
+src/context/UpdateFactory.cpp \
 src/context/impl/CollationImpl.cpp \
 src/context/impl/CodepointCollation.cpp \
 src/context/impl/VarStoreImpl.hpp \
@@ -28,6 +32,7 @@ src/context/impl/XQContextImpl.cpp \
 src/context/impl/XQDynamicContextImpl.cpp \
 src/context/impl/ItemFactoryImpl.cpp \
 src/context/impl/XQRemoteDebugger.cpp \
+src/context/impl/XercesUpdateFactory.cpp \
 src/ast/XQAtomize.cpp \
 src/ast/XQCastableAs.cpp \
 src/ast/XQCastAs.cpp \
@@ -381,6 +386,19 @@ src/runtime/ResultImpl.cpp \
 src/runtime/SequenceResult.cpp \
 src/runtime/SingleResult.cpp \
 src/runtime/Sequence.cpp \
+src/update/FunctionPut.cpp \
+src/update/PendingUpdateList.cpp \
+src/update/UApplyUpdates.cpp \
+src/update/UDelete.cpp \
+src/update/URename.cpp \
+src/update/UReplace.cpp \
+src/update/UReplaceValueOf.cpp \
+src/update/UInsertAsFirst.cpp \
+src/update/UInsertAsLast.cpp \
+src/update/UInsertInto.cpp \
+src/update/UInsertAfter.cpp \
+src/update/UInsertBefore.cpp \
+src/update/UTransform.cpp \
 src/config/xqilla_config.h \
 src/config/xqilla_config_win32.h \
 src/xqts/TestSuiteParser.cpp \

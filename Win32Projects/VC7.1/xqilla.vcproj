@@ -781,6 +781,9 @@
 				RelativePath="..\..\src\context\impl\VarTypeStoreImpl.hpp">
 			</File>
 			<File
+				RelativePath="..\..\src\context\impl\XercesUpdateFactory.cpp">
+			</File>
+			<File
 				RelativePath="..\..\src\context\impl\XQContextImpl.cpp">
 			</File>
 			<File
@@ -805,6 +808,9 @@
 				RelativePath="..\..\include\xqilla\context\impl\VariableStoreTemplate.hpp">
 			</File>
 			<File
+				RelativePath="..\..\include\xqilla\context\impl\XercesUpdateFactory.hpp">
+			</File>
+			<File
 				RelativePath="..\..\include\xqilla\context\impl\XQContextImpl.hpp">
 			</File>
 			<File
@@ -814,6 +820,9 @@
 				RelativePath="..\..\include\xqilla\context\impl\XQRemoteDebugger.hpp">
 			</File>
 		</Filter>
+			<File
+				RelativePath="..\..\src\context\UpdateFactory.cpp">
+			</File>
 			<File
 				RelativePath="..\..\src\context\XQScopedNamespace.cpp">
 			</File>
@@ -839,7 +848,13 @@
 				RelativePath="..\..\include\xqilla\context\URIResolver.hpp">
 			</File>
 			<File
+				RelativePath="..\..\include\xqilla\context\MessageListener.hpp">
+			</File>
+			<File
 				RelativePath="..\..\include\xqilla\context\ModuleResolver.hpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\context\UpdateFactory.hpp">
 			</File>
 			<File
 				RelativePath="..\..\include\xqilla\context\VarHashEntry.hpp">

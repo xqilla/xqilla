@@ -60,8 +60,12 @@ class XQPromoteNumeric;
 class XQPromoteAnyURI;
 class XQDocumentOrder;
 class XQPredicate;
+class XQNameExpression;
+class XQContentSequence;
+class XQDirectName;
 class DynamicContext;
 class Item;
+
 class FTContains;
 class FTSelection;
 class FTWords;
@@ -77,6 +81,18 @@ class FTScope;
 class FTContent;
 class FTWindow;
 class FTWindowLiteral;
+
+class UDelete;
+class URename;
+class UReplace;
+class UReplaceValueOf;
+class UInsertAsFirst;
+class UInsertAsLast;
+class UInsertInto;
+class UInsertAfter;
+class UInsertBefore;
+class UTransform;
+class UApplyUpdates;
 
 class XQILLA_API PrintAST
 {
@@ -118,6 +134,9 @@ public:
   virtual std::string printPromoteAnyURI(const XQPromoteAnyURI *item, const DynamicContext *context, int indent);
   virtual std::string printDocumentOrder(const XQDocumentOrder *item, const DynamicContext *context, int indent);
   virtual std::string printPredicate(const XQPredicate *item, const DynamicContext *context, int indent);
+  virtual std::string printNameExpression(const XQNameExpression *item, const DynamicContext *context, int indent);
+  virtual std::string printContentSequence(const XQContentSequence *item, const DynamicContext *context, int indent);
+  virtual std::string printDirectName(const XQDirectName *item, const DynamicContext *context, int indent);
   virtual std::string printUserFunction(const XQUserFunction::XQFunctionEvaluator *item, const DynamicContext *context, int indent);
 
   virtual std::string printFTContains(const FTContains *item, const DynamicContext *context, int indent);
@@ -137,6 +156,18 @@ public:
   virtual std::string printFTWindowLiteral(const FTWindowLiteral *selection, const DynamicContext *context, int indent);
 
   virtual std::string printFTRange(const FTRange &range, const DynamicContext *context, int indent);
+
+  virtual std::string printUDelete(const UDelete *item, const DynamicContext *context, int indent);
+  virtual std::string printURename(const URename *item, const DynamicContext *context, int indent);
+  virtual std::string printUReplace(const UReplace *item, const DynamicContext *context, int indent);
+  virtual std::string printUReplaceValueOf(const UReplaceValueOf *item, const DynamicContext *context, int indent);
+  virtual std::string printUInsertAsFirst(const UInsertAsFirst *item, const DynamicContext *context, int indent);
+  virtual std::string printUInsertAsLast(const UInsertAsLast *item, const DynamicContext *context, int indent);
+  virtual std::string printUInsertInto(const UInsertInto *item, const DynamicContext *context, int indent);
+  virtual std::string printUInsertAfter(const UInsertAfter *item, const DynamicContext *context, int indent);
+  virtual std::string printUInsertBefore(const UInsertBefore *item, const DynamicContext *context, int indent);
+  virtual std::string printUTransform(const UTransform *item, const DynamicContext *context, int indent);
+  virtual std::string printUApplyUpdates(const UApplyUpdates *item, const DynamicContext *context, int indent);
 
   virtual std::string printItem(const Item::Ptr item, const DynamicContext *context, int indent);
   virtual std::string printSequenceType(const SequenceType *type, const DynamicContext *context, int indent);

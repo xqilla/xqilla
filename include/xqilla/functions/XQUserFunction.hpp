@@ -62,6 +62,9 @@ public:
     Result createResult(DynamicContext* context, int flags=0) const;
     ASTNode* staticResolution(StaticContext* context);
     virtual ASTNode *staticTyping(StaticContext *context);
+    virtual PendingUpdateList createUpdateList(DynamicContext *context) const;
+
+    void evaluateArguments(DynamicContext *context) const;
 
     const XQUserFunction *getFunctionDefinition() const
     {
@@ -103,7 +106,7 @@ public:
     const XQUserFunction* m_pFuncDef;
   };
 
-  XQUserFunction(const XMLCh* fnName, VectorOfFunctionParameters* params, ASTNode* body, SequenceType* returnValue, StaticContext* ctx);
+  XQUserFunction(const XMLCh* fnName, VectorOfFunctionParameters* params, ASTNode* body, SequenceType* returnValue, bool isUpdating, StaticContext* ctx);
 
   // from FuncFactory
   virtual ASTNode *createInstance(const VectorOfASTNodes &args, XPath2MemoryManager* expr) const;
@@ -115,6 +118,7 @@ public:
   virtual const XMLCh* getFullName() const;
   const VectorOfFunctionParameters* getParams() const;
   const SequenceType* getReturnValue() const;
+  bool isUpdating() const { return isUpdating_; }
 
   /// Resolve URIs, give the function a default static type
   void staticResolutionStage1(StaticContext* context);
@@ -143,6 +147,8 @@ protected:
   const XMLCh* m_szPrefix,*m_szName,*m_szSignature,*m_szFullName,*m_szURI;
   SequenceType* m_pReturnPattern;
   VectorOfFunctionParameters* m_pParams;
+  bool isUpdating_;
+
   XPath2MemoryManager* m_pMemMgr;
   StaticResolutionContext _src;
   bool m_bCalculatingSRC;

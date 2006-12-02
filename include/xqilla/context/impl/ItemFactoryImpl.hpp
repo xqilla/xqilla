@@ -31,13 +31,14 @@ public:
   /* @name Node factory methods */
 
   virtual Node::Ptr cloneNode(const Node::Ptr node, const DynamicContext *context) const;
+  virtual Node::Ptr copyNode(const Node::Ptr &node, const DynamicContext *context) const;
   virtual Node::Ptr createTextNode(const XMLCh *value, const DynamicContext *context) const;
   virtual Node::Ptr createCommentNode(const XMLCh *value, const DynamicContext *context) const;
   virtual Node::Ptr createPINode(const XMLCh *name, const XMLCh *value, const DynamicContext *context) const;
   virtual Node::Ptr createAttributeNode(const XMLCh *uri, const XMLCh *prefix, const XMLCh *name,
                                         const XMLCh *value, const DynamicContext *context) const;
   virtual Node::Ptr createElementNode(const XMLCh *uri, const XMLCh *prefix, const XMLCh *name,
-                                      const std::vector<Node::Ptr> &attrList, const std::vector<ItemFactory::ElementChild> &childList,
+                                      const std::vector<Node::Ptr> &attrList, const std::vector<Node::Ptr> &childList,
                                       const DynamicContext *context) const;
   virtual Node::Ptr createDocumentNode(const std::vector<Node::Ptr> &childList, const DynamicContext *context) const;
   virtual const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* createNamespaceNode(const XMLCh* prefix, const XMLCh* uri, const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* parentNode, const DynamicContext *context) const;
@@ -115,7 +116,10 @@ public:
                                                      const XMLCh* name, const DynamicContext* context);
 
   XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *getOutputDocument(const DynamicContext *context) const;
+
 private:
+  XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *copyNode(XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *document,
+                                                   const Node::Ptr &node, const DynamicContext *context) const;
 
   DatatypeLookup datatypeLookup_;
   mutable NodeImpl::Ptr outputDocument_;

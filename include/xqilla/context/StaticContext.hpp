@@ -32,6 +32,7 @@ class VariableTypeStore;
 class ItemFactory;
 class StaticType;
 class ModuleResolver;
+class MessageListener;
 class ExternalFunction;
 
 XERCES_CPP_NAMESPACE_BEGIN
@@ -195,6 +196,16 @@ public:
   virtual void setPreserveNamespaces(bool value) = 0;
   /** Get the policy for namespace copy */
   virtual bool getPreserveNamespaces() const = 0;
+
+  /** Set the revalidation mode */
+  virtual void setRevalidationMode(DocumentCache::ValidationMode mode) = 0;
+  /** Get the revalidation mode */
+  virtual DocumentCache::ValidationMode getRevalidationMode() const = 0;
+
+  /** Set the listener for warning and trace messages */
+  virtual void setMessageListener(MessageListener *listener) = 0;
+  /** Gets the listener for warning and trace messages */
+  virtual MessageListener *getMessageListener() const = 0;
 
   /// The enableDebuging flag is considered to be in both the static and dynamic contexts
   virtual void enableDebugging(bool enable=true) = 0;

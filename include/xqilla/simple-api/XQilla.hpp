@@ -47,10 +47,15 @@ public:
 
   /// Enumeration used to select a language to parse
   enum Language {
-    XQUERY,          ///< Parse an XQuery expression
-    XPATH2,          ///< Parse an XPath 2.0 expression
-    XQUERY_FULLTEXT, ///< Parse an XQuery Full-Text expression
-    XPATH2_FULLTEXT  ///< Parse an XPath 2.0 Full-Text expression
+    XQUERY   = 0x00,
+    XPATH2   = 0x01,
+    FULLTEXT = 0x02,
+    UPDATE   = 0x04,
+
+    XQUERY_FULLTEXT        = (XQUERY | FULLTEXT),
+    XPATH2_FULLTEXT        = (XPATH2 | FULLTEXT),
+    XQUERY_UPDATE          = (XQUERY | UPDATE),
+    XQUERY_FULLTEXT_UPDATE = (XQUERY | FULLTEXT | UPDATE)
   };
                                                                                                                                                               
   /**
@@ -149,7 +154,8 @@ public:
    * @param memMgr The memory manager used to create the DynamicContext.
    * @return An implementation of DynamicContext
    */
-  DynamicContext *createContext(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr =
+  DynamicContext *createContext(Language language = XQUERY,
+                                XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr =
                                 XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager);
 
   //@}

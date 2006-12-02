@@ -269,9 +269,10 @@ public:
   }
 
   XQilla::Language getLanguage() const { return m_language; }
-  bool isFullText() const { return m_language == XQilla::XQUERY_FULLTEXT || m_language == XQilla::XPATH2_FULLTEXT; }
-  bool isXQuery() const { return m_language == XQilla::XQUERY || m_language == XQilla::XQUERY_FULLTEXT; }
-  bool isXPath() const { return m_language == XQilla::XPATH2 || m_language == XQilla::XPATH2_FULLTEXT; }
+  bool isXQuery() const { return (m_language & XQilla::XPATH2) == 0; }
+  bool isXPath() const { return (m_language & XQilla::XPATH2) != 0; }
+  bool isFullText() const { return (m_language & XQilla::FULLTEXT) != 0; }
+  bool isUpdate() const { return (m_language & XQilla::UPDATE) != 0; }
 
 protected:
   virtual int Read( YY_CHAR* buf, int max_size )
@@ -307,6 +308,8 @@ protected:
     case XQilla::XPATH2: l = "XPath 2.0"; break;
     case XQilla::XQUERY_FULLTEXT: l = "XQuery Full-Text"; break;
     case XQilla::XPATH2_FULLTEXT: l = "XPath 2.0 Full-Text"; break;
+    case XQilla::XQUERY_UPDATE: l = "XQuery Update"; break;
+    case XQilla::XQUERY_FULLTEXT_UPDATE: l = "XQuery Full-Text Update"; break;
     }
 
     const XMLCh *szMsg = XPath2Utils::concatStrings(X("Invalid "), X(l), X(" syntax: "), m_memMgr);

@@ -84,6 +84,7 @@ xqilla/context/ContextHelpers.hpp \
 xqilla/context/DynamicContext.hpp \
 xqilla/context/StaticContext.hpp \
 xqilla/context/ItemFactory.hpp \
+xqilla/context/MessageListener.hpp \
 xqilla/context/ModuleResolver.hpp \
 xqilla/context/URIResolver.hpp \
 xqilla/context/VariableStore.hpp \
@@ -94,6 +95,7 @@ xqilla/context/VariableTypeStore.hpp \
 xqilla/context/Collation.hpp \
 xqilla/context/XQScopedNamespace.hpp \
 xqilla/context/ModuleResolver.hpp \
+xqilla/context/UpdateFactory.hpp \
 xqilla/context/impl/CollationImpl.hpp \
 xqilla/context/impl/VarHashEntryImpl.hpp \
 xqilla/context/impl/VariableStoreTemplate.hpp \
@@ -102,6 +104,7 @@ xqilla/context/impl/XQRemoteDebugger.hpp \
 xqilla/context/impl/XQContextImpl.hpp \
 xqilla/context/impl/XQDynamicContextImpl.hpp \
 xqilla/context/impl/ItemFactoryImpl.hpp \
+xqilla/context/impl/XercesUpdateFactory.hpp \
 xqilla/dom-api/impl/XQillaNSResolverImpl.hpp \
 xqilla/dom-api/XPath2Result.hpp \
 xqilla/dom-api/XQillaExpression.hpp \
@@ -328,6 +331,19 @@ xqilla/schema/AnyAtomicTypeDatatypeValidator.hpp \
 xqilla/schema/DocumentCacheImpl.hpp \
 xqilla/simple-api/XQilla.hpp \
 xqilla/simple-api/XQQuery.hpp \
+xqilla/update/FunctionPut.hpp \
+xqilla/update/PendingUpdateList.hpp \
+xqilla/update/UApplyUpdates.hpp \
+xqilla/update/UDelete.hpp \
+xqilla/update/URename.hpp \
+xqilla/update/UReplace.hpp \
+xqilla/update/UReplaceValueOf.hpp \
+xqilla/update/UInsertAsFirst.hpp \
+xqilla/update/UInsertAsLast.hpp \
+xqilla/update/UInsertInto.hpp \
+xqilla/update/UInsertAfter.hpp \
+xqilla/update/UInsertBefore.hpp \
+xqilla/update/UTransform.hpp \
 xqilla/utils/NumUtils.hpp \
 xqilla/utils/XPath2NSUtils.hpp \
 xqilla/utils/XPath2Utils.hpp \

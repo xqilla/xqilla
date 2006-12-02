@@ -68,30 +68,30 @@ LTLIBRARIES = $(lib_LTLIBRARIES)
 libxqilla_la_LIBADD =
 am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	ProxyMemoryManager.lo StringPool.lo XPath2MemoryManagerImpl.lo \
-	XQScopedNamespace.lo CollationImpl.lo CodepointCollation.lo \
-	VarStoreImpl.lo VarTypeStoreImpl.lo VarHashEntryImpl.lo \
-	XQContextImpl.lo XQDynamicContextImpl.lo ItemFactoryImpl.lo \
-	XQRemoteDebugger.lo XQAtomize.lo XQCastableAs.lo XQCastAs.lo \
-	XQContextItem.lo XQFunction.lo XQIf.lo ASTNodeImpl.lo \
-	XQInstanceOf.lo XQLiteral.lo XQNav.lo XQOperator.lo \
-	XQParenthesizedExpr.lo XQSequence.lo XQStep.lo XQTreatAs.lo \
-	XQVariable.lo StaticResolutionContext.lo StaticType.lo \
-	AggregateFunction.lo ConstantFoldingFunction.lo \
-	NumericFunction.lo XQDebugHook.lo XQDOMConstructor.lo \
-	XQDocumentConstructor.lo XQElementConstructor.lo \
-	XQAttributeConstructor.lo XQPIConstructor.lo \
-	XQCommentConstructor.lo XQTextConstructor.lo XQFLWOR.lo \
-	XQFunctionCall.lo XQGlobalVariable.lo XQOrderingChange.lo \
-	XQQuantified.lo XQValidate.lo XQTypeswitch.lo \
-	XQVariableBinding.lo XPath1Compat.lo ConvertFunctionArg.lo \
-	XQDocumentOrder.lo XQPredicate.lo FTContains.lo FTWords.lo \
-	FTOr.lo FTAnd.lo FTMildnot.lo FTUnaryNot.lo \
-	DefaultTokenizer.lo DefaultTokenStore.lo FTOrder.lo \
-	FTDistance.lo FTScope.lo FTContent.lo FTWindow.lo \
-	XQillaBuilderImpl.lo XQillaDocumentImpl.lo \
-	XQillaExpressionImpl.lo XQillaNSResolverImpl.lo \
-	XQillaXMLGrammarPoolImpl.lo XPathDocumentImpl.lo \
-	XPathNamespaceImpl.lo XPath2ResultImpl.lo \
+	XQScopedNamespace.lo UpdateFactory.lo CollationImpl.lo \
+	CodepointCollation.lo VarStoreImpl.lo VarTypeStoreImpl.lo \
+	VarHashEntryImpl.lo XQContextImpl.lo XQDynamicContextImpl.lo \
+	ItemFactoryImpl.lo XQRemoteDebugger.lo XercesUpdateFactory.lo \
+	XQAtomize.lo XQCastableAs.lo XQCastAs.lo XQContextItem.lo \
+	XQFunction.lo XQIf.lo ASTNodeImpl.lo XQInstanceOf.lo \
+	XQLiteral.lo XQNav.lo XQOperator.lo XQParenthesizedExpr.lo \
+	XQSequence.lo XQStep.lo XQTreatAs.lo XQVariable.lo \
+	StaticResolutionContext.lo StaticType.lo AggregateFunction.lo \
+	ConstantFoldingFunction.lo NumericFunction.lo XQDebugHook.lo \
+	XQDOMConstructor.lo XQDocumentConstructor.lo \
+	XQElementConstructor.lo XQAttributeConstructor.lo \
+	XQPIConstructor.lo XQCommentConstructor.lo \
+	XQTextConstructor.lo XQFLWOR.lo XQFunctionCall.lo \
+	XQGlobalVariable.lo XQOrderingChange.lo XQQuantified.lo \
+	XQValidate.lo XQTypeswitch.lo XQVariableBinding.lo \
+	XPath1Compat.lo ConvertFunctionArg.lo XQDocumentOrder.lo \
+	XQPredicate.lo FTContains.lo FTWords.lo FTOr.lo FTAnd.lo \
+	FTMildnot.lo FTUnaryNot.lo DefaultTokenizer.lo \
+	DefaultTokenStore.lo FTOrder.lo FTDistance.lo FTScope.lo \
+	FTContent.lo FTWindow.lo XQillaBuilderImpl.lo \
+	XQillaDocumentImpl.lo XQillaExpressionImpl.lo \
+	XQillaNSResolverImpl.lo XQillaXMLGrammarPoolImpl.lo \
+	XPathDocumentImpl.lo XPathNamespaceImpl.lo XPath2ResultImpl.lo \
 	XQillaImplementation.lo XPath2NodeSerializer.lo XQilla.lo \
 	XQQuery.lo UTF8Str.lo XMLChCompare.lo XStr.lo ContextUtils.lo \
 	DateUtils.lo NumUtils.lo XQillaPlatformUtils.lo PrintAST.lo \
@@ -185,7 +185,11 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	AnyAtomicTypeDatatypeValidator.lo EmptyResult.lo \
 	LazySequenceResult.lo ResultBuffer.lo ResultBufferImpl.lo \
 	Result.lo ResultImpl.lo SequenceResult.lo SingleResult.lo \
-	Sequence.lo TestSuiteParser.lo TestSuiteResultListener.lo \
+	Sequence.lo FunctionPut.lo PendingUpdateList.lo \
+	UApplyUpdates.lo UDelete.lo URename.lo UReplace.lo \
+	UReplaceValueOf.lo UInsertAsFirst.lo UInsertAsLast.lo \
+	UInsertInto.lo UInsertAfter.lo UInsertBefore.lo UTransform.lo \
+	TestSuiteParser.lo TestSuiteResultListener.lo \
 	TestSuiteRunner.lo
 libxqilla_la_OBJECTS = $(am_libxqilla_la_OBJECTS)
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
@@ -357,6 +361,9 @@ SUBDIRS = include
 INCLUDES = -I$(top_srcdir)/include/ -I$(xerces_include) -I$(top_srcdir)/src/lexer/
 LDADD = libxqilla.la -lxerces-c
 lib_LTLIBRARIES = libxqilla.la
+
+# Library version, see http://sourceware.org/autobook/autobook/autobook_91.html
+libxqilla_la_LDFLAGS = -version-info 1:0:0
 libxqilla_la_SOURCES = \
 src/framework/ReferenceCounted.cpp \
 src/framework/BaseMemoryManager.cpp \
@@ -364,6 +371,7 @@ src/framework/ProxyMemoryManager.cpp \
 src/framework/StringPool.cpp \
 src/framework/XPath2MemoryManagerImpl.cpp \
 src/context/XQScopedNamespace.cpp \
+src/context/UpdateFactory.cpp \
 src/context/impl/CollationImpl.cpp \
 src/context/impl/CodepointCollation.cpp \
 src/context/impl/VarStoreImpl.hpp \
@@ -375,6 +383,7 @@ src/context/impl/XQContextImpl.cpp \
 src/context/impl/XQDynamicContextImpl.cpp \
 src/context/impl/ItemFactoryImpl.cpp \
 src/context/impl/XQRemoteDebugger.cpp \
+src/context/impl/XercesUpdateFactory.cpp \
 src/ast/XQAtomize.cpp \
 src/ast/XQCastableAs.cpp \
 src/ast/XQCastAs.cpp \
@@ -728,6 +737,19 @@ src/runtime/ResultImpl.cpp \
 src/runtime/SequenceResult.cpp \
 src/runtime/SingleResult.cpp \
 src/runtime/Sequence.cpp \
+src/update/FunctionPut.cpp \
+src/update/PendingUpdateList.cpp \
+src/update/UApplyUpdates.cpp \
+src/update/UDelete.cpp \
+src/update/URename.cpp \
+src/update/UReplace.cpp \
+src/update/UReplaceValueOf.cpp \
+src/update/UInsertAsFirst.cpp \
+src/update/UInsertAsLast.cpp \
+src/update/UInsertInto.cpp \
+src/update/UInsertAfter.cpp \
+src/update/UInsertBefore.cpp \
+src/update/UTransform.cpp \
 src/config/xqilla_config.h \
 src/config/xqilla_config_win32.h \
 src/xqts/TestSuiteParser.cpp \
@@ -1072,6 +1094,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionOneOrMore.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionPosition.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionPrefixFromQName.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionPut.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionQName.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionRemove.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionReplace.Plo@am__quote@
@@ -1134,6 +1157,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Or.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/OrderComparison.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ParentAxis.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PendingUpdateList.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Plus.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PrecedingAxis.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PrecedingSiblingAxis.Plo@am__quote@
@@ -1158,14 +1182,26 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TestSuiteResultListener.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TestSuiteRunner.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Timezone.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UApplyUpdates.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UCANormalizer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UCANormalizer1.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UCANormalizer2.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UCANormalizer3.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UCANormalizer4.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UDelete.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UInsertAfter.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UInsertAsFirst.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UInsertAsLast.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UInsertBefore.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UInsertInto.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/URename.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UReplace.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UReplaceValueOf.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UTF8Str.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UTransform.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UnaryMinus.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Union.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UpdateFactory.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/VarHashEntryImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/VarStoreImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/VarTypeStoreImpl.Plo@am__quote@
@@ -1230,6 +1266,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQillaPlatformUtils.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQillaXMLGrammarPoolImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XStr.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XercesUpdateFactory.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/basicXQillaUsage.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/m_apm.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mapm5sin.Plo@am__quote@
@@ -1608,6 +1645,13 @@ XQScopedNamespace.lo: src/context/XQScopedNamespace.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQScopedNamespace.lo `test -f 'src/context/XQScopedNamespace.cpp' || echo '$(srcdir)/'`src/context/XQScopedNamespace.cpp
 
+UpdateFactory.lo: src/context/UpdateFactory.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT UpdateFactory.lo -MD -MP -MF "$(DEPDIR)/UpdateFactory.Tpo" -c -o UpdateFactory.lo `test -f 'src/context/UpdateFactory.cpp' || echo '$(srcdir)/'`src/context/UpdateFactory.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/UpdateFactory.Tpo" "$(DEPDIR)/UpdateFactory.Plo"; else rm -f "$(DEPDIR)/UpdateFactory.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/context/UpdateFactory.cpp' object='UpdateFactory.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o UpdateFactory.lo `test -f 'src/context/UpdateFactory.cpp' || echo '$(srcdir)/'`src/context/UpdateFactory.cpp
+
 CollationImpl.lo: src/context/impl/CollationImpl.cpp
 @am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT CollationImpl.lo -MD -MP -MF "$(DEPDIR)/CollationImpl.Tpo" -c -o CollationImpl.lo `test -f 'src/context/impl/CollationImpl.cpp' || echo '$(srcdir)/'`src/context/impl/CollationImpl.cpp; \
 @am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/CollationImpl.Tpo" "$(DEPDIR)/CollationImpl.Plo"; else rm -f "$(DEPDIR)/CollationImpl.Tpo"; exit 1; fi
@@ -1670,6 +1714,13 @@ XQRemoteDebugger.lo: src/context/impl/XQRemoteDebugger.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/context/impl/XQRemoteDebugger.cpp' object='XQRemoteDebugger.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQRemoteDebugger.lo `test -f 'src/context/impl/XQRemoteDebugger.cpp' || echo '$(srcdir)/'`src/context/impl/XQRemoteDebugger.cpp
+
+XercesUpdateFactory.lo: src/context/impl/XercesUpdateFactory.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XercesUpdateFactory.lo -MD -MP -MF "$(DEPDIR)/XercesUpdateFactory.Tpo" -c -o XercesUpdateFactory.lo `test -f 'src/context/impl/XercesUpdateFactory.cpp' || echo '$(srcdir)/'`src/context/impl/XercesUpdateFactory.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/XercesUpdateFactory.Tpo" "$(DEPDIR)/XercesUpdateFactory.Plo"; else rm -f "$(DEPDIR)/XercesUpdateFactory.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/context/impl/XercesUpdateFactory.cpp' object='XercesUpdateFactory.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XercesUpdateFactory.lo `test -f 'src/context/impl/XercesUpdateFactory.cpp' || echo '$(srcdir)/'`src/context/impl/XercesUpdateFactory.cpp
 
 XQAtomize.lo: src/ast/XQAtomize.cpp
 @am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQAtomize.lo -MD -MP -MF "$(DEPDIR)/XQAtomize.Tpo" -c -o XQAtomize.lo `test -f 'src/ast/XQAtomize.cpp' || echo '$(srcdir)/'`src/ast/XQAtomize.cpp; \
@@ -3693,6 +3744,97 @@ Sequence.lo: src/runtime/Sequence.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/runtime/Sequence.cpp' object='Sequence.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o Sequence.lo `test -f 'src/runtime/Sequence.cpp' || echo '$(srcdir)/'`src/runtime/Sequence.cpp
+
+FunctionPut.lo: src/update/FunctionPut.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionPut.lo -MD -MP -MF "$(DEPDIR)/FunctionPut.Tpo" -c -o FunctionPut.lo `test -f 'src/update/FunctionPut.cpp' || echo '$(srcdir)/'`src/update/FunctionPut.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/FunctionPut.Tpo" "$(DEPDIR)/FunctionPut.Plo"; else rm -f "$(DEPDIR)/FunctionPut.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/update/FunctionPut.cpp' object='FunctionPut.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionPut.lo `test -f 'src/update/FunctionPut.cpp' || echo '$(srcdir)/'`src/update/FunctionPut.cpp
+
+PendingUpdateList.lo: src/update/PendingUpdateList.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT PendingUpdateList.lo -MD -MP -MF "$(DEPDIR)/PendingUpdateList.Tpo" -c -o PendingUpdateList.lo `test -f 'src/update/PendingUpdateList.cpp' || echo '$(srcdir)/'`src/update/PendingUpdateList.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/PendingUpdateList.Tpo" "$(DEPDIR)/PendingUpdateList.Plo"; else rm -f "$(DEPDIR)/PendingUpdateList.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/update/PendingUpdateList.cpp' object='PendingUpdateList.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o PendingUpdateList.lo `test -f 'src/update/PendingUpdateList.cpp' || echo '$(srcdir)/'`src/update/PendingUpdateList.cpp
+
+UApplyUpdates.lo: src/update/UApplyUpdates.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT UApplyUpdates.lo -MD -MP -MF "$(DEPDIR)/UApplyUpdates.Tpo" -c -o UApplyUpdates.lo `test -f 'src/update/UApplyUpdates.cpp' || echo '$(srcdir)/'`src/update/UApplyUpdates.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/UApplyUpdates.Tpo" "$(DEPDIR)/UApplyUpdates.Plo"; else rm -f "$(DEPDIR)/UApplyUpdates.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/update/UApplyUpdates.cpp' object='UApplyUpdates.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o UApplyUpdates.lo `test -f 'src/update/UApplyUpdates.cpp' || echo '$(srcdir)/'`src/update/UApplyUpdates.cpp
+
+UDelete.lo: src/update/UDelete.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT UDelete.lo -MD -MP -MF "$(DEPDIR)/UDelete.Tpo" -c -o UDelete.lo `test -f 'src/update/UDelete.cpp' || echo '$(srcdir)/'`src/update/UDelete.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/UDelete.Tpo" "$(DEPDIR)/UDelete.Plo"; else rm -f "$(DEPDIR)/UDelete.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/update/UDelete.cpp' object='UDelete.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o UDelete.lo `test -f 'src/update/UDelete.cpp' || echo '$(srcdir)/'`src/update/UDelete.cpp
+
+URename.lo: src/update/URename.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT URename.lo -MD -MP -MF "$(DEPDIR)/URename.Tpo" -c -o URename.lo `test -f 'src/update/URename.cpp' || echo '$(srcdir)/'`src/update/URename.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/URename.Tpo" "$(DEPDIR)/URename.Plo"; else rm -f "$(DEPDIR)/URename.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/update/URename.cpp' object='URename.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o URename.lo `test -f 'src/update/URename.cpp' || echo '$(srcdir)/'`src/update/URename.cpp
+
+UReplace.lo: src/update/UReplace.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT UReplace.lo -MD -MP -MF "$(DEPDIR)/UReplace.Tpo" -c -o UReplace.lo `test -f 'src/update/UReplace.cpp' || echo '$(srcdir)/'`src/update/UReplace.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/UReplace.Tpo" "$(DEPDIR)/UReplace.Plo"; else rm -f "$(DEPDIR)/UReplace.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/update/UReplace.cpp' object='UReplace.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o UReplace.lo `test -f 'src/update/UReplace.cpp' || echo '$(srcdir)/'`src/update/UReplace.cpp
+
+UReplaceValueOf.lo: src/update/UReplaceValueOf.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT UReplaceValueOf.lo -MD -MP -MF "$(DEPDIR)/UReplaceValueOf.Tpo" -c -o UReplaceValueOf.lo `test -f 'src/update/UReplaceValueOf.cpp' || echo '$(srcdir)/'`src/update/UReplaceValueOf.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/UReplaceValueOf.Tpo" "$(DEPDIR)/UReplaceValueOf.Plo"; else rm -f "$(DEPDIR)/UReplaceValueOf.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/update/UReplaceValueOf.cpp' object='UReplaceValueOf.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o UReplaceValueOf.lo `test -f 'src/update/UReplaceValueOf.cpp' || echo '$(srcdir)/'`src/update/UReplaceValueOf.cpp
+
+UInsertAsFirst.lo: src/update/UInsertAsFirst.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT UInsertAsFirst.lo -MD -MP -MF "$(DEPDIR)/UInsertAsFirst.Tpo" -c -o UInsertAsFirst.lo `test -f 'src/update/UInsertAsFirst.cpp' || echo '$(srcdir)/'`src/update/UInsertAsFirst.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/UInsertAsFirst.Tpo" "$(DEPDIR)/UInsertAsFirst.Plo"; else rm -f "$(DEPDIR)/UInsertAsFirst.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/update/UInsertAsFirst.cpp' object='UInsertAsFirst.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o UInsertAsFirst.lo `test -f 'src/update/UInsertAsFirst.cpp' || echo '$(srcdir)/'`src/update/UInsertAsFirst.cpp
+
+UInsertAsLast.lo: src/update/UInsertAsLast.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT UInsertAsLast.lo -MD -MP -MF "$(DEPDIR)/UInsertAsLast.Tpo" -c -o UInsertAsLast.lo `test -f 'src/update/UInsertAsLast.cpp' || echo '$(srcdir)/'`src/update/UInsertAsLast.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/UInsertAsLast.Tpo" "$(DEPDIR)/UInsertAsLast.Plo"; else rm -f "$(DEPDIR)/UInsertAsLast.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/update/UInsertAsLast.cpp' object='UInsertAsLast.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o UInsertAsLast.lo `test -f 'src/update/UInsertAsLast.cpp' || echo '$(srcdir)/'`src/update/UInsertAsLast.cpp
+
+UInsertInto.lo: src/update/UInsertInto.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT UInsertInto.lo -MD -MP -MF "$(DEPDIR)/UInsertInto.Tpo" -c -o UInsertInto.lo `test -f 'src/update/UInsertInto.cpp' || echo '$(srcdir)/'`src/update/UInsertInto.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/UInsertInto.Tpo" "$(DEPDIR)/UInsertInto.Plo"; else rm -f "$(DEPDIR)/UInsertInto.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/update/UInsertInto.cpp' object='UInsertInto.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o UInsertInto.lo `test -f 'src/update/UInsertInto.cpp' || echo '$(srcdir)/'`src/update/UInsertInto.cpp
+
+UInsertAfter.lo: src/update/UInsertAfter.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT UInsertAfter.lo -MD -MP -MF "$(DEPDIR)/UInsertAfter.Tpo" -c -o UInsertAfter.lo `test -f 'src/update/UInsertAfter.cpp' || echo '$(srcdir)/'`src/update/UInsertAfter.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/UInsertAfter.Tpo" "$(DEPDIR)/UInsertAfter.Plo"; else rm -f "$(DEPDIR)/UInsertAfter.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/update/UInsertAfter.cpp' object='UInsertAfter.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o UInsertAfter.lo `test -f 'src/update/UInsertAfter.cpp' || echo '$(srcdir)/'`src/update/UInsertAfter.cpp
+
+UInsertBefore.lo: src/update/UInsertBefore.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT UInsertBefore.lo -MD -MP -MF "$(DEPDIR)/UInsertBefore.Tpo" -c -o UInsertBefore.lo `test -f 'src/update/UInsertBefore.cpp' || echo '$(srcdir)/'`src/update/UInsertBefore.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/UInsertBefore.Tpo" "$(DEPDIR)/UInsertBefore.Plo"; else rm -f "$(DEPDIR)/UInsertBefore.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/update/UInsertBefore.cpp' object='UInsertBefore.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o UInsertBefore.lo `test -f 'src/update/UInsertBefore.cpp' || echo '$(srcdir)/'`src/update/UInsertBefore.cpp
+
+UTransform.lo: src/update/UTransform.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT UTransform.lo -MD -MP -MF "$(DEPDIR)/UTransform.Tpo" -c -o UTransform.lo `test -f 'src/update/UTransform.cpp' || echo '$(srcdir)/'`src/update/UTransform.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/UTransform.Tpo" "$(DEPDIR)/UTransform.Plo"; else rm -f "$(DEPDIR)/UTransform.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/update/UTransform.cpp' object='UTransform.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o UTransform.lo `test -f 'src/update/UTransform.cpp' || echo '$(srcdir)/'`src/update/UTransform.cpp
 
 TestSuiteParser.lo: src/xqts/TestSuiteParser.cpp
 @am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT TestSuiteParser.lo -MD -MP -MF "$(DEPDIR)/TestSuiteParser.Tpo" -c -o TestSuiteParser.lo `test -f 'src/xqts/TestSuiteParser.cpp' || echo '$(srcdir)/'`src/xqts/TestSuiteParser.cpp; \

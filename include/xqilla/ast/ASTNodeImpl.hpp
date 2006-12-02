@@ -44,6 +44,9 @@ public:
   ///calls createResult
   virtual Result collapseTree(DynamicContext* context, int flags=0) const;
 
+  /// Default - returns an empty update list
+  virtual PendingUpdateList createUpdateList(DynamicContext *context) const;
+
   /**
    * Can be overridden by derived classes. Default implementation returns a
    * SequenceResult made from the Sequence returned by collapseTreeInternal.

@@ -56,11 +56,6 @@ XQElementConstructor::XQElementConstructor(ASTNode* name, VectorOfASTNodes* attr
   setType(ASTNode::DOM_CONSTRUCTOR);
 }
 
-static bool isTextNode(const Node::Ptr &node)
-{
-  return node->dmNodeKind() == Node::text_string;
-}
-
 Sequence XQElementConstructor::collapseTreeInternal(DynamicContext *context, int flags) const 
 {
   Node::Ptr result;
@@ -110,158 +105,66 @@ Sequence XQElementConstructor::collapseTreeInternal(DynamicContext *context, int
     }
 
     // Now that we have converted our namespace attributes into namespace bindings, resolve the name
-    Result resName=m_name->collapseTree(context);
-    AnyAtomicType::Ptr itemName=resName->next(context);
-    if(itemName==NULLRCP || resName->next(context)!=NULLRCP)
-      XQThrow(ASTException,X("DOM Constructor"),
-              X("The name for the element must be a single xs:QName, xs:string or xs:untypedAtomic item [err:XPTY0004]"));
+    AnyAtomicType::Ptr itemName = m_name->collapseTree(context)->next(context);
+    const ATQNameOrDerived* pQName = (const ATQNameOrDerived*)itemName.get();
+    const XMLCh *nodeUri = pQName->getURI();
+    const XMLCh *nodePrefix = pQName->getPrefix();
+    const XMLCh *nodeName = pQName->getName();
 
-    const XMLCh* nodeUri=NULL, *nodePrefix=NULL, *nodeName=NULL;
-    if(itemName->getPrimitiveTypeIndex()==AnyAtomicType::QNAME)
-    {
-      const ATQNameOrDerived* pQName=(const ATQNameOrDerived*)(const AnyAtomicType*)itemName;
-      nodeUri=pQName->getURI();
-      nodePrefix=pQName->getPrefix();
-      nodeName=pQName->getName();
-    }
-    else if(itemName->getPrimitiveTypeIndex()==AnyAtomicType::STRING ||
-            itemName->getPrimitiveTypeIndex()==AnyAtomicType::UNTYPED_ATOMIC)
-    {
-      const XMLCh* pString=itemName->asString(context);
-      if(!XMLChar1_0::isValidQName(pString, XMLString::stringLen(pString)))
-        XQThrow(ASTException,X("DOM Constructor"),
-                X("The name for the element cannot be converted to a xs:QName [err:XQDY0074]"));
-
-      nodePrefix=XPath2NSUtils::getPrefix(pString, context->getMemoryManager());
-      try
-      {
-        nodeUri=context->getUriBoundToPrefix(nodePrefix, this);
-      }
-      catch(NamespaceLookupException&)
-      {
-        XQThrow(ASTException,X("DOM Constructor"),X("The name for the element cannot be converted to a "
-                                                    "xs:QName because the prefix is undefined [err:XQDY0074]"));
-      }
-      // if the prefix was empty and we didn't find a xmlns=".." declaration in the scope, use the default element/type ns
-      if((nodePrefix==0 || *nodePrefix==0) && (nodeUri==0 || *nodeUri==0))
-        nodeUri=context->getDefaultElementAndTypeNS();
-      // keep the specified prefix in the node name
-      nodeName=pString;
-    }
-    else
-      XQThrow(ASTException,X("DOM Constructor"),X("The name for the element must be either a xs:QName, "
-                                                  "xs:string or xs:untypedAtomic [err:XPTY0004]"));
-
-    // TODO: what error should we return if the string is empty?
-    if(nodeName==NULL || *nodeName==0)
-      XQThrow(ASTException,X("DOM Constructor"),X("The name for the element is empty"));
-
-    std::vector<ItemFactory::ElementChild> childList;
+    std::vector<Node::Ptr> childList;
     for (VectorOfASTNodes::const_iterator itCont = m_children->begin(); itCont != m_children->end (); ++itCont)
     {
       ASTNode* childItem=(*itCont);
-      Result children=childItem->collapseTree(context);
+
       Item::Ptr child;
-      bool lastWasAtomic = false;
-      while((child = children->next(context)) != NULLRCP)
+      Result result = childItem->collapseTree(context);
+      while((child = result->next(context)).notNull())
       {
-        if(child->isNode())
+        assert(child->isNode());
+        Node::Ptr sourceNode = (Node::Ptr)child;
+
+        if(sourceNode->dmNodeKind() == Node::attribute_string)
         {
-          lastWasAtomic = false;
-          Node::Ptr sourceNode = (Node::Ptr)child;
+          if(!childList.empty())
+            XQThrow(ASTException,X("DOM Constructor"),X("Attribute nodes must be created before the "
+                                                        "other child nodes of an element [err:XQTY0024]"));
 
-          // DOCUMENT node
-          if(sourceNode->dmNodeKind() == Node::document_string)
+          // check if the attribute has a prefix that has been defined
+          ATQNameOrDerived::Ptr name = sourceNode->dmNodeName(context);
+          const XMLCh *szPrefix = ((const ATQNameOrDerived*)name.get())->getPrefix();
+          const XMLCh *szURI = ((const ATQNameOrDerived*)name.get())->getURI();
+          if(szPrefix!=NULL && *szPrefix!=0)
           {
-            Result children = sourceNode->dmChildren(context, this);
-            Node::Ptr childNode;
-            while((childNode = children->next(context)).notNull()) {
-              // merge consecutive text nodes
-              if(isTextNode(childNode) && !childList.empty() && isTextNode(childList.back())) {
-                const XMLCh* buff=XPath2Utils::concatStrings(childList.back()->dmStringValue(context),
-                                                             childNode->dmStringValue(context),
-                                                             context->getMemoryManager());
-                childList.pop_back();
-                childList.push_back(context->getItemFactory()->createTextNode(buff, context));
-              }
-              else
-                childList.push_back(childNode);
-            }
-          }
-
-          // ATTRIBUTE node
-          else if(sourceNode->dmNodeKind() == Node::attribute_string)
-          {
-            if(!childList.empty())
-              XQThrow(ASTException,X("DOM Constructor"),X("Attribute nodes must be created before the "
-                                                          "other child nodes of an element [err:XQTY0024]"));
-
-            // check if the attribute has a prefix that has been defined
-            ATQNameOrDerived::Ptr name = sourceNode->dmNodeName(context);
-            const XMLCh *szPrefix = ((const ATQNameOrDerived*)name.get())->getPrefix();
-            const XMLCh *szURI = ((const ATQNameOrDerived*)name.get())->getURI();
-            if(szPrefix!=NULL && *szPrefix!=0)
+            const XMLCh *newPrefix = definePrefix(szPrefix, szURI, newNSScope, locallyDefinedNamespaces, attrList,
+                                                  context);
+            if(newPrefix != szPrefix)
             {
-              const XMLCh *newPrefix = definePrefix(szPrefix, szURI, newNSScope, locallyDefinedNamespaces, attrList,
-                                                    context);
-              if(newPrefix != szPrefix)
-              {
-                sourceNode = context->getItemFactory()->
-                  createAttributeNode(szURI, newPrefix, ((const ATQNameOrDerived*)name.get())->getName(),
-                                      sourceNode->dmStringValue(context), context);
-              }
-            }
-            attrList.push_back(sourceNode);
-          }
-
-          else
-          {
-            if(isTextNode(sourceNode) && !childList.empty() && isTextNode(childList.back())) {
-              const XMLCh* buff=XPath2Utils::concatStrings(childList.back()->dmStringValue(context),
-                                                           sourceNode->dmStringValue(context),
-                                                           context->getMemoryManager());
-              childList.pop_back();
-              childList.push_back(ItemFactory::ElementChild(context->getItemFactory()->createTextNode(buff, context),
-                                                            /*clone*/false));
-            }
-            else {
-              ASTNode* pChild=childItem;
-              if((unsigned int)pChild->getType()==ASTNode::DEBUG_HOOK)
-                pChild=((XQDebugHook*)pChild)->m_impl;
-              // if it's a text node, ensure it's not empty
-              if(!isTextNode(sourceNode) || !XPath2Utils::equals(sourceNode->dmStringValue(context),0))
-                // if the node we should add as a child was generated by a DOM constructor, we can skip cloning it
-                childList.push_back(ItemFactory::ElementChild(sourceNode, (unsigned int)pChild->getType()!=
-                                                              ASTNode::DOM_CONSTRUCTOR));
+              sourceNode = context->getItemFactory()->
+                createAttributeNode(szURI, newPrefix, ((const ATQNameOrDerived*)name.get())->getName(),
+                                    sourceNode->dmStringValue(context), context);
             }
           }
+          attrList.push_back(sourceNode);
         }
-        else
-        {
-          const XMLCh* valueStr=child->asString(context);
-          if(lastWasAtomic)
-          {
-            XMLCh space[]={ ' ', 0 };
-            valueStr=XPath2Utils::concatStrings(space,valueStr,context->getMemoryManager());
+        else if(sourceNode->dmNodeKind() == Node::text_string) {
+          if(!childList.empty() && childList.back()->dmNodeKind() == Node::text_string) {
+            const XMLCh* buff=XPath2Utils::concatStrings(childList.back()->dmStringValue(context),
+                                                         sourceNode->dmStringValue(context),
+                                                         context->getMemoryManager());
+            childList.pop_back();
+            childList.push_back(context->getItemFactory()->createTextNode(buff, context));
           }
-          lastWasAtomic = true;
-          // empty strings are stripped
-          if(valueStr && *valueStr)
-          {
-            if(!childList.empty() && isTextNode(childList.back())) {
-              const XMLCh* buff=XPath2Utils::concatStrings(childList.back()->dmStringValue(context),valueStr,
-                                                           context->getMemoryManager());
-                        
-              childList.pop_back();
-              childList.push_back(context->getItemFactory()->createTextNode(buff, context));
-            }
-            else {
-              childList.push_back(context->getItemFactory()->createTextNode(valueStr, context));
-            }
-          }
+          // Ensure it's not empty
+          else if(!XPath2Utils::equals(sourceNode->dmStringValue(context),0))
+            childList.push_back(sourceNode);
+        }
+        else {
+          assert(sourceNode->dmNodeKind() != Node::document_string);
+          childList.push_back(sourceNode);
         }
       }
     }
+
     result = context->getItemFactory()->createElementNode(nodeUri, nodePrefix, nodeName, attrList, childList, context);
   }
   catch(DOMException& e) {
@@ -294,37 +197,20 @@ ASTNode* XQElementConstructor::staticResolution(StaticContext *context)
              ((XQDOMConstructor*)astNode)->getNodeType()==Node::attribute_string);
       XQDOMConstructor* attrConstructor=(XQDOMConstructor*)astNode;
       const ASTNode* dItem=attrConstructor->getName();
-      assert(dItem!=NULL && dItem->getType() == ASTNode::LITERAL);
-      const ItemConstructor* itemConstr=((XQLiteral*)dItem)->getItemConstructor();
-      assert(XPath2Utils::equals(itemConstr->getTypeURI(),
-                                 SchemaSymbols::fgURI_SCHEMAFORSCHEMA) &&
-             XPath2Utils::equals(itemConstr->getTypeName(),
-                                 SchemaSymbols::fgDT_QNAME));
+      assert(dItem!=NULL && dItem->getType() == ASTNode::DIRECT_NAME);
+      const XMLCh *qname = ((XQDirectName*)dItem)->getQName();
 
-      // createItem will throw an exception if the prefix is undefined
-      AnyAtomicType::Ptr atomName;
-      try
-      {
-        atomName = itemConstr->createItem(dContext);
-      }
-      catch(XQException& e)
-      {
-        // this is a normal attribute, there are no more namespace declarations
-        break;
-      }
-
-      const ATQNameOrDerived* pQName=(const ATQNameOrDerived*)atomName.get();
       const XMLCh* XMLNSPrefix=NULL;
-      if((pQName->getPrefix()==NULL || *pQName->getPrefix()==0) &&
-         XPath2Utils::equals(pQName->getName(),XMLUni::fgXMLNSString)) {
+      if(XPath2Utils::equals(qname,XMLUni::fgXMLNSString)) {
         XMLNSPrefix=XMLUni::fgZeroLenString;
       }
-      else if(XPath2Utils::equals(pQName->getPrefix(), XMLUni::fgXMLNSString)) {
-        XMLNSPrefix=pQName->getName();
+      else if(XPath2Utils::equals(XPath2NSUtils::getPrefix(qname, context->getMemoryManager()), XMLUni::fgXMLNSString)) {
+        XMLNSPrefix=XPath2NSUtils::getLocalName(qname);
       }
       else
         // no more namespace declaration
         break;
+
       // we are a namespace attribute: check that we have a constant value
       const VectorOfASTNodes *children=attrConstructor->getChildren();
       const XMLCh* uri=NULL;
@@ -374,6 +260,12 @@ ASTNode* XQElementConstructor::staticResolution(StaticContext *context)
              ((XQDOMConstructor*)astNode)->getNodeType()==Node::attribute_string);
       XQDOMConstructor* attrConstructor=(XQDOMConstructor*)astNode;
       const ASTNode* dItem=attrConstructor->getName();
+      if(dItem->getType() == ASTNode::NAME_EXPRESSION) {
+	      dItem = ((XQNameExpression*)dItem)->getExpression();
+      }
+      if(dItem->getType() == ASTNode::TREAT_AS) {
+	      dItem = ((XQAtomize*)dItem)->getExpression();
+      }
       if(dItem->getType() == ASTNode::ATOMIZE) {
 	      dItem = ((XQAtomize*)dItem)->getExpression();
       }
@@ -395,45 +287,15 @@ ASTNode* XQElementConstructor::staticResolution(StaticContext *context)
       attrNames.insert(XMLString::replicate(buff.getRawBuffer(), dContext->getMemoryManager()));
     }
   }
-  if(m_name)
-  {
-    // verify the namespace prefix used by the node name
-    if(m_name->getType() == ASTNode::LITERAL) {
-      const ItemConstructor* itemConstr=((XQLiteral*)m_name)->getItemConstructor();
-      // if the type is xs:QName, it was a named constructor, and it must be checked
-      if(XPath2Utils::equals(itemConstr->getTypeURI(),SchemaSymbols::fgURI_SCHEMAFORSCHEMA) &&
-         XPath2Utils::equals(itemConstr->getTypeName(),SchemaSymbols::fgDT_QNAME)) 
-      {
-        AutoDelete<DynamicContext> dContext(context->createDynamicContext());
-        dContext->setMemoryManager(context->getMemoryManager());
-        // createItem will throw an exception if the prefix is undefined
-        AnyAtomicType::Ptr atomName;
-        try
-        {
-          atomName = itemConstr->createItem(dContext);
-        }
-        catch(XQException& e)
-        {
-          XMLBuffer buff(1023, context->getMemoryManager());
-          buff.set(e.getError());
-          int index=XMLString::indexOf(buff.getRawBuffer(),chOpenSquare);
-          if(index!=-1)
-            XMLString::copyString(buff.getRawBuffer()+index, X("[err:XPST0081]"));
-          else
-            buff.append(X("[err:XPST0081]"));
-          XQThrow(StaticErrorException, X("XQElementConstructor::staticResolution"), buff.getRawBuffer());
-        }
-      }
-    }
-    // and run static resolution
-    m_name = new (mm) XQAtomize(m_name, mm);
-    m_name->setLocationInfo(this);
-    m_name = m_name->staticResolution(context);
-  }
+
+  // and run static resolution
+  m_name = new (mm) XQNameExpression(m_name, mm);
+  m_name->setLocationInfo(this);
+  m_name = m_name->staticResolution(context);
 
 
   for (i=0;i<m_children->size();i++) {
-    // normalize whitespace and expand entities in string literals
+    // expand entities in string literals
     if((*m_children)[i]->getType()==LITERAL)
     {
       AutoDelete<DynamicContext> dContext(context->createDynamicContext());
@@ -454,6 +316,9 @@ ASTNode* XQElementConstructor::staticResolution(StaticContext *context)
         lit->setItemConstructor(newIC);
       }
     }
+
+    (*m_children)[i] = new (mm) XQContentSequence((*m_children)[i], /*copy*/true, mm);
+    (*m_children)[i]->setLocationInfo(this);
     (*m_children)[i] = (*m_children)[i]->staticResolution(context);
   }
 
@@ -491,10 +356,8 @@ ASTNode* XQElementConstructor::staticTyping(StaticContext *context)
     }
   }
 
-  if(m_name) {
-    m_name = m_name->staticTyping(context);
-    _src.add(m_name->getStaticResolutionContext());
-  }
+  m_name = m_name->staticTyping(context);
+  _src.add(m_name->getStaticResolutionContext());
 
   for(i = 0; i < m_children->size(); ++i) {
     (*m_children)[i] = (*m_children)[i]->staticTyping(context);

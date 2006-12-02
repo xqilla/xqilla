@@ -40,6 +40,7 @@
 #include <xqilla/ast/XQTreatAs.hpp>
 #include <xqilla/ast/ConvertFunctionArg.hpp>
 #include <xqilla/context/ContextHelpers.hpp>
+#include <xqilla/update/PendingUpdateList.hpp>
 
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 
@@ -166,6 +167,12 @@ void XQSort::SortSpec::staticTyping(StaticContext *context, StaticResolutionCont
 {
   _expr = _expr->staticTyping(context);
   src.add(_expr->getStaticResolutionContext());
+
+  if(_expr->getStaticResolutionContext().isUpdating()) {
+    XQThrow(StaticErrorException,X("XQSort::SortSpec::staticTyping"),
+            X("It is a static error for the order by expression of a FLWOR expression "
+              "to be an updating expression [err:XUST0001]"));
+  }
 
   if(_collationURI == NULL)
     _collation = context->getDefaultCollation(this);
@@ -655,6 +662,12 @@ void XQFLWOR::staticTypingImpl(StaticContext* context)
     (*it0)->_allValues = (*it0)->_allValues->staticTyping(context);
     (*it0)->_src.getStaticType() = (*it0)->_allValues->getStaticResolutionContext().getStaticType();
 
+    if((*it0)->_allValues->getStaticResolutionContext().isUpdating()) {
+      XQThrow(StaticErrorException,X("XQFLWOR::staticTypingImpl"),
+              X("It is a static error for the for or let expression of a FLWOR expression "
+                "to be an updating expression [err:XUST0001]"));
+    }
+
     // Declare the variable binding
     if((*it0)->_bindingType == XQVariableBinding::letBinding) {
       (*it0)->_src.setProperties((*it0)->_allValues->getStaticResolutionContext().getProperties());
@@ -700,6 +713,13 @@ void XQFLWOR::staticTypingImpl(StaticContext* context)
     // Statically resolve any binding specific where conditions, if we have them
     if(newVB->_where) {
       newVB->_where = newVB->_where->staticTyping(context);
+
+      if(newVB->_where->getStaticResolutionContext().isUpdating()) {
+        XQThrow(StaticErrorException,X("XQFLWOR::staticTypingImpl"),
+                X("It is a static error for the where expression of a FLWOR expression "
+                  "to be an updating expression [err:XUST0001]"));
+      }
+
       _src.add(newVB->_where->getStaticResolutionContext());
     }
 
@@ -795,6 +815,12 @@ ASTNode *XQFLWOR::calculateSRCForWhere(ASTNode *where, StaticContext *context)
   if(context->isDebuggingEnabled()) {
     // Don't do anything special if this is a debug build
     where = where->staticTyping(context);
+
+    if(where->getStaticResolutionContext().isUpdating()) {
+      XQThrow(StaticErrorException,X("XQFLWOR::calculateSRCForWhere"),
+              X("It is a static error for the where expression of a FLWOR expression "
+                "to be an updating expression [err:XUST0001]"));
+    }
   }
   else {
     if(where->getType()==ASTNode::OPERATOR &&
@@ -823,6 +849,12 @@ ASTNode *XQFLWOR::calculateSRCForWhere(ASTNode *where, StaticContext *context)
       // Try to send the condition to the outer most condition possible
       where = where->staticTyping(context);
       const StaticResolutionContext &whereSrc = where->getStaticResolutionContext();
+
+      if(whereSrc.isUpdating()) {
+        XQThrow(StaticErrorException,X("XQFLWOR::calculateSRCForWhere"),
+                X("It is a static error for the where expression of a FLWOR expression "
+                  "to be an updating expression [err:XUST0001]"));
+      }
 
       VectorOfVariableBinding::reverse_iterator rend = _bindings->rend();
       VectorOfVariableBinding::reverse_iterator rbegin = _bindings->rbegin();
@@ -880,6 +912,33 @@ void XQFLWOR::setWhereExpr(ASTNode *where)
 void XQFLWOR::setReturnExpr(ASTNode *ret)
 {
   _return = ret;
+}
+
+PendingUpdateList XQFLWOR::createUpdateList(DynamicContext *context) const
+{
+  // We ignore "order by", since it can have no effect
+  // on the final updates that are done
+
+  VariableStore* varStore = context->getVariableStore();
+
+  ExecutionBindings ebs;
+  for(VectorOfVariableBinding::const_iterator it = _bindings->begin();
+      it != _bindings->end(); ++it) {
+    ebs.push_back(ProductFactor(*it));
+  }
+
+  // Initialise and run the execution bindings
+  varStore->addLogicalBlockScope();
+
+  PendingUpdateList result;
+  if(nextState(ebs, context, true)) {
+    do {
+      result.mergeUpdates(_return->createUpdateList(context));
+    } while(nextState(ebs, context, false));
+  }
+  varStore->removeScope();
+
+  return result;
 }
 
 XQFLWOR::SortingFLWORResult::SortingFLWORResult(VectorOfVariableBinding::const_iterator it, VectorOfVariableBinding::const_iterator end,

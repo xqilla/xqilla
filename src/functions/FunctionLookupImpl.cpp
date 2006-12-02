@@ -17,13 +17,13 @@
 #include <xqilla/functions/ExternalFunction.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>
 
-FunctionLookupImpl::FunctionLookupImpl(XPath2MemoryManager* memMgr) :
-  _uriPool(17, memMgr),
-  _funcTable(197, false, memMgr),
-  _exFuncTable(7, false, memMgr),
-  _memMgr(memMgr)
+FunctionLookupImpl::FunctionLookupImpl(bool update, XPath2MemoryManager* memMgr)
+  : _uriPool(17, memMgr),
+    _funcTable(197, false, memMgr),
+    _exFuncTable(7, false, memMgr),
+    _memMgr(memMgr)
 {
-    createTable();
+  createTable(update);
 }
 
 FunctionLookupImpl::~FunctionLookupImpl()
@@ -240,7 +240,9 @@ std::vector< FuncFactory* > FunctionLookupImpl::getFunctionFactories() const
 #include <xqilla/functions/FunctionAdjustDateToTimezone.hpp>
 #include <xqilla/functions/FunctionAdjustTimeToTimezone.hpp>
 
-void FunctionLookupImpl::createTable()
+#include <xqilla/update/FunctionPut.hpp>
+
+void FunctionLookupImpl::createTable(bool update)
 {
   // From the XPath2 Function & Operators list
 
@@ -494,5 +496,11 @@ void FunctionLookupImpl::createTable()
   insertFunction(new (_memMgr) FuncFactoryTemplate<FunctionDefaultCollation>());
   //   fn:static-base-uri
   insertFunction(new (_memMgr) FuncFactoryTemplate<FunctionStaticBaseURI>());
+
+  if(update) {
+    // Update functions
+    //   fn:put
+    insertFunction(new (_memMgr) FuncFactoryTemplate<FunctionPut>());
+  }
 
 }

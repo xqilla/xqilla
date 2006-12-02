@@ -43,8 +43,9 @@ class XQILLA_API DocumentCache : public XERCES_CPP_NAMESPACE_QUALIFIER XMemory
 {
 public:
   enum ValidationMode {
-    VALIDATION_STRICT	= 0,
-    VALIDATION_LAX		= 1
+    VALIDATION_STRICT = 0,
+    VALIDATION_LAX    = 1,
+    VALIDATION_SKIP   = 2
   };
 
   /** virtual destructor */
