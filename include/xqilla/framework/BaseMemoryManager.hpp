@@ -34,7 +34,6 @@ class DOMNode;
 XERCES_CPP_NAMESPACE_END
 
 class VariableStore;
-class FunctionLookup;
 class Collation;
 class CollationHelper;
 class XQillaNSResolver;
@@ -75,9 +74,6 @@ public:
 
   /** create a store for variables */
   virtual VariableTypeStore* createVariableTypeStore();
-
-  /** create a function table */
-  virtual FunctionLookup* createFunctionTable();
 
   /** create a ATDecimalOrDerived for the given integer */
   virtual ATDecimalOrDerived* createInteger(int value);

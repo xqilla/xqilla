@@ -19,6 +19,8 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/ast/StaticResolutionContext.hpp>
 #include <xqilla/context/ContextHelpers.hpp>
+#include <xqilla/update/PendingUpdateList.hpp>
+#include <xqilla/exceptions/StaticErrorException.hpp>
 
 XQIf::XQIf(ASTNode* test, ASTNode* whenTrue, ASTNode* whenFalse, XPath2MemoryManager* memMgr)
   : ASTNodeImpl(memMgr),
@@ -52,6 +54,12 @@ ASTNode *XQIf::staticTyping(StaticContext *context)
 
   _test = _test->staticTyping(context);
 
+  if(_test->getStaticResolutionContext().isUpdating()) {
+    XQThrow(StaticErrorException,X("XQIf::staticTyping"),
+            X("It is a static error for the conditional expression of an if expression "
+              "to be an updating expression [err:XUST0001]"));
+  }
+
   if(_test->isConstant()) {
     AutoDelete<DynamicContext> dContext(context->createDynamicContext());
     dContext->setMemoryManager(context->getMemoryManager());
@@ -71,6 +79,19 @@ ASTNode *XQIf::staticTyping(StaticContext *context)
     _src.add(_whenTrue->getStaticResolutionContext());
 
     _whenFalse = _whenFalse->staticTyping(context);
+
+    if(_src.isUpdating()) {
+      if(!_whenFalse->getStaticResolutionContext().isUpdating() &&
+         _whenFalse->getStaticResolutionContext().getStaticType().containsType(StaticType::ITEM_TYPE))
+        XQThrow(StaticErrorException, X("XQIf::staticTyping"),
+                X("Mixed updating and non-updating operands [err:XUST0001]"));
+    }
+    else {
+      if(_whenFalse->getStaticResolutionContext().isUpdating())
+        XQThrow(StaticErrorException, X("XQIf::staticTyping"),
+                X("Mixed updating and non-updating operands [err:XUST0001]"));
+    }
+
     _src.getStaticType().typeUnion(_whenFalse->getStaticResolutionContext().getStaticType());
     _src.setProperties(_src.getProperties() & _whenFalse->getStaticResolutionContext().getProperties());
     _src.add(_whenFalse->getStaticResolutionContext());
@@ -104,6 +125,16 @@ void XQIf::setWhenTrue(ASTNode *item)
 void XQIf::setWhenFalse(ASTNode *item)
 {
   _whenFalse = item;
+}
+
+PendingUpdateList XQIf::createUpdateList(DynamicContext *context) const
+{
+    if(_test->collapseTree(context)->getEffectiveBooleanValue(context, this)) {
+      return _whenTrue->createUpdateList(context);
+    }
+    else {
+      return _whenFalse->createUpdateList(context);
+    }
 }
 
 XQIf::IfResult::IfResult(const XQIf *di, int flags)

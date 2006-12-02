@@ -26,22 +26,22 @@ class XPath2MemoryManager;
 class XQILLA_API XQillaNSResolverImpl : public XQillaNSResolver
 {
 public:
-	XQillaNSResolverImpl(XPath2MemoryManager* memMgr, XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *resolverNode);
-	~XQillaNSResolverImpl();
+  XQillaNSResolverImpl(XPath2MemoryManager* memMgr, XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *resolverNode);
+  ~XQillaNSResolverImpl();
 
-	virtual const XMLCh* lookupNamespaceURI(const XMLCh* prefix) const;
+  virtual const XMLCh* lookupNamespaceURI(const XMLCh* prefix) const;
   virtual const XMLCh* lookupPrefix(const XMLCh* uri) const;
   
   virtual void addNamespaceBinding(const XMLCh* prefix, const XMLCh* uri);
 
   virtual void release();
 
-	XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *getResolverNode(void);
+  XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *getResolverNode(void);
 
 protected:
   static const XMLCh g_nsBlocker[];
   XERCES_CPP_NAMESPACE_QUALIFIER RefHashTableOf< XMLCh > _namespaceBindings;
-	XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *_resolverNode;
+  XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *_resolverNode;
   XPath2MemoryManager* _memMgr;
 };//XQillaNSResolverImpl
 

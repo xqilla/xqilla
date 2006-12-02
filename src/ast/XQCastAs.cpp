@@ -144,7 +144,7 @@ Item::Ptr XQCastAs::CastAsResult::getSingleResult(DynamicContext *context) const
   try {
     return (const Item::Ptr)((const AnyAtomicType::Ptr)first)->castAs(_di->getSequenceType()->getTypeURI(context), _di->getSequenceType()->getConstrainingType()->getName(), context);
   }
-  catch(XPath2TypeCastException &e) {
+  catch(XQException &e) {
     if(e.getXQueryLine() == 0)
       e.setXQueryPosition(this);
     throw;

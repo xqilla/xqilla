@@ -25,6 +25,7 @@
 #include <xqilla/utils/XMLChCompare.hpp>
 #include <xqilla/ast/ASTNode.hpp>
 #include <xqilla/runtime/Sequence.hpp>
+#include <xqilla/simple-api/XQilla.hpp>
 #include <xqilla/framework/ProxyMemoryManager.hpp>
 
 XERCES_CPP_NAMESPACE_BEGIN
@@ -32,10 +33,13 @@ class DOMNode;
 class XMLGrammarPool;
 XERCES_CPP_NAMESPACE_END
 
+class FunctionLookup;
+
 class XQILLA_API XQContextImpl : public DynamicContext
 {
 public:
-  XQContextImpl(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr =
+  XQContextImpl(XQilla::Language language,
+                XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr =
                 XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager,
                 XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool* xmlgr = 0,
                 XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* contextNode = 0);
@@ -154,8 +158,9 @@ public:
   virtual XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *createNewDocument() const;
   virtual void releaseDocument(XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *doc) const;
 
-  /** send a pair of strings to the "trace" data set */
-  virtual void trace(const XMLCh* message1, const XMLCh* message2);
+  /** Creates a new UpdateFactory, used for performing updates.
+      Caller owns the returned object, and should delete it */
+  virtual UpdateFactory *createUpdateFactory() const;
 
   //////////////////////////////////
   // Static Context Accessors     //
@@ -280,6 +285,16 @@ public:
   /** Get the policy for namespace copy */
   virtual bool getPreserveNamespaces() const;
 
+  /** Set the revalidation mode */
+  virtual void setRevalidationMode(DocumentCache::ValidationMode mode);
+  /** Get the revalidation mode */
+  virtual DocumentCache::ValidationMode getRevalidationMode() const;
+
+  /** Set the listener for warning and trace messages */
+  virtual void setMessageListener(MessageListener *listener);
+  /** Gets the listener for warning and trace messages */
+  virtual MessageListener *getMessageListener() const;
+
   /////////////////////////////////////////
   //  XQilla context specific accessors  //
   /////////////////////////////////////////
@@ -288,6 +303,8 @@ public:
   virtual XPath2MemoryManager* getMemoryManager() const;
 
 protected:
+  XQilla::Language _language;
+
   // The memory manager used to create this context
   XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* _createdWith;
 
@@ -390,6 +407,12 @@ protected:
    *  consists of two parts: preserve or no-preserve, and inherit or no-inherit. */
   bool _bPreserveNamespaces,
        _bInheritNamespaces;
+
+  /** The revalidation mode for XQuery Update */
+  DocumentCache::ValidationMode _revalidationMode;
+
+  /** The message listener, for warnings and trace messages */
+  MessageListener *_messageListener;
 
   /** Base URI. This is an absolute URI, used when necessary in the
    * resolution of relative URIs (for example, by the fn:resolve- uri

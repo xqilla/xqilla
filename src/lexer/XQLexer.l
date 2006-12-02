@@ -51,17 +51,13 @@ static char szDelimiters[]       ="\t\n\r <>?*$)({/=!|@[],;%\"'&}:.-+";
 #define REJECT_IF_NOT_FOLLOWED_CHOICE2(state, tok1, tok2)    	                                            { int tok=next_token(state); if(tok!=_EOF_ && tok!=tok1 && tok!=tok2) { undoUserAction(); REJECT; } }
 #define REJECT_IF_NOT_FOLLOWED_CHOICE3(state, tok1, tok2, tok3)                                             { int tok=next_token(state); if(tok!=_EOF_ && tok!=tok1 && tok!=tok2 && tok!=tok3) { undoUserAction(); REJECT; } }
 #define REJECT_IF_NOT_FOLLOWED_CHOICE4(state, tok1, tok2, tok3, tok4)                                       { int tok=next_token(state); if(tok!=_EOF_ && tok!=tok1 && tok!=tok2 && tok!=tok3 && tok!=tok4) { undoUserAction(); REJECT; } }
-#define REJECT_IF_NOT_FOLLOWED_CHOICE5(state, tok1, tok2, tok3, tok4, tok5)                                 { int tok=next_token(state); if(tok!=_EOF_ && tok!=tok1 && tok!=tok2 && tok!=tok3 && tok!=tok4 && tok!=tok5) { undoUserAction(); REJECT; } }
-#define REJECT_IF_NOT_FOLLOWED_CHOICE6(state, tok1, tok2, tok3, tok4, tok5, tok6)                           { int tok=next_token(state); if(tok!=_EOF_ && tok!=tok1 && tok!=tok2 && tok!=tok3 && tok!=tok4 && tok!=tok5 && tok!=tok6) { undoUserAction(); REJECT; } }
-#define REJECT_IF_NOT_FOLLOWED_CHOICE7(state, tok1, tok2, tok3, tok4, tok5, tok6, tok7)                     { int tok=next_token(state); if(tok!=_EOF_ && tok!=tok1 && tok!=tok2 && tok!=tok3 && tok!=tok4 && tok!=tok5 && tok!=tok6 && tok!=tok7) { undoUserAction(); REJECT; } }
-#define REJECT_IF_NOT_FOLLOWED_CHOICE8(state, tok1, tok2, tok3, tok4, tok5, tok6, tok7, tok8)               { int tok=next_token(state); if(tok!=_EOF_ && tok!=tok1 && tok!=tok2 && tok!=tok3 && tok!=tok4 && tok!=tok5 && tok!=tok6 && tok!=tok7 && tok!=tok8) { undoUserAction(); REJECT; } }
-#define REJECT_IF_NOT_FOLLOWED_CHOICE9(state, tok1, tok2, tok3, tok4, tok5, tok6, tok7, tok8, tok9)         { int tok=next_token(state); if(tok!=_EOF_ && tok!=tok1 && tok!=tok2 && tok!=tok3 && tok!=tok4 && tok!=tok5 && tok!=tok6 && tok!=tok7 && tok!=tok8 && tok!=tok9) { undoUserAction(); REJECT; } }
-#define REJECT_IF_NOT_FOLLOWED_CHOICE10(state, tok1, tok2, tok3, tok4, tok5, tok6, tok7, tok8, tok9, tok10) { int tok=next_token(state); if(tok!=_EOF_ && tok!=tok1 && tok!=tok2 && tok!=tok3 && tok!=tok4 && tok!=tok5 && tok!=tok6 && tok!=tok7 && tok!=tok8 && tok!=tok9 && tok!=tok10) { undoUserAction(); REJECT; } }
+#define REJECT_IF_NOT_FOLLOWED_CHOICE12(state, tok1, tok2, tok3, tok4, tok5, tok6, tok7, tok8, tok9, tok10, tok11, tok12) { int tok=next_token(state); if(tok!=_EOF_ && tok!=tok1 && tok!=tok2 && tok!=tok3 && tok!=tok4 && tok!=tok5 && tok!=tok6 && tok!=tok7 && tok!=tok8 && tok!=tok9 && tok!=tok10 && tok!=tok11 && tok!=tok12) { undoUserAction(); REJECT; } }
 
-#define REJECT_NOT_XQUERY { if(!isXQuery()) { undoUserAction(); REJECT; } }
+#define REJECT_NOT_XQUERY   { if(!isXQuery()) { undoUserAction(); REJECT; } }
 #define REJECT_NOT_FULLTEXT { if(!isFullText()) { undoUserAction(); REJECT; } }
-#define REJECT_XQUERY { if(isXQuery()) { undoUserAction(); REJECT; } }
-#define REJECT_IF_XPATH { if(getLanguage() == XQilla::XPATH2) { undoUserAction(); REJECT; } }
+#define REJECT_NOT_UPDATE   { if(!isUpdate()) { undoUserAction(); REJECT; } }
+#define REJECT_XQUERY       { if(isXQuery()) { undoUserAction(); REJECT; } }
+#define REJECT_IF_XPATH     { if(getLanguage() == XQilla::XPATH2) { undoUserAction(); REJECT; } }
 
 %}
 
@@ -165,6 +161,8 @@ NotColon			[^:]
 %x THESAURUS1
 %x THESAURUS2
 %x STOPWORDS
+%x UPDATEOP
+%x TYPEDECL
 
 %{
 char *xqGetStateName(int state)
@@ -205,6 +203,8 @@ char *xqGetStateName(int state)
   case THESAURUS1: return "THESAURUS1";
   case THESAURUS2: return "THESAURUS2";
   case STOPWORDS: return "STOPWORDS";
+  case UPDATEOP: return "UPDATEOP";
+  case TYPEDECL: return "TYPEDECL";
   }
   return "unknown";
 }
@@ -212,8 +212,8 @@ char *xqGetStateName(int state)
 
 %%
 
-<INITIAL,OPERATOR,BOUNDARYSPACE_DECL,COPYNAMESPACE_DECL,XQUERYDECL,NAMESPACEDECL,NAMESPACEKEYWORD,KINDTEST,KINDTESTFORPI,CLOSEKINDTEST,ITEMTYPE,SINGLETYPE,ATTRIBUTE_DECL,IMPORT,DECLARE_KEYWORD,DEFAULT_KEYWORD,DEFAULT_ORDER,VALIDATE,ORDER,EMPTY_PARENS,OCCURRENCEINDICATOR,THESAURUS1,THESAURUS2,STOPWORDS>{S}		if(m_bReportWhiteSpace) RECOGNIZE(_XQUERY_WHITESPACE_);
-<INITIAL,OPERATOR,XQUERYDECL,NAMESPACEDECL,NAMESPACEKEYWORD,BOUNDARYSPACE_DECL,COPYNAMESPACE_DECL,SINGLETYPE,ITEMTYPE,KINDTEST,KINDTESTFORPI,CLOSEKINDTEST,OCCURRENCEINDICATOR,VARNAME,EXPR_COMMENT,IMPORT,DECLARE_KEYWORD,DEFAULT_KEYWORD,DEFAULT_ORDER,VALIDATE,ORDER,EMPTY_PARENS,THESAURUS1,THESAURUS2,STOPWORDS>"(:"						beginComment(); PUSH_CURRENT(); BEGIN(EXPR_COMMENT); if(m_bReportWhiteSpace) RECOGNIZE(_XQUERY_COMMENT_);
+<INITIAL,OPERATOR,BOUNDARYSPACE_DECL,COPYNAMESPACE_DECL,XQUERYDECL,NAMESPACEDECL,NAMESPACEKEYWORD,KINDTEST,KINDTESTFORPI,CLOSEKINDTEST,ITEMTYPE,SINGLETYPE,ATTRIBUTE_DECL,IMPORT,DECLARE_KEYWORD,DEFAULT_KEYWORD,DEFAULT_ORDER,VALIDATE,ORDER,EMPTY_PARENS,OCCURRENCEINDICATOR,THESAURUS1,THESAURUS2,STOPWORDS,UPDATEOP,TYPEDECL>{S}		if(m_bReportWhiteSpace) RECOGNIZE(_XQUERY_WHITESPACE_);
+<INITIAL,OPERATOR,XQUERYDECL,NAMESPACEDECL,NAMESPACEKEYWORD,BOUNDARYSPACE_DECL,COPYNAMESPACE_DECL,SINGLETYPE,ITEMTYPE,KINDTEST,KINDTESTFORPI,CLOSEKINDTEST,OCCURRENCEINDICATOR,VARNAME,EXPR_COMMENT,IMPORT,DECLARE_KEYWORD,DEFAULT_KEYWORD,DEFAULT_ORDER,VALIDATE,ORDER,EMPTY_PARENS,THESAURUS1,THESAURUS2,STOPWORDS,UPDATEOP,TYPEDECL>"(:"						beginComment(); PUSH_CURRENT(); BEGIN(EXPR_COMMENT); if(m_bReportWhiteSpace) RECOGNIZE(_XQUERY_COMMENT_);
 
 <INITIAL>{DecimalLiteral}									REJECT_IF_NOT_TERMINATED; yylval.str=allocate_string((XMLCh*)yytext); CHANGE_STATE(OPERATOR); RECOGNIZE(_DECIMAL_NUMBER_);
 <INITIAL>{DoubleLiteral}									REJECT_IF_NOT_TERMINATED; yylval.str=allocate_string((XMLCh*)yytext); CHANGE_STATE(OPERATOR); RECOGNIZE(_DOUBLE_NUMBER_);
@@ -269,7 +269,7 @@ char *xqGetStateName(int state)
 																							RECOGNIZE(_STRING_LITERAL_);
 																						}
 
-<INITIAL>"declare"											REJECT_NOT_XQUERY; REJECT_IF_NOT_TERMINATED; REJECT_IF_NOT_FOLLOWED_CHOICE10(DECLARE_KEYWORD, _OPTION_, _VARIABLE_KEYWORD_, _FUNCTION_, _CONSTRUCTION_, _ORDERING_, _DEFAULT_, _COPY_NAMESPACES_, _BASEURI_, _BOUNDARYSPACE_, _NAMESPACE_); CHANGE_STATE(DECLARE_KEYWORD); RECOGNIZE(_DECLARE_);
+<INITIAL>"declare"											REJECT_NOT_XQUERY; REJECT_IF_NOT_TERMINATED; REJECT_IF_NOT_FOLLOWED_CHOICE12(DECLARE_KEYWORD, _OPTION_, _VARIABLE_KEYWORD_, _FUNCTION_, _CONSTRUCTION_, _ORDERING_, _DEFAULT_, _COPY_NAMESPACES_, _BASEURI_, _BOUNDARYSPACE_, _NAMESPACE_, _REVALIDATION_, _UPDATING_); CHANGE_STATE(DECLARE_KEYWORD); RECOGNIZE(_DECLARE_);
 <DECLARE_KEYWORD>"option"                                   REJECT_NOT_XQUERY; REJECT_IF_NOT_TERMINATED; CHANGE_STATE(INITIAL); RECOGNIZE(_OPTION_);
 <DECLARE_KEYWORD>"variable"                                 REJECT_NOT_XQUERY; REJECT_IF_NOT_TERMINATED; CHANGE_STATE(INITIAL); RECOGNIZE(_VARIABLE_KEYWORD_);
 <DECLARE_KEYWORD>"function"                                 REJECT_NOT_XQUERY; REJECT_IF_NOT_TERMINATED; CHANGE_STATE(INITIAL); RECOGNIZE(_FUNCTION_);
@@ -279,6 +279,8 @@ char *xqGetStateName(int state)
 <DECLARE_KEYWORD>"base-uri"									REJECT_NOT_XQUERY; REJECT_IF_NOT_TERMINATED; CHANGE_STATE(NAMESPACEDECL); RECOGNIZE(_BASEURI_);
 <DECLARE_KEYWORD>"boundary-space"							REJECT_NOT_XQUERY; REJECT_IF_NOT_TERMINATED; CHANGE_STATE(BOUNDARYSPACE_DECL); RECOGNIZE(_BOUNDARYSPACE_);
 <DECLARE_KEYWORD>"namespace"								REJECT_NOT_XQUERY; REJECT_IF_NOT_TERMINATED; CHANGE_STATE(NAMESPACEDECL); RECOGNIZE(_NAMESPACE_);
+<DECLARE_KEYWORD>"revalidation"								REJECT_NOT_XQUERY; REJECT_NOT_UPDATE; REJECT_IF_NOT_TERMINATED; CHANGE_STATE(VALIDATE); RECOGNIZE(_REVALIDATION_);
+<DECLARE_KEYWORD>"updating"								REJECT_NOT_XQUERY; REJECT_NOT_UPDATE; REJECT_IF_NOT_TERMINATED; CHANGE_STATE(DECLARE_KEYWORD); RECOGNIZE(_UPDATING_);
 
 <DECLARE_KEYWORD,NAMESPACEKEYWORD>"default"          	    {
                                                                 REJECT_NOT_XQUERY; REJECT_IF_NOT_TERMINATED; 
@@ -428,8 +430,9 @@ char *xqGetStateName(int state)
 
 <INITIAL>"validate"											REJECT_NOT_XQUERY; REJECT_IF_NOT_TERMINATED; REJECT_IF_NOT_FOLLOWED_CHOICE3(VALIDATE, _LBRACE_, _MODE_LAX_, _MODE_STRICT_); CHANGE_STATE(VALIDATE); RECOGNIZE(_VALIDATE_);
 <VALIDATE>"{"									            REJECT_NOT_XQUERY; PUSH(OPERATOR); CHANGE_STATE(INITIAL); RECOGNIZE(_LBRACE_);
-<VALIDATE>"lax"									            REJECT_NOT_XQUERY; REJECT_IF_NOT_TERMINATED; REJECT_IF_NOT_FOLLOWED1(VALIDATE, _LBRACE_); RECOGNIZE(_MODE_LAX_);
-<VALIDATE>"strict"								            REJECT_NOT_XQUERY; REJECT_IF_NOT_TERMINATED; REJECT_IF_NOT_FOLLOWED1(VALIDATE, _LBRACE_); RECOGNIZE(_MODE_STRICT_);
+<VALIDATE>"lax"									            REJECT_NOT_XQUERY; REJECT_IF_NOT_TERMINATED; RECOGNIZE(_MODE_LAX_);
+<VALIDATE>"strict"								            REJECT_NOT_XQUERY; REJECT_IF_NOT_TERMINATED; RECOGNIZE(_MODE_STRICT_);
+<VALIDATE>"skip"								            REJECT_NOT_UPDATE; REJECT_IF_NOT_TERMINATED; RECOGNIZE(_MODE_SKIP_);
 
 <INITIAL>"typeswitch"										REJECT_NOT_XQUERY; REJECT_IF_NOT_TERMINATED; REJECT_IF_NOT_FOLLOWED1(YYSTATE, _LPAR_); RECOGNIZE(_TYPESWITCH_);
 
@@ -469,7 +472,7 @@ char *xqGetStateName(int state)
 <PRAGMA_CONTENT>"#)"									 REJECT_NOT_XQUERY; CHANGE_STATE(INITIAL); RECOGNIZE(_PRAGMA_CLOSE_);
 
 
-<INITIAL,OPERATOR,ITEMTYPE,XQUERYDECL>";"					REJECT_NOT_XQUERY; CHANGE_STATE(INITIAL); RECOGNIZE(_SEMICOLON_);
+<INITIAL,OPERATOR,ITEMTYPE,XQUERYDECL,VALIDATE>";"					REJECT_NOT_XQUERY; CHANGE_STATE(INITIAL); RECOGNIZE(_SEMICOLON_);
 
 <INITIAL,OPERATOR,KINDTEST,CLOSEKINDTEST,ELEMENT_CONTENT,QUOT_ATTRIBUTE_CONTENT,APOS_ATTRIBUTE_CONTENT>"{"	{
 																switch(YYSTATE)
@@ -508,6 +511,28 @@ char *xqGetStateName(int state)
 <INITIAL>"preceding"{WhitespaceChar}*"::"					RECOGNIZE(_AXIS_PRECEDING_);
 <INITIAL>"self"{WhitespaceChar}*"::"						RECOGNIZE(_AXIS_SELF_);
 <INITIAL>"namespace"{WhitespaceChar}*"::"					REJECT_XQUERY; RECOGNIZE(_AXIS_NAMESPACE_);
+
+<INITIAL>"do" {
+  REJECT_NOT_UPDATE; REJECT_IF_NOT_TERMINATED;
+  REJECT_IF_NOT_FOLLOWED_CHOICE4(UPDATEOP, _INSERT_, _DELETE_, _REPLACE_, _RENAME_);
+  CHANGE_STATE(UPDATEOP); RECOGNIZE(_DO_);
+}
+<INITIAL>"transform"{S}"copy" REJECT_NOT_UPDATE; REJECT_IF_NOT_TERMINATED; REJECT_IF_NOT_FOLLOWED1(INITIAL, _DOLLAR_SIGN_); RECOGNIZE(_TRANSFORM_COPY_);
+
+<UPDATEOP>"insert" REJECT_NOT_UPDATE; REJECT_IF_NOT_TERMINATED; CHANGE_STATE(INITIAL); RECOGNIZE(_INSERT_);
+<UPDATEOP>"delete" REJECT_NOT_UPDATE; REJECT_IF_NOT_TERMINATED; CHANGE_STATE(INITIAL); RECOGNIZE(_DELETE_);
+<UPDATEOP>"replace" REJECT_NOT_UPDATE; REJECT_IF_NOT_TERMINATED; CHANGE_STATE(INITIAL); RECOGNIZE(_REPLACE_);
+<UPDATEOP>"rename" REJECT_NOT_UPDATE; REJECT_IF_NOT_TERMINATED; CHANGE_STATE(INITIAL); RECOGNIZE(_RENAME_);
+
+<INITIAL>"value"{S}"of" REJECT_NOT_UPDATE; REJECT_IF_NOT_TERMINATED; CHANGE_STATE(INITIAL); RECOGNIZE(_VALUE_OF_);
+
+<OPERATOR>"first" REJECT_NOT_UPDATE; REJECT_IF_NOT_TERMINATED; RECOGNIZE(_FIRST_);
+<OPERATOR>"last" REJECT_NOT_UPDATE; REJECT_IF_NOT_TERMINATED; RECOGNIZE(_LAST_);
+<OPERATOR>"into" REJECT_NOT_UPDATE; REJECT_IF_NOT_TERMINATED; CHANGE_STATE(INITIAL); RECOGNIZE(_INTO_);
+<OPERATOR>"after" REJECT_NOT_UPDATE; REJECT_IF_NOT_TERMINATED; CHANGE_STATE(INITIAL); RECOGNIZE(_AFTER_);
+<OPERATOR>"before" REJECT_NOT_UPDATE; REJECT_IF_NOT_TERMINATED; CHANGE_STATE(INITIAL); RECOGNIZE(_BEFORE_);
+<OPERATOR>"with" REJECT_NOT_UPDATE; REJECT_IF_NOT_TERMINATED; CHANGE_STATE(INITIAL); RECOGNIZE(_WITH_);
+<OPERATOR>"modify" REJECT_NOT_UPDATE; REJECT_IF_NOT_TERMINATED; CHANGE_STATE(INITIAL); RECOGNIZE(_MODIFY_);
 
 <INITIAL,OPERATOR,ITEMTYPE,CLOSEKINDTEST,THESAURUS2,STOPWORDS>","				{
 																switch(YYSTATE) {
@@ -669,15 +694,30 @@ char *xqGetStateName(int state)
 
 <OPERATOR,ITEMTYPE>"castable"						        REJECT_IF_NOT_TERMINATED; REJECT_IF_NOT_FOLLOWED1(SINGLETYPE, _AS_); CHANGE_STATE(SINGLETYPE); RECOGNIZE(_CASTABLE_);
 <OPERATOR,ITEMTYPE>"cast"       							REJECT_IF_NOT_TERMINATED; REJECT_IF_NOT_FOLLOWED1(SINGLETYPE, _AS_); CHANGE_STATE(SINGLETYPE); RECOGNIZE(_CAST_);
-<OPERATOR,ITEMTYPE>"treat"      							REJECT_IF_NOT_TERMINATED; REJECT_IF_NOT_FOLLOWED1(YYSTATE, _AS_); CHANGE_STATE(ITEMTYPE); RECOGNIZE(_TREAT_);
-<OPERATOR,ITEMTYPE,SINGLETYPE>"as"							{
-                                                                REJECT_IF_NOT_TERMINATED; 
-																if(YYSTATE!=SINGLETYPE)
-																{
+<OPERATOR,ITEMTYPE>"treat"      							REJECT_IF_NOT_TERMINATED; REJECT_IF_NOT_FOLLOWED1(ITEMTYPE, _AS_); CHANGE_STATE(ITEMTYPE); RECOGNIZE(_TREAT_);
+<OPERATOR,ITEMTYPE,SINGLETYPE,TYPEDECL>"as"							{
+                                REJECT_IF_NOT_TERMINATED;
+
+                                switch(YYSTATE) {
+                                case OPERATOR: {
+                                  REJECT_NOT_UPDATE;
+                                  int tok = next_token(OPERATOR);
+                                  if(tok!=_FIRST_ && tok!=_LAST_) {
+                                    CHANGE_STATE(INITIAL);
+                                  }
+                                  break;
+                                }
+                                case ITEMTYPE:
                                   REJECT_NOT_XQUERY;
-																	CHANGE_STATE(ITEMTYPE);
-																}
-                                                                RECOGNIZE(_AS_);
+                                  break;
+                                case SINGLETYPE:
+                                  break;
+                                case TYPEDECL:
+                                  CHANGE_STATE(ITEMTYPE);
+                                  break;
+                                }
+
+                                RECOGNIZE(_AS_);
 															}
 
 <OPERATOR,ITEMTYPE>"instance"       						REJECT_IF_NOT_TERMINATED; REJECT_IF_NOT_FOLLOWED1(ITEMTYPE, _OF_); CHANGE_STATE(ITEMTYPE); RECOGNIZE(_INSTANCE_);
@@ -718,7 +758,7 @@ char *xqGetStateName(int state)
 
 <CLOSEKINDTEST>"?"											RECOGNIZE(_NILLABLE_);
 
-<OCCURRENCEINDICATOR,STOPWORDS>{Char}									{
+<OCCURRENCEINDICATOR,STOPWORDS,TYPEDECL>{Char}									{
 																undoUserAction();
 																CHANGE_STATE(OPERATOR); 
 																yyless(0);
@@ -796,7 +836,7 @@ char *xqGetStateName(int state)
 																			RECOGNIZE(_CHAR_);
 																		}
 
-<INITIAL>{QName}{WhitespaceChar}*"("						{
+<INITIAL,ITEMTYPE>{QName}{WhitespaceChar}*"("						{
 																REJECT_IF_COLON;
 
                                                                 XMLCh* beginning=yylval.str=allocate_string((XMLCh*)yytext);
@@ -815,7 +855,7 @@ char *xqGetStateName(int state)
 																static const XMLCh schema_element_str[] = { 's', 'c', 'h', 'e', 'm', 'a', '-', 'e', 'l', 'e', 'm', 'e', 'n', 't', 0 };
 																static const XMLCh text_str[] = { 't', 'e', 'x', 't', 0 };
 																static const XMLCh typeswitch_str[] = { 't', 'y', 'p', 'e', 's', 'w', 'i', 't', 'c', 'h', 0 };
-																static const XMLCh void_str[] = { 'v', 'o', 'i', 'd', 0 };
+																static const XMLCh empty_sequence_str[] = { 'e', 'm', 'p', 't', 'y', '-', 's', 'e', 'q', 'u', 'e', 'n', 'c', 'e', 0 };
 
                                                                 // reject reserved names
 																if(XPath2Utils::equals(yylval.str,attribute_str) ||
@@ -830,12 +870,13 @@ char *xqGetStateName(int state)
 																   XPath2Utils::equals(yylval.str,schema_element_str) ||
 																   XPath2Utils::equals(yylval.str,text_str) ||
 																   XPath2Utils::equals(yylval.str,typeswitch_str) ||
-																   XPath2Utils::equals(yylval.str,void_str))
+																   XPath2Utils::equals(yylval.str,empty_sequence_str))
 																{
 																	undoUserAction(); 
 																	REJECT;
 																}
 
+                                CHANGE_STATE(INITIAL);
 																RECOGNIZE(_FUNCTION_CALL_);
 															}
 <INITIAL,SINGLETYPE,ITEMTYPE,KINDTEST,VARNAME,START_TAG,ATTRIBUTE_DECL,END_TAG>{QName}		{
@@ -847,7 +888,7 @@ char *xqGetStateName(int state)
 																												case SINGLETYPE:		CHANGE_STATE(OPERATOR); RECOGNIZE(_QNAME_);
 																												case ITEMTYPE:			CHANGE_STATE(OCCURRENCEINDICATOR); RECOGNIZE(_QNAME_);
 																												case KINDTEST:			CHANGE_STATE(CLOSEKINDTEST); RECOGNIZE(_QNAME_);
-																												case VARNAME:			CHANGE_STATE(OPERATOR); RECOGNIZE(_VARIABLE_);
+																												case VARNAME:			CHANGE_STATE(TYPEDECL); RECOGNIZE(_VARIABLE_);
 																												case START_TAG:			CHANGE_STATE(ATTRIBUTE_DECL); RECOGNIZE(_TAG_NAME_);
 																												case ATTRIBUTE_DECL:	RECOGNIZE(_ATTRIBUTE_NAME_);
 																												case END_TAG:			RECOGNIZE(_TAG_NAME_);

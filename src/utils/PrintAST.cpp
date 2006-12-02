@@ -60,6 +60,7 @@
 #include <xqilla/ast/ConvertFunctionArg.hpp>
 #include <xqilla/ast/XQDocumentOrder.hpp>
 #include <xqilla/ast/XQPredicate.hpp>
+
 #include <xqilla/fulltext/FTContains.hpp>
 #include <xqilla/fulltext/FTSelection.hpp>
 #include <xqilla/fulltext/FTWords.hpp>
@@ -73,6 +74,18 @@
 #include <xqilla/fulltext/FTScope.hpp>
 #include <xqilla/fulltext/FTContent.hpp>
 #include <xqilla/fulltext/FTWindow.hpp>
+
+#include <xqilla/update/UDelete.hpp>
+#include <xqilla/update/URename.hpp>
+#include <xqilla/update/UReplace.hpp>
+#include <xqilla/update/UReplaceValueOf.hpp>
+#include <xqilla/update/UInsertAsFirst.hpp>
+#include <xqilla/update/UInsertAsLast.hpp>
+#include <xqilla/update/UInsertInto.hpp>
+#include <xqilla/update/UInsertAfter.hpp>
+#include <xqilla/update/UInsertBefore.hpp>
+#include <xqilla/update/UTransform.hpp>
+#include <xqilla/update/UApplyUpdates.hpp>
 
 #include <xercesc/dom/DOMNode.hpp>
 #if defined(XERCES_HAS_CPP_NAMESPACE)
@@ -262,12 +275,68 @@ string PrintAST::printASTNode(const ASTNode *item, const DynamicContext *context
     return printPredicate((XQPredicate *)item, context, indent);
     break;
   }
+  case ASTNode::NAME_EXPRESSION: {
+    return printNameExpression((XQNameExpression *)item, context, indent);
+    break;
+  }
+  case ASTNode::CONTENT_SEQUENCE: {
+    return printContentSequence((XQContentSequence *)item, context, indent);
+    break;
+  }
+  case ASTNode::DIRECT_NAME: {
+    return printDirectName((XQDirectName *)item, context, indent);
+    break;
+  }
   case ASTNode::USER_FUNCTION: {
     return printUserFunction((XQUserFunction::XQFunctionEvaluator *)item, context, indent);
     break;
   }
   case ASTNode::FTCONTAINS: {
     return printFTContains((FTContains *)item, context, indent);
+    break;
+  }
+  case ASTNode::UDELETE: {
+    return printUDelete((UDelete *)item, context, indent);
+    break;
+  }
+  case ASTNode::URENAME: {
+    return printURename((URename *)item, context, indent);
+    break;
+  }
+  case ASTNode::UREPLACE: {
+    return printUReplace((UReplace *)item, context, indent);
+    break;
+  }
+  case ASTNode::UREPLACE_VALUE_OF: {
+    return printUReplaceValueOf((UReplaceValueOf *)item, context, indent);
+    break;
+  }
+  case ASTNode::UINSERT_AS_FIRST: {
+    return printUInsertAsFirst((UInsertAsFirst *)item, context, indent);
+    break;
+  }
+  case ASTNode::UINSERT_AS_LAST: {
+    return printUInsertAsLast((UInsertAsLast *)item, context, indent);
+    break;
+  }
+  case ASTNode::UINSERT_INTO: {
+    return printUInsertInto((UInsertInto *)item, context, indent);
+    break;
+  }
+  case ASTNode::UINSERT_AFTER: {
+    return printUInsertAfter((UInsertAfter *)item, context, indent);
+    break;
+  }
+  case ASTNode::UINSERT_BEFORE: {
+    return printUInsertBefore((UInsertBefore *)item, context, indent);
+    break;
+  }
+  case ASTNode::UTRANSFORM: {
+    return printUTransform((UTransform *)item, context, indent);
+    break;
+  }
+  case ASTNode::UAPPLY_UPDATES: {
+    return printUApplyUpdates((UApplyUpdates *)item, context, indent);
     break;
   }
   default:
@@ -805,6 +874,7 @@ string PrintAST::printValidate(const XQValidate *item, const DynamicContext *con
     s << "lax";
     break;
   }
+  default: break;
   }
   s << "\">" << endl;
   s << printASTNode(item->getExpression(), context, indent + INDENT);
@@ -878,7 +948,8 @@ string PrintAST::printDOMConstructor(const XQDOMConstructor *item, const Dynamic
   s << in << "<DOMConstructor type=\"" << UTF8(item->getNodeType());
   if(item->getName() ||
      (item->getAttributes() != 0 && !item->getAttributes()->empty()) ||
-     (item->getChildren() != 0 && !item->getChildren()->empty())) {
+     (item->getChildren() != 0 && !item->getChildren()->empty()) ||
+     item->getValue() != 0) {
     s << "\">" << endl;
     if(item->getName()) {
       s << in << "  <Name>" << endl;
@@ -1345,6 +1416,202 @@ string PrintAST::printPredicate(const XQPredicate *item, const DynamicContext *c
   s << printASTNode(item->getExpression(), context, indent + INDENT);
   s << printASTNode(item->getPredicate(), context, indent + INDENT);
   s << in << "</Predicate>" << endl;
+
+  return s.str();
+}
+
+string PrintAST::printNameExpression(const XQNameExpression *item, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  s << in << "<NameExpression>" << endl; 
+  s << printASTNode(item->getExpression(), context, indent + INDENT);
+  s << in << "</NameExpression>" << endl;
+
+  return s.str();
+}
+
+string PrintAST::printContentSequence(const XQContentSequence *item, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  s << in << "<ContentSequence";
+  if(item->getCopy()) s << " copy=\"true\"";
+  s << ">" << endl; 
+  s << printASTNode(item->getExpression(), context, indent + INDENT);
+  s << in << "</ContentSequence>" << endl;
+
+  return s.str();
+}
+
+string PrintAST::printDirectName(const XQDirectName *item, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  s << in << "<DirectName qname=\"" << UTF8(item->getQName()) << "/>" << endl; 
+
+  return s.str();
+}
+
+string PrintAST::printUDelete(const UDelete *item, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  s << in << "<UDelete>" << endl;
+  s << printASTNode(item->getExpression(), context, indent + INDENT);
+  s << in << "</UDelete>" << endl;
+
+  return s.str();
+}
+
+string PrintAST::printURename(const URename *item, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  s << in << "<URename>" << endl;
+  s << printASTNode(item->getTarget(), context, indent + INDENT);
+  s << printASTNode(item->getName(), context, indent + INDENT);
+  s << in << "</URename>" << endl;
+
+  return s.str();
+}
+
+string PrintAST::printUReplace(const UReplace *item, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  s << in << "<UReplace>" << endl;
+  s << printASTNode(item->getTarget(), context, indent + INDENT);
+  s << printASTNode(item->getExpression(), context, indent + INDENT);
+  s << in << "</UReplace>" << endl;
+
+  return s.str();
+}
+
+string PrintAST::printUReplaceValueOf(const UReplaceValueOf *item, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  s << in << "<UReplaceValueOf>" << endl;
+  s << printASTNode(item->getTarget(), context, indent + INDENT);
+  s << printASTNode(item->getExpression(), context, indent + INDENT);
+  s << in << "</UReplaceValueOf>" << endl;
+
+  return s.str();
+}
+
+string PrintAST::printUInsertAsFirst(const UInsertAsFirst *item, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  s << in << "<UInsertAsFirst>" << endl;
+  s << printASTNode(item->getSource(), context, indent + INDENT);
+  s << printASTNode(item->getTarget(), context, indent + INDENT);
+  s << in << "</UInsertAsFirst>" << endl;
+
+  return s.str();
+}
+
+string PrintAST::printUInsertAsLast(const UInsertAsLast *item, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  s << in << "<UInsertAsLast>" << endl;
+  s << printASTNode(item->getSource(), context, indent + INDENT);
+  s << printASTNode(item->getTarget(), context, indent + INDENT);
+  s << in << "</UInsertAsLast>" << endl;
+
+  return s.str();
+}
+
+string PrintAST::printUInsertInto(const UInsertInto *item, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  s << in << "<UInsertInto>" << endl;
+  s << printASTNode(item->getSource(), context, indent + INDENT);
+  s << printASTNode(item->getTarget(), context, indent + INDENT);
+  s << in << "</UInsertInto>" << endl;
+
+  return s.str();
+}
+
+string PrintAST::printUInsertAfter(const UInsertAfter *item, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  s << in << "<UInsertAfter>" << endl;
+  s << printASTNode(item->getSource(), context, indent + INDENT);
+  s << printASTNode(item->getTarget(), context, indent + INDENT);
+  s << in << "</UInsertAfter>" << endl;
+
+  return s.str();
+}
+
+string PrintAST::printUInsertBefore(const UInsertBefore *item, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  s << in << "<UInsertBefore>" << endl;
+  s << printASTNode(item->getSource(), context, indent + INDENT);
+  s << printASTNode(item->getTarget(), context, indent + INDENT);
+  s << in << "</UInsertBefore>" << endl;
+
+  return s.str();
+}
+
+string PrintAST::printUTransform(const UTransform *item, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  const VectorOfVariableBinding *bindings = item->getBindings();
+
+  s << in << "<UTransform>" << endl;
+  for(VectorOfVariableBinding::const_iterator i = bindings->begin(); i != bindings->end(); ++i) {
+    s << printXQVariableBinding(*i, context, indent + INDENT);
+  }
+  s << printASTNode(item->getModifyExpr(), context, indent + INDENT);
+  s << printASTNode(item->getReturnExpr(), context, indent + INDENT);
+  s << in << "</UTransform>" << endl;
+
+  return s.str();
+}
+
+string PrintAST::printUApplyUpdates(const UApplyUpdates *item, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  s << in << "<UApplyUpdates>" << endl;
+  s << printASTNode(item->getExpression(), context, indent + INDENT);
+  s << in << "</UApplyUpdates>" << endl;
 
   return s.str();
 }

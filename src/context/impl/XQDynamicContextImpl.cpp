@@ -21,6 +21,7 @@
 
 #include <xqilla/context/impl/XQDynamicContextImpl.hpp>
 #include <xqilla/context/impl/ItemFactoryImpl.hpp>
+#include <xqilla/context/impl/XercesUpdateFactory.hpp>
 
 #include <xqilla/context/VariableStore.hpp>
 #include <xqilla/utils/XPath2NSUtils.hpp>
@@ -64,6 +65,7 @@ XQDynamicContextImpl::XQDynamicContextImpl(const StaticContext *staticContext, X
     _implicitTimezone(0),
     _resolvers(XQillaAllocator<URIResolver*>(&_internalMM)),
     _docCache(staticContext->getDocumentCache()->createDerivedCache(&_internalMM)),
+    _messageListener(staticContext->getMessageListener()),
     _documentMap(3,false,&_internalMM),
     _uriMap(3,false, new (&_internalMM) XERCES_CPP_NAMESPACE_QUALIFIER HashPtr(), &_internalMM)
 {
@@ -457,12 +459,9 @@ void XQDynamicContextImpl::setItemFactory(ItemFactory *factory)
   _itemFactory = factory;
 }
 
-void XQDynamicContextImpl::trace(const XMLCh* message1, const XMLCh* message2) {
-    char* msg1=XERCES_CPP_NAMESPACE_QUALIFIER XMLString::transcode(message1);
-    char* msg2=XERCES_CPP_NAMESPACE_QUALIFIER XMLString::transcode(message2);
-    std::cerr << msg1 << " " << msg2 << std::endl; 
-    XERCES_CPP_NAMESPACE_QUALIFIER XMLString::release(&msg1);
-    XERCES_CPP_NAMESPACE_QUALIFIER XMLString::release(&msg2);
+UpdateFactory *XQDynamicContextImpl::createUpdateFactory() const
+{
+  return new XercesUpdateFactory();
 }
 
 void XQDynamicContextImpl::setNamespaceBinding(const XMLCh* prefix, const XMLCh* uri)
@@ -519,3 +518,14 @@ Collation* XQDynamicContextImpl::getDefaultCollation(const LocationInfo *locatio
     return getCollation(_defaultCollation, location);
   }
 }
+
+void XQDynamicContextImpl::setMessageListener(MessageListener *listener)
+{
+  _messageListener = listener;
+}
+
+MessageListener *XQDynamicContextImpl::getMessageListener() const
+{
+  return _messageListener;
+}
+

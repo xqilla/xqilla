@@ -31,6 +31,7 @@
 #include <xqilla/context/impl/ItemFactoryImpl.hpp>
 #include <xqilla/context/impl/XQDynamicContextImpl.hpp>
 #include <xqilla/context/impl/CodepointCollation.hpp>
+#include <xqilla/context/impl/XercesUpdateFactory.hpp>
 #include <xqilla/context/VariableStore.hpp>
 #include <xqilla/context/VariableTypeStore.hpp>
 #include <xqilla/context/URIResolver.hpp>
@@ -54,6 +55,7 @@
 #include <xqilla/items/DatatypeLookup.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/items/impl/NodeImpl.hpp>
+#include "../functions/FunctionLookupImpl.hpp"
 #include <xqilla/functions/FunctionLookup.hpp>
 #include <xqilla/functions/FunctionConstructor.hpp>
 #include <xqilla/functions/XQUserFunction.hpp>
@@ -75,16 +77,19 @@ const XMLCh XMLChLOCAL[] = { XERCES_CPP_NAMESPACE_QUALIFIER chLatin_l, XERCES_CP
 
 static CodepointCollation g_codepointCollation;
 
-XQContextImpl::XQContextImpl(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr,
+XQContextImpl::XQContextImpl(XQilla::Language language, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr,
                              XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool* xmlgr,
                              XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* contextNode)
-  : _createdWith(memMgr),
+  : _language(language),
+    _createdWith(memMgr),
     _internalMM(memMgr),
     _varTypeStore(0),
     _functionTable(0),
     _collations(XQillaAllocator<Collation*>(&_internalMM)),
     _constructionMode(CONSTRUCTION_MODE_PRESERVE),
     _bPreserveBoundarySpace(false),
+    _revalidationMode(DocumentCache::VALIDATION_STRICT),
+    _messageListener(0),
     _varStore(0),
     _documentMap(3,false,&_internalMM),
     _uriMap(3,false, new (&_internalMM) XERCES_CPP_NAMESPACE_QUALIFIER HashPtr(), &_internalMM),
@@ -118,7 +123,7 @@ XQContextImpl::XQContextImpl(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMg
   if(_varTypeStore==NULL)
     _varTypeStore=_internalMM.createVariableTypeStore();
   if(_functionTable==NULL)
-    _functionTable=_internalMM.createFunctionTable();
+    _functionTable = new (&_internalMM) FunctionLookupImpl((language & XQilla::UPDATE) != 0, &_internalMM);
 
   _itemFactory = new (&_internalMM) ItemFactoryImpl(_docCache, &_internalMM);
 
@@ -190,7 +195,7 @@ XQContextImpl::~XQContextImpl()
 
 DynamicContext *XQContextImpl::createModuleContext(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr) const
 {
-  DynamicContext* moduleCtx = new (memMgr) XQContextImpl(memMgr);
+  DynamicContext* moduleCtx = new (memMgr) XQContextImpl(_language, memMgr);
   // force the context to use our memory manager
   moduleCtx->setMemoryManager(getMemoryManager());
   // propagate debug settings
@@ -834,10 +839,28 @@ void XQContextImpl::setItemFactory(ItemFactory *factory)
   _itemFactory = factory;
 }
 
-void XQContextImpl::trace(const XMLCh* message1, const XMLCh* message2) {
-    char* msg1=XERCES_CPP_NAMESPACE_QUALIFIER XMLString::transcode(message1);
-    char* msg2=XERCES_CPP_NAMESPACE_QUALIFIER XMLString::transcode(message2);
-    std::cerr << msg1 << " " << msg2 << std::endl;
-    XERCES_CPP_NAMESPACE_QUALIFIER XMLString::release(&msg1);
-    XERCES_CPP_NAMESPACE_QUALIFIER XMLString::release(&msg2);
+UpdateFactory *XQContextImpl::createUpdateFactory() const
+{
+  return new XercesUpdateFactory();
 }
+
+void XQContextImpl::setRevalidationMode(DocumentCache::ValidationMode mode)
+{
+  _revalidationMode = mode;
+}
+
+DocumentCache::ValidationMode XQContextImpl::getRevalidationMode() const
+{
+  return _revalidationMode;
+}
+
+void XQContextImpl::setMessageListener(MessageListener *listener)
+{
+  _messageListener = listener;
+}
+
+MessageListener *XQContextImpl::getMessageListener() const
+{
+  return _messageListener;
+}
+

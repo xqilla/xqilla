@@ -18,6 +18,8 @@
 #include <xqilla/ast/XQSequence.hpp>
 #include <xqilla/runtime/Sequence.hpp>
 #include <xqilla/context/DynamicContext.hpp>
+#include <xqilla/exceptions/StaticErrorException.hpp>
+#include <xqilla/update/PendingUpdateList.hpp>
 
 XQParenthesizedExpr::XQParenthesizedExpr(XPath2MemoryManager* memMgr)
 	: ASTNodeImpl(memMgr), _astNodes(XQillaAllocator<ASTNode*>(memMgr))
@@ -58,8 +60,25 @@ ASTNode* XQParenthesizedExpr::staticResolution(StaticContext *context) {
 ASTNode* XQParenthesizedExpr::staticTyping(StaticContext *context) {
   _src.getStaticType().flags = 0;
 
+  bool updating = false;
   for(VectorOfASTNodes::iterator i = _astNodes.begin(); i != _astNodes.end(); ++i) {
     *i = (*i)->staticTyping(context);
+
+    if(i == _astNodes.begin()) {
+      updating = (*i)->getStaticResolutionContext().isUpdating();
+    }
+    else if(updating) {
+      if(!(*i)->getStaticResolutionContext().isUpdating() &&
+         (*i)->getStaticResolutionContext().getStaticType().containsType(StaticType::ITEM_TYPE))
+        XQThrow(StaticErrorException, X("XQParenthesizedExpr::staticTyping"),
+                X("Mixed updating and non-updating operands [err:XUST0001]"));
+    }
+    else {
+      if((*i)->getStaticResolutionContext().isUpdating())
+        XQThrow(StaticErrorException, X("XQParenthesizedExpr::staticTyping"),
+                X("Mixed updating and non-updating operands [err:XUST0001]"));
+    }
+
     _src.getStaticType().typeUnion((*i)->getStaticResolutionContext().getStaticType());
     _src.add((*i)->getStaticResolutionContext());
   }
@@ -68,6 +87,15 @@ ASTNode* XQParenthesizedExpr::staticTyping(StaticContext *context) {
     return constantFold(context);
   }
   return this;
+}
+
+PendingUpdateList XQParenthesizedExpr::createUpdateList(DynamicContext *context) const
+{
+  PendingUpdateList result;
+  for(VectorOfASTNodes::const_iterator i = _astNodes.begin(); i != _astNodes.end(); ++i) {
+    result.mergeUpdates((*i)->createUpdateList(context));
+  }
+  return result;
 }
 
 const VectorOfASTNodes &XQParenthesizedExpr::getChildren() const {

@@ -80,6 +80,9 @@ public:
   void creative(bool value);
   bool isCreative() const;
 
+  void updating(bool value);
+  bool isUpdating() const;
+
   /**
    * Properties that allow optimisation regarding sorting or not.
    * The values are OR'd as flags, so they must be distinct bits
@@ -117,6 +120,7 @@ private:
   bool _availableCollections;
   bool _forceNoFolding;
   bool _creative;
+  bool _updating;
 
   unsigned int _properties;
   StaticType _staticType;

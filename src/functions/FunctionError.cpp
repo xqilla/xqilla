@@ -17,6 +17,7 @@
 #include <xqilla/items/Item.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/ast/StaticResolutionContext.hpp>
+#include <xqilla/update/PendingUpdateList.hpp>
 
 const XMLCh FunctionError::name[] = {
   XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_r, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_r, 
@@ -50,6 +51,12 @@ ASTNode *FunctionError::staticTyping(StaticContext *context)
   _src.getStaticType().flags = StaticType::ITEM_TYPE;
   _src.forceNoFolding(true);
   return calculateSRCForArguments(context);
+}
+
+PendingUpdateList FunctionError::createUpdateList(DynamicContext *context) const
+{
+  collapseTreeInternal(context); // doesn't return
+  return PendingUpdateList();
 }
 
 Sequence FunctionError::collapseTreeInternal(DynamicContext* context, int flags) const

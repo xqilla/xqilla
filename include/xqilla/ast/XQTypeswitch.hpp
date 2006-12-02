@@ -37,7 +37,7 @@ public:
 
     void staticResolution(const StaticResolutionContext &var_src, StaticContext* context, StaticResolutionContext &src);
     void staticTyping(const StaticResolutionContext &var_src, StaticContext* context,
-                                          StaticResolutionContext &src);
+                      StaticResolutionContext &src, bool updating);
 
     ASTNode* _expr;
     SequenceType* _type;
@@ -53,6 +53,9 @@ public:
   Result createResult(DynamicContext* context, int flags=0) const;
   ASTNode* staticResolution(StaticContext *context);
   virtual ASTNode *staticTyping(StaticContext *context);
+  virtual PendingUpdateList createUpdateList(DynamicContext *context) const;
+
+  const Clause *chooseClause(DynamicContext *context) const;
 
   const ASTNode *getExpression() const;
   const Clause *getDefaultClause() const;
@@ -61,16 +64,16 @@ public:
   void setExpression(ASTNode *expr);
 
 protected:
+
   class TypeswitchResult : public ResultImpl
   {
   public:
-    TypeswitchResult(const XQTypeswitch *di, int flags);
+    TypeswitchResult(const XQTypeswitch *di);
 
     Item::Ptr next(DynamicContext *context);
     std::string asString(DynamicContext *context, int indent) const;
 
   private:
-    int _flags;
     const XQTypeswitch *_di;
 
     Scope<Sequence> *_scope;

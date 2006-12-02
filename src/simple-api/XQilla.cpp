@@ -54,7 +54,7 @@ XQQuery* XQilla::parse(const XMLCh* inputQuery, Language language, DynamicContex
   bool contextOwned = (flags & NO_ADOPT_CONTEXT) == 0;
   if(context == 0) {
     contextOwned = true;
-    context = createContext();
+    context = createContext(language);
   }
 
   Janitor<XQQuery> query(new (memMgr) XQQuery(inputQuery, context, contextOwned, memMgr));
@@ -131,9 +131,9 @@ XQQuery* XQilla::parseFromURI(const XMLCh* queryFile, Language language, Dynamic
   return parse(moduleText.getRawBuffer(), language, context, queryFile, flags, memMgr);
 }
 
-DynamicContext *XQilla::createContext(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr)
+DynamicContext *XQilla::createContext(Language language, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr)
 {
-  return new (memMgr) XQContextImpl(memMgr, 0, 0);
+  return new (memMgr) XQContextImpl(language, memMgr, 0, 0);
 }
 
 #ifdef _DEBUG

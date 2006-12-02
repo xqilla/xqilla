@@ -24,7 +24,7 @@
 class XQILLA_API FunctionLookupImpl : public FunctionLookup
 {
 public:
-  FunctionLookupImpl(XPath2MemoryManager* memMgr);
+  FunctionLookupImpl(bool update, XPath2MemoryManager* memMgr);
   virtual ~FunctionLookupImpl();
 
   ///insert a new function factory
@@ -45,7 +45,7 @@ public:
 
 protected:
   ///function to create the table
-  void createTable();
+  void createTable(bool update);
 
 private:
   XERCES_CPP_NAMESPACE_QUALIFIER XMLStringPool _uriPool;

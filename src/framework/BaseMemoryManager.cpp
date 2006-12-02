@@ -30,7 +30,6 @@ XERCES_CPP_NAMESPACE_USE
 #include <xqilla/dom-api/impl/XQillaNSResolverImpl.hpp>
 #include "../context/impl/VarStoreImpl.hpp"
 #include "../context/impl/VarTypeStoreImpl.hpp"
-#include "../functions/FunctionLookupImpl.hpp"
 #include <xqilla/items/impl/ATDecimalOrDerivedImpl.hpp>
 
 #include <iostream>
@@ -274,11 +273,6 @@ VariableStore* BaseMemoryManager::createVariableStore() {
 VariableTypeStore* BaseMemoryManager::createVariableTypeStore() {
   return new (this) VarTypeStoreImpl(this);
 } 
-
-/** create a function table */
-FunctionLookup* BaseMemoryManager::createFunctionTable() {
-  return new (this) FunctionLookupImpl(this);
-}
 
 /** create a ATDecimalOrDerived for the given integer */
 ATDecimalOrDerived* BaseMemoryManager::createInteger(int value) {

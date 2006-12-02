@@ -24,6 +24,7 @@ class DynamicContext;
 class StaticContext;
 class Result;
 class StaticResolutionContext;
+class PendingUpdateList;
 
 class XQILLA_API ASTNode : public LocationInfo
 {
@@ -60,13 +61,30 @@ public:
     DOCUMENT_ORDER,
     PREDICATE,
     ATOMIZE,
-    FTCONTAINS
+    FTCONTAINS,
+    UDELETE,
+    URENAME,
+    UREPLACE,
+    UREPLACE_VALUE_OF,
+    UTRANSFORM,
+    UINSERT_AS_FIRST,
+    UINSERT_AS_LAST,
+    UINSERT_INTO,
+    UINSERT_AFTER,
+    UINSERT_BEFORE,
+    UAPPLY_UPDATES,
+    NAME_EXPRESSION,
+    CONTENT_SEQUENCE,
+    DIRECT_NAME
   } whichType;
 
   virtual ~ASTNode() {}
 
   /// The flags parameter is currently unused
   virtual Result collapseTree(DynamicContext *context, int flags=0) const = 0;
+
+  /// Executes an update expression
+  virtual PendingUpdateList createUpdateList(DynamicContext *context) const = 0;
 
   /** Returns true if this ASTNode has no predicates, and is an instance of
       XQSequence or XQLiteral */

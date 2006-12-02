@@ -57,25 +57,15 @@ public:
 
   /* @name Node factory methods */
 
-  class XQILLA_API ElementChild {
-  public:
-    ElementChild(const Node::Ptr &n) : node(n), clone(true) {}
-    ElementChild(const Node::Ptr &n, bool c) : node(n), clone(c) {}
-    operator const Node::Ptr &() { return node; }
-    const Node *operator ->() const { return node.get(); }
-
-    Node::Ptr node;
-    bool clone;
-  };
-
   virtual Node::Ptr cloneNode(const Node::Ptr node, const DynamicContext *context) const = 0;
+  virtual Node::Ptr copyNode(const Node::Ptr &node, const DynamicContext *context) const = 0;
   virtual Node::Ptr createTextNode(const XMLCh *value, const DynamicContext *context) const = 0;
   virtual Node::Ptr createCommentNode(const XMLCh *value, const DynamicContext *context) const = 0;
   virtual Node::Ptr createPINode(const XMLCh *name, const XMLCh *value, const DynamicContext *context) const = 0;
   virtual Node::Ptr createAttributeNode(const XMLCh *uri, const XMLCh *prefix, const XMLCh *name,
                                         const XMLCh *value, const DynamicContext *context) const = 0;
   virtual Node::Ptr createElementNode(const XMLCh *uri, const XMLCh *prefix, const XMLCh *name,
-                                      const std::vector<Node::Ptr> &attrList, const std::vector<ElementChild> &childList,
+                                      const std::vector<Node::Ptr> &attrList, const std::vector<Node::Ptr> &childList,
                                       const DynamicContext *context) const = 0;
   virtual Node::Ptr createDocumentNode(const std::vector<Node::Ptr> &childList, const DynamicContext *context) const = 0;
   virtual const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* createNamespaceNode(const XMLCh* prefix, const XMLCh* uri, const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* parentNode, const DynamicContext *context) const = 0;

@@ -43,9 +43,9 @@ XQillaExpressionImpl::XQillaExpressionImpl(const XMLCh *expression,
                                            XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr,
                                            const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver *nsr,
                                            XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool *xmlGP)
-	: _createdWith(memMgr)
+  : _createdWith(memMgr)
 {
-  _staticContext = new (_createdWith) XQContextImpl(_createdWith, xmlGP);
+  _staticContext = new (_createdWith) XQContextImpl(XQilla::XPATH2, _createdWith, xmlGP);
   if(nsr != 0) _staticContext->setNSResolver(nsr);
   XQilla xqilla;
   _compiledExpression = xqilla.parse(expression, XQilla::XPATH2, _staticContext, NULL, XQilla::NO_ADOPT_CONTEXT, _createdWith);

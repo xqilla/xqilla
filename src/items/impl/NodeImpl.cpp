@@ -612,7 +612,7 @@ Sequence NodeImpl::dmTypedValue(DynamicContext* context) const {
 }
 
 Sequence NodeImpl::dmDocumentURI(const DynamicContext* context) const {
-  if(fNode->getNodeType()!=DOMNode::DOCUMENT_NODE) 
+  if(fNode->getNodeType()!=DOMNode::DOCUMENT_NODE)
     return Sequence(context->getMemoryManager());
     
   const DOMDocument* doc=(const DOMDocument *)fNode;

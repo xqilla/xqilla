@@ -71,6 +71,18 @@
 #include <xqilla/fulltext/FTContent.hpp>
 #include <xqilla/fulltext/FTWindow.hpp>
 
+#include <xqilla/update/UDelete.hpp>
+#include <xqilla/update/URename.hpp>
+#include <xqilla/update/UReplace.hpp>
+#include <xqilla/update/UReplaceValueOf.hpp>
+#include <xqilla/update/UInsertAsFirst.hpp>
+#include <xqilla/update/UInsertAsLast.hpp>
+#include <xqilla/update/UInsertInto.hpp>
+#include <xqilla/update/UInsertAfter.hpp>
+#include <xqilla/update/UInsertBefore.hpp>
+#include <xqilla/update/UTransform.hpp>
+#include <xqilla/update/UApplyUpdates.hpp>
+
 #include <xqilla/parser/QName.hpp>
 
 #include <xqilla/operators/Equals.hpp>
@@ -134,30 +146,32 @@ extern "C"
 void *alloca (size_t);
 #endif
 
-#define QP						((XQParserArgs*)qp)
-#define CONTEXT					(QP->_context)
-#define LANGUAGE					(QP->_lexer->getLanguage())
-#define MEMMGR					(CONTEXT->getMemoryManager())
+#define QP       ((XQParserArgs*)qp)
+#define CONTEXT  (QP->_context)
+#define LANGUAGE (QP->_lexer->getLanguage())
+#define MEMMGR   (CONTEXT->getMemoryManager())
 
-#define REJECT_NOT_XQUERY(where,pos) if(!QP->_lexer->isXQuery()) { yyerror(LANGUAGE, #where, (pos).first_line, (pos).first_column); }
-#define REJECT_NOT_XPATH(where,pos) if(!QP->_lexer->isXPath()) { yyerror(LANGUAGE, #where, (pos).first_line, (pos).first_column); }
+#define REJECT_NOT_XQUERY(where,pos)   if(!QP->_lexer->isXQuery())   { yyerror(LANGUAGE, #where, (pos).first_line, (pos).first_column); }
+#define REJECT_NOT_XPATH(where,pos)    if(!QP->_lexer->isXPath())    { yyerror(LANGUAGE, #where, (pos).first_line, (pos).first_column); }
 #define REJECT_NOT_FULLTEXT(where,pos) if(!QP->_lexer->isFullText()) { yyerror(LANGUAGE, #where, (pos).first_line, (pos).first_column); }
+#define REJECT_NOT_UPDATE(where,pos)   if(!QP->_lexer->isUpdate())   { yyerror(LANGUAGE, #where, (pos).first_line, (pos).first_column); }
 
-#define WRAP(pos,object)		(wrapForDebug((QP), (object), NULL, (pos).first_line, (pos).first_column))
-#define FNWRAP(pos,name,object)	(wrapForDebug((QP),(object),(name),(pos).first_line, (pos).first_column))
+#define WRAP(pos,object)        (wrapForDebug((QP), (object),   NULL, (pos).first_line, (pos).first_column))
+#define FNWRAP(pos,name,object) (wrapForDebug((QP), (object), (name), (pos).first_line, (pos).first_column))
 
 #define LOCATION(pos,name) LocationInfo name(QP->_query->getFile(), (pos).first_line, (pos).first_column)
 
-#define BIT_ORDERING_SPECIFIED	0
-#define BIT_BOUNDARY_SPECIFIED	                1
-#define BIT_COLLATION_SPECIFIED	                2
-#define BIT_BASEURI_SPECIFIED	                3
-#define BIT_CONSTRUCTION_SPECIFIED	            4
+#define BIT_ORDERING_SPECIFIED                  0
+#define BIT_BOUNDARY_SPECIFIED                  1
+#define BIT_COLLATION_SPECIFIED                 2
+#define BIT_BASEURI_SPECIFIED                   3
+#define BIT_CONSTRUCTION_SPECIFIED              4
 #define BIT_EMPTYORDERING_SPECIFIED             5
 #define BIT_COPYNAMESPACE_SPECIFIED             6
 #define BIT_DEFAULTELEMENTNAMESPACE_SPECIFIED   7
 #define BIT_DEFAULTFUNCTIONNAMESPACE_SPECIFIED  8
 #define BIT_DECLARE_SECOND_STEP                 9
+#define BIT_REVALIDATION_SPECIFIED              10
 
 #undef yylex
 #define yylex QP->_lexer->yylex
@@ -455,6 +469,7 @@ namespace XQParser {
 %token _MODULE_					        "module"
 %token _ELEMENT_				        "element"
 %token _FUNCTION_				        "function"
+
 %token _SCORE_                                          "score"
 %token _FTCONTAINS_                                     "ftcontains"
 %token _WEIGHT_                                         "weight"
@@ -507,6 +522,25 @@ namespace XQParser {
 %token _SENTENCE_                                       "sentence"
 %token _PARAGRAPH_                                      "paragraph"
 %token _WITHOUT_CONTENT_                                "without content"
+
+%token _REPLACE_                                        "replace"
+%token _MODIFY_                                         "modify"
+%token _FIRST_                                          "first"
+%token _INSERT_                                         "insert"
+%token _BEFORE_                                         "before"
+%token _AFTER_                                          "after"
+%token _TRANSFORM_COPY_                                 "transform copy"
+%token _REVALIDATION_                                   "revalidation"
+%token _WITH_                                           "with"
+%token _VALUE_OF_                                       "value of"
+%token _DO_                                             "do"
+%token _RENAME_                                         "rename"
+%token _MODE_SKIP_                                      "skip"
+%token _LAST_                                           "last"
+%token _DELETE_                                         "delete"
+%token _INTO_                                           "into"
+%token _UPDATING_                                       "updating"
+
 %token _EOF_
 
 %type <functDecl>			FunctionDecl 
@@ -520,7 +554,8 @@ namespace XQParser {
 %type <astNode>			CompElemConstructor CompTextConstructor CompPIConstructor CompCommentConstructor OrderedExpr UnorderedExpr
 %type <astNode>			CompAttrConstructor WhereClause CompDocConstructor DoubleLiteral InstanceofExpr DirectConstructor 
 %type <astNode>			ContentExpr ExtensionExpr CdataSection FTContainsExpr FTIgnoreOption
-%type <astNode>      		ForwardStep ReverseStep AbbrevForwardStep AbbrevReverseStep
+%type <astNode>			InsertExpr DeleteExpr RenameExpr ReplaceExpr TransformExpr
+%type <astNode>			ForwardStep ReverseStep AbbrevForwardStep AbbrevReverseStep
 
 %type <ftselection>     FTSelection FTWords FTWordsSelection FTUnaryNot FTMildnot FTAnd FTOr
 %type <ftoption>        FTProximity
@@ -538,8 +573,8 @@ namespace XQParser {
 %type <sequenceType>		SequenceType TypeDeclaration SingleType
 %type <occurrence>			OccurrenceIndicator
 %type <itemType>			ItemType 
-%type <variableBinding>		ForBinding LetBinding QuantifyBinding
-%type <variableBindingList> FlworExprForLetList ForOrLetClause ForClause LetClause ForBindingList LetBindingList QuantifyBindingList
+%type <variableBinding>		ForBinding LetBinding QuantifyBinding TransformBinding
+%type <variableBindingList> FlworExprForLetList ForOrLetClause ForClause LetClause ForBindingList LetBindingList QuantifyBindingList TransformBindingList
 %type <clause>				CaseClause
 %type <clauseList>			CaseClauseList
 %type <sortModifier>		OrderDirection EmptyHandling
@@ -549,6 +584,8 @@ namespace XQParser {
 %type <stringList>			ResourceLocations
 %type <str>					PositionalVar SchemaPrefix CommonContent URILiteral FTScoreVar
 %type <str>                 PreserveMode InheritMode
+
+%type <boolean> FunctionDeclUpdating
 
 %start Module
 
@@ -692,6 +729,7 @@ Setter:
 	| ConstructionDecl 
 	| OrderingModeDecl 
 	| EmptyOrderDecl 
+  | RevalidationDecl
 	| CopyNamespacesDecl 
 ;	
 
@@ -1121,58 +1159,68 @@ ConstructionDecl:
 	}
 	;
 
-// [27]    FunctionDecl    ::=    <"declare" "function"> <QName "("> ParamList? (")" |  (<")" "as"> SequenceType)) 
-//										(EnclosedExpr | "external")
+// [26]    FunctionDecl 	   ::=   "declare" "updating"? "function" QName "(" ParamList? ")" ("as" SequenceType)?
+//                    (EnclosedExpr | "external")
 FunctionDecl:
-	  _DECLARE_ _FUNCTION_ _FUNCTION_CALL_ ParamList _RPAR_ EnclosedExpr
+	  _DECLARE_ FunctionDeclUpdating _FUNCTION_ _FUNCTION_CALL_ ParamList _RPAR_ EnclosedExpr
 		{
       REJECT_NOT_XQUERY(FunctionDecl, @1);
 
-			$$ = WRAP(@1, new (MEMMGR) XQUserFunction($3,$4,WRAP(@6, $6),NULL, CONTEXT));
+			$$ = WRAP(@1, new (MEMMGR) XQUserFunction($4,$5,WRAP(@7, $7),NULL, $2, CONTEXT));
 		}
-	| _DECLARE_ _FUNCTION_ _FUNCTION_CALL_ _RPAR_ EnclosedExpr
+	| _DECLARE_ FunctionDeclUpdating _FUNCTION_ _FUNCTION_CALL_ _RPAR_ EnclosedExpr
 		{
       REJECT_NOT_XQUERY(FunctionDecl, @1);
 
-			$$ = WRAP(@1, new (MEMMGR) XQUserFunction($3,NULL,WRAP(@5, $5),NULL, CONTEXT));
+			$$ = WRAP(@1, new (MEMMGR) XQUserFunction($4,NULL,WRAP(@6, $6),NULL, $2, CONTEXT));
 		}
-	| _DECLARE_ _FUNCTION_ _FUNCTION_CALL_ ParamList _EXPR_AS_ SequenceType EnclosedExpr
+	| _DECLARE_ FunctionDeclUpdating _FUNCTION_ _FUNCTION_CALL_ ParamList _EXPR_AS_ SequenceType EnclosedExpr
 		{
       REJECT_NOT_XQUERY(FunctionDecl, @1);
 
-			$$ = WRAP(@1, new (MEMMGR) XQUserFunction($3,$4,WRAP(@7, $7),$6, CONTEXT));
+			$$ = WRAP(@1, new (MEMMGR) XQUserFunction($4,$5,WRAP(@8, $8),$7, $2, CONTEXT));
 		}
-	| _DECLARE_ _FUNCTION_ _FUNCTION_CALL_ _EXPR_AS_ SequenceType EnclosedExpr
+	| _DECLARE_ FunctionDeclUpdating _FUNCTION_ _FUNCTION_CALL_ _EXPR_AS_ SequenceType EnclosedExpr
 		{
       REJECT_NOT_XQUERY(FunctionDecl, @1);
 
-			$$ = WRAP(@1, new (MEMMGR) XQUserFunction($3,NULL,WRAP(@6, $6),$5, CONTEXT));
+			$$ = WRAP(@1, new (MEMMGR) XQUserFunction($4,NULL,WRAP(@7, $7),$6, $2, CONTEXT));
 		}
-	| _DECLARE_ _FUNCTION_ _FUNCTION_CALL_ ParamList _RPAR_ _EXTERNAL_
+	| _DECLARE_ FunctionDeclUpdating _FUNCTION_ _FUNCTION_CALL_ ParamList _RPAR_ _EXTERNAL_
 		{
       REJECT_NOT_XQUERY(FunctionDecl, @1);
 
-			$$ = WRAP(@1, new (MEMMGR) XQUserFunction($3,$4,NULL,NULL, CONTEXT));
+			$$ = WRAP(@1, new (MEMMGR) XQUserFunction($4,$5,NULL,NULL, $2, CONTEXT));
 		}
-	| _DECLARE_ _FUNCTION_ _FUNCTION_CALL_ _RPAR_ _EXTERNAL_
+	| _DECLARE_ FunctionDeclUpdating _FUNCTION_ _FUNCTION_CALL_ _RPAR_ _EXTERNAL_
 		{
       REJECT_NOT_XQUERY(FunctionDecl, @1);
 
-			$$ = WRAP(@1, new (MEMMGR) XQUserFunction($3,NULL,NULL,NULL, CONTEXT));
+			$$ = WRAP(@1, new (MEMMGR) XQUserFunction($4,NULL,NULL,NULL, $2, CONTEXT));
 		}
-	| _DECLARE_ _FUNCTION_ _FUNCTION_CALL_ ParamList _EXPR_AS_ SequenceType _EXTERNAL_
+	| _DECLARE_ FunctionDeclUpdating _FUNCTION_ _FUNCTION_CALL_ ParamList _EXPR_AS_ SequenceType _EXTERNAL_
 		{
       REJECT_NOT_XQUERY(FunctionDecl, @1);
 
-			$$ = WRAP(@1, new (MEMMGR) XQUserFunction($3,$4,NULL,$6, CONTEXT));
+			$$ = WRAP(@1, new (MEMMGR) XQUserFunction($4,$5,NULL,$7, $2, CONTEXT));
 		}
-	| _DECLARE_ _FUNCTION_ _FUNCTION_CALL_ _EXPR_AS_ SequenceType _EXTERNAL_
+	| _DECLARE_ FunctionDeclUpdating _FUNCTION_ _FUNCTION_CALL_ _EXPR_AS_ SequenceType _EXTERNAL_
 		{
       REJECT_NOT_XQUERY(FunctionDecl, @1);
 
-			$$ = WRAP(@1, new (MEMMGR) XQUserFunction($3,NULL,NULL,$5, CONTEXT));
+			$$ = WRAP(@1, new (MEMMGR) XQUserFunction($4,NULL,NULL,$6, $2, CONTEXT));
 		}
 	;
+
+FunctionDeclUpdating:
+    {
+      $$ = false;
+    }
+    | _UPDATING_
+    {
+      REJECT_NOT_UPDATE(FunctionDeclUpdating, @1);
+      $$ = true;
+    }
 
 // [28]    ParamList    ::=    Param ("," Param)* 
 ParamList:
@@ -1213,7 +1261,12 @@ EnclosedExpr:
 QueryBody:
 	Expr
 	{
+    if(QP->_lexer->isUpdate()) {
+	    QP->_query->setQueryBody(WRAP(@1, new (MEMMGR) UApplyUpdates($1, MEMMGR)));
+    }
+    else {
 	    QP->_query->setQueryBody($1);
+    }
 	}
 	;
 
@@ -1243,12 +1296,18 @@ Expr:
 		}
 	  ;
 
-// [33]     ExprSingle    ::=    FLWORExpr |  QuantifiedExpr |  TypeswitchExpr |  IfExpr |  OrExpr 
+// [32]    	ExprSingle    ::=    FLWORExpr | QuantifiedExpr | TypeswitchExpr | IfExpr | InsertExpr
+//                               | DeleteExpr | RenameExpr | ReplaceExpr | TransformExpr | OrExpr
 ExprSingle:
 		FLWORExpr
 	  | QuantifiedExpr
 	  | TypeswitchExpr
 	  | IfExpr
+	  | InsertExpr
+	  | DeleteExpr
+	  | RenameExpr
+	  | ReplaceExpr
+	  | TransformExpr
 	  | OrExpr
 	  ;
 
@@ -2370,12 +2429,7 @@ DirElemConstructor:
 		{ 
 			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 			$$ = WRAP(@1, new (MEMMGR) XQElementConstructor(
-								new (MEMMGR) XQLiteral(
-                    new (MEMMGR) AnyAtomicTypeConstructor(
-										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_QNAME,
-										$2, AnyAtomicType::QNAME),
-										MEMMGR), 
+								WRAP(@2, new (MEMMGR) XQDirectName($2, /*isAttr*/false, MEMMGR)),
 								$3, content, MEMMGR));
 		}
 	| _START_TAG_OPEN_ _TAG_NAME_ DirAttributeList _TAG_CLOSE_ DirElementContent _END_TAG_OPEN_ _TAG_NAME_ _TAG_CLOSE_
@@ -2407,12 +2461,7 @@ DirElemConstructor:
 				}
 			}
 			$$ = WRAP(@1, new (MEMMGR) XQElementConstructor(
-							  new (MEMMGR) XQLiteral(
-                    new (MEMMGR) AnyAtomicTypeConstructor(
-										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_QNAME,
-										$2, AnyAtomicType::QNAME),
-										MEMMGR), 
+							  WRAP(@2, new (MEMMGR) XQDirectName($2, /*isAttr*/false, MEMMGR)),
 							  $3, elemContent,MEMMGR));
 		}
 	;
@@ -2437,14 +2486,8 @@ DirAttributeList:
             }
             if($4->size()>0 && $4->back()==0)
                 $4->pop_back();
-            ASTNode* attrItem=WRAP(@2, new (MEMMGR) XQAttributeConstructor(
-                                            new (MEMMGR) XQLiteral(
-                                                new (MEMMGR) AnyAtomicTypeConstructor(
-                                                    XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-										            XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_QNAME,
-										            $2, AnyAtomicType::QNAME),
-                                                MEMMGR), 
-                                            $4,MEMMGR));
+            ASTNode* attrItem=WRAP(@2, new (MEMMGR)
+              XQAttributeConstructor(WRAP(@2, new (MEMMGR) XQDirectName($2, /*isAttr*/true, MEMMGR)), $4,MEMMGR));
             if(bInsertAtFront)
                 $$->insert($$->begin(), attrItem);
             else
@@ -2748,24 +2791,14 @@ CompElemConstructor:
 			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 			content->push_back(WRAP(@3, $3));
 			$$ = WRAP(@1, new (MEMMGR) XQElementConstructor(
-								  new (MEMMGR) XQLiteral(
-                    new (MEMMGR) AnyAtomicTypeConstructor(
-										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_QNAME,
-										$1, AnyAtomicType::QNAME),
-										MEMMGR), 
+								  WRAP(@1, new (MEMMGR) XQDirectName($1, /*isAttr*/false, MEMMGR)),
 								  empty, content,MEMMGR));
 		}
 	| _NAMED_ELEMENT_CONSTR_ _LBRACE_ _RBRACE_ 
 		{
 			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 			$$ = WRAP(@1, new (MEMMGR) XQElementConstructor(
-								  new (MEMMGR) XQLiteral(
-                    new (MEMMGR) AnyAtomicTypeConstructor(
-										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_QNAME,
-										$1, AnyAtomicType::QNAME),
-										MEMMGR), 
+								  WRAP(@1, new (MEMMGR) XQDirectName($1, /*isAttr*/false, MEMMGR)),
 								  empty, empty,MEMMGR));
 		}
 	| _ELEMENT_CONSTR_ _LBRACE_ Expr _RBRACE_ _LBRACE_ ContentExpr _RBRACE_ 
@@ -2798,24 +2831,14 @@ CompAttrConstructor:
 			VectorOfASTNodes* content=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 			content->push_back(WRAP(@3, $3));
 			$$ = WRAP(@1, new (MEMMGR) XQAttributeConstructor(
-								      new (MEMMGR) XQLiteral(
-                    new (MEMMGR) AnyAtomicTypeConstructor(
-										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_QNAME,
-										$1, AnyAtomicType::QNAME),
-										MEMMGR), 
+								      WRAP(@1, new (MEMMGR) XQDirectName($1, /*isAttr*/false, MEMMGR)),
 									  content,MEMMGR));
 		}
 	| _NAMED_ATTRIBUTE_CONSTR_ _LBRACE_ _RBRACE_ 
 		{
 			VectorOfASTNodes* empty=new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
 			$$ = WRAP(@1, new (MEMMGR) XQAttributeConstructor(
-								      new (MEMMGR) XQLiteral(
-                    new (MEMMGR) AnyAtomicTypeConstructor(
-										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-										XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_QNAME,
-										$1, AnyAtomicType::QNAME),
-										MEMMGR), 
+								      WRAP(@1, new (MEMMGR) XQDirectName($1, /*isAttr*/false, MEMMGR)),
 									  empty,MEMMGR));
 		}
 	| _ATTRIBUTE_CONSTR_ _LBRACE_ Expr _RBRACE_ _LBRACE_ Expr _RBRACE_ 
@@ -3684,6 +3707,139 @@ FTIgnoreOption:
     $$ = $2;
 	}
 	;
+
+// [141]    	RevalidationDecl 	   ::=    	"declare" "revalidation" ("strict" | "lax" | "skip")
+RevalidationDecl:
+  _DECLARE_ _REVALIDATION_ _MODE_STRICT_
+  {
+    REJECT_NOT_XQUERY(RevalidationDecl, @1);
+    REJECT_NOT_UPDATE(RevalidationDecl, @1);
+
+		if(QP->_flags.get(BIT_REVALIDATION_SPECIFIED))
+			yyerror(@1, "Prolog contains more than one revalidation declaration [err:TBD]");
+		QP->_flags.set(BIT_REVALIDATION_SPECIFIED);
+		CONTEXT->setRevalidationMode(DocumentCache::VALIDATION_STRICT);
+  }
+  | _DECLARE_ _REVALIDATION_ _MODE_LAX_
+  {
+    REJECT_NOT_XQUERY(RevalidationDecl, @1);
+    REJECT_NOT_UPDATE(RevalidationDecl, @1);
+
+		if(QP->_flags.get(BIT_REVALIDATION_SPECIFIED))
+			yyerror(@1, "Prolog contains more than one revalidation declaration [err:TBD]");
+		QP->_flags.set(BIT_REVALIDATION_SPECIFIED);
+		CONTEXT->setRevalidationMode(DocumentCache::VALIDATION_LAX);
+  }
+  | _DECLARE_ _REVALIDATION_ _MODE_SKIP_
+  {
+    REJECT_NOT_XQUERY(RevalidationDecl, @1);
+    REJECT_NOT_UPDATE(RevalidationDecl, @1);
+
+		if(QP->_flags.get(BIT_REVALIDATION_SPECIFIED))
+			yyerror(@1, "Prolog contains more than one revalidation declaration [err:TBD]");
+		QP->_flags.set(BIT_REVALIDATION_SPECIFIED);
+		CONTEXT->setRevalidationMode(DocumentCache::VALIDATION_SKIP);
+  }
+  ;
+
+// [142]    	InsertExpr 	   ::=    	"do" "insert" SourceExpr ((("as" ("first" | "last"))? "into")
+//                                                              | "after" | "before") TargetExpr
+// [146]    	SourceExpr 	   ::=    	ExprSingle
+// [147]    	TargetExpr 	   ::=    	ExprSingle
+InsertExpr:
+  _DO_ _INSERT_ ExprSingle _AS_ _FIRST_ _INTO_ ExprSingle
+  {
+    REJECT_NOT_UPDATE(InsertExpr, @1);
+    $$ = WRAP(@1, new (MEMMGR) UInsertAsFirst($3, $7, MEMMGR));
+  }
+  | _DO_ _INSERT_ ExprSingle _AS_ _LAST_ _INTO_ ExprSingle
+  {
+    REJECT_NOT_UPDATE(InsertExpr, @1);
+    $$ = WRAP(@1, new (MEMMGR) UInsertAsLast($3, $7, MEMMGR));
+  }
+  | _DO_ _INSERT_ ExprSingle _INTO_ ExprSingle
+  {
+    REJECT_NOT_UPDATE(InsertExpr, @1);
+    $$ = WRAP(@1, new (MEMMGR) UInsertInto($3, $5, MEMMGR));
+  }
+  | _DO_ _INSERT_ ExprSingle _AFTER_ ExprSingle
+  {
+    REJECT_NOT_UPDATE(InsertExpr, @1);
+    $$ = WRAP(@1, new (MEMMGR) UInsertAfter($3, $5, MEMMGR));
+  }
+  | _DO_ _INSERT_ ExprSingle _BEFORE_ ExprSingle
+  {
+    REJECT_NOT_UPDATE(InsertExpr, @1);
+    $$ = WRAP(@1, new (MEMMGR) UInsertBefore($3, $5, MEMMGR));
+  }
+  ;
+
+// [143]    	DeleteExpr 	   ::=    	"do" "delete" TargetExpr
+// [147]    	TargetExpr 	   ::=    	ExprSingle
+DeleteExpr:
+  _DO_ _DELETE_ ExprSingle
+  {
+    REJECT_NOT_UPDATE(DeleteExpr, @1);
+    $$ = WRAP(@1, new (MEMMGR) UDelete($3, MEMMGR));
+  }
+  ;
+
+// [144]    	ReplaceExpr 	   ::=    	"do" "replace" ("value" "of")? TargetExpr "with" ExprSingle
+// [147]    	TargetExpr 	   ::=    	ExprSingle
+ReplaceExpr:
+  _DO_ _REPLACE_ _VALUE_OF_ ExprSingle _WITH_ ExprSingle
+  {
+    REJECT_NOT_UPDATE(ReplaceExpr, @1);
+    $$ = WRAP(@1, new (MEMMGR) UReplaceValueOf($4, $6, MEMMGR));
+  }
+  | _DO_ _REPLACE_ ExprSingle _WITH_ ExprSingle
+  {
+    REJECT_NOT_UPDATE(ReplaceExpr, @1);
+    $$ = WRAP(@1, new (MEMMGR) UReplace($3, $5, MEMMGR));
+  }
+  ;
+
+// [145]    	RenameExpr 	   ::=    	"do" "rename" TargetExpr "as" NewNameExpr
+// [147]    	TargetExpr 	   ::=    	ExprSingle
+// [148]    	NewNameExpr 	   ::=    	ExprSingle
+RenameExpr:
+  _DO_ _RENAME_ ExprSingle _AS_ ExprSingle
+  {
+    REJECT_NOT_UPDATE(RenameExpr, @1);
+    $$ = WRAP(@1, new (MEMMGR) URename($3, $5, MEMMGR));
+  }
+  ;
+
+// [149]    	TransformExpr 	   ::=    	"transform" "copy" "$" VarName ":=" ExprSingle ("," "$" VarName ":=" ExprSingle)*
+//                                        "modify" ExprSingle "return" ExprSingle
+TransformExpr:
+  _TRANSFORM_COPY_ TransformBindingList _MODIFY_ ExprSingle _RETURN_ ExprSingle
+  {
+    REJECT_NOT_UPDATE(TransformExpr, @1);
+    $$ = FNWRAP(@1, szFLWOR, new (MEMMGR) UTransform($2, $4, $6, MEMMGR));
+  }
+  ;
+
+TransformBindingList:
+  TransformBindingList _COMMA_ TransformBinding
+  {
+    $1->push_back($3);
+    $$ = $1;
+  }
+  | TransformBinding
+  {
+    $$ = new (MEMMGR) VectorOfVariableBinding(XQillaAllocator<XQVariableBinding*>(MEMMGR));
+    $$->push_back($1);
+  }
+  ;
+
+TransformBinding:
+  _DOLLAR_SIGN_ _VARIABLE_ _COLON_EQ_ ExprSingle
+  {
+    $$ = WRAP(@1, new (MEMMGR) XQVariableBinding(MEMMGR, XQVariableBinding::letBinding,$2,$4));
+  }
+  ;
+
 
 // [174]   	IntegerLiteral	   ::=   	Digits
 IntegerLiteral:

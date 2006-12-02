@@ -23,6 +23,7 @@ class Item;
 class URIResolver;
 class VariableStore;
 class ItemFactory;
+class UpdateFactory;
 
 /// The execution time dynamic context interface
 class XQILLA_API DynamicContext : public StaticContext
@@ -93,8 +94,9 @@ public:
   /** returns the validated node */
   virtual Node::Ptr validate(const Node::Ptr &node, DocumentCache::ValidationMode valMode) = 0;
 
-  /** send a pair of strings to the "trace" data set */
-  virtual void trace(const XMLCh* message1, const XMLCh* message2) = 0;
+  /** Creates a new UpdateFactory, used for performing updates.
+      Caller owns the returned object, and should delete it */
+  virtual UpdateFactory *createUpdateFactory() const = 0;
 
   /** Set the object to be used for debugging callbacks */
   virtual void setDebugCallback(XQDebugCallback* callback) = 0;

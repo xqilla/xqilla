@@ -14,6 +14,7 @@
 #include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionTrace.hpp>
 #include <xqilla/context/DynamicContext.hpp>
+#include <xqilla/context/MessageListener.hpp>
 #include <xqilla/items/Item.hpp>
 #include <xqilla/ast/StaticResolutionContext.hpp>
 #include <xercesc/framework/XMLBuffer.hpp>
@@ -51,31 +52,14 @@ ASTNode *FunctionTrace::staticTyping(StaticContext *context)
 }
 
 Sequence FunctionTrace::collapseTreeInternal(DynamicContext* context, int flags) const
-{	
+{
   Sequence value = getParamNumber(1, context)->toSequence(context);
-  Sequence label = getParamNumber(2, context)->toSequence(context);
-  XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer valueStr(1023, context->getMemoryManager());
-  unsigned int len=value.getLength();
-  if(len>0)
-  {
-      if(len==1)
-          valueStr.set(value.first()->asString(context));
-      else
-      {
-          XMLCh szOpenParen[]={ XERCES_CPP_NAMESPACE_QUALIFIER chOpenParen, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
-          XMLCh szCloseParen[]={ XERCES_CPP_NAMESPACE_QUALIFIER chCloseParen, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
-          XMLCh szComma[]={ XERCES_CPP_NAMESPACE_QUALIFIER chComma, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
-          valueStr.set(szOpenParen);
-          Sequence::iterator end = value.end();
-          for(Sequence::iterator i = value.begin(); i != end;) {
-            valueStr.append((*i)->asString(context));
-            if(++i != end)
-              valueStr.append(szComma);
-          }
-          valueStr.append(szCloseParen);
-      }
+
+  if(context->getMessageListener() != 0) {
+    context->getMessageListener()->trace(getParamNumber(2, context)->next(context)->asString(context),
+                                         value, this, context);
   }
-  context->trace(label.first()->asString(context),valueStr.getRawBuffer());
+
   return value;
 }
 

@@ -71,6 +71,7 @@ typedef union {
   VectorOfFTOptions *ftoptionlist;
   FTRange ftrange;
   FTOption::FTUnit ftunit;
+  bool boolean;
 } yystype;
 #define YYSTYPE yystype
 #define YYSTYPE_IS_DECLARED 1

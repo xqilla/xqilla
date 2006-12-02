@@ -264,7 +264,24 @@
      _SENTENCE_ = 489,
      _PARAGRAPH_ = 490,
      _WITHOUT_CONTENT_ = 491,
-     _EOF_ = 492
+     _REPLACE_ = 492,
+     _MODIFY_ = 493,
+     _FIRST_ = 494,
+     _INSERT_ = 495,
+     _BEFORE_ = 496,
+     _AFTER_ = 497,
+     _TRANSFORM_COPY_ = 498,
+     _REVALIDATION_ = 499,
+     _WITH_ = 500,
+     _VALUE_OF_ = 501,
+     _DO_ = 502,
+     _RENAME_ = 503,
+     _MODE_SKIP_ = 504,
+     _LAST_ = 505,
+     _DELETE_ = 506,
+     _INTO_ = 507,
+     _UPDATING_ = 508,
+     _EOF_ = 509
    };
 #endif
 /* Tokens.  */
@@ -503,7 +520,24 @@
 #define _SENTENCE_ 489
 #define _PARAGRAPH_ 490
 #define _WITHOUT_CONTENT_ 491
-#define _EOF_ 492
+#define _REPLACE_ 492
+#define _MODIFY_ 493
+#define _FIRST_ 494
+#define _INSERT_ 495
+#define _BEFORE_ 496
+#define _AFTER_ 497
+#define _TRANSFORM_COPY_ 498
+#define _REVALIDATION_ 499
+#define _WITH_ 500
+#define _VALUE_OF_ 501
+#define _DO_ 502
+#define _RENAME_ 503
+#define _MODE_SKIP_ 504
+#define _LAST_ 505
+#define _DELETE_ 506
+#define _INTO_ 507
+#define _UPDATING_ 508
+#define _EOF_ 509
 
 
 
