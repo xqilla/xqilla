@@ -14,11 +14,13 @@
 #include "../config/xqilla_config.h"
 #include "FunctionLookupImpl.hpp"
 #include <xqilla/functions/FuncFactory.hpp>
+#include <xqilla/functions/ExternalFunction.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>
 
 FunctionLookupImpl::FunctionLookupImpl(XPath2MemoryManager* memMgr) :
   _uriPool(17, memMgr),
   _funcTable(197, false, memMgr),
+  _exFuncTable(7, false, memMgr),
   _memMgr(memMgr)
 {
     createTable();
@@ -74,6 +76,19 @@ ASTNode* FunctionLookupImpl::lookUpFunction(const XMLCh* URI, const XMLCh* fname
     if(pFactory)
         return pFactory->createInstance(args, memMgr);
     return NULL;
+}
+
+void FunctionLookupImpl::insertExternalFunction(const ExternalFunction *func)
+{
+  unsigned int secondaryKey = _uriPool.addOrFind(func->getURI()) | (func->getNumberOfArguments() << 16);
+  _exFuncTable.put((void*)func->getName(), secondaryKey, func);
+}
+
+const ExternalFunction *FunctionLookupImpl::lookUpExternalFunction(const XMLCh* URI, const XMLCh* fname, unsigned int numArgs) const
+{
+  if(!_uriPool.exists(URI)) return NULL;  
+  unsigned int secondaryKey = _uriPool.getId(URI) | (numArgs << 16);
+  return _exFuncTable.get((void*)fname, secondaryKey);
 }
 
 bool equalNsAndName1(const std::pair<const XMLCh*,const XMLCh*>& first, const std::pair<const XMLCh*,const XMLCh*>& second)

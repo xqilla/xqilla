@@ -59,7 +59,7 @@ public:
 
   void currentTimeUsed(bool value);
   void implicitTimezoneUsed(bool value);
-  bool areContextTimeUsed() const;
+
   void availableDocumentsUsed(bool value);
   void availableCollectionsUsed(bool value);
   bool areDocsOrCollectionsUsed() const;

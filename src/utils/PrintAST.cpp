@@ -116,9 +116,14 @@ string PrintAST::print(const XQQuery *query, const DynamicContext *context, int 
     name += "}:";
     name += UTF8(funName);
 
-    s << "  <FunctionDefinition name=\"" << name << "\">" << endl;
-    s << p.printASTNode(f->getFunctionBody(), context, 2);
-    s << "  </FunctionDefinition>" << endl;
+    s << "  <FunctionDefinition name=\"" << name << "\"";
+    if(f->getFunctionBody() == NULL) {
+      s << "/>" << endl;
+    } else {
+      s <<">" << endl;
+      s << p.printASTNode(f->getFunctionBody(), context, 2);
+      s << "  </FunctionDefinition>" << endl;
+    }
   }
   for(vector<XQGlobalVariable*, XQillaAllocator<XQGlobalVariable*> >::const_iterator it = query->getVariables().begin();
       it != query->getVariables().end(); ++it) {
@@ -570,9 +575,10 @@ string PrintAST::printUserFunction(const XQUserFunction::XQFunctionEvaluator *it
   name += UTF8(funName);
 
   const VectorOfASTNodes &args = item->getArguments();
-  s << in << "<UserFunction name=\"" << name << "\">" << endl;
+  s << in << "<UserFunction name=\"" << name << "\"";
 
-  if(item->getFunctionDefinition()->getParams()) {
+  if(item->getFunctionDefinition()->getParams() && !item->getFunctionDefinition()->getParams()->empty()) {
+    s << ">" << endl;
     XQUserFunction::VectorOfFunctionParameters::const_iterator binding = item->getFunctionDefinition()->getParams()->begin();
     for(VectorOfASTNodes::const_iterator arg = args.begin(); arg != args.end() && binding != item->getFunctionDefinition()->getParams()->end(); ++arg, ++binding) {
       if((*binding)->_qname) {
@@ -581,14 +587,13 @@ string PrintAST::printUserFunction(const XQUserFunction::XQFunctionEvaluator *it
         s << in << "  </Binding>" << endl;
       }
     }
-  }
 
-  // We don't output the body, as it may result in an infinite loop
-  // for recursive user functions - jpcs
-//   s << in << "  <Body>" << endl;
-//   s << printASTNode(item->getFunctionDefinition()->getFunctionBody(), context, indent + INDENT + INDENT);
-//   s << in << "  </Body>" << endl;
-  s << in << "</UserFunction>" << endl;
+    // We don't output the body, as it may result in an infinite loop
+    // for recursive user functions - jpcs
+    s << in << "</UserFunction>" << endl;
+  } else {
+    s << "/>" << endl;
+  }
 
   return s.str();
 }

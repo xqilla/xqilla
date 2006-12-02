@@ -36,6 +36,9 @@ public:
   ///returns the approriate Function object
   virtual ASTNode* lookUpFunction(const XMLCh* URI, const XMLCh* fname, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr) const;
 
+  virtual void insertExternalFunction(const ExternalFunction *func);
+  virtual const ExternalFunction *lookUpExternalFunction(const XMLCh* URI, const XMLCh* fname, unsigned int numArgs) const;
+
   /// returns all the defined functions
   virtual std::vector< std::pair<const XMLCh*,const XMLCh*> > getFunctions() const;
   virtual std::vector< FuncFactory* > getFunctionFactories() const;
@@ -47,6 +50,7 @@ protected:
 private:
   XERCES_CPP_NAMESPACE_QUALIFIER XMLStringPool _uriPool;
   XERCES_CPP_NAMESPACE_QUALIFIER RefHash2KeysTableOf< FuncFactory > _funcTable;
+  XERCES_CPP_NAMESPACE_QUALIFIER RefHash2KeysTableOf< const ExternalFunction > _exFuncTable;
   XPath2MemoryManager* _memMgr;
 };
 

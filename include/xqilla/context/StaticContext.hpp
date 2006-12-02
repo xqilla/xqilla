@@ -32,6 +32,7 @@ class VariableTypeStore;
 class ItemFactory;
 class StaticType;
 class ModuleResolver;
+class ExternalFunction;
 
 XERCES_CPP_NAMESPACE_BEGIN
 class DOMDocument;
@@ -141,9 +142,14 @@ public:
 
   /** adds a custom function to the function table */
   virtual void addCustomFunction(FuncFactory *func) = 0;
-	/** returns a function with name name in the namespace represented by prefix */
+  /** returns a function with name in the namespace represented by prefix */
   virtual ASTNode* lookUpFunction(const XMLCh* prefix, const XMLCh* name, VectorOfASTNodes& v,
                                   const LocationInfo *location) const = 0;
+
+  /** adds an external function implementation to the function table */
+  virtual void addExternalFunction(const ExternalFunction *func) = 0;
+  /** returns an external function implementation for the given uri and localname */
+  virtual const ExternalFunction *lookUpExternalFunction(const XMLCh *uri, const XMLCh *name, unsigned int numArgs) const = 0;
 
   /** Get the implementation for the specified collation */
   virtual Collation* getCollation(const XMLCh* const URI, const LocationInfo *location) const = 0;
