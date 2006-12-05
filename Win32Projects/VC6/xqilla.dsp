@@ -1325,10 +1325,6 @@ SOURCE=..\..\src\functions\FunctionLookupImpl.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\functions\FunctionLookupImpl.hpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\functions\FunctionLowerCase.cpp
 # End Source File
 # Begin Source File
@@ -1786,6 +1782,10 @@ SOURCE=..\..\include\xqilla\functions\FunctionLocalname.hpp
 # Begin Source File
 
 SOURCE=..\..\include\xqilla\functions\FunctionLookup.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\functions\FunctionLookupImpl.hpp
 # End Source File
 # Begin Source File
 
