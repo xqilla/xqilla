@@ -128,6 +128,7 @@ xqilla/exceptions/XQException.hpp \
 xqilla/exceptions/QueryInterruptedException.hpp \
 xqilla/exceptions/QueryTimeoutException.hpp \
 xqilla/functions/FunctionLookup.hpp \
+xqilla/functions/FunctionLookupImpl.hpp \
 xqilla/functions/FunctionAbs.hpp \
 xqilla/functions/FunctionAdjustDateTimeToTimezone.hpp \
 xqilla/functions/FunctionAdjustDateToTimezone.hpp \

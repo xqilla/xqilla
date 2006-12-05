@@ -55,7 +55,7 @@
 #include <xqilla/items/DatatypeLookup.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/items/impl/NodeImpl.hpp>
-#include "../functions/FunctionLookupImpl.hpp"
+#include <xqilla/functions/FunctionLookupImpl.hpp>
 #include <xqilla/functions/FunctionLookup.hpp>
 #include <xqilla/functions/FunctionConstructor.hpp>
 #include <xqilla/functions/XQUserFunction.hpp>

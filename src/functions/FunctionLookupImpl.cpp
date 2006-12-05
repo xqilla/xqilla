@@ -12,7 +12,7 @@
  */
 
 #include "../config/xqilla_config.h"
-#include "FunctionLookupImpl.hpp"
+#include <xqilla/functions/FunctionLookupImpl.hpp>
 #include <xqilla/functions/FuncFactory.hpp>
 #include <xqilla/functions/ExternalFunction.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>

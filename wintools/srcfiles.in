@@ -197,7 +197,6 @@ src/functions/FunctionLast.cpp	lib
 src/functions/FunctionLocalNameFromQName.cpp	lib
 src/functions/FunctionLocalname.cpp	lib
 src/functions/FunctionLookupImpl.cpp	lib
-src/functions/FunctionLookupImpl.hpp	lib
 src/functions/FunctionLowerCase.cpp	lib
 src/functions/FunctionMatches.cpp	lib
 src/functions/FunctionMax.cpp	lib
@@ -588,6 +587,7 @@ include/xqilla/functions/FunctionLast.hpp	lib
 include/xqilla/functions/FunctionLocalNameFromQName.hpp	lib
 include/xqilla/functions/FunctionLocalname.hpp	lib
 include/xqilla/functions/FunctionLookup.hpp	lib
+include/xqilla/functions/FunctionLookupImpl.hpp	lib
 include/xqilla/functions/FunctionLowerCase.hpp	lib
 include/xqilla/functions/FunctionMatches.hpp	lib
 include/xqilla/functions/FunctionMax.hpp	lib
