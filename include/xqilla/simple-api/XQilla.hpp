@@ -92,13 +92,13 @@ public:
    *
    * @exception XQException If a parse error occurs.
    */
-  XQQuery* parse(const XMLCh* query,
-                 Language language = XQUERY,
-                 DynamicContext* context = 0,
-                 const XMLCh* queryFile = NULL,
-                 unsigned int flags = 0,
-                 XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr =
-                 XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager);
+  static XQQuery* parse(const XMLCh* query,
+                        Language language = XQUERY,
+                        DynamicContext* context = 0,
+                        const XMLCh* queryFile = NULL,
+                        unsigned int flags = 0,
+                        XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr =
+                        XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager);
 
   /**
    * Parse the expression from the given InputSource.
@@ -115,12 +115,12 @@ public:
    *
    * @exception XQException If a parse error occurs.
    */
-  XQQuery* parse(const XERCES_CPP_NAMESPACE_QUALIFIER InputSource& querySrc,
-                 Language language = XQUERY,
-                 DynamicContext* context = 0,
-                 unsigned int flags = 0,
-                 XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr =
-                 XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager);
+  static XQQuery* parse(const XERCES_CPP_NAMESPACE_QUALIFIER InputSource& querySrc,
+                        Language language = XQUERY,
+                        DynamicContext* context = 0,
+                        unsigned int flags = 0,
+                        XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr =
+                        XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager);
 
   /**
    * Parse the expression residing at the given URL.
@@ -137,12 +137,12 @@ public:
    *
    * @exception XQException If a parse error occurs.
    */
-  XQQuery* parseFromURI(const XMLCh* queryFile,
-                        Language language = XQUERY,
-                        DynamicContext* context = 0,
-                        unsigned int flags = 0,
-                        XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr =
-                        XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager);
+  static XQQuery* parseFromURI(const XMLCh* queryFile,
+                               Language language = XQUERY,
+                               DynamicContext* context = 0,
+                               unsigned int flags = 0,
+                               XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr =
+                               XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager);
 
   //@}
 
@@ -154,9 +154,9 @@ public:
    * @param memMgr The memory manager used to create the DynamicContext.
    * @return An implementation of DynamicContext
    */
-  DynamicContext *createContext(Language language = XQUERY,
-                                XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr =
-                                XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager);
+  static DynamicContext *createContext(Language language = XQUERY,
+                                       XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr =
+                                       XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager);
 
   //@}
 
