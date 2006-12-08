@@ -421,15 +421,13 @@ void XQQuery::importModule(const XMLCh* szUri, VectorOfStrings* locations, Stati
     }
     Janitor<InputSource> janIS(srcToUse);
 
-    XQilla xqilla;
-
     DynamicContext* moduleCtx = context->createModuleContext();
     moduleCtx->setBaseURI(srcToUse->getSystemId());
     LoopDetector loopDetector(context->getXMLEntityResolver(), szUri);
     moduleCtx->setXMLEntityResolver(&loopDetector);
     moduleCtx->setModuleResolver(context->getModuleResolver());
 
-    XQQuery* pParsedQuery = xqilla.parse(*srcToUse, XQilla::XQUERY, moduleCtx);
+    XQQuery* pParsedQuery = XQilla::parse(*srcToUse, XQilla::XQUERY, moduleCtx);
 
     if(!pParsedQuery->getIsLibraryModule()) {
       XMLBuffer buf(1023,context->getMemoryManager());

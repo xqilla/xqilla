@@ -92,14 +92,6 @@ XQillaGrammarResolver::XQillaGrammarResolver(
                                 dvdt->getDatatypeValidator(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DURATION),
                                 facets, 0, false, 0, true, manager);
 
-  // xdt:anyAtomicType -- no facets.  We need to put this validator in the xerces memory manager, and put it in the registry ourselves
-  XERCES_CPP_NAMESPACE_QUALIFIER DVHashTable *defRegistry = dvdt->getBuiltInRegistry();
-  if(!defRegistry->containsKey((void*) AnyAtomicType::fgDT_ANYATOMICTYPE)) {
-    XERCES_CPP_NAMESPACE_QUALIFIER DatatypeValidator* dv = new (XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager) AnyAtomicTypeDatatypeValidator();
-    dv->setTypeName(AnyAtomicType::fgDT_ANYATOMICTYPE_XERCESHASH);
-    defRegistry->put((void*) AnyAtomicType::fgDT_ANYATOMICTYPE_XERCESHASH, dv);
-  }
-    
   // xdt:untypedAtomic -- no facets
   dvdt->createDatatypeValidator(ATUntypedAtomic::fgDT_UNTYPEDATOMIC, 
                                 dvdt->getDatatypeValidator(AnyAtomicType::fgDT_ANYATOMICTYPE_XERCESHASH),

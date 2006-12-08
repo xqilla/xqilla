@@ -12,19 +12,21 @@
  */
 
 #include "../config/xqilla_config.h"
-#include <xercesc/dom/DOMImplementationRegistry.hpp>
-#include <xercesc/util/PlatformUtils.hpp>
 
 #include <xqilla/framework/XPath2MemoryManagerImpl.hpp>
-
 #include <xqilla/utils/XQillaPlatformUtils.hpp>
-#include "../dom-api/XQillaImplementation.hpp"
 #include <xqilla/items/impl/ATDecimalOrDerivedImpl.hpp>
 #include <xqilla/items/impl/ATDoubleOrDerivedImpl.hpp>
 #include <xqilla/items/impl/ATFloatOrDerivedImpl.hpp>
-
+#include <xqilla/schema/AnyAtomicTypeDatatypeValidator.hpp>
 #include <xqilla/mapm/m_apm.h>
+
+#include "../dom-api/XQillaImplementation.hpp"
 #include "DateUtils.hpp"
+
+#include <xercesc/dom/DOMImplementationRegistry.hpp>
+#include <xercesc/util/PlatformUtils.hpp>
+#include <xercesc/validators/datatype/DatatypeValidatorFactory.hpp>
 
 XERCES_CPP_NAMESPACE_USE;
 
@@ -34,10 +36,16 @@ void XQillaPlatformUtils::initialize(MemoryManager *memMgr) {
   //  Make sure we haven't already been initialized. Note that this is not
   //  thread safe and is not intended for that.
   if(gInitFlag++ == 0) {
-    XMLPlatformUtils::Initialize(XMLUni::fgXercescDefaultLocale, 0, 0, memMgr);
+    XMLPlatformUtils::Initialize(XMLUni::fgXercescDefaultLocale, 0, 0, memMgr, /*toInitStatics*/true);
     XQillaImplementation::initialize();
     m_apm_mt_initialize();
     DateUtils::initialize();
+
+    // Expand the Xerces Built-in registry to include xs:anyAtomicType
+    DatatypeValidator* dv = new AnyAtomicTypeDatatypeValidator();
+    dv->setTypeName(AnyAtomicType::fgDT_ANYATOMICTYPE_XERCESHASH);
+    DatatypeValidatorFactory::getBuiltInRegistry()->
+      put((void*) AnyAtomicType::fgDT_ANYATOMICTYPE_XERCESHASH, dv);
   }
 }
 
