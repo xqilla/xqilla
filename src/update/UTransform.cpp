@@ -175,7 +175,7 @@ public:
   nodecompare(const DynamicContext *context)
     : context_(context) {}
 
-  bool operator()(const Node::Ptr &first, const Node::Ptr &second)
+  bool operator()(const Node::Ptr &first, const Node::Ptr &second) const
   {
     return first->uniqueLessThan(second, context_);
   }
