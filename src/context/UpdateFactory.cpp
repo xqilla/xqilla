@@ -92,7 +92,7 @@ void UpdateFactory::applyUpdates(const PendingUpdateList &pul, DynamicContext *c
       case PendingUpdate::PUT:
       case PendingUpdate::INSERT_INTO:
       case PendingUpdate::INSERT_ATTRIBUTES:
-      case PendingUpdate::DELETE:
+      case PendingUpdate::PUDELETE:
       case PendingUpdate::INSERT_BEFORE:
       case PendingUpdate::INSERT_AFTER:
       case PendingUpdate::INSERT_INTO_AS_FIRST:
@@ -112,7 +112,7 @@ void UpdateFactory::applyUpdates(const PendingUpdateList &pul, DynamicContext *c
     case PendingUpdate::INSERT_ATTRIBUTES:
     case PendingUpdate::REPLACE_VALUE:
     case PendingUpdate::RENAME:
-    case PendingUpdate::DELETE:
+    case PendingUpdate::PUDELETE:
     case PendingUpdate::REPLACE_ELEMENT_CONTENT:
     case PendingUpdate::REPLACE_ATTRIBUTE:
     case PendingUpdate::REPLACE_NODE:
@@ -140,7 +140,7 @@ void UpdateFactory::applyUpdates(const PendingUpdateList &pul, DynamicContext *c
     case PendingUpdate::RENAME:
       applyRename(*i, context);
       break;
-    case PendingUpdate::DELETE:
+    case PendingUpdate::PUDELETE:
       applyDelete(*i, context);
       break;
     case PendingUpdate::PUT:
@@ -176,7 +176,7 @@ void UpdateFactory::applyUpdates(const PendingUpdateList &pul, DynamicContext *c
     case PendingUpdate::INSERT_ATTRIBUTES:
     case PendingUpdate::REPLACE_VALUE:
     case PendingUpdate::RENAME:
-    case PendingUpdate::DELETE:
+    case PendingUpdate::PUDELETE:
     case PendingUpdate::REPLACE_ELEMENT_CONTENT:
     case PendingUpdate::REPLACE_ATTRIBUTE:
     case PendingUpdate::REPLACE_NODE:
@@ -203,7 +203,7 @@ void UpdateFactory::applyUpdates(const PendingUpdateList &pul, DynamicContext *c
     case PendingUpdate::INSERT_ATTRIBUTES:
     case PendingUpdate::REPLACE_VALUE:
     case PendingUpdate::RENAME:
-    case PendingUpdate::DELETE:
+    case PendingUpdate::PUDELETE:
     case PendingUpdate::REPLACE_ELEMENT_CONTENT:
       break;
     }
@@ -227,7 +227,7 @@ void UpdateFactory::applyUpdates(const PendingUpdateList &pul, DynamicContext *c
     case PendingUpdate::INSERT_ATTRIBUTES:
     case PendingUpdate::REPLACE_VALUE:
     case PendingUpdate::RENAME:
-    case PendingUpdate::DELETE:
+    case PendingUpdate::PUDELETE:
       break;
     }
   }
