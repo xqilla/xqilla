@@ -2936,6 +2936,114 @@ SOURCE=..\..\include\xqilla\simple-api\XQQuery.hpp
 SOURCE=..\..\include\xqilla\simple-api\XQilla.hpp
 # End Source File
 # End Group
+# Begin Group "update"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\src\update\FunctionPut.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\update\PendingUpdateList.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\update\UApplyUpdates.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\update\UDelete.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\update\URename.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\update\UReplace.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\update\UReplaceValueOf.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\update\UInsertAsFirst.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\update\UInsertAsLast.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\update\UInsertInto.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\update\UInsertAfter.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\update\UInsertBefore.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\update\UTransform.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\update\FunctionPut.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\update\PendingUpdateList.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\update\UApplyUpdates.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\update\UDelete.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\update\URename.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\update\UReplace.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\update\UReplaceValueOf.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\update\UInsertAsFirst.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\update\UInsertAsLast.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\update\UInsertInto.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\update\UInsertAfter.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\update\UInsertBefore.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\update\UTransform.hpp
+# End Source File
+# End Group
 # Begin Group "utils"
 
 # PROP Default_Filter ""
