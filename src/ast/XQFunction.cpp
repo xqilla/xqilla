@@ -68,7 +68,7 @@ const XMLCh XQFunction::XMLChFunctionURI[] =
     XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n,       XERCES_CPP_NAMESPACE_QUALIFIER chLatin_s,       XERCES_CPP_NAMESPACE_QUALIFIER chNull
 };
 
-const unsigned int XQFunction::UNLIMITED = 51; // A reasonably large number
+const unsigned int XQFunction::UNLIMITED = 10000; // A reasonably large number
 
 XQFunction::XQFunction(const XMLCh* name, unsigned int argsFrom, unsigned int argsTo, const char* paramDecl, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ASTNodeImpl(memMgr),
