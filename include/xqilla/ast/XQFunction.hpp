@@ -57,12 +57,12 @@ protected:
   static const unsigned int UNLIMITED;
 
   //parse the supplied string of comma separated arguments into vector of SequenceTypes
-  static std::vector< SequenceType* >* parseParamDecl(const char* paramString);
+  void parseParamDecl(const char* paramString, XPath2MemoryManager *mm);
 
   const XMLCh *_fName, *_fURI, *_signature;
   const unsigned int _nArgsFrom, _nArgsTo;
 
-  const std::vector<SequenceType*>* _paramDecl;
+  std::vector<SequenceType*, XQillaAllocator<SequenceType*> > _paramDecl;
 
   VectorOfASTNodes _args; // The real store for arguments 
 

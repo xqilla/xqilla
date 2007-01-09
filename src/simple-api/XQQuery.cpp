@@ -427,7 +427,7 @@ void XQQuery::importModule(const XMLCh* szUri, VectorOfStrings* locations, Stati
     moduleCtx->setXMLEntityResolver(&loopDetector);
     moduleCtx->setModuleResolver(context->getModuleResolver());
 
-    XQQuery* pParsedQuery = XQilla::parse(*srcToUse, XQilla::XQUERY, moduleCtx);
+    XQQuery* pParsedQuery = XQilla::parse(*srcToUse, moduleCtx);
 
     if(!pParsedQuery->getIsLibraryModule()) {
       XMLBuffer buf(1023,context->getMemoryManager());

@@ -15,6 +15,7 @@
 #define _STATICCONTEXT_HPP
 
 #include <xqilla/framework/XQillaExport.hpp>
+#include <xqilla/simple-api/XQilla.hpp>
 #include <time.h>
 #include <xqilla/schema/DocumentCache.hpp>
 #include <xercesc/util/PlatformUtils.hpp>
@@ -66,6 +67,10 @@ public:
                                               XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager) const = 0;
   virtual DynamicContext *createDynamicContext(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr =
                                                XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager) const = 0;
+
+  /** Returns the lanuage that this context is for. This value cannot be set, since it is used
+      to correctly construct the StaticContext */
+  virtual XQilla::Language getLanguage() const = 0;
   
   /** Returns the ItemFactory for this context, which is used to create XQilla items and other objects. */
   virtual ItemFactory *getItemFactory() const = 0;

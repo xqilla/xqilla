@@ -47,7 +47,7 @@ XQillaExpressionImpl::XQillaExpressionImpl(const XMLCh *expression,
 {
   _staticContext = new (_createdWith) XQContextImpl(XQilla::XPATH2, _createdWith, xmlGP);
   if(nsr != 0) _staticContext->setNSResolver(nsr);
-  _compiledExpression = XQilla::parse(expression, XQilla::XPATH2, _staticContext, NULL, XQilla::NO_ADOPT_CONTEXT,
+  _compiledExpression = XQilla::parse(expression, _staticContext, NULL, XQilla::NO_ADOPT_CONTEXT,
 	  _createdWith);
 }
 

@@ -50,6 +50,8 @@ public:
   virtual DynamicContext *createDynamicContext(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr =
                                                XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager) const;
 
+  virtual XQilla::Language getLanguage() const;
+
   //////////////////////////////////////
   // XQuery Static Context Accessors  //
   //////////////////////////////////////

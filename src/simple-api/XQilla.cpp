@@ -47,20 +47,20 @@ XQilla::~XQilla()
   XQillaPlatformUtils::terminate();
 }
 
-XQQuery* XQilla::parse(const XMLCh* inputQuery, Language language, DynamicContext* context,
+XQQuery* XQilla::parse(const XMLCh* inputQuery, DynamicContext* context,
                        const XMLCh* queryFile, unsigned int flags,
                        MemoryManager *memMgr)
 {
   bool contextOwned = (flags & NO_ADOPT_CONTEXT) == 0;
   if(context == 0) {
     contextOwned = true;
-    context = createContext(language);
+    context = createContext(XQilla::XQUERY, memMgr);
   }
 
   Janitor<XQQuery> query(new (memMgr) XQQuery(inputQuery, context, contextOwned, memMgr));
 
   try {
-    XQLexer lexer(context->getMemoryManager(), queryFile, inputQuery, language);
+    XQLexer lexer(context->getMemoryManager(), queryFile, inputQuery, context->getLanguage());
 
     XQParserArgs args;
     args._context=context;
@@ -85,7 +85,7 @@ XQQuery* XQilla::parse(const XMLCh* inputQuery, Language language, DynamicContex
   return query.release();
 }
 
-XQQuery* XQilla::parse(const InputSource& querySrc, Language language, DynamicContext* context,
+XQQuery* XQilla::parse(const InputSource& querySrc, DynamicContext* context,
                        unsigned int flags, MemoryManager *memMgr)
 {
   XMLBuffer moduleText;
@@ -105,10 +105,10 @@ XQQuery* XQilla::parse(const InputSource& querySrc, Language language, DynamicCo
     XQThrow2(ContextException,X("XQilla::parse"), buf.getRawBuffer());
   }
 
-  return parse(moduleText.getRawBuffer(), language, context, querySrc.getSystemId(), flags, memMgr);
+  return parse(moduleText.getRawBuffer(), context, querySrc.getSystemId(), flags, memMgr);
 }
 
-XQQuery* XQilla::parseFromURI(const XMLCh* queryFile, Language language, DynamicContext* context,
+XQQuery* XQilla::parseFromURI(const XMLCh* queryFile, DynamicContext* context,
                               unsigned int flags, MemoryManager *memMgr)
 {
   XMLBuffer moduleText;
@@ -128,7 +128,7 @@ XQQuery* XQilla::parseFromURI(const XMLCh* queryFile, Language language, Dynamic
     XQThrow2(ContextException,X("XQilla::parseFromURI"), buf.getRawBuffer());
   }
 
-  return parse(moduleText.getRawBuffer(), language, context, queryFile, flags, memMgr);
+  return parse(moduleText.getRawBuffer(), context, queryFile, flags, memMgr);
 }
 
 DynamicContext *XQilla::createContext(Language language, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr)

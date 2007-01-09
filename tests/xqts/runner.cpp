@@ -301,11 +301,11 @@ void XQillaTestSuiteRunner::runTestCase(const TestCase &testCase)
     context->setModuleResolver(this);
     context->registerURIResolver(this);
 
-    Janitor<XQQuery> pParsedQuery(xqilla.parseFromURI(X(testCase.queryURL.c_str()), XQilla::XQUERY, context.get(), XQilla::NO_ADOPT_CONTEXT));
+    Janitor<XQQuery> pParsedQuery(xqilla.parseFromURI(X(testCase.queryURL.c_str()), context.get(), XQilla::NO_ADOPT_CONTEXT));
 
     map<string, string>::const_iterator v;
     for(v=testCase.extraVars.begin();v!=testCase.extraVars.end();v++) {
-      XQQuery* pInnerQuery = xqilla.parseFromURI(X(v->second.c_str()), XQilla::XQUERY, context.get());
+      XQQuery* pInnerQuery = xqilla.parseFromURI(X(v->second.c_str()), context.get());
       Sequence doc=pInnerQuery->execute(context.get())->toSequence(context.get());
       context->getVariableStore()->setGlobalVar(X(v->first.c_str()),doc,context.get(), 0);
     }
