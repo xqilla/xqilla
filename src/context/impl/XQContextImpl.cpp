@@ -208,6 +208,11 @@ DynamicContext *XQContextImpl::createDynamicContext(XERCES_CPP_NAMESPACE_QUALIFI
   return new (memMgr) XQDynamicContextImpl(this, memMgr);
 }
 
+XQilla::Language XQContextImpl::getLanguage() const
+{
+  return _language;
+}
+
 void XQContextImpl::setMemoryManager(XPath2MemoryManager* memMgr)
 {
   _memMgr = memMgr;

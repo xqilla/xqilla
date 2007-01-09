@@ -34,6 +34,8 @@ public:
   virtual DynamicContext *createDynamicContext(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr
                                                = XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager) const;
 
+  virtual XQilla::Language getLanguage() const;
+
   //////////////////////////////////////
   // XQuery Static Context Accessors  //
   //////////////////////////////////////
@@ -426,6 +428,7 @@ inline bool XQDynamicContextImpl::getPreserveBoundarySpace() const { XQThrow2(Co
 inline DocumentCache::ValidationMode XQDynamicContextImpl::getRevalidationMode() const { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("The static context is not available from a proxying dynamic context")); }
 
 
+inline XQilla::Language XQDynamicContextImpl::getLanguage() const { return _staticContext->getLanguage(); }
 inline const XMLCh* XQDynamicContextImpl::getBaseURI() const { return _staticContext->getBaseURI(); }
 inline Collation* XQDynamicContextImpl::getCollation(const XMLCh* URI, const LocationInfo *location) const { return _staticContext->getCollation(URI, location); }
 inline bool XQDynamicContextImpl::isTypeOrDerivedFromType(const XMLCh* uri, const XMLCh* typeName, const XMLCh* uriToCheck, const XMLCh* typeNameToCheck) const { return _staticContext->isTypeOrDerivedFromType(uri, typeName, uriToCheck, typeNameToCheck); }

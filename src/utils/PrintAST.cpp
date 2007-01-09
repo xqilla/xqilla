@@ -105,15 +105,24 @@ string PrintAST::print(const XQQuery *query, const DynamicContext *context, int 
 {
   ostringstream s;
 
-  s << getIndent(indent) << "<XQuery";
+	string in(getIndent(indent));
+
   if(query->getIsLibraryModule()) {
-    s << " module=\"true\"";
+    s << in << "<Module";
+  }
+  else {
+    s << in << "<XQuery";
   }
   if(query->getModuleTargetNamespace()) {
     s << " targetNamespace=\"" << UTF8(query->getModuleTargetNamespace()) << "\"";
   }
   s << ">" << endl;
-  indent += INDENT;
+
+  const ImportedModules &modules = query->getImportedModules();
+  for(ImportedModules::const_iterator it = modules.begin();
+      it != modules.end(); ++it) {
+    s << print(*it, context, indent + INDENT);
+  }
 
   PrintAST p;
 
@@ -129,23 +138,29 @@ string PrintAST::print(const XQQuery *query, const DynamicContext *context, int 
     name += "}:";
     name += UTF8(funName);
 
-    s << "  <FunctionDefinition name=\"" << name << "\"";
+    s << in << "  <FunctionDefinition name=\"" << name << "\"";
     if(f->getFunctionBody() == NULL) {
       s << "/>" << endl;
     } else {
       s <<">" << endl;
-      s << p.printASTNode(f->getFunctionBody(), context, 2);
-      s << "  </FunctionDefinition>" << endl;
+      s << p.printASTNode(f->getFunctionBody(), context, indent + INDENT + INDENT);
+      s << in << "  </FunctionDefinition>" << endl;
     }
   }
   for(vector<XQGlobalVariable*, XQillaAllocator<XQGlobalVariable*> >::const_iterator it = query->getVariables().begin();
       it != query->getVariables().end(); ++it) {
-    s << p.printGlobal(*it, context, indent);
+    s << p.printGlobal(*it, context, indent + INDENT);
   }
-  s << p.printASTNode(query->getQueryBody(), context, indent);
 
-  indent -= INDENT;
-  s << getIndent(indent) << "</XQuery>" << endl;
+  if(query->getQueryBody() != 0)
+    s << p.printASTNode(query->getQueryBody(), context, indent + INDENT);
+
+  if(query->getIsLibraryModule()) {
+    s << in << "</Module>";
+  }
+  else {
+    s << in << "</XQuery>";
+  }
 
   return s.str();
 }

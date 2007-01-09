@@ -33,50 +33,40 @@
 
 #include <assert.h>
 
-class SequenceTypeTable : public std::map< std::string, std::vector< SequenceType* >* >
-{
-public:
-	~SequenceTypeTable()
-	{
-		for(iterator it=begin();it!=end();it++)
-		{
-			std::vector< SequenceType* >* vec=it->second;
-			for(std::vector< SequenceType* >::iterator it2=vec->begin();it2!=vec->end();it2++)
-				delete (*it2);
-			delete vec;
-		}
-	}
-};
-
-static SequenceTypeTable g_SequenceTypeCache;
+#if defined(XERCES_HAS_CPP_NAMESPACE)
+XERCES_CPP_NAMESPACE_USE
+#endif
 
 /* http://www.w3.org/2005/xpath-functions */
 const XMLCh XQFunction::XMLChFunctionURI[] =
 {
-    XERCES_CPP_NAMESPACE_QUALIFIER chLatin_h,       XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t,       XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t, 
-    XERCES_CPP_NAMESPACE_QUALIFIER chLatin_p,       XERCES_CPP_NAMESPACE_QUALIFIER chColon,         XERCES_CPP_NAMESPACE_QUALIFIER chForwardSlash, 
-    XERCES_CPP_NAMESPACE_QUALIFIER chForwardSlash,  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_w,       XERCES_CPP_NAMESPACE_QUALIFIER chLatin_w, 
-    XERCES_CPP_NAMESPACE_QUALIFIER chLatin_w,       XERCES_CPP_NAMESPACE_QUALIFIER chPeriod,        XERCES_CPP_NAMESPACE_QUALIFIER chLatin_w,
-    XERCES_CPP_NAMESPACE_QUALIFIER chDigit_3,       XERCES_CPP_NAMESPACE_QUALIFIER chPeriod,        XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, 
-    XERCES_CPP_NAMESPACE_QUALIFIER chLatin_r,       XERCES_CPP_NAMESPACE_QUALIFIER chLatin_g,       XERCES_CPP_NAMESPACE_QUALIFIER chForwardSlash, 
-    XERCES_CPP_NAMESPACE_QUALIFIER chDigit_2,       XERCES_CPP_NAMESPACE_QUALIFIER chDigit_0,       XERCES_CPP_NAMESPACE_QUALIFIER chDigit_0, 
-    XERCES_CPP_NAMESPACE_QUALIFIER chDigit_5,       XERCES_CPP_NAMESPACE_QUALIFIER chForwardSlash,  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_x, 
-    XERCES_CPP_NAMESPACE_QUALIFIER chLatin_p,       XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a,       XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t, 
-    XERCES_CPP_NAMESPACE_QUALIFIER chLatin_h,       XERCES_CPP_NAMESPACE_QUALIFIER chDash,          XERCES_CPP_NAMESPACE_QUALIFIER chLatin_f, 
-    XERCES_CPP_NAMESPACE_QUALIFIER chLatin_u,       XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n,       XERCES_CPP_NAMESPACE_QUALIFIER chLatin_c,
-    XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t,       XERCES_CPP_NAMESPACE_QUALIFIER chLatin_i,       XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, 
-    XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n,       XERCES_CPP_NAMESPACE_QUALIFIER chLatin_s,       XERCES_CPP_NAMESPACE_QUALIFIER chNull
+    chLatin_h,       chLatin_t,       chLatin_t, 
+    chLatin_p,       chColon,         chForwardSlash, 
+    chForwardSlash,  chLatin_w,       chLatin_w, 
+    chLatin_w,       chPeriod,        chLatin_w,
+    chDigit_3,       chPeriod,        chLatin_o, 
+    chLatin_r,       chLatin_g,       chForwardSlash, 
+    chDigit_2,       chDigit_0,       chDigit_0, 
+    chDigit_5,       chForwardSlash,  chLatin_x, 
+    chLatin_p,       chLatin_a,       chLatin_t, 
+    chLatin_h,       chDash,          chLatin_f, 
+    chLatin_u,       chLatin_n,       chLatin_c,
+    chLatin_t,       chLatin_i,       chLatin_o, 
+    chLatin_n,       chLatin_s,       chNull
 };
 
-const unsigned int XQFunction::UNLIMITED = 10000; // A reasonably large number
+const unsigned int XQFunction::UNLIMITED = 51; // A reasonably large number
 
-XQFunction::XQFunction(const XMLCh* name, unsigned int argsFrom, unsigned int argsTo, const char* paramDecl, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
+XQFunction::XQFunction(const XMLCh* name, unsigned int argsFrom, unsigned int argsTo, const char* paramDecl,
+                       const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ASTNodeImpl(memMgr),
-  _fName(name), _fURI(XMLChFunctionURI), 
-  _nArgsFrom(argsFrom), _nArgsTo(argsTo),
-  _paramDecl(parseParamDecl(paramDecl)), _args(args)
+    _fName(name), _fURI(XMLChFunctionURI), 
+    _nArgsFrom(argsFrom), _nArgsTo(argsTo),
+    _paramDecl(XQillaAllocator<SequenceType*>(memMgr)),
+    _args(args)
 {
   setType(ASTNode::FUNCTION);
+  parseParamDecl(paramDecl, memMgr);
 
   if((argsFrom != UNLIMITED && argsFrom > args.size()) ||
      (argsTo != UNLIMITED && args.size() > argsTo)) {
@@ -93,13 +83,13 @@ XQFunction::XQFunction(const XMLCh* name, unsigned int argsFrom, unsigned int ar
   else
   {
 	  // place the optional arguments between [ and ]
-	  static const XMLCh comma[]={ XERCES_CPP_NAMESPACE_QUALIFIER chComma, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
-	  static const XMLCh openSquare[]={ XERCES_CPP_NAMESPACE_QUALIFIER chSpace, XERCES_CPP_NAMESPACE_QUALIFIER chOpenSquare, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
-	  static const XMLCh closSquare[]={ XERCES_CPP_NAMESPACE_QUALIFIER chCloseSquare, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
-	  XERCES_CPP_NAMESPACE_QUALIFIER XMLStringTokenizer tokenizer(paramString,comma);
+	  static const XMLCh comma[]={ chComma, chNull };
+	  static const XMLCh openSquare[]={ chSpace, chOpenSquare, chNull };
+	  static const XMLCh closSquare[]={ chCloseSquare, chNull };
+	  XMLStringTokenizer tokenizer(paramString,comma);
 	  unsigned int i;
 	  unsigned int nTokens=tokenizer.countTokens();
-	  _signature=XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString;
+	  _signature=XMLUni::fgZeroLenString;
 
 	  for(i=0;i<argsFrom;i++)
 	  {
@@ -120,7 +110,7 @@ XQFunction::XQFunction(const XMLCh* name, unsigned int argsFrom, unsigned int ar
 	  }
 	  if(argsTo==UNLIMITED)
 	  {
-		  static const XMLCh ellipsis[]={ XERCES_CPP_NAMESPACE_QUALIFIER chComma, XERCES_CPP_NAMESPACE_QUALIFIER chPeriod, XERCES_CPP_NAMESPACE_QUALIFIER chPeriod, XERCES_CPP_NAMESPACE_QUALIFIER chPeriod, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
+		  static const XMLCh ellipsis[]={ chComma, chPeriod, chPeriod, chPeriod, chNull };
 		  _signature=XPath2Utils::concatStrings(_signature,ellipsis,memMgr);
 	  }
   }
@@ -148,12 +138,12 @@ ASTNode *XQFunction::resolveArguments(StaticContext *context, bool checkTimezone
 {
   unsigned int paramNumber = 0;
   for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
-    *i = (*_paramDecl)[paramNumber]->convertFunctionArg(*i, context, numericFunction, this);
+    *i = _paramDecl[paramNumber]->convertFunctionArg(*i, context, numericFunction, this);
     *i = (*i)->staticResolution(context);
 
     ++paramNumber;
-    if(paramNumber >= _paramDecl->size()) {
-      paramNumber = _paramDecl->size() - 1;
+    if(paramNumber >= _paramDecl.size()) {
+      paramNumber = _paramDecl.size() - 1;
     }
   }
 
@@ -188,74 +178,68 @@ unsigned int XQFunction::getNumArgs() const
   return _args.size();
 }
 
-std::vector< SequenceType* >* XQFunction::parseParamDecl(const char* paramString)
+void XQFunction::parseParamDecl(const char* paramString, XPath2MemoryManager *mm)
 {
-  // check the cache, first
-  SequenceTypeTable::iterator it=g_SequenceTypeCache.find(paramString);
-  if(it!=g_SequenceTypeCache.end())
-    return it->second;
-                                                                                                                                                              
-  // Note: we are going to use the global allocator, as we are going to store this data into a static variable
-  std::vector< SequenceType* >* params=new std::vector< SequenceType* >;
-                                                                                                                                                              
   // Tokenise param string
-  XMLCh* string = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::transcode(paramString);
-  static XMLCh delimiters[]={ XERCES_CPP_NAMESPACE_QUALIFIER chComma, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
-  XERCES_CPP_NAMESPACE_QUALIFIER XMLStringTokenizer tokenizer(string, delimiters);
+  XMLCh* string = XMLString::transcode(paramString);
+  static XMLCh delimiters[]={ chComma, chNull };
+  XMLStringTokenizer tokenizer(string, delimiters);
   while(tokenizer.hasMoreTokens())
   {
     XMLCh* toParse=tokenizer.nextToken();
     //create SequenceType from curParam and append to vector
-                                                                                                                                                              
+
     SequenceType *sequenceType=NULL;
-    XMLCh* tmpCurParam = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::replicate(toParse);
-    XERCES_CPP_NAMESPACE_QUALIFIER XMLString::collapseWS(tmpCurParam);
-                                                                                                                                                              
+    XMLCh* tmpCurParam = XMLString::replicate(toParse);
+    XMLString::collapseWS(tmpCurParam);
+
     // get the OccurrenceIndicator
     SequenceType::OccurrenceIndicator occurrence=SequenceType::EXACTLY_ONE;
-    unsigned int len=XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(tmpCurParam);
+    unsigned int len=XMLString::stringLen(tmpCurParam);
     if(len>0)
       switch(tmpCurParam[len-1])
       {
-        case XERCES_CPP_NAMESPACE_QUALIFIER chQuestion: occurrence=SequenceType::QUESTION_MARK; tmpCurParam[len-1]=0; break;
-        case XERCES_CPP_NAMESPACE_QUALIFIER chAsterisk: occurrence=SequenceType::STAR; tmpCurParam[len-1]=0; break;
-        case XERCES_CPP_NAMESPACE_QUALIFIER chPlus:     occurrence=SequenceType::PLUS; tmpCurParam[len-1]=0; break;
+        case chQuestion: occurrence=SequenceType::QUESTION_MARK; tmpCurParam[len-1]=0; break;
+        case chAsterisk: occurrence=SequenceType::STAR; tmpCurParam[len-1]=0; break;
+        case chPlus:     occurrence=SequenceType::PLUS; tmpCurParam[len-1]=0; break;
       }
-                                                                                                                                                              
+
     // check if it's a node(), element(), item() or empty()
-    static XMLCh szNode[]={ XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_d, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, XERCES_CPP_NAMESPACE_QUALIFIER chOpenParen, XERCES_CPP_NAMESPACE_QUALIFIER chCloseParen, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
-    static XMLCh szElement[]={ XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_l, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_m, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t, XERCES_CPP_NAMESPACE_QUALIFIER chOpenParen, XERCES_CPP_NAMESPACE_QUALIFIER chCloseParen, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
-    static XMLCh szItem[]={ XERCES_CPP_NAMESPACE_QUALIFIER chLatin_i, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_m, XERCES_CPP_NAMESPACE_QUALIFIER chOpenParen, XERCES_CPP_NAMESPACE_QUALIFIER chCloseParen, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
-    static XMLCh szEmpty[]={ XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_m, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_p, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_y, XERCES_CPP_NAMESPACE_QUALIFIER chOpenParen, XERCES_CPP_NAMESPACE_QUALIFIER chCloseParen, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
+    static XMLCh szNode[]={ chLatin_n, chLatin_o, chLatin_d, chLatin_e, chOpenParen, chCloseParen, chNull };
+    static XMLCh szElement[]={ chLatin_e, chLatin_l, chLatin_e, chLatin_m, chLatin_e, chLatin_n, chLatin_t,
+                               chOpenParen, chCloseParen, chNull };
+    static XMLCh szItem[]={ chLatin_i, chLatin_t, chLatin_e, chLatin_m, chOpenParen, chCloseParen, chNull };
+    static XMLCh szEmpty[]={ chLatin_e, chLatin_m, chLatin_p, chLatin_t, chLatin_y, chOpenParen, chCloseParen, chNull };
+
     if(XPath2Utils::equals(tmpCurParam, szNode))
-      sequenceType=new SequenceType(new SequenceType::ItemType(SequenceType::ItemType::TEST_NODE), occurrence);
+      sequenceType=new (mm) SequenceType(new (mm) SequenceType::ItemType(SequenceType::ItemType::TEST_NODE), occurrence);
     else if(XPath2Utils::equals(tmpCurParam, szElement))
-      sequenceType=new SequenceType(new SequenceType::ItemType(SequenceType::ItemType::TEST_ELEMENT), occurrence);
+      sequenceType=new (mm) SequenceType(new (mm) SequenceType::ItemType(SequenceType::ItemType::TEST_ELEMENT), occurrence);
     else if(XPath2Utils::equals(tmpCurParam, szItem))
-      sequenceType=new SequenceType(new SequenceType::ItemType(SequenceType::ItemType::TEST_ANYTHING), occurrence);
+      sequenceType=new (mm) SequenceType(new (mm) SequenceType::ItemType(SequenceType::ItemType::TEST_ANYTHING),
+                                         occurrence);
     else if(XPath2Utils::equals(tmpCurParam, szEmpty))
-      sequenceType=new SequenceType();
+      sequenceType=new (mm) SequenceType();
     else
     {
-      SequenceType::ItemType* test=new SequenceType::ItemType(SequenceType::ItemType::TEST_ATOMIC_TYPE,NULL,new QualifiedName(tmpCurParam));
-      if (XPath2Utils::equals(tmpCurParam, ATDurationOrDerived::fgDT_YEARMONTHDURATION) ||
-          XPath2Utils::equals(tmpCurParam, ATDurationOrDerived::fgDT_DAYTIMEDURATION) ||
-          XPath2Utils::equals(tmpCurParam, AnyAtomicType::fgDT_ANYATOMICTYPE) ||
-          XPath2Utils::equals(tmpCurParam, ATUntypedAtomic::fgDT_UNTYPEDATOMIC) )
-        // If yearMonthDuration, dayTimeDuration, anyAtomicType or untypedAtomic, we set the URI to be FunctionURI, and use the specified type
+      SequenceType::ItemType* test=new (mm) SequenceType::ItemType(SequenceType::ItemType::TEST_ATOMIC_TYPE,NULL,
+                                                                   new (mm) QualifiedName(tmpCurParam));
+      if(XPath2Utils::equals(tmpCurParam, ATDurationOrDerived::fgDT_YEARMONTHDURATION) ||
+         XPath2Utils::equals(tmpCurParam, ATDurationOrDerived::fgDT_DAYTIMEDURATION) ||
+         XPath2Utils::equals(tmpCurParam, AnyAtomicType::fgDT_ANYATOMICTYPE) ||
+         XPath2Utils::equals(tmpCurParam, ATUntypedAtomic::fgDT_UNTYPEDATOMIC) )
+        // If yearMonthDuration, dayTimeDuration, anyAtomicType or untypedAtomic, we set the URI to be FunctionURI,
+        // and use the specified type
         test->setTypeURI(FunctionConstructor::XMLChXPath2DatatypesURI);
       else
         // otherwise it's a atomic type coming from the XMLSchema namespace
-        test->setTypeURI(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA);
-      sequenceType = new SequenceType(test, occurrence);
+        test->setTypeURI(SchemaSymbols::fgURI_SCHEMAFORSCHEMA);
+      sequenceType = new (mm) SequenceType(test, occurrence);
     }
-    XERCES_CPP_NAMESPACE_QUALIFIER XMLString::release(&tmpCurParam);
-    params->push_back(sequenceType);
+    XMLString::release(&tmpCurParam);
+    _paramDecl.push_back(sequenceType);
   }
-  XERCES_CPP_NAMESPACE_QUALIFIER XMLString::release(&string);
-  g_SequenceTypeCache[paramString]=params;
-                                                                                                                                                              
-  return params;
+  XMLString::release(&string);
 }
 
 const VectorOfASTNodes &XQFunction::getArguments() const {

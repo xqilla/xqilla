@@ -79,7 +79,6 @@ public:
    * Parse the expression contained in the given query string.
    *
    * @param query A string containing the expression to parse.
-   * @param language The language to parse the string as. Defaults to XQUERY.
    * @param context If specified, the context to use for parsing this expression. A
    * default context is used if this parameter is 0.
    * @param queryFile The name of the file that query originates in. This is passed
@@ -93,7 +92,6 @@ public:
    * @exception XQException If a parse error occurs.
    */
   static XQQuery* parse(const XMLCh* query,
-                        Language language = XQUERY,
                         DynamicContext* context = 0,
                         const XMLCh* queryFile = NULL,
                         unsigned int flags = 0,
@@ -104,7 +102,6 @@ public:
    * Parse the expression from the given InputSource.
    *
    * @param querySrc An InputSource which the expression will be parsed from.
-   * @param language The language to parse the string as. Defaults to XQUERY.
    * @param context If specified, the context to use for parsing this expression. A
    * default context is used if this parameter is 0.
    * @param flags A bitwise OR of the Flags constants, that control aspects of how
@@ -116,7 +113,6 @@ public:
    * @exception XQException If a parse error occurs.
    */
   static XQQuery* parse(const XERCES_CPP_NAMESPACE_QUALIFIER InputSource& querySrc,
-                        Language language = XQUERY,
                         DynamicContext* context = 0,
                         unsigned int flags = 0,
                         XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr =
@@ -126,7 +122,6 @@ public:
    * Parse the expression residing at the given URL.
    *
    * @param queryFile The URL of the expression to parse.
-   * @param language The language to parse the string as. Defaults to XQUERY.
    * @param context If specified, the context to use for parsing this expression. A
    * default context is used if this parameter is 0.
    * @param flags A bitwise OR of the Flags constants, that control aspects of how
@@ -138,7 +133,6 @@ public:
    * @exception XQException If a parse error occurs.
    */
   static XQQuery* parseFromURI(const XMLCh* queryFile,
-                               Language language = XQUERY,
                                DynamicContext* context = 0,
                                unsigned int flags = 0,
                                XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr =
