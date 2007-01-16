@@ -130,7 +130,7 @@ src/exceptions/InvalidLexicalSpaceException.hpp \
 src/exceptions/MiscException.hpp \
 src/functions/FuncFactory.cpp \
 src/functions/FuncFactoryTemplate.hpp \
-src/functions/FunctionLookupImpl.cpp \
+src/functions/FunctionLookup.cpp \
 src/functions/FunctionAbs.cpp \
 src/functions/FunctionAvg.cpp \
 src/functions/FunctionBaseURI.cpp \

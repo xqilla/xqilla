@@ -55,7 +55,6 @@
 #include <xqilla/items/DatatypeLookup.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/items/impl/NodeImpl.hpp>
-#include <xqilla/functions/FunctionLookupImpl.hpp>
 #include <xqilla/functions/FunctionLookup.hpp>
 #include <xqilla/functions/FunctionConstructor.hpp>
 #include <xqilla/functions/XQUserFunction.hpp>
@@ -122,8 +121,6 @@ XQContextImpl::XQContextImpl(XQilla::Language language, XERCES_CPP_NAMESPACE_QUA
     _varStore=_internalMM.createVariableStore();
   if(_varTypeStore==NULL)
     _varTypeStore=_internalMM.createVariableTypeStore();
-  if(_functionTable==NULL)
-    _functionTable = new (&_internalMM) FunctionLookupImpl((language & XQilla::UPDATE) != 0, &_internalMM);
 
   _itemFactory = new (&_internalMM) ItemFactoryImpl(_docCache, &_internalMM);
 
@@ -495,6 +492,8 @@ void XQContextImpl::setExternalContextNode(const XERCES_CPP_NAMESPACE_QUALIFIER 
 
 void XQContextImpl::addCustomFunction(FuncFactory *func)
 {
+  if(_functionTable==NULL)
+    _functionTable = new (&_internalMM) FunctionLookup(&_internalMM);
   _functionTable->insertFunction(func);
 }
 
@@ -609,7 +608,7 @@ ASTNode* XQContextImpl::lookUpFunction(const XMLCh* prefix, const XMLCh* name, V
 		}
 	}
 
-	ASTNode* functionImpl=_functionTable->lookUpFunction(uri, name, v, getMemoryManager());
+	ASTNode* functionImpl= FunctionLookup::lookUpGlobalFunction(uri, name, v, getMemoryManager(), _functionTable);
 
   if(functionImpl == NULL && v.size() == 1) {
     // maybe it's not a function, but a datatype
@@ -628,12 +627,14 @@ ASTNode* XQContextImpl::lookUpFunction(const XMLCh* prefix, const XMLCh* name, V
 
 void XQContextImpl::addExternalFunction(const ExternalFunction *func)
 {
+  if(_functionTable==NULL)
+    _functionTable = new (&_internalMM) FunctionLookup(&_internalMM);
   _functionTable->insertExternalFunction(func);
 }
 
 const ExternalFunction *XQContextImpl::lookUpExternalFunction(const XMLCh *uri, const XMLCh *name, unsigned int numArgs) const
 {
-  return _functionTable->lookUpExternalFunction(uri, name, numArgs);
+  return FunctionLookup::lookUpGlobalExternalFunction(uri, name, numArgs, _functionTable);
 }
 
 XERCES_CPP_NAMESPACE::DOMDocument *XQContextImpl::createNewDocument() const

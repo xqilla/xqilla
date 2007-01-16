@@ -75,6 +75,7 @@ XQUserFunction::XQUserFunction(const XMLCh* fnName, VectorOfFunctionParameters* 
     m_pMemMgr(ctx->getMemoryManager()),
     _src(ctx->getMemoryManager()),
     m_bCalculatingSRC(false),
+    m_qname(1023, m_pMemMgr),
     m_moduleDocCache(NULL)
 {
   int nColon=XERCES_CPP_NAMESPACE_QUALIFIER XMLString::indexOf(fnName,':');
@@ -106,6 +107,8 @@ XQUserFunction::XQUserFunction(const XMLCh* fnName, VectorOfFunctionParameters* 
 
   m_pReturnPattern=returnValue;
   m_pParams=params;
+  m_qname.set(m_szName);
+  m_qname.append(m_szURI);
 }
 
 const XMLCh* XQUserFunction::getFullName() const
@@ -121,6 +124,11 @@ const XMLCh* XQUserFunction::getName() const
 const XMLCh *XQUserFunction::getURI() const
 {
   return m_szURI;
+}
+
+const XMLCh *XQUserFunction::getQName() const
+{
+  return m_qname.getRawBuffer();
 }
 
 unsigned int XQUserFunction::getMinArgs() const

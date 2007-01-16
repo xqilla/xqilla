@@ -98,26 +98,26 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	XPath2NSUtils.lo XPath2Utils.lo UCANormalizer1.lo \
 	UCANormalizer2.lo UCANormalizer3.lo UCANormalizer4.lo \
 	UCANormalizer.lo XQillaException.lo XQException.lo \
-	FuncFactory.lo FunctionLookupImpl.lo FunctionAbs.lo \
-	FunctionAvg.lo FunctionBaseURI.lo FunctionBoolean.lo \
-	FunctionCeiling.lo FunctionCodepointEqual.lo \
-	FunctionCodepointsToString.lo FunctionCollection.lo \
-	FunctionCompare.lo FunctionConcat.lo FunctionConstructor.lo \
-	FunctionContains.lo FunctionCount.lo FunctionCurrentDate.lo \
-	FunctionCurrentDateTime.lo FunctionCurrentTime.lo \
-	FunctionData.lo FunctionDateTime.lo FunctionDeepEqual.lo \
-	FunctionDefaultCollation.lo FunctionDistinctValues.lo \
-	FunctionDocAvailable.lo FunctionDoc.lo FunctionDocumentURI.lo \
-	FunctionEmpty.lo FunctionEncodeForUri.lo FunctionEndsWith.lo \
-	FunctionError.lo FunctionEscapeHtmlUri.lo \
-	FunctionExactlyOne.lo FunctionExists.lo FunctionFalse.lo \
-	FunctionFloor.lo FunctionId.lo FunctionIdref.lo \
-	FunctionImplicitTimezone.lo FunctionIndexOf.lo \
-	FunctionInScopePrefixes.lo FunctionInsertBefore.lo \
-	FunctionIriToUri.lo FunctionLang.lo FunctionLast.lo \
-	FunctionLocalname.lo FunctionLocalNameFromQName.lo \
-	FunctionLowerCase.lo FunctionMatches.lo FunctionMax.lo \
-	FunctionMin.lo FunctionName.lo FunctionNamespaceUri.lo \
+	FuncFactory.lo FunctionLookup.lo FunctionAbs.lo FunctionAvg.lo \
+	FunctionBaseURI.lo FunctionBoolean.lo FunctionCeiling.lo \
+	FunctionCodepointEqual.lo FunctionCodepointsToString.lo \
+	FunctionCollection.lo FunctionCompare.lo FunctionConcat.lo \
+	FunctionConstructor.lo FunctionContains.lo FunctionCount.lo \
+	FunctionCurrentDate.lo FunctionCurrentDateTime.lo \
+	FunctionCurrentTime.lo FunctionData.lo FunctionDateTime.lo \
+	FunctionDeepEqual.lo FunctionDefaultCollation.lo \
+	FunctionDistinctValues.lo FunctionDocAvailable.lo \
+	FunctionDoc.lo FunctionDocumentURI.lo FunctionEmpty.lo \
+	FunctionEncodeForUri.lo FunctionEndsWith.lo FunctionError.lo \
+	FunctionEscapeHtmlUri.lo FunctionExactlyOne.lo \
+	FunctionExists.lo FunctionFalse.lo FunctionFloor.lo \
+	FunctionId.lo FunctionIdref.lo FunctionImplicitTimezone.lo \
+	FunctionIndexOf.lo FunctionInScopePrefixes.lo \
+	FunctionInsertBefore.lo FunctionIriToUri.lo FunctionLang.lo \
+	FunctionLast.lo FunctionLocalname.lo \
+	FunctionLocalNameFromQName.lo FunctionLowerCase.lo \
+	FunctionMatches.lo FunctionMax.lo FunctionMin.lo \
+	FunctionName.lo FunctionNamespaceUri.lo \
 	FunctionNamespaceURIForPrefix.lo \
 	FunctionNamespaceURIFromQName.lo FunctionNilled.lo \
 	FunctionNodeName.lo FunctionNormalizeSpace.lo \
@@ -481,7 +481,7 @@ src/exceptions/InvalidLexicalSpaceException.hpp \
 src/exceptions/MiscException.hpp \
 src/functions/FuncFactory.cpp \
 src/functions/FuncFactoryTemplate.hpp \
-src/functions/FunctionLookupImpl.cpp \
+src/functions/FunctionLookup.cpp \
 src/functions/FunctionAbs.cpp \
 src/functions/FunctionAvg.cpp \
 src/functions/FunctionBaseURI.cpp \
@@ -1069,7 +1069,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionLast.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionLocalNameFromQName.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionLocalname.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionLookupImpl.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionLookup.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionLowerCase.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionMatches.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionMax.Plo@am__quote@
@@ -2309,12 +2309,12 @@ FuncFactory.lo: src/functions/FuncFactory.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FuncFactory.lo `test -f 'src/functions/FuncFactory.cpp' || echo '$(srcdir)/'`src/functions/FuncFactory.cpp
 
-FunctionLookupImpl.lo: src/functions/FunctionLookupImpl.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionLookupImpl.lo -MD -MP -MF "$(DEPDIR)/FunctionLookupImpl.Tpo" -c -o FunctionLookupImpl.lo `test -f 'src/functions/FunctionLookupImpl.cpp' || echo '$(srcdir)/'`src/functions/FunctionLookupImpl.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/FunctionLookupImpl.Tpo" "$(DEPDIR)/FunctionLookupImpl.Plo"; else rm -f "$(DEPDIR)/FunctionLookupImpl.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/FunctionLookupImpl.cpp' object='FunctionLookupImpl.lo' libtool=yes @AMDEPBACKSLASH@
+FunctionLookup.lo: src/functions/FunctionLookup.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionLookup.lo -MD -MP -MF "$(DEPDIR)/FunctionLookup.Tpo" -c -o FunctionLookup.lo `test -f 'src/functions/FunctionLookup.cpp' || echo '$(srcdir)/'`src/functions/FunctionLookup.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/FunctionLookup.Tpo" "$(DEPDIR)/FunctionLookup.Plo"; else rm -f "$(DEPDIR)/FunctionLookup.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/FunctionLookup.cpp' object='FunctionLookup.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionLookupImpl.lo `test -f 'src/functions/FunctionLookupImpl.cpp' || echo '$(srcdir)/'`src/functions/FunctionLookupImpl.cpp
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionLookup.lo `test -f 'src/functions/FunctionLookup.cpp' || echo '$(srcdir)/'`src/functions/FunctionLookup.cpp
 
 FunctionAbs.lo: src/functions/FunctionAbs.cpp
 @am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionAbs.lo -MD -MP -MF "$(DEPDIR)/FunctionAbs.Tpo" -c -o FunctionAbs.lo `test -f 'src/functions/FunctionAbs.cpp' || echo '$(srcdir)/'`src/functions/FunctionAbs.cpp; \

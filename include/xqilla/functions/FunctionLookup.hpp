@@ -18,6 +18,7 @@
 
 #include <vector>
 #include <xercesc/util/XercesDefs.hpp>
+#include <xercesc/util/RefHash2KeysTableOf.hpp>
 #include <xqilla/ast/ASTNode.hpp>
 
 class FuncFactory;
@@ -27,23 +28,46 @@ class ExternalFunction;
 class XQILLA_API FunctionLookup
 {
 public:
-  virtual ~FunctionLookup() {}
+  FunctionLookup(XPath2MemoryManager* memMgr);
+  ~FunctionLookup();
 
   ///adds a function to the custom function table
-  virtual void insertFunction(FuncFactory *func) = 0;
+  void insertFunction(FuncFactory *func);
   /// replaces the implementation of an existing function
-  virtual void replaceFunction(FuncFactory *func) = 0;
+  void replaceFunction(FuncFactory *func);
   ///returns the approriate Function object
-  virtual ASTNode* lookUpFunction(const XMLCh* URI, const XMLCh* fname, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr) const = 0;
+  ASTNode* lookUpFunction(const XMLCh* URI, const XMLCh* fname,
+			  const VectorOfASTNodes &args,
+			  XPath2MemoryManager* memMgr) const;
 
   ///adds a function to the external function table
-  virtual void insertExternalFunction(const ExternalFunction *func) = 0;
+  void insertExternalFunction(const ExternalFunction *func);
   ///returns the approriate ExternalFunction object
-  virtual const ExternalFunction *lookUpExternalFunction(const XMLCh* URI, const XMLCh* fname, unsigned int numArgs) const = 0;
+  const ExternalFunction *lookUpExternalFunction(const XMLCh* URI,
+						 const XMLCh* fname,
+						 unsigned int numArgs) const;
 
-  /// returns all the defined functions
-  virtual std::vector< std::pair<const XMLCh*,const XMLCh*> > getFunctions() const = 0;
-  virtual std::vector< FuncFactory* > getFunctionFactories() const = 0;
+private:
+  XERCES_CPP_NAMESPACE_QUALIFIER RefHash2KeysTableOf< FuncFactory > _funcTable;
+  XERCES_CPP_NAMESPACE_QUALIFIER RefHash2KeysTableOf< const ExternalFunction > _exFuncTable;
+
+public:
+  // static (global table interfaces)
+  static void insertGlobalFunction(FuncFactory *func);
+  static void insertGlobalExternalFunction(const ExternalFunction *func);
+  // next two look in global table first, then the contextTable
+  static ASTNode* lookUpGlobalFunction(const XMLCh* URI, const XMLCh* fname,
+				       const VectorOfASTNodes &args,
+				       XPath2MemoryManager* memMgr,
+				       const FunctionLookup *contextTable);
+  static const ExternalFunction *lookUpGlobalExternalFunction(
+	  const XMLCh* URI, const XMLCh* fname, unsigned int numArgs,
+	  const FunctionLookup *contextTable);
+  static void initialize(bool update);
+  static void terminate();
+private:
+  static FunctionLookup *g_globalFunctionTable;
+  static XPath2MemoryManager *g_memMgr;
 };
 
 #endif 

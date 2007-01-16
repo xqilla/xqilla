@@ -55,7 +55,7 @@ const XMLCh XQFunction::XMLChFunctionURI[] =
     chLatin_n,       chLatin_s,       chNull
 };
 
-const unsigned int XQFunction::UNLIMITED = 51; // A reasonably large number
+const unsigned int XQFunction::UNLIMITED = 10000; // A reasonably large number
 
 XQFunction::XQFunction(const XMLCh* name, unsigned int argsFrom, unsigned int argsTo, const char* paramDecl,
                        const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
@@ -222,8 +222,8 @@ void XQFunction::parseParamDecl(const char* paramString, XPath2MemoryManager *mm
       sequenceType=new (mm) SequenceType();
     else
     {
-      SequenceType::ItemType* test=new (mm) SequenceType::ItemType(SequenceType::ItemType::TEST_ATOMIC_TYPE,NULL,
-                                                                   new (mm) QualifiedName(tmpCurParam));
+      SequenceType::ItemType* test=
+	      new (mm) SequenceType::ItemType(SequenceType::ItemType::TEST_ATOMIC_TYPE, NULL,new (mm) QualifiedName(tmpCurParam, mm));
       if(XPath2Utils::equals(tmpCurParam, ATDurationOrDerived::fgDT_YEARMONTHDURATION) ||
          XPath2Utils::equals(tmpCurParam, ATDurationOrDerived::fgDT_DAYTIMEDURATION) ||
          XPath2Utils::equals(tmpCurParam, AnyAtomicType::fgDT_ANYATOMICTYPE) ||
