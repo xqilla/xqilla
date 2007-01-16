@@ -1334,7 +1334,7 @@
 				RelativePath="..\..\src\functions\FunctionLocalname.cpp">
 			</File>
 			<File
-				RelativePath="..\..\src\functions\FunctionLookupImpl.cpp">
+				RelativePath="..\..\src\functions\FunctionLookup.cpp">
 			</File>
 			<File
 				RelativePath="..\..\src\functions\FunctionLowerCase.cpp">
@@ -1680,9 +1680,6 @@
 			</File>
 			<File
 				RelativePath="..\..\include\xqilla\functions\FunctionLookup.hpp">
-			</File>
-			<File
-				RelativePath="..\..\include\xqilla\functions\FunctionLookupImpl.hpp">
 			</File>
 			<File
 				RelativePath="..\..\include\xqilla\functions\FunctionLowerCase.hpp">

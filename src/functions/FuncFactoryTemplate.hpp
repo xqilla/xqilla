@@ -28,10 +28,13 @@ class FuncFactoryTemplate : public FuncFactory
 {
 public:
 
-  FuncFactoryTemplate()
+  FuncFactoryTemplate(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr)
+	  : qname(1023, memMgr)
   {
+	  qname.set(getName());
+	  qname.append(getURI());
   }
-
+  
   virtual ASTNode *createInstance(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr) const
   {
 	  return new (memMgr) TYPE(args, memMgr);
@@ -47,6 +50,11 @@ public:
     return TYPE::XMLChFunctionURI;
   }
 
+  virtual const XMLCh *getQName() const
+  {
+    return qname.getRawBuffer();
+  }
+	
   virtual unsigned int getMinArgs() const
   {
     return TYPE::minArgs;
@@ -56,6 +64,9 @@ public:
   {
     return TYPE::maxArgs;
   }
+
+private:
+  XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer qname;
 };
 
 #endif

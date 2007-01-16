@@ -19,6 +19,7 @@
 #include <xqilla/items/impl/ATDoubleOrDerivedImpl.hpp>
 #include <xqilla/items/impl/ATFloatOrDerivedImpl.hpp>
 #include <xqilla/schema/AnyAtomicTypeDatatypeValidator.hpp>
+#include <xqilla/functions/FunctionLookup.hpp>
 #include <xqilla/mapm/m_apm.h>
 
 #include "../dom-api/XQillaImplementation.hpp"
@@ -40,6 +41,7 @@ void XQillaPlatformUtils::initialize(MemoryManager *memMgr) {
     XQillaImplementation::initialize();
     m_apm_mt_initialize();
     DateUtils::initialize();
+    FunctionLookup::initialize(true); // XXX TBD: is language update or not?
 
     // Expand the Xerces Built-in registry to include xs:anyAtomicType
     DatatypeValidator* dv = new AnyAtomicTypeDatatypeValidator();
@@ -58,6 +60,7 @@ void XQillaPlatformUtils::terminate() {
     m_apm_free_all_mem_mt();
     DateUtils::terminate();
     m_apm_mt_terminate();
+    FunctionLookup::terminate();
     XQillaImplementation::terminate();
     XMLPlatformUtils::Terminate();
   }

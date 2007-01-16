@@ -112,6 +112,7 @@ public:
   virtual ASTNode *createInstance(const VectorOfASTNodes &args, XPath2MemoryManager* expr) const;
   virtual const XMLCh* getName() const;
   virtual const XMLCh *getURI() const;
+  virtual const XMLCh *getQName() const;
   virtual unsigned int getMinArgs() const;
   virtual unsigned int getMaxArgs() const;
 
@@ -152,6 +153,7 @@ protected:
   XPath2MemoryManager* m_pMemMgr;
   StaticResolutionContext _src;
   bool m_bCalculatingSRC;
+  XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer m_qname;
   DocumentCache* m_moduleDocCache;
 
   friend class XQFunctionEvaluator;

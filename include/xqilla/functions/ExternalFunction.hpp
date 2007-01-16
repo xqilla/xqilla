@@ -35,6 +35,7 @@ public:
 
   virtual const XMLCh *getName() const = 0;
   virtual const XMLCh *getURI() const = 0;
+  virtual const XMLCh *getQName() const = 0;
   virtual unsigned int getNumberOfArguments() const = 0;
 
   /// Execute the function
