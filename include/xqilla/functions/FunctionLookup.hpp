@@ -46,6 +46,7 @@ public:
   const ExternalFunction *lookUpExternalFunction(const XMLCh* URI,
 						 const XMLCh* fname,
 						 unsigned int numArgs) const;
+  void insertUpdateFunctions(XPath2MemoryManager *memMgr);
 
 private:
   XERCES_CPP_NAMESPACE_QUALIFIER RefHash2KeysTableOf< FuncFactory > _funcTable;
@@ -63,7 +64,7 @@ public:
   static const ExternalFunction *lookUpGlobalExternalFunction(
 	  const XMLCh* URI, const XMLCh* fname, unsigned int numArgs,
 	  const FunctionLookup *contextTable);
-  static void initialize(bool update);
+  static void initialize();
   static void terminate();
 private:
   static FunctionLookup *g_globalFunctionTable;

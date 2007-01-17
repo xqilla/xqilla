@@ -122,6 +122,11 @@ XQContextImpl::XQContextImpl(XQilla::Language language, XERCES_CPP_NAMESPACE_QUA
   if(_varTypeStore==NULL)
     _varTypeStore=_internalMM.createVariableTypeStore();
 
+  if ((language & XQilla::UPDATE) != 0) {
+	      _functionTable = new (&_internalMM) FunctionLookup(&_internalMM);
+	      _functionTable->insertUpdateFunctions(&_internalMM);
+  }
+
   _itemFactory = new (&_internalMM) ItemFactoryImpl(_docCache, &_internalMM);
 
   // insert the default collation

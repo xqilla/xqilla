@@ -41,7 +41,7 @@ void XQillaPlatformUtils::initialize(MemoryManager *memMgr) {
     XQillaImplementation::initialize();
     m_apm_mt_initialize();
     DateUtils::initialize();
-    FunctionLookup::initialize(true); // XXX TBD: is language update or not?
+    FunctionLookup::initialize();
 
     // Expand the Xerces Built-in registry to include xs:anyAtomicType
     DatatypeValidator* dv = new AnyAtomicTypeDatatypeValidator();
