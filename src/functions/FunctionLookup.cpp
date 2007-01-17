@@ -127,10 +127,10 @@ const ExternalFunction *FunctionLookup::lookUpExternalFunction(
 /*
  * Global initialization and access
  */
-static void initGlobalTable(FunctionLookup *t, bool update, MemoryManager *memMgr);
+static void initGlobalTable(FunctionLookup *t, MemoryManager *memMgr);
 
 // static
-void FunctionLookup::initialize(bool update)
+void FunctionLookup::initialize()
 {
 	/* global table is allocated via the memory manager, so
 	   no need to delete it at this time
@@ -141,7 +141,7 @@ void FunctionLookup::initialize(bool update)
 		delete g_memMgr;
 	g_memMgr = new XPath2MemoryManagerImpl();
 	g_globalFunctionTable = new (g_memMgr) FunctionLookup(g_memMgr);
-	initGlobalTable(g_globalFunctionTable, update, g_memMgr);
+	initGlobalTable(g_globalFunctionTable, g_memMgr);
 }
 
 // static
@@ -316,8 +316,14 @@ const ExternalFunction *FunctionLookup::lookUpGlobalExternalFunction(
 // Updates
 #include <xqilla/update/FunctionPut.hpp>
 
-static void initGlobalTable(FunctionLookup *t, bool update,
-			    MemoryManager *memMgr)
+void FunctionLookup::insertUpdateFunctions(XPath2MemoryManager *memMgr)
+{
+  // Update functions
+  //   fn:put
+  insertFunction(new (memMgr) FuncFactoryTemplate<FunctionPut>(memMgr));
+}
+
+static void initGlobalTable(FunctionLookup *t, MemoryManager *memMgr)
 {
   // From the XPath2 Function & Operators list
 
@@ -572,9 +578,4 @@ static void initGlobalTable(FunctionLookup *t, bool update,
   //   fn:static-base-uri
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionStaticBaseURI>(memMgr));
 
-  if(update) {
-    // Update functions
-    //   fn:put
-    t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionPut>(memMgr));
-  }
 }
