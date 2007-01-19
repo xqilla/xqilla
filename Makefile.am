@@ -3,7 +3,7 @@ SUBDIRS = include
 
 INCLUDES = -I$(top_srcdir)/include/ -I$(xerces_include) -I$(top_srcdir)/src/lexer/
 LDFLAGS = -L$(xerces_lib) -R$(xerces_lib)
-LDADD = libxqilla.la -lxerces-c
+LDADD = libxqilla.la
 
 bin_PROGRAMS = xqilla
 noinst_PROGRAMS = basicXQillaUsage xqtsRunner
@@ -11,7 +11,8 @@ noinst_PROGRAMS = basicXQillaUsage xqtsRunner
 lib_LTLIBRARIES = libxqilla.la
 
 # Library version, see http://sourceware.org/autobook/autobook/autobook_91.html
-libxqilla_la_LDFLAGS = -version-info 1:0:0
+# -no-undefined for Cygwin (bug #1639669)
+libxqilla_la_LDFLAGS = -version-info 2:0:0 -no-undefined -lxerces-c
 
 libxqilla_la_SOURCES = \
 src/framework/ReferenceCounted.cpp \
