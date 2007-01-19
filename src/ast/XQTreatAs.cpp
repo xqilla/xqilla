@@ -104,7 +104,7 @@ ASTNode *XQTreatAs::staticTyping(StaticContext *context)
     }
 
     // Get a better static type by looking at our expression's type too
-    _src.getStaticType().typeIntersect(_expr->getStaticResolutionContext().getStaticType());
+    _src.getStaticType().typeIntersect(sType);
 
     if(_src.getStaticType().containsType(StaticType::NODE_TYPE)) {
       // Copy the properties if we return nodes

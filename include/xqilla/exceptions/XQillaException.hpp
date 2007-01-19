@@ -18,6 +18,8 @@
 #include <xercesc/dom/DOMXPathException.hpp>
 #include <xercesc/util/XMLString.hpp>
 
+class XQException;
+
 /**
  * The <code>XQillaException</code> interface extends the <code>DOMXPathException</code>
  * allowing an additional exception of type <code>RUNTIME_ERR</code> to be thrown.
@@ -37,8 +39,15 @@ public:
    * @param code The error code which indicates the exception
    * @param message The string containing the error message
    */
-  XQillaException(short code, const XMLCh* message): 
-      XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException(code, XERCES_CPP_NAMESPACE_QUALIFIER XMLString::replicate(message)) {};
+	XQillaException(short code, const XMLCh* message);
+
+  /**
+   * Constructor which takes an error code and a message.
+   *
+   * @param code The error code which indicates the exception
+   * @param message The string containing the error message
+   */
+	XQillaException(const XQException &ex);
 
   /**
    * Copy constructor.

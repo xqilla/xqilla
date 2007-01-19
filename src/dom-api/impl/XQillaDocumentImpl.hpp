@@ -41,20 +41,19 @@ public:
   ~XQillaDocumentImpl();
   
   // weak version, need to create a context from scratch inside
-  virtual const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathExpression* createExpression(const XMLCh* expression,
-                                                                                    const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver* resolver)
-    throw (XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException, XERCES_CPP_NAMESPACE_QUALIFIER DOMException);
+  virtual const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathExpression*
+  createExpression(const XMLCh* expression, const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver* resolver);
   
   // create an NS Resolver
-  virtual const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver* createNSResolver(XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* nodeResolver);
+  virtual const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver*
+  createNSResolver(XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* nodeResolver);
   
   // weak version, need to create a context from scratch inside
   virtual void* evaluate(const XMLCh* expression,
                          XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* contextNode,
                          const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver* resolver,
                          unsigned short type,
-                         void* reuseableResult)
-    throw (XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException, XERCES_CPP_NAMESPACE_QUALIFIER DOMException);
+                         void* reuseableResult);
   
   virtual void setGrammarPool(XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool *xmlGrammarPool);
   virtual XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool *getGrammarPool();

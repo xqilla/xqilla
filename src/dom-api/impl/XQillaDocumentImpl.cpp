@@ -57,9 +57,9 @@ XQillaDocumentImpl::~XQillaDocumentImpl()
 }//destructor
 
 // weak version, create a context within
-const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathExpression* XQillaDocumentImpl::createExpression(const XMLCh* expression, 
-                                                                                              const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver* resolver)
-  throw (XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException, XERCES_CPP_NAMESPACE_QUALIFIER DOMException)
+const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathExpression*
+XQillaDocumentImpl::createExpression(const XMLCh* expression, 
+                                     const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver* resolver)
 {
   return new (&_memMgr) XQillaExpressionImpl(expression, &_memMgr, resolver, _xmlGrammarPool);
 }
@@ -70,14 +70,14 @@ void* XQillaDocumentImpl::evaluate(const XMLCh* expression,
                                    const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver* resolver,
                                    unsigned short type,
                                    void* reuseableResult)
-  throw (XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathException, XERCES_CPP_NAMESPACE_QUALIFIER DOMException) 
 {
   XQillaExpressionImpl *expr = new (&_memMgr) XQillaExpressionImpl(expression, &_memMgr, resolver, _xmlGrammarPool);
   return expr->evaluateOnce(contextNode, type, reuseableResult);
 }
 
 /** Create an NSResolver */
-const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver* XQillaDocumentImpl::createNSResolver(XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* nodeResolver) {
+const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver*
+XQillaDocumentImpl::createNSResolver(XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* nodeResolver) {
   return _memMgr.createNSResolver(nodeResolver);
 }
 

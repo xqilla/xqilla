@@ -222,20 +222,22 @@ XPath2FirstResultImpl::XPath2FirstResultImpl(const XQQuery *expression,
     if(XQillaException::getDebug()) {
       e.printDebug( X("Caught exception at Interface") );
     }    
-    throw XQillaException(DOMXPathException::TYPE_ERR, e.getError());
+    throw XQillaException(e);
   }
   catch(const XQillaException &) {
     // rethrow it
     throw;
   }
   catch(DOMException &e) {
-    throw XQillaException(DOMXPathException::TYPE_ERR, X("XQillaExpressionImpl::evaluateToSequence(): DOMException!"));
+    throw XQillaException(DOMXPathException::INVALID_EXPRESSION_ERR,
+	    X("XQillaExpressionImpl::evaluateToSequence(): DOMException!"));
   }
   catch(XMLException &e) {
-    throw XQillaException(DOMXPathException::TYPE_ERR, e.getMessage());
+    throw XQillaException(DOMXPathException::INVALID_EXPRESSION_ERR, e.getMessage());
   }
   catch (...) {
-    throw XQillaException(DOMXPathException::TYPE_ERR, X("XQillaExpressionImpl::evaluateToSequence(): Unknown exception caught."));
+    throw XQillaException(DOMXPathException::INVALID_EXPRESSION_ERR,
+	    X("XQillaExpressionImpl::evaluateToSequence(): Unknown exception caught."));
   }
 }
 
@@ -288,20 +290,22 @@ XPath2SnapshotResultImpl::XPath2SnapshotResultImpl(const XQQuery *expression,
     if(XQillaException::getDebug()) {
       e.printDebug( X("Caught exception at Interface") );
     }    
-    throw XQillaException(DOMXPathException::TYPE_ERR, e.getError());
+    throw XQillaException(e);
   }
   catch(const XQillaException &) {
     // rethrow it
     throw;
   }
   catch(DOMException &e) {
-    throw XQillaException(DOMXPathException::TYPE_ERR, X("XQillaExpressionImpl::evaluateToSequence(): DOMException!"));
+    throw XQillaException(DOMXPathException::INVALID_EXPRESSION_ERR,
+	    X("XQillaExpressionImpl::evaluateToSequence(): DOMException!"));
   }
   catch(XMLException &e) {
-    throw XQillaException(DOMXPathException::TYPE_ERR, e.getMessage());
+    throw XQillaException(DOMXPathException::INVALID_EXPRESSION_ERR, e.getMessage());
   }
   catch (...) {
-    throw XQillaException(DOMXPathException::TYPE_ERR, X("XQillaExpressionImpl::evaluateToSequence(): Unknown exception caught."));
+    throw XQillaException(DOMXPathException::INVALID_EXPRESSION_ERR,
+	    X("XQillaExpressionImpl::evaluateToSequence(): Unknown exception caught."));
   }
 }
 
@@ -374,20 +378,22 @@ XPath2IteratorResultImpl::XPath2IteratorResultImpl(const XQQuery *expression,
     if(XQillaException::getDebug()) {
       e.printDebug( X("Caught exception at Interface") );
     }    
-    throw XQillaException(DOMXPathException::TYPE_ERR, e.getError());
+    throw XQillaException(e);
   }
   catch(const XQillaException &) {
     // rethrow it
     throw;
   }
   catch(DOMException &e) {
-    throw XQillaException(DOMXPathException::TYPE_ERR, X("XQillaExpressionImpl::evaluateToSequence(): DOMException!"));
+    throw XQillaException(DOMXPathException::INVALID_EXPRESSION_ERR,
+	    X("XQillaExpressionImpl::evaluateToSequence(): DOMException!"));
   }
   catch(XMLException &e) {
-    throw XQillaException(DOMXPathException::TYPE_ERR, e.getMessage());
+    throw XQillaException(DOMXPathException::INVALID_EXPRESSION_ERR, e.getMessage());
   }
   catch (...) {
-    throw XQillaException(DOMXPathException::TYPE_ERR, X("XQillaExpressionImpl::evaluateToSequence(): Unknown exception caught."));
+    throw XQillaException(DOMXPathException::INVALID_EXPRESSION_ERR,
+	    X("XQillaExpressionImpl::evaluateToSequence(): Unknown exception caught."));
   }
 }
 
