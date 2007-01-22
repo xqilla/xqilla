@@ -802,7 +802,8 @@ ModuleResolver * XQContextImpl::getModuleResolver() const
 VectorOfStrings* XQContextImpl::resolveModuleURI(const XMLCh* uri) const
 {
   VectorOfStrings* vect=new (getMemoryManager()) VectorOfStrings(XQillaAllocator<const XMLCh*>(getMemoryManager()));
-  _moduleResolver->resolveModuleLocation(vect, uri, this);
+  if(_moduleResolver)
+    _moduleResolver->resolveModuleLocation(vect, uri, this);
   return vect;
 }
 
