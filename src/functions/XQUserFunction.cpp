@@ -414,14 +414,10 @@ ASTNode* XQUserFunction::XQFunctionEvaluator::staticResolution(StaticContext* co
     VectorOfASTNodes::iterator argIt = _args.begin();
     for(VectorOfFunctionParameters::iterator defIt = m_pFuncDef->m_pParams->begin();
         defIt != m_pFuncDef->m_pParams->end() && argIt != _args.end(); ++defIt, ++argIt) {
-      if((*defIt)->_qname || context->isDebuggingEnabled()) {
-	      *argIt = (*defIt)->m_pType->convertFunctionArg(*argIt, context, /*numericfunction*/false, *argIt);
-        *argIt = (*argIt)->staticResolution(context);
-      }
-      else {
-        // Don't resolve the argument, since it isn't used by the function body, but at least run staticResolution to catch static errors
-        (*argIt)->staticResolution(context);
-      }
+      // The spec doesn't allow us to skip static errors, so we have to check even if
+      // the parameter isn't used
+      *argIt = (*defIt)->m_pType->convertFunctionArg(*argIt, context, /*numericfunction*/false, *argIt);
+      *argIt = (*argIt)->staticResolution(context);
     }
   }
 
@@ -448,7 +444,8 @@ ASTNode* XQUserFunction::XQFunctionEvaluator::staticTyping(StaticContext* contex
     VectorOfASTNodes::iterator argIt = _args.begin();
     for(VectorOfFunctionParameters::iterator defIt = m_pFuncDef->m_pParams->begin();
         defIt != m_pFuncDef->m_pParams->end() && argIt != _args.end(); ++defIt, ++argIt) {
-      // always run staticTyping to catch static errors
+      // The spec doesn't allow us to skip static errors, so we have to check even if
+      // the parameter isn't used
       *argIt = (*argIt)->staticTyping(context);
 
       if((*argIt)->getStaticResolutionContext().isUpdating()) {
@@ -457,9 +454,9 @@ ASTNode* XQUserFunction::XQFunctionEvaluator::staticTyping(StaticContext* contex
                   "to be an updating expression [err:XUST0001]"));
       }
 
-      if((*defIt)->_qname || context->isDebuggingEnabled()) {
-        _src.add((*argIt)->getStaticResolutionContext());
-      }
+      // TBD Check all static errors in staticResolution, so we can skip static typing - jpcs
+      // if((*defIt)->_qname || context->isDebuggingEnabled())
+      _src.add((*argIt)->getStaticResolutionContext());
     }
   }
 
