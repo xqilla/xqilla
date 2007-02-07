@@ -19,8 +19,6 @@
 #include <xqilla/items/Node.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
-#include <xercesc/dom/DOM.hpp>
-#include <xercesc/validators/schema/SchemaSymbols.hpp>
 
 const XMLCh FunctionNilled::name[] = {
   XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_i, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_l, 
@@ -51,7 +49,7 @@ ASTNode *FunctionNilled::staticTyping(StaticContext *context)
   return calculateSRCForArguments(context);
 }
 
-Sequence FunctionNilled::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionNilled::createSequence(DynamicContext* context, int flags) const
 {
   Sequence arg = getParamNumber(1, context)->toSequence(context);
   // If the argument is the empty sequence, returns the empty sequence

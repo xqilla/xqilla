@@ -49,7 +49,7 @@ ASTNode *FunctionCount::staticTyping(StaticContext *context)
   return calculateSRCForArguments(context);
 }
 
-Sequence FunctionCount::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionCount::createSequence(DynamicContext* context, int flags) const
 {
   Result arg = getParamNumber(1,context);
 

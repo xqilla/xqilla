@@ -55,7 +55,7 @@ ASTNode *XPath1CompatConvertFunctionArg::staticTyping(StaticContext *context)
 
 Result XPath1CompatConvertFunctionArg::createResult(DynamicContext* context, int flags) const
 {
-  return new XPath1CompatConvertFunctionArgResult(this, expr_->collapseTree(context, flags), seqType_);
+  return new XPath1CompatConvertFunctionArgResult(this, expr_->createResult(context, flags), seqType_);
 }
 
 XPath1CompatConvertFunctionArg::XPath1CompatConvertFunctionArgResult::

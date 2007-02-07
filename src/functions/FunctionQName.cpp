@@ -43,7 +43,7 @@ FunctionQName::FunctionQName(const VectorOfASTNodes &args, XPath2MemoryManager* 
   _src.getStaticType().flags = StaticType::QNAME_TYPE;
 }
 
-Sequence FunctionQName::collapseTreeInternal(DynamicContext* context, int flags) const {
+Sequence FunctionQName::createSequence(DynamicContext* context, int flags) const {
   Sequence paramURIseq = getParamNumber(1, context)->toSequence(context);
   Sequence paramLocalseq = getParamNumber(2, context)->toSequence(context);
 
@@ -52,11 +52,11 @@ Sequence FunctionQName::collapseTreeInternal(DynamicContext* context, int flags)
     uri=paramURIseq.first()->asString(context);
   const XMLCh* local = paramLocalseq.first()->asString(context);
   if(!XERCES_CPP_NAMESPACE_QUALIFIER XMLChar1_0::isValidQName(local, XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(local)))
-    XQThrow(FunctionException,X("FunctionQName::collapseTreeInternal"),X("The second argument to fn:QName is not a valid xs:QName [err:FOCA0002]"));
+    XQThrow(FunctionException,X("FunctionQName::createSequence"),X("The second argument to fn:QName is not a valid xs:QName [err:FOCA0002]"));
 
   const XMLCh* prefix = XPath2NSUtils::getPrefix(local, context->getMemoryManager());
   if((uri==NULL || *uri==0) && !(prefix==NULL || *prefix==0))
-    XQThrow(FunctionException,X("FunctionQName::collapseTreeInternal"),X("The second argument to fn:QName specifies a prefix, but the specified uri is empty [err:FOCA0002]"));
+    XQThrow(FunctionException,X("FunctionQName::createSequence"),X("The second argument to fn:QName specifies a prefix, but the specified uri is empty [err:FOCA0002]"));
 
   local = XPath2NSUtils::getLocalName(local);
   //Construct QName here

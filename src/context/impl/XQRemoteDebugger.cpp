@@ -27,7 +27,8 @@
 #include <xqilla/items/AnyAtomicType.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/context/VariableTypeStore.hpp>
-#include <xqilla/items/impl/NodeImpl.hpp>
+#include <xqilla/xerces/XercesConfiguration.hpp>
+
 #include <xercesc/util/BinInputStream.hpp>
 #include <xercesc/util/XMLNetAccessor.hpp>
 #include <xercesc/util/XMLUniDefs.hpp>
@@ -544,18 +545,17 @@ void XQRemoteDebugger::ReportResult(DynamicContext* context, const XMLCh* file, 
 		// special case for nodes: associate the info to the underlying DOMNode object
 		if(data->isNode())
 		{
-      const NodeImpl *nodeImpl = (const NodeImpl*)data->getInterface(Item::gXQilla);
-      if(nodeImpl == 0) {
+      const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* node = (const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode*)
+        data->getInterface(XercesConfiguration::gXerces);
+      if(node == 0) {
         m_backMappingInfo->put((void*)(const Item*)data, location);
       }
       else {
-        const XERCES_CPP_NAMESPACE::DOMNode* node = nodeImpl->getDOMNode();
-        if(node!=NULL)
-          m_backMappingInfo->put((void*)node, location);
+        m_backMappingInfo->put((void*)node, location);
       }
 		}
 		else 
-            m_backMappingInfo->put((void*)(const Item*)data, location);
+      m_backMappingInfo->put((void*)(const Item*)data, location);
 	}
 }
 

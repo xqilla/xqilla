@@ -32,6 +32,8 @@
 #include <xqilla/context/URIResolver.hpp>
 #include <xqilla/functions/FunctionConstructor.hpp>
 #include <xqilla/utils/XQillaPlatformUtils.hpp>
+#include <xqilla/xerces/XercesConfiguration.hpp>
+#include <xqilla/fastxdm/FastXDMConfiguration.hpp>
 
 #if defined(XERCES_HAS_CPP_NAMESPACE)
 XERCES_CPP_NAMESPACE_USE
@@ -41,7 +43,7 @@ using namespace std;
 class XQillaTestSuiteRunner : public TestSuiteRunner, private XMLEntityResolver, private ModuleResolver, private URIResolver
 {
 public:
-  XQillaTestSuiteRunner(const string &singleTest, TestSuiteResultListener *results);
+  XQillaTestSuiteRunner(const string &singleTest, TestSuiteResultListener *results, XQillaConfiguration *conf);
 
   virtual void addSource(const string &id, const string &filename, const string &schema);
   virtual void addSchema(const string &id, const string &filename, const string &uri);
@@ -61,6 +63,7 @@ private:
   virtual bool resolveDefaultCollection(Sequence &result, DynamicContext* context);
 
 private:
+  XQillaConfiguration *m_conf;
   string m_szSingleTest;
   string m_szFullTestName;
   const TestCase* m_pCurTestCase;
@@ -92,6 +95,7 @@ void usage(const char *progname)
   cout << "-E <file>      : Output an error file" << endl;
   cout << "-h             : Show this display" << endl;
   cout << "-x             : Output results as XML" << endl;
+  cout << "-z             : Use the Xerces-C data model (default is FastXDM)" << endl;
 }
 
 int main(int argc, char *argv[])
@@ -101,6 +105,10 @@ int main(int argc, char *argv[])
   string errorFile;
   string outputErrorFile;
   bool xmlResults = false;
+
+  XercesConfiguration xercesConf;
+  FastXDMConfiguration fastConf;
+  XQillaConfiguration *conf = &fastConf;
 
   for(int i = 1; i < argc; ++i) {
     if(*argv[i] == '-' && argv[i][2] == '\0' ){
@@ -130,6 +138,10 @@ int main(int argc, char *argv[])
       }
       case 'x': {
         xmlResults = true;
+        break;
+      }
+      case 'z': {
+        conf = &xercesConf;
         break;
       }
       default: {
@@ -194,7 +206,7 @@ int main(int argc, char *argv[])
     return 1;
   }
 
-  XQillaTestSuiteRunner runner(singleTest, &knownErrors);
+  XQillaTestSuiteRunner runner(singleTest, &knownErrors, conf);
   TestSuiteParser parser(testSuitePath, &runner);
 
   parser.run();
@@ -221,10 +233,11 @@ int main(int argc, char *argv[])
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-string serializeXMLResults(const Sequence &result, const DynamicContext *context);
+static string serializeXMLResults(XQilla &xqilla, const Sequence &result, DynamicContext *context);
 
-XQillaTestSuiteRunner::XQillaTestSuiteRunner(const string &singleTest, TestSuiteResultListener *results)
+XQillaTestSuiteRunner::XQillaTestSuiteRunner(const string &singleTest, TestSuiteResultListener *results, XQillaConfiguration *conf)
   : TestSuiteRunner(results),
+    m_conf(conf),
     m_szSingleTest(singleTest),
     m_pCurTestCase(NULL)
 {
@@ -291,15 +304,13 @@ void XQillaTestSuiteRunner::runTestCase(const TestCase &testCase)
   XQilla xqilla;
 
   m_pCurTestCase=&testCase;
-  Janitor<DynamicContext> context(xqilla.createContext());
+  Janitor<DynamicContext> context(xqilla.createContext(XQilla::XQUERY, m_conf));
   try {
     context->setImplicitTimezone(context->getItemFactory()->
-                                 createDurationOrDerived(FunctionConstructor::XMLChXPath2DatatypesURI,
-                                                         ATDurationOrDerived::fgDT_DAYTIMEDURATION,
-                                                         X("PT0S"), context.get()));
+                                 createDayTimeDuration(X("PT0S"), context.get()));
     context->setXMLEntityResolver(this);
     context->setModuleResolver(this);
-    context->registerURIResolver(this);
+    context->registerURIResolver(this, /*adopt*/false);
 
     Janitor<XQQuery> pParsedQuery(xqilla.parseFromURI(X(testCase.queryURL.c_str()), context.get(), XQilla::NO_ADOPT_CONTEXT));
 
@@ -329,7 +340,7 @@ void XQillaTestSuiteRunner::runTestCase(const TestCase &testCase)
 
     Sequence result=pParsedQuery->execute(context.get())->toSequence(context.get());
 
-    testResults(testCase, serializeXMLResults(result, context.get()));
+    testResults(testCase, serializeXMLResults(xqilla, result, context.get()));
   }
   catch(XQException& e) {
     ostringstream oss;
@@ -444,20 +455,20 @@ bool XQillaTestSuiteRunner::resolveDefaultCollection(Sequence &result, DynamicCo
   return false;
 }
 
-string serializeXMLResults(const Sequence &result, const DynamicContext *context) {
+static string serializeXMLResults(XQilla &xqilla, const Sequence &result, DynamicContext *context)
+{
+  static const char *serializeQuery = "declare copy-namespaces preserve, inherit; "
+	  "declare variable $results external; document { $results }";
+
+  // Emulate the XQuery serialization spec
+  Janitor<XQQuery> query(xqilla.parse(X(serializeQuery), context, 0, XQilla::NO_ADOPT_CONTEXT));
+  context->getVariableStore()->setGlobalVar(X("results"), result, context, 0);
+  Result sResult = query->execute(context);
+
   MemBufFormatTarget strTarget;
   {
     XMLFormatter formatter("UTF-8", "1.0", &strTarget, XMLFormatter::NoEscapes, XMLFormatter::UnRep_CharRef);
-    for(unsigned int i=0;i<result.getLength();i++) {
-      const Item* item=result.item(i);
-      if(i>0 && !item->isNode() && !result.item(i-1)->isNode())
-        formatter << X(" ");
-      if(item->isNode())
-        formatter << XMLFormatter::NoEscapes;
-      else
-        formatter << XMLFormatter::CharEscapes;
-      formatter << item->asString(context);
-    }
+    formatter << sResult->next(context)->asString(context);
   }
   return (char*)strTarget.getRawBuffer();
 }

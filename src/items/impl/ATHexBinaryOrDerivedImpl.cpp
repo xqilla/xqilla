@@ -92,6 +92,10 @@ AnyAtomicType::Ptr ATHexBinaryOrDerivedImpl::castAsInternal(AtomicObjectType tar
       uniBase64[i]=0;
       // replace #xA with #x20, collapse multiple spaces
       XMLString::collapseWS(uniBase64, context->getMemoryManager());
+      if(targetType == 0) {
+        targetURI = SchemaSymbols::fgURI_SCHEMAFORSCHEMA;
+        targetType = SchemaSymbols::fgDT_BASE64BINARY;
+      }
       ATBase64BinaryOrDerivedImpl* retVal=new ATBase64BinaryOrDerivedImpl(targetURI, targetType, uniBase64, context);
       context->getMemoryManager()->deallocate(uniBase64);
       context->getMemoryManager()->deallocate(binData);

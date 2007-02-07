@@ -3,8 +3,6 @@
   <error id="Constr-attr-ws-3" reason="result failure"/>
   <error id="Constr-attr-ws-5" reason="result failure"/>
   <error id="Constr-inscope-1" reason="inspect" action="pass"/>
-  <error id="Constr-inscope-10" reason="result failure"/>
-  <error id="Constr-inscope-12" reason="result failure"/>
   <error id="Constr-inscope-2" reason="inspect" action="pass"/>
   <error id="Constr-inscope-3" reason="inspect" action="pass"/>
   <error id="Constr-inscope-4" reason="inspect" action="pass"/>
@@ -23,7 +21,6 @@
   <error id="K-SeqSUMFunc-26" reason="error failure"/>
   <error id="base-URI-18" reason="error failure"/>
   <error id="base-URI-24" reason="error failure"/>
-  <error id="base-uri-29" reason="result failure"/>
   <error id="caselessmatch04" reason="result failure"/>
   <error id="caselessmatch05" reason="result failure"/>
   <error id="caselessmatch06" reason="result failure"/>
@@ -38,8 +35,6 @@
   <error id="fn-avg-mix-args-015" reason="result failure"/>
   <error id="fn-avg-mix-args-020" reason="result failure"/>
   <error id="fn-avg-mix-args-022" reason="result failure"/>
-  <error id="fn-base-uri-17" reason="result failure"/>
-  <error id="fn-base-uri-21" reason="result failure"/>
   <error id="fn-base-uri-23" reason="error failure"/>
   <error id="fn-current-date-1" reason="inspect" action="pass"/>
   <error id="fn-current-date-10" reason="inspect" action="pass"/>

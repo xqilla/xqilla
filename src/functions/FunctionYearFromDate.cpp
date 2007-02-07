@@ -51,7 +51,7 @@ ASTNode *FunctionYearFromDate::staticTyping(StaticContext *context)
   return calculateSRCForArguments(context, /*checkTimezone*/true);
 }
 
-Sequence FunctionYearFromDate::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionYearFromDate::createSequence(DynamicContext* context, int flags) const
 {
   XPath2MemoryManager* memMgr = context->getMemoryManager();
 

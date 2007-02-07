@@ -30,23 +30,27 @@ public:
   void setExpression(ASTNode *expr) { expr_ = expr; }
   const XMLCh *getTypeURI() const { return uri_; }
   const XMLCh *getTypeName() const { return name_; }
+  bool isPrimitive() const { return isPrimitive_; }
+  AnyAtomicType::AtomicObjectType getTypeIndex() const { return typeIndex_; }  
 
 protected:
   class PromoteUntypedResult : public ResultImpl
   {
   public:
-    PromoteUntypedResult(const XQPromoteUntyped *di, const Result &parent, const XMLCh *uri, const XMLCh *name)
-      : ResultImpl(di), parent_(parent), uri_(uri), name_(name) {}
+    PromoteUntypedResult(const XQPromoteUntyped *di, const Result &parent)
+      : ResultImpl(di), parent_(parent), di_(di) {}
 
     Item::Ptr next(DynamicContext *context);
     std::string asString(DynamicContext *context, int indent) const { return "promoteuntypedresult"; }
   private:
     Result parent_;
-    const XMLCh *uri_, *name_;
+    const XQPromoteUntyped *di_;
   };
 
   ASTNode* expr_;
   const XMLCh *uri_, *name_;
+  bool isPrimitive_;
+  AnyAtomicType::AtomicObjectType typeIndex_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -64,23 +68,25 @@ public:
   void setExpression(ASTNode *expr) { expr_ = expr; }
   const XMLCh *getTypeURI() const { return uri_; }
   const XMLCh *getTypeName() const { return name_; }
+  AnyAtomicType::AtomicObjectType getTypeIndex() const { return typeIndex_; }
 
 protected:
   class PromoteNumericResult : public ResultImpl
   {
   public:
-    PromoteNumericResult(const XQPromoteNumeric *di, const Result &parent, const XMLCh *uri, const XMLCh *name)
-      : ResultImpl(di), parent_(parent), uri_(uri), name_(name) {}
+    PromoteNumericResult(const XQPromoteNumeric *di, const Result &parent)
+      : ResultImpl(di), parent_(parent), di_(di) {}
 
     Item::Ptr next(DynamicContext *context);
     std::string asString(DynamicContext *context, int indent) const { return "promotenumericresult"; }
   private:
     Result parent_;
-    const XMLCh *uri_, *name_;
+    const XQPromoteNumeric *di_;
   };
 
   ASTNode* expr_;
   const XMLCh *uri_, *name_;
+  AnyAtomicType::AtomicObjectType typeIndex_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

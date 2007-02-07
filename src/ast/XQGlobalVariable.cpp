@@ -50,7 +50,7 @@ void XQGlobalVariable::execute(DynamicContext* context) const
         errMsg.set(X("A value for the external variable '"));
         errMsg.append(m_szQName);
         errMsg.append(X("' has not been provided [err:XPTY0002]"));
-        XQThrow(IllegalArgumentException,X("XQGlobalVariable::collapseTreeInternal"),errMsg.getRawBuffer());
+        XQThrow(IllegalArgumentException,X("XQGlobalVariable::createSequence"),errMsg.getRawBuffer());
       }
       if(m_Type != NULL) {
         // Check the external value's type
@@ -59,7 +59,7 @@ void XQGlobalVariable::execute(DynamicContext* context) const
       }
     }
     else {
-      varStore->setGlobalVar(m_szURI, m_szLocalName, m_Value->collapseTree(context)->
+      varStore->setGlobalVar(m_szURI, m_szLocalName, m_Value->createResult(context)->
                              toSequence(context), context);
     }
   }
@@ -69,7 +69,7 @@ void XQGlobalVariable::execute(DynamicContext* context) const
     errMsg.append(m_szQName);
     errMsg.append(X("' does not match the declared type: "));
     errMsg.append(ex.getError());
-    XQThrow(XPath2TypeMatchException,X("XQGlobalVariable::collapseTreeInternal"),errMsg.getRawBuffer());
+    XQThrow(XPath2TypeMatchException,X("XQGlobalVariable::createSequence"),errMsg.getRawBuffer());
   }
 }
 

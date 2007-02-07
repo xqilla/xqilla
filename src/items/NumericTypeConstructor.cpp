@@ -20,7 +20,12 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/context/ItemFactory.hpp>
 #include <xqilla/utils/UTF8Str.hpp>
+#include <xqilla/utils/XStr.hpp>
 #include <xqilla/exceptions/TypeNotFoundException.hpp>
+#include <xqilla/events/EventHandler.hpp>
+#include <xqilla/items/impl/ATDecimalOrDerivedImpl.hpp>
+#include <xqilla/items/impl/ATDoubleOrDerivedImpl.hpp>
+#include <xqilla/items/impl/ATFloatOrDerivedImpl.hpp>
 #include "../exceptions/InvalidLexicalSpaceException.hpp"
 
 #if defined(XERCES_HAS_CPP_NAMESPACE)
@@ -40,7 +45,7 @@ NumericTypeConstructor::NumericTypeConstructor(const XMLCh* typeURI,
 
   memset(&_value, 0, sizeof(_value));
 
-	const M_APM cval = value.c_struct();
+  const M_APM cval = value.c_struct();
 
   _value.m_apm_datalength = cval->m_apm_datalength;
   _value.m_apm_exponent = cval->m_apm_exponent;
@@ -56,7 +61,7 @@ Item::Ptr NumericTypeConstructor::createItem(const DynamicContext* context) cons
 {
   // Use the C API to copy our fake MAPM
   MAPM copy;
-	m_apm_copy(const_cast<M_APM>(copy.c_struct()), const_cast<M_APM>(&_value));
+  m_apm_copy(const_cast<M_APM>(copy.c_struct()), const_cast<M_APM>(&_value));
 
   Numeric::Ptr retVal;
   switch(_primitiveType) {
@@ -94,6 +99,32 @@ Item::Ptr NumericTypeConstructor::createItem(const DynamicContext* context) cons
     XQThrow2(InvalidLexicalSpaceException, X("NumericTypeConstructor::createItem"), buf.getRawBuffer());
   }
   return retVal;
+}
+
+void NumericTypeConstructor::generateEvents(EventHandler *events, const DynamicContext* context) const
+{
+  // Use the C API to copy our fake MAPM
+  MAPM copy;
+  m_apm_copy(const_cast<M_APM>(copy.c_struct()), const_cast<M_APM>(&_value));
+
+  Numeric::Ptr retVal;
+  switch(_primitiveType) {
+  case AnyAtomicType::DECIMAL:
+    events->atomicItemEvent(Numeric::asDecimalString(copy, ATDecimalOrDerivedImpl::g_nSignificantDigits, context),
+                            _typeURI, _typeName);
+    break;
+  case AnyAtomicType::FLOAT:
+    events->atomicItemEvent(Numeric::asDoubleString(Numeric::NUM, copy, ATFloatOrDerivedImpl::g_nSignificantDigits, context),
+                            _typeURI, _typeName);
+    break;
+  case AnyAtomicType::DOUBLE:
+    events->atomicItemEvent(Numeric::asDoubleString(Numeric::NUM, copy, ATDoubleOrDerivedImpl::g_nSignificantDigits, context),
+                            _typeURI, _typeName);
+    break;
+  default:
+    assert(false);
+    break;
+  }
 }
 
 std::string NumericTypeConstructor::asString(const DynamicContext* context) const

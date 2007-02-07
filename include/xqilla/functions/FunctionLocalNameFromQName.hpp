@@ -34,7 +34,7 @@ public:
   FunctionLocalNameFromQName(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   /** Returns the local-name part of a QName, eg for foo:bar it returns bar */
-  Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
+  Sequence createSequence(DynamicContext* context, int flags=0) const;
 };
 
 #endif // _FUNCTIONGETLOCALNAMEFROMQNAME_HPP

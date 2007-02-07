@@ -42,7 +42,7 @@ ASTNode* UReplace::staticResolution(StaticContext *context)
   target_->setLocationInfo(this);
   target_ = target_->staticResolution(context);
 
-  expr_ = new (mm) XQContentSequence(expr_, /*copy*/true, mm);
+  expr_ = new (mm) XQContentSequence(expr_, mm);
   expr_->setLocationInfo(this);
   expr_ = expr_->staticResolution(context);
 
@@ -77,13 +77,13 @@ ASTNode *UReplace::staticTyping(StaticContext *context)
 
 PendingUpdateList UReplace::createUpdateList(DynamicContext *context) const
 {
-  Node::Ptr node = (Node*)target_->collapseTree(context)->next(context).get();
+  Node::Ptr node = (Node*)target_->createResult(context)->next(context).get();
 
   if(node->dmParent(context).isNull())
     XQThrow(XPath2TypeMatchException,X("UReplace::staticTyping"),
             X("The target node of a replace expression does not have a parent [err:TBD]"));
 
-  Result tmpRes = expr_->collapseTree(context);
+  Result tmpRes = expr_->createResult(context);
   Item::Ptr tmp;
 
   Sequence value(context->getMemoryManager());

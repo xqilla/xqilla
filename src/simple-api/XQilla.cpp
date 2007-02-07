@@ -19,11 +19,13 @@
 #include <xqilla/simple-api/XQQuery.hpp>
 #include <xqilla/context/XQDebugCallback.hpp>
 #include <xqilla/exceptions/ContextException.hpp>
-#include <xqilla/context/impl/XQContextImpl.hpp>
 #include <xqilla/utils/XQillaPlatformUtils.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/exceptions/XQException.hpp>
+#include <xqilla/fastxdm/FastXDMConfiguration.hpp>
 #include "../lexer/XQLexer.hpp"
+
+#include <xqilla/context/impl/XQContextImpl.hpp>
 
 #include <xercesc/util/XMLURL.hpp>
 #include <xercesc/util/TransService.hpp>
@@ -37,7 +39,7 @@
 XERCES_CPP_NAMESPACE_USE
 #endif
 
-XQilla::XQilla(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr)
+XQilla::XQilla(MemoryManager *memMgr)
 {
   XQillaPlatformUtils::initialize(memMgr);
 }
@@ -54,7 +56,7 @@ XQQuery* XQilla::parse(const XMLCh* inputQuery, DynamicContext* context,
   bool contextOwned = (flags & NO_ADOPT_CONTEXT) == 0;
   if(context == 0) {
     contextOwned = true;
-    context = createContext(XQilla::XQUERY, memMgr);
+    context = createContext(XQilla::XQUERY, 0, memMgr);
   }
 
   Janitor<XQQuery> query(new (memMgr) XQQuery(inputQuery, context, contextOwned, memMgr));
@@ -131,9 +133,15 @@ XQQuery* XQilla::parseFromURI(const XMLCh* queryFile, DynamicContext* context,
   return parse(moduleText.getRawBuffer(), context, queryFile, flags, memMgr);
 }
 
-DynamicContext *XQilla::createContext(Language language, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr)
+static FastXDMConfiguration _gDefaultConfiguration;
+
+DynamicContext *XQilla::createContext(Language language, XQillaConfiguration *conf,
+                                      MemoryManager *memMgr)
 {
-  return new (memMgr) XQContextImpl(language, memMgr, 0, 0);
+  if(conf == 0) conf = &_gDefaultConfiguration;
+  DynamicContext *result = new (memMgr) XQContextImpl(conf, language, memMgr);
+  conf->populateStaticContext(result);
+  return result;
 }
 
 #ifdef _DEBUG
@@ -168,6 +176,7 @@ bool XQilla::readQuery(const InputSource& querySrc, MemoryManager* memMgr, XMLBu
     Janitor<XMLTranscoder> transcoder(NULL);
     XMLTransService::Codes retCode;
     if(querySrc.getEncoding()==NULL) {
+      // TBD make this better by using an XQuery specific encoding sniffer - jpcs
       XMLRecognizer::Encodings encoding=XMLRecognizer::basicEncodingProbe(buffer,BUFFER_SIZE);
       transcoder.reset(XMLPlatformUtils::fgTransService->makeNewTranscoderFor(encoding, retCode, BUFFER_SIZE, memMgr));
     }

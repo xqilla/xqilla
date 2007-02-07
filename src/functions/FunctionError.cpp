@@ -55,11 +55,11 @@ ASTNode *FunctionError::staticTyping(StaticContext *context)
 
 PendingUpdateList FunctionError::createUpdateList(DynamicContext *context) const
 {
-  collapseTreeInternal(context); // doesn't return
+  createSequence(context); // doesn't return
   return PendingUpdateList();
 }
 
-Sequence FunctionError::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionError::createSequence(DynamicContext* context, int flags) const
 {
     XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer exc_name(1023, context->getMemoryManager());
     exc_name.set(X("User-requested error"));
@@ -77,7 +77,7 @@ Sequence FunctionError::collapseTreeInternal(DynamicContext* context, int flags)
                 if(arg.isEmpty())
                 {
                     if(getNumArgs()==1)
-                        XQThrow(XPath2ErrorException, X("FunctionError::collapseTreeInternal"), X("ItemType matching failed [err:XPTY0004]"));
+                        XQThrow(XPath2ErrorException, X("FunctionError::createSequence"), X("ItemType matching failed [err:XPTY0004]"));
                 }
                 else
                 {
@@ -88,7 +88,7 @@ Sequence FunctionError::collapseTreeInternal(DynamicContext* context, int flags)
             }
     }
     exc_name.append(X(" [err:FOER0000]"));
-    XQThrow(XPath2ErrorException, X("FunctionError::collapseTreeInternal"), exc_name.getRawBuffer());
+    XQThrow(XPath2ErrorException, X("FunctionError::createSequence"), exc_name.getRawBuffer());
 }
 
 

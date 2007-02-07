@@ -19,7 +19,6 @@
 #include <xqilla/items/Item.hpp>
 #include <xqilla/runtime/Sequence.hpp>
 #include <xqilla/context/DynamicContext.hpp>
-#include <xqilla/context/impl/XQContextImpl.hpp>
 #include <xqilla/dom-api/XQillaExpression.hpp>
 #include "XPath2ResultImpl.hpp"
 #include <xqilla/ast/ASTNode.hpp>
@@ -29,6 +28,7 @@
 
 #include <xqilla/exceptions/XQException.hpp>
 #include <xqilla/exceptions/XQillaException.hpp>
+#include <xqilla/schema/DocumentCacheImpl.hpp>
 
 #include <xercesc/util/XMLString.hpp>
 #include <xercesc/util/XMLException.hpp>
@@ -43,10 +43,11 @@ XQillaExpressionImpl::XQillaExpressionImpl(const XMLCh *expression,
                                            XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr,
                                            const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver *nsr,
                                            XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool *xmlGP)
-  : _createdWith(memMgr)
+  : _createdWith(memMgr),
+    _xmlgr(xmlGP)
 {
   try {
-    _staticContext = new (_createdWith) XQContextImpl(XQilla::XPATH2, _createdWith, xmlGP);
+    _staticContext = XQilla::createContext(XQilla::XPATH2, this, _createdWith);
     if(nsr != 0) _staticContext->setNSResolver(nsr);
     _compiledExpression = XQilla::parse(expression, _staticContext, NULL, XQilla::NO_ADOPT_CONTEXT,
                                         _createdWith);
@@ -69,6 +70,11 @@ void XQillaExpressionImpl::release()
 {
   this->~XQillaExpressionImpl();
   _createdWith->deallocate(this);
+}
+
+DocumentCache *XQillaExpressionImpl::createDocumentCache(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr)
+{
+  return new(memMgr) DocumentCacheImpl(memMgr, _xmlgr);
 }
 
 void* XQillaExpressionImpl::evaluate(XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* contextNode,

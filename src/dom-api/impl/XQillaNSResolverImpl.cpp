@@ -15,17 +15,38 @@
 #include <xqilla/dom-api/impl/XQillaNSResolverImpl.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/framework/XPath2MemoryManager.hpp>
-#include <xqilla/utils/XPath2NSUtils.hpp>
 #include <xercesc/dom/DOMElement.hpp>
 #include <xercesc/util/XMLUni.hpp>
 #include <xercesc/util/XMLUniDefs.hpp>
 #include <xercesc/util/XMLString.hpp>
-#include <xercesc/dom/DOMNamedNodeMap.hpp>
+#include <xercesc/dom/DOM.hpp>
 
 const XMLCh XQillaNSResolverImpl::g_nsBlocker[]={ XERCES_CPP_NAMESPACE_QUALIFIER chOpenSquare, XERCES_CPP_NAMESPACE_QUALIFIER chOpenSquare, 
                                                   XERCES_CPP_NAMESPACE_QUALIFIER chCloseSquare, XERCES_CPP_NAMESPACE_QUALIFIER chCloseSquare, 
                                                   XERCES_CPP_NAMESPACE_QUALIFIER chOpenCurly, XERCES_CPP_NAMESPACE_QUALIFIER chCloseCurly, 
                                                   XERCES_CPP_NAMESPACE_QUALIFIER chNull };
+
+static const XERCES_CPP_NAMESPACE_QUALIFIER DOMElement *returnOwnerElement(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *node)
+{
+  if(!node == 0) {
+    //this is to ensure that we have an element node
+    const XERCES_CPP_NAMESPACE_QUALIFIER DOMElement *parent;
+    if(node->getNodeType() == XERCES_CPP_NAMESPACE_QUALIFIER DOMNode::ATTRIBUTE_NODE) {
+      parent = static_cast<const XERCES_CPP_NAMESPACE_QUALIFIER DOMAttr *>(node)->getOwnerElement();
+    }
+    else if(node->getNodeType() != XERCES_CPP_NAMESPACE_QUALIFIER DOMNode::ELEMENT_NODE) {
+      parent = static_cast<const XERCES_CPP_NAMESPACE_QUALIFIER DOMElement *>(node->getParentNode());
+    }
+    else {
+      parent = static_cast<const XERCES_CPP_NAMESPACE_QUALIFIER DOMElement *>(node);
+    }
+    
+    return parent;
+  } else {
+    return 0;
+  }
+}
+
 
 XQillaNSResolverImpl::XQillaNSResolverImpl(XPath2MemoryManager* memMgr, 
                                          XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *resolverNode) : 
@@ -50,7 +71,7 @@ XQillaNSResolverImpl::~XQillaNSResolverImpl()
 
 const XMLCh* XQillaNSResolverImpl::lookupNamespaceURI(const XMLCh* prefix) const
 {
-  const XERCES_CPP_NAMESPACE_QUALIFIER DOMElement *parent = XPath2NSUtils::returnOwnerElement(_resolverNode);
+  const XERCES_CPP_NAMESPACE_QUALIFIER DOMElement *parent = returnOwnerElement(_resolverNode);
 
   while(!parent == 0 && parent->getNodeType() != XERCES_CPP_NAMESPACE_QUALIFIER DOMNode::DOCUMENT_NODE) {
     const XMLCh* uri = parent->getAttributeNS(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgXMLNSURIName, prefix);
@@ -76,7 +97,7 @@ const XMLCh* XQillaNSResolverImpl::lookupNamespaceURI(const XMLCh* prefix) const
 }//lookupNamespaceURI
 
 const XMLCh* XQillaNSResolverImpl::lookupPrefix(const XMLCh* uri) const {
-  const XERCES_CPP_NAMESPACE_QUALIFIER DOMElement *parent = XPath2NSUtils::returnOwnerElement(_resolverNode);
+  const XERCES_CPP_NAMESPACE_QUALIFIER DOMElement *parent = returnOwnerElement(_resolverNode);
 
   while(!parent == 0 && parent->getNodeType() != XERCES_CPP_NAMESPACE_QUALIFIER DOMNode::DOCUMENT_NODE) {
 

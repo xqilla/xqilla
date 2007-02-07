@@ -36,7 +36,7 @@ ASTNode* UInsertBefore::staticResolution(StaticContext *context)
 {
   XPath2MemoryManager *mm = context->getMemoryManager();
 
-  source_ = new (mm) XQContentSequence(source_, /*copy*/true, mm);
+  source_ = new (mm) XQContentSequence(source_, mm);
   source_->setLocationInfo(this);
   source_ = source_->staticResolution(context);
 
@@ -78,7 +78,7 @@ ASTNode *UInsertBefore::staticTyping(StaticContext *context)
 
 PendingUpdateList UInsertBefore::createUpdateList(DynamicContext *context) const
 {
-  Node::Ptr node = (Node*)target_->collapseTree(context)->next(context).get();
+  Node::Ptr node = (Node*)target_->createResult(context)->next(context).get();
 
   if(node->dmNodeKind() != Node::element_string || node->dmParent(context).isNull())
     XQThrow(XPath2TypeMatchException,X("UInsertBefore::staticTyping"),
@@ -87,7 +87,7 @@ PendingUpdateList UInsertBefore::createUpdateList(DynamicContext *context) const
   Sequence alist(context->getMemoryManager());
   Sequence clist(context->getMemoryManager());
 
-  Result value = source_->collapseTree(context);
+  Result value = source_->createResult(context);
   Item::Ptr item;
   while((item = value->next(context)).notNull()) {
     if(((Node*)item.get())->dmNodeKind() == Node::attribute_string) {

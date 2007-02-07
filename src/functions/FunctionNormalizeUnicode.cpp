@@ -48,7 +48,7 @@ FunctionNormalizeUnicode::FunctionNormalizeUnicode(const VectorOfASTNodes &args,
   _src.getStaticType().flags = StaticType::STRING_TYPE;
 }
 
-Sequence FunctionNormalizeUnicode::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionNormalizeUnicode::createSequence(DynamicContext* context, int flags) const
 {
   XPath2MemoryManager* memMgr = context->getMemoryManager();
   Sequence strParm=getParamNumber(1,context)->toSequence(context);
@@ -118,10 +118,10 @@ Sequence FunctionNormalizeUnicode::collapseTreeInternal(DynamicContext* context,
       Normalizer::normalizeKD(str, buf);
     }
     else if(XPath2Utils::equals(normalization, fg_fully)) {
-      XQThrow(FunctionException, X("FunctionNormalizeUnicode::collapseTreeInternal"), X("Unsupported normalization form [err:FOCH0003]."));
+      XQThrow(FunctionException, X("FunctionNormalizeUnicode::createSequence"), X("Unsupported normalization form [err:FOCH0003]."));
     }
     else { 
-      XQThrow(FunctionException, X("FunctionNormalizeUnicode::collapseTreeInternal"), X("Invalid normalization form [err:FOCH0003]."));
+      XQThrow(FunctionException, X("FunctionNormalizeUnicode::createSequence"), X("Invalid normalization form [err:FOCH0003]."));
    }
 
     return Sequence(context->getItemFactory()->createString(buf.getRawBuffer(), context), memMgr);

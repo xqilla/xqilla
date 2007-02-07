@@ -105,11 +105,9 @@ public:
   virtual AnyAtomicType::AtomicObjectType getPrimitiveTypeIndex() const = 0;
   
   static const XMLCh fgDT_DAYTIMEDURATION[];
-  static const XMLCh fgDT_DAYTIMEDURATION_XERCESHASH[];
   static const XMLCh pattern_DT_DAYTIMEDURATION[];
  
   static const XMLCh fgDT_YEARMONTHDURATION[];
-  static const XMLCh fgDT_YEARMONTHDURATION_XERCESHASH[];
   static const XMLCh pattern_DT_YEARMONTHDURATION[];
 };
 

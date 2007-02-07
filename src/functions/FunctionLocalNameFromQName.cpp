@@ -42,7 +42,7 @@ FunctionLocalNameFromQName::FunctionLocalNameFromQName(const VectorOfASTNodes &a
   _src.getStaticType().flags = StaticType::STRING_TYPE;
 }
 
-Sequence FunctionLocalNameFromQName::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionLocalNameFromQName::createSequence(DynamicContext* context, int flags) const
 {
   Sequence arg=getParamNumber(1,context)->toSequence(context);
   if(arg.isEmpty())

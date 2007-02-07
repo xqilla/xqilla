@@ -63,7 +63,7 @@ ASTNode *FunctionStaticBaseURI::staticTyping(StaticContext *context)
   return this;
 }
 
-Sequence FunctionStaticBaseURI::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionStaticBaseURI::createSequence(DynamicContext* context, int flags) const
 {
   // Always constant folded
   return Sequence(context->getMemoryManager());

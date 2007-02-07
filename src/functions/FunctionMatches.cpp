@@ -46,7 +46,7 @@ FunctionMatches::FunctionMatches(const VectorOfASTNodes &args, XPath2MemoryManag
   _src.getStaticType().flags = StaticType::BOOLEAN_TYPE;
 }
 
-Sequence FunctionMatches::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionMatches::createSequence(DynamicContext* context, int flags) const
 {
   XPath2MemoryManager* memMgr = context->getMemoryManager();
 
@@ -78,7 +78,7 @@ Sequence FunctionMatches::collapseTreeInternal(DynamicContext* context, int flag
     case chLatin_x:
       break;
     default:
-      XQThrow(FunctionException, X("FunctionMatches::collapseTreeInternal"),X("Invalid regular expression flags [err:FORX0001]."));
+      XQThrow(FunctionException, X("FunctionMatches::createSequence"),X("Invalid regular expression flags [err:FORX0001]."));
     }
   }
 
@@ -96,9 +96,9 @@ Sequence FunctionMatches::collapseTreeInternal(DynamicContext* context, int flag
     buf.set(X("Invalid regular expression: "));
     buf.append(e.getMessage());
     buf.append(X(" [err:FORX0002]"));
-    XQThrow(FunctionException, X("FunctionMatches::collapseTreeInternal"), buf.getRawBuffer());
+    XQThrow(FunctionException, X("FunctionMatches::createSequence"), buf.getRawBuffer());
   } catch (XMLException &e){ 
-    XQThrow(FunctionException, X("FunctionMatches::collapseTreeInternal"), e.getMessage());  
+    XQThrow(FunctionException, X("FunctionMatches::createSequence"), e.getMessage());  
   }  
 
   //do not get here

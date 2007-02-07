@@ -98,7 +98,7 @@ Item::Ptr Union::UnionResult::next(DynamicContext *context)
         return 0;
       }
       else {
-        _result = _op->getArgument(_index++)->collapseTree(context, _flags);
+        _result = _op->getArgument(_index++)->createResult(context, _flags);
       }
     }
     else {

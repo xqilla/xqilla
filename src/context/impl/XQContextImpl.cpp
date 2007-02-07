@@ -11,27 +11,13 @@
  * $Id$
  */
 
-//////////////////////////////////////////////////////////////////////
-// XQContextImpl.cpp: implementation of the XQContextImpl class.
-//////////////////////////////////////////////////////////////////////
-
-#include <iostream>
-
-#include <xercesc/dom/DOMImplementation.hpp>
-#include <xercesc/dom/DOM.hpp>
-#include <xercesc/sax/InputSource.hpp>
-#include <xercesc/sax/SAXException.hpp>
-#include <xercesc/framework/MemBufInputSource.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 #include <xercesc/util/XMLUri.hpp>
-#include <xercesc/util/XMLURL.hpp>
 
-#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/context/impl/XQContextImpl.hpp>
-#include <xqilla/context/impl/ItemFactoryImpl.hpp>
 #include <xqilla/context/impl/XQDynamicContextImpl.hpp>
+
 #include <xqilla/context/impl/CodepointCollation.hpp>
-#include <xqilla/context/impl/XercesUpdateFactory.hpp>
 #include <xqilla/context/VariableStore.hpp>
 #include <xqilla/context/VariableTypeStore.hpp>
 #include <xqilla/context/URIResolver.hpp>
@@ -47,39 +33,29 @@
 #include <xqilla/exceptions/NamespaceLookupException.hpp>
 #include <xqilla/exceptions/TypeNotFoundException.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>
-#include <xqilla/exceptions/XMLParseException.hpp>
-#include <xqilla/items/Item.hpp>
-#include <xqilla/items/Node.hpp>
 #include <xqilla/items/ATDurationOrDerived.hpp>
 #include <xqilla/items/Timezone.hpp>
 #include <xqilla/items/DatatypeLookup.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xqilla/items/impl/NodeImpl.hpp>
 #include <xqilla/functions/FunctionLookup.hpp>
 #include <xqilla/functions/FunctionConstructor.hpp>
 #include <xqilla/functions/XQUserFunction.hpp>
-#include <xqilla/schema/DocumentCacheImpl.hpp>
 #include <xqilla/dom-api/impl/XQillaNSResolverImpl.hpp>
-#include "../../dom-api/impl/XPathDocumentImpl.hpp"
+#include <xqilla/simple-api/XQillaConfiguration.hpp>
 
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
+XERCES_CPP_NAMESPACE_USE;
 
-////////////////////////////////////////////////////////////////////////
-
-const XMLCh XMLChXS[]    = { XERCES_CPP_NAMESPACE_QUALIFIER chLatin_x, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_s, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
-const XMLCh XMLChXSI[]   = { XERCES_CPP_NAMESPACE_QUALIFIER chLatin_x, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_s, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_i, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
-const XMLCh XMLChFN[]    = { XERCES_CPP_NAMESPACE_QUALIFIER chLatin_f, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
-const XMLCh XMLChXDT[]   = { XERCES_CPP_NAMESPACE_QUALIFIER chLatin_x, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_d, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
-const XMLCh XMLChLOCAL[] = { XERCES_CPP_NAMESPACE_QUALIFIER chLatin_l, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_c, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_l, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
+const XMLCh XMLChXS[]    = { chLatin_x, chLatin_s, chNull };
+const XMLCh XMLChXSI[]   = { chLatin_x, chLatin_s, chLatin_i, chNull };
+const XMLCh XMLChFN[]    = { chLatin_f, chLatin_n, chNull };
+const XMLCh XMLChXDT[]   = { chLatin_x, chLatin_d, chLatin_t, chNull };
+const XMLCh XMLChLOCAL[] = { chLatin_l, chLatin_o, chLatin_c, chLatin_a, chLatin_l, chNull };
 
 static CodepointCollation g_codepointCollation;
 
-XQContextImpl::XQContextImpl(XQilla::Language language, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr,
-                             XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool* xmlgr,
-                             XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* contextNode)
-  : _language(language),
+XQContextImpl::XQContextImpl(XQillaConfiguration *conf, XQilla::Language language, MemoryManager* memMgr)
+  : _conf(conf),
+    _language(language),
     _createdWith(memMgr),
     _internalMM(memMgr),
     _varTypeStore(0),
@@ -90,13 +66,10 @@ XQContextImpl::XQContextImpl(XQilla::Language language, XERCES_CPP_NAMESPACE_QUA
     _revalidationMode(DocumentCache::VALIDATION_STRICT),
     _messageListener(0),
     _varStore(0),
-    _documentMap(3,false,&_internalMM),
-    _uriMap(3,false, new (&_internalMM) XERCES_CPP_NAMESPACE_QUALIFIER HashPtr(), &_internalMM),
-    _resolvers(XQillaAllocator<URIResolver*>(&_internalMM)),
+    _resolvers(XQillaAllocator<ResolverEntry>(&_internalMM)),
     _moduleResolver(0)
 {
   _memMgr = &_internalMM;
-  _firstDocRefCount=new (&_internalMM) DocRefCount();
 
   ////////////////////
   // static context //
@@ -112,10 +85,10 @@ XQContextImpl::XQContextImpl(XQilla::Language language, XERCES_CPP_NAMESPACE_QUA
   // by default, the default namespace for functions is the XPath2 namespace
   _functionNS = XQFunction::XMLChFunctionURI;
 
-  if(xmlgr)
-    _docCache=new (&_internalMM) DocumentCacheImpl(&_internalMM, xmlgr);
-  else 
-    _docCache=new (&_internalMM) DocumentCacheImpl(&_internalMM);
+	// This is created with the _createdWith memory manager,
+	// since a bug in xerces means we can't use a non-thread-safe
+	// memory manager - jpcs
+  _docCache = conf->createDocumentCache(_createdWith);
 
   if(_varStore==NULL)
     _varStore=_internalMM.createVariableStore();
@@ -123,11 +96,11 @@ XQContextImpl::XQContextImpl(XQilla::Language language, XERCES_CPP_NAMESPACE_QUA
     _varTypeStore=_internalMM.createVariableTypeStore();
 
   if ((language & XQilla::UPDATE) != 0) {
-	      _functionTable = new (&_internalMM) FunctionLookup(&_internalMM);
-	      _functionTable->insertUpdateFunctions(&_internalMM);
+    _functionTable = new (&_internalMM) FunctionLookup(&_internalMM);
+    _functionTable->insertUpdateFunctions(&_internalMM);
   }
 
-  _itemFactory = new (&_internalMM) ItemFactoryImpl(_docCache, &_internalMM);
+  _itemFactory = conf->createItemFactory(_docCache, &_internalMM);
 
   // insert the default collation
   addCollation(_internalMM.createCollation(&g_codepointCollation));
@@ -138,24 +111,13 @@ XQContextImpl::XQContextImpl(XQilla::Language language, XERCES_CPP_NAMESPACE_QUA
   _bInheritNamespaces = true;
   _bPreserveNamespaces = true;
 
-  if(contextNode==0)
-		_baseURI=0;
-  else {
-    if(contextNode->getNodeType() == XERCES_CPP_NAMESPACE_QUALIFIER DOMNode::DOCUMENT_NODE) {
-      _baseURI = _internalMM.getPooledString(contextNode->getBaseURI());
-    } else {
-      _baseURI = _internalMM.getPooledString(contextNode->getOwnerDocument()->getBaseURI());
-    }
-  }
+  _baseURI=0;
 
   ////////////////////////
   // Evaluation context //
   ////////////////////////
 
-  if(contextNode!=NULL)
-    setExternalContextNode(contextNode);
-  else
-    _contextItem = NULL;
+  _contextItem = NULL;
 
   _contextPosition = 1;
   _contextSize = 1;
@@ -164,13 +126,19 @@ XQContextImpl::XQContextImpl(XQilla::Language language, XERCES_CPP_NAMESPACE_QUA
   // implicit timezone - lazily set in getImplicitTimezone
   _implicitTimezone = 0;
 
+  // Set up the default URIResolver
+  _defaultResolver.resolver = conf->createDefaultURIResolver(&_internalMM);
+  if(_defaultResolver.resolver != 0) {
+    _defaultResolver.adopt = true;
+  }
+
   // XQuery stuff
   m_pDebugCallback = NULL;
   m_bEnableDebugging = false;
 
   // XQuery defines these predefined namespace bindings
-  setNamespaceBinding(XMLChXS, XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA);
-  setNamespaceBinding(XMLChXSI, XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_XSI);
+  setNamespaceBinding(XMLChXS, SchemaSymbols::fgURI_SCHEMAFORSCHEMA);
+  setNamespaceBinding(XMLChXSI, SchemaSymbols::fgURI_XSI);
   setNamespaceBinding(XMLChFN, XQFunction::XMLChFunctionURI);
   setNamespaceBinding(XMLChXDT, FunctionConstructor::XMLChXPath2DatatypesURI);
   setNamespaceBinding(XMLChLOCAL, XQUserFunction::XMLChXQueryLocalFunctionsURI);
@@ -186,28 +154,76 @@ XQContextImpl::~XQContextImpl()
   delete _varStore;
   delete _varTypeStore;
   delete _itemFactory;
+	delete _docCache;
 
-  DocRefCount *drc;
-  while(_firstDocRefCount != 0) {
-    drc = _firstDocRefCount;
-    _firstDocRefCount = _firstDocRefCount->next;
-    _internalMM.deallocate(drc);
+  std::vector<ResolverEntry, XQillaAllocator<ResolverEntry> >::reverse_iterator end = _resolvers.rend();
+  for(std::vector<ResolverEntry, XQillaAllocator<ResolverEntry> >::reverse_iterator i = _resolvers.rbegin(); i != end; ++i) {
+    if(i->adopt) {
+      delete i->resolver;
+    }
   }
+  if(_defaultResolver.adopt)
+    delete _defaultResolver.resolver;
 }
 
-DynamicContext *XQContextImpl::createModuleContext(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr) const
+DynamicContext *XQContextImpl::createModuleContext(MemoryManager *memMgr) const
 {
-  DynamicContext* moduleCtx = new (memMgr) XQContextImpl(_language, memMgr);
-  // force the context to use our memory manager
+  DynamicContext* moduleCtx = new (memMgr) XQContextImpl(_conf, _language, memMgr);
+
+  // Force the context to use our memory manager
   moduleCtx->setMemoryManager(getMemoryManager());
+
+  // Set the ModuleResolver
+  moduleCtx->setModuleResolver(_moduleResolver);
+
+  // Set the MessageListener
+  moduleCtx->setMessageListener(_messageListener);
+
+  // Add our collations
+  for(std::vector<Collation*, XQillaAllocator<Collation*> >::const_iterator it= _collations.begin(); it!=_collations.end(); ++it)
+    moduleCtx->addCollation(*it);
+
   // propagate debug settings
-  moduleCtx->enableDebugging(isDebuggingEnabled());
+  moduleCtx->enableDebugging(m_bEnableDebugging);
+  moduleCtx->setDebugCallback(m_pDebugCallback);
+
+  _conf->populateStaticContext(moduleCtx);
   return moduleCtx;
 }
 
-DynamicContext *XQContextImpl::createDynamicContext(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr) const
+DynamicContext *XQContextImpl::createModuleDynamicContext(const DynamicContext* moduleCtx, MemoryManager *memMgr) const
 {
-  return new (memMgr) XQDynamicContextImpl(this, memMgr);
+  DynamicContext* moduleDCtx = new (memMgr) XQDynamicContextImpl(_conf, moduleCtx, memMgr);
+
+  // Force the context to use our memory manager
+  moduleDCtx->setMemoryManager(getMemoryManager());
+
+  // Add our URIResolvers to the module context
+  moduleDCtx->setDefaultURIResolver(_defaultResolver.resolver, /*adopt*/false);
+  std::vector<ResolverEntry, XQillaAllocator<ResolverEntry> >::const_iterator end = _resolvers.end();
+  for(std::vector<ResolverEntry, XQillaAllocator<ResolverEntry> >::const_iterator i = _resolvers.begin(); i != end; ++i) {
+    moduleDCtx->registerURIResolver(i->resolver, /*adopt*/false);
+  }
+
+  // Set the XMLEntityResolver
+  moduleDCtx->setXMLEntityResolver(_docCache->getXMLEntityResolver());
+
+  // Set the MessageListener
+  moduleDCtx->setMessageListener(_messageListener);
+
+  // propagate debug settings
+  moduleDCtx->enableDebugging(m_bEnableDebugging);
+  moduleDCtx->setDebugCallback(m_pDebugCallback);
+
+  _conf->populateDynamicContext(moduleDCtx);
+  return moduleDCtx;
+}
+
+DynamicContext *XQContextImpl::createDynamicContext(MemoryManager *memMgr) const
+{
+  DynamicContext *result = new (memMgr) XQDynamicContextImpl(_conf, this, memMgr);
+  _conf->populateDynamicContext(result);
+  return result;
 }
 
 XQilla::Language XQContextImpl::getLanguage() const
@@ -222,10 +238,10 @@ void XQContextImpl::setMemoryManager(XPath2MemoryManager* memMgr)
 
 void XQContextImpl::setNamespaceBinding(const XMLCh* prefix, const XMLCh* uri)
 {
-    if(XPath2Utils::equals(prefix,XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgXMLNSString) || 
-       XPath2Utils::equals(prefix,XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgXMLString))
+    if(XPath2Utils::equals(prefix,XMLUni::fgXMLNSString) || 
+       XPath2Utils::equals(prefix,XMLUni::fgXMLString))
       XQThrow2(StaticErrorException,X("XQContextImpl::setNamespaceBinding"),X("The prefixes 'xmlns' and 'xml' cannot be used in a namespace declaration [err:XQST0070]"));
-    if(XPath2Utils::equals(uri,XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgXMLURIName))
+    if(XPath2Utils::equals(uri,XMLUni::fgXMLURIName))
       XQThrow2(StaticErrorException,X("XQContextImpl::setNamespaceBinding"),X("The 'http://www.w3.org/XML/1998/namespace' namespace cannot be bound to any prefix [err:XQST0070]"));
 
 	((XQillaNSResolverImpl*)_nsResolver)->addNamespaceBinding(prefix,uri);
@@ -281,71 +297,6 @@ bool XQContextImpl::isDebuggingEnabled() const
     return m_bEnableDebugging;
 }
 
-void XQContextImpl::incrementDocumentRefCount(const XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* document) const
-{
-  assert(document != 0);
-
-  XQContextImpl* me=const_cast<XQContextImpl*>(this);
-
-  DocRefCount *found = _firstDocRefCount;
-  while(found->doc != 0 && found->doc != document) {
-    found = found->next;
-  }
-
-  if(found->doc == 0) {
-    found->doc = document;
-    found->next = new (&me->_internalMM) DocRefCount();
-  }
-  else {
-    ++found->ref_count;
-  }
-}
-
-void XQContextImpl::decrementDocumentRefCount(const XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* document) const
-{
-  assert(document != 0);
-
-  XQContextImpl* me=const_cast<XQContextImpl*>(this);
-
-  DocRefCount *prev = 0;
-  DocRefCount *found = _firstDocRefCount;
-  while(found->doc != 0 && found->doc != document) {
-    prev = found;
-    found = found->next;
-  }
-
-  if(found->doc != 0) {
-    if(--found->ref_count == 0) {
-      if(prev == 0) {
-        me->_firstDocRefCount = found->next;
-      }
-      else {
-        prev->next = found->next;
-      }
-      me->_internalMM.deallocate(found);
-      XMLCh *uri = me->_uriMap.get((void*)document);
-      if(uri != 0) {
-        me->_uriMap.removeKey((void*)document);
-        me->_documentMap.removeKey((void*)uri);
-      }
-      releaseDocument(const_cast<XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument*>(document));
-    }
-  }
-}
-
-XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* XQContextImpl::retrieveDocument(const XMLCh* uri)
-{
-  XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *doc = _documentMap.get((void*)uri);
-  return doc;
-}
-
-void XQContextImpl::storeDocument(const XMLCh* uri, XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* document)
-{
-  uri=_internalMM.getPooledString(uri);
-  _documentMap.put((void*)uri, document);
-  _uriMap.put((void*)document, const_cast<XMLCh*>(uri));
-}
-
 void XQContextImpl::clearDynamicContext()
 {
   _nsResolver = _globalNSResolver;
@@ -354,10 +305,22 @@ void XQContextImpl::clearDynamicContext()
   _contextPosition = 1;
   _varStore->clear();
   _implicitTimezone = 0;
+
+  if(_defaultResolver.adopt)
+    delete _defaultResolver.resolver;
+  _defaultResolver.adopt = false;
+  _defaultResolver.resolver = 0;
+
+  std::vector<ResolverEntry, XQillaAllocator<ResolverEntry> >::reverse_iterator end = _resolvers.rend();
+  for(std::vector<ResolverEntry, XQillaAllocator<ResolverEntry> >::reverse_iterator i = _resolvers.rbegin(); i != end; ++i) {
+    if(i->adopt) {
+      delete i->resolver;
+    }
+  }
   _resolvers.clear();
+  registerURIResolver(_conf->createDefaultURIResolver(&_internalMM), /*adopt*/true);
+
   _moduleResolver = 0;
-  _documentMap.removeAll();
-  _uriMap.removeAll();
   time(&_currentTime);
 }
 
@@ -458,11 +421,11 @@ void XQContextImpl::setImplicitTimezone(const ATDurationOrDerived::Ptr &timezone
   this->_implicitTimezone = timezoneAsDuration;
 }
 
-void XQContextImpl::setNSResolver(const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver* resolver) {
+void XQContextImpl::setNSResolver(const DOMXPathNSResolver* resolver) {
   _nsResolver = resolver;
 }
 
-const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver* XQContextImpl::getNSResolver() const {
+const DOMXPathNSResolver* XQContextImpl::getNSResolver() const {
   return _nsResolver;
 }
 
@@ -470,7 +433,7 @@ const XMLCh* XQContextImpl::getUriBoundToPrefix(const XMLCh* prefix, const Locat
 {
   const XMLCh* uri = _nsResolver->lookupNamespaceURI(prefix);
 
-	if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(uri) == 0 && XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(prefix) > 0){
+	if(XMLString::stringLen(uri) == 0 && XMLString::stringLen(prefix) > 0){
 		const XMLCh* msg = XPath2Utils::concatStrings(X("No namespace for prefix \'"), prefix, X("\' [err:XPST0081]"), getMemoryManager());
 		XQThrow3(NamespaceLookupException, X("XQContextImpl::getUriBoundToPrefix"), msg, location);
 	}
@@ -486,13 +449,6 @@ const XMLCh* XQContextImpl::getPrefixBoundToUri(const XMLCh* uri) const
 void XQContextImpl::setContextItem(const Item::Ptr &item)
 {
   _contextItem = item;
-}
-
-void XQContextImpl::setExternalContextNode(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *node)
-{
-  // bump the document reference count, so that it will never reach zero...
-  incrementDocumentRefCount(XPath2Utils::getOwnerDoc(node));
-  setContextItem(new NodeImpl(node, this));
 }
 
 void XQContextImpl::addCustomFunction(FuncFactory *func)
@@ -563,18 +519,18 @@ void XQContextImpl::setDefaultCollation(const XMLCh* URI)
 
 Collation* XQContextImpl::getCollation(const XMLCh* URI, const LocationInfo *location) const
 {
-  if(!XERCES_CPP_NAMESPACE_QUALIFIER XMLUri::isValidURI(false, URI))
+  if(!XMLUri::isValidURI(false, URI))
   {
     const XMLCh* baseURI=getBaseURI();
     if(baseURI && *baseURI)
     {
       try
       {
-        XERCES_CPP_NAMESPACE_QUALIFIER XMLUri base(baseURI, getMemoryManager());
-        XERCES_CPP_NAMESPACE_QUALIFIER XMLUri full(&base, URI, getMemoryManager());
+        XMLUri base(baseURI, getMemoryManager());
+        XMLUri full(&base, URI, getMemoryManager());
         URI = getMemoryManager()->getPooledString(full.getUriText());
       }
-      catch(XERCES_CPP_NAMESPACE_QUALIFIER XMLException &e)
+      catch(XMLException &e)
       {
         //if can't build, assume it's because there was an invalid base URI, so use the original URI
       }
@@ -637,36 +593,41 @@ void XQContextImpl::addExternalFunction(const ExternalFunction *func)
   _functionTable->insertExternalFunction(func);
 }
 
-const ExternalFunction *XQContextImpl::lookUpExternalFunction(const XMLCh *uri, const XMLCh *name, unsigned int numArgs) const
+const ExternalFunction *XQContextImpl::lookUpExternalFunction(const XMLCh *uri, const XMLCh *name,
+                                                                   unsigned int numArgs) const
 {
   return FunctionLookup::lookUpGlobalExternalFunction(uri, name, numArgs, _functionTable);
 }
 
-XERCES_CPP_NAMESPACE::DOMDocument *XQContextImpl::createNewDocument() const
-{
-  return new (getMemoryManager()) XPathDocumentImpl(getMemoryManager());
-}
-
-void XQContextImpl::releaseDocument(XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *doc) const
-{
-  doc->release();
-}
-
-void XQContextImpl::setXMLEntityResolver(XERCES_CPP_NAMESPACE_QUALIFIER XMLEntityResolver* const handler)
+void XQContextImpl::setXMLEntityResolver(XMLEntityResolver* const handler)
 {
   _docCache->setXMLEntityResolver(handler);
 }
 
-XERCES_CPP_NAMESPACE_QUALIFIER XMLEntityResolver* XQContextImpl::getXMLEntityResolver() const
+XMLEntityResolver* XQContextImpl::getXMLEntityResolver() const
 {
   return _docCache->getXMLEntityResolver();
 }
 
-void XQContextImpl::registerURIResolver(URIResolver *resolver)
+void XQContextImpl::registerURIResolver(URIResolver *resolver, bool adopt)
 {
   if(resolver != 0) {
-    _resolvers.push_back(resolver);
+    _resolvers.push_back(ResolverEntry(resolver, adopt));
   }
+}
+
+URIResolver *XQContextImpl::getDefaultURIResolver() const
+{
+  return _defaultResolver.resolver;
+}
+
+void XQContextImpl::setDefaultURIResolver(URIResolver *resolver, bool adopt)
+{
+  if(_defaultResolver.adopt) {
+    delete _defaultResolver.resolver;
+  }
+  _defaultResolver.resolver = resolver;
+  _defaultResolver.adopt = adopt;
 }
 
 Sequence XQContextImpl::resolveDocument(const XMLCh* uri, const LocationInfo *location)
@@ -674,53 +635,19 @@ Sequence XQContextImpl::resolveDocument(const XMLCh* uri, const LocationInfo *lo
   Sequence result(getMemoryManager());
 
   // Check the URIResolver objects
-  bool found = false;
-  std::vector<URIResolver *, XQillaAllocator<URIResolver*> >::reverse_iterator end = _resolvers.rend();
-  for(std::vector<URIResolver *, XQillaAllocator<URIResolver*> >::reverse_iterator i = _resolvers.rbegin();
-      !found && i != end; ++i) {
-    found = (*i)->resolveDocument(result, uri, this);
+  try {
+    std::vector<ResolverEntry, XQillaAllocator<ResolverEntry> >::reverse_iterator end = _resolvers.rend();
+    for(std::vector<ResolverEntry, XQillaAllocator<ResolverEntry> >::reverse_iterator i = _resolvers.rbegin(); i != end; ++i) {
+      if(i->resolver->resolveDocument(result, uri, this))
+        return result;
+    }
+    if(_defaultResolver.resolver)
+      _defaultResolver.resolver->resolveDocument(result, uri, this);
   }
-
-  if(!found) {
-    XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *doc = 0;
-
-    // Resolve the uri against the base uri
-    const XMLCh *systemId = uri;
-    XERCES_CPP_NAMESPACE_QUALIFIER XMLURL urlTmp(&_internalMM);
-    if(urlTmp.setURL(getBaseURI(), uri, urlTmp)) {
-      systemId = _internalMM.getPooledString(urlTmp.getURLText());
-    }
-
-    // Check in the cache
-    doc = retrieveDocument(systemId);
-
-    // Check to see if we can locate and parse the document
-    if(!doc) {
-      try {
-        doc = _docCache->loadXMLDocument(uri, this);
-        storeDocument(systemId, doc);
-      }
-      catch(const XMLParseException& e) {
-        XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer errMsg;
-        errMsg.set(X("Error parsing resource: "));
-        errMsg.append(uri);
-        errMsg.append(X(". Error message: "));
-        errMsg.append(e.getError());
-        errMsg.append(X(" [err:FODC0002]"));
-        XQThrow3(XMLParseException,X("XQContextImpl::resolveDocument"), errMsg.getRawBuffer(), location);
-      }
-    }
-
-    if(doc) {
-      result.addItem(new NodeImpl(doc, this));
-    }
-    else {
-      XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer errMsg;
-      errMsg.set(X("Error retrieving resource: "));
-      errMsg.append(uri);
-      errMsg.append(X(" [err:FODC0002]"));
-      XQThrow3(XMLParseException,X("XQContextImpl::resolveDocument"), errMsg.getRawBuffer(), location);
-    }
+  catch(XQException &e) {
+    if(e.getXQueryLine() == 0 && location)
+      e.setXQueryPosition(location);
+    throw;
   }
 
   return result;
@@ -731,47 +658,19 @@ Sequence XQContextImpl::resolveCollection(const XMLCh* uri, const LocationInfo *
   Sequence result(getMemoryManager());
 
   // Check the URIResolver objects
-  bool found = false;
-  std::vector<URIResolver *, XQillaAllocator<URIResolver*> >::reverse_iterator end = _resolvers.rend();
-  for(std::vector<URIResolver *, XQillaAllocator<URIResolver*> >::reverse_iterator i = _resolvers.rbegin();
-      !found && i != end; ++i) {
-    found = (*i)->resolveCollection(result, uri, this);
+  try {
+    std::vector<ResolverEntry, XQillaAllocator<ResolverEntry> >::reverse_iterator end = _resolvers.rend();
+    for(std::vector<ResolverEntry, XQillaAllocator<ResolverEntry> >::reverse_iterator i = _resolvers.rbegin(); i != end; ++i) {
+      if(i->resolver->resolveCollection(result, uri, this))
+        return result;
+    }
+    if(_defaultResolver.resolver)
+      _defaultResolver.resolver->resolveCollection(result, uri, this);
   }
-
-  if(!found) {
-    XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *doc = 0;
-
-    // Resolve the uri against the base uri
-    const XMLCh *systemId = uri;
-    XERCES_CPP_NAMESPACE_QUALIFIER XMLURL urlTmp(&_internalMM);
-    if(urlTmp.setURL(getBaseURI(), uri, urlTmp)) {
-      systemId = _internalMM.getPooledString(urlTmp.getURLText());
-    }
-
-    // Check in the cache
-    doc = retrieveDocument(systemId);
-
-    // Check to see if we can locate and parse the document
-    if(!doc) {
-      try {
-        doc = _docCache->loadXMLDocument(uri, this);
-        storeDocument(systemId, doc);
-      }
-      catch(const XMLParseException& e) {
-        doc = 0;
-      }
-    }
-
-    if(doc) {
-      result.addItem(new NodeImpl(doc, this));
-    }
-    else {
-      XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer errMsg;
-      errMsg.set(X("Error retrieving resource: "));
-      errMsg.append(uri);
-      errMsg.append(X(" [err:FODC0004]"));
-      XQThrow3(XMLParseException,X("XQContextImpl::resolveCollection"), errMsg.getRawBuffer(), location);
-    }
+  catch(XQException &e) {
+    if(e.getXQueryLine() == 0 && location)
+      e.setXQueryPosition(location);
+    throw;
   }
 
   return result;
@@ -780,12 +679,13 @@ Sequence XQContextImpl::resolveCollection(const XMLCh* uri, const LocationInfo *
 Sequence XQContextImpl::resolveDefaultCollection()
 {
   Sequence result(getMemoryManager());
-  std::vector<URIResolver *, XQillaAllocator<URIResolver*> >::reverse_iterator end = _resolvers.rend();
-  for(std::vector<URIResolver *, XQillaAllocator<URIResolver*> >::reverse_iterator i = _resolvers.rbegin(); i != end; ++i) {
-    if((*i)->resolveDefaultCollection(result, this)) {
-      break;
-    }
+  std::vector<ResolverEntry, XQillaAllocator<ResolverEntry> >::reverse_iterator end = _resolvers.rend();
+  for(std::vector<ResolverEntry, XQillaAllocator<ResolverEntry> >::reverse_iterator i = _resolvers.rbegin(); i != end; ++i) {
+    if(i->resolver->resolveDefaultCollection(result, this))
+      return result;
   }
+  if(_defaultResolver.resolver)
+    _defaultResolver.resolver->resolveDefaultCollection(result, this);
   return result;
 }
 
@@ -841,6 +741,11 @@ Node::Ptr XQContextImpl::validate(const Node::Ptr &node, DocumentCache::Validati
   return _docCache->validate(node, valMode, this);
 }
 
+SequenceBuilder *XQContextImpl::createSequenceBuilder() const
+{
+  return _conf->createSequenceBuilder(this);
+}
+
 ItemFactory *XQContextImpl::getItemFactory() const
 {
   return _itemFactory;
@@ -853,7 +758,7 @@ void XQContextImpl::setItemFactory(ItemFactory *factory)
 
 UpdateFactory *XQContextImpl::createUpdateFactory() const
 {
-  return new XercesUpdateFactory();
+  return _conf->createUpdateFactory(const_cast<ProxyMemoryManager*>(&_internalMM));
 }
 
 void XQContextImpl::setRevalidationMode(DocumentCache::ValidationMode mode)
@@ -874,5 +779,10 @@ void XQContextImpl::setMessageListener(MessageListener *listener)
 MessageListener *XQContextImpl::getMessageListener() const
 {
   return _messageListener;
+}
+
+void XQContextImpl::testInterrupt() const
+{
+  _conf->testInterrupt();
 }
 

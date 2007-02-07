@@ -43,7 +43,7 @@ FunctionCompare::FunctionCompare(const VectorOfASTNodes &args, XPath2MemoryManag
   _src.getStaticType().flags = StaticType::DECIMAL_TYPE;
 }
 
-Sequence FunctionCompare::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionCompare::createSequence(DynamicContext* context, int flags) const
 {
     Sequence str1 = getParamNumber(1,context)->toSequence(context);
     Sequence str2 = getParamNumber(2,context)->toSequence(context);
@@ -57,11 +57,11 @@ Sequence FunctionCompare::collapseTreeInternal(DynamicContext* context, int flag
         try {
             context->getItemFactory()->createAnyURI(collName, context);
         } catch(XPath2ErrorException &e) {
-            XQThrow(FunctionException, X("FunctionCompare::collapseTreeInternal"), X("Invalid argument to compare function"));  
+            XQThrow(FunctionException, X("FunctionCompare::createSequence"), X("Invalid argument to compare function"));  
         }
         collation = context->getCollation(collName, this);
         if(collation == NULL)
-            XQThrow(FunctionException,X("FunctionCompare::collapseTreeInternal"),X("Collation object is not available"));
+            XQThrow(FunctionException,X("FunctionCompare::createSequence"),X("Collation object is not available"));
     }
     else
         collation = context->getDefaultCollation(this);

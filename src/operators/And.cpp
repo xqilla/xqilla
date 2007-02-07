@@ -61,7 +61,7 @@ ASTNode* And::staticTyping(StaticContext *context)
     else {
       AutoDelete<DynamicContext> dContext(context->createDynamicContext());
       dContext->setMemoryManager(context->getMemoryManager());
-      if(!(*i)->collapseTree(dContext)->getEffectiveBooleanValue(dContext, *i)) {
+      if(!(*i)->createResult(dContext)->getEffectiveBooleanValue(dContext, *i)) {
         // It's constantly false, so this expression is false
         ASTNode* newBlock = new (getMemoryManager())
           XQSequence(dContext->getItemFactory()->createBoolean(false, dContext),
@@ -88,7 +88,7 @@ Item::Ptr And::AndResult::getSingleResult(DynamicContext *context) const
 {
   unsigned int numArgs=_op->getNumArgs();
   for(unsigned int i=0;i<numArgs;i++) {
-    if(!_op->getArgument(i)->collapseTree(context)->getEffectiveBooleanValue(context, _op->getArgument(i))) {
+    if(!_op->getArgument(i)->createResult(context)->getEffectiveBooleanValue(context, _op->getArgument(i))) {
       return (const Item::Ptr)context->getItemFactory()->createBoolean(false, context);
     }
   }

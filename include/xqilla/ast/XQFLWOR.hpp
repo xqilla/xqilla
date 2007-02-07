@@ -103,6 +103,8 @@ public:
   XQFLWOR(VectorOfVariableBinding* bindings, ASTNode* where, XQSort* orderBy, ASTNode* returnExpr, XPath2MemoryManager* expr);
 
   virtual Result createResult(DynamicContext *context, int flags=0) const;
+  virtual void generateEvents(EventHandler *events, DynamicContext *context,
+                              bool preserveNS, bool preserveType) const;
   virtual ASTNode* staticResolution(StaticContext *context);
   virtual ASTNode *staticTyping(StaticContext *context);
   virtual PendingUpdateList createUpdateList(DynamicContext *context) const;

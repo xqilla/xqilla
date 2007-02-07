@@ -71,7 +71,7 @@ ASTNode* XQPredicate::staticTyping(StaticContext *context)
     // It's not a numeric constant
     AutoDelete<DynamicContext> dContext(context->createDynamicContext());
     dContext->setMemoryManager(mm);
-    if(predicate_->collapseTree(dContext)->getEffectiveBooleanValue(dContext, this)) {
+    if(predicate_->createResult(dContext)->getEffectiveBooleanValue(dContext, this)) {
       // We have a true predicate
       return expr_;
     }
@@ -96,7 +96,7 @@ Result XQPredicate::createResult(DynamicContext* context, int flags) const
 {
   const StaticResolutionContext &src = predicate_->getStaticResolutionContext();
 
-  Result parent = expr_->collapseTree(context, flags);
+  Result parent = expr_->createResult(context, flags);
 
   unsigned int contextSize = 0;
   if(src.isContextSizeUsed()) {
@@ -169,7 +169,7 @@ Item::Ptr XQPredicate::PredicateFilterResult::next(DynamicContext *context)
       context->setContextPosition(contextPos_);
       context->setContextItem(result);
 
-      Result pred_result = pred_->collapseTree(context);
+      Result pred_result = pred_->createResult(context);
       first_ = pred_result->next(context);
       if(first_ != NULLRCP) {
         second_ = pred_result->next(context);
@@ -252,7 +252,7 @@ Item::Ptr XQPredicate::NonNumericPredicateFilterResult::next(DynamicContext *con
       context->setContextItem(result);
 
       // 2) Otherwise, the predicate truth value is the effective boolean value of the predicate expression
-      if(!pred_->collapseTree(context)->getEffectiveBooleanValue(context, this)) {
+      if(!pred_->createResult(context)->getEffectiveBooleanValue(context, this)) {
         result = 0;
         if(!contextUsed) {
           parent_ = 0;
@@ -304,7 +304,7 @@ Item::Ptr XQPredicate::NumericPredicateFilterResult::next(DynamicContext *contex
     // a context item
     context->setContextItem(pFactory->createInteger(1, context));
 
-    Result pred_result = pred_->collapseTree(context);
+    Result pred_result = pred_->createResult(context);
     Numeric::Ptr first = (Numeric::Ptr)pred_result->next(context);
     if(first == NULLRCP) {
       // The effective boolean value is therefore false

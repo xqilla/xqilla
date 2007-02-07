@@ -34,7 +34,7 @@ FunctionRound::FunctionRound(const VectorOfASTNodes &args, XPath2MemoryManager* 
   _src.getStaticType().flags = StaticType::NUMERIC_TYPE;
 }
 
-Sequence FunctionRound::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionRound::createSequence(DynamicContext* context, int flags) const
 {
   XPath2MemoryManager* memMgr = context->getMemoryManager();
 

@@ -33,7 +33,7 @@ public:
   FunctionStartsWith(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   /** XPath function. returns true if string1 starts with string2 **/
-  Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
+  Sequence createSequence(DynamicContext* context, int flags=0) const;
 
 };
 

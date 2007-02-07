@@ -19,7 +19,6 @@
 #include <xqilla/ast/XQStep.hpp>
 #include <xqilla/runtime/Sequence.hpp>
 #include <xqilla/context/DynamicContext.hpp>
-#include <xercesc/dom/DOMDocument.hpp>
 #include <xqilla/exceptions/TypeErrorException.hpp>
 #include <xqilla/items/Node.hpp>
 #include <xqilla/ast/StaticResolutionContext.hpp>
@@ -53,7 +52,7 @@ Result XQNav::createResult(DynamicContext* context, int flags) const
   if(it != end) {
     ASTNode *step = it->step;
 
-    result = step->collapseTree(context, flags);
+    result = step->createResult(context, flags);
     StaticType st = step->getStaticResolutionContext().getStaticType();
 
     for(++it; it != end; ++it) {
@@ -357,7 +356,7 @@ Item::Ptr NavStepResult::next(DynamicContext *context)
     context->setContextPosition(contextPos_);
     context->setContextItem(contextItem_);
 
-    stepResult_ = step_->collapseTree(context);
+    stepResult_ = step_->createResult(context);
     result = stepResult_->next(context);
   }
 

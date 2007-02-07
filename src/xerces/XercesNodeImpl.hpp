@@ -16,6 +16,8 @@
 
 #include <xqilla/items/Node.hpp>
 #include <xqilla/utils/XMLChCompare.hpp>
+#include <xqilla/axis/Axis.hpp>
+
 #include <xercesc/util/XercesDefs.hpp>
 #include <xercesc/framework/XMLBuffer.hpp>
 
@@ -26,17 +28,16 @@ class DocumentCache;
 
 XERCES_CPP_NAMESPACE_BEGIN
 class DatatypeValidator;
-class DOMWriter;
 class DOMNode;
 XERCES_CPP_NAMESPACE_END
 
-class XQILLA_API NodeImpl : public Node
+class XercesNodeImpl : public Node, private AxisNodeFactory
 {
 public:
-  typedef RefCountPointer<const NodeImpl> Ptr;
+  typedef RefCountPointer<const XercesNodeImpl> Ptr;
 
-  NodeImpl(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *node, const DynamicContext *context);
-  ~NodeImpl();
+  XercesNodeImpl(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *node, const DynamicContext *context);
+  ~XercesNodeImpl();
 
   virtual void *getInterface(const XMLCh *name) const;
 
@@ -62,6 +63,7 @@ public:
 
   virtual const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* getDOMNode() const;
 
+  virtual Node::Ptr root(const DynamicContext* context) const;
   virtual Node::Ptr dmParent(const DynamicContext* context) const;
   virtual Result dmAttributes(const DynamicContext* context, const LocationInfo *info) const;
   virtual Result dmNamespaceNodes(const DynamicContext* context, const LocationInfo *info) const;
@@ -75,17 +77,18 @@ public:
   virtual const XMLCh* getTypeURI() const;
   virtual const XMLCh* getTypeName() const;
 
-  static const XMLCh ls_string[];
+  virtual void generateEvents(EventHandler *events, const DynamicContext *context,
+                              bool preserveNS = true, bool preserveType = true) const;
 
 protected:
-  NodeImpl(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *node);
+  XercesNodeImpl(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *node);
+
+  virtual Node::Ptr createNode(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *node, const DynamicContext *context) const;
 
   virtual void getTypeUriAndName(const XMLCh*& uri, const XMLCh*& name) const;
   virtual void getMemberTypeUriAndName(const XMLCh*& uri, const XMLCh*& name) const;
   Sequence getListTypeTypedValue(XERCES_CPP_NAMESPACE_QUALIFIER DatatypeValidator *dtv, const DynamicContext* context) const;
   void addStringValueToBuffer(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* node, XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer& buffer) const;
-
-  XERCES_CPP_NAMESPACE_QUALIFIER DOMWriter *fSerializer;
 
   const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* fNode;
   const DynamicContext *context_;

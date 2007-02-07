@@ -55,7 +55,7 @@ FunctionEncodeForUri::FunctionEncodeForUri(const VectorOfASTNodes &args, XPath2M
   _src.getStaticType().flags = StaticType::STRING_TYPE;
 }
 
-Sequence FunctionEncodeForUri::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionEncodeForUri::createSequence(DynamicContext* context, int flags) const
 {
     Sequence uriPart=getParamNumber(1,context)->toSequence(context);
     if(uriPart.isEmpty())

@@ -37,7 +37,7 @@ XQOrderingChange::XQOrderingChange(StaticContext::NodeSetOrdering ordering, ASTN
 
 Result XQOrderingChange::createResult(DynamicContext *context, int flags) const
 {
-  return m_pExpr->collapseTree(context);
+  return m_pExpr->createResult(context);
 }
 
 ASTNode* XQOrderingChange::staticResolution(StaticContext* context)

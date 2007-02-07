@@ -21,9 +21,9 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 
-#include <xqilla/ast/AggregateFunction.hpp>
+#include <xqilla/ast/ConstantFoldingFunction.hpp>
 
-class XQILLA_API FunctionMin : public AggregateFunction
+class XQILLA_API FunctionMin : public ConstantFoldingFunction
 {
 public:
   static const XMLCh name[];
@@ -36,7 +36,7 @@ public:
   ASTNode* staticResolution(StaticContext *context);
   virtual ASTNode *staticTyping(StaticContext *context);
   /** Returns the maximum value from the given sequence. **/
-  Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
+  Sequence createSequence(DynamicContext* context, int flags=0) const;
 
 };
 

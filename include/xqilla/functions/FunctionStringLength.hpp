@@ -42,7 +42,7 @@ public:
   virtual ASTNode *staticTyping(StaticContext *context);
 
   /** Returns the readable length of the string argument. **/
-  Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
+  Sequence createSequence(DynamicContext* context, int flags=0) const;
 
 private:
   const XMLCh* getString(DynamicContext* context) const;

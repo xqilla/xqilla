@@ -60,7 +60,7 @@ Result XQVariable::createResult(DynamicContext* context, int flags) const
   if(!var.first) {
     const XMLCh* qname = XPath2NSUtils::qualifyName(_prefix, _name, context->getMemoryManager());
     const XMLCh* msg = XPath2Utils::concatStrings(X("Variable "), qname, X(" does not exist [err:XPDY0002]"), context->getMemoryManager());
-    XQThrow(DynamicErrorException, X("XQVariable::collapseTreeInternal"), msg);
+    XQThrow(DynamicErrorException, X("XQVariable::createSequence"), msg);
   }
 
   return var.second;

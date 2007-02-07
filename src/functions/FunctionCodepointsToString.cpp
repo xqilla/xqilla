@@ -45,7 +45,7 @@ FunctionCodepointsToString::FunctionCodepointsToString(const VectorOfASTNodes &a
   _src.getStaticType().flags = StaticType::STRING_TYPE;
 }
 
-Sequence FunctionCodepointsToString::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionCodepointsToString::createSequence(DynamicContext* context, int flags) const
 {
   XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer result(1023, context->getMemoryManager());
   Sequence arg = getParamNumber(1,context)->toSequence(context);
@@ -68,11 +68,11 @@ Sequence FunctionCodepointsToString::collapseTreeInternal(DynamicContext* contex
   {
       if(XERCES_CPP_NAMESPACE_QUALIFIER RegxUtil::isHighSurrogate(str[j]))
         if((j+1)==len || !XERCES_CPP_NAMESPACE_QUALIFIER RegxUtil::isLowSurrogate(str[j+1]) || !XERCES_CPP_NAMESPACE_QUALIFIER XMLChar1_0::isXMLChar(str[j], str[j+1]))
-          XQThrow(XPath2ErrorException, X("FunctionCodepointsToString::collapseTreeInternal"), X("String contains an invalid XML character [err:FOCH0001]."));
+          XQThrow(XPath2ErrorException, X("FunctionCodepointsToString::createSequence"), X("String contains an invalid XML character [err:FOCH0001]."));
         else
           j++;
       else if(!XERCES_CPP_NAMESPACE_QUALIFIER XMLChar1_0::isXMLChar(str[j]))
-        XQThrow(XPath2ErrorException, X("FunctionCodepointsToString::collapseTreeInternal"), X("String contains an invalid XML character [err:FOCH0001]."));
+        XQThrow(XPath2ErrorException, X("FunctionCodepointsToString::createSequence"), X("String contains an invalid XML character [err:FOCH0001]."));
   }
   return Sequence(context->getItemFactory()->createString(str, context),
                   context->getMemoryManager());

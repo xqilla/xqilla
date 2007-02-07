@@ -15,10 +15,9 @@
 #define _FUNCTIONID_HPP
 
 #include <xqilla/framework/XQillaExport.hpp>
-#include <xercesc/dom/DOMNodeFilter.hpp>
-
 #include <xqilla/ast/XQFunction.hpp>
 #include <xqilla/runtime/Sequence.hpp>
+
 #include <vector>
 
 /** 
@@ -45,7 +44,7 @@ public:
    * Returns the sequence of element nodes with ID values matching the value 
    * of one of the IDREF values supplied in $srcval. 
    */
-  Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
+  Sequence createSequence(DynamicContext* context, int flags=0) const;
 };
 
 #endif // _FUNCTIONID_HPP

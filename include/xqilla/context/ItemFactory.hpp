@@ -55,21 +55,6 @@ public:
                                                          const XMLCh* typeName, const XMLCh* value, const DynamicContext* context) = 0;
   virtual AnyAtomicType::Ptr createDerivedFromAtomicType(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* value, const DynamicContext* context) = 0;
 
-  /* @name Node factory methods */
-
-  virtual Node::Ptr cloneNode(const Node::Ptr node, const DynamicContext *context) const = 0;
-  virtual Node::Ptr copyNode(const Node::Ptr &node, const DynamicContext *context) const = 0;
-  virtual Node::Ptr createTextNode(const XMLCh *value, const DynamicContext *context) const = 0;
-  virtual Node::Ptr createCommentNode(const XMLCh *value, const DynamicContext *context) const = 0;
-  virtual Node::Ptr createPINode(const XMLCh *name, const XMLCh *value, const DynamicContext *context) const = 0;
-  virtual Node::Ptr createAttributeNode(const XMLCh *uri, const XMLCh *prefix, const XMLCh *name,
-                                        const XMLCh *value, const DynamicContext *context) const = 0;
-  virtual Node::Ptr createElementNode(const XMLCh *uri, const XMLCh *prefix, const XMLCh *name,
-                                      const std::vector<Node::Ptr> &attrList, const std::vector<Node::Ptr> &childList,
-                                      const DynamicContext *context) const = 0;
-  virtual Node::Ptr createDocumentNode(const std::vector<Node::Ptr> &childList, const DynamicContext *context) const = 0;
-  virtual const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* createNamespaceNode(const XMLCh* prefix, const XMLCh* uri, const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* parentNode, const DynamicContext *context) const = 0;
-
   /* @name Number factory methods */
 
   virtual ATDoubleOrDerived::Ptr createDouble(const MAPM value, const DynamicContext* context) = 0;
@@ -113,7 +98,6 @@ public:
   virtual ATDurationOrDerived::Ptr createDayTimeDuration(const MAPM &seconds, const DynamicContext* context) = 0;
   virtual ATDurationOrDerived::Ptr createYearMonthDuration(const XMLCh* value, const DynamicContext* context) = 0;
   virtual ATDurationOrDerived::Ptr createYearMonthDuration(const MAPM &months, const DynamicContext* context) = 0;
-  virtual ATDurationOrDerived::Ptr createDurationOrDerived(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* value, const DynamicContext* context) = 0;
 
   /* @name Other factory methods */
 

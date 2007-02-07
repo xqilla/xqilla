@@ -15,33 +15,15 @@
 #define AFXQ_ITEMFACTORYIMPL_H__D608C994_F090_4206_9473_81F3D7350510__INCLUDED_
 
 #include <xqilla/context/ItemFactory.hpp>
-
 #include <xqilla/items/DatatypeLookup.hpp>
-#include <xqilla/items/impl/NodeImpl.hpp>
 
 #include <xercesc/framework/MemoryManager.hpp>
-#include <xercesc/dom/DOMDocument.hpp>
 
 class XQILLA_API ItemFactoryImpl : public ItemFactory
 {
 public:
   ItemFactoryImpl(const DocumentCache* dc, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr);
   virtual ~ItemFactoryImpl();
-
-  /* @name Node factory methods */
-
-  virtual Node::Ptr cloneNode(const Node::Ptr node, const DynamicContext *context) const;
-  virtual Node::Ptr copyNode(const Node::Ptr &node, const DynamicContext *context) const;
-  virtual Node::Ptr createTextNode(const XMLCh *value, const DynamicContext *context) const;
-  virtual Node::Ptr createCommentNode(const XMLCh *value, const DynamicContext *context) const;
-  virtual Node::Ptr createPINode(const XMLCh *name, const XMLCh *value, const DynamicContext *context) const;
-  virtual Node::Ptr createAttributeNode(const XMLCh *uri, const XMLCh *prefix, const XMLCh *name,
-                                        const XMLCh *value, const DynamicContext *context) const;
-  virtual Node::Ptr createElementNode(const XMLCh *uri, const XMLCh *prefix, const XMLCh *name,
-                                      const std::vector<Node::Ptr> &attrList, const std::vector<Node::Ptr> &childList,
-                                      const DynamicContext *context) const;
-  virtual Node::Ptr createDocumentNode(const std::vector<Node::Ptr> &childList, const DynamicContext *context) const;
-  virtual const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* createNamespaceNode(const XMLCh* prefix, const XMLCh* uri, const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* parentNode, const DynamicContext *context) const;
 
   /* @name Atomic type factory methods */
 
@@ -95,7 +77,6 @@ public:
   virtual ATDurationOrDerived::Ptr createDayTimeDuration(const MAPM &seconds, const DynamicContext* context);
   virtual ATDurationOrDerived::Ptr createYearMonthDuration(const XMLCh* value, const DynamicContext* context);
   virtual ATDurationOrDerived::Ptr createYearMonthDuration(const MAPM &months, const DynamicContext* context);
-  virtual ATDurationOrDerived::Ptr createDurationOrDerived(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* value, const DynamicContext* context);
 
   /* @name Other factory methods */
 
@@ -115,14 +96,8 @@ public:
   virtual ATQNameOrDerived::Ptr createQNameOrDerived(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* uri, const XMLCh* prefix,
                                                      const XMLCh* name, const DynamicContext* context);
 
-  XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *getOutputDocument(const DynamicContext *context) const;
-
-private:
-  XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *copyNode(XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *document,
-                                                   const Node::Ptr &node, const DynamicContext *context) const;
-
+protected:
   DatatypeLookup datatypeLookup_;
-  mutable NodeImpl::Ptr outputDocument_;
   XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr_;
 };
 

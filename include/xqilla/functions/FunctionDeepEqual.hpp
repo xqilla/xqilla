@@ -34,7 +34,7 @@ public:
 
   FunctionDeepEqual(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
-  Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
+  Sequence createSequence(DynamicContext* context, int flags=0) const;
 
   static bool deep_equal(Sequence seq1, Sequence seq2, Collation* collation, DynamicContext* context, const LocationInfo *info);
   static bool node_deep_equal(const Node::Ptr &node1, const Node::Ptr &node2, Collation* collation, DynamicContext* context, const LocationInfo *info);

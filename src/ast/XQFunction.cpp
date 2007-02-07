@@ -170,7 +170,7 @@ Result XQFunction::getParamNumber(unsigned int number, DynamicContext* context, 
 {
 	assert(number > 0);
 	assert(number <= getNumArgs());
-	return _args[number - 1]->collapseTree(context, flags);
+	return _args[number - 1]->createResult(context, flags);
 }
 
 unsigned int XQFunction::getNumArgs() const

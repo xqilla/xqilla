@@ -112,18 +112,19 @@ const XMLCh* ATDecimalOrDerivedImpl::asString(const DynamicContext* context) con
 }
 
 /* Promote this to the given type, if possible */
-Numeric::Ptr ATDecimalOrDerivedImpl::promoteTypeIfApplicable(const XMLCh* typeURI, const XMLCh* typeName, const DynamicContext* context) const {
-  // if target is instance of xs:decimal, or if typeName == double or if typeName == float, cast
-  if( this->isInstanceOfType(typeURI, typeName, context) ) {
-    return this;  // no need to promote, we are already a decimal (or possibly anyAtomicType, anySimpleType, anyType)
-  } else if( (XPath2Utils::equals(typeName, SchemaSymbols::fgDT_DOUBLE) &&      
-      XPath2Utils::equals(typeURI, SchemaSymbols::fgURI_SCHEMAFORSCHEMA)) ||
-     (XPath2Utils::equals(typeName, SchemaSymbols::fgDT_FLOAT) &&      
-      XPath2Utils::equals(typeURI, SchemaSymbols::fgURI_SCHEMAFORSCHEMA)) ) {
-    return (const Numeric::Ptr )this->castAs(typeURI, typeName, context);
-  } else {
-    return 0;
-  }  
+Numeric::Ptr ATDecimalOrDerivedImpl::promoteTypeIfApplicable(AnyAtomicType::AtomicObjectType typeIndex,
+                                                             const DynamicContext* context) const
+{
+  switch(typeIndex) {
+  case AnyAtomicType::DECIMAL:
+    return this;
+  case AnyAtomicType::FLOAT:
+  case AnyAtomicType::DOUBLE:
+    return (const Numeric::Ptr)castAs(typeIndex, context);
+  default:
+    break;
+  }
+  return 0;
 }
 
 /** Returns a Numeric object which is the sum of this and other */
@@ -139,15 +140,17 @@ Numeric::Ptr ATDecimalOrDerivedImpl::add(const Numeric::Ptr &other, const Dynami
     return context->getItemFactory()->createDecimal(_decimal + otherImpl->_decimal, context);
   } else if(this->getPrimitiveTypeIndex() != other->getPrimitiveTypeIndex()) {
     // if other is not a decimal, then we need to promote this to a float or double
-    return ((const Numeric::Ptr )this->castAs(other->getPrimitiveTypeURI(), other->getPrimitiveTypeName(), context))->add(other, context);
+    return ((const Numeric::Ptr )this->castAs(other->getPrimitiveTypeIndex(), context))->add(other, context);
   } else if (this->isInstanceOfType(other->getTypeURI(), other->getTypeName(), context)) {
     // here we know we have two decimals, and this is 'lower' in the hierarchy than other
     // so cast this to other's type
-    return ((const Numeric::Ptr )this->castAs(other->getTypeURI(), other->getTypeName(), context))->add(other, context);
+    return ((const Numeric::Ptr )this->castAs(AnyAtomicType::DECIMAL, other->getTypeURI(), other->getTypeName(),
+                                              context))->add(other, context);
   } else if (other->isInstanceOfType(this->getTypeURI(), this->getTypeName(), context)) {
     // here we have two decimals, and this is 'higher' in the hierarchy than other
     // so cast other to this' type
-    return this->add((const Numeric::Ptr )other->castAs(this->getTypeURI(), this->getTypeName(), context), context);
+    return this->add((const Numeric::Ptr )other->castAs(AnyAtomicType::DECIMAL, this->getTypeURI(), this->getTypeName(),
+                                                        context), context);
   } else {
     // we have two separate branches.  if either is instance of integer, cast it to integer, otherwise, cast to decimal
     // revisit: this is not the prettiest way to do it.  You would want to go up the tree one by one instead of
@@ -155,19 +158,17 @@ Numeric::Ptr ATDecimalOrDerivedImpl::add(const Numeric::Ptr &other, const Dynami
     ATDecimalOrDerived::Ptr first;
     ATDecimalOrDerived::Ptr second;
     if(this->_isInteger) {
-      first = (const ATDecimalOrDerived::Ptr )this->castAs(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+      first = (const ATDecimalOrDerived::Ptr )this->castAs(AnyAtomicType::DECIMAL, SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                            SchemaSymbols::fgDT_INTEGER, context);
     } else {
-      first = (const ATDecimalOrDerived::Ptr )this->castAs(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                          SchemaSymbols::fgDT_DECIMAL, context);
+      first = (const ATDecimalOrDerived::Ptr )this->castAs(AnyAtomicType::DECIMAL, context);
     }
 
     if(((ATDecimalOrDerivedImpl*)(const Numeric*)other)->_isInteger) {
-      second = (const ATDecimalOrDerived::Ptr )other->castAs(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+      second = (const ATDecimalOrDerived::Ptr )other->castAs(AnyAtomicType::DECIMAL, SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                             SchemaSymbols::fgDT_INTEGER, context);
     } else {
-      second = (const ATDecimalOrDerived::Ptr )other->castAs(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                          SchemaSymbols::fgDT_DECIMAL, context);
+      second = (const ATDecimalOrDerived::Ptr )other->castAs(AnyAtomicType::DECIMAL, context);
     }
     return first->add(second, context);
   }
@@ -189,15 +190,17 @@ Numeric::Ptr ATDecimalOrDerivedImpl::subtract(const Numeric::Ptr &other, const D
 
   } else if(this->getPrimitiveTypeIndex() != other->getPrimitiveTypeIndex()) {
     // if other is not a decimal, then we need to promote this to a float or double
-    return ((const Numeric::Ptr )this->castAs(other->getPrimitiveTypeURI(), other->getPrimitiveTypeName(), context))->subtract(other, context);
+    return ((const Numeric::Ptr )this->castAs(other->getPrimitiveTypeIndex(), context))->subtract(other, context);
   } else if (this->isInstanceOfType(other->getTypeURI(), other->getTypeName(), context)) {
     // here we know we have two decimals, and this is 'lower' in the hierarchy than other
     // so cast this to other's type
-    return ((const Numeric::Ptr )this->castAs(other->getTypeURI(), other->getTypeName(), context))->subtract(other, context);
+    return ((const Numeric::Ptr )this->castAs(AnyAtomicType::DECIMAL, other->getTypeURI(), other->getTypeName(),
+                                              context))->subtract(other, context);
   } else if (other->isInstanceOfType(this->getTypeURI(), this->getTypeName(), context)) {
     // here we have two decimals, and this is 'higher' in the hierarchy than other
     // so cast other to this' type
-    return this->subtract((const Numeric::Ptr )other->castAs(this->getTypeURI(), this->getTypeName(), context), context);
+    return this->subtract((const Numeric::Ptr )other->castAs(AnyAtomicType::DECIMAL, getTypeURI(), getTypeName(),
+                                                             context), context);
   } else {
     // we have two separate branches.  if either is instance of integer, cast it to integer, otherwise, cast to decimal
     // revisit: this is not the prettiest way to do it.  You would want to go up the tree one by one instead of
@@ -205,19 +208,17 @@ Numeric::Ptr ATDecimalOrDerivedImpl::subtract(const Numeric::Ptr &other, const D
     ATDecimalOrDerived::Ptr first; 
     ATDecimalOrDerived::Ptr second; 
     if(this->_isInteger) {
-      first = (const ATDecimalOrDerived::Ptr )this->castAs(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+      first = (const ATDecimalOrDerived::Ptr )this->castAs(AnyAtomicType::DECIMAL, SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                            SchemaSymbols::fgDT_INTEGER, context);
     } else {
-      first = (const ATDecimalOrDerived::Ptr )this->castAs(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                          SchemaSymbols::fgDT_DECIMAL, context);
+      first = (const ATDecimalOrDerived::Ptr )this->castAs(AnyAtomicType::DECIMAL, context);
     }
 
     if(((ATDecimalOrDerivedImpl*)(const Numeric*)other)->_isInteger) {
-      second = (const ATDecimalOrDerived::Ptr )other->castAs(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+      second = (const ATDecimalOrDerived::Ptr )other->castAs(AnyAtomicType::DECIMAL, SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                             SchemaSymbols::fgDT_INTEGER, context);
     } else {
-      second = (const ATDecimalOrDerived::Ptr )other->castAs(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                          SchemaSymbols::fgDT_DECIMAL, context);
+      second = (const ATDecimalOrDerived::Ptr )other->castAs(AnyAtomicType::DECIMAL, context);
     }
     return first->subtract(second, context);
   }
@@ -237,15 +238,15 @@ Numeric::Ptr ATDecimalOrDerivedImpl::multiply(const Numeric::Ptr &other, const D
 
   } else if(this->getPrimitiveTypeIndex() != other->getPrimitiveTypeIndex()) {
     // if other is not a decimal, then we need to promote this to a float or double
-    return ((const Numeric::Ptr )this->castAs(other->getPrimitiveTypeURI(), other->getPrimitiveTypeName(), context))->multiply(other, context);
+    return ((const Numeric::Ptr )this->castAs(other->getPrimitiveTypeIndex(), context))->multiply(other, context);
   } else if (this->isInstanceOfType(other->getTypeURI(), other->getTypeName(), context)) {
     // here we know we have two decimals, and this is 'lower' in the hierarchy than other
     // so cast this to other's type
-    return ((const Numeric::Ptr )this->castAs(other->getTypeURI(), other->getTypeName(), context))->multiply(other, context);
+    return ((const Numeric::Ptr )this->castAs(AnyAtomicType::DECIMAL, other->getTypeURI(), other->getTypeName(), context))->multiply(other, context);
   } else if (other->isInstanceOfType(this->getTypeURI(), this->getTypeName(), context)) {
     // here we have two decimals, and this is 'higher' in the hierarchy than other
     // so cast other to this' type
-    return this->multiply((const Numeric::Ptr )other->castAs(this->getTypeURI(), this->getTypeName(), context), context);
+    return this->multiply((const Numeric::Ptr )other->castAs(AnyAtomicType::DECIMAL, this->getTypeURI(), this->getTypeName(), context), context);
   } else {
     // we have two separate branches.  if either is instance of integer, cast it to integer, otherwise, cast to decimal
     // revisit: this is not the prettiest way to do it.  You would want to go up the tree one by one instead of
@@ -253,19 +254,17 @@ Numeric::Ptr ATDecimalOrDerivedImpl::multiply(const Numeric::Ptr &other, const D
     ATDecimalOrDerived::Ptr first;
     ATDecimalOrDerived::Ptr second; 
     if(this->_isInteger) {
-      first = (const ATDecimalOrDerived::Ptr )this->castAs(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+      first = (const ATDecimalOrDerived::Ptr )this->castAs(AnyAtomicType::DECIMAL, SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                            SchemaSymbols::fgDT_INTEGER, context);
     } else {
-      first = (const ATDecimalOrDerived::Ptr )this->castAs(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                          SchemaSymbols::fgDT_DECIMAL, context);
+      first = (const ATDecimalOrDerived::Ptr )this->castAs(AnyAtomicType::DECIMAL, context);
     }
     
     if(((ATDecimalOrDerivedImpl*)(const Numeric*)other)->_isInteger) {
-      second = (const ATDecimalOrDerived::Ptr )other->castAs(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+      second = (const ATDecimalOrDerived::Ptr )other->castAs(AnyAtomicType::DECIMAL, SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                             SchemaSymbols::fgDT_INTEGER, context);
     } else {
-      second = (const ATDecimalOrDerived::Ptr )other->castAs(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                          SchemaSymbols::fgDT_DECIMAL, context);
+      second = (const ATDecimalOrDerived::Ptr )other->castAs(AnyAtomicType::DECIMAL, context);
     }
     return first->multiply(second, context);
   }
@@ -286,15 +285,15 @@ Numeric::Ptr ATDecimalOrDerivedImpl::divide(const Numeric::Ptr &other, const Dyn
     return context->getItemFactory()->createDecimal(_decimal / otherImpl->_decimal, context);
   } else if(this->getPrimitiveTypeIndex() != other->getPrimitiveTypeIndex()) {
     // if other is not a decimal, then we need to promote this to a float or double
-    return ((const Numeric::Ptr )this->castAs(other->getPrimitiveTypeURI(), other->getPrimitiveTypeName(), context))->divide(other, context);
+    return ((const Numeric::Ptr )this->castAs(other->getPrimitiveTypeIndex(), context))->divide(other, context);
   } else if (this->isInstanceOfType(other->getTypeURI(), other->getTypeName(), context)) {
     // here we know we have two decimals, and this is 'lower' in the hierarchy than other
     // so cast this to other's type
-    return ((const Numeric::Ptr )this->castAs(other->getTypeURI(), other->getTypeName(), context))->divide(other, context);
+    return ((const Numeric::Ptr )this->castAs(AnyAtomicType::DECIMAL, other->getTypeURI(), other->getTypeName(), context))->divide(other, context);
   } else if (other->isInstanceOfType(this->getTypeURI(), this->getTypeName(), context)) {
     // here we have two decimals, and this is 'higher' in the hierarchy than other
     // so cast other to this' type
-    return this->divide((const Numeric::Ptr )other->castAs(this->getTypeURI(), this->getTypeName(), context), context);
+    return this->divide((const Numeric::Ptr )other->castAs(AnyAtomicType::DECIMAL, this->getTypeURI(), this->getTypeName(), context), context);
   } else {
     // we have two separate branches.  if either is instance of integer, cast it to integer, otherwise, cast to decimal
     // revisit: this is not the prettiest way to do it.  You would want to go up the tree one by one instead of
@@ -302,19 +301,17 @@ Numeric::Ptr ATDecimalOrDerivedImpl::divide(const Numeric::Ptr &other, const Dyn
     ATDecimalOrDerived::Ptr first;
     ATDecimalOrDerived::Ptr second; 
     if(this->_isInteger) {
-      first = (const ATDecimalOrDerived::Ptr )this->castAs(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+      first = (const ATDecimalOrDerived::Ptr )this->castAs(AnyAtomicType::DECIMAL, SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                            SchemaSymbols::fgDT_INTEGER, context);
     } else {
-      first = (const ATDecimalOrDerived::Ptr )this->castAs(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                          SchemaSymbols::fgDT_DECIMAL, context);
+      first = (const ATDecimalOrDerived::Ptr )this->castAs(AnyAtomicType::DECIMAL, context);
     }
     
     if(((ATDecimalOrDerivedImpl*)(const Numeric*)other)->_isInteger) {
-      second = (const ATDecimalOrDerived::Ptr )other->castAs(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+      second = (const ATDecimalOrDerived::Ptr )other->castAs(AnyAtomicType::DECIMAL, SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                             SchemaSymbols::fgDT_INTEGER, context);
     } else {
-      second = (const ATDecimalOrDerived::Ptr )other->castAs(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                          SchemaSymbols::fgDT_DECIMAL, context);
+      second = (const ATDecimalOrDerived::Ptr )other->castAs(AnyAtomicType::DECIMAL, context);
     }
     return first->divide(second, context);
   }
@@ -342,15 +339,15 @@ Numeric::Ptr ATDecimalOrDerivedImpl::mod(const Numeric::Ptr &other, const Dynami
     return context->getItemFactory()->createDecimal(result, context);
   } else if(this->getPrimitiveTypeIndex() != other->getPrimitiveTypeIndex()) {
     // if other is not a decimal, then we need to promote this to a float or double
-    return ((const Numeric::Ptr )this->castAs(other->getPrimitiveTypeURI(), other->getPrimitiveTypeName(), context))->mod(other, context);
+    return ((const Numeric::Ptr )this->castAs(other->getPrimitiveTypeIndex(), context))->mod(other, context);
   } else if (this->isInstanceOfType(other->getTypeURI(), other->getTypeName(), context)) {
     // here we know we have two decimals, and this is 'lower' in the hierarchy than other
     // so cast this to other's type
-    return ((const Numeric::Ptr )this->castAs(other->getTypeURI(), other->getTypeName(), context))->mod(other, context);
+    return ((const Numeric::Ptr )this->castAs(AnyAtomicType::DECIMAL, other->getTypeURI(), other->getTypeName(), context))->mod(other, context);
   } else if (other->isInstanceOfType(this->getTypeURI(), this->getTypeName(), context)) {
     // here we have two decimals, and this is 'higher' in the hierarchy than other
     // so cast other to this' type
-    return this->mod((const Numeric::Ptr )other->castAs(this->getTypeURI(), this->getTypeName(), context), context);
+    return this->mod((const Numeric::Ptr )other->castAs(AnyAtomicType::DECIMAL, this->getTypeURI(), this->getTypeName(), context), context);
   } else {
     // we have two separate branches.  if either is instance of integer, cast it to integer, otherwise, cast to decimal
     // revisit: this is not the prettiest way to do it.  You would want to go up the tree one by one instead of
@@ -358,19 +355,17 @@ Numeric::Ptr ATDecimalOrDerivedImpl::mod(const Numeric::Ptr &other, const Dynami
     ATDecimalOrDerived::Ptr first;
     ATDecimalOrDerived::Ptr second; 
     if(this->_isInteger) {
-      first = (const ATDecimalOrDerived::Ptr )this->castAs(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+      first = (const ATDecimalOrDerived::Ptr )this->castAs(AnyAtomicType::DECIMAL, SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                            SchemaSymbols::fgDT_INTEGER, context);
     } else {
-      first = (const ATDecimalOrDerived::Ptr )this->castAs(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                          SchemaSymbols::fgDT_DECIMAL, context);
+      first = (const ATDecimalOrDerived::Ptr )this->castAs(AnyAtomicType::DECIMAL, context);
     }
     
     if(((ATDecimalOrDerivedImpl*)(const Numeric*)other)->_isInteger) {
-      second = (const ATDecimalOrDerived::Ptr )other->castAs(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+      second = (const ATDecimalOrDerived::Ptr )other->castAs(AnyAtomicType::DECIMAL, SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                             SchemaSymbols::fgDT_INTEGER, context);
     } else {
-      second = (const ATDecimalOrDerived::Ptr )other->castAs(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                          SchemaSymbols::fgDT_DECIMAL, context);
+      second = (const ATDecimalOrDerived::Ptr )other->castAs(AnyAtomicType::DECIMAL, context);
     }
     return first->mod(second, context);
   }
@@ -381,7 +376,7 @@ Numeric::Ptr ATDecimalOrDerivedImpl::mod(const Numeric::Ptr &other, const Dynami
 Numeric::Ptr ATDecimalOrDerivedImpl::floor(const DynamicContext* context) const {
   // if integer, return xs:integer, otherwise xs:decimal    
   if(_isInteger) {
-    return (const Numeric::Ptr )this->castAs(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+    return (const Numeric::Ptr )this->castAs(AnyAtomicType::DECIMAL, SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                         SchemaSymbols::fgDT_INTEGER, context);
   }
   return context->getItemFactory()->createDecimal(_decimal.floor(), context);
@@ -392,7 +387,7 @@ Numeric::Ptr ATDecimalOrDerivedImpl::floor(const DynamicContext* context) const 
 Numeric::Ptr ATDecimalOrDerivedImpl::ceiling(const DynamicContext* context) const {
   // if integer, return xs:integer, otherwise xs:decimal    
   if(_isInteger) {
-    return (const Numeric::Ptr )this->castAs(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+    return (const Numeric::Ptr )this->castAs(AnyAtomicType::DECIMAL, SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                         SchemaSymbols::fgDT_INTEGER, context);
   }
   return context->getItemFactory()->createDecimal(_decimal.ceil(), context);
@@ -403,7 +398,7 @@ Numeric::Ptr ATDecimalOrDerivedImpl::ceiling(const DynamicContext* context) cons
 Numeric::Ptr ATDecimalOrDerivedImpl::round(const DynamicContext* context) const {
   // if integer, return xs:integer, otherwise xs:decimal    
   if(_isInteger) {
-    return (const Numeric::Ptr )this->castAs(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+    return (const Numeric::Ptr )this->castAs(AnyAtomicType::DECIMAL, SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                         SchemaSymbols::fgDT_INTEGER, context);
   }
   MAPM value = _decimal + 0.5;
@@ -412,7 +407,7 @@ Numeric::Ptr ATDecimalOrDerivedImpl::round(const DynamicContext* context) const 
 
 /** Rounds this Numeric to the given precision, and rounds a half to even */
 Numeric::Ptr ATDecimalOrDerivedImpl::roundHalfToEven(const Numeric::Ptr &precision, const DynamicContext* context) const {
-  ATDecimalOrDerived::Ptr decimal_precision = (const Numeric::Ptr)precision->castAs(this->getPrimitiveTypeURI(), this->getPrimitiveTypeName(), context);
+  ATDecimalOrDerived::Ptr decimal_precision = (const Numeric::Ptr)precision->castAs(this->getPrimitiveTypeIndex(), context);
   MAPM exp = MAPM(MM_Ten).pow(((ATDecimalOrDerivedImpl*)(const ATDecimalOrDerived*)decimal_precision)->_decimal);
   MAPM value = _decimal * exp;
   bool halfVal = false;

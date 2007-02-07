@@ -19,10 +19,10 @@
 #ifndef _FUNCTIONAVG_HPP
 #define _FUNCTIONAVG_HPP
 
-#include <xqilla/ast/AggregateFunction.hpp>
+#include <xqilla/ast/ConstantFoldingFunction.hpp>
 
 /** Avg operator function*/
-class XQILLA_API FunctionAvg : public AggregateFunction
+class XQILLA_API FunctionAvg : public ConstantFoldingFunction
 {
 public:
   static const XMLCh name[];
@@ -31,8 +31,10 @@ public:
 
   FunctionAvg(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
+  ASTNode* staticResolution(StaticContext *context);
+  virtual ASTNode *staticTyping(StaticContext *context);
   /** Takes a list of nodes and averages their values */
-  Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
+  Sequence createSequence(DynamicContext* context, int flags=0) const;
 
 };
 

@@ -20,7 +20,6 @@ xqilla/ast/XQTreatAs.hpp \
 xqilla/ast/XQVariable.hpp \
 xqilla/ast/StaticResolutionContext.hpp \
 xqilla/ast/StaticType.hpp \
-xqilla/ast/AggregateFunction.hpp \
 xqilla/ast/ConstantFoldingFunction.hpp \
 xqilla/ast/NumericFunction.hpp \
 xqilla/ast/XQDebugHook.hpp \
@@ -44,6 +43,11 @@ xqilla/ast/XPath1Compat.hpp \
 xqilla/ast/ConvertFunctionArg.hpp \
 xqilla/ast/XQDocumentOrder.hpp \
 xqilla/ast/XQPredicate.hpp \
+xqilla/events/EventHandler.hpp \
+xqilla/events/EventSerializer.hpp \
+xqilla/events/NSFixupFilter.hpp \
+xqilla/events/SequenceBuilder.hpp \
+xqilla/fastxdm/FastXDMConfiguration.hpp \
 xqilla/fulltext/FTContains.hpp \
 xqilla/fulltext/FTSelection.hpp \
 xqilla/fulltext/FTWords.hpp \
@@ -104,7 +108,6 @@ xqilla/context/impl/XQRemoteDebugger.hpp \
 xqilla/context/impl/XQContextImpl.hpp \
 xqilla/context/impl/XQDynamicContextImpl.hpp \
 xqilla/context/impl/ItemFactoryImpl.hpp \
-xqilla/context/impl/XercesUpdateFactory.hpp \
 xqilla/dom-api/impl/XQillaNSResolverImpl.hpp \
 xqilla/dom-api/XPath2Result.hpp \
 xqilla/dom-api/XQillaExpression.hpp \
@@ -281,7 +284,6 @@ xqilla/items/impl/ATDecimalOrDerivedImpl.hpp \
 xqilla/items/impl/ATDoubleOrDerivedImpl.hpp \
 xqilla/items/impl/ATFloatOrDerivedImpl.hpp \
 xqilla/items/impl/ATQNameOrDerivedImpl.hpp \
-xqilla/items/impl/NodeImpl.hpp \
 xqilla/items/impl/ATDurationOrDerivedImpl.hpp \
 xqilla/items/impl/ATDateTimeOrDerivedImpl.hpp \
 xqilla/items/impl/ATDateOrDerivedImpl.hpp \
@@ -331,6 +333,7 @@ xqilla/schema/SequenceType.hpp \
 xqilla/schema/AnyAtomicTypeDatatypeValidator.hpp \
 xqilla/schema/DocumentCacheImpl.hpp \
 xqilla/simple-api/XQilla.hpp \
+xqilla/simple-api/XQillaConfiguration.hpp \
 xqilla/simple-api/XQQuery.hpp \
 xqilla/update/FunctionPut.hpp \
 xqilla/update/PendingUpdateList.hpp \
@@ -362,6 +365,7 @@ xqilla/framework/ProxyMemoryManager.hpp \
 xqilla/framework/StringPool.hpp \
 xqilla/framework/XPath2MemoryManagerImpl.hpp \
 xqilla/framework/XQillaExport.hpp \
+xqilla/xerces/XercesConfiguration.hpp \
 xqilla/xqts/TestSuiteParser.hpp \
 xqilla/xqts/TestSuiteResultListener.hpp \
 xqilla/xqts/TestSuiteRunner.hpp

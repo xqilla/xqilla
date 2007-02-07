@@ -35,7 +35,7 @@ public:
   
 protected:
   /** concatenates two strings. Takes two strings, and gives a string */
-  Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
+  Sequence createSequence(DynamicContext* context, int flags=0) const;
 };
 
 #endif // _FUNCTIONCONCAT_HPP

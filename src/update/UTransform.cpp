@@ -46,7 +46,7 @@ ASTNode *UTransform::staticResolution(StaticContext* context)
     (*it0)->_vName = XPath2NSUtils::getLocalName((*it0)->_variable);
 
     // call static resolution on the value
-    (*it0)->_allValues = new (mm) XQContentSequence((*it0)->_allValues, /*copy*/true, mm);
+    (*it0)->_allValues = new (mm) XQContentSequence((*it0)->_allValues, mm);
     (*it0)->_allValues->setLocationInfo(this);
     (*it0)->_allValues = (*it0)->_allValues->staticResolution(context);
   }
@@ -209,7 +209,7 @@ Item::Ptr UTransform::TransformResult::next(DynamicContext *context)
     for(VectorOfVariableBinding::const_iterator it = transform_->getBindings()->begin();
         it != end; ++it) {
 
-      Sequence values = (*it)->_allValues->collapseTree(context)->toSequence(context);
+      Sequence values = (*it)->_allValues->createResult(context)->toSequence(context);
 
       // Keep a record of the nodes that have been copied
       Result valIt = values;
@@ -249,7 +249,7 @@ Item::Ptr UTransform::TransformResult::next(DynamicContext *context)
     ufactory->applyUpdates(pul, context);
 
     // Execute the return expression
-    result_ = transform_->getReturnExpr()->collapseTree(context);
+    result_ = transform_->getReturnExpr()->createResult(context);
   }
   else {
     if(scope_ == 0) {

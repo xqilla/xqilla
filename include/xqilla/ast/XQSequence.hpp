@@ -37,6 +37,8 @@ public:
   virtual ASTNode* staticResolution(StaticContext *context);
   virtual ASTNode *staticTyping(StaticContext *context);
   virtual Result createResult(DynamicContext* context, int flags=0) const;
+  virtual void generateEvents(EventHandler *events, DynamicContext *context,
+                              bool preserveNS, bool preserveType) const;
 
   const ItemConstructor::Vector &getItemConstructors() const
   {
@@ -44,7 +46,7 @@ public:
   }
 
   static XQSequence *constantFold(Result &result, DynamicContext *context, XPath2MemoryManager* memMgr,
-	  const LocationInfo *location);
+                                  const LocationInfo *location);
 
 private:
   class SequenceResult : public ResultImpl {

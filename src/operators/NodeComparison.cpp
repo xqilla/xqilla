@@ -19,7 +19,6 @@
 #include <xqilla/items/ATBooleanOrDerived.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xercesc/dom/DOMNode.hpp>
 #include <xqilla/context/ItemFactory.hpp>
 #include <xqilla/ast/XQTreatAs.hpp>
 #include <xqilla/schema/SequenceType.hpp>
@@ -76,9 +75,9 @@ NodeComparison::NodeComparisonResult::NodeComparisonResult(const NodeComparison 
 
 Item::Ptr NodeComparison::NodeComparisonResult::getSingleResult(DynamicContext *context) const
 {
-  Item::Ptr arg1 = _op->getArgument(0)->collapseTree(context)->next(context);
+  Item::Ptr arg1 = _op->getArgument(0)->createResult(context)->next(context);
   if(arg1.isNull()) return 0;
-  Item::Ptr arg2 = _op->getArgument(1)->collapseTree(context)->next(context);
+  Item::Ptr arg2 = _op->getArgument(1)->createResult(context)->next(context);
   if(arg2.isNull()) return 0;
   
 	return context->getItemFactory()->createBoolean(((Node*)arg1.get())->equals((Node*)arg2.get()), context);

@@ -41,15 +41,12 @@ public:
 
   virtual bool isSingleNumericConstant(StaticContext *context) const;
 
-  ///calls createResult
-  virtual Result collapseTree(DynamicContext* context, int flags=0) const;
-
   /// Default - returns an empty update list
   virtual PendingUpdateList createUpdateList(DynamicContext *context) const;
 
   /**
    * Can be overridden by derived classes. Default implementation returns a
-   * SequenceResult made from the Sequence returned by collapseTreeInternal.
+   * SequenceResult made from the Sequence returned by createSequence.
    */
   virtual Result createResult(DynamicContext* context, int flags=0) const;
 
@@ -57,7 +54,12 @@ public:
    * Collapse the compiled expression based on context. Default implementation
    * returns an empty sequence.
    */
-  virtual Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
+  virtual Sequence createSequence(DynamicContext* context, int flags=0) const;
+
+  /** Returns the result of this expression via the EventHandler provided.
+      Default implementation uses result returned from createResult(). */
+  virtual void generateEvents(EventHandler *events, DynamicContext *context,
+                              bool preserveNS, bool preserveType) const;
 
   /** Performs constant folding on this ASTNode. */
   ASTNode *constantFold(StaticContext *context);
@@ -68,10 +70,10 @@ protected:
   void setType(ASTNode::whichType t);
   XPath2MemoryManager* getMemoryManager(void) const;
 
-  class CollapseTreeInternalResult : public LazySequenceResult
+  class CreateSequenceResult : public LazySequenceResult
   {
   public:
-    CollapseTreeInternalResult(const ASTNodeImpl *di, int flags, DynamicContext *context);
+    CreateSequenceResult(const ASTNodeImpl *di, int flags, DynamicContext *context);
 
     void getResult(Sequence &toFill, DynamicContext *context) const;
     std::string asString(DynamicContext *context, int indent) const;

@@ -21,10 +21,6 @@
 #include <xqilla/exceptions/FunctionException.hpp>
 #include <xqilla/items/Node.hpp>
 #include <xqilla/context/DynamicContext.hpp>
-#include <xercesc/dom/DOMNode.hpp>
-#include <xercesc/util/XMLString.hpp>
-#include <xercesc/validators/schema/SchemaGrammar.hpp>
-#include <xercesc/validators/common/ContentSpecNode.hpp>
 #include <xqilla/ast/StaticResolutionContext.hpp>
 #include <xqilla/ast/XQSequence.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
@@ -41,26 +37,26 @@ XQValidate::XQValidate(ASTNode* valExpr, DocumentCache::ValidationMode valMode, 
   setType(ASTNode::VALIDATE);
 }
 
-Sequence XQValidate::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence XQValidate::createSequence(DynamicContext* context, int flags) const
 {
-  Result toBeValidated = _expr->collapseTree(context);
+  Result toBeValidated = _expr->createResult(context);
   Item::Ptr first = toBeValidated->next(context);
   Item::Ptr second = toBeValidated->next(context);
 
   if(first.isNull() || !second.isNull() || !first->isNode())
-    XQThrow(FunctionException,X("XQValidate::collapseTreeInternal"),
+    XQThrow(FunctionException,X("XQValidate::createSequence"),
             X("The expression to be validated must evaluate to exactly one document or element node [err:XQTY0030]."));
 
   Node::Ptr node = (Node::Ptr)first;
   if(node->dmNodeKind() != Node::element_string &&
      node->dmNodeKind() != Node::document_string)
-    XQThrow(FunctionException,X("XQValidate::collapseTreeInternal"),
+    XQThrow(FunctionException,X("XQValidate::createSequence"),
             X("The expression to be validated must evaluate to exactly one document or element node [err:XQTY0030]."));
 
   // perform validation on this item
   Node::Ptr validatedElt = context->validate(node, _validationMode);
   if(validatedElt.isNull())
-    XQThrow(FunctionException,X("XQValidate::collapseTreeInternal"), X("Unexpected error while validating"));
+    XQThrow(FunctionException,X("XQValidate::createSequence"), X("Unexpected error while validating"));
 
   return Sequence(validatedElt, context->getMemoryManager());
 }
@@ -82,7 +78,7 @@ ASTNode *XQValidate::staticTyping(StaticContext *context)
   _src.getStaticType().typeIntersect(StaticType::DOCUMENT_TYPE | StaticType::ELEMENT_TYPE);
 
   if(_src.getStaticType().isType(StaticType::EMPTY_TYPE)) {
-    XQThrow(FunctionException, X("XQValidate::collapseTreeInternal"),
+    XQThrow(FunctionException, X("XQValidate::createSequence"),
             X("The expression to be validated must evaluate to exactly one document or element node [err:XQTY0030]."));
   }
 

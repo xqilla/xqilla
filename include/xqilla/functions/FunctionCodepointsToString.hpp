@@ -35,7 +35,7 @@ public:
   
 protected:
   /** takes a series of integers (codepoints) and turns them into a unicode string */
-  Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
+  Sequence createSequence(DynamicContext* context, int flags=0) const;
 };
 #endif // _FUNCTIONCODEPOINTSTOSTRING_HPP
 

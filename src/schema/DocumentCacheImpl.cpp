@@ -45,58 +45,28 @@
 #include <xqilla/parser/QName.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/context/ItemFactory.hpp>
-#include <xqilla/items/impl/NodeImpl.hpp>
 
-class HackGrammarResolver : public XERCES_CPP_NAMESPACE_QUALIFIER XMemory
+#include "../xerces/XercesNodeImpl.hpp"
+#include "../dom-api/impl/XPathDocumentImpl.hpp"
+
+XERCES_CPP_NAMESPACE_USE;
+
+class GrammarResolverHack : public XMemory
 {
 public:
     bool                            fCacheGrammar;
     bool                            fUseCachedGrammar;
     bool                            fGrammarPoolFromExternalApplication;
-    XERCES_CPP_NAMESPACE_QUALIFIER XMLStringPool*                  fStringPool;
-    XERCES_CPP_NAMESPACE_QUALIFIER RefHashTableOf<XERCES_CPP_NAMESPACE_QUALIFIER Grammar>*        fGrammarBucket;
-    XERCES_CPP_NAMESPACE_QUALIFIER RefHashTableOf<XERCES_CPP_NAMESPACE_QUALIFIER Grammar>*        fGrammarFromPool;
-    XERCES_CPP_NAMESPACE_QUALIFIER DatatypeValidatorFactory*       fDataTypeReg;
-    XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager*                  fMemoryManager;
-    XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool*                 fGrammarPool;
-    XERCES_CPP_NAMESPACE_QUALIFIER XSModel*                        fXSModel;
-    XERCES_CPP_NAMESPACE_QUALIFIER XSModel*                        fGrammarPoolXSModel;
-    XERCES_CPP_NAMESPACE_QUALIFIER ValueVectorOf<XERCES_CPP_NAMESPACE_QUALIFIER SchemaGrammar*>*  fGrammarsToAddToXSModel;
+    XMLStringPool*                  fStringPool;
+    RefHashTableOf<Grammar>*        fGrammarBucket;
+    RefHashTableOf<Grammar>*        fGrammarFromPool;
+    DatatypeValidatorFactory*       fDataTypeReg;
+    MemoryManager*                  fMemoryManager;
+    XMLGrammarPool*                 fGrammarPool;
+    XSModel*                        fXSModel;
+    XSModel*                        fGrammarPoolXSModel;
+    ValueVectorOf<SchemaGrammar*>*  fGrammarsToAddToXSModel;
 };
-
-XQillaGrammarResolver::XQillaGrammarResolver(
-                      XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool* const gramPool, 
-                      XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager*  const manager /*= XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager*/)
-: GrammarResolver(gramPool, manager)
-{
-  // trigger the creation of the fDataTypeReg data member
-  getDatatypeValidator(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA, XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING);
-
-  XERCES_CPP_NAMESPACE_QUALIFIER DatatypeValidatorFactory* dvdt=((HackGrammarResolver*)this)->fDataTypeReg;
-  // xdt:yearMonthDuration
-  XERCES_CPP_NAMESPACE_QUALIFIER RefHashTableOf<XERCES_CPP_NAMESPACE_QUALIFIER KVStringPair>* facets =
-    new (manager) XERCES_CPP_NAMESPACE_QUALIFIER RefHashTableOf<XERCES_CPP_NAMESPACE_QUALIFIER KVStringPair>(1,manager);
-  facets->put((void*) XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgELT_PATTERN,
-              new (manager) XERCES_CPP_NAMESPACE_QUALIFIER KVStringPair(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgELT_PATTERN, ATDurationOrDerived::pattern_DT_YEARMONTHDURATION,manager));
-    
-  dvdt->createDatatypeValidator(ATDurationOrDerived::fgDT_YEARMONTHDURATION, 
-                                dvdt->getDatatypeValidator(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DURATION),
-                                facets, 0, false, 0, true, manager);
-    
-  // xdt:dayTimeDuration
-  facets = new (manager) XERCES_CPP_NAMESPACE_QUALIFIER RefHashTableOf<XERCES_CPP_NAMESPACE_QUALIFIER KVStringPair>(1,manager);
-  facets->put((void*) XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgELT_PATTERN,
-              new (manager) XERCES_CPP_NAMESPACE_QUALIFIER KVStringPair(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgELT_PATTERN, ATDurationOrDerived::pattern_DT_DAYTIMEDURATION,manager));
-    
-  dvdt->createDatatypeValidator(ATDurationOrDerived::fgDT_DAYTIMEDURATION, 
-                                dvdt->getDatatypeValidator(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DURATION),
-                                facets, 0, false, 0, true, manager);
-
-  // xdt:untypedAtomic -- no facets
-  dvdt->createDatatypeValidator(ATUntypedAtomic::fgDT_UNTYPEDATOMIC, 
-                                dvdt->getDatatypeValidator(AnyAtomicType::fgDT_ANYATOMICTYPE_XERCESHASH),
-                                0, 0, false, 0, true, manager);
-}
 
 /////////////////////////////////////////////////////////////////
 //
@@ -134,16 +104,36 @@ const XMLCh DocumentCacheParser::g_szUntyped[]= {
 
 DocumentCacheParser::DocumentCacheParser(const DocumentCacheParser &parent, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr)
   : XercesDOMParser(0, memMgr, parent.getGrammarResolver()->getGrammarPool()),
+    schemaLocations_(1023, memMgr),
+    noNamespaceSchemaLocation_(1023, memMgr),
     _context(0)
 {
   init();
+
+  // Hack around a Xerces bug, where the GrammarResolver doesn't
+  // initialise it's XSModel correctly from a locked XMLGrammarPool - jpcs
+  ((GrammarResolverHack*)fGrammarResolver)->fGrammarPoolXSModel = parent.getGrammarResolver()->getGrammarPool()->getXSModel();
+
+  schemaLocations_.set(parent.schemaLocations_.getRawBuffer());
+  noNamespaceSchemaLocation_.set(parent.noNamespaceSchemaLocation_.getRawBuffer());
+
+  getScanner()->setExternalNoNamespaceSchemaLocation(noNamespaceSchemaLocation_.getRawBuffer());
+  getScanner()->setExternalSchemaLocation(schemaLocations_.getRawBuffer());
 }
 
-DocumentCacheParser::DocumentCacheParser(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr, XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool* xmlgr) :
-  XercesDOMParser(0,memMgr, xmlgr),
-  _context(0)
+DocumentCacheParser::DocumentCacheParser(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr, XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool* xmlgr)
+  : XercesDOMParser(0,memMgr, xmlgr),
+    schemaLocations_(1023, memMgr),
+    noNamespaceSchemaLocation_(1023, memMgr),
+    _context(0)
 {
   init();
+
+  if(xmlgr) {
+    // Hack around a Xerces bug, where the GrammarResolver doesn't
+    // initialise it's XSModel correctly from a locked XMLGrammarPool - jpcs
+    ((GrammarResolverHack*)fGrammarResolver)->fGrammarPoolXSModel = xmlgr->getXSModel();
+  }
 }
 
 DocumentCacheParser::~DocumentCacheParser()
@@ -152,18 +142,6 @@ DocumentCacheParser::~DocumentCacheParser()
 
 void DocumentCacheParser::init()
 {
-  delete fGrammarResolver; delete fScanner;
-  // re-init using this grammar resolver
-  fGrammarResolver = new (fMemoryManager) XQillaGrammarResolver(fGrammarPool, fMemoryManager);
-  fURIStringPool = fGrammarResolver->getStringPool();
-
-  //  Create a scanner and tell it what validator to use. Then set us
-  //  as the document event handler so we can fill the DOM document.
-  fScanner = XERCES_CPP_NAMESPACE_QUALIFIER XMLScannerResolver::getDefaultScanner(fValidator, fGrammarResolver, fMemoryManager);
-  fScanner->setDocHandler(this);
-  fScanner->setDocTypeHandler(this);
-  fScanner->setURIStringPool(fURIStringPool);
-
   // hold the loaded schemas in the cache, so that can be reused    
   fGrammarResolver->cacheGrammarFromParse(true);
   fGrammarResolver->useCachedGrammarInParse(true);
@@ -185,7 +163,7 @@ void DocumentCacheParser::startDocument()
 
   if(_context) {
     fDocument = (XERCES_CPP_NAMESPACE_QUALIFIER DOMDocumentImpl *)
-      _context->createNewDocument(); // This uses the context's memory manager
+	    new (_context->getMemoryManager()) XPathDocumentImpl(_context->getMemoryManager());
   }
   else {
     fDocument = (XERCES_CPP_NAMESPACE_QUALIFIER DOMDocumentImpl *)
@@ -249,7 +227,7 @@ XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *DocumentCacheParser::parseWithContex
   return adoptDocument();
 }
 
-void DocumentCacheParser::loadSchema(const XMLCh* const uri, const XMLCh* const location, StaticContext *context)
+void DocumentCacheParser::loadSchema(const XMLCh* const uri, const XMLCh* location, StaticContext *context)
 {
   // if we are requested to load the XMLSchema schema, just return
   if(XPath2Utils::equals(uri, XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA))
@@ -265,11 +243,9 @@ void DocumentCacheParser::loadSchema(const XMLCh* const uri, const XMLCh* const 
   }
   XERCES_CPP_NAMESPACE_QUALIFIER Janitor<XERCES_CPP_NAMESPACE_QUALIFIER InputSource> janIS(srcToUse);
 
-  // always validate, so that the preloaded schema can be matched even if the XML doesn't reference it    
-  setValidationScheme(XERCES_CPP_NAMESPACE_QUALIFIER AbstractDOMParser::Val_Always);
-
   XERCES_CPP_NAMESPACE_QUALIFIER Grammar* grammar=NULL;
   if(srcToUse) {
+    if(location == 0) location = srcToUse->getSystemId();
     grammar=getScanner()->loadGrammar(*srcToUse, XERCES_CPP_NAMESPACE_QUALIFIER Grammar::SchemaGrammarType, true);
   }
   else if(location) {
@@ -284,6 +260,20 @@ void DocumentCacheParser::loadSchema(const XMLCh* const uri, const XMLCh* const 
   }
   if(grammar==NULL)
     XQThrow2(StaticErrorException,X("DocumentCacheParser::loadSchema"), X("Schema not found [err:XQST0059]"));
+
+  // Update the scanner's external schema locations, so it validates
+  // XML documents that match
+  if(uri == 0 || *uri == 0) {
+    noNamespaceSchemaLocation_.set(location);
+    getScanner()->setExternalNoNamespaceSchemaLocation(noNamespaceSchemaLocation_.getRawBuffer());
+  }
+  else {
+    schemaLocations_.append(' ');
+    schemaLocations_.append(uri);
+    schemaLocations_.append(' ');
+    schemaLocations_.append(location);
+    getScanner()->setExternalSchemaLocation(schemaLocations_.getRawBuffer());
+  }
 }
 
 unsigned int DocumentCacheParser::getSchemaUriId(const XMLCh* uri) const
@@ -328,38 +318,36 @@ XERCES_CPP_NAMESPACE_QUALIFIER SchemaAttDef* DocumentCacheParser::getAttributeDe
 }
 
 Node::Ptr DocumentCacheParser::validate(const Node::Ptr &node,
-	DocumentCache::ValidationMode valMode,
-	DynamicContext *context)
+                                        DocumentCache::ValidationMode valMode,
+                                        DynamicContext *context)
 {
-    XERCES_CPP_NAMESPACE_QUALIFIER AbstractDOMParser::ValSchemes oldValScheme=getValidationScheme();
     try {
+      Node::Ptr documentElement = node;
+
         if(node->dmNodeKind() == Node::document_string)
         {
             Result children = node->dmChildren(context,0);
             Node::Ptr child;
-            bool bSeenElement=false;
+            documentElement = 0;
             while((child=children->next(context)).notNull())
             {
               if(child->dmNodeKind()==Node::element_string)
-                if(bSeenElement)
+                if(documentElement.notNull())
                   XQThrow2(DynamicErrorException,X("DocumentCacheParser::validate"), X("A document being validated must have exactly one child element [err:XQDY0061]"));
                 else
-                  bSeenElement=true;
+                  documentElement = child;
               else if(child->dmNodeKind()!=Node::processing_instruction_string && 
                       child->dmNodeKind()!=Node::comment_string)
-                XQThrow2(DynamicErrorException,X("DocumentCacheParser::validate"), X("A document being validated can only have element, comments and processing instructions as children [err:XQDY0061]"));
+                XQThrow2(DynamicErrorException,X("DocumentCacheParser::validate"),
+                         X("A document being validated can only have element, comments and processing instructions as children [err:XQDY0061]"));
             }
-            if(!bSeenElement)
+            if(documentElement.isNull())
               XQThrow2(DynamicErrorException,X("DocumentCacheParser::validate"), X("A document being validated must have exactly one child element [err:XQDY0061]"));
         }
 
         // if validation is strict, there must be a schema for the root node
         if(valMode==DocumentCache::VALIDATION_STRICT) {
-            ATQNameOrDerived::Ptr name;
-            if(node->dmNodeKind() == Node::document_string)
-                name = ((const Node::Ptr)(node->dmChildren(context,0)->next(context)))->dmNodeName(context);
-            else
-                name = node->dmNodeName(context);
+            ATQNameOrDerived::Ptr name = documentElement->dmNodeName(context);
             const XMLCh *node_uri = ((const ATQNameOrDerived*)name.get())->getURI();
             const XMLCh *node_name = ((const ATQNameOrDerived*)name.get())->getName();
 
@@ -373,44 +361,39 @@ Node::Ptr DocumentCacheParser::validate(const Node::Ptr &node,
                 msg.append(X(" is not defined as a global element [err:XQDY0084]"));
                 XQThrow2(DynamicErrorException,X("DocumentCacheParser::validate"), msg.getRawBuffer());
             }
+
+            setValidationConstraintFatal(true);
         }
         // - build a textual representation of the element
-        const XMLCh* serializedForm = node->asString(context);
+        AutoDeallocate<const XMLCh> serializedForm(node->asString(context), context->getMemoryManager());
 
-        // - enable the flag bValidationConstraintFatal, if validation is strict
-        if(valMode==DocumentCache::VALIDATION_STRICT)
-            setValidationConstraintFatal(true);
-        setValidationScheme(XERCES_CPP_NAMESPACE_QUALIFIER AbstractDOMParser::Val_Always);
-        setIdentityConstraintChecking(false);
-
-        XERCES_CPP_NAMESPACE_QUALIFIER MemBufInputSource inputSrc(  (const XMLByte*)serializedForm, 
-                                                                    XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(serializedForm)*sizeof(XMLCh), 
+        XERCES_CPP_NAMESPACE_QUALIFIER MemBufInputSource inputSrc(  (const XMLByte*)serializedForm.get(),
+                                                                    XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(serializedForm) * sizeof(XMLCh), 
                                                                     XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString,
                                                                     false,
                                                                     context->getMemoryManager());
         inputSrc.setCopyBufToStream(false);
         inputSrc.setEncoding(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgUTF16EncodingString);
+
         // - parse the text (with validation on)
-        XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* pDoc=parseWithContext(inputSrc, context);
+        XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* pDoc = parseWithContext(inputSrc, context);
+
         setValidationConstraintFatal(false);
-        setValidationScheme(oldValScheme);
-        setIdentityConstraintChecking(true);
-        XERCES_CPP_NAMESPACE_QUALIFIER XMLString::release((void**)&serializedForm, context->getMemoryManager() );
+
         // - return the document element
-        if(pDoc==NULL)
-            return NULL;
+        if(pDoc == NULL) return NULL;
         // if we were asked to validate a document node, return the document; otherwise, return the root node
         if(node->dmNodeKind() == Node::document_string)
-            return new NodeImpl(pDoc, context);
+            return new XercesNodeImpl(pDoc, context);
         else
         {
           // the newly returned node has no parent
-          return new NodeImpl(pDoc->removeChild(pDoc->getDocumentElement()), context);
+          return new XercesNodeImpl(pDoc->removeChild(pDoc->getDocumentElement()), context);
         }
     }
     catch (const XERCES_CPP_NAMESPACE_QUALIFIER SAXException& toCatch) {
         setValidationConstraintFatal(false);
-        setValidationScheme(oldValScheme);
+
         XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer exc_msg(1023, context->getMemoryManager());
         exc_msg.set(X("Validation failed: "));
         exc_msg.append(toCatch.getMessage());
@@ -419,7 +402,7 @@ Node::Ptr DocumentCacheParser::validate(const Node::Ptr &node,
     }
     catch (const XERCES_CPP_NAMESPACE_QUALIFIER DOMException& toCatch) {
         setValidationConstraintFatal(false);
-        setValidationScheme(oldValScheme);
+
         XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer exc_msg(1023, context->getMemoryManager());
         exc_msg.set(X("Validation failed: "));
         exc_msg.append(toCatch.msg);
@@ -428,7 +411,7 @@ Node::Ptr DocumentCacheParser::validate(const Node::Ptr &node,
     }
     catch (const XERCES_CPP_NAMESPACE_QUALIFIER XMLException& toCatch) {
         setValidationConstraintFatal(false);
-        setValidationScheme(oldValScheme);
+
         XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer exc_msg(1023, context->getMemoryManager());
         exc_msg.set(X("Validation failed: "));
         exc_msg.append(toCatch.getMessage());
@@ -450,7 +433,7 @@ void DocumentCacheParser::error(const   unsigned int                errCode
 {
   XERCES_CPP_NAMESPACE_QUALIFIER XMLErrorReporter::ErrTypes newErrType=errType;
   // if we have disabled validation errors, convert them into warnings
-  if (!getValidationConstraintFatal() && XPath2Utils::equals(msgDomain, XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgValidityDomain)) 
+  if(!getValidationConstraintFatal() && XPath2Utils::equals(msgDomain, XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgValidityDomain)) 
     newErrType=XERCES_CPP_NAMESPACE_QUALIFIER XMLErrorReporter::ErrType_Warning;
   XercesDOMParser::error(errCode,msgDomain,newErrType,errorText,systemId,publicId,lineNum,colNum);
 }
@@ -489,28 +472,7 @@ XERCES_CPP_NAMESPACE_QUALIFIER XMLEntityResolver* DocumentCacheImpl::getXMLEntit
     return const_cast<XERCES_CPP_NAMESPACE_QUALIFIER XMLEntityResolver*>(_parser.getXMLEntityResolver());
 }
 
-XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *DocumentCacheImpl::loadXMLDocument(XERCES_CPP_NAMESPACE_QUALIFIER
-                                                                               InputSource& inputSource,
-                                                                               DynamicContext *context)
-{
-  XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *doc = 0;
-  try {
-    doc = _parser.parseWithContext(inputSource, context);
-  }
-  catch(const XERCES_CPP_NAMESPACE_QUALIFIER SAXException& toCatch) {
-    //TODO: Find a way to decipher whether the exception is actually because of a parsing problem or because the document can't be found
-    XQThrow2(XMLParseException, X("DocumentCacheImpl::loadXMLDocument"), toCatch.getMessage());
-  }
-  catch(const XERCES_CPP_NAMESPACE_QUALIFIER DOMException& toCatch) {
-    XQThrow2(XMLParseException,X("DocumentCacheImpl::loadXMLDocument"), toCatch.msg);
-  }
-  catch(const XERCES_CPP_NAMESPACE_QUALIFIER XMLException& toCatch) {
-    XQThrow2(XMLParseException,X("DocumentCacheImpl::loadXMLDocument"), toCatch.getMessage());
-  }
-  return doc;
-}
- 
-XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *DocumentCacheImpl::loadXMLDocument(const XMLCh* uri, DynamicContext *context)
+Node::Ptr DocumentCacheImpl::loadDocument(const XMLCh* uri, DynamicContext *context)
 {
   XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *doc = 0;
   try {
@@ -526,9 +488,9 @@ XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *DocumentCacheImpl::loadXMLDocument(c
   catch(const XERCES_CPP_NAMESPACE_QUALIFIER XMLException& toCatch) {
     XQThrow2(XMLParseException,X("DocumentCacheImpl::loadXMLDocument"), toCatch.getMessage());
   }
-  return doc;
+  return new XercesNodeImpl(doc, context);
 }
-
+ 
 /*
  * returns true if the type represented by uri:typename is an instance of uriToCheck:typeNameToCheck 
  *

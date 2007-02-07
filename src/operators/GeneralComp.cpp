@@ -35,9 +35,10 @@
 
 GeneralComp::GeneralComp(ComparisonOperation operation, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : XQOperator(name, args, memMgr),
+    operation_(operation),
+    collation_(0),
     xpath1compat_(false)
 {
-  _operation=operation;
 }
 
 bool GeneralComp::compare(GeneralComp::ComparisonOperation operation, AnyAtomicType::Ptr first, AnyAtomicType::Ptr second,
@@ -59,37 +60,33 @@ bool GeneralComp::compare(GeneralComp::ComparisonOperation operation, AnyAtomicT
 
   if(first->getPrimitiveTypeIndex() == AnyAtomicType::UNTYPED_ATOMIC) {
     if (second->isNumericValue()) {
-      first = first->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                            XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DOUBLE, context);
+      first = first->castAs(AnyAtomicType::DOUBLE, context);
     }
     else if(second->getPrimitiveTypeIndex() == AnyAtomicType::UNTYPED_ATOMIC) {
-      first = first->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                            XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING, context);
+      first = first->castAs(AnyAtomicType::STRING, context);
     }
     else {
-      first = first->castAs(second->getTypeURI(),
+      first = first->castAs(second->getPrimitiveTypeIndex(),
+                            second->getTypeURI(),
                             second->getTypeName(), context);
     }
   }
   if(second->getPrimitiveTypeIndex() == AnyAtomicType::UNTYPED_ATOMIC) {
     if(first->isNumericValue()) {
-      second = second->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                              XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DOUBLE, context);
+      second = second->castAs(AnyAtomicType::DOUBLE, context);
     }
     else if(first->getPrimitiveTypeIndex() == AnyAtomicType::UNTYPED_ATOMIC) {
-      second = second->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                              XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING, context);
+      second = second->castAs(AnyAtomicType::STRING, context);
     }
     else {
-      second = second->castAs(first->getTypeURI(),
+      second = second->castAs(first->getPrimitiveTypeIndex(),
+                              first->getTypeURI(),
                               first->getTypeName(), context);
     }
   }
   if(xpath1compat && (first->isNumericValue() || second->isNumericValue())) {
-    first = first->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                          XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DOUBLE, context);
-    second = second->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                            XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_DOUBLE, context);
+    first = first->castAs(AnyAtomicType::DOUBLE, context);
+    second = second->castAs(AnyAtomicType::DOUBLE, context);
   }
   bool result = false;
   switch(operation) {
@@ -119,6 +116,8 @@ ASTNode* GeneralComp::staticResolution(StaticContext *context)
     *i = (*i)->staticResolution(context);
   }
 
+  collation_ = context->getDefaultCollation(this);
+
   return this;
 }
 
@@ -147,10 +146,6 @@ Result GeneralComp::createResult(DynamicContext* context, int flags) const
   return new GeneralCompResult(this);
 }
 
-GeneralComp::ComparisonOperation GeneralComp::getOperation() const {
-  return _operation;
-}
-
 GeneralComp::GeneralCompResult::GeneralCompResult(const GeneralComp *op)
   : SingleResult(op),
     _op(op)
@@ -160,10 +155,8 @@ GeneralComp::GeneralCompResult::GeneralCompResult(const GeneralComp *op)
 Item::Ptr GeneralComp::GeneralCompResult::getSingleResult(DynamicContext *context) const
 {
   // Atomization is applied to each operand of a general comparison.
-  Result arg1 = _op->getArgument(0)->collapseTree(context);
-  Result arg2 = _op->getArgument(1)->collapseTree(context);
-
-  Collation* collation=context->getDefaultCollation(this);
+  Result arg1 = _op->getArgument(0)->createResult(context);
+  Result arg2 = _op->getArgument(1)->createResult(context);
 
   // The result of the comparison is true if and only if there is a pair of atomic values, 
   // one belonging to the result of atomization of the first operand and the other belonging 
@@ -176,7 +169,7 @@ Item::Ptr GeneralComp::GeneralCompResult::getSingleResult(DynamicContext *contex
     AnyAtomicType::Ptr item2;
     Sequence arg2_sequence(context->getMemoryManager());
     while((item2 = (const AnyAtomicType::Ptr)arg2->next(context)) != NULLRCP) {
-      if(compare(_op->getOperation(), item1, item2, collation, context, _op->getXPath1CompatibilityMode(), this))
+      if(compare(_op->getOperation(), item1, item2, _op->getCollation(), context, _op->getXPath1CompatibilityMode(), this))
         return (const Item::Ptr)context->getItemFactory()->createBoolean(true, context);
       arg2_sequence.addItem(item2);
     }
@@ -185,7 +178,7 @@ Item::Ptr GeneralComp::GeneralCompResult::getSingleResult(DynamicContext *contex
     Sequence::iterator itSecond;
     while((item1 = (const AnyAtomicType::Ptr)arg1->next(context)) != NULLRCP) {
       for(itSecond = arg2_sequence.begin(); itSecond != arg2_sequence.end(); ++itSecond) {
-        if(compare(_op->getOperation(), item1, (const AnyAtomicType::Ptr)*itSecond, collation, context,
+        if(compare(_op->getOperation(), item1, (const AnyAtomicType::Ptr)*itSecond, _op->getCollation(), context,
                    _op->getXPath1CompatibilityMode(), this))
           return (const Item::Ptr)context->getItemFactory()->createBoolean(true, context);
       }

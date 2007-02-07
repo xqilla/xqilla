@@ -39,17 +39,6 @@ XQillaBuilderImpl::XQillaBuilderImpl( XERCES_CPP_NAMESPACE_QUALIFIER XMLValidato
 
 DOMBuilderImpl(valToAdopt, manager, gramPool)
 {
-  delete fGrammarResolver; delete fScanner;
-  // re-init using this grammar resolver
-  fGrammarResolver = new (fMemoryManager) XQillaGrammarResolver(fGrammarPool, fMemoryManager);
-  fURIStringPool = fGrammarResolver->getStringPool();
-
-  //  Create a scanner and tell it what validator to use. Then set us
-  //  as the document event handler so we can fill the DOM document.
-  fScanner = XERCES_CPP_NAMESPACE_QUALIFIER XMLScannerResolver::getDefaultScanner(fValidator, fGrammarResolver, fMemoryManager);
-  fScanner->setDocHandler(this);
-  fScanner->setDocTypeHandler(this);
-  fScanner->setURIStringPool(fURIStringPool);
 }
 
 // ---------------------------------------------------------------------------

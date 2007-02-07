@@ -48,12 +48,12 @@ ASTNode *FunctionLast::staticTyping(StaticContext *context)
   return calculateSRCForArguments(context);
 }
 
-Sequence FunctionLast::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionLast::createSequence(DynamicContext* context, int flags) const
 {
   XPath2MemoryManager* memMgr = context->getMemoryManager();
 
   if(context->getContextItem()==NULLRCP)
-    XQThrow(FunctionException,X("FunctionPosition::collapseTreeInternal"), X("Undefined context item in fn:last [err:XPDY0002]"));
+    XQThrow(FunctionException,X("FunctionPosition::createSequence"), X("Undefined context item in fn:last [err:XPDY0002]"));
   return Sequence(context->getItemFactory()->createInteger((long)context->getContextSize(), context), memMgr);
 }
 

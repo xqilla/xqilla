@@ -29,7 +29,7 @@ public:
   XQValidate(ASTNode* valExpr, DocumentCache::ValidationMode valMode, XPath2MemoryManager* expr);
 
   /** evaluate the expression, and check if it's valid according to the schemas **/
-  Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
+  Sequence createSequence(DynamicContext* context, int flags=0) const;
 
   /**
    *  Called during static analysis to determine if statically correct.  If

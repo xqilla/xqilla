@@ -66,10 +66,10 @@ Item::Ptr Plus::plus(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::Ptr &
 
     if(atom1->isNumericValue()) {
       if(atom2->isNumericValue()) {
-        return (const Item::Ptr)((Numeric*)(const AnyAtomicType*)atom1)->add((const Numeric::Ptr )atom2, context);
+        return ((Numeric*)atom1.get())->add((Numeric*)atom2.get(), context);
       }
       else {
-        XQThrow2(XPath2ErrorException,X("Plus::collapseTreeInternal"), X("An attempt to add a non numeric type to a numeric type has occurred [err:XPTY0004]"));
+        XQThrow2(XPath2ErrorException,X("Plus::createSequence"), X("An attempt to add a non numeric type to a numeric type has occurred [err:XPTY0004]"));
       }
     }
 
@@ -77,83 +77,83 @@ Item::Ptr Plus::plus(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::Ptr &
     case AnyAtomicType::DATE : {
       switch(atom2->getPrimitiveTypeIndex()) {
       case AnyAtomicType::DAY_TIME_DURATION: {
-        return (const Item::Ptr)((ATDateOrDerived*)atom1.get())->addDayTimeDuration((const ATDurationOrDerived*)atom2.get(), context);
+        return ((ATDateOrDerived*)atom1.get())->addDayTimeDuration((const ATDurationOrDerived*)atom2.get(), context);
       }
       case AnyAtomicType::YEAR_MONTH_DURATION: {
-        return (const Item::Ptr)((ATDateOrDerived*)atom1.get())->addYearMonthDuration((const ATDurationOrDerived*)atom2.get(), context);
+        return ((ATDateOrDerived*)atom1.get())->addYearMonthDuration((const ATDurationOrDerived*)atom2.get(), context);
       }
       default: {
-        XQThrow2(XPath2ErrorException,X("Plus::collapseTreeInternal"), X("An invalid attempt to add to xs:date type has occurred [err:XPTY0004]"));
+        XQThrow2(XPath2ErrorException,X("Plus::createSequence"), X("An invalid attempt to add to xs:date type has occurred [err:XPTY0004]"));
       }
       }
     }
     case AnyAtomicType::TIME : {
       switch(atom2->getPrimitiveTypeIndex()) {
       case AnyAtomicType::DAY_TIME_DURATION: {
-        return (const Item::Ptr)((ATTimeOrDerived*)(const AnyAtomicType*)atom1)->addDayTimeDuration( (const ATDurationOrDerived::Ptr )atom2, context );
+        return ((ATTimeOrDerived*)atom1.get())->addDayTimeDuration((const ATDurationOrDerived*)atom2.get(), context );
       }
       default: {
-        XQThrow2(XPath2ErrorException,X("Plus::collapseTreeInternal"), X("An invalid attempt to add to xs:time type has occurred [err:XPTY0004]"));
+        XQThrow2(XPath2ErrorException,X("Plus::createSequence"), X("An invalid attempt to add to xs:time type has occurred [err:XPTY0004]"));
       }
       }
     }
     case AnyAtomicType::DATE_TIME : {
       switch(atom2->getPrimitiveTypeIndex()) {
       case AnyAtomicType::DAY_TIME_DURATION: {
-        return (const Item::Ptr)((ATDateTimeOrDerived*)atom1.get())->addDayTimeDuration((const ATDurationOrDerived*)atom2.get(), context);
+        return ((ATDateTimeOrDerived*)atom1.get())->addDayTimeDuration((const ATDurationOrDerived*)atom2.get(), context);
       }
       case AnyAtomicType::YEAR_MONTH_DURATION: {
-        return (const Item::Ptr)((ATDateTimeOrDerived*)atom1.get())->addYearMonthDuration((const ATDurationOrDerived*)atom2.get(), context);
+        return ((ATDateTimeOrDerived*)atom1.get())->addYearMonthDuration((const ATDurationOrDerived*)atom2.get(), context);
       }
       default: {
-        XQThrow2(XPath2ErrorException,X("Plus::collapseTreeInternal"), X("An invalid attempt to add to xs:dateTime type has occurred [err:XPTY0004]"));
+        XQThrow2(XPath2ErrorException,X("Plus::createSequence"), X("An invalid attempt to add to xs:dateTime type has occurred [err:XPTY0004]"));
       }
       }
     }
     case AnyAtomicType::DAY_TIME_DURATION: {
       switch(atom2->getPrimitiveTypeIndex()) {
       case AnyAtomicType::DAY_TIME_DURATION: {
-        return (const Item::Ptr)((ATDurationOrDerived*)atom2.get())->add((const ATDurationOrDerived *)atom1.get(), context);
+        return ((ATDurationOrDerived*)atom2.get())->add((const ATDurationOrDerived *)atom1.get(), context);
       }
       case AnyAtomicType::DATE: {
-        return (const Item::Ptr)((ATDateOrDerived*)atom2.get())->addDayTimeDuration((const ATDurationOrDerived *)atom1.get(), context);
+        return ((ATDateOrDerived*)atom2.get())->addDayTimeDuration((const ATDurationOrDerived *)atom1.get(), context);
       }
       case AnyAtomicType::DATE_TIME: {
-        return (const Item::Ptr)((ATDateTimeOrDerived*)atom2.get())->addDayTimeDuration((const ATDurationOrDerived *)atom1.get(), context);
+        return ((ATDateTimeOrDerived*)atom2.get())->addDayTimeDuration((const ATDurationOrDerived *)atom1.get(), context);
       }
       case AnyAtomicType::TIME: {
-        return (const Item::Ptr)((ATTimeOrDerived*)atom2.get())->addDayTimeDuration((const ATDurationOrDerived *)atom1.get(), context);
+        return ((ATTimeOrDerived*)atom2.get())->addDayTimeDuration((const ATDurationOrDerived *)atom1.get(), context);
       }
       default: {
-        XQThrow2(XPath2ErrorException,X("Plus::collapseTreeInternal"), X("An invalid attempt to add to xdt:dayTimeDuration type has occurred [err:XPTY0004]"));
+        XQThrow2(XPath2ErrorException,X("Plus::createSequence"), X("An invalid attempt to add to xdt:dayTimeDuration type has occurred [err:XPTY0004]"));
       }
       }
     }
     case AnyAtomicType::YEAR_MONTH_DURATION: {
       switch(atom2->getPrimitiveTypeIndex()) {
       case AnyAtomicType::YEAR_MONTH_DURATION: {
-        return (const Item::Ptr)((ATDurationOrDerived*)atom2.get())->add((const ATDurationOrDerived *)atom1.get(), context);
+        return ((ATDurationOrDerived*)atom2.get())->add((const ATDurationOrDerived *)atom1.get(), context);
       }
       case AnyAtomicType::DATE: {
-        return (const Item::Ptr)((ATDateOrDerived*)atom2.get())->addYearMonthDuration((const ATDurationOrDerived *)atom1.get(), context);
+        return ((ATDateOrDerived*)atom2.get())->addYearMonthDuration((const ATDurationOrDerived *)atom1.get(), context);
       }
       case AnyAtomicType::DATE_TIME: {
-        return (const Item::Ptr)((ATDateTimeOrDerived*)atom2.get())->addYearMonthDuration((const ATDurationOrDerived *)atom1.get(), context);
+        return ((ATDateTimeOrDerived*)atom2.get())->addYearMonthDuration((const ATDurationOrDerived *)atom1.get(), context);
       }
       default: {
-        XQThrow2(XPath2ErrorException,X("Plus::collapseTreeInternal"), X("An invalid attempt to add to xdt:yearMonthDuration type has occurred [err:XPTY0004]"));
+        XQThrow2(XPath2ErrorException,X("Plus::createSequence"), X("An invalid attempt to add to xdt:yearMonthDuration type has occurred [err:XPTY0004]"));
       }
       }
     }
     default: {
-      XQThrow2(XPath2ErrorException,X("Plus::collapseTreeInternal"), X("The operator add ('+') has been called on invalid operand types [err:XPTY0004]"));
+      XQThrow2(XPath2ErrorException,X("Plus::createSequence"), X("The operator add ('+') has been called on invalid operand types [err:XPTY0004]"));
     }
     }
   }
   catch(XQException &e) {
-      if(e.getXQueryLine() == 0)
-        e.setXQueryPosition(info);
-      throw;
+    if(e.getXQueryLine() == 0)
+      e.setXQueryPosition(info);
+    throw;
   }
 }
 

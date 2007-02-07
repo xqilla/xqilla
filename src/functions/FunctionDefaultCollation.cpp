@@ -41,7 +41,7 @@ FunctionDefaultCollation::FunctionDefaultCollation(const VectorOfASTNodes &args,
   _src.getStaticType().flags = StaticType::STRING_TYPE;
 }
 
-Sequence FunctionDefaultCollation::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionDefaultCollation::createSequence(DynamicContext* context, int flags) const
 {
   Collation* collation = context->getDefaultCollation(this);
   if(collation != NULL)

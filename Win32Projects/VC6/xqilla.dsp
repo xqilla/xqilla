@@ -97,10 +97,6 @@ SOURCE=..\..\src\ast\ASTNodeImpl.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\ast\AggregateFunction.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\ast\ConstantFoldingFunction.cpp
 # End Source File
 # Begin Source File
@@ -262,10 +258,6 @@ SOURCE=..\..\include\xqilla\ast\ASTNode.hpp
 # Begin Source File
 
 SOURCE=..\..\include\xqilla\ast\ASTNodeImpl.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\include\xqilla\ast\AggregateFunction.hpp
 # End Source File
 # Begin Source File
 
@@ -592,10 +584,6 @@ SOURCE=..\..\src\context\impl\VarTypeStoreImpl.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\context\impl\XercesUpdateFactory.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\context\impl\XQContextImpl.cpp
 # End Source File
 # Begin Source File
@@ -625,10 +613,6 @@ SOURCE=..\..\include\xqilla\context\impl\VarHashEntryImpl.hpp
 # Begin Source File
 
 SOURCE=..\..\include\xqilla\context\impl\VariableStoreTemplate.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\include\xqilla\context\impl\XercesUpdateFactory.hpp
 # End Source File
 # Begin Source File
 
@@ -2144,10 +2128,6 @@ SOURCE=..\..\src\items\impl\ATUntypedAtomicImpl.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\items\impl\NodeImpl.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\include\xqilla\items\impl\ATBooleanOrDerivedImpl.hpp
 # End Source File
 # Begin Source File
@@ -2165,10 +2145,6 @@ SOURCE=..\..\include\xqilla\items\impl\ATFloatOrDerivedImpl.hpp
 # Begin Source File
 
 SOURCE=..\..\include\xqilla\items\impl\ATQNameOrDerivedImpl.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\include\xqilla\items\impl\NodeImpl.hpp
 # End Source File
 # Begin Source File
 

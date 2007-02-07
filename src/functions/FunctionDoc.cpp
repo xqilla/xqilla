@@ -51,7 +51,7 @@ ASTNode *FunctionDoc::staticTyping(StaticContext *context)
   return calculateSRCForArguments(context);
 }
 
-Sequence FunctionDoc::collapseTreeInternal(DynamicContext* context, int flags) const {
+Sequence FunctionDoc::createSequence(DynamicContext* context, int flags) const {
   Sequence uriArg = getParamNumber(1,context)->toSequence(context);
   
   if (uriArg.isEmpty()) {
@@ -70,14 +70,14 @@ Sequence FunctionDoc::collapseTreeInternal(DynamicContext* context, int flags) c
 	  uri=newUri;
   }
   if(!XPath2Utils::isValidURI(uri, context->getMemoryManager()))
-    XQThrow(FunctionException, X("FunctionDoc::collapseTreeInternal"), X("Invalid argument to fn:doc function [err:FODC0005]"));
+    XQThrow(FunctionException, X("FunctionDoc::createSequence"), X("Invalid argument to fn:doc function [err:FODC0005]"));
 
   try {
     return context->resolveDocument(uri, this);
   } 
   //TODO:  once DocumentCacheImpl can throw different errors, we should be able to throw the correct corresponding error messages.
   catch(XMLParseException &e) {
-    XQThrow(FunctionException, X("FunctionDoc::collapseTreeInternal"), e.getError());
+    XQThrow(FunctionException, X("FunctionDoc::createSequence"), e.getError());
   }
 	return Sequence(context->getMemoryManager());
 }

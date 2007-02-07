@@ -24,7 +24,7 @@ public:
 
   virtual ASTNode *staticResolution(StaticContext *context);
   virtual ASTNode *staticTyping(StaticContext *context);
-  virtual Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
+  virtual Sequence createSequence(DynamicContext* context, int flags=0) const;
 
   const ASTNode *getExpression() const { return expr_; }
   void setExpression(ASTNode *expr) { expr_ = expr; }

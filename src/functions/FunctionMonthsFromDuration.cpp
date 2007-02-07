@@ -41,7 +41,7 @@ FunctionMonthsFromDuration::FunctionMonthsFromDuration(const VectorOfASTNodes &a
   _src.getStaticType().flags = StaticType::DECIMAL_TYPE;
 }
 
-Sequence FunctionMonthsFromDuration::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionMonthsFromDuration::createSequence(DynamicContext* context, int flags) const
 {
   XPath2MemoryManager* memMgr = context->getMemoryManager();
 

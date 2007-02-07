@@ -29,7 +29,6 @@
 # 
 lib.filters=ast axis context dom-api exceptions framework fulltext functions items lexer mapm operators parser runtime schema simple-api update utils xqts
 src/ast/ASTNodeImpl.cpp	lib
-src/ast/AggregateFunction.cpp	lib
 src/ast/ConstantFoldingFunction.cpp	lib
 src/ast/ConvertFunctionArg.cpp	lib
 src/ast/NumericFunction.cpp	lib
@@ -69,6 +68,21 @@ src/ast/XQTypeswitch.cpp	lib
 src/ast/XQValidate.cpp	lib
 src/ast/XQVariable.cpp	lib
 src/ast/XQVariableBinding.cpp	lib
+src/events/EventSerializer.cpp lib
+src/events/NoInheritFilter.hpp lib
+src/events/NoInheritFilter.cpp lib
+src/events/NSFixupFilter.cpp lib
+src/fastxdm/FastXDMConfiguration.cpp lib
+src/fastxdm/FastXDMDocument.hpp lib
+src/fastxdm/FastXDMDocument.cpp lib
+src/fastxdm/FastXDMDocumentCacheImpl.hpp lib
+src/fastxdm/FastXDMDocumentCacheImpl.cpp lib
+src/fastxdm/FastXDMNodeImpl.hpp lib
+src/fastxdm/FastXDMNodeImpl.cpp lib
+src/fastxdm/FastXDMSequenceBuilder.hpp lib
+src/fastxdm/FastXDMSequenceBuilder.cpp lib
+src/fastxdm/FastXDMUpdateFactory.hpp lib
+src/fastxdm/FastXDMUpdateFactory.cpp lib
 src/fulltext/FTContains.cpp   lib
 src/fulltext/FTWords.cpp   lib
 src/fulltext/FTOr.cpp   lib
@@ -109,7 +123,6 @@ src/context/impl/VarStoreImpl.cpp	lib
 src/context/impl/VarStoreImpl.hpp	lib
 src/context/impl/VarTypeStoreImpl.cpp	lib
 src/context/impl/VarTypeStoreImpl.hpp	lib
-src/context/impl/XercesUpdateFactory.cpp	lib
 src/context/impl/XQContextImpl.cpp	lib
 src/context/impl/XQDynamicContextImpl.cpp	lib
 src/context/impl/XQRemoteDebugger.cpp	lib
@@ -299,7 +312,6 @@ src/items/impl/ATStringOrDerivedImpl.hpp	lib
 src/items/impl/ATTimeOrDerivedImpl.cpp	lib
 src/items/impl/ATUntypedAtomicImpl.cpp	lib
 src/items/impl/ATUntypedAtomicImpl.hpp	lib
-src/items/impl/NodeImpl.cpp	lib
 src/lexer/FlexLexer.h	lib
 src/lexer/XQLexer.l		lib
 src/lexer/XQLexer.cpp		lib
@@ -415,6 +427,15 @@ src/utils/XPath2NSUtils.cpp	lib
 src/utils/XPath2Utils.cpp	lib
 src/utils/XQillaPlatformUtils.cpp	lib
 src/utils/XStr.cpp	lib
+src/xerces/XercesConfiguration.cpp	lib
+src/xerces/XercesNodeImpl.hpp lib
+src/xerces/XercesNodeImpl.cpp lib
+src/xerces/XercesSequenceBuilder.hpp lib
+src/xerces/XercesSequenceBuilder.cpp lib
+src/xerces/XercesUpdateFactory.hpp lib
+src/xerces/XercesUpdateFactory.cpp lib
+src/xerces/XercesURIResolver.hpp	lib
+src/xerces/XercesURIResolver.cpp	lib
 src/xqts/TestSuiteParser.cpp	lib
 src/xqts/TestSuiteResultListener.cpp	lib
 src/xqts/TestSuiteRunner.cpp		lib
@@ -423,7 +444,6 @@ src/samples/basic/basicXQillaUsage.cpp		    app=basicXQillaUsage
 tests/xqts/runner.cpp				    app=xqtsRunner
 include/xqilla/ast/ASTNode.hpp	lib
 include/xqilla/ast/ASTNodeImpl.hpp	lib
-include/xqilla/ast/AggregateFunction.hpp	lib
 include/xqilla/ast/ConstantFoldingFunction.hpp	lib
 include/xqilla/ast/ConvertFunctionArg.hpp	lib
 include/xqilla/ast/LocationInfo.hpp	lib
@@ -499,7 +519,6 @@ include/xqilla/context/impl/CollationImpl.hpp	lib
 include/xqilla/context/impl/ItemFactoryImpl.hpp	lib
 include/xqilla/context/impl/VarHashEntryImpl.hpp	lib
 include/xqilla/context/impl/VariableStoreTemplate.hpp	lib
-include/xqilla/context/impl/XercesUpdateFactory.hpp	lib
 include/xqilla/context/impl/XQContextImpl.hpp	lib
 include/xqilla/context/impl/XQDynamicContextImpl.hpp	lib
 include/xqilla/context/impl/XQRemoteDebugger.hpp	lib
@@ -507,6 +526,10 @@ include/xqilla/dom-api/XPath2Result.hpp	lib
 include/xqilla/dom-api/XQillaExpression.hpp	lib
 include/xqilla/dom-api/XQillaNSResolver.hpp	lib
 include/xqilla/dom-api/impl/XQillaNSResolverImpl.hpp	lib
+include/xqilla/events/EventHandler.hpp	lib
+include/xqilla/events/EventSerializer.hpp lib
+include/xqilla/events/NSFixupFilter.hpp lib
+include/xqilla/events/SequenceBuilder.hpp	lib
 include/xqilla/exceptions/ASTException.hpp	lib
 include/xqilla/exceptions/ContextException.hpp	lib
 include/xqilla/exceptions/DynamicErrorException.hpp	lib
@@ -525,6 +548,7 @@ include/xqilla/exceptions/XPath2TypeCastException.hpp	lib
 include/xqilla/exceptions/XPath2TypeMatchException.hpp	lib
 include/xqilla/exceptions/XQException.hpp	lib
 include/xqilla/exceptions/XQillaException.hpp	lib
+include/xqilla/fastxdm/FastXDMConfiguration.hpp lib
 include/xqilla/framework/BaseMemoryManager.hpp	lib
 include/xqilla/framework/ProxyMemoryManager.hpp	lib
 include/xqilla/framework/ReferenceCounted.hpp	lib
@@ -706,7 +730,6 @@ include/xqilla/items/impl/ATDecimalOrDerivedImpl.hpp lib
 include/xqilla/items/impl/ATDoubleOrDerivedImpl.hpp lib
 include/xqilla/items/impl/ATFloatOrDerivedImpl.hpp lib
 include/xqilla/items/impl/ATQNameOrDerivedImpl.hpp lib
-include/xqilla/items/impl/NodeImpl.hpp lib
 include/xqilla/items/impl/ATDurationOrDerivedImpl.hpp lib
 include/xqilla/items/impl/ATDateTimeOrDerivedImpl.hpp lib
 include/xqilla/items/impl/ATDateOrDerivedImpl.hpp lib
@@ -782,6 +805,7 @@ include/xqilla/utils/XQillaPlatformUtils.hpp	lib
 include/xqilla/utils/XStr.hpp	lib
 include/xqilla/xqilla-dom3.hpp	lib
 include/xqilla/xqilla-simple.hpp	lib
+include/xqilla/xerces/XercesConfiguration.hpp	lib
 include/xqilla/xqts/TestSuiteParser.hpp	lib
 include/xqilla/xqts/TestSuiteResultListener.hpp	lib
 include/xqilla/xqts/TestSuiteRunner.hpp	lib

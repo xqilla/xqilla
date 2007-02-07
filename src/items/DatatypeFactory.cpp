@@ -16,7 +16,6 @@
 
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/context/DynamicContext.hpp>
-#include <xqilla/items/impl/NodeImpl.hpp>
 #include "../exceptions/InvalidLexicalSpaceException.hpp"
 #include <xqilla/items/ATDurationOrDerived.hpp>
 #include <xqilla/items/ATUntypedAtomic.hpp>
@@ -44,6 +43,19 @@ DatatypeFactory::~DatatypeFactory()
 AnyAtomicType::Ptr DatatypeFactory::createInstance(const XMLCh* value,
                                                    const DynamicContext* context) const
 {
+  if(fBaseValidator->getWSFacet()==DatatypeValidator::COLLAPSE && !XMLString::isWSCollapsed(value))
+  {
+      XMLCh* tempValue=XMLString::replicate(value, context->getMemoryManager());
+      XMLString::collapseWS(tempValue, context->getMemoryManager());
+      value=tempValue;
+  }
+  if(fBaseValidator->getWSFacet()==DatatypeValidator::REPLACE && !XMLString::isWSReplaced(value))
+  {
+      XMLCh* tempValue=XMLString::replicate(value, context->getMemoryManager());
+      XMLString::replaceWS(tempValue, context->getMemoryManager());
+      value=tempValue;
+  }
+  
   try {
     fBaseValidator->validate(value, 0, context->getMemoryManager());
   } catch (XMLException &e) {
@@ -58,6 +70,9 @@ AnyAtomicType::Ptr DatatypeFactory::createInstance(const XMLCh* typeURI,
                                                    const XMLCh* value,
                                                    const DynamicContext* context) const
 {
+  if(typeName == 0)
+    return createInstance(value, context);
+
   DatatypeValidator* validator =
     const_cast<DatatypeValidator*>(fDocumentCache->getDatatypeValidator(typeURI, typeName));
 

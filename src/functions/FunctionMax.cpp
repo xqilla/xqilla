@@ -27,12 +27,15 @@
 #include <xqilla/items/ATDecimalOrDerived.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/context/ContextHelpers.hpp>
+#include <xqilla/utils/XPath2Utils.hpp>
 
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 
+XERCES_CPP_NAMESPACE_USE;
+
 const XMLCh FunctionMax::name[] = {
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_m, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_x, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chNull 
+  chLatin_m, chLatin_a, chLatin_x, 
+  chNull 
 };
 const unsigned int FunctionMax::minArgs = 1;
 const unsigned int FunctionMax::maxArgs = 2;
@@ -43,7 +46,7 @@ const unsigned int FunctionMax::maxArgs = 2;
 **/
 
 FunctionMax::FunctionMax(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : AggregateFunction(name, minArgs, maxArgs, "anyAtomicType*, string", args, memMgr)
+  : ConstantFoldingFunction(name, minArgs, maxArgs, "anyAtomicType*, string", args, memMgr)
 {
 }
 
@@ -56,62 +59,99 @@ ASTNode *FunctionMax::staticTyping(StaticContext *context)
 {
   _src.clear();
 
-  // TBD - could do better here - jpcs
-  _src.getStaticType().flags = StaticType::TYPED_ATOMIC_TYPE;
-  return calculateSRCForArguments(context);
+  ASTNode *result = calculateSRCForArguments(context);
+  if(result != this) return result;
+
+  _src.getStaticType() = _args[0]->getStaticResolutionContext().getStaticType();
+
+  if(_src.getStaticType().containsType(StaticType::UNTYPED_ATOMIC_TYPE)) {
+    _src.getStaticType().flags &= ~StaticType::UNTYPED_ATOMIC_TYPE;
+    _src.getStaticType().flags |= StaticType::DOUBLE_TYPE;
+  }
+  if(_src.getStaticType().containsType(StaticType::DOUBLE_TYPE)) {
+    _src.getStaticType().flags &= ~(StaticType::DECIMAL_TYPE | StaticType::FLOAT_TYPE);
+  }
+  if(_src.getStaticType().containsType(StaticType::FLOAT_TYPE)) {
+    _src.getStaticType().flags &= ~StaticType::DECIMAL_TYPE;
+  }
+
+  if(_args.size() > 1)
+    _src.getStaticType().typeUnion(_args[1]->getStaticResolutionContext().getStaticType());
+
+  return this;
 }
 
-Sequence FunctionMax::collapseTreeInternal(DynamicContext* context, int flags) const
+static inline bool checkUntypedAndNaN(Item::Ptr &item, Item::Ptr &max, DynamicContext *context)
 {
-    XPath2MemoryManager* memMgr = context->getMemoryManager();
+  if(((AnyAtomicType*)item.get())->getPrimitiveTypeIndex() == AnyAtomicType::UNTYPED_ATOMIC) {
+    if(XPath2Utils::equals(item->getTypeName(), ATUntypedAtomic::fgDT_UNTYPEDATOMIC) &&
+       XPath2Utils::equals(item->getTypeURI(), SchemaSymbols::fgURI_SCHEMAFORSCHEMA))
+      item = ((AnyAtomicType*)item.get())->castAs(AnyAtomicType::DOUBLE, context);
+  }
+  if(((AnyAtomicType*)item.get())->isNumericValue()) {
+    if(((Numeric*)item.get())->isNaN()) {
+      if(((AnyAtomicType*)max.get())->getPrimitiveTypeIndex() == AnyAtomicType::DOUBLE)
+        item = ((Numeric*)item.get())->castAs(AnyAtomicType::DOUBLE, context);
+      return true;
+    }
+    if(((AnyAtomicType*)max.get())->isNumericValue()) {
+      Numeric::Ptr num = ((Numeric*)item.get())->promoteTypeIfApplicable(((Numeric*)max.get())->getPrimitiveTypeIndex(), context);
+      if(num.notNull()) item = num;
+      else {
+        num = ((Numeric*)max.get())->promoteTypeIfApplicable(((Numeric*)item.get())->getPrimitiveTypeIndex(), context);
+        if(num.notNull()) max = num;
+      }
+    }
+  }
 
-    Sequence sequence(memMgr);
+  return false;
+}
+
+Sequence FunctionMax::createSequence(DynamicContext* context, int flags) const
+{
+  XPath2MemoryManager* memMgr = context->getMemoryManager();
+
+  Result args = getParamNumber(1,context);
+
+  Item::Ptr max = args->next(context);
+  if(max.isNull()) return Sequence(memMgr);
+
+  checkUntypedAndNaN(max, max, context);
+
+  Collation* collation = NULL;
+  if(getNumArgs() > 1)
+    collation = context->getCollation(getParamNumber(2,context)->next(context)->asString(context), this);
+  else collation = context->getDefaultCollation(this);
+
+  Item::Ptr item = args->next(context);
+  if(item.isNull()) {
+    // check for a type that doesn't support comparison
     try {
-        sequence = validateSequence(getParamNumber(1,context)->toSequence(context), context);
-    } catch (IllegalArgumentException &e) {
-        XQThrow(IllegalArgumentException, X("FunctionMax::collapseTreeInternal"), X("Invalid argument to fn:max() function [err:FORG0006]."));
+      GreaterThan::greater_than(max, max, collation, context, this);
     }
+    catch(XQException &e) {
+      XQThrow(::IllegalArgumentException, X("FunctionMax::createSequence"),
+              X("Invalid argument to fn:max() function [err:FORG0006]"));
+    }
+    return Sequence(max, memMgr);
+  }
 
-    // Return the empty sequence if the sequence is empty
-    if(sequence.isEmpty()) {
-        return Sequence(memMgr);
+  do {
+    if(checkUntypedAndNaN(item, max, context)) {
+      max = item;
     }
-    if(sequence.getLength()==1 && isNumericNaN(sequence.first()))
-        return sequence;
+    else {
+      try {
+        if(GreaterThan::greater_than(item, max, collation, context, this)) {
+          max = item;
+        }
+      }
+      catch(XQException &e) {
+        XQThrow(::IllegalArgumentException, X("FunctionMax::createSequence"),
+                X("Invalid argument to fn:max() function [err:FORG0006]"));
+      }
+    }
+  } while((item = args->next(context)).notNull());
 
-    Collation* collation=NULL;
-    if (getNumArgs()>1) {
-        Sequence collArg = getParamNumber(2,context)->toSequence(context);
-        const XMLCh* collName = collArg.first()->asString(context);
-        try {
-            context->getItemFactory()->createAnyURI(collName, context);
-        } catch(XPath2ErrorException &e) {
-            XQThrow(FunctionException, X("FunctionMax::collapseTreeInternal"), X("Invalid collationURI"));  
-        }
-        collation=context->getCollation(collName, this);
-    }
-    else
-        collation=context->getDefaultCollation(this);
-
-    Sequence::iterator i = sequence.begin();
-    AnyAtomicType::Ptr maxItem = (const AnyAtomicType *)i->get();
-    ++i;
-    // if we have just one item, force entering the 'for' loop, or we will not test if the type had a total order
-    if(i == sequence.end()) --i;
-    for(; i != sequence.end(); ++i) {
-        const AnyAtomicType *atomic = (const AnyAtomicType *)i->get();
-        try {
-          if(GreaterThan::greater_than(atomic, maxItem, collation, context, this))
-            maxItem = atomic;
-        }
-        catch (IllegalArgumentException &e) {
-          XQThrow(IllegalArgumentException, X("FunctionMax::collapseTreeInternal"),
-                  X("Invalid argument to fn:max() function [err:FORG0006]."));
-        }
-        catch (XPath2ErrorException &e) {
-          XQThrow(IllegalArgumentException, X("FunctionMax::collapseTreeInternal"),
-                  X("Invalid argument to fn:max() function [err:FORG0006]."));
-        }
-    }
-    return Sequence(maxItem, memMgr);
+  return Sequence(max, memMgr);
 }

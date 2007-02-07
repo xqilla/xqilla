@@ -69,10 +69,10 @@ ASTNode* Intersect::staticTyping(StaticContext *context)
   return this;
 }
 
-Sequence Intersect::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence Intersect::createSequence(DynamicContext* context, int flags) const
 {
-	Sequence param1 = _args[0]->collapseTree(context, flags)->toSequence(context);
-	Sequence param2 = _args[1]->collapseTree(context, flags)->toSequence(context);
+	Sequence param1 = _args[0]->createResult(context, flags)->toSequence(context);
+	Sequence param2 = _args[1]->createResult(context, flags)->toSequence(context);
 
 	XPath2MemoryManager* memMgr = context->getMemoryManager();
 	Sequence result(param1.getLength(),memMgr);

@@ -76,18 +76,8 @@ public:
   /* Determine whether or not an XMLCh* is contained within a vector of XMLCh's */
   static bool containsString(std::vector<const XMLCh*> values, const XMLCh* val); 
 
-  /** Obtain index of node with respect to it's siblings of same name */
-  static int indexNode(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *node);
-
   /** Gets the owner document for the given node */
   static const XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *getOwnerDoc(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *node);
-
-  /** Assign the given type to the DOMElement */
-  static void setElementType(XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* pDoc, XERCES_CPP_NAMESPACE_QUALIFIER DOMElement *node, const XMLCh* uri, const XMLCh* name);
-
-  /** Copy the type informations from a node to another*/
-  static void copyElementType(XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* pDoc, XERCES_CPP_NAMESPACE_QUALIFIER DOMElement* destNode, const XERCES_CPP_NAMESPACE_QUALIFIER DOMElement* srcNode);
-  static void copyAttributeType(XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* pDoc, XERCES_CPP_NAMESPACE_QUALIFIER DOMAttr* destNode, const XERCES_CPP_NAMESPACE_QUALIFIER DOMAttr* srcNode);
 };
 
 inline bool XPath2Utils::equals(const XMLCh *const str1, const XMLCh *const str2) {

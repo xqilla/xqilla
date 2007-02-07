@@ -24,24 +24,10 @@ class Sequence;
 class Result;
 class NodeTest;
 
-XERCES_CPP_NAMESPACE_BEGIN
-class DOMNode;
-XERCES_CPP_NAMESPACE_END
-
-
 class XQILLA_API Node : public Item
 {
 public:
   typedef RefCountPointer<const Node> Ptr;
-
-  /**
-   * The "Xerces" DOMNode node interface.
-   * Use this as the parameter when you call Item::getInterface()
-   * to have a xerces DOMNode returned, if the Node is of the
-   * correct type. If it is not of the correct type, the method
-   * will return 0.
-   */
-  static const XMLCh gXerces[];
 
   /** Returns true, since this Item is a Node */
   virtual bool isNode() const = 0;
@@ -94,6 +80,9 @@ public:
       return the same as lessThan. */
   virtual bool uniqueLessThan(const Node::Ptr &other, const DynamicContext *context) const = 0;
 
+  /** Returns the root of this node */
+  virtual Node::Ptr root(const DynamicContext* context) const = 0;
+
   /** Returns the parent of this node */
   virtual Node::Ptr dmParent(const DynamicContext* context) const = 0;
 
@@ -124,6 +113,10 @@ public:
 
   /* Get the name of the DOM type  (ie "integer" for xs:integer) */
   virtual const XMLCh* getTypeName() const = 0;
+
+  /** Generate events for this Node to the given EventHandler */
+  virtual void generateEvents(EventHandler *events, const DynamicContext *context,
+                              bool preserveNS = true, bool preserveType = true) const = 0;
 
   static const XMLCh document_string[];
   static const XMLCh element_string[];

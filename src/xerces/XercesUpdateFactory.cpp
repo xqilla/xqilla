@@ -13,12 +13,13 @@
 
 #include "../config/xqilla_config.h"
 
-#include <xqilla/context/impl/XercesUpdateFactory.hpp>
+#include "XercesUpdateFactory.hpp"
+#include "XercesNodeImpl.hpp"
+
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/context/MessageListener.hpp>
 #include <xqilla/exceptions/ASTException.hpp>
 #include <xqilla/update/PendingUpdateList.hpp>
-#include <xqilla/items/impl/NodeImpl.hpp>
 #include <xqilla/schema/DocumentCacheImpl.hpp>
 #include <xqilla/dom-api/impl/XQillaNSResolverImpl.hpp>
 
@@ -36,7 +37,7 @@ static const XMLCh utf8_str[] = { chLatin_u, chLatin_t, chLatin_f, chDash, chDig
 
 void XercesUpdateFactory::applyPut(const PendingUpdate &update, DynamicContext *context)
 {
-  const NodeImpl *nodeImpl = (const NodeImpl*)update.getTarget()->getInterface(Item::gXQilla);
+  const XercesNodeImpl *nodeImpl = (const XercesNodeImpl*)update.getTarget()->getInterface(Item::gXQilla);
   const DOMNode *domnode = nodeImpl->getDOMNode();
 
   const XMLCh *encoding = 0;
@@ -77,7 +78,7 @@ void XercesUpdateFactory::applyPut(const PendingUpdate &update, DynamicContext *
 
 void XercesUpdateFactory::applyInsertInto(const PendingUpdate &update, DynamicContext *context)
 {
-  const NodeImpl *nodeImpl = (const NodeImpl*)update.getTarget()->getInterface(Item::gXQilla);
+  const XercesNodeImpl *nodeImpl = (const XercesNodeImpl*)update.getTarget()->getInterface(Item::gXQilla);
   DOMNode *domnode = const_cast<DOMNode*>(nodeImpl->getDOMNode());
   DOMDocument *doc = const_cast<DOMDocument*>(XPath2Utils::getOwnerDoc(domnode));
 
@@ -89,7 +90,7 @@ void XercesUpdateFactory::applyInsertInto(const PendingUpdate &update, DynamicCo
   Result children = update.getValue();
   Item::Ptr item;
   while((item = children->next(context)).notNull()) {
-    const NodeImpl *childImpl = (const NodeImpl*)item->getInterface(Item::gXQilla);
+    const XercesNodeImpl *childImpl = (const XercesNodeImpl*)item->getInterface(Item::gXQilla);
     DOMNode *newChild = doc->importNode(const_cast<DOMNode*>(childImpl->getDOMNode()), /*deep*/true);
 
     if(childImpl->dmNodeKind() == Node::element_string ||
@@ -117,7 +118,7 @@ void XercesUpdateFactory::applyInsertInto(const PendingUpdate &update, DynamicCo
 
 void XercesUpdateFactory::applyInsertAttributes(const PendingUpdate &update, DynamicContext *context)
 {
-  const NodeImpl *nodeImpl = (const NodeImpl*)update.getTarget()->getInterface(Item::gXQilla);
+  const XercesNodeImpl *nodeImpl = (const XercesNodeImpl*)update.getTarget()->getInterface(Item::gXQilla);
   DOMElement *element = (DOMElement*)nodeImpl->getDOMNode();
   DOMDocument *doc = const_cast<DOMDocument*>(XPath2Utils::getOwnerDoc(element));
 
@@ -130,7 +131,7 @@ void XercesUpdateFactory::applyInsertAttributes(const PendingUpdate &update, Dyn
   Result children = update.getValue();
   Item::Ptr item;
   while((item = children->next(context)).notNull()) {
-    const NodeImpl *childImpl = (const NodeImpl*)item->getInterface(Item::gXQilla);
+    const XercesNodeImpl *childImpl = (const XercesNodeImpl*)item->getInterface(Item::gXQilla);
     DOMNode *newChild = doc->importNode(const_cast<DOMNode*>(childImpl->getDOMNode()), /*deep*/true);
 
     // If the type-name property of $target is xs:untyped, then upd:setToUntyped($A) is invoked.
@@ -175,7 +176,7 @@ void XercesUpdateFactory::applyInsertAttributes(const PendingUpdate &update, Dyn
 
 void XercesUpdateFactory::applyReplaceValue(const PendingUpdate &update, DynamicContext *context)
 {
-  const NodeImpl *nodeImpl = (const NodeImpl*)update.getTarget()->getInterface(Item::gXQilla);
+  const XercesNodeImpl *nodeImpl = (const XercesNodeImpl*)update.getTarget()->getInterface(Item::gXQilla);
   DOMNode *domnode = const_cast<DOMNode*>(nodeImpl->getDOMNode());
 
   // 2. If $target is a text, comment, or processing instruction node: content of $target is set to $string-value.
@@ -199,7 +200,7 @@ void XercesUpdateFactory::applyReplaceValue(const PendingUpdate &update, Dynamic
 
 void XercesUpdateFactory::applyRename(const PendingUpdate &update, DynamicContext *context)
 {
-  const NodeImpl *nodeImpl = (const NodeImpl*)update.getTarget()->getInterface(Item::gXQilla);
+  const XercesNodeImpl *nodeImpl = (const XercesNodeImpl*)update.getTarget()->getInterface(Item::gXQilla);
   DOMNode *domnode = const_cast<DOMNode*>(nodeImpl->getDOMNode());
 
   ATQNameOrDerived *qname = (ATQNameOrDerived*)update.getValue().first().get();
@@ -216,7 +217,7 @@ void XercesUpdateFactory::applyRename(const PendingUpdate &update, DynamicContex
 
 void XercesUpdateFactory::applyDelete(const PendingUpdate &update, DynamicContext *context)
 {
-  const NodeImpl *nodeImpl = (const NodeImpl*)update.getTarget()->getInterface(Item::gXQilla);
+  const XercesNodeImpl *nodeImpl = (const XercesNodeImpl*)update.getTarget()->getInterface(Item::gXQilla);
   DOMNode *domnode = const_cast<DOMNode*>(nodeImpl->getDOMNode());
 
   forDeletion_.insert(domnode);
@@ -226,7 +227,7 @@ void XercesUpdateFactory::applyDelete(const PendingUpdate &update, DynamicContex
 
 void XercesUpdateFactory::applyInsertBefore(const PendingUpdate &update, DynamicContext *context)
 {
-  const NodeImpl *nodeImpl = (const NodeImpl*)update.getTarget()->getInterface(Item::gXQilla);
+  const XercesNodeImpl *nodeImpl = (const XercesNodeImpl*)update.getTarget()->getInterface(Item::gXQilla);
   DOMNode *domnode = const_cast<DOMNode*>(nodeImpl->getDOMNode());
   Node::Ptr parentNode = nodeImpl->dmParent(context);
   DOMNode *parent = domnode->getParentNode();
@@ -240,7 +241,7 @@ void XercesUpdateFactory::applyInsertBefore(const PendingUpdate &update, Dynamic
   Result children = update.getValue();
   Item::Ptr item;
   while((item = children->next(context)).notNull()) {
-    const NodeImpl *childImpl = (const NodeImpl*)item->getInterface(Item::gXQilla);
+    const XercesNodeImpl *childImpl = (const XercesNodeImpl*)item->getInterface(Item::gXQilla);
     DOMNode *newChild = doc->importNode(const_cast<DOMNode*>(childImpl->getDOMNode()), /*deep*/true);
 
     if(childImpl->dmNodeKind() == Node::element_string ||
@@ -268,7 +269,7 @@ void XercesUpdateFactory::applyInsertBefore(const PendingUpdate &update, Dynamic
 
 void XercesUpdateFactory::applyInsertAfter(const PendingUpdate &update, DynamicContext *context)
 {
-  const NodeImpl *nodeImpl = (const NodeImpl*)update.getTarget()->getInterface(Item::gXQilla);
+  const XercesNodeImpl *nodeImpl = (const XercesNodeImpl*)update.getTarget()->getInterface(Item::gXQilla);
   DOMNode *domnode = const_cast<DOMNode*>(nodeImpl->getDOMNode());
   DOMNode *before = domnode->getNextSibling();
   Node::Ptr parentNode = nodeImpl->dmParent(context);
@@ -283,7 +284,7 @@ void XercesUpdateFactory::applyInsertAfter(const PendingUpdate &update, DynamicC
   Result children = update.getValue();
   Item::Ptr item;
   while((item = children->next(context)).notNull()) {
-    const NodeImpl *childImpl = (const NodeImpl*)item->getInterface(Item::gXQilla);
+    const XercesNodeImpl *childImpl = (const XercesNodeImpl*)item->getInterface(Item::gXQilla);
     DOMNode *newChild = doc->importNode(const_cast<DOMNode*>(childImpl->getDOMNode()), /*deep*/true);
 
     if(childImpl->dmNodeKind() == Node::element_string ||
@@ -311,7 +312,7 @@ void XercesUpdateFactory::applyInsertAfter(const PendingUpdate &update, DynamicC
 
 void XercesUpdateFactory::applyInsertAsFirst(const PendingUpdate &update, DynamicContext *context)
 {
-  const NodeImpl *nodeImpl = (const NodeImpl*)update.getTarget()->getInterface(Item::gXQilla);
+  const XercesNodeImpl *nodeImpl = (const XercesNodeImpl*)update.getTarget()->getInterface(Item::gXQilla);
   DOMNode *domnode = const_cast<DOMNode*>(nodeImpl->getDOMNode());
   DOMNode *firstChild = domnode->getFirstChild();
   DOMDocument *doc = const_cast<DOMDocument*>(XPath2Utils::getOwnerDoc(domnode));
@@ -324,7 +325,7 @@ void XercesUpdateFactory::applyInsertAsFirst(const PendingUpdate &update, Dynami
   Result children = update.getValue();
   Item::Ptr item;
   while((item = children->next(context)).notNull()) {
-    const NodeImpl *childImpl = (const NodeImpl*)item->getInterface(Item::gXQilla);
+    const XercesNodeImpl *childImpl = (const XercesNodeImpl*)item->getInterface(Item::gXQilla);
     DOMNode *newChild = doc->importNode(const_cast<DOMNode*>(childImpl->getDOMNode()), /*deep*/true);
 
     if(childImpl->dmNodeKind() == Node::element_string ||
@@ -352,7 +353,7 @@ void XercesUpdateFactory::applyInsertAsFirst(const PendingUpdate &update, Dynami
 
 void XercesUpdateFactory::applyInsertAsLast(const PendingUpdate &update, DynamicContext *context)
 {
-  const NodeImpl *nodeImpl = (const NodeImpl*)update.getTarget()->getInterface(Item::gXQilla);
+  const XercesNodeImpl *nodeImpl = (const XercesNodeImpl*)update.getTarget()->getInterface(Item::gXQilla);
   DOMNode *domnode = const_cast<DOMNode*>(nodeImpl->getDOMNode());
   DOMDocument *doc = const_cast<DOMDocument*>(XPath2Utils::getOwnerDoc(domnode));
 
@@ -364,7 +365,7 @@ void XercesUpdateFactory::applyInsertAsLast(const PendingUpdate &update, Dynamic
   Result children = update.getValue();
   Item::Ptr item;
   while((item = children->next(context)).notNull()) {
-    const NodeImpl *childImpl = (const NodeImpl*)item->getInterface(Item::gXQilla);
+    const XercesNodeImpl *childImpl = (const XercesNodeImpl*)item->getInterface(Item::gXQilla);
     DOMNode *newChild = doc->importNode(const_cast<DOMNode*>(childImpl->getDOMNode()), /*deep*/true);
 
     if(childImpl->dmNodeKind() == Node::element_string ||
@@ -392,7 +393,7 @@ void XercesUpdateFactory::applyInsertAsLast(const PendingUpdate &update, Dynamic
 
 void XercesUpdateFactory::applyReplaceNode(const PendingUpdate &update, DynamicContext *context)
 {
-  const NodeImpl *nodeImpl = (const NodeImpl*)update.getTarget()->getInterface(Item::gXQilla);
+  const XercesNodeImpl *nodeImpl = (const XercesNodeImpl*)update.getTarget()->getInterface(Item::gXQilla);
   DOMNode *domnode = const_cast<DOMNode*>(nodeImpl->getDOMNode());
   Node::Ptr parentNode = nodeImpl->dmParent(context);
   DOMNode *parent = domnode->getParentNode();
@@ -404,7 +405,7 @@ void XercesUpdateFactory::applyReplaceNode(const PendingUpdate &update, DynamicC
   Result children = update.getValue();
   Item::Ptr item;
   while((item = children->next(context)).notNull()) {
-    const NodeImpl *childImpl = (const NodeImpl*)item->getInterface(Item::gXQilla);
+    const XercesNodeImpl *childImpl = (const XercesNodeImpl*)item->getInterface(Item::gXQilla);
     DOMNode *newChild = doc->importNode(const_cast<DOMNode*>(childImpl->getDOMNode()), /*deep*/true);
 
     // 1b. If the type-name property of parent($target) is xs:untyped, then upd:setToUntyped() is invoked
@@ -429,7 +430,7 @@ void XercesUpdateFactory::applyReplaceNode(const PendingUpdate &update, DynamicC
 
 void XercesUpdateFactory::applyReplaceAttribute(const PendingUpdate &update, DynamicContext *context)
 {
-  const NodeImpl *nodeImpl = (const NodeImpl*)update.getTarget()->getInterface(Item::gXQilla);
+  const XercesNodeImpl *nodeImpl = (const XercesNodeImpl*)update.getTarget()->getInterface(Item::gXQilla);
   DOMAttr *domnode = (DOMAttr*)nodeImpl->getDOMNode();
   Node::Ptr parentNode = nodeImpl->dmParent(context);
   DOMElement *element = domnode->getOwnerElement();
@@ -441,7 +442,7 @@ void XercesUpdateFactory::applyReplaceAttribute(const PendingUpdate &update, Dyn
   Result children = update.getValue();
   Item::Ptr item;
   while((item = children->next(context)).notNull()) {
-    const NodeImpl *childImpl = (const NodeImpl*)item->getInterface(Item::gXQilla);
+    const XercesNodeImpl *childImpl = (const XercesNodeImpl*)item->getInterface(Item::gXQilla);
     DOMNode *newChild = doc->importNode(const_cast<DOMNode*>(childImpl->getDOMNode()), /*deep*/true);
 
     // 1b. If the type-name property of parent($target) is xs:untyped, then upd:setToUntyped() is invoked
@@ -466,7 +467,7 @@ void XercesUpdateFactory::applyReplaceAttribute(const PendingUpdate &update, Dyn
 
 void XercesUpdateFactory::applyReplaceElementContent(const PendingUpdate &update, DynamicContext *context)
 {
-  const NodeImpl *nodeImpl = (const NodeImpl*)update.getTarget()->getInterface(Item::gXQilla);
+  const XercesNodeImpl *nodeImpl = (const XercesNodeImpl*)update.getTarget()->getInterface(Item::gXQilla);
   DOMElement *domnode = (DOMElement*)nodeImpl->getDOMNode();
 
   // 1. For each node $C that is a child of $target, the parent property of $C is set to empty.
@@ -592,10 +593,16 @@ void XercesUpdateFactory::completeRevalidation(DynamicContext *context)
   // TBD implement this - jpcs
 }
 
+static const XMLCh ls_string[] =
+{
+    chLatin_L, chLatin_S,
+    chNull
+};
+
 void XercesUpdateFactory::completeUpdate(DynamicContext *context)
 {
   // Write all the documents in the PutList to disk
-  DOMImplementation *impl = DOMImplementationRegistry::getDOMImplementation(NodeImpl::ls_string);
+  DOMImplementation *impl = DOMImplementationRegistry::getDOMImplementation(ls_string);
   AutoRelease<DOMWriter> writer(((DOMImplementationLS*)impl)->createDOMWriter());
 
   for(PutList::iterator i = putList_.begin(); i != putList_.end(); ++i) {

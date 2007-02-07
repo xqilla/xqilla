@@ -38,7 +38,7 @@ public:
   virtual ASTNode *staticTyping(StaticContext *context);
 
   /** returns the context size */
-  Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
+  Sequence createSequence(DynamicContext* context, int flags=0) const;
 };
 
 #endif // _FUNCTIONLAST_HPP

@@ -40,7 +40,7 @@ FunctionPrefixFromQName::FunctionPrefixFromQName(const VectorOfASTNodes &args, X
   _src.getStaticType().flags = StaticType::STRING_TYPE;
 }
 
-Sequence FunctionPrefixFromQName::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionPrefixFromQName::createSequence(DynamicContext* context, int flags) const
 {
   Sequence arg=getParamNumber(1,context)->toSequence(context);
   if(arg.isEmpty())

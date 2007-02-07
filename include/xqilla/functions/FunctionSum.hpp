@@ -19,10 +19,10 @@
 #ifndef _FUNCTIONSUM_HPP
 #define _FUNCTIONSUM_HPP
 
-#include <xqilla/ast/AggregateFunction.hpp>
+#include <xqilla/ast/ConstantFoldingFunction.hpp>
 
 /** Sum operator function*/
-class XQILLA_API FunctionSum : public AggregateFunction
+class XQILLA_API FunctionSum : public ConstantFoldingFunction
 {
 public:
   static const XMLCh name[];
@@ -34,9 +34,10 @@ public:
   ASTNode* staticResolution(StaticContext *context);
   virtual ASTNode *staticTyping(StaticContext *context);
   /** Takes a list of nodes and sums their values */
-  Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
+  Sequence createSequence(DynamicContext* context, int flags=0) const;
 
-  static Item::Ptr sum(const Sequence &sequence, DynamicContext *context, const LocationInfo *info);
+  static Item::Ptr sum(const Result &result, DynamicContext *context, const LocationInfo *info,
+                       unsigned int *count = 0);
 
 };
 #endif // _FUNCTIONSUM_HPP

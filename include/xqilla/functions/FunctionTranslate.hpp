@@ -27,7 +27,7 @@ public:
   FunctionTranslate(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   /** XPath function. returns string1 with each character in string2 replaced with the corresponding character in string3 **/
-  Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
+  Sequence createSequence(DynamicContext* context, int flags=0) const;
 
 };
 

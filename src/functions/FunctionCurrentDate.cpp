@@ -50,7 +50,7 @@ ASTNode *FunctionCurrentDate::staticTyping(StaticContext *context)
   return calculateSRCForArguments(context);
 }
 
-Sequence FunctionCurrentDate::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionCurrentDate::createSequence(DynamicContext* context, int flags) const
 {
   return Sequence(DateUtils::getCurrentDate(context), context->getMemoryManager());
 }

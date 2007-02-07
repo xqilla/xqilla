@@ -35,7 +35,7 @@ FunctionFalse::FunctionFalse(const VectorOfASTNodes &args, XPath2MemoryManager* 
   _src.getStaticType().flags = StaticType::BOOLEAN_TYPE;
 }
 
-Sequence FunctionFalse::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionFalse::createSequence(DynamicContext* context, int flags) const
 {
 	return Sequence(context->getItemFactory()->createBoolean(false, context),
                   context->getMemoryManager());

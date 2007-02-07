@@ -150,7 +150,7 @@ Result ArithmeticOperator::createResult(DynamicContext* context, int flags) cons
 AnyAtomicType::Ptr ArithmeticOperator::getArgument(unsigned int index, DynamicContext *context) const
 {
   if(getNumArgs() <= index) return 0;
-  return (const AnyAtomicType::Ptr )_args[index]->collapseTree(context)->next(context);
+  return (const AnyAtomicType::Ptr )_args[index]->createResult(context)->next(context);
 }
 
 ArithmeticOperator::ArithmeticResult::ArithmeticResult(const ArithmeticOperator *op)

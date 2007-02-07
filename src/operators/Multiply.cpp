@@ -68,11 +68,11 @@ Item::Ptr Multiply::execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType
       return (const Item::Ptr)((Numeric*)(const AnyAtomicType*)atom1)->multiply((const Numeric::Ptr )atom2, context);
     }
     else {
-      XQThrow(XPath2ErrorException,X("Multiply::collapseTreeInternal"), X("An attempt to multiply a non numeric type to a numeric type has occurred [err:XPTY0004]"));
+      XQThrow(XPath2ErrorException,X("Multiply::createSequence"), X("An attempt to multiply a non numeric type to a numeric type has occurred [err:XPTY0004]"));
     }
   }
 
-  XQThrow(XPath2ErrorException,X("Multiply::collapseTreeInternal"), X("The operator * has been called on invalid operand types [err:XPTY0004]"));
+  XQThrow(XPath2ErrorException,X("Multiply::createSequence"), X("The operator * has been called on invalid operand types [err:XPTY0004]"));
 
 }
 

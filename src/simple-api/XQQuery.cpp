@@ -19,7 +19,6 @@
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/simple-api/XQilla.hpp>
 #include <xqilla/context/DynamicContext.hpp>
-#include <xqilla/context/impl/XQContextImpl.hpp>
 #include <xqilla/context/XQDebugCallback.hpp>
 #include <xqilla/context/VariableStore.hpp>
 #include <xqilla/context/VariableTypeStore.hpp>
@@ -37,7 +36,6 @@
 #include <xqilla/utils/XPath2NSUtils.hpp>
 #include <xqilla/utils/PrintAST.hpp>
 
-#include <xercesc/dom/DOM.hpp>
 #include <xercesc/util/XMLUni.hpp>
 #include <xercesc/util/XMLURL.hpp>
 #include <xercesc/util/XMLResourceIdentifier.hpp>
@@ -425,7 +423,6 @@ void XQQuery::importModule(const XMLCh* szUri, VectorOfStrings* locations, Stati
     moduleCtx->setBaseURI(srcToUse->getSystemId());
     LoopDetector loopDetector(context->getXMLEntityResolver(), szUri);
     moduleCtx->setXMLEntityResolver(&loopDetector);
-    moduleCtx->setModuleResolver(context->getModuleResolver());
 
     XQQuery* pParsedQuery = XQilla::parse(*srcToUse, moduleCtx);
 
@@ -467,8 +464,7 @@ void XQQuery::importModule(const XMLCh* szUri, VectorOfStrings* locations, Stati
       }
     }
 
-    moduleCtx->setXMLEntityResolver(NULL);
-    moduleCtx->setModuleResolver(NULL);
+    moduleCtx->setXMLEntityResolver(context->getXMLEntityResolver());
     m_importedModules.push_back(pParsedQuery);
 
     bFound=true;
@@ -516,8 +512,7 @@ Item::Ptr XQQuery::QueryResult::next(DynamicContext *context)
         modIt != _query->m_importedModules.end(); ++modIt) {
 
       // Derive the module's execution context from it's static context
-      AutoDelete<DynamicContext> moduleCtx((*modIt)->createDynamicContext(context->getMemoryManager()));
-      moduleCtx->setMemoryManager(context->getMemoryManager());
+      AutoDelete<DynamicContext> moduleCtx(context->createModuleDynamicContext((*modIt)->getStaticContext(), context->getMemoryManager()));
 
       (*modIt)->execute(moduleCtx)->next(moduleCtx);
 
@@ -527,14 +522,8 @@ Item::Ptr XQQuery::QueryResult::next(DynamicContext *context)
         std::pair<bool, Sequence> value = moduleCtx->getVariableStore()->
           getGlobalVar((*varIt)->getVariableURI(), (*varIt)->getVariableLocalName(), moduleCtx);
         assert(value.first);
-        Sequence newSeq(value.second.getLength());
-        for(Sequence::iterator it=value.second.begin(); it!=value.second.end(); it++)
-          if((*it)->isNode())
-            newSeq.addItem(context->getItemFactory()->cloneNode((const Node::Ptr)(*it), context));
-          else
-            newSeq.addItem(*it);
         context->getVariableStore()->
-          setGlobalVar((*varIt)->getVariableURI(), (*varIt)->getVariableLocalName(), newSeq, context);
+          setGlobalVar((*varIt)->getVariableURI(), (*varIt)->getVariableLocalName(), value.second, context);
       }
     }
 
@@ -544,7 +533,7 @@ Item::Ptr XQQuery::QueryResult::next(DynamicContext *context)
 
     // execute the query body
     if(_query->getQueryBody() != NULL) {
-      _parent = _query->getQueryBody()->collapseTree(context);
+      _parent = _query->getQueryBody()->createResult(context);
     }
   }
 
@@ -591,10 +580,7 @@ void XQQuery::DebugResult::getResult(Sequence &toFill, DynamicContext *context) 
         modIt != _query->m_importedModules.end(); ++modIt) {
 
       // Derive the module's execution context from it's static context
-      AutoDelete<DynamicContext> moduleCtx((*modIt)->createDynamicContext(context->getMemoryManager()));
-      moduleCtx->setMemoryManager(context->getMemoryManager());
-      // propagate debug settings
-      moduleCtx->setDebugCallback(context->getDebugCallback());
+      AutoDelete<DynamicContext> moduleCtx(context->createModuleDynamicContext((*modIt)->getStaticContext(), context->getMemoryManager()));
 
       (*modIt)->execute(moduleCtx)->next(moduleCtx);
 
@@ -604,14 +590,8 @@ void XQQuery::DebugResult::getResult(Sequence &toFill, DynamicContext *context) 
         std::pair<bool, Sequence> value = moduleCtx->getVariableStore()->
           getGlobalVar((*varIt)->getVariableURI(), (*varIt)->getVariableLocalName(), moduleCtx);
         assert(value.first);
-        Sequence newSeq(value.second.getLength());
-        for(Sequence::iterator it=value.second.begin(); it!=value.second.end(); it++)
-          if((*it)->isNode())
-            newSeq.addItem(context->getItemFactory()->cloneNode((const Node::Ptr)(*it), context));
-          else
-            newSeq.addItem(*it);
         context->getVariableStore()->
-          setGlobalVar((*varIt)->getVariableURI(), (*varIt)->getVariableLocalName(), newSeq, context);
+          setGlobalVar((*varIt)->getVariableURI(), (*varIt)->getVariableLocalName(), value.second, context);
       }
     }
 
@@ -621,7 +601,7 @@ void XQQuery::DebugResult::getResult(Sequence &toFill, DynamicContext *context) 
 
     // execute the query body
     if(_query->getQueryBody() != NULL) {
-      toFill = _query->getQueryBody()->collapseTree(context)->toSequence(context);
+      toFill = _query->getQueryBody()->createResult(context)->toSequence(context);
     }
   }
   catch(XQException& e)

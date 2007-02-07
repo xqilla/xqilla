@@ -17,6 +17,10 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/context/ItemFactory.hpp>
 
+#include "../dom-api/impl/XPathNamespaceImpl.hpp"
+
+#include <xercesc/dom/impl/DOMDocumentImpl.hpp>
+#include <xercesc/dom/DOMElement.hpp>
 #include <xercesc/util/XMLString.hpp>
 #include <xercesc/util/XMLUniDefs.hpp>
 
@@ -31,90 +35,97 @@ NamespaceAxis::NamespaceAxis(const LocationInfo *info, const XERCES_CPP_NAMESPAC
     originalNode_(contextNode),
     nodeMap_(node_->getAttributes()),
     i_(0),
-	defNsTested_(false),
-    defXmlNs_(false)
+    state_(CHECK_ELEMENT)
 {
+}
+
+static const DOMNode *createNamespaceNode(const XMLCh* prefix, const XMLCh* uri, const DOMNode* parentNode)
+{
+  if(parentNode->getNodeType()!=DOMNode::ELEMENT_NODE)
+      return NULL;
+
+  DOMDocument *ownerDocument = parentNode->getOwnerDocument();
+  return new ((DOMDocumentImpl *)ownerDocument, (DOMDocumentImpl::NodeObjectType)XPathNamespaceImpl::XPATH_NAMESPACE_OBJECT)
+    XPathNamespaceImpl(prefix, uri, static_cast<DOMElement*>(const_cast<DOMNode*>(parentNode)), ownerDocument);
 }
 
 const DOMNode *NamespaceAxis::nextNode(DynamicContext *context)
 {
   const DOMNode *result = 0;
 
-  while(node_!=0 && result == 0) {
-    if(nodeMap_ == 0 || i_ >= nodeMap_->getLength()) {
-      node_ = XPath2NSUtils::getParent(node_);
-      if(node_ != 0) {
-        nodeMap_ = node_->getAttributes();
-        i_ = 0;
-        // check if this node has a namespace, but the prefix is not declared in the attribute map
-        const XMLCh* uri=node_->getNamespaceURI();
-        const XMLCh* prefix=node_->getPrefix();
-        if(uri && *uri && 
-           nodeMap_->getNamedItemNS(XMLUni::fgXMLNSString, prefix)==0 &&
-           done_.insert(prefix).second)
-        {
-           return context->getItemFactory()->createNamespaceNode(prefix, uri, originalNode_, context);
+  while(result == 0) {
+    switch(state_) {
+    case CHECK_ELEMENT: {
+      const XMLCh* uri = node_->getNamespaceURI();
+      const XMLCh* prefix = node_->getPrefix();
+      if(done_.insert(prefix).second && uri && *uri) {
+        result = createNamespaceNode(prefix, uri, originalNode_);
+      }
+      state_ = CHECK_ATTR;
+      break;
+    }
+    case CHECK_ATTR: {
+      if(nodeMap_ != 0 && i_ < nodeMap_->getLength()) {
+        DOMNode *tmpAttr = nodeMap_->item(i_);
+        ++i_;
+
+        const XMLCh* attrName = tmpAttr->getNodeName();
+
+        // Check to see if this attribute starts with xmlns
+        if(!XMLString::startsWith(attrName, XMLUni::fgXMLNSString)) {
+          const XMLCh* uri = tmpAttr->getNamespaceURI();
+          const XMLCh* prefix = tmpAttr->getPrefix();
+          if(uri && *uri && done_.insert(prefix).second) {
+            result = createNamespaceNode(prefix, uri, originalNode_);
+          }
         }
-        continue;
+        else {
+          // Get uri
+          const XMLCh* uri = tmpAttr->getNodeValue();
+
+          // Figure out prefix
+          const XMLCh* prefix = 0;
+          if(XMLString::stringLen(attrName) != 5) {
+            // A prefix was given
+
+            // If the name doesn't start with xmlns: (and its not xmlns) then skip it
+            // XXX: Is this necessary/allowed?
+            if(attrName[5] != chColon) {
+              continue;
+            }
+
+            prefix = attrName + 6;
+          }
+
+          if(done_.insert(prefix).second && uri && *uri) {
+            result = createNamespaceNode(prefix, uri, originalNode_);
+          }
+        }
       }
       else {
-        nodeMap_ = 0;
-        break;
+        node_ = XPath2NSUtils::getParent(node_);
+        if(node_ == 0 || node_->getNodeType() != DOMNode::ELEMENT_NODE) {
+          state_ = DO_XML;
+        }
+        else {
+          nodeMap_ = node_->getAttributes();
+          i_ = 0;
+          state_ = CHECK_ELEMENT;
+        }
       }
+      break;
     }
-
-    DOMNode *tmpAttr = nodeMap_->item(i_);
-    ++i_;
-
-    const XMLCh* attrName = tmpAttr->getNodeName();
-
-    // Check to see if this attribute starts with xmlns
-    if(!XMLString::startsWith(attrName, XMLUni::fgXMLNSString)) {
-      continue;
+    case DO_XML: {
+      result = createNamespaceNode(XMLUni::fgXMLString, XMLUni::fgXMLURIName, originalNode_);
+      state_ = DONE;
+      break;
     }
-
-    // Get uri
-    const XMLCh* uri = tmpAttr->getNodeValue();
-
-    // Figure out prefix
-    const XMLCh* prefix = 0;
-    if(XMLString::stringLen(attrName) != 5) {
-      // A prefix was given
-
-      // If the name doesn't start with xmlns: (and its not xmlns) then skip it
-      // XXX: Is this necessary/allowed?
-      if(attrName[5] != chColon) {
-        continue;
-      }
-
-      prefix = attrName + 6;
-    }
-
-    // If the uri is empty, the prefix has been unset; add it to the map of "already reported" prefixes and go on
-    if(uri == 0 || *uri==0) {
-      done_.insert(prefix);
-      continue;
-    }
- 
-    // Add namespace, if not already there
-    if(done_.insert(prefix).second) {
-      result = context->getItemFactory()->createNamespaceNode(prefix, uri, originalNode_, context);
+    case DONE:
+      return 0;
     }
   }
 
-  if(result==0 && !defNsTested_)
-  {
-    defNsTested_=true;
-    if(context->getDefaultElementAndTypeNS()!=0 && done_.insert(0).second)
-      result = context->getItemFactory()->createNamespaceNode(NULL, context->getDefaultElementAndTypeNS(), originalNode_, context);
-  }
-  if(result==0 && !defXmlNs_)
-  {
-	defXmlNs_=true;
-    // Output the obligatory namespace node for the "xml" prefix
-    result = context->getItemFactory()->createNamespaceNode(XMLUni::fgXMLString, XMLUni::fgXMLURIName, originalNode_, context);
-  }
-  return result;  
+  return result;
 }
 
 std::string NamespaceAxis::asString(DynamicContext *context, int indent) const

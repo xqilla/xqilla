@@ -21,10 +21,6 @@
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/context/ItemFactory.hpp>
 
-#include <xercesc/dom/DOMNode.hpp>
-#include <xercesc/dom/DOMNamedNodeMap.hpp>
-#include <xercesc/util/XMLString.hpp>
-
 /**
  * fn:in-scope-prefixes($element as element) as xs:string*
 **/
@@ -47,7 +43,7 @@ FunctionInScopePrefixes::FunctionInScopePrefixes(const VectorOfASTNodes &args, X
   _src.getStaticType().flags = StaticType::STRING_TYPE;
 }
 
-Sequence FunctionInScopePrefixes::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionInScopePrefixes::createSequence(DynamicContext* context, int flags) const
 {
   Sequence arg1 = getParamNumber(1,context)->toSequence(context);
   Node::Ptr node = (Node::Ptr)arg1.first();

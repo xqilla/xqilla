@@ -35,6 +35,7 @@ class StaticType;
 class ModuleResolver;
 class MessageListener;
 class ExternalFunction;
+class XQillaConfiguration;
 
 XERCES_CPP_NAMESPACE_BEGIN
 class DOMDocument;
@@ -67,6 +68,9 @@ public:
                                               XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager) const = 0;
   virtual DynamicContext *createDynamicContext(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr =
                                                XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager) const = 0;
+
+  /** Returns the configuration object for this context */
+  virtual XQillaConfiguration *getConfiguration() const = 0;
 
   /** Returns the lanuage that this context is for. This value cannot be set, since it is used
       to correctly construct the StaticContext */
@@ -220,11 +224,6 @@ public:
   /////////////////////////////////////////
   //  XQilla context specific accessors  //
   /////////////////////////////////////////
-
-  /** Used whenever we need to create a new document (including parsing in documents) */
-  virtual XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *createNewDocument() const = 0;
-  /** Used to release a document allocated through createNewDocument(). */
-  virtual void releaseDocument(XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *doc) const = 0;
 
   /** Get the memory manager */
   virtual XPath2MemoryManager* getMemoryManager() const = 0;

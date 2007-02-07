@@ -65,7 +65,7 @@ FTSelection *FTWindow::optimize(FTContext *ftcontext, bool execute) const
   XPath2MemoryManager *mm = ftcontext->context->getMemoryManager();
 
   if(execute || expr_->isConstant()) {
-    Result rangeResult = expr_->collapseTree(ftcontext->context);
+    Result rangeResult = expr_->createResult(ftcontext->context);
     Numeric::Ptr num = (Numeric::Ptr)rangeResult->next(ftcontext->context);
 
     long distance = ::atol(UTF8(num->asString(ftcontext->context)));

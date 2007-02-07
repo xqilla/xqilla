@@ -64,7 +64,7 @@ PendingUpdateList UDelete::createUpdateList(DynamicContext *context) const
 {
   PendingUpdateList pul;
 
-  Result targets = expr_->collapseTree(context);
+  Result targets = expr_->createResult(context);
   Item::Ptr item;
   while((item = targets->next(context)).notNull()) {
     pul.addUpdate(PendingUpdate(PendingUpdate::PUDELETE, (Node*)item.get(), this));

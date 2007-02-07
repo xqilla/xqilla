@@ -50,7 +50,7 @@ ASTNode *XQQuantified::staticTyping(StaticContext *context)
     if(_return->isConstant()) {
       AutoDelete<DynamicContext> dContext(context->createDynamicContext());
       dContext->setMemoryManager(context->getMemoryManager());
-      bool value = _return->collapseTree(dContext)->getEffectiveBooleanValue(dContext, _return);
+      bool value = _return->createResult(dContext)->getEffectiveBooleanValue(dContext, _return);
       ASTNode *newBlock = new (getMemoryManager())
 	      XQSequence(dContext->getItemFactory()->createBoolean(value, dContext),
 			       dContext, getMemoryManager());
@@ -95,7 +95,7 @@ Item::Ptr XQQuantified::QuantifiedResult::getSingleResult(DynamicContext *contex
   varStore->addLogicalBlockScope();
   if(_quantified->nextState(ebs, context, true)) {
     do {
-      bool result = _quantified->getReturnExpr()->collapseTree(context)->getEffectiveBooleanValue(context, _quantified->getReturnExpr());
+      bool result = _quantified->getReturnExpr()->createResult(context)->getEffectiveBooleanValue(context, _quantified->getReturnExpr());
       if(defaultResult != result) {
         defaultResult = result;
         break;

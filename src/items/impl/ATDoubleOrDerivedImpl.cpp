@@ -92,20 +92,21 @@ const XMLCh* ATDoubleOrDerivedImpl::asString(const DynamicContext* context) cons
 }
 
 /* Promote this to the given type, if possible */
-Numeric::Ptr ATDoubleOrDerivedImpl::promoteTypeIfApplicable(const XMLCh* typeURI, const XMLCh* typeName, const DynamicContext* context) const {
-  // can only promote if this target is instance of double, and this isInstanceOf target
-  if(context->isTypeOrDerivedFromType(typeURI, typeName, this->getPrimitiveTypeURI(), this->getPrimitiveTypeName()) &&
-     this->isInstanceOfType(typeURI, typeName, context)) {
-    return this;  // no need to promote, already a double
-    //return (const Numeric::Ptr )this->castAs(typeURI, typeName, context);
-  } else {
-    return 0;
-  }  
+Numeric::Ptr ATDoubleOrDerivedImpl::promoteTypeIfApplicable(AnyAtomicType::AtomicObjectType typeIndex,
+                                                            const DynamicContext* context) const
+{
+  switch(typeIndex) {
+  case AnyAtomicType::DOUBLE:
+    return this;
+  default:
+    break;
+  }
+  return 0;
 }
 
 /** Returns a Numeric object which is the sum of this and other */
 Numeric::Ptr ATDoubleOrDerivedImpl::add(const Numeric::Ptr &other, const DynamicContext* context) const {
-  if(this->getPrimitiveTypeIndex() == other->getPrimitiveTypeIndex()) {
+  if(AnyAtomicType::DOUBLE == other->getPrimitiveTypeIndex()) {
     // if both are of the same type exactly, we can perform addition
     ATDoubleOrDerivedImpl* otherImpl = (ATDoubleOrDerivedImpl*)(const Numeric*)other;
     if(otherImpl->_state == NaN) return notANumber(context);
@@ -165,14 +166,14 @@ Numeric::Ptr ATDoubleOrDerivedImpl::add(const Numeric::Ptr &other, const Dynamic
     
   } else {
     // if other is not a double, then we need to promote it to a double
-    return this->add((const Numeric::Ptr )other->castAs(this->getPrimitiveTypeURI(), this->getPrimitiveTypeName(), context), context);
+    return this->add((const Numeric::Ptr )other->castAs(AnyAtomicType::DOUBLE, context), context);
   } 
 }
 
 /** Returns a Numeric object which is the difference of this and
    * other */
 Numeric::Ptr ATDoubleOrDerivedImpl::subtract(const Numeric::Ptr &other, const DynamicContext* context) const {
-  if(this->getPrimitiveTypeIndex() == other->getPrimitiveTypeIndex()) {
+  if(AnyAtomicType::DOUBLE == other->getPrimitiveTypeIndex()) {
     // if both are of the same type exactly, we can perform subtraction
     ATDoubleOrDerivedImpl* otherImpl = (ATDoubleOrDerivedImpl*)(const Numeric*)other;
     if(otherImpl->_state == NaN) return notANumber(context);
@@ -215,13 +216,13 @@ Numeric::Ptr ATDoubleOrDerivedImpl::subtract(const Numeric::Ptr &other, const Dy
     
   } else {
     // if other is not a double, then we need to promote it to a double
-    return this->subtract((const Numeric::Ptr )other->castAs(this->getPrimitiveTypeURI(), this->getPrimitiveTypeName(), context), context);
+    return this->subtract((const Numeric::Ptr )other->castAs(AnyAtomicType::DOUBLE, context), context);
   } 
 }
 
 /** Returns a Numeric object which is the product of this and other */
 Numeric::Ptr ATDoubleOrDerivedImpl::multiply(const Numeric::Ptr &other, const DynamicContext* context) const {
-  if(this->getPrimitiveTypeIndex() == other->getPrimitiveTypeIndex()) {
+  if(AnyAtomicType::DOUBLE == other->getPrimitiveTypeIndex()) {
     // if both are of the same type, we can perform multiplication
     ATDoubleOrDerivedImpl* otherImpl = (ATDoubleOrDerivedImpl*)(const Numeric*)other;
     if(otherImpl->_state == NaN) return notANumber(context);
@@ -273,13 +274,13 @@ Numeric::Ptr ATDoubleOrDerivedImpl::multiply(const Numeric::Ptr &other, const Dy
     
   } else {
     // if other is not a double, then we need to promote it to a double
-    return this->multiply((const Numeric::Ptr )other->castAs(this->getPrimitiveTypeURI(), this->getPrimitiveTypeName(), context), context);
+    return this->multiply((const Numeric::Ptr )other->castAs(AnyAtomicType::DOUBLE, context), context);
   } 
 }
 
 /** Returns a Numeric object which is the quotient of this and other */
 Numeric::Ptr ATDoubleOrDerivedImpl::divide(const Numeric::Ptr &other, const DynamicContext* context) const {
-  if(this->getPrimitiveTypeIndex() == other->getPrimitiveTypeIndex()) {
+  if(AnyAtomicType::DOUBLE == other->getPrimitiveTypeIndex()) {
     // if both are of the same type, we can perform division
     ATDoubleOrDerivedImpl* otherImpl = (ATDoubleOrDerivedImpl*)(const Numeric*)other;
     if(otherImpl->_state == NaN) return notANumber(context);
@@ -353,21 +354,20 @@ Numeric::Ptr ATDoubleOrDerivedImpl::divide(const Numeric::Ptr &other, const Dyna
 
   } else {
     // if other is not a double, then we need to promote it to a double
-    return this->divide((const Numeric::Ptr )other->castAs(this->getPrimitiveTypeURI(), this->getPrimitiveTypeName(), context), context);
+    return this->divide((const Numeric::Ptr )other->castAs(AnyAtomicType::DOUBLE, context), context);
   } 
 }
 
 /** Returns the mod of its operands as a Numeric */
 Numeric::Ptr ATDoubleOrDerivedImpl::mod(const Numeric::Ptr &other, const DynamicContext* context) const {
-  if(this->getPrimitiveTypeIndex() == other->getPrimitiveTypeIndex()) {
+  if(AnyAtomicType::DOUBLE == other->getPrimitiveTypeIndex()) {
     // if both are of the same type, we can perform mod
     ATDoubleOrDerivedImpl* otherImpl = (ATDoubleOrDerivedImpl*)(const Numeric*)other;
     if(this->isNaN() || otherImpl->isNaN() || this->isInfinite() || otherImpl->isZero()) {
       return notANumber(context);
     
     } else if(otherImpl->isInfinite() || this->isZero()) {
-      return (const Numeric::Ptr )this->castAs(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                                          SchemaSymbols::fgDT_DOUBLE, context);
+      return (const Numeric::Ptr )this->castAs(AnyAtomicType::DOUBLE, context);
     
     } else {
       MAPM result = _double;
@@ -380,7 +380,7 @@ Numeric::Ptr ATDoubleOrDerivedImpl::mod(const Numeric::Ptr &other, const Dynamic
     }
   } else {
     // if other is not a double, then we need to promote it to a double
-    return this->mod((const Numeric::Ptr )other->castAs(this->getPrimitiveTypeURI(), this->getPrimitiveTypeName(), context), context);
+    return this->mod((const Numeric::Ptr )other->castAs(AnyAtomicType::DOUBLE, context), context);
   } 
 }
 
@@ -453,7 +453,7 @@ Numeric::Ptr ATDoubleOrDerivedImpl::roundHalfToEven(const Numeric::Ptr &precisio
   if (isZero() && isNegative())
     return this;
   
-  ATDoubleOrDerived::Ptr double_precision = (const Numeric::Ptr)precision->castAs(this->getPrimitiveTypeURI(), this->getPrimitiveTypeName(), context);
+  ATDoubleOrDerived::Ptr double_precision = (const Numeric::Ptr)precision->castAs(AnyAtomicType::DOUBLE, context);
   MAPM exp = MAPM(10).pow(((ATDoubleOrDerivedImpl*)(const ATDoubleOrDerived*)double_precision)->_double);
   MAPM value = _double * exp;
   bool halfVal = false;

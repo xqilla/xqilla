@@ -39,7 +39,7 @@ XQFunctionCall::XQFunctionCall(QualifiedName* qname, const VectorOfASTNodes &arg
 
 Result XQFunctionCall::createResult(DynamicContext* ctx, int flags) const
 {
-	XQThrow(FunctionException,X("XQFunctionCall::collapseTreeInternal"), X("staticResolution has not been called!!!"));
+	XQThrow(FunctionException,X("XQFunctionCall::createSequence"), X("staticResolution has not been called!!!"));
 }
 
 ASTNode* XQFunctionCall::staticResolution(StaticContext *context) 

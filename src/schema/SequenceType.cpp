@@ -39,8 +39,6 @@
 #include <xqilla/ast/XPath1Compat.hpp>
 #include <xqilla/ast/ConvertFunctionArg.hpp>
 
-#include <xercesc/dom/DOM.hpp>
-#include <xercesc/util/XMLUniDefs.hpp>
 #include <xercesc/validators/schema/SchemaAttDef.hpp>
 #include <xercesc/validators/schema/SchemaElementDecl.hpp>
 

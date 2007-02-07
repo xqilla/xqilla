@@ -16,11 +16,13 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 
+#include <xercesc/util/XMemory.hpp>
+
 class PendingUpdateList;
 class PendingUpdate;
 class DynamicContext;
 
-class XQILLA_API UpdateFactory
+class XQILLA_API UpdateFactory : public XERCES_CPP_NAMESPACE_QUALIFIER XMemory
 {
 public:
   virtual ~UpdateFactory() {}

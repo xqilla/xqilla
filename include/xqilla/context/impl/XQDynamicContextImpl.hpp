@@ -11,28 +11,31 @@
  * $Id$
  */
 
-//////////////////////////////////////////////////////////////////////
-// XQDynamicContextImpl.h: proxies calls to the embedded XQStaticContext
-//////////////////////////////////////////////////////////////////////
-
-#if !defined(AFXQ_XQDYNAMICCONTEXTIMPL_H__D608B994_E090_4206_9473_81F3D7350410__INCLUDED_)
-#define AFXQ_XQDYNAMICCONTEXTIMPL_H__D608B994_E090_4206_9473_81F3D7350410__INCLUDED_
+#ifndef XQDYNAMICCONTEXTIMPL_H
+#define XQDYNAMICCONTEXTIMPL_H
 
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/runtime/Sequence.hpp>
 #include <xqilla/framework/ProxyMemoryManager.hpp>
 #include <xqilla/exceptions/ContextException.hpp>
 
+#include <xercesc/util/ValueHashTableOf.hpp>
+
 class XQILLA_API XQDynamicContextImpl : public DynamicContext
 {
 public:
-  XQDynamicContextImpl(const StaticContext *staticContext, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr);
+  XQDynamicContextImpl(XQillaConfiguration *conf, const StaticContext *staticContext,
+                       XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr);
   ~XQDynamicContextImpl();
 
   virtual DynamicContext *createModuleContext(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr =
                                               XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager) const;
+  virtual DynamicContext *createModuleDynamicContext(const DynamicContext* moduleCtx, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr =
+                                                     XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager) const;
   virtual DynamicContext *createDynamicContext(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr
                                                = XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager) const;
+
+  virtual XQillaConfiguration *getConfiguration() const;
 
   virtual XQilla::Language getLanguage() const;
 
@@ -66,17 +69,16 @@ public:
   virtual void enableDebugging(bool enable=true);
   virtual bool isDebuggingEnabled() const;
 
+  virtual void testInterrupt() const;
+
   //////////////////////////////////
   // Dynamic Context Accessors    //
   //////////////////////////////////
 
-  virtual void incrementDocumentRefCount(const XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* document) const;
-  virtual void decrementDocumentRefCount(const XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* document) const;
-  virtual XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* retrieveDocument(const XMLCh* uri);
-  virtual void storeDocument(const XMLCh* uri,XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* document);
-
   /** Resets the dynamic context, as if it had never been used */
   virtual void clearDynamicContext();
+
+  virtual SequenceBuilder *createSequenceBuilder() const;
 
   /** Returns the ItemFactory for this context, which is used to create XQilla items and other objects. */
   virtual ItemFactory *getItemFactory() const;
@@ -87,10 +89,6 @@ public:
   virtual Item::Ptr getContextItem() const;
   /** Set the context item to item */
   virtual void setContextItem(const Item::Ptr &item);
-  /** Sets the context item to an external document.
-      This is needed so that the DOMDocument reference counting
-      does not release the document that the node comes from. */
-  virtual void setExternalContextNode(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *node);
 
   /** Get the context position */
   virtual unsigned int getContextPosition() const;
@@ -127,7 +125,12 @@ public:
      URIResolver object's lifespan matches or exceeds the life of the
      DynamicContext.
   */
-  virtual void registerURIResolver(URIResolver *resolver);
+  virtual void registerURIResolver(URIResolver *resolver, bool adopt);
+  /** Returns the default URIResolver */
+  virtual URIResolver *getDefaultURIResolver() const;
+  /** Sets the default URIResolver */
+  virtual void setDefaultURIResolver(URIResolver *resolver, bool adopt);
+
   /* Resolve the given uri (and baseUri) to a DOMDocument. If the uri
      is relative, the base uri is obtained from the context. */
   virtual Sequence resolveDocument(const XMLCh* uri, const LocationInfo *location);
@@ -135,10 +138,6 @@ public:
      the uri is relative, the base uri is obtained from the context. */
   virtual Sequence resolveCollection(const XMLCh* uri, const LocationInfo *location);
   virtual Sequence resolveDefaultCollection();
-
-  /** Used whenever we need to create a new document (including parsing in documents) */
-  virtual XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *createNewDocument() const;
-  virtual void releaseDocument(XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *doc) const;
 
   /** Creates a new UpdateFactory, used for performing updates.
       Caller owns the returned object, and should delete it */
@@ -285,6 +284,8 @@ public:
   virtual XPath2MemoryManager* getMemoryManager() const;
 
 protected:
+  XQillaConfiguration *_conf;
+
   const StaticContext *_staticContext;
 
   // The memory manager used to create this context
@@ -344,8 +345,18 @@ protected:
    * functions are discussed in 3.10.4 Constructor Functions */
   ItemFactory* _itemFactory;
 
+  XERCES_CPP_NAMESPACE_QUALIFIER ValueHashTableOf<Node::Ptr> _documentMap;
+
+  struct ResolverEntry {
+    ResolverEntry() : resolver(0), adopt(false) {}
+    ResolverEntry(URIResolver *r, bool a) : resolver(r), adopt(a) {}
+    URIResolver *resolver;
+    bool adopt;
+  };
+
   /// A stack of URIResolver pointers
-  std::vector<URIResolver *, XQillaAllocator<URIResolver*> > _resolvers;
+  std::vector<ResolverEntry, XQillaAllocator<ResolverEntry> > _resolvers;
+  ResolverEntry _defaultResolver;
 
   /** Contains the XMLGrammarPool of the StaticContext, and is used to
    * load xml documents for resolveCollection and resolveDocument */
@@ -353,19 +364,6 @@ protected:
 
   /** The message listener, for warnings and trace messages */
   MessageListener *_messageListener;
-
-  class DocRefCount {
-  public:
-    DocRefCount() : doc(0), ref_count(1), next(0) {}
-
-    const XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *doc;
-    unsigned int ref_count;
-    DocRefCount *next;
-  };
-
-  DocRefCount *_firstDocRefCount;
-  XERCES_CPP_NAMESPACE_QUALIFIER RefHashTableOf< XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument > _documentMap;
-  XERCES_CPP_NAMESPACE_QUALIFIER RefHashTableOf< XMLCh > _uriMap;
 
   // used for memory management
   XPath2MemoryManager* _memMgr;
@@ -436,4 +434,4 @@ inline bool XQDynamicContextImpl::getInheritNamespaces() const { return _staticC
 inline bool XQDynamicContextImpl::getPreserveNamespaces() const { return _staticContext->getPreserveNamespaces(); }
 inline StaticContext::ConstructionMode XQDynamicContextImpl::getConstructionMode() const { return _staticContext->getConstructionMode(); }
 
-#endif // !defined(AFXQ_XQDYNAMICCONTEXTIMPL_H__D608B994_E090_4206_9473_81F3D7350410__INCLUDED_)
+#endif

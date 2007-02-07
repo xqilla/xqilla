@@ -124,9 +124,7 @@ AnyAtomicType::Ptr ATDurationOrDerivedImpl::castAsInternal(AtomicObjectType targ
   // checking if what we're casting to by using isTypeOrDerivedFrom is expensive so we will 
   // determine what we are casting to and then what type we actually are.
 
-  if(context->isTypeOrDerivedFromType(targetURI, targetType, 
-                                      FunctionConstructor::XMLChXPath2DatatypesURI, 
-                                      ATDurationOrDerived::fgDT_YEARMONTHDURATION)) {
+  if(targetIndex == AnyAtomicType::YEAR_MONTH_DURATION) {
     //we're casting to a yearMonthDuration
  
     if (_durationType == DAY_TIME_DURATION) {
@@ -135,9 +133,11 @@ AnyAtomicType::Ptr ATDurationOrDerivedImpl::castAsInternal(AtomicObjectType targ
       buf.append(chLatin_P);
       buf.append(chDigit_0);
       buf.append(chLatin_M);         
-      return context->getItemFactory()->createDurationOrDerived(targetURI, targetType, buf.getRawBuffer(), context);
+      return context->getItemFactory()->createDerivedFromAtomicType(targetIndex, targetURI, targetType,
+                                                                    buf.getRawBuffer(), context);
     } else if (_durationType == YEAR_MONTH_DURATION) {
-      return context->getItemFactory()->createDurationOrDerived(targetURI, targetType, this->asString(context), context);
+      return context->getItemFactory()->createDerivedFromAtomicType(targetIndex, targetURI, targetType,
+                                                                    this->asString(context), context);
     } else {
       //else we're a duration and we must remove the day and time components
       if(_months.sign() == 0) {
@@ -161,12 +161,11 @@ AnyAtomicType::Ptr ATDurationOrDerivedImpl::castAsInternal(AtomicObjectType targ
           buf.append(chLatin_M);
         }
       }
-      return context->getItemFactory()->createDurationOrDerived(targetURI, targetType, buf.getRawBuffer(), context);
+      return context->getItemFactory()->createDerivedFromAtomicType(targetIndex, targetURI, targetType,
+                                                                    buf.getRawBuffer(), context);
     }
 
-  } else if (context->isTypeOrDerivedFromType(targetURI, targetType, 
-                                              FunctionConstructor::XMLChXPath2DatatypesURI, 
-                                              ATDurationOrDerived::fgDT_DAYTIMEDURATION)) {
+  } else if(targetIndex == AnyAtomicType::DAY_TIME_DURATION) {
     //we're casting to a dayTimeDuration
 
     if (_durationType == YEAR_MONTH_DURATION) {
@@ -176,9 +175,11 @@ AnyAtomicType::Ptr ATDurationOrDerivedImpl::castAsInternal(AtomicObjectType targ
       buf.append(chLatin_T);
       buf.append(chDigit_0);
       buf.append(chLatin_M);         
-      return context->getItemFactory()->createDurationOrDerived(targetURI, targetType, buf.getRawBuffer(), context);
+      return context->getItemFactory()->createDerivedFromAtomicType(targetIndex, targetURI, targetType,
+                                                                    buf.getRawBuffer(), context);
     } else if (_durationType == DAY_TIME_DURATION) {
-      return context->getItemFactory()->createDurationOrDerived(targetURI, targetType, this->asString(context), context);
+      return context->getItemFactory()->createDerivedFromAtomicType(targetIndex, targetURI, targetType,
+                                                                    this->asString(context), context);
     } else {
       //else we're a duration and we must remove the year and month components
       if (_seconds.sign() == 0) {
@@ -219,7 +220,8 @@ AnyAtomicType::Ptr ATDurationOrDerivedImpl::castAsInternal(AtomicObjectType targ
           } 
         }
       }
-      return context->getItemFactory()->createDurationOrDerived(targetURI, targetType, buf.getRawBuffer(), context);
+      return context->getItemFactory()->createDerivedFromAtomicType(targetIndex, targetURI, targetType,
+                                                                    buf.getRawBuffer(), context);
     }
 
   } else {

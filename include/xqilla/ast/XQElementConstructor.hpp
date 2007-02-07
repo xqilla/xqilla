@@ -23,7 +23,8 @@ class XQILLA_API XQElementConstructor : public XQDOMConstructor
 public:
   XQElementConstructor(ASTNode* name, VectorOfASTNodes* attrList, VectorOfASTNodes* children, XPath2MemoryManager *mm);
 
-  virtual Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
+  virtual void generateEvents(EventHandler *events, DynamicContext *context,
+                              bool preserveNS, bool preserveType) const;
   virtual ASTNode* staticResolution(StaticContext *context);
   virtual ASTNode *staticTyping(StaticContext *context);
 

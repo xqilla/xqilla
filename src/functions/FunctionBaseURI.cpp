@@ -52,7 +52,7 @@ ASTNode *FunctionBaseURI::staticTyping(StaticContext *context)
   return calculateSRCForArguments(context);
 }
 
-Sequence FunctionBaseURI::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionBaseURI::createSequence(DynamicContext* context, int flags) const
 {
   Node::Ptr node = NULL;
   if(getNumArgs() == 1)
@@ -66,9 +66,9 @@ Sequence FunctionBaseURI::collapseTreeInternal(DynamicContext* context, int flag
   {
     const Item::Ptr item = context->getContextItem();
     if(item==NULLRCP)
-        XQThrow(FunctionException, X("FunctionBaseURI::collapseTreeInternal"),X("Undefined context item in fn:base-uri [err:XPDY0002]"));
+        XQThrow(FunctionException, X("FunctionBaseURI::createSequence"),X("Undefined context item in fn:base-uri [err:XPDY0002]"));
     if(!item->isNode())
-        XQThrow(FunctionException, X("FunctionBaseURI::collapseTreeInternal"),X("The context item is not a node [err:XPTY0004]"));
+        XQThrow(FunctionException, X("FunctionBaseURI::createSequence"),X("The context item is not a node [err:XPTY0004]"));
     node = (const Node::Ptr )item;
   }
   return node->dmBaseURI(context);

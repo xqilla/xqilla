@@ -44,7 +44,8 @@ public:
   virtual ASTNode *staticTyping(StaticContext *context);
   Result createResult(DynamicContext* context, int flags=0) const;
 
-  ComparisonOperation getOperation() const;
+  ComparisonOperation getOperation() const { return operation_; }
+  Collation *getCollation() const { return collation_; }
   bool getXPath1CompatibilityMode() const { return xpath1compat_; }
 
   static bool compare(GeneralComp::ComparisonOperation operation,
@@ -64,7 +65,8 @@ protected:
     const GeneralComp *_op;
   };
 
-  ComparisonOperation _operation;
+  ComparisonOperation operation_;
+  Collation* collation_;
   bool xpath1compat_;
 };
 

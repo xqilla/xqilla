@@ -19,8 +19,7 @@
 #include <xqilla/exceptions/ASTException.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/items/Node.hpp>
-
-#include <xercesc/dom/DOM.hpp>
+#include <xqilla/events/EventHandler.hpp>
 
 #if defined(XERCES_HAS_CPP_NAMESPACE)
 XERCES_CPP_NAMESPACE_USE
@@ -33,43 +32,72 @@ XQDocumentConstructor::XQDocumentConstructor(ASTNode *value, XPath2MemoryManager
   setType(ASTNode::DOM_CONSTRUCTOR);
 }
 
-Sequence XQDocumentConstructor::collapseTreeInternal(DynamicContext *context, int flags) const 
+class DocConstructFilter : public EventFilter
 {
-  XPath2MemoryManager *mm = context->getMemoryManager();
-
-  try
+public:
+  DocConstructFilter(EventHandler *next, const XQDocumentConstructor *ast)
+    : EventFilter(next),
+      ast_(ast),
+      level_(0)
   {
-    std::vector<Node::Ptr> childList;
-    Result children = m_value->collapseTree(context);
-    Item::Ptr child;
-    while((child = children->next(context)).notNull())
-    {
-      assert(child->isNode());
-      Node::Ptr sourceNode = (Node::Ptr)child;
+  }
 
-      if(sourceNode->dmNodeKind() == Node::attribute_string)
-        XQThrow(ASTException,X("XQDocumentConstructor::collapseTreeInternal"),
-                X("An attribute node cannot be a child of a document [err:XPTY0004]."));
-      else if(sourceNode->dmNodeKind() == Node::text_string) {
-        // Ensure it's not empty
-        if(!XPath2Utils::equals(sourceNode->dmStringValue(context),0))
-          childList.push_back(sourceNode);
-      }
-      else childList.push_back(sourceNode);
+  virtual void startElementEvent(const XMLCh *prefix, const XMLCh *uri, const XMLCh *localname)
+  {
+    ++level_;
+    next_->startElementEvent(prefix, uri, localname);
+  }
+
+  virtual void endElementEvent(const XMLCh *prefix, const XMLCh *uri, const XMLCh *localname,
+                               const XMLCh *typeURI, const XMLCh *typeName)
+  {
+    next_->endElementEvent(prefix, uri, localname, typeURI, typeName);
+    --level_;
+  }
+
+  virtual void attributeEvent(const XMLCh *prefix, const XMLCh *uri, const XMLCh *localname, const XMLCh *value,
+                              const XMLCh *typeURI, const XMLCh *typeName)
+  {
+    if(level_ == 0) {
+      XQThrow3(ASTException,X("DocConstructFilter::attributeEvent"),
+               X("An attribute node cannot be a child of a document [err:XPTY0004]."), ast_);
     }
 
-    return Sequence(context->getItemFactory()->createDocumentNode(childList, context), mm);
+    next_->attributeEvent(prefix, uri, localname, value, typeURI, typeName);
   }
-  catch(DOMException& e) {
-    XQThrow(ASTException,X("XQDocumentConstructor::collapseTreeInternal"),e.getMessage());
+
+  virtual void namespaceEvent(const XMLCh *prefix, const XMLCh *uri)
+  {
+    if(level_ == 0) {
+      XQThrow3(ASTException,X("DocConstructFilter::attributeEvent"),
+               X("An namespace node cannot be a child of a document [err:XPTY0004]."), ast_);
+    }
+
+    next_->namespaceEvent(prefix, uri);
   }
+
+private:
+  const XQDocumentConstructor *ast_;
+  unsigned int level_;
+};
+
+void XQDocumentConstructor::generateEvents(EventHandler *events, DynamicContext *context,
+                                           bool preserveNS, bool preserveType) const
+{
+  events->startDocumentEvent(0, 0);
+
+  DocConstructFilter filter(events, this);
+  m_value->generateEvents(&filter, context, preserveNS, preserveType);
+
+  events->endDocumentEvent();
+  events->endEvent();
 }
 
 ASTNode* XQDocumentConstructor::staticResolution(StaticContext *context)
 {
   XPath2MemoryManager *mm = context->getMemoryManager();
 
-  m_value = new (mm) XQContentSequence(m_value, /*copy*/false, mm);
+  m_value = new (mm) XQContentSequence(m_value, mm);
   m_value->setLocationInfo(this);
 
   m_value = m_value->staticResolution(context);

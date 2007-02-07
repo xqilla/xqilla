@@ -45,7 +45,7 @@ public:
       of the xml:lang attribute on the nearest ancestor of the context node that has 
       an xml:lang attribute.**/
 
-  Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
+  Sequence createSequence(DynamicContext* context, int flags=0) const;
 
 };
 

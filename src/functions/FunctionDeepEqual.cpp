@@ -31,9 +31,6 @@
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/context/ItemFactory.hpp>
 
-#include <xercesc/dom/DOM.hpp>
-#include <xercesc/validators/schema/SchemaSymbols.hpp>
-
 #include <assert.h>
 
 const XMLCh FunctionDeepEqual::name[] = {
@@ -96,11 +93,9 @@ FunctionDeepEqual::FunctionDeepEqual(const VectorOfASTNodes &args, XPath2MemoryM
         return true;
       // need to manually convert xdt:untypedAtomic to xs:string
       if(atom1->getPrimitiveTypeIndex() == AnyAtomicType::UNTYPED_ATOMIC)
-          atom1 = atom1->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                                XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING, context);
+          atom1 = atom1->castAs(AnyAtomicType::STRING, context);
       if(atom2->getPrimitiveTypeIndex() == AnyAtomicType::UNTYPED_ATOMIC)
-          atom2 = atom2->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                                XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING, context);
+          atom2 = atom2->castAs(AnyAtomicType::STRING, context);
       try {
         if(!Equals::equals(atom1,atom2,collation,context, info)) {
           return false;
@@ -208,7 +203,7 @@ FunctionDeepEqual::FunctionDeepEqual(const VectorOfASTNodes &args, XPath2MemoryM
   return deep_equal(sChildren1,sChildren2,collation,context, info);
 }
 
-Sequence FunctionDeepEqual::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionDeepEqual::createSequence(DynamicContext* context, int flags) const
 {
 	Sequence arg1=getParamNumber(1,context)->toSequence(context);
 	Sequence arg2=getParamNumber(2,context)->toSequence(context);
@@ -220,11 +215,11 @@ Sequence FunctionDeepEqual::collapseTreeInternal(DynamicContext* context, int fl
       try {
         context->getItemFactory()->createAnyURI(collName, context);
       } catch(InvalidLexicalSpaceException &e) {
-        XQThrow(FunctionException, X("FunctionDeepEqual::collapseTreeInternal"), X("Invalid collationURI"));  
+        XQThrow(FunctionException, X("FunctionDeepEqual::createSequence"), X("Invalid collationURI"));  
       }
       collation=context->getCollation(collName, this);
       if(collation==NULL)
-        XQThrow(FunctionException,X("FunctionDeepEqual::collapseTreeInternal"),X("Collation object is not available"));
+        XQThrow(FunctionException,X("FunctionDeepEqual::createSequence"),X("Collation object is not available"));
 	}
 	else
       collation=context->getDefaultCollation(this);

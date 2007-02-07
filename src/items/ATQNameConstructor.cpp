@@ -18,8 +18,13 @@
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/impl/ATQNameOrDerivedImpl.hpp>
+#include <xqilla/events/EventHandler.hpp>
 
 #include <xqilla/utils/UTF8Str.hpp>
+
+#include <xercesc/framework/XMLBuffer.hpp>
+
+XERCES_CPP_NAMESPACE_USE;
 
 ATQNameConstructor::ATQNameConstructor(const XMLCh* typeURI,
                                        const XMLCh* typeName,
@@ -38,6 +43,17 @@ ATQNameConstructor::ATQNameConstructor(const XMLCh* typeURI,
 Item::Ptr ATQNameConstructor::createItem(const DynamicContext* context) const
 {
   return new ATQNameOrDerivedImpl(_typeURI, _typeName, _uri, _prefix, _localname, context);
+}
+
+void ATQNameConstructor::generateEvents(EventHandler *events, const DynamicContext* context) const
+{
+  XMLBuffer buf;
+  if(_prefix && *_prefix) {
+    buf.append(_prefix);
+    buf.append(':');
+  }
+  buf.append(_localname);
+  events->atomicItemEvent(buf.getRawBuffer(), _typeURI, _typeName);
 }
 
 std::string ATQNameConstructor::asString(const DynamicContext* context) const

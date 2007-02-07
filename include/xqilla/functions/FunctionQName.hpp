@@ -35,7 +35,7 @@ public:
   FunctionQName(const VectorOfASTNodes &args, XPath2MemoryManager*  memMgr);
   
   /** Given a uri and a name, it returns an expanded QName **/
-  Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
+  Sequence createSequence(DynamicContext* context, int flags=0) const;
 
 };
 

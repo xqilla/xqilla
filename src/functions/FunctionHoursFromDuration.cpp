@@ -41,7 +41,7 @@ FunctionHoursFromDuration::FunctionHoursFromDuration(const VectorOfASTNodes &arg
   _src.getStaticType().flags = StaticType::DECIMAL_TYPE;
 }
 
-Sequence FunctionHoursFromDuration::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionHoursFromDuration::createSequence(DynamicContext* context, int flags) const
 {
   XPath2MemoryManager* memMgr = context->getMemoryManager();
 

@@ -27,10 +27,12 @@
 #include <xqilla/runtime/Result.hpp>
 #include <xqilla/simple-api/XQQuery.hpp>
 #include <xqilla/utils/UTF8Str.hpp>
+#include <xqilla/utils/XPath2Utils.hpp>
 
 #include <xqilla/exceptions/FunctionException.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/context/ItemFactory.hpp>
+#include <xqilla/xerces/XercesConfiguration.hpp>
 
 #include <xercesc/dom/DOMException.hpp>
 #include <xercesc/dom/DOMElement.hpp>
@@ -76,7 +78,8 @@ XPath2ResultImpl::XPath2ResultImpl(DOMNode* contextNode,
       throw DOMException(DOMException::NOT_SUPPORTED_ERR, X("Context node of illegal type."));
       break;
     }
-    _context->setExternalContextNode(contextNode);
+    _context->setContextItem(((XercesConfiguration*)_context->getConfiguration())->
+	    createNode(contextNode, _context));
   }
 }
 
@@ -122,7 +125,7 @@ int XPath2ResultImpl::asInt() const
   AnyAtomicType::Ptr atom = (const AnyAtomicType::Ptr)_currentItem;
   Item::Ptr integer;
   try {
-    integer = atom->castAs(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+    integer = atom->castAs(AnyAtomicType::DECIMAL, SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                            SchemaSymbols::fgDT_INTEGER, _context);
   } catch (XPath2TypeCastException &e) {
     throw XQillaException(DOMXPathException::TYPE_ERR, X("Cannot convert result to int"));
@@ -144,8 +147,7 @@ double XPath2ResultImpl::asDouble() const
   AnyAtomicType::Ptr atom = (const AnyAtomicType::Ptr)_currentItem;
   Item::Ptr doubleValue;
   try {
-    doubleValue = atom->castAs(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                               SchemaSymbols::fgDT_DOUBLE, _context);
+    doubleValue = atom->castAs(AnyAtomicType::DOUBLE, _context);
   } catch (XPath2TypeCastException &e) {
     throw XQillaException(DOMXPathException::TYPE_ERR, X("Cannot convert result to double"));
   }
@@ -179,8 +181,7 @@ bool XPath2ResultImpl::asBoolean() const
   AnyAtomicType::Ptr atom = (const AnyAtomicType::Ptr)_currentItem;
   Item::Ptr boolean;
   try {
-    boolean = atom->castAs(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                           SchemaSymbols::fgDT_BOOLEAN, _context);
+    boolean = atom->castAs(AnyAtomicType::BOOLEAN, _context);
   } catch (XPath2TypeCastException &e) {
     throw XQillaException(DOMXPathException::TYPE_ERR, X("Cannot convert result to a boolean"));
   }
@@ -197,7 +198,7 @@ const DOMNode* XPath2ResultImpl::asNode() const
     throw XQillaException(DOMXPathException::TYPE_ERR, X("The requested result is not a node"));
   }
 
-  const DOMNode *node = (const DOMNode*)_currentItem->getInterface(Node::gXerces);
+  const DOMNode *node = (const DOMNode*)_currentItem->getInterface(XercesConfiguration::gXerces);
   if(node == 0) {
     // Should never happen
     throw XQillaException(DOMXPathException::TYPE_ERR, X("The requested result not a XQilla implementation node"));

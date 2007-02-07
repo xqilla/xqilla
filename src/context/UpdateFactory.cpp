@@ -61,7 +61,7 @@ void UpdateFactory::applyUpdates(const PendingUpdateList &pul, DynamicContext *c
           if(mlistener != 0) {
             mlistener->warning(X("In the context of this expression"), *res.first);
           }
-          XQThrow3(ASTException, X("UApplyUpdates::collapseTreeInternal"),
+          XQThrow3(ASTException, X("UApplyUpdates::createSequence"),
                    X("Incompatible updates - two replace value expressions have the same target node [err:TBD]"), &(*i));
         }
         break;
@@ -73,7 +73,7 @@ void UpdateFactory::applyUpdates(const PendingUpdateList &pul, DynamicContext *c
           if(mlistener != 0) {
             mlistener->warning(X("In the context of this expression"), *res.first);
           }
-          XQThrow3(ASTException, X("UApplyUpdates::collapseTreeInternal"),
+          XQThrow3(ASTException, X("UApplyUpdates::createSequence"),
                    X("Incompatible updates - two replace expressions have the same target node [err:TBD]"), &(*i));
         }
         break;
@@ -84,7 +84,7 @@ void UpdateFactory::applyUpdates(const PendingUpdateList &pul, DynamicContext *c
           if(mlistener != 0) {
             mlistener->warning(X("In the context of this expression"), *res.first);
           }
-          XQThrow3(ASTException, X("UApplyUpdates::collapseTreeInternal"),
+          XQThrow3(ASTException, X("UApplyUpdates::createSequence"),
                    X("Incompatible updates - two rename expressions have the same target node [err:TBD]"), &(*i));
         }
         break;

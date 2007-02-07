@@ -23,6 +23,7 @@
 
 class DynamicContext;
 class StaticType;
+class EventHandler;
 
 class XQILLA_API ItemConstructor {
 public:
@@ -33,6 +34,7 @@ public:
   virtual const StaticType &getStaticType() const = 0;
 
   virtual Item::Ptr createItem(const DynamicContext* context) const = 0;
+  virtual void generateEvents(EventHandler *events, const DynamicContext* context) const = 0;
   virtual std::string asString(const DynamicContext* context) const = 0;
 
   virtual const XMLCh* getTypeURI() const = 0;

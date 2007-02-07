@@ -44,7 +44,8 @@ public:
   virtual const XMLCh* asString(const DynamicContext* context) const = 0;
 
   /* Promote this to the given type, if possible */
-  virtual Numeric::Ptr promoteTypeIfApplicable(const XMLCh* typeURI, const XMLCh* typeName, const DynamicContext* context) const = 0;
+  virtual Numeric::Ptr promoteTypeIfApplicable(AnyAtomicType::AtomicObjectType typeIndex,
+                                               const DynamicContext* context) const = 0;
   
   /* returns true if the two Numeric values are equal 
    * false otherwise */

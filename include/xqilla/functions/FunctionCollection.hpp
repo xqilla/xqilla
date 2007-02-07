@@ -38,7 +38,7 @@ public:
   virtual ASTNode *staticTyping(StaticContext *context);
 
   /** resolve the uri and return the DOM tree **/
-  Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
+  Sequence createSequence(DynamicContext* context, int flags=0) const;
 };
 
 #endif // _FUNCTIONCOLLECTION_HPP

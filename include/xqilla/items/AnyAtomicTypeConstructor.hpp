@@ -29,6 +29,7 @@ public:
   virtual const StaticType &getStaticType() const { return _sType; }
 
   virtual Item::Ptr createItem(const DynamicContext* context) const;
+  virtual void generateEvents(EventHandler *events, const DynamicContext* context) const;
   virtual std::string asString(const DynamicContext* context) const;
 
   virtual const XMLCh* getTypeURI() const { return _typeURI; }

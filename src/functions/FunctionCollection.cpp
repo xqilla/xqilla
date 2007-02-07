@@ -54,7 +54,7 @@ ASTNode *FunctionCollection::staticTyping(StaticContext *context)
   return calculateSRCForArguments(context);
 }
 
-Sequence FunctionCollection::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionCollection::createSequence(DynamicContext* context, int flags) const
 {
   //args 0 - URI to resolve
   if(getNumArgs()==0)
@@ -66,7 +66,7 @@ Sequence FunctionCollection::collapseTreeInternal(DynamicContext* context, int f
 
   const XMLCh* currentUri = arg.first()->asString(context);
   if(!XPath2Utils::isValidURI(currentUri, context->getMemoryManager()))
-    XQThrow(FunctionException, X("FunctionCollection::collapseTreeInternal"), X("Invalid URI format [err:FODC0002]"));
+    XQThrow(FunctionException, X("FunctionCollection::createSequence"), X("Invalid URI format [err:FODC0002]"));
 
   return context->resolveCollection(currentUri, this);
 }

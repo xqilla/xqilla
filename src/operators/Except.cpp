@@ -89,8 +89,8 @@ Item::Ptr Except::ExceptResult::next(DynamicContext *context)
 {
   if(_toDo) {
     _toDo = false;
-    _result = _op->getArgument(0)->collapseTree(context, _flags);
-    _excpt = _op->getArgument(1)->collapseTree(context);
+    _result = _op->getArgument(0)->createResult(context, _flags);
+    _excpt = _op->getArgument(1)->createResult(context);
   }
 
   Item::Ptr item = _result->next(context);

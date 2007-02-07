@@ -39,7 +39,8 @@ build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
 bin_PROGRAMS = xqilla$(EXEEXT)
-noinst_PROGRAMS = basicXQillaUsage$(EXEEXT) xqtsRunner$(EXEEXT)
+noinst_PROGRAMS = basicXQillaUsage$(EXEEXT) xqtsRunner$(EXEEXT) \
+	xmarkRunner$(EXEEXT)
 DIST_COMMON = $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(top_srcdir)/configure \
 	$(top_srcdir)/src/config/xqilla_config_unix.h.in \
@@ -71,21 +72,21 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	XQScopedNamespace.lo UpdateFactory.lo CollationImpl.lo \
 	CodepointCollation.lo VarStoreImpl.lo VarTypeStoreImpl.lo \
 	VarHashEntryImpl.lo XQContextImpl.lo XQDynamicContextImpl.lo \
-	ItemFactoryImpl.lo XQRemoteDebugger.lo XercesUpdateFactory.lo \
-	XQAtomize.lo XQCastableAs.lo XQCastAs.lo XQContextItem.lo \
-	XQFunction.lo XQIf.lo ASTNodeImpl.lo XQInstanceOf.lo \
-	XQLiteral.lo XQNav.lo XQOperator.lo XQParenthesizedExpr.lo \
-	XQSequence.lo XQStep.lo XQTreatAs.lo XQVariable.lo \
-	StaticResolutionContext.lo StaticType.lo AggregateFunction.lo \
-	ConstantFoldingFunction.lo NumericFunction.lo XQDebugHook.lo \
-	XQDOMConstructor.lo XQDocumentConstructor.lo \
+	ItemFactoryImpl.lo XQRemoteDebugger.lo XQAtomize.lo \
+	XQCastableAs.lo XQCastAs.lo XQContextItem.lo XQFunction.lo \
+	XQIf.lo ASTNodeImpl.lo XQInstanceOf.lo XQLiteral.lo XQNav.lo \
+	XQOperator.lo XQParenthesizedExpr.lo XQSequence.lo XQStep.lo \
+	XQTreatAs.lo XQVariable.lo StaticResolutionContext.lo \
+	StaticType.lo ConstantFoldingFunction.lo NumericFunction.lo \
+	XQDebugHook.lo XQDOMConstructor.lo XQDocumentConstructor.lo \
 	XQElementConstructor.lo XQAttributeConstructor.lo \
 	XQPIConstructor.lo XQCommentConstructor.lo \
 	XQTextConstructor.lo XQFLWOR.lo XQFunctionCall.lo \
 	XQGlobalVariable.lo XQOrderingChange.lo XQQuantified.lo \
 	XQValidate.lo XQTypeswitch.lo XQVariableBinding.lo \
 	XPath1Compat.lo ConvertFunctionArg.lo XQDocumentOrder.lo \
-	XQPredicate.lo FTContains.lo FTWords.lo FTOr.lo FTAnd.lo \
+	XQPredicate.lo EventSerializer.lo NoInheritFilter.lo \
+	NSFixupFilter.lo FTContains.lo FTWords.lo FTOr.lo FTAnd.lo \
 	FTMildnot.lo FTUnaryNot.lo DefaultTokenizer.lo \
 	DefaultTokenStore.lo FTOrder.lo FTDistance.lo FTScope.lo \
 	FTContent.lo FTWindow.lo XQillaBuilderImpl.lo \
@@ -157,7 +158,7 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	ATGYearMonthOrDerivedImpl.lo ATGYearOrDerivedImpl.lo \
 	ATHexBinaryOrDerivedImpl.lo ATNotationOrDerivedImpl.lo \
 	ATQNameOrDerivedImpl.lo ATStringOrDerivedImpl.lo \
-	ATTimeOrDerivedImpl.lo ATUntypedAtomicImpl.lo NodeImpl.lo \
+	ATTimeOrDerivedImpl.lo ATUntypedAtomicImpl.lo \
 	DatatypeFactory.lo DatatypeLookup.lo \
 	AnyAtomicTypeConstructor.lo AnyAtomicType.lo \
 	ATDurationOrDerived.lo ATQNameConstructor.lo \
@@ -190,7 +191,12 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	UReplaceValueOf.lo UInsertAsFirst.lo UInsertAsLast.lo \
 	UInsertInto.lo UInsertAfter.lo UInsertBefore.lo UTransform.lo \
 	TestSuiteParser.lo TestSuiteResultListener.lo \
-	TestSuiteRunner.lo
+	TestSuiteRunner.lo FastXDMUpdateFactory.lo \
+	FastXDMDocumentCacheImpl.lo FastXDMDocument.lo \
+	FastXDMNodeImpl.lo FastXDMConfiguration.lo \
+	FastXDMSequenceBuilder.lo XercesConfiguration.lo \
+	XercesNodeImpl.lo XercesSequenceBuilder.lo \
+	XercesUpdateFactory.lo XercesURIResolver.lo
 libxqilla_la_OBJECTS = $(am_libxqilla_la_OBJECTS)
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS) $(noinst_PROGRAMS)
@@ -198,6 +204,10 @@ am_basicXQillaUsage_OBJECTS = basicXQillaUsage.$(OBJEXT)
 basicXQillaUsage_OBJECTS = $(am_basicXQillaUsage_OBJECTS)
 basicXQillaUsage_LDADD = $(LDADD)
 basicXQillaUsage_DEPENDENCIES = libxqilla.la
+am_xmarkRunner_OBJECTS = xmark.$(OBJEXT)
+xmarkRunner_OBJECTS = $(am_xmarkRunner_OBJECTS)
+xmarkRunner_LDADD = $(LDADD)
+xmarkRunner_DEPENDENCIES = libxqilla.la
 am_xqilla_OBJECTS = xqilla-commandline.$(OBJEXT)
 xqilla_OBJECTS = $(am_xqilla_OBJECTS)
 xqilla_LDADD = $(LDADD)
@@ -226,9 +236,9 @@ CXXLD = $(CXX)
 CXXLINK = $(LIBTOOL) --tag=CXX --mode=link $(CXXLD) $(AM_CXXFLAGS) \
 	$(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 SOURCES = $(libxqilla_la_SOURCES) $(basicXQillaUsage_SOURCES) \
-	$(xqilla_SOURCES) $(xqtsRunner_SOURCES)
+	$(xmarkRunner_SOURCES) $(xqilla_SOURCES) $(xqtsRunner_SOURCES)
 DIST_SOURCES = $(libxqilla_la_SOURCES) $(basicXQillaUsage_SOURCES) \
-	$(xqilla_SOURCES) $(xqtsRunner_SOURCES)
+	$(xmarkRunner_SOURCES) $(xqilla_SOURCES) $(xqtsRunner_SOURCES)
 RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
 	html-recursive info-recursive install-data-recursive \
 	install-exec-recursive install-info-recursive \
@@ -384,7 +394,6 @@ src/context/impl/XQContextImpl.cpp \
 src/context/impl/XQDynamicContextImpl.cpp \
 src/context/impl/ItemFactoryImpl.cpp \
 src/context/impl/XQRemoteDebugger.cpp \
-src/context/impl/XercesUpdateFactory.cpp \
 src/ast/XQAtomize.cpp \
 src/ast/XQCastableAs.cpp \
 src/ast/XQCastAs.cpp \
@@ -403,7 +412,6 @@ src/ast/XQTreatAs.cpp \
 src/ast/XQVariable.cpp \
 src/ast/StaticResolutionContext.cpp \
 src/ast/StaticType.cpp \
-src/ast/AggregateFunction.cpp \
 src/ast/ConstantFoldingFunction.cpp \
 src/ast/NumericFunction.cpp \
 src/ast/XQDebugHook.cpp \
@@ -426,6 +434,10 @@ src/ast/XPath1Compat.cpp \
 src/ast/ConvertFunctionArg.cpp \
 src/ast/XQDocumentOrder.cpp \
 src/ast/XQPredicate.cpp \
+src/events/EventSerializer.cpp \
+src/events/NoInheritFilter.cpp \
+src/events/NoInheritFilter.hpp \
+src/events/NSFixupFilter.cpp \
 src/fulltext/FTContains.cpp \
 src/fulltext/FTWords.cpp \
 src/fulltext/FTOr.cpp \
@@ -624,7 +636,6 @@ src/items/impl/ATStringOrDerivedImpl.hpp \
 src/items/impl/ATTimeOrDerivedImpl.cpp \
 src/items/impl/ATUntypedAtomicImpl.cpp \
 src/items/impl/ATUntypedAtomicImpl.hpp \
-src/items/impl/NodeImpl.cpp \
 src/items/DatatypeFactory.cpp \
 src/items/DatatypeFactoryTemplate.hpp \
 src/items/DatatypeLookup.cpp \
@@ -754,7 +765,27 @@ src/config/xqilla_config.h \
 src/config/xqilla_config_win32.h \
 src/xqts/TestSuiteParser.cpp \
 src/xqts/TestSuiteResultListener.cpp \
-src/xqts/TestSuiteRunner.cpp
+src/xqts/TestSuiteRunner.cpp \
+src/fastxdm/FastXDMUpdateFactory.hpp \
+src/fastxdm/FastXDMUpdateFactory.cpp \
+src/fastxdm/FastXDMDocumentCacheImpl.hpp \
+src/fastxdm/FastXDMDocumentCacheImpl.cpp \
+src/fastxdm/FastXDMDocument.hpp \
+src/fastxdm/FastXDMDocument.cpp \
+src/fastxdm/FastXDMNodeImpl.hpp \
+src/fastxdm/FastXDMNodeImpl.cpp \
+src/fastxdm/FastXDMConfiguration.cpp \
+src/fastxdm/FastXDMSequenceBuilder.hpp \
+src/fastxdm/FastXDMSequenceBuilder.cpp \
+src/xerces/XercesConfiguration.cpp \
+src/xerces/XercesNodeImpl.hpp \
+src/xerces/XercesNodeImpl.cpp \
+src/xerces/XercesSequenceBuilder.hpp \
+src/xerces/XercesSequenceBuilder.cpp \
+src/xerces/XercesUpdateFactory.hpp \
+src/xerces/XercesUpdateFactory.cpp \
+src/xerces/XercesURIResolver.hpp \
+src/xerces/XercesURIResolver.cpp
 
 EXTRA_DIST = \
 src/lexer/flex.skl \
@@ -806,6 +837,9 @@ src/samples/basic/basicXQillaUsage.cpp
 
 xqtsRunner_SOURCES = \
 tests/xqts/runner.cpp
+
+xmarkRunner_SOURCES = \
+tests/xmark/xmark.cpp
 
 LEXERFILE = $(top_srcdir)/src/lexer/XQLexer.cpp
 LEXTEMPLATE = $(top_srcdir)/src/lexer/XQLexer.l
@@ -934,6 +968,9 @@ clean-noinstPROGRAMS:
 basicXQillaUsage$(EXEEXT): $(basicXQillaUsage_OBJECTS) $(basicXQillaUsage_DEPENDENCIES) 
 	@rm -f basicXQillaUsage$(EXEEXT)
 	$(CXXLINK) $(basicXQillaUsage_LDFLAGS) $(basicXQillaUsage_OBJECTS) $(basicXQillaUsage_LDADD) $(LIBS)
+xmarkRunner$(EXEEXT): $(xmarkRunner_OBJECTS) $(xmarkRunner_DEPENDENCIES) 
+	@rm -f xmarkRunner$(EXEEXT)
+	$(CXXLINK) $(xmarkRunner_LDFLAGS) $(xmarkRunner_OBJECTS) $(xmarkRunner_LDADD) $(LIBS)
 xqilla$(EXEEXT): $(xqilla_OBJECTS) $(xqilla_DEPENDENCIES) 
 	@rm -f xqilla$(EXEEXT)
 	$(CXXLINK) $(xqilla_LDFLAGS) $(xqilla_OBJECTS) $(xqilla_LDADD) $(LIBS)
@@ -972,7 +1009,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATTimeOrDerivedImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATUntypedAtomic.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATUntypedAtomicImpl.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AggregateFunction.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AncestorAxis.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AncestorOrSelfAxis.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/And.Plo@am__quote@
@@ -1002,6 +1038,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DocumentCacheImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/EmptyResult.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Equals.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/EventSerializer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Except.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FTAnd.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FTContains.Plo@am__quote@
@@ -1014,6 +1051,12 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FTUnaryNot.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FTWindow.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FTWords.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FastXDMConfiguration.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FastXDMDocument.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FastXDMDocumentCacheImpl.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FastXDMNodeImpl.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FastXDMSequenceBuilder.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FastXDMUpdateFactory.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FollowingAxis.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FollowingSiblingAxis.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FuncFactory.Plo@am__quote@
@@ -1144,10 +1187,11 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Minus.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Mod.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Multiply.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NSFixupFilter.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NamespaceAxis.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NoInheritFilter.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Node.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NodeComparison.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NodeImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NodeTest.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NotEquals.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NumUtils.Plo@am__quote@
@@ -1266,6 +1310,10 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQillaPlatformUtils.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQillaXMLGrammarPoolImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XStr.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XercesConfiguration.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XercesNodeImpl.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XercesSequenceBuilder.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XercesURIResolver.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XercesUpdateFactory.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/basicXQillaUsage.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/m_apm.Plo@am__quote@
@@ -1307,6 +1355,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mapmutil.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mapmutl2.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/runner.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xmark.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xqilla-commandline.Po@am__quote@
 
 .c.o:
@@ -1715,13 +1764,6 @@ XQRemoteDebugger.lo: src/context/impl/XQRemoteDebugger.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQRemoteDebugger.lo `test -f 'src/context/impl/XQRemoteDebugger.cpp' || echo '$(srcdir)/'`src/context/impl/XQRemoteDebugger.cpp
 
-XercesUpdateFactory.lo: src/context/impl/XercesUpdateFactory.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XercesUpdateFactory.lo -MD -MP -MF "$(DEPDIR)/XercesUpdateFactory.Tpo" -c -o XercesUpdateFactory.lo `test -f 'src/context/impl/XercesUpdateFactory.cpp' || echo '$(srcdir)/'`src/context/impl/XercesUpdateFactory.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/XercesUpdateFactory.Tpo" "$(DEPDIR)/XercesUpdateFactory.Plo"; else rm -f "$(DEPDIR)/XercesUpdateFactory.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/context/impl/XercesUpdateFactory.cpp' object='XercesUpdateFactory.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XercesUpdateFactory.lo `test -f 'src/context/impl/XercesUpdateFactory.cpp' || echo '$(srcdir)/'`src/context/impl/XercesUpdateFactory.cpp
-
 XQAtomize.lo: src/ast/XQAtomize.cpp
 @am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQAtomize.lo -MD -MP -MF "$(DEPDIR)/XQAtomize.Tpo" -c -o XQAtomize.lo `test -f 'src/ast/XQAtomize.cpp' || echo '$(srcdir)/'`src/ast/XQAtomize.cpp; \
 @am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/XQAtomize.Tpo" "$(DEPDIR)/XQAtomize.Plo"; else rm -f "$(DEPDIR)/XQAtomize.Tpo"; exit 1; fi
@@ -1847,13 +1889,6 @@ StaticType.lo: src/ast/StaticType.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/ast/StaticType.cpp' object='StaticType.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o StaticType.lo `test -f 'src/ast/StaticType.cpp' || echo '$(srcdir)/'`src/ast/StaticType.cpp
-
-AggregateFunction.lo: src/ast/AggregateFunction.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT AggregateFunction.lo -MD -MP -MF "$(DEPDIR)/AggregateFunction.Tpo" -c -o AggregateFunction.lo `test -f 'src/ast/AggregateFunction.cpp' || echo '$(srcdir)/'`src/ast/AggregateFunction.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/AggregateFunction.Tpo" "$(DEPDIR)/AggregateFunction.Plo"; else rm -f "$(DEPDIR)/AggregateFunction.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/ast/AggregateFunction.cpp' object='AggregateFunction.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o AggregateFunction.lo `test -f 'src/ast/AggregateFunction.cpp' || echo '$(srcdir)/'`src/ast/AggregateFunction.cpp
 
 ConstantFoldingFunction.lo: src/ast/ConstantFoldingFunction.cpp
 @am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ConstantFoldingFunction.lo -MD -MP -MF "$(DEPDIR)/ConstantFoldingFunction.Tpo" -c -o ConstantFoldingFunction.lo `test -f 'src/ast/ConstantFoldingFunction.cpp' || echo '$(srcdir)/'`src/ast/ConstantFoldingFunction.cpp; \
@@ -2008,6 +2043,27 @@ XQPredicate.lo: src/ast/XQPredicate.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/ast/XQPredicate.cpp' object='XQPredicate.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQPredicate.lo `test -f 'src/ast/XQPredicate.cpp' || echo '$(srcdir)/'`src/ast/XQPredicate.cpp
+
+EventSerializer.lo: src/events/EventSerializer.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT EventSerializer.lo -MD -MP -MF "$(DEPDIR)/EventSerializer.Tpo" -c -o EventSerializer.lo `test -f 'src/events/EventSerializer.cpp' || echo '$(srcdir)/'`src/events/EventSerializer.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/EventSerializer.Tpo" "$(DEPDIR)/EventSerializer.Plo"; else rm -f "$(DEPDIR)/EventSerializer.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/events/EventSerializer.cpp' object='EventSerializer.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o EventSerializer.lo `test -f 'src/events/EventSerializer.cpp' || echo '$(srcdir)/'`src/events/EventSerializer.cpp
+
+NoInheritFilter.lo: src/events/NoInheritFilter.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT NoInheritFilter.lo -MD -MP -MF "$(DEPDIR)/NoInheritFilter.Tpo" -c -o NoInheritFilter.lo `test -f 'src/events/NoInheritFilter.cpp' || echo '$(srcdir)/'`src/events/NoInheritFilter.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/NoInheritFilter.Tpo" "$(DEPDIR)/NoInheritFilter.Plo"; else rm -f "$(DEPDIR)/NoInheritFilter.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/events/NoInheritFilter.cpp' object='NoInheritFilter.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o NoInheritFilter.lo `test -f 'src/events/NoInheritFilter.cpp' || echo '$(srcdir)/'`src/events/NoInheritFilter.cpp
+
+NSFixupFilter.lo: src/events/NSFixupFilter.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT NSFixupFilter.lo -MD -MP -MF "$(DEPDIR)/NSFixupFilter.Tpo" -c -o NSFixupFilter.lo `test -f 'src/events/NSFixupFilter.cpp' || echo '$(srcdir)/'`src/events/NSFixupFilter.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/NSFixupFilter.Tpo" "$(DEPDIR)/NSFixupFilter.Plo"; else rm -f "$(DEPDIR)/NSFixupFilter.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/events/NSFixupFilter.cpp' object='NSFixupFilter.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o NSFixupFilter.lo `test -f 'src/events/NSFixupFilter.cpp' || echo '$(srcdir)/'`src/events/NSFixupFilter.cpp
 
 FTContains.lo: src/fulltext/FTContains.cpp
 @am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FTContains.lo -MD -MP -MF "$(DEPDIR)/FTContains.Tpo" -c -o FTContains.lo `test -f 'src/fulltext/FTContains.cpp' || echo '$(srcdir)/'`src/fulltext/FTContains.cpp; \
@@ -3255,13 +3311,6 @@ ATUntypedAtomicImpl.lo: src/items/impl/ATUntypedAtomicImpl.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ATUntypedAtomicImpl.lo `test -f 'src/items/impl/ATUntypedAtomicImpl.cpp' || echo '$(srcdir)/'`src/items/impl/ATUntypedAtomicImpl.cpp
 
-NodeImpl.lo: src/items/impl/NodeImpl.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT NodeImpl.lo -MD -MP -MF "$(DEPDIR)/NodeImpl.Tpo" -c -o NodeImpl.lo `test -f 'src/items/impl/NodeImpl.cpp' || echo '$(srcdir)/'`src/items/impl/NodeImpl.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/NodeImpl.Tpo" "$(DEPDIR)/NodeImpl.Plo"; else rm -f "$(DEPDIR)/NodeImpl.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/items/impl/NodeImpl.cpp' object='NodeImpl.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o NodeImpl.lo `test -f 'src/items/impl/NodeImpl.cpp' || echo '$(srcdir)/'`src/items/impl/NodeImpl.cpp
-
 DatatypeFactory.lo: src/items/DatatypeFactory.cpp
 @am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DatatypeFactory.lo -MD -MP -MF "$(DEPDIR)/DatatypeFactory.Tpo" -c -o DatatypeFactory.lo `test -f 'src/items/DatatypeFactory.cpp' || echo '$(srcdir)/'`src/items/DatatypeFactory.cpp; \
 @am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/DatatypeFactory.Tpo" "$(DEPDIR)/DatatypeFactory.Plo"; else rm -f "$(DEPDIR)/DatatypeFactory.Tpo"; exit 1; fi
@@ -3857,6 +3906,83 @@ TestSuiteRunner.lo: src/xqts/TestSuiteRunner.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o TestSuiteRunner.lo `test -f 'src/xqts/TestSuiteRunner.cpp' || echo '$(srcdir)/'`src/xqts/TestSuiteRunner.cpp
 
+FastXDMUpdateFactory.lo: src/fastxdm/FastXDMUpdateFactory.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FastXDMUpdateFactory.lo -MD -MP -MF "$(DEPDIR)/FastXDMUpdateFactory.Tpo" -c -o FastXDMUpdateFactory.lo `test -f 'src/fastxdm/FastXDMUpdateFactory.cpp' || echo '$(srcdir)/'`src/fastxdm/FastXDMUpdateFactory.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/FastXDMUpdateFactory.Tpo" "$(DEPDIR)/FastXDMUpdateFactory.Plo"; else rm -f "$(DEPDIR)/FastXDMUpdateFactory.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/fastxdm/FastXDMUpdateFactory.cpp' object='FastXDMUpdateFactory.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FastXDMUpdateFactory.lo `test -f 'src/fastxdm/FastXDMUpdateFactory.cpp' || echo '$(srcdir)/'`src/fastxdm/FastXDMUpdateFactory.cpp
+
+FastXDMDocumentCacheImpl.lo: src/fastxdm/FastXDMDocumentCacheImpl.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FastXDMDocumentCacheImpl.lo -MD -MP -MF "$(DEPDIR)/FastXDMDocumentCacheImpl.Tpo" -c -o FastXDMDocumentCacheImpl.lo `test -f 'src/fastxdm/FastXDMDocumentCacheImpl.cpp' || echo '$(srcdir)/'`src/fastxdm/FastXDMDocumentCacheImpl.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/FastXDMDocumentCacheImpl.Tpo" "$(DEPDIR)/FastXDMDocumentCacheImpl.Plo"; else rm -f "$(DEPDIR)/FastXDMDocumentCacheImpl.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/fastxdm/FastXDMDocumentCacheImpl.cpp' object='FastXDMDocumentCacheImpl.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FastXDMDocumentCacheImpl.lo `test -f 'src/fastxdm/FastXDMDocumentCacheImpl.cpp' || echo '$(srcdir)/'`src/fastxdm/FastXDMDocumentCacheImpl.cpp
+
+FastXDMDocument.lo: src/fastxdm/FastXDMDocument.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FastXDMDocument.lo -MD -MP -MF "$(DEPDIR)/FastXDMDocument.Tpo" -c -o FastXDMDocument.lo `test -f 'src/fastxdm/FastXDMDocument.cpp' || echo '$(srcdir)/'`src/fastxdm/FastXDMDocument.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/FastXDMDocument.Tpo" "$(DEPDIR)/FastXDMDocument.Plo"; else rm -f "$(DEPDIR)/FastXDMDocument.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/fastxdm/FastXDMDocument.cpp' object='FastXDMDocument.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FastXDMDocument.lo `test -f 'src/fastxdm/FastXDMDocument.cpp' || echo '$(srcdir)/'`src/fastxdm/FastXDMDocument.cpp
+
+FastXDMNodeImpl.lo: src/fastxdm/FastXDMNodeImpl.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FastXDMNodeImpl.lo -MD -MP -MF "$(DEPDIR)/FastXDMNodeImpl.Tpo" -c -o FastXDMNodeImpl.lo `test -f 'src/fastxdm/FastXDMNodeImpl.cpp' || echo '$(srcdir)/'`src/fastxdm/FastXDMNodeImpl.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/FastXDMNodeImpl.Tpo" "$(DEPDIR)/FastXDMNodeImpl.Plo"; else rm -f "$(DEPDIR)/FastXDMNodeImpl.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/fastxdm/FastXDMNodeImpl.cpp' object='FastXDMNodeImpl.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FastXDMNodeImpl.lo `test -f 'src/fastxdm/FastXDMNodeImpl.cpp' || echo '$(srcdir)/'`src/fastxdm/FastXDMNodeImpl.cpp
+
+FastXDMConfiguration.lo: src/fastxdm/FastXDMConfiguration.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FastXDMConfiguration.lo -MD -MP -MF "$(DEPDIR)/FastXDMConfiguration.Tpo" -c -o FastXDMConfiguration.lo `test -f 'src/fastxdm/FastXDMConfiguration.cpp' || echo '$(srcdir)/'`src/fastxdm/FastXDMConfiguration.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/FastXDMConfiguration.Tpo" "$(DEPDIR)/FastXDMConfiguration.Plo"; else rm -f "$(DEPDIR)/FastXDMConfiguration.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/fastxdm/FastXDMConfiguration.cpp' object='FastXDMConfiguration.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FastXDMConfiguration.lo `test -f 'src/fastxdm/FastXDMConfiguration.cpp' || echo '$(srcdir)/'`src/fastxdm/FastXDMConfiguration.cpp
+
+FastXDMSequenceBuilder.lo: src/fastxdm/FastXDMSequenceBuilder.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FastXDMSequenceBuilder.lo -MD -MP -MF "$(DEPDIR)/FastXDMSequenceBuilder.Tpo" -c -o FastXDMSequenceBuilder.lo `test -f 'src/fastxdm/FastXDMSequenceBuilder.cpp' || echo '$(srcdir)/'`src/fastxdm/FastXDMSequenceBuilder.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/FastXDMSequenceBuilder.Tpo" "$(DEPDIR)/FastXDMSequenceBuilder.Plo"; else rm -f "$(DEPDIR)/FastXDMSequenceBuilder.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/fastxdm/FastXDMSequenceBuilder.cpp' object='FastXDMSequenceBuilder.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FastXDMSequenceBuilder.lo `test -f 'src/fastxdm/FastXDMSequenceBuilder.cpp' || echo '$(srcdir)/'`src/fastxdm/FastXDMSequenceBuilder.cpp
+
+XercesConfiguration.lo: src/xerces/XercesConfiguration.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XercesConfiguration.lo -MD -MP -MF "$(DEPDIR)/XercesConfiguration.Tpo" -c -o XercesConfiguration.lo `test -f 'src/xerces/XercesConfiguration.cpp' || echo '$(srcdir)/'`src/xerces/XercesConfiguration.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/XercesConfiguration.Tpo" "$(DEPDIR)/XercesConfiguration.Plo"; else rm -f "$(DEPDIR)/XercesConfiguration.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/xerces/XercesConfiguration.cpp' object='XercesConfiguration.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XercesConfiguration.lo `test -f 'src/xerces/XercesConfiguration.cpp' || echo '$(srcdir)/'`src/xerces/XercesConfiguration.cpp
+
+XercesNodeImpl.lo: src/xerces/XercesNodeImpl.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XercesNodeImpl.lo -MD -MP -MF "$(DEPDIR)/XercesNodeImpl.Tpo" -c -o XercesNodeImpl.lo `test -f 'src/xerces/XercesNodeImpl.cpp' || echo '$(srcdir)/'`src/xerces/XercesNodeImpl.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/XercesNodeImpl.Tpo" "$(DEPDIR)/XercesNodeImpl.Plo"; else rm -f "$(DEPDIR)/XercesNodeImpl.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/xerces/XercesNodeImpl.cpp' object='XercesNodeImpl.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XercesNodeImpl.lo `test -f 'src/xerces/XercesNodeImpl.cpp' || echo '$(srcdir)/'`src/xerces/XercesNodeImpl.cpp
+
+XercesSequenceBuilder.lo: src/xerces/XercesSequenceBuilder.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XercesSequenceBuilder.lo -MD -MP -MF "$(DEPDIR)/XercesSequenceBuilder.Tpo" -c -o XercesSequenceBuilder.lo `test -f 'src/xerces/XercesSequenceBuilder.cpp' || echo '$(srcdir)/'`src/xerces/XercesSequenceBuilder.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/XercesSequenceBuilder.Tpo" "$(DEPDIR)/XercesSequenceBuilder.Plo"; else rm -f "$(DEPDIR)/XercesSequenceBuilder.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/xerces/XercesSequenceBuilder.cpp' object='XercesSequenceBuilder.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XercesSequenceBuilder.lo `test -f 'src/xerces/XercesSequenceBuilder.cpp' || echo '$(srcdir)/'`src/xerces/XercesSequenceBuilder.cpp
+
+XercesUpdateFactory.lo: src/xerces/XercesUpdateFactory.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XercesUpdateFactory.lo -MD -MP -MF "$(DEPDIR)/XercesUpdateFactory.Tpo" -c -o XercesUpdateFactory.lo `test -f 'src/xerces/XercesUpdateFactory.cpp' || echo '$(srcdir)/'`src/xerces/XercesUpdateFactory.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/XercesUpdateFactory.Tpo" "$(DEPDIR)/XercesUpdateFactory.Plo"; else rm -f "$(DEPDIR)/XercesUpdateFactory.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/xerces/XercesUpdateFactory.cpp' object='XercesUpdateFactory.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XercesUpdateFactory.lo `test -f 'src/xerces/XercesUpdateFactory.cpp' || echo '$(srcdir)/'`src/xerces/XercesUpdateFactory.cpp
+
+XercesURIResolver.lo: src/xerces/XercesURIResolver.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XercesURIResolver.lo -MD -MP -MF "$(DEPDIR)/XercesURIResolver.Tpo" -c -o XercesURIResolver.lo `test -f 'src/xerces/XercesURIResolver.cpp' || echo '$(srcdir)/'`src/xerces/XercesURIResolver.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/XercesURIResolver.Tpo" "$(DEPDIR)/XercesURIResolver.Plo"; else rm -f "$(DEPDIR)/XercesURIResolver.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/xerces/XercesURIResolver.cpp' object='XercesURIResolver.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XercesURIResolver.lo `test -f 'src/xerces/XercesURIResolver.cpp' || echo '$(srcdir)/'`src/xerces/XercesURIResolver.cpp
+
 basicXQillaUsage.o: src/samples/basic/basicXQillaUsage.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT basicXQillaUsage.o -MD -MP -MF "$(DEPDIR)/basicXQillaUsage.Tpo" -c -o basicXQillaUsage.o `test -f 'src/samples/basic/basicXQillaUsage.cpp' || echo '$(srcdir)/'`src/samples/basic/basicXQillaUsage.cpp; \
 @am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/basicXQillaUsage.Tpo" "$(DEPDIR)/basicXQillaUsage.Po"; else rm -f "$(DEPDIR)/basicXQillaUsage.Tpo"; exit 1; fi
@@ -3870,6 +3996,20 @@ basicXQillaUsage.obj: src/samples/basic/basicXQillaUsage.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/basic/basicXQillaUsage.cpp' object='basicXQillaUsage.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o basicXQillaUsage.obj `if test -f 'src/samples/basic/basicXQillaUsage.cpp'; then $(CYGPATH_W) 'src/samples/basic/basicXQillaUsage.cpp'; else $(CYGPATH_W) '$(srcdir)/src/samples/basic/basicXQillaUsage.cpp'; fi`
+
+xmark.o: tests/xmark/xmark.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT xmark.o -MD -MP -MF "$(DEPDIR)/xmark.Tpo" -c -o xmark.o `test -f 'tests/xmark/xmark.cpp' || echo '$(srcdir)/'`tests/xmark/xmark.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/xmark.Tpo" "$(DEPDIR)/xmark.Po"; else rm -f "$(DEPDIR)/xmark.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='tests/xmark/xmark.cpp' object='xmark.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o xmark.o `test -f 'tests/xmark/xmark.cpp' || echo '$(srcdir)/'`tests/xmark/xmark.cpp
+
+xmark.obj: tests/xmark/xmark.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT xmark.obj -MD -MP -MF "$(DEPDIR)/xmark.Tpo" -c -o xmark.obj `if test -f 'tests/xmark/xmark.cpp'; then $(CYGPATH_W) 'tests/xmark/xmark.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/xmark/xmark.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/xmark.Tpo" "$(DEPDIR)/xmark.Po"; else rm -f "$(DEPDIR)/xmark.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='tests/xmark/xmark.cpp' object='xmark.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o xmark.obj `if test -f 'tests/xmark/xmark.cpp'; then $(CYGPATH_W) 'tests/xmark/xmark.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/xmark/xmark.cpp'; fi`
 
 xqilla-commandline.o: src/samples/xqilla/xqilla-commandline.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT xqilla-commandline.o -MD -MP -MF "$(DEPDIR)/xqilla-commandline.Tpo" -c -o xqilla-commandline.o `test -f 'src/samples/xqilla/xqilla-commandline.cpp' || echo '$(srcdir)/'`src/samples/xqilla/xqilla-commandline.cpp; \

@@ -16,7 +16,7 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/runtime/ResultImpl.hpp>
-#include <xqilla/items/impl/NodeImpl.hpp>
+#include <xqilla/items/Node.hpp>
 
 #include <xercesc/dom/DOMNode.hpp>
 
@@ -26,25 +26,12 @@ class AxisNodeFactory
 {
 public:
   virtual ~AxisNodeFactory() {}
-  virtual const Node::Ptr createNode(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *node, const DynamicContext *context) const = 0;
+  virtual Node::Ptr createNode(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *node, const DynamicContext *context) const = 0;
 };
-
-template<class TYPE>
-class AxisNodeFactoryTemplate : public AxisNodeFactory
-{
-public:
-  virtual const Node::Ptr createNode(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *node, const DynamicContext *context) const
-  {
-    return new TYPE(node, context);
-  }
-};
-
 
 class XQILLA_API Axis : public ResultImpl
 {
 public:
-  static AxisNodeFactoryTemplate<NodeImpl> gNodeImplFactory;
-
   Axis(const LocationInfo *info, const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *contextNode, const Node *nodeObj,
        const NodeTest *nodeTest, const AxisNodeFactory &factory);
   Item::Ptr next(DynamicContext *context);

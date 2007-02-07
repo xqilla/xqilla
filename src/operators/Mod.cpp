@@ -43,10 +43,10 @@ Item::Ptr Mod::execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::Ptr
       return (const Item::Ptr)((Numeric*)(const AnyAtomicType*)atom1)->mod((const Numeric::Ptr )atom2, context);
     }
     else {
-      XQThrow(XPath2ErrorException,X("Mod::collapseTreeInternal"), X("An attempt to mod a non numeric type to a numeric type has occurred [err:XPTY0004]"));
+      XQThrow(XPath2ErrorException,X("Mod::createSequence"), X("An attempt to mod a non numeric type to a numeric type has occurred [err:XPTY0004]"));
 		}
 	}
 
-  XQThrow(XPath2ErrorException,X("Mod::collapseTreeInternal"), X("The operator mod has been called on invalid operand types [err:XPTY0004]"));
+  XQThrow(XPath2ErrorException,X("Mod::createSequence"), X("The operator mod has been called on invalid operand types [err:XPTY0004]"));
 }
 

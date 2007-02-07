@@ -23,7 +23,7 @@ class XQILLA_API AncestorOrSelfAxis : public Axis
 {
 public:
   AncestorOrSelfAxis(const LocationInfo *info, const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *contextNode, const Node *nodeObj,
-       const NodeTest *nodeTest, const AxisNodeFactory &factory = Axis::gNodeImplFactory);
+       const NodeTest *nodeTest, const AxisNodeFactory &factory);
   const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *nextNode(DynamicContext *context);
   std::string asString(DynamicContext *context, int indent) const;
 private:

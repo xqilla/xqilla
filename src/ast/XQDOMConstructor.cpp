@@ -25,6 +25,7 @@
 #include <xqilla/items/ATQNameConstructor.hpp>
 #include <xqilla/exceptions/ASTException.hpp>
 #include <xqilla/exceptions/XPath2TypeMatchException.hpp>
+#include <xqilla/events/SequenceBuilder.hpp>
 
 #include <xercesc/util/XMLChar.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
@@ -36,6 +37,14 @@ XERCES_CPP_NAMESPACE_USE
 XQDOMConstructor::XQDOMConstructor(XPath2MemoryManager* mm)
   : ASTNodeImpl(mm)
 {
+}
+
+Sequence XQDOMConstructor::createSequence(DynamicContext *context, int flags) const 
+{
+  AutoDelete<SequenceBuilder> builder(context->createSequenceBuilder());
+  generateEvents(builder.get(), context, true, true);
+  builder->endEvent();
+  return builder->getSequence();
 }
 
 bool XQDOMConstructor::getStringValue(const VectorOfASTNodes* m_children, XMLBuffer &value, DynamicContext *context)
@@ -52,7 +61,7 @@ bool XQDOMConstructor::getStringValue(const VectorOfASTNodes* m_children, XMLBuf
 bool XQDOMConstructor::getStringValue(const ASTNode *child, XMLBuffer &value, DynamicContext *context)
 {
   bool bSomethingFound=false;
-  Result childList = child->collapseTree(context);
+  Result childList = child->createResult(context);
   Item::Ptr item;
   bool addSpace = false;
   while((item = childList->next(context)) != NULLRCP) {
@@ -136,10 +145,9 @@ void XQDOMConstructor::unescapeEntities(XMLBuffer& buff) const
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-XQContentSequence::XQContentSequence(ASTNode *expr, bool copy, XPath2MemoryManager* mm)
+XQContentSequence::XQContentSequence(ASTNode *expr, XPath2MemoryManager* mm)
   : ASTNodeImpl(mm),
-    expr_(expr),
-    copy_(copy)
+    expr_(expr)
 {
   setType(ASTNode::CONTENT_SEQUENCE);
 }
@@ -178,109 +186,104 @@ ASTNode *XQContentSequence::staticTyping(StaticContext *context)
   return this;
 }
 
-static bool isTextNode(const Node::Ptr &node)
+Sequence XQContentSequence::createSequence(DynamicContext* context, int flags) const
 {
-  return node->dmNodeKind() == Node::text_string;
+  AutoDelete<SequenceBuilder> builder(context->createSequenceBuilder());
+  generateEvents(builder.get(), context, true, true);
+  builder->endEvent();
+  return builder->getSequence();
 }
 
-Sequence XQContentSequence::collapseTreeInternal(DynamicContext* context, int flags) const
+class ContentSequenceFilter : public EventFilter
 {
-  std::vector<Node::Ptr> contentSequence;
-
-  Result children = expr_->collapseTree(context);;
-
-  Item::Ptr child;
-  bool lastWasAtomic = false;
-  while((child = children->next(context)).notNull())
+public:
+  ContentSequenceFilter(EventHandler *next)
+    : EventFilter(next),
+      lastWasAtomic_(false)
   {
-    if(child->isNode())
-    {
-      lastWasAtomic = false;
-      Node::Ptr sourceNode = (Node::Ptr)child;
-
-      // DOCUMENT node
-      if(sourceNode->dmNodeKind() == Node::document_string)
-      {
-        Result docChildren = sourceNode->dmChildren(context, this);
-        Node::Ptr docChild;
-        while((docChild = docChildren->next(context)).notNull()) {
-          // merge consecutive text nodes
-          if(isTextNode(docChild) && !contentSequence.empty() && isTextNode(contentSequence.back())) {
-            const XMLCh* buff=XPath2Utils::concatStrings(contentSequence.back()->dmStringValue(context),
-                                                         docChild->dmStringValue(context),
-                                                         context->getMemoryManager());
-            contentSequence.pop_back();
-            contentSequence.push_back(context->getItemFactory()->createTextNode(buff, context));
-          }
-          else {
-            if(copy_)
-              contentSequence.push_back(context->getItemFactory()->copyNode(docChild, context));
-            else
-              contentSequence.push_back(docChild);
-          }
-        }
-      }
-
-      // TEXT node
-      else if(isTextNode(sourceNode))
-      {
-        if(!contentSequence.empty() && isTextNode(contentSequence.back())) {
-          const XMLCh* buff=XPath2Utils::concatStrings(contentSequence.back()->dmStringValue(context),
-                                                       sourceNode->dmStringValue(context),
-                                                       context->getMemoryManager());
-          contentSequence.pop_back();
-          contentSequence.push_back(context->getItemFactory()->createTextNode(buff, context));
-        }
-        else {
-          // Ensure it's not empty
-          if(!XPath2Utils::equals(sourceNode->dmStringValue(context),0)) {
-            if(copy_)
-              contentSequence.push_back(context->getItemFactory()->copyNode(sourceNode, context));
-            else
-              contentSequence.push_back(sourceNode);
-          }
-        }
-      }
-
-      else
-      {
-        if(copy_)
-          contentSequence.push_back(context->getItemFactory()->copyNode(sourceNode, context));
-        else
-          contentSequence.push_back(sourceNode);
-      }
-    }
-    else
-    {
-      const XMLCh* valueStr=child->asString(context);
-      if(lastWasAtomic)
-      {
-        XMLCh space[]={ ' ', 0 };
-        valueStr=XPath2Utils::concatStrings(space,valueStr,context->getMemoryManager());
-      }
-      lastWasAtomic = true;
-      // empty strings are stripped
-      if(valueStr && *valueStr)
-      {
-        if(!contentSequence.empty() && isTextNode(contentSequence.back())) {
-          const XMLCh* buff=XPath2Utils::concatStrings(contentSequence.back()->dmStringValue(context),valueStr,
-                                                       context->getMemoryManager());
-                        
-          contentSequence.pop_back();
-          contentSequence.push_back(context->getItemFactory()->createTextNode(buff, context));
-        }
-        else {
-          contentSequence.push_back(context->getItemFactory()->createTextNode(valueStr, context));
-        }
-      }
-    }
   }
 
-  Sequence result(context->getMemoryManager());
-  for(std::vector<Node::Ptr>::iterator csIt = contentSequence.begin(); csIt != contentSequence.end(); ++csIt) {
-    result.addItem(*csIt);
+  virtual void startDocumentEvent(const XMLCh *documentURI, const XMLCh *encoding)
+  {
+    // Do nothing
   }
-  return result;
+
+  virtual void endDocumentEvent()
+  {
+    // Do nothing
+  }
+
+  virtual void endEvent()
+  {
+    // Do nothing
+  }
+
+  virtual void startElementEvent(const XMLCh *prefix, const XMLCh *uri, const XMLCh *localname)
+  {
+    lastWasAtomic_ = false;
+    next_->startElementEvent(prefix, uri, localname);
+  }
+
+  virtual void piEvent(const XMLCh *target, const XMLCh *value)
+  {
+    lastWasAtomic_ = false;
+    next_->piEvent(target, value);
+  }
+
+  virtual void textEvent(const XMLCh *value)
+  {
+    lastWasAtomic_ = false;
+    next_->textEvent(value);
+  }
+
+  virtual void textEvent(const XMLCh *chars, unsigned int length)
+  {
+    lastWasAtomic_ = false;
+    next_->textEvent(chars, length);
+  }
+
+  virtual void commentEvent(const XMLCh *value)
+  {
+    lastWasAtomic_ = false;
+    next_->commentEvent(value);
+  }
+
+  virtual void attributeEvent(const XMLCh *prefix, const XMLCh *uri, const XMLCh *localname, const XMLCh *value,
+                              const XMLCh *typeURI, const XMLCh *typeName)
+  {
+    lastWasAtomic_ = false;
+    next_->attributeEvent(prefix, uri, localname, value, typeURI, typeName);
+  }
+
+  virtual void namespaceEvent(const XMLCh *prefix, const XMLCh *uri)
+  {
+    lastWasAtomic_ = false;
+    next_->namespaceEvent(prefix, uri);
+  }
+
+  virtual void atomicItemEvent(const XMLCh *value, const XMLCh *typeURI, const XMLCh *typeName)
+  {
+    static XMLCh space[] = { ' ', 0 };
+
+    if(lastWasAtomic_) {
+      next_->textEvent(space);
+    }
+    next_->textEvent(value);
+    lastWasAtomic_ = true;
+  }
+
+private:
+  bool lastWasAtomic_;
+};
+
+void XQContentSequence::generateEvents(EventHandler *events, DynamicContext *context,
+                                       bool preserveNS, bool preserveType) const
+{
+  preserveNS = context->getPreserveNamespaces();
+  preserveType = context->getConstructionMode() == StaticContext::CONSTRUCTION_MODE_PRESERVE;
+
+  ContentSequenceFilter filter(events);
+  expr_->generateEvents(&filter, context, preserveNS, preserveType);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -379,7 +382,7 @@ Result XQNameExpression::createResult(DynamicContext* context, int flags) const
 
 Item::Ptr XQNameExpression::NameExpressionResult::getSingleResult(DynamicContext *context) const
 {
-    AnyAtomicType::Ptr itemName = ast_->getExpression()->collapseTree(context)->next(context);
+    AnyAtomicType::Ptr itemName = ast_->getExpression()->createResult(context)->next(context);
 
     switch(itemName->getPrimitiveTypeIndex()) {
     case AnyAtomicType::QNAME:

@@ -35,7 +35,7 @@ public:
   
 protected:
   /* Accepts a sequence of strings and returns the strings concatenated together with an optional separator. */
-  Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
+  Sequence createSequence(DynamicContext* context, int flags=0) const;
 
 };
 

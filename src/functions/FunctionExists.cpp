@@ -49,7 +49,7 @@ ASTNode *FunctionExists::staticTyping(StaticContext *context)
   return calculateSRCForArguments(context);
 }
 
-Sequence FunctionExists::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionExists::createSequence(DynamicContext* context, int flags) const
 {
 	Result items = getParamNumber(1,context);
 	return Sequence(context->getItemFactory()->createBoolean(items->next(context) != NULLRCP, context),

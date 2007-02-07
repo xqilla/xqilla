@@ -115,7 +115,7 @@ XQInstanceOf::InstanceOfResult::InstanceOfResult(const XQInstanceOf *di, int fla
 Item::Ptr XQInstanceOf::InstanceOfResult::getSingleResult(DynamicContext *context) const
 {
   try {
-    Result result = _di->getExpression()->collapseTree(context);
+    Result result = _di->getExpression()->createResult(context);
     while(result->next(context).notNull()) {}
   }
   catch(const XPath2TypeMatchException &ex) {

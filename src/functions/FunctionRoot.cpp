@@ -19,9 +19,6 @@
 #include <xqilla/runtime/Sequence.hpp>
 #include <xqilla/items/Node.hpp>
 #include <xqilla/ast/StaticResolutionContext.hpp>
-#include <xercesc/dom/DOMNode.hpp>
-#include <xercesc/dom/DOMAttr.hpp>
-#include <xqilla/items/DatatypeFactory.hpp>
 
 const XMLCh FunctionRoot::name[] = {
   XERCES_CPP_NAMESPACE_QUALIFIER chLatin_r, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, 
@@ -40,17 +37,6 @@ FunctionRoot::FunctionRoot(const VectorOfASTNodes &args, XPath2MemoryManager* me
 {
 }
 
-/*static*/ Node::Ptr FunctionRoot::root(const Node::Ptr &node, const DynamicContext *context) 
-{
-  Node::Ptr result = node;
-  Node::Ptr parent = node->dmParent(context);
-  while(parent.notNull()) {
-    result = parent;
-    parent = result->dmParent(context);
-  }
-  return result;
-}
-
 ASTNode* FunctionRoot::staticResolution(StaticContext *context) {
   if(!_args.empty() && (*_args.begin())->getType()==ASTNode::CONTEXT_ITEM)
       _args.clear();
@@ -62,7 +48,7 @@ ASTNode *FunctionRoot::staticTyping(StaticContext *context)
   _src.clear();
 
   _src.setProperties(StaticResolutionContext::DOCORDER | StaticResolutionContext::GROUPED |
-	  StaticResolutionContext::PEER | StaticResolutionContext::SAMEDOC | StaticResolutionContext::ONENODE);
+                     StaticResolutionContext::PEER | StaticResolutionContext::SAMEDOC | StaticResolutionContext::ONENODE);
   _src.getStaticType().flags = StaticType::NODE_TYPE;
 
   if(_args.empty()) {
@@ -71,9 +57,9 @@ ASTNode *FunctionRoot::staticTyping(StaticContext *context)
   return calculateSRCForArguments(context);
 }
 
-Sequence FunctionRoot::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionRoot::createSequence(DynamicContext* context, int flags) const
 {
-	XPath2MemoryManager* memMgr = context->getMemoryManager();
+  XPath2MemoryManager* memMgr = context->getMemoryManager();
 
   Node::Ptr node = NULL;
   if(getNumArgs() == 1)
@@ -87,10 +73,10 @@ Sequence FunctionRoot::collapseTreeInternal(DynamicContext* context, int flags) 
   {
     const Item::Ptr item = context->getContextItem();
     if(item==NULLRCP)
-        XQThrow(FunctionException, X("FunctionRoot::collapseTreeInternal"),X("Undefined context item in fn:root [err:XPDY0002]"));
+        XQThrow(FunctionException, X("FunctionRoot::createSequence"),X("Undefined context item in fn:root [err:XPDY0002]"));
     if(!item->isNode())
-        XQThrow(FunctionException, X("FunctionRoot::collapseTreeInternal"),X("The context item is not a node [err:XPTY0004]"));
+        XQThrow(FunctionException, X("FunctionRoot::createSequence"),X("The context item is not a node [err:XPTY0004]"));
     node = (const Node::Ptr )item;
   }
-  return Sequence(root(node, context), memMgr);
+  return Sequence(node->root(context), memMgr);
 }

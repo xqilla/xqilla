@@ -39,7 +39,7 @@ public:
  /** 
   * Returns an absolute anyURI given a base URI and a relative URI.
   **/
-  Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
+  Sequence createSequence(DynamicContext* context, int flags=0) const;
 
 private:
   const XMLCh *baseURI_;

@@ -24,12 +24,14 @@
 #include <xqilla/exceptions/IllegalArgumentException.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xercesc/validators/schema/SchemaSymbols.hpp>
 #include <xqilla/context/ItemFactory.hpp>
+#include <xqilla/context/ContextHelpers.hpp>
+
+#include <xercesc/validators/schema/SchemaSymbols.hpp>
 
 const XMLCh FunctionAvg::name[] = {
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_v, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_g, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chNull 
+  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_v, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_g,
+  XERCES_CPP_NAMESPACE_QUALIFIER chNull
 };
 const unsigned int FunctionAvg::minArgs = 1;
 const unsigned int FunctionAvg::maxArgs = 1;
@@ -39,49 +41,62 @@ const unsigned int FunctionAvg::maxArgs = 1;
 **/
 
 FunctionAvg::FunctionAvg(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : AggregateFunction(name, minArgs, maxArgs, "anyAtomicType*", args, memMgr)
+  : ConstantFoldingFunction(name, minArgs, maxArgs, "anyAtomicType*", args, memMgr)
 {
-  // TBD - could do better here - jpcs
-  _src.getStaticType().flags = StaticType::TYPED_ATOMIC_TYPE;
 }
 
-Sequence FunctionAvg::collapseTreeInternal(DynamicContext* context, int flags) const
+ASTNode* FunctionAvg::staticResolution(StaticContext *context)
 {
-  Sequence sequence(context->getMemoryManager());
+  AutoNodeSetOrderingReset orderReset(context);
+  return resolveArguments(context);
+}
+
+ASTNode *FunctionAvg::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
+  ASTNode *result = calculateSRCForArguments(context);
+  if(result != this) return result;
+
+  _src.getStaticType() = _args[0]->getStaticResolutionContext().getStaticType();
+
+  if(_src.getStaticType().containsType(StaticType::UNTYPED_ATOMIC_TYPE)) {
+    _src.getStaticType().flags &= ~StaticType::UNTYPED_ATOMIC_TYPE;
+    _src.getStaticType().flags |= StaticType::DOUBLE_TYPE;
+  }
+  if(_src.getStaticType().containsType(StaticType::DOUBLE_TYPE)) {
+    _src.getStaticType().flags &= ~(StaticType::DECIMAL_TYPE | StaticType::FLOAT_TYPE);
+  }
+  if(_src.getStaticType().containsType(StaticType::FLOAT_TYPE)) {
+    _src.getStaticType().flags &= ~StaticType::DECIMAL_TYPE;
+  }
+
+  return this;
+}
+
+Sequence FunctionAvg::createSequence(DynamicContext* context, int flags) const
+{
   try {
-    sequence = validateSequence(getParamNumber(1,context)->toSequence(context), context);
-  } catch (IllegalArgumentException &e) {
-    XQThrow(IllegalArgumentException, X("FunctionAvg::collapseTreeInternal()"), X("Invalid argument to fn:avg() function [err:FORG0006]."));
+    unsigned int count = 0;
+    Item::Ptr sum = FunctionSum::sum(getParamNumber(1, context), context, this, &count);
+    if(sum.isNull())
+      return Sequence(context->getMemoryManager());
+
+    if(count == 1)
+      return Sequence(sum, context->getMemoryManager());
+
+    Numeric::Ptr countNum = context->getItemFactory()->createDecimal((long)count, context);
+
+    if(((AnyAtomicType*)sum.get())->isNumericValue()) {
+      return Sequence(((Numeric*)sum.get())->divide(countNum, context), context->getMemoryManager());
+    }
+    else {
+      // It must be a duration type
+      return Sequence(((ATDurationOrDerived*)sum.get())->divide(countNum, context), context->getMemoryManager());
+    }
   }
-
-  if(sequence.isEmpty())
-    return Sequence(context->getMemoryManager());
-
-  // check for types that don't support addition and division by an integer
-  const AnyAtomicType::Ptr atom = (const AnyAtomicType::Ptr )sequence.first();
-  if(!atom->isNumericValue() && 
-     atom->getPrimitiveTypeIndex() != AnyAtomicType::DAY_TIME_DURATION &&
-     atom->getPrimitiveTypeIndex() != AnyAtomicType::YEAR_MONTH_DURATION)
-    XQThrow(IllegalArgumentException, X("FunctionAvg::collapseTreeInternal()"), X("Invalid argument to fn:avg() function [err:FORG0006]."));
-
-  if(sequence.getLength() == 1)
-    return sequence;
-
-  AnyAtomicType::Ptr sum;
-  try {
-    sum = (AnyAtomicType::Ptr)FunctionSum::sum(sequence, context, this);
-  }
-  catch(IllegalArgumentException &) {
-    XQThrow(IllegalArgumentException, X("FunctionAvg::collapseTreeInternal()"), X("Invalid argument to fn:avg() function [err:FORG0006]."));
-  }
-
-  Numeric::Ptr count = context->getItemFactory()->createDecimal((long)sequence.getLength(), context);
-
-  if(sum->isNumericValue()) {
-    return Sequence(((Numeric*)sum.get())->divide(count, context), context->getMemoryManager());
-  }
-  else {
-    // It must be a duration type
-    return Sequence(((ATDurationOrDerived*)sum.get())->divide(count, context), context->getMemoryManager());
+  catch(::IllegalArgumentException &) {
+    XQThrow(IllegalArgumentException, X("FunctionAvg::createSequence()"), X("Invalid argument to fn:avg() function [err:FORG0006]"));
   }
 }
+

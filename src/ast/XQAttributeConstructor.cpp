@@ -25,8 +25,8 @@
 #include <xqilla/items/Node.hpp>
 #include <xqilla/items/AnyAtomicTypeConstructor.hpp>
 #include <xqilla/ast/XQAtomize.hpp>
+#include <xqilla/events/EventHandler.hpp>
 
-#include <xercesc/dom/DOM.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 #include <xercesc/framework/XMLBuffer.hpp>
 #include <xercesc/util/XMLChar.hpp>
@@ -43,32 +43,37 @@ XQAttributeConstructor::XQAttributeConstructor(ASTNode* name, VectorOfASTNodes* 
   setType(ASTNode::DOM_CONSTRUCTOR);
 }
 
-Sequence XQAttributeConstructor::collapseTreeInternal(DynamicContext *context, int flags) const 
+void XQAttributeConstructor::generateEvents(EventHandler *events, DynamicContext *context,
+                                            bool preserveNS, bool preserveType) const
 {
-  Node::Ptr result;
-  try
-  {
-    AnyAtomicType::Ptr itemName = m_name->collapseTree(context)->next(context);
-    const ATQNameOrDerived* pQName = (const ATQNameOrDerived*)itemName.get();
-    const XMLCh *nodePrefix = pQName->getPrefix();
-    const XMLCh *nodeUri = pQName->getURI();
-    const XMLCh *nodeName = pQName->getName();
+  AnyAtomicType::Ptr itemName = m_name->createResult(context)->next(context);
+  const ATQNameOrDerived* pQName = (const ATQNameOrDerived*)itemName.get();
+  const XMLCh *prefix = pQName->getPrefix();
+  const XMLCh *uri = pQName->getURI();
+  const XMLCh *name = pQName->getName();
 
-    if((nodeUri==NULL && XPath2Utils::equals(nodeName, XMLUni::fgXMLNSString)) ||
-       XPath2Utils::equals(nodeUri, XMLUni::fgXMLNSURIName))
-      XQThrow(ASTException,X("DOM Constructor"),X("A computed attribute constructor cannot create a namespace declaration [err:XQDY0044]"));
+  if((uri==NULL && XPath2Utils::equals(name, XMLUni::fgXMLNSString)) ||
+     XPath2Utils::equals(uri, XMLUni::fgXMLNSURIName))
+    XQThrow(ASTException,X("DOM Constructor"),X("A computed attribute constructor cannot create a namespace declaration [err:XQDY0044]"));
 
-    XMLBuffer value;
-    getStringValue(m_children, value, context);
-    result = context->getItemFactory()->createAttributeNode(nodeUri, nodePrefix, nodeName, value.getRawBuffer(),
-                                                            context);
+  XMLBuffer value;
+  getStringValue(m_children, value, context);
+
+  const XMLCh *typeURI = SchemaSymbols::fgURI_SCHEMAFORSCHEMA;
+  const XMLCh *typeName = ATUntypedAtomic::fgDT_UNTYPEDATOMIC;
+
+  // check if it's xml:id
+  static const XMLCh id[] = { 'i', 'd', 0 };
+  if(XPath2Utils::equals(name, id) && XPath2Utils::equals(uri, XMLUni::fgXMLURIName)) {
+    // If the attribute name is xml:id, the string value and typed value of the attribute are further normalized by 
+    // discarding any leading and trailing space (#x20) characters, and by replacing sequences of space (#x20) characters 
+    // by a single space (#x20) character.
+    XMLString::collapseWS(value.getRawBuffer(), context->getMemoryManager());
+    typeURI = SchemaSymbols::fgURI_SCHEMAFORSCHEMA;
+    typeName = XMLUni::fgIDString;
   }
-  catch(DOMException& e) {
-    XQThrow(ASTException,X("AttributeConstructor"),e.getMessage());
-  }
-  if(result.notNull())
-    return Sequence(result, context->getMemoryManager());
-  return Sequence(context->getMemoryManager());
+
+  events->attributeEvent(emptyToNull(prefix), emptyToNull(uri), name, value.getRawBuffer(), typeURI, typeName);
 }
 
 ASTNode* XQAttributeConstructor::staticResolution(StaticContext *context)

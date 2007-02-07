@@ -34,7 +34,7 @@ FunctionFloor::FunctionFloor(const VectorOfASTNodes &args, XPath2MemoryManager* 
   _src.getStaticType().flags = StaticType::NUMERIC_TYPE;
 }
 
-Sequence FunctionFloor::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionFloor::createSequence(DynamicContext* context, int flags) const
 {
   Numeric::Ptr numericArg = getNumericParam(1, context);
 

@@ -15,7 +15,6 @@
 #include <assert.h>
 #include <xqilla/functions/FunctionNamespaceUri.hpp>
 #include <xqilla/context/DynamicContext.hpp>
-#include <xercesc/dom/DOM.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/items/Node.hpp>
 #include <xqilla/items/ATStringOrDerived.hpp>
@@ -59,7 +58,7 @@ ASTNode *FunctionNamespaceUri::staticTyping(StaticContext *context)
   return calculateSRCForArguments(context);
 }
 
-Sequence FunctionNamespaceUri::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionNamespaceUri::createSequence(DynamicContext* context, int flags) const
 {
   XPath2MemoryManager* memMgr = context->getMemoryManager();
 
@@ -75,9 +74,9 @@ Sequence FunctionNamespaceUri::collapseTreeInternal(DynamicContext* context, int
   {
     const Item::Ptr item = context->getContextItem();
     if(item==NULLRCP)
-      XQThrow(FunctionException, X("FunctionNamespaceUri::collapseTreeInternal"),X("Undefined context item in fn:namespace-uri [err:XPDY0002]"));
+      XQThrow(FunctionException, X("FunctionNamespaceUri::createSequence"),X("Undefined context item in fn:namespace-uri [err:XPDY0002]"));
     if(!item->isNode())
-      XQThrow(FunctionException, X("FunctionNamespaceUri::collapseTreeInternal"),X("The context item is not a node [err:XPTY0004]"));
+      XQThrow(FunctionException, X("FunctionNamespaceUri::createSequence"),X("The context item is not a node [err:XPTY0004]"));
     ctxNode=item;
   }
 

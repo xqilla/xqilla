@@ -38,7 +38,7 @@ FunctionConcat::FunctionConcat(const VectorOfASTNodes &args, XPath2MemoryManager
   _src.getStaticType().flags = StaticType::STRING_TYPE;
 }
 
-Sequence FunctionConcat::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionConcat::createSequence(DynamicContext* context, int flags) const
 {
   XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer result(1023, context->getMemoryManager());
   for(unsigned int i = 1; i <= getNumArgs(); ++i) {
