@@ -29,16 +29,8 @@ class QualifiedName;
 
 XERCES_CPP_NAMESPACE_BEGIN
 class DOMDocument;
-class SchemaGrammar;
 class XMLGrammarPool;
 XERCES_CPP_NAMESPACE_END
-
-class XQILLA_API XQillaGrammarResolver : public XERCES_CPP_NAMESPACE_QUALIFIER GrammarResolver
-{
-public:
-    XQillaGrammarResolver(XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool* const gramPool, 
-                          XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager*  const manager = XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager);
-};
 
 // convert  errors into exceptions
 class XQILLA_API DocumentCacheErrorCatcher : public XERCES_CPP_NAMESPACE_QUALIFIER ErrorHandler
@@ -110,6 +102,9 @@ public:
 protected:
   bool isChildElement( XERCES_CPP_NAMESPACE_QUALIFIER ContentSpecNode *topContentSpec, unsigned int uriId, const XMLCh* localPart ) const;
 
+  XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer schemaLocations_;
+  XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer noNamespaceSchemaLocation_;
+
   DocumentCacheErrorCatcher _errorHandler;
   DynamicContext *_context;
 };
@@ -130,10 +125,8 @@ public:
   virtual void setXMLEntityResolver(XERCES_CPP_NAMESPACE_QUALIFIER XMLEntityResolver* const handler);
   virtual XERCES_CPP_NAMESPACE_QUALIFIER XMLEntityResolver* getXMLEntityResolver() const;
 
-  /** load the DOM document from the requested URI (or get it from the cache) */
-  virtual XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *loadXMLDocument(const XMLCh* Uri, DynamicContext *context);
-  virtual XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *loadXMLDocument(XERCES_CPP_NAMESPACE_QUALIFIER
-                                                                      InputSource& inputSource, DynamicContext *context);
+  /** load the document from the requested URI */
+  virtual Node::Ptr loadDocument(const XMLCh* uri, DynamicContext *context);
 
   /*
    * returns true if the type represented by uri:typename is an instance of uriToCheck:typeNameToCheck 

@@ -18,17 +18,20 @@
 #include <xqilla/items/AnyAtomicType.hpp>
 #include <xqilla/items/ATDoubleOrDerived.hpp>
 #include <xqilla/items/ATDurationOrDerived.hpp>
-#include <xqilla/functions/FunctionConstructor.hpp>
 #include <xqilla/operators/Plus.hpp>
 #include <xqilla/exceptions/IllegalArgumentException.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/mapm/m_apm.h>
-#include <xercesc/validators/schema/SchemaSymbols.hpp>
 #include <xqilla/context/ContextHelpers.hpp>
+#include <xqilla/utils/XPath2Utils.hpp>
+
+#include <xercesc/validators/schema/SchemaSymbols.hpp>
+
+XERCES_CPP_NAMESPACE_USE;
 
 const XMLCh FunctionSum::name[] = {
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_s, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_u, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_m, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chNull 
+  chLatin_s, chLatin_u, chLatin_m, 
+  chNull 
 };
 const unsigned int FunctionSum::minArgs = 1;
 const unsigned int FunctionSum::maxArgs = 2;
@@ -39,7 +42,7 @@ const unsigned int FunctionSum::maxArgs = 2;
 **/
 
 FunctionSum::FunctionSum(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : AggregateFunction(name, minArgs, maxArgs, "anyAtomicType*,anyAtomicType?", args, memMgr)
+  : ConstantFoldingFunction(name, minArgs, maxArgs, "anyAtomicType*,anyAtomicType?", args, memMgr)
 {
 }
 
@@ -52,54 +55,100 @@ ASTNode *FunctionSum::staticTyping(StaticContext *context)
 {
   _src.clear();
 
-  // TBD - could do better here - jpcs
-  _src.getStaticType().flags = StaticType::TYPED_ATOMIC_TYPE;
-  return calculateSRCForArguments(context);
+  ASTNode *result = calculateSRCForArguments(context);
+  if(result != this) return result;
+
+  _src.getStaticType() = _args[0]->getStaticResolutionContext().getStaticType();
+
+  if(_src.getStaticType().containsType(StaticType::UNTYPED_ATOMIC_TYPE)) {
+    _src.getStaticType().flags &= ~StaticType::UNTYPED_ATOMIC_TYPE;
+    _src.getStaticType().flags |= StaticType::DOUBLE_TYPE;
+  }
+  if(_src.getStaticType().containsType(StaticType::DOUBLE_TYPE)) {
+    _src.getStaticType().flags &= ~(StaticType::DECIMAL_TYPE | StaticType::FLOAT_TYPE);
+  }
+  if(_src.getStaticType().containsType(StaticType::FLOAT_TYPE)) {
+    _src.getStaticType().flags &= ~StaticType::DECIMAL_TYPE;
+  }
+
+  if(_args.size() > 1)
+    _src.getStaticType().typeUnion(_args[1]->getStaticResolutionContext().getStaticType());
+
+  return this;
 }
 
-Sequence FunctionSum::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionSum::createSequence(DynamicContext* context, int flags) const
 {
   XPath2MemoryManager* memMgr = context->getMemoryManager();
 
-  Sequence sequence(memMgr);
-  try {
-    sequence = validateSequence(getParamNumber(1,context)->toSequence(context), context);
-  } catch (IllegalArgumentException &e) {
-    XQThrow(IllegalArgumentException, X("FunctionSum::collapseTreeInternal"), X("Invalid argument to fn:sum() function [err:FORG0006]"));
-  }
-
-  if(sequence.isEmpty())
+  Item::Ptr result = sum(getParamNumber(1, context), context, this);
+  if(result.isNull())
     if(getNumArgs() == 1)
       return Sequence(context->getItemFactory()->createInteger(0, context), memMgr);
     else
       return getParamNumber(2,context)->toSequence(context);
 
-  // check for types that don't support addition
-  const AnyAtomicType::Ptr atom = (const AnyAtomicType::Ptr )sequence.first();
-  if(!atom->isNumericValue() && 
-     atom->getPrimitiveTypeIndex() != AnyAtomicType::DAY_TIME_DURATION &&
-     atom->getPrimitiveTypeIndex() != AnyAtomicType::YEAR_MONTH_DURATION)
-    XQThrow(IllegalArgumentException, X("FunctionSum::collapseTreeInternal"), X("Invalid argument to fn:sum() function [err:FORG0006]."));
-
-  return Sequence(sum(sequence, context, this), memMgr);
+  return Sequence(result, memMgr);
 }
 
-Item::Ptr FunctionSum::sum(const Sequence &sequence, DynamicContext *context, const LocationInfo *info)
+static inline bool checkUntypedAndNaN(Item::Ptr &item, const Item::Ptr &sum, DynamicContext *context)
 {
-  if(sequence.getLength() == 1)
-    return sequence.first();
+  if(((AnyAtomicType*)item.get())->getPrimitiveTypeIndex() == AnyAtomicType::UNTYPED_ATOMIC) {
+    if(XPath2Utils::equals(item->getTypeName(), ATUntypedAtomic::fgDT_UNTYPEDATOMIC) &&
+       XPath2Utils::equals(item->getTypeURI(), SchemaSymbols::fgURI_SCHEMAFORSCHEMA))
+      item = ((AnyAtomicType*)item.get())->castAs(AnyAtomicType::DOUBLE, context);
+  }
+  if(((AnyAtomicType*)item.get())->isNumericValue()) {
+    if(((Numeric*)item.get())->isNaN()) {
+      if(((AnyAtomicType*)sum.get())->getPrimitiveTypeIndex() == AnyAtomicType::DOUBLE)
+        item = ((Numeric*)item.get())->castAs(AnyAtomicType::DOUBLE, context);
+      return true;
+    }
+  }
 
-  Sequence::const_iterator i = sequence.begin();
-  Item::Ptr sum = *i;
-  ++i;
+  return false;
+}
 
-  for(; i != sequence.end(); ++i) {
+Item::Ptr FunctionSum::sum(const Result &res, DynamicContext *context, const LocationInfo *info, unsigned int *count)
+{
+  Result result = res;
+
+  unsigned int tmpCount;
+  if(count == 0) count = &tmpCount;
+  *count = 0;
+
+  Item::Ptr sum = result->next(context);
+  if(sum.isNull()) return 0;
+
+  ++(*count);
+  if(checkUntypedAndNaN(sum, sum, context))
+    return sum;
+
+  Item::Ptr item = result->next(context);
+  if(item.isNull()) {
+    // check for a type that doesn't support addition
+    const AnyAtomicType *atom = (const AnyAtomicType*)sum.get();
+    if(!atom->isNumericValue() && 
+       atom->getPrimitiveTypeIndex() != AnyAtomicType::DAY_TIME_DURATION &&
+       atom->getPrimitiveTypeIndex() != AnyAtomicType::YEAR_MONTH_DURATION)
+      XQThrow3(::IllegalArgumentException, X("FunctionSum::createSequence"),
+               X("Invalid argument to fn:sum() function [err:FORG0006]"), info);
+    return sum;
+  }
+
+  do {
+    ++(*count);
+    if(checkUntypedAndNaN(item, sum, context))
+      return item;
+
     try {
-      sum = Plus::plus(*i, sum, context, info);
-    } catch (IllegalArgumentException &e) {
-      XQThrow3(IllegalArgumentException, X("FunctionSum::collapseTreeInternal"), X("Invalid argument to fn:sum() function"), info);
-    }  
-  } 
+      sum = Plus::plus(sum, item, context, info);
+    }
+    catch(XQException &e) {
+      XQThrow3(::IllegalArgumentException, X("FunctionSum::createSequence"),
+               X("Invalid argument to fn:sum() function [err:FORG0006]"), info);
+    }
+  } while((item = result->next(context)).notNull());
 
   return sum;
 }

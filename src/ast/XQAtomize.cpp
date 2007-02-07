@@ -15,6 +15,7 @@
 
 #include <xqilla/ast/XQAtomize.hpp>
 #include <xqilla/items/Node.hpp>
+#include <xqilla/events/EventHandler.hpp>
 
 XQAtomize::XQAtomize(ASTNode* expr, XPath2MemoryManager* memMgr)
   : ASTNodeImpl(memMgr),
@@ -67,7 +68,7 @@ ASTNode *XQAtomize::staticTyping(StaticContext *context)
 
 Result XQAtomize::createResult(DynamicContext* context, int flags) const
 {
-  return new AtomizeResult(this, expr_->collapseTree(context, flags));
+  return new AtomizeResult(this, expr_->createResult(context, flags));
 }
 
 Item::Ptr AtomizeResult::next(DynamicContext *context)

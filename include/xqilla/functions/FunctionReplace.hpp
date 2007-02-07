@@ -40,7 +40,7 @@ public:
    * Returns $input with non-overlapping matches to $pattern 
    * replaced by $replacement
    */
-  Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
+  Sequence createSequence(DynamicContext* context, int flags=0) const;
 
 };
 

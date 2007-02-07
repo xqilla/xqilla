@@ -50,7 +50,7 @@ FunctionEscapeHtmlUri::FunctionEscapeHtmlUri(const VectorOfASTNodes &args, XPath
   _src.getStaticType().flags = StaticType::STRING_TYPE;
 }
 
-Sequence FunctionEscapeHtmlUri::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionEscapeHtmlUri::createSequence(DynamicContext* context, int flags) const
 {
     Sequence uriPart=getParamNumber(1,context)->toSequence(context);
     if(uriPart.isEmpty())

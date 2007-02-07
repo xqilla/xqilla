@@ -34,7 +34,7 @@ FunctionCeiling::FunctionCeiling(const VectorOfASTNodes &args, XPath2MemoryManag
   _src.getStaticType().flags = StaticType::NUMERIC_TYPE;
 }
 
-Sequence FunctionCeiling::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionCeiling::createSequence(DynamicContext* context, int flags) const
 {
   Numeric::Ptr numericArg = getNumericParam(1, context);
     

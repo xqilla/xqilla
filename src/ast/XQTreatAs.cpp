@@ -43,7 +43,7 @@ XQTreatAs::XQTreatAs(ASTNode* expr, const SequenceType* exprType, XPath2MemoryMa
 
 Result XQTreatAs::createResult(DynamicContext* context, int flags) const
 {
-  Result result = _expr->collapseTree(context, flags);
+  Result result = _expr->createResult(context, flags);
   if(_exprType->getOccurrenceIndicator() != SequenceType::STAR ||
      _exprType->getItemType() == NULL) {
     result = _exprType->occurrenceMatches(result, this);

@@ -37,7 +37,7 @@ FunctionStringJoin::FunctionStringJoin(const VectorOfASTNodes &args, XPath2Memor
   _src.getStaticType().flags = StaticType::STRING_TYPE;
 }
 
-Sequence FunctionStringJoin::collapseTreeInternal(DynamicContext* context, int flags) const {
+Sequence FunctionStringJoin::createSequence(DynamicContext* context, int flags) const {
 	XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer result(1023, context->getMemoryManager());
   XPath2MemoryManager* memMgr = context->getMemoryManager();
   Sequence strSeq = getParamNumber(1, context)->toSequence(context);

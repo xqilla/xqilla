@@ -39,7 +39,7 @@ FunctionStringToCodepoints::FunctionStringToCodepoints(const VectorOfASTNodes &a
   _src.getStaticType().flags = StaticType::DECIMAL_TYPE;
 }
 
-Sequence FunctionStringToCodepoints::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionStringToCodepoints::createSequence(DynamicContext* context, int flags) const
 {	
   Sequence param1 = getParamNumber(1,context)->toSequence(context);
   if(param1.isEmpty()) return param1;

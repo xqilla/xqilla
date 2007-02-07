@@ -41,7 +41,7 @@ FunctionTranslate::FunctionTranslate(const VectorOfASTNodes &args, XPath2MemoryM
   _src.getStaticType().flags = StaticType::STRING_TYPE;
 }
 
-Sequence FunctionTranslate::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionTranslate::createSequence(DynamicContext* context, int flags) const
 {
 	XPath2MemoryManager* memMgr = context->getMemoryManager();
 	Sequence str1 = getParamNumber(1,context)->toSequence(context);

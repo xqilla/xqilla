@@ -145,6 +145,15 @@ Result XQSequence::createResult(DynamicContext* context, int flags) const
   return new SequenceResult(this);
 }
 
+void XQSequence::generateEvents(EventHandler *events, DynamicContext *context,
+                                bool preserveNS, bool preserveType) const
+{
+  for(ItemConstructor::Vector::const_iterator it = _itemConstructors.begin();
+      it != _itemConstructors.end(); ++it) {
+    (*it)->generateEvents(events, context);
+  }
+}
+
 /** Returns true if this XQ has no predicates, and is an instance of
     XQSequence or XQLiteral. If the literal value of this XQ
     is a single DateOrTimeType, then !hasTimezone() on it must return true,

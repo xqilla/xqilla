@@ -25,6 +25,7 @@ class StaticContext;
 class Result;
 class StaticResolutionContext;
 class PendingUpdateList;
+class EventHandler;
 
 class XQILLA_API ASTNode : public LocationInfo
 {
@@ -80,8 +81,13 @@ public:
 
   virtual ~ASTNode() {}
 
-  /// The flags parameter is currently unused
-  virtual Result collapseTree(DynamicContext *context, int flags=0) const = 0;
+  /** Returns a Result iterator for the results of this expression.
+      The flags parameter is currently unused */
+  virtual Result createResult(DynamicContext* context, int flags=0) const = 0;
+
+  /** Returns the result of this expression via the EventHandler provided. */
+  virtual void generateEvents(EventHandler *events, DynamicContext *context,
+                              bool preserveNS, bool preserveType) const = 0;
 
   /// Executes an update expression
   virtual PendingUpdateList createUpdateList(DynamicContext *context) const = 0;

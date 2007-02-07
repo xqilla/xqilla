@@ -47,7 +47,7 @@ public:
   /**
    * Adjusts a time to a specific timezone, or to no timezone at all
    */
-  Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
+  Sequence createSequence(DynamicContext* context, int flags=0) const;
 };
 
 #endif // _FUNCTIONADJUSTTIMETOTIMEZONE_HPP

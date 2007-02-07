@@ -46,7 +46,7 @@ FunctionContains::FunctionContains(const VectorOfASTNodes &args, XPath2MemoryMan
   _src.getStaticType().flags = StaticType::BOOLEAN_TYPE;
 }
 
-Sequence FunctionContains::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionContains::createSequence(DynamicContext* context, int flags) const
 {
     Sequence str1 = getParamNumber(1,context)->toSequence(context);
     Sequence str2 = getParamNumber(2,context)->toSequence(context);
@@ -58,11 +58,11 @@ Sequence FunctionContains::collapseTreeInternal(DynamicContext* context, int fla
         try {
             context->getItemFactory()->createAnyURI(collName, context);
         } catch(XPath2ErrorException &e) {
-            XQThrow(FunctionException, X("FunctionContains::collapseTreeInternal"), X("Invalid collationURI"));  
+            XQThrow(FunctionException, X("FunctionContains::createSequence"), X("Invalid collationURI"));  
         }
         collation=context->getCollation(collName, this);
         if(collation==NULL)
-            XQThrow(FunctionException,X("FunctionContains::collapseTreeInternal"),X("Collation object is not available"));
+            XQThrow(FunctionException,X("FunctionContains::createSequence"),X("Collation object is not available"));
     }
     else
         collation=context->getCollation(CodepointCollation::getCodepointCollationName(), this);

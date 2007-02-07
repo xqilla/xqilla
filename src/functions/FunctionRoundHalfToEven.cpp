@@ -40,7 +40,7 @@ FunctionRoundHalfToEven::FunctionRoundHalfToEven(const VectorOfASTNodes &args, X
   _src.getStaticType().flags = StaticType::NUMERIC_TYPE;
 }
 
-Sequence FunctionRoundHalfToEven::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionRoundHalfToEven::createSequence(DynamicContext* context, int flags) const
 {
   XPath2MemoryManager* memMgr = context->getMemoryManager();
 

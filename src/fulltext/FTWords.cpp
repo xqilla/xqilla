@@ -72,7 +72,7 @@ FTSelection *FTWords::staticTyping(StaticContext *context)
 FTSelection *FTWords::optimize(FTContext *ftcontext, bool execute) const
 {
   if(execute || expr_->isConstant()) {
-    Result strings = expr_->collapseTree(ftcontext->context);
+    Result strings = expr_->createResult(ftcontext->context);
 
     switch(option_) {
     case ANY_WORD: {

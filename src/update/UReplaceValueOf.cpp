@@ -85,7 +85,7 @@ ASTNode *UReplaceValueOf::staticTyping(StaticContext *context)
 
 PendingUpdateList UReplaceValueOf::createUpdateList(DynamicContext *context) const
 {
-  Node::Ptr node = (Node*)target_->collapseTree(context)->next(context).get();
+  Node::Ptr node = (Node*)target_->createResult(context)->next(context).get();
 
   XMLBuffer buf;
   XQDOMConstructor::getStringValue(expr_, buf, context);

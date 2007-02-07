@@ -383,7 +383,7 @@ Result XQUserFunction::XQFunctionEvaluator::getArgument(unsigned int index, Dyna
 
   if(index >= nDefinedArgs) return 0;
 
-  return _args[index]->collapseTree(context);
+  return _args[index]->createResult(context);
 }
 
 Result XQUserFunction::XQFunctionEvaluator::createResult(DynamicContext* context, int flags) const
@@ -481,7 +481,7 @@ void XQUserFunction::XQFunctionEvaluator::evaluateArguments(DynamicContext *cont
     for(VectorOfFunctionParameters::const_iterator it = m_pFuncDef->getParams()->begin();
         it != m_pFuncDef->getParams()->end(); ++it, ++index) {
       if((*it)->_qname || context->isDebuggingEnabled()) {
-        Sequence argValue(getArguments()[index]->collapseTree(context)->toSequence(context));
+        Sequence argValue(getArguments()[index]->createResult(context)->toSequence(context));
         varValues.push_back(ParamBinding(*it, argValue));
       }
       else {
@@ -547,7 +547,7 @@ Item::Ptr XQUserFunction::XQFunctionEvaluator::FunctionEvaluatorResult::next(Dyn
   if(_toDo) {
     _toDo = false;
     _di->evaluateArguments(context);
-    _result = _di->getFunctionDefinition()->getFunctionBody()->collapseTree(context);
+    _result = _di->getFunctionDefinition()->getFunctionBody()->createResult(context);
   }
   else if(_scope != 0) {
     varStore->setScopeState(_scope);

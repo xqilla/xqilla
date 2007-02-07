@@ -37,7 +37,7 @@ public:
   FunctionDocumentURI(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
 	/* returns the document-URI property of the node */
-  Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
+  Sequence createSequence(DynamicContext* context, int flags=0) const;
 };
 
 #endif

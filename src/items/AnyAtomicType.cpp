@@ -40,27 +40,6 @@ const XMLCh AnyAtomicType::fgDT_ANYATOMICTYPE[]=
 	XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, XERCES_CPP_NAMESPACE_QUALIFIER chNull 
 };
 
-/* http://www.w3.org/2001/XMLSchema,anyAtomicType */
-const XMLCh AnyAtomicType::fgDT_ANYATOMICTYPE_XERCESHASH[]=
-{ 
-    XERCES_CPP_NAMESPACE_QUALIFIER chLatin_h,       XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t,       XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t, 
-    XERCES_CPP_NAMESPACE_QUALIFIER chLatin_p,       XERCES_CPP_NAMESPACE_QUALIFIER chColon,         XERCES_CPP_NAMESPACE_QUALIFIER chForwardSlash, 
-    XERCES_CPP_NAMESPACE_QUALIFIER chForwardSlash,  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_w,       XERCES_CPP_NAMESPACE_QUALIFIER chLatin_w, 
-    XERCES_CPP_NAMESPACE_QUALIFIER chLatin_w,       XERCES_CPP_NAMESPACE_QUALIFIER chPeriod,        XERCES_CPP_NAMESPACE_QUALIFIER chLatin_w,
-    XERCES_CPP_NAMESPACE_QUALIFIER chDigit_3,       XERCES_CPP_NAMESPACE_QUALIFIER chPeriod,        XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, 
-    XERCES_CPP_NAMESPACE_QUALIFIER chLatin_r,       XERCES_CPP_NAMESPACE_QUALIFIER chLatin_g,       XERCES_CPP_NAMESPACE_QUALIFIER chForwardSlash, 
-    XERCES_CPP_NAMESPACE_QUALIFIER chDigit_2,       XERCES_CPP_NAMESPACE_QUALIFIER chDigit_0,       XERCES_CPP_NAMESPACE_QUALIFIER chDigit_0, 
-    XERCES_CPP_NAMESPACE_QUALIFIER chDigit_1,       XERCES_CPP_NAMESPACE_QUALIFIER chForwardSlash,  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_X,
-    XERCES_CPP_NAMESPACE_QUALIFIER chLatin_M,       XERCES_CPP_NAMESPACE_QUALIFIER chLatin_L,       XERCES_CPP_NAMESPACE_QUALIFIER chLatin_S,
-    XERCES_CPP_NAMESPACE_QUALIFIER chLatin_c,       XERCES_CPP_NAMESPACE_QUALIFIER chLatin_h,       XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e,
-    XERCES_CPP_NAMESPACE_QUALIFIER chLatin_m,       XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a,       XERCES_CPP_NAMESPACE_QUALIFIER chComma, 
-	XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a,       XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n,       XERCES_CPP_NAMESPACE_QUALIFIER chLatin_y, 
-	XERCES_CPP_NAMESPACE_QUALIFIER chLatin_A,       XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t,       XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, 
-	XERCES_CPP_NAMESPACE_QUALIFIER chLatin_m,       XERCES_CPP_NAMESPACE_QUALIFIER chLatin_i,       XERCES_CPP_NAMESPACE_QUALIFIER chLatin_c, 
-	XERCES_CPP_NAMESPACE_QUALIFIER chLatin_T,       XERCES_CPP_NAMESPACE_QUALIFIER chLatin_y,       XERCES_CPP_NAMESPACE_QUALIFIER chLatin_p, 
-	XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e,       XERCES_CPP_NAMESPACE_QUALIFIER chNull 
-};
-
 const AnyAtomicType::CastTable AnyAtomicType::staticCastTable;
 
 /* isAtomicValue from Item */
@@ -88,35 +67,21 @@ const XMLCh* AnyAtomicType::getPrimitiveTypeURI() const{
   return XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA;
 }
 
-AnyAtomicType::Ptr AnyAtomicType::castAs(const XMLCh* targetTypeURI, const XMLCh* targetTypeName, const DynamicContext* context) const {
-  bool isPrimitive;
-  AtomicObjectType targetIndex = context->getItemFactory()->getPrimitiveTypeIndex(targetTypeURI, targetTypeName, isPrimitive);
-
-  if(!castIsSupported(targetIndex, context)) {
-    XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buffer(1023, context->getMemoryManager());
-    buffer.set(X("Casting from {"));
-    buffer.append(this->getTypeURI());
-    buffer.append(X("}"));
-    buffer.append(this->getTypeName());
-    buffer.append(X(" to {"));
-    buffer.append(targetTypeURI);
-    buffer.append(X("}"));
-    buffer.append(targetTypeName);
-    buffer.append(X(" is not supported [err:XPTY0004]"));
-
-    XQThrow2(XPath2TypeCastException, X("AnyAtomicType::castAs"), buffer.getRawBuffer());
-  }
+AnyAtomicType::Ptr AnyAtomicType::castAs(AtomicObjectType targetIndex, const DynamicContext* context) const
+{
+  // We assume this cast is supported, since it's an internal cast,
+  // not one specified by the user
   
   try {
-    return this->castAsInternal(targetIndex, targetTypeURI, targetTypeName, context);
+    return castAsInternal(targetIndex, 0, 0, context);
   } catch (TypeNotFoundException &e) {
     XQThrow2(XPath2TypeCastException, X("AnyAtomicType::castAs"), e.getError());
   } catch (InvalidLexicalSpaceException &e) {
-    if(this->getPrimitiveTypeIndex() == UNTYPED_ATOMIC ||
-       this->getPrimitiveTypeIndex() == ANY_SIMPLE_TYPE || 
-       this->getPrimitiveTypeIndex() == STRING) {
+    if(getPrimitiveTypeIndex() == UNTYPED_ATOMIC ||
+       getPrimitiveTypeIndex() == ANY_SIMPLE_TYPE || 
+       getPrimitiveTypeIndex() == STRING) {
       XQThrow2(XPath2TypeCastException, X("AnyAtomicType::castAs"), X("Invalid lexical value [err:FORG0001]"));
-    } else if (context->isTypeOrDerivedFromType(targetTypeURI, targetTypeName, this->getPrimitiveTypeURI(), this->getPrimitiveTypeName())) {
+    } else if(getPrimitiveTypeIndex() == targetIndex) {
       XQThrow2(XPath2TypeCastException, X("AnyAtomicType::castAs"), X("Value does not conform to facets [err:FORG0001]"));
     } else {
       XQThrow2(XPath2TypeCastException, X("AnyAtomicType::castAs"), e.getError());  // should never be here, in theory
@@ -127,21 +92,66 @@ AnyAtomicType::Ptr AnyAtomicType::castAs(const XMLCh* targetTypeURI, const XMLCh
 
 }
 
-AnyAtomicType::Ptr AnyAtomicType::castAsInternal(AtomicObjectType targetIndex, const XMLCh* targetTypeURI, const XMLCh* targetTypeName, const DynamicContext* context) const {
-    return context->getItemFactory()->createDerivedFromAtomicType(targetIndex, targetTypeURI, targetTypeName, this->asString(context), context);
+AnyAtomicType::Ptr AnyAtomicType::castAs(AtomicObjectType targetIndex, const XMLCh* targetTypeURI,
+                                         const XMLCh* targetTypeName, const DynamicContext* context) const
+{
+  if(!castIsSupported(targetIndex, context)) {
+    XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buffer(1023, context->getMemoryManager());
+    buffer.set(X("Casting from {"));
+    buffer.append(getTypeURI());
+    buffer.append(X("}"));
+    buffer.append(getTypeName());
+    buffer.append(X(" to {"));
+    buffer.append(targetTypeURI);
+    buffer.append(X("}"));
+    buffer.append(targetTypeName);
+    buffer.append(X(" is not supported [err:XPTY0004]"));
+
+    XQThrow2(XPath2TypeCastException, X("AnyAtomicType::castAs"), buffer.getRawBuffer());
+  }
+  
+  try {
+    return castAsInternal(targetIndex, targetTypeURI, targetTypeName, context);
+  } catch (TypeNotFoundException &e) {
+    XQThrow2(XPath2TypeCastException, X("AnyAtomicType::castAs"), e.getError());
+  } catch (InvalidLexicalSpaceException &e) {
+    if(getPrimitiveTypeIndex() == UNTYPED_ATOMIC ||
+       getPrimitiveTypeIndex() == ANY_SIMPLE_TYPE || 
+       getPrimitiveTypeIndex() == STRING) {
+      XQThrow2(XPath2TypeCastException, X("AnyAtomicType::castAs"), X("Invalid lexical value [err:FORG0001]"));
+    } else if(getPrimitiveTypeIndex() == targetIndex) {
+      XQThrow2(XPath2TypeCastException, X("AnyAtomicType::castAs"), X("Value does not conform to facets [err:FORG0001]"));
+    } else {
+      XQThrow2(XPath2TypeCastException, X("AnyAtomicType::castAs"), e.getError());  // should never be here, in theory
+    }
+  } catch (NamespaceLookupException &e) {
+    XQThrow2(XPath2TypeCastException, X("AnyAtomicType::castAs"), e.getError());
+  }
+
+}
+
+AnyAtomicType::Ptr AnyAtomicType::castAsInternal(AtomicObjectType targetIndex, const XMLCh* targetTypeURI,
+                                                 const XMLCh* targetTypeName, const DynamicContext* context) const
+{
+  if(targetTypeName == 0) {
+    return context->getItemFactory()->createDerivedFromAtomicType(targetIndex, asString(context), context);
+  }
+  else {
+    return context->getItemFactory()->createDerivedFromAtomicType(targetIndex, targetTypeURI, targetTypeName,
+                                                                  asString(context), context);
+  }
 }
 
 /* Test if this type can be cast to the target type */
-bool AnyAtomicType::castable(const XMLCh* targetTypeURI, const XMLCh* targetTypeName, const DynamicContext* context) const {
-  bool isPrimitive;
-  AtomicObjectType targetIndex = context->getItemFactory()->getPrimitiveTypeIndex(targetTypeURI, targetTypeName, isPrimitive);
-
+bool AnyAtomicType::castable(AtomicObjectType targetIndex, const XMLCh* targetTypeURI, const XMLCh* targetTypeName,
+                             const DynamicContext* context) const
+{
   if(!castIsSupported(targetIndex, context)) {
           return false;
   }
   // validate the data by calling castAs (can't use checkInstance)
   try {
-    this->castAsInternal(targetIndex, targetTypeURI, targetTypeName, context);
+    castAsInternal(targetIndex, targetTypeURI, targetTypeName, context);
   } catch (IllegalArgumentException &e) {
     return false;
   } catch (XPath2TypeCastException &e) {

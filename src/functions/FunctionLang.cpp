@@ -17,9 +17,6 @@
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/exceptions/FunctionException.hpp>
-#include <xercesc/dom/DOM.hpp>
-#include <xercesc/util/XMLUni.hpp>
-#include <xercesc/util/XMLUniDefs.hpp>
 #include <xqilla/items/ATBooleanOrDerived.hpp>
 #include <xqilla/items/ATStringOrDerived.hpp>
 #include <xqilla/items/Node.hpp>
@@ -59,7 +56,7 @@ ASTNode *FunctionLang::staticTyping(StaticContext *context)
   return calculateSRCForArguments(context);
 }
 
-Sequence FunctionLang::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionLang::createSequence(DynamicContext* context, int flags) const
 {
     XPath2MemoryManager* memMgr = context->getMemoryManager();
 
@@ -81,9 +78,9 @@ Sequence FunctionLang::collapseTreeInternal(DynamicContext* context, int flags) 
     {
         const Item::Ptr item = context->getContextItem();
         if(item==NULLRCP)
-            XQThrow(FunctionException, X("FunctionLang::collapseTreeInternal"),X("Undefined context item in fn:lang [err:XPDY0002]"));
+            XQThrow(FunctionException, X("FunctionLang::createSequence"),X("Undefined context item in fn:lang [err:XPDY0002]"));
         if(!item->isNode())
-            XQThrow(FunctionException, X("FunctionLang::collapseTreeInternal"),X("The context item is not a node [err:XPTY0004]"));
+            XQThrow(FunctionException, X("FunctionLang::createSequence"),X("The context item is not a node [err:XPTY0004]"));
         ctxNode=item;
     }
 

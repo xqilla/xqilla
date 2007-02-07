@@ -59,7 +59,7 @@ ASTNode *FunctionString::staticTyping(StaticContext *context)
   return calculateSRCForArguments(context);
 }
 
-Sequence FunctionString::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionString::createSequence(DynamicContext* context, int flags) const
 {
   XPath2MemoryManager* memMgr = context->getMemoryManager();
 
@@ -67,7 +67,7 @@ Sequence FunctionString::collapseTreeInternal(DynamicContext* context, int flags
   if(getNumArgs() == 0) {
     item = context->getContextItem();
     if(item == NULLRCP) {
-      XQThrow(FunctionException, X("FunctionString::collapseTreeInternal"),
+      XQThrow(FunctionException, X("FunctionString::createSequence"),
               X("Undefined context item in fn:string [err:XPDY0002]"));
     }
   }
@@ -87,8 +87,7 @@ Item::Ptr FunctionString::string(const Item::Ptr &item, DynamicContext *context)
     return context->getItemFactory()->createString(((Node*)item.get())->dmStringValue(context), context);
   }
   else if(item->isAtomicValue()) {
-    return ((AnyAtomicType*)item.get())->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                                                XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING, context);
+    return ((AnyAtomicType*)item.get())->castAs(AnyAtomicType::STRING, context);
   }
   assert(false);
   return 0;

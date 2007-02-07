@@ -206,7 +206,7 @@ XMLCh* VarStoreImpl::print(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr)
   if(index==NULL)
     index=_store.getGlobalScope();
 
-  XQContextImpl xp2c(XQilla::XPATH2, memMgr, 0, 0);
+  AutoDelete<DynamicContext> xp2c(XQilla::createContext(XQilla::XPATH2));
 
   while(index)
     {
@@ -242,7 +242,7 @@ XMLCh* VarStoreImpl::print(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr)
           unsigned int len=value.getLength();
           if(len>0) {
             if(len==1)
-              buf.append(value.first()->asString(&xp2c));
+              buf.append(value.first()->asString(xp2c));
             else {
               XMLCh szOpenParen[]={ XERCES_CPP_NAMESPACE_QUALIFIER chOpenParen, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
               XMLCh szCloseParen[]={ XERCES_CPP_NAMESPACE_QUALIFIER chCloseParen, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
@@ -250,7 +250,7 @@ XMLCh* VarStoreImpl::print(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr)
               buf.append(szOpenParen);
               Sequence::iterator end = value.end();
               for(Sequence::iterator i = value.begin(); i != end;) {
-                buf.append((*i)->asString(&xp2c));
+                buf.append((*i)->asString(xp2c));
                 if(++i != end)
                   buf.append(szComma);
               }

@@ -132,7 +132,7 @@ ASTNode* XQTypeswitch::staticTyping(StaticContext *context)
     // If it's constant, we can narrow it down to the correct clause
     AutoDelete<DynamicContext> dContext(context->createDynamicContext());
     dContext->setMemoryManager(context->getMemoryManager());
-    Sequence value = _expr->collapseTree(dContext)->toSequence(dContext);
+    Sequence value = _expr->createResult(dContext)->toSequence(dContext);
 
     Clause *match = 0;
     for(VectorOfClause::iterator it=_clauses->begin();it!=_clauses->end();++it) {
@@ -237,7 +237,7 @@ void XQTypeswitch::setExpression(ASTNode *expr)
 const XQTypeswitch::Clause *XQTypeswitch::chooseClause(DynamicContext *context) const
 {
   // retrieve the value of the operand expression
-  ResultBuffer value(_expr->collapseTree(context));
+  ResultBuffer value(_expr->createResult(context));
 
   const Clause *clause = 0;
 
@@ -267,6 +267,18 @@ const XQTypeswitch::Clause *XQTypeswitch::chooseClause(DynamicContext *context) 
   }
 
   return clause;
+}
+
+void XQTypeswitch::generateEvents(EventHandler *events, DynamicContext *context,
+                                  bool preserveNS, bool preserveType) const
+{
+  const Clause *clause = chooseClause(context);
+
+  clause->_expr->generateEvents(events, context, preserveNS, preserveType);
+
+  if(clause->_variable != 0) {
+    context->getVariableStore()->removeScope();
+  }
 }
 
 PendingUpdateList XQTypeswitch::createUpdateList(DynamicContext *context) const
@@ -303,7 +315,7 @@ Item::Ptr XQTypeswitch::TypeswitchResult::next(DynamicContext *context)
       _scopeRemoved = false;
     }
 
-    _result = clause->_expr->collapseTree(context);
+    _result = clause->_expr->createResult(context);
   }
   else if(_scope != 0) {
     varStore->setScopeState(_scope);

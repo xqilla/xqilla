@@ -53,7 +53,7 @@ ASTNode *FunctionMonthFromDateTime::staticTyping(StaticContext *context)
   return calculateSRCForArguments(context, /*checkTimezone*/true);
 }
 
-Sequence FunctionMonthFromDateTime::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionMonthFromDateTime::createSequence(DynamicContext* context, int flags) const
 {
   XPath2MemoryManager* memMgr = context->getMemoryManager();
 

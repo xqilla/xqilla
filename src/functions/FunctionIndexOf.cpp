@@ -52,15 +52,13 @@ Sequence FunctionIndexOf::indexOf(Sequence &list, const Item::Ptr &item, Collati
   AnyAtomicType::Ptr atom=(const AnyAtomicType::Ptr )item;
   // need to manually convert xdt:untypedAtomic to xs:string
   if(atom->getPrimitiveTypeIndex() == AnyAtomicType::UNTYPED_ATOMIC)
-    atom = atom->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                        XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING, context);
+    atom = atom->castAs(AnyAtomicType::STRING, context);
   for(Sequence::iterator i = list.begin(); i != list.end(); ++i,++index) {
     AnyAtomicType::Ptr current = (const AnyAtomicType::Ptr )*i;
     try {
         // need to manually convert xdt:untypedAtomic to xs:string
         if(current->getPrimitiveTypeIndex() == AnyAtomicType::UNTYPED_ATOMIC)
-            current = current->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                                      XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING, context);
+            current = current->castAs(AnyAtomicType::STRING, context);
 
         if(Equals::equals(current,atom,collation,context,this))
         result.addItem(context->getItemFactory()->createInteger(index, context));
@@ -74,7 +72,7 @@ Sequence FunctionIndexOf::indexOf(Sequence &list, const Item::Ptr &item, Collati
 }
 
 
-Sequence FunctionIndexOf::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionIndexOf::createSequence(DynamicContext* context, int flags) const
 {
 	XPath2MemoryManager* memMgr = context->getMemoryManager();
 	Sequence list=getParamNumber(1,context)->toSequence(context);
@@ -87,7 +85,7 @@ Sequence FunctionIndexOf::collapseTreeInternal(DynamicContext* context, int flag
     try {
       context->getItemFactory()->createAnyURI(collName, context);
     } catch(XPath2ErrorException &e) {
-      XQThrow(FunctionException, X("FunctionIndexOf::collapseTreeInternal"), X("Invalid collationURI"));  
+      XQThrow(FunctionException, X("FunctionIndexOf::createSequence"), X("Invalid collationURI"));  
     }
 	  collation=context->getCollation(collName, this);
   }

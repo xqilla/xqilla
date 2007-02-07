@@ -36,7 +36,7 @@ FunctionDocumentURI::FunctionDocumentURI(const VectorOfASTNodes  &args, XPath2Me
   _src.getStaticType().flags = StaticType::ANY_URI_TYPE;
 }
 
-Sequence FunctionDocumentURI::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionDocumentURI::createSequence(DynamicContext* context, int flags) const
 {
   Sequence arg = getParamNumber(1,context)->toSequence(context);
   if(arg.isEmpty())

@@ -75,7 +75,7 @@ Item::Ptr UnaryMinus::execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicTy
     else
       return ((const Numeric*)atom1.get())->invert(context);
   } else {
-    XQThrow(XPath2ErrorException,X("UnaryMinus::collapseTreeInternal"),
+    XQThrow(XPath2ErrorException,X("UnaryMinus::createSequence"),
             X("An attempt to apply unary minus a non numeric type has occurred [err:XPTY0004]"));
   }
 }

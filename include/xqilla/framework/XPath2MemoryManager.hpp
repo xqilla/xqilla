@@ -205,6 +205,12 @@ public:
     p_ = 0;
     return tmp;
   }
+  TYPE *swap(TYPE *p)
+  {
+    TYPE *tmp = p_;
+    p_ = p;
+    return tmp;
+  }
   void set(TYPE *p)
   {
     if(p_ != 0)
@@ -252,6 +258,12 @@ public:
     p_ = 0;
     return tmp;
   }
+  TYPE *adopt(TYPE *p)
+  {
+    TYPE *tmp = p_;
+    p_ = p;
+    return tmp;
+  }
   void set(TYPE *p)
   {
     delete p_;
@@ -296,6 +308,12 @@ public:
   {
     TYPE *tmp = p_;
     p_ = 0;
+    return tmp;
+  }
+  TYPE *swap(TYPE *p)
+  {
+    TYPE *tmp = p_;
+    p_ = p;
     return tmp;
   }
   void set(TYPE *p)
@@ -347,6 +365,12 @@ public:
   {
     TYPE *tmp = p_;
     p_ = 0;
+    return tmp;
+  }
+  TYPE *swap(TYPE *p)
+  {
+    TYPE *tmp = p_;
+    p_ = p;
     return tmp;
   }
   void set(TYPE *p)

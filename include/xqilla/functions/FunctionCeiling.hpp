@@ -33,7 +33,7 @@ public:
 
   FunctionCeiling(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
 
-  Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
+  Sequence createSequence(DynamicContext* context, int flags=0) const;
 
 };
 

@@ -46,7 +46,7 @@ ASTNode *UApplyUpdates::staticTyping(StaticContext *context)
   return this;
 }
 
-Sequence UApplyUpdates::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence UApplyUpdates::createSequence(DynamicContext* context, int flags) const
 {
   AutoDelete<UpdateFactory> ufactory(context->createUpdateFactory());
   ufactory->applyUpdates(expr_->createUpdateList(context), context);

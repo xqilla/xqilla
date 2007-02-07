@@ -26,7 +26,7 @@ class XQILLA_API XQDebugHook : public ASTNodeImpl
 public:
   XQDebugHook(const XMLCh* szFile, unsigned int nLine, unsigned int nColumn, ASTNode* impl, const XMLCh* functionName, XPath2MemoryManager* memMgr);
 	
-  virtual Result collapseTree(DynamicContext* context, int flags=0) const;
+  virtual Result createResult(DynamicContext* context, int flags=0) const;
   virtual ASTNode* staticResolution(StaticContext *context);
   virtual ASTNode *staticTyping(StaticContext *context);
 

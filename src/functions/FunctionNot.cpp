@@ -47,7 +47,7 @@ ASTNode *FunctionNot::staticTyping(StaticContext *context)
   return calculateSRCForArguments(context);
 }
 
-Sequence FunctionNot::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionNot::createSequence(DynamicContext* context, int flags) const
 {
 	bool result = !getParamNumber(1,context)->getEffectiveBooleanValue(context, this);
 	XPath2MemoryManager* memMgr = context->getMemoryManager();

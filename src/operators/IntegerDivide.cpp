@@ -58,7 +58,8 @@ Item::Ptr IntegerDivide::execute(const AnyAtomicType::Ptr &atom1, const AnyAtomi
     else if(div->isNegative()) 
       div = div->ceiling(context);
 
-    return div->castAs(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+    return div->castAs(AnyAtomicType::DECIMAL,
+                       XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                        XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_INTEGER, context);
   }
   XQThrow(XPath2ErrorException,X("IntegerDivide::execute"), X("An attempt to integer divide a non numeric type to a numeric type has occurred [err:XPTY0004]"));

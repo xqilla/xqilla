@@ -68,18 +68,11 @@ public:
   StringDatatypeFactory(const DocumentCache* dc)
     : DatatypeFactoryTemplate<TYPE>(dc) {}
 
-  virtual const XMLCh* getPrimitiveTypeURI() const {
-    return XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA;
-  }
-
-  const XMLCh* getPrimitiveTypeName() const {
-    return TYPE::getPrimitiveName();
-  }
-
   AnyAtomicType::Ptr createInstance(const XMLCh* value,
                                     const DynamicContext* context) const
   {
-    return createInstanceNoCheck(getPrimitiveTypeURI(), getPrimitiveTypeName(), value, context);
+    return createInstanceNoCheck(DatatypeFactoryTemplate<TYPE>::getPrimitiveTypeURI(),
+                                 DatatypeFactoryTemplate<TYPE>::getPrimitiveTypeName(), value, context);
   }
 
   bool checkInstance(const XMLCh* value,
@@ -87,28 +80,6 @@ public:
   {
     return true;
   }
-
-protected:
-  StringDatatypeFactory(const DocumentCache* dc, XERCES_CPP_NAMESPACE_QUALIFIER DatatypeValidator *val)
-    : DatatypeFactoryTemplate<TYPE>(dc, val) {}
-};
-
-template<class TYPE>
-class UntypedAtomicDatatypeFactory : public StringDatatypeFactory<TYPE>
-{
-public:
-  UntypedAtomicDatatypeFactory(const DocumentCache* dc)
-    : StringDatatypeFactory<TYPE>(dc, const_cast<XERCES_CPP_NAMESPACE_QUALIFIER DatatypeValidator*>
-                                  (dc->getDatatypeValidator(getPrimitiveTypeURI(), getPrimitiveTypeName()))) {}
-
-  virtual const XMLCh* getPrimitiveTypeURI() const {
-    return FunctionConstructor::XMLChXPath2DatatypesURI;
-  }
-
-  const XMLCh* getPrimitiveTypeName() const {
-    return TYPE::getPrimitiveName();
-  }
-
 };
 
 template<class TYPE>
@@ -116,15 +87,13 @@ class DayTimeDurationDatatypeFactory : public DatatypeFactoryTemplate<TYPE>
 {
 public:
   DayTimeDurationDatatypeFactory(const DocumentCache* dc)
-    : DatatypeFactoryTemplate<TYPE>(dc) {}
+    : DatatypeFactoryTemplate<TYPE>(dc, const_cast<XERCES_CPP_NAMESPACE_QUALIFIER DatatypeValidator*>
+                                    (dc->getDatatypeValidator(DatatypeFactoryTemplate<TYPE>::getPrimitiveTypeURI(),
+                                                              getPrimitiveTypeName()))) {}
 
   AnyAtomicType::AtomicObjectType getPrimitiveTypeIndex() const
   {
     return AnyAtomicType::DAY_TIME_DURATION;
-  }
-
-  virtual const XMLCh* getPrimitiveTypeURI() const {
-    return FunctionConstructor::XMLChXPath2DatatypesURI;
   }
 
   const XMLCh* getPrimitiveTypeName() const {
@@ -137,15 +106,13 @@ class YearMonthDurationDatatypeFactory : public DatatypeFactoryTemplate<TYPE>
 {
 public:
   YearMonthDurationDatatypeFactory(const DocumentCache* dc)
-    : DatatypeFactoryTemplate<TYPE>(dc) {}
+    : DatatypeFactoryTemplate<TYPE>(dc, const_cast<XERCES_CPP_NAMESPACE_QUALIFIER DatatypeValidator*>
+                                    (dc->getDatatypeValidator(DatatypeFactoryTemplate<TYPE>::getPrimitiveTypeURI(),
+                                                              getPrimitiveTypeName()))) {}
 
   AnyAtomicType::AtomicObjectType getPrimitiveTypeIndex() const
   {
     return AnyAtomicType::YEAR_MONTH_DURATION;
-  }
-
-  virtual const XMLCh* getPrimitiveTypeURI() const {
-    return FunctionConstructor::XMLChXPath2DatatypesURI;
   }
 
   const XMLCh* getPrimitiveTypeName() const {

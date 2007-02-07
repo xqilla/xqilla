@@ -44,7 +44,7 @@ public:
   /** Returns the namespace unaware name of the node. Takes an optional nodelist,
       and returns an empty string if the node has no name. Uses the current context
       if a nodelist is not specified. */
-  Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
+  Sequence createSequence(DynamicContext* context, int flags=0) const;
 
 };
 

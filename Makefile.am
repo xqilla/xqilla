@@ -6,7 +6,7 @@ LDFLAGS = -L$(xerces_lib) -R$(xerces_lib)
 LDADD = libxqilla.la
 
 bin_PROGRAMS = xqilla
-noinst_PROGRAMS = basicXQillaUsage xqtsRunner
+noinst_PROGRAMS = basicXQillaUsage xqtsRunner xmarkRunner
 
 lib_LTLIBRARIES = libxqilla.la
 
@@ -33,7 +33,6 @@ src/context/impl/XQContextImpl.cpp \
 src/context/impl/XQDynamicContextImpl.cpp \
 src/context/impl/ItemFactoryImpl.cpp \
 src/context/impl/XQRemoteDebugger.cpp \
-src/context/impl/XercesUpdateFactory.cpp \
 src/ast/XQAtomize.cpp \
 src/ast/XQCastableAs.cpp \
 src/ast/XQCastAs.cpp \
@@ -52,7 +51,6 @@ src/ast/XQTreatAs.cpp \
 src/ast/XQVariable.cpp \
 src/ast/StaticResolutionContext.cpp \
 src/ast/StaticType.cpp \
-src/ast/AggregateFunction.cpp \
 src/ast/ConstantFoldingFunction.cpp \
 src/ast/NumericFunction.cpp \
 src/ast/XQDebugHook.cpp \
@@ -75,6 +73,10 @@ src/ast/XPath1Compat.cpp \
 src/ast/ConvertFunctionArg.cpp \
 src/ast/XQDocumentOrder.cpp \
 src/ast/XQPredicate.cpp \
+src/events/EventSerializer.cpp \
+src/events/NoInheritFilter.cpp \
+src/events/NoInheritFilter.hpp \
+src/events/NSFixupFilter.cpp \
 src/fulltext/FTContains.cpp \
 src/fulltext/FTWords.cpp \
 src/fulltext/FTOr.cpp \
@@ -273,7 +275,6 @@ src/items/impl/ATStringOrDerivedImpl.hpp \
 src/items/impl/ATTimeOrDerivedImpl.cpp \
 src/items/impl/ATUntypedAtomicImpl.cpp \
 src/items/impl/ATUntypedAtomicImpl.hpp \
-src/items/impl/NodeImpl.cpp \
 src/items/DatatypeFactory.cpp \
 src/items/DatatypeFactoryTemplate.hpp \
 src/items/DatatypeLookup.cpp \
@@ -403,7 +404,27 @@ src/config/xqilla_config.h \
 src/config/xqilla_config_win32.h \
 src/xqts/TestSuiteParser.cpp \
 src/xqts/TestSuiteResultListener.cpp \
-src/xqts/TestSuiteRunner.cpp
+src/xqts/TestSuiteRunner.cpp \
+src/fastxdm/FastXDMUpdateFactory.hpp \
+src/fastxdm/FastXDMUpdateFactory.cpp \
+src/fastxdm/FastXDMDocumentCacheImpl.hpp \
+src/fastxdm/FastXDMDocumentCacheImpl.cpp \
+src/fastxdm/FastXDMDocument.hpp \
+src/fastxdm/FastXDMDocument.cpp \
+src/fastxdm/FastXDMNodeImpl.hpp \
+src/fastxdm/FastXDMNodeImpl.cpp \
+src/fastxdm/FastXDMConfiguration.cpp \
+src/fastxdm/FastXDMSequenceBuilder.hpp \
+src/fastxdm/FastXDMSequenceBuilder.cpp \
+src/xerces/XercesConfiguration.cpp \
+src/xerces/XercesNodeImpl.hpp \
+src/xerces/XercesNodeImpl.cpp \
+src/xerces/XercesSequenceBuilder.hpp \
+src/xerces/XercesSequenceBuilder.cpp \
+src/xerces/XercesUpdateFactory.hpp \
+src/xerces/XercesUpdateFactory.cpp \
+src/xerces/XercesURIResolver.hpp \
+src/xerces/XercesURIResolver.cpp
 
 EXTRA_DIST = \
 src/lexer/flex.skl \
@@ -456,6 +477,9 @@ src/samples/basic/basicXQillaUsage.cpp
 
 xqtsRunner_SOURCES = \
 tests/xqts/runner.cpp
+
+xmarkRunner_SOURCES = \
+tests/xmark/xmark.cpp
 
 LEXERFILE   = $(top_srcdir)/src/lexer/XQLexer.cpp
 LEXTEMPLATE = $(top_srcdir)/src/lexer/XQLexer.l

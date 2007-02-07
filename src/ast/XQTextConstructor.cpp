@@ -19,8 +19,8 @@
 #include <xqilla/exceptions/ASTException.hpp>
 #include <xqilla/items/Node.hpp>
 #include <xqilla/ast/XQAtomize.hpp>
+#include <xqilla/events/EventHandler.hpp>
 
-#include <xercesc/dom/DOM.hpp>
 #include <xercesc/framework/XMLBuffer.hpp>
 
 #if defined(XERCES_HAS_CPP_NAMESPACE)
@@ -35,21 +35,12 @@ XQTextConstructor::XQTextConstructor(bool isCDATA, ASTNode *value, XPath2MemoryM
   setType(ASTNode::DOM_CONSTRUCTOR);
 }
 
-Sequence XQTextConstructor::collapseTreeInternal(DynamicContext *context, int flags) const 
+void XQTextConstructor::generateEvents(EventHandler *events, DynamicContext *context,
+                                       bool preserveNS, bool preserveType) const
 {
-  Node::Ptr result;
-  try
-  {
-    XMLBuffer value;
-    if(getStringValue(m_value, value, context))
-      result = context->getItemFactory()->createTextNode(value.getRawBuffer(), context);
-  }
-  catch(DOMException& e) {
-    XQThrow(ASTException,X("DOM Constructor"),e.getMessage());
-  }
-  if(result.notNull())
-    return Sequence(result, context->getMemoryManager());
-  return Sequence(context->getMemoryManager());
+  XMLBuffer value;
+  if(getStringValue(m_value, value, context))
+    events->textEvent(value.getRawBuffer());
 }
 
 ASTNode* XQTextConstructor::staticResolution(StaticContext *context)

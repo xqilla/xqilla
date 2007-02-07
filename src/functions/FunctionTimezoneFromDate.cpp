@@ -41,7 +41,7 @@ FunctionTimezoneFromDate::FunctionTimezoneFromDate(const VectorOfASTNodes &args,
   _src.getStaticType().flags = StaticType::DAY_TIME_DURATION_TYPE;
 }
 
-Sequence FunctionTimezoneFromDate::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionTimezoneFromDate::createSequence(DynamicContext* context, int flags) const
 {
 	XPath2MemoryManager* memMgr = context->getMemoryManager();
 

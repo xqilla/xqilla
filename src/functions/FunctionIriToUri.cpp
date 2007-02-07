@@ -63,7 +63,7 @@ FunctionIriToUri::FunctionIriToUri(const VectorOfASTNodes &args, XPath2MemoryMan
   _src.getStaticType().flags = StaticType::STRING_TYPE;
 }
 
-Sequence FunctionIriToUri::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionIriToUri::createSequence(DynamicContext* context, int flags) const
 {
     Sequence uriPart=getParamNumber(1,context)->toSequence(context);
     if(uriPart.isEmpty())

@@ -39,7 +39,7 @@ public:
    * Returns a string representing the timezone component in the value of
    * $srcval.
    */
-  Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
+  Sequence createSequence(DynamicContext* context, int flags=0) const;
 };
 
 #endif // _FUNCTIONGETTIMEZONEFROMDATETIME_HPP

@@ -147,7 +147,7 @@ DatatypeLookup::DatatypeLookup(const DocumentCache* dc, MemoryManager* memMgr) :
   insertDatatype(yearMonthDuration_);
 
   // create a xdt:untypedAtomic 
-  untypedAtomic_ = new (fMemMgr) UntypedAtomicDatatypeFactory<ATUntypedAtomicImpl>(fDocumentCache);
+  untypedAtomic_ = new (fMemMgr) StringDatatypeFactory<ATUntypedAtomicImpl>(fDocumentCache);
   insertDatatype(untypedAtomic_);
 }
 
@@ -221,8 +221,7 @@ const DatatypeFactory* DatatypeLookup::lookupDatatype(const XMLCh* typeURI, cons
   
   // in case we're lucky and we were given a primitive type
   if (pFactory) {
-    if(XPath2Utils::equals(typeURI, SchemaSymbols::fgURI_SCHEMAFORSCHEMA) ||
-      XPath2Utils::equals(typeName, ATUntypedAtomic::fgDT_UNTYPEDATOMIC) ) {
+    if(XPath2Utils::equals(typeURI, SchemaSymbols::fgURI_SCHEMAFORSCHEMA)) {
       isPrimitive = true;
       return pFactory;
     }

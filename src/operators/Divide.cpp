@@ -60,7 +60,7 @@ Item::Ptr Divide::execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::
       return (const Item::Ptr)((Numeric*)(const AnyAtomicType*)atom1)->divide((const Numeric::Ptr )atom2, context);
     }
     else {
-      XQThrow(XPath2ErrorException,X("Divide::collapseTreeInternal"), X("An attempt to divide a numeric type by a non-numeric type has occurred [err:XPTY0004]"));
+      XQThrow(XPath2ErrorException,X("Divide::createSequence"), X("An attempt to divide a numeric type by a non-numeric type has occurred [err:XPTY0004]"));
     }
   }
 
@@ -75,11 +75,11 @@ Item::Ptr Divide::execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::
       return (const Item::Ptr)duration->divide((const ATDurationOrDerived*)atom2.get(), context);
     }
     else {
-      XQThrow(XPath2ErrorException,X("Divide::collapseTreeInternal"), X("An attempt to divide an xs:duration by an invalid type has occured [err:XPTY0004]"));
+      XQThrow(XPath2ErrorException,X("Divide::createSequence"), X("An attempt to divide an xs:duration by an invalid type has occured [err:XPTY0004]"));
     }
   }
   else {
-    XQThrow(XPath2ErrorException,X("Divide::collapseTreeInternal"), X("The operator div has been called on invalid operand types [err:XPTY0004]"));
+    XQThrow(XPath2ErrorException,X("Divide::createSequence"), X("The operator div has been called on invalid operand types [err:XPTY0004]"));
   }
 
   return 0;

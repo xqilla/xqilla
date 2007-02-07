@@ -18,6 +18,8 @@
 #include <xqilla/dom-api/XQillaExpression.hpp>
 #include <xqilla/runtime/Sequence.hpp>
 
+#include <xqilla/xerces/XercesConfiguration.hpp>
+
 class XPath2Result;
 class DynamicContext;
 class XPath2MemoryManager;
@@ -31,7 +33,7 @@ class DOMException;
 class DOMXPathNSResolver;
 XERCES_CPP_NAMESPACE_END 
 
-class XQILLA_API XQillaExpressionImpl : public XQillaExpression
+class XQILLA_API XQillaExpressionImpl : public XQillaExpression, public XercesConfiguration
 {
 public:
 
@@ -54,8 +56,11 @@ public:
   void setCompiledExpression(XQQuery *expr) { _compiledExpression = expr; }
 
 private:
+  virtual DocumentCache *createDocumentCache(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr);
+
   XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* _createdWith;
 
+  XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool *_xmlgr;
   DynamicContext *_staticContext;
   XQQuery* _compiledExpression;
 }; //XQillaExpressionImpl

@@ -15,7 +15,9 @@
 #define _URIRESOLVER_HPP
 
 #include <xqilla/framework/XQillaExport.hpp>
+
 #include <xercesc/util/XercesDefs.hpp>
+#include <xercesc/util/XMemory.hpp>
 
 class DynamicContext;
 class Sequence;
@@ -28,7 +30,8 @@ XERCES_CPP_NAMESPACE_END
 /** 
  * This is an abstract class used to resolve URIs in different ways
 **/
-class XQILLA_API URIResolver {
+class XQILLA_API URIResolver : public XERCES_CPP_NAMESPACE_QUALIFIER XMemory
+{
   public:
     /* virtual destructor, does nothing */
     virtual ~URIResolver() {};      

@@ -84,7 +84,7 @@ ASTNode *URename::staticTyping(StaticContext *context)
 
 PendingUpdateList URename::createUpdateList(DynamicContext *context) const
 {
-  Node::Ptr node = (Node*)target_->collapseTree(context)->next(context).get();
+  Node::Ptr node = (Node*)target_->createResult(context)->next(context).get();
 
   if(node->dmNodeKind() != Node::element_string &&
      node->dmNodeKind() != Node::attribute_string &&
@@ -93,6 +93,6 @@ PendingUpdateList URename::createUpdateList(DynamicContext *context) const
             X("It is a type error for the target expression of a rename expression not to be a single element, "
               "attribute or processing instruction [err:TBD]"));
 
-  return PendingUpdate(PendingUpdate::RENAME, node, name_->collapseTree(context)->next(context), this);
+  return PendingUpdate(PendingUpdate::RENAME, node, name_->createResult(context)->next(context), this);
 }
 

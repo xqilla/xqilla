@@ -183,7 +183,7 @@ void XQSort::SortSpec::staticTyping(StaticContext *context, StaticResolutionCont
 
 SortableItem XQSort::SortSpec::buildKey(DynamicContext* context)
 {
-  Result atomized = _expr->collapseTree(context);
+  Result atomized = _expr->createResult(context);
 
   SortableItem value;
   value.m_info = this;
@@ -321,11 +321,11 @@ bool XQFLWOR::ProductFactor::initialise(DynamicContext *context)
 {
   // Compute the values, if needed
   if(_vb->_valuesResultMustBeRecalculated) {
-    _values = _vb->_allValues->collapseTree(context);
+    _values = _vb->_allValues->createResult(context);
   }
   else {
     if(_valuesBuffer.isNull()) {
-      _valuesBuffer = _vb->_allValues->collapseTree(context);
+      _valuesBuffer = _vb->_allValues->createResult(context);
     }
     _values = _valuesBuffer.createResult();
   }
@@ -413,7 +413,7 @@ bool XQFLWOR::ProductFactor::next(DynamicContext *context)
 
 bool XQFLWOR::ProductFactor::checkWhere(DynamicContext *context)
 {
-  return _vb->_where == 0 || _vb->_where->collapseTree(context)->getEffectiveBooleanValue(context, _vb->_where);
+  return _vb->_where == 0 || _vb->_where->createResult(context)->getEffectiveBooleanValue(context, _vb->_where);
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -505,7 +505,7 @@ bool XQFLWOR::nextState(ExecutionBindings &ebs, DynamicContext *context, bool in
 
 bool XQFLWOR::checkWhere(DynamicContext *context) const
 {
-  return _where == 0 || _where->collapseTree(context)->getEffectiveBooleanValue(context, _where);
+  return _where == 0 || _where->createResult(context)->getEffectiveBooleanValue(context, _where);
 }
 
 VariableStore::Entry *XQFLWOR::getAccumulator(DynamicContext *context) const
@@ -914,6 +914,35 @@ void XQFLWOR::setReturnExpr(ASTNode *ret)
   _return = ret;
 }
 
+void XQFLWOR::generateEvents(EventHandler *events, DynamicContext *context,
+                             bool preserveNS, bool preserveType) const
+{
+  // If we have to sort, we revert to creating Items
+  if(_sort || context->isDebuggingEnabled()) {
+    ASTNodeImpl::generateEvents(events, context, preserveNS, preserveType);
+    return;
+  }
+
+  VariableStore* varStore = context->getVariableStore();
+
+  ExecutionBindings ebs;
+  for(VectorOfVariableBinding::const_iterator it = _bindings->begin();
+      it != _bindings->end(); ++it) {
+    ebs.push_back(ProductFactor(*it));
+  }
+
+  // Initialise and run the execution bindings
+  varStore->addLogicalBlockScope();
+
+  if(nextState(ebs, context, true)) {
+    do {
+      _return->generateEvents(events, context, preserveNS, preserveType);
+    } while(nextState(ebs, context, false));
+  }
+
+  varStore->removeScope();
+}
+
 PendingUpdateList XQFLWOR::createUpdateList(DynamicContext *context) const
 {
   // We ignore "order by", since it can have no effect
@@ -969,7 +998,7 @@ void XQFLWOR::SortingFLWORResult::getResult(Sequence &toFill, DynamicContext *co
   PreSortResult toBeSorted;
   if(_flwor->nextState(const_cast<ExecutionBindings&>(_ebs), context, true)) {
     do {
-      Sequence result(_flwor->getReturnExpr()->collapseTree(context, _flags)->toSequence(context));
+      Sequence result(_flwor->getReturnExpr()->createResult(context, _flags)->toSequence(context));
 
       if(sorting) {
         toBeSorted.push_back(ResultPair(result, _flwor->getSort()->buildKeys(context)));
@@ -1042,7 +1071,7 @@ Item::Ptr XQFLWOR::FLWORResult::next(DynamicContext *context)
     _toInit = false;
     varStore->addLogicalBlockScope();
     if(_flwor->nextState(_ebs, context, true)) {
-      _returnResult = _flwor->getReturnExpr()->collapseTree(context, _flags);
+      _returnResult = _flwor->getReturnExpr()->createResult(context, _flags);
     }
     else {
       varStore->removeScope();
@@ -1063,7 +1092,7 @@ Item::Ptr XQFLWOR::FLWORResult::next(DynamicContext *context)
   while(result == NULLRCP) {
     context->testInterrupt();
     if(_flwor->nextState(_ebs, context, false)) {
-      _returnResult = _flwor->getReturnExpr()->collapseTree(context, _flags);
+      _returnResult = _flwor->getReturnExpr()->createResult(context, _flags);
       result = _returnResult->next(context);
     }
     else {

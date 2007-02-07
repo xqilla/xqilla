@@ -50,7 +50,7 @@ const XMLCh* FunctionStringLength::getString(DynamicContext* context) const {
   VectorOfASTNodes args=VectorOfASTNodes(XQillaAllocator<ASTNode*>(context->getMemoryManager()));
   FunctionString stringGrabber(args, memMgr);
   //call xf:string and extract result
-  return stringGrabber.collapseTree(context)->next(context)->asString(context);
+  return stringGrabber.createResult(context)->next(context)->asString(context);
 }
 
 ASTNode* FunctionStringLength::staticResolution(StaticContext *context) {
@@ -68,7 +68,7 @@ ASTNode *FunctionStringLength::staticTyping(StaticContext *context)
   return calculateSRCForArguments(context);
 }
 
-Sequence FunctionStringLength::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionStringLength::createSequence(DynamicContext* context, int flags) const
 { 
     const XMLCh* str;
     XPath2MemoryManager* memMgr = context->getMemoryManager();

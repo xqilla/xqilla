@@ -29,8 +29,12 @@
 #include <xqilla/items/AnyAtomicTypeConstructor.hpp>
 #include <xqilla/ast/XQAtomize.hpp>
 #include <xqilla/parser/QName.hpp>
+#include <xqilla/events/EventHandler.hpp>
+#include <xqilla/schema/DocumentCacheImpl.hpp>
+#include <xqilla/utils/XMLChCompare.hpp>
 
-#include <xercesc/dom/DOM.hpp>
+#include "../events/NoInheritFilter.hpp"
+
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 #include <xercesc/framework/XMLBuffer.hpp>
 #include <xercesc/util/XMLChar.hpp>
@@ -41,9 +45,7 @@
 XERCES_CPP_NAMESPACE_USE
 #endif
 
-static const XMLCh *definePrefix(const XMLCh *szPrefix, const XMLCh *szURI, const XQScopedNamespace &newNSScope,
-                                 XQScopedNamespace &locallyDefinedNamespaces, std::vector<Node::Ptr> &attrList,
-                                 DynamicContext *context);
+using namespace std;
 
 XQElementConstructor::XQElementConstructor(ASTNode* name, VectorOfASTNodes* attrList, VectorOfASTNodes* children,
 	XPath2MemoryManager* mm)
@@ -56,123 +58,172 @@ XQElementConstructor::XQElementConstructor(ASTNode* name, VectorOfASTNodes* attr
   setType(ASTNode::DOM_CONSTRUCTOR);
 }
 
-Sequence XQElementConstructor::collapseTreeInternal(DynamicContext *context, int flags) const 
+
+class ElemConstructFilter : public EventFilter
 {
-  Node::Ptr result;
-  try
+public:
+  ElemConstructFilter(EventHandler *next, const XQElementConstructor *ast, XPath2MemoryManager *mm)
+    : EventFilter(next),
+      mm_(mm),
+      ast_(ast),
+      level_(0),
+      seenContent_(false)
   {
-    // Add a new scope for the namespace definitions, before we try to assign a URI to the name of the element
-    XQScopedNamespace locallyDefinedNamespaces(context->getMemoryManager(), NULL);
-    XQScopedNamespace newNSScope(context->getMemoryManager(), context->getNSResolver());
-    AutoNsScopeReset jan(context, &newNSScope);
+  }
 
-    std::vector<Node::Ptr> attrList;
-    if(m_namespaces != 0) {
-      RefHashTableOfEnumerator<XMLCh> nsEnumVal(m_namespaces, false, context->getMemoryManager());
-      RefHashTableOfEnumerator<XMLCh> nsEnumKey(m_namespaces, false, context->getMemoryManager());
-      while(nsEnumVal.hasMoreElements())
-      {
-        XMLCh* uri=&nsEnumVal.nextElement();
-        XMLCh* prefix=(XMLCh*)nsEnumKey.nextElementKey();
-        locallyDefinedNamespaces.addNamespaceBinding(prefix, uri);
-        Node::Ptr node;
-        if(XPath2Utils::equals(prefix, XMLUni::fgZeroLenString)) {
-          context->setDefaultElementAndTypeNS(uri);
-          node = context->getItemFactory()->createAttributeNode(XMLUni::fgXMLNSURIName, XMLUni::fgZeroLenString,
-                                                                XMLUni::fgXMLNSString, uri, context);
-        }
-        else {
-          context->setNamespaceBinding(prefix, uri);
-          node = context->getItemFactory()->createAttributeNode(XMLUni::fgXMLNSURIName, XMLUni::fgXMLNSString, prefix, uri,
-                                                                context);
-        }
+  virtual void startElementEvent(const XMLCh *prefix, const XMLCh *uri, const XMLCh *localname)
+  {
+    if(level_ != 0) seenContent_ = true;
+    ++level_;
+    next_->startElementEvent(prefix, uri, localname);
+  }
 
-        attrList.push_back(node);
-      }
+  virtual void endElementEvent(const XMLCh *prefix, const XMLCh *uri, const XMLCh *localname,
+                               const XMLCh *typeURI, const XMLCh *typeName)
+  {
+    next_->endElementEvent(prefix, uri, localname, typeURI, typeName);
+    --level_;
+  }
+
+  virtual void piEvent(const XMLCh *target, const XMLCh *value)
+  {
+    seenContent_ = true;
+    next_->piEvent(target, value);
+  }
+
+  virtual void textEvent(const XMLCh *value)
+  {
+    seenContent_ = true;
+    next_->textEvent(value);
+  }
+
+  virtual void textEvent(const XMLCh *chars, unsigned int length)
+  {
+    seenContent_ = true;
+    next_->textEvent(chars, length);
+  }
+
+  virtual void commentEvent(const XMLCh *value)
+  {
+    seenContent_ = true;
+    next_->commentEvent(value);
+  }
+
+  virtual void attributeEvent(const XMLCh *prefix, const XMLCh *uri, const XMLCh *localname, const XMLCh *value,
+                              const XMLCh *typeURI, const XMLCh *typeName)
+  {
+    if(level_ == 1) {
+      if(seenContent_)
+        XQThrow3(ASTException,X("ElemConstructFilter::attributeEvent"),
+                 X("Attribute nodes must be created before the other content of an element [err:XQTY0024]"), ast_);
+
+      if(!attrs_.insert(AttrRecord(uri, localname, mm_)).second)
+        XQThrow3(ASTException,X("ElemConstructFilter::attributeEvent"),
+                 X("An element has two attributes with the same expanded name [err:XQDY0025]"), ast_);
     }
-    if(m_attrList != 0) {
-      for(VectorOfASTNodes::const_iterator itAttr = m_attrList->begin(); itAttr != m_attrList->end (); ++itAttr) {
-        Result oneAttribute = (*itAttr)->collapseTree(context);
-        Item::Ptr attr;
-        while((attr = oneAttribute->next(context)) != NULLRCP) {
-          assert(attr->isNode());
-          Node::Ptr node=(Node::Ptr)attr;
 
-          assert(node->dmNodeKind() == Node::attribute_string);
-          attrList.push_back(node);
-        }
-      }
+    next_->attributeEvent(prefix, uri, localname, value, typeURI, typeName);
+  }
+
+  virtual void namespaceEvent(const XMLCh *prefix, const XMLCh *uri)
+  {
+    if(level_ == 1) {
+      if(seenContent_)
+        XQThrow3(ASTException,X("ElemConstructFilter::namespaceEvent"),
+                 X("Namespace nodes must be created before the other content of an element [err:XQTY0024]"), ast_);
+      if(!attrs_.insert(AttrRecord(prefix, 0, mm_)).second)
+        XQThrow3(ASTException,X("ElemConstructFilter::namespaceEvent"),
+                 X("An element has two namespaces for the same prefix [err:XQDY0025]"), ast_);
     }
 
-    // Now that we have converted our namespace attributes into namespace bindings, resolve the name
-    AnyAtomicType::Ptr itemName = m_name->collapseTree(context)->next(context);
-    const ATQNameOrDerived* pQName = (const ATQNameOrDerived*)itemName.get();
-    const XMLCh *nodeUri = pQName->getURI();
-    const XMLCh *nodePrefix = pQName->getPrefix();
-    const XMLCh *nodeName = pQName->getName();
+    next_->namespaceEvent(prefix, uri);
+  }
 
-    std::vector<Node::Ptr> childList;
-    for (VectorOfASTNodes::const_iterator itCont = m_children->begin(); itCont != m_children->end (); ++itCont)
+private:
+  struct AttrRecord {
+    AttrRecord(const XMLCh *u, const XMLCh *n, XPath2MemoryManager *mm)
+      : uri(mm->getPooledString(u)), name(mm->getPooledString(n)) {}
+
+    bool operator<(const AttrRecord &o) const
     {
-      ASTNode* childItem=(*itCont);
-
-      Item::Ptr child;
-      Result result = childItem->collapseTree(context);
-      while((child = result->next(context)).notNull())
-      {
-        assert(child->isNode());
-        Node::Ptr sourceNode = (Node::Ptr)child;
-
-        if(sourceNode->dmNodeKind() == Node::attribute_string)
-        {
-          if(!childList.empty())
-            XQThrow(ASTException,X("DOM Constructor"),X("Attribute nodes must be created before the "
-                                                        "other child nodes of an element [err:XQTY0024]"));
-
-          // check if the attribute has a prefix that has been defined
-          ATQNameOrDerived::Ptr name = sourceNode->dmNodeName(context);
-          const XMLCh *szPrefix = ((const ATQNameOrDerived*)name.get())->getPrefix();
-          const XMLCh *szURI = ((const ATQNameOrDerived*)name.get())->getURI();
-          if(szPrefix!=NULL && *szPrefix!=0)
-          {
-            const XMLCh *newPrefix = definePrefix(szPrefix, szURI, newNSScope, locallyDefinedNamespaces, attrList,
-                                                  context);
-            if(newPrefix != szPrefix)
-            {
-              sourceNode = context->getItemFactory()->
-                createAttributeNode(szURI, newPrefix, ((const ATQNameOrDerived*)name.get())->getName(),
-                                    sourceNode->dmStringValue(context), context);
-            }
-          }
-          attrList.push_back(sourceNode);
-        }
-        else if(sourceNode->dmNodeKind() == Node::text_string) {
-          if(!childList.empty() && childList.back()->dmNodeKind() == Node::text_string) {
-            const XMLCh* buff=XPath2Utils::concatStrings(childList.back()->dmStringValue(context),
-                                                         sourceNode->dmStringValue(context),
-                                                         context->getMemoryManager());
-            childList.pop_back();
-            childList.push_back(context->getItemFactory()->createTextNode(buff, context));
-          }
-          // Ensure it's not empty
-          else if(!XPath2Utils::equals(sourceNode->dmStringValue(context),0))
-            childList.push_back(sourceNode);
-        }
-        else {
-          assert(sourceNode->dmNodeKind() != Node::document_string);
-          childList.push_back(sourceNode);
-        }
-      }
+      int cmp = XMLString::compareString(name, o.name);
+      if(cmp < 0) return true;
+      if(cmp > 0) return false;
+      return XMLString::compareString(uri, o.uri) < 0;
     }
 
-    result = context->getItemFactory()->createElementNode(nodeUri, nodePrefix, nodeName, attrList, childList, context);
+    const XMLCh *uri;
+    const XMLCh *name;
+  };
+
+  XPath2MemoryManager *mm_;
+  const XQElementConstructor *ast_;
+  unsigned int level_;
+  bool seenContent_;
+  set<AttrRecord> attrs_;
+};
+
+void XQElementConstructor::generateEvents(EventHandler *events, DynamicContext *context,
+                                          bool preserveNS, bool preserveType) const
+{
+  NoInheritFilter niFilter(events, context->getMemoryManager());
+  if(!context->getInheritNamespaces()) events = &niFilter;
+
+  ElemConstructFilter filter(events, this, context->getMemoryManager());
+  events = &filter;
+
+  // Add a new scope for the namespace definitions, before we try to assign a URI to the name of the element
+  XQScopedNamespace locallyDefinedNamespaces(context->getMemoryManager(), NULL);
+  XQScopedNamespace newNSScope(context->getMemoryManager(), context->getNSResolver());
+  AutoNsScopeReset jan(context, &newNSScope);
+
+  if(m_namespaces != 0) {
+    RefHashTableOfEnumerator<XMLCh> nsEnumVal(m_namespaces, false, context->getMemoryManager());
+    RefHashTableOfEnumerator<XMLCh> nsEnumKey(m_namespaces, false, context->getMemoryManager());
+    while(nsEnumVal.hasMoreElements())
+    {
+      XMLCh* uri=&nsEnumVal.nextElement();
+      XMLCh* prefix=(XMLCh*)nsEnumKey.nextElementKey();
+      locallyDefinedNamespaces.addNamespaceBinding(prefix, uri);
+    }
   }
-  catch(DOMException& e) {
-    XQThrow(ASTException,X("ElementConstructor"),e.getMessage());
+
+  // Now that we have converted our namespace attributes into namespace bindings, resolve the name
+  AnyAtomicType::Ptr itemName = m_name->createResult(context)->next(context);
+  const ATQNameOrDerived *pQName = (const ATQNameOrDerived*)itemName.get();
+  const XMLCh *prefix = emptyToNull(pQName->getPrefix());
+  const XMLCh *uri = emptyToNull(pQName->getURI());
+  const XMLCh *localname = pQName->getName();
+
+  events->startElementEvent(prefix, uri, localname);
+
+  if(m_namespaces != 0) {
+    RefHashTableOfEnumerator<XMLCh> nsEnumVal(m_namespaces, false, context->getMemoryManager());
+    RefHashTableOfEnumerator<XMLCh> nsEnumKey(m_namespaces, false, context->getMemoryManager());
+    while(nsEnumVal.hasMoreElements())
+    {
+      events->namespaceEvent(emptyToNull((XMLCh*)nsEnumKey.nextElementKey()), emptyToNull(&nsEnumVal.nextElement()));
+    }
   }
-  if(result.notNull())
-    return Sequence(result, context->getMemoryManager());
-  return Sequence(context->getMemoryManager());
+  if(m_attrList != 0) {
+    for(VectorOfASTNodes::const_iterator itAttr = m_attrList->begin(); itAttr != m_attrList->end (); ++itAttr) {
+      (*itAttr)->generateEvents(events, context, preserveNS, preserveType);
+    }
+  }
+
+  for(VectorOfASTNodes::const_iterator itCont = m_children->begin(); itCont != m_children->end (); ++itCont)
+  {
+    (*itCont)->generateEvents(events, context, preserveNS, preserveType);
+  }
+
+  const XMLCh *typeURI = SchemaSymbols::fgURI_SCHEMAFORSCHEMA;
+  const XMLCh *typeName = DocumentCacheParser::g_szUntyped;
+  if(context->getConstructionMode() == StaticContext::CONSTRUCTION_MODE_PRESERVE) {
+    typeURI = SchemaSymbols::fgURI_SCHEMAFORSCHEMA;
+    typeName = SchemaSymbols::fgATTVAL_ANYTYPE;
+  }
+
+  events->endElementEvent(prefix, uri, localname, typeURI, typeName);
 }
 
 ASTNode* XQElementConstructor::staticResolution(StaticContext *context)
@@ -317,7 +368,7 @@ ASTNode* XQElementConstructor::staticResolution(StaticContext *context)
       }
     }
 
-    (*m_children)[i] = new (mm) XQContentSequence((*m_children)[i], /*copy*/true, mm);
+    (*m_children)[i] = new (mm) XQContentSequence((*m_children)[i], mm);
     (*m_children)[i]->setLocationInfo(this);
     (*m_children)[i] = (*m_children)[i]->staticResolution(context);
   }
@@ -368,49 +419,6 @@ ASTNode* XQElementConstructor::staticTyping(StaticContext *context)
   _src.forceNoFolding(true);
   _src.creative(true);
   return this; // Never constant fold
-}
-
-const XMLCh *definePrefix(const XMLCh *szPrefix, const XMLCh *szURI, const XQScopedNamespace &newNSScope,
-                          XQScopedNamespace &locallyDefinedNamespaces, std::vector<Node::Ptr> &attrList,
-                          DynamicContext *context)
-{
-  // check if the attribute has a prefix that has been defined
-  const XMLCh* associatedURI=locallyDefinedNamespaces.lookupNamespaceURI(szPrefix);
-  if(associatedURI == NULL)
-    associatedURI=newNSScope.lookupNamespaceURI(szPrefix);
-
-  if(associatedURI==NULL) // prefix is not defined
-  {
-    locallyDefinedNamespaces.addNamespaceBinding(szPrefix,szURI);
-    attrList.push_back(context->getItemFactory()->
-      createAttributeNode(XMLUni::fgXMLNSURIName, XMLUni::fgXMLNSString, szPrefix, szURI, context));
-  }
-  else if(!XPath2Utils::equals(szURI, associatedURI))  // prefix is defined, but it is associated to another URI
-  {
-    if(locallyDefinedNamespaces.lookupNamespaceURI(szPrefix)==NULL)    // prefix is inherited, override it
-    {
-      locallyDefinedNamespaces.addNamespaceBinding(szPrefix,szURI);
-      attrList.push_back(context->getItemFactory()->
-        createAttributeNode(XMLUni::fgXMLNSURIName, XMLUni::fgXMLNSString, szPrefix, szURI, context));
-    }
-    else // prefix is defined here, rename it
-    {
-      XMLCh szNumBuff[20];
-      const XMLCh *szInitialPrefix = szPrefix;
-      long index = 1;
-      while(locallyDefinedNamespaces.lookupNamespaceURI(szPrefix) != NULL) {
-        static XMLCh szUnderScore[] = { chUnderscore, chNull };
-        XMLString::binToText(index++, szNumBuff, 19, 10);
-        szPrefix = XPath2Utils::concatStrings(szInitialPrefix, szUnderScore, szNumBuff, context->getMemoryManager());
-      }
-
-      locallyDefinedNamespaces.addNamespaceBinding(szPrefix,szURI);
-      attrList.push_back(context->getItemFactory()->
-        createAttributeNode(XMLUni::fgXMLNSURIName, XMLUni::fgXMLNSString, szPrefix, szURI, context));
-    }
-  }
-
-  return szPrefix;
 }
 
 const XMLCh* XQElementConstructor::getNodeType() const

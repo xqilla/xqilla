@@ -26,12 +26,16 @@
 #include <xqilla/items/ATBooleanOrDerived.hpp>
 #include <xqilla/items/ATDecimalOrDerived.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xercesc/validators/schema/SchemaSymbols.hpp>
 #include <xqilla/context/ContextHelpers.hpp>
+#include <xqilla/utils/XPath2Utils.hpp>
+
+#include <xercesc/validators/schema/SchemaSymbols.hpp>
+
+XERCES_CPP_NAMESPACE_USE;
 
 const XMLCh FunctionMin::name[] = {
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_m, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_i, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chNull 
+  chLatin_m, chLatin_i, chLatin_n, 
+  chNull 
 };
 const unsigned int FunctionMin::minArgs = 1;
 const unsigned int FunctionMin::maxArgs = 2;
@@ -42,7 +46,7 @@ const unsigned int FunctionMin::maxArgs = 2;
 **/
 
 FunctionMin::FunctionMin(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : AggregateFunction(name, minArgs, maxArgs, "anyAtomicType*, string", args, memMgr)
+  : ConstantFoldingFunction(name, minArgs, maxArgs, "anyAtomicType*, string", args, memMgr)
 {
 }
 
@@ -55,62 +59,99 @@ ASTNode *FunctionMin::staticTyping(StaticContext *context)
 {
   _src.clear();
 
-  // TBD - could do better here - jpcs
-  _src.getStaticType().flags = StaticType::TYPED_ATOMIC_TYPE;
-  return calculateSRCForArguments(context);
+  ASTNode *result = calculateSRCForArguments(context);
+  if(result != this) return result;
+
+  _src.getStaticType() = _args[0]->getStaticResolutionContext().getStaticType();
+
+  if(_src.getStaticType().containsType(StaticType::UNTYPED_ATOMIC_TYPE)) {
+    _src.getStaticType().flags &= ~StaticType::UNTYPED_ATOMIC_TYPE;
+    _src.getStaticType().flags |= StaticType::DOUBLE_TYPE;
+  }
+  if(_src.getStaticType().containsType(StaticType::DOUBLE_TYPE)) {
+    _src.getStaticType().flags &= ~(StaticType::DECIMAL_TYPE | StaticType::FLOAT_TYPE);
+  }
+  if(_src.getStaticType().containsType(StaticType::FLOAT_TYPE)) {
+    _src.getStaticType().flags &= ~StaticType::DECIMAL_TYPE;
+  }
+
+  if(_args.size() > 1)
+    _src.getStaticType().typeUnion(_args[1]->getStaticResolutionContext().getStaticType());
+
+  return this;
 }
 
-Sequence FunctionMin::collapseTreeInternal(DynamicContext* context, int flags) const
+static inline bool checkUntypedAndNaN(Item::Ptr &item, Item::Ptr &min, DynamicContext *context)
 {
-    XPath2MemoryManager* memMgr = context->getMemoryManager();
+  if(((AnyAtomicType*)item.get())->getPrimitiveTypeIndex() == AnyAtomicType::UNTYPED_ATOMIC) {
+    if(XPath2Utils::equals(item->getTypeName(), ATUntypedAtomic::fgDT_UNTYPEDATOMIC) &&
+       XPath2Utils::equals(item->getTypeURI(), SchemaSymbols::fgURI_SCHEMAFORSCHEMA))
+      item = ((AnyAtomicType*)item.get())->castAs(AnyAtomicType::DOUBLE, context);
+  }
+  if(((AnyAtomicType*)item.get())->isNumericValue()) {
+    if(((Numeric*)item.get())->isNaN()) {
+      if(((AnyAtomicType*)min.get())->getPrimitiveTypeIndex() == AnyAtomicType::DOUBLE)
+        item = ((Numeric*)item.get())->castAs(AnyAtomicType::DOUBLE, context);
+      return true;
+    }
+    if(((AnyAtomicType*)min.get())->isNumericValue()) {
+      Numeric::Ptr num = ((Numeric*)item.get())->promoteTypeIfApplicable(((Numeric*)min.get())->getPrimitiveTypeIndex(), context);
+      if(num.notNull()) item = num;
+      else {
+        num = ((Numeric*)min.get())->promoteTypeIfApplicable(((Numeric*)item.get())->getPrimitiveTypeIndex(), context);
+        if(num.notNull()) min = num;
+      }
+    }
+  }
 
-    Sequence sequence(memMgr);  
+  return false;
+}
+
+Sequence FunctionMin::createSequence(DynamicContext* context, int flags) const
+{
+  XPath2MemoryManager* memMgr = context->getMemoryManager();
+
+  Result args = getParamNumber(1,context);
+
+  Item::Ptr min = args->next(context);
+  if(min.isNull()) return Sequence(memMgr);
+
+  checkUntypedAndNaN(min, min, context);
+
+  Collation* collation = NULL;
+  if(getNumArgs() > 1)
+    collation = context->getCollation(getParamNumber(2,context)->next(context)->asString(context), this);
+  else collation = context->getDefaultCollation(this);
+
+  Item::Ptr item = args->next(context);
+  if(item.isNull()) {
+    // check for a type that doesn't support comparison
     try {
-        sequence = validateSequence(getParamNumber(1,context)->toSequence(context), context);
-    } catch (IllegalArgumentException &e) {
-        XQThrow(IllegalArgumentException, X("FunctionMin::collapseTreeInternal"), X("Invalid argument to fn:min() function [err:FORG0006]."));
+      LessThan::less_than(min, min, collation, context, this);
     }
+    catch(XQException &e) {
+      XQThrow(::IllegalArgumentException, X("FunctionMin::createSequence"),
+              X("Invalid argument to fn:min() function [err:FORG0006]"));
+    }
+    return Sequence(min, memMgr);
+  }
 
-    // Return the empty sequence if the sequence is empty
-    if(sequence.isEmpty()) {
-        return Sequence(memMgr);
+  do {
+    if(checkUntypedAndNaN(item, min, context)) {
+      min = item;
     }
-    if(sequence.getLength()==1 && isNumericNaN(sequence.first()))
-        return sequence;
+    else {
+      try {
+        if(LessThan::less_than(item, min, collation, context, this)) {
+          min = item;
+        }
+      }
+      catch(XQException &e) {
+        XQThrow(::IllegalArgumentException, X("FunctionMin::createSequence"),
+                X("Invalid argument to fn:min() function [err:FORG0006]"));
+      }
+    }
+  } while((item = args->next(context)).notNull());
 
-    Collation* collation=NULL;
-    if (getNumArgs()>1) {
-        Sequence collArg = getParamNumber(2,context)->toSequence(context);
-        const XMLCh* collName = collArg.first()->asString(context);
-        try {
-            context->getItemFactory()->createAnyURI(collName, context);
-        } catch(XPath2ErrorException &e) {
-            XQThrow(FunctionException, X("FunctionMin::collapseTreeInternal"), X("Invalid collationURI"));  
-        }
-        collation=context->getCollation(collName, this);
-    }
-    else
-        collation=context->getDefaultCollation(this);
-
-    Sequence::iterator i = sequence.begin();
-    AnyAtomicType::Ptr minItem = (const AnyAtomicType *)i->get();
-    ++i;
-    // if we have just one item, force entering the 'for' loop, or we will not test if the type had a total order
-    if(i == sequence.end()) --i;
-    for (; i != sequence.end(); ++i) {
-        const AnyAtomicType *atomic = (const AnyAtomicType *)i->get();
-        try {
-          if(LessThan::less_than(atomic, minItem, collation, context, this))
-            minItem = atomic;
-        }
-        catch (IllegalArgumentException &e) {
-            XQThrow(IllegalArgumentException, X("FunctionMin::collapseTreeInternal"),
-                    X("Invalid argument to fn:min() function [err:FORG0006]."));
-        }
-        catch (XPath2ErrorException &e) {
-            XQThrow(IllegalArgumentException, X("FunctionMin::collapseTreeInternal"),
-                    X("Invalid argument to fn:min() function [err:FORG0006]."));
-        }
-    }
-    return Sequence(minItem, memMgr);
+  return Sequence(min, memMgr);
 }

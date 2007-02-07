@@ -101,7 +101,7 @@ Result ComparisonOperator::createResult(DynamicContext* context, int flags) cons
 AnyAtomicType::Ptr ComparisonOperator::getArgument(unsigned int index, DynamicContext *context) const
 {
   assert(getNumArgs() > index);
-  return (const AnyAtomicType::Ptr )_args[index]->collapseTree(context)->next(context);
+  return (const AnyAtomicType::Ptr )_args[index]->createResult(context)->next(context);
 }
 
 ComparisonOperator::ComparisonResult::ComparisonResult(const ComparisonOperator *op)

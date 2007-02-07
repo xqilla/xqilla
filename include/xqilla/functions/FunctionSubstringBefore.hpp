@@ -35,7 +35,7 @@ public:
   FunctionSubstringBefore(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   /** XPath function. returns the substring of the first string preceding the first occurrence of the second string within that string **/
-  Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
+  Sequence createSequence(DynamicContext* context, int flags=0) const;
 
 };
 

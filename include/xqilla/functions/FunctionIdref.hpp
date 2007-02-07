@@ -15,10 +15,9 @@
 #define _FUNCTIONIDREF_HPP
 
 #include <xqilla/framework/XQillaExport.hpp>
-#include <xercesc/dom/DOMNodeFilter.hpp>
-
 #include <xqilla/ast/XQFunction.hpp>
 #include <xqilla/runtime/Sequence.hpp>
+
 #include <vector>
 
 /** 
@@ -50,7 +49,7 @@ public:
    *
    * This function allows reverse navigation from IDs to IDREFs.
    */
-  Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
+  Sequence createSequence(DynamicContext* context, int flags=0) const;
 };
 
 #endif // _FUNCTIONIDREF_HPP

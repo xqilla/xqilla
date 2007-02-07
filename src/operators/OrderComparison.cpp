@@ -82,9 +82,9 @@ OrderComparison::OrderComparisonResult::OrderComparisonResult(const OrderCompari
 
 Item::Ptr OrderComparison::OrderComparisonResult::getSingleResult(DynamicContext *context) const
 {
-  Item::Ptr arg1 = _op->getArgument(0)->collapseTree(context)->next(context);
+  Item::Ptr arg1 = _op->getArgument(0)->createResult(context)->next(context);
   if(arg1.isNull()) return 0;
-  Item::Ptr arg2 = _op->getArgument(1)->collapseTree(context)->next(context);
+  Item::Ptr arg2 = _op->getArgument(1)->createResult(context)->next(context);
   if(arg2.isNull()) return 0;
   
 	if(_op->getTestBefore())

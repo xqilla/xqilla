@@ -41,7 +41,7 @@ public:
   /**
    * Returns the integer representing the month in the value of $srcval
    */
-  Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
+  Sequence createSequence(DynamicContext* context, int flags=0) const;
 };
 
 #endif // _FUNCTIONGETMONTHFROMDATE_HPP

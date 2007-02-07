@@ -42,7 +42,7 @@ FunctionMinutesFromDuration::FunctionMinutesFromDuration(const VectorOfASTNodes 
   _src.getStaticType().flags = StaticType::DECIMAL_TYPE;
 }
 
-Sequence FunctionMinutesFromDuration::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionMinutesFromDuration::createSequence(DynamicContext* context, int flags) const
 {
   XPath2MemoryManager* memMgr = context->getMemoryManager();
 

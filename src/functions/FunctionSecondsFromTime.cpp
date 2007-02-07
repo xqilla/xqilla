@@ -52,7 +52,7 @@ ASTNode *FunctionSecondsFromTime::staticTyping(StaticContext *context)
   return calculateSRCForArguments(context, /*checkTimezone*/true);
 }
 
-Sequence FunctionSecondsFromTime::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionSecondsFromTime::createSequence(DynamicContext* context, int flags) const
 {
   XPath2MemoryManager* memMgr = context->getMemoryManager();
 

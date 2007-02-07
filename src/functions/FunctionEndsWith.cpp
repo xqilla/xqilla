@@ -49,7 +49,7 @@ FunctionEndsWith::FunctionEndsWith(const VectorOfASTNodes &args, XPath2MemoryMan
   _src.getStaticType().flags = StaticType::BOOLEAN_TYPE;
 }
 
-Sequence FunctionEndsWith::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionEndsWith::createSequence(DynamicContext* context, int flags) const
 {
     Sequence sourceString=getParamNumber(1,context)->toSequence(context);
     Sequence findString=getParamNumber(2,context)->toSequence(context);
@@ -76,7 +76,7 @@ Sequence FunctionEndsWith::collapseTreeInternal(DynamicContext* context, int fla
         try {
             context->getItemFactory()->createAnyURI(collName, context);
         } catch(XPath2ErrorException &e) {
-            XQThrow(FunctionException, X("FunctionEndsWith::collapseTreeInternal"), X("Invalid collationURI"));  
+            XQThrow(FunctionException, X("FunctionEndsWith::createSequence"), X("Invalid collationURI"));  
         }
         collation=context->getCollation(collName, this);
     }

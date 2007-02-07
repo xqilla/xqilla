@@ -51,7 +51,7 @@ ASTNode *FunctionDocAvailable::staticTyping(StaticContext *context)
   return calculateSRCForArguments(context);
 }
 
-Sequence FunctionDocAvailable::collapseTreeInternal(DynamicContext* context, int flags) const {
+Sequence FunctionDocAvailable::createSequence(DynamicContext* context, int flags) const {
   Sequence uriArg = getParamNumber(1,context)->toSequence(context);
   
   if (uriArg.isEmpty()) {
@@ -70,7 +70,7 @@ Sequence FunctionDocAvailable::collapseTreeInternal(DynamicContext* context, int
 	  uri=newUri;
   }
   if(!XPath2Utils::isValidURI(uri, context->getMemoryManager()))
-    XQThrow(FunctionException, X("FunctionDocAvailable::collapseTreeInternal"), X("Invalid argument to fn:doc-available function [err:FODC0005]"));
+    XQThrow(FunctionException, X("FunctionDocAvailable::createSequence"), X("Invalid argument to fn:doc-available function [err:FODC0005]"));
 
   bool bSuccess=false;
   try {

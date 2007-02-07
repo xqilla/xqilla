@@ -33,7 +33,7 @@ public:
 
   FunctionFalse(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
 
-  virtual Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
+  virtual Sequence createSequence(DynamicContext* context, int flags=0) const;
 };
 
 #endif // _FUNCTIONFALSE_HPP

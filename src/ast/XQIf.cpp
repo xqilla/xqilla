@@ -28,12 +28,23 @@ XQIf::XQIf(ASTNode* test, ASTNode* whenTrue, ASTNode* whenFalse, XPath2MemoryMan
   _whenTrue(whenTrue),
   _whenFalse(whenFalse)
 {
-	setType(ASTNode::IF);
+  setType(ASTNode::IF);
 }
 
 Result XQIf::createResult(DynamicContext* context, int flags) const
 {
   return new IfResult(this, flags);
+}
+
+void XQIf::generateEvents(EventHandler *events, DynamicContext *context,
+                          bool preserveNS, bool preserveType) const
+{
+  if(_test->createResult(context)->getEffectiveBooleanValue(context, this)) {
+    _whenTrue->generateEvents(events, context, preserveNS, preserveType);
+  }
+  else {
+    _whenFalse->generateEvents(events, context, preserveNS, preserveType);
+  }
 }
 
 ASTNode* XQIf::staticResolution(StaticContext *context) {
@@ -63,7 +74,7 @@ ASTNode *XQIf::staticTyping(StaticContext *context)
   if(_test->isConstant()) {
     AutoDelete<DynamicContext> dContext(context->createDynamicContext());
     dContext->setMemoryManager(context->getMemoryManager());
-    if(_test->collapseTree(dContext)->getEffectiveBooleanValue(dContext, this)) {
+    if(_test->createResult(dContext)->getEffectiveBooleanValue(dContext, this)) {
       return _whenTrue->staticTyping(context);
     }
     else {
@@ -129,7 +140,7 @@ void XQIf::setWhenFalse(ASTNode *item)
 
 PendingUpdateList XQIf::createUpdateList(DynamicContext *context) const
 {
-    if(_test->collapseTree(context)->getEffectiveBooleanValue(context, this)) {
+    if(_test->createResult(context)->getEffectiveBooleanValue(context, this)) {
       return _whenTrue->createUpdateList(context);
     }
     else {
@@ -148,11 +159,11 @@ XQIf::IfResult::IfResult(const XQIf *di, int flags)
 Item::Ptr XQIf::IfResult::next(DynamicContext *context)
 {
   if(_results.isNull()) {
-    if(_di->getTest()->collapseTree(context)->getEffectiveBooleanValue(context, this)) {
-      _results = _di->getWhenTrue()->collapseTree(context, _flags);
+    if(_di->getTest()->createResult(context)->getEffectiveBooleanValue(context, this)) {
+      _results = _di->getWhenTrue()->createResult(context, _flags);
     }
     else {
-      _results = _di->getWhenFalse()->collapseTree(context, _flags);
+      _results = _di->getWhenFalse()->createResult(context, _flags);
     }
   }
 

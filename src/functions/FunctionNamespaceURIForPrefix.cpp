@@ -21,9 +21,6 @@
 #include <xqilla/runtime/Sequence.hpp>
 #include <xqilla/items/Node.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xercesc/util/XMLString.hpp>
-#include <xercesc/dom/DOMNode.hpp>
-
 
 const XMLCh FunctionNamespaceURIForPrefix::name[] = {
   XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_m, 
@@ -53,7 +50,7 @@ FunctionNamespaceURIForPrefix::FunctionNamespaceURIForPrefix(const VectorOfASTNo
   _src.getStaticType().flags = StaticType::ANY_URI_TYPE;
 }
 
-Sequence FunctionNamespaceURIForPrefix::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionNamespaceURIForPrefix::createSequence(DynamicContext* context, int flags) const
 {
   Item::Ptr first=getParamNumber(1, context)->next(context);
   const XMLCh* prefix = 0;

@@ -40,7 +40,7 @@ public:
   /**
    * Returns the upper-case string.
    */
-  Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
+  Sequence createSequence(DynamicContext* context, int flags=0) const;
 };
 
 #endif // _FUNCTIONUPPERCASE_HPP

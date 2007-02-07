@@ -11,8 +11,8 @@
  * $Id$
  */
 
-#include "../../config/xqilla_config.h"
-#include <xqilla/items/impl/NodeImpl.hpp>
+#include "../config/xqilla_config.h"
+#include "XercesNodeImpl.hpp"
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/context/XQScopedNamespace.hpp>
 #include <xqilla/framework/XPath2MemoryManager.hpp>
@@ -25,12 +25,14 @@
 #include <xqilla/items/ATQNameOrDerived.hpp>
 #include <xqilla/items/ATUntypedAtomic.hpp>
 #include <xqilla/utils/XPath2NSUtils.hpp>
-#include <xqilla/functions/FunctionRoot.hpp>
 #include <xqilla/functions/FunctionConstructor.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/schema/DocumentCache.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/schema/DocumentCacheImpl.hpp>
+#include <xqilla/events/EventHandler.hpp>
+#include <xqilla/events/EventSerializer.hpp>
+#include <xqilla/events/NSFixupFilter.hpp>
 
 #include <xqilla/axis/AncestorAxis.hpp>
 #include <xqilla/axis/AncestorOrSelfAxis.hpp>
@@ -47,6 +49,9 @@
 #include <xqilla/axis/SelfAxis.hpp>
 #include <xqilla/axis/NodeTest.hpp>
 
+#include <xqilla/xerces/XercesConfiguration.hpp>
+#include "../xerces/XercesURIResolver.hpp"
+
 #include <xercesc/dom/DOM.hpp>
 #include <xercesc/dom/DOMPSVITypeInfo.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
@@ -61,73 +66,184 @@
 XERCES_CPP_NAMESPACE_USE
 #endif
 
-const XMLCh NodeImpl::ls_string[] =
-{
-    chLatin_L, chLatin_S,
-    chNull
-};
+static void typeUriAndName(const DOMNode *node, const XMLCh*& uri, const XMLCh*& name);
 
-NodeImpl::NodeImpl(const DOMNode *node, const DynamicContext *context) : 
+XercesNodeImpl::XercesNodeImpl(const DOMNode *node, const DynamicContext *context) : 
     Node(), 
-    fSerializer(0), 
     fNode(node),
     context_(context)
 {  
   assert(node!=0);
-  context_->incrementDocumentRefCount(XPath2Utils::getOwnerDoc(fNode));
+  ((XercesURIResolver*)context_->getDefaultURIResolver())->
+	  incrementDocumentRefCount(XPath2Utils::getOwnerDoc(fNode));
 }
 
-NodeImpl::NodeImpl(const DOMNode *node)
-  : fSerializer(0),
-    fNode(node),
+XercesNodeImpl::XercesNodeImpl(const DOMNode *node)
+  : fNode(node),
     context_(0)
 {
   assert(node!=0);
 }
 
-NodeImpl::~NodeImpl()
+XercesNodeImpl::~XercesNodeImpl()
 {
   if(context_ != 0) {
-    context_->decrementDocumentRefCount(XPath2Utils::getOwnerDoc(fNode));
-  }
-  if(fSerializer != 0) {
-	  fSerializer->release();
+    ((XercesURIResolver*)context_->getDefaultURIResolver())->
+	    decrementDocumentRefCount(XPath2Utils::getOwnerDoc(fNode));
   }
 }
 
-void *NodeImpl::getInterface(const XMLCh *name) const
+Node::Ptr XercesNodeImpl::createNode(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *node, const DynamicContext *context) const
+{
+  return new XercesNodeImpl(node, context);
+}
+
+void *XercesNodeImpl::getInterface(const XMLCh *name) const
 {
   if(XPath2Utils::equals(name,Item::gXQilla)) {
     return (void*)this;
   }
-  else if(XPath2Utils::equals(name,Node::gXerces)) {
+  else if(XPath2Utils::equals(name, XercesConfiguration::gXerces)) {
     return (void*)fNode;
   }
   return 0;
 }
 
-bool NodeImpl::isNode() const
+bool XercesNodeImpl::isNode() const
 {
     return true;
 }
 
-bool NodeImpl::isAtomicValue() const
+bool XercesNodeImpl::isAtomicValue() const
 {
     return false;
 }
 
-const XMLCh* NodeImpl::asString(const DynamicContext* context) const
+const XMLCh* XercesNodeImpl::asString(const DynamicContext* context) const
 {
-  if(!fSerializer) {
-    DOMImplementation *impl = DOMImplementationRegistry::getDOMImplementation(ls_string);
-    ((NodeImpl*)this)->fSerializer = ((DOMImplementationLS*)impl)->createDOMWriter(context->getMemoryManager());
-    ((NodeImpl*)this)->fSerializer->setFeature(XMLUni::fgDOMXMLDeclaration, false);
+  XPath2MemoryManager *mm = context->getMemoryManager();
+
+  EventSerializer writer(mm);
+  NSFixupFilter nsfilter(&writer, mm);
+  generateEvents(&nsfilter, context);
+  nsfilter.endEvent();
+
+  return XMLString::replicate((XMLCh*)writer.getRawBuffer(), mm);
+}
+
+static inline bool emptyString(const XMLCh * const str)
+{
+  return str == 0 || *str == 0;
+}
+
+static void outputInheritedNamespaces(const DOMNode *node, EventHandler *events)
+{
+  typedef std::set<const XMLCh*, XMLChSort> DoneSet;
+  DoneSet done;
+
+  while(node != 0 && node->getNodeType() == DOMNode::ELEMENT_NODE) {
+
+    if(done.insert(emptyToNull(node->getPrefix())).second && !emptyString(node->getNamespaceURI())) {
+      events->namespaceEvent(emptyToNull(node->getPrefix()), node->getNamespaceURI());
+    }
+
+    DOMNamedNodeMap *attrs = node->getAttributes();
+    for(unsigned int i = 0; i < attrs->getLength(); ++i) {
+      DOMNode *attr = attrs->item(i);
+      if(XPath2Utils::equals(XMLUni::fgXMLNSURIName, attr->getNamespaceURI())) {
+        const XMLCh *prefix = emptyString(attr->getPrefix()) ? 0 : attr->getLocalName();
+        if(done.insert(prefix).second && !emptyString(attr->getNodeValue())) {
+          events->namespaceEvent(prefix, attr->getNodeValue());
+        }
+      }
+      else if(!emptyString(attr->getNamespaceURI()) && done.insert(emptyToNull(attr->getPrefix())).second) {
+        events->namespaceEvent(emptyToNull(attr->getPrefix()), attr->getNamespaceURI());
+      }
+    }
+
+    node = node->getParentNode();
   }
-  return fSerializer->writeToString(*fNode);
+}
+
+static void toEventsImpl(const DOMNode *node, EventHandler *events,
+                         bool outputNamespaces, bool preserveType, bool inheritedNamespaces)
+{
+  switch(node->getNodeType()) {
+  case DOMNode::DOCUMENT_NODE: {
+    events->startDocumentEvent(((DOMDocument*)node)->getDocumentURI(), ((DOMDocument*)node)->getActualEncoding());
+    DOMNode *child = node->getFirstChild();
+    while(child != 0) {
+      toEventsImpl(child, events, outputNamespaces, preserveType, false);
+      child = child->getNextSibling();
+    }
+    events->endDocumentEvent();
+    break;
+  }
+  case DOMNode::ELEMENT_NODE: {
+    events->startElementEvent(emptyToNull(node->getPrefix()), emptyToNull(node->getNamespaceURI()), emptyToNull(node->getLocalName()));
+
+    DOMNamedNodeMap *attrs = node->getAttributes();
+    for(unsigned int i = 0; i < attrs->getLength(); ++i) {
+      toEventsImpl(attrs->item(i), events, outputNamespaces, preserveType, inheritedNamespaces);
+    }
+
+    if(inheritedNamespaces) {
+      outputInheritedNamespaces(node, events);
+    }
+
+    DOMNode *child = node->getFirstChild();
+    while(child != 0) {
+      toEventsImpl(child, events, outputNamespaces, preserveType, false);
+      child = child->getNextSibling();
+    }
+
+    const XMLCh *typeURI = SchemaSymbols::fgURI_SCHEMAFORSCHEMA;
+    const XMLCh *typeName = DocumentCacheParser::g_szUntyped;
+    if(preserveType) typeUriAndName(node, typeURI, typeName);
+
+    events->endElementEvent(emptyToNull(node->getPrefix()), emptyToNull(node->getNamespaceURI()), node->getLocalName(),
+                            typeURI, typeName);
+    break;
+  }
+  case DOMNode::TEXT_NODE:
+  case DOMNode::CDATA_SECTION_NODE:
+    events->textEvent(node->getNodeValue());
+    break;
+  case DOMNode::COMMENT_NODE:
+    events->commentEvent(node->getNodeValue());
+    break;
+  case DOMNode::PROCESSING_INSTRUCTION_NODE:
+    events->piEvent(node->getNodeName(), node->getNodeValue());
+    break;
+  case DOMNode::ATTRIBUTE_NODE:
+    if(XPath2Utils::equals(XMLUni::fgXMLNSURIName, node->getNamespaceURI())) {
+      if(outputNamespaces && !inheritedNamespaces) {
+        const XMLCh *prefix = emptyString(node->getPrefix()) ? 0 : node->getLocalName();
+        events->namespaceEvent(prefix, emptyToNull(node->getNodeValue()));
+      }
+    }
+    else {
+      const XMLCh *typeURI = SchemaSymbols::fgURI_SCHEMAFORSCHEMA;
+      const XMLCh *typeName = ATUntypedAtomic::fgDT_UNTYPEDATOMIC;
+      if(preserveType) typeUriAndName(node, typeURI, typeName);
+
+      events->attributeEvent(emptyToNull(node->getPrefix()), emptyToNull(node->getNamespaceURI()), node->getLocalName(),
+                             node->getNodeValue(), typeURI, typeName);
+    }
+    break;
+  default:
+    break;
+  }
+}
+
+void XercesNodeImpl::generateEvents(EventHandler *events, const DynamicContext *context,
+                              bool preserveNS, bool preserveType) const
+{
+  toEventsImpl(fNode, events, preserveNS, preserveType, preserveNS);
 }
 
 /** check if the underlying type of this node is instance of a certain type */
-bool NodeImpl::hasInstanceOfType(const XMLCh* typeURI, const XMLCh* typeName, const DynamicContext* context) const {
+bool XercesNodeImpl::hasInstanceOfType(const XMLCh* typeURI, const XMLCh* typeName, const DynamicContext* context) const {
     const XMLCh* uri, *name;
     getTypeUriAndName(uri,name);
     return context->isTypeOrDerivedFromType(uri, name, typeURI, typeName);
@@ -136,61 +252,76 @@ bool NodeImpl::hasInstanceOfType(const XMLCh* typeURI, const XMLCh* typeName, co
 
 /* Accessor functions */
 
-Sequence NodeImpl::dmBaseURI(const DynamicContext* context) const {
-  
-    const XMLCh* baseURI=NULL;
+Sequence XercesNodeImpl::dmBaseURI(const DynamicContext* context) const
+{
+  static XMLCh base_str[] = { 'b', 'a', 's', 'e', 0 };
+
 	switch (fNode->getNodeType()) {
-    case DOMNode::ATTRIBUTE_NODE : 
-        {
-            DOMElement* pNode=((DOMAttr*)fNode)->getOwnerElement();
-            if(pNode)
-                baseURI = pNode->getBaseURI();
-        }
-        break;
-    case DOMNode::COMMENT_NODE : 
-    case DOMNode::TEXT_NODE : 
-    case DOMNode::ELEMENT_NODE : 
-    case DOMNode::DOCUMENT_NODE :
-    case DOMNode::PROCESSING_INSTRUCTION_NODE : 
-        {
-            baseURI = fNode->getBaseURI();
-            break;
-        }
-	}
-    const XMLCh* moduleBaseURI=context->getBaseURI();
-    if(baseURI && baseURI[0]) 
-    {
-        ATAnyURIOrDerived::Ptr tempURI;
-        if(moduleBaseURI && moduleBaseURI[0])
-        {
-            try
-            {
-                XMLUri temp(moduleBaseURI, context->getMemoryManager());
-                XMLUri temp2(&temp, baseURI, context->getMemoryManager());
-                tempURI = context->getItemFactory()->createAnyURI(temp2.getUriText(), context);
-            }
-            catch(MalformedURLException& e)
-            {
-                XQThrow2(ItemException, X("NodeImpl::dmBaseURI"), X("Base-URI is a malformed URL"));
-            }
-        }
-        else 
-            tempURI = context->getItemFactory()->createAnyURI(baseURI, context);
-        return Sequence(tempURI, context->getMemoryManager());
+  case DOMNode::DOCUMENT_NODE: {
+    const XMLCh *baseURI = context->getBaseURI();
+
+    const XMLCh* docURI = ((DOMDocument*)fNode)->getDocumentURI();
+    if(docURI != 0 && *docURI != 0)
+      baseURI = docURI;
+
+    if(baseURI == 0 || *baseURI == 0)
+      return Sequence(context->getMemoryManager());
+    return Sequence(context->getItemFactory()->createAnyURI(baseURI, context), context->getMemoryManager());
+  }
+  case DOMNode::ELEMENT_NODE: {
+    const XMLCh *baseURI = context->getBaseURI();
+
+    Node::Ptr parent = dmParent(context);
+    if(parent.notNull()) {
+      Sequence pb = parent->dmBaseURI(context);
+      if(!pb.isEmpty())
+        baseURI = pb.first()->asString(context);
     }
-    else if(moduleBaseURI && moduleBaseURI[0])
-    {
-        const ATAnyURIOrDerived::Ptr tempURI = context->getItemFactory()->createAnyURI(moduleBaseURI, context);
-        return Sequence(tempURI, context->getMemoryManager());
-	}
+
+    NodeTest xmlBase;
+    xmlBase.setNodeName(base_str);
+    xmlBase.setNodeUri(XMLUni::fgXMLURIName);
+    xmlBase.setTypeWildcard();
+
+    Item::Ptr item = getAxisResult(XQStep::ATTRIBUTE, &xmlBase, const_cast<DynamicContext*>(context), 0)->
+      next(const_cast<DynamicContext*>(context));
+    if(item.notNull()) {
+      const XMLCh *uri = ((Node*)item.get())->dmStringValue(context);
+
+      if(uri && *uri) {
+        if(baseURI && *baseURI) {
+          XMLUri temp(baseURI, context->getMemoryManager());
+          XMLUri temp2(&temp, uri, context->getMemoryManager());
+          return Sequence(context->getItemFactory()->createAnyURI(temp2.getUriText(), context), context->getMemoryManager());
+        }
+        return Sequence(context->getItemFactory()->createAnyURI(uri, context), context->getMemoryManager());
+      }
+    }
+
+    if(baseURI == NULL || *baseURI == 0)
+      return Sequence(context->getMemoryManager());
+    return Sequence(context->getItemFactory()->createAnyURI(baseURI, context), context->getMemoryManager());
+  }
+  case DOMNode::ATTRIBUTE_NODE:
+  case DOMNode::COMMENT_NODE:
+  case DOMNode::TEXT_NODE:
+  case DOMNode::PROCESSING_INSTRUCTION_NODE: {
+    Node::Ptr parent = dmParent(context);
+    if(parent.notNull()) {
+      return parent->dmBaseURI(context);
+    }
     return Sequence(context->getMemoryManager());
+  }
+	}
+
+  return Sequence(context->getMemoryManager());
 }
 
 // The dm:node-kind accessor returns a string value representing the
 // node's kind: either "document", "element", "attribute", "text",
 // "namespace", "processing-instruction", or "comment".
 
-const XMLCh* NodeImpl::dmNodeKind(void) const {
+const XMLCh* XercesNodeImpl::dmNodeKind(void) const {
   
     switch(fNode->getNodeType()) {
         
@@ -217,11 +348,11 @@ const XMLCh* NodeImpl::dmNodeKind(void) const {
         return namespace_string;
 	}
     
-  XQThrow2(ItemException, X("NodeImpl::dmNodeKind"), X("Unknown node type."));
+  XQThrow2(ItemException, X("XercesNodeImpl::dmNodeKind"), X("Unknown node type."));
 }
 
 
-ATQNameOrDerived::Ptr NodeImpl::dmNodeName(const DynamicContext* context) const {
+ATQNameOrDerived::Ptr XercesNodeImpl::dmNodeName(const DynamicContext* context) const {
   
 	switch(fNode->getNodeType())
 	{
@@ -245,7 +376,7 @@ ATQNameOrDerived::Ptr NodeImpl::dmNodeName(const DynamicContext* context) const 
 }
 
 
-void NodeImpl::addStringValueToBuffer(const DOMNode* node, XMLBuffer& buffer) const
+void XercesNodeImpl::addStringValueToBuffer(const DOMNode* node, XMLBuffer& buffer) const
 {
     short nodeType=node->getNodeType();
     if(nodeType==DOMNode::TEXT_NODE ||
@@ -266,7 +397,7 @@ void NodeImpl::addStringValueToBuffer(const DOMNode* node, XMLBuffer& buffer) co
 //its descendant nodes.
 
 
-const XMLCh* NodeImpl::dmStringValue(const DynamicContext* context) const {
+const XMLCh* XercesNodeImpl::dmStringValue(const DynamicContext* context) const {
 
 	switch(fNode->getNodeType())
 	{
@@ -398,7 +529,7 @@ const XMLCh* NodeImpl::dmStringValue(const DynamicContext* context) const {
 	return XMLUni::fgZeroLenString;
 }
 
-Sequence NodeImpl::getListTypeTypedValue(DatatypeValidator *dtv, const DynamicContext* context) const {
+Sequence XercesNodeImpl::getListTypeTypedValue(DatatypeValidator *dtv, const DynamicContext* context) const {
 
     const XMLCh *stringVal = dmStringValue(context);
     BaseRefVectorOf<XMLCh>* tokenVector = XMLString::tokenizeString(stringVal);
@@ -433,7 +564,7 @@ Sequence NodeImpl::getListTypeTypedValue(DatatypeValidator *dtv, const DynamicCo
                 }
             }
             if(!bFound)
-                XQThrow2(ItemException, X("NodeImpl::getListTypeTypedValue"), X("Value in list doesn't validate with any of the componenets of the union type"));
+                XQThrow2(ItemException, X("XercesNodeImpl::getListTypeTypedValue"), X("Value in list doesn't validate with any of the componenets of the union type"));
         }
     } 
     else
@@ -449,15 +580,15 @@ Sequence NodeImpl::getListTypeTypedValue(DatatypeValidator *dtv, const DynamicCo
 }
 
 
-Sequence NodeImpl::dmTypedValue(DynamicContext* context) const {
+Sequence XercesNodeImpl::dmTypedValue(DynamicContext* context) const {
     /*
-    cerr<<"NodeImpl::dmTypedValue getTypeName(): "<<XMLString::transcode(getTypeName())<<endl;
-    cerr<<"NodeImpl::dmTypedValue getTypeURI():  "<<XMLString::transcode(getTypeURI())<<endl;
+    cerr<<"XercesNodeImpl::dmTypedValue getTypeName(): "<<XMLString::transcode(getTypeName())<<endl;
+    cerr<<"XercesNodeImpl::dmTypedValue getTypeURI():  "<<XMLString::transcode(getTypeURI())<<endl;
 
-    cerr<<"NodeImpl::dmTypedValue nodenaem:  "<<XMLString::transcode(fNode->getNodeName())<<endl;
+    cerr<<"XercesNodeImpl::dmTypedValue nodenaem:  "<<XMLString::transcode(fNode->getNodeName())<<endl;
 
 
-    cerr<<"NodeImpl::dmTypedValue uri:  "<<XMLString::transcode(fNode->getNamespaceURI())<<endl;
+    cerr<<"XercesNodeImpl::dmTypedValue uri:  "<<XMLString::transcode(fNode->getNamespaceURI())<<endl;
 
     cerr << "\n\n" << endl;
     */
@@ -474,8 +605,8 @@ Sequence NodeImpl::dmTypedValue(DynamicContext* context) const {
             getMemberTypeUriAndName(typeUri,typeName);
             Item::Ptr item = 0;
 
-            //cerr<<"NodeImpl::dmTypedValue getTypeName(): "<<XMLString::transcode(typeName)<<endl;
-            //cerr<<"NodeImpl::dmTypedValue getTypeURI():  "<<XMLString::transcode(typeUri)<<endl;
+            //cerr<<"XercesNodeImpl::dmTypedValue getTypeName(): "<<XMLString::transcode(typeName)<<endl;
+            //cerr<<"XercesNodeImpl::dmTypedValue getTypeURI():  "<<XMLString::transcode(typeUri)<<endl;
 
             // If the attribute is of type xdt:untypedAtomic: its typed-value is its dm:string-value as an xdt:untypedAtomic
             if(XPath2Utils::equals(typeName, ATUntypedAtomic::fgDT_UNTYPEDATOMIC) &&
@@ -500,7 +631,7 @@ Sequence NodeImpl::dmTypedValue(DynamicContext* context) const {
                     msg.append(X("}"));
                     msg.append(typeName);
                     msg.append(X(" is unknown"));
-                    XQThrow2(XPath2TypeCastException,X("NodeImpl::dmTypedValue"), msg.getRawBuffer());
+                    XQThrow2(XPath2TypeCastException,X("XercesNodeImpl::dmTypedValue"), msg.getRawBuffer());
                 } 
 
                 if(dtv->getType() == DatatypeValidator::List)
@@ -579,7 +710,7 @@ Sequence NodeImpl::dmTypedValue(DynamicContext* context) const {
                 // The typed-value of such an element is undefined. Attempting to access this property with the dm:typed-value 
                 // accessor always raises an error.
                 if(cti->getContentType() == SchemaElementDecl::Children) 
-                    XQThrow2(ItemException, X("NodeImpl::dmTypedValue"), X("Attempt to get typed value from a complex type with non-mixed complex content [err:FOTY0012]"));
+                    XQThrow2(ItemException, X("XercesNodeImpl::dmTypedValue"), X("Attempt to get typed value from a complex type with non-mixed complex content [err:FOTY0012]"));
             }
             else 
             {
@@ -611,7 +742,7 @@ Sequence NodeImpl::dmTypedValue(DynamicContext* context) const {
     return Sequence(context->getMemoryManager());
 }
 
-Sequence NodeImpl::dmDocumentURI(const DynamicContext* context) const {
+Sequence XercesNodeImpl::dmDocumentURI(const DynamicContext* context) const {
   if(fNode->getNodeType()!=DOMNode::DOCUMENT_NODE)
     return Sequence(context->getMemoryManager());
     
@@ -622,7 +753,7 @@ Sequence NodeImpl::dmDocumentURI(const DynamicContext* context) const {
   return Sequence(context->getItemFactory()->createAnyURI(docURI, context), context->getMemoryManager());
 }
 
-ATQNameOrDerived::Ptr NodeImpl::dmTypeName(const DynamicContext* context) const {
+ATQNameOrDerived::Ptr XercesNodeImpl::dmTypeName(const DynamicContext* context) const {
     short nodeType=fNode->getNodeType();
     if(nodeType != DOMNode::ELEMENT_NODE &&
        nodeType != DOMNode::ATTRIBUTE_NODE &&
@@ -638,7 +769,7 @@ ATQNameOrDerived::Ptr NodeImpl::dmTypeName(const DynamicContext* context) const 
   return context->getItemFactory()->createQName(typeUri, XMLUni::fgZeroLenString, typeName, context);
 }
 
-ATBooleanOrDerived::Ptr NodeImpl::dmNilled(const DynamicContext* context) const
+ATBooleanOrDerived::Ptr XercesNodeImpl::dmNilled(const DynamicContext* context) const
 {
     if(fNode->getNodeType() != DOMNode::ELEMENT_NODE) {
         return 0;
@@ -661,15 +792,15 @@ ATBooleanOrDerived::Ptr NodeImpl::dmNilled(const DynamicContext* context) const
     return context->getItemFactory()->createBoolean(false, context);
 }
 
-bool NodeImpl::lessThan(const Node::Ptr &other, const DynamicContext *context) const
+bool XercesNodeImpl::lessThan(const Node::Ptr &other, const DynamicContext *context) const
 {
-  const NodeImpl *otherImpl = (const NodeImpl*)other->getInterface(Item::gXQilla);
+  const XercesNodeImpl *otherImpl = (const XercesNodeImpl*)other->getInterface(Item::gXQilla);
   if(otherImpl == 0) {
     // It's not a xqilla implementation Node, so it can't
     // be from the same tree as us - jpcs
 
     // Order them according to the address of their roots
-    return FunctionRoot::root(this, context).get() < FunctionRoot::root(other, context).get();
+    return this->root(context).get() < other->root(context).get();
   }
 
   const DOMNode* otherNode = otherImpl->getDOMNode();
@@ -717,31 +848,45 @@ bool NodeImpl::lessThan(const Node::Ptr &other, const DynamicContext *context) c
   return true;
 }
 
-bool NodeImpl::equals(const Node::Ptr &other) const
+bool XercesNodeImpl::equals(const Node::Ptr &other) const
 {
-  const NodeImpl *otherImpl = (const NodeImpl*)other->getInterface(Item::gXQilla);
+  const XercesNodeImpl *otherImpl = (const XercesNodeImpl*)other->getInterface(Item::gXQilla);
   if(otherImpl == 0) return false;
   return fNode->isSameNode(otherImpl->getDOMNode());
 }
 
-bool NodeImpl::uniqueLessThan(const Node::Ptr &other, const DynamicContext *context) const
+bool XercesNodeImpl::uniqueLessThan(const Node::Ptr &other, const DynamicContext *context) const
 {
-  const NodeImpl *otherImpl = (const NodeImpl*)other->getInterface(Item::gXQilla);
+  const XercesNodeImpl *otherImpl = (const XercesNodeImpl*)other->getInterface(Item::gXQilla);
   if(otherImpl == 0) {
     // It's not a xqilla implementation Node, so it can't
     // be from the same tree as us - jpcs
 
     // Order them according to the address of their roots
-    return FunctionRoot::root(this, context).get() < FunctionRoot::root(other, context).get();
+    return this->root(context).get() < other->root(context).get();
   }
   return fNode < otherImpl->getDOMNode();
 }
 
-const DOMNode* NodeImpl::getDOMNode() const {
+const DOMNode* XercesNodeImpl::getDOMNode() const {
   return fNode;
 }
 
-Node::Ptr NodeImpl::dmParent(const DynamicContext* context) const
+Node::Ptr XercesNodeImpl::root(const DynamicContext* context) const
+{
+  DOMNode *result = const_cast<DOMNode*>(fNode);
+  DOMNode *parent = XPath2NSUtils::getParent(result);
+
+  // Skip out of entity reference nodes
+  while(parent != 0) {
+    result = parent;
+    parent = parent->getParentNode();
+  }
+
+  return new XercesNodeImpl(result, context);
+}
+
+Node::Ptr XercesNodeImpl::dmParent(const DynamicContext* context) const
 {
   DOMNode *parent = XPath2NSUtils::getParent(fNode);
 
@@ -752,84 +897,84 @@ Node::Ptr NodeImpl::dmParent(const DynamicContext* context) const
 
   if(parent == 0) return 0;
 
-  return new NodeImpl(parent, context);
+  return new XercesNodeImpl(parent, context);
 }
 
-Result NodeImpl::dmAttributes(const DynamicContext* context, const LocationInfo *info) const
+Result XercesNodeImpl::dmAttributes(const DynamicContext* context, const LocationInfo *info) const
 {
   if(fNode->getNodeType() == DOMNode::ELEMENT_NODE) {
-    return new AttributeAxis(info, fNode, this, NULL);
+    return new AttributeAxis(info, fNode, this, NULL, *this);
   }
   return 0;
 }
 
-Result NodeImpl::dmNamespaceNodes(const DynamicContext* context, const LocationInfo *info) const
+Result XercesNodeImpl::dmNamespaceNodes(const DynamicContext* context, const LocationInfo *info) const
 {
   if(fNode->getNodeType() == DOMNode::ELEMENT_NODE) {
-    return new NamespaceAxis(info, fNode, this, NULL);
+    return new NamespaceAxis(info, fNode, this, NULL, *this);
   }
   return 0;
 }
 
-Result NodeImpl::dmChildren(const DynamicContext *context, const LocationInfo *info) const
+Result XercesNodeImpl::dmChildren(const DynamicContext *context, const LocationInfo *info) const
 {
   if(fNode->getNodeType() == DOMNode::ELEMENT_NODE || fNode->getNodeType() == DOMNode::DOCUMENT_NODE) {
-    return new ChildAxis(info, fNode, this, NULL);
+    return new ChildAxis(info, fNode, this, NULL, *this);
   }
   return 0;
 }
 
-Result NodeImpl::getAxisResult(XQStep::Axis axis, const NodeTest *nodeTest, const DynamicContext *context, const LocationInfo *info) const
+Result XercesNodeImpl::getAxisResult(XQStep::Axis axis, const NodeTest *nodeTest, const DynamicContext *context, const LocationInfo *info) const
 {
   switch(axis) {
   case XQStep::ANCESTOR: {
-    return new AncestorAxis(info, fNode, this, nodeTest);
+    return new AncestorAxis(info, fNode, this, nodeTest, *this);
   }
   case XQStep::ANCESTOR_OR_SELF: {
-    return new AncestorOrSelfAxis(info, fNode, this, nodeTest);
+    return new AncestorOrSelfAxis(info, fNode, this, nodeTest, *this);
   }
   case XQStep::ATTRIBUTE: {
     if(fNode->getNodeType() == DOMNode::ELEMENT_NODE) {
-      return new AttributeAxis(info, fNode, this, nodeTest);
+      return new AttributeAxis(info, fNode, this, nodeTest, *this);
     }
     break;
   }
   case XQStep::CHILD: {
     if(fNode->getNodeType() == DOMNode::ELEMENT_NODE || fNode->getNodeType() == DOMNode::DOCUMENT_NODE) {
-      return new ChildAxis(info, fNode, this, nodeTest);
+      return new ChildAxis(info, fNode, this, nodeTest, *this);
     }
     break;
   }
   case XQStep::DESCENDANT: {
     if(fNode->getNodeType() == DOMNode::ELEMENT_NODE || fNode->getNodeType() == DOMNode::DOCUMENT_NODE) {
-      return new DescendantAxis(info, fNode, this, nodeTest);
+      return new DescendantAxis(info, fNode, this, nodeTest, *this);
     }
     break;
   }
   case XQStep::DESCENDANT_OR_SELF: {
-    return new DescendantOrSelfAxis(info, fNode, this, nodeTest);
+    return new DescendantOrSelfAxis(info, fNode, this, nodeTest, *this);
     break;
   }
   case XQStep::FOLLOWING: {
-    return new FollowingAxis(info, fNode, this, nodeTest);
+    return new FollowingAxis(info, fNode, this, nodeTest, *this);
   }
   case XQStep::FOLLOWING_SIBLING: {
-    return new FollowingSiblingAxis(info, fNode, this, nodeTest);
+    return new FollowingSiblingAxis(info, fNode, this, nodeTest, *this);
   }
   case XQStep::NAMESPACE: {
     if(fNode->getNodeType() == DOMNode::ELEMENT_NODE) {
-      return new NamespaceAxis(info, fNode, this, nodeTest);
+      return new NamespaceAxis(info, fNode, this, nodeTest, *this);
     }
     break;
   }
   case XQStep::PARENT: {
-    return new ParentAxis(info, fNode, this, nodeTest);
+    return new ParentAxis(info, fNode, this, nodeTest, *this);
   }
   case XQStep::PRECEDING: {
-    return new PrecedingAxis(info, fNode, this, nodeTest);
+    return new PrecedingAxis(info, fNode, this, nodeTest, *this);
   }
   case XQStep::PRECEDING_SIBLING: {
-    return new PrecedingSiblingAxis(info, fNode, this, nodeTest);
+    return new PrecedingSiblingAxis(info, fNode, this, nodeTest, *this);
   }
   case XQStep::SELF: {
     return nodeTest->filterResult(new SelfAxis(info, this), info);
@@ -839,7 +984,7 @@ Result NodeImpl::getAxisResult(XQStep::Axis axis, const NodeTest *nodeTest, cons
   return 0;
 }
 
-ATBooleanOrDerived::Ptr NodeImpl::dmIsId(const DynamicContext* context) const
+ATBooleanOrDerived::Ptr XercesNodeImpl::dmIsId(const DynamicContext* context) const
 {
   const DOMTypeInfo *typeInfo = 0;
 
@@ -861,7 +1006,7 @@ ATBooleanOrDerived::Ptr NodeImpl::dmIsId(const DynamicContext* context) const
   return context->getItemFactory()->createBoolean(false, context);
 }
 
-ATBooleanOrDerived::Ptr NodeImpl::dmIsIdRefs(const DynamicContext* context) const
+ATBooleanOrDerived::Ptr XercesNodeImpl::dmIsIdRefs(const DynamicContext* context) const
 {
   const DOMTypeInfo *typeInfo = 0;
 
@@ -884,7 +1029,7 @@ ATBooleanOrDerived::Ptr NodeImpl::dmIsIdRefs(const DynamicContext* context) cons
   return context->getItemFactory()->createBoolean(false, context);
 }
 
-void NodeImpl::getMemberTypeUriAndName(const XMLCh*& uri, const XMLCh*& name) const
+void XercesNodeImpl::getMemberTypeUriAndName(const XMLCh*& uri, const XMLCh*& name) const
 {
     short nodeType=fNode->getNodeType();
     try
@@ -913,14 +1058,19 @@ void NodeImpl::getMemberTypeUriAndName(const XMLCh*& uri, const XMLCh*& name) co
     getTypeUriAndName(uri, name);
 }
 
-void NodeImpl::getTypeUriAndName(const XMLCh*& uri, const XMLCh*& name) const
+void XercesNodeImpl::getTypeUriAndName(const XMLCh*& uri, const XMLCh*& name) const
 {
-    short nodeType=fNode->getNodeType();
+  typeUriAndName(fNode, uri, name);
+}
+
+static void typeUriAndName(const DOMNode *node, const XMLCh*& uri, const XMLCh*& name)
+{
+    short nodeType=node->getNodeType();
     if (nodeType == DOMNode::ELEMENT_NODE) {
         // check if we have PSVI info
         try
         {
-            DOMPSVITypeInfo* psviType=(DOMPSVITypeInfo*)const_cast<DOMNode*>(fNode)->getInterface(XMLUni::fgXercescInterfacePSVITypeInfo);
+            DOMPSVITypeInfo* psviType=(DOMPSVITypeInfo*)const_cast<DOMNode*>(node)->getInterface(XMLUni::fgXercescInterfacePSVITypeInfo);
             if(psviType && psviType->getNumericProperty(DOMPSVITypeInfo::PSVI_Validity)==PSVIItem::VALIDITY_VALID)
             {
                 uri=psviType->getStringProperty(DOMPSVITypeInfo::PSVI_Type_Definition_Namespace);
@@ -939,7 +1089,7 @@ void NodeImpl::getTypeUriAndName(const XMLCh*& uri, const XMLCh*& name) const
         // check if we have PSVI info
         try
         {
-            DOMPSVITypeInfo* psviType=(DOMPSVITypeInfo*)const_cast<DOMNode*>(fNode)->getInterface(XMLUni::fgXercescInterfacePSVITypeInfo);
+            DOMPSVITypeInfo* psviType=(DOMPSVITypeInfo*)const_cast<DOMNode*>(node)->getInterface(XMLUni::fgXercescInterfacePSVITypeInfo);
             if(psviType && psviType->getNumericProperty(DOMPSVITypeInfo::PSVI_Validity)==PSVIItem::VALIDITY_VALID)
             {
                 uri=psviType->getStringProperty(DOMPSVITypeInfo::PSVI_Type_Definition_Namespace);
@@ -950,7 +1100,7 @@ void NodeImpl::getTypeUriAndName(const XMLCh*& uri, const XMLCh*& name) const
             // ignore it; the implementation of getInterface for Xerces < 2.6 will throw it
         }
         // check if we have type informations coming from a DTD
-        const DOMTypeInfo* pTypeInfo=((DOMAttr*)fNode)->getTypeInfo();
+        const DOMTypeInfo* pTypeInfo=((DOMAttr*)node)->getTypeInfo();
         const XMLCh* szUri=pTypeInfo->getNamespace();
         if(szUri==0 || szUri[0]==0)
         {
@@ -980,16 +1130,16 @@ void NodeImpl::getTypeUriAndName(const XMLCh*& uri, const XMLCh*& name) const
         name=ATUntypedAtomic::fgDT_UNTYPEDATOMIC;
         return;
     }
-    XQThrow2(ItemException, X("NodeImpl::getTypeUriAndName"), X("Tried to get type informations on Node other than DOMElement, DOMAttribute or DOMText"));
+    XQThrow2(ItemException, X("XercesNodeImpl::getTypeUriAndName"), X("Tried to get type informations on Node other than DOMElement, DOMAttribute or DOMText"));
 }
 
-const XMLCh* NodeImpl::getTypeName() const {
+const XMLCh* XercesNodeImpl::getTypeName() const {
     const XMLCh* uri, *name;
     getTypeUriAndName(uri,name);
     return name;
 }
 
-const XMLCh* NodeImpl::getTypeURI() const {
+const XMLCh* XercesNodeImpl::getTypeURI() const {
     const XMLCh* uri, *name;
     getTypeUriAndName(uri,name);
     return uri;

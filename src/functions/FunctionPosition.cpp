@@ -49,12 +49,12 @@ ASTNode *FunctionPosition::staticTyping(StaticContext *context)
   return calculateSRCForArguments(context);
 }
 
-Sequence FunctionPosition::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionPosition::createSequence(DynamicContext* context, int flags) const
 {
   XPath2MemoryManager* memMgr = context->getMemoryManager();
 
   if(context->getContextItem()==NULLRCP)
-    XQThrow(FunctionException,X("FunctionPosition::collapseTreeInternal"), X("Undefined context item in fn:position [err:XPDY0002]"));
+    XQThrow(FunctionException,X("FunctionPosition::createSequence"), X("Undefined context item in fn:position [err:XPDY0002]"));
   return Sequence(context->getItemFactory()->createInteger((long)context->getContextPosition(), context), memMgr);
 }
 

@@ -19,8 +19,8 @@
 #include <xqilla/exceptions/ASTException.hpp>
 #include <xqilla/items/Node.hpp>
 #include <xqilla/ast/XQAtomize.hpp>
+#include <xqilla/events/EventHandler.hpp>
 
-#include <xercesc/dom/DOM.hpp>
 #include <xercesc/util/XMLChar.hpp>
 #include <xercesc/framework/XMLBuffer.hpp>
 
@@ -35,39 +35,30 @@ XQCommentConstructor::XQCommentConstructor(ASTNode *value, XPath2MemoryManager* 
   setType(ASTNode::DOM_CONSTRUCTOR);
 }
 
-Sequence XQCommentConstructor::collapseTreeInternal(DynamicContext *context, int flags) const 
+void XQCommentConstructor::generateEvents(EventHandler *events, DynamicContext *context,
+                                          bool preserveNS, bool preserveType) const
 {
-  Node::Ptr result;
-  try
-  {
-    XMLBuffer value;
-    getStringValue(m_value, value, context);
+  XMLBuffer value;
+  getStringValue(m_value, value, context);
 
-    // Check for two dashes in a row, or a dash at the end
-    bool foundDash = false;
-    const XMLCh *ptr = value.getRawBuffer();
-    const XMLCh *end = ptr + value.getLen();
-    while(ptr != end) {
-      if(*ptr == chDash) {
-        if(foundDash) break;
-        foundDash = true;
-      }
-      else foundDash = false;
-      ++ptr;
+  // Check for two dashes in a row, or a dash at the end
+  bool foundDash = false;
+  const XMLCh *ptr = value.getRawBuffer();
+  const XMLCh *end = ptr + value.getLen();
+  while(ptr != end) {
+    if(*ptr == chDash) {
+      if(foundDash) break;
+      foundDash = true;
     }
-    if(foundDash)
-      XQThrow(ASTException,X("DOM Constructor"),X("It is a dynamic error if the result of the content expression of "
-                                                  "a computed comment constructor contains two adjacent hyphens or "
-                                                  "ends with a hyphen. [err:XQDY0072]"));
+    else foundDash = false;
+    ++ptr;
+  }
+  if(foundDash)
+    XQThrow(ASTException,X("DOM Constructor"),X("It is a dynamic error if the result of the content expression of "
+                                                "a computed comment constructor contains two adjacent hyphens or "
+                                                "ends with a hyphen. [err:XQDY0072]"));
 
-    result = context->getItemFactory()->createCommentNode(value.getRawBuffer(), context);
-  }
-  catch(DOMException& e) {
-    XQThrow(ASTException,X("DOM Constructor"),e.getMessage());
-  }
-  if(result.notNull())
-    return Sequence(result, context->getMemoryManager());
-  return Sequence(context->getMemoryManager());
+  events->commentEvent(value.getRawBuffer());
 }
 
 ASTNode* XQCommentConstructor::staticResolution(StaticContext *context)

@@ -34,7 +34,7 @@ public:
   
   /** Returns an QName with the lexical form given in the first argument. The 
    *  prefix is resolved using the in-scope namespaces for a given element. **/
-  Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
+  Sequence createSequence(DynamicContext* context, int flags=0) const;
 
 };
 

@@ -41,7 +41,7 @@ FunctionUpperCase::FunctionUpperCase(const VectorOfASTNodes &args, XPath2MemoryM
   _src.getStaticType().flags = StaticType::STRING_TYPE;
 }
 
-Sequence FunctionUpperCase::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionUpperCase::createSequence(DynamicContext* context, int flags) const
 {
   XPath2MemoryManager *memMgr = context->getMemoryManager();
 

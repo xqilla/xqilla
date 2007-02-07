@@ -46,7 +46,7 @@ FunctionSubstringBefore::FunctionSubstringBefore(const VectorOfASTNodes &args, X
   _src.getStaticType().flags = StaticType::STRING_TYPE;
 }
 
-Sequence FunctionSubstringBefore::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionSubstringBefore::createSequence(DynamicContext* context, int flags) const
 {
   XPath2MemoryManager* memMgr = context->getMemoryManager();
 
@@ -73,7 +73,7 @@ Sequence FunctionSubstringBefore::collapseTreeInternal(DynamicContext* context, 
     try {
       context->getItemFactory()->createAnyURI(collName, context);
     } catch(XPath2ErrorException &e) {
-      XQThrow(FunctionException, X("FunctionSubstringAfter::collapseTreeInternal"), X("Invalid collationURI"));  
+      XQThrow(FunctionException, X("FunctionSubstringAfter::createSequence"), X("Invalid collationURI"));  
     }
     collation=context->getCollation(collName, this);
   }

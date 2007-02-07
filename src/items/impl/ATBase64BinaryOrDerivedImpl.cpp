@@ -122,6 +122,10 @@ AnyAtomicType::Ptr ATBase64BinaryOrDerivedImpl::castAsInternal(AtomicObjectType 
           buf.append(hexDigits[decodedBinary[i]/16]);
           buf.append(hexDigits[decodedBinary[i]%16]);
       }
+      if(targetType == 0) {
+        targetURI = SchemaSymbols::fgURI_SCHEMAFORSCHEMA;
+        targetType = SchemaSymbols::fgDT_HEXBINARY;
+      }
       return new ATHexBinaryOrDerivedImpl(targetURI, targetType, buf.getRawBuffer(), context);
     }
     default: {

@@ -93,7 +93,7 @@ Item::Ptr FTContains::FTContainsResult::getSingleResult(DynamicContext *context)
 
   DefaultTokenizer tokenizer;
 
-  Result argNodes = parent_->getArgument()->collapseTree(context);
+  Result argNodes = parent_->getArgument()->createResult(context);
   Item::Ptr item;
   while((item = argNodes->next(context)).notNull()) {
     if(!item->isNode())

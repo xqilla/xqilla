@@ -54,7 +54,7 @@ ASTNode *FunctionDateTime::staticTyping(StaticContext *context)
   return calculateSRCForArguments(context, /*checkTimezone*/true);
 }
 
-Sequence FunctionDateTime::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionDateTime::createSequence(DynamicContext* context, int flags) const
 {
     ATDateOrDerived::Ptr date = (const ATDateOrDerived *)getParamNumber(1, context)->next(context).get();
     if(date.isNull())
@@ -70,7 +70,7 @@ Sequence FunctionDateTime::collapseTreeInternal(DynamicContext* context, int fla
         if(time->hasTimezone()) {
           const Timezone::Ptr timeTZ=time->getTimezone();
           if(!timeTZ->equals(finalTZ))
-            XQThrow(FunctionException, X("FunctionDateTime::collapseTreeInternal"),
+            XQThrow(FunctionException, X("FunctionDateTime::createSequence"),
                     X("Both arguments to fn:dateTime have a timezone specified [err:FORG0008]"));
         }
     }

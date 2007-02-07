@@ -34,7 +34,7 @@ FunctionAbs::FunctionAbs(const VectorOfASTNodes &args, XPath2MemoryManager* memM
   _src.getStaticType().flags = StaticType::NUMERIC_TYPE;
 }
 
-Sequence FunctionAbs::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionAbs::createSequence(DynamicContext* context, int flags) const
 {
   Numeric::Ptr numericArg = getNumericParam(1, context);
 

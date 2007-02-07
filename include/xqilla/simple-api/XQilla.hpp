@@ -23,6 +23,7 @@
 class DynamicContext;
 class XQQuery;
 class XPath2MemoryManager;
+class XQillaConfiguration;
 
 XERCES_CPP_NAMESPACE_BEGIN
 class InputSource;
@@ -149,6 +150,7 @@ public:
    * @return An implementation of DynamicContext
    */
   static DynamicContext *createContext(Language language = XQUERY,
+                                       XQillaConfiguration *conf = 0,
                                        XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr =
                                        XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager);
 

@@ -20,7 +20,6 @@
 #include <xqilla/items/ATQNameOrDerived.hpp>
 #include <xqilla/items/Node.hpp>
 #include <xqilla/items/ATStringOrDerived.hpp>
-#include <xercesc/dom/DOMNode.hpp>
 #include <xqilla/exceptions/FunctionException.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 
@@ -48,7 +47,7 @@ FunctionResolveQName::FunctionResolveQName(const VectorOfASTNodes &args, XPath2M
   _src.getStaticType().flags = StaticType::QNAME_TYPE;
 }
 
-Sequence FunctionResolveQName::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionResolveQName::createSequence(DynamicContext* context, int flags) const
 {
   XPath2MemoryManager* memMgr = context->getMemoryManager();
 
@@ -58,7 +57,7 @@ Sequence FunctionResolveQName::collapseTreeInternal(DynamicContext* context, int
     
   const XMLCh* paramQName = arg1.first()->asString(context);
   if(!XERCES_CPP_NAMESPACE_QUALIFIER XMLChar1_0::isValidQName(paramQName, XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(paramQName)))
-    XQThrow(FunctionException,X("FunctionResolveQName::collapseTreeInternal"),X("The first argument to fn:resolve-QName is not a valid xs:QName [err:FOCA0002]"));
+    XQThrow(FunctionException,X("FunctionResolveQName::createSequence"),X("The first argument to fn:resolve-QName is not a valid xs:QName [err:FOCA0002]"));
 
   const XMLCh* prefix = XPath2NSUtils::getPrefix(paramQName, memMgr);
   const XMLCh* localName = XPath2NSUtils::getLocalName(paramQName);
@@ -86,7 +85,7 @@ Sequence FunctionResolveQName::collapseTreeInternal(DynamicContext* context, int
   }
 
   if(!noPrefix && namespaceURI == 0) {
-    XQThrow(FunctionException, X("FunctionResolveQName::collapseTreeInternal"),X("No namespace found for prefix [err:FONS0004]."));
+    XQThrow(FunctionException, X("FunctionResolveQName::createSequence"),X("No namespace found for prefix [err:FONS0004]."));
   }
 
   Sequence result(context->getItemFactory()->createQName(namespaceURI, prefix, localName, context), memMgr);

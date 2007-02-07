@@ -63,7 +63,7 @@ PendingUpdateList FunctionPut::createUpdateList(DynamicContext *context) const
 
   if(node->dmNodeKind() != Node::document_string &&
      node->dmNodeKind() != Node::element_string) {
-    XQThrow(FunctionException, X("FunctionPut::collapseTreeInternal"),
+    XQThrow(FunctionException, X("FunctionPut::createSequence"),
             X("The argument to fn:put is not a document or element node [err:TBD]"));
   }
 
@@ -80,11 +80,11 @@ PendingUpdateList FunctionPut::createUpdateList(DynamicContext *context) const
   }
 
   if(uriArg == 0)
-    XQThrow(FunctionException, X("FunctionPut::collapseTreeInternal"),
+    XQThrow(FunctionException, X("FunctionPut::createSequence"),
             X("The uri argument to fn:put is empty [err:TBD]"));
 
   if(!baseURI_)
-    XQThrow(FunctionException, X("FunctionPut::collapseTreeInternal"),
+    XQThrow(FunctionException, X("FunctionPut::createSequence"),
             X("Base uri undefined in the static context [err:FONS0005]"));
 
   Item::Ptr anyURI;
@@ -95,7 +95,7 @@ PendingUpdateList FunctionPut::createUpdateList(DynamicContext *context) const
     anyURI = context->getItemFactory()->createAnyURI(resolved.getUriText(), context);
   }
   catch(XQException &e) {
-    XQThrow(FunctionException, X("FunctionPut::collapseTreeInternal"),
+    XQThrow(FunctionException, X("FunctionPut::createSequence"),
             X("The argument to fn:put is not a valid xs:anyURI [err:TBD]"));
   }
 

@@ -1454,9 +1454,7 @@ string PrintAST::printContentSequence(const XQContentSequence *item, const Dynam
 
   string in(getIndent(indent));
 
-  s << in << "<ContentSequence";
-  if(item->getCopy()) s << " copy=\"true\"";
-  s << ">" << endl; 
+  s << in << "<ContentSequence>" << endl; 
   s << printASTNode(item->getExpression(), context, indent + INDENT);
   s << in << "</ContentSequence>" << endl;
 

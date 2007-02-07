@@ -101,26 +101,28 @@ const XMLCh* ATFloatOrDerivedImpl::asString(const DynamicContext* context) const
 }
 
 /* Promote this to the given type, if possible */
-Numeric::Ptr ATFloatOrDerivedImpl::promoteTypeIfApplicable(const XMLCh* typeURI, const XMLCh* typeName, const DynamicContext* context) const {
-  // if this isInstanceOf target (and target instanceof xs:float) or if typeName == double, cast
-  if(this->isInstanceOfType(typeURI, typeName, context) ) {
-    return this; // no need to promote, already a float (or possibly anyAtomicType, anySimpleType, anyType)
-  } else if( (XPath2Utils::equals(typeName, SchemaSymbols::fgDT_DOUBLE) &&      
-      XPath2Utils::equals(typeURI, SchemaSymbols::fgURI_SCHEMAFORSCHEMA)) ) {
-    return (const Numeric::Ptr )this->castAs(typeURI, typeName, context);
-  } else {
-    return 0;
-  }  
+Numeric::Ptr ATFloatOrDerivedImpl::promoteTypeIfApplicable(AnyAtomicType::AtomicObjectType typeIndex,
+                                                           const DynamicContext* context) const
+{
+  switch(typeIndex) {
+  case AnyAtomicType::FLOAT:
+    return this;
+  case AnyAtomicType::DOUBLE:
+    return (const Numeric::Ptr)castAs(typeIndex, context);
+  default:
+    break;
+  }
+  return 0;
 }
 
 /** Returns a Numeric object which is the sum of this and other */
 Numeric::Ptr ATFloatOrDerivedImpl::add(const Numeric::Ptr &other, const DynamicContext* context) const {
   if(other->getPrimitiveTypeIndex() == AnyAtomicType::DECIMAL) {
     // if other is a decimal, promote it to xs:float
-    return this->add((const Numeric::Ptr )other->castAs(this->getPrimitiveTypeURI(), this->getPrimitiveTypeName(), context), context);
+    return this->add((const Numeric::Ptr )other->castAs(this->getPrimitiveTypeIndex(), context), context);
   } else if (other->getPrimitiveTypeIndex() == AnyAtomicType::DOUBLE) {
     // if other is a double, promote this to xs:double
-    return ((const Numeric::Ptr )this->castAs(other->getPrimitiveTypeURI(), other->getPrimitiveTypeName(), context))->add(other, context);
+    return ((const Numeric::Ptr )this->castAs(other->getPrimitiveTypeIndex(), context))->add(other, context);
   } else if (other->getPrimitiveTypeIndex() == AnyAtomicType::FLOAT) {
     // same primitive type, can make comparison
     ATFloatOrDerivedImpl* otherImpl = (ATFloatOrDerivedImpl*)(const Numeric*)other;
@@ -189,10 +191,10 @@ Numeric::Ptr ATFloatOrDerivedImpl::add(const Numeric::Ptr &other, const DynamicC
 Numeric::Ptr ATFloatOrDerivedImpl::subtract(const Numeric::Ptr &other, const DynamicContext* context) const {
   if(other->getPrimitiveTypeIndex() == AnyAtomicType::DECIMAL) {
     // if other is a decimal, promote it to xs:float
-    return this->subtract((const Numeric::Ptr )other->castAs(this->getPrimitiveTypeURI(), this->getPrimitiveTypeName(), context), context);
+    return this->subtract((const Numeric::Ptr )other->castAs(this->getPrimitiveTypeIndex(), context), context);
   } else if (other->getPrimitiveTypeIndex() == AnyAtomicType::DOUBLE) {
     // if other is a double, promote this to xs:double
-    return ((const Numeric::Ptr )this->castAs(other->getPrimitiveTypeURI(), other->getPrimitiveTypeName(), context))->subtract(other, context);
+    return ((const Numeric::Ptr )this->castAs(other->getPrimitiveTypeIndex(), context))->subtract(other, context);
   } else if (other->getPrimitiveTypeIndex() == AnyAtomicType::FLOAT) {
     // same primitive type, can make comparison
     ATFloatOrDerivedImpl* otherImpl = (ATFloatOrDerivedImpl*)(const Numeric*)other;
@@ -243,10 +245,10 @@ Numeric::Ptr ATFloatOrDerivedImpl::subtract(const Numeric::Ptr &other, const Dyn
 Numeric::Ptr ATFloatOrDerivedImpl::multiply(const Numeric::Ptr &other, const DynamicContext* context) const {
   if(other->getPrimitiveTypeIndex() == AnyAtomicType::DECIMAL) {
     // if other is a decimal, promote it to xs:float
-    return this->multiply((const Numeric::Ptr )other->castAs(this->getPrimitiveTypeURI(), this->getPrimitiveTypeName(), context), context);
+    return this->multiply((const Numeric::Ptr )other->castAs(this->getPrimitiveTypeIndex(), context), context);
   } else if (other->getPrimitiveTypeIndex() == AnyAtomicType::DOUBLE) {
     // if other is a double, promote this to xs:double
-    return ((const Numeric::Ptr )this->castAs(other->getPrimitiveTypeURI(), other->getPrimitiveTypeName(), context))->multiply(other, context);
+    return ((const Numeric::Ptr )this->castAs(other->getPrimitiveTypeIndex(), context))->multiply(other, context);
   } else if (other->getPrimitiveTypeIndex() == AnyAtomicType::FLOAT) {
     // same primitive type, can make comparison
     ATFloatOrDerivedImpl* otherImpl = (ATFloatOrDerivedImpl*)(const Numeric*)other;
@@ -306,10 +308,10 @@ Numeric::Ptr ATFloatOrDerivedImpl::multiply(const Numeric::Ptr &other, const Dyn
 Numeric::Ptr ATFloatOrDerivedImpl::divide(const Numeric::Ptr &other, const DynamicContext* context) const {
     if(other->getPrimitiveTypeIndex() == AnyAtomicType::DECIMAL) {
     // if other is a decimal, promote it to xs:float
-    return this->divide((const Numeric::Ptr )other->castAs(this->getPrimitiveTypeURI(), this->getPrimitiveTypeName(), context), context);
+    return this->divide((const Numeric::Ptr )other->castAs(this->getPrimitiveTypeIndex(), context), context);
   } else if (other->getPrimitiveTypeIndex() == AnyAtomicType::DOUBLE) {
     // if other is a double, promote this to xs:double
-    return ((const Numeric::Ptr )this->castAs(other->getPrimitiveTypeURI(), other->getPrimitiveTypeName(), context))->divide(other, context);
+    return ((const Numeric::Ptr )this->castAs(other->getPrimitiveTypeIndex(), context))->divide(other, context);
   } else if (other->getPrimitiveTypeIndex() == AnyAtomicType::FLOAT) {
     // same primitive type, can make comparison
     ATFloatOrDerivedImpl* otherImpl = (ATFloatOrDerivedImpl*)(const Numeric*)other;
@@ -392,18 +394,17 @@ Numeric::Ptr ATFloatOrDerivedImpl::divide(const Numeric::Ptr &other, const Dynam
 Numeric::Ptr ATFloatOrDerivedImpl::mod(const Numeric::Ptr &other, const DynamicContext* context) const {
   if(other->getPrimitiveTypeIndex() == AnyAtomicType::DECIMAL) {
     // if other is a decimal, promote it to xs:float
-    return this->mod((const Numeric::Ptr )other->castAs(this->getPrimitiveTypeURI(), this->getPrimitiveTypeName(), context), context);
+    return this->mod((const Numeric::Ptr )other->castAs(this->getPrimitiveTypeIndex(), context), context);
   } else if (other->getPrimitiveTypeIndex() == AnyAtomicType::DOUBLE) {
     // if other is a double, promote this to xs:double
-    return ((const Numeric::Ptr )this->castAs(other->getPrimitiveTypeURI(), other->getPrimitiveTypeName(), context))->mod(other, context);
+    return ((const Numeric::Ptr )this->castAs(other->getPrimitiveTypeIndex(), context))->mod(other, context);
   } else if (other->getPrimitiveTypeIndex() == AnyAtomicType::FLOAT) {
     // same primitive type, can make comparison
     const ATFloatOrDerivedImpl* otherImpl = (ATFloatOrDerivedImpl*)(const Numeric*)other;
     if(this->isNaN() || otherImpl->isNaN() || this->isInfinite() || otherImpl->isZero()) {
       return notANumber(context);    
     } else if(otherImpl->isInfinite() || this->isZero()) {
-      return (const Numeric::Ptr )this->castAs(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                                          SchemaSymbols::fgDT_FLOAT, context);
+      return (const Numeric::Ptr )this->castAs(AnyAtomicType::FLOAT, context);
     } else {
       MAPM result = _float;
       MAPM r;
@@ -488,7 +489,7 @@ Numeric::Ptr ATFloatOrDerivedImpl::roundHalfToEven(const Numeric::Ptr &precision
   if (isZero() && isNegative())
     return this;
 
-  ATFloatOrDerived::Ptr float_precision = (const Numeric::Ptr)precision->castAs(this->getPrimitiveTypeURI(), this->getPrimitiveTypeName(), context);
+  ATFloatOrDerived::Ptr float_precision = (const Numeric::Ptr)precision->castAs(this->getPrimitiveTypeIndex(), context);
   MAPM exp = MAPM(10).pow(((ATFloatOrDerivedImpl*)(const ATFloatOrDerived*)float_precision)->_float);
   MAPM value = _float * exp;
   bool halfVal = false;

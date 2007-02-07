@@ -13,32 +13,18 @@
 
 #include <xqilla/context/impl/ItemFactoryImpl.hpp>
 #include <xqilla/context/DynamicContext.hpp>
-#include <xqilla/context/XQDebugCallback.hpp>
-
-#include <assert.h>
-
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xqilla/context/DynamicContext.hpp>
-#include <xqilla/functions/FunctionConstructor.hpp>
 #include <xqilla/items/impl/ATBooleanOrDerivedImpl.hpp>
 #include <xqilla/items/impl/ATDecimalOrDerivedImpl.hpp>
 #include <xqilla/items/impl/ATDoubleOrDerivedImpl.hpp>
 #include <xqilla/items/impl/ATFloatOrDerivedImpl.hpp>
 #include <xqilla/items/impl/ATQNameOrDerivedImpl.hpp>
 #include <xqilla/items/impl/ATDurationOrDerivedImpl.hpp>
-#include <xqilla/items/impl/NodeImpl.hpp>
 #include <xqilla/items/ATDurationOrDerived.hpp>
 #include <xqilla/items/ATUntypedAtomic.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
-#include <xqilla/exceptions/TypeNotFoundException.hpp>
-#include <xqilla/exceptions/ASTException.hpp>
-#include "../../dom-api/impl/XPathNamespaceImpl.hpp"
 
-#include <xercesc/util/XMLString.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
-#include <xercesc/validators/datatype/DatatypeValidator.hpp>
-#include <xercesc/dom/DOM.hpp>
-#include <xercesc/dom/impl/DOMDocumentImpl.hpp>
 
 #if defined(XERCES_HAS_CPP_NAMESPACE)
 XERCES_CPP_NAMESPACE_USE
@@ -46,329 +32,12 @@ XERCES_CPP_NAMESPACE_USE
 
 ItemFactoryImpl::ItemFactoryImpl(const DocumentCache* dc, MemoryManager* memMgr)
   : datatypeLookup_(dc, memMgr),
-    outputDocument_(0),
     memMgr_(memMgr)
 {
 }
 
 ItemFactoryImpl::~ItemFactoryImpl()
 {
-}
-
-DOMDocument *ItemFactoryImpl::getOutputDocument(const DynamicContext *context) const
-{
-  // Lazily create the output document
-  if(outputDocument_ == NULLRCP) {
-    outputDocument_ = new NodeImpl(context->createNewDocument(), context);
-  }
-	return (DOMDocument*)outputDocument_->getDOMNode();
-}
-
-Node::Ptr ItemFactoryImpl::cloneNode(const Node::Ptr node, const DynamicContext *context) const
-{
-  DOMNode* xNode=(DOMNode*)node->getInterface(Node::gXerces);
-  assert(xNode!=NULL);
-  if(xNode->getNodeType()==DOMNode::DOCUMENT_NODE)
-  {
-    DOMDocument *document = context->createNewDocument();
-
-    DOMNode* child=xNode->getFirstChild();
-    while(child)
-    {
-      DOMNode *newChild = document->importNode(child,true);
-      if(child->getNodeType()==DOMNode::ELEMENT_NODE)
-        XPath2Utils::copyElementType(document, (DOMElement*)newChild, (const DOMElement*)child);
-      if(context->getDebugCallback()) context->getDebugCallback()->ReportClonedNode(const_cast<DynamicContext*>(context), child, newChild);
-      document->appendChild(newChild);
-      child=child->getNextSibling();
-    }
-    return new NodeImpl(document, context);
-  }
-  else if(xNode->getNodeType()==DOMXPathNamespace::XPATH_NAMESPACE_NODE)
-  {
-    // TODO
-    XQThrow2(ASTException,X("ItemFactoryImpl::cloneNode"),X("Cannot clone a namespace node"));
-    return NULL;
-  }
-  else
-  {
-    DOMDocument* mainDoc=getOutputDocument(context);
-    DOMNode* newNode=mainDoc->importNode(xNode, true);
-    if(xNode->getNodeType()==DOMNode::ATTRIBUTE_NODE)
-      XPath2Utils::copyAttributeType(mainDoc, (DOMAttr*)newNode, (const DOMAttr*)xNode);
-    else if(xNode->getNodeType()==DOMNode::ELEMENT_NODE)
-      XPath2Utils::copyElementType(mainDoc, (DOMElement*)newNode, (const DOMElement*)xNode);
-    if(context->getDebugCallback()) context->getDebugCallback()->ReportClonedNode(const_cast<DynamicContext*>(context), xNode, newNode);
-    return new NodeImpl(newNode, context);
-  }
-}
-
-Node::Ptr ItemFactoryImpl::createTextNode(const XMLCh *value, const DynamicContext *context) const
-{
-  return new NodeImpl(getOutputDocument(context)->createTextNode(value), context);
-}
-
-Node::Ptr ItemFactoryImpl::createCommentNode(const XMLCh *value, const DynamicContext *context) const
-{
-  return new NodeImpl(getOutputDocument(context)->createComment(value), context);
-}
-
-Node::Ptr ItemFactoryImpl::createPINode(const XMLCh *name, const XMLCh *value, const DynamicContext *context) const
-{
-  return new NodeImpl(getOutputDocument(context)->createProcessingInstruction(name, value), context);
-}
-
-Node::Ptr ItemFactoryImpl::createAttributeNode(const XMLCh *uri, const XMLCh *prefix, const XMLCh *name, const XMLCh *value, const DynamicContext *context) const
-{
-  // check if it's an ID
-  bool isID=false;
-  static XMLCh xmlID[]={ chLatin_x, chLatin_m, chLatin_l, chColon, chLatin_i, chLatin_d, chNull }; 
-  static XMLCh xml[]={ chLatin_x, chLatin_m, chLatin_l, chNull }; 
-  static XMLCh ID[]={ chLatin_i, chLatin_d, chNull }; 
-  if(XPath2Utils::equals(uri, XMLUni::fgXMLURIName) && 
-     (XPath2Utils::equals(name, xmlID) || (XPath2Utils::equals(prefix, xml) && XPath2Utils::equals(name, ID))))
-  {
-    // If the attribute name is xml:id, the string value and typed value of the attribute are further normalized by 
-    // discarding any leading and trailing space (#x20) characters, and by replacing sequences of space (#x20) characters 
-    // by a single space (#x20) character.
-    XMLCh* copyStr=(XMLCh*)context->getMemoryManager()->allocate((XMLString::stringLen(value)+1)*sizeof(XMLCh));
-    XMLString::copyString(copyStr, value);
-    XMLString::collapseWS(copyStr, context->getMemoryManager());
-    value=copyStr;
-    isID=true;
-  }
-
-  DOMAttr *attr = getOutputDocument(context)->createAttributeNS(uri, name);
-  if(prefix != 0 && !XPath2Utils::equals(XMLUni::fgZeroLenString, prefix))
-    attr->setPrefix(prefix);
-  attr->setNodeValue(value);
-/*
-  // to mark it as an ID requires access to the internal headers of Xerces; maybe we can fake it's an ID inside
-  // Node::dmIsId, or maybe we can change Xerces to automatically turn on the bit when he sees the xml:id name....
-  DOMAttrNSImpl *attr = (DOMAttrNSImpl*)getOutputDocument(context)->createAttributeNS(uri, name);
-  castToNodeImpl(attr)->isIdAttr(isID); // TODO: add it to the ID map of the document??
-*/
-  return new NodeImpl(attr, context);
-}
-
-Node::Ptr ItemFactoryImpl::copyNode(const Node::Ptr &node, const DynamicContext *context) const
-{
-  return new NodeImpl(copyNode(getOutputDocument(context), node, context), context);
-}
-
-DOMNode *ItemFactoryImpl::copyNode(DOMDocument *document, const Node::Ptr &node, const DynamicContext *context) const
-{
-  StaticContext::ConstructionMode constrMode=context->getConstructionMode();
-  bool nsPreserveMode=context->getPreserveNamespaces();
-
-  const NodeImpl *nodeImpl = (const NodeImpl*)node->getInterface(Item::gXQilla);
-  assert(nodeImpl != 0);
-
-  const DOMNode *domnode = nodeImpl->getDOMNode();
-
-  DOMNode *newNode = NULL;
-  if(domnode->getOwnerDocument() == document) {
-    newNode = domnode->cloneNode(true);
-  }
-  else {
-    newNode = document->importNode(const_cast<DOMNode*>(domnode),true);
-  }
-
-  switch(newNode->getNodeType()) {
-  case DOMNode::ATTRIBUTE_NODE:
-    if(constrMode == StaticContext::CONSTRUCTION_MODE_PRESERVE)
-      XPath2Utils::copyAttributeType(document, (DOMAttr*)newNode, (DOMAttr*)domnode);
-    break;
-  case DOMNode::ELEMENT_NODE:
-    if(constrMode == StaticContext::CONSTRUCTION_MODE_PRESERVE)
-      XPath2Utils::copyElementType(document, (DOMElement*)newNode, (DOMElement*)domnode);
-
-    if(!nsPreserveMode)
-    {
-      DOMElement* childElem=(DOMElement*)newNode;
-      // it's an error if the data type is namespace sensitive, e.g. QName or NOTATION
-      try
-      {
-        const DOMTypeInfo *psviType=childElem->getTypeInfo();
-        if(psviType)
-        {
-          const XMLCh* typeURI=psviType->getNamespace();
-          const XMLCh* typeName=psviType->getName();
-          if(XPath2Utils::equals(typeURI, SchemaSymbols::fgURI_SCHEMAFORSCHEMA) &&
-             (
-              XPath2Utils::equals(typeName, SchemaSymbols::fgDT_QNAME) ||
-              XPath2Utils::equals(typeName, XMLUni::fgNotationString)
-              )
-             )
-            XQThrow2(ASTException,X("ItemFactoryImpl::createElementNode"),
-                     X("An element has a content that is namespace sensitive, and cannot be copied when copy-namespace is set to no-preserve [err:XQTY0086]"));
-        }
-      } catch(DOMException&) {
-      }
-      
-      DOMNamedNodeMap* attrMap=childElem->getAttributes();
-      for(XMLSize_t i=0;i<attrMap->getLength();)
-      {
-        bool bPreserved=true;
-        DOMNode* attr=attrMap->item(i);
-        try
-        {
-          const DOMTypeInfo *psviType=((DOMAttr*)attr)->getTypeInfo();
-          if(psviType)
-          {
-            const XMLCh* typeURI=psviType->getNamespace();
-            const XMLCh* typeName=psviType->getName();
-            if(XPath2Utils::equals(typeURI, SchemaSymbols::fgURI_SCHEMAFORSCHEMA) &&
-               (
-                XPath2Utils::equals(typeName, SchemaSymbols::fgDT_QNAME) ||
-                XPath2Utils::equals(typeName, XMLUni::fgNotationString)
-                )
-               )
-              XQThrow2(ASTException,X("ItemFactoryImpl::createElementNode"),
-                       X("An element has a content that is namespace sensitive, and cannot be copied when copy-namespace is set to no-preserve [err:XQTY0086]"));
-          }
-        } catch(DOMException&) {
-        }
-
-        if(XPath2Utils::equals(attr->getPrefix(), XMLUni::fgXMLNSString) || XPath2Utils::equals(attr->getNodeName(), XMLUni::fgXMLNSString))
-        {
-          const XMLCh* prefix=attr->getPrefix()==NULL?XMLUni::fgZeroLenString:attr->getLocalName();
-          // copy this namespace only if needed by the element name...
-          if(!XPath2Utils::equals(childElem->getPrefix(), prefix))
-          {
-            bPreserved=false;
-            //... or by its attributes
-            for(XMLSize_t j=0;j<attrMap->getLength();j++)
-              if(XPath2Utils::equals(attrMap->item(j)->getPrefix(), prefix))
-              {
-                bPreserved=true;
-                break;
-              }
-            if(!bPreserved)
-              attrMap->removeNamedItemNS(attr->getNamespaceURI(), attr->getLocalName());
-          }
-        }
-        if(bPreserved)
-          i++;
-      }
-    }
-    break;
-  default: break;
-  }
-
-  if(context->getDebugCallback()) context->getDebugCallback()->ReportClonedNode(const_cast<DynamicContext*>(context), domnode, newNode);
-
-  return newNode;
-}
-
-Node::Ptr ItemFactoryImpl::createElementNode(const XMLCh *uri, const XMLCh *prefix, const XMLCh *name,
-                                           const std::vector<Node::Ptr> &attrList, const std::vector<Node::Ptr> &childList,
-                                           const DynamicContext *context) const
-{
-  StaticContext::ConstructionMode constrMode=context->getConstructionMode();
-  bool nsInheritMode=context->getInheritNamespaces();
-
-  DOMDocument *document = getOutputDocument(context);
-  DOMElement *element = document->createElementNS(uri, name);
-  if(prefix != 0 && !XPath2Utils::equals(XMLUni::fgZeroLenString, prefix))
-    element->setPrefix(prefix);
-
-  for(std::vector<Node::Ptr>::const_iterator a = attrList.begin(); a != attrList.end(); ++a) {
-    const NodeImpl *nodeImpl = (const NodeImpl *)(*a)->getInterface(Item::gXQilla);
-    assert(nodeImpl != 0);
-
-    const DOMNode* attr=nodeImpl->getDOMNode();
-    DOMAttr* exists=element->getAttributeNodeNS(attr->getNamespaceURI(), attr->getLocalName());
-    if(exists!=0)
-      XQThrow2(ASTException,X("ItemFactoryImpl::createElementNode"),X("An element has two attributes with the same expanded name [err:XQDY0025]"));
-
-    element->setAttributeNodeNS((DOMAttr*)attr);
-  }
-
-  std::vector<const XMLCh*> inScopePrefixes;
-  if(!nsInheritMode)
-  {
-    DOMNode* elt=element;
-    while(elt!=NULL)
-    {
-      // check if this node has a namespace, but the prefix is not declared in the attribute map
-      const XMLCh* uri=elt->getNamespaceURI();
-      if(uri && *uri)
-      {
-        const XMLCh* prefix=elt->getPrefix();
-        if (!XPath2Utils::containsString(inScopePrefixes, prefix))
-          inScopePrefixes.push_back(prefix);
-      }
-      DOMNamedNodeMap* attrMap=elt->getAttributes();
-      for(XMLSize_t i=0;i<attrMap->getLength();i++)
-      {
-        DOMNode* attr=attrMap->item(i);
-        if(XPath2Utils::equals(attr->getPrefix(), XMLUni::fgXMLNSString) || XPath2Utils::equals(attr->getNodeName(), XMLUni::fgXMLNSString))
-        {
-          const XMLCh* prefix=attr->getPrefix()==NULL?XMLUni::fgZeroLenString:attr->getLocalName();
-          if (!XPath2Utils::containsString(inScopePrefixes, prefix))
-            inScopePrefixes.push_back(prefix);
-        }
-      }
-      elt=elt->getParentNode();
-    }
-  }
-
-  for(std::vector<Node::Ptr>::const_iterator i = childList.begin(); i != childList.end(); ++i) {
-    const NodeImpl *nodeImpl = (const NodeImpl *)(*i)->getInterface(Item::gXQilla);
-    assert(nodeImpl != 0);
-
-    DOMNode *newChild = const_cast<DOMNode*>(nodeImpl->getDOMNode());
-
-    if(!nsInheritMode && newChild->getNodeType()==DOMNode::ELEMENT_NODE)
-    {
-      DOMNamedNodeMap* attrMap=newChild->getAttributes();
-      // add empty namespace declarations for all the inherited namespaces
-      for(std::vector<const XMLCh*>::iterator it=inScopePrefixes.begin();it!=inScopePrefixes.end();it++)
-      {
-        const XMLCh* prefix=(*it);
-        if(prefix==0 || *prefix==0)
-            prefix=XMLUni::fgXMLNSString;
-        if(attrMap->getNamedItemNS(XMLUni::fgXMLNSURIName, prefix)==NULL && !XPath2Utils::equals(newChild->getPrefix(), prefix))
-        {
-          const XMLCh* fullName=NULL;
-          if((*it)==0 || (*it)[0]==0)
-            fullName=XMLUni::fgXMLNSString;
-          else
-            fullName=XPath2Utils::concatStrings(XMLUni::fgXMLNSColonString, *it, context->getMemoryManager());
-          DOMAttr *attr = getOutputDocument(context)->createAttributeNS(XMLUni::fgXMLNSURIName, fullName);
-          attrMap->setNamedItemNS(attr);
-        }
-      }
-    }
-
-    element->appendChild(newChild);
-  }  
-
-  if(constrMode == StaticContext::CONSTRUCTION_MODE_PRESERVE)
-    XPath2Utils::setElementType(document, element, SchemaSymbols::fgURI_SCHEMAFORSCHEMA, SchemaSymbols::fgATTVAL_ANYTYPE);
-
-  return new NodeImpl(element, context);
-}
-
-Node::Ptr ItemFactoryImpl::createDocumentNode(const std::vector<Node::Ptr> &childList, const DynamicContext *context) const
-{
-  DOMDocument *document = context->createNewDocument();
-
-  for(std::vector<Node::Ptr>::const_iterator i = childList.begin(); i != childList.end(); ++i) {
-    document->appendChild(copyNode(document, *i, context));
-  }
-
-  return new NodeImpl(document, context);
-}
-
-const DOMNode* ItemFactoryImpl::createNamespaceNode(const XMLCh* prefix, const XMLCh* uri, const DOMNode* parentNode, const DynamicContext *context) const
-{
-  if(parentNode->getNodeType()!=DOMNode::ELEMENT_NODE)
-      return NULL;
-
-  DOMDocument *ownerDocument = parentNode->getOwnerDocument();
-  return new ((DOMDocumentImpl *)ownerDocument, (DOMDocumentImpl::NodeObjectType)XPathNamespaceImpl::XPATH_NAMESPACE_OBJECT) XPathNamespaceImpl(prefix, uri, static_cast<DOMElement*>(const_cast<DOMNode*>(parentNode)), ownerDocument);
 }
 
 AnyAtomicType::AtomicObjectType ItemFactoryImpl::getPrimitiveTypeIndex(const XMLCh* typeURI, const XMLCh* typeName, bool &isPrimitive) const
@@ -463,26 +132,26 @@ ATDecimalOrDerived::Ptr ItemFactoryImpl::createNonNegativeInteger(const MAPM val
       
 ATDurationOrDerived::Ptr ItemFactoryImpl::createDayTimeDuration(const XMLCh* value, const DynamicContext* context) {
   return (ATDurationOrDerived*)datatypeLookup_.getDurationFactory()->
-    createInstance(FunctionConstructor::XMLChXPath2DatatypesURI, 
+    createInstance(SchemaSymbols::fgURI_SCHEMAFORSCHEMA, 
                    ATDurationOrDerived::fgDT_DAYTIMEDURATION, value, context).get();
 }
 
 ATDurationOrDerived::Ptr ItemFactoryImpl::createDayTimeDuration(const MAPM &seconds, const DynamicContext* context)
 {
-  return new ATDurationOrDerivedImpl(FunctionConstructor::XMLChXPath2DatatypesURI,
+  return new ATDurationOrDerivedImpl(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                                      ATDurationOrDerived::fgDT_DAYTIMEDURATION,
                                      0, seconds, context);
 }
 
 ATDurationOrDerived::Ptr ItemFactoryImpl::createYearMonthDuration(const XMLCh* value, const DynamicContext* context) {
   return (ATDurationOrDerived*)datatypeLookup_.getDurationFactory()->
-    createInstance(FunctionConstructor::XMLChXPath2DatatypesURI, 
+    createInstance(SchemaSymbols::fgURI_SCHEMAFORSCHEMA, 
                    ATDurationOrDerived::fgDT_YEARMONTHDURATION, value, context).get();
 }
 
 ATDurationOrDerived::Ptr ItemFactoryImpl::createYearMonthDuration(const MAPM &months, const DynamicContext* context)
 {
-  return new ATDurationOrDerivedImpl(FunctionConstructor::XMLChXPath2DatatypesURI,
+  return new ATDurationOrDerivedImpl(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                                      ATDurationOrDerived::fgDT_YEARMONTHDURATION,
                                      months, 0, context);
 }
@@ -610,20 +279,12 @@ ATDoubleOrDerived::Ptr ItemFactoryImpl::createDoubleOrDerived(const XMLCh* typeU
 }
 
 
-/** create a xs:duration */
-ATDurationOrDerived::Ptr ItemFactoryImpl::createDurationOrDerived(const XMLCh* typeURI, 
-                                                                    const XMLCh* typeName,
-                                                                    const XMLCh* value, 
-                                                                    const DynamicContext* context){
-  return (const ATDurationOrDerived::Ptr)datatypeLookup_.getDurationFactory()->createInstance(typeURI, typeName, value, context);
-}
-
 /** create a xs:float */
 ATFloatOrDerived::Ptr ItemFactoryImpl::createFloatOrDerived(const XMLCh* typeURI, 
                                                               const XMLCh* typeName,
                                                               const XMLCh* value, 
                                                               const DynamicContext* context){
-  if(XMLString::equals(value, Numeric::NAN_string)) {
+  if(XPath2Utils::equals(value, Numeric::NAN_string)) {
     value= Numeric::NaN_string;
   }
   return (const ATFloatOrDerived::Ptr)datatypeLookup_.getFloatFactory()->createInstance(typeURI, typeName, value, context);

@@ -32,8 +32,8 @@ XERCES_CPP_NAMESPACE_USE
 #endif
 using namespace std;
 
-string loadExpectedResult(const string &file);
-bool compareNodes(DOMNode* node1, DOMNode* node2);
+static string loadExpectedResult(const string &file);
+static bool compareNodes(DOMNode* node1, DOMNode* node2);
 
 void TestSuiteRunner::testResults(const TestCase &testCase, const std::string &xmlResult) const
 {
@@ -121,7 +121,7 @@ void TestSuiteRunner::testErrors(const TestCase &testCase, const std::string &ac
   }
 }
 
-string loadExpectedResult(const string &file) {
+static string loadExpectedResult(const string &file) {
   string expectedResult;
 
   Janitor<BinFileInputStream> stream((BinFileInputStream*)URLInputSource(file.c_str()).makeStream());
@@ -143,30 +143,20 @@ string loadExpectedResult(const string &file) {
   return expectedResult;
 }
 
-bool isIgnorableWS(DOMNode* node)
+static bool isIgnorableWS(DOMNode* node)
 {
-   if(node!=NULL &&
-       node->getNodeType()==DOMNode::TEXT_NODE && 
-       XMLString::isAllWhiteSpace(node->getNodeValue()) &&
-       (node->getPreviousSibling()==NULL || (node->getPreviousSibling()!=NULL && 
-                                           (
-                                            node->getPreviousSibling()->getNodeType()==DOMNode::ELEMENT_NODE || 
-                                            node->getPreviousSibling()->getNodeType()==DOMNode::PROCESSING_INSTRUCTION_NODE ||
-                                            node->getPreviousSibling()->getNodeType()==DOMNode::COMMENT_NODE
-                                           )
-                                           )) &&
-       (node->getNextSibling()==NULL || (node->getNextSibling()!=NULL && 
-                                       (
-                                        node->getNextSibling()->getNodeType()==DOMNode::ELEMENT_NODE || 
-                                        node->getNextSibling()->getNodeType()==DOMNode::PROCESSING_INSTRUCTION_NODE ||
-                                        node->getNextSibling()->getNodeType()==DOMNode::COMMENT_NODE 
-                                       )
-                                      )))
-     return true;
-   return false;
- }
+  return node!=NULL &&
+    node->getNodeType()==DOMNode::TEXT_NODE && 
+    XMLString::isAllWhiteSpace(node->getNodeValue()) &&
+    (node->getPreviousSibling()==NULL || (node->getPreviousSibling()->getNodeType()==DOMNode::ELEMENT_NODE || 
+                                          node->getPreviousSibling()->getNodeType()==DOMNode::PROCESSING_INSTRUCTION_NODE ||
+                                          node->getPreviousSibling()->getNodeType()==DOMNode::COMMENT_NODE)) &&
+    (node->getNextSibling()==NULL || (node->getNextSibling()->getNodeType()==DOMNode::ELEMENT_NODE || 
+                                      node->getNextSibling()->getNodeType()==DOMNode::PROCESSING_INSTRUCTION_NODE ||
+                                      node->getNextSibling()->getNodeType()==DOMNode::COMMENT_NODE));
+}
 
-bool compareNodes(DOMNode* node1, DOMNode* node2)
+static bool compareNodes(DOMNode* node1, DOMNode* node2)
 {
     if(node1->getNodeType()!=node2->getNodeType())
     {
@@ -194,27 +184,10 @@ bool compareNodes(DOMNode* node1, DOMNode* node2)
         }
         DOMNamedNodeMap* map1=e1->getAttributes();
         DOMNamedNodeMap* map2=e2->getAttributes();
-        // remove namespace nodes
-        unsigned int i;
-        for(i=0;i<map1->getLength();i++)
-        {
-            if(XMLString::equals(map1->item(i)->getNamespaceURI(),XMLUni::fgXMLNSURIName))
-            {
-                map1->removeNamedItemNS(map1->item(i)->getNamespaceURI(), map1->item(i)->getLocalName());
-                i--;
-            }
-        }
-        for(i=0;i<map2->getLength();i++)
-        {
-            if(XMLString::equals(map2->item(i)->getNamespaceURI(),XMLUni::fgXMLNSURIName))
-            {
-                map2->removeNamedItemNS(map2->item(i)->getNamespaceURI(), map2->item(i)->getLocalName());
-                i--;
-            }
-        }
+
         if(map1->getLength()!=map2->getLength())
             return false;
-        for(i=0;i<map1->getLength();i++)
+        for(unsigned int i=0;i<map1->getLength();i++)
         {
             DOMNode* a1=map1->item(i);
             DOMNode* a2=map2->getNamedItemNS(a1->getNamespaceURI(),a1->getLocalName());

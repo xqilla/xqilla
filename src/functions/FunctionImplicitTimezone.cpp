@@ -51,7 +51,7 @@ ASTNode *FunctionImplicitTimezone::staticTyping(StaticContext *context)
   return calculateSRCForArguments(context);
 }
 
-Sequence FunctionImplicitTimezone::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionImplicitTimezone::createSequence(DynamicContext* context, int flags) const
 {
   return Sequence(context->getImplicitTimezone(), context->getMemoryManager());
 }

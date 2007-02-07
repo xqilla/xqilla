@@ -43,7 +43,7 @@ public:
   virtual ASTNode *staticTyping(StaticContext *context);
 
   /** Returns the argument as a String **/
-  Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
+  Sequence createSequence(DynamicContext* context, int flags=0) const;
 
   static Item::Ptr string(const Item::Ptr &item, DynamicContext *context);
 };

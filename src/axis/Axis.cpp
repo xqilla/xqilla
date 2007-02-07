@@ -24,8 +24,6 @@
 XERCES_CPP_NAMESPACE_USE
 #endif
 
-AxisNodeFactoryTemplate<NodeImpl> Axis::gNodeImplFactory = AxisNodeFactoryTemplate<NodeImpl>();
-
 Axis::Axis(const LocationInfo *info, const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *contextNode, const Node *nodeObj,
            const NodeTest *nodeTest, const AxisNodeFactory &factory)
   : ResultImpl(info),

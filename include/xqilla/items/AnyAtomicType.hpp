@@ -25,52 +25,6 @@ class XQILLA_API AnyAtomicType: public Item
 {
 
 public:
-  typedef RefCountPointer<const AnyAtomicType> Ptr;
-
-  /* isAtomicValue from Item */
-  virtual bool isAtomicValue() const;
-
-  /* isNode from Item */
-  virtual bool isNode() const;
-
-  /* is this type numeric?  Return false by default */
-  virtual bool isNumericValue() const;
-
-  /* is this type date or time based?  Return false by default */
-  virtual bool isDateOrTimeTypeValue() const;
-
-  /* Get the namespace uri of the primitive type (basic type) of this type */
-  virtual const XMLCh* getPrimitiveTypeURI() const;
-
-  /* Get the name of the primitive type (basic type) of this type (ie "decimal" for xs:decimal) */
-  virtual const XMLCh* getPrimitiveTypeName() const = 0;
-
-  /* Get the namespace URI for this type */
-  virtual const XMLCh* getTypeURI() const = 0;
-
-  /* Get the name of this type  (ie "integer" for xs:integer) */
-  virtual const XMLCh* getTypeName() const = 0;
-
-  /* If possible, cast this type to the target type  -- not virtual, this is the single entry point for casting */
-  AnyAtomicType::Ptr castAs(const XMLCh* targetURI, const XMLCh* targetType, const DynamicContext* context) const;
-
-  /* Test if this type can be cast to the target type */
-  virtual bool castable(const XMLCh* targetURI, const XMLCh* targetType, const DynamicContext* context) const;
-
-  /* returns the XMLCh* (canonical) representation of this type */
-  virtual const XMLCh* asString(const DynamicContext* context) const = 0;
-
-  /* returns true if the two objects are equal (whatever that means 
-   * in the context of the datatype), false otherwise */
-  virtual bool equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const = 0;
-
-  /* Returns true if this typeName and uri match the given typeName and uri */
-  virtual bool isOfType(const XMLCh* targetURI, const XMLCh* targetType, const DynamicContext* context) const;
-
-  /* Returns true if this typeName and uri match the given typeName and uri,
-   * or if any of this type's parents match the given typeName and uri */
-  virtual bool isInstanceOfType(const XMLCh* targetURI, const XMLCh* targetType, const StaticContext* context) const;
-  
   enum AtomicObjectType {
     ANY_SIMPLE_TYPE    = 0,
     ANY_URI            = 1,
@@ -126,6 +80,57 @@ public:
     NumAtomicObjectTypes= 23
   };*/
 
+  typedef RefCountPointer<const AnyAtomicType> Ptr;
+
+  /* isAtomicValue from Item */
+  virtual bool isAtomicValue() const;
+
+  /* isNode from Item */
+  virtual bool isNode() const;
+
+  /* is this type numeric?  Return false by default */
+  virtual bool isNumericValue() const;
+
+  /* is this type date or time based?  Return false by default */
+  virtual bool isDateOrTimeTypeValue() const;
+
+  /* Get the namespace uri of the primitive type (basic type) of this type */
+  virtual const XMLCh* getPrimitiveTypeURI() const;
+
+  /* Get the name of the primitive type (basic type) of this type (ie "decimal" for xs:decimal) */
+  virtual const XMLCh* getPrimitiveTypeName() const = 0;
+
+  /* Get the namespace URI for this type */
+  virtual const XMLCh* getTypeURI() const = 0;
+
+  /* Get the name of this type  (ie "integer" for xs:integer) */
+  virtual const XMLCh* getTypeName() const = 0;
+
+  /* If possible, cast this type to the target type  -- not virtual, this is the single entry point for casting */
+  AnyAtomicType::Ptr castAs(AtomicObjectType targetIndex, const DynamicContext* context) const;
+
+  /* If possible, cast this type to the target type  -- not virtual, this is the single entry point for casting */
+  AnyAtomicType::Ptr castAs(AtomicObjectType targetIndex, const XMLCh* targetURI, const XMLCh* targetType,
+                            const DynamicContext* context) const;
+
+  /* Test if this type can be cast to the target type */
+  virtual bool castable(AtomicObjectType targetIndex, const XMLCh* targetURI, const XMLCh* targetType,
+                        const DynamicContext* context) const;
+
+  /* returns the XMLCh* (canonical) representation of this type */
+  virtual const XMLCh* asString(const DynamicContext* context) const = 0;
+
+  /* returns true if the two objects are equal (whatever that means 
+   * in the context of the datatype), false otherwise */
+  virtual bool equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const = 0;
+
+  /* Returns true if this typeName and uri match the given typeName and uri */
+  virtual bool isOfType(const XMLCh* targetURI, const XMLCh* targetType, const DynamicContext* context) const;
+
+  /* Returns true if this typeName and uri match the given typeName and uri,
+   * or if any of this type's parents match the given typeName and uri */
+  virtual bool isInstanceOfType(const XMLCh* targetURI, const XMLCh* targetType, const StaticContext* context) const;
+  
   /**
    * Returns true if 
    * (a) both the input type and the target type are built-in schema types and 
@@ -143,7 +148,6 @@ public:
   virtual AtomicObjectType getPrimitiveTypeIndex() const = 0;
  
   static const XMLCh fgDT_ANYATOMICTYPE[];
-  static const XMLCh fgDT_ANYATOMICTYPE_XERCESHASH[];
 
 protected:
   /* internal castAs method.  This one is virtual and does the real work */

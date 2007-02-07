@@ -40,7 +40,7 @@ public:
 
 	/* returns the base-URI property of document or element nodes,
 	 * and the empty sequence for all other kinds of nodes */
-  Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
+  Sequence createSequence(DynamicContext* context, int flags=0) const;
 };
 
 #endif

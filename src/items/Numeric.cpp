@@ -192,9 +192,9 @@ AnyAtomicType::Ptr Numeric::castAsInternal(AtomicObjectType targetIndex, const X
               X("Special values like NaN, INF or -INF cannot be cast to decimal [err:FOCA0002]"));
     case NUM:
     case NEG_NUM:
-      if(context->isTypeOrDerivedFromType(targetURI, targetType,
-                                          SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                                          SchemaSymbols::fgDT_INTEGER)) {
+      if(targetType != 0 && context->isTypeOrDerivedFromType(targetURI, targetType,
+                                                             SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                                                             SchemaSymbols::fgDT_INTEGER)) {
         if(isNegative()) {
           return context->getItemFactory()->createDecimalOrDerived(targetURI, targetType, asMAPM().ceil(), context);
         }
@@ -203,6 +203,10 @@ AnyAtomicType::Ptr Numeric::castAsInternal(AtomicObjectType targetIndex, const X
         }
       }    
       else {
+        if(targetType == 0) {
+          targetURI = SchemaSymbols::fgURI_SCHEMAFORSCHEMA;
+          targetType = SchemaSymbols::fgDT_DECIMAL;
+        }
         return context->getItemFactory()->createDecimalOrDerived(targetURI, targetType, asMAPM(), context);
       }
     }
@@ -220,6 +224,10 @@ AnyAtomicType::Ptr Numeric::castAsInternal(AtomicObjectType targetIndex, const X
       }
       // Fall through
     case NUM:
+      if(targetType == 0) {
+        targetURI = SchemaSymbols::fgURI_SCHEMAFORSCHEMA;
+        targetType = SchemaSymbols::fgDT_FLOAT;
+      }
       return context->getItemFactory()->createFloatOrDerived(targetURI, targetType, asMAPM(), context);
     }
   case DOUBLE:
@@ -236,9 +244,17 @@ AnyAtomicType::Ptr Numeric::castAsInternal(AtomicObjectType targetIndex, const X
       }
       // Fall through
     case NUM:
+      if(targetType == 0) {
+        targetURI = SchemaSymbols::fgURI_SCHEMAFORSCHEMA;
+        targetType = SchemaSymbols::fgDT_DOUBLE;
+      }
       return context->getItemFactory()->createDoubleOrDerived(targetURI, targetType, asMAPM(), context);
     }
   case BOOLEAN:
+    if(targetType == 0) {
+      targetURI = SchemaSymbols::fgURI_SCHEMAFORSCHEMA;
+      targetType = SchemaSymbols::fgDT_BOOLEAN;
+    }
     if(isZero() || isNaN()) {
       return context->getItemFactory()->createBooleanOrDerived(targetURI, targetType, false, context);
     } else {

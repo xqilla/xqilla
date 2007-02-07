@@ -33,7 +33,7 @@ public:
   FunctionPrefixFromQName(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   /** Returns the prefix part of a QName, eg for foo:bar it returns foo */
-  Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
+  Sequence createSequence(DynamicContext* context, int flags=0) const;
 };
 
 #endif // _FUNCTIONPREFIXFROMQNAME_HPP

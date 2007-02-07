@@ -407,9 +407,6 @@
 				RelativePath="..\..\src\ast\ASTNodeImpl.cpp">
 			</File>
 			<File
-				RelativePath="..\..\src\ast\AggregateFunction.cpp">
-			</File>
-			<File
 				RelativePath="..\..\src\ast\ConstantFoldingFunction.cpp">
 			</File>
 			<File
@@ -531,9 +528,6 @@
 			</File>
 			<File
 				RelativePath="..\..\include\xqilla\ast\ASTNodeImpl.hpp">
-			</File>
-			<File
-				RelativePath="..\..\include\xqilla\ast\AggregateFunction.hpp">
 			</File>
 			<File
 				RelativePath="..\..\include\xqilla\ast\ConstantFoldingFunction.hpp">
@@ -781,9 +775,6 @@
 				RelativePath="..\..\src\context\impl\VarTypeStoreImpl.hpp">
 			</File>
 			<File
-				RelativePath="..\..\src\context\impl\XercesUpdateFactory.cpp">
-			</File>
-			<File
 				RelativePath="..\..\src\context\impl\XQContextImpl.cpp">
 			</File>
 			<File
@@ -806,9 +797,6 @@
 			</File>
 			<File
 				RelativePath="..\..\include\xqilla\context\impl\VariableStoreTemplate.hpp">
-			</File>
-			<File
-				RelativePath="..\..\include\xqilla\context\impl\XercesUpdateFactory.hpp">
 			</File>
 			<File
 				RelativePath="..\..\include\xqilla\context\impl\XQContextImpl.hpp">
@@ -1953,9 +1941,6 @@
 				RelativePath="..\..\src\items\impl\ATUntypedAtomicImpl.hpp">
 			</File>
 			<File
-				RelativePath="..\..\src\items\impl\NodeImpl.cpp">
-			</File>
-			<File
 				RelativePath="..\..\include\xqilla\items\impl\ATBooleanOrDerivedImpl.hpp">
 			</File>
 			<File
@@ -1969,9 +1954,6 @@
 			</File>
 			<File
 				RelativePath="..\..\include\xqilla\items\impl\ATQNameOrDerivedImpl.hpp">
-			</File>
-			<File
-				RelativePath="..\..\include\xqilla\items\impl\NodeImpl.hpp">
 			</File>
 			<File
 				RelativePath="..\..\include\xqilla\items\impl\ATDurationOrDerivedImpl.hpp">

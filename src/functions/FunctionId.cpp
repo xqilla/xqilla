@@ -16,15 +16,10 @@
 
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/exceptions/FunctionException.hpp>
-#include <xercesc/dom/DOM.hpp>
-#include <xercesc/util/XMLUni.hpp>
-#include <xercesc/util/XMLString.hpp>
-#include <xercesc/validators/schema/SchemaSymbols.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/items/Node.hpp>
 #include <xqilla/ast/StaticResolutionContext.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xqilla/functions/FunctionRoot.hpp>
 
 const XMLCh FunctionId::name[] = {
   XERCES_CPP_NAMESPACE_QUALIFIER chLatin_i, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_d, XERCES_CPP_NAMESPACE_QUALIFIER chNull 
@@ -58,7 +53,7 @@ ASTNode *FunctionId::staticTyping(StaticContext *context)
   return calculateSRCForArguments(context);
 }
 
-Sequence FunctionId::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionId::createSequence(DynamicContext* context, int flags) const
 {
   Node::Ptr ctxNode;
   if(getNumArgs() == 2)
@@ -70,15 +65,15 @@ Sequence FunctionId::collapseTreeInternal(DynamicContext* context, int flags) co
   {
     const Item::Ptr item = context->getContextItem();
     if(item==NULLRCP)
-      XQThrow(FunctionException, X("FunctionId::collapseTreeInternal"),X("Undefined context item in fn:id [err:XPDY0002]"));
+      XQThrow(FunctionException, X("FunctionId::createSequence"),X("Undefined context item in fn:id [err:XPDY0002]"));
     if(!item->isNode())
-      XQThrow(FunctionException, X("FunctionId::collapseTreeInternal"),X("The context item is not a node [err:XPTY0004]"));
+      XQThrow(FunctionException, X("FunctionId::createSequence"),X("The context item is not a node [err:XPTY0004]"));
     ctxNode=item;
   }
 
-  Node::Ptr root = FunctionRoot::root(ctxNode, context);
+  Node::Ptr root = ctxNode->root(context);
   if(root->dmNodeKind() != Node::document_string) {
-    XQThrow(FunctionException,X("FunctionId::collapseTreeInternal"), X("Current context doesn't belong to a document [err:FODC0001]"));
+    XQThrow(FunctionException,X("FunctionId::createSequence"), X("Current context doesn't belong to a document [err:FODC0001]"));
   }
     
   Sequence strings = getParamNumber(1, context)->toSequence(context);

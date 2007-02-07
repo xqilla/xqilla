@@ -32,6 +32,14 @@ Result XQParenthesizedExpr::createResult(DynamicContext* context, int flags) con
   return new ParenthesizedResult(this, flags);
 }
 
+void XQParenthesizedExpr::generateEvents(EventHandler *events, DynamicContext *context,
+                                         bool preserveNS, bool preserveType) const
+{
+  for(VectorOfASTNodes::const_iterator i = _astNodes.begin(); i != _astNodes.end(); ++i) {
+    (*i)->generateEvents(events, context, preserveNS, preserveType);
+  }
+}
+
 void XQParenthesizedExpr::addItem(ASTNode* di) {
 
 	_astNodes.push_back(di);
@@ -117,7 +125,7 @@ Item::Ptr XQParenthesizedExpr::ParenthesizedResult::next(DynamicContext *context
 
   while(item == NULLRCP) {
     if(_i != _di->getChildren().end()) {
-      _result = (*_i++)->collapseTree(context, _flags);
+      _result = (*_i++)->createResult(context, _flags);
       item = _result->next(context);
     }
     else {

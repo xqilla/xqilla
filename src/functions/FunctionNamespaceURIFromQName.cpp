@@ -42,7 +42,7 @@ FunctionNamespaceURIFromQName::FunctionNamespaceURIFromQName(const VectorOfASTNo
   _src.getStaticType().flags = StaticType::ANY_URI_TYPE;
 }
 
-Sequence FunctionNamespaceURIFromQName::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionNamespaceURIFromQName::createSequence(DynamicContext* context, int flags) const
 {
   Sequence arg=getParamNumber(1,context)->toSequence(context);
   if(arg.isEmpty())

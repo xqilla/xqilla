@@ -38,8 +38,10 @@
 
 XQCastableAs::XQCastableAs(ASTNode* expr, SequenceType* exprType, XPath2MemoryManager* memMgr)
   : ASTNodeImpl(memMgr),
-  _expr(expr),
-  _exprType(exprType)
+    _expr(expr),
+    _exprType(exprType),
+    _isPrimitive(false),
+    _typeIndex((AnyAtomicType::AtomicObjectType)-1)
 {
 	setType(ASTNode::CASTABLE_AS);
 }
@@ -65,7 +67,11 @@ ASTNode* XQCastableAs::staticResolution(StaticContext *context)
      (XPath2Utils::equals(itemType->getTypeURI(context, this), FunctionConstructor::XMLChXPath2DatatypesURI) &&
 		  XPath2Utils::equals(itemType->getType()->getName(), AnyAtomicType::fgDT_ANYATOMICTYPE)))
     XQThrow(TypeErrorException,X("XQCastableAs::staticResolution"),
-            X("The target type of a castable expression must be an atomic type that is in the in-scope schema types and is not xs:NOTATION or xdt:anyAtomicType [err:XPST0080]"));
+            X("The target type of a castable expression must be an atomic type that is in the in-scope schema types "
+              "and is not xs:NOTATION or xdt:anyAtomicType [err:XPST0080]"));
+
+  if(_exprType->getItemTestType() != SequenceType::ItemType::TEST_ATOMIC_TYPE)
+    XQThrow(TypeErrorException,X("XQCastableAs::staticResolution"),X("Cannot cast to a non atomic type"));
 
   _expr = new (mm) XQAtomize(_expr, mm);
   _expr->setLocationInfo(this);
@@ -74,6 +80,10 @@ ASTNode* XQCastableAs::staticResolution(StaticContext *context)
     AutoNodeSetOrderingReset orderReset(context);
     _expr = _expr->staticResolution(context);
   }
+
+  _typeIndex = context->getItemFactory()->
+    getPrimitiveTypeIndex(_exprType->getTypeURI(context),
+                          _exprType->getConstrainingType()->getName(), _isPrimitive);
 
   return this;
 }
@@ -114,7 +124,7 @@ Item::Ptr XQCastableAs::CastableAsResult::getSingleResult(DynamicContext *contex
 {
   // The semantics of the cast expression are as follows:
   //    1. Atomization is performed on the input expression.
-  Result toBeCasted(_di->getExpression()->collapseTree(context));
+  Result toBeCasted(_di->getExpression()->createResult(context));
 
   const Item::Ptr first = toBeCasted->next(context);
 
@@ -133,11 +143,17 @@ Item::Ptr XQCastableAs::CastableAsResult::getSingleResult(DynamicContext *contex
       result = false;
     }
     else {
-      if(_di->getSequenceType()->getItemTestType() != SequenceType::ItemType::TEST_ATOMIC_TYPE)
-        XQThrow(TypeErrorException,X("XQCastableAs::collapseTreeInternal"),X("Cannot cast to a non atomic type"));
       //    4. If the result of atomization is a single atomic value, the result of the cast expression depends on the input type and the target type.
       //       The normative definition of these rules is given in [XQuery 1.0 and XPath 2.0 Functions and Operators].
-      result = ((const AnyAtomicType::Ptr)first)->castable(_di->getSequenceType()->getTypeURI(context), _di->getSequenceType()->getConstrainingType()->getName(), context);
+      if(_di->isPrimitive()) {
+        result = ((const AnyAtomicType::Ptr)first)->castable(_di->getTypeIndex(), 0, 0, context);
+      }
+      else {
+        result = ((const AnyAtomicType::Ptr)first)->castable(_di->getTypeIndex(),
+                                                             _di->getSequenceType()->getTypeURI(context),
+                                                             _di->getSequenceType()->getConstrainingType()->getName(),
+                                                             context);
+      }
     }
   }
   return (const Item::Ptr)context->getItemFactory()->createBoolean(result, context);

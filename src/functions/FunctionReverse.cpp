@@ -48,7 +48,7 @@ ASTNode *FunctionReverse::staticTyping(StaticContext *context)
   return result;
 }
 
-Sequence FunctionReverse::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionReverse::createSequence(DynamicContext* context, int flags) const
 {
   XPath2MemoryManager* memMgr = context->getMemoryManager();
 

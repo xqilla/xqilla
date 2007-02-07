@@ -36,7 +36,7 @@ public:
   FunctionContains(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   /** XPath function. returns true if string1 conatins string2 **/
-  Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
+  Sequence createSequence(DynamicContext* context, int flags=0) const;
 };
 
 #endif // _FUNCTIONCONTAINS_HPP

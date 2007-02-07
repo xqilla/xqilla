@@ -36,7 +36,7 @@ FunctionNodeName::FunctionNodeName(const VectorOfASTNodes &args, XPath2MemoryMan
   _src.getStaticType().flags = StaticType::QNAME_TYPE;
 }
 
-Sequence FunctionNodeName::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionNodeName::createSequence(DynamicContext* context, int flags) const
 {
   Sequence items=getParamNumber(1,context)->toSequence(context);
   if(items.isEmpty())

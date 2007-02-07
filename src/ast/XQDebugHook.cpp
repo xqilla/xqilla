@@ -37,7 +37,7 @@ XQDebugHook::XQDebugHook(const XMLCh* szFile, unsigned int nLine, unsigned int n
   setLocationInfo(szFile, nLine, nColumn);
 }
 
-Result XQDebugHook::collapseTree(DynamicContext *context, int flags) const
+Result XQDebugHook::createResult(DynamicContext *context, int flags) const
 {
   XQDebugCallback* pDbgCallback=context->getDebugCallback();
 
@@ -52,7 +52,7 @@ Result XQDebugHook::collapseTree(DynamicContext *context, int flags) const
     }
   try
     {
-      Result result=m_impl->collapseTree(context,flags);
+      Result result=m_impl->createResult(context,flags);
       if(pDbgCallback) {
         Sequence seqRes=result->toSequence(context);
         pDbgCallback->ReportResult(context,getFile(), getLine(), getColumn(), seqRes);

@@ -54,7 +54,7 @@ ASTNode *FunctionCodepointEqual::staticTyping(StaticContext *context)
   return calculateSRCForArguments(context);
 }
 
-Sequence FunctionCodepointEqual::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionCodepointEqual::createSequence(DynamicContext* context, int flags) const
 {
     Item::Ptr str1 = getParamNumber(1,context)->next(context);
     Item::Ptr str2 = getParamNumber(2,context)->next(context);

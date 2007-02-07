@@ -35,8 +35,10 @@
 
 XQCastAs::XQCastAs(ASTNode* expr, SequenceType* exprType, XPath2MemoryManager* memMgr)
   : ASTNodeImpl(memMgr),
-  _expr(expr),
-  _exprType(exprType)
+    _expr(expr),
+    _exprType(exprType),
+    _isPrimitive(false),
+    _typeIndex((AnyAtomicType::AtomicObjectType)-1)
 {
 	setType(ASTNode::CAST_AS);
 }
@@ -66,9 +68,16 @@ ASTNode* XQCastAs::staticResolution(StaticContext *context)
               X("The target type of a cast expression must be an atomic type that is in the in-scope schema types and is not xs:NOTATION or xdt:anyAtomicType [err:XPST0080]"));
   }
 
+  if(_exprType->getItemTestType() != SequenceType::ItemType::TEST_ATOMIC_TYPE)
+    XQThrow(TypeErrorException,X("XQCastAs::staticResolution"),X("Cannot cast to a non atomic type"));
+
   _expr = new (mm) XQAtomize(_expr, mm);
   _expr->setLocationInfo(this);
   _expr = _expr->staticResolution(context);
+
+  _typeIndex = context->getItemFactory()->
+    getPrimitiveTypeIndex(_exprType->getTypeURI(context),
+                          _exprType->getConstrainingType()->getName(), _isPrimitive);
 
   return this;
 }
@@ -114,7 +123,7 @@ Item::Ptr XQCastAs::CastAsResult::getSingleResult(DynamicContext *context) const
 {
   // The semantics of the cast expression are as follows:
   //    1. Atomization is performed on the input expression.
-	Result toBeCasted(_di->getExpression()->collapseTree(context));
+	Result toBeCasted(_di->getExpression()->createResult(context));
 
   const Item::Ptr first = toBeCasted->next(context);
 
@@ -123,7 +132,8 @@ Item::Ptr XQCastAs::CastAsResult::getSingleResult(DynamicContext *context) const
     //       1. If ? is specified after the target type, the result of the cast expression is an empty sequence.
     //       2. If ? is not specified after the target type, a type error is raised [err:XPTY0004].
     if(_di->getSequenceType()->getOccurrenceIndicator() == SequenceType::EXACTLY_ONE) {
-      XQThrow(TypeErrorException,X("XQCastAs::CastAsResult::getSingleResult"),X("The input to a non-optional cast as expression is an empty sequence [err:XPTY0004]"));
+      XQThrow(TypeErrorException,X("XQCastAs::CastAsResult::getSingleResult"),
+              X("The input to a non-optional cast as expression is an empty sequence [err:XPTY0004]"));
     }
     else {
       return 0;
@@ -134,15 +144,22 @@ Item::Ptr XQCastAs::CastAsResult::getSingleResult(DynamicContext *context) const
 
   //    2. If the result of atomization is a sequence of more than one atomic value, a type error is raised.[err:XPTY0004]
   if(second != NULLRCP) {
-    XQThrow(TypeErrorException,X("XQCastAs::CastAsResult::getSingleResult"),X("The input to a cast as expression is more than one atomic value [err:XPTY0004]"));
+    XQThrow(TypeErrorException,X("XQCastAs::CastAsResult::getSingleResult"),
+            X("The input to a cast as expression is more than one atomic value [err:XPTY0004]"));
   }
 
-  if(_di->getSequenceType()->getItemTestType() != SequenceType::ItemType::TEST_ATOMIC_TYPE)
-    XQThrow(TypeErrorException,X("XQCastAs::CastAsResult::getSingleResult"),X("Cannot cast to a non atomic type"));
   //    4. If the result of atomization is a single atomic value, the result of the cast expression depends on the input type and the target type.
   //       The normative definition of these rules is given in [XQuery 1.0 and XPath 2.0 Functions and Operators].
   try {
-    return (const Item::Ptr)((const AnyAtomicType::Ptr)first)->castAs(_di->getSequenceType()->getTypeURI(context), _di->getSequenceType()->getConstrainingType()->getName(), context);
+    if(_di->isPrimitive()) {
+      return ((const AnyAtomicType*)first.get())->castAs(_di->getTypeIndex(), 0, 0, context);
+    }
+    else {
+      return ((const AnyAtomicType*)first.get())->castAs(_di->getTypeIndex(),
+                                                         _di->getSequenceType()->getTypeURI(context),
+                                                         _di->getSequenceType()->getConstrainingType()->getName(),
+                                                         context);
+    }
   }
   catch(XQException &e) {
     if(e.getXQueryLine() == 0)

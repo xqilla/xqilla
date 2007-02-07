@@ -33,6 +33,7 @@
 #include <xqilla/context/ItemFactory.hpp>
 #include <xqilla/context/ContextHelpers.hpp>
 #include <xqilla/update/PendingUpdateList.hpp>
+#include <xqilla/events/EventHandler.hpp>
 
 ASTNodeImpl::ASTNodeImpl(XPath2MemoryManager* memMgr)
   : _src(memMgr),
@@ -74,11 +75,6 @@ bool ASTNodeImpl::isSingleNumericConstant(StaticContext *context) const
   return false;
 }
 
-Result ASTNodeImpl::collapseTree(DynamicContext* context, int flags) const
-{
-  return createResult(context, flags);
-}
-
 PendingUpdateList ASTNodeImpl::createUpdateList(DynamicContext *context) const
 {
   return PendingUpdateList();
@@ -86,10 +82,25 @@ PendingUpdateList ASTNodeImpl::createUpdateList(DynamicContext *context) const
 
 Result ASTNodeImpl::createResult(DynamicContext* context, int flags) const
 {
-  return new CollapseTreeInternalResult(this, flags, context);
+  return new CreateSequenceResult(this, flags, context);
 }
 
-Sequence ASTNodeImpl::collapseTreeInternal(DynamicContext* context, int flags) const
+void ASTNodeImpl::generateEvents(EventHandler *events, DynamicContext *context,
+                                 bool preserveNS, bool preserveType) const
+{
+  Result result = createResult(context);
+  Item::Ptr item;
+  while((item = result->next(context)).notNull()) {
+    if(item->isNode()) {
+      ((Node*)item.get())->generateEvents(events, context, preserveNS, preserveType);
+    }
+    else {
+      events->atomicItemEvent(item->asString(context), item->getTypeURI(), item->getTypeName());
+    }
+  }
+}
+
+Sequence ASTNodeImpl::createSequence(DynamicContext* context, int flags) const
 {
   return Sequence(context->getMemoryManager());
 }
@@ -119,20 +130,20 @@ const StaticResolutionContext &ASTNodeImpl::getStaticResolutionContext() const
 }
 
 /////////////////////////////////////
-// CollapseTreeInternalResult
+// CreateSequenceResult
 /////////////////////////////////////
 
-ASTNodeImpl::CollapseTreeInternalResult::CollapseTreeInternalResult(const ASTNodeImpl *di, int flags, DynamicContext *context)
+ASTNodeImpl::CreateSequenceResult::CreateSequenceResult(const ASTNodeImpl *di, int flags, DynamicContext *context)
   : LazySequenceResult(di, context),
     _flags(flags),
     _di(di)
 {
 }
 
-void ASTNodeImpl::CollapseTreeInternalResult::getResult(Sequence &toFill, DynamicContext *context) const
+void ASTNodeImpl::CreateSequenceResult::getResult(Sequence &toFill, DynamicContext *context) const
 {
   try {
-    toFill = _di->collapseTreeInternal(context, _flags);
+    toFill = _di->createSequence(context, _flags);
   }
   catch(XQException &e) {
       if(e.getXQueryLine() == 0)
@@ -141,7 +152,7 @@ void ASTNodeImpl::CollapseTreeInternalResult::getResult(Sequence &toFill, Dynami
   }
 }
 
-std::string ASTNodeImpl::CollapseTreeInternalResult::asString(DynamicContext *context, int indent) const
+std::string ASTNodeImpl::CreateSequenceResult::asString(DynamicContext *context, int indent) const
 {
   std::ostringstream oss;
   std::string in(getIndent(indent));

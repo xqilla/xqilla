@@ -32,6 +32,8 @@ public:
 
   const ASTNode *getExpression() const;
   const SequenceType *getSequenceType() const;
+  bool isPrimitive() const { return _isPrimitive; }
+  AnyAtomicType::AtomicObjectType getTypeIndex() const { return _typeIndex; }  
 
   void setExpression(ASTNode *item);
 
@@ -50,6 +52,8 @@ protected:
 
   ASTNode* _expr;
   SequenceType* _exprType;
+  bool _isPrimitive;
+  AnyAtomicType::AtomicObjectType _typeIndex;
 };
 
 #endif // _XQCASTAS_HPP

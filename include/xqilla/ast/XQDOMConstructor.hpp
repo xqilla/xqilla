@@ -19,10 +19,16 @@
 
 #include <xercesc/framework/XMLBuffer.hpp>
 
+class EventHandler;
+
 class XQILLA_API XQDOMConstructor : public ASTNodeImpl
 {
 public:
   XQDOMConstructor(XPath2MemoryManager* mm);
+
+  virtual Sequence createSequence(DynamicContext *context, int flags) const;
+  virtual void generateEvents(EventHandler *events, DynamicContext *context,
+                              bool preserveNS, bool preserveType) const = 0;
 
   virtual const XMLCh* getNodeType() const = 0;
   virtual const ASTNode *getName() const { return 0; }
@@ -45,20 +51,19 @@ protected:
 class XQILLA_API XQContentSequence : public ASTNodeImpl
 {
 public:
-  XQContentSequence(ASTNode *expr, bool copy, XPath2MemoryManager* mm);
+  XQContentSequence(ASTNode *expr, XPath2MemoryManager* mm);
 
   virtual ASTNode *staticResolution(StaticContext *context);
   virtual ASTNode *staticTyping(StaticContext *context);
-  virtual Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
+  virtual Sequence createSequence(DynamicContext* context, int flags=0) const;
+  virtual void generateEvents(EventHandler *events, DynamicContext *context,
+                              bool preserveNS, bool preserveType) const;
 
   const ASTNode *getExpression() const { return expr_; }
   void setExpression(ASTNode *expr) { expr_ = expr; }
 
-  bool getCopy() const { return copy_; }
-
 private:
   ASTNode *expr_;
-  bool copy_;
 };
 
 class XQILLA_API XQDirectName : public ASTNodeImpl

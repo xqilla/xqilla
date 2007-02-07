@@ -49,7 +49,7 @@ const XMLCh* FunctionNormalizeSpace::getString(DynamicContext* context) const {
   VectorOfASTNodes args=VectorOfASTNodes(XQillaAllocator<ASTNode*>(memMgr));
   FunctionString stringGrabber(args, memMgr);
   //call xf:string and extract result
-  return stringGrabber.collapseTree(context)->next(context)->asString(context);
+  return stringGrabber.createResult(context)->next(context)->asString(context);
 }
 
 ASTNode* FunctionNormalizeSpace::staticResolution(StaticContext *context) {
@@ -67,7 +67,7 @@ ASTNode *FunctionNormalizeSpace::staticTyping(StaticContext *context)
   return calculateSRCForArguments(context);
 }
 
-Sequence FunctionNormalizeSpace::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionNormalizeSpace::createSequence(DynamicContext* context, int flags) const
 {
     XPath2MemoryManager* memMgr = context->getMemoryManager();
     const XMLCh* str;

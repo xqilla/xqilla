@@ -19,6 +19,7 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/context/ItemFactory.hpp>
 #include <xqilla/utils/UTF8Str.hpp>
+#include <xqilla/events/EventHandler.hpp>
 
 AnyAtomicTypeConstructor::AnyAtomicTypeConstructor(const XMLCh* typeURI,
                                                    const XMLCh* typeName,
@@ -35,6 +36,11 @@ AnyAtomicTypeConstructor::AnyAtomicTypeConstructor(const XMLCh* typeURI,
 Item::Ptr AnyAtomicTypeConstructor::createItem(const DynamicContext* context) const
 {
   return context->getItemFactory()->createDerivedFromAtomicType(_primitiveType, _typeURI, _typeName, _value, context);
+}
+
+void AnyAtomicTypeConstructor::generateEvents(EventHandler *events, const DynamicContext* context) const
+{
+  events->atomicItemEvent(_value, _typeURI, _typeName);
 }
 
 std::string AnyAtomicTypeConstructor::asString(const DynamicContext* context) const

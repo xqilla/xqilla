@@ -94,8 +94,8 @@ Item::Ptr Range::RangeResult::next(DynamicContext *context)
 
   if(_end == NULLRCP) {
     // initialise
-    _last = (const Numeric::Ptr )_op->getArgument(0)->collapseTree(context)->next(context);
-    _end = (const Numeric::Ptr )_op->getArgument(1)->collapseTree(context)->next(context);
+    _last = (const Numeric::Ptr )_op->getArgument(0)->createResult(context)->next(context);
+    _end = (const Numeric::Ptr )_op->getArgument(1)->createResult(context)->next(context);
     if(_last.isNull() || _end.isNull() || _last->greaterThan(_end, context))
       _last = 0;
   }

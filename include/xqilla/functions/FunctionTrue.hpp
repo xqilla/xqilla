@@ -38,7 +38,7 @@ public:
   /**
    * Returns the boolean value true.
    */
-  virtual Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
+  virtual Sequence createSequence(DynamicContext* context, int flags=0) const;
 };
 
 #endif // _FUNCTIONTRUE_HPP

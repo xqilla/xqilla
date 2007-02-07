@@ -80,7 +80,7 @@ FTSelection *FTDistance::optimize(FTContext *ftcontext, bool execute) const
   XPath2MemoryManager *mm = ftcontext->context->getMemoryManager();
 
   if(execute || range_.arg1->isConstant()) {
-    Result rangeResult = range_.arg1->collapseTree(ftcontext->context);
+    Result rangeResult = range_.arg1->createResult(ftcontext->context);
     Numeric::Ptr num = (Numeric::Ptr)rangeResult->next(ftcontext->context);
     long distance = ::atol(UTF8(num->asString(ftcontext->context)));
 
@@ -101,7 +101,7 @@ FTSelection *FTDistance::optimize(FTContext *ftcontext, bool execute) const
       return result->optimize(ftcontext, execute);
     }
     case FTRange::FROM_TO: {
-      Result rangeResult2 = range_.arg2->collapseTree(ftcontext->context);
+      Result rangeResult2 = range_.arg2->createResult(ftcontext->context);
       Numeric::Ptr num2 = (Numeric::Ptr)rangeResult2->next(ftcontext->context);
       long distance2 = ::atol(UTF8(num->asString(ftcontext->context)));
 

@@ -138,6 +138,10 @@ AnyAtomicType::Ptr ATQNameOrDerivedImpl::castAsInternal(AtomicObjectType targetI
                                                                     this->asLexicalString(context), context);
     } 
     case QNAME: {
+      if(targetType == 0) {
+        targetURI = SchemaSymbols::fgURI_SCHEMAFORSCHEMA;
+        targetType = SchemaSymbols::fgDT_QNAME;
+      }
       return context->getItemFactory()->createQNameOrDerived(targetURI, targetType, _uri, _prefix, _name, context);
     }
     default: return AnyAtomicType::castAsInternal(targetIndex, targetURI, targetType, context);

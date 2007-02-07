@@ -66,7 +66,7 @@ Item::Ptr Minus::execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::P
       return (const Item::Ptr)((Numeric*)(const AnyAtomicType*)atom1)->subtract((const Numeric::Ptr )atom2, context);
     }
     else {
-      XQThrow(XPath2ErrorException,X("Minus::collapseTreeInternal"), X("An attempt to subtract a non numeric type from a numeric type has occurred [err:XPTY0004]"));
+      XQThrow(XPath2ErrorException,X("Minus::createSequence"), X("An attempt to subtract a non numeric type from a numeric type has occurred [err:XPTY0004]"));
     }
   }
   
@@ -83,7 +83,7 @@ Item::Ptr Minus::execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::P
       return (const Item::Ptr)((ATDateOrDerived*)atom1.get())->subtractDate((const ATDateOrDerived *)atom2.get(), context);
     }
     default: {
-      XQThrow(XPath2ErrorException,X("Minus::collapseTreeInternal"), X("An invalid attempt to subtract from xs:date type has occurred [err:XPTY0004]"));
+      XQThrow(XPath2ErrorException,X("Minus::createSequence"), X("An invalid attempt to subtract from xs:date type has occurred [err:XPTY0004]"));
     }
     }
   }
@@ -96,7 +96,7 @@ Item::Ptr Minus::execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::P
       return (const Item::Ptr)((ATTimeOrDerived*)atom1.get())->subtractTime((const ATTimeOrDerived *)atom2.get(), context);
     }
     default: {
-      XQThrow(XPath2ErrorException,X("Minus::collapseTreeInternal"), X("An invalid attempt to subtract from xs:time type has occurred [err:XPTY0004]"));
+      XQThrow(XPath2ErrorException,X("Minus::createSequence"), X("An invalid attempt to subtract from xs:time type has occurred [err:XPTY0004]"));
     }
     }
   }
@@ -112,7 +112,7 @@ Item::Ptr Minus::execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::P
       return (const Item::Ptr)((ATDateTimeOrDerived*)(const AnyAtomicType*)atom1)->subtractDateTimeAsDayTimeDuration((const ATDateTimeOrDerived::Ptr )atom2, context);
     }
     default: {
-      XQThrow(XPath2ErrorException,X("Minus::collapseTreeInternal"), X("An invalid attempt to subtract from xs:dateTime type has occurred [err:XPTY0004]"));
+      XQThrow(XPath2ErrorException,X("Minus::createSequence"), X("An invalid attempt to subtract from xs:dateTime type has occurred [err:XPTY0004]"));
     }
     }
   }
@@ -122,7 +122,7 @@ Item::Ptr Minus::execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::P
       return (const Item::Ptr)((ATDurationOrDerived*)atom1.get())->subtract((const ATDurationOrDerived *)atom2.get(), context);
     }
     default: {
-      XQThrow(XPath2ErrorException,X("Minus::collapseTreeInternal"), X("An invalid attempt to subtract from xdt:dayTimeDuration type has occurred [err:XPTY0004]"));
+      XQThrow(XPath2ErrorException,X("Minus::createSequence"), X("An invalid attempt to subtract from xdt:dayTimeDuration type has occurred [err:XPTY0004]"));
     }
     }
   }
@@ -132,12 +132,12 @@ Item::Ptr Minus::execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::P
       return (const Item::Ptr)((ATDurationOrDerived*)atom1.get())->subtract((const ATDurationOrDerived *)atom2.get(), context);
     }
     default: {
-      XQThrow(XPath2ErrorException,X("Minus::collapseTreeInternal"), X("An invalid attempt to subtract from xdt:yearMonthDuration type has occurred [err:XPTY0004]"));
+      XQThrow(XPath2ErrorException,X("Minus::createSequence"), X("An invalid attempt to subtract from xdt:yearMonthDuration type has occurred [err:XPTY0004]"));
     }
     }
   }
   default: {
-    XQThrow(XPath2ErrorException,X("Minus::collapseTreeInternal"), X("The operator subtract ('-') has been called on invalid operand types [err:XPTY0004]"));
+    XQThrow(XPath2ErrorException,X("Minus::createSequence"), X("The operator subtract ('-') has been called on invalid operand types [err:XPTY0004]"));
   }
   }
 }

@@ -46,7 +46,7 @@ FunctionTokenize::FunctionTokenize(const VectorOfASTNodes &args, XPath2MemoryMan
   _src.getStaticType().flags = StaticType::STRING_TYPE;
 }
 
-Sequence FunctionTokenize::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionTokenize::createSequence(DynamicContext* context, int flags) const
 {
   XPath2MemoryManager* memMgr = context->getMemoryManager();
 
@@ -77,7 +77,7 @@ Sequence FunctionTokenize::collapseTreeInternal(DynamicContext* context, int fla
     case chLatin_x:
       break;
     default:
-      XQThrow(FunctionException, X("FunctionTokenize::collapseTreeInternal"),X("Invalid regular expression flags [err:FORX0001]."));
+      XQThrow(FunctionException, X("FunctionTokenize::createSequence"),X("Invalid regular expression flags [err:FORX0001]."));
     }
   }
    
@@ -91,19 +91,19 @@ Sequence FunctionTokenize::collapseTreeInternal(DynamicContext* context, int fla
 
     RegularExpression regEx(pattern, optionsBuf.getRawBuffer(), memMgr);
     if(regEx.matches(XMLUni::fgZeroLenString))
-      XQThrow(FunctionException, X("FunctionTokenize::collapseTreeInternal"), X("The pattern matches the zero-length string [err:FORX0003]"));
+      XQThrow(FunctionException, X("FunctionTokenize::createSequence"), X("The pattern matches the zero-length string [err:FORX0003]"));
     toks = regEx.tokenize(input);
   } catch (ParseException &e){ 
     XMLBuffer buf(1023, memMgr);
     buf.set(X("Invalid regular expression: "));
     buf.append(e.getMessage());
     buf.append(X(" [err:FORX0002]"));
-    XQThrow(FunctionException, X("FunctionTokenize::collapseTreeInternal"), buf.getRawBuffer());
+    XQThrow(FunctionException, X("FunctionTokenize::createSequence"), buf.getRawBuffer());
   } catch (RuntimeException &e){ 
     if(e.getCode()==XMLExcepts::Regex_InvalidRepPattern)
-      XQThrow(FunctionException, X("FunctionTokenize::collapseTreeInternal"), X("Invalid replacement pattern [err:FORX0004]"));
+      XQThrow(FunctionException, X("FunctionTokenize::createSequence"), X("Invalid replacement pattern [err:FORX0004]"));
     else 
-      XQThrow(FunctionException, X("FunctionTokenize::collapseTreeInternal"), e.getMessage());
+      XQThrow(FunctionException, X("FunctionTokenize::createSequence"), e.getMessage());
   }
 
   Sequence resultSeq(toks->size(),memMgr);

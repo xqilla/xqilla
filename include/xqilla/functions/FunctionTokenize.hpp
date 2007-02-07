@@ -40,7 +40,7 @@ public:
    * Returns $input broken into a sequence of strings 
    * using matches to $pattern as a separator. 
    */
-  Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
+  Sequence createSequence(DynamicContext* context, int flags=0) const;
 
 };
 

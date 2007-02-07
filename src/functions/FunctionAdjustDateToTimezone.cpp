@@ -61,7 +61,7 @@ ASTNode *FunctionAdjustDateToTimezone::staticTyping(StaticContext *context)
   return calculateSRCForArguments(context);
 }
 
-Sequence FunctionAdjustDateToTimezone::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionAdjustDateToTimezone::createSequence(DynamicContext* context, int flags) const
 {
 	XPath2MemoryManager* memMgr = context->getMemoryManager();
 
@@ -85,7 +85,7 @@ Sequence FunctionAdjustDateToTimezone::collapseTreeInternal(DynamicContext* cont
       timezoneAsDuration = (const ATDurationOrDerived::Ptr )op2.first();
       Timezone::Ptr timezone = new Timezone(timezoneAsDuration, context);
       if(!timezoneAsDuration->equals(timezone->asDayTimeDuration(context), context)) {
-        XQThrow(FunctionException, X("FunctionAdjustDateToTimeZone::collapseTreeInternal"),X("Invalid timezone value [err:FODT0003]"));
+        XQThrow(FunctionException, X("FunctionAdjustDateToTimeZone::createSequence"),X("Invalid timezone value [err:FODT0003]"));
       }
     }
   }

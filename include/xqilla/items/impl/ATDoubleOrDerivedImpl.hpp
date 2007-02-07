@@ -50,7 +50,8 @@ public:
   virtual const XMLCh* asString(const DynamicContext* context) const;
 
   /* Promote this to the given type, if possible */
-  virtual Numeric::Ptr promoteTypeIfApplicable(const XMLCh* typeURI, const XMLCh* typeName, const DynamicContext* context) const;
+  virtual Numeric::Ptr promoteTypeIfApplicable(AnyAtomicType::AtomicObjectType typeIndex,
+                                               const DynamicContext* context) const;
   
   /** Returns a Numeric object which is the sum of this and other */
   virtual Numeric::Ptr add(const Numeric::Ptr &other, const DynamicContext* context) const;

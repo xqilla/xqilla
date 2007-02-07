@@ -51,7 +51,7 @@ ASTNode *FunctionTrace::staticTyping(StaticContext *context)
   return result;
 }
 
-Sequence FunctionTrace::collapseTreeInternal(DynamicContext* context, int flags) const
+Sequence FunctionTrace::createSequence(DynamicContext* context, int flags) const
 {
   Sequence value = getParamNumber(1, context)->toSequence(context);
 

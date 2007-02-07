@@ -22,7 +22,7 @@ class Sequence;
 class Item;
 class URIResolver;
 class VariableStore;
-class ItemFactory;
+class SequenceBuilder;
 class UpdateFactory;
 
 /// The execution time dynamic context interface
@@ -31,10 +31,8 @@ class XQILLA_API DynamicContext : public StaticContext
 public:
   virtual ~DynamicContext() {};
 
-  /** Register a new reference to the document */
-  virtual void incrementDocumentRefCount(const XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* document) const = 0;
-  /** Register a closed reference to the document */
-  virtual void decrementDocumentRefCount(const XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* document) const = 0;
+  virtual DynamicContext *createModuleDynamicContext(const DynamicContext* moduleCtx, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr =
+                                                     XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager) const = 0;
 
   /** Resets the dynamic context, as if it had never been used */
   virtual void clearDynamicContext() = 0;
@@ -43,10 +41,6 @@ public:
   virtual Item::Ptr getContextItem() const = 0;
   /** Set the context item to item */
   virtual void setContextItem(const Item::Ptr &item) = 0;
-  /** Sets the context item to an external document.
-      This is needed so that the DOMDocument reference counting
-      does not release the document that the node comes from. */
-  virtual void setExternalContextNode(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *node) = 0;
 
   /** Get the context position */
   virtual unsigned int getContextPosition() const = 0;
@@ -78,12 +72,17 @@ public:
      returns NULL, subsequent ones will be called - ending in a call to
      the fallback routines.
 
-     The DynamicContext will not
+     If "adopt" is false, the DynamicContext will not
      adopt this object, making the user responsible for making sure that the
      URIResolver object's lifespan matches or exceeds the life of the
      DynamicContext.
   */
-  virtual void registerURIResolver(URIResolver *resolver) = 0;
+  virtual void registerURIResolver(URIResolver *resolver, bool adopt) = 0;
+  /** Returns the default URIResolver */
+  virtual URIResolver *getDefaultURIResolver() const = 0;
+  /** Sets the default URIResolver */
+  virtual void setDefaultURIResolver(URIResolver *resolver, bool adopt) = 0;
+
   /* Resolve the given uri (and baseUri) to a DOMDocument. If the uri
      is relative, the base uri is obtained from the context. */
   virtual Sequence resolveDocument(const XMLCh* uri, const LocationInfo *location) = 0;
@@ -94,6 +93,10 @@ public:
   /** returns the validated node */
   virtual Node::Ptr validate(const Node::Ptr &node, DocumentCache::ValidationMode valMode) = 0;
 
+  /** Create a new SequenceBuilder, which is used to turn a
+      stream of events into a Sequence. */
+  virtual SequenceBuilder *createSequenceBuilder() const = 0;
+
   /** Creates a new UpdateFactory, used for performing updates.
       Caller owns the returned object, and should delete it */
   virtual UpdateFactory *createUpdateFactory() const = 0;
@@ -103,11 +106,8 @@ public:
   /** Get the object to be used for debugging callbacks */
   virtual XQDebugCallback* getDebugCallback() const = 0;
 
-  /**
-     Test if the query should be interrupted, and throw if so.
-     This method has a default implementation of no-op.
-   */
-  virtual void testInterrupt() const {} 
+  /** Test if the query should be interrupted, and throw if so. */
+  virtual void testInterrupt() const = 0;
 };
 
 #endif

@@ -16,12 +16,15 @@
 
 #include <xqilla/ast/XQDOMConstructor.hpp>
 
+class EventHandler;
+
 class XQILLA_API XQTextConstructor : public XQDOMConstructor
 {
 public:
   XQTextConstructor(bool isCDATA, ASTNode *value, XPath2MemoryManager* mm);
 
-  virtual Sequence collapseTreeInternal(DynamicContext* context, int flags=0) const;
+  virtual void generateEvents(EventHandler *events, DynamicContext *context,
+                              bool preserveNS, bool preserveType) const;
   virtual ASTNode* staticResolution(StaticContext *context);
   virtual ASTNode *staticTyping(StaticContext *context);
 
