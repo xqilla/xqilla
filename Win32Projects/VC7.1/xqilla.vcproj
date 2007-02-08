@@ -938,6 +938,40 @@
 			</File>
 		</Filter>
 		<Filter
+			Name="events"
+			Filter="">
+			<File
+				RelativePath="..\..\src\events\ContentSequenceFilter.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\events\EventSerializer.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\events\NoInheritFilter.hpp">
+			</File>
+			<File
+				RelativePath="..\..\src\events\NoInheritFilter.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\events\NSFixupFilter.cpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\events\ContentSequenceFilter.hpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\events\EventHandler.hpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\events\EventSerializer.hpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\events\NSFixupFilter.hpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\events\SequenceBuilder.hpp">
+			</File>
+		</Filter>
+		<Filter
 			Name="exceptions"
 			Filter="">
 			<File
@@ -1005,6 +1039,46 @@
 			</File>
 			<File
 				RelativePath="..\..\include\xqilla\exceptions\XQillaException.hpp">
+			</File>
+		</Filter>
+		<Filter
+			Name="fastxdm"
+			Filter="">
+			<File
+				RelativePath="..\..\src\fastxdm\FastXDMConfiguration.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\fastxdm\FastXDMDocument.hpp">
+			</File>
+			<File
+				RelativePath="..\..\src\fastxdm\FastXDMDocument.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\fastxdm\FastXDMDocumentCacheImpl.hpp">
+			</File>
+			<File
+				RelativePath="..\..\src\fastxdm\FastXDMDocumentCacheImpl.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\fastxdm\FastXDMNodeImpl.hpp">
+			</File>
+			<File
+				RelativePath="..\..\src\fastxdm\FastXDMNodeImpl.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\fastxdm\FastXDMSequenceBuilder.hpp">
+			</File>
+			<File
+				RelativePath="..\..\src\fastxdm\FastXDMSequenceBuilder.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\fastxdm\FastXDMUpdateFactory.hpp">
+			</File>
+			<File
+				RelativePath="..\..\src\fastxdm\FastXDMUpdateFactory.cpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\fastxdm\FastXDMConfiguration.hpp">
 			</File>
 		</Filter>
 		<Filter
@@ -2696,6 +2770,40 @@
 			</File>
 			<File
 				RelativePath="..\..\include\xqilla\utils\XStr.hpp">
+			</File>
+		</Filter>
+		<Filter
+			Name="xerces"
+			Filter="">
+			<File
+				RelativePath="..\..\src\xerces\XercesConfiguration.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\xerces\XercesNodeImpl.hpp">
+			</File>
+			<File
+				RelativePath="..\..\src\xerces\XercesNodeImpl.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\xerces\XercesSequenceBuilder.hpp">
+			</File>
+			<File
+				RelativePath="..\..\src\xerces\XercesSequenceBuilder.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\xerces\XercesUpdateFactory.hpp">
+			</File>
+			<File
+				RelativePath="..\..\src\xerces\XercesUpdateFactory.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\xerces\XercesURIResolver.hpp">
+			</File>
+			<File
+				RelativePath="..\..\src\xerces\XercesURIResolver.cpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\xerces\XercesConfiguration.hpp">
 			</File>
 		</Filter>
 		<Filter
