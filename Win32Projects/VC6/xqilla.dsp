@@ -796,6 +796,50 @@ SOURCE=..\..\include\xqilla\dom-api\XQillaExpression.hpp
 SOURCE=..\..\include\xqilla\dom-api\XQillaNSResolver.hpp
 # End Source File
 # End Group
+# Begin Group "events"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\src\events\ContentSequenceFilter.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\events\EventSerializer.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\events\NoInheritFilter.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\events\NoInheritFilter.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\events\NSFixupFilter.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\events\ContentSequenceFilter.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\events\EventHandler.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\events\EventSerializer.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\events\NSFixupFilter.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\events\SequenceBuilder.hpp
+# End Source File
+# End Group
 # Begin Group "exceptions"
 
 # PROP Default_Filter ""
@@ -886,6 +930,58 @@ SOURCE=..\..\include\xqilla\exceptions\XQException.hpp
 # Begin Source File
 
 SOURCE=..\..\include\xqilla\exceptions\XQillaException.hpp
+# End Source File
+# End Group
+# Begin Group "fastxdm"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\src\fastxdm\FastXDMConfiguration.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\fastxdm\FastXDMDocument.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\fastxdm\FastXDMDocument.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\fastxdm\FastXDMDocumentCacheImpl.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\fastxdm\FastXDMDocumentCacheImpl.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\fastxdm\FastXDMNodeImpl.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\fastxdm\FastXDMNodeImpl.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\fastxdm\FastXDMSequenceBuilder.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\fastxdm\FastXDMSequenceBuilder.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\fastxdm\FastXDMUpdateFactory.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\fastxdm\FastXDMUpdateFactory.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\fastxdm\FastXDMConfiguration.hpp
 # End Source File
 # End Group
 # Begin Group "framework"
@@ -3122,6 +3218,50 @@ SOURCE=..\..\include\xqilla\utils\XQillaPlatformUtils.hpp
 # Begin Source File
 
 SOURCE=..\..\include\xqilla\utils\XStr.hpp
+# End Source File
+# End Group
+# Begin Group "xerces"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\src\xerces\XercesConfiguration.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\xerces\XercesNodeImpl.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\xerces\XercesNodeImpl.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\xerces\XercesSequenceBuilder.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\xerces\XercesSequenceBuilder.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\xerces\XercesUpdateFactory.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\xerces\XercesUpdateFactory.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\xerces\XercesURIResolver.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\xerces\XercesURIResolver.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\xerces\XercesConfiguration.hpp
 # End Source File
 # End Group
 # Begin Group "xqts"
