@@ -73,6 +73,7 @@ src/ast/XPath1Compat.cpp \
 src/ast/ConvertFunctionArg.cpp \
 src/ast/XQDocumentOrder.cpp \
 src/ast/XQPredicate.cpp \
+src/events/ContentSequenceFilter.cpp \
 src/events/EventSerializer.cpp \
 src/events/NoInheritFilter.cpp \
 src/events/NoInheritFilter.hpp \

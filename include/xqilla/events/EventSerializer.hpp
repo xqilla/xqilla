@@ -16,14 +16,16 @@
 
 #include <xqilla/events/EventHandler.hpp>
 
-#include <xercesc/framework/MemBufFormatTarget.hpp>
+#include <xercesc/framework/XMLFormatter.hpp>
 
 class XQILLA_API EventSerializer : public EventHandler
 {
 public:
-  EventSerializer(char *encoding, char *xmlVersion, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mm =
+  EventSerializer(char *encoding, char *xmlVersion, XERCES_CPP_NAMESPACE_QUALIFIER XMLFormatTarget *target,
+                  XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mm =
                   XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager);
-  EventSerializer(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mm =
+  EventSerializer(XERCES_CPP_NAMESPACE_QUALIFIER XMLFormatTarget *target,
+                  XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mm =
                   XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager);
 
   virtual void startDocumentEvent(const XMLCh *documentURI, const XMLCh *encoding);
@@ -38,17 +40,17 @@ public:
   virtual void attributeEvent(const XMLCh *prefix, const XMLCh *uri, const XMLCh *localname, const XMLCh *value,
                               const XMLCh *typeURI, const XMLCh *typeName);
   virtual void namespaceEvent(const XMLCh *prefix, const XMLCh *uri);
+  virtual void atomicItemEvent(AnyAtomicType::AtomicObjectType type, const XMLCh *value,
+                               const XMLCh *typeURI, const XMLCh *typeName);
   virtual void endEvent();
 
-  const XMLByte *getRawBuffer() const
-  {
-    return target_.getRawBuffer();
-  }
+  void addNewlines(bool add) { addNewlines_ = add; }
 
 private:
-  XERCES_CPP_NAMESPACE_QUALIFIER MemBufFormatTarget target_;
   XERCES_CPP_NAMESPACE_QUALIFIER XMLFormatter formatter_;
   bool elementStarted_;
+  unsigned int level_;
+  bool addNewlines_;
 };
 
 #endif

@@ -95,7 +95,8 @@ void ASTNodeImpl::generateEvents(EventHandler *events, DynamicContext *context,
       ((Node*)item.get())->generateEvents(events, context, preserveNS, preserveType);
     }
     else {
-      events->atomicItemEvent(item->asString(context), item->getTypeURI(), item->getTypeName());
+      events->atomicItemEvent(((AnyAtomicType*)item.get())->getPrimitiveTypeIndex(), item->asString(context),
+                              item->getTypeURI(), item->getTypeName());
     }
   }
 }

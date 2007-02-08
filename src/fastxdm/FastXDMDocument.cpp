@@ -19,8 +19,6 @@
 #include <xqilla/utils/XMLChCompare.hpp>
 #include <xqilla/items/ATUntypedAtomic.hpp>
 #include <xqilla/schema/DocumentCacheImpl.hpp>
-#include <xqilla/events/EventSerializer.hpp>
-#include <xqilla/events/NSFixupFilter.hpp>
 
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 
@@ -333,15 +331,6 @@ void FastXDMDocument::resizeNamespaces()
   memcpy(newMem.get(), namespaces_, numNamespaces_ * sizeof(Namespace));
   namespaces_ = newMem.swap(namespaces_);
   maxNamespaces_ *= 2;
-}
-
-const XMLCh *FastXDMDocument::toString(const Node *node, XPath2MemoryManager *mm)
-{
-  EventSerializer writer(mm);
-  NSFixupFilter nsfilter(&writer, mm);
-  toEvents(node, &nsfilter);
-  nsfilter.endEvent();
-  return mm->getPooledString((XMLCh*)writer.getRawBuffer());
 }
 
 static void outputInheritedNamespaces(const FastXDMDocument::Node *node, EventHandler *events)

@@ -496,6 +496,30 @@ void XQUserFunction::XQFunctionEvaluator::evaluateArguments(DynamicContext *cont
   }
 }
 
+void XQUserFunction::XQFunctionEvaluator::generateEvents(EventHandler *events, DynamicContext *context,
+	bool preserveNS, bool preserveType) const
+{
+  context->testInterrupt();
+  VariableStore* varStore = context->getVariableStore();
+
+  DocumentCache* docCache = m_pFuncDef->getModuleDocumentCache();
+  DocumentCache* origDocCache = NULL;
+  if(docCache != NULL) {
+    origDocCache = const_cast<DocumentCache*>(context->getDocumentCache());
+    context->setDocumentCache(docCache);
+  }
+
+  evaluateArguments(context);
+
+  m_pFuncDef->getFunctionBody()->generateEvents(events, context, preserveNS, preserveType);
+
+  varStore->removeScope();
+
+  if(origDocCache != NULL) {
+    context->setDocumentCache(origDocCache);
+  }
+}
+
 PendingUpdateList XQUserFunction::XQFunctionEvaluator::createUpdateList(DynamicContext *context) const
 {
   context->testInterrupt();

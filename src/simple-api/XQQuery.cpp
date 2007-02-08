@@ -35,6 +35,7 @@
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/utils/XPath2NSUtils.hpp>
 #include <xqilla/utils/PrintAST.hpp>
+#include <xqilla/events/EventHandler.hpp>
 
 #include <xercesc/util/XMLUni.hpp>
 #include <xercesc/util/XMLURL.hpp>
@@ -94,6 +95,60 @@ Result XQQuery::execute(DynamicContext* context) const
   }
   else {
     return new QueryResult(this);
+  }
+}
+
+void XQQuery::executeProlog(DynamicContext *context) const
+{
+  try {
+    // Execute the imported modules
+    for(ImportedModules::const_iterator modIt = m_importedModules.begin();
+        modIt != m_importedModules.end(); ++modIt) {
+
+      // Derive the module's execution context from it's static context
+      AutoDelete<DynamicContext> moduleCtx(context->createModuleDynamicContext((*modIt)->getStaticContext(),
+                                                                               context->getMemoryManager()));
+      (*modIt)->executeProlog(moduleCtx);
+
+      // Copy the module's imported variables into our context
+      for(GlobalVariables::const_iterator varIt = (*modIt)->m_userDefVars.begin();
+          varIt != (*modIt)->m_userDefVars.end(); ++varIt) {
+        std::pair<bool, Sequence> value = moduleCtx->getVariableStore()->
+          getGlobalVar((*varIt)->getVariableURI(), (*varIt)->getVariableLocalName(), moduleCtx);
+        assert(value.first);
+        context->getVariableStore()->
+          setGlobalVar((*varIt)->getVariableURI(), (*varIt)->getVariableLocalName(), value.second, context);
+      }
+    }
+
+    // define global variables
+    for(GlobalVariables::const_iterator it3 = m_userDefVars.begin(); it3 != m_userDefVars.end(); ++it3)
+      (*it3)->execute(context);
+  }
+  catch(XQException& e) {
+    if(e.getXQueryLine() == 0) {
+      e.setXQueryPosition(m_szCurrentFile, 1, 1);
+    }
+    throw e;
+  }
+}
+
+void XQQuery::execute(EventHandler *events, DynamicContext* context) const
+{
+  executeProlog(context);
+
+  if(m_query != NULL) {
+    try {
+      // execute the query body
+      m_query->generateEvents(events, context, true, true);
+      events->endEvent();
+    }
+    catch(XQException& e) {
+      if(e.getXQueryLine() == 0) {
+        e.setXQueryPosition(m_szCurrentFile, 1, 1);
+      }
+      throw e;
+    }
   }
 }
 
@@ -507,29 +562,7 @@ Item::Ptr XQQuery::QueryResult::next(DynamicContext *context)
   if(_toDo) {
     _toDo = false;
 
-    // Execute the imported modules
-    for(ImportedModules::const_iterator modIt = _query->m_importedModules.begin();
-        modIt != _query->m_importedModules.end(); ++modIt) {
-
-      // Derive the module's execution context from it's static context
-      AutoDelete<DynamicContext> moduleCtx(context->createModuleDynamicContext((*modIt)->getStaticContext(), context->getMemoryManager()));
-
-      (*modIt)->execute(moduleCtx)->next(moduleCtx);
-
-      // Copy the module's imported variables into our context
-      for(GlobalVariables::const_iterator varIt = (*modIt)->m_userDefVars.begin();
-          varIt != (*modIt)->m_userDefVars.end(); ++varIt) {
-        std::pair<bool, Sequence> value = moduleCtx->getVariableStore()->
-          getGlobalVar((*varIt)->getVariableURI(), (*varIt)->getVariableLocalName(), moduleCtx);
-        assert(value.first);
-        context->getVariableStore()->
-          setGlobalVar((*varIt)->getVariableURI(), (*varIt)->getVariableLocalName(), value.second, context);
-      }
-    }
-
-    // define global variables
-    for(GlobalVariables::const_iterator it3 = _query->m_userDefVars.begin(); it3 != _query->m_userDefVars.end(); ++it3)
-      (*it3)->execute(context);
+    _query->executeProlog(context);
 
     // execute the query body
     if(_query->getQueryBody() != NULL) {
@@ -575,29 +608,7 @@ void XQQuery::DebugResult::getResult(Sequence &toFill, DynamicContext *context) 
 
   try
   {
-    // Execute the imported modules
-    for(ImportedModules::const_iterator modIt = _query->m_importedModules.begin();
-        modIt != _query->m_importedModules.end(); ++modIt) {
-
-      // Derive the module's execution context from it's static context
-      AutoDelete<DynamicContext> moduleCtx(context->createModuleDynamicContext((*modIt)->getStaticContext(), context->getMemoryManager()));
-
-      (*modIt)->execute(moduleCtx)->next(moduleCtx);
-
-      // Copy the module's imported variables into our context
-      for(GlobalVariables::const_iterator varIt = (*modIt)->m_userDefVars.begin();
-          varIt != (*modIt)->m_userDefVars.end(); ++varIt) {
-        std::pair<bool, Sequence> value = moduleCtx->getVariableStore()->
-          getGlobalVar((*varIt)->getVariableURI(), (*varIt)->getVariableLocalName(), moduleCtx);
-        assert(value.first);
-        context->getVariableStore()->
-          setGlobalVar((*varIt)->getVariableURI(), (*varIt)->getVariableLocalName(), value.second, context);
-      }
-    }
-
-    // define global variables
-    for(GlobalVariables::const_iterator it3 = _query->m_userDefVars.begin(); it3 != _query->m_userDefVars.end(); ++it3)
-      (*it3)->execute(context);
+    _query->executeProlog(context);
 
     // execute the query body
     if(_query->getQueryBody() != NULL) {

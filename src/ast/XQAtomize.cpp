@@ -15,7 +15,6 @@
 
 #include <xqilla/ast/XQAtomize.hpp>
 #include <xqilla/items/Node.hpp>
-#include <xqilla/events/EventHandler.hpp>
 
 XQAtomize::XQAtomize(ASTNode* expr, XPath2MemoryManager* memMgr)
   : ASTNodeImpl(memMgr),

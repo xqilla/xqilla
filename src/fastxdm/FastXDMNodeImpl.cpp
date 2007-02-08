@@ -28,8 +28,10 @@
 #include <xqilla/dom-api/XQillaNSResolver.hpp>
 #include <xqilla/axis/SelfAxis.hpp>
 #include <xqilla/axis/NodeTest.hpp>
-#include <xqilla/events/EventHandler.hpp>
+#include <xqilla/events/EventSerializer.hpp>
+#include <xqilla/events/NSFixupFilter.hpp>
 
+#include <xercesc/framework/MemBufFormatTarget.hpp>
 #include <xercesc/validators/datatype/ListDatatypeValidator.hpp>
 #include <xercesc/util/XMLUri.hpp>
 
@@ -70,7 +72,14 @@ bool FastXDMNodeImpl::isAtomicValue() const
 
 const XMLCh *FastXDMNodeImpl::asString(const DynamicContext* context) const
 {
-  return FastXDMDocument::toString(node_, context->getMemoryManager());
+  XPath2MemoryManager *mm = context->getMemoryManager();
+
+  MemBufFormatTarget target(1023, mm);
+  EventSerializer writer(&target, mm);
+  NSFixupFilter nsfilter(&writer, mm);
+  FastXDMDocument::toEvents(node_, &nsfilter);
+  nsfilter.endEvent();
+  return XMLString::replicate((XMLCh*)target.getRawBuffer(), mm);
 }
 
 void FastXDMNodeImpl::generateEvents(EventHandler *events, const DynamicContext *context,
@@ -1206,7 +1215,7 @@ const XMLCh* FastXDMAttributeNodeImpl::asString(const DynamicContext* context) c
   buffer.append(X("=\""));
   buffer.append(attr_->value);
   buffer.append(X("\""));
-  return context->getMemoryManager()->getPooledString(buffer.getRawBuffer());
+  return XMLString::replicate(buffer.getRawBuffer(), context->getMemoryManager());
 }
 
 void FastXDMAttributeNodeImpl::generateEvents(EventHandler *events, const DynamicContext *context,
@@ -1535,7 +1544,7 @@ const XMLCh* FastXDMNamespaceNodeImpl::asString(const DynamicContext* context) c
   buffer.append(X("=\""));
   buffer.append(uri_);
   buffer.append(X("\"]"));
-  return context->getMemoryManager()->getPooledString(buffer.getRawBuffer());
+  return XMLString::replicate(buffer.getRawBuffer(), context->getMemoryManager());
 }
 
 void FastXDMNamespaceNodeImpl::generateEvents(EventHandler *events, const DynamicContext *context,

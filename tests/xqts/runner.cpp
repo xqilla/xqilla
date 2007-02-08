@@ -34,6 +34,9 @@
 #include <xqilla/utils/XQillaPlatformUtils.hpp>
 #include <xqilla/xerces/XercesConfiguration.hpp>
 #include <xqilla/fastxdm/FastXDMConfiguration.hpp>
+#include <xqilla/events/ContentSequenceFilter.hpp>
+#include <xqilla/events/EventSerializer.hpp>
+#include <xqilla/events/NSFixupFilter.hpp>
 
 #if defined(XERCES_HAS_CPP_NAMESPACE)
 XERCES_CPP_NAMESPACE_USE
@@ -233,8 +236,6 @@ int main(int argc, char *argv[])
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-static string serializeXMLResults(XQilla &xqilla, const Sequence &result, DynamicContext *context);
-
 XQillaTestSuiteRunner::XQillaTestSuiteRunner(const string &singleTest, TestSuiteResultListener *results, XQillaConfiguration *conf)
   : TestSuiteRunner(results),
     m_conf(conf),
@@ -338,9 +339,14 @@ void XQillaTestSuiteRunner::runTestCase(const TestCase &testCase)
     time_t curTime;
     context->setCurrentTime(time(&curTime));
 
-    Sequence result=pParsedQuery->execute(context.get())->toSequence(context.get());
+    // Emulate the XQuery serialization spec
+    MemBufFormatTarget target;
+    EventSerializer writer("UTF-8", "1.1", &target, context->getMemoryManager());
+    NSFixupFilter nsfilter(&writer, context->getMemoryManager());
+    ContentSequenceFilter csfilter(&nsfilter);
 
-    testResults(testCase, serializeXMLResults(xqilla, result, context.get()));
+    pParsedQuery->execute(&csfilter, context.get());
+    testResults(testCase, (char*)target.getRawBuffer());
   }
   catch(XQException& e) {
     ostringstream oss;
@@ -453,22 +459,4 @@ bool XQillaTestSuiteRunner::resolveDefaultCollection(Sequence &result, DynamicCo
   if(!m_pCurTestCase->defaultCollection.empty())
     return resolveCollection(result, X(m_pCurTestCase->defaultCollection.c_str()), context);
   return false;
-}
-
-static string serializeXMLResults(XQilla &xqilla, const Sequence &result, DynamicContext *context)
-{
-  static const char *serializeQuery = "declare copy-namespaces preserve, inherit; "
-	  "declare variable $results external; document { $results }";
-
-  // Emulate the XQuery serialization spec
-  Janitor<XQQuery> query(xqilla.parse(X(serializeQuery), context, 0, XQilla::NO_ADOPT_CONTEXT));
-  context->getVariableStore()->setGlobalVar(X("results"), result, context, 0);
-  Result sResult = query->execute(context);
-
-  MemBufFormatTarget strTarget;
-  {
-    XMLFormatter formatter("UTF-8", "1.0", &strTarget, XMLFormatter::NoEscapes, XMLFormatter::UnRep_CharRef);
-    formatter << sResult->next(context)->asString(context);
-  }
-  return (char*)strTarget.getRawBuffer();
 }

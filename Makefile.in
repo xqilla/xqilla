@@ -85,14 +85,15 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	XQGlobalVariable.lo XQOrderingChange.lo XQQuantified.lo \
 	XQValidate.lo XQTypeswitch.lo XQVariableBinding.lo \
 	XPath1Compat.lo ConvertFunctionArg.lo XQDocumentOrder.lo \
-	XQPredicate.lo EventSerializer.lo NoInheritFilter.lo \
-	NSFixupFilter.lo FTContains.lo FTWords.lo FTOr.lo FTAnd.lo \
-	FTMildnot.lo FTUnaryNot.lo DefaultTokenizer.lo \
-	DefaultTokenStore.lo FTOrder.lo FTDistance.lo FTScope.lo \
-	FTContent.lo FTWindow.lo XQillaBuilderImpl.lo \
-	XQillaDocumentImpl.lo XQillaExpressionImpl.lo \
-	XQillaNSResolverImpl.lo XQillaXMLGrammarPoolImpl.lo \
-	XPathDocumentImpl.lo XPathNamespaceImpl.lo XPath2ResultImpl.lo \
+	XQPredicate.lo ContentSequenceFilter.lo EventSerializer.lo \
+	NoInheritFilter.lo NSFixupFilter.lo FTContains.lo FTWords.lo \
+	FTOr.lo FTAnd.lo FTMildnot.lo FTUnaryNot.lo \
+	DefaultTokenizer.lo DefaultTokenStore.lo FTOrder.lo \
+	FTDistance.lo FTScope.lo FTContent.lo FTWindow.lo \
+	XQillaBuilderImpl.lo XQillaDocumentImpl.lo \
+	XQillaExpressionImpl.lo XQillaNSResolverImpl.lo \
+	XQillaXMLGrammarPoolImpl.lo XPathDocumentImpl.lo \
+	XPathNamespaceImpl.lo XPath2ResultImpl.lo \
 	XQillaImplementation.lo XPath2NodeSerializer.lo XQilla.lo \
 	XQQuery.lo UTF8Str.lo XMLChCompare.lo XStr.lo ContextUtils.lo \
 	DateUtils.lo NumUtils.lo XQillaPlatformUtils.lo PrintAST.lo \
@@ -434,6 +435,7 @@ src/ast/XPath1Compat.cpp \
 src/ast/ConvertFunctionArg.cpp \
 src/ast/XQDocumentOrder.cpp \
 src/ast/XQPredicate.cpp \
+src/events/ContentSequenceFilter.cpp \
 src/events/EventSerializer.cpp \
 src/events/NoInheritFilter.cpp \
 src/events/NoInheritFilter.hpp \
@@ -1024,6 +1026,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CollationImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ComparisonOperator.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ConstantFoldingFunction.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ContentSequenceFilter.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ContextUtils.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ConvertFunctionArg.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DatatypeFactory.Plo@am__quote@
@@ -2043,6 +2046,13 @@ XQPredicate.lo: src/ast/XQPredicate.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/ast/XQPredicate.cpp' object='XQPredicate.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQPredicate.lo `test -f 'src/ast/XQPredicate.cpp' || echo '$(srcdir)/'`src/ast/XQPredicate.cpp
+
+ContentSequenceFilter.lo: src/events/ContentSequenceFilter.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ContentSequenceFilter.lo -MD -MP -MF "$(DEPDIR)/ContentSequenceFilter.Tpo" -c -o ContentSequenceFilter.lo `test -f 'src/events/ContentSequenceFilter.cpp' || echo '$(srcdir)/'`src/events/ContentSequenceFilter.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ContentSequenceFilter.Tpo" "$(DEPDIR)/ContentSequenceFilter.Plo"; else rm -f "$(DEPDIR)/ContentSequenceFilter.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/events/ContentSequenceFilter.cpp' object='ContentSequenceFilter.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ContentSequenceFilter.lo `test -f 'src/events/ContentSequenceFilter.cpp' || echo '$(srcdir)/'`src/events/ContentSequenceFilter.cpp
 
 EventSerializer.lo: src/events/EventSerializer.cpp
 @am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT EventSerializer.lo -MD -MP -MF "$(DEPDIR)/EventSerializer.Tpo" -c -o EventSerializer.lo `test -f 'src/events/EventSerializer.cpp' || echo '$(srcdir)/'`src/events/EventSerializer.cpp; \

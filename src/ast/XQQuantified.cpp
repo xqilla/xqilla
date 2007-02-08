@@ -34,8 +34,8 @@
 XQQuantified::XQQuantified(XQQuantified::QuantifierType qType, VectorOfVariableBinding* bindings, ASTNode* returnExpr, XPath2MemoryManager* expr)
   : XQFLWOR(bindings, NULL, NULL, returnExpr, expr)
 {
-	_qType=qType;
-    setType(ASTNode::FLWOR_QUANTIFIED);
+  _qType=qType;
+  setType(ASTNode::FLWOR_QUANTIFIED);
 }
 
 ASTNode *XQQuantified::staticTyping(StaticContext *context)
@@ -52,8 +52,8 @@ ASTNode *XQQuantified::staticTyping(StaticContext *context)
       dContext->setMemoryManager(context->getMemoryManager());
       bool value = _return->createResult(dContext)->getEffectiveBooleanValue(dContext, _return);
       ASTNode *newBlock = new (getMemoryManager())
-	      XQSequence(dContext->getItemFactory()->createBoolean(value, dContext),
-			       dContext, getMemoryManager());
+        XQSequence(dContext->getItemFactory()->createBoolean(value, dContext),
+                   dContext, getMemoryManager());
       newBlock->setLocationInfo(this);
       return newBlock->staticResolution(context);
     }
@@ -62,6 +62,12 @@ ASTNode *XQQuantified::staticTyping(StaticContext *context)
   else {
     return constantFold(context);
   }
+}
+
+void XQQuantified::generateEvents(EventHandler *events, DynamicContext *context,
+                                  bool preserveNS, bool preserveType) const
+{
+  ASTNodeImpl::generateEvents(events, context, preserveNS, preserveType);
 }
 
 Result XQQuantified::createResultImpl(VectorOfVariableBinding::const_iterator it, VectorOfVariableBinding::const_iterator end, DynamicContext* context, int flags) const

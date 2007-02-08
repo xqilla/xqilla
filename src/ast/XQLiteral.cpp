@@ -23,7 +23,7 @@ XQLiteral::XQLiteral(ItemConstructor *ic, XPath2MemoryManager* memMgr)
 	: ASTNodeImpl(memMgr),
     _itemConstructor(ic)
 {
-	setType(ASTNode::LITERAL);
+  setType(ASTNode::LITERAL);
 }
 
 /** Returns true if this XQ has no predicates, and is an instance of
@@ -57,11 +57,10 @@ bool XQLiteral::isSingleNumericConstant(StaticContext *context) const
   return false;
 }
 
-ASTNode* XQLiteral::staticResolution(StaticContext *context) {
-  XPath2MemoryManager *mm = context->getMemoryManager();
-  ASTNode *result = new (mm) XQSequence(_itemConstructor, mm);
-  result->setLocationInfo(this);
-  return result->staticResolution(context);
+ASTNode* XQLiteral::staticResolution(StaticContext *context)
+{
+  // Constant fold, to parse numeric literals
+  return constantFold(context);
 }
 
 ASTNode *XQLiteral::staticTyping(StaticContext *context)

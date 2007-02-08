@@ -37,7 +37,8 @@ public:
   virtual void attributeEvent(const XMLCh *prefix, const XMLCh *uri, const XMLCh *localname, const XMLCh *value,
                               const XMLCh *typeURI, const XMLCh *typeName);
   virtual void namespaceEvent(const XMLCh *prefix, const XMLCh *uri);
-  virtual void atomicItemEvent(const XMLCh *value, const XMLCh *typeURI, const XMLCh *typeName);
+  virtual void atomicItemEvent(AnyAtomicType::AtomicObjectType type, const XMLCh *value, const XMLCh *typeURI,
+                               const XMLCh *typeName);
   virtual void endEvent();
 
   virtual Sequence getSequence() const { return seq_; }

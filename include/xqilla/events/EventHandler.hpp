@@ -15,6 +15,7 @@
 #define _EVENTHANDLER_HPP
 
 #include <xqilla/framework/XQillaExport.hpp>
+#include <xqilla/items/AnyAtomicType.hpp>
 
 #include <xercesc/util/XercesDefs.hpp>
 
@@ -46,7 +47,8 @@ public:
   /** Handles a namespace binding as an event */
   virtual void namespaceEvent(const XMLCh *prefix, const XMLCh *uri) = 0;
   /** Handles an atomic item as an event */
-  virtual void atomicItemEvent(const XMLCh *value, const XMLCh *typeURI, const XMLCh *typeName) {}
+  virtual void atomicItemEvent(AnyAtomicType::AtomicObjectType type, const XMLCh *value,
+                               const XMLCh *typeURI, const XMLCh *typeName) {}
   /** Called when all events have been reported */
   virtual void endEvent() = 0;
 };
@@ -111,9 +113,10 @@ public:
     next_->namespaceEvent(prefix, uri);
   }
 
-  virtual void atomicItemEvent(const XMLCh *value, const XMLCh *typeURI, const XMLCh *typeName)
+  virtual void atomicItemEvent(AnyAtomicType::AtomicObjectType type, const XMLCh *value, const XMLCh *typeURI,
+                               const XMLCh *typeName)
   {
-    next_->atomicItemEvent(value, typeURI, typeName);
+    next_->atomicItemEvent(type, value, typeURI, typeName);
   }
 
   virtual void endEvent()

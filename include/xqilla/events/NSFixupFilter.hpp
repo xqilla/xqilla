@@ -24,6 +24,8 @@ public:
   NSFixupFilter(EventHandler *next, XPath2MemoryManager *mm);
   ~NSFixupFilter();
 
+  virtual void startDocumentEvent(const XMLCh *documentURI, const XMLCh *encoding);
+  virtual void endDocumentEvent();
   virtual void startElementEvent(const XMLCh *prefix, const XMLCh *uri, const XMLCh *localname);
   virtual void endElementEvent(const XMLCh *prefix, const XMLCh *uri, const XMLCh *localname,
                                const XMLCh *typeURI, const XMLCh *typeName);
@@ -32,6 +34,14 @@ public:
   virtual void namespaceEvent(const XMLCh *prefix, const XMLCh *uri);
 
 private:
+  struct ElemEntry {
+    void set(const XMLCh *p, ElemEntry *pr)
+    { prefix = p; prev = pr; }
+
+    const XMLCh *prefix;
+    ElemEntry *prev;
+  };
+
   struct NSEntry {
     void set(const XMLCh *p, const XMLCh *u, unsigned int l, NSEntry *pr)
     { prefix = p; uri = u; level = l; prev = pr; }
@@ -49,6 +59,7 @@ private:
 
   XPath2MemoryManager *mm_;
   unsigned int level_;
+  ElemEntry *elements_;
   NSEntry *namespaces_;
 };
 
