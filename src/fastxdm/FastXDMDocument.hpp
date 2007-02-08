@@ -41,7 +41,7 @@ public:
 
   struct Node;
 
-  struct XQILLA_API Attribute {
+  struct Attribute {
     void set(unsigned int oi, const XMLCh *p, const XMLCh *u, const XMLCh *l, const XMLCh *v, const XMLCh *tu, const XMLCh *tn)
     {
       owner.index = oi; prefix = p; uri = u; localname = l; value = v; typeURI = tu; typeName = tn;
@@ -66,7 +66,7 @@ public:
     const XMLCh *typeName;
   };
 
-  struct XQILLA_API Namespace {
+  struct Namespace {
     void set(unsigned int oi, const XMLCh *p, const XMLCh *u)
     {
       owner.index = oi; prefix = p; uri = u;
@@ -81,7 +81,7 @@ public:
     const XMLCh *uri;
   };
 
-  struct XQILLA_API Node {
+  struct Node {
     void setDocument(const XMLCh *d, const XMLCh *e)
     {
       nodeKind = DOCUMENT; level = 0; nextSibling.index = (unsigned int)-1; data.document.documentURI = d;
@@ -123,13 +123,13 @@ public:
       Node *ptr;
     } nextSibling;
 
-    union XQILLA_API {
-      struct XQILLA_API {
+    union {
+      struct {
         const XMLCh *documentURI;
         const XMLCh *encoding;
       } document;
 
-      struct XQILLA_API {
+      struct {
         union {
           unsigned int index;
           Attribute *ptr;
@@ -148,7 +148,7 @@ public:
         const XMLCh *typeName;
       } element;
 
-      struct XQILLA_API {
+      struct {
         const XMLCh *target;
         const XMLCh *value;
       } other;
