@@ -53,7 +53,7 @@ void ATQNameConstructor::generateEvents(EventHandler *events, const DynamicConte
     buf.append(':');
   }
   buf.append(_localname);
-  events->atomicItemEvent(buf.getRawBuffer(), _typeURI, _typeName);
+  events->atomicItemEvent(AnyAtomicType::QNAME, buf.getRawBuffer(), _typeURI, _typeName);
 }
 
 std::string ATQNameConstructor::asString(const DynamicContext* context) const

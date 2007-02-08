@@ -161,10 +161,11 @@ void FastXDMSequenceBuilder::namespaceEvent(const XMLCh *prefix, const XMLCh *ur
   document_->namespaceEvent(prefix, uri);
 }
 
-void FastXDMSequenceBuilder::atomicItemEvent(const XMLCh *value, const XMLCh *typeURI, const XMLCh *typeName)
+void FastXDMSequenceBuilder::atomicItemEvent(AnyAtomicType::AtomicObjectType type, const XMLCh *value, const XMLCh *typeURI,
+                                             const XMLCh *typeName)
 {
   assert(level_ == 0);
 
-  seq_.addItem(context_->getItemFactory()->createDerivedFromAtomicType(typeURI, typeName, value, context_));
+  seq_.addItem(context_->getItemFactory()->createDerivedFromAtomicType(type, typeURI, typeName, value, context_));
 }
 

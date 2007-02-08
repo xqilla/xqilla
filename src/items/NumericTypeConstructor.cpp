@@ -110,15 +110,17 @@ void NumericTypeConstructor::generateEvents(EventHandler *events, const DynamicC
   Numeric::Ptr retVal;
   switch(_primitiveType) {
   case AnyAtomicType::DECIMAL:
-    events->atomicItemEvent(Numeric::asDecimalString(copy, ATDecimalOrDerivedImpl::g_nSignificantDigits, context),
-                            _typeURI, _typeName);
+    events->atomicItemEvent(_primitiveType, Numeric::asDecimalString(copy, ATDecimalOrDerivedImpl::g_nSignificantDigits,
+                                                                     context), _typeURI, _typeName);
     break;
   case AnyAtomicType::FLOAT:
-    events->atomicItemEvent(Numeric::asDoubleString(Numeric::NUM, copy, ATFloatOrDerivedImpl::g_nSignificantDigits, context),
+    events->atomicItemEvent(_primitiveType, Numeric::asDoubleString(Numeric::NUM, copy,
+                                                                    ATFloatOrDerivedImpl::g_nSignificantDigits, context),
                             _typeURI, _typeName);
     break;
   case AnyAtomicType::DOUBLE:
-    events->atomicItemEvent(Numeric::asDoubleString(Numeric::NUM, copy, ATDoubleOrDerivedImpl::g_nSignificantDigits, context),
+    events->atomicItemEvent(_primitiveType, Numeric::asDoubleString(Numeric::NUM, copy,
+                                                                    ATDoubleOrDerivedImpl::g_nSignificantDigits, context),
                             _typeURI, _typeName);
     break;
   default:

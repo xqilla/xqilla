@@ -11,24 +11,20 @@
  * $Id$
  */
 
-#ifndef _FASTXDMSEQUENCEBUILDER_HPP
-#define _FASTXDMSEQUENCEBUILDER_HPP
+#ifndef _CONTENTSEQUENCEFILTER_HPP
+#define _CONTENTSEQUENCEFILTER_HPP
 
-#include <xqilla/events/SequenceBuilder.hpp>
-#include <xqilla/runtime/Sequence.hpp>
+#include <xqilla/events/EventHandler.hpp>
 
-#include "FastXDMDocument.hpp"
-
-class FastXDMSequenceBuilder : public SequenceBuilder
+class XQILLA_API ContentSequenceFilter : public EventFilter
 {
 public:
-  FastXDMSequenceBuilder(const DynamicContext *context);
+  ContentSequenceFilter(EventHandler *next);
 
   virtual void startDocumentEvent(const XMLCh *documentURI, const XMLCh *encoding);
   virtual void endDocumentEvent();
+  virtual void endEvent();
   virtual void startElementEvent(const XMLCh *prefix, const XMLCh *uri, const XMLCh *localname);
-  virtual void endElementEvent(const XMLCh *prefix, const XMLCh *uri, const XMLCh *localname,
-                               const XMLCh *typeURI, const XMLCh *typeName);
   virtual void piEvent(const XMLCh *target, const XMLCh *value);
   virtual void textEvent(const XMLCh *value);
   virtual void textEvent(const XMLCh *chars, unsigned int length);
@@ -38,15 +34,9 @@ public:
   virtual void namespaceEvent(const XMLCh *prefix, const XMLCh *uri);
   virtual void atomicItemEvent(AnyAtomicType::AtomicObjectType type, const XMLCh *value, const XMLCh *typeURI,
                                const XMLCh *typeName);
-  virtual void endEvent();
-
-  virtual Sequence getSequence() const { return seq_; }
 
 private:
-  const DynamicContext *context_;
-  unsigned int level_;
-  FastXDMDocument::Ptr document_;
-  Sequence seq_;
+  bool lastWasAtomic_;
 };
 
 #endif

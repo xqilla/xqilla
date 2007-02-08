@@ -40,7 +40,7 @@ Item::Ptr AnyAtomicTypeConstructor::createItem(const DynamicContext* context) co
 
 void AnyAtomicTypeConstructor::generateEvents(EventHandler *events, const DynamicContext* context) const
 {
-  events->atomicItemEvent(_value, _typeURI, _typeName);
+  events->atomicItemEvent(_primitiveType, _value, _typeURI, _typeName);
 }
 
 std::string AnyAtomicTypeConstructor::asString(const DynamicContext* context) const

@@ -43,6 +43,7 @@ xqilla/ast/XPath1Compat.hpp \
 xqilla/ast/ConvertFunctionArg.hpp \
 xqilla/ast/XQDocumentOrder.hpp \
 xqilla/ast/XQPredicate.hpp \
+xqilla/events/ContentSequenceFilter.hpp \
 xqilla/events/EventHandler.hpp \
 xqilla/events/EventSerializer.hpp \
 xqilla/events/NSFixupFilter.hpp \

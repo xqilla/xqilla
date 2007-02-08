@@ -60,9 +60,15 @@ void ATDurationOrDerivedImpl::init(const DynamicContext* context)
     _isPositive = false;
     _months = _months.neg();
   }
-  if(_seconds.sign() < 0) {
-    _isPositive = false;
-    _seconds = _seconds.neg();
+  if(_seconds.sign() != 0) {
+    if(abs(_seconds.exponent()) > (int)ATDecimalOrDerivedImpl::g_nSignificantDigits) {
+      // Call it zero if the size is too small to display
+      _seconds = 0;
+    }
+    else if(_seconds.sign() < 0) {
+      _isPositive = false;
+      _seconds = _seconds.neg();
+    }
   }
 
   if(this->isInstanceOfType (FunctionConstructor::XMLChXPath2DatatypesURI,

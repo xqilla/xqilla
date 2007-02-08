@@ -192,7 +192,6 @@ public:
   static void toEvents(const Node *node, EventHandler *events, bool preserveNS = true, bool preserveType = true);
   static void toEvents(const Attribute *attr, EventHandler *events, bool preserveType = true);
   static void toEvents(const Namespace *ns, EventHandler *events);
-  static const XMLCh *toString(const Node *node, XPath2MemoryManager *mm);
 
 private:
   void resizeNodes();

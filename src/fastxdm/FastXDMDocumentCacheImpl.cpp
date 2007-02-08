@@ -714,11 +714,10 @@ Node::Ptr FastXDMDocumentCacheImpl::validate(const Node::Ptr &node,
     }
 
     // - build a textual representation of the element
-    // TBD release the serializedForm? - jpcs
     // TBD Write schema validation as an EventHandler, so we don't have to serialize - jpcs
-    const XMLCh *serializedForm = node->asString(context);
+    AutoDeallocate<const XMLCh> serializedForm(node->asString(context), context->getMemoryManager());
 
-    MemBufInputSource inputSrc((const XMLByte*)serializedForm, 
+    MemBufInputSource inputSrc((const XMLByte*)serializedForm.get(), 
                                XMLString::stringLen(serializedForm) * sizeof(XMLCh), 
                                XMLUni::fgZeroLenString,
                                false, mm);

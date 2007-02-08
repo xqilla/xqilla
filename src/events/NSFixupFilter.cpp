@@ -23,12 +23,18 @@ NSFixupFilter::NSFixupFilter(EventHandler *next, XPath2MemoryManager *mm)
   : EventFilter(next),
     mm_(mm),
     level_(0),
+    elements_(0),
     namespaces_(0)
 {
 }
 
 NSFixupFilter::~NSFixupFilter()
 {
+  while(elements_ != 0) {
+    ElemEntry *tmp = elements_;
+    elements_ = elements_->prev;
+    mm_->deallocate(tmp);
+  }
   while(namespaces_ != 0) {
     NSEntry *tmp = namespaces_;
     namespaces_ = namespaces_->prev;
@@ -36,10 +42,27 @@ NSFixupFilter::~NSFixupFilter()
   }
 }
 
+void NSFixupFilter::startDocumentEvent(const XMLCh *documentURI, const XMLCh *encoding)
+{
+  next_->startDocumentEvent(documentURI, encoding);
+  ++level_;
+}
+
+void NSFixupFilter::endDocumentEvent()
+{
+  --level_;
+  next_->endDocumentEvent();
+}
+
 void NSFixupFilter::startElementEvent(const XMLCh *prefix, const XMLCh *uri, const XMLCh *localname)
 {
   ++level_;
   bool def = definePrefix(prefix, uri);
+
+  // add the prefix to our linked list
+  ElemEntry *entry = (ElemEntry*)mm_->allocate(sizeof(ElemEntry));
+  entry->set(prefix, elements_);
+  elements_ = entry;
 
   next_->startElementEvent(prefix, uri, localname);
 
@@ -49,10 +72,15 @@ void NSFixupFilter::startElementEvent(const XMLCh *prefix, const XMLCh *uri, con
 void NSFixupFilter::endElementEvent(const XMLCh *prefix, const XMLCh *uri, const XMLCh *localname,
                                     const XMLCh *typeURI, const XMLCh *typeName)
 {
-  // TBD What if the prefix was redefined in startElementEvent? - jpcs
-  next_->endElementEvent(prefix, uri, localname, typeURI, typeName);
+  ElemEntry *etmp = elements_;
+
+  next_->endElementEvent(etmp->prefix, uri, localname, typeURI, typeName);
 
   --level_;
+
+  elements_ = elements_->prev;
+  mm_->deallocate(etmp);
+
   while(namespaces_ != 0 && namespaces_->level > level_) {
     NSEntry *tmp = namespaces_;
     namespaces_ = namespaces_->prev;
@@ -63,7 +91,7 @@ void NSFixupFilter::endElementEvent(const XMLCh *prefix, const XMLCh *uri, const
 void NSFixupFilter::attributeEvent(const XMLCh *prefix, const XMLCh *uri, const XMLCh *localname, const XMLCh *value,
                                    const XMLCh *typeURI, const XMLCh *typeName)
 {
-  if(definePrefix(prefix, uri, /*attr*/true)) {
+  if(level_ != 0 && definePrefix(prefix, uri, /*attr*/true)) {
     next_->namespaceEvent(prefix, uri);
   }
 
@@ -72,7 +100,7 @@ void NSFixupFilter::attributeEvent(const XMLCh *prefix, const XMLCh *uri, const 
 
 void NSFixupFilter::namespaceEvent(const XMLCh *prefix, const XMLCh *uri)
 {
-  if(definePrefix(prefix, uri, /*attr*/false, /*redefine*/false)) {
+  if(level_ == 0 || definePrefix(prefix, uri, /*attr*/false, /*redefine*/false)) {
     next_->namespaceEvent(prefix, uri);
   }
 }

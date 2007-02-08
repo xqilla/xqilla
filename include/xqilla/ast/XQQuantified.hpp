@@ -30,6 +30,8 @@ public:
   XQQuantified(QuantifierType qType, VectorOfVariableBinding* bindings, ASTNode* returnExpr, XPath2MemoryManager *expr);
 
   virtual ASTNode *staticTyping(StaticContext *context);
+  virtual void generateEvents(EventHandler *events, DynamicContext *context,
+                              bool preserveNS, bool preserveType) const;
 
   QuantifierType getQuantifierType() const;
 

@@ -241,10 +241,11 @@ void XercesSequenceBuilder::namespaceEvent(const XMLCh *prefix, const XMLCh *uri
   currentNode_ = attr;
 }
 
-void XercesSequenceBuilder::atomicItemEvent(const XMLCh *value, const XMLCh *typeURI, const XMLCh *typeName)
+void XercesSequenceBuilder::atomicItemEvent(AnyAtomicType::AtomicObjectType type, const XMLCh *value, const XMLCh *typeURI,
+                                            const XMLCh *typeName)
 {
   assert(currentParent_ == 0);
 
-  seq_.addItem(context_->getItemFactory()->createDerivedFromAtomicType(typeURI, typeName, value, context_));
+  seq_.addItem(context_->getItemFactory()->createDerivedFromAtomicType(type, typeURI, typeName, value, context_));
 }
 

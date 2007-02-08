@@ -26,6 +26,7 @@
 #include <xqilla/exceptions/ASTException.hpp>
 #include <xqilla/exceptions/XPath2TypeMatchException.hpp>
 #include <xqilla/events/SequenceBuilder.hpp>
+#include <xqilla/events/ContentSequenceFilter.hpp>
 
 #include <xercesc/util/XMLChar.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
@@ -193,88 +194,6 @@ Sequence XQContentSequence::createSequence(DynamicContext* context, int flags) c
   builder->endEvent();
   return builder->getSequence();
 }
-
-class ContentSequenceFilter : public EventFilter
-{
-public:
-  ContentSequenceFilter(EventHandler *next)
-    : EventFilter(next),
-      lastWasAtomic_(false)
-  {
-  }
-
-  virtual void startDocumentEvent(const XMLCh *documentURI, const XMLCh *encoding)
-  {
-    // Do nothing
-  }
-
-  virtual void endDocumentEvent()
-  {
-    // Do nothing
-  }
-
-  virtual void endEvent()
-  {
-    // Do nothing
-  }
-
-  virtual void startElementEvent(const XMLCh *prefix, const XMLCh *uri, const XMLCh *localname)
-  {
-    lastWasAtomic_ = false;
-    next_->startElementEvent(prefix, uri, localname);
-  }
-
-  virtual void piEvent(const XMLCh *target, const XMLCh *value)
-  {
-    lastWasAtomic_ = false;
-    next_->piEvent(target, value);
-  }
-
-  virtual void textEvent(const XMLCh *value)
-  {
-    lastWasAtomic_ = false;
-    next_->textEvent(value);
-  }
-
-  virtual void textEvent(const XMLCh *chars, unsigned int length)
-  {
-    lastWasAtomic_ = false;
-    next_->textEvent(chars, length);
-  }
-
-  virtual void commentEvent(const XMLCh *value)
-  {
-    lastWasAtomic_ = false;
-    next_->commentEvent(value);
-  }
-
-  virtual void attributeEvent(const XMLCh *prefix, const XMLCh *uri, const XMLCh *localname, const XMLCh *value,
-                              const XMLCh *typeURI, const XMLCh *typeName)
-  {
-    lastWasAtomic_ = false;
-    next_->attributeEvent(prefix, uri, localname, value, typeURI, typeName);
-  }
-
-  virtual void namespaceEvent(const XMLCh *prefix, const XMLCh *uri)
-  {
-    lastWasAtomic_ = false;
-    next_->namespaceEvent(prefix, uri);
-  }
-
-  virtual void atomicItemEvent(const XMLCh *value, const XMLCh *typeURI, const XMLCh *typeName)
-  {
-    static XMLCh space[] = { ' ', 0 };
-
-    if(lastWasAtomic_) {
-      next_->textEvent(space);
-    }
-    next_->textEvent(value);
-    lastWasAtomic_ = true;
-  }
-
-private:
-  bool lastWasAtomic_;
-};
 
 void XQContentSequence::generateEvents(EventHandler *events, DynamicContext *context,
                                        bool preserveNS, bool preserveType) const

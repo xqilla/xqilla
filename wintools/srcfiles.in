@@ -68,6 +68,7 @@ src/ast/XQTypeswitch.cpp	lib
 src/ast/XQValidate.cpp	lib
 src/ast/XQVariable.cpp	lib
 src/ast/XQVariableBinding.cpp	lib
+src/events/ContentSequenceFilter.cpp lib
 src/events/EventSerializer.cpp lib
 src/events/NoInheritFilter.hpp lib
 src/events/NoInheritFilter.cpp lib
@@ -526,6 +527,7 @@ include/xqilla/dom-api/XPath2Result.hpp	lib
 include/xqilla/dom-api/XQillaExpression.hpp	lib
 include/xqilla/dom-api/XQillaNSResolver.hpp	lib
 include/xqilla/dom-api/impl/XQillaNSResolverImpl.hpp	lib
+include/xqilla/events/ContentSequenceFilter.hpp lib
 include/xqilla/events/EventHandler.hpp	lib
 include/xqilla/events/EventSerializer.hpp lib
 include/xqilla/events/NSFixupFilter.hpp lib

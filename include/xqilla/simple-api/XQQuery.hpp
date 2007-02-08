@@ -71,7 +71,8 @@ public:
                                        XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager) const;
 
   /**
-   * Executes the query using the given DynamicContext.
+   * Executes the query using the given DynamicContext, returning
+   * a lazy iterator over the results.
    *
    * @param context The DynamicContext to use to execute the
    * query. This contains runtime values for variables, the value
@@ -83,6 +84,18 @@ public:
    * @exception XQException If a runtime error occurs
    */
   Result execute(DynamicContext* context) const;
+
+  /**
+   * Executes the query using the given DynamicContext, sending
+   * the output of the query to the given EventHandler.
+   *
+   * @param context The DynamicContext to use to execute the
+   * query. This contains runtime values for variables, the value
+   * of the context item, and other relevent information.
+   *
+   * @exception XQException If a runtime error occurs
+   */
+  void execute(EventHandler *events, DynamicContext* context) const;
 
   /**
    * Perform static resolution on the query. This operation is not
@@ -217,6 +230,8 @@ private:
 
   XQQuery(const XQQuery &);
   XQQuery &operator=(const XQQuery &);
+
+  void executeProlog(DynamicContext *context) const;
 
 private:
   /// The memory manager used to create this object

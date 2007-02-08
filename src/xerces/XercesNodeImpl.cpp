@@ -60,6 +60,8 @@
 #include <xercesc/validators/datatype/ListDatatypeValidator.hpp>
 #include <xercesc/util/XMLUri.hpp>
 #include <xercesc/util/XMLURL.hpp>
+#include <xercesc/framework/MemBufFormatTarget.hpp>
+
 #include <assert.h>
 
 #if defined(XERCES_HAS_CPP_NAMESPACE)
@@ -123,12 +125,13 @@ const XMLCh* XercesNodeImpl::asString(const DynamicContext* context) const
 {
   XPath2MemoryManager *mm = context->getMemoryManager();
 
-  EventSerializer writer(mm);
+  MemBufFormatTarget target(1023, mm);
+  EventSerializer writer(&target, mm);
   NSFixupFilter nsfilter(&writer, mm);
   generateEvents(&nsfilter, context);
   nsfilter.endEvent();
 
-  return XMLString::replicate((XMLCh*)writer.getRawBuffer(), mm);
+  return XMLString::replicate((XMLCh*)target.getRawBuffer(), mm);
 }
 
 static inline bool emptyString(const XMLCh * const str)
