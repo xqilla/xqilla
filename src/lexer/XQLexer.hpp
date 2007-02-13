@@ -130,13 +130,15 @@ protected:
   {
     if(yy_start_stack_ptr==0)
       {
-        XMLCh szMsg[256];
-        XERCES_CPP_NAMESPACE_QUALIFIER XMLString::copyString(szMsg, X("Unbalanced '"));
-        XERCES_CPP_NAMESPACE_QUALIFIER XMLString::catString(szMsg, (XMLCh*)yytext);
-        XERCES_CPP_NAMESPACE_QUALIFIER XMLString::catString(szMsg, X("' token"));
-        XQSimpleThrow(szMsg, NULL, m_lineno, m_columnno);
+        char szMsg[256], text[256];
+        XERCES_CPP_NAMESPACE_QUALIFIER XMLString::copyString(szMsg, "Unbalanced '");
+        XERCES_CPP_NAMESPACE_QUALIFIER XMLString::transcode((XMLCh*)yytext, text, 256);
+        XERCES_CPP_NAMESPACE_QUALIFIER XMLString::catString(szMsg, text);
+        XERCES_CPP_NAMESPACE_QUALIFIER XMLString::catString(szMsg, "' token");
+        LexerError(szMsg);
       }
-    yyFlexLexer::yy_pop_state();
+    else
+      yyFlexLexer::yy_pop_state();
   }
 
   virtual bool next_tokens(int state, int tok1, int tok2=-1, int tok3=-1)
