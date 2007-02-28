@@ -79,6 +79,7 @@ public:
     DIRECT_NAME
   } whichType;
 
+  ASTNode() : userData_(0) {}
   virtual ~ASTNode() {}
 
   /** Returns a Result iterator for the results of this expression.
@@ -108,6 +109,12 @@ public:
   virtual ASTNode *staticTyping(StaticContext *context) = 0;
   /// Returns the StaticResolutionContext for this ASTNode
   virtual const StaticResolutionContext &getStaticResolutionContext() const = 0;
+
+  void *getUserData() const { return userData_; }
+  void setUserData(void *data) { userData_ = data; }
+
+private:
+  void *userData_;
 };
 
 typedef std::vector<ASTNode*,XQillaAllocator<ASTNode*> > VectorOfASTNodes;
