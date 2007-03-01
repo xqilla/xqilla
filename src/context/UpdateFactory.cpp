@@ -102,8 +102,9 @@ void UpdateFactory::applyUpdates(const PendingUpdateList &pul, DynamicContext *c
     }
   }
 
+  PendingUpdateList::const_iterator i;
   // We apply PUT first, to catch the duplicate puts properly
-  for(PendingUpdateList::const_iterator i = pul.begin(); i != pul.end(); ++i) {
+  for(i = pul.begin(); i != pul.end(); ++i) {
     switch(i->getType()) {
     case PendingUpdate::PUT:
       applyPut(*i, context);
@@ -126,7 +127,7 @@ void UpdateFactory::applyUpdates(const PendingUpdateList &pul, DynamicContext *c
 
   // 2. The semantics of all the update primitives on $pul are made effective, in the following order:
   //    a. First, all upd:insertInto, upd:insertAttributes, upd:replaceValue, upd:rename, and upd:delete primitives are applied.
-  for(PendingUpdateList::const_iterator i = pul.begin(); i != pul.end(); ++i) {
+  for(i = pul.begin(); i != pul.end(); ++i) {
     switch(i->getType()) {
     case PendingUpdate::INSERT_INTO:
       applyInsertInto(*i, context);
@@ -156,7 +157,7 @@ void UpdateFactory::applyUpdates(const PendingUpdateList &pul, DynamicContext *c
   }
 
   //    b. Next, all upd:insertBefore, upd:insertAfter, upd:insertIntoAsFirst, and upd:insertIntoAsLast primitives are applied.
-  for(PendingUpdateList::const_iterator i = pul.begin(); i != pul.end(); ++i) {
+  for(i = pul.begin(); i != pul.end(); ++i) {
     switch(i->getType()) {
     case PendingUpdate::INSERT_BEFORE:
       applyInsertBefore(*i, context);
@@ -185,7 +186,7 @@ void UpdateFactory::applyUpdates(const PendingUpdateList &pul, DynamicContext *c
   }
 
   //    c. Next, all upd:replaceNode primitives are applied.
-  for(PendingUpdateList::const_iterator i = pul.begin(); i != pul.end(); ++i) {
+  for(i = pul.begin(); i != pul.end(); ++i) {
     switch(i->getType()) {
     case PendingUpdate::REPLACE_NODE:
       applyReplaceNode(*i, context);
@@ -210,7 +211,7 @@ void UpdateFactory::applyUpdates(const PendingUpdateList &pul, DynamicContext *c
   }
 
   //    d. Next, all upd:replaceElementContent primitives are applied.
-  for(PendingUpdateList::const_iterator i = pul.begin(); i != pul.end(); ++i) {
+  for(i = pul.begin(); i != pul.end(); ++i) {
     switch(i->getType()) {
     case PendingUpdate::REPLACE_ELEMENT_CONTENT:
       applyReplaceElementContent(*i, context);

@@ -119,9 +119,9 @@ string PrintAST::print(const XQQuery *query, const DynamicContext *context, int 
   s << ">" << endl;
 
   const ImportedModules &modules = query->getImportedModules();
-  for(ImportedModules::const_iterator it = modules.begin();
-      it != modules.end(); ++it) {
-    s << print(*it, context, indent + INDENT);
+  for(ImportedModules::const_iterator it1 = modules.begin();
+      it1 != modules.end(); ++it1) {
+    s << print(*it1, context, indent + INDENT);
   }
 
   PrintAST p;
