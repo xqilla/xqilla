@@ -13,18 +13,10 @@
 
 #include "../config/xqilla_config.h"
 #include <assert.h>
-#include <xercesc/dom/DOM.hpp>
-#include <xercesc/util/XMLException.hpp>
 #include <xercesc/util/XMLString.hpp>
 #include <xercesc/util/XMLUniDefs.hpp>
-#include <xercesc/util/XMLUni.hpp>
 #include <xercesc/util/XMLUri.hpp>
 #include <xercesc/framework/XMLBuffer.hpp>
-#include <xercesc/framework/psvi/PSVIItem.hpp>
-#include <xercesc/dom/DOMPSVITypeInfo.hpp>
-#include <xercesc/dom/impl/DOMTypeInfoImpl.hpp>
-#include <xercesc/dom/impl/DOMAttrImpl.hpp>
-#include <xercesc/dom/impl/DOMElementNSImpl.hpp>
 
 #include <xqilla/framework/XPath2MemoryManager.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
