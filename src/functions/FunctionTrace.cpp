@@ -43,11 +43,13 @@ ASTNode *FunctionTrace::staticTyping(StaticContext *context)
 {
   _src.clear();
 
-  _src.forceNoFolding(true);
   ASTNode *result = calculateSRCForArguments(context);
   if(result == this) {
     _src.getStaticType() = _args.front()->getStaticResolutionContext().getStaticType();
+    _src.setProperties(_args.front()->getStaticResolutionContext().getProperties());
   }
+  _src.forceNoFolding(true);
+
   return result;
 }
 
