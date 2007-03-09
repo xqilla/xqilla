@@ -258,7 +258,7 @@ public:
     p_ = 0;
     return tmp;
   }
-  TYPE *adopt(TYPE *p)
+  TYPE *swap(TYPE *p)
   {
     TYPE *tmp = p_;
     p_ = p;
