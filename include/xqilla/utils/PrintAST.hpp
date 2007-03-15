@@ -171,7 +171,6 @@ public:
 
   virtual std::string printItem(const Item::Ptr item, const DynamicContext *context, int indent);
   virtual std::string printSequenceType(const SequenceType *type, const DynamicContext *context, int indent);
-  virtual std::string printItemTypeAttrs(const SequenceType::ItemType *type, const DynamicContext *context);
   virtual std::string printXQVariableBinding(const XQVariableBinding *binding, const DynamicContext *context, int indent);
   virtual std::string printSort(const XQSort *sort, const DynamicContext *context, int indent);
   virtual std::string printClause(const XQTypeswitch::Clause *clause, const DynamicContext *context, int indent);
@@ -183,6 +182,7 @@ public:
   static std::string getComparisonOperationName(GeneralComp::ComparisonOperation co);
   static std::string getFTUnitName(FTOption::FTUnit unit);
   static std::string getFTRangeTypeName(FTRange::Type type);
+  static std::string printItemTypeAttrs(const SequenceType::ItemType *type, const DynamicContext *context);
 };
 
 #endif
