@@ -48,7 +48,7 @@ ASTNode *FunctionCollection::staticTyping(StaticContext *context)
   _src.clear();
 
   _src.setProperties(StaticResolutionContext::DOCORDER | StaticResolutionContext::GROUPED |
-                     StaticResolutionContext::PEER | StaticResolutionContext::SUBTREE);
+                     StaticResolutionContext::SUBTREE);
   _src.getStaticType().flags = StaticType::NODE_TYPE;
   _src.availableCollectionsUsed(true);
   return calculateSRCForArguments(context);
