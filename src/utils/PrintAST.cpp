@@ -904,7 +904,7 @@ string PrintAST::printGlobal(const XQGlobalVariable *item, const DynamicContext 
 
   string in(getIndent(indent));
 
-  s << in << "<GlobalVar name=\"" << UTF8(item->getVariableName());
+  s << in << "<GlobalVar name=\"" << UTF8(item->getVariableName()) << "\"";
   if(item->isExternal()) {
     s << " external=\"true\"";
   }
