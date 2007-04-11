@@ -42,7 +42,11 @@ public:
   const ASTNode *getPredicate() const { return predicate_; }
   void setPredicate(ASTNode *pred) { predicate_ = pred; }
 
+  bool isReverse() const { return reverse_; }
+  void setReverse(bool reverse) { reverse_ = reverse; }
+
   static ASTNode *addPredicates(ASTNode *expr, VectorOfPredicates *preds);
+  static ASTNode *addReversePredicates(ASTNode *expr, VectorOfPredicates *preds);
 
 protected:
   class PredicateFilterResult : public ResultImpl
@@ -93,6 +97,7 @@ protected:
 
   ASTNode *expr_;
   ASTNode *predicate_;
+  bool reverse_;
 };
 
 #endif

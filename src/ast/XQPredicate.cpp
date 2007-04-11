@@ -22,7 +22,8 @@
 XQPredicate::XQPredicate(ASTNode *predicate, XPath2MemoryManager* memMgr)
   : ASTNodeImpl(memMgr),
     expr_(0),
-    predicate_(predicate)
+    predicate_(predicate),
+    reverse_(false)
 {
   setType(ASTNode::PREDICATE);
 }
@@ -30,7 +31,8 @@ XQPredicate::XQPredicate(ASTNode *predicate, XPath2MemoryManager* memMgr)
 XQPredicate::XQPredicate(ASTNode* expr, ASTNode *predicate, XPath2MemoryManager* memMgr)
   : ASTNodeImpl(memMgr),
     expr_(expr),
-    predicate_(predicate)
+    predicate_(predicate),
+    reverse_(false)
 {
   setType(ASTNode::PREDICATE);
 }
@@ -125,6 +127,18 @@ ASTNode *XQPredicate::addPredicates(ASTNode *expr, VectorOfPredicates *preds)
   VectorOfPredicates::iterator i = preds->begin();
   VectorOfPredicates::iterator end = preds->end();
   for(; i != end; ++i) {
+    (*i)->setExpression(expr);
+    expr = *i;
+  }
+  return expr;
+}
+
+ASTNode *XQPredicate::addReversePredicates(ASTNode *expr, VectorOfPredicates *preds)
+{
+  VectorOfPredicates::iterator i = preds->begin();
+  VectorOfPredicates::iterator end = preds->end();
+  for(; i != end; ++i) {
+    (*i)->setReverse(true);
     (*i)->setExpression(expr);
     expr = *i;
   }

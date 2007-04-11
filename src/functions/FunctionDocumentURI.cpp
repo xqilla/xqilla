@@ -38,8 +38,8 @@ FunctionDocumentURI::FunctionDocumentURI(const VectorOfASTNodes  &args, XPath2Me
 
 Sequence FunctionDocumentURI::createSequence(DynamicContext* context, int flags) const
 {
-  Sequence arg = getParamNumber(1,context)->toSequence(context);
-  if(arg.isEmpty())
+  Item::Ptr arg = getParamNumber(1,context)->next(context);
+  if(arg.isNull())
     return Sequence(context->getMemoryManager());
-  return ((Node*)(const Item*)arg.first())->dmDocumentURI(context);
+  return ((Node*)arg.get())->dmDocumentURI(context);
 }
