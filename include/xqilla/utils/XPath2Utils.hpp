@@ -41,7 +41,7 @@ public:
    * responsibility of the caller to delete it when not longer needed. 
    */
   static const XMLCh* escapeURI(const XMLCh* const str, bool escapeRes, XPath2MemoryManager* memMgr);
-  static bool isValidURI(const XMLCh* const str, XPath2MemoryManager* memMgr);
+  static bool isValidURI(const XMLCh* const str, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr);
   
   static const XMLCh* concatStrings(const XMLCh* src1, const XMLCh srcChar, XPath2MemoryManager* memMgr);
   static const XMLCh* concatStrings(const XMLCh* src1, const XMLCh* src2, XPath2MemoryManager* memMgr);

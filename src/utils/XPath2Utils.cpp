@@ -31,13 +31,15 @@
 #define snprintf _snprintf
 #endif
 
+XERCES_CPP_NAMESPACE_USE;
+
 const XMLCh* XPath2Utils::escapeURI(const XMLCh* const str, bool escapeRes, XPath2MemoryManager* memMgr)
 {
 
-  if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(str) == 0) {
+  if(XMLString::stringLen(str) == 0) {
     return 0;
   }
-	XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buf(1023, memMgr);
+	XMLBuffer buf(1023, memMgr);
 
   const XMLCh *cptr; 
 
@@ -81,33 +83,33 @@ const XMLCh* XPath2Utils::escapeURI(const XMLCh* const str, bool escapeRes, XPat
   return memMgr->getPooledString(buf.getRawBuffer());
 }
 
-bool XPath2Utils::isValidURI(const XMLCh* const str, XPath2MemoryManager* memMgr)
+bool XPath2Utils::isValidURI(const XMLCh* const str, MemoryManager* memMgr)
 {
   // XMLSchema specs say: "Spaces are, in principle, allowed in the lexical space of anyURI, however, 
   // their use is highly discouraged (unless they are encoded by %20)"
   // Xerces complains if a space is found, so let's encode it
-  const XMLCh escSpace[]={ XERCES_CPP_NAMESPACE_QUALIFIER chPercent, XERCES_CPP_NAMESPACE_QUALIFIER chDigit_2, XERCES_CPP_NAMESPACE_QUALIFIER chDigit_0, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
-  XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buff(1023, memMgr);
+  const XMLCh escSpace[]={ chPercent, chDigit_2, chDigit_0, chNull };
+  XMLBuffer buff(1023, memMgr);
   const XMLCh* pCursor=str;
   while(*pCursor)
   {
-    if(*pCursor==XERCES_CPP_NAMESPACE_QUALIFIER chSpace)
+    if(*pCursor==chSpace)
       buff.append(escSpace);
     else
       buff.append(*pCursor);
     pCursor++;
   }
-  return XERCES_CPP_NAMESPACE_QUALIFIER XMLUri::isValidURI(true, buff.getRawBuffer());
+  return XMLUri::isValidURI(true, buff.getRawBuffer());
 }
 
 const XMLCh* XPath2Utils::concatStrings(const XMLCh* src1, const XMLCh src, XPath2MemoryManager* memMgr) {
-  XMLCh dummy[2] = {src, XERCES_CPP_NAMESPACE_QUALIFIER chNull};
+  XMLCh dummy[2] = {src, chNull};
   return XPath2Utils::concatStrings(src1, dummy, memMgr);
 }
 
 const XMLCh* XPath2Utils::concatStrings(const XMLCh* src1, const XMLCh* src2, XPath2MemoryManager* memMgr) {
 
-  XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buffer(1023, memMgr);
+  XMLBuffer buffer(1023, memMgr);
   buffer.set(src1);
   buffer.append(src2);
 
@@ -116,7 +118,7 @@ const XMLCh* XPath2Utils::concatStrings(const XMLCh* src1, const XMLCh* src2, XP
 
 const XMLCh* XPath2Utils::concatStrings(const XMLCh* src1, const XMLCh* src2, const XMLCh* src3, XPath2MemoryManager* memMgr) {
 
-  XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buffer(1023, memMgr);
+  XMLBuffer buffer(1023, memMgr);
   buffer.set(src1);
   buffer.append(src2);
   buffer.append(src3);
@@ -126,7 +128,7 @@ const XMLCh* XPath2Utils::concatStrings(const XMLCh* src1, const XMLCh* src2, co
 
 const XMLCh* XPath2Utils::asStr(const XMLCh ch, XPath2MemoryManager* memMgr) {
 
-  XMLCh newStr[2] = {ch, XERCES_CPP_NAMESPACE_QUALIFIER chNull};
+  XMLCh newStr[2] = {ch, chNull};
   return memMgr->getPooledString(newStr);
 }
 
@@ -137,7 +139,7 @@ const XMLCh* XPath2Utils::subString(const XMLCh* src, unsigned int offset, unsig
   }
 
 	XMLCh *newStr = new XMLCh [ count + 1 ];
-  XERCES_CPP_NAMESPACE_QUALIFIER XMLString::subString(newStr, src, offset, offset + count);
+  XMLString::subString(newStr, src, offset, offset + count);
   const XMLCh* retval=memMgr->getPooledString(newStr);
   delete[] newStr;
   return retval;
@@ -149,44 +151,44 @@ const XMLCh* XPath2Utils::deleteData( const XMLCh* const target, unsigned int of
     return 0;
   }
 
-  unsigned int targetSize = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(target); 
+  unsigned int targetSize = XMLString::stringLen(target); 
   unsigned int newSize =  targetSize - count;
   AutoDelete<XMLCh> stringGuard(new XMLCh [newSize + 1]);
   XMLCh *newString = stringGuard;
 
-  XERCES_CPP_NAMESPACE_QUALIFIER XMLString::copyNString(newString, target, offset);// * sizeof(XMLCh));
-  XERCES_CPP_NAMESPACE_QUALIFIER XMLString::copyNString(newString + offset, target + offset + count, ( targetSize - offset - count));//*sizeof(XMLCh));
+  XMLString::copyNString(newString, target, offset);// * sizeof(XMLCh));
+  XMLString::copyNString(newString + offset, target + offset + count, ( targetSize - offset - count));//*sizeof(XMLCh));
   newString[newSize] = 0;
   const XMLCh* retval = memMgr->getPooledString(newString);
   return retval;
 }
 
 const XMLCh* XPath2Utils::toLower( const XMLCh* const target, XPath2MemoryManager* memMgr) {
-  XMLCh *newStr = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::replicate(target);
-  XERCES_CPP_NAMESPACE_QUALIFIER XMLString::lowerCase(newStr);
+  XMLCh *newStr = XMLString::replicate(target);
+  XMLString::lowerCase(newStr);
   const XMLCh* retval=memMgr->getPooledString(newStr);
-  XERCES_CPP_NAMESPACE_QUALIFIER XMLString::release(&newStr);
+  XMLString::release(&newStr);
   return retval;
 }
 
 const XMLCh* XPath2Utils::toUpper( const XMLCh* const target, XPath2MemoryManager* memMgr) {
-  XMLCh *newStr = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::replicate(target);
-  XERCES_CPP_NAMESPACE_QUALIFIER XMLString::upperCase(newStr);
+  XMLCh *newStr = XMLString::replicate(target);
+  XMLString::upperCase(newStr);
   const XMLCh* retval=memMgr->getPooledString(newStr);
-  XERCES_CPP_NAMESPACE_QUALIFIER XMLString::release(&newStr);
+  XMLString::release(&newStr);
   return retval;
 }
 
 const XMLCh* XPath2Utils::toCollapsedWS(const XMLCh* const target, XPath2MemoryManager* memMgr) {
-  XMLCh *newStr = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::replicate(target);
-  XERCES_CPP_NAMESPACE_QUALIFIER XMLString::collapseWS(newStr);
+  XMLCh *newStr = XMLString::replicate(target);
+  XMLString::collapseWS(newStr);
   const XMLCh* retval=memMgr->getPooledString(newStr);
-  XERCES_CPP_NAMESPACE_QUALIFIER XMLString::release(&newStr);
+  XMLString::release(&newStr);
   return retval;
 }
 
 const XMLCh* XPath2Utils::normalizeEOL(const XMLCh* const src, XPath2MemoryManager* memMgr) {
-    int len=XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(src);
+    int len=XMLString::stringLen(src);
 	int j=0;
     XMLCh* dst=(XMLCh*)memMgr->allocate((len+1)*sizeof(XMLCh*));
     // A.2.3 End-of-Line Handling
@@ -195,13 +197,13 @@ const XMLCh* XPath2Utils::normalizeEOL(const XMLCh* const src, XPath2MemoryManag
     //  2. any #xD character that is not immediately followed by #xA.
 	for(int i=0;i<len;i++)
 	{
-        if (src[i]== XERCES_CPP_NAMESPACE_QUALIFIER chCR && i<len && src[i+1]== XERCES_CPP_NAMESPACE_QUALIFIER chLF)
+        if (src[i]== chCR && i<len && src[i+1]== chLF)
         {
-			dst[j++]=XERCES_CPP_NAMESPACE_QUALIFIER chLF;
+			dst[j++]=chLF;
             i++;
         }
-        else if(src[i]== XERCES_CPP_NAMESPACE_QUALIFIER chCR)
-			dst[j++]=XERCES_CPP_NAMESPACE_QUALIFIER chLF;
+        else if(src[i]== chCR)
+			dst[j++]=chLF;
         else
             dst[j++]=src[i];
     }
@@ -218,7 +220,7 @@ std::vector<const XMLCh*> XPath2Utils::getVal(const XMLCh* values, XPath2MemoryM
   
   /* XPath requires this bizarre WS separated splitting of the string, as the
      string can hold many id's. */
-  int valuesLen = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(values);
+  int valuesLen = XMLString::stringLen(values);
   
 
   
