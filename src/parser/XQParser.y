@@ -2078,7 +2078,7 @@ AxisStep:
 		}
 	| ReverseStep PredicateList
 		{
-      $$ = XQPredicate::addPredicates($1, $2);
+      $$ = XQPredicate::addReversePredicates($1, $2);
       $$ = WRAP(@1, new (MEMMGR) XQDocumentOrder($$, MEMMGR));
 		}
 	;
@@ -3816,7 +3816,7 @@ TransformExpr:
   _TRANSFORM_COPY_ TransformBindingList _MODIFY_ ExprSingle _RETURN_ ExprSingle
   {
     REJECT_NOT_UPDATE(TransformExpr, @1);
-    $$ = FNWRAP(@1, szFLWOR, new (MEMMGR) UTransform($2, $4, $6, MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) UTransform($2, $4, $6, MEMMGR));
   }
   ;
 
