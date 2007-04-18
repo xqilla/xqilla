@@ -102,7 +102,7 @@ DynamicContext *XQDynamicContextImpl::createModuleContext(MemoryManager *memMgr)
 
 DynamicContext *XQDynamicContextImpl::createModuleDynamicContext(const DynamicContext* moduleCtx, MemoryManager *memMgr) const
 {
-  DynamicContext* moduleDCtx = moduleCtx->createDynamicContext(memMgr);
+  DynamicContext* moduleDCtx = new (memMgr) XQDynamicContextImpl(_conf, moduleCtx, memMgr);
 
   // Force the context to use our memory manager
   moduleDCtx->setMemoryManager(getMemoryManager());
@@ -124,6 +124,7 @@ DynamicContext *XQDynamicContextImpl::createModuleDynamicContext(const DynamicCo
   moduleDCtx->enableDebugging(m_bEnableDebugging);
   moduleDCtx->setDebugCallback(m_pDebugCallback);
 
+  _conf->populateDynamicContext(moduleDCtx);
   return moduleDCtx;
 }
 
