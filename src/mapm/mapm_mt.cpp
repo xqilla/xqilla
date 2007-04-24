@@ -24,6 +24,19 @@
  *	using semaphores
  *
  *      $Log$
+ *      Revision 1.3  2007/04/24 13:12:59  jpcs
+ *      Converted common NodeTest objects that use an ItemType object to NodeTest
+ *      objects without an ItemType object. This simplifies comparing different
+ *      NodeTest objects, and uses a more efficient implementation.
+ *
+ *      Exposed methods on XQCastAs to perform the cast specified to an
+ *      AnyAtomicType and a string.
+ *
+ *      Modified MAPM so that some of it's common algorithms are thread safe, and
+ *      therefore reduced the use of the mutex to guard the library. The same MAPM
+ *      object should not now be used from multiple threads at the same time -
+ *      which means that the built-in MAPM constants should be avoided.
+ *
  *      Revision 1.2  2005/11/03 17:04:24  jpcs
  *      Merged XQEngine.hpp and Pathan.hpp into XQillaExport.hpp. Renamed all
  *      things Pathan to XQilla.
@@ -112,9 +125,9 @@ M_APM 	m_apm_init_mt(void)
 {
 M_APM 	t;
 
-	m_apm_enter();
+// 	m_apm_enter();
 	t=m_apm_init();
-	m_apm_leave();
+// 	m_apm_leave();
 	return(t);
 }
 
@@ -122,9 +135,9 @@ M_APM 	t;
 
 void	m_apm_free_mt(M_APM t)
 {
-	m_apm_enter();
+// 	m_apm_enter();
 	m_apm_free(t);
-	m_apm_leave();
+// 	m_apm_leave();
 }
 
 /****************************************************************************/
@@ -149,72 +162,72 @@ void	m_apm_trim_mem_usage_mt(void)
 
 void	m_apm_set_string_mt(M_APM ctmp, char *s_in)
 {
-	m_apm_enter();
+// 	m_apm_enter();
 	m_apm_set_string(ctmp,s_in);
-	m_apm_leave();
+// 	m_apm_leave();
 }
 
 /****************************************************************************/
 
 void	m_apm_set_double_mt(M_APM atmp,double dd)
 {
-	m_apm_enter();
+// 	m_apm_enter();
 	m_apm_set_double(atmp,dd);
-	m_apm_leave();
+// 	m_apm_leave();
 }
 
 /****************************************************************************/
 
 void	m_apm_set_long_mt(M_APM atmp, long mm)
 {
-	m_apm_enter();
+// 	m_apm_enter();
 	m_apm_set_long(atmp,mm);
-	m_apm_leave();
+// 	m_apm_leave();
 }
 
 /****************************************************************************/
 
 void	m_apm_to_string_mt(char *s, int places, M_APM mtmp)
 {
-	m_apm_enter();
+// 	m_apm_enter();
 	m_apm_to_string(s,places,mtmp);
-	m_apm_leave();
+// 	m_apm_leave();
 }
 
 /****************************************************************************/
 
-void	m_apm_add_mt(M_APM r, M_APM a, M_APM b)
+void	m_apm_add_mt(M_APM r, const M_APM a, const M_APM b)
 {
-	m_apm_enter();
+// 	m_apm_enter();
 	m_apm_add(r,a,b);
-	m_apm_leave();
+// 	m_apm_leave();
 }
 
 /****************************************************************************/
 
-void	m_apm_subtract_mt(M_APM r, M_APM a, M_APM b)
+void	m_apm_subtract_mt(M_APM r, const M_APM a, const M_APM b)
 {
-	m_apm_enter();
+// 	m_apm_enter();
 	m_apm_subtract(r,a,b);
-	m_apm_leave();
+// 	m_apm_leave();
 }
 
 /****************************************************************************/
 
 void	m_apm_absolute_value_mt(M_APM d, M_APM s)
 {
-	m_apm_enter();
+// 	m_apm_enter();
 	m_apm_absolute_value(d,s);
-	m_apm_leave();
+// 	m_apm_leave();
 }
 
 /****************************************************************************/
 
 void	m_apm_negate_mt(M_APM d, M_APM s)
 {
-	m_apm_enter();
+// 	m_apm_enter();
 	m_apm_negate(d,s);
-	m_apm_leave();
+// 	m_apm_leave();
 }
 
 /****************************************************************************/
@@ -223,9 +236,9 @@ int	m_apm_compare_mt(M_APM ltmp, M_APM rtmp)
 {
 int 	ret;
 
-	m_apm_enter();
+// 	m_apm_enter();
 	ret=m_apm_compare(ltmp,rtmp);
-	m_apm_leave();
+// 	m_apm_leave();
 	return(ret);
 }
 
@@ -270,9 +283,9 @@ void	m_apm_to_fixpt_string_mt(char *ss, int dplaces, M_APM mtmp)
 
 void	m_apm_round_mt(M_APM btmp, int places, M_APM atmp)
 {
-	m_apm_enter();
+// 	m_apm_enter();
 	m_apm_round(btmp,places,atmp);
-	m_apm_leave();
+// 	m_apm_leave();
 }
 
 /****************************************************************************/
@@ -315,9 +328,9 @@ void	m_apm_arctan2_mt(M_APM rr, int places, M_APM yy, M_APM xx)
 
 void	m_apm_copy_mt(M_APM dest, M_APM src)
 {
-	m_apm_enter();
+// 	m_apm_enter();
 	m_apm_copy(dest,src);
-	m_apm_leave();
+// 	m_apm_leave();
 }
 
 
@@ -370,9 +383,9 @@ int	m_apm_sign_mt(M_APM m)
 {
 int 	i;
 
-	m_apm_enter();
+// 	m_apm_enter();
 	i=m_apm_sign(m);
-	m_apm_leave();
+// 	m_apm_leave();
 	return(i);
 }
 
@@ -382,9 +395,9 @@ int	m_apm_exponent_mt(M_APM m)
 {
 int 	i;
 
-	m_apm_enter();
+// 	m_apm_enter();
 	i=m_apm_exponent(m);
-	m_apm_leave();
+// 	m_apm_leave();
 	return(i);
 }
 
@@ -394,9 +407,9 @@ int	m_apm_significant_digits_mt(M_APM m)
 {
 int 	i;
 
-	m_apm_enter();
+// 	m_apm_enter();
 	i=m_apm_significant_digits(m);
-	m_apm_leave();
+// 	m_apm_leave();
 	return(i);
 }
 
@@ -406,9 +419,9 @@ int	m_apm_is_integer_mt(M_APM m)
 {
 int 	i;
 
-	m_apm_enter();
+// 	m_apm_enter();
 	i=m_apm_is_integer(m);
-	m_apm_leave();
+// 	m_apm_leave();
 	return(i);
 }
 
@@ -418,9 +431,9 @@ int	m_apm_is_even_mt(M_APM m)
 {
 int 	i;
 
-	m_apm_enter();
+// 	m_apm_enter();
 	i=m_apm_is_even(m);
-	m_apm_leave();
+// 	m_apm_leave();
 	return(i);
 }
 
@@ -430,9 +443,9 @@ int	m_apm_is_odd_mt(M_APM m)
 {
 int 	i;
 
-	m_apm_enter();
+// 	m_apm_enter();
 	i=m_apm_is_odd(m);
-	m_apm_leave();
+// 	m_apm_leave();
 	return(i);
 }
 

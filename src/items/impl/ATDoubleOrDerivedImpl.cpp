@@ -154,7 +154,7 @@ Numeric::Ptr ATDoubleOrDerivedImpl::add(const Numeric::Ptr &other, const Dynamic
                     return this;
                   else
                     // sum of two zero of different sign -> result is equal to +0
-                    return newDouble(MM_Zero, context);
+                    return newDouble(0, context);
                 }
                 return newDouble(_double + otherImpl->_double, context);
               }

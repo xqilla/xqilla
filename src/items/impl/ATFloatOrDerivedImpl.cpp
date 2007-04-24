@@ -171,7 +171,7 @@ Numeric::Ptr ATFloatOrDerivedImpl::add(const Numeric::Ptr &other, const DynamicC
                     return this;
                   else
                     // sum of two zero of different sign -> result is equal to +0
-                    return newFloat(MM_Zero, context);
+                    return newFloat(0, context);
                 }
                 return newFloat(_float + otherImpl->_float, context);
               }

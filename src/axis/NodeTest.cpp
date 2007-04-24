@@ -227,6 +227,87 @@ void NodeTest::staticResolution(StaticContext *context, const LocationInfo *loca
      !_wildcardType && _type == Node::element_string) {
     _uri = context->getDefaultElementAndTypeNS();
   }
+
+  // Convert certain NodeTest objects that use an ItemType to ones that don't,
+  // for efficiency and simplicity of comparison.
+  if(_itemType != 0) {
+	  switch(_itemType->getItemTestType()) {
+	  case SequenceType::ItemType::TEST_NODE:
+		  _wildcardType = true;
+		  _wildcardNamespace = true;
+		  _wildcardName = true;
+		  _itemType = 0;
+		  break;
+	  case SequenceType::ItemType::TEST_DOCUMENT:
+		  if(_itemType->getName() == 0 && _itemType->getType() == 0) {
+			  _wildcardType = false;
+			  _type = Node::document_string;
+			  _wildcardNamespace = true;
+			  _wildcardName = true;
+			  _itemType = 0;
+		  }
+		  break;
+	  case SequenceType::ItemType::TEST_TEXT:
+		  _wildcardType = false;
+		  _type = Node::text_string;
+		  _wildcardNamespace = true;
+		  _wildcardName = true;
+		  _itemType = 0;
+		  break;
+	  case SequenceType::ItemType::TEST_COMMENT:
+		  _wildcardType = false;
+		  _type = Node::comment_string;
+		  _wildcardNamespace = true;
+		  _wildcardName = true;
+		  _itemType = 0;
+		  break;
+	  case SequenceType::ItemType::TEST_PI:
+		  _wildcardType = false;
+		  _type = Node::processing_instruction_string;
+		  _wildcardNamespace = true;
+		  if(_itemType->getName() == 0) {
+			  _wildcardName = true;
+		  } else {
+			  _wildcardName = false;
+			  _name = _itemType->getName()->getName();
+		  }
+		  _itemType = 0;
+		  break;
+	  case SequenceType::ItemType::TEST_ATTRIBUTE:
+		  if(_itemType->getType() == 0) {
+			  _wildcardType = false;
+			  _type = Node::attribute_string;
+			  if(_itemType->getName() == 0) {
+				  _wildcardNamespace = true;
+				  _wildcardName = true;
+			  } else {
+				  _wildcardNamespace = false;
+				  _uri = context->getUriBoundToPrefix(_itemType->getName()->getPrefix(), location);
+				  _wildcardName = false;
+				  _name = _itemType->getName()->getName();
+			  }
+			  _itemType = 0;
+		  }
+		  break;
+	  case SequenceType::ItemType::TEST_ELEMENT:
+		  if(_itemType->getType() == 0) {
+			  _wildcardType = false;
+			  _type = Node::element_string;
+			  if(_itemType->getName() == 0) {
+				  _wildcardNamespace = true;
+				  _wildcardName = true;
+			  } else {
+				  _wildcardNamespace = false;
+				  _uri = context->getUriBoundToPrefix(_itemType->getName()->getPrefix(), location);
+				  _wildcardName = false;
+				  _name = _itemType->getName()->getName();
+			  }
+			  _itemType = 0;
+		  }
+		  break;
+	  default: break;
+	  }
+  }
 }
 
 bool NodeTest::isNodePrefixSet() const {

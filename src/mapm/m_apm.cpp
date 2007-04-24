@@ -149,9 +149,9 @@ void MAPM::toIntegerString(char *dest) const
 	
 MAPM & MAPM::operator=(const MAPM &m)
 {
-    m_apm_enter();
+//     m_apm_enter();
     copyFrom((M_APM)m.cval());
-    m_apm_leave();
+//     m_apm_leave();
     return *this;
 }
 
@@ -181,35 +181,39 @@ MAPM & MAPM::operator=(long l)
 
 MAPM MAPM::operator++()
 {
-    m_apm_enter();
-    *this = *this+MM_One;
-    m_apm_leave();
+//     m_apm_enter();
+    MAPM ret;
+    m_apm_add_mt(ret.val(),cval(),MM_One);
+    *this = ret;
+//     m_apm_leave();
     return *this;
 }
 
 MAPM MAPM::operator--()
 {
-    m_apm_enter();
-    *this = *this-MM_One;
-    m_apm_leave();
+//     m_apm_enter();
+    MAPM ret;
+    m_apm_subtract_mt(ret.val(),cval(),MM_One);
+    *this = ret;
+//     m_apm_leave();
     return *this;
 }
 
 const MAPM MAPM::operator++(int)
 {
-	m_apm_enter();
+// 	m_apm_enter();
 	MAPM old = *this;
 	++(*this);          /* Call prefix increment */
-	m_apm_leave();
+// 	m_apm_leave();
 	return old;
 }
 
 const MAPM MAPM::operator--(int)
 {
-	m_apm_enter();
+// 	m_apm_enter();
 	MAPM old = *this;
 	--(*this);          /* Call prefix decrement */
-	m_apm_leave();
+// 	m_apm_leave();
 	return old;
 }
 	
@@ -322,7 +326,7 @@ int MAPM::exponent(void) const
 
 int MAPM::significant_digits(void) const 
 {
-    return m_apm_significant_digits(cval());
+    return m_apm_significant_digits_mt(cval());
 }
 
 int MAPM::is_integer(void) const 

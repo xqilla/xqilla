@@ -275,7 +275,7 @@ const XMLCh* ATDateTimeOrDerivedImpl::asString(const DynamicContext* context) co
   buffer.append(chColon);
   DateUtils::formatNumber(minute, 2, buffer);
   buffer.append(chColon);
-  if(second < MM_Ten)
+  if(second < 10)
     buffer.append(chDigit_0);
   buffer.append(Numeric::asDecimalString(second, ATDecimalOrDerivedImpl::g_nSignificantDigits, context));
   // Add timezone if exists 
@@ -502,7 +502,7 @@ ATDurationOrDerived::Ptr ATDateTimeOrDerivedImpl::subtractDateTimeAsYearMonthDur
   // put it into yearMonthDuration form
   MAPM days = dayTimeDiff->getDays(context)->asMAPM();
   
-  MAPM months = MM_Zero;
+  MAPM months;
   // Get number of months
   MAPM YY, MM, DD;
   dateFromSeconds(tzNormalize(other->_hasTimezone, other->seconds_, context), YY, MM, DD);

@@ -113,6 +113,45 @@ void XQCastAs::setExpression(ASTNode *item) {
   _expr = item;
 }
 
+AnyAtomicType::Ptr XQCastAs::cast(const AnyAtomicType::Ptr &in, DynamicContext *context) const
+{
+  try {
+    if(_isPrimitive) {
+      return in->castAs(_typeIndex, 0, 0, context);
+    }
+    else {
+      return in->castAs(_typeIndex, _exprType->getTypeURI(context),
+                        _exprType->getConstrainingType()->getName(), context);
+    }
+  }
+  catch(XQException &e) {
+    if(e.getXQueryLine() == 0)
+      e.setXQueryPosition(this);
+    throw;
+  }
+}
+
+AnyAtomicType::Ptr XQCastAs::cast(const XMLCh *value, DynamicContext *context) const
+{
+  try {
+    if(_isPrimitive) {
+      return context->getItemFactory()->
+        createDerivedFromAtomicType(_typeIndex, value, context);
+    }
+    else {
+      return context->getItemFactory()->
+        createDerivedFromAtomicType(_typeIndex, _exprType->getTypeURI(context),
+                                    _exprType->getConstrainingType()->getName(), value, context);
+    }
+  }
+  catch(XQException &e) {
+    if(e.getXQueryLine() == 0)
+      e.setXQueryPosition(this);
+    throw;
+  }
+}
+
+
 XQCastAs::CastAsResult::CastAsResult(const XQCastAs *di)
   : SingleResult(di),
     _di(di)
@@ -150,22 +189,7 @@ Item::Ptr XQCastAs::CastAsResult::getSingleResult(DynamicContext *context) const
 
   //    4. If the result of atomization is a single atomic value, the result of the cast expression depends on the input type and the target type.
   //       The normative definition of these rules is given in [XQuery 1.0 and XPath 2.0 Functions and Operators].
-  try {
-    if(_di->isPrimitive()) {
-      return ((const AnyAtomicType*)first.get())->castAs(_di->getTypeIndex(), 0, 0, context);
-    }
-    else {
-      return ((const AnyAtomicType*)first.get())->castAs(_di->getTypeIndex(),
-                                                         _di->getSequenceType()->getTypeURI(context),
-                                                         _di->getSequenceType()->getConstrainingType()->getName(),
-                                                         context);
-    }
-  }
-  catch(XQException &e) {
-    if(e.getXQueryLine() == 0)
-      e.setXQueryPosition(this);
-    throw;
-  }
+  return _di->cast((const AnyAtomicType*)first.get(), context);
 }
 
 std::string XQCastAs::CastAsResult::asString(DynamicContext *context, int indent) const

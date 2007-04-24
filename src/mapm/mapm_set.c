@@ -19,19 +19,6 @@
 
 #include "m_apm_lc.h"
 
-static	char *M_buf  = NULL;
-static  int   M_lbuf = 0;
-
-/****************************************************************************/
-void	M_free_all_set()
-{
-if (M_lbuf != 0)
-  {
-   MAPM_FREE(M_buf);
-   M_buf  = NULL;
-   M_lbuf = 0;
-  }
-}
 /****************************************************************************/
 void	m_apm_set_long(M_APM atmp, long mm)
 {
@@ -91,33 +78,18 @@ for (ii=0; ii < nbytes; ii++)
 /****************************************************************************/
 void	m_apm_set_string(M_APM ctmp, char *s_in)
 {
+char *M_buf;
+
 char	ch, *cp, *s, *p;
 void	*vp;
 int	i, j, zflag, exponent, sign;
 
-if (M_lbuf == 0)
-  {
-   M_lbuf = 256;
-   if ((M_buf = (char *)MAPM_MALLOC(256)) == NULL)
+   if ((M_buf = (char *)MAPM_MALLOC(strlen(s_in) + 32)) == NULL)
      {
       /* fatal, this does not return */
 
       M_apm_log_error_msg(M_APM_EXIT, "\'m_apm_set_string\', Out of memory");
      }
-  }
-
-if ((i = strlen(s_in)) > (M_lbuf - 4))
-  {
-   M_lbuf = i + 32;
-   if ((vp = MAPM_REALLOC(M_buf, M_lbuf)) == NULL)
-     {
-      /* fatal, this does not return */
-
-      M_apm_log_error_msg(M_APM_EXIT, "\'m_apm_set_string\', Out of memory");
-     }
-
-   M_buf = (char *)vp;
-  }
 
 s = M_buf;
 strcpy(s,s_in);
@@ -245,12 +217,7 @@ else
  *  this number bigger).
  */
 
-if (M_lbuf > 1000)
-  {
    MAPM_FREE(M_buf);
-   M_buf  = NULL;
-   M_lbuf = 0;
-  }
 }
 /****************************************************************************/
 void	m_apm_to_string(char *s, int places, M_APM mtmp)

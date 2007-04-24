@@ -19,31 +19,14 @@
 
 #include "m_apm_lc.h"
 
-static	M_APM	M_work1 = NULL;
-static	M_APM	M_work2 = NULL;
-static	int	M_add_firsttime = TRUE;
-
-/****************************************************************************/
-void	M_free_all_add()
-{
-if (M_add_firsttime == FALSE)
-  {
-   m_apm_free(M_work1);
-   m_apm_free(M_work2);
-   M_add_firsttime = TRUE;
-  }
-}
 /****************************************************************************/
 void	m_apm_add(M_APM r, M_APM a, M_APM b)
 {
+M_APM	M_work1, M_work2;
 int	j, carry, sign, aexp, bexp, adigits, bdigits;
 
-if (M_add_firsttime)
-  {
-   M_add_firsttime = FALSE;
    M_work1 = m_apm_init();
    M_work2 = m_apm_init();
-  }
 
 if (a->m_apm_sign == 0)
   {
@@ -161,15 +144,12 @@ M_apm_normalize(r);
 /****************************************************************************/
 void	m_apm_subtract(M_APM r, M_APM a, M_APM b)
 {
+M_APM	M_work1, M_work2;
 int	itmp, j, flag, icompare, sign, aexp, bexp, 
 	borrow, adigits, bdigits;
 
-if (M_add_firsttime)
-  {
-   M_add_firsttime = FALSE;
    M_work1 = m_apm_init();
    M_work2 = m_apm_init();
-  }
 
 if (b->m_apm_sign == 0)
   {

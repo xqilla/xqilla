@@ -37,6 +37,9 @@ public:
 
   void setExpression(ASTNode *item);
 
+  AnyAtomicType::Ptr cast(const AnyAtomicType::Ptr &in, DynamicContext *context) const;
+  AnyAtomicType::Ptr cast(const XMLCh *value, DynamicContext *context) const;
+
 protected:
   class CastAsResult : public SingleResult
   {

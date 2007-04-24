@@ -19,10 +19,26 @@
 
 #include "m_apm_lc.h"
 
+extern void	M_alloc_all_util();
+
+/****************************************************************************/
+void m_apm_library_initialize()
+{
+  M_alloc_all_util();
+
+  m_apm_mt_initialize();
+}
+
+void m_apm_library_terminate()
+{
+  m_apm_free_all_mem();
+
+  m_apm_mt_terminate();
+}
 /****************************************************************************/
 void	m_apm_free_all_mem()
 {
-M_free_all_add();    /* call each module which has statically declared data */
+/* call each module which has statically declared data */
 M_free_all_div();
 M_free_all_exp();
 
@@ -32,7 +48,6 @@ M_free_all_fft();
 
 M_free_all_pow();
 M_free_all_rnd();
-M_free_all_set();
 M_free_all_cnst();
 M_free_all_fmul();
 M_free_all_stck();
