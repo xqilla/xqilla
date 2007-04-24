@@ -165,12 +165,10 @@ extern	void	M_free_all_fft(void);
 #endif
 
 extern	void	M_init_trig_globals(void);
-extern	void	M_free_all_add(void);
 extern	void	M_free_all_div(void);
 extern	void	M_free_all_exp(void);
 extern	void	M_free_all_pow(void);
 extern	void	M_free_all_rnd(void);
-extern	void	M_free_all_set(void);
 extern	void	M_free_all_cnst(void);
 extern	void	M_free_all_fmul(void);
 extern	void	M_free_all_stck(void);

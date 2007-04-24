@@ -47,6 +47,7 @@ typedef M_APM_struct *M_APM;
 
 /*
  *	convienient predefined constants
+ *  (Not thread safe in C++ API)
  */
 
 extern	M_APM	MM_Zero;
@@ -71,6 +72,9 @@ extern	M_APM	MM_LOG_3_BASE_E;
 /*
  *	function prototypes
  */
+extern void m_apm_library_initialize(void);
+extern void m_apm_library_terminate(void);
+
 extern void m_apm_mt_initialize(void);
 extern void m_apm_mt_terminate(void);
 

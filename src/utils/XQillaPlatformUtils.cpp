@@ -40,7 +40,7 @@ void XQillaPlatformUtils::initialize(MemoryManager *memMgr) {
   if(gInitFlag++ == 0) {
     XMLPlatformUtils::Initialize(XMLUni::fgXercescDefaultLocale, 0, 0, memMgr);
     XQillaImplementation::initialize();
-    m_apm_mt_initialize();
+    m_apm_library_initialize();
     DateUtils::initialize();
     FunctionLookup::initialize();
 
@@ -91,9 +91,8 @@ void XQillaPlatformUtils::terminate() {
   }
 
   if(--gInitFlag == 0) {
-    m_apm_free_all_mem_mt();
     DateUtils::terminate();
-    m_apm_mt_terminate();
+    m_apm_library_terminate();
     FunctionLookup::terminate();
     XQillaImplementation::terminate();
     XMLPlatformUtils::Terminate();

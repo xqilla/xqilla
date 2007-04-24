@@ -35,13 +35,6 @@ M_APM	m_apm_init()
 {
 M_APM	atmp;
 
-if (M_firsttime3)
-  {
-   M_firsttime3 = FALSE;
-   M_init_util_data();
-   M_init_trig_globals();
-  }
-
 if ((atmp = (M_APM)MAPM_MALLOC(sizeof(M_APM_struct))) == NULL)
   {
    /* fatal, this does not return */
@@ -79,6 +72,24 @@ else
   {
    M_apm_log_error_msg(M_APM_RETURN, 
                        "Invalid M_APM variable passed to \'m_apm_free\'");
+  }
+}
+/****************************************************************************/
+void	M_alloc_all_util()
+{
+
+  if (M_firsttime3) {
+    M_firsttime3 = FALSE;
+    M_init_util_data();
+    M_init_trig_globals();
+  }
+
+if (M_util_firsttime)
+  {
+   M_util_firsttime = FALSE;
+
+   M_work_0_5 = m_apm_init();
+   m_apm_set_string(M_work_0_5, "5");
   }
 }
 /****************************************************************************/
@@ -180,14 +191,6 @@ void	M_get_div_rem_10(int tbl_lookup, UCHAR *ndiv, UCHAR *nrem)
 void	m_apm_round(M_APM btmp, int places, M_APM atmp) 
 {
 int	ii;
-
-if (M_util_firsttime)
-  {
-   M_util_firsttime = FALSE;
-
-   M_work_0_5 = m_apm_init();
-   m_apm_set_string(M_work_0_5, "5");
-  }
 
 ii = places + 1;
 

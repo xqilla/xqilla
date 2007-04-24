@@ -160,7 +160,7 @@ const XMLCh* ATTimeOrDerivedImpl::asString(const DynamicContext* context) const
   buffer.append(chColon);
   DateUtils::formatNumber(minute, 2, buffer);
   buffer.append(chColon);
-  if(second < MM_Ten)
+  if(second < 10)
     buffer.append(chDigit_0);
   buffer.append(Numeric::asDecimalString(second, ATDecimalOrDerivedImpl::g_nSignificantDigits, context));
   // Add timezone if exists

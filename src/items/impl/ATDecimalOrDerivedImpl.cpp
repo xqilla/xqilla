@@ -277,7 +277,7 @@ Numeric::Ptr ATDecimalOrDerivedImpl::divide(const Numeric::Ptr &other, const Dyn
     // if both are of the same type exactly, we can perform division
     ATDecimalOrDerivedImpl* otherImpl = (ATDecimalOrDerivedImpl*)(const Numeric*)other;
   
-    if(otherImpl->_decimal == MM_Zero) {
+    if(otherImpl->_decimal.sign() == 0) {
       XQThrow2(XPath2ErrorException, X("ATDecimalOrDerivedImpl::divide"), X("Division by zero [err:FOAR0001]"));
     }
   
@@ -408,7 +408,7 @@ Numeric::Ptr ATDecimalOrDerivedImpl::round(const DynamicContext* context) const 
 /** Rounds this Numeric to the given precision, and rounds a half to even */
 Numeric::Ptr ATDecimalOrDerivedImpl::roundHalfToEven(const Numeric::Ptr &precision, const DynamicContext* context) const {
   ATDecimalOrDerived::Ptr decimal_precision = (const Numeric::Ptr)precision->castAs(this->getPrimitiveTypeIndex(), context);
-  MAPM exp = MAPM(MM_Ten).pow(((ATDecimalOrDerivedImpl*)(const ATDecimalOrDerived*)decimal_precision)->_decimal);
+  MAPM exp = MAPM(10).pow(((ATDecimalOrDerivedImpl*)(const ATDecimalOrDerived*)decimal_precision)->_decimal);
   MAPM value = _decimal * exp;
   bool halfVal = false;
 
