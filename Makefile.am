@@ -408,7 +408,6 @@ src/xqts/TestSuiteResultListener.cpp \
 src/xqts/TestSuiteRunner.cpp \
 src/fastxdm/FastXDMUpdateFactory.hpp \
 src/fastxdm/FastXDMUpdateFactory.cpp \
-src/fastxdm/FastXDMDocumentCacheImpl.hpp \
 src/fastxdm/FastXDMDocumentCacheImpl.cpp \
 src/fastxdm/FastXDMDocument.hpp \
 src/fastxdm/FastXDMDocument.cpp \

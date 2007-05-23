@@ -15,9 +15,11 @@
 #define AFXQ_ITEMFACTORYIMPL_H__D608C994_F090_4206_9473_81F3D7350510__INCLUDED_
 
 #include <xqilla/context/ItemFactory.hpp>
-#include <xqilla/items/DatatypeLookup.hpp>
 
 #include <xercesc/framework/MemoryManager.hpp>
+
+class DatatypeLookup;
+class DocumentCache;
 
 class XQILLA_API ItemFactoryImpl : public ItemFactory
 {
@@ -97,8 +99,10 @@ public:
                                                      const XMLCh* name, const DynamicContext* context);
 
 protected:
-  DatatypeLookup datatypeLookup_;
-  XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr_;
+  ItemFactoryImpl(DatatypeLookup *dl);
+
+  DatatypeLookup *datatypeLookup_;
+  bool datatypeLookupOwned_;
 };
 
 #endif

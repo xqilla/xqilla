@@ -14,8 +14,7 @@
 #include "../config/xqilla_config.h"
 
 #include "FastXDMUpdateFactory.hpp"
-#include "FastXDMDocumentCacheImpl.hpp"
-// #include "FastXDMNodeImpl.hpp
+#include <xqilla/fastxdm/FastXDMDocumentCacheImpl.hpp>
 
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/context/MessageListener.hpp>

@@ -14,7 +14,7 @@
 #include "../config/xqilla_config.h"
 
 #include <xqilla/fastxdm/FastXDMConfiguration.hpp>
-#include "FastXDMDocumentCacheImpl.hpp"
+#include <xqilla/fastxdm/FastXDMDocumentCacheImpl.hpp>
 #include "FastXDMSequenceBuilder.hpp"
 #include "FastXDMUpdateFactory.hpp"
 

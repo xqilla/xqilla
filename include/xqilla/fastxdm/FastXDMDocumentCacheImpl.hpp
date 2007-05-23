@@ -17,8 +17,6 @@
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/schema/DocumentCache.hpp>
 
-#include "FastXDMDocument.hpp"
-
 #include <xercesc/framework/XMLDocumentHandler.hpp>
 #include <xercesc/framework/XMLEntityHandler.hpp>
 #include <xercesc/framework/XMLErrorReporter.hpp>
@@ -44,8 +42,6 @@ public:
   FastXDMDocumentCacheImpl(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr);
   FastXDMDocumentCacheImpl(const FastXDMDocumentCacheImpl *parent, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr);
   ~FastXDMDocumentCacheImpl();
-
-  void init(XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool *gramPool = 0);
 
   /**
    * Sets the XMLEntityResolver that is used by Xerces when it is used
@@ -88,7 +84,10 @@ public:
 
   virtual DocumentCache *createDerivedCache(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr) const;
 
-private:
+protected:
+  FastXDMDocumentCacheImpl(XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool *gramPool, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr);
+  void init(XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool *gramPool = 0, bool makeScanner = true);
+
   void loadSchema(const XMLCh* const uri, const XMLCh* location, StaticContext *context);
 
   // XMLEntityHandler

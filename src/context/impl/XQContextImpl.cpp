@@ -154,7 +154,7 @@ XQContextImpl::~XQContextImpl()
   delete _varStore;
   delete _varTypeStore;
   delete _itemFactory;
-	delete _docCache;
+  delete _docCache;
 
   std::vector<ResolverEntry, XQillaAllocator<ResolverEntry> >::reverse_iterator end = _resolvers.rend();
   for(std::vector<ResolverEntry, XQillaAllocator<ResolverEntry> >::reverse_iterator i = _resolvers.rbegin(); i != end; ++i) {
