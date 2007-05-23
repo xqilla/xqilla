@@ -29,7 +29,7 @@
 #include <xercesc/framework/XMLGrammarPool.hpp>
 #include <xercesc/internal/IGXMLScanner.hpp>
 
-#include "FastXDMDocumentCacheImpl.hpp"
+#include <xqilla/fastxdm/FastXDMDocumentCacheImpl.hpp>
 #include "FastXDMDocument.hpp"
 #include "FastXDMNodeImpl.hpp"
 
@@ -107,35 +107,56 @@ FastXDMDocumentCacheImpl::FastXDMDocumentCacheImpl(const FastXDMDocumentCacheImp
   scanner_->setExternalSchemaLocation(schemaLocations_.getRawBuffer());
 }
 
-void FastXDMDocumentCacheImpl::init(XMLGrammarPool *gramPool)
+// Constructor used by DB XML - only creates the GrammarResolver
+FastXDMDocumentCacheImpl::FastXDMDocumentCacheImpl(XMLGrammarPool *gramPool, MemoryManager* memMgr)
+  : grammarResolver_(0),
+    scanner_(0),
+    entityResolver_(0),
+    events_(0),
+    attrList_(0),
+    attrCount_(0),
+    elementInfo_(0),
+    strictValidation_(false),
+    loadedSchemas_(0),
+    schemaLocations_(0, memMgr),
+    noNamespaceSchemaLocation_(0, memMgr),
+    memMgr_(memMgr)
+{
+  init(gramPool, /*makeScanner*/false);
+}
+
+void FastXDMDocumentCacheImpl::init(XMLGrammarPool *gramPool, bool makeScanner)
 {
   grammarResolver_ = new (memMgr_) GrammarResolver(gramPool, memMgr_);
-  scanner_ = new (memMgr_) IGXMLScanner(0, grammarResolver_, memMgr_);
-  scanner_->setURIStringPool(grammarResolver_->getStringPool());
-
   if(gramPool) {
+    grammarResolver_->cacheGrammarFromParse(true);
+    grammarResolver_->useCachedGrammarInParse(true);
+
     // Hack around a Xerces bug, where the GrammarResolver doesn't
     // initialise it's XSModel correctly from a locked XMLGrammarPool - jpcs
     ((GrammarResolverHack*)grammarResolver_)->fGrammarPoolXSModel = gramPool->getXSModel();
   }
 
-  // hold the loaded schemas in the cache, so that can be reused    
-  grammarResolver_->cacheGrammarFromParse(true);
-  grammarResolver_->useCachedGrammarInParse(true);
-  scanner_->cacheGrammarFromParse(true);
-  scanner_->useCachedGrammarInParse(true);
+  if(makeScanner) {
+    scanner_ = new (memMgr_) IGXMLScanner(0, grammarResolver_, memMgr_);
+    scanner_->setURIStringPool(grammarResolver_->getStringPool());
 
-  // set up the parser
-  scanner_->setDocHandler(this);
-  scanner_->setEntityHandler(this);
-  scanner_->setErrorReporter(this);
-  scanner_->setPSVIHandler(this);
-  scanner_->setDoNamespaces(true);
-  scanner_->setDoSchema(true);
-  scanner_->setValidationScheme(XMLScanner::Val_Auto);
-  scanner_->setValidationConstraintFatal(false);
+    // hold the loaded schemas in the cache, so that can be reused    
+    scanner_->cacheGrammarFromParse(true);
+    scanner_->useCachedGrammarInParse(true);
 
-  loadedSchemas_ = new (memMgr_) XMLStringPool(3, memMgr_);
+    // set up the parser
+    scanner_->setDocHandler(this);
+    scanner_->setEntityHandler(this);
+    scanner_->setErrorReporter(this);
+    scanner_->setPSVIHandler(this);
+    scanner_->setDoNamespaces(true);
+    scanner_->setDoSchema(true);
+    scanner_->setValidationScheme(XMLScanner::Val_Auto);
+    scanner_->setValidationConstraintFatal(false);
+
+    loadedSchemas_ = new (memMgr_) XMLStringPool(3, memMgr_);
+  }
 }
 
 FastXDMDocumentCacheImpl::~FastXDMDocumentCacheImpl()
@@ -605,12 +626,12 @@ void FastXDMDocumentCacheImpl::loadSchema(const XMLCh* const uri, const XMLCh* l
 
 unsigned int FastXDMDocumentCacheImpl::getSchemaUriId(const XMLCh* uri) const
 {
-  return scanner_->getURIStringPool()->getId(uri);
+  return grammarResolver_->getStringPool()->getId(uri);
 }
 
 const XMLCh* FastXDMDocumentCacheImpl::getSchemaUri(unsigned int id) const
 {
-  return scanner_->getURIStringPool()->getValueForId(id);
+  return grammarResolver_->getStringPool()->getValueForId(id);
 }
 
 class DocumentElementOnlyFilter : public EventFilter
