@@ -25,9 +25,6 @@ void	m_apm_add(M_APM r, M_APM a, M_APM b)
 M_APM	M_work1, M_work2;
 int	j, carry, sign, aexp, bexp, adigits, bdigits;
 
-   M_work1 = m_apm_init();
-   M_work2 = m_apm_init();
-
 if (a->m_apm_sign == 0)
   {
    m_apm_copy(r,b);
@@ -55,6 +52,9 @@ if (a->m_apm_sign == -1 && b->m_apm_sign == 1)
    a->m_apm_sign = -1;
    return;
   }
+
+M_work1 = m_apm_init();
+M_work2 = m_apm_init();
 
 sign = a->m_apm_sign;         /* signs are the same, result will be same */
 
@@ -140,6 +140,9 @@ else
 r->m_apm_sign = sign;
 
 M_apm_normalize(r);
+
+ m_apm_free(M_work1);
+ m_apm_free(M_work2);
 }
 /****************************************************************************/
 void	m_apm_subtract(M_APM r, M_APM a, M_APM b)
@@ -147,9 +150,6 @@ void	m_apm_subtract(M_APM r, M_APM a, M_APM b)
 M_APM	M_work1, M_work2;
 int	itmp, j, flag, icompare, sign, aexp, bexp, 
 	borrow, adigits, bdigits;
-
-   M_work1 = m_apm_init();
-   M_work2 = m_apm_init();
 
 if (b->m_apm_sign == 0)
   {
@@ -180,19 +180,22 @@ if (a->m_apm_sign == -1 && b->m_apm_sign == 1)
    return;
   }
 
+/* are they the same??  if so, the result is zero */
+
+if ((icompare = m_apm_compare(a, b)) == 0)
+  {
+   M_set_to_zero(r);
+   return;
+  }
+
+M_work1 = m_apm_init();
+M_work2 = m_apm_init();
+
 /* now, the signs are the same  */
 /* make a positive working copy */
 
 m_apm_absolute_value(M_work1, a);
 m_apm_absolute_value(M_work2, b);
-
-/* are they the same??  if so, the result is zero */
-
-if ((icompare = m_apm_compare(M_work1, M_work2)) == 0)
-  {
-   M_set_to_zero(r);
-   return;
-  }
 
 if (icompare == 1)             /*  |a| > |b|  (do A-B)  */
   {
@@ -279,5 +282,8 @@ else   		/* perform B-A,  M_work2 - M_work1 */
 r->m_apm_sign = sign;
 
 M_apm_normalize(r);
+
+ m_apm_free(M_work1);
+ m_apm_free(M_work2);
 }
 /****************************************************************************/
