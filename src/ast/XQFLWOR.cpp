@@ -158,7 +158,7 @@ void XQSort::SortSpec::staticResolution(StaticContext *context, StaticResolution
   _expr = new (mm) XQPromoteUntyped(_expr, SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                                     SchemaSymbols::fgDT_STRING, mm);
   _expr->setLocationInfo(this);
-  _expr = new XQTreatAs(_expr, zero_or_one, mm);
+  _expr = new (mm) XQTreatAs(_expr, zero_or_one, mm);
   _expr->setLocationInfo(this);
   _expr = _expr->staticResolution(context);
 }
