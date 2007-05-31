@@ -134,9 +134,11 @@ static string loadExpectedResult(const string &file) {
      ((unsigned char)expectedResult[2])==0xBF)
     expectedResult.erase(0,3);
 
-  for(string::iterator c=expectedResult.begin();c!=expectedResult.end();c++)
+  for(string::iterator c=expectedResult.begin();c!=expectedResult.end();)
     if(*c==0xD)
-      c=expectedResult.erase(c)-1;
+      c=expectedResult.erase(c);
+    else
+      c++;
   while(expectedResult.size()>0 && expectedResult[expectedResult.size()-1]==0xA)
     expectedResult.erase(expectedResult.size()-1);
 
