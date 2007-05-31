@@ -6105,7 +6105,7 @@ yyreduce:
 #line 3089 "../src/parser/XQParser.y"
     {
 		NodeTest *step = new (MEMMGR) NodeTest();
-        step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_PI, new (MEMMGR) QualifiedName((yyvsp[(2) - (3)].str))));
+        step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_PI, new (MEMMGR) QualifiedName((yyvsp[(2) - (3)].str), MEMMGR)));
 		(yyval.nodeTest) = step;
 	}
     break;
@@ -6114,7 +6114,7 @@ yyreduce:
 #line 3095 "../src/parser/XQParser.y"
     {
 		NodeTest *step = new (MEMMGR) NodeTest();
-        step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_PI, new (MEMMGR) QualifiedName((yyvsp[(2) - (3)].str))));
+        step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_PI, new (MEMMGR) QualifiedName((yyvsp[(2) - (3)].str), MEMMGR)));
 		(yyval.nodeTest) = step;
 	}
     break;

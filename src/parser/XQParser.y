@@ -3088,13 +3088,13 @@ PITest:
 	| _PROCESSING_INSTRUCTION_LPAR_ _NCNAME_ _RPAR_
 	{
 		NodeTest *step = new (MEMMGR) NodeTest();
-        step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_PI, new (MEMMGR) QualifiedName($2)));
+        step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_PI, new (MEMMGR) QualifiedName($2, MEMMGR)));
 		$$ = step;
 	}
 	| _PROCESSING_INSTRUCTION_LPAR_ _STRING_LITERAL_ _RPAR_
 	{
 		NodeTest *step = new (MEMMGR) NodeTest();
-        step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_PI, new (MEMMGR) QualifiedName($2)));
+        step->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_PI, new (MEMMGR) QualifiedName($2, MEMMGR)));
 		$$ = step;
 	}
 	;
