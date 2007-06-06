@@ -180,14 +180,6 @@ if (a->m_apm_sign == -1 && b->m_apm_sign == 1)
    return;
   }
 
-/* are they the same??  if so, the result is zero */
-
-if ((icompare = m_apm_compare(a, b)) == 0)
-  {
-   M_set_to_zero(r);
-   return;
-  }
-
 M_work1 = m_apm_init();
 M_work2 = m_apm_init();
 
@@ -196,6 +188,14 @@ M_work2 = m_apm_init();
 
 m_apm_absolute_value(M_work1, a);
 m_apm_absolute_value(M_work2, b);
+
+/* are they the same??  if so, the result is zero */
+
+if ((icompare = m_apm_compare(M_work1, M_work2)) == 0)
+  {
+   M_set_to_zero(r);
+   return;
+  }
 
 if (icompare == 1)             /*  |a| > |b|  (do A-B)  */
   {
