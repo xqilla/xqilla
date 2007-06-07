@@ -194,6 +194,8 @@ m_apm_absolute_value(M_work2, b);
 if ((icompare = m_apm_compare(M_work1, M_work2)) == 0)
   {
    M_set_to_zero(r);
+   m_apm_free(M_work1);
+   m_apm_free(M_work2);
    return;
   }
 
