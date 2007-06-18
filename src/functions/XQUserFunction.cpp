@@ -39,6 +39,8 @@
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 #include <xercesc/validators/datatype/DatatypeValidator.hpp>
 
+XERCES_CPP_NAMESPACE_USE;
+
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -46,22 +48,22 @@
  /* http://www.w3.org/2005/xquery-local-functions */
 const XMLCh XQUserFunction::XMLChXQueryLocalFunctionsURI[] =
 {
-    XERCES_CPP_NAMESPACE_QUALIFIER chLatin_h,       XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t,       XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t, 
-    XERCES_CPP_NAMESPACE_QUALIFIER chLatin_p,       XERCES_CPP_NAMESPACE_QUALIFIER chColon,         XERCES_CPP_NAMESPACE_QUALIFIER chForwardSlash, 
-    XERCES_CPP_NAMESPACE_QUALIFIER chForwardSlash,  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_w,       XERCES_CPP_NAMESPACE_QUALIFIER chLatin_w, 
-    XERCES_CPP_NAMESPACE_QUALIFIER chLatin_w,       XERCES_CPP_NAMESPACE_QUALIFIER chPeriod,        XERCES_CPP_NAMESPACE_QUALIFIER chLatin_w,
-    XERCES_CPP_NAMESPACE_QUALIFIER chDigit_3,       XERCES_CPP_NAMESPACE_QUALIFIER chPeriod,        XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, 
-    XERCES_CPP_NAMESPACE_QUALIFIER chLatin_r,       XERCES_CPP_NAMESPACE_QUALIFIER chLatin_g,       XERCES_CPP_NAMESPACE_QUALIFIER chForwardSlash, 
-    XERCES_CPP_NAMESPACE_QUALIFIER chDigit_2,       XERCES_CPP_NAMESPACE_QUALIFIER chDigit_0,       XERCES_CPP_NAMESPACE_QUALIFIER chDigit_0, 
-    XERCES_CPP_NAMESPACE_QUALIFIER chDigit_5,       XERCES_CPP_NAMESPACE_QUALIFIER chForwardSlash,  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_x,
-    XERCES_CPP_NAMESPACE_QUALIFIER chLatin_q,       XERCES_CPP_NAMESPACE_QUALIFIER chLatin_u,       XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e,
-    XERCES_CPP_NAMESPACE_QUALIFIER chLatin_r,       XERCES_CPP_NAMESPACE_QUALIFIER chLatin_y,       XERCES_CPP_NAMESPACE_QUALIFIER chDash, 
-    XERCES_CPP_NAMESPACE_QUALIFIER chLatin_l,       XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o,       XERCES_CPP_NAMESPACE_QUALIFIER chLatin_c,
-    XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a,       XERCES_CPP_NAMESPACE_QUALIFIER chLatin_l,       XERCES_CPP_NAMESPACE_QUALIFIER chDash, 
-    XERCES_CPP_NAMESPACE_QUALIFIER chLatin_f,       XERCES_CPP_NAMESPACE_QUALIFIER chLatin_u,       XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n,
-    XERCES_CPP_NAMESPACE_QUALIFIER chLatin_c,       XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t,       XERCES_CPP_NAMESPACE_QUALIFIER chLatin_i,
-    XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o,       XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n,       XERCES_CPP_NAMESPACE_QUALIFIER chLatin_s,
-    XERCES_CPP_NAMESPACE_QUALIFIER chNull
+    chLatin_h,       chLatin_t,       chLatin_t, 
+    chLatin_p,       chColon,         chForwardSlash, 
+    chForwardSlash,  chLatin_w,       chLatin_w, 
+    chLatin_w,       chPeriod,        chLatin_w,
+    chDigit_3,       chPeriod,        chLatin_o, 
+    chLatin_r,       chLatin_g,       chForwardSlash, 
+    chDigit_2,       chDigit_0,       chDigit_0, 
+    chDigit_5,       chForwardSlash,  chLatin_x,
+    chLatin_q,       chLatin_u,       chLatin_e,
+    chLatin_r,       chLatin_y,       chDash, 
+    chLatin_l,       chLatin_o,       chLatin_c,
+    chLatin_a,       chLatin_l,       chDash, 
+    chLatin_f,       chLatin_u,       chLatin_n,
+    chLatin_c,       chLatin_t,       chLatin_i,
+    chLatin_o,       chLatin_n,       chLatin_s,
+    chNull
 };
 
 XQUserFunction::XQUserFunction(const XMLCh* fnName, VectorOfFunctionParameters* params, ASTNode* body, SequenceType* returnValue, bool isUpdating, StaticContext* ctx)
@@ -72,14 +74,14 @@ XQUserFunction::XQUserFunction(const XMLCh* fnName, VectorOfFunctionParameters* 
     m_szSignature(NULL),
     m_szFullName(fnName),
     m_szURI(NULL),
+    m_uriname(NULL),
     isUpdating_(isUpdating),
     m_pMemMgr(ctx->getMemoryManager()),
     _src(ctx->getMemoryManager()),
     m_bCalculatingSRC(false),
-    m_qname(1023, m_pMemMgr),
     m_moduleDocCache(NULL)
 {
-  int nColon=XERCES_CPP_NAMESPACE_QUALIFIER XMLString::indexOf(fnName,':');
+  int nColon=XMLString::indexOf(fnName,':');
   if(nColon==-1)
   {
       m_szURI=ctx->getDefaultFuncNS();
@@ -88,16 +90,16 @@ XQUserFunction::XQUserFunction(const XMLCh* fnName, VectorOfFunctionParameters* 
   else
   {
       XMLCh* tempPrefix = new XMLCh[nColon + 1];
-      XERCES_CPP_NAMESPACE_QUALIFIER XMLString::subString(tempPrefix, fnName, 0, nColon);
+      XMLString::subString(tempPrefix, fnName, 0, nColon);
       tempPrefix[nColon] = 0;
       m_szPrefix = m_pMemMgr->getPooledString(tempPrefix);
       delete [] tempPrefix;
       m_szURI=ctx->getUriBoundToPrefix(m_szPrefix, this);
       m_szName=m_pMemMgr->getPooledString(fnName+nColon+1);
   }
-  if(XPath2Utils::equals(m_szURI, XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgXMLURIName) ||
-     XPath2Utils::equals(m_szURI, XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA) ||
-     XPath2Utils::equals(m_szURI, XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_XSI) ||
+  if(XPath2Utils::equals(m_szURI, XMLUni::fgXMLURIName) ||
+     XPath2Utils::equals(m_szURI, SchemaSymbols::fgURI_SCHEMAFORSCHEMA) ||
+     XPath2Utils::equals(m_szURI, SchemaSymbols::fgURI_XSI) ||
      XPath2Utils::equals(m_szURI, XQFunction::XMLChFunctionURI) ||
      XPath2Utils::equals(m_szURI, FunctionConstructor::XMLChXPath2DatatypesURI))
   {
@@ -108,8 +110,11 @@ XQUserFunction::XQUserFunction(const XMLCh* fnName, VectorOfFunctionParameters* 
 
   m_pReturnPattern=returnValue;
   m_pParams=params;
-  m_qname.set(m_szName);
-  m_qname.append(m_szURI);
+
+  XMLBuffer uriname;
+  uriname.set(m_szName);
+  uriname.append(m_szURI);
+  m_uriname = m_pMemMgr->getPooledString(uriname.getRawBuffer());
 }
 
 const XMLCh* XQUserFunction::getFullName() const
@@ -127,9 +132,9 @@ const XMLCh *XQUserFunction::getURI() const
   return m_szURI;
 }
 
-const XMLCh *XQUserFunction::getQName() const
+const XMLCh *XQUserFunction::getURINameHash() const
 {
-  return m_qname.getRawBuffer();
+  return m_uriname;
 }
 
 unsigned int XQUserFunction::getMinArgs() const
@@ -209,14 +214,14 @@ void XQUserFunction::staticResolutionStage1(StaticContext *context)
     exFunc_ = context->lookUpExternalFunction(m_szURI, m_szName, nArgs);
 
     if(exFunc_ == NULL) {
-      XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buf;
+      XMLBuffer buf;
       buf.set(X("External function '{"));
       buf.append(m_szURI);
       buf.append(X("}"));
       buf.append(m_szName);
       buf.append(X("' with "));
       XMLCh szNumBuff[20];
-      XERCES_CPP_NAMESPACE_QUALIFIER XMLString::binToText(nArgs, szNumBuff, 19, 10);
+      XMLString::binToText(nArgs, szNumBuff, 19, 10);
       buf.append(szNumBuff);
       buf.append(X(" argument(s) has not been bound to an implementation"));
       XQThrow(FunctionException,X("User-defined Function"), buf.getRawBuffer());
@@ -235,7 +240,7 @@ void XQUserFunction::staticResolutionStage1(StaticContext *context)
       for (VectorOfFunctionParameters::iterator it2 = it+1; it2 != m_pParams->end (); ++it2) {
         if(XPath2Utils::equals((*it)->_uri,(*it2)->_uri) && 
            XPath2Utils::equals((*it)->_name,(*it2)->_name)) {
-          XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buf;
+          XMLBuffer buf;
           buf.set(X("User-defined function '"));
           buf.append(m_szName);
           buf.append(X("' has two parameters named '"));
@@ -324,13 +329,13 @@ void XQUserFunction::staticTyping(StaticContext *context)
     if(!m_body->getStaticResolutionContext().isUpdating() &&
        m_body->getStaticResolutionContext().getStaticType().containsType(StaticType::ITEM_TYPE))
       XQThrow(StaticErrorException,X("XQUserFunction::staticTyping"),
-              X("It is a static error for the body expression of an user defined updating function "
+              X("It is a static error for the body expression of a user defined updating function "
                 "not to be an updating expression [err:XUST0002]"));
   }
   else {
     if(m_body->getStaticResolutionContext().isUpdating())
       XQThrow(StaticErrorException,X("XQUserFunction::staticTyping"),
-              X("It is a static error for the body expression of an user defined function "
+              X("It is a static error for the body expression of a user defined function "
                 "to be an updating expression [err:XUST0001]"));
   }
 
@@ -500,6 +505,11 @@ void XQUserFunction::XQFunctionEvaluator::evaluateArguments(DynamicContext *cont
 void XQUserFunction::XQFunctionEvaluator::generateEvents(EventHandler *events, DynamicContext *context,
 	bool preserveNS, bool preserveType) const
 {
+  if(m_pFuncDef->getFunctionBody() == NULL) {
+    ASTNodeImpl::generateEvents(events, context, preserveNS, preserveType);
+    return;
+  }
+
   context->testInterrupt();
   VariableStore* varStore = context->getVariableStore();
 
@@ -524,6 +534,11 @@ void XQUserFunction::XQFunctionEvaluator::generateEvents(EventHandler *events, D
 PendingUpdateList XQUserFunction::XQFunctionEvaluator::createUpdateList(DynamicContext *context) const
 {
   context->testInterrupt();
+
+  if(m_pFuncDef->getFunctionBody() == NULL) {
+    return m_pFuncDef->getExternalFunction()->executeUpdate(this, context);
+  }
+
   VariableStore* varStore = context->getVariableStore();
 
   DocumentCache* docCache = m_pFuncDef->getModuleDocumentCache();
@@ -607,9 +622,9 @@ Item::Ptr XQUserFunction::XQFunctionEvaluator::FunctionEvaluatorResult::next(Dyn
         const XMLCh* uri=atom->getTypeURI(), *name=atom->getTypeName();
         while(!reset.oldDC->isTypeDefined(uri, name))
         {
-            XERCES_CPP_NAMESPACE_QUALIFIER DatatypeValidator* pDV=docCache->getDatatypeValidator(uri, name);
+            DatatypeValidator* pDV=docCache->getDatatypeValidator(uri, name);
             assert(pDV!=NULL);
-            XERCES_CPP_NAMESPACE_QUALIFIER DatatypeValidator* pBaseDV=pDV->getBaseValidator();
+            DatatypeValidator* pBaseDV=pDV->getBaseValidator();
             if(pBaseDV==NULL)
                 break;
             uri=pBaseDV->getTypeUri();

@@ -11,20 +11,23 @@
  * $Id$
  */
 
-#ifndef _DESCENDANTAXIS_HPP
-#define _DESCENDANTAXIS_HPP
+#ifndef _CHILDAXIS_HPP
+#define _CHILDAXIS_HPP
 
-#include <xqilla/axis/Axis.hpp>
+#include "Axis.hpp"
 
-class XQILLA_API DescendantAxis : public Axis
+/**
+This class implements the ChildAxis axis as defined by the XPath spec
+*/
+class XQILLA_API ChildAxis : public Axis
 {
 public:
-  DescendantAxis(const LocationInfo *info, const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *contextNode, const Node *nodeObj,
+  ChildAxis(const LocationInfo *info, const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *contextNode, const Node *nodeObj,
        const NodeTest *nodeTest, const AxisNodeFactory &factory);
   const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *nextNode(DynamicContext *context);
   std::string asString(DynamicContext *context, int indent) const;
 private:
-  const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *descendant_;
+  const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *child_;
 };
 
 

@@ -14,7 +14,7 @@
 #ifndef _FOLLOWINGSIBLINGAXIS_HPP
 #define _FOLLOWINGSIBLINGAXIS_HPP
 
-#include <xqilla/axis/Axis.hpp>
+#include "Axis.hpp"
 
 class XQILLA_API FollowingSiblingAxis : public Axis
 {

@@ -12,7 +12,7 @@
  */
 
 #include "../config/xqilla_config.h"
-#include <xqilla/axis/ChildAxis.hpp>
+#include "ChildAxis.hpp"
 #include <xercesc/dom/DOMNode.hpp>
 #include <xqilla/items/Node.hpp>
 

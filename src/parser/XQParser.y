@@ -3716,7 +3716,7 @@ RevalidationDecl:
     REJECT_NOT_UPDATE(RevalidationDecl, @1);
 
 		if(QP->_flags.get(BIT_REVALIDATION_SPECIFIED))
-			yyerror(@1, "Prolog contains more than one revalidation declaration [err:TBD]");
+			yyerror(@1, "Prolog contains more than one revalidation declaration [err:XUST0003]");
 		QP->_flags.set(BIT_REVALIDATION_SPECIFIED);
 		CONTEXT->setRevalidationMode(DocumentCache::VALIDATION_STRICT);
   }
@@ -3726,7 +3726,7 @@ RevalidationDecl:
     REJECT_NOT_UPDATE(RevalidationDecl, @1);
 
 		if(QP->_flags.get(BIT_REVALIDATION_SPECIFIED))
-			yyerror(@1, "Prolog contains more than one revalidation declaration [err:TBD]");
+			yyerror(@1, "Prolog contains more than one revalidation declaration [err:XUST0003]");
 		QP->_flags.set(BIT_REVALIDATION_SPECIFIED);
 		CONTEXT->setRevalidationMode(DocumentCache::VALIDATION_LAX);
   }
@@ -3736,7 +3736,7 @@ RevalidationDecl:
     REJECT_NOT_UPDATE(RevalidationDecl, @1);
 
 		if(QP->_flags.get(BIT_REVALIDATION_SPECIFIED))
-			yyerror(@1, "Prolog contains more than one revalidation declaration [err:TBD]");
+			yyerror(@1, "Prolog contains more than one revalidation declaration [err:XUST0003]");
 		QP->_flags.set(BIT_REVALIDATION_SPECIFIED);
 		CONTEXT->setRevalidationMode(DocumentCache::VALIDATION_SKIP);
   }

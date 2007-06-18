@@ -11,18 +11,20 @@
  * $Id$
  */
 
-#ifndef _PARENTAXIS_HPP
-#define _PARENTAXIS_HPP
+#ifndef _DESCENDANTORSELFAXIS_HPP
+#define _DESCENDANTORSELFAXIS_HPP
 
-#include <xqilla/axis/Axis.hpp>
+#include "Axis.hpp"
 
-class XQILLA_API ParentAxis : public Axis
+class XQILLA_API DescendantOrSelfAxis : public Axis
 {
 public:
-  ParentAxis(const LocationInfo *info, const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *contextNode, const Node *nodeObj,
+  DescendantOrSelfAxis(const LocationInfo *info, const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *contextNode, const Node *nodeObj,
        const NodeTest *nodeTest, const AxisNodeFactory &factory);
   const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *nextNode(DynamicContext *context);
   std::string asString(DynamicContext *context, int indent) const;
+private:
+  const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *descendant_;
 };
 
 

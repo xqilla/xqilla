@@ -43,10 +43,7 @@ public:
   virtual void applyReplaceAttribute(const PendingUpdate &update, DynamicContext *context) = 0;
   virtual void applyReplaceElementContent(const PendingUpdate &update, DynamicContext *context) = 0;
 
-  virtual void completeRevalidation(DynamicContext *context) = 0;
-  virtual void completeDeletions(DynamicContext *context) = 0;
   virtual void completeUpdate(DynamicContext *context) = 0;
-
 };
 
 #endif

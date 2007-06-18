@@ -12,7 +12,7 @@
  */
 
 #include "../config/xqilla_config.h"
-#include <xqilla/axis/PrecedingAxis.hpp>
+#include "PrecedingAxis.hpp"
 
 #include <xqilla/items/Node.hpp>
 

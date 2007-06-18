@@ -654,91 +654,13 @@
 			Name="axis"
 			Filter="">
 			<File
-				RelativePath="..\..\src\axis\AncestorAxis.cpp">
-			</File>
-			<File
-				RelativePath="..\..\src\axis\AncestorOrSelfAxis.cpp">
-			</File>
-			<File
-				RelativePath="..\..\src\axis\AttributeAxis.cpp">
-			</File>
-			<File
-				RelativePath="..\..\src\axis\Axis.cpp">
-			</File>
-			<File
-				RelativePath="..\..\src\axis\ChildAxis.cpp">
-			</File>
-			<File
-				RelativePath="..\..\src\axis\DescendantAxis.cpp">
-			</File>
-			<File
-				RelativePath="..\..\src\axis\DescendantOrSelfAxis.cpp">
-			</File>
-			<File
-				RelativePath="..\..\src\axis\FollowingAxis.cpp">
-			</File>
-			<File
-				RelativePath="..\..\src\axis\FollowingSiblingAxis.cpp">
-			</File>
-			<File
-				RelativePath="..\..\src\axis\NamespaceAxis.cpp">
-			</File>
-			<File
 				RelativePath="..\..\src\axis\NodeTest.cpp">
-			</File>
-			<File
-				RelativePath="..\..\src\axis\ParentAxis.cpp">
-			</File>
-			<File
-				RelativePath="..\..\src\axis\PrecedingAxis.cpp">
-			</File>
-			<File
-				RelativePath="..\..\src\axis\PrecedingSiblingAxis.cpp">
 			</File>
 			<File
 				RelativePath="..\..\src\axis\SelfAxis.cpp">
 			</File>
 			<File
-				RelativePath="..\..\include\xqilla\axis\AncestorAxis.hpp">
-			</File>
-			<File
-				RelativePath="..\..\include\xqilla\axis\AncestorOrSelfAxis.hpp">
-			</File>
-			<File
-				RelativePath="..\..\include\xqilla\axis\AttributeAxis.hpp">
-			</File>
-			<File
-				RelativePath="..\..\include\xqilla\axis\Axis.hpp">
-			</File>
-			<File
-				RelativePath="..\..\include\xqilla\axis\ChildAxis.hpp">
-			</File>
-			<File
-				RelativePath="..\..\include\xqilla\axis\DescendantAxis.hpp">
-			</File>
-			<File
-				RelativePath="..\..\include\xqilla\axis\DescendantOrSelfAxis.hpp">
-			</File>
-			<File
-				RelativePath="..\..\include\xqilla\axis\FollowingAxis.hpp">
-			</File>
-			<File
-				RelativePath="..\..\include\xqilla\axis\FollowingSiblingAxis.hpp">
-			</File>
-			<File
-				RelativePath="..\..\include\xqilla\axis\NamespaceAxis.hpp">
-			</File>
-			<File
 				RelativePath="..\..\include\xqilla\axis\NodeTest.hpp">
-			</File>
-			<File
-				RelativePath="..\..\include\xqilla\axis\ParentAxis.hpp">
-			</File>
-			<File
-				RelativePath="..\..\include\xqilla\axis\PrecedingAxis.hpp">
-			</File>
-			<File
-				RelativePath="..\..\include\xqilla\axis\PrecedingSiblingAxis.hpp">
 			</File>
 			<File
 				RelativePath="..\..\include\xqilla\axis\SelfAxis.hpp">
@@ -2775,6 +2697,84 @@
 		<Filter
 			Name="xerces"
 			Filter="">
+			<File
+				RelativePath="..\..\src\xerces\AncestorAxis.hpp">
+			</File>
+			<File
+				RelativePath="..\..\src\xerces\AncestorOrSelfAxis.hpp">
+			</File>
+			<File
+				RelativePath="..\..\src\xerces\AttributeAxis.hpp">
+			</File>
+			<File
+				RelativePath="..\..\src\xerces\Axis.hpp">
+			</File>
+			<File
+				RelativePath="..\..\src\xerces\ChildAxis.hpp">
+			</File>
+			<File
+				RelativePath="..\..\src\xerces\DescendantAxis.hpp">
+			</File>
+			<File
+				RelativePath="..\..\src\xerces\DescendantOrSelfAxis.hpp">
+			</File>
+			<File
+				RelativePath="..\..\src\xerces\FollowingAxis.hpp">
+			</File>
+			<File
+				RelativePath="..\..\src\xerces\FollowingSiblingAxis.hpp">
+			</File>
+			<File
+				RelativePath="..\..\src\xerces\NamespaceAxis.hpp">
+			</File>
+			<File
+				RelativePath="..\..\src\xerces\ParentAxis.hpp">
+			</File>
+			<File
+				RelativePath="..\..\src\xerces\PrecedingAxis.hpp">
+			</File>
+			<File
+				RelativePath="..\..\src\xerces\PrecedingSiblingAxis.hpp">
+			</File>
+			<File
+				RelativePath="..\..\src\xerces\AncestorAxis.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\xerces\AncestorOrSelfAxis.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\xerces\AttributeAxis.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\xerces\Axis.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\xerces\ChildAxis.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\xerces\DescendantAxis.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\xerces\DescendantOrSelfAxis.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\xerces\FollowingAxis.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\xerces\FollowingSiblingAxis.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\xerces\NamespaceAxis.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\xerces\ParentAxis.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\xerces\PrecedingAxis.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\xerces\PrecedingSiblingAxis.cpp">
+			</File>
 			<File
 				RelativePath="..\..\src\xerces\XercesConfiguration.cpp">
 			</File>

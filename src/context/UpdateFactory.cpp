@@ -40,11 +40,11 @@ typedef std::set<const PendingUpdate*, pucompare> PendingUpdateSet;
 void UpdateFactory::applyUpdates(const PendingUpdateList &pul, DynamicContext *context)
 {
 
-  // 1.Checks the update primitives on $pul for compatibility. Signals an incompatability if any of the following conditions are detected:
-  //    a. Two or more upd:replaceNode primitives on $pul have the same target node.
-  //    b. Two or more upd:replaceValue primitives on $pul have the same target node.
-  //    c. Two or more upd:replaceElementContent primitives on $pul have the same target node.
-  //    d. Two or more upd:rename primitives on $pul have the same target node.
+  // 1. Checks the update primitives on $pul for compatibility. Raises a dynamic error if any of the following conditions are detected:
+  //    a. Two or more upd:rename primitives on the merged list have the same target node [err:XUDY0015].
+  //    b. Two or more upd:replaceNode primitives on the merged list have the same target node [err:XUDY0016].
+  //    c. Two or more upd:replaceValue primitives on the merged list have the same target node [err:XUDY0017].
+  //    d. Two or more upd:replaceElementContent primitives on $pul have the same target node [err:XUDY0017].
   {
     PendingUpdateSet replaceNodeSet = PendingUpdateSet(pucompare(context));
     PendingUpdateSet replaceValueSet = PendingUpdateSet(pucompare(context));
@@ -62,7 +62,7 @@ void UpdateFactory::applyUpdates(const PendingUpdateList &pul, DynamicContext *c
             mlistener->warning(X("In the context of this expression"), *res.first);
           }
           XQThrow3(ASTException, X("UApplyUpdates::createSequence"),
-                   X("Incompatible updates - two replace value expressions have the same target node [err:TBD]"), &(*i));
+                   X("Incompatible updates - two replace value expressions have the same target node [err:XUDY0017]"), &(*i));
         }
         break;
       }
@@ -74,7 +74,7 @@ void UpdateFactory::applyUpdates(const PendingUpdateList &pul, DynamicContext *c
             mlistener->warning(X("In the context of this expression"), *res.first);
           }
           XQThrow3(ASTException, X("UApplyUpdates::createSequence"),
-                   X("Incompatible updates - two replace expressions have the same target node [err:TBD]"), &(*i));
+                   X("Incompatible updates - two replace expressions have the same target node [err:XUDY0016]"), &(*i));
         }
         break;
       }
@@ -85,7 +85,7 @@ void UpdateFactory::applyUpdates(const PendingUpdateList &pul, DynamicContext *c
             mlistener->warning(X("In the context of this expression"), *res.first);
           }
           XQThrow3(ASTException, X("UApplyUpdates::createSequence"),
-                   X("Incompatible updates - two rename expressions have the same target node [err:TBD]"), &(*i));
+                   X("Incompatible updates - two rename expressions have the same target node [err:XUDY0015]"), &(*i));
         }
         break;
       }
@@ -125,8 +125,10 @@ void UpdateFactory::applyUpdates(const PendingUpdateList &pul, DynamicContext *c
     }
   }
 
+#
+
   // 2. The semantics of all the update primitives on $pul are made effective, in the following order:
-  //    a. First, all upd:insertInto, upd:insertAttributes, upd:replaceValue, upd:rename, and upd:delete primitives are applied.
+  //    a. First, all upd:insertInto, upd:insertAttributes, upd:replaceValue, and upd:rename primitives are applied.
   for(i = pul.begin(); i != pul.end(); ++i) {
     switch(i->getType()) {
     case PendingUpdate::INSERT_INTO:
@@ -142,8 +144,6 @@ void UpdateFactory::applyUpdates(const PendingUpdateList &pul, DynamicContext *c
       applyRename(*i, context);
       break;
     case PendingUpdate::PUDELETE:
-      applyDelete(*i, context);
-      break;
     case PendingUpdate::PUT:
     case PendingUpdate::REPLACE_ELEMENT_CONTENT:
     case PendingUpdate::REPLACE_ATTRIBUTE:
@@ -233,31 +233,59 @@ void UpdateFactory::applyUpdates(const PendingUpdateList &pul, DynamicContext *c
     }
   }
 
-  //    e. Finally, for each node marked for deletion by one of the update primitives listed above, let $N be the node that is marked
-  //       for deletion, and let $P be its parent node. The following actions are applied:
-  //          i. The parent property of $N is set to empty.
-  //         ii. If $N is an attribute node, the attributes property of $P is modified to remove $N.
-  //        iii. If $N is a non-attribute node, the children property of $P is modified to remove $N.
-  //         iv. If $N is an element, attribute, or text node, and $P is an element node, then upd:removeType($P) is invoked.
-  completeDeletions(context);
+  //    e. Finally, all upd:delete primitives are applied.
+  for(i = pul.begin(); i != pul.end(); ++i) {
+    switch(i->getType()) {
+    case PendingUpdate::PUDELETE:
+      applyDelete(*i, context);
+      break;
+    case PendingUpdate::INSERT_INTO:
+    case PendingUpdate::INSERT_ATTRIBUTES:
+    case PendingUpdate::REPLACE_VALUE:
+    case PendingUpdate::RENAME:
+    case PendingUpdate::PUT:
+    case PendingUpdate::REPLACE_ELEMENT_CONTENT:
+    case PendingUpdate::REPLACE_ATTRIBUTE:
+    case PendingUpdate::REPLACE_NODE:
+    case PendingUpdate::INSERT_BEFORE:
+    case PendingUpdate::INSERT_AFTER:
+    case PendingUpdate::INSERT_INTO_AS_FIRST:
+    case PendingUpdate::INSERT_INTO_AS_LAST:
+      break;
+    }
+  }
 
   // 3. If, as a net result of the above steps, the children property of some node contains adjacent text nodes, these adjacent text
   //    nodes are merged into a single text node. The string-value of the resulting text node is the concatenated string-values of the
-  //    adjacent text nodes, with no intervening space added. The nodeid of the resulting text node is implementation-dependent.
+  //    adjacent text nodes, with no intervening space added. The node identity of the resulting text node is implementation-dependent.
   //    * Handled in the called methods
 
-  // 4. For each document or element node $top that was marked for revalidation by one of the earlier steps, upd:revalidate($top) is
+  // 4. If, as a net result of the above steps, the children property of some node contains an empty text node, that empty text node is
+  //    deleted from the children property.
+  //    * Handled in the called methods
+
+  // 5. For each document or element node $top that was marked for revalidation by one of the earlier steps, upd:revalidate($top) is
   //    invoked.
-  completeRevalidation(context);
 
-  // 5. If the resulting XDM instance violates any consistency constraint specified in [XQuery/XPath Data Model (XDM)], an error is
-  //    signaled [err:TBD].
-  //    * Handled in the called methods
+  // 6. If the resulting XDM instance violates any constraint specified in [XQuery/XPath Data Model (XDM)], a dynamic error is raised
+  //    [err:XUDY0021].
+  //
+  //    Note:
+  //    For example, a data model constraint violation might occur if multiple attributes with the same parent have the same qualified
+  //    name (see Section 6.2.1 OverviewDM.)
+  // TBD Where else does this occur? - jpcs
 
-  // 6. The upd:applyUpdates operation is atomic with respect to the data model. In other words, if upd:applyUpdates terminates
+  // 7. The upd:applyUpdates operation is atomic with respect to the data model. In other words, if upd:applyUpdates terminates
   //    normally, the resulting XDM instance reflects the result of all update primitives; but if upd:applyUpdates raises an error, the
-  //    resulting XDM instance reflects no changes. Propagation of XDM changes to an underlying physical representation is beyond the
-  //    scope of this specification.
+  //    resulting XDM instance reflects no changes. Atomicity is guaranteed only with respect to operations on XDM instances, and only
+  //    with respect to error conditions specified in this document.
+  //
+  //    Note:
+  //    The results of implementation-dependent error conditions such as exceeding resource limits are beyond the scope of this
+  //    specification.
+
+  // 8. Propagation of XDM changes to an underlying persistent store is beyond the scope of this specification. For example, the effect
+  //    on persistent storage of deleting a node that has no parent is beyond the scope of this specification.
   completeUpdate(context);
 }
 

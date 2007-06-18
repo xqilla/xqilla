@@ -34,18 +34,18 @@
 #include <xqilla/events/EventSerializer.hpp>
 #include <xqilla/events/NSFixupFilter.hpp>
 
-#include <xqilla/axis/AncestorAxis.hpp>
-#include <xqilla/axis/AncestorOrSelfAxis.hpp>
-#include <xqilla/axis/AttributeAxis.hpp>
-#include <xqilla/axis/ChildAxis.hpp>
-#include <xqilla/axis/DescendantAxis.hpp>
-#include <xqilla/axis/DescendantOrSelfAxis.hpp>
-#include <xqilla/axis/FollowingAxis.hpp>
-#include <xqilla/axis/FollowingSiblingAxis.hpp>
-#include <xqilla/axis/NamespaceAxis.hpp>
-#include <xqilla/axis/ParentAxis.hpp>
-#include <xqilla/axis/PrecedingAxis.hpp>
-#include <xqilla/axis/PrecedingSiblingAxis.hpp>
+#include "AncestorAxis.hpp"
+#include "AncestorOrSelfAxis.hpp"
+#include "AttributeAxis.hpp"
+#include "ChildAxis.hpp"
+#include "DescendantAxis.hpp"
+#include "DescendantOrSelfAxis.hpp"
+#include "FollowingAxis.hpp"
+#include "FollowingSiblingAxis.hpp"
+#include "NamespaceAxis.hpp"
+#include "ParentAxis.hpp"
+#include "PrecedingAxis.hpp"
+#include "PrecedingSiblingAxis.hpp"
 #include <xqilla/axis/SelfAxis.hpp>
 #include <xqilla/axis/NodeTest.hpp>
 

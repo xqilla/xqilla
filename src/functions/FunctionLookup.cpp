@@ -37,7 +37,7 @@ FunctionLookup::~FunctionLookup()
 void FunctionLookup::replaceFunction(FuncFactory *func)
 {
     unsigned int secondaryKey = SECONDARY_KEY(func);
-    _funcTable.put((void*)func->getQName(), secondaryKey, func);
+    _funcTable.put((void*)func->getURINameHash(), secondaryKey, func);
 }
 
 void FunctionLookup::insertFunction(FuncFactory *func)
@@ -51,7 +51,7 @@ void FunctionLookup::insertFunction(FuncFactory *func)
     // Walk the matches for the primary key (name) looking for overlaps:
     //   ensure func->max < min OR func->min > max
     //
-    iterator.setPrimaryKey(func->getQName());
+    iterator.setPrimaryKey(func->getURINameHash());
     while(iterator.hasMoreElements())
     {
         FuncFactory *entry= &(iterator.nextElement());
@@ -60,7 +60,7 @@ void FunctionLookup::insertFunction(FuncFactory *func)
 		continue;
 	// overlap -- throw exception
         XMLBuffer buf;
-	buf.set(X("Multiple functions have the same QName and overlapping args {"));
+	buf.set(X("Multiple functions have the same expanded QName and number of arguments {"));
 	buf.append(func->getURI());
 	buf.append(X("}"));
 	buf.append(func->getName());
@@ -72,7 +72,7 @@ void FunctionLookup::insertFunction(FuncFactory *func)
 	XQThrow2(StaticErrorException,X("FunctionLookup::insertFunction"), buf.getRawBuffer());
     }
     // Ok to add function
-    _funcTable.put((void*)func->getQName(), secondaryKey, func);
+    _funcTable.put((void*)func->getURINameHash(), secondaryKey, func);
 }
 
 ASTNode* FunctionLookup::lookUpFunction(const XMLCh* URI, const XMLCh* fname,
@@ -111,7 +111,7 @@ ASTNode* FunctionLookup::lookUpFunction(const XMLCh* URI, const XMLCh* fname,
 void FunctionLookup::insertExternalFunction(const ExternalFunction *func)
 {
   unsigned int secondaryKey = func->getNumberOfArguments();
-  _exFuncTable.put((void*)func->getQName(), secondaryKey, func);
+  _exFuncTable.put((void*)func->getURINameHash(), secondaryKey, func);
 }
 
 const ExternalFunction *FunctionLookup::lookUpExternalFunction(

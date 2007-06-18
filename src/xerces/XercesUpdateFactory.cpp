@@ -70,7 +70,7 @@ void XercesUpdateFactory::applyPut(const PendingUpdate &update, DynamicContext *
     XMLBuffer buf;
     buf.append(X("fn:put() URI scheme not supported for URI \""));
     buf.append(item.uri.getUriText());
-    buf.append(X("\" [err:TBD]"));
+    buf.append(X("\""));
 
     XQThrow3(ASTException, X("XercesUpdateFactory::applyPut"), buf.getRawBuffer(), &update);
   }
@@ -103,8 +103,7 @@ void XercesUpdateFactory::applyInsertInto(const PendingUpdate &update, DynamicCo
     if(untyped) setToUntyped(newChild);
 
     // For each node in $content, the parent property is set to parent($target).
-    // The children property of $target is modified to add the nodes in $content just before $target,
-    // preserving their order.
+    // The children property of $target is modified to add the nodes in $content, preserving their order.
     domnode->appendChild(newChild);
   }
 
@@ -125,14 +124,23 @@ void XercesUpdateFactory::applyInsertAttributes(const PendingUpdate &update, Dyn
   bool untyped = XPath2Utils::equals(nodeImpl->getTypeName(), DocumentCacheParser::g_szUntyped) &&
     XPath2Utils::equals(nodeImpl->getTypeURI(), SchemaSymbols::fgURI_SCHEMAFORSCHEMA);
 
-  // For looking up the defined namespaces
-  XQillaNSResolverImpl resolver(context->getMemoryManager(), element);
+//   // For looking up the defined namespaces
+//   XQillaNSResolverImpl resolver(context->getMemoryManager(), element);
 
   Result children = update.getValue();
   Item::Ptr item;
   while((item = children->next(context)).notNull()) {
     const XercesNodeImpl *childImpl = (const XercesNodeImpl*)item->getInterface(Item::gXQilla);
     DOMNode *newChild = doc->importNode(const_cast<DOMNode*>(childImpl->getDOMNode()), /*deep*/true);
+
+    // 1. Error checks:
+    //    a. If the QNames of any two attribute nodes in $content have implied namespace bindings that conflict with each other,
+    //       a dynamic error is raised [err:XUDY0024].
+    //    b. If the QName of any attribute node in $content has an implied namespace binding that conflicts with a namespace
+    //       binding in the "namespaces" property of $target, a dynamic error is raised [err:XUDY0024].
+    // TBD perform these checks - jpcs
+
+    // TBD [err:XUDY0021] if the attribute already exists - jpcs
 
     // If the type-name property of $target is xs:untyped, then upd:setToUntyped($A) is invoked.
     if(untyped) setToUntyped(newChild);
@@ -141,31 +149,29 @@ void XercesUpdateFactory::applyInsertAttributes(const PendingUpdate &update, Dyn
     // attributes: Modified to include the nodes in $content.
     element->setAttributeNode((DOMAttr*)newChild);
 
-    // TBD What happens if the attribute already exists? - jpcs
-
-    // namespaces: Modified to include namespace bindings for any attribute namespace prefixes in $content
-    // that did not already have bindings.
-    const XMLCh *prefix = newChild->getPrefix();
-    if(prefix != 0 && *prefix != 0) {
-      const XMLCh *foundURI = resolver.lookupNamespaceURI(prefix);
-      if(foundURI == NULL || !XPath2Utils::equals(foundURI, newChild->getNamespaceURI())) {
-        // Prefix needs defining
-        if(element->getAttributeNS(XMLUni::fgXMLNSURIName, prefix) != NULL) {
-          // Prefix is already defined on this element -
-          // make up a new prefix for the attribute
-          // TBD is this the correct thing to do? - jpcs
-          XMLCh szNumBuff[20];
-          long index = 0;
-          do {
-            static const XMLCh szUnderScore[] = { chUnderscore, chNull };
-            XMLString::binToText(++index, szNumBuff, 19, 10);
-            prefix = XPath2Utils::concatStrings(newChild->getPrefix(), szUnderScore, szNumBuff, context->getMemoryManager());
-          } while(element->getAttributeNS(XMLUni::fgXMLNSURIName, prefix) != NULL);
-          newChild->setPrefix(prefix);
-        }
-        element->setAttributeNS(XMLUni::fgXMLNSURIName, prefix, newChild->getNamespaceURI());
-      }
-    }
+//     // namespaces: Modified to include namespace bindings for any attribute namespace prefixes in $content
+//     // that did not already have bindings.
+//     const XMLCh *prefix = newChild->getPrefix();
+//     if(prefix != 0 && *prefix != 0) {
+//       const XMLCh *foundURI = resolver.lookupNamespaceURI(prefix);
+//       if(foundURI == NULL || !XPath2Utils::equals(foundURI, newChild->getNamespaceURI())) {
+//         // Prefix needs defining
+//         if(element->getAttributeNS(XMLUni::fgXMLNSURIName, prefix) != NULL) {
+//           // Prefix is already defined on this element -
+//           // make up a new prefix for the attribute
+//           // TBD is this the correct thing to do? - jpcs
+//           XMLCh szNumBuff[20];
+//           long index = 0;
+//           do {
+//             static const XMLCh szUnderScore[] = { chUnderscore, chNull };
+//             XMLString::binToText(++index, szNumBuff, 19, 10);
+//             prefix = XPath2Utils::concatStrings(newChild->getPrefix(), szUnderScore, szNumBuff, context->getMemoryManager());
+//           } while(element->getAttributeNS(XMLUni::fgXMLNSURIName, prefix) != NULL);
+//           newChild->setPrefix(prefix);
+//         }
+//         element->setAttributeNS(XMLUni::fgXMLNSURIName, prefix, newChild->getNamespaceURI());
+//       }
+//     }
   }
 
   // upd:removeType($target) is invoked.
@@ -445,21 +451,31 @@ void XercesUpdateFactory::applyReplaceAttribute(const PendingUpdate &update, Dyn
     const XercesNodeImpl *childImpl = (const XercesNodeImpl*)item->getInterface(Item::gXQilla);
     DOMNode *newChild = doc->importNode(const_cast<DOMNode*>(childImpl->getDOMNode()), /*deep*/true);
 
-    // 1b. If the type-name property of parent($target) is xs:untyped, then upd:setToUntyped() is invoked
+    // 1. Error checks:
+    //    a. If the QNames of any two attribute nodes in $replacement have implied namespace bindings that conflict with
+    //       each other, a dynamic error is raised [err:XUDY0024].
+    //    b. If the QName of any attribute node in $replacement has an implied namespace binding that conflicts with a
+    //       namespace binding in the "namespaces" property of parent($target), a dynamic error is raised [err:XUDY0024].
+    // TBD perform these checks - jpcs
+
+    // TBD [err:XUDY0021] if the attribute already exists - jpcs
+
+    // 2b. If the type-name property of parent($target) is xs:untyped, then upd:setToUntyped() is invoked
     //     on each element node in $replacement.
     if(untyped) setToUntyped(newChild);
 
-    // 1a. For each node in $replacement, the parent property is set to parent($target).
-    // 3a. If $target is an attribute node, the attributes property of parent($target) is replaced by
-    //     $replacement.
-    // TBD is 3a badly worded? - jpcs
+    // 2a. For each node in $replacement, the parent property is set to parent($target).
+    // 4a. If $target is an attribute node, the attributes property of parent($target) is modified by removing $target
+    //     and adding the nodes in $replacement (if any).
+    // 4b. If $target is an attribute node, the namespaces property of parent($target) is modified to include namespace
+    //     bindings for any attribute namespace prefixes in $replacement that did not already have bindings.
     element->setAttributeNode((DOMAttr*)newChild);
   }
 
-  // 2a. $target is marked for deletion.
+  // 3a. $target is marked for deletion.
   forDeletion_.insert(domnode);
 
-  // 3c. upd:removeType(parent($target)) is invoked.
+  // 4d. upd:removeType(parent($target)) is invoked.
   removeType(element);
 
   addToPutList(element, &update, context);
@@ -473,7 +489,7 @@ void XercesUpdateFactory::applyReplaceElementContent(const PendingUpdate &update
   // 1. For each node $C that is a child of $target, the parent property of $C is set to empty.
   DOMNode *child = domnode->getFirstChild();
   while(child != 0) {
-    domnode->removeChild(child);
+    forDeletion_.insert(child);
     child = child->getNextSibling();
   }
 
@@ -531,7 +547,7 @@ void XercesUpdateFactory::addToPutList(const DOMNode *domnode, const LocationInf
         XMLBuffer buf;
         buf.append(X("Document writing conflict for URI \""));
         buf.append(item.uri.getUriText());
-        buf.append(X("\" [err:TBD]"));
+        buf.append(X("\""));
 
         XQThrow3(ASTException, X("XercesUpdateFactory::addToPutList"), buf.getRawBuffer(), location);
       }
@@ -539,7 +555,7 @@ void XercesUpdateFactory::addToPutList(const DOMNode *domnode, const LocationInf
       XMLBuffer buf;
       buf.append(X("Unable to re-write document - unsupported URI scheme \""));
       buf.append(item.uri.getUriText());
-      buf.append(X("\" [err:TBD]"));
+      buf.append(X("\""));
 
       XQThrow3(ASTException, X("XercesUpdateFactory::addToPutList"), buf.getRawBuffer(), location);
     }
@@ -548,7 +564,7 @@ void XercesUpdateFactory::addToPutList(const DOMNode *domnode, const LocationInf
     XMLBuffer buf;
     buf.append(X("Unable to re-write document - bad document URI \""));
     buf.append(docuri);
-    buf.append(X("\" [err:TBD]"));
+    buf.append(X("\""));
 
     XQThrow3(ASTException, X("XercesUpdateFactory::addToPutList"), buf.getRawBuffer(), location);
   }
@@ -601,6 +617,9 @@ static const XMLCh ls_string[] =
 
 void XercesUpdateFactory::completeUpdate(DynamicContext *context)
 {
+  completeDeletions(context);
+  completeRevalidation(context);
+
   // Write all the documents in the PutList to disk
   DOMImplementation *impl = DOMImplementationRegistry::getDOMImplementation(ls_string);
   AutoRelease<DOMWriter> writer(((DOMImplementationLS*)impl)->createDOMWriter());
@@ -614,9 +633,9 @@ void XercesUpdateFactory::completeUpdate(DynamicContext *context)
         XMLBuffer buf;
         buf.append(X("Writing to URI \""));
         buf.append(i->uri.getUriText());
-        buf.append(X("\" failed. [err:TBD]"));
+        buf.append(X("\" failed."));
 
-        XQThrow3(ASTException, X("XercesUpdateFactory::putDocuments"), buf.getRawBuffer(), i->location);
+        XQThrow3(ASTException, X("XercesUpdateFactory::completeUpdate"), buf.getRawBuffer(), i->location);
       }
     }
     catch(DOMException &ex) {
@@ -625,9 +644,8 @@ void XercesUpdateFactory::completeUpdate(DynamicContext *context)
       buf.append(i->uri.getUriText());
       buf.append(X("\" failed: "));
       buf.append(ex.msg);
-      buf.append(X(" [err:TBD]"));
 
-      XQThrow3(ASTException, X("XercesUpdateFactory::putDocuments"), buf.getRawBuffer(), i->location);
+      XQThrow3(ASTException, X("XercesUpdateFactory::completeUpdate"), buf.getRawBuffer(), i->location);
     }
   }
 }

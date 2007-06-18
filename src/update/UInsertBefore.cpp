@@ -43,6 +43,8 @@ ASTNode* UInsertBefore::staticResolution(StaticContext *context)
   SequenceType *targetType = new (mm) SequenceType(new (mm) SequenceType::ItemType(SequenceType::ItemType::TEST_NODE),
                                                    SequenceType::EXACTLY_ONE);
   targetType->setLocationInfo(this);
+
+  // TBD The error here should be [err:XUTY0006] - jpcs
   target_ = new (mm) XQTreatAs(target_, targetType, mm);
   target_->setLocationInfo(this);
   target_ = target_->staticResolution(context);
@@ -80,9 +82,13 @@ PendingUpdateList UInsertBefore::createUpdateList(DynamicContext *context) const
 {
   Node::Ptr node = (Node*)target_->createResult(context)->next(context).get();
 
-  if(node->dmNodeKind() != Node::element_string || node->dmParent(context).isNull())
+  if(node->dmNodeKind() == Node::document_string ||
+     node->dmNodeKind() == Node::attribute_string ||
+     node->dmNodeKind() == Node::namespace_string ||
+     node->dmParent(context).isNull())
     XQThrow(XPath2TypeMatchException,X("UInsertBefore::staticTyping"),
-            X("The target node of an insert before expression must be a single element that has a parent [err:TBD]"));
+            X("The target node of an insert before expression must be a single element, text, comment, or processing "
+              "instruction node that has a parent [err:XUTY0006]"));
 
   Sequence alist(context->getMemoryManager());
   Sequence clist(context->getMemoryManager());
@@ -93,7 +99,7 @@ PendingUpdateList UInsertBefore::createUpdateList(DynamicContext *context) const
     if(((Node*)item.get())->dmNodeKind() == Node::attribute_string) {
       if(!clist.isEmpty())
         XQThrow(ASTException,X("UInsertBefore::createUpdateList"),
-                X("Attribute nodes must occur before other nodes in the source expression for an insert before expression [err:TBD]"));
+                X("Attribute nodes must occur before other nodes in the source expression for an insert before expression [err:XUTY0004]"));
       alist.addItem(item);
     }
     else
@@ -103,6 +109,14 @@ PendingUpdateList UInsertBefore::createUpdateList(DynamicContext *context) const
   PendingUpdateList result;
 
   if(!alist.isEmpty()) {
+    // 4. If $alist is not empty and before or after is specified, the following checks are performed:
+    //    a. parent($target) must be an element node [err:XUTY0022].
+    if(node->dmParent(context)->dmNodeKind() == Node::document_string)
+      XQThrow(XPath2TypeMatchException,X("UInsertBefore::createUpdateList"),
+              X("It is a type error if an insert expression specifies the insertion of an attribute node before or after a child of a document node [err:XUTY0022]"));
+    //    b. No attribute node in $alist may have a QName whose implied namespace binding conflicts with a namespace binding in the
+    //       "namespaces" property of parent($target) [err:XUDY0023].
+    // TBD make this check - jpcs
     result.addUpdate(PendingUpdate(PendingUpdate::INSERT_ATTRIBUTES, node, alist, this));
   }
   if(!clist.isEmpty()) {
