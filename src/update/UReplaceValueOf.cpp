@@ -46,6 +46,8 @@ ASTNode* UReplaceValueOf::staticResolution(StaticContext *context)
   SequenceType *targetType = new (mm) SequenceType(new (mm) SequenceType::ItemType(SequenceType::ItemType::TEST_NODE),
                                                    SequenceType::EXACTLY_ONE);
   targetType->setLocationInfo(this);
+
+  // TBD This error should be [err:XUTY0008] - jpcs
   target_ = new (mm) XQTreatAs(target_, targetType, mm);
   target_->setLocationInfo(this);
   target_ = target_->staticResolution(context);
@@ -87,6 +89,11 @@ PendingUpdateList UReplaceValueOf::createUpdateList(DynamicContext *context) con
 {
   Node::Ptr node = (Node*)target_->createResult(context)->next(context).get();
 
+  if(node->dmNodeKind() == Node::document_string)
+    XQThrow(XPath2TypeMatchException,X("UReplaceValueOf::createUpdateList"),
+            X("The target expression of a replace expression does not return a single "
+              "node that is not a document node [err:XUTY0008]"));
+    
   XMLBuffer buf;
   XQDOMConstructor::getStringValue(expr_, buf, context);
   Item::Ptr value = context->getItemFactory()->createString(buf.getRawBuffer(), context);
@@ -94,15 +101,8 @@ PendingUpdateList UReplaceValueOf::createUpdateList(DynamicContext *context) con
   if(node->dmNodeKind() == Node::element_string) {
     return PendingUpdate(PendingUpdate::REPLACE_ELEMENT_CONTENT, node, value, this);
   }
-  else if(node->dmNodeKind() == Node::attribute_string ||
-          node->dmNodeKind() == Node::text_string ||
-          node->dmNodeKind() == Node::comment_string ||
-          node->dmNodeKind() == Node::processing_instruction_string) {
-    return PendingUpdate(PendingUpdate::REPLACE_VALUE, node, value, this);
-  }
   else {
-    XQThrow(XPath2TypeMatchException,X("UReplaceValueOf::createUpdateList"),
-            X("The target node of a replace value of expression must not be a document [err:TBD]"));
+    return PendingUpdate(PendingUpdate::REPLACE_VALUE, node, value, this);
   }
 }
 

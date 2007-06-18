@@ -64,7 +64,7 @@ PendingUpdateList FunctionPut::createUpdateList(DynamicContext *context) const
   if(node->dmNodeKind() != Node::document_string &&
      node->dmNodeKind() != Node::element_string) {
     XQThrow(FunctionException, X("FunctionPut::createSequence"),
-            X("The argument to fn:put is not a document or element node [err:TBD]"));
+            X("The argument to fn:put is not a document or element node [err:FOUP0001]"));
   }
 
   const XMLCh *uriArg = 0;
@@ -81,7 +81,7 @@ PendingUpdateList FunctionPut::createUpdateList(DynamicContext *context) const
 
   if(uriArg == 0)
     XQThrow(FunctionException, X("FunctionPut::createSequence"),
-            X("The uri argument to fn:put is empty [err:TBD]"));
+            X("The uri argument to fn:put is empty [err:FOUP0002]"));
 
   if(!baseURI_)
     XQThrow(FunctionException, X("FunctionPut::createSequence"),
@@ -96,7 +96,7 @@ PendingUpdateList FunctionPut::createUpdateList(DynamicContext *context) const
   }
   catch(XQException &e) {
     XQThrow(FunctionException, X("FunctionPut::createSequence"),
-            X("The argument to fn:put is not a valid xs:anyURI [err:TBD]"));
+            X("The argument to fn:put is not a valid xs:anyURI [err:FOUP0002]"));
   }
 
   return PendingUpdate(PendingUpdate::PUT, node, anyURI, this);

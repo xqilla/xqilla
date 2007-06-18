@@ -16,8 +16,12 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 
+#include <xercesc/util/XMLUniDefs.hpp>
+
 class Result;
+class PendingUpdateList;
 class DynamicContext;
+class XPath2MemoryManager;
 
 class XQILLA_API ExternalFunction
 {
@@ -33,13 +37,23 @@ public:
 
   virtual ~ExternalFunction() {}
 
-  virtual const XMLCh *getName() const = 0;
-  virtual const XMLCh *getURI() const = 0;
-  virtual const XMLCh *getQName() const = 0;
-  virtual unsigned int getNumberOfArguments() const = 0;
+  const XMLCh *getURI() const { return uri_; }
+  const XMLCh *getName() const { return name_; }
+  const XMLCh *getURINameHash() const { return uriName_; }
+  unsigned int getNumberOfArguments() const { return numArgs_; }
 
-  /// Execute the function
-  virtual Result execute(const Arguments *args, DynamicContext *context) const = 0;
+  /// Execute the (non-updating) function
+  virtual Result execute(const Arguments *args, DynamicContext *context) const;
+  /// Execute the updating function
+  virtual PendingUpdateList executeUpdate(const Arguments *args, DynamicContext *context) const;
+
+protected:
+  ExternalFunction(const XMLCh *uri, const XMLCh *name, unsigned int numberOfArgs, XPath2MemoryManager *mm);
+
+  const XMLCh *uri_;
+  const XMLCh *name_;
+  const XMLCh *uriName_;
+  unsigned int numArgs_;
 };
 
 #endif

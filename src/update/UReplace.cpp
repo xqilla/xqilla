@@ -38,6 +38,8 @@ ASTNode* UReplace::staticResolution(StaticContext *context)
   SequenceType *targetType = new (mm) SequenceType(new (mm) SequenceType::ItemType(SequenceType::ItemType::TEST_NODE),
                                                    SequenceType::EXACTLY_ONE);
   targetType->setLocationInfo(this);
+
+  // TBD The error here should be [err:XUTY0008] - jpcs
   target_ = new (mm) XQTreatAs(target_, targetType, mm);
   target_->setLocationInfo(this);
   target_ = target_->staticResolution(context);
@@ -79,9 +81,14 @@ PendingUpdateList UReplace::createUpdateList(DynamicContext *context) const
 {
   Node::Ptr node = (Node*)target_->createResult(context)->next(context).get();
 
+  if(node->dmNodeKind() == Node::document_string)
+    XQThrow(XPath2TypeMatchException,X("UReplace::createUpdateList"),
+            X("The target expression of a replace expression does not return a single "
+              "node that is not a document node [err:XUTY0008]"));
+    
   if(node->dmParent(context).isNull())
-    XQThrow(XPath2TypeMatchException,X("UReplace::staticTyping"),
-            X("The target node of a replace expression does not have a parent [err:TBD]"));
+    XQThrow(XPath2TypeMatchException,X("UReplace::createUpdateList"),
+            X("The target node of a replace expression does not have a parent [err:XUDY0009]"));
 
   Result tmpRes = expr_->createResult(context);
   Item::Ptr tmp;
@@ -93,18 +100,25 @@ PendingUpdateList UReplace::createUpdateList(DynamicContext *context) const
      node->dmNodeKind() == Node::comment_string ||
      node->dmNodeKind() == Node::processing_instruction_string) {
     while((tmp = tmpRes->next(context)).notNull()) {
+      // 3. If $target is an element, text, comment, or processing instruction node, then $rlist must consist exclusively of zero or
+      //    more element, text, comment, or processing instruction nodes [err:XUTY0010].
       if(((Node*)tmp.get())->dmNodeKind() == Node::attribute_string)
         XQThrow(XPath2TypeMatchException,X("UReplace::staticTyping"),
-                X("The with expression of a replace expression must not contain attributes when not replacing an attribute [err:TBD]"));
+                X("The with expression of a replace expression must not contain attributes when not replacing an attribute [err:XUTY0010]"));
       value.addItem(tmp);
     }
     return PendingUpdate(PendingUpdate::REPLACE_NODE, node, value, this);
   }
   else {
     while((tmp = tmpRes->next(context)).notNull()) {
+      // 4. If $target is an attribute node, then:
+      //    a. $rlist must consist exclusively of zero or more attribute nodes [err:XUTY0011].
       if(((Node*)tmp.get())->dmNodeKind() != Node::attribute_string)
         XQThrow(XPath2TypeMatchException,X("UReplace::staticTyping"),
-                X("The with expression of a replace expression must only contain attributes when replacing an attribute [err:TBD]"));
+                X("The with expression of a replace expression must only contain attributes when replacing an attribute [err:XUTY0011]"));
+      //    b. No attribute node in $rlist may have a QName whose implied namespace binding conflicts with a namespace binding in the
+      //       "namespaces" property of $parent [err:XUDY0023].
+      // TBD Check this - jpcs
       value.addItem(tmp);
     }
     return PendingUpdate(PendingUpdate::REPLACE_ATTRIBUTE, node, value, this);

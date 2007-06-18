@@ -33,7 +33,7 @@ public:
 
   virtual const XMLCh *getName() const = 0;
   virtual const XMLCh *getURI() const = 0;
-  virtual const XMLCh *getQName() const = 0;
+  virtual const XMLCh *getURINameHash() const = 0;
   virtual unsigned int getMinArgs() const = 0;
   virtual unsigned int getMaxArgs() const = 0;
 };

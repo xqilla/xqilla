@@ -11,10 +11,6 @@
  * $Id$
  */
 
-//////////////////////////////////////////////////////////////////////
-// XQValidate.cpp: implementation of the XQValidate class.
-//////////////////////////////////////////////////////////////////////
-
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/ast/XQValidate.hpp>
 #include <xqilla/context/impl/XQDynamicContextImpl.hpp>
@@ -25,15 +21,11 @@
 #include <xqilla/ast/XQSequence.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 
-////////////////////////////////////////////////////////////////////////////////////////
-//
-//
-
 XQValidate::XQValidate(ASTNode* valExpr, DocumentCache::ValidationMode valMode, XPath2MemoryManager* expr)
   : ASTNodeImpl(expr)
 {
-  _expr=valExpr;
-  _validationMode=valMode;
+  _expr = valExpr;
+  _validationMode = valMode;
   setType(ASTNode::VALIDATE);
 }
 

@@ -43,6 +43,8 @@ ASTNode* UInsertAsLast::staticResolution(StaticContext *context)
   SequenceType *targetType = new (mm) SequenceType(new (mm) SequenceType::ItemType(SequenceType::ItemType::TEST_NODE),
                                                    SequenceType::EXACTLY_ONE);
   targetType->setLocationInfo(this);
+
+  // TBD The error here should be [err:XUTY0005] - jpcs
   target_ = new (mm) XQTreatAs(target_, targetType, mm);
   target_->setLocationInfo(this);
   target_ = target_->staticResolution(context);
@@ -84,7 +86,7 @@ PendingUpdateList UInsertAsLast::createUpdateList(DynamicContext *context) const
      node->dmNodeKind() != Node::document_string)
     XQThrow(XPath2TypeMatchException,X("UInsertAsLast::createUpdateList"),
             X("It is a type error for the target expression of an insert as last expression not to be a single element "
-              "or document [err:TBD]"));
+              "or document [err:XUTY0005]"));
 
   Sequence alist(context->getMemoryManager());
   Sequence clist(context->getMemoryManager());
@@ -95,7 +97,7 @@ PendingUpdateList UInsertAsLast::createUpdateList(DynamicContext *context) const
     if(((Node*)item.get())->dmNodeKind() == Node::attribute_string) {
       if(!clist.isEmpty())
         XQThrow(ASTException,X("UInsertAsLast::createUpdateList"),
-                X("Attribute nodes must occur before other nodes in the source expression for an insert as last expression [err:TBD]"));
+                X("Attribute nodes must occur before other nodes in the source expression for an insert as last expression [err:XUTY0004]"));
       alist.addItem(item);
     }
     else
@@ -105,6 +107,14 @@ PendingUpdateList UInsertAsLast::createUpdateList(DynamicContext *context) const
   PendingUpdateList result;
 
   if(!alist.isEmpty()) {
+    // 3. If $alist is not empty and into is specified, the following checks are performed:
+    //    a. $target must be an element node [err:XUTY0022].
+    if(node->dmNodeKind() == Node::document_string)
+      XQThrow(XPath2TypeMatchException,X("UInsertInto::createUpdateList"),
+              X("It is a type error if an insert expression specifies the insertion of an attribute node into a document node [err:XUTY0022]"));
+    //    b. No attribute node in $alist may have a QName whose implied namespace binding conflicts with a namespace
+    //       binding in the "namespaces" property of $target [err:XUDY0023].  
+    // TBD make this check - jpcs
     result.addUpdate(PendingUpdate(PendingUpdate::INSERT_ATTRIBUTES, node, alist, this));
   }
   if(!clist.isEmpty()) {

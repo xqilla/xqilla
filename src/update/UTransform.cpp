@@ -23,6 +23,8 @@
 #include <xqilla/utils/XPath2NSUtils.hpp>
 #include <xqilla/context/Scope.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
+#include <xqilla/ast/XQTreatAs.hpp>
+#include <xqilla/schema/SequenceType.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>
 #include <xqilla/update/PendingUpdateList.hpp>
 
@@ -45,8 +47,15 @@ ASTNode *UTransform::staticResolution(StaticContext* context)
       (*it0)->_vURI = context->getUriBoundToPrefix(prefix, this);
     (*it0)->_vName = XPath2NSUtils::getLocalName((*it0)->_variable);
 
+    SequenceType *copyType = new (mm) SequenceType(new (mm) SequenceType::ItemType(SequenceType::ItemType::TEST_NODE),
+                                                   SequenceType::EXACTLY_ONE);
+    copyType->setLocationInfo(this);
+
     // call static resolution on the value
     (*it0)->_allValues = new (mm) XQContentSequence((*it0)->_allValues, mm);
+    (*it0)->_allValues->setLocationInfo(this);
+    // TBD The error should be [err:XUTY0013] - jpcs
+    (*it0)->_allValues = new (mm) XQTreatAs((*it0)->_allValues, copyType, mm);
     (*it0)->_allValues->setLocationInfo(this);
     (*it0)->_allValues = (*it0)->_allValues->staticResolution(context);
   }
@@ -159,9 +168,6 @@ ASTNode *UTransform::staticTyping(StaticContext *context)
   // Overwrite our bindings with the new ones
   _bindings = newBindings;
 
-  if(_bindings->empty()) {
-    return _return;
-  }
   return this;
 }
 
@@ -239,7 +245,7 @@ Item::Ptr UTransform::TransformResult::next(DynamicContext *context)
         target = target->dmParent(context);
         if(target.isNull()) {
           XQThrow3(StaticErrorException,X("UTransform::staticTyping"),
-                   X("The target node of an update expression in the transform expression is not a node from the copy clauses [err:TBD]"), &(*i));
+                   X("The target node of an update expression in the transform expression is not a node from the copy clauses [err:XUDY0014]"), &(*i));
         }
       }
     }

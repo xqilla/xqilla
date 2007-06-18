@@ -11,26 +11,20 @@
  * $Id$
  */
 
-#ifndef _ATTRIBUTEAXIS_HPP
-#define _ATTRIBUTEAXIS_HPP
+#ifndef _PARENTAXIS_HPP
+#define _PARENTAXIS_HPP
 
-#include <xqilla/axis/Axis.hpp>
+#include "Axis.hpp"
 
-#include <xercesc/dom/DOMNamedNodeMap.hpp>
-
-class XQILLA_API AttributeAxis : public Axis
+class XQILLA_API ParentAxis : public Axis
 {
 public:
-  AttributeAxis(const LocationInfo *info, const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *contextNode, const Node *nodeObj,
+  ParentAxis(const LocationInfo *info, const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *contextNode, const Node *nodeObj,
        const NodeTest *nodeTest, const AxisNodeFactory &factory);
-
   const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *nextNode(DynamicContext *context);
   std::string asString(DynamicContext *context, int indent) const;
-
-private:
-  XERCES_CPP_NAMESPACE_QUALIFIER DOMNamedNodeMap *nodeMap_;
-  unsigned int i_;
 };
+
 
 #endif
 

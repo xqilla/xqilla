@@ -12,7 +12,7 @@
  */
 
 #include "../config/xqilla_config.h"
-#include <xqilla/axis/AncestorAxis.hpp>
+#include "AncestorAxis.hpp"
 #include <xercesc/dom/DOMNode.hpp>
 #include <xqilla/utils/XPath2NSUtils.hpp>
 

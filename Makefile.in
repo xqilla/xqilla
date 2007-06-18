@@ -100,8 +100,9 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	XPath2NSUtils.lo XPath2Utils.lo UCANormalizer1.lo \
 	UCANormalizer2.lo UCANormalizer3.lo UCANormalizer4.lo \
 	UCANormalizer.lo XQillaException.lo XQException.lo \
-	FuncFactory.lo FunctionLookup.lo FunctionAbs.lo FunctionAvg.lo \
-	FunctionBaseURI.lo FunctionBoolean.lo FunctionCeiling.lo \
+	ExternalFunction.lo FuncFactory.lo FunctionLookup.lo \
+	FunctionAbs.lo FunctionAvg.lo FunctionBaseURI.lo \
+	FunctionBoolean.lo FunctionCeiling.lo \
 	FunctionCodepointEqual.lo FunctionCodepointsToString.lo \
 	FunctionCollection.lo FunctionCompare.lo FunctionConcat.lo \
 	FunctionConstructor.lo FunctionContains.lo FunctionCount.lo \
@@ -173,17 +174,13 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	mapm_lg3.lo mapm_log.lo mapm_mt.lo mapm_mul.lo mapm_pow.lo \
 	mapmpwr2.lo mapm_rcp.lo mapm_rnd.lo mapmrsin.lo mapm_set.lo \
 	mapm_sin.lo mapmsqrt.lo mapmstck.lo mapmutil.lo mapmutl2.lo \
-	AncestorAxis.lo AncestorOrSelfAxis.lo AttributeAxis.lo Axis.lo \
-	ChildAxis.lo DescendantAxis.lo DescendantOrSelfAxis.lo \
-	FollowingAxis.lo FollowingSiblingAxis.lo NamespaceAxis.lo \
-	NodeTest.lo ParentAxis.lo PrecedingAxis.lo \
-	PrecedingSiblingAxis.lo SelfAxis.lo And.lo \
-	ArithmeticOperator.lo ComparisonOperator.lo Divide.lo \
-	Equals.lo Except.lo GeneralComp.lo GreaterThan.lo \
-	GreaterThanEqual.lo IntegerDivide.lo Intersect.lo LessThan.lo \
-	LessThanEqual.lo Minus.lo Mod.lo Multiply.lo NodeComparison.lo \
-	NotEquals.lo Or.lo OrderComparison.lo Plus.lo Range.lo \
-	UnaryMinus.lo Union.lo DocumentCacheImpl.lo SequenceType.lo \
+	NodeTest.lo SelfAxis.lo And.lo ArithmeticOperator.lo \
+	ComparisonOperator.lo Divide.lo Equals.lo Except.lo \
+	GeneralComp.lo GreaterThan.lo GreaterThanEqual.lo \
+	IntegerDivide.lo Intersect.lo LessThan.lo LessThanEqual.lo \
+	Minus.lo Mod.lo Multiply.lo NodeComparison.lo NotEquals.lo \
+	Or.lo OrderComparison.lo Plus.lo Range.lo UnaryMinus.lo \
+	Union.lo DocumentCacheImpl.lo SequenceType.lo \
 	AnyAtomicTypeDatatypeValidator.lo EmptyResult.lo \
 	LazySequenceResult.lo ResultBuffer.lo ResultBufferImpl.lo \
 	Result.lo ResultImpl.lo SequenceResult.lo SingleResult.lo \
@@ -195,9 +192,14 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	TestSuiteRunner.lo FastXDMUpdateFactory.lo \
 	FastXDMDocumentCacheImpl.lo FastXDMDocument.lo \
 	FastXDMNodeImpl.lo FastXDMConfiguration.lo \
-	FastXDMSequenceBuilder.lo XercesConfiguration.lo \
-	XercesNodeImpl.lo XercesSequenceBuilder.lo \
-	XercesUpdateFactory.lo XercesURIResolver.lo
+	FastXDMSequenceBuilder.lo AncestorAxis.lo \
+	AncestorOrSelfAxis.lo AttributeAxis.lo Axis.lo ChildAxis.lo \
+	DescendantAxis.lo DescendantOrSelfAxis.lo FollowingAxis.lo \
+	FollowingSiblingAxis.lo NamespaceAxis.lo ParentAxis.lo \
+	PrecedingAxis.lo PrecedingSiblingAxis.lo \
+	XercesConfiguration.lo XercesNodeImpl.lo \
+	XercesSequenceBuilder.lo XercesUpdateFactory.lo \
+	XercesURIResolver.lo
 libxqilla_la_OBJECTS = $(am_libxqilla_la_OBJECTS)
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS) $(noinst_PROGRAMS)
@@ -500,6 +502,7 @@ src/exceptions/XQillaException.cpp \
 src/exceptions/XQException.cpp \
 src/exceptions/InvalidLexicalSpaceException.hpp \
 src/exceptions/MiscException.hpp \
+src/functions/ExternalFunction.cpp \
 src/functions/FuncFactory.cpp \
 src/functions/FuncFactoryTemplate.hpp \
 src/functions/FunctionLookup.cpp \
@@ -705,20 +708,7 @@ src/mapm/mapmstck.c \
 src/mapm/mapmutil.c \
 src/mapm/mapmutl2.c \
 src/mapm/README \
-src/axis/AncestorAxis.cpp \
-src/axis/AncestorOrSelfAxis.cpp \
-src/axis/AttributeAxis.cpp \
-src/axis/Axis.cpp \
-src/axis/ChildAxis.cpp \
-src/axis/DescendantAxis.cpp \
-src/axis/DescendantOrSelfAxis.cpp \
-src/axis/FollowingAxis.cpp \
-src/axis/FollowingSiblingAxis.cpp \
-src/axis/NamespaceAxis.cpp \
 src/axis/NodeTest.cpp \
-src/axis/ParentAxis.cpp \
-src/axis/PrecedingAxis.cpp \
-src/axis/PrecedingSiblingAxis.cpp \
 src/axis/SelfAxis.cpp \
 src/operators/And.cpp \
 src/operators/ArithmeticOperator.cpp \
@@ -784,6 +774,32 @@ src/fastxdm/FastXDMNodeImpl.cpp \
 src/fastxdm/FastXDMConfiguration.cpp \
 src/fastxdm/FastXDMSequenceBuilder.hpp \
 src/fastxdm/FastXDMSequenceBuilder.cpp \
+src/xerces/AncestorAxis.hpp \
+src/xerces/AncestorOrSelfAxis.hpp \
+src/xerces/AttributeAxis.hpp \
+src/xerces/Axis.hpp \
+src/xerces/ChildAxis.hpp \
+src/xerces/DescendantAxis.hpp \
+src/xerces/DescendantOrSelfAxis.hpp \
+src/xerces/FollowingAxis.hpp \
+src/xerces/FollowingSiblingAxis.hpp \
+src/xerces/NamespaceAxis.hpp \
+src/xerces/ParentAxis.hpp \
+src/xerces/PrecedingAxis.hpp \
+src/xerces/PrecedingSiblingAxis.hpp \
+src/xerces/AncestorAxis.cpp \
+src/xerces/AncestorOrSelfAxis.cpp \
+src/xerces/AttributeAxis.cpp \
+src/xerces/Axis.cpp \
+src/xerces/ChildAxis.cpp \
+src/xerces/DescendantAxis.cpp \
+src/xerces/DescendantOrSelfAxis.cpp \
+src/xerces/FollowingAxis.cpp \
+src/xerces/FollowingSiblingAxis.cpp \
+src/xerces/NamespaceAxis.cpp \
+src/xerces/ParentAxis.cpp \
+src/xerces/PrecedingAxis.cpp \
+src/xerces/PrecedingSiblingAxis.cpp \
 src/xerces/XercesConfiguration.cpp \
 src/xerces/XercesNodeImpl.hpp \
 src/xerces/XercesNodeImpl.cpp \
@@ -1051,6 +1067,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Equals.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/EventSerializer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Except.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ExternalFunction.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FTAnd.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FTContains.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FTContent.Plo@am__quote@
@@ -2377,6 +2394,13 @@ XQException.lo: src/exceptions/XQException.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQException.lo `test -f 'src/exceptions/XQException.cpp' || echo '$(srcdir)/'`src/exceptions/XQException.cpp
 
+ExternalFunction.lo: src/functions/ExternalFunction.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ExternalFunction.lo -MD -MP -MF "$(DEPDIR)/ExternalFunction.Tpo" -c -o ExternalFunction.lo `test -f 'src/functions/ExternalFunction.cpp' || echo '$(srcdir)/'`src/functions/ExternalFunction.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ExternalFunction.Tpo" "$(DEPDIR)/ExternalFunction.Plo"; else rm -f "$(DEPDIR)/ExternalFunction.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/ExternalFunction.cpp' object='ExternalFunction.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ExternalFunction.lo `test -f 'src/functions/ExternalFunction.cpp' || echo '$(srcdir)/'`src/functions/ExternalFunction.cpp
+
 FuncFactory.lo: src/functions/FuncFactory.cpp
 @am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FuncFactory.lo -MD -MP -MF "$(DEPDIR)/FuncFactory.Tpo" -c -o FuncFactory.lo `test -f 'src/functions/FuncFactory.cpp' || echo '$(srcdir)/'`src/functions/FuncFactory.cpp; \
 @am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/FuncFactory.Tpo" "$(DEPDIR)/FuncFactory.Plo"; else rm -f "$(DEPDIR)/FuncFactory.Tpo"; exit 1; fi
@@ -3455,103 +3479,12 @@ mapm_mt.lo: src/mapm/mapm_mt.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o mapm_mt.lo `test -f 'src/mapm/mapm_mt.cpp' || echo '$(srcdir)/'`src/mapm/mapm_mt.cpp
 
-AncestorAxis.lo: src/axis/AncestorAxis.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT AncestorAxis.lo -MD -MP -MF "$(DEPDIR)/AncestorAxis.Tpo" -c -o AncestorAxis.lo `test -f 'src/axis/AncestorAxis.cpp' || echo '$(srcdir)/'`src/axis/AncestorAxis.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/AncestorAxis.Tpo" "$(DEPDIR)/AncestorAxis.Plo"; else rm -f "$(DEPDIR)/AncestorAxis.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/axis/AncestorAxis.cpp' object='AncestorAxis.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o AncestorAxis.lo `test -f 'src/axis/AncestorAxis.cpp' || echo '$(srcdir)/'`src/axis/AncestorAxis.cpp
-
-AncestorOrSelfAxis.lo: src/axis/AncestorOrSelfAxis.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT AncestorOrSelfAxis.lo -MD -MP -MF "$(DEPDIR)/AncestorOrSelfAxis.Tpo" -c -o AncestorOrSelfAxis.lo `test -f 'src/axis/AncestorOrSelfAxis.cpp' || echo '$(srcdir)/'`src/axis/AncestorOrSelfAxis.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/AncestorOrSelfAxis.Tpo" "$(DEPDIR)/AncestorOrSelfAxis.Plo"; else rm -f "$(DEPDIR)/AncestorOrSelfAxis.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/axis/AncestorOrSelfAxis.cpp' object='AncestorOrSelfAxis.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o AncestorOrSelfAxis.lo `test -f 'src/axis/AncestorOrSelfAxis.cpp' || echo '$(srcdir)/'`src/axis/AncestorOrSelfAxis.cpp
-
-AttributeAxis.lo: src/axis/AttributeAxis.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT AttributeAxis.lo -MD -MP -MF "$(DEPDIR)/AttributeAxis.Tpo" -c -o AttributeAxis.lo `test -f 'src/axis/AttributeAxis.cpp' || echo '$(srcdir)/'`src/axis/AttributeAxis.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/AttributeAxis.Tpo" "$(DEPDIR)/AttributeAxis.Plo"; else rm -f "$(DEPDIR)/AttributeAxis.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/axis/AttributeAxis.cpp' object='AttributeAxis.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o AttributeAxis.lo `test -f 'src/axis/AttributeAxis.cpp' || echo '$(srcdir)/'`src/axis/AttributeAxis.cpp
-
-Axis.lo: src/axis/Axis.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT Axis.lo -MD -MP -MF "$(DEPDIR)/Axis.Tpo" -c -o Axis.lo `test -f 'src/axis/Axis.cpp' || echo '$(srcdir)/'`src/axis/Axis.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/Axis.Tpo" "$(DEPDIR)/Axis.Plo"; else rm -f "$(DEPDIR)/Axis.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/axis/Axis.cpp' object='Axis.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o Axis.lo `test -f 'src/axis/Axis.cpp' || echo '$(srcdir)/'`src/axis/Axis.cpp
-
-ChildAxis.lo: src/axis/ChildAxis.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ChildAxis.lo -MD -MP -MF "$(DEPDIR)/ChildAxis.Tpo" -c -o ChildAxis.lo `test -f 'src/axis/ChildAxis.cpp' || echo '$(srcdir)/'`src/axis/ChildAxis.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ChildAxis.Tpo" "$(DEPDIR)/ChildAxis.Plo"; else rm -f "$(DEPDIR)/ChildAxis.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/axis/ChildAxis.cpp' object='ChildAxis.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ChildAxis.lo `test -f 'src/axis/ChildAxis.cpp' || echo '$(srcdir)/'`src/axis/ChildAxis.cpp
-
-DescendantAxis.lo: src/axis/DescendantAxis.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DescendantAxis.lo -MD -MP -MF "$(DEPDIR)/DescendantAxis.Tpo" -c -o DescendantAxis.lo `test -f 'src/axis/DescendantAxis.cpp' || echo '$(srcdir)/'`src/axis/DescendantAxis.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/DescendantAxis.Tpo" "$(DEPDIR)/DescendantAxis.Plo"; else rm -f "$(DEPDIR)/DescendantAxis.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/axis/DescendantAxis.cpp' object='DescendantAxis.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DescendantAxis.lo `test -f 'src/axis/DescendantAxis.cpp' || echo '$(srcdir)/'`src/axis/DescendantAxis.cpp
-
-DescendantOrSelfAxis.lo: src/axis/DescendantOrSelfAxis.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DescendantOrSelfAxis.lo -MD -MP -MF "$(DEPDIR)/DescendantOrSelfAxis.Tpo" -c -o DescendantOrSelfAxis.lo `test -f 'src/axis/DescendantOrSelfAxis.cpp' || echo '$(srcdir)/'`src/axis/DescendantOrSelfAxis.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/DescendantOrSelfAxis.Tpo" "$(DEPDIR)/DescendantOrSelfAxis.Plo"; else rm -f "$(DEPDIR)/DescendantOrSelfAxis.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/axis/DescendantOrSelfAxis.cpp' object='DescendantOrSelfAxis.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DescendantOrSelfAxis.lo `test -f 'src/axis/DescendantOrSelfAxis.cpp' || echo '$(srcdir)/'`src/axis/DescendantOrSelfAxis.cpp
-
-FollowingAxis.lo: src/axis/FollowingAxis.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FollowingAxis.lo -MD -MP -MF "$(DEPDIR)/FollowingAxis.Tpo" -c -o FollowingAxis.lo `test -f 'src/axis/FollowingAxis.cpp' || echo '$(srcdir)/'`src/axis/FollowingAxis.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/FollowingAxis.Tpo" "$(DEPDIR)/FollowingAxis.Plo"; else rm -f "$(DEPDIR)/FollowingAxis.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/axis/FollowingAxis.cpp' object='FollowingAxis.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FollowingAxis.lo `test -f 'src/axis/FollowingAxis.cpp' || echo '$(srcdir)/'`src/axis/FollowingAxis.cpp
-
-FollowingSiblingAxis.lo: src/axis/FollowingSiblingAxis.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FollowingSiblingAxis.lo -MD -MP -MF "$(DEPDIR)/FollowingSiblingAxis.Tpo" -c -o FollowingSiblingAxis.lo `test -f 'src/axis/FollowingSiblingAxis.cpp' || echo '$(srcdir)/'`src/axis/FollowingSiblingAxis.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/FollowingSiblingAxis.Tpo" "$(DEPDIR)/FollowingSiblingAxis.Plo"; else rm -f "$(DEPDIR)/FollowingSiblingAxis.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/axis/FollowingSiblingAxis.cpp' object='FollowingSiblingAxis.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FollowingSiblingAxis.lo `test -f 'src/axis/FollowingSiblingAxis.cpp' || echo '$(srcdir)/'`src/axis/FollowingSiblingAxis.cpp
-
-NamespaceAxis.lo: src/axis/NamespaceAxis.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT NamespaceAxis.lo -MD -MP -MF "$(DEPDIR)/NamespaceAxis.Tpo" -c -o NamespaceAxis.lo `test -f 'src/axis/NamespaceAxis.cpp' || echo '$(srcdir)/'`src/axis/NamespaceAxis.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/NamespaceAxis.Tpo" "$(DEPDIR)/NamespaceAxis.Plo"; else rm -f "$(DEPDIR)/NamespaceAxis.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/axis/NamespaceAxis.cpp' object='NamespaceAxis.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o NamespaceAxis.lo `test -f 'src/axis/NamespaceAxis.cpp' || echo '$(srcdir)/'`src/axis/NamespaceAxis.cpp
-
 NodeTest.lo: src/axis/NodeTest.cpp
 @am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT NodeTest.lo -MD -MP -MF "$(DEPDIR)/NodeTest.Tpo" -c -o NodeTest.lo `test -f 'src/axis/NodeTest.cpp' || echo '$(srcdir)/'`src/axis/NodeTest.cpp; \
 @am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/NodeTest.Tpo" "$(DEPDIR)/NodeTest.Plo"; else rm -f "$(DEPDIR)/NodeTest.Tpo"; exit 1; fi
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/axis/NodeTest.cpp' object='NodeTest.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o NodeTest.lo `test -f 'src/axis/NodeTest.cpp' || echo '$(srcdir)/'`src/axis/NodeTest.cpp
-
-ParentAxis.lo: src/axis/ParentAxis.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ParentAxis.lo -MD -MP -MF "$(DEPDIR)/ParentAxis.Tpo" -c -o ParentAxis.lo `test -f 'src/axis/ParentAxis.cpp' || echo '$(srcdir)/'`src/axis/ParentAxis.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ParentAxis.Tpo" "$(DEPDIR)/ParentAxis.Plo"; else rm -f "$(DEPDIR)/ParentAxis.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/axis/ParentAxis.cpp' object='ParentAxis.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ParentAxis.lo `test -f 'src/axis/ParentAxis.cpp' || echo '$(srcdir)/'`src/axis/ParentAxis.cpp
-
-PrecedingAxis.lo: src/axis/PrecedingAxis.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT PrecedingAxis.lo -MD -MP -MF "$(DEPDIR)/PrecedingAxis.Tpo" -c -o PrecedingAxis.lo `test -f 'src/axis/PrecedingAxis.cpp' || echo '$(srcdir)/'`src/axis/PrecedingAxis.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/PrecedingAxis.Tpo" "$(DEPDIR)/PrecedingAxis.Plo"; else rm -f "$(DEPDIR)/PrecedingAxis.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/axis/PrecedingAxis.cpp' object='PrecedingAxis.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o PrecedingAxis.lo `test -f 'src/axis/PrecedingAxis.cpp' || echo '$(srcdir)/'`src/axis/PrecedingAxis.cpp
-
-PrecedingSiblingAxis.lo: src/axis/PrecedingSiblingAxis.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT PrecedingSiblingAxis.lo -MD -MP -MF "$(DEPDIR)/PrecedingSiblingAxis.Tpo" -c -o PrecedingSiblingAxis.lo `test -f 'src/axis/PrecedingSiblingAxis.cpp' || echo '$(srcdir)/'`src/axis/PrecedingSiblingAxis.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/PrecedingSiblingAxis.Tpo" "$(DEPDIR)/PrecedingSiblingAxis.Plo"; else rm -f "$(DEPDIR)/PrecedingSiblingAxis.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/axis/PrecedingSiblingAxis.cpp' object='PrecedingSiblingAxis.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o PrecedingSiblingAxis.lo `test -f 'src/axis/PrecedingSiblingAxis.cpp' || echo '$(srcdir)/'`src/axis/PrecedingSiblingAxis.cpp
 
 SelfAxis.lo: src/axis/SelfAxis.cpp
 @am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SelfAxis.lo -MD -MP -MF "$(DEPDIR)/SelfAxis.Tpo" -c -o SelfAxis.lo `test -f 'src/axis/SelfAxis.cpp' || echo '$(srcdir)/'`src/axis/SelfAxis.cpp; \
@@ -3965,6 +3898,97 @@ FastXDMSequenceBuilder.lo: src/fastxdm/FastXDMSequenceBuilder.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/fastxdm/FastXDMSequenceBuilder.cpp' object='FastXDMSequenceBuilder.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FastXDMSequenceBuilder.lo `test -f 'src/fastxdm/FastXDMSequenceBuilder.cpp' || echo '$(srcdir)/'`src/fastxdm/FastXDMSequenceBuilder.cpp
+
+AncestorAxis.lo: src/xerces/AncestorAxis.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT AncestorAxis.lo -MD -MP -MF "$(DEPDIR)/AncestorAxis.Tpo" -c -o AncestorAxis.lo `test -f 'src/xerces/AncestorAxis.cpp' || echo '$(srcdir)/'`src/xerces/AncestorAxis.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/AncestorAxis.Tpo" "$(DEPDIR)/AncestorAxis.Plo"; else rm -f "$(DEPDIR)/AncestorAxis.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/xerces/AncestorAxis.cpp' object='AncestorAxis.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o AncestorAxis.lo `test -f 'src/xerces/AncestorAxis.cpp' || echo '$(srcdir)/'`src/xerces/AncestorAxis.cpp
+
+AncestorOrSelfAxis.lo: src/xerces/AncestorOrSelfAxis.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT AncestorOrSelfAxis.lo -MD -MP -MF "$(DEPDIR)/AncestorOrSelfAxis.Tpo" -c -o AncestorOrSelfAxis.lo `test -f 'src/xerces/AncestorOrSelfAxis.cpp' || echo '$(srcdir)/'`src/xerces/AncestorOrSelfAxis.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/AncestorOrSelfAxis.Tpo" "$(DEPDIR)/AncestorOrSelfAxis.Plo"; else rm -f "$(DEPDIR)/AncestorOrSelfAxis.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/xerces/AncestorOrSelfAxis.cpp' object='AncestorOrSelfAxis.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o AncestorOrSelfAxis.lo `test -f 'src/xerces/AncestorOrSelfAxis.cpp' || echo '$(srcdir)/'`src/xerces/AncestorOrSelfAxis.cpp
+
+AttributeAxis.lo: src/xerces/AttributeAxis.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT AttributeAxis.lo -MD -MP -MF "$(DEPDIR)/AttributeAxis.Tpo" -c -o AttributeAxis.lo `test -f 'src/xerces/AttributeAxis.cpp' || echo '$(srcdir)/'`src/xerces/AttributeAxis.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/AttributeAxis.Tpo" "$(DEPDIR)/AttributeAxis.Plo"; else rm -f "$(DEPDIR)/AttributeAxis.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/xerces/AttributeAxis.cpp' object='AttributeAxis.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o AttributeAxis.lo `test -f 'src/xerces/AttributeAxis.cpp' || echo '$(srcdir)/'`src/xerces/AttributeAxis.cpp
+
+Axis.lo: src/xerces/Axis.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT Axis.lo -MD -MP -MF "$(DEPDIR)/Axis.Tpo" -c -o Axis.lo `test -f 'src/xerces/Axis.cpp' || echo '$(srcdir)/'`src/xerces/Axis.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/Axis.Tpo" "$(DEPDIR)/Axis.Plo"; else rm -f "$(DEPDIR)/Axis.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/xerces/Axis.cpp' object='Axis.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o Axis.lo `test -f 'src/xerces/Axis.cpp' || echo '$(srcdir)/'`src/xerces/Axis.cpp
+
+ChildAxis.lo: src/xerces/ChildAxis.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ChildAxis.lo -MD -MP -MF "$(DEPDIR)/ChildAxis.Tpo" -c -o ChildAxis.lo `test -f 'src/xerces/ChildAxis.cpp' || echo '$(srcdir)/'`src/xerces/ChildAxis.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ChildAxis.Tpo" "$(DEPDIR)/ChildAxis.Plo"; else rm -f "$(DEPDIR)/ChildAxis.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/xerces/ChildAxis.cpp' object='ChildAxis.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ChildAxis.lo `test -f 'src/xerces/ChildAxis.cpp' || echo '$(srcdir)/'`src/xerces/ChildAxis.cpp
+
+DescendantAxis.lo: src/xerces/DescendantAxis.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DescendantAxis.lo -MD -MP -MF "$(DEPDIR)/DescendantAxis.Tpo" -c -o DescendantAxis.lo `test -f 'src/xerces/DescendantAxis.cpp' || echo '$(srcdir)/'`src/xerces/DescendantAxis.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/DescendantAxis.Tpo" "$(DEPDIR)/DescendantAxis.Plo"; else rm -f "$(DEPDIR)/DescendantAxis.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/xerces/DescendantAxis.cpp' object='DescendantAxis.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DescendantAxis.lo `test -f 'src/xerces/DescendantAxis.cpp' || echo '$(srcdir)/'`src/xerces/DescendantAxis.cpp
+
+DescendantOrSelfAxis.lo: src/xerces/DescendantOrSelfAxis.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DescendantOrSelfAxis.lo -MD -MP -MF "$(DEPDIR)/DescendantOrSelfAxis.Tpo" -c -o DescendantOrSelfAxis.lo `test -f 'src/xerces/DescendantOrSelfAxis.cpp' || echo '$(srcdir)/'`src/xerces/DescendantOrSelfAxis.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/DescendantOrSelfAxis.Tpo" "$(DEPDIR)/DescendantOrSelfAxis.Plo"; else rm -f "$(DEPDIR)/DescendantOrSelfAxis.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/xerces/DescendantOrSelfAxis.cpp' object='DescendantOrSelfAxis.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DescendantOrSelfAxis.lo `test -f 'src/xerces/DescendantOrSelfAxis.cpp' || echo '$(srcdir)/'`src/xerces/DescendantOrSelfAxis.cpp
+
+FollowingAxis.lo: src/xerces/FollowingAxis.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FollowingAxis.lo -MD -MP -MF "$(DEPDIR)/FollowingAxis.Tpo" -c -o FollowingAxis.lo `test -f 'src/xerces/FollowingAxis.cpp' || echo '$(srcdir)/'`src/xerces/FollowingAxis.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/FollowingAxis.Tpo" "$(DEPDIR)/FollowingAxis.Plo"; else rm -f "$(DEPDIR)/FollowingAxis.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/xerces/FollowingAxis.cpp' object='FollowingAxis.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FollowingAxis.lo `test -f 'src/xerces/FollowingAxis.cpp' || echo '$(srcdir)/'`src/xerces/FollowingAxis.cpp
+
+FollowingSiblingAxis.lo: src/xerces/FollowingSiblingAxis.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FollowingSiblingAxis.lo -MD -MP -MF "$(DEPDIR)/FollowingSiblingAxis.Tpo" -c -o FollowingSiblingAxis.lo `test -f 'src/xerces/FollowingSiblingAxis.cpp' || echo '$(srcdir)/'`src/xerces/FollowingSiblingAxis.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/FollowingSiblingAxis.Tpo" "$(DEPDIR)/FollowingSiblingAxis.Plo"; else rm -f "$(DEPDIR)/FollowingSiblingAxis.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/xerces/FollowingSiblingAxis.cpp' object='FollowingSiblingAxis.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FollowingSiblingAxis.lo `test -f 'src/xerces/FollowingSiblingAxis.cpp' || echo '$(srcdir)/'`src/xerces/FollowingSiblingAxis.cpp
+
+NamespaceAxis.lo: src/xerces/NamespaceAxis.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT NamespaceAxis.lo -MD -MP -MF "$(DEPDIR)/NamespaceAxis.Tpo" -c -o NamespaceAxis.lo `test -f 'src/xerces/NamespaceAxis.cpp' || echo '$(srcdir)/'`src/xerces/NamespaceAxis.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/NamespaceAxis.Tpo" "$(DEPDIR)/NamespaceAxis.Plo"; else rm -f "$(DEPDIR)/NamespaceAxis.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/xerces/NamespaceAxis.cpp' object='NamespaceAxis.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o NamespaceAxis.lo `test -f 'src/xerces/NamespaceAxis.cpp' || echo '$(srcdir)/'`src/xerces/NamespaceAxis.cpp
+
+ParentAxis.lo: src/xerces/ParentAxis.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ParentAxis.lo -MD -MP -MF "$(DEPDIR)/ParentAxis.Tpo" -c -o ParentAxis.lo `test -f 'src/xerces/ParentAxis.cpp' || echo '$(srcdir)/'`src/xerces/ParentAxis.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ParentAxis.Tpo" "$(DEPDIR)/ParentAxis.Plo"; else rm -f "$(DEPDIR)/ParentAxis.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/xerces/ParentAxis.cpp' object='ParentAxis.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ParentAxis.lo `test -f 'src/xerces/ParentAxis.cpp' || echo '$(srcdir)/'`src/xerces/ParentAxis.cpp
+
+PrecedingAxis.lo: src/xerces/PrecedingAxis.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT PrecedingAxis.lo -MD -MP -MF "$(DEPDIR)/PrecedingAxis.Tpo" -c -o PrecedingAxis.lo `test -f 'src/xerces/PrecedingAxis.cpp' || echo '$(srcdir)/'`src/xerces/PrecedingAxis.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/PrecedingAxis.Tpo" "$(DEPDIR)/PrecedingAxis.Plo"; else rm -f "$(DEPDIR)/PrecedingAxis.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/xerces/PrecedingAxis.cpp' object='PrecedingAxis.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o PrecedingAxis.lo `test -f 'src/xerces/PrecedingAxis.cpp' || echo '$(srcdir)/'`src/xerces/PrecedingAxis.cpp
+
+PrecedingSiblingAxis.lo: src/xerces/PrecedingSiblingAxis.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT PrecedingSiblingAxis.lo -MD -MP -MF "$(DEPDIR)/PrecedingSiblingAxis.Tpo" -c -o PrecedingSiblingAxis.lo `test -f 'src/xerces/PrecedingSiblingAxis.cpp' || echo '$(srcdir)/'`src/xerces/PrecedingSiblingAxis.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/PrecedingSiblingAxis.Tpo" "$(DEPDIR)/PrecedingSiblingAxis.Plo"; else rm -f "$(DEPDIR)/PrecedingSiblingAxis.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/xerces/PrecedingSiblingAxis.cpp' object='PrecedingSiblingAxis.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o PrecedingSiblingAxis.lo `test -f 'src/xerces/PrecedingSiblingAxis.cpp' || echo '$(srcdir)/'`src/xerces/PrecedingSiblingAxis.cpp
 
 XercesConfiguration.lo: src/xerces/XercesConfiguration.cpp
 @am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XercesConfiguration.lo -MD -MP -MF "$(DEPDIR)/XercesConfiguration.Tpo" -c -o XercesConfiguration.lo `test -f 'src/xerces/XercesConfiguration.cpp' || echo '$(srcdir)/'`src/xerces/XercesConfiguration.cpp; \

@@ -11,39 +11,25 @@
  * $Id$
  */
 
-#ifndef _NAMESPACEAXIS_HPP
-#define _NAMESPACEAXIS_HPP
+#ifndef _ATTRIBUTEAXIS_HPP
+#define _ATTRIBUTEAXIS_HPP
 
-#include <set>
-
-#include <xqilla/axis/Axis.hpp>
-#include <xqilla/utils/XMLChCompare.hpp>
+#include "Axis.hpp"
 
 #include <xercesc/dom/DOMNamedNodeMap.hpp>
 
-class XQILLA_API NamespaceAxis : public Axis
+class XQILLA_API AttributeAxis : public Axis
 {
 public:
-  NamespaceAxis(const LocationInfo *info, const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *contextNode, const Node *nodeObj,
+  AttributeAxis(const LocationInfo *info, const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *contextNode, const Node *nodeObj,
        const NodeTest *nodeTest, const AxisNodeFactory &factory);
 
   const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *nextNode(DynamicContext *context);
   std::string asString(DynamicContext *context, int indent) const;
 
 private:
-  const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *node_, *originalNode_;
   XERCES_CPP_NAMESPACE_QUALIFIER DOMNamedNodeMap *nodeMap_;
   unsigned int i_;
-
-  enum {
-    CHECK_ELEMENT,
-    CHECK_ATTR,
-    DO_XML,
-    DONE
-  } state_;
-
-  typedef std::set<const XMLCh*, XMLChSort> DoneSet;
-  DoneSet done_;
 };
 
 #endif

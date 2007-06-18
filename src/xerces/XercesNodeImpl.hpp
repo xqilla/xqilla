@@ -16,7 +16,7 @@
 
 #include <xqilla/items/Node.hpp>
 #include <xqilla/utils/XMLChCompare.hpp>
-#include <xqilla/axis/Axis.hpp>
+#include "Axis.hpp"
 
 #include <xercesc/util/XercesDefs.hpp>
 #include <xercesc/framework/XMLBuffer.hpp>

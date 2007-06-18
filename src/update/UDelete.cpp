@@ -36,6 +36,7 @@ ASTNode *UDelete::staticResolution(StaticContext *context)
                                                 SequenceType::STAR);
   seqType->setLocationInfo(this);
 
+  // TBD The error here should be [err:XUTY0007] - jpcs
   expr_ = new (mm) XQTreatAs(expr_, seqType, mm);
   expr_->setLocationInfo(this);
 

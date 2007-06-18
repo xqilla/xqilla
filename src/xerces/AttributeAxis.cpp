@@ -12,7 +12,7 @@
  */
 
 #include "../config/xqilla_config.h"
-#include <xqilla/axis/AttributeAxis.hpp>
+#include "AttributeAxis.hpp"
 #include <xqilla/axis/NodeTest.hpp>
 
 #include <xercesc/util/XMLUniDefs.hpp>

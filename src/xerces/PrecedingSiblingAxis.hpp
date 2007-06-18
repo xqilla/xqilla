@@ -11,20 +11,23 @@
  * $Id$
  */
 
-#ifndef _FOLLOWINGAXIS_HPP
-#define _FOLLOWINGAXIS_HPP
+#ifndef _PRECEDINGSIBLINGAXIS_HPP
+#define _PRECEDINGSIBLINGAXIS_HPP
 
-#include <xqilla/axis/Axis.hpp>
+#include "Axis.hpp"
 
-class XQILLA_API FollowingAxis : public Axis
+/**
+   This class implements the PrecedingSiblingAxis axis as defined by the XPath spec
+*/
+class XQILLA_API PrecedingSiblingAxis : public Axis
 {
 public:
-  FollowingAxis(const LocationInfo *info, const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *contextNode, const Node *nodeObj,
+  PrecedingSiblingAxis(const LocationInfo *info, const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *contextNode, const Node *nodeObj,
        const NodeTest *nodeTest, const AxisNodeFactory &factory);
   const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *nextNode(DynamicContext *context);
   std::string asString(DynamicContext *context, int indent) const;
 private:
-  const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *node_;
+  const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *sibling_;
 };
 
 

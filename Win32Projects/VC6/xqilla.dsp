@@ -425,59 +425,7 @@ SOURCE=..\..\include\xqilla\ast\XQVariableBinding.hpp
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\..\src\axis\AncestorAxis.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\axis\AncestorOrSelfAxis.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\axis\AttributeAxis.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\axis\Axis.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\axis\ChildAxis.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\axis\DescendantAxis.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\axis\DescendantOrSelfAxis.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\axis\FollowingAxis.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\axis\FollowingSiblingAxis.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\axis\NamespaceAxis.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\axis\NodeTest.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\axis\ParentAxis.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\axis\PrecedingAxis.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\axis\PrecedingSiblingAxis.cpp
 # End Source File
 # Begin Source File
 
@@ -485,59 +433,7 @@ SOURCE=..\..\src\axis\SelfAxis.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\include\xqilla\axis\AncestorAxis.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\include\xqilla\axis\AncestorOrSelfAxis.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\include\xqilla\axis\AttributeAxis.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\include\xqilla\axis\Axis.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\include\xqilla\axis\ChildAxis.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\include\xqilla\axis\DescendantAxis.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\include\xqilla\axis\DescendantOrSelfAxis.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\include\xqilla\axis\FollowingAxis.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\include\xqilla\axis\FollowingSiblingAxis.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\include\xqilla\axis\NamespaceAxis.hpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\include\xqilla\axis\NodeTest.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\include\xqilla\axis\ParentAxis.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\include\xqilla\axis\PrecedingAxis.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\include\xqilla\axis\PrecedingSiblingAxis.hpp
 # End Source File
 # Begin Source File
 
@@ -3223,6 +3119,110 @@ SOURCE=..\..\include\xqilla\utils\XStr.hpp
 # Begin Group "xerces"
 
 # PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\src\xerces\AncestorAxis.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\xerces\AncestorOrSelfAxis.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\xerces\AttributeAxis.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\xerces\Axis.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\xerces\ChildAxis.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\xerces\DescendantAxis.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\xerces\DescendantOrSelfAxis.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\xerces\FollowingAxis.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\xerces\FollowingSiblingAxis.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\xerces\NamespaceAxis.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\xerces\ParentAxis.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\xerces\PrecedingAxis.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\xerces\PrecedingSiblingAxis.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\xerces\AncestorAxis.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\xerces\AncestorOrSelfAxis.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\xerces\AttributeAxis.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\xerces\Axis.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\xerces\ChildAxis.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\xerces\DescendantAxis.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\xerces\DescendantOrSelfAxis.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\xerces\FollowingAxis.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\xerces\FollowingSiblingAxis.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\xerces\NamespaceAxis.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\xerces\ParentAxis.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\xerces\PrecedingAxis.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\xerces\PrecedingSiblingAxis.cpp
+# End Source File
 # Begin Source File
 
 SOURCE=..\..\src\xerces\XercesConfiguration.cpp

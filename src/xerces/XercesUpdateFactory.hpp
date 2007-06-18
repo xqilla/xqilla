@@ -44,11 +44,11 @@ public:
   virtual void applyReplaceAttribute(const PendingUpdate &update, DynamicContext *context);
   virtual void applyReplaceElementContent(const PendingUpdate &update, DynamicContext *context);
 
-  virtual void completeRevalidation(DynamicContext *context);
-  virtual void completeDeletions(DynamicContext *context);
   virtual void completeUpdate(DynamicContext *context);
 
 protected:
+  void completeDeletions(DynamicContext *context);
+  void completeRevalidation(DynamicContext *context);
   void removeType(XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *node);
   void setToUntyped(XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *node);
   void addToPutList(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *node, const LocationInfo *location, DynamicContext *context);

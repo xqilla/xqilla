@@ -11,23 +11,20 @@
  * $Id$
  */
 
-#ifndef _CHILDAXIS_HPP
-#define _CHILDAXIS_HPP
+#ifndef _FOLLOWINGAXIS_HPP
+#define _FOLLOWINGAXIS_HPP
 
-#include <xqilla/axis/Axis.hpp>
+#include "Axis.hpp"
 
-/**
-This class implements the ChildAxis axis as defined by the XPath spec
-*/
-class XQILLA_API ChildAxis : public Axis
+class XQILLA_API FollowingAxis : public Axis
 {
 public:
-  ChildAxis(const LocationInfo *info, const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *contextNode, const Node *nodeObj,
+  FollowingAxis(const LocationInfo *info, const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *contextNode, const Node *nodeObj,
        const NodeTest *nodeTest, const AxisNodeFactory &factory);
   const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *nextNode(DynamicContext *context);
   std::string asString(DynamicContext *context, int indent) const;
 private:
-  const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *child_;
+  const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *node_;
 };
 
 

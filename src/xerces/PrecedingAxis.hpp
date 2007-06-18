@@ -14,7 +14,7 @@
 #ifndef _PRECEDINGAXIS_HPP
 #define _PRECEDINGAXIS_HPP
 
-#include <xqilla/axis/Axis.hpp>
+#include "Axis.hpp"
 
 /**
 This class implements the PrecedingAxis axis as defined by the XPath spec

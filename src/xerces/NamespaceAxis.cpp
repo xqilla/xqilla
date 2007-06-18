@@ -12,7 +12,7 @@
  */
 
 #include "../config/xqilla_config.h"
-#include <xqilla/axis/NamespaceAxis.hpp>
+#include "NamespaceAxis.hpp"
 #include <xqilla/utils/XPath2NSUtils.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/context/ItemFactory.hpp>
