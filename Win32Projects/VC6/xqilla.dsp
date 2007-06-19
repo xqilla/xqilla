@@ -1077,6 +1077,10 @@ SOURCE=..\..\include\xqilla\fulltext\TokenStore.hpp
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=..\..\src\functions\ExternalFunctions.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\functions\FuncFactory.cpp
 # End Source File
 # Begin Source File
@@ -1538,6 +1542,10 @@ SOURCE=..\..\src\functions\FunctionZeroOrOne.cpp
 # Begin Source File
 
 SOURCE=..\..\src\functions\XQUserFunction.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\functions\ExternalFunctions.hpp
 # End Source File
 # Begin Source File
 
