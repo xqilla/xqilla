@@ -1077,7 +1077,7 @@ SOURCE=..\..\include\xqilla\fulltext\TokenStore.hpp
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\..\src\functions\ExternalFunctions.cpp
+SOURCE=..\..\src\functions\ExternalFunction.cpp
 # End Source File
 # Begin Source File
 
@@ -1545,7 +1545,7 @@ SOURCE=..\..\src\functions\XQUserFunction.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\include\xqilla\functions\ExternalFunctions.hpp
+SOURCE=..\..\include\xqilla\functions\ExternalFunction.hpp
 # End Source File
 # Begin Source File
 
