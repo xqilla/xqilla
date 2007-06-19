@@ -1153,7 +1153,7 @@
 			Name="functions"
 			Filter="">
 			<File
-				RelativePath="..\..\src\functions\ExternalFunctions.cpp">
+				RelativePath="..\..\src\functions\ExternalFunction.cpp">
 			</File>
 			<File
 				RelativePath="..\..\src\functions\FuncFactory.cpp">
@@ -1504,7 +1504,7 @@
 				RelativePath="..\..\src\functions\XQUserFunction.cpp">
 			</File>
 			<File
-				RelativePath="..\..\include\xqilla\functions\ExternalFunctions.hpp">
+				RelativePath="..\..\include\xqilla\functions\ExternalFunction.hpp">
 			</File>
 			<File
 				RelativePath="..\..\include\xqilla\functions\FuncFactory.hpp">
