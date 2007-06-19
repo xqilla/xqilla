@@ -142,6 +142,7 @@ src/framework/ProxyMemoryManager.cpp	lib
 src/framework/ReferenceCounted.cpp	lib
 src/framework/StringPool.cpp	lib
 src/framework/XPath2MemoryManagerImpl.cpp	lib
+src/functions/ExternalFunctions.cpp	lib
 src/functions/FuncFactory.cpp	lib
 src/functions/FuncFactoryTemplate.hpp	lib
 src/functions/FunctionAbs.cpp	lib
@@ -558,6 +559,7 @@ include/xqilla/framework/StringPool.hpp	lib
 include/xqilla/framework/XPath2MemoryManager.hpp	lib
 include/xqilla/framework/XPath2MemoryManagerImpl.hpp	lib
 include/xqilla/framework/XQillaExport.hpp	lib
+include/xqilla/functions/ExternalFunctions.hpp	lib
 include/xqilla/functions/FuncFactory.hpp	lib
 include/xqilla/functions/FunctionAbs.hpp	lib
 include/xqilla/functions/FunctionAdjustDateTimeToTimezone.hpp	lib
