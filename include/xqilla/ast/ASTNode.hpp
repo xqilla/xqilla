@@ -46,10 +46,8 @@ public:
     OPERATOR,
     CONTEXT_ITEM,
     PARENTHESIZED,
-    DEBUG_HOOK,
     DOM_CONSTRUCTOR,
-    FLWOR,
-    FLWOR_QUANTIFIED,
+    QUANTIFIED,
     TYPESWITCH,
     VALIDATE,
     FUNCTION_CALL,
@@ -76,7 +74,8 @@ public:
     UAPPLY_UPDATES,
     NAME_EXPRESSION,
     CONTENT_SEQUENCE,
-    DIRECT_NAME
+    DIRECT_NAME,
+    RETURN
   } whichType;
 
   ASTNode() : userData_(0) {}

@@ -13,13 +13,13 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/ast/XQElementConstructor.hpp>
-#include <xqilla/ast/XQDebugHook.hpp>
 #include <xqilla/ast/StaticResolutionContext.hpp>
 #include <xqilla/ast/XQSequence.hpp>
 #include <xqilla/ast/XQLiteral.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/context/ItemFactory.hpp>
-#include <xqilla/context/XQScopedNamespace.hpp>
+#include <xqilla/context/ContextHelpers.hpp>
+#include <xqilla/dom-api/impl/XQillaNSResolverImpl.hpp>
 #include <xqilla/exceptions/ASTException.hpp>
 #include <xqilla/exceptions/NamespaceLookupException.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>
@@ -173,8 +173,8 @@ void XQElementConstructor::generateEvents(EventHandler *events, DynamicContext *
   events = &filter;
 
   // Add a new scope for the namespace definitions, before we try to assign a URI to the name of the element
-  XQScopedNamespace locallyDefinedNamespaces(context->getMemoryManager(), NULL);
-  XQScopedNamespace newNSScope(context->getMemoryManager(), context->getNSResolver());
+  XQillaNSResolverImpl locallyDefinedNamespaces(context->getMemoryManager());
+  XQillaNSResolverImpl newNSScope(context->getMemoryManager(), context->getNSResolver());
   AutoNsScopeReset jan(context, &newNSScope);
 
   if(m_namespaces != 0) {
@@ -231,7 +231,7 @@ ASTNode* XQElementConstructor::staticResolution(StaticContext *context)
   XPath2MemoryManager *mm = context->getMemoryManager();
 
   // Add a new scope for the namespace definitions
-  XQScopedNamespace newNSScope(context->getMemoryManager(), context->getNSResolver());
+  XQillaNSResolverImpl newNSScope(context->getMemoryManager(), context->getNSResolver());
   AutoNsScopeReset jan(context, &newNSScope);
   unsigned int i;
 
@@ -242,8 +242,6 @@ ASTNode* XQElementConstructor::staticResolution(StaticContext *context)
     for (VectorOfASTNodes::iterator it=m_attrList->begin();it!=m_attrList->end();) 
     {
       ASTNode* astNode=*it;
-      if(astNode->getType()==ASTNode::DEBUG_HOOK)
-          astNode=((XQDebugHook*)astNode)->m_impl;
       assert(astNode->getType()==ASTNode::DOM_CONSTRUCTOR && 
              ((XQDOMConstructor*)astNode)->getNodeType()==Node::attribute_string);
       XQDOMConstructor* attrConstructor=(XQDOMConstructor*)astNode;
@@ -305,8 +303,6 @@ ASTNode* XQElementConstructor::staticResolution(StaticContext *context)
     for (i=0;i<m_attrList->size();i++) 
     {
       ASTNode* astNode=(*m_attrList)[i];
-      if(astNode->getType()==ASTNode::DEBUG_HOOK)
-          astNode=((XQDebugHook*)astNode)->m_impl;
       assert(astNode->getType()==ASTNode::DOM_CONSTRUCTOR && 
              ((XQDOMConstructor*)astNode)->getNodeType()==Node::attribute_string);
       XQDOMConstructor* attrConstructor=(XQDOMConstructor*)astNode;
@@ -345,31 +341,10 @@ ASTNode* XQElementConstructor::staticResolution(StaticContext *context)
   m_name = m_name->staticResolution(context);
 
 
-  for (i=0;i<m_children->size();i++) {
-    // expand entities in string literals
-    if((*m_children)[i]->getType()==LITERAL)
-    {
-      AutoDelete<DynamicContext> dContext(context->createDynamicContext());
-      dContext->setMemoryManager(mm);
-      XQLiteral *lit = (XQLiteral*)(*m_children)[i];
-      Item::Ptr item = lit->getItemConstructor()->createItem(dContext);
-      if(((AnyAtomicType*)(const Item*)item)->getPrimitiveTypeIndex()==AnyAtomicType::STRING)
-      {
-        const XMLCh* str=item->asString(dContext);
-        XMLBuffer buff(XMLString::stringLen(str)+1, mm);
-        buff.append(str);
-        unescapeEntities(buff);
-        AnyAtomicTypeConstructor *newIC = new (mm)
-                        AnyAtomicTypeConstructor(
-                            SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                            SchemaSymbols::fgDT_STRING,
-                mm->getPooledString(buff.getRawBuffer()), AnyAtomicType::STRING);
-        lit->setItemConstructor(newIC);
-      }
-    }
-
+  for(i = 0; i < m_children->size(); ++i) {
     (*m_children)[i] = new (mm) XQContentSequence((*m_children)[i], mm);
     (*m_children)[i]->setLocationInfo(this);
+
     (*m_children)[i] = (*m_children)[i]->staticResolution(context);
   }
 
@@ -381,7 +356,7 @@ ASTNode* XQElementConstructor::staticTyping(StaticContext *context)
   _src.clear();
 
   // Add a new scope for the namespace definitions
-  XQScopedNamespace newNSScope(context->getMemoryManager(), context->getNSResolver());
+  XQillaNSResolverImpl newNSScope(context->getMemoryManager(), context->getNSResolver());
   AutoNsScopeReset jan(context, &newNSScope);
 
   if(m_namespaces != 0) {

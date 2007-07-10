@@ -60,6 +60,7 @@ public:
      * Getter for m_nTestType
      */
     ItemTestType getItemTestType(void) const;
+    void setItemTestType(ItemTestType t);
 
     void setAllowNilled(bool value);
     bool getAllowNilled() const;

@@ -11,12 +11,8 @@
  * $Id$
  */
 
-//////////////////////////////////////////////////////////////////////
-// XQGlobalVariable.hpp: interface for the XQGlobalVariable class.
-//////////////////////////////////////////////////////////////////////
-
-#if !defined(AFXQ_XQGLOBALVARIABLE_H__A97FA5AD_5355_45CD_9092_ED94F5CD035B__INCLUDED_)
-#define AFXQ_XQGLOBALVARIABLE_H__A97FA5AD_5355_45CD_9092_ED94F5CD035B__INCLUDED_
+#ifndef XQGLOBALVARIABLE_HPP
+#define XQGLOBALVARIABLE_HPP
 
 #include <xqilla/ast/ASTNodeImpl.hpp>
 
@@ -50,4 +46,4 @@ protected:
   StaticResolutionContext _src;
 };
 
-#endif // !defined(AFXQ_XQGLOBALVARIABLE_H__A97FA5AD_5355_45CD_9092_ED94F5CD035B__INCLUDED_)
+#endif

@@ -11,8 +11,8 @@
  * $Id$
  */
 
-#if !defined(AFXQ_XQTEXTCONSTRUCTOR_H__56E97972_3896_49D3_B055_36CC3E9E550A__INCLUDED_)
-#define AFXQ_XQTEXTCONSTRUCTOR_H__56E97972_3896_49D3_B055_36CC3E9E550A__INCLUDED_
+#ifndef XQTEXTCONSTRUCTOR_HPP
+#define XQTEXTCONSTRUCTOR_HPP
 
 #include <xqilla/ast/XQDOMConstructor.hpp>
 
@@ -21,7 +21,7 @@ class EventHandler;
 class XQILLA_API XQTextConstructor : public XQDOMConstructor
 {
 public:
-  XQTextConstructor(bool isCDATA, ASTNode *value, XPath2MemoryManager* mm);
+  XQTextConstructor(ASTNode *value, XPath2MemoryManager* mm);
 
   virtual void generateEvents(EventHandler *events, DynamicContext *context,
                               bool preserveNS, bool preserveType) const;

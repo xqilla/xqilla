@@ -11,12 +11,8 @@
  * $Id$
  */
 
-//////////////////////////////////////////////////////////////////////
-// XQException.h: interface for the XQException class.
-//////////////////////////////////////////////////////////////////////
-
-#if !defined(AFXQ_XQEXCEPTION_H__446AD191_E9D0_4658_BD8C_032D29DA123E__INCLUDED_)
-#define AFXQ_XQEXCEPTION_H__446AD191_E9D0_4658_BD8C_032D29DA123E__INCLUDED_
+#ifndef XQEXCEPTION_HPP
+#define XQEXCEPTION_HPP
 
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/utils/XStr.hpp>
@@ -35,23 +31,19 @@ public:
   XQException(const XQException &);
   virtual ~XQException();
 
-  const XMLCh *getType() const { return m_type; }
-  const XMLCh *getError() const { return m_error; }
+  const XMLCh *getType() const { return type_; }
+  const XMLCh *getError() const { return error_; }
 
-  const XMLCh *getXQueryFile() const { return m_xqFile; }
-  unsigned int getXQueryLine() const { return m_xqLine; }
-  unsigned int getXQueryColumn() const { return m_xqColumn; }
+  const XMLCh *getXQueryFile() const { return xqFile_; }
+  unsigned int getXQueryLine() const { return xqLine_; }
+  unsigned int getXQueryColumn() const { return xqColumn_; }
 
   void setXQueryPosition(const XMLCh *file, unsigned int line, unsigned int column);
   void setXQueryPosition(const LocationInfo *info);
 
-  const XMLCh *getCppFunction() const { return m_cppFunction; }
-  const char *getCppFile() const { return m_cppFile; }
-  unsigned int getCppLine() const { return m_cppLine; }
-
-  /// For debugger
-  bool isErrorReported() const { return m_errorReported; }
-  void setErrorReported(bool value = true) { m_errorReported = value; }
+  const XMLCh *getCppFunction() const { return cppFunction_; }
+  const char *getCppFile() const { return cppFile_; }
+  unsigned int getCppLine() const { return cppLine_; }
 
   void printDebug(const XMLCh* const context) const;
 
@@ -61,18 +53,16 @@ protected:
 private:
   XQException &operator=(const XQException &);
   
-  XMLCh* m_type;
-  XMLCh* m_error;
+  XMLCh* type_;
+  XMLCh* error_;
 
-  XMLCh* m_cppFunction;
-  const char *m_cppFile;
-  unsigned int m_cppLine;
+  XMLCh* cppFunction_;
+  const char *cppFile_;
+  unsigned int cppLine_;
 
-  unsigned int m_xqLine, m_xqColumn;
-  XMLCh* m_xqFile;
-
-  bool m_errorReported;
+  unsigned int xqLine_, xqColumn_;
+  XMLCh* xqFile_;
 };
 
-#endif // !defined(AFXQ_XQEXCEPTION_H__446AD191_E9D0_4658_BD8C_032D29DA123E__INCLUDED_)
+#endif
 

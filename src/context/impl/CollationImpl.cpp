@@ -19,10 +19,6 @@
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/context/ItemFactory.hpp>
 
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
-
 CollationImpl::CollationImpl(XPath2MemoryManager* memMgr, CollationHelper* helper)
 {
   _memMgr=memMgr;

@@ -11,12 +11,8 @@
  * $Id$
  */
 
-//////////////////////////////////////////////////////////////////////
-// XQOrderingChange.hpp: interface for the XQOrderingChange class.
-//////////////////////////////////////////////////////////////////////
-
-#if !defined(AFXQ_XQORDERINGCHANGE_H__A97FA5AE_5355_45CD_9092_ED94F5CD035B__INCLUDED_)
-#define AFXQ_XQORDERINGCHANGE_H__A97FA5AE_5355_45CD_9092_ED94F5CD035B__INCLUDED_
+#ifndef XQORDERINGCHANGE_HPP
+#define XQORDERINGCHANGE_HPP
 
 #include <xqilla/ast/ASTNodeImpl.hpp>
 #include <xqilla/context/StaticContext.hpp>
@@ -39,4 +35,4 @@ protected:
   ASTNode* m_pExpr;
 };
 
-#endif // !defined(AFXQ_XQORDERINGCHANGE_H__A97FA5AE_5355_45CD_9092_ED94F5CD035B__INCLUDED_)
+#endif

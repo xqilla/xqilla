@@ -11,8 +11,8 @@
  * $Id$
  */
 
-#if !defined(AFXQ_NORMALIZER_H__6BA76C4A_0A5B_480B_9870_86A89A118100__INCLUDED_)
-#define AFXQ_NORMALIZER_H__6BA76C4A_0A5B_480B_9870_86A89A118100__INCLUDED_
+#ifndef UCANORMALIZER_HPP
+#define UCANORMALIZER_HPP
 
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xercesc/framework/XMLBuffer.hpp>
@@ -149,4 +149,4 @@ public:
   static void upperCase(const XMLCh* source, XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &dest);
 };
 
-#endif // !defined(AFXQ_NORMALIZER_H__6BA76C4A_0A5B_480B_9870_86A89A118100__INCLUDED_)
+#endif

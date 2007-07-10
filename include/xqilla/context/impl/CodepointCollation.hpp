@@ -11,8 +11,8 @@
  * $Id$
  */
 
-#if !defined(AFXQ_CODEPOINTCOLLATION_H__6BA76C4A_0A5B_480B_9870_86A89A118100__INCLUDED_)
-#define AFXQ_CODEPOINTCOLLATION_H__6BA76C4A_0A5B_480B_9870_86A89A118100__INCLUDED_
+#ifndef CODEPOINTCOLLATION_HPP
+#define CODEPOINTCOLLATION_HPP
 
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/context/impl/CollationImpl.hpp>
@@ -28,4 +28,4 @@ public:
 	virtual int compare(const XMLCh* string1, const XMLCh* string2) const;
 };
 
-#endif // !defined(AFXQ_CODEPOINTCOLLATION_H__6BA76C4A_0A5B_480B_9870_86A89A118100__INCLUDED_)
+#endif

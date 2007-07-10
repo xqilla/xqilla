@@ -11,12 +11,8 @@
  * $Id$
  */
 
-//////////////////////////////////////////////////////////////////////
-// XQFunction.hpp: interface for the XQFunction class.
-//////////////////////////////////////////////////////////////////////
-
-#if !defined(AFXQ_XQFUNCTION_H__97943356_0D2D_4930_9D60_6E95AB67586A__INCLUDED_)
-#define AFXQ_XQFUNCTION_H__97943356_0D2D_4930_9D60_6E95AB67586A__INCLUDED_
+#ifndef XQUSERFUNCTION_HPP
+#define XQUSERFUNCTION_HPP
 
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/functions/FuncFactory.hpp>
@@ -25,37 +21,44 @@
 #include <xqilla/schema/DocumentCache.hpp>
 #include <xqilla/ast/XQFunction.hpp>
 #include <xqilla/ast/StaticResolutionContext.hpp>
-#include <xqilla/context/Scope.hpp>
+#include <xqilla/context/impl/VarStoreImpl.hpp>
 
 class XQILLA_API XQUserFunction : public FuncFactory, public LocationInfo
 {
 public:
-  class XQFunctionParameter
+  class ArgumentSpec : public LocationInfo
   {
   public:
-    XQFunctionParameter(const XMLCh* paramName, SequenceType* type, XPath2MemoryManager* memMgr)
-      : _src(memMgr)
+    ArgumentSpec(const XMLCh *qname, SequenceType *type, XPath2MemoryManager *memMgr)
+      : src_(memMgr)
     {
-      _qname = memMgr->getPooledString(paramName);
-      m_pType = type;
+      qname_ = memMgr->getPooledString(qname);
+      seqType_ = type;
     }
 
-    const XMLCh *_qname, *_uri, *_name;
-    SequenceType* m_pType;
-    StaticResolutionContext _src;
+    const XMLCh *getURI() const { return uri_; }
+    const XMLCh *getName() const { return name_; }
+    SequenceType *getType() const { return seqType_; }
+
+    bool isUsed() const { return qname_ != 0; }
+    void setNotUsed() { qname_ = 0; }
+
+    const StaticResolutionContext &getStaticResolutionContext() const { return src_; }
+
+    void staticResolution(StaticContext* context);
+
+  private:
+    const XMLCh *qname_, *uri_, *name_;
+    SequenceType *seqType_;
+    StaticResolutionContext src_;
   };
 
-  typedef std::vector<XQFunctionParameter*,XQillaAllocator<XQFunctionParameter*> > VectorOfFunctionParameters;
+  typedef std::vector<ArgumentSpec*,XQillaAllocator<ArgumentSpec*> > ArgumentSpecs;
 
-  class XQFunctionEvaluator : public XQFunction, public ExternalFunction::Arguments
+  class Instance : public XQFunction, public ExternalFunction::Arguments
   {
   public:
-    XQFunctionEvaluator(const XQUserFunction* funcDef, const VectorOfASTNodes& args, XPath2MemoryManager* expr);
-
-    void setSignature(const XMLCh* signature)
-    {
-      _signature=signature;
-    }
+    Instance(const XQUserFunction *funcDef, const VectorOfASTNodes& args, XPath2MemoryManager* expr);
 
     virtual Result getArgument(unsigned int index, DynamicContext *context) const;
 
@@ -66,61 +69,59 @@ public:
     virtual ASTNode *staticTyping(StaticContext *context);
     virtual PendingUpdateList createUpdateList(DynamicContext *context) const;
 
-    void evaluateArguments(DynamicContext *context) const;
+    void evaluateArguments(VarStoreImpl &scope, DynamicContext *context) const;
 
     const XQUserFunction *getFunctionDefinition() const
     {
-      return m_pFuncDef;
+      return funcDef_;
     }
 
   protected:
     class FunctionEvaluatorResult : public ResultImpl
     {
     public:
-      FunctionEvaluatorResult(const XQFunctionEvaluator *di);
+      FunctionEvaluatorResult(const Instance *di, DynamicContext *context);
 
       Item::Ptr next(DynamicContext *context);
       std::string asString(DynamicContext *context, int indent) const;
     private:
-      const XQFunctionEvaluator *_di;
+      const Instance *_di;
       bool _toDo;
 
-      Scope<Sequence> *_scope;
+      VarStoreImpl _scope;
       Result _result;
-      bool _scopeRemoved;
     };
 
     class ExternalFunctionEvaluatorResult : public ResultImpl
     {
     public:
-      ExternalFunctionEvaluatorResult(const XQFunctionEvaluator *di);
+      ExternalFunctionEvaluatorResult(const Instance *di);
 
       Item::Ptr next(DynamicContext *context);
       std::string asString(DynamicContext *context, int indent) const;
     private:
-      const XQFunctionEvaluator *_di;
+      const Instance *_di;
       bool _toDo;
 
       Result _result;
     };
 
     bool addReturnCheck_;
-    const XQUserFunction* m_pFuncDef;
+    const XQUserFunction *funcDef_;
   };
 
-  XQUserFunction(const XMLCh* fnName, VectorOfFunctionParameters* params, ASTNode* body, SequenceType* returnValue, bool isUpdating, StaticContext* ctx);
+  XQUserFunction(const XMLCh *qname, ArgumentSpecs *argSpecs, ASTNode *body, SequenceType *returnType, bool isUpdating, XPath2MemoryManager *mm);
 
   // from FuncFactory
   virtual ASTNode *createInstance(const VectorOfASTNodes &args, XPath2MemoryManager* expr) const;
-  virtual const XMLCh* getName() const;
-  virtual const XMLCh *getURI() const;
-  virtual const XMLCh *getURINameHash() const;
+  virtual const XMLCh* getName() const { return name_; }
+  virtual const XMLCh *getURI() const { return uri_; }
+  virtual const XMLCh *getURINameHash() const { return uriname_; }
   virtual unsigned int getMinArgs() const;
   virtual unsigned int getMaxArgs() const;
 
-  virtual const XMLCh* getFullName() const;
-  const VectorOfFunctionParameters* getParams() const;
-  const SequenceType* getReturnValue() const;
+  const ArgumentSpecs* getArgumentSpecs() const { return argSpecs_; }
+  const SequenceType* getReturnType() const { return returnType_; }
   bool isUpdating() const { return isUpdating_; }
 
   /// Resolve URIs, give the function a default static type
@@ -129,36 +130,30 @@ public:
   void staticResolutionStage2(StaticContext* context);
   void staticTyping(StaticContext *context);
 
-  void setSignature(const XMLCh* signature);
-  const XMLCh* getSignature();
-  bool isExternal() const;
-  void setFunctionBody(ASTNode* value);
-  void setModuleDocumentCache(DocumentCache* docCache);
+  void setFunctionBody(ASTNode* value) { body_ = value; }
+  void setModuleDocumentCache(DocumentCache* docCache) { moduleDocCache_ = docCache; }
 
-  void setURI(const XMLCh* uri);
-  const XMLCh *getPrefix() const;
-
-  const ASTNode *getFunctionBody() const;
-  const ExternalFunction *getExternalFunction() const;
-  DocumentCache* getModuleDocumentCache() const;
+  const ASTNode *getFunctionBody() const { return body_; }
+  const ExternalFunction *getExternalFunction() const { return exFunc_; }
+  DocumentCache *getModuleDocumentCache() const { return moduleDocCache_; }
 
   static const XMLCh XMLChXQueryLocalFunctionsURI[];
 
 protected:
-  ASTNode* m_body;
+  ASTNode *body_;
   const ExternalFunction *exFunc_;
-  const XMLCh* m_szPrefix,*m_szName,*m_szSignature,*m_szFullName,*m_szURI;
-  const XMLCh *m_uriname;
-  SequenceType* m_pReturnPattern;
-  VectorOfFunctionParameters* m_pParams;
+  const XMLCh *name_, *qname_, *uri_;
+  const XMLCh *uriname_;
+  SequenceType *returnType_;
+  ArgumentSpecs *argSpecs_;
   bool isUpdating_;
 
-  XPath2MemoryManager* m_pMemMgr;
-  StaticResolutionContext _src;
-  bool m_bCalculatingSRC;
-  DocumentCache* m_moduleDocCache;
+  XPath2MemoryManager *memMgr_;
+  StaticResolutionContext src_;
+  bool calculatingSRC_;
+  DocumentCache *moduleDocCache_;
 
-  friend class XQFunctionEvaluator;
+  friend class Instance;
 };
 
-#endif // !defined(AFXQ_XQFUNCTION_H__97943356_0D2D_4930_9D60_6E95AB67586A__INCLUDED_)
+#endif

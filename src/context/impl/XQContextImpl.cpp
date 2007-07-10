@@ -23,7 +23,6 @@
 #include <xqilla/context/URIResolver.hpp>
 #include <xqilla/context/ModuleResolver.hpp>
 #include <xqilla/context/Collation.hpp>
-#include <xqilla/ast/XQDebugHook.hpp>
 #include <xqilla/ast/XQFunction.hpp>
 #include <xqilla/ast/XQSequence.hpp>
 #include <xqilla/utils/XPath2NSUtils.hpp>
@@ -65,9 +64,12 @@ XQContextImpl::XQContextImpl(XQillaConfiguration *conf, XQilla::Language languag
     _bPreserveBoundarySpace(false),
     _revalidationMode(DocumentCache::VALIDATION_STRICT),
     _messageListener(0),
-    _varStore(0),
+    _varStore(&_defaultVarStore),
+    _globalVarStore(&_defaultVarStore),
+    _defaultVarStore(&_internalMM),
     _resolvers(XQillaAllocator<ResolverEntry>(&_internalMM)),
-    _moduleResolver(0)
+    _moduleResolver(0),
+    _tmpVarCounter(0)
 {
   _memMgr = &_internalMM;
 
@@ -78,7 +80,7 @@ XQContextImpl::XQContextImpl(XQillaConfiguration *conf, XQilla::Language languag
   _xpath1Compatibility = false;    // according to Formal Semantics, § 4.1.1
   _ordering = ORDERING_ORDERED;
 
-  _globalNSResolver = new (&_internalMM) XQillaNSResolverImpl(&_internalMM, 0); // resolve acc.to null node
+  _globalNSResolver = new (&_internalMM) XQillaNSResolverImpl(&_internalMM);
   _nsResolver = _globalNSResolver;
 
   _defaultElementNS = 0;
@@ -90,8 +92,6 @@ XQContextImpl::XQContextImpl(XQillaConfiguration *conf, XQilla::Language languag
 	// memory manager - jpcs
   _docCache = conf->createDocumentCache(_createdWith);
 
-  if(_varStore==NULL)
-    _varStore=_internalMM.createVariableStore();
   if(_varTypeStore==NULL)
     _varTypeStore=_internalMM.createVariableTypeStore();
 
@@ -132,10 +132,6 @@ XQContextImpl::XQContextImpl(XQillaConfiguration *conf, XQilla::Language languag
     _defaultResolver.adopt = true;
   }
 
-  // XQuery stuff
-  m_pDebugCallback = NULL;
-  m_bEnableDebugging = false;
-
   // XQuery defines these predefined namespace bindings
   setNamespaceBinding(XMLChXS, SchemaSymbols::fgURI_SCHEMAFORSCHEMA);
   setNamespaceBinding(XMLChXSI, SchemaSymbols::fgURI_XSI);
@@ -146,12 +142,10 @@ XQContextImpl::XQContextImpl(XQillaConfiguration *conf, XQilla::Language languag
 
 XQContextImpl::~XQContextImpl()
 {
-  _varStore->clear();
   _varTypeStore->clear();
   _contextItem = 0;
   _implicitTimezone = 0;
 
-  delete _varStore;
   delete _varTypeStore;
   delete _itemFactory;
   delete _docCache;
@@ -183,10 +177,6 @@ DynamicContext *XQContextImpl::createModuleContext(MemoryManager *memMgr) const
   for(std::vector<Collation*, XQillaAllocator<Collation*> >::const_iterator it= _collations.begin(); it!=_collations.end(); ++it)
     moduleCtx->addCollation(*it);
 
-  // propagate debug settings
-  moduleCtx->enableDebugging(m_bEnableDebugging);
-  moduleCtx->setDebugCallback(m_pDebugCallback);
-
   _conf->populateStaticContext(moduleCtx);
   return moduleCtx;
 }
@@ -210,10 +200,6 @@ DynamicContext *XQContextImpl::createModuleDynamicContext(const DynamicContext* 
 
   // Set the MessageListener
   moduleDCtx->setMessageListener(_messageListener);
-
-  // propagate debug settings
-  moduleDCtx->enableDebugging(m_bEnableDebugging);
-  moduleDCtx->setDebugCallback(m_pDebugCallback);
 
   _conf->populateDynamicContext(moduleDCtx);
   return moduleDCtx;
@@ -277,34 +263,17 @@ bool XQContextImpl::getPreserveNamespaces() const
     return _bPreserveNamespaces;
 }
 
-void XQContextImpl::setDebugCallback(XQDebugCallback* callback)
-{
-    m_pDebugCallback=callback;
-}
-
-XQDebugCallback* XQContextImpl::getDebugCallback() const
-{
-    return m_pDebugCallback;
-}
-
-void XQContextImpl::enableDebugging(bool enable/*=true*/)
-{
-    m_bEnableDebugging=enable;
-}
-
-bool XQContextImpl::isDebuggingEnabled() const
-{
-    return m_bEnableDebugging;
-}
-
 void XQContextImpl::clearDynamicContext()
 {
   _nsResolver = _globalNSResolver;
   _contextItem = 0;
   _contextSize = 1;
   _contextPosition = 1;
-  _varStore->clear();
   _implicitTimezone = 0;
+
+  _defaultVarStore.clear();
+  _varStore = &_defaultVarStore;
+  _globalVarStore = &_defaultVarStore;
 
   if(_defaultResolver.adopt)
     delete _defaultResolver.resolver;
@@ -473,9 +442,38 @@ Item::Ptr XQContextImpl::getContextItem() const
   return _contextItem;
 }
 
-VariableStore* XQContextImpl::getVariableStore()
+const VariableStore* XQContextImpl::getVariableStore() const
 {
   return _varStore;
+}
+
+void XQContextImpl::setVariableStore(const VariableStore *store)
+{
+  assert(store);
+  _varStore = store;
+}
+
+const VariableStore* XQContextImpl::getGlobalVariableStore() const
+{
+  return _globalVarStore;
+}
+
+void XQContextImpl::setGlobalVariableStore(const VariableStore *store)
+{
+  _globalVarStore = store;
+}
+
+void XQContextImpl::setExternalVariable(const XMLCh *namespaceURI, const XMLCh *name, const Sequence &value)
+{
+  _defaultVarStore.setVar(namespaceURI, name, value);
+}
+
+void XQContextImpl::setExternalVariable(const XMLCh *qname, const Sequence &value)
+{
+  const XMLCh *uri = getUriBoundToPrefix(XPath2NSUtils::getPrefix(qname, getMemoryManager()), 0);
+  const XMLCh *name = XPath2NSUtils::getLocalName(qname);
+
+  _defaultVarStore.setVar(uri, name, value);
 }
 
 VariableTypeStore* XQContextImpl::getVariableTypeStore()
@@ -550,26 +548,9 @@ Collation* XQContextImpl::getDefaultCollation(const LocationInfo *location) cons
   return getCollation(_defaultCollation, location);
 }
 
-ASTNode* XQContextImpl::lookUpFunction(const XMLCh* prefix, const XMLCh* name, VectorOfASTNodes& v,
-                                       const LocationInfo *location) const
+ASTNode *XQContextImpl::lookUpFunction(const XMLCh *uri, const XMLCh* name, const VectorOfASTNodes &v) const
 {
-	const XMLCh* uri;
-
-	//look at default namespace
-	if(prefix == 0) {
-		uri = getDefaultFuncNS();
-	}
-	else {
-		uri = getUriBoundToPrefix(prefix, location);
-
-		//not bound to anything - error
-		if(uri == 0) {
-			const XMLCh* msg = XPath2Utils::concatStrings(X("The prefix '"), prefix , X("' is not bound to a uri in the current context"), getMemoryManager());
-			XQThrow3(NamespaceLookupException, X("XQContextImpl::lookUpFunction"), msg, location);
-		}
-	}
-
-	ASTNode* functionImpl= FunctionLookup::lookUpGlobalFunction(uri, name, v, getMemoryManager(), _functionTable);
+  ASTNode* functionImpl = FunctionLookup::lookUpGlobalFunction(uri, name, v, getMemoryManager(), _functionTable);
 
   if(functionImpl == NULL && v.size() == 1) {
     // maybe it's not a function, but a datatype
@@ -718,17 +699,17 @@ VectorOfStrings* XQContextImpl::resolveModuleURI(const XMLCh* uri) const
  */
 bool XQContextImpl::isTypeOrDerivedFromType(const XMLCh* uri, const XMLCh* typeName, const XMLCh* uriToCheck, const XMLCh* typeNameToCheck) const
 {
-	return _docCache->isTypeOrDerivedFromType(uri,typeName,uriToCheck,typeNameToCheck);
+  return _docCache->isTypeOrDerivedFromType(uri,typeName,uriToCheck,typeNameToCheck);
 }
 
-void XQContextImpl::addSchemaLocation(const XMLCh* uri, VectorOfStrings* locations)
+void XQContextImpl::addSchemaLocation(const XMLCh* uri, VectorOfStrings* locations, const LocationInfo *location)
 {
-	_docCache->addSchemaLocation(uri, locations, this);
+  _docCache->addSchemaLocation(uri, locations, this, location);
 }
 
 const DocumentCache* XQContextImpl::getDocumentCache() const
 {
-	return _docCache;
+  return _docCache;
 }
 
 void XQContextImpl::setDocumentCache(DocumentCache* docCache)
@@ -784,5 +765,17 @@ MessageListener *XQContextImpl::getMessageListener() const
 void XQContextImpl::testInterrupt() const
 {
   _conf->testInterrupt();
+}
+
+const XMLCh *XQContextImpl::allocateTempVarName()
+{
+  static XMLCh prefix[] = { '#', 't', 'm', 'p', 0 };
+
+  XMLBuffer buf(20);
+  buf.set(prefix);
+  XPath2Utils::numToBuf(_tmpVarCounter, buf);
+
+  ++_tmpVarCounter;
+  return getMemoryManager()->getPooledString(buf.getRawBuffer());
 }
 

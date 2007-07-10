@@ -11,39 +11,27 @@
  * $Id$
  */
 
-//////////////////////////////////////////////////////////////////////
-// XQFunctionCall.hpp: interface for the XQFunctionCall class.
-//////////////////////////////////////////////////////////////////////
+#ifndef XQFUNCTIONCALL_HPP
+#define XQFUNCTIONCALL_HPP
 
-#if !defined(AFXQ_XQFUNCTIONCALL_H__2B6902E9_A4FA_4AB3_9C69_08A8E77E70DA__INCLUDED_)
-#define AFXQ_XQFUNCTIONCALL_H__2B6902E9_A4FA_4AB3_9C69_08A8E77E70DA__INCLUDED_
-
-#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/ast/ASTNodeImpl.hpp>
 
-class QualifiedName;
-
-/** placeholder for function calls. */
 class XQILLA_API XQFunctionCall : public ASTNodeImpl
 {
 public:
-  XQFunctionCall(QualifiedName* qname, const VectorOfASTNodes &args, XPath2MemoryManager* expr);
+  XQFunctionCall(const XMLCh *qname, VectorOfASTNodes *args, XPath2MemoryManager *mm);
 
-  /** always throws an exception **/
-  Result createResult(DynamicContext* context, int flags=0) const;
-
-  /**
-   *  Will perform the binding with the real function body
-   */
   virtual ASTNode* staticResolution(StaticContext *context);
   virtual ASTNode *staticTyping(StaticContext *context);
 
-  const QualifiedName *getName() const;
-  const VectorOfASTNodes &getArguments() const;
+  virtual Result createResult(DynamicContext* context, int flags=0) const;
 
-protected:
-  VectorOfASTNodes _args;
-  QualifiedName* _qname;
+  const XMLCh *getQName() const { return qname_; }
+  const VectorOfASTNodes *getArguments() const { return args_; }
+
+private:
+  const XMLCh *qname_;
+  VectorOfASTNodes *args_;
 };
 
-#endif // !defined(AFXQ_XQFUNCTIONCALL_H__2B6902E9_A4FA_4AB3_9C69_08A8E77E70DA__INCLUDED_)
+#endif

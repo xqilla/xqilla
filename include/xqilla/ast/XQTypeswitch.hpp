@@ -11,62 +11,70 @@
  * $Id$
  */
 
-//////////////////////////////////////////////////////////////////////
-// XQTypeswitch.hpp: interface for the XQTypeswitch class.
-//////////////////////////////////////////////////////////////////////
+#ifndef XQTYPESWITCH_HPP
+#define XQTYPESWITCH_HPP
 
-#if !defined(AFXQ_XQTYPESWITCH_H__90ED3AA0_5C63_437A_9B94_0CCDEF499124__INCLUDED_)
-#define AFXQ_XQTYPESWITCH_H__90ED3AA0_5C63_437A_9B94_0CCDEF499124__INCLUDED_
-
-#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/ast/ASTNodeImpl.hpp>
-#include <xqilla/schema/SequenceType.hpp>
-#include <vector>
+#include <xqilla/context/impl/VarStoreImpl.hpp>
 
+class SequenceType;
 class ResultBuffer;
 template<class TYPE> class Scope;
 
 class XQILLA_API XQTypeswitch : public ASTNodeImpl
 {
 public:
-  class Clause : public LocationInfo
+  class Case : public LocationInfo
   {
   public:
-    Clause(SequenceType* type, ASTNode* expr, const XMLCh* variable)
-      : _expr(expr), _type(type), _variable(variable), _uri(0), _name(0) {}
+    Case(const XMLCh *qname, SequenceType *seqType, ASTNode *expr);
 
-    void staticResolution(const StaticResolutionContext &var_src, StaticContext* context, StaticResolutionContext &src);
+    void staticResolution(StaticContext* context);
     void staticTyping(const StaticResolutionContext &var_src, StaticContext* context,
                       StaticResolutionContext &src, bool updating);
 
-    ASTNode* _expr;
-    SequenceType* _type;
-    const XMLCh* _variable;
-    const XMLCh* _uri;
-    const XMLCh* _name;
+    const XMLCh *getQName() const { return qname_; }
+    const XMLCh *getURI() const { return uri_; }
+    const XMLCh *getName() const { return name_; }
+
+    bool isVariableUsed() const { return qname_ != 0; }
+    void setVariableNotUsed() { qname_ = 0; }
+
+    SequenceType *getSequenceType() const { return seqType_; }
+    void setSequenceType(SequenceType *s) { seqType_ = s; }
+
+    ASTNode *getExpression() const { return expr_; }
+    void setExpression(ASTNode *expr) { expr_ = expr; }
+
+  private:
+    const XMLCh *qname_;
+    const XMLCh *uri_;
+    const XMLCh *name_;
+    SequenceType *seqType_;
+    ASTNode *expr_;
   };
 
-  typedef std::vector<Clause*, XQillaAllocator<Clause*> > VectorOfClause;
+  typedef std::vector<Case*, XQillaAllocator<Case*> > Cases;
 
-  XQTypeswitch(ASTNode* eval, VectorOfClause* clauses, Clause* defReturn, XPath2MemoryManager* expr);
+  XQTypeswitch(ASTNode *expr, Cases *cases, Case *defaultCase, XPath2MemoryManager *mm);
 
-  Result createResult(DynamicContext* context, int flags=0) const;
+  virtual ASTNode *staticResolution(StaticContext *context);
+  virtual ASTNode *staticTyping(StaticContext *context);
+
+  virtual Result createResult(DynamicContext* context, int flags=0) const;
   virtual void generateEvents(EventHandler *events, DynamicContext *context,
                               bool preserveNS, bool preserveType) const;
-  ASTNode* staticResolution(StaticContext *context);
-  virtual ASTNode *staticTyping(StaticContext *context);
   virtual PendingUpdateList createUpdateList(DynamicContext *context) const;
 
-  const Clause *chooseClause(DynamicContext *context) const;
+  const Case *chooseCase(DynamicContext *context, Sequence &resultSeq) const;
 
-  const ASTNode *getExpression() const;
-  const Clause *getDefaultClause() const;
-  const VectorOfClause *getClauses() const;
+  const ASTNode *getExpression() const { return expr_; }
+  void setExpression(ASTNode *expr) { expr_ = expr; }
 
-  void setExpression(ASTNode *expr);
+  const Case *getDefaultCase() const { return default_; }
+  const Cases *getCases() const { return cases_; }
 
-protected:
-
+private:
   class TypeswitchResult : public ResultImpl
   {
   public:
@@ -78,14 +86,14 @@ protected:
   private:
     const XQTypeswitch *_di;
 
-    Scope<Sequence> *_scope;
+    SingleVarStore _scope;
+    bool _scopeUsed;
     Result _result;
-    bool _scopeRemoved;
   };
 
-  ASTNode* _expr;
-  Clause* _default;
-  VectorOfClause* _clauses;
+  ASTNode *expr_;
+  Cases *cases_;
+  Case *default_;
 };
 
-#endif // !defined(AFXQ_XQTYPESWITCH_H__90ED3AA0_5C63_437A_9B94_0CCDEF499124__INCLUDED_)
+#endif

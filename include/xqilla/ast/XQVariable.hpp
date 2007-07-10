@@ -24,7 +24,7 @@ class XQILLA_API XQVariable : public ASTNodeImpl
 {
 public:
   XQVariable(const XMLCh *qualifiedName, XPath2MemoryManager* memMgr);
-  XQVariable(const XMLCh *prefix, const XMLCh *name, XPath2MemoryManager* memMgr);
+  XQVariable(const XMLCh *uri, const XMLCh *name, XPath2MemoryManager* memMgr);
   ~XQVariable();
 
   virtual Result createResult(DynamicContext* context, int flags=0) const;
@@ -39,7 +39,6 @@ private:
   const XMLCh* _prefix;
   const XMLCh* _uri;
   const XMLCh* _name;
-  unsigned int _staticProperties;
 };
 
 #endif

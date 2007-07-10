@@ -33,6 +33,7 @@ public:
   typedef std::vector<StepInfo,XQillaAllocator<StepInfo> > Steps;
 
   XQNav(XPath2MemoryManager* memMgr);
+  XQNav(ASTNode *step, XPath2MemoryManager* memMgr);
   virtual ~XQNav();
 	
 

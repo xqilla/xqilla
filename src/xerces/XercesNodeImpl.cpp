@@ -14,7 +14,8 @@
 #include "../config/xqilla_config.h"
 #include "XercesNodeImpl.hpp"
 #include <xqilla/context/DynamicContext.hpp>
-#include <xqilla/context/XQScopedNamespace.hpp>
+#include <xqilla/context/ContextHelpers.hpp>
+#include <xqilla/dom-api/impl/XQillaNSResolverImpl.hpp>
 #include <xqilla/framework/XPath2MemoryManager.hpp>
 #include <xqilla/runtime/Sequence.hpp>
 #include <xqilla/runtime/Result.hpp>
@@ -595,8 +596,7 @@ Sequence XercesNodeImpl::dmTypedValue(DynamicContext* context) const {
 
     cerr << "\n\n" << endl;
     */
-    XQScopedNamespace newNSScope(context->getMemoryManager(), context->getNSResolver());
-    newNSScope.setNodeContext(fNode);
+    XQillaNSResolverImpl newNSScope(context->getMemoryManager(), fNode, context->getNSResolver());
     AutoNsScopeReset jan(context,&newNSScope);
 
     switch(fNode->getNodeType())

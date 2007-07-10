@@ -11,17 +11,10 @@
  * $Id$
  */
 
-//////////////////////////////////////////////////////////////////////
-// XQTypeswitch.cpp: implementation of the XQTypeswitch class.
-//////////////////////////////////////////////////////////////////////
-
-#include <sstream>
-
-#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/ast/XQTypeswitch.hpp>
-#include <xqilla/context/impl/XQDynamicContextImpl.hpp>
 #include <xqilla/context/VariableStore.hpp>
 #include <xqilla/context/VariableTypeStore.hpp>
+#include <xqilla/context/ContextHelpers.hpp>
 #include <xqilla/ast/StaticResolutionContext.hpp>
 #include <xqilla/runtime/ResultBuffer.hpp>
 #include <xqilla/utils/XPath2NSUtils.hpp>
@@ -31,12 +24,12 @@
 #include <xqilla/exceptions/StaticErrorException.hpp>
 #include <xqilla/update/PendingUpdateList.hpp>
 
-XQTypeswitch::XQTypeswitch(ASTNode* eval, VectorOfClause* clauses, Clause* defReturn, XPath2MemoryManager* expr)
-  : ASTNodeImpl(expr)
+XQTypeswitch::  XQTypeswitch(ASTNode *expr, Cases *cases, Case *defaultCase, XPath2MemoryManager *mm)
+  : ASTNodeImpl(mm),
+    expr_(expr),
+    cases_(cases),
+    default_(defaultCase)
 {
-  _expr=eval;
-  _default=defReturn;
-  _clauses=clauses;
   setType(ASTNode::TYPESWITCH);
 }
 
@@ -48,15 +41,14 @@ Result XQTypeswitch::createResult(DynamicContext *context, int flags) const
 ASTNode* XQTypeswitch::staticResolution(StaticContext *context)
 {
   // Statically resolve the test expression
-  _expr = _expr->staticResolution(context);
+  expr_ = expr_->staticResolution(context);
 
   // Call static resolution on the clauses
-  for(VectorOfClause::iterator it = _clauses->begin(); it != _clauses->end(); ++it) {
-    (*it)->_type->staticResolution(context);
-    (*it)->staticResolution(_expr->getStaticResolutionContext(), context, _src);
+  for(Cases::iterator it = cases_->begin(); it != cases_->end(); ++it) {
+    (*it)->staticResolution(context);
   }
 
-  _default->staticResolution(_expr->getStaticResolutionContext(), context, _src);
+  default_->staticResolution(context);
 
   return this;
 }
@@ -66,8 +58,8 @@ ASTNode* XQTypeswitch::staticTyping(StaticContext *context)
   _src.clear();
 
   // Statically resolve the test expression
-  _expr = _expr->staticTyping(context);
-  const StaticResolutionContext &exprSrc = _expr->getStaticResolutionContext();
+  expr_ = expr_->staticTyping(context);
+  const StaticResolutionContext &exprSrc = expr_->getStaticResolutionContext();
 
   if(exprSrc.isUpdating()) {
     XQThrow(StaticErrorException,X("XQTypeswitch::staticTyping"),
@@ -83,47 +75,47 @@ ASTNode* XQTypeswitch::staticTyping(StaticContext *context)
     // Do basic static type checking on the clauses,
     // to eliminate ones which will never be matches,
     // and find ones which will always be matched.
-    VectorOfClause newClauses(XQillaAllocator<Clause*>(context->getMemoryManager()));
-    VectorOfClause::iterator it = _clauses->begin();
-    for(; it != _clauses->end(); ++it) {
-      const SequenceType::ItemType *itemType = (*it)->_type->getItemType();
+    Cases newCases(XQillaAllocator<Case*>(context->getMemoryManager()));
+    Cases::iterator it = cases_->begin();
+    for(; it != cases_->end(); ++it) {
+      const SequenceType::ItemType *itemType = (*it)->getSequenceType()->getItemType();
       if(itemType != NULL) {
-        const StaticType &sType = _expr->getStaticResolutionContext().getStaticType();
+        const StaticType &sType = expr_->getStaticResolutionContext().getStaticType();
 
         bool isExact;
-        StaticType clauseType;
-        itemType->getStaticType(clauseType, context, isExact, *it);
+        StaticType cseType;
+        itemType->getStaticType(cseType, context, isExact, *it);
 
-        if(isExact && (sType.flags & clauseType.flags) != 0 &&
-           (sType.flags & ~clauseType.flags) == 0 &&
-           (*it)->_type->getOccurrenceIndicator() == SequenceType::STAR) {
+        if(isExact && (sType.flags & cseType.flags) != 0 &&
+           (sType.flags & ~cseType.flags) == 0 &&
+           (*it)->getSequenceType()->getOccurrenceIndicator() == SequenceType::STAR) {
           // It always matches, so set this clause as the
           // default clause and remove all the others
-          newClauses.clear();
-          _default = *it;
-          _default->_type = 0;
+          newCases.clear();
+          default_ = *it;
+          default_->setSequenceType(0);
           break;
         }
-        else if((sType.flags & clauseType.flags) == 0 &&
-                ((*it)->_type->getOccurrenceIndicator() == SequenceType::EXACTLY_ONE ||
-                 (*it)->_type->getOccurrenceIndicator() == SequenceType::PLUS)) {
+        else if((sType.flags & cseType.flags) == 0 &&
+                ((*it)->getSequenceType()->getOccurrenceIndicator() == SequenceType::EXACTLY_ONE ||
+                 (*it)->getSequenceType()->getOccurrenceIndicator() == SequenceType::PLUS)) {
           // It never matches, so don't add it to the new clauses
         }
         else {
-          newClauses.push_back(*it);
+          newCases.push_back(*it);
         }
       }
     }
-    *_clauses = newClauses;
+    *cases_ = newCases;
 
     // Call static resolution on the new clauses
     _src.setProperties((unsigned int)-1);
 
-    _default->staticTyping(_expr->getStaticResolutionContext(), context, _src, false);
+    default_->staticTyping(expr_->getStaticResolutionContext(), context, _src, false);
     bool updating = _src.isUpdating();
 
-    for(it = _clauses->begin(); it != _clauses->end(); ++it) {
-      (*it)->staticTyping(_expr->getStaticResolutionContext(), context, _src, updating);
+    for(it = cases_->begin(); it != cases_->end(); ++it) {
+      (*it)->staticTyping(expr_->getStaticResolutionContext(), context, _src, updating);
     }
 
     return this;
@@ -132,12 +124,12 @@ ASTNode* XQTypeswitch::staticTyping(StaticContext *context)
     // If it's constant, we can narrow it down to the correct clause
     AutoDelete<DynamicContext> dContext(context->createDynamicContext());
     dContext->setMemoryManager(context->getMemoryManager());
-    Sequence value = _expr->createResult(dContext)->toSequence(dContext);
+    Sequence value = expr_->createResult(dContext)->toSequence(dContext);
 
-    Clause *match = 0;
-    for(VectorOfClause::iterator it=_clauses->begin();it!=_clauses->end();++it) {
+    Case *match = 0;
+    for(Cases::iterator it = cases_->begin(); it != cases_->end(); ++it) {
       try {
-        (*it)->_type->matches(value, (*it)->_type)->toSequence(dContext);
+        (*it)->getSequenceType()->matches(value, (*it)->getSequenceType())->toSequence(dContext);
         match = *it;
         break;
       }
@@ -149,13 +141,13 @@ ASTNode* XQTypeswitch::staticTyping(StaticContext *context)
     // Replace the default with the matched clause and
     // remove the remaining clauses, as they don't match
     if(match) {
-      _default = match;
-      _default->_type = 0;
+      default_ = match;
+      default_->setSequenceType(0);
     }
-    _clauses->clear();
+    cases_->clear();
 
     // Statically resolve the default clause
-    _default->staticTyping(_expr->getStaticResolutionContext(), context, _src, false);
+    default_->staticTyping(expr_->getStaticResolutionContext(), context, _src, false);
 
     // Constant fold if possible
     if(!_src.isUsed()) {
@@ -165,88 +157,78 @@ ASTNode* XQTypeswitch::staticTyping(StaticContext *context)
   }
 }
 
-void XQTypeswitch::Clause::staticResolution(const StaticResolutionContext &var_src, StaticContext* context, StaticResolutionContext &src)
+XQTypeswitch::Case::Case(const XMLCh *qname, SequenceType *seqType, ASTNode *expr)
+  : qname_(qname),
+    uri_(0),
+    name_(0),
+    seqType_(seqType),
+    expr_(expr)
 {
-  _expr = _expr->staticResolution(context);
 }
 
-void XQTypeswitch::Clause::staticTyping(const StaticResolutionContext &var_src, StaticContext* context,
+void XQTypeswitch::Case::staticResolution(StaticContext* context)
+{
+  if(seqType_)
+    seqType_->staticResolution(context);
+  expr_ = expr_->staticResolution(context);
+}
+
+void XQTypeswitch::Case::staticTyping(const StaticResolutionContext &var_src, StaticContext* context,
                                         StaticResolutionContext &src, bool updating)
 {
   VariableTypeStore* varStore=context->getVariableTypeStore();
 
-  if(_variable != 0) {
+  if(qname_ != 0) {
     varStore->addLogicalBlockScope();
-    _uri = context->getUriBoundToPrefix(XPath2NSUtils::getPrefix(_variable, context->getMemoryManager()), this);
-    _name = XPath2NSUtils::getLocalName(_variable);
-    varStore->declareVar(_uri, _name, var_src);
+    uri_ = context->getUriBoundToPrefix(XPath2NSUtils::getPrefix(qname_, context->getMemoryManager()), this);
+    name_ = XPath2NSUtils::getLocalName(qname_);
+    varStore->declareVar(uri_, name_, var_src);
   }
 
   StaticResolutionContext newSrc(context->getMemoryManager());
-  _expr = _expr->staticTyping(context);
-  newSrc.add(_expr->getStaticResolutionContext());
+  expr_ = expr_->staticTyping(context);
+  newSrc.add(expr_->getStaticResolutionContext());
 
-  if(_type != 0) {
+  if(seqType_ != 0) {
     if(updating) {
       if(!newSrc.isUpdating() &&
-         _expr->getStaticResolutionContext().getStaticType().containsType(StaticType::ITEM_TYPE))
-        XQThrow(StaticErrorException, X("XQTypeswitch::Clause::staticTyping"),
+         expr_->getStaticResolutionContext().getStaticType().containsType(StaticType::ITEM_TYPE))
+        XQThrow(StaticErrorException, X("XQTypeswitch::Case::staticTyping"),
                 X("Mixed updating and non-updating operands [err:XUST0001]"));
     }
     else {
       if(newSrc.isUpdating())
-        XQThrow(StaticErrorException, X("XQTypeswitch::Clause::staticTyping"),
+        XQThrow(StaticErrorException, X("XQTypeswitch::Case::staticTyping"),
                 X("Mixed updating and non-updating operands [err:XUST0001]"));
     }
   }
 
-  if(_variable != 0) {
+  if(qname_ != 0) {
     // Remove the local variable from the StaticResolutionContext
-    if(!newSrc.removeVariable(_uri, _name)) {
+    if(!newSrc.removeVariable(uri_, name_)) {
       // If the variable isn't used, don't bother setting it when we execute
-      _variable = 0;
+      qname_ = 0;
     }
     varStore->removeScope();
   }
 
-  src.getStaticType().typeUnion(_expr->getStaticResolutionContext().getStaticType());
-  src.setProperties(src.getProperties() & _expr->getStaticResolutionContext().getProperties());
+  src.getStaticType().typeUnion(expr_->getStaticResolutionContext().getStaticType());
+  src.setProperties(src.getProperties() & expr_->getStaticResolutionContext().getProperties());
   src.add(newSrc);
 }
 
-const ASTNode *XQTypeswitch::getExpression() const
-{
-  return _expr;
-}
-
-const XQTypeswitch::Clause *XQTypeswitch::getDefaultClause() const
-{
-  return _default;
-}
-
-const XQTypeswitch::VectorOfClause *XQTypeswitch::getClauses() const
-{
-  return _clauses;
-}
-
-void XQTypeswitch::setExpression(ASTNode *expr)
-{
-  _expr = expr;
-}
-
-const XQTypeswitch::Clause *XQTypeswitch::chooseClause(DynamicContext *context) const
+const XQTypeswitch::Case *XQTypeswitch::chooseCase(DynamicContext *context, Sequence &resultSeq) const
 {
   // retrieve the value of the operand expression
-  ResultBuffer value(_expr->createResult(context));
+  ResultBuffer value(expr_->createResult(context));
 
-  const Clause *clause = 0;
+  const Case *cse = 0;
 
   // find the effective case
-  for(VectorOfClause::const_iterator it = _clauses->begin();
-      it != _clauses->end(); ++it) {
+  for(Cases::const_iterator it = cases_->begin(); it != cases_->end(); ++it) {
     try {
-      (*it)->_type->matches(value.createResult(), (*it)->_type)->toSequence(context);
-      clause = *it;
+      (*it)->getSequenceType()->matches(value.createResult(), (*it)->getSequenceType())->toSequence(context);
+      cse = *it;
       break;
     }
     catch(const XPath2TypeMatchException &ex) {
@@ -255,94 +237,75 @@ const XQTypeswitch::Clause *XQTypeswitch::chooseClause(DynamicContext *context) 
   }
 
   // if no case is satisfied, use the default one
-  if(clause == 0) {
-      clause = _default;
+  if(cse == 0) {
+      cse = default_;
   }
 
   // Bind the variable
-  if(clause->_variable != 0) {
-    VariableStore* varStore = context->getVariableStore();
-    varStore->addLogicalBlockScope();
-    varStore->declareVar(clause->_uri, clause->_name, value.createResult()->toSequence(context), context);
+  if(cse->isVariableUsed()) {
+    resultSeq = value.createResult()->toSequence(context);
+
+//     varStore->declareVar(cse->getURI(), cse->getName(), value.createResult()->toSequence(context), context);
   }
 
-  return clause;
+  return cse;
 }
 
 void XQTypeswitch::generateEvents(EventHandler *events, DynamicContext *context,
                                   bool preserveNS, bool preserveType) const
 {
-  const Clause *clause = chooseClause(context);
+  SingleVarStore scope;
+  const Case *cse = chooseCase(context, scope.value);
 
-  clause->_expr->generateEvents(events, context, preserveNS, preserveType);
+  AutoVariableStoreReset reset(context);
+  if(cse->isVariableUsed())
+    scope.setAsVariableStore(cse->getURI(), cse->getName(), context);
 
-  if(clause->_variable != 0) {
-    context->getVariableStore()->removeScope();
-  }
+  cse->getExpression()->generateEvents(events, context, preserveNS, preserveType);
 }
 
 PendingUpdateList XQTypeswitch::createUpdateList(DynamicContext *context) const
 {
-  const Clause *clause = chooseClause(context);
+  SingleVarStore scope;
+  const Case *cse = chooseCase(context, scope.value);
 
-  PendingUpdateList result = clause->_expr->createUpdateList(context);
+  AutoVariableStoreReset reset(context);
+  if(cse->isVariableUsed())
+    scope.setAsVariableStore(cse->getURI(), cse->getName(), context);
 
-  if(clause->_variable != 0) {
-    context->getVariableStore()->removeScope();
-  }
-
-  return result;
+  return cse->getExpression()->createUpdateList(context);
 }
 
 XQTypeswitch::TypeswitchResult::TypeswitchResult(const XQTypeswitch *di)
   : ResultImpl(di),
     _di(di),
-    _scope(0),
-    _result(0),
-    _scopeRemoved(true)
+    _scopeUsed(false),
+    _result(0)
 {
 }
 
 Item::Ptr XQTypeswitch::TypeswitchResult::next(DynamicContext *context)
 {
-  VariableStore* varStore = context->getVariableStore();
-  Scope<Sequence> *oldScope = varStore->getScopeState();
+  AutoVariableStoreReset reset(context);
 
   if(_result.isNull()) {
-    const Clause *clause = _di->chooseClause(context);
+    const Case *cse = _di->chooseCase(context, _scope.value);
 
-    if(clause->_variable != 0) {
-      _scopeRemoved = false;
+    if(cse->isVariableUsed()) {
+      _scope.setAsVariableStore(cse->getURI(), cse->getName(), context);
+      _scopeUsed = true;
     }
 
-    _result = clause->_expr->createResult(context);
+    _result = cse->getExpression()->createResult(context);
   }
-  else if(_scope != 0) {
-    varStore->setScopeState(_scope);
-  }
-
-  const Item::Ptr item = _result->next(context);
-
-  if(!_scopeRemoved) {
-    if(item == NULLRCP) {
-      varStore->removeScope();
-      _scope = 0;
-    }
-    else {
-      _scope = varStore->getScopeState();
-      varStore->setScopeState(oldScope);
-    }
+  else if(_scopeUsed) {
+    context->setVariableStore(&_scope);
   }
 
-  return item;
+  return _result->next(context);
 }
 
 std::string XQTypeswitch::TypeswitchResult::asString(DynamicContext *context, int indent) const
 {
-  std::ostringstream oss;
-  std::string in(getIndent(indent));
-
-  oss << in << "<typeswitch/>" << std::endl;
-
-  return oss.str();
+  return "TypeswitchResult";
 }

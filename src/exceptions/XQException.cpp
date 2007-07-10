@@ -37,67 +37,64 @@ XERCES_CPP_NAMESPACE_USE
 #endif
 
 XQException::XQException(const XMLCh *reason, const XMLCh* file, unsigned int line, unsigned int column, const char *cppFile, unsigned int cppLine)
-  : m_type(XMLString::transcode("XQException")),
-    m_error(XMLString::replicate(reason)),
-    m_cppFunction(XMLString::transcode("XQuery")),
-    m_cppFile(cppFile),
-    m_cppLine(cppLine),
-    m_xqLine(line),
-    m_xqColumn(column),
-    m_xqFile(XMLString::replicate(file)),
-    m_errorReported(false)
+  : type_(XMLString::transcode("XQException")),
+    error_(XMLString::replicate(reason)),
+    cppFunction_(XMLString::transcode("XQuery")),
+    cppFile_(cppFile),
+    cppLine_(cppLine),
+    xqLine_(line),
+    xqColumn_(column),
+    xqFile_(XMLString::replicate(file))
 {
 }
 
 XQException::XQException(const XMLCh* const type, const XMLCh* const functionName, const XMLCh* const reason, const LocationInfo *info, const char *cppFile, unsigned int cppLine)
-  : m_type(XMLString::replicate(type)),
-    m_error(XMLString::replicate(reason)),
-    m_cppFunction(XMLString::replicate(functionName)),
-    m_cppFile(cppFile),
-    m_cppLine(cppLine),
-    m_xqLine(0),
-    m_xqColumn(0),
-    m_xqFile(0),
-    m_errorReported(false)
+  : type_(XMLString::replicate(type)),
+    error_(XMLString::replicate(reason)),
+    cppFunction_(XMLString::replicate(functionName)),
+    cppFile_(cppFile),
+    cppLine_(cppLine),
+    xqLine_(0),
+    xqColumn_(0),
+    xqFile_(0)
 {
   if(info != 0) setXQueryPosition(info);
 }
 
 XQException::XQException(const XQException &o)
-  : m_type(XMLString::replicate(o.m_type)),
-    m_error(XMLString::replicate(o.m_error)),
-    m_cppFunction(XMLString::replicate(o.m_cppFunction)),
-    m_cppFile(o.m_cppFile),
-    m_cppLine(o.m_cppLine),
-    m_xqLine(o.m_xqLine),
-    m_xqColumn(o.m_xqColumn),
-    m_xqFile(XMLString::replicate(o.m_xqFile)),
-    m_errorReported(o.m_errorReported)
+  : type_(XMLString::replicate(o.type_)),
+    error_(XMLString::replicate(o.error_)),
+    cppFunction_(XMLString::replicate(o.cppFunction_)),
+    cppFile_(o.cppFile_),
+    cppLine_(o.cppLine_),
+    xqLine_(o.xqLine_),
+    xqColumn_(o.xqColumn_),
+    xqFile_(XMLString::replicate(o.xqFile_))
 {
 }
 
 XQException::~XQException()
 {
-  XMLString::release(&m_type);
-  XMLString::release(&m_error);
-  XMLString::release(&m_cppFunction);
-  XMLString::release(&m_xqFile);
+  XMLString::release(&type_);
+  XMLString::release(&error_);
+  XMLString::release(&cppFunction_);
+  XMLString::release(&xqFile_);
 }
 
 void XQException::setXQueryPosition(const XMLCh *file, unsigned int line, unsigned int column)
 {
-  XMLString::release(&m_xqFile);
-  m_xqFile = XMLString::replicate(file);
-  m_xqLine = line;
-  m_xqColumn = column;
+  XMLString::release(&xqFile_);
+  xqFile_ = XMLString::replicate(file);
+  xqLine_ = line;
+  xqColumn_ = column;
 }
 
 void XQException::setXQueryPosition(const LocationInfo *info)
 {
-  XMLString::release(&m_xqFile);
-  m_xqFile = XMLString::replicate(info->getFile());
-  m_xqLine = info->getLine();
-  m_xqColumn = info->getColumn();
+  XMLString::release(&xqFile_);
+  xqFile_ = XMLString::replicate(info->getFile());
+  xqLine_ = info->getLine();
+  xqColumn_ = info->getColumn();
 }
 
 void XQException::printDebug(const XMLCh* const context) const
@@ -105,10 +102,10 @@ void XQException::printDebug(const XMLCh* const context) const
   std::cerr << std::endl;
   std::cerr << "===================" << std::endl;
   std::cerr << UTF8(context) << std::endl << std::endl;
-  std::cerr << "Type: " << UTF8(m_type) << std::endl;
-  std::cerr << "Reason: " << UTF8(m_error) << std::endl;
-  std::cerr << "XQuery Location: " << UTF8(m_xqFile) << ":" << m_xqLine << ":" << m_xqColumn << std::endl;
-  std::cerr << "C++ Location: " << UTF8(m_cppFunction) << ", " << m_cppFile << ":" << m_cppLine << std::endl;
+  std::cerr << "Type: " << UTF8(type_) << std::endl;
+  std::cerr << "Reason: " << UTF8(error_) << std::endl;
+  std::cerr << "XQuery Location: " << UTF8(xqFile_) << ":" << xqLine_ << ":" << xqColumn_ << std::endl;
+  std::cerr << "C++ Location: " << UTF8(cppFunction_) << ", " << cppFile_ << ":" << cppLine_ << std::endl;
   std::cerr << "===================" << std::endl;
 
 }

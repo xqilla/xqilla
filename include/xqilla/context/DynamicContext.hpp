@@ -15,7 +15,6 @@
 #define _DYNAMICCONTEXT_HPP
 
 #include <xqilla/context/StaticContext.hpp>
-#include <xqilla/context/XQDebugCallback.hpp>
 #include <xqilla/items/ATDurationOrDerived.hpp>
 
 class Sequence;
@@ -53,7 +52,17 @@ public:
   virtual void setContextSize(unsigned int size) = 0;
   
   /** get the variable store */
-  virtual VariableStore* getVariableStore() = 0;
+  virtual const VariableStore* getVariableStore() const = 0;
+  /** set the variable store */
+  virtual void setVariableStore(const VariableStore *store) = 0;
+  /** get the variable store for globally scoped variables */
+  virtual const VariableStore* getGlobalVariableStore() const = 0;
+  /** set the variable store for globally scoped variables */
+  virtual void setGlobalVariableStore(const VariableStore *store) = 0;
+  /** set the value of an external global variable with the given uri/localname pair */
+  virtual void setExternalVariable(const XMLCh *namespaceURI, const XMLCh *name, const Sequence &value) = 0;
+  /** set the value of an external global variable with the given QName */
+  virtual void setExternalVariable(const XMLCh *qname, const Sequence &value) = 0;
 
   /** Return the current time */
   virtual time_t getCurrentTime() const = 0;
@@ -100,11 +109,6 @@ public:
   /** Creates a new UpdateFactory, used for performing updates.
       Caller owns the returned object, and should delete it */
   virtual UpdateFactory *createUpdateFactory() const = 0;
-
-  /** Set the object to be used for debugging callbacks */
-  virtual void setDebugCallback(XQDebugCallback* callback) = 0;
-  /** Get the object to be used for debugging callbacks */
-  virtual XQDebugCallback* getDebugCallback() const = 0;
 
   /** Test if the query should be interrupted, and throw if so. */
   virtual void testInterrupt() const = 0;

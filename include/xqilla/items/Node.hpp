@@ -125,6 +125,5 @@ public:
   static const XMLCh processing_instruction_string[];
   static const XMLCh comment_string[];
   static const XMLCh namespace_string[];
-  static const XMLCh cdata_string[];
 };
 #endif

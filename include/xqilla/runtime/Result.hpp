@@ -31,6 +31,7 @@ class StaticType;
 class XQILLA_API Result
 {
 public:
+  Result(const Item::Ptr &item);
   Result(const Sequence &seq);
   Result(ResultImpl *impl);
   Result(const Result &o);

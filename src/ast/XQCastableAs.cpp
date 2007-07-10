@@ -32,10 +32,6 @@
 
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
-
 XQCastableAs::XQCastableAs(ASTNode* expr, SequenceType* exprType, XPath2MemoryManager* memMgr)
   : ASTNodeImpl(memMgr),
     _expr(expr),

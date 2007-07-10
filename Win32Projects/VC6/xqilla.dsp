@@ -101,11 +101,27 @@ SOURCE=..\..\src\ast\ConstantFoldingFunction.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\ast\ContextTuple.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\ast\ConvertFunctionArg.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\ast\ForTuple.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\ast\LetTuple.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\ast\NumericFunction.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\ast\OrderByTuple.cpp
 # End Source File
 # Begin Source File
 
@@ -114,6 +130,10 @@ SOURCE=..\..\src\ast\StaticResolutionContext.cpp
 # Begin Source File
 
 SOURCE=..\..\src\ast\StaticType.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\ast\WhereTuple.cpp
 # End Source File
 # Begin Source File
 
@@ -165,15 +185,7 @@ SOURCE=..\..\src\ast\XQTextConstructor.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\ast\XQDebugHook.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\ast\XQDocumentOrder.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\ast\XQFLWOR.cpp
 # End Source File
 # Begin Source File
 
@@ -225,6 +237,10 @@ SOURCE=..\..\src\ast\XQQuantified.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\ast\XQReturn.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\ast\XQSequence.cpp
 # End Source File
 # Begin Source File
@@ -249,10 +265,6 @@ SOURCE=..\..\src\ast\XQVariable.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\ast\XQVariableBinding.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\include\xqilla\ast\ASTNode.hpp
 # End Source File
 # Begin Source File
@@ -265,7 +277,19 @@ SOURCE=..\..\include\xqilla\ast\ConstantFoldingFunction.hpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\include\xqilla\ast\ContextTuple.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\include\xqilla\ast\ConvertFunctionArg.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\ast\ForTuple.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\ast\LetTuple.hpp
 # End Source File
 # Begin Source File
 
@@ -282,6 +306,14 @@ SOURCE=..\..\include\xqilla\ast\StaticResolutionContext.hpp
 # Begin Source File
 
 SOURCE=..\..\include\xqilla\ast\StaticType.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\ast\TupleNode.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\ast\WhereTuple.hpp
 # End Source File
 # Begin Source File
 
@@ -333,15 +365,7 @@ SOURCE=..\..\include\xqilla\ast\XQTextConstructor.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\include\xqilla\ast\XQDebugHook.hpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\include\xqilla\ast\XQDocumentOrder.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\include\xqilla\ast\XQFLWOR.hpp
 # End Source File
 # Begin Source File
 
@@ -393,6 +417,10 @@ SOURCE=..\..\include\xqilla\ast\XQQuantified.hpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\include\xqilla\ast\XQReturn.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\include\xqilla\ast\XQSequence.hpp
 # End Source File
 # Begin Source File
@@ -414,10 +442,6 @@ SOURCE=..\..\include\xqilla\ast\XQValidate.hpp
 # Begin Source File
 
 SOURCE=..\..\include\xqilla\ast\XQVariable.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\include\xqilla\ast\XQVariableBinding.hpp
 # End Source File
 # End Group
 # Begin Group "axis"
@@ -468,10 +492,6 @@ SOURCE=..\..\src\context\impl\VarStoreImpl.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\context\impl\VarStoreImpl.hpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\context\impl\VarTypeStoreImpl.cpp
 # End Source File
 # Begin Source File
@@ -485,10 +505,6 @@ SOURCE=..\..\src\context\impl\XQContextImpl.cpp
 # Begin Source File
 
 SOURCE=..\..\src\context\impl\XQDynamicContextImpl.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\context\impl\XQRemoteDebugger.cpp
 # End Source File
 # Begin Source File
 
@@ -508,6 +524,10 @@ SOURCE=..\..\include\xqilla\context\impl\VarHashEntryImpl.hpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\include\xqilla\context\impl\VarStoreImpl.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\include\xqilla\context\impl\VariableStoreTemplate.hpp
 # End Source File
 # Begin Source File
@@ -518,18 +538,10 @@ SOURCE=..\..\include\xqilla\context\impl\XQContextImpl.hpp
 
 SOURCE=..\..\include\xqilla\context\impl\XQDynamicContextImpl.hpp
 # End Source File
-# Begin Source File
-
-SOURCE=..\..\include\xqilla\context\impl\XQRemoteDebugger.hpp
-# End Source File
 # End Group
 # Begin Source File
 
 SOURCE=..\..\src\context\UpdateFactory.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\context\XQScopedNamespace.cpp
 # End Source File
 # Begin Source File
 
@@ -582,14 +594,6 @@ SOURCE=..\..\include\xqilla\context\VariableStore.hpp
 # Begin Source File
 
 SOURCE=..\..\include\xqilla\context\VariableTypeStore.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\include\xqilla\context\XQDebugCallback.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\include\xqilla\context\XQScopedNamespace.hpp
 # End Source File
 # End Group
 # Begin Group "dom-api"
@@ -2389,11 +2393,11 @@ SOURCE=..\..\src\lexer\XQLexer.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\lexer\XQLexer.hpp
+SOURCE=..\..\src\lexer\XQLexer2.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\lexer\XQillaLexer.hpp
+SOURCE=..\..\src\lexer\XQLexer.hpp
 # End Source File
 # End Group
 # Begin Group "mapm"
@@ -2785,6 +2789,10 @@ SOURCE=..\..\include\xqilla\parser\QName.hpp
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=..\..\src\runtime\ClosureResult.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\runtime\EmptyResult.cpp
 # End Source File
 # Begin Source File
@@ -2821,6 +2829,10 @@ SOURCE=..\..\src\runtime\SingleResult.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\include\xqilla\runtime\ClosureResult.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\include\xqilla\runtime\EmptyResult.hpp
 # End Source File
 # Begin Source File
@@ -2854,6 +2866,10 @@ SOURCE=..\..\include\xqilla\runtime\SequenceResult.hpp
 # Begin Source File
 
 SOURCE=..\..\include\xqilla\runtime\SingleResult.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\runtime\TupleResult.hpp
 # End Source File
 # End Group
 # Begin Group "schema"

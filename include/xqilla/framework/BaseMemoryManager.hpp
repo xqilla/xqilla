@@ -70,9 +70,6 @@ public:
   virtual XQillaNSResolver* createNSResolver(XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *resolverNode);
   
   /** create a store for variables */
-  virtual VariableStore* createVariableStore();
-
-  /** create a store for variables */
   virtual VariableTypeStore* createVariableTypeStore();
 
   /** create a ATDecimalOrDerived for the given integer */
