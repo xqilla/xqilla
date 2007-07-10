@@ -21,7 +21,6 @@
 #include <xqilla/dom-api/XPath2Result.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 
-#include "../../context/impl/VarStoreImpl.hpp"
 #include <xqilla/exceptions/FunctionException.hpp>
 #include <xqilla/exceptions/ContextException.hpp>
 

@@ -145,16 +145,15 @@ public:
   virtual VectorOfStrings* resolveModuleURI(const XMLCh* uri) const = 0;
 
   /** add the location for the grammar of a specific namespace **/
-  virtual void addSchemaLocation(const XMLCh* uri, VectorOfStrings* locations) = 0;
+  virtual void addSchemaLocation(const XMLCh* uri, VectorOfStrings* locations, const LocationInfo *location) = 0;
   
   /** get the variable type store */
   virtual VariableTypeStore* getVariableTypeStore() = 0;
 
   /** adds a custom function to the function table */
   virtual void addCustomFunction(FuncFactory *func) = 0;
-  /** returns a function with name in the namespace represented by prefix */
-  virtual ASTNode* lookUpFunction(const XMLCh* prefix, const XMLCh* name, VectorOfASTNodes& v,
-                                  const LocationInfo *location) const = 0;
+  /** returns a function object with the given uri, localname and number of arguments triple */
+  virtual ASTNode *lookUpFunction(const XMLCh *uri, const XMLCh* name, const VectorOfASTNodes &v) const = 0;
 
   /** adds an external function implementation to the function table */
   virtual void addExternalFunction(const ExternalFunction *func) = 0;
@@ -163,7 +162,7 @@ public:
 
   /** Get the implementation for the specified collation */
   virtual Collation* getCollation(const XMLCh* const URI, const LocationInfo *location) const = 0;
-  /** Add a collation	*/
+  /** Add a collation */
   virtual void addCollation(Collation* collation) = 0;
   
   /** Get the default collation */
@@ -216,14 +215,12 @@ public:
   /** Gets the listener for warning and trace messages */
   virtual MessageListener *getMessageListener() const = 0;
 
-  /// The enableDebuging flag is considered to be in both the static and dynamic contexts
-  virtual void enableDebugging(bool enable=true) = 0;
-  /// The enableDebuging flag is considered to be in both the static and dynamic contexts
-  virtual bool isDebuggingEnabled() const = 0;
-
   /////////////////////////////////////////
   //  XQilla context specific accessors  //
   /////////////////////////////////////////
+
+  /** Return a unique name that can be used for a temporary variable */
+  virtual const XMLCh *allocateTempVarName() = 0;
 
   /** Get the memory manager */
   virtual XPath2MemoryManager* getMemoryManager() const = 0;

@@ -11,51 +11,37 @@
  * $Id$
  */
 
-#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/ast/XQValidate.hpp>
-#include <xqilla/context/impl/XQDynamicContextImpl.hpp>
-#include <xqilla/exceptions/FunctionException.hpp>
+#include <xqilla/exceptions/StaticErrorException.hpp>
+#include <xqilla/exceptions/DynamicErrorException.hpp>
 #include <xqilla/items/Node.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/ast/StaticResolutionContext.hpp>
-#include <xqilla/ast/XQSequence.hpp>
-#include <xqilla/items/DatatypeFactory.hpp>
 
-XQValidate::XQValidate(ASTNode* valExpr, DocumentCache::ValidationMode valMode, XPath2MemoryManager* expr)
-  : ASTNodeImpl(expr)
+XQValidate::XQValidate(ASTNode *expr, DocumentCache::ValidationMode mode, XPath2MemoryManager *mm)
+  : ASTNodeImpl(mm),
+    expr_(expr),
+    mode_(mode)
 {
-  _expr = valExpr;
-  _validationMode = valMode;
   setType(ASTNode::VALIDATE);
 }
 
 Sequence XQValidate::createSequence(DynamicContext* context, int flags) const
 {
-  Result toBeValidated = _expr->createResult(context);
-  Item::Ptr first = toBeValidated->next(context);
-  Item::Ptr second = toBeValidated->next(context);
+  Result toBeValidated = expr_->createResult(context);
+  Item::Ptr item = toBeValidated->next(context);
 
-  if(first.isNull() || !second.isNull() || !first->isNode())
-    XQThrow(FunctionException,X("XQValidate::createSequence"),
+  if(item.isNull() || !toBeValidated->next(context).isNull() || !item->isNode() ||
+     (((Node*)item.get())->dmNodeKind() != Node::element_string && ((Node*)item.get())->dmNodeKind() != Node::document_string))
+    XQThrow(DynamicErrorException, X("XQValidate::createSequence"),
             X("The expression to be validated must evaluate to exactly one document or element node [err:XQTY0030]."));
 
-  Node::Ptr node = (Node::Ptr)first;
-  if(node->dmNodeKind() != Node::element_string &&
-     node->dmNodeKind() != Node::document_string)
-    XQThrow(FunctionException,X("XQValidate::createSequence"),
-            X("The expression to be validated must evaluate to exactly one document or element node [err:XQTY0030]."));
-
-  // perform validation on this item
-  Node::Ptr validatedElt = context->validate(node, _validationMode);
-  if(validatedElt.isNull())
-    XQThrow(FunctionException,X("XQValidate::createSequence"), X("Unexpected error while validating"));
-
-  return Sequence(validatedElt, context->getMemoryManager());
+  return Sequence(context->validate((Node*)item.get(), mode_), context->getMemoryManager());
 }
 
-ASTNode* XQValidate::staticResolution(StaticContext* ctx)
+ASTNode* XQValidate::staticResolution(StaticContext* context)
 {
-  _expr = _expr->staticResolution(ctx);
+  expr_ = expr_->staticResolution(context);
   return this;
 }
 
@@ -63,14 +49,14 @@ ASTNode *XQValidate::staticTyping(StaticContext *context)
 {
   _src.clear();
 
-  _expr = _expr->staticTyping(context);
-  _src.add(_expr->getStaticResolutionContext());
+  expr_ = expr_->staticTyping(context);
+  _src.add(expr_->getStaticResolutionContext());
 
-  _src.getStaticType() = _expr->getStaticResolutionContext().getStaticType();
+  _src.getStaticType() = expr_->getStaticResolutionContext().getStaticType();
   _src.getStaticType().typeIntersect(StaticType::DOCUMENT_TYPE | StaticType::ELEMENT_TYPE);
 
-  if(_src.getStaticType().isType(StaticType::EMPTY_TYPE)) {
-    XQThrow(FunctionException, X("XQValidate::createSequence"),
+  if(!_src.getStaticType().containsType(StaticType::DOCUMENT_TYPE | StaticType::ELEMENT_TYPE)) {
+    XQThrow(StaticErrorException, X("XQValidate::createSequence"),
             X("The expression to be validated must evaluate to exactly one document or element node [err:XQTY0030]."));
   }
 
@@ -78,17 +64,3 @@ ASTNode *XQValidate::staticTyping(StaticContext *context)
   return this; // Never constant fold
 }
 
-const ASTNode *XQValidate::getExpression() const
-{
-  return _expr;
-}
-
-DocumentCache::ValidationMode XQValidate::getValidationMode() const
-{
-  return _validationMode;
-}
-
-void XQValidate::setExpression(ASTNode *expr)
-{
-  _expr = expr;
-}

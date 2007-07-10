@@ -11,8 +11,8 @@
  * $Id$
  */
 
-#if !defined(AFXQ_COLLATION_H__6BA76C4A_0A5B_480B_9870_86A89A118100__INCLUDED_)
-#define AFXQ_COLLATION_H__6BA76C4A_0A5B_480B_9870_86A89A118100__INCLUDED_
+#ifndef COLLATION_HPP
+#define COLLATION_HPP
 
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xercesc/util/XercesDefs.hpp>
@@ -33,4 +33,4 @@ protected:
   Collation() {}
 };
 
-#endif // !defined(AFXQ_COLLATION_H__6BA76C4A_0A5B_480B_9870_86A89A118100__INCLUDED_)
+#endif

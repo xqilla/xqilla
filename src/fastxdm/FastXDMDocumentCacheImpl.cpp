@@ -525,7 +525,7 @@ bool FastXDMDocumentCacheImpl::isTypeDefined(const XMLCh* const uri, const XMLCh
   return false;
 }
 
-void FastXDMDocumentCacheImpl::addSchemaLocation(const XMLCh* uri, VectorOfStrings* locations, StaticContext *context)
+void FastXDMDocumentCacheImpl::addSchemaLocation(const XMLCh* uri, VectorOfStrings* locations, StaticContext *context, const LocationInfo *location)
 {
   XMLBuffer buf(1023,context->getMemoryManager());
   if(loadedSchemas_->exists(uri))
@@ -533,7 +533,7 @@ void FastXDMDocumentCacheImpl::addSchemaLocation(const XMLCh* uri, VectorOfStrin
     buf.set(X("More than one 'import schema' specifies the same target namespace \""));
     buf.append(uri);
     buf.append(X("\" [err:XQST0058]"));
-    XQThrow2(StaticErrorException,X("FastXDMDocumentCacheImpl::addSchemaLocation"), buf.getRawBuffer());
+    XQThrow3(StaticErrorException,X("FastXDMDocumentCacheImpl::addSchemaLocation"), buf.getRawBuffer(), location);
   }
   loadedSchemas_->addOrFind(uri);
 
@@ -541,7 +541,7 @@ void FastXDMDocumentCacheImpl::addSchemaLocation(const XMLCh* uri, VectorOfStrin
   if(locations==NULL) {
     // if no locations are given, try to see if the entity resolver can still find it
     try {
-      loadSchema(uri, 0, context);
+      loadSchema(uri, 0, context, location);
       bFoundSchema = true;
     } catch(SAXParseException& e) {
       buf.set(X("An error occurred while trying to load the schema for namespace \""));
@@ -554,7 +554,7 @@ void FastXDMDocumentCacheImpl::addSchemaLocation(const XMLCh* uri, VectorOfStrin
   else {
     for(VectorOfStrings::iterator it=locations->begin(); it!=locations->end(); it++) {
       try {
-        loadSchema(uri, *it, context);
+        loadSchema(uri, *it, context, location);
         bFoundSchema = true;
         break;
       } catch(SAXParseException& e) {
@@ -571,13 +571,13 @@ void FastXDMDocumentCacheImpl::addSchemaLocation(const XMLCh* uri, VectorOfStrin
   if(!bFoundSchema)
   {
     if(buf.isEmpty())
-      XQThrow2(StaticErrorException,X("FastXDMDocumentCacheImpl::addSchemaLocation"), X("Schema not found [err:XQST0059]"));
+      XQThrow3(StaticErrorException,X("FastXDMDocumentCacheImpl::addSchemaLocation"), X("Schema not found [err:XQST0059]"), location);
     else
-      XQThrow2(StaticErrorException,X("FastXDMDocumentCacheImpl::addSchemaLocation"), buf.getRawBuffer());
+      XQThrow3(StaticErrorException,X("FastXDMDocumentCacheImpl::addSchemaLocation"), buf.getRawBuffer(), location);
   }
 }
 
-void FastXDMDocumentCacheImpl::loadSchema(const XMLCh* const uri, const XMLCh* location, StaticContext *context)
+void FastXDMDocumentCacheImpl::loadSchema(const XMLCh* const uri, const XMLCh* location, StaticContext *context, const LocationInfo *info)
 {
   // if we are requested to load the XMLSchema schema, just return
   if(XPath2Utils::equals(uri, SchemaSymbols::fgURI_SCHEMAFORSCHEMA))
@@ -607,7 +607,7 @@ void FastXDMDocumentCacheImpl::loadSchema(const XMLCh* const uri, const XMLCh* l
     grammar = scanner_->loadGrammar(systemId, Grammar::SchemaGrammarType, true);
   }
   if(grammar==NULL)
-    XQThrow2(StaticErrorException,X("FastXDMDocumentCacheImpl::loadSchema"), X("Schema not found [err:XQST0059]"));
+    XQThrow3(StaticErrorException,X("FastXDMDocumentCacheImpl::loadSchema"), X("Schema not found [err:XQST0059]"), info);
 
   // Update the scanner's external schema locations, so it validates
   // XML documents that match

@@ -11,8 +11,8 @@
  * $Id$
  */
 
-#if !defined(AFXQ_CONTEXTHELPERS_H__D6A320F5_21F1_421D_9E46_E4373B375E1A__INCLUDED_)
-#define AFXQ_CONTEXTHELPERS_H__D6A320F5_21F1_421D_9E46_E4373B375E1A__INCLUDED_
+#ifndef CONTEXTHELPERS_HPP
+#define CONTEXTHELPERS_HPP
 
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/context/DynamicContext.hpp>
@@ -55,6 +55,30 @@ public:
 protected:
   StaticContext* context_;
   StaticType sType_;
+};
+
+class XQILLA_API AutoNsScopeReset
+{
+public:
+  AutoNsScopeReset(StaticContext* context, XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver* newResolver)
+  {
+    _context=context;
+    _oldNSResolver=_context->getNSResolver();
+    _defaultElementAndTypeNS=context->getDefaultElementAndTypeNS();
+    _context->setNSResolver(newResolver);
+  }
+
+  ~AutoNsScopeReset()
+  {
+    _context->setNSResolver(_oldNSResolver);
+    _context->setDefaultElementAndTypeNS(_defaultElementAndTypeNS);
+  }
+
+protected:
+  StaticContext* _context;
+  const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver* _oldNSResolver;
+  const XMLCh *_defaultElementAndTypeNS;
+  
 };
 
 class XQILLA_API AutoContextInfoReset
@@ -106,6 +130,33 @@ public:
 
 protected:
   DynamicContext* context_;
+};
+
+class XQILLA_API AutoVariableStoreReset
+{
+public:
+  AutoVariableStoreReset(DynamicContext *context, const VariableStore *store = 0)
+  {
+    _context = context;
+    _oldVarStore = _context->getVariableStore();
+    if(store)
+      _context->setVariableStore(store);
+  }
+
+  ~AutoVariableStoreReset()
+  {
+    _context->setVariableStore(_oldVarStore);
+  }
+
+  void reset()
+  {
+    _context->setVariableStore(_oldVarStore);
+  }
+
+protected:
+  DynamicContext *_context;
+  const VariableStore *_oldVarStore;
+  
 };
 
 #endif

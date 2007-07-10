@@ -11,10 +11,6 @@
  * $Id$
  */
 
-//////////////////////////////////////////////////////////////////////
-// XQOrderingChange.cpp: implementation of the XQOrderingChange class.
-//////////////////////////////////////////////////////////////////////
-
 #include <sstream>
 
 #include <xqilla/framework/XQillaExport.hpp>
@@ -22,10 +18,6 @@
 
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/context/ContextHelpers.hpp>
-
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
 
 XQOrderingChange::XQOrderingChange(StaticContext::NodeSetOrdering ordering, ASTNode* astNode, XPath2MemoryManager* expr)
   : ASTNodeImpl(expr),

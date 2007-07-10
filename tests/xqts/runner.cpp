@@ -319,15 +319,15 @@ void XQillaTestSuiteRunner::runTestCase(const TestCase &testCase)
     for(v=testCase.extraVars.begin();v!=testCase.extraVars.end();v++) {
       XQQuery* pInnerQuery = xqilla.parseFromURI(X(v->second.c_str()), context.get());
       Sequence doc=pInnerQuery->execute(context.get())->toSequence(context.get());
-      context->getVariableStore()->setGlobalVar(X(v->first.c_str()),doc,context.get(), 0);
+      context->setExternalVariable(X(v->first.c_str()), doc);
     }
     for(v=testCase.inputVars.begin();v!=testCase.inputVars.end();v++) {
       Sequence doc=context->resolveDocument(X(v->second.c_str()), 0);
-      context->getVariableStore()->setGlobalVar(X(v->first.c_str()),doc,context.get(), 0);
+      context->setExternalVariable(X(v->first.c_str()), doc);
     }
     for(v=testCase.inputURIVars.begin();v!=testCase.inputURIVars.end();v++) {
       Item::Ptr uri = context->getItemFactory()->createString(X(v->second.c_str()),context.get());
-      context->getVariableStore()->setGlobalVar(X(v->first.c_str()), uri, context.get(), 0);
+      context->setExternalVariable(X(v->first.c_str()), uri);
     }
     if(!testCase.contextItem.empty())
     {

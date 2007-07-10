@@ -15,7 +15,7 @@
 #include "FastXDMNodeImpl.hpp"
 
 #include <xqilla/context/DynamicContext.hpp>
-#include <xqilla/context/XQScopedNamespace.hpp>
+#include <xqilla/context/ContextHelpers.hpp>
 #include <xqilla/runtime/Sequence.hpp>
 #include <xqilla/runtime/Result.hpp>
 #include <xqilla/exceptions/ItemException.hpp>

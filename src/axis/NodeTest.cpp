@@ -79,8 +79,7 @@ void NodeTest::getStaticType(StaticType &st, const StaticContext *context,
     else if(_type == Node::comment_string) {
       st.flags = StaticType::COMMENT_TYPE;
     }
-    else if(_type == Node::text_string ||
-            _type == Node::cdata_string) {
+    else if(_type == Node::text_string) {
       st.flags = StaticType::TEXT_TYPE;
     }
 

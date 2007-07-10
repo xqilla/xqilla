@@ -11,15 +11,10 @@
  * $Id$
  */
 
-//////////////////////////////////////////////////////////////////////
-// XQQuery.cpp: implementation of the XQQuery class.
-//////////////////////////////////////////////////////////////////////
-
 #include <xqilla/simple-api/XQQuery.hpp>
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/simple-api/XQilla.hpp>
 #include <xqilla/context/DynamicContext.hpp>
-#include <xqilla/context/XQDebugCallback.hpp>
 #include <xqilla/context/VariableStore.hpp>
 #include <xqilla/context/VariableTypeStore.hpp>
 #include <xqilla/functions/FunctionLookup.hpp>
@@ -54,10 +49,6 @@ using namespace std;
 XERCES_CPP_NAMESPACE_USE
 #endif
 
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
-
 XQQuery::XQQuery(const XMLCh* queryText, DynamicContext *context, bool contextOwned, MemoryManager *memMgr)
   : m_memMgr(memMgr),
     m_context(context),
@@ -79,8 +70,8 @@ XQQuery::~XQQuery()
       it != m_importedModules.end(); ++it) {
     delete *it;
   }
-	if(m_contextOwned)
-		delete m_context;
+  if(m_contextOwned)
+    delete m_context;
 }
 
 DynamicContext *XQQuery::createDynamicContext(MemoryManager *memMgr) const
@@ -90,12 +81,7 @@ DynamicContext *XQQuery::createDynamicContext(MemoryManager *memMgr) const
 
 Result XQQuery::execute(DynamicContext* context) const
 {
-  if(context->getDebugCallback()) {
-    return new DebugResult(this, context);
-  }
-  else {
-    return new QueryResult(this);
-  }
+  return new QueryResult(this);
 }
 
 void XQQuery::executeProlog(DynamicContext *context) const
@@ -113,11 +99,10 @@ void XQQuery::executeProlog(DynamicContext *context) const
       // Copy the module's imported variables into our context
       for(GlobalVariables::const_iterator varIt = (*modIt)->m_userDefVars.begin();
           varIt != (*modIt)->m_userDefVars.end(); ++varIt) {
-        std::pair<bool, Sequence> value = moduleCtx->getVariableStore()->
-          getGlobalVar((*varIt)->getVariableURI(), (*varIt)->getVariableLocalName(), moduleCtx);
-        assert(value.first);
-        context->getVariableStore()->
-          setGlobalVar((*varIt)->getVariableURI(), (*varIt)->getVariableLocalName(), value.second, context);
+        Result value = moduleCtx->getGlobalVariableStore()->
+          getVar((*varIt)->getVariableURI(), (*varIt)->getVariableLocalName());
+        context->setExternalVariable((*varIt)->getVariableURI(), (*varIt)->getVariableLocalName(),
+                                     value->toSequence(context));
       }
     }
 
@@ -160,9 +145,9 @@ void XQQuery::staticResolution(StaticContext *context)
   // which gives them the static type they were defined with
   UserFunctions::iterator i;
   for(i = m_userDefFns.begin(); i != m_userDefFns.end(); ++i) {
+    (*i)->staticResolutionStage1(context);
     if(getIsLibraryModule() && !XERCES_CPP_NAMESPACE::XMLString::equals((*i)->getURI(), getModuleTargetNamespace()))
       XQThrow3(StaticErrorException,X("XQQuery::staticResolution"), X("Every function in a module must be in the module namespace [err:XQST0048]."), *i);
-    (*i)->staticResolutionStage1(context);
   }
 
   // Define types for the imported variables
@@ -388,60 +373,58 @@ const XMLCh* XQQuery::getModuleTargetNamespace() const
 class LoopDetector : public XMLEntityResolver
 {
 public:
-    LoopDetector(XMLEntityResolver* pParent, const XMLCh* myModuleURI) 
-    {
-        m_pParentResolver=pParent;
-        m_PreviousModuleNamespace=myModuleURI;
-    }
+  LoopDetector(XMLEntityResolver* pParent, const XMLCh* myModuleURI, const LocationInfo *location) 
+  {
+    m_pParentResolver = pParent;
+    m_PreviousModuleNamespace = myModuleURI;
+    m_location = location;
+  }
 
-    virtual InputSource* resolveEntity(XMLResourceIdentifier* resourceIdentifier)
-    {
-        if(resourceIdentifier->getResourceIdentifierType()==XMLResourceIdentifier::UnKnown &&
-            XPath2Utils::equals(resourceIdentifier->getNameSpace(), m_PreviousModuleNamespace))
-        {
-            XMLBuffer buf;
-            buf.set(X("The graph of module imports contains a cycle for namespace '"));
-            buf.append(resourceIdentifier->getNameSpace());
-            buf.append(X("' [err:XQST0073]"));
-            XQThrow2(StaticErrorException, X("XQQuery::ImportModule"), buf.getRawBuffer());
-        }
-        if(m_pParentResolver)
-            return m_pParentResolver->resolveEntity(resourceIdentifier);
-        return NULL;
+  virtual InputSource *resolveEntity(XMLResourceIdentifier* resourceIdentifier)
+  {
+    if(resourceIdentifier->getResourceIdentifierType() == XMLResourceIdentifier::UnKnown &&
+       XPath2Utils::equals(resourceIdentifier->getNameSpace(), m_PreviousModuleNamespace)) {
+      XMLBuffer buf;
+      buf.set(X("The graph of module imports contains a cycle for namespace '"));
+      buf.append(resourceIdentifier->getNameSpace());
+      buf.append(X("' [err:XQST0073]"));
+      XQThrow3(StaticErrorException, X("LoopDetector::resolveEntity"), buf.getRawBuffer(), m_location);
     }
+    if(m_pParentResolver)
+      return m_pParentResolver->resolveEntity(resourceIdentifier);
+    return NULL;
+  }
 
 protected:
-    XMLEntityResolver* m_pParentResolver;
-    const XMLCh* m_PreviousModuleNamespace;
+  XMLEntityResolver* m_pParentResolver;
+  const XMLCh* m_PreviousModuleNamespace;
+  const LocationInfo *m_location;
 };
 
-void XQQuery::importModule(const XMLCh* szUri, VectorOfStrings* locations, StaticContext* context)
+void XQQuery::importModule(const XMLCh* szUri, VectorOfStrings* locations, StaticContext* context, const LocationInfo *location)
 {
   for(ImportedModules::iterator modIt = m_importedModules.begin();
       modIt != m_importedModules.end(); ++modIt) {
-      if(XPath2Utils::equals((*modIt)->getModuleTargetNamespace(),szUri))
-      {
-          XMLBuffer buf(1023,context->getMemoryManager());
-          buf.set(X("Module for namespace '"));
-          buf.append(szUri);
-          buf.append(X("' has already been imported [err:XQST0047]"));
-          XQThrow2(StaticErrorException, X("XQQuery::ImportModule"), buf.getRawBuffer());
-      }
+    if(XPath2Utils::equals((*modIt)->getModuleTargetNamespace(),szUri)) {
+      XMLBuffer buf(1023,context->getMemoryManager());
+      buf.set(X("Module for namespace '"));
+      buf.append(szUri);
+      buf.append(X("' has already been imported [err:XQST0047]"));
+      XQThrow3(StaticErrorException, X("XQQuery::ImportModule"), buf.getRawBuffer(), location);
+    }
   }
   if(locations==NULL)
     locations=context->resolveModuleURI(szUri);
-  if(locations==NULL || locations->empty())
-  {
+  if(locations==NULL || locations->empty()) {
     XMLBuffer buf(1023,context->getMemoryManager());
     buf.set(X("Cannot locate module for namespace "));
     buf.append(szUri);
     buf.append(X(" without the 'at <location>' keyword [err:XQST0059]"));
-    XQThrow2(StaticErrorException,X("XQQuery::ImportModule"), buf.getRawBuffer());
+    XQThrow3(StaticErrorException,X("XQQuery::ImportModule"), buf.getRawBuffer(), location);
   }
 
   bool bFound=false;
-  for(VectorOfStrings::iterator it=locations->begin();it!=locations->end();it++)
-  {
+  for(VectorOfStrings::iterator it=locations->begin();it!=locations->end();++it) {
     InputSource* srcToUse = 0;
     if (context->getDocumentCache()->getXMLEntityResolver()){
       XMLResourceIdentifier resourceIdentifier(XMLResourceIdentifier::UnKnown,
@@ -450,8 +433,7 @@ void XQQuery::importModule(const XMLCh* szUri, VectorOfStrings* locations, Stati
       srcToUse = context->getDocumentCache()->getXMLEntityResolver()->resolveEntity(&resourceIdentifier);
     }
 
-    if(srcToUse==0)
-    {
+    if(srcToUse==0) {
       try {
         XMLURL urlTmp(context->getBaseURI(), *it);
         if (urlTmp.isRelative()) {
@@ -476,7 +458,7 @@ void XQQuery::importModule(const XMLCh* szUri, VectorOfStrings* locations, Stati
 
     DynamicContext* moduleCtx = context->createModuleContext();
     moduleCtx->setBaseURI(srcToUse->getSystemId());
-    LoopDetector loopDetector(context->getXMLEntityResolver(), szUri);
+    LoopDetector loopDetector(context->getXMLEntityResolver(), szUri, location);
     moduleCtx->setXMLEntityResolver(&loopDetector);
 
     XQQuery* pParsedQuery = XQilla::parse(*srcToUse, moduleCtx);
@@ -486,14 +468,14 @@ void XQQuery::importModule(const XMLCh* szUri, VectorOfStrings* locations, Stati
       buf.set(X("The module at "));
       buf.append(srcToUse->getSystemId());
       buf.append(X(" is not a module"));
-      XQThrow2(StaticErrorException, X("XQQuery::ImportModule"), buf.getRawBuffer());
+      XQThrow3(StaticErrorException, X("XQQuery::ImportModule"), buf.getRawBuffer(), location);
     }
     if(!XERCES_CPP_NAMESPACE::XMLString::equals(szUri,pParsedQuery->getModuleTargetNamespace())) {
       XMLBuffer buf(1023,context->getMemoryManager());
       buf.set(X("The module at "));
       buf.append(srcToUse->getSystemId());
       buf.append(X(" specifies a different namespace [err:XQST0059]"));
-      XQThrow2(StaticErrorException, X("XQQuery::ImportModule"), buf.getRawBuffer());
+      XQThrow3(StaticErrorException, X("XQQuery::ImportModule"), buf.getRawBuffer(), location);
     }
     // now move the variable declarations and the function definitions into my context
     for(UserFunctions::iterator itFn = pParsedQuery->m_userDefFns.begin(); itFn != pParsedQuery->m_userDefFns.end(); ++itFn) {
@@ -530,7 +512,7 @@ void XQQuery::importModule(const XMLCh* szUri, VectorOfStrings* locations, Stati
     buf.set(X("Cannot locate the module for namespace \""));
     buf.append(szUri);
     buf.append(X("\" [err:XQST0059]"));
-    XQThrow2(StaticErrorException,X("XQQuery::ImportModule"), buf.getRawBuffer());
+    XQThrow3(StaticErrorException,X("XQQuery::ImportModule"), buf.getRawBuffer(), location);
   }
 }
 
@@ -587,59 +569,6 @@ std::string XQQuery::QueryResult::asString(DynamicContext *context, int indent) 
   oss << in << "<queryresult>" << std::endl;
   oss << _parent->asString(context, indent + 1);
   oss << in << "</queryresult>" << std::endl;
-
-  return oss.str();
-}
-
-XQQuery::DebugResult::DebugResult(const XQQuery *query, DynamicContext *context)
-  : LazySequenceResult(query->getQueryBody(), context),
-    _query(query)
-{
-}
-
-void XQQuery::DebugResult::getResult(Sequence &toFill, DynamicContext *context) const
-{
-  static XMLCh szMain[]= { chLatin_M, chLatin_a, chLatin_i, chLatin_n, chNull };
-
-  if(context->getDebugCallback()) {
-    context->getDebugCallback()->NotifyQueryBegin(context, _query->getQueryText());
-    context->getDebugCallback()->EnterFunction(context, _query->getFile(), szMain, 0, 0);
-  }
-
-  try
-  {
-    _query->executeProlog(context);
-
-    // execute the query body
-    if(_query->getQueryBody() != NULL) {
-      toFill = _query->getQueryBody()->createResult(context)->toSequence(context);
-    }
-  }
-  catch(XQException& e)
-  {
-    if(!e.isErrorReported()) {
-      if(context->getDebugCallback() && context->isDebuggingEnabled()) 
-        context->getDebugCallback()->ReportFirstError(context, e.getError(), _query->getFile(), 0);
-      e.setErrorReported();
-      if(e.getXQueryLine() == 0) {
-        e.setXQueryPosition(_query->getFile(), 1, 1);
-      }
-    }
-    throw e;
-  }
-
-  if(context->getDebugCallback()) {
-    context->getDebugCallback()->ExitFunction(context, szMain);
-    context->getDebugCallback()->NotifyQueryEnd(context, toFill);
-  }
-}
-
-std::string XQQuery::DebugResult::asString(DynamicContext *context, int indent) const
-{
-  std::ostringstream oss;
-  std::string in(getIndent(indent));
-
-  oss << in << "<debugresult/>" << std::endl;
 
   return oss.str();
 }

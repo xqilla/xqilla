@@ -410,16 +410,31 @@
 				RelativePath="..\..\src\ast\ConstantFoldingFunction.cpp">
 			</File>
 			<File
+				RelativePath="..\..\src\ast\ContextTuple.cpp">
+			</File>
+			<File
 				RelativePath="..\..\src\ast\ConvertFunctionArg.cpp">
 			</File>
 			<File
+				RelativePath="..\..\src\ast\ForTuple.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\ast\LetTuple.cpp">
+			</File>
+			<File
 				RelativePath="..\..\src\ast\NumericFunction.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\ast\OrderByTuple.cpp">
 			</File>
 			<File
 				RelativePath="..\..\src\ast\StaticResolutionContext.cpp">
 			</File>
 			<File
 				RelativePath="..\..\src\ast\StaticType.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\ast\WhereTuple.cpp">
 			</File>
 			<File
 				RelativePath="..\..\src\ast\XPath1Compat.cpp">
@@ -458,13 +473,7 @@
 				RelativePath="..\..\src\ast\XQTextConstructor.cpp">
 			</File>
 			<File
-				RelativePath="..\..\src\ast\XQDebugHook.cpp">
-			</File>
-			<File
 				RelativePath="..\..\src\ast\XQDocumentOrder.cpp">
-			</File>
-			<File
-				RelativePath="..\..\src\ast\XQFLWOR.cpp">
 			</File>
 			<File
 				RelativePath="..\..\src\ast\XQFunction.cpp">
@@ -503,6 +512,9 @@
 				RelativePath="..\..\src\ast\XQQuantified.cpp">
 			</File>
 			<File
+				RelativePath="..\..\src\ast\XQReturn.cpp">
+			</File>
+			<File
 				RelativePath="..\..\src\ast\XQSequence.cpp">
 			</File>
 			<File
@@ -521,9 +533,6 @@
 				RelativePath="..\..\src\ast\XQVariable.cpp">
 			</File>
 			<File
-				RelativePath="..\..\src\ast\XQVariableBinding.cpp">
-			</File>
-			<File
 				RelativePath="..\..\include\xqilla\ast\ASTNode.hpp">
 			</File>
 			<File
@@ -533,7 +542,16 @@
 				RelativePath="..\..\include\xqilla\ast\ConstantFoldingFunction.hpp">
 			</File>
 			<File
+				RelativePath="..\..\include\xqilla\ast\ContextTuple.hpp">
+			</File>
+			<File
 				RelativePath="..\..\include\xqilla\ast\ConvertFunctionArg.hpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\ast\ForTuple.hpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\ast\LetTuple.hpp">
 			</File>
 			<File
 				RelativePath="..\..\include\xqilla\ast\LocationInfo.hpp">
@@ -546,6 +564,12 @@
 			</File>
 			<File
 				RelativePath="..\..\include\xqilla\ast\StaticType.hpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\ast\TupleNode.hpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\ast\WhereTuple.hpp">
 			</File>
 			<File
 				RelativePath="..\..\include\xqilla\ast\XPath1Compat.hpp">
@@ -584,13 +608,7 @@
 				RelativePath="..\..\include\xqilla\ast\XQTextConstructor.hpp">
 			</File>
 			<File
-				RelativePath="..\..\include\xqilla\ast\XQDebugHook.hpp">
-			</File>
-			<File
 				RelativePath="..\..\include\xqilla\ast\XQDocumentOrder.hpp">
-			</File>
-			<File
-				RelativePath="..\..\include\xqilla\ast\XQFLWOR.hpp">
 			</File>
 			<File
 				RelativePath="..\..\include\xqilla\ast\XQFunction.hpp">
@@ -629,6 +647,9 @@
 				RelativePath="..\..\include\xqilla\ast\XQQuantified.hpp">
 			</File>
 			<File
+				RelativePath="..\..\include\xqilla\ast\XQReturn.hpp">
+			</File>
+			<File
 				RelativePath="..\..\include\xqilla\ast\XQSequence.hpp">
 			</File>
 			<File
@@ -645,9 +666,6 @@
 			</File>
 			<File
 				RelativePath="..\..\include\xqilla\ast\XQVariable.hpp">
-			</File>
-			<File
-				RelativePath="..\..\include\xqilla\ast\XQVariableBinding.hpp">
 			</File>
 		</Filter>
 		<Filter
@@ -688,9 +706,6 @@
 				RelativePath="..\..\src\context\impl\VarStoreImpl.cpp">
 			</File>
 			<File
-				RelativePath="..\..\src\context\impl\VarStoreImpl.hpp">
-			</File>
-			<File
 				RelativePath="..\..\src\context\impl\VarTypeStoreImpl.cpp">
 			</File>
 			<File
@@ -701,9 +716,6 @@
 			</File>
 			<File
 				RelativePath="..\..\src\context\impl\XQDynamicContextImpl.cpp">
-			</File>
-			<File
-				RelativePath="..\..\src\context\impl\XQRemoteDebugger.cpp">
 			</File>
 			<File
 				RelativePath="..\..\include\xqilla\context\impl\CodepointCollation.hpp">
@@ -718,6 +730,9 @@
 				RelativePath="..\..\include\xqilla\context\impl\VarHashEntryImpl.hpp">
 			</File>
 			<File
+				RelativePath="..\..\include\xqilla\context\impl\VarStoreImpl.hpp">
+			</File>
+			<File
 				RelativePath="..\..\include\xqilla\context\impl\VariableStoreTemplate.hpp">
 			</File>
 			<File
@@ -726,15 +741,9 @@
 			<File
 				RelativePath="..\..\include\xqilla\context\impl\XQDynamicContextImpl.hpp">
 			</File>
-			<File
-				RelativePath="..\..\include\xqilla\context\impl\XQRemoteDebugger.hpp">
-			</File>
 		</Filter>
 			<File
 				RelativePath="..\..\src\context\UpdateFactory.cpp">
-			</File>
-			<File
-				RelativePath="..\..\src\context\XQScopedNamespace.cpp">
 			</File>
 			<File
 				RelativePath="..\..\include\xqilla\context\Collation.hpp">
@@ -774,12 +783,6 @@
 			</File>
 			<File
 				RelativePath="..\..\include\xqilla\context\VariableTypeStore.hpp">
-			</File>
-			<File
-				RelativePath="..\..\include\xqilla\context\XQDebugCallback.hpp">
-			</File>
-			<File
-				RelativePath="..\..\include\xqilla\context\XQScopedNamespace.hpp">
 			</File>
 		</Filter>
 		<Filter
@@ -2140,10 +2143,10 @@
 				RelativePath="..\..\src\lexer\XQLexer.cpp">
 			</File>
 			<File
-				RelativePath="..\..\src\lexer\XQLexer.hpp">
+				RelativePath="..\..\src\lexer\XQLexer2.cpp">
 			</File>
 			<File
-				RelativePath="..\..\src\lexer\XQillaLexer.hpp">
+				RelativePath="..\..\src\lexer\XQLexer.hpp">
 			</File>
 		</Filter>
 		<Filter
@@ -2441,6 +2444,9 @@
 			Name="runtime"
 			Filter="">
 			<File
+				RelativePath="..\..\src\runtime\ClosureResult.cpp">
+			</File>
+			<File
 				RelativePath="..\..\src\runtime\EmptyResult.cpp">
 			</File>
 			<File
@@ -2468,6 +2474,9 @@
 				RelativePath="..\..\src\runtime\SingleResult.cpp">
 			</File>
 			<File
+				RelativePath="..\..\include\xqilla\runtime\ClosureResult.hpp">
+			</File>
+			<File
 				RelativePath="..\..\include\xqilla\runtime\EmptyResult.hpp">
 			</File>
 			<File
@@ -2493,6 +2502,9 @@
 			</File>
 			<File
 				RelativePath="..\..\include\xqilla\runtime\SingleResult.hpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\runtime\TupleResult.hpp">
 			</File>
 		</Filter>
 		<Filter

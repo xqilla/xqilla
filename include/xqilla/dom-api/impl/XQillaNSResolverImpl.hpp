@@ -26,7 +26,10 @@ class XPath2MemoryManager;
 class XQILLA_API XQillaNSResolverImpl : public XQillaNSResolver
 {
 public:
-  XQillaNSResolverImpl(XPath2MemoryManager* memMgr, XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *resolverNode);
+  XQillaNSResolverImpl(XPath2MemoryManager* memMgr);
+  XQillaNSResolverImpl(XPath2MemoryManager* memMgr, const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver *prevScope);
+  XQillaNSResolverImpl(XPath2MemoryManager* memMgr, const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *resolverNode,
+                       const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver *prevScope = 0);
   ~XQillaNSResolverImpl();
 
   virtual const XMLCh* lookupNamespaceURI(const XMLCh* prefix) const;
@@ -36,14 +39,12 @@ public:
 
   virtual void release();
 
-  XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *getResolverNode(void);
-
 protected:
-  static const XMLCh g_nsBlocker[];
   XERCES_CPP_NAMESPACE_QUALIFIER RefHashTableOf< XMLCh > _namespaceBindings;
-  XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *_resolverNode;
+  const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *_resolverNode;
+  const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver* _prevScope;
   XPath2MemoryManager* _memMgr;
-};//XQillaNSResolverImpl
+};
 
 
-#endif //__XQILLANSRESOLVERIMPL_HPP
+#endif

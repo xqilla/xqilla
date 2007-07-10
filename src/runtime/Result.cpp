@@ -27,6 +27,12 @@
 
 EmptyResult Result::_empty(0);
 
+Result::Result(const Item::Ptr &item)
+  : _impl(new SequenceResult(0, item))
+{
+  _impl->incrementRefCount();
+}
+
 Result::Result(const Sequence &seq)
   : _impl(new SequenceResult(0, seq))
 {

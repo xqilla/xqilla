@@ -11,65 +11,55 @@
  * $Id$
  */
 
-//////////////////////////////////////////////////////////////////////
-// XQFunctionCall.cpp: implementation of the XQFunctionCall class.
-//////////////////////////////////////////////////////////////////////
-
-#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/ast/XQFunctionCall.hpp>
 #include <xqilla/exceptions/FunctionException.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>
-#include <xqilla/parser/QName.hpp>
-#include <xqilla/runtime/Sequence.hpp>
 #include <xqilla/context/DynamicContext.hpp>
+#include <xqilla/utils/XPath2NSUtils.hpp>
+
 #include <xercesc/util/XMLString.hpp>
 #include <xercesc/framework/XMLBuffer.hpp>
 
-////////////////////////////////////////////////////////////////////////////////////////
-//
-//
+XERCES_CPP_NAMESPACE_USE;
 
-XQFunctionCall::XQFunctionCall(QualifiedName* qname, const VectorOfASTNodes &args, XPath2MemoryManager* expr)
-  : ASTNodeImpl(expr),
-  _args(args),
-  _qname(qname)
+XQFunctionCall::XQFunctionCall(const XMLCh *qname, VectorOfASTNodes *args, XPath2MemoryManager *mm)
+  : ASTNodeImpl(mm),
+    qname_(qname),
+    args_(args ? args : new (mm) VectorOfASTNodes(XQillaAllocator<ASTNode*>(mm)))
 {
-    setType(ASTNode::FUNCTION_CALL);
-}
-
-Result XQFunctionCall::createResult(DynamicContext* ctx, int flags) const
-{
-	XQThrow(FunctionException,X("XQFunctionCall::createSequence"), X("staticResolution has not been called!!!"));
+  setType(ASTNode::FUNCTION_CALL);
 }
 
 ASTNode* XQFunctionCall::staticResolution(StaticContext *context) 
 {
-  ASTNode* functionImpl=context->lookUpFunction(_qname->getPrefix(),_qname->getName(), _args, this);
+  const XMLCh *prefix = XPath2NSUtils::getPrefix(qname_, context->getMemoryManager());
+  const XMLCh *name = XPath2NSUtils::getLocalName(qname_);
 
-  if(functionImpl==NULL) {
-    // get the uri for debugging purposes
-    const XMLCh* uri = context->getUriBoundToPrefix(_qname->getPrefix(), this);
+  const XMLCh *uri = 0;
+  if(prefix == 0 || *prefix == 0) {
+    uri = context->getDefaultFuncNS();
+  }
+  else {
+    uri = context->getUriBoundToPrefix(prefix, this);
+  }
 
-    if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(uri) == 0 && XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(_qname->getPrefix()) == 0)
-      uri=context->getDefaultFuncNS();
-
-    XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buf;
-    buf.set(X("Function '"));
-    buf.append(_qname->getName());
-    buf.append(X("' in namespace '"));
-    if(uri)
-      buf.append(uri);
-    buf.append(X("' with "));
+  ASTNode *result = context->lookUpFunction(uri, name, *args_);
+  if(result == 0) {
+    XMLBuffer buf;
+    buf.set(X("A function called {"));
+    buf.append(uri);
+    buf.append(X("}"));
+    buf.append(name);
+    buf.append(X(" with "));
     XMLCh szNumBuff[20];
-    XERCES_CPP_NAMESPACE_QUALIFIER XMLString::binToText(_args.size(), szNumBuff, 19, 10);
+    XMLString::binToText(args_ ? args_->size() : 0, szNumBuff, 19, 10);
     buf.append(szNumBuff);
-    buf.append(X(" argument(s) is undefined [err:XPST0017]"));
+    buf.append(X(" arguments is not defined [err:XPST0017]"));
 
-    //cerr << "reason1: " << XERCES_CPP_NAMESPACE_QUALIFIER XMLString::transcode(buf.getRawBuffer()) << endl;
     XQThrow(StaticErrorException, X("XQFunctionCall::staticResolution"), buf.getRawBuffer());
   }
-  functionImpl->setLocationInfo(this);
-  return functionImpl->staticResolution(context);
+  result->setLocationInfo(this);
+  return result->staticResolution(context);
 }
 
 ASTNode *XQFunctionCall::staticTyping(StaticContext *context)
@@ -78,12 +68,8 @@ ASTNode *XQFunctionCall::staticTyping(StaticContext *context)
   return this;
 }
 
-const QualifiedName *XQFunctionCall::getName() const
+Result XQFunctionCall::createResult(DynamicContext* context, int flags) const
 {
-  return _qname;
-}
-
-const VectorOfASTNodes &XQFunctionCall::getArguments() const
-{
-  return _args;
+  // Should never happen
+  return 0;
 }

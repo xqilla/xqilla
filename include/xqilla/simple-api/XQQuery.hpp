@@ -11,12 +11,8 @@
  * $Id$
  */
 
-//////////////////////////////////////////////////////////////////////
-// XQQuery.h: interface for the XQQuery class.
-//////////////////////////////////////////////////////////////////////
-
-#if !defined(AFXQ_XQUERY_H__FAA9933A_2F10_49A4_93A2_857E2A8C48E3__INCLUDED_)
-#define AFXQ_XQUERY_H__FAA9933A_2F10_49A4_93A2_857E2A8C48E3__INCLUDED_
+#ifndef XQQUERY_HPP
+#define XQQUERY_HPP
 
 #include <xqilla/framework/XQillaExport.hpp>
 #include <vector>
@@ -132,10 +128,10 @@ public:
    */
   void staticTyping(StaticContext *context = 0);
 
-	//@}
+  //@}
 
-	/** @name Query Information */
-	// @{
+  /** @name Query Information */
+  // @{
 
   /// Returns the expression that was parsed to create this XQQuery object.
   const XMLCh* getQueryText() const;
@@ -143,10 +139,10 @@ public:
   /// Returns the query plan as XML. This is designed for debug and informative purposes only.
   std::string getQueryPlan() const;
 
-	//@}
+  //@}
 
-	/** @name Getters and Setters */
-	// @{
+  /** @name Getters and Setters */
+  // @{
 
   /// Get the query body as an ASTNode
   ASTNode* getQueryBody() const;
@@ -173,10 +169,10 @@ public:
 
   const DynamicContext *getStaticContext() const { return m_context; }
 
-	//@}
+  //@}
 
-	/** @name Module Methods */
-	// @{
+  /** @name Module Methods */
+  // @{
 
   /// Sets whether this query is a module or not
   void setIsLibraryModule(bool bIsModule=true);
@@ -187,13 +183,11 @@ public:
   /// Gets the module taget namespace for this query
   const XMLCh* getModuleTargetNamespace() const;
   /// Performs a module import from the given target namespace and locations
-  void importModule(const XMLCh* szUri, VectorOfStrings* locations, StaticContext* context);
+  void importModule(const XMLCh* szUri, VectorOfStrings* locations, StaticContext* context, const LocationInfo *location);
 
-	//@}
+  //@}
 
 private:
-  void importModuleImpl(const XMLCh* szUri, XERCES_CPP_NAMESPACE_QUALIFIER InputSource* location, StaticContext* context);
-
   /// Top level lazy result iterator
   class QueryResult : public ResultImpl
   {
@@ -207,19 +201,6 @@ private:
     const XQQuery *_query;
     Result _parent;
     bool _toDo;
-  };
-
-  /// Top level debug lazy result iterator
-  class DebugResult : public LazySequenceResult
-  {
-  public:
-    DebugResult(const XQQuery *query, DynamicContext *context);
-
-    void getResult(Sequence &toFill, DynamicContext *context) const;
-    std::string asString(DynamicContext *context, int indent) const;
-
-  private:
-    const XQQuery *_query;
   };
 
 private:
@@ -253,8 +234,7 @@ private:
   ImportedModules m_importedModules;
 
   friend class QueryResult;
-  friend class DebugResult;
   friend class XQilla;
 };
 
-#endif // !defined(AFXQ_XQUERY_H__FAA9933A_2F10_49A4_93A2_857E2A8C48E3__INCLUDED_)
+#endif

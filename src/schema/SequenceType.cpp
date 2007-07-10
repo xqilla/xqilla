@@ -201,6 +201,11 @@ SequenceType::ItemType::ItemTestType SequenceType::ItemType::getItemTestType(voi
   return m_nTestType;
 }
 
+void SequenceType::ItemType::setItemTestType(ItemTestType t)
+{
+  m_nTestType = t;
+}
+
 void SequenceType::ItemType::setAllowNilled(bool value)
 {
   m_bAllowNil=value;

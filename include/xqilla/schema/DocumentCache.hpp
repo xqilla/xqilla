@@ -26,6 +26,7 @@ typedef std::vector<const XMLCh*, XQillaAllocator<const XMLCh*> > VectorOfString
 class DynamicContext;
 class StaticContext;
 class QualifiedName;
+class LocationInfo;
 
 XERCES_CPP_NAMESPACE_BEGIN
 class DOMDocument;
@@ -74,7 +75,7 @@ public:
   virtual bool isTypeOrDerivedFromType(const XMLCh* const uri, const XMLCh* const typeName, const XMLCh* const uriToCheck, const XMLCh* const typeNameToCheck) const = 0; 
   virtual bool isTypeDefined(const XMLCh* const uri, const XMLCh* const typeName) const = 0; 
 
-  virtual void addSchemaLocation(const XMLCh* uri, VectorOfStrings* locations, StaticContext *context) = 0;
+  virtual void addSchemaLocation(const XMLCh* uri, VectorOfStrings* locations, StaticContext *context, const LocationInfo *location) = 0;
 
   /** helper functions used to map namespace ids found in the SchemaGrammar **/
   virtual unsigned int getSchemaUriId(const XMLCh* uri) const = 0;

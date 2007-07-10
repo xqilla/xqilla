@@ -15,6 +15,7 @@
 #define XQDYNAMICCONTEXTIMPL_H
 
 #include <xqilla/context/DynamicContext.hpp>
+#include <xqilla/context/impl/VarStoreImpl.hpp>
 #include <xqilla/runtime/Sequence.hpp>
 #include <xqilla/framework/ProxyMemoryManager.hpp>
 #include <xqilla/exceptions/ContextException.hpp>
@@ -61,14 +62,6 @@ public:
   // XQuery Dynamic Context Accessors //
   //////////////////////////////////////
 
-  /** Set the object to be used for debugging callbacks */
-  virtual void setDebugCallback(XQDebugCallback* callback);
-  /** Get the object to be used for debugging callbacks */
-  virtual XQDebugCallback* getDebugCallback() const;
-
-  virtual void enableDebugging(bool enable=true);
-  virtual bool isDebuggingEnabled() const;
-
   virtual void testInterrupt() const;
 
   //////////////////////////////////
@@ -100,8 +93,12 @@ public:
   /** Set the context size */
   virtual void setContextSize(unsigned int size);
 
-  /** get the variable store */
-  virtual VariableStore* getVariableStore();
+  virtual const VariableStore* getVariableStore() const;
+  virtual void setVariableStore(const VariableStore *store);
+  virtual const VariableStore* getGlobalVariableStore() const;
+  virtual void setGlobalVariableStore(const VariableStore *store);
+  virtual void setExternalVariable(const XMLCh *namespaceURI, const XMLCh *name, const Sequence &value);
+  virtual void setExternalVariable(const XMLCh *qname, const Sequence &value);
 
   /** Return the current time */
   virtual time_t getCurrentTime() const;
@@ -210,16 +207,15 @@ public:
   virtual VectorOfStrings* resolveModuleURI(const XMLCh* uri) const;
 
   /** add the location for the grammar of a specific namespace **/
-  virtual void addSchemaLocation(const XMLCh* uri, VectorOfStrings* locations);
+  virtual void addSchemaLocation(const XMLCh* uri, VectorOfStrings* locations, const LocationInfo *location);
 
   /** get the variable type store */
   virtual VariableTypeStore* getVariableTypeStore();
 
   /** adds a custom function to the function table */
   virtual void addCustomFunction(FuncFactory *func);
-	/** returns a function with name name in the namespace represented by prefix */
-  virtual ASTNode* lookUpFunction(const XMLCh* prefix, const XMLCh* name, VectorOfASTNodes& v,
-                                  const LocationInfo *location) const;
+  /** returns a function object with the given uri, localname and number of arguments triple */
+  virtual ASTNode *lookUpFunction(const XMLCh *uri, const XMLCh* name, const VectorOfASTNodes &v) const;
 
   /** adds an external function implementation to the function table */
   virtual void addExternalFunction(const ExternalFunction *func);
@@ -228,7 +224,7 @@ public:
 
   /** Get the implementation for the specified collation */
   virtual Collation* getCollation(const XMLCh* const URI, const LocationInfo *location) const;
-  /** Add a collation	*/
+  /** Add a collation */
   virtual void addCollation(Collation* collation);
 
   /** Get the default collation */
@@ -280,6 +276,8 @@ public:
   //  XQilla context specific accessors  //
   /////////////////////////////////////////
 
+  virtual const XMLCh *allocateTempVarName();
+
   /** Get the memory manager */
   virtual XPath2MemoryManager* getMemoryManager() const;
 
@@ -327,7 +325,9 @@ protected:
    * available for reference within the expression. The QName
    * represents the name of the variable, and the Sequence represents its
    * value */
-  VariableStore* _varStore;
+  const VariableStore *_varStore;
+  const VariableStore *_globalVarStore;
+  VarStoreImpl _defaultVarStore;
 
   /** Current date and time. This information  represents an
    * implementation-dependent point in time during processing of a query
@@ -367,14 +367,6 @@ protected:
 
   // used for memory management
   XPath2MemoryManager* _memMgr;
-
-  /////////////////////////////////////////
-  //  XQuery dynamic context variables   //
-  /////////////////////////////////////////
-
-  bool m_bEnableDebugging;
-
-  XQDebugCallback* m_pDebugCallback;
 };
 
 
@@ -392,7 +384,7 @@ inline void XQDynamicContextImpl::addExternalFunction(const ExternalFunction *fu
 { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
 inline void XQDynamicContextImpl::addCollation(Collation* collation)
 { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
-inline void XQDynamicContextImpl::addSchemaLocation(const XMLCh* uri, VectorOfStrings* locations)
+inline void XQDynamicContextImpl::addSchemaLocation(const XMLCh* uri, VectorOfStrings* locations, const LocationInfo *location)
 { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
 inline VariableTypeStore* XQDynamicContextImpl::getVariableTypeStore()
 { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); return 0; }
@@ -412,13 +404,15 @@ inline void XQDynamicContextImpl::setModuleResolver(ModuleResolver *resolver)
 { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
 inline void XQDynamicContextImpl::setRevalidationMode(DocumentCache::ValidationMode mode)
 { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
+inline const XMLCh *XQDynamicContextImpl::allocateTempVarName()
+{ XQThrow2(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); return 0; }
 
 
 inline const StaticType &XQDynamicContextImpl::getContextItemType() const { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("The static context is not available from a proxying dynamic context")); }
 inline const XMLCh* XQDynamicContextImpl::getDefaultFuncNS() const { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("The static context is not available from a proxying dynamic context")); }
 inline StaticContext::NodeSetOrdering XQDynamicContextImpl::getNodeSetOrdering() const { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("The static context is not available from a proxying dynamic context")); }
 inline ModuleResolver * XQDynamicContextImpl::getModuleResolver() const { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("The static context is not available from a proxying dynamic context")); }
-inline ASTNode* XQDynamicContextImpl::lookUpFunction(const XMLCh* prefix, const XMLCh* name, VectorOfASTNodes& v, const LocationInfo *location) const { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("The static context is not available from a proxying dynamic context")); }
+inline ASTNode* XQDynamicContextImpl::lookUpFunction(const XMLCh* uri, const XMLCh* name, const VectorOfASTNodes& v) const { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("The static context is not available from a proxying dynamic context")); }
 inline const ExternalFunction *XQDynamicContextImpl::lookUpExternalFunction(const XMLCh *uri, const XMLCh *name, unsigned int numArgs) const { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("The static context is not available from a proxying dynamic context")); }
 inline StaticContext::FLWOROrderingMode XQDynamicContextImpl::getDefaultFLWOROrderingMode() const { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("The static context is not available from a proxying dynamic context")); }
 inline bool XQDynamicContextImpl::getXPath1CompatibilityMode() const { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("The static context is not available from a proxying dynamic context")); }

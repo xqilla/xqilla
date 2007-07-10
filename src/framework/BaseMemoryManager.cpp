@@ -28,7 +28,6 @@ XERCES_CPP_NAMESPACE_USE
 #include <xqilla/utils/XStr.hpp>
 #include <xqilla/context/impl/CollationImpl.hpp>
 #include <xqilla/dom-api/impl/XQillaNSResolverImpl.hpp>
-#include "../context/impl/VarStoreImpl.hpp"
 #include "../context/impl/VarTypeStoreImpl.hpp"
 #include <xqilla/items/impl/ATDecimalOrDerivedImpl.hpp>
 
@@ -263,11 +262,6 @@ Collation* BaseMemoryManager::createCollation(CollationHelper* helper) {
 XQillaNSResolver* BaseMemoryManager::createNSResolver(DOMNode *resolverNode) {
   return new (this) XQillaNSResolverImpl(this, resolverNode);
 }
-
-/** create a store for variables */
-VariableStore* BaseMemoryManager::createVariableStore() {
-  return new (this) VarStoreImpl(this);
-} 
 
 /** create a store for variables */
 VariableTypeStore* BaseMemoryManager::createVariableTypeStore() {

@@ -1,0 +1,249 @@
+/*
+ * Copyright (c) 2001-2006
+ *     DecisionSoft Limited. All rights reserved.
+ * Copyright (c) 2004-2006
+ *     Progress Software Corporation. All rights reserved.
+ * Copyright (c) 2004-2006
+ *     Oracle. All rights reserved.
+ *
+ * See the file LICENSE for redistribution information.
+ *
+ * $Id$
+ */
+
+#include <xqilla/ast/ForTuple.hpp>
+#include <xqilla/ast/LetTuple.hpp>
+#include <xqilla/ast/OrderByTuple.hpp>
+#include <xqilla/context/DynamicContext.hpp>
+#include <xqilla/context/ContextHelpers.hpp>
+#include <xqilla/context/impl/VarStoreImpl.hpp>
+#include <xqilla/exceptions/StaticErrorException.hpp>
+#include <xqilla/utils/XStr.hpp>
+#include <xqilla/operators/GreaterThan.hpp>
+
+using namespace std;
+
+OrderByTuple::OrderByTuple(TupleNode *parent, ASTNode *expr, int modifiers, Collation *collation, XPath2MemoryManager *mm)
+  : TupleNode(ORDER_BY, parent),
+    expr_(expr),
+    modifiers_((Modifiers)modifiers),
+    collation_(collation),
+    usedSrc_(mm)
+{
+}
+
+TupleNode *OrderByTuple::staticResolution(StaticContext *context)
+{
+  parent_ = parent_->staticResolution(context);
+
+  AutoNodeSetOrderingReset orderReset(context, (modifiers_ & UNSTABLE) == 0 ?
+                                      StaticContext::ORDERING_ORDERED : StaticContext::ORDERING_UNORDERED);
+  expr_ = expr_->staticResolution(context);
+
+  return this;
+}
+
+static TupleNode *findOrderByAncestor(TupleNode *ancestor, const StaticResolutionContext &exprSrc)
+{
+  // Find the furthest ancestor that we can safely be placed before
+  TupleNode *found = 0;
+
+  while(ancestor != 0) {
+    switch(ancestor->getType()) {
+    case TupleNode::FOR: {
+      ForTuple *f = (ForTuple*)ancestor;
+      if((f->getVarName() && exprSrc.isVariableUsed(f->getVarURI(), f->getVarName())) ||
+         (f->getPosName() && exprSrc.isVariableUsed(f->getPosURI(), f->getPosName()))) {
+        return found;
+      }
+      found = ancestor;
+      break;
+    }
+    case TupleNode::LET: {
+      LetTuple *f = (LetTuple*)ancestor;
+      if((f->getVarName() && exprSrc.isVariableUsed(f->getVarURI(), f->getVarName()))) {
+        return found;
+      }
+      found = ancestor;
+      break;
+    }
+    case TupleNode::ORDER_BY: {
+      return found;
+    }
+    default: break;
+    }
+
+    ancestor = ancestor->getParent();
+  }
+
+  return found;
+}
+
+TupleNode *OrderByTuple::staticTypingSetup(StaticContext *context)
+{
+  parent_ = parent_->staticTypingSetup(context);
+
+  {
+    AutoNodeSetOrderingReset orderReset(context, (modifiers_ & UNSTABLE) == 0 ?
+                                        StaticContext::ORDERING_ORDERED : StaticContext::ORDERING_UNORDERED);
+    expr_ = expr_->staticTyping(context);
+  }
+
+  if(expr_->getStaticResolutionContext().isUpdating()) {
+    XQThrow(StaticErrorException,X("OrderByTuple::staticTypingSetup"),
+            X("It is a static error for the order by expression of a FLWOR expression "
+              "to be an updating expression [err:XUST0001]"));
+  }
+
+  // Push back if possible
+  TupleNode *found = findOrderByAncestor(parent_, expr_->getStaticResolutionContext());
+  if(found) {
+    TupleNode *tmp = parent_;
+    parent_ = found->getParent();
+    found->setParent(this);
+    return tmp;
+  }
+
+  return this;
+}
+
+TupleNode *OrderByTuple::staticTypingTeardown(StaticContext *context, StaticResolutionContext &usedSrc)
+{
+  usedSrc_.clear();
+  usedSrc_.add(usedSrc);
+
+  usedSrc.add(expr_->getStaticResolutionContext());
+  parent_ = parent_->staticTypingTeardown(context, usedSrc);
+
+  return this;
+}
+
+class OrderByTupleResult : public TupleResult
+{
+public:
+  OrderByTupleResult(const OrderByTuple *ast, const TupleResult::Ptr &parent)
+    : TupleResult(ast),
+      ast_(ast),
+      parent_(parent),
+      toDo_(true),
+      tuples_(),
+      tupleIt_(tuples_.begin())
+  {
+  }
+
+  ~OrderByTupleResult()
+  {
+    if(!toDo_) {
+      for(; tupleIt_ != tuples_.end(); ++tupleIt_) {
+        delete *tupleIt_;
+      }
+    }
+  }
+
+  virtual Result getVar(const XMLCh *namespaceURI, const XMLCh *name) const
+  {
+    return (*tupleIt_)->varStore.getVar(namespaceURI, name);
+  }
+
+  virtual bool next(DynamicContext *context)
+  {
+    if(toDo_) {
+      toDo_ = false;
+
+      XPath2MemoryManager *mm = context->getMemoryManager();
+      const ASTNode *expr = ast_->getExpression();
+      const StaticResolutionContext &usedSrc = ast_->getUsedSRC();
+
+      while(parent_->next(context)) {
+        AutoVariableStoreReset reset(context, parent_);
+        tuples_.push_back(new OrderPair((AnyAtomicType*)expr->createResult(context)->
+                                        next(context).get(), usedSrc, parent_, mm));
+      }
+
+      stable_sort(tuples_.begin(), tuples_.end(),
+                  OrderComparison(ast_->getModifiers(), ast_->getCollation(), context, this));
+      tupleIt_ = tuples_.begin();
+    } else {
+      delete *tupleIt_;
+      *tupleIt_ = 0;
+      ++tupleIt_;
+    }
+
+    return tupleIt_ != tuples_.end();
+  }
+
+private:
+  class OrderPair
+  {
+  public:
+    static inline bool isEmptyOrNaN(const AnyAtomicType::Ptr &si)
+    {
+      return si.isNull() || (si->isNumericValue() && ((Numeric*)si.get())->isNaN());
+    }
+
+    OrderPair(const AnyAtomicType::Ptr &si, const StaticResolutionContext &usedSrc, const VariableStore *vars,
+              XPath2MemoryManager *mm)
+      : sortItem(isEmptyOrNaN(si) ? 0 : si),
+        varStore(mm)
+    {
+      varStore.cacheVariableStore(usedSrc, vars);
+    }
+
+    AnyAtomicType::Ptr sortItem;
+    VarStoreImpl varStore;
+  };
+
+  class OrderComparison
+  {
+  public:
+    OrderComparison(OrderByTuple::Modifiers mod, Collation *col, DynamicContext *cn, const LocationInfo *loc)
+      : modifiers(mod), collation(col), context(cn), location(loc) {}
+
+    inline bool greaterThan(const OrderPair *w, const OrderPair *v) const
+    {
+      if((modifiers & OrderByTuple::EMPTY_LEAST) != 0) {
+        // When the orderspec specifies empty least, a value W is considered to be greater-than a value V if one of the following is true:
+        //     * V is an empty sequence and W is not an empty sequence.
+        //     * V is NaN, and W is neither NaN nor an empty sequence.
+        if(w->sortItem.isNull()) return false;
+        if(v->sortItem.isNull()) return !w->sortItem.isNull();
+      }
+      else {
+        // When the orderspec specifies empty greatest, a value W is considered to be greater-than a value V if one of the following is true:
+        //     * W is an empty sequence and V is not an empty sequence.
+        //     * W is NaN, and V is neither NaN nor an empty sequence.
+        if(v->sortItem.isNull()) return false;
+        if(w->sortItem.isNull()) return !v->sortItem.isNull();
+      }
+      //     * No collation is specified, and W gt V is true.
+      //     * A specific collation C is specified, and fn:compare(V, W, C) is less than zero.
+      return GreaterThan::greater_than(w->sortItem, v->sortItem, collation, context, location);
+    }
+
+    bool operator()(const OrderPair *a, const OrderPair *b) const
+    {
+      //    1. If V1 is greater-than V2: If the orderspec specifies descending, then T1 precedes T2 in the tuple stream; otherwise, T2 precedes T1 in the tuple stream.
+      if((modifiers & OrderByTuple::DESCENDING) != 0) return greaterThan(a, b);
+      //    2. If V2 is greater-than V1: If the orderspec specifies descending, then T2 precedes T1 in the tuple stream; otherwise, T1 precedes T2 in the tuple stream.
+      return greaterThan(b, a);
+    }
+
+    OrderByTuple::Modifiers modifiers;
+    Collation *collation;
+    DynamicContext *context;
+    const LocationInfo *location;
+  };
+
+  const OrderByTuple *ast_;
+  TupleResult::Ptr parent_;
+  bool toDo_;
+
+  vector<OrderPair*> tuples_;
+  vector<OrderPair*>::iterator tupleIt_;
+};
+
+TupleResult::Ptr OrderByTuple::createResult(DynamicContext* context) const
+{
+  return new OrderByTupleResult(this, parent_->createResult(context));
+}
+

@@ -66,9 +66,9 @@ void VarTypeStoreImpl::declareVar(const XMLCh* namespaceURI,
 const StaticResolutionContext *VarTypeStoreImpl::getVar(const XMLCh* namespaceURI,
                                                         const XMLCh* name) const
 {
-	VarHashEntry<const StaticResolutionContext*>* result = _store.getVar(namespaceURI, name);
-	if(result)
-		return result->getValue();
+  VarHashEntry<const StaticResolutionContext*>* result = _store.getVar(namespaceURI, name);
+  if(result)
+    return result->getValue();
   return 0;
 }
 

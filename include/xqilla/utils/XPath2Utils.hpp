@@ -21,13 +21,9 @@
 class XPath2MemoryManager;
 
 #include <xercesc/util/XMLString.hpp>
+#include <xercesc/framework/XMLBuffer.hpp>
 #include <xercesc/dom/DOMNode.hpp>
 #include <xercesc/dom/DOMDocument.hpp>
-
-XERCES_CPP_NAMESPACE_BEGIN
-    class DOMAttr;
-    class DOMElement;
-XERCES_CPP_NAMESPACE_END
 
 /**class with methods that are used by v2 that are DOM related*/ 
 class XQILLA_API XPath2Utils
@@ -48,6 +44,9 @@ public:
   static const XMLCh* concatStrings(const XMLCh* src1 ,const XMLCh* src2, const XMLCh* src3, XPath2MemoryManager* memMgr);
    
   static const XMLCh* asStr(const XMLCh src, XPath2MemoryManager* memMgr);
+
+  static void numToBuf(unsigned int n, XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &buf);
+  static void numToBuf(int n, XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &buf);
 
   static bool equals(const XMLCh *const str1, const XMLCh *const str2);
   static int compare(const XMLCh *str1, const XMLCh *str2);
@@ -125,6 +124,22 @@ inline const XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *XPath2Utils::getOwnerDo
   }
   else {
     return node->getOwnerDocument();
+  }
+}
+
+inline void XPath2Utils::numToBuf(unsigned int n, XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &buf)
+{
+  if(n >= 10) numToBuf(n / 10, buf);
+  buf.append('0' + (n % 10));
+}
+
+inline void XPath2Utils::numToBuf(int n, XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &buf)
+{
+  if(n < 0) {
+    buf.append('-');
+    numToBuf((unsigned int)-n, buf);
+  } else {
+    numToBuf((unsigned int)n, buf);
   }
 }
 

@@ -11,8 +11,8 @@
  * $Id$
  */
 
-#if !defined(AFXQ_XQDOMCONSTRUCTOR_H__56E97972_3896_49D3_B055_36CC3E9E550A__INCLUDED_)
-#define AFXQ_XQDOMCONSTRUCTOR_H__56E97972_3896_49D3_B055_36CC3E9E550A__INCLUDED_
+#ifndef XQDOMCONSTRUCTOR_HPP
+#define XQDOMCONSTRUCTOR_HPP
 
 #include <xqilla/ast/ASTNodeImpl.hpp>
 #include <xqilla/runtime/SingleResult.hpp>
@@ -43,9 +43,6 @@ public:
                              DynamicContext *context);
   static bool getStringValue(const ASTNode *child, XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &value,
                              DynamicContext *context);
-
-protected:
-  void unescapeEntities(XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer& buff) const;
 };
 
 class XQILLA_API XQContentSequence : public ASTNodeImpl

@@ -43,11 +43,7 @@ class XQTreatAs;
 class XQOperator;
 class XQContextItem;
 class XQQuery;
-class XQDebugHook;
 class XQDOMConstructor;
-class XQFLWOR;
-class XQVariableBinding;
-class XQSort;
 class XQQuantified;
 class XQFunctionCall;
 class XQGlobalVariable;
@@ -63,6 +59,7 @@ class XQPredicate;
 class XQNameExpression;
 class XQContentSequence;
 class XQDirectName;
+class XQReturn;
 class DynamicContext;
 class Item;
 
@@ -94,6 +91,13 @@ class UInsertBefore;
 class UTransform;
 class UApplyUpdates;
 
+class TupleNode;
+class ContextTuple;
+class ForTuple;
+class LetTuple;
+class WhereTuple;
+class OrderByTuple;
+
 class XQILLA_API PrintAST
 {
 public:
@@ -118,9 +122,7 @@ public:
   virtual std::string printTreatAs(const XQTreatAs *item, const DynamicContext *context, int indent);
   virtual std::string printOperator(const XQOperator *item, const DynamicContext *context, int indent);
   virtual std::string printContextItem(const XQContextItem *item, const DynamicContext *context, int indent);
-  virtual std::string printDebugHook(const XQDebugHook *item, const DynamicContext *context, int indent);
-  virtual std::string printFLWOR(const XQFLWOR *item, const DynamicContext *context, int indent);
-  virtual std::string printFLWORQuantified(const XQQuantified *item, const DynamicContext *context, int indent);
+  virtual std::string printQuantified(const XQQuantified *item, const DynamicContext *context, int indent);
   virtual std::string printTypeswitch(const XQTypeswitch *item, const DynamicContext *context, int indent);
   virtual std::string printValidate(const XQValidate *item, const DynamicContext *context, int indent);
   virtual std::string printGlobal(const XQGlobalVariable *item, const DynamicContext *context, int indent);
@@ -137,7 +139,8 @@ public:
   virtual std::string printNameExpression(const XQNameExpression *item, const DynamicContext *context, int indent);
   virtual std::string printContentSequence(const XQContentSequence *item, const DynamicContext *context, int indent);
   virtual std::string printDirectName(const XQDirectName *item, const DynamicContext *context, int indent);
-  virtual std::string printUserFunction(const XQUserFunction::XQFunctionEvaluator *item, const DynamicContext *context, int indent);
+  virtual std::string printUserFunction(const XQUserFunction::Instance *item, const DynamicContext *context, int indent);
+  virtual std::string printReturn(const XQReturn *item, const DynamicContext *context, int indent);
 
   virtual std::string printFTContains(const FTContains *item, const DynamicContext *context, int indent);
   virtual std::string printFTSelection(const FTSelection *selection, const DynamicContext *context, int indent);
@@ -169,11 +172,16 @@ public:
   virtual std::string printUTransform(const UTransform *item, const DynamicContext *context, int indent);
   virtual std::string printUApplyUpdates(const UApplyUpdates *item, const DynamicContext *context, int indent);
 
+  virtual std::string printTupleNode(const TupleNode *item, const DynamicContext *context, int indent);
+  virtual std::string printContextTuple(const ContextTuple *item, const DynamicContext *context, int indent);
+  virtual std::string printForTuple(const ForTuple *item, const DynamicContext *context, int indent);
+  virtual std::string printLetTuple(const LetTuple *item, const DynamicContext *context, int indent);
+  virtual std::string printWhereTuple(const WhereTuple *item, const DynamicContext *context, int indent);
+  virtual std::string printOrderByTuple(const OrderByTuple *item, const DynamicContext *context, int indent);
+
   virtual std::string printItem(const Item::Ptr item, const DynamicContext *context, int indent);
   virtual std::string printSequenceType(const SequenceType *type, const DynamicContext *context, int indent);
-  virtual std::string printXQVariableBinding(const XQVariableBinding *binding, const DynamicContext *context, int indent);
-  virtual std::string printSort(const XQSort *sort, const DynamicContext *context, int indent);
-  virtual std::string printClause(const XQTypeswitch::Clause *clause, const DynamicContext *context, int indent);
+  virtual std::string printCase(const XQTypeswitch::Case *cse, const DynamicContext *context, int indent);
 
   static std::string getIndent(int indent);
   static std::string getAxisName(XQStep::Axis axis);

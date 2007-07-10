@@ -75,7 +75,7 @@ public:
   }
 
   /** Pre parse the schema at the given uri */
-  void loadSchema(const XMLCh* const uri, const XMLCh* location, StaticContext *context);
+  void loadSchema(const XMLCh* const uri, const XMLCh* location, StaticContext *context, const LocationInfo *info);
   unsigned int getSchemaUriId(const XMLCh* uri) const;
   const XMLCh* getSchemaUri(unsigned int id) const;
 
@@ -141,7 +141,7 @@ public:
                                        const XMLCh* const uriToCheck, const XMLCh* const typeNameToCheck) const; 
   virtual bool isTypeDefined(const XMLCh* const uri, const XMLCh* const typeName) const; 
 
-  virtual void addSchemaLocation(const XMLCh* uri, VectorOfStrings* locations, StaticContext *context);
+  virtual void addSchemaLocation(const XMLCh* uri, VectorOfStrings* locations, StaticContext *context, const LocationInfo *location);
 
   /** helper functions used to map namespace ids found in the SchemaGrammar **/
   virtual unsigned int getSchemaUriId(const XMLCh* uri) const;

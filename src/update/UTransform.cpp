@@ -21,50 +21,74 @@
 #include <xqilla/context/UpdateFactory.hpp>
 #include <xqilla/context/VariableTypeStore.hpp>
 #include <xqilla/utils/XPath2NSUtils.hpp>
-#include <xqilla/context/Scope.hpp>
+#include <xqilla/context/ContextHelpers.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/ast/XQTreatAs.hpp>
 #include <xqilla/schema/SequenceType.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>
 #include <xqilla/update/PendingUpdateList.hpp>
 
-UTransform::UTransform(VectorOfVariableBinding* bindings, ASTNode *modifyExpr, ASTNode* returnExpr, XPath2MemoryManager* mm)
-  : XQFLWOR(bindings, NULL, NULL, returnExpr, mm),
-    modify_(modifyExpr)
+CopyBinding::CopyBinding(XPath2MemoryManager* memMgr, 
+                         const XMLCh* variable, 
+                         ASTNode* allValues)
+  : qname_(memMgr->getPooledString(variable)),
+    uri_(0),
+    name_(0),
+    src_(memMgr),
+    expr_(allValues)
 {
-  setType(ASTNode::UTRANSFORM);
+}
+
+CopyBinding::CopyBinding(XPath2MemoryManager* memMgr, const CopyBinding &o)
+  : qname_(o.qname_),
+    uri_(o.uri_),
+    name_(o.name_),
+    src_(o.src_, memMgr),
+    expr_(o.expr_)
+{
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+UTransform::UTransform(VectorOfCopyBinding* bindings, ASTNode *modifyExpr, ASTNode* returnExpr, XPath2MemoryManager* mm)
+  : ASTNodeImpl(mm),
+    bindings_(bindings),
+    modify_(modifyExpr),
+    return_(returnExpr)
+{
+  setType(UTRANSFORM);
 }
 
 ASTNode *UTransform::staticResolution(StaticContext* context)
 {
   XPath2MemoryManager *mm = context->getMemoryManager();
 
-  VectorOfVariableBinding::iterator end = _bindings->end();
-  for(VectorOfVariableBinding::iterator it0 = _bindings->begin(); it0 != end; ++it0) {
+  VectorOfCopyBinding::iterator end = bindings_->end();
+  for(VectorOfCopyBinding::iterator it0 = bindings_->begin(); it0 != end; ++it0) {
     // Work out the uri and localname of the variable binding
-    const XMLCh* prefix=XPath2NSUtils::getPrefix((*it0)->_variable, mm);
+    const XMLCh* prefix=XPath2NSUtils::getPrefix((*it0)->qname_, mm);
     if(prefix && *prefix)
-      (*it0)->_vURI = context->getUriBoundToPrefix(prefix, this);
-    (*it0)->_vName = XPath2NSUtils::getLocalName((*it0)->_variable);
+      (*it0)->uri_ = context->getUriBoundToPrefix(prefix, this);
+    (*it0)->name_ = XPath2NSUtils::getLocalName((*it0)->qname_);
 
     SequenceType *copyType = new (mm) SequenceType(new (mm) SequenceType::ItemType(SequenceType::ItemType::TEST_NODE),
                                                    SequenceType::EXACTLY_ONE);
     copyType->setLocationInfo(this);
 
     // call static resolution on the value
-    (*it0)->_allValues = new (mm) XQContentSequence((*it0)->_allValues, mm);
-    (*it0)->_allValues->setLocationInfo(this);
+    (*it0)->expr_ = new (mm) XQContentSequence((*it0)->expr_, mm);
+    (*it0)->expr_->setLocationInfo(this);
     // TBD The error should be [err:XUTY0013] - jpcs
-    (*it0)->_allValues = new (mm) XQTreatAs((*it0)->_allValues, copyType, mm);
-    (*it0)->_allValues->setLocationInfo(this);
-    (*it0)->_allValues = (*it0)->_allValues->staticResolution(context);
+    (*it0)->expr_ = new (mm) XQTreatAs((*it0)->expr_, copyType, mm);
+    (*it0)->expr_->setLocationInfo(this);
+    (*it0)->expr_ = (*it0)->expr_->staticResolution(context);
   }
 
   // Call staticResolution on the modify expression
   modify_ = modify_->staticResolution(context);
 
   // Call staticResolution on the return expression
-  _return = _return->staticResolution(context);
+  return_ = return_->staticResolution(context);
 
   return this;
 }
@@ -73,29 +97,29 @@ ASTNode *UTransform::staticTyping(StaticContext *context)
 {
   _src.clear();
 
-  VectorOfVariableBinding *newBindings =
-    new (getMemoryManager()) VectorOfVariableBinding(XQillaAllocator<XQVariableBinding*>(getMemoryManager()));
+  VectorOfCopyBinding *newBindings =
+    new (getMemoryManager()) VectorOfCopyBinding(XQillaAllocator<CopyBinding*>(getMemoryManager()));
 
   VariableTypeStore* varStore = context->getVariableTypeStore();
 
   // Add all the binding variables to the new scope
-  VectorOfVariableBinding::iterator end = _bindings->end();
-  for(VectorOfVariableBinding::iterator it0 = _bindings->begin(); it0 != end; ++it0) {
+  VectorOfCopyBinding::iterator end = bindings_->end();
+  for(VectorOfCopyBinding::iterator it0 = bindings_->begin(); it0 != end; ++it0) {
     varStore->addLogicalBlockScope();
 
     // call static resolution on the value
-    (*it0)->_allValues = (*it0)->_allValues->staticTyping(context);
-    (*it0)->_src.getStaticType() = (*it0)->_allValues->getStaticResolutionContext().getStaticType();
+    (*it0)->expr_ = (*it0)->expr_->staticTyping(context);
+    (*it0)->src_.getStaticType() = (*it0)->expr_->getStaticResolutionContext().getStaticType();
 
-    if((*it0)->_allValues->getStaticResolutionContext().isUpdating()) {
+    if((*it0)->expr_->getStaticResolutionContext().isUpdating()) {
       XQThrow(StaticErrorException,X("UTransform::staticTyping"),
               X("It is a static error for the copy expression of a transform expression "
                 "to be an updating expression [err:XUST0001]"));
     }
 
     // Declare the variable binding
-    (*it0)->_src.setProperties((*it0)->_allValues->getStaticResolutionContext().getProperties());
-    varStore->declareVar((*it0)->_vURI, (*it0)->_vName, (*it0)->_src);
+    (*it0)->src_.setProperties((*it0)->expr_->getStaticResolutionContext().getProperties());
+    varStore->declareVar((*it0)->uri_, (*it0)->name_, (*it0)->src_);
   }
 
   // Call staticTyping on the modify expression
@@ -109,71 +133,48 @@ ASTNode *UTransform::staticTyping(StaticContext *context)
             X("The modify expression is not an updating expression [err:XUST0002]"));
 
   // Call staticResolution on the return expression
-  _return = _return->staticTyping(context);
-  _src.getStaticType() = _return->getStaticResolutionContext().getStaticType();
-  _src.setProperties(_return->getStaticResolutionContext().getProperties());
-  _src.add(_return->getStaticResolutionContext());
+  return_ = return_->staticTyping(context);
+  _src.getStaticType() = return_->getStaticResolutionContext().getStaticType();
+  _src.setProperties(return_->getStaticResolutionContext().getProperties());
+  _src.add(return_->getStaticResolutionContext());
 
-  if(_return->getStaticResolutionContext().isUpdating()) {
+  if(return_->getStaticResolutionContext().isUpdating()) {
     XQThrow(StaticErrorException,X("UTransform::staticTyping"),
             X("It is a static error for the return expression of a transform expression "
               "to be an updating expression [err:XUST0001]"));
   }
 
-  VectorOfVariableBinding::reverse_iterator rend = _bindings->rend();
-  for(VectorOfVariableBinding::reverse_iterator it = _bindings->rbegin(); it != rend; ++it) {
-    XQVariableBinding *newVB = new (getMemoryManager()) XQVariableBinding(getMemoryManager(), **it);
+  VectorOfCopyBinding::reverse_iterator rend = bindings_->rend();
+  for(VectorOfCopyBinding::reverse_iterator it = bindings_->rbegin(); it != rend; ++it) {
+    CopyBinding *newVB = new (getMemoryManager()) CopyBinding(getMemoryManager(), **it);
     newVB->setLocationInfo(*it);
 
     // Remove our variable binding and the scope we added
     varStore->removeScope();
 
     // Remove our binding variable from the StaticResolutionContext data (removing it if it's not used)
-    if(!_src.removeVariable(newVB->_vURI, newVB->_vName) && !context->isDebuggingEnabled()) {
-      newVB->_variable = 0;
+    if(!_src.removeVariable(newVB->uri_, newVB->name_)) {
+      newVB->qname_ = 0;
     }
 
-    const StaticResolutionContext &valueSrc = newVB->_allValues->getStaticResolutionContext();
-    // if the expression makes use of a variable with the same name of the binding, we need a new scope
-    if(valueSrc.isVariableUsed(newVB->_vURI, newVB->_vName))
-      newVB->_needsNewScope=true;
-    _src.add(valueSrc);
-
-    VectorOfVariableBinding::reverse_iterator it2;
-    // Check if previous variable bindings have been used by this value,
-    for(it2 = it + 1; it2 != rend; ++it2) {
-      if((*it2)->_variable && valueSrc.isVariableUsed((*it2)->_vURI, (*it2)->_vName)) {
-        newVB->_valuesResultMustBeRecalculated = true;
-        break;
-      }
-    }
-
-    // Check to see if this binding has the same name as any before it
-    // (4 comparisons, since each binding has two possible variables for it)
-    for(it2 = it + 1; newVB->_needsNewScope==false && it2 != rend; ++it2) {
-      if(newVB->_variable && (*it2)->_variable &&
-         XPath2Utils::equals(newVB->_vName, (*it2)->_vName) && XPath2Utils::equals(newVB->_vURI, (*it2)->_vURI)) {
-        newVB->_needsNewScope = true;
-        break;
-      }
-    }
+    _src.add(newVB->expr_->getStaticResolutionContext());
 
     // Add the new VB at the front of the new Bindings
     // (If it's a let binding, and it's variable isn't used, don't add it - there's no point)
-    if(context->isDebuggingEnabled() || newVB->_variable) {
+    if(newVB->qname_) {
       newBindings->insert(newBindings->begin(), newVB);
     }
   }
 
   // Overwrite our bindings with the new ones
-  _bindings = newBindings;
+  bindings_ = newBindings;
 
   return this;
 }
 
 Result UTransform::createResult(DynamicContext* context, int flags) const
 {
-  return new TransformResult(this);
+  return new TransformResult(this, context);
 }
 
 class nodecompare {
@@ -192,30 +193,31 @@ private:
 
 typedef std::set<Node::Ptr, nodecompare> NodeSet;
 
-UTransform::TransformResult::~TransformResult()
+UTransform::TransformResult::TransformResult(const UTransform *transform, DynamicContext *context)
+  : ResultImpl(transform),
+    transform_(transform),
+    toDo_(true),
+    scope_(context->getMemoryManager(), context->getVariableStore()),
+    result_(0)
 {
-  if(scope_) delete scope_;
 }
 
 Item::Ptr UTransform::TransformResult::next(DynamicContext *context)
 {
   context->testInterrupt();
 
-  VariableStore* varStore = context->getVariableStore();
-  Scope<Sequence> *oldScope = varStore->getScopeState();
+  AutoVariableStoreReset reset(context, &scope_);
 
   if(toDo_) {
     toDo_ = false;
 
-    varStore->addLogicalBlockScope();
-
     NodeSet copiedNodes = NodeSet(nodecompare(context));
 
-    VectorOfVariableBinding::const_iterator end = transform_->getBindings()->end();
-    for(VectorOfVariableBinding::const_iterator it = transform_->getBindings()->begin();
+    VectorOfCopyBinding::const_iterator end = transform_->getBindings()->end();
+    for(VectorOfCopyBinding::const_iterator it = transform_->getBindings()->begin();
         it != end; ++it) {
 
-      Sequence values = (*it)->_allValues->createResult(context)->toSequence(context);
+      Sequence values = (*it)->expr_->createResult(context)->toSequence(context);
 
       // Keep a record of the nodes that have been copied
       Result valIt = values;
@@ -224,15 +226,7 @@ Item::Ptr UTransform::TransformResult::next(DynamicContext *context)
         copiedNodes.insert((Node*)val.get());
       }
 
-      // Make debug callback before declaring the variable
-      if(context->getDebugCallback()) context->getDebugCallback()->IsBreakPointHit(context, (*it)->getFile(), (*it)->getLine());
-
-      // Add a new scope, if needed
-      if((*it)->_needsNewScope) {
-        varStore->addLogicalBlockScope();
-      }
-
-      varStore->declareVar((*it)->_vURI, (*it)->_vName, values, context);
+      scope_.setVar((*it)->uri_, (*it)->name_, values);
     }
 
     // Get the pending update list
@@ -257,34 +251,13 @@ Item::Ptr UTransform::TransformResult::next(DynamicContext *context)
     // Execute the return expression
     result_ = transform_->getReturnExpr()->createResult(context);
   }
-  else {
-    if(scope_ == 0) {
-      return 0;
-    }
-    varStore->setScopeState(scope_);
-    scope_ = 0;
-  }
 
   Item::Ptr result = result_->next(context);
 
   if(result.isNull()) {
-    VectorOfVariableBinding::const_reverse_iterator end = transform_->getBindings()->rend();
-    for(VectorOfVariableBinding::const_reverse_iterator it = transform_->getBindings()->rbegin();
-        it != end; ++it) {
-      if((*it)->_needsNewScope) {
-        varStore->removeScope();
-        varStore->addLogicalBlockScope();
-      }
-    }
-    varStore->removeScope();
-
-    scope_ = 0;
     result_ = 0;
     return 0;
   }
-
-  scope_ = varStore->getScopeState();
-  varStore->setScopeState(oldScope);
 
   return result;
 }

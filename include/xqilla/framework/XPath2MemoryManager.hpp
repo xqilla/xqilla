@@ -58,9 +58,6 @@ public:
   virtual XQillaNSResolver* createNSResolver(XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *resolverNode) = 0;
   
   /** create a store for variables */
-  virtual VariableStore* createVariableStore() = 0;
-
-  /** create a store for variables */
   virtual VariableTypeStore* createVariableTypeStore() = 0;
 
   /** create a ATDecimalOrDerived for the given integer */

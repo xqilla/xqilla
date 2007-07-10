@@ -86,28 +86,7 @@ ASTNode* XQAttributeConstructor::staticResolution(StaticContext *context)
   m_name = m_name->staticResolution(context);
 
   unsigned int i;
-  for (i=0;i<m_children->size();i++) {
-    // normalize whitespace and expand entities in string literals
-    if((*m_children)[i]->getType()==LITERAL)
-    {
-      AutoDelete<DynamicContext> dContext(context->createDynamicContext());
-      dContext->setMemoryManager(mm);
-      XQLiteral *lit = (XQLiteral*)(*m_children)[i];
-      Item::Ptr item = lit->getItemConstructor()->createItem(dContext);
-      if(((AnyAtomicType*)(const Item*)item)->getPrimitiveTypeIndex()==AnyAtomicType::STRING)
-      {
-        const XMLCh* str=item->asString(dContext);
-        XMLBuffer buff(XMLString::stringLen(str)+1, mm);
-        buff.append(str);
-        XMLString::replaceWS(buff.getRawBuffer(), mm);
-        unescapeEntities(buff);
-        AnyAtomicTypeConstructor *newIC = new (mm)
-          AnyAtomicTypeConstructor(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                                   SchemaSymbols::fgDT_STRING,
-                                   mm->getPooledString(buff.getRawBuffer()), AnyAtomicType::STRING);
-        lit->setItemConstructor(newIC);
-      }
-    }
+  for(i = 0;i < m_children->size(); ++i) {
     // atomize content and run static resolution 
     (*m_children)[i] = new (mm) XQAtomize((*m_children)[i], mm);
     (*m_children)[i]->setLocationInfo(this);

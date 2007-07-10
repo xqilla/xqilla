@@ -11,10 +11,6 @@
  * $Id$
  */
 
-//////////////////////////////////////////////////////////////////////
-// XQGlobalVariable.cpp: implementation of the XQGlobalVariable class.
-//////////////////////////////////////////////////////////////////////
-
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/ast/XQGlobalVariable.hpp>
 #include <xqilla/runtime/Sequence.hpp>
@@ -40,12 +36,11 @@ XQGlobalVariable::XQGlobalVariable(const XMLCh* varQName, SequenceType* seqType,
 
 void XQGlobalVariable::execute(DynamicContext* context) const
 {
-  VariableStore* varStore = context->getVariableStore();
   try {
     if(m_Value == NULL) {
       // It's an external declaration, so check the user has set the value in the variable store
-      std::pair<bool, Sequence> value = varStore->getGlobalVar(m_szURI, m_szLocalName, context);
-      if(!value.first) {
+      Result value = context->getGlobalVariableStore()->getVar(m_szURI, m_szLocalName);
+      if(value.isNull()) {
         XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer errMsg;
         errMsg.set(X("A value for the external variable '"));
         errMsg.append(m_szQName);
@@ -54,13 +49,14 @@ void XQGlobalVariable::execute(DynamicContext* context) const
       }
       if(m_Type != NULL) {
         // Check the external value's type
-        Result matchesRes = m_Type->matches(value.second, m_Type);
+        Result matchesRes = m_Type->matches(value, m_Type);
         while(matchesRes->next(context).notNull()) {}
       }
     }
     else {
-      varStore->setGlobalVar(m_szURI, m_szLocalName, m_Value->createResult(context)->
-                             toSequence(context), context);
+      // TBD Could use our own VariableStore implementation - jpcs
+      context->setExternalVariable(m_szURI, m_szLocalName, m_Value->createResult(context)->
+                                   toSequence(context));
     }
   }
   catch(const XPath2TypeMatchException &ex) {

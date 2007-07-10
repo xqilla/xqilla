@@ -28,8 +28,7 @@
 
 XQVariable::XQVariable(const XMLCh *qualifiedName, XPath2MemoryManager* memMgr)
   : ASTNodeImpl(memMgr),
-    _uri(0),
-    _staticProperties(0)
+    _uri(0)
 {
   setType(ASTNode::VARIABLE);
 
@@ -38,15 +37,13 @@ XQVariable::XQVariable(const XMLCh *qualifiedName, XPath2MemoryManager* memMgr)
   _name = qname.getName();
 }
 
-XQVariable::XQVariable(const XMLCh *prefix, const XMLCh *name, XPath2MemoryManager* memMgr)
+XQVariable::XQVariable(const XMLCh *uri, const XMLCh *name, XPath2MemoryManager* memMgr)
   : ASTNodeImpl(memMgr),
-    _uri(0),
-    _staticProperties(0)
+    _prefix(0),
+    _uri(uri),
+    _name(name)
 {
   setType(ASTNode::VARIABLE);
-
-  _prefix = getMemoryManager()->getPooledString(prefix);
-  _name = getMemoryManager()->getPooledString(name);
 }
 
 XQVariable::~XQVariable()
@@ -55,15 +52,7 @@ XQVariable::~XQVariable()
 
 Result XQVariable::createResult(DynamicContext* context, int flags) const
 {
-  std::pair<bool, Sequence> var = context->getVariableStore()->getVar(_uri, _name, context);
-
-  if(!var.first) {
-    const XMLCh* qname = XPath2NSUtils::qualifyName(_prefix, _name, context->getMemoryManager());
-    const XMLCh* msg = XPath2Utils::concatStrings(X("Variable "), qname, X(" does not exist [err:XPDY0002]"), context->getMemoryManager());
-    XQThrow(DynamicErrorException, X("XQVariable::createSequence"), msg);
-  }
-
-  return var.second;
+  return context->getVariableStore()->getVar(_uri, _name);
 }
 
 ASTNode* XQVariable::staticResolution(StaticContext *context)

@@ -27,9 +27,9 @@
 XERCES_CPP_NAMESPACE_USE
 #endif
 
-XQTextConstructor::XQTextConstructor(bool isCDATA, ASTNode *value, XPath2MemoryManager* mm)
+XQTextConstructor::XQTextConstructor(ASTNode *value, XPath2MemoryManager* mm)
   : XQDOMConstructor(mm),
-    m_nodeType(isCDATA ? Node::cdata_string : Node::text_string),
+    m_nodeType(Node::text_string),
     m_value(value)
 {
   setType(ASTNode::DOM_CONSTRUCTOR);

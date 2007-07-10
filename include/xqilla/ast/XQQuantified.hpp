@@ -11,49 +11,40 @@
  * $Id$
  */
 
-//////////////////////////////////////////////////////////////////////
-// XQQuantified.hpp: interface for the XQQuantified class.
-//////////////////////////////////////////////////////////////////////
+#ifndef XQQUANTIFIED_HPP
+#define XQQUANTIFIED_HPP
 
-#if !defined(AFXQ_XQUANTIFIED_H__2B6902E9_A4FA_4AB3_9C69_08A8E77E70DA__INCLUDED_)
-#define AFXQ_XQUANTIFIED_H__2B6902E9_A4FA_4AB3_9C69_08A8E77E70DA__INCLUDED_
+#include <xqilla/ast/ASTNodeImpl.hpp>
 
-#include <xqilla/framework/XQillaExport.hpp>
-#include <xqilla/ast/XQFLWOR.hpp>
-#include <xqilla/runtime/SingleResult.hpp>
+class TupleNode;
 
-class XQILLA_API XQQuantified : public XQFLWOR
+class XQILLA_API XQQuantified : public ASTNodeImpl
 {
 public:
-  typedef enum {some, every} QuantifierType;
-
-  XQQuantified(QuantifierType qType, VectorOfVariableBinding* bindings, ASTNode* returnExpr, XPath2MemoryManager *expr);
-
-  virtual ASTNode *staticTyping(StaticContext *context);
-  virtual void generateEvents(EventHandler *events, DynamicContext *context,
-                              bool preserveNS, bool preserveType) const;
-
-  QuantifierType getQuantifierType() const;
-
-protected:
-  virtual Result createResultImpl(VectorOfVariableBinding::const_iterator it, VectorOfVariableBinding::const_iterator end,
-                                  DynamicContext* context, int flags = 0) const;
-
-  class QuantifiedResult : public SingleResult
-  {
-  public:
-    QuantifiedResult(VectorOfVariableBinding::const_iterator it, VectorOfVariableBinding::const_iterator end,
-                     const XQQuantified *quantified);
-
-    Item::Ptr getSingleResult(DynamicContext *context) const;
-    std::string asString(DynamicContext *context, int indent) const;
-
-  private:
-    const XQQuantified *_quantified;
-    ExecutionBindings _ebs; // mutable
+  enum Type {
+    SOME,
+    EVERY
   };
 
-  QuantifierType _qType;
+  XQQuantified(Type qtype, TupleNode *parent, ASTNode *expr, XPath2MemoryManager *mm);
+
+  Type getQuantifierType() const { return qtype_; }
+
+  const TupleNode *getParent() const { return parent_; }
+  void setParent(TupleNode *parent) { parent_ = parent; }
+
+  ASTNode *getExpression() const { return expr_; }
+  void setExpression(ASTNode *expr) { expr_ = expr; }
+
+  virtual ASTNode *staticResolution(StaticContext *context);
+  virtual ASTNode *staticTyping(StaticContext *context);
+
+  virtual Result createResult(DynamicContext* context, int flags=0) const;
+
+private:
+  Type qtype_;
+  TupleNode *parent_;
+  ASTNode *expr_;
 };
 
-#endif // !defined(AFXQ_XQUANTIFIED_H__2B6902E9_A4FA_4AB3_9C69_08A8E77E70DA__INCLUDED_)
+#endif

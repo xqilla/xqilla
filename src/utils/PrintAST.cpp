@@ -38,16 +38,14 @@
 #include <xqilla/schema/SequenceType.hpp>
 #include <xqilla/parser/QName.hpp>
 #include <xqilla/context/DynamicContext.hpp>
+#include <xqilla/context/Collation.hpp>
 #include <xqilla/items/Item.hpp>
 #include <xqilla/items/AnyAtomicType.hpp>
 #include <xqilla/utils/XStr.hpp>
 #include <xqilla/exceptions/NamespaceLookupException.hpp>
 #include <xqilla/operators/GeneralComp.hpp>
 #include <xqilla/simple-api/XQQuery.hpp>
-#include <xqilla/ast/XQDebugHook.hpp>
 #include <xqilla/ast/XQDOMConstructor.hpp>
-#include <xqilla/ast/XQFLWOR.hpp>
-#include <xqilla/ast/XQVariableBinding.hpp>
 #include <xqilla/ast/XQQuantified.hpp>
 #include <xqilla/ast/XQFunctionCall.hpp>
 #include <xqilla/ast/XQGlobalVariable.hpp>
@@ -60,6 +58,7 @@
 #include <xqilla/ast/ConvertFunctionArg.hpp>
 #include <xqilla/ast/XQDocumentOrder.hpp>
 #include <xqilla/ast/XQPredicate.hpp>
+#include <xqilla/ast/XQReturn.hpp>
 
 #include <xqilla/fulltext/FTContains.hpp>
 #include <xqilla/fulltext/FTSelection.hpp>
@@ -86,6 +85,12 @@
 #include <xqilla/update/UInsertBefore.hpp>
 #include <xqilla/update/UTransform.hpp>
 #include <xqilla/update/UApplyUpdates.hpp>
+
+#include <xqilla/ast/ContextTuple.hpp>
+#include <xqilla/ast/ForTuple.hpp>
+#include <xqilla/ast/LetTuple.hpp>
+#include <xqilla/ast/WhereTuple.hpp>
+#include <xqilla/ast/OrderByTuple.hpp>
 
 #include <xercesc/dom/DOMNode.hpp>
 #if defined(XERCES_HAS_CPP_NAMESPACE)
@@ -230,16 +235,8 @@ string PrintAST::printASTNode(const ASTNode *item, const DynamicContext *context
     return printContextItem((XQContextItem *)item, context, indent);
     break;
   }
-  case ASTNode::DEBUG_HOOK: {
-    return printDebugHook((XQDebugHook *)item, context, indent);
-    break;
-  }
-  case ASTNode::FLWOR: {
-    return printFLWOR((XQFLWOR *)item, context, indent);
-    break;
-  }
-  case ASTNode::FLWOR_QUANTIFIED: {
-    return printFLWORQuantified((XQQuantified *)item, context, indent);
+  case ASTNode::QUANTIFIED: {
+    return printQuantified((XQQuantified *)item, context, indent);
     break;
   }
   case ASTNode::TYPESWITCH: {
@@ -303,7 +300,7 @@ string PrintAST::printASTNode(const ASTNode *item, const DynamicContext *context
     break;
   }
   case ASTNode::USER_FUNCTION: {
-    return printUserFunction((XQUserFunction::XQFunctionEvaluator *)item, context, indent);
+    return printUserFunction((XQUserFunction::Instance *)item, context, indent);
     break;
   }
   case ASTNode::FTCONTAINS: {
@@ -352,6 +349,10 @@ string PrintAST::printASTNode(const ASTNode *item, const DynamicContext *context
   }
   case ASTNode::UAPPLY_UPDATES: {
     return printUApplyUpdates((UApplyUpdates *)item, context, indent);
+    break;
+  }
+  case ASTNode::RETURN: {
+    return printReturn((XQReturn*)item, context, indent);
     break;
   }
   default:
@@ -644,7 +645,7 @@ string PrintAST::printTreatAs(const XQTreatAs *item, const DynamicContext *conte
   return s.str();
 }
 
-string PrintAST::printUserFunction(const XQUserFunction::XQFunctionEvaluator *item, const DynamicContext *context, int indent)
+string PrintAST::printUserFunction(const XQUserFunction::Instance *item, const DynamicContext *context, int indent)
 {
   ostringstream s;
 
@@ -661,12 +662,12 @@ string PrintAST::printUserFunction(const XQUserFunction::XQFunctionEvaluator *it
   const VectorOfASTNodes &args = item->getArguments();
   s << in << "<UserFunction name=\"" << name << "\"";
 
-  if(item->getFunctionDefinition()->getParams() && !item->getFunctionDefinition()->getParams()->empty()) {
+  if(item->getFunctionDefinition()->getArgumentSpecs() && !item->getFunctionDefinition()->getArgumentSpecs()->empty()) {
     s << ">" << endl;
-    XQUserFunction::VectorOfFunctionParameters::const_iterator binding = item->getFunctionDefinition()->getParams()->begin();
-    for(VectorOfASTNodes::const_iterator arg = args.begin(); arg != args.end() && binding != item->getFunctionDefinition()->getParams()->end(); ++arg, ++binding) {
-      if((*binding)->_qname) {
-        s << in << "  <Binding name=\"{" << UTF8((*binding)->_uri) << "}:" << UTF8((*binding)->_name) << "\">" << endl;
+    XQUserFunction::ArgumentSpecs::const_iterator binding = item->getFunctionDefinition()->getArgumentSpecs()->begin();
+    for(VectorOfASTNodes::const_iterator arg = args.begin(); arg != args.end() && binding != item->getFunctionDefinition()->getArgumentSpecs()->end(); ++arg, ++binding) {
+      if((*binding)->isUsed()) {
+        s << in << "  <Binding name=\"{" << UTF8((*binding)->getURI()) << "}:" << UTF8((*binding)->getName()) << "\">" << endl;
         s << printASTNode(*arg, context, indent + INDENT + INDENT);
         s << in << "  </Binding>" << endl;
       }
@@ -682,191 +683,48 @@ string PrintAST::printUserFunction(const XQUserFunction::XQFunctionEvaluator *it
   return s.str();
 }
 
-string PrintAST::printDebugHook(const XQDebugHook *item, const DynamicContext *context, int indent)
-{
-  ostringstream s;
-
-  string in(getIndent(indent));
-  string functionName(UTF8(item->getFunctionName()));
-  string file(UTF8(item->getFile()));
-
-  s << in << "<DebugHook function=\"" << functionName
-    << "\" file=\"" << file << ":" << item->getLine() << ":"
-    << item->getColumn() << "\">" << endl;
-  s << printASTNode(item->m_impl, context, indent + INDENT);
-  s << in << "</DebugHook>" << endl;
-
-  return s.str();
-}
-
-string PrintAST::printFLWOR(const XQFLWOR *item, const DynamicContext *context, int indent)
-{
-  ostringstream s;
-
-  string in(getIndent(indent));
-  const VectorOfVariableBinding *bindings = item->getBindings();
-  const ASTNode *where = item->getWhereExpr();
-  const XQSort *sort = item->getSort();
-
-  s << in << "<FLWOR>" << endl;
-  for(VectorOfVariableBinding::const_iterator i = bindings->begin(); i != bindings->end(); ++i) {
-    s << printXQVariableBinding(*i, context, indent + INDENT);
-  }
-  if(where) {
-    s << in << "  <Where>" << endl;
-    s << printASTNode(where, context, indent + INDENT + INDENT);
-    s << in << "  </Where>" << endl;
-  }
-  if(sort) s << printSort(sort, context, indent + INDENT);
-  s << printASTNode(item->getReturnExpr(), context, indent + INDENT);
-  s << in << "</FLWOR>" << endl;
-
-  return s.str();
-}
-
-string PrintAST::printXQVariableBinding(const XQVariableBinding *binding, const DynamicContext *context, int indent)
-{
-  ostringstream s;
-
-  string in(getIndent(indent));
-  string type;
-  if(binding->_bindingType == XQVariableBinding::letBinding) {
-    type = "LetBinding";
-  }
-  else {
-    type = "ForBinding";
-  }
-
-  s << in << "<" << type << " name=\"" << UTF8(binding->_variable);
-  if(binding->_positionalVariable) {
-    s << "\" at=\"" << UTF8(binding->_positionalVariable);
-  }
-  s << "\">" << endl;
-  s << printASTNode(binding->_allValues, context, indent + INDENT);
-  if(binding->_where) {
-    s << in << "  <Where>" << endl;
-    s << printASTNode(binding->_where, context, indent + INDENT + INDENT);
-    s << in << "  </Where>" << endl;
-  }
-  s << in << "</" << type << ">" << endl;
-
-  return s.str();
-}
-
-string PrintAST::printSort(const XQSort *sort, const DynamicContext *context, int indent)
-{
-  ostringstream s;
-
-  string in(getIndent(indent));
-  string type;
-  if(sort->getSortType() == XQSort::stable) {
-    type = "StableSort";
-  }
-  else {
-    type = "Sort";
-  }
-
-  s << in << "<" << type << ">" << endl;
-  for(XQSort::VectorOfSortSpec::const_iterator it = sort->getSortSpecs()->begin();
-      it != sort->getSortSpecs()->end(); ++it) {
-    s << in << "  <Specification";
-    if((*it)->getModifier()) {
-      s << " modifier=\"";
-      bool addBar = false;
-      if((*it)->getModifier() & XQSort::SortSpec::ascending) {
-        s << "ascending";
-        addBar = true;
-      }
-      if((*it)->getModifier() & XQSort::SortSpec::descending) {
-        if(addBar) s << "|";
-        s << "descending";
-        addBar = true;
-      }
-      if((*it)->getModifier() & XQSort::SortSpec::empty_greatest) {
-        if(addBar) s << "|";
-        s << "empty_greatest";
-        addBar = true;
-      }
-      if((*it)->getModifier() & XQSort::SortSpec::empty_least) {
-        if(addBar) s << "|";
-        s << "empty_least";
-      }
-      s << "\"";
-    }
-    if((*it)->getCollation() != 0 && *((*it)->getCollation()) != 0) {
-      s << " collation=\"" << UTF8((*it)->getCollation()) << "\"";
-    }
-    s << ">" << endl;
-    s << printASTNode((*it)->getExpression(), context, indent + INDENT + INDENT);
-    s << in << "  </Specification>" << endl;
-  }
-  s << in << "</" << type << ">" << endl;
-
-  return s.str();
-}
-
-string PrintAST::printFLWORQuantified(const XQQuantified *item, const DynamicContext *context, int indent)
-{
-  ostringstream s;
-
-  string in(getIndent(indent));
-  XQQuantified::QuantifierType type = item->getQuantifierType();
-  string name(type == XQQuantified::some ? "SomeFLWOR" : "EveryFLWOR");
-
-  const VectorOfVariableBinding *bindings = item->getBindings();
-
-  s << in << "<" << name << ">" << endl;
-  for(VectorOfVariableBinding::const_iterator i = bindings->begin(); i != bindings->end(); ++i) {
-    s << printXQVariableBinding(*i, context, indent + INDENT);
-  }
-  s << printASTNode(item->getReturnExpr(), context, indent + INDENT);
-  s << in << "</" << name << ">" << endl;
-
-  return s.str();
-}
-
 string PrintAST::printTypeswitch(const XQTypeswitch *item, const DynamicContext *context, int indent)
 {
   ostringstream s;
 
   string in(getIndent(indent));
 
-  const XQTypeswitch::VectorOfClause *clauses = item->getClauses();
+  const XQTypeswitch::Cases *cases = item->getCases();
 
   s << in << "<TypeSwitch>" << endl;
   s << printASTNode(item->getExpression(), context, indent + INDENT);
-  for(XQTypeswitch::VectorOfClause::const_iterator i = clauses->begin(); i != clauses->end(); ++i) {
-    s << printClause(*i, context, indent + INDENT);
+  for(XQTypeswitch::Cases::const_iterator i = cases->begin(); i != cases->end(); ++i) {
+    s << printCase(*i, context, indent + INDENT);
   }
-  s << printClause(item->getDefaultClause(), context, indent + INDENT);
+  s << printCase(item->getDefaultCase(), context, indent + INDENT);
   s << in << "</TypeSwitch>" << endl;
 
   return s.str();
 }
 
-string PrintAST::printClause(const XQTypeswitch::Clause *clause, const DynamicContext *context, int indent)
+string PrintAST::printCase(const XQTypeswitch::Case *cse, const DynamicContext *context, int indent)
 {
   ostringstream s;
 
   string in(getIndent(indent));
 
-  if(clause->_type) {
-    s << in << "<Clause";
-    if(clause->_variable) {
-      s << " name=\"" << UTF8(clause->_variable) << "\"";
+  if(cse->getSequenceType()) {
+    s << in << "<Case";
+    if(cse->isVariableUsed()) {
+      s << " name=\"" << UTF8(cse->getQName()) << "\"";
     }
     s << ">" << endl;
-    s << printSequenceType(clause->_type, context, indent + INDENT);
-    s << printASTNode(clause->_expr, context, indent + INDENT);
-    s << in << "</Clause>" << endl;
+    s << printSequenceType(cse->getSequenceType(), context, indent + INDENT);
+    s << printASTNode(cse->getExpression(), context, indent + INDENT);
+    s << in << "</Case>" << endl;
   }
   else {
     s << in << "<Default";
-    if(clause->_variable) {
-      s << " name=\"" << UTF8(clause->_variable) << "\"";
+    if(cse->isVariableUsed()) {
+      s << " name=\"" << UTF8(cse->getQName()) << "\"";
     }
     s << ">" << endl;
-    s << printASTNode(clause->_expr, context, indent + INDENT);
+    s << printASTNode(cse->getExpression(), context, indent + INDENT);
     s << in << "</Default>" << endl;
   }
 
@@ -880,7 +738,7 @@ string PrintAST::printValidate(const XQValidate *item, const DynamicContext *con
   string in(getIndent(indent));
 
   s << in << "<Validate mode=\"";
-  switch(item->getValidationMode()) {
+  switch(item->getMode()) {
   case DocumentCache::VALIDATION_STRICT: {
     s << "strict";
     break;
@@ -931,21 +789,13 @@ string PrintAST::printFunctionCall(const XQFunctionCall *item, const DynamicCont
 
   string in(getIndent(indent));
 
-  const XMLCh *funPre = item->getName()->getPrefix();
-  const XMLCh *funName = item->getName()->getName();
-
-  string name;
-  name += UTF8(funPre);
-  name += ":";
-  name += UTF8(funName);
-
-  const VectorOfASTNodes &args = item->getArguments();
-  if(args.empty()) {
-    s << in << "<FunctionCall name=\"" << name << "\"/>" << endl;
+  const VectorOfASTNodes *args = item->getArguments();
+  if(args->empty()) {
+    s << in << "<FunctionCall name=\"" << UTF8(item->getQName()) << "\"/>" << endl;
   }
   else {
-    s << in << "<FunctionCall name=\"" << name << "\">" << endl;
-    for(VectorOfASTNodes::const_iterator i = args.begin(); i != args.end(); ++i) {
+    s << in << "<FunctionCall name=\"" << UTF8(item->getQName()) << "\">" << endl;
+    for(VectorOfASTNodes::const_iterator i = args->begin(); i != args->end(); ++i) {
       s << printASTNode(*i, context, indent + INDENT);
     }
     s << in << "</FunctionCall>" << endl;
@@ -1603,11 +1453,14 @@ string PrintAST::printUTransform(const UTransform *item, const DynamicContext *c
 
   string in(getIndent(indent));
 
-  const VectorOfVariableBinding *bindings = item->getBindings();
+  const VectorOfCopyBinding *bindings = item->getBindings();
 
   s << in << "<UTransform>" << endl;
-  for(VectorOfVariableBinding::const_iterator i = bindings->begin(); i != bindings->end(); ++i) {
-    s << printXQVariableBinding(*i, context, indent + INDENT);
+  for(VectorOfCopyBinding::const_iterator i = bindings->begin(); i != bindings->end(); ++i) {
+	  s << in << "<Copy name=\"" << UTF8((*i)->qname_);
+	  s << "\">" << endl;
+	  s << printASTNode((*i)->expr_, context, indent + INDENT);
+	  s << in << "</Copy>" << endl;
   }
   s << printASTNode(item->getModifyExpr(), context, indent + INDENT);
   s << printASTNode(item->getReturnExpr(), context, indent + INDENT);
@@ -1625,6 +1478,152 @@ string PrintAST::printUApplyUpdates(const UApplyUpdates *item, const DynamicCont
   s << in << "<UApplyUpdates>" << endl;
   s << printASTNode(item->getExpression(), context, indent + INDENT);
   s << in << "</UApplyUpdates>" << endl;
+
+  return s.str();
+}
+
+string PrintAST::printQuantified(const XQQuantified *item, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+  string name(item->getQuantifierType() == XQQuantified::SOME ? "Some" : "Every");
+
+  s << in << "<" << name << ">" << endl;
+  s << printTupleNode(item->getParent(), context, indent + INDENT);
+  s << printASTNode(item->getExpression(), context, indent + INDENT);
+  s << in << "</" << name << ">" << endl;
+
+  return s.str();
+}
+
+string PrintAST::printReturn(const XQReturn *item, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  s << in << "<Return>" << endl;
+  s << printTupleNode(item->getParent(), context, indent + INDENT);
+  s << printASTNode(item->getExpression(), context, indent + INDENT);
+  s << in << "</Return>" << endl;
+
+  return s.str();
+}
+
+string PrintAST::printTupleNode(const TupleNode *item, const DynamicContext *context, int indent)
+{
+  switch(item->getType()) {
+  case TupleNode::CONTEXT_TUPLE:
+    return printContextTuple((ContextTuple*)item, context, indent);
+  case TupleNode::FOR:
+    return printForTuple((ForTuple*)item, context, indent);
+  case TupleNode::LET:
+    return printLetTuple((LetTuple*)item, context, indent);
+  case TupleNode::WHERE:
+    return printWhereTuple((WhereTuple*)item, context, indent);
+  case TupleNode::ORDER_BY:
+    return printOrderByTuple((OrderByTuple*)item, context, indent);
+  default:
+    break;
+  }
+  return getIndent(indent) + "<Unknown/>\n";
+}
+
+string PrintAST::printForTuple(const ForTuple *item, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  s << in << "<ForTuple";
+  if(item->getVarName()) {
+    s << " uri=\"" << UTF8(item->getVarURI())
+      << "\" name=\"" << UTF8(item->getVarName())
+      << "\"";
+  }
+  if(item->getPosName()) {
+    s << " posURI=\"" << UTF8(item->getPosURI())
+      << "\" posName=\"" << UTF8(item->getPosName())
+      << "\"";
+  }
+  s << ">" << endl;
+  s << printTupleNode(item->getParent(), context, indent + INDENT);
+  s << printASTNode(item->getExpression(), context, indent + INDENT);
+  s << in << "</ForTuple>" << endl;
+
+  return s.str();
+}
+
+string PrintAST::printLetTuple(const LetTuple *item, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  s << in << "<LetTuple";
+  if(item->getVarName()) {
+    s << " uri=\"" << UTF8(item->getVarURI())
+      << "\" name=\"" << UTF8(item->getVarName())
+      << "\"";
+  }
+  s << ">" << endl;
+  s << printTupleNode(item->getParent(), context, indent + INDENT);
+  s << printASTNode(item->getExpression(), context, indent + INDENT);
+  s << in << "</LetTuple>" << endl;
+
+  return s.str();
+}
+
+string PrintAST::printWhereTuple(const WhereTuple *item, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  s << in << "<WhereTuple>" << endl;
+  s << printTupleNode(item->getParent(), context, indent + INDENT);
+  s << printASTNode(item->getExpression(), context, indent + INDENT);
+  s << in << "</WhereTuple>" << endl;
+
+  return s.str();
+}
+
+string PrintAST::printOrderByTuple(const OrderByTuple *item, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  s << in << "<OrderByTuple";
+
+  if(item->getModifiers() & OrderByTuple::DESCENDING)
+	  s << " direction=\"descending\"";
+  else s << " direction=\"ascending\"";
+
+  if(item->getModifiers() & OrderByTuple::EMPTY_LEAST)
+	  s << " empty=\"least\"";
+  else s << " empty=\"greatest\"";
+
+  if(item->getModifiers() & OrderByTuple::UNSTABLE)
+	  s << " stable=\"false\"";
+  else s << " stable=\"true\"";
+
+  s << " collation=\"" << UTF8(item->getCollation()->getCollationName()) << "\">" << endl;
+  s << printTupleNode(item->getParent(), context, indent + INDENT);
+  s << printASTNode(item->getExpression(), context, indent + INDENT);
+  s << in << "</OrderByTuple>" << endl;
+
+  return s.str();
+}
+
+string PrintAST::printContextTuple(const ContextTuple *item, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  s << in << "<ContextTuple/>" << endl;
 
   return s.str();
 }

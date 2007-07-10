@@ -17,6 +17,8 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 
+#include <xercesc/util/XercesDefs.hpp>
+
 class XQILLA_API LocationInfo
 {
 public:

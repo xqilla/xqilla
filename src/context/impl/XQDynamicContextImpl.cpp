@@ -35,10 +35,6 @@
 
 XERCES_CPP_NAMESPACE_USE;
 
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
-
 XQDynamicContextImpl::XQDynamicContextImpl(XQillaConfiguration *conf, const StaticContext *staticContext, MemoryManager* memMgr)
   : _conf(conf),
     _staticContext(staticContext),
@@ -50,6 +46,9 @@ XQDynamicContextImpl::XQDynamicContextImpl(XQillaConfiguration *conf, const Stat
     _contextItem(0),
     _contextPosition(1),
     _contextSize(1),
+    _varStore(&_defaultVarStore),
+    _globalVarStore(&_defaultVarStore),
+    _defaultVarStore(&_internalMM),
     _implicitTimezone(0),
     _documentMap(3, &_internalMM),
     _resolvers(XQillaAllocator<ResolverEntry>(&_internalMM)),
@@ -61,7 +60,6 @@ XQDynamicContextImpl::XQDynamicContextImpl(XQillaConfiguration *conf, const Stat
 {
   time(&_currentTime);
   _memMgr = &_internalMM;
-  _varStore = _internalMM.createVariableStore();
   _itemFactory = _conf->createItemFactory(_docCache, &_internalMM);
 
   setXMLEntityResolver(staticContext->getXMLEntityResolver());
@@ -71,9 +69,6 @@ XQDynamicContextImpl::XQDynamicContextImpl(XQillaConfiguration *conf, const Stat
   if(_defaultResolver.resolver != 0) {
 	  _defaultResolver.adopt = true;
   }
-
-  m_pDebugCallback = NULL;
-  m_bEnableDebugging = false;
 }
 
 XQDynamicContextImpl::~XQDynamicContextImpl()
@@ -81,7 +76,6 @@ XQDynamicContextImpl::~XQDynamicContextImpl()
   _contextItem = 0;
   _implicitTimezone = 0;
 
-  delete _varStore;
   delete _itemFactory;
   delete _docCache;
 
@@ -120,10 +114,6 @@ DynamicContext *XQDynamicContextImpl::createModuleDynamicContext(const DynamicCo
   // Set the MessageListener
   moduleDCtx->setMessageListener(_messageListener);
 
-  // propagate debug settings
-  moduleDCtx->enableDebugging(m_bEnableDebugging);
-  moduleDCtx->setDebugCallback(m_pDebugCallback);
-
   _conf->populateDynamicContext(moduleDCtx);
   return moduleDCtx;
 }
@@ -143,34 +133,17 @@ void XQDynamicContextImpl::setMemoryManager(XPath2MemoryManager* memMgr)
   _memMgr = memMgr;
 }
 
-void XQDynamicContextImpl::setDebugCallback(XQDebugCallback* callback)
-{
-    m_pDebugCallback=callback;
-}
-
-XQDebugCallback* XQDynamicContextImpl::getDebugCallback() const
-{
-    return m_pDebugCallback;
-}
-
-void XQDynamicContextImpl::enableDebugging(bool enable/*=true*/)
-{
-    m_bEnableDebugging=enable;
-}
-
-bool XQDynamicContextImpl::isDebuggingEnabled() const
-{
-    return m_bEnableDebugging;
-}
-
 void XQDynamicContextImpl::clearDynamicContext()
 {
   _nsResolver = _staticContext->getNSResolver();
   _contextItem = 0;
   _contextSize = 1;
   _contextPosition = 1;
-  _varStore->clear();
   _implicitTimezone = 0;
+
+  _defaultVarStore.clear();
+  _varStore = &_defaultVarStore;
+  _globalVarStore = &_defaultVarStore;
 
   if(_defaultResolver.adopt)
     delete _defaultResolver.resolver;
@@ -230,9 +203,38 @@ unsigned int XQDynamicContextImpl::getContextPosition() const
   return _contextPosition;
 }
 
-VariableStore* XQDynamicContextImpl::getVariableStore()
+const VariableStore* XQDynamicContextImpl::getVariableStore() const
 {
   return _varStore;
+}
+
+void XQDynamicContextImpl::setVariableStore(const VariableStore *store)
+{
+  assert(store);
+  _varStore = store;
+}
+
+const VariableStore* XQDynamicContextImpl::getGlobalVariableStore() const
+{
+  return _globalVarStore;
+}
+
+void XQDynamicContextImpl::setGlobalVariableStore(const VariableStore *store)
+{
+  _globalVarStore = store;
+}
+
+void XQDynamicContextImpl::setExternalVariable(const XMLCh *namespaceURI, const XMLCh *name, const Sequence &value)
+{
+  _defaultVarStore.setVar(namespaceURI, name, value);
+}
+
+void XQDynamicContextImpl::setExternalVariable(const XMLCh *qname, const Sequence &value)
+{
+  const XMLCh *uri = getUriBoundToPrefix(XPath2NSUtils::getPrefix(qname, getMemoryManager()), 0);
+  const XMLCh *name = XPath2NSUtils::getLocalName(qname);
+
+  _defaultVarStore.setVar(uri, name, value);
 }
 
 time_t XQDynamicContextImpl::getCurrentTime() const

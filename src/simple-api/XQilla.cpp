@@ -11,13 +11,8 @@
  * $Id$
  */
 
-//////////////////////////////////////////////////////////////////////
-// XQEvaluator.cpp: implementation of the XQEvaluator class.
-//////////////////////////////////////////////////////////////////////
-
 #include <xqilla/simple-api/XQilla.hpp>
 #include <xqilla/simple-api/XQQuery.hpp>
-#include <xqilla/context/XQDebugCallback.hpp>
 #include <xqilla/exceptions/ContextException.hpp>
 #include <xqilla/utils/XQillaPlatformUtils.hpp>
 #include <xqilla/context/DynamicContext.hpp>
@@ -61,27 +56,19 @@ XQQuery* XQilla::parse(const XMLCh* inputQuery, DynamicContext* context,
 
   Janitor<XQQuery> query(new (memMgr) XQQuery(inputQuery, context, contextOwned, memMgr));
 
-  try {
-    XQLexer lexer(context->getMemoryManager(), queryFile, inputQuery, context->getLanguage());
+  XQLexer lexer(context->getMemoryManager(), queryFile, inputQuery, context->getLanguage());
 
-    XQParserArgs args;
-    args._context=context;
-    args._lexer=&lexer;
-    args._query=query.get();
-    args._query->setFile(queryFile);
+  XQParserArgs args;
+  args._context = context;
+  args._lexer = &lexer;
+  args._query = query.get();
+  args._query->setFile(queryFile);
 
-    XQParser::yyparse(&args);
+  XQParser::yyparse(&args);
 
-    // Perform static resolution, if requested
-    if((flags & NO_STATIC_RESOLUTION) == 0) {
-      args._query->staticResolution(context);
-    }
-  }
-  catch(XQException& e) {
-    // parsing errors and staticResolution don't invoke ReportFirstError, so do it here
-    if(context->getDebugCallback() && context->isDebuggingEnabled()) 
-      context->getDebugCallback()->ReportFirstError(context, e.getError(), queryFile, e.getXQueryLine());
-    throw e;
+  // Perform static resolution, if requested
+  if((flags & NO_STATIC_RESOLUTION) == 0) {
+    args._query->staticResolution(context);
   }
 
   return query.release();
@@ -92,15 +79,15 @@ XQQuery* XQilla::parse(const InputSource& querySrc, DynamicContext* context,
 {
   XMLBuffer moduleText;
   try {
-    if(!readQuery(querySrc, memMgr, moduleText))
-    {
+    if(!readQuery(querySrc, memMgr, moduleText)) {
       XMLBuffer buf(1023,context->getMemoryManager());
       buf.set(X("Cannot read query content from "));
       buf.append(querySrc.getSystemId());
       buf.append(X(" [err:XQST0059]"));
       XQThrow2(ContextException,X("XQilla::parse"), buf.getRawBuffer());
     }
-  } catch(XMLException& e) {
+  }
+  catch(XMLException& e) {
     XMLBuffer buf(1023,context->getMemoryManager());
     buf.set(X("Exception reading query content: "));
     buf.append(e.getMessage());
@@ -115,15 +102,15 @@ XQQuery* XQilla::parseFromURI(const XMLCh* queryFile, DynamicContext* context,
 {
   XMLBuffer moduleText;
   try {
-    if(!readQuery(queryFile, memMgr, moduleText))
-    {
+    if(!readQuery(queryFile, memMgr, moduleText)) {
       XMLBuffer buf(1023,context->getMemoryManager());
       buf.set(X("Cannot read query content from "));
       buf.append(queryFile);
       buf.append(X(" [err:XQST0059]"));
       XQThrow2(ContextException,X("XQilla::parseFromURI"), buf.getRawBuffer());
     }
-  } catch(XMLException& e) {
+  }
+  catch(XMLException& e) {
     XMLBuffer buf(1023,context->getMemoryManager());
     buf.set(X("Exception reading query content: "));
     buf.append(e.getMessage());
@@ -144,11 +131,7 @@ DynamicContext *XQilla::createContext(Language language, XQillaConfiguration *co
   return result;
 }
 
-#ifdef _DEBUG
-  #define BUFFER_SIZE 128
-#else
-  #define BUFFER_SIZE 8192
-#endif
+#define BUFFER_SIZE 1024
 
 bool XQilla::readQuery(const XMLCh* queryFile, MemoryManager* memMgr, XMLBuffer& queryText)
 {
@@ -167,39 +150,43 @@ bool XQilla::readQuery(const XMLCh* queryFile, MemoryManager* memMgr, XMLBuffer&
 
 bool XQilla::readQuery(const InputSource& querySrc, MemoryManager* memMgr, XMLBuffer& queryText)
 {
-    BinInputStream* stream=querySrc.makeStream();
-    if(stream==NULL)
-      return false;
+    BinInputStream* stream = querySrc.makeStream();
+    if(stream == NULL) return false;
     Janitor<BinInputStream> janStream(stream);
+
     XMLByte buffer[BUFFER_SIZE];
-    unsigned int nRead=stream->readBytes(buffer,BUFFER_SIZE);
+    unsigned int nRead = stream->readBytes(buffer, BUFFER_SIZE);
+
     Janitor<XMLTranscoder> transcoder(NULL);
     XMLTransService::Codes retCode;
-    if(querySrc.getEncoding()==NULL) {
+    if(querySrc.getEncoding() == NULL) {
       // TBD make this better by using an XQuery specific encoding sniffer - jpcs
-      XMLRecognizer::Encodings encoding=XMLRecognizer::basicEncodingProbe(buffer,BUFFER_SIZE);
+      XMLRecognizer::Encodings encoding = XMLRecognizer::basicEncodingProbe(buffer,BUFFER_SIZE);
       transcoder.reset(XMLPlatformUtils::fgTransService->makeNewTranscoderFor(encoding, retCode, BUFFER_SIZE, memMgr));
     }
     else {
       transcoder.reset(XMLPlatformUtils::fgTransService->makeNewTranscoderFor(querySrc.getEncoding(), retCode, BUFFER_SIZE, memMgr));
     }
+
     XMLCh tempBuff[BUFFER_SIZE];
     unsigned char charSizes[BUFFER_SIZE];
-    unsigned int bytesEaten=0, nOffset=0;
-    unsigned int nCount=transcoder->transcodeFrom(buffer,nRead,tempBuff,BUFFER_SIZE,bytesEaten,charSizes);
-    queryText.set(tempBuff,nCount);
-    if(bytesEaten<nRead){
-      nOffset=nRead-bytesEaten;
-      memmove(buffer, buffer+bytesEaten, nRead-bytesEaten);
-    }
+    unsigned int bytesEaten = 0, nOffset = 0;
+    unsigned int nCount;
 
-    while((nRead=stream->readBytes(buffer+nOffset,BUFFER_SIZE-nOffset))>0) {
-      nCount=transcoder->transcodeFrom(buffer,nRead,tempBuff,BUFFER_SIZE,bytesEaten,charSizes);
-      queryText.append(tempBuff,nCount);
-      if(bytesEaten<nRead) {
-        nOffset=nRead-bytesEaten;
-        memmove(buffer, buffer+bytesEaten, nRead-bytesEaten);
+    do {
+      nCount = transcoder->transcodeFrom(buffer, nRead, tempBuff, BUFFER_SIZE, bytesEaten, charSizes);
+      queryText.append(tempBuff, nCount);
+
+      if(bytesEaten < nRead){
+        nOffset = nRead - bytesEaten;
+        memmove(buffer, buffer + bytesEaten, nOffset);
       }
-    }
+
+      nRead = stream->readBytes(buffer + nOffset, BUFFER_SIZE - nOffset);
+      if(nRead == 0 && nCount == 0) break;
+
+      nRead += nOffset;
+    } while(nRead > 0);
+
     return true;
 }

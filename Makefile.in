@@ -43,7 +43,7 @@ noinst_PROGRAMS = basicXQillaUsage$(EXEEXT) xqtsRunner$(EXEEXT) \
 	xmarkRunner$(EXEEXT)
 DIST_COMMON = $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(top_srcdir)/configure \
-	$(top_srcdir)/src/config/xqilla_config_unix.h.in ChangeLog \
+	$(top_srcdir)/src/config/xqilla_config_unix.h.in \
 	autotools/config.guess autotools/config.sub autotools/depcomp \
 	autotools/install-sh autotools/ltmain.sh autotools/missing \
 	autotools/mkinstalldirs
@@ -69,31 +69,31 @@ LTLIBRARIES = $(lib_LTLIBRARIES)
 libxqilla_la_LIBADD =
 am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	ProxyMemoryManager.lo StringPool.lo XPath2MemoryManagerImpl.lo \
-	XQScopedNamespace.lo UpdateFactory.lo CollationImpl.lo \
-	CodepointCollation.lo VarStoreImpl.lo VarTypeStoreImpl.lo \
-	VarHashEntryImpl.lo XQContextImpl.lo XQDynamicContextImpl.lo \
-	ItemFactoryImpl.lo XQRemoteDebugger.lo XQAtomize.lo \
-	XQCastableAs.lo XQCastAs.lo XQContextItem.lo XQFunction.lo \
-	XQIf.lo ASTNodeImpl.lo XQInstanceOf.lo XQLiteral.lo XQNav.lo \
-	XQOperator.lo XQParenthesizedExpr.lo XQSequence.lo XQStep.lo \
-	XQTreatAs.lo XQVariable.lo StaticResolutionContext.lo \
-	StaticType.lo ConstantFoldingFunction.lo NumericFunction.lo \
-	XQDebugHook.lo XQDOMConstructor.lo XQDocumentConstructor.lo \
+	UpdateFactory.lo CollationImpl.lo CodepointCollation.lo \
+	VarStoreImpl.lo VarTypeStoreImpl.lo VarHashEntryImpl.lo \
+	XQContextImpl.lo XQDynamicContextImpl.lo ItemFactoryImpl.lo \
+	XQAtomize.lo XQCastableAs.lo XQCastAs.lo XQContextItem.lo \
+	XQFunction.lo XQIf.lo ASTNodeImpl.lo XQInstanceOf.lo \
+	XQLiteral.lo XQNav.lo XQOperator.lo XQParenthesizedExpr.lo \
+	XQSequence.lo XQStep.lo XQTreatAs.lo XQVariable.lo \
+	StaticResolutionContext.lo StaticType.lo \
+	ConstantFoldingFunction.lo NumericFunction.lo \
+	XQDOMConstructor.lo XQDocumentConstructor.lo \
 	XQElementConstructor.lo XQAttributeConstructor.lo \
 	XQPIConstructor.lo XQCommentConstructor.lo \
-	XQTextConstructor.lo XQFLWOR.lo XQFunctionCall.lo \
-	XQGlobalVariable.lo XQOrderingChange.lo XQQuantified.lo \
-	XQValidate.lo XQTypeswitch.lo XQVariableBinding.lo \
-	XPath1Compat.lo ConvertFunctionArg.lo XQDocumentOrder.lo \
-	XQPredicate.lo ContentSequenceFilter.lo EventSerializer.lo \
-	NoInheritFilter.lo NSFixupFilter.lo FTContains.lo FTWords.lo \
-	FTOr.lo FTAnd.lo FTMildnot.lo FTUnaryNot.lo \
-	DefaultTokenizer.lo DefaultTokenStore.lo FTOrder.lo \
-	FTDistance.lo FTScope.lo FTContent.lo FTWindow.lo \
-	XQillaBuilderImpl.lo XQillaDocumentImpl.lo \
-	XQillaExpressionImpl.lo XQillaNSResolverImpl.lo \
-	XQillaXMLGrammarPoolImpl.lo XPathDocumentImpl.lo \
-	XPathNamespaceImpl.lo XPath2ResultImpl.lo \
+	XQTextConstructor.lo XQFunctionCall.lo XQGlobalVariable.lo \
+	XQOrderingChange.lo XQQuantified.lo XQValidate.lo \
+	XQTypeswitch.lo XPath1Compat.lo ConvertFunctionArg.lo \
+	XQDocumentOrder.lo XQPredicate.lo XQReturn.lo ContextTuple.lo \
+	ForTuple.lo LetTuple.lo WhereTuple.lo OrderByTuple.lo \
+	ContentSequenceFilter.lo EventSerializer.lo NoInheritFilter.lo \
+	NSFixupFilter.lo FTContains.lo FTWords.lo FTOr.lo FTAnd.lo \
+	FTMildnot.lo FTUnaryNot.lo DefaultTokenizer.lo \
+	DefaultTokenStore.lo FTOrder.lo FTDistance.lo FTScope.lo \
+	FTContent.lo FTWindow.lo XQillaBuilderImpl.lo \
+	XQillaDocumentImpl.lo XQillaExpressionImpl.lo \
+	XQillaNSResolverImpl.lo XQillaXMLGrammarPoolImpl.lo \
+	XPathDocumentImpl.lo XPathNamespaceImpl.lo XPath2ResultImpl.lo \
 	XQillaImplementation.lo XPath2NodeSerializer.lo XQilla.lo \
 	XQQuery.lo UTF8Str.lo XMLChCompare.lo XStr.lo ContextUtils.lo \
 	DateUtils.lo NumUtils.lo XQillaPlatformUtils.lo PrintAST.lo \
@@ -166,32 +166,32 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	ATDurationOrDerived.lo ATQNameConstructor.lo \
 	ATUntypedAtomic.lo DateOrTimeType.lo Item.lo Node.lo \
 	Numeric.lo NumericTypeConstructor.lo Timezone.lo QName.lo \
-	XQParser.lo XQLexer.lo mapm5sin.lo mapm_add.lo mapmasin.lo \
-	mapmasn0.lo mapmcbrt.lo mapmcnst.lo mapm_cpi.lo m_apm.lo \
-	mapm_div.lo mapm_exp.lo mapmfact.lo mapm_fam.lo mapm_fft.lo \
-	mapm_flr.lo mapmfmul.lo mapm_fpf.lo mapm_gcd.lo mapmgues.lo \
-	mapmhasn.lo mapmhsin.lo mapmipwr.lo mapmistr.lo mapm_lg2.lo \
-	mapm_lg3.lo mapm_log.lo mapm_mt.lo mapm_mul.lo mapm_pow.lo \
-	mapmpwr2.lo mapm_rcp.lo mapm_rnd.lo mapmrsin.lo mapm_set.lo \
-	mapm_sin.lo mapmsqrt.lo mapmstck.lo mapmutil.lo mapmutl2.lo \
-	NodeTest.lo SelfAxis.lo And.lo ArithmeticOperator.lo \
-	ComparisonOperator.lo Divide.lo Equals.lo Except.lo \
-	GeneralComp.lo GreaterThan.lo GreaterThanEqual.lo \
-	IntegerDivide.lo Intersect.lo LessThan.lo LessThanEqual.lo \
-	Minus.lo Mod.lo Multiply.lo NodeComparison.lo NotEquals.lo \
-	Or.lo OrderComparison.lo Plus.lo Range.lo UnaryMinus.lo \
-	Union.lo DocumentCacheImpl.lo SequenceType.lo \
-	AnyAtomicTypeDatatypeValidator.lo EmptyResult.lo \
-	LazySequenceResult.lo ResultBuffer.lo ResultBufferImpl.lo \
-	Result.lo ResultImpl.lo SequenceResult.lo SingleResult.lo \
-	Sequence.lo FunctionPut.lo PendingUpdateList.lo \
-	UApplyUpdates.lo UDelete.lo URename.lo UReplace.lo \
-	UReplaceValueOf.lo UInsertAsFirst.lo UInsertAsLast.lo \
-	UInsertInto.lo UInsertAfter.lo UInsertBefore.lo UTransform.lo \
-	TestSuiteParser.lo TestSuiteResultListener.lo \
-	TestSuiteRunner.lo FastXDMUpdateFactory.lo \
-	FastXDMDocumentCacheImpl.lo FastXDMDocument.lo \
-	FastXDMNodeImpl.lo FastXDMConfiguration.lo \
+	XQParser.lo XQLexer.lo XQLexer2.lo mapm5sin.lo mapm_add.lo \
+	mapmasin.lo mapmasn0.lo mapmcbrt.lo mapmcnst.lo mapm_cpi.lo \
+	m_apm.lo mapm_div.lo mapm_exp.lo mapmfact.lo mapm_fam.lo \
+	mapm_fft.lo mapm_flr.lo mapmfmul.lo mapm_fpf.lo mapm_gcd.lo \
+	mapmgues.lo mapmhasn.lo mapmhsin.lo mapmipwr.lo mapmistr.lo \
+	mapm_lg2.lo mapm_lg3.lo mapm_log.lo mapm_mt.lo mapm_mul.lo \
+	mapm_pow.lo mapmpwr2.lo mapm_rcp.lo mapm_rnd.lo mapmrsin.lo \
+	mapm_set.lo mapm_sin.lo mapmsqrt.lo mapmstck.lo mapmutil.lo \
+	mapmutl2.lo NodeTest.lo SelfAxis.lo And.lo \
+	ArithmeticOperator.lo ComparisonOperator.lo Divide.lo \
+	Equals.lo Except.lo GeneralComp.lo GreaterThan.lo \
+	GreaterThanEqual.lo IntegerDivide.lo Intersect.lo LessThan.lo \
+	LessThanEqual.lo Minus.lo Mod.lo Multiply.lo NodeComparison.lo \
+	NotEquals.lo Or.lo OrderComparison.lo Plus.lo Range.lo \
+	UnaryMinus.lo Union.lo DocumentCacheImpl.lo SequenceType.lo \
+	AnyAtomicTypeDatatypeValidator.lo ClosureResult.lo \
+	EmptyResult.lo LazySequenceResult.lo ResultBuffer.lo \
+	ResultBufferImpl.lo Result.lo ResultImpl.lo SequenceResult.lo \
+	SingleResult.lo Sequence.lo FunctionPut.lo \
+	PendingUpdateList.lo UApplyUpdates.lo UDelete.lo URename.lo \
+	UReplace.lo UReplaceValueOf.lo UInsertAsFirst.lo \
+	UInsertAsLast.lo UInsertInto.lo UInsertAfter.lo \
+	UInsertBefore.lo UTransform.lo TestSuiteParser.lo \
+	TestSuiteResultListener.lo TestSuiteRunner.lo \
+	FastXDMUpdateFactory.lo FastXDMDocumentCacheImpl.lo \
+	FastXDMDocument.lo FastXDMNodeImpl.lo FastXDMConfiguration.lo \
 	FastXDMSequenceBuilder.lo AncestorAxis.lo \
 	AncestorOrSelfAxis.lo AttributeAxis.lo Axis.lo ChildAxis.lo \
 	DescendantAxis.lo DescendantOrSelfAxis.lo FollowingAxis.lo \
@@ -390,11 +390,9 @@ src/framework/BaseMemoryManager.cpp \
 src/framework/ProxyMemoryManager.cpp \
 src/framework/StringPool.cpp \
 src/framework/XPath2MemoryManagerImpl.cpp \
-src/context/XQScopedNamespace.cpp \
 src/context/UpdateFactory.cpp \
 src/context/impl/CollationImpl.cpp \
 src/context/impl/CodepointCollation.cpp \
-src/context/impl/VarStoreImpl.hpp \
 src/context/impl/VarStoreImpl.cpp \
 src/context/impl/VarTypeStoreImpl.hpp \
 src/context/impl/VarTypeStoreImpl.cpp \
@@ -402,7 +400,6 @@ src/context/impl/VarHashEntryImpl.cpp \
 src/context/impl/XQContextImpl.cpp \
 src/context/impl/XQDynamicContextImpl.cpp \
 src/context/impl/ItemFactoryImpl.cpp \
-src/context/impl/XQRemoteDebugger.cpp \
 src/ast/XQAtomize.cpp \
 src/ast/XQCastableAs.cpp \
 src/ast/XQCastAs.cpp \
@@ -423,7 +420,6 @@ src/ast/StaticResolutionContext.cpp \
 src/ast/StaticType.cpp \
 src/ast/ConstantFoldingFunction.cpp \
 src/ast/NumericFunction.cpp \
-src/ast/XQDebugHook.cpp \
 src/ast/XQDOMConstructor.cpp \
 src/ast/XQDocumentConstructor.cpp \
 src/ast/XQElementConstructor.cpp \
@@ -431,18 +427,22 @@ src/ast/XQAttributeConstructor.cpp \
 src/ast/XQPIConstructor.cpp \
 src/ast/XQCommentConstructor.cpp \
 src/ast/XQTextConstructor.cpp \
-src/ast/XQFLWOR.cpp \
 src/ast/XQFunctionCall.cpp \
 src/ast/XQGlobalVariable.cpp \
 src/ast/XQOrderingChange.cpp \
 src/ast/XQQuantified.cpp \
 src/ast/XQValidate.cpp \
 src/ast/XQTypeswitch.cpp \
-src/ast/XQVariableBinding.cpp \
 src/ast/XPath1Compat.cpp \
 src/ast/ConvertFunctionArg.cpp \
 src/ast/XQDocumentOrder.cpp \
 src/ast/XQPredicate.cpp \
+src/ast/XQReturn.cpp \
+src/ast/ContextTuple.cpp \
+src/ast/ForTuple.cpp \
+src/ast/LetTuple.cpp \
+src/ast/WhereTuple.cpp \
+src/ast/OrderByTuple.cpp \
 src/events/ContentSequenceFilter.cpp \
 src/events/EventSerializer.cpp \
 src/events/NoInheritFilter.cpp \
@@ -665,8 +665,8 @@ src/parser/QName.cpp \
 src/parser/XQParser.cpp \
 src/parser/XQParser.hpp \
 src/lexer/FlexLexer.h \
-src/lexer/XQillaLexer.hpp \
 src/lexer/XQLexer.cpp \
+src/lexer/XQLexer2.cpp \
 src/lexer/XQLexer.hpp \
 src/mapm/mapm5sin.c \
 src/mapm/mapm_add.c \
@@ -737,6 +737,7 @@ src/operators/Union.cpp \
 src/schema/DocumentCacheImpl.cpp \
 src/schema/SequenceType.cpp \
 src/schema/AnyAtomicTypeDatatypeValidator.cpp \
+src/runtime/ClosureResult.cpp \
 src/runtime/EmptyResult.cpp \
 src/runtime/LazySequenceResult.cpp \
 src/runtime/ResultBuffer.cpp \
@@ -1046,11 +1047,13 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Axis.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/BaseMemoryManager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ChildAxis.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ClosureResult.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CodepointCollation.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CollationImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ComparisonOperator.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ConstantFoldingFunction.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ContentSequenceFilter.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ContextTuple.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ContextUtils.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ConvertFunctionArg.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DatatypeFactory.Plo@am__quote@
@@ -1087,6 +1090,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FastXDMUpdateFactory.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FollowingAxis.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FollowingSiblingAxis.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ForTuple.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FuncFactory.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionAbs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionAdjustDateTimeToTimezone.Plo@am__quote@
@@ -1212,6 +1216,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LazySequenceResult.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LessThan.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LessThanEqual.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LetTuple.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Minus.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Mod.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Multiply.Plo@am__quote@
@@ -1227,6 +1232,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NumericFunction.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NumericTypeConstructor.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Or.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/OrderByTuple.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/OrderComparison.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ParentAxis.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PendingUpdateList.Plo@am__quote@
@@ -1277,6 +1283,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/VarHashEntryImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/VarStoreImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/VarTypeStoreImpl.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/WhereTuple.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XMLChCompare.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XPath1Compat.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XPath2MemoryManagerImpl.Plo@am__quote@
@@ -1294,19 +1301,18 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQContextImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQContextItem.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQDOMConstructor.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQDebugHook.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQDocumentConstructor.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQDocumentOrder.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQDynamicContextImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQElementConstructor.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQException.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQFLWOR.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQFunction.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQFunctionCall.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQGlobalVariable.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQIf.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQInstanceOf.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQLexer.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQLexer2.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQLiteral.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQNav.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQOperator.Plo@am__quote@
@@ -1317,8 +1323,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQPredicate.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQQuantified.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQQuery.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQRemoteDebugger.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQScopedNamespace.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQReturn.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQSequence.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQStep.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQTextConstructor.Plo@am__quote@
@@ -1327,7 +1332,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQUserFunction.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQValidate.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQVariable.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQVariableBinding.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQilla.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQillaBuilderImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQillaDocumentImpl.Plo@am__quote@
@@ -1715,13 +1719,6 @@ XPath2MemoryManagerImpl.lo: src/framework/XPath2MemoryManagerImpl.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XPath2MemoryManagerImpl.lo `test -f 'src/framework/XPath2MemoryManagerImpl.cpp' || echo '$(srcdir)/'`src/framework/XPath2MemoryManagerImpl.cpp
 
-XQScopedNamespace.lo: src/context/XQScopedNamespace.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQScopedNamespace.lo -MD -MP -MF "$(DEPDIR)/XQScopedNamespace.Tpo" -c -o XQScopedNamespace.lo `test -f 'src/context/XQScopedNamespace.cpp' || echo '$(srcdir)/'`src/context/XQScopedNamespace.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/XQScopedNamespace.Tpo" "$(DEPDIR)/XQScopedNamespace.Plo"; else rm -f "$(DEPDIR)/XQScopedNamespace.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/context/XQScopedNamespace.cpp' object='XQScopedNamespace.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQScopedNamespace.lo `test -f 'src/context/XQScopedNamespace.cpp' || echo '$(srcdir)/'`src/context/XQScopedNamespace.cpp
-
 UpdateFactory.lo: src/context/UpdateFactory.cpp
 @am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT UpdateFactory.lo -MD -MP -MF "$(DEPDIR)/UpdateFactory.Tpo" -c -o UpdateFactory.lo `test -f 'src/context/UpdateFactory.cpp' || echo '$(srcdir)/'`src/context/UpdateFactory.cpp; \
 @am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/UpdateFactory.Tpo" "$(DEPDIR)/UpdateFactory.Plo"; else rm -f "$(DEPDIR)/UpdateFactory.Tpo"; exit 1; fi
@@ -1784,13 +1781,6 @@ ItemFactoryImpl.lo: src/context/impl/ItemFactoryImpl.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/context/impl/ItemFactoryImpl.cpp' object='ItemFactoryImpl.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ItemFactoryImpl.lo `test -f 'src/context/impl/ItemFactoryImpl.cpp' || echo '$(srcdir)/'`src/context/impl/ItemFactoryImpl.cpp
-
-XQRemoteDebugger.lo: src/context/impl/XQRemoteDebugger.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQRemoteDebugger.lo -MD -MP -MF "$(DEPDIR)/XQRemoteDebugger.Tpo" -c -o XQRemoteDebugger.lo `test -f 'src/context/impl/XQRemoteDebugger.cpp' || echo '$(srcdir)/'`src/context/impl/XQRemoteDebugger.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/XQRemoteDebugger.Tpo" "$(DEPDIR)/XQRemoteDebugger.Plo"; else rm -f "$(DEPDIR)/XQRemoteDebugger.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/context/impl/XQRemoteDebugger.cpp' object='XQRemoteDebugger.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQRemoteDebugger.lo `test -f 'src/context/impl/XQRemoteDebugger.cpp' || echo '$(srcdir)/'`src/context/impl/XQRemoteDebugger.cpp
 
 XQAtomize.lo: src/ast/XQAtomize.cpp
 @am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQAtomize.lo -MD -MP -MF "$(DEPDIR)/XQAtomize.Tpo" -c -o XQAtomize.lo `test -f 'src/ast/XQAtomize.cpp' || echo '$(srcdir)/'`src/ast/XQAtomize.cpp; \
@@ -1932,13 +1922,6 @@ NumericFunction.lo: src/ast/NumericFunction.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o NumericFunction.lo `test -f 'src/ast/NumericFunction.cpp' || echo '$(srcdir)/'`src/ast/NumericFunction.cpp
 
-XQDebugHook.lo: src/ast/XQDebugHook.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQDebugHook.lo -MD -MP -MF "$(DEPDIR)/XQDebugHook.Tpo" -c -o XQDebugHook.lo `test -f 'src/ast/XQDebugHook.cpp' || echo '$(srcdir)/'`src/ast/XQDebugHook.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/XQDebugHook.Tpo" "$(DEPDIR)/XQDebugHook.Plo"; else rm -f "$(DEPDIR)/XQDebugHook.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/ast/XQDebugHook.cpp' object='XQDebugHook.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQDebugHook.lo `test -f 'src/ast/XQDebugHook.cpp' || echo '$(srcdir)/'`src/ast/XQDebugHook.cpp
-
 XQDOMConstructor.lo: src/ast/XQDOMConstructor.cpp
 @am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQDOMConstructor.lo -MD -MP -MF "$(DEPDIR)/XQDOMConstructor.Tpo" -c -o XQDOMConstructor.lo `test -f 'src/ast/XQDOMConstructor.cpp' || echo '$(srcdir)/'`src/ast/XQDOMConstructor.cpp; \
 @am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/XQDOMConstructor.Tpo" "$(DEPDIR)/XQDOMConstructor.Plo"; else rm -f "$(DEPDIR)/XQDOMConstructor.Tpo"; exit 1; fi
@@ -1988,13 +1971,6 @@ XQTextConstructor.lo: src/ast/XQTextConstructor.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQTextConstructor.lo `test -f 'src/ast/XQTextConstructor.cpp' || echo '$(srcdir)/'`src/ast/XQTextConstructor.cpp
 
-XQFLWOR.lo: src/ast/XQFLWOR.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQFLWOR.lo -MD -MP -MF "$(DEPDIR)/XQFLWOR.Tpo" -c -o XQFLWOR.lo `test -f 'src/ast/XQFLWOR.cpp' || echo '$(srcdir)/'`src/ast/XQFLWOR.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/XQFLWOR.Tpo" "$(DEPDIR)/XQFLWOR.Plo"; else rm -f "$(DEPDIR)/XQFLWOR.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/ast/XQFLWOR.cpp' object='XQFLWOR.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQFLWOR.lo `test -f 'src/ast/XQFLWOR.cpp' || echo '$(srcdir)/'`src/ast/XQFLWOR.cpp
-
 XQFunctionCall.lo: src/ast/XQFunctionCall.cpp
 @am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQFunctionCall.lo -MD -MP -MF "$(DEPDIR)/XQFunctionCall.Tpo" -c -o XQFunctionCall.lo `test -f 'src/ast/XQFunctionCall.cpp' || echo '$(srcdir)/'`src/ast/XQFunctionCall.cpp; \
 @am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/XQFunctionCall.Tpo" "$(DEPDIR)/XQFunctionCall.Plo"; else rm -f "$(DEPDIR)/XQFunctionCall.Tpo"; exit 1; fi
@@ -2037,13 +2013,6 @@ XQTypeswitch.lo: src/ast/XQTypeswitch.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQTypeswitch.lo `test -f 'src/ast/XQTypeswitch.cpp' || echo '$(srcdir)/'`src/ast/XQTypeswitch.cpp
 
-XQVariableBinding.lo: src/ast/XQVariableBinding.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQVariableBinding.lo -MD -MP -MF "$(DEPDIR)/XQVariableBinding.Tpo" -c -o XQVariableBinding.lo `test -f 'src/ast/XQVariableBinding.cpp' || echo '$(srcdir)/'`src/ast/XQVariableBinding.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/XQVariableBinding.Tpo" "$(DEPDIR)/XQVariableBinding.Plo"; else rm -f "$(DEPDIR)/XQVariableBinding.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/ast/XQVariableBinding.cpp' object='XQVariableBinding.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQVariableBinding.lo `test -f 'src/ast/XQVariableBinding.cpp' || echo '$(srcdir)/'`src/ast/XQVariableBinding.cpp
-
 XPath1Compat.lo: src/ast/XPath1Compat.cpp
 @am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XPath1Compat.lo -MD -MP -MF "$(DEPDIR)/XPath1Compat.Tpo" -c -o XPath1Compat.lo `test -f 'src/ast/XPath1Compat.cpp' || echo '$(srcdir)/'`src/ast/XPath1Compat.cpp; \
 @am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/XPath1Compat.Tpo" "$(DEPDIR)/XPath1Compat.Plo"; else rm -f "$(DEPDIR)/XPath1Compat.Tpo"; exit 1; fi
@@ -2071,6 +2040,48 @@ XQPredicate.lo: src/ast/XQPredicate.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/ast/XQPredicate.cpp' object='XQPredicate.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQPredicate.lo `test -f 'src/ast/XQPredicate.cpp' || echo '$(srcdir)/'`src/ast/XQPredicate.cpp
+
+XQReturn.lo: src/ast/XQReturn.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQReturn.lo -MD -MP -MF "$(DEPDIR)/XQReturn.Tpo" -c -o XQReturn.lo `test -f 'src/ast/XQReturn.cpp' || echo '$(srcdir)/'`src/ast/XQReturn.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/XQReturn.Tpo" "$(DEPDIR)/XQReturn.Plo"; else rm -f "$(DEPDIR)/XQReturn.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/ast/XQReturn.cpp' object='XQReturn.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQReturn.lo `test -f 'src/ast/XQReturn.cpp' || echo '$(srcdir)/'`src/ast/XQReturn.cpp
+
+ContextTuple.lo: src/ast/ContextTuple.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ContextTuple.lo -MD -MP -MF "$(DEPDIR)/ContextTuple.Tpo" -c -o ContextTuple.lo `test -f 'src/ast/ContextTuple.cpp' || echo '$(srcdir)/'`src/ast/ContextTuple.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ContextTuple.Tpo" "$(DEPDIR)/ContextTuple.Plo"; else rm -f "$(DEPDIR)/ContextTuple.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/ast/ContextTuple.cpp' object='ContextTuple.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ContextTuple.lo `test -f 'src/ast/ContextTuple.cpp' || echo '$(srcdir)/'`src/ast/ContextTuple.cpp
+
+ForTuple.lo: src/ast/ForTuple.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ForTuple.lo -MD -MP -MF "$(DEPDIR)/ForTuple.Tpo" -c -o ForTuple.lo `test -f 'src/ast/ForTuple.cpp' || echo '$(srcdir)/'`src/ast/ForTuple.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ForTuple.Tpo" "$(DEPDIR)/ForTuple.Plo"; else rm -f "$(DEPDIR)/ForTuple.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/ast/ForTuple.cpp' object='ForTuple.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ForTuple.lo `test -f 'src/ast/ForTuple.cpp' || echo '$(srcdir)/'`src/ast/ForTuple.cpp
+
+LetTuple.lo: src/ast/LetTuple.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT LetTuple.lo -MD -MP -MF "$(DEPDIR)/LetTuple.Tpo" -c -o LetTuple.lo `test -f 'src/ast/LetTuple.cpp' || echo '$(srcdir)/'`src/ast/LetTuple.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/LetTuple.Tpo" "$(DEPDIR)/LetTuple.Plo"; else rm -f "$(DEPDIR)/LetTuple.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/ast/LetTuple.cpp' object='LetTuple.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o LetTuple.lo `test -f 'src/ast/LetTuple.cpp' || echo '$(srcdir)/'`src/ast/LetTuple.cpp
+
+WhereTuple.lo: src/ast/WhereTuple.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT WhereTuple.lo -MD -MP -MF "$(DEPDIR)/WhereTuple.Tpo" -c -o WhereTuple.lo `test -f 'src/ast/WhereTuple.cpp' || echo '$(srcdir)/'`src/ast/WhereTuple.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/WhereTuple.Tpo" "$(DEPDIR)/WhereTuple.Plo"; else rm -f "$(DEPDIR)/WhereTuple.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/ast/WhereTuple.cpp' object='WhereTuple.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o WhereTuple.lo `test -f 'src/ast/WhereTuple.cpp' || echo '$(srcdir)/'`src/ast/WhereTuple.cpp
+
+OrderByTuple.lo: src/ast/OrderByTuple.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT OrderByTuple.lo -MD -MP -MF "$(DEPDIR)/OrderByTuple.Tpo" -c -o OrderByTuple.lo `test -f 'src/ast/OrderByTuple.cpp' || echo '$(srcdir)/'`src/ast/OrderByTuple.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/OrderByTuple.Tpo" "$(DEPDIR)/OrderByTuple.Plo"; else rm -f "$(DEPDIR)/OrderByTuple.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/ast/OrderByTuple.cpp' object='OrderByTuple.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o OrderByTuple.lo `test -f 'src/ast/OrderByTuple.cpp' || echo '$(srcdir)/'`src/ast/OrderByTuple.cpp
 
 ContentSequenceFilter.lo: src/events/ContentSequenceFilter.cpp
 @am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ContentSequenceFilter.lo -MD -MP -MF "$(DEPDIR)/ContentSequenceFilter.Tpo" -c -o ContentSequenceFilter.lo `test -f 'src/events/ContentSequenceFilter.cpp' || echo '$(srcdir)/'`src/events/ContentSequenceFilter.cpp; \
@@ -3465,6 +3476,13 @@ XQLexer.lo: src/lexer/XQLexer.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQLexer.lo `test -f 'src/lexer/XQLexer.cpp' || echo '$(srcdir)/'`src/lexer/XQLexer.cpp
 
+XQLexer2.lo: src/lexer/XQLexer2.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQLexer2.lo -MD -MP -MF "$(DEPDIR)/XQLexer2.Tpo" -c -o XQLexer2.lo `test -f 'src/lexer/XQLexer2.cpp' || echo '$(srcdir)/'`src/lexer/XQLexer2.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/XQLexer2.Tpo" "$(DEPDIR)/XQLexer2.Plo"; else rm -f "$(DEPDIR)/XQLexer2.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/lexer/XQLexer2.cpp' object='XQLexer2.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQLexer2.lo `test -f 'src/lexer/XQLexer2.cpp' || echo '$(srcdir)/'`src/lexer/XQLexer2.cpp
+
 m_apm.lo: src/mapm/m_apm.cpp
 @am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT m_apm.lo -MD -MP -MF "$(DEPDIR)/m_apm.Tpo" -c -o m_apm.lo `test -f 'src/mapm/m_apm.cpp' || echo '$(srcdir)/'`src/mapm/m_apm.cpp; \
 @am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/m_apm.Tpo" "$(DEPDIR)/m_apm.Plo"; else rm -f "$(DEPDIR)/m_apm.Tpo"; exit 1; fi
@@ -3681,6 +3699,13 @@ AnyAtomicTypeDatatypeValidator.lo: src/schema/AnyAtomicTypeDatatypeValidator.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/schema/AnyAtomicTypeDatatypeValidator.cpp' object='AnyAtomicTypeDatatypeValidator.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o AnyAtomicTypeDatatypeValidator.lo `test -f 'src/schema/AnyAtomicTypeDatatypeValidator.cpp' || echo '$(srcdir)/'`src/schema/AnyAtomicTypeDatatypeValidator.cpp
+
+ClosureResult.lo: src/runtime/ClosureResult.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ClosureResult.lo -MD -MP -MF "$(DEPDIR)/ClosureResult.Tpo" -c -o ClosureResult.lo `test -f 'src/runtime/ClosureResult.cpp' || echo '$(srcdir)/'`src/runtime/ClosureResult.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ClosureResult.Tpo" "$(DEPDIR)/ClosureResult.Plo"; else rm -f "$(DEPDIR)/ClosureResult.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/runtime/ClosureResult.cpp' object='ClosureResult.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ClosureResult.lo `test -f 'src/runtime/ClosureResult.cpp' || echo '$(srcdir)/'`src/runtime/ClosureResult.cpp
 
 EmptyResult.lo: src/runtime/EmptyResult.cpp
 @am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT EmptyResult.lo -MD -MP -MF "$(DEPDIR)/EmptyResult.Tpo" -c -o EmptyResult.lo `test -f 'src/runtime/EmptyResult.cpp' || echo '$(srcdir)/'`src/runtime/EmptyResult.cpp; \
