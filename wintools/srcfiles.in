@@ -467,6 +467,7 @@ include/xqilla/ast/ForTuple.hpp	lib
 include/xqilla/ast/LetTuple.hpp	lib
 include/xqilla/ast/LocationInfo.hpp	lib
 include/xqilla/ast/NumericFunction.hpp	lib
+include/xqilla/ast/OrderByTuple.hpp	lib
 include/xqilla/ast/StaticResolutionContext.hpp	lib
 include/xqilla/ast/StaticType.hpp	lib
 include/xqilla/ast/TupleNode.hpp	lib

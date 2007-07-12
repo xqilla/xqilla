@@ -301,6 +301,10 @@ SOURCE=..\..\include\xqilla\ast\NumericFunction.hpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\include\xqilla\ast\OrderByTuple.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\include\xqilla\ast\StaticResolutionContext.hpp
 # End Source File
 # Begin Source File

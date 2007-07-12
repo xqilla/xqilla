@@ -560,6 +560,9 @@
 				RelativePath="..\..\include\xqilla\ast\NumericFunction.hpp">
 			</File>
 			<File
+				RelativePath="..\..\include\xqilla\ast\OrderByTuple.hpp">
+			</File>
+			<File
 				RelativePath="..\..\include\xqilla\ast\StaticResolutionContext.hpp">
 			</File>
 			<File

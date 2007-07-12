@@ -45,6 +45,7 @@ xqilla/ast/TupleNode.hpp \
 xqilla/ast/ContextTuple.hpp \
 xqilla/ast/ForTuple.hpp \
 xqilla/ast/LetTuple.hpp \
+xqilla/ast/OrderByTuple.hpp \
 xqilla/ast/WhereTuple.hpp \
 xqilla/events/ContentSequenceFilter.hpp \
 xqilla/events/EventHandler.hpp \
