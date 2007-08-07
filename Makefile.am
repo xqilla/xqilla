@@ -452,6 +452,7 @@ ChangeLog \
 docs/Doxyfile.simpleapi.in \
 docs/Doxyfile.dom3api.in \
 docs/Doxyfile.devapi.in \
+docs/header.html \
 docs/simple-api \
 docs/dom3-api \
 Win32Projects/VC6/xqilla.dsp \

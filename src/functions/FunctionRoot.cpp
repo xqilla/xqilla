@@ -14,6 +14,7 @@
 #include "../config/xqilla_config.h"
 #include <assert.h>
 #include <xqilla/functions/FunctionRoot.hpp>
+#include <xqilla/ast/XQContextItem.hpp>
 #include <xqilla/exceptions/FunctionException.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/runtime/Sequence.hpp>
@@ -45,6 +46,8 @@ ASTNode* FunctionRoot::staticResolution(StaticContext *context) {
 
 ASTNode *FunctionRoot::staticTyping(StaticContext *context)
 {
+  XPath2MemoryManager *mm = context->getMemoryManager();
+
   _src.clear();
 
   _src.setProperties(StaticResolutionContext::DOCORDER | StaticResolutionContext::GROUPED |
@@ -53,8 +56,23 @@ ASTNode *FunctionRoot::staticTyping(StaticContext *context)
 
   if(_args.empty()) {
     _src.contextItemUsed(true);
+
+    if(context->getContextItemType().isType(StaticType::DOCUMENT_TYPE)) {
+      ASTNode *result = new (mm) XQContextItem(mm);
+      result->setLocationInfo(this);
+      return result->staticTyping(context);
+    }
   }
-  return calculateSRCForArguments(context);
+  else {
+    _args[0] = _args[0]->staticTyping(context);
+    _src.add(_args[0]->getStaticResolutionContext());
+
+    if(_args[0]->getStaticResolutionContext().getStaticType().isType(StaticType::DOCUMENT_TYPE)) {
+      return _args[0];
+    }
+  }
+
+  return this;
 }
 
 Sequence FunctionRoot::createSequence(DynamicContext* context, int flags) const

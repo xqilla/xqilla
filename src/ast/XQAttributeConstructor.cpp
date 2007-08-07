@@ -114,6 +114,9 @@ ASTNode* XQAttributeConstructor::staticTyping(StaticContext *context)
   _src.getStaticType().flags = StaticType::ATTRIBUTE_TYPE;
   _src.forceNoFolding(true);
   _src.creative(true);
+  _src.setProperties(StaticResolutionContext::DOCORDER | StaticResolutionContext::GROUPED |
+	  StaticResolutionContext::PEER | StaticResolutionContext::SUBTREE | StaticResolutionContext::SAMEDOC |
+	  StaticResolutionContext::ONENODE);
   return this; // Never constant fold
 }
 

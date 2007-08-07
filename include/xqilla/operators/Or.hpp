@@ -43,4 +43,4 @@ private:
   };
 };
 
-#endif // _OR_HPP
+#endif

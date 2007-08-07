@@ -96,7 +96,8 @@ ASTNode *XQTreatAs::staticTyping(StaticContext *context)
     }
 
     if(isExact && sType.isType(_src.getStaticType().flags)) {
-      if(_exprType->getOccurrenceIndicator() == SequenceType::STAR) {
+      if(_exprType->getOccurrenceIndicator() == SequenceType::STAR ||
+         (_expr->getStaticResolutionContext().getProperties() & StaticResolutionContext::ONENODE) != 0) {
         // It always matches
         return _expr;
       }
