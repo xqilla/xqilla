@@ -355,8 +355,6 @@ string PrintAST::printASTNode(const ASTNode *item, const DynamicContext *context
     return printReturn((XQReturn*)item, context, indent);
     break;
   }
-  default:
-    break;
   }
   return getIndent(indent) + "<Unknown/>\n";
 }
