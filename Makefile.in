@@ -43,7 +43,7 @@ noinst_PROGRAMS = basicXQillaUsage$(EXEEXT) xqtsRunner$(EXEEXT) \
 	xmarkRunner$(EXEEXT)
 DIST_COMMON = $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(top_srcdir)/configure \
-	$(top_srcdir)/src/config/xqilla_config_unix.h.in \
+	$(top_srcdir)/src/config/xqilla_config_unix.h.in ChangeLog \
 	autotools/config.guess autotools/config.sub autotools/depcomp \
 	autotools/install-sh autotools/ltmain.sh autotools/missing \
 	autotools/mkinstalldirs
@@ -822,6 +822,7 @@ ChangeLog \
 docs/Doxyfile.simpleapi.in \
 docs/Doxyfile.dom3api.in \
 docs/Doxyfile.devapi.in \
+docs/header.html \
 docs/simple-api \
 docs/dom3-api \
 Win32Projects/VC6/xqilla.dsp \
