@@ -70,6 +70,9 @@ void KnownErrorChecker::reportInspect(const TestCase &testCase, const string &ac
   string newComment = comment;
   map<string, Error>::iterator i = errors_.find(testCase.name);
   if(i != errors_.end()) {
+    if(i->second.comment != "") {
+      newComment = i->second.comment;
+    }
     if(i->second.action == "skip") {
       results_->reportSkip(testCase, i->second.comment);
       return;
@@ -78,11 +81,9 @@ void KnownErrorChecker::reportInspect(const TestCase &testCase, const string &ac
       results_->reportPass(testCase, i->second.comment);
       return;
     }
-    else {
-	    newComment = i->second.comment;
-    }
   }
   errors_[testCase.name].reason = "inspect";
+  errors_[testCase.name].comment = newComment;
 
   results_->reportInspect(testCase, actualResult, expectedResult, newComment);
 }
@@ -100,18 +101,22 @@ void KnownErrorChecker::reportFail(const TestCase &testCase, const string &actua
   if(i == errors_.end()) {
     nowFail_.push_back(testCase.name);
   }
-  else if(i->second.action == "skip") {
-    results_->reportSkip(testCase, i->second.comment);
-    return;
-  }
-  else if(i->second.action == "pass") {
-    results_->reportPass(testCase, i->second.comment);
-    return;
-  }
   else {
-    newComment = i->second.comment;
+    if(i->second.comment != "") {
+      newComment = i->second.comment;
+    }
+
+    if(i->second.action == "skip") {
+      results_->reportSkip(testCase, i->second.comment);
+      return;
+    }
+    else if(i->second.action == "pass") {
+      results_->reportPass(testCase, i->second.comment);
+      return;
+    }
   }
   errors_[testCase.name].reason = "result failure";
+  errors_[testCase.name].comment = newComment;
 
   results_->reportFail(testCase, actualResult, expectedResult, newComment);
 }
@@ -124,18 +129,22 @@ void KnownErrorChecker::reportFailNoError(const TestCase &testCase, const string
   if(i == errors_.end()) {
     nowFail_.push_back(testCase.name);
   }
-  else if(i->second.action == "skip") {
-    results_->reportSkip(testCase, i->second.comment);
-    return;
-  }
-  else if(i->second.action == "pass") {
-    results_->reportPass(testCase, i->second.comment);
-    return;
-  }
   else {
-    newComment = i->second.comment;
+    if(i->second.comment != "") {
+      newComment = i->second.comment;
+    }
+
+    if(i->second.action == "skip") {
+      results_->reportSkip(testCase, i->second.comment);
+      return;
+    }
+    else if(i->second.action == "pass") {
+      results_->reportPass(testCase, i->second.comment);
+      return;
+    }
   }
   errors_[testCase.name].reason = "no error failure";
+  errors_[testCase.name].comment = newComment;
 
   results_->reportFailNoError(testCase, actualResult, newComment);
 }
@@ -148,18 +157,22 @@ void KnownErrorChecker::reportFailUnexpectedError(const TestCase &testCase, cons
   if(i == errors_.end()) {
     nowFail_.push_back(testCase.name);
   }
-  else if(i->second.action == "skip") {
-    results_->reportSkip(testCase, i->second.comment);
-    return;
-  }
-  else if(i->second.action == "pass") {
-    results_->reportPass(testCase, i->second.comment);
-    return;
-  }
   else {
-    newComment = i->second.comment;
+    if(i->second.comment != "") {
+      newComment = i->second.comment;
+    }
+
+    if(i->second.action == "skip") {
+      results_->reportSkip(testCase, i->second.comment);
+      return;
+    }
+    else if(i->second.action == "pass") {
+      results_->reportPass(testCase, i->second.comment);
+      return;
+    }
   }
   errors_[testCase.name].reason = "error failure";
+  errors_[testCase.name].comment = newComment;
 
   results_->reportFailUnexpectedError(testCase, unexpectedError, newComment);
 }
@@ -320,6 +333,12 @@ void ConsoleResultListener::reportInspect(const TestCase &testCase, const string
     errorStream_ << *it << endl;
     errorStream_ << endl;
   }
+
+  if(comment != "") {
+	  errorStream_ << "********** Comment: **********" << endl;
+	  errorStream_ << comment << endl;;
+	  errorStream_ << endl;
+  }
 }
 
 void ConsoleResultListener::reportSkip(const TestCase &testCase, const std::string &comment)
@@ -348,6 +367,12 @@ void ConsoleResultListener::reportFail(const TestCase &testCase, const string &a
     errorStream_ << *it << endl;
     errorStream_ << endl;
   }
+
+  if(comment != "") {
+	  errorStream_ << "********** Comment: **********" << endl;
+	  errorStream_ << comment << endl;;
+	  errorStream_ << endl;
+  }
 }
 
 void ConsoleResultListener::reportFailNoError(const TestCase &testCase, const string &actualResult,
@@ -362,6 +387,12 @@ void ConsoleResultListener::reportFailNoError(const TestCase &testCase, const st
   errorStream_ << "********** Actual result: **********" << endl;
   errorStream_ << actualResult << endl;;
   errorStream_ << endl;
+
+  if(comment != "") {
+	  errorStream_ << "********** Comment: **********" << endl;
+	  errorStream_ << comment << endl;;
+	  errorStream_ << endl;
+  }
 }
 
 void ConsoleResultListener::reportFailUnexpectedError(const TestCase &testCase, const string &unexpectedError,
@@ -376,6 +407,12 @@ void ConsoleResultListener::reportFailUnexpectedError(const TestCase &testCase, 
   errorStream_ << "********** Actual error: **********" << endl;
   errorStream_ << unexpectedError << endl;;
   errorStream_ << endl;
+
+  if(comment != "") {
+	  errorStream_ << "********** Comment: **********" << endl;
+	  errorStream_ << comment << endl;;
+	  errorStream_ << endl;
+  }
 }
 
 bool ConsoleResultListener::printReport() const

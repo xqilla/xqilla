@@ -368,6 +368,11 @@ void XQLexer::undoLessThan()
 <INITIAL>"revalidation"           RECOGNIZE_VALUE(_REVALIDATION_, yytext);
 <INITIAL>"updating"               RECOGNIZE_VALUE(_UPDATING_, yytext);
 <INITIAL>"skip"                   RECOGNIZE_VALUE(_SKIP_, yytext);
+<INITIAL>"copy"                   RECOGNIZE_VALUE(_COPY_, yytext);
+<INITIAL>"insert"                 RECOGNIZE_VALUE(_INSERT_, yytext);
+<INITIAL>"delete"                 RECOGNIZE_VALUE(_DELETE_, yytext);
+<INITIAL>"replace"                RECOGNIZE_VALUE(_REPLACE_, yytext);
+<INITIAL>"rename"                 RECOGNIZE_VALUE(_RENAME_, yytext);
 <INITIAL>"value"                  RECOGNIZE_VALUE(_VALUE_, yytext);
 <INITIAL>"first"                  RECOGNIZE_VALUE(_FIRST_, yytext);
 <INITIAL>"last"                   RECOGNIZE_VALUE(_LAST_, yytext);
@@ -375,7 +380,6 @@ void XQLexer::undoLessThan()
 <INITIAL>"after"                  RECOGNIZE_VALUE(_AFTER_, yytext);
 <INITIAL>"before"                 RECOGNIZE_VALUE(_BEFORE_, yytext);
 <INITIAL>"modify"                 RECOGNIZE_VALUE(_MODIFY_, yytext);
-<INITIAL>"nodes"                  RECOGNIZE_VALUE(_NODES_, yytext);
 
 <INITIAL>"namespace" {
   if(!isXPath() && lookAhead() == _COLON_COLON_) {
@@ -436,37 +440,16 @@ void XQLexer::undoLessThan()
   }
 }
 
-<INITIAL>"insert" {
+<INITIAL>"do" {
   if(isUpdate()) {
-    RECOGNIZE_VALUE(_INSERT_, yytext);
+    RECOGNIZE_VALUE(_DO_, yytext);
   } else {
     RECOGNIZE_VALUE(_QNAME_, yytext);
   }
 }
-<INITIAL>"delete" {
+<INITIAL>"transform" {
   if(isUpdate()) {
-    RECOGNIZE_VALUE(_DELETE_, yytext);
-  } else {
-    RECOGNIZE_VALUE(_QNAME_, yytext);
-  }
-}
-<INITIAL>"replace" {
-  if(isUpdate()) {
-    RECOGNIZE_VALUE(_REPLACE_, yytext);
-  } else {
-    RECOGNIZE_VALUE(_QNAME_, yytext);
-  }
-}
-<INITIAL>"rename" {
-  if(isUpdate()) {
-    RECOGNIZE_VALUE(_RENAME_, yytext);
-  } else {
-    RECOGNIZE_VALUE(_QNAME_, yytext);
-  }
-}
-<INITIAL>"copy" {
-  if(isUpdate()) {
-    RECOGNIZE_VALUE(_COPY_, yytext);
+    RECOGNIZE_VALUE(_TRANSFORM_, yytext);
   } else {
     RECOGNIZE_VALUE(_QNAME_, yytext);
   }

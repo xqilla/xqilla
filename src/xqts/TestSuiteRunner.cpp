@@ -37,8 +37,10 @@ static bool compareNodes(DOMNode* node1, DOMNode* node2);
 
 void TestSuiteRunner::testResults(const TestCase &testCase, const std::string &xmlResult) const
 {
-  if(testCase.outputFiles.empty() && !testCase.expectedErrors.empty()) {
-    m_results->reportFailNoError(testCase, xmlResult, "");
+  if(testCase.outputFiles.empty()) {
+    if(!testCase.expectedErrors.empty())
+      m_results->reportFailNoError(testCase, xmlResult, "");
+    // Otherwise don't report anything - it's probably the first stage of an update test
   }
   else {
     bool passed = false;
@@ -47,6 +49,10 @@ void TestSuiteRunner::testResults(const TestCase &testCase, const std::string &x
     for(std::map<std::string, std::string>::const_iterator i=testCase.outputFiles.begin();i!=testCase.outputFiles.end();i++) {
       compareMethod=(*i).second;
       string expectedResult = loadExpectedResult((*i).first);
+      if(expectedResult == "#Not found") {
+        m_results->reportFail(testCase, xmlResult, allExpectedResults, "Bad test! Expected result not found: " + (*i).first);
+        return;
+      }
 
       if(compareMethod=="Text" || compareMethod=="Fragment" || compareMethod=="XML") {
         outputResult = xmlResult;
@@ -122,25 +128,29 @@ void TestSuiteRunner::testErrors(const TestCase &testCase, const std::string &ac
 }
 
 static string loadExpectedResult(const string &file) {
-  string expectedResult;
+  string expectedResult = "#Not found";
 
-  Janitor<BinFileInputStream> stream((BinFileInputStream*)URLInputSource(file.c_str()).makeStream());
-  unsigned int dwSize=stream->getSize();
-  expectedResult.resize(dwSize);
-  stream->readBytes((XMLByte*)expectedResult.c_str(), dwSize);
-  if(dwSize>3 && 
-     ((unsigned char)expectedResult[0])==0xEF && 
-     ((unsigned char)expectedResult[1])==0xBB && 
-     ((unsigned char)expectedResult[2])==0xBF)
-    expectedResult.erase(0,3);
+  try {
+    Janitor<BinFileInputStream> stream((BinFileInputStream*)URLInputSource(file.c_str()).makeStream());
+    if(stream.get()) {
+      unsigned int dwSize=stream->getSize();
+      expectedResult.resize(dwSize);
+      stream->readBytes((XMLByte*)expectedResult.c_str(), dwSize);
+      if(dwSize>3 && 
+         ((unsigned char)expectedResult[0])==0xEF && 
+         ((unsigned char)expectedResult[1])==0xBB && 
+         ((unsigned char)expectedResult[2])==0xBF)
+        expectedResult.erase(0,3);
 
-  for(string::iterator c=expectedResult.begin();c!=expectedResult.end();)
-    if(*c==0xD)
-      c=expectedResult.erase(c);
-    else
-      c++;
-  while(expectedResult.size()>0 && expectedResult[expectedResult.size()-1]==0xA)
-    expectedResult.erase(expectedResult.size()-1);
+      for(string::iterator c=expectedResult.begin();c!=expectedResult.end();)
+        if(*c==0xD)
+          c=expectedResult.erase(c);
+        else
+          c++;
+      while(expectedResult.size()>0 && expectedResult[expectedResult.size()-1]==0xA)
+        expectedResult.erase(expectedResult.size()-1);
+    }
+  } catch(...) {}
 
   return expectedResult;
 }

@@ -19,7 +19,10 @@
 #include <xqilla/xqts/TestSuiteResultListener.hpp>
 #include <xqilla/xqts/TestSuiteRunner.hpp>
 
+#include <set>
 #include <iostream>
+#include <fstream>
+#include <stdio.h>
 
 #include <xercesc/framework/URLInputSource.hpp>
 #include <xercesc/util/XMLEntityResolver.hpp>
@@ -47,6 +50,7 @@ class XQillaTestSuiteRunner : public TestSuiteRunner, private XMLEntityResolver,
 {
 public:
   XQillaTestSuiteRunner(const string &singleTest, TestSuiteResultListener *results, XQillaConfiguration *conf);
+  virtual ~XQillaTestSuiteRunner();
 
   virtual void addSource(const string &id, const string &filename, const string &schema);
   virtual void addSchema(const string &id, const string &filename, const string &uri);
@@ -79,6 +83,8 @@ private:
   map<string, string> m_moduleFiles;
   // id -> list of inputFiles ID
   map<string, list<string> > m_collections;
+
+  set<string> m_filesToDelete;
 };
 
 void usage(const char *progname)
@@ -244,6 +250,15 @@ XQillaTestSuiteRunner::XQillaTestSuiteRunner(const string &singleTest, TestSuite
 {
 }
 
+XQillaTestSuiteRunner::~XQillaTestSuiteRunner()
+{
+  // Delete the copied source files
+  set<string>::iterator it = m_filesToDelete.begin();
+  for(; it != m_filesToDelete.end(); ++it) {
+    remove(it->c_str());
+  }
+}
+
 void XQillaTestSuiteRunner::startTestGroup(const string &name)
 {
   if(m_szFullTestName != "")
@@ -305,7 +320,7 @@ void XQillaTestSuiteRunner::runTestCase(const TestCase &testCase)
   XQilla xqilla;
 
   m_pCurTestCase=&testCase;
-  Janitor<DynamicContext> context(xqilla.createContext(XQilla::XQUERY, m_conf));
+  Janitor<DynamicContext> context(xqilla.createContext(testCase.updateTest ? XQilla::XQUERY_UPDATE : XQilla::XQUERY, m_conf));
   try {
     context->setImplicitTimezone(context->getItemFactory()->
                                  createDayTimeDuration(X("PT0S"), context.get()));
@@ -322,7 +337,27 @@ void XQillaTestSuiteRunner::runTestCase(const TestCase &testCase)
       context->setExternalVariable(X(v->first.c_str()), doc);
     }
     for(v=testCase.inputVars.begin();v!=testCase.inputVars.end();v++) {
-      Sequence doc=context->resolveDocument(X(v->second.c_str()), 0);
+      string filename = v->second;
+
+      if(testCase.updateTest) {
+        // Copy the file, because an update tests might modify it
+        filename = ".xqts_" + filename + ".xml";
+
+        // Only the copy the file once, at the start of the test
+        if(testCase.stateTime == 0) {
+          string oldFilename;
+          map<string, string>::iterator it = m_inputFiles.find(v->second);
+          if(it != m_inputFiles.end()) {
+            oldFilename = it->second;
+          }
+
+          std::ifstream input(oldFilename.c_str() + 8); // Take off the "file:///" from the begining
+          std::ofstream output(filename.c_str()); 
+          output << input.rdbuf();
+        }
+      }
+
+      Sequence doc = context->resolveDocument(X(filename.c_str()), 0);
       context->setExternalVariable(X(v->first.c_str()), doc);
     }
     for(v=testCase.inputURIVars.begin();v!=testCase.inputURIVars.end();v++) {

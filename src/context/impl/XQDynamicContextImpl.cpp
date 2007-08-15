@@ -75,6 +75,7 @@ XQDynamicContextImpl::~XQDynamicContextImpl()
 {
   _contextItem = 0;
   _implicitTimezone = 0;
+  _defaultVarStore.clear();
 
   delete _itemFactory;
   delete _docCache;
