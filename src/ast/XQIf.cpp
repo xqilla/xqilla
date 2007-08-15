@@ -98,7 +98,8 @@ ASTNode *XQIf::staticTyping(StaticContext *context)
                 X("Mixed updating and non-updating operands [err:XUST0001]"));
     }
     else {
-      if(_whenFalse->getStaticResolutionContext().isUpdating())
+      if(_whenFalse->getStaticResolutionContext().isUpdating() &&
+         _whenTrue->getStaticResolutionContext().getStaticType().containsType(StaticType::ITEM_TYPE))
         XQThrow(StaticErrorException, X("XQIf::staticTyping"),
                 X("Mixed updating and non-updating operands [err:XUST0001]"));
     }

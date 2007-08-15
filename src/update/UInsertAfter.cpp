@@ -117,7 +117,7 @@ PendingUpdateList UInsertAfter::createUpdateList(DynamicContext *context) const
     //    b. No attribute node in $alist may have a QName whose implied namespace binding conflicts with a namespace binding in the
     //       "namespaces" property of parent($target) [err:XUDY0023].
     // TBD make this check - jpcs
-    result.addUpdate(PendingUpdate(PendingUpdate::INSERT_ATTRIBUTES, node, alist, this));
+    result.addUpdate(PendingUpdate(PendingUpdate::INSERT_ATTRIBUTES, node->dmParent(context), alist, this));
   }
   if(!clist.isEmpty()) {
     result.addUpdate(PendingUpdate(PendingUpdate::INSERT_AFTER, node, clist, this));

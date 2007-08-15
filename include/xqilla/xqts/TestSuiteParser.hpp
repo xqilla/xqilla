@@ -29,6 +29,8 @@ class XQILLA_API TestCase
 {
 public:
   std::string name;
+  bool updateTest;
+  int stateTime;
   std::string queryURL;
   std::string query;
   std::string contextItem;
@@ -74,7 +76,7 @@ private:
 private:
   TestSuiteRunner *m_runner;
 
-  XERCES_CPP_NAMESPACE_QUALIFIER XMLURL m_urlXQTSDirectory, m_urlXQTSQueriesDirectory, m_urlXQTSResultsDirectory, 
+  XERCES_CPP_NAMESPACE_QUALIFIER XMLURL m_urlXQTSCatalog, m_urlXQTSQueriesDirectory, m_urlXQTSResultsDirectory, 
     m_urlBasePath, m_urlBasePathReferenceFiles, m_urlQuery;
 
   bool m_bReadingChars;

@@ -145,6 +145,7 @@ XQContextImpl::~XQContextImpl()
   _varTypeStore->clear();
   _contextItem = 0;
   _implicitTimezone = 0;
+  _defaultVarStore.clear();
 
   delete _varTypeStore;
   delete _itemFactory;
