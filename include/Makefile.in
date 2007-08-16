@@ -194,7 +194,7 @@ xqilla/ast/XQSequence.hpp \
 xqilla/ast/XQStep.hpp \
 xqilla/ast/XQTreatAs.hpp \
 xqilla/ast/XQVariable.hpp \
-xqilla/ast/StaticResolutionContext.hpp \
+xqilla/ast/StaticAnalysis.hpp \
 xqilla/ast/StaticType.hpp \
 xqilla/ast/ConstantFoldingFunction.hpp \
 xqilla/ast/NumericFunction.hpp \

@@ -62,10 +62,10 @@ ASTNode* Except::staticTyping(StaticContext *context)
   _src.getStaticType().flags = StaticType::NODE_TYPE;
 
   _args[0] = _args[0]->staticTyping(context);
-  _src.copy(_args[0]->getStaticResolutionContext());
+  _src.copy(_args[0]->getStaticAnalysis());
 
   _args[1] = _args[1]->staticTyping(context);
-  _src.add(_args[1]->getStaticResolutionContext());
+  _src.add(_args[1]->getStaticAnalysis());
 
   return this;
 }

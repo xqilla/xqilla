@@ -31,14 +31,18 @@
 XERCES_CPP_NAMESPACE_USE
 #endif
 
-XQTreatAs::XQTreatAs(ASTNode* expr, const SequenceType* exprType, XPath2MemoryManager* memMgr)
+static const XMLCh err_XPTY0004[] = { 'e', 'r', 'r', ':', 'X', 'P', 'T', 'Y', '0', '0', '0', '4', 0 };
+
+XQTreatAs::XQTreatAs(ASTNode* expr, const SequenceType* exprType, XPath2MemoryManager* memMgr, const XMLCh *errorCode)
   : ASTNodeImpl(memMgr),
     _expr(expr),
     _exprType(exprType),
-    _doTypeCheck(true),
-    _isTreatAs(false)
+    _errorCode(errorCode),
+    _doTypeCheck(true)
 {
   setType(ASTNode::TREAT_AS);
+
+  if(_errorCode == 0) _errorCode = err_XPTY0004;
 }
 
 Result XQTreatAs::createResult(DynamicContext* context, int flags) const
@@ -46,10 +50,10 @@ Result XQTreatAs::createResult(DynamicContext* context, int flags) const
   Result result = _expr->createResult(context, flags);
   if(_exprType->getOccurrenceIndicator() != SequenceType::STAR ||
      _exprType->getItemType() == NULL) {
-    result = _exprType->occurrenceMatches(result, this);
+    result = _exprType->occurrenceMatches(result, this, _errorCode);
   }
   if(_doTypeCheck) {
-    result = _exprType->typeMatches(result, this);
+    result = _exprType->typeMatches(result, this, _errorCode);
   }
   return result;
 }
@@ -80,24 +84,29 @@ ASTNode *XQTreatAs::staticTyping(StaticContext *context)
   // limited static typing that we implement
   const SequenceType::ItemType *itemType = _exprType->getItemType();
   if(itemType != NULL) {
-    const StaticType &sType = _expr->getStaticResolutionContext().getStaticType();
+    const StaticType &sType = _expr->getStaticAnalysis().getStaticType();
 
     bool isExact;
     itemType->getStaticType(_src.getStaticType(), context, isExact, this);
 
     if(!sType.containsType(_src.getStaticType().flags) &&
        (_exprType->getOccurrenceIndicator() == SequenceType::EXACTLY_ONE ||
-        _exprType->getOccurrenceIndicator() == SequenceType::PLUS)) {
+        _exprType->getOccurrenceIndicator() == SequenceType::PLUS) &&
+       !_expr->getStaticAnalysis().isNoFoldingForced() &&
+       !_expr->getStaticAnalysis().isUpdating()) {
       // It never matches
-      XQThrow(XPath2TypeMatchException, X("XQTreatAs::staticResolution"), _isTreatAs ?
-              X("The type of the expression doesn't match the sequence type specified in the 'treat as' expression"
-                " [err:XPDY0050]") :
-              X("ItemType matching failed [err:XPTY0004]"));
+      XMLBuffer buf;
+      buf.set(X("Expression does not match type "));
+      _exprType->toBuffer(buf);
+      buf.append(X(" ["));
+      buf.append(_errorCode);
+      buf.append(X("]"));
+      XQThrow(XPath2TypeMatchException, X("XQTreatAs::staticTyping"), buf.getRawBuffer());
     }
 
     if(isExact && sType.isType(_src.getStaticType().flags)) {
       if(_exprType->getOccurrenceIndicator() == SequenceType::STAR ||
-         (_expr->getStaticResolutionContext().getProperties() & StaticResolutionContext::ONENODE) != 0) {
+         (_expr->getStaticAnalysis().getProperties() & StaticAnalysis::ONENODE) != 0) {
         // It always matches
         return _expr;
       }
@@ -109,36 +118,17 @@ ASTNode *XQTreatAs::staticTyping(StaticContext *context)
 
     if(_src.getStaticType().containsType(StaticType::NODE_TYPE)) {
       // Copy the properties if we return nodes
-      _src.setProperties(_expr->getStaticResolutionContext().getProperties());
+      _src.setProperties(_expr->getStaticAnalysis().getProperties());
     }
   }
   else {
     _src.getStaticType().flags = 0;
     _doTypeCheck = false;
   }
-  _src.add(_expr->getStaticResolutionContext());
+  _src.add(_expr->getStaticAnalysis());
 
-  if(_expr->isConstant()) {
-    try
-    {
-      return constantFold(context);
-    }
-    catch(XQException& e)
-    {
-      if(_isTreatAs)
-      {
-        XMLBuffer buff(1023, context->getMemoryManager());
-        buff.set(e.getError());
-        int index=XMLString::indexOf(buff.getRawBuffer(),chOpenSquare);
-        if(index!=-1)
-          XMLString::copyString(buff.getRawBuffer()+index, X("[err:XPDY0050]"));
-        else
-          buff.append(X("[err:XPDY0050]"));
-        XQThrow(XPath2TypeMatchException, X("XQTreatAs::staticResolution"), buff.getRawBuffer());
-      }
-      else
-        throw;
-    }
+  if(_expr->isConstant() && !_expr->getStaticAnalysis().isUpdating()) {
+    return constantFold(context);
   }
   return this;
 }

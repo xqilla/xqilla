@@ -49,7 +49,7 @@ using namespace std;
 class XQillaTestSuiteRunner : public TestSuiteRunner, private XMLEntityResolver, private ModuleResolver, private URIResolver
 {
 public:
-  XQillaTestSuiteRunner(const string &singleTest, TestSuiteResultListener *results, XQillaConfiguration *conf);
+  XQillaTestSuiteRunner(const string &singleTest, TestSuiteResultListener *results, XQillaConfiguration *conf, XQilla::Language lang);
   virtual ~XQillaTestSuiteRunner();
 
   virtual void addSource(const string &id, const string &filename, const string &schema);
@@ -71,6 +71,7 @@ private:
 
 private:
   XQillaConfiguration *m_conf;
+  XQilla::Language m_lang;
   string m_szSingleTest;
   string m_szFullTestName;
   const TestCase* m_pCurTestCase;
@@ -103,8 +104,9 @@ void usage(const char *progname)
   cout << "-e <file>      : Use the given file as a known error file" << endl;
   cout << "-E <file>      : Output an error file" << endl;
   cout << "-h             : Show this display" << endl;
-  cout << "-x             : Output results as XML" << endl;
-  cout << "-z             : Use the Xerces-C data model (default is FastXDM)" << endl;
+  cout << "-r             : Output results as XML" << endl;
+  cout << "-u             : Parse XQuery Update (also uses Xerces-C data model)" << endl;
+  cout << "-x             : Use the Xerces-C data model (default is FastXDM)" << endl;
 }
 
 int main(int argc, char *argv[])
@@ -114,6 +116,7 @@ int main(int argc, char *argv[])
   string errorFile;
   string outputErrorFile;
   bool xmlResults = false;
+  bool update = false;
 
   XercesConfiguration xercesConf;
   FastXDMConfiguration fastConf;
@@ -145,11 +148,16 @@ int main(int argc, char *argv[])
         outputErrorFile = argv[i];
         break;
       }
-      case 'x': {
+      case 'r': {
         xmlResults = true;
         break;
       }
-      case 'z': {
+      case 'u': {
+        update = true;
+        conf = &xercesConf;
+        break;
+      }
+      case 'x': {
         conf = &xercesConf;
         break;
       }
@@ -215,7 +223,7 @@ int main(int argc, char *argv[])
     return 1;
   }
 
-  XQillaTestSuiteRunner runner(singleTest, &knownErrors, conf);
+  XQillaTestSuiteRunner runner(singleTest, &knownErrors, conf, update ? XQilla::XQUERY_UPDATE : XQilla::XQUERY);
   TestSuiteParser parser(testSuitePath, &runner);
 
   parser.run();
@@ -242,9 +250,10 @@ int main(int argc, char *argv[])
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-XQillaTestSuiteRunner::XQillaTestSuiteRunner(const string &singleTest, TestSuiteResultListener *results, XQillaConfiguration *conf)
+XQillaTestSuiteRunner::XQillaTestSuiteRunner(const string &singleTest, TestSuiteResultListener *results, XQillaConfiguration *conf, XQilla::Language lang)
   : TestSuiteRunner(results),
     m_conf(conf),
+    m_lang(lang),
     m_szSingleTest(singleTest),
     m_pCurTestCase(NULL)
 {
@@ -320,7 +329,7 @@ void XQillaTestSuiteRunner::runTestCase(const TestCase &testCase)
   XQilla xqilla;
 
   m_pCurTestCase=&testCase;
-  Janitor<DynamicContext> context(xqilla.createContext(testCase.updateTest ? XQilla::XQUERY_UPDATE : XQilla::XQUERY, m_conf));
+  Janitor<DynamicContext> context(xqilla.createContext(m_lang, m_conf));
   try {
     context->setImplicitTimezone(context->getItemFactory()->
                                  createDayTimeDuration(X("PT0S"), context.get()));

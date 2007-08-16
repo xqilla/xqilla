@@ -16,7 +16,7 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/ATTimeOrDerived.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xqilla/ast/StaticResolutionContext.hpp>
+#include <xqilla/ast/StaticAnalysis.hpp>
 #include <xqilla/context/ItemFactory.hpp>
 #include "../utils/DateUtils.hpp"
 #include <stdio.h> // for sprintf

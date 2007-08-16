@@ -23,7 +23,7 @@
 class DynamicContext;
 class StaticContext;
 class Result;
-class StaticResolutionContext;
+class StaticAnalysis;
 class PendingUpdateList;
 class EventHandler;
 
@@ -106,8 +106,8 @@ public:
 
   virtual ASTNode *staticResolution(StaticContext *context) = 0;
   virtual ASTNode *staticTyping(StaticContext *context) = 0;
-  /// Returns the StaticResolutionContext for this ASTNode
-  virtual const StaticResolutionContext &getStaticResolutionContext() const = 0;
+  /// Returns the StaticAnalysis for this ASTNode
+  virtual const StaticAnalysis &getStaticAnalysis() const = 0;
 
   void *getUserData() const { return userData_; }
   void setUserData(void *data) { userData_ = data; }

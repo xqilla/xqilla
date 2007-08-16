@@ -34,16 +34,26 @@ URename::URename(ASTNode *target, ASTNode *name, XPath2MemoryManager* memMgr)
   setType(ASTNode::URENAME);
 }
 
+static const XMLCh err_XUTY0012[] = { 'e', 'r', 'r', ':', 'X', 'U', 'T', 'Y', '0', '0', '1', '2', 0 };
+static const XMLCh err_XUDY0027[] = { 'e', 'r', 'r', ':', 'X', 'U', 'D', 'Y', '0', '0', '2', '7', 0 };
+
 ASTNode* URename::staticResolution(StaticContext *context)
 {
   XPath2MemoryManager *mm = context->getMemoryManager();
 
-  SequenceType *targetType = new (mm) SequenceType(new (mm) SequenceType::ItemType(SequenceType::ItemType::TEST_NODE),
-                                                   SequenceType::EXACTLY_ONE);
-  targetType->setLocationInfo(this);
+  SequenceType *targetType1 = new (mm) SequenceType(new (mm) SequenceType::ItemType(SequenceType::ItemType::TEST_ANYTHING),
+                                                    SequenceType::PLUS);
+  targetType1->setLocationInfo(this);
 
-  // TBD The error should be [err:XUTY0012] - jpcs
-  target_ = new (mm) XQTreatAs(target_, targetType, mm);
+  SequenceType *targetType2 = new (mm) SequenceType(new (mm) SequenceType::ItemType(SequenceType::ItemType::TEST_NODE),
+                                                    SequenceType::EXACTLY_ONE);
+  targetType2->setLocationInfo(this);
+
+  target_ = new (mm) XQTreatAs(target_, targetType1, mm, err_XUDY0027);
+  target_->setLocationInfo(this);
+  target_ = target_->staticResolution(context);
+
+  target_ = new (mm) XQTreatAs(target_, targetType2, mm, err_XUTY0012);
   target_->setLocationInfo(this);
   target_ = target_->staticResolution(context);
 
@@ -59,15 +69,15 @@ ASTNode *URename::staticTyping(StaticContext *context)
   _src.clear();
 
   target_ = target_->staticTyping(context);
-  _src.add(target_->getStaticResolutionContext());
+  _src.add(target_->getStaticAnalysis());
 
-  if(target_->getStaticResolutionContext().isUpdating()) {
+  if(target_->getStaticAnalysis().isUpdating()) {
     XQThrow(StaticErrorException,X("URename::staticTyping"),
             X("It is a static error for the target expression of a rename expression "
               "to be an updating expression [err:XUST0001]"));
   }
 
-  if(!target_->getStaticResolutionContext().getStaticType().
+  if(!target_->getStaticAnalysis().getStaticType().
      containsType(StaticType::ELEMENT_TYPE|StaticType::ATTRIBUTE_TYPE|StaticType::PI_TYPE)) {
     XQThrow(XPath2TypeMatchException,X("URename::staticTyping"),
             X("It is a type error for the target expression of a rename expression not to be a single element, "
@@ -75,9 +85,9 @@ ASTNode *URename::staticTyping(StaticContext *context)
   }
 
   name_ = name_->staticTyping(context);
-  _src.add(name_->getStaticResolutionContext());
+  _src.add(name_->getStaticAnalysis());
 
-  if(name_->getStaticResolutionContext().isUpdating()) {
+  if(name_->getStaticAnalysis().isUpdating()) {
     XQThrow(StaticErrorException,X("URename::staticTyping"),
             X("It is a static error for the name expression of a rename expression "
               "to be an updating expression [err:XUST0001]"));

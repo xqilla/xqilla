@@ -17,7 +17,7 @@
 #include <xqilla/runtime/Sequence.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/exceptions/DynamicErrorException.hpp>
-#include <xqilla/ast/StaticResolutionContext.hpp>
+#include <xqilla/ast/StaticAnalysis.hpp>
 
 XQContextItem::XQContextItem(XPath2MemoryManager* memMgr)
 	: ASTNodeImpl(memMgr)
@@ -38,9 +38,9 @@ ASTNode *XQContextItem::staticTyping(StaticContext *context)
 {
   _src.clear();
 
-  _src.setProperties(StaticResolutionContext::DOCORDER | StaticResolutionContext::GROUPED |
-	  StaticResolutionContext::PEER | StaticResolutionContext::SUBTREE | StaticResolutionContext::SAMEDOC |
-	  StaticResolutionContext::ONENODE | StaticResolutionContext::SELF);
+  _src.setProperties(StaticAnalysis::DOCORDER | StaticAnalysis::GROUPED |
+	  StaticAnalysis::PEER | StaticAnalysis::SUBTREE | StaticAnalysis::SAMEDOC |
+	  StaticAnalysis::ONENODE | StaticAnalysis::SELF);
   _src.getStaticType() = context->getContextItemType();
   _src.contextItemUsed(true);
   return this;

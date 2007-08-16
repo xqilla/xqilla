@@ -31,8 +31,8 @@ Multiply::Multiply(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
 
 void Multiply::calculateStaticType()
 {
-  const StaticType &arg0 = _args[0]->getStaticResolutionContext().getStaticType();
-  const StaticType &arg1 = _args[1]->getStaticResolutionContext().getStaticType();
+  const StaticType &arg0 = _args[0]->getStaticAnalysis().getStaticType();
+  const StaticType &arg1 = _args[1]->getStaticAnalysis().getStaticType();
 
   calculateStaticTypeForNumerics(arg0, arg1);
 

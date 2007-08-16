@@ -23,7 +23,7 @@
 #include <xqilla/context/VarHashEntry.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>
 #include <xqilla/exceptions/DynamicErrorException.hpp>
-#include <xqilla/ast/StaticResolutionContext.hpp>
+#include <xqilla/ast/StaticAnalysis.hpp>
 #include <xercesc/framework/XMLBuffer.hpp>
 
 XQVariable::XQVariable(const XMLCh *qualifiedName, XPath2MemoryManager* memMgr)
@@ -67,14 +67,14 @@ ASTNode *XQVariable::staticTyping(StaticContext *context)
 {
   _src.clear();
 
-  const StaticResolutionContext *var_src = context->getVariableTypeStore()->getVar(_uri, _name);
-  if(var_src == NULL || (var_src->getProperties() & StaticResolutionContext::UNDEFINEDVAR)!=0) {
+  const StaticAnalysis *var_src = context->getVariableTypeStore()->getVar(_uri, _name);
+  if(var_src == NULL || (var_src->getProperties() & StaticAnalysis::UNDEFINEDVAR)!=0) {
     const XMLCh* qname = XPath2NSUtils::qualifyName(_prefix, _name, context->getMemoryManager());
     const XMLCh* msg = XPath2Utils::concatStrings(X("Variable "), qname, X(" does not exist [err:XPST0008]"),
                                                   context->getMemoryManager());
     XQThrow(StaticErrorException, X("XQVariable::staticResolution"), msg);
   }
-  if((var_src->getProperties() & StaticResolutionContext::FORWARDREF)!=0) {
+  if((var_src->getProperties() & StaticAnalysis::FORWARDREF)!=0) {
     XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer errMsg(1023, context->getMemoryManager());
     errMsg.set(X("Cannot refer to global variable with name {"));
     errMsg.append(_uri);
@@ -83,7 +83,7 @@ ASTNode *XQVariable::staticTyping(StaticContext *context)
     errMsg.append(X(" because it is declared later [err:XQST0054]"));
     XQThrow(StaticErrorException,X("XQVariable::staticResolution"), errMsg.getRawBuffer());
   }
-  _src.setProperties(var_src->getProperties() & ~(StaticResolutionContext::SUBTREE|StaticResolutionContext::SAMEDOC));
+  _src.setProperties(var_src->getProperties() & ~(StaticAnalysis::SUBTREE|StaticAnalysis::SAMEDOC));
   _src.getStaticType() = var_src->getStaticType();
   _src.variableUsed(_uri, _name);
 

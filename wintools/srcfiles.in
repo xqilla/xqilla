@@ -36,7 +36,7 @@ src/ast/ForTuple.cpp	lib
 src/ast/LetTuple.cpp	lib
 src/ast/NumericFunction.cpp	lib
 src/ast/OrderByTuple.cpp	lib
-src/ast/StaticResolutionContext.cpp	lib
+src/ast/StaticAnalysis.cpp	lib
 src/ast/StaticType.cpp	lib
 src/ast/WhereTuple.cpp	lib
 src/ast/XPath1Compat.cpp	lib
@@ -468,7 +468,7 @@ include/xqilla/ast/LetTuple.hpp	lib
 include/xqilla/ast/LocationInfo.hpp	lib
 include/xqilla/ast/NumericFunction.hpp	lib
 include/xqilla/ast/OrderByTuple.hpp	lib
-include/xqilla/ast/StaticResolutionContext.hpp	lib
+include/xqilla/ast/StaticAnalysis.hpp	lib
 include/xqilla/ast/StaticType.hpp	lib
 include/xqilla/ast/TupleNode.hpp	lib
 include/xqilla/ast/WhereTuple.hpp	lib

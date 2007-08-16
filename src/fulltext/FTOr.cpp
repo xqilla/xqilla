@@ -48,7 +48,7 @@ FTSelection *FTOr::staticTyping(StaticContext *context)
   for(VectorOfFTSelections::iterator i = args_.begin();
       i != args_.end(); ++i) {
     *i = (*i)->staticTyping(context);
-    src_.add((*i)->getStaticResolutionContext());
+    src_.add((*i)->getStaticAnalysis());
   }
 
   return this;

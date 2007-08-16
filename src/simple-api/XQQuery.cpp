@@ -25,7 +25,7 @@
 #include <xqilla/items/Node.hpp>
 #include <xqilla/ast/XQGlobalVariable.hpp>
 #include <xqilla/ast/XQSequence.hpp>
-#include <xqilla/ast/StaticResolutionContext.hpp>
+#include <xqilla/ast/StaticAnalysis.hpp>
 #include <xqilla/runtime/Result.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/utils/XPath2NSUtils.hpp>
@@ -157,7 +157,7 @@ void XQQuery::staticResolution(StaticContext *context)
         varIt != (*modIt)->m_userDefVars.end(); ++varIt) {
       context->getVariableTypeStore()->
         declareGlobalVar((*varIt)->getVariableURI(), (*varIt)->getVariableLocalName(),
-                         (*varIt)->getStaticResolutionContext());
+                         (*varIt)->getStaticAnalysis());
     }
   }
 
@@ -165,13 +165,13 @@ void XQQuery::staticResolution(StaticContext *context)
   if(!m_userDefVars.empty())
   {
     GlobalVariables::iterator itVar, itVar2;
-    // declare all the global variables with a special StaticResolutionContext, in order to recognize 'variable is defined later' errors 
+    // declare all the global variables with a special StaticAnalysis, in order to recognize 'variable is defined later' errors 
     // instead of more generic 'variable not found'
     // In order to catch references to not yet defined variables (but when no recursion happens) we also create a scope where we undefine
     // the rest of the variables (once we enter in a function call, the scope will disappear and the forward references to the global variables 
     // will happear)
-    StaticResolutionContext forwardRef(context->getMemoryManager());
-    forwardRef.setProperties(StaticResolutionContext::FORWARDREF);
+    StaticAnalysis forwardRef(context->getMemoryManager());
+    forwardRef.setProperties(StaticAnalysis::FORWARDREF);
     for(itVar = m_userDefVars.begin(); itVar != m_userDefVars.end(); ++itVar) {
       const XMLCh* varName=(*itVar)->getVariableName();
       const XMLCh* prefix=XPath2NSUtils::getPrefix(varName, context->getMemoryManager());
@@ -181,8 +181,8 @@ void XQQuery::staticResolution(StaticContext *context)
       const XMLCh* name= XPath2NSUtils::getLocalName(varName);
       context->getVariableTypeStore()->declareGlobalVar(uri, name, forwardRef);
     }
-    StaticResolutionContext forwardRef2(context->getMemoryManager());
-    forwardRef2.setProperties(StaticResolutionContext::UNDEFINEDVAR);
+    StaticAnalysis forwardRef2(context->getMemoryManager());
+    forwardRef2.setProperties(StaticAnalysis::UNDEFINEDVAR);
     for(itVar = m_userDefVars.begin(); itVar != m_userDefVars.end(); ++itVar) {
       context->getVariableTypeStore()->addLogicalBlockScope();
       for(itVar2 = itVar; itVar2 != m_userDefVars.end(); ++itVar2) {
@@ -270,23 +270,23 @@ void XQQuery::staticTyping(StaticContext *context)
     for(GlobalVariables::const_iterator varIt = (*modIt)->m_userDefVars.begin();
         varIt != (*modIt)->m_userDefVars.end(); ++varIt) {
       varStore->declareGlobalVar((*varIt)->getVariableURI(), (*varIt)->getVariableLocalName(),
-                                 (*varIt)->getStaticResolutionContext());
+                                 (*varIt)->getStaticAnalysis());
     }
   }
 
   // Run staticTyping on the global variables
   if(!m_userDefVars.empty())
   {
-    // declare all the global variables with a special StaticResolutionContext, in order to recognize 'variable is defined
+    // declare all the global variables with a special StaticAnalysis, in order to recognize 'variable is defined
     // later' errors instead of more generic 'variable not found'. In order to catch references to not yet defined
     // variables (but when no recursion happens) we also create a scope where we undefine the rest of the variables (once
     // we enter in a function call, the scope will disappear and the forward references to the global variables will
     // appear).
-    StaticResolutionContext forwardRef(context->getMemoryManager());
-    forwardRef.setProperties(StaticResolutionContext::FORWARDREF);
+    StaticAnalysis forwardRef(context->getMemoryManager());
+    forwardRef.setProperties(StaticAnalysis::FORWARDREF);
 
-    StaticResolutionContext undefinedVar(context->getMemoryManager());
-    undefinedVar.setProperties(StaticResolutionContext::UNDEFINEDVAR);
+    StaticAnalysis undefinedVar(context->getMemoryManager());
+    undefinedVar.setProperties(StaticAnalysis::UNDEFINEDVAR);
 
     GlobalVariables::iterator itVar, itVar2;
     for(itVar = m_userDefVars.begin(); itVar != m_userDefVars.end(); ++itVar) {

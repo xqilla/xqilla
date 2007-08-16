@@ -20,7 +20,7 @@ class Numeric;
 #include <xqilla/ast/ASTNode.hpp>
 #include <xqilla/runtime/Result.hpp>
 #include <xqilla/runtime/LazySequenceResult.hpp>
-#include <xqilla/ast/StaticResolutionContext.hpp>
+#include <xqilla/ast/StaticAnalysis.hpp>
 
 /** class which is used as base for all the different data types */
 class XQILLA_API ASTNodeImpl : public ASTNode
@@ -64,7 +64,7 @@ public:
   /** Performs constant folding on this ASTNode. */
   ASTNode *constantFold(StaticContext *context);
 
-  virtual const StaticResolutionContext &getStaticResolutionContext() const;
+  virtual const StaticAnalysis &getStaticAnalysis() const;
 
 protected:
   void setType(ASTNode::whichType t);
@@ -83,7 +83,7 @@ protected:
     const ASTNodeImpl *_di;
   };
 
-  StaticResolutionContext _src;
+  StaticAnalysis _src;
 
 private:
   whichType _type;

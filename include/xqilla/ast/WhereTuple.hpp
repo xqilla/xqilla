@@ -28,7 +28,7 @@ public:
 
   virtual TupleNode *staticResolution(StaticContext *context);
   virtual TupleNode *staticTypingSetup(StaticContext *context);
-  virtual TupleNode *staticTypingTeardown(StaticContext *context, StaticResolutionContext &usedSrc);
+  virtual TupleNode *staticTypingTeardown(StaticContext *context, StaticAnalysis &usedSrc);
 
   virtual TupleResult::Ptr createResult(DynamicContext* context) const;
 

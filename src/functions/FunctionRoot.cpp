@@ -19,7 +19,7 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/runtime/Sequence.hpp>
 #include <xqilla/items/Node.hpp>
-#include <xqilla/ast/StaticResolutionContext.hpp>
+#include <xqilla/ast/StaticAnalysis.hpp>
 
 const XMLCh FunctionRoot::name[] = {
   XERCES_CPP_NAMESPACE_QUALIFIER chLatin_r, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, 
@@ -50,8 +50,8 @@ ASTNode *FunctionRoot::staticTyping(StaticContext *context)
 
   _src.clear();
 
-  _src.setProperties(StaticResolutionContext::DOCORDER | StaticResolutionContext::GROUPED |
-                     StaticResolutionContext::PEER | StaticResolutionContext::SAMEDOC | StaticResolutionContext::ONENODE);
+  _src.setProperties(StaticAnalysis::DOCORDER | StaticAnalysis::GROUPED |
+                     StaticAnalysis::PEER | StaticAnalysis::SAMEDOC | StaticAnalysis::ONENODE);
   _src.getStaticType().flags = StaticType::NODE_TYPE;
 
   if(_args.empty()) {
@@ -65,9 +65,9 @@ ASTNode *FunctionRoot::staticTyping(StaticContext *context)
   }
   else {
     _args[0] = _args[0]->staticTyping(context);
-    _src.add(_args[0]->getStaticResolutionContext());
+    _src.add(_args[0]->getStaticAnalysis());
 
-    if(_args[0]->getStaticResolutionContext().getStaticType().isType(StaticType::DOCUMENT_TYPE)) {
+    if(_args[0]->getStaticAnalysis().getStaticType().isType(StaticType::DOCUMENT_TYPE)) {
       return _args[0];
     }
   }

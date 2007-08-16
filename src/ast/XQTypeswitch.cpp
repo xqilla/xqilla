@@ -15,7 +15,7 @@
 #include <xqilla/context/VariableStore.hpp>
 #include <xqilla/context/VariableTypeStore.hpp>
 #include <xqilla/context/ContextHelpers.hpp>
-#include <xqilla/ast/StaticResolutionContext.hpp>
+#include <xqilla/ast/StaticAnalysis.hpp>
 #include <xqilla/runtime/ResultBuffer.hpp>
 #include <xqilla/utils/XPath2NSUtils.hpp>
 #include <xqilla/schema/SequenceType.hpp>
@@ -53,13 +53,15 @@ ASTNode* XQTypeswitch::staticResolution(StaticContext *context)
   return this;
 }
 
+static const XMLCh no_err[] = { 0 };
+
 ASTNode* XQTypeswitch::staticTyping(StaticContext *context)
 {
   _src.clear();
 
   // Statically resolve the test expression
   expr_ = expr_->staticTyping(context);
-  const StaticResolutionContext &exprSrc = expr_->getStaticResolutionContext();
+  const StaticAnalysis &exprSrc = expr_->getStaticAnalysis();
 
   if(exprSrc.isUpdating()) {
     XQThrow(StaticErrorException,X("XQTypeswitch::staticTyping"),
@@ -67,20 +69,28 @@ ASTNode* XQTypeswitch::staticTyping(StaticContext *context)
               "to be an updating expression [err:XUST0001]"));
   }
 
+  // Call static resolution on the clauses
+  bool possiblyUpdating = true;
+  _src.add(exprSrc);
   _src.getStaticType().flags = 0;
+  _src.setProperties((unsigned int)-1);
+
+  default_->staticTyping(expr_->getStaticAnalysis(), context, _src, possiblyUpdating);
+
+  Cases::iterator it;
+  for(it = cases_->begin(); it != cases_->end(); ++it) {
+    (*it)->staticTyping(expr_->getStaticAnalysis(), context, _src, possiblyUpdating);
+  }
 
   if(exprSrc.isUsed()) {
-    _src.add(exprSrc);
-
     // Do basic static type checking on the clauses,
     // to eliminate ones which will never be matches,
     // and find ones which will always be matched.
     Cases newCases(XQillaAllocator<Case*>(context->getMemoryManager()));
-    Cases::iterator it = cases_->begin();
-    for(; it != cases_->end(); ++it) {
+    for(it = cases_->begin(); it != cases_->end(); ++it) {
       const SequenceType::ItemType *itemType = (*it)->getSequenceType()->getItemType();
       if(itemType != NULL) {
-        const StaticType &sType = expr_->getStaticResolutionContext().getStaticType();
+        const StaticType &sType = expr_->getStaticAnalysis().getStaticType();
 
         bool isExact;
         StaticType cseType;
@@ -106,16 +116,22 @@ ASTNode* XQTypeswitch::staticTyping(StaticContext *context)
         }
       }
     }
-    *cases_ = newCases;
 
-    // Call static resolution on the new clauses
-    _src.setProperties((unsigned int)-1);
+    if(newCases.size() != cases_->size()) {
+      *cases_ = newCases;
 
-    default_->staticTyping(expr_->getStaticResolutionContext(), context, _src, false);
-    bool updating = _src.isUpdating();
+      // Call static resolution on the new clauses
+      possiblyUpdating = true;
+      _src.clear();
+      _src.add(exprSrc);
+      _src.getStaticType().flags = 0;
+      _src.setProperties((unsigned int)-1);
 
-    for(it = cases_->begin(); it != cases_->end(); ++it) {
-      (*it)->staticTyping(expr_->getStaticResolutionContext(), context, _src, updating);
+      default_->staticTyping(expr_->getStaticAnalysis(), context, _src, possiblyUpdating);
+
+      for(it = cases_->begin(); it != cases_->end(); ++it) {
+        (*it)->staticTyping(expr_->getStaticAnalysis(), context, _src, possiblyUpdating);
+      }
     }
 
     return this;
@@ -129,7 +145,7 @@ ASTNode* XQTypeswitch::staticTyping(StaticContext *context)
     Case *match = 0;
     for(Cases::iterator it = cases_->begin(); it != cases_->end(); ++it) {
       try {
-        (*it)->getSequenceType()->matches(value, (*it)->getSequenceType())->toSequence(dContext);
+        (*it)->getSequenceType()->matches(value, (*it)->getSequenceType(), no_err)->toSequence(dContext);
         match = *it;
         break;
       }
@@ -147,7 +163,11 @@ ASTNode* XQTypeswitch::staticTyping(StaticContext *context)
     cases_->clear();
 
     // Statically resolve the default clause
-    default_->staticTyping(expr_->getStaticResolutionContext(), context, _src, false);
+    possiblyUpdating = true;
+    _src.clear();
+    _src.getStaticType().flags = 0;
+    _src.setProperties((unsigned int)-1);
+    default_->staticTyping(expr_->getStaticAnalysis(), context, _src, possiblyUpdating);
 
     // Constant fold if possible
     if(!_src.isUsed()) {
@@ -173,8 +193,8 @@ void XQTypeswitch::Case::staticResolution(StaticContext* context)
   expr_ = expr_->staticResolution(context);
 }
 
-void XQTypeswitch::Case::staticTyping(const StaticResolutionContext &var_src, StaticContext* context,
-                                        StaticResolutionContext &src, bool updating)
+void XQTypeswitch::Case::staticTyping(const StaticAnalysis &var_src, StaticContext* context,
+                                      StaticAnalysis &src, bool &possiblyUpdating)
 {
   VariableTypeStore* varStore=context->getVariableTypeStore();
 
@@ -185,26 +205,25 @@ void XQTypeswitch::Case::staticTyping(const StaticResolutionContext &var_src, St
     varStore->declareVar(uri_, name_, var_src);
   }
 
-  StaticResolutionContext newSrc(context->getMemoryManager());
+  StaticAnalysis newSrc(context->getMemoryManager());
   expr_ = expr_->staticTyping(context);
-  newSrc.add(expr_->getStaticResolutionContext());
+  newSrc.add(expr_->getStaticAnalysis());
 
   if(seqType_ != 0) {
-    if(updating) {
-      if(!newSrc.isUpdating() &&
-         expr_->getStaticResolutionContext().getStaticType().containsType(StaticType::ITEM_TYPE))
+    if(src.isUpdating()) {
+      if(!newSrc.isUpdating() && !expr_->getStaticAnalysis().isPossiblyUpdating())
         XQThrow(StaticErrorException, X("XQTypeswitch::Case::staticTyping"),
                 X("Mixed updating and non-updating operands [err:XUST0001]"));
     }
     else {
-      if(newSrc.isUpdating())
+      if(newSrc.isUpdating() && !possiblyUpdating)
         XQThrow(StaticErrorException, X("XQTypeswitch::Case::staticTyping"),
                 X("Mixed updating and non-updating operands [err:XUST0001]"));
     }
   }
 
   if(qname_ != 0) {
-    // Remove the local variable from the StaticResolutionContext
+    // Remove the local variable from the StaticAnalysis
     if(!newSrc.removeVariable(uri_, name_)) {
       // If the variable isn't used, don't bother setting it when we execute
       qname_ = 0;
@@ -212,8 +231,11 @@ void XQTypeswitch::Case::staticTyping(const StaticResolutionContext &var_src, St
     varStore->removeScope();
   }
 
-  src.getStaticType().typeUnion(expr_->getStaticResolutionContext().getStaticType());
-  src.setProperties(src.getProperties() & expr_->getStaticResolutionContext().getProperties());
+  if(possiblyUpdating)
+    possiblyUpdating = expr_->getStaticAnalysis().isPossiblyUpdating();
+
+  src.getStaticType().typeUnion(expr_->getStaticAnalysis().getStaticType());
+  src.setProperties(src.getProperties() & expr_->getStaticAnalysis().getProperties());
   src.add(newSrc);
 }
 
@@ -227,7 +249,7 @@ const XQTypeswitch::Case *XQTypeswitch::chooseCase(DynamicContext *context, Sequ
   // find the effective case
   for(Cases::const_iterator it = cases_->begin(); it != cases_->end(); ++it) {
     try {
-      (*it)->getSequenceType()->matches(value.createResult(), (*it)->getSequenceType())->toSequence(context);
+      (*it)->getSequenceType()->matches(value.createResult(), (*it)->getSequenceType(), no_err)->toSequence(context);
       cse = *it;
       break;
     }

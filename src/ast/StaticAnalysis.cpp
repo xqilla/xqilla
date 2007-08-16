@@ -14,14 +14,14 @@
 #include "../config/xqilla_config.h"
 #include <sstream>
 
-#include <xqilla/ast/StaticResolutionContext.hpp>
+#include <xqilla/ast/StaticAnalysis.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/utils/XPath2NSUtils.hpp>
 #include <xqilla/utils/UTF8Str.hpp>
 
 using namespace std;
 
-StaticResolutionContext::StaticResolutionContext(XPath2MemoryManager* memMgr)
+StaticAnalysis::StaticAnalysis(XPath2MemoryManager* memMgr)
   : _dynamicVariables(17, false, memMgr),
     _uriPool(17, memMgr),
     _memMgr(memMgr)
@@ -29,7 +29,7 @@ StaticResolutionContext::StaticResolutionContext(XPath2MemoryManager* memMgr)
   clear();
 }
 
-StaticResolutionContext::StaticResolutionContext(const StaticResolutionContext &o, XPath2MemoryManager* memMgr)
+StaticAnalysis::StaticAnalysis(const StaticAnalysis &o, XPath2MemoryManager* memMgr)
   : _dynamicVariables(17, false, memMgr),
     _uriPool(17, memMgr),
     _memMgr(memMgr)
@@ -38,14 +38,14 @@ StaticResolutionContext::StaticResolutionContext(const StaticResolutionContext &
   copy(o);
 }
 
-void StaticResolutionContext::copy(const StaticResolutionContext &o)
+void StaticAnalysis::copy(const StaticAnalysis &o)
 {
   add(o);
   _properties = o._properties;
   _staticType = o._staticType;
 }
 
-void StaticResolutionContext::clear()
+void StaticAnalysis::clear()
 {
   _contextItem = false;
   _contextPosition = false;
@@ -57,6 +57,7 @@ void StaticResolutionContext::clear()
   _forceNoFolding = false;
   _creative = false;
   _updating = false;
+  _possiblyUpdating = false;
 
   _properties = 0;
   _staticType = StaticType();
@@ -65,78 +66,78 @@ void StaticResolutionContext::clear()
   _uriPool.flushAll();
 }
 
-void StaticResolutionContext::contextItemUsed(bool value)
+void StaticAnalysis::contextItemUsed(bool value)
 {
   _contextItem = value;
 }
 
-void StaticResolutionContext::contextPositionUsed(bool value)
+void StaticAnalysis::contextPositionUsed(bool value)
 {
   _contextPosition = value;
 }
 
-void StaticResolutionContext::contextSizeUsed(bool value)
+void StaticAnalysis::contextSizeUsed(bool value)
 {
   _contextSize = value;
 }
 
-bool StaticResolutionContext::isContextItemUsed() const
+bool StaticAnalysis::isContextItemUsed() const
 {
   return _contextItem;
 }
 
-bool StaticResolutionContext::isContextPositionUsed() const
+bool StaticAnalysis::isContextPositionUsed() const
 {
   return _contextPosition;
 }
 
-bool StaticResolutionContext::isContextSizeUsed() const
+bool StaticAnalysis::isContextSizeUsed() const
 {
   return _contextSize;
 }
 
 /** Returns true if any of the context item flags have been used */
-bool StaticResolutionContext::areContextFlagsUsed() const
+bool StaticAnalysis::areContextFlagsUsed() const
 {
   return _contextItem || _contextPosition || _contextSize;
 }
 
-void StaticResolutionContext::currentTimeUsed(bool value)
+void StaticAnalysis::currentTimeUsed(bool value)
 {
   _currentTime = value;
 }
 
-void StaticResolutionContext::implicitTimezoneUsed(bool value)
+void StaticAnalysis::implicitTimezoneUsed(bool value)
 {
   _implicitTimezone = value;
 }
 
-void StaticResolutionContext::availableDocumentsUsed(bool value)
+void StaticAnalysis::availableDocumentsUsed(bool value)
 {
   _availableDocuments = value;
 }
 
-void StaticResolutionContext::availableCollectionsUsed(bool value)
+void StaticAnalysis::availableCollectionsUsed(bool value)
 {
   _availableCollections = value;
 }
 
-bool StaticResolutionContext::areDocsOrCollectionsUsed() const
+bool StaticAnalysis::areDocsOrCollectionsUsed() const
 {
   return _availableDocuments || _availableCollections;
 }
 
-void StaticResolutionContext::forceNoFolding(bool value)
+void StaticAnalysis::forceNoFolding(bool value)
 {
   _forceNoFolding = value;
 }
 
-bool StaticResolutionContext::isNoFoldingForced() const
+bool StaticAnalysis::isNoFoldingForced() const
 {
   return _forceNoFolding;
 }
 
-void StaticResolutionContext::variableUsed(const XMLCh *namespaceURI, const XMLCh *name)
+void StaticAnalysis::variableUsed(const XMLCh *namespaceURI, const XMLCh *name)
 {
   namespaceURI = _memMgr->getPooledString(namespaceURI);
   name = _memMgr->getPooledString(name);
@@ -144,7 +145,7 @@ void StaticResolutionContext::variableUsed(const XMLCh *namespaceURI, const XMLC
   _dynamicVariables.put((void*)name, nsID, 0);
 }
 
-vector<pair<const XMLCh*, const XMLCh*> > StaticResolutionContext::variablesUsed() const
+vector<pair<const XMLCh*, const XMLCh*> > StaticAnalysis::variablesUsed() const
 {
   vector<pair<const XMLCh*, const XMLCh*> > result;
 
@@ -161,7 +162,7 @@ vector<pair<const XMLCh*, const XMLCh*> > StaticResolutionContext::variablesUsed
   return result;
 }
 
-bool StaticResolutionContext::removeVariable(const XMLCh *namespaceURI, const XMLCh *name)
+bool StaticAnalysis::removeVariable(const XMLCh *namespaceURI, const XMLCh *name)
 {
   namespaceURI = _memMgr->getPooledString(namespaceURI);
   name = _memMgr->getPooledString(name);
@@ -173,7 +174,7 @@ bool StaticResolutionContext::removeVariable(const XMLCh *namespaceURI, const XM
   return false;
 }
 
-bool StaticResolutionContext::isVariableUsed(const XMLCh *namespaceURI, const XMLCh *name) const
+bool StaticAnalysis::isVariableUsed(const XMLCh *namespaceURI, const XMLCh *name) const
 {
   namespaceURI = _memMgr->getPooledString(namespaceURI);
   name = _memMgr->getPooledString(name);
@@ -184,8 +185,8 @@ bool StaticResolutionContext::isVariableUsed(const XMLCh *namespaceURI, const XM
   return false;
 }
 
-/** Sets the members of this StaticResolutionContext from the given StaticResolutionContext */
-void StaticResolutionContext::add(const StaticResolutionContext &o)
+/** Sets the members of this StaticAnalysis from the given StaticAnalysis */
+void StaticAnalysis::add(const StaticAnalysis &o)
 {
   if(o._contextItem) _contextItem = true;
   if(o._contextPosition) _contextPosition = true;
@@ -197,6 +198,7 @@ void StaticResolutionContext::add(const StaticResolutionContext &o)
   if(o._forceNoFolding) _forceNoFolding = true;
   if(o._creative) _creative = true;
   if(o._updating) _updating = true;
+  // Don't copy _possiblyUpdating
 
   const XMLCh* namespaceURI;
   const XMLCh* name;
@@ -210,7 +212,7 @@ void StaticResolutionContext::add(const StaticResolutionContext &o)
   }
 }
 
-void StaticResolutionContext::addExceptContextFlags(const StaticResolutionContext &o)
+void StaticAnalysis::addExceptContextFlags(const StaticAnalysis &o)
 {
   if(o._currentTime) _currentTime = true;
   if(o._implicitTimezone) _implicitTimezone = true;
@@ -219,6 +221,7 @@ void StaticResolutionContext::addExceptContextFlags(const StaticResolutionContex
   if(o._forceNoFolding) _forceNoFolding = true;
   if(o._creative) _creative = true;
   if(o._updating) _updating = true;
+  // Don't copy _possiblyUpdating
 
   const XMLCh* namespaceURI;
   const XMLCh* name;
@@ -234,60 +237,70 @@ void StaticResolutionContext::addExceptContextFlags(const StaticResolutionContex
 
 
 /** Returns true if flags are set, or variables have been used */
-bool StaticResolutionContext::isUsed() const
+bool StaticAnalysis::isUsed() const
 {
   return _contextItem || _contextPosition || _contextSize
     || _currentTime || _implicitTimezone || _availableCollections
     || _availableDocuments || _forceNoFolding || !_dynamicVariables.isEmpty();
 }
 
-bool StaticResolutionContext::isUsedExceptContextFlags() const
+bool StaticAnalysis::isUsedExceptContextFlags() const
 {
   return _currentTime || _implicitTimezone || _availableCollections
     || _availableDocuments || _forceNoFolding || !_dynamicVariables.isEmpty();
 }
 
-void StaticResolutionContext::creative(bool value)
+void StaticAnalysis::creative(bool value)
 {
   _creative = value;
 }
 
-bool StaticResolutionContext::isCreative() const
+bool StaticAnalysis::isCreative() const
 {
   return _creative;
 }
 
-void StaticResolutionContext::updating(bool value)
+void StaticAnalysis::updating(bool value)
 {
   _updating = value;
 }
 
-bool StaticResolutionContext::isUpdating() const
+bool StaticAnalysis::isUpdating() const
 {
   return _updating;
 }
 
-unsigned int StaticResolutionContext::getProperties() const
+void StaticAnalysis::possiblyUpdating(bool value)
+{
+  _possiblyUpdating = value;
+}
+
+bool StaticAnalysis::isPossiblyUpdating() const
+{
+  return _possiblyUpdating;
+}
+
+unsigned int StaticAnalysis::getProperties() const
 {
 	return _properties;
 }
 
-void StaticResolutionContext::setProperties(unsigned int props)
+void StaticAnalysis::setProperties(unsigned int props)
 {
 	_properties = props;
 }
 
-const StaticType &StaticResolutionContext::getStaticType() const
+const StaticType &StaticAnalysis::getStaticType() const
 {
 	return _staticType;
 }
 
-StaticType &StaticResolutionContext::getStaticType()
+StaticType &StaticAnalysis::getStaticType()
 {
 	return _staticType;
 }
 
-std::string StaticResolutionContext::toString() const
+std::string StaticAnalysis::toString() const
 {
   std::ostringstream s;
 
@@ -301,6 +314,7 @@ std::string StaticResolutionContext::toString() const
   s << "Force No Folding:      " << (_forceNoFolding ? "true" : "false") << std::endl;
   s << "Creative:              " << (_creative ? "true" : "false") << std::endl;
   s << "Updating:              " << (_updating ? "true" : "false") << std::endl;
+  s << "Possibly Updating:     " << (_possiblyUpdating ? "true" : "false") << std::endl;
 
   s << "Variables Used: [";
   const XMLCh* namespaceURI;

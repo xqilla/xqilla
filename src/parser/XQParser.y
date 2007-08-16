@@ -203,7 +203,8 @@ void *alloca (size_t);
 
 XERCES_CPP_NAMESPACE_USE;
 
-static XMLCh sz1_0[] = { chDigit_1, chPeriod, chDigit_0, chNull };
+static const XMLCh sz1_0[] = { chDigit_1, chPeriod, chDigit_0, chNull };
+static const XMLCh err_XPDY0050[] = { 'e', 'r', 'r', ':', 'X', 'P', 'D', 'Y', '0', '0', '5', '0', 0 };
 
 static inline VectorOfASTNodes packageArgs(ASTNode *arg1Impl, ASTNode *arg2Impl, XPath2MemoryManager* memMgr)
 {
@@ -1217,7 +1218,7 @@ Expr:
       }
       else
       {
-        XQParenthesizedExpr *dis = new (MEMMGR) XQParenthesizedExpr(MEMMGR);
+        XQParenthesizedExpr *dis = WRAP(@2, new (MEMMGR) XQParenthesizedExpr(MEMMGR));
         dis->addItem($1);
         dis->addItem($3);
         $$ = dis;
@@ -1756,8 +1757,7 @@ InstanceofExpr:
 TreatExpr:
   CastableExpr _TREAT_ _AS_ SequenceType
   {
-    XQTreatAs* treatAs = new (MEMMGR) XQTreatAs($1,$4,MEMMGR);
-    treatAs->setIsTreatAsStatement(true);
+    XQTreatAs* treatAs = new (MEMMGR) XQTreatAs($1,$4,MEMMGR, err_XPDY0050);
     $$ = WRAP(@2, treatAs);
   }
   | CastableExpr

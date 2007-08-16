@@ -49,8 +49,8 @@ ASTNode* XQPromoteUntyped::staticTyping(StaticContext *context)
   _src.clear();
 
   expr_ = expr_->staticTyping(context);
-  _src.getStaticType() = expr_->getStaticResolutionContext().getStaticType();
-  _src.add(expr_->getStaticResolutionContext());
+  _src.getStaticType() = expr_->getStaticAnalysis().getStaticType();
+  _src.add(expr_->getStaticAnalysis());
 
   // crioux thinks this should also add: unless the target type is anyAtomicType!
   if(XPath2Utils::equals(name_, AnyAtomicType::fgDT_ANYATOMICTYPE) && 
@@ -135,8 +135,8 @@ ASTNode* XQPromoteNumeric::staticTyping(StaticContext *context)
   _src.clear();
 
   expr_ = expr_->staticTyping(context);
-  _src.getStaticType() = expr_->getStaticResolutionContext().getStaticType();
-  _src.add(expr_->getStaticResolutionContext());
+  _src.getStaticType() = expr_->getStaticAnalysis().getStaticType();
+  _src.add(expr_->getStaticAnalysis());
 
   if(!((XPath2Utils::equals(name_, SchemaSymbols::fgDT_DOUBLE) ||
         XPath2Utils::equals(name_, SchemaSymbols::fgDT_FLOAT) &&
@@ -228,8 +228,8 @@ ASTNode *XQPromoteAnyURI::staticTyping(StaticContext *context)
   _src.clear();
 
   expr_ = expr_->staticTyping(context);
-  _src.getStaticType() = expr_->getStaticResolutionContext().getStaticType();
-  _src.add(expr_->getStaticResolutionContext());
+  _src.getStaticType() = expr_->getStaticAnalysis().getStaticType();
+  _src.add(expr_->getStaticAnalysis());
 
   if(_src.getStaticType().flags & StaticType::ANY_URI_TYPE) {
     _src.getStaticType().flags &= ~StaticType::ANY_URI_TYPE;

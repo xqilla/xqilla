@@ -15,7 +15,7 @@
 #define ORDERBYTUPLE_HPP
 
 #include <xqilla/ast/TupleNode.hpp>
-#include <xqilla/ast/StaticResolutionContext.hpp>
+#include <xqilla/ast/StaticAnalysis.hpp>
 
 class ASTNode;
 class Collation;
@@ -49,11 +49,11 @@ public:
 
   void setUnstable() { modifiers_ = (Modifiers)(modifiers_ | UNSTABLE); }
 
-  const StaticResolutionContext &getUsedSRC() const { return usedSrc_; }
+  const StaticAnalysis &getUsedSRC() const { return usedSrc_; }
 
   virtual TupleNode *staticResolution(StaticContext *context);
   virtual TupleNode *staticTypingSetup(StaticContext *context);
-  virtual TupleNode *staticTypingTeardown(StaticContext *context, StaticResolutionContext &usedSrc);
+  virtual TupleNode *staticTypingTeardown(StaticContext *context, StaticAnalysis &usedSrc);
 
   virtual TupleResult::Ptr createResult(DynamicContext* context) const;
 
@@ -61,7 +61,7 @@ private:
   ASTNode *expr_;
   Modifiers modifiers_;
   Collation *collation_;
-  StaticResolutionContext usedSrc_;
+  StaticAnalysis usedSrc_;
 };
 
 #endif

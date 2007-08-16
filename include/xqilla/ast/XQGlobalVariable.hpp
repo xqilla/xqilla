@@ -35,7 +35,7 @@ public:
   const XMLCh *getVariableLocalName() const;
   const SequenceType *getSequenceType() const;
   const ASTNode *getVariableExpr() const;
-  const StaticResolutionContext &getStaticResolutionContext() const { return _src; }
+  const StaticAnalysis &getStaticAnalysis() const { return _src; }
 
 protected:
   const XMLCh* m_szQName;
@@ -43,7 +43,7 @@ protected:
   const XMLCh* m_szLocalName;
   SequenceType* m_Type;
   ASTNode* m_Value;
-  StaticResolutionContext _src;
+  StaticAnalysis _src;
 };
 
 #endif

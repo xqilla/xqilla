@@ -18,7 +18,7 @@
 #include <xqilla/items/Node.hpp>
 #include <xqilla/items/ATStringOrDerived.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xqilla/ast/StaticResolutionContext.hpp>
+#include <xqilla/ast/StaticAnalysis.hpp>
 #include <xqilla/exceptions/FunctionException.hpp>
 #include <xqilla/functions/FunctionString.hpp>
 

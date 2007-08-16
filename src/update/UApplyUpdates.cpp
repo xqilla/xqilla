@@ -36,9 +36,9 @@ ASTNode *UApplyUpdates::staticTyping(StaticContext *context)
   _src.clear();
 
   expr_ = expr_->staticTyping(context);
-  _src.add(expr_->getStaticResolutionContext());
+  _src.add(expr_->getStaticAnalysis());
 
-  if(!expr_->getStaticResolutionContext().isUpdating()) {
+  if(!expr_->getStaticAnalysis().isUpdating()) {
     return expr_;
   }
 

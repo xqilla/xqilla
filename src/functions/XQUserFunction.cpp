@@ -173,7 +173,7 @@ void XQUserFunction::staticResolutionStage1(StaticContext *context)
     }
   }
 
-  // Set up a default StaticType and StaticResolutionContext
+  // Set up a default StaticType and StaticAnalysis
   if(returnType_ != NULL) {
     if(body_ != NULL) {
       body_ = returnType_->convertFunctionArg(body_, context, /*numericfunction*/false, returnType_);
@@ -220,7 +220,7 @@ void XQUserFunction::staticTyping(StaticContext *context)
 
   if(isUpdating_ && returnType_ != NULL) {
     XQThrow(StaticErrorException, X("XQUserFunction::staticTyping"),
-              X("It is a static error for an updating function to declare a return type [err:TBD]"));
+              X("It is a static error for an updating function to declare a return type [err:XUST0028]"));
   }
 
   // define the new variables in a new scope and assign them the proper values
@@ -231,29 +231,28 @@ void XQUserFunction::staticTyping(StaticContext *context)
   if(argSpecs_) {
     ArgumentSpecs::iterator it;
     for(it = argSpecs_->begin(); it != argSpecs_->end (); ++it) {
-      varStore->declareVar((*it)->getURI(), (*it)->getName(), (*it)->getStaticResolutionContext());
+      varStore->declareVar((*it)->getURI(), (*it)->getName(), (*it)->getStaticAnalysis());
     }
   }
 
-  StaticResolutionContext bodySRC(mm);
+  StaticAnalysis bodySRC(mm);
   body_ = body_->staticTyping(context);
-  bodySRC.copy(body_->getStaticResolutionContext());
+  bodySRC.copy(body_->getStaticAnalysis());
 
   if(isUpdating_) {
-    if(!body_->getStaticResolutionContext().isUpdating() &&
-       body_->getStaticResolutionContext().getStaticType().containsType(StaticType::ITEM_TYPE))
+    if(!body_->getStaticAnalysis().isUpdating() && !body_->getStaticAnalysis().isPossiblyUpdating())
       XQThrow(StaticErrorException, X("XQUserFunction::staticTyping"),
               X("It is a static error for the body expression of a user defined updating function "
                 "not to be an updating expression [err:XUST0002]"));
   }
   else {
-    if(body_->getStaticResolutionContext().isUpdating())
+    if(body_->getStaticAnalysis().isUpdating())
       XQThrow(StaticErrorException, X("XQUserFunction::staticTyping"),
               X("It is a static error for the body expression of a user defined function "
                 "to be an updating expression [err:XUST0001]"));
   }
 
-  // Remove the parameter variables from the stored StaticResolutionContext
+  // Remove the parameter variables from the stored StaticAnalysis
   if(argSpecs_) {
     for(ArgumentSpecs::iterator it = argSpecs_->begin(); it != argSpecs_->end (); ++it) {
       if(!bodySRC.removeVariable((*it)->getURI(), (*it)->getName())) {
@@ -263,7 +262,7 @@ void XQUserFunction::staticTyping(StaticContext *context)
     }
   }
 
-  // Swap bodySRC with our StaticResolutionContext
+  // Swap bodySRC with our StaticAnalysis
   src_.clear();
   src_.copy(bodySRC);
 
@@ -345,7 +344,7 @@ ASTNode* XQUserFunction::Instance::staticTyping(StaticContext* context)
     // the parameter isn't used
     *argIt = (*argIt)->staticTyping(context);
 
-    if((*argIt)->getStaticResolutionContext().isUpdating()) {
+    if((*argIt)->getStaticAnalysis().isUpdating()) {
       XQThrow(StaticErrorException, X("XQUserFunction::Instance::staticTyping"),
               X("It is a static error for the argument expression of a function call expression "
                 "to be an updating expression [err:XUST0001]"));
@@ -353,7 +352,7 @@ ASTNode* XQUserFunction::Instance::staticTyping(StaticContext* context)
 
     // TBD Check all static errors in staticResolution, so we can skip static typing - jpcs
     // if((*defIt)->_qname || context->isDebuggingEnabled())
-    _src.add((*argIt)->getStaticResolutionContext());
+    _src.add((*argIt)->getStaticAnalysis());
   }
 
   // don't constant fold if it's an imported or an external function

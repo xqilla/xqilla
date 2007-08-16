@@ -18,7 +18,7 @@
 #include <xqilla/exceptions/FunctionException.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/items/Node.hpp>
-#include <xqilla/ast/StaticResolutionContext.hpp>
+#include <xqilla/ast/StaticAnalysis.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 
 const XMLCh FunctionId::name[] = {

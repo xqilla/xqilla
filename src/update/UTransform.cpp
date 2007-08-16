@@ -16,7 +16,7 @@
 #include <xqilla/update/UTransform.hpp>
 #include <xqilla/context/VariableStore.hpp>
 #include <xqilla/context/DynamicContext.hpp>
-#include <xqilla/ast/StaticResolutionContext.hpp>
+#include <xqilla/ast/StaticAnalysis.hpp>
 #include <xqilla/ast/XQDOMConstructor.hpp>
 #include <xqilla/context/UpdateFactory.hpp>
 #include <xqilla/context/VariableTypeStore.hpp>
@@ -59,6 +59,8 @@ UTransform::UTransform(VectorOfCopyBinding* bindings, ASTNode *modifyExpr, ASTNo
   setType(UTRANSFORM);
 }
 
+static const XMLCh err_XUTY0013[] = { 'e', 'r', 'r', ':', 'X', 'U', 'T', 'Y', '0', '0', '1', '3', 0 };
+
 ASTNode *UTransform::staticResolution(StaticContext* context)
 {
   XPath2MemoryManager *mm = context->getMemoryManager();
@@ -78,8 +80,7 @@ ASTNode *UTransform::staticResolution(StaticContext* context)
     // call static resolution on the value
     (*it0)->expr_ = new (mm) XQContentSequence((*it0)->expr_, mm);
     (*it0)->expr_->setLocationInfo(this);
-    // TBD The error should be [err:XUTY0013] - jpcs
-    (*it0)->expr_ = new (mm) XQTreatAs((*it0)->expr_, copyType, mm);
+    (*it0)->expr_ = new (mm) XQTreatAs((*it0)->expr_, copyType, mm, err_XUTY0013);
     (*it0)->expr_->setLocationInfo(this);
     (*it0)->expr_ = (*it0)->expr_->staticResolution(context);
   }
@@ -109,36 +110,35 @@ ASTNode *UTransform::staticTyping(StaticContext *context)
 
     // call static resolution on the value
     (*it0)->expr_ = (*it0)->expr_->staticTyping(context);
-    (*it0)->src_.getStaticType() = (*it0)->expr_->getStaticResolutionContext().getStaticType();
+    (*it0)->src_.getStaticType() = (*it0)->expr_->getStaticAnalysis().getStaticType();
 
-    if((*it0)->expr_->getStaticResolutionContext().isUpdating()) {
+    if((*it0)->expr_->getStaticAnalysis().isUpdating()) {
       XQThrow(StaticErrorException,X("UTransform::staticTyping"),
               X("It is a static error for the copy expression of a transform expression "
                 "to be an updating expression [err:XUST0001]"));
     }
 
     // Declare the variable binding
-    (*it0)->src_.setProperties((*it0)->expr_->getStaticResolutionContext().getProperties());
+    (*it0)->src_.setProperties((*it0)->expr_->getStaticAnalysis().getProperties());
     varStore->declareVar((*it0)->uri_, (*it0)->name_, (*it0)->src_);
   }
 
   // Call staticTyping on the modify expression
   modify_ = modify_->staticTyping(context);
-  _src.add(modify_->getStaticResolutionContext());
+  _src.add(modify_->getStaticAnalysis());
   _src.updating(false);
 
-  if(!modify_->getStaticResolutionContext().isUpdating() &&
-     modify_->getStaticResolutionContext().getStaticType().containsType(StaticType::ITEM_TYPE))
+  if(!modify_->getStaticAnalysis().isUpdating() && !modify_->getStaticAnalysis().isPossiblyUpdating())
     XQThrow(StaticErrorException, X("UTransform::staticTyping"),
             X("The modify expression is not an updating expression [err:XUST0002]"));
 
   // Call staticResolution on the return expression
   return_ = return_->staticTyping(context);
-  _src.getStaticType() = return_->getStaticResolutionContext().getStaticType();
-  _src.setProperties(return_->getStaticResolutionContext().getProperties());
-  _src.add(return_->getStaticResolutionContext());
+  _src.getStaticType() = return_->getStaticAnalysis().getStaticType();
+  _src.setProperties(return_->getStaticAnalysis().getProperties());
+  _src.add(return_->getStaticAnalysis());
 
-  if(return_->getStaticResolutionContext().isUpdating()) {
+  if(return_->getStaticAnalysis().isUpdating()) {
     XQThrow(StaticErrorException,X("UTransform::staticTyping"),
             X("It is a static error for the return expression of a transform expression "
               "to be an updating expression [err:XUST0001]"));
@@ -152,12 +152,12 @@ ASTNode *UTransform::staticTyping(StaticContext *context)
     // Remove our variable binding and the scope we added
     varStore->removeScope();
 
-    // Remove our binding variable from the StaticResolutionContext data (removing it if it's not used)
+    // Remove our binding variable from the StaticAnalysis data (removing it if it's not used)
     if(!_src.removeVariable(newVB->uri_, newVB->name_)) {
       newVB->qname_ = 0;
     }
 
-    _src.add(newVB->expr_->getStaticResolutionContext());
+    _src.add(newVB->expr_->getStaticAnalysis());
 
     // Add the new VB at the front of the new Bindings
     // (If it's a let binding, and it's variable isn't used, don't add it - there's no point)

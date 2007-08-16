@@ -29,7 +29,7 @@ ClosureResult::ClosureResult(const ASTNode *ast, DynamicContext *context, const 
   // TBD copy context item? - jpcs
 
   // Copy the variables we need into our local storage
-  varStore_.cacheVariableStore(ast->getStaticResolutionContext(), sourceScope);
+  varStore_.cacheVariableStore(ast->getStaticAnalysis(), sourceScope);
 
   try {
     AutoVariableStoreReset reset(context, &varStore_);

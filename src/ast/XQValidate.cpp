@@ -16,7 +16,7 @@
 #include <xqilla/exceptions/DynamicErrorException.hpp>
 #include <xqilla/items/Node.hpp>
 #include <xqilla/context/DynamicContext.hpp>
-#include <xqilla/ast/StaticResolutionContext.hpp>
+#include <xqilla/ast/StaticAnalysis.hpp>
 
 XQValidate::XQValidate(ASTNode *expr, DocumentCache::ValidationMode mode, XPath2MemoryManager *mm)
   : ASTNodeImpl(mm),
@@ -50,9 +50,9 @@ ASTNode *XQValidate::staticTyping(StaticContext *context)
   _src.clear();
 
   expr_ = expr_->staticTyping(context);
-  _src.add(expr_->getStaticResolutionContext());
+  _src.add(expr_->getStaticAnalysis());
 
-  _src.getStaticType() = expr_->getStaticResolutionContext().getStaticType();
+  _src.getStaticType() = expr_->getStaticAnalysis().getStaticType();
   _src.getStaticType().typeIntersect(StaticType::DOCUMENT_TYPE | StaticType::ELEMENT_TYPE);
 
   if(!_src.getStaticType().containsType(StaticType::DOCUMENT_TYPE | StaticType::ELEMENT_TYPE)) {

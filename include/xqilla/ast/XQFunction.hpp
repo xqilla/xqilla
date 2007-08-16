@@ -41,7 +41,7 @@ public:
 
   /** Wraps the arguments in the appropriate conversion functions,
       calls static resolution on them, and constant folds if
-      this function's StaticResolutionContext is not used */
+      this function's StaticAnalysis is not used */
   ASTNode *resolveArguments(StaticContext *context, bool checkTimezone = false, bool numericFunction = false);
   ASTNode *calculateSRCForArguments(StaticContext *context, bool checkTimezone = false, bool numericFunction = false);
 

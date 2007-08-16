@@ -109,15 +109,21 @@ Sequence ASTNodeImpl::createSequence(DynamicContext* context, int flags) const
 ASTNode *ASTNodeImpl::constantFold(StaticContext *context)
 {
   XPath2MemoryManager* mm = context->getMemoryManager();
-  AutoDelete<DynamicContext> dContext(context->createDynamicContext());
-  dContext->setMemoryManager(mm);
 
-  Result result = createResult(dContext);
-  ASTNode *newBlock = XQSequence::constantFold(result, dContext, mm, this);
-  if(newBlock == 0) return this; // Constant folding failed
+  try {
+	  AutoDelete<DynamicContext> dContext(context->createDynamicContext());
+	  dContext->setMemoryManager(mm);
 
-  newBlock->setLocationInfo(this);
-  return newBlock->staticTyping(context);
+	  Result result = createResult(dContext);
+	  ASTNode *newBlock = XQSequence::constantFold(result, dContext, mm, this);
+	  if(newBlock == 0) return this; // Constant folding failed
+
+	  newBlock->setLocationInfo(this);
+	  return newBlock->staticTyping(context);
+  }
+  catch(XQException &ex) {
+	  return this; // Constant folding failed
+  }
 }
 
 XPath2MemoryManager* ASTNodeImpl::getMemoryManager(void) const {
@@ -125,7 +131,7 @@ XPath2MemoryManager* ASTNodeImpl::getMemoryManager(void) const {
   return _memMgr;
 }
 
-const StaticResolutionContext &ASTNodeImpl::getStaticResolutionContext() const
+const StaticAnalysis &ASTNodeImpl::getStaticAnalysis() const
 {
   return _src;
 }

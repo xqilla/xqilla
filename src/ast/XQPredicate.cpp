@@ -56,18 +56,18 @@ ASTNode* XQPredicate::staticTyping(StaticContext *context)
   XPath2MemoryManager *mm = context->getMemoryManager();
 
   expr_ = expr_->staticTyping(context);
-  _src.copy(expr_->getStaticResolutionContext());
+  _src.copy(expr_->getStaticAnalysis());
 
   if(expr_->getType() == SEQUENCE &&
      ((XQSequence*)expr_)->getItemConstructors().empty()) {
     return expr_;
   }
 
-  AutoContextItemTypeReset contextTypeReset(context, expr_->getStaticResolutionContext().getStaticType());
+  AutoContextItemTypeReset contextTypeReset(context, expr_->getStaticAnalysis().getStaticType());
 
   predicate_ = predicate_->staticTyping(context);
 
-  const StaticResolutionContext &newSrc = predicate_->getStaticResolutionContext();
+  const StaticAnalysis &newSrc = predicate_->getStaticAnalysis();
 
   if(!newSrc.isUsed() && !predicate_->isSingleNumericConstant(context)) {
     // It's not a numeric constant
@@ -96,7 +96,7 @@ ASTNode* XQPredicate::staticTyping(StaticContext *context)
 
 Result XQPredicate::createResult(DynamicContext* context, int flags) const
 {
-  const StaticResolutionContext &src = predicate_->getStaticResolutionContext();
+  const StaticAnalysis &src = predicate_->getStaticAnalysis();
 
   Result parent = expr_->createResult(context, flags);
 
@@ -163,8 +163,8 @@ Item::Ptr XQPredicate::PredicateFilterResult::next(DynamicContext *context)
 {
   AutoContextInfoReset autoReset(context);
 
-  bool contextUsed = pred_->getStaticResolutionContext().isContextItemUsed() ||
-    pred_->getStaticResolutionContext().isContextPositionUsed();
+  bool contextUsed = pred_->getStaticAnalysis().isContextItemUsed() ||
+    pred_->getStaticAnalysis().isContextPositionUsed();
 
   Item::Ptr result = 0;
   while(result == NULLRCP) {
@@ -245,8 +245,8 @@ Item::Ptr XQPredicate::NonNumericPredicateFilterResult::next(DynamicContext *con
 {
   AutoContextInfoReset autoReset(context);
 
-  bool contextUsed = pred_->getStaticResolutionContext().isContextItemUsed() ||
-    pred_->getStaticResolutionContext().isContextPositionUsed();
+  bool contextUsed = pred_->getStaticAnalysis().isContextItemUsed() ||
+    pred_->getStaticAnalysis().isContextPositionUsed();
 
   Item::Ptr result = 0;
   while(result == NULLRCP) {

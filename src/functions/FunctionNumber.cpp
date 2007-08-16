@@ -19,7 +19,7 @@
 #include <xqilla/items/Numeric.hpp>
 #include <xqilla/exceptions/FunctionException.hpp>
 #include <xqilla/exceptions/XPath2TypeCastException.hpp>
-#include <xqilla/ast/StaticResolutionContext.hpp>
+#include <xqilla/ast/StaticAnalysis.hpp>
 #include <xqilla/exceptions/XPath2TypeMatchException.hpp>
 
 #include <xercesc/validators/schema/SchemaSymbols.hpp>

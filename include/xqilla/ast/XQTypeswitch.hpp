@@ -30,8 +30,8 @@ public:
     Case(const XMLCh *qname, SequenceType *seqType, ASTNode *expr);
 
     void staticResolution(StaticContext* context);
-    void staticTyping(const StaticResolutionContext &var_src, StaticContext* context,
-                      StaticResolutionContext &src, bool updating);
+    void staticTyping(const StaticAnalysis &var_src, StaticContext* context,
+                      StaticAnalysis &src, bool &possiblyUpdating);
 
     const XMLCh *getQName() const { return qname_; }
     const XMLCh *getURI() const { return uri_; }

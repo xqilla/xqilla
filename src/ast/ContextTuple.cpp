@@ -24,7 +24,7 @@ TupleNode *ContextTuple::staticTypingSetup(StaticContext *context)
   return this;
 }
 
-TupleNode *ContextTuple::staticTypingTeardown(StaticContext *context, StaticResolutionContext &usedSrc)
+TupleNode *ContextTuple::staticTypingTeardown(StaticContext *context, StaticAnalysis &usedSrc)
 {
   return this;
 }

@@ -35,10 +35,10 @@ FTSelection *FTMildnot::staticTyping(StaticContext *context)
   src_.clear();
 
   left_ = left_->staticTyping(context);
-  src_.add(left_->getStaticResolutionContext());
+  src_.add(left_->getStaticAnalysis());
 
   right_ = right_->staticTyping(context);
-  src_.add(right_->getStaticResolutionContext());
+  src_.add(right_->getStaticAnalysis());
 
   return this;
 }

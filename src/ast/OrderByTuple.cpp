@@ -43,7 +43,7 @@ TupleNode *OrderByTuple::staticResolution(StaticContext *context)
   return this;
 }
 
-static TupleNode *findOrderByAncestor(TupleNode *ancestor, const StaticResolutionContext &exprSrc)
+static TupleNode *findOrderByAncestor(TupleNode *ancestor, const StaticAnalysis &exprSrc)
 {
   // Find the furthest ancestor that we can safely be placed before
   TupleNode *found = 0;
@@ -89,14 +89,14 @@ TupleNode *OrderByTuple::staticTypingSetup(StaticContext *context)
     expr_ = expr_->staticTyping(context);
   }
 
-  if(expr_->getStaticResolutionContext().isUpdating()) {
+  if(expr_->getStaticAnalysis().isUpdating()) {
     XQThrow(StaticErrorException,X("OrderByTuple::staticTypingSetup"),
             X("It is a static error for the order by expression of a FLWOR expression "
               "to be an updating expression [err:XUST0001]"));
   }
 
   // Push back if possible
-  TupleNode *found = findOrderByAncestor(parent_, expr_->getStaticResolutionContext());
+  TupleNode *found = findOrderByAncestor(parent_, expr_->getStaticAnalysis());
   if(found) {
     TupleNode *tmp = parent_;
     parent_ = found->getParent();
@@ -107,12 +107,12 @@ TupleNode *OrderByTuple::staticTypingSetup(StaticContext *context)
   return this;
 }
 
-TupleNode *OrderByTuple::staticTypingTeardown(StaticContext *context, StaticResolutionContext &usedSrc)
+TupleNode *OrderByTuple::staticTypingTeardown(StaticContext *context, StaticAnalysis &usedSrc)
 {
   usedSrc_.clear();
   usedSrc_.add(usedSrc);
 
-  usedSrc.add(expr_->getStaticResolutionContext());
+  usedSrc.add(expr_->getStaticAnalysis());
   parent_ = parent_->staticTypingTeardown(context, usedSrc);
 
   return this;
@@ -152,7 +152,7 @@ public:
 
       XPath2MemoryManager *mm = context->getMemoryManager();
       const ASTNode *expr = ast_->getExpression();
-      const StaticResolutionContext &usedSrc = ast_->getUsedSRC();
+      const StaticAnalysis &usedSrc = ast_->getUsedSRC();
 
       while(parent_->next(context)) {
         AutoVariableStoreReset reset(context, parent_);
@@ -181,7 +181,7 @@ private:
       return si.isNull() || (si->isNumericValue() && ((Numeric*)si.get())->isNaN());
     }
 
-    OrderPair(const AnyAtomicType::Ptr &si, const StaticResolutionContext &usedSrc, const VariableStore *vars,
+    OrderPair(const AnyAtomicType::Ptr &si, const StaticAnalysis &usedSrc, const VariableStore *vars,
               XPath2MemoryManager *mm)
       : sortItem(isEmptyOrNaN(si) ? 0 : si),
         varStore(mm)

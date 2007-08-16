@@ -16,7 +16,7 @@
 
 
 #include <xqilla/framework/XQillaExport.hpp>
-#include <xqilla/ast/StaticResolutionContext.hpp>
+#include <xqilla/ast/StaticAnalysis.hpp>
 #include <xqilla/ast/LocationInfo.hpp>
 #include <xqilla/fulltext/AllMatches.hpp>
 #include <xqilla/fulltext/TokenStore.hpp>
@@ -63,7 +63,7 @@ public:
 
   Type getType() const { return type_; }
 
-  virtual const StaticResolutionContext &getStaticResolutionContext() const { return src_; }
+  virtual const StaticAnalysis &getStaticAnalysis() const { return src_; }
 
   virtual FTSelection *staticResolution(StaticContext *context) = 0;
   virtual FTSelection *staticTyping(StaticContext *context) = 0;
@@ -76,7 +76,7 @@ protected:
 
   XPath2MemoryManager *getMemoryManager() const { return memMgr_; }
 
-  StaticResolutionContext src_;
+  StaticAnalysis src_;
 
 private:
   Type type_;

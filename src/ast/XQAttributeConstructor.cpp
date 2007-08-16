@@ -13,7 +13,7 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/ast/XQAttributeConstructor.hpp>
-#include <xqilla/ast/StaticResolutionContext.hpp>
+#include <xqilla/ast/StaticAnalysis.hpp>
 #include <xqilla/ast/XQLiteral.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/context/ItemFactory.hpp>
@@ -103,20 +103,20 @@ ASTNode* XQAttributeConstructor::staticTyping(StaticContext *context)
   _src.clear();
 
   m_name = m_name->staticTyping(context);
-  _src.add(m_name->getStaticResolutionContext());
+  _src.add(m_name->getStaticAnalysis());
 
   unsigned int i;
   for(i = 0; i < m_children->size(); ++i) {
     (*m_children)[i] = (*m_children)[i]->staticTyping(context);
-    _src.add((*m_children)[i]->getStaticResolutionContext());
+    _src.add((*m_children)[i]->getStaticAnalysis());
   }
 
   _src.getStaticType().flags = StaticType::ATTRIBUTE_TYPE;
   _src.forceNoFolding(true);
   _src.creative(true);
-  _src.setProperties(StaticResolutionContext::DOCORDER | StaticResolutionContext::GROUPED |
-	  StaticResolutionContext::PEER | StaticResolutionContext::SUBTREE | StaticResolutionContext::SAMEDOC |
-	  StaticResolutionContext::ONENODE);
+  _src.setProperties(StaticAnalysis::DOCORDER | StaticAnalysis::GROUPED |
+	  StaticAnalysis::PEER | StaticAnalysis::SUBTREE | StaticAnalysis::SAMEDOC |
+	  StaticAnalysis::ONENODE);
   return this; // Never constant fold
 }
 

@@ -18,7 +18,7 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/ATBooleanOrDerived.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xqilla/ast/StaticResolutionContext.hpp>
+#include <xqilla/ast/StaticAnalysis.hpp>
 #include <xqilla/ast/XQSequence.hpp>
 #include <xqilla/context/ItemFactory.hpp>
 #include <xqilla/context/ContextHelpers.hpp>
@@ -52,7 +52,7 @@ ASTNode* And::staticTyping(StaticContext *context)
 
   for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
     *i = (*i)->staticTyping(context);
-    const StaticResolutionContext &valueSrc = (*i)->getStaticResolutionContext();
+    const StaticAnalysis &valueSrc = (*i)->getStaticAnalysis();
 
     if(valueSrc.isUsed()) {
       _src.add(valueSrc);

@@ -16,7 +16,7 @@
 #include <xqilla/exceptions/XPath2ErrorException.hpp>
 #include <xqilla/items/Item.hpp>
 #include <xqilla/context/DynamicContext.hpp>
-#include <xqilla/ast/StaticResolutionContext.hpp>
+#include <xqilla/ast/StaticAnalysis.hpp>
 #include <xqilla/update/PendingUpdateList.hpp>
 
 const XMLCh FunctionError::name[] = {
@@ -47,9 +47,10 @@ ASTNode *FunctionError::staticTyping(StaticContext *context)
 {
   _src.clear();
 
-  // we need to specify ITEM_TYPE, or a sequence type applied on us will always fail
-  _src.getStaticType().flags = StaticType::ITEM_TYPE;
+//   // we need to specify ITEM_TYPE, or a sequence type applied on us will always fail
+//   _src.getStaticType().flags = StaticType::ITEM_TYPE;
   _src.forceNoFolding(true);
+  _src.possiblyUpdating(true);
   return calculateSRCForArguments(context);
 }
 
@@ -63,31 +64,32 @@ Sequence FunctionError::createSequence(DynamicContext* context, int flags) const
 {
     XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer exc_name(1023, context->getMemoryManager());
     exc_name.set(X("User-requested error"));
-    switch(getNumArgs())
-    {
-    case 0: break;
+    switch(getNumArgs()) {
     case 3: // TODO: extra storage in the exception object for the user object
     case 2: {
-                Sequence arg=getParamNumber(2,context)->toSequence(context);
-                exc_name.append(X(": "));
-                exc_name.append(arg.first()->asString(context));
-            }
-    case 1: {
-                Sequence arg=getParamNumber(1,context)->toSequence(context);
-                if(arg.isEmpty())
-                {
-                    if(getNumArgs()==1)
-                        XQThrow(XPath2ErrorException, X("FunctionError::createSequence"), X("ItemType matching failed [err:XPTY0004]"));
-                }
-                else
-                {
-                    exc_name.append(X(" ["));
-                    exc_name.append(arg.first()->asString(context));
-                    exc_name.append(X("]"));
-                }
-            }
+      Sequence arg = getParamNumber(2,context)->toSequence(context);
+      exc_name.append(X(": "));
+      exc_name.append(arg.first()->asString(context));
     }
-    exc_name.append(X(" [err:FOER0000]"));
+    case 1: {
+      Sequence arg = getParamNumber(1,context)->toSequence(context);
+      if(arg.isEmpty()) {
+        if(getNumArgs() == 1)
+          XQThrow(XPath2ErrorException, X("FunctionError::createSequence"), X("ItemType matching failed [err:XPTY0004]"));
+        else
+          exc_name.append(X(" [err:FOER0000]"));
+      }
+      else {
+        exc_name.append(X(" ["));
+        exc_name.append(arg.first()->asString(context));
+        exc_name.append(X("]"));
+      }
+      break;
+    }
+    case 0:
+      exc_name.append(X(" [err:FOER0000]"));
+      break;
+    }
     XQThrow(XPath2ErrorException, X("FunctionError::createSequence"), exc_name.getRawBuffer());
 }
 

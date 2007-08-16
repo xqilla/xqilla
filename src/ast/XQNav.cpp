@@ -21,7 +21,7 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/exceptions/TypeErrorException.hpp>
 #include <xqilla/items/Node.hpp>
-#include <xqilla/ast/StaticResolutionContext.hpp>
+#include <xqilla/ast/StaticAnalysis.hpp>
 #include <xqilla/ast/XQTreatAs.hpp>
 #include <xqilla/ast/XQDocumentOrder.hpp>
 #include <xqilla/ast/XQPredicate.hpp>
@@ -61,7 +61,7 @@ Result XQNav::createResult(DynamicContext* context, int flags) const
     ASTNode *step = it->step;
 
     result = step->createResult(context, flags);
-    StaticType st = step->getStaticResolutionContext().getStaticType();
+    StaticType st = step->getStaticAnalysis().getStaticType();
 
     for(++it; it != end; ++it) {
       if(st.containsType(StaticType::ANY_ATOMIC_TYPE)) {
@@ -70,7 +70,7 @@ Result XQNav::createResult(DynamicContext* context, int flags) const
 
       step = it->step;
 
-      if(step->getStaticResolutionContext().isContextSizeUsed()) {
+      if(step->getStaticAnalysis().isContextSizeUsed()) {
         // We need the context size, so convert to a Sequence to work it out
         Sequence seq(result->toSequence(context));
         result = new NavStepResult(new SequenceResult(step, seq), step, seq.getLength());
@@ -79,7 +79,7 @@ Result XQNav::createResult(DynamicContext* context, int flags) const
         result = new NavStepResult(result, step, 0);
       }
 
-      st = step->getStaticResolutionContext().getStaticType();
+      st = step->getStaticAnalysis().getStaticType();
     }
 
     // the last step allows either nodes or atomic items
@@ -150,9 +150,9 @@ ASTNode* XQNav::staticTyping(StaticContext *context)
 
   AutoContextItemTypeReset contextTypeReset(context, context->getContextItemType());
 
-  unsigned int props = StaticResolutionContext::DOCORDER | StaticResolutionContext::GROUPED |
-    StaticResolutionContext::PEER | StaticResolutionContext::SUBTREE | StaticResolutionContext::SAMEDOC |
-    StaticResolutionContext::ONENODE;
+  unsigned int props = StaticAnalysis::DOCORDER | StaticAnalysis::GROUPED |
+    StaticAnalysis::PEER | StaticAnalysis::SUBTREE | StaticAnalysis::SAMEDOC |
+    StaticAnalysis::ONENODE;
 
   Steps newSteps(XQillaAllocator<StepInfo>(context->getMemoryManager()));
 
@@ -162,7 +162,7 @@ ASTNode* XQNav::staticTyping(StaticContext *context)
   for(; it != end; ++it) {
     // Statically resolve our step
     ASTNode *step = it->step->staticTyping(context);
-    const StaticResolutionContext &stepSrc = step->getStaticResolutionContext();
+    const StaticAnalysis &stepSrc = step->getStaticAnalysis();
     context->setContextItemType(stepSrc.getStaticType());
 
     props = combineProperties(props, stepSrc.getProperties());
@@ -217,9 +217,9 @@ ASTNode* XQNav::staticTyping(StaticContext *context)
         const ASTNode *peek = (it + 1)->step;
         while(peek->getType() == PREDICATE) {
           const XQPredicate *pred = (const XQPredicate*)peek;
-          if(pred->getPredicate()->getStaticResolutionContext().isContextPositionUsed() ||
-             pred->getPredicate()->getStaticResolutionContext().isContextSizeUsed() ||
-             pred->getPredicate()->getStaticResolutionContext().getStaticType().containsType(StaticType::NUMERIC_TYPE)) {
+          if(pred->getPredicate()->getStaticAnalysis().isContextPositionUsed() ||
+             pred->getPredicate()->getStaticAnalysis().isContextSizeUsed() ||
+             pred->getPredicate()->getStaticAnalysis().getStaticType().containsType(StaticType::NUMERIC_TYPE)) {
             usesContextPositionOrSize = true;
           }
           peek = pred->getExpression();
@@ -238,9 +238,9 @@ ASTNode* XQNav::staticTyping(StaticContext *context)
                 ++it;
                 const_cast<XQStep*>(peekstep)->setAxis(XQStep::DESCENDANT);
                 // Set the properties to those for descendant axis
-                const_cast<StaticResolutionContext&>(peekstep->getStaticResolutionContext()).
-                  setProperties(StaticResolutionContext::SUBTREE | StaticResolutionContext::DOCORDER |
-                                StaticResolutionContext::GROUPED | StaticResolutionContext::SAMEDOC);
+                const_cast<StaticAnalysis&>(peekstep->getStaticAnalysis()).
+                  setProperties(StaticAnalysis::SUBTREE | StaticAnalysis::DOCORDER |
+                                StaticAnalysis::GROUPED | StaticAnalysis::SAMEDOC);
               }
             }
 
@@ -262,7 +262,7 @@ ASTNode* XQNav::staticTyping(StaticContext *context)
   _steps = newSteps;
 
   if(!_steps.empty()) {
-    _src.getStaticType() = _steps.back().step->getStaticResolutionContext().getStaticType();
+    _src.getStaticType() = _steps.back().step->getStaticAnalysis().getStaticType();
   }
 
   _src.setProperties(props);
@@ -281,43 +281,43 @@ unsigned int XQNav::combineProperties(unsigned int prev_props, unsigned int step
 {
   unsigned int new_props = 0;
 
-  if((step_props & StaticResolutionContext::SELF)) {
+  if((step_props & StaticAnalysis::SELF)) {
     new_props |= prev_props;
   }
 
-  if((prev_props & StaticResolutionContext::ONENODE) && (step_props & StaticResolutionContext::DOCORDER)) {
+  if((prev_props & StaticAnalysis::ONENODE) && (step_props & StaticAnalysis::DOCORDER)) {
     // If there was only one input node, and the step is in document order
     // then we are still in document order
-    new_props |= StaticResolutionContext::DOCORDER | StaticResolutionContext::GROUPED;
+    new_props |= StaticAnalysis::DOCORDER | StaticAnalysis::GROUPED;
   }
 
-  if((prev_props & StaticResolutionContext::DOCORDER) && (prev_props & StaticResolutionContext::PEER) &&
-     (step_props & StaticResolutionContext::DOCORDER) && (step_props & StaticResolutionContext::SUBTREE)) {
+  if((prev_props & StaticAnalysis::DOCORDER) && (prev_props & StaticAnalysis::PEER) &&
+     (step_props & StaticAnalysis::DOCORDER) && (step_props & StaticAnalysis::SUBTREE)) {
     // We keep the DOCORDER property, along with a few others that come for free
-    new_props |= StaticResolutionContext::DOCORDER | StaticResolutionContext::GROUPED | StaticResolutionContext::SUBTREE;
-    if(step_props & StaticResolutionContext::PEER) {
-      new_props |= StaticResolutionContext::PEER;
+    new_props |= StaticAnalysis::DOCORDER | StaticAnalysis::GROUPED | StaticAnalysis::SUBTREE;
+    if(step_props & StaticAnalysis::PEER) {
+      new_props |= StaticAnalysis::PEER;
     }
   }
 
-  if((prev_props & StaticResolutionContext::GROUPED) && (step_props & StaticResolutionContext::SAMEDOC)) {
+  if((prev_props & StaticAnalysis::GROUPED) && (step_props & StaticAnalysis::SAMEDOC)) {
     // If the step keeps in the SAMEDOC, then the GROUPED property is maintained
-    new_props |= StaticResolutionContext::GROUPED;
+    new_props |= StaticAnalysis::GROUPED;
   }
 
-  if((prev_props & StaticResolutionContext::SUBTREE) && (step_props & StaticResolutionContext::SUBTREE)) {
+  if((prev_props & StaticAnalysis::SUBTREE) && (step_props & StaticAnalysis::SUBTREE)) {
     // If both are SUBTREE, then we still have SUBTREE
-    new_props |= StaticResolutionContext::SUBTREE;
+    new_props |= StaticAnalysis::SUBTREE;
   }
 
-  if((prev_props & StaticResolutionContext::SAMEDOC) && (step_props & StaticResolutionContext::SAMEDOC)) {
+  if((prev_props & StaticAnalysis::SAMEDOC) && (step_props & StaticAnalysis::SAMEDOC)) {
     // If both are SAMEDOC, then we still have SAMEDOC
-    new_props |= StaticResolutionContext::SAMEDOC;
+    new_props |= StaticAnalysis::SAMEDOC;
   }
 
-  if((prev_props & StaticResolutionContext::ONENODE) && (step_props & StaticResolutionContext::ONENODE)) {
+  if((prev_props & StaticAnalysis::ONENODE) && (step_props & StaticAnalysis::ONENODE)) {
     // If both are ONENODE, then we still have ONENODE
-    new_props |= StaticResolutionContext::ONENODE;
+    new_props |= StaticAnalysis::ONENODE;
   }
 
   return new_props;

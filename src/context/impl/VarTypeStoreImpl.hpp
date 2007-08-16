@@ -53,27 +53,27 @@ public:
   /** Declares and/or sets a variable in the global scope. */
   virtual void declareGlobalVar(const XMLCh* namespaceURI,
                                 const XMLCh* name,
-                                const StaticResolutionContext &src);
+                                const StaticAnalysis &src);
 
   /** Looks up the value of a variable in the current scope.
       Returns a boolean (true if successful), and the SequenceType
       value of the variable*/
-  virtual const StaticResolutionContext* getGlobalVar(const XMLCh* namespaceURI,
+  virtual const StaticAnalysis* getGlobalVar(const XMLCh* namespaceURI,
                                                       const XMLCh* name) const;
 
   ///Declares a var in the top level scope
   virtual void declareVar(const XMLCh* namespaceURI,
                           const XMLCh* name,
-                          const StaticResolutionContext &src);
+                          const StaticAnalysis &src);
 
   /** Looks up the value of a variable in the current scope.
       Returns a boolean (true if successful), and the SequenceType
       value of the variable*/
-  virtual const StaticResolutionContext* getVar(const XMLCh* namespaceURI,
+  virtual const StaticAnalysis* getVar(const XMLCh* namespaceURI,
                                                 const XMLCh* name) const;
 
 private:
-  VariableStoreTemplate<const StaticResolutionContext*> _store;
+  VariableStoreTemplate<const StaticAnalysis*> _store;
 };
 
 #endif

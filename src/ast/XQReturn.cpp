@@ -40,8 +40,8 @@ ASTNode *XQReturn::staticTyping(StaticContext *context)
   parent_ = parent_->staticTypingSetup(context);
 
   expr_ = expr_->staticTyping(context);
-  _src.add(expr_->getStaticResolutionContext());
-  _src.getStaticType() = expr_->getStaticResolutionContext().getStaticType();
+  _src.add(expr_->getStaticAnalysis());
+  _src.getStaticType() = expr_->getStaticAnalysis().getStaticType();
 
   parent_ = parent_->staticTypingTeardown(context, _src);
 

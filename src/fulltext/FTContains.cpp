@@ -19,7 +19,7 @@
 #include <xqilla/fulltext/DefaultTokenStore.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/context/ItemFactory.hpp>
-#include <xqilla/ast/StaticResolutionContext.hpp>
+#include <xqilla/ast/StaticAnalysis.hpp>
 #include <xqilla/exceptions/XPath2TypeMatchException.hpp>
 
 FTContains::FTContains(ASTNode *argument, FTSelection *selection, ASTNode *ignore, XPath2MemoryManager* memMgr)
@@ -55,10 +55,10 @@ ASTNode *FTContains::staticTyping(StaticContext *context)
   _src.getStaticType().flags = StaticType::BOOLEAN_TYPE;
 
   argument_ = argument_->staticTyping(context);
-  _src.add(argument_->getStaticResolutionContext());
+  _src.add(argument_->getStaticAnalysis());
 
   selection_ = selection_->staticTyping(context);
-  _src.add(selection_->getStaticResolutionContext());
+  _src.add(selection_->getStaticAnalysis());
 
   {
     AutoDelete<DynamicContext> dContext(context->createDynamicContext());
@@ -70,7 +70,7 @@ ASTNode *FTContains::staticTyping(StaticContext *context)
 
   if(ignore_ != NULL) {
     ignore_ = ignore_->staticTyping(context);
-    _src.add(ignore_->getStaticResolutionContext());
+    _src.add(ignore_->getStaticAnalysis());
   }
 
   return this;

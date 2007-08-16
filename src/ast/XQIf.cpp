@@ -17,7 +17,7 @@
 #include <xqilla/ast/XQIf.hpp>
 #include <xqilla/runtime/Sequence.hpp>
 #include <xqilla/context/DynamicContext.hpp>
-#include <xqilla/ast/StaticResolutionContext.hpp>
+#include <xqilla/ast/StaticAnalysis.hpp>
 #include <xqilla/context/ContextHelpers.hpp>
 #include <xqilla/update/PendingUpdateList.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>
@@ -65,48 +65,47 @@ ASTNode *XQIf::staticTyping(StaticContext *context)
 
   _test = _test->staticTyping(context);
 
-  if(_test->getStaticResolutionContext().isUpdating()) {
+  if(_test->getStaticAnalysis().isUpdating()) {
     XQThrow(StaticErrorException,X("XQIf::staticTyping"),
             X("It is a static error for the conditional expression of an if expression "
               "to be an updating expression [err:XUST0001]"));
   }
 
+  _src.add(_test->getStaticAnalysis());
+
+  _whenTrue = _whenTrue->staticTyping(context);
+  _src.getStaticType() = _whenTrue->getStaticAnalysis().getStaticType();
+  _src.setProperties(_whenTrue->getStaticAnalysis().getProperties());
+  _src.add(_whenTrue->getStaticAnalysis());
+
+  _whenFalse = _whenFalse->staticTyping(context);
+
+  if(_src.isUpdating()) {
+    if(!_whenFalse->getStaticAnalysis().isUpdating() &&
+       !_whenFalse->getStaticAnalysis().isPossiblyUpdating())
+      XQThrow(StaticErrorException, X("XQIf::staticTyping"),
+              X("Mixed updating and non-updating operands [err:XUST0001]"));
+  }
+  else {
+    if(_whenFalse->getStaticAnalysis().isUpdating() &&
+       !_whenTrue->getStaticAnalysis().isPossiblyUpdating())
+      XQThrow(StaticErrorException, X("XQIf::staticTyping"),
+              X("Mixed updating and non-updating operands [err:XUST0001]"));
+  }
+
+  _src.getStaticType().typeUnion(_whenFalse->getStaticAnalysis().getStaticType());
+  _src.setProperties(_src.getProperties() & _whenFalse->getStaticAnalysis().getProperties());
+  _src.add(_whenFalse->getStaticAnalysis());
+
   if(_test->isConstant()) {
     AutoDelete<DynamicContext> dContext(context->createDynamicContext());
     dContext->setMemoryManager(context->getMemoryManager());
     if(_test->createResult(dContext)->getEffectiveBooleanValue(dContext, this)) {
-      return _whenTrue->staticTyping(context);
+      return _whenTrue;
     }
     else {
-      return _whenFalse->staticTyping(context);
+      return _whenFalse;
     }
-  }
-  else {
-    _src.add(_test->getStaticResolutionContext());
-
-    _whenTrue = _whenTrue->staticTyping(context);
-    _src.getStaticType() = _whenTrue->getStaticResolutionContext().getStaticType();
-    _src.setProperties(_whenTrue->getStaticResolutionContext().getProperties());
-    _src.add(_whenTrue->getStaticResolutionContext());
-
-    _whenFalse = _whenFalse->staticTyping(context);
-
-    if(_src.isUpdating()) {
-      if(!_whenFalse->getStaticResolutionContext().isUpdating() &&
-         _whenFalse->getStaticResolutionContext().getStaticType().containsType(StaticType::ITEM_TYPE))
-        XQThrow(StaticErrorException, X("XQIf::staticTyping"),
-                X("Mixed updating and non-updating operands [err:XUST0001]"));
-    }
-    else {
-      if(_whenFalse->getStaticResolutionContext().isUpdating() &&
-         _whenTrue->getStaticResolutionContext().getStaticType().containsType(StaticType::ITEM_TYPE))
-        XQThrow(StaticErrorException, X("XQIf::staticTyping"),
-                X("Mixed updating and non-updating operands [err:XUST0001]"));
-    }
-
-    _src.getStaticType().typeUnion(_whenFalse->getStaticResolutionContext().getStaticType());
-    _src.setProperties(_src.getProperties() & _whenFalse->getStaticResolutionContext().getProperties());
-    _src.add(_whenFalse->getStaticResolutionContext());
   }
 
   return this;

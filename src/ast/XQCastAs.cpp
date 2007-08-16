@@ -89,7 +89,7 @@ ASTNode *XQCastAs::staticTyping(StaticContext *context)
   }
 
   _expr = _expr->staticTyping(context);
-  _src.add(_expr->getStaticResolutionContext());
+  _src.add(_expr->getStaticAnalysis());
 
   if(_expr->isConstant()) {
     return constantFold(context);

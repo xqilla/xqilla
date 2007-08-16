@@ -39,8 +39,8 @@ ASTNode *XQDocumentOrder::staticTyping(StaticContext *context)
   _src.clear();
 
   expr_ = expr_->staticTyping(context);
-  _src.getStaticType() = expr_->getStaticResolutionContext().getStaticType();
-  _src.add(expr_->getStaticResolutionContext());
+  _src.getStaticType() = expr_->getStaticAnalysis().getStaticType();
+  _src.add(expr_->getStaticAnalysis());
 
   // Check if nodes will be returned
   if(!_src.getStaticType().containsType(StaticType::NODE_TYPE)) {
@@ -48,14 +48,14 @@ ASTNode *XQDocumentOrder::staticTyping(StaticContext *context)
   }
 
   // Check if it's already in document order
-  if((expr_->getStaticResolutionContext().getProperties() &
-      StaticResolutionContext::DOCORDER) != 0) {
+  if((expr_->getStaticAnalysis().getProperties() &
+      StaticAnalysis::DOCORDER) != 0) {
     return expr_;
   }
 
-  _src.setProperties(expr_->getStaticResolutionContext().getProperties()
-                     | StaticResolutionContext::DOCORDER
-                     | StaticResolutionContext::GROUPED);
+  _src.setProperties(expr_->getStaticAnalysis().getProperties()
+                     | StaticAnalysis::DOCORDER
+                     | StaticAnalysis::GROUPED);
 
   if(expr_->isConstant()) {
     return constantFold(context);

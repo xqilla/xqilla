@@ -19,7 +19,7 @@
 #include <xqilla/items/ATStringOrDerived.hpp>
 #include <xqilla/items/ATDecimalOrDerived.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xqilla/ast/StaticResolutionContext.hpp>
+#include <xqilla/ast/StaticAnalysis.hpp>
 
 #include <xercesc/util/XMLString.hpp>
 #include <xercesc/util/regx/RegxUtil.hpp>

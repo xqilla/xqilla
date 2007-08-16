@@ -15,7 +15,7 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/exceptions/FunctionException.hpp>
 #include <xqilla/exceptions/XMLParseException.hpp>
-#include <xqilla/ast/StaticResolutionContext.hpp>
+#include <xqilla/ast/StaticAnalysis.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xercesc/util/XMLString.hpp>
 
@@ -43,8 +43,8 @@ ASTNode *FunctionDoc::staticTyping(StaticContext *context)
 {
   _src.clear();
 
-  _src.setProperties(StaticResolutionContext::DOCORDER | StaticResolutionContext::GROUPED |
-                     StaticResolutionContext::PEER | StaticResolutionContext::SUBTREE | StaticResolutionContext::ONENODE);
+  _src.setProperties(StaticAnalysis::DOCORDER | StaticAnalysis::GROUPED |
+                     StaticAnalysis::PEER | StaticAnalysis::SUBTREE | StaticAnalysis::ONENODE);
   _src.getStaticType().flags = StaticType::DOCUMENT_TYPE;
   _src.availableDocumentsUsed(true);
 

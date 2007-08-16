@@ -39,16 +39,26 @@ UReplaceValueOf::UReplaceValueOf(ASTNode *target, ASTNode *expr, XPath2MemoryMan
   setType(ASTNode::UREPLACE_VALUE_OF);
 }
 
+static const XMLCh err_XUTY0008[] = { 'e', 'r', 'r', ':', 'X', 'U', 'T', 'Y', '0', '0', '0', '8', 0 };
+static const XMLCh err_XUDY0027[] = { 'e', 'r', 'r', ':', 'X', 'U', 'D', 'Y', '0', '0', '2', '7', 0 };
+
 ASTNode* UReplaceValueOf::staticResolution(StaticContext *context)
 {
   XPath2MemoryManager *mm = context->getMemoryManager();
 
-  SequenceType *targetType = new (mm) SequenceType(new (mm) SequenceType::ItemType(SequenceType::ItemType::TEST_NODE),
-                                                   SequenceType::EXACTLY_ONE);
-  targetType->setLocationInfo(this);
+  SequenceType *targetType1 = new (mm) SequenceType(new (mm) SequenceType::ItemType(SequenceType::ItemType::TEST_ANYTHING),
+                                                    SequenceType::PLUS);
+  targetType1->setLocationInfo(this);
 
-  // TBD This error should be [err:XUTY0008] - jpcs
-  target_ = new (mm) XQTreatAs(target_, targetType, mm);
+  SequenceType *targetType2 = new (mm) SequenceType(new (mm) SequenceType::ItemType(SequenceType::ItemType::TEST_NODE),
+                                                    SequenceType::EXACTLY_ONE);
+  targetType2->setLocationInfo(this);
+
+  target_ = new (mm) XQTreatAs(target_, targetType1, mm, err_XUDY0027);
+  target_->setLocationInfo(this);
+  target_ = target_->staticResolution(context);
+
+  target_ = new (mm) XQTreatAs(target_, targetType2, mm, err_XUTY0008);
   target_->setLocationInfo(this);
   target_ = target_->staticResolution(context);
 
@@ -64,18 +74,18 @@ ASTNode *UReplaceValueOf::staticTyping(StaticContext *context)
   _src.clear();
 
   target_ = target_->staticTyping(context);
-  _src.add(target_->getStaticResolutionContext());
+  _src.add(target_->getStaticAnalysis());
 
-  if(target_->getStaticResolutionContext().isUpdating()) {
+  if(target_->getStaticAnalysis().isUpdating()) {
     XQThrow(StaticErrorException,X("UReplaceValueOf::staticTyping"),
             X("It is a static error for the target expression of a replace expression "
               "to be an updating expression [err:XUST0001]"));
   }
 
   expr_ = expr_->staticTyping(context);
-  _src.add(expr_->getStaticResolutionContext());
+  _src.add(expr_->getStaticAnalysis());
 
-  if(expr_->getStaticResolutionContext().isUpdating()) {
+  if(expr_->getStaticAnalysis().isUpdating()) {
     XQThrow(StaticErrorException,X("UReplaceValueOf::staticTyping"),
             X("It is a static error for the with expression of a replace expression "
               "to be an updating expression [err:XUST0001]"));
