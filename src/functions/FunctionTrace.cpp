@@ -16,7 +16,7 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/context/MessageListener.hpp>
 #include <xqilla/items/Item.hpp>
-#include <xqilla/ast/StaticResolutionContext.hpp>
+#include <xqilla/ast/StaticAnalysis.hpp>
 #include <xercesc/framework/XMLBuffer.hpp>
 
 const XMLCh FunctionTrace::name[] = {
@@ -45,8 +45,8 @@ ASTNode *FunctionTrace::staticTyping(StaticContext *context)
 
   ASTNode *result = calculateSRCForArguments(context);
   if(result == this) {
-    _src.getStaticType() = _args.front()->getStaticResolutionContext().getStaticType();
-    _src.setProperties(_args.front()->getStaticResolutionContext().getProperties());
+    _src.getStaticType() = _args.front()->getStaticAnalysis().getStaticType();
+    _src.setProperties(_args.front()->getStaticAnalysis().getProperties());
   }
   _src.forceNoFolding(true);
 

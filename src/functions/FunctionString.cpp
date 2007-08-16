@@ -21,7 +21,7 @@
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xercesc/util/XMLUni.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
-#include <xqilla/ast/StaticResolutionContext.hpp>
+#include <xqilla/ast/StaticAnalysis.hpp>
 #include <xqilla/exceptions/FunctionException.hpp>
 
 const XMLCh FunctionString::name[] = {

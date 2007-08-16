@@ -62,12 +62,12 @@ ASTNode* Union::staticTyping(StaticContext *context)
   _src.clear();
 
   _args[0] = _args[0]->staticTyping(context);
-  _src.add(_args[0]->getStaticResolutionContext());
-  _src.getStaticType() = _args[0]->getStaticResolutionContext().getStaticType();
+  _src.add(_args[0]->getStaticAnalysis());
+  _src.getStaticType() = _args[0]->getStaticAnalysis().getStaticType();
 
   _args[1] = _args[1]->staticTyping(context);
-  _src.add(_args[1]->getStaticResolutionContext());
-  _src.getStaticType().typeUnion(_args[1]->getStaticResolutionContext().getStaticType());
+  _src.add(_args[1]->getStaticAnalysis());
+  _src.getStaticType().typeUnion(_args[1]->getStaticAnalysis().getStaticType());
 
   return this;
 }

@@ -17,7 +17,7 @@
 #include <xqilla/runtime/TupleResult.hpp>
 
 class StaticContext;
-class StaticResolutionContext;
+class StaticAnalysis;
 
 class XQILLA_API TupleNode : public LocationInfo
 {
@@ -42,7 +42,7 @@ public:
 
   virtual TupleNode *staticResolution(StaticContext *context) = 0;
   virtual TupleNode *staticTypingSetup(StaticContext *context) = 0;
-  virtual TupleNode *staticTypingTeardown(StaticContext *context, StaticResolutionContext &usedSrc) = 0;
+  virtual TupleNode *staticTypingTeardown(StaticContext *context, StaticAnalysis &usedSrc) = 0;
 
   virtual TupleResult::Ptr createResult(DynamicContext* context) const = 0;
 

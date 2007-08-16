@@ -62,14 +62,14 @@ FTSelection *FTDistance::staticTyping(StaticContext *context)
   src_.clear();
 
   arg_ = arg_->staticTyping(context);
-  src_.add(arg_->getStaticResolutionContext());
+  src_.add(arg_->getStaticAnalysis());
 
   range_.arg1 = range_.arg1->staticTyping(context);
-  src_.add(range_.arg1->getStaticResolutionContext());
+  src_.add(range_.arg1->getStaticAnalysis());
 
   if(range_.arg2 != NULL) {
     range_.arg2 = range_.arg2->staticTyping(context);
-    src_.add(range_.arg2->getStaticResolutionContext());
+    src_.add(range_.arg2->getStaticAnalysis());
   }
 
   return this;
@@ -143,7 +143,7 @@ FTSelection *FTDistanceLiteral::staticTyping(StaticContext *context)
   src_.clear();
 
   arg_ = arg_->staticTyping(context);
-  src_.add(arg_->getStaticResolutionContext());
+  src_.add(arg_->getStaticAnalysis());
 
   return this;
 }

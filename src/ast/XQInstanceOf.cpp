@@ -84,7 +84,7 @@ ASTNode *XQInstanceOf::staticTyping(StaticContext *context)
     return result->staticTyping(context);
   }
 
-  _src.add(_expr->getStaticResolutionContext());
+  _src.add(_expr->getStaticAnalysis());
   _src.getStaticType().flags = StaticType::BOOLEAN_TYPE;
 
   if(_expr->isConstant()) {

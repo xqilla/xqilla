@@ -36,12 +36,12 @@ void VarTypeStoreImpl::clear()
 
 void VarTypeStoreImpl::addLocalScope()
 {
-  _store.addScope(Scope<const StaticResolutionContext*>::LOCAL_SCOPE);
+  _store.addScope(Scope<const StaticAnalysis*>::LOCAL_SCOPE);
 }
 
 void VarTypeStoreImpl::addLogicalBlockScope()
 {
-  _store.addScope(Scope<const StaticResolutionContext*>::LOGICAL_BLOCK_SCOPE);
+  _store.addScope(Scope<const StaticAnalysis*>::LOGICAL_BLOCK_SCOPE);
 }
 
 void VarTypeStoreImpl::removeScope()
@@ -51,31 +51,31 @@ void VarTypeStoreImpl::removeScope()
 
 void VarTypeStoreImpl::declareGlobalVar(const XMLCh* namespaceURI,
                                         const XMLCh* name,
-                                        const StaticResolutionContext &src)
+                                        const StaticAnalysis &src)
 {
   _store.setGlobalVar(namespaceURI, name, &src);
 }
 
 void VarTypeStoreImpl::declareVar(const XMLCh* namespaceURI,
                                   const XMLCh* name,
-                                  const StaticResolutionContext &src)
+                                  const StaticAnalysis &src)
 {
   _store.declareVar(namespaceURI, name, &src);
 }
 
-const StaticResolutionContext *VarTypeStoreImpl::getVar(const XMLCh* namespaceURI,
+const StaticAnalysis *VarTypeStoreImpl::getVar(const XMLCh* namespaceURI,
                                                         const XMLCh* name) const
 {
-  VarHashEntry<const StaticResolutionContext*>* result = _store.getVar(namespaceURI, name);
+  VarHashEntry<const StaticAnalysis*>* result = _store.getVar(namespaceURI, name);
   if(result)
     return result->getValue();
   return 0;
 }
 
-const StaticResolutionContext* VarTypeStoreImpl::getGlobalVar(const XMLCh* namespaceURI,
+const StaticAnalysis* VarTypeStoreImpl::getGlobalVar(const XMLCh* namespaceURI,
                                                               const XMLCh* name) const
 {
-  VarHashEntry<const StaticResolutionContext*>* result = _store.getGlobalVar(namespaceURI, name);
+  VarHashEntry<const StaticAnalysis*>* result = _store.getGlobalVar(namespaceURI, name);
   if(result)
     return result->getValue();
   return 0;

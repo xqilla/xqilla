@@ -51,7 +51,7 @@ ASTNode* UnaryMinus::staticTyping(StaticContext *context)
 
 void UnaryMinus::calculateStaticType()
 {
-  const StaticType &arg0 = _args[0]->getStaticResolutionContext().getStaticType();
+  const StaticType &arg0 = _args[0]->getStaticAnalysis().getStaticType();
   // untypedAtomic will be promoted to xs:double
   if(arg0.containsType(StaticType::NUMERIC_TYPE)) {
     _src.getStaticType().flags = arg0.flags & StaticType::NUMERIC_TYPE;

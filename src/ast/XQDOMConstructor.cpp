@@ -93,9 +93,9 @@ ASTNode *XQContentSequence::staticTyping(StaticContext *context)
   _src.clear();
 
   expr_ = expr_->staticTyping(context);
-  _src.copy(expr_->getStaticResolutionContext());
+  _src.copy(expr_->getStaticAnalysis());
 
-  if(!expr_->getStaticResolutionContext().getStaticType().containsType(StaticType::DOCUMENT_TYPE)) {
+  if(!expr_->getStaticAnalysis().getStaticType().containsType(StaticType::DOCUMENT_TYPE)) {
     ASTNode *pChild = expr_;
 
     // Not needed if the wrapped expression is a DOM_CONSTRUCTOR
@@ -204,13 +204,13 @@ ASTNode *XQNameExpression::staticTyping(StaticContext *context)
   _src.getStaticType().flags = StaticType::QNAME_TYPE;
 
   expr_ = expr_->staticTyping(context);
-  _src.add(expr_->getStaticResolutionContext());
+  _src.add(expr_->getStaticAnalysis());
 
-  if(expr_->getStaticResolutionContext().getStaticType().isType(StaticType::QNAME_TYPE)) {
+  if(expr_->getStaticAnalysis().getStaticType().isType(StaticType::QNAME_TYPE)) {
     return expr_;
   }
 
-  if(!expr_->getStaticResolutionContext().getStaticType().
+  if(!expr_->getStaticAnalysis().getStaticType().
      containsType(StaticType::QNAME_TYPE|StaticType::STRING_TYPE|StaticType::UNTYPED_ATOMIC_TYPE)) {
     XQThrow(XPath2TypeMatchException,X("XQNameExpression::staticTyping"),
             X("The name expression must be a single xs:QName, xs:string or xs:untypedAtomic [err:XPTY0004]"));

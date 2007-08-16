@@ -34,8 +34,8 @@ ASTNode *XQAtomize::staticTyping(StaticContext *context)
   _src.clear();
 
   expr_ = expr_->staticTyping(context);
-  _src.getStaticType() = expr_->getStaticResolutionContext().getStaticType();
-  _src.add(expr_->getStaticResolutionContext());
+  _src.getStaticType() = expr_->getStaticAnalysis().getStaticType();
+  _src.add(expr_->getStaticAnalysis());
 
   if(!_src.getStaticType().containsType(StaticType::NODE_TYPE)) {
     // If the expression has no nodes, this function does nothing

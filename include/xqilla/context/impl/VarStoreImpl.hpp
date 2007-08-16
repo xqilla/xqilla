@@ -22,7 +22,7 @@
 #include <xercesc/util/RefHash2KeysTableOf.hpp>
 
 class DynamicContext;
-class StaticResolutionContext;
+class StaticAnalysis;
 
 /** Default implementation of VariableStore that stores variable values in a hash map, and
     proxies calls to a parent VariableStore if the value is not found in it's map. */
@@ -30,13 +30,13 @@ class XQILLA_API VarStoreImpl : public VariableStore
 {
 public:
   VarStoreImpl(XPath2MemoryManager *memMgr, const VariableStore *parent = 0);
-  VarStoreImpl(const StaticResolutionContext &src, const VariableStore *varStore, XPath2MemoryManager *mm);
+  VarStoreImpl(const StaticAnalysis &src, const VariableStore *varStore, XPath2MemoryManager *mm);
 
   virtual Result getVar(const XMLCh *namespaceURI, const XMLCh *name) const;
   void setVar(const XMLCh *namespaceURI, const XMLCh *name, const Result &value, unsigned int readCount = ResultBufferImpl::UNLIMITED_COUNT);
   void clear();
 
-  void cacheVariableStore(const StaticResolutionContext &src, const VariableStore *toCache);
+  void cacheVariableStore(const StaticAnalysis &src, const VariableStore *toCache);
 
 private:
   typedef XERCES_CPP_NAMESPACE_QUALIFIER RefHash2KeysTableOf<ResultBuffer> VariableHash;
@@ -51,7 +51,7 @@ private:
 class XQILLA_API VarStoreCache : public VarStoreImpl
 {
 public:
-  VarStoreCache(const StaticResolutionContext &src, const VariableStore *varStore, XPath2MemoryManager *mm);
+  VarStoreCache(const StaticAnalysis &src, const VariableStore *varStore, XPath2MemoryManager *mm);
 };
 
 class XQILLA_API SingleVarStore : public VariableStore

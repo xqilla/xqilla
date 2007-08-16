@@ -16,7 +16,7 @@
 
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/exceptions/FunctionException.hpp>
-#include <xqilla/ast/StaticResolutionContext.hpp>
+#include <xqilla/ast/StaticAnalysis.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 
 const XMLCh FunctionCollection::name[] = {
@@ -47,8 +47,8 @@ ASTNode *FunctionCollection::staticTyping(StaticContext *context)
 {
   _src.clear();
 
-  _src.setProperties(StaticResolutionContext::DOCORDER | StaticResolutionContext::GROUPED |
-                     StaticResolutionContext::SUBTREE);
+  _src.setProperties(StaticAnalysis::DOCORDER | StaticAnalysis::GROUPED |
+                     StaticAnalysis::SUBTREE);
   _src.getStaticType().flags = StaticType::NODE_TYPE;
   _src.availableCollectionsUsed(true);
   return calculateSRCForArguments(context);

@@ -36,7 +36,7 @@ TupleNode *WhereTuple::staticResolution(StaticContext *context)
   return this;
 }
 
-static TupleNode *findWhereAncestor(TupleNode *ancestor, const StaticResolutionContext &exprSrc)
+static TupleNode *findWhereAncestor(TupleNode *ancestor, const StaticAnalysis &exprSrc)
 {
   // Find the furthest ancestor that we can safely be placed before
   TupleNode *found = 0;
@@ -93,14 +93,14 @@ TupleNode *WhereTuple::staticTypingSetup(StaticContext *context)
     expr_ = expr_->staticTyping(context);
   }
 
-  if(expr_->getStaticResolutionContext().isUpdating()) {
+  if(expr_->getStaticAnalysis().isUpdating()) {
     XQThrow(StaticErrorException,X("WhereTuple::staticTypingSetup"),
             X("It is a static error for the where expression of a FLWOR expression "
               "to be an updating expression [err:XUST0001]"));
   }
 
   // Push back if possible
-  TupleNode *found = findWhereAncestor(parent_, expr_->getStaticResolutionContext());
+  TupleNode *found = findWhereAncestor(parent_, expr_->getStaticAnalysis());
   if(found) {
     TupleNode *tmp = parent_;
     parent_ = found->getParent();
@@ -111,9 +111,9 @@ TupleNode *WhereTuple::staticTypingSetup(StaticContext *context)
   return this;
 }
 
-TupleNode *WhereTuple::staticTypingTeardown(StaticContext *context, StaticResolutionContext &usedSrc)
+TupleNode *WhereTuple::staticTypingTeardown(StaticContext *context, StaticAnalysis &usedSrc)
 {
-  usedSrc.add(expr_->getStaticResolutionContext());
+  usedSrc.add(expr_->getStaticAnalysis());
   parent_ = parent_->staticTypingTeardown(context, usedSrc);
 
   return this;

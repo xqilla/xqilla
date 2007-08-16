@@ -48,7 +48,7 @@ ASTNode *FunctionUnordered::staticTyping(StaticContext *context)
 
   ASTNode *result = calculateSRCForArguments(context);
   if(result == this) {
-    _src.getStaticType() = _args.front()->getStaticResolutionContext().getStaticType();
+    _src.getStaticType() = _args.front()->getStaticAnalysis().getStaticType();
   }
   return result;
 }

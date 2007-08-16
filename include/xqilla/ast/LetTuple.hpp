@@ -15,7 +15,7 @@
 #define LETTUPLE_HPP
 
 #include <xqilla/ast/TupleNode.hpp>
-#include <xqilla/ast/StaticResolutionContext.hpp>
+#include <xqilla/ast/StaticAnalysis.hpp>
 
 class ASTNode;
 
@@ -32,13 +32,13 @@ public:
 
   virtual TupleNode *staticResolution(StaticContext *context);
   virtual TupleNode *staticTypingSetup(StaticContext *context);
-  virtual TupleNode *staticTypingTeardown(StaticContext *context, StaticResolutionContext &usedSrc);
+  virtual TupleNode *staticTypingTeardown(StaticContext *context, StaticAnalysis &usedSrc);
 
   virtual TupleResult::Ptr createResult(DynamicContext* context) const;
 
 private:
   const XMLCh *varQName_, *varURI_, *varName_;
-  StaticResolutionContext varSrc_;
+  StaticAnalysis varSrc_;
   ASTNode *expr_;
 };
 

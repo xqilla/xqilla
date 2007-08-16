@@ -85,6 +85,8 @@ public:
     bool matches(const Node::Ptr &toBeTested, DynamicContext* context, const LocationInfo *location) const;
     bool matchesNameType(const Item::Ptr &toBeTested, DynamicContext* context, const LocationInfo *location) const;
 
+    void toBuffer(XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &buffer) const;
+
   protected:
 
     // The ItemTestType of this ItemType
@@ -164,9 +166,9 @@ public:
    * Returns a Result that will throw an XPath2TypeMatchException if
    * the toBeTested Result doesn't match this SequenceType.
    */
-  Result matches(const Result &toBeTested, const LocationInfo *location) const;
-  Result occurrenceMatches(const Result &toBeTested, const LocationInfo *location) const;
-  Result typeMatches(const Result &toBeTested, const LocationInfo *location) const;
+  Result matches(const Result &toBeTested, const LocationInfo *location, const XMLCh *errorCode) const;
+  Result occurrenceMatches(const Result &toBeTested, const LocationInfo *location, const XMLCh *errorCode) const;
+  Result typeMatches(const Result &toBeTested, const LocationInfo *location, const XMLCh *errorCode) const;
 
   ASTNode *convertFunctionArg(ASTNode *arg, StaticContext *context, bool numericFunction,
                               const LocationInfo *location) const;
@@ -188,6 +190,8 @@ public:
 
   void staticResolution(StaticContext* context) const;
 
+  void toBuffer(XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &buffer) const;
+
 protected:
 
   // The ItemType of this SequenceType
@@ -199,26 +203,28 @@ protected:
   class OccurrenceMatchesResult : public ResultImpl
   {
   public:
-    OccurrenceMatchesResult(const Result &parent, const SequenceType *seqType, const LocationInfo *location);
+    OccurrenceMatchesResult(const Result &parent, const SequenceType *seqType, const LocationInfo *location, const XMLCh *errorCode);
 
     Item::Ptr next(DynamicContext *context);
     std::string asString(DynamicContext *context, int indent) const;
   private:
     const SequenceType *_seqType;
     Result _parent;
+    const XMLCh *_errorCode;
     bool _toDo;
   };
 
   class TypeMatchesResult : public ResultImpl
   {
   public:
-    TypeMatchesResult(const Result &parent, const SequenceType *seqType, const LocationInfo *location);
+    TypeMatchesResult(const Result &parent, const SequenceType *seqType, const LocationInfo *location, const XMLCh *errorCode);
 
     Item::Ptr next(DynamicContext *context);
     std::string asString(DynamicContext *context, int indent) const;
   private:
     const SequenceType *_seqType;
     Result _parent;
+    const XMLCh *_errorCode;
   };
 };
 

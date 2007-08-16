@@ -11,8 +11,8 @@
  * $Id$
  */
 
-#ifndef _STATICRESOLUTIONCONTEXT_HPP
-#define _STATICRESOLUTIONCONTEXT_HPP
+#ifndef _STATICANALYSIS_HPP
+#define _STATICANALYSIS_HPP
 
 #include <string>
 
@@ -32,15 +32,15 @@ typedef XERCES_CPP_NAMESPACE_QUALIFIER RefHash2KeysTableOfEnumerator<int> Variab
 /**
  * Records access to various parts of the context during static resolution.
  */
-class XQILLA_API StaticResolutionContext
+class XQILLA_API StaticAnalysis
 {
 public:
-  StaticResolutionContext(XPath2MemoryManager* memMgr);
-  StaticResolutionContext(const StaticResolutionContext &o, XPath2MemoryManager* memMgr);
+  StaticAnalysis(XPath2MemoryManager* memMgr);
+  StaticAnalysis(const StaticAnalysis &o, XPath2MemoryManager* memMgr);
 
-  void copy(const StaticResolutionContext &o);
+  void copy(const StaticAnalysis &o);
 
-  /// Clears all the information in this StaticResolutionContext
+  /// Clears all the information in this StaticAnalysis
   void clear();
 
   /** Overrides all the other flags, and never allows this sub-expression
@@ -69,9 +69,9 @@ public:
   bool isVariableUsed(const XMLCh *namespaceURI, const XMLCh *name) const;
   std::vector<std::pair<const XMLCh*, const XMLCh*> > variablesUsed() const;
 
-  /** Sets the members of this StaticResolutionContext from the given StaticResolutionContext */
-  void add(const StaticResolutionContext &o);
-  void addExceptContextFlags(const StaticResolutionContext &o);
+  /** Sets the members of this StaticAnalysis from the given StaticAnalysis */
+  void add(const StaticAnalysis &o);
+  void addExceptContextFlags(const StaticAnalysis &o);
 
   /** Returns true if flags are set, or variables have been used */
   bool isUsed() const;
@@ -82,6 +82,8 @@ public:
 
   void updating(bool value);
   bool isUpdating() const;
+  void possiblyUpdating(bool value);
+  bool isPossiblyUpdating() const;
 
   /**
    * Properties that allow optimisation regarding sorting or not.
@@ -108,8 +110,8 @@ public:
   std::string toString() const;
 
 private:
-  StaticResolutionContext(const StaticResolutionContext &o);
-  StaticResolutionContext &operator=(const StaticResolutionContext &o);
+  StaticAnalysis(const StaticAnalysis &o);
+  StaticAnalysis &operator=(const StaticAnalysis &o);
 
   bool _contextItem;
   bool _contextPosition;
@@ -121,6 +123,7 @@ private:
   bool _forceNoFolding;
   bool _creative;
   bool _updating;
+  bool _possiblyUpdating;
 
   unsigned int _properties;
   StaticType _staticType;

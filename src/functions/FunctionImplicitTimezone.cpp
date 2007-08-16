@@ -14,7 +14,7 @@
 #include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionImplicitTimezone.hpp>
 #include <xqilla/context/DynamicContext.hpp>
-#include <xqilla/ast/StaticResolutionContext.hpp>
+#include <xqilla/ast/StaticAnalysis.hpp>
 
 /*implicit-timezone*/
 const XMLCh FunctionImplicitTimezone::name[] = {

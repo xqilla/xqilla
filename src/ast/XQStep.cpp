@@ -20,7 +20,7 @@
 #include <xqilla/items/ATDecimalOrDerived.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xqilla/ast/StaticResolutionContext.hpp>
+#include <xqilla/ast/StaticAnalysis.hpp>
 #include <xqilla/exceptions/TypeErrorException.hpp>
 #include <xqilla/utils/PrintAST.hpp>
 #include <xqilla/ast/XQDocumentOrder.hpp>
@@ -43,31 +43,31 @@ unsigned int XQStep::getAxisProperties(Axis axis)
   // properties depend on the axis of the step
   switch (axis) {
   case SELF:
-    properties |= StaticResolutionContext::ONENODE | StaticResolutionContext::SELF;
+    properties |= StaticAnalysis::ONENODE | StaticAnalysis::SELF;
     // Fall through
   case CHILD:
   case ATTRIBUTE:
   case NAMESPACE:
-    properties |= StaticResolutionContext::SUBTREE | StaticResolutionContext::PEER;
+    properties |= StaticAnalysis::SUBTREE | StaticAnalysis::PEER;
     break;
   case DESCENDANT:
   case DESCENDANT_OR_SELF:
-    properties |= StaticResolutionContext::SUBTREE;
+    properties |= StaticAnalysis::SUBTREE;
     break;
   case FOLLOWING_SIBLING:
   case PRECEDING_SIBLING:
-    properties |= StaticResolutionContext::PEER;
+    properties |= StaticAnalysis::PEER;
     break;
   case PARENT:
-    properties |= StaticResolutionContext::PEER | StaticResolutionContext::ONENODE;
+    properties |= StaticAnalysis::PEER | StaticAnalysis::ONENODE;
     break;
   default:
     break;
   }
-  properties |= StaticResolutionContext::GROUPED | StaticResolutionContext::SAMEDOC;
+  properties |= StaticAnalysis::GROUPED | StaticAnalysis::SAMEDOC;
 
   if(isForwardAxis(axis) || axis == PARENT) {
-    properties |= StaticResolutionContext::DOCORDER;
+    properties |= StaticAnalysis::DOCORDER;
   }
 
   return properties;

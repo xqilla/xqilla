@@ -76,7 +76,7 @@ TupleNode *ForTuple::staticTypingSetup(StaticContext *context)
   // call static resolution on the value
   expr_ = expr_->staticTyping(context);
 
-  if(expr_->getStaticResolutionContext().isUpdating()) {
+  if(expr_->getStaticAnalysis().isUpdating()) {
     XQThrow(StaticErrorException,X("ForTuple::staticTypingSetup"),
             X("It is a static error for the for expression of a FLWOR expression "
               "to be an updating expression [err:XUST0001]"));
@@ -85,9 +85,9 @@ TupleNode *ForTuple::staticTypingSetup(StaticContext *context)
   varStore->addLogicalBlockScope();
 
   // Declare the variable binding
-  varSrc_.getStaticType() = expr_->getStaticResolutionContext().getStaticType();
-  varSrc_.setProperties(StaticResolutionContext::DOCORDER | StaticResolutionContext::GROUPED |
-                        StaticResolutionContext::PEER | StaticResolutionContext::SUBTREE | StaticResolutionContext::ONENODE);
+  varSrc_.getStaticType() = expr_->getStaticAnalysis().getStaticType();
+  varSrc_.setProperties(StaticAnalysis::DOCORDER | StaticAnalysis::GROUPED |
+                        StaticAnalysis::PEER | StaticAnalysis::SUBTREE | StaticAnalysis::ONENODE);
   varStore->declareVar(varURI_, varName_, varSrc_);
 
   if(posName_) {
@@ -99,24 +99,24 @@ TupleNode *ForTuple::staticTypingSetup(StaticContext *context)
   return this;
 }
 
-TupleNode *ForTuple::staticTypingTeardown(StaticContext *context, StaticResolutionContext &usedSrc)
+TupleNode *ForTuple::staticTypingTeardown(StaticContext *context, StaticAnalysis &usedSrc)
 {
   // Remove our variable binding and the scope we added
   context->getVariableTypeStore()->removeScope();
 
-  // Remove our binding variable from the StaticResolutionContext data (removing it if it's not used)
+  // Remove our binding variable from the StaticAnalysis data (removing it if it's not used)
   if(varName_ && !usedSrc.removeVariable(varURI_, varName_)) {
     varURI_ = 0;
     varName_ = 0;
   }
 
-  // Remove our positional variable from the StaticResolutionContext data (removing it if it's not used)
+  // Remove our positional variable from the StaticAnalysis data (removing it if it's not used)
   if(posName_ && !usedSrc.removeVariable(posURI_, posName_)) {
     posURI_ = 0;
     posName_ = 0;
   }
 
-  usedSrc.add(expr_->getStaticResolutionContext());
+  usedSrc.add(expr_->getStaticAnalysis());
   parent_ = parent_->staticTypingTeardown(context, usedSrc);
 
   return this;

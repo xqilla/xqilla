@@ -16,7 +16,7 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/exceptions/FunctionException.hpp>
 #include <xqilla/exceptions/XMLParseException.hpp>
-#include <xqilla/ast/StaticResolutionContext.hpp>
+#include <xqilla/ast/StaticAnalysis.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xercesc/util/XMLString.hpp>
 

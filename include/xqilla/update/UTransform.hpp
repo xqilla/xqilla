@@ -25,7 +25,7 @@ public:
 
   const XMLCh *qname_, *uri_, *name_;
 
-  StaticResolutionContext src_;
+  StaticAnalysis src_;
 
   ASTNode *expr_;
 

@@ -16,7 +16,7 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/ATDateOrDerived.hpp>
 #include "../utils/DateUtils.hpp"
-#include <xqilla/ast/StaticResolutionContext.hpp>
+#include <xqilla/ast/StaticAnalysis.hpp>
 
 const XMLCh FunctionCurrentDate::name[] = {
   XERCES_CPP_NAMESPACE_QUALIFIER chLatin_c, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_u, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_r, 

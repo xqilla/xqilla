@@ -58,7 +58,7 @@ ASTNode *FunctionAvg::staticTyping(StaticContext *context)
   ASTNode *result = calculateSRCForArguments(context);
   if(result != this) return result;
 
-  _src.getStaticType() = _args[0]->getStaticResolutionContext().getStaticType();
+  _src.getStaticType() = _args[0]->getStaticAnalysis().getStaticType();
 
   if(_src.getStaticType().containsType(StaticType::UNTYPED_ATOMIC_TYPE)) {
     _src.getStaticType().flags &= ~StaticType::UNTYPED_ATOMIC_TYPE;

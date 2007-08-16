@@ -64,7 +64,7 @@ FTSelection *FTWords::staticTyping(StaticContext *context)
   src_.clear();
 
   expr_ = expr_->staticTyping(context);
-  src_.add(expr_->getStaticResolutionContext());
+  src_.add(expr_->getStaticAnalysis());
 
   return this;
 }

@@ -45,7 +45,7 @@ ASTNode *XPath1CompatConvertFunctionArg::staticTyping(StaticContext *context)
   _src.clear();
 
   expr_ = expr_->staticTyping(context);
-  _src.copy(expr_->getStaticResolutionContext());
+  _src.copy(expr_->getStaticAnalysis());
 
   if(expr_->isConstant()) {
     return constantFold(context);

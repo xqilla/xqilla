@@ -44,7 +44,7 @@ TupleNode *LetTuple::staticResolution(StaticContext *context)
   return this;
 }
 
-static TupleNode *findLetAncestor(TupleNode *ancestor, const StaticResolutionContext &exprSrc)
+static TupleNode *findLetAncestor(TupleNode *ancestor, const StaticAnalysis &exprSrc)
 {
   // Find the furthest ancestor that we can safely be placed before
   TupleNode *found = 0;
@@ -85,7 +85,7 @@ TupleNode *LetTuple::staticTypingSetup(StaticContext *context)
   // call static resolution on the value
   expr_ = expr_->staticTyping(context);
 
-  if(expr_->getStaticResolutionContext().isUpdating()) {
+  if(expr_->getStaticAnalysis().isUpdating()) {
     XQThrow(StaticErrorException,X("LetTuple::staticTypingSetup"),
             X("It is a static error for the let expression of a FLWOR expression "
               "to be an updating expression [err:XUST0001]"));
@@ -94,13 +94,13 @@ TupleNode *LetTuple::staticTypingSetup(StaticContext *context)
   varStore->addLogicalBlockScope();
 
   // Declare the variable binding
-  varSrc_.getStaticType() = expr_->getStaticResolutionContext().getStaticType();
-  varSrc_.setProperties(expr_->getStaticResolutionContext().getProperties());
+  varSrc_.getStaticType() = expr_->getStaticAnalysis().getStaticType();
+  varSrc_.setProperties(expr_->getStaticAnalysis().getProperties());
   varStore->declareVar(varURI_, varName_, varSrc_);
 
   // Push back if possible
-  if(!expr_->getStaticResolutionContext().isCreative()) {
-    TupleNode *found = findLetAncestor(parent_, expr_->getStaticResolutionContext());
+  if(!expr_->getStaticAnalysis().isCreative()) {
+    TupleNode *found = findLetAncestor(parent_, expr_->getStaticAnalysis());
     if(found) {
       TupleNode *tmp = parent_;
       parent_ = found->getParent();
@@ -112,18 +112,18 @@ TupleNode *LetTuple::staticTypingSetup(StaticContext *context)
   return this;
 }
 
-TupleNode *LetTuple::staticTypingTeardown(StaticContext *context, StaticResolutionContext &usedSrc)
+TupleNode *LetTuple::staticTypingTeardown(StaticContext *context, StaticAnalysis &usedSrc)
 {
   // Remove our variable binding and the scope we added
   context->getVariableTypeStore()->removeScope();
 
-  // Remove our binding variable from the StaticResolutionContext data (removing it if it's not used)
+  // Remove our binding variable from the StaticAnalysis data (removing it if it's not used)
   // TBD Use counts for the variable - jpcs
   if(!usedSrc.removeVariable(varURI_, varName_)) {
     return parent_->staticTypingTeardown(context, usedSrc);
   }
 
-  usedSrc.add(expr_->getStaticResolutionContext());
+  usedSrc.add(expr_->getStaticAnalysis());
   parent_ = parent_->staticTypingTeardown(context, usedSrc);
 
   // TBD Combine LetTuple that compute the same expression? - jpcs

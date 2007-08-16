@@ -20,7 +20,7 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/exceptions/FunctionException.hpp>
 #include <xqilla/items/Timezone.hpp>
-#include <xqilla/ast/StaticResolutionContext.hpp>
+#include <xqilla/ast/StaticAnalysis.hpp>
 #include <xercesc/util/XMLString.hpp>
 
 const XMLCh FunctionAdjustDateToTimezone::name[] = { 

@@ -20,7 +20,7 @@
 #include <xqilla/schema/SequenceType.hpp>
 #include <xqilla/schema/DocumentCache.hpp>
 #include <xqilla/ast/XQFunction.hpp>
-#include <xqilla/ast/StaticResolutionContext.hpp>
+#include <xqilla/ast/StaticAnalysis.hpp>
 #include <xqilla/context/impl/VarStoreImpl.hpp>
 
 class XQILLA_API XQUserFunction : public FuncFactory, public LocationInfo
@@ -43,14 +43,14 @@ public:
     bool isUsed() const { return qname_ != 0; }
     void setNotUsed() { qname_ = 0; }
 
-    const StaticResolutionContext &getStaticResolutionContext() const { return src_; }
+    const StaticAnalysis &getStaticAnalysis() const { return src_; }
 
     void staticResolution(StaticContext* context);
 
   private:
     const XMLCh *qname_, *uri_, *name_;
     SequenceType *seqType_;
-    StaticResolutionContext src_;
+    StaticAnalysis src_;
   };
 
   typedef std::vector<ArgumentSpec*,XQillaAllocator<ArgumentSpec*> > ArgumentSpecs;
@@ -149,7 +149,7 @@ protected:
   bool isUpdating_;
 
   XPath2MemoryManager *memMgr_;
-  StaticResolutionContext src_;
+  StaticAnalysis src_;
   bool calculatingSRC_;
   DocumentCache *moduleDocCache_;
 

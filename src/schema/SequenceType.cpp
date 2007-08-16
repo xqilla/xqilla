@@ -71,19 +71,19 @@ SequenceType::~SequenceType()
 		delete m_pItemType;
 }
 
-Result SequenceType::occurrenceMatches(const Result &toBeTested, const LocationInfo *location) const
+Result SequenceType::occurrenceMatches(const Result &toBeTested, const LocationInfo *location, const XMLCh *errorCode) const
 {
-  return new OccurrenceMatchesResult(toBeTested, this, location);
+  return new OccurrenceMatchesResult(toBeTested, this, location, errorCode);
 }
 
-Result SequenceType::typeMatches(const Result &toBeTested, const LocationInfo *location) const
+Result SequenceType::typeMatches(const Result &toBeTested, const LocationInfo *location, const XMLCh *errorCode) const
 {
-  return new TypeMatchesResult(toBeTested, this, location);
+  return new TypeMatchesResult(toBeTested, this, location, errorCode);
 }
 
-Result SequenceType::matches(const Result &toBeTested, const LocationInfo *location) const
+Result SequenceType::matches(const Result &toBeTested, const LocationInfo *location, const XMLCh *errorCode) const
 {
-  return typeMatches(occurrenceMatches(toBeTested, location), location);
+  return typeMatches(occurrenceMatches(toBeTested, location, errorCode), location, errorCode);
 }
 
 void SequenceType::setItemType(SequenceType::ItemType* itemType)
@@ -352,6 +352,173 @@ void SequenceType::ItemType::getStaticType(StaticType &st, const StaticContext *
   case TEST_NODE: {
     st.flags = StaticType::NODE_TYPE;
     isExact = true;
+    break;
+  }
+  }
+}
+
+void SequenceType::toBuffer(XMLBuffer &buffer) const
+{
+  if(m_pItemType == 0) {
+    buffer.append(X("empty-sequence()"));
+  }
+  else {
+    m_pItemType->toBuffer(buffer);
+
+    switch(m_nOccurrence) {
+    case EXACTLY_ONE: break;
+    case STAR: buffer.append('*'); break;
+    case PLUS: buffer.append('+'); break;
+    case QUESTION_MARK: buffer.append('?'); break;
+    }
+  }
+}
+
+void SequenceType::ItemType::toBuffer(XMLBuffer &buffer) const
+{
+  switch(m_nTestType) {
+  case TEST_ANYTHING: {
+    buffer.append(X("item()"));
+    break;
+  }
+  case TEST_ATOMIC_TYPE: {
+    if(m_pType->getPrefix() != 0) {
+      buffer.append(m_pType->getPrefix());
+      buffer.append(':');
+    }
+    buffer.append(m_pType->getName());
+    break;
+  }
+  case TEST_DOCUMENT: {
+    buffer.append(X("document("));
+
+    if(m_pName != NULL) {
+      if(m_pName->getPrefix() != 0) {
+        buffer.append(m_pName->getPrefix());
+        buffer.append(':');
+      }
+      buffer.append(m_pName->getName());
+    }
+
+    if(m_pType != NULL) {
+      if(m_pName == NULL) {
+        buffer.append('*');
+      }
+      buffer.append(X(", "));
+      if(m_pType->getPrefix() != 0) {
+        buffer.append(m_pType->getPrefix());
+        buffer.append(':');
+      }
+      buffer.append(m_pType->getName());
+    }
+
+    buffer.append(')');
+    break;
+  }
+  case TEST_ELEMENT: {
+    buffer.append(X("element("));
+
+    if(m_pName != NULL) {
+      if(m_pName->getPrefix() != 0) {
+        buffer.append(m_pName->getPrefix());
+        buffer.append(':');
+      }
+      buffer.append(m_pName->getName());
+    }
+
+    if(m_pType != NULL) {
+      if(m_pName == NULL) {
+        buffer.append('*');
+      }
+      buffer.append(X(", "));
+      if(m_pType->getPrefix() != 0) {
+        buffer.append(m_pType->getPrefix());
+        buffer.append(':');
+      }
+      buffer.append(m_pType->getName());
+    }
+
+    buffer.append(')');
+    break;
+  }
+  case TEST_ATTRIBUTE: {
+    buffer.append(X("attribute("));
+
+    if(m_pName != NULL) {
+      if(m_pName->getPrefix() != 0) {
+        buffer.append(m_pName->getPrefix());
+        buffer.append(':');
+      }
+      buffer.append(m_pName->getName());
+    }
+
+    if(m_pType != NULL) {
+      if(m_pName == NULL) {
+        buffer.append('*');
+      }
+      buffer.append(X(", "));
+      if(m_pType->getPrefix() != 0) {
+        buffer.append(m_pType->getPrefix());
+        buffer.append(':');
+      }
+      buffer.append(m_pType->getName());
+    }
+
+    buffer.append(')');
+    break;
+  }
+  case TEST_PI: {
+    buffer.append(X("processing-instruction("));
+
+    if(m_pName != NULL) {
+      if(m_pName->getPrefix() != 0) {
+        buffer.append(m_pName->getPrefix());
+        buffer.append(':');
+      }
+      buffer.append(m_pName->getName());
+    }
+
+    buffer.append(')');
+    break;
+  }
+  case TEST_SCHEMA_ELEMENT: {
+    buffer.append(X("schema-element("));
+
+    if(m_pName != NULL) {
+      if(m_pName->getPrefix() != 0) {
+        buffer.append(m_pName->getPrefix());
+        buffer.append(':');
+      }
+      buffer.append(m_pName->getName());
+    }
+
+    buffer.append(')');
+    break;
+  }
+  case TEST_SCHEMA_ATTRIBUTE: {
+    buffer.append(X("schema-attribute("));
+
+    if(m_pName != NULL) {
+      if(m_pName->getPrefix() != 0) {
+        buffer.append(m_pName->getPrefix());
+        buffer.append(':');
+      }
+      buffer.append(m_pName->getName());
+    }
+
+    buffer.append(')');
+    break;
+  }
+  case TEST_COMMENT: {
+    buffer.append(X("comment()"));
+    break;
+  }
+  case TEST_TEXT: {
+    buffer.append(X("text()"));
+    break;
+  }
+  case TEST_NODE: {
+    buffer.append(X("node()"));
     break;
   }
   }
@@ -710,10 +877,11 @@ const SequenceType::ItemType *SequenceType::getItemType() const {
 // OccurrenceMatchesResult
 ////////////////////////////////////////
 
-SequenceType::OccurrenceMatchesResult::OccurrenceMatchesResult(const Result &parent, const SequenceType *seqType, const LocationInfo *location)
+SequenceType::OccurrenceMatchesResult::OccurrenceMatchesResult(const Result &parent, const SequenceType *seqType, const LocationInfo *location, const XMLCh *errorCode)
   : ResultImpl(location),
     _seqType(seqType),
     _parent(parent),
+    _errorCode(errorCode),
     _toDo(true)
 {
 }
@@ -727,16 +895,26 @@ Item::Ptr SequenceType::OccurrenceMatchesResult::next(DynamicContext *context)
     // "SequenceType matching between a given value and a given SequenceType is performed as follows:
     //  If the SequenceType is empty, the match succeeds only if the value is an empty sequence."
     if(_seqType->getItemType() == NULL && item.notNull()) {
-      XQThrow(XPath2TypeMatchException, X("SequenceType::MatchesResult::next"),
-               X("SequenceType matching failed: the sequence is not empty [err:XPTY0004]"));
+      XMLBuffer buf;
+      buf.set(X("Sequence does not match type "));
+      _seqType->toBuffer(buf);
+      buf.append(X(" ["));
+      buf.append(_errorCode);
+      buf.append(X("]"));
+      XQThrow(XPath2TypeMatchException, X("SequenceType::OccurrenceMatchesResult::next"), buf.getRawBuffer());
     }
     // "If the SequenceType contains an ItemType and an OccurrenceIndicator, the match succeeds only if 
     //  the number of items in the value matches the OccurrenceIndicator and each of these items matches the ItemType. "
     if(_seqType->getItemType() &&
        (_seqType->getOccurrenceIndicator() == PLUS || _seqType->getOccurrenceIndicator() == EXACTLY_ONE) &&
        item.isNull()) {
-      XQThrow(XPath2TypeMatchException, X("SequenceType::MatchesResult::next"),
-               X("SequenceType matching failed: the sequence does not contain items [err:XPTY0004]"));
+      XMLBuffer buf;
+      buf.set(X("Sequence does not match type "));
+      _seqType->toBuffer(buf);
+      buf.append(X(" - the sequence does not contain items ["));
+      buf.append(_errorCode);
+      buf.append(X("]"));
+      XQThrow(XPath2TypeMatchException, X("SequenceType::OccurrenceMatchesResult::next"), buf.getRawBuffer());
     }
 
     // "If the SequenceType is an ItemType with no OccurrenceIndicator, the match succeeds only if 
@@ -754,8 +932,13 @@ Item::Ptr SequenceType::OccurrenceMatchesResult::next(DynamicContext *context)
         _parent = 0;
       }
       else {
-        XQThrow(XPath2TypeMatchException, X("SequenceType::MatchesResult::next"),
-                 X("SequenceType matching failed: the sequence contains more than one item [err:XPTY0004]"));
+        XMLBuffer buf;
+        buf.set(X("Sequence does not match type "));
+        _seqType->toBuffer(buf);
+        buf.append(X(" - the sequence contains more then one item ["));
+        buf.append(_errorCode);
+        buf.append(X("]"));
+        XQThrow(XPath2TypeMatchException, X("SequenceType::OccurrenceMatchesResult::next"), buf.getRawBuffer());
       }
     }
   }
@@ -783,10 +966,11 @@ std::string SequenceType::OccurrenceMatchesResult::asString(DynamicContext *cont
 // TypeMatchesResult
 ////////////////////////////////////////
 
-SequenceType::TypeMatchesResult::TypeMatchesResult(const Result &parent, const SequenceType *seqType, const LocationInfo *location)
+SequenceType::TypeMatchesResult::TypeMatchesResult(const Result &parent, const SequenceType *seqType, const LocationInfo *location, const XMLCh *errorCode)
   : ResultImpl(location),
     _seqType(seqType),
-    _parent(parent)
+    _parent(parent),
+    _errorCode(errorCode)
 {
 }
 
@@ -797,8 +981,13 @@ Item::Ptr SequenceType::TypeMatchesResult::next(DynamicContext *context)
     _parent = 0;
   }
   else if(!_seqType->getItemType()->matches(item, context, this)) {
-    XQThrow(XPath2TypeMatchException, X("SequenceType::MatchesResult::next"),
-            X("ItemType matching failed [err:XPTY0004]"));
+    XMLBuffer buf;
+    buf.set(X("Sequence does not match type "));
+    _seqType->toBuffer(buf);
+    buf.append(X(" - found item of incorrect type ["));
+    buf.append(_errorCode);
+    buf.append(X("]"));
+    XQThrow(XPath2TypeMatchException, X("SequenceType::MatchesResult::next"), buf.getRawBuffer());
   }
 
   return item;

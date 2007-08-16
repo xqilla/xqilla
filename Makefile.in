@@ -76,24 +76,24 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	XQFunction.lo XQIf.lo ASTNodeImpl.lo XQInstanceOf.lo \
 	XQLiteral.lo XQNav.lo XQOperator.lo XQParenthesizedExpr.lo \
 	XQSequence.lo XQStep.lo XQTreatAs.lo XQVariable.lo \
-	StaticResolutionContext.lo StaticType.lo \
-	ConstantFoldingFunction.lo NumericFunction.lo \
-	XQDOMConstructor.lo XQDocumentConstructor.lo \
-	XQElementConstructor.lo XQAttributeConstructor.lo \
-	XQPIConstructor.lo XQCommentConstructor.lo \
-	XQTextConstructor.lo XQFunctionCall.lo XQGlobalVariable.lo \
-	XQOrderingChange.lo XQQuantified.lo XQValidate.lo \
-	XQTypeswitch.lo XPath1Compat.lo ConvertFunctionArg.lo \
-	XQDocumentOrder.lo XQPredicate.lo XQReturn.lo ContextTuple.lo \
-	ForTuple.lo LetTuple.lo WhereTuple.lo OrderByTuple.lo \
-	ContentSequenceFilter.lo EventSerializer.lo NoInheritFilter.lo \
-	NSFixupFilter.lo FTContains.lo FTWords.lo FTOr.lo FTAnd.lo \
-	FTMildnot.lo FTUnaryNot.lo DefaultTokenizer.lo \
-	DefaultTokenStore.lo FTOrder.lo FTDistance.lo FTScope.lo \
-	FTContent.lo FTWindow.lo XQillaBuilderImpl.lo \
-	XQillaDocumentImpl.lo XQillaExpressionImpl.lo \
-	XQillaNSResolverImpl.lo XQillaXMLGrammarPoolImpl.lo \
-	XPathDocumentImpl.lo XPathNamespaceImpl.lo XPath2ResultImpl.lo \
+	StaticAnalysis.lo StaticType.lo ConstantFoldingFunction.lo \
+	NumericFunction.lo XQDOMConstructor.lo \
+	XQDocumentConstructor.lo XQElementConstructor.lo \
+	XQAttributeConstructor.lo XQPIConstructor.lo \
+	XQCommentConstructor.lo XQTextConstructor.lo XQFunctionCall.lo \
+	XQGlobalVariable.lo XQOrderingChange.lo XQQuantified.lo \
+	XQValidate.lo XQTypeswitch.lo XPath1Compat.lo \
+	ConvertFunctionArg.lo XQDocumentOrder.lo XQPredicate.lo \
+	XQReturn.lo ContextTuple.lo ForTuple.lo LetTuple.lo \
+	WhereTuple.lo OrderByTuple.lo ContentSequenceFilter.lo \
+	EventSerializer.lo NoInheritFilter.lo NSFixupFilter.lo \
+	FTContains.lo FTWords.lo FTOr.lo FTAnd.lo FTMildnot.lo \
+	FTUnaryNot.lo DefaultTokenizer.lo DefaultTokenStore.lo \
+	FTOrder.lo FTDistance.lo FTScope.lo FTContent.lo FTWindow.lo \
+	XQillaBuilderImpl.lo XQillaDocumentImpl.lo \
+	XQillaExpressionImpl.lo XQillaNSResolverImpl.lo \
+	XQillaXMLGrammarPoolImpl.lo XPathDocumentImpl.lo \
+	XPathNamespaceImpl.lo XPath2ResultImpl.lo \
 	XQillaImplementation.lo XPath2NodeSerializer.lo XQilla.lo \
 	XQQuery.lo UTF8Str.lo XMLChCompare.lo XStr.lo ContextUtils.lo \
 	DateUtils.lo NumUtils.lo XQillaPlatformUtils.lo PrintAST.lo \
@@ -416,7 +416,7 @@ src/ast/XQSequence.cpp \
 src/ast/XQStep.cpp \
 src/ast/XQTreatAs.cpp \
 src/ast/XQVariable.cpp \
-src/ast/StaticResolutionContext.cpp \
+src/ast/StaticAnalysis.cpp \
 src/ast/StaticType.cpp \
 src/ast/ConstantFoldingFunction.cpp \
 src/ast/NumericFunction.cpp \
@@ -1254,7 +1254,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SequenceResult.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SequenceType.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SingleResult.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/StaticResolutionContext.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/StaticAnalysis.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/StaticType.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/StringPool.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TestSuiteParser.Plo@am__quote@
@@ -1895,12 +1895,12 @@ XQVariable.lo: src/ast/XQVariable.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQVariable.lo `test -f 'src/ast/XQVariable.cpp' || echo '$(srcdir)/'`src/ast/XQVariable.cpp
 
-StaticResolutionContext.lo: src/ast/StaticResolutionContext.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT StaticResolutionContext.lo -MD -MP -MF "$(DEPDIR)/StaticResolutionContext.Tpo" -c -o StaticResolutionContext.lo `test -f 'src/ast/StaticResolutionContext.cpp' || echo '$(srcdir)/'`src/ast/StaticResolutionContext.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/StaticResolutionContext.Tpo" "$(DEPDIR)/StaticResolutionContext.Plo"; else rm -f "$(DEPDIR)/StaticResolutionContext.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/ast/StaticResolutionContext.cpp' object='StaticResolutionContext.lo' libtool=yes @AMDEPBACKSLASH@
+StaticAnalysis.lo: src/ast/StaticAnalysis.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT StaticAnalysis.lo -MD -MP -MF "$(DEPDIR)/StaticAnalysis.Tpo" -c -o StaticAnalysis.lo `test -f 'src/ast/StaticAnalysis.cpp' || echo '$(srcdir)/'`src/ast/StaticAnalysis.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/StaticAnalysis.Tpo" "$(DEPDIR)/StaticAnalysis.Plo"; else rm -f "$(DEPDIR)/StaticAnalysis.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/ast/StaticAnalysis.cpp' object='StaticAnalysis.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o StaticResolutionContext.lo `test -f 'src/ast/StaticResolutionContext.cpp' || echo '$(srcdir)/'`src/ast/StaticResolutionContext.cpp
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o StaticAnalysis.lo `test -f 'src/ast/StaticAnalysis.cpp' || echo '$(srcdir)/'`src/ast/StaticAnalysis.cpp
 
 StaticType.lo: src/ast/StaticType.cpp
 @am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT StaticType.lo -MD -MP -MF "$(DEPDIR)/StaticType.Tpo" -c -o StaticType.lo `test -f 'src/ast/StaticType.cpp' || echo '$(srcdir)/'`src/ast/StaticType.cpp; \

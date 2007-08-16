@@ -20,7 +20,7 @@
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/items/Node.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xqilla/ast/StaticResolutionContext.hpp>
+#include <xqilla/ast/StaticAnalysis.hpp>
 #include <xqilla/framework/XPath2MemoryManagerImpl.hpp>
 #include <xqilla/context/ItemFactory.hpp>
 

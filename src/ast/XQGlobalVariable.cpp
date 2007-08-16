@@ -34,6 +34,8 @@ XQGlobalVariable::XQGlobalVariable(const XMLCh* varQName, SequenceType* seqType,
 {
 }
 
+static const XMLCh err_XPTY0004[] = { 'e', 'r', 'r', ':', 'X', 'P', 'T', 'Y', '0', '0', '0', '4', 0 };
+
 void XQGlobalVariable::execute(DynamicContext* context) const
 {
   try {
@@ -49,7 +51,7 @@ void XQGlobalVariable::execute(DynamicContext* context) const
       }
       if(m_Type != NULL) {
         // Check the external value's type
-        Result matchesRes = m_Type->matches(value, m_Type);
+        Result matchesRes = m_Type->matches(value, m_Type, err_XPTY0004);
         while(matchesRes->next(context).notNull()) {}
       }
     }
@@ -96,7 +98,7 @@ void XQGlobalVariable::staticTyping(StaticContext* context)
 
   if(m_Value != NULL) {
     m_Value = m_Value->staticTyping(context);
-    _src.copy(m_Value->getStaticResolutionContext());
+    _src.copy(m_Value->getStaticAnalysis());
   }
   else {
     if(m_Type->getItemType() != NULL) {

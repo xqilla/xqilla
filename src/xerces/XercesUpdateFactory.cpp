@@ -211,13 +211,19 @@ void XercesUpdateFactory::applyRename(const PendingUpdate &update, DynamicContex
 
   ATQNameOrDerived *qname = (ATQNameOrDerived*)update.getValue().first().get();
 
-  // TBD Rename processing-instruction? - jpcs
+  if(domnode->getNodeType() == DOMNode::PROCESSING_INSTRUCTION_NODE) {
+	  DOMProcessingInstruction *newPI = domnode->getOwnerDocument()->
+		  createProcessingInstruction(qname->getName(), domnode->getNodeValue());
+	  domnode->getParentNode()->replaceChild(newPI, domnode);
+  }
+  else {
+	  domnode->getOwnerDocument()->renameNode(domnode, qname->getURI(), qname->getName());
+	  if(qname->getURI() != 0 && *qname->getURI() != 0)
+		  domnode->setPrefix(qname->getPrefix());
 
-  domnode->getOwnerDocument()->renameNode(domnode, qname->getURI(), qname->getName());
-  if(qname->getURI() != 0 && *qname->getURI() != 0)
-    domnode->setPrefix(qname->getPrefix());
+	  removeType(domnode);
+  }
 
-  removeType(domnode);
   addToPutList(domnode, &update, context);
 }
 

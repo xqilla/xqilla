@@ -16,7 +16,7 @@
 #include <xqilla/exceptions/FunctionException.hpp>
 #include <xqilla/items/ATBooleanOrDerived.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xqilla/ast/StaticResolutionContext.hpp>
+#include <xqilla/ast/StaticAnalysis.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xercesc/util/XMLString.hpp>
 

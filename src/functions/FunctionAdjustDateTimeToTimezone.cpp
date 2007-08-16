@@ -21,7 +21,7 @@
 #include <xqilla/exceptions/FunctionException.hpp>
 #include <xercesc/util/XMLString.hpp>
 #include <xqilla/items/Timezone.hpp>
-#include <xqilla/ast/StaticResolutionContext.hpp>
+#include <xqilla/ast/StaticAnalysis.hpp>
 
 const XMLCh FunctionAdjustDateTimeToTimezone::name[] = { 
   XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_d, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_j, 

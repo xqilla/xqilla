@@ -154,7 +154,7 @@ ASTNode *XQFunction::calculateSRCForArguments(StaticContext *context, bool check
 {
   for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
     *i = (*i)->staticTyping(context);
-    _src.add((*i)->getStaticResolutionContext());
+    _src.add((*i)->getStaticAnalysis());
 
     if(checkTimezone && (*i)->isDateOrTimeAndHasNoTimezone(context))
       _src.implicitTimezoneUsed(true);

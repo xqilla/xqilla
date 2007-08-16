@@ -13,7 +13,7 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/ast/XQCommentConstructor.hpp>
-#include <xqilla/ast/StaticResolutionContext.hpp>
+#include <xqilla/ast/StaticAnalysis.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/context/ItemFactory.hpp>
 #include <xqilla/exceptions/ASTException.hpp>
@@ -78,14 +78,14 @@ ASTNode* XQCommentConstructor::staticTyping(StaticContext *context)
   _src.clear();
 
   m_value = m_value->staticTyping(context);
-  _src.add(m_value->getStaticResolutionContext());
+  _src.add(m_value->getStaticAnalysis());
 
   _src.getStaticType().flags = StaticType::COMMENT_TYPE;
   _src.forceNoFolding(true);
   _src.creative(true);
-  _src.setProperties(StaticResolutionContext::DOCORDER | StaticResolutionContext::GROUPED |
-	  StaticResolutionContext::PEER | StaticResolutionContext::SUBTREE | StaticResolutionContext::SAMEDOC |
-	  StaticResolutionContext::ONENODE);
+  _src.setProperties(StaticAnalysis::DOCORDER | StaticAnalysis::GROUPED |
+	  StaticAnalysis::PEER | StaticAnalysis::SUBTREE | StaticAnalysis::SAMEDOC |
+	  StaticAnalysis::ONENODE);
   return this; // Never constant fold
 }
 

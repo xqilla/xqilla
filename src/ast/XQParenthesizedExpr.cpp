@@ -68,27 +68,27 @@ ASTNode* XQParenthesizedExpr::staticResolution(StaticContext *context) {
 ASTNode* XQParenthesizedExpr::staticTyping(StaticContext *context) {
   _src.getStaticType().flags = 0;
 
-  bool updating = false;
+  bool possiblyUpdating = true;
   for(VectorOfASTNodes::iterator i = _astNodes.begin(); i != _astNodes.end(); ++i) {
     *i = (*i)->staticTyping(context);
 
-    if(i == _astNodes.begin()) {
-      updating = (*i)->getStaticResolutionContext().isUpdating();
-    }
-    else if(updating) {
-      if(!(*i)->getStaticResolutionContext().isUpdating() &&
-         (*i)->getStaticResolutionContext().getStaticType().containsType(StaticType::ITEM_TYPE))
+    if(_src.isUpdating()) {
+      if(!(*i)->getStaticAnalysis().isUpdating() &&
+         !(*i)->getStaticAnalysis().isPossiblyUpdating())
         XQThrow(StaticErrorException, X("XQParenthesizedExpr::staticTyping"),
                 X("Mixed updating and non-updating operands [err:XUST0001]"));
     }
     else {
-      if((*i)->getStaticResolutionContext().isUpdating())
+      if((*i)->getStaticAnalysis().isUpdating() && !possiblyUpdating)
         XQThrow(StaticErrorException, X("XQParenthesizedExpr::staticTyping"),
                 X("Mixed updating and non-updating operands [err:XUST0001]"));
     }
 
-    _src.getStaticType().typeUnion((*i)->getStaticResolutionContext().getStaticType());
-    _src.add((*i)->getStaticResolutionContext());
+    if(possiblyUpdating)
+      possiblyUpdating = (*i)->getStaticAnalysis().isPossiblyUpdating();
+
+    _src.getStaticType().typeUnion((*i)->getStaticAnalysis().getStaticType());
+    _src.add((*i)->getStaticAnalysis());
   }
 
   if(!_src.isUsed()) {

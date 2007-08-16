@@ -43,7 +43,7 @@ ASTNode *FunctionReverse::staticTyping(StaticContext *context)
 
   ASTNode *result = calculateSRCForArguments(context);
   if(result == this) {
-    _src.getStaticType() = _args[0]->getStaticResolutionContext().getStaticType();
+    _src.getStaticType() = _args[0]->getStaticAnalysis().getStaticType();
   }
   return result;
 }

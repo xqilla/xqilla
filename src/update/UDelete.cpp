@@ -28,6 +28,8 @@ UDelete::UDelete(ASTNode *expr, XPath2MemoryManager* memMgr)
   setType(ASTNode::UDELETE);
 }
 
+static const XMLCh err_XUTY0007[] = { 'e', 'r', 'r', ':', 'X', 'U', 'T', 'Y', '0', '0', '0', '7', 0 };
+
 ASTNode *UDelete::staticResolution(StaticContext *context)
 {
   XPath2MemoryManager *mm = context->getMemoryManager();
@@ -36,8 +38,7 @@ ASTNode *UDelete::staticResolution(StaticContext *context)
                                                 SequenceType::STAR);
   seqType->setLocationInfo(this);
 
-  // TBD The error here should be [err:XUTY0007] - jpcs
-  expr_ = new (mm) XQTreatAs(expr_, seqType, mm);
+  expr_ = new (mm) XQTreatAs(expr_, seqType, mm, err_XUTY0007);
   expr_->setLocationInfo(this);
 
   expr_ = expr_->staticResolution(context);
@@ -49,9 +50,9 @@ ASTNode *UDelete::staticTyping(StaticContext *context)
   _src.clear();
 
   expr_ = expr_->staticTyping(context);
-  _src.add(expr_->getStaticResolutionContext());
+  _src.add(expr_->getStaticAnalysis());
 
-  if(expr_->getStaticResolutionContext().isUpdating()) {
+  if(expr_->getStaticAnalysis().isUpdating()) {
     XQThrow(StaticErrorException,X("UDelete::staticTyping"),
             X("It is a static error for the target expression of a delete expression "
               "to be an updating expression [err:XUST0001]"));

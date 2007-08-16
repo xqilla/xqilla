@@ -53,7 +53,7 @@ void VarStoreImpl::clear()
   store_.removeAll();
 }
 
-void VarStoreImpl::cacheVariableStore(const StaticResolutionContext &src, const VariableStore *toCache)
+void VarStoreImpl::cacheVariableStore(const StaticAnalysis &src, const VariableStore *toCache)
 {
   vector<pair<const XMLCh*, const XMLCh*> > vars = src.variablesUsed();
   for(vector<pair<const XMLCh*, const XMLCh*> >::iterator i = vars.begin(); i != vars.end(); ++i) {

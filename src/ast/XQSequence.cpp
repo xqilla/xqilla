@@ -22,7 +22,7 @@
 #define snprintf _snprintf
 #endif
 
-#include <xqilla/ast/StaticResolutionContext.hpp>
+#include <xqilla/ast/StaticAnalysis.hpp>
 #include <xqilla/runtime/Sequence.hpp>
 #include <xqilla/runtime/SequenceResult.hpp>
 #include <xqilla/context/DynamicContext.hpp>
@@ -133,8 +133,13 @@ ASTNode *XQSequence::staticTyping(StaticContext *context)
   _src.getStaticType().flags = 0;
 
   ItemConstructor::Vector::iterator it = _itemConstructors.begin();
-  for(; it != _itemConstructors.end(); ++it) {
-    _src.getStaticType().typeUnion((*it)->getStaticType());
+  if(it == _itemConstructors.end()) {
+    _src.possiblyUpdating(true);
+  }
+  else {
+    for(; it != _itemConstructors.end(); ++it) {
+      _src.getStaticType().typeUnion((*it)->getStaticType());
+    }
   }
 
   return this;

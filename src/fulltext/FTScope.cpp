@@ -30,7 +30,7 @@ FTSelection *FTScope::staticTyping(StaticContext *context)
   src_.clear();
 
   arg_ = arg_->staticTyping(context);
-  src_.add(arg_->getStaticResolutionContext());
+  src_.add(arg_->getStaticAnalysis());
 
   return this;
 }

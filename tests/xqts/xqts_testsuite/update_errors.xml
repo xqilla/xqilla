@@ -1,131 +1,13 @@
 <errors>
   <error id="address-book-q1" reason="error failure" action="skip" comment="Bad test! Contains incompatible updates"/>
-  <error id="id-comma-expr-010" reason="error failure"/>
-  <error id="id-comma-expr-011" reason="result failure"/>
-  <error id="id-comma-expr-012" reason="result failure"/>
-  <error id="id-comma-expr-015" reason="result failure"/>
-  <error id="id-comma-expr-016" reason="result failure" action="skip" comment="Bad test! Expected result not found: UpdateFacility/ExpectedTestResults/CommaExpression//id-comma-expr-016.xml"/>
-  <error id="id-comma-expr-017" reason="result failure" action="skip" comment="Bad test! Expected result not found: UpdateFacility/ExpectedTestResults/CommaExpression//id-comma-expr-017.xml"/>
-  <error id="id-comma-expr-018" reason="result failure" action="skip" comment="Bad test! Expected result not found: UpdateFacility/ExpectedTestResults/CommaExpression//id-comma-expr-018.xml"/>
-  <error id="id-comma-expr-021" reason="error failure"/>
-  <error id="id-comma-expr-022" reason="result failure"/>
-  <error id="id-comma-expr-028" reason="error failure"/>
-  <error id="id-comma-expr-029" reason="error failure"/>
-  <error id="id-comma-expr-030" reason="error failure"/>
-  <error id="id-comma-expr-032" reason="error failure"/>
-  <error id="id-comma-expr-033" reason="error failure"/>
-  <error id="id-comma-expr-034" reason="error failure"/>
-  <error id="id-comma-expr-035" reason="error failure"/>
-  <error id="id-comma-expr-04" reason="result failure"/>
-  <error id="id-comma-expr-05" reason="result failure"/>
-  <error id="id-comma-expr-08" reason="result failure"/>
-  <error id="id-comma-expr-09" reason="result failure"/>
-  <error id="id-conditional-expr-01" reason="result failure"/>
-  <error id="id-conditional-expr-010" reason="result failure"/>
-  <error id="id-conditional-expr-011" reason="error failure"/>
-  <error id="id-conditional-expr-012" reason="error failure"/>
-  <error id="id-conditional-expr-013" reason="result failure"/>
-  <error id="id-conditional-expr-014" reason="result failure"/>
-  <error id="id-conditional-expr-015" reason="result failure"/>
-  <error id="id-conditional-expr-016" reason="result failure"/>
-  <error id="id-conditional-expr-017" reason="error failure"/>
-  <error id="id-conditional-expr-018" reason="error failure"/>
-  <error id="id-conditional-expr-019" reason="result failure"/>
-  <error id="id-conditional-expr-02" reason="result failure"/>
-  <error id="id-conditional-expr-021" reason="result failure"/>
-  <error id="id-conditional-expr-022" reason="result failure"/>
-  <error id="id-conditional-expr-023" reason="error failure"/>
-  <error id="id-conditional-expr-024" reason="error failure"/>
-  <error id="id-conditional-expr-025" reason="error failure"/>
-  <error id="id-conditional-expr-026" reason="error failure"/>
-  <error id="id-conditional-expr-027" reason="error failure"/>
-  <error id="id-conditional-expr-028" reason="error failure"/>
-  <error id="id-conditional-expr-029" reason="error failure"/>
-  <error id="id-conditional-expr-03" reason="result failure"/>
-  <error id="id-conditional-expr-030" reason="error failure"/>
-  <error id="id-conditional-expr-04" reason="result failure"/>
-  <error id="id-conditional-expr-05" reason="error failure"/>
-  <error id="id-conditional-expr-06" reason="error failure"/>
-  <error id="id-conditional-expr-07" reason="result failure"/>
-  <error id="id-conditional-expr-08" reason="result failure"/>
-  <error id="id-conditional-expr-09" reason="error failure"/>
-  <error id="id-delete-expr-02" reason="result failure"/>
-  <error id="id-delete-expr-07" reason="error failure"/>
-  <error id="id-flwor-expr-010" reason="error failure"/>
-  <error id="id-flwor-expr-011" reason="error failure"/>
-  <error id="id-flwor-expr-012" reason="error failure"/>
-  <error id="id-flwor-expr-017" reason="error failure"/>
-  <error id="id-flwor-expr-018" reason="error failure"/>
-  <error id="id-flwor-expr-019" reason="error failure"/>
-  <error id="id-flwor-expr-020" reason="error failure"/>
-  <error id="id-function-call-01" reason="error failure"/>
-  <error id="id-function-call-02" reason="error failure"/>
-  <error id="id-function-call-03" reason="error failure"/>
-  <error id="id-function-call-04" reason="error failure"/>
-  <error id="id-function-call-05" reason="error failure"/>
-  <error id="id-function-declaration-012" reason="error failure"/>
-  <error id="id-function-declaration-013" reason="error failure"/>
-  <error id="id-function-declaration-06" reason="result failure"/>
-  <error id="id-function-declaration-08" reason="result failure"/>
-  <error id="id-insert-expr-024" reason="error failure"/>
-  <error id="id-insert-expr-037" reason="result failure"/>
-  <error id="id-insert-expr-040" reason="result failure"/>
-  <error id="id-insert-expr-041" reason="result failure"/>
-  <error id="id-insert-expr-07" reason="result failure" action="skip" comment="Bad test! Expected result not found: UpdateFacility/ExpectedTestResults/InsertExpressions//id-insert-expr-07.xml"/>
-  <error id="id-rename-expr-010" reason="error failure"/>
-  <error id="id-rename-expr-011" reason="result failure"/>
-  <error id="id-rename-expr-012" reason="error failure"/>
-  <error id="id-rename-expr-013" reason="error failure"/>
-  <error id="id-rename-expr-014" reason="result failure"/>
-  <error id="id-rename-expr-03" reason="result failure"/>
-  <error id="id-rename-expr-04" reason="result failure"/>
-  <error id="id-rename-expr-05" reason="error failure"/>
-  <error id="id-rename-expr-06" reason="error failure"/>
-  <error id="id-rename-expr-07" reason="error failure"/>
-  <error id="id-rename-expr-08" reason="error failure"/>
-  <error id="id-rename-expr-09" reason="error failure"/>
-  <error id="id-replace-expr-012" reason="error failure"/>
-  <error id="id-replace-expr-018" reason="error failure"/>
-  <error id="id-replace-expr-04" reason="result failure"/>
-  <error id="id-replace-expr-07" reason="result failure"/>
-  <error id="id-replace-expr-08" reason="result failure"/>
-  <error id="id-replace-expr-09" reason="result failure"/>
-  <error id="id-transform-expr-010" reason="error failure"/>
-  <error id="id-transform-expr-011" reason="result failure" action="skip" comment="Bad test! Query not found: UpdateFacility/Queries/TransformExpressions//id-transform-expr-011-test.xq"/>
-  <error id="id-transform-expr-012" reason="error failure"/>
-  <error id="id-transform-expr-06" reason="error failure"/>
-  <error id="id-transform-expr-09" reason="error failure"/>
-  <error id="id-typeswitch-expr-010" reason="result failure"/>
-  <error id="id-typeswitch-expr-011" reason="result failure"/>
-  <error id="id-typeswitch-expr-012" reason="error failure"/>
-  <error id="id-typeswitch-expr-013" reason="error failure"/>
-  <error id="id-typeswitch-expr-014" reason="error failure"/>
-  <error id="id-typeswitch-expr-016" reason="error failure"/>
-  <error id="id-typeswitch-expr-019" reason="result failure"/>
-  <error id="id-typeswitch-expr-020" reason="error failure"/>
-  <error id="id-typeswitch-expr-021" reason="error failure"/>
-  <error id="id-typeswitch-expr-026" reason="result failure" action="skip" comment="Bad test! Expected result not found: UpdateFacility/ExpectedTestResults/TypeswitchExpression//id-typeswitch-expr-26.xml"/>
-  <error id="id-typeswitch-expr-027" reason="error failure"/>
-  <error id="id-typeswitch-expr-028" reason="error failure"/>
-  <error id="id-typeswitch-expr-029" reason="error failure"/>
-  <error id="id-typeswitch-expr-030" reason="error failure"/>
-  <error id="id-typeswitch-expr-031" reason="result failure"/>
-  <error id="id-typeswitch-expr-032" reason="result failure"/>
-  <error id="id-typeswitch-expr-033" reason="result failure"/>
-  <error id="id-typeswitch-expr-034" reason="error failure"/>
-  <error id="id-typeswitch-expr-035" reason="error failure"/>
-  <error id="id-typeswitch-expr-05" reason="result failure"/>
-  <error id="id-typeswitch-expr-06" reason="error failure"/>
-  <error id="id-typeswitch-expr-07" reason="error failure"/>
-  <error id="id-typeswitch-expr-09" reason="result failure"/>
   <error id="namespaces-q1" reason="result failure" action="skip" comment="Bad test! Query not found: UpdateFacility/Queries/UseCases/NamespacesUpdates//namespaces-q1-test.xq"/>
   <error id="nil-q1" reason="result failure" action="skip" comment="Bad test! Expected result not found: UpdateFacility/ExpectedTestResults/UseCases/NilUpdates//nil-q1-results.xml"/>
   <error id="parts-q1" reason="result failure" action="skip" comment="Bad test! Expected result not found: UpdateFacility/ExpectedTestResults/UseCases/PartsUpdates//parts-q1-results.xml"/>
   <error id="parts-q2" reason="result failure" action="skip" comment="Bad test! Expected result not found: UpdateFacility/ExpectedTestResults/UseCases/PartsUpdates//parts-q2-results.xml"/>
   <error id="parts-q3-1" reason="result failure" action="skip" comment="Bad test! Expected result not found: UpdateFacility/ExpectedTestResults/UseCases/PartsUpdates//parts-q3-results.xml"/>
   <error id="parts-q3-2" reason="result failure" action="skip" comment="Bad test! Expected result not found: UpdateFacility/ExpectedTestResults/UseCases/PartsUpdates//parts-q3-results.xml"/>
-  <error id="parts-q4-1" reason="error failure" action="skip" comment="Bad test! Relies on previously deleted element"/>
-  <error id="parts-q4-2" reason="error failure" action="skip" comment="Bad test! Relies on previously deleted element"/>
+  <error id="parts-q4-1" reason="result failure" action="skip" comment="Bad test! Expected result not found: UpdateFacility/ExpectedTestResults/UseCases/PartsUpdates//parts-q4-results.xml"/>
+  <error id="parts-q4-2" reason="result failure" action="skip" comment="Bad test! Expected result not found: UpdateFacility/ExpectedTestResults/UseCases/PartsUpdates//parts-q4-results.xml"/>
   <error id="parts-q6" reason="result failure" action="skip" comment="Bad test! Expected result not found: UpdateFacility/ExpectedTestResults/UseCases/PartsUpdates//parts-q6-results.xml"/>
   <error id="relational-data-q1" reason="result failure" action="skip" comment="Bad test! Expected result not found: UpdateFacility/ExpectedTestResults/UseCases/RelationalDataUpdates/relational-data-q1-results.xml"/>
   <error id="relational-data-q2" reason="result failure" action="skip" comment="Bad test! Expected result not found: UpdateFacility/ExpectedTestResults/UseCases/RelationalDataUpdates/relational-data-q2-results.xml"/>
