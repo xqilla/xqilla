@@ -19,6 +19,7 @@
 #include <xqilla/xqts/TestSuiteParser.hpp>
 #include <xqilla/xqts/TestSuiteResultListener.hpp>
 
+#include <fstream>
 #include <iostream>
 
 #include <xercesc/parsers/XercesDOMParser.hpp>
@@ -50,6 +51,10 @@ void TestSuiteRunner::testResults(const TestCase &testCase, const std::string &x
       compareMethod=(*i).second;
       string expectedResult = loadExpectedResult((*i).first);
       if(expectedResult == "#Not found") {
+
+//         std::ofstream output(i->first.c_str() + 8); // Take off the "file:///" from the begining
+//         output << xmlResult;
+
         m_results->reportFail(testCase, xmlResult, allExpectedResults, "Bad test! Expected result not found: " + (*i).first);
         return;
       }

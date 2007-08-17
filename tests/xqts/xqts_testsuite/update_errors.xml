@@ -1,23 +1,2 @@
 <errors>
-  <error id="address-book-q1" reason="error failure" action="skip" comment="Bad test! Contains incompatible updates"/>
-  <error id="namespaces-q1" reason="result failure" action="skip" comment="Bad test! Query not found: UpdateFacility/Queries/UseCases/NamespacesUpdates//namespaces-q1-test.xq"/>
-  <error id="nil-q1" reason="result failure" action="skip" comment="Bad test! Expected result not found: UpdateFacility/ExpectedTestResults/UseCases/NilUpdates//nil-q1-results.xml"/>
-  <error id="parts-q1" reason="result failure" action="skip" comment="Bad test! Expected result not found: UpdateFacility/ExpectedTestResults/UseCases/PartsUpdates//parts-q1-results.xml"/>
-  <error id="parts-q2" reason="result failure" action="skip" comment="Bad test! Expected result not found: UpdateFacility/ExpectedTestResults/UseCases/PartsUpdates//parts-q2-results.xml"/>
-  <error id="parts-q3-1" reason="result failure" action="skip" comment="Bad test! Expected result not found: UpdateFacility/ExpectedTestResults/UseCases/PartsUpdates//parts-q3-results.xml"/>
-  <error id="parts-q3-2" reason="result failure" action="skip" comment="Bad test! Expected result not found: UpdateFacility/ExpectedTestResults/UseCases/PartsUpdates//parts-q3-results.xml"/>
-  <error id="parts-q4-1" reason="result failure" action="skip" comment="Bad test! Expected result not found: UpdateFacility/ExpectedTestResults/UseCases/PartsUpdates//parts-q4-results.xml"/>
-  <error id="parts-q4-2" reason="result failure" action="skip" comment="Bad test! Expected result not found: UpdateFacility/ExpectedTestResults/UseCases/PartsUpdates//parts-q4-results.xml"/>
-  <error id="parts-q6" reason="result failure" action="skip" comment="Bad test! Expected result not found: UpdateFacility/ExpectedTestResults/UseCases/PartsUpdates//parts-q6-results.xml"/>
-  <error id="relational-data-q1" reason="result failure" action="skip" comment="Bad test! Expected result not found: UpdateFacility/ExpectedTestResults/UseCases/RelationalDataUpdates/relational-data-q1-results.xml"/>
-  <error id="relational-data-q2" reason="result failure" action="skip" comment="Bad test! Expected result not found: UpdateFacility/ExpectedTestResults/UseCases/RelationalDataUpdates/relational-data-q2-results.xml"/>
-  <error id="relational-data-q3" reason="result failure" action="skip" comment="Bad test! Expected result not found: UpdateFacility/ExpectedTestResults/UseCases/RelationalDataUpdates/relational-data-q3-results.xml"/>
-  <error id="relational-data-q4" reason="error failure" action="skip" comment="Bad test!"/>
-  <error id="relational-data-q5" reason="result failure" action="skip" comment="Bad test! Expected result not found: UpdateFacility/ExpectedTestResults/UseCases/RelationalDataUpdates/relational-data-q5-results.xml"/>
-  <error id="relational-data-q6-1" reason="result failure" action="skip" comment="Bad test! Expected result not found: UpdateFacility/ExpectedTestResults/UseCases/RelationalDataUpdates/relational-data-q6-results-1.xml"/>
-  <error id="relational-data-q6-2" reason="result failure" action="skip" comment="Bad test! Expected result not found: UpdateFacility/ExpectedTestResults/UseCases/RelationalDataUpdates/relational-data-q6-results-1.xml"/>
-  <error id="relational-data-q7" reason="result failure" action="skip" comment="Bad test! Expected result not found: UpdateFacility/ExpectedTestResults/UseCases/RelationalDataUpdates/relational-data-q7-results.xml"/>
-  <error id="relational-data-q8" reason="error failure" action="skip" comment="Application constriants not supported"/>
-  <error id="relational-data-q9" reason="error failure" action="skip" comment="Application constriants not supported"/>
-  <error id="soap-q1" reason="result failure" action="skip" comment="Bad test! Query not found: UpdateFacility/Queries/UseCases/SoapUpdates//soap-q1-test.xq"/>
 </errors>
