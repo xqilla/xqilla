@@ -1,6 +1,4 @@
 <errors>
-  <error id="Constr-attr-ws-3" reason="result failure"/>
-  <error id="Constr-attr-ws-5" reason="result failure"/>
   <error id="Constr-inscope-1" reason="inspect" action="pass"/>
   <error id="Constr-inscope-2" reason="inspect" action="pass"/>
   <error id="Constr-inscope-3" reason="inspect" action="pass"/>

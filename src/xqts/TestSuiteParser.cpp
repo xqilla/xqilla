@@ -23,6 +23,7 @@
 #include <stdlib.h>
 
 #include <xercesc/sax2/XMLReaderFactory.hpp>
+#include <xercesc/sax2/Attributes.hpp>
 #include <xercesc/framework/URLInputSource.hpp>
 #include <xercesc/util/BinFileInputStream.hpp>
 
