@@ -68,6 +68,16 @@ public:
     ValueVectorOf<SchemaGrammar*>*  fGrammarsToAddToXSModel;
 };
 
+#if DEBUG
+static int checkGrammarResolverHack()
+{
+	assert(sizeof(GrammarResolver) == sizeof(GrammarResolverHack));
+	return 1;
+}
+
+static int checkGrammarResolverHack_int = checkGrammarResolverHack();
+#endif
+
 /////////////////////////////////////////////////////////////////
 //
 //
