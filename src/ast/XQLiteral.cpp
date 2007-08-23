@@ -71,5 +71,5 @@ ASTNode *XQLiteral::staticTyping(StaticContext *context)
 
 Result XQLiteral::createResult(DynamicContext* context, int flags) const
 {
-  return Sequence(_itemConstructor->createItem(context), context->getMemoryManager());
+  return _itemConstructor->createItem(context);
 }

@@ -16,6 +16,8 @@
 #include <sstream>
 
 #include <xqilla/ast/XQCastableAs.hpp>
+#include <xqilla/ast/XQLiteral.hpp>
+#include <xqilla/ast/XQSequence.hpp>
 #include <xqilla/schema/SequenceType.hpp>
 #include <xqilla/parser/QName.hpp>
 #include <xqilla/exceptions/TypeErrorException.hpp>
@@ -39,7 +41,7 @@ XQCastableAs::XQCastableAs(ASTNode* expr, SequenceType* exprType, XPath2MemoryMa
     _isPrimitive(false),
     _typeIndex((AnyAtomicType::AtomicObjectType)-1)
 {
-	setType(ASTNode::CASTABLE_AS);
+  setType(ASTNode::CASTABLE_AS);
 }
 
 Result XQCastableAs::createResult(DynamicContext* context, int flags) const
@@ -61,13 +63,46 @@ ASTNode* XQCastableAs::staticResolution(StaticContext *context)
   if((XPath2Utils::equals(itemType->getTypeURI(context, this), XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA) &&
       XPath2Utils::equals(itemType->getType()->getName(), szNOTATION)) ||
      (XPath2Utils::equals(itemType->getTypeURI(context, this), FunctionConstructor::XMLChXPath2DatatypesURI) &&
-		  XPath2Utils::equals(itemType->getType()->getName(), AnyAtomicType::fgDT_ANYATOMICTYPE)))
+      XPath2Utils::equals(itemType->getType()->getName(), AnyAtomicType::fgDT_ANYATOMICTYPE)))
     XQThrow(TypeErrorException,X("XQCastableAs::staticResolution"),
             X("The target type of a castable expression must be an atomic type that is in the in-scope schema types "
               "and is not xs:NOTATION or xdt:anyAtomicType [err:XPST0080]"));
 
   if(_exprType->getItemTestType() != SequenceType::ItemType::TEST_ATOMIC_TYPE)
     XQThrow(TypeErrorException,X("XQCastableAs::staticResolution"),X("Cannot cast to a non atomic type"));
+
+  _typeIndex = context->getItemFactory()->
+    getPrimitiveTypeIndex(_exprType->getTypeURI(context),
+                          _exprType->getConstrainingType()->getName(), _isPrimitive);
+
+  // If this is a cast to xs:QName or xs:NOTATION and the argument is a string literal
+  // evaluate immediately, since they aren't allowed otherwise
+  if((_typeIndex == AnyAtomicType::QNAME || _typeIndex == AnyAtomicType::NOTATION) &&
+     _expr->getType() == LITERAL &&
+     (((XQLiteral*)_expr)->getItemConstructor())->getStaticType().isType(StaticType::STRING_TYPE)) {
+
+    AutoDelete<DynamicContext> dContext(context->createDynamicContext());
+    dContext->setMemoryManager(mm);
+
+    bool result = false;
+    try {
+      if(_isPrimitive) {
+        ((AnyAtomicType*)((XQLiteral*)_expr)->getItemConstructor()->createItem(dContext).get())->
+          castAsNoCheck(_typeIndex, 0, 0, dContext);
+      }
+      else {
+        ((AnyAtomicType*)((XQLiteral*)_expr)->getItemConstructor()->createItem(dContext).get())->
+          castAsNoCheck(_typeIndex, _exprType->getTypeURI(dContext),
+                        _exprType->getConstrainingType()->getName(), dContext);
+      }
+      result = true;
+    }
+    catch(XQException &e) {}
+
+    XQSequence *seq = new (mm) XQSequence(dContext->getItemFactory()->createBoolean(result, dContext), dContext, mm);
+    seq->setLocationInfo(this);
+    return seq->staticResolution(context);
+  }
 
   _expr = new (mm) XQAtomize(_expr, mm);
   _expr->setLocationInfo(this);
@@ -76,10 +111,6 @@ ASTNode* XQCastableAs::staticResolution(StaticContext *context)
     AutoNodeSetOrderingReset orderReset(context);
     _expr = _expr->staticResolution(context);
   }
-
-  _typeIndex = context->getItemFactory()->
-    getPrimitiveTypeIndex(_exprType->getTypeURI(context),
-                          _exprType->getConstrainingType()->getName(), _isPrimitive);
 
   return this;
 }
@@ -92,6 +123,7 @@ ASTNode *XQCastableAs::staticTyping(StaticContext *context)
 
   _src.getStaticType().flags = StaticType::BOOLEAN_TYPE;
   _src.add(_expr->getStaticAnalysis());
+
   if(_expr->isConstant()) {
     return constantFold(context);
   }
@@ -125,7 +157,7 @@ Item::Ptr XQCastableAs::CastableAsResult::getSingleResult(DynamicContext *contex
   const Item::Ptr first = toBeCasted->next(context);
 
   bool result = false;
-	if(first == NULLRCP) {
+  if(first == NULLRCP) {
     //    3. If the result of atomization is an empty sequence:
     //       1. If ? is specified after the target type, the result of the cast expression is an empty sequence.
     //       2. If ? is not specified after the target type, a type error is raised.[err:XP0004][err:XP0006]

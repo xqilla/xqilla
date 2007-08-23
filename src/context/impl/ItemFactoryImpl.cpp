@@ -54,6 +54,13 @@ AnyAtomicType::AtomicObjectType ItemFactoryImpl::getPrimitiveTypeIndex(const XML
   return dtf->getPrimitiveTypeIndex();
 }
 
+void ItemFactoryImpl::getPrimitiveTypeName(AnyAtomicType::AtomicObjectType type, const XMLCh *&typeURI, const XMLCh *&typeName) const
+{
+  const DatatypeFactory *dtf = datatypeLookup_->lookupDatatype(type);
+  typeURI = dtf->getPrimitiveTypeURI();
+  typeName = dtf->getPrimitiveTypeName();
+}
+
 ATQNameOrDerived::Ptr ItemFactoryImpl::createQName(const XMLCh* uri,
 	const XMLCh *prefix,
 	const XMLCh* name, 
