@@ -106,8 +106,12 @@ public:
   /* Get the name of this type  (ie "integer" for xs:integer) */
   virtual const XMLCh* getTypeName() const = 0;
 
-  /* If possible, cast this type to the target type  -- not virtual, this is the single entry point for casting */
+  /* If possible, cast this type to the target type  -- no casting table lookup made */
   AnyAtomicType::Ptr castAs(AtomicObjectType targetIndex, const DynamicContext* context) const;
+
+  /* If possible, cast this type to the target type  -- no casting table lookup made */
+  AnyAtomicType::Ptr castAsNoCheck(AtomicObjectType targetIndex, const XMLCh* targetURI, const XMLCh* targetType,
+                                   const DynamicContext* context) const;
 
   /* If possible, cast this type to the target type  -- not virtual, this is the single entry point for casting */
   AnyAtomicType::Ptr castAs(AtomicObjectType targetIndex, const XMLCh* targetURI, const XMLCh* targetType,

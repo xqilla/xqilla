@@ -71,31 +71,17 @@ AnyAtomicType::Ptr AnyAtomicType::castAs(AtomicObjectType targetIndex, const Dyn
 {
   // We assume this cast is supported, since it's an internal cast,
   // not one specified by the user
-  
-  try {
-    return castAsInternal(targetIndex, 0, 0, context);
-  } catch (TypeNotFoundException &e) {
-    XQThrow2(XPath2TypeCastException, X("AnyAtomicType::castAs"), e.getError());
-  } catch (InvalidLexicalSpaceException &e) {
-    if(getPrimitiveTypeIndex() == UNTYPED_ATOMIC ||
-       getPrimitiveTypeIndex() == ANY_SIMPLE_TYPE || 
-       getPrimitiveTypeIndex() == STRING) {
-      XQThrow2(XPath2TypeCastException, X("AnyAtomicType::castAs"), X("Invalid lexical value [err:FORG0001]"));
-    } else if(getPrimitiveTypeIndex() == targetIndex) {
-      XQThrow2(XPath2TypeCastException, X("AnyAtomicType::castAs"), X("Value does not conform to facets [err:FORG0001]"));
-    } else {
-      XQThrow2(XPath2TypeCastException, X("AnyAtomicType::castAs"), e.getError());  // should never be here, in theory
-    }
-  } catch (NamespaceLookupException &e) {
-    XQThrow2(XPath2TypeCastException, X("AnyAtomicType::castAs"), e.getError());
-  }
-
+  return castAsNoCheck(targetIndex, 0, 0, context);
 }
 
 AnyAtomicType::Ptr AnyAtomicType::castAs(AtomicObjectType targetIndex, const XMLCh* targetTypeURI,
                                          const XMLCh* targetTypeName, const DynamicContext* context) const
 {
   if(!castIsSupported(targetIndex, context)) {
+    if(targetTypeName == 0) {
+      context->getItemFactory()->getPrimitiveTypeName(targetIndex, targetTypeURI, targetTypeName);
+    }
+
     XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buffer(1023, context->getMemoryManager());
     buffer.set(X("Casting from {"));
     buffer.append(getTypeURI());
@@ -109,9 +95,15 @@ AnyAtomicType::Ptr AnyAtomicType::castAs(AtomicObjectType targetIndex, const XML
 
     XQThrow2(XPath2TypeCastException, X("AnyAtomicType::castAs"), buffer.getRawBuffer());
   }
+
+  return castAsNoCheck(targetIndex, targetTypeURI, targetTypeName, context);
+}
   
+AnyAtomicType::Ptr AnyAtomicType::castAsNoCheck(AtomicObjectType targetIndex, const XMLCh* targetURI, const XMLCh* targetType,
+                                                const DynamicContext* context) const
+{
   try {
-    return castAsInternal(targetIndex, targetTypeURI, targetTypeName, context);
+    return castAsInternal(targetIndex, targetURI, targetType, context);
   } catch (TypeNotFoundException &e) {
     XQThrow2(XPath2TypeCastException, X("AnyAtomicType::castAs"), e.getError());
   } catch (InvalidLexicalSpaceException &e) {
@@ -127,7 +119,6 @@ AnyAtomicType::Ptr AnyAtomicType::castAs(AtomicObjectType targetIndex, const XML
   } catch (NamespaceLookupException &e) {
     XQThrow2(XPath2TypeCastException, X("AnyAtomicType::castAs"), e.getError());
   }
-
 }
 
 AnyAtomicType::Ptr AnyAtomicType::castAsInternal(AtomicObjectType targetIndex, const XMLCh* targetTypeURI,
@@ -232,23 +223,23 @@ NOT   { 1, 1,  0,  0,  0,  0,  0,  0,  0,  0, 0,  0,  0,  0,  0,   0,   0,  0,  
 
 AnyAtomicType::CastTable::CastTable() {
   // initialize table to allow casting only between same types
-  for(int j = 0; j<(int)AnyAtomicType::NumAtomicObjectTypes; j++)
-  {
-    for(int k = 0; k<(int)AnyAtomicType::NumAtomicObjectTypes; k++)
-    {
+  int j;
+  for(j = 0; j<(int)AnyAtomicType::NumAtomicObjectTypes; ++j) {
+    for(int k = 0; k<(int)AnyAtomicType::NumAtomicObjectTypes; ++k) {
       staticCastTable[j][k] = false;
-      if(k==AnyAtomicType::ANY_SIMPLE_TYPE)
-        continue;
-      staticCastTable[AnyAtomicType::STRING][k] = true;  // strings can be cast to anything
-      if(k!=AnyAtomicType::NOTATION && k!=AnyAtomicType::QNAME)
-      	staticCastTable[AnyAtomicType::UNTYPED_ATOMIC][k] = true;  // untypedAtomic can be cast to almost anything
     }
+  }
+
+  for(j = 0; j<(int)AnyAtomicType::NumAtomicObjectTypes; ++j) {
     staticCastTable[j][j] = true; // you can always cast something to itself
-    // if the source is not QNAME, allow casting to STRING and UNTYPED_ATOMIC
-    if(j==AnyAtomicType::QNAME || j==AnyAtomicType::ANY_SIMPLE_TYPE)
-      continue;
-    staticCastTable[j][AnyAtomicType::STRING] = true;  // almost anything can be cast to string
-    staticCastTable[j][AnyAtomicType::UNTYPED_ATOMIC] = true;  // almost anything can be cast to untypedAtomic
+    staticCastTable[j][AnyAtomicType::STRING] = true;  // anything can be cast to string
+    staticCastTable[j][AnyAtomicType::UNTYPED_ATOMIC] = true;  // anything can be cast to untypedAtomic
+
+    // xs:string and xs:untypedAtomic can be cast to anything, except an xs:QName or xs:NOTATION
+    if(j != AnyAtomicType::NOTATION && j != AnyAtomicType::QNAME) {
+      staticCastTable[AnyAtomicType::STRING][j] = true;  // strings can be cast to anything
+      staticCastTable[AnyAtomicType::UNTYPED_ATOMIC][j] = true;  // untypedAtomic can be cast to anything
+    }
   }
 
   // finally, add special casting rules
@@ -279,9 +270,6 @@ AnyAtomicType::CastTable::CastTable() {
   staticCastTable[AnyAtomicType::DAY_TIME_DURATION][AnyAtomicType::YEAR_MONTH_DURATION] = true;
   staticCastTable[AnyAtomicType::YEAR_MONTH_DURATION][AnyAtomicType::DAY_TIME_DURATION] = true;
   
-  staticCastTable[AnyAtomicType::DURATION][AnyAtomicType::DAY_TIME_DURATION] = true;
-  staticCastTable[AnyAtomicType::DAY_TIME_DURATION][AnyAtomicType::DURATION] = true;
-
   staticCastTable[AnyAtomicType::DATE_TIME][AnyAtomicType::DATE] = true;
   staticCastTable[AnyAtomicType::DATE][AnyAtomicType::DATE_TIME] = true;
   
@@ -302,8 +290,6 @@ AnyAtomicType::CastTable::CastTable() {
   staticCastTable[AnyAtomicType::BASE_64_BINARY][AnyAtomicType::HEX_BINARY]      = true;
   staticCastTable[AnyAtomicType::HEX_BINARY][AnyAtomicType::BASE_64_BINARY]      = true;
 
-  staticCastTable[AnyAtomicType::QNAME][AnyAtomicType::UNTYPED_ATOMIC] = true;
-  staticCastTable[AnyAtomicType::QNAME][AnyAtomicType::STRING] = true;
 /*  debug output
  *  for(int i = 0; i<(int)AnyAtomicType::NumAtomicObjectTypes; i++) {
     for(int j = 0; j<(int)AnyAtomicType::NumAtomicObjectTypes; j++) {

@@ -16,6 +16,8 @@
 #include <sstream>
 
 #include <xqilla/ast/XQCastAs.hpp>
+#include <xqilla/ast/XQLiteral.hpp>
+#include <xqilla/ast/XQSequence.hpp>
 #include <xqilla/schema/SequenceType.hpp>
 #include <xqilla/parser/QName.hpp>
 #include <xqilla/exceptions/TypeErrorException.hpp>
@@ -23,6 +25,7 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/Item.hpp>
 #include <xqilla/items/AnyAtomicType.hpp>
+#include <xqilla/items/ItemConstructor.hpp>
 #include <xqilla/ast/XQAtomize.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/functions/FunctionConstructor.hpp>
@@ -67,13 +70,43 @@ ASTNode* XQCastAs::staticResolution(StaticContext *context)
   if(_exprType->getItemTestType() != SequenceType::ItemType::TEST_ATOMIC_TYPE)
     XQThrow(TypeErrorException,X("XQCastAs::staticResolution"),X("Cannot cast to a non atomic type"));
 
-  _expr = new (mm) XQAtomize(_expr, mm);
-  _expr->setLocationInfo(this);
-  _expr = _expr->staticResolution(context);
-
   _typeIndex = context->getItemFactory()->
     getPrimitiveTypeIndex(_exprType->getTypeURI(context),
                           _exprType->getConstrainingType()->getName(), _isPrimitive);
+
+  // If this is a cast to xs:QName or xs:NOTATION and the argument is a string literal
+  // evaluate immediately, since they aren't allowed otherwise
+  if((_typeIndex == AnyAtomicType::QNAME || _typeIndex == AnyAtomicType::NOTATION) &&
+     _expr->getType() == LITERAL &&
+     (((XQLiteral*)_expr)->getItemConstructor())->getStaticType().isType(StaticType::STRING_TYPE)) {
+
+    AutoDelete<DynamicContext> dContext(context->createDynamicContext());
+    dContext->setMemoryManager(mm);
+
+    AnyAtomicType::Ptr item = ((XQLiteral*)_expr)->getItemConstructor()->createItem(dContext);
+    try {
+      if(_isPrimitive) {
+        item = item->castAsNoCheck(_typeIndex, 0, 0, dContext);
+      }
+      else {
+        item = item->castAsNoCheck(_typeIndex, _exprType->getTypeURI(dContext),
+                                   _exprType->getConstrainingType()->getName(), dContext);
+      }
+    }
+    catch(XQException &e) {
+      if(e.getXQueryLine() == 0)
+        e.setXQueryPosition(this);
+      throw;
+    }
+
+    XQSequence *seq = new (mm) XQSequence(item, dContext, mm);
+    seq->setLocationInfo(this);
+    return seq->staticResolution(context);
+  }
+
+  _expr = new (mm) XQAtomize(_expr, mm);
+  _expr->setLocationInfo(this);
+  _expr = _expr->staticResolution(context);
 
   return this;
 }
@@ -90,6 +123,21 @@ ASTNode *XQCastAs::staticTyping(StaticContext *context)
 
   _expr = _expr->staticTyping(context);
   _src.add(_expr->getStaticAnalysis());
+
+  if(_typeIndex == AnyAtomicType::QNAME &&
+     !_expr->getStaticAnalysis().getStaticType().containsType(StaticType::QNAME_TYPE) &&
+     (_exprType->getOccurrenceIndicator() == SequenceType::EXACTLY_ONE ||
+      _expr->getStaticAnalysis().getStaticType().containsType(StaticType::ITEM_TYPE))) {
+    XQThrow(TypeErrorException,X("XQCastAs::staticTyping"),
+            X("Only a subtype of xs:QName can be cast to a subtype of xs:QName [err:XPTY0004]"));
+  }
+  if(_typeIndex == AnyAtomicType::NOTATION &&
+     !_expr->getStaticAnalysis().getStaticType().containsType(StaticType::NOTATION_TYPE) &&
+     (_exprType->getOccurrenceIndicator() == SequenceType::EXACTLY_ONE ||
+      _expr->getStaticAnalysis().getStaticType().containsType(StaticType::ITEM_TYPE))) {
+    XQThrow(TypeErrorException,X("XQCastAs::staticTyping"),
+            X("Only a subtype of xs:NOTATION can be cast to a subtype of xs:NOTATION [err:XPTY0004]"));
+  }
 
   if(_expr->isConstant()) {
     return constantFold(context);
@@ -158,11 +206,11 @@ Item::Ptr XQCastAs::CastAsResult::getSingleResult(DynamicContext *context) const
 {
   // The semantics of the cast expression are as follows:
   //    1. Atomization is performed on the input expression.
-	Result toBeCasted(_di->getExpression()->createResult(context));
+  Result toBeCasted(_di->getExpression()->createResult(context));
 
   const Item::Ptr first = toBeCasted->next(context);
 
-	if(first == NULLRCP) {
+  if(first == NULLRCP) {
     //    3. If the result of atomization is an empty sequence:
     //       1. If ? is specified after the target type, the result of the cast expression is an empty sequence.
     //       2. If ? is not specified after the target type, a type error is raised [err:XPTY0004].

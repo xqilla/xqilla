@@ -149,7 +149,7 @@ ASTNode *XQPredicate::addReversePredicates(ASTNode *expr, VectorOfPredicates *pr
 // PredicateFilterResult
 /////////////////////////////////////
 
-XQPredicate::PredicateFilterResult::PredicateFilterResult(const Result &parent, const ASTNode *pred, unsigned int contextSize)
+PredicateFilterResult::PredicateFilterResult(const Result &parent, const ASTNode *pred, unsigned int contextSize)
   : ResultImpl(pred),
     todo_(true),
     parent_(parent),
@@ -159,7 +159,7 @@ XQPredicate::PredicateFilterResult::PredicateFilterResult(const Result &parent, 
 {
 }
 
-Item::Ptr XQPredicate::PredicateFilterResult::next(DynamicContext *context)
+Item::Ptr PredicateFilterResult::next(DynamicContext *context)
 {
   AutoContextInfoReset autoReset(context);
 
@@ -217,12 +217,12 @@ Item::Ptr XQPredicate::PredicateFilterResult::next(DynamicContext *context)
   return result;
 }
 
-void XQPredicate::PredicateFilterResult::skip()
+void PredicateFilterResult::skip()
 {
   parent_->skip();
 }
 
-std::string XQPredicate::PredicateFilterResult::asString(DynamicContext *context, int indent) const
+std::string PredicateFilterResult::asString(DynamicContext *context, int indent) const
 {
   return "predicatefilterresult";
 }
@@ -231,7 +231,7 @@ std::string XQPredicate::PredicateFilterResult::asString(DynamicContext *context
 // NonNumericPredicateFilterResult
 /////////////////////////////////////
 
-XQPredicate::NonNumericPredicateFilterResult::NonNumericPredicateFilterResult(const Result &parent, const ASTNode *pred, unsigned int contextSize)
+NonNumericPredicateFilterResult::NonNumericPredicateFilterResult(const Result &parent, const ASTNode *pred, unsigned int contextSize)
   : ResultImpl(pred),
     todo_(true),
     parent_(parent),
@@ -241,7 +241,7 @@ XQPredicate::NonNumericPredicateFilterResult::NonNumericPredicateFilterResult(co
 {
 }
 
-Item::Ptr XQPredicate::NonNumericPredicateFilterResult::next(DynamicContext *context)
+Item::Ptr NonNumericPredicateFilterResult::next(DynamicContext *context)
 {
   AutoContextInfoReset autoReset(context);
 
@@ -280,12 +280,12 @@ Item::Ptr XQPredicate::NonNumericPredicateFilterResult::next(DynamicContext *con
   return result;
 }
 
-void XQPredicate::NonNumericPredicateFilterResult::skip()
+void NonNumericPredicateFilterResult::skip()
 {
   parent_->skip();
 }
 
-std::string XQPredicate::NonNumericPredicateFilterResult::asString(DynamicContext *context, int indent) const
+std::string NonNumericPredicateFilterResult::asString(DynamicContext *context, int indent) const
 {
   return "nonnumericpredicatefilterresult";
 }
@@ -294,7 +294,7 @@ std::string XQPredicate::NonNumericPredicateFilterResult::asString(DynamicContex
 // NumericPredicateFilterResult
 /////////////////////////////////////
 
-XQPredicate::NumericPredicateFilterResult::NumericPredicateFilterResult(const Result &parent, const ASTNode *pred, unsigned int contextSize)
+NumericPredicateFilterResult::NumericPredicateFilterResult(const Result &parent, const ASTNode *pred, unsigned int contextSize)
   : ResultImpl(pred),
     todo_(true),
     parent_(parent),
@@ -303,7 +303,7 @@ XQPredicate::NumericPredicateFilterResult::NumericPredicateFilterResult(const Re
 {
 }
 
-Item::Ptr XQPredicate::NumericPredicateFilterResult::next(DynamicContext *context)
+Item::Ptr NumericPredicateFilterResult::next(DynamicContext *context)
 {
   if(todo_) {
     todo_ = false;
@@ -354,12 +354,12 @@ Item::Ptr XQPredicate::NumericPredicateFilterResult::next(DynamicContext *contex
   return 0;
 }
 
-void XQPredicate::NumericPredicateFilterResult::skip()
+void NumericPredicateFilterResult::skip()
 {
   parent_->skip();
 }
 
-std::string XQPredicate::NumericPredicateFilterResult::asString(DynamicContext *context, int indent) const
+std::string NumericPredicateFilterResult::asString(DynamicContext *context, int indent) const
 {
   return "numericpredicatefilterresult";
 }

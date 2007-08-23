@@ -49,55 +49,55 @@ public:
   static ASTNode *addReversePredicates(ASTNode *expr, VectorOfPredicates *preds);
 
 protected:
-  class PredicateFilterResult : public ResultImpl
-  {
-  public:
-    PredicateFilterResult(const Result &parent, const ASTNode *pred, unsigned int contextSize);
-    Item::Ptr next(DynamicContext *context);
-    void skip();
-    std::string asString(DynamicContext *context, int indent) const;
-  private:
-    bool todo_;
-    Result parent_;
-    const ASTNode *pred_;
-    unsigned int contextPos_;
-    unsigned int contextSize_;
-    Item::Ptr first_;
-    Item::Ptr second_;
-  };
-
-  class NonNumericPredicateFilterResult : public ResultImpl
-  {
-  public:
-    NonNumericPredicateFilterResult(const Result &parent, const ASTNode *pred, unsigned int contextSize);
-    Item::Ptr next(DynamicContext *context);
-    void skip();
-    std::string asString(DynamicContext *context, int indent) const;
-  private:
-    bool todo_;
-    Result parent_;
-    const ASTNode *pred_;
-    unsigned int contextPos_;
-    unsigned int contextSize_;
-  };
-
-  class NumericPredicateFilterResult : public ResultImpl
-  {
-  public:
-    NumericPredicateFilterResult(const Result &parent, const ASTNode *pred, unsigned int contextSize);
-    Item::Ptr next(DynamicContext *context);
-    void skip();
-    std::string asString(DynamicContext *context, int indent) const;
-  private:
-    bool todo_;
-    Result parent_;
-    const ASTNode *pred_;
-    unsigned int contextSize_;
-  };
-
   ASTNode *expr_;
   ASTNode *predicate_;
   bool reverse_;
+};
+
+class PredicateFilterResult : public ResultImpl
+{
+public:
+	PredicateFilterResult(const Result &parent, const ASTNode *pred, unsigned int contextSize);
+	Item::Ptr next(DynamicContext *context);
+	void skip();
+	std::string asString(DynamicContext *context, int indent) const;
+private:
+	bool todo_;
+	Result parent_;
+	const ASTNode *pred_;
+	unsigned int contextPos_;
+	unsigned int contextSize_;
+	Item::Ptr first_;
+	Item::Ptr second_;
+};
+
+class NonNumericPredicateFilterResult : public ResultImpl
+{
+public:
+	NonNumericPredicateFilterResult(const Result &parent, const ASTNode *pred, unsigned int contextSize);
+	Item::Ptr next(DynamicContext *context);
+	void skip();
+	std::string asString(DynamicContext *context, int indent) const;
+private:
+	bool todo_;
+	Result parent_;
+	const ASTNode *pred_;
+	unsigned int contextPos_;
+	unsigned int contextSize_;
+};
+
+class NumericPredicateFilterResult : public ResultImpl
+{
+public:
+	NumericPredicateFilterResult(const Result &parent, const ASTNode *pred, unsigned int contextSize);
+	Item::Ptr next(DynamicContext *context);
+	void skip();
+	std::string asString(DynamicContext *context, int indent) const;
+private:
+	bool todo_;
+	Result parent_;
+	const ASTNode *pred_;
+	unsigned int contextSize_;
 };
 
 #endif
