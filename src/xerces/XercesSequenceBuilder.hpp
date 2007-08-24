@@ -43,6 +43,9 @@ public:
 
   virtual Sequence getSequence() const { return seq_; }
 
+  static void setElementTypeInfo(XERCES_CPP_NAMESPACE_QUALIFIER DOMElement *element, const XMLCh *typeURI, const XMLCh *typeName);
+  static void setAttributeTypeInfo(XERCES_CPP_NAMESPACE_QUALIFIER DOMAttr *attr, const XMLCh *typeURI, const XMLCh *typeName);
+
 private:
   const DynamicContext *context_;
   XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *document_;

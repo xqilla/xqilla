@@ -37,8 +37,9 @@ private:
 
 typedef std::set<const PendingUpdate*, pucompare> PendingUpdateSet;
 
-void UpdateFactory::applyUpdates(const PendingUpdateList &pul, DynamicContext *context)
+void UpdateFactory::applyUpdates(const PendingUpdateList &pul, DynamicContext *context, DocumentCache::ValidationMode valMode)
 {
+  valMode_ = valMode;
 
   // 1. Checks the update primitives on $pul for compatibility. Raises a dynamic error if any of the following conditions are detected:
   //    a. Two or more upd:rename primitives on the merged list have the same target node [err:XUDY0015].

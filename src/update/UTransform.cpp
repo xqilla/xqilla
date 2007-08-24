@@ -54,7 +54,8 @@ UTransform::UTransform(VectorOfCopyBinding* bindings, ASTNode *modifyExpr, ASTNo
   : ASTNodeImpl(mm),
     bindings_(bindings),
     modify_(modifyExpr),
-    return_(returnExpr)
+    return_(returnExpr),
+    valMode_(DocumentCache::VALIDATION_SKIP)
 {
   setType(UTRANSFORM);
 }
@@ -90,6 +91,8 @@ ASTNode *UTransform::staticResolution(StaticContext* context)
 
   // Call staticResolution on the return expression
   return_ = return_->staticResolution(context);
+
+  valMode_ = context->getRevalidationMode();
 
   return this;
 }
@@ -246,7 +249,7 @@ Item::Ptr UTransform::TransformResult::next(DynamicContext *context)
 
     // Apply the updates
     AutoDelete<UpdateFactory> ufactory(context->createUpdateFactory());
-    ufactory->applyUpdates(pul, context);
+    ufactory->applyUpdates(pul, context, transform_->getRevalidationMode());
 
     // Execute the return expression
     result_ = transform_->getReturnExpr()->createResult(context);

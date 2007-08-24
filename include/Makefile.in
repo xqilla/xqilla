@@ -229,7 +229,6 @@ xqilla/events/EventSerializer.hpp \
 xqilla/events/NSFixupFilter.hpp \
 xqilla/events/SequenceBuilder.hpp \
 xqilla/fastxdm/FastXDMConfiguration.hpp \
-xqilla/fastxdm/FastXDMDocumentCacheImpl.hpp \
 xqilla/fulltext/FTContains.hpp \
 xqilla/fulltext/FTSelection.hpp \
 xqilla/fulltext/FTWords.hpp \

@@ -30,7 +30,7 @@
 #include <xqilla/ast/XQAtomize.hpp>
 #include <xqilla/parser/QName.hpp>
 #include <xqilla/events/EventHandler.hpp>
-#include <xqilla/schema/DocumentCacheImpl.hpp>
+#include <xqilla/schema/DocumentCache.hpp>
 #include <xqilla/utils/XMLChCompare.hpp>
 
 #include "../events/NoInheritFilter.hpp"
@@ -217,7 +217,7 @@ void XQElementConstructor::generateEvents(EventHandler *events, DynamicContext *
   }
 
   const XMLCh *typeURI = SchemaSymbols::fgURI_SCHEMAFORSCHEMA;
-  const XMLCh *typeName = DocumentCacheParser::g_szUntyped;
+  const XMLCh *typeName = DocumentCache::g_szUntyped;
   if(context->getConstructionMode() == StaticContext::CONSTRUCTION_MODE_PRESERVE) {
     typeURI = SchemaSymbols::fgURI_SCHEMAFORSCHEMA;
     typeName = SchemaSymbols::fgATTVAL_ANYTYPE;

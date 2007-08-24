@@ -16,6 +16,7 @@
 
 #include <xqilla/ast/ASTNodeImpl.hpp>
 #include <xqilla/context/impl/VarStoreImpl.hpp>
+#include <xqilla/schema/DocumentCache.hpp>
 
 class XQILLA_API CopyBinding : public LocationInfo
 {
@@ -52,6 +53,8 @@ public:
   const ASTNode *getReturnExpr() const { return return_; }
   void setReturnExpr(ASTNode *ret) { return_ = ret; }
 
+  DocumentCache::ValidationMode getRevalidationMode() const { return valMode_; }
+
 protected:
   class TransformResult : public ResultImpl
   {
@@ -73,6 +76,7 @@ protected:
   VectorOfCopyBinding* bindings_;
   ASTNode *modify_;
   ASTNode *return_;
+  DocumentCache::ValidationMode valMode_;
 };
 
 #endif

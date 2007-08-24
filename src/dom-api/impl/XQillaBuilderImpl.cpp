@@ -15,7 +15,6 @@
 #include "XQillaBuilderImpl.hpp"
 #include "XQillaDocumentImpl.hpp"
 #include "XQillaXMLGrammarPoolImpl.hpp"
-#include <xqilla/schema/DocumentCacheImpl.hpp>
 
 #include <xercesc/framework/XMLGrammarPool.hpp>
 #include <xercesc/framework/Wrapper4DOMInputSource.hpp>

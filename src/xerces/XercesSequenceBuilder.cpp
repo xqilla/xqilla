@@ -87,16 +87,22 @@ void XercesSequenceBuilder::startElementEvent(const XMLCh *prefix, const XMLCh *
   currentNode_ = elem;
 }
 
+void XercesSequenceBuilder::setElementTypeInfo(DOMElement *element, const XMLCh *typeURI, const XMLCh *typeName)
+{
+  // TBD detect xs:untyped? - jpcs
+  DOMDocument *document = element->getOwnerDocument();
+  DOMTypeInfoImpl* pInfo = new (document) DOMTypeInfoImpl(typeURI, typeName);
+  pInfo->setNumericProperty(DOMPSVITypeInfo::PSVI_Validity, PSVIItem::VALIDITY_VALID);
+  ((DOMElementNSImpl*)element)->setTypeInfo(pInfo);
+}
+
 void XercesSequenceBuilder::endElementEvent(const XMLCh *prefix, const XMLCh *uri, const XMLCh *localname,
                                             const XMLCh *typeURI, const XMLCh *typeName)
 {
   currentNode_ = currentParent_;
   currentParent_ = currentParent_->getParentNode();
 
-  // TBD detect xs:untyped? - jpcs
-  DOMTypeInfoImpl* pInfo = new (document_) DOMTypeInfoImpl(typeURI, typeName);
-  pInfo->setNumericProperty(DOMPSVITypeInfo::PSVI_Validity, PSVIItem::VALIDITY_VALID);
-  ((DOMElementNSImpl*)currentNode_)->setTypeInfo(pInfo);
+  setElementTypeInfo((DOMElement*)currentNode_, typeURI, typeName);
 
   if(currentParent_ == 0) {
     seq_.addItem(new XercesNodeImpl(currentNode_, context_));
@@ -201,6 +207,15 @@ void XercesSequenceBuilder::commentEvent(const XMLCh *value)
   }
 }
 
+void XercesSequenceBuilder::setAttributeTypeInfo(DOMAttr *attr, const XMLCh *typeURI, const XMLCh *typeName)
+{
+  // TBD detect xs:untypedAtomic? - jpcs
+  DOMDocument *document = attr->getOwnerDocument();
+  DOMTypeInfoImpl* pInfo = new (document) DOMTypeInfoImpl(typeURI, typeName);
+  pInfo->setNumericProperty(DOMPSVITypeInfo::PSVI_Validity, PSVIItem::VALIDITY_VALID);
+  ((DOMAttrImpl*)attr)->setTypeInfo(pInfo);
+}
+
 void XercesSequenceBuilder::attributeEvent(const XMLCh *prefix, const XMLCh *uri, const XMLCh *localname, const XMLCh *value,
                                            const XMLCh *typeURI, const XMLCh *typeName)
 {
@@ -213,10 +228,7 @@ void XercesSequenceBuilder::attributeEvent(const XMLCh *prefix, const XMLCh *uri
     attr->setPrefix(prefix);
   attr->setValue(value);
 
-  // TBD detect xs:untypedAtomic? - jpcs
-  DOMTypeInfoImpl* pInfo = new (document_) DOMTypeInfoImpl(typeURI, typeName);
-  pInfo->setNumericProperty(DOMPSVITypeInfo::PSVI_Validity, PSVIItem::VALIDITY_VALID);
-  ((DOMAttrImpl*)attr)->setTypeInfo(pInfo);
+  setAttributeTypeInfo(attr, typeURI, typeName);
 
   if(currentParent_ != 0)
     currentParent_->getAttributes()->setNamedItemNS(attr);

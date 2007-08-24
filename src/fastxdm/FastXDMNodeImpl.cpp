@@ -22,7 +22,7 @@
 #include <xqilla/items/ATQNameOrDerived.hpp>
 #include <xqilla/items/ATUntypedAtomic.hpp>
 #include <xqilla/functions/FunctionConstructor.hpp>
-#include <xqilla/schema/DocumentCacheImpl.hpp>
+#include <xqilla/schema/DocumentCache.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/utils/XMLChCompare.hpp>
 #include <xqilla/dom-api/XQillaNSResolver.hpp>
@@ -33,6 +33,9 @@
 
 #include <xercesc/framework/MemBufFormatTarget.hpp>
 #include <xercesc/validators/datatype/ListDatatypeValidator.hpp>
+#include <xercesc/validators/datatype/UnionDatatypeValidator.hpp>
+#include <xercesc/validators/schema/ComplexTypeInfo.hpp>
+#include <xercesc/validators/schema/SchemaElementDecl.hpp>
 #include <xercesc/util/XMLUri.hpp>
 
 #include <set>
@@ -324,7 +327,7 @@ Sequence FastXDMNodeImpl::dmTypedValue(DynamicContext* context) const
     addStringValueToBuffer(node_ + 1, node_->level, str);
 
     // If the element is of type xdt:untyped or xs:anyType, its typed-value is its dm:string-value as an xdt:untypedAtomic.
-    if((XPath2Utils::equals(typeName, DocumentCacheParser::g_szUntyped) || XPath2Utils::equals(typeName, SchemaSymbols::fgATTVAL_ANYTYPE)) &&
+    if((XPath2Utils::equals(typeName, DocumentCache::g_szUntyped) || XPath2Utils::equals(typeName, SchemaSymbols::fgATTVAL_ANYTYPE)) &&
        XPath2Utils::equals(typeUri, SchemaSymbols::fgURI_SCHEMAFORSCHEMA)) {
       return Sequence(context->getItemFactory()->createUntypedAtomic(str.getRawBuffer(), context), context->getMemoryManager());
     }

@@ -15,105 +15,32 @@
 #define _DOCUMENTCACHEIMPL_HPP
 
 #include <xqilla/framework/XQillaExport.hpp>
-
-#include <xercesc/parsers/XercesDOMParser.hpp>
-#include <xercesc/sax/ErrorHandler.hpp>
-#include <xercesc/util/RefHashTableOf.hpp>
-#include <xercesc/util/ValueHashTableOf.hpp>
-#include <xercesc/validators/common/GrammarResolver.hpp>
-
 #include <xqilla/schema/DocumentCache.hpp>
+
+#include <xercesc/framework/XMLDocumentHandler.hpp>
+#include <xercesc/framework/XMLEntityHandler.hpp>
+#include <xercesc/framework/XMLErrorReporter.hpp>
+#include <xercesc/framework/psvi/PSVIHandler.hpp>
 
 class DynamicContext;
 class QualifiedName;
 
 XERCES_CPP_NAMESPACE_BEGIN
-class DOMDocument;
 class XMLGrammarPool;
+class GrammarResolver;
+class XMLScanner;
 XERCES_CPP_NAMESPACE_END
 
-// convert  errors into exceptions
-class XQILLA_API DocumentCacheErrorCatcher : public XERCES_CPP_NAMESPACE_QUALIFIER ErrorHandler
+/// The class that performs the parsing of input documents
+class XQILLA_API DocumentCacheImpl : public DocumentCache,
+                                     private XERCES_CPP_NAMESPACE_QUALIFIER XMLDocumentHandler,
+                                     private XERCES_CPP_NAMESPACE_QUALIFIER PSVIHandler,
+                                     private XERCES_CPP_NAMESPACE_QUALIFIER XMLEntityHandler,
+                                     private XERCES_CPP_NAMESPACE_QUALIFIER XMLErrorReporter
 {
 public:
-  // ErrorHandler interface
-
-  void warning(const XERCES_CPP_NAMESPACE_QUALIFIER SAXParseException& toCatch);
-  void error(const XERCES_CPP_NAMESPACE_QUALIFIER SAXParseException& toCatch);
-  void fatalError(const XERCES_CPP_NAMESPACE_QUALIFIER SAXParseException& toCatch);
-  void resetErrors();
-protected:
-};
-
-// custom parser to manipulate the schema repository
-class XQILLA_API DocumentCacheParser : public XERCES_CPP_NAMESPACE_QUALIFIER XercesDOMParser
-{
-public:
-  DocumentCacheParser(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr, XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool* xmlgr = 0);
-  DocumentCacheParser(const DocumentCacheParser &parent, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr);
-  ~DocumentCacheParser();
-
-  void init();
-
-  /** Override the creation of the DOM Document, so that we can use our own memory manager */
-  virtual void startDocument();
-
-  /**
-   * Overload the parse method, to create the document from a different memory manager.
-   * NB the Grammar info in the tree will still be in the same memory manager as the parser.
-   */
-  virtual XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *parseWithContext(const XMLCh* const uri, DynamicContext *context);
-  /**
-   * Overload the parse method, to create the document from a different memory manager.
-   * NB the Grammar info in the tree will still be in the same memory manager as the parser.
-   */
-  virtual XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *parseWithContext(const XERCES_CPP_NAMESPACE_QUALIFIER InputSource &source, DynamicContext *context);
-
-  XERCES_CPP_NAMESPACE_QUALIFIER GrammarResolver* getGrammarResolver() const
-  {
-    return XercesDOMParser::getGrammarResolver();
-  }
-
-  /** Pre parse the schema at the given uri */
-  void loadSchema(const XMLCh* const uri, const XMLCh* location, StaticContext *context, const LocationInfo *info);
-  unsigned int getSchemaUriId(const XMLCh* uri) const;
-  const XMLCh* getSchemaUri(unsigned int id) const;
-
-  XERCES_CPP_NAMESPACE_QUALIFIER SchemaElementDecl* getElementDecl(const XMLCh* elementUri, const XMLCh* elementName) const;
-
-  XERCES_CPP_NAMESPACE_QUALIFIER SchemaAttDef* getAttributeDecl(const XMLCh* attributeUri, const XMLCh* attributeName) const;
-  
-  Node::Ptr validate(const Node::Ptr &node, DocumentCache::ValidationMode valMode, DynamicContext *context);
-
-  virtual void error
-  (
-   const   unsigned int                errCode
-   , const XMLCh* const                msgDomain
-   , const XERCES_CPP_NAMESPACE_QUALIFIER XMLErrorReporter::ErrTypes  errType
-   , const XMLCh* const                errorText
-   , const XMLCh* const                systemId
-   , const XMLCh* const                publicId
-   , const XMLSSize_t                  lineNum
-   , const XMLSSize_t                  colNum
-   );
-
-  static const XMLCh g_szUntyped[];
-
-protected:
-  bool isChildElement( XERCES_CPP_NAMESPACE_QUALIFIER ContentSpecNode *topContentSpec, unsigned int uriId, const XMLCh* localPart ) const;
-
-  XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer schemaLocations_;
-  XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer noNamespaceSchemaLocation_;
-
-  DocumentCacheErrorCatcher _errorHandler;
-  DynamicContext *_context;
-};
-
-/// The class that performs the (cached) parsing of input documents
-class XQILLA_API DocumentCacheImpl : public DocumentCache
-{
-public:
-  DocumentCacheImpl(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr, XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool* xmlgr = 0);
+  DocumentCacheImpl(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr, XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool* xmlgr = 0,
+                    bool makeScanner = true);
   DocumentCacheImpl(const DocumentCacheImpl *parent, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr);
   ~DocumentCacheImpl();
 
@@ -125,7 +52,6 @@ public:
   virtual void setXMLEntityResolver(XERCES_CPP_NAMESPACE_QUALIFIER XMLEntityResolver* const handler);
   virtual XERCES_CPP_NAMESPACE_QUALIFIER XMLEntityResolver* getXMLEntityResolver() const;
 
-  /** load the document from the requested URI */
   virtual Node::Ptr loadDocument(const XMLCh* uri, DynamicContext *context);
 
   /*
@@ -160,11 +86,66 @@ public:
   virtual DocumentCache *createDerivedCache(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr) const;
 
 protected:
-  DocumentCacheParser _parser;
-  XERCES_CPP_NAMESPACE_QUALIFIER XMLStringPool* _loadedSchemas;
-  XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* _memMgr;
+  void init(XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool *gramPool = 0, bool makeScanner = true);
+
+  void loadSchema(const XMLCh* const uri, const XMLCh* location, StaticContext *context, const LocationInfo *info);
+
+  // XMLEntityHandler
+  virtual void endInputSource(const XERCES_CPP_NAMESPACE_QUALIFIER InputSource& inputSource);
+  virtual bool expandSystemId(const XMLCh* const systemId, XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &toFill);
+  virtual void resetEntities();
+  virtual XERCES_CPP_NAMESPACE_QUALIFIER InputSource* resolveEntity(const XMLCh* const publicId, const XMLCh* const systemId, const XMLCh* const baseURI = 0);
+  virtual XERCES_CPP_NAMESPACE_QUALIFIER InputSource* resolveEntity(XERCES_CPP_NAMESPACE_QUALIFIER XMLResourceIdentifier* resourceIdentifier);
+  virtual void startInputSource(const XERCES_CPP_NAMESPACE_QUALIFIER InputSource& inputSource);
+
+  // XMLErrorReporter
+  void resetErrors();
+  void error(const unsigned int, const XMLCh* const, const XMLErrorReporter::ErrTypes errType, const XMLCh* const errorText,
+             const XMLCh* const systemId, const XMLCh* const publicId, const XMLSSize_t lineNum, const XMLSSize_t colNum);
+
+  // XMLDocumentHandler
+  virtual void startDocument();
+  virtual void endDocument();
+  virtual void resetDocument();
+  virtual void startElement(const XERCES_CPP_NAMESPACE_QUALIFIER XMLElementDecl& elemDecl, const unsigned int urlId,
+                            const XMLCh* const elemPrefix,
+                            const XERCES_CPP_NAMESPACE_QUALIFIER RefVectorOf<XERCES_CPP_NAMESPACE_QUALIFIER XMLAttr>& attrList,
+                            const unsigned int attrCount, const bool isEmpty, const bool isRoot);
+  virtual void endElement(const XERCES_CPP_NAMESPACE_QUALIFIER XMLElementDecl& elemDecl, const unsigned int urlId,
+                          const bool isRoot, const XMLCh* const elemPrefix=0);
+  virtual void docCharacters(const XMLCh* const chars, const unsigned int length, const bool cdataSection);
+  virtual void ignorableWhitespace(const XMLCh* const chars, const unsigned int length, const bool cdataSection);
+  virtual void docComment(const XMLCh* const comment);
+  virtual void docPI(const XMLCh* const target, const XMLCh* const data);
+  virtual void startEntityReference(const XERCES_CPP_NAMESPACE_QUALIFIER XMLEntityDecl& entDecl);
+  virtual void endEntityReference(const XERCES_CPP_NAMESPACE_QUALIFIER XMLEntityDecl& entDecl);
+  virtual void XMLDecl(const XMLCh* const versionStr, const XMLCh* const encodingStr, const XMLCh* const standaloneStr,
+                       const XMLCh* const actualEncodingStr);
+
+  // PSVIHandler
+  virtual void handleElementPSVI(const XMLCh* const localName, const XMLCh* const uri,
+                                 XERCES_CPP_NAMESPACE_QUALIFIER PSVIElement *elementInfo);
+  virtual void handlePartialElementPSVI(const XMLCh* const localName, const XMLCh* const uri,
+                                        XERCES_CPP_NAMESPACE_QUALIFIER PSVIElement *elementInfo);
+  virtual void handleAttributesPSVI(const XMLCh* const localName, const XMLCh* const uri,
+                                    XERCES_CPP_NAMESPACE_QUALIFIER PSVIAttributeList *psviAttributes);
+
+protected:
+  XERCES_CPP_NAMESPACE_QUALIFIER GrammarResolver *grammarResolver_;
+  XERCES_CPP_NAMESPACE_QUALIFIER XMLScanner *scanner_;
+  XERCES_CPP_NAMESPACE_QUALIFIER XMLEntityResolver *entityResolver_;
+
+  EventHandler *events_;
+  const XERCES_CPP_NAMESPACE_QUALIFIER RefVectorOf<XERCES_CPP_NAMESPACE_QUALIFIER XMLAttr> *attrList_;
+  unsigned int attrCount_;
+  XERCES_CPP_NAMESPACE_QUALIFIER PSVIElement *elementInfo_;
+  bool strictValidation_;
+
+  XERCES_CPP_NAMESPACE_QUALIFIER XMLStringPool* loadedSchemas_;
+  XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer schemaLocations_;
+  XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer noNamespaceSchemaLocation_;
+  XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr_;
 };
 
 #endif
-
 

@@ -73,6 +73,7 @@ protected:
   typedef std::set<PutItem> PutList;
 
   DOMNodeSet forDeletion_;
+  DOMNodeSet forRevalidation_;
   PutList putList_;
 };
 

@@ -337,6 +337,9 @@ void XQillaTestSuiteRunner::runTestCase(const TestCase &testCase)
     context->setModuleResolver(this);
     context->registerURIResolver(this, /*adopt*/false);
 
+    // TBD - jpcs
+    context->setRevalidationMode(DocumentCache::VALIDATION_LAX);
+
     Janitor<XQQuery> pParsedQuery(xqilla.parseFromURI(X(testCase.queryURL.c_str()), context.get(), XQilla::NO_ADOPT_CONTEXT));
 
     map<string, string>::const_iterator v;

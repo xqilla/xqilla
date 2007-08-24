@@ -125,7 +125,7 @@ SOURCE=..\..\src\ast\OrderByTuple.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\ast\StaticResolutionContext.cpp
+SOURCE=..\..\src\ast\StaticAnalysis.cpp
 # End Source File
 # Begin Source File
 
@@ -305,7 +305,7 @@ SOURCE=..\..\include\xqilla\ast\OrderByTuple.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\include\xqilla\ast\StaticResolutionContext.hpp
+SOURCE=..\..\include\xqilla\ast\StaticAnalysis.hpp
 # End Source File
 # Begin Source File
 
@@ -850,14 +850,6 @@ SOURCE=..\..\src\fastxdm\FastXDMDocument.hpp
 # Begin Source File
 
 SOURCE=..\..\src\fastxdm\FastXDMDocument.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\fastxdm\FastXDMDocumentCacheImpl.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\fastxdm\FastXDMDocumentCacheImpl.cpp
 # End Source File
 # Begin Source File
 
