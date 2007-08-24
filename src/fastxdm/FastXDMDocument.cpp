@@ -18,7 +18,7 @@
 #include <xqilla/framework/XPath2MemoryManager.hpp>
 #include <xqilla/utils/XMLChCompare.hpp>
 #include <xqilla/items/ATUntypedAtomic.hpp>
-#include <xqilla/schema/DocumentCacheImpl.hpp>
+#include <xqilla/schema/DocumentCache.hpp>
 
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 
@@ -417,7 +417,7 @@ static const FastXDMDocument::Node *toEventsImpl(const FastXDMDocument::Node *no
     else
       events->endElementEvent(node->data.element.prefix, node->data.element.uri, node->data.element.localname,
                               SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                              DocumentCacheParser::g_szUntyped);
+                              DocumentCache::g_szUntyped);
     return child;
   }
   case FastXDMDocument::TEXT:

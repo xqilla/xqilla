@@ -80,6 +80,8 @@ public:
   virtual void generateEvents(EventHandler *events, const DynamicContext *context,
                               bool preserveNS = true, bool preserveType = true) const;
 
+  static void typeUriAndName(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *node, const XMLCh *&uri, const XMLCh *&name);
+
 protected:
   XercesNodeImpl(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *node);
 

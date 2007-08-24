@@ -14,7 +14,7 @@
 #include "../config/xqilla_config.h"
 
 #include <xqilla/fastxdm/FastXDMConfiguration.hpp>
-#include <xqilla/fastxdm/FastXDMDocumentCacheImpl.hpp>
+#include <xqilla/schema/DocumentCacheImpl.hpp>
 #include "FastXDMSequenceBuilder.hpp"
 #include "FastXDMUpdateFactory.hpp"
 
@@ -31,7 +31,7 @@ XERCES_CPP_NAMESPACE_USE;
 
 DocumentCache *FastXDMConfiguration::createDocumentCache(MemoryManager *memMgr)
 {
-  return new(memMgr) FastXDMDocumentCacheImpl(memMgr);
+  return new(memMgr) DocumentCacheImpl(memMgr);
 }
 
 SequenceBuilder *FastXDMConfiguration::createSequenceBuilder(const DynamicContext *context)

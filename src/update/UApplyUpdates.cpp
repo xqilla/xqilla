@@ -20,7 +20,8 @@
 
 UApplyUpdates::UApplyUpdates(ASTNode *expr, XPath2MemoryManager* memMgr)
   : ASTNodeImpl(memMgr),
-    expr_(expr)
+    expr_(expr),
+    valMode_(DocumentCache::VALIDATION_SKIP)
 {
   setType(ASTNode::UAPPLY_UPDATES);
 }
@@ -28,6 +29,7 @@ UApplyUpdates::UApplyUpdates(ASTNode *expr, XPath2MemoryManager* memMgr)
 ASTNode* UApplyUpdates::staticResolution(StaticContext *context)
 {
   expr_ = expr_->staticResolution(context);
+  valMode_ = context->getRevalidationMode();
   return this;
 }
 
@@ -49,7 +51,7 @@ ASTNode *UApplyUpdates::staticTyping(StaticContext *context)
 Sequence UApplyUpdates::createSequence(DynamicContext* context, int flags) const
 {
   AutoDelete<UpdateFactory> ufactory(context->createUpdateFactory());
-  ufactory->applyUpdates(expr_->createUpdateList(context), context);
+  ufactory->applyUpdates(expr_->createUpdateList(context), context, valMode_);
   return Sequence(context->getMemoryManager());
 }
 

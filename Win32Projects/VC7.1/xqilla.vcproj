@@ -428,7 +428,7 @@
 				RelativePath="..\..\src\ast\OrderByTuple.cpp">
 			</File>
 			<File
-				RelativePath="..\..\src\ast\StaticResolutionContext.cpp">
+				RelativePath="..\..\src\ast\StaticAnalysis.cpp">
 			</File>
 			<File
 				RelativePath="..\..\src\ast\StaticType.cpp">
@@ -563,7 +563,7 @@
 				RelativePath="..\..\include\xqilla\ast\OrderByTuple.hpp">
 			</File>
 			<File
-				RelativePath="..\..\include\xqilla\ast\StaticResolutionContext.hpp">
+				RelativePath="..\..\include\xqilla\ast\StaticAnalysis.hpp">
 			</File>
 			<File
 				RelativePath="..\..\include\xqilla\ast\StaticType.hpp">
@@ -980,12 +980,6 @@
 			</File>
 			<File
 				RelativePath="..\..\src\fastxdm\FastXDMDocument.cpp">
-			</File>
-			<File
-				RelativePath="..\..\src\fastxdm\FastXDMDocumentCacheImpl.hpp">
-			</File>
-			<File
-				RelativePath="..\..\src\fastxdm\FastXDMDocumentCacheImpl.cpp">
 			</File>
 			<File
 				RelativePath="..\..\src\fastxdm\FastXDMNodeImpl.hpp">

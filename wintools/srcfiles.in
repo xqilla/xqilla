@@ -79,8 +79,6 @@ src/events/NSFixupFilter.cpp lib
 src/fastxdm/FastXDMConfiguration.cpp lib
 src/fastxdm/FastXDMDocument.hpp lib
 src/fastxdm/FastXDMDocument.cpp lib
-src/fastxdm/FastXDMDocumentCacheImpl.hpp lib
-src/fastxdm/FastXDMDocumentCacheImpl.cpp lib
 src/fastxdm/FastXDMNodeImpl.hpp lib
 src/fastxdm/FastXDMNodeImpl.cpp lib
 src/fastxdm/FastXDMSequenceBuilder.hpp lib

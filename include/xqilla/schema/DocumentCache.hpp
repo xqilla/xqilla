@@ -43,6 +43,9 @@ XERCES_CPP_NAMESPACE_END
 class XQILLA_API DocumentCache : public XERCES_CPP_NAMESPACE_QUALIFIER XMemory
 {
 public:
+  /// untyped
+  static const XMLCh g_szUntyped[];
+
   enum ValidationMode {
     VALIDATION_STRICT = 0,
     VALIDATION_LAX    = 1,

@@ -186,13 +186,12 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	UInsertAsLast.lo UInsertInto.lo UInsertAfter.lo \
 	UInsertBefore.lo UTransform.lo TestSuiteParser.lo \
 	TestSuiteResultListener.lo TestSuiteRunner.lo \
-	FastXDMUpdateFactory.lo FastXDMDocumentCacheImpl.lo \
-	FastXDMDocument.lo FastXDMNodeImpl.lo FastXDMConfiguration.lo \
-	FastXDMSequenceBuilder.lo AncestorAxis.lo \
-	AncestorOrSelfAxis.lo AttributeAxis.lo Axis.lo ChildAxis.lo \
-	DescendantAxis.lo DescendantOrSelfAxis.lo FollowingAxis.lo \
-	FollowingSiblingAxis.lo NamespaceAxis.lo ParentAxis.lo \
-	PrecedingAxis.lo PrecedingSiblingAxis.lo \
+	FastXDMUpdateFactory.lo FastXDMDocument.lo FastXDMNodeImpl.lo \
+	FastXDMConfiguration.lo FastXDMSequenceBuilder.lo \
+	AncestorAxis.lo AncestorOrSelfAxis.lo AttributeAxis.lo Axis.lo \
+	ChildAxis.lo DescendantAxis.lo DescendantOrSelfAxis.lo \
+	FollowingAxis.lo FollowingSiblingAxis.lo NamespaceAxis.lo \
+	ParentAxis.lo PrecedingAxis.lo PrecedingSiblingAxis.lo \
 	XercesConfiguration.lo XercesNodeImpl.lo \
 	XercesSequenceBuilder.lo XercesUpdateFactory.lo \
 	XercesURIResolver.lo
@@ -775,7 +774,6 @@ src/xqts/TestSuiteResultListener.cpp \
 src/xqts/TestSuiteRunner.cpp \
 src/fastxdm/FastXDMUpdateFactory.hpp \
 src/fastxdm/FastXDMUpdateFactory.cpp \
-src/fastxdm/FastXDMDocumentCacheImpl.cpp \
 src/fastxdm/FastXDMDocument.hpp \
 src/fastxdm/FastXDMDocument.cpp \
 src/fastxdm/FastXDMNodeImpl.hpp \
@@ -1093,7 +1091,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FTWords.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FastXDMConfiguration.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FastXDMDocument.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FastXDMDocumentCacheImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FastXDMNodeImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FastXDMSequenceBuilder.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FastXDMUpdateFactory.Plo@am__quote@
@@ -3897,13 +3894,6 @@ FastXDMUpdateFactory.lo: src/fastxdm/FastXDMUpdateFactory.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/fastxdm/FastXDMUpdateFactory.cpp' object='FastXDMUpdateFactory.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FastXDMUpdateFactory.lo `test -f 'src/fastxdm/FastXDMUpdateFactory.cpp' || echo '$(srcdir)/'`src/fastxdm/FastXDMUpdateFactory.cpp
-
-FastXDMDocumentCacheImpl.lo: src/fastxdm/FastXDMDocumentCacheImpl.cpp
-@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FastXDMDocumentCacheImpl.lo -MD -MP -MF $(DEPDIR)/FastXDMDocumentCacheImpl.Tpo -c -o FastXDMDocumentCacheImpl.lo `test -f 'src/fastxdm/FastXDMDocumentCacheImpl.cpp' || echo '$(srcdir)/'`src/fastxdm/FastXDMDocumentCacheImpl.cpp
-@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/FastXDMDocumentCacheImpl.Tpo $(DEPDIR)/FastXDMDocumentCacheImpl.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/fastxdm/FastXDMDocumentCacheImpl.cpp' object='FastXDMDocumentCacheImpl.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FastXDMDocumentCacheImpl.lo `test -f 'src/fastxdm/FastXDMDocumentCacheImpl.cpp' || echo '$(srcdir)/'`src/fastxdm/FastXDMDocumentCacheImpl.cpp
 
 FastXDMDocument.lo: src/fastxdm/FastXDMDocument.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FastXDMDocument.lo -MD -MP -MF $(DEPDIR)/FastXDMDocument.Tpo -c -o FastXDMDocument.lo `test -f 'src/fastxdm/FastXDMDocument.cpp' || echo '$(srcdir)/'`src/fastxdm/FastXDMDocument.cpp

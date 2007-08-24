@@ -16,6 +16,7 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/ast/ASTNodeImpl.hpp>
+#include <xqilla/schema/DocumentCache.hpp>
 
 class XQILLA_API UApplyUpdates : public ASTNodeImpl
 {
@@ -29,8 +30,11 @@ public:
   const ASTNode *getExpression() const { return expr_; }
   void setExpression(ASTNode *expr) { expr_ = expr; }
 
+  DocumentCache::ValidationMode getRevalidationMode() const { return valMode_; }
+
 protected:
   ASTNode *expr_;
+  DocumentCache::ValidationMode valMode_;
 };
 
 #endif

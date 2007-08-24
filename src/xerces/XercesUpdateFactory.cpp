@@ -15,15 +15,18 @@
 
 #include "XercesUpdateFactory.hpp"
 #include "XercesNodeImpl.hpp"
+#include "XercesSequenceBuilder.hpp"
 
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/context/MessageListener.hpp>
 #include <xqilla/exceptions/ASTException.hpp>
 #include <xqilla/update/PendingUpdateList.hpp>
-#include <xqilla/schema/DocumentCacheImpl.hpp>
+#include <xqilla/schema/DocumentCache.hpp>
 #include <xqilla/dom-api/impl/XQillaNSResolverImpl.hpp>
+#include <xqilla/items/ATUntypedAtomic.hpp>
 
 #include <xercesc/dom/DOM.hpp>
+#include <xercesc/validators/schema/SchemaSymbols.hpp>
 #include <xercesc/framework/LocalFileFormatTarget.hpp>
 #include <xercesc/util/XMLUniDefs.hpp>
 #include <xercesc/framework/XMLBuffer.hpp>
@@ -82,7 +85,7 @@ void XercesUpdateFactory::applyInsertInto(const PendingUpdate &update, DynamicCo
   DOMNode *domnode = const_cast<DOMNode*>(nodeImpl->getDOMNode());
   DOMDocument *doc = const_cast<DOMDocument*>(XPath2Utils::getOwnerDoc(domnode));
 
-  bool untyped = XPath2Utils::equals(nodeImpl->getTypeName(), DocumentCacheParser::g_szUntyped) &&
+  bool untyped = XPath2Utils::equals(nodeImpl->getTypeName(), DocumentCache::g_szUntyped) &&
     XPath2Utils::equals(nodeImpl->getTypeURI(), SchemaSymbols::fgURI_SCHEMAFORSCHEMA);
 
   bool containsElementOrText = false;
@@ -121,7 +124,7 @@ void XercesUpdateFactory::applyInsertAttributes(const PendingUpdate &update, Dyn
   DOMElement *element = (DOMElement*)nodeImpl->getDOMNode();
   DOMDocument *doc = const_cast<DOMDocument*>(XPath2Utils::getOwnerDoc(element));
 
-  bool untyped = XPath2Utils::equals(nodeImpl->getTypeName(), DocumentCacheParser::g_szUntyped) &&
+  bool untyped = XPath2Utils::equals(nodeImpl->getTypeName(), DocumentCache::g_szUntyped) &&
     XPath2Utils::equals(nodeImpl->getTypeURI(), SchemaSymbols::fgURI_SCHEMAFORSCHEMA);
 
 //   // For looking up the defined namespaces
@@ -245,7 +248,7 @@ void XercesUpdateFactory::applyInsertBefore(const PendingUpdate &update, Dynamic
   DOMNode *parent = domnode->getParentNode();
   DOMDocument *doc = const_cast<DOMDocument*>(XPath2Utils::getOwnerDoc(domnode));
 
-  bool untyped = XPath2Utils::equals(parentNode->getTypeName(), DocumentCacheParser::g_szUntyped) &&
+  bool untyped = XPath2Utils::equals(parentNode->getTypeName(), DocumentCache::g_szUntyped) &&
     XPath2Utils::equals(parentNode->getTypeURI(), SchemaSymbols::fgURI_SCHEMAFORSCHEMA);
 
   bool containsElementOrText = false;
@@ -288,7 +291,7 @@ void XercesUpdateFactory::applyInsertAfter(const PendingUpdate &update, DynamicC
   DOMNode *parent = domnode->getParentNode();
   DOMDocument *doc = const_cast<DOMDocument*>(XPath2Utils::getOwnerDoc(domnode));
 
-  bool untyped = XPath2Utils::equals(parentNode->getTypeName(), DocumentCacheParser::g_szUntyped) &&
+  bool untyped = XPath2Utils::equals(parentNode->getTypeName(), DocumentCache::g_szUntyped) &&
     XPath2Utils::equals(parentNode->getTypeURI(), SchemaSymbols::fgURI_SCHEMAFORSCHEMA);
 
   bool containsElementOrText = false;
@@ -329,7 +332,7 @@ void XercesUpdateFactory::applyInsertAsFirst(const PendingUpdate &update, Dynami
   DOMNode *firstChild = domnode->getFirstChild();
   DOMDocument *doc = const_cast<DOMDocument*>(XPath2Utils::getOwnerDoc(domnode));
 
-  bool untyped = XPath2Utils::equals(nodeImpl->getTypeName(), DocumentCacheParser::g_szUntyped) &&
+  bool untyped = XPath2Utils::equals(nodeImpl->getTypeName(), DocumentCache::g_szUntyped) &&
     XPath2Utils::equals(nodeImpl->getTypeURI(), SchemaSymbols::fgURI_SCHEMAFORSCHEMA);
 
   bool containsElementOrText = false;
@@ -369,7 +372,7 @@ void XercesUpdateFactory::applyInsertAsLast(const PendingUpdate &update, Dynamic
   DOMNode *domnode = const_cast<DOMNode*>(nodeImpl->getDOMNode());
   DOMDocument *doc = const_cast<DOMDocument*>(XPath2Utils::getOwnerDoc(domnode));
 
-  bool untyped = XPath2Utils::equals(nodeImpl->getTypeName(), DocumentCacheParser::g_szUntyped) &&
+  bool untyped = XPath2Utils::equals(nodeImpl->getTypeName(), DocumentCache::g_szUntyped) &&
     XPath2Utils::equals(nodeImpl->getTypeURI(), SchemaSymbols::fgURI_SCHEMAFORSCHEMA);
 
   bool containsElementOrText = false;
@@ -411,7 +414,7 @@ void XercesUpdateFactory::applyReplaceNode(const PendingUpdate &update, DynamicC
   DOMNode *parent = domnode->getParentNode();
   DOMDocument *doc = const_cast<DOMDocument*>(XPath2Utils::getOwnerDoc(domnode));
 
-  bool untyped = XPath2Utils::equals(parentNode->getTypeName(), DocumentCacheParser::g_szUntyped) &&
+  bool untyped = XPath2Utils::equals(parentNode->getTypeName(), DocumentCache::g_szUntyped) &&
     XPath2Utils::equals(parentNode->getTypeURI(), SchemaSymbols::fgURI_SCHEMAFORSCHEMA);
 
   Result children = update.getValue();
@@ -448,7 +451,7 @@ void XercesUpdateFactory::applyReplaceAttribute(const PendingUpdate &update, Dyn
   DOMElement *element = domnode->getOwnerElement();
   DOMDocument *doc = element->getOwnerDocument();
 
-  bool untyped = XPath2Utils::equals(parentNode->getTypeName(), DocumentCacheParser::g_szUntyped) &&
+  bool untyped = XPath2Utils::equals(parentNode->getTypeName(), DocumentCache::g_szUntyped) &&
     XPath2Utils::equals(parentNode->getTypeURI(), SchemaSymbols::fgURI_SCHEMAFORSCHEMA);
 
   Result children = update.getValue();
@@ -517,12 +520,91 @@ void XercesUpdateFactory::applyReplaceElementContent(const PendingUpdate &update
 
 void XercesUpdateFactory::removeType(DOMNode *node)
 {
-  // TBD Implement this - jpcs
+  DOMNode *ancestor = node;
+
+  // 1. If $N is an element node, its properties are changed as follows:
+  if(node->getNodeType() == DOMNode::ELEMENT_NODE) {
+    // a. If type-name is not equal to xs:untyped, then
+    const XMLCh *typeURI, *typeName;
+    XercesNodeImpl::typeUriAndName(node, typeURI, typeName);
+    if(!XPath2Utils::equals(typeName, DocumentCache::g_szUntyped) ||
+       !XPath2Utils::equals(typeURI, SchemaSymbols::fgURI_SCHEMAFORSCHEMA)) {
+      // i.  type-name is set to xs:anyType
+      XercesSequenceBuilder::setElementTypeInfo((DOMElement *)node, SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                                                SchemaSymbols::fgATTVAL_ANYTYPE);
+      // ii. If the parent of N is an element node, then upd:removeType(parent($N)) is invoked.
+      DOMNode *parent = node->getParentNode();
+      if(parent && parent->getNodeType() == DOMNode::ELEMENT_NODE)
+        removeType(parent);
+    }
+
+    // b. string-value is set equal to the concatenated contents of the text node descendants, in document order.
+    // c. typed-value is set equal to the string-value property, as an instance of xs:untypedAtomic.
+    // d. nilled, is-id, and is-idrefs are set to false.
+
+    // Automatically done by changing the type
+  }
+  // 2. If $N is an attribute node, its properties are changed as follows:
+  else if(node->getNodeType() == DOMNode::ATTRIBUTE_NODE) {
+    //    a. type-name is set to xs:untypedAtomic.
+    XercesSequenceBuilder::setAttributeTypeInfo((DOMAttr *)node, SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                                                ATUntypedAtomic::fgDT_UNTYPEDATOMIC);
+
+    //    b. typed-value is set equal to the string-value property, as an instance of xs:untypedAtomic.
+    //    c. is-id and is-idrefs are set to false.
+
+    // Automatically done by changing the type
+
+    //    d. If $N has a parent, upd:removeType(parent($N)) is invoked.
+    ancestor = ((DOMAttr*)node)->getOwnerElement();
+    if(ancestor) removeType(ancestor);
+  }
+  else return;
+
+  // 3. The topmost ancestor of $N is marked for revalidation.
+  if(ancestor) {
+    while(ancestor->getParentNode() != 0)
+      ancestor = ancestor->getParentNode();
+
+    forRevalidation_.insert(ancestor);
+  }
 }
 
 void XercesUpdateFactory::setToUntyped(DOMNode *node)
 {
-  // TBD Implement this - jpcs
+  // 1. If $N is an element node, its properties are changed as follows:
+  if(node->getNodeType() == DOMNode::ELEMENT_NODE) {
+    // a. type-name is set to xs:untyped.
+    XercesSequenceBuilder::setElementTypeInfo((DOMElement *)node, SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                                              DocumentCache::g_szUntyped);
+    // b. typed-value is set equal to the string-value property, as an instance of xs:untypedAtomic.
+    // c. nilled, is-id, and is-idrefs are set to false.
+
+    // Automatically done by changing the type
+
+    // d. upd:setToUntyped() is invoked on the attributes and child element nodes of $N.
+    DOMNamedNodeMap *attrs = node->getAttributes();
+    for(unsigned int i = 0; i < attrs->getLength(); ++i)
+      setToUntyped(attrs->item(i));
+
+    DOMNode *child = node->getFirstChild();
+    while(child) {
+      if(child->getNodeType() == DOMNode::ELEMENT_NODE)
+        setToUntyped(child);
+      child = child->getNextSibling();
+    }
+  }
+  // 2. If $N is an attribute node, its properties are changed as follows:
+  else if(node->getNodeType() == DOMNode::ATTRIBUTE_NODE) {
+    // a. type-name is set to xs:untypedAtomic.
+    XercesSequenceBuilder::setAttributeTypeInfo((DOMAttr *)node, SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                                                ATUntypedAtomic::fgDT_UNTYPEDATOMIC);
+
+    // b. typed-value is set equal to the string-value property, as an instance of xs:untypedAtomic.
+    // c. is-id and is-idrefs are set to false.
+
+    // Automatically done by changing the type
+  }
 }
 
 void XercesUpdateFactory::addToPutList(const DOMNode *domnode, const LocationInfo *location, DynamicContext *context)
@@ -610,9 +692,87 @@ void XercesUpdateFactory::completeDeletions(DynamicContext *context)
   }
 }
 
+static inline DOMElement *nextElement(DOMNode *node)
+{
+  while(node && node->getNodeType() != DOMNode::ELEMENT_NODE) {
+    node = node->getNextSibling();
+  }
+  return (DOMElement*)node;
+}
+
+static void copyTypes(DOMNode *top, const DOMNode *topV)
+{
+  assert(top->getNodeType() == topV->getNodeType());
+
+  switch(topV->getNodeType()) {
+  case DOMNode::ELEMENT_NODE: {
+    // Copy the element's type
+    const XMLCh *oldTypeURI, *oldTypeName, *typeURI, *typeName;
+    XercesNodeImpl::typeUriAndName(top, oldTypeURI, oldTypeName);
+    XercesNodeImpl::typeUriAndName(topV, typeURI, typeName);
+    if(!XPath2Utils::equals(oldTypeName, typeName) ||
+       !XPath2Utils::equals(oldTypeURI, typeURI)) {
+      XercesSequenceBuilder::setElementTypeInfo((DOMElement *)top, typeURI, typeName);
+    }
+
+    // Recurse over the attributes
+    DOMNamedNodeMap *attrs = top->getAttributes();
+    DOMNamedNodeMap *attrsV = topV->getAttributes();
+    for(unsigned int i = 0; i < attrsV->getLength(); ++i) {
+      DOMNode *atV = attrsV->item(i);
+      DOMNode *at = attrs->getNamedItemNS(atV->getNamespaceURI(), atV->getLocalName());
+
+      // Add the attribute
+      if(!at) {
+        at = top->getOwnerDocument()->importNode(atV, /*deep*/true);
+        attrs->setNamedItemNS(at);
+      }
+      copyTypes(at, atV);
+    }
+
+    // Fall through
+  }
+  case DOMNode::DOCUMENT_NODE: {
+    // Recurse over the child elements
+    DOMElement *topChild = nextElement(top->getFirstChild());
+    const DOMElement *topVChild = nextElement(topV->getFirstChild());
+
+    while(topVChild) {
+      assert(topChild);
+      copyTypes(topChild, topVChild);
+
+      topChild = nextElement(topChild->getNextSibling());
+      topVChild = nextElement(topVChild->getNextSibling());
+    }
+    break;
+  }
+  case DOMNode::ATTRIBUTE_NODE: {
+    // Copy the attribute's type
+    const XMLCh *oldTypeURI, *oldTypeName, *typeURI, *typeName;
+    XercesNodeImpl::typeUriAndName(top, oldTypeURI, oldTypeName);
+    XercesNodeImpl::typeUriAndName(topV, typeURI, typeName);
+    if(!XPath2Utils::equals(oldTypeName, typeName) ||
+       !XPath2Utils::equals(oldTypeURI, typeURI)) {
+      XercesSequenceBuilder::setAttributeTypeInfo((DOMAttr *)top, typeURI, typeName);
+    }
+    break;
+  }
+  }
+}
+
 void XercesUpdateFactory::completeRevalidation(DynamicContext *context)
 {
-  // TBD implement this - jpcs
+  if(valMode_ == DocumentCache::VALIDATION_SKIP) return;
+
+  for(DOMNodeSet::iterator i = forRevalidation_.begin(); i != forRevalidation_.end(); ++i) {
+    DOMNode *top = *i;
+
+    Node::Ptr val = context->validate(new XercesNodeImpl(top, context), valMode_);
+    const XercesNodeImpl *valImpl = (const XercesNodeImpl*)val->getInterface(Item::gXQilla);
+    const DOMNode *topV = valImpl->getDOMNode();
+
+    copyTypes(top, topV);
+  }
 }
 
 static const XMLCh ls_string[] =

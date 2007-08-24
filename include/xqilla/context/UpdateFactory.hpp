@@ -15,6 +15,7 @@
 #define _UPDATEFACTORY_HPP
 
 #include <xqilla/framework/XQillaExport.hpp>
+#include <xqilla/schema/DocumentCache.hpp>
 
 #include <xercesc/util/XMemory.hpp>
 
@@ -27,7 +28,7 @@ class XQILLA_API UpdateFactory : public XERCES_CPP_NAMESPACE_QUALIFIER XMemory
 public:
   virtual ~UpdateFactory() {}
 
-  virtual void applyUpdates(const PendingUpdateList &pul, DynamicContext *context);
+  virtual void applyUpdates(const PendingUpdateList &pul, DynamicContext *context, DocumentCache::ValidationMode valMode);
 
   virtual void applyPut(const PendingUpdate &update, DynamicContext *context) = 0;
   virtual void applyInsertInto(const PendingUpdate &update, DynamicContext *context) = 0;
@@ -44,6 +45,9 @@ public:
   virtual void applyReplaceElementContent(const PendingUpdate &update, DynamicContext *context) = 0;
 
   virtual void completeUpdate(DynamicContext *context) = 0;
+
+protected:
+  DocumentCache::ValidationMode valMode_;  
 };
 
 #endif
