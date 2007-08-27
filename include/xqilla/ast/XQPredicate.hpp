@@ -54,7 +54,7 @@ protected:
   bool reverse_;
 };
 
-class PredicateFilterResult : public ResultImpl
+class XQILLA_API PredicateFilterResult : public ResultImpl
 {
 public:
 	PredicateFilterResult(const Result &parent, const ASTNode *pred, unsigned int contextSize);
