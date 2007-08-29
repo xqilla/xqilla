@@ -718,11 +718,6 @@ void XQContextImpl::setDocumentCache(DocumentCache* docCache)
     _docCache = docCache;
 }
 
-Node::Ptr XQContextImpl::validate(const Node::Ptr &node, DocumentCache::ValidationMode valMode)
-{
-  return _docCache->validate(node, valMode, this);
-}
-
 SequenceBuilder *XQContextImpl::createSequenceBuilder() const
 {
   return _conf->createSequenceBuilder(this);

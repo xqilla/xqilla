@@ -37,6 +37,7 @@ class ComplexTypeInfo;
 class SchemaElementDecl;
 class SchemaAttDef;
 class InputSource;
+class GrammarResolver;
 XERCES_CPP_NAMESPACE_END
 
 ///Expression Context is a storage for contexts.
@@ -84,7 +85,7 @@ public:
   virtual unsigned int getSchemaUriId(const XMLCh* uri) const = 0;
   virtual const XMLCh* getSchemaUri(unsigned int id) const = 0;
 
-  virtual Node::Ptr validate(const Node::Ptr &node, ValidationMode valMode, DynamicContext *context) = 0;
+  virtual XERCES_CPP_NAMESPACE_QUALIFIER GrammarResolver *getGrammarResolver() const = 0;
 
   virtual XERCES_CPP_NAMESPACE_QUALIFIER DatatypeValidator* getDatatypeValidator(const XMLCh* uri, const XMLCh* typeName) const = 0;
 

@@ -364,11 +364,6 @@ VectorOfStrings* XQDynamicContextImpl::resolveModuleURI(const XMLCh* uri) const
   return _staticContext->resolveModuleURI(uri);
 }
 
-Node::Ptr XQDynamicContextImpl::validate(const Node::Ptr &node, DocumentCache::ValidationMode valMode)
-{
-  return _docCache->validate(node, valMode, this);
-}
-
 SequenceBuilder *XQDynamicContextImpl::createSequenceBuilder() const
 {
   return _conf->createSequenceBuilder(this);

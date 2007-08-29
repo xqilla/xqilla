@@ -238,6 +238,12 @@ static void toEventsImpl(const DOMNode *node, EventHandler *events,
   }
 }
 
+void XercesNodeImpl::generateEvents(const DOMNode *node, EventHandler *events,
+                                    bool preserveNS, bool preserveType)
+{
+  toEventsImpl(node, events, preserveNS, preserveType, preserveNS);
+}
+
 void XercesNodeImpl::generateEvents(EventHandler *events, const DynamicContext *context,
                               bool preserveNS, bool preserveType) const
 {

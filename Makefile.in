@@ -177,10 +177,10 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	LessThanEqual.lo Minus.lo Mod.lo Multiply.lo NodeComparison.lo \
 	NotEquals.lo Or.lo OrderComparison.lo Plus.lo Range.lo \
 	UnaryMinus.lo Union.lo DocumentCacheImpl.lo SequenceType.lo \
-	AnyAtomicTypeDatatypeValidator.lo ClosureResult.lo \
-	EmptyResult.lo LazySequenceResult.lo ResultBuffer.lo \
-	ResultBufferImpl.lo Result.lo ResultImpl.lo SequenceResult.lo \
-	SingleResult.lo Sequence.lo FunctionPut.lo \
+	AnyAtomicTypeDatatypeValidator.lo SchemaValidatorFilter.lo \
+	ClosureResult.lo EmptyResult.lo LazySequenceResult.lo \
+	ResultBuffer.lo ResultBufferImpl.lo Result.lo ResultImpl.lo \
+	SequenceResult.lo SingleResult.lo Sequence.lo FunctionPut.lo \
 	PendingUpdateList.lo UApplyUpdates.lo UDelete.lo URename.lo \
 	UReplace.lo UReplaceValueOf.lo UInsertAsFirst.lo \
 	UInsertAsLast.lo UInsertInto.lo UInsertAfter.lo \
@@ -744,6 +744,7 @@ src/operators/Union.cpp \
 src/schema/DocumentCacheImpl.cpp \
 src/schema/SequenceType.cpp \
 src/schema/AnyAtomicTypeDatatypeValidator.cpp \
+src/schema/SchemaValidatorFilter.cpp \
 src/runtime/ClosureResult.cpp \
 src/runtime/EmptyResult.cpp \
 src/runtime/LazySequenceResult.cpp \
@@ -1254,6 +1255,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ResultBuffer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ResultBufferImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ResultImpl.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SchemaValidatorFilter.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SelfAxis.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Sequence.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SequenceResult.Plo@am__quote@
@@ -3705,6 +3707,13 @@ AnyAtomicTypeDatatypeValidator.lo: src/schema/AnyAtomicTypeDatatypeValidator.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/schema/AnyAtomicTypeDatatypeValidator.cpp' object='AnyAtomicTypeDatatypeValidator.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o AnyAtomicTypeDatatypeValidator.lo `test -f 'src/schema/AnyAtomicTypeDatatypeValidator.cpp' || echo '$(srcdir)/'`src/schema/AnyAtomicTypeDatatypeValidator.cpp
+
+SchemaValidatorFilter.lo: src/schema/SchemaValidatorFilter.cpp
+@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SchemaValidatorFilter.lo -MD -MP -MF $(DEPDIR)/SchemaValidatorFilter.Tpo -c -o SchemaValidatorFilter.lo `test -f 'src/schema/SchemaValidatorFilter.cpp' || echo '$(srcdir)/'`src/schema/SchemaValidatorFilter.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/SchemaValidatorFilter.Tpo $(DEPDIR)/SchemaValidatorFilter.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/schema/SchemaValidatorFilter.cpp' object='SchemaValidatorFilter.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SchemaValidatorFilter.lo `test -f 'src/schema/SchemaValidatorFilter.cpp' || echo '$(srcdir)/'`src/schema/SchemaValidatorFilter.cpp
 
 ClosureResult.lo: src/runtime/ClosureResult.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ClosureResult.lo -MD -MP -MF $(DEPDIR)/ClosureResult.Tpo -c -o ClosureResult.lo `test -f 'src/runtime/ClosureResult.cpp' || echo '$(srcdir)/'`src/runtime/ClosureResult.cpp

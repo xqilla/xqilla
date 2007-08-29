@@ -99,8 +99,6 @@ public:
      is relative, the base uri is obtained from the context. */
   virtual Sequence resolveCollection(const XMLCh* uri, const LocationInfo *location) = 0;
   virtual Sequence resolveDefaultCollection() = 0;
-  /** returns the validated node */
-  virtual Node::Ptr validate(const Node::Ptr &node, DocumentCache::ValidationMode valMode) = 0;
 
   /** Create a new SequenceBuilder, which is used to turn a
       stream of events into a Sequence. */

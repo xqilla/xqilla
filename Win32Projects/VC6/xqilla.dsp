@@ -2881,6 +2881,10 @@ SOURCE=..\..\src\schema\DocumentCacheImpl.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\schema\SchemaValidatorFilter.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\schema\SequenceType.cpp
 # End Source File
 # Begin Source File
@@ -2894,6 +2898,10 @@ SOURCE=..\..\include\xqilla\schema\DocumentCache.hpp
 # Begin Source File
 
 SOURCE=..\..\include\xqilla\schema\DocumentCacheImpl.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\schema\SchemaValidatorFilter.hpp
 # End Source File
 # Begin Source File
 

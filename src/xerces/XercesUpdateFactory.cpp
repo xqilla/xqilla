@@ -20,10 +20,12 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/context/MessageListener.hpp>
 #include <xqilla/exceptions/ASTException.hpp>
+#include <xqilla/ast/XQValidate.hpp>
 #include <xqilla/update/PendingUpdateList.hpp>
 #include <xqilla/schema/DocumentCache.hpp>
 #include <xqilla/dom-api/impl/XQillaNSResolverImpl.hpp>
 #include <xqilla/items/ATUntypedAtomic.hpp>
+#include <xqilla/schema/SchemaValidatorFilter.hpp>
 
 #include <xercesc/dom/DOM.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
@@ -700,65 +702,114 @@ static inline DOMElement *nextElement(DOMNode *node)
   return (DOMElement*)node;
 }
 
-static void copyTypes(DOMNode *top, const DOMNode *topV)
+class RevalidationEventHandler : public EventHandler
 {
-  assert(top->getNodeType() == topV->getNodeType());
+public:
+  RevalidationEventHandler(DOMNode *node)
+    : node_(0),
+      child_(node)
+  {
+  }
 
-  switch(topV->getNodeType()) {
-  case DOMNode::ELEMENT_NODE: {
+  virtual void startDocumentEvent(const XMLCh *documentURI, const XMLCh *encoding)
+  {
+    assert(child_ && child_->getNodeType() == DOMNode::DOCUMENT_NODE);
+    node_ = child_;
+    child_ = nextElement(node_->getFirstChild());
+  }
+
+  virtual void endDocumentEvent()
+  {
+    assert(node_ && node_->getNodeType() == DOMNode::DOCUMENT_NODE);
+    child_ = node_;
+    node_ = 0;
+  }
+
+  virtual void startElementEvent(const XMLCh *prefix, const XMLCh *uri, const XMLCh *localname)
+  {
+    assert(child_ && child_->getNodeType() == DOMNode::ELEMENT_NODE);
+    node_ = child_;
+    child_ = nextElement(node_->getFirstChild());
+  }
+
+  virtual void endElementEvent(const XMLCh *prefix, const XMLCh *uri, const XMLCh *localname,
+                               const XMLCh *typeURI, const XMLCh *typeName)
+  {
+    assert(node_ && node_->getNodeType() == DOMNode::ELEMENT_NODE);
+
     // Copy the element's type
-    const XMLCh *oldTypeURI, *oldTypeName, *typeURI, *typeName;
-    XercesNodeImpl::typeUriAndName(top, oldTypeURI, oldTypeName);
-    XercesNodeImpl::typeUriAndName(topV, typeURI, typeName);
+    const XMLCh *oldTypeURI, *oldTypeName;
+    XercesNodeImpl::typeUriAndName(node_, oldTypeURI, oldTypeName);
     if(!XPath2Utils::equals(oldTypeName, typeName) ||
        !XPath2Utils::equals(oldTypeURI, typeURI)) {
-      XercesSequenceBuilder::setElementTypeInfo((DOMElement *)top, typeURI, typeName);
+      XercesSequenceBuilder::setElementTypeInfo((DOMElement *)node_, typeURI, typeName);
     }
 
-    // Recurse over the attributes
-    DOMNamedNodeMap *attrs = top->getAttributes();
-    DOMNamedNodeMap *attrsV = topV->getAttributes();
-    for(unsigned int i = 0; i < attrsV->getLength(); ++i) {
-      DOMNode *atV = attrsV->item(i);
-      DOMNode *at = attrs->getNamedItemNS(atV->getNamespaceURI(), atV->getLocalName());
-
-      // Add the attribute
-      if(!at) {
-        at = top->getOwnerDocument()->importNode(atV, /*deep*/true);
-        attrs->setNamedItemNS(at);
-      }
-      copyTypes(at, atV);
-    }
-
-    // Fall through
+    child_ = node_;
+    node_ = node_->getParentNode();
+    child_ = nextElement(child_->getNextSibling());
   }
-  case DOMNode::DOCUMENT_NODE: {
-    // Recurse over the child elements
-    DOMElement *topChild = nextElement(top->getFirstChild());
-    const DOMElement *topVChild = nextElement(topV->getFirstChild());
 
-    while(topVChild) {
-      assert(topChild);
-      copyTypes(topChild, topVChild);
+  virtual void attributeEvent(const XMLCh *prefix, const XMLCh *uri, const XMLCh *localname, const XMLCh *value,
+                              const XMLCh *typeURI, const XMLCh *typeName)
+  {
+    assert(node_ && node_->getNodeType() == DOMNode::ELEMENT_NODE);
 
-      topChild = nextElement(topChild->getNextSibling());
-      topVChild = nextElement(topVChild->getNextSibling());
+    DOMNamedNodeMap *attrs = node_->getAttributes();
+    DOMAttr *at = (DOMAttr*)attrs->getNamedItemNS(uri, localname);
+
+    // Add the attribute
+    if(!at) {
+      at = node_->getOwnerDocument()->createAttributeNS(uri, localname);
+      at->setPrefix(prefix);
+      attrs->setNamedItemNS(at);
     }
-    break;
-  }
-  case DOMNode::ATTRIBUTE_NODE: {
+
+    // Copy the schema normalized value
+    at->setNodeValue(value);
+
     // Copy the attribute's type
-    const XMLCh *oldTypeURI, *oldTypeName, *typeURI, *typeName;
-    XercesNodeImpl::typeUriAndName(top, oldTypeURI, oldTypeName);
-    XercesNodeImpl::typeUriAndName(topV, typeURI, typeName);
+    const XMLCh *oldTypeURI, *oldTypeName;
+    XercesNodeImpl::typeUriAndName(at, oldTypeURI, oldTypeName);
     if(!XPath2Utils::equals(oldTypeName, typeName) ||
        !XPath2Utils::equals(oldTypeURI, typeURI)) {
-      XercesSequenceBuilder::setAttributeTypeInfo((DOMAttr *)top, typeURI, typeName);
+      XercesSequenceBuilder::setAttributeTypeInfo(at, typeURI, typeName);
     }
-    break;
   }
+
+  virtual void piEvent(const XMLCh *target, const XMLCh *value)
+  {
   }
-}
+
+  virtual void textEvent(const XMLCh *value)
+  {
+  }
+
+  virtual void textEvent(const XMLCh *chars, unsigned int length)
+  {
+  }
+
+  virtual void commentEvent(const XMLCh *value)
+  {
+  }
+
+  virtual void namespaceEvent(const XMLCh *prefix, const XMLCh *uri)
+  {
+  }
+
+  virtual void atomicItemEvent(AnyAtomicType::AtomicObjectType type, const XMLCh *value, const XMLCh *typeURI,
+                               const XMLCh *typeName)
+  {
+  }
+
+  virtual void endEvent()
+  {
+  }
+
+private:
+  DOMNode *node_;
+  DOMNode *child_;
+};
 
 void XercesUpdateFactory::completeRevalidation(DynamicContext *context)
 {
@@ -767,11 +818,16 @@ void XercesUpdateFactory::completeRevalidation(DynamicContext *context)
   for(DOMNodeSet::iterator i = forRevalidation_.begin(); i != forRevalidation_.end(); ++i) {
     DOMNode *top = *i;
 
-    Node::Ptr val = context->validate(new XercesNodeImpl(top, context), valMode_);
-    const XercesNodeImpl *valImpl = (const XercesNodeImpl*)val->getInterface(Item::gXQilla);
-    const DOMNode *topV = valImpl->getDOMNode();
+    // TBD element default/normalized values - jpcs
 
-    copyTypes(top, topV);
+    // Stream the node through the schema validator, and back to the RevalidationEventHandler,
+    // which will write the information back into the node
+    RevalidationEventHandler reh(top);
+    SchemaValidatorFilter svf(valMode_ == DocumentCache::VALIDATION_STRICT, &reh, context, 0);
+    ValidateArgumentCheckFilter argCheck(&svf, valMode_, context, 0);
+
+    XercesNodeImpl::generateEvents(top, &argCheck, true, false);
+    argCheck.endEvent();
   }
 }
 
