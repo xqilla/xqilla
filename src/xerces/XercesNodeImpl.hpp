@@ -82,6 +82,8 @@ public:
 
   static void typeUriAndName(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *node, const XMLCh *&uri, const XMLCh *&name);
 
+  static void generateEvents(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *node, EventHandler *events, bool preserveNS = true, bool preserveType = true);
+
 protected:
   XercesNodeImpl(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *node);
 

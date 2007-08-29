@@ -324,6 +324,7 @@ xqilla/schema/DocumentCache.hpp \
 xqilla/schema/SequenceType.hpp \
 xqilla/schema/AnyAtomicTypeDatatypeValidator.hpp \
 xqilla/schema/DocumentCacheImpl.hpp \
+xqilla/schema/SchemaValidatorFilter.hpp \
 xqilla/simple-api/XQilla.hpp \
 xqilla/simple-api/XQillaConfiguration.hpp \
 xqilla/simple-api/XQQuery.hpp \

@@ -2514,6 +2514,9 @@
 				RelativePath="..\..\src\schema\DocumentCacheImpl.cpp">
 			</File>
 			<File
+				RelativePath="..\..\src\schema\SchemaValidatorFilter.cpp">
+			</File>
+			<File
 				RelativePath="..\..\src\schema\SequenceType.cpp">
 			</File>
 			<File
@@ -2524,6 +2527,9 @@
 			</File>
 			<File
 				RelativePath="..\..\include\xqilla\schema\DocumentCacheImpl.hpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\schema\SchemaValidatorFilter.hpp">
 			</File>
 			<File
 				RelativePath="..\..\include\xqilla\schema\SequenceType.hpp">

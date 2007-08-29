@@ -383,6 +383,7 @@ src/runtime/SequenceResult.cpp	lib
 src/runtime/SingleResult.cpp	lib
 src/schema/AnyAtomicTypeDatatypeValidator.cpp	lib
 src/schema/DocumentCacheImpl.cpp	lib
+src/schema/SchemaValidatorFilter.cpp lib
 src/schema/SequenceType.cpp	lib
 src/simple-api/XQQuery.cpp	lib
 src/simple-api/XQilla.cpp	lib
@@ -784,6 +785,7 @@ include/xqilla/runtime/TupleResult.hpp	lib
 include/xqilla/schema/AnyAtomicTypeDatatypeValidator.hpp	lib
 include/xqilla/schema/DocumentCache.hpp	lib
 include/xqilla/schema/DocumentCacheImpl.hpp	lib
+include/xqilla/schema/SchemaValidatorFilter.hpp lib
 include/xqilla/schema/SequenceType.hpp	lib
 include/xqilla/simple-api/XQQuery.hpp	lib
 include/xqilla/simple-api/XQilla.hpp	lib

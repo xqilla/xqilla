@@ -21,10 +21,8 @@
 #include <xercesc/framework/MemBufInputSource.hpp>
 #include <xercesc/sax/SAXParseException.hpp>
 #include <xercesc/validators/datatype/DatatypeValidatorFactory.hpp>
-#include <xercesc/validators/common/Grammar.hpp>
 #include <xercesc/validators/schema/SchemaGrammar.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
-#include <xercesc/validators/schema/SchemaValidator.hpp>
 #include <xercesc/framework/XMLSchemaDescription.hpp>
 #include <xercesc/framework/XMLGrammarPool.hpp>
 #include <xercesc/internal/IGXMLScanner.hpp>
@@ -280,34 +278,18 @@ void DocumentCacheImpl::startElement(const XMLElementDecl& elemDecl, const unsig
 
   attrList_ = &attrList;
   attrCount_ = attrCount;
-  if(scanner_->getCurrentGrammarType() != Grammar::SchemaGrammarType) {
+  if(!scanner_->getDoSchema() || scanner_->getCurrentGrammarType() != Grammar::SchemaGrammarType) {
     handleAttributesPSVI(0, 0, 0);
   }
 
-  // We're not expecting isEmpty to be true, since we're processing namespaces
-  assert(!isEmpty);
+  if(isEmpty) {
+	  endElement(elemDecl, urlId, isRoot, elemPrefix);
+  }
 }
 
 void DocumentCacheImpl::endElement(const XMLElementDecl& elemDecl, const unsigned int urlId, const bool isRoot,
                                    const XMLCh* const elemPrefix)
 {
-  //   // Type URI and localname
-  //   if(elementInfo->getTypeDefinition()) {
-  //     elementInfo->getTypeDefinition()->getNamespace();
-  //     elementInfo->getTypeDefinition()->getName();
-  //   }
-
-  //   // Union member
-  //   if(elementInfo->getMemberTypeDefinition()) {
-  //     elementInfo->getMemberTypeDefinition()->getNamespace();
-  //     elementInfo->getMemberTypeDefinition()->getName();
-  //   }
-
-  //   // dmNilled
-  //   elementInfo->getValidity()==PSVIItem::VALIDITY_VALID;
-  //   if(elementInfo->getElementDeclaration())
-  //     elementInfo->getElementDeclaration()->getNillable()!=0;
-
   const XMLCh *typeURI = SchemaSymbols::fgURI_SCHEMAFORSCHEMA;
   const XMLCh *typeName = DocumentCache::g_szUntyped;
 
@@ -327,7 +309,7 @@ void DocumentCacheImpl::endElement(const XMLElementDecl& elemDecl, const unsigne
   }
 
   events_->endElementEvent(emptyToNull(elemPrefix), emptyToNull(scanner_->getURIText(urlId)), elemDecl.getBaseName(),
-                           typeURI, typeName);
+                           emptyToNull(typeURI), typeName);
 
   elementInfo_ = 0;
 }
@@ -416,7 +398,7 @@ void DocumentCacheImpl::handleAttributesPSVI(const XMLCh* const localName, const
       }
 
       events_->attributeEvent(emptyToNull(attr->getPrefix()), emptyToNull(auri), attr->getName(), attr->getValue(),
-                              typeURI, typeName);
+                              emptyToNull(typeURI), typeName);
     }
   }
 
@@ -624,150 +606,9 @@ const XMLCh* DocumentCacheImpl::getSchemaUri(unsigned int id) const
   return grammarResolver_->getStringPool()->getValueForId(id);
 }
 
-class DocumentElementOnlyFilter : public EventFilter
+GrammarResolver *DocumentCacheImpl::getGrammarResolver() const
 {
-public:
-  DocumentElementOnlyFilter(EventHandler *next)
-    : EventFilter(next),
-      reportEvents_(false)
-  {
-  }
-
-  virtual void startDocumentEvent(const XMLCh *documentURI, const XMLCh *encoding)
-  {
-  }
-
-  virtual void endDocumentEvent()
-  {
-  }
-
-  virtual void startElementEvent(const XMLCh *prefix, const XMLCh *uri, const XMLCh *localname)
-  {
-    reportEvents_ = true;
-    next_->startElementEvent(prefix, uri, localname);
-  }
-
-  virtual void piEvent(const XMLCh *target, const XMLCh *value)
-  {
-    if(reportEvents_)
-      next_->piEvent(target, value);
-  }
-
-  virtual void textEvent(const XMLCh *value)
-  {
-    if(reportEvents_)
-      next_->textEvent(value);
-  }
-
-  virtual void textEvent(const XMLCh *chars, unsigned int length)
-  {
-    if(reportEvents_)
-      next_->textEvent(chars, length);
-  }
-
-  virtual void commentEvent(const XMLCh *value)
-  {
-    if(reportEvents_)
-      next_->commentEvent(value);
-  }
-
-private:
-  bool reportEvents_;
-};
-
-Node::Ptr DocumentCacheImpl::validate(const Node::Ptr &node,
-                                      DocumentCache::ValidationMode valMode,
-                                      DynamicContext *context)
-{
-  XPath2MemoryManager *mm = context->getMemoryManager();
-
-  try {
-    Node::Ptr documentElement = node;
-
-    if(node->dmNodeKind() == Node::document_string) {
-      Result children = node->dmChildren(context, 0);
-      Node::Ptr child;
-      documentElement = 0;
-      while((child = children->next(context)).notNull()) {
-        if(child->dmNodeKind()==Node::element_string)
-          if(documentElement.notNull())
-            XQThrow2(DynamicErrorException,X("DocumentCacheImpl::validate"),
-                     X("A document being validated must have exactly one child element [err:XQDY0061]"));
-          else {
-            documentElement = child;
-          }
-        else if(child->dmNodeKind() != Node::processing_instruction_string && 
-                child->dmNodeKind() != Node::comment_string)
-          XQThrow2(DynamicErrorException,X("DocumentCacheImpl::validate"),
-                   X("A document being validated can only have element, comments and processing instructions as children [err:XQDY0061]"));
-      }
-      if(documentElement.isNull())
-        XQThrow2(DynamicErrorException,X("DocumentCacheImpl::validate"),
-                 X("A document being validated must have exactly one child element [err:XQDY0061]"));
-    }
-
-    // if validation is strict, there must be a schema for the root node
-    if(valMode == DocumentCache::VALIDATION_STRICT) {
-      ATQNameOrDerived::Ptr name = documentElement->dmNodeName(context);
-      const XMLCh *node_uri = ((const ATQNameOrDerived*)name.get())->getURI();
-      const XMLCh *node_name = ((const ATQNameOrDerived*)name.get())->getName();
-
-      SchemaElementDecl* elemDecl = getElementDecl(node_uri, node_name);
-      if(elemDecl == NULL) {
-        XMLBuffer msg(1023, mm);
-        msg.set(X("Element {"));
-        msg.append(node_uri);
-        msg.append(X("}"));
-        msg.append(node_name);
-        msg.append(X(" is not defined as a global element [err:XQDY0084]"));
-        XQThrow2(DynamicErrorException,X("DocumentCacheImpl::validate"), msg.getRawBuffer());
-      }
-    }
-
-    // - build a textual representation of the element
-    // TBD Write schema validation as an EventHandler, so we don't have to serialize - jpcs
-    AutoDeallocate<const XMLCh> serializedForm(node->asString(context), context->getMemoryManager());
-
-    MemBufInputSource inputSrc((const XMLByte*)serializedForm.get(), 
-                               XMLString::stringLen(serializedForm) * sizeof(XMLCh), 
-                               XMLUni::fgZeroLenString,
-                               false, mm);
-    inputSrc.setCopyBufToStream(false);
-    inputSrc.setEncoding(XMLUni::fgUTF16EncodingString);
-
-    // - parse the text (with validation on)
-    AutoDelete<SequenceBuilder> builder(context->createSequenceBuilder());
-    events_ = builder.get();
-    attrList_ = 0;
-    attrCount_ = 0;
-    elementInfo_ = 0;
-    strictValidation_ = valMode == DocumentCache::VALIDATION_STRICT;
-
-    DocumentElementOnlyFilter filter(events_);
-    if(node->dmNodeKind() == Node::element_string) {
-      events_ = &filter;
-    }
-
-    scanner_->scanDocument(inputSrc);
-    events_->endEvent();
-
-    return (Node*)builder->getSequence().first().get();
-  }
-  catch(const SAXException& toCatch) {
-    XMLBuffer exc_msg(1023, context->getMemoryManager());
-    exc_msg.set(X("Validation failed: "));
-    exc_msg.append(toCatch.getMessage());
-    exc_msg.append(X(" [err:XQDY0027]"));
-    XQThrow2(DynamicErrorException,X("DocumentCacheImpl::validate"), exc_msg.getRawBuffer());
-  }
-  catch(const XMLException& toCatch) {
-    XMLBuffer exc_msg(1023, context->getMemoryManager());
-    exc_msg.set(X("Validation failed: "));
-    exc_msg.append(toCatch.getMessage());
-    exc_msg.append(X(" [err:XQDY0027]"));
-    XQThrow2(DynamicErrorException,X("DocumentCacheImpl::validate"), exc_msg.getRawBuffer());
-  }
-  return NULL;
+  return grammarResolver_;
 }
 
 DatatypeValidator*  DocumentCacheImpl::getDatatypeValidator(const XMLCh* uri, const XMLCh* typeName) const

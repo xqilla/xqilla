@@ -179,8 +179,6 @@ public:
   virtual const DocumentCache* getDocumentCache() const;
   /** sets the repository for the grammars **/
   virtual void setDocumentCache(DocumentCache* docCache);
-  /** returns the validated node */
-  virtual Node::Ptr validate(const Node::Ptr &node, DocumentCache::ValidationMode valMode);
   /** returns true if the type represented by uri:typename is an instance of uriToCheck:typeNameToCheck
    *
    * ie: to check

@@ -367,6 +367,7 @@ src/operators/Union.cpp \
 src/schema/DocumentCacheImpl.cpp \
 src/schema/SequenceType.cpp \
 src/schema/AnyAtomicTypeDatatypeValidator.cpp \
+src/schema/SchemaValidatorFilter.cpp \
 src/runtime/ClosureResult.cpp \
 src/runtime/EmptyResult.cpp \
 src/runtime/LazySequenceResult.cpp \

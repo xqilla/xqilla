@@ -73,7 +73,7 @@ public:
   virtual unsigned int getSchemaUriId(const XMLCh* uri) const;
   virtual const XMLCh* getSchemaUri(unsigned int id) const;
 
-  virtual Node::Ptr validate(const Node::Ptr &node, DocumentCache::ValidationMode valMode, DynamicContext *context);
+  virtual XERCES_CPP_NAMESPACE_QUALIFIER GrammarResolver *getGrammarResolver() const;
 
   virtual XERCES_CPP_NAMESPACE_QUALIFIER DatatypeValidator*  getDatatypeValidator(const XMLCh* uri, const XMLCh* typeName) const;
 
@@ -99,9 +99,9 @@ protected:
   virtual void startInputSource(const XERCES_CPP_NAMESPACE_QUALIFIER InputSource& inputSource);
 
   // XMLErrorReporter
-  void resetErrors();
-  void error(const unsigned int, const XMLCh* const, const XMLErrorReporter::ErrTypes errType, const XMLCh* const errorText,
-             const XMLCh* const systemId, const XMLCh* const publicId, const XMLSSize_t lineNum, const XMLSSize_t colNum);
+  virtual void resetErrors();
+  virtual void error(const unsigned int, const XMLCh* const, const XMLErrorReporter::ErrTypes errType, const XMLCh* const errorText,
+                     const XMLCh* const systemId, const XMLCh* const publicId, const XMLSSize_t lineNum, const XMLSSize_t colNum);
 
   // XMLDocumentHandler
   virtual void startDocument();

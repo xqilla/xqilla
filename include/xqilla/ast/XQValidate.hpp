@@ -15,6 +15,7 @@
 #define XQVALIDATE_HPP
 
 #include <xqilla/ast/ASTNodeImpl.hpp>
+#include <xqilla/events/EventHandler.hpp>
 #include <xqilla/schema/DocumentCache.hpp>
 
 class XQILLA_API XQValidate : public ASTNodeImpl
@@ -25,6 +26,8 @@ public:
   virtual ASTNode* staticResolution(StaticContext *context);
   virtual ASTNode *staticTyping(StaticContext *context);
   virtual Sequence createSequence(DynamicContext* context, int flags=0) const;
+  virtual void generateEvents(EventHandler *events, DynamicContext *context,
+                              bool preserveNS, bool preserveType) const;
 
   const ASTNode *getExpression() const { return expr_; }
   DocumentCache::ValidationMode getMode() const { return mode_; }
@@ -34,6 +37,37 @@ public:
 private:
   ASTNode *expr_;
   DocumentCache::ValidationMode mode_;
+};
+
+class XQILLA_API ValidateArgumentCheckFilter : public EventFilter
+{
+public:
+  ValidateArgumentCheckFilter(EventHandler *next, DocumentCache::ValidationMode mode, DynamicContext *context,
+                              const LocationInfo *loc);
+
+  virtual void startDocumentEvent(const XMLCh *documentURI, const XMLCh *encoding);
+  virtual void endDocumentEvent();
+  virtual void startElementEvent(const XMLCh *prefix, const XMLCh *uri, const XMLCh *localname);
+  virtual void endElementEvent(const XMLCh *prefix, const XMLCh *uri, const XMLCh *localname,
+                               const XMLCh *typeURI, const XMLCh *typeName);
+  virtual void textEvent(const XMLCh *value);
+  virtual void textEvent(const XMLCh *chars, unsigned int length);
+  virtual void piEvent(const XMLCh *target, const XMLCh *value);
+  virtual void commentEvent(const XMLCh *value);
+  virtual void attributeEvent(const XMLCh *prefix, const XMLCh *uri, const XMLCh *localname, const XMLCh *value,
+                              const XMLCh *typeURI, const XMLCh *typeName);
+  virtual void namespaceEvent(const XMLCh *prefix, const XMLCh *uri);
+  virtual void atomicItemEvent(AnyAtomicType::AtomicObjectType type, const XMLCh *value, const XMLCh *typeURI,
+                               const XMLCh *typeName);
+
+private:
+  DocumentCache::ValidationMode mode_;
+  const LocationInfo *info_;
+  DynamicContext *context_;
+  bool inDocumentNode_;
+  bool seenDocElem_;
+  unsigned int level_;
+  bool seenOne_;
 };
 
 #endif
