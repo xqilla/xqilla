@@ -69,8 +69,10 @@ ATAnyURIOrDerived::Ptr FunctionNamespaceURIForPrefix::uriForPrefix(const XMLCh *
   Node::Ptr ns;
   while((ns = (Node*)namespaces->next(context).get()).notNull()) {
     ATQNameOrDerived::Ptr name = ns->dmNodeName(context);
-    if(name.isNull() && prefix == 0) {
-      return context->getItemFactory()->createAnyURI(ns->dmStringValue(context), context);
+    if(name.isNull()) {
+      if(prefix == 0) {
+        return context->getItemFactory()->createAnyURI(ns->dmStringValue(context), context);
+      }
     }
     else if(XPath2Utils::equals(((const ATQNameOrDerived*)name.get())->getName(), prefix)) {
       return context->getItemFactory()->createAnyURI(ns->dmStringValue(context), context);
