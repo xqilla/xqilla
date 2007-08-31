@@ -39,11 +39,11 @@ SchemaValidatorFilter::SchemaValidatorFilter(bool strictValidation, EventHandler
     XMLScanner(0, context->getDocumentCache()->getGrammarResolver(), context->getMemoryManager()),
     mm_(context->getMemoryManager()),
     info_(info),
-    fSchemaValidator(new (mm_) SchemaValidator(0, mm_)),
-    fSchemaGrammar(new (fGrammarPoolMemoryManager) SchemaGrammar(fGrammarPoolMemoryManager)),
-    fContent(1023, mm_),
-    fICHandler(new (mm_) IdentityConstraintHandler(this, mm_)),
-    fElemNonDeclPool(new (mm_) RefHash3KeysIdPool<SchemaElementDecl>(29, true, 128, mm_)),
+    fSchemaValidator(new (context->getMemoryManager()) SchemaValidator(0, context->getMemoryManager())),
+    fSchemaGrammar(0),
+    fContent(1023, context->getMemoryManager()),
+    fICHandler(0),
+    fElemNonDeclPool(new (context->getMemoryManager()) RefHash3KeysIdPool<SchemaElementDecl>(29, true, 128, context->getMemoryManager())),
     strictValidation_(strictValidation),
     errorOccurred_(false),
     parentStack_(0),
@@ -54,6 +54,9 @@ SchemaValidatorFilter::SchemaValidatorFilter(bool strictValidation, EventHandler
     xsiType_(0),
     attrCount_(0)
 {
+  fSchemaGrammar = new (fGrammarPoolMemoryManager) SchemaGrammar(fGrammarPoolMemoryManager);
+  fICHandler = new (mm_) IdentityConstraintHandler(this, mm_);
+
   // XMLScanner methods needed
   // ----------------------
   //   fScanner->incrementErrorCount();                 implemented
