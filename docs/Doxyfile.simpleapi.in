@@ -352,6 +352,7 @@ INPUT                  = \
 ../include/xqilla/runtime/ResultImpl.hpp \
 ../include/xqilla/ast/StaticAnalysis.hpp \
 ../include/xqilla/exceptions/XQException.hpp \
+../include/xqilla/functions/ExternalFunction.hpp \
 %xerces_include%/xercesc/framework/MemoryManager.hpp \
 %xerces_include%/xercesc/util/XMemory.hpp \
 %xerces_include%/xercesc/dom/DOMNode.hpp \
