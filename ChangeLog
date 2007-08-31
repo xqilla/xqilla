@@ -1,0 +1,51 @@
+XQilla: an XQuery and XPath 2.0 library and command line interpreter.
+
+version 1.1.0 (2007.08.31):
+	* Added support for XQuery Update (Last Call Working Draft, 28 August
+	  2007).
+	* Added XQillaConfiguration, which encapsulates everything needed to
+	  create or use a new data model.
+	* Implemented a new data model called FastXDM. It places nodes in a
+	  sequential array, and is much faster and more memory efficient than
+	  the DOM based data model. This is now the default data model.
+	* Implemented XercesConfiguration, to enable use of the Xerces-C DOM
+	  based data model.
+	* Implemented EventHandler, an event based execution interface. This is
+	  used primarily for efficient evaluation of constructed nodes. This can
+	  be invoked using XQQuery::execute(EventHandler*,DynamicContext*).
+	* Added the ExternalFunction class, to allow users to easily implement
+	  XQuery external functions.
+	* Added the MessageListener interface, to allow users to easily receive
+	  warning and trace messages.
+	* Implemented closures, to enable the efficient and lazy execution of
+	  "let" expressions.
+	* Implemented more lazy execution code for "order by" expressions
+	* Added better error messages for sequence type checking errors.
+	* Removed the XQDebugCallback API.
+	* Rewrote the lexer and parser to be more memory efficient.
+	* Rewrote "validate" expressions to be more memory efficient.
+	* Modified the XQuery Test Suite runner to run the forthcoming XQuery
+	  Update test suite.
+	* Made minor changes to allow compilation against the Xerces-C 2.8
+	  release candidate.
+	* Fixed a bug in the limit checking of the seconds field in the time
+	  when parsing.
+	* Fixed modules so that the correct language is used to parse the
+	  module.
+	* Fixed a bug in the code to create a new dynamic context for a
+	  module.
+	* Fixed possible segmentation faults and memory leaks when using the
+	  DOM3 API
+	* A number of other miscellaneous minor bug fixes.
+	
+version 1.0.1 (2007.02.12):
+	* Fixed fn:concat() to accept more than 51 arguments.
+	* Fixed module parsing, to use the correct language enumeration when
+	  parsing. Output modules in the query plan.
+	* Fixed a race condition in the parsing of function signatures.
+	* Fixed parse errors in the DOM3 API, which were being thrown as
+	  XQException instead of XQillaException. [1626534]
+	* Fixed the building of shared libraries under Cygwin, by adding
+	  -no-undefined to the libtool line in the Makefile. [1639669]
+	* Fixed a bug in the static typing of user defined functions, that could
+	  result in incorrect errors.
