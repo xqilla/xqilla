@@ -23,7 +23,7 @@ PROJECT_NAME           = "XQilla Simple API"
 # This could be handy for archiving the generated documentation or 
 # if some version control system is used.
 
-PROJECT_NUMBER         = 1.0
+PROJECT_NUMBER         = %version%
 
 # The OUTPUT_DIRECTORY tag is used to specify the (relative or absolute) 
 # base path where the generated documentation will be put. 
@@ -339,13 +339,18 @@ WARN_LOGFILE           =
 INPUT                  = \
 ../include/xqilla/simple-api \
 ../include/xqilla/context \
+../include/xqilla/context \
+../include/xqilla/events \
+../include/xqilla/fastxdm \
+../include/xqilla/xerces \
 ../include/xqilla/items \
 ../include/xqilla/framework/ReferenceCounted.hpp \
 ../include/xqilla/framework/XPath2MemoryManager.hpp \
 ../include/xqilla/framework/StringPool.hpp \
 ../include/xqilla/runtime/Sequence.hpp \
 ../include/xqilla/runtime/Result.hpp \
-../include/xqilla/ast/StaticResolutionContext.hpp \
+../include/xqilla/runtime/ResultImpl.hpp \
+../include/xqilla/ast/StaticAnalysis.hpp \
 ../include/xqilla/exceptions/XQException.hpp \
 %xerces_include%/xercesc/framework/MemoryManager.hpp \
 %xerces_include%/xercesc/util/XMemory.hpp \
@@ -358,7 +363,11 @@ INPUT                  = \
 %xerces_include%/xercesc/framework/LocalFileInputSource.hpp \
 %xerces_include%/xercesc/framework/MemBufInputSource.hpp \
 %xerces_include%/xercesc/framework/StdInInputSource.hpp \
-%xerces_include%/xercesc/framework/URLInputSource.hpp
+%xerces_include%/xercesc/framework/URLInputSource.hpp \
+%xerces_include%/xercesc/framework/LocalFileFormatTarget.hpp \
+%xerces_include%/xercesc/framework/MemBufFormatTarget.hpp \
+%xerces_include%/xercesc/framework/StdOutFormatTarget.hpp \
+%xerces_include%/xercesc/framework/XMLFormatter.hpp
 
 
 # If the value of the INPUT tag contains directories, you can use the 
@@ -513,7 +522,7 @@ HTML_FILE_EXTENSION    = .html
 # each generated HTML page. If it is left blank doxygen will generate a 
 # standard header.
 
-HTML_HEADER            = 
+HTML_HEADER            = simple_header.html
 
 # The HTML_FOOTER tag can be used to specify a personal HTML footer for 
 # each generated HTML page. If it is left blank doxygen will generate a 

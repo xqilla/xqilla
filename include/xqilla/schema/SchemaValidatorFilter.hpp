@@ -105,17 +105,6 @@ private:
                      const XMLCh* const systemId, const XMLCh* const publicId, const XMLSSize_t lineNum, const XMLSSize_t colNum);
 
 private:
-  class Attr {
-  public:
-    Attr(const XMLCh *p, const XMLCh *u, const XMLCh *l, const XMLCh *v)
-      : prefix(p), uri(u), localname(l), value(v) {}
-
-    const XMLCh *prefix;
-    const XMLCh *uri;
-    const XMLCh *localname;
-    const XMLCh *value;
-  };
-
   void processStartElement();
   void processAttrs(XERCES_CPP_NAMESPACE_QUALIFIER XMLElementDecl *elemDecl);
 
