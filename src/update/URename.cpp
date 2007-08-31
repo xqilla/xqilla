@@ -21,8 +21,10 @@
 #include <xqilla/ast/XQDOMConstructor.hpp>
 #include <xqilla/schema/SequenceType.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
+#include <xqilla/functions/FunctionNamespaceURIForPrefix.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>
 #include <xqilla/exceptions/XPath2TypeMatchException.hpp>
+#include <xqilla/exceptions/DynamicErrorException.hpp>
 
 XERCES_CPP_NAMESPACE_USE;
 
@@ -113,15 +115,40 @@ PendingUpdateList URename::createUpdateList(DynamicContext *context) const
   // 3. The following checks are performed for error conditions:
   //    a. If $target is an element node, the "namespaces" property of $target must not include any namespace binding that conflicts
   //       with the implied namespace binding of $QName [err:XUDY0023].
+  if(node->dmNodeKind() == Node::element_string) {
+    ATAnyURIOrDerived::Ptr uri = FunctionNamespaceURIForPrefix::uriForPrefix(qname->getPrefix(), node, context, this);
+    if(uri.notNull() && !XPath2Utils::equals(uri->asString(context), qname->getURI())) {
+      XMLBuffer buf;
+      buf.append(X("Implied namespace binding for the rename expression (\""));
+      buf.append(qname->getPrefix());
+      buf.append(X("\" -> \""));
+      buf.append(qname->getURI());
+      buf.append(X("\") conflicts with those already existing on the target element [err:XUDY0023]"));
+      XQThrow3(DynamicErrorException, X("URename::createUpdateList"), buf.getRawBuffer(), this);
+    }
+  }
   //    b. If $target is an attribute node that has a parent, the "namespaces" property of parent($target) must not include any
   //       namespace binding that conflicts with the implied namespace binding of $QName [err:XUDY0023].
-  // TBD Check these - jpcs
-
+  else if(node->dmNodeKind() == Node::attribute_string) {
+    Node::Ptr parentNode = node->dmParent(context);
+    if(parentNode.notNull() && qname->getURI() != 0 && *(qname->getURI()) != 0) {
+      ATAnyURIOrDerived::Ptr uri = FunctionNamespaceURIForPrefix::uriForPrefix(qname->getPrefix(), parentNode, context, this);
+      if(uri.notNull() && !XPath2Utils::equals(uri->asString(context), qname->getURI())) {
+        XMLBuffer buf;
+        buf.append(X("Implied namespace binding for the rename expression (\""));
+        buf.append(qname->getPrefix());
+        buf.append(X("\" -> \""));
+        buf.append(qname->getURI());
+        buf.append(X("\") conflicts with those already existing on the parent element of the target attribute [err:XUDY0023]"));
+        XQThrow3(DynamicErrorException, X("URename::createUpdateList"), buf.getRawBuffer(), this);
+      }
+    }
+  }
   //    c. If $target is processing instruction node, $QName must not include a non-empty namespace prefix. [err:XUDY0025].
-  if(node->dmNodeKind() == Node::processing_instruction_string && !XPath2Utils::equals(qname->getPrefix(), XMLUni::fgZeroLenString))
+  else if(node->dmNodeKind() == Node::processing_instruction_string && !XPath2Utils::equals(qname->getPrefix(), XMLUni::fgZeroLenString))
     XQThrow(XPath2TypeMatchException,X("URename::createUpdateList"),
             X("The target of a rename expression is a processing instruction node, and the new name "
-              "expression returned a QName with a non-empty namespace prefix [err:XUTY0025]"));
+              "expression returned a QName with a non-empty namespace prefix [err:XUDY0025]"));
 
   return PendingUpdate(PendingUpdate::RENAME, node, qname, this);
 }

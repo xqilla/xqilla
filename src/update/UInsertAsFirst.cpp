@@ -23,6 +23,11 @@
 #include <xqilla/exceptions/ASTException.hpp>
 #include <xqilla/update/PendingUpdateList.hpp>
 #include <xqilla/ast/XQDOMConstructor.hpp>
+#include <xqilla/utils/XPath2Utils.hpp>
+#include <xqilla/functions/FunctionNamespaceURIForPrefix.hpp>
+#include <xqilla/exceptions/DynamicErrorException.hpp>
+
+XERCES_CPP_NAMESPACE_USE;
 
 UInsertAsFirst::UInsertAsFirst(ASTNode *source, ASTNode *target, XPath2MemoryManager* memMgr)
   : ASTNodeImpl(memMgr),
@@ -108,6 +113,23 @@ PendingUpdateList UInsertAsFirst::createUpdateList(DynamicContext *context) cons
       if(!clist.isEmpty())
         XQThrow(ASTException,X("UInsertAsFirst::createUpdateList"),
                 X("Attribute nodes must occur before other nodes in the source expression for an insert as first expression [err:XUTY0004]"));
+
+      //    b. No attribute node in $alist may have a QName whose implied namespace binding conflicts with a namespace
+      //       binding in the "namespaces" property of $target [err:XUDY0023].  
+      ATQNameOrDerived::Ptr qname = ((Node*)item.get())->dmNodeName(context);
+      if(qname->getURI() != 0 && *(qname->getURI()) != 0) {
+        ATAnyURIOrDerived::Ptr uri = FunctionNamespaceURIForPrefix::uriForPrefix(qname->getPrefix(), node, context, this);
+        if(uri.notNull() && !XPath2Utils::equals(uri->asString(context), qname->getURI())) {
+          XMLBuffer buf;
+          buf.append(X("Implied namespace binding for the insert as first expression (\""));
+          buf.append(qname->getPrefix());
+          buf.append(X("\" -> \""));
+          buf.append(qname->getURI());
+          buf.append(X("\") conflicts with those already existing on the parent element of the target attribute [err:XUDY0023]"));
+          XQThrow3(DynamicErrorException, X("UInsertInto::createUpdateList"), buf.getRawBuffer(), this);
+        }
+      }
+
       alist.addItem(item);
     }
     else
@@ -122,9 +144,6 @@ PendingUpdateList UInsertAsFirst::createUpdateList(DynamicContext *context) cons
     if(node->dmNodeKind() == Node::document_string)
       XQThrow(XPath2TypeMatchException,X("UInsertInto::createUpdateList"),
               X("It is a type error if an insert expression specifies the insertion of an attribute node into a document node [err:XUTY0022]"));
-    //    b. No attribute node in $alist may have a QName whose implied namespace binding conflicts with a namespace
-    //       binding in the "namespaces" property of $target [err:XUDY0023].  
-    // TBD make this check - jpcs
     result.addUpdate(PendingUpdate(PendingUpdate::INSERT_ATTRIBUTES, node, alist, this));
   }
   if(!clist.isEmpty()) {
