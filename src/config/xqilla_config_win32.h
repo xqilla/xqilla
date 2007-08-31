@@ -19,7 +19,7 @@
 
 /* Define to empty if the keyword does not work.  */
 /* MS VC++ supports const */
-#undef const
+/* #undef const */
 
 /* Define if your processor stores words with the most significant
    byte first (like Motorola and SPARC, unlike Intel and VAX).  */
