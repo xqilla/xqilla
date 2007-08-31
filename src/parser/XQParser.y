@@ -345,7 +345,6 @@ namespace XQParser {
 %token <str> _END_ "end"
 %token <str> _MOST_ "most"
 %token <str> _SKIP_ "skip"
-%token <str> _TRANSFORM_ "transform"
 %token <str> _COPY_ "copy"
 %token <str> _VALUE_ "value"
 %token <str> _WHITESPACE_ "<whitespace>"
@@ -467,8 +466,8 @@ namespace XQParser {
 %token <str> _AFTER_                                          "after"
 %token <str> _REVALIDATION_                                   "revalidation"
 %token <str> _WITH_                                           "with"
-%token <str> _WITH_FT_                                           "with (ft option)"
-%token <str> _DO_                                             "do"
+%token <str> _WITH_FT_                                        "with (ft option)"
+%token <str> _NODES_                                          "nodes"
 %token <str> _RENAME_                                         "rename"
 %token <str> _LAST_                                           "last"
 %token <str> _DELETE_                                         "delete"
@@ -3419,71 +3418,74 @@ RevalidationDecl:
   }
   ;
 
-// [142]      InsertExpr      ::=      "do" "insert" SourceExpr ((("as" ("first" | "last"))? "into")
-//                                                              | "after" | "before") TargetExpr
-// [146]      SourceExpr      ::=      ExprSingle
-// [147]      TargetExpr      ::=      ExprSingle
+// [142]      InsertExprTargetChoice ::=   	(("as" ("first" | "last"))? "into") | "after" | "before"
+// [143]      InsertExpr             ::=   	"insert" ("node" | "nodes") SourceExpr InsertExprTargetChoice TargetExpr
+// [147]      SourceExpr      ::=      ExprSingle
+// [148]      TargetExpr      ::=      ExprSingle
 InsertExpr:
-  _DO_ _INSERT_ ExprSingle _AS_ _FIRST_ _INTO_ ExprSingle
+  InsertExprBegin ExprSingle _AS_ _FIRST_ _INTO_ ExprSingle
   {
-    $$ = WRAP(@1, new (MEMMGR) UInsertAsFirst($3, $7, MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) UInsertAsFirst($2, $6, MEMMGR));
   }
-  | _DO_ _INSERT_ ExprSingle _AS_ _LAST_ _INTO_ ExprSingle
+  | InsertExprBegin ExprSingle _AS_ _LAST_ _INTO_ ExprSingle
   {
-    $$ = WRAP(@1, new (MEMMGR) UInsertAsLast($3, $7, MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) UInsertAsLast($2, $6, MEMMGR));
   }
-  | _DO_ _INSERT_ ExprSingle _INTO_ ExprSingle
+  | InsertExprBegin ExprSingle _INTO_ ExprSingle
   {
-    $$ = WRAP(@1, new (MEMMGR) UInsertInto($3, $5, MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) UInsertInto($2, $4, MEMMGR));
   }
-  | _DO_ _INSERT_ ExprSingle _AFTER_ ExprSingle
+  | InsertExprBegin ExprSingle _AFTER_ ExprSingle
   {
-    $$ = WRAP(@1, new (MEMMGR) UInsertAfter($3, $5, MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) UInsertAfter($2, $4, MEMMGR));
   }
-  | _DO_ _INSERT_ ExprSingle _BEFORE_ ExprSingle
+  | InsertExprBegin ExprSingle _BEFORE_ ExprSingle
   {
-    $$ = WRAP(@1, new (MEMMGR) UInsertBefore($3, $5, MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) UInsertBefore($2, $4, MEMMGR));
   }
   ;
 
-// [143]      DeleteExpr      ::=      "do" "delete" TargetExpr
-// [147]      TargetExpr      ::=      ExprSingle
+InsertExprBegin: _INSERT_ _NODE_ | _INSERT_ _NODES_ ;
+
+// [144]      DeleteExpr      ::=      "delete" ("node" | "nodes") TargetExpr
+// [148]      TargetExpr      ::=      ExprSingle
 DeleteExpr:
-  _DO_ _DELETE_ ExprSingle
+  DeleteExprBegin ExprSingle
   {
-    $$ = WRAP(@1, new (MEMMGR) UDelete($3, MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) UDelete($2, MEMMGR));
   }
   ;
 
-// [144]      ReplaceExpr      ::=      "do" "replace" ("value" "of")? TargetExpr "with" ExprSingle
-// [147]      TargetExpr      ::=      ExprSingle
+DeleteExprBegin: _DELETE_ _NODE_ | _DELETE_ _NODES_ ;
+
+// [145]   	ReplaceExpr	   ::=   	"replace" ("value" "of")? "node" TargetExpr "with" ExprSingle
+// [148]      TargetExpr      ::=      ExprSingle
 ReplaceExpr:
-  _DO_ _REPLACE_ _VALUE_ _OF_ ExprSingle _WITH_ ExprSingle
+  _REPLACE_ _VALUE_ _OF_ _NODE_ ExprSingle _WITH_ ExprSingle
   {
     $$ = WRAP(@1, new (MEMMGR) UReplaceValueOf($5, $7, MEMMGR));
   }
-  | _DO_ _REPLACE_ ExprSingle _WITH_ ExprSingle
+  | _REPLACE_ _NODE_ ExprSingle _WITH_ ExprSingle
   {
     $$ = WRAP(@1, new (MEMMGR) UReplace($3, $5, MEMMGR));
   }
   ;
 
-// [145]      RenameExpr      ::=      "do" "rename" TargetExpr "as" NewNameExpr
-// [147]      TargetExpr      ::=      ExprSingle
-// [148]      NewNameExpr      ::=      ExprSingle
+// [146]   	RenameExpr	   ::=   	"rename" "node" TargetExpr "as" NewNameExpr
+// [148]      TargetExpr      ::=      ExprSingle
+// [149]      NewNameExpr      ::=      ExprSingle
 RenameExpr:
-  _DO_ _RENAME_ ExprSingle _AS_ ExprSingle
+  _RENAME_ _NODE_ ExprSingle _AS_ ExprSingle
   {
     $$ = WRAP(@1, new (MEMMGR) URename($3, $5, MEMMGR));
   }
   ;
 
-// [149]      TransformExpr      ::=      "transform" "copy" "$" VarName ":=" ExprSingle ("," "$" VarName ":=" ExprSingle)*
-//                                        "modify" ExprSingle "return" ExprSingle
+// [150] TransformExpr ::= "copy" "$" VarName ":=" ExprSingle ("," "$" VarName ":=" ExprSingle)* "modify" ExprSingle "return" ExprSingle
 TransformExpr:
-  _TRANSFORM_ _COPY_ TransformBindingList _MODIFY_ ExprSingle _RETURN_ ExprSingle
+  _COPY_ TransformBindingList _MODIFY_ ExprSingle _RETURN_ ExprSingle
   {
-    $$ = WRAP(@1, new (MEMMGR) UTransform($3, $5, $7, MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) UTransform($2, $4, $6, MEMMGR));
   }
   ;
 
@@ -3587,7 +3589,7 @@ _QNAME_ | _BOUNDARY_SPACE_ | _FT_OPTION_ | _BASE_URI_ | _LAX_ | _STRICT_ | _IDIV
 _DESCENDANT_OR_SELF_ | _FOLLOWING_SIBLING_ | _FOLLOWING_ | _PARENT_ | _ANCESTOR_ | _PRECEDING_SIBLING_ | _PRECEDING_ |
 _ANCESTOR_OR_SELF_ | _DOCUMENT_ | _NOT_ | _SENSITIVE_ | _INSENSITIVE_ | _DIACRITICS_ | _WITHOUT_ | _STEMMING_ |
 _THESAURUS_ | _STOP_ | _WILDCARDS_ | _ENTIRE_ | _CONTENT_ | _WORD_ | _TYPE_ | _START_ | _END_ | _MOST_ | _SKIP_ |
-_TRANSFORM_ | _COPY_ | _VALUE_ | _EQ_ | _NE_ | _LT_ | _LE_ | _GT_ | _GE_ | _AT_ | _VARIABLE_ | _RETURN_ | _FOR_ |
+_COPY_ | _VALUE_ | _EQ_ | _NE_ | _LT_ | _LE_ | _GT_ | _GE_ | _AT_ | _VARIABLE_ | _RETURN_ | _FOR_ |
 _IN_ | _LET_ | _WHERE_ | _BY_ | _ORDER_ | _STABLE_ | _ASCENDING_ | _DESCENDING_ | _EMPTY_ | _GREATEST_ |
 _LEAST_ | _COLLATION_ | _SOME_ | _EVERY_ | _SATISFIES_ | _CASE_ | _AS_ | _THEN_ | _ELSE_ | _OR_ | _AND_ | _INSTANCE_ |
 _OF_ | _CASTABLE_ | _TO_ | _DIV_ | _MOD_ | _UNION_ | _INTERSECT_ | _EXCEPT_ | _VALIDATE_ | _CAST_ | _TREAT_ | _IS_ |
@@ -3596,7 +3598,7 @@ _CONSTRUCTION_ | _ORDERING_ | _DEFAULT_ | _COPY_NAMESPACES_ | _OPTION_ | _VERSIO
 _FUNCTION_ | _SCORE_ | _FTCONTAINS_ | _WEIGHT_ | _WINDOW_ | _DISTANCE_ | _OCCURS_ | _TIMES_ | _SAME_ |
 _DIFFERENT_ | _LOWERCASE_ | _UPPERCASE_ | _RELATIONSHIP_ | _LEVELS_ | _LANGUAGE_ | _ANY_ | _ALL_ | _PHRASE_ |
 _EXACTLY_ | _FROM_ | _WORDS_ | _SENTENCES_ | _PARAGRAPHS_ | _SENTENCE_ | _PARAGRAPH_ | _REPLACE_ | _MODIFY_ | _FIRST_ |
-_INSERT_ | _BEFORE_ | _AFTER_ | _REVALIDATION_ | _WITH_ | _DO_ | _RENAME_ | _LAST_ | _DELETE_ | _INTO_ | _UPDATING_ |
+_INSERT_ | _BEFORE_ | _AFTER_ | _REVALIDATION_ | _WITH_ | _NODES_ | _RENAME_ | _LAST_ | _DELETE_ | _INTO_ | _UPDATING_ |
 _ORDERED_ | _UNORDERED_
   ;
 

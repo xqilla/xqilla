@@ -349,8 +349,11 @@ INPUT                  = \
 %xerces_include%/xercesc/framework/LocalFileInputSource.hpp \
 %xerces_include%/xercesc/framework/MemBufInputSource.hpp \
 %xerces_include%/xercesc/framework/StdInInputSource.hpp \
-%xerces_include%/xercesc/framework/URLInputSource.hpp
-
+%xerces_include%/xercesc/framework/URLInputSource.hpp \
+%xerces_include%/xercesc/framework/LocalFileFormatTarget.hpp \
+%xerces_include%/xercesc/framework/MemBufFormatTarget.hpp \
+%xerces_include%/xercesc/framework/StdOutFormatTarget.hpp \
+%xerces_include%/xercesc/framework/XMLFormatter.hpp
 
 # If the value of the INPUT tag contains directories, you can use the 
 # FILE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp 

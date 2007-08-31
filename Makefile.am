@@ -452,7 +452,8 @@ ChangeLog \
 docs/Doxyfile.simpleapi.in \
 docs/Doxyfile.dom3api.in \
 docs/Doxyfile.devapi.in \
-docs/header.html \
+docs/dom3_header.html \
+docs/simple_header.html \
 docs/simple-api \
 docs/dom3-api \
 Win32Projects/VC6/xqilla.dsp \
@@ -519,9 +520,11 @@ $(PARSERCPP) $(PARSERHPP): $(PARSERFILE)
 docs:
 	$(MAKE) -C include docs
 
+docsclean:
+	$(MAKE) -C include docsclean
+
 devdocs:
 	$(MAKE) -C include devdocs
 
-$(top_srcdir)/docs/simple-api: docs
-
-$(top_srcdir)/docs/dom3-api: docs
+devdocsclean:
+	$(MAKE) -C include devdocsclean
