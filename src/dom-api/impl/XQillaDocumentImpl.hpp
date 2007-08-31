@@ -38,7 +38,7 @@ public:
   XQillaDocumentImpl(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr);
   XQillaDocumentImpl(const XMLCh *fNamespaceURI, const XMLCh *qualifiedName, XERCES_CPP_NAMESPACE_QUALIFIER DOMDocumentType *doctype,
                      XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* const memMgr);
-  ~XQillaDocumentImpl();
+  virtual ~XQillaDocumentImpl();
   
   // weak version, need to create a context from scratch inside
   virtual const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathExpression*
@@ -55,7 +55,7 @@ public:
                          unsigned short type,
                          void* reuseableResult);
   
-  virtual void setGrammarPool(XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool *xmlGrammarPool);
+  virtual void setGrammarPool(XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool *xmlGrammarPool, bool adoptGramPool);
   virtual XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool *getGrammarPool();
 
 protected:
@@ -63,8 +63,9 @@ protected:
   ProxyMemoryManager _memMgr;
 
   XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool *_xmlGrammarPool;
+  bool _adoptGramPool;
 
-}; //XQillaDocumentImpl
+};
 
 
-#endif //__XQILLADOCUMENTIMPL_HPP
+#endif

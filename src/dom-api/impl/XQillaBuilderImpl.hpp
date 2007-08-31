@@ -43,13 +43,15 @@ public:
       * @param valToAdopt Pointer to the validator instance to use. The
       *                   parser is responsible for freeing the memory.
       */
-    XQillaBuilderImpl
-    (
-          XERCES_CPP_NAMESPACE_QUALIFIER XMLValidator* const   valToAdopt = 0
-        , XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* const  manager = XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager
-        , XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool* const gramPool = 0        
-    );
+  XQillaBuilderImpl
+  (
+   XERCES_CPP_NAMESPACE_QUALIFIER XMLValidator* const   valToAdopt,
+   XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* const  manager,
+   XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool* const gramPool,
+   bool adoptGramPool
+   );
 
+  virtual ~XQillaBuilderImpl();
 
     /**
       * <p><b>"Experimental - subject to change"</b></p>
@@ -131,11 +133,12 @@ public:
 
 
 private:
-    void initParser();
-    XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* getDocumentAndAddGrammar();
-}; //XQillaBuilderImpl
+  void initParser();
+  XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* getDocumentAndAddGrammar();
+  XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool *gramPool_;
+};
 
 
-#endif //__XQILLADOMBUILDERIMPL_HPP
+#endif
 
 
