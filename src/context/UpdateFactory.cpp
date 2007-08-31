@@ -33,7 +33,7 @@ public:
   pucompare(const DynamicContext *context)
     : context_(context) {}
 
-  bool operator()(const PendingUpdate *first, const PendingUpdate *second)
+  bool operator()(const PendingUpdate *first, const PendingUpdate *second) const
   {
     return first->getTarget()->uniqueLessThan(second->getTarget(), context_);
   }
@@ -51,7 +51,7 @@ public:
   nodecompare(const DynamicContext *context)
     : context_(context) {}
 
-  bool operator()(const Node::Ptr &first, const Node::Ptr &second)
+  bool operator()(const Node::Ptr &first, const Node::Ptr &second) const
   {
     return first->uniqueLessThan(second, context_);
   }
