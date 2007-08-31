@@ -24,6 +24,15 @@
 #endif
 
 /*
+ * Building statically on Windows:
+ *
+ * 1) Compile Xerces-C with XML_LIBRARY defined to get a static library
+ * 2) Compile XQilla with XQILLA_API defined to nothing, to compile without
+ *    the DLL import/exports
+ */
+
+
+/*
  * The following ifdef block is the standard way of creating macros which
  * make exporting from a DLL simpler. All files within this DLL are
  * compiled with the XQILLA_APIS symbol defined on the command line.
@@ -33,11 +42,14 @@
  * sees symbols defined with this macro as being exported.
  */
 #if defined(WIN32) && !defined(__CYGWIN__)
-  #ifdef XQILLA_APIS
-    #define XQILLA_API __declspec(dllexport)
-  #else
-    #define XQILLA_API __declspec(dllimport)
+  #if !defined(XQILLA_API)
+    #ifdef XQILLA_APIS
+      #define XQILLA_API __declspec(dllexport)
+    #else
+      #define XQILLA_API __declspec(dllimport)
+    #endif
   #endif
+
   #pragma warning(disable: 4251 4786 4101 4290)
 #else
   #define XQILLA_API 
