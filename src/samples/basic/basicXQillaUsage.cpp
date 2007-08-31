@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
 
     // 3. Obtain a parser and set 'do namespaces', 'use schema' and 'validate' to 
     //    true.
-    DOMBuilder* xmlParser = xqillaImplementation->createDOMBuilder(DOMImplementationLS::MODE_SYNCHRONOUS, 0);
+    DOMBuilder *xmlParser = xqillaImplementation->createDOMBuilder(DOMImplementationLS::MODE_SYNCHRONOUS, 0);
     xmlParser->setFeature(X("namespaces"), true);
     xmlParser->setFeature(X("http://apache.org/xml/features/validation/schema"), true);
     xmlParser->setFeature(X("validation"), true);
@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
     // Parse our XML document //
     ////////////////////////////
   
-    DOMDocument* document = xmlParser->parseURI(argv[1]);
+    DOMDocument *document = xmlParser->parseURI(argv[1]);
     if(document == 0) {
       cerr << "Document not found: " << argv[1] << endl;
       return 1;
@@ -91,26 +91,29 @@ int main(int argc, char *argv[])
     // 1. Create a Namespace Resolver.  This holds a map of namespace prefixes 
     //    to namespace URIs.
   
-    const DOMXPathNSResolver* resolver = document->createNSResolver(document->getDocumentElement());
+    const DOMXPathNSResolver *resolver = document->createNSResolver(document->getDocumentElement());
 
     //    For a more advanced interface (like to have the ability to add 
     //    namespace bindings, this NSResolver can be cast to a XQillaNSResolver
-    XQillaNSResolver* xqillaResolver = (XQillaNSResolver*)resolver;
-    xqillaResolver->addNamespaceBinding(X("my"), X("http://example.com/myURI"));
+    ((XQillaNSResolver*)resolver)->addNamespaceBinding(X("my"), X("http://example.com/myURI"));
   
     // **************** Example 1: max() function ****************** //
   
     // 2. Create a parsed expression
     char* expression = "max(/Catalogue/Book/Price)";
-    const DOMXPathExpression* parsedExpression = document->createExpression(X(expression), resolver); 
+    const DOMXPathExpression *parsedExpression = document->createExpression(X(expression), resolver);
 
-    // 3. Evaluate the expression. We choose to have a first result, since we 
-    //    know the answer will have only one item. Could also choose 
+    // 3. Evaluate the expression. We choose to have a first result, since we
+    //    know the answer will have only one item. Could also choose
     //    XPath2Result::SNAPSHOT_RESULT and XPath2Result::ITERATOR_RESULT
-    XPath2Result* firstResult = (XPath2Result*)parsedExpression->evaluate(document->getDocumentElement(), XPath2Result::FIRST_RESULT, 0);
+    XPath2Result *firstResult = (XPath2Result*)parsedExpression->evaluate(document->getDocumentElement(), XPath2Result::FIRST_RESULT, 0);
 
     // 4. Work with the result: output it to the screen in this case
     cout << "The answer for expression '" << expression << "' is: " << firstResult->asDouble() << endl;
+
+    // Clean up
+    firstResult->release();
+    ((XQillaExpression*)parsedExpression)->release();
 
     // **************** Example 2: output of nodes ****************** //
     
@@ -119,13 +122,13 @@ int main(int argc, char *argv[])
     parsedExpression = document->createExpression(X(expression2), resolver);
 
     // 3. Evaluate the expression. We choose to have an iterator result
-    XPath2Result* iteratorResult = (XPath2Result*)parsedExpression->evaluate(document->getDocumentElement(), XPath2Result::ITERATOR_RESULT, 0);
+    XPath2Result *iteratorResult = (XPath2Result*)parsedExpression->evaluate(document->getDocumentElement(), XPath2Result::ITERATOR_RESULT, 0);
 
     // 4. Work with the result: output it to the screen in this case
   
     // create a DOMWriter (serializer) to output the nodes
-    DOMWriter* serializer = xqillaImplementation->createDOMWriter();
-    StdOutFormatTarget* target = new StdOutFormatTarget();
+    DOMWriter *serializer = xqillaImplementation->createDOMWriter();
+    StdOutFormatTarget target;
 
     cout << "The answer for expression '" << expression2 << "' is: " <<endl;
 
@@ -133,14 +136,20 @@ int main(int argc, char *argv[])
     while(iteratorResult->iterateNext()) {
       if(iteratorResult->isNode()) {
         cout << "Node " << i++ << ": "<< flush;
-        serializer->writeNode(target, *(iteratorResult->asNode()));
+        serializer->writeNode(&target, *(iteratorResult->asNode()));
         cout << endl;
       } else {
         cerr << "Expected a node but received an atomic value!"<< endl;
       }
     }
 
+    // Clean up
     serializer->release();
+    iteratorResult->release();
+    ((XQillaExpression*)parsedExpression)->release();
+    ((XQillaNSResolver*)resolver)->release();
+    xmlParser->release();
+
   }
   catch(DOMException &e) {
     cerr << "DOMException: " << UTF8(e.getMessage()) << endl;

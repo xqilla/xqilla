@@ -32,12 +32,18 @@ const XMLCh XQillaBuilderImpl::gXQilla[] =   // Points to "XPath2"
 
 
 
-XQillaBuilderImpl::XQillaBuilderImpl( XERCES_CPP_NAMESPACE_QUALIFIER XMLValidator* const   valToAdopt
-                              , XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* const  manager
-                              , XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool* const gramPool) :
-
-DOMBuilderImpl(valToAdopt, manager, gramPool)
+XQillaBuilderImpl::XQillaBuilderImpl(XERCES_CPP_NAMESPACE_QUALIFIER XMLValidator* const   valToAdopt,
+                                     XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* const  manager,
+                                     XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool* const gramPool,
+                                     bool adoptGramPool)
+  : DOMBuilderImpl(valToAdopt, manager, gramPool),
+    gramPool_(adoptGramPool ? gramPool : 0)
 {
+}
+
+XQillaBuilderImpl::~XQillaBuilderImpl()
+{
+  delete gramPool_;
 }
 
 // ---------------------------------------------------------------------------
@@ -84,7 +90,8 @@ XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* XQillaBuilderImpl::getDocumentAndAdd
         gr->cacheGrammar(oldGrPool->orphanGrammar(g.getGrammarDescription()->getGrammarKey()));
     }
 
-    ((XQillaDocumentImpl*)doc)->setGrammarPool(gr);
+    ((XQillaDocumentImpl*)doc)->setGrammarPool(gr, true);
+
     return doc;
 }
 

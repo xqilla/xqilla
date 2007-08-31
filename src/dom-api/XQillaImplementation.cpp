@@ -106,23 +106,24 @@ XERCES_CPP_NAMESPACE_QUALIFIER DOMBuilder* XQillaImplementation::createDOMBuilde
                                                                                   XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool*  const gramPool)
 {
   XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool *temp = 0;
+  bool adoptGramPool = false;
   
   if(!gramPool) {
     temp = new (manager) XQillaXMLGrammarPoolImpl(manager);
+    adoptGramPool = true;
   }
   else {
     temp = gramPool;
   }
 
+  if(mode == XERCES_CPP_NAMESPACE_QUALIFIER DOMImplementationLS::MODE_ASYNCHRONOUS)
+    throw XERCES_CPP_NAMESPACE_QUALIFIER DOMException(XERCES_CPP_NAMESPACE_QUALIFIER DOMException::NOT_SUPPORTED_ERR, 0);
 
-    if (mode == XERCES_CPP_NAMESPACE_QUALIFIER DOMImplementationLS::MODE_ASYNCHRONOUS)
-        throw XERCES_CPP_NAMESPACE_QUALIFIER DOMException(XERCES_CPP_NAMESPACE_QUALIFIER DOMException::NOT_SUPPORTED_ERR, 0);
+  XERCES_CPP_NAMESPACE_QUALIFIER DOMBuilder *tmp = new (manager) XQillaBuilderImpl(0, manager, temp, adoptGramPool);
+  tmp->setProperty(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgXercesParserUseDocumentFromImplementation, (void*)gXQilla);
+  tmp->setFeature(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgXercesCacheGrammarFromParse, true);
 
-    XERCES_CPP_NAMESPACE_QUALIFIER DOMBuilder *tmp = new (manager) XQillaBuilderImpl(0, manager, temp);
-    tmp->setProperty(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgXercesParserUseDocumentFromImplementation, (void*)gXQilla);
-    tmp->setFeature(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgXercesCacheGrammarFromParse, true);
-
-    return tmp;
+  return tmp;
 }
 
 
