@@ -24,6 +24,7 @@
 #include <xqilla/schema/SequenceType.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>
 #include <xqilla/exceptions/XPath2TypeMatchException.hpp>
+#include <xqilla/exceptions/DynamicErrorException.hpp>
 
 #include <xercesc/framework/XMLBuffer.hpp>
 
@@ -106,6 +107,45 @@ PendingUpdateList UReplaceValueOf::createUpdateList(DynamicContext *context) con
     
   XMLBuffer buf;
   XQDOMConstructor::getStringValue(expr_, buf, context);
+
+  // If $target is a comment node, and $string contains two adjacent hyphens or ends with a hyphen, a dynamic error is raised [err:XQDY0072].
+  if(node->dmNodeKind() == Node::comment_string) {
+    bool foundOne = false;
+    for(const XMLCh *str = buf.getRawBuffer(); *str; ++str) {
+      if(*str == '-') {
+        if(foundOne) {
+          XQThrow(DynamicErrorException,X("UReplaceValueOf::createUpdateList"),
+                  X("The replace value of expression would result in a comment node whose content contains two adjacent hyphens [err:XQDY0072]"));
+        }
+        else foundOne = true;
+      }
+      else {
+        foundOne = false;
+      }
+    }
+
+    if(foundOne) {
+      XQThrow(DynamicErrorException,X("UReplaceValueOf::createUpdateList"),
+              X("The replace value of expression would result in a comment node whose content ends with a hyphen [err:XQDY0072]"));
+    }
+  }
+  // If $target is a processing instruction node, and $string contains the substring "?>", a dynamic error is raised [err:XQDY0026].
+  else if(node->dmNodeKind() == Node::processing_instruction_string) {
+    bool foundQuestion = false;
+    for(const XMLCh *str = buf.getRawBuffer(); *str; ++str) {
+      if(*str == '?') {
+        foundQuestion = true;
+      }
+      else {
+        if(foundQuestion && *str == '>') {
+          XQThrow(DynamicErrorException,X("UReplaceValueOf::createUpdateList"),
+                  X("The replace value of expression would result in a processing instruction node whose content includes the string \"?>\" [err:XQDY0026]"));
+        }
+        foundQuestion = false;
+      }
+    }
+  }
+
   Item::Ptr value = context->getItemFactory()->createString(buf.getRawBuffer(), context);
 
   if(node->dmNodeKind() == Node::element_string) {

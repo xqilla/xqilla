@@ -52,33 +52,30 @@ FunctionNamespaceURIForPrefix::FunctionNamespaceURIForPrefix(const VectorOfASTNo
 
 Sequence FunctionNamespaceURIForPrefix::createSequence(DynamicContext* context, int flags) const
 {
-  Item::Ptr first=getParamNumber(1, context)->next(context);
+  Item::Ptr first = getParamNumber(1, context)->next(context);
   const XMLCh* prefix = 0;
-  if(first.notNull())
-    prefix=first->asString(context);
+  if(first.notNull()) prefix = first->asString(context);
 
-  if(XPath2Utils::equals(prefix, XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString)) {
-    prefix = 0; 
-  }
+  if(prefix && !*prefix) prefix = 0; 
 
-  Node::Ptr node = (Node::Ptr)getParamNumber(2,context)->next(context);
-
-  Result namespaces = node->dmNamespaceNodes(context, this);
-  Node::Ptr ns;
-  while((ns = (Node::Ptr)namespaces->next(context)).notNull()) {
-    ATQNameOrDerived::Ptr name = ns->dmNodeName(context);
-    if(name.isNull()) {
-      if(prefix == 0) {
-        return Sequence(context->getItemFactory()->createAnyURI(ns->dmStringValue(context), context), context->getMemoryManager());
-      }
-    }
-    else {
-      if(XPath2Utils::equals(((const ATQNameOrDerived*)name.get())->getName(), prefix)) {
-        return Sequence(context->getItemFactory()->createAnyURI(ns->dmStringValue(context), context), context->getMemoryManager());
-      }
-    }
-  }
-
-  return Sequence(context->getMemoryManager());
+  return Sequence(uriForPrefix(prefix, (Node*)getParamNumber(2,context)->next(context).get(), context, this), context->getMemoryManager());
 }
 
+ATAnyURIOrDerived::Ptr FunctionNamespaceURIForPrefix::uriForPrefix(const XMLCh *prefix, const Node::Ptr &node, DynamicContext *context,
+                                                                   const LocationInfo *location)
+{
+  Result namespaces = node->dmNamespaceNodes(context, location);
+
+  Node::Ptr ns;
+  while((ns = (Node*)namespaces->next(context).get()).notNull()) {
+    ATQNameOrDerived::Ptr name = ns->dmNodeName(context);
+    if(name.isNull() && prefix == 0) {
+      return context->getItemFactory()->createAnyURI(ns->dmStringValue(context), context);
+    }
+    else if(XPath2Utils::equals(((const ATQNameOrDerived*)name.get())->getName(), prefix)) {
+      return context->getItemFactory()->createAnyURI(ns->dmStringValue(context), context);
+    }
+  }
+
+  return 0;
+}

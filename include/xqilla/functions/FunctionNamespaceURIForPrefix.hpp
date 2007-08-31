@@ -11,10 +11,6 @@
  * $Id$
  */
 
-/*
-  namespace-uri-for-prefix function
-*/
-
 #ifndef _FUNCTIONGETNAMESPACEURIFORPREFIX_HPP
 #define _FUNCTIONGETNAMESPACEURIFORPREFIX_HPP
 
@@ -34,7 +30,10 @@ public:
   /** Given a uri and a name, it returns an expanded QName **/
   Sequence createSequence(DynamicContext* context, int flags=0) const;
 
+  static ATAnyURIOrDerived::Ptr uriForPrefix(const XMLCh *prefix, const Node::Ptr &node,
+                                             DynamicContext *context, const LocationInfo *location);
+
 };
 
-#endif // _FUNCTIONGETNAMESPACEURIFORPREFIX_HPP
+#endif
 

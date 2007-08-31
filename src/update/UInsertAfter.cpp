@@ -23,6 +23,11 @@
 #include <xqilla/exceptions/ASTException.hpp>
 #include <xqilla/update/PendingUpdateList.hpp>
 #include <xqilla/ast/XQDOMConstructor.hpp>
+#include <xqilla/utils/XPath2Utils.hpp>
+#include <xqilla/functions/FunctionNamespaceURIForPrefix.hpp>
+#include <xqilla/exceptions/DynamicErrorException.hpp>
+
+XERCES_CPP_NAMESPACE_USE;
 
 UInsertAfter::UInsertAfter(ASTNode *source, ASTNode *target, XPath2MemoryManager* memMgr)
   : ASTNodeImpl(memMgr),
@@ -91,14 +96,19 @@ ASTNode *UInsertAfter::staticTyping(StaticContext *context)
 PendingUpdateList UInsertAfter::createUpdateList(DynamicContext *context) const
 {
   Node::Ptr node = (Node*)target_->createResult(context)->next(context).get();
+  Node::Ptr parentNode = node->dmParent(context);
 
   if(node->dmNodeKind() == Node::document_string ||
      node->dmNodeKind() == Node::attribute_string ||
-     node->dmNodeKind() == Node::namespace_string ||
-     node->dmParent(context).isNull())
+     node->dmNodeKind() == Node::namespace_string)
     XQThrow(XPath2TypeMatchException,X("UInsertAfter::staticTyping"),
             X("The target node of an insert after expression must be a single element, text, comment, or processing "
-              "instruction node that has a parent [err:XUTY0006]"));
+              "instruction node [err:XUTY0006]"));
+
+  if(parentNode.isNull())
+    XQThrow(XPath2TypeMatchException,X("UInsertAfter::staticTyping"),
+            X("It is a dynamic error if the target expression of an insert after expression does "
+              "not have a parent [err:XUDY0029]"));
 
   Sequence alist(context->getMemoryManager());
   Sequence clist(context->getMemoryManager());
@@ -110,6 +120,23 @@ PendingUpdateList UInsertAfter::createUpdateList(DynamicContext *context) const
       if(!clist.isEmpty())
         XQThrow(ASTException,X("UInsertAfter::createUpdateList"),
                 X("Attribute nodes must occur before other nodes in the source expression for an insert after expression [err:XUTY0004]"));
+
+      //    b. No attribute node in $alist may have a QName whose implied namespace binding conflicts with a namespace binding in the
+      //       "namespaces" property of parent($target) [err:XUDY0023].
+      ATQNameOrDerived::Ptr qname = ((Node*)item.get())->dmNodeName(context);
+      if(qname->getURI() != 0 && *(qname->getURI()) != 0) {
+        ATAnyURIOrDerived::Ptr uri = FunctionNamespaceURIForPrefix::uriForPrefix(qname->getPrefix(), parentNode, context, this);
+        if(uri.notNull() && !XPath2Utils::equals(uri->asString(context), qname->getURI())) {
+          XMLBuffer buf;
+          buf.append(X("Implied namespace binding for the insert after expression (\""));
+          buf.append(qname->getPrefix());
+          buf.append(X("\" -> \""));
+          buf.append(qname->getURI());
+          buf.append(X("\") conflicts with those already existing on the parent element of the target attribute [err:XUDY0023]"));
+          XQThrow3(DynamicErrorException, X("UInsertAfter::createUpdateList"), buf.getRawBuffer(), this);
+        }
+      }
+
       alist.addItem(item);
     }
     else
@@ -123,10 +150,7 @@ PendingUpdateList UInsertAfter::createUpdateList(DynamicContext *context) const
     //    a. parent($target) must be an element node [err:XUTY0022].
     if(node->dmParent(context)->dmNodeKind() == Node::document_string)
       XQThrow(XPath2TypeMatchException,X("UInsertAfter::createUpdateList"),
-              X("It is a type error if an insert expression specifies the insertion of an attribute node before or after a child of a document node [err:XUTY0022]"));
-    //    b. No attribute node in $alist may have a QName whose implied namespace binding conflicts with a namespace binding in the
-    //       "namespaces" property of parent($target) [err:XUDY0023].
-    // TBD make this check - jpcs
+              X("It is a type error if an insert expression specifies the insertion of an attribute node before or after a child of a document node [err:XUDY0030]"));
     result.addUpdate(PendingUpdate(PendingUpdate::INSERT_ATTRIBUTES, node->dmParent(context), alist, this));
   }
   if(!clist.isEmpty()) {

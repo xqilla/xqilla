@@ -14,12 +14,19 @@
 #include "../config/xqilla_config.h"
 
 #include <set>
+#include <map>
 
 #include <xqilla/context/UpdateFactory.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/context/MessageListener.hpp>
 #include <xqilla/update/PendingUpdateList.hpp>
-#include <xqilla/exceptions/ASTException.hpp>
+#include <xqilla/exceptions/DynamicErrorException.hpp>
+#include <xqilla/utils/XPath2Utils.hpp>
+
+#include <xercesc/framework/XMLBuffer.hpp>
+
+XERCES_CPP_NAMESPACE_USE;
+using namespace std;
 
 class pucompare {
 public:
@@ -35,10 +42,164 @@ private:
   const DynamicContext *context_;
 };
 
-typedef std::set<const PendingUpdate*, pucompare> PendingUpdateSet;
+typedef set<const PendingUpdate*, pucompare> PendingUpdateSet;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+class nodecompare {
+public:
+  nodecompare(const DynamicContext *context)
+    : context_(context) {}
+
+  bool operator()(const Node::Ptr &first, const Node::Ptr &second)
+  {
+    return first->uniqueLessThan(second, context_);
+  }
+
+private:
+  const DynamicContext *context_;
+};
+
+class AttrName {
+public:
+  AttrName(const ATQNameOrDerived::Ptr &name, const LocationInfo *info = 0)
+    : name_(name), info_(info) {}
+
+  const XMLCh *getURI() const
+  {
+    return name_->getURI();
+  }
+
+  const XMLCh *getPrefix() const
+  {
+    return name_->getPrefix();
+  }
+
+  const XMLCh *getName() const
+  {
+    return name_->getName();
+  }
+
+  bool operator<(const AttrName &o) const
+  {
+    return name_->compare(o.name_, 0) < 0;
+  }
+
+  ATQNameOrDerived::Ptr name_;
+  const LocationInfo *info_;
+};
+
+typedef set<AttrName> AttrNameSet;
+
+class AttrNamespace
+{
+public:
+  AttrNamespace(const XMLCh *prefix, const XMLCh *uri = 0, const LocationInfo *info = 0)
+    : prefix_(prefix), uri_(uri), info_(info) {}
+
+  bool operator<(const AttrNamespace &o) const
+  {
+    return XPath2Utils::compare(prefix_, o.prefix_) < 0;
+  }
+
+  const XMLCh *prefix_;
+  const XMLCh *uri_;
+  const LocationInfo *info_;
+};
+
+typedef set<AttrNamespace> AttrNamespaceSet;
+
+class AttrMapValue {
+public:
+
+  void addAttr(const ATQNameOrDerived::Ptr &name, DynamicContext *context, const LocationInfo *loc)
+  {
+    MessageListener *mlistener = context->getMessageListener();
+
+    // Add the attribute name, and check if it already existed
+    pair<AttrNameSet::iterator, bool> result = names.insert(AttrName(name, loc));
+    if(!result.second) {
+      if(result.first->info_ && mlistener) {
+        mlistener->warning(X("In the context of this expression"), result.first->info_);
+      }
+      XMLBuffer buf;
+      buf.append(X("Attribute {"));
+      buf.append(name->getURI());
+      buf.append(X("}"));
+      buf.append(name->getName());
+      buf.append(X(" already exists [err:XUDY0021]"));
+      XQThrow3(DynamicErrorException, X("AttrMapValue::addAttr"), buf.getRawBuffer(), loc);
+    }
+  }
+
+  void removeAttr(const ATQNameOrDerived::Ptr &name)
+  {
+    names.erase(name);
+  }
+
+  void addNamespace(const ATQNameOrDerived::Ptr &name, DynamicContext *context, const LocationInfo *loc)
+  {
+    MessageListener *mlistener = context->getMessageListener();
+
+    // Add the namespace binding, and check if it is already mapped to a different URI
+    pair<AttrNamespaceSet::iterator, bool> result =
+      namespaces.insert(AttrNamespace(name->getPrefix(), name->getURI(), loc));
+    if(!result.second && !XPath2Utils::equals(result.first->uri_, name->getURI())) {
+      if(result.first->info_ && mlistener) {
+        mlistener->warning(X("In the context of this expression"), result.first->info_);
+      }
+      XMLBuffer buf;
+      buf.append(X("Implied namespace binding for the attribute (\""));
+      buf.append(name->getPrefix());
+      buf.append(X("\" -> \""));
+      buf.append(name->getURI());
+      buf.append(X("\") conflicts with those already existing on the target element [err:XUDY0024]"));
+      XQThrow3(DynamicErrorException, X("AttrMapValue::addNamespace"), buf.getRawBuffer(), loc);
+    }
+  }
+
+  AttrNameSet names;
+  AttrNamespaceSet namespaces;
+};
+
+class AttrMap : public map<Node::Ptr, AttrMapValue, nodecompare>
+{
+public:
+  AttrMap(const DynamicContext *context) : map<Node::Ptr, AttrMapValue, nodecompare>(nodecompare(context)) {}
+
+  AttrMapValue &get(const Node::Ptr &node, DynamicContext *context)
+  {
+    iterator found = find(node);
+    if(found == end()) {
+      AttrMapValue &value = insert(value_type(node, AttrMapValue())).first->second;
+
+      // Add the existing attributes
+      Result attrs = node->dmAttributes(context, 0);
+      Node::Ptr tmp;
+      while((tmp = (Node*)attrs->next(context).get()).notNull()) {
+        value.names.insert(tmp->dmNodeName(context));
+      }
+
+      // Add the existing namespace bindings
+      Result namespaces = node->dmNamespaceNodes(context, 0);
+      while((tmp = (Node*)namespaces->next(context).get()).notNull()) {
+        ATQNameOrDerived::Ptr name = tmp->dmNodeName(context);
+        value.namespaces.insert(AttrNamespace(name.isNull() ? 0 : name->getName(), tmp->dmStringValue(context)));
+      }
+
+      return value;
+    }
+    return found->second;
+  }
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void UpdateFactory::applyUpdates(const PendingUpdateList &pul, DynamicContext *context, DocumentCache::ValidationMode valMode)
 {
+  PendingUpdateList::const_iterator i;
+  MessageListener *mlistener = context->getMessageListener();
+
   valMode_ = valMode;
 
   // 1. Checks the update primitives on $pul for compatibility. Raises a dynamic error if any of the following conditions are detected:
@@ -51,41 +212,39 @@ void UpdateFactory::applyUpdates(const PendingUpdateList &pul, DynamicContext *c
     PendingUpdateSet replaceValueSet = PendingUpdateSet(pucompare(context));
     PendingUpdateSet renameSet = PendingUpdateSet(pucompare(context));
 
-    MessageListener *mlistener = context->getMessageListener();
-
-    for(PendingUpdateList::const_iterator i = pul.begin(); i != pul.end(); ++i) {
+    for(i = pul.begin(); i != pul.end(); ++i) {
       switch(i->getType()) {
       case PendingUpdate::REPLACE_ELEMENT_CONTENT:
       case PendingUpdate::REPLACE_VALUE: {
-        std::pair<PendingUpdateSet::iterator, bool> res = replaceValueSet.insert(&(*i));
+        pair<PendingUpdateSet::iterator, bool> res = replaceValueSet.insert(&(*i));
         if(!res.second) {
           if(mlistener != 0) {
             mlistener->warning(X("In the context of this expression"), *res.first);
           }
-          XQThrow3(ASTException, X("UApplyUpdates::createSequence"),
+          XQThrow3(DynamicErrorException, X("UApplyUpdates::createSequence"),
                    X("Incompatible updates - two replace value expressions have the same target node [err:XUDY0017]"), &(*i));
         }
         break;
       }
       case PendingUpdate::REPLACE_ATTRIBUTE:
       case PendingUpdate::REPLACE_NODE: {
-        std::pair<PendingUpdateSet::iterator, bool> res = replaceNodeSet.insert(&(*i));
+        pair<PendingUpdateSet::iterator, bool> res = replaceNodeSet.insert(&(*i));
         if(!res.second) {
           if(mlistener != 0) {
             mlistener->warning(X("In the context of this expression"), *res.first);
           }
-          XQThrow3(ASTException, X("UApplyUpdates::createSequence"),
+          XQThrow3(DynamicErrorException, X("UApplyUpdates::createSequence"),
                    X("Incompatible updates - two replace expressions have the same target node [err:XUDY0016]"), &(*i));
         }
         break;
       }
       case PendingUpdate::RENAME: {
-        std::pair<PendingUpdateSet::iterator, bool> res = renameSet.insert(&(*i));
+        pair<PendingUpdateSet::iterator, bool> res = renameSet.insert(&(*i));
         if(!res.second) {
           if(mlistener != 0) {
             mlistener->warning(X("In the context of this expression"), *res.first);
           }
-          XQThrow3(ASTException, X("UApplyUpdates::createSequence"),
+          XQThrow3(DynamicErrorException, X("UApplyUpdates::createSequence"),
                    X("Incompatible updates - two rename expressions have the same target node [err:XUDY0015]"), &(*i));
         }
         break;
@@ -103,7 +262,86 @@ void UpdateFactory::applyUpdates(const PendingUpdateList &pul, DynamicContext *c
     }
   }
 
-  PendingUpdateList::const_iterator i;
+  // Perform some checks on any attribute and namespace binding updates. Check for:
+  //   1. Attribute name clashes on the original node, and from other updates
+  //   2. Implied namespace binding clashes on the original node, and from other updates
+  {
+    AttrMap attrCheck(context);
+
+    for(i = pul.begin(); i != pul.end(); ++i) {
+      switch(i->getType()) {
+      case PendingUpdate::INSERT_ATTRIBUTES: {
+        AttrMapValue &value = attrCheck.get(i->getTarget(), context);
+
+        Result children = i->getValue();
+        Node::Ptr node;
+        while((node = (Node*)children->next(context).get()).notNull()) {
+          ATQNameOrDerived::Ptr name = node->dmNodeName(context);
+
+          // Check if the attribute already exists
+          value.addAttr(name, context, &(*i));
+
+          // Check for a namespace clash
+          if(name->getPrefix() != 0 && *(name->getPrefix()) != 0)
+            value.addNamespace(name, context, &(*i));
+        }
+        break;
+      }
+      case PendingUpdate::RENAME: {
+        ATQNameOrDerived *name = (ATQNameOrDerived*)i->getValue().first().get();
+
+        if(i->getTarget()->dmNodeKind() == Node::element_string) {
+          AttrMapValue &value = attrCheck.get(i->getTarget(), context);
+          value.addNamespace(name, context, &(*i));
+        }
+        else if(i->getTarget()->dmNodeKind() == Node::attribute_string) {
+          Node::Ptr parentNode = i->getTarget()->dmParent(context);
+          if(parentNode.notNull()) {
+            AttrMapValue &value = attrCheck.get(parentNode, context);
+
+            value.removeAttr(i->getTarget()->dmNodeName(context));
+
+            // Check if the new attribute already exists
+            value.addAttr(name, context, &(*i));
+
+            // Check for a namespace clash
+            if(name->getPrefix() != 0 && *(name->getPrefix()) != 0)
+              value.addNamespace(name, context, &(*i));
+          }
+        }
+        break;
+      }
+      default: break;
+      }
+    }
+    
+    for(i = pul.begin(); i != pul.end(); ++i) {
+      switch(i->getType()) {
+      case PendingUpdate::REPLACE_ATTRIBUTE: {
+        Node::Ptr parentNode = i->getTarget()->dmParent(context);
+        AttrMapValue &value = attrCheck.get(parentNode, context);
+
+        value.removeAttr(i->getTarget()->dmNodeName(context));
+
+        Result children = i->getValue();
+        Node::Ptr node;
+        while((node = (Node*)children->next(context).get()).notNull()) {
+          ATQNameOrDerived::Ptr name = node->dmNodeName(context);
+
+          // Check if the attribute already exists
+          value.addAttr(name, context, &(*i));
+
+          // Check for a namespace clash
+          if(name->getPrefix() != 0 && *(name->getPrefix()) != 0)
+            value.addNamespace(name, context, &(*i));
+        }
+        break;
+      }
+      default: break;
+      }
+    }
+  }
+
   // We apply PUT first, to catch the duplicate puts properly
   for(i = pul.begin(); i != pul.end(); ++i) {
     switch(i->getType()) {
@@ -274,7 +512,6 @@ void UpdateFactory::applyUpdates(const PendingUpdateList &pul, DynamicContext *c
   //    Note:
   //    For example, a data model constraint violation might occur if multiple attributes with the same parent have the same qualified
   //    name (see Section 6.2.1 OverviewDM.)
-  // TBD Where else does this occur? - jpcs
 
   // 7. The upd:applyUpdates operation is atomic with respect to the data model. In other words, if upd:applyUpdates terminates
   //    normally, the resulting XDM instance reflects the result of all update primitives; but if upd:applyUpdates raises an error, the

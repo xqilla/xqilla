@@ -20,8 +20,13 @@
 #include <xqilla/ast/XQTreatAs.hpp>
 #include <xqilla/ast/XQDOMConstructor.hpp>
 #include <xqilla/schema/SequenceType.hpp>
+#include <xqilla/utils/XPath2Utils.hpp>
+#include <xqilla/functions/FunctionNamespaceURIForPrefix.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>
 #include <xqilla/exceptions/XPath2TypeMatchException.hpp>
+#include <xqilla/exceptions/DynamicErrorException.hpp>
+
+XERCES_CPP_NAMESPACE_USE;
 
 UReplace::UReplace(ASTNode *target, ASTNode *expr, XPath2MemoryManager* memMgr)
   : ASTNodeImpl(memMgr),
@@ -96,7 +101,8 @@ PendingUpdateList UReplace::createUpdateList(DynamicContext *context) const
             X("The target expression of a replace expression does not return a single "
               "node that is not a document node [err:XUTY0008]"));
     
-  if(node->dmParent(context).isNull())
+  Node::Ptr parentNode = node->dmParent(context);
+  if(parentNode.isNull())
     XQThrow(XPath2TypeMatchException,X("UReplace::createUpdateList"),
             X("The target node of a replace expression does not have a parent [err:XUDY0009]"));
 
@@ -128,7 +134,20 @@ PendingUpdateList UReplace::createUpdateList(DynamicContext *context) const
                 X("The with expression of a replace expression must only contain attributes when replacing an attribute [err:XUTY0011]"));
       //    b. No attribute node in $rlist may have a QName whose implied namespace binding conflicts with a namespace binding in the
       //       "namespaces" property of $parent [err:XUDY0023].
-      // TBD Check this - jpcs
+      ATQNameOrDerived::Ptr qname = ((Node*)tmp.get())->dmNodeName(context);
+      if(qname->getURI() != 0 && *(qname->getURI()) != 0) {
+        ATAnyURIOrDerived::Ptr uri = FunctionNamespaceURIForPrefix::uriForPrefix(qname->getPrefix(), parentNode, context, this);
+        if(uri.notNull() && !XPath2Utils::equals(uri->asString(context), qname->getURI())) {
+          XMLBuffer buf;
+          buf.append(X("Implied namespace binding for the replace expression (\""));
+          buf.append(qname->getPrefix());
+          buf.append(X("\" -> \""));
+          buf.append(qname->getURI());
+          buf.append(X("\") conflicts with those already existing on the parent element of the target attribute [err:XUDY0023]"));
+          XQThrow3(DynamicErrorException, X("URename::createUpdateList"), buf.getRawBuffer(), this);
+        }
+      }
+
       value.addItem(tmp);
     }
     return PendingUpdate(PendingUpdate::REPLACE_ATTRIBUTE, node, value, this);

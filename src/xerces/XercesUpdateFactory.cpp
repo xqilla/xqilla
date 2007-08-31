@@ -129,9 +129,6 @@ void XercesUpdateFactory::applyInsertAttributes(const PendingUpdate &update, Dyn
   bool untyped = XPath2Utils::equals(nodeImpl->getTypeName(), DocumentCache::g_szUntyped) &&
     XPath2Utils::equals(nodeImpl->getTypeURI(), SchemaSymbols::fgURI_SCHEMAFORSCHEMA);
 
-//   // For looking up the defined namespaces
-//   XQillaNSResolverImpl resolver(context->getMemoryManager(), element);
-
   Result children = update.getValue();
   Item::Ptr item;
   while((item = children->next(context)).notNull()) {
@@ -143,9 +140,7 @@ void XercesUpdateFactory::applyInsertAttributes(const PendingUpdate &update, Dyn
     //       a dynamic error is raised [err:XUDY0024].
     //    b. If the QName of any attribute node in $content has an implied namespace binding that conflicts with a namespace
     //       binding in the "namespaces" property of $target, a dynamic error is raised [err:XUDY0024].
-    // TBD perform these checks - jpcs
-
-    // TBD [err:XUDY0021] if the attribute already exists - jpcs
+    // Checks performed by UpdateFactory
 
     // If the type-name property of $target is xs:untyped, then upd:setToUntyped($A) is invoked.
     if(untyped) setToUntyped(newChild);
@@ -154,29 +149,6 @@ void XercesUpdateFactory::applyInsertAttributes(const PendingUpdate &update, Dyn
     // attributes: Modified to include the nodes in $content.
     element->setAttributeNode((DOMAttr*)newChild);
 
-//     // namespaces: Modified to include namespace bindings for any attribute namespace prefixes in $content
-//     // that did not already have bindings.
-//     const XMLCh *prefix = newChild->getPrefix();
-//     if(prefix != 0 && *prefix != 0) {
-//       const XMLCh *foundURI = resolver.lookupNamespaceURI(prefix);
-//       if(foundURI == NULL || !XPath2Utils::equals(foundURI, newChild->getNamespaceURI())) {
-//         // Prefix needs defining
-//         if(element->getAttributeNS(XMLUni::fgXMLNSURIName, prefix) != NULL) {
-//           // Prefix is already defined on this element -
-//           // make up a new prefix for the attribute
-//           // TBD is this the correct thing to do? - jpcs
-//           XMLCh szNumBuff[20];
-//           long index = 0;
-//           do {
-//             static const XMLCh szUnderScore[] = { chUnderscore, chNull };
-//             XMLString::binToText(++index, szNumBuff, 19, 10);
-//             prefix = XPath2Utils::concatStrings(newChild->getPrefix(), szUnderScore, szNumBuff, context->getMemoryManager());
-//           } while(element->getAttributeNS(XMLUni::fgXMLNSURIName, prefix) != NULL);
-//           newChild->setPrefix(prefix);
-//         }
-//         element->setAttributeNS(XMLUni::fgXMLNSURIName, prefix, newChild->getNamespaceURI());
-//       }
-//     }
   }
 
   // upd:removeType($target) is invoked.
@@ -217,16 +189,22 @@ void XercesUpdateFactory::applyRename(const PendingUpdate &update, DynamicContex
   ATQNameOrDerived *qname = (ATQNameOrDerived*)update.getValue().first().get();
 
   if(domnode->getNodeType() == DOMNode::PROCESSING_INSTRUCTION_NODE) {
-	  DOMProcessingInstruction *newPI = domnode->getOwnerDocument()->
-		  createProcessingInstruction(qname->getName(), domnode->getNodeValue());
-	  domnode->getParentNode()->replaceChild(newPI, domnode);
+    DOMProcessingInstruction *newPI = domnode->getOwnerDocument()->
+      createProcessingInstruction(qname->getName(), domnode->getNodeValue());
+    domnode->getParentNode()->replaceChild(newPI, domnode);
   }
   else {
-	  domnode->getOwnerDocument()->renameNode(domnode, qname->getURI(), qname->getName());
-	  if(qname->getURI() != 0 && *qname->getURI() != 0)
-		  domnode->setPrefix(qname->getPrefix());
+    // If $newName has an implied namespace binding that conflicts with an existing namespace binding
+    // in the namespaces property of $target, a dynamic error is raised [err:XUDY0024].
 
-	  removeType(domnode);
+    // If $target has a parent, and $newName has an implied namespace binding that conflicts with a
+    // namespace binding in the namespaces property of parent($target), a dynamic error is raised [err:XUDY0024].
+
+    domnode->getOwnerDocument()->renameNode(domnode, qname->getURI(), qname->getName());
+    if(qname->getURI() != 0 && *qname->getURI() != 0)
+      domnode->setPrefix(qname->getPrefix());
+
+    removeType(domnode);
   }
 
   addToPutList(domnode, &update, context);
@@ -467,9 +445,7 @@ void XercesUpdateFactory::applyReplaceAttribute(const PendingUpdate &update, Dyn
     //       each other, a dynamic error is raised [err:XUDY0024].
     //    b. If the QName of any attribute node in $replacement has an implied namespace binding that conflicts with a
     //       namespace binding in the "namespaces" property of parent($target), a dynamic error is raised [err:XUDY0024].
-    // TBD perform these checks - jpcs
-
-    // TBD [err:XUDY0021] if the attribute already exists - jpcs
+    // Checks performed by UpdateFactory
 
     // 2b. If the type-name property of parent($target) is xs:untyped, then upd:setToUntyped() is invoked
     //     on each element node in $replacement.
