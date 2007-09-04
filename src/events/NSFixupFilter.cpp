@@ -61,7 +61,7 @@ void NSFixupFilter::startElementEvent(const XMLCh *prefix, const XMLCh *uri, con
 
   // add the prefix to our linked list
   ElemEntry *entry = (ElemEntry*)mm_->allocate(sizeof(ElemEntry));
-  entry->set(prefix, elements_);
+  entry->set(mm_->getPooledString(prefix), elements_);
   elements_ = entry;
 
   next_->startElementEvent(prefix, uri, localname);
@@ -173,7 +173,9 @@ bool NSFixupFilter::definePrefix(const XMLCh *&prefix, const XMLCh *uri, bool at
 
   // add the mapping to our linked list
   NSEntry *entry = (NSEntry*)mm_->allocate(sizeof(NSEntry));
-  entry->set(prefix, uri, level_, namespaces_);
+  entry->set(mm_->getPooledString(prefix),
+	     mm_->getPooledString(uri),
+	     level_, namespaces_);
   namespaces_ = entry;
 
   return result;
