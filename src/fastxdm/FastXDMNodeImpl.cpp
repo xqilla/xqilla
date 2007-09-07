@@ -190,15 +190,15 @@ const XMLCh* FastXDMNodeImpl::dmNodeKind(void) const
 
 ATQNameOrDerived::Ptr FastXDMNodeImpl::dmNodeName(const DynamicContext* context) const
 {
-	switch(node_->nodeKind) {
+  switch(node_->nodeKind) {
   case FastXDMDocument::ELEMENT:
     return context->getItemFactory()->createQName(node_->data.element.uri, node_->data.element.prefix, node_->data.element.localname, context);
   case FastXDMDocument::PROCESSING_INSTRUCTION:
     return context->getItemFactory()->createQName(XMLUni::fgZeroLenString, XMLUni::fgZeroLenString, node_->data.other.target, context);
   default:
     break;
-	}
-	return 0;
+  }
+  return 0;
 }
 
 static inline void addStringValueToBuffer(const FastXDMDocument::Node *node, unsigned int endLevel, XMLBuffer& buffer)
@@ -211,8 +211,8 @@ static inline void addStringValueToBuffer(const FastXDMDocument::Node *node, uns
 
 const XMLCh* FastXDMNodeImpl::dmStringValue(const DynamicContext* context) const
 {
-	switch(node_->nodeKind)
-	{
+  switch(node_->nodeKind)
+  {
   case FastXDMDocument::DOCUMENT:
   case FastXDMDocument::ELEMENT: {
     XMLBuffer str(1023, context->getMemoryManager());
@@ -225,8 +225,8 @@ const XMLCh* FastXDMNodeImpl::dmStringValue(const DynamicContext* context) const
     return node_->data.other.value;
   case FastXDMDocument::MARKER:
     break;
-	}
-	return XMLUni::fgZeroLenString;
+  }
+  return XMLUni::fgZeroLenString;
 }
 
 static Sequence getListTypeTypedValue(const XMLCh *stringVal, DatatypeValidator *dtv, const DynamicContext* context)
