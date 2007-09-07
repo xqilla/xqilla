@@ -37,6 +37,6 @@ private :
     XMLByte *fUTF8Form;
 };
 
-#define UTF8(str) UTF8Str(str).UTF8Form()
+#define UTF8(str) UTF8Str((const XMLCh*)(str)).UTF8Form()
 
 #endif
