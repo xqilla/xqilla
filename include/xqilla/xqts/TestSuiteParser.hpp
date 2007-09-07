@@ -17,6 +17,7 @@
 #include <string>
 #include <list>
 #include <map>
+#include <set>
 
 #include <xercesc/sax2/DefaultHandler.hpp>
 #include <xercesc/util/XMLURL.hpp>
@@ -50,41 +51,31 @@ public:
 
   void run();
 
+  void handleUnknownElement(const std::string &elementName);
+
 private:
-  virtual void startElement
-  (
-    const XMLCh* const uri,
-    const XMLCh* const localname,
-    const XMLCh* const qname,
-    const XERCES_CPP_NAMESPACE_QUALIFIER Attributes&	attrs
-  );
-  virtual void endElement
-  (
-	const XMLCh* const uri,
-	const XMLCh* const localname,
-	const XMLCh* const qname
-   );
-  virtual void characters
-  (
-    const XMLCh* const chars,
-    const unsigned int length
-   );
+  virtual void startElement(const XMLCh* const uri, const XMLCh* const localname, const XMLCh* const qname,
+                            const XERCES_CPP_NAMESPACE_QUALIFIER Attributes&  attributes);
+  virtual void endElement(const XMLCh* const uri, const XMLCh* const localname,	const XMLCh* const qname);
+  virtual void characters(const XMLCh* const chars, const unsigned int length);
 
   virtual void error(const XERCES_CPP_NAMESPACE_QUALIFIER SAXParseException& exc);
   virtual void fatalError(const XERCES_CPP_NAMESPACE_QUALIFIER SAXParseException& exc);
 
 private:
-  TestSuiteRunner *m_runner;
+  TestSuiteRunner *runner_;
 
-  XERCES_CPP_NAMESPACE_QUALIFIER XMLURL m_urlXQTSCatalog, m_urlXQTSQueriesDirectory, m_urlXQTSResultsDirectory, 
-    m_urlBasePath, m_urlBasePathReferenceFiles, m_urlQuery;
+  XERCES_CPP_NAMESPACE_QUALIFIER XMLURL urlXQTSCatalog_, urlXQTSQueriesDirectory_, urlXQTSResultsDirectory_, 
+    urlBasePath_, urlBasePathReferenceFiles_, urlQuery_;
 
-  bool m_bReadingChars;
-  std::string m_szChars;
+  std::set<std::string> unknownElements_;
 
-  std::string m_szVariableBoundToInput, m_szCompareMethod, m_szNamespace, m_szCollectionID;
+  bool readingChars_;
+  std::string chars_;
 
-  TestCase m_testCase;
+  std::string variableBoundToInput_, compareMethod_, namespace_, collectionID_;
+
+  TestCase testCase_;
 };
 
 #endif

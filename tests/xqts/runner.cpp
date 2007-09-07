@@ -55,7 +55,7 @@ public:
   virtual void addSource(const string &id, const string &filename, const string &schema);
   virtual void addSchema(const string &id, const string &filename, const string &uri);
   virtual void addModule(const string &id, const string &filename);
-  virtual void addCollection(const string &id, const string &filename);
+  virtual void addCollectionDoc(const string &id, const string &filename);
 
   virtual void startTestGroup(const string &name);
   virtual void endTestGroup();
@@ -303,7 +303,7 @@ void XQillaTestSuiteRunner::addModule(const string &id, const string &filename)
   m_moduleFiles[id] = filename;
 }
 
-void XQillaTestSuiteRunner::addCollection(const string &id, const string &filename)
+void XQillaTestSuiteRunner::addCollectionDoc(const string &id, const string &filename)
 {
   m_collections[id].push_back(filename);
 }
