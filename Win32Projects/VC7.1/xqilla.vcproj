@@ -1387,6 +1387,12 @@
 				RelativePath="..\..\src\functions\FunctionOneOrMore.cpp">
 			</File>
 			<File
+				RelativePath="..\..\src\functions\FunctionParseXML.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\functions\FunctionParseXML.hpp">
+			</File>
+			<File
 				RelativePath="..\..\src\functions\FunctionPosition.cpp">
 			</File>
 			<File
@@ -1499,6 +1505,12 @@
 			</File>
 			<File
 				RelativePath="..\..\src\functions\FunctionZeroOrOne.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\functions\XQillaFunction.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\functions\XQillaFunction.hpp">
 			</File>
 			<File
 				RelativePath="..\..\src\functions\XQUserFunction.cpp">
@@ -2512,6 +2524,12 @@
 			</File>
 			<File
 				RelativePath="..\..\src\schema\DocumentCacheImpl.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\schema\FaxppDocumentCacheImpl.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\schema\FaxppDocumentCacheImpl.hpp">
 			</File>
 			<File
 				RelativePath="..\..\src\schema\SchemaValidatorFilter.cpp">
