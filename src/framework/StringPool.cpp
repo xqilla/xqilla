@@ -13,6 +13,7 @@
 
 #include "../config/xqilla_config.h"
 #include <xqilla/framework/StringPool.hpp>
+#include <xqilla/framework/XPath2MemoryManager.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 
 #include <xercesc/util/XMLUni.hpp>
@@ -69,13 +70,67 @@ const XMLCh *StringPool::getPooledString(const XMLCh *src)
     return replicate(src, length);
   }
 
-  unsigned int hashVal = hash(src);
+  unsigned int hashVal = hash(src, length);
   unsigned int modHashVal = hashVal % _modulus;
 
   const Bucket *bucket = _bucketList[modHashVal];
   while(bucket) {
     if(bucket->length == length &&
        XPath2Utils::equals(bucket->value, src)) {
+      break;
+    }
+    bucket = bucket->next;
+  }
+
+  if(bucket) {
+    ++_hits;
+    return bucket->value;
+  }
+  else {
+    ++_misses;
+    if(_count >= (_modulus * 3 / 4)) {
+      resize();
+      modHashVal = hashVal % _modulus;
+    }
+
+    const XMLCh *result = replicate(src, length);
+    _bucketList[modHashVal] = new (_mm->allocate(sizeof(Bucket)))
+      Bucket(result, length, hashVal, _bucketList[modHashVal]);
+    ++_count;
+
+    return result;
+  }
+}
+
+static inline bool equalsN(const XMLCh *str1, const XMLCh *str2, unsigned int len2)
+{
+  while(true) {
+    if(len2 == 0) return *str1 == 0;
+    if(*str1 != *str2) return false;
+
+    ++str1;
+    ++str2;
+    --len2;
+  }
+}
+
+const XMLCh *StringPool::getPooledString(const XMLCh *src, unsigned int length)
+{
+  if(src == 0) return 0;
+  if(length == 0) return XMLUni::fgZeroLenString;
+
+  if(length > lengthThreshold) {
+    ++_toobig;
+    return replicate(src, length);
+  }
+
+  unsigned int hashVal = hash(src, length);
+  unsigned int modHashVal = hashVal % _modulus;
+
+  const Bucket *bucket = _bucketList[modHashVal];
+  while(bucket) {
+    if(bucket->length == length &&
+       equalsN(bucket->value, src, length)) {
       break;
     }
     bucket = bucket->next;
@@ -119,7 +174,7 @@ const XMLCh *StringPool::getPooledString(const char *src)
     return transcoded;
   }
 
-  unsigned int hashVal = hash(transcoded);
+  unsigned int hashVal = hash(transcoded, length);
   unsigned int modHashVal = hashVal % _modulus;
 
   const Bucket *bucket = _bucketList[modHashVal];

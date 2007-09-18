@@ -218,6 +218,8 @@ src/functions/FunctionNormalizeUnicode.cpp	lib
 src/functions/FunctionNot.cpp	lib
 src/functions/FunctionNumber.cpp	lib
 src/functions/FunctionOneOrMore.cpp	lib
+src/functions/FunctionParseXML.cpp lib
+src/functions/FunctionParseXML.hpp lib
 src/functions/FunctionPosition.cpp	lib
 src/functions/FunctionPrefixFromQName.cpp	lib
 src/functions/FunctionQName.cpp	lib
@@ -256,6 +258,8 @@ src/functions/FunctionYearFromDate.cpp	lib
 src/functions/FunctionYearFromDateTime.cpp	lib
 src/functions/FunctionYearsFromDuration.cpp	lib
 src/functions/FunctionZeroOrOne.cpp	lib
+src/functions/XQillaFunction.cpp lib
+src/functions/XQillaFunction.hpp lib
 src/functions/XQUserFunction.cpp	lib
 src/items/ATDurationOrDerived.cpp	lib
 src/items/ATQNameConstructor.cpp	lib
@@ -383,6 +387,8 @@ src/runtime/SequenceResult.cpp	lib
 src/runtime/SingleResult.cpp	lib
 src/schema/AnyAtomicTypeDatatypeValidator.cpp	lib
 src/schema/DocumentCacheImpl.cpp	lib
+src/schema/FaxppDocumentCacheImpl.cpp lib
+src/schema/FaxppDocumentCacheImpl.hpp lib
 src/schema/SchemaValidatorFilter.cpp lib
 src/schema/SequenceType.cpp	lib
 src/simple-api/XQQuery.cpp	lib

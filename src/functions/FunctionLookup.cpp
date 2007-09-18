@@ -314,6 +314,8 @@ const ExternalFunction *FunctionLookup::lookUpGlobalExternalFunction(
 #include <xqilla/functions/FunctionAdjustTimeToTimezone.hpp>
 // Updates
 #include <xqilla/update/FunctionPut.hpp>
+// XQilla extension functions
+#include "FunctionParseXML.hpp"
 
 void FunctionLookup::insertUpdateFunctions(XPath2MemoryManager *memMgr)
 {
@@ -577,4 +579,6 @@ static void initGlobalTable(FunctionLookup *t, MemoryManager *memMgr)
   //   fn:static-base-uri
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionStaticBaseURI>(memMgr));
 
+  // XQilla extension functions
+  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionParseXML>(memMgr));
 }

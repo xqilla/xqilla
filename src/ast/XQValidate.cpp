@@ -44,7 +44,9 @@ void XQValidate::generateEvents(EventHandler *events, DynamicContext *context,
                                 bool preserveNS, bool preserveType) const
 {
   // Stream the node through the schema validator
-  SchemaValidatorFilter svf(mode_ == DocumentCache::VALIDATION_STRICT, events, context, this);
+  SchemaValidatorFilter svf(mode_ == DocumentCache::VALIDATION_STRICT, events,
+                            context->getDocumentCache()->getGrammarResolver(),
+                            context->getMemoryManager(), this);
   ValidateArgumentCheckFilter argCheck(&svf, mode_, context, this);
   expr_->generateEvents(&argCheck, context, true, false);
 }

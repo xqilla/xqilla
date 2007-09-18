@@ -15,6 +15,7 @@
 
 #include <xqilla/fastxdm/FastXDMConfiguration.hpp>
 #include <xqilla/schema/DocumentCacheImpl.hpp>
+#include "../schema/FaxppDocumentCacheImpl.hpp"
 #include "FastXDMSequenceBuilder.hpp"
 #include "FastXDMUpdateFactory.hpp"
 
@@ -31,7 +32,11 @@ XERCES_CPP_NAMESPACE_USE;
 
 DocumentCache *FastXDMConfiguration::createDocumentCache(MemoryManager *memMgr)
 {
-  return new(memMgr) DocumentCacheImpl(memMgr);
+// #ifdef HAVE_FAXPP
+//   return new (memMgr) FaxppDocumentCacheImpl(memMgr);
+// #else
+  return new (memMgr) DocumentCacheImpl(memMgr);
+// #endif
 }
 
 SequenceBuilder *FastXDMConfiguration::createSequenceBuilder(const DynamicContext *context)

@@ -89,6 +89,47 @@ fi
 AC_SUBST(xerces_include)
 AC_SUBST(xerces_lib)
 
+# Check if the FAXPP library is present
+AH_TEMPLATE(HAVE_FAXPP, [Define to 1 if the FAXPP library is present.])
+AC_MSG_CHECKING([if --with-faxpp=DIR option specified])
+AC_ARG_WITH(faxpp,
+        [AS_HELP_STRING(--with-faxpp=DIR,Path of FAXPP. [DIR="/usr/local"])],
+        [with_faxpp="$withval"], [with_faxpp="no"])
+AC_MSG_RESULT($with_faxpp)
+if test "$with_faxpp" = "no"; then
+        with_faxpp="/usr/local"
+fi
+AC_MSG_CHECKING([if the FAXPP library is present])
+if test `ls $with_faxpp/lib/libfaxpp.* 2>/dev/null | wc -l` -gt 0 ; then
+        AC_MSG_RESULT([yes])
+        AC_DEFINE(HAVE_FAXPP)
+        faxpp_lib="-L$with_faxpp/lib -R$with_faxpp/lib"
+        faxpp_library="-lfaxpp"
+        faxpp_include="-I$with_faxpp/include"
+elif test `ls $with_faxpp/libfaxpp.* 2>/dev/null | wc -l` -gt 0 ; then
+        if test `ls $with_faxpp/include/faxpp/parser.h 2>/dev/null | wc -l` -gt 0 ; then
+                AC_MSG_RESULT([yes])
+                AC_DEFINE(HAVE_FAXPP)
+                faxpp_lib="-L$with_faxpp -R$with_faxpp"
+                faxpp_library="-lfaxpp"
+                faxpp_include="-I$with_faxpp/include"
+        elif test `ls $with_faxpp/../include/faxpp/parser.h 2>/dev/null | wc -l` -gt 0 ; then
+                AC_MSG_RESULT([yes])
+                AC_DEFINE(HAVE_FAXPP)
+                faxpp_lib="-L$with_faxpp -R$with_faxpp"
+                faxpp_library="-lfaxpp"
+                faxpp_include="-I$with_faxpp/../include"
+        fi
+else
+        AC_MSG_RESULT([no])
+        faxpp_lib=""
+        faxpp_library=""
+        faxpp_include=""
+fi
+AC_SUBST(faxpp_include)
+AC_SUBST(faxpp_lib)
+AC_SUBST(faxpp_library)
+
 # Checks for programs.
 AC_PROG_CXX
 AC_PROG_CC

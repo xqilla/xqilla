@@ -18,7 +18,8 @@
 #include <xercesc/util/XMLString.hpp>
 #include <xercesc/util/XMLResourceIdentifier.hpp>
 #include <xercesc/util/XMLEntityResolver.hpp>
-#include <xercesc/framework/MemBufInputSource.hpp>
+#include <xercesc/framework/URLInputSource.hpp>
+#include <xercesc/framework/LocalFileInputSource.hpp>
 #include <xercesc/sax/SAXParseException.hpp>
 #include <xercesc/validators/datatype/DatatypeValidatorFactory.hpp>
 #include <xercesc/validators/schema/SchemaGrammar.hpp>
@@ -213,6 +214,38 @@ void DocumentCacheImpl::error(const unsigned int errCode, const XMLCh* const err
 
 Node::Ptr DocumentCacheImpl::loadDocument(const XMLCh* uri, DynamicContext *context)
 {
+  InputSource* srcToUse = 0;
+  if(entityResolver_){
+    XMLResourceIdentifier resourceIdentifier(XMLResourceIdentifier::UnKnown, uri, 0,
+                                             XMLUni::fgZeroLenString, context->getBaseURI());
+    srcToUse = entityResolver_->resolveEntity(&resourceIdentifier);
+  }
+
+  if(srcToUse == 0) {
+    XMLURL urlTmp(context->getMemoryManager());
+    if(urlTmp.setURL(context->getBaseURI(), uri, urlTmp) && !urlTmp.isRelative()) {
+      srcToUse = new URLInputSource(urlTmp);
+    }
+    else {
+      // It's not a URL, so let's assume it's a local file name.
+      const XMLCh *baseUri = context->getBaseURI();
+      if(baseUri && baseUri[0]) {
+        AutoDeallocate<XMLCh> tmpBuf(XMLPlatformUtils::weavePaths(baseUri, uri), XMLPlatformUtils::fgMemoryManager);
+        srcToUse = new LocalFileInputSource(tmpBuf);
+      }
+      else {
+        srcToUse = new LocalFileInputSource(uri);
+      }
+    }
+  }
+
+  Janitor<InputSource> janIS(srcToUse);
+
+  return parseDocument(*srcToUse, context);
+}
+
+Node::Ptr DocumentCacheImpl::parseDocument(InputSource &srcToUse, DynamicContext *context)
+{
   AutoDelete<SequenceBuilder> builder(context->createSequenceBuilder());
   events_ = builder.get();
   attrList_ = 0;
@@ -220,35 +253,15 @@ Node::Ptr DocumentCacheImpl::loadDocument(const XMLCh* uri, DynamicContext *cont
   elementInfo_ = 0;
   strictValidation_ = false;
 
-  InputSource* srcToUse = 0;
-  if(entityResolver_){
-    XMLResourceIdentifier resourceIdentifier(XMLResourceIdentifier::UnKnown, uri, 0,
-                                             XMLUni::fgZeroLenString, context->getBaseURI());
-    srcToUse = entityResolver_->resolveEntity(&resourceIdentifier);
-  }
-  Janitor<InputSource> janIS(srcToUse);
-
   try {
-    if(srcToUse) {
-      scanner_->scanDocument(*srcToUse);
-    }
-    else {
-      // Resolve the uri against the base uri
-      const XMLCh *systemId = uri;
-      XMLURL urlTmp(context->getMemoryManager());
-      if(urlTmp.setURL(context->getBaseURI(), uri, urlTmp)) {
-        systemId = urlTmp.getURLText();
-      }
-
-      scanner_->scanDocument(systemId);
-    }
+    scanner_->scanDocument(srcToUse);
   }
   catch(const SAXException& toCatch) {
     //TODO: Find a way to decipher whether the exception is actually because of a parsing problem or because the document can't be found
-    XQThrow2(XMLParseException, X("DocumentCacheImpl::loadDocument"), toCatch.getMessage());
+    XQThrow2(XMLParseException, X("DocumentCacheImpl::parseDocument"), toCatch.getMessage());
   }
   catch(const XMLException& toCatch) {
-    XQThrow2(XMLParseException,X("DocumentCacheImpl::loadDocument"), toCatch.getMessage());
+    XQThrow2(XMLParseException,X("DocumentCacheImpl::parseDocument"), toCatch.getMessage());
   }
 
   events_->endEvent();

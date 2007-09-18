@@ -17,6 +17,7 @@
 #include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/ConstantFoldingFunction.hpp>
+#include <xqilla/items/Node.hpp>
 
 class XQILLA_API FunctionNamespaceURIForPrefix : public ConstantFoldingFunction
 {

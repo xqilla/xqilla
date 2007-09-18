@@ -61,6 +61,11 @@ public:
   {
   }
 
+  void setNextEventHandler(EventHandler *next)
+  {
+    next_ = next;
+  }
+
   virtual void startDocumentEvent(const XMLCh *documentURI, const XMLCh *encoding)
   {
     next_->startDocumentEvent(documentURI, encoding);

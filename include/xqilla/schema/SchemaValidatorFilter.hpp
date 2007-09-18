@@ -25,7 +25,6 @@
 #include <xercesc/internal/XMLScanner.hpp>
 #include <xercesc/util/RefHash3KeysIdPool.hpp>
 
-class XPath2MemoryManager;
 class DynamicContext;
 class LocationInfo;
 
@@ -42,7 +41,8 @@ class XQILLA_API SchemaValidatorFilter : public EventFilter,
                                          private XERCES_CPP_NAMESPACE_QUALIFIER XMLErrorReporter
 {
 public:
-  SchemaValidatorFilter(bool strictValidation, EventHandler *next, DynamicContext *context, const LocationInfo *info);
+  SchemaValidatorFilter(bool strictValidation, EventHandler *next, XERCES_CPP_NAMESPACE_QUALIFIER GrammarResolver *grammarResolver,
+                        XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mm, const LocationInfo *info);
   virtual ~SchemaValidatorFilter();
 
   void reset();
@@ -117,7 +117,6 @@ private:
   XERCES_CPP_NAMESPACE_QUALIFIER XMLElementDecl *createElementDecl(unsigned int uriId, unsigned int currentScope,
                                                                    bool laxThisOne);
 
-  XPath2MemoryManager *mm_;
   const LocationInfo *info_;
 
   XERCES_CPP_NAMESPACE_QUALIFIER SchemaValidator *fSchemaValidator;
@@ -131,9 +130,10 @@ private:
 
   XERCES_CPP_NAMESPACE_QUALIFIER ElemStack::StackElem *parentStack_;
   unsigned int elemDepth_;
-  const XMLCh *prefix_;
-  const XMLCh *uri_;
-  const XMLCh *localname_;
+  XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer prefix_;
+  XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer uri_;
+  XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer localname_;
+  bool elementToProcess_;
   const XMLCh *xsiType_;
   unsigned int attrCount_;
 };

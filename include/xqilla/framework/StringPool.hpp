@@ -27,6 +27,8 @@ public:
 
   /** Returns a copy of the given string */
   const XMLCh* getPooledString(const XMLCh *src);
+  /** Returns a copy of the given string, with given length */
+  const XMLCh* getPooledString(const XMLCh *src, unsigned int length);
   /** Returns a copy of the transcoding of the given string */
   const XMLCh* getPooledString(const char *src);
 
@@ -40,7 +42,7 @@ private:
   StringPool(const StringPool&);
   StringPool &operator=(const StringPool&);
 
-  static unsigned int hash(const XMLCh *v);
+  static unsigned int hash(const XMLCh *v, unsigned int length);
   const XMLCh *replicate(const XMLCh *v, unsigned int length) const;
   void resize();
 
@@ -65,23 +67,23 @@ private:
   unsigned int _toobig;
 };
 
-inline unsigned int StringPool::hash(const XMLCh *v)
+inline unsigned int StringPool::hash(const XMLCh *v, unsigned int length)
 {
-  unsigned int top;
   unsigned int hashVal = 0;
-  while(*v) {
-    top = hashVal >> 24;
-    hashVal += (hashVal * 37) + top + (unsigned int)(*v);
+  while(length) {
+    hashVal += (hashVal * 37) + (hashVal >> 24) + (unsigned int)(*v);
     ++v;
+    --length;
   }
   return hashVal;
 }
 
 inline const XMLCh *StringPool::replicate(const XMLCh *v, unsigned int length) const
 {
-  unsigned int size = (length+1) * sizeof(XMLCh);
-  XMLCh *ret = (XMLCh*)_mm->allocate(size);
+  unsigned int size = length * sizeof(XMLCh);
+  XMLCh *ret = (XMLCh*)_mm->allocate(size + sizeof(XMLCh));
   memcpy(ret, v, size);
+  ret[length] = 0;
   return ret;
 }
 

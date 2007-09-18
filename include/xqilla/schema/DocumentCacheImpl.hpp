@@ -53,6 +53,7 @@ public:
   virtual XERCES_CPP_NAMESPACE_QUALIFIER XMLEntityResolver* getXMLEntityResolver() const;
 
   virtual Node::Ptr loadDocument(const XMLCh* uri, DynamicContext *context);
+  virtual Node::Ptr parseDocument(XERCES_CPP_NAMESPACE_QUALIFIER InputSource &srcToUse, DynamicContext *context);
 
   /*
    * returns true if the type represented by uri:typename is an instance of uriToCheck:typeNameToCheck 
