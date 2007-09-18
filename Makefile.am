@@ -1,8 +1,8 @@
 AUTOMAKE_OPTIONS = foreign dist-zip
 SUBDIRS = include
 
-INCLUDES = -I$(top_srcdir)/include/ -I$(xerces_include) -I$(top_srcdir)/src/lexer/
-LDFLAGS = -L$(xerces_lib) -R$(xerces_lib)
+INCLUDES = -I$(top_srcdir)/include/ -I$(xerces_include) -I$(top_srcdir)/src/lexer/ $(faxpp_include)
+LDFLAGS = -L$(xerces_lib) -R$(xerces_lib) $(faxpp_lib)
 LDADD = libxqilla.la
 
 bin_PROGRAMS = xqilla
@@ -12,7 +12,7 @@ lib_LTLIBRARIES = libxqilla.la
 
 # Library version, see http://sourceware.org/autobook/autobook/autobook_91.html
 # -no-undefined for Cygwin (bug #1639669)
-libxqilla_la_LDFLAGS = -version-info 2:0:0 -no-undefined -lxerces-c
+libxqilla_la_LDFLAGS = -version-info 2:0:0 -no-undefined -lxerces-c $(faxpp_library)
 
 libxqilla_la_SOURCES = \
 src/framework/ReferenceCounted.cpp \
@@ -133,6 +133,10 @@ src/exceptions/XQException.cpp \
 src/exceptions/InvalidLexicalSpaceException.hpp \
 src/exceptions/MiscException.hpp \
 src/functions/ExternalFunction.cpp \
+src/functions/XQillaFunction.cpp \
+src/functions/XQillaFunction.hpp \
+src/functions/FunctionParseXML.cpp \
+src/functions/FunctionParseXML.hpp \
 src/functions/FuncFactory.cpp \
 src/functions/FuncFactoryTemplate.hpp \
 src/functions/FunctionLookup.cpp \
@@ -368,6 +372,8 @@ src/schema/DocumentCacheImpl.cpp \
 src/schema/SequenceType.cpp \
 src/schema/AnyAtomicTypeDatatypeValidator.cpp \
 src/schema/SchemaValidatorFilter.cpp \
+src/schema/FaxppDocumentCacheImpl.hpp \
+src/schema/FaxppDocumentCacheImpl.cpp \
 src/runtime/ClosureResult.cpp \
 src/runtime/EmptyResult.cpp \
 src/runtime/LazySequenceResult.cpp \

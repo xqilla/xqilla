@@ -799,7 +799,9 @@ void XercesUpdateFactory::completeRevalidation(DynamicContext *context)
     // Stream the node through the schema validator, and back to the RevalidationEventHandler,
     // which will write the information back into the node
     RevalidationEventHandler reh(top);
-    SchemaValidatorFilter svf(valMode_ == DocumentCache::VALIDATION_STRICT, &reh, context, 0);
+    SchemaValidatorFilter svf(valMode_ == DocumentCache::VALIDATION_STRICT, &reh,
+                              context->getDocumentCache()->getGrammarResolver(),
+                              context->getMemoryManager(), 0);
     ValidateArgumentCheckFilter argCheck(&svf, valMode_, context, 0);
 
     XercesNodeImpl::generateEvents(top, &argCheck, true, false);

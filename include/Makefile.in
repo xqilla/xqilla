@@ -141,6 +141,9 @@ datarootdir = @datarootdir@
 docdir = @docdir@
 dvidir = @dvidir@
 exec_prefix = @exec_prefix@
+faxpp_include = @faxpp_include@
+faxpp_lib = @faxpp_lib@
+faxpp_library = @faxpp_library@
 host = @host@
 host_alias = @host_alias@
 host_cpu = @host_cpu@
@@ -551,9 +554,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  include/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  include/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu  include/Makefile
+	  $(AUTOMAKE) --foreign  include/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \

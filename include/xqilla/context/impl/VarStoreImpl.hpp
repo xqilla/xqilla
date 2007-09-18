@@ -48,12 +48,6 @@ private:
   XPath2MemoryManager *mm_;
 };
 
-class XQILLA_API VarStoreCache : public VarStoreImpl
-{
-public:
-  VarStoreCache(const StaticAnalysis &src, const VariableStore *varStore, XPath2MemoryManager *mm);
-};
-
 class XQILLA_API SingleVarStore : public VariableStore
 {
 public:

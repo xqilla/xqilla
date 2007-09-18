@@ -21,8 +21,8 @@
 #include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/ConstantFoldingFunction.hpp>
+#include <xqilla/items/Node.hpp>
 
-class Node;
 class Collation;
 
 class XQILLA_API FunctionDeepEqual : public ConstantFoldingFunction

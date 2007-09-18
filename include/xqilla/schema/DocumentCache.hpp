@@ -58,6 +58,8 @@ public:
 
   /** load the document from the requested URI */
   virtual Node::Ptr loadDocument(const XMLCh* uri, DynamicContext *context) = 0;
+  /** parse the document from the InputSource provided */
+  virtual Node::Ptr parseDocument(XERCES_CPP_NAMESPACE_QUALIFIER InputSource &srcToUse, DynamicContext *context) = 0;
 
   /**
    * Sets the XMLEntityResolver that is used by Xerces when it is used

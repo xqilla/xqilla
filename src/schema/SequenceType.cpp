@@ -974,6 +974,45 @@ SequenceType::TypeMatchesResult::TypeMatchesResult(const Result &parent, const S
 {
 }
 
+static void itemTypeToBuffer(const Item::Ptr &item, DynamicContext *context, XMLBuffer &buffer)
+{
+  if(item->isNode()) {
+    Node *node = (Node*)item.get();
+    buffer.append(node->dmNodeKind());
+    buffer.append('(');
+
+    if(node->dmNodeKind() == Node::element_string ||
+       node->dmNodeKind() == Node::attribute_string) {
+      ATQNameOrDerived::Ptr qname = node->dmNodeName(context);
+      if(qname->getURI()) {
+        buffer.append('{');
+        buffer.append(qname->getURI());
+        buffer.append('}');
+      }
+      buffer.append(qname->getName());
+
+      buffer.append(',');
+      buffer.append(' ');
+      if(node->getTypeURI()) {
+        buffer.append('{');
+        buffer.append(node->getTypeURI());
+        buffer.append('}');
+      }
+      buffer.append(node->getTypeName());
+    }
+
+    buffer.append(')');
+  }
+  else {
+    if(item->getTypeURI()) {
+      buffer.append('{');
+      buffer.append(item->getTypeURI());
+      buffer.append('}');
+    }
+    buffer.append(item->getTypeName());
+  }
+}
+
 Item::Ptr SequenceType::TypeMatchesResult::next(DynamicContext *context)
 {
   Item::Ptr item = _parent->next(context);
@@ -984,7 +1023,9 @@ Item::Ptr SequenceType::TypeMatchesResult::next(DynamicContext *context)
     XMLBuffer buf;
     buf.set(X("Sequence does not match type "));
     _seqType->toBuffer(buf);
-    buf.append(X(" - found item of incorrect type ["));
+    buf.append(X(" - found item of type "));
+    itemTypeToBuffer(item, context, buf);
+    buf.append(X(" ["));
     buf.append(_errorCode);
     buf.append(X("]"));
     XQThrow(XPath2TypeMatchException, X("SequenceType::MatchesResult::next"), buf.getRawBuffer());

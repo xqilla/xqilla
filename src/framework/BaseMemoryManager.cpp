@@ -238,6 +238,11 @@ const XMLCh *BaseMemoryManager::getPooledString(const XMLCh *src)
   return fStringPool->getPooledString(src);
 }
 
+const XMLCh *BaseMemoryManager::getPooledString(const XMLCh *src, unsigned int length)
+{
+  return fStringPool->getPooledString(src, length);
+}
+
 const XMLCh *BaseMemoryManager::getPooledString(const char *src)
 {
   return fStringPool->getPooledString(src);

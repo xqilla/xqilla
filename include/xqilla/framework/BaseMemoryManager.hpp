@@ -50,6 +50,7 @@ public:
   
   /** Returns a copy of the given string */
   virtual const XMLCh* getPooledString(const XMLCh *src);
+  virtual const XMLCh* getPooledString(const XMLCh *src, unsigned int length);
   /** Returns a copy of the transcoding of the given string */
   virtual const XMLCh* getPooledString(const char *src);
 

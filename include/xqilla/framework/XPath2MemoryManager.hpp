@@ -45,6 +45,7 @@ public:
   
   /** Returns a copy of the given string */ 
   virtual const XMLCh* getPooledString(const XMLCh *src) = 0;
+  virtual const XMLCh* getPooledString(const XMLCh *src, unsigned int length) = 0;
   virtual const XMLCh* getPooledString(const char *src) = 0;
 
   // from MemoryManager

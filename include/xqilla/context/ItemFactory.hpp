@@ -37,7 +37,6 @@
 #include <xqilla/items/ATStringOrDerived.hpp>
 #include <xqilla/items/ATTimeOrDerived.hpp>
 #include <xqilla/items/ATUntypedAtomic.hpp>
-#include <xqilla/items/Node.hpp>
 
 #include <xercesc/util/XMemory.hpp>
 

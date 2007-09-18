@@ -39,6 +39,7 @@
 #include <xqilla/functions/FunctionLookup.hpp>
 #include <xqilla/functions/FunctionConstructor.hpp>
 #include <xqilla/functions/XQUserFunction.hpp>
+#include "../../functions/XQillaFunction.hpp"
 #include <xqilla/dom-api/impl/XQillaNSResolverImpl.hpp>
 #include <xqilla/simple-api/XQillaConfiguration.hpp>
 
@@ -138,6 +139,9 @@ XQContextImpl::XQContextImpl(XQillaConfiguration *conf, XQilla::Language languag
   setNamespaceBinding(XMLChFN, XQFunction::XMLChFunctionURI);
   setNamespaceBinding(XMLChXDT, FunctionConstructor::XMLChXPath2DatatypesURI);
   setNamespaceBinding(XMLChLOCAL, XQUserFunction::XMLChXQueryLocalFunctionsURI);
+
+  // Predefine the namespace for xqilla extension functions
+  setNamespaceBinding(XQillaFunction::XQillaPrefix, XQillaFunction::XMLChFunctionURI);
 }
 
 XQContextImpl::~XQContextImpl()
