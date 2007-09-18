@@ -1389,6 +1389,14 @@ SOURCE=..\..\src\functions\FunctionOneOrMore.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\functions\FunctionParseXML.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\functions\FunctionParseXML.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\functions\FunctionPosition.cpp
 # End Source File
 # Begin Source File
@@ -1538,6 +1546,14 @@ SOURCE=..\..\src\functions\FunctionYearsFromDuration.cpp
 # Begin Source File
 
 SOURCE=..\..\src\functions\FunctionZeroOrOne.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\functions\XQillaFunction.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\functions\XQillaFunction.hpp
 # End Source File
 # Begin Source File
 
@@ -2878,6 +2894,14 @@ SOURCE=..\..\src\schema\AnyAtomicTypeDatatypeValidator.cpp
 # Begin Source File
 
 SOURCE=..\..\src\schema\DocumentCacheImpl.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\schema\FaxppDocumentCacheImpl.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\schema\FaxppDocumentCacheImpl.hpp
 # End Source File
 # Begin Source File
 
