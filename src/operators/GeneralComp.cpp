@@ -30,6 +30,7 @@
 #include <xqilla/context/impl/CodepointCollation.hpp>
 #include <xqilla/ast/XQAtomize.hpp>
 #include <xqilla/context/ContextHelpers.hpp>
+#include <xqilla/exceptions/StaticErrorException.hpp>
 
 /*static*/ const XMLCh GeneralComp::name[]={ XERCES_CPP_NAMESPACE_QUALIFIER chLatin_c, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_m, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_p, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
 
@@ -128,6 +129,12 @@ ASTNode* GeneralComp::staticTyping(StaticContext *context)
   for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
     *i = (*i)->staticTyping(context);
     _src.add((*i)->getStaticAnalysis());
+
+    if((*i)->getStaticAnalysis().isUpdating()) {
+      XQThrow(StaticErrorException,X("GeneralComp::staticTyping"),
+              X("It is a static error for an operand of an operator "
+                "to be an updating expression [err:XUST0001]"));
+    }
 
     if((*i)->isDateOrTimeAndHasNoTimezone(context))
       _src.implicitTimezoneUsed(true);

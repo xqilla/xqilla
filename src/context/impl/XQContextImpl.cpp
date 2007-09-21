@@ -616,6 +616,18 @@ void XQContextImpl::setDefaultURIResolver(URIResolver *resolver, bool adopt)
   _defaultResolver.adopt = adopt;
 }
 
+Node::Ptr XQContextImpl::parseDocument(InputSource &srcToUse, const LocationInfo *location)
+{
+  try {
+    return _docCache->parseDocument(srcToUse, this);
+  }
+  catch(XQException &e) {
+    if(e.getXQueryLine() == 0 && location)
+      e.setXQueryPosition(location);
+    throw;
+  }
+}
+
 Sequence XQContextImpl::resolveDocument(const XMLCh* uri, const LocationInfo *location)
 {
   Sequence result(getMemoryManager());

@@ -300,6 +300,18 @@ void XQDynamicContextImpl::setDefaultURIResolver(URIResolver *resolver, bool ado
   _defaultResolver.adopt = adopt;
 }
 
+Node::Ptr XQDynamicContextImpl::parseDocument(InputSource &srcToUse, const LocationInfo *location)
+{
+  try {
+    return _docCache->parseDocument(srcToUse, this);
+  }
+  catch(XQException &e) {
+    if(e.getXQueryLine() == 0 && location)
+      e.setXQueryPosition(location);
+    throw;
+  }
+}
+
 Sequence XQDynamicContextImpl::resolveDocument(const XMLCh* uri, const LocationInfo *location)
 {
   Sequence result(getMemoryManager());

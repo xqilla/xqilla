@@ -17,9 +17,6 @@
 
 #include <assert.h>
 
-#include <xercesc/util/XMLURL.hpp>
-#include <xercesc/util/XMLResourceIdentifier.hpp>
-#include <xercesc/util/XMLEntityResolver.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 #include <xercesc/util/BinInputStream.hpp>
 #include <xercesc/sax/InputSource.hpp>
@@ -28,6 +25,7 @@
 #include <xqilla/exceptions/XMLParseException.hpp>
 #include <xqilla/items/ATUntypedAtomic.hpp>
 #include <xqilla/context/DynamicContext.hpp>
+#include <xqilla/utils/UTF8Str.hpp>
 
 XERCES_CPP_NAMESPACE_USE;
 
@@ -64,18 +62,25 @@ Node::Ptr FaxppDocumentCacheImpl::parseDocument(InputSource &srcToUse, DynamicCo
   validator_.setNextEventHandler(builder);
   events_ = &validator_;
 
-  // TBD Force use of encoding set on InputSource (this is done by FunctionParseXML) - jpcs
-
   BinInputStream *stream = srcToUse.makeStream();
   if(stream == NULL)
     XQThrow2(XMLParseException, X("FaxppDocumentCacheImpl::loadDocument"), X("Document not found"));
   Janitor<BinInputStream> janStream(stream);
 
   FAXPP_Error err = FAXPP_init_parse_callback(parser_, binInputStreamReadCallback, stream);
-  if(err == UNSUPPORTED_ENCODING)
-    XQThrow2(XMLParseException, X("FaxppDocumentCacheImpl::loadDocument"), X("Unsupported encoding"));
   if(err == OUT_OF_MEMORY)
     XQThrow2(XMLParseException, X("FaxppDocumentCacheImpl::loadDocument"), X("Out of memory"));
+
+  // Force use of encoding set on InputSource (this is done by FunctionParseXML)
+  if(srcToUse.getEncoding()) {
+    FAXPP_DecodeFunction decode = FAXPP_string_to_decode(UTF8(srcToUse.getEncoding()));
+    if(decode == 0) err = UNSUPPORTED_ENCODING;
+    FAXPP_set_decode(parser_, decode);
+  }
+
+  if(err == UNSUPPORTED_ENCODING) {
+    XQThrow2(XMLParseException, X("FaxppDocumentCacheImpl::loadDocument"), X("Unsupported encoding"));
+  }
 
   unsigned int i;
   FAXPP_Attribute *attr;

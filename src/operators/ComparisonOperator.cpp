@@ -28,6 +28,7 @@
 #include <xqilla/ast/XQTreatAs.hpp>
 #include <xqilla/schema/SequenceType.hpp>
 #include <xqilla/ast/ConvertFunctionArg.hpp>
+#include <xqilla/exceptions/StaticErrorException.hpp>
 
 #if defined(XERCES_HAS_CPP_NAMESPACE)
 XERCES_CPP_NAMESPACE_USE
@@ -80,6 +81,12 @@ ASTNode* ComparisonOperator::staticTyping(StaticContext *context)
   for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
     *i = (*i)->staticTyping(context);
     _src.add((*i)->getStaticAnalysis());
+
+    if((*i)->getStaticAnalysis().isUpdating()) {
+      XQThrow(StaticErrorException,X("ComparisonOperator::staticTyping"),
+              X("It is a static error for an operand of an operator "
+                "to be an updating expression [err:XUST0001]"));
+    }
 
     if((*i)->isDateOrTimeAndHasNoTimezone(context))
       _src.implicitTimezoneUsed(true);

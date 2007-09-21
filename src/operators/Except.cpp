@@ -22,6 +22,7 @@
 #include <xqilla/ast/XQDocumentOrder.hpp>
 #include <xqilla/ast/XQTreatAs.hpp>
 #include <xqilla/schema/SequenceType.hpp>
+#include <xqilla/exceptions/StaticErrorException.hpp>
 
 /*static*/ const XMLCh Except::name[]={ XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_x, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_c, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_p, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
 
@@ -64,8 +65,20 @@ ASTNode* Except::staticTyping(StaticContext *context)
   _args[0] = _args[0]->staticTyping(context);
   _src.copy(_args[0]->getStaticAnalysis());
 
+  if(_args[0]->getStaticAnalysis().isUpdating()) {
+    XQThrow(StaticErrorException,X("Except::staticTyping"),
+            X("It is a static error for an operand of an operator "
+              "to be an updating expression [err:XUST0001]"));
+  }
+
   _args[1] = _args[1]->staticTyping(context);
   _src.add(_args[1]->getStaticAnalysis());
+
+  if(_args[1]->getStaticAnalysis().isUpdating()) {
+    XQThrow(StaticErrorException,X("Except::staticTyping"),
+            X("It is a static error for an operand of an operator "
+              "to be an updating expression [err:XUST0001]"));
+  }
 
   return this;
 }

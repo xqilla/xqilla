@@ -22,6 +22,7 @@
 #include <xqilla/ast/XQSequence.hpp>
 #include <xqilla/context/ItemFactory.hpp>
 #include <xqilla/context/ContextHelpers.hpp>
+#include <xqilla/exceptions/StaticErrorException.hpp>
 
 /*static*/ const XMLCh Or::name[]={ XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_r, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
 
@@ -51,8 +52,18 @@ ASTNode* Or::staticTyping(StaticContext *context)
 
   VectorOfASTNodes newArgs(XQillaAllocator<ASTNode*>(context->getMemoryManager()));
 
-  for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
+  VectorOfASTNodes::iterator i;
+  for(i = _args.begin(); i != _args.end(); ++i) {
     *i = (*i)->staticTyping(context);
+
+    if((*i)->getStaticAnalysis().isUpdating()) {
+      XQThrow(StaticErrorException,X("Or::staticTyping"),
+              X("It is a static error for an operand of an operator "
+                "to be an updating expression [err:XUST0001]"));
+    }
+  }
+
+  for(i = _args.begin(); i != _args.end(); ++i) {
     const StaticAnalysis &valueSrc = (*i)->getStaticAnalysis();
 
     if(valueSrc.isUsed()) {

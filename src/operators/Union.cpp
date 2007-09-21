@@ -23,6 +23,7 @@
 #include <xqilla/ast/XQDocumentOrder.hpp>
 #include <xqilla/ast/XQTreatAs.hpp>
 #include <xqilla/schema/SequenceType.hpp>
+#include <xqilla/exceptions/StaticErrorException.hpp>
 
 /*static*/ const XMLCh Union::name[]={ XERCES_CPP_NAMESPACE_QUALIFIER chLatin_u, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_i, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
 
@@ -65,9 +66,21 @@ ASTNode* Union::staticTyping(StaticContext *context)
   _src.add(_args[0]->getStaticAnalysis());
   _src.getStaticType() = _args[0]->getStaticAnalysis().getStaticType();
 
+  if(_args[0]->getStaticAnalysis().isUpdating()) {
+    XQThrow(StaticErrorException,X("Union::staticTyping"),
+            X("It is a static error for an operand of an operator "
+              "to be an updating expression [err:XUST0001]"));
+  }
+
   _args[1] = _args[1]->staticTyping(context);
   _src.add(_args[1]->getStaticAnalysis());
   _src.getStaticType().typeUnion(_args[1]->getStaticAnalysis().getStaticType());
+
+  if(_args[1]->getStaticAnalysis().isUpdating()) {
+    XQThrow(StaticErrorException,X("Union::staticTyping"),
+            X("It is a static error for an operand of an operator "
+              "to be an updating expression [err:XUST0001]"));
+  }
 
   return this;
 }

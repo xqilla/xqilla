@@ -21,6 +21,7 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/exceptions/IllegalArgumentException.hpp>
 #include <xqilla/exceptions/XPath2TypeMatchException.hpp>
+#include <xqilla/exceptions/StaticErrorException.hpp>
 #include <xercesc/framework/XMLBuffer.hpp>
 #include <xqilla/ast/XQTreatAs.hpp>
 
@@ -99,6 +100,12 @@ void XQGlobalVariable::staticTyping(StaticContext* context)
   if(m_Value != NULL) {
     m_Value = m_Value->staticTyping(context);
     _src.copy(m_Value->getStaticAnalysis());
+
+    if(m_Value->getStaticAnalysis().isUpdating()) {
+      XQThrow(StaticErrorException,X("XQGlobalVariable::staticTyping"),
+              X("It is a static error for the initializing expression of a global variable "
+                "to be an updating expression [err:XUST0001]"));
+    }
   }
   else {
     if(m_Type->getItemType() != NULL) {
