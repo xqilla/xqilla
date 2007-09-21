@@ -92,11 +92,14 @@ public:
   /** Sets the default URIResolver */
   virtual void setDefaultURIResolver(URIResolver *resolver, bool adopt) = 0;
 
-  /* Resolve the given uri (and baseUri) to a DOMDocument. If the uri
-     is relative, the base uri is obtained from the context. */
+  /** Parse an XML document from the provided InputSource */
+  virtual Node::Ptr parseDocument(XERCES_CPP_NAMESPACE_QUALIFIER InputSource &srcToUse,
+                                  const LocationInfo *location) = 0;
+  /** Resolve the given uri (and baseUri) to an XML document. If the uri
+      is relative, the base uri is obtained from the context. */
   virtual Sequence resolveDocument(const XMLCh* uri, const LocationInfo *location) = 0;
-  /* Resolve the given uri (and baseUri) to a ist of DOMNode objects. If the uri
-     is relative, the base uri is obtained from the context. */
+  /** Resolve the given uri (and baseUri) to a sequence of Node objects. If the uri
+      is relative, the base uri is obtained from the context. */
   virtual Sequence resolveCollection(const XMLCh* uri, const LocationInfo *location) = 0;
   virtual Sequence resolveDefaultCollection() = 0;
 

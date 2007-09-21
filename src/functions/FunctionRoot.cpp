@@ -20,6 +20,7 @@
 #include <xqilla/runtime/Sequence.hpp>
 #include <xqilla/items/Node.hpp>
 #include <xqilla/ast/StaticAnalysis.hpp>
+#include <xqilla/exceptions/StaticErrorException.hpp>
 
 const XMLCh FunctionRoot::name[] = {
   XERCES_CPP_NAMESPACE_QUALIFIER chLatin_r, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, 
@@ -66,6 +67,12 @@ ASTNode *FunctionRoot::staticTyping(StaticContext *context)
   else {
     _args[0] = _args[0]->staticTyping(context);
     _src.add(_args[0]->getStaticAnalysis());
+
+    if(_args[0]->getStaticAnalysis().isUpdating()) {
+      XQThrow(StaticErrorException,X("FunctionRoot::staticTyping"),
+              X("It is a static error for an argument to a function "
+                "to be an updating expression [err:XUST0001]"));
+    }
 
     if(_args[0]->getStaticAnalysis().getStaticType().isType(StaticType::DOCUMENT_TYPE)) {
       return _args[0];

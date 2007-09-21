@@ -25,6 +25,7 @@
 #include <xqilla/ast/XQTreatAs.hpp>
 #include <xqilla/schema/SequenceType.hpp>
 #include <xqilla/ast/ConvertFunctionArg.hpp>
+#include <xqilla/exceptions/StaticErrorException.hpp>
 
 #include <xercesc/framework/XMLBuffer.hpp>
 
@@ -84,6 +85,12 @@ ASTNode* ArithmeticOperator::staticTyping(StaticContext *context)
   bool emptyArgument = false;
   for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
     *i = (*i)->staticTyping(context);
+
+    if((*i)->getStaticAnalysis().isUpdating()) {
+      XQThrow(StaticErrorException,X("ArithmeticOperator::staticTyping"),
+              X("It is a static error for an operand of an operator "
+                "to be an updating expression [err:XUST0001]"));
+    }
 
     if((*i)->getStaticAnalysis().getStaticType().flags == 0)
       emptyArgument = true;

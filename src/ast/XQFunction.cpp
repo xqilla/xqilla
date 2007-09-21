@@ -21,6 +21,7 @@
 #include <xqilla/items/ATUntypedAtomic.hpp>
 #include <xqilla/functions/FunctionConstructor.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
+#include <xqilla/exceptions/StaticErrorException.hpp>
 
 #include <xercesc/util/XMLString.hpp>
 #include <xercesc/util/XMLUniDefs.hpp>
@@ -155,6 +156,12 @@ ASTNode *XQFunction::calculateSRCForArguments(StaticContext *context, bool check
   for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
     *i = (*i)->staticTyping(context);
     _src.add((*i)->getStaticAnalysis());
+
+    if((*i)->getStaticAnalysis().isUpdating()) {
+      XQThrow(StaticErrorException,X("XQFunction::staticTyping"),
+              X("It is a static error for an argument to a function "
+                "to be an updating expression [err:XUST0001]"));
+    }
 
     if(checkTimezone && (*i)->isDateOrTimeAndHasNoTimezone(context))
       _src.implicitTimezoneUsed(true);

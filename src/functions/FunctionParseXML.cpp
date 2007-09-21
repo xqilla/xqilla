@@ -62,8 +62,7 @@ Sequence FunctionParseXML::createSequence(DynamicContext* context, int flags) co
   src.setEncoding(XMLUni::fgUTF16EncodingString);
 
   try {
-    return Sequence(const_cast<DocumentCache*>(context->getDocumentCache())->parseDocument(src, context),
-                    context->getMemoryManager());
+    return Sequence(context->parseDocument(src, this), context->getMemoryManager());
   }
   catch(XMLParseException &e) {
     XQThrow(FunctionException, X("FunctionParseXML::createSequence"), e.getError());

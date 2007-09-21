@@ -117,34 +117,16 @@ public:
   /** Set the implicit timezone */
   virtual void setImplicitTimezone(const ATDurationOrDerived::Ptr &timezoneAsDuration);
 
-  /**
-     Register a callback object for resolving URIs. Multiple URIResolver
-     objects can be registered with the DynamicContext at the same time.
-     The most recently added URIResolver will be called first, and if it
-     returns NULL, subsequent ones will be called - ending in a call to
-     the fallback routines.
-
-     If "adopt" is false, the DynamicContext will not
-     adopt this object, making the user responsible for making sure that the
-     URIResolver object's lifespan matches or exceeds the life of the
-     DynamicContext.
-  */
   virtual void registerURIResolver(URIResolver *resolver, bool adopt);
-  /** Returns the default URIResolver */
   virtual URIResolver *getDefaultURIResolver() const;
-  /** Sets the default URIResolver */
   virtual void setDefaultURIResolver(URIResolver *resolver, bool adopt);
 
-  /* Resolve the given uri (and baseUri) to a DOMDocument. If the uri
-     is relative, the base uri is obtained from the context. */
+  virtual Node::Ptr parseDocument(XERCES_CPP_NAMESPACE_QUALIFIER InputSource &srcToUse,
+                                  const LocationInfo *location);
   virtual Sequence resolveDocument(const XMLCh* uri, const LocationInfo *location);
-  /* Resolve the given uri (and baseUri) to a list of DOMNode objects. If
-     the uri is relative, the base uri is obtained from the context. */
   virtual Sequence resolveCollection(const XMLCh* uri, const LocationInfo *location);
   virtual Sequence resolveDefaultCollection();
 
-  /** Creates a new UpdateFactory, used for performing updates.
-      Caller owns the returned object, and should delete it */
   virtual UpdateFactory *createUpdateFactory() const;
 
   //////////////////////////////////

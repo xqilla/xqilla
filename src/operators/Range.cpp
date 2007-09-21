@@ -23,6 +23,7 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/context/ItemFactory.hpp>
+#include <xqilla/exceptions/StaticErrorException.hpp>
 #include <assert.h>
 
 #if defined(XERCES_HAS_CPP_NAMESPACE)
@@ -63,6 +64,12 @@ ASTNode* Range::staticTyping(StaticContext *context)
   for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
     *i = (*i)->staticTyping(context);
     _src.add((*i)->getStaticAnalysis());
+
+    if((*i)->getStaticAnalysis().isUpdating()) {
+      XQThrow(StaticErrorException,X("Range::staticTyping"),
+              X("It is a static error for an operand of an operator "
+                "to be an updating expression [err:XUST0001]"));
+    }
 
     if((*i)->isDateOrTimeAndHasNoTimezone(context))
       _src.implicitTimezoneUsed(true);

@@ -15,6 +15,7 @@
 
 #include <xqilla/ast/XQAtomize.hpp>
 #include <xqilla/items/Node.hpp>
+#include <xqilla/exceptions/StaticErrorException.hpp>
 
 XQAtomize::XQAtomize(ASTNode* expr, XPath2MemoryManager* memMgr)
   : ASTNodeImpl(memMgr),
@@ -36,6 +37,12 @@ ASTNode *XQAtomize::staticTyping(StaticContext *context)
   expr_ = expr_->staticTyping(context);
   _src.getStaticType() = expr_->getStaticAnalysis().getStaticType();
   _src.add(expr_->getStaticAnalysis());
+
+  if(expr_->getStaticAnalysis().isUpdating()) {
+    XQThrow(StaticErrorException,X("XQAtomize::staticTyping"),
+            X("It is a static error for an atomized expression "
+              "to be an updating expression [err:XUST0001]"));
+  }
 
   if(!_src.getStaticType().containsType(StaticType::NODE_TYPE)) {
     // If the expression has no nodes, this function does nothing
