@@ -601,13 +601,13 @@ void XQLexer::undoLessThan()
 
 <INITIAL>{NotNumber} {
   std::ostringstream oss;
-  oss << "Invalid literal found: " << UTF8(yytext);
+  oss << "Invalid literal found: " << UTF8((XMLCh*)yytext);
   return error(oss.str().c_str());
 }
 
 <*>[\x0000-\xFFFF] { 
   std::ostringstream oss;
-  oss << "Unrecognized character '" << UTF8(yytext) << "' (" << yytext[0] << ")";
+  oss << "Unrecognized character '" << UTF8((XMLCh*)yytext) << "' (" << yytext[0] << ")";
   return error(oss.str().c_str());
 }
 

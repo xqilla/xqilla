@@ -198,8 +198,6 @@ private:
   void resizeAttributes();
   void resizeNamespaces();
 
-  void checkTextBuffer();
-
   XERCES_CPP_NAMESPACE_QUALIFIER ValueStackOf<unsigned int> elementStack_;
   unsigned int prevNode_;
 

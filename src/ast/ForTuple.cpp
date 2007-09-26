@@ -87,7 +87,8 @@ TupleNode *ForTuple::staticTypingSetup(StaticContext *context)
   // Declare the variable binding
   varSrc_.getStaticType() = expr_->getStaticAnalysis().getStaticType();
   varSrc_.setProperties(StaticAnalysis::DOCORDER | StaticAnalysis::GROUPED |
-                        StaticAnalysis::PEER | StaticAnalysis::SUBTREE | StaticAnalysis::ONENODE);
+                        StaticAnalysis::PEER | StaticAnalysis::SUBTREE | StaticAnalysis::SAMEDOC |
+                        StaticAnalysis::ONENODE | StaticAnalysis::SELF);
   varStore->declareVar(varURI_, varName_, varSrc_);
 
   if(posName_) {

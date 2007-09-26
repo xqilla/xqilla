@@ -827,12 +827,12 @@ void XercesUpdateFactory::completeUpdate(DynamicContext *context)
   for(PutList::iterator i = putList_.begin(); i != putList_.end(); ++i) {
     try {
       writer->setEncoding(i->encoding);
-	  const XMLCh *path = i->uri.getPath();
-	  //Get rid of the leading / if it is a Windows path.
-	  int colonIdx = XMLString::indexOf(path, chColon);
-	  if(path && colonIdx == 2 && XMLString::isAlpha(path[1])){
-		  path++;
-	  }
+      const XMLCh *path = i->uri.getPath();
+      //Get rid of the leading / if it is a Windows path.
+      int colonIdx = XMLString::indexOf(path, chColon);
+      if(path && colonIdx == 2 && XMLString::isAlpha(path[1])){
+        path++;
+      }
       LocalFileFormatTarget target(path);
 
       if(!writer->writeNode(&target, *i->node)) {
