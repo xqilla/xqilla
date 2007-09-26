@@ -108,6 +108,26 @@ FastXDMDocument::Namespace *FastXDMDocument::getNamespace(unsigned int i)
   return namespaces_ + i;
 }
 
+#define checkTextBuffer() \
+{ \
+  if(textToCreate_) { \
+    if(numNodes_ == 0 || !textBuffer_.isEmpty()) { \
+      if(numNodes_ == maxNodes_) resizeNodes(); \
+\
+      nodes_[numNodes_].setText(elementStack_.size(), mm_->getPooledString(textBuffer_.getRawBuffer())); \
+\
+      if(prevNode_ != (unsigned int)-1) \
+        getNode(prevNode_)->nextSibling.index = numNodes_; \
+\
+      prevNode_ = numNodes_; \
+      ++numNodes_; \
+    } \
+\
+    textBuffer_.reset(); \
+    textToCreate_ = false; \
+  } \
+}
+
 void FastXDMDocument::startDocumentEvent(const XMLCh *documentURI, const XMLCh *encoding)
 {
   elementStack_.removeAllElements();
@@ -234,26 +254,6 @@ void FastXDMDocument::textEvent(const XMLCh *chars, unsigned int length)
 {
   textBuffer_.append(chars, length);
   textToCreate_ = true;
-}
-
-void FastXDMDocument::checkTextBuffer()
-{
-  if(textToCreate_) {
-    if(numNodes_ == 0 || !textBuffer_.isEmpty()) {
-      if(numNodes_ == maxNodes_) resizeNodes();
-
-      nodes_[numNodes_].setText(elementStack_.size(), mm_->getPooledString(textBuffer_.getRawBuffer()));
-
-      if(prevNode_ != (unsigned int)-1)
-        getNode(prevNode_)->nextSibling.index = numNodes_;
-
-      prevNode_ = numNodes_;
-      ++numNodes_;
-    }
-
-    textBuffer_.reset();
-    textToCreate_ = false;
-  }
 }
 
 void FastXDMDocument::commentEvent(const XMLCh *value)
