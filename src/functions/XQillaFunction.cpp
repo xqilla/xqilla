@@ -12,7 +12,7 @@
  */
 
 #include "../config/xqilla_config.h"
-#include "XQillaFunction.hpp"
+#include <xqilla/functions/XQillaFunction.hpp>
 
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 

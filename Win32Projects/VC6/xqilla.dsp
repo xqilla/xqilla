@@ -1393,10 +1393,6 @@ SOURCE=..\..\src\functions\FunctionParseXML.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\functions\FunctionParseXML.hpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\functions\FunctionPosition.cpp
 # End Source File
 # Begin Source File
@@ -1550,10 +1546,6 @@ SOURCE=..\..\src\functions\FunctionZeroOrOne.cpp
 # Begin Source File
 
 SOURCE=..\..\src\functions\XQillaFunction.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\functions\XQillaFunction.hpp
 # End Source File
 # Begin Source File
 
@@ -1869,6 +1861,10 @@ SOURCE=..\..\include\xqilla\functions\FunctionOneOrMore.hpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\include\xqilla\functions\FunctionParseXML.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\include\xqilla\functions\FunctionPosition.hpp
 # End Source File
 # Begin Source File
@@ -2018,6 +2014,10 @@ SOURCE=..\..\include\xqilla\functions\FunctionYearsFromDuration.hpp
 # Begin Source File
 
 SOURCE=..\..\include\xqilla\functions\FunctionZeroOrOne.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\functions\XQillaFunction.hpp
 # End Source File
 # Begin Source File
 

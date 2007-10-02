@@ -315,7 +315,7 @@ const ExternalFunction *FunctionLookup::lookUpGlobalExternalFunction(
 // Updates
 #include <xqilla/update/FunctionPut.hpp>
 // XQilla extension functions
-#include "FunctionParseXML.hpp"
+#include <xqilla/functions/FunctionParseXML.hpp>
 
 void FunctionLookup::insertUpdateFunctions(XPath2MemoryManager *memMgr)
 {

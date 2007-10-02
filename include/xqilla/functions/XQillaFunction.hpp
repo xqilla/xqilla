@@ -16,7 +16,7 @@
 
 #include <xqilla/ast/ConstantFoldingFunction.hpp>
 
-class XQillaFunction : public ConstantFoldingFunction
+class XQILLA_API XQillaFunction : public ConstantFoldingFunction
 {
 public:
   static const XMLCh XQillaPrefix[];

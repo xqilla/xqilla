@@ -39,7 +39,7 @@
 #include <xqilla/functions/FunctionLookup.hpp>
 #include <xqilla/functions/FunctionConstructor.hpp>
 #include <xqilla/functions/XQUserFunction.hpp>
-#include "../../functions/XQillaFunction.hpp"
+#include <xqilla/functions/XQillaFunction.hpp>
 #include <xqilla/dom-api/impl/XQillaNSResolverImpl.hpp>
 #include <xqilla/simple-api/XQillaConfiguration.hpp>
 

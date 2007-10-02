@@ -1455,10 +1455,10 @@ string PrintAST::printUTransform(const UTransform *item, const DynamicContext *c
 
   s << in << "<UTransform>" << endl;
   for(VectorOfCopyBinding::const_iterator i = bindings->begin(); i != bindings->end(); ++i) {
-	  s << in << "<Copy name=\"" << UTF8((*i)->qname_);
+	  s << in << "  <Copy name=\"" << UTF8((*i)->qname_);
 	  s << "\">" << endl;
-	  s << printASTNode((*i)->expr_, context, indent + INDENT);
-	  s << in << "</Copy>" << endl;
+	  s << printASTNode((*i)->expr_, context, indent + INDENT + INDENT);
+	  s << in << "  </Copy>" << endl;
   }
   s << printASTNode(item->getModifyExpr(), context, indent + INDENT);
   s << printASTNode(item->getReturnExpr(), context, indent + INDENT);

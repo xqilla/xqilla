@@ -134,9 +134,7 @@ src/exceptions/InvalidLexicalSpaceException.hpp \
 src/exceptions/MiscException.hpp \
 src/functions/ExternalFunction.cpp \
 src/functions/XQillaFunction.cpp \
-src/functions/XQillaFunction.hpp \
 src/functions/FunctionParseXML.cpp \
-src/functions/FunctionParseXML.hpp \
 src/functions/FuncFactory.cpp \
 src/functions/FuncFactoryTemplate.hpp \
 src/functions/FunctionLookup.cpp \

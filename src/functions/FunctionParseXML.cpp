@@ -12,7 +12,7 @@
  */
 
 #include "../config/xqilla_config.h"
-#include "FunctionParseXML.hpp"
+#include <xqilla/functions/FunctionParseXML.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/exceptions/FunctionException.hpp>
 #include <xqilla/exceptions/XMLParseException.hpp>

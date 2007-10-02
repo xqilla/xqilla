@@ -219,7 +219,6 @@ src/functions/FunctionNot.cpp	lib
 src/functions/FunctionNumber.cpp	lib
 src/functions/FunctionOneOrMore.cpp	lib
 src/functions/FunctionParseXML.cpp lib
-src/functions/FunctionParseXML.hpp lib
 src/functions/FunctionPosition.cpp	lib
 src/functions/FunctionPrefixFromQName.cpp	lib
 src/functions/FunctionQName.cpp	lib
@@ -259,7 +258,6 @@ src/functions/FunctionYearFromDateTime.cpp	lib
 src/functions/FunctionYearsFromDuration.cpp	lib
 src/functions/FunctionZeroOrOne.cpp	lib
 src/functions/XQillaFunction.cpp lib
-src/functions/XQillaFunction.hpp lib
 src/functions/XQUserFunction.cpp	lib
 src/items/ATDurationOrDerived.cpp	lib
 src/items/ATQNameConstructor.cpp	lib
@@ -644,6 +642,7 @@ include/xqilla/functions/FunctionNormalizeUnicode.hpp	lib
 include/xqilla/functions/FunctionNot.hpp	lib
 include/xqilla/functions/FunctionNumber.hpp	lib
 include/xqilla/functions/FunctionOneOrMore.hpp	lib
+include/xqilla/functions/FunctionParseXML.hpp lib
 include/xqilla/functions/FunctionPosition.hpp	lib
 include/xqilla/functions/FunctionPrefixFromQName.hpp	lib
 include/xqilla/functions/FunctionQName.hpp	lib
@@ -682,6 +681,7 @@ include/xqilla/functions/FunctionYearFromDate.hpp	lib
 include/xqilla/functions/FunctionYearFromDateTime.hpp	lib
 include/xqilla/functions/FunctionYearsFromDuration.hpp	lib
 include/xqilla/functions/FunctionZeroOrOne.hpp	lib
+include/xqilla/functions/XQillaFunction.hpp lib
 include/xqilla/functions/XQUserFunction.hpp	lib
 include/xqilla/fulltext/AllMatches.hpp	lib
 include/xqilla/fulltext/DefaultTokenizer.hpp	lib
