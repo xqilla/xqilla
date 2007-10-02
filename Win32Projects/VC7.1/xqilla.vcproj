@@ -1390,9 +1390,6 @@
 				RelativePath="..\..\src\functions\FunctionParseXML.cpp">
 			</File>
 			<File
-				RelativePath="..\..\src\functions\FunctionParseXML.hpp">
-			</File>
-			<File
 				RelativePath="..\..\src\functions\FunctionPosition.cpp">
 			</File>
 			<File
@@ -1508,9 +1505,6 @@
 			</File>
 			<File
 				RelativePath="..\..\src\functions\XQillaFunction.cpp">
-			</File>
-			<File
-				RelativePath="..\..\src\functions\XQillaFunction.hpp">
 			</File>
 			<File
 				RelativePath="..\..\src\functions\XQUserFunction.cpp">
@@ -1747,6 +1741,9 @@
 				RelativePath="..\..\include\xqilla\functions\FunctionOneOrMore.hpp">
 			</File>
 			<File
+				RelativePath="..\..\include\xqilla\functions\FunctionParseXML.hpp">
+			</File>
+			<File
 				RelativePath="..\..\include\xqilla\functions\FunctionPosition.hpp">
 			</File>
 			<File
@@ -1859,6 +1856,9 @@
 			</File>
 			<File
 				RelativePath="..\..\include\xqilla\functions\FunctionZeroOrOne.hpp">
+			</File>
+			<File
+				RelativePath="..\..\include\xqilla\functions\XQillaFunction.hpp">
 			</File>
 			<File
 				RelativePath="..\..\include\xqilla\functions\XQUserFunction.hpp">

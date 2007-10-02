@@ -16,7 +16,7 @@
 
 #include "XQillaFunction.hpp"
 
-class FunctionParseXML : public XQillaFunction
+class XQILLA_API FunctionParseXML : public XQillaFunction
 {
 public:
   static const XMLCh name[];

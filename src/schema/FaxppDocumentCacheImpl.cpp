@@ -98,6 +98,7 @@ Node::Ptr FaxppDocumentCacheImpl::parseDocument(InputSource &srcToUse, DynamicCo
     const FAXPP_Event *event = FAXPP_get_current_event(parser_);
     switch(event->type) {
     case START_DOCUMENT_EVENT:
+      // TBD Get encoding from parser if not specified in document - jpcs
       events_->startDocumentEvent(srcToUse.getSystemId(), nullTerm(event->encoding, mm));
       break;
     case END_DOCUMENT_EVENT:

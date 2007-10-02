@@ -196,6 +196,7 @@ xqilla/functions/FunctionNormalizeUnicode.hpp \
 xqilla/functions/FunctionNot.hpp \
 xqilla/functions/FunctionNumber.hpp \
 xqilla/functions/FunctionOneOrMore.hpp \
+xqilla/functions/FunctionParseXML.hpp \
 xqilla/functions/FunctionPosition.hpp \
 xqilla/functions/FunctionPrefixFromQName.hpp \
 xqilla/functions/FunctionQName.hpp \
@@ -236,6 +237,7 @@ xqilla/functions/FunctionYearsFromDuration.hpp \
 xqilla/functions/FunctionZeroOrOne.hpp \
 xqilla/functions/FuncFactory.hpp \
 xqilla/functions/XQUserFunction.hpp \
+xqilla/functions/XQillaFunction.hpp \
 xqilla/items/ATAnySimpleType.hpp \
 xqilla/items/ATAnyURIOrDerived.hpp \
 xqilla/items/ATBase64BinaryOrDerived.hpp \

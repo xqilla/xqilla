@@ -22,11 +22,13 @@
 #include <xercesc/util/XMLString.hpp>
 #include <xercesc/util/XMLUri.hpp>
 
+XERCES_CPP_NAMESPACE_USE;
+
 const XMLCh FunctionResolveURI::name[] = {
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_r, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_s, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_l, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_v, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, XERCES_CPP_NAMESPACE_QUALIFIER chDash,    XERCES_CPP_NAMESPACE_QUALIFIER chLatin_u, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_r, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_i, XERCES_CPP_NAMESPACE_QUALIFIER chNull 
+  chLatin_r, chLatin_e, chLatin_s, 
+  chLatin_o, chLatin_l, chLatin_v, 
+  chLatin_e, chDash,    chLatin_u, 
+  chLatin_r, chLatin_i, chNull 
 };
 const unsigned int FunctionResolveURI::minArgs = 1;
 const unsigned int FunctionResolveURI::maxArgs = 2;
@@ -61,60 +63,55 @@ ASTNode *FunctionResolveURI::staticTyping(StaticContext *context)
 
 Sequence FunctionResolveURI::createSequence(DynamicContext* context, int flags) const
 {
-  XPath2MemoryManager* memMgr = context->getMemoryManager();
-  Sequence relativeSeq = getParamNumber(1, context)->toSequence(context);
-  if(relativeSeq.isEmpty())
-    return Sequence(memMgr);
+  XPath2MemoryManager *memMgr = context->getMemoryManager();
 
-  const XMLCh* relativeURI = relativeSeq.first()->asString(context);
+  Item::Ptr relative = getParamNumber(1, context)->next(context);
+  if(relative.isNull()) return Sequence(memMgr);
+
+  const XMLCh *relativeURI = relative->asString(context);
   try {
-    if(XERCES_CPP_NAMESPACE_QUALIFIER XMLUri::isValidURI(false, relativeURI))
+    if(XMLUri::isValidURI(false, relativeURI))
       return Sequence(context->getItemFactory()->createAnyURI(relativeURI, context), memMgr); 
-  } catch(InvalidLexicalSpaceException &e){
+  }
+  catch(InvalidLexicalSpaceException &e){
     XQThrow(FunctionException, X("FunctionResolveURI::createSequence"), X("Invalid argument to resolve-uri [err:FORG0002]"));
   }
 
   try {
-
-    const XMLCh* baseURI;
-    if (getNumArgs() == 1) 
-    {
+    const XMLCh *baseURI;
+    if(getNumArgs() == 1) {
       baseURI = baseURI_;
-      if (!baseURI)
+      if(!baseURI)
         XQThrow(FunctionException, X("FunctionResolveURI::createSequence"),
                 X("Base uri undefined in the static context [err:FONS0005]"));
     }
-    else 
-    {
-      Sequence baseSeq = getParamNumber(2, context)->toSequence(context);
-      baseURI = baseSeq.first()->asString(context);
+    else {
+      baseURI = getParamNumber(2, context)->next(context)->asString(context);
     }
 
-    if(!XERCES_CPP_NAMESPACE_QUALIFIER XMLUri::isValidURI(true, relativeURI))
+    if(!XMLUri::isValidURI(true, relativeURI))
       XQThrow(FunctionException, X("FunctionResolveURI::createSequence"),
               X("Invalid relative uri argument to resolve-uri [err:FORG0002]"));
-    if(!XERCES_CPP_NAMESPACE_QUALIFIER XMLUri::isValidURI(false, baseURI))
+    if(!XMLUri::isValidURI(false, baseURI))
       XQThrow(FunctionException, X("FunctionResolveURI::createSequence"),
               X("Invalid base-uri argument to resolve-uri [err:FORG0002]"));
   
     try {
-      XERCES_CPP_NAMESPACE_QUALIFIER XMLUri base(baseURI);
+      XMLUri base(baseURI);
+      XMLUri full(&base, relativeURI);
 
-      XERCES_CPP_NAMESPACE_QUALIFIER XMLUri full(&base, relativeURI);
-
-      const XMLCh* fullURI = getMemoryManager()->getPooledString(full.getUriText());    
-      return Sequence(context->getItemFactory()->createAnyURI(fullURI, context), memMgr); 
-
-    } catch(InvalidLexicalSpaceException &e){
+      return Sequence(context->getItemFactory()->createAnyURI(full.getUriText(), context), memMgr); 
+    }
+    catch(InvalidLexicalSpaceException &e){
       XQThrow(FunctionException, X("FunctionResolveURI::createSequence"), X("Invalid argument to resolve-uri [err:FORG0002]"));
     }
 
-  } catch(XERCES_CPP_NAMESPACE_QUALIFIER XMLException &e) {
+  }
+  catch(XMLException &e) {
     //if can't build, assume its cause there was a relative URI given
     XQThrow(FunctionException, X("FunctionResolveURI::createSequence"), X("Relative URI base argument to resolve-uri [err:FORG0009]"));
   }
   
   //should not get here
   assert(0);
-
 }
