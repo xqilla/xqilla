@@ -153,7 +153,7 @@ const XMLCh* XPath2Utils::deleteData( const XMLCh* const target, unsigned int of
 
   unsigned int targetSize = XMLString::stringLen(target); 
   unsigned int newSize =  targetSize - count;
-  AutoDelete<XMLCh> stringGuard(new XMLCh [newSize + 1]);
+  AutoDeleteArray<XMLCh> stringGuard(new XMLCh [newSize + 1]);
   XMLCh *newString = stringGuard;
 
   XMLString::copyNString(newString, target, offset);// * sizeof(XMLCh));

@@ -12,11 +12,13 @@
  */
 
 #include "NoInheritFilter.hpp"
+#include <xqilla/framework/XPath2MemoryManager.hpp>
 
 XERCES_CPP_NAMESPACE_USE;
 
-NoInheritFilter::NoInheritFilter(EventHandler *next, MemoryManager *mm)
+NoInheritFilter::NoInheritFilter(EventHandler *next, XPath2MemoryManager *mm)
   : EventFilter(next),
+    mm_(mm),
     prefixes_(7, mm),
     prefixes2_(7, mm),
     level_(0),
@@ -68,11 +70,11 @@ void NoInheritFilter::startElementEvent(const XMLCh *prefix, const XMLCh *uri, c
   next_->startElementEvent(prefix, uri, localname);
 
   if(level_ == 1 && uri != 0) {
-    prefixes_.put((void*)prefix, 0);
+    prefixes_.put((void*)mm_->getPooledString(prefix), 0);
   }
   else if(level_ == 2) {
     prefixes2_.removeAll();
-    prefixes2_.put((void*)prefix, 0);
+    prefixes2_.put((void*)mm_->getPooledString(prefix), 0);
 
     elementStarted_ = true;
   }
@@ -121,10 +123,10 @@ void NoInheritFilter::attributeEvent(const XMLCh *prefix, const XMLCh *uri, cons
   next_->attributeEvent(prefix, uri, localname, value, typeURI, typeName);
 
   if(level_ == 1 && uri != 0) {
-    prefixes_.put((void*)prefix, 0);
+    prefixes_.put((void*)mm_->getPooledString(prefix), 0);
   }
   else if(level_ == 2 && uri != 0) {
-    prefixes2_.put((void*)prefix, 0);
+    prefixes2_.put((void*)mm_->getPooledString(prefix), 0);
   }
 }
 
@@ -133,10 +135,10 @@ void NoInheritFilter::namespaceEvent(const XMLCh *prefix, const XMLCh *uri)
   next_->namespaceEvent(prefix, uri);
 
   if(level_ == 1 && uri != 0) {
-    prefixes_.put((void*)prefix, 0);
+    prefixes_.put((void*)mm_->getPooledString(prefix), 0);
   }
   else if(level_ == 2) {
-    prefixes2_.put((void*)prefix, 0);
+    prefixes2_.put((void*)mm_->getPooledString(prefix), 0);
   }
 }
 

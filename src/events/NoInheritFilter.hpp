@@ -21,7 +21,7 @@
 class NoInheritFilter : public EventFilter
 {
 public:
-  NoInheritFilter(EventHandler *next, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mm);
+  NoInheritFilter(EventHandler *next, XPath2MemoryManager *mm);
 
   virtual void startDocumentEvent(const XMLCh *documentURI, const XMLCh *encoding);
   virtual void endDocumentEvent();
@@ -40,6 +40,7 @@ public:
 private:
   void checkElementStarted();
 
+  XPath2MemoryManager *mm_;
   XERCES_CPP_NAMESPACE_QUALIFIER RefHashTableOf<int> prefixes_;
   XERCES_CPP_NAMESPACE_QUALIFIER RefHashTableOf<int> prefixes2_;
   unsigned int level_;
