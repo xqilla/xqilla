@@ -32,7 +32,7 @@ XERCES_CPP_NAMESPACE_USE
 #endif
 
 ItemFactoryImpl::ItemFactoryImpl(const DocumentCache* dc, MemoryManager* memMgr)
-  : datatypeLookup_(new DatatypeLookup(dc, memMgr)),
+  : datatypeLookup_(new (memMgr) DatatypeLookup(dc, memMgr)),
     datatypeLookupOwned_(true)
 {
 }
