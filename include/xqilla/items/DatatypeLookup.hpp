@@ -16,13 +16,15 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/items/AnyAtomicType.hpp>
+
 #include <xercesc/util/XercesDefs.hpp>
 #include <xercesc/util/RefHashTableOf.hpp>
+#include <xercesc/util/XMemory.hpp>
 
 class DatatypeFactory;
 class DocumentCache;
 
-class XQILLA_API DatatypeLookup
+class XQILLA_API DatatypeLookup : public XERCES_CPP_NAMESPACE_QUALIFIER XMemory
 {
 public:
   DatatypeLookup(const DocumentCache* dc, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr);
