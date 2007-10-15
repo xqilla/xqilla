@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/FIXED:NO"
-				AdditionalDependencies="xqilla10.lib xerces-c_2.lib"
+				AdditionalDependencies="xqilla11.lib xerces-c_2.lib"
 				AdditionalLibraryDirectories="$(OutDir);../../../xerces-c-src/Build/Win32/VC7.1/$(ConfigurationName)"
 				OutputFile="$(OutDir)/xqilla.exe"
 				LinkIncremental="1"
@@ -101,7 +101,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/FIXED:NO"
-				AdditionalDependencies="xqilla10d.lib xerces-c_2d.lib"
+				AdditionalDependencies="xqilla11d.lib xerces-c_2d.lib"
 				AdditionalLibraryDirectories="$(OutDir);../../../xerces-c-src/Build/Win32/VC7.1/$(ConfigurationName)"
 				OutputFile="$(OutDir)/xqilla.exe"
 				LinkIncremental="2"
@@ -166,7 +166,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/FIXED:NO"
-				AdditionalDependencies="xqilla10.lib xerces-c_2.lib"
+				AdditionalDependencies="xqilla11.lib xerces-c_2.lib"
 				AdditionalLibraryDirectories="$(OutDir);../../../xerces-c-src/Build/Win32/VC7.1/$(ConfigurationName)"
 				OutputFile="$(OutDir)/xqilla.exe"
 				LinkIncremental="1"
@@ -227,7 +227,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/FIXED:NO"
-				AdditionalDependencies="xqilla10d.lib xerces-c_2d.lib"
+				AdditionalDependencies="xqilla11d.lib xerces-c_2d.lib"
 				AdditionalLibraryDirectories="$(OutDir);../../../xerces-c-src/Build/Win32/VC7.1/$(ConfigurationName)"
 				OutputFile="$(OutDir)/xqilla.exe"
 				LinkIncremental="2"
@@ -292,7 +292,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/FIXED:NO"
-				AdditionalDependencies="xqilla10.lib xerces-c_2.lib"
+				AdditionalDependencies="xqilla11.lib xerces-c_2.lib"
 				AdditionalLibraryDirectories="$(OutDir);../../../xerces-c-src/Build/Win32/VC7.1/$(ConfigurationName)"
 				OutputFile="$(OutDir)/xqilla.exe"
 				LinkIncremental="1"
@@ -353,7 +353,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/FIXED:NO"
-				AdditionalDependencies="xqilla10d.lib xerces-c_2d.lib"
+				AdditionalDependencies="xqilla11d.lib xerces-c_2d.lib"
 				AdditionalLibraryDirectories="$(OutDir);../../../xerces-c-src/Build/Win32/VC7.1/$(ConfigurationName)"
 				OutputFile="$(OutDir)/xqilla.exe"
 				LinkIncremental="2"
