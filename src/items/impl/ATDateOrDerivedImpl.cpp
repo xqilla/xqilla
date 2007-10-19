@@ -348,8 +348,8 @@ ATDateOrDerived::Ptr ATDateOrDerivedImpl::addYearMonthDuration(const ATDurationO
 ATDateOrDerived::Ptr ATDateOrDerivedImpl::addDayTimeDuration(const ATDurationOrDerived::Ptr &dayTime,
                                                              const DynamicContext* context) const
 {
-  MAPM result = seconds_ + dayTime->asSeconds(context)->asMAPM();
-  result = (result / DateUtils::g_secondsPerDay).floor() * DateUtils::g_secondsPerDay;
+  MAPM result = (dayTime->asSeconds(context)->asMAPM() / DateUtils::g_secondsPerDay).floor() * DateUtils::g_secondsPerDay;
+  result = seconds_ + result;
   return new ATDateOrDerivedImpl(_typeURI, _typeName, result, timezone_, _hasTimezone);
 }
   
@@ -369,8 +369,8 @@ ATDateOrDerived::Ptr ATDateOrDerivedImpl::subtractYearMonthDuration(const ATDura
 ATDateOrDerived::Ptr ATDateOrDerivedImpl::subtractDayTimeDuration(const ATDurationOrDerived::Ptr &dayTime,
                                                                   const DynamicContext* context) const
 {
-  MAPM result = seconds_ - dayTime->asSeconds(context)->asMAPM();
-  result = (result / DateUtils::g_secondsPerDay).floor() * DateUtils::g_secondsPerDay;
+  MAPM result = (dayTime->asSeconds(context)->asMAPM() / DateUtils::g_secondsPerDay).floor() * DateUtils::g_secondsPerDay;
+  result = seconds_ - result;
   return new ATDateOrDerivedImpl(_typeURI, _typeName, result, timezone_, _hasTimezone);
 }
 
