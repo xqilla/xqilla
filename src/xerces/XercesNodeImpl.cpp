@@ -69,28 +69,25 @@
 XERCES_CPP_NAMESPACE_USE
 #endif
 
-XercesNodeImpl::XercesNodeImpl(const DOMNode *node, const DynamicContext *context) : 
-    Node(), 
-    fNode(node),
-    context_(context)
+XercesNodeImpl::XercesNodeImpl(const DOMNode *node, const DynamicContext *context)
+  : fNode(node),
+    resolver_((XercesURIResolver*)context->getDefaultURIResolver())
 {  
   assert(node!=0);
-  ((XercesURIResolver*)context_->getDefaultURIResolver())->
-	  incrementDocumentRefCount(XPath2Utils::getOwnerDoc(fNode));
+  resolver_->incrementDocumentRefCount(XPath2Utils::getOwnerDoc(fNode));
 }
 
 XercesNodeImpl::XercesNodeImpl(const DOMNode *node)
   : fNode(node),
-    context_(0)
+    resolver_(0)
 {
   assert(node!=0);
 }
 
 XercesNodeImpl::~XercesNodeImpl()
 {
-  if(context_ != 0) {
-    ((XercesURIResolver*)context_->getDefaultURIResolver())->
-	    decrementDocumentRefCount(XPath2Utils::getOwnerDoc(fNode));
+  if(resolver_ != 0) {
+    resolver_->decrementDocumentRefCount(XPath2Utils::getOwnerDoc(fNode));
   }
 }
 

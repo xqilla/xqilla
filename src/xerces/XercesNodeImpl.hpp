@@ -25,6 +25,7 @@ class DynamicContext;
 class XPath2MemoryManager;
 class Sequence;
 class DocumentCache;
+class XercesURIResolver;
 
 XERCES_CPP_NAMESPACE_BEGIN
 class DatatypeValidator;
@@ -95,6 +96,6 @@ protected:
   void addStringValueToBuffer(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* node, XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer& buffer) const;
 
   const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* fNode;
-  const DynamicContext *context_;
+  XercesURIResolver *resolver_;
 };
 #endif
