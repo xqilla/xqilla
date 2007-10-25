@@ -43,6 +43,7 @@
 				AdditionalDependencies="@XQILLA_LIB@.lib @XERCES_LIB@.lib"
 				AdditionalLibraryDirectories="$(OutDir);@XERCES_LIBHOME7@/$(ConfigurationName)"
 				OutputFile="$(OutDir)/xqilla.exe"
+				ProgramDataBaseFile="$(OutDir)/xqilla.pdb"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				IgnoreDefaultLibraryNames="libcmt"
@@ -104,11 +105,11 @@
 				AdditionalDependencies="@XQILLA_LIB@d.lib @XERCES_LIB@d.lib"
 				AdditionalLibraryDirectories="$(OutDir);@XERCES_LIBHOME7@/$(ConfigurationName)"
 				OutputFile="$(OutDir)/xqilla.exe"
+				ProgramDataBaseFile="$(OutDir)/xqilla.pdb"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				IgnoreDefaultLibraryNames="libcmtd"
 				GenerateDebugInformation="TRUE"
-				ProgramDataBaseFile="$(OutDir)/@project_name@.pdb"
 				SubSystem="1"
 				TargetMachine="1"/>
 			<Tool
@@ -169,6 +170,7 @@
 				AdditionalDependencies="@XQILLA_LIB@.lib @XERCES_LIB@.lib"
 				AdditionalLibraryDirectories="$(OutDir);@XERCES_LIBHOME7@/$(ConfigurationName)"
 				OutputFile="$(OutDir)/xqilla.exe"
+				ProgramDataBaseFile="$(OutDir)/xqilla.pdb"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				IgnoreDefaultLibraryNames="libcmt"
@@ -230,11 +232,11 @@
 				AdditionalDependencies="@XQILLA_LIB@d.lib @XERCES_LIB@d.lib"
 				AdditionalLibraryDirectories="$(OutDir);@XERCES_LIBHOME7@/$(ConfigurationName)"
 				OutputFile="$(OutDir)/xqilla.exe"
+				ProgramDataBaseFile="$(OutDir)/xqilla.pdb"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				IgnoreDefaultLibraryNames="libcmtd"
 				GenerateDebugInformation="TRUE"
-				ProgramDataBaseFile="$(OutDir)/@project_name@.pdb"
 				SubSystem="1"
 				TargetMachine="1"/>
 			<Tool
@@ -295,6 +297,7 @@
 				AdditionalDependencies="@XQILLA_LIB@.lib @XERCES_LIB@.lib"
 				AdditionalLibraryDirectories="$(OutDir);@XERCES_LIBHOME7@/$(ConfigurationName)"
 				OutputFile="$(OutDir)/xqilla.exe"
+				ProgramDataBaseFile="$(OutDir)/xqilla.pdb"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				IgnoreDefaultLibraryNames="libcmt"
@@ -356,11 +359,11 @@
 				AdditionalDependencies="@XQILLA_LIB@d.lib @XERCES_LIB@d.lib"
 				AdditionalLibraryDirectories="$(OutDir);@XERCES_LIBHOME7@/$(ConfigurationName)"
 				OutputFile="$(OutDir)/xqilla.exe"
+				ProgramDataBaseFile="$(OutDir)/xqilla.pdb"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				IgnoreDefaultLibraryNames="libcmtd"
 				GenerateDebugInformation="TRUE"
-				ProgramDataBaseFile="$(OutDir)/@project_name@.pdb"
 				SubSystem="1"
 				TargetMachine="1"/>
 			<Tool
