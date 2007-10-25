@@ -47,6 +47,7 @@
 				AdditionalDependencies="@XERCES_LIB@.lib"
 				AdditionalLibraryDirectories="$(OutDir);@XERCES_LIBHOME7@/$(ConfigurationName)"
 				OutputFile="$(OutDir)/@XQILLA_LIB@.dll"
+				ProgramDataBaseFile="$(OutDir)/@XQILLA_LIB@.pdb"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				ImportLibrary="$(OutDir)/@XQILLA_LIB@.lib"
@@ -109,10 +110,10 @@
 				AdditionalDependencies="@XERCES_LIB@d.lib"
 				AdditionalLibraryDirectories="$(OutDir);@XERCES_LIBHOME7@/$(ConfigurationName)"
 				OutputFile="$(OutDir)/@XQILLA_LIB@d.dll"
+				ProgramDataBaseFile="$(OutDir)/@XQILLA_LIB@d.pdb"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				GenerateDebugInformation="TRUE"
-				ProgramDataBaseFile="$(OutDir)/@XQILLA_LIB@.pdb"
 				ImportLibrary="$(OutDir)/@XQILLA_LIB@d.lib"
 				TargetMachine="1"/>
 			<Tool
@@ -174,6 +175,7 @@
 				AdditionalDependencies="@XERCES_LIB@.lib"
 				AdditionalLibraryDirectories="$(OutDir);@XERCES_LIBHOME7@/$(ConfigurationName)"
 				OutputFile="$(OutDir)/@XQILLA_LIB@.dll"
+				ProgramDataBaseFile="$(OutDir)/@XQILLA_LIB@.pdb"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				ImportLibrary="$(OutDir)/@XQILLA_LIB@.lib"
@@ -236,10 +238,10 @@
 				AdditionalDependencies="@XERCES_LIB@d.lib"
 				AdditionalLibraryDirectories="$(OutDir);@XERCES_LIBHOME7@/$(ConfigurationName)"
 				OutputFile="$(OutDir)/@XQILLA_LIB@d.dll"
+				ProgramDataBaseFile="$(OutDir)/@XQILLA_LIB@d.pdb"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				GenerateDebugInformation="TRUE"
-				ProgramDataBaseFile="$(OutDir)/@XQILLA_LIB@.pdb"
 				ImportLibrary="$(OutDir)/@XQILLA_LIB@d.lib"
 				TargetMachine="1"/>
 			<Tool
@@ -301,6 +303,7 @@
 				AdditionalDependencies="@XERCES_LIB@.lib"
 				AdditionalLibraryDirectories="$(OutDir);@XERCES_LIBHOME7@/$(ConfigurationName)"
 				OutputFile="$(OutDir)/@XQILLA_LIB@.dll"
+				ProgramDataBaseFile="$(OutDir)/@XQILLA_LIB@.pdb"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				ImportLibrary="$(OutDir)/@XQILLA_LIB@.lib"
@@ -363,10 +366,10 @@
 				AdditionalDependencies="@XERCES_LIB@d.lib"
 				AdditionalLibraryDirectories="$(OutDir);@XERCES_LIBHOME7@/$(ConfigurationName)"
 				OutputFile="$(OutDir)/@XQILLA_LIB@d.dll"
+				ProgramDataBaseFile="$(OutDir)/@XQILLA_LIB@d.pdb"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				GenerateDebugInformation="TRUE"
-				ProgramDataBaseFile="$(OutDir)/@XQILLA_LIB@.pdb"
 				ImportLibrary="$(OutDir)/@XQILLA_LIB@d.lib"
 				TargetMachine="1"/>
 			<Tool

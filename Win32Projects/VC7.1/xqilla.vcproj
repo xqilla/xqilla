@@ -47,6 +47,7 @@
 				AdditionalDependencies="xerces-c_2.lib"
 				AdditionalLibraryDirectories="$(OutDir);../../../xerces-c-src/Build/Win32/VC7.1/$(ConfigurationName)"
 				OutputFile="$(OutDir)/xqilla11.dll"
+				ProgramDataBaseFile="$(OutDir)/xqilla11.pdb"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				ImportLibrary="$(OutDir)/xqilla11.lib"
@@ -109,10 +110,10 @@
 				AdditionalDependencies="xerces-c_2d.lib"
 				AdditionalLibraryDirectories="$(OutDir);../../../xerces-c-src/Build/Win32/VC7.1/$(ConfigurationName)"
 				OutputFile="$(OutDir)/xqilla11d.dll"
+				ProgramDataBaseFile="$(OutDir)/xqilla11d.pdb"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				GenerateDebugInformation="TRUE"
-				ProgramDataBaseFile="$(OutDir)/xqilla11.pdb"
 				ImportLibrary="$(OutDir)/xqilla11d.lib"
 				TargetMachine="1"/>
 			<Tool
@@ -174,6 +175,7 @@
 				AdditionalDependencies="xerces-c_2.lib"
 				AdditionalLibraryDirectories="$(OutDir);../../../xerces-c-src/Build/Win32/VC7.1/$(ConfigurationName)"
 				OutputFile="$(OutDir)/xqilla11.dll"
+				ProgramDataBaseFile="$(OutDir)/xqilla11.pdb"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				ImportLibrary="$(OutDir)/xqilla11.lib"
@@ -236,10 +238,10 @@
 				AdditionalDependencies="xerces-c_2d.lib"
 				AdditionalLibraryDirectories="$(OutDir);../../../xerces-c-src/Build/Win32/VC7.1/$(ConfigurationName)"
 				OutputFile="$(OutDir)/xqilla11d.dll"
+				ProgramDataBaseFile="$(OutDir)/xqilla11d.pdb"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				GenerateDebugInformation="TRUE"
-				ProgramDataBaseFile="$(OutDir)/xqilla11.pdb"
 				ImportLibrary="$(OutDir)/xqilla11d.lib"
 				TargetMachine="1"/>
 			<Tool
@@ -301,6 +303,7 @@
 				AdditionalDependencies="xerces-c_2.lib"
 				AdditionalLibraryDirectories="$(OutDir);../../../xerces-c-src/Build/Win32/VC7.1/$(ConfigurationName)"
 				OutputFile="$(OutDir)/xqilla11.dll"
+				ProgramDataBaseFile="$(OutDir)/xqilla11.pdb"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				ImportLibrary="$(OutDir)/xqilla11.lib"
@@ -363,10 +366,10 @@
 				AdditionalDependencies="xerces-c_2d.lib"
 				AdditionalLibraryDirectories="$(OutDir);../../../xerces-c-src/Build/Win32/VC7.1/$(ConfigurationName)"
 				OutputFile="$(OutDir)/xqilla11d.dll"
+				ProgramDataBaseFile="$(OutDir)/xqilla11d.pdb"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				GenerateDebugInformation="TRUE"
-				ProgramDataBaseFile="$(OutDir)/xqilla11.pdb"
 				ImportLibrary="$(OutDir)/xqilla11d.lib"
 				TargetMachine="1"/>
 			<Tool
