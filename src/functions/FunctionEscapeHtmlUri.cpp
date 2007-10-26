@@ -19,25 +19,27 @@
 #include <xercesc/util/XMLUni.hpp>
 #include <xercesc/util/XMLUTF8Transcoder.hpp>
 
+XERCES_CPP_NAMESPACE_USE;
+
 const XMLCh FunctionEscapeHtmlUri::name[] = {
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_s, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_c, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_p, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chDash,    XERCES_CPP_NAMESPACE_QUALIFIER chLatin_h, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_m, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_l, XERCES_CPP_NAMESPACE_QUALIFIER chDash,    
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_u, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_r, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_i, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chNull 
+  chLatin_e, chLatin_s, chLatin_c, 
+  chLatin_a, chLatin_p, chLatin_e, 
+  chDash,    chLatin_h, chLatin_t, 
+  chLatin_m, chLatin_l, chDash,    
+  chLatin_u, chLatin_r, chLatin_i, 
+  chNull 
 };
 const unsigned int FunctionEscapeHtmlUri::minArgs = 1;
 const unsigned int FunctionEscapeHtmlUri::maxArgs = 1;
 
 static const XMLCh HEX_DIGITS[16] = 
 { 
-    XERCES_CPP_NAMESPACE_QUALIFIER chDigit_0, XERCES_CPP_NAMESPACE_QUALIFIER chDigit_1, XERCES_CPP_NAMESPACE_QUALIFIER chDigit_2, 
-    XERCES_CPP_NAMESPACE_QUALIFIER chDigit_3, XERCES_CPP_NAMESPACE_QUALIFIER chDigit_4, XERCES_CPP_NAMESPACE_QUALIFIER chDigit_5, 
-    XERCES_CPP_NAMESPACE_QUALIFIER chDigit_6, XERCES_CPP_NAMESPACE_QUALIFIER chDigit_7, XERCES_CPP_NAMESPACE_QUALIFIER chDigit_8, 
-    XERCES_CPP_NAMESPACE_QUALIFIER chDigit_9, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_A, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_B, 
-    XERCES_CPP_NAMESPACE_QUALIFIER chLatin_C, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_D, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_E, 
-    XERCES_CPP_NAMESPACE_QUALIFIER chLatin_F
+    chDigit_0, chDigit_1, chDigit_2, 
+    chDigit_3, chDigit_4, chDigit_5, 
+    chDigit_6, chDigit_7, chDigit_8, 
+    chDigit_9, chLatin_A, chLatin_B, 
+    chLatin_C, chLatin_D, chLatin_E, 
+    chLatin_F
 };
 
 /*
@@ -52,26 +54,23 @@ FunctionEscapeHtmlUri::FunctionEscapeHtmlUri(const VectorOfASTNodes &args, XPath
 
 Sequence FunctionEscapeHtmlUri::createSequence(DynamicContext* context, int flags) const
 {
-    Sequence uriPart=getParamNumber(1,context)->toSequence(context);
-    if(uriPart.isEmpty())
-        return Sequence(context->getItemFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context), context->getMemoryManager());
+    Item::Ptr uriPart = getParamNumber(1, context)->next(context);
+    if(uriPart.isNull())
+        return Sequence(context->getItemFactory()->createString(XMLUni::fgZeroLenString, context), context->getMemoryManager());
 
-    const XMLCh* source = uriPart.first()->asString(context);
-    unsigned len=XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(source);
-    XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer outString(len+1, context->getMemoryManager());
-    XERCES_CPP_NAMESPACE_QUALIFIER XMLUTF8Transcoder utf8Trans(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgUTF8EncodingString, 10, context->getMemoryManager());
-    for(unsigned i=0;i<len;i++)
-    {
-        if(source[i]>=32 && source[i]<=126)
+    const XMLCh *source = uriPart->asString(context);
+    unsigned len = XMLString::stringLen(source);
+    XMLBuffer outString(len + 1, context->getMemoryManager());
+    XMLUTF8Transcoder utf8Trans(XMLUni::fgUTF8EncodingString, 10, context->getMemoryManager());
+    for(unsigned i = 0; i < len; ++i) {
+        if(source[i] >= 32 && source[i] <= 126)
             outString.append(source[i]);
-        else
-        {
+        else {
             XMLByte utf8Str[8];
             unsigned int charsEaten;
-            unsigned int nLen=utf8Trans.transcodeTo(&source[i], 1, utf8Str, 7, charsEaten, XERCES_CPP_NAMESPACE_QUALIFIER XMLTranscoder::UnRep_RepChar);
-            for(unsigned int j=0;j<nLen;j++)
-            {
-                outString.append(XERCES_CPP_NAMESPACE_QUALIFIER chPercent);
+            unsigned int nLen = utf8Trans.transcodeTo(&source[i], 1, utf8Str, 7, charsEaten, XMLTranscoder::UnRep_RepChar);
+            for(unsigned int j = 0; j < nLen; ++j) {
+                outString.append(chPercent);
                 outString.append(HEX_DIGITS[utf8Str[j] >> 4]);
                 outString.append(HEX_DIGITS[utf8Str[j] & 0xF]);
             }
