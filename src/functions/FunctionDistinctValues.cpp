@@ -227,15 +227,13 @@ Item::Ptr DistinctValueResult::next(DynamicContext *context)
   AnyAtomicType::Ptr item;
   while(true) {
     item = (const AnyAtomicType *)parent_->next(context).get();
-    if(item == NULLRCP) {
-      parent_ = 0;
-      return 0;
-    }
+    if(item.isNull()) break;
 
     if(alreadySeen_->insert(item).second)
       return item;
   }
 
+  parent_ = 0;
   return 0;
 }
 

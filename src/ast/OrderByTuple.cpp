@@ -133,10 +133,9 @@ public:
 
   ~OrderByTupleResult()
   {
-    if(!toDo_) {
-      for(; tupleIt_ != tuples_.end(); ++tupleIt_) {
-        delete *tupleIt_;
-      }
+    vector<OrderPair*>::iterator it = tuples_.begin();
+    for(; it != tuples_.end(); ++it) {
+      delete *it;
     }
   }
 
