@@ -36,13 +36,13 @@ FunctionLookup::~FunctionLookup()
 }
 void FunctionLookup::replaceFunction(FuncFactory *func)
 {
-  unsigned int secondaryKey = SECONDARY_KEY(func);
-  _funcTable.put((void*)func->getURINameHash(), secondaryKey, func);
+  size_t secondaryKey = SECONDARY_KEY(func);
+  _funcTable.put((void*)func->getURINameHash(), (int)secondaryKey, func);
 }
 
 void FunctionLookup::insertFunction(FuncFactory *func)
 {
-  unsigned int secondaryKey = SECONDARY_KEY(func);
+  size_t secondaryKey = SECONDARY_KEY(func);
 
   // Use similar algorithm to lookup in order to detect overlaps
   // in argument numbers
@@ -66,13 +66,13 @@ void FunctionLookup::insertFunction(FuncFactory *func)
       buf.append(func->getName());
       buf.append(X("/"));
       XMLCh szInt[10];
-      XMLString::binToText(secondaryKey,szInt,9,10);
+      XMLString::binToText((unsigned int)secondaryKey,szInt,9,10);
       buf.append(szInt);
       buf.append(X(" [err:XQST0034]."));
       XQThrow2(StaticErrorException,X("FunctionLookup::insertFunction"), buf.getRawBuffer());
     }
   // Ok to add function
-  _funcTable.put((void*)func->getURINameHash(), secondaryKey, func);
+  _funcTable.put((void*)func->getURINameHash(), (int)secondaryKey, func);
 }
 
 ASTNode* FunctionLookup::lookUpFunction(const XMLCh* URI, const XMLCh* fname,
@@ -94,7 +94,7 @@ ASTNode* FunctionLookup::lookUpFunction(const XMLCh* URI, const XMLCh* fname,
   key.set(fname);
   key.append(URI);
   iterator.setPrimaryKey(key.getRawBuffer());
-  unsigned int nargs = args.size();
+  size_t nargs = args.size();
   while(iterator.hasMoreElements()) {
     FuncFactory *entry= &(iterator.nextElement());
     if (entry->getMinArgs() <= nargs &&
@@ -109,18 +109,18 @@ ASTNode* FunctionLookup::lookUpFunction(const XMLCh* URI, const XMLCh* fname,
 //
 void FunctionLookup::insertExternalFunction(const ExternalFunction *func)
 {
-  unsigned int secondaryKey = func->getNumberOfArguments();
-  _exFuncTable.put((void*)func->getURINameHash(), secondaryKey, func);
+  size_t secondaryKey = func->getNumberOfArguments();
+  _exFuncTable.put((void*)func->getURINameHash(), (int)secondaryKey, func);
 }
 
 const ExternalFunction *FunctionLookup::lookUpExternalFunction(
-                                                               const XMLCh* URI, const XMLCh* fname, unsigned int numArgs) const
+	const XMLCh* URI, const XMLCh* fname, size_t numArgs) const
 {
-  unsigned int secondaryKey = numArgs;
+  size_t secondaryKey = numArgs;
   XMLBuffer key;
   key.set(fname);
   key.append(URI);
-  return _exFuncTable.get(key.getRawBuffer(), secondaryKey);
+  return _exFuncTable.get(key.getRawBuffer(), (int)secondaryKey);
 }
 
 /*
@@ -188,14 +188,15 @@ ASTNode* FunctionLookup::lookUpGlobalFunction(
 
 // static
 const ExternalFunction *FunctionLookup::lookUpGlobalExternalFunction(
-                                                                     const XMLCh* URI, const XMLCh* fname, unsigned int numArgs,
-                                                                     const FunctionLookup *contextTable)
+	const XMLCh* URI, const XMLCh* fname, size_t numArgs,
+	const FunctionLookup *contextTable)
 {
 	const ExternalFunction *ef =
 		g_globalFunctionTable->lookUpExternalFunction(
-                                                  URI, fname, numArgs);
+			URI, fname, (unsigned int)numArgs);
 	if (!ef && contextTable)
-		ef = contextTable->lookUpExternalFunction(URI, fname, numArgs);
+		ef = contextTable->lookUpExternalFunction(
+			URI, fname, (unsigned int)numArgs);
 	return ef;
 }
 

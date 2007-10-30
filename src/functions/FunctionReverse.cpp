@@ -54,7 +54,7 @@ Sequence FunctionReverse::createSequence(DynamicContext* context, int flags) con
 
   Sequence origSeq = getParamNumber(1, context)->toSequence(context);
   // empty or singleton sequences are identical when reversed
-  unsigned int len=origSeq.getLength();
+  size_t len = origSeq.getLength();
   if(len<2)
     return origSeq;
 

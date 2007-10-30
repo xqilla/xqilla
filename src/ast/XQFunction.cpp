@@ -58,7 +58,7 @@ const XMLCh XQFunction::XMLChFunctionURI[] =
 
 const unsigned int XQFunction::UNLIMITED = 10000; // A reasonably large number
 
-XQFunction::XQFunction(const XMLCh* name, unsigned int argsFrom, unsigned int argsTo, const char* paramDecl,
+XQFunction::XQFunction(const XMLCh* name, size_t argsFrom, size_t argsTo, const char* paramDecl,
                        const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ASTNodeImpl(memMgr),
     _fName(name), _fURI(XMLChFunctionURI), 
@@ -137,7 +137,7 @@ const XMLCh* XQFunction::getFunctionSignature() const
 
 ASTNode *XQFunction::resolveArguments(StaticContext *context, bool checkTimezone, bool numericFunction)
 {
-  unsigned int paramNumber = 0;
+  size_t paramNumber = 0;
   for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
     *i = _paramDecl[paramNumber]->convertFunctionArg(*i, context, numericFunction, this);
     *i = (*i)->staticResolution(context);
@@ -173,14 +173,14 @@ ASTNode *XQFunction::calculateSRCForArguments(StaticContext *context, bool check
   return this;
 }
 
-Result XQFunction::getParamNumber(unsigned int number, DynamicContext* context, int flags) const
+Result XQFunction::getParamNumber(size_t number, DynamicContext* context, int flags) const
 {
 	assert(number > 0);
 	assert(number <= getNumArgs());
 	return _args[number - 1]->createResult(context, flags);
 }
 
-unsigned int XQFunction::getNumArgs() const
+size_t XQFunction::getNumArgs() const
 {
   return _args.size();
 }

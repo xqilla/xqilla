@@ -327,7 +327,7 @@ unsigned int XQNav::combineProperties(unsigned int prev_props, unsigned int step
 // NavStepResult
 /////////////////////////////////////
 
-NavStepResult::NavStepResult(const Result &parent, const ASTNode *step, unsigned int contextSize)
+NavStepResult::NavStepResult(const Result &parent, const ASTNode *step, size_t contextSize)
   : ResultImpl(step),
     initialised_(false),
     parent_(parent),
@@ -376,7 +376,7 @@ std::string NavStepResult::asString(DynamicContext *context, int indent) const
   std::ostringstream oss;
   std::string in(getIndent(indent));
 
-  oss << in << "<step contextSize=\"" << contextSize_ << "\">" << std::endl;
+  oss << in << "<step contextSize=\"" << (unsigned long)contextSize_ << "\">" << std::endl;
   if(!parent_.isNull()) {
     oss << in << "  <parent>" << std::endl;
     oss << parent_->asString(context, indent + 2);

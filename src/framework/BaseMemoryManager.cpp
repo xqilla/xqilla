@@ -254,8 +254,8 @@ void BaseMemoryManager::dumpStatistics() const
 
   fStringPool->dumpStatistics();
 
-  std::cout << "\tAllocated objects: " << objectsAllocated_ << std::endl;
-  std::cout << "\tTotal Memory Allocated: " << totalMemoryAllocated_ << std::endl;
+  std::cout << "\tAllocated objects: " << (unsigned int)objectsAllocated_ << std::endl;
+  std::cout << "\tTotal Memory Allocated: " << (unsigned int)totalMemoryAllocated_ << std::endl;
 }
 
 /** create a collation */
@@ -278,11 +278,11 @@ ATDecimalOrDerived* BaseMemoryManager::createInteger(int value) {
   if (!fIntegerPool)
     fIntegerPool = new (this) RefHashTableOf<ATDecimalOrDerived>(53,true, new (this) HashPtr(),this);
 
-  ATDecimalOrDerived* itemValue=fIntegerPool->get((const void*)value);
+  ATDecimalOrDerived* itemValue=fIntegerPool->get((const void*)((size_t)value));
   if(itemValue!=NULL)
       return itemValue;
   itemValue=new ATDecimalOrDerivedImpl(value);
   itemValue->incrementRefCount();
-  fIntegerPool->put((void*)value, itemValue);
+  fIntegerPool->put((void*)((size_t)value), itemValue);
   return itemValue;
 }

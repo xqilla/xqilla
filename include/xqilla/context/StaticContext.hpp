@@ -158,7 +158,7 @@ public:
   /** adds an external function implementation to the function table */
   virtual void addExternalFunction(const ExternalFunction *func) = 0;
   /** returns an external function implementation for the given uri and localname */
-  virtual const ExternalFunction *lookUpExternalFunction(const XMLCh *uri, const XMLCh *name, unsigned int numArgs) const = 0;
+  virtual const ExternalFunction *lookUpExternalFunction(const XMLCh *uri, const XMLCh *name, size_t numArgs) const = 0;
 
   /** Get the implementation for the specified collation */
   virtual Collation* getCollation(const XMLCh* const URI, const LocationInfo *location) const = 0;

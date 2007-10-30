@@ -100,7 +100,7 @@ Result XQPredicate::createResult(DynamicContext* context, int flags) const
 
   Result parent = expr_->createResult(context, flags);
 
-  unsigned int contextSize = 0;
+  size_t contextSize = 0;
   if(src.isContextSizeUsed()) {
     // We need the context size, so convert to a Sequence to work it out
     Sequence seq(parent->toSequence(context));
@@ -149,7 +149,7 @@ ASTNode *XQPredicate::addReversePredicates(ASTNode *expr, VectorOfPredicates *pr
 // PredicateFilterResult
 /////////////////////////////////////
 
-PredicateFilterResult::PredicateFilterResult(const Result &parent, const ASTNode *pred, unsigned int contextSize)
+PredicateFilterResult::PredicateFilterResult(const Result &parent, const ASTNode *pred, size_t contextSize)
   : ResultImpl(pred),
     todo_(true),
     parent_(parent),
@@ -231,7 +231,7 @@ std::string PredicateFilterResult::asString(DynamicContext *context, int indent)
 // NonNumericPredicateFilterResult
 /////////////////////////////////////
 
-NonNumericPredicateFilterResult::NonNumericPredicateFilterResult(const Result &parent, const ASTNode *pred, unsigned int contextSize)
+NonNumericPredicateFilterResult::NonNumericPredicateFilterResult(const Result &parent, const ASTNode *pred, size_t contextSize)
   : ResultImpl(pred),
     todo_(true),
     parent_(parent),
@@ -294,7 +294,7 @@ std::string NonNumericPredicateFilterResult::asString(DynamicContext *context, i
 // NumericPredicateFilterResult
 /////////////////////////////////////
 
-NumericPredicateFilterResult::NumericPredicateFilterResult(const Result &parent, const ASTNode *pred, unsigned int contextSize)
+NumericPredicateFilterResult::NumericPredicateFilterResult(const Result &parent, const ASTNode *pred, size_t contextSize)
   : ResultImpl(pred),
     todo_(true),
     parent_(parent),

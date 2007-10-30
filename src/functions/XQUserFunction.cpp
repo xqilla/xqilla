@@ -74,14 +74,14 @@ XQUserFunction::XQUserFunction(const XMLCh *qname, ArgumentSpecs *argSpecs, ASTN
 {
 }
 
-unsigned int XQUserFunction::getMinArgs() const
+size_t XQUserFunction::getMinArgs() const
 {
-  return argSpecs_ == 0 ? 0 : argSpecs_->size();
+  return (argSpecs_ == 0 ? 0 : argSpecs_->size());
 }
 
-unsigned int XQUserFunction::getMaxArgs() const
+size_t XQUserFunction::getMaxArgs() const
 {
-  return argSpecs_ == 0 ? 0 : argSpecs_->size();
+  return (argSpecs_ == 0 ? 0 : argSpecs_->size());
 }
 
 ASTNode* XQUserFunction::createInstance(const VectorOfASTNodes &args, XPath2MemoryManager *mm) const
@@ -129,7 +129,7 @@ void XQUserFunction::staticResolutionStage1(StaticContext *context)
 
   // Check for the implementation of an external function
   if(body_ == NULL) {
-    unsigned int nArgs = argSpecs_ ? argSpecs_->size() : 0;
+    size_t nArgs = argSpecs_ ? argSpecs_->size() : 0;
     exFunc_ = context->lookUpExternalFunction(uri_, name_, nArgs);
 
     if(exFunc_ == NULL) {
@@ -140,7 +140,7 @@ void XQUserFunction::staticResolutionStage1(StaticContext *context)
       buf.append(name_);
       buf.append(X("' with "));
       XMLCh szNumBuff[20];
-      XMLString::binToText(nArgs, szNumBuff, 19, 10);
+      XMLString::binToText((unsigned int)nArgs, szNumBuff, 19, 10);
       buf.append(szNumBuff);
       buf.append(X(" argument(s) has not been bound to an implementation"));
       XQThrow(FunctionException, X("XQUserFunction::staticResolutionStage1"), buf.getRawBuffer());
@@ -282,7 +282,7 @@ XQUserFunction::Instance::Instance(const XQUserFunction* funcDef, const VectorOf
   _fURI = funcDef->getURI();
 }
 
-Result XQUserFunction::Instance::getArgument(unsigned int index, DynamicContext *context) const
+Result XQUserFunction::Instance::getArgument(size_t index, DynamicContext *context) const
 {
   if(index >= funcDef_->getMaxArgs()) return 0;
 

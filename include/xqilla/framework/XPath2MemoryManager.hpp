@@ -65,8 +65,8 @@ public:
   virtual ATDecimalOrDerived* createInteger(int value) = 0;
 
   virtual void dumpStatistics() const = 0;
-  virtual unsigned long getAllocatedObjectCount() const = 0;
-  virtual unsigned long getTotalAllocatedMemory() const = 0;
+  virtual size_t getAllocatedObjectCount() const = 0;
+  virtual size_t getTotalAllocatedMemory() const = 0;
   virtual const StringPool *getStringPool() const = 0;
 };//XPath2MemoryManager
 

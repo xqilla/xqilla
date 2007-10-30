@@ -67,7 +67,7 @@ protected:
 class XQILLA_API NavStepResult : public ResultImpl
 {
 public:
-  NavStepResult(const Result &parent, const ASTNode *step, unsigned int contextSize);
+  NavStepResult(const Result &parent, const ASTNode *step, size_t contextSize);
 
   Item::Ptr next(DynamicContext *context);
   std::string asString(DynamicContext *context, int indent) const;
@@ -77,8 +77,8 @@ private:
   Result parent_;
   const ASTNode *step_;
   Result stepResult_;
-  unsigned int contextPos_;
-  unsigned int contextSize_;
+  size_t contextPos_;
+  size_t contextSize_;
   Item::Ptr contextItem_;
 };
 
