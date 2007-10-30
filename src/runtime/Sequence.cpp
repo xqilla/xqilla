@@ -54,7 +54,7 @@ Sequence::Sequence(const Sequence &s, MemoryManager* memMgr)
   joinSequence(s);
 }
 
-Sequence::Sequence(unsigned int n, MemoryManager* memMgr)
+Sequence::Sequence(size_t n, MemoryManager* memMgr)
   : _itemList(XQillaAllocator<Item::Ptr>(memMgr))
 {
     _itemList.reserve(n);

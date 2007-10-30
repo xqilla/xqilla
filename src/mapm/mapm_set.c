@@ -22,7 +22,7 @@
 /****************************************************************************/
 void	m_apm_set_long(M_APM atmp, long mm)
 {
-int     len, ii, nbytes;
+int     ii, nbytes, len;
 char	*p, *buf, ch, buf2[64];
 
 /* if zero, return right away */
@@ -46,7 +46,7 @@ else
    atmp->m_apm_sign = 1;
   }
 
-len = strlen(buf);
+len = (int) strlen(buf);
 atmp->m_apm_exponent = len;
 
 /* least significant nibble of ODD data-length must be 0 */
@@ -148,13 +148,13 @@ if (j > 0)                       /* normalize number and adjust exponent */
 
 p++;        /* scan past implied decimal point now in column 1 (index 0) */
 
-i = strlen(p);
+i = (int) strlen(p);
 ctmp->m_apm_datalength = i;
 
 if ((i & 1) != 0)   /* if odd number of digits, append a '0' to make it even */
   strcat(p,"0");    
 
-j = strlen(p) >> 1;  /* number of bytes in encoded M_APM number */
+j = (int) strlen(p) >> 1;  /* number of bytes in encoded M_APM number */
 
 /* do we need more memory to hold this number */
 

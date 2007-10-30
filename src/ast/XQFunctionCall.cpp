@@ -52,7 +52,7 @@ ASTNode* XQFunctionCall::staticResolution(StaticContext *context)
     buf.append(name);
     buf.append(X(" with "));
     XMLCh szNumBuff[20];
-    XMLString::binToText(args_ ? args_->size() : 0, szNumBuff, 19, 10);
+    XMLString::binToText(args_ ? (unsigned int)args_->size() : 0, szNumBuff, 19, 10);
     buf.append(szNumBuff);
     buf.append(X(" arguments is not defined [err:XPST0017]"));
 

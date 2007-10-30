@@ -568,7 +568,7 @@ void SchemaValidatorFilter::textEvent(const XMLCh *chars)
 
   const XMLCh *end = chars;
   while(*end) ++end;
-  unsigned int len = end - chars;
+  unsigned int len = (unsigned int)(end - chars);
 
   if(fValidate) {
     // Get the character data opts for the current element

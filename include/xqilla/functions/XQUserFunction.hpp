@@ -60,7 +60,7 @@ public:
   public:
     Instance(const XQUserFunction *funcDef, const VectorOfASTNodes& args, XPath2MemoryManager* expr);
 
-    virtual Result getArgument(unsigned int index, DynamicContext *context) const;
+    virtual Result getArgument(size_t index, DynamicContext *context) const;
 
     Result createResult(DynamicContext* context, int flags=0) const;
     virtual void generateEvents(EventHandler *events, DynamicContext *context,
@@ -117,8 +117,8 @@ public:
   virtual const XMLCh* getName() const { return name_; }
   virtual const XMLCh *getURI() const { return uri_; }
   virtual const XMLCh *getURINameHash() const { return uriname_; }
-  virtual unsigned int getMinArgs() const;
-  virtual unsigned int getMaxArgs() const;
+  virtual size_t getMinArgs() const;
+  virtual size_t getMaxArgs() const;
 
   const ArgumentSpecs* getArgumentSpecs() const { return argSpecs_; }
   const SequenceType* getReturnType() const { return returnType_; }

@@ -152,11 +152,11 @@ public:
   /**
    * The number of items in the result snapshot. Valid values for snapshotItem
    * indices are 0 to snapshotLength-1 inclusive.
-   * @return snapshotLength of type unsigned long, readonly
+   * @return snapshotLength of type size_t, readonly
    * @exception XPathException
    * TYPE_ERR: raised if resultType is not SNAPSHOT_RESULT.
    */
-  virtual unsigned long getSnapshotLength() const = 0;
+  virtual size_t getSnapshotLength() const = 0;
 
   /**
    * Iterates and returns true if the current result is the next item from the
@@ -175,13 +175,13 @@ public:
    * index is greater than or equal to the number of items in the list, this method
    * returns false. Unlike the iterator result, the snapshot does not become
    * invalid, but may not correspond to the current document if it is mutated.
-   * @param index of type unsigned long - Index into the snapshot collection.
+   * @param index of type size_t - Index into the snapshot collection.
    * @return boolean True if the current result is the next item from the sequence
    * or false if there are no more items.
    * @exception XPathException
    * TYPE_ERR: raised if resultType is not SNAPSHOT_RESULT.
    */
-  virtual bool snapshotItem(unsigned long index) = 0;
+  virtual bool snapshotItem(size_t) = 0;
   //@}
 
   /** @name Non-standard Extension */
