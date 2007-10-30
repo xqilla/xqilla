@@ -38,6 +38,7 @@
 				AssemblerListingLocation=".\$(OutDir)/"
 				ObjectFile=".\$(OutDir)/"
 				WarningLevel="3"
+				Detect64BitPortabilityProblems="TRUE"
 				SuppressStartupBanner="TRUE"
 				CompileAs="0"/>
 			<Tool
@@ -100,6 +101,7 @@
 				AssemblerListingLocation=".\$(OutDir)/"
 				ObjectFile=".\$(OutDir)/"
 				WarningLevel="3"
+				Detect64BitPortabilityProblems="TRUE"
 				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="3"
 				CompileAs="0"/>
@@ -166,6 +168,7 @@
 				AssemblerListingLocation=".\$(OutDir)/"
 				ObjectFile=".\$(OutDir)/"
 				WarningLevel="3"
+				Detect64BitPortabilityProblems="TRUE"
 				SuppressStartupBanner="TRUE"
 				CompileAs="0"/>
 			<Tool
@@ -228,6 +231,7 @@
 				AssemblerListingLocation=".\$(OutDir)/"
 				ObjectFile=".\$(OutDir)/"
 				WarningLevel="3"
+				Detect64BitPortabilityProblems="TRUE"
 				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="3"
 				CompileAs="0"/>
@@ -294,6 +298,7 @@
 				AssemblerListingLocation=".\$(OutDir)/"
 				ObjectFile=".\$(OutDir)/"
 				WarningLevel="3"
+				Detect64BitPortabilityProblems="TRUE"
 				SuppressStartupBanner="TRUE"
 				CompileAs="0"/>
 			<Tool
@@ -356,6 +361,7 @@
 				AssemblerListingLocation=".\$(OutDir)/"
 				ObjectFile=".\$(OutDir)/"
 				WarningLevel="3"
+				Detect64BitPortabilityProblems="TRUE"
 				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="3"
 				CompileAs="0"/>
