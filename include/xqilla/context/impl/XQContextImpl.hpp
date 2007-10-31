@@ -395,11 +395,11 @@ protected:
 
   /** The context position is the position of  the context item within
    * the sequence of items currently being processed. */
-  unsigned int _contextPosition;
+  size_t _contextPosition;
 
   /** The context size is the number of items in the sequence of
    * items currently being processed. */
-  unsigned int _contextSize;
+  size_t _contextSize;
 
   /** In-scope variable values. This is a set of  (QName, Sequence) pairs.
    * It defines the set of variables that have been declared and are
