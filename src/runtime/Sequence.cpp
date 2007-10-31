@@ -88,7 +88,7 @@ const Item::Ptr &Sequence::second() const
 }
 
 // might return NULL
-const Item::Ptr &Sequence::item(unsigned int index) const
+const Item::Ptr &Sequence::item(size_t index) const
 {
   return _itemList[index];
 }
@@ -145,7 +145,7 @@ Sequence::const_reverse_iterator Sequence::rend(void) const
   return _itemList.rend();
 }
 
-unsigned int Sequence::getLength(void) const
+size_t Sequence::getLength(void) const
 {
   return _itemList.size();
 }

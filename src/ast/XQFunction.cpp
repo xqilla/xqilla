@@ -56,7 +56,7 @@ const XMLCh XQFunction::XMLChFunctionURI[] =
     chLatin_n,       chLatin_s,       chNull
 };
 
-const unsigned int XQFunction::UNLIMITED = 10000; // A reasonably large number
+const size_t XQFunction::UNLIMITED = 10000; // A reasonably large number
 
 XQFunction::XQFunction(const XMLCh* name, size_t argsFrom, size_t argsTo, const char* paramDecl,
                        const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)

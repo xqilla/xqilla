@@ -32,7 +32,7 @@ public:
     virtual ~Arguments() {}
 
     /// Return the result for the argument index specified. Arguments indexes are zero based.
-    virtual Result getArgument(unsigned int index, DynamicContext *context) const = 0;
+    virtual Result getArgument(size_t index, DynamicContext *context) const = 0;
   };
 
   virtual ~ExternalFunction() {}

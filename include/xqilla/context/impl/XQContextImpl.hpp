@@ -91,14 +91,14 @@ public:
   virtual void setContextItem(const Item::Ptr &item);
 
   /** Get the context position */
-  virtual unsigned int getContextPosition() const;
+  virtual size_t getContextPosition() const;
   /** Set the context position */
-  virtual void setContextPosition(unsigned int pos);
+  virtual void setContextPosition(size_t pos);
 
   /** Get the context size */
-  virtual unsigned int getContextSize() const;
+  virtual size_t getContextSize() const;
   /** Set the context size */
-  virtual void setContextSize(unsigned int size);
+  virtual void setContextSize(size_t size);
 
   virtual const VariableStore* getVariableStore() const;
   virtual void setVariableStore(const VariableStore *store);
@@ -207,7 +207,7 @@ public:
   /** adds an external function implementation to the function table */
   virtual void addExternalFunction(const ExternalFunction *func);
   /** returns an external function implementation for the given uri and localname */
-  virtual const ExternalFunction *lookUpExternalFunction(const XMLCh *uri, const XMLCh *name, unsigned int numArgs) const;
+  virtual const ExternalFunction *lookUpExternalFunction(const XMLCh *uri, const XMLCh *name, size_t numArgs) const;
 
   /** Get the implementation for the specified collation */
   virtual Collation* getCollation(const XMLCh* const URI, const LocationInfo *location) const;
