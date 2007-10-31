@@ -80,7 +80,7 @@ Sequence FunctionNormalizeSpace::createSequence(DynamicContext* context, int fla
 
         str = strParm.first()->asString(context);
     }
-    const XMLCh* result = NULL;
+    const XMLCh* result = XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString;
 
     int whitespace = 0; 
     for(unsigned int i = 0; i < XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(str); i++) 
