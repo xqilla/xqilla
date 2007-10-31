@@ -179,12 +179,12 @@ void XQDynamicContextImpl::setContextItem(const Item::Ptr &item)
   _contextItem = item;
 }
 
-void XQDynamicContextImpl::setContextSize(unsigned int size)
+void XQDynamicContextImpl::setContextSize(size_t size)
 {
   _contextSize = size;
 }
 
-void XQDynamicContextImpl::setContextPosition(unsigned int pos)
+void XQDynamicContextImpl::setContextPosition(size_t pos)
 {
   _contextPosition = pos;
 }
@@ -194,12 +194,12 @@ Item::Ptr XQDynamicContextImpl::getContextItem() const
   return _contextItem;
 }
 
-unsigned int XQDynamicContextImpl::getContextSize() const
+size_t XQDynamicContextImpl::getContextSize() const
 {
   return _contextSize;
 }
 
-unsigned int XQDynamicContextImpl::getContextPosition() const
+size_t XQDynamicContextImpl::getContextPosition() const
 {
   return _contextPosition;
 }

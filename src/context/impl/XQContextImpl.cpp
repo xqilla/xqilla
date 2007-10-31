@@ -432,12 +432,12 @@ void XQContextImpl::addCustomFunction(FuncFactory *func)
   _functionTable->insertFunction(func);
 }
 
-void XQContextImpl::setContextSize(unsigned int size)
+void XQContextImpl::setContextSize(size_t size)
 {
   _contextSize = size;
 }
 
-void XQContextImpl::setContextPosition(unsigned int pos)
+void XQContextImpl::setContextPosition(size_t pos)
 {
   _contextPosition = pos;
 }
@@ -486,12 +486,12 @@ VariableTypeStore* XQContextImpl::getVariableTypeStore()
   return _varTypeStore;
 }
 
-unsigned int XQContextImpl::getContextSize() const
+size_t XQContextImpl::getContextSize() const
 {
   return _contextSize;
 }
 
-unsigned int XQContextImpl::getContextPosition() const
+size_t XQContextImpl::getContextPosition() const
 {
   return _contextPosition;
 }
@@ -580,7 +580,7 @@ void XQContextImpl::addExternalFunction(const ExternalFunction *func)
 }
 
 const ExternalFunction *XQContextImpl::lookUpExternalFunction(const XMLCh *uri, const XMLCh *name,
-                                                                   unsigned int numArgs) const
+							      size_t numArgs) const
 {
   return FunctionLookup::lookUpGlobalExternalFunction(uri, name, numArgs, _functionTable);
 }

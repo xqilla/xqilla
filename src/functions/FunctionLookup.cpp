@@ -193,10 +193,10 @@ const ExternalFunction *FunctionLookup::lookUpGlobalExternalFunction(
 {
 	const ExternalFunction *ef =
 		g_globalFunctionTable->lookUpExternalFunction(
-			URI, fname, (unsigned int)numArgs);
+			URI, fname, numArgs);
 	if (!ef && contextTable)
 		ef = contextTable->lookUpExternalFunction(
-			URI, fname, (unsigned int)numArgs);
+			URI, fname, numArgs);
 	return ef;
 }
 

@@ -45,7 +45,7 @@ public:
   ///returns the approriate ExternalFunction object
   const ExternalFunction *lookUpExternalFunction(const XMLCh* URI,
 						 const XMLCh* fname,
-						 unsigned int numArgs) const;
+						 size_t numArgs) const;
   void insertUpdateFunctions(XPath2MemoryManager *memMgr);
 
 private:
@@ -62,7 +62,7 @@ public:
 				       XPath2MemoryManager* memMgr,
 				       const FunctionLookup *contextTable);
   static const ExternalFunction *lookUpGlobalExternalFunction(
-	  const XMLCh* URI, const XMLCh* fname, unsigned int numArgs,
+	  const XMLCh* URI, const XMLCh* fname, size_t numArgs,
 	  const FunctionLookup *contextTable);
   static void initialize();
   static void terminate();
