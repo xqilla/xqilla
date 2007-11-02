@@ -41,7 +41,8 @@ void TestSuiteRunner::testResults(const TestCase &testCase, const std::string &x
   if(testCase.outputFiles.empty()) {
     if(!testCase.expectedErrors.empty())
       m_results->reportFailNoError(testCase, xmlResult, "");
-    // Otherwise don't report anything - it's probably the first stage of an update test
+    // Otherwise pass - it's probably the first stage of an update test
+    m_results->reportPass(testCase, "");
   }
   else {
     bool passed = false;
@@ -175,95 +176,104 @@ static bool isIgnorableWS(DOMNode* node)
 
 static bool compareNodes(DOMNode* node1, DOMNode* node2)
 {
-    if(node1->getNodeType()!=node2->getNodeType())
-    {
-        //TRACE(_T("node type %d (%s value %s) != node type %d (%s value %s)\n"),node1->getNodeType(), node1->getNodeName(), node1->getNodeValue(), node2->getNodeType(), node2->getNodeName(), node2->getNodeValue());
-        return false;
-    }
-    if(node1->hasChildNodes() != node2->hasChildNodes())
-    {
-        //TRACE(_T("node %s has %d children != node %s has %d children\n"),node1->getNodeName(), node1->hasChildNodes(), node2->getNodeName(), node2->hasChildNodes());
-        return false;
-    }
-    if(node1->getNodeType()==DOMNode::ELEMENT_NODE)
-    {
-        DOMElement* e1=(DOMElement*)node1;
-        DOMElement* e2=(DOMElement*)node2;
-        if(!XMLString::equals(e1->getNamespaceURI(), e2->getNamespaceURI()))
-        {
-            //TRACE(_T("node %s namespace %s != node %s namespace %s\n"),e1->getNodeName(), e1->getNamespaceURI(), e2->getNodeName(), e2->getNamespaceURI());
-            return false;
-        }
-        if(!XMLString::equals(e1->getLocalName(), e2->getLocalName()))
-        {
-            //TRACE(_T("node %s local part %s != node %s local part %s\n"),e1->getNodeName(), e1->getLocalName(), e2->getNodeName(), e2->getLocalName());
-            return false;
-        }
-        DOMNamedNodeMap* map1=e1->getAttributes();
-        DOMNamedNodeMap* map2=e2->getAttributes();
+//   cerr << (node1->getNodeType() == DOMNode::ATTRIBUTE_NODE ? "@" : "") << UTF8(node1->getNodeName())
+//        << ", " << (node2->getNodeType() == DOMNode::ATTRIBUTE_NODE ? "@" : "") << UTF8(node2->getNodeName()) << " -> ";
 
-        if(map1->getLength()!=map2->getLength())
-            return false;
-        for(unsigned int i=0;i<map1->getLength();i++)
-        {
-            DOMNode* a1=map1->item(i);
-            DOMNode* a2=map2->getNamedItemNS(a1->getNamespaceURI(),a1->getLocalName());
-            if(a2==NULL)
-            {
-                //TRACE(_T("node %s has attribute {%s}%s != node %s hasn't\n"),node1->getNodeName(), a1->getNamespaceURI(), a1->getLocalName(), node2->getNodeName());
-                return false;
-            }
-            if(!compareNodes(a1,a2))
-                return false;
-        }
-    }
-    else
+  if(node1->getNodeType()!=node2->getNodeType())
+  {
+//     cerr << "false (node type)\n";
+    return false;
+  }
+  if(node1->hasChildNodes() != node2->hasChildNodes())
+  {
+//     cerr << "false (child nodes)\n";
+    return false;
+  }
+  if(node1->getNodeType()==DOMNode::ELEMENT_NODE)
+  {
+    DOMElement* e1=(DOMElement*)node1;
+    DOMElement* e2=(DOMElement*)node2;
+    if(!XMLString::equals(e1->getNamespaceURI(), e2->getNamespaceURI()))
     {
-        if(!XMLString::equals(node1->getNodeName(),node2->getNodeName()))
-        {
-            //TRACE(_T("node %s != node %s\n"), node1->getNodeValue(), node2->getNodeValue());
-            return false;
-        }
-        if(!XMLString::equals(node1->getNodeValue(),node2->getNodeValue()))
-        {
-            //TRACE(_T("node %s value %s != node %s value %s\n"),node1->getNodeName(), node1->getNodeValue(),node2->getNodeName(), node2->getNodeValue());
-            return false;
-        }
+//       cerr << "false (uri)\n";
+      return false;
     }
-    DOMNode* n1=node1->getFirstChild();
-    DOMNode* n2=node2->getFirstChild();
-    while(n1 && n2)
+    if(!XMLString::equals(e1->getLocalName(), e2->getLocalName()))
     {
-        if(isIgnorableWS(n1))
-        {
-            //TRACE(_T("skipping ws node %s value '%s'\n"),n1->getNodeName(), n1->getNodeValue());
-            n1=n1->getNextSibling();
-        }
-        if(isIgnorableWS(n2))
-        {
-            //TRACE(_T("skipping ws node %s value '%s'\n"),n2->getNodeName(), n2->getNodeValue());
-            n2=n2->getNextSibling();
-        }
-        if(n1==NULL || n2==NULL)
-            break;
+//       cerr << "false (localname)\n";
+      return false;
+    }
+    DOMNamedNodeMap* map1=e1->getAttributes();
+    DOMNamedNodeMap* map2=e2->getAttributes();
 
-        if(!compareNodes(n1, n2))
-            return false;
-        n1=n1->getNextSibling();
-        n2=n2->getNextSibling();
+    if(map1->getLength()!=map2->getLength()) {
+//       cerr << "false (num attrs)\n";
+      return false;
     }
+    for(unsigned int i=0;i<map1->getLength();i++)
+    {
+      DOMNode* a1=map1->item(i);
+      DOMNode* a2=map2->getNamedItemNS(a1->getNamespaceURI(),a1->getLocalName());
+      if(a2==NULL)
+      {
+//         cerr << "false (no a2 attr)\n";
+        return false;
+      }
+      if(!compareNodes(a1,a2)) {
+//         cerr << "false (attr)\n";
+        return false;
+      }
+    }
+  }
+  else
+  {
+    if(!XMLString::equals(node1->getNodeName(),node2->getNodeName()))
+    {
+//       cerr << "false (node name)\n";
+      return false;
+    }
+    if(!XMLString::equals(node1->getNodeValue(),node2->getNodeValue()))
+    {
+//       cerr << "false (node value)\n";
+//       cerr << "  \"" << UTF8(node1->getNodeValue()) << "\" != \"" << UTF8(node2->getNodeValue()) << "\"\n";
+      return false;
+    }
+  }
+  DOMNode* n1=node1->getFirstChild();
+  DOMNode* n2=node2->getFirstChild();
+  while(n1 && n2)
+  {
     if(isIgnorableWS(n1))
     {
-        //TRACE(_T("skipping ws node %s value '%s'\n"),n1->getNodeName(), n1->getNodeValue());
-        n1=n1->getNextSibling();
+      n1=n1->getNextSibling();
     }
     if(isIgnorableWS(n2))
     {
-        //TRACE(_T("skipping ws node %s value '%s'\n"),n2->getNodeName(), n2->getNodeValue());
-        n2=n2->getNextSibling();
+      n2=n2->getNextSibling();
     }
+    if(n1==NULL || n2==NULL)
+      break;
 
-    if(n1!=NULL || n2!=NULL)
-        return false;
-    return true;
+    if(!compareNodes(n1, n2)) {
+//       cerr << "false (child node)\n";
+      return false;
+    }
+    n1=n1->getNextSibling();
+    n2=n2->getNextSibling();
+  }
+  if(isIgnorableWS(n1))
+  {
+    n1=n1->getNextSibling();
+  }
+  if(isIgnorableWS(n2))
+  {
+    n2=n2->getNextSibling();
+  }
+
+  if(n1!=NULL || n2!=NULL) {
+//     cerr << "false (extra children)\n";
+    return false;
+  }
+//   cerr << "true\n";
+  return true;
 }
