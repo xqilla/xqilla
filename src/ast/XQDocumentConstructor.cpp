@@ -20,6 +20,7 @@
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/items/Node.hpp>
 #include <xqilla/events/EventHandler.hpp>
+#include <xqilla/exceptions/StaticErrorException.hpp>
 
 #if defined(XERCES_HAS_CPP_NAMESPACE)
 XERCES_CPP_NAMESPACE_USE
@@ -111,6 +112,12 @@ ASTNode* XQDocumentConstructor::staticTyping(StaticContext *context)
 
   m_value = m_value->staticTyping(context);
   _src.add(m_value->getStaticAnalysis());
+
+  if(m_value->getStaticAnalysis().isUpdating()) {
+    XQThrow(StaticErrorException,X("XQDocumentConstructor::staticTyping"),
+            X("It is a static error for the content expression of a document node constructor "
+              "to be an updating expression [err:XUST0001]"));
+  }
 
   _src.getStaticType().flags = StaticType::DOCUMENT_TYPE;
   _src.forceNoFolding(true);

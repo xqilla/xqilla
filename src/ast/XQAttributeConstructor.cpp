@@ -26,6 +26,7 @@
 #include <xqilla/items/AnyAtomicTypeConstructor.hpp>
 #include <xqilla/ast/XQAtomize.hpp>
 #include <xqilla/events/EventHandler.hpp>
+#include <xqilla/exceptions/StaticErrorException.hpp>
 
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 #include <xercesc/framework/XMLBuffer.hpp>
@@ -105,18 +106,30 @@ ASTNode* XQAttributeConstructor::staticTyping(StaticContext *context)
   m_name = m_name->staticTyping(context);
   _src.add(m_name->getStaticAnalysis());
 
+  if(m_name->getStaticAnalysis().isUpdating()) {
+    XQThrow(StaticErrorException,X("XQAttributeConstructor::staticTyping"),
+            X("It is a static error for the name expression of an attribute constructor "
+              "to be an updating expression [err:XUST0001]"));
+  }
+
   unsigned int i;
   for(i = 0; i < m_children->size(); ++i) {
     (*m_children)[i] = (*m_children)[i]->staticTyping(context);
     _src.add((*m_children)[i]->getStaticAnalysis());
+
+    if((*m_children)[i]->getStaticAnalysis().isUpdating()) {
+      XQThrow(StaticErrorException,X("XQAttributeConstructor::staticTyping"),
+              X("It is a static error for the a value expression of an attribute constructor "
+                "to be an updating expression [err:XUST0001]"));
+    }
   }
 
   _src.getStaticType().flags = StaticType::ATTRIBUTE_TYPE;
   _src.forceNoFolding(true);
   _src.creative(true);
   _src.setProperties(StaticAnalysis::DOCORDER | StaticAnalysis::GROUPED |
-	  StaticAnalysis::PEER | StaticAnalysis::SUBTREE | StaticAnalysis::SAMEDOC |
-	  StaticAnalysis::ONENODE);
+                     StaticAnalysis::PEER | StaticAnalysis::SUBTREE | StaticAnalysis::SAMEDOC |
+                     StaticAnalysis::ONENODE);
   return this; // Never constant fold
 }
 

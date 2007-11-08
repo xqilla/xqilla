@@ -20,6 +20,7 @@
 #include <xqilla/items/Node.hpp>
 #include <xqilla/ast/XQAtomize.hpp>
 #include <xqilla/events/EventHandler.hpp>
+#include <xqilla/exceptions/StaticErrorException.hpp>
 
 #include <xercesc/util/XMLChar.hpp>
 #include <xercesc/framework/XMLBuffer.hpp>
@@ -80,12 +81,18 @@ ASTNode* XQCommentConstructor::staticTyping(StaticContext *context)
   m_value = m_value->staticTyping(context);
   _src.add(m_value->getStaticAnalysis());
 
+  if(m_value->getStaticAnalysis().isUpdating()) {
+    XQThrow(StaticErrorException,X("XQCommentConstructor::staticTyping"),
+            X("It is a static error for the value expression of a comment node constructor "
+              "to be an updating expression [err:XUST0001]"));
+  }
+
   _src.getStaticType().flags = StaticType::COMMENT_TYPE;
   _src.forceNoFolding(true);
   _src.creative(true);
   _src.setProperties(StaticAnalysis::DOCORDER | StaticAnalysis::GROUPED |
-	  StaticAnalysis::PEER | StaticAnalysis::SUBTREE | StaticAnalysis::SAMEDOC |
-	  StaticAnalysis::ONENODE);
+                     StaticAnalysis::PEER | StaticAnalysis::SUBTREE | StaticAnalysis::SAMEDOC |
+                     StaticAnalysis::ONENODE);
   return this; // Never constant fold
 }
 
