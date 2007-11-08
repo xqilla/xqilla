@@ -169,7 +169,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalOptions="/FIXED:NO"
+				AdditionalOptions="/FIXED:NO /machine:AMD64"
 				AdditionalDependencies="xqilla11.lib xerces-c_2.lib"
 				AdditionalLibraryDirectories="$(OutDir);../../../xerces-c-src/Build/Win32/VC7.1/$(ConfigurationName)"
 				OutputFile="$(OutDir)/xqilla.exe"
@@ -232,7 +232,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalOptions="/FIXED:NO"
+				AdditionalOptions="/FIXED:NO /machine:AMD64"
 				AdditionalDependencies="xqilla11d.lib xerces-c_2d.lib"
 				AdditionalLibraryDirectories="$(OutDir);../../../xerces-c-src/Build/Win32/VC7.1/$(ConfigurationName)"
 				OutputFile="$(OutDir)/xqilla.exe"
@@ -298,7 +298,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalOptions="/FIXED:NO"
+				AdditionalOptions="/FIXED:NO /machine:IA64"
 				AdditionalDependencies="xqilla11.lib xerces-c_2.lib"
 				AdditionalLibraryDirectories="$(OutDir);../../../xerces-c-src/Build/Win32/VC7.1/$(ConfigurationName)"
 				OutputFile="$(OutDir)/xqilla.exe"
@@ -361,7 +361,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalOptions="/FIXED:NO"
+				AdditionalOptions="/FIXED:NO /machine:IA64"
 				AdditionalDependencies="xqilla11d.lib xerces-c_2d.lib"
 				AdditionalLibraryDirectories="$(OutDir);../../../xerces-c-src/Build/Win32/VC7.1/$(ConfigurationName)"
 				OutputFile="$(OutDir)/xqilla.exe"
