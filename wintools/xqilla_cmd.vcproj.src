@@ -169,7 +169,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalOptions="/FIXED:NO"
+				AdditionalOptions="/FIXED:NO /machine:AMD64"
 				AdditionalDependencies="@XQILLA_LIB@.lib @XERCES_LIB@.lib"
 				AdditionalLibraryDirectories="$(OutDir);@XERCES_LIBHOME7@/$(ConfigurationName)"
 				OutputFile="$(OutDir)/xqilla.exe"
@@ -232,7 +232,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalOptions="/FIXED:NO"
+				AdditionalOptions="/FIXED:NO /machine:AMD64"
 				AdditionalDependencies="@XQILLA_LIB@d.lib @XERCES_LIB@d.lib"
 				AdditionalLibraryDirectories="$(OutDir);@XERCES_LIBHOME7@/$(ConfigurationName)"
 				OutputFile="$(OutDir)/xqilla.exe"
@@ -298,7 +298,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalOptions="/FIXED:NO"
+				AdditionalOptions="/FIXED:NO /machine:IA64"
 				AdditionalDependencies="@XQILLA_LIB@.lib @XERCES_LIB@.lib"
 				AdditionalLibraryDirectories="$(OutDir);@XERCES_LIBHOME7@/$(ConfigurationName)"
 				OutputFile="$(OutDir)/xqilla.exe"
@@ -361,7 +361,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalOptions="/FIXED:NO"
+				AdditionalOptions="/FIXED:NO /machine:IA64"
 				AdditionalDependencies="@XQILLA_LIB@d.lib @XERCES_LIB@d.lib"
 				AdditionalLibraryDirectories="$(OutDir);@XERCES_LIBHOME7@/$(ConfigurationName)"
 				OutputFile="$(OutDir)/xqilla.exe"
