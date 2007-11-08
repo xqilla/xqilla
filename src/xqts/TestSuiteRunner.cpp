@@ -42,7 +42,7 @@ void TestSuiteRunner::testResults(const TestCase &testCase, const std::string &x
     if(!testCase.expectedErrors.empty())
       m_results->reportFailNoError(testCase, xmlResult, "");
     // Otherwise pass - it's probably the first stage of an update test
-    m_results->reportPass(testCase, "");
+    else m_results->reportPass(testCase, "");
   }
   else {
     bool passed = false;

@@ -32,6 +32,7 @@
 #include <xqilla/events/EventHandler.hpp>
 #include <xqilla/schema/DocumentCache.hpp>
 #include <xqilla/utils/XMLChCompare.hpp>
+#include <xqilla/exceptions/StaticErrorException.hpp>
 
 #include "../events/NoInheritFilter.hpp"
 
@@ -385,17 +386,29 @@ ASTNode* XQElementConstructor::staticTyping(StaticContext *context)
   m_name = m_name->staticTyping(context);
   _src.add(m_name->getStaticAnalysis());
 
+  if(m_name->getStaticAnalysis().isUpdating()) {
+    XQThrow(StaticErrorException,X("XQElementConstructor::staticTyping"),
+            X("It is a static error for the name expression of an element constructor "
+              "to be an updating expression [err:XUST0001]"));
+  }
+
   for(i = 0; i < m_children->size(); ++i) {
     (*m_children)[i] = (*m_children)[i]->staticTyping(context);
     _src.add((*m_children)[i]->getStaticAnalysis());
+
+    if((*m_children)[i]->getStaticAnalysis().isUpdating()) {
+      XQThrow(StaticErrorException,X("XQElementConstructor::staticTyping"),
+              X("It is a static error for a content expression of an element constructor "
+                "to be an updating expression [err:XUST0001]"));
+    }
   }
 
   _src.getStaticType().flags = StaticType::ELEMENT_TYPE;
   _src.forceNoFolding(true);
   _src.creative(true);
   _src.setProperties(StaticAnalysis::DOCORDER | StaticAnalysis::GROUPED |
-	  StaticAnalysis::PEER | StaticAnalysis::SUBTREE | StaticAnalysis::SAMEDOC |
-	  StaticAnalysis::ONENODE);
+                     StaticAnalysis::PEER | StaticAnalysis::SUBTREE | StaticAnalysis::SAMEDOC |
+                     StaticAnalysis::ONENODE);
   return this; // Never constant fold
 }
 
