@@ -279,8 +279,8 @@ void XQillaTestSuiteRunner::startTestGroup(const string &name)
 
 void XQillaTestSuiteRunner::endTestGroup()
 {
-  int nColonPos = m_szFullTestName.find_last_of(":");
-  if(nColonPos != -1)
+  string::size_type nColonPos = m_szFullTestName.find_last_of(":");
+  if(nColonPos != string::npos)
     m_szFullTestName = string(m_szFullTestName.c_str(), nColonPos);
   else
     m_szFullTestName = "";
