@@ -240,18 +240,7 @@ void XQQuery::staticResolution(StaticContext *context)
   // Run staticResolutionStage2 on the user defined functions,
   // which statically resolves their function bodies
   for(i = m_userDefFns.begin(); i != m_userDefFns.end(); ++i) {
-      try {
-        (*i)->staticResolutionStage2(context);
-      } catch(XQException& e) {
-        XMLBuffer errMsg(1023, context->getMemoryManager());
-        errMsg.set(X("Error while running static resolution on user-defined function {"));
-        errMsg.append((*i)->getURI());
-        errMsg.append(X("}"));
-        errMsg.append((*i)->getName());
-        errMsg.append(X(": "));
-        errMsg.append(e.getError());
-        XQThrow3(StaticErrorException,X("XQQuery::staticResolution"), errMsg.getRawBuffer(), *i);
-      }
+    (*i)->staticResolutionStage2(context);
   }
   if(m_query) m_query = m_query->staticResolution(context);
 
@@ -309,18 +298,7 @@ void XQQuery::staticTyping(StaticContext *context)
   // which calculates a better type for them
   UserFunctions::iterator i;
   for(i = m_userDefFns.begin(); i != m_userDefFns.end(); ++i) {
-      try {
-        (*i)->staticTyping(context);
-      } catch(XQException& e) {
-        XMLBuffer errMsg(1023, context->getMemoryManager());
-        errMsg.set(X("Error while calculating static type of user-defined function {"));
-        errMsg.append((*i)->getURI());
-        errMsg.append(X("}"));
-        errMsg.append((*i)->getName());
-        errMsg.append(X(": "));
-        errMsg.append(e.getError());
-        XQThrow3(StaticErrorException,X("XQQuery::staticTyping"), errMsg.getRawBuffer(), *i);
-      }
+    (*i)->staticTyping(context);
   }
   if(m_query) m_query = m_query->staticTyping(context);
 }

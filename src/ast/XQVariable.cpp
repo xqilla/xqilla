@@ -26,6 +26,8 @@
 #include <xqilla/ast/StaticAnalysis.hpp>
 #include <xercesc/framework/XMLBuffer.hpp>
 
+XERCES_CPP_NAMESPACE_USE;
+
 XQVariable::XQVariable(const XMLCh *qualifiedName, XPath2MemoryManager* memMgr)
   : ASTNodeImpl(memMgr),
     _uri(0)
@@ -69,13 +71,16 @@ ASTNode *XQVariable::staticTyping(StaticContext *context)
 
   const StaticAnalysis *var_src = context->getVariableTypeStore()->getVar(_uri, _name);
   if(var_src == NULL || (var_src->getProperties() & StaticAnalysis::UNDEFINEDVAR)!=0) {
-    const XMLCh* qname = XPath2NSUtils::qualifyName(_prefix, _name, context->getMemoryManager());
-    const XMLCh* msg = XPath2Utils::concatStrings(X("Variable "), qname, X(" does not exist [err:XPST0008]"),
-                                                  context->getMemoryManager());
-    XQThrow(StaticErrorException, X("XQVariable::staticResolution"), msg);
+    XMLBuffer errMsg;
+    errMsg.append(X("A variable called {"));
+    errMsg.append(_uri);
+    errMsg.append(X("}"));
+    errMsg.append(_name);
+    errMsg.append(X(" does not exist [err:XPST0008]"));
+    XQThrow(StaticErrorException, X("XQVariable::staticResolution"), errMsg.getRawBuffer());
   }
   if((var_src->getProperties() & StaticAnalysis::FORWARDREF)!=0) {
-    XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer errMsg(1023, context->getMemoryManager());
+    XMLBuffer errMsg;
     errMsg.set(X("Cannot refer to global variable with name {"));
     errMsg.append(_uri);
     errMsg.append(X("}"));
