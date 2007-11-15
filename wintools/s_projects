@@ -1,0 +1,35 @@
+#
+# This script drives construction of Visual Studio (version 7.1) projects 
+# files, using an xquery script (genproject.template),an input XML
+# document, and a file containing a list of project names.
+#
+
+# project name list
+PROJECTS=xqilla.projects
+
+# xquery script template
+TEMPLATE=genproject.template
+
+# temporary script, post-sed-replacement
+TEMP_SCRIPT=genproject.script
+
+# xml document input template
+CONFIG_INPUT=xqilla.template.xml
+
+# temporary xml document, post-sed-replacement
+CONFIG_OUTPUT=xqilla.xml
+
+# location for output project files
+PROJECT_OUTPUT_DIR=../Win32Projects/VC7.1
+
+# substitute some variables in the XML document template
+sed -f lib_paths.sed < $CONFIG_INPUT > $CONFIG_OUTPUT
+
+# for each project, substitute 2 variables in the XQuery script, then run it
+for i in `cat $PROJECTS`
+do
+   sed -e "s!@PROJECT_NAME@!$i!g" -e "s!@PROJECT_INPUT@!$CONFIG_OUTPUT!g" < $TEMPLATE > $TEMP_SCRIPT
+   echo "Generating project for $i"
+   xqilla -o $PROJECT_OUTPUT_DIR/$i.vcproj $TEMP_SCRIPT
+   rm -f $TEMP_SCRIPT
+done

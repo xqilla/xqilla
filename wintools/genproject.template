@@ -1,0 +1,346 @@
+(:
+*  IMPORTANT: this file is shared (identical) between the BDB XML and XQilla
+*  projects.  It should not be changed independently or in any way that makes
+*  it project-dependent.
+*
+*  @PROJECT_NAME@  - name of the Visual Studio project
+*  @PROJECT_INPUT@ - input XML document that drives the script.
+* TBD:
+*  1. Could drive the remaining variables, including Visual Studio
+*  variables, off of the xml file and provide the XML input 
+*  file as an external variable to the query.  E.g. some projects
+*  may want to parameterize the optimization and warnings levels
+*  2. Generate AdditionalIncludeDirectories based on the <depends> elements for 
+*  projects rather than just including "all" 
+:)
+declare variable $projectList := "@PROJECT_INPUT@";
+declare variable $sourcePath := doc($projectList)/projects/variable[@name="sourcePath"];
+declare variable $outputBase := doc($projectList)/projects/variable[@name="outputBase"];
+
+(: Visual Studio Variables --relatively static :)
+declare variable $platform := "Win32";
+declare variable $debugOptLevel := "0";  (: VS -- no optimization :)
+declare variable $releaseOptLevel := "2"; (: VS -- level 2 opt :)
+declare variable $warnLevel := "3"; (: VS warning level :)
+declare variable $appType := "1"; (: VS type 1 is a program :)
+declare variable $dllType := "2";  (: VS type 2 is a DLL :)
+declare variable $staticType := "4"; (: VS type 4 is a static lib :)
+declare variable $debugInfo := "3"; (: VS debug information format :)
+declare variable $libExtension := ".lib";
+
+(: is it a DLL, Application, or static library? :)
+declare function local:configurationType($projectType)
+{
+  if ($projectType eq "dll") then $dllType
+  else if ($projectType eq "app") then $appType
+  else if ($projectType eq "static") then $staticType
+  else error("Unknown project type")
+};
+
+(: debug vs release :)
+declare function local:isDebug($config) as xs:boolean
+{
+  contains($config,"Debug")
+};
+
+declare function local:isRelease($config) as xs:boolean
+{
+  contains($config,"Release")
+};
+
+(: machine-target-dependent link options :)
+declare function local:addLinkOptions($config)
+{
+  let $machine := if (contains($config,"IA64")) then "/machine:IA64"
+                  else if (contains($config,"AMD64")) then "/machine:AMD64"
+                  else ""
+  return if (not($machine eq "")) then attribute{"AdditionalOptions"}{$machine}
+         else ()
+};
+
+declare function local:addDebugInformation($config)
+{
+  attribute{"DebugInformationFormat"}{$debugInfo},	
+   if (local:isDebug($config)) then attribute{"BasicRuntimeChecks"}{"3"} else ()
+};
+
+declare function local:generateCompilerPreprocessorDefs($project, $config)
+{
+  let $generic := doc($projectList)/projects/preprocessor[@config="all" or contains($config,@config)]
+  let $proj := $project/preprocessor[@config="all" or contains($config,@config)]
+  let $type := doc($projectList)/projects/preprocessor[@config=$project/type]
+
+  return string-join(($generic,$proj,$type),";")
+};
+
+(:
+declare function local:generateResourcePreprocessorDefs($config)
+{
+  let $dbg := if (local:isDebug($config)) then "_DEBUG" else "NDEBUG"
+  return concat($dbg,";_CRT_SECURE_NO_DEPRECATE=1")
+};
+:)
+
+(: Optimization level :)
+declare function local:optLevel($config)
+{
+  if (local:isDebug($config)) then $debugOptLevel
+  else $releaseOptLevel
+};
+
+(: MDd is 3, MD is 2, MTd is 1, MT is 0 :)
+declare function local:runtimeLibrary($config,$static as xs:boolean)
+{
+  if (local:isDebug($config)) then 
+    if ($static) then "1" else"3" 
+  else 
+    if ($static) then "0" else"2" 
+};
+
+declare function local:makeStaticOutputFile($project, $config)
+{
+  attribute{"OutputFile"}
+  {concat("$(OutDir)/", doc($projectList)/projects/library[@name=$project/@name and
+    						    contains($config,@config)]/libname,".lib")
+  }
+};
+
+declare function local:makeImportLibrary($project, $config)
+{
+  if ($project/type eq "dll") then
+    attribute{"ImportLibrary"}{concat("$(OutDir)/", doc($projectList)/projects/library[@name=$project/@name and
+    						    contains($config,@config)]/libname,".lib")}
+  else ()
+};
+
+declare function local:makeOutputPDBFile($project, $config)
+{
+  attribute{"ProgramDatabaseFile"}
+  {
+    if ($project/type eq "dll") then
+       concat("$(OutDir)/", doc($projectList)/projects/library[@name=$project/@name and
+    			    		 		    contains($config,@config)]/libname,".pdb")
+    else							    
+      concat("$(OutDir)/",if (not(empty($project/@output))) then $project/@output else $project/@name,".pdb")
+  }
+};
+
+declare function local:makeOutputFile($project, $config)
+{
+  attribute{"OutputFile"}
+  {
+    if ($project/type eq "dll") then
+       concat("$(OutDir)/", doc($projectList)/projects/library[@name=$project/@name and
+    			    		 		    contains($config,@config)]/libname,".dll")
+    else							    
+      concat("$(OutDir)/",if (not(empty($project/@output))) then $project/@output else $project/@name,".exe")
+  }
+};
+
+(: The simple thing is to add all libraries for all projects :)
+declare function local:addLibraryDependencies($project,$config)
+{
+  attribute{"AdditionalDependencies"}{string-join(for $dep in $project/depends
+   return concat(doc($projectList)/projects/library[@name=$dep and contains($config,@config)]/libname,".lib")," ")}
+};
+
+(: The simple thing is to add all libraries for all projects :)
+declare function local:addLibraryDirectories($project,$config)
+{
+  attribute{"AdditionalLibraryDirectories"}{string-join(for $dep in $project/depends
+   return doc($projectList)/projects/library[@name=$dep and contains($config,@config)]/libdir,";")}
+};
+
+(: The simple thing is to add all libraries for all projects :)
+declare function local:addIncludeDirectories($project,$config)
+{
+  let $incref := for $inc in $project/include[@type="ref"] return doc($projectList)/projects/include[@name=$inc]
+  let $increl := $project/include[@type="rel"]
+  return
+   attribute{"AdditionalIncludeDirectories"}{string-join(($incref,$increl),",")}
+};
+
+(: look for project-specific tool, then a type-specific event :)
+declare function local:generatePostBuildEvent($project, $config)
+{
+<Tool>
+    {attribute{"Name"}{"VCPostBuildEventTool"}}
+    {if (not(empty($project/event[@name="postbuild"]))) then
+           (attribute{"CommandLine"}{$project/event[@name="postbuild"]/command[@config=$config]},
+           attribute{"Description"}{$project/event[@name="postbuild"]/description})
+     else let $ev := doc($projectList)/projects/event[@name="postbuild" and @type=$project/type]
+           return if (not(empty($ev))) then 
+	              (attribute{"CommandLine"}{replace($ev/command[@config=$config],"@pname@",$project/@name)},
+           	      attribute{"Description"}{$ev/description})
+           else ()
+    }
+</Tool>
+};
+
+declare function local:generateCustomBuildTool($project, $config)
+{
+<Tool>
+    {attribute{"Name"}{"VCCustomBuildTool"}}
+    {if (not(empty($project/event[@name="custom"]))) then
+        (attribute{"CommandLine"}{$project/event[@name="custom"]/command[contains(@config,$config)]},
+    	attribute{"Outputs"}{$project/event[@name="custom"]/output})
+	else ()}
+</Tool>
+};
+
+(: for static build :)
+declare function local:generateConfigLibrarian($project, $config)
+{
+<Tool>
+  {attribute{"Name"}{"VCLibrarianTool"}}
+  {local:makeStaticOutputFile($project,$config)}
+</Tool>
+};
+
+declare function local:generateConfigLinkerAndMidl($project, $config)
+{
+<Tool>
+  {attribute{"Name"}{"VCLinkerTool"}}
+  {local:addLinkOptions($config)}
+  {local:addLibraryDependencies($project,$config)}
+  {local:addLibraryDirectories($project,$config)}
+  {local:makeOutputFile($project, $config)}
+  {local:makeOutputPDBFile($project, $config)}
+  {attribute{"LinkIncremental"}{"1"}}
+  {attribute{"SuppressStartupBanner"}{"TRUE"}}
+  {attribute{"OptimizeReferences"}{"2"}}
+  {local:makeImportLibrary($project,$config)}
+  {attribute{"TargetMachine"}{"1"}}
+</Tool>
+};
+
+declare function local:generateConfigCompiler($project, $config, $static as xs:boolean)
+{
+<Tool>
+  {attribute{"Name"}{"VCCLCompilerTool"}}
+  {attribute{"Optimization"}{local:optLevel($config)}}
+  {attribute{"MinimalRebuild"}{"TRUE"}}
+  {if (local:isRelease($config)) then attribute{"InlineFunctionExpansion"}{"1"} else ()}
+  {local:addIncludeDirectories($project,$config)}
+  {attribute{"PreprocessorDefinitions"}{local:generateCompilerPreprocessorDefs($project, $config)}}
+  {attribute{"StringPooling"}{"TRUE"}}
+  {if (not(empty($project/options/rtti))) then attribute{"RuntimeTypeInfo"}{"TRUE"} else ()}
+  {attribute{"RuntimeLibrary"}{local:runtimeLibrary($config,$static)}}
+  {if (local:isRelease($config)) then attribute{"EnableFunctionLevelLinking"}{"TRUE"} else ()}
+  {attribute{"UsePrecompiledHeader"}{"2"}}
+  {if ($project/@name eq "dbxml") then attribute{"PrecompiledHeaderThrough"}{"DbXmlInternal.hpp"} else ()}
+  {attribute{"PrecompiledHeaderFile"}{concat("./$(OutDir)/",$project/@name,".pch")}}
+  {attribute{"AssemblerListingLocation"}{"./$(OutDir)/"}}
+  {attribute{"ObjectFile"}{"./$(OutDir)/"}}
+  {attribute{"WarningLevel"}{$warnLevel}}
+  {attribute{"Detect64BitPortabilityProblems"}{"TRUE"}}
+  {attribute{"SuppressStartupBanner"}{"TRUE"}}
+  {local:addDebugInformation($config)}
+  {attribute{"CompileAs"}{"0"}}
+</Tool>
+};
+
+declare function local:generateConfigBoilerplate($config)
+{
+<Tool Name="VCPreBuildEventTool"/>,
+<Tool Name="VCPreLinkEventTool"/>,
+<Tool Name="VCResourceCompilerTool"/>,
+<Tool Name="VCWebServiceProxyGeneratorTool"/>,
+<Tool Name="VCXMLDataGeneratorTool"/>,
+<Tool Name="VCWebDeploymentTool"/>,
+<Tool Name="VCManagedWrapperGeneratorTool"/>,
+<Tool Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+};
+
+(: could use $ConfigurationName, but DB uses config_machine, so copy that :)
+declare function local:generateOutputDirectory($config,$static)
+{
+    attribute{"OutputDirectory"}{concat($outputBase,string-join(tokenize($config," "),"_"),$static)}
+};
+
+declare function local:generateConfig($project, $config)
+{
+  <Configuration>
+    {attribute{"Name"}{concat($config,"|",$platform)}}
+    {local:generateOutputDirectory($config,"")}
+    {attribute{"IntermediateDirectory"}{concat("./$(OutDir)/",$project/@name)}}
+    {attribute{"ConfigurationType"}{local:configurationType($project/type)}}
+    {attribute{"UseOfMFC"}{"0"}}
+    {attribute{"ATLMinimizesCRunTimeLibraryUsage"}{"FALSE"}}
+    {attribute{"CharacterSet"}{"2"}}
+    {local:generateConfigBoilerplate($config)}
+    {local:generateConfigCompiler($project, $config,xs:boolean("false"))}
+    {local:generateConfigLinkerAndMidl($project, $config)}
+    {local:generatePostBuildEvent($project,if (local:isDebug($config)) then "Debug" else "Release")}
+    {local:generateCustomBuildTool($project,if (local:isDebug($config)) then "Debug" else "Release")}
+  </Configuration>
+};
+
+declare function local:generateStaticConfig($project, $config)
+{
+  <Configuration>
+    {attribute{"Name"}{concat($config,"|",$platform)}}
+    {local:generateOutputDirectory($config,"_static")}
+    {attribute{"IntermediateDirectory"}{concat("./$(OutDir)/",$project/@name)}}
+    {attribute{"ConfigurationType"}{local:configurationType("static")}}
+    {attribute{"UseOfMFC"}{"0"}}
+    {attribute{"ATLMinimizesCRunTimeLibraryUsage"}{"FALSE"}}
+    {attribute{"CharacterSet"}{"2"}}
+    {local:generateConfigBoilerplate($config)}
+    {local:generateConfigCompiler($project, $config,xs:boolean("true"))}
+    {local:generateConfigLibrarian($project, $config)}
+  </Configuration>
+};
+
+declare function local:generateFilesNoFilter($project)
+{
+    for $file in $project/files/file
+        return  <File RelativePath="{concat($sourcePath,$file/@name)}"/>
+};
+
+declare function local:generateFilesWithFilter($project,$filter)
+{
+    for $file in $project/files/filter[@name=$filter]/file
+        return  <File RelativePath="{concat($sourcePath,$file/@name)}"/>
+};
+
+declare function local:generateFiles($project)
+{
+  let $filters := $project/files/filter/@name
+  return if (empty($filters)) then
+          local:generateFilesNoFilter($project)
+     else
+         for $filter in $filters
+         return (<Filter Name="{$filter}" Filter="">
+               {local:generateFilesWithFilter($project,$filter)}
+         </Filter>)
+};
+
+declare function local:getProjects()
+{
+  (: doc($projectList)/projects/project :)
+  doc($projectList)/projects/project[@name="@PROJECT_NAME@"]
+};
+
+for $project in local:getProjects()
+let $static := contains($project/@name,"static")
+let $proj := if ($static) then doc($projectList)/projects/project[@name=tokenize($project/@name,"_")[1]] else $project
+return 
+<VisualStudioProject
+   ProjectType="Visual C++"
+   Version="7.10"
+   Name="{string($project/@name)}"
+   SccProjectName=""
+   SccLocalPath="">
+  <Platforms><Platform Name="Win32"/></Platforms>
+  <Configurations>
+    {
+    for $config in ("Debug","Debug IA64","Debug AMD64","Release","Release IA64","Release AMD64") return if ($static) then local:generateStaticConfig($project, $config) else local:generateConfig($project, $config)
+    }
+  </Configurations>
+  <References/>
+  <Files>
+    {local:generateFiles($proj)}
+  </Files>
+  <Globals/>
+</VisualStudioProject>
