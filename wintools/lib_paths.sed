@@ -10,7 +10,7 @@
 #
 # Assume dependent libraries are in ../../../XXX_HOME, e.g.
 #   ../../../xerces-c-src_2_8_0
-
+s!@XQILLA_STATIC_LIB@!@XQILLA_LIB@s!g
 s!@XQILLA_LIB@!@XQILLA_LIB_BASE@@XQILLA_VERSION_MAJOR@@XQILLA_VERSION_MINOR@!g
 s!@XQILLA_LIB_BASE@!xqilla!g
 

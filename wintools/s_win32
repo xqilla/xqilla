@@ -2,4 +2,7 @@
 #	$Id$
 #
 sh ./s_win32_dsp
-sh ./s_win32_vcproj
+#sh ./s_win32_vcproj
+# s_projects requires that xqilla (the command line program) be in 
+# your PATH
+sh ./s_projects
