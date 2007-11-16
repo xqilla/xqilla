@@ -189,7 +189,11 @@ declare function local:generateCustomBuildTool($project, $config)
 </Tool>
 };
 
-(: for static build :)
+(: 
+ static build of libraries; at this time it does *not* add additional
+ dependent libraries.  This means that applications need to include them
+ for the time being.
+:)
 declare function local:generateConfigLibrarian($project, $config)
 {
 <Tool>
