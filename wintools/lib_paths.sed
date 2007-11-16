@@ -24,6 +24,7 @@ s!@XERCES_LIBHOME7@!@XERCES_WINHOME@/Build/Win32/VC7.1!g
 # Xerces-c is in ../../../xerces-c-src
 s!@XERCES_WINHOME@!../../../@XERCES_NAME@!g
 s!@XERCES_NAME@!xerces-c-src!g
+s!@XERCES_STATIC_LIB@!xerces-c_static_@XERCES_VERSION_MAJOR@!g
 s!@XERCES_LIB@!xerces-c_@XERCES_VERSION_MAJOR@!g
 s!@XERCES_DLL@!xerces-c_@XERCES_VERSION_MAJOR@_@XERCES_VERSION_MINOR@!g
 

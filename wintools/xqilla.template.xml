@@ -18,7 +18,8 @@
   <preprocessor config='Release'>NDEBUG</preprocessor>
   <preprocessor config='dll'>_USRDLL</preprocessor>
   <preprocessor config='app'>_CONSOLE</preprocessor>
-  <preprocessor config='static'>_LIB;XQILLA_API=;XML_LIBRARY=</preprocessor>
+  <preprocessor config='static_lib'>_LIB;XQILLA_API=;XML_LIBRARY=</preprocessor>
+  <preprocessor config='static_app'>XQILLA_API=;XML_LIBRARY=</preprocessor>
   <include name='all'>../../include,../../src/lexer,@XERCES_WINHOME@/include,@XERCES_WINHOME@/src</include>>
   <library config='Debug' name='xqilla'>
     <libname>@XQILLA_LIB@d</libname>
@@ -48,6 +49,16 @@
   <library config='Release' name='xerces'>
     <libname>@XERCES_LIB@</libname>
     <libdir>@XERCES_LIBHOME7@/$(ConfigurationName)</libdir>
+    <libinc>@XERCES_WINHOME@/include,@XERCES_WINHOME@/src</libinc>
+  </library>
+  <library config='Debug' name='xerces_static'>
+    <libname>@XERCES_STATIC_LIB@d</libname>
+    <libdir>@XERCES_LIBHOME7@/Static$(ConfigurationName)</libdir>
+    <libinc>@XERCES_WINHOME@/include,@XERCES_WINHOME@/src</libinc>
+  </library>
+  <library config='Release' name='xerces_static'>
+    <libname>@XERCES_STATIC_LIB@</libname>
+    <libdir>@XERCES_LIBHOME7@/Static$(ConfigurationName)</libdir>
     <libinc>@XERCES_WINHOME@/include,@XERCES_WINHOME@/src</libinc>
   </library>
   <project name='xqilla'>
@@ -896,10 +907,9 @@
     </files>
   </project>
   <project name='xqilla_static'>
-    <type>static</type>
+    <type>static_lib</type>
     <depends>xerces</depends>
     <include type='ref'>all</include>
-    <preprocessor config='all'>XQILLA_API</preprocessor>
     <files />
   </project>
   <project name='xqilla_cmd' output='xqilla'>
@@ -910,6 +920,12 @@
     <files>
       <file name='src\samples\xqilla\xqilla-commandline.cpp' />
     </files>
+  </project>
+  <project name='xqilla_cmd_static' output='xqilla'>
+    <type>static_app</type>
+    <depends>xqilla_static</depends>
+    <depends>xerces_static</depends>
+    <include type='ref'>all</include>
   </project>
   <project name='basicXQillaUsage'>
     <type>app</type>
