@@ -466,31 +466,29 @@ Win32Projects/VC6/basicXQillaUsage.dsp \
 Win32Projects/VC6/xqtsRunner.dsp \
 Win32Projects/VC6/XQilla.dsw \
 Win32Projects/VC7.1/xqilla.vcproj \
+Win32Projects/VC7.1/xqilla_static.vcproj \
 Win32Projects/VC7.1/xqilla_cmd.vcproj \
+Win32Projects/VC7.1/xqilla_cmd_static.vcproj \
 Win32Projects/VC7.1/basicXQillaUsage.vcproj \
 Win32Projects/VC7.1/xqtsRunner.vcproj \
 Win32Projects/VC7.1/XQilla.sln \
 tests/xqts/xqts_testsuite/errors.xml \
 wintools/app_dsp.src \
-wintools/app_vcproj.src \
 wintools/filter_dsp.end \
 wintools/filter_dsp.start \
-wintools/filter_vcproj.end \
-wintools/filter_vcproj.start \
 wintools/lib_paths.sed \
 wintools/README \
 wintools/srcfile_dsp.src \
-wintools/srcfile_filt_vcproj.src \
 wintools/srcfiles.in \
-wintools/srcfile_vcproj.src \
 wintools/s_win32 \
 wintools/s_win32_common \
 wintools/s_win32_dsp \
-wintools/s_win32_vcproj \
+wintools/xqilla.projects \
+wintools/xqilla.template.xml \
+wintools/s_projects \
+wintools/genproject.template \
 wintools/xqilla_cmd.dsp.src \
-wintools/xqilla_cmd.vcproj.src \
-wintools/xqilla_dsp.src \
-wintools/xqilla_vcproj.src
+wintools/xqilla_dsp.src
 
 
 xqilla_SOURCES = \
