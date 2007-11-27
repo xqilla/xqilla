@@ -29,7 +29,13 @@ sed -f lib_paths.sed < $CONFIG_INPUT > $CONFIG_OUTPUT
 for i in `cat $PROJECTS`
 do
    sed -e "s!@PROJECT_NAME@!$i!g" -e "s!@PROJECT_INPUT@!$CONFIG_OUTPUT!g" < $TEMPLATE > $TEMP_SCRIPT
-   echo "Generating project for $i"
-   xqilla -o $PROJECT_OUTPUT_DIR/$i.vcproj $TEMP_SCRIPT
+   TMP=$PROJECT_OUTPUT_DIR/$i.tmp.vcproj
+   TARG=$PROJECT_OUTPUT_DIR/$i.vcproj
+   xqilla -o $TMP $TEMP_SCRIPT
    rm -f $TEMP_SCRIPT
+   cmp $TMP $TARG > /dev/null 2>&1 ||
+	(echo "Building $TARG" && rm -f $TARG &&
+	    cp $TMP $TARG && chmod 664 $TARG)
+   rm -f $TMP
+
 done
