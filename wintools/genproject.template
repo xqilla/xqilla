@@ -171,7 +171,7 @@ declare function local:generatePostBuildEvent($project, $config)
            attribute{"Description"}{$project/event[@name="postbuild"]/description})
      else let $ev := doc($projectList)/projects/event[@name="postbuild" and @type=$project/type]
            return if (not(empty($ev))) then 
-	              (attribute{"CommandLine"}{replace($ev/command[@config=$config],"@pname@",$project/@name)},
+	              (attribute{"CommandLine"}{replace($ev/command[@config=$config],"@pname@",if (not(empty($project/@output))) then $project/@output else $project/@name)},
            	      attribute{"Description"}{$ev/description})
            else ()
     }
@@ -212,6 +212,7 @@ declare function local:generateConfigLinkerAndMidl($project, $config)
   {local:makeOutputFile($project, $config)}
   {local:makeOutputPDBFile($project, $config)}
   {attribute{"LinkIncremental"}{"1"}}
+  {attribute{"GenerateDebugInformation"}{"TRUE"}}
   {attribute{"SuppressStartupBanner"}{"TRUE"}}
   {attribute{"OptimizeReferences"}{"2"}}
   {local:makeImportLibrary($project,$config)}
