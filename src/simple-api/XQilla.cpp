@@ -18,6 +18,7 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/exceptions/XQException.hpp>
 #include <xqilla/fastxdm/FastXDMConfiguration.hpp>
+#include <xqilla/optimizer/QueryPathTreeGenerator.hpp>
 #include "../lexer/XQLexer.hpp"
 
 #include <xqilla/context/impl/XQContextImpl.hpp>
@@ -30,9 +31,7 @@
 #include <xercesc/framework/LocalFileInputSource.hpp>
 #include <xercesc/util/Janitor.hpp>
 
-#if defined(XERCES_HAS_CPP_NAMESPACE)
-XERCES_CPP_NAMESPACE_USE
-#endif
+XERCES_CPP_NAMESPACE_USE;
 
 XQilla::XQilla(MemoryManager *memMgr)
 {
@@ -68,7 +67,10 @@ XQQuery* XQilla::parse(const XMLCh* inputQuery, DynamicContext* context,
 
   // Perform static resolution, if requested
   if((flags & NO_STATIC_RESOLUTION) == 0) {
-    args._query->staticResolution(context);
+    StaticResolver *sr = new StaticResolver(context);
+    QueryPathTreeGenerator *qpt = new QueryPathTreeGenerator(context->getMemoryManager(), sr);
+    AutoDelete<Optimizer> optimizer(qpt);
+    optimizer->startOptimize(args._query);
   }
 
   return query.release();

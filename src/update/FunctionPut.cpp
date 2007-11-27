@@ -34,8 +34,8 @@ const unsigned int FunctionPut::minArgs = 1;
 const unsigned int FunctionPut::maxArgs = 2;
 
 /**
- * fn:doc($uri as xs:string?) as document?
- **/
+ * fn:put($node as node(), $uri as xs:string?) as empty-sequence()
+ */
 FunctionPut::FunctionPut(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : XQFunction(name, minArgs, maxArgs, "node(), string?", args, memMgr),
     baseURI_(0)

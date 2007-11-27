@@ -11,6 +11,8 @@
  * $Id$
  */
 
+// #define SHOW_QUERY_PATH_TREES
+
 #include "../config/xqilla_config.h"
 #include <iostream>
 #include <sstream>
@@ -52,7 +54,6 @@
 #include <xqilla/ast/XQTypeswitch.hpp>
 #include <xqilla/ast/XQValidate.hpp>
 #include <xqilla/ast/XQOrderingChange.hpp>
-#include <xqilla/ast/XQFunction.hpp>
 #include <xqilla/ast/XQAtomize.hpp>
 #include <xqilla/ast/XPath1Compat.hpp>
 #include <xqilla/ast/ConvertFunctionArg.hpp>
@@ -91,6 +92,11 @@
 #include <xqilla/ast/LetTuple.hpp>
 #include <xqilla/ast/WhereTuple.hpp>
 #include <xqilla/ast/OrderByTuple.hpp>
+
+#include <xqilla/functions/FunctionDoc.hpp>
+#include <xqilla/functions/FunctionCollection.hpp>
+#include <xqilla/functions/FunctionParseXML.hpp>
+#include <xqilla/optimizer/QueryPathNode.hpp>
 
 #include <xercesc/dom/DOMNode.hpp>
 #if defined(XERCES_HAS_CPP_NAMESPACE)
@@ -368,13 +374,30 @@ string PrintAST::printFunction(const XQFunction *item, const DynamicContext *con
   const XMLCh *funUri = item->getFunctionURI();
   const XMLCh *funName = item->getFunctionName();
 
+  QueryPathNode *queryPathTree = 0;
+#ifdef SHOW_QUERY_PATH_TREES
+  if(funUri == XQFunction::XMLChFunctionURI) {
+    if(funName == FunctionDoc::name) {
+      queryPathTree = ((FunctionDoc*)item)->getQueryPathTree();
+    }
+    else if(funName == FunctionCollection::name) {
+      queryPathTree = ((FunctionCollection*)item)->getQueryPathTree();
+    }
+  }
+  else if(funUri == XQillaFunction::XMLChFunctionURI) {
+    if(funName == FunctionParseXML::name) {
+      queryPathTree = ((FunctionParseXML*)item)->getQueryPathTree();
+    }
+  }
+#endif
+
   string name("{");
   name += UTF8(funUri);
   name += "}:";
   name += UTF8(funName);
 
   const VectorOfASTNodes &args = item->getArguments();
-  if(args.empty()) {
+  if(args.empty() && queryPathTree == 0) {
     s << in << "<Function name=\"" << name << "\"/>" << endl;
   }
   else {
@@ -382,6 +405,8 @@ string PrintAST::printFunction(const XQFunction *item, const DynamicContext *con
     for(VectorOfASTNodes::const_iterator i = args.begin(); i != args.end(); ++i) {
       s << printASTNode(*i, context, indent + INDENT);
     }
+    if(queryPathTree)
+      s << queryPathTree->toString(indent + INDENT);
     s << in << "</Function>" << endl;
   }
 
@@ -812,7 +837,11 @@ string PrintAST::printDOMConstructor(const XQDOMConstructor *item, const Dynamic
   if(item->getName() ||
      (item->getAttributes() != 0 && !item->getAttributes()->empty()) ||
      (item->getChildren() != 0 && !item->getChildren()->empty()) ||
-     item->getValue() != 0) {
+     item->getValue() != 0
+#ifdef SHOW_QUERY_PATH_TREES
+     || item->getQueryPathTree() != 0
+#endif
+     ) {
     s << "\">" << endl;
     if(item->getName()) {
       s << in << "  <Name>" << endl;
@@ -840,6 +869,10 @@ string PrintAST::printDOMConstructor(const XQDOMConstructor *item, const Dynamic
       s << printASTNode(item->getValue(), context, indent + INDENT + INDENT);
       s << in << "  </Children>" << endl;
     }
+#ifdef SHOW_QUERY_PATH_TREES
+    if(item->getQueryPathTree())
+      s << item->getQueryPathTree()->toString(indent + INDENT);
+#endif
     s << in << "</DOMConstructor>" << endl;
   }
   else {

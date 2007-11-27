@@ -95,7 +95,7 @@ public:
   virtual const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver* getNSResolver() const = 0;
   /** returns the URI that is bound in prefix in the current scope or zero
       length string otherwise */
-  virtual const XMLCh* getUriBoundToPrefix(const XMLCh* prefix, const LocationInfo *location) const = 0;
+  virtual const XMLCh* getUriBoundToPrefix(const XMLCh* prefix, const LocationInfo *location = 0) const = 0;
   /** returns the prefix that is bound in uri in the current scope or zero
       length string otherwise */
   virtual const XMLCh* getPrefixBoundToUri(const XMLCh* uri) const = 0;
@@ -145,7 +145,7 @@ public:
   virtual VectorOfStrings* resolveModuleURI(const XMLCh* uri) const = 0;
 
   /** add the location for the grammar of a specific namespace **/
-  virtual void addSchemaLocation(const XMLCh* uri, VectorOfStrings* locations, const LocationInfo *location) = 0;
+  virtual void addSchemaLocation(const XMLCh* uri, VectorOfStrings* locations, const LocationInfo *location = 0) = 0;
   
   /** get the variable type store */
   virtual VariableTypeStore* getVariableTypeStore() = 0;
@@ -161,12 +161,12 @@ public:
   virtual const ExternalFunction *lookUpExternalFunction(const XMLCh *uri, const XMLCh *name, size_t numArgs) const = 0;
 
   /** Get the implementation for the specified collation */
-  virtual Collation* getCollation(const XMLCh* const URI, const LocationInfo *location) const = 0;
+  virtual Collation* getCollation(const XMLCh* const URI, const LocationInfo *location = 0) const = 0;
   /** Add a collation */
   virtual void addCollation(Collation* collation) = 0;
   
   /** Get the default collation */
-  virtual Collation* getDefaultCollation(const LocationInfo *location) const = 0;
+  virtual Collation* getDefaultCollation(const LocationInfo *location = 0) const = 0;
   /** Specify which collation is the default one */
   virtual void setDefaultCollation(const XMLCh* const URI) = 0;
 

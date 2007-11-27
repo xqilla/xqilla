@@ -616,10 +616,11 @@ void XQContextImpl::setDefaultURIResolver(URIResolver *resolver, bool adopt)
   _defaultResolver.adopt = adopt;
 }
 
-Node::Ptr XQContextImpl::parseDocument(InputSource &srcToUse, const LocationInfo *location)
+Node::Ptr XQContextImpl::parseDocument(InputSource &srcToUse, const LocationInfo *location,
+                                       const QPNVector *projection)
 {
   try {
-    return _docCache->parseDocument(srcToUse, this);
+    return _docCache->parseDocument(srcToUse, this, projection);
   }
   catch(XQException &e) {
     if(e.getXQueryLine() == 0 && location)
@@ -628,7 +629,8 @@ Node::Ptr XQContextImpl::parseDocument(InputSource &srcToUse, const LocationInfo
   }
 }
 
-Sequence XQContextImpl::resolveDocument(const XMLCh* uri, const LocationInfo *location)
+Sequence XQContextImpl::resolveDocument(const XMLCh* uri, const LocationInfo *location,
+                                        const QPNVector *projection)
 {
   Sequence result(getMemoryManager());
 
@@ -636,11 +638,11 @@ Sequence XQContextImpl::resolveDocument(const XMLCh* uri, const LocationInfo *lo
   try {
     std::vector<ResolverEntry, XQillaAllocator<ResolverEntry> >::reverse_iterator end = _resolvers.rend();
     for(std::vector<ResolverEntry, XQillaAllocator<ResolverEntry> >::reverse_iterator i = _resolvers.rbegin(); i != end; ++i) {
-      if(i->resolver->resolveDocument(result, uri, this))
+      if(i->resolver->resolveDocument(result, uri, this, projection))
         return result;
     }
     if(_defaultResolver.resolver)
-      _defaultResolver.resolver->resolveDocument(result, uri, this);
+      _defaultResolver.resolver->resolveDocument(result, uri, this, projection);
   }
   catch(XQException &e) {
     if(e.getXQueryLine() == 0 && location)
@@ -651,7 +653,7 @@ Sequence XQContextImpl::resolveDocument(const XMLCh* uri, const LocationInfo *lo
   return result;
 }
 
-Sequence XQContextImpl::resolveCollection(const XMLCh* uri, const LocationInfo *location)
+Sequence XQContextImpl::resolveCollection(const XMLCh* uri, const LocationInfo *location, const QPNVector *projection)
 {
   Sequence result(getMemoryManager());
 
@@ -659,11 +661,11 @@ Sequence XQContextImpl::resolveCollection(const XMLCh* uri, const LocationInfo *
   try {
     std::vector<ResolverEntry, XQillaAllocator<ResolverEntry> >::reverse_iterator end = _resolvers.rend();
     for(std::vector<ResolverEntry, XQillaAllocator<ResolverEntry> >::reverse_iterator i = _resolvers.rbegin(); i != end; ++i) {
-      if(i->resolver->resolveCollection(result, uri, this))
+      if(i->resolver->resolveCollection(result, uri, this, projection))
         return result;
     }
     if(_defaultResolver.resolver)
-      _defaultResolver.resolver->resolveCollection(result, uri, this);
+      _defaultResolver.resolver->resolveCollection(result, uri, this, projection);
   }
   catch(XQException &e) {
     if(e.getXQueryLine() == 0 && location)
@@ -674,16 +676,16 @@ Sequence XQContextImpl::resolveCollection(const XMLCh* uri, const LocationInfo *
   return result;
 }
 
-Sequence XQContextImpl::resolveDefaultCollection()
+Sequence XQContextImpl::resolveDefaultCollection(const QPNVector *projection)
 {
   Sequence result(getMemoryManager());
   std::vector<ResolverEntry, XQillaAllocator<ResolverEntry> >::reverse_iterator end = _resolvers.rend();
   for(std::vector<ResolverEntry, XQillaAllocator<ResolverEntry> >::reverse_iterator i = _resolvers.rbegin(); i != end; ++i) {
-    if(i->resolver->resolveDefaultCollection(result, this))
+    if(i->resolver->resolveDefaultCollection(result, this, projection))
       return result;
   }
   if(_defaultResolver.resolver)
-    _defaultResolver.resolver->resolveDefaultCollection(result, this);
+    _defaultResolver.resolver->resolveDefaultCollection(result, this, projection);
   return result;
 }
 

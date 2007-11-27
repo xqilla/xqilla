@@ -41,9 +41,9 @@ subdir = .
 DIST_COMMON = $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(top_srcdir)/configure \
 	$(top_srcdir)/src/config/xqilla_config_unix.h.in ChangeLog \
-	autotools/config.guess autotools/config.sub autotools/depcomp \
-	autotools/install-sh autotools/ltmain.sh autotools/missing \
-	autotools/mkinstalldirs
+	TODO autotools/config.guess autotools/config.sub \
+	autotools/depcomp autotools/install-sh autotools/ltmain.sh \
+	autotools/missing autotools/mkinstalldirs
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.in
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -83,13 +83,13 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	XQReturn.lo ContextTuple.lo ForTuple.lo LetTuple.lo \
 	WhereTuple.lo OrderByTuple.lo ContentSequenceFilter.lo \
 	EventSerializer.lo NoInheritFilter.lo NSFixupFilter.lo \
-	FTContains.lo FTWords.lo FTOr.lo FTAnd.lo FTMildnot.lo \
-	FTUnaryNot.lo DefaultTokenizer.lo DefaultTokenStore.lo \
-	FTOrder.lo FTDistance.lo FTScope.lo FTContent.lo FTWindow.lo \
-	XQillaBuilderImpl.lo XQillaDocumentImpl.lo \
-	XQillaExpressionImpl.lo XQillaNSResolverImpl.lo \
-	XQillaXMLGrammarPoolImpl.lo XPathDocumentImpl.lo \
-	XPathNamespaceImpl.lo XPath2ResultImpl.lo \
+	QueryPathTreeFilter.lo FTContains.lo FTWords.lo FTOr.lo \
+	FTAnd.lo FTMildnot.lo FTUnaryNot.lo DefaultTokenizer.lo \
+	DefaultTokenStore.lo FTOrder.lo FTDistance.lo FTScope.lo \
+	FTContent.lo FTWindow.lo XQillaBuilderImpl.lo \
+	XQillaDocumentImpl.lo XQillaExpressionImpl.lo \
+	XQillaNSResolverImpl.lo XQillaXMLGrammarPoolImpl.lo \
+	XPathDocumentImpl.lo XPathNamespaceImpl.lo XPath2ResultImpl.lo \
 	XQillaImplementation.lo XPath2NodeSerializer.lo XQilla.lo \
 	XQQuery.lo UTF8Str.lo XMLChCompare.lo XStr.lo ContextUtils.lo \
 	DateUtils.lo NumUtils.lo XQillaPlatformUtils.lo PrintAST.lo \
@@ -195,7 +195,8 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	PrecedingAxis.lo PrecedingSiblingAxis.lo \
 	XercesConfiguration.lo XercesNodeImpl.lo \
 	XercesSequenceBuilder.lo XercesUpdateFactory.lo \
-	XercesURIResolver.lo
+	XercesURIResolver.lo Optimizer.lo ASTVisitor.lo \
+	QueryPathNode.lo QueryPathTreeGenerator.lo
 libxqilla_la_OBJECTS = $(am_libxqilla_la_OBJECTS)
 libxqilla_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
@@ -460,6 +461,7 @@ src/events/EventSerializer.cpp \
 src/events/NoInheritFilter.cpp \
 src/events/NoInheritFilter.hpp \
 src/events/NSFixupFilter.cpp \
+src/events/QueryPathTreeFilter.cpp \
 src/fulltext/FTContains.cpp \
 src/fulltext/FTWords.cpp \
 src/fulltext/FTOr.cpp \
@@ -825,7 +827,11 @@ src/xerces/XercesSequenceBuilder.cpp \
 src/xerces/XercesUpdateFactory.hpp \
 src/xerces/XercesUpdateFactory.cpp \
 src/xerces/XercesURIResolver.hpp \
-src/xerces/XercesURIResolver.cpp
+src/xerces/XercesURIResolver.cpp \
+src/optimizer/Optimizer.cpp \
+src/optimizer/ASTVisitor.cpp \
+src/optimizer/QueryPathNode.cpp \
+src/optimizer/QueryPathTreeGenerator.cpp
 
 EXTRA_DIST = \
 src/lexer/flex.skl \
@@ -1028,6 +1034,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ASTNodeImpl.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ASTVisitor.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATAnySimpleTypeImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATAnyURIOrDerivedImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATBase64BinaryOrDerivedImpl.Plo@am__quote@
@@ -1248,6 +1255,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Numeric.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NumericFunction.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NumericTypeConstructor.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Optimizer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Or.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/OrderByTuple.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/OrderComparison.Plo@am__quote@
@@ -1259,6 +1267,9 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PrintAST.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ProxyMemoryManager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/QName.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/QueryPathNode.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/QueryPathTreeFilter.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/QueryPathTreeGenerator.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Range.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ReferenceCounted.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Result.Plo@am__quote@
@@ -2129,6 +2140,13 @@ NSFixupFilter.lo: src/events/NSFixupFilter.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/events/NSFixupFilter.cpp' object='NSFixupFilter.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o NSFixupFilter.lo `test -f 'src/events/NSFixupFilter.cpp' || echo '$(srcdir)/'`src/events/NSFixupFilter.cpp
+
+QueryPathTreeFilter.lo: src/events/QueryPathTreeFilter.cpp
+@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT QueryPathTreeFilter.lo -MD -MP -MF $(DEPDIR)/QueryPathTreeFilter.Tpo -c -o QueryPathTreeFilter.lo `test -f 'src/events/QueryPathTreeFilter.cpp' || echo '$(srcdir)/'`src/events/QueryPathTreeFilter.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/QueryPathTreeFilter.Tpo $(DEPDIR)/QueryPathTreeFilter.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/events/QueryPathTreeFilter.cpp' object='QueryPathTreeFilter.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o QueryPathTreeFilter.lo `test -f 'src/events/QueryPathTreeFilter.cpp' || echo '$(srcdir)/'`src/events/QueryPathTreeFilter.cpp
 
 FTContains.lo: src/fulltext/FTContains.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FTContains.lo -MD -MP -MF $(DEPDIR)/FTContains.Tpo -c -o FTContains.lo `test -f 'src/fulltext/FTContains.cpp' || echo '$(srcdir)/'`src/fulltext/FTContains.cpp
@@ -4089,6 +4107,34 @@ XercesURIResolver.lo: src/xerces/XercesURIResolver.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/xerces/XercesURIResolver.cpp' object='XercesURIResolver.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XercesURIResolver.lo `test -f 'src/xerces/XercesURIResolver.cpp' || echo '$(srcdir)/'`src/xerces/XercesURIResolver.cpp
+
+Optimizer.lo: src/optimizer/Optimizer.cpp
+@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT Optimizer.lo -MD -MP -MF $(DEPDIR)/Optimizer.Tpo -c -o Optimizer.lo `test -f 'src/optimizer/Optimizer.cpp' || echo '$(srcdir)/'`src/optimizer/Optimizer.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/Optimizer.Tpo $(DEPDIR)/Optimizer.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/optimizer/Optimizer.cpp' object='Optimizer.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o Optimizer.lo `test -f 'src/optimizer/Optimizer.cpp' || echo '$(srcdir)/'`src/optimizer/Optimizer.cpp
+
+ASTVisitor.lo: src/optimizer/ASTVisitor.cpp
+@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ASTVisitor.lo -MD -MP -MF $(DEPDIR)/ASTVisitor.Tpo -c -o ASTVisitor.lo `test -f 'src/optimizer/ASTVisitor.cpp' || echo '$(srcdir)/'`src/optimizer/ASTVisitor.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/ASTVisitor.Tpo $(DEPDIR)/ASTVisitor.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/optimizer/ASTVisitor.cpp' object='ASTVisitor.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ASTVisitor.lo `test -f 'src/optimizer/ASTVisitor.cpp' || echo '$(srcdir)/'`src/optimizer/ASTVisitor.cpp
+
+QueryPathNode.lo: src/optimizer/QueryPathNode.cpp
+@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT QueryPathNode.lo -MD -MP -MF $(DEPDIR)/QueryPathNode.Tpo -c -o QueryPathNode.lo `test -f 'src/optimizer/QueryPathNode.cpp' || echo '$(srcdir)/'`src/optimizer/QueryPathNode.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/QueryPathNode.Tpo $(DEPDIR)/QueryPathNode.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/optimizer/QueryPathNode.cpp' object='QueryPathNode.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o QueryPathNode.lo `test -f 'src/optimizer/QueryPathNode.cpp' || echo '$(srcdir)/'`src/optimizer/QueryPathNode.cpp
+
+QueryPathTreeGenerator.lo: src/optimizer/QueryPathTreeGenerator.cpp
+@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT QueryPathTreeGenerator.lo -MD -MP -MF $(DEPDIR)/QueryPathTreeGenerator.Tpo -c -o QueryPathTreeGenerator.lo `test -f 'src/optimizer/QueryPathTreeGenerator.cpp' || echo '$(srcdir)/'`src/optimizer/QueryPathTreeGenerator.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/QueryPathTreeGenerator.Tpo $(DEPDIR)/QueryPathTreeGenerator.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/optimizer/QueryPathTreeGenerator.cpp' object='QueryPathTreeGenerator.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o QueryPathTreeGenerator.lo `test -f 'src/optimizer/QueryPathTreeGenerator.cpp' || echo '$(srcdir)/'`src/optimizer/QueryPathTreeGenerator.cpp
 
 basicXQillaUsage.o: src/samples/basic/basicXQillaUsage.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT basicXQillaUsage.o -MD -MP -MF $(DEPDIR)/basicXQillaUsage.Tpo -c -o basicXQillaUsage.o `test -f 'src/samples/basic/basicXQillaUsage.cpp' || echo '$(srcdir)/'`src/samples/basic/basicXQillaUsage.cpp

@@ -1,0 +1,19 @@
+pull event execution
+document projection
+query plan output using event API
+nested loop elimination (group recognition, join recognition)
+faster modifiable data model
+string pool that returns numeric identifier
+support for UTF-8 execution?
+extract basic schema types from Xerces-C
+abstract schema type access (no direct access to Xerces objects)
+build option without Xerces-C
+fix UTF-16 bugs
+fix XQTS bugs
+new test suite
+test XQuery Fulltext
+complete XQuery Fulltext support
+XQueryP support
+Grouping support
+Fix ATDoubleOrDerivedImpl and ATFloatOrDerivedImpl to use double and float types
+replace MAPM

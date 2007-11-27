@@ -17,11 +17,14 @@
 #include <xqilla/exceptions/XMLParseException.hpp>
 #include <xqilla/ast/StaticAnalysis.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
+
 #include <xercesc/util/XMLString.hpp>
 
+XERCES_CPP_NAMESPACE_USE;
+
 const XMLCh FunctionDoc::name[] = {
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_d, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_c, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chNull 
+  chLatin_d, chLatin_o, chLatin_c, 
+  chNull 
 };
 const unsigned int FunctionDoc::minArgs = 1;
 const unsigned int FunctionDoc::maxArgs = 1;
@@ -30,7 +33,8 @@ const unsigned int FunctionDoc::maxArgs = 1;
  * fn:doc($uri as xs:string?) as document?
  **/
 FunctionDoc::FunctionDoc(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQFunction(name, minArgs, maxArgs, "string?", args, memMgr)
+  : XQFunction(name, minArgs, maxArgs, "string?", args, memMgr),
+    queryPathTree_(0)
 {
 }
 
@@ -48,36 +52,48 @@ ASTNode *FunctionDoc::staticTyping(StaticContext *context)
   _src.getStaticType().flags = StaticType::DOCUMENT_TYPE;
   _src.availableDocumentsUsed(true);
 
-  return calculateSRCForArguments(context);
+  calculateSRCForArguments(context);
+
+  if(_args[0]->isConstant()) {
+  }
+  else {
+  }
+
+  return this;
 }
 
-Sequence FunctionDoc::createSequence(DynamicContext* context, int flags) const {
+Sequence FunctionDoc::createSequence(DynamicContext* context, int flags) const
+{
   Sequence uriArg = getParamNumber(1,context)->toSequence(context);
   
   if (uriArg.isEmpty()) {
     return Sequence(context->getMemoryManager());
   }
   
-  const XMLCh* uri = uriArg.first()->asString(context);
+  const XMLCh *uri = uriArg.first()->asString(context);
+
   // on Windows, we can have URIs using \ instead of /; let's normalize them
-  XMLCh backSlash[]={ XERCES_CPP_NAMESPACE_QUALIFIER chBackSlash, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
-  if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::findAny(uri,backSlash))
-  {
-	  XMLCh* newUri=XERCES_CPP_NAMESPACE_QUALIFIER XMLString::replicate(uri,context->getMemoryManager());
-	  for(unsigned int i=0;i<XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(newUri);i++)
-		  if(newUri[i]==XERCES_CPP_NAMESPACE_QUALIFIER chBackSlash)
-			  newUri[i]=XERCES_CPP_NAMESPACE_QUALIFIER chForwardSlash;
-	  uri=newUri;
+  if(uri != 0) {
+    unsigned int len = XMLString::stringLen(uri);
+    AutoDeleteArray<XMLCh> newURI(new XMLCh[len + 1]);
+
+    const XMLCh *src = uri;
+    XMLCh *dst = newURI;
+    while(*src != 0) {
+      if(*src == '\\') *dst = '/';
+      else *dst = *src;
+
+      ++src; ++dst;
+    }
+    *dst = 0;
+
+    uri = context->getMemoryManager()->getPooledString(newURI);
   }
+
   if(!XPath2Utils::isValidURI(uri, context->getMemoryManager()))
     XQThrow(FunctionException, X("FunctionDoc::createSequence"), X("Invalid argument to fn:doc function [err:FODC0005]"));
 
-  try {
-    return context->resolveDocument(uri, this);
-  } 
-  //TODO:  once DocumentCacheImpl can throw different errors, we should be able to throw the correct corresponding error messages.
-  catch(XMLParseException &e) {
-    XQThrow(FunctionException, X("FunctionDoc::createSequence"), e.getError());
-  }
-	return Sequence(context->getMemoryManager());
+  QPNVector projection;
+  projection.push_back(queryPathTree_);
+  return context->resolveDocument(uri, this, queryPathTree_ ? &projection : 0);
 }

@@ -20,6 +20,7 @@
 #include <xercesc/framework/XMLBuffer.hpp>
 
 class EventHandler;
+class QueryPathNode;
 
 class XQILLA_API XQDOMConstructor : public ASTNodeImpl
 {
@@ -43,6 +44,12 @@ public:
                              DynamicContext *context);
   static bool getStringValue(const ASTNode *child, XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &value,
                              DynamicContext *context);
+
+  QueryPathNode *getQueryPathTree() const { return queryPathTree_; }
+  void setQueryPathTree(QueryPathNode *q) { queryPathTree_ = q; }
+
+private:
+  QueryPathNode *queryPathTree_;
 };
 
 class XQILLA_API XQContentSequence : public ASTNodeImpl

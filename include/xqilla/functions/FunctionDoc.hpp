@@ -11,18 +11,14 @@
  * $Id$
  */
 
-/*
-
-  Doc function
-
-*/
-
 #ifndef _FUNCTIONDOC_HPP
 #define _FUNCTIONDOC_HPP
 
 #include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/XQFunction.hpp>
+
+class QueryPathNode;
 
 class XQILLA_API FunctionDoc : public XQFunction
 {
@@ -37,6 +33,12 @@ public:
   virtual ASTNode *staticTyping(StaticContext *context);
 
   Sequence createSequence(DynamicContext* context, int flags=0) const;
+
+  QueryPathNode *getQueryPathTree() const { return queryPathTree_; }
+  void setQueryPathTree(QueryPathNode *q) { queryPathTree_ = q; }
+
+private:
+  QueryPathNode *queryPathTree_;
 };
 
-#endif // _FUNCTIONDOC_HPP
+#endif

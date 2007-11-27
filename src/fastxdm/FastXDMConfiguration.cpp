@@ -59,7 +59,7 @@ class XQILLA_API FastXDMURIResolver : public URIResolver {
 public:
   FastXDMURIResolver(MemoryManager *mm) : _documentMap(3, mm) {}
 
-  virtual bool resolveDocument(Sequence &result, const XMLCh* uri, DynamicContext* context)
+  virtual bool resolveDocument(Sequence &result, const XMLCh* uri, DynamicContext* context, const QPNVector *projection)
   {
     Node::Ptr doc;
 
@@ -80,7 +80,7 @@ public:
     // Check to see if we can locate and parse the document
     if(doc.isNull()) {
       try {
-        doc = const_cast<DocumentCache*>(context->getDocumentCache())->loadDocument(uri, context);
+        doc = const_cast<DocumentCache*>(context->getDocumentCache())->loadDocument(uri, context, projection);
         _documentMap.put((void*)systemId, doc);
       }
       catch(const XMLParseException& e) {
@@ -108,7 +108,7 @@ public:
     return false;
   }
 
-  virtual bool resolveCollection(Sequence &result, const XMLCh* uri, DynamicContext* context)
+  virtual bool resolveCollection(Sequence &result, const XMLCh* uri, DynamicContext* context, const QPNVector *projection)
   {
     Node::Ptr doc;
 
@@ -129,7 +129,7 @@ public:
     // Check to see if we can locate and parse the document
     if(doc.isNull()) {
       try {
-        doc = const_cast<DocumentCache*>(context->getDocumentCache())->loadDocument(uri, context);
+        doc = const_cast<DocumentCache*>(context->getDocumentCache())->loadDocument(uri, context, projection);
         _documentMap.put((void*)systemId, doc);
       }
       catch(const XMLParseException& e) {
@@ -157,7 +157,7 @@ public:
     return false;
   }
 
-  virtual bool resolveDefaultCollection(Sequence &result, DynamicContext* context)
+  virtual bool resolveDefaultCollection(Sequence &result, DynamicContext* context, const QPNVector *projection)
   {
     return false;
   }

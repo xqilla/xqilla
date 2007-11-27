@@ -122,10 +122,12 @@ public:
   virtual void setDefaultURIResolver(URIResolver *resolver, bool adopt);
 
   virtual Node::Ptr parseDocument(XERCES_CPP_NAMESPACE_QUALIFIER InputSource &srcToUse,
-                                  const LocationInfo *location);
-  virtual Sequence resolveDocument(const XMLCh* uri, const LocationInfo *location);
-  virtual Sequence resolveCollection(const XMLCh* uri, const LocationInfo *location);
-  virtual Sequence resolveDefaultCollection();
+                                  const LocationInfo *location, const QPNVector *projection);
+  virtual Sequence resolveDocument(const XMLCh* uri, const LocationInfo *location,
+                                   const QPNVector *projection);
+  virtual Sequence resolveCollection(const XMLCh* uri, const LocationInfo *location,
+                                     const QPNVector *projection);
+  virtual Sequence resolveDefaultCollection(const QPNVector *projection);
 
   virtual UpdateFactory *createUpdateFactory() const;
 

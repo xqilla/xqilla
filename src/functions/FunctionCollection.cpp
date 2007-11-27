@@ -19,11 +19,13 @@
 #include <xqilla/ast/StaticAnalysis.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 
+XERCES_CPP_NAMESPACE_USE;
+
 const XMLCh FunctionCollection::name[] = {
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_c, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_l, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_l, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_c, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_i, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, XERCES_CPP_NAMESPACE_QUALIFIER chNull 
+  chLatin_c, chLatin_o, chLatin_l, 
+  chLatin_l, chLatin_e, chLatin_c, 
+  chLatin_t, chLatin_i, chLatin_o, 
+  chLatin_n, chNull 
 };
 const unsigned int FunctionCollection::minArgs = 0;
 const unsigned int FunctionCollection::maxArgs = 1;
@@ -34,7 +36,8 @@ const unsigned int FunctionCollection::maxArgs = 1;
 **/
 
 FunctionCollection::FunctionCollection(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQFunction(name, minArgs, maxArgs, "string?", args, memMgr)
+  : XQFunction(name, minArgs, maxArgs, "string?", args, memMgr),
+    queryPathTree_(0)
 {
 }
 
@@ -57,16 +60,19 @@ ASTNode *FunctionCollection::staticTyping(StaticContext *context)
 Sequence FunctionCollection::createSequence(DynamicContext* context, int flags) const
 {
   //args 0 - URI to resolve
-  if(getNumArgs()==0)
+  if(getNumArgs() == 0)
       return context->resolveDefaultCollection();
 
-  Sequence arg = getParamNumber(1, context)->toSequence(context);
-  if(arg.isEmpty())
+  Item::Ptr arg = getParamNumber(1, context)->next(context);
+  if(arg.isNull())
     return context->resolveDefaultCollection();
 
-  const XMLCh* currentUri = arg.first()->asString(context);
-  if(!XPath2Utils::isValidURI(currentUri, context->getMemoryManager()))
+  const XMLCh *uri = arg->asString(context);
+  if(!XPath2Utils::isValidURI(uri, context->getMemoryManager()))
     XQThrow(FunctionException, X("FunctionCollection::createSequence"), X("Invalid URI format [err:FODC0002]"));
 
-  return context->resolveCollection(currentUri, this);
+  QPNVector projection;
+  projection.push_back(queryPathTree_);
+  return context->resolveCollection(uri, this, queryPathTree_ ? &projection : 0);
 }
+

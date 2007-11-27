@@ -16,6 +16,8 @@
 
 #include "XQillaFunction.hpp"
 
+class QueryPathNode;
+
 class XQILLA_API FunctionParseXML : public XQillaFunction
 {
 public:
@@ -28,6 +30,12 @@ public:
   virtual ASTNode *staticTyping(StaticContext *context);
 
   Sequence createSequence(DynamicContext* context, int flags=0) const;
+
+  QueryPathNode *getQueryPathTree() const { return queryPathTree_; }
+  void setQueryPathTree(QueryPathNode *q) { queryPathTree_ = q; }
+
+private:
+  QueryPathNode *queryPathTree_;
 };
 
 #endif

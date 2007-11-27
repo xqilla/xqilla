@@ -43,6 +43,7 @@
 #include <xqilla/parser/QName.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/context/ItemFactory.hpp>
+#include <xqilla/events/QueryPathTreeFilter.hpp>
 
 XERCES_CPP_NAMESPACE_USE;
 
@@ -212,7 +213,7 @@ void DocumentCacheImpl::error(const unsigned int errCode, const XMLCh* const err
     throw SAXParseException(errorText, publicId, systemId, lineNum, colNum, memMgr_);
 }
 
-Node::Ptr DocumentCacheImpl::loadDocument(const XMLCh* uri, DynamicContext *context)
+Node::Ptr DocumentCacheImpl::loadDocument(const XMLCh* uri, DynamicContext *context, const QPNVector *projection)
 {
   InputSource* srcToUse = 0;
   if(entityResolver_){
@@ -241,13 +242,15 @@ Node::Ptr DocumentCacheImpl::loadDocument(const XMLCh* uri, DynamicContext *cont
 
   Janitor<InputSource> janIS(srcToUse);
 
-  return parseDocument(*srcToUse, context);
+  return parseDocument(*srcToUse, context, projection);
 }
 
-Node::Ptr DocumentCacheImpl::parseDocument(InputSource &srcToUse, DynamicContext *context)
+Node::Ptr DocumentCacheImpl::parseDocument(InputSource &srcToUse, DynamicContext *context, const QPNVector *projection)
 {
   AutoDelete<SequenceBuilder> builder(context->createSequenceBuilder());
-  events_ = builder.get();
+  QueryPathTreeFilter qptf(projection, builder.get());
+  events_ = projection ? (EventHandler*)&qptf : (EventHandler*)builder.get();
+
   attrList_ = 0;
   attrCount_ = 0;
   elementInfo_ = 0;

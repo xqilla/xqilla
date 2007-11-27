@@ -65,9 +65,9 @@ public:
 private:
   virtual InputSource* resolveEntity(XMLResourceIdentifier* resourceIdentifier);
   virtual bool resolveModuleLocation(VectorOfStrings* result, const XMLCh* nsUri, const StaticContext* context);
-  virtual bool resolveDocument(Sequence &result, const XMLCh* uri, DynamicContext* context);
-  virtual bool resolveCollection(Sequence &result, const XMLCh* uri, DynamicContext* context);
-  virtual bool resolveDefaultCollection(Sequence &result, DynamicContext* context);
+  virtual bool resolveDocument(Sequence &result, const XMLCh* uri, DynamicContext* context, const QPNVector *projection);
+  virtual bool resolveCollection(Sequence &result, const XMLCh* uri, DynamicContext* context, const QPNVector *projection);
+  virtual bool resolveDefaultCollection(Sequence &result, DynamicContext* context, const QPNVector *projection);
 
 private:
   XQillaConfiguration *m_conf;
@@ -476,34 +476,34 @@ bool XQillaTestSuiteRunner::resolveModuleLocation(VectorOfStrings* result, const
   return bFound;
 }
 
-bool XQillaTestSuiteRunner::resolveDocument(Sequence &result, const XMLCh* uri, DynamicContext* context)
+bool XQillaTestSuiteRunner::resolveDocument(Sequence &result, const XMLCh* uri, DynamicContext* context, const QPNVector *projection)
 {
   std::map<std::string, std::string>::iterator it=m_inputFiles.find(UTF8(uri));
   if(it!=m_inputFiles.end())
   {
-    result=context->resolveDocument(X(it->second.c_str()), 0);
+    result=context->resolveDocument(X(it->second.c_str()), 0, projection);
     return true;
   }
   return false;
 }
 
-bool XQillaTestSuiteRunner::resolveCollection(Sequence &result, const XMLCh* uri, DynamicContext* context)
+bool XQillaTestSuiteRunner::resolveCollection(Sequence &result, const XMLCh* uri, DynamicContext* context, const QPNVector *projection)
 {
   std::map<std::string, std::list<std::string> >::iterator it=m_collections.find(UTF8(uri));
   if(it!=m_collections.end())
   {
     for(std::list<std::string>::iterator s=it->second.begin();s!=it->second.end();s++)
     {
-      result.joinSequence(context->resolveDocument(X(s->c_str()), 0));
+      result.joinSequence(context->resolveDocument(X(s->c_str()), 0, projection));
     }
     return true;
   }
   return false;
 }
 
-bool XQillaTestSuiteRunner::resolveDefaultCollection(Sequence &result, DynamicContext* context)
+bool XQillaTestSuiteRunner::resolveDefaultCollection(Sequence &result, DynamicContext* context, const QPNVector *projection)
 {
   if(!m_pCurTestCase->defaultCollection.empty())
-    return resolveCollection(result, X(m_pCurTestCase->defaultCollection.c_str()), context);
+    return resolveCollection(result, X(m_pCurTestCase->defaultCollection.c_str()), context, projection);
   return false;
 }
