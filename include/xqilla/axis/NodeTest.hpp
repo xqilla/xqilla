@@ -32,6 +32,8 @@ class XQILLA_API NodeTest
 {
 public:
   NodeTest();
+  NodeTest(const XMLCh *nodeType, const XMLCh *uri = 0, const XMLCh *name = 0);
+	NodeTest(const NodeTest *other);
   virtual ~NodeTest();
 
   /** Method for returning arbitrary interfaces from the implementations */
@@ -95,6 +97,9 @@ public:
 
   void getStaticType(StaticType &st, const StaticContext *context,
                      bool &isExact, const LocationInfo *location) const;
+
+  bool isSubsetOf(const NodeTest *o) const;
+  static bool isSubsetOf(const NodeTest *a, const NodeTest *b);
 
 protected:
   ///check a node's type against _type, considers wildcard

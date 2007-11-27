@@ -11,12 +11,6 @@
  * $Id$
  */
 
-/*
-
-  Collection function
-
-*/
-
 #ifndef _FUNCTIONCOLLECTION_HPP
 #define _FUNCTIONCOLLECTION_HPP
 
@@ -24,7 +18,8 @@
 
 #include <xqilla/ast/XQFunction.hpp>
 
-/** collection function. */
+class QueryPathNode;
+
 class XQILLA_API FunctionCollection : public XQFunction
 {
 public:
@@ -39,6 +34,12 @@ public:
 
   /** resolve the uri and return the DOM tree **/
   Sequence createSequence(DynamicContext* context, int flags=0) const;
+
+  QueryPathNode *getQueryPathTree() const { return queryPathTree_; }
+  void setQueryPathTree(QueryPathNode *q) { queryPathTree_ = q; }
+
+private:
+  QueryPathNode *queryPathTree_;
 };
 
-#endif // _FUNCTIONCOLLECTION_HPP
+#endif

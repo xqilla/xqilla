@@ -26,6 +26,7 @@
 #include <xqilla/exceptions/XPath2TypeMatchException.hpp>
 #include <xqilla/events/SequenceBuilder.hpp>
 #include <xqilla/events/ContentSequenceFilter.hpp>
+#include <xqilla/events/QueryPathTreeFilter.hpp>
 
 #include <xercesc/util/XMLChar.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
@@ -35,15 +36,23 @@ XERCES_CPP_NAMESPACE_USE
 #endif
 
 XQDOMConstructor::XQDOMConstructor(XPath2MemoryManager* mm)
-  : ASTNodeImpl(mm)
+	: ASTNodeImpl(mm),
+	  queryPathTree_(0)
 {
 }
 
 Sequence XQDOMConstructor::createSequence(DynamicContext *context, int flags) const 
 {
   AutoDelete<SequenceBuilder> builder(context->createSequenceBuilder());
-  generateEvents(builder.get(), context, true, true);
-  builder->endEvent();
+  if(queryPathTree_ != 0) {
+	  QueryPathTreeFilter qptf(queryPathTree_, builder.get());
+	  generateEvents(&qptf, context, true, true);
+	  qptf.endEvent();
+  }
+  else {
+	  generateEvents(builder.get(), context, true, true);
+	  builder->endEvent();
+  }
   return builder->getSequence();
 }
 

@@ -24,9 +24,12 @@ public:
   XercesURIResolver(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mm);
   virtual ~XercesURIResolver();
 
-  virtual bool resolveDocument(Sequence &result, const XMLCh* uri, DynamicContext* context);
-  virtual bool resolveCollection(Sequence &result, const XMLCh* uri, DynamicContext* context);
-  virtual bool resolveDefaultCollection(Sequence &result, DynamicContext* context);
+  virtual bool resolveDocument(Sequence &result, const XMLCh* uri, DynamicContext* context,
+                               const QPNVector *projection);
+  virtual bool resolveCollection(Sequence &result, const XMLCh* uri, DynamicContext* context,
+                                 const QPNVector *projection);
+  virtual bool resolveDefaultCollection(Sequence &result, DynamicContext* context,
+                                        const QPNVector *projection);
 
   void incrementDocumentRefCount(const XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* document);
   void decrementDocumentRefCount(const XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* document);

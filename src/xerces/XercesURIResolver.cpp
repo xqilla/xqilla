@@ -44,7 +44,7 @@ XercesURIResolver::~XercesURIResolver()
   }
 }
 
-bool XercesURIResolver::resolveDocument(Sequence &result, const XMLCh* uri, DynamicContext* context)
+bool XercesURIResolver::resolveDocument(Sequence &result, const XMLCh* uri, DynamicContext* context, const QPNVector *projection)
 {
   Node::Ptr doc;
 
@@ -61,7 +61,7 @@ bool XercesURIResolver::resolveDocument(Sequence &result, const XMLCh* uri, Dyna
   // Check to see if we can locate and parse the document
   if(found == 0) {
     try {
-      doc = const_cast<DocumentCache*>(context->getDocumentCache())->loadDocument(uri, context);
+      doc = const_cast<DocumentCache*>(context->getDocumentCache())->loadDocument(uri, context, projection);
 
       found = (DOMDocument*)((DOMNode*)doc->getInterface(XercesConfiguration::gXerces));
 
@@ -96,7 +96,7 @@ bool XercesURIResolver::resolveDocument(Sequence &result, const XMLCh* uri, Dyna
   return false;
 }
 
-bool XercesURIResolver::resolveCollection(Sequence &result, const XMLCh* uri, DynamicContext* context)
+bool XercesURIResolver::resolveCollection(Sequence &result, const XMLCh* uri, DynamicContext* context, const QPNVector *projection)
 {
   Node::Ptr doc;
 
@@ -113,7 +113,7 @@ bool XercesURIResolver::resolveCollection(Sequence &result, const XMLCh* uri, Dy
   // Check to see if we can locate and parse the document
   if(found == 0) {
     try {
-      doc = const_cast<DocumentCache*>(context->getDocumentCache())->loadDocument(uri, context);
+      doc = const_cast<DocumentCache*>(context->getDocumentCache())->loadDocument(uri, context, projection);
 
       found = (DOMDocument*)((DOMNode*)doc->getInterface(XercesConfiguration::gXerces));
 
@@ -148,7 +148,7 @@ bool XercesURIResolver::resolveCollection(Sequence &result, const XMLCh* uri, Dy
   return false;
 }
 
-bool XercesURIResolver::resolveDefaultCollection(Sequence &result, DynamicContext* context)
+bool XercesURIResolver::resolveDefaultCollection(Sequence &result, DynamicContext* context, const QPNVector *projection)
 {
   return false;
 }

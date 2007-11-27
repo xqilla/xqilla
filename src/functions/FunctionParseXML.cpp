@@ -31,9 +31,10 @@ const unsigned int FunctionParseXML::maxArgs = 1;
 
 /**
  * xqilla:parse-xml($xml as xs:string?) as document?
- **/
+ */
 FunctionParseXML::FunctionParseXML(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQillaFunction(name, minArgs, maxArgs, "string?", args, memMgr)
+  : XQillaFunction(name, minArgs, maxArgs, "string?", args, memMgr),
+    queryPathTree_(0)
 {
 }
 
@@ -62,7 +63,9 @@ Sequence FunctionParseXML::createSequence(DynamicContext* context, int flags) co
   src.setEncoding(XMLUni::fgUTF16EncodingString);
 
   try {
-    return Sequence(context->parseDocument(src, this), context->getMemoryManager());
+    QPNVector projection;
+    projection.push_back(queryPathTree_);
+    return Sequence(context->parseDocument(src, this, queryPathTree_ ? &projection : 0), context->getMemoryManager());
   }
   catch(XMLParseException &e) {
     XQThrow(FunctionException, X("FunctionParseXML::createSequence"), e.getError());

@@ -78,6 +78,7 @@ src/events/EventSerializer.cpp \
 src/events/NoInheritFilter.cpp \
 src/events/NoInheritFilter.hpp \
 src/events/NSFixupFilter.cpp \
+src/events/QueryPathTreeFilter.cpp \
 src/fulltext/FTContains.cpp \
 src/fulltext/FTWords.cpp \
 src/fulltext/FTOr.cpp \
@@ -443,7 +444,11 @@ src/xerces/XercesSequenceBuilder.cpp \
 src/xerces/XercesUpdateFactory.hpp \
 src/xerces/XercesUpdateFactory.cpp \
 src/xerces/XercesURIResolver.hpp \
-src/xerces/XercesURIResolver.cpp
+src/xerces/XercesURIResolver.cpp \
+src/optimizer/Optimizer.cpp \
+src/optimizer/ASTVisitor.cpp \
+src/optimizer/QueryPathNode.cpp \
+src/optimizer/QueryPathTreeGenerator.cpp
 
 EXTRA_DIST = \
 src/lexer/flex.skl \

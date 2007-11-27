@@ -14,19 +14,22 @@
 #ifndef _DOCUMENTCACHE_HPP
 #define _DOCUMENTCACHE_HPP
 
-#include <xqilla/framework/XQillaExport.hpp>
-#include <xercesc/util/XercesDefs.hpp>
 #include <vector>
+
 #include <xqilla/framework/XPath2MemoryManager.hpp>
 #include <xqilla/items/Node.hpp>
-#include <xercesc/util/XMemory.hpp>
 
-typedef std::vector<const XMLCh*, XQillaAllocator<const XMLCh*> > VectorOfStrings;
+#include <xercesc/util/XercesDefs.hpp>
+#include <xercesc/util/XMemory.hpp>
 
 class DynamicContext;
 class StaticContext;
 class QualifiedName;
 class LocationInfo;
+class QueryPathNode;
+
+typedef std::vector<const QueryPathNode *> QPNVector;
+typedef std::vector<const XMLCh*, XQillaAllocator<const XMLCh*> > VectorOfStrings;
 
 XERCES_CPP_NAMESPACE_BEGIN
 class DOMDocument;
@@ -57,9 +60,9 @@ public:
   virtual ~DocumentCache() {}
 
   /** load the document from the requested URI */
-  virtual Node::Ptr loadDocument(const XMLCh* uri, DynamicContext *context) = 0;
+  virtual Node::Ptr loadDocument(const XMLCh* uri, DynamicContext *context, const QPNVector *projection = 0) = 0;
   /** parse the document from the InputSource provided */
-  virtual Node::Ptr parseDocument(XERCES_CPP_NAMESPACE_QUALIFIER InputSource &srcToUse, DynamicContext *context) = 0;
+  virtual Node::Ptr parseDocument(XERCES_CPP_NAMESPACE_QUALIFIER InputSource &srcToUse, DynamicContext *context, const QPNVector *projection = 0) = 0;
 
   /**
    * Sets the XMLEntityResolver that is used by Xerces when it is used

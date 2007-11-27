@@ -31,7 +31,12 @@ ASTNode* NumericFunction::staticResolution(StaticContext *context) {
 
 ASTNode *NumericFunction::staticTyping(StaticContext *context)
 {
-  return calculateSRCForArguments(context, /*checkTimezone*/false, /*numericfunction*/true);
+  ASTNode *result = calculateSRCForArguments(context, /*checkTimezone*/false, /*numericfunction*/true);
+  if(result == this) {
+    if(!_args[0]->getStaticAnalysis().getStaticType().containsType(StaticType::NUMERIC_TYPE))
+      XQThrow(FunctionException,X("NumericFunction::staticTyping"), X("Non-numeric argument in numeric function [err:XPTY0004]"));
+  }
+  return result;
 }
 
 Numeric::Ptr NumericFunction::getNumericParam(unsigned int number, DynamicContext *context, int flags) const

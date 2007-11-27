@@ -40,7 +40,36 @@ NodeTest::NodeTest()
 {
 }
 
-NodeTest::~NodeTest() {
+NodeTest::NodeTest(const XMLCh *nodeType, const XMLCh *uri, const XMLCh *name)
+  : _name(name),
+    _uri(uri),
+    _prefix(0),
+    _type(nodeType),
+    _wildcardName(name == 0),
+    _wildcardNamespace(name == 0),
+    _wildcardType(nodeType == 0),
+    _usePrefix(false),
+    _hasChildren(false),
+    _itemType(0)
+{
+}
+
+NodeTest::NodeTest(const NodeTest *o)
+  : _name(o->_name),
+    _uri(o->_uri),
+    _prefix(o->_prefix),
+    _type(o->_type),
+    _wildcardName(o->_wildcardName),
+    _wildcardNamespace(o->_wildcardNamespace),
+    _wildcardType(o->_wildcardType),
+    _usePrefix(o->_usePrefix),
+    _hasChildren(o->_hasChildren),
+    _itemType(o->_itemType)
+{
+}
+
+NodeTest::~NodeTest()
+{
   delete _itemType;
 }
 
@@ -50,10 +79,10 @@ void *NodeTest::getInterface(const XMLCh *name) const
 }
 
 void NodeTest::getStaticType(StaticType &st, const StaticContext *context,
-	bool &isExact, const LocationInfo *location) const
+                             bool &isExact, const LocationInfo *location) const
 {
   if(_itemType) {
-	  _itemType->getStaticType(st, context, isExact, location);
+    _itemType->getStaticType(st, context, isExact, location);
   }
   else {
     if(_wildcardType) {
@@ -102,14 +131,14 @@ bool NodeTest::filterNode(Node::Ptr node, DynamicContext* context, const Locatio
 
 bool NodeTest::checkNodeType(Node::Ptr node) const
 {
-	assert(node.notNull());
+  assert(node.notNull());
 
-	if(_wildcardType) {
+  if(_wildcardType) {
     if(_hasChildren) {
       return node->dmNodeKind() == Node::element_string || node->dmNodeKind() == Node::document_string;
     }
-		else return true;
-	}
+    else return true;
+  }
 
   return node->dmNodeKind() == _type;
 }
@@ -124,7 +153,7 @@ bool NodeTest::checkNodeName(Node::Ptr node, const DynamicContext *context) cons
   }
 
   return (_wildcardName || (name.notNull() && XPath2Utils::equals(((ATQNameOrDerived*)name.get())->getName(), _name)))
-	  && (_wildcardNamespace || (name.notNull() && XPath2Utils::equals(((ATQNameOrDerived*)name.get())->getURI(), uri)));
+    && (_wildcardNamespace || (name.notNull() && XPath2Utils::equals(((ATQNameOrDerived*)name.get())->getURI(), uri)));
 }
 
 
@@ -230,82 +259,82 @@ void NodeTest::staticResolution(StaticContext *context, const LocationInfo *loca
   // Convert certain NodeTest objects that use an ItemType to ones that don't,
   // for efficiency and simplicity of comparison.
   if(_itemType != 0) {
-	  switch(_itemType->getItemTestType()) {
-	  case SequenceType::ItemType::TEST_NODE:
-		  _wildcardType = true;
-		  _wildcardNamespace = true;
-		  _wildcardName = true;
-		  _itemType = 0;
-		  break;
-	  case SequenceType::ItemType::TEST_DOCUMENT:
-		  if(_itemType->getName() == 0 && _itemType->getType() == 0) {
-			  _wildcardType = false;
-			  _type = Node::document_string;
-			  _wildcardNamespace = true;
-			  _wildcardName = true;
-			  _itemType = 0;
-		  }
-		  break;
-	  case SequenceType::ItemType::TEST_TEXT:
-		  _wildcardType = false;
-		  _type = Node::text_string;
-		  _wildcardNamespace = true;
-		  _wildcardName = true;
-		  _itemType = 0;
-		  break;
-	  case SequenceType::ItemType::TEST_COMMENT:
-		  _wildcardType = false;
-		  _type = Node::comment_string;
-		  _wildcardNamespace = true;
-		  _wildcardName = true;
-		  _itemType = 0;
-		  break;
-	  case SequenceType::ItemType::TEST_PI:
-		  _wildcardType = false;
-		  _type = Node::processing_instruction_string;
-		  _wildcardNamespace = true;
-		  if(_itemType->getName() == 0) {
-			  _wildcardName = true;
-		  } else {
-			  _wildcardName = false;
-			  _name = _itemType->getName()->getName();
-		  }
-		  _itemType = 0;
-		  break;
-	  case SequenceType::ItemType::TEST_ATTRIBUTE:
-		  if(_itemType->getType() == 0) {
-			  _wildcardType = false;
-			  _type = Node::attribute_string;
-			  if(_itemType->getName() == 0) {
-				  _wildcardNamespace = true;
-				  _wildcardName = true;
-			  } else {
-				  _wildcardNamespace = false;
-				  _uri = context->getUriBoundToPrefix(_itemType->getName()->getPrefix(), location);
-				  _wildcardName = false;
-				  _name = _itemType->getName()->getName();
-			  }
-			  _itemType = 0;
-		  }
-		  break;
-	  case SequenceType::ItemType::TEST_ELEMENT:
-		  if(_itemType->getType() == 0) {
-			  _wildcardType = false;
-			  _type = Node::element_string;
-			  if(_itemType->getName() == 0) {
-				  _wildcardNamespace = true;
-				  _wildcardName = true;
-			  } else {
-				  _wildcardNamespace = false;
-				  _uri = context->getUriBoundToPrefix(_itemType->getName()->getPrefix(), location);
-				  _wildcardName = false;
-				  _name = _itemType->getName()->getName();
-			  }
-			  _itemType = 0;
-		  }
-		  break;
-	  default: break;
-	  }
+    switch(_itemType->getItemTestType()) {
+    case SequenceType::ItemType::TEST_NODE:
+      _wildcardType = true;
+      _wildcardNamespace = true;
+      _wildcardName = true;
+      _itemType = 0;
+      break;
+    case SequenceType::ItemType::TEST_DOCUMENT:
+      if(_itemType->getName() == 0 && _itemType->getType() == 0) {
+        _wildcardType = false;
+        _type = Node::document_string;
+        _wildcardNamespace = true;
+        _wildcardName = true;
+        _itemType = 0;
+      }
+      break;
+    case SequenceType::ItemType::TEST_TEXT:
+      _wildcardType = false;
+      _type = Node::text_string;
+      _wildcardNamespace = true;
+      _wildcardName = true;
+      _itemType = 0;
+      break;
+    case SequenceType::ItemType::TEST_COMMENT:
+      _wildcardType = false;
+      _type = Node::comment_string;
+      _wildcardNamespace = true;
+      _wildcardName = true;
+      _itemType = 0;
+      break;
+    case SequenceType::ItemType::TEST_PI:
+      _wildcardType = false;
+      _type = Node::processing_instruction_string;
+      _wildcardNamespace = true;
+      if(_itemType->getName() == 0) {
+        _wildcardName = true;
+      } else {
+        _wildcardName = false;
+        _name = _itemType->getName()->getName();
+      }
+      _itemType = 0;
+      break;
+    case SequenceType::ItemType::TEST_ATTRIBUTE:
+      if(_itemType->getType() == 0) {
+        _wildcardType = false;
+        _type = Node::attribute_string;
+        if(_itemType->getName() == 0) {
+          _wildcardNamespace = true;
+          _wildcardName = true;
+        } else {
+          _wildcardNamespace = false;
+          _uri = context->getUriBoundToPrefix(_itemType->getName()->getPrefix(), location);
+          _wildcardName = false;
+          _name = _itemType->getName()->getName();
+        }
+        _itemType = 0;
+      }
+      break;
+    case SequenceType::ItemType::TEST_ELEMENT:
+      if(_itemType->getType() == 0) {
+        _wildcardType = false;
+        _type = Node::element_string;
+        if(_itemType->getName() == 0) {
+          _wildcardNamespace = true;
+          _wildcardName = true;
+        } else {
+          _wildcardNamespace = false;
+          _uri = context->getUriBoundToPrefix(_itemType->getName()->getPrefix(), location);
+          _wildcardName = false;
+          _name = _itemType->getName()->getName();
+        }
+        _itemType = 0;
+      }
+      break;
+    default: break;
+    }
   }
 }
 
@@ -318,7 +347,30 @@ SequenceType::ItemType* NodeTest::getItemType() const {
 }
 
 void NodeTest::setItemType(SequenceType::ItemType* type) {
-    _itemType=type;
+  _itemType=type;
+}
+
+bool NodeTest::isSubsetOf(const NodeTest *o) const
+{
+  if(o->_itemType != 0 || _itemType != 0)
+    return false;
+
+  if(!o->_wildcardType && (_wildcardType || o->_type != _type))
+    return false;
+  if(!o->_wildcardNamespace && (_wildcardNamespace || !XPath2Utils::equals(o->_uri, _uri)))
+    return false;
+  if(!o->_wildcardName && (_wildcardName || !XPath2Utils::equals(o->_name, _name)))
+    return false;
+  return true;
+}
+
+bool NodeTest::isSubsetOf(const NodeTest *a, const NodeTest *b)
+{
+  if(b == 0) return true;
+  if(a == 0) return b->_itemType == 0 && b->_wildcardType &&
+               b->_wildcardNamespace && b->_wildcardName;
+
+  return a->isSubsetOf(b);
 }
 
 /////////////////////////////////////

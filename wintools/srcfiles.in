@@ -27,7 +27,7 @@
 #	the module's source listing
 #	o all matching files will be placed in that folder
 # 
-lib.filters=ast axis context dom-api events exceptions fastxdm framework fulltext functions items lexer mapm operators parser runtime schema simple-api update utils xerces xqts
+lib.filters=ast axis context dom-api events exceptions fastxdm framework fulltext functions items lexer mapm operators optimizer parser runtime schema simple-api update utils xerces xqts
 src/ast/ASTNodeImpl.cpp	lib
 src/ast/ConstantFoldingFunction.cpp	lib
 src/ast/ContextTuple.cpp	lib
@@ -76,6 +76,7 @@ src/events/EventSerializer.cpp lib
 src/events/NoInheritFilter.hpp lib
 src/events/NoInheritFilter.cpp lib
 src/events/NSFixupFilter.cpp lib
+src/events/QueryPathTreeFilter.cpp lib
 src/fastxdm/FastXDMConfiguration.cpp lib
 src/fastxdm/FastXDMDocument.hpp lib
 src/fastxdm/FastXDMDocument.cpp lib
@@ -369,6 +370,10 @@ src/operators/Plus.cpp	lib
 src/operators/Range.cpp	lib
 src/operators/UnaryMinus.cpp	lib
 src/operators/Union.cpp	lib
+src/optimizer/ASTVisitor.cpp	lib
+src/optimizer/Optimizer.cpp	lib
+src/optimizer/QueryPathNode.cpp	lib
+src/optimizer/QueryPathTreeGenerator.cpp	lib
 src/parser/QName.cpp	lib
 src/parser/XQParser.y		lib
 src/parser/XQParser.cpp	lib
@@ -538,6 +543,7 @@ include/xqilla/events/ContentSequenceFilter.hpp lib
 include/xqilla/events/EventHandler.hpp	lib
 include/xqilla/events/EventSerializer.hpp lib
 include/xqilla/events/NSFixupFilter.hpp lib
+include/xqilla/events/QueryPathTreeFilter.hpp	lib
 include/xqilla/events/SequenceBuilder.hpp	lib
 include/xqilla/exceptions/ASTException.hpp	lib
 include/xqilla/exceptions/ContextException.hpp	lib
@@ -776,6 +782,10 @@ include/xqilla/operators/Plus.hpp	lib
 include/xqilla/operators/Range.hpp	lib
 include/xqilla/operators/UnaryMinus.hpp	lib
 include/xqilla/operators/Union.hpp	lib
+include/xqilla/optimizer/ASTVisitor.hpp	lib
+include/xqilla/optimizer/Optimizer.hpp	lib
+include/xqilla/optimizer/QueryPathNode.hpp	lib
+include/xqilla/optimizer/QueryPathTreeGenerator.hpp	lib
 include/xqilla/parser/QName.hpp	lib
 include/xqilla/runtime/ClosureResult.hpp	lib
 include/xqilla/runtime/EmptyResult.hpp	lib

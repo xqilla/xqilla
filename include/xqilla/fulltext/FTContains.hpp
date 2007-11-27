@@ -31,9 +31,13 @@ public:
   virtual ASTNode *staticTyping(StaticContext *context);
   virtual Result createResult(DynamicContext *context, int flags=0) const;
 
-  const ASTNode *getArgument() const { return argument_; }
-  const FTSelection *getSelection() const { return selection_; }
-  const ASTNode *getIgnore() const { return ignore_; }
+  ASTNode *getArgument() const { return argument_; }
+  FTSelection *getSelection() const { return selection_; }
+  ASTNode *getIgnore() const { return ignore_; }
+
+  void setArgument(ASTNode *a) { argument_ = a; }
+  void setSelection(FTSelection *s) { selection_ = s; }
+  void setIgnore(ASTNode *a) { ignore_ = a; }
 
 private:
   class XQILLA_API FTContainsResult : public SingleResult

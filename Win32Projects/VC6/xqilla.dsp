@@ -725,6 +725,10 @@ SOURCE=..\..\src\events\NSFixupFilter.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\events\QueryPathTreeFilter.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\include\xqilla\events\ContentSequenceFilter.hpp
 # End Source File
 # Begin Source File
@@ -738,6 +742,10 @@ SOURCE=..\..\include\xqilla\events\EventSerializer.hpp
 # Begin Source File
 
 SOURCE=..\..\include\xqilla\events\NSFixupFilter.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\events\QueryPathTreeFilter.hpp
 # End Source File
 # Begin Source File
 
@@ -2770,6 +2778,42 @@ SOURCE=..\..\include\xqilla\operators\UnaryMinus.hpp
 # Begin Source File
 
 SOURCE=..\..\include\xqilla\operators\Union.hpp
+# End Source File
+# End Group
+# Begin Group "optimizer"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\src\optimizer\ASTVisitor.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\optimizer\Optimizer.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\optimizer\QueryPathNode.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\optimizer\QueryPathTreeGenerator.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\optimizer\ASTVisitor.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\optimizer\Optimizer.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\optimizer\QueryPathNode.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\optimizer\QueryPathTreeGenerator.hpp
 # End Source File
 # End Group
 # Begin Group "parser"

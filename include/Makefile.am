@@ -51,6 +51,7 @@ xqilla/events/ContentSequenceFilter.hpp \
 xqilla/events/EventHandler.hpp \
 xqilla/events/EventSerializer.hpp \
 xqilla/events/NSFixupFilter.hpp \
+xqilla/events/QueryPathTreeFilter.hpp \
 xqilla/events/SequenceBuilder.hpp \
 xqilla/fastxdm/FastXDMConfiguration.hpp \
 xqilla/fulltext/FTContains.hpp \
@@ -310,6 +311,10 @@ xqilla/operators/Plus.hpp \
 xqilla/operators/Range.hpp \
 xqilla/operators/UnaryMinus.hpp \
 xqilla/operators/Union.hpp \
+xqilla/optimizer/Optimizer.hpp \
+xqilla/optimizer/ASTVisitor.hpp \
+xqilla/optimizer/QueryPathNode.hpp \
+xqilla/optimizer/QueryPathTreeGenerator.hpp \
 xqilla/parser/QName.hpp \
 xqilla/runtime/ClosureResult.hpp \
 xqilla/runtime/TupleResult.hpp \

@@ -145,6 +145,7 @@
         <file name='include\xqilla\events\EventHandler.hpp' />
         <file name='include\xqilla\events\EventSerializer.hpp' />
         <file name='include\xqilla\events\NSFixupFilter.hpp' />
+        <file name='include\xqilla\events\QueryPathTreeFilter.hpp' />
         <file name='include\xqilla\events\SequenceBuilder.hpp' />
         <file name='include\xqilla\exceptions\ASTException.hpp' />
         <file name='include\xqilla\exceptions\ContextException.hpp' />
@@ -383,6 +384,10 @@
         <file name='include\xqilla\operators\Range.hpp' />
         <file name='include\xqilla\operators\UnaryMinus.hpp' />
         <file name='include\xqilla\operators\Union.hpp' />
+        <file name='include\xqilla\optimizer\ASTVisitor.hpp' />
+        <file name='include\xqilla\optimizer\Optimizer.hpp' />
+        <file name='include\xqilla\optimizer\QueryPathNode.hpp' />
+        <file name='include\xqilla\optimizer\QueryPathTreeGenerator.hpp' />
         <file name='include\xqilla\parser\QName.hpp' />
         <file name='include\xqilla\runtime\ClosureResult.hpp' />
         <file name='include\xqilla\runtime\EmptyResult.hpp' />
@@ -520,6 +525,7 @@
         <file name='src\events\NoInheritFilter.hpp' />
         <file name='src\events\NoInheritFilter.cpp' />
         <file name='src\events\NSFixupFilter.cpp' />
+        <file name='src\events\QueryPathTreeFilter.cpp' />
       </filter>
       <filter name='exceptions'>
         <file name='src\exceptions\InvalidLexicalSpaceException.hpp' />
@@ -798,6 +804,12 @@
         <file name='src\operators\Range.cpp' />
         <file name='src\operators\UnaryMinus.cpp' />
         <file name='src\operators\Union.cpp' />
+      </filter>
+      <filter name='optimizer'>
+        <file name='src\optimizer\ASTVisitor.cpp' />
+        <file name='src\optimizer\Optimizer.cpp' />
+        <file name='src\optimizer\QueryPathNode.cpp' />
+        <file name='src\optimizer\QueryPathTreeGenerator.cpp' />
       </filter>
       <filter name='parser'>
         <file name='src\parser\QName.cpp' />
