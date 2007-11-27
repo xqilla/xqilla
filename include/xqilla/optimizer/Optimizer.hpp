@@ -14,12 +14,14 @@
 #ifndef _OPTIMIZER_HPP
 #define _OPTIMIZER_HPP
 
+#include <xqilla/framework/XQillaExport.hpp>
+
 class ASTNode;
 class DynamicContext;
 
 class XQQuery;
 
-class Optimizer
+class XQILLA_API Optimizer
 {
 public:
   Optimizer(Optimizer *parent = 0);
@@ -41,7 +43,7 @@ private:
   Optimizer *parent_;
 };
 
-class StaticResolver : public Optimizer
+class XQILLA_API StaticResolver : public Optimizer
 {
 public:
   StaticResolver(DynamicContext *xpc, Optimizer *parent = 0)
@@ -57,7 +59,7 @@ private:
   DynamicContext *xpc_;
 };
 
-class StaticTyper : public Optimizer
+class XQILLA_API StaticTyper : public Optimizer
 {
 public:
   StaticTyper(DynamicContext *xpc, Optimizer *parent = 0)
