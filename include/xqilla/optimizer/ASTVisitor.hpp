@@ -67,7 +67,7 @@
 
 #include <xqilla/fulltext/FTContains.hpp>
 
-class ASTVisitor : public Optimizer
+class XQILLA_API ASTVisitor : public Optimizer
 {
 public:
   ASTVisitor(Optimizer *parent = 0)
