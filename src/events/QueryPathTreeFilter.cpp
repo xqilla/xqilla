@@ -34,20 +34,19 @@ QueryPathTreeFilter::QueryPathTreeFilter(const QueryPathNode *qpn, EventHandler 
   stack_.push_back(new StackEntry());
   stack_.back()->matched = true;
 
-  stack_.back()->addNode(qpn);
+  if(qpn)
+    stack_.back()->addNode(qpn);
 }
 
-QueryPathTreeFilter::QueryPathTreeFilter(const QPNVector *qpns, EventHandler *next)
+QueryPathTreeFilter::QueryPathTreeFilter(const QPNVector &qpns, EventHandler *next)
   : EventFilter(next)
 {
   stack_.push_back(new StackEntry());
   stack_.back()->matched = true;
 
-  if(qpns) {
-    QPNVector::const_iterator i = qpns->begin();
-    for(; i != qpns->end(); ++i) {
-      stack_.back()->addNode(*i);
-    }
+  QPNVector::const_iterator i = qpns.begin();
+  for(; i != qpns.end(); ++i) {
+    stack_.back()->addNode(*i);
   }
 }
 

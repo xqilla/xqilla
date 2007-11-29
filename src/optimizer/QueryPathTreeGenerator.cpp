@@ -72,14 +72,17 @@
 
 #include <xqilla/update/FunctionPut.hpp>
 
+#include <xercesc/util/XMLUri.hpp>
+
 XERCES_CPP_NAMESPACE_USE;
 using namespace std;
 
 static const XMLCh XMLChDot[] = { chColon, chColon, chLatin_d, chLatin_o, chLatin_t, chNull };
 
-QueryPathTreeGenerator::QueryPathTreeGenerator(XPath2MemoryManager *mm, Optimizer *parent)
+QueryPathTreeGenerator::QueryPathTreeGenerator(DynamicContext *context, Optimizer *parent)
   : Optimizer(parent),
-    mm_(mm),
+    mm_(context->getMemoryManager()),
+    context_(context),
     varStore_(&varStoreMemMgr_)
 {
   resetInternal();
@@ -646,6 +649,38 @@ QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateNav(XQNav *it
   return result;
 }
 
+static const XMLCh *resolveURIArg(const ASTNode *arg, DynamicContext *context, bool &defaultCollection)
+{
+  if(!arg->isConstant()) return 0;
+
+  Item::Ptr item = arg->createResult(context)->next(context);
+  if(item.isNull()) {
+    defaultCollection = true;
+    return 0;
+  }
+
+  const XMLCh *uriArg = item->asString(context);
+  if(uriArg == 0) return 0;
+
+  const XMLCh *baseUri = context->getBaseURI();
+
+  try {
+    XMLUri uri;
+    if(baseUri != 0 && *baseUri != 0) {
+      XMLUri base(baseUri);
+      uri = XMLUri(&base, uriArg);
+    } else {
+      uri = XMLUri(uriArg);
+    }
+    return context->getMemoryManager()->getPooledString(uri.getUriText());
+  }
+  catch(...)  {
+    // don't throw; it's just that the URI isn't valid.
+  }
+
+  return 0;
+}
+
 QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateFunction(XQFunction *item)
 {
   VectorOfASTNodes &args = const_cast<VectorOfASTNodes &>(item->getArguments());
@@ -677,12 +712,26 @@ QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateFunction(XQFu
     }
 
     else if(name == FunctionDoc::name) {
-      generate(args[0]);
+      ASTNode *arg = args[0];
+      generate(arg);
 
       QueryPathNode *root = ((FunctionDoc*)item)->getQueryPathTree();
       if(!root) {
-        NodeTest *nt = new (mm_) NodeTest(Node::document_string);
-        root = new (mm_) QueryPathNode(nt, QueryPathNode::ROOT, mm_);
+        // Check criteria for safe document projection
+        if(!arg->isConstant()) context_->setProjection(false);
+
+        // Check to see if this document URI has already been accessed
+        bool defaultCollection = false;
+        const XMLCh *uriArg = resolveURIArg(arg, context_, defaultCollection);
+        if(uriArg != 0) root = projectionMap_[uriArg];
+
+        // If we've not found a root QueryPathNode, create a new one
+        if(!root) {
+          NodeTest *nt = new (mm_) NodeTest(Node::document_string);
+          root = new (mm_) QueryPathNode(nt, QueryPathNode::ROOT, mm_);
+          if(uriArg != 0) projectionMap_[uriArg] = root;
+        }
+
         ((FunctionDoc*)item)->setQueryPathTree(root);
       }
 
@@ -690,13 +739,34 @@ QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateFunction(XQFu
     }
 
     else if(name == FunctionCollection::name) {
-      if(!args.empty()) generate(args[0]);
+      ASTNode *arg = 0;
+      if(!args.empty()) {
+        arg = args[0];
+        generate(arg);
+      }
 
       QueryPathNode *root = ((FunctionCollection*)item)->getQueryPathTree();
       if(!root) {
-        // TBD Should this be ROOT? - jpcs
-        NodeTest *nt = new (mm_) NodeTest(Node::document_string);
-        root = new (mm_) QueryPathNode(nt, QueryPathNode::ROOT, mm_);
+        const XMLCh *uriArg = 0;
+        bool defaultCollection = false;
+        if(arg != 0) {
+          // Check criteria for safe document projection
+          if(!arg->isConstant()) context_->setProjection(false);
+
+          // Check to see if this document URI has already been accessed
+          uriArg = resolveURIArg(arg, context_, defaultCollection);
+        }
+        else defaultCollection = true;
+
+        if(uriArg != 0 || defaultCollection) root = projectionMap_[uriArg];
+
+        // If we've not found a root QueryPathNode, create a new one
+        if(!root) {
+          NodeTest *nt = new (mm_) NodeTest(Node::document_string);
+          root = new (mm_) QueryPathNode(nt, QueryPathNode::ROOT, mm_);
+          if(uriArg != 0 || defaultCollection) projectionMap_[uriArg] = root;
+        }
+
         ((FunctionCollection*)item)->setQueryPathTree(root);
       }
 

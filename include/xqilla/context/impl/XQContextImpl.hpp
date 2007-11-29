@@ -130,12 +130,12 @@ public:
   virtual void setDefaultURIResolver(URIResolver *resolver, bool adopt);
 
   virtual Node::Ptr parseDocument(XERCES_CPP_NAMESPACE_QUALIFIER InputSource &srcToUse,
-                                  const LocationInfo *location, const QPNVector *projection);
+                                  const LocationInfo *location, const QueryPathNode *projection);
   virtual Sequence resolveDocument(const XMLCh* uri, const LocationInfo *location,
-                                   const QPNVector *projection);
+                                   const QueryPathNode *projection);
   virtual Sequence resolveCollection(const XMLCh* uri, const LocationInfo *location,
-                                     const QPNVector *projection);
-  virtual Sequence resolveDefaultCollection(const QPNVector *projection);
+                                     const QueryPathNode *projection);
+  virtual Sequence resolveDefaultCollection(const QueryPathNode *projection);
 
   virtual UpdateFactory *createUpdateFactory() const;
 
@@ -272,6 +272,9 @@ public:
   /////////////////////////////////////////
   //  XQilla context specific accessors  //
   /////////////////////////////////////////
+
+  virtual bool getProjection() const { return _projection; }
+  virtual void setProjection(bool enabled) { _projection = enabled; }
 
   virtual const XMLCh *allocateTempVarName();
 
@@ -452,6 +455,8 @@ protected:
   ResolverEntry _defaultResolver;
 
   ModuleResolver *_moduleResolver;
+
+  bool _projection;
 
   unsigned int _tmpVarCounter;
 

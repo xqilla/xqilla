@@ -221,7 +221,7 @@ void DocumentCacheImpl::error(const unsigned int errCode, const XMLCh* const err
     throw SAXParseException(errorText, publicId, systemId, lineNum, colNum, memMgr_);
 }
 
-Node::Ptr DocumentCacheImpl::loadDocument(const XMLCh* uri, DynamicContext *context, const QPNVector *projection)
+Node::Ptr DocumentCacheImpl::loadDocument(const XMLCh* uri, DynamicContext *context, const QueryPathNode *projection)
 {
   InputSource* srcToUse = 0;
   if(entityResolver_){
@@ -253,7 +253,7 @@ Node::Ptr DocumentCacheImpl::loadDocument(const XMLCh* uri, DynamicContext *cont
   return parseDocument(*srcToUse, context, projection);
 }
 
-Node::Ptr DocumentCacheImpl::parseDocument(InputSource &srcToUse, DynamicContext *context, const QPNVector *projection)
+Node::Ptr DocumentCacheImpl::parseDocument(InputSource &srcToUse, DynamicContext *context, const QueryPathNode *projection)
 {
   AutoDelete<SequenceBuilder> builder(context->createSequenceBuilder());
   QueryPathTreeFilter qptf(projection, builder.get());

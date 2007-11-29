@@ -73,9 +73,9 @@ public:
 private:
   virtual InputSource* resolveEntity(XMLResourceIdentifier* resourceIdentifier);
   virtual bool resolveModuleLocation(VectorOfStrings* result, const XMLCh* nsUri, const StaticContext* context);
-  virtual bool resolveDocument(Sequence &result, const XMLCh* uri, DynamicContext* context, const QPNVector *projection);
-  virtual bool resolveCollection(Sequence &result, const XMLCh* uri, DynamicContext* context, const QPNVector *projection);
-  virtual bool resolveDefaultCollection(Sequence &result, DynamicContext* context, const QPNVector *projection);
+  virtual bool resolveDocument(Sequence &result, const XMLCh* uri, DynamicContext* context, const QueryPathNode *projection);
+  virtual bool resolveCollection(Sequence &result, const XMLCh* uri, DynamicContext* context, const QueryPathNode *projection);
+  virtual bool resolveDefaultCollection(Sequence &result, DynamicContext* context, const QueryPathNode *projection);
 
 private:
   XQillaConfiguration *m_conf;
@@ -484,7 +484,7 @@ bool XQillaTestSuiteRunner::resolveModuleLocation(VectorOfStrings* result, const
   return bFound;
 }
 
-bool XQillaTestSuiteRunner::resolveDocument(Sequence &result, const XMLCh* uri, DynamicContext* context, const QPNVector *projection)
+bool XQillaTestSuiteRunner::resolveDocument(Sequence &result, const XMLCh* uri, DynamicContext* context, const QueryPathNode *projection)
 {
   std::map<std::string, std::string>::iterator it=m_inputFiles.find(UTF8(uri));
   if(it!=m_inputFiles.end())
@@ -495,7 +495,7 @@ bool XQillaTestSuiteRunner::resolveDocument(Sequence &result, const XMLCh* uri, 
   return false;
 }
 
-bool XQillaTestSuiteRunner::resolveCollection(Sequence &result, const XMLCh* uri, DynamicContext* context, const QPNVector *projection)
+bool XQillaTestSuiteRunner::resolveCollection(Sequence &result, const XMLCh* uri, DynamicContext* context, const QueryPathNode *projection)
 {
   std::map<std::string, std::list<std::string> >::iterator it=m_collections.find(UTF8(uri));
   if(it!=m_collections.end())
@@ -509,7 +509,7 @@ bool XQillaTestSuiteRunner::resolveCollection(Sequence &result, const XMLCh* uri
   return false;
 }
 
-bool XQillaTestSuiteRunner::resolveDefaultCollection(Sequence &result, DynamicContext* context, const QPNVector *projection)
+bool XQillaTestSuiteRunner::resolveDefaultCollection(Sequence &result, DynamicContext* context, const QueryPathNode *projection)
 {
   if(!m_pCurTestCase->defaultCollection.empty())
     return resolveCollection(result, X(m_pCurTestCase->defaultCollection.c_str()), context, projection);

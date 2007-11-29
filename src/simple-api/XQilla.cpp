@@ -76,7 +76,7 @@ XQQuery* XQilla::parse(const XMLCh* inputQuery, DynamicContext* context,
   // Perform static resolution, if requested
   if((flags & NO_STATIC_RESOLUTION) == 0) {
     StaticResolver *sr = new StaticResolver(context);
-    QueryPathTreeGenerator *qpt = new QueryPathTreeGenerator(context->getMemoryManager(), sr);
+    QueryPathTreeGenerator *qpt = new QueryPathTreeGenerator(context, sr);
     AutoDelete<Optimizer> optimizer(qpt);
     optimizer->startOptimize(args._query);
   }

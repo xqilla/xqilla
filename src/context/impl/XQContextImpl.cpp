@@ -78,6 +78,7 @@ XQContextImpl::XQContextImpl(XQillaConfiguration *conf, XQilla::Language languag
     _defaultVarStore(&_internalMM),
     _resolvers(XQillaAllocator<ResolverEntry>(&_internalMM)),
     _moduleResolver(0),
+    _projection(true),
     _tmpVarCounter(0)
 {
   _memMgr = &_internalMM;
@@ -625,7 +626,7 @@ void XQContextImpl::setDefaultURIResolver(URIResolver *resolver, bool adopt)
 }
 
 Node::Ptr XQContextImpl::parseDocument(InputSource &srcToUse, const LocationInfo *location,
-                                       const QPNVector *projection)
+                                       const QueryPathNode *projection)
 {
   try {
     return _docCache->parseDocument(srcToUse, this, projection);
@@ -638,7 +639,7 @@ Node::Ptr XQContextImpl::parseDocument(InputSource &srcToUse, const LocationInfo
 }
 
 Sequence XQContextImpl::resolveDocument(const XMLCh* uri, const LocationInfo *location,
-                                        const QPNVector *projection)
+                                        const QueryPathNode *projection)
 {
   Sequence result(getMemoryManager());
 
@@ -661,7 +662,7 @@ Sequence XQContextImpl::resolveDocument(const XMLCh* uri, const LocationInfo *lo
   return result;
 }
 
-Sequence XQContextImpl::resolveCollection(const XMLCh* uri, const LocationInfo *location, const QPNVector *projection)
+Sequence XQContextImpl::resolveCollection(const XMLCh* uri, const LocationInfo *location, const QueryPathNode *projection)
 {
   Sequence result(getMemoryManager());
 
@@ -684,7 +685,7 @@ Sequence XQContextImpl::resolveCollection(const XMLCh* uri, const LocationInfo *
   return result;
 }
 
-Sequence XQContextImpl::resolveDefaultCollection(const QPNVector *projection)
+Sequence XQContextImpl::resolveDefaultCollection(const QueryPathNode *projection)
 {
   Sequence result(getMemoryManager());
   std::vector<ResolverEntry, XQillaAllocator<ResolverEntry> >::reverse_iterator end = _resolvers.rend();
