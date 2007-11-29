@@ -69,18 +69,16 @@ Sequence FunctionCollection::createSequence(DynamicContext* context, int flags) 
 {
   //args 0 - URI to resolve
   if(getNumArgs() == 0)
-      return context->resolveDefaultCollection();
+      return context->resolveDefaultCollection(context->getProjection() ? queryPathTree_ : 0);
 
   Item::Ptr arg = getParamNumber(1, context)->next(context);
   if(arg.isNull())
-    return context->resolveDefaultCollection();
+    return context->resolveDefaultCollection(context->getProjection() ? queryPathTree_ : 0);
 
   const XMLCh *uri = arg->asString(context);
   if(!XPath2Utils::isValidURI(uri, context->getMemoryManager()))
     XQThrow(FunctionException, X("FunctionCollection::createSequence"), X("Invalid URI format [err:FODC0002]"));
 
-  QPNVector projection;
-  projection.push_back(queryPathTree_);
-  return context->resolveCollection(uri, this, queryPathTree_ ? &projection : 0);
+  return context->resolveCollection(uri, this, context->getProjection() ? queryPathTree_ : 0);
 }
 

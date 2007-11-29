@@ -101,7 +101,5 @@ Sequence FunctionDoc::createSequence(DynamicContext* context, int flags) const
   if(!XPath2Utils::isValidURI(uri, context->getMemoryManager()))
     XQThrow(FunctionException, X("FunctionDoc::createSequence"), X("Invalid argument to fn:doc function [err:FODC0005]"));
 
-  QPNVector projection;
-  projection.push_back(queryPathTree_);
-  return context->resolveDocument(uri, this, queryPathTree_ ? &projection : 0);
+  return context->resolveDocument(uri, this, context->getProjection() ? queryPathTree_ : 0);
 }

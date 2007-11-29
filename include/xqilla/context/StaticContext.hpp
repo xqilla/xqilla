@@ -227,6 +227,11 @@ public:
   //  XQilla context specific accessors  //
   /////////////////////////////////////////
 
+  /** Gets whether document projection is enabled */
+  virtual bool getProjection() const = 0;
+  /** Sets whether document projection is enabled */
+  virtual void setProjection(bool enabled) = 0;
+
   /** Return a unique name that can be used for a temporary variable */
   virtual const XMLCh *allocateTempVarName() = 0;
 

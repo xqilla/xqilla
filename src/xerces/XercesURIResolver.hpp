@@ -27,17 +27,21 @@
 
 #include <xercesc/util/RefHashTableOf.hpp>
 
+XERCES_CPP_NAMESPACE_BEGIN
+class DOMDocument;
+XERCES_CPP_NAMESPACE_END
+
 class XQILLA_API XercesURIResolver : public URIResolver {
 public:
   XercesURIResolver(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mm);
   virtual ~XercesURIResolver();
 
   virtual bool resolveDocument(Sequence &result, const XMLCh* uri, DynamicContext* context,
-                               const QPNVector *projection);
+                               const QueryPathNode *projection);
   virtual bool resolveCollection(Sequence &result, const XMLCh* uri, DynamicContext* context,
-                                 const QPNVector *projection);
+                                 const QueryPathNode *projection);
   virtual bool resolveDefaultCollection(Sequence &result, DynamicContext* context,
-                                        const QPNVector *projection);
+                                        const QueryPathNode *projection);
 
   void incrementDocumentRefCount(const XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* document);
   void decrementDocumentRefCount(const XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* document);

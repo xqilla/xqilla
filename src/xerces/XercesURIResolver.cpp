@@ -52,7 +52,7 @@ XercesURIResolver::~XercesURIResolver()
   }
 }
 
-bool XercesURIResolver::resolveDocument(Sequence &result, const XMLCh* uri, DynamicContext* context, const QPNVector *projection)
+bool XercesURIResolver::resolveDocument(Sequence &result, const XMLCh* uri, DynamicContext* context, const QueryPathNode *projection)
 {
   Node::Ptr doc;
 
@@ -104,7 +104,7 @@ bool XercesURIResolver::resolveDocument(Sequence &result, const XMLCh* uri, Dyna
   return false;
 }
 
-bool XercesURIResolver::resolveCollection(Sequence &result, const XMLCh* uri, DynamicContext* context, const QPNVector *projection)
+bool XercesURIResolver::resolveCollection(Sequence &result, const XMLCh* uri, DynamicContext* context, const QueryPathNode *projection)
 {
   Node::Ptr doc;
 
@@ -156,7 +156,7 @@ bool XercesURIResolver::resolveCollection(Sequence &result, const XMLCh* uri, Dy
   return false;
 }
 
-bool XercesURIResolver::resolveDefaultCollection(Sequence &result, DynamicContext* context, const QPNVector *projection)
+bool XercesURIResolver::resolveDefaultCollection(Sequence &result, DynamicContext* context, const QueryPathNode *projection)
 {
   return false;
 }

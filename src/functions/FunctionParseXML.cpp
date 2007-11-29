@@ -71,9 +71,7 @@ Sequence FunctionParseXML::createSequence(DynamicContext* context, int flags) co
   src.setEncoding(XMLUni::fgUTF16EncodingString);
 
   try {
-    QPNVector projection;
-    projection.push_back(queryPathTree_);
-    return Sequence(context->parseDocument(src, this, queryPathTree_ ? &projection : 0), context->getMemoryManager());
+    return Sequence(context->parseDocument(src, this, context->getProjection() ? queryPathTree_ : 0), context->getMemoryManager());
   }
   catch(XMLParseException &e) {
     XQThrow(FunctionException, X("FunctionParseXML::createSequence"), e.getError());

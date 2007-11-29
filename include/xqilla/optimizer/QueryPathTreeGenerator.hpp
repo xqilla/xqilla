@@ -22,12 +22,16 @@
 #ifndef _QUERYPATHTREEGENERATOR_HPP
 #define _QUERYPATHTREEGENERATOR_HPP
 
+#include <map>
+
 #include <xqilla/optimizer/ASTVisitor.hpp>
 #include <xqilla/optimizer/QueryPathNode.hpp>
 #include <xqilla/context/impl/VariableStoreTemplate.hpp>
 #include <xqilla/framework/XPath2MemoryManagerImpl.hpp>
 
 class NodeTest;
+
+typedef std::map<const XMLCh *, QueryPathNode*> QPNMap;
 
 /**
  * Generates QueryPathNode trees of the paths
@@ -36,7 +40,7 @@ class NodeTest;
 class QueryPathTreeGenerator : public Optimizer
 {
 public:
-  QueryPathTreeGenerator(XPath2MemoryManager *mm, Optimizer *parent = 0);
+  QueryPathTreeGenerator(DynamicContext *context, Optimizer *parent = 0);
   virtual ~QueryPathTreeGenerator() { varStore_.clear(); }
 
   class PathResult {
@@ -143,6 +147,7 @@ protected:
   PathResult copyNodes(const PathResult &r);
 
   XPath2MemoryManager *mm_;
+  DynamicContext *context_;
 
   std::set<const ASTNode*> userFunctionStack_;
 
@@ -151,6 +156,8 @@ protected:
 
   XPath2MemoryManagerImpl varStoreMemMgr_;
   VarStore varStore_; ///< Memory owned by varStoreMemMgr_
+
+  QPNMap projectionMap_;
 };
 
 #endif

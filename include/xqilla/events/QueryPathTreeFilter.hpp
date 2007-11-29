@@ -22,16 +22,20 @@
 #ifndef _QUERYPATHTREEFILTER_HPP
 #define _QUERYPATHTREEFILTER_HPP
 
+#include <vector>
+
 #include <xqilla/events/EventHandler.hpp>
-#include <xqilla/schema/DocumentCache.hpp>
 
 #include <xercesc/framework/XMLBuffer.hpp>
+
+class QueryPathNode;
+typedef std::vector<const QueryPathNode *> QPNVector;
 
 class XQILLA_API QueryPathTreeFilter : public EventFilter
 {
 public:
   QueryPathTreeFilter(const QueryPathNode *qpn, EventHandler *next);
-  QueryPathTreeFilter(const QPNVector *qpns, EventHandler *next);
+  QueryPathTreeFilter(const QPNVector &qpns, EventHandler *next);
   virtual ~QueryPathTreeFilter();
 
   virtual void startDocumentEvent(const XMLCh *documentURI, const XMLCh *encoding);

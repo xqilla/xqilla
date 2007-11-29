@@ -64,7 +64,8 @@ XQDynamicContextImpl::XQDynamicContextImpl(XQillaConfiguration *conf, const Stat
     // since a bug in xerces means we can't use a non-thread-safe
     // memory manager - jpcs
     _docCache(staticContext->getDocumentCache()->createDerivedCache(_createdWith)),
-    _messageListener(staticContext->getMessageListener())
+    _messageListener(staticContext->getMessageListener()),
+    _projection(staticContext->getProjection())
 {
   time(&_currentTime);
   _memMgr = &_internalMM;
@@ -309,7 +310,7 @@ void XQDynamicContextImpl::setDefaultURIResolver(URIResolver *resolver, bool ado
 }
 
 Node::Ptr XQDynamicContextImpl::parseDocument(InputSource &srcToUse, const LocationInfo *location,
-                                              const QPNVector *projection)
+                                              const QueryPathNode *projection)
 {
   try {
     return _docCache->parseDocument(srcToUse, this, projection);
@@ -321,7 +322,7 @@ Node::Ptr XQDynamicContextImpl::parseDocument(InputSource &srcToUse, const Locat
   }
 }
 
-Sequence XQDynamicContextImpl::resolveDocument(const XMLCh* uri, const LocationInfo *location, const QPNVector *projection)
+Sequence XQDynamicContextImpl::resolveDocument(const XMLCh* uri, const LocationInfo *location, const QueryPathNode *projection)
 {
   Sequence result(getMemoryManager());
 
@@ -344,7 +345,7 @@ Sequence XQDynamicContextImpl::resolveDocument(const XMLCh* uri, const LocationI
   return result;
 }
 
-Sequence XQDynamicContextImpl::resolveCollection(const XMLCh* uri, const LocationInfo *location, const QPNVector *projection)
+Sequence XQDynamicContextImpl::resolveCollection(const XMLCh* uri, const LocationInfo *location, const QueryPathNode *projection)
 {
   Sequence result(getMemoryManager());
 
@@ -367,7 +368,7 @@ Sequence XQDynamicContextImpl::resolveCollection(const XMLCh* uri, const Locatio
   return result;
 }
 
-Sequence XQDynamicContextImpl::resolveDefaultCollection(const QPNVector *projection)
+Sequence XQDynamicContextImpl::resolveDefaultCollection(const QueryPathNode *projection)
 {
   Sequence result(getMemoryManager());
   std::vector<ResolverEntry, XQillaAllocator<ResolverEntry> >::reverse_iterator end = _resolvers.rend();

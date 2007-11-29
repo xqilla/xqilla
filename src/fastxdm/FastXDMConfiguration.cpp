@@ -67,7 +67,7 @@ class XQILLA_API FastXDMURIResolver : public URIResolver {
 public:
   FastXDMURIResolver(MemoryManager *mm) : _documentMap(3, mm) {}
 
-  virtual bool resolveDocument(Sequence &result, const XMLCh* uri, DynamicContext* context, const QPNVector *projection)
+  virtual bool resolveDocument(Sequence &result, const XMLCh* uri, DynamicContext* context, const QueryPathNode *projection)
   {
     Node::Ptr doc;
 
@@ -116,7 +116,7 @@ public:
     return false;
   }
 
-  virtual bool resolveCollection(Sequence &result, const XMLCh* uri, DynamicContext* context, const QPNVector *projection)
+  virtual bool resolveCollection(Sequence &result, const XMLCh* uri, DynamicContext* context, const QueryPathNode *projection)
   {
     Node::Ptr doc;
 
@@ -165,7 +165,7 @@ public:
     return false;
   }
 
-  virtual bool resolveDefaultCollection(Sequence &result, DynamicContext* context, const QPNVector *projection)
+  virtual bool resolveDefaultCollection(Sequence &result, DynamicContext* context, const QueryPathNode *projection)
   {
     return false;
   }

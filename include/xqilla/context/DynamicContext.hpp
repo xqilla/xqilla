@@ -82,6 +82,10 @@ public:
   /** Set the implicit timezone */
   virtual void setImplicitTimezone(const ATDurationOrDerived::Ptr &timezoneAsDuration) = 0;
 
+  /////////////////////////////////////////
+  //  XQilla context specific accessors  //
+  /////////////////////////////////////////
+
   /**
      Register a callback object for resolving URIs. Multiple URIResolver
      objects can be registered with the DynamicContext at the same time.
@@ -102,16 +106,16 @@ public:
 
   /** Parse an XML document from the provided InputSource */
   virtual Node::Ptr parseDocument(XERCES_CPP_NAMESPACE_QUALIFIER InputSource &srcToUse,
-                                  const LocationInfo *location = 0, const QPNVector *projection = 0) = 0;
+                                  const LocationInfo *location = 0, const QueryPathNode *projection = 0) = 0;
   /** Resolve the given uri (and baseUri) to an XML document. If the uri
       is relative, the base uri is obtained from the context. */
   virtual Sequence resolveDocument(const XMLCh* uri, const LocationInfo *location = 0,
-                                   const QPNVector *projection = 0) = 0;
+                                   const QueryPathNode *projection = 0) = 0;
   /** Resolve the given uri (and baseUri) to a sequence of Node objects. If the uri
       is relative, the base uri is obtained from the context. */
   virtual Sequence resolveCollection(const XMLCh* uri, const LocationInfo *location = 0,
-                                     const QPNVector *projection = 0) = 0;
-  virtual Sequence resolveDefaultCollection(const QPNVector *projection = 0) = 0;
+                                     const QueryPathNode *projection = 0) = 0;
+  virtual Sequence resolveDefaultCollection(const QueryPathNode *projection = 0) = 0;
 
   /** Create a new SequenceBuilder, which is used to turn a
       stream of events into a Sequence. */

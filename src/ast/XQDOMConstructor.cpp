@@ -52,7 +52,7 @@ XQDOMConstructor::XQDOMConstructor(XPath2MemoryManager* mm)
 Sequence XQDOMConstructor::createSequence(DynamicContext *context, int flags) const 
 {
   AutoDelete<SequenceBuilder> builder(context->createSequenceBuilder());
-  if(queryPathTree_ != 0) {
+  if(context->getProjection() && queryPathTree_ != 0) {
 	  QueryPathTreeFilter qptf(queryPathTree_, builder.get());
 	  generateEvents(&qptf, context, true, true);
 	  qptf.endEvent();

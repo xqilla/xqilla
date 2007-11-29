@@ -36,7 +36,6 @@ class QualifiedName;
 class LocationInfo;
 class QueryPathNode;
 
-typedef std::vector<const QueryPathNode *> QPNVector;
 typedef std::vector<const XMLCh*, XQillaAllocator<const XMLCh*> > VectorOfStrings;
 
 XERCES_CPP_NAMESPACE_BEGIN
@@ -68,9 +67,9 @@ public:
   virtual ~DocumentCache() {}
 
   /** load the document from the requested URI */
-  virtual Node::Ptr loadDocument(const XMLCh* uri, DynamicContext *context, const QPNVector *projection = 0) = 0;
+  virtual Node::Ptr loadDocument(const XMLCh* uri, DynamicContext *context, const QueryPathNode *projection = 0) = 0;
   /** parse the document from the InputSource provided */
-  virtual Node::Ptr parseDocument(XERCES_CPP_NAMESPACE_QUALIFIER InputSource &srcToUse, DynamicContext *context, const QPNVector *projection = 0) = 0;
+  virtual Node::Ptr parseDocument(XERCES_CPP_NAMESPACE_QUALIFIER InputSource &srcToUse, DynamicContext *context, const QueryPathNode *projection = 0) = 0;
 
   /**
    * Sets the XMLEntityResolver that is used by Xerces when it is used
