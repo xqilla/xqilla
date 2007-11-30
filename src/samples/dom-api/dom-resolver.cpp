@@ -19,22 +19,12 @@
  * $Id$
  */
 
-//System includes
-
-
 #include <iostream>
-
-//Xerces includes
 
 #include <xercesc/dom/DOM.hpp>
 #include <xercesc/framework/StdOutFormatTarget.hpp>
 
-//XQilla includes
-
 #include <xqilla/xqilla-dom3.hpp>
-
-// IO include
-#include <iostream>
 
 XERCES_CPP_NAMESPACE_USE;
 using namespace std;

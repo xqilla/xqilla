@@ -35,8 +35,10 @@ build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
 bin_PROGRAMS = xqilla$(EXEEXT)
-noinst_PROGRAMS = basicXQillaUsage$(EXEEXT) xqtsRunner$(EXEEXT) \
-	xmarkRunner$(EXEEXT)
+noinst_PROGRAMS = xqtsRunner$(EXEEXT) xmarkRunner$(EXEEXT) \
+	simple-basic$(EXEEXT) simple-context-item$(EXEEXT) \
+	dom-basic$(EXEEXT) dom-context-item$(EXEEXT) \
+	dom-resolver$(EXEEXT)
 subdir = .
 DIST_COMMON = $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(top_srcdir)/configure \
@@ -203,10 +205,26 @@ libxqilla_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(CXXFLAGS) $(libxqilla_la_LDFLAGS) $(LDFLAGS) -o $@
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS) $(noinst_PROGRAMS)
-am_basicXQillaUsage_OBJECTS = basicXQillaUsage.$(OBJEXT)
-basicXQillaUsage_OBJECTS = $(am_basicXQillaUsage_OBJECTS)
-basicXQillaUsage_LDADD = $(LDADD)
-basicXQillaUsage_DEPENDENCIES = libxqilla.la
+am_dom_basic_OBJECTS = dom-basic.$(OBJEXT)
+dom_basic_OBJECTS = $(am_dom_basic_OBJECTS)
+dom_basic_LDADD = $(LDADD)
+dom_basic_DEPENDENCIES = libxqilla.la
+am_dom_context_item_OBJECTS = dom-context-item.$(OBJEXT)
+dom_context_item_OBJECTS = $(am_dom_context_item_OBJECTS)
+dom_context_item_LDADD = $(LDADD)
+dom_context_item_DEPENDENCIES = libxqilla.la
+am_dom_resolver_OBJECTS = dom-resolver.$(OBJEXT)
+dom_resolver_OBJECTS = $(am_dom_resolver_OBJECTS)
+dom_resolver_LDADD = $(LDADD)
+dom_resolver_DEPENDENCIES = libxqilla.la
+am_simple_basic_OBJECTS = simple-basic.$(OBJEXT)
+simple_basic_OBJECTS = $(am_simple_basic_OBJECTS)
+simple_basic_LDADD = $(LDADD)
+simple_basic_DEPENDENCIES = libxqilla.la
+am_simple_context_item_OBJECTS = simple-context-item.$(OBJEXT)
+simple_context_item_OBJECTS = $(am_simple_context_item_OBJECTS)
+simple_context_item_LDADD = $(LDADD)
+simple_context_item_DEPENDENCIES = libxqilla.la
 am_xmarkRunner_OBJECTS = xmark.$(OBJEXT)
 xmarkRunner_OBJECTS = $(am_xmarkRunner_OBJECTS)
 xmarkRunner_LDADD = $(LDADD)
@@ -240,9 +258,13 @@ CXXLD = $(CXX)
 CXXLINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(libxqilla_la_SOURCES) $(basicXQillaUsage_SOURCES) \
+SOURCES = $(libxqilla_la_SOURCES) $(dom_basic_SOURCES) \
+	$(dom_context_item_SOURCES) $(dom_resolver_SOURCES) \
+	$(simple_basic_SOURCES) $(simple_context_item_SOURCES) \
 	$(xmarkRunner_SOURCES) $(xqilla_SOURCES) $(xqtsRunner_SOURCES)
-DIST_SOURCES = $(libxqilla_la_SOURCES) $(basicXQillaUsage_SOURCES) \
+DIST_SOURCES = $(libxqilla_la_SOURCES) $(dom_basic_SOURCES) \
+	$(dom_context_item_SOURCES) $(dom_resolver_SOURCES) \
+	$(simple_basic_SOURCES) $(simple_context_item_SOURCES) \
 	$(xmarkRunner_SOURCES) $(xqilla_SOURCES) $(xqtsRunner_SOURCES)
 RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
 	html-recursive info-recursive install-data-recursive \
@@ -837,6 +859,11 @@ EXTRA_DIST = \
 src/lexer/flex.skl \
 src/lexer/XQLexer.l \
 src/parser/XQParser.y \
+src/parser/XQParser.y \
+src/samples/dom-api/data.xml \
+src/samples/dom-api/data.xsd \
+src/samples/dom-api/foo.xml \
+src/samples/simple-api/foo.xml \
 LICENSE \
 ChangeLog \
 docs/Doxyfile.simpleapi.in \
@@ -846,17 +873,27 @@ docs/dom3_header.html \
 docs/simple_header.html \
 docs/simple-api \
 docs/dom3-api \
+Win32Projects/VC6/dom-basic.dsp \
+Win32Projects/VC6/dom-context-item.dsp \
+Win32Projects/VC6/dom-resolver.dsp \
+Win32Projects/VC6/simple-basic.dsp \
+Win32Projects/VC6/simple-context-item.dsp \
+Win32Projects/VC6/xmarkRunner.dsp \
 Win32Projects/VC6/xqilla.dsp \
 Win32Projects/VC6/xqilla_cmd.dsp \
-Win32Projects/VC6/basicXQillaUsage.dsp \
 Win32Projects/VC6/xqtsRunner.dsp \
 Win32Projects/VC6/XQilla.dsw \
 Win32Projects/VC7.1/xqilla.vcproj \
 Win32Projects/VC7.1/xqilla_static.vcproj \
 Win32Projects/VC7.1/xqilla_cmd.vcproj \
 Win32Projects/VC7.1/xqilla_cmd_static.vcproj \
-Win32Projects/VC7.1/basicXQillaUsage.vcproj \
 Win32Projects/VC7.1/xqtsRunner.vcproj \
+Win32Projects/VC7.1/xmarkRunner.vcproj \
+Win32Projects/VC7.1/simple-basic.vcproj \
+Win32Projects/VC7.1/simple-context-item.vcproj \
+Win32Projects/VC7.1/dom-basic.vcproj \
+Win32Projects/VC7.1/dom-context-item.vcproj \
+Win32Projects/VC7.1/dom-resolver.vcproj \
 Win32Projects/VC7.1/XQilla.sln \
 tests/xqts/xqts_testsuite/errors.xml \
 wintools/app_dsp.src \
@@ -879,14 +916,26 @@ wintools/xqilla_dsp.src
 xqilla_SOURCES = \
 src/samples/xqilla/xqilla-commandline.cpp
 
-basicXQillaUsage_SOURCES = \
-src/samples/basic/basicXQillaUsage.cpp
-
 xqtsRunner_SOURCES = \
 tests/xqts/runner.cpp
 
 xmarkRunner_SOURCES = \
 tests/xmark/xmark.cpp
+
+simple_basic_SOURCES = \
+src/samples/simple-api/simple-basic.cpp
+
+simple_context_item_SOURCES = \
+src/samples/simple-api/simple-context-item.cpp
+
+dom_basic_SOURCES = \
+src/samples/dom-api/dom-basic.cpp
+
+dom_context_item_SOURCES = \
+src/samples/dom-api/dom-context-item.cpp
+
+dom_resolver_SOURCES = \
+src/samples/dom-api/dom-resolver.cpp
 
 LEXERFILE = $(top_srcdir)/src/lexer/XQLexer.cpp
 LEXTEMPLATE = $(top_srcdir)/src/lexer/XQLexer.l
@@ -1012,9 +1061,21 @@ clean-noinstPROGRAMS:
 	  echo " rm -f $$p $$f"; \
 	  rm -f $$p $$f ; \
 	done
-basicXQillaUsage$(EXEEXT): $(basicXQillaUsage_OBJECTS) $(basicXQillaUsage_DEPENDENCIES) 
-	@rm -f basicXQillaUsage$(EXEEXT)
-	$(CXXLINK) $(basicXQillaUsage_OBJECTS) $(basicXQillaUsage_LDADD) $(LIBS)
+dom-basic$(EXEEXT): $(dom_basic_OBJECTS) $(dom_basic_DEPENDENCIES) 
+	@rm -f dom-basic$(EXEEXT)
+	$(CXXLINK) $(dom_basic_OBJECTS) $(dom_basic_LDADD) $(LIBS)
+dom-context-item$(EXEEXT): $(dom_context_item_OBJECTS) $(dom_context_item_DEPENDENCIES) 
+	@rm -f dom-context-item$(EXEEXT)
+	$(CXXLINK) $(dom_context_item_OBJECTS) $(dom_context_item_LDADD) $(LIBS)
+dom-resolver$(EXEEXT): $(dom_resolver_OBJECTS) $(dom_resolver_DEPENDENCIES) 
+	@rm -f dom-resolver$(EXEEXT)
+	$(CXXLINK) $(dom_resolver_OBJECTS) $(dom_resolver_LDADD) $(LIBS)
+simple-basic$(EXEEXT): $(simple_basic_OBJECTS) $(simple_basic_DEPENDENCIES) 
+	@rm -f simple-basic$(EXEEXT)
+	$(CXXLINK) $(simple_basic_OBJECTS) $(simple_basic_LDADD) $(LIBS)
+simple-context-item$(EXEEXT): $(simple_context_item_OBJECTS) $(simple_context_item_DEPENDENCIES) 
+	@rm -f simple-context-item$(EXEEXT)
+	$(CXXLINK) $(simple_context_item_OBJECTS) $(simple_context_item_LDADD) $(LIBS)
 xmarkRunner$(EXEEXT): $(xmarkRunner_OBJECTS) $(xmarkRunner_DEPENDENCIES) 
 	@rm -f xmarkRunner$(EXEEXT)
 	$(CXXLINK) $(xmarkRunner_OBJECTS) $(xmarkRunner_LDADD) $(LIBS)
@@ -1375,7 +1436,9 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XercesSequenceBuilder.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XercesURIResolver.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XercesUpdateFactory.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/basicXQillaUsage.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dom-basic.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dom-context-item.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dom-resolver.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/m_apm.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mapm5sin.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mapm_add.Plo@am__quote@
@@ -1415,6 +1478,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mapmutil.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mapmutl2.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/runner.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/simple-basic.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/simple-context-item.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xmark.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xqilla-commandline.Po@am__quote@
 
@@ -4134,19 +4199,75 @@ QueryPathTreeGenerator.lo: src/optimizer/QueryPathTreeGenerator.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o QueryPathTreeGenerator.lo `test -f 'src/optimizer/QueryPathTreeGenerator.cpp' || echo '$(srcdir)/'`src/optimizer/QueryPathTreeGenerator.cpp
 
-basicXQillaUsage.o: src/samples/basic/basicXQillaUsage.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT basicXQillaUsage.o -MD -MP -MF $(DEPDIR)/basicXQillaUsage.Tpo -c -o basicXQillaUsage.o `test -f 'src/samples/basic/basicXQillaUsage.cpp' || echo '$(srcdir)/'`src/samples/basic/basicXQillaUsage.cpp
-@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/basicXQillaUsage.Tpo $(DEPDIR)/basicXQillaUsage.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/basic/basicXQillaUsage.cpp' object='basicXQillaUsage.o' libtool=no @AMDEPBACKSLASH@
+dom-basic.o: src/samples/dom-api/dom-basic.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT dom-basic.o -MD -MP -MF $(DEPDIR)/dom-basic.Tpo -c -o dom-basic.o `test -f 'src/samples/dom-api/dom-basic.cpp' || echo '$(srcdir)/'`src/samples/dom-api/dom-basic.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/dom-basic.Tpo $(DEPDIR)/dom-basic.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/dom-api/dom-basic.cpp' object='dom-basic.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o basicXQillaUsage.o `test -f 'src/samples/basic/basicXQillaUsage.cpp' || echo '$(srcdir)/'`src/samples/basic/basicXQillaUsage.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o dom-basic.o `test -f 'src/samples/dom-api/dom-basic.cpp' || echo '$(srcdir)/'`src/samples/dom-api/dom-basic.cpp
 
-basicXQillaUsage.obj: src/samples/basic/basicXQillaUsage.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT basicXQillaUsage.obj -MD -MP -MF $(DEPDIR)/basicXQillaUsage.Tpo -c -o basicXQillaUsage.obj `if test -f 'src/samples/basic/basicXQillaUsage.cpp'; then $(CYGPATH_W) 'src/samples/basic/basicXQillaUsage.cpp'; else $(CYGPATH_W) '$(srcdir)/src/samples/basic/basicXQillaUsage.cpp'; fi`
-@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/basicXQillaUsage.Tpo $(DEPDIR)/basicXQillaUsage.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/basic/basicXQillaUsage.cpp' object='basicXQillaUsage.obj' libtool=no @AMDEPBACKSLASH@
+dom-basic.obj: src/samples/dom-api/dom-basic.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT dom-basic.obj -MD -MP -MF $(DEPDIR)/dom-basic.Tpo -c -o dom-basic.obj `if test -f 'src/samples/dom-api/dom-basic.cpp'; then $(CYGPATH_W) 'src/samples/dom-api/dom-basic.cpp'; else $(CYGPATH_W) '$(srcdir)/src/samples/dom-api/dom-basic.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/dom-basic.Tpo $(DEPDIR)/dom-basic.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/dom-api/dom-basic.cpp' object='dom-basic.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o basicXQillaUsage.obj `if test -f 'src/samples/basic/basicXQillaUsage.cpp'; then $(CYGPATH_W) 'src/samples/basic/basicXQillaUsage.cpp'; else $(CYGPATH_W) '$(srcdir)/src/samples/basic/basicXQillaUsage.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o dom-basic.obj `if test -f 'src/samples/dom-api/dom-basic.cpp'; then $(CYGPATH_W) 'src/samples/dom-api/dom-basic.cpp'; else $(CYGPATH_W) '$(srcdir)/src/samples/dom-api/dom-basic.cpp'; fi`
+
+dom-context-item.o: src/samples/dom-api/dom-context-item.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT dom-context-item.o -MD -MP -MF $(DEPDIR)/dom-context-item.Tpo -c -o dom-context-item.o `test -f 'src/samples/dom-api/dom-context-item.cpp' || echo '$(srcdir)/'`src/samples/dom-api/dom-context-item.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/dom-context-item.Tpo $(DEPDIR)/dom-context-item.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/dom-api/dom-context-item.cpp' object='dom-context-item.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o dom-context-item.o `test -f 'src/samples/dom-api/dom-context-item.cpp' || echo '$(srcdir)/'`src/samples/dom-api/dom-context-item.cpp
+
+dom-context-item.obj: src/samples/dom-api/dom-context-item.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT dom-context-item.obj -MD -MP -MF $(DEPDIR)/dom-context-item.Tpo -c -o dom-context-item.obj `if test -f 'src/samples/dom-api/dom-context-item.cpp'; then $(CYGPATH_W) 'src/samples/dom-api/dom-context-item.cpp'; else $(CYGPATH_W) '$(srcdir)/src/samples/dom-api/dom-context-item.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/dom-context-item.Tpo $(DEPDIR)/dom-context-item.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/dom-api/dom-context-item.cpp' object='dom-context-item.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o dom-context-item.obj `if test -f 'src/samples/dom-api/dom-context-item.cpp'; then $(CYGPATH_W) 'src/samples/dom-api/dom-context-item.cpp'; else $(CYGPATH_W) '$(srcdir)/src/samples/dom-api/dom-context-item.cpp'; fi`
+
+dom-resolver.o: src/samples/dom-api/dom-resolver.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT dom-resolver.o -MD -MP -MF $(DEPDIR)/dom-resolver.Tpo -c -o dom-resolver.o `test -f 'src/samples/dom-api/dom-resolver.cpp' || echo '$(srcdir)/'`src/samples/dom-api/dom-resolver.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/dom-resolver.Tpo $(DEPDIR)/dom-resolver.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/dom-api/dom-resolver.cpp' object='dom-resolver.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o dom-resolver.o `test -f 'src/samples/dom-api/dom-resolver.cpp' || echo '$(srcdir)/'`src/samples/dom-api/dom-resolver.cpp
+
+dom-resolver.obj: src/samples/dom-api/dom-resolver.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT dom-resolver.obj -MD -MP -MF $(DEPDIR)/dom-resolver.Tpo -c -o dom-resolver.obj `if test -f 'src/samples/dom-api/dom-resolver.cpp'; then $(CYGPATH_W) 'src/samples/dom-api/dom-resolver.cpp'; else $(CYGPATH_W) '$(srcdir)/src/samples/dom-api/dom-resolver.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/dom-resolver.Tpo $(DEPDIR)/dom-resolver.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/dom-api/dom-resolver.cpp' object='dom-resolver.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o dom-resolver.obj `if test -f 'src/samples/dom-api/dom-resolver.cpp'; then $(CYGPATH_W) 'src/samples/dom-api/dom-resolver.cpp'; else $(CYGPATH_W) '$(srcdir)/src/samples/dom-api/dom-resolver.cpp'; fi`
+
+simple-basic.o: src/samples/simple-api/simple-basic.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT simple-basic.o -MD -MP -MF $(DEPDIR)/simple-basic.Tpo -c -o simple-basic.o `test -f 'src/samples/simple-api/simple-basic.cpp' || echo '$(srcdir)/'`src/samples/simple-api/simple-basic.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/simple-basic.Tpo $(DEPDIR)/simple-basic.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/simple-api/simple-basic.cpp' object='simple-basic.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o simple-basic.o `test -f 'src/samples/simple-api/simple-basic.cpp' || echo '$(srcdir)/'`src/samples/simple-api/simple-basic.cpp
+
+simple-basic.obj: src/samples/simple-api/simple-basic.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT simple-basic.obj -MD -MP -MF $(DEPDIR)/simple-basic.Tpo -c -o simple-basic.obj `if test -f 'src/samples/simple-api/simple-basic.cpp'; then $(CYGPATH_W) 'src/samples/simple-api/simple-basic.cpp'; else $(CYGPATH_W) '$(srcdir)/src/samples/simple-api/simple-basic.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/simple-basic.Tpo $(DEPDIR)/simple-basic.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/simple-api/simple-basic.cpp' object='simple-basic.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o simple-basic.obj `if test -f 'src/samples/simple-api/simple-basic.cpp'; then $(CYGPATH_W) 'src/samples/simple-api/simple-basic.cpp'; else $(CYGPATH_W) '$(srcdir)/src/samples/simple-api/simple-basic.cpp'; fi`
+
+simple-context-item.o: src/samples/simple-api/simple-context-item.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT simple-context-item.o -MD -MP -MF $(DEPDIR)/simple-context-item.Tpo -c -o simple-context-item.o `test -f 'src/samples/simple-api/simple-context-item.cpp' || echo '$(srcdir)/'`src/samples/simple-api/simple-context-item.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/simple-context-item.Tpo $(DEPDIR)/simple-context-item.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/simple-api/simple-context-item.cpp' object='simple-context-item.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o simple-context-item.o `test -f 'src/samples/simple-api/simple-context-item.cpp' || echo '$(srcdir)/'`src/samples/simple-api/simple-context-item.cpp
+
+simple-context-item.obj: src/samples/simple-api/simple-context-item.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT simple-context-item.obj -MD -MP -MF $(DEPDIR)/simple-context-item.Tpo -c -o simple-context-item.obj `if test -f 'src/samples/simple-api/simple-context-item.cpp'; then $(CYGPATH_W) 'src/samples/simple-api/simple-context-item.cpp'; else $(CYGPATH_W) '$(srcdir)/src/samples/simple-api/simple-context-item.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/simple-context-item.Tpo $(DEPDIR)/simple-context-item.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/simple-api/simple-context-item.cpp' object='simple-context-item.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o simple-context-item.obj `if test -f 'src/samples/simple-api/simple-context-item.cpp'; then $(CYGPATH_W) 'src/samples/simple-api/simple-context-item.cpp'; else $(CYGPATH_W) '$(srcdir)/src/samples/simple-api/simple-context-item.cpp'; fi`
 
 xmark.o: tests/xmark/xmark.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT xmark.o -MD -MP -MF $(DEPDIR)/xmark.Tpo -c -o xmark.o `test -f 'tests/xmark/xmark.cpp' || echo '$(srcdir)/'`tests/xmark/xmark.cpp

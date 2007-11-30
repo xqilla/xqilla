@@ -3,4 +3,9 @@ xqilla_static
 xqilla_cmd
 xqilla_cmd_static
 xqtsRunner
-basicXQillaUsage
+xmarkRunner
+simple-basic
+simple-context-item
+dom-basic
+dom-context-item
+dom-resolver
