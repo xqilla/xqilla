@@ -455,8 +455,6 @@ src/lexer/flex.skl \
 src/lexer/XQLexer.l \
 src/parser/XQParser.y \
 LICENSE \
-LICENSE.xquery.txt \
-LICENSE.pathan.txt \
 ChangeLog \
 docs/Doxyfile.simpleapi.in \
 docs/Doxyfile.dom3api.in \
