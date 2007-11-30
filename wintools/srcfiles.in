@@ -464,8 +464,13 @@ src/xqts/TestSuiteParser.cpp	lib
 src/xqts/TestSuiteResultListener.cpp	lib
 src/xqts/TestSuiteRunner.cpp		lib
 src/samples/xqilla/xqilla-commandline.cpp   	    app=xqilla_cmd
-src/samples/basic/basicXQillaUsage.cpp		    app=basicXQillaUsage
+src/samples/simple-api/simple-basic.cpp		    app=simple-basic
+src/samples/simple-api/simple-context-item.cpp		    app=simple-context-item
+src/samples/dom-api/dom-basic.cpp		    app=dom-basic
+src/samples/dom-api/dom-context-item.cpp		    app=dom-context-item
+src/samples/dom-api/dom-resolver.cpp		    app=dom-resolver
 tests/xqts/runner.cpp				    app=xqtsRunner
+tests/xmark/xmark.cpp				    app=xmarkRunner
 include/xqilla/ast/ASTNode.hpp	lib
 include/xqilla/ast/ASTNodeImpl.hpp	lib
 include/xqilla/ast/ConstantFoldingFunction.hpp	lib

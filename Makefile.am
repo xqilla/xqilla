@@ -6,7 +6,7 @@ LDFLAGS = -L$(xerces_lib) -R$(xerces_lib) $(faxpp_lib)
 LDADD = libxqilla.la
 
 bin_PROGRAMS = xqilla
-noinst_PROGRAMS = basicXQillaUsage xqtsRunner xmarkRunner
+noinst_PROGRAMS = xqtsRunner xmarkRunner simple-basic simple-context-item dom-basic dom-context-item dom-resolver
 
 lib_LTLIBRARIES = libxqilla.la
 
@@ -454,7 +454,13 @@ EXTRA_DIST = \
 src/lexer/flex.skl \
 src/lexer/XQLexer.l \
 src/parser/XQParser.y \
+src/parser/XQParser.y \
+src/samples/dom-api/data.xml \
+src/samples/dom-api/data.xsd \
+src/samples/dom-api/foo.xml \
+src/samples/simple-api/foo.xml \
 LICENSE \
+TODO \
 ChangeLog \
 docs/Doxyfile.simpleapi.in \
 docs/Doxyfile.dom3api.in \
@@ -463,17 +469,27 @@ docs/dom3_header.html \
 docs/simple_header.html \
 docs/simple-api \
 docs/dom3-api \
+Win32Projects/VC6/dom-basic.dsp \
+Win32Projects/VC6/dom-context-item.dsp \
+Win32Projects/VC6/dom-resolver.dsp \
+Win32Projects/VC6/simple-basic.dsp \
+Win32Projects/VC6/simple-context-item.dsp \
+Win32Projects/VC6/xmarkRunner.dsp \
 Win32Projects/VC6/xqilla.dsp \
 Win32Projects/VC6/xqilla_cmd.dsp \
-Win32Projects/VC6/basicXQillaUsage.dsp \
 Win32Projects/VC6/xqtsRunner.dsp \
 Win32Projects/VC6/XQilla.dsw \
 Win32Projects/VC7.1/xqilla.vcproj \
 Win32Projects/VC7.1/xqilla_static.vcproj \
 Win32Projects/VC7.1/xqilla_cmd.vcproj \
 Win32Projects/VC7.1/xqilla_cmd_static.vcproj \
-Win32Projects/VC7.1/basicXQillaUsage.vcproj \
 Win32Projects/VC7.1/xqtsRunner.vcproj \
+Win32Projects/VC7.1/xmarkRunner.vcproj \
+Win32Projects/VC7.1/simple-basic.vcproj \
+Win32Projects/VC7.1/simple-context-item.vcproj \
+Win32Projects/VC7.1/dom-basic.vcproj \
+Win32Projects/VC7.1/dom-context-item.vcproj \
+Win32Projects/VC7.1/dom-resolver.vcproj \
 Win32Projects/VC7.1/XQilla.sln \
 tests/xqts/xqts_testsuite/errors.xml \
 wintools/app_dsp.src \
@@ -497,14 +513,26 @@ wintools/xqilla_dsp.src
 xqilla_SOURCES = \
 src/samples/xqilla/xqilla-commandline.cpp
 
-basicXQillaUsage_SOURCES = \
-src/samples/basic/basicXQillaUsage.cpp
-
 xqtsRunner_SOURCES = \
 tests/xqts/runner.cpp
 
 xmarkRunner_SOURCES = \
 tests/xmark/xmark.cpp
+
+simple_basic_SOURCES = \
+src/samples/simple-api/simple-basic.cpp
+
+simple_context_item_SOURCES = \
+src/samples/simple-api/simple-context-item.cpp
+
+dom_basic_SOURCES = \
+src/samples/dom-api/dom-basic.cpp
+
+dom_context_item_SOURCES = \
+src/samples/dom-api/dom-context-item.cpp
+
+dom_resolver_SOURCES = \
+src/samples/dom-api/dom-resolver.cpp
 
 LEXERFILE   = $(top_srcdir)/src/lexer/XQLexer.cpp
 LEXTEMPLATE = $(top_srcdir)/src/lexer/XQLexer.l

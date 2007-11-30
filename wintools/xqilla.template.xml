@@ -939,13 +939,49 @@
     <depends>xerces_static</depends>
     <include type='ref'>all</include>
   </project>
-  <project name='basicXQillaUsage'>
+  <project name='simple-basic'>
     <type>app</type>
     <depends>xqilla</depends>
     <depends>xerces</depends>
     <include type='ref'>all</include>
     <files>
-      <file name='samples\basic\basicXQillaUsage.cpp' />
+      <file name='samples\simple-api\simple-basic.cpp' />
+    </files>
+  </project>
+  <project name='simple-context-item'>
+    <type>app</type>
+    <depends>xqilla</depends>
+    <depends>xerces</depends>
+    <include type='ref'>all</include>
+    <files>
+      <file name='samples\simple-api\simple-context-item.cpp' />
+    </files>
+  </project>
+  <project name='dom-basic'>
+    <type>app</type>
+    <depends>xqilla</depends>
+    <depends>xerces</depends>
+    <include type='ref'>all</include>
+    <files>
+      <file name='samples\dom-api\dom-basic.cpp' />
+    </files>
+  </project>
+  <project name='dom-context-item'>
+    <type>app</type>
+    <depends>xqilla</depends>
+    <depends>xerces</depends>
+    <include type='ref'>all</include>
+    <files>
+      <file name='samples\dom-api\dom-context-item.cpp' />
+    </files>
+  </project>
+  <project name='dom-resolver'>
+    <type>app</type>
+    <depends>xqilla</depends>
+    <depends>xerces</depends>
+    <include type='ref'>all</include>
+    <files>
+      <file name='samples\dom-api\dom-resolver.cpp' />
     </files>
   </project>
   <project name='xqtsRunner'>
@@ -955,6 +991,15 @@
     <include type='ref'>all</include>
     <files>
       <file name='tests\xqts\runner.cpp' />
+    </files>
+  </project>
+  <project name='xmarkRunner'>
+    <type>app</type>
+    <depends>xqilla</depends>
+    <depends>xerces</depends>
+    <include type='ref'>all</include>
+    <files>
+      <file name='tests\xmark\xmark.cpp' />
     </files>
   </project>
 </projects>
