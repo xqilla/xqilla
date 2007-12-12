@@ -20,7 +20,7 @@ FILE_SRC=$FILT_FILE_SRC
 EXT=dsp
 
 # source dependencies
-. s_win32_common
+. ./s_win32_common
 
 generate_projects
 

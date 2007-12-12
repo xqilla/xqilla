@@ -1,5 +1,26 @@
 XQilla: an XQuery and XPath 2.0 library and command line interpreter.
 
+version 2.0.0 (2007.12.12):
+	* Changed the license for XQilla to the Apache License v2, a more
+	  permissive open-source licence.
+	* Implemented document projection, an optimisation technique that prunes
+	  sub-trees of documents not needed for the query at parse time. This is
+	  enabled by default.
+	* Added a new extension function xqilla:parse-xml() which takes a string
+	  and parses it as an XML document.
+	* Added optional support for using the FAXPP XML parser instead of the
+	  Xerces-C parser.
+	* Added a command line option to the "xqilla" utility for binding
+	  external variables from the command line.
+	* Implemented better error messages for type errors.
+	* Modified the embedded MAPM library so we are now using it under the
+	  terms of the MIT licence.
+	* Fixed miscellaneous bugs in the XQuery Update implementation.
+	* Fixed a bug with the algorithm to add and subtract an
+	  xs:dayTimeDuration to or from an xs:date.
+	* Fixed a bug in XercesNodeImpl which caused a segfault if the node was
+	  created as a value of a global variable in another module.
+	
 version 1.1.0 (2007.08.31):
 	* Added support for XQuery Update (Last Call Working Draft, 28 August
 	  2007).

@@ -1,5 +1,4 @@
 pull event execution
-document projection
 query plan output using event API
 nested loop elimination (group recognition, join recognition)
 faster modifiable data model
