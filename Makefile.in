@@ -343,7 +343,6 @@ PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 RANLIB = @RANLIB@
-SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
@@ -418,7 +417,7 @@ lib_LTLIBRARIES = libxqilla.la
 
 # Library version, see http://sourceware.org/autobook/autobook/autobook_91.html
 # -no-undefined for Cygwin (bug #1639669)
-libxqilla_la_LDFLAGS = -version-info 2:0:0 -no-undefined -lxerces-c $(faxpp_library)
+libxqilla_la_LDFLAGS = -version-info 3:0:0 -no-undefined -lxerces-c $(faxpp_library)
 libxqilla_la_SOURCES = \
 src/framework/ReferenceCounted.cpp \
 src/framework/BaseMemoryManager.cpp \

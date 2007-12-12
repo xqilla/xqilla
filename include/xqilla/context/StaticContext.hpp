@@ -227,9 +227,36 @@ public:
   //  XQilla context specific accessors  //
   /////////////////////////////////////////
 
-  /** Gets whether document projection is enabled */
+  /**
+   * Gets whether document projection is enabled.
+   *
+   * Document projection is an optimisation that uses query analysis
+   * to remove sub-trees from documents that aren't needed by the
+   * query. This results in substantially smaller memory usage and
+   * faster query times, but means that any subsequent querying on the
+   * results of an initial query can be wrong.
+   *
+   * If you are hoping to perform further queries on the results of a
+   * query, you should turn document projection off to avoid incorrect
+   * results.
+   */
   virtual bool getProjection() const = 0;
-  /** Sets whether document projection is enabled */
+  /**
+   * Sets whether document projection is enabled. Document projection
+   * can be enabled or disabled at compile time, as well as overridden
+   * at runtime. By default document projection is enabled unless query
+   * complilation is unable to guarentee it's correctness.
+   *
+   * Document projection is an optimisation that uses query analysis
+   * to remove sub-trees from documents that aren't needed by the
+   * query. This results in substantially smaller memory usage and
+   * faster query times, but means that any subsequent querying on the
+   * results of an initial query can be wrong.
+   *
+   * If you are hoping to perform further queries on the results of a
+   * query, you should turn document projection off to avoid incorrect
+   * results.
+   */
   virtual void setProjection(bool enabled) = 0;
 
   /** Return a unique name that can be used for a temporary variable */
