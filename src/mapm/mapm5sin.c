@@ -10,11 +10,16 @@
  *  that both that copyright notice and this permission notice appear 
  *  in supporting documentation.
  *
- *  Permission to modify the software is granted, but not the right to
- *  distribute the modified code.  Modifications are to be distributed 
- *  as patches to released version.
+ *	Permission to modify the software is granted. Permission to distribute
+ *	the modified code is granted. Modifications are to be distributed 
+ *	by using the file 'license.txt' as a template to modify the file header.
+ *	'license.txt' is available in the official MAPM distribution.
  *  
  *  This software is provided "as is" without express or implied warranty.
+ *
+ *  THIS FILE HAS BEEN MODIFIED FROM THE OFFICIAL MAPM DISTRIBUTION BY
+ *  'XQilla project' on 2005/11/01.
+ *  THIS FILE IS ORIGINALLY FROM MAPM VERSION 4.6.1.
  */
 
 #include "m_apm_lc.h"
