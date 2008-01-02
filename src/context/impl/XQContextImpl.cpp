@@ -176,7 +176,7 @@ XQContextImpl::~XQContextImpl()
 
 DynamicContext *XQContextImpl::createModuleContext(MemoryManager *memMgr) const
 {
-  DynamicContext* moduleCtx = new (memMgr) XQContextImpl(_conf, _language, memMgr);
+  XQContextImpl* moduleCtx = new (memMgr) XQContextImpl(_conf, _language, memMgr);
 
   // Force the context to use our memory manager
   moduleCtx->setMemoryManager(getMemoryManager());
@@ -190,6 +190,9 @@ DynamicContext *XQContextImpl::createModuleContext(MemoryManager *memMgr) const
   // Add our collations
   for(std::vector<Collation*, XQillaAllocator<Collation*> >::const_iterator it= _collations.begin(); it!=_collations.end(); ++it)
     moduleCtx->addCollation(*it);
+
+  // Add the external functions
+  moduleCtx->_functionTable->copyExternalFunctions(_functionTable);
 
   _conf->populateStaticContext(moduleCtx);
   return moduleCtx;

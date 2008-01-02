@@ -54,6 +54,8 @@ public:
   const ExternalFunction *lookUpExternalFunction(const XMLCh* URI,
 						 const XMLCh* fname,
 						 size_t numArgs) const;
+  void copyExternalFunctions(const FunctionLookup *fl);
+
   void insertUpdateFunctions(XPath2MemoryManager *memMgr);
 
 private:

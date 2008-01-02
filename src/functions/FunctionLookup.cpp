@@ -131,6 +131,14 @@ const ExternalFunction *FunctionLookup::lookUpExternalFunction(
   return _exFuncTable.get(key.getRawBuffer(), (int)secondaryKey);
 }
 
+void FunctionLookup::copyExternalFunctions(const FunctionLookup *fl)
+{
+  RefHash2KeysTableOfEnumerator<const ExternalFunction> en(const_cast<RefHash2KeysTableOf<const ExternalFunction>*>(&fl->_exFuncTable));
+  while(en.hasMoreElements()) {
+    insertExternalFunction(&en.nextElement());
+  }
+}
+
 /*
  * Global initialization and access
  */
