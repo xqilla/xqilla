@@ -27,7 +27,7 @@
 #	the module's source listing
 #	o all matching files will be placed in that folder
 # 
-lib.filters=ast axis context dom-api events exceptions fastxdm framework fulltext functions items lexer mapm operators optimizer parser runtime schema simple-api update utils xerces xqts
+lib.filters=ast axis context dom-api events exceptions fastxdm framework fulltext functions items lexer mapm operators optimizer parser runtime schema simple-api update utils xerces xqts yajl
 src/ast/ASTNodeImpl.cpp	lib
 src/ast/ConstantFoldingFunction.cpp	lib
 src/ast/ContextTuple.cpp	lib
@@ -219,6 +219,7 @@ src/functions/FunctionNormalizeUnicode.cpp	lib
 src/functions/FunctionNot.cpp	lib
 src/functions/FunctionNumber.cpp	lib
 src/functions/FunctionOneOrMore.cpp	lib
+src/functions/FunctionParseJSON.cpp lib
 src/functions/FunctionParseXML.cpp lib
 src/functions/FunctionPosition.cpp	lib
 src/functions/FunctionPrefixFromQName.cpp	lib
@@ -234,6 +235,7 @@ src/functions/FunctionRoundHalfToEven.cpp	lib
 src/functions/FunctionSecondsFromDateTime.cpp	lib
 src/functions/FunctionSecondsFromDuration.cpp	lib
 src/functions/FunctionSecondsFromTime.cpp	lib
+src/functions/FunctionSerializeJSON.cpp lib
 src/functions/FunctionStartsWith.cpp	lib
 src/functions/FunctionStaticBaseURI.cpp	lib
 src/functions/FunctionString.cpp	lib
@@ -425,6 +427,19 @@ src/utils/XPath2NSUtils.cpp	lib
 src/utils/XPath2Utils.cpp	lib
 src/utils/XQillaPlatformUtils.cpp	lib
 src/utils/XStr.cpp	lib
+src/yajl/yajl.c lib
+src/yajl/yajl_buf.c lib
+src/yajl/yajl_buf.h lib
+src/yajl/yajl_common.h lib
+src/yajl/yajl_encode.c lib
+src/yajl/yajl_encode.h lib
+src/yajl/yajl_gen.c lib
+src/yajl/yajl_gen.h lib
+src/yajl/yajl_lex.c lib
+src/yajl/yajl_lex.h lib
+src/yajl/yajl_parse.h lib
+src/yajl/yajl_parser.c lib
+src/yajl/yajl_parser.h lib
 src/xerces/AncestorAxis.hpp	lib
 src/xerces/AncestorOrSelfAxis.hpp	lib
 src/xerces/AttributeAxis.hpp	lib
@@ -653,6 +668,7 @@ include/xqilla/functions/FunctionNormalizeUnicode.hpp	lib
 include/xqilla/functions/FunctionNot.hpp	lib
 include/xqilla/functions/FunctionNumber.hpp	lib
 include/xqilla/functions/FunctionOneOrMore.hpp	lib
+include/xqilla/functions/FunctionParseJSON.hpp lib
 include/xqilla/functions/FunctionParseXML.hpp lib
 include/xqilla/functions/FunctionPosition.hpp	lib
 include/xqilla/functions/FunctionPrefixFromQName.hpp	lib
@@ -668,6 +684,7 @@ include/xqilla/functions/FunctionRoundHalfToEven.hpp	lib
 include/xqilla/functions/FunctionSecondsFromDateTime.hpp	lib
 include/xqilla/functions/FunctionSecondsFromDuration.hpp	lib
 include/xqilla/functions/FunctionSecondsFromTime.hpp	lib
+include/xqilla/functions/FunctionSerializeJSON.hpp lib
 include/xqilla/functions/FunctionStartsWith.hpp	lib
 include/xqilla/functions/FunctionStaticBaseURI.hpp	lib
 include/xqilla/functions/FunctionString.hpp	lib

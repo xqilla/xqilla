@@ -60,6 +60,7 @@
 #include <xqilla/functions/FunctionNumber.hpp>
 #include <xqilla/functions/FunctionOneOrMore.hpp>
 #include <xqilla/functions/FunctionParseXML.hpp>
+#include <xqilla/functions/FunctionParseJSON.hpp>
 #include <xqilla/functions/FunctionRemove.hpp>
 #include <xqilla/functions/FunctionReverse.hpp>
 #include <xqilla/functions/FunctionRoot.hpp>
@@ -920,6 +921,20 @@ QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateFunction(XQFu
         NodeTest *nt = new (mm_) NodeTest(Node::document_string);
         root = new (mm_) QueryPathNode(nt, QueryPathNode::ROOT, mm_);
         ((FunctionParseXML*)item)->setQueryPathTree(root);
+      }
+
+      result.join(root);
+    }
+
+    else if(name == FunctionParseJSON::name) {
+      // Returns a sequence of elements
+      generate(args[0]);
+
+      QueryPathNode *root = ((FunctionParseJSON*)item)->getQueryPathTree();
+      if(!root) {
+        NodeTest *nt = new (mm_) NodeTest(Node::element_string);
+        root = new (mm_) QueryPathNode(nt, QueryPathNode::CHILD, mm_);
+        ((FunctionParseJSON*)item)->setQueryPathTree(root);
       }
 
       result.join(root);

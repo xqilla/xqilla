@@ -251,6 +251,8 @@ src/functions/FunctionTimezoneFromTime.cpp \
 src/functions/FunctionYearFromDate.cpp \
 src/functions/FunctionYearFromDateTime.cpp \
 src/functions/FunctionYearsFromDuration.cpp \
+src/functions/FunctionParseJSON.cpp \
+src/functions/FunctionSerializeJSON.cpp \
 src/functions/XQUserFunction.cpp \
 src/items/impl/ATAnySimpleTypeImpl.cpp \
 src/items/impl/ATAnySimpleTypeImpl.hpp \
@@ -448,7 +450,20 @@ src/xerces/XercesURIResolver.cpp \
 src/optimizer/Optimizer.cpp \
 src/optimizer/ASTVisitor.cpp \
 src/optimizer/QueryPathNode.cpp \
-src/optimizer/QueryPathTreeGenerator.cpp
+src/optimizer/QueryPathTreeGenerator.cpp \
+src/yajl/yajl_buf.c \
+src/yajl/yajl_buf.h \
+src/yajl/yajl.c \
+src/yajl/yajl_encode.c \
+src/yajl/yajl_encode.h \
+src/yajl/yajl_gen.c \
+src/yajl/yajl_lex.c \
+src/yajl/yajl_lex.h \
+src/yajl/yajl_parser.c \
+src/yajl/yajl_parser.h \
+src/yajl/yajl_common.h \
+src/yajl/yajl_gen.h \
+src/yajl/yajl_parse.h
 
 EXTRA_DIST = \
 src/lexer/flex.skl \

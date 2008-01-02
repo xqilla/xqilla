@@ -19,11 +19,16 @@
  * $Id$
  */
 
+#include <math.h>
+#include <stdio.h> // for sprintf
+#if defined(WIN32) && !defined(__CYGWIN__)
+#define snprintf _snprintf
+#endif
+
 #include "../config/xqilla_config.h"
 #include "DateUtils.hpp"
 #include <xercesc/framework/XMLBuffer.hpp>
 #include <xercesc/util/XMLUniDefs.hpp>
-#include <stdio.h> // for sprintf
 #include <xqilla/framework/XPath2MemoryManager.hpp>
 #include <xqilla/items/ATDateOrDerived.hpp>
 #include <xqilla/items/ATDateTimeOrDerived.hpp>
@@ -32,12 +37,8 @@
 #include <xqilla/context/ItemFactory.hpp>
 #include <xqilla/utils/ContextUtils.hpp>
 #include <xqilla/exceptions/XPath2TypeCastException.hpp>
-#include <math.h>
 
 #include <xercesc/util/Mutexes.hpp>
-#if defined(WIN32) && !defined(__CYGWIN__)
-#define snprintf _snprintf
-#endif
 
 const int DateUtils::g_secondsPerMinute = 60;
 const int DateUtils::g_minutesPerHour = 60;

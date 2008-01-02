@@ -197,6 +197,8 @@ xqilla/functions/FunctionNormalizeUnicode.hpp \
 xqilla/functions/FunctionNot.hpp \
 xqilla/functions/FunctionNumber.hpp \
 xqilla/functions/FunctionOneOrMore.hpp \
+xqilla/functions/FunctionParseJSON.hpp \
+xqilla/functions/FunctionSerializeJSON.hpp \
 xqilla/functions/FunctionParseXML.hpp \
 xqilla/functions/FunctionPosition.hpp \
 xqilla/functions/FunctionPrefixFromQName.hpp \

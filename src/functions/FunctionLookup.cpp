@@ -333,6 +333,8 @@ const ExternalFunction *FunctionLookup::lookUpGlobalExternalFunction(
 #include <xqilla/update/FunctionPut.hpp>
 // XQilla extension functions
 #include <xqilla/functions/FunctionParseXML.hpp>
+#include <xqilla/functions/FunctionParseJSON.hpp>
+#include <xqilla/functions/FunctionSerializeJSON.hpp>
 
 void FunctionLookup::insertUpdateFunctions(XPath2MemoryManager *memMgr)
 {
@@ -598,4 +600,6 @@ static void initGlobalTable(FunctionLookup *t, MemoryManager *memMgr)
 
   // XQilla extension functions
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionParseXML>(memMgr));
+  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionParseJSON>(memMgr));
+  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionSerializeJSON>(memMgr));
 }
