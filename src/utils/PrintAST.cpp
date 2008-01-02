@@ -104,6 +104,7 @@
 #include <xqilla/functions/FunctionDoc.hpp>
 #include <xqilla/functions/FunctionCollection.hpp>
 #include <xqilla/functions/FunctionParseXML.hpp>
+#include <xqilla/functions/FunctionParseJSON.hpp>
 #include <xqilla/optimizer/QueryPathNode.hpp>
 
 #include <xercesc/dom/DOMNode.hpp>
@@ -395,6 +396,9 @@ string PrintAST::printFunction(const XQFunction *item, const DynamicContext *con
   else if(funUri == XQillaFunction::XMLChFunctionURI) {
     if(funName == FunctionParseXML::name) {
       queryPathTree = ((FunctionParseXML*)item)->getQueryPathTree();
+    }
+    else if(funName == FunctionParseJSON::name) {
+      queryPathTree = ((FunctionParseJSON*)item)->getQueryPathTree();
     }
   }
 #endif

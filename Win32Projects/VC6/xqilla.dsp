@@ -1397,6 +1397,10 @@ SOURCE=..\..\src\functions\FunctionOneOrMore.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\functions\FunctionParseJSON.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\functions\FunctionParseXML.cpp
 # End Source File
 # Begin Source File
@@ -1454,6 +1458,10 @@ SOURCE=..\..\src\functions\FunctionSecondsFromDuration.cpp
 # Begin Source File
 
 SOURCE=..\..\src\functions\FunctionSecondsFromTime.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\functions\FunctionSerializeJSON.cpp
 # End Source File
 # Begin Source File
 
@@ -1869,6 +1877,10 @@ SOURCE=..\..\include\xqilla\functions\FunctionOneOrMore.hpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\include\xqilla\functions\FunctionParseJSON.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\include\xqilla\functions\FunctionParseXML.hpp
 # End Source File
 # Begin Source File
@@ -1926,6 +1938,10 @@ SOURCE=..\..\include\xqilla\functions\FunctionSecondsFromDuration.hpp
 # Begin Source File
 
 SOURCE=..\..\include\xqilla\functions\FunctionSecondsFromTime.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\functions\FunctionSerializeJSON.hpp
 # End Source File
 # Begin Source File
 
@@ -3386,6 +3402,62 @@ SOURCE=..\..\include\xqilla\xqts\TestSuiteResultListener.hpp
 # Begin Source File
 
 SOURCE=..\..\include\xqilla\xqts\TestSuiteRunner.hpp
+# End Source File
+# End Group
+# Begin Group "yajl"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\src\yajl\yajl.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\yajl\yajl_buf.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\yajl\yajl_buf.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\yajl\yajl_common.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\yajl\yajl_encode.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\yajl\yajl_encode.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\yajl\yajl_gen.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\yajl\yajl_gen.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\yajl\yajl_lex.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\yajl\yajl_lex.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\yajl\yajl_parse.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\yajl\yajl_parser.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\yajl\yajl_parser.h
 # End Source File
 # End Group
 # End Target
