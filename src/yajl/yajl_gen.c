@@ -38,6 +38,8 @@
 #include <string.h>
 #include <stdio.h>
 
+#define STRLEN(s) (unsigned int)strlen((s))
+
 typedef enum {
     yajl_gen_start,
     yajl_gen_map_start,
@@ -94,7 +96,7 @@ yajl_gen_free(yajl_gen g)
             unsigned int i;                                             \
             for (i=0;i<g->depth;i++)                                    \
                 yajl_buf_append(g->buf, g->indentString,                \
-                                strlen(g->indentString));               \
+                                STRLEN(g->indentString));               \
         }                                                               \
     }
 
@@ -144,7 +146,7 @@ yajl_gen_integer(yajl_gen g, long long int number)
     char i[32];
     ENSURE_VALID_STATE; ENSURE_NOT_KEY; INSERT_SEP; INSERT_WHITESPACE;
     sprintf(i, "%lld", number);
-    yajl_buf_append(g->buf, i, strlen(i));
+    yajl_buf_append(g->buf, i, STRLEN(i));
     APPENDED_ATOM;
     FINAL_NEWLINE;
     return yajl_gen_status_ok;
@@ -156,7 +158,7 @@ yajl_gen_double(yajl_gen g, double number)
     char i[32];
     ENSURE_VALID_STATE; ENSURE_NOT_KEY; INSERT_SEP; INSERT_WHITESPACE;
     sprintf(i, "%lf", number);
-    yajl_buf_append(g->buf, i, strlen(i));
+    yajl_buf_append(g->buf, i, STRLEN(i));
     APPENDED_ATOM;
     return yajl_gen_status_ok;
 }
@@ -178,7 +180,7 @@ yajl_gen_status
 yajl_gen_null(yajl_gen g)
 {
     ENSURE_VALID_STATE; ENSURE_NOT_KEY; INSERT_SEP; INSERT_WHITESPACE;
-    yajl_buf_append(g->buf, "null", strlen("null"));
+    yajl_buf_append(g->buf, "null", STRLEN("null"));
     APPENDED_ATOM;
     FINAL_NEWLINE;
     return yajl_gen_status_ok;
@@ -190,7 +192,7 @@ yajl_gen_bool(yajl_gen g, int boolean)
     const char * val = boolean ? "true" : "false";
 
 	ENSURE_VALID_STATE; ENSURE_NOT_KEY; INSERT_SEP; INSERT_WHITESPACE;
-    yajl_buf_append(g->buf, val, strlen(val));
+    yajl_buf_append(g->buf, val, STRLEN(val));
     APPENDED_ATOM;
     FINAL_NEWLINE;
     return yajl_gen_status_ok;

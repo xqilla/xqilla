@@ -39,6 +39,8 @@
 #include <ctype.h>
 #include <assert.h>
 
+#define STRLEN(s) (unsigned int)strlen((s))
+
 unsigned char *
 yajl_render_error_string(yajl_handle hand, const unsigned char * jsonText,
                          unsigned int jsonTextLen, int verbose)
@@ -62,11 +64,11 @@ yajl_render_error_string(yajl_handle hand, const unsigned char * jsonText,
 
     {
         unsigned int memneeded = 0;
-        memneeded += strlen(errorType);
-        memneeded += strlen(" error");
+        memneeded += STRLEN(errorType);
+        memneeded += STRLEN(" error");
         if (errorText != NULL) {
-            memneeded += strlen(": ");            
-            memneeded += strlen(errorText);            
+            memneeded += STRLEN(": ");            
+            memneeded += STRLEN(errorText);            
         }
         str = (unsigned char *) malloc(memneeded + 2);
         str[0] = 0;
@@ -99,9 +101,9 @@ yajl_render_error_string(yajl_handle hand, const unsigned char * jsonText,
         text[i++] = '\n';
         text[i] = 0;
         {
-            char * newStr = (char *) malloc(strlen((char *) str) +
-                                            strlen((char *) text) +
-                                            strlen(arrow) + 1);
+            char * newStr = (char *) malloc(STRLEN((char *) str) +
+                                            STRLEN((char *) text) +
+                                            STRLEN(arrow) + 1);
             newStr[0] = 0;
             strcat((char *) newStr, (char *) str);
             strcat((char *) newStr, text);

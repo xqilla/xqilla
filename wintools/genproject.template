@@ -38,6 +38,12 @@ declare function local:configurationType($projectType)
   else error("Unknown project type")
 };
 
+(: "normalize" Windows file paths :)
+declare function local:windowsPath($path) as xs:string
+{
+        translate($path,"/","\\")
+};
+
 (: debug vs release :)
 declare function local:isDebug($config) as xs:boolean
 {
@@ -261,7 +267,7 @@ declare function local:generateConfigBoilerplate($config)
 (: could use $ConfigurationName, but DB uses config_machine, so copy that :)
 declare function local:generateOutputDirectory($config,$static)
 {
-    attribute{"OutputDirectory"}{concat($outputBase,string-join(tokenize($config," "),"_"),$static)}
+    attribute{"OutputDirectory"}{local:windowsPath(concat($outputBase,string-join(tokenize($config," "),"_"),$static))}
 };
 
 declare function local:generateConfig($project, $config)
@@ -305,13 +311,13 @@ declare function local:generateStaticConfig($project, $config)
 declare function local:generateFilesNoFilter($project)
 {
     for $file in $project/files/file
-        return  <File RelativePath="{concat($sourcePath,$file/@name)}"/>
+        return  <File RelativePath="{local:windowsPath(concat($sourcePath,$file/@name))}"/>
 };
 
 declare function local:generateFilesWithFilter($project,$filter)
 {
     for $file in $project/files/filter[@name=$filter]/file
-        return  <File RelativePath="{concat($sourcePath,$file/@name)}"/>
+        return  <File RelativePath="{local:windowsPath(concat($sourcePath,$file/@name))}"/>
 };
 
 declare function local:generateFiles($project)

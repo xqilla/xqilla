@@ -37,6 +37,8 @@
 #include <string.h>
 #include <stdio.h>
 
+#define STRLEN(s) (unsigned int)strlen((s))
+
 static void CharToHex(unsigned char c, char * hexBuf)
 {
     const char * hexchar = "0123456789ABCDE";
@@ -74,7 +76,7 @@ yajl_string_encode(yajl_buf buf, const unsigned char * str,
         }
         if (escaped != NULL) {
             yajl_buf_append(buf, str + beg, end - beg);
-            yajl_buf_append(buf, escaped, strlen(escaped));
+            yajl_buf_append(buf, escaped, STRLEN(escaped));
             beg = ++end;
         } else {
             ++end;
@@ -169,7 +171,7 @@ void yajl_string_decode(yajl_buf buf, const unsigned char * str,
                 default:
                     assert("this should never happen" == NULL);
             }
-            yajl_buf_append(buf, unescaped, strlen(unescaped));
+            yajl_buf_append(buf, unescaped, STRLEN(unescaped));
             beg = ++end;
         } else {
             end++;
