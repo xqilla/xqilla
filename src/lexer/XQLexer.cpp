@@ -2,9 +2,9 @@
 
 #line 4 "../src/lexer/XQLexer.cpp"
 /*
- * Copyright (c) 2001-2007
+ * Copyright (c) 2001-2008
  *     DecisionSoft Limited. All rights reserved.
- * Copyright (c) 2004-2007
+ * Copyright (c) 2004-2008
  *     Oracle. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13319,9 +13319,9 @@ static yyconst short int yy_chk[24294] =
 #line 1 "../src/lexer/XQLexer.l"
 #define INITIAL 0
 /*
- * Copyright (c) 2001-2007
+ * Copyright (c) 2001-2008
  *     DecisionSoft Limited. All rights reserved.
- * Copyright (c) 2004-2007
+ * Copyright (c) 2004-2008
  *     Oracle. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");

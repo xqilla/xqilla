@@ -2670,8 +2670,8 @@ echo "${ECHO_T}$xerces_version" >&6; }
         xerces_include="$with_xerces/src"
         xerces_library="xerces-c"
 else
-        { { echo "$as_me:$LINENO: error: Xerces-C++ is required to build XQuery.  $with_xerces not a valid, supported Xerces tree.  You must specify the path where Xerces is installed with --with-xerces." >&5
-echo "$as_me: error: Xerces-C++ is required to build XQuery.  $with_xerces not a valid, supported Xerces tree.  You must specify the path where Xerces is installed with --with-xerces." >&2;}
+        { { echo "$as_me:$LINENO: error: The Xerces-C source is required to build XQilla.  $with_xerces is not a valid, compiled source tree for Xerces-C.  You must specify the path where Xerces is installed with --with-xerces." >&5
+echo "$as_me: error: The Xerces-C source is required to build XQilla.  $with_xerces is not a valid, compiled source tree for Xerces-C.  You must specify the path where Xerces is installed with --with-xerces." >&2;}
    { (exit 1); exit 1; }; }
 fi
 

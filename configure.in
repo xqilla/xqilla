@@ -84,7 +84,7 @@ elif test `ls $with_xerces/lib/libxerces-c*2[[6-8]].* 2>/dev/null | wc -l` -gt 0
         xerces_include="$with_xerces/src"
         xerces_library="xerces-c"
 else
-        AC_MSG_ERROR([Xerces-C++ is required to build XQuery.  $with_xerces not a valid, supported Xerces tree.  You must specify the path where Xerces is installed with --with-xerces.])
+        AC_MSG_ERROR([The Xerces-C source is required to build XQilla.  $with_xerces is not a valid, compiled source tree for Xerces-C.  You must specify the path where Xerces is installed with --with-xerces.])
 fi
 AC_SUBST(xerces_include)
 AC_SUBST(xerces_lib)

@@ -6,7 +6,7 @@ string pool that returns numeric identifier
 support for UTF-8 execution?
 extract basic schema types from Xerces-C
 abstract schema type access (no direct access to Xerces objects)
-build option without Xerces-C
+Build without code that needs a source version of Xerces-C?
 fix UTF-16 bugs
 fix XQTS bugs
 new test suite
