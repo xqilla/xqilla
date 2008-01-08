@@ -1,7 +1,7 @@
 /*
- * Copyright (c) 2001-2007
+ * Copyright (c) 2001-2008
  *     DecisionSoft Limited. All rights reserved.
- * Copyright (c) 2004-2007
+ * Copyright (c) 2004-2008
  *     Oracle. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,7 +31,7 @@
 #include <xqilla/context/URIResolver.hpp>
 #include <xqilla/context/impl/ItemFactoryImpl.hpp>
 
-#include <xercesc/util/ValueHashTableOf.hpp>
+#include <xercesc/util/RefHashTableOf.hpp>
 #include <xercesc/util/NoSuchElementException.hpp>
 #include <xercesc/util/XMLURL.hpp>
 #include <xqilla/exceptions/XMLParseException.hpp>
@@ -65,7 +65,7 @@ UpdateFactory *FastXDMConfiguration::createUpdateFactory(MemoryManager *memMgr)
 
 class XQILLA_API FastXDMURIResolver : public URIResolver {
 public:
-  FastXDMURIResolver(MemoryManager *mm) : _documentMap(3, mm) {}
+  FastXDMURIResolver(MemoryManager *mm) : _documentMap(3, /*adopt*/true, mm) {}
 
   virtual bool resolveDocument(Sequence &result, const XMLCh* uri, DynamicContext* context, const QueryPathNode *projection)
   {
@@ -79,17 +79,14 @@ public:
     }
 
     // Check in the cache
-    try {
-      doc = _documentMap.get(systemId);
-    }
-    catch(NoSuchElementException &ex) {
-    }
+    Node::Ptr *found = _documentMap.get(systemId);
+    if(found) doc = *found;
 
     // Check to see if we can locate and parse the document
     if(doc.isNull()) {
       try {
         doc = const_cast<DocumentCache*>(context->getDocumentCache())->loadDocument(uri, context, projection);
-        _documentMap.put((void*)systemId, doc);
+        _documentMap.put((void*)systemId, new Node::Ptr(doc));
       }
       catch(const XMLParseException& e) {
         XMLBuffer errMsg;
@@ -128,17 +125,14 @@ public:
     }
 
     // Check in the cache
-    try {
-      doc = _documentMap.get(systemId);
-    }
-    catch(NoSuchElementException &ex) {
-    }
+    Node::Ptr *found = _documentMap.get(systemId);
+    if(found) doc = *found;
 
     // Check to see if we can locate and parse the document
     if(doc.isNull()) {
       try {
         doc = const_cast<DocumentCache*>(context->getDocumentCache())->loadDocument(uri, context, projection);
-        _documentMap.put((void*)systemId, doc);
+        _documentMap.put((void*)systemId, new Node::Ptr(doc));
       }
       catch(const XMLParseException& e) {
         XMLBuffer errMsg;
@@ -171,7 +165,7 @@ public:
   }
 
 private:
-  ValueHashTableOf<Node::Ptr> _documentMap;
+  RefHashTableOf<Node::Ptr> _documentMap;
 };
 
 URIResolver *FastXDMConfiguration::createDefaultURIResolver(MemoryManager *memMgr)

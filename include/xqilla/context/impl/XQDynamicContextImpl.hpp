@@ -1,7 +1,7 @@
 /*
- * Copyright (c) 2001-2007
+ * Copyright (c) 2001-2008
  *     DecisionSoft Limited. All rights reserved.
- * Copyright (c) 2004-2007
+ * Copyright (c) 2004-2008
  *     Oracle. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -337,8 +337,6 @@ protected:
    * a constructor function in the in-scope functions. Constructor 
    * functions are discussed in 3.10.4 Constructor Functions */
   ItemFactory* _itemFactory;
-
-  XERCES_CPP_NAMESPACE_QUALIFIER ValueHashTableOf<Node::Ptr> _documentMap;
 
   struct ResolverEntry {
     ResolverEntry() : resolver(0), adopt(false) {}

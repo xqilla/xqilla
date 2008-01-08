@@ -1,7 +1,7 @@
 /*
- * Copyright (c) 2001-2007
+ * Copyright (c) 2001-2008
  *     DecisionSoft Limited. All rights reserved.
- * Copyright (c) 2004-2007
+ * Copyright (c) 2004-2008
  *     Oracle. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -304,7 +304,12 @@ void XQContextImpl::clearDynamicContext()
     }
   }
   _resolvers.clear();
-  registerURIResolver(_conf->createDefaultURIResolver(&_internalMM), /*adopt*/true);
+
+  _defaultResolver.resolver = _conf->createDefaultURIResolver(&_internalMM);
+  if(_defaultResolver.resolver != 0) {
+    _defaultResolver.adopt = true;
+  }
+//   registerURIResolver(_conf->createDefaultURIResolver(&_internalMM), /*adopt*/true);
 
   _moduleResolver = 0;
   time(&_currentTime);
