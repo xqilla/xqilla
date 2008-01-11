@@ -21,6 +21,7 @@
 
 #include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionLookup.hpp>
+#include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/functions/FuncFactory.hpp>
 #include <xqilla/functions/ExternalFunction.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>
@@ -34,8 +35,8 @@ FunctionLookup *FunctionLookup::g_globalFunctionTable = 0;
 XPath2MemoryManager *FunctionLookup::g_memMgr = 0;
 
 FunctionLookup::FunctionLookup(XPath2MemoryManager* memMgr)
-	: _funcTable(197, false, memMgr),
-	  _exFuncTable(7, false, memMgr)
+  : _funcTable(197, false, memMgr),
+    _exFuncTable(7, false, memMgr)
 {
 }
 
@@ -122,7 +123,7 @@ void FunctionLookup::insertExternalFunction(const ExternalFunction *func)
 }
 
 const ExternalFunction *FunctionLookup::lookUpExternalFunction(
-	const XMLCh* URI, const XMLCh* fname, size_t numArgs) const
+  const XMLCh* URI, const XMLCh* fname, size_t numArgs) const
 {
   size_t secondaryKey = numArgs;
   XMLBuffer key;
@@ -131,11 +132,11 @@ const ExternalFunction *FunctionLookup::lookUpExternalFunction(
   return _exFuncTable.get(key.getRawBuffer(), (int)secondaryKey);
 }
 
-void FunctionLookup::copyExternalFunctions(const FunctionLookup *fl)
+void FunctionLookup::copyExternalFunctionsTo(DynamicContext *context) const
 {
-  RefHash2KeysTableOfEnumerator<const ExternalFunction> en(const_cast<RefHash2KeysTableOf<const ExternalFunction>*>(&fl->_exFuncTable));
+  RefHash2KeysTableOfEnumerator<const ExternalFunction> en(const_cast<RefHash2KeysTableOf<const ExternalFunction>*>(&_exFuncTable));
   while(en.hasMoreElements()) {
-    insertExternalFunction(&en.nextElement());
+    context->addExternalFunction(&en.nextElement());
   }
 }
 
@@ -147,44 +148,44 @@ static void initGlobalTable(FunctionLookup *t, MemoryManager *memMgr);
 // static
 void FunctionLookup::initialize()
 {
-	/* global table is allocated via the memory manager, so
-	   no need to delete it at this time
+  /* global table is allocated via the memory manager, so
+     no need to delete it at this time
      if (g_globalFunctionTable)
      delete g_globalFunctionTable;
-	*/
-	if (g_memMgr)
-		delete g_memMgr;
-	g_memMgr = new XPath2MemoryManagerImpl();
-	g_globalFunctionTable = new (g_memMgr) FunctionLookup(g_memMgr);
-	initGlobalTable(g_globalFunctionTable, g_memMgr);
+  */
+  if (g_memMgr)
+    delete g_memMgr;
+  g_memMgr = new XPath2MemoryManagerImpl();
+  g_globalFunctionTable = new (g_memMgr) FunctionLookup(g_memMgr);
+  initGlobalTable(g_globalFunctionTable, g_memMgr);
 }
 
 // static
 void FunctionLookup::terminate()
 {
-	if (g_memMgr) {
-		delete g_memMgr;
-		g_memMgr = 0;
-		g_globalFunctionTable = 0;
-	}
-	/* no need to delete this -- memMgr cleans up
+  if (g_memMgr) {
+    delete g_memMgr;
+    g_memMgr = 0;
+    g_globalFunctionTable = 0;
+  }
+  /* no need to delete this -- memMgr cleans up
      if (g_globalFunctionTable) {
      delete g_globalFunctionTable;
      g_globalFunctionTable = 0;
      }
-	*/
+  */
 }
 
 // static
 void FunctionLookup::insertGlobalFunction(FuncFactory *func)
 {
-	g_globalFunctionTable->insertFunction(func);
+  g_globalFunctionTable->insertFunction(func);
 }
 
 // static
 void FunctionLookup::insertGlobalExternalFunction(const ExternalFunction *func)
 {
-	g_globalFunctionTable->insertExternalFunction(func);
+  g_globalFunctionTable->insertExternalFunction(func);
 }
 
 // static
@@ -194,26 +195,26 @@ ASTNode* FunctionLookup::lookUpGlobalFunction(
                                               XPath2MemoryManager* memMgr,
                                               const FunctionLookup *contextTable)
 {
-	ASTNode *ast = g_globalFunctionTable->lookUpFunction(
+  ASTNode *ast = g_globalFunctionTable->lookUpFunction(
                                                        URI, fname, args, memMgr);
-	if (!ast && contextTable)
-		ast = contextTable->lookUpFunction(
+  if (!ast && contextTable)
+    ast = contextTable->lookUpFunction(
                                        URI, fname, args, memMgr);
-	return ast;
+  return ast;
 }
 
 // static
 const ExternalFunction *FunctionLookup::lookUpGlobalExternalFunction(
-	const XMLCh* URI, const XMLCh* fname, size_t numArgs,
-	const FunctionLookup *contextTable)
+  const XMLCh* URI, const XMLCh* fname, size_t numArgs,
+  const FunctionLookup *contextTable)
 {
-	const ExternalFunction *ef =
-		g_globalFunctionTable->lookUpExternalFunction(
-			URI, fname, numArgs);
-	if (!ef && contextTable)
-		ef = contextTable->lookUpExternalFunction(
-			URI, fname, numArgs);
-	return ef;
+  const ExternalFunction *ef =
+    g_globalFunctionTable->lookUpExternalFunction(
+      URI, fname, numArgs);
+  if (!ef && contextTable)
+    ef = contextTable->lookUpExternalFunction(
+      URI, fname, numArgs);
+  return ef;
 }
 
 #include "FuncFactoryTemplate.hpp"
