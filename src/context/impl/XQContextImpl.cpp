@@ -176,7 +176,7 @@ XQContextImpl::~XQContextImpl()
 
 DynamicContext *XQContextImpl::createModuleContext(MemoryManager *memMgr) const
 {
-  XQContextImpl* moduleCtx = new (memMgr) XQContextImpl(_conf, _language, memMgr);
+  DynamicContext* moduleCtx = new (memMgr) XQContextImpl(_conf, _language, memMgr);
 
   // Force the context to use our memory manager
   moduleCtx->setMemoryManager(getMemoryManager());
@@ -192,7 +192,9 @@ DynamicContext *XQContextImpl::createModuleContext(MemoryManager *memMgr) const
     moduleCtx->addCollation(*it);
 
   // Add the external functions
-  moduleCtx->_functionTable->copyExternalFunctions(_functionTable);
+  if(_functionTable) {
+    _functionTable->copyExternalFunctionsTo(moduleCtx);
+  }
 
   _conf->populateStaticContext(moduleCtx);
   return moduleCtx;

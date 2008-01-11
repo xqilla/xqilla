@@ -32,6 +32,7 @@
 class FuncFactory;
 class XPath2MemoryManager;
 class ExternalFunction;
+class DynamicContext;
 
 class XQILLA_API FunctionLookup
 {
@@ -54,7 +55,7 @@ public:
   const ExternalFunction *lookUpExternalFunction(const XMLCh* URI,
 						 const XMLCh* fname,
 						 size_t numArgs) const;
-  void copyExternalFunctions(const FunctionLookup *fl);
+  void copyExternalFunctionsTo(DynamicContext *context) const;
 
   void insertUpdateFunctions(XPath2MemoryManager *memMgr);
 
