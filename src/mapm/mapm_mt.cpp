@@ -10,11 +10,16 @@
  *  that both that copyright notice and this permission notice appear 
  *  in supporting documentation.
  *
- *  Permission to modify the software is granted, but not the right to
- *  distribute the modified code.  Modifications are to be distributed 
- *  as patches to released version.
- *  
+ *  Permission to modify the software is granted. Permission to distribute
+ *  the modified code is granted. Modifications are to be distributed by
+ *  using the file 'license.txt' as a template to modify the file header.
+ *  'license.txt' is available in the official MAPM distribution.
+ *
  *  This software is provided "as is" without express or implied warranty.
+ *
+ *  THIS FILE HAS BEEN MODIFIED FROM THE OFFICIAL MAPM DISTRIBUTION BY
+ *  XQilla project on 2005/11/03, 2007/24/04
+ *  THIS FILE IS ORIGINALLY FROM MAPM VERSION 4.9.5
  */
 
 /*
@@ -24,6 +29,9 @@
  *	using semaphores
  *
  *      $Log$
+ *      Revision 1.4  2008/01/14 14:46:29  jpcs
+ *      Fixed the licence in a MAPM file that had been missed.
+ *
  *      Revision 1.3  2007/04/24 13:12:59  jpcs
  *      Converted common NodeTest objects that use an ItemType object to NodeTest
  *      objects without an ItemType object. This simplifies comparing different
