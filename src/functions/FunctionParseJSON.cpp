@@ -263,21 +263,13 @@ static yajl_callbacks json2xml_callbacks = {
   json2xml_end_array
 };
 
-Sequence FunctionParseJSON::createSequence(DynamicContext* context, int flags) const
+void FunctionParseJSON::parseJSON(const XMLCh *jsonString, EventHandler *handler, DynamicContext *context, const LocationInfo *location)
 {
-  Item::Ptr item = getParamNumber(1, context)->next(context);
+  UTF8Str utf8(jsonString);
 
-  if(item.isNull()) return Sequence(context->getMemoryManager());
+  JSON2XML_Env env = { handler };
 
-  UTF8Str utf8(item->asString(context));
-
-  AutoDelete<SequenceBuilder> builder(context->createSequenceBuilder());
-  QueryPathTreeFilter qptf(queryPathTree_, builder.get());
-  JSON2XML_Env env = {
-    queryPathTree_ ? (EventHandler*)&qptf : (EventHandler*)builder.get()
-  };
-
-  env.handler->startElementEvent(0, 0, JSON2XML_json);
+  handler->startElementEvent(0, 0, JSON2XML_json);
 
   yajl_parser_config cfg = { 0 };
   yajl_handle yajl = yajl_alloc(&json2xml_callbacks, &cfg, &env);
@@ -291,13 +283,26 @@ Sequence FunctionParseJSON::createSequence(DynamicContext* context, int flags) c
                                         (unsigned int)strlen(utf8.UTF8Form()));
     buf.append(X((char*)str));
     yajl_free_error(str);
-    XQThrow(FunctionException, X("FunctionParseJSON::createSequence"), buf.getRawBuffer());
+    XQThrow3(FunctionException, X("FunctionParseJSON::parseJSON"), buf.getRawBuffer(), location);
   }
 
-  env.handler->endElementEvent(0, 0, JSON2XML_json,
-                               SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                               DocumentCache::g_szUntyped);
+  handler->endElementEvent(0, 0, JSON2XML_json,
+                           SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                           DocumentCache::g_szUntyped);
+}
 
-  env.handler->endEvent();
+Sequence FunctionParseJSON::createSequence(DynamicContext* context, int flags) const
+{
+  Item::Ptr item = getParamNumber(1, context)->next(context);
+
+  if(item.isNull()) return Sequence(context->getMemoryManager());
+
+  AutoDelete<SequenceBuilder> builder(context->createSequenceBuilder());
+  QueryPathTreeFilter qptf(queryPathTree_, builder.get());
+  EventHandler *handler = queryPathTree_ ? (EventHandler*)&qptf : (EventHandler*)builder.get();
+
+  parseJSON(item->asString(context), handler, context, this);
+
+  handler->endEvent();
   return builder->getSequence();
 }

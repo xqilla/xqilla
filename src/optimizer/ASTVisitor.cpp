@@ -578,7 +578,8 @@ ASTNode *ASTVisitor::optimizeFTContains(FTContains *item)
   // TBD implement optimization of FTSelection objects - jpcs
   item->setArgument(optimize(item->getArgument()));
   //   item->setSelection(optimizeFTSelection(item->getSelection()));
-  item->setIgnore(optimize(item->getIgnore()));
+  if(item->getIgnore())
+    item->setIgnore(optimize(item->getIgnore()));
   return item;
 }
 

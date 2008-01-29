@@ -50,7 +50,11 @@ public:
    */
   Sequence createSequence(DynamicContext* context, int flags=0) const;
 
+  static const XMLCh *replace(const XMLCh *input, const XMLCh *pattern, const XMLCh *replacement,
+                              const XMLCh *options = 0, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mm =
+                              XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager);
+
 };
 
-#endif // _FUNCTIONREPLACE_HPP
+#endif
 

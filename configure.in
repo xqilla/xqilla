@@ -89,24 +89,40 @@ fi
 AC_SUBST(xerces_include)
 AC_SUBST(xerces_lib)
 
+# Check for the BinInputStream::getContentType() method
+AH_TEMPLATE(HAVE_GETCONTENTTYPE, [Define to 1 if the Xerces-C library supports the BinInputStream::getContentType() method.])
+CPPFLAGS_BKUP="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS -I$xerces_include"
+AC_LANG_PUSH(C++)
+AC_TRY_COMPILE([#include<xercesc/util/BinMemInputStream.hpp>],
+        [XERCES_CPP_NAMESPACE_QUALIFIER BinMemInputStream(0, 0).getContentType();],
+        [ac_found_getcontenttype="yes"], [ac_found_getcontenttype="no"])
+AC_LANG_POP(C++)
+CPPFLAGS="$CPPFLAGS_BKUP"
+AC_MSG_CHECKING([if the Xerces-C library supports the BinInputStream::getContentType() method])
+AC_MSG_RESULT($ac_found_getcontenttype)
+if test "$ac_found_getcontenttype" = yes
+then
+	AC_DEFINE(HAVE_GETCONTENTTYPE)
+fi
+
+
 # Check if the FAXPP library is present
 AH_TEMPLATE(HAVE_FAXPP, [Define to 1 if the FAXPP library is present.])
 AC_MSG_CHECKING([if --with-faxpp=DIR option specified])
 AC_ARG_WITH(faxpp,
         [AS_HELP_STRING(--with-faxpp=DIR,Path of FAXPP. [DIR="/usr/local"])],
-        [with_faxpp="$withval"], [with_faxpp="no"])
+        [with_faxpp="$withval"], [with_faxpp="/usr/local"])
 AC_MSG_RESULT($with_faxpp)
-if test "$with_faxpp" = "no"; then
-        with_faxpp="/usr/local"
-fi
-AC_MSG_CHECKING([if the FAXPP library is present])
-if test `ls $with_faxpp/lib/libfaxpp.* 2>/dev/null | wc -l` -gt 0 ; then
+if test "$with_faxpp" != "no"; then
+   AC_MSG_CHECKING([if the FAXPP library is present])
+   if test `ls $with_faxpp/lib/libfaxpp.* 2>/dev/null | wc -l` -gt 0 ; then
         AC_MSG_RESULT([yes])
         AC_DEFINE(HAVE_FAXPP)
         faxpp_lib="-L$with_faxpp/lib -R$with_faxpp/lib"
         faxpp_library="-lfaxpp"
         faxpp_include="-I$with_faxpp/include"
-elif test `ls $with_faxpp/libfaxpp.* 2>/dev/null | wc -l` -gt 0 ; then
+   elif test `ls $with_faxpp/libfaxpp.* 2>/dev/null | wc -l` -gt 0 ; then
         if test `ls $with_faxpp/include/faxpp/parser.h 2>/dev/null | wc -l` -gt 0 ; then
                 AC_MSG_RESULT([yes])
                 AC_DEFINE(HAVE_FAXPP)
@@ -120,15 +136,55 @@ elif test `ls $with_faxpp/libfaxpp.* 2>/dev/null | wc -l` -gt 0 ; then
                 faxpp_library="-lfaxpp"
                 faxpp_include="-I$with_faxpp/../include"
         fi
-else
+   else
         AC_MSG_RESULT([no])
         faxpp_lib=""
         faxpp_library=""
         faxpp_include=""
+   fi
 fi
 AC_SUBST(faxpp_include)
 AC_SUBST(faxpp_lib)
 AC_SUBST(faxpp_library)
+
+# Check if the HTML Tidy library is present
+AH_TEMPLATE(HAVE_LIBTIDY, [Define to 1 if the HTML Tidy library is present.])
+AC_MSG_CHECKING([if --with-tidy=DIR option specified])
+AC_ARG_WITH(tidy,
+        [AS_HELP_STRING(--with-tidy=DIR,Path of the HTML Tidy library. [DIR="/usr"])],
+        [with_tidy="$withval"], [with_tidy="/usr"])
+AC_MSG_RESULT($with_tidy)
+if test "$with_tidy" != "no"; then
+   AC_MSG_CHECKING([if the HTML Tidy library is present])
+   if test `ls $with_tidy/lib/libtidy.* 2>/dev/null | wc -l` -gt 0 ; then
+        if test `ls $with_tidy/include/tidy/tidy.h 2>/dev/null | wc -l` -gt 0 ; then
+                AC_MSG_RESULT([yes])
+                AC_DEFINE(HAVE_LIBTIDY)
+                tidy_lib="-L$with_tidy/lib -R$with_tidy/lib"
+                tidy_library="-ltidy"
+                tidy_include="-I$with_tidy/include/tidy"
+        elif test `ls $with_tidy/include/tidy.h 2>/dev/null | wc -l` -gt 0 ; then
+                AC_MSG_RESULT([yes])
+                AC_DEFINE(HAVE_LIBTIDY)
+                tidy_lib="-L$with_tidy/lib -R$with_tidy/lib"
+                tidy_library="-ltidy"
+                tidy_include="-I$with_tidy/include"
+        else
+                AC_MSG_RESULT([no])
+                tidy_lib=""
+                tidy_library=""
+                tidy_include=""
+        fi
+   else
+        AC_MSG_RESULT([no])
+        tidy_lib=""
+        tidy_library=""
+        tidy_include=""
+   fi
+fi
+AC_SUBST(tidy_include)
+AC_SUBST(tidy_lib)
+AC_SUBST(tidy_library)
 
 # Checks for programs.
 AC_PROG_CXX
@@ -138,7 +194,7 @@ AC_PROG_CPP
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
-#AC_PROG_RANLIB
+AC_PROG_RANLIB
 AC_PROG_YACC
 AM_PROG_LEX
 
@@ -168,6 +224,8 @@ AC_CHECK_LIB(nsl,gethostbyname)
 
 # Checks for header files.
 AC_FUNC_ALLOCA
+AC_FUNC_MALLOC
+AC_FUNC_REALLOC
 AC_HEADER_STDC
 AC_CHECK_HEADERS([limits.h malloc.h stddef.h stdlib.h string.h sys/time.h sys/timeb.h wchar.h])
 
@@ -183,7 +241,7 @@ AC_CHECK_TYPES([ptrdiff_t])
 # Checks for library functions.
 AC_FUNC_ERROR_AT_LINE
 AC_FUNC_MKTIME
-AC_CHECK_FUNCS([floor ftime gettimeofday memmove memset pow sqrt strchr strstr tzset])
+AC_CHECK_FUNCS([floor ftime gettimeofday memmove memset pow sqrt strchr strstr tzset localtime_r])
 
 AC_CONFIG_FILES([Makefile include/Makefile])
 AC_OUTPUT

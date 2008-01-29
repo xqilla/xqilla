@@ -37,7 +37,7 @@ class XQILLA_API TestSuiteResultListener
 public:
   virtual ~TestSuiteResultListener() {}
 
-  virtual void reportVersion(const std::string &version) {}
+  virtual void reportVersion(const std::string &version, bool update) {}
 
   virtual void startTestGroup(const std::string &name) = 0;
   virtual void endTestGroup() = 0;
@@ -61,6 +61,8 @@ class XQILLA_API KnownErrorChecker : public TestSuiteResultListener
 {
 public:
   KnownErrorChecker(TestSuiteResultListener *results);
+
+  virtual void reportVersion(const std::string &version, bool update);
 
   virtual void startTestGroup(const std::string &name);
   virtual void endTestGroup();
@@ -137,7 +139,7 @@ class XQILLA_API XMLReportResultListener : public TestSuiteResultListener
 public:
   XMLReportResultListener();
 
-  virtual void reportVersion(const std::string &version) { version_ = version; }
+  virtual void reportVersion(const std::string &version, bool update);
 
   virtual void startTestGroup(const std::string &name);
   virtual void endTestGroup();
@@ -165,6 +167,8 @@ public:
   void printReport() const;
 
 private:
+  bool update_;
+
   std::string version_;
   std::string implName_, implVersion_, implDescription_;
   std::string orgName_, orgWebsite_;
@@ -175,6 +179,9 @@ private:
   std::map<std::string, std::string> implDefinedItems_;
   std::map<std::string, bool> features_;
   std::map<std::string, std::pair<std::string, std::string> > contextProperties_;
+
+  std::string previousTestName_;
+  std::ostringstream tmpStream_;
 
   std::ostringstream outputStream_;
 };

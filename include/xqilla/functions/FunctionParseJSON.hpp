@@ -22,7 +22,7 @@
 #ifndef _FUNCTIONPARSEJSON_HPP
 #define _FUNCTIONPARSEJSON_HPP
 
-#include "XQillaFunction.hpp"
+#include <xqilla/functions/XQillaFunction.hpp>
 
 class QueryPathNode;
 
@@ -41,6 +41,9 @@ public:
 
   QueryPathNode *getQueryPathTree() const { return queryPathTree_; }
   void setQueryPathTree(QueryPathNode *q) { queryPathTree_ = q; }
+
+  static void parseJSON(const XMLCh *jsonString, EventHandler *handler,
+                        DynamicContext *context, const LocationInfo *location);
 
 private:
   QueryPathNode *queryPathTree_;

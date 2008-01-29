@@ -33,6 +33,11 @@ class XPath2MemoryManager;
 #include <xercesc/dom/DOMNode.hpp>
 #include <xercesc/dom/DOMDocument.hpp>
 
+XERCES_CPP_NAMESPACE_BEGIN
+class InputSource;
+class BinInputStream;
+XERCES_CPP_NAMESPACE_END
+
 /**class with methods that are used by v2 that are DOM related*/ 
 class XQILLA_API XPath2Utils
 {
@@ -85,6 +90,12 @@ public:
 
   /** Gets the owner document for the given node */
   static const XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *getOwnerDoc(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *node);
+
+  static bool readSource(const XERCES_CPP_NAMESPACE_QUALIFIER InputSource &src, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mm,
+                         XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &result, bool sniffEncoding = false);
+  static void readSource(XERCES_CPP_NAMESPACE_QUALIFIER BinInputStream *stream, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mm,
+                         XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &result, const XMLCh *encoding = 0, bool sniffEncoding = false);
+
 };
 
 inline bool XPath2Utils::equals(const XMLCh *const str1, const XMLCh *const str2) {

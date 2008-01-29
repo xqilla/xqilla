@@ -62,6 +62,7 @@ public:
 
   virtual Node::Ptr loadDocument(const XMLCh* uri, DynamicContext *context, const QueryPathNode *projection = 0);
   virtual Node::Ptr parseDocument(XERCES_CPP_NAMESPACE_QUALIFIER InputSource &srcToUse, DynamicContext *context, const QueryPathNode *projection = 0);
+  virtual void parseDocument(XERCES_CPP_NAMESPACE_QUALIFIER InputSource &srcToUse, EventHandler *handler, DynamicContext *context);
 
   /*
    * returns true if the type represented by uri:typename is an instance of uriToCheck:typeNameToCheck 

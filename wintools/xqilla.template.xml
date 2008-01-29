@@ -250,6 +250,7 @@
         <file name='include/xqilla/functions/FunctionNot.hpp' />
         <file name='include/xqilla/functions/FunctionNumber.hpp' />
         <file name='include/xqilla/functions/FunctionOneOrMore.hpp' />
+        <file name='include/xqilla/functions/FunctionParseHTML.hpp' />
         <file name='include/xqilla/functions/FunctionParseJSON.hpp' />
         <file name='include/xqilla/functions/FunctionParseXML.hpp' />
         <file name='include/xqilla/functions/FunctionPosition.hpp' />
@@ -286,6 +287,7 @@
         <file name='include/xqilla/functions/FunctionTranslate.hpp' />
         <file name='include/xqilla/functions/FunctionTrue.hpp' />
         <file name='include/xqilla/functions/FunctionUnordered.hpp' />
+        <file name='include/xqilla/functions/FunctionUnparsedText.hpp' />
         <file name='include/xqilla/functions/FunctionUpperCase.hpp' />
         <file name='include/xqilla/functions/FunctionYearFromDate.hpp' />
         <file name='include/xqilla/functions/FunctionYearFromDateTime.hpp' />
@@ -647,6 +649,7 @@
         <file name='src/functions/FunctionNot.cpp' />
         <file name='src/functions/FunctionNumber.cpp' />
         <file name='src/functions/FunctionOneOrMore.cpp' />
+        <file name='src/functions/FunctionParseHTML.cpp' />
         <file name='src/functions/FunctionParseJSON.cpp' />
         <file name='src/functions/FunctionParseXML.cpp' />
         <file name='src/functions/FunctionPosition.cpp' />
@@ -683,6 +686,7 @@
         <file name='src/functions/FunctionTranslate.cpp' />
         <file name='src/functions/FunctionTrue.cpp' />
         <file name='src/functions/FunctionUnordered.cpp' />
+        <file name='src/functions/FunctionUnparsedText.cpp' />
         <file name='src/functions/FunctionUpperCase.cpp' />
         <file name='src/functions/FunctionYearFromDate.cpp' />
         <file name='src/functions/FunctionYearFromDateTime.cpp' />

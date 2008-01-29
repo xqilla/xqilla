@@ -943,7 +943,7 @@ Item::Ptr SequenceType::OccurrenceMatchesResult::next(DynamicContext *context)
         XMLBuffer buf;
         buf.set(X("Sequence does not match type "));
         _seqType->toBuffer(buf);
-        buf.append(X(" - the sequence contains more then one item ["));
+        buf.append(X(" - the sequence contains more than one item ["));
         buf.append(_errorCode);
         buf.append(X("]"));
         XQThrow(XPath2TypeMatchException, X("SequenceType::OccurrenceMatchesResult::next"), buf.getRawBuffer());

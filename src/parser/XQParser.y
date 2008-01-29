@@ -2936,7 +2936,7 @@ FTSelection:
       (*i)->setArgument($$);
       $$ = *i;
     }
-    delete $2;
+/*     delete $2; */
   }
   | FTOr FTSelectionOptions
   {
@@ -2948,7 +2948,7 @@ FTSelection:
       (*i)->setArgument($$);
       $$ = *i;
     }
-    delete options;
+/*     delete options; */
   }
   ;
 

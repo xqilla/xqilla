@@ -62,14 +62,8 @@ Sequence FunctionMatches::createSequence(DynamicContext* context, int flags) con
   Item::Ptr inputItem = getParamNumber(1,context)->next(context);
   if(inputItem.notNull())
     input=inputItem->asString(context);
+
   const XMLCh* pattern = getParamNumber(2,context)->next(context)->asString(context);
-  // If the value of $operand1 is the zero-length string and the value of $operand2 is not the zero-length string,
-  // then the function returns false.
-  if(XMLString::stringLen(input)==0 && XMLString::stringLen(pattern)>0)
-    return Sequence(context->getItemFactory()->createBoolean(false, context), memMgr);
-  // If the value of $operand2 is the zero-length string, then the function returns true
-  if(XMLString::stringLen(pattern)==0)
-    return Sequence(context->getItemFactory()->createBoolean(true, context), memMgr);
 
   const XMLCh* options = XMLUni::fgZeroLenString;
   if(getNumArgs()>2)
@@ -90,15 +84,8 @@ Sequence FunctionMatches::createSequence(DynamicContext* context, int flags) con
     }
   }
 
-  //Build the Regular Expression
   try {
-    // Always turn off head character optimisation, since it is broken
-    XMLBuffer optionsBuf(1023, context->getMemoryManager());
-    optionsBuf.set(options);
-    optionsBuf.append(chLatin_H);
-
-    RegularExpression regEx(pattern, optionsBuf.getRawBuffer(), memMgr);
-    return Sequence(context->getItemFactory()->createBoolean(regEx.matches(input), context), memMgr);
+    return Sequence(context->getItemFactory()->createBoolean(matches(input, pattern, options), context), memMgr);
   } catch (ParseException &e){ 
     XMLBuffer buf(1023, memMgr);
     buf.set(X("Invalid regular expression: "));
@@ -111,4 +98,23 @@ Sequence FunctionMatches::createSequence(DynamicContext* context, int flags) con
 
   //do not get here
 
+}
+
+bool FunctionMatches::matches(const XMLCh *input, const XMLCh *pattern, const XMLCh *options)
+{
+  // If the value of $operand2 is the zero-length string, then the function returns true
+  if(pattern == 0 || *pattern == 0) return true;
+
+  // If the value of $operand1 is the zero-length string and the value of $operand2 is not the zero-length string,
+  // then the function returns false.
+  if(input == 0 || *input == 0) return false;
+
+  // Always turn off head character optimisation, since it is broken
+  XMLBuffer optionsBuf;
+  optionsBuf.set(options);
+  optionsBuf.append(chLatin_H);
+
+  //Build the Regular Expression
+  RegularExpression regEx(pattern, optionsBuf.getRawBuffer());
+  return regEx.matches(input);
 }

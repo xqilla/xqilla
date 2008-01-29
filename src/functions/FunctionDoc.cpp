@@ -60,25 +60,18 @@ ASTNode *FunctionDoc::staticTyping(StaticContext *context)
   _src.getStaticType().flags = StaticType::DOCUMENT_TYPE;
   _src.availableDocumentsUsed(true);
 
-  calculateSRCForArguments(context);
-
-  if(_args[0]->isConstant()) {
-  }
-  else {
-  }
-
-  return this;
+  return calculateSRCForArguments(context);
 }
 
 Sequence FunctionDoc::createSequence(DynamicContext* context, int flags) const
 {
-  Sequence uriArg = getParamNumber(1,context)->toSequence(context);
+  Item::Ptr uriArg = getParamNumber(1,context)->next(context);
   
-  if (uriArg.isEmpty()) {
+  if(uriArg.isNull()) {
     return Sequence(context->getMemoryManager());
   }
   
-  const XMLCh *uri = uriArg.first()->asString(context);
+  const XMLCh *uri = uriArg->asString(context);
 
   // on Windows, we can have URIs using \ instead of /; let's normalize them
   if(uri != 0) {

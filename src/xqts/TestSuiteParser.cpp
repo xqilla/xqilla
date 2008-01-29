@@ -104,7 +104,8 @@ void TestSuiteParser::startElement(const XMLCh* const uri, const XMLCh* const lo
 //     if(szURI=="http://www.w3.org/2005/02/query-test-XQTSCatalog")
 //     {
       if(szName=="test-suite") {
-        runner_->getResultListener()->reportVersion(UTF8(attributes.getValue(X("version"))));
+        runner_->getResultListener()->reportVersion(UTF8(attributes.getValue(X("version"))),
+                                                    szURI == "http://www.w3.org/2005/02/query-test-update");
 
         urlXQTSQueriesDirectory_.setURL(urlXQTSCatalog_, attributes.getValue(X("XQueryQueryOffsetPath")));
         urlXQTSResultsDirectory_.setURL(urlXQTSCatalog_, attributes.getValue(X("ResultOffsetPath")));

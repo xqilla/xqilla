@@ -6599,7 +6599,7 @@ yyreduce:
       (*i)->setArgument((yyval.ftselection));
       (yyval.ftselection) = *i;
     }
-    delete (yyvsp[(2) - (4)].ftoptionlist);
+/*     delete $2; */
   }
     break;
 
@@ -6614,7 +6614,7 @@ yyreduce:
       (*i)->setArgument((yyval.ftselection));
       (yyval.ftselection) = *i;
     }
-    delete options;
+/*     delete options; */
   }
     break;
 
