@@ -229,8 +229,8 @@ void FunctionParseHTML::parseHTML(const XMLCh *html, EventHandler *handler, Dyna
 
 void FunctionParseHTML::parseHTML(const XMLCh *html, EventHandler *handler, DynamicContext *context, const LocationInfo *location)
 {
-  XQThrow(FunctionException, X("FunctionParseHTML::parseHTML"),
-          X("XQilla was not compiled with HTML Tidy support [err:XQILLA]"));
+  XQThrow3(FunctionException, X("FunctionParseHTML::parseHTML"),
+           X("XQilla was not compiled with HTML Tidy support [err:XQILLA]"), location);
 }
 
 #endif
