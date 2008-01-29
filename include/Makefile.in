@@ -111,7 +111,6 @@ PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 RANLIB = @RANLIB@
-SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
@@ -174,6 +173,9 @@ target_alias = @target_alias@
 target_cpu = @target_cpu@
 target_os = @target_os@
 target_vendor = @target_vendor@
+tidy_include = @tidy_include@
+tidy_lib = @tidy_lib@
+tidy_library = @tidy_library@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 xerces_include = @xerces_include@
@@ -377,6 +379,7 @@ xqilla/functions/FunctionNormalizeUnicode.hpp \
 xqilla/functions/FunctionNot.hpp \
 xqilla/functions/FunctionNumber.hpp \
 xqilla/functions/FunctionOneOrMore.hpp \
+xqilla/functions/FunctionParseHTML.hpp \
 xqilla/functions/FunctionParseJSON.hpp \
 xqilla/functions/FunctionSerializeJSON.hpp \
 xqilla/functions/FunctionParseXML.hpp \
@@ -413,6 +416,7 @@ xqilla/functions/FunctionTrace.hpp \
 xqilla/functions/FunctionTranslate.hpp \
 xqilla/functions/FunctionTrue.hpp \
 xqilla/functions/FunctionUnordered.hpp \
+xqilla/functions/FunctionUnparsedText.hpp \
 xqilla/functions/FunctionUpperCase.hpp \
 xqilla/functions/FunctionYearFromDate.hpp \
 xqilla/functions/FunctionYearFromDateTime.hpp \

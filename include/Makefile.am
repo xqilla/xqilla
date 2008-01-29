@@ -197,6 +197,7 @@ xqilla/functions/FunctionNormalizeUnicode.hpp \
 xqilla/functions/FunctionNot.hpp \
 xqilla/functions/FunctionNumber.hpp \
 xqilla/functions/FunctionOneOrMore.hpp \
+xqilla/functions/FunctionParseHTML.hpp \
 xqilla/functions/FunctionParseJSON.hpp \
 xqilla/functions/FunctionSerializeJSON.hpp \
 xqilla/functions/FunctionParseXML.hpp \
@@ -233,6 +234,7 @@ xqilla/functions/FunctionTrace.hpp \
 xqilla/functions/FunctionTranslate.hpp \
 xqilla/functions/FunctionTrue.hpp \
 xqilla/functions/FunctionUnordered.hpp \
+xqilla/functions/FunctionUnparsedText.hpp \
 xqilla/functions/FunctionUpperCase.hpp \
 xqilla/functions/FunctionYearFromDate.hpp \
 xqilla/functions/FunctionYearFromDateTime.hpp \

@@ -219,6 +219,7 @@ src/functions/FunctionNormalizeUnicode.cpp	lib
 src/functions/FunctionNot.cpp	lib
 src/functions/FunctionNumber.cpp	lib
 src/functions/FunctionOneOrMore.cpp	lib
+src/functions/FunctionParseHTML.cpp lib
 src/functions/FunctionParseJSON.cpp lib
 src/functions/FunctionParseXML.cpp lib
 src/functions/FunctionPosition.cpp	lib
@@ -255,6 +256,7 @@ src/functions/FunctionTrace.cpp	lib
 src/functions/FunctionTranslate.cpp	lib
 src/functions/FunctionTrue.cpp	lib
 src/functions/FunctionUnordered.cpp	lib
+src/functions/FunctionUnparsedText.cpp	lib
 src/functions/FunctionUpperCase.cpp	lib
 src/functions/FunctionYearFromDate.cpp	lib
 src/functions/FunctionYearFromDateTime.cpp	lib
@@ -668,6 +670,7 @@ include/xqilla/functions/FunctionNormalizeUnicode.hpp	lib
 include/xqilla/functions/FunctionNot.hpp	lib
 include/xqilla/functions/FunctionNumber.hpp	lib
 include/xqilla/functions/FunctionOneOrMore.hpp	lib
+include/xqilla/functions/FunctionParseHTML.hpp lib
 include/xqilla/functions/FunctionParseJSON.hpp lib
 include/xqilla/functions/FunctionParseXML.hpp lib
 include/xqilla/functions/FunctionPosition.hpp	lib
@@ -704,6 +707,7 @@ include/xqilla/functions/FunctionTrace.hpp	lib
 include/xqilla/functions/FunctionTranslate.hpp	lib
 include/xqilla/functions/FunctionTrue.hpp	lib
 include/xqilla/functions/FunctionUnordered.hpp	lib
+include/xqilla/functions/FunctionUnparsedText.hpp	lib
 include/xqilla/functions/FunctionUpperCase.hpp	lib
 include/xqilla/functions/FunctionYearFromDate.hpp	lib
 include/xqilla/functions/FunctionYearFromDateTime.hpp	lib

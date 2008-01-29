@@ -23,6 +23,7 @@
 #include <xqilla/simple-api/XQQuery.hpp>
 #include <xqilla/exceptions/ContextException.hpp>
 #include <xqilla/utils/XQillaPlatformUtils.hpp>
+#include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/exceptions/XQException.hpp>
 #include <xqilla/fastxdm/FastXDMConfiguration.hpp>
@@ -32,9 +33,6 @@
 #include <xqilla/context/impl/XQContextImpl.hpp>
 
 #include <xercesc/util/XMLURL.hpp>
-#include <xercesc/util/TransService.hpp>
-#include <xercesc/util/BinInputStream.hpp>
-#include <xercesc/framework/XMLRecognizer.hpp>
 #include <xercesc/framework/URLInputSource.hpp>
 #include <xercesc/framework/LocalFileInputSource.hpp>
 #include <xercesc/util/Janitor.hpp>
@@ -141,8 +139,6 @@ DynamicContext *XQilla::createContext(Language language, XQillaConfiguration *co
   return result;
 }
 
-#define BUFFER_SIZE 1024
-
 bool XQilla::readQuery(const XMLCh* queryFile, MemoryManager* memMgr, XMLBuffer& queryText)
 {
     Janitor<InputSource> srcToFill(NULL);
@@ -160,43 +156,5 @@ bool XQilla::readQuery(const XMLCh* queryFile, MemoryManager* memMgr, XMLBuffer&
 
 bool XQilla::readQuery(const InputSource& querySrc, MemoryManager* memMgr, XMLBuffer& queryText)
 {
-    BinInputStream* stream = querySrc.makeStream();
-    if(stream == NULL) return false;
-    Janitor<BinInputStream> janStream(stream);
-
-    XMLByte buffer[BUFFER_SIZE];
-    unsigned int nRead = stream->readBytes(buffer, BUFFER_SIZE);
-
-    Janitor<XMLTranscoder> transcoder(NULL);
-    XMLTransService::Codes retCode;
-    if(querySrc.getEncoding() == NULL) {
-      // TBD make this better by using an XQuery specific encoding sniffer - jpcs
-      XMLRecognizer::Encodings encoding = XMLRecognizer::basicEncodingProbe(buffer,BUFFER_SIZE);
-      transcoder.reset(XMLPlatformUtils::fgTransService->makeNewTranscoderFor(encoding, retCode, BUFFER_SIZE, memMgr));
-    }
-    else {
-      transcoder.reset(XMLPlatformUtils::fgTransService->makeNewTranscoderFor(querySrc.getEncoding(), retCode, BUFFER_SIZE, memMgr));
-    }
-
-    XMLCh tempBuff[BUFFER_SIZE];
-    unsigned char charSizes[BUFFER_SIZE];
-    unsigned int bytesEaten = 0, nOffset = 0;
-    unsigned int nCount;
-
-    do {
-      nCount = transcoder->transcodeFrom(buffer, nRead, tempBuff, BUFFER_SIZE, bytesEaten, charSizes);
-      queryText.append(tempBuff, nCount);
-
-      if(bytesEaten < nRead){
-        nOffset = nRead - bytesEaten;
-        memmove(buffer, buffer + bytesEaten, nOffset);
-      }
-
-      nRead = stream->readBytes(buffer + nOffset, BUFFER_SIZE - nOffset);
-      if(nRead == 0 && nCount == 0) break;
-
-      nRead += nOffset;
-    } while(nRead > 0);
-
-    return true;
+  return XPath2Utils::readSource(querySrc, memMgr, queryText, /*sniffEncoding*/true);
 }

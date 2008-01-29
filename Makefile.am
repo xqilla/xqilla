@@ -1,8 +1,8 @@
 AUTOMAKE_OPTIONS = foreign dist-zip
 SUBDIRS = include
 
-INCLUDES = -I$(top_srcdir)/include/ -I$(xerces_include) -I$(top_srcdir)/src/lexer/ $(faxpp_include)
-LDFLAGS = -L$(xerces_lib) -R$(xerces_lib) $(faxpp_lib) -lxerces-c $(faxpp_library)
+INCLUDES = -I$(top_srcdir)/include/ -I$(xerces_include) -I$(top_srcdir)/src/lexer/ $(faxpp_include) $(tidy_include)
+LDFLAGS = -L$(xerces_lib) -R$(xerces_lib) $(faxpp_lib) $(tidy_lib) -lxerces-c $(faxpp_library) $(tidy_library)
 LDADD = libxqilla.la
 
 bin_PROGRAMS = xqilla
@@ -225,6 +225,7 @@ src/functions/FunctionTrace.cpp \
 src/functions/FunctionTranslate.cpp \
 src/functions/FunctionTrue.cpp \
 src/functions/FunctionUnordered.cpp \
+src/functions/FunctionUnparsedText.cpp \
 src/functions/FunctionUpperCase.cpp \
 src/functions/FunctionZeroOrOne.cpp \
 src/functions/FunctionAdjustDateTimeToTimezone.cpp \
@@ -253,6 +254,7 @@ src/functions/FunctionYearFromDateTime.cpp \
 src/functions/FunctionYearsFromDuration.cpp \
 src/functions/FunctionParseJSON.cpp \
 src/functions/FunctionSerializeJSON.cpp \
+src/functions/FunctionParseHTML.cpp \
 src/functions/XQUserFunction.cpp \
 src/items/impl/ATAnySimpleTypeImpl.cpp \
 src/items/impl/ATAnySimpleTypeImpl.hpp \
@@ -474,6 +476,7 @@ src/samples/dom-api/data.xml \
 src/samples/dom-api/data.xsd \
 src/samples/dom-api/foo.xml \
 src/samples/simple-api/foo.xml \
+src/xercesc_content_type.patch \
 LICENSE \
 TODO \
 ChangeLog \

@@ -25,6 +25,13 @@
 #include <xercesc/util/XMLUniDefs.hpp>
 #include <xercesc/util/XMLUri.hpp>
 #include <xercesc/framework/XMLBuffer.hpp>
+#include <xercesc/util/TranscodingException.hpp>
+#include <xercesc/util/BinInputStream.hpp>
+#include <xercesc/util/TransService.hpp>
+#include <xercesc/framework/XMLRecognizer.hpp>
+#include <xercesc/sax/InputSource.hpp>
+#include <xercesc/util/regx/RegularExpression.hpp>
+#include <xercesc/util/regx/Match.hpp>
 
 #include <xqilla/framework/XPath2MemoryManager.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
@@ -146,11 +153,9 @@ const XMLCh* XPath2Utils::subString(const XMLCh* src, unsigned int offset, unsig
     XQThrow2(MiscException,X("XPath2Utils:subString"),X("Cannot take substring of null string"));
   }
 
-	XMLCh *newStr = new XMLCh [ count + 1 ];
+	AutoDeleteArray<XMLCh> newStr(new XMLCh [ count + 1 ]);
   XMLString::subString(newStr, src, offset, offset + count);
-  const XMLCh* retval=memMgr->getPooledString(newStr);
-  delete[] newStr;
-  return retval;
+  return memMgr->getPooledString(newStr);
 }
 
 const XMLCh* XPath2Utils::deleteData( const XMLCh* const target, unsigned int offset, unsigned int count, XPath2MemoryManager* memMgr) {
@@ -267,4 +272,83 @@ bool XPath2Utils::containsString(std::vector<const XMLCh*> values, const XMLCh* 
     if (XPath2Utils::equals(val, *it))
       return true;
   return false;
+}
+
+#define BUFFER_SIZE 1024
+
+bool XPath2Utils::readSource(const InputSource &src, MemoryManager *mm, XMLBuffer &result, bool sniffEncoding)
+{
+  BinInputStream *stream = src.makeStream();
+  if(stream == NULL) return false;
+  Janitor<BinInputStream> janStream(stream);
+
+  readSource(stream, mm, result, src.getEncoding(), sniffEncoding);
+  return true;
+}
+
+void XPath2Utils::readSource(BinInputStream *stream, MemoryManager *mm, XMLBuffer &result,
+                             const XMLCh *encoding, bool sniffEncoding)
+{
+  XMLByte buffer[BUFFER_SIZE];
+  unsigned int nRead = 0;
+
+  Janitor<XMLTranscoder> transcoder(NULL);
+  XMLTransService::Codes retCode;
+
+  if(encoding) {
+    transcoder.reset(XMLPlatformUtils::fgTransService->makeNewTranscoderFor(encoding, retCode, BUFFER_SIZE, mm));
+    if(transcoder.get() == 0) {
+      ThrowXMLwithMemMgr1(TranscodingException, XMLExcepts::Trans_CantCreateCvtrFor, encoding, mm);
+    }
+  }
+  else {
+#ifdef HAVE_GETCONTENTTYPE
+    RegularExpression charsetRE(".*; *charset=([^ ;]*|\"[^\"]*\").*", "iH", mm);
+    if(charsetRE.matches(stream->getContentType(), mm)) {
+      XMLCh *charset = charsetRE.replace(stream->getContentType(), X("$1"));
+      AutoDeallocate<XMLCh> charsetGuard(charset, mm);
+
+      if(*charset == '"') {
+        // Trim the quotes
+        charset += 1;
+        *(charset + XMLString::stringLen(charset) - 1) = 0;
+      }
+
+      transcoder.reset(XMLPlatformUtils::fgTransService->makeNewTranscoderFor(charset, retCode, BUFFER_SIZE, mm));
+      if(transcoder.get() == 0) {
+        ThrowXMLwithMemMgr1(TranscodingException, XMLExcepts::Trans_CantCreateCvtrFor, charset, mm);
+      }
+    }
+    else
+#endif
+    if(sniffEncoding) {
+      // TBD make this better by using an XQuery specific encoding sniffer - jpcs
+      nRead = stream->readBytes(buffer, BUFFER_SIZE);
+      XMLRecognizer::Encodings encoding = XMLRecognizer::basicEncodingProbe(buffer, BUFFER_SIZE);
+      transcoder.reset(XMLPlatformUtils::fgTransService->makeNewTranscoderFor(encoding, retCode, BUFFER_SIZE, mm));
+    }
+    else {
+      transcoder.reset(XMLPlatformUtils::fgTransService->makeNewTranscoderFor("UTF-8", retCode, BUFFER_SIZE, mm));
+    }
+  }
+
+  XMLCh tempBuff[BUFFER_SIZE];
+  unsigned char charSizes[BUFFER_SIZE];
+  unsigned int bytesEaten = 0, nOffset = 0;
+  unsigned int nCount;
+
+  do {
+    nCount = transcoder->transcodeFrom(buffer, nRead, tempBuff, BUFFER_SIZE, bytesEaten, charSizes);
+    if(nCount) result.append(tempBuff, nCount);
+
+    if(bytesEaten < nRead){
+      nOffset = nRead - bytesEaten;
+      memmove(buffer, buffer + bytesEaten, nOffset);
+    }
+
+    nRead = stream->readBytes(buffer + nOffset, BUFFER_SIZE - nOffset);
+    if(nRead == 0 && nCount == 0) break;
+
+    nRead += nOffset;
+  } while(nRead > 0);
 }

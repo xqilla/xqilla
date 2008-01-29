@@ -1397,6 +1397,10 @@ SOURCE=..\..\src\functions\FunctionOneOrMore.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\functions\FunctionParseHTML.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\functions\FunctionParseJSON.cpp
 # End Source File
 # Begin Source File
@@ -1538,6 +1542,10 @@ SOURCE=..\..\src\functions\FunctionTrue.cpp
 # Begin Source File
 
 SOURCE=..\..\src\functions\FunctionUnordered.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\functions\FunctionUnparsedText.cpp
 # End Source File
 # Begin Source File
 
@@ -1877,6 +1885,10 @@ SOURCE=..\..\include\xqilla\functions\FunctionOneOrMore.hpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\include\xqilla\functions\FunctionParseHTML.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\include\xqilla\functions\FunctionParseJSON.hpp
 # End Source File
 # Begin Source File
@@ -2018,6 +2030,10 @@ SOURCE=..\..\include\xqilla\functions\FunctionTrue.hpp
 # Begin Source File
 
 SOURCE=..\..\include\xqilla\functions\FunctionUnordered.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\functions\FunctionUnparsedText.hpp
 # End Source File
 # Begin Source File
 

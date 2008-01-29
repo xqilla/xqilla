@@ -201,26 +201,32 @@ int main(int argc, char *argv[])
   if(xmlResults) {
     results.reset(new XMLReportResultListener());
     XMLReportResultListener *xmlreport = (XMLReportResultListener*)results.get();
-    xmlreport->setImplementation("XQilla", "1.0");
+    xmlreport->setImplementation("XQilla", "2.0");
     xmlreport->setOrganization("XQilla", "http://xqilla.sourceforge.net");
 
-    xmlreport->addImplementationDefinedItem("expressionUnicode", "UTF-16");
-    xmlreport->addImplementationDefinedItem("implicitTimezone", "Defined by the system clock");
-    xmlreport->addImplementationDefinedItem("XMLVersion", "1.1");
-    xmlreport->addImplementationDefinedItem("axes", "Full axis support");
-    xmlreport->addImplementationDefinedItem("defaultOrderEmpty", "empty least");
-    xmlreport->addImplementationDefinedItem("normalizationForms", "NFC, NFD, NFKC, NFKD");
-    xmlreport->addImplementationDefinedItem("docProcessing", "schema validation");
+    if(!update) {
+      xmlreport->addImplementationDefinedItem("expressionUnicode", "UTF-16");
+      xmlreport->addImplementationDefinedItem("implicitTimezone", "Defined by the system clock");
+      xmlreport->addImplementationDefinedItem("XMLVersion", "1.1");
+      xmlreport->addImplementationDefinedItem("axes", "Full axis support");
+      xmlreport->addImplementationDefinedItem("defaultOrderEmpty", "empty least");
+      xmlreport->addImplementationDefinedItem("normalizationForms", "NFC, NFD, NFKC, NFKD");
+      xmlreport->addImplementationDefinedItem("docProcessing", "schema validation");
+    }
 
     xmlreport->addFeature("Minimal Conformance", true);
-    xmlreport->addFeature("Schema Import", true);
-    xmlreport->addFeature("Schema Validation", true);
-    xmlreport->addFeature("Static Typing", false);
-    xmlreport->addFeature("Static Typing Extensions", false);
-    xmlreport->addFeature("Full Axis", true);
-    xmlreport->addFeature("Module", true);
-    xmlreport->addFeature("Serialization", false);
-    xmlreport->addFeature("Trivial XML Embedding", false);
+    if(!update) {
+      xmlreport->addFeature("Schema Import", true);
+      xmlreport->addFeature("Schema Validation", true);
+      xmlreport->addFeature("Static Typing", false);
+      xmlreport->addFeature("Static Typing Extensions", false);
+      xmlreport->addFeature("Full Axis", true);
+      xmlreport->addFeature("Module", true);
+      xmlreport->addFeature("Serialization", false);
+      xmlreport->addFeature("Trivial XML Embedding", false);
+    }
+
+    xmlreport->setSubmittor("John Snelson", "john.snelson@oracle.com");
   }
   else {
     results.reset(new ConsoleResultListener());

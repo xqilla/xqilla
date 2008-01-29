@@ -257,8 +257,17 @@ Node::Ptr DocumentCacheImpl::parseDocument(InputSource &srcToUse, DynamicContext
 {
   AutoDelete<SequenceBuilder> builder(context->createSequenceBuilder());
   QueryPathTreeFilter qptf(projection, builder.get());
-  events_ = projection ? (EventHandler*)&qptf : (EventHandler*)builder.get();
+  EventHandler *handler = projection ? (EventHandler*)&qptf : (EventHandler*)builder.get();
 
+  parseDocument(srcToUse, handler, context);
+
+  handler->endEvent();
+  return (Node*)builder->getSequence().first().get();
+}
+
+void DocumentCacheImpl::parseDocument(InputSource &srcToUse, EventHandler *handler, DynamicContext *context)
+{
+  events_ = handler;
   attrList_ = 0;
   attrCount_ = 0;
   elementInfo_ = 0;
@@ -274,9 +283,6 @@ Node::Ptr DocumentCacheImpl::parseDocument(InputSource &srcToUse, DynamicContext
   catch(const XMLException& toCatch) {
     XQThrow2(XMLParseException,X("DocumentCacheImpl::parseDocument"), toCatch.getMessage());
   }
-
-  events_->endEvent();
-  return (Node*)builder->getSequence().first().get();
 }
 
 void DocumentCacheImpl::startDocument()

@@ -19,25 +19,34 @@
  * $Id$
  */
 
-#ifndef _FUNCTIONMATCHES_HPP
-#define _FUNCTIONMATCHES_HPP
+#ifndef _FUNCTIONPARSEHTML_HPP
+#define _FUNCTIONPARSEHTML_HPP
 
-#include <xqilla/ast/ConstantFoldingFunction.hpp>
+#include <xqilla/functions/XQillaFunction.hpp>
 
-class XQILLA_API FunctionMatches : public ConstantFoldingFunction
+class QueryPathNode;
+
+class XQILLA_API FunctionParseHTML : public XQillaFunction
 {
 public:
   static const XMLCh name[];
   static const unsigned int minArgs;
   static const unsigned int maxArgs;
 
-  FunctionMatches(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
+  FunctionParseHTML(const VectorOfASTNodes &args, XPath2MemoryManager *memMgr);
   
-  /** XPath function: returns true if string1 matches the regExp supplied as string2, otherwise returns false. **/
+  virtual ASTNode *staticTyping(StaticContext *context);
+
   Sequence createSequence(DynamicContext* context, int flags=0) const;
 
-  static bool matches(const XMLCh *input, const XMLCh *pattern, const XMLCh *options = 0);
+  QueryPathNode *getQueryPathTree() const { return queryPathTree_; }
+  void setQueryPathTree(QueryPathNode *q) { queryPathTree_ = q; }
 
+  static void parseHTML(const XMLCh *html, EventHandler *handler,
+                        DynamicContext *context, const LocationInfo *location);
+
+private:
+  QueryPathNode *queryPathTree_;
 };
 
 #endif

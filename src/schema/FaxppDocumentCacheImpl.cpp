@@ -62,12 +62,11 @@ static inline const XMLCh *nullTerm(const FAXPP_Text &text, XPath2MemoryManager 
   return mm->getPooledString((XMLCh*)text.ptr, text.len / sizeof(XMLCh));
 }
 
-Node::Ptr FaxppDocumentCacheImpl::parseDocument(InputSource &srcToUse, DynamicContext *context)
+void FaxppDocumentCacheImpl::parseDocument(InputSource &srcToUse, EventHandler *handler, DynamicContext *context)
 {
   XPath2MemoryManager *mm = context->getMemoryManager();
 
-  AutoDelete<SequenceBuilder> builder(context->createSequenceBuilder());
-  validator_.setNextEventHandler(builder);
+  validator_.setNextEventHandler(handler);
   events_ = &validator_;
 
   BinInputStream *stream = srcToUse.makeStream();
@@ -85,6 +84,10 @@ Node::Ptr FaxppDocumentCacheImpl::parseDocument(InputSource &srcToUse, DynamicCo
     if(decode == 0) err = UNSUPPORTED_ENCODING;
     FAXPP_set_decode(parser_, decode);
   }
+#if 0
+  else if(stream->getContentType()) {
+  }
+#endif
 
   if(err == UNSUPPORTED_ENCODING) {
     XQThrow2(XMLParseException, X("FaxppDocumentCacheImpl::loadDocument"), X("Unsupported encoding"));
@@ -111,8 +114,7 @@ Node::Ptr FaxppDocumentCacheImpl::parseDocument(InputSource &srcToUse, DynamicCo
       break;
     case END_DOCUMENT_EVENT:
       events_->endDocumentEvent();
-      events_->endEvent();
-      return (Node*)builder->getSequence().first().get();
+      return;
     case START_ELEMENT_EVENT:
     case SELF_CLOSING_ELEMENT_EVENT:
       events_->startElementEvent(nullTerm(event->prefix, mm), nullTerm(event->uri, mm), nullTerm(event->name, mm));
@@ -156,9 +158,6 @@ Node::Ptr FaxppDocumentCacheImpl::parseDocument(InputSource &srcToUse, DynamicCo
     case NO_EVENT: break;
     }
   }
-
-  // Never happens
-  return 0;
 }
 
 DocumentCache *FaxppDocumentCacheImpl::createDerivedCache(MemoryManager *memMgr) const

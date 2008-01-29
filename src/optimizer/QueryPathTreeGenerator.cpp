@@ -1520,7 +1520,8 @@ QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateFTContains(FT
   // TBD implement optimization of FTSelection objects - jpcs
   PathResult result = generate(item->getArgument());
   //   item->setSelection(optimizeFTSelection(item->getSelection()));
-  generate(item->getIgnore());
+  if(item->getIgnore())
+    generate(item->getIgnore());
   return result;
 }
 

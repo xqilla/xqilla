@@ -109,16 +109,11 @@ Sequence FunctionReplace::createSequence(DynamicContext* context, int flags) con
     }
   }
 
-  const XMLCh* result=NULL;
-  //Now attempt to replace
+  // Now attempt to replace
   try {
-    // Always turn off head character optimisation, since it is broken
-    XMLBuffer optionsBuf(1023, context->getMemoryManager());
-    optionsBuf.set(options);
-    optionsBuf.append(chLatin_H);
+    AutoDeallocate<const XMLCh> result(replace(input, pattern, replacement, options, memMgr), memMgr);
+    return Sequence(context->getItemFactory()->createString(result.get(), context), memMgr);
 
-    RegularExpression regEx(pattern, optionsBuf.getRawBuffer(), memMgr);
-    result = regEx.replace(input, replacement);
   } catch (ParseException &e){ 
     XMLBuffer buf(1023, memMgr);
     buf.set(X("Invalid regular expression: "));
@@ -132,7 +127,19 @@ Sequence FunctionReplace::createSequence(DynamicContext* context, int flags) con
       XQThrow(FunctionException, X("FunctionReplace::createSequence"), X("Invalid replacement pattern [err:FORX0004]"));
     else 
       XQThrow(FunctionException, X("FunctionReplace::createSequence"), e.getMessage());
-  }  
+  }
 
-  return Sequence(context->getItemFactory()->createString(result, context), memMgr);
+  // Never happens
+}
+
+const XMLCh *FunctionReplace::replace(const XMLCh *input, const XMLCh *pattern, const XMLCh *replacement, const XMLCh *options, MemoryManager *mm)
+{
+  // Always turn off head character optimisation, since it is broken
+  XMLBuffer optionsBuf;
+  optionsBuf.set(options);
+  optionsBuf.append(chLatin_H);
+
+  //Now attempt to replace
+  RegularExpression regEx(pattern, optionsBuf.getRawBuffer(), mm);
+  return regEx.replace(input, replacement);
 }

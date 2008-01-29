@@ -332,10 +332,13 @@ const ExternalFunction *FunctionLookup::lookUpGlobalExternalFunction(
 #include <xqilla/functions/FunctionAdjustTimeToTimezone.hpp>
 // Updates
 #include <xqilla/update/FunctionPut.hpp>
+// XSLT 2.0 functions
+#include <xqilla/functions/FunctionUnparsedText.hpp>
 // XQilla extension functions
 #include <xqilla/functions/FunctionParseXML.hpp>
 #include <xqilla/functions/FunctionParseJSON.hpp>
 #include <xqilla/functions/FunctionSerializeJSON.hpp>
+#include <xqilla/functions/FunctionParseHTML.hpp>
 
 void FunctionLookup::insertUpdateFunctions(XPath2MemoryManager *memMgr)
 {
@@ -599,8 +602,15 @@ static void initGlobalTable(FunctionLookup *t, MemoryManager *memMgr)
   //   fn:static-base-uri
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionStaticBaseURI>(memMgr));
 
+  // XSLT 2.0 functions
+  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionUnparsedText>(memMgr));
+
   // XQilla extension functions
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionParseXML>(memMgr));
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionParseJSON>(memMgr));
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionSerializeJSON>(memMgr));
+
+#ifdef HAVE_LIBTIDY
+  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionParseHTML>(memMgr));
+#endif
 }

@@ -51,6 +51,11 @@ KnownErrorChecker::KnownErrorChecker(TestSuiteResultListener *results)
 {
 }
 
+void KnownErrorChecker::reportVersion(const std::string &version, bool update)
+{
+  results_->reportVersion(version, update);
+}
+
 void KnownErrorChecker::startTestGroup(const std::string &name)
 {
   results_->startTestGroup(name);
@@ -486,8 +491,15 @@ void ConsoleResultListener::testCaseToErrorStream(const TestCase &testCase)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 XMLReportResultListener::XMLReportResultListener()
-  : anonymous_(false)
+  : update_(false),
+    anonymous_(false)
 {
+}
+
+void XMLReportResultListener::reportVersion(const std::string &version, bool update)
+{
+  version_ = version;
+  update_ = update;
 }
 
 void XMLReportResultListener::startTestGroup(const std::string &name)
@@ -500,68 +512,110 @@ void XMLReportResultListener::endTestGroup()
 
 void XMLReportResultListener::reportPass(const TestCase &testCase, const string &comment)
 {
-  outputStream_ << "  <test-case";
-  outputStream_ << " name=\"" << testCase.name << "\"";
-  outputStream_ << " result=\"pass\"";
+  if(previousTestName_ != testCase.name) {
+    outputStream_ << tmpStream_.str();
+  }
+
+  tmpStream_.str("");
+  previousTestName_ = testCase.name;
+
+  tmpStream_ << "  <test-case";
+  tmpStream_ << " name=\"" << testCase.name << "\"";
+  tmpStream_ << " result=\"pass\"";
   if(comment != "")
-    outputStream_ << " comment=\"" << comment << "\"";
-  outputStream_ << "/>" << endl;
+    tmpStream_ << " comment=\"" << comment << "\"";
+  tmpStream_ << "/>" << endl;
 }
 
 void XMLReportResultListener::reportInspect(const TestCase &testCase, const std::string &actualResult,
                                             const std::list<std::string> &expectedResult, const string &comment)
 {
-  outputStream_ << "  <test-case";
-  outputStream_ << " name=\"" << testCase.name << "\"";
-  outputStream_ << " result=\"cannot tell\"";
+  if(previousTestName_ != testCase.name) {
+    outputStream_ << tmpStream_.str();
+  }
+
+  tmpStream_.str("");
+  previousTestName_ = testCase.name;
+
+  tmpStream_ << "  <test-case";
+  tmpStream_ << " name=\"" << testCase.name << "\"";
+  tmpStream_ << " result=\"cannot tell\"";
   if(comment != "")
-    outputStream_ << " comment=\"" << comment << "\"";
+    tmpStream_ << " comment=\"" << comment << "\"";
   else 
-    outputStream_ << " comment=\"result has not been inspected\"";
-  outputStream_ << "/>" << endl;
+    tmpStream_ << " comment=\"result has not been inspected\"";
+  tmpStream_ << "/>" << endl;
 }
 
 void XMLReportResultListener::reportSkip(const TestCase &testCase, const std::string &comment)
 {
-  outputStream_ << "  <test-case";
-  outputStream_ << " name=\"" << testCase.name << "\"";
-  outputStream_ << " result=\"not applicable\"";
+  if(previousTestName_ != testCase.name) {
+    outputStream_ << tmpStream_.str();
+  }
+
+  tmpStream_.str("");
+  previousTestName_ = testCase.name;
+
+  tmpStream_ << "  <test-case";
+  tmpStream_ << " name=\"" << testCase.name << "\"";
+  tmpStream_ << " result=\"not applicable\"";
   if(comment != "")
-    outputStream_ << " comment=\"" << comment << "\"";
-  outputStream_ << "/>" << endl;
+    tmpStream_ << " comment=\"" << comment << "\"";
+  tmpStream_ << "/>" << endl;
 }
 
 void XMLReportResultListener::reportFail(const TestCase &testCase, const std::string &actualResult,
                                          const std::list<std::string> &expectedResult, const string &comment)
 {
-  outputStream_ << "  <test-case";
-  outputStream_ << " name=\"" << testCase.name << "\"";
-  outputStream_ << " result=\"fail\"";
+  if(previousTestName_ != testCase.name) {
+    outputStream_ << tmpStream_.str();
+  }
+
+  tmpStream_.str("");
+  previousTestName_ = testCase.name;
+
+  tmpStream_ << "  <test-case";
+  tmpStream_ << " name=\"" << testCase.name << "\"";
+  tmpStream_ << " result=\"fail\"";
   if(comment != "")
-    outputStream_ << " comment=\"" << comment << "\"";
-  outputStream_ << "/>" << endl;
+    tmpStream_ << " comment=\"" << comment << "\"";
+  tmpStream_ << "/>" << endl;
 }
 
 void XMLReportResultListener::reportFailNoError(const TestCase &testCase, const std::string &actualResult,
                                                 const string &comment)
 {
-  outputStream_ << "  <test-case";
-  outputStream_ << " name=\"" << testCase.name << "\"";
-  outputStream_ << " result=\"fail\"";
+  if(previousTestName_ != testCase.name) {
+    outputStream_ << tmpStream_.str();
+  }
+
+  tmpStream_.str("");
+  previousTestName_ = testCase.name;
+
+  tmpStream_ << "  <test-case";
+  tmpStream_ << " name=\"" << testCase.name << "\"";
+  tmpStream_ << " result=\"fail\"";
   if(comment != "")
-    outputStream_ << " comment=\"" << comment << "\"";
-  outputStream_ << "/>" << endl;
+    tmpStream_ << " comment=\"" << comment << "\"";
+  tmpStream_ << "/>" << endl;
 }
 
 void XMLReportResultListener::reportFailUnexpectedError(const TestCase &testCase, const std::string &unexpectedError,
                                                         const string &comment)
 {
-  outputStream_ << "  <test-case";
-  outputStream_ << " name=\"" << testCase.name << "\"";
-  outputStream_ << " result=\"fail\"";
+  if(previousTestName_ != testCase.name) {
+    outputStream_ << tmpStream_.str();
+  }
+
+  tmpStream_.str("");
+  previousTestName_ = testCase.name;
+
+  tmpStream_ << "  <test-case";
+  tmpStream_ << " name=\"" << testCase.name << "\"";
+  tmpStream_ << " result=\"fail\"";
   if(comment != "")
-    outputStream_ << " comment=\"" << comment << "\"";
-  outputStream_ << "/>" << endl;
+    tmpStream_ << " comment=\"" << comment << "\"";
+  tmpStream_ << "/>" << endl;
 }
 
 void XMLReportResultListener::setImplementation(const std::string &name, const std::string &version, const std::string &description)
@@ -612,7 +666,14 @@ void XMLReportResultListener::addContextProperty(const std::string &name, const 
 
 void XMLReportResultListener::printReport() const
 {
-  cout << "<test-suite-result xmlns=\"http://www.w3.org/2005/02/query-test-XQTSResult\">" << endl;
+  cout << "<test-suite-result xmlns=\"";
+  if(update_) {
+    cout << "http://www.w3.org/2005/02/query-test-XQUTSResult";
+  }
+  else {
+    cout << "http://www.w3.org/2005/02/query-test-XQTSResult";
+  }
+  cout << "\">" << endl;
   cout << endl;
   cout << "  <implementation name=\"" << implName_ << "\"";
   if(implVersion_ != "")
