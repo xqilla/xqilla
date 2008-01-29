@@ -1120,7 +1120,7 @@ diff -ru xerces-c-src_2_8_0-release/src/xercesc/util/NetAccessors/WinSock/BinHTT
 +
 +int BinHTTPURLInputStream::parseResponseStatus() const
 +{
-+    char *p = strstr(fBuffer.getRawBuffer(), "HTTP");
++    char *p = strstr(const_cast<char*>(fBuffer.getRawBuffer()), "HTTP");
 +    if(p == 0) return -1;
 +
 +    p = strchr(p, chSpace);
@@ -1133,7 +1133,7 @@ diff -ru xerces-c-src_2_8_0-release/src/xercesc/util/NetAccessors/WinSock/BinHTT
 +{
 +    int len = strlen(name);
 +
-+    char *p = strstr(fBuffer.getRawBuffer(), name);
++    char *p = strstr(const_cast<char*>(fBuffer.getRawBuffer()), name);
 +    while(p != 0) {
 +        if(*(p - 1) == '\n' &&
 +            *(p + len) == ':' &&
