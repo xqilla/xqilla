@@ -26,7 +26,6 @@
  * This define tells VS8 not to give a warning when we use strcpy()
  * instead of the MS secure function strcpy_s().
  */
-
 #ifdef _MSC_VER
 #define _CRT_SECURE_NO_DEPRECATE 1
 #endif
@@ -39,7 +38,6 @@
  *    the DLL import/exports
  */
 
-
 /*
  * The following ifdef block is the standard way of creating macros which
  * make exporting from a DLL simpler. All files within this DLL are
@@ -49,18 +47,18 @@
  * XQILLA_API functions as being imported from a DLL, wheras this DLL
  * sees symbols defined with this macro as being exported.
  */
-#if defined(WIN32) && !defined(__CYGWIN__)
-  #if !defined(XQILLA_API)
-    #ifdef XQILLA_APIS
-      #define XQILLA_API __declspec(dllexport)
-    #else
-      #define XQILLA_API __declspec(dllimport)
-    #endif
-  #endif
+#if defined(WIN32) && !defined(__CYGWIN__) && !defined(__MINGW32__)
+#  if !defined(XQILLA_API)
+#    ifdef XQILLA_APIS
+#      define XQILLA_API __declspec(dllexport)
+#    else
+#      define XQILLA_API __declspec(dllimport)
+#    endif
+#  endif
 
-  #pragma warning(disable: 4251 4786 4101 4290)
+#  pragma warning(disable: 4251 4786 4101 4290)
 #else
-  #define XQILLA_API 
+#  define XQILLA_API 
 #endif
 
 #endif

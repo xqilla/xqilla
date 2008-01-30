@@ -14,6 +14,10 @@
 /* Define to 1 if you have the `alarm' function. */
 #undef HAVE_ALARM
 
+/* Define to 1 if the Xerces-C library supports the
+   RegularExpression::allMatches() method. */
+#undef HAVE_ALLMATCHES
+
 /* Define to 1 if you have `alloca', as a function or macro. */
 #undef HAVE_ALLOCA
 
