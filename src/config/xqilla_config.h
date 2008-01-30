@@ -27,7 +27,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
-#if !define(__MINGW32__)
+#if !defined(__MINGW32__)
 
 // Warning 4064: switch statement contains 'default' but no 'case' labels
 // 
@@ -40,6 +40,12 @@
 //
 // Warning 4290: C++ exception specification ignored except to indicate a function is not __declspec(nothrow)
 #pragma warning(disable: 4065 4251 4786 4101 4290)
+
+#endif
+
+#endif
+
+#if !defined(HAVE_CONFIG_H)
 
 /* Define if your processor stores words with the most significant
    byte first (like Motorola and SPARC, unlike Intel and VAX).  */
@@ -60,12 +66,10 @@
 /* Define to 1 if the HTML Tidy library is present. */
 #undef HAVE_LIBTIDY
 
-#endif
+#else
 
-#endif
-
-#if defined(__MINGW32__) || !defined(WIN32)
 #include "xqilla_config_unix.h"
+
 #endif
 
 #endif
