@@ -103,7 +103,28 @@ AC_MSG_CHECKING([if the Xerces-C library supports the BinInputStream::getContent
 AC_MSG_RESULT($ac_found_getcontenttype)
 if test "$ac_found_getcontenttype" = yes
 then
-	AC_DEFINE(HAVE_GETCONTENTTYPE)
+        AC_DEFINE(HAVE_GETCONTENTTYPE)
+else
+        AC_MSG_ERROR([The Xerces-C source code must be patched with the content type patch: xqilla/src/xercesc_content_type.patch])
+fi
+
+# Check for the RegularExpression::allMatches() method
+AH_TEMPLATE(HAVE_ALLMATCHES, [Define to 1 if the Xerces-C library supports the RegularExpression::allMatches() method.])
+CPPFLAGS_BKUP="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS -I$xerces_include"
+AC_LANG_PUSH(C++)
+AC_TRY_COMPILE([#include<xercesc/util/regx/RegularExpression.hpp>],
+        [XERCES_CPP_NAMESPACE_QUALIFIER RegularExpression(".*").allMatches(0, 0, 0, 0);],
+        [ac_found_allmatches="yes"], [ac_found_allmatches="no"])
+AC_LANG_POP(C++)
+CPPFLAGS="$CPPFLAGS_BKUP"
+AC_MSG_CHECKING([if the Xerces-C library supports the RegularExpression::allMatches() method])
+AC_MSG_RESULT($ac_found_allmatches)
+if test "$ac_found_allmatches" = yes
+then
+        AC_DEFINE(HAVE_ALLMATCHES)
+else
+        AC_MSG_ERROR([The Xerces-C source code must be patched with the regex patch: xqilla/src/xercesc_regex.patch])
 fi
 
 

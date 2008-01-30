@@ -19,8 +19,53 @@
  * $Id$
  */
 
+#ifndef _XQILLA_CONFIG_H
+#define _XQILLA_CONFIG_H
+
 #if defined(WIN32) && !defined(__CYGWIN__)
-#include "xqilla_config_win32.h"
-#else
+
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+
+#if !define(__MINGW32__)
+
+// Warning 4064: switch statement contains 'default' but no 'case' labels
+// 
+// Warning 4251: We have a lot of std::vector objects inside exported classes, and VC++ complains about it
+// "class 'std::vector<XXXX> >' needs to have dll-interface to be used by clients of class 'YYYY'"
+//
+// Warning 4786: "identifier was truncated to '255' characters in the browser information"
+//
+// Warning 4101: "unreferenced local variable"
+//
+// Warning 4290: C++ exception specification ignored except to indicate a function is not __declspec(nothrow)
+#pragma warning(disable: 4065 4251 4786 4101 4290)
+
+/* Define if your processor stores words with the most significant
+   byte first (like Motorola and SPARC, unlike Intel and VAX).  */
+/* Intel & Alpha architechtures are small endian */
+#undef WORDS_BIGENDIAN
+
+/* Define to 1 if the Xerces-C library supports the
+   RegularExpression::allMatches() method. */
+#define HAVE_ALLMATCHES 1
+
+/* Define to 1 if the Xerces-C library supports the
+   BinInputStream::getContentType() method. */
+#define HAVE_GETCONTENTTYPE 1
+
+/* Define to 1 if the FAXPP library is present. */
+#undef HAVE_FAXPP
+
+/* Define to 1 if the HTML Tidy library is present. */
+#undef HAVE_LIBTIDY
+
+#endif
+
+#endif
+
+#if defined(__MINGW32__) || !defined(WIN32)
 #include "xqilla_config_unix.h"
+#endif
+
 #endif

@@ -65,30 +65,24 @@ Sequence FunctionReplace::createSequence(DynamicContext* context, int flags) con
   const XMLCh *pattern = getParamNumber(2,context)->next(context)->asString(context);
   const XMLCh *replacement = getParamNumber(3,context)->next(context)->asString(context);
 
-  bool notEscaped = true;
-  const XMLCh* ptr;
-  for (ptr = replacement; *ptr != chNull; ptr++)
-  {
-    if ((*ptr == chDollarSign) && notEscaped) {
-      ptr++;
+  const XMLCh *ptr;
+  for(ptr = replacement; *ptr != chNull; ++ptr) {
+    if(*ptr == chDollarSign) {
+      ++ptr;
       
-      //check that after the $ is a digit 
-      if (!XMLString::isDigit(*ptr))
-        XQThrow(FunctionException, X("FunctionReplace::createSequence"), X("Invalid replacement pattern [err:FORX0004]"));
-    } else {
-      //if you have a slash and then a character that's not a $ or \, 
-      //then it's an invalid replace string  
-      if (!notEscaped && (*ptr != chDollarSign && *ptr != chBackSlash))
-        XQThrow(FunctionException, X("FunctionReplace::createSequence"), X("Invalid replacement pattern [err:FORX0004]"));
+      //check that after the '$' is a digit
+      if(!XMLString::isDigit(*ptr))
+        XQThrow(FunctionException, X("FunctionReplace::createSequence"), X("Invalid replacement pattern - '$' without following digit [err:FORX0004]"));
+    }
+    else if(*ptr == chBackSlash) {
+      ++ptr;
       
-      if (*ptr == chBackSlash)
-        notEscaped = false;        
-      else   
-        notEscaped = true;  
+      //check that after the '\' is a '$' or '\'
+      if(*ptr != chDollarSign && *ptr != chBackSlash) {
+        XQThrow(FunctionException, X("FunctionReplace::createSequence"), X("Invalid replacement pattern - '\\' without following '$' or '\\' [err:FORX0004]"));
+      }
     }
   }
-  if(!notEscaped)
-    XQThrow(FunctionException, X("FunctionReplace::createSequence"), X("Invalid replacement pattern [err:FORX0004]"));
 
   const XMLCh *options = XMLUni::fgZeroLenString;
   if(getNumArgs()>3)
