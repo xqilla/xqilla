@@ -220,6 +220,7 @@ src/functions/FunctionSubstringAfter.cpp \
 src/functions/FunctionSubstringBefore.cpp \
 src/functions/FunctionSubstring.cpp \
 src/functions/FunctionSum.cpp \
+src/functions/FunctionTime.cpp \
 src/functions/FunctionTokenize.cpp \
 src/functions/FunctionTrace.cpp \
 src/functions/FunctionTranslate.cpp \

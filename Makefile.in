@@ -133,10 +133,10 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	FunctionStringLength.lo FunctionStringToCodepoints.lo \
 	FunctionSubsequence.lo FunctionSubstringAfter.lo \
 	FunctionSubstringBefore.lo FunctionSubstring.lo FunctionSum.lo \
-	FunctionTokenize.lo FunctionTrace.lo FunctionTranslate.lo \
-	FunctionTrue.lo FunctionUnordered.lo FunctionUnparsedText.lo \
-	FunctionUpperCase.lo FunctionZeroOrOne.lo \
-	FunctionAdjustDateTimeToTimezone.lo \
+	FunctionTime.lo FunctionTokenize.lo FunctionTrace.lo \
+	FunctionTranslate.lo FunctionTrue.lo FunctionUnordered.lo \
+	FunctionUnparsedText.lo FunctionUpperCase.lo \
+	FunctionZeroOrOne.lo FunctionAdjustDateTimeToTimezone.lo \
 	FunctionAdjustDateToTimezone.lo \
 	FunctionAdjustTimeToTimezone.lo FunctionDayFromDate.lo \
 	FunctionDayFromDateTime.lo FunctionDaysFromDuration.lo \
@@ -630,6 +630,7 @@ src/functions/FunctionSubstringAfter.cpp \
 src/functions/FunctionSubstringBefore.cpp \
 src/functions/FunctionSubstring.cpp \
 src/functions/FunctionSum.cpp \
+src/functions/FunctionTime.cpp \
 src/functions/FunctionTokenize.cpp \
 src/functions/FunctionTrace.cpp \
 src/functions/FunctionTranslate.cpp \
@@ -1303,6 +1304,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionSubstringAfter.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionSubstringBefore.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionSum.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionTime.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionTimezoneFromDate.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionTimezoneFromDateTime.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionTimezoneFromTime.Plo@am__quote@
@@ -3182,6 +3184,13 @@ FunctionSum.lo: src/functions/FunctionSum.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/FunctionSum.cpp' object='FunctionSum.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionSum.lo `test -f 'src/functions/FunctionSum.cpp' || echo '$(srcdir)/'`src/functions/FunctionSum.cpp
+
+FunctionTime.lo: src/functions/FunctionTime.cpp
+@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionTime.lo -MD -MP -MF $(DEPDIR)/FunctionTime.Tpo -c -o FunctionTime.lo `test -f 'src/functions/FunctionTime.cpp' || echo '$(srcdir)/'`src/functions/FunctionTime.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/FunctionTime.Tpo $(DEPDIR)/FunctionTime.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/FunctionTime.cpp' object='FunctionTime.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionTime.lo `test -f 'src/functions/FunctionTime.cpp' || echo '$(srcdir)/'`src/functions/FunctionTime.cpp
 
 FunctionTokenize.lo: src/functions/FunctionTokenize.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionTokenize.lo -MD -MP -MF $(DEPDIR)/FunctionTokenize.Tpo -c -o FunctionTokenize.lo `test -f 'src/functions/FunctionTokenize.cpp' || echo '$(srcdir)/'`src/functions/FunctionTokenize.cpp
