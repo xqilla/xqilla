@@ -248,6 +248,7 @@ src/functions/FunctionSubstring.cpp	lib
 src/functions/FunctionSubstringAfter.cpp	lib
 src/functions/FunctionSubstringBefore.cpp	lib
 src/functions/FunctionSum.cpp	lib
+src/functions/FunctionTime.cpp	lib
 src/functions/FunctionTimezoneFromDate.cpp	lib
 src/functions/FunctionTimezoneFromDateTime.cpp	lib
 src/functions/FunctionTimezoneFromTime.cpp	lib
@@ -699,6 +700,7 @@ include/xqilla/functions/FunctionSubstring.hpp	lib
 include/xqilla/functions/FunctionSubstringAfter.hpp	lib
 include/xqilla/functions/FunctionSubstringBefore.hpp	lib
 include/xqilla/functions/FunctionSum.hpp	lib
+include/xqilla/functions/FunctionTime.hpp	lib
 include/xqilla/functions/FunctionTimezoneFromDate.hpp	lib
 include/xqilla/functions/FunctionTimezoneFromDateTime.hpp	lib
 include/xqilla/functions/FunctionTimezoneFromTime.hpp	lib

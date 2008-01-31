@@ -408,6 +408,7 @@ xqilla/functions/FunctionSubstringAfter.hpp \
 xqilla/functions/FunctionSubstringBefore.hpp \
 xqilla/functions/FunctionSubstring.hpp \
 xqilla/functions/FunctionSum.hpp \
+xqilla/functions/FunctionTime.hpp \
 xqilla/functions/FunctionTimezoneFromDate.hpp \
 xqilla/functions/FunctionTimezoneFromDateTime.hpp \
 xqilla/functions/FunctionTimezoneFromTime.hpp \

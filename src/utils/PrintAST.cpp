@@ -107,10 +107,7 @@
 #include <xqilla/functions/FunctionParseJSON.hpp>
 #include <xqilla/optimizer/QueryPathNode.hpp>
 
-#include <xercesc/dom/DOMNode.hpp>
-#if defined(XERCES_HAS_CPP_NAMESPACE)
-  XERCES_CPP_NAMESPACE_USE
-#endif
+XERCES_CPP_NAMESPACE_USE;
 
 using namespace std;
 

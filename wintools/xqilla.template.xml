@@ -279,6 +279,7 @@
         <file name='include/xqilla/functions/FunctionSubstringAfter.hpp' />
         <file name='include/xqilla/functions/FunctionSubstringBefore.hpp' />
         <file name='include/xqilla/functions/FunctionSum.hpp' />
+        <file name='include/xqilla/functions/FunctionTime.hpp' />
         <file name='include/xqilla/functions/FunctionTimezoneFromDate.hpp' />
         <file name='include/xqilla/functions/FunctionTimezoneFromDateTime.hpp' />
         <file name='include/xqilla/functions/FunctionTimezoneFromTime.hpp' />
@@ -678,6 +679,7 @@
         <file name='src/functions/FunctionSubstringAfter.cpp' />
         <file name='src/functions/FunctionSubstringBefore.cpp' />
         <file name='src/functions/FunctionSum.cpp' />
+        <file name='src/functions/FunctionTime.cpp' />
         <file name='src/functions/FunctionTimezoneFromDate.cpp' />
         <file name='src/functions/FunctionTimezoneFromDateTime.cpp' />
         <file name='src/functions/FunctionTimezoneFromTime.cpp' />

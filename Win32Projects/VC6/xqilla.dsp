@@ -1513,6 +1513,10 @@ SOURCE=..\..\src\functions\FunctionSum.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\functions\FunctionTime.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\functions\FunctionTimezoneFromDate.cpp
 # End Source File
 # Begin Source File
@@ -1998,6 +2002,10 @@ SOURCE=..\..\include\xqilla\functions\FunctionSubstringBefore.hpp
 # Begin Source File
 
 SOURCE=..\..\include\xqilla\functions\FunctionSum.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\functions\FunctionTime.hpp
 # End Source File
 # Begin Source File
 
