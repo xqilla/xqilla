@@ -389,7 +389,7 @@ $(top_srcdir)/docs/.simple-api-timestamp: $(nobase_include_HEADERS) $(top_srcdir
 		touch .simple-api-timestamp
 
 $(top_srcdir)/docs/Doxyfile.simpleapi: $(top_srcdir)/docs/Doxyfile.simpleapi.in
-	sed -e "s,%xerces_include%,$(xerces_include)," -e "s,%version%,$(VERSION)," $(top_srcdir)/docs/Doxyfile.simpleapi.in >$(top_srcdir)/docs/Doxyfile.simpleapi
+	sed -e "s,%xerces_include%,$(xerces_include_dir)," -e "s,%version%,$(VERSION)," $(top_srcdir)/docs/Doxyfile.simpleapi.in >$(top_srcdir)/docs/Doxyfile.simpleapi
 
 $(top_srcdir)/docs/.dom3-api-timestamp: $(nobase_include_HEADERS) $(top_srcdir)/docs/Doxyfile.dom3api
 	cd $(top_srcdir)/docs && \
@@ -397,7 +397,7 @@ $(top_srcdir)/docs/.dom3-api-timestamp: $(nobase_include_HEADERS) $(top_srcdir)/
 		touch .dom3-api-timestamp
 
 $(top_srcdir)/docs/Doxyfile.dom3api: $(top_srcdir)/docs/Doxyfile.dom3api.in $(top_srcdir)/docs/dom3_header.html
-	sed -e "s,%xerces_include%,$(xerces_include)," -e "s,%version%,$(VERSION)," $(top_srcdir)/docs/Doxyfile.dom3api.in >$(top_srcdir)/docs/Doxyfile.dom3api
+	sed -e "s,%xerces_include%,$(xerces_include_dir)," -e "s,%version%,$(VERSION)," $(top_srcdir)/docs/Doxyfile.dom3api.in >$(top_srcdir)/docs/Doxyfile.dom3api
 
 devdocs: $(top_srcdir)/docs/.dev-api-timestamp
 
@@ -412,4 +412,4 @@ $(top_srcdir)/docs/.dev-api-timestamp: $(nobase_include_HEADERS) $(top_srcdir)/d
 		touch .dev-api-timestamp
 
 $(top_srcdir)/docs/Doxyfile.devapi: $(top_srcdir)/docs/Doxyfile.devapi.in
-	sed -e "s,%xerces_include%,$(xerces_include)," $(top_srcdir)/docs/Doxyfile.devapi.in >$(top_srcdir)/docs/Doxyfile.devapi
+	sed -e "s,%xerces_include%,$(xerces_include_dir)," $(top_srcdir)/docs/Doxyfile.devapi.in >$(top_srcdir)/docs/Doxyfile.devapi

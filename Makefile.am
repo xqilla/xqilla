@@ -1,7 +1,7 @@
 AUTOMAKE_OPTIONS = foreign dist-zip
 SUBDIRS = include
 
-INCLUDES = -I$(top_srcdir)/include/ -I$(xerces_include) -I$(top_srcdir)/src/lexer/ $(faxpp_include) $(tidy_include)
+INCLUDES = -I$(top_srcdir)/include/ $(xerces_include) -I$(top_srcdir)/src/lexer/ $(faxpp_include) $(tidy_include)
 LDFLAGS = -L$(xerces_lib) -R$(xerces_lib) $(faxpp_lib) $(tidy_lib) -lxerces-c $(faxpp_library) $(tidy_library)
 LDADD = libxqilla.la
 
