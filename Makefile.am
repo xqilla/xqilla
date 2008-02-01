@@ -402,7 +402,6 @@ src/update/UInsertAfter.cpp \
 src/update/UInsertBefore.cpp \
 src/update/UTransform.cpp \
 src/config/xqilla_config.h \
-src/config/xqilla_config_win32.h \
 src/xqts/TestSuiteParser.cpp \
 src/xqts/TestSuiteResultListener.cpp \
 src/xqts/TestSuiteRunner.cpp \
@@ -478,6 +477,7 @@ src/samples/dom-api/data.xsd \
 src/samples/dom-api/foo.xml \
 src/samples/simple-api/foo.xml \
 src/xercesc_content_type.patch \
+src/xercesc_regex.patch \
 LICENSE \
 TODO \
 ChangeLog \

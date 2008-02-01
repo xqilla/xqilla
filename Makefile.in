@@ -40,7 +40,7 @@ noinst_PROGRAMS = xqtsRunner$(EXEEXT) xmarkRunner$(EXEEXT) \
 	dom-basic$(EXEEXT) dom-context-item$(EXEEXT) \
 	dom-resolver$(EXEEXT)
 subdir = .
-DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
+DIST_COMMON = $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(top_srcdir)/configure \
 	$(top_srcdir)/src/config/xqilla_config_unix.h.in ChangeLog \
 	TODO autotools/config.guess autotools/config.sub \
@@ -346,6 +346,7 @@ PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 RANLIB = @RANLIB@
+SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
@@ -813,7 +814,6 @@ src/update/UInsertAfter.cpp \
 src/update/UInsertBefore.cpp \
 src/update/UTransform.cpp \
 src/config/xqilla_config.h \
-src/config/xqilla_config_win32.h \
 src/xqts/TestSuiteParser.cpp \
 src/xqts/TestSuiteResultListener.cpp \
 src/xqts/TestSuiteRunner.cpp \
@@ -889,6 +889,7 @@ src/samples/dom-api/data.xsd \
 src/samples/dom-api/foo.xml \
 src/samples/simple-api/foo.xml \
 src/xercesc_content_type.patch \
+src/xercesc_regex.patch \
 LICENSE \
 TODO \
 ChangeLog \
