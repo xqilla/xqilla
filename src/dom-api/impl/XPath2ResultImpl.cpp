@@ -92,6 +92,7 @@ XPath2ResultImpl::XPath2ResultImpl(DOMNode* contextNode,
 }
 
 XPath2ResultImpl::~XPath2ResultImpl() { 
+  _currentItem = 0;
   delete _context;
   if(_exprToDelete) _exprToDelete->release();
 }
