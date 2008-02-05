@@ -35,11 +35,11 @@ int main(int argc, char *argv[]) {
 
     // Create a DOMWriter to output the nodes
     DOMWriter *writer = xqillaImplementation->createDOMWriter();
-    StdOutFormatTarget *target = new StdOutFormatTarget();
+    StdOutFormatTarget target;
 
     // Iterate over the results, printing them
     while(result->iterateNext()) {
-      writer->writeNode(target, *(result->asNode()));
+      writer->writeNode(&target, *(result->asNode()));
       std::cout << std::endl;
     }
 
