@@ -21,6 +21,7 @@ s!@XQILLA_VERSION_PATCH@!0!g
 # Xerces is assumed to be source (vs installation)
 s!@XERCES_LIBHOME@!@XERCES_WINHOME@/Build/Win32/VC6!g
 s!@XERCES_LIBHOME7@!@XERCES_WINHOME@/Build/Win32/VC7.1!g
+s!@XERCES_BUILDHOME@!@XERCES_WINHOME@/Build!g
 # Xerces-c is in ../../../xerces-c-src
 s!@XERCES_WINHOME@!../../../@XERCES_NAME@!g
 s!@XERCES_NAME@!xerces-c-src!g
