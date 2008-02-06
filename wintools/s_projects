@@ -19,23 +19,31 @@ CONFIG_INPUT=xqilla.template.xml
 # temporary xml document, post-sed-replacement
 CONFIG_OUTPUT=xqilla.xml
 
-# location for output project files
-PROJECT_OUTPUT_DIR=../Win32Projects/VC7.1
-
 # substitute some variables in the XML document template
 sed -f lib_paths.sed < $CONFIG_INPUT > $CONFIG_OUTPUT
 
-# for each project, substitute 2 variables in the XQuery script, then run it
-for i in `cat $PROJECTS`
+# for each project/destination, substitute 2 variables in the XQuery script, then run it
+
+for v in VC7.1 VC8
 do
-   sed -e "s!@PROJECT_NAME@!$i!g" -e "s!@PROJECT_INPUT@!$CONFIG_OUTPUT!g" < $TEMPLATE > $TEMP_SCRIPT
-   TMP=$PROJECT_OUTPUT_DIR/$i.tmp.vcproj
-   TARG=$PROJECT_OUTPUT_DIR/$i.vcproj
-   xqilla -o $TMP $TEMP_SCRIPT
-   rm -f $TEMP_SCRIPT
-   cmp $TMP $TARG > /dev/null 2>&1 ||
+    PROJECT_OUTPUT_DIR=../Win32Projects/$v
+
+    if [ $v = "VC7.1" ]; then
+	VERSION="7.10"
+    else
+	VERSION="8.00"
+    fi
+
+    for i in `cat $PROJECTS`
+    do
+	sed -e "s!@PROJECT_NAME@!$i!g" -e "s!@PROJECT_INPUT@!$CONFIG_OUTPUT!g" -e"s!@VISUAL_STUDIO_VERSION@!$VERSION!g" < $TEMPLATE > $TEMP_SCRIPT
+	TMP=$PROJECT_OUTPUT_DIR/$i.tmp.vcproj
+	TARG=$PROJECT_OUTPUT_DIR/$i.vcproj
+	xqilla -o $TMP $TEMP_SCRIPT
+	rm -f $TEMP_SCRIPT
+	cmp $TMP $TARG > /dev/null 2>&1 ||
 	(echo "Building $TARG" && rm -f $TARG &&
 	    cp $TMP $TARG && chmod 664 $TARG)
-   rm -f $TMP
-
+	rm -f $TMP
+    done
 done

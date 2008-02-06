@@ -39,7 +39,9 @@
 // Warning 4101: "unreferenced local variable"
 //
 // Warning 4290: C++ exception specification ignored except to indicate a function is not __declspec(nothrow)
-#pragma warning(disable: 4065 4251 4786 4101 4290)
+//
+// Warning 4996 is deprecated/unsafe methods from Visual Studio 2005 onwards
+#pragma warning(disable: 4065 4251 4786 4101 4290 4996)
 
 #endif
 
