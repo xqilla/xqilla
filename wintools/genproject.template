@@ -28,6 +28,12 @@ declare variable $staticType := "4"; (: VS type 4 is a static lib :)
 declare variable $debugInfo := "3"; (: VS debug information format :)
 declare variable $libExtension := ".lib";
 
+(: formatting :)
+declare function local:indent($n)
+{
+  concat("&#xa;",string-join(for $i in (1 to $n) return " ", ""))
+};
+
 (: is it a DLL, Application, or static library? :)
 declare function local:configurationType($projectType)
 {
@@ -179,7 +185,7 @@ declare function local:addIncludeDirectories($project,$config)
 (: look for project-specific tool, then a type-specific event :)
 declare function local:generatePostBuildEvent($project, $config)
 {
-<Tool>
+local:indent(6),<Tool>
     {attribute{"Name"}{"VCPostBuildEventTool"}}
     {if (not(empty($project/event[@name="postbuild"]))) then
            (attribute{"CommandLine"}{$project/event[@name="postbuild"]/command[@config=$config]},
@@ -195,7 +201,7 @@ declare function local:generatePostBuildEvent($project, $config)
 
 declare function local:generateCustomBuildTool($project, $config)
 {
-<Tool>
+local:indent(6),<Tool>
     {attribute{"Name"}{"VCCustomBuildTool"}}
     {if (not(empty($project/event[@name="custom"]))) then
         (attribute{"CommandLine"}{$project/event[@name="custom"]/command[contains(@config,$config)]},
@@ -211,7 +217,7 @@ declare function local:generateCustomBuildTool($project, $config)
 :)
 declare function local:generateConfigLibrarian($project, $config)
 {
-<Tool>
+local:indent(6),<Tool>
   {attribute{"Name"}{"VCLibrarianTool"}}
   {local:makeStaticOutputFile($project,$config)}
 </Tool>
@@ -219,7 +225,7 @@ declare function local:generateConfigLibrarian($project, $config)
 
 declare function local:generateConfigLinkerAndMidl($project, $platform, $config)
 {
-<Tool>
+local:indent(6),<Tool>
   {attribute{"Name"}{"VCLinkerTool"}}
   {local:addLinkOptions($platform, $config)}
   {local:addLibraryDependencies($project,$config)}
@@ -237,7 +243,7 @@ declare function local:generateConfigLinkerAndMidl($project, $platform, $config)
 
 declare function local:generateConfigCompiler($project, $platform, $config, $static as xs:boolean)
 {
-<Tool>
+local:indent(6),<Tool>
   {attribute{"Name"}{"VCCLCompilerTool"}}
   {attribute{"Optimization"}{local:optLevel($config)}}
   {attribute{"MinimalRebuild"}{"TRUE"}}
@@ -263,14 +269,14 @@ declare function local:generateConfigCompiler($project, $platform, $config, $sta
 
 declare function local:generateConfigBoilerplate($config)
 {
-<Tool Name="VCPreBuildEventTool"/>,
-<Tool Name="VCPreLinkEventTool"/>,
-<Tool Name="VCResourceCompilerTool"/>,
-<Tool Name="VCWebServiceProxyGeneratorTool"/>,
-<Tool Name="VCXMLDataGeneratorTool"/>,
-<Tool Name="VCWebDeploymentTool"/>,
-<Tool Name="VCManagedWrapperGeneratorTool"/>,
-<Tool Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+local:indent(6),<Tool Name="VCPreBuildEventTool"/>,
+local:indent(6),<Tool Name="VCPreLinkEventTool"/>,
+local:indent(6),<Tool Name="VCResourceCompilerTool"/>,
+local:indent(6),<Tool Name="VCWebServiceProxyGeneratorTool"/>,
+local:indent(6),<Tool Name="VCXMLDataGeneratorTool"/>,
+local:indent(6),<Tool Name="VCWebDeploymentTool"/>,
+local:indent(6),<Tool Name="VCManagedWrapperGeneratorTool"/>,
+local:indent(6),<Tool Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
 };
 
 (: use "platform/configuration" :)
@@ -281,7 +287,7 @@ declare function local:generateOutputDirectory($platform,$config,$static)
 
 declare function local:generateConfig($project, $platform, $config)
 {
-  <Configuration>
+local:indent(4),<Configuration>
     {attribute{"Name"}{concat($config,"|",$platform)}}
     {local:generateOutputDirectory($platform,$config,"")}
     {attribute{"IntermediateDirectory"}{concat("./$(OutDir)/",$project/@name)}}
@@ -299,7 +305,7 @@ declare function local:generateConfig($project, $platform, $config)
 
 declare function local:generateStaticConfig($project, $platform, $config)
 {
-  <Configuration>
+  local:indent(4),<Configuration>
     {attribute{"Name"}{concat($config,"|",$platform)}}
     {local:generateOutputDirectory($platform,$config,"_static")}
     {attribute{"IntermediateDirectory"}{concat("./$(OutDir)/",$project/@name)}}
@@ -320,13 +326,13 @@ declare function local:generateStaticConfig($project, $platform, $config)
 declare function local:generateFilesNoFilter($project)
 {
     for $file in $project/files/file
-        return  <File RelativePath="{local:windowsPath(concat($sourcePath,$file/@name))}"/>
+        return  (local:indent(4),<File RelativePath="{local:windowsPath(concat($sourcePath,$file/@name))}"/>)
 };
 
 declare function local:generateFilesWithFilter($project,$filter)
 {
     for $file in $project/files/filter[@name=$filter]/file
-        return  <File RelativePath="{local:windowsPath(concat($sourcePath,$file/@name))}"/>
+        return  (local:indent(6),<File RelativePath="{local:windowsPath(concat($sourcePath,$file/@name))}"/>)
 };
 
 declare function local:generateFiles($project)
@@ -336,9 +342,9 @@ declare function local:generateFiles($project)
           local:generateFilesNoFilter($project)
      else
          for $filter in $filters
-         return (<Filter Name="{$filter}" Filter="">
+         return (local:indent(4),<Filter Name="{$filter}" Filter="">
                {local:generateFilesWithFilter($project,$filter)}
-         </Filter>)
+         {local:indent(4)}</Filter>)
 };
 
 declare function local:getGuid($project)
@@ -367,16 +373,20 @@ return
    Version="{$vsversion}"
    Name="{string($project/@name)}"
    ProjectGUID="{local:getGuid($project)}">
-  <Platforms><Platform Name="Win32"/><Platform Name="x64"/><Platform Name="IA64"/></Platforms>
-  <Configurations>
+   {local:indent(2)}<Platforms>
+   {local:indent(4)}<Platform Name="Win32"/>
+   {local:indent(4)}<Platform Name="x64"/>
+   {local:indent(4)}<Platform Name="IA64"/>
+   {local:indent(2)}</Platforms>
+   {local:indent(2)}<Configurations>
     {
     for $platform in local:getPlatforms($vsversion) return 
     for $config in ("Debug","Release") return if ($static) then local:generateStaticConfig($project, $platform, $config) else local:generateConfig($project, $platform, $config)
     }
-  </Configurations>
-  <References/>
-  <Files>
+  {local:indent(2)}</Configurations>
+  {local:indent(2)}<References/>
+  {local:indent(2)}<Files>
     {local:generateFiles($proj)}
-  </Files>
-  <Globals/>
-</VisualStudioProject>
+  {local:indent(2)}</Files>
+  {local:indent(2)}<Globals/>
+{"&#xa;"}</VisualStudioProject>
