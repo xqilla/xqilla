@@ -21,9 +21,11 @@
 
 #ifdef _MSC_VER
 #pragma warning(disable: 4786)
+#include <time.h>
+#else
+#include <sys/time.h>
 #endif
 
-#include <sys/time.h>
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -75,21 +77,21 @@ string timestamp(string &dateTime)
 
   char szDate[256];
   sprintf(szDate,"%04d-%02d-%02dT%02d:%02d:%02dZ",
-    tm.tm_year+1900,
-    tm.tm_mon+1,
-    tm.tm_mday,
-    tm.tm_hour,
-    tm.tm_min,
-    tm.tm_sec);
+    tm_p->tm_year+1900,
+    tm_p->tm_mon+1,
+    tm_p->tm_mday,
+    tm_p->tm_hour,
+    tm_p->tm_min,
+    tm_p->tm_sec);
   dateTime = szDate;
 
   sprintf(szDate,"%04d%02d%02d%02d%02d%02d",
-    tm.tm_year+1900,
-    tm.tm_mon+1,
-    tm.tm_mday,
-    tm.tm_hour,
-    tm.tm_min,
-    tm.tm_sec);
+    tm_p->tm_year+1900,
+    tm_p->tm_mon+1,
+    tm_p->tm_mday,
+    tm_p->tm_hour,
+    tm_p->tm_min,
+    tm_p->tm_sec);
   return szDate;
 }
 
