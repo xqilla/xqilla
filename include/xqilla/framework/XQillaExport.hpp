@@ -47,16 +47,18 @@
  * XQILLA_API functions as being imported from a DLL, wheras this DLL
  * sees symbols defined with this macro as being exported.
  */
-#if defined(WIN32) && !defined(__CYGWIN__) && !defined(__MINGW32__)
+#if defined(WIN32) && !defined(__CYGWIN__)
 #  if !defined(XQILLA_API)
-#    ifdef XQILLA_APIS
+#    if defined(XQILLA_APIS)
 #      define XQILLA_API __declspec(dllexport)
 #    else
 #      define XQILLA_API __declspec(dllimport)
 #    endif
 #  endif
 
-#  pragma warning(disable: 4251 4786 4101 4290)
+#  if !defined(__MINGW32__)
+#    pragma warning(disable: 4251 4786 4101 4290)
+#  endif
 #else
 #  define XQILLA_API 
 #endif
