@@ -33,6 +33,7 @@
 #include <xercesc/util/XMLEntityResolver.hpp>
 #include <xercesc/framework/MemBufFormatTarget.hpp>
 #include <xercesc/dom/DOMException.hpp>
+#include <xercesc/util/PlatformUtils.hpp>
 
 #include <xqilla/xqilla-simple.hpp>
 #include <xqilla/context/VariableStore.hpp>
@@ -49,7 +50,7 @@ XERCES_CPP_NAMESPACE_USE
 using namespace std;
 
 #define MAXIMUM_TIME_FOR_QUERIES 0.2
-#define MSECS_IN_SECS 1000000
+#define MILLISECS_IN_SECS 1000
 
 Sequence query(XQilla &xqilla, DynamicContext *context, const Item::Ptr &ci, string query)
 {
@@ -116,16 +117,13 @@ public:
 
   double durationInSeconds() const
   {
-    return ((double)duration_ / MSECS_IN_SECS);
+    return ((double)duration_ / MILLISECS_IN_SECS);
   }
 
 private:
   static unsigned long getTime()
   {
-    struct timeval timev;
-    gettimeofday(&timev, 0);
-
-    return (timev.tv_sec * MSECS_IN_SECS) + timev.tv_usec;
+    return XMLPlatformUtils::getCurrentMillis();
   }
 
   unsigned long start_;
