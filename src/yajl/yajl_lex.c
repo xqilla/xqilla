@@ -30,6 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */ 
 
+#include "../config/xqilla_config.h"
 #include "yajl_lex.h"
 #include "yajl_buf.h"
 
