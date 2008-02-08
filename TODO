@@ -16,3 +16,5 @@ XQueryP support
 Grouping support
 Fix ATDoubleOrDerivedImpl and ATFloatOrDerivedImpl to use double and float types
 replace MAPM
+Windows -- re-enable warning 4996 (xqilla_config.h) and address the "unsafe" warnings
+	for use of strcat, strcpy, etc
