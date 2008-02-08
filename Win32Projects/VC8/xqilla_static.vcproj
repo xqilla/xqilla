@@ -9,31 +9,25 @@
       <Tool Name="VCPreBuildEventTool"/>
       <Tool Name="VCPreLinkEventTool"/>
       <Tool Name="VCResourceCompilerTool"/>
-      <Tool Name="VCWebServiceProxyGeneratorTool"/>
       <Tool Name="VCXMLDataGeneratorTool"/>
-      <Tool Name="VCWebDeploymentTool"/>
       <Tool Name="VCManagedWrapperGeneratorTool"/>
       <Tool Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
-      <Tool Name="VCCLCompilerTool" Optimization="0" MinimalRebuild="TRUE" AdditionalIncludeDirectories="../../include,../../src/lexer,../../../xerces-c-src/include,../../../xerces-c-src/src" PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_LIB;XQILLA_API=;XML_LIBRARY=" StringPooling="TRUE" RuntimeLibrary="1" UsePrecompiledHeader="0" PrecompiledHeaderFile="./$(OutDir)/xqilla_static.pch" AssemblerListingLocation="./$(OutDir)/" ObjectFile="./$(OutDir)/" WarningLevel="3" Detect64BitPortabilityProblems="TRUE" SuppressStartupBanner="TRUE" DebugInformationFormat="3" BasicRuntimeChecks="3" CompileAs="0"/>
+      <Tool Name="VCCLCompilerTool" Optimization="0" MinimalRebuild="TRUE" AdditionalIncludeDirectories="../../include,../../src/lexer,../../../xerces-c-src/include,../../../xerces-c-src/src" PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_LIB;XQILLA_API=;XML_LIBRARY=" StringPooling="TRUE" RuntimeLibrary="1" UsePrecompiledHeader="0" PrecompiledHeaderFile="./$(OutDir)/xqilla_static.pch" AssemblerListingLocation="./$(OutDir)/" ObjectFile="./$(OutDir)/" WarningLevel="3" SuppressStartupBanner="TRUE" DebugInformationFormat="3" BasicRuntimeChecks="3" CompileAs="0"/>
       <Tool Name="VCLibrarianTool" OutputFile="$(OutDir)/xqilla20sd.lib"/></Configuration>
     <Configuration Name="Release|Win32" OutputDirectory="..\..\build\windows\VC8\$(PlatformName)\Release_static" IntermediateDirectory="./$(OutDir)/xqilla_static" ConfigurationType="4" UseOfMFC="0" ATLMinimizesCRunTimeLibraryUsage="FALSE" CharacterSet="2">
       <Tool Name="VCPreBuildEventTool"/>
       <Tool Name="VCPreLinkEventTool"/>
       <Tool Name="VCResourceCompilerTool"/>
-      <Tool Name="VCWebServiceProxyGeneratorTool"/>
       <Tool Name="VCXMLDataGeneratorTool"/>
-      <Tool Name="VCWebDeploymentTool"/>
       <Tool Name="VCManagedWrapperGeneratorTool"/>
       <Tool Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
-      <Tool Name="VCCLCompilerTool" Optimization="2" MinimalRebuild="TRUE" InlineFunctionExpansion="1" AdditionalIncludeDirectories="../../include,../../src/lexer,../../../xerces-c-src/include,../../../xerces-c-src/src" PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_LIB;XQILLA_API=;XML_LIBRARY=" StringPooling="TRUE" RuntimeLibrary="0" EnableFunctionLevelLinking="TRUE" UsePrecompiledHeader="0" PrecompiledHeaderFile="./$(OutDir)/xqilla_static.pch" AssemblerListingLocation="./$(OutDir)/" ObjectFile="./$(OutDir)/" WarningLevel="3" Detect64BitPortabilityProblems="TRUE" SuppressStartupBanner="TRUE" DebugInformationFormat="3" CompileAs="0"/>
+      <Tool Name="VCCLCompilerTool" Optimization="2" MinimalRebuild="TRUE" InlineFunctionExpansion="1" AdditionalIncludeDirectories="../../include,../../src/lexer,../../../xerces-c-src/include,../../../xerces-c-src/src" PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_LIB;XQILLA_API=;XML_LIBRARY=" StringPooling="TRUE" RuntimeLibrary="0" EnableFunctionLevelLinking="TRUE" UsePrecompiledHeader="0" PrecompiledHeaderFile="./$(OutDir)/xqilla_static.pch" AssemblerListingLocation="./$(OutDir)/" ObjectFile="./$(OutDir)/" WarningLevel="3" SuppressStartupBanner="TRUE" DebugInformationFormat="3" CompileAs="0"/>
       <Tool Name="VCLibrarianTool" OutputFile="$(OutDir)/xqilla20s.lib"/></Configuration>
     <Configuration Name="Debug|x64" OutputDirectory="..\..\build\windows\VC8\$(PlatformName)\Debug_static" IntermediateDirectory="./$(OutDir)/xqilla_static" ConfigurationType="4" UseOfMFC="0" ATLMinimizesCRunTimeLibraryUsage="FALSE" CharacterSet="2">
       <Tool Name="VCPreBuildEventTool"/>
       <Tool Name="VCPreLinkEventTool"/>
       <Tool Name="VCResourceCompilerTool"/>
-      <Tool Name="VCWebServiceProxyGeneratorTool"/>
       <Tool Name="VCXMLDataGeneratorTool"/>
-      <Tool Name="VCWebDeploymentTool"/>
       <Tool Name="VCManagedWrapperGeneratorTool"/>
       <Tool Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
       <Tool Name="VCCLCompilerTool" Optimization="0" MinimalRebuild="TRUE" AdditionalIncludeDirectories="../../include,../../src/lexer,../../../xerces-c-src/include,../../../xerces-c-src/src" PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_LIB;XQILLA_API=;XML_LIBRARY=" StringPooling="TRUE" RuntimeLibrary="1" UsePrecompiledHeader="0" PrecompiledHeaderFile="./$(OutDir)/xqilla_static.pch" AssemblerListingLocation="./$(OutDir)/" ObjectFile="./$(OutDir)/" WarningLevel="3" SuppressStartupBanner="TRUE" DebugInformationFormat="3" BasicRuntimeChecks="3" CompileAs="0"/>
@@ -42,9 +36,7 @@
       <Tool Name="VCPreBuildEventTool"/>
       <Tool Name="VCPreLinkEventTool"/>
       <Tool Name="VCResourceCompilerTool"/>
-      <Tool Name="VCWebServiceProxyGeneratorTool"/>
       <Tool Name="VCXMLDataGeneratorTool"/>
-      <Tool Name="VCWebDeploymentTool"/>
       <Tool Name="VCManagedWrapperGeneratorTool"/>
       <Tool Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
       <Tool Name="VCCLCompilerTool" Optimization="2" MinimalRebuild="TRUE" InlineFunctionExpansion="1" AdditionalIncludeDirectories="../../include,../../src/lexer,../../../xerces-c-src/include,../../../xerces-c-src/src" PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_LIB;XQILLA_API=;XML_LIBRARY=" StringPooling="TRUE" RuntimeLibrary="0" EnableFunctionLevelLinking="TRUE" UsePrecompiledHeader="0" PrecompiledHeaderFile="./$(OutDir)/xqilla_static.pch" AssemblerListingLocation="./$(OutDir)/" ObjectFile="./$(OutDir)/" WarningLevel="3" SuppressStartupBanner="TRUE" DebugInformationFormat="3" CompileAs="0"/>
@@ -53,23 +45,19 @@
       <Tool Name="VCPreBuildEventTool"/>
       <Tool Name="VCPreLinkEventTool"/>
       <Tool Name="VCResourceCompilerTool"/>
-      <Tool Name="VCWebServiceProxyGeneratorTool"/>
       <Tool Name="VCXMLDataGeneratorTool"/>
-      <Tool Name="VCWebDeploymentTool"/>
       <Tool Name="VCManagedWrapperGeneratorTool"/>
       <Tool Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
-      <Tool Name="VCCLCompilerTool" Optimization="0" MinimalRebuild="TRUE" AdditionalIncludeDirectories="../../include,../../src/lexer,../../../xerces-c-src/include,../../../xerces-c-src/src" PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_LIB;XQILLA_API=;XML_LIBRARY=" StringPooling="TRUE" RuntimeLibrary="1" UsePrecompiledHeader="0" PrecompiledHeaderFile="./$(OutDir)/xqilla_static.pch" AssemblerListingLocation="./$(OutDir)/" ObjectFile="./$(OutDir)/" WarningLevel="3" Detect64BitPortabilityProblems="TRUE" SuppressStartupBanner="TRUE" DebugInformationFormat="3" BasicRuntimeChecks="3" CompileAs="0"/>
+      <Tool Name="VCCLCompilerTool" Optimization="0" MinimalRebuild="TRUE" AdditionalIncludeDirectories="../../include,../../src/lexer,../../../xerces-c-src/include,../../../xerces-c-src/src" PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_LIB;XQILLA_API=;XML_LIBRARY=" StringPooling="TRUE" RuntimeLibrary="1" UsePrecompiledHeader="0" PrecompiledHeaderFile="./$(OutDir)/xqilla_static.pch" AssemblerListingLocation="./$(OutDir)/" ObjectFile="./$(OutDir)/" WarningLevel="3" SuppressStartupBanner="TRUE" DebugInformationFormat="3" BasicRuntimeChecks="3" CompileAs="0"/>
       <Tool Name="VCLibrarianTool" OutputFile="$(OutDir)/xqilla20sd.lib"/></Configuration>
     <Configuration Name="Release|IA64" OutputDirectory="..\..\build\windows\VC8\$(PlatformName)\Release_static" IntermediateDirectory="./$(OutDir)/xqilla_static" ConfigurationType="4" UseOfMFC="0" ATLMinimizesCRunTimeLibraryUsage="FALSE" CharacterSet="2">
       <Tool Name="VCPreBuildEventTool"/>
       <Tool Name="VCPreLinkEventTool"/>
       <Tool Name="VCResourceCompilerTool"/>
-      <Tool Name="VCWebServiceProxyGeneratorTool"/>
       <Tool Name="VCXMLDataGeneratorTool"/>
-      <Tool Name="VCWebDeploymentTool"/>
       <Tool Name="VCManagedWrapperGeneratorTool"/>
       <Tool Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
-      <Tool Name="VCCLCompilerTool" Optimization="2" MinimalRebuild="TRUE" InlineFunctionExpansion="1" AdditionalIncludeDirectories="../../include,../../src/lexer,../../../xerces-c-src/include,../../../xerces-c-src/src" PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_LIB;XQILLA_API=;XML_LIBRARY=" StringPooling="TRUE" RuntimeLibrary="0" EnableFunctionLevelLinking="TRUE" UsePrecompiledHeader="0" PrecompiledHeaderFile="./$(OutDir)/xqilla_static.pch" AssemblerListingLocation="./$(OutDir)/" ObjectFile="./$(OutDir)/" WarningLevel="3" Detect64BitPortabilityProblems="TRUE" SuppressStartupBanner="TRUE" DebugInformationFormat="3" CompileAs="0"/>
+      <Tool Name="VCCLCompilerTool" Optimization="2" MinimalRebuild="TRUE" InlineFunctionExpansion="1" AdditionalIncludeDirectories="../../include,../../src/lexer,../../../xerces-c-src/include,../../../xerces-c-src/src" PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_LIB;XQILLA_API=;XML_LIBRARY=" StringPooling="TRUE" RuntimeLibrary="0" EnableFunctionLevelLinking="TRUE" UsePrecompiledHeader="0" PrecompiledHeaderFile="./$(OutDir)/xqilla_static.pch" AssemblerListingLocation="./$(OutDir)/" ObjectFile="./$(OutDir)/" WarningLevel="3" SuppressStartupBanner="TRUE" DebugInformationFormat="3" CompileAs="0"/>
       <Tool Name="VCLibrarianTool" OutputFile="$(OutDir)/xqilla20s.lib"/></Configuration>
   </Configurations>
   <References/>

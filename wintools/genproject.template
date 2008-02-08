@@ -62,11 +62,12 @@ declare function local:isRelease($config) as xs:boolean
 };
 
 (: machine-target-dependent link options :)
-declare function local:addLinkOptions($platform, $config)
+declare function local:addLinkOptions($project, $platform, $config)
 {
   let $machine := if (contains($platform,"Win32")) then "/machine:x86"
-                  else concat("/machine:",$platform)
-  return if (not($machine eq "")) then attribute{"AdditionalOptions"}{$machine}
+      	             else concat("/machine:",$platform)
+  let $opt := string-join(($machine,$project/options/link[contains(@config,$config)])," ")
+  return if (not($opt eq "")) then attribute{"AdditionalOptions"}{$opt}
          else ()
 };
 
@@ -125,6 +126,13 @@ declare function local:makeImportLibrary($project, $config)
 {
   if ($project/type eq "dll") then
     attribute{"ImportLibrary"}{concat("$(OutDir)/", local:getLibName($project/@name, $config),".lib")}
+  else ()
+};
+
+declare function local:makeModuleDefinition($project, $config)
+{
+  if (not(empty($project/moddef))) then
+    attribute{"ModuleDefinitionFile"}{local:windowsPath(concat($sourcePath,$project/moddef/@file))}
   else ()
 };
 
@@ -227,7 +235,7 @@ declare function local:generateConfigLinkerAndMidl($project, $platform, $config)
 {
 local:indent(6),<Tool>
   {attribute{"Name"}{"VCLinkerTool"}}
-  {local:addLinkOptions($platform, $config)}
+  {local:addLinkOptions($project, $platform, $config)}
   {local:addLibraryDependencies($project,$config)}
   {local:addLibraryDirectories($project,$platform,$config)}
   {local:makeOutputFile($project, $config)}
@@ -237,6 +245,7 @@ local:indent(6),<Tool>
   {attribute{"SuppressStartupBanner"}{"TRUE"}}
   {attribute{"OptimizeReferences"}{"2"}}
   {local:makeImportLibrary($project,$config)}
+  {local:makeModuleDefinition($project,$config)}
   {attribute{"TargetMachine"}{"0"}}
 </Tool>
 };
@@ -260,7 +269,7 @@ local:indent(6),<Tool>
   {attribute{"AssemblerListingLocation"}{"./$(OutDir)/"}}
   {attribute{"ObjectFile"}{"./$(OutDir)/"}}
   {attribute{"WarningLevel"}{$warnLevel}}
-  {if (not($platform eq "x64")) then attribute{"Detect64BitPortabilityProblems"}{"TRUE"} else ()}
+  {if (not($vsversion eq "8.00") and not($project/options/nowp64)) then attribute{"Detect64BitPortabilityProblems"}{"TRUE"} else ()}
   {attribute{"SuppressStartupBanner"}{"TRUE"}}
   {local:addDebugInformation($config)}
   {attribute{"CompileAs"}{"0"}}
@@ -272,9 +281,7 @@ declare function local:generateConfigBoilerplate($config)
 local:indent(6),<Tool Name="VCPreBuildEventTool"/>,
 local:indent(6),<Tool Name="VCPreLinkEventTool"/>,
 local:indent(6),<Tool Name="VCResourceCompilerTool"/>,
-local:indent(6),<Tool Name="VCWebServiceProxyGeneratorTool"/>,
 local:indent(6),<Tool Name="VCXMLDataGeneratorTool"/>,
-local:indent(6),<Tool Name="VCWebDeploymentTool"/>,
 local:indent(6),<Tool Name="VCManagedWrapperGeneratorTool"/>,
 local:indent(6),<Tool Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
 };
@@ -323,16 +330,30 @@ declare function local:generateStaticConfig($project, $platform, $config)
   </Configuration>
 };
 
+declare function local:generateRcFile($file)
+{
+	local:indent(4),<File RelativePath="{local:windowsPath(concat($sourcePath,$file/@name))}">
+	{ for $platform in local:getPlatforms($vsversion) return 
+            for $config in ("Debug","Release") return
+              (local:indent(6),<FileConfiguration Name="{concat($config,"|",$platform)}">
+                  <Tool Name="VCResourceCompilerTool" PreprocessorDefinitions="{concat(if ($config="Debug") then "_DEBUG" else "NDEBUG",";","$(NoInherit))")}"/>
+	      {local:indent(6)}</FileConfiguration>)
+        }
+	{local:indent(4)}</File>
+};
+
 declare function local:generateFilesNoFilter($project)
 {
     for $file in $project/files/file
-        return  (local:indent(4),<File RelativePath="{local:windowsPath(concat($sourcePath,$file/@name))}"/>)
+        return  if (ends-with($file/@name,".rc")) then local:generateRcFile($file)
+	  else  (local:indent(4),<File RelativePath="{local:windowsPath(concat($sourcePath,$file/@name))}"/>)
 };
 
 declare function local:generateFilesWithFilter($project,$filter)
 {
     for $file in $project/files/filter[@name=$filter]/file
-        return  (local:indent(6),<File RelativePath="{local:windowsPath(concat($sourcePath,$file/@name))}"/>)
+        return if (ends-with($file/@name,".rc")) then local:generateRcFile($file)
+	  else (local:indent(6),<File RelativePath="{local:windowsPath(concat($sourcePath,$file/@name))}"/>)
 };
 
 declare function local:generateFiles($project)
