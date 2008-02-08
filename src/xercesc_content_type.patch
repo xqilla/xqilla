@@ -1,5 +1,5 @@
 diff -ru xerces-c-src_2_8_0-release/src/xercesc/util/BinInputStream.cpp xerces-c-src_2_8_0/src/xercesc/util/BinInputStream.cpp
---- xerces-c-src_2_8_0-release/src/xercesc/util/BinInputStream.cpp	2007-08-28 19:44:52.000000000 +0100
+--- xerces-c-src_2_8_0-release/src/xercesc/util/BinInputStream.cpp	2008-02-08 15:30:17.000000000 +0000
 +++ xerces-c-src_2_8_0/src/xercesc/util/BinInputStream.cpp	2008-01-28 02:24:47.000000000 +0000
 @@ -42,4 +42,10 @@
  {
@@ -13,7 +13,7 @@ diff -ru xerces-c-src_2_8_0-release/src/xercesc/util/BinInputStream.cpp xerces-c
 +
  XERCES_CPP_NAMESPACE_END
 diff -ru xerces-c-src_2_8_0-release/src/xercesc/util/BinInputStream.hpp xerces-c-src_2_8_0/src/xercesc/util/BinInputStream.hpp
---- xerces-c-src_2_8_0-release/src/xercesc/util/BinInputStream.hpp	2007-08-28 19:44:52.000000000 +0100
+--- xerces-c-src_2_8_0-release/src/xercesc/util/BinInputStream.hpp	2008-02-08 15:30:17.000000000 +0000
 +++ xerces-c-src_2_8_0/src/xercesc/util/BinInputStream.hpp	2008-01-28 02:23:51.000000000 +0000
 @@ -46,6 +46,7 @@
          , const unsigned int        maxToRead
@@ -24,7 +24,7 @@ diff -ru xerces-c-src_2_8_0-release/src/xercesc/util/BinInputStream.hpp xerces-c
  protected :
      // -----------------------------------------------------------------------
 diff -ru xerces-c-src_2_8_0-release/src/xercesc/util/NetAccessors/Socket/UnixHTTPURLInputStream.cpp xerces-c-src_2_8_0/src/xercesc/util/NetAccessors/Socket/UnixHTTPURLInputStream.cpp
---- xerces-c-src_2_8_0-release/src/xercesc/util/NetAccessors/Socket/UnixHTTPURLInputStream.cpp	2007-08-28 19:44:15.000000000 +0100
+--- xerces-c-src_2_8_0-release/src/xercesc/util/NetAccessors/Socket/UnixHTTPURLInputStream.cpp	2008-02-08 15:30:17.000000000 +0000
 +++ xerces-c-src_2_8_0/src/xercesc/util/NetAccessors/Socket/UnixHTTPURLInputStream.cpp	2008-01-29 00:08:59.000000000 +0000
 @@ -58,7 +58,14 @@
      int* get() const { return fData; }
@@ -756,7 +756,7 @@ diff -ru xerces-c-src_2_8_0-release/src/xercesc/util/NetAccessors/Socket/UnixHTT
              ThrowXMLwithMemMgr(NetAccessorException, XMLExcepts::NetAcc_ReadSocket, fMemoryManager);
          }
 diff -ru xerces-c-src_2_8_0-release/src/xercesc/util/NetAccessors/Socket/UnixHTTPURLInputStream.hpp xerces-c-src_2_8_0/src/xercesc/util/NetAccessors/Socket/UnixHTTPURLInputStream.hpp
---- xerces-c-src_2_8_0-release/src/xercesc/util/NetAccessors/Socket/UnixHTTPURLInputStream.hpp	2007-08-28 19:44:15.000000000 +0100
+--- xerces-c-src_2_8_0-release/src/xercesc/util/NetAccessors/Socket/UnixHTTPURLInputStream.hpp	2008-02-08 15:30:17.000000000 +0000
 +++ xerces-c-src_2_8_0/src/xercesc/util/NetAccessors/Socket/UnixHTTPURLInputStream.hpp	2008-01-28 23:49:33.000000000 +0000
 @@ -27,10 +27,132 @@
  #include <xercesc/util/XMLExceptMsgs.hpp>
@@ -932,9 +932,18 @@ diff -ru xerces-c-src_2_8_0-release/src/xercesc/util/NetAccessors/Socket/UnixHTT
  }; // UnixHTTPURLInputStream
  
 diff -ru xerces-c-src_2_8_0-release/src/xercesc/util/NetAccessors/WinSock/BinHTTPURLInputStream.cpp xerces-c-src_2_8_0/src/xercesc/util/NetAccessors/WinSock/BinHTTPURLInputStream.cpp
---- xerces-c-src_2_8_0-release/src/xercesc/util/NetAccessors/WinSock/BinHTTPURLInputStream.cpp	2007-08-28 19:44:16.000000000 +0100
-+++ xerces-c-src_2_8_0/src/xercesc/util/NetAccessors/WinSock/BinHTTPURLInputStream.cpp	2008-01-29 01:29:38.000000000 +0000
-@@ -37,6 +37,7 @@
+--- xerces-c-src_2_8_0-release/src/xercesc/util/NetAccessors/WinSock/BinHTTPURLInputStream.cpp	2008-02-08 15:30:17.000000000 +0000
++++ xerces-c-src_2_8_0/src/xercesc/util/NetAccessors/WinSock/BinHTTPURLInputStream.cpp	2008-02-08 15:24:34.000000000 +0000
+@@ -20,8 +20,6 @@
+  */
+ 
+ 
+-#define INCL_WINSOCK_API_TYPEDEFS 1
+-#include <winsock2.h>
+ #include <windows.h>
+ #include <tchar.h>
+ 
+@@ -37,6 +35,7 @@
  #include <xercesc/util/Janitor.hpp>
  #include <xercesc/util/XMLUniDefs.hpp>
  #include <xercesc/util/Base64.hpp>
@@ -942,7 +951,7 @@ diff -ru xerces-c-src_2_8_0-release/src/xercesc/util/NetAccessors/WinSock/BinHTT
  
  XERCES_CPP_NAMESPACE_BEGIN
  
-@@ -52,7 +53,14 @@
+@@ -52,7 +51,14 @@
      SOCKET* get() const { return fData; }
      SOCKET* release() {	SOCKET* p = fData; fData = 0; return p; }
  
@@ -958,7 +967,7 @@ diff -ru xerces-c-src_2_8_0-release/src/xercesc/util/NetAccessors/WinSock/BinHTT
      bool isDataNull() { return (fData == 0); }
  
  private :
-@@ -73,6 +81,218 @@
+@@ -73,6 +79,218 @@
      SOCKET*  fData;
  };
  
@@ -1177,7 +1186,45 @@ diff -ru xerces-c-src_2_8_0-release/src/xercesc/util/NetAccessors/WinSock/BinHTT
  static HMODULE gWinsockLib = NULL;
  static LPFN_GETHOSTBYNAME gWSgethostbyname = NULL;
  static LPFN_INET_ADDR gWSinet_addr = NULL;
-@@ -222,8 +442,11 @@
+@@ -190,40 +408,43 @@
+ 	return (*gWShtons)(hostshort);
+ }
+ 
+-unsigned int BinHTTPURLInputStream::socket(int af,int type,int protocol)
++SOCKET BinHTTPURLInputStream::socket(int af,int type,int protocol)
+ {
+ 	return (*gWSsocket)(af,type,protocol);
+ }
+ 
+-int BinHTTPURLInputStream::connect(unsigned int s,const sockaddr* name,int namelen)
++int BinHTTPURLInputStream::connect(SOCKET s,const sockaddr* name,int namelen)
+ {
+ 	return (*gWSconnect)(s,name,namelen);
+ }
+ 
+-int BinHTTPURLInputStream::send(unsigned int s,const char* buf,int len,int flags)
++int BinHTTPURLInputStream::send(SOCKET s,const char* buf,int len,int flags)
+ {
+ 	return (*gWSsend)(s,buf,len,flags);
+ }
+ 
+-int BinHTTPURLInputStream::recv(unsigned int s,char* buf,int len,int flags)
++int BinHTTPURLInputStream::recv(SOCKET s,char* buf,int len,int flags)
+ {
+ 	return (*gWSrecv)(s,buf,len,flags);
+ }
+ 
+-int BinHTTPURLInputStream::shutdown(unsigned int s,int how)
++int BinHTTPURLInputStream::shutdown(SOCKET s,int how)
+ {
+ 	return (*gWSshutdown)(s,how);
+ }
+ 
+-int BinHTTPURLInputStream::closesocket(unsigned int socket)
++int BinHTTPURLInputStream::closesocket(SOCKET socket)
+ {
+ 	return (*gWSclosesocket)(socket);
+ }
  
  
  BinHTTPURLInputStream::BinHTTPURLInputStream(const XMLURL& urlSource, const XMLNetHTTPInfo* httpInfo /*=0*/)
@@ -1190,7 +1237,7 @@ diff -ru xerces-c-src_2_8_0-release/src/xercesc/util/NetAccessors/WinSock/BinHTT
  {
      if(!fInitialized)
      {
-@@ -243,257 +466,160 @@
+@@ -243,257 +464,160 @@
           }
      }
  
@@ -1566,7 +1613,7 @@ diff -ru xerces-c-src_2_8_0-release/src/xercesc/util/NetAccessors/WinSock/BinHTT
  }
  
  
-@@ -502,17 +628,28 @@
+@@ -502,17 +626,28 @@
  {
      shutdown(fSocketHandle, SD_BOTH);
      closesocket(fSocketHandle);
@@ -1597,27 +1644,36 @@ diff -ru xerces-c-src_2_8_0-release/src/xercesc/util/NetAccessors/WinSock/BinHTT
      {
          // If there's any data left over in the buffer into which we first
          //   read from the server (to get the http header), return that.
+@@ -526,7 +661,7 @@
+         // There was no data in the local buffer.
+         // Read some from the socket, straight into our caller's buffer.
+         //
+-        len = recv((SOCKET) fSocketHandle, (char *) toFill, maxToRead, 0);
++        len = recv(fSocketHandle, (char *) toFill, maxToRead, 0);
+         if (len == SOCKET_ERROR)
+         {
+             // Call WSAGetLastError() to get the error number.
 diff -ru xerces-c-src_2_8_0-release/src/xercesc/util/NetAccessors/WinSock/BinHTTPURLInputStream.hpp xerces-c-src_2_8_0/src/xercesc/util/NetAccessors/WinSock/BinHTTPURLInputStream.hpp
---- xerces-c-src_2_8_0-release/src/xercesc/util/NetAccessors/WinSock/BinHTTPURLInputStream.hpp	2007-08-28 19:44:16.000000000 +0100
-+++ xerces-c-src_2_8_0/src/xercesc/util/NetAccessors/WinSock/BinHTTPURLInputStream.hpp	2008-01-29 01:29:43.000000000 +0000
+--- xerces-c-src_2_8_0-release/src/xercesc/util/NetAccessors/WinSock/BinHTTPURLInputStream.hpp	2008-02-08 15:30:17.000000000 +0000
++++ xerces-c-src_2_8_0/src/xercesc/util/NetAccessors/WinSock/BinHTTPURLInputStream.hpp	2008-02-08 15:22:45.000000000 +0000
 @@ -28,16 +28,138 @@
  #include <xercesc/util/BinInputStream.hpp>
  #include <xercesc/util/Mutexes.hpp>
  #include <xercesc/util/XMLNetAccessor.hpp>
 +#include <xercesc/framework/MemoryManager.hpp>
++
++#define INCL_WINSOCK_API_TYPEDEFS 1
++#include <winsock2.h>
++
++XERCES_CPP_NAMESPACE_BEGIN
  
--//
+ //
 -// This class implements the BinInputStream interface specified by the XML
 -// parser.
--//
- struct hostent;
- struct sockaddr;
- 
- XERCES_CPP_NAMESPACE_BEGIN
- 
-+//
 +// This class implements a simple expanding character buffer
-+//
+ //
+-struct hostent;
+-struct sockaddr;
 +class XMLUTIL_EXPORT CharBuffer
 +{
 +public:
@@ -1699,7 +1755,8 @@ diff -ru xerces-c-src_2_8_0-release/src/xercesc/util/NetAccessors/WinSock/BinHTT
 +        reset();
 +        append(chars);
 +    }
-+
+ 
+-XERCES_CPP_NAMESPACE_BEGIN
 +private:
 +    // -----------------------------------------------------------------------
 +    //  Unimplemented constructors and operators
@@ -1735,7 +1792,7 @@ diff -ru xerces-c-src_2_8_0-release/src/xercesc/util/NetAccessors/WinSock/BinHTT
 +    unsigned int fIndex;
 +    MemoryManager *fMemoryManager;
 +};
-+
+ 
 +//
 +// This class implements the BinInputStream interface specified by the XML
 +// parser.
@@ -1765,9 +1822,12 @@ diff -ru xerces-c-src_2_8_0-release/src/xercesc/util/NetAccessors/WinSock/BinHTT
      // -----------------------------------------------------------------------
      //  Private data members
      //
-@@ -81,9 +211,10 @@
+@@ -79,11 +209,12 @@
+     //      that readBytes must return.
+     // -----------------------------------------------------------------------
      MemoryManager*      fMemoryManager;
-     unsigned int        fSocketHandle;
+-    unsigned int        fSocketHandle;
++    SOCKET              fSocketHandle;
      unsigned int        fBytesProcessed;
 -    char                fBuffer[4000];
 -    char *              fBufferEnd;
@@ -1778,8 +1838,27 @@ diff -ru xerces-c-src_2_8_0-release/src/xercesc/util/NetAccessors/WinSock/BinHTT
      static bool         fInitialized;
      static XMLMutex*        fInitMutex;
  
+@@ -93,12 +224,12 @@
+ 	inline static unsigned long inet_addr(const char* cp);
+ 	inline static hostent* gethostbyaddr(const char* addr,int len,int type);
+ 	inline static unsigned short htons(unsigned short hostshort);
+-	inline static unsigned int socket(int af,int type,int protocol);
+-	inline static int connect(unsigned int s,const sockaddr* name,int namelen);
+-	inline static int send(unsigned int s,const char* buf,int len,int flags);
+-	inline static int recv(unsigned int s,char* buf,int len,int flags);
+-	inline static int shutdown(unsigned int s,int how);
+-	inline static int closesocket(unsigned int socket);
++	inline static SOCKET socket(int af,int type,int protocol);
++	inline static int connect(SOCKET s,const sockaddr* name,int namelen);
++	inline static int send(SOCKET s,const char* buf,int len,int flags);
++	inline static int recv(SOCKET s,char* buf,int len,int flags);
++	inline static int shutdown(SOCKET s,int how);
++	inline static int closesocket(SOCKET socket);
+ 
+     friend class SocketJanitor;
+ };
 diff -ru xerces-c-src_2_8_0-release/src/xercesc/util/XMLURL.cpp xerces-c-src_2_8_0/src/xercesc/util/XMLURL.cpp
---- xerces-c-src_2_8_0-release/src/xercesc/util/XMLURL.cpp	2007-08-28 19:44:52.000000000 +0100
+--- xerces-c-src_2_8_0-release/src/xercesc/util/XMLURL.cpp	2008-02-08 15:30:17.000000000 +0000
 +++ xerces-c-src_2_8_0/src/xercesc/util/XMLURL.cpp	2008-01-28 01:21:23.000000000 +0000
 @@ -1132,6 +1132,10 @@
      // If we are at the end, then we are done now
@@ -1793,7 +1872,7 @@ diff -ru xerces-c-src_2_8_0-release/src/xercesc/util/XMLURL.cpp xerces-c-src_2_8
  	}
  
 diff -ru xerces-c-src_2_8_0-release/src/xercesc/validators/schema/SchemaElementDecl.hpp xerces-c-src_2_8_0/src/xercesc/validators/schema/SchemaElementDecl.hpp
---- xerces-c-src_2_8_0-release/src/xercesc/validators/schema/SchemaElementDecl.hpp	2007-08-28 19:43:18.000000000 +0100
+--- xerces-c-src_2_8_0-release/src/xercesc/validators/schema/SchemaElementDecl.hpp	2008-02-08 15:30:17.000000000 +0000
 +++ xerces-c-src_2_8_0/src/xercesc/validators/schema/SchemaElementDecl.hpp	2007-11-13 01:31:25.000000000 +0000
 @@ -506,7 +506,7 @@
  

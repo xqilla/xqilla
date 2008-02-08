@@ -1,3 +1,4 @@
+Hash map implementation od distinct-values()
 pull event execution
 query plan output using event API
 nested loop elimination (group recognition, join recognition)
