@@ -1,21 +1,44 @@
-Hash map implementation od distinct-values()
-pull event execution
-query plan output using event API
+Features
+--------
+
+complete XQuery Fulltext support
+XQueryP support
+Grouping support
+XSLT 2.0 support
+Higher order functions
+
+
+Optimization
+------------
+
+Hash map implementation of distinct-values()
 nested loop elimination (group recognition, join recognition)
+variable inlining
+common sub-expression extraction
 faster modifiable data model
+pull event execution
+
+
+Infrastructure
+--------------
+
+query plan output using event API
 string pool that returns numeric identifier
 support for UTF-8 execution?
 extract basic schema types from Xerces-C
 abstract schema type access (no direct access to Xerces objects)
 Build without code that needs a source version of Xerces-C?
+Improve MAPM concurrency
+Windows -- re-enable warning 4996 (xqilla_config.h) and address the "unsafe" warnings
+	for use of strcat, strcpy, etc
+
+
+QA
+--
+
 fix UTF-16 bugs
 fix XQTS bugs
 new test suite
 test XQuery Fulltext
-complete XQuery Fulltext support
-XQueryP support
-Grouping support
 Fix ATDoubleOrDerivedImpl and ATFloatOrDerivedImpl to use double and float types
-replace MAPM
-Windows -- re-enable warning 4996 (xqilla_config.h) and address the "unsafe" warnings
-	for use of strcat, strcpy, etc
+
