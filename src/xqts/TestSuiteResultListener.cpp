@@ -22,7 +22,7 @@
 #pragma warning(disable: 4786)
 #endif
 
-
+#include "../config/xqilla_config.h"
 #include <xqilla/xqts/TestSuiteResultListener.hpp>
 #include <xqilla/xqts/TestSuiteParser.hpp>
 
