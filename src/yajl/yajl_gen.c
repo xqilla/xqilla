@@ -30,6 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */ 
 
+#include "../config/xqilla_config.h"
 #include "yajl_gen.h"
 #include "yajl_buf.h"
 #include "yajl_encode.h"
