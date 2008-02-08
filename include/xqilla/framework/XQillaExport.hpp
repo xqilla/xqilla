@@ -27,7 +27,9 @@
  * instead of the MS secure function strcpy_s().
  */
 #ifdef _MSC_VER
+#ifndef _CRT_SECURE_NO_DEPRECATE
 #define _CRT_SECURE_NO_DEPRECATE 1
+#endif
 #endif
 
 /*
