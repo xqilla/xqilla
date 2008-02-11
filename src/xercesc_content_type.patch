@@ -930,20 +930,20 @@ diff -ru xerces-c-src_2_8_0-release/src/xercesc/util/NetAccessors/Socket/UnixHTT
 +    XMLCh *             fContentType;
      MemoryManager*      fMemoryManager;
  }; // UnixHTTPURLInputStream
- 
-diff -ru xerces-c-src_2_8_0-release/src/xercesc/util/NetAccessors/WinSock/BinHTTPURLInputStream.cpp xerces-c-src_2_8_0/src/xercesc/util/NetAccessors/WinSock/BinHTTPURLInputStream.cpp
---- xerces-c-src_2_8_0-release/src/xercesc/util/NetAccessors/WinSock/BinHTTPURLInputStream.cpp	2008-02-08 15:30:17.000000000 +0000
-+++ xerces-c-src_2_8_0/src/xercesc/util/NetAccessors/WinSock/BinHTTPURLInputStream.cpp	2008-02-08 15:24:34.000000000 +0000
-@@ -20,8 +20,6 @@
+
+--- xerces-c-src_2_8_0-release/src/xercesc/util/NetAccessors/WinSock/BinHTTPURLInputStream.cpp	2007-08-28 14:44:16.000000000 -0400
++++ xerces-c-src_2_8_0/src/xercesc/util/NetAccessors/WinSock/BinHTTPURLInputStream.cpp	2008-02-11 15:03:57.000000000 -0500
+@@ -20,9 +20,6 @@
   */
  
  
 -#define INCL_WINSOCK_API_TYPEDEFS 1
 -#include <winsock2.h>
- #include <windows.h>
+-#include <windows.h>
  #include <tchar.h>
  
-@@ -37,6 +35,7 @@
+ #include <stdio.h>
+@@ -37,6 +34,7 @@
  #include <xercesc/util/Janitor.hpp>
  #include <xercesc/util/XMLUniDefs.hpp>
  #include <xercesc/util/Base64.hpp>
@@ -951,7 +951,7 @@ diff -ru xerces-c-src_2_8_0-release/src/xercesc/util/NetAccessors/WinSock/BinHTT
  
  XERCES_CPP_NAMESPACE_BEGIN
  
-@@ -52,7 +51,14 @@
+@@ -52,7 +50,14 @@
      SOCKET* get() const { return fData; }
      SOCKET* release() {	SOCKET* p = fData; fData = 0; return p; }
  
@@ -967,7 +967,7 @@ diff -ru xerces-c-src_2_8_0-release/src/xercesc/util/NetAccessors/WinSock/BinHTT
      bool isDataNull() { return (fData == 0); }
  
  private :
-@@ -73,6 +79,218 @@
+@@ -73,6 +78,218 @@
      SOCKET*  fData;
  };
  
@@ -1186,7 +1186,7 @@ diff -ru xerces-c-src_2_8_0-release/src/xercesc/util/NetAccessors/WinSock/BinHTT
  static HMODULE gWinsockLib = NULL;
  static LPFN_GETHOSTBYNAME gWSgethostbyname = NULL;
  static LPFN_INET_ADDR gWSinet_addr = NULL;
-@@ -190,40 +408,43 @@
+@@ -190,40 +407,43 @@
  	return (*gWShtons)(hostshort);
  }
  
@@ -1237,7 +1237,7 @@ diff -ru xerces-c-src_2_8_0-release/src/xercesc/util/NetAccessors/WinSock/BinHTT
  {
      if(!fInitialized)
      {
-@@ -243,257 +464,160 @@
+@@ -243,257 +463,160 @@
           }
      }
  
@@ -1613,7 +1613,7 @@ diff -ru xerces-c-src_2_8_0-release/src/xercesc/util/NetAccessors/WinSock/BinHTT
  }
  
  
-@@ -502,17 +626,28 @@
+@@ -502,17 +625,28 @@
  {
      shutdown(fSocketHandle, SD_BOTH);
      closesocket(fSocketHandle);
@@ -1644,7 +1644,7 @@ diff -ru xerces-c-src_2_8_0-release/src/xercesc/util/NetAccessors/WinSock/BinHTT
      {
          // If there's any data left over in the buffer into which we first
          //   read from the server (to get the http header), return that.
-@@ -526,7 +661,7 @@
+@@ -526,7 +660,7 @@
          // There was no data in the local buffer.
          // Read some from the socket, straight into our caller's buffer.
          //
