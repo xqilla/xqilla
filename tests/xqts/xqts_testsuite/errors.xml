@@ -128,4 +128,5 @@
   <error id="fn-resolve-uri-4" reason="no error failure"/>
   <error id="fn-resolve-uri-9" reason="result failure"/>
   <error id="normalization-1" reason="no error failure"/>
+  <error id="validateexpr-26" reason="error failure" action="pass" comment="&quot;Element {}a is not defined as a global element [err:XQDY0084]&quot; returned instead"/>
 </errors>
