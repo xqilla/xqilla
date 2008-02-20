@@ -106,16 +106,17 @@ public:
   }
 
   // define a copy constructor, because we don't want to copy the singleton object
-//   XQillaAllocator(const XQillaAllocator<_Tp>& o)
-//   {
-//     _memMgr=o._memMgr;
-//   }
-
+  XQillaAllocator(const XQillaAllocator<_Tp>& o)
+  {
+    _memMgr=o._memMgr;
+  }
+#if _MSC_VER >= 1500
+  // Needed for Visual Studio 2008      
   template<class _Tp1> XQillaAllocator(const XQillaAllocator<_Tp1>& o)
   {
     _memMgr = o._memMgr;
   }
-
+#endif
   pointer allocate(size_t _n, const void* = 0)
   {
     if(_n==1)

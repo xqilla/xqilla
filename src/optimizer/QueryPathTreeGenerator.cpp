@@ -19,6 +19,7 @@
  * $Id$
  */
 
+#include "../config/xqilla_config.h"
 #include <xqilla/optimizer/QueryPathTreeGenerator.hpp>
 #include <xqilla/axis/NodeTest.hpp>
 
