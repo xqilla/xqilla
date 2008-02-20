@@ -19,6 +19,7 @@
  * $Id$
  */
 
+#include "../config/xqilla_config.h"
 #include <assert.h>
 
 #include <xqilla/events/QueryPathTreeFilter.hpp>
