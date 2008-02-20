@@ -19,12 +19,13 @@
  * $Id$
  */
 
+#include "../config/xqilla_config.h"
+
 #include <stdio.h> // for sprintf
 #if defined(WIN32) && !defined(__CYGWIN__)
 #define snprintf _snprintf
 #endif
 
-#include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionParseJSON.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/exceptions/FunctionException.hpp>
@@ -141,7 +142,7 @@ int json2xml_boolean(void * ctx, int boolVal)
   return 1;
 }
 
-int json2xml_integer(void *ctx, long long integerVal)
+int json2xml_integer(void *ctx, long integerVal)
 {
   JSON2XML_Env *env = (JSON2XML_Env*)ctx;
 
@@ -267,7 +268,8 @@ void FunctionParseJSON::parseJSON(const XMLCh *jsonString, EventHandler *handler
 {
   UTF8Str utf8(jsonString);
 
-  JSON2XML_Env env = { handler };
+  JSON2XML_Env env;
+  env.handler = handler;
 
   handler->startElementEvent(0, 0, JSON2XML_json);
 

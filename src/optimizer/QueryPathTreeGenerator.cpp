@@ -134,9 +134,9 @@ void QueryPathTreeGenerator::optimize(XQQuery *query)
     generateFunctionDef(*it);
   }
 
-  for(GlobalVariables::const_iterator it = query->getVariables().begin();
-      it != query->getVariables().end(); ++it) {
-    generateGlobalVar(*it);
+  for(GlobalVariables::const_iterator it3 = query->getVariables().begin();
+      it3 != query->getVariables().end(); ++it3) {
+    generateGlobalVar(*it3);
   }
 
   if(query->getQueryBody() != 0) {

@@ -106,10 +106,10 @@ public:
   }
 
   // define a copy constructor, because we don't want to copy the singleton object
-  XQillaAllocator(const XQillaAllocator<_Tp>& o)
-  {
-    _memMgr=o._memMgr;
-  }
+//   XQillaAllocator(const XQillaAllocator<_Tp>& o)
+//   {
+//     _memMgr=o._memMgr;
+//   }
 
   template<class _Tp1> XQillaAllocator(const XQillaAllocator<_Tp1>& o)
   {

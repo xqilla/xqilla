@@ -19,12 +19,13 @@
  * $Id$
  */
 
+#include "../config/xqilla_config.h"
+
 #include <stdio.h> // for sprintf
 #if defined(WIN32) && !defined(__CYGWIN__)
 #define snprintf _snprintf
 #endif
 
-#include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionSerializeJSON.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/exceptions/FunctionException.hpp>

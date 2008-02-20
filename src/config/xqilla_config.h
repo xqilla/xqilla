@@ -22,6 +22,10 @@
 #ifndef _XQILLA_CONFIG_H
 #define _XQILLA_CONFIG_H
 
+#if defined(_MSC_VER)
+#define WIN32 1
+#endif
+
 #if defined(WIN32) && !defined(__CYGWIN__)
 
 #define WIN32_LEAN_AND_MEAN
