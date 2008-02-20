@@ -19,6 +19,7 @@
  * $Id$
  */
 
+#include "../config/xqilla_config.h"
 #include <xqilla/exceptions/XQException.hpp>
 
 #include <xercesc/util/XMLString.hpp>

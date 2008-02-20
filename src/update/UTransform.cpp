@@ -19,6 +19,7 @@
  * $Id$
  */
 
+#include "../config/xqilla_config.h"
 #include <set>
 
 #include <xqilla/update/UTransform.hpp>
