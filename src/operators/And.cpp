@@ -70,7 +70,7 @@ ASTNode* And::staticTyping(StaticContext *context)
     }
   }
 
-  for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
+  for(i = _args.begin(); i != _args.end(); ++i) {
     const StaticAnalysis &valueSrc = (*i)->getStaticAnalysis();
 
     if(valueSrc.isUsed()) {

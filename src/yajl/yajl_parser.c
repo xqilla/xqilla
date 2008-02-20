@@ -204,7 +204,7 @@ yajl_do_parse(yajl_handle hand, unsigned int * offset,
                      * so we're safe.
                      */
                     if (hand->callbacks && hand->callbacks->yajl_integer) {
-                        long long int i;
+                        long int i;
                         int neg = 0;
                         yajl_buf_clear(hand->decodeBuf);
                         yajl_buf_append(hand->decodeBuf, buf, bufLen);

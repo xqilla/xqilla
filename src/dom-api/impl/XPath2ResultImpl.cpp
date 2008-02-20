@@ -294,7 +294,8 @@ XPath2SnapshotResultImpl::XPath2SnapshotResultImpl(const XQQuery *expression,
     _sequence(0)
 {
   try {
-    _sequence = new (_createdWith) Sequence(expression->execute(_context)->toSequence(_context));
+    Sequence seq = expression->execute(_context)->toSequence(_context);
+    _sequence = new (_createdWith) Sequence(seq, _createdWith);
   }
   catch(const XQException &e) {
     if(XQillaException::getDebug()) {

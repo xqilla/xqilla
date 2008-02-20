@@ -45,8 +45,8 @@ void ASTVisitor::optimize(XQQuery *query)
   }
 
   UserFunctions &funcs = const_cast<UserFunctions&>(query->getFunctions());
-  for(UserFunctions::iterator i = funcs.begin(); i != funcs.end(); ++i) {
-    (*i)->setFunctionBody(optimize(const_cast<ASTNode *>((*i)->getFunctionBody())));
+  for(UserFunctions::iterator i2 = funcs.begin(); i2 != funcs.end(); ++i2) {
+    (*i2)->setFunctionBody(optimize(const_cast<ASTNode *>((*i2)->getFunctionBody())));
   }
 
   if(query->getQueryBody() != 0) {
