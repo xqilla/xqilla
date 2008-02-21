@@ -1,5 +1,31 @@
 XQilla: an XQuery and XPath 2.0 library and command line interpreter.
 
+version 2.1.0 (2008.12.21):
+	* Added the xqilla:parse-json() and xqilla:serialize-json() extension
+	  functions to parse and serialize JSON.
+	* Added the xqilla:parse-html() function which uses HTML Tidy to parse
+	  HTML into XML. The function will not be compiled if TidyLib is not
+	  found.
+	* Added fn:unparsed-text(), a function from XSLT 2.0 which can fetch a
+	  URL and return it as a string.
+	* Added an xqilla:time() function which outputs the time taken to
+	  evaluate it's argument.
+	* Added src/xercesc_content_type.patch which should be applied
+	  against Xerces-C 2.8 to fix an HTTP connection bug.
+	* Added src/xercesc_regex.patch which should be applied against Xerces-C
+	  2.8 to fix a regular expression bug in fn:replace().
+	* Added project files for Visual C++ 8, including 64 bit build
+	  targets.
+	* Changed the default XQuery Update revalidation mode to LAX.
+	* Fixed a bug in external functions when used with modules.
+	* Fixed a memory leak in the FastXDMURIResolver.
+	* Fixed a segfault in XPath2ResultImpl if the results were only
+	  partially navigated.
+	* Fixed a bug in XPath2ResultImpl where XQExceptions weren't being
+	  turned into XQillaExceptions.
+	* Fixed XQilla to compile using Visual C++ 6.
+	* Fixed compilation flags to work under HPUX.
+
 version 2.0.0 (2007.12.12):
 	* Changed the license for XQilla to the Apache License v2, a more
 	  permissive open-source licence.
