@@ -25,7 +25,7 @@
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xercesc/framework/MemoryManager.hpp>
 #include <memory>
-#include <string>
+#include <cstring>
 
 class XQILLA_API StringPool
 {

@@ -71,7 +71,7 @@ XQContextImpl::XQContextImpl(XQillaConfiguration *conf, XQilla::Language languag
     _collations(XQillaAllocator<Collation*>(&_internalMM)),
     _constructionMode(CONSTRUCTION_MODE_PRESERVE),
     _bPreserveBoundarySpace(false),
-    _revalidationMode(DocumentCache::VALIDATION_STRICT),
+    _revalidationMode(DocumentCache::VALIDATION_LAX),
     _messageListener(0),
     _varStore(&_defaultVarStore),
     _globalVarStore(&_defaultVarStore),

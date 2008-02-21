@@ -50,7 +50,7 @@ const unsigned int FunctionSerializeJSON::minArgs = 1;
 const unsigned int FunctionSerializeJSON::maxArgs = 1;
 
 /**
- * xqilla:serialize-json($json-xml as element()*) as xs:string?
+ * xqilla:serialize-json($json-xml as element()?) as xs:string?
  */
 FunctionSerializeJSON::FunctionSerializeJSON(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : XQillaFunction(name, minArgs, maxArgs, "element()?", args, memMgr)

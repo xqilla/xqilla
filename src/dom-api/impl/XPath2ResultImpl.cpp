@@ -437,7 +437,15 @@ bool XPath2IteratorResultImpl::iterateNext()
     throw DOMException(DOMException::INVALID_STATE_ERR, XMLString::transcode("Document has changed"));
   }//if
 
-  _currentItem = _results->next(_context);
+  try {
+    _currentItem = _results->next(_context);
+  }
+  catch(const XQException &e) {
+    if(XQillaException::getDebug()) {
+      e.printDebug( X("Caught exception at Interface") );
+    }    
+    throw XQillaException(e);
+  }
 
   if(_currentItem.isNull()) {
     _results = 0;
