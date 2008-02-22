@@ -129,15 +129,15 @@ NotNumber       (("."{Digits})|({Digits}("."[0-9]*)?))(("e"|"E")("+"|"-")?{Digit
 StringLiteral ("\""({PredefinedEntityRef}|{CharRef}|("\"\"")|[^"&])*"\"")|("'"({PredefinedEntityRef}|{CharRef}|("''")|[^'&])*"'")
 
 /* [148]    	ElementContentChar 	   ::=    	Char - [{}<&] */
-ElementContentChar ([\x0009]|[\x000D]|[\x000A]|[\x0020-\x0025]|[\x0027-\x003B]|[\x003D-\x007A]|[\x007C]|\x007E-\xD7FF]|[\xE000-\xFFFD]|{SurrogatePairs})
+ElementContentChar ([\x0009]|[\x000D]|[\x000A]|[\x0020-\x0025]|[\x0027-\x003B]|[\x003D-\x007A]|[\x007C]|[\x007E-\xD7FF]|[\xE000-\xFFFD]|{SurrogatePairs})
 ElementContent (({PredefinedEntityRef}|{CharRef}|"{{"|"}}"|{ElementContentChar}|{CDATASection})*)
 
 /* [149]    	QuotAttrContentChar 	   ::=    	Char - ["{}<&] */
-QuotAttrContentChar ([\x0009]|[\x000D]|[\x000A]|[\x0020-\x0021]|[\x0023-\x0025]|[\x0027-\x003B]|[\x003D-\x007A]|[\x007C]|\x007E-\xD7FF]|[\xE000-\xFFFD]|{SurrogatePairs})
+QuotAttrContentChar ([\x0009]|[\x000D]|[\x000A]|[\x0020-\x0021]|[\x0023-\x0025]|[\x0027-\x003B]|[\x003D-\x007A]|[\x007C]|[\x007E-\xD7FF]|[\xE000-\xFFFD]|{SurrogatePairs})
 QuotAttrContent (({PredefinedEntityRef}|{CharRef}|"{{"|"}}"|"\"\""|{QuotAttrContentChar})*)
 
 /* [150]    	AposAttrContentChar 	   ::=    	Char - ['{}<&] */
-AposAttrContentChar ([\x0009]|[\x000D]|[\x000A]|[\x0020-\x0025]|[\x0028-\x003B]|[\x003D-\x007A]|[\x007C]|\x007E-\xD7FF]|[\xE000-\xFFFD]|{SurrogatePairs})
+AposAttrContentChar ([\x0009]|[\x000D]|[\x000A]|[\x0020-\x0025]|[\x0028-\x003B]|[\x003D-\x007A]|[\x007C]|[\x007E-\xD7FF]|[\xE000-\xFFFD]|{SurrogatePairs})
 AposAttrContent (({PredefinedEntityRef}|{CharRef}|"{{"|"}}"|"''"|{AposAttrContentChar})*)
 
 PredefinedEntityRef "&"("lt"|"gt"|"amp"|"quot"|"apos")";"
