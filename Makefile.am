@@ -480,6 +480,7 @@ src/xercesc_content_type.patch \
 src/xercesc_regex.patch \
 LICENSE \
 TODO \
+README \
 ChangeLog \
 docs/Doxyfile.simpleapi.in \
 docs/Doxyfile.dom3api.in \

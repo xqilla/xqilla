@@ -17,6 +17,8 @@ version 2.1.0 (2008.12.21):
 	* Added project files for Visual C++ 8, including 64 bit build
 	  targets.
 	* Changed the default XQuery Update revalidation mode to LAX.
+	* Fixed a bug in the lexing of element and attribute content in
+	  queries that incorrectly rejected certain Unicode characters.
 	* Fixed a bug in external functions when used with modules.
 	* Fixed a memory leak in the FastXDMURIResolver.
 	* Fixed a segfault in XPath2ResultImpl if the results were only
