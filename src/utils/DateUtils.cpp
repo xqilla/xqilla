@@ -218,6 +218,10 @@ void DateUtils::convertAbsolute2DMY(MAPM absolute, MAPM& day, MAPM& month, MAPM&
 
   absolute.integer_div_rem(days_in_100_years, div, rem);
   if(div <= -4) fix = true;
+  if(div >= 4) {
+    div -= 1;
+    rem += days_in_100_years;
+  }
   year += div * 100;
   absolute = rem;
 
@@ -227,13 +231,17 @@ void DateUtils::convertAbsolute2DMY(MAPM absolute, MAPM& day, MAPM& month, MAPM&
 
   absolute.integer_div_rem(days_in_1_years, div, rem);
   if(div <= -4) fix = true;
+  if(div >= 4) {
+    div -= 1;
+    rem += days_in_1_years;
+  }
   year += div;
   absolute = rem;
 
   if(bc) {
     if(fix && absolute.sign() == 0) {
       // Correct off by one error in year calculations
-	    // due to negative leap years
+      // due to negative leap years
       absolute += 1;
     }
     else {

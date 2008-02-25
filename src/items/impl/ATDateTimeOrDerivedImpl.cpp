@@ -56,8 +56,8 @@ XERCES_CPP_NAMESPACE_USE
 ATDateTimeOrDerivedImpl::
 ATDateTimeOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* value, const DynamicContext* context): 
     _typeName(typeName),
-    _typeURI(typeURI) { 
-    
+    _typeURI(typeURI)
+{ 
   setDateTime(value);
 }
 

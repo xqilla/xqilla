@@ -119,18 +119,18 @@ ASTNode *ASTNodeImpl::constantFold(StaticContext *context)
   XPath2MemoryManager* mm = context->getMemoryManager();
 
   try {
-	  AutoDelete<DynamicContext> dContext(context->createDynamicContext());
-	  dContext->setMemoryManager(mm);
+    AutoDelete<DynamicContext> dContext(context->createDynamicContext());
+    dContext->setMemoryManager(mm);
 
-	  Result result = createResult(dContext);
-	  ASTNode *newBlock = XQSequence::constantFold(result, dContext, mm, this);
-	  if(newBlock == 0) return this; // Constant folding failed
+    Result result = createResult(dContext);
+    ASTNode *newBlock = XQSequence::constantFold(result, dContext, mm, this);
+    if(newBlock == 0) return this; // Constant folding failed
 
-	  newBlock->setLocationInfo(this);
-	  return newBlock->staticTyping(context);
+    newBlock->setLocationInfo(this);
+    return newBlock->staticTyping(context);
   }
   catch(XQException &ex) {
-	  return this; // Constant folding failed
+    return this; // Constant folding failed
   }
 }
 
