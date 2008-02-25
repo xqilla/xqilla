@@ -26,6 +26,8 @@
 #include <xercesc/framework/MemoryManager.hpp>
 #include <memory>
 #include <cstring>
+//Added so xqilla will compile under CC on Solaris
+#include <string>
 
 class XQILLA_API StringPool
 {
