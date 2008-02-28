@@ -190,7 +190,7 @@ private:
 
     OrderPair(const AnyAtomicType::Ptr &si, const StaticAnalysis &usedSrc, const VariableStore *vars,
               XPath2MemoryManager *mm)
-      : sortItem(isEmptyOrNaN(si) ? 0 : si),
+		: sortItem(isEmptyOrNaN(si) ? (AnyAtomicType::Ptr)0 : si),
         varStore(mm)
     {
       varStore.cacheVariableStore(usedSrc, vars);
