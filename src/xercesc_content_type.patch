@@ -339,7 +339,7 @@ diff -ru xerces-c-src_2_8_0-release/src/xercesc/util/NetAccessors/Socket/UnixHTT
 -    trans->transcodeTo(portBuffer, transSize, (unsigned char *) portAsASCII, transSize, charsEaten, XMLTranscoder::UnRep_Throw);
 +int UnixHTTPURLInputStream::parseResponseStatus() const
 +{
-+    char *p = strstr(fBuffer.getRawBuffer(), "HTTP");
++    char *p = const_cast<char*>(strstr(fBuffer.getRawBuffer(), "HTTP"));
 +    if(p == 0) return -1;
  
 -    delete trans;
@@ -366,7 +366,7 @@ diff -ru xerces-c-src_2_8_0-release/src/xercesc/util/NetAccessors/Socket/UnixHTT
 -        {
 -            ThrowXMLwithMemMgr1(NetAccessorException,
 -                     XMLExcepts::NetAcc_TargetResolution, hostName, fMemoryManager);
-+    char *p = strstr(fBuffer.getRawBuffer(), name);
++    char *p = const_cast<char*>(strstr(fBuffer.getRawBuffer(), name));
 +    while(p != 0) {
 +        if(*(p - 1) == '\n' &&
 +            *(p + len) == ':' &&
