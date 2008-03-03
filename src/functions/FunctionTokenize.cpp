@@ -90,7 +90,7 @@ Sequence FunctionTokenize::createSequence(DynamicContext* context, int flags) co
   }
    
   //Now attempt to tokenize
-  RefArrayVectorOf<XMLCh>* toks=NULL;
+  AutoDelete<RefArrayVectorOf<XMLCh> > toks(0);
   try {
     // Always turn off head character optimisation, since it is broken
     XMLBuffer optionsBuf(1023, context->getMemoryManager());
@@ -100,7 +100,7 @@ Sequence FunctionTokenize::createSequence(DynamicContext* context, int flags) co
     RegularExpression regEx(pattern, optionsBuf.getRawBuffer(), memMgr);
     if(regEx.matches(XMLUni::fgZeroLenString))
       XQThrow(FunctionException, X("FunctionTokenize::createSequence"), X("The pattern matches the zero-length string [err:FORX0003]"));
-    toks = regEx.tokenize(input);
+    toks.set(regEx.tokenize(input));
   } catch (ParseException &e){ 
     XMLBuffer buf(1023, memMgr);
     buf.set(X("Invalid regular expression: "));
