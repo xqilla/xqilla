@@ -42,7 +42,7 @@ FaxppDocumentCacheImpl::FaxppDocumentCacheImpl(MemoryManager* memMgr, XMLGrammar
     parser_(0),
     validator_(/*strictValidation*/false, 0, grammarResolver_, memMgr, 0)
 {
-  parser_ = FAXPP_create_parser(WELL_FORMED_PARSE_MODE, FAXPP_utf16_native_encode);
+  parser_ = FAXPP_create_parser(WELL_FORMED_PARSE_MODE, FAXPP_utf16_native_transcoder);
   if(parser_ == 0)
     XQThrow2(XMLParseException, X("FaxppDocumentCacheImpl::init"), X("Out of memory"));
 }
@@ -155,6 +155,11 @@ void FaxppDocumentCacheImpl::parseDocument(InputSource &srcToUse, EventHandler *
     case PI_EVENT:
       events_->piEvent(nullTerm(event->name, mm), nullTerm(event->value, mm));
       break;
+    case DOCTYPE_EVENT:
+    case ENTITY_REFERENCE_START_EVENT:
+    case ENTITY_REFERENCE_END_EVENT:
+    case START_EXTERNAL_ENTITY_EVENT:
+    case END_EXTERNAL_ENTITY_EVENT:
     case NO_EVENT: break;
     }
   }
