@@ -43,7 +43,8 @@ osf*)   CPPFLAGS="$CPPFLAGS -pthread";;
 *qnx*)  AC_DEFINE(HAVE_QNX)
         AH_TEMPLATE(HAVE_QNX, [Define to 1 if building on QNX.]);;
 solaris*)
-        CPPFLAGS="$CPPFLAGS -D_REENTRANT";;
+        CPPFLAGS="$CPPFLAGS -D_REENTRANT"
+        LIBS="$LIBS -lm";;
 esac
 
 # Set CFLAGS/CXXFLAGS.  We MUST set the flags before we call autoconf

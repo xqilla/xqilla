@@ -177,6 +177,13 @@ void FastXDMDocument::endEvent()
 	  ++numAttributes_;
   }
 
+  // Add the end of namespaces marker
+  if(numNamespaces_ > 0) {
+	  if(numNamespaces_ == maxNamespaces_) resizeNamespaces();
+	  namespaces_[numNamespaces_].setMarker();
+	  ++numNamespaces_;
+  }
+
   // Rewrite all the indexes to pointers
   Node *nend = nodes_ + numNodes_;
   for(Node *node = nodes_; node != nend; ++node) {
