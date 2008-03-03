@@ -358,7 +358,7 @@ void XQillaTestSuiteRunner::runTestCase(const TestCase &testCase)
 
     map<string, string>::const_iterator v;
     for(v=testCase.extraVars.begin();v!=testCase.extraVars.end();v++) {
-      XQQuery* pInnerQuery = xqilla.parseFromURI(X(v->second.c_str()), context.get());
+      Janitor<XQQuery> pInnerQuery(xqilla.parseFromURI(X(v->second.c_str()), context.get(), XQilla::NO_ADOPT_CONTEXT));
       Sequence doc=pInnerQuery->execute(context.get())->toSequence(context.get());
       context->setExternalVariable(X(v->first.c_str()), doc);
     }

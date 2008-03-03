@@ -79,6 +79,10 @@ public:
     {
       owner.index = oi; prefix = p; uri = u;
     }
+    void setMarker()
+    {
+      owner.index = (unsigned int)-1; prefix = 0; uri = 0;
+    }
 
     union {
       unsigned int index;
