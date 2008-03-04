@@ -265,8 +265,6 @@ AC_CHECK_LIB(nsl,gethostbyname)
 
 # Checks for header files.
 AC_FUNC_ALLOCA
-AC_FUNC_MALLOC
-AC_FUNC_REALLOC
 AC_HEADER_STDC
 AC_CHECK_HEADERS([limits.h malloc.h stddef.h stdlib.h string.h sys/time.h sys/timeb.h wchar.h])
 
