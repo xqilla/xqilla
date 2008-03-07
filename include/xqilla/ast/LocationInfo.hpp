@@ -27,23 +27,32 @@
 
 #include <xercesc/util/XercesDefs.hpp>
 
+/** A class that gives records a location in the query */
 class XQILLA_API LocationInfo
 {
 public:
+	/** Constructor that sets the information to 0 */
   LocationInfo()
     : file_(0), line_(0), column_(0) {}
+  /** Constructor that takes the initial information */
   LocationInfo(const XMLCh *file, unsigned int line, unsigned int column)
     : file_(file), line_(line), column_(column) {}
 
+  /** The file that the query was parsed from. This could be null. */
   const XMLCh *getFile() const { return file_; }
+  /** The line in the query */
   unsigned int getLine() const { return line_; }
+  /** The column in the query */
   unsigned int getColumn() const { return column_; }
+
+  /** Sets the location to the given information */
   void setLocationInfo(const XMLCh *file, unsigned int line, unsigned int column)
   {
     file_ = file;
     line_ = line;
     column_ = column;
   }
+  /** Sets the location with the information in the given LocationInfo object */
   void setLocationInfo(const LocationInfo *o)
   {
     if(o != 0) {

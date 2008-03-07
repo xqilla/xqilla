@@ -90,7 +90,7 @@ public:
      Register a callback object for resolving URIs. Multiple URIResolver
      objects can be registered with the DynamicContext at the same time.
      The most recently added URIResolver will be called first, and if it
-     returns NULL, subsequent ones will be called - ending in a call to
+     returns false, subsequent ones will be called - ending in a call to
      the fallback routines.
 
      If "adopt" is false, the DynamicContext will not
@@ -115,7 +115,12 @@ public:
       is relative, the base uri is obtained from the context. */
   virtual Sequence resolveCollection(const XMLCh* uri, const LocationInfo *location = 0,
                                      const QueryPathNode *projection = 0) = 0;
+  /** Resolve the default collection to a sequence of Node objects. */
   virtual Sequence resolveDefaultCollection(const QueryPathNode *projection = 0) = 0;
+
+  /** Attempts to put the document specified to the given URI by calling the registered
+      URIResolver objects. Returns whether the operation was successful. */
+  virtual bool putDocument(const Node::Ptr &document, const XMLCh *uri) = 0;
 
   /** Create a new SequenceBuilder, which is used to turn a
       stream of events into a Sequence. */

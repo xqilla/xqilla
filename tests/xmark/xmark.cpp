@@ -284,45 +284,49 @@ public:
     }
     return true;
   }
+  virtual bool putDocument(const Node::Ptr &document, const XMLCh *uri, DynamicContext *context)
+  {
+    return false;
+  }
  
 };
 
 void queryBenchmarkData(XQilla &xqilla, DynamicContext *config_context, const Item::Ptr &config, string &dataPath,
                         XQillaConfiguration *conf, Stats &stats, StatsReporter &reporter)
 {
-	// Find the files
+  // Find the files
   XMarkResolver resolver;
-	Result files = query(xqilla, config_context, config, "for $a in /benchmark_data/data_type[@name = '" + stats.data
-		+ "']/size[@name = '" + stats.size + "']/file/@name return data($a)");
-	Item::Ptr file;
-	while((file = files->next(config_context)).notNull()) {
-		string fullpath = dataPath + stats.data + "/" + stats.size + "/" + UTF8(file->asString(config_context));
+  Result files = query(xqilla, config_context, config, "for $a in /benchmark_data/data_type[@name = '" + stats.data
+    + "']/size[@name = '" + stats.size + "']/file/@name return data($a)");
+  Item::Ptr file;
+  while((file = files->next(config_context)).notNull()) {
+    string fullpath = dataPath + stats.data + "/" + stats.size + "/" + UTF8(file->asString(config_context));
     resolver.defaultCollection.push_back(fullpath);
-	}
+  }
 
-	// Find the queries
-	Result queries = query(xqilla, config_context, config, "for $a at $pos in /benchmark_data/data_type[@name = '" + stats.data
-		+ "']/query return (data($a/description), data($a/action), $pos)");
+  // Find the queries
+  Result queries = query(xqilla, config_context, config, "for $a at $pos in /benchmark_data/data_type[@name = '" + stats.data
+    + "']/query return (data($a/description), data($a/action), $pos)");
 
-	Item::Ptr query;
-	while((query = queries->next(config_context)).notNull()) {
-		stats.reset();
+  Item::Ptr query;
+  while((query = queries->next(config_context)).notNull()) {
+    stats.reset();
 
-		stats.info["description"] = UTF8(query->asString(config_context));
-		query = queries->next(config_context);
-		string action = UTF8(query->asString(config_context));
-		query = queries->next(config_context);
-		stats.info["query_index"] = UTF8(query->asString(config_context));
+    stats.info["description"] = UTF8(query->asString(config_context));
+    query = queries->next(config_context);
+    string action = UTF8(query->asString(config_context));
+    query = queries->next(config_context);
+    stats.info["query_index"] = UTF8(query->asString(config_context));
 
-		// Replace "input()" with the correct "collection()" function call
-		string::size_type pos = action.find("input()");
-		while(pos != string::npos) {
-			action = action.replace(pos, 7, "collection()");
-			pos = action.find("input()");
-		}
-		stats.info["action"] = "<![CDATA[" + action + "]]>";
+    // Replace "input()" with the correct "collection()" function call
+    string::size_type pos = action.find("input()");
+    while(pos != string::npos) {
+      action = action.replace(pos, 7, "collection()");
+      pos = action.find("input()");
+    }
+    stats.info["action"] = "<![CDATA[" + action + "]]>";
 
-		try {
+    try {
       AutoDelete<DynamicContext> context(xqilla.createContext(XQilla::XQUERY, conf));
       context->registerURIResolver(&resolver, /*adopt*/false);
 
@@ -340,7 +344,7 @@ void queryBenchmarkData(XQilla &xqilla, DynamicContext *config_context, const It
         stats.timer.stop();
         ++stats.count;
       }
-		}
+    }
     catch(XQException& e) {
       cerr << UTF8(e.getError()) << endl;
       cerr << "at " << UTF8(e.getXQueryFile()) << ":" << e.getXQueryLine() << ":" << e.getXQueryColumn() << endl;
@@ -356,9 +360,9 @@ void queryBenchmarkData(XQilla &xqilla, DynamicContext *config_context, const It
       exit(-1);
     }
 
-		stats.name = "query";
-		reporter.reportStats(stats);
-	}
+    stats.name = "query";
+    reporter.reportStats(stats);
+  }
 }
 
 void usage(const char *progname)
@@ -409,10 +413,10 @@ int main(int argc, char *argv[])
     else if(configPath.empty()) {
       configPath = argv[i];
 
-			string::size_type pos = configPath.rfind("/");
-			if(pos != string::npos) {
-				dataPath = configPath.substr(0, pos + 1);
-			}
+      string::size_type pos = configPath.rfind("/");
+      if(pos != string::npos) {
+        dataPath = configPath.substr(0, pos + 1);
+      }
     }
     else {
       cerr << "Too many parameters" << endl;

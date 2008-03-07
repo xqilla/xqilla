@@ -41,49 +41,22 @@
 #include <xercesc/util/XMLUniDefs.hpp>
 #include <xercesc/framework/XMLBuffer.hpp>
 
-#if defined(XERCES_HAS_CPP_NAMESPACE)
-XERCES_CPP_NAMESPACE_USE
-#endif
-
-static const XMLCh file_scheme[] = { chLatin_f, chLatin_i, chLatin_l, chLatin_e, 0 };
-static const XMLCh utf8_str[] = { chLatin_u, chLatin_t, chLatin_f, chDash, chDigit_8, 0 };
+XERCES_CPP_NAMESPACE_USE;
 
 void XercesUpdateFactory::applyPut(const PendingUpdate &update, DynamicContext *context)
 {
-  const XercesNodeImpl *nodeImpl = (const XercesNodeImpl*)update.getTarget()->getInterface(Item::gXQilla);
-  const DOMNode *domnode = nodeImpl->getDOMNode();
+  PutItem item(update.getValue().first()->asString(context), update.getTarget(), &update, context);
 
-  const XMLCh *encoding = 0;
-  if(domnode->getNodeType() == DOMNode::DOCUMENT_NODE) {
-    // Use the document's encoding, if this is a document node
-    encoding = ((DOMDocument*)domnode)->getEncoding();
-  }
-  if(encoding == 0 || *encoding == 0) {
-    // Otherwise, just use UTF-8
-    encoding = utf8_str;
-  }
-
-  PutItem item(update.getValue().first()->asString(context), encoding, domnode, &update);
-
-  if(XPath2Utils::equals(item.uri.getScheme(), file_scheme)) {
-    std::pair<PutList::iterator, bool> res = putList_.insert(item);
-    if(!res.second) {
-      if(context->getMessageListener() != 0) {
-        context->getMessageListener()->warning(X("In the context of this expression"), res.first->location);
-      }
-
-      XMLBuffer buf;
-      buf.append(X("fn:put() called with the URI \""));
-      buf.append(item.uri.getUriText());
-      buf.append(X("\" twice."));
-
-      XQThrow3(ASTException, X("XercesUpdateFactory::applyPut"), buf.getRawBuffer(), &update);
+  std::pair<PutSet::iterator, bool> res = putSet_.insert(item);
+  if(!res.second) {
+    if(context->getMessageListener() != 0) {
+      context->getMessageListener()->warning(X("In the context of this expression"), res.first->location);
     }
-  } else {
+
     XMLBuffer buf;
-    buf.append(X("fn:put() URI scheme not supported for URI \""));
-    buf.append(item.uri.getUriText());
-    buf.append(X("\""));
+    buf.append(X("fn:put() called with the URI \""));
+    buf.append(item.uri);
+    buf.append(X("\" twice."));
 
     XQThrow3(ASTException, X("XercesUpdateFactory::applyPut"), buf.getRawBuffer(), &update);
   }
@@ -125,7 +98,7 @@ void XercesUpdateFactory::applyInsertInto(const PendingUpdate &update, DynamicCo
     removeType(domnode);
   }
 
-  addToPutList(domnode, &update, context);
+  addToPutSet(update.getTarget(), &update, context);
 }
 
 void XercesUpdateFactory::applyInsertAttributes(const PendingUpdate &update, DynamicContext *context)
@@ -162,7 +135,7 @@ void XercesUpdateFactory::applyInsertAttributes(const PendingUpdate &update, Dyn
   // upd:removeType($target) is invoked.
   removeType(element);
 
-  addToPutList(element, &update, context);
+  addToPutSet(update.getTarget(), &update, context);
 }
 
 void XercesUpdateFactory::applyReplaceValue(const PendingUpdate &update, DynamicContext *context)
@@ -186,7 +159,7 @@ void XercesUpdateFactory::applyReplaceValue(const PendingUpdate &update, Dynamic
       removeType(domnode->getParentNode());
   }
 
-  addToPutList(domnode, &update, context);
+  addToPutSet(update.getTarget(), &update, context);
 }
 
 void XercesUpdateFactory::applyRename(const PendingUpdate &update, DynamicContext *context)
@@ -200,6 +173,7 @@ void XercesUpdateFactory::applyRename(const PendingUpdate &update, DynamicContex
     DOMProcessingInstruction *newPI = domnode->getOwnerDocument()->
       createProcessingInstruction(qname->getName(), domnode->getNodeValue());
     domnode->getParentNode()->replaceChild(newPI, domnode);
+    domnode = newPI;
   }
   else {
     // If $newName has an implied namespace binding that conflicts with an existing namespace binding
@@ -215,7 +189,9 @@ void XercesUpdateFactory::applyRename(const PendingUpdate &update, DynamicContex
     removeType(domnode);
   }
 
-  addToPutList(domnode, &update, context);
+  // Deliberately create a new XercesNodeImpl, since the PI is actually
+  // replaced, not just renamed, meaning it is no longer attached to the tree
+  addToPutSet(new XercesNodeImpl(domnode, context), &update, context);
 }
 
 void XercesUpdateFactory::applyDelete(const PendingUpdate &update, DynamicContext *context)
@@ -225,7 +201,7 @@ void XercesUpdateFactory::applyDelete(const PendingUpdate &update, DynamicContex
 
   forDeletion_.insert(domnode);
 
-  addToPutList(domnode, &update, context);
+  addToPutSet(update.getTarget(), &update, context);
 }
 
 void XercesUpdateFactory::applyInsertBefore(const PendingUpdate &update, DynamicContext *context)
@@ -267,7 +243,7 @@ void XercesUpdateFactory::applyInsertBefore(const PendingUpdate &update, Dynamic
     removeType(parent);
   }
 
-  addToPutList(domnode, &update, context);
+  addToPutSet(update.getTarget(), &update, context);
 }
 
 void XercesUpdateFactory::applyInsertAfter(const PendingUpdate &update, DynamicContext *context)
@@ -310,7 +286,7 @@ void XercesUpdateFactory::applyInsertAfter(const PendingUpdate &update, DynamicC
     removeType(parent);
   }
 
-  addToPutList(domnode, &update, context);
+  addToPutSet(update.getTarget(), &update, context);
 }
 
 void XercesUpdateFactory::applyInsertAsFirst(const PendingUpdate &update, DynamicContext *context)
@@ -351,7 +327,7 @@ void XercesUpdateFactory::applyInsertAsFirst(const PendingUpdate &update, Dynami
     removeType(domnode);
   }
 
-  addToPutList(domnode, &update, context);
+  addToPutSet(update.getTarget(), &update, context);
 }
 
 void XercesUpdateFactory::applyInsertAsLast(const PendingUpdate &update, DynamicContext *context)
@@ -391,7 +367,7 @@ void XercesUpdateFactory::applyInsertAsLast(const PendingUpdate &update, Dynamic
     removeType(domnode);
   }
 
-  addToPutList(domnode, &update, context);
+  addToPutSet(update.getTarget(), &update, context);
 }
 
 void XercesUpdateFactory::applyReplaceNode(const PendingUpdate &update, DynamicContext *context)
@@ -428,7 +404,7 @@ void XercesUpdateFactory::applyReplaceNode(const PendingUpdate &update, DynamicC
   // 3c. upd:removeType(parent($target)) is invoked.
   removeType(parent);
 
-  addToPutList(domnode, &update, context);
+  addToPutSet(update.getTarget(), &update, context);
 }
 
 void XercesUpdateFactory::applyReplaceAttribute(const PendingUpdate &update, DynamicContext *context)
@@ -473,7 +449,8 @@ void XercesUpdateFactory::applyReplaceAttribute(const PendingUpdate &update, Dyn
   // 4d. upd:removeType(parent($target)) is invoked.
   removeType(element);
 
-  addToPutList(element, &update, context);
+  // Use parentNode, since the attr replace could have removed the original attr
+  addToPutSet(parentNode, &update, context);
 }
 
 void XercesUpdateFactory::applyReplaceElementContent(const PendingUpdate &update, DynamicContext *context)
@@ -501,7 +478,7 @@ void XercesUpdateFactory::applyReplaceElementContent(const PendingUpdate &update
   // 3c. upd:removeType($target) is invoked.
   removeType(domnode);
 
-  addToPutList(domnode, &update, context);
+  addToPutSet(update.getTarget(), &update, context);
 }
 
 void XercesUpdateFactory::removeType(DOMNode *node)
@@ -593,54 +570,39 @@ void XercesUpdateFactory::setToUntyped(DOMNode *node)
   }
 }
 
-void XercesUpdateFactory::addToPutList(const DOMNode *domnode, const LocationInfo *location, DynamicContext *context)
+bool XercesUpdateFactory::PutItem::operator<(const PutItem &other) const
 {
-  const DOMDocument *doc = XPath2Utils::getOwnerDoc(domnode);
-
-  const XMLCh *docuri = doc->getDocumentURI();
-  if(docuri == 0 || *docuri == 0) {
-    // ignore for now
-    return;
+  if(uri == 0 && other.uri == 0) {
+    return node->uniqueLessThan(other.node, context);
   }
 
-  const XMLCh *encoding = doc->getEncoding();
-  if(encoding == 0 || *encoding == 0) {
-    encoding = utf8_str;
+  return XPath2Utils::compare(uri, other.uri) < 0;
+}
+
+void XercesUpdateFactory::addToPutSet(const Node::Ptr &node, const LocationInfo *location, DynamicContext *context)
+{
+  Node::Ptr root = node->root(context);
+
+  Sequence docURISeq = root->dmDocumentURI(context);
+  const XMLCh *docuri = 0;
+  if(!docURISeq.isEmpty()) {
+    docuri = docURISeq.first()->asString(context);
   }
 
-  try {
-    PutItem item(docuri, encoding, doc, location);
+  PutItem item(docuri, root, location, context);
 
-    if(XPath2Utils::equals(item.uri.getScheme(), file_scheme)) {
-      std::pair<PutList::iterator, bool> res = putList_.insert(item);
-      if(!res.second && res.first->node != item.node) {
-        if(context->getMessageListener() != 0) {
-          context->getMessageListener()->warning(X("In the context of this expression"), res.first->location);
-        }
-
-        XMLBuffer buf;
-        buf.append(X("Document writing conflict for URI \""));
-        buf.append(item.uri.getUriText());
-        buf.append(X("\""));
-
-        XQThrow3(ASTException, X("XercesUpdateFactory::addToPutList"), buf.getRawBuffer(), location);
-      }
-    } else {
-      XMLBuffer buf;
-      buf.append(X("Unable to re-write document - unsupported URI scheme \""));
-      buf.append(item.uri.getUriText());
-      buf.append(X("\""));
-
-      XQThrow3(ASTException, X("XercesUpdateFactory::addToPutList"), buf.getRawBuffer(), location);
+  std::pair<PutSet::iterator, bool> res = putSet_.insert(item);
+  if(!res.second && !res.first->node->equals(item.node)) {
+    if(context->getMessageListener() != 0) {
+      context->getMessageListener()->warning(X("In the context of this expression"), res.first->location);
     }
-  }
-  catch(...) {
+
     XMLBuffer buf;
-    buf.append(X("Unable to re-write document - bad document URI \""));
-    buf.append(docuri);
+    buf.append(X("Document writing conflict for URI \""));
+    buf.append(item.uri);
     buf.append(X("\""));
 
-    XQThrow3(ASTException, X("XercesUpdateFactory::addToPutList"), buf.getRawBuffer(), location);
+    XQThrow3(ASTException, X("XercesUpdateFactory::addToPutSet"), buf.getRawBuffer(), location);
   }
 }
 
@@ -817,49 +779,28 @@ void XercesUpdateFactory::completeRevalidation(DynamicContext *context)
   }
 }
 
-static const XMLCh ls_string[] =
-{
-    chLatin_L, chLatin_S,
-    chNull
-};
-
 void XercesUpdateFactory::completeUpdate(DynamicContext *context)
 {
   completeDeletions(context);
   completeRevalidation(context);
 
-  // Write all the documents in the PutList to disk
-  DOMImplementation *impl = DOMImplementationRegistry::getDOMImplementation(ls_string);
-  AutoRelease<DOMWriter> writer(((DOMImplementationLS*)impl)->createDOMWriter());
-
-  for(PutList::iterator i = putList_.begin(); i != putList_.end(); ++i) {
+  // Call the URIResolvers to handle the PutSet
+  for(PutSet::iterator i = putSet_.begin(); i != putSet_.end(); ++i) {
     try {
-      writer->setEncoding(i->encoding);
-      const XMLCh *path = i->uri.getPath();
-      //Get rid of the leading / if it is a Windows path.
-      int colonIdx = XMLString::indexOf(path, chColon);
-      if(path && colonIdx == 2 && XMLString::isAlpha(path[1])){
-        path++;
-      }
-      LocalFileFormatTarget target(path);
-
-      if(!writer->writeNode(&target, *i->node)) {
+      if(!context->putDocument(i->node, i->uri)) {
         XMLBuffer buf;
-        buf.append(X("Writing to URI \""));
-        buf.append(i->uri.getUriText());
-        buf.append(X("\" failed."));
+        buf.append(X("Writing of updated document failed for URI \""));
+        buf.append(i->uri);
+        buf.append(X("\""));
 
         XQThrow3(ASTException, X("XercesUpdateFactory::completeUpdate"), buf.getRawBuffer(), i->location);
       }
     }
-    catch(DOMException &ex) {
-      XMLBuffer buf;
-      buf.append(X("Writing to URI \""));
-      buf.append(i->uri.getUriText());
-      buf.append(X("\" failed: "));
-      buf.append(ex.msg);
-
-      XQThrow3(ASTException, X("XercesUpdateFactory::completeUpdate"), buf.getRawBuffer(), i->location);
+    catch(XQException& e) {
+      if(e.getXQueryLine() == 0) {
+        e.setXQueryPosition(i->location);
+      }
+      throw e;
     }
   }
 }

@@ -29,8 +29,6 @@
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/ast/LocationInfo.hpp>
 
-#include <xercesc/util/XMLUri.hpp>
-
 XERCES_CPP_NAMESPACE_BEGIN
 class DOMNode;
 XERCES_CPP_NAMESPACE_END
@@ -59,30 +57,27 @@ protected:
   void completeRevalidation(DynamicContext *context);
   void removeType(XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *node);
   void setToUntyped(XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *node);
-  void addToPutList(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *node, const LocationInfo *location, DynamicContext *context);
+  void addToPutSet(const Node::Ptr &node, const LocationInfo *location, DynamicContext *context);
 
   typedef std::set<XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *> DOMNodeSet;
 
   class PutItem {
   public:
-    PutItem(const XMLCh *urich, const XMLCh *enc, const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *nd, const LocationInfo *loc)
-      : uri(urich), encoding(enc), node(nd), location(loc) {}
+    PutItem(const XMLCh *urich, const Node::Ptr &nd, const LocationInfo *loc, const DynamicContext *c)
+      : uri(urich), node(nd), location(loc), context(c) {}
 
-    XERCES_CPP_NAMESPACE_QUALIFIER XMLUri uri;
-    const XMLCh *encoding;
-    const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *node;
+    const XMLCh *uri;
+    const Node::Ptr node;
     const LocationInfo *location;
+    const DynamicContext *context;
 
-    bool operator<(const PutItem &other) const
-    {
-      return XPath2Utils::compare(uri.getUriText(), other.uri.getUriText()) < 0;
-    }
+    bool operator<(const PutItem &other) const;
   };
-  typedef std::set<PutItem> PutList;
+  typedef std::set<PutItem> PutSet;
 
   DOMNodeSet forDeletion_;
   DOMNodeSet forRevalidation_;
-  PutList putList_;
+  PutSet putSet_;
 };
 
 #endif
