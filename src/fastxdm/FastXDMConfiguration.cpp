@@ -164,6 +164,11 @@ public:
     return false;
   }
 
+  virtual bool putDocument(const Node::Ptr &document, const XMLCh *uri, DynamicContext *context)
+  {
+    return false;
+  }
+
 private:
   RefHashTableOf<Node::Ptr> _documentMap;
 };

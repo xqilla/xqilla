@@ -212,7 +212,7 @@ yajl_do_parse(yajl_handle hand, unsigned int * offset,
                         if (*buf == '-') {
                             buf++; neg = 1;
                         }
-                        sscanf((char *) buf, "%lld", &i);
+                        sscanf((char *) buf, "%lld", (long long int*)&i);
                         if (neg) i -= (i<<1);
                         hand->callbacks->yajl_integer(hand->ctx, i);
                     }

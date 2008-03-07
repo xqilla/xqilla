@@ -147,7 +147,7 @@ int json2xml_integer(void *ctx, long integerVal)
   JSON2XML_Env *env = (JSON2XML_Env*)ctx;
 
   char intString[256];
-  snprintf(intString, 256,"%lld", integerVal);
+  snprintf(intString, 256,"%lld", (long long int)integerVal);
 
   env->startValue();
   env->handler->attributeEvent(0, 0, JSON2XML_type, JSON2XML_number,

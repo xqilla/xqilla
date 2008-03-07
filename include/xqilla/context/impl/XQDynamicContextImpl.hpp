@@ -129,6 +129,7 @@ public:
   virtual Sequence resolveCollection(const XMLCh* uri, const LocationInfo *location,
                                      const QueryPathNode *projection);
   virtual Sequence resolveDefaultCollection(const QueryPathNode *projection);
+  virtual bool putDocument(const Node::Ptr &document, const XMLCh *uri);
 
   virtual UpdateFactory *createUpdateFactory() const;
 

@@ -42,6 +42,7 @@ public:
                                  const QueryPathNode *projection);
   virtual bool resolveDefaultCollection(Sequence &result, DynamicContext* context,
                                         const QueryPathNode *projection);
+  virtual bool putDocument(const Node::Ptr &document, const XMLCh *uri, DynamicContext *context);
 
   void incrementDocumentRefCount(const XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* document);
   void decrementDocumentRefCount(const XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* document);

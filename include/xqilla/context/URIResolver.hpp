@@ -23,6 +23,7 @@
 #define _URIRESOLVER_HPP
 
 #include <xqilla/framework/XQillaExport.hpp>
+#include <xqilla/items/Node.hpp>
 
 #include <xercesc/util/XMemory.hpp>
 
@@ -31,25 +32,42 @@ class Sequence;
 class QueryPathNode;
 
 /** 
- * This is an abstract class used to resolve URIs in different ways
+ * This is an abstract class used to resolve URIs in different ways. The user should
+ * derive a concrete class from URIResolver, and use the DynamicContext::registerURIResolver()
+ * method to add this resolver to the list used by XQilla.
  */
 class XQILLA_API URIResolver : public XERCES_CPP_NAMESPACE_QUALIFIER XMemory
 {
 public:
-  /* virtual destructor, does nothing */
+  /** virtual destructor, does nothing */
   virtual ~URIResolver() {};      
 
-  /* Resolve the given uri (and baseUri) to a Sequence (reference parameter). If the uri
-     is relative, the base uri can be obtained from the context. If the uri is not handled
-     by this URIResolver, returns false, otherwise returns true. */
+  /**
+   * Resolve the given uri (and baseUri) to a Sequence (reference parameter). If the uri
+   * is relative, the base uri can be obtained from the context. If the uri is not handled
+   * by this URIResolver, returns false, otherwise returns true.
+   */
   virtual bool resolveDocument(Sequence &result, const XMLCh* uri, DynamicContext *context, const QueryPathNode *projection) = 0;
 
-  /* Resolve the given uri (and baseUri) to a Sequence (reference parameter). If the uri
-     is relative, the base uri can be obtained from the context. If the uri is not handled
-     by this URIResolver, returns false, otherwise returns true. */
+  /**
+   * Resolve the given uri (and baseUri) to a Sequence (reference parameter). If the uri
+   * is relative, the base uri can be obtained from the context. If the uri is not handled
+   * by this URIResolver, returns false, otherwise returns true.
+   */
   virtual bool resolveCollection(Sequence &result, const XMLCh* uri, DynamicContext *context, const QueryPathNode *projection) = 0;
 
-  /* Resolve the default collection. If it is not defined, returns false, otherwise returns true. */
+  /**
+   * Resolve the default collection. If it is not defined, returns false, otherwise returns true.
+   */
   virtual bool resolveDefaultCollection(Sequence &result, DynamicContext *context, const QueryPathNode *projection) = 0;
+
+  /**
+   * Called with any document that has been updated, to allow the user to save the document in any manner applicable.
+   * The uri parameter will be the argument to the fn:put() function if that was called with the document - otherwise it
+   * will be the document URI of the document. If this URIResolver successfully handled the putDocument() request, the method
+   * should return true, otherwise it should return false and subsequent URIResolver objects will be called to handle the
+   * document.
+   */
+  virtual bool putDocument(const Node::Ptr &document, const XMLCh *uri, DynamicContext *context) = 0;
 };
 #endif

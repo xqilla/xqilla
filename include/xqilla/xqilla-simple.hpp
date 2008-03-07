@@ -26,3 +26,11 @@
 #include <xqilla/utils/XStr.hpp>
 #include <xqilla/utils/UTF8Str.hpp>
 #include <xqilla/framework/XPath2MemoryManager.hpp>
+#include <xqilla/ast/LocationInfo.hpp>
+#include <xqilla/context/MessageListener.hpp>
+#include <xqilla/events/EventSerializer.hpp>
+#include <xqilla/events/NSFixupFilter.hpp>
+#include <xqilla/xerces/XercesConfiguration.hpp>
+#include <xqilla/fastxdm/FastXDMConfiguration.hpp>
+#include <xqilla/context/ModuleResolver.hpp>
+#include <xqilla/context/URIResolver.hpp>

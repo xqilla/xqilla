@@ -1,2 +1,27 @@
 This is XQilla, a C++ implementation of XQuery and XPath 2.0 based on Xerces-C.
 
+Build Instructions
+------------------
+
+1. Download a source distribution of Xerces-C 2.8
+2. Apply the patches src/xercesc_content_type.patch and src/xercesc_regex.patch
+   to Xerces-C:
+
+cd xerces-c-src_2_8_0/
+patch -p1 <../xqilla/src/xercesc_content_type.patch
+patch -p1 <../xqilla/src/xercesc_regex.patch
+
+3. Build Xerces-C
+
+cd xerces-c-src_2_8_0/
+export XERCESCROOT=`pwd`
+cd src/xercesc
+./runConfigure
+make
+
+4. Build XQilla
+
+cd xqilla/
+./configure --with-xerces=`pwd`/../xerces-c-src_2_8_0/
+make
+

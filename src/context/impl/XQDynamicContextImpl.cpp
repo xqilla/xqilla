@@ -384,6 +384,18 @@ Sequence XQDynamicContextImpl::resolveDefaultCollection(const QueryPathNode *pro
   return result;
 }
 
+bool XQDynamicContextImpl::putDocument(const Node::Ptr &document, const XMLCh *uri)
+{
+  std::vector<ResolverEntry, XQillaAllocator<ResolverEntry> >::reverse_iterator end = _resolvers.rend();
+  for(std::vector<ResolverEntry, XQillaAllocator<ResolverEntry> >::reverse_iterator i = _resolvers.rbegin(); i != end; ++i) {
+    if(i->resolver->putDocument(document, uri, this))
+      return true;
+  }
+  if(_defaultResolver.resolver)
+    return _defaultResolver.resolver->putDocument(document, uri, this);
+  return false;
+}
+
 VectorOfStrings* XQDynamicContextImpl::resolveModuleURI(const XMLCh* uri) const
 {
   return _staticContext->resolveModuleURI(uri);

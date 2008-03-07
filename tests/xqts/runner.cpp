@@ -39,15 +39,9 @@
 
 #include <xqilla/xqilla-simple.hpp>
 #include <xqilla/context/VariableStore.hpp>
-#include <xqilla/context/ModuleResolver.hpp>
-#include <xqilla/context/URIResolver.hpp>
 #include <xqilla/functions/FunctionConstructor.hpp>
 #include <xqilla/utils/XQillaPlatformUtils.hpp>
-#include <xqilla/xerces/XercesConfiguration.hpp>
-#include <xqilla/fastxdm/FastXDMConfiguration.hpp>
 #include <xqilla/events/ContentSequenceFilter.hpp>
-#include <xqilla/events/EventSerializer.hpp>
-#include <xqilla/events/NSFixupFilter.hpp>
 
 #if defined(XERCES_HAS_CPP_NAMESPACE)
 XERCES_CPP_NAMESPACE_USE
@@ -76,6 +70,7 @@ private:
   virtual bool resolveDocument(Sequence &result, const XMLCh* uri, DynamicContext* context, const QueryPathNode *projection);
   virtual bool resolveCollection(Sequence &result, const XMLCh* uri, DynamicContext* context, const QueryPathNode *projection);
   virtual bool resolveDefaultCollection(Sequence &result, DynamicContext* context, const QueryPathNode *projection);
+  virtual bool putDocument(const Node::Ptr &document, const XMLCh *uri, DynamicContext *context) { return false; }
 
 private:
   XQillaConfiguration *m_conf;

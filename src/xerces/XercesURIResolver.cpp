@@ -26,11 +26,18 @@
 
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/exceptions/XMLParseException.hpp>
+#include <xqilla/utils/XPath2Utils.hpp>
+#include <xqilla/exceptions/ASTException.hpp>
 #include <xqilla/xerces/XercesConfiguration.hpp>
 
-#include <xercesc/dom/DOMDocument.hpp>
 #include <xercesc/util/XMLURL.hpp>
+#include <xercesc/util/XMLUri.hpp>
 #include <xercesc/util/HashPtr.hpp>
+
+#include <xercesc/dom/DOM.hpp>
+#include <xercesc/framework/LocalFileFormatTarget.hpp>
+#include <xercesc/util/XMLUniDefs.hpp>
+#include <xercesc/framework/XMLBuffer.hpp>
 
 XERCES_CPP_NAMESPACE_USE;
 
@@ -159,6 +166,82 @@ bool XercesURIResolver::resolveCollection(Sequence &result, const XMLCh* uri, Dy
 bool XercesURIResolver::resolveDefaultCollection(Sequence &result, DynamicContext* context, const QueryPathNode *projection)
 {
   return false;
+}
+
+static const XMLCh ls_string[] = { chLatin_L, chLatin_S, chNull };
+static const XMLCh file_scheme[] = { chLatin_f, chLatin_i, chLatin_l, chLatin_e, 0 };
+static const XMLCh utf8_str[] = { chLatin_u, chLatin_t, chLatin_f, chDash, chDigit_8, 0 };
+
+bool XercesURIResolver::putDocument(const Node::Ptr &document, const XMLCh *uri, DynamicContext *context)
+{
+  // Ignore nodes with no URI
+  if(uri == 0) return true;
+
+  try {
+    XMLUri uri_obj(uri);
+
+    // Check for a "file" scheme
+    if(!XPath2Utils::equals(uri_obj.getScheme(), file_scheme))
+      return false;
+
+    // Check this is a Xerces data model node
+    const DOMNode *domnode = (const DOMNode*)document->getInterface(XercesConfiguration::gXerces);
+    if(!domnode) return false;
+
+    // Find the encoding to use
+    const XMLCh *encoding = 0;
+    if(domnode->getNodeType() == DOMNode::DOCUMENT_NODE) {
+      // Use the document's encoding, if this is a document node
+      encoding = ((DOMDocument*)domnode)->getEncoding();
+    }
+    if(encoding == 0 || *encoding == 0) {
+      // Otherwise, just use UTF-8
+      encoding = utf8_str;
+    }
+
+    // Write the document to disk
+    DOMImplementation *impl = DOMImplementationRegistry::getDOMImplementation(ls_string);
+    AutoRelease<DOMWriter> writer(((DOMImplementationLS*)impl)->createDOMWriter());
+
+    try {
+      writer->setEncoding(encoding);
+      const XMLCh *path = uri_obj.getPath();
+      //Get rid of the leading / if it is a Windows path.
+      int colonIdx = XMLString::indexOf(path, chColon);
+      if(path && colonIdx == 2 && XMLString::isAlpha(path[1])){
+        path++;
+      }
+      LocalFileFormatTarget target(path);
+
+      if(!writer->writeNode(&target, *domnode)) {
+        XMLBuffer buf;
+        buf.append(X("Writing to URI \""));
+        buf.append(uri_obj.getUriText());
+        buf.append(X("\" failed."));
+
+        XQThrow2(ASTException, X("XercesURIResolver::putDocument"), buf.getRawBuffer());
+      }
+    }
+    catch(DOMException &ex) {
+      XMLBuffer buf;
+      buf.append(X("Writing to URI \""));
+      buf.append(uri_obj.getUriText());
+      buf.append(X("\" failed: "));
+      buf.append(ex.msg);
+
+      XQThrow2(ASTException, X("XercesURIResolver::putDocument"), buf.getRawBuffer());
+    }
+  }
+  catch(const MalformedURLException &ex) {
+    XMLBuffer buf;
+    buf.append(X("Unable to re-write document - bad document URI \""));
+    buf.append(uri);
+    buf.append(X("\""));
+
+    XQThrow2(ASTException, X("XercesURIResolver::putDocument"), buf.getRawBuffer());
+  }
+
+  return true;
 }
 
 void XercesURIResolver::incrementDocumentRefCount(const DOMDocument* document)
