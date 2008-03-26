@@ -42,6 +42,11 @@ XERCES_CPP_NAMESPACE_USE
 #include <iostream>
 
 static const unsigned int CHUNK_SIZE = 32 * 1024;
+#if defined(__HP_aCC) && defined(__ia64)
+#define ALLOC_ALIGN 16
+#else
+#define ALLOC_ALIGN 4
+#endif
 
 BaseMemoryManager::~BaseMemoryManager() 
 {
@@ -60,6 +65,8 @@ void BaseMemoryManager::initialise()
   totalMemoryAllocated_ = 0;
   fStringPool = new (this) StringPool(this);
   fIntegerPool = 0;
+  // set up minimum alignment for returned allocations
+  pad = ((sizeof(MemList) + ALLOC_ALIGN - 1)&~(ALLOC_ALIGN-1));
 
 }
 
@@ -78,6 +85,7 @@ void BaseMemoryManager::releaseAll()
 void *BaseMemoryManager::allocate(size_t amount)
 {
 #if ALLOCATE_IN_CHUNKS
+#error "alignment constraints are not implemented for this case; fix that or remove this error if you think it is unnecessary for your platform"	
   size_t memSize = amount + sizeof(MemAlloc);
 
   if(fCurrentBlock == 0 || fCurrentBlock->remaining < memSize) {
@@ -128,7 +136,7 @@ void *BaseMemoryManager::allocate(size_t amount)
 #else
   char *newBlock = 0;
   try {
-    newBlock = (char*)internal_allocate(amount + sizeof(MemList));
+    newBlock = (char*)internal_allocate(amount + pad);
   }
   catch (...) {}
   if(!newBlock) {
@@ -155,7 +163,7 @@ void *BaseMemoryManager::allocate(size_t amount)
   }
   fCurrentBlock = newMemList;
 
-  return (void *)(newBlock + sizeof(MemList));
+  return (void *)(newBlock + pad);
 #endif
 }
 
@@ -186,7 +194,7 @@ void BaseMemoryManager::deallocate(void* p)
       internal_deallocate((void*)oldMemList);
     }
 #else
-    char *oldBlock = ((char *)p) - sizeof(MemList);
+    char *oldBlock = ((char *)p) - pad;
     MemList *oldMemList = (MemList *)oldBlock;
 #if DEBUG_MEMORY
     if (oldMemList->magic != DEBUG_MEMORY_ALLOCD) {
