@@ -48,6 +48,8 @@ static const unsigned int CHUNK_SIZE = 32 * 1024;
 #define ALLOC_ALIGN 4
 #endif
 
+#define PAD ((sizeof(MemList) + ALLOC_ALIGN - 1)&~(ALLOC_ALIGN-1))
+
 BaseMemoryManager::~BaseMemoryManager() 
 {
 }
@@ -65,9 +67,6 @@ void BaseMemoryManager::initialise()
   totalMemoryAllocated_ = 0;
   fStringPool = new (this) StringPool(this);
   fIntegerPool = 0;
-  // set up minimum alignment for returned allocations
-  pad = ((sizeof(MemList) + ALLOC_ALIGN - 1)&~(ALLOC_ALIGN-1));
-
 }
 
 void BaseMemoryManager::releaseAll()
@@ -136,7 +135,7 @@ void *BaseMemoryManager::allocate(size_t amount)
 #else
   char *newBlock = 0;
   try {
-    newBlock = (char*)internal_allocate(amount + pad);
+    newBlock = (char*)internal_allocate(amount + PAD);
   }
   catch (...) {}
   if(!newBlock) {
@@ -163,7 +162,7 @@ void *BaseMemoryManager::allocate(size_t amount)
   }
   fCurrentBlock = newMemList;
 
-  return (void *)(newBlock + pad);
+  return (void *)(newBlock + PAD);
 #endif
 }
 
@@ -194,7 +193,7 @@ void BaseMemoryManager::deallocate(void* p)
       internal_deallocate((void*)oldMemList);
     }
 #else
-    char *oldBlock = ((char *)p) - pad;
+    char *oldBlock = ((char *)p) - PAD;
     MemList *oldMemList = (MemList *)oldBlock;
 #if DEBUG_MEMORY
     if (oldMemList->magic != DEBUG_MEMORY_ALLOCD) {
