@@ -26,11 +26,14 @@
 
 class XQPredicate;
 
-class VectorOfPredicates : public std::vector<XQPredicate*,XQillaAllocator<XQPredicate*> >
+// NOTE: the use of "::" in front of XQillaAllocator here is
+// to work around an issue in the HP-UX aCC compiler and STL
+// implementation.  Do not remove it.
+class VectorOfPredicates : public std::vector<XQPredicate*,::XQillaAllocator<XQPredicate*> >
 {
 public:
   VectorOfPredicates(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mm)
-    : std::vector<XQPredicate*,XQillaAllocator<XQPredicate*> >(XQillaAllocator<XQPredicate*>(mm)) {}
+	  : std::vector<XQPredicate*,::XQillaAllocator<XQPredicate*> >(::XQillaAllocator<XQPredicate*>(mm)) {}
 };
 
 
