@@ -116,7 +116,6 @@ protected:
   size_t totalMemoryAllocated_;
 
   StringPool *fStringPool;
-  size_t pad;
 
   XERCES_CPP_NAMESPACE_QUALIFIER RefHashTableOf<ATDecimalOrDerived>* fIntegerPool;
 };
