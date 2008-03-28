@@ -23,15 +23,14 @@
 #define _XQILLA_CONFIG_H
 
 #if defined(_MSC_VER)
-#define WIN32 1
-#endif
-
-#if defined(WIN32) && !defined(__CYGWIN__)
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
-#if !defined(__MINGW32__)
+#ifndef int64_t
+typedef __int64 int64_t;
+typedef unsigned __int64 uint64_t;
+#endif
 
 // Warning 4064: switch statement contains 'default' but no 'case' labels
 // 
@@ -49,8 +48,6 @@
 // Warning 4786 is a warning that debug info was truncated to 255 chars
 //   this happens in VC6 on large STL template classes.
 #pragma warning(disable: 4065 4251 4786 4101 4290 4996 4786)
-
-#endif
 
 #endif
 
@@ -78,6 +75,10 @@
 #else
 
 #include "xqilla_config_unix.h"
+#ifndef int64_t
+typedef long long int64_t;
+typedef unsigned long long uint64_t;
+#endif
 
 #endif
 

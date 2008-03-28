@@ -22,7 +22,7 @@
 #include "../config/xqilla_config.h"
 
 #include <stdio.h> // for sprintf
-#if defined(WIN32) && !defined(__CYGWIN__)
+#ifdef _MSC_VER
 #define snprintf _snprintf
 #endif
 
@@ -147,7 +147,7 @@ int json2xml_integer(void *ctx, long integerVal)
   JSON2XML_Env *env = (JSON2XML_Env*)ctx;
 
   char intString[256];
-  snprintf(intString, 256,"%lld", (long long int)integerVal);
+  snprintf(intString, 256,"%lld", (int64_t)integerVal);
 
   env->startValue();
   env->handler->attributeEvent(0, 0, JSON2XML_type, JSON2XML_number,
