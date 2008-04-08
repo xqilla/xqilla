@@ -364,6 +364,7 @@ INPUT                  = \
 %xerces_include%/xercesc/dom/DOMDocument.hpp \
 %xerces_include%/xercesc/dom/DOMXPathNSResolver.hpp \
 %xerces_include%/xercesc/util/XMLEntityResolver.hpp \
+%xerces_include%/xercesc/util/XMLResourceIdentifier.hpp \
 %xerces_include%/xercesc/util/PlatformUtils.hpp \
 %xerces_include%/xercesc/sax/InputSource.hpp \
 %xerces_include%/xercesc/framework/LocalFileInputSource.hpp \
