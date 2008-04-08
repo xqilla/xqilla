@@ -1,6 +1,6 @@
 XQilla: an XQuery and XPath 2.0 library and command line interpreter.
 
-version 2.1.0 (2008.12.21):
+version 2.1.1 (2008.04.08):
 	* Added the xqilla:parse-json() and xqilla:serialize-json() extension
 	  functions to parse and serialize JSON.
 	* Added the xqilla:parse-html() function which uses HTML Tidy to parse
