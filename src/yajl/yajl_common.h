@@ -46,6 +46,14 @@
 #  endif
 #else
 #  define YAJL_API
-#endif 
+#endif
+
+#if defined(_MSC_VER)
+typedef __int64 xq_int64_t;
+typedef unsigned __int64 xq_uint64_t;
+#else
+typedef long long xq_int64_t;
+typedef unsigned long long xq_uint64_t;
+#endif
 
 #endif
