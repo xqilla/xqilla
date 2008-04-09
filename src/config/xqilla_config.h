@@ -27,11 +27,6 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
-#ifndef int64_t
-typedef __int64 int64_t;
-typedef unsigned __int64 uint64_t;
-#endif
-
 // Warning 4064: switch statement contains 'default' but no 'case' labels
 // 
 // Warning 4251: We have a lot of std::vector objects inside exported classes, and VC++ complains about it
@@ -75,10 +70,6 @@ typedef unsigned __int64 uint64_t;
 #else
 
 #include "xqilla_config_unix.h"
-#ifndef int64_t
-typedef long long int64_t;
-typedef unsigned long long uint64_t;
-#endif
 
 #endif
 
