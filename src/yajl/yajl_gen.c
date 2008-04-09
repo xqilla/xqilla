@@ -146,7 +146,7 @@ yajl_gen_integer(yajl_gen g, long int number)
 {
     char i[32];
     ENSURE_VALID_STATE; ENSURE_NOT_KEY; INSERT_SEP; INSERT_WHITESPACE;
-    sprintf(i, "%lld", (int64_t)number);
+    sprintf(i, "%lld", (xq_int64_t)number);
     yajl_buf_append(g->buf, i, STRLEN(i));
     APPENDED_ATOM;
     FINAL_NEWLINE;
