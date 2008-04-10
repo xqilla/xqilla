@@ -61,7 +61,6 @@ ASTNode* UReplace::staticResolution(StaticContext *context)
 
   target_ = new (mm) XQTreatAs(target_, targetType1, mm, err_XUDY0027);
   target_->setLocationInfo(this);
-  target_ = target_->staticResolution(context);
 
   target_ = new (mm) XQTreatAs(target_, targetType2, mm, err_XUTY0008);
   target_->setLocationInfo(this);
