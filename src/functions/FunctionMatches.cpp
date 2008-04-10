@@ -51,7 +51,7 @@ const unsigned int FunctionMatches::maxArgs = 3;
 FunctionMatches::FunctionMatches(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "string?, string, string", args, memMgr)
 {
-  _src.getStaticType().flags = StaticType::BOOLEAN_TYPE;
+  _src.getStaticType() = StaticType::BOOLEAN_TYPE;
 }
 
 Sequence FunctionMatches::createSequence(DynamicContext* context, int flags) const

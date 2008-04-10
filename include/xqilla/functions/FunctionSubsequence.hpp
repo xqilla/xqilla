@@ -43,12 +43,11 @@ private:
   class SubsequenceResult : public ResultImpl
   {
   public:
-    SubsequenceResult(const FunctionSubsequence *func, int flags);
+    SubsequenceResult(const FunctionSubsequence *func);
 
     Item::Ptr next(DynamicContext *context);
     std::string asString(DynamicContext *context, int indent) const;
   private:
-    int _flags;
     const FunctionSubsequence *_func;
     Numeric::Ptr _end;
     Numeric::Ptr _one;
@@ -57,7 +56,7 @@ private:
   };
 };
 
-#endif // _FUNCTIONSUBSEQUENCE_HPP
+#endif
 
 
 

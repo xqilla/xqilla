@@ -92,7 +92,7 @@ ASTNode* Or::staticTyping(StaticContext *context)
     }
   }
 
-  _src.getStaticType().flags = StaticType::BOOLEAN_TYPE;
+  _src.getStaticType() = StaticType::BOOLEAN_TYPE;
 
   _args = newArgs;
   return this;

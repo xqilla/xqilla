@@ -71,16 +71,6 @@ void *FastXDMNodeImpl::getInterface(const XMLCh *name) const
   return 0;
 }
 
-bool FastXDMNodeImpl::isNode() const
-{
-    return true;
-}
-
-bool FastXDMNodeImpl::isAtomicValue() const
-{
-    return false;
-}
-
 const XMLCh *FastXDMNodeImpl::asString(const DynamicContext* context) const
 {
   XPath2MemoryManager *mm = context->getMemoryManager();
@@ -559,14 +549,14 @@ const XMLCh* FastXDMNodeImpl::getTypeURI() const
   return uri;
 }
 
-static inline Item::Ptr testNode(const FastXDMDocument::Ptr &document, const FastXDMDocument::Node *node, const NodeTest *nodeTest, DynamicContext *context, const LocationInfo *loc)
+static inline Item::Ptr testNode(const FastXDMDocument::Ptr &document, const FastXDMDocument::Node *node, const NodeTest *nodeTest, DynamicContext *context)
 {
   if(nodeTest == 0) return new FastXDMNodeImpl(document, node);
 
   SequenceType::ItemType *itemType = nodeTest->getItemType();
   if(itemType != 0) {
     Node::Ptr result = new FastXDMNodeImpl(document, node);
-    if(itemType->matches(result, context, loc)) {
+    if(itemType->matches(result, context)) {
       return result;
     }
   }
@@ -608,13 +598,13 @@ static inline Item::Ptr testNode(const FastXDMDocument::Ptr &document, const Fas
   return new FastXDMNodeImpl(document, node);
 }
 
-static inline Item::Ptr testAttribute(const FastXDMDocument::Ptr &document, const FastXDMDocument::Attribute *attr, const NodeTest *nodeTest, DynamicContext *context, const LocationInfo *loc)
+static inline Item::Ptr testAttribute(const FastXDMDocument::Ptr &document, const FastXDMDocument::Attribute *attr, const NodeTest *nodeTest, DynamicContext *context)
 {
   if(nodeTest != 0) {
       SequenceType::ItemType *itemType = nodeTest->getItemType();
       if(itemType != 0) {
         Node::Ptr result = new FastXDMAttributeNodeImpl(document, attr);
-        if(itemType->matches(result, context, loc)) {
+        if(itemType->matches(result, context)) {
           return result;
         }
       }
@@ -627,10 +617,10 @@ static inline Item::Ptr testAttribute(const FastXDMDocument::Ptr &document, cons
   return new FastXDMAttributeNodeImpl(document, attr);
 }
 
-static inline bool testNamespace(const FastXDMNamespaceNodeImpl::Ptr &ns, const NodeTest *nodeTest, DynamicContext *context, const LocationInfo *loc)
+static inline bool testNamespace(const FastXDMNamespaceNodeImpl::Ptr &ns, const NodeTest *nodeTest, DynamicContext *context)
 {
   if(nodeTest != 0) {
-    return nodeTest->filterNode(ns, context, loc);
+    return nodeTest->filterNode(ns, context);
   }
   return true;
 }
@@ -652,7 +642,7 @@ public:
     while((node = nextNode()) != 0) {
       context->testInterrupt();
 
-      Item::Ptr result = testNode(document_, node, nodeTest_, context, this);
+      Item::Ptr result = testNode(document_, node, nodeTest_, context);
       if(result.notNull()) return result;
     }
 
@@ -976,7 +966,7 @@ public:
 
       ++attr_;
 
-      Item::Ptr result = testAttribute(document_, attr, nodeTest_, context, this);
+      Item::Ptr result = testAttribute(document_, attr, nodeTest_, context);
       if(result.notNull()) return result;
 
       attr = attr_;
@@ -1012,7 +1002,7 @@ public:
   Item::Ptr next(DynamicContext *context)
   {
     FastXDMNamespaceNodeImpl::Ptr result;
-    while(result.isNull() || !testNamespace(result, nodeTest_, context, this)) {
+    while(result.isNull() || !testNamespace(result, nodeTest_, context)) {
       result = 0;
 
       switch(state_) {
@@ -1204,16 +1194,6 @@ void *FastXDMAttributeNodeImpl::getInterface(const XMLCh *name) const
   if(name == fastxdm_attr_string)
     return (void *)this;
   return 0;
-}
-
-bool FastXDMAttributeNodeImpl::isNode() const
-{
-    return true;
-}
-
-bool FastXDMAttributeNodeImpl::isAtomicValue() const
-{
-    return false;
 }
 
 const XMLCh* FastXDMAttributeNodeImpl::asString(const DynamicContext* context) const
@@ -1423,14 +1403,14 @@ public:
   Item::Ptr next(DynamicContext *context)
   {
     if(attr_ != 0) {
-      Item::Ptr result = testAttribute(document_, attr_, nodeTest_, context, this);
+      Item::Ptr result = testAttribute(document_, attr_, nodeTest_, context);
       attr_ = 0;
 
       if(result.notNull()) return result;
     }
 
     while(node_ != 0) {
-      Item::Ptr result = testNode(document_, node_, nodeTest_, context, this);
+      Item::Ptr result = testNode(document_, node_, nodeTest_, context);
       node_ = FastXDMDocument::getParent(node_);
 
       if(result.notNull()) return result;
@@ -1535,16 +1515,6 @@ void *FastXDMNamespaceNodeImpl::getInterface(const XMLCh *name) const
   if(name == fastxdm_ns_string)
     return (void *)this;
   return 0;
-}
-
-bool FastXDMNamespaceNodeImpl::isNode() const
-{
-    return true;
-}
-
-bool FastXDMNamespaceNodeImpl::isAtomicValue() const
-{
-    return false;
 }
 
 const XMLCh* FastXDMNamespaceNodeImpl::asString(const DynamicContext* context) const
@@ -1705,7 +1675,7 @@ public:
   Item::Ptr next(DynamicContext *context)
   {
     if(ns_.notNull()) {
-      if(testNamespace(ns_, nodeTest_, context, this)) {
+      if(testNamespace(ns_, nodeTest_, context)) {
         Item::Ptr result = ns_;
         ns_ = 0;
         return result;
@@ -1714,7 +1684,7 @@ public:
     }
 
     while(node_ != 0) {
-      Item::Ptr result = testNode(document_, node_, nodeTest_, context, this);
+      Item::Ptr result = testNode(document_, node_, nodeTest_, context);
       node_ = FastXDMDocument::getParent(node_);
 
       if(result.notNull()) return result;

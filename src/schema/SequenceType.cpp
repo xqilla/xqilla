@@ -38,6 +38,7 @@
 #include <xqilla/items/ATDoubleOrDerived.hpp>
 #include <xqilla/items/ATUntypedAtomic.hpp>
 #include <xqilla/items/Node.hpp>
+#include <xqilla/items/FunctionRef.hpp>
 #include <xqilla/functions/FunctionConstructor.hpp>
 #include <xqilla/functions/FunctionString.hpp>
 #include <xqilla/functions/FunctionNumber.hpp>
@@ -55,28 +56,27 @@ XERCES_CPP_NAMESPACE_USE
 #endif
 
 SequenceType::SequenceType(const XMLCh* typeURI,const XMLCh* typeName, SequenceType::OccurrenceIndicator occur, XPath2MemoryManager *mm)
+  : m_pItemType(new (mm) SequenceType::ItemType(typeURI, typeName, mm)),
+    m_nOccurrence(occur)
 {
-  m_pItemType=new (mm) SequenceType::ItemType(ItemType::TEST_ATOMIC_TYPE,NULL,new (mm) QualifiedName(XMLUni::fgZeroLenString, typeName));
-  m_pItemType->setTypeURI(typeURI);
-	m_nOccurrence=occur;
 }
 
-SequenceType::SequenceType(SequenceType::ItemType* test, OccurrenceIndicator occur /*= EXACTLY_ONE*/)
+SequenceType::SequenceType(SequenceType::ItemType* test, OccurrenceIndicator occur)
+  : m_pItemType(test),
+    m_nOccurrence(occur)
 {
-  m_pItemType=test;
-  m_nOccurrence=occur;
 }
 
 SequenceType::SequenceType()
+  : m_pItemType(0),
+    m_nOccurrence(EXACTLY_ONE)
 {
-	m_pItemType=0;
-	m_nOccurrence=EXACTLY_ONE;
 }
 
 SequenceType::~SequenceType()
 {
-	if(m_pItemType)
-		delete m_pItemType;
+  if(m_pItemType)
+    delete m_pItemType;
 }
 
 Result SequenceType::occurrenceMatches(const Result &toBeTested, const LocationInfo *location, const XMLCh *errorCode) const
@@ -101,12 +101,12 @@ void SequenceType::setItemType(SequenceType::ItemType* itemType)
   m_pItemType=itemType;
 }
 
-SequenceType::ItemType::ItemTestType SequenceType::getItemTestType(void) const {
+SequenceType::ItemType::ItemTestType SequenceType::getItemTestType() const {
 
   return m_pItemType->getItemTestType();
 }
 
-SequenceType::OccurrenceIndicator SequenceType::getOccurrenceIndicator(void) const {
+SequenceType::OccurrenceIndicator SequenceType::getOccurrenceIndicator() const {
 
   return m_nOccurrence;
 }
@@ -116,95 +116,185 @@ void SequenceType::setOccurrence(SequenceType::OccurrenceIndicator nOccurrence)
   m_nOccurrence=nOccurrence;
 }
 
-void SequenceType::setNameURI(const XMLCh* const nameURI) {
+const XMLCh* SequenceType::getNameURI() const {
 
-  if(m_pItemType!=NULL) {
-    m_pItemType->setNameURI(nameURI);
-  }
-}
-
-const XMLCh* SequenceType::getNameURI(const StaticContext* context) const {
-
-  if(m_pItemType!=NULL) {
-    return m_pItemType->getNameURI(context, this);
-  }
+  if(m_pItemType)
+    return m_pItemType->getNameURI();
   return 0;
 }
 
-void SequenceType::setTypeURI(const XMLCh* const typeURI) {
+const XMLCh* SequenceType::getTypeURI() const {
 
-  //cerr << "SequnceType:: Setting typeURI: " << typeURI << endl;
-
-  if(m_pItemType!=NULL) {
-    m_pItemType->setTypeURI(typeURI);
-  }
-}
-
-const XMLCh* SequenceType::getTypeURI(const StaticContext* context) const {
-
-  if(m_pItemType!=NULL) {
-    return m_pItemType->getTypeURI(context, this);
-  }
+  if(m_pItemType)
+    return m_pItemType->getTypeURI();
   return 0;
 }
 
-QualifiedName *SequenceType::getConstrainingName(void) const {
+QualifiedName *SequenceType::getConstrainingName() const {
 
   return m_pItemType->getName();
 }
 
-QualifiedName *SequenceType::getConstrainingType(void) const {
+QualifiedName *SequenceType::getConstrainingType() const {
 
   return m_pItemType->getType();
 }
 
-void SequenceType::staticResolution(StaticContext* context) const
+void SequenceType::staticResolution(StaticContext* context)
 {
-  if(m_pItemType!=NULL && m_pItemType->getItemTestType()==ItemType::TEST_ATOMIC_TYPE && m_pItemType->getType()!=NULL)
-  {
-      // check if the type to be tested is defined and is really an atomic one
-      const XMLCh* uriToCheck=m_pItemType->getTypeURI(context, this);
-      const XMLCh* nameToCheck=m_pItemType->getType()->getName();
-      if(!context->getDocumentCache()->isTypeDefined(uriToCheck, nameToCheck))
-      {
-        XMLBuffer buf;
-        buf.set(X("Type {"));
-        buf.append(uriToCheck);
-        buf.append(X("}:"));
-        buf.append(nameToCheck);
-        buf.append(X(" is not defined [err:XPST0051]"));
-        XQThrow(StaticErrorException, X("SequenceType::staticResolution"), buf.getRawBuffer());
-      }
-      if(!context->getDocumentCache()->isTypeOrDerivedFromType(uriToCheck, nameToCheck,
-                                                               FunctionConstructor::XMLChXPath2DatatypesURI, AnyAtomicType::fgDT_ANYATOMICTYPE)) 
-      {
-        XMLBuffer buf;
-        buf.set(X("Type {"));
-        buf.append(uriToCheck);
-        buf.append(X("}:"));
-        buf.append(nameToCheck);
-        buf.append(X(" is not an atomic type [err:XPST0051]"));
-        XQThrow(StaticErrorException, X("SequenceType::staticResolution"), buf.getRawBuffer());
-      }
-  }
+  if(m_pItemType)
+    m_pItemType->staticResolution(context, this);
 }
 
-SequenceType::ItemType::ItemType(ItemTestType test,QualifiedName* name /*=NULL*/, QualifiedName* type /*=NULL*/)
+void SequenceType::ItemType::staticResolution(StaticContext *context, const LocationInfo *location)
 {
-  m_nTestType=test;
-  m_pName=name;
-  m_pType=type;
-  m_TypeURI=m_NameURI=NULL;
-  m_bAllowNil=false;
+  // Prefix resolution should only happen once
+  // (since SequenceType objects can be multiple times in the AST)
+  if(!staticallyResolved_) {
+    staticallyResolved_ = true;
+
+    if(m_pType && m_TypeURI == 0) {
+      const XMLCh *prefix = m_pType->getPrefix();
+      // an empty prefix means the default element and type namespace
+      if(prefix == 0 || *prefix == 0) {
+        m_TypeURI = context->getDefaultElementAndTypeNS();
+      }
+      else {
+        m_TypeURI = context->getUriBoundToPrefix(prefix, location);
+      }
+    }
+  
+    if(m_pName && m_NameURI == 0) {
+      const XMLCh *prefix = m_pName->getPrefix();
+      // if we are testing for an attribute, an empty prefix means empty namespace; if we are testing an element, it means 
+      // the default element and type namespace
+      if(prefix == 0 || *prefix == 0) {
+        if(m_nTestType == TEST_ELEMENT || m_nTestType == TEST_SCHEMA_ELEMENT)
+          m_NameURI = context->getDefaultElementAndTypeNS();
+      } else {
+        m_NameURI = context->getUriBoundToPrefix(prefix, location);
+      }
+    }
+  }
+
+  if(m_pType) {
+    if(m_nTestType == ItemType::TEST_ATOMIC_TYPE) {
+      // check if the type to be tested is defined and is really an atomic one
+      if(!context->getDocumentCache()->isTypeDefined(m_TypeURI, m_pType->getName())) {
+        XMLBuffer buf;
+        buf.set(X("Type {"));
+        buf.append(m_TypeURI);
+        buf.append(X("}:"));
+        buf.append(m_pType->getName());
+        buf.append(X(" is not defined [err:XPST0051]"));
+        XQThrow3(StaticErrorException, X("SequenceType::ItemType::staticResolution"), buf.getRawBuffer(), location);
+      }
+      if(!context->getDocumentCache()->isTypeOrDerivedFromType(m_TypeURI, m_pType->getName(),
+                                                               FunctionConstructor::XMLChXPath2DatatypesURI,
+                                                               AnyAtomicType::fgDT_ANYATOMICTYPE)) {
+        XMLBuffer buf;
+        buf.set(X("Type {"));
+        buf.append(m_TypeURI);
+        buf.append(X("}:"));
+        buf.append(m_pType->getName());
+        buf.append(X(" is not an atomic type [err:XPST0051]"));
+        XQThrow3(StaticErrorException, X("SequenceType::ItemType::staticResolution"), buf.getRawBuffer(), location);
+      }
+    }
+    else if(!context->getDocumentCache()->isTypeDefined(m_TypeURI, m_pType->getName())) {
+      XMLBuffer msg;
+      msg.set(X("Type {"));
+      msg.append(m_TypeURI);
+      msg.append(X("}"));
+      msg.append(m_pType->getName());
+      msg.append(X(" is not defined [err:XPTY0004]"));
+      XQThrow3(XPath2ErrorException,X("SequenceType::ItemType::matchesNameType"), msg.getRawBuffer(), location);
+    }
+  }
+
+  switch(m_nTestType) {
+  case TEST_SCHEMA_ELEMENT: {
+    // retrieve the type of the element name
+    SchemaElementDecl *elemDecl = context->getDocumentCache()->getElementDecl(m_NameURI, m_pName->getName());
+    if(elemDecl == NULL) {
+      XMLBuffer msg(1023, context->getMemoryManager());
+      msg.set(X("Element {"));
+      msg.append(m_NameURI);
+      msg.append(X("}"));
+      msg.append(m_pName->getName());
+      msg.append(X(" is not defined as a global element [err:XPST0081]"));
+      XQThrow3(StaticErrorException,X("SequenceType::ItemType::staticResolution"), msg.getRawBuffer(), location);
+    }
+    break;
+  }
+  case TEST_SCHEMA_ATTRIBUTE: {
+    // retrieve the type of the attribute name
+    SchemaAttDef *attrDecl = context->getDocumentCache()->getAttributeDecl(m_NameURI, m_pName->getName());
+    if(attrDecl == NULL) {
+      XMLBuffer msg(1023, context->getMemoryManager());
+      msg.set(X("Attribute {"));
+      msg.append(m_NameURI);
+      msg.append(X("}"));
+      msg.append(m_pName->getName());
+      msg.append(X(" is not defined as a global attribute [err:XPST0081]"));
+      XQThrow3(StaticErrorException,X("SequenceType::ItemType::staticResolution"), msg.getRawBuffer(), location);
+    }
+    break;
+  }
+  default: break;
+  }
+
+  if(returnType_)
+    returnType_->staticResolution(context);
+}
+
+SequenceType::ItemType::ItemType(ItemTestType test,QualifiedName* name, QualifiedName* type)
+  : m_nTestType(test),
+    m_pName(name),
+    m_pType(type),
+    m_NameURI(0),
+    m_TypeURI(0),
+    m_bAllowNil(false),
+    argTypes_(0),
+    returnType_(0),
+    staticallyResolved_(false)
+{
+}
+
+SequenceType::ItemType::ItemType(const XMLCh *typeURI,const XMLCh *typeName, XPath2MemoryManager *mm)
+  : m_nTestType(TEST_ATOMIC_TYPE),
+    m_pName(0),
+    m_pType(new (mm) QualifiedName(typeName, mm)),
+    m_NameURI(0),
+    m_TypeURI(typeURI),
+    m_bAllowNil(false),
+    argTypes_(0),
+    returnType_(0),
+    staticallyResolved_(true)
+{
+}
+
+SequenceType::ItemType::ItemType(VectorOfSequenceTypes *argTypes, SequenceType *returnType)
+  : m_nTestType(TEST_FUNCTION),
+    m_pName(0),
+    m_pType(0),
+    m_NameURI(0),
+    m_TypeURI(0),
+    m_bAllowNil(false),
+    argTypes_(argTypes),
+    returnType_(returnType),
+    staticallyResolved_(true)
+{
 }
 
 SequenceType::ItemType::~ItemType()
 {
     delete m_pName;
     delete m_pType;
+    delete returnType_;
 }
 
-SequenceType::ItemType::ItemTestType SequenceType::ItemType::getItemTestType(void) const
+SequenceType::ItemType::ItemTestType SequenceType::ItemType::getItemTestType() const
 {
   return m_nTestType;
 }
@@ -229,7 +319,7 @@ void SequenceType::ItemType::setName(QualifiedName * name)
     m_pName=name;
 }
 
-QualifiedName *SequenceType::ItemType::getName(void) const {
+QualifiedName *SequenceType::ItemType::getName() const {
 
   return m_pName;
 }
@@ -239,127 +329,124 @@ void SequenceType::ItemType::setType(QualifiedName * type)
     m_pType=type;
 }
 
-QualifiedName *SequenceType::ItemType::getType(void) const {
+QualifiedName *SequenceType::ItemType::getType() const {
 
   return m_pType;
 }
 
-void SequenceType::ItemType::setNameURI(const XMLCh* const nameURI) {
-
-  m_NameURI = nameURI;
-}
-
-void SequenceType::ItemType::setTypeURI(const XMLCh* const typeURI) {
-
-  m_TypeURI = typeURI;
-}
-
-const XMLCh* SequenceType::ItemType::getTypeURI(const StaticContext* context, const LocationInfo *location) const
+const XMLCh* SequenceType::ItemType::getTypeURI() const
 {
-    if(m_TypeURI!=0 && *m_TypeURI!=0) {
-        return m_TypeURI;
-    }
-    if(m_pType != 0)
-    {
-        const XMLCh* prefix=m_pType->getPrefix();
-        // an empty prefix means the default element and type namespace
-        if(prefix==0 || *prefix==0)
-            return context->getDefaultElementAndTypeNS();
-        return context->getUriBoundToPrefix(prefix, location);
-    }
-    return 0;
+  return m_TypeURI;
 }
 
-const XMLCh* SequenceType::ItemType::getNameURI(const StaticContext* context, const LocationInfo *location) const
+const XMLCh* SequenceType::ItemType::getNameURI() const
 {
-    if(m_NameURI!=0 && *m_NameURI!=0)
-        return m_NameURI;
-    if(m_pName != 0)
-    {
-        const XMLCh* prefix=m_pName->getPrefix();
-        // if we are testing for an attribute, an empty prefix means empty namespace; if we are testing an element, it means 
-        // the default element and type namespace
-        if(prefix==0 || *prefix==0)
-            if(m_nTestType==TEST_ATTRIBUTE || m_nTestType==TEST_SCHEMA_ATTRIBUTE)
-                return 0;
-            else if(m_nTestType==TEST_ELEMENT || m_nTestType==TEST_SCHEMA_ELEMENT)
-                return context->getDefaultElementAndTypeNS();
+  return m_NameURI;
+}
 
-        return context->getUriBoundToPrefix(prefix, location);
+void SequenceType::getStaticType(StaticType &st, const StaticContext *context,
+                                 bool &isExact, const LocationInfo *location) const
+{
+  if(m_pItemType == 0) {
+    st = StaticType();
+    isExact = true;
+  }
+  else {
+    m_pItemType->getStaticType(st, context, isExact, location);
+
+    switch(m_nOccurrence) {
+    case EXACTLY_ONE: break;
+    case STAR: st.multiply(0, StaticType::UNLIMITED); break;
+    case PLUS: st.multiply(1, StaticType::UNLIMITED); break;
+    case QUESTION_MARK: st.multiply(0, 1); break;
     }
-    return 0;
+  }
 }
 
 void SequenceType::ItemType::getStaticType(StaticType &st, const StaticContext *context, bool &isExact, const LocationInfo *location) const
 {
-  if(this==NULL)
-  {
-    st.flags = 0;
+  if(this == NULL) {
+    st = StaticType();
     isExact = true;
     return;
   }
 
   switch(m_nTestType) {
   case TEST_ANYTHING: {
-    st.flags = StaticType::ITEM_TYPE;
+    st = StaticType::ITEM_TYPE;
     isExact = true;
     break;
   }
   case TEST_ATOMIC_TYPE: {
-    st.flags = StaticType::getFlagsFor(getTypeURI(context, location), getType()->getName(), context, isExact);
+    st = StaticType::create(m_TypeURI, m_pType->getName(), context, isExact);
     break;
   }
   case TEST_DOCUMENT: {
-    st.flags = StaticType::DOCUMENT_TYPE;
+    st = StaticType::DOCUMENT_TYPE;
     if(m_pName == NULL && m_pType == NULL)
-	    isExact = true;
+      isExact = true;
     else isExact = false;
     break;
   }
   case TEST_ELEMENT: {
-    st.flags = StaticType::ELEMENT_TYPE;
+    st = StaticType::ELEMENT_TYPE;
     if(m_pName == NULL && m_pType == NULL)
-	    isExact = true;
+      isExact = true;
     else isExact = false;
     break;
   }
   case TEST_ATTRIBUTE: {
-    st.flags = StaticType::ATTRIBUTE_TYPE;
+    st = StaticType::ATTRIBUTE_TYPE;
     if(m_pName == NULL && m_pType == NULL)
-	    isExact = true;
+      isExact = true;
     else isExact = false;
     break;
   }
   case TEST_PI: {
-    st.flags = StaticType::PI_TYPE;
+    st = StaticType::PI_TYPE;
     if(m_pName == NULL && m_pType == NULL)
-	    isExact = true;
+      isExact = true;
     else isExact = false;
     break;
   }
   case TEST_SCHEMA_ELEMENT: {
-    st.flags = StaticType::ELEMENT_TYPE;
+    st = StaticType::ELEMENT_TYPE;
     isExact = false;
     break;
   }
   case TEST_SCHEMA_ATTRIBUTE: {
-    st.flags = StaticType::ATTRIBUTE_TYPE;
+    st = StaticType::ATTRIBUTE_TYPE;
     isExact = false;
     break;
   }
   case TEST_COMMENT: {
-    st.flags = StaticType::COMMENT_TYPE;
+    st = StaticType::COMMENT_TYPE;
     isExact = true;
     break;
   }
   case TEST_TEXT: {
-    st.flags = StaticType::TEXT_TYPE;
+    st = StaticType::TEXT_TYPE;
     isExact = true;
     break;
   }
   case TEST_NODE: {
-    st.flags = StaticType::NODE_TYPE;
+    st = StaticType::NODE_TYPE;
     isExact = true;
+    break;
+  }
+  case TEST_FUNCTION: {
+    if(returnType_ == 0) {
+      st = StaticType::FUNCTION_TYPE;
+      isExact = true;
+    }
+    else {
+      StaticType ret;
+      returnType_->getStaticType(ret, context, isExact, location);
+
+      isExact = isExact && argTypes_->size() == 0;
+
+      st = StaticType(context->getMemoryManager(), argTypes_->size(), ret);
+    }
     break;
   }
   }
@@ -371,7 +458,7 @@ void SequenceType::toBuffer(XMLBuffer &buffer) const
     buffer.append(X("empty-sequence()"));
   }
   else {
-    m_pItemType->toBuffer(buffer);
+    m_pItemType->toBuffer(buffer, m_nOccurrence != EXACTLY_ONE);
 
     switch(m_nOccurrence) {
     case EXACTLY_ONE: break;
@@ -382,7 +469,23 @@ void SequenceType::toBuffer(XMLBuffer &buffer) const
   }
 }
 
-void SequenceType::ItemType::toBuffer(XMLBuffer &buffer) const
+inline void outputPrefixOrURI(const XMLCh *prefix, const XMLCh *uri, XMLBuffer &buffer)
+{
+  if(prefix != 0) {
+    buffer.append(prefix);
+    buffer.append(':');
+  }
+  else if(XPath2Utils::equals(uri, SchemaSymbols::fgURI_SCHEMAFORSCHEMA)) {
+    buffer.append(X("xs:"));
+  }
+  else if(uri != 0) {
+    buffer.append('{');
+    buffer.append(uri);
+    buffer.append('}');
+  }
+}
+
+void SequenceType::ItemType::toBuffer(XMLBuffer &buffer, bool addBrackets) const
 {
   switch(m_nTestType) {
   case TEST_ANYTHING: {
@@ -390,10 +493,7 @@ void SequenceType::ItemType::toBuffer(XMLBuffer &buffer) const
     break;
   }
   case TEST_ATOMIC_TYPE: {
-    if(m_pType->getPrefix() != 0) {
-      buffer.append(m_pType->getPrefix());
-      buffer.append(':');
-    }
+    outputPrefixOrURI(m_pType->getPrefix(), m_TypeURI, buffer);
     buffer.append(m_pType->getName());
     break;
   }
@@ -401,10 +501,7 @@ void SequenceType::ItemType::toBuffer(XMLBuffer &buffer) const
     buffer.append(X("document("));
 
     if(m_pName != NULL) {
-      if(m_pName->getPrefix() != 0) {
-        buffer.append(m_pName->getPrefix());
-        buffer.append(':');
-      }
+      outputPrefixOrURI(m_pName->getPrefix(), m_NameURI, buffer);
       buffer.append(m_pName->getName());
     }
 
@@ -413,10 +510,7 @@ void SequenceType::ItemType::toBuffer(XMLBuffer &buffer) const
         buffer.append('*');
       }
       buffer.append(X(", "));
-      if(m_pType->getPrefix() != 0) {
-        buffer.append(m_pType->getPrefix());
-        buffer.append(':');
-      }
+      outputPrefixOrURI(m_pType->getPrefix(), m_TypeURI, buffer);
       buffer.append(m_pType->getName());
     }
 
@@ -427,10 +521,7 @@ void SequenceType::ItemType::toBuffer(XMLBuffer &buffer) const
     buffer.append(X("element("));
 
     if(m_pName != NULL) {
-      if(m_pName->getPrefix() != 0) {
-        buffer.append(m_pName->getPrefix());
-        buffer.append(':');
-      }
+      outputPrefixOrURI(m_pName->getPrefix(), m_NameURI, buffer);
       buffer.append(m_pName->getName());
     }
 
@@ -439,10 +530,7 @@ void SequenceType::ItemType::toBuffer(XMLBuffer &buffer) const
         buffer.append('*');
       }
       buffer.append(X(", "));
-      if(m_pType->getPrefix() != 0) {
-        buffer.append(m_pType->getPrefix());
-        buffer.append(':');
-      }
+      outputPrefixOrURI(m_pType->getPrefix(), m_TypeURI, buffer);
       buffer.append(m_pType->getName());
     }
 
@@ -453,10 +541,7 @@ void SequenceType::ItemType::toBuffer(XMLBuffer &buffer) const
     buffer.append(X("attribute("));
 
     if(m_pName != NULL) {
-      if(m_pName->getPrefix() != 0) {
-        buffer.append(m_pName->getPrefix());
-        buffer.append(':');
-      }
+      outputPrefixOrURI(m_pName->getPrefix(), m_NameURI, buffer);
       buffer.append(m_pName->getName());
     }
 
@@ -465,10 +550,7 @@ void SequenceType::ItemType::toBuffer(XMLBuffer &buffer) const
         buffer.append('*');
       }
       buffer.append(X(", "));
-      if(m_pType->getPrefix() != 0) {
-        buffer.append(m_pType->getPrefix());
-        buffer.append(':');
-      }
+      outputPrefixOrURI(m_pType->getPrefix(), m_TypeURI, buffer);
       buffer.append(m_pType->getName());
     }
 
@@ -479,10 +561,7 @@ void SequenceType::ItemType::toBuffer(XMLBuffer &buffer) const
     buffer.append(X("processing-instruction("));
 
     if(m_pName != NULL) {
-      if(m_pName->getPrefix() != 0) {
-        buffer.append(m_pName->getPrefix());
-        buffer.append(':');
-      }
+      outputPrefixOrURI(m_pName->getPrefix(), m_NameURI, buffer);
       buffer.append(m_pName->getName());
     }
 
@@ -493,10 +572,7 @@ void SequenceType::ItemType::toBuffer(XMLBuffer &buffer) const
     buffer.append(X("schema-element("));
 
     if(m_pName != NULL) {
-      if(m_pName->getPrefix() != 0) {
-        buffer.append(m_pName->getPrefix());
-        buffer.append(':');
-      }
+      outputPrefixOrURI(m_pName->getPrefix(), m_NameURI, buffer);
       buffer.append(m_pName->getName());
     }
 
@@ -507,10 +583,7 @@ void SequenceType::ItemType::toBuffer(XMLBuffer &buffer) const
     buffer.append(X("schema-attribute("));
 
     if(m_pName != NULL) {
-      if(m_pName->getPrefix() != 0) {
-        buffer.append(m_pName->getPrefix());
-        buffer.append(':');
-      }
+      outputPrefixOrURI(m_pName->getPrefix(), m_NameURI, buffer);
       buffer.append(m_pName->getName());
     }
 
@@ -529,29 +602,50 @@ void SequenceType::ItemType::toBuffer(XMLBuffer &buffer) const
     buffer.append(X("node()"));
     break;
   }
+  case TEST_FUNCTION: {
+    if(returnType_ == 0) {
+      buffer.append(X("function()"));
+    }
+    else {
+      addBrackets = addBrackets && returnType_->getOccurrenceIndicator() == EXACTLY_ONE;
+      if(addBrackets) buffer.append('(');
+
+      buffer.append(X("function("));
+
+      bool doneOne = false;
+      for(VectorOfSequenceTypes::const_iterator i = argTypes_->begin();
+          i != argTypes_->end(); ++i) {
+        (*i)->toBuffer(buffer);
+        if(doneOne) buffer.append(',');
+        doneOne = true;
+      }
+      buffer.append(X(") as "));
+      returnType_->toBuffer(buffer);
+
+      if(addBrackets) buffer.append(')');
+    }
+    break;
+  }
   }
 }
 
-bool SequenceType::ItemType::matchesNameType(const Item::Ptr &toBeTested, DynamicContext* context,
-                                             const LocationInfo *location) const
+bool SequenceType::ItemType::matchesNameType(const Item::Ptr &toBeTested, const DynamicContext* context) const
 {
   // Check name constraint
-  if(m_pName!=NULL) {
+  if(m_pName) {
     if(toBeTested->isNode()) {
-
       ATQNameOrDerived::Ptr name = ((const Node*)(const Item*)toBeTested)->dmNodeName(context);
       if(name.isNull()) return false;
 
       // Match node name
-      const XMLCh* nodeName = m_pName->getName();
-
-      if(!(XPath2Utils::equals(nodeName, ((const ATQNameOrDerived*)name.get())->getName())))
+      if(!(XPath2Utils::equals(m_pName->getName(), ((const ATQNameOrDerived*)name.get())->getName())))
         return false;
 
       // Match node uri
-      if(!(XPath2Utils::equals(getNameURI(context, location), ((const ATQNameOrDerived*)name.get())->getURI())))
+      if(!(XPath2Utils::equals(m_NameURI, ((const ATQNameOrDerived*)name.get())->getURI())))
         return false;
     }
+    else return false;
   }
 
   //A named atomic type matches a value if the dynamic type of the
@@ -562,37 +656,18 @@ bool SequenceType::ItemType::matchesNameType(const Item::Ptr &toBeTested, Dynami
   //atomic type derived from xs:decimal.
 
   if(m_pType) {
-    if(!context->getDocumentCache()->isTypeDefined(getTypeURI(context, location), m_pType->getName()))
-    {
-      XMLBuffer msg(1023, context->getMemoryManager());
-      msg.set(X("Type {"));
-      msg.append(getTypeURI(context, location));
-      msg.append(X("}"));
-      msg.append(m_pType->getName());
-      msg.append(X(" is not defined [err:XPTY0004]"));
-      XQThrow3(XPath2ErrorException,X("SequenceType::ItemType::matchesNameType"), msg.getRawBuffer(), location);
-    }
-    bool result;
     if(toBeTested->isAtomicValue()) {
-      result = ((AnyAtomicType*)(const Item*)toBeTested)->isInstanceOfType(getTypeURI(context, location), m_pType->getName(), context);
+      return ((AnyAtomicType*)toBeTested.get())->isInstanceOfType(m_TypeURI, m_pType->getName(), context);
     } else if (toBeTested->isNode()) {
-      result = ((Node*)(const Item*)toBeTested)->hasInstanceOfType(getTypeURI(context, location), m_pType->getName(), context);
-    } else {
-      assert(false); // should never get here
+      return ((Node*)toBeTested.get())->hasInstanceOfType(m_TypeURI, m_pType->getName(), context);
     }
-    //cerr << "was toBeTested ("<<XMLString::transcode(((AnyAtomicType*)toBeTested)->getTypeURI()) << ":"
-    //     << XMLString::transcode(((AnyAtomicType*)toBeTested)->getTypeName())
-    //     << ") instance of "<< XMLString::transcode(getTypeURI(context)) << ":" 
-    //     << XMLString::transcode(m_pType->getName()) << "? "<< result<<endl;
-    
-    return result;
+    return false;
   }
 
   return true;
 }
 
-bool SequenceType::ItemType::matches(const Node::Ptr &toBeTested, DynamicContext* context,
-                                     const LocationInfo *location) const
+bool SequenceType::ItemType::matches(const Node::Ptr &toBeTested, DynamicContext* context) const
 {
   switch(m_nTestType) {
     case TEST_ELEMENT:
@@ -600,7 +675,7 @@ bool SequenceType::ItemType::matches(const Node::Ptr &toBeTested, DynamicContext
       if(toBeTested->dmNodeKind() != Node::element_string)
         return false;
 
-      if(!matchesNameType(toBeTested, context, location))
+      if(!matchesNameType(toBeTested, context))
         return false;
 
       // if the element has xsi:nil="true", m_bAllowNil MUST be true
@@ -608,16 +683,16 @@ bool SequenceType::ItemType::matches(const Node::Ptr &toBeTested, DynamicContext
         return false;
 
       return true;
-    }//case
+    }
 
     case TEST_ATTRIBUTE:
     {
       if(toBeTested->dmNodeKind() != Node::attribute_string)
         return false;
-      if(!matchesNameType(toBeTested, context, location))
+      if(!matchesNameType(toBeTested, context))
         return false;
       return true;
-    }//case
+    }
 
     case TEST_SCHEMA_ELEMENT:
     {
@@ -626,18 +701,11 @@ bool SequenceType::ItemType::matches(const Node::Ptr &toBeTested, DynamicContext
 
       // retrieve the type of the element name
       assert(m_pName!=NULL);
-      const XMLCh* elementNS=getNameURI(context, location);
+      const XMLCh* elementNS=m_NameURI;
       const XMLCh* elementName=m_pName->getName();
-      SchemaElementDecl* elemDecl=context->getDocumentCache()->getElementDecl(elementNS, elementName);
-      if(elemDecl==NULL) {
-        XMLBuffer msg(1023, context->getMemoryManager());
-        msg.set(X("Element {"));
-        msg.append(elementNS);
-        msg.append(X("}"));
-        msg.append(elementName);
-        msg.append(X(" is not defined as a global element [err:XPST0081]"));
-        XQThrow3(StaticErrorException,X("SequenceType::ItemType::matches"), msg.getRawBuffer(), location);
-      }
+      SchemaElementDecl *elemDecl=context->getDocumentCache()->getElementDecl(elementNS, elementName);
+      assert(elemDecl != NULL);
+
       // 1. The name of the candidate node matches the specified ElementName or matches the name of an element in a 
       //    substitution group headed by an element named ElementName.
       ATQNameOrDerived::Ptr name = toBeTested->dmNodeName(context);
@@ -683,7 +751,7 @@ bool SequenceType::ItemType::matches(const Node::Ptr &toBeTested, DynamicContext
         return false;
       
       return true;
-    }//case
+    }
 
     case TEST_SCHEMA_ATTRIBUTE:
     {
@@ -692,18 +760,11 @@ bool SequenceType::ItemType::matches(const Node::Ptr &toBeTested, DynamicContext
 
       // retrieve the type of the attribute name
       assert(m_pName!=NULL);
-      const XMLCh* attributeNS=getNameURI(context, location);
+      const XMLCh* attributeNS=m_NameURI;
       const XMLCh* attributeName=m_pName->getName();
       SchemaAttDef* attrDecl=context->getDocumentCache()->getAttributeDecl(attributeNS, attributeName);
-      if(attrDecl==NULL) {
-        XMLBuffer msg(1023, context->getMemoryManager());
-        msg.set(X("Attribute {"));
-        msg.append(attributeNS);
-        msg.append(X("}"));
-        msg.append(attributeName);
-        msg.append(X(" is not defined as a global attribute [err:XPST0081]"));
-        XQThrow3(StaticErrorException,X("SequenceType::ItemType::matches"), msg.getRawBuffer(), location);
-      }
+      assert(attrDecl != NULL);
+
       // 1. The name of the candidate node matches the specified AttributeName
       ATQNameOrDerived::Ptr name = toBeTested->dmNodeName(context);
       if(name.isNull()) return false;
@@ -721,18 +782,13 @@ bool SequenceType::ItemType::matches(const Node::Ptr &toBeTested, DynamicContext
         return false;
 
       return true;
-    }//case
-
-    case TEST_NODE:
-    {
-      return true;
     }
 
     case TEST_PI:
     {
       if(toBeTested->dmNodeKind() != Node::processing_instruction_string)
         return false;
-      if(!matchesNameType(toBeTested, context, location))
+      if(!matchesNameType(toBeTested, context))
         return false;
       return true;
     }
@@ -754,37 +810,39 @@ bool SequenceType::ItemType::matches(const Node::Ptr &toBeTested, DynamicContext
         if(m_pName!=NULL || m_pType!=NULL) {
 
           // if we have a constraint on name/type, they apply to the document element
-          Result children = toBeTested->dmChildren(context,0);
+          Result children = toBeTested->dmChildren(context, 0);
           Node::Ptr docElement;
           while((docElement = children->next(context)).notNull() &&
                 docElement->dmNodeKind() != Node::element_string) {}
 
           if(docElement.isNull()) return false;
 
-          if(!matchesNameType(docElement, context, location))
+          if(!matchesNameType(docElement, context))
             return false;            
         }
         return true;
     }
 
+    case TEST_NODE:
     case TEST_ANYTHING:
     {
       return true;
     }
 
     case TEST_ATOMIC_TYPE:
+    case TEST_FUNCTION:
     {
         return false;
-    }//case
-  }//switch
+    }
+
+  }
   return true;
 }
 
-bool SequenceType::ItemType::matches(const Item::Ptr &toBeTested, DynamicContext* context,
-                                     const LocationInfo *location) const
+bool SequenceType::ItemType::matches(const Item::Ptr &toBeTested, DynamicContext* context) const
 {
   if(toBeTested->isNode())
-    return matches((const Node::Ptr)toBeTested, context, location);
+    return matches((const Node::Ptr)toBeTested, context);
     
   switch(m_nTestType) {
     case TEST_ELEMENT:
@@ -807,15 +865,242 @@ bool SequenceType::ItemType::matches(const Item::Ptr &toBeTested, DynamicContext
 
     case TEST_ATOMIC_TYPE:
     {
-        return matchesNameType(toBeTested, context, location);
-    }//case
+      if(!toBeTested->isAtomicValue()) return false;
+      return matchesNameType(toBeTested, context);
+    }
 
-  }//switch
+    case TEST_FUNCTION:
+    {
+      if(!toBeTested->isFunction()) return false;
+      if(returnType_ == 0) return true;
+
+      FunctionRef *func = (FunctionRef*)toBeTested.get();
+      if(func->getNumArgs() != argTypes_->size()) return false;
+
+      return true;
+    }
+
+  }
   return true;
 }
 
+bool SequenceType::matches(const SequenceType *toBeTested, const StaticContext* context) const
+{
+  if(m_pItemType == 0)
+    return toBeTested->m_pItemType == 0;
+  if(toBeTested->m_pItemType == 0)
+    return m_nOccurrence == QUESTION_MARK || m_nOccurrence == STAR;
+
+  switch(m_nOccurrence) {
+  case EXACTLY_ONE:
+    if(toBeTested->m_nOccurrence != EXACTLY_ONE) return false;
+    break;
+  case PLUS:
+    if(toBeTested->m_nOccurrence != EXACTLY_ONE &&
+       toBeTested->m_nOccurrence != PLUS) return false;
+    break;
+  case QUESTION_MARK:
+    if(toBeTested->m_nOccurrence == PLUS) return false;
+    break;
+  case STAR:
+    break;
+  }
+
+  return m_pItemType->matches(toBeTested->m_pItemType, context);
+}
+
+bool SequenceType::ItemType::matchesNameType(const ItemType *toBeTested, const StaticContext* context) const
+{
+  if(m_pName) {
+    if(toBeTested->m_pName == 0) return false;
+    if(!XPath2Utils::equals(m_pName->getName(), toBeTested->m_pName->getName()) ||
+       !XPath2Utils::equals(m_NameURI, toBeTested->m_NameURI))
+      return false;
+  }
+
+  if(m_pType) {
+    if(toBeTested->m_pType == 0) return false;
+    if(!context->isTypeOrDerivedFromType(toBeTested->m_TypeURI, toBeTested->m_pType->getName(), m_TypeURI, m_pType->getName()))
+      return false;
+  }
+
+  return true;
+}
+
+bool SequenceType::ItemType::matches(const ItemType *toBeTested, const StaticContext* context) const
+{
+  switch(m_nTestType) {
+  case TEST_ANYTHING: {
+    return true;
+  }
+
+  case TEST_NODE: {
+    switch(toBeTested->m_nTestType) {
+    case TEST_ELEMENT:
+    case TEST_ATTRIBUTE:
+    case TEST_SCHEMA_ELEMENT:
+    case TEST_SCHEMA_ATTRIBUTE:
+    case TEST_NODE:
+    case TEST_PI:
+    case TEST_COMMENT:
+    case TEST_TEXT:
+    case TEST_DOCUMENT:
+      return true;
+    default:
+      return false;
+    }
+  }
+
+  case TEST_ELEMENT: {
+    if(toBeTested->m_nTestType != TEST_ELEMENT)
+      return false;
+    if(!matchesNameType(toBeTested, context))
+      return false;
+    if(!m_bAllowNil && toBeTested->m_bAllowNil) return false;
+    return true;
+  }
+
+  case TEST_ATTRIBUTE: {
+    if(toBeTested->m_nTestType != TEST_ATTRIBUTE)
+      return false;
+    if(!matchesNameType(toBeTested, context))
+      return false;
+    return true;
+  }
+
+  case TEST_SCHEMA_ELEMENT: {
+    if(toBeTested->m_nTestType != TEST_SCHEMA_ELEMENT)
+      return false;
+    if(!matchesNameType(toBeTested, context))
+      return false;
+    return true;
+  }
+
+  case TEST_SCHEMA_ATTRIBUTE: {
+    if(toBeTested->m_nTestType != TEST_SCHEMA_ATTRIBUTE)
+      return false;
+    if(!matchesNameType(toBeTested, context))
+      return false;
+    return true;
+  }
+
+  case TEST_PI: {
+    if(toBeTested->m_nTestType != TEST_PI)
+      return false;
+    if(!matchesNameType(toBeTested, context))
+      return false;
+    return true;
+  }
+
+  case TEST_COMMENT: {
+    if(toBeTested->m_nTestType != TEST_COMMENT)
+      return false;
+    return true;
+  }
+
+  case TEST_TEXT: {
+    if(toBeTested->m_nTestType != TEST_TEXT)
+      return false;
+    return true;
+  }
+
+  case TEST_DOCUMENT: {
+    if(toBeTested->m_nTestType != TEST_DOCUMENT)
+      return false;
+    if(!matchesNameType(toBeTested, context))
+      return false;
+    return true;
+  }
+    
+  case TEST_ATOMIC_TYPE: {
+    if(toBeTested->m_nTestType != TEST_ATOMIC_TYPE)
+      return false;
+    if(!matchesNameType(toBeTested, context))
+      return false;
+    return true;
+  }
+
+  case TEST_FUNCTION: {
+    if(toBeTested->m_nTestType != TEST_FUNCTION) return false;
+    if(returnType_ == 0) return true;
+    if(toBeTested->returnType_ == 0) return false;
+
+    if(toBeTested->argTypes_->size() != argTypes_->size()) return false;
+
+    VectorOfSequenceTypes::const_iterator i = toBeTested->argTypes_->begin();
+    VectorOfSequenceTypes::const_iterator j = argTypes_->begin();
+    for(; i != toBeTested->argTypes_->end() && j != argTypes_->end(); ++i, ++j) {
+      if(!(*i)->matches(*j, context)) return false;
+    }
+
+    if(!returnType_->matches(toBeTested->returnType_, context))
+      return false;
+    return true;
+  }
+  }
+  return true;
+}
+
+Result SequenceType::convertFunctionArg(const Result &input, DynamicContext *context, bool xpath1Compat,
+                                        const LocationInfo *location, const XMLCh *errorCode)
+{
+  // From XPath2 Spec, Section 3.1.5 (http://www.w3.org/TR/xpath20/#id-function-calls)
+
+  // The function conversion rules are used to convert an argument value to its expected type; that is, to the
+  // declared type of the function parameter. The expected type is expressed as a SequenceType. The function
+  // conversion rules are applied to a given value as follows:
+
+  Result result(input);
+
+  if(m_pItemType!=NULL)
+  {
+    SequenceType::ItemType::ItemTestType testType = getItemTestType();
+    // FS says we atomize first if the sequence type is atomic, and I think that's sensible - jpcs
+    if(testType == ItemType::TEST_ATOMIC_TYPE) {
+      result = new AtomizeResult(location, result);
+    }
+
+    // If XPath 1.0 compatibility mode is true and an argument is not of the expected type, then the following
+    // conversions are applied sequentially to the argument value V:
+    if(xpath1Compat) {
+      if(m_nOccurrence == SequenceType::EXACTLY_ONE || m_nOccurrence == SequenceType::QUESTION_MARK) {
+        result = new XPath1CompatConvertFunctionArgResult(location, result, this);
+      }
+    }
+    // If the expected type is a sequence of an atomic type (possibly with an occurrence indicator *, +, or ?),
+    // the following conversions are applied:
+    else if(testType == ItemType::TEST_ATOMIC_TYPE) {
+      const XMLCh *uri = m_pItemType->getTypeURI();
+      const XMLCh *name = m_pItemType->getType()->getName();
+
+      bool isPrimitive = false;
+      AnyAtomicType::AtomicObjectType typeIndex = context->getItemFactory()->getPrimitiveTypeIndex(uri, name, isPrimitive);
+
+      if(!XPath2Utils::equals(name, AnyAtomicType::fgDT_ANYATOMICTYPE) ||
+         !XPath2Utils::equals(uri, SchemaSymbols::fgURI_SCHEMAFORSCHEMA)) {
+        result = new PromoteUntypedResult(location, result, isPrimitive, typeIndex, uri, name);
+      }
+
+      if(XPath2Utils::equals(uri, SchemaSymbols::fgURI_SCHEMAFORSCHEMA)) {
+        if(XPath2Utils::equals(name, SchemaSymbols::fgDT_DOUBLE) ||
+           XPath2Utils::equals(name, SchemaSymbols::fgDT_FLOAT)) {
+          result = new PromoteNumericResult(location, result, typeIndex);
+        }
+
+        if(XPath2Utils::equals(name, SchemaSymbols::fgDT_STRING)) {
+          result = new PromoteAnyURIResult(location, result);
+        }
+      }
+    }
+  }
+  // If, after the above conversions, the resulting value does not match the expected type according to the
+  // rules for SequenceType Matching, a type error is raised. [err:XPTY0004] Note that the rules for
+  // SequenceType Matching permit a value of a derived type to be substituted for a value of its base type.
+  return matches(result, location, errorCode);
+}
+
 ASTNode *SequenceType::convertFunctionArg(ASTNode *arg, StaticContext *context, bool numericFunction,
-                                          const LocationInfo *location) const
+                                          const LocationInfo *location)
 {
   XPath2MemoryManager *mm = context->getMemoryManager();
 
@@ -829,7 +1114,7 @@ ASTNode *SequenceType::convertFunctionArg(ASTNode *arg, StaticContext *context, 
   {
     SequenceType::ItemType::ItemTestType testType = getItemTestType();
     // FS says we atomize first if the sequence type is atomic, and I think that's sensible - jpcs
-    if( testType == ItemType::TEST_ATOMIC_TYPE) {
+    if(testType == ItemType::TEST_ATOMIC_TYPE) {
       arg = new (mm) XQAtomize(arg, mm);
       arg->setLocationInfo(location);
     }
@@ -845,7 +1130,10 @@ ASTNode *SequenceType::convertFunctionArg(ASTNode *arg, StaticContext *context, 
     // If the expected type is a sequence of an atomic type (possibly with an occurrence indicator *, +, or ?),
     // the following conversions are applied:
     else if(testType == ItemType::TEST_ATOMIC_TYPE) {
-      const XMLCh *uri = m_pItemType->getTypeURI(context, this);
+      arg = new (mm) XQAtomize(arg, mm);
+      arg->setLocationInfo(location);
+
+      const XMLCh *uri = m_pItemType->getTypeURI();
       const XMLCh *name = m_pItemType->getType()->getName();
 
       if(numericFunction &&
@@ -897,62 +1185,63 @@ SequenceType::OccurrenceMatchesResult::OccurrenceMatchesResult(const Result &par
 Item::Ptr SequenceType::OccurrenceMatchesResult::next(DynamicContext *context)
 {
   Item::Ptr item = _parent->next(context);
-  if(_toDo) {
-    _toDo = false;
 
-    // "SequenceType matching between a given value and a given SequenceType is performed as follows:
-    //  If the SequenceType is empty, the match succeeds only if the value is an empty sequence."
-    if(_seqType->getItemType() == NULL && item.notNull()) {
+  // "SequenceType matching between a given value and a given SequenceType is performed as follows:
+  //  If the SequenceType is empty, the match succeeds only if the value is an empty sequence."
+  if(_seqType->getItemType() == NULL && item.notNull()) {
+    XMLBuffer buf;
+    buf.set(X("Sequence does not match type "));
+    _seqType->toBuffer(buf);
+    buf.append(X(" - the sequence contains items ["));
+    buf.append(X(" ["));
+    buf.append(_errorCode);
+    buf.append(X("]"));
+    XQThrow(XPath2TypeMatchException, X("SequenceType::OccurrenceMatchesResult::next"), buf.getRawBuffer());
+  }
+  // "If the SequenceType contains an ItemType and an OccurrenceIndicator, the match succeeds only if 
+  //  the number of items in the value matches the OccurrenceIndicator and each of these items matches the ItemType. "
+  if(_seqType->getItemType() &&
+     (_seqType->getOccurrenceIndicator() == PLUS || _seqType->getOccurrenceIndicator() == EXACTLY_ONE) &&
+     item.isNull()) {
+    XMLBuffer buf;
+    buf.set(X("Sequence does not match type "));
+    _seqType->toBuffer(buf);
+    buf.append(X(" - the sequence does not contain items ["));
+    buf.append(_errorCode);
+    buf.append(X("]"));
+    XQThrow(XPath2TypeMatchException, X("SequenceType::OccurrenceMatchesResult::next"), buf.getRawBuffer());
+  }
+
+  // "If the SequenceType is an ItemType with no OccurrenceIndicator, the match succeeds only if 
+  //  the value contains precisely one item and that item matches the ItemType "
+  if(_seqType->getItemType() &&
+     (_seqType->getOccurrenceIndicator() == EXACTLY_ONE || _seqType->getOccurrenceIndicator() == QUESTION_MARK) &&
+     item.notNull()) {
+    // Do the tests on the number of items up front,
+    // since often functions that cast to a single or
+    // optional item only call next once. - jpcs
+
+    Item::Ptr second = _parent->next(context);
+
+    if(second.isNull()) {
+      _parent = 0;
+    }
+    else {
       XMLBuffer buf;
       buf.set(X("Sequence does not match type "));
       _seqType->toBuffer(buf);
-      buf.append(X(" ["));
+      buf.append(X(" - the sequence contains more than one item ["));
       buf.append(_errorCode);
       buf.append(X("]"));
       XQThrow(XPath2TypeMatchException, X("SequenceType::OccurrenceMatchesResult::next"), buf.getRawBuffer());
-    }
-    // "If the SequenceType contains an ItemType and an OccurrenceIndicator, the match succeeds only if 
-    //  the number of items in the value matches the OccurrenceIndicator and each of these items matches the ItemType. "
-    if(_seqType->getItemType() &&
-       (_seqType->getOccurrenceIndicator() == PLUS || _seqType->getOccurrenceIndicator() == EXACTLY_ONE) &&
-       item.isNull()) {
-      XMLBuffer buf;
-      buf.set(X("Sequence does not match type "));
-      _seqType->toBuffer(buf);
-      buf.append(X(" - the sequence does not contain items ["));
-      buf.append(_errorCode);
-      buf.append(X("]"));
-      XQThrow(XPath2TypeMatchException, X("SequenceType::OccurrenceMatchesResult::next"), buf.getRawBuffer());
-    }
-
-    // "If the SequenceType is an ItemType with no OccurrenceIndicator, the match succeeds only if 
-    //  the value contains precisely one item and that item matches the ItemType "
-    if(_seqType->getItemType() &&
-       (_seqType->getOccurrenceIndicator() == EXACTLY_ONE || _seqType->getOccurrenceIndicator() == QUESTION_MARK) &&
-       item.notNull()) {
-      // Do the tests on the number of items up front,
-      // since often functions that cast to a single or
-      // optional item only call next once. - jpcs
-
-      Item::Ptr second = _parent->next(context);
-
-      if(second == NULLRCP) {
-        _parent = 0;
-      }
-      else {
-        XMLBuffer buf;
-        buf.set(X("Sequence does not match type "));
-        _seqType->toBuffer(buf);
-        buf.append(X(" - the sequence contains more than one item ["));
-        buf.append(_errorCode);
-        buf.append(X("]"));
-        XQThrow(XPath2TypeMatchException, X("SequenceType::OccurrenceMatchesResult::next"), buf.getRawBuffer());
-      }
     }
   }
 
-  if(item == NULLRCP) {
-    _parent = 0;
+  if(item.isNull()) {
+    *resultPointer_ = 0;
+  }
+  else {
+    *resultPointer_ = _parent;
   }
 
   return item;
@@ -982,57 +1271,18 @@ SequenceType::TypeMatchesResult::TypeMatchesResult(const Result &parent, const S
 {
 }
 
-static void itemTypeToBuffer(const Item::Ptr &item, DynamicContext *context, XMLBuffer &buffer)
-{
-  if(item->isNode()) {
-    Node *node = (Node*)item.get();
-    buffer.append(node->dmNodeKind());
-    buffer.append('(');
-
-    if(node->dmNodeKind() == Node::element_string ||
-       node->dmNodeKind() == Node::attribute_string) {
-      ATQNameOrDerived::Ptr qname = node->dmNodeName(context);
-      if(qname->getURI()) {
-        buffer.append('{');
-        buffer.append(qname->getURI());
-        buffer.append('}');
-      }
-      buffer.append(qname->getName());
-
-      buffer.append(',');
-      buffer.append(' ');
-      if(node->getTypeURI()) {
-        buffer.append('{');
-        buffer.append(node->getTypeURI());
-        buffer.append('}');
-      }
-      buffer.append(node->getTypeName());
-    }
-
-    buffer.append(')');
-  }
-  else {
-    if(item->getTypeURI()) {
-      buffer.append('{');
-      buffer.append(item->getTypeURI());
-      buffer.append('}');
-    }
-    buffer.append(item->getTypeName());
-  }
-}
-
 Item::Ptr SequenceType::TypeMatchesResult::next(DynamicContext *context)
 {
   Item::Ptr item = _parent->next(context);
-  if(item == NULLRCP) {
+  if(item.isNull()) {
     _parent = 0;
   }
-  else if(!_seqType->getItemType()->matches(item, context, this)) {
+  else if(!_seqType->getItemType()->matches(item, context)) {
     XMLBuffer buf;
     buf.set(X("Sequence does not match type "));
     _seqType->toBuffer(buf);
     buf.append(X(" - found item of type "));
-    itemTypeToBuffer(item, context, buf);
+    item->typeToBuffer(context, buf);
     buf.append(X(" ["));
     buf.append(_errorCode);
     buf.append(X("]"));

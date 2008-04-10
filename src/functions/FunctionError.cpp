@@ -55,8 +55,9 @@ ASTNode *FunctionError::staticTyping(StaticContext *context)
 {
   _src.clear();
 
-//   // we need to specify ITEM_TYPE, or a sequence type applied on us will always fail
-//   _src.getStaticType().flags = StaticType::ITEM_TYPE;
+  // we need to specify item()*, or we get constant folded away all the time
+  _src.getStaticType() = StaticType(StaticType::ITEM_TYPE, 0, StaticType::UNLIMITED);
+
   _src.forceNoFolding(true);
   _src.possiblyUpdating(true);
   return calculateSRCForArguments(context);

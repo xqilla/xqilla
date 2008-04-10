@@ -65,13 +65,16 @@ ASTNode* XQPredicate::staticTyping(StaticContext *context)
 
   expr_ = expr_->staticTyping(context);
   _src.copy(expr_->getStaticAnalysis());
+  _src.getStaticType().setCardinality(0, _src.getStaticType().getMax());
 
   if(expr_->getType() == SEQUENCE &&
      ((XQSequence*)expr_)->getItemConstructors().empty()) {
     return expr_;
   }
 
-  AutoContextItemTypeReset contextTypeReset(context, expr_->getStaticAnalysis().getStaticType());
+  StaticType ciType = expr_->getStaticAnalysis().getStaticType();
+  ciType.setCardinality(1, 1);
+  AutoContextItemTypeReset contextTypeReset(context, ciType);
 
   predicate_ = predicate_->staticTyping(context);
 
@@ -116,12 +119,16 @@ Result XQPredicate::createResult(DynamicContext* context, int flags) const
     parent = new SequenceResult(this, seq);
   }
   if(src.getStaticType().isType(StaticType::NUMERIC_TYPE) &&
+     src.getStaticType().getMin() <= 1 &&
+     src.getStaticType().getMax() >= 1 &&
      !src.isContextItemUsed() && !src.isContextPositionUsed()) {
     // It only contains numeric type results, and doesn't use the context
     // item or position
     return new NumericPredicateFilterResult(parent, predicate_, contextSize);
   }
-  else if(!src.getStaticType().containsType(StaticType::NUMERIC_TYPE)) {
+  else if(!src.getStaticType().containsType(StaticType::NUMERIC_TYPE) ||
+	  src.getStaticType().getMin() > 1 ||
+	  src.getStaticType().getMax() < 1) {
     // It only contains non-numeric results
     return new NonNumericPredicateFilterResult(parent, predicate_, contextSize);
   }
@@ -225,11 +232,6 @@ Item::Ptr PredicateFilterResult::next(DynamicContext *context)
   return result;
 }
 
-void PredicateFilterResult::skip()
-{
-  parent_->skip();
-}
-
 std::string PredicateFilterResult::asString(DynamicContext *context, int indent) const
 {
   return "predicatefilterresult";
@@ -286,11 +288,6 @@ Item::Ptr NonNumericPredicateFilterResult::next(DynamicContext *context)
   }
 
   return result;
-}
-
-void NonNumericPredicateFilterResult::skip()
-{
-  parent_->skip();
 }
 
 std::string NonNumericPredicateFilterResult::asString(DynamicContext *context, int indent) const
@@ -360,11 +357,6 @@ Item::Ptr NumericPredicateFilterResult::next(DynamicContext *context)
   }
 
   return 0;
-}
-
-void NumericPredicateFilterResult::skip()
-{
-  parent_->skip();
 }
 
 std::string NumericPredicateFilterResult::asString(DynamicContext *context, int indent) const

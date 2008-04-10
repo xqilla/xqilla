@@ -28,15 +28,18 @@
 #include <xqilla/exceptions/FunctionException.hpp>
 #include <xqilla/exceptions/XPath2TypeCastException.hpp>
 #include <xqilla/ast/StaticAnalysis.hpp>
+#include <xqilla/ast/XQContextItem.hpp>
 #include <xqilla/exceptions/XPath2TypeMatchException.hpp>
 
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 #include <assert.h>
 
+XERCES_CPP_NAMESPACE_USE
+
 const XMLCh FunctionNumber::name[] = {
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_u, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_m, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_b, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_r, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chNull 
+  chLatin_n, chLatin_u, chLatin_m, 
+  chLatin_b, chLatin_e, chLatin_r, 
+  chNull 
 };
 const unsigned int FunctionNumber::minArgs = 0;
 const unsigned int FunctionNumber::maxArgs = 1;
@@ -53,64 +56,40 @@ FunctionNumber::FunctionNumber(const VectorOfASTNodes &args, XPath2MemoryManager
 
 ASTNode* FunctionNumber::staticResolution(StaticContext *context)
 {
-  if(!_args.empty() && (*_args.begin())->getType()==ASTNode::CONTEXT_ITEM)
-      _args.clear();
+  XPath2MemoryManager *mm = context->getMemoryManager();
+
+  if(_args.empty()) {
+    XQContextItem *ci = new (mm) XQContextItem(mm);
+    ci->setLocationInfo(this);
+    _args.push_back(ci);
+  }
+
   return resolveArguments(context);
 }
 
 ASTNode *FunctionNumber::staticTyping(StaticContext *context)
 {
   _src.clear();
-
-  if(_args.empty()) {
-    _src.contextItemUsed(true);
-  }
-  _src.getStaticType().flags = StaticType::DOUBLE_TYPE;
+  _src.getStaticType() = StaticType::DOUBLE_TYPE;
   return calculateSRCForArguments(context);
 }
 
 Sequence FunctionNumber::createSequence(DynamicContext* context, int flags) const
 {
-  XPath2MemoryManager* memMgr = context->getMemoryManager();
-  
-  Item::Ptr item = 0;
-  if(getNumArgs() == 0) {
-    item = context->getContextItem();
-    if(item == NULLRCP) {
-      XQThrow(FunctionException, X("FunctionNumber::createSequence"), X("Undefined context item in fn:number [err:XPDY0002]"));
-    }
-
-    if(item->isNode())
-    {
-        Sequence typedValue = ((Node *)item.get())->dmTypedValue(context);
-        if(typedValue.getLength() < 1) {
-          XQThrow(XPath2TypeMatchException, X("FunctionNumber::createSequence"),
-                  X("SequenceType matching failed: the sequence does not contain items [err:XPTY0004]"));
-        }
-        if(typedValue.getLength() > 1) {
-          XQThrow(XPath2TypeMatchException, X("FunctionNumber::createSequence"),
-                  X("SequenceType matching failed: the sequence contains more than one item [err:XPTY0004]"));
-        }
-        item = typedValue.first();
-    }
-  }
-  else {
-    item = getParamNumber(1, context)->next(context);
-  }
-
-  return Sequence(number((const AnyAtomicType::Ptr )item, context), memMgr);
+  return Sequence(number((AnyAtomicType*)getParamNumber(1, context)->next(context).get(), context),
+                  context->getMemoryManager());
 }
 
 Item::Ptr FunctionNumber::number(const AnyAtomicType::Ptr &item, DynamicContext *context)
 {
-  if(item == NULLRCP) {
-    return (const Item::Ptr)context->getItemFactory()->createDouble(Numeric::NaN_string, context);
+  if(item.isNull()) {
+    return context->getItemFactory()->createDouble(Numeric::NaN_string, context);
   }
   else {
     try {
-      return (const Item::Ptr)item->castAs(AnyAtomicType::DOUBLE, 0, 0, context);
+      return item->castAs(AnyAtomicType::DOUBLE, 0, 0, context);
     } catch (XPath2TypeCastException &e) {
-      return (const Item::Ptr)context->getItemFactory()->createDouble(Numeric::NaN_string, context);
+      return context->getItemFactory()->createDouble(Numeric::NaN_string, context);
     }   
   }
 }

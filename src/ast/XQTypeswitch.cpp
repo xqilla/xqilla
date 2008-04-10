@@ -31,6 +31,7 @@
 #include <xqilla/exceptions/XPath2TypeMatchException.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>
 #include <xqilla/update/PendingUpdateList.hpp>
+#include <xqilla/runtime/ClosureResult.hpp>
 
 XQTypeswitch::  XQTypeswitch(ASTNode *expr, Cases *cases, Case *defaultCase, XPath2MemoryManager *mm)
   : ASTNodeImpl(mm),
@@ -80,48 +81,44 @@ ASTNode* XQTypeswitch::staticTyping(StaticContext *context)
   // Call static resolution on the clauses
   bool possiblyUpdating = true;
   _src.add(exprSrc);
-  _src.getStaticType().flags = 0;
-  _src.setProperties((unsigned int)-1);
 
-  default_->staticTyping(expr_->getStaticAnalysis(), context, _src, possiblyUpdating);
+  default_->staticTyping(expr_->getStaticAnalysis(), context, _src, possiblyUpdating, /*first*/true);
 
   Cases::iterator it;
   for(it = cases_->begin(); it != cases_->end(); ++it) {
-    (*it)->staticTyping(expr_->getStaticAnalysis(), context, _src, possiblyUpdating);
+    (*it)->staticTyping(expr_->getStaticAnalysis(), context, _src, possiblyUpdating, /*first*/false);
   }
 
   if(exprSrc.isUsed()) {
     // Do basic static type checking on the clauses,
     // to eliminate ones which will never be matches,
     // and find ones which will always be matched.
+    const StaticType &sType = expr_->getStaticAnalysis().getStaticType();
+
     Cases newCases(XQillaAllocator<Case*>(context->getMemoryManager()));
     for(it = cases_->begin(); it != cases_->end(); ++it) {
-      const SequenceType::ItemType *itemType = (*it)->getSequenceType()->getItemType();
-      if(itemType != NULL) {
-        const StaticType &sType = expr_->getStaticAnalysis().getStaticType();
+      bool isExact;
+      StaticType cseType;
+      (*it)->getSequenceType()->getStaticType(cseType, context, isExact, *it);
 
-        bool isExact;
-        StaticType cseType;
-        itemType->getStaticType(cseType, context, isExact, *it);
-
-        if(isExact && (sType.flags & cseType.flags) != 0 &&
-           (sType.flags & ~cseType.flags) == 0 &&
-           (*it)->getSequenceType()->getOccurrenceIndicator() == SequenceType::STAR) {
-          // It always matches, so set this clause as the
-          // default clause and remove all the others
-          newCases.clear();
-          default_ = *it;
-          default_->setSequenceType(0);
-          break;
-        }
-        else if((sType.flags & cseType.flags) == 0 &&
-                ((*it)->getSequenceType()->getOccurrenceIndicator() == SequenceType::EXACTLY_ONE ||
-                 (*it)->getSequenceType()->getOccurrenceIndicator() == SequenceType::PLUS)) {
-          // It never matches, so don't add it to the new clauses
-        }
-        else {
-          newCases.push_back(*it);
-        }
+      if(isExact && sType.isType(cseType) &&
+         sType.getMin() >= cseType.getMin() &&
+         sType.getMax() <= cseType.getMax()) {
+        // It always matches, so set this clause as the
+        // default clause and remove all the others
+        newCases.clear();
+        default_ = *it;
+        default_->setSequenceType(0);
+        break;
+      }
+      else if((cseType.getMin() > sType.getMax()) ||
+              (cseType.getMax() < sType.getMin()) ||
+	      (!sType.containsType(cseType) &&
+		      (cseType.getMin() > 0 || sType.getMin() > 0))) {
+        // It never matches, so don't add it to the new clauses
+      }
+      else {
+        newCases.push_back(*it);
       }
     }
 
@@ -132,13 +129,11 @@ ASTNode* XQTypeswitch::staticTyping(StaticContext *context)
       possiblyUpdating = true;
       _src.clear();
       _src.add(exprSrc);
-      _src.getStaticType().flags = 0;
-      _src.setProperties((unsigned int)-1);
 
-      default_->staticTyping(expr_->getStaticAnalysis(), context, _src, possiblyUpdating);
+      default_->staticTyping(expr_->getStaticAnalysis(), context, _src, possiblyUpdating, /*first*/true);
 
       for(it = cases_->begin(); it != cases_->end(); ++it) {
-        (*it)->staticTyping(expr_->getStaticAnalysis(), context, _src, possiblyUpdating);
+        (*it)->staticTyping(expr_->getStaticAnalysis(), context, _src, possiblyUpdating, /*first*/false);
       }
     }
 
@@ -173,9 +168,7 @@ ASTNode* XQTypeswitch::staticTyping(StaticContext *context)
     // Statically resolve the default clause
     possiblyUpdating = true;
     _src.clear();
-    _src.getStaticType().flags = 0;
-    _src.setProperties((unsigned int)-1);
-    default_->staticTyping(expr_->getStaticAnalysis(), context, _src, possiblyUpdating);
+    default_->staticTyping(expr_->getStaticAnalysis(), context, _src, possiblyUpdating, /*first*/true);
 
     // Constant fold if possible
     if(!_src.isUsed()) {
@@ -202,15 +195,26 @@ void XQTypeswitch::Case::staticResolution(StaticContext* context)
 }
 
 void XQTypeswitch::Case::staticTyping(const StaticAnalysis &var_src, StaticContext* context,
-                                      StaticAnalysis &src, bool &possiblyUpdating)
+                                      StaticAnalysis &src, bool &possiblyUpdating, bool first)
 {
-  VariableTypeStore* varStore=context->getVariableTypeStore();
+  VariableTypeStore* varStore = context->getVariableTypeStore();
+
+  StaticAnalysis caseSrc(context->getMemoryManager());
+  caseSrc.copy(var_src);
+
+  if(seqType_ != 0) {
+    bool isExact;
+    StaticType type;
+    seqType_->getStaticType(type, context, isExact, this);
+	  
+    caseSrc.getStaticType() &= type;
+  }
 
   if(qname_ != 0) {
     varStore->addLogicalBlockScope();
     uri_ = context->getUriBoundToPrefix(XPath2NSUtils::getPrefix(qname_, context->getMemoryManager()), this);
     name_ = XPath2NSUtils::getLocalName(qname_);
-    varStore->declareVar(uri_, name_, var_src);
+    varStore->declareVar(uri_, name_, caseSrc);
   }
 
   StaticAnalysis newSrc(context->getMemoryManager());
@@ -242,8 +246,13 @@ void XQTypeswitch::Case::staticTyping(const StaticAnalysis &var_src, StaticConte
   if(possiblyUpdating)
     possiblyUpdating = expr_->getStaticAnalysis().isPossiblyUpdating();
 
-  src.getStaticType().typeUnion(expr_->getStaticAnalysis().getStaticType());
-  src.setProperties(src.getProperties() & expr_->getStaticAnalysis().getProperties());
+  if(first) {
+    src.getStaticType() = expr_->getStaticAnalysis().getStaticType();
+    src.setProperties(expr_->getStaticAnalysis().getProperties());
+  } else {
+    src.getStaticType() |= expr_->getStaticAnalysis().getStaticType();
+    src.setProperties(src.getProperties() & expr_->getStaticAnalysis().getProperties());
+  }
   src.add(newSrc);
 }
 
@@ -281,8 +290,8 @@ const XQTypeswitch::Case *XQTypeswitch::chooseCase(DynamicContext *context, Sequ
   return cse;
 }
 
-void XQTypeswitch::generateEvents(EventHandler *events, DynamicContext *context,
-                                  bool preserveNS, bool preserveType) const
+EventGenerator::Ptr XQTypeswitch::generateEvents(EventHandler *events, DynamicContext *context,
+                                            bool preserveNS, bool preserveType) const
 {
   SingleVarStore scope;
   const Case *cse = chooseCase(context, scope.value);
@@ -291,7 +300,7 @@ void XQTypeswitch::generateEvents(EventHandler *events, DynamicContext *context,
   if(cse->isVariableUsed())
     scope.setAsVariableStore(cse->getURI(), cse->getName(), context);
 
-  cse->getExpression()->generateEvents(events, context, preserveNS, preserveType);
+  return new ClosureEventGenerator(cse->getExpression(), context, preserveNS, preserveType);
 }
 
 PendingUpdateList XQTypeswitch::createUpdateList(DynamicContext *context) const
@@ -308,31 +317,22 @@ PendingUpdateList XQTypeswitch::createUpdateList(DynamicContext *context) const
 
 XQTypeswitch::TypeswitchResult::TypeswitchResult(const XQTypeswitch *di)
   : ResultImpl(di),
-    _di(di),
-    _scopeUsed(false),
-    _result(0)
+    _di(di)
 {
 }
 
-Item::Ptr XQTypeswitch::TypeswitchResult::next(DynamicContext *context)
+Item::Ptr XQTypeswitch::TypeswitchResult::nextOrTail(Result &tail, DynamicContext *context)
 {
+  SingleVarStore scope;
+  const Case *cse = _di->chooseCase(context, scope.value);
+
   AutoVariableStoreReset reset(context);
-
-  if(_result.isNull()) {
-    const Case *cse = _di->chooseCase(context, _scope.value);
-
-    if(cse->isVariableUsed()) {
-      _scope.setAsVariableStore(cse->getURI(), cse->getName(), context);
-      _scopeUsed = true;
-    }
-
-    _result = cse->getExpression()->createResult(context);
-  }
-  else if(_scopeUsed) {
-    context->setVariableStore(&_scope);
+  if(cse->isVariableUsed()) {
+    scope.setAsVariableStore(cse->getURI(), cse->getName(), context);
   }
 
-  return _result->next(context);
+  tail = ClosureResult::create(cse->getExpression(), context);
+  return 0;
 }
 
 std::string XQTypeswitch::TypeswitchResult::asString(DynamicContext *context, int indent) const

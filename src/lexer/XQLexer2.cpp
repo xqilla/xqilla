@@ -28,35 +28,54 @@
 XERCES_CPP_NAMESPACE_USE;
 
 XQLexer::XQLexer(XPath2MemoryManager* memMgr, const XMLCh *queryFile, const XMLCh* query, XQilla::Language lang)
-  : firstToken_(true),
-    m_szQueryFile(queryFile),
+  : Lexer(memMgr, lang, queryFile, 1, 1),
+    firstToken_(_LANG_XQUERY_),
+    parseAttrValueTemplate_(false),
     m_szQuery(XPath2Utils::normalizeEOL(query, memMgr)),
     m_nLength(XMLString::stringLen(m_szQuery)),
     m_position(0),
     m_index(0),
-    m_memMgr(memMgr),
-    m_lineno(1),
-    m_columnno(1),
-    m_nOpenComments(0),
-    m_bGenerateErrorException(true),
-    m_language(lang)
+    m_nOpenComments(0)
+{
+  if((m_language & XQilla::XPATH2) != 0) {
+    firstToken_ = _LANG_XPATH2_;
+  } else if((m_language & XQilla::FULLTEXT) != 0) {
+    if((m_language & XQilla::UPDATE) != 0) {
+      firstToken_ = _LANG_XQUERY_FULLTEXT_UPDATE_;
+    } else {
+      firstToken_ = _LANG_XQUERY_FULLTEXT_;
+    }
+  } else if((m_language & XQilla::UPDATE) != 0) {
+    firstToken_ = _LANG_XQUERY_UPDATE_;
+  } else {
+    firstToken_ = _LANG_XQUERY_;
+  }
+}
+
+XQLexer::XQLexer(XPath2MemoryManager* memMgr, const XMLCh *queryFile, int line, int column, const XMLCh* query,
+                 XQilla::Language lang, bool attrValueTemplate)
+  : Lexer(memMgr, lang, queryFile, line, column),
+    firstToken_(MYEOF),
+    parseAttrValueTemplate_(attrValueTemplate),
+    m_szQuery(XPath2Utils::normalizeEOL(query, memMgr)),
+    m_nLength(XMLString::stringLen(m_szQuery)),
+    m_position(0),
+    m_index(0),
+    m_nOpenComments(0)
 {
 }
 
 XQLexer::XQLexer(const XQLexer *other)
-  : firstToken_(false),
-    m_szQueryFile(other->m_szQueryFile),
+  : Lexer(other->mm_, other->m_language, other->m_szQueryFile, 1, 1),
+    firstToken_(MYEOF),
+    parseAttrValueTemplate_(false),
     m_szQuery(other->m_szQuery + other->m_index),
     m_nLength(other->m_nLength - other->m_index),
     m_position(0),
     m_index(0),
-    m_memMgr(other->m_memMgr),
-    m_lineno(1),
-    m_columnno(1),
-    m_nOpenComments(0),
-    m_bGenerateErrorException(false),
-    m_language(other->m_language)
+    m_nOpenComments(0)
 {
+  m_bGenerateErrorException = false;
   yy_start = other->yy_start;
 }
 
@@ -90,27 +109,34 @@ bool XQLexer::isCommentClosed()
 
 XMLCh* XQLexer::allocate_string(const XMLCh* src)
 {
-  return (XMLCh*)m_memMgr->getPooledString(src);
+  return (XMLCh*)mm_->getPooledString(src);
 }
 
 XMLCh* XQLexer::allocate_string(const XMLCh* src, int len)
 {
-  return (XMLCh*)XPath2Utils::subString(src,0,len,m_memMgr);
+  return (XMLCh*)XPath2Utils::subString(src,0,len,mm_);
 }
 
-XMLCh *XQLexer::allocate_string_and_unescape(XMLCh *src, int len, XMLCh quoteChar, bool unescapeBrace)
+XMLCh *XQLexer::allocate_string_and_unescape(XMLCh *src, int len, XMLCh quoteChar, bool unescapeBrace,
+                                             bool unescapeEntities, bool unescapeCDATA)
 {
   // The input to this method has already been validated by the lexer,
   // so we don't need to do error checking
 
   *(src + len) = 0; // Null terminate the source
 
-  XMLCh *result = (XMLCh*)m_memMgr->allocate((len + 1) * sizeof(XMLCh));
+  XMLCh *result = (XMLCh*)mm_->allocate((len + 1) * sizeof(XMLCh));
   XMLCh *dst = result;
 
   for(; *src; ++src) {
     switch(*src) {
     case '&':
+      if(!unescapeEntities) {
+        *dst = *src;
+        ++dst;
+        break;
+      }
+
       ++src;
       switch(*src) {
       case 'a':
@@ -194,7 +220,7 @@ XMLCh *XQLexer::allocate_string_and_unescape(XMLCh *src, int len, XMLCh quoteCha
       ++dst;
       break;
     case '<': {
-      if(quoteChar != 0) {
+      if(!unescapeCDATA) {
         *dst = *src;
         ++dst;
         break;
@@ -269,33 +295,44 @@ void XQLexer::LexerError( const char* msg )
   error(msg);
 }
 
-void XQLexer::Error( const char* msg, int line, int col )
+void Lexer::Error( const char* msg, int line, int col )
 {
   if(!m_bGenerateErrorException)
     return;
   if(strstr(msg, "[err:")!=NULL)
-    XQSimpleThrow(X(msg), m_szQueryFile, m_lineno, m_columnno);
-  const XMLCh* szMsg=XPath2Utils::concatStrings(X(msg), X(" [err:XPST0003]"), m_memMgr);
-  XQSimpleThrow(szMsg, m_szQueryFile, m_lineno, m_columnno);
+    XQSimpleThrow(X(msg), m_szQueryFile, line, col);
+  const XMLCh* szMsg=XPath2Utils::concatStrings(X(msg), X(" [err:XPST0003]"), mm_);
+  XQSimpleThrow(szMsg, m_szQueryFile, line, col);
 }
 
-void XQLexer::Error(XQilla::Language lang, const char *where, unsigned int line, unsigned int col)
+void Lexer::Error(XQilla::Language lang, const char *where, unsigned int line, unsigned int col)
 {
   if(!m_bGenerateErrorException)
     return;
-  char *l;
-  switch(lang) {
-  case XQilla::XQUERY: l = "XQuery"; break;
-  case XQilla::XPATH2: l = "XPath 2.0"; break;
-  case XQilla::XQUERY_FULLTEXT: l = "XQuery Full-Text"; break;
-  case XQilla::XPATH2_FULLTEXT: l = "XPath 2.0 Full-Text"; break;
-  case XQilla::XQUERY_UPDATE: l = "XQuery Update"; break;
-  case XQilla::XQUERY_FULLTEXT_UPDATE: l = "XQuery Full-Text Update"; break;
+
+  XMLBuffer buf;
+  buf.append(X("Invalid "));
+
+  if((lang & XQilla::XPATH2) != 0) {
+    buf.append(X("XPath 2.0"));
+  } else {
+    buf.append(X("XQuery"));
+  }
+  if((lang & XQilla::FULLTEXT) != 0) {
+    buf.append(X(" Full-Text"));
+  }
+  if((lang & XQilla::UPDATE) != 0) {
+    buf.append(X(" Update"));
+  }
+  if((lang & XQilla::EXTENSIONS) != 0) {
+    buf.append(X(" with extensions"));
   }
 
-  const XMLCh *szMsg = XPath2Utils::concatStrings(X("Invalid "), X(l), X(" syntax: "), m_memMgr);
-  szMsg = XPath2Utils::concatStrings(szMsg, X(where), X(" [err:XPST0003]"), m_memMgr);
-  XQSimpleThrow(szMsg, m_szQueryFile, line, col);
+  buf.append(X(" syntax: "));
+  buf.append(X(where));
+  buf.append(X(" [err:XPST0003]"));
+
+  XQSimpleThrow(buf.getRawBuffer(), m_szQueryFile, line, col);
 }
 
 void XQLexer::userAction(YY_CHAR* text, int length)

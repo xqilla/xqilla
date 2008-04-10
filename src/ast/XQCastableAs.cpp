@@ -68,9 +68,9 @@ ASTNode* XQCastableAs::staticResolution(StaticContext *context)
   _exprType->staticResolution(context);
 
   const SequenceType::ItemType* itemType = _exprType->getItemType();
-  if((XPath2Utils::equals(itemType->getTypeURI(context, this), XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA) &&
+  if((XPath2Utils::equals(itemType->getTypeURI(), XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA) &&
       XPath2Utils::equals(itemType->getType()->getName(), szNOTATION)) ||
-     (XPath2Utils::equals(itemType->getTypeURI(context, this), FunctionConstructor::XMLChXPath2DatatypesURI) &&
+     (XPath2Utils::equals(itemType->getTypeURI(), FunctionConstructor::XMLChXPath2DatatypesURI) &&
       XPath2Utils::equals(itemType->getType()->getName(), AnyAtomicType::fgDT_ANYATOMICTYPE)))
     XQThrow(TypeErrorException,X("XQCastableAs::staticResolution"),
             X("The target type of a castable expression must be an atomic type that is in the in-scope schema types "
@@ -80,7 +80,7 @@ ASTNode* XQCastableAs::staticResolution(StaticContext *context)
     XQThrow(TypeErrorException,X("XQCastableAs::staticResolution"),X("Cannot cast to a non atomic type"));
 
   _typeIndex = context->getItemFactory()->
-    getPrimitiveTypeIndex(_exprType->getTypeURI(context),
+    getPrimitiveTypeIndex(_exprType->getTypeURI(),
                           _exprType->getConstrainingType()->getName(), _isPrimitive);
 
   // If this is a cast to xs:QName or xs:NOTATION and the argument is a string literal
@@ -100,7 +100,7 @@ ASTNode* XQCastableAs::staticResolution(StaticContext *context)
       }
       else {
         ((AnyAtomicType*)((XQLiteral*)_expr)->getItemConstructor()->createItem(dContext).get())->
-          castAsNoCheck(_typeIndex, _exprType->getTypeURI(dContext),
+          castAsNoCheck(_typeIndex, _exprType->getTypeURI(),
                         _exprType->getConstrainingType()->getName(), dContext);
       }
       result = true;
@@ -129,7 +129,7 @@ ASTNode *XQCastableAs::staticTyping(StaticContext *context)
 
   _expr = _expr->staticTyping(context);
 
-  _src.getStaticType().flags = StaticType::BOOLEAN_TYPE;
+  _src.getStaticType() = StaticType::BOOLEAN_TYPE;
   _src.add(_expr->getStaticAnalysis());
 
   if(_expr->isConstant()) {
@@ -186,7 +186,7 @@ Item::Ptr XQCastableAs::CastableAsResult::getSingleResult(DynamicContext *contex
       }
       else {
         result = ((const AnyAtomicType::Ptr)first)->castable(_di->getTypeIndex(),
-                                                             _di->getSequenceType()->getTypeURI(context),
+                                                             _di->getSequenceType()->getTypeURI(),
                                                              _di->getSequenceType()->getConstrainingType()->getName(),
                                                              context);
       }

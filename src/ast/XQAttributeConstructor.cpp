@@ -46,14 +46,15 @@ XERCES_CPP_NAMESPACE_USE
 
 XQAttributeConstructor::XQAttributeConstructor(ASTNode* name, VectorOfASTNodes* children, XPath2MemoryManager* mm)
   : XQDOMConstructor(mm),
+    namespaceExpr(0),
     m_name(name),
     m_children(children)
 {
   setType(ASTNode::DOM_CONSTRUCTOR);
 }
 
-void XQAttributeConstructor::generateEvents(EventHandler *events, DynamicContext *context,
-                                            bool preserveNS, bool preserveType) const
+EventGenerator::Ptr XQAttributeConstructor::generateEvents(EventHandler *events, DynamicContext *context,
+                                                      bool preserveNS, bool preserveType) const
 {
   AnyAtomicType::Ptr itemName = m_name->createResult(context)->next(context);
   const ATQNameOrDerived* pQName = (const ATQNameOrDerived*)itemName.get();
@@ -83,6 +84,7 @@ void XQAttributeConstructor::generateEvents(EventHandler *events, DynamicContext
   }
 
   events->attributeEvent(emptyToNull(prefix), emptyToNull(uri), name, value.getRawBuffer(), typeURI, typeName);
+  return 0;
 }
 
 ASTNode* XQAttributeConstructor::staticResolution(StaticContext *context)
@@ -132,13 +134,12 @@ ASTNode* XQAttributeConstructor::staticTyping(StaticContext *context)
     }
   }
 
-  _src.getStaticType().flags = StaticType::ATTRIBUTE_TYPE;
-  _src.forceNoFolding(true);
+  _src.getStaticType() = StaticType::ATTRIBUTE_TYPE;
   _src.creative(true);
   _src.setProperties(StaticAnalysis::DOCORDER | StaticAnalysis::GROUPED |
                      StaticAnalysis::PEER | StaticAnalysis::SUBTREE | StaticAnalysis::SAMEDOC |
                      StaticAnalysis::ONENODE);
-  return this; // Never constant fold
+  return this;
 }
 
 const XMLCh* XQAttributeConstructor::getNodeType() const

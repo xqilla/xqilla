@@ -53,7 +53,7 @@ ASTNode *FunctionCurrentDate::staticTyping(StaticContext *context)
 {
   _src.clear();
 
-  _src.getStaticType().flags = StaticType::DATE_TYPE;
+  _src.getStaticType() = StaticType::DATE_TYPE;
   _src.currentTimeUsed(true);
   return calculateSRCForArguments(context);
 }

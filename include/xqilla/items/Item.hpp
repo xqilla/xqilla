@@ -26,6 +26,10 @@
 #include <xqilla/framework/ReferenceCounted.hpp>
 #include <xercesc/util/XercesDefs.hpp>
 
+XERCES_CPP_NAMESPACE_BEGIN
+class XMLBuffer;
+XERCES_CPP_NAMESPACE_END
+
 // forward declare when we can
 class XPath2MemoryManager;
 class DynamicContext;
@@ -42,6 +46,8 @@ public:
 
   virtual bool isAtomicValue() const = 0;
 
+  virtual bool isFunction() const = 0;
+
   virtual const XMLCh* asString(const DynamicContext* context) const = 0;
 
   virtual const XMLCh* getTypeURI() const = 0;
@@ -50,6 +56,9 @@ public:
 
   /** Method for returning arbitrary interfaces from the implementations */
   virtual void *getInterface(const XMLCh *name) const = 0;
+
+  /** Debug method to output the type of the item in SequenceType notation */
+  virtual void typeToBuffer(DynamicContext *context, XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &buffer) const = 0;
 
 protected:
   Item() {}
@@ -61,5 +70,5 @@ private:
   Item & operator=(const Item & item) ;
 };
 
-#endif // _ITEM_HPP
+#endif
 

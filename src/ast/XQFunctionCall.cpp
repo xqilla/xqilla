@@ -24,8 +24,8 @@
 #include <xqilla/exceptions/StaticErrorException.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/utils/XPath2NSUtils.hpp>
+#include <xqilla/utils/XPath2Utils.hpp>
 
-#include <xercesc/util/XMLString.hpp>
 #include <xercesc/framework/XMLBuffer.hpp>
 
 XERCES_CPP_NAMESPACE_USE;
@@ -59,9 +59,7 @@ ASTNode* XQFunctionCall::staticResolution(StaticContext *context)
     buf.append(X("}"));
     buf.append(name);
     buf.append(X(" with "));
-    XMLCh szNumBuff[20];
-    XMLString::binToText(args_ ? (unsigned int)args_->size() : 0, szNumBuff, 19, 10);
-    buf.append(szNumBuff);
+    XPath2Utils::numToBuf(args_ ? (unsigned int)args_->size() : 0, buf);
     buf.append(X(" arguments is not defined [err:XPST0017]"));
 
     XQThrow(StaticErrorException, X("XQFunctionCall::staticResolution"), buf.getRawBuffer());

@@ -39,7 +39,7 @@ const unsigned int FunctionCeiling::maxArgs = 1;
 FunctionCeiling::FunctionCeiling(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : NumericFunction(name, minArgs, maxArgs, "anyAtomicType?", args, memMgr)
 {
-  _src.getStaticType().flags = StaticType::NUMERIC_TYPE;
+  _src.getStaticType() = StaticType(StaticType::NUMERIC_TYPE, 0, 1);
 }
 
 Sequence FunctionCeiling::createSequence(DynamicContext* context, int flags) const

@@ -42,23 +42,27 @@ public:
   AnyAtomicType::AtomicObjectType getTypeIndex() const { return typeIndex_; }  
 
 protected:
-  class PromoteUntypedResult : public ResultImpl
-  {
-  public:
-    PromoteUntypedResult(const XQPromoteUntyped *di, const Result &parent)
-      : ResultImpl(di), parent_(parent), di_(di) {}
-
-    Item::Ptr next(DynamicContext *context);
-    std::string asString(DynamicContext *context, int indent) const { return "promoteuntypedresult"; }
-  private:
-    Result parent_;
-    const XQPromoteUntyped *di_;
-  };
-
   ASTNode* expr_;
   const XMLCh *uri_, *name_;
   bool isPrimitive_;
   AnyAtomicType::AtomicObjectType typeIndex_;
+};
+
+class PromoteUntypedResult : public ResultImpl
+{
+public:
+  PromoteUntypedResult(const XQPromoteUntyped *di, const Result &parent);
+  PromoteUntypedResult(const LocationInfo *location, const Result &parent,
+                       bool isPrimitive, AnyAtomicType::AtomicObjectType typeIndex,
+                       const XMLCh *uri, const XMLCh *name);
+
+  Item::Ptr next(DynamicContext *context);
+  std::string asString(DynamicContext *context, int indent) const { return "promoteuntypedresult"; }
+private:
+  Result parent_;
+  bool isPrimitive_;
+  AnyAtomicType::AtomicObjectType typeIndex_;
+  const XMLCh *uri_, *name_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -79,21 +83,21 @@ public:
   AnyAtomicType::AtomicObjectType getTypeIndex() const { return typeIndex_; }
 
 protected:
-  class PromoteNumericResult : public ResultImpl
-  {
-  public:
-    PromoteNumericResult(const XQPromoteNumeric *di, const Result &parent)
-      : ResultImpl(di), parent_(parent), di_(di) {}
-
-    Item::Ptr next(DynamicContext *context);
-    std::string asString(DynamicContext *context, int indent) const { return "promotenumericresult"; }
-  private:
-    Result parent_;
-    const XQPromoteNumeric *di_;
-  };
-
   ASTNode* expr_;
   const XMLCh *uri_, *name_;
+  AnyAtomicType::AtomicObjectType typeIndex_;
+};
+
+class PromoteNumericResult : public ResultImpl
+{
+public:
+  PromoteNumericResult(const LocationInfo *location, const Result &parent, AnyAtomicType::AtomicObjectType typeIndex)
+    : ResultImpl(location), parent_(parent), typeIndex_(typeIndex) {}
+
+  Item::Ptr next(DynamicContext *context);
+  std::string asString(DynamicContext *context, int indent) const { return "promotenumericresult"; }
+private:
+  Result parent_;
   AnyAtomicType::AtomicObjectType typeIndex_;
 };
 
@@ -114,20 +118,20 @@ public:
   const XMLCh *getTypeName() const { return name_; }
 
 protected:
-  class PromoteAnyURIResult : public ResultImpl
-  {
-  public:
-    PromoteAnyURIResult(const XQPromoteAnyURI *di, const Result &parent)
-      : ResultImpl(di), parent_(parent) {}
-
-    Item::Ptr next(DynamicContext *context);
-    std::string asString(DynamicContext *context, int indent) const { return "promoteanyuriresult"; }
-  private:
-    Result parent_;
-  };
-
   ASTNode* expr_;
   const XMLCh *uri_, *name_;
+};
+
+class PromoteAnyURIResult : public ResultImpl
+{
+public:
+  PromoteAnyURIResult(const LocationInfo *location, const Result &parent)
+    : ResultImpl(location), parent_(parent) {}
+
+  Item::Ptr next(DynamicContext *context);
+  std::string asString(DynamicContext *context, int indent) const { return "promoteanyuriresult"; }
+private:
+  Result parent_;
 };
 
 #endif

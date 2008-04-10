@@ -37,37 +37,65 @@
 XERCES_CPP_NAMESPACE_USE
 #endif
 
-XQCommentConstructor::XQCommentConstructor(ASTNode *value, XPath2MemoryManager* mm)
+XQCommentConstructor::XQCommentConstructor(ASTNode *value, XPath2MemoryManager* mm, bool xslt)
   : XQDOMConstructor(mm),
-    m_value(value)
+    m_value(value),
+    xslt_(xslt)
 {
   setType(ASTNode::DOM_CONSTRUCTOR);
 }
 
-void XQCommentConstructor::generateEvents(EventHandler *events, DynamicContext *context,
-                                          bool preserveNS, bool preserveType) const
+EventGenerator::Ptr XQCommentConstructor::generateEvents(EventHandler *events, DynamicContext *context,
+                                                    bool preserveNS, bool preserveType) const
 {
   XMLBuffer value;
   getStringValue(m_value, value, context);
 
   // Check for two dashes in a row, or a dash at the end
-  bool foundDash = false;
-  const XMLCh *ptr = value.getRawBuffer();
-  const XMLCh *end = ptr + value.getLen();
-  while(ptr != end) {
-    if(*ptr == chDash) {
-      if(foundDash) break;
-      foundDash = true;
+  if(xslt_) {
+    XMLBuffer buf(value.getLen());
+    bool foundDash = false;
+    const XMLCh *ptr = value.getRawBuffer();
+    const XMLCh *end = ptr + value.getLen();
+    while(ptr != end) {
+      if(*ptr == chDash) {
+        if(foundDash) {
+          buf.append(' ');
+        }
+        foundDash = true;
+      }
+      else foundDash = false;
+
+      buf.append(*ptr);
+      ++ptr;
     }
-    else foundDash = false;
-    ++ptr;
+
+    if(foundDash) {
+      buf.append(' ');
+    }
+
+    value.set(buf.getRawBuffer());
   }
-  if(foundDash)
-    XQThrow(ASTException,X("DOM Constructor"),X("It is a dynamic error if the result of the content expression of "
-                                                "a computed comment constructor contains two adjacent hyphens or "
-                                                "ends with a hyphen. [err:XQDY0072]"));
+  else {
+    bool foundDash = false;
+    const XMLCh *ptr = value.getRawBuffer();
+    const XMLCh *end = ptr + value.getLen();
+    while(ptr != end) {
+      if(*ptr == chDash) {
+        if(foundDash) break;
+        foundDash = true;
+      }
+      else foundDash = false;
+      ++ptr;
+    }
+    if(foundDash)
+      XQThrow(ASTException,X("DOM Constructor"),X("It is a dynamic error if the result of the content expression of "
+                                                  "a computed comment constructor contains two adjacent hyphens or "
+                                                  "ends with a hyphen. [err:XQDY0072]"));
+  }
 
   events->commentEvent(value.getRawBuffer());
+  return 0;
 }
 
 ASTNode* XQCommentConstructor::staticResolution(StaticContext *context)
@@ -95,13 +123,12 @@ ASTNode* XQCommentConstructor::staticTyping(StaticContext *context)
               "to be an updating expression [err:XUST0001]"));
   }
 
-  _src.getStaticType().flags = StaticType::COMMENT_TYPE;
-  _src.forceNoFolding(true);
+  _src.getStaticType() = StaticType::COMMENT_TYPE;
   _src.creative(true);
   _src.setProperties(StaticAnalysis::DOCORDER | StaticAnalysis::GROUPED |
                      StaticAnalysis::PEER | StaticAnalysis::SUBTREE | StaticAnalysis::SAMEDOC |
                      StaticAnalysis::ONENODE);
-  return this; // Never constant fold
+  return this;
 }
 
 const XMLCh* XQCommentConstructor::getNodeType() const

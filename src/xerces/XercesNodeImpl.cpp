@@ -115,16 +115,6 @@ void *XercesNodeImpl::getInterface(const XMLCh *name) const
   return 0;
 }
 
-bool XercesNodeImpl::isNode() const
-{
-    return true;
-}
-
-bool XercesNodeImpl::isAtomicValue() const
-{
-    return false;
-}
-
 const XMLCh* XercesNodeImpl::asString(const DynamicContext* context) const
 {
   XPath2MemoryManager *mm = context->getMemoryManager();

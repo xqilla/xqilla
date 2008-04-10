@@ -41,7 +41,7 @@ const unsigned int FunctionNodeName::maxArgs = 1;
 FunctionNodeName::FunctionNodeName(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "node()?", args, memMgr)
 {
-  _src.getStaticType().flags = StaticType::QNAME_TYPE;
+  _src.getStaticType() = StaticType(StaticType::QNAME_TYPE, 0, 1);
 }
 
 Sequence FunctionNodeName::createSequence(DynamicContext* context, int flags) const

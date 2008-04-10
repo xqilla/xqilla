@@ -25,14 +25,31 @@
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 
+XERCES_CPP_NAMESPACE_USE;
 using namespace std;
 
-VarStoreImpl::VarStoreImpl(XPath2MemoryManager *memMgr, const VariableStore *parent)
-  : uriPool_(1, memMgr),
-    store_(5, true, memMgr),
+VarStoreImpl::VarStoreImpl(XPath2MemoryManager *mm, const VariableStore *parent)
+  : uriPool_(1, mm),
+    store_(5, true, mm),
     parent_(parent),
-    mm_(memMgr)
+    mm_(mm)
 {
+}
+
+VarStoreImpl::VarStoreImpl(const VarStoreImpl &other, XPath2MemoryManager *mm)
+  : uriPool_(1, mm),
+    store_(5, true, mm),
+    parent_(other.parent_),
+    mm_(mm)
+{
+  RefHash2KeysTableOfEnumerator<ResultBuffer> en(&const_cast<VarStoreImpl&>(other).store_);
+  RefHash2KeysTableOfEnumerator<ResultBuffer> en2(&const_cast<VarStoreImpl&>(other).store_);
+  while(en.hasMoreElements()) {
+    void *name;
+    int nsID;
+    en.nextElementKey(name, nsID);
+    setVar(other.uriPool_.getValueForId(nsID), (XMLCh*)name, en2.nextElement().createResult());
+  }
 }
 
 Result VarStoreImpl::getVar(const XMLCh *namespaceURI, const XMLCh *name) const

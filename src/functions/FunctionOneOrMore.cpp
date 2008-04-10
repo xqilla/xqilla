@@ -20,12 +20,11 @@
  */
 
 #include "../config/xqilla_config.h"
-#include <sstream>
 
 #include <xqilla/functions/FunctionOneOrMore.hpp>
-#include <xqilla/runtime/Sequence.hpp>
 #include <xqilla/context/DynamicContext.hpp>
-#include <xqilla/exceptions/FunctionException.hpp>
+#include <xqilla/ast/XQTreatAs.hpp>
+#include <xqilla/schema/SequenceType.hpp>
 
 const XMLCh FunctionOneOrMore::name[] = { 
   XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, 
@@ -43,46 +42,20 @@ const unsigned int FunctionOneOrMore::maxArgs = 1;
 FunctionOneOrMore::FunctionOneOrMore(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "item()*", args, memMgr)
 {
-  // TBD - could do better here - jpcs
-  _src.getStaticType().flags = StaticType::ITEM_TYPE;
 }
 
-Result FunctionOneOrMore::createResult(DynamicContext* context, int flags) const
+static const XMLCh err_FORG0004[] = { 'e', 'r', 'r', ':', 'F', 'O', 'R', 'G', '0', '0', '0', '4', 0 };
+
+ASTNode* FunctionOneOrMore::staticResolution(StaticContext *context)
 {
-  return new OneOrMoreResult(this, flags);
+  XPath2MemoryManager *mm = context->getMemoryManager();
+
+  SequenceType *seqType = new (mm) SequenceType(new (mm) SequenceType::ItemType(SequenceType::ItemType::TEST_ANYTHING),
+                                                SequenceType::PLUS);
+  seqType->setLocationInfo(this);
+
+  ASTNode *result = new (mm) XQTreatAs(_args.front(), seqType, mm, err_FORG0004);
+  result->setLocationInfo(this);
+  return result->staticResolution(context);
 }
 
-FunctionOneOrMore::OneOrMoreResult::OneOrMoreResult(const FunctionOneOrMore *func, int flags)
-  : ResultImpl(func),
-    _flags(flags),
-    _func(func),
-    _arg(0),
-    _argNo(0)
-{
-}
-
-Item::Ptr FunctionOneOrMore::OneOrMoreResult::next(DynamicContext *context)
-{
-  if(_arg.isNull()) {
-    _arg = _func->getParamNumber(1, context);
-  }
-
-  const Item::Ptr result = _arg->next(context);
-  ++_argNo;
-
-  if(_argNo == 1 && result == NULLRCP) {
-    XQThrow(FunctionException, X("FunctionOneOrMore::OneOrMoreResult::next"),X("fn:one-or-more called with a sequence containing no items [err:FORG0004]"));
-  }
-
-  return result;
-}
-
-std::string FunctionOneOrMore::OneOrMoreResult::asString(DynamicContext *context, int indent) const
-{
-  std::ostringstream oss;
-  std::string in(getIndent(indent));
-
-  oss << in << "<oneormore/>" << std::endl;
-
-  return oss.str();
-}

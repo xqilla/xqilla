@@ -46,9 +46,9 @@ void Multiply::calculateStaticType()
 
   // Multiplying a duration by a number
   if(arg0.containsType(StaticType::DAY_TIME_DURATION_TYPE|StaticType::YEAR_MONTH_DURATION_TYPE) && arg1.containsType(StaticType::NUMERIC_TYPE))
-    _src.getStaticType().flags |= arg0.flags & (StaticType::DAY_TIME_DURATION_TYPE|StaticType::YEAR_MONTH_DURATION_TYPE);
+    _src.getStaticType() |= arg0 & (StaticType::DAY_TIME_DURATION_TYPE|StaticType::YEAR_MONTH_DURATION_TYPE);
   if(arg0.containsType(StaticType::NUMERIC_TYPE) && arg1.containsType(StaticType::DAY_TIME_DURATION_TYPE|StaticType::YEAR_MONTH_DURATION_TYPE))
-    _src.getStaticType().flags |= arg1.flags & (StaticType::DAY_TIME_DURATION_TYPE|StaticType::YEAR_MONTH_DURATION_TYPE);
+    _src.getStaticType() |= arg1 & (StaticType::DAY_TIME_DURATION_TYPE|StaticType::YEAR_MONTH_DURATION_TYPE);
 }
 
 Item::Ptr Multiply::execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::Ptr &atom2, DynamicContext *context) const
@@ -57,15 +57,13 @@ Item::Ptr Multiply::execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType
 
   // xs:double * xs:duration (only xdt:dayTimeDuration and xdt:yearMonthDuration)
   if(atom1->isNumericValue() &&
-     (atom2->getPrimitiveTypeIndex() == AnyAtomicType::DURATION ||
-      atom2->getPrimitiveTypeIndex() == AnyAtomicType::DAY_TIME_DURATION ||
+     (atom2->getPrimitiveTypeIndex() == AnyAtomicType::DAY_TIME_DURATION ||
       atom2->getPrimitiveTypeIndex() == AnyAtomicType::YEAR_MONTH_DURATION)) {
       return (const Item::Ptr)((const ATDurationOrDerived*)atom2.get())->multiply((const Numeric::Ptr)atom1, context);
   }
   // xs:duration * xs:double (only xdt:dayTimeDuration and xdt:yearMonthDuration)
   if(atom2->isNumericValue() &&
-     (atom1->getPrimitiveTypeIndex() == AnyAtomicType::DURATION ||
-      atom1->getPrimitiveTypeIndex() == AnyAtomicType::DAY_TIME_DURATION ||
+     (atom1->getPrimitiveTypeIndex() == AnyAtomicType::DAY_TIME_DURATION ||
       atom1->getPrimitiveTypeIndex() == AnyAtomicType::YEAR_MONTH_DURATION)) {
     return (const Item::Ptr)((const ATDurationOrDerived*)atom1.get())->multiply((const Numeric::Ptr)atom2, context);
   }

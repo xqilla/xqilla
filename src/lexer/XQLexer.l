@@ -42,8 +42,8 @@
   std::cerr << "Recognize: \"" << UTF8(yylval.str) << "\" ("#token << ")" << std::endl; \
   return token; \
 }
-#define RECOGNIZE_VALUE_UNESCAPE(token, value, length, quot_char, unescape_brace) { \
-  yylval.str = allocate_string_and_unescape((XMLCh*)(value), (length), (quot_char), (unescape_brace)); \
+#define RECOGNIZE_VALUE_UNESCAPE(token, value, length, quot_char, unescape_brace, unescape_entities, unescape_cdata) { \
+  yylval.str = allocate_string_and_unescape((XMLCh*)(value), (length), (quot_char), (unescape_brace), (unescape_entities), (unescape_cdata)); \
   std::cerr << "Recognize: \"" << UTF8(yylval.str) << "\" ("#token << ")" << std::endl; \
   return token; \
 }
@@ -57,8 +57,8 @@
 #define RECOGNIZE(token) return token
 #define RECOGNIZE_VALUE(token, value) yylval.str = allocate_string((XMLCh*)(value)); return token
 #define RECOGNIZE_VALUE_LEN(token, value, length) yylval.str = allocate_string((XMLCh*)(value), (length)); return token
-#define RECOGNIZE_VALUE_UNESCAPE(token, value, length, quot_char, unescape_brace) \
-  yylval.str = allocate_string_and_unescape((XMLCh*)(value), (length), (quot_char), (unescape_brace)); return token
+#define RECOGNIZE_VALUE_UNESCAPE(token, value, length, quot_char, unescape_brace, unescape_entities, unescape_cdata) \
+  yylval.str = allocate_string_and_unescape((XMLCh*)(value), (length), (quot_char), (unescape_brace), (unescape_entities), (unescape_cdata)); return token
 // yy_push_state pushes the current state and does a transition to the specified one;
 #define PUSH_AND_CHANGE_STATE(state) yy_push_state((state))
 #define POP() yy_pop_state()
@@ -140,6 +140,10 @@ QuotAttrContent (({PredefinedEntityRef}|{CharRef}|"{{"|"}}"|"\"\""|{QuotAttrCont
 AposAttrContentChar ([\x0009]|[\x000D]|[\x000A]|[\x0020-\x0025]|[\x0028-\x003B]|[\x003D-\x007A]|[\x007C]|[\x007E-\xD7FF]|[\xE000-\xFFFD]|{SurrogatePairs})
 AposAttrContent (({PredefinedEntityRef}|{CharRef}|"{{"|"}}"|"''"|{AposAttrContentChar})*)
 
+/* AttrValueTemplateChar 	   ::=    	Char - [{}] */
+AttrValueTemplateChar ([\x0009]|[\x000D]|[\x000A]|[\x0020-\x0021]|[\x0023-\x007A]|[\x007C]|\x007E-\xD7FF]|[\xE000-\xFFFD]|{SurrogatePairs})
+AttrValueTemplateContent (("{{"|"}}"|{AttrValueTemplateChar})*)
+
 PredefinedEntityRef "&"("lt"|"gt"|"amp"|"quot"|"apos")";"
 HexDigits ([0-9]|[a-f]|[A-F])+ 
 CharRef "&#"({Digits}|("x"{HexDigits}))";"
@@ -164,6 +168,7 @@ CharRef "&#"({Digits}|("x"{HexDigits}))";"
 %x PROCESSING_INSTRUCTION_CONTENT
 %x XML_COMMENT
 %x COMPUTED_CONSTRUCTOR
+%x ATTR_VALUE_TEMPLATE
 
 %{
 char *xqGetStateName(int state)
@@ -183,6 +188,7 @@ char *xqGetStateName(int state)
   case PROCESSING_INSTRUCTION_CONTENT: return "PROCESSING_INSTRUCTION_CONTENT";
   case XML_COMMENT: return "XML_COMMENT";
   case COMPUTED_CONSTRUCTOR: return "COMPUTED_CONSTRUCTOR";
+  case ATTR_VALUE_TEMPLATE: return "ATTR_VALUE_TEMPLATE";
   }
   return "unknown";
 }
@@ -197,26 +203,22 @@ void XQLexer::undoLessThan()
 %%
 
 %{
-  if(firstToken_) {
-    firstToken_ = false;
+  if(firstToken_ != MYEOF) {
+    int token = firstToken_;
+    firstToken_ = MYEOF;
+    RECOGNIZE(token);
+  }
 
-    switch(m_language) {
-    case XQilla::XQUERY:                 RECOGNIZE(_LANG_XQUERY_);
-    case XQilla::XPATH2:                 RECOGNIZE(_LANG_XPATH2_);
-    case XQilla::XQUERY_FULLTEXT:        RECOGNIZE(_LANG_XQUERY_FULLTEXT_);
-    case XQilla::XPATH2_FULLTEXT:        RECOGNIZE(_LANG_XPATH2_FULLTEXT_);
-    case XQilla::XQUERY_UPDATE:          RECOGNIZE(_LANG_XQUERY_UPDATE_);
-    case XQilla::XQUERY_FULLTEXT_UPDATE: RECOGNIZE(_LANG_XQUERY_FULLTEXT_UPDATE_);
-    }
-
-    return error("Unknown language enumeration");
+  if(parseAttrValueTemplate_) {
+    parseAttrValueTemplate_ = false;
+    CHANGE_STATE(ATTR_VALUE_TEMPLATE);
   }
 %}
 
 <INITIAL>{IntegerLiteral} RECOGNIZE_VALUE(_INTEGER_LITERAL_, yytext);
 <INITIAL>{DecimalLiteral} RECOGNIZE_VALUE(_DECIMAL_LITERAL_, yytext);
 <INITIAL>{DoubleLiteral}  RECOGNIZE_VALUE(_DOUBLE_LITERAL_, yytext);
-<INITIAL>{StringLiteral}  RECOGNIZE_VALUE_UNESCAPE(_STRING_LITERAL_, yytext + 1, yyleng - 2, *yytext, false);
+<INITIAL>{StringLiteral}  RECOGNIZE_VALUE_UNESCAPE(_STRING_LITERAL_, yytext + 1, yyleng - 2, *yytext, false, true, false);
 
 <INITIAL,COMPUTED_CONSTRUCTOR>{WhitespaceChar}+ /* Do nothing */
 
@@ -273,7 +275,6 @@ void XQLexer::undoLessThan()
 <INITIAL>"preserve"               RECOGNIZE_VALUE(_PRESERVE_, yytext);
 <INITIAL>"strip"                  RECOGNIZE_VALUE(_STRIP_, yytext);
 <INITIAL>"default"                RECOGNIZE_VALUE(_DEFAULT_, yytext);
-<INITIAL>"function"               RECOGNIZE_VALUE(_FUNCTION_, yytext);
 <INITIAL>"option"                 RECOGNIZE_VALUE(_OPTION_, yytext);
 <INITIAL>"ft-option"              RECOGNIZE_VALUE(_FT_OPTION_, yytext);
 <INITIAL>"ordering"               RECOGNIZE_VALUE(_ORDERING_, yytext);
@@ -384,12 +385,78 @@ void XQLexer::undoLessThan()
 <INITIAL>"before"                 RECOGNIZE_VALUE(_BEFORE_, yytext);
 <INITIAL>"modify"                 RECOGNIZE_VALUE(_MODIFY_, yytext);
 <INITIAL>"nodes"                  RECOGNIZE_VALUE(_NODES_, yytext);
+<INITIAL>"id"                     RECOGNIZE_VALUE(_ID_, yytext);
+<INITIAL>"key"                    RECOGNIZE_VALUE(_KEY_, yytext);
 
 <INITIAL>"namespace" {
   if(!isXPath() && lookAhead() == _COLON_COLON_) {
     RECOGNIZE_VALUE(_QNAME_, yytext);
   } else {
     RECOGNIZE_VALUE(_NAMESPACE_, yytext);
+  }
+}
+
+<INITIAL>"template" {
+  if(isExtensions()) {
+    RECOGNIZE_VALUE(_TEMPLATE_, yytext);
+  } else {
+    RECOGNIZE_VALUE(_QNAME_, yytext);
+  }
+}
+<INITIAL>"matches" {
+  if(isExtensions()) {
+    RECOGNIZE_VALUE(_MATCHES_, yytext);
+  } else {
+    RECOGNIZE_VALUE(_QNAME_, yytext);
+  }
+}
+<INITIAL>"name" {
+  if(isExtensions()) {
+    RECOGNIZE_VALUE(_NAME_, yytext);
+  } else {
+    RECOGNIZE_VALUE(_QNAME_, yytext);
+  }
+}
+<INITIAL>"call" {
+  if(isExtensions()) {
+    RECOGNIZE_VALUE(_CALL_, yytext);
+  } else {
+    RECOGNIZE_VALUE(_QNAME_, yytext);
+  }
+}
+<INITIAL>"apply" {
+  if(isExtensions()) {
+    RECOGNIZE_VALUE(_APPLY_, yytext);
+  } else {
+    RECOGNIZE_VALUE(_QNAME_, yytext);
+  }
+}
+<INITIAL>"templates" {
+  if(isExtensions()) {
+    RECOGNIZE_VALUE(_TEMPLATES_, yytext);
+  } else {
+    RECOGNIZE_VALUE(_QNAME_, yytext);
+  }
+}
+<INITIAL>"function" {
+  if(isExtensions()) {
+    RECOGNIZE_VALUE(_FUNCTION_EXT_, yytext);
+  } else {
+    RECOGNIZE_VALUE(_FUNCTION_, yytext);
+  }
+}
+<INITIAL>"#" {
+  if(isExtensions()) {
+    RECOGNIZE(_HASH_);
+  } else {
+    return error("Unrecognized token '#'");
+  }
+}
+<INITIAL>"=>" {
+  if(isExtensions()) {
+    RECOGNIZE(_ARROW_);
+  } else {
+    return error("Unrecognized token '=>'");
   }
 }
 
@@ -546,10 +613,10 @@ void XQLexer::undoLessThan()
 }
 
 
-<ELEMENT_CONTENT,QUOT_ATTRIBUTE_CONTENT,APOS_ATTRIBUTE_CONTENT>"{" PUSH_AND_CHANGE_STATE(INITIAL); RECOGNIZE(_LBRACE_);
+<ELEMENT_CONTENT,QUOT_ATTRIBUTE_CONTENT,APOS_ATTRIBUTE_CONTENT,ATTR_VALUE_TEMPLATE>"{" PUSH_AND_CHANGE_STATE(INITIAL); RECOGNIZE(_LBRACE_);
 <INITIAL>"{"                                                       PUSH_AND_CHANGE_STATE(INITIAL); RECOGNIZE(_LBRACE_EXPR_ENCLOSURE_);
 
-<ELEMENT_CONTENT,QUOT_ATTRIBUTE_CONTENT,APOS_ATTRIBUTE_CONTENT>"}" return error("It is an error for a right brace to appear in element or attribute content");
+<ELEMENT_CONTENT,QUOT_ATTRIBUTE_CONTENT,APOS_ATTRIBUTE_CONTENT,ATTR_VALUE_TEMPLATE>"}" return error("It is an error for a right brace to appear in element or attribute content");
 <INITIAL>"}"                                                       POP(); RECOGNIZE(_RBRACE_);
 
 <ELEMENT_CONTENT,QUOT_ATTRIBUTE_CONTENT,APOS_ATTRIBUTE_CONTENT>"&"  return error("It is an error for an ampersand to appear in element or attribute content");
@@ -560,16 +627,18 @@ void XQLexer::undoLessThan()
 <START_TAG>">" CHANGE_STATE(ELEMENT_CONTENT); RECOGNIZE(_START_TAG_CLOSE_);
 <END_TAG>">"   POP(); RECOGNIZE(_END_TAG_CLOSE_);
 
+<ATTR_VALUE_TEMPLATE>{AttrValueTemplateContent} RECOGNIZE_VALUE_UNESCAPE(_QUOT_ATTR_CONTENT_, yytext, yyleng, 0, true, false, false);
+
 <START_TAG>"\""                           CHANGE_STATE(QUOT_ATTRIBUTE_CONTENT); RECOGNIZE(_OPEN_QUOT_);
-<QUOT_ATTRIBUTE_CONTENT>{QuotAttrContent} RECOGNIZE_VALUE_UNESCAPE(_QUOT_ATTR_CONTENT_, yytext, yyleng, '"', true);
+<QUOT_ATTRIBUTE_CONTENT>{QuotAttrContent} RECOGNIZE_VALUE_UNESCAPE(_QUOT_ATTR_CONTENT_, yytext, yyleng, '"', true, true, false);
 <QUOT_ATTRIBUTE_CONTENT>"\""              CHANGE_STATE(START_TAG); RECOGNIZE(_CLOSE_QUOT_);
 
 <START_TAG>"'"                            CHANGE_STATE(APOS_ATTRIBUTE_CONTENT); RECOGNIZE(_OPEN_APOS_);
-<APOS_ATTRIBUTE_CONTENT>{AposAttrContent} RECOGNIZE_VALUE_UNESCAPE(_APOS_ATTR_CONTENT_, yytext, yyleng, '\'', true);
+<APOS_ATTRIBUTE_CONTENT>{AposAttrContent} RECOGNIZE_VALUE_UNESCAPE(_APOS_ATTR_CONTENT_, yytext, yyleng, '\'', true, true, false);
 <APOS_ATTRIBUTE_CONTENT>"'"               CHANGE_STATE(START_TAG); RECOGNIZE(_CLOSE_APOS_);
 
 <ELEMENT_CONTENT>{WhitespaceChar}+ RECOGNIZE_VALUE(_WHITESPACE_ELEMENT_CONTENT_, yytext);
-<ELEMENT_CONTENT>{ElementContent} RECOGNIZE_VALUE_UNESCAPE(_ELEMENT_CONTENT_, yytext, yyleng, 0, true);
+<ELEMENT_CONTENT>{ElementContent} RECOGNIZE_VALUE_UNESCAPE(_ELEMENT_CONTENT_, yytext, yyleng, 0, true, true, true);
 
 <START_TAG>"/>" POP(); RECOGNIZE(_EMPTY_TAG_CLOSE_);
 

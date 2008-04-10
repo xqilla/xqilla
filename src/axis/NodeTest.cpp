@@ -95,29 +95,29 @@ void NodeTest::getStaticType(StaticType &st, const StaticContext *context,
   else {
     if(_wildcardType) {
       if(_hasChildren) {
-        st.flags = StaticType::ELEMENT_TYPE | StaticType::DOCUMENT_TYPE;
+        st = StaticType::ELEMENT_TYPE | StaticType::DOCUMENT_TYPE;
       }
       else {
-        st.flags = StaticType::NODE_TYPE;
+        st = StaticType::NODE_TYPE;
       }
     }
     else if(_type == Node::document_string) {
-      st.flags = StaticType::DOCUMENT_TYPE;
+      st = StaticType::DOCUMENT_TYPE;
     }
     else if(_type == Node::element_string) {
-      st.flags = StaticType::ELEMENT_TYPE;
+      st = StaticType::ELEMENT_TYPE;
     }
     else if(_type == Node::attribute_string) {
-      st.flags = StaticType::ATTRIBUTE_TYPE;
+      st = StaticType::ATTRIBUTE_TYPE;
     }
     else if(_type == Node::processing_instruction_string) {
-      st.flags = StaticType::PI_TYPE;
+      st = StaticType::PI_TYPE;
     }
     else if(_type == Node::comment_string) {
-      st.flags = StaticType::COMMENT_TYPE;
+      st = StaticType::COMMENT_TYPE;
     }
     else if(_type == Node::text_string) {
-      st.flags = StaticType::TEXT_TYPE;
+      st = StaticType::TEXT_TYPE;
     }
 
     if(_wildcardName && _wildcardNamespace)
@@ -131,9 +131,9 @@ Result NodeTest::filterResult(const Result &toFilter, const LocationInfo *info) 
   return new FilterResult(info, toFilter, this);
 }
 
-bool NodeTest::filterNode(Node::Ptr node, DynamicContext* context, const LocationInfo *info) const
+bool NodeTest::filterNode(Node::Ptr node, DynamicContext* context) const
 {
-  if(_itemType) return _itemType->matches(node, context, info);
+  if(_itemType) return _itemType->matches(node, context);
   else return checkNodeType(node) && checkNodeName(node, context);
 }
 
@@ -267,6 +267,8 @@ void NodeTest::staticResolution(StaticContext *context, const LocationInfo *loca
   // Convert certain NodeTest objects that use an ItemType to ones that don't,
   // for efficiency and simplicity of comparison.
   if(_itemType != 0) {
+    _itemType->staticResolution(context, location);
+
     switch(_itemType->getItemTestType()) {
     case SequenceType::ItemType::TEST_NODE:
       _wildcardType = true;
@@ -395,7 +397,7 @@ NodeTest::FilterResult::FilterResult(const LocationInfo *info, const Result &toF
 Item::Ptr NodeTest::FilterResult::next(DynamicContext *context)
 {
   Node::Ptr result = 0;
-  while((result = toFilter_->next(context)).notNull() && !nodeTest_->filterNode(result, context, this)) {}
+  while((result = toFilter_->next(context)).notNull() && !nodeTest_->filterNode(result, context)) {}
 
   return result;
 }

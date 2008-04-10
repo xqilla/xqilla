@@ -225,32 +225,20 @@ void XQFunction::parseParamDecl(const char* paramString, XPath2MemoryManager *mm
                                chOpenParen, chCloseParen, chNull };
     static XMLCh szItem[]={ chLatin_i, chLatin_t, chLatin_e, chLatin_m, chOpenParen, chCloseParen, chNull };
     static XMLCh szEmpty[]={ chLatin_e, chLatin_m, chLatin_p, chLatin_t, chLatin_y, chOpenParen, chCloseParen, chNull };
+    static XMLCh szFunction[]={ chLatin_f, chLatin_u, chLatin_n, chLatin_c, chLatin_t, chLatin_i, chLatin_o, chLatin_n, chOpenParen, chCloseParen, chNull };
 
     if(XPath2Utils::equals(tmpCurParam, szNode))
-      sequenceType=new (mm) SequenceType(new (mm) SequenceType::ItemType(SequenceType::ItemType::TEST_NODE), occurrence);
+      sequenceType = new (mm) SequenceType(new (mm) SequenceType::ItemType(SequenceType::ItemType::TEST_NODE), occurrence);
     else if(XPath2Utils::equals(tmpCurParam, szElement))
-      sequenceType=new (mm) SequenceType(new (mm) SequenceType::ItemType(SequenceType::ItemType::TEST_ELEMENT), occurrence);
+      sequenceType = new (mm) SequenceType(new (mm) SequenceType::ItemType(SequenceType::ItemType::TEST_ELEMENT), occurrence);
     else if(XPath2Utils::equals(tmpCurParam, szItem))
-      sequenceType=new (mm) SequenceType(new (mm) SequenceType::ItemType(SequenceType::ItemType::TEST_ANYTHING),
-                                         occurrence);
+      sequenceType = new (mm) SequenceType(new (mm) SequenceType::ItemType(SequenceType::ItemType::TEST_ANYTHING), occurrence);
+    else if(XPath2Utils::equals(tmpCurParam, szFunction))
+      sequenceType = new (mm) SequenceType(new (mm) SequenceType::ItemType(SequenceType::ItemType::TEST_FUNCTION), occurrence);
     else if(XPath2Utils::equals(tmpCurParam, szEmpty))
-      sequenceType=new (mm) SequenceType();
+      sequenceType = new (mm) SequenceType();
     else
-    {
-      SequenceType::ItemType* test=
-	      new (mm) SequenceType::ItemType(SequenceType::ItemType::TEST_ATOMIC_TYPE, NULL,new (mm) QualifiedName(tmpCurParam, mm));
-      if(XPath2Utils::equals(tmpCurParam, ATDurationOrDerived::fgDT_YEARMONTHDURATION) ||
-         XPath2Utils::equals(tmpCurParam, ATDurationOrDerived::fgDT_DAYTIMEDURATION) ||
-         XPath2Utils::equals(tmpCurParam, AnyAtomicType::fgDT_ANYATOMICTYPE) ||
-         XPath2Utils::equals(tmpCurParam, ATUntypedAtomic::fgDT_UNTYPEDATOMIC) )
-        // If yearMonthDuration, dayTimeDuration, anyAtomicType or untypedAtomic, we set the URI to be FunctionURI,
-        // and use the specified type
-        test->setTypeURI(FunctionConstructor::XMLChXPath2DatatypesURI);
-      else
-        // otherwise it's a atomic type coming from the XMLSchema namespace
-        test->setTypeURI(SchemaSymbols::fgURI_SCHEMAFORSCHEMA);
-      sequenceType = new (mm) SequenceType(test, occurrence);
-    }
+      sequenceType = new (mm) SequenceType(SchemaSymbols::fgURI_SCHEMAFORSCHEMA, tmpCurParam, occurrence, mm);
     XMLString::release(&tmpCurParam);
     _paramDecl.push_back(sequenceType);
   }

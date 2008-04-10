@@ -45,11 +45,14 @@ ASTNode *XQReturn::staticTyping(StaticContext *context)
 {
   _src.clear();
 
-  parent_ = parent_->staticTypingSetup(context);
+  unsigned int min, max;
+  parent_ = parent_->staticTypingSetup(min, max, context);
 
   expr_ = expr_->staticTyping(context);
   _src.add(expr_->getStaticAnalysis());
+
   _src.getStaticType() = expr_->getStaticAnalysis().getStaticType();
+  _src.getStaticType().multiply(min, max);
 
   parent_ = parent_->staticTypingTeardown(context, _src);
 
@@ -100,7 +103,7 @@ Result XQReturn::createResult(DynamicContext* context, int flags) const
   return new ReturnResult(this, parent_->createResult(context));
 }
 
-void XQReturn::generateEvents(EventHandler *events, DynamicContext *context,
+EventGenerator::Ptr XQReturn::generateEvents(EventHandler *events, DynamicContext *context,
                               bool preserveNS, bool preserveType) const
 {
     AutoVariableStoreReset reset(context);
@@ -108,9 +111,11 @@ void XQReturn::generateEvents(EventHandler *events, DynamicContext *context,
     TupleResult::Ptr tuples = parent_->createResult(context);
     while(tuples->next(context)) {
       context->setVariableStore(tuples);
-      expr_->generateEvents(events, context, preserveNS, preserveType);
+      expr_->generateAndTailCall(events, context, preserveNS, preserveType);
       reset.reset();
     }
+
+    return 0;
 }
 
 PendingUpdateList XQReturn::createUpdateList(DynamicContext *context) const

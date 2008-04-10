@@ -51,7 +51,7 @@ const unsigned int FunctionTokenize::maxArgs = 3;
 FunctionTokenize::FunctionTokenize(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "string?, string, string", args, memMgr)
 {
-  _src.getStaticType().flags = StaticType::STRING_TYPE;
+  _src.getStaticType() = StaticType(StaticType::STRING_TYPE, 0, StaticType::UNLIMITED);
 }
 
 Sequence FunctionTokenize::createSequence(DynamicContext* context, int flags) const

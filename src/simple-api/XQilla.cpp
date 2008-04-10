@@ -29,10 +29,12 @@
 #include <xqilla/fastxdm/FastXDMConfiguration.hpp>
 #include <xqilla/optimizer/QueryPathTreeGenerator.hpp>
 #include "../lexer/XQLexer.hpp"
+#include "../lexer/XSLT2Lexer.hpp"
 
 #include <xqilla/context/impl/XQContextImpl.hpp>
 
 #include <xercesc/util/XMLURL.hpp>
+#include <xercesc/framework/MemBufInputSource.hpp>
 #include <xercesc/framework/URLInputSource.hpp>
 #include <xercesc/framework/LocalFileInputSource.hpp>
 #include <xercesc/util/Janitor.hpp>
@@ -53,6 +55,12 @@ XQQuery* XQilla::parse(const XMLCh* inputQuery, DynamicContext* context,
                        const XMLCh* queryFile, unsigned int flags,
                        MemoryManager *memMgr)
 {
+  if(context != 0 && (context->getLanguage() & XQilla::XSLT2) != 0) {
+    MemBufInputSource src((XMLByte*)inputQuery, XMLString::stringLen(inputQuery) * sizeof(XMLCh), queryFile);
+    src.setEncoding(XMLUni::fgUTF16EncodingString);
+    return parse(src, context, flags, memMgr);
+  }
+
   bool contextOwned = (flags & NO_ADOPT_CONTEXT) == 0;
   if(context == 0) {
     contextOwned = true;
@@ -85,47 +93,90 @@ XQQuery* XQilla::parse(const XMLCh* inputQuery, DynamicContext* context,
 XQQuery* XQilla::parse(const InputSource& querySrc, DynamicContext* context,
                        unsigned int flags, MemoryManager *memMgr)
 {
-  XMLBuffer moduleText;
-  try {
-    if(!readQuery(querySrc, memMgr, moduleText)) {
+  if(context == 0 || (context->getLanguage() & XQilla::XSLT2) == 0) {
+    XMLBuffer moduleText;
+    try {
+      if(!readQuery(querySrc, memMgr, moduleText)) {
+        XMLBuffer buf(1023,context->getMemoryManager());
+        buf.set(X("Cannot read query content from "));
+        buf.append(querySrc.getSystemId());
+        buf.append(X(" [err:XQST0059]"));
+        XQThrow2(ContextException,X("XQilla::parse"), buf.getRawBuffer());
+      }
+    }
+    catch(XMLException& e) {
       XMLBuffer buf(1023,context->getMemoryManager());
-      buf.set(X("Cannot read query content from "));
-      buf.append(querySrc.getSystemId());
-      buf.append(X(" [err:XQST0059]"));
+      buf.set(X("Exception reading query content: "));
+      buf.append(e.getMessage());
       XQThrow2(ContextException,X("XQilla::parse"), buf.getRawBuffer());
     }
-  }
-  catch(XMLException& e) {
-    XMLBuffer buf(1023,context->getMemoryManager());
-    buf.set(X("Exception reading query content: "));
-    buf.append(e.getMessage());
-    XQThrow2(ContextException,X("XQilla::parse"), buf.getRawBuffer());
+
+    return parse(moduleText.getRawBuffer(), context, querySrc.getSystemId(), flags, memMgr);
   }
 
-  return parse(moduleText.getRawBuffer(), context, querySrc.getSystemId(), flags, memMgr);
+#ifdef HAVE_FAXPP
+  bool contextOwned = (flags & NO_ADOPT_CONTEXT) == 0;
+
+  Janitor<XQQuery> query(new (memMgr) XQQuery(0, context, contextOwned, memMgr));
+
+  XSLT2Lexer lexer(context, querySrc, context->getLanguage());
+
+  XQParserArgs args;
+  args._context = context;
+  args._lexer = &lexer;
+  args._query = query.get();
+  args._query->setFile(querySrc.getSystemId());
+
+  XQParser::yyparse(&args);
+
+  // Perform static resolution, if requested
+  if((flags & NO_STATIC_RESOLUTION) == 0) {
+    StaticResolver *sr = new StaticResolver(context);
+    QueryPathTreeGenerator *qpt = new QueryPathTreeGenerator(context, sr);
+    AutoDelete<Optimizer> optimizer(qpt);
+    optimizer->startOptimize(args._query);
+  }
+
+  return query.release();
+#endif
+
+  XQThrow2(ContextException,X("XQilla::parse"), X("XSLT 2.0 not compiled in"));
 }
 
 XQQuery* XQilla::parseFromURI(const XMLCh* queryFile, DynamicContext* context,
                               unsigned int flags, MemoryManager *memMgr)
 {
-  XMLBuffer moduleText;
+  Janitor<InputSource> srcToFill(0);
   try {
-    if(!readQuery(queryFile, memMgr, moduleText)) {
-      XMLBuffer buf(1023,context->getMemoryManager());
-      buf.set(X("Cannot read query content from "));
-      buf.append(queryFile);
-      buf.append(X(" [err:XQST0059]"));
-      XQThrow2(ContextException,X("XQilla::parseFromURI"), buf.getRawBuffer());
-    }
+    XMLURL urlTmp(queryFile);
+    if(urlTmp.isRelative())
+      throw MalformedURLException(__FILE__, __LINE__, XMLExcepts::URL_NoProtocolPresent);
+    srcToFill.reset(new (memMgr) URLInputSource(urlTmp));
   }
-  catch(XMLException& e) {
-    XMLBuffer buf(1023,context->getMemoryManager());
-    buf.set(X("Exception reading query content: "));
-    buf.append(e.getMessage());
-    XQThrow2(ContextException,X("XQilla::parseFromURI"), buf.getRawBuffer());
+  catch(const MalformedURLException&) {
+    srcToFill.reset(new (memMgr) LocalFileInputSource(queryFile));
   }
+  return parse(*srcToFill.get(), context, flags, memMgr);
 
-  return parse(moduleText.getRawBuffer(), context, queryFile, flags, memMgr);
+
+//   XMLBuffer moduleText;
+//   try {
+//     if(!readQuery(queryFile, memMgr, moduleText)) {
+//       XMLBuffer buf(1023,context->getMemoryManager());
+//       buf.set(X("Cannot read query content from "));
+//       buf.append(queryFile);
+//       buf.append(X(" [err:XQST0059]"));
+//       XQThrow2(ContextException,X("XQilla::parseFromURI"), buf.getRawBuffer());
+//     }
+//   }
+//   catch(XMLException& e) {
+//     XMLBuffer buf(1023,context->getMemoryManager());
+//     buf.set(X("Exception reading query content: "));
+//     buf.append(e.getMessage());
+//     XQThrow2(ContextException,X("XQilla::parseFromURI"), buf.getRawBuffer());
+//   }
+
+//   return parse(moduleText.getRawBuffer(), context, queryFile, flags, memMgr);
 }
 
 static FastXDMConfiguration _gDefaultConfiguration;

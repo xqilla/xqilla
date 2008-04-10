@@ -32,7 +32,7 @@ class SequenceType;
 class XQILLA_API XQTreatAs : public ASTNodeImpl
 {
 public:
-  XQTreatAs(ASTNode* expr, const SequenceType *exprType, XPath2MemoryManager* memMgr, const XMLCh *errorCode = 0);
+  XQTreatAs(ASTNode* expr, SequenceType *exprType, XPath2MemoryManager* memMgr, const XMLCh *errorCode = 0);
 
   virtual Result createResult(DynamicContext* context, int flags=0) const;
   virtual ASTNode* staticResolution(StaticContext *context);
@@ -46,9 +46,11 @@ public:
 
 protected:
   ASTNode* _expr;
-  const SequenceType* _exprType;
+  SequenceType *_exprType;
   const XMLCh *_errorCode;
   bool _doTypeCheck;
+  bool _doCardinalityCheck;
+  ASTNode *_funcConvert;
 };
 
 #endif

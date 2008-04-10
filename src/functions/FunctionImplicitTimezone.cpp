@@ -54,7 +54,7 @@ ASTNode *FunctionImplicitTimezone::staticTyping(StaticContext *context)
 {
   _src.clear();
 
-  _src.getStaticType().flags = StaticType::DAY_TIME_DURATION_TYPE;
+  _src.getStaticType() = StaticType::DAY_TIME_DURATION_TYPE;
   _src.implicitTimezoneUsed(true);
   return calculateSRCForArguments(context);
 }

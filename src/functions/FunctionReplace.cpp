@@ -51,7 +51,7 @@ const unsigned int FunctionReplace::maxArgs = 4;
 FunctionReplace::FunctionReplace(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "string?, string, string, string", args, memMgr)
 {
-  _src.getStaticType().flags = StaticType::STRING_TYPE;
+  _src.getStaticType() = StaticType::STRING_TYPE;
 }
 
 Sequence FunctionReplace::createSequence(DynamicContext* context, int flags) const

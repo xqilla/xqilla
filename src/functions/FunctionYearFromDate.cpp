@@ -55,7 +55,7 @@ ASTNode *FunctionYearFromDate::staticTyping(StaticContext *context)
 {
   _src.clear();
 
-  _src.getStaticType().flags = StaticType::DECIMAL_TYPE;
+  _src.getStaticType() = StaticType(StaticType::DECIMAL_TYPE, 0, 1);
   return calculateSRCForArguments(context, /*checkTimezone*/true);
 }
 

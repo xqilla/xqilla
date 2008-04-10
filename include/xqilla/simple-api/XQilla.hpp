@@ -56,15 +56,18 @@ public:
 
   /// Enumeration used to select a language to parse
   enum Language {
-    XQUERY   = 0x00,
-    XPATH2   = 0x01,
-    FULLTEXT = 0x02,
-    UPDATE   = 0x04,
+    XQUERY     = 0x00,
+    XPATH2     = 0x01,
+    FULLTEXT   = 0x02,
+    UPDATE     = 0x04,
+    EXTENSIONS = 0x08,
+    XSLT2      = 0x10,
 
     XQUERY_FULLTEXT        = (XQUERY | FULLTEXT),
     XPATH2_FULLTEXT        = (XPATH2 | FULLTEXT),
     XQUERY_UPDATE          = (XQUERY | UPDATE),
-    XQUERY_FULLTEXT_UPDATE = (XQUERY | FULLTEXT | UPDATE)
+    XQUERY_FULLTEXT_UPDATE = (XQUERY | FULLTEXT | UPDATE),
+    XSLT2_FULLTEXT         = (XSLT2 | FULLTEXT)
   };
                                                                                                                                                               
   /**

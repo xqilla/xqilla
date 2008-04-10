@@ -82,7 +82,7 @@ public:
 
   virtual void startElementEvent(const XMLCh *prefix, const XMLCh *uri, const XMLCh *localname)
   {
-    if(level_ != 0) seenContent_ = true;
+    seenContent_ = true;
     ++level_;
     next_->startElementEvent(prefix, uri, localname);
   }
@@ -121,7 +121,7 @@ public:
   virtual void attributeEvent(const XMLCh *prefix, const XMLCh *uri, const XMLCh *localname, const XMLCh *value,
                               const XMLCh *typeURI, const XMLCh *typeName)
   {
-    if(level_ == 1) {
+    if(level_ == 0) {
       if(seenContent_)
         XQThrow3(ASTException,X("ElemConstructFilter::attributeEvent"),
                  X("Attribute nodes must be created before the other content of an element [err:XQTY0024]"), ast_);
@@ -136,7 +136,7 @@ public:
 
   virtual void namespaceEvent(const XMLCh *prefix, const XMLCh *uri)
   {
-    if(level_ == 1) {
+    if(level_ == 0) {
       if(seenContent_)
         XQThrow3(ASTException,X("ElemConstructFilter::namespaceEvent"),
                  X("Namespace nodes must be created before the other content of an element [err:XQTY0024]"), ast_);
@@ -147,6 +147,8 @@ public:
 
     next_->namespaceEvent(prefix, uri);
   }
+
+  void setSeenContent(bool val) { seenContent_ = val; }
 
 private:
   struct AttrRecord {
@@ -172,14 +174,11 @@ private:
   set<AttrRecord> attrs_;
 };
 
-void XQElementConstructor::generateEvents(EventHandler *events, DynamicContext *context,
-                                          bool preserveNS, bool preserveType) const
+EventGenerator::Ptr XQElementConstructor::generateEvents(EventHandler *events, DynamicContext *context,
+                                                    bool preserveNS, bool preserveType) const
 {
   NoInheritFilter niFilter(events, context->getMemoryManager());
   if(!context->getInheritNamespaces()) events = &niFilter;
-
-  ElemConstructFilter filter(events, this, context->getMemoryManager());
-  events = &filter;
 
   // Add a new scope for the namespace definitions, before we try to assign a URI to the name of the element
   XQillaNSResolverImpl locallyDefinedNamespaces(context->getMemoryManager());
@@ -189,8 +188,7 @@ void XQElementConstructor::generateEvents(EventHandler *events, DynamicContext *
   if(m_namespaces != 0) {
     RefHashTableOfEnumerator<XMLCh> nsEnumVal(m_namespaces, false, context->getMemoryManager());
     RefHashTableOfEnumerator<XMLCh> nsEnumKey(m_namespaces, false, context->getMemoryManager());
-    while(nsEnumVal.hasMoreElements())
-    {
+    while(nsEnumVal.hasMoreElements()) {
       XMLCh* uri=&nsEnumVal.nextElement();
       XMLCh* prefix=(XMLCh*)nsEnumKey.nextElementKey();
       locallyDefinedNamespaces.addNamespaceBinding(prefix, uri);
@@ -206,23 +204,23 @@ void XQElementConstructor::generateEvents(EventHandler *events, DynamicContext *
 
   events->startElementEvent(prefix, uri, localname);
 
+  ElemConstructFilter elemFilter(events, this, context->getMemoryManager());
+
   if(m_namespaces != 0) {
     RefHashTableOfEnumerator<XMLCh> nsEnumVal(m_namespaces, false, context->getMemoryManager());
     RefHashTableOfEnumerator<XMLCh> nsEnumKey(m_namespaces, false, context->getMemoryManager());
-    while(nsEnumVal.hasMoreElements())
-    {
-      events->namespaceEvent(emptyToNull((XMLCh*)nsEnumKey.nextElementKey()), emptyToNull(&nsEnumVal.nextElement()));
+    while(nsEnumVal.hasMoreElements()) {
+      elemFilter.namespaceEvent(emptyToNull((XMLCh*)nsEnumKey.nextElementKey()), emptyToNull(&nsEnumVal.nextElement()));
     }
   }
   if(m_attrList != 0) {
     for(VectorOfASTNodes::const_iterator itAttr = m_attrList->begin(); itAttr != m_attrList->end (); ++itAttr) {
-      (*itAttr)->generateEvents(events, context, preserveNS, preserveType);
+      (*itAttr)->generateAndTailCall(&elemFilter, context, preserveNS, preserveType);
     }
   }
 
-  for(VectorOfASTNodes::const_iterator itCont = m_children->begin(); itCont != m_children->end (); ++itCont)
-  {
-    (*itCont)->generateEvents(events, context, preserveNS, preserveType);
+  for(VectorOfASTNodes::const_iterator itCont = m_children->begin(); itCont != m_children->end (); ++itCont) {
+    (*itCont)->generateAndTailCall(&elemFilter, context, preserveNS, preserveType);
   }
 
   const XMLCh *typeURI = SchemaSymbols::fgURI_SCHEMAFORSCHEMA;
@@ -233,6 +231,7 @@ void XQElementConstructor::generateEvents(EventHandler *events, DynamicContext *
   }
 
   events->endElementEvent(prefix, uri, localname, typeURI, typeName);
+  return 0;
 }
 
 ASTNode* XQElementConstructor::staticResolution(StaticContext *context)
@@ -255,7 +254,12 @@ ASTNode* XQElementConstructor::staticResolution(StaticContext *context)
              ((XQDOMConstructor*)astNode)->getNodeType()==Node::attribute_string);
       XQDOMConstructor* attrConstructor=(XQDOMConstructor*)astNode;
       const ASTNode* dItem=attrConstructor->getName();
-      assert(dItem!=NULL && dItem->getType() == ASTNode::DIRECT_NAME);
+      assert(dItem!=NULL);
+
+      if(dItem->getType() != ASTNode::DIRECT_NAME)
+        // no more namespace declaration
+        break;
+
       const XMLCh *qname = ((XQDirectName*)dItem)->getQName();
 
       const XMLCh* XMLNSPrefix=NULL;
@@ -411,13 +415,12 @@ ASTNode* XQElementConstructor::staticTyping(StaticContext *context)
     }
   }
 
-  _src.getStaticType().flags = StaticType::ELEMENT_TYPE;
-  _src.forceNoFolding(true);
+  _src.getStaticType() = StaticType::ELEMENT_TYPE;
   _src.creative(true);
   _src.setProperties(StaticAnalysis::DOCORDER | StaticAnalysis::GROUPED |
                      StaticAnalysis::PEER | StaticAnalysis::SUBTREE | StaticAnalysis::SAMEDOC |
                      StaticAnalysis::ONENODE);
-  return this; // Never constant fold
+  return this;
 }
 
 const XMLCh* XQElementConstructor::getNodeType() const

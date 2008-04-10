@@ -19,10 +19,6 @@
  * $Id$
  */
 
-/*
-  Data function
-*/
-
 #ifndef _FUNCTIONDATA_HPP
 #define _FUNCTIONDATA_HPP
 
@@ -41,10 +37,9 @@ public:
 
   virtual ASTNode* staticResolution(StaticContext *context);
   virtual ASTNode *staticTyping(StaticContext *context);
-  Result createResult(DynamicContext* context, int flags=0) const;
 };
 
-#endif // _FUNCTIONDATA_HPP
+#endif
 
 
 

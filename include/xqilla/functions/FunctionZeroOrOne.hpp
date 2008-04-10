@@ -35,22 +35,7 @@ public:
 
   FunctionZeroOrOne(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
-  Result createResult(DynamicContext* context, int flags=0) const;
-
-private:
-  class ZeroOrOneResult : public ResultImpl
-  {
-  public:
-    ZeroOrOneResult(const FunctionZeroOrOne *func, int flags);
-
-    Item::Ptr next(DynamicContext *context);
-    std::string asString(DynamicContext *context, int indent) const;
-  private:
-    int _flags;
-    const FunctionZeroOrOne *_func;
-    Result _arg;
-    unsigned int _argNo;
-  };
+  virtual ASTNode* staticResolution(StaticContext *context);
 };
 
-#endif // _FUNCTIONZEROORONE_HPP
+#endif

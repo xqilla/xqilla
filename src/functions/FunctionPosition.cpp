@@ -52,7 +52,7 @@ ASTNode *FunctionPosition::staticTyping(StaticContext *context)
 {
   _src.clear();
 
-  _src.getStaticType().flags = StaticType::DECIMAL_TYPE;
+  _src.getStaticType() = StaticType::DECIMAL_TYPE;
   _src.contextPositionUsed(true);
   return calculateSRCForArguments(context);
 }

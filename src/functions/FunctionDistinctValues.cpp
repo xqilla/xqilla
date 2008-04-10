@@ -82,6 +82,7 @@ ASTNode *FunctionDistinctValues::staticTyping(StaticContext *context)
   ASTNode *result = calculateSRCForArguments(context);
   if(result == this) {
     _src.getStaticType() = _args.front()->getStaticAnalysis().getStaticType();
+    _src.getStaticType().setCardinality(_src.getStaticType().getMin() == 0 ? 0 : 1, _src.getStaticType().getMax());
   }
   return result;
 }

@@ -27,20 +27,32 @@
 
 using namespace std;
 
+Result ClosureResult::create(const ASTNode *ast, DynamicContext *context, const VariableStore *sourceScope)
+{
+  if(ast->getStaticAnalysis().variablesUsed().empty() &&
+     !ast->getStaticAnalysis().areContextFlagsUsed()) {
+    return ast->createResult(context);
+  }
+
+  return new ClosureResult(ast, context, sourceScope);
+}
+
 ClosureResult::ClosureResult(const ASTNode *ast, DynamicContext *context, const VariableStore *sourceScope)
   : ResultImpl(ast),
+    contextItem_(context->getContextItem()),
+    contextPosition_(context->getContextPosition()),
+    contextSize_(context->getContextSize()),
     varStore_(context->getMemoryManager()),
+    docCache_(const_cast<DocumentCache*>(context->getDocumentCache())),
     result_(0)
 {
   if(sourceScope == 0) sourceScope = context->getVariableStore();
-
-  // TBD copy context item? - jpcs
 
   // Copy the variables we need into our local storage
   varStore_.cacheVariableStore(ast->getStaticAnalysis(), sourceScope);
 
   try {
-    AutoVariableStoreReset reset(context, &varStore_);
+    AutoVariableStoreReset vsReset(context, &varStore_);
     result_ = ast->createResult(context);
   }
   catch(...) {
@@ -49,8 +61,34 @@ ClosureResult::ClosureResult(const ASTNode *ast, DynamicContext *context, const 
   }
 }
 
-Item::Ptr ClosureResult::next(DynamicContext *context)
+Item::Ptr ClosureResult::nextOrTail(Result &tail, DynamicContext *context)
 {
-  AutoVariableStoreReset reset(context, &varStore_);
-  return result_->next(context);
+  AutoDocumentCacheReset dcReset(context);
+  context->setDocumentCache(docCache_);
+  AutoContextInfoReset ciReset(context, contextItem_, contextPosition_, contextSize_);
+  AutoVariableStoreReset vsReset(context, &varStore_);
+
+  return result_->nextOrTail(tail, context);
+}
+
+ClosureEventGenerator::ClosureEventGenerator(const ASTNode *ast, DynamicContext *context, bool preserveNS, bool preserveType)
+  : ASTNodeEventGenerator(ast, preserveNS, preserveType),
+    contextItem_(context->getContextItem()),
+    contextPosition_(context->getContextPosition()),
+    contextSize_(context->getContextSize()),
+    varStore_(context->getMemoryManager()),
+    docCache_(const_cast<DocumentCache*>(context->getDocumentCache()))
+{
+  // Copy the variables we need into our local storage
+  varStore_.cacheVariableStore(ast->getStaticAnalysis(), context->getVariableStore());
+}
+
+EventGenerator::Ptr ClosureEventGenerator::generateEvents(EventHandler *events, DynamicContext *context)
+{
+  AutoDocumentCacheReset dcReset(context);
+  context->setDocumentCache(docCache_);
+  AutoContextInfoReset ciReset(context, contextItem_, contextPosition_, contextSize_);
+  AutoVariableStoreReset vsReset(context, &varStore_);
+
+  return ast_->generateEvents(events, context, preserveNS_, preserveType_);
 }

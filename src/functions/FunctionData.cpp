@@ -56,25 +56,3 @@ ASTNode *FunctionData::staticTyping(StaticContext *context)
   return this;
 }
 
-Result FunctionData::createResult(DynamicContext* context, int flags) const
-{
-  // Should never happen
-  assert(0);
-  return 0;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

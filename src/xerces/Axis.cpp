@@ -56,7 +56,7 @@ Item::Ptr Axis::next(DynamicContext *context)
     if(itemType != 0)
     {
       Node::Ptr result = factory_.createNode(node, context);
-      if(itemType->matches(result, context, this)) {
+      if(itemType->matches(result, context)) {
         return result;
       }
     }

@@ -47,18 +47,18 @@ void Plus::calculateStaticType()
 
   // Adding a duration to a date, dateTime, time, or duration
   if(arg1.containsType(StaticType::DAY_TIME_DURATION_TYPE)) {
-    _src.getStaticType().flags |= arg0.flags & (StaticType::DATE_TYPE|StaticType::DATE_TIME_TYPE|StaticType::TIME_TYPE|
+    _src.getStaticType() |= arg0 & (StaticType::DATE_TYPE|StaticType::DATE_TIME_TYPE|StaticType::TIME_TYPE|
                                                 StaticType::DAY_TIME_DURATION_TYPE);
   }
   if(arg1.containsType(StaticType::YEAR_MONTH_DURATION_TYPE)) {
-    _src.getStaticType().flags |= arg0.flags & (StaticType::DATE_TYPE|StaticType::DATE_TIME_TYPE|StaticType::YEAR_MONTH_DURATION_TYPE);
+    _src.getStaticType() |= arg0 & (StaticType::DATE_TYPE|StaticType::DATE_TIME_TYPE|StaticType::YEAR_MONTH_DURATION_TYPE);
   }
   if(arg0.containsType(StaticType::DAY_TIME_DURATION_TYPE)) {
-    _src.getStaticType().flags |= arg1.flags & (StaticType::DATE_TYPE|StaticType::DATE_TIME_TYPE|StaticType::TIME_TYPE|
+    _src.getStaticType() |= arg1 & (StaticType::DATE_TYPE|StaticType::DATE_TIME_TYPE|StaticType::TIME_TYPE|
                                                 StaticType::DAY_TIME_DURATION_TYPE);
   }
   if(arg0.containsType(StaticType::YEAR_MONTH_DURATION_TYPE)) {
-    _src.getStaticType().flags |= arg1.flags & (StaticType::DATE_TYPE|StaticType::DATE_TIME_TYPE|StaticType::YEAR_MONTH_DURATION_TYPE);
+    _src.getStaticType() |= arg1 & (StaticType::DATE_TYPE|StaticType::DATE_TIME_TYPE|StaticType::YEAR_MONTH_DURATION_TYPE);
   }
 }
 

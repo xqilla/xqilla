@@ -27,8 +27,10 @@ TupleNode *ContextTuple::staticResolution(StaticContext *context)
   return this;
 }
 
-TupleNode *ContextTuple::staticTypingSetup(StaticContext *context)
+TupleNode *ContextTuple::staticTypingSetup(unsigned int &min, unsigned int &max, StaticContext *context)
 {
+  min = 1;
+  max = 1;
   return this;
 }
 

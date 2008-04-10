@@ -37,10 +37,11 @@
 XERCES_CPP_NAMESPACE_USE
 #endif
 
-XQPIConstructor::XQPIConstructor(ASTNode* name, ASTNode* value, XPath2MemoryManager* mm)
+XQPIConstructor::XQPIConstructor(ASTNode* name, ASTNode* value, XPath2MemoryManager* mm, bool xslt)
   : XQDOMConstructor(mm),
     m_name(name),
-    m_value(value)
+    m_value(value),
+    xslt_(xslt)
 {
   setType(ASTNode::DOM_CONSTRUCTOR);
 }
@@ -60,8 +61,8 @@ static bool checkString(const XMLCh *str)
   return true;
 }
 
-void XQPIConstructor::generateEvents(EventHandler *events, DynamicContext *context,
-                                     bool preserveNS, bool preserveType) const
+EventGenerator::Ptr XQPIConstructor::generateEvents(EventHandler *events, DynamicContext *context,
+                                               bool preserveNS, bool preserveType) const
 {
   Result resName = m_name->createResult(context);
   AnyAtomicType::Ptr itemName = resName->next(context);
@@ -107,6 +108,7 @@ void XQPIConstructor::generateEvents(EventHandler *events, DynamicContext *conte
   while(XMLChar1_0::isWhitespace(*piContent)) piContent++;
 
   events->piEvent(nodeName, piContent);
+  return 0;
 }
 
 ASTNode* XQPIConstructor::staticResolution(StaticContext *context)
@@ -146,13 +148,12 @@ ASTNode* XQPIConstructor::staticTyping(StaticContext *context)
               "to be an updating expression [err:XUST0001]"));
   }
 
-  _src.getStaticType().flags = StaticType::PI_TYPE;
-  _src.forceNoFolding(true);
+  _src.getStaticType() = StaticType::PI_TYPE;
   _src.creative(true);
   _src.setProperties(StaticAnalysis::DOCORDER | StaticAnalysis::GROUPED |
                      StaticAnalysis::PEER | StaticAnalysis::SUBTREE | StaticAnalysis::SAMEDOC |
                      StaticAnalysis::ONENODE);
-  return this; // Never constant fold
+  return this;
 }
 
 const XMLCh* XQPIConstructor::getNodeType() const

@@ -30,12 +30,15 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
+#include <xqilla/runtime/ClosureResult.hpp>
+
+XERCES_CPP_NAMESPACE_USE;
 
 const XMLCh FunctionSubsequence::name[] = {
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_s, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_u, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_b, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_s, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_q, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_u, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_c, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, XERCES_CPP_NAMESPACE_QUALIFIER chNull 
+  chLatin_s, chLatin_u, chLatin_b, 
+  chLatin_s, chLatin_e, chLatin_q, 
+  chLatin_u, chLatin_e, chLatin_n, 
+  chLatin_c, chLatin_e, chNull 
 };
 const unsigned int FunctionSubsequence::minArgs = 2;
 const unsigned int FunctionSubsequence::maxArgs = 3;
@@ -62,18 +65,52 @@ ASTNode *FunctionSubsequence::staticTyping(StaticContext *context)
   ASTNode *result = calculateSRCForArguments(context);
   if(result == this) {
     _src.getStaticType() = _args.front()->getStaticAnalysis().getStaticType();
+    _src.getStaticType().setCardinality(0, _src.getStaticType().getMax());
   }
   return result;
 }
 
+class SingleArgSubsequenceResult : public ResultImpl
+{
+public:
+  SingleArgSubsequenceResult(const FunctionSubsequence *func)
+    : ResultImpl(func),
+      _func(func)
+  {}
+
+  Item::Ptr nextOrTail(Result &tail, DynamicContext *context)
+  {
+    Numeric::Ptr one = context->getItemFactory()->createDouble(1, context);
+    Result source = ClosureResult::create(_func->getArguments()[0], context);
+
+    Numeric::Ptr i = one;
+    Numeric::Ptr position = ((Numeric*)_func->getParamNumber(2, context)->next(context).get())->round(context);
+
+    while(i->lessThan(position, context) && source->next(context).notNull()) {
+      i = i->add(one, context);
+    }
+
+    tail = source;
+    return 0;
+  }
+
+  std::string asString(DynamicContext *context, int indent) const
+  {
+    return "";
+  }
+private:
+  const FunctionSubsequence *_func;
+};
+
 Result FunctionSubsequence::createResult(DynamicContext* context, int flags) const
 {
-  return new SubsequenceResult(this, flags);
+  if(getNumArgs() == 2)
+    return new SingleArgSubsequenceResult(this);
+  return new SubsequenceResult(this);
 }
 
-FunctionSubsequence::SubsequenceResult::SubsequenceResult(const FunctionSubsequence *func, int flags)
+FunctionSubsequence::SubsequenceResult::SubsequenceResult(const FunctionSubsequence *func)
   : ResultImpl(func),
-    _flags(flags),
     _func(func),
     _end(0),
     _one(0),
@@ -84,21 +121,22 @@ FunctionSubsequence::SubsequenceResult::SubsequenceResult(const FunctionSubseque
 
 Item::Ptr FunctionSubsequence::SubsequenceResult::next(DynamicContext *context)
 {
-  if(_one == NULLRCP) {
+  if(_one.isNull()) {
     _one = context->getItemFactory()->createDouble(1, context);
     _source = _func->getParamNumber(1, context);
 
     _i = _one;
     const Numeric::Ptr position = ((const Numeric::Ptr )_func->getParamNumber(2, context)->next(context))->round(context);
-    if(_func->getNumArgs()>2)
-      _end = ((const Numeric::Ptr )_func->getParamNumber(3, context)->next(context))->round(context)->add(position, context);
 
     while(_i->lessThan(position, context) && _source->next(context) != NULLRCP) {
       _i = _i->add(_one, context);
     }
+
+    _end = ((const Numeric::Ptr )_func->getParamNumber(3, context)->next(context))->round(context)
+      ->add(position, context);
   }
 
-  if(_end != NULLRCP && !_i->lessThan(_end, context)) {
+  if(!_i->lessThan(_end, context)) {
     return 0;
   }
 

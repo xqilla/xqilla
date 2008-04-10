@@ -42,7 +42,7 @@ const unsigned int FunctionStringJoin::maxArgs = 2;
 FunctionStringJoin::FunctionStringJoin(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "string*, string", args, memMgr)
 {
-  _src.getStaticType().flags = StaticType::STRING_TYPE;
+  _src.getStaticType() = StaticType::STRING_TYPE;
 }
 
 Sequence FunctionStringJoin::createSequence(DynamicContext* context, int flags) const {

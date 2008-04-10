@@ -43,20 +43,21 @@ XQValidate::XQValidate(ASTNode *expr, DocumentCache::ValidationMode mode, XPath2
 Sequence XQValidate::createSequence(DynamicContext *context, int flags) const 
 {
   AutoDelete<SequenceBuilder> builder(context->createSequenceBuilder());
-  generateEvents(builder.get(), context, true, true);
+  generateAndTailCall(builder.get(), context, true, true);
   builder->endEvent();
   return builder->getSequence();
 }
 
-void XQValidate::generateEvents(EventHandler *events, DynamicContext *context,
-                                bool preserveNS, bool preserveType) const
+EventGenerator::Ptr XQValidate::generateEvents(EventHandler *events, DynamicContext *context,
+                                          bool preserveNS, bool preserveType) const
 {
   // Stream the node through the schema validator
   SchemaValidatorFilter svf(mode_ == DocumentCache::VALIDATION_STRICT, events,
                             context->getDocumentCache()->getGrammarResolver(),
                             context->getMemoryManager(), this);
   ValidateArgumentCheckFilter argCheck(&svf, mode_, context, this);
-  expr_->generateEvents(&argCheck, context, true, false);
+  expr_->generateAndTailCall(&argCheck, context, true, false);
+  return 0;
 }
 
 ASTNode *XQValidate::staticResolution(StaticContext* context)
@@ -73,15 +74,14 @@ ASTNode *XQValidate::staticTyping(StaticContext *context)
   _src.add(expr_->getStaticAnalysis());
 
   _src.getStaticType() = expr_->getStaticAnalysis().getStaticType();
-  _src.getStaticType().typeIntersect(StaticType::DOCUMENT_TYPE | StaticType::ELEMENT_TYPE);
+  _src.getStaticType() &= StaticType::DOCUMENT_TYPE | StaticType::ELEMENT_TYPE;
 
   if(!_src.getStaticType().containsType(StaticType::DOCUMENT_TYPE | StaticType::ELEMENT_TYPE)) {
     XQThrow(StaticErrorException, X("XQValidate::createSequence"),
             X("The expression to be validated must evaluate to exactly one document or element node [err:XQTY0030]."));
   }
 
-  _src.forceNoFolding(true);
-  return this; // Never constant fold
+  return this;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

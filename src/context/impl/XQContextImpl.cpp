@@ -33,6 +33,7 @@
 #include <xqilla/context/Collation.hpp>
 #include <xqilla/ast/XQFunction.hpp>
 #include <xqilla/ast/XQSequence.hpp>
+#include <xqilla/ast/XQVariable.hpp>
 #include <xqilla/utils/XPath2NSUtils.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/utils/ContextUtils.hpp>
@@ -56,7 +57,6 @@ XERCES_CPP_NAMESPACE_USE;
 const XMLCh XMLChXS[]    = { chLatin_x, chLatin_s, chNull };
 const XMLCh XMLChXSI[]   = { chLatin_x, chLatin_s, chLatin_i, chNull };
 const XMLCh XMLChFN[]    = { chLatin_f, chLatin_n, chNull };
-const XMLCh XMLChXDT[]   = { chLatin_x, chLatin_d, chLatin_t, chNull };
 const XMLCh XMLChLOCAL[] = { chLatin_l, chLatin_o, chLatin_c, chLatin_a, chLatin_l, chNull };
 
 static CodepointCollation g_codepointCollation;
@@ -66,7 +66,10 @@ XQContextImpl::XQContextImpl(XQillaConfiguration *conf, XQilla::Language languag
     _language(language),
     _createdWith(memMgr),
     _internalMM(memMgr),
+    _contextItemType(StaticType::ITEM_TYPE, 0, 1),
     _varTypeStore(0),
+    _templateNameMap(29, false, &_internalMM),
+    _templates(XQillaAllocator<XQUserFunction*>(&_internalMM)),
     _functionTable(0),
     _collations(XQillaAllocator<Collation*>(&_internalMM)),
     _constructionMode(CONSTRUCTION_MODE_PRESERVE),
@@ -76,6 +79,7 @@ XQContextImpl::XQContextImpl(XQillaConfiguration *conf, XQilla::Language languag
     _varStore(&_defaultVarStore),
     _globalVarStore(&_defaultVarStore),
     _defaultVarStore(&_internalMM),
+    _regexStore(0),
     _resolvers(XQillaAllocator<ResolverEntry>(&_internalMM)),
     _moduleResolver(0),
     _projection(true),
@@ -86,7 +90,6 @@ XQContextImpl::XQContextImpl(XQillaConfiguration *conf, XQilla::Language languag
   ////////////////////
   // static context //
   ////////////////////
-  _contextItemType.flags = StaticType::ITEM_TYPE;
   _xpath1Compatibility = false;    // according to Formal Semantics, § 4.1.1
   _ordering = ORDERING_ORDERED;
 
@@ -97,9 +100,9 @@ XQContextImpl::XQContextImpl(XQillaConfiguration *conf, XQilla::Language languag
   // by default, the default namespace for functions is the XPath2 namespace
   _functionNS = XQFunction::XMLChFunctionURI;
 
-	// This is created with the _createdWith memory manager,
-	// since a bug in xerces means we can't use a non-thread-safe
-	// memory manager - jpcs
+  // This is created with the _createdWith memory manager,
+  // since a bug in xerces means we can't use a non-thread-safe
+  // memory manager - jpcs
   _docCache = conf->createDocumentCache(_createdWith);
 
   if(_varTypeStore==NULL)
@@ -142,15 +145,19 @@ XQContextImpl::XQContextImpl(XQillaConfiguration *conf, XQilla::Language languag
     _defaultResolver.adopt = true;
   }
 
-  // XQuery defines these predefined namespace bindings
-  setNamespaceBinding(XMLChXS, SchemaSymbols::fgURI_SCHEMAFORSCHEMA);
-  setNamespaceBinding(XMLChXSI, SchemaSymbols::fgURI_XSI);
-  setNamespaceBinding(XMLChFN, XQFunction::XMLChFunctionURI);
-  setNamespaceBinding(XMLChXDT, FunctionConstructor::XMLChXPath2DatatypesURI);
-  setNamespaceBinding(XMLChLOCAL, XQUserFunction::XMLChXQueryLocalFunctionsURI);
+  if((language & XQilla::XPATH2) == 0 &&
+     (language & XQilla::XSLT2) == 0) {
+    // XQuery defines these predefined namespace bindings
+    setNamespaceBinding(XMLChXS, SchemaSymbols::fgURI_SCHEMAFORSCHEMA);
+    setNamespaceBinding(XMLChXSI, SchemaSymbols::fgURI_XSI);
+    setNamespaceBinding(XMLChFN, XQFunction::XMLChFunctionURI);
+    setNamespaceBinding(XMLChLOCAL, XQUserFunction::XMLChXQueryLocalFunctionsURI);
+  }
 
-  // Predefine the namespace for xqilla extension functions
-  setNamespaceBinding(XQillaFunction::XQillaPrefix, XQillaFunction::XMLChFunctionURI);
+  if((language & XQilla::XSLT2) == 0) {
+    // Predefine the namespace for xqilla extension functions
+    setNamespaceBinding(XQillaFunction::XQillaPrefix, XQillaFunction::XMLChFunctionURI);
+  }
 }
 
 XQContextImpl::~XQContextImpl()
@@ -249,17 +256,17 @@ void XQContextImpl::setNamespaceBinding(const XMLCh* prefix, const XMLCh* uri)
     if(XPath2Utils::equals(uri,XMLUni::fgXMLURIName))
       XQThrow2(StaticErrorException,X("XQContextImpl::setNamespaceBinding"),X("The 'http://www.w3.org/XML/1998/namespace' namespace cannot be bound to any prefix [err:XQST0070]"));
 
-	((XQillaNSResolverImpl*)_nsResolver)->addNamespaceBinding(prefix,uri);
+  ((XQillaNSResolverImpl*)_nsResolver)->addNamespaceBinding(prefix,uri);
 }
 
 void XQContextImpl::setPreserveBoundarySpace(bool value)
 {
-	_bPreserveBoundarySpace=value;
+  _bPreserveBoundarySpace=value;
 }
 
 bool XQContextImpl::getPreserveBoundarySpace() const
 {
-	return _bPreserveBoundarySpace;
+  return _bPreserveBoundarySpace;
 }
 
 void XQContextImpl::setInheritNamespaces(bool value)
@@ -354,7 +361,7 @@ const XMLCh* XQContextImpl::getBaseURI() const
 
 void XQContextImpl::setBaseURI(const XMLCh* newURI)
 {
-	_baseURI = _internalMM.getPooledString(newURI);
+  _baseURI = _internalMM.getPooledString(newURI);
 }
 
 StaticContext::ConstructionMode XQContextImpl::getConstructionMode() const
@@ -398,14 +405,14 @@ void XQContextImpl::setCurrentTime(time_t newTime)
 }
 
 ATDurationOrDerived::Ptr XQContextImpl::getImplicitTimezone() const {
-	if(_implicitTimezone == NULLRCP) {
-		// validate tzone
-		Timezone tzone(ContextUtils::getTimezone());
+  if(_implicitTimezone == NULLRCP) {
+    // validate tzone
+    Timezone tzone(ContextUtils::getTimezone());
     // c-style the const away since we are in a const method
     ((XQContextImpl*)this)->_implicitTimezone = tzone.asDayTimeDuration(this);
-	}
+  }
 
-	return _implicitTimezone;
+  return _implicitTimezone;
 }
 
 void XQContextImpl::setImplicitTimezone(const ATDurationOrDerived::Ptr &timezoneAsDuration) {
@@ -424,14 +431,16 @@ const DOMXPathNSResolver* XQContextImpl::getNSResolver() const {
 
 const XMLCh* XQContextImpl::getUriBoundToPrefix(const XMLCh* prefix, const LocationInfo *location) const
 {
+  if(prefix == 0 || *prefix == 0) return 0;
+
   const XMLCh* uri = _nsResolver->lookupNamespaceURI(prefix);
 
-	if(XMLString::stringLen(uri) == 0 && XMLString::stringLen(prefix) > 0){
-		const XMLCh* msg = XPath2Utils::concatStrings(X("No namespace for prefix \'"), prefix, X("\' [err:XPST0081]"), getMemoryManager());
-		XQThrow3(NamespaceLookupException, X("XQContextImpl::getUriBoundToPrefix"), msg, location);
-	}
+  if((uri == 0 || *uri == 0) && prefix != 0 && *prefix != 0) {
+    const XMLCh* msg = XPath2Utils::concatStrings(X("No namespace for prefix \'"), prefix, X("\' [err:XPST0081]"), getMemoryManager());
+    XQThrow3(NamespaceLookupException, X("XQContextImpl::getUriBoundToPrefix"), msg, location);
+  }
 
-	return uri;
+  return uri;
 }
 
 const XMLCh* XQContextImpl::getPrefixBoundToUri(const XMLCh* uri) const
@@ -442,6 +451,41 @@ const XMLCh* XQContextImpl::getPrefixBoundToUri(const XMLCh* uri) const
 void XQContextImpl::setContextItem(const Item::Ptr &item)
 {
   _contextItem = item;
+}
+
+void XQContextImpl::addTemplate(XQUserFunction *tp)
+{
+  if(tp->getURINameHash() != 0) {
+    if(_templateNameMap.containsKey((void*)tp->getURINameHash())) {
+      // [ERR XTSE0660] It is a static error if a stylesheet contains more than one template with
+      // the same name and the same import precedence, unless it also contains a template with the
+      // same name and higher import precedence.
+      XMLBuffer buf;
+      buf.set(X("Multiple templates have the same expanded QName {"));
+      buf.append(tp->getURI());
+      buf.append(X("}"));
+      buf.append(tp->getName());
+      buf.append(X(" [err:XTSE0660]."));
+      XQThrow3(StaticErrorException,X("XQContextImpl::addNamedTemplate"), buf.getRawBuffer(), tp);
+    }
+    _templateNameMap.put((void*)tp->getURINameHash(), tp);
+  }
+  if(tp->getPattern() != 0) {
+    _templates.push_back(tp);
+  }
+}
+
+const XQUserFunction *XQContextImpl::lookUpNamedTemplate(const XMLCh *uri, const XMLCh *name) const
+{
+  XMLBuffer key;
+  key.set(name);
+  key.append(uri);
+  return _templateNameMap.get(key.getRawBuffer());
+}
+
+const UserFunctions &XQContextImpl::getTemplateRules() const
+{
+  return _templates;
 }
 
 void XQContextImpl::addCustomFunction(FuncFactory *func)
@@ -503,6 +547,16 @@ void XQContextImpl::setExternalVariable(const XMLCh *qname, const Sequence &valu
 VariableTypeStore* XQContextImpl::getVariableTypeStore()
 {
   return _varTypeStore;
+}
+
+const RegexGroupStore *XQContextImpl::getRegexGroupStore() const
+{
+  return _regexStore;
+}
+
+void XQContextImpl::setRegexGroupStore(const RegexGroupStore *store)
+{
+  _regexStore = store;
 }
 
 size_t XQContextImpl::getContextSize() const

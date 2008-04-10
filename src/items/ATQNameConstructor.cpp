@@ -45,7 +45,7 @@ ATQNameConstructor::ATQNameConstructor(const XMLCh* typeURI,
     _prefix(prefix),
     _localname(localname)
 {
-  _sType.flags = StaticType::QNAME_TYPE;
+  _sType = StaticType::QNAME_TYPE;
 }
 
 Item::Ptr ATQNameConstructor::createItem(const DynamicContext* context) const

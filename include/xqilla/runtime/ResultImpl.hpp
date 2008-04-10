@@ -27,24 +27,28 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/items/Item.hpp>
-#include <xqilla/framework/ReferenceCounted.hpp>
 #include <xqilla/ast/LocationInfo.hpp>
 
 class SequenceType;
 class DynamicContext;
 class Sequence;
+class Result;
+class ResultBufferImpl;
 
 /** A lazily evaluated query result */
-class XQILLA_API ResultImpl : public ReferenceCounted, public LocationInfo
+class XQILLA_API ResultImpl : public LocationInfo
 {
 public:
   virtual ~ResultImpl() {}
 
-  /// Get the next item from the iterator. Returns null if the is no next value.
-  virtual Item::Ptr next(DynamicContext *context) = 0;
+  Result *getResultPointer() { return resultPointer_; }
+  void setResultPointer(Result *p) { resultPointer_ = p; }
 
-  /// Performs iterator specific skip of results
-  virtual void skip() {}
+  /// Get the next item from the iterator. Returns null if the is no next value.
+  virtual Item::Ptr next(DynamicContext *context);
+
+  /// Gets the next item, or returns a tail call Result which will give the next item.
+  virtual Item::Ptr nextOrTail(Result &tail, DynamicContext *context);
 
   /// Returns the effective boolean value of the sequence. Only works properly before next() has been called.
   virtual bool getEffectiveBooleanValue(DynamicContext* context, const LocationInfo *info);
@@ -54,20 +58,18 @@ public:
   /// Cast operator to a Sequence. Only works properly before next() has been called.
   virtual Sequence toSequence(DynamicContext *context);
 
+  /// Returns a result buffer of the result
+  virtual ResultBufferImpl *toResultBuffer(unsigned int readCount);
+
   /// Debug method to visualise the Result
   virtual std::string asString(DynamicContext *context, int indent) const = 0;
 
   static std::string getIndent(int indent);
 
 protected:
-  /**
-   * Do not allocate this object from a memory manager!
-   * It must be created using the heap.
-   */
-  ResultImpl(const LocationInfo *o)
-  {
-    setLocationInfo(o);
-  }
+  ResultImpl(const LocationInfo *o);
+
+  Result *resultPointer_;
 
 private:
   ResultImpl(const ResultImpl &) {};

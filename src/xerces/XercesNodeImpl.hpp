@@ -50,8 +50,6 @@ public:
 
   virtual void *getInterface(const XMLCh *name) const;
 
-  virtual bool isNode() const;
-  virtual bool isAtomicValue() const;
   virtual const XMLCh* asString(const DynamicContext* context) const;
   virtual bool hasInstanceOfType(const XMLCh* typeURI, const XMLCh* typeName, const DynamicContext* context) const;
 

@@ -44,12 +44,13 @@ XQTextConstructor::XQTextConstructor(ASTNode *value, XPath2MemoryManager* mm)
   setType(ASTNode::DOM_CONSTRUCTOR);
 }
 
-void XQTextConstructor::generateEvents(EventHandler *events, DynamicContext *context,
-                                       bool preserveNS, bool preserveType) const
+EventGenerator::Ptr XQTextConstructor::generateEvents(EventHandler *events, DynamicContext *context,
+                                                 bool preserveNS, bool preserveType) const
 {
   XMLBuffer value;
   if(getStringValue(m_value, value, context))
     events->textEvent(value.getRawBuffer());
+  return 0;
 }
 
 ASTNode* XQTextConstructor::staticResolution(StaticContext *context)
@@ -77,13 +78,12 @@ ASTNode* XQTextConstructor::staticTyping(StaticContext *context)
               "to be an updating expression [err:XUST0001]"));
   }
 
-  _src.getStaticType().flags = StaticType::TEXT_TYPE;
-  _src.forceNoFolding(true);
+  _src.getStaticType() = StaticType(StaticType::TEXT_TYPE, 0, 1);
   _src.creative(true);
   _src.setProperties(StaticAnalysis::DOCORDER | StaticAnalysis::GROUPED |
                      StaticAnalysis::PEER | StaticAnalysis::SUBTREE | StaticAnalysis::SAMEDOC |
                      StaticAnalysis::ONENODE);
-  return this; // Never constant fold
+  return this;
 }
 
 const XMLCh* XQTextConstructor::getNodeType() const

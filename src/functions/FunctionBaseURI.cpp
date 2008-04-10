@@ -56,7 +56,7 @@ ASTNode *FunctionBaseURI::staticTyping(StaticContext *context)
 
   if(_args.empty())
     _src.contextItemUsed(true);
-  _src.getStaticType().flags = StaticType::ANY_URI_TYPE;
+  _src.getStaticType() = StaticType(StaticType::ANY_URI_TYPE, 0, 1);
   return calculateSRCForArguments(context);
 }
 

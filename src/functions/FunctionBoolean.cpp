@@ -54,7 +54,7 @@ ASTNode *FunctionBoolean::staticTyping(StaticContext *context)
 {
   _src.clear();
 
-  _src.getStaticType().flags = StaticType::BOOLEAN_TYPE;
+  _src.getStaticType() = StaticType::BOOLEAN_TYPE;
   return calculateSRCForArguments(context);
 }
 

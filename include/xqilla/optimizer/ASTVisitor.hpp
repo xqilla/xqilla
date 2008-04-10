@@ -53,6 +53,16 @@
 #include <xqilla/ast/ConvertFunctionArg.hpp>
 #include <xqilla/ast/XQDocumentOrder.hpp>
 #include <xqilla/ast/XQPredicate.hpp>
+#include <xqilla/ast/XQNamespaceBinding.hpp>
+#include <xqilla/ast/XQFunctionConversion.hpp>
+#include <xqilla/ast/XQAnalyzeString.hpp>
+#include <xqilla/ast/XQCopyOf.hpp>
+#include <xqilla/ast/XQCallTemplate.hpp>
+#include <xqilla/ast/XQApplyTemplates.hpp>
+#include <xqilla/ast/XQInlineFunction.hpp>
+#include <xqilla/ast/XQFunctionRef.hpp>
+#include <xqilla/ast/XQFunctionDeref.hpp>
+
 #include <xqilla/ast/ContextTuple.hpp>
 #include <xqilla/ast/ForTuple.hpp>
 #include <xqilla/ast/LetTuple.hpp>
@@ -83,6 +93,10 @@ public:
 
 protected:
   virtual void optimize(XQQuery *query);
+
+  virtual XQGlobalVariable *optimizeGlobalVar(XQGlobalVariable *item);
+  virtual XQUserFunction *optimizeFunctionDef(XQUserFunction *item);
+
   virtual ASTNode *optimize(ASTNode *item);
   virtual ASTNode *optimizeFunction(XQFunction *item);
   virtual ASTNode *optimizeLiteral(XQLiteral *item);
@@ -102,9 +116,9 @@ protected:
   virtual ASTNode *optimizeQuantified(XQQuantified *item);
   virtual ASTNode *optimizeTypeswitch(XQTypeswitch *item);
   virtual ASTNode *optimizeValidate(XQValidate *item);
-  virtual XQGlobalVariable *optimizeGlobalVar(XQGlobalVariable *item);
   virtual ASTNode *optimizeFunctionCall(XQFunctionCall *item);
   virtual ASTNode *optimizeDOMConstructor(XQDOMConstructor *item);
+  virtual ASTNode *optimizeSimpleContent(XQSimpleContent *item);
   virtual ASTNode *optimizeOrderingChange(XQOrderingChange *item);
   virtual ASTNode *optimizeAtomize(XQAtomize *item);
   virtual ASTNode *optimizeXPath1CompatConvertFunctionArg(XPath1CompatConvertFunctionArg *item);
@@ -113,10 +127,19 @@ protected:
   virtual ASTNode *optimizePromoteAnyURI(XQPromoteAnyURI *item);
   virtual ASTNode *optimizeDocumentOrder(XQDocumentOrder *item);
   virtual ASTNode *optimizePredicate(XQPredicate *item);
-  virtual ASTNode *optimizeUserFunction(XQUserFunction::Instance *item);
+  virtual ASTNode *optimizeUserFunction(XQUserFunctionInstance *item);
   virtual ASTNode *optimizeNameExpression(XQNameExpression *item);
   virtual ASTNode *optimizeContentSequence(XQContentSequence *item);
   virtual ASTNode *optimizeDirectName(XQDirectName *item);
+  virtual ASTNode *optimizeNamespaceBinding(XQNamespaceBinding *item);
+  virtual ASTNode *optimizeFunctionConversion(XQFunctionConversion *item);
+  virtual ASTNode *optimizeAnalyzeString(XQAnalyzeString *item);
+  virtual ASTNode *optimizeCopyOf(XQCopyOf *item);
+  virtual ASTNode *optimizeCallTemplate(XQCallTemplate *item);
+  virtual ASTNode *optimizeApplyTemplates(XQApplyTemplates *item);
+  virtual ASTNode *optimizeInlineFunction(XQInlineFunction *item);
+  virtual ASTNode *optimizeFunctionRef(XQFunctionRef *item);
+  virtual ASTNode *optimizeFunctionDeref(XQFunctionDeref *item);
 
   virtual ASTNode *optimizeUDelete(UDelete *item);
   virtual ASTNode *optimizeURename(URename *item);

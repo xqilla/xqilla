@@ -60,7 +60,7 @@ ASTNode *FTContains::staticTyping(StaticContext *context)
 {
   _src.clear();
 
-  _src.getStaticType().flags = StaticType::BOOLEAN_TYPE;
+  _src.getStaticType() = StaticType::BOOLEAN_TYPE;
 
   argument_ = argument_->staticTyping(context);
   _src.add(argument_->getStaticAnalysis());

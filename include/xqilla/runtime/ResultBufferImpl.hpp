@@ -48,6 +48,7 @@ public:
   Result createResult();
 
   unsigned int getMaxReadCount() const { return _maxReadCount; }
+  void increaseMaxReadCount(unsigned int readCount);
   unsigned int incrementReadCount() { return ++_readCount; }
 
 private:
@@ -73,6 +74,7 @@ class BufferedResult : public ResultImpl
 public:
   BufferedResult(ResultBufferImpl *impl);
   Item::Ptr next(DynamicContext *context);
+  ResultBufferImpl *toResultBuffer(unsigned int readCount);
   std::string asString(DynamicContext *context, int indent) const;
 private:
   ResultBufferImpl::Ptr _impl;

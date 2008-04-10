@@ -38,10 +38,14 @@ public:
   typedef RefCountPointer<const Node> Ptr;
 
   /** Returns true, since this Item is a Node */
-  virtual bool isNode() const = 0;
+  virtual bool isNode() const;
 
   /** Returns false, since this Item is a Node */
-  virtual bool isAtomicValue() const = 0;
+  virtual bool isAtomicValue() const;
+
+  virtual bool isFunction() const;
+
+  virtual void typeToBuffer(DynamicContext *context, XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &buffer) const;
 
   /** Serialize this node */
   virtual const XMLCh* asString(const DynamicContext* context) const = 0;

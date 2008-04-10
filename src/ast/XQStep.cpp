@@ -30,6 +30,7 @@
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/ast/StaticAnalysis.hpp>
 #include <xqilla/exceptions/TypeErrorException.hpp>
+#include <xqilla/exceptions/DynamicErrorException.hpp>
 #include <xqilla/utils/PrintAST.hpp>
 #include <xqilla/ast/XQDocumentOrder.hpp>
 
@@ -91,21 +92,27 @@ ASTNode *XQStep::staticTyping(StaticContext *context)
 {
   _src.clear();
 
+  if(!context->getContextItemType().containsType(StaticType::ITEM_TYPE)) {
+    XQThrow(DynamicErrorException,X("XQStep::staticTyping"),
+            X("It is an error for the context item to be undefined when using it [err:XPDY0002]"));
+  }
+
   _src.setProperties(getAxisProperties(axis_));
   _src.contextItemUsed(true);
 
   bool isExact;
   nodeTest_->getStaticType(_src.getStaticType(), context, isExact, this);
+  _src.getStaticType().multiply(0, StaticType::UNLIMITED);
 
   switch(axis_) {
   case SELF:
-    _src.getStaticType().typeIntersect(context->getContextItemType());
+    _src.getStaticType().typeNodeIntersect(context->getContextItemType());
     break;
   case ATTRIBUTE:
-    _src.getStaticType().typeIntersect(StaticType::ATTRIBUTE_TYPE);
+    _src.getStaticType().typeNodeIntersect(StaticType(StaticType::ATTRIBUTE_TYPE, 0, StaticType::UNLIMITED));
     break;
   case NAMESPACE:
-    _src.getStaticType().typeIntersect(StaticType::NAMESPACE_TYPE);
+    _src.getStaticType().typeNodeIntersect(StaticType(StaticType::NAMESPACE_TYPE, 0, StaticType::UNLIMITED));
     break;
   case CHILD:
   case DESCENDANT:
@@ -113,12 +120,12 @@ ASTNode *XQStep::staticTyping(StaticContext *context)
   case FOLLOWING_SIBLING:
   case PRECEDING:
   case PRECEDING_SIBLING:
-    _src.getStaticType().typeIntersect(StaticType::ELEMENT_TYPE | StaticType::TEXT_TYPE | StaticType::PI_TYPE |
-                                       StaticType::COMMENT_TYPE);
+    _src.getStaticType().typeNodeIntersect(StaticType(StaticType::ELEMENT_TYPE | StaticType::TEXT_TYPE | StaticType::PI_TYPE |
+                                            StaticType::COMMENT_TYPE, 0, StaticType::UNLIMITED));
     break;
   case ANCESTOR:
   case PARENT:
-    _src.getStaticType().typeIntersect(StaticType::DOCUMENT_TYPE | StaticType::ELEMENT_TYPE);
+    _src.getStaticType().typeNodeIntersect(StaticType(StaticType::DOCUMENT_TYPE | StaticType::ELEMENT_TYPE, 0, StaticType::UNLIMITED));
     break;
   case DESCENDANT_OR_SELF:
   case ANCESTOR_OR_SELF:

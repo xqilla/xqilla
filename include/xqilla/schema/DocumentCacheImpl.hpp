@@ -145,7 +145,9 @@ protected:
   XERCES_CPP_NAMESPACE_QUALIFIER XMLScanner *scanner_;
   XERCES_CPP_NAMESPACE_QUALIFIER XMLEntityResolver *entityResolver_;
 
+  LocationInfo location_;
   EventHandler *events_;
+
   const XERCES_CPP_NAMESPACE_QUALIFIER RefVectorOf<XERCES_CPP_NAMESPACE_QUALIFIER XMLAttr> *attrList_;
   unsigned int attrCount_;
   XERCES_CPP_NAMESPACE_QUALIFIER PSVIElement *elementInfo_;

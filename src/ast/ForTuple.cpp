@@ -75,9 +75,9 @@ TupleNode *ForTuple::staticResolution(StaticContext *context)
   return this;
 }
 
-TupleNode *ForTuple::staticTypingSetup(StaticContext *context)
+TupleNode *ForTuple::staticTypingSetup(unsigned int &min, unsigned int &max, StaticContext *context)
 {
-  parent_ = parent_->staticTypingSetup(context);
+  parent_ = parent_->staticTypingSetup(min, max, context);
 
   VariableTypeStore* varStore = context->getVariableTypeStore();
 
@@ -90,10 +90,18 @@ TupleNode *ForTuple::staticTypingSetup(StaticContext *context)
               "to be an updating expression [err:XUST0001]"));
   }
 
+  const StaticType &sType = expr_->getStaticAnalysis().getStaticType();
+
+  min *= sType.getMin();
+  if(max == StaticType::UNLIMITED || sType.getMax() == StaticType::UNLIMITED)
+    max = StaticType::UNLIMITED;
+  else max *= sType.getMax();
+
   varStore->addLogicalBlockScope();
 
   // Declare the variable binding
-  varSrc_.getStaticType() = expr_->getStaticAnalysis().getStaticType();
+  varSrc_.getStaticType() = sType;
+  varSrc_.getStaticType().setCardinality(1, 1);
   varSrc_.setProperties(StaticAnalysis::DOCORDER | StaticAnalysis::GROUPED |
                         StaticAnalysis::PEER | StaticAnalysis::SUBTREE | StaticAnalysis::SAMEDOC |
                         StaticAnalysis::ONENODE | StaticAnalysis::SELF);
@@ -101,7 +109,7 @@ TupleNode *ForTuple::staticTypingSetup(StaticContext *context)
 
   if(posName_) {
     // Declare the positional variable binding
-    posSrc_.getStaticType().flags = StaticType::DECIMAL_TYPE;
+    posSrc_.getStaticType() = StaticType::DECIMAL_TYPE;
     varStore->declareVar(posURI_, posName_, posSrc_);
   }
 

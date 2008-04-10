@@ -27,14 +27,17 @@
 #include <xqilla/schema/SequenceType.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/context/ItemFactory.hpp>
+#include <xqilla/context/ContextHelpers.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/utils/XPath2NSUtils.hpp>
 #include <xqilla/items/ATQNameConstructor.hpp>
 #include <xqilla/exceptions/ASTException.hpp>
 #include <xqilla/exceptions/XPath2TypeMatchException.hpp>
+#include <xqilla/exceptions/StaticErrorException.hpp>
 #include <xqilla/events/SequenceBuilder.hpp>
 #include <xqilla/events/ContentSequenceFilter.hpp>
 #include <xqilla/events/QueryPathTreeFilter.hpp>
+#include <xqilla/runtime/ClosureResult.hpp>
 
 #include <xercesc/util/XMLChar.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
@@ -44,8 +47,8 @@ XERCES_CPP_NAMESPACE_USE
 #endif
 
 XQDOMConstructor::XQDOMConstructor(XPath2MemoryManager* mm)
-	: ASTNodeImpl(mm),
-	  queryPathTree_(0)
+  : ASTNodeImpl(mm),
+    queryPathTree_(0)
 {
 }
 
@@ -53,13 +56,13 @@ Sequence XQDOMConstructor::createSequence(DynamicContext *context, int flags) co
 {
   AutoDelete<SequenceBuilder> builder(context->createSequenceBuilder());
   if(context->getProjection() && queryPathTree_ != 0) {
-	  QueryPathTreeFilter qptf(queryPathTree_, builder.get());
-	  generateEvents(&qptf, context, true, true);
-	  qptf.endEvent();
+    QueryPathTreeFilter qptf(queryPathTree_, builder.get());
+    generateAndTailCall(&qptf, context, true, true);
+    qptf.endEvent();
   }
   else {
-	  generateEvents(builder.get(), context, true, true);
-	  builder->endEvent();
+    generateAndTailCall(builder.get(), context, true, true);
+    builder->endEvent();
   }
   return builder->getSequence();
 }
@@ -112,21 +115,17 @@ ASTNode *XQContentSequence::staticTyping(StaticContext *context)
   expr_ = expr_->staticTyping(context);
   _src.copy(expr_->getStaticAnalysis());
 
-  if(!expr_->getStaticAnalysis().getStaticType().containsType(StaticType::DOCUMENT_TYPE)) {
+  if(!expr_->getStaticAnalysis().getStaticType().containsType(StaticType::DOCUMENT_TYPE|StaticType::ANY_ATOMIC_TYPE)) {
     ASTNode *pChild = expr_;
 
     // Not needed if the wrapped expression is a DOM_CONSTRUCTOR
-    if((unsigned int)pChild->getType() == ASTNode::DOM_CONSTRUCTOR) {
+    if(pChild->getType() == ASTNode::DOM_CONSTRUCTOR) {
       return expr_->staticTyping(context);
     }
   }
 
-  if(_src.getStaticType().containsType(StaticType::ANY_ATOMIC_TYPE)) {
-    _src.getStaticType().typeIntersect(~StaticType::ANY_ATOMIC_TYPE);
-    _src.getStaticType().typeUnion(StaticType::TEXT_TYPE);
-  }
+  _src.getStaticType().substitute(StaticType::ANY_ATOMIC_TYPE, StaticType::TEXT_TYPE);
 
-  _src.forceNoFolding(true);
   _src.creative(true);
   return this;
 }
@@ -134,19 +133,24 @@ ASTNode *XQContentSequence::staticTyping(StaticContext *context)
 Sequence XQContentSequence::createSequence(DynamicContext* context, int flags) const
 {
   AutoDelete<SequenceBuilder> builder(context->createSequenceBuilder());
-  generateEvents(builder.get(), context, true, true);
+  generateAndTailCall(builder.get(), context, true, true);
   builder->endEvent();
   return builder->getSequence();
 }
 
-void XQContentSequence::generateEvents(EventHandler *events, DynamicContext *context,
-                                       bool preserveNS, bool preserveType) const
+EventGenerator::Ptr XQContentSequence::generateEvents(EventHandler *events, DynamicContext *context,
+                                                 bool preserveNS, bool preserveType) const
 {
   preserveNS = context->getPreserveNamespaces();
   preserveType = context->getConstructionMode() == StaticContext::CONSTRUCTION_MODE_PRESERVE;
 
+  if(!expr_->getStaticAnalysis().getStaticType().containsType(StaticType::DOCUMENT_TYPE|StaticType::ANY_ATOMIC_TYPE)) {
+    return new ClosureEventGenerator(expr_, context, preserveNS, preserveType);
+  }
+
   ContentSequenceFilter filter(events);
-  expr_->generateEvents(&filter, context, preserveNS, preserveType);
+  expr_->generateAndTailCall(&filter, context, preserveNS, preserveType);
+  return 0;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -218,7 +222,7 @@ ASTNode *XQNameExpression::staticTyping(StaticContext *context)
 {
   _src.clear();
 
-  _src.getStaticType().flags = StaticType::QNAME_TYPE;
+  _src.getStaticType() = StaticType::QNAME_TYPE;
 
   expr_ = expr_->staticTyping(context);
   _src.add(expr_->getStaticAnalysis());
@@ -266,5 +270,70 @@ Item::Ptr XQNameExpression::NameExpressionResult::getSingleResult(DynamicContext
 
     XQThrow(XPath2TypeMatchException,X("XQNameExpression::NameExpressionResult::getSingleResult"),
             X("The name expression must be a single xs:QName, xs:string or xs:untypedAtomic [err:XPTY0004]"));
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+XQSimpleContent::XQSimpleContent(VectorOfASTNodes *children, XPath2MemoryManager* mm)
+  : ASTNodeImpl(mm),
+    children_(children)
+{
+  setType(ASTNode::SIMPLE_CONTENT);
+}
+
+ASTNode* XQSimpleContent::staticResolution(StaticContext *context)
+{
+  XPath2MemoryManager *mm = context->getMemoryManager();
+
+  unsigned int i;
+  for(i = 0;i < children_->size(); ++i) {
+    // atomize content and run static resolution 
+    (*children_)[i] = new (mm) XQAtomize((*children_)[i], mm);
+    (*children_)[i]->setLocationInfo(this);
+
+    (*children_)[i] = (*children_)[i]->staticResolution(context);
+  }
+
+  return this;
+}
+
+ASTNode *XQSimpleContent::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
+  bool constant = true;
+  unsigned int i;
+  for(i = 0; i < children_->size(); ++i) {
+    (*children_)[i] = (*children_)[i]->staticTyping(context);
+    _src.add((*children_)[i]->getStaticAnalysis());
+
+    if((*children_)[i]->getStaticAnalysis().isUpdating()) {
+      XQThrow(StaticErrorException,X("XQSimpleContent::staticTyping"),
+              X("It is a static error for the a value expression of an attribute constructor "
+                "to be an updating expression [err:XUST0001]"));
+    }
+
+    if(!(*children_)[i]->isConstant()) constant = false;
+  }
+
+  _src.getStaticType() = StaticType::STRING_TYPE;
+
+  if(constant) {
+    return constantFold(context);
+  }
+  return this;
+}
+
+Result XQSimpleContent::createResult(DynamicContext* context, int flags) const
+{
+  return new SimpleContentResult(this);
+}
+
+Item::Ptr XQSimpleContent::SimpleContentResult::getSingleResult(DynamicContext *context) const
+{
+  // TBD separator - jpcs
+  XMLBuffer value;
+  XQDOMConstructor::getStringValue(ast_->getChildren(), value, context);
+  return context->getItemFactory()->createString(value.getRawBuffer(), context);
 }
 

@@ -85,13 +85,13 @@ ASTNode* And::staticTyping(StaticContext *context)
         ASTNode* newBlock = new (getMemoryManager())
           XQSequence(dContext->getItemFactory()->createBoolean(false, dContext),
                            dContext, getMemoryManager());
-	newBlock->setLocationInfo(this);
+        newBlock->setLocationInfo(this);
         return newBlock->staticResolution(context);
       }
     }
   }
 
-  _src.getStaticType().flags = StaticType::BOOLEAN_TYPE;
+  _src.getStaticType() = StaticType::BOOLEAN_TYPE;
 
   _args = newArgs;
   return this;
@@ -112,7 +112,7 @@ Item::Ptr And::AndResult::getSingleResult(DynamicContext *context) const
     }
   }
 
-	return (const Item::Ptr)context->getItemFactory()->createBoolean(true, context);
+  return (const Item::Ptr)context->getItemFactory()->createBoolean(true, context);
 }
 
 std::string And::AndResult::asString(DynamicContext *context, int indent) const

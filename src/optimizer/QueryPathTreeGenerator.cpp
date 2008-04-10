@@ -263,6 +263,10 @@ QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generate(ASTNode *ite
     result = generateDOMConstructor((XQDOMConstructor *)item);
     break;
   }
+  case ASTNode::SIMPLE_CONTENT: {
+    result = generateSimpleContent((XQSimpleContent *)item);
+    break;
+  }
   case ASTNode::NAME_EXPRESSION: {
     result = generateNameExpression((XQNameExpression *)item);
     break;
@@ -304,7 +308,7 @@ QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generate(ASTNode *ite
     break;
   }
   case ASTNode::USER_FUNCTION: {
-    result = generateUserFunction((XQUserFunction::Instance *)item);
+    result = generateUserFunction((XQUserFunctionInstance *)item);
     break;
   }
   case ASTNode::UDELETE: {
@@ -361,6 +365,42 @@ QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generate(ASTNode *ite
   }
   case ASTNode::FTCONTAINS: {
     result = generateFTContains((FTContains *)item);
+    break;
+  }
+  case ASTNode::NAMESPACE_BINDING: {
+    result = generateNamespaceBinding((XQNamespaceBinding *)item);
+    break;
+  }
+  case ASTNode::FUNCTION_CONVERSION: {
+    result = generateFunctionConversion((XQFunctionConversion *)item);
+    break;
+  }
+  case ASTNode::ANALYZE_STRING: {
+    result = generateAnalyzeString((XQAnalyzeString *)item);
+    break;
+  }
+  case ASTNode::COPY_OF: {
+    result = generateCopyOf((XQCopyOf *)item);
+    break;
+  }
+  case ASTNode::CALL_TEMPLATE: {
+    result = generateCallTemplate((XQCallTemplate *)item);
+    break;
+  }
+  case ASTNode::APPLY_TEMPLATES: {
+    result = generateApplyTemplates((XQApplyTemplates *)item);
+    break;
+  }
+  case ASTNode::INLINE_FUNCTION: {
+    result = generateInlineFunction((XQInlineFunction *)item);
+    break;
+  }
+  case ASTNode::FUNCTION_REF: {
+    result = generateFunctionRef((XQFunctionRef *)item);
+    break;
+  }
+  case ASTNode::FUNCTION_DEREF: {
+    result = generateFunctionDeref((XQFunctionDeref *)item);
     break;
   }
   }
@@ -968,7 +1008,7 @@ public:
   QueryPathTreeGenerator::PathResult value;
 };
 
-QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateUserFunction(XQUserFunction::Instance *item)
+QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateUserFunction(XQUserFunctionInstance *item)
 {
   PathResult result;
 
@@ -1281,6 +1321,18 @@ QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateDOMConstructo
   return result;
 }
 
+QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateSimpleContent(XQSimpleContent *item)
+{
+  VectorOfASTNodes *children = const_cast<VectorOfASTNodes *>(item->getChildren());
+  if(children) {
+    for(VectorOfASTNodes::iterator j = children->begin(); j != children->end(); ++j) {
+      generate(*j);
+    }
+  }
+
+  return PathResult();
+}
+
 QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateNameExpression(XQNameExpression *item)
 {
   return generate(const_cast<ASTNode *>(item->getExpression()));
@@ -1524,6 +1576,111 @@ QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateFTContains(FT
   if(item->getIgnore())
     generate(item->getIgnore());
   return result;
+}
+
+QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateNamespaceBinding(XQNamespaceBinding *item)
+{
+  return generate(const_cast<ASTNode *>(item->getExpression()));
+}
+
+QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateFunctionConversion(XQFunctionConversion *item)
+{
+  return generate(const_cast<ASTNode *>(item->getExpression()));
+}
+
+QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateAnalyzeString(XQAnalyzeString *item)
+{
+  PathResult result;
+
+  generate(item->getExpression());
+  generate(item->getRegex());
+  if(item->getFlags())
+    generate(item->getFlags());
+
+  varStore_.addScope(VarStore::MyScope::LOGICAL_BLOCK_SCOPE);
+  setCurrentContext(PathResult());
+
+  result.join(generate(item->getMatch()));
+  result.join(generate(item->getNonMatch()));
+
+  delete varStore_.popScope();
+
+  return result;
+}
+
+QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateCopyOf(XQCopyOf *item)
+{
+  return copyNodes(generate(const_cast<ASTNode *>(item->getExpression())));
+}
+
+QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateCallTemplate(XQCallTemplate *item)
+{
+  // Shouldn't happen
+  TemplateArguments *args = item->getArguments();
+  if(args != 0) {
+    for(TemplateArguments::iterator i = args->begin(); i != args->end(); ++i) {
+      generate((*i)->value);
+    }
+  }
+  return PathResult();
+}
+
+QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateApplyTemplates(XQApplyTemplates *item)
+{
+  // TBD Could be better - jpcs
+  context_->setProjection(false);
+
+  PathResult res = generate(const_cast<ASTNode *>(item->getExpression()));
+
+//   varStore_.addScope(VarStore::MyScope::LOGICAL_BLOCK_SCOPE);
+//   setCurrentContext(res);
+
+//   delete varStore_.popScope();
+
+  TemplateArguments *args = item->getArguments();
+  if(args != 0) {
+    for(TemplateArguments::iterator i = args->begin(); i != args->end(); ++i) {
+      generate((*i)->value).markRoot();
+    }
+  }
+
+  return PathResult();
+}
+
+QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateInlineFunction(XQInlineFunction *item)
+{
+  generateFunctionDef(item->getUserFunction());
+
+  // TBD What about the function instance? - jpcs
+
+  return PathResult();
+}
+
+QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateFunctionRef(XQFunctionRef *item)
+{
+  // TBD What about the function instance? - jpcs
+  return PathResult();
+}
+
+QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateFunctionDeref(XQFunctionDeref *item)
+{
+  // TBD Could be better - jpcs
+  context_->setProjection(false);
+
+  // We could trace which function instances could possibly be called here
+  // and treat the function dereference as the union of all the functions
+  // it could call.
+
+  generate(item->getExpression());
+
+  VectorOfASTNodes *args = const_cast<VectorOfASTNodes*>(item->getArguments());
+  if(args) {
+    for(VectorOfASTNodes::iterator i = args->begin(); i != args->end(); ++i) {
+      generate(*i).markRoot();
+    }
+  }
+
+  return PathResult();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

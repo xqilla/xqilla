@@ -19,10 +19,6 @@
  * $Id$
  */
 
-/*
- * xf:exactly-one(item* $srcval) => item
- */
-
 #ifndef _FUNCTIONEXACTLYONE_HPP
 #define _FUNCTIONEXACTLYONE_HPP
 
@@ -39,22 +35,7 @@ public:
 
   FunctionExactlyOne(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
-  Result createResult(DynamicContext* context, int flags=0) const;
-
-private:
-  class ExactlyOneResult : public ResultImpl
-  {
-  public:
-    ExactlyOneResult(const FunctionExactlyOne *func, int flags);
-
-    Item::Ptr next(DynamicContext *context);
-    std::string asString(DynamicContext *context, int indent) const;
-  private:
-    int _flags;
-    const FunctionExactlyOne *_func;
-    Result _arg;
-    unsigned int _argNo;
-  };
+  virtual ASTNode* staticResolution(StaticContext *context);
 };
 
-#endif // _FUNCTIONEXACTLYONE_HPP
+#endif

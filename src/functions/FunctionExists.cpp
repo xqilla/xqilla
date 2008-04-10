@@ -21,6 +21,8 @@
 
 #include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionExists.hpp>
+#include <xqilla/ast/XQSequence.hpp>
+#include <xqilla/exceptions/XQException.hpp>
 #include <xqilla/items/ATBooleanOrDerived.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
@@ -52,15 +54,35 @@ ASTNode* FunctionExists::staticResolution(StaticContext *context) {
 ASTNode *FunctionExists::staticTyping(StaticContext *context)
 {
   _src.clear();
+  _src.getStaticType() = StaticType::BOOLEAN_TYPE;
 
-  _src.getStaticType().flags = StaticType::BOOLEAN_TYPE;
-  return calculateSRCForArguments(context);
+  ASTNode *result = calculateSRCForArguments(context);
+  if(result == this) {
+    const StaticType &sType = _args[0]->getStaticAnalysis().getStaticType();
+    if(sType.getMin() > 0 || sType.getMax() == 0) {
+      XPath2MemoryManager* mm = context->getMemoryManager();
+
+      try {
+        AutoDelete<DynamicContext> dContext(context->createDynamicContext());
+        dContext->setMemoryManager(mm);
+
+        result = new (mm) XQSequence(dContext->getItemFactory()->createBoolean(sType.getMin() > 0, dContext), dContext, mm);
+        result->setLocationInfo(this);
+        return result->staticTyping(context);
+      }
+      catch(XQException &ex) {
+        // Constant folding failed
+      }
+    }
+  }
+
+  return result;
 }
 
 Sequence FunctionExists::createSequence(DynamicContext* context, int flags) const
 {
-	Result items = getParamNumber(1,context);
-	return Sequence(context->getItemFactory()->createBoolean(items->next(context) != NULLRCP, context),
+  Result items = getParamNumber(1,context);
+  return Sequence(context->getItemFactory()->createBoolean(items->next(context).notNull(), context),
                   context->getMemoryManager());
 }
 

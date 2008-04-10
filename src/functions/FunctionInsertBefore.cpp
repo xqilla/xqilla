@@ -61,7 +61,7 @@ ASTNode *FunctionInsertBefore::staticTyping(StaticContext *context)
   ASTNode *result = calculateSRCForArguments(context);
   if(result == this) {
     _src.getStaticType() = _args[0]->getStaticAnalysis().getStaticType();
-    _src.getStaticType().typeUnion(_args[2]->getStaticAnalysis().getStaticType());
+    _src.getStaticType().typeConcat(_args[2]->getStaticAnalysis().getStaticType());
   }
   return result;
 }

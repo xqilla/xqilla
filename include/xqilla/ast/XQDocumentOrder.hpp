@@ -65,7 +65,6 @@ public:
     : ResultImpl(doc), parent_(parent), nTypeOfItemsInLastStep_(0),
       noDups_(uniqueLessThanCompareFn(context)) {}
   Item::Ptr next(DynamicContext *context);
-  void skip() { parent_->skip(); }
   std::string asString(DynamicContext *context, int indent) const { return "uniquenodesresult"; }
 
 private:

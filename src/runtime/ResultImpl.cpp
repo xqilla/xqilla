@@ -24,15 +24,22 @@
 
 #include <xqilla/runtime/ResultImpl.hpp>
 #include <xqilla/runtime/SequenceResult.hpp>
+#include <xqilla/runtime/ResultBufferImpl.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/Numeric.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/exceptions/XPath2TypeMatchException.hpp>
 
+ResultImpl::ResultImpl(const LocationInfo *o)
+  : resultPointer_(0)
+{
+  setLocationInfo(o);
+}
+
 static inline bool getEffectiveBooleanValueInternal(const Item::Ptr &first, const Item::Ptr &second, DynamicContext* context, const LocationInfo *info)
 {
   // If its operand is a singleton value ...
-  if(second == NULLRCP && first->isAtomicValue()) {
+  if(second.isNull() && first->isAtomicValue()) {
     const AnyAtomicType::Ptr atom=first;
     // ... of type xs:boolean or derived from xs:boolean, fn:boolean returns the value of its operand unchanged.
     if(atom->getPrimitiveTypeIndex() == AnyAtomicType::BOOLEAN)
@@ -60,10 +67,13 @@ static inline bool getEffectiveBooleanValueInternal(const Item::Ptr &first, cons
 
 bool ResultImpl::getEffectiveBooleanValue(DynamicContext* context, const LocationInfo *info)
 {
-  const Item::Ptr first = next(context);
-  if(first == NULLRCP) return false;
+  // Control our own scoped pointer
+  Result me(this);
+
+  const Item::Ptr first = me->next(context);
+  if(first.isNull()) return false;
   if(first->isNode()) return true;
-  return getEffectiveBooleanValueInternal(first, next(context), context, info);
+  return getEffectiveBooleanValueInternal(first, me->next(context), context, info);
 }
 
 bool ResultImpl::getEffectiveBooleanValue(const Item::Ptr &first, const Item::Ptr &second, DynamicContext* context, const LocationInfo *info)
@@ -72,7 +82,7 @@ bool ResultImpl::getEffectiveBooleanValue(const Item::Ptr &first, const Item::Pt
   // The effective boolean value of an operand is defined as follows:
   //
   // If its operand is an empty sequence, fn:boolean returns false.
-  if(first == NULLRCP) {
+  if(first.isNull()) {
     return false;
   }
 
@@ -83,16 +93,49 @@ bool ResultImpl::getEffectiveBooleanValue(const Item::Ptr &first, const Item::Pt
   return getEffectiveBooleanValueInternal(first, second, context, info);
 }
 
+Item::Ptr ResultImpl::next(DynamicContext *context)
+{
+  // Store resultPointer_ locally, as "this" may get deleted
+  Result &resultPointer = *resultPointer_;
+
+  Item::Ptr item;
+  do {
+    item = resultPointer->nextOrTail(resultPointer, context);
+  } while(item.isNull() && !resultPointer.isNull());
+  
+  return item;
+}
+
+Item::Ptr ResultImpl::nextOrTail(Result &tail, DynamicContext *context)
+{
+  Item::Ptr item = next(context);
+  if(item.isNull()) {
+    tail = 0;
+  }
+  return item;
+}
+
 Sequence ResultImpl::toSequence(DynamicContext *context)
 {
+  // Control our own scoped pointer
+  Result me(this);
+
   Sequence result(context->getMemoryManager());
 
   Item::Ptr item = 0;
-  while((item = next(context)) != NULLRCP) {
+  while((item = me->next(context)) != NULLRCP) {
     result.addItem(item);
   }
 
   return result;
+}
+
+ResultBufferImpl *ResultImpl::toResultBuffer(unsigned int readCount)
+{
+  // Control our own scoped pointer
+  Result me(this);
+
+  return new ResultBufferImpl(me, readCount);
 }
 
 std::string ResultImpl::getIndent(int indent)

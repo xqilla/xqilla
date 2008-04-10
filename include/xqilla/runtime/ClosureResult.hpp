@@ -23,23 +23,46 @@
 #define _CLOSURERESULT_HPP
 
 #include <xqilla/runtime/Result.hpp>
+#include <xqilla/events/EventGenerator.hpp>
 #include <xqilla/context/impl/VarStoreImpl.hpp>
 
 class VariableStore;
 class ASTNode;
+class DocumentCache;
 
 class XQILLA_API ClosureResult : public ResultImpl
 {
 public:
-  ClosureResult(const ASTNode *ast, DynamicContext *context, const VariableStore *varStore = 0);
-
-  virtual Item::Ptr next(DynamicContext *context);
+  virtual Item::Ptr nextOrTail(Result &tail, DynamicContext *context);
 
   virtual std::string asString(DynamicContext *context, int indent) const { return ""; }
 
+  static Result create(const ASTNode *ast, DynamicContext *context, const VariableStore *varStore = 0);
+
 private:
+  ClosureResult(const ASTNode *ast, DynamicContext *context, const VariableStore *varStore);
+
+  Item::Ptr contextItem_;
+  unsigned int contextPosition_;
+  unsigned int contextSize_;
   VarStoreImpl varStore_;
+  DocumentCache *docCache_;
   Result result_;
+};
+
+class XQILLA_API ClosureEventGenerator : public ASTNodeEventGenerator
+{
+public:
+  ClosureEventGenerator(const ASTNode *ast, DynamicContext *context, bool preserveNS, bool preserveType);
+
+  virtual EventGenerator::Ptr generateEvents(EventHandler *events, DynamicContext *context);
+
+protected:
+  Item::Ptr contextItem_;
+  unsigned int contextPosition_;
+  unsigned int contextSize_;
+  VarStoreImpl varStore_;
+  DocumentCache *docCache_;
 };
 
 #endif

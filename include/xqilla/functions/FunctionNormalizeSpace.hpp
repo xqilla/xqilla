@@ -19,20 +19,11 @@
  * $Id$
  */
 
-/*
-
-  normalize-space function
-
-*/
-
 #ifndef _FUNCTIONNORMALIZESPACE_HPP
 #define _FUNCTIONNORMALIZESPACE_HPP
 
-#include <xqilla/framework/XQillaExport.hpp>
-
 #include <xqilla/ast/XQFunction.hpp>
 
-/** normalize-space function. */
 class XQILLA_API FunctionNormalizeSpace : public XQFunction
 {
 public:
@@ -42,19 +33,10 @@ public:
 
   FunctionNormalizeSpace(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
-  /**
-   * Called during static analysis to determine if statically correct.
-   * Performs constant folding if the function has an argument, and it
-   * is constant.
-   */
-  virtual ASTNode* staticResolution(StaticContext *context);
+  virtual ASTNode *staticResolution(StaticContext *context);
   virtual ASTNode *staticTyping(StaticContext *context);
 
   Sequence createSequence(DynamicContext* context, int flags=0) const;
-
-private:
-  const XMLCh* getString(DynamicContext* context) const;
 };
 
-#endif // _FUNCTIONNORMALIZESPACE_HPP
-
+#endif

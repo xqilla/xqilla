@@ -30,7 +30,7 @@ class SequenceType;
 class XQILLA_API XPath1CompatConvertFunctionArg : public ASTNodeImpl
 {
 public:
-  XPath1CompatConvertFunctionArg(ASTNode* expr, const SequenceType *seqType, XPath2MemoryManager* memMgr);
+  XPath1CompatConvertFunctionArg(ASTNode* expr, SequenceType *seqType, XPath2MemoryManager* memMgr);
 
   virtual Result createResult(DynamicContext* context, int flags=0) const;
   virtual ASTNode* staticResolution(StaticContext *context);
@@ -41,21 +41,21 @@ public:
   const SequenceType *getSequenceType() const { return seqType_; }
 
 protected:
-  class XPath1CompatConvertFunctionArgResult : public ResultImpl
-  {
-  public:
-    XPath1CompatConvertFunctionArgResult(const XPath1CompatConvertFunctionArg *di, const Result &parent, const SequenceType *seqType);
-
-    Item::Ptr next(DynamicContext *context);
-    std::string asString(DynamicContext *context, int indent) const;
-  private:
-    const SequenceType *seqType_;
-    Result parent_;
-    bool oneDone_;
-  };
-
   ASTNode* expr_;
+  SequenceType *seqType_;
+};
+
+class XPath1CompatConvertFunctionArgResult : public ResultImpl
+{
+public:
+  XPath1CompatConvertFunctionArgResult(const LocationInfo *location, const Result &parent, const SequenceType *seqType);
+
+  Item::Ptr next(DynamicContext *context);
+  std::string asString(DynamicContext *context, int indent) const;
+private:
   const SequenceType *seqType_;
+  Result parent_;
+  bool oneDone_;
 };
 
 #endif

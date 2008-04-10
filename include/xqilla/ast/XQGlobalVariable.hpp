@@ -29,7 +29,7 @@ class SequenceType;
 class XQILLA_API XQGlobalVariable : public LocationInfo
 {
 public:
-  XQGlobalVariable(const XMLCh* varQName, SequenceType* seqType, ASTNode* value, XPath2MemoryManager *mm);
+  XQGlobalVariable(const XMLCh* varQName, SequenceType* seqType, ASTNode* value, XPath2MemoryManager *mm, bool isParam = false);
 
   void execute(DynamicContext* context) const;
   void staticResolution(StaticContext *context);
@@ -37,15 +37,26 @@ public:
 
   const XMLCh* getVariableName() const;
   bool isExternal() const;
-  void setVariableExpr(ASTNode* value);
+  bool isParam() const { return isParam_; }
+
+  bool isRequired() const { return required_; }
+  void setRequired(bool r) { required_ = r; }
 
   const XMLCh *getVariableURI() const;
+  void setVariableURI(const XMLCh *uri) { m_szURI = uri; }
   const XMLCh *getVariableLocalName() const;
+  void setVariableLocalName(const XMLCh *name) { m_szLocalName = name; }
   const SequenceType *getSequenceType() const;
+  void setSequenceType(SequenceType *type) { m_Type = type; }
   const ASTNode *getVariableExpr() const;
+  void setVariableExpr(ASTNode* value);
+
   const StaticAnalysis &getStaticAnalysis() const { return _src; }
 
 protected:
+  bool isParam_;
+  bool required_;
+  bool xpath1Compat_;
   const XMLCh* m_szQName;
   const XMLCh* m_szURI;
   const XMLCh* m_szLocalName;

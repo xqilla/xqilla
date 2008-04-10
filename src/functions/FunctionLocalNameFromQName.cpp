@@ -47,7 +47,7 @@ const unsigned int FunctionLocalNameFromQName::maxArgs = 1;
 FunctionLocalNameFromQName::FunctionLocalNameFromQName(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "QName?", args, memMgr)
 {
-  _src.getStaticType().flags = StaticType::STRING_TYPE;
+  _src.getStaticType() = StaticType(StaticType::STRING_TYPE, 0, 1);
 }
 
 Sequence FunctionLocalNameFromQName::createSequence(DynamicContext* context, int flags) const

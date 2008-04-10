@@ -37,8 +37,8 @@ class StaticAnalysis;
 class XQILLA_API VarStoreImpl : public VariableStore
 {
 public:
-  VarStoreImpl(XPath2MemoryManager *memMgr, const VariableStore *parent = 0);
-  VarStoreImpl(const StaticAnalysis &src, const VariableStore *varStore, XPath2MemoryManager *mm);
+  VarStoreImpl(XPath2MemoryManager *mm, const VariableStore *parent = 0);
+  VarStoreImpl(const VarStoreImpl &other, XPath2MemoryManager *mm);
 
   virtual Result getVar(const XMLCh *namespaceURI, const XMLCh *name) const;
   void setVar(const XMLCh *namespaceURI, const XMLCh *name, const Result &value, unsigned int readCount = ResultBufferImpl::UNLIMITED_COUNT);

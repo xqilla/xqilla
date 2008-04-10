@@ -29,6 +29,7 @@
 #include <xqilla/context/ContextHelpers.hpp>
 #include <xqilla/update/PendingUpdateList.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>
+#include <xqilla/runtime/ClosureResult.hpp>
 
 XQIf::XQIf(ASTNode* test, ASTNode* whenTrue, ASTNode* whenFalse, XPath2MemoryManager* memMgr)
   : ASTNodeImpl(memMgr),
@@ -41,17 +42,17 @@ XQIf::XQIf(ASTNode* test, ASTNode* whenTrue, ASTNode* whenFalse, XPath2MemoryMan
 
 Result XQIf::createResult(DynamicContext* context, int flags) const
 {
-  return new IfResult(this, flags);
+  return new IfResult(this);
 }
 
-void XQIf::generateEvents(EventHandler *events, DynamicContext *context,
-                          bool preserveNS, bool preserveType) const
+EventGenerator::Ptr XQIf::generateEvents(EventHandler *events, DynamicContext *context,
+                                    bool preserveNS, bool preserveType) const
 {
   if(_test->createResult(context)->getEffectiveBooleanValue(context, this)) {
-    _whenTrue->generateEvents(events, context, preserveNS, preserveType);
+    return new ClosureEventGenerator(_whenTrue, context, preserveNS, preserveType);
   }
   else {
-    _whenFalse->generateEvents(events, context, preserveNS, preserveType);
+    return new ClosureEventGenerator(_whenFalse, context, preserveNS, preserveType);
   }
 }
 
@@ -101,7 +102,7 @@ ASTNode *XQIf::staticTyping(StaticContext *context)
               X("Mixed updating and non-updating operands [err:XUST0001]"));
   }
 
-  _src.getStaticType().typeUnion(_whenFalse->getStaticAnalysis().getStaticType());
+  _src.getStaticType() |= _whenFalse->getStaticAnalysis().getStaticType();
   _src.setProperties(_src.getProperties() & _whenFalse->getStaticAnalysis().getProperties());
   _src.add(_whenFalse->getStaticAnalysis());
 
@@ -156,26 +157,21 @@ PendingUpdateList XQIf::createUpdateList(DynamicContext *context) const
     }
 }
 
-XQIf::IfResult::IfResult(const XQIf *di, int flags)
+XQIf::IfResult::IfResult(const XQIf *di)
   : ResultImpl(di),
-    _flags(flags),
-    _di(di),
-    _results(0)
+    _di(di)
 {
 }
 
-Item::Ptr XQIf::IfResult::next(DynamicContext *context)
+Item::Ptr XQIf::IfResult::nextOrTail(Result &tail, DynamicContext *context)
 {
-  if(_results.isNull()) {
-    if(_di->getTest()->createResult(context)->getEffectiveBooleanValue(context, this)) {
-      _results = _di->getWhenTrue()->createResult(context, _flags);
-    }
-    else {
-      _results = _di->getWhenFalse()->createResult(context, _flags);
-    }
+  if(_di->getTest()->createResult(context)->getEffectiveBooleanValue(context, this)) {
+    tail = ClosureResult::create(_di->getWhenTrue(), context);
   }
-
-  return _results->next(context);
+  else {
+    tail = ClosureResult::create(_di->getWhenFalse(), context);
+  }
+  return 0;
 }
 
 std::string XQIf::IfResult::asString(DynamicContext *context, int indent) const

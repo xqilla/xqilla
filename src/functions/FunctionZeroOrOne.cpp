@@ -23,9 +23,9 @@
 #include <sstream>
 
 #include <xqilla/functions/FunctionZeroOrOne.hpp>
-#include <xqilla/runtime/Sequence.hpp>
 #include <xqilla/context/DynamicContext.hpp>
-#include <xqilla/exceptions/FunctionException.hpp>
+#include <xqilla/ast/XQTreatAs.hpp>
+#include <xqilla/schema/SequenceType.hpp>
 
 const XMLCh FunctionZeroOrOne::name[] = { 
   XERCES_CPP_NAMESPACE_QUALIFIER chLatin_z, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_r, 
@@ -43,46 +43,20 @@ const unsigned int FunctionZeroOrOne::maxArgs = 1;
 FunctionZeroOrOne::FunctionZeroOrOne(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "item()*", args, memMgr)
 {
-  // TBD - could do better here - jpcs
-  _src.getStaticType().flags = StaticType::ITEM_TYPE;
 }
 
-Result FunctionZeroOrOne::createResult(DynamicContext* context, int flags) const
+static const XMLCh err_FORG0003[] = { 'e', 'r', 'r', ':', 'F', 'O', 'R', 'G', '0', '0', '0', '3', 0 };
+
+ASTNode* FunctionZeroOrOne::staticResolution(StaticContext *context)
 {
-  return new ZeroOrOneResult(this, flags);
+  XPath2MemoryManager *mm = context->getMemoryManager();
+
+  SequenceType *seqType = new (mm) SequenceType(new (mm) SequenceType::ItemType(SequenceType::ItemType::TEST_ANYTHING),
+                                                SequenceType::QUESTION_MARK);
+  seqType->setLocationInfo(this);
+
+  ASTNode *result = new (mm) XQTreatAs(_args.front(), seqType, mm, err_FORG0003);
+  result->setLocationInfo(this);
+  return result->staticResolution(context);
 }
 
-FunctionZeroOrOne::ZeroOrOneResult::ZeroOrOneResult(const FunctionZeroOrOne *func, int flags)
-  : ResultImpl(func),
-    _flags(flags),
-    _func(func),
-    _arg(0),
-    _argNo(0)
-{
-}
-
-Item::Ptr FunctionZeroOrOne::ZeroOrOneResult::next(DynamicContext *context)
-{
-  if(_arg.isNull()) {
-    _arg = _func->getParamNumber(1, context);
-  }
-
-  const Item::Ptr result = _arg->next(context);
-  ++_argNo;
-
-  if(_argNo == 2 && result != NULLRCP) {
-    XQThrow(FunctionException, X("FunctionZeroOrOne::ZeroOrOneResult::next"),X("fn:zero-or-one called with a sequence containing more than one item [err:FORG0003]"));
-  }
-
-  return result;
-}
-
-std::string FunctionZeroOrOne::ZeroOrOneResult::asString(DynamicContext *context, int indent) const
-{
-  std::ostringstream oss;
-  std::string in(getIndent(indent));
-
-  oss << in << "<zeroorone/>" << std::endl;
-
-  return oss.str();
-}

@@ -26,6 +26,8 @@
 #include <xqilla/schema/SequenceType.hpp>
 #include <xqilla/functions/FunctionString.hpp>
 #include <xqilla/functions/FunctionNumber.hpp>
+#include <xqilla/utils/XPath2Utils.hpp>
+#include <xqilla/exceptions/XPath2TypeMatchException.hpp>
 
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 
@@ -33,7 +35,7 @@
 XERCES_CPP_NAMESPACE_USE
 #endif
 
-XPath1CompatConvertFunctionArg::XPath1CompatConvertFunctionArg(ASTNode* expr, const SequenceType *seqType, XPath2MemoryManager* memMgr)
+XPath1CompatConvertFunctionArg::XPath1CompatConvertFunctionArg(ASTNode* expr, SequenceType *seqType, XPath2MemoryManager* memMgr)
   : ASTNodeImpl(memMgr),
     expr_(expr),
     seqType_(seqType)
@@ -55,7 +57,26 @@ ASTNode *XPath1CompatConvertFunctionArg::staticTyping(StaticContext *context)
   expr_ = expr_->staticTyping(context);
   _src.copy(expr_->getStaticAnalysis());
 
-  if(expr_->isConstant()) {
+  unsigned int min = _src.getStaticType().getMin() == 0 ? 0 : 1;
+  _src.getStaticType().setCardinality(min, 1);
+
+  if(seqType_->getItemTestType() == SequenceType::ItemType::TEST_ATOMIC_TYPE) {
+    const XMLCh* typeURI = seqType_->getTypeURI();
+    const XMLCh* typeName = seqType_->getConstrainingType()->getName();
+
+    if(XPath2Utils::equals(typeName, SchemaSymbols::fgDT_STRING) &&
+       XPath2Utils::equals(typeURI, SchemaSymbols::fgURI_SCHEMAFORSCHEMA)) {
+      _src.getStaticType() = StaticType::STRING_TYPE;
+      _src.setProperties(0);
+    }
+    else if(XPath2Utils::equals(typeName, SchemaSymbols::fgDT_DOUBLE) &&
+            XPath2Utils::equals(typeURI, SchemaSymbols::fgURI_SCHEMAFORSCHEMA)) {
+      _src.getStaticType() = StaticType::DOUBLE_TYPE;
+      _src.setProperties(0);
+    }
+  }
+
+  if(!_src.isUsed()) {
     return constantFold(context);
   }
   return this;
@@ -66,16 +87,16 @@ Result XPath1CompatConvertFunctionArg::createResult(DynamicContext* context, int
   return new XPath1CompatConvertFunctionArgResult(this, expr_->createResult(context, flags), seqType_);
 }
 
-XPath1CompatConvertFunctionArg::XPath1CompatConvertFunctionArgResult::
-XPath1CompatConvertFunctionArgResult(const XPath1CompatConvertFunctionArg *di, const Result &parent, const SequenceType *seqType)
-  : ResultImpl(di),
+XPath1CompatConvertFunctionArgResult::
+XPath1CompatConvertFunctionArgResult(const LocationInfo *location, const Result &parent, const SequenceType *seqType)
+  : ResultImpl(location),
     seqType_(seqType),
     parent_(parent),
     oneDone_(false)
 {
 }
 
-Item::Ptr XPath1CompatConvertFunctionArg::XPath1CompatConvertFunctionArgResult::next(DynamicContext *context)
+Item::Ptr XPath1CompatConvertFunctionArgResult::next(DynamicContext *context)
 {
   // If XPath 1.0 compatibility mode is true and an argument is not of the expected type, then the following
   // conversions are applied sequentially to the argument value V:
@@ -90,24 +111,41 @@ Item::Ptr XPath1CompatConvertFunctionArg::XPath1CompatConvertFunctionArgResult::
   Item::Ptr item = parent_->next(context);
 
   if(seqType_->getItemTestType() == SequenceType::ItemType::TEST_ATOMIC_TYPE) {
-    const XMLCh* typeURI = seqType_->getTypeURI(context);
+    const XMLCh* typeURI = seqType_->getTypeURI();
     const XMLCh* typeName = seqType_->getConstrainingType()->getName();
 
     // 2. If the expected type is xs:string or xs:string?, then the value V is effectively replaced by
     //    fn:string(V).
-    if(context->isTypeOrDerivedFromType(typeURI, typeName,
-                                        SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                                        SchemaSymbols::fgDT_STRING)) {
+    if(XPath2Utils::equals(typeName, SchemaSymbols::fgDT_STRING) &&
+       XPath2Utils::equals(typeURI, SchemaSymbols::fgURI_SCHEMAFORSCHEMA)) {
       item = FunctionString::string(item, context);
     }
 
-    // 3. If the expected type is a (possibly optional) numeric type, then the value V is effectively
-    //    replaced by fn:number(V).
-    if(context->isTypeOrDerivedFromType(typeURI, typeName,
-                                        SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                                        SchemaSymbols::fgDT_DOUBLE)) {
-      assert(item->isAtomicValue()); // Since atomization should have happened
-      item = FunctionNumber::number((const AnyAtomicType::Ptr )item, context);
+    // 3. If the expected type is xs:double or xs:double?, then the value V is effectively replaced by
+    //    fn:number(V).
+    else if(XPath2Utils::equals(typeName, SchemaSymbols::fgDT_DOUBLE) &&
+            XPath2Utils::equals(typeURI, SchemaSymbols::fgURI_SCHEMAFORSCHEMA)) {
+
+      // Atomize first
+      if(item->isNode()) {
+        Result atomized = ((Node*)item.get())->dmTypedValue(context);
+        item = atomized->next(context);
+
+        if(item.notNull() && atomized->next(context).notNull()) {
+          XQThrow(XPath2TypeMatchException, X("XPath1CompatConvertFunctionArgResult::next"),
+                  X("Sequence does not match type xs:anyAtomicType? - found more than one item [err:XPTY0004]"));
+        }
+      }
+      else if(item->isFunction()) {
+        XMLBuffer buf;
+        buf.set(X("Sequence does not match type (xs:anyAtomicType | node())*"));
+        buf.append(X(" - found item of type "));
+        item->typeToBuffer(context, buf);
+        buf.append(X(" [err:XPTY0004]"));
+        XQThrow(XPath2TypeMatchException, X("XPath1CompatConvertFunctionArgResult::next"), buf.getRawBuffer());
+      }
+
+      item = FunctionNumber::number((AnyAtomicType*)item.get(), context);
     }
   }
 
@@ -115,7 +153,7 @@ Item::Ptr XPath1CompatConvertFunctionArg::XPath1CompatConvertFunctionArgResult::
   return item;
 }
 
-std::string XPath1CompatConvertFunctionArg::XPath1CompatConvertFunctionArgResult::asString(DynamicContext *context, int indent) const
+std::string XPath1CompatConvertFunctionArgResult::asString(DynamicContext *context, int indent) const
 {
   return "xpath1convertfunctionarg";
 }

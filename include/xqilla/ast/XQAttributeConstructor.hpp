@@ -29,7 +29,7 @@ class XQILLA_API XQAttributeConstructor : public XQDOMConstructor
 public:
   XQAttributeConstructor(ASTNode* name, VectorOfASTNodes* children, XPath2MemoryManager* mm);
 
-  virtual void generateEvents(EventHandler *events, DynamicContext *context,
+  virtual EventGenerator::Ptr generateEvents(EventHandler *events, DynamicContext *context,
                               bool preserveNS, bool preserveType) const;
   virtual ASTNode* staticResolution(StaticContext *context);
   virtual ASTNode *staticTyping(StaticContext *context);
@@ -37,8 +37,12 @@ public:
   virtual const XMLCh* getNodeType() const;
   virtual const ASTNode *getName() const;
   virtual const VectorOfASTNodes *getChildren() const;
+  void setChildren(VectorOfASTNodes *c) { m_children = c; }
 
   virtual void setName(ASTNode *name);
+
+  // Used for parsing only
+  ASTNode *namespaceExpr;
 
 protected:
   ASTNode* m_name;

@@ -28,11 +28,14 @@
 #include <xqilla/runtime/Sequence.hpp>
 #include <xqilla/items/Node.hpp>
 #include <xqilla/ast/StaticAnalysis.hpp>
+#include <xqilla/ast/XQContextItem.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>
 
+XERCES_CPP_NAMESPACE_USE
+
 const XMLCh FunctionRoot::name[] = {
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_r, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t, XERCES_CPP_NAMESPACE_QUALIFIER chNull 
+  chLatin_r, chLatin_o, chLatin_o, 
+  chLatin_t, chNull 
 };
 const unsigned int FunctionRoot::minArgs = 0;
 const unsigned int FunctionRoot::maxArgs = 1;
@@ -47,9 +50,16 @@ FunctionRoot::FunctionRoot(const VectorOfASTNodes &args, XPath2MemoryManager* me
 {
 }
 
-ASTNode* FunctionRoot::staticResolution(StaticContext *context) {
-  if(!_args.empty() && (*_args.begin())->getType()==ASTNode::CONTEXT_ITEM)
-      _args.clear();
+ASTNode* FunctionRoot::staticResolution(StaticContext *context)
+{
+  XPath2MemoryManager *mm = context->getMemoryManager();
+
+  if(_args.empty()) {
+    XQContextItem *ci = new (mm) XQContextItem(mm);
+    ci->setLocationInfo(this);
+    _args.push_back(ci);
+  }
+
   return resolveArguments(context);
 }
 
@@ -61,30 +71,19 @@ ASTNode *FunctionRoot::staticTyping(StaticContext *context)
 
   _src.setProperties(StaticAnalysis::DOCORDER | StaticAnalysis::GROUPED |
                      StaticAnalysis::PEER | StaticAnalysis::SAMEDOC | StaticAnalysis::ONENODE);
-  _src.getStaticType().flags = StaticType::NODE_TYPE;
+  _src.getStaticType() = StaticType(StaticType::NODE_TYPE, 0, 1);
 
-  if(_args.empty()) {
-    _src.contextItemUsed(true);
+  _args[0] = _args[0]->staticTyping(context);
+  _src.add(_args[0]->getStaticAnalysis());
 
-    if(context->getContextItemType().isType(StaticType::DOCUMENT_TYPE)) {
-      ASTNode *result = new (mm) XQContextItem(mm);
-      result->setLocationInfo(this);
-      return result->staticTyping(context);
-    }
+  if(_args[0]->getStaticAnalysis().isUpdating()) {
+    XQThrow(StaticErrorException,X("FunctionRoot::staticTyping"),
+            X("It is a static error for an argument to a function "
+              "to be an updating expression [err:XUST0001]"));
   }
-  else {
-    _args[0] = _args[0]->staticTyping(context);
-    _src.add(_args[0]->getStaticAnalysis());
 
-    if(_args[0]->getStaticAnalysis().isUpdating()) {
-      XQThrow(StaticErrorException,X("FunctionRoot::staticTyping"),
-              X("It is a static error for an argument to a function "
-                "to be an updating expression [err:XUST0001]"));
-    }
-
-    if(_args[0]->getStaticAnalysis().getStaticType().isType(StaticType::DOCUMENT_TYPE)) {
-      return _args[0];
-    }
+  if(_args[0]->getStaticAnalysis().getStaticType().isType(StaticType::DOCUMENT_TYPE)) {
+    return _args[0];
   }
 
   return this;
@@ -94,22 +93,8 @@ Sequence FunctionRoot::createSequence(DynamicContext* context, int flags) const
 {
   XPath2MemoryManager* memMgr = context->getMemoryManager();
 
-  Node::Ptr node = NULL;
-  if(getNumArgs() == 1)
-  {
-    Sequence arg1=getParamNumber(1,context)->toSequence(context);
-    if(arg1.isEmpty())
-      return Sequence(memMgr);
-    node = (const Node::Ptr )arg1.first();
-  }
-  else
-  {
-    const Item::Ptr item = context->getContextItem();
-    if(item==NULLRCP)
-        XQThrow(FunctionException, X("FunctionRoot::createSequence"),X("Undefined context item in fn:root [err:XPDY0002]"));
-    if(!item->isNode())
-        XQThrow(FunctionException, X("FunctionRoot::createSequence"),X("The context item is not a node [err:XPTY0004]"));
-    node = (const Node::Ptr )item;
-  }
+  Node::Ptr node = (Node*)getParamNumber(1, context)->next(context).get();
+  if(node.isNull()) return Sequence(memMgr);
+
   return Sequence(node->root(context), memMgr);
 }

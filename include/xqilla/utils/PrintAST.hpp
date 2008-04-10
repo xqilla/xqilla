@@ -30,7 +30,6 @@
 #include <xqilla/schema/SequenceType.hpp>
 #include <xqilla/operators/GeneralComp.hpp>
 #include <xqilla/ast/XQTypeswitch.hpp>
-#include <xqilla/functions/XQUserFunction.hpp>
 #include <xqilla/fulltext/FTOption.hpp>
 #include <xqilla/fulltext/FTRange.hpp>
 
@@ -68,6 +67,18 @@ class XQNameExpression;
 class XQContentSequence;
 class XQDirectName;
 class XQReturn;
+class XQNamespaceBinding;
+class XQFunctionConversion;
+class XQAnalyzeString;
+class XQCopyOf;
+class XQCallTemplate;
+class XQApplyTemplates;
+class XQInlineFunction;
+class XQFunctionDeref;
+class XQFunctionRef;
+class XQUserFunction;
+class XQUserFunctionInstance;
+class XQSimpleContent;
 class DynamicContext;
 class Item;
 
@@ -136,6 +147,7 @@ public:
   virtual std::string printGlobal(const XQGlobalVariable *item, const DynamicContext *context, int indent);
   virtual std::string printFunctionCall(const XQFunctionCall *item, const DynamicContext *context, int indent);
   virtual std::string printDOMConstructor(const XQDOMConstructor *item, const DynamicContext *context, int indent);
+  virtual std::string printSimpleContent(const XQSimpleContent *item, const DynamicContext *context, int indent);
   virtual std::string printOrderingChange(const XQOrderingChange *item, const DynamicContext *context, int indent);
   virtual std::string printAtomize(const XQAtomize *item, const DynamicContext *context, int indent);
   virtual std::string printXPath1CompatConvertFunctionArg(const XPath1CompatConvertFunctionArg *item, const DynamicContext *context, int indent);
@@ -147,8 +159,19 @@ public:
   virtual std::string printNameExpression(const XQNameExpression *item, const DynamicContext *context, int indent);
   virtual std::string printContentSequence(const XQContentSequence *item, const DynamicContext *context, int indent);
   virtual std::string printDirectName(const XQDirectName *item, const DynamicContext *context, int indent);
-  virtual std::string printUserFunction(const XQUserFunction::Instance *item, const DynamicContext *context, int indent);
+  virtual std::string printUserFunction(const XQUserFunctionInstance *item, const DynamicContext *context, int indent);
   virtual std::string printReturn(const XQReturn *item, const DynamicContext *context, int indent);
+  virtual std::string printNamespaceBinding(const XQNamespaceBinding *item, const DynamicContext *context, int indent);
+  virtual std::string printFunctionConversion(const XQFunctionConversion *item, const DynamicContext *context, int indent);
+  virtual std::string printAnalyzeString(const XQAnalyzeString *item, const DynamicContext *context, int indent);
+  virtual std::string printCopyOf(const XQCopyOf *item, const DynamicContext *context, int indent);
+  virtual std::string printCallTemplate(const XQCallTemplate *item, const DynamicContext *context, int indent);
+  virtual std::string printApplyTemplates(const XQApplyTemplates *item, const DynamicContext *context, int indent);
+  virtual std::string printInlineFunction(const XQInlineFunction *item, const DynamicContext *context, int indent);
+  virtual std::string printFunctionDeref(const XQFunctionDeref *item, const DynamicContext *context, int indent);
+  virtual std::string printFunctionRef(const XQFunctionRef *item, const DynamicContext *context, int indent);
+
+  virtual std::string printXQUserFunction(const XQUserFunction *item, const DynamicContext *context, int indent);
 
   virtual std::string printFTContains(const FTContains *item, const DynamicContext *context, int indent);
   virtual std::string printFTSelection(const FTSelection *selection, const DynamicContext *context, int indent);
@@ -187,18 +210,16 @@ public:
   virtual std::string printWhereTuple(const WhereTuple *item, const DynamicContext *context, int indent);
   virtual std::string printOrderByTuple(const OrderByTuple *item, const DynamicContext *context, int indent);
 
-  virtual std::string printItem(const Item::Ptr item, const DynamicContext *context, int indent);
   virtual std::string printSequenceType(const SequenceType *type, const DynamicContext *context, int indent);
   virtual std::string printCase(const XQTypeswitch::Case *cse, const DynamicContext *context, int indent);
 
   static std::string getIndent(int indent);
   static std::string getAxisName(XQStep::Axis axis);
-  static std::string getItemTestTypeName(int type);
   static std::string getOccurrenceIndicatorName(SequenceType::OccurrenceIndicator oi);
   static std::string getComparisonOperationName(GeneralComp::ComparisonOperation co);
   static std::string getFTUnitName(FTOption::FTUnit unit);
   static std::string getFTRangeTypeName(FTRange::Type type);
-  static std::string printItemTypeAttrs(const SequenceType::ItemType *type, const DynamicContext *context);
+
 };
 
 #endif

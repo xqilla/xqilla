@@ -41,7 +41,7 @@ public:
   virtual ASTNode *staticTyping(StaticContext *context);
 
   virtual Result createResult(DynamicContext* context, int flags=0) const;
-  virtual void generateEvents(EventHandler *events, DynamicContext *context,
+  virtual EventGenerator::Ptr generateEvents(EventHandler *events, DynamicContext *context,
                               bool preserveNS, bool preserveType) const;
   virtual PendingUpdateList createUpdateList(DynamicContext *context) const;
 

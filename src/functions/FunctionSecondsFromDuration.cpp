@@ -47,7 +47,7 @@ const unsigned int FunctionSecondsFromDuration::maxArgs = 1;
 FunctionSecondsFromDuration::FunctionSecondsFromDuration(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "duration?", args, memMgr)
 {
-  _src.getStaticType().flags = StaticType::DECIMAL_TYPE;
+  _src.getStaticType() = StaticType(StaticType::DECIMAL_TYPE, 0, 1);
 }
 
 Sequence FunctionSecondsFromDuration::createSequence(DynamicContext* context, int flags) const

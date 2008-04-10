@@ -83,9 +83,11 @@ typedef struct yyltype
 
 #ifndef YYSTYPE
 #include <xqilla/ast/ASTNode.hpp>
+#include <xqilla/ast/XQParenthesizedExpr.hpp>
 #include <xqilla/ast/TupleNode.hpp>
 #include <xqilla/ast/OrderByTuple.hpp>
 #include <xqilla/ast/XQNav.hpp>
+#include <xqilla/ast/XQCallTemplate.hpp>
 #include <xqilla/schema/SequenceType.hpp>
 #include <xqilla/parser/QName.hpp>
 #include <xqilla/functions/XQUserFunction.hpp>
@@ -97,23 +99,32 @@ typedef struct yyltype
 #include <xqilla/fulltext/FTRange.hpp>
 #include <xqilla/update/UTransform.hpp>
 
+class LetTuple;
+class XQGlobalVariable;
+
 typedef union {
   XMLCh* str;
   ASTNode* astNode;
+  XQParenthesizedExpr *parenExpr;
   XQUserFunction* functDecl;
   XQUserFunction::ArgumentSpec* argSpec;
   XQUserFunction::ArgumentSpecs* argSpecs;
+  XQGlobalVariable *globalVar;
   NodeTest *nodeTest;
   XQStep::Axis axis;
   QualifiedName *qName;
   SequenceType* sequenceType;
   SequenceType::OccurrenceIndicator occurrence;
   SequenceType::ItemType* itemType;
+  VectorOfSequenceTypes *sequenceTypes;
   VectorOfASTNodes* itemList;
   VectorOfPredicates* predicates;
   TupleNode *tupleNode;
+  LetTuple *letTuple;
   CopyBinding* copyBinding;
   VectorOfCopyBinding* copyBindingList;
+  XQTemplateArgument *templateArg;
+  TemplateArguments *templateArgs;
   XQTypeswitch::Case *caseClause;
   XQTypeswitch::Cases *caseClauses;
   OrderByTuple::Modifiers orderByModifier;
@@ -125,6 +136,7 @@ typedef union {
   FTRange ftrange;
   FTOption::FTUnit ftunit;
   bool boolean;
+  int integer;
 } yystype;
 #define YYSTYPE yystype
 #define YYSTYPE_IS_DECLARED 1
@@ -134,17 +146,12 @@ typedef union {
 
 #include "../parser/XQParser.hpp"  // to be included *after* defining YYSTYPE and YYLTYPE
 
-class XQILLA_API XQLexer : public yyFlexLexer
+class XQILLA_API Lexer
 {
 public:
-  XQLexer(XPath2MemoryManager* memMgr, const XMLCh *queryFile, const XMLCh* query, XQilla::Language lang);
+  virtual ~Lexer() {}
 
-  // Implemented in XQLexer.cpp, output of XQLexer.l
-  int yylex();
-  int yylex(YYSTYPE* pYYLVAL, YYLTYPE* pYYLOC);
-
-  const XMLCh* getQueryString() { return m_szQuery; }
-  void setGenerateErrorException(bool bEnable) { m_bGenerateErrorException=bEnable; }
+  virtual int yylex(YYSTYPE* pYYLVAL, YYLTYPE* pYYLOC) = 0;
 
   int error(const char* message)
   {
@@ -165,12 +172,55 @@ public:
   }
 
   XQilla::Language getLanguage() const { return m_language; }
-  bool isXQuery() const { return (m_language & XQilla::XPATH2) == 0; }
+  bool isXQuery() const { return (m_language & (XQilla::XPATH2 | XQilla::XSLT2)) == 0; }
   bool isXPath() const { return (m_language & XQilla::XPATH2) != 0; }
+  bool isXSLT() const { return (m_language & XQilla::XSLT2) != 0; }
   bool isFullText() const { return (m_language & XQilla::FULLTEXT) != 0; }
   bool isUpdate() const { return (m_language & XQilla::UPDATE) != 0; }
+  bool isExtensions() const { return (m_language & XQilla::EXTENSIONS) != 0; }
 
-  void undoLessThan();
+  void setGenerateErrorException(bool bEnable) { m_bGenerateErrorException=bEnable; }
+
+  virtual void undoLessThan() {}
+  virtual XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver *getNSResolver() const { return 0; }
+
+protected:
+  Lexer(XPath2MemoryManager *mm, XQilla::Language lang, const XMLCh *queryFile, int line, int column)
+    : mm_(mm),
+      m_language(lang),
+      m_szQueryFile(queryFile),
+      m_lineno(line),
+      m_columnno(column),
+      m_bGenerateErrorException(true)
+  {
+  }
+
+  void Error(const char* msg, int line, int col);
+  void Error(XQilla::Language lang, const char *where, unsigned int line, unsigned int col);
+
+  XPath2MemoryManager *mm_;
+  XQilla::Language m_language;
+
+  const XMLCh* m_szQueryFile;
+  int m_lineno,m_columnno;
+
+  bool m_bGenerateErrorException;
+};
+
+class XQILLA_API XQLexer : public Lexer, public yyFlexLexer
+{
+public:
+  XQLexer(XPath2MemoryManager* memMgr, const XMLCh *queryFile, const XMLCh* query, XQilla::Language lang);
+  XQLexer(XPath2MemoryManager* memMgr, const XMLCh *queryFile, int line, int column, const XMLCh* query,
+          XQilla::Language lang, bool attrValueTemplate = false);
+
+  // Implemented in XQLexer.cpp, output of XQLexer.l
+  int yylex();
+  virtual int yylex(YYSTYPE* pYYLVAL, YYLTYPE* pYYLOC);
+
+  const XMLCh* getQueryString() { return m_szQuery; }
+
+  virtual void undoLessThan();
 
 protected:
   // For look ahead
@@ -180,9 +230,6 @@ protected:
   virtual void LexerOutput(const YY_CHAR* buf, int size);
   virtual void LexerError(const char* msg);
   virtual void yy_pop_state();
-
-  void Error(const char* msg, int line, int col);
-  void Error(XQilla::Language lang, const char *where, unsigned int line, unsigned int col);
 
   void userAction(YY_CHAR* text, int length);
   void undoUserAction();
@@ -196,24 +243,20 @@ protected:
   XMLCh *allocate_string(const XMLCh* src);
   XMLCh *allocate_string(const XMLCh* src, int len);
   XMLCh *allocate_string_and_unescape(XMLCh toBeUnescaped, const XMLCh* src, int len);
-  XMLCh *allocate_string_and_unescape(XMLCh *src, int len, XMLCh quoteChar, bool unescapeBrace);
+  XMLCh *allocate_string_and_unescape(XMLCh *src, int len, XMLCh quoteChar, bool unescapeBrace,
+                                      bool unescapeEntities, bool unescapeCDATA);
 
   YYSTYPE yylval;
   YYLTYPE yyloc;
 
-  bool firstToken_;
+  int firstToken_;
+  bool parseAttrValueTemplate_;
 
-  const XMLCh* m_szQueryFile;
   const XMLCh* m_szQuery;
   unsigned int m_nLength;
   int m_position,m_index;
-  XPath2MemoryManager* m_memMgr;
-  int m_lineno,m_columnno;
 
   int m_nOpenComments;
-  bool m_bGenerateErrorException;
-
-  XQilla::Language m_language;
 };
 
 class XQParserArgs
@@ -222,7 +265,7 @@ public:
   XQParserArgs()
     : _lexer(0), _context(0), _query(0), _flags(32), _namespaceDecls(13) {}
 
-  XQLexer* _lexer;
+  Lexer* _lexer;
   DynamicContext* _context;
   XQQuery* _query;
   XERCES_CPP_NAMESPACE_QUALIFIER BitSet _flags;

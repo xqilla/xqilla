@@ -57,6 +57,7 @@ XQDynamicContextImpl::XQDynamicContextImpl(XQillaConfiguration *conf, const Stat
     _varStore(&_defaultVarStore),
     _globalVarStore(&_defaultVarStore),
     _defaultVarStore(&_internalMM),
+    _regexStore(0),
     _implicitTimezone(0),
     _resolvers(XQillaAllocator<ResolverEntry>(&_internalMM)),
     // This is created with the _createdWith memory manager,
@@ -250,6 +251,16 @@ void XQDynamicContextImpl::setExternalVariable(const XMLCh *qname, const Sequenc
   _defaultVarStore.setVar(uri, name, value);
 }
 
+const RegexGroupStore *XQDynamicContextImpl::getRegexGroupStore() const
+{
+  return _regexStore;
+}
+
+void XQDynamicContextImpl::setRegexGroupStore(const RegexGroupStore *store)
+{
+  _regexStore = store;
+}
+
 time_t XQDynamicContextImpl::getCurrentTime() const
 {
   return _currentTime;
@@ -436,14 +447,16 @@ const DOMXPathNSResolver* XQDynamicContextImpl::getNSResolver() const {
 
 const XMLCh* XQDynamicContextImpl::getUriBoundToPrefix(const XMLCh* prefix, const LocationInfo *location) const
 {
+  if(prefix == 0 || *prefix == 0) return 0;
+
   const XMLCh* uri = _nsResolver->lookupNamespaceURI(prefix);
 
-	if(XMLString::stringLen(uri) == 0 && XMLString::stringLen(prefix) > 0){
-		const XMLCh* msg = XPath2Utils::concatStrings(X("No namespace for prefix \'"), prefix, X("\' [err:XPST0081]"), getMemoryManager());
-		XQThrow3(NamespaceLookupException, X("XQDynamicContextImpl::getUriBoundToPrefix"), msg, location);
-	}
+  if((uri == 0 || *uri == 0) && prefix != 0 && *prefix != 0) {
+    const XMLCh* msg = XPath2Utils::concatStrings(X("No namespace for prefix \'"), prefix, X("\' [err:XPST0081]"), getMemoryManager());
+    XQThrow3(NamespaceLookupException, X("XQDynamicContextImpl::getUriBoundToPrefix"), msg, location);
+  }
 
-	return uri;
+  return uri;
 }
 
 const XMLCh* XQDynamicContextImpl::getPrefixBoundToUri(const XMLCh* uri) const

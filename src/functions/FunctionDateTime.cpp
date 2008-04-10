@@ -58,7 +58,7 @@ ASTNode *FunctionDateTime::staticTyping(StaticContext *context)
 {
   _src.clear();
 
-  _src.getStaticType().flags = StaticType::DATE_TIME_TYPE;
+  _src.getStaticType() = StaticType(StaticType::DATE_TIME_TYPE, 0, 1);
   return calculateSRCForArguments(context, /*checkTimezone*/true);
 }
 

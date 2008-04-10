@@ -31,7 +31,7 @@ class XQILLA_API XQTextConstructor : public XQDOMConstructor
 public:
   XQTextConstructor(ASTNode *value, XPath2MemoryManager* mm);
 
-  virtual void generateEvents(EventHandler *events, DynamicContext *context,
+  virtual EventGenerator::Ptr generateEvents(EventHandler *events, DynamicContext *context,
                               bool preserveNS, bool preserveType) const;
   virtual ASTNode* staticResolution(StaticContext *context);
   virtual ASTNode *staticTyping(StaticContext *context);

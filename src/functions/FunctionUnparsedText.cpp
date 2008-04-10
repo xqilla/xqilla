@@ -61,7 +61,7 @@ ASTNode *FunctionUnparsedText::staticTyping(StaticContext *context)
 {
   _src.clear();
 
-  _src.getStaticType().flags = StaticType::STRING_TYPE;
+  _src.getStaticType() = StaticType(StaticType::STRING_TYPE, 0, 1);
   _src.availableDocumentsUsed(true);
 
   return calculateSRCForArguments(context);

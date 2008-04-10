@@ -24,6 +24,9 @@
 #include <sstream>
 
 #include <xqilla/ast/XQTreatAs.hpp>
+#include <xqilla/ast/XQVariable.hpp>
+#include <xqilla/ast/XQFunctionDeref.hpp>
+#include <xqilla/ast/XQInlineFunction.hpp>
 #include <xqilla/schema/SequenceType.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/Item.hpp>
@@ -32,42 +35,38 @@
 #include <xqilla/functions/FunctionConstructor.hpp>
 #include <xqilla/exceptions/XPath2TypeMatchException.hpp>
 #include <xqilla/context/ContextHelpers.hpp>
+#include <xqilla/context/MessageListener.hpp>
+#include <xqilla/context/VariableTypeStore.hpp>
+#include <xqilla/functions/XQUserFunction.hpp>
+#include <xqilla/context/impl/VarStoreImpl.hpp>
+#include "../items/impl/FunctionRefImpl.hpp"
 
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 
-#if defined(XERCES_HAS_CPP_NAMESPACE)
 XERCES_CPP_NAMESPACE_USE
-#endif
+using namespace std;
 
 static const XMLCh err_XPTY0004[] = { 'e', 'r', 'r', ':', 'X', 'P', 'T', 'Y', '0', '0', '0', '4', 0 };
+static const XMLCh funcVarName[] = { '#', 'f', 'u', 'n', 'c', 'V', 'a', 'r', 0 };
 
-XQTreatAs::XQTreatAs(ASTNode* expr, const SequenceType* exprType, XPath2MemoryManager* memMgr, const XMLCh *errorCode)
+XQTreatAs::XQTreatAs(ASTNode* expr, SequenceType* exprType, XPath2MemoryManager* memMgr, const XMLCh *errorCode)
   : ASTNodeImpl(memMgr),
     _expr(expr),
     _exprType(exprType),
     _errorCode(errorCode),
-    _doTypeCheck(true)
+    _doTypeCheck(true),
+    _doCardinalityCheck(true),
+    _funcConvert(0)
 {
   setType(ASTNode::TREAT_AS);
 
   if(_errorCode == 0) _errorCode = err_XPTY0004;
 }
 
-Result XQTreatAs::createResult(DynamicContext* context, int flags) const
-{
-  Result result = _expr->createResult(context, flags);
-  if(_exprType->getOccurrenceIndicator() != SequenceType::STAR ||
-     _exprType->getItemType() == NULL) {
-    result = _exprType->occurrenceMatches(result, this, _errorCode);
-  }
-  if(_doTypeCheck) {
-    result = _exprType->typeMatches(result, this, _errorCode);
-  }
-  return result;
-}
-
 ASTNode* XQTreatAs::staticResolution(StaticContext *context)
 {
+  XPath2MemoryManager *mm = context->getMemoryManager();
+
   _exprType->staticResolution(context);
 
   if(_exprType->getOccurrenceIndicator() == SequenceType::QUESTION_MARK ||
@@ -79,61 +78,134 @@ ASTNode* XQTreatAs::staticResolution(StaticContext *context)
     _expr = _expr->staticResolution(context);
   }
 
+  const SequenceType::ItemType *type = _exprType->getItemType();
+
+  if(type && type->getItemTestType() == SequenceType::ItemType::TEST_FUNCTION &&
+     type->getReturnType() != 0) {
+    // Construct an XQInlineFunction that will convert a function reference
+    // stored in a variable to the correct type, and will throw type errors
+    // if it isn't the correct type
+
+    // Simultaneously create the XQInlineFunction parameter spec and the
+    // XQFunctionDeref argument list
+    XQUserFunction::ArgumentSpecs *paramList = new (mm) XQUserFunction::ArgumentSpecs(XQillaAllocator<XQUserFunction::ArgumentSpec*>(mm));
+    VectorOfASTNodes *argList = new (mm) VectorOfASTNodes(XQillaAllocator<ASTNode*>(mm));
+
+    VectorOfSequenceTypes *argTypes = type->getArgumentTypes();
+    unsigned int count = 0;
+    for(VectorOfSequenceTypes::iterator i = argTypes->begin(); i != argTypes->end(); ++i) {
+      XMLBuffer buf(20);
+      buf.set(FunctionRefImpl::argVarPrefix);
+      XPath2Utils::numToBuf(count, buf);
+      ++count;
+      const XMLCh *argName = mm->getPooledString(buf.getRawBuffer());
+
+      XQUserFunction::ArgumentSpec *argSpec = new (mm) XQUserFunction::ArgumentSpec(argName, *i, mm);
+      argSpec->setLocationInfo(*i);
+      paramList->push_back(argSpec);
+
+      XQVariable *argVar = new (mm) XQVariable(0, argName, mm);
+      argVar->setLocationInfo(this);
+      argList->push_back(argVar);
+    }
+
+    XQVariable *funcVar = new (mm) XQVariable(0, funcVarName, mm);
+    funcVar->setLocationInfo(this);
+
+    XQFunctionDeref *body = new (mm) XQFunctionDeref(funcVar, argList, mm);
+    body->setLocationInfo(this);
+
+    XQUserFunction *func = new (mm) XQUserFunction(0, paramList, body, type->getReturnType(), false, false, mm);
+    func->setLocationInfo(this);
+
+    _funcConvert = new (mm) XQInlineFunction(func, mm);
+    _funcConvert->setLocationInfo(this);
+
+    _funcConvert = _funcConvert->staticResolution(context);
+  }
+
   return this;
 }
 
 ASTNode *XQTreatAs::staticTyping(StaticContext *context)
 {
+  XPath2MemoryManager *mm = context->getMemoryManager();
+
   _src.clear();
 
   _expr = _expr->staticTyping(context);
 
+  if(_funcConvert) {
+    // Could do better on the static type
+    StaticAnalysis varSrc(mm);
+    varSrc.getStaticType() = StaticType::FUNCTION_TYPE;
+
+    VariableTypeStore *varStore = context->getVariableTypeStore();
+    varStore->addLogicalBlockScope();
+    varStore->declareVar(0, funcVarName, varSrc);
+
+    {
+      AutoMessageListenerReset reset(context); // Turn off warnings
+      _funcConvert = _funcConvert->staticTyping(context);
+    }
+
+    varStore->removeScope();
+  }
+
   // Do as much static time type checking as we can, given the
   // limited static typing that we implement
-  const SequenceType::ItemType *itemType = _exprType->getItemType();
-  if(itemType != NULL) {
-    const StaticType &sType = _expr->getStaticAnalysis().getStaticType();
+  const StaticType &actualType = _expr->getStaticAnalysis().getStaticType();
 
-    bool isExact;
-    itemType->getStaticType(_src.getStaticType(), context, isExact, this);
+  bool isExact;
+  _exprType->getStaticType(_src.getStaticType(), context, isExact, this);
 
-    if(!sType.containsType(_src.getStaticType().flags) &&
-       (_exprType->getOccurrenceIndicator() == SequenceType::EXACTLY_ONE ||
-        _exprType->getOccurrenceIndicator() == SequenceType::PLUS) &&
-       !_expr->getStaticAnalysis().isNoFoldingForced() &&
-       !_expr->getStaticAnalysis().isUpdating()) {
+  StaticType::TypeMatch match = _src.getStaticType().matches(actualType);
+
+  // Get a better static type by looking at our expression's type too
+  _src.getStaticType() &= actualType;
+
+  _src.setProperties(_expr->getStaticAnalysis().getProperties());
+  _src.add(_expr->getStaticAnalysis());
+
+  if(!_expr->getStaticAnalysis().isUpdating()) {
+    if(match.type == StaticType::NEVER || match.cardinality == StaticType::NEVER) {
       // It never matches
       XMLBuffer buf;
       buf.set(X("Expression does not match type "));
       _exprType->toBuffer(buf);
+      buf.append(X(" - the expression has a static type of "));
+      actualType.typeToBuf(buf);
       buf.append(X(" ["));
       buf.append(_errorCode);
       buf.append(X("]"));
       XQThrow(XPath2TypeMatchException, X("XQTreatAs::staticTyping"), buf.getRawBuffer());
     }
 
-    if(isExact && sType.isType(_src.getStaticType().flags)) {
-      if(_exprType->getOccurrenceIndicator() == SequenceType::STAR ||
-         (_expr->getStaticAnalysis().getProperties() & StaticAnalysis::ONENODE) != 0) {
-        // It always matches
-        return _expr;
+    MessageListener *mlistener = context->getMessageListener();
+    if(mlistener) {
+      if(match.type == StaticType::PROBABLY_NOT || match.cardinality == StaticType::PROBABLY_NOT) {
+        // It might not match
+        XMLBuffer buf;
+        buf.set(X("The expression might not match type "));
+        _exprType->toBuffer(buf);
+        buf.append(X(" - the expression has a static type of "));
+        actualType.typeToBuf(buf);
+        mlistener->warning(buf.getRawBuffer(), this);
       }
+    }
+
+    if(isExact && match.type == StaticType::ALWAYS) {
       _doTypeCheck = false;
     }
+    if(match.cardinality == StaticType::ALWAYS) {
+      _doCardinalityCheck = false;
+    }
 
-    // Get a better static type by looking at our expression's type too
-    _src.getStaticType().typeIntersect(sType);
-
-    if(_src.getStaticType().containsType(StaticType::NODE_TYPE)) {
-      // Copy the properties if we return nodes
-      _src.setProperties(_expr->getStaticAnalysis().getProperties());
+    if(!_doTypeCheck && !_doCardinalityCheck) {
+      // It always matches
+      return _expr;
     }
   }
-  else {
-    _src.getStaticType().flags = 0;
-    _doTypeCheck = false;
-  }
-  _src.add(_expr->getStaticAnalysis());
 
   if(_expr->isConstant() && !_expr->getStaticAnalysis().isUpdating()) {
     return constantFold(context);
@@ -152,3 +224,58 @@ const SequenceType *XQTreatAs::getSequenceType() const {
 void XQTreatAs::setExpression(ASTNode *item) {
   _expr = item;
 }
+
+class FunctionConversionResult : public ResultImpl
+{
+public:
+  FunctionConversionResult(const Result &parent, const ASTNode *funcConvert, const LocationInfo *location)
+    : ResultImpl(location),
+      parent_(parent),
+      funcConvert_(funcConvert)
+  {
+  }
+
+  virtual Item::Ptr next(DynamicContext *context)
+  {
+    Item::Ptr item = parent_->next(context);
+
+    if(item.notNull() && item->isFunction()) {
+      XPath2MemoryManager *mm = context->getMemoryManager();
+
+      VarStoreImpl scope(mm, context->getVariableStore());
+      scope.setVar(0, funcVarName, item);
+
+      AutoVariableStoreReset vsReset(context, &scope);
+
+      // funcConvert_ only returns one item
+      item = funcConvert_->createResult(context)->next(context);
+    }
+
+    return item;
+  }
+
+  string asString(DynamicContext *context, int indent) const { return ""; }
+
+private:
+  Result parent_;
+  const ASTNode *funcConvert_;
+};
+
+Result XQTreatAs::createResult(DynamicContext* context, int flags) const
+{
+  Result result = _expr->createResult(context, flags);
+  if(_doCardinalityCheck &&
+     (_exprType->getOccurrenceIndicator() != SequenceType::STAR ||
+      _exprType->getItemType() == NULL)) {
+    result = _exprType->occurrenceMatches(result, this, _errorCode);
+  }
+  if(_doTypeCheck) {
+    result = _exprType->typeMatches(result, this, _errorCode);
+
+    if(_funcConvert) {
+      result = new FunctionConversionResult(result, _funcConvert, this);
+    }
+  }
+  return result;
+}
+

@@ -32,6 +32,7 @@
 
 LetTuple::LetTuple(TupleNode *parent, const XMLCh *varQName, ASTNode *expr, XPath2MemoryManager *mm)
   : TupleNode(LET, parent),
+    seqType(0),
     varQName_(varQName),
     varURI_(0),
     varName_(0),
@@ -44,8 +45,10 @@ TupleNode *LetTuple::staticResolution(StaticContext *context)
 {
   parent_ = parent_->staticResolution(context);
 
-  varURI_ = context->getUriBoundToPrefix(XPath2NSUtils::getPrefix(varQName_, context->getMemoryManager()), this);
-  varName_ = XPath2NSUtils::getLocalName(varQName_);
+  if(varName_ == 0) {
+    varURI_ = context->getUriBoundToPrefix(XPath2NSUtils::getPrefix(varQName_, context->getMemoryManager()), this);
+    varName_ = XPath2NSUtils::getLocalName(varQName_);
+  }
 
   expr_ = expr_->staticResolution(context);
 
@@ -84,9 +87,9 @@ static TupleNode *findLetAncestor(TupleNode *ancestor, const StaticAnalysis &exp
   return found;
 }
 
-TupleNode *LetTuple::staticTypingSetup(StaticContext *context)
+TupleNode *LetTuple::staticTypingSetup(unsigned int &min, unsigned int &max, StaticContext *context)
 {
-  parent_ = parent_->staticTypingSetup(context);
+  parent_ = parent_->staticTypingSetup(min, max, context);
 
   VariableTypeStore* varStore = context->getVariableTypeStore();
 
@@ -166,7 +169,7 @@ public:
       return false;
 
     // TBD Use counts for the variable - jpcs
-    values_ = ResultBuffer(new ClosureResult(ast_->getExpression(), context, parent_));
+    values_ = ResultBuffer(ClosureResult::create(ast_->getExpression(), context, parent_));
     return true;
   }
 

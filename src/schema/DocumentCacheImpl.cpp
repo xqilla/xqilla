@@ -285,14 +285,26 @@ void DocumentCacheImpl::parseDocument(InputSource &srcToUse, EventHandler *handl
   }
 }
 
+static inline void setLocation(LocationInfo &info, const Locator *locator)
+{
+  info.setLocationInfo(locator->getSystemId(),
+                       locator->getLineNumber(),
+                       locator->getColumnNumber());
+}
+
+#define LOCATION setLocation(location_, scanner_->getLocator())
+
 void DocumentCacheImpl::startDocument()
 {
+  LOCATION;
+  events_->setLocationInfo(&location_);
   events_->startDocumentEvent(scanner_->getLocator()->getSystemId(),
                               scanner_->getReaderMgr()->getCurrentEncodingStr());
 }
 
 void DocumentCacheImpl::endDocument()
 {
+  LOCATION;
   events_->endDocumentEvent();
 }
 
@@ -304,6 +316,7 @@ void DocumentCacheImpl::startElement(const XMLElementDecl& elemDecl, const unsig
                                      const XMLCh* const elemPrefix, const RefVectorOf<XMLAttr>& attrList,
                                      const unsigned int attrCount, const bool isEmpty, const bool isRoot)
 {
+  LOCATION;
   events_->startElementEvent(emptyToNull(elemPrefix), emptyToNull(scanner_->getURIText(urlId)), elemDecl.getBaseName());
 
   attrList_ = &attrList;
@@ -338,6 +351,7 @@ void DocumentCacheImpl::endElement(const XMLElementDecl& elemDecl, const unsigne
     }
   }
 
+  LOCATION;
   events_->endElementEvent(emptyToNull(elemPrefix), emptyToNull(scanner_->getURIText(urlId)), elemDecl.getBaseName(),
                            emptyToNull(typeURI), typeName);
 
@@ -346,16 +360,19 @@ void DocumentCacheImpl::endElement(const XMLElementDecl& elemDecl, const unsigne
 
 void DocumentCacheImpl::docCharacters(const XMLCh* const chars, const unsigned int length, const bool cdataSection)
 {
+  LOCATION;
   events_->textEvent(chars, length);
 }
 
 void DocumentCacheImpl::docComment(const XMLCh* const comment)
 {
+  LOCATION;
   events_->commentEvent(comment);
 }
 
 void DocumentCacheImpl::docPI(const XMLCh* const target, const XMLCh* const data)
 {
+  LOCATION;
   events_->piEvent(target, data);
 }
 
@@ -396,6 +413,8 @@ void DocumentCacheImpl::handlePartialElementPSVI(const XMLCh* const localName, c
 void DocumentCacheImpl::handleAttributesPSVI(const XMLCh* const localName, const XMLCh* const uri,
                                              PSVIAttributeList *psviAttributes)
 {
+  // We can't get any better location for an attribute than the element where is occured
+
   for(unsigned int i = 0; i < attrCount_; ++i) {
     const XMLAttr *attr = attrList_->elementAt(i);
     if(attr->getURIId() == scanner_->getXMLNSNamespaceId()) {

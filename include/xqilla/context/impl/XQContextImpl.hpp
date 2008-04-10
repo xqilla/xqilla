@@ -115,6 +115,9 @@ public:
   virtual void setExternalVariable(const XMLCh *namespaceURI, const XMLCh *name, const Sequence &value);
   virtual void setExternalVariable(const XMLCh *qname, const Sequence &value);
 
+  virtual const RegexGroupStore* getRegexGroupStore() const;
+  virtual void setRegexGroupStore(const RegexGroupStore *store);
+
   /** Return the current time */
   virtual time_t getCurrentTime() const;
   /** Set the current time */
@@ -210,14 +213,14 @@ public:
   /** get the variable type store */
   virtual VariableTypeStore* getVariableTypeStore();
 
-  /** adds a custom function to the function table */
+  virtual void addTemplate(XQUserFunction *tp);
+  virtual const XQUserFunction *lookUpNamedTemplate(const XMLCh *uri, const XMLCh *name) const;
+  virtual const UserFunctions &getTemplateRules() const;
+
   virtual void addCustomFunction(FuncFactory *func);
-  /** returns a function object with the given uri, localname and number of arguments triple */
   virtual ASTNode *lookUpFunction(const XMLCh *uri, const XMLCh* name, const VectorOfASTNodes &v) const;
 
-  /** adds an external function implementation to the function table */
   virtual void addExternalFunction(const ExternalFunction *func);
-  /** returns an external function implementation for the given uri and localname */
   virtual const ExternalFunction *lookUpExternalFunction(const XMLCh *uri, const XMLCh *name, size_t numArgs) const;
 
   /** Get the implementation for the specified collation */
@@ -334,6 +337,11 @@ protected:
    * static data type */
   VariableTypeStore* _varTypeStore;
 
+  /** Stores the available named templates */
+  XERCES_CPP_NAMESPACE_QUALIFIER RefHashTableOf<XQUserFunction> _templateNameMap;
+  /** Stores the available templates with a pattern */
+  UserFunctions _templates; 
+
   /** In-scope functions. This part of the  static context defines the
    * set of functions that are available to be called from within an
    * expression. Each function is uniquely identified by its QName and
@@ -350,6 +358,7 @@ protected:
    * that given a set of strings, returns a sequence containing those strings
    * in sorted order; and a function that given two strings, returns true if
    * they are considered equal, and false if not. */
+
   std::vector<Collation*, XQillaAllocator<Collation*> > _collations;
 
   /** Default collation. This is a collation. This collation is used by
@@ -423,6 +432,8 @@ protected:
   const VariableStore *_varStore;
   const VariableStore *_globalVarStore;
   VarStoreImpl _defaultVarStore;
+
+  const RegexGroupStore *_regexStore;
 
   /** Current date and time. This information  represents an
    * implementation-dependent point in time during processing of a query

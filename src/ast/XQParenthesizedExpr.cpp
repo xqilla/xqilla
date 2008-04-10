@@ -25,32 +25,38 @@
 #include <xqilla/ast/XQParenthesizedExpr.hpp>
 #include <xqilla/ast/XQSequence.hpp>
 #include <xqilla/runtime/Sequence.hpp>
+#include <xqilla/runtime/ClosureResult.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>
 #include <xqilla/update/PendingUpdateList.hpp>
 
 XQParenthesizedExpr::XQParenthesizedExpr(XPath2MemoryManager* memMgr)
-	: ASTNodeImpl(memMgr), _astNodes(XQillaAllocator<ASTNode*>(memMgr))
+  : ASTNodeImpl(memMgr), _astNodes(XQillaAllocator<ASTNode*>(memMgr))
 {
   setType(ASTNode::PARENTHESIZED);
 }
 
 Result XQParenthesizedExpr::createResult(DynamicContext* context, int flags) const
 {
-  return new ParenthesizedResult(this, flags);
+  return new ParenthesizedResult(this);
 }
 
-void XQParenthesizedExpr::generateEvents(EventHandler *events, DynamicContext *context,
-                                         bool preserveNS, bool preserveType) const
+EventGenerator::Ptr XQParenthesizedExpr::generateEvents(EventHandler *events, DynamicContext *context,
+                                                        bool preserveNS, bool preserveType) const
 {
-  for(VectorOfASTNodes::const_iterator i = _astNodes.begin(); i != _astNodes.end(); ++i) {
-    (*i)->generateEvents(events, context, preserveNS, preserveType);
+  VectorOfASTNodes::const_iterator i = _astNodes.begin();
+  VectorOfASTNodes::const_iterator end = _astNodes.end();
+  if(i == end) return 0;
+  --end;
+  for(; i != end; ++i) {
+    (*i)->generateAndTailCall(events, context, preserveNS, preserveType);
   }
+  return new ClosureEventGenerator(*i, context, preserveNS, preserveType);
 }
 
-void XQParenthesizedExpr::addItem(ASTNode* di) {
-
-	_astNodes.push_back(di);
+void XQParenthesizedExpr::addItem(ASTNode* di)
+{
+  _astNodes.push_back(di);
 }
 
 ASTNode* XQParenthesizedExpr::staticResolution(StaticContext *context) {
@@ -73,9 +79,9 @@ ASTNode* XQParenthesizedExpr::staticResolution(StaticContext *context) {
   return this;
 }
 
-ASTNode* XQParenthesizedExpr::staticTyping(StaticContext *context) {
-  _src.getStaticType().flags = 0;
-
+ASTNode* XQParenthesizedExpr::staticTyping(StaticContext *context)
+{
+  bool doneOne = false;
   bool possiblyUpdating = true;
   for(VectorOfASTNodes::iterator i = _astNodes.begin(); i != _astNodes.end(); ++i) {
     *i = (*i)->staticTyping(context);
@@ -95,7 +101,13 @@ ASTNode* XQParenthesizedExpr::staticTyping(StaticContext *context) {
     if(possiblyUpdating)
       possiblyUpdating = (*i)->getStaticAnalysis().isPossiblyUpdating();
 
-    _src.getStaticType().typeUnion((*i)->getStaticAnalysis().getStaticType());
+    if(!doneOne) {
+      doneOne = true;
+      _src.getStaticType() = (*i)->getStaticAnalysis().getStaticType();
+    } else {
+      _src.getStaticType().typeConcat((*i)->getStaticAnalysis().getStaticType());
+    }
+
     _src.add((*i)->getStaticAnalysis());
   }
 
@@ -118,22 +130,30 @@ const VectorOfASTNodes &XQParenthesizedExpr::getChildren() const {
   return _astNodes;
 }
 
-XQParenthesizedExpr::ParenthesizedResult::ParenthesizedResult(const XQParenthesizedExpr *di, int flags)
+XQParenthesizedExpr::ParenthesizedResult::ParenthesizedResult(const XQParenthesizedExpr *di)
   : ResultImpl(di),
-    _flags(flags),
     _di(di),
     _i(di->getChildren().begin()),
     _result(0)
 {
 }
 
-Item::Ptr XQParenthesizedExpr::ParenthesizedResult::next(DynamicContext *context)
+Item::Ptr XQParenthesizedExpr::ParenthesizedResult::nextOrTail(Result &tail, DynamicContext *context)
 {
   Item::Ptr item = _result->next(context);
 
-  while(item == NULLRCP) {
+  while(item.isNull()) {
     if(_i != _di->getChildren().end()) {
-      _result = (*_i++)->createResult(context, _flags);
+      const ASTNode *ast = *_i;
+      ++_i;
+
+      if(_i == _di->getChildren().end()) {
+        // Tail call optimisation
+        tail = ClosureResult::create(ast, context);
+        return 0;
+      }
+
+      _result = ast->createResult(context);
       item = _result->next(context);
     }
     else {

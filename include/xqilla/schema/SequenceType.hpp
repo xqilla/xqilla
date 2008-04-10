@@ -31,6 +31,9 @@
 
 class Item;
 class XPath2MemoryManager;
+class SequenceType;
+
+typedef std::vector<SequenceType*, XQillaAllocator<SequenceType*> > VectorOfSequenceTypes;
 
 class XQILLA_API SequenceType : public LocationInfo
 {
@@ -54,10 +57,16 @@ public:
       TEST_TEXT,         ///< text node
       TEST_DOCUMENT,     ///< document node
       TEST_ANYTHING,     ///< any item
-      TEST_ATOMIC_TYPE   ///< the named atomic type or parent's named atomic type if derived through restriction
+      TEST_ATOMIC_TYPE,  ///< the named atomic type
+      TEST_FUNCTION      ///< function
     } ItemTestType;
 
+    // Normal constructor
     ItemType(ItemTestType test, QualifiedName* name=NULL, QualifiedName* type=NULL);
+    // Constructor for an atomic type
+    ItemType(const XMLCh *typeURI,const XMLCh *typeName, XPath2MemoryManager *mm);
+    // Constructor for a function
+    ItemType(VectorOfSequenceTypes *argTypes, SequenceType *returnType);
 
     /**
      * Destructor.
@@ -67,33 +76,37 @@ public:
     /**
      * Getter for m_nTestType
      */
-    ItemTestType getItemTestType(void) const;
+    ItemTestType getItemTestType() const;
     void setItemTestType(ItemTestType t);
 
     void setAllowNilled(bool value);
     bool getAllowNilled() const;
 
-    QualifiedName *getName(void) const;
-    QualifiedName *getType(void) const;
+    QualifiedName *getName() const;
+    QualifiedName *getType() const;
 
     void setName(QualifiedName * name);
     void setType(QualifiedName * type);
 
-    void setNameURI(const XMLCh* const nameURI);
-    void setTypeURI(const XMLCh* const typeURI);
+    const XMLCh* getTypeURI() const;
+    const XMLCh* getNameURI() const;
 
-    //Return a URI, firstly the overriding URI string, if not, the URI bond to the QName prefix
-    const XMLCh* getTypeURI(const StaticContext* context, const LocationInfo *location) const;
-    const XMLCh* getNameURI(const StaticContext* context, const LocationInfo *location) const;
+    VectorOfSequenceTypes *getArgumentTypes() const { return argTypes_; }
+    SequenceType *getReturnType() const { return returnType_; }
 
     void getStaticType(StaticType &st, const StaticContext *context,
                        bool &isExact, const LocationInfo *location) const;
 
-    bool matches(const Item::Ptr &toBeTested, DynamicContext* context, const LocationInfo *location) const;
-    bool matches(const Node::Ptr &toBeTested, DynamicContext* context, const LocationInfo *location) const;
-    bool matchesNameType(const Item::Ptr &toBeTested, DynamicContext* context, const LocationInfo *location) const;
+    bool matches(const Item::Ptr &toBeTested, DynamicContext* context) const;
+    bool matches(const Node::Ptr &toBeTested, DynamicContext* context) const;
+    bool matchesNameType(const Item::Ptr &toBeTested, const DynamicContext* context) const;
 
-    void toBuffer(XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &buffer) const;
+    bool matches(const ItemType *toBeTested, const StaticContext* context) const;
+    bool matchesNameType(const ItemType *toBeTested, const StaticContext* context) const;
+
+    void staticResolution(StaticContext *context, const LocationInfo *location);
+
+    void toBuffer(XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &buffer, bool addBrackets = false) const;
 
   protected:
 
@@ -101,14 +114,21 @@ public:
     ItemTestType m_nTestType;
 
     // The name and type to match
-    QualifiedName* m_pName, * m_pType;
+    QualifiedName *m_pName, *m_pType;
 
     // The forced URIs for name and type
-    const XMLCh* m_NameURI, * m_TypeURI;
+    const XMLCh *m_NameURI, *m_TypeURI;
 
     // allow elements having the xsi:nil="true" attribute
     bool m_bAllowNil;
-  };//ItemType
+
+    // The number of arguments the function should take
+    VectorOfSequenceTypes *argTypes_;
+    // The return type of the function
+    SequenceType *returnType_;
+
+    bool staticallyResolved_;
+  };
 
 
 
@@ -156,19 +176,9 @@ public:
    */
   void setOccurrence(OccurrenceIndicator nOccurrence);
 
-  /**
-   * Setter for the nameURI
-   */
-  void setNameURI(const XMLCh* const nameURI);
-
-  /**
-   * Setter for the typeURI
-   */
-  void setTypeURI(const XMLCh* const typeURI);
-
   //Return a URI, firstly the overriding URI string, if not, the URI bond to the QName prefix
-  const XMLCh* getTypeURI(const StaticContext* context) const;
-  const XMLCh* getNameURI(const StaticContext* context) const;
+  const XMLCh *getTypeURI() const;
+  const XMLCh *getNameURI() const;
 
   /**
    * Returns a Result that will throw an XPath2TypeMatchException if
@@ -178,25 +188,31 @@ public:
   Result occurrenceMatches(const Result &toBeTested, const LocationInfo *location, const XMLCh *errorCode) const;
   Result typeMatches(const Result &toBeTested, const LocationInfo *location, const XMLCh *errorCode) const;
 
+  Result convertFunctionArg(const Result &input, DynamicContext *context, bool xpath1Compat,
+                            const LocationInfo *location, const XMLCh *errorCode);
   ASTNode *convertFunctionArg(ASTNode *arg, StaticContext *context, bool numericFunction,
-                              const LocationInfo *location) const;
+                              const LocationInfo *location);
 
-  QualifiedName *getConstrainingType(void) const;
-  QualifiedName *getConstrainingName(void) const;
+  QualifiedName *getConstrainingType() const;
+  QualifiedName *getConstrainingName() const;
 
   /**
    * Getter for m_pItemType.
    */
-  ItemType::ItemTestType getItemTestType(void) const;
+  ItemType::ItemTestType getItemTestType() const;
 
   /**
    * Getter for m_nOccurrence.
    */
-  OccurrenceIndicator getOccurrenceIndicator(void) const;
+  OccurrenceIndicator getOccurrenceIndicator() const;
 
   const ItemType *getItemType() const;
 
-  void staticResolution(StaticContext* context) const;
+  bool matches(const SequenceType *toBeTested, const StaticContext* context) const;
+
+  void staticResolution(StaticContext* context);
+  void getStaticType(StaticType &st, const StaticContext *context,
+                     bool &isExact, const LocationInfo *location) const;
 
   void toBuffer(XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &buffer) const;
 
@@ -236,4 +252,4 @@ protected:
   };
 };
 
-#endif // _SEQUENCETYPE_HPP
+#endif

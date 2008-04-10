@@ -62,7 +62,7 @@ ASTNode *FunctionAdjustTimeToTimezone::staticTyping(StaticContext *context)
 {
   _src.clear();
 
-  _src.getStaticType().flags = StaticType::TIME_TYPE;
+  _src.getStaticType() = StaticType(StaticType::TIME_TYPE, 0, 1);
   if(getNumArgs() == 1) {
     _src.implicitTimezoneUsed(true);
   }

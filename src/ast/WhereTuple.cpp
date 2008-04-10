@@ -77,7 +77,7 @@ static TupleNode *findWhereAncestor(TupleNode *ancestor, const StaticAnalysis &e
   return found;
 }
 
-TupleNode *WhereTuple::staticTypingSetup(StaticContext *context)
+TupleNode *WhereTuple::staticTypingSetup(unsigned int &min, unsigned int &max, StaticContext *context)
 {
   // Split if expr_ is the And operator
   if(expr_->getType() == ASTNode::OPERATOR && ((XQOperator*)expr_)->getOperatorName() == And::name) {
@@ -90,10 +90,10 @@ TupleNode *WhereTuple::staticTypingSetup(StaticContext *context)
       result->setLocationInfo(this);
     }
 
-    return result->staticTypingSetup(context);
+    return result->staticTypingSetup(min, max, context);
   }
 
-  parent_ = parent_->staticTypingSetup(context);
+  parent_ = parent_->staticTypingSetup(min, max, context);
 
   // call static resolution on the value
   {
@@ -106,6 +106,8 @@ TupleNode *WhereTuple::staticTypingSetup(StaticContext *context)
             X("It is a static error for the where expression of a FLWOR expression "
               "to be an updating expression [err:XUST0001]"));
   }
+
+  min = 0;
 
   // Push back if possible
   TupleNode *found = findWhereAncestor(parent_, expr_->getStaticAnalysis());

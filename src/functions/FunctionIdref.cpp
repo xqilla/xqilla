@@ -59,7 +59,7 @@ ASTNode *FunctionIdref::staticTyping(StaticContext *context)
 {
   _src.clear();
 
-  _src.getStaticType().flags = StaticType::NODE_TYPE;
+  _src.getStaticType() = StaticType(StaticType::NODE_TYPE, 0, StaticType::UNLIMITED);
   if(_args.size()==1)
     _src.contextItemUsed(true);
   return calculateSRCForArguments(context);
