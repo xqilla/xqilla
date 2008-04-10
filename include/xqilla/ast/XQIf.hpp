@@ -33,8 +33,8 @@ public:
   XQIf(ASTNode* test, ASTNode* whenTrue, ASTNode* whenFalse, XPath2MemoryManager* memMgr);
   
   virtual Result createResult(DynamicContext* context, int flags=0) const;
-  virtual void generateEvents(EventHandler *events, DynamicContext *context,
-                              bool preserveNS, bool preserveType) const;
+  virtual EventGenerator::Ptr generateEvents(EventHandler *events, DynamicContext *context,
+                                               bool preserveNS, bool preserveType) const;
   virtual ASTNode* staticResolution(StaticContext *context);
   virtual ASTNode *staticTyping(StaticContext *context);
   virtual PendingUpdateList createUpdateList(DynamicContext *context) const;
@@ -51,15 +51,13 @@ protected:
   class IfResult : public ResultImpl
   {
   public:
-    IfResult(const XQIf *di, int flags);
+    IfResult(const XQIf *di);
 
-    Item::Ptr next(DynamicContext *context);
+    Item::Ptr nextOrTail(Result &tail, DynamicContext *context);
     std::string asString(DynamicContext *context, int indent) const;
 
   private:
-    int _flags;
     const XQIf *_di;
-    Result _results;
   };
 
   ASTNode* _test,* _whenTrue,* _whenFalse;

@@ -68,6 +68,16 @@
 #include <xqilla/ast/XQDocumentOrder.hpp>
 #include <xqilla/ast/XQPredicate.hpp>
 #include <xqilla/ast/XQReturn.hpp>
+#include <xqilla/ast/XQNamespaceBinding.hpp>
+#include <xqilla/ast/XQFunctionConversion.hpp>
+#include <xqilla/ast/XQAnalyzeString.hpp>
+#include <xqilla/ast/XQCopyOf.hpp>
+#include <xqilla/ast/XQCallTemplate.hpp>
+#include <xqilla/ast/XQApplyTemplates.hpp>
+#include <xqilla/ast/XQInlineFunction.hpp>
+#include <xqilla/ast/XQFunctionDeref.hpp>
+#include <xqilla/ast/XQFunctionRef.hpp>
+#include <xqilla/functions/XQUserFunction.hpp>
 
 #include <xqilla/fulltext/FTContains.hpp>
 #include <xqilla/fulltext/FTSelection.hpp>
@@ -122,7 +132,7 @@ string PrintAST::print(const XQQuery *query, const DynamicContext *context, int 
 {
   ostringstream s;
 
-	string in(getIndent(indent));
+  string in(getIndent(indent));
 
   if(query->getIsLibraryModule()) {
     s << in << "<Module";
@@ -145,24 +155,7 @@ string PrintAST::print(const XQQuery *query, const DynamicContext *context, int 
 
   for(std::vector<XQUserFunction*, XQillaAllocator<XQUserFunction*> >::const_iterator i = query->getFunctions().begin();
       i != query->getFunctions().end(); ++i) {
-    XQUserFunction *f = *i;
-
-    const XMLCh *funUri = f->getURI();
-    const XMLCh *funName = f->getName();
-
-    string name("{");
-    name += UTF8(funUri);
-    name += "}:";
-    name += UTF8(funName);
-
-    s << in << "  <FunctionDefinition name=\"" << name << "\"";
-    if(f->getFunctionBody() == NULL) {
-      s << "/>" << endl;
-    } else {
-      s <<">" << endl;
-      s << p.printASTNode(f->getFunctionBody(), context, indent + INDENT + INDENT);
-      s << in << "  </FunctionDefinition>" << endl;
-    }
+    s << p.printXQUserFunction(*i, context, indent + INDENT);
   }
   for(vector<XQGlobalVariable*, XQillaAllocator<XQGlobalVariable*> >::const_iterator it = query->getVariables().begin();
       it != query->getVariables().end(); ++it) {
@@ -177,6 +170,88 @@ string PrintAST::print(const XQQuery *query, const DynamicContext *context, int 
   }
   else {
     s << in << "</XQuery>";
+  }
+
+  return s.str();
+}
+
+string PrintAST::printXQUserFunction(const XQUserFunction *f, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  string name;
+  if(f->getQName() != 0) {
+    name += UTF8(f->getQName());
+  }
+  else if(f->getName() != 0) {
+    name += "{";
+    name += UTF8(f->getURI());
+    name += "}";
+    name += UTF8(f->getName());
+  }
+
+  if(f->isTemplate()) {
+    s << in << "<TemplateDefinition";
+  }
+  else {
+    s << in << "<FunctionDefinition";
+  }
+  if(name != "") {
+    s << " name=\"" << name << "\"";
+  }
+  if(f->getArgumentSpecs() == NULL && f->getPattern() == NULL && f->getFunctionBody() == NULL && f->getReturnType() == NULL) {
+    s << "/>" << endl;
+  } else {
+    s <<">" << endl;
+
+    if(f->getPattern() != NULL) {
+      s << in << "  <Pattern>" << endl;
+      VectorOfASTNodes::iterator patIt = f->getPattern()->begin();
+      for(; patIt != f->getPattern()->end(); ++patIt) {
+        s << printASTNode(*patIt, context, indent + INDENT + INDENT);
+      }
+      s << in << "  </Pattern>" << endl;
+    }
+
+    if(f->getArgumentSpecs() != NULL) {
+      XQUserFunction::ArgumentSpecs::const_iterator argIt;
+      for(argIt = f->getArgumentSpecs()->begin(); argIt != f->getArgumentSpecs()->end(); ++argIt) {
+        if((*argIt)->isUsed()) {
+          s << in << "  <Parameter name=\"";
+          if((*argIt)->getQName() != 0) {
+            s << UTF8((*argIt)->getQName());
+          }
+          else {
+            s << "{" << UTF8((*argIt)->getURI()) << "}" << UTF8((*argIt)->getName());
+          }
+          if((*argIt)->getType() == 0) {
+            s << "\"/>" << endl;
+          }
+          else {
+            s << "\">" << endl;
+            s << printSequenceType((*argIt)->getType(), context, indent + INDENT + INDENT);
+            s << in << "  </Parameter>" << endl;
+          }
+        }
+      }
+    }
+
+    if(f->getFunctionBody() != NULL) {
+      s << printASTNode(f->getFunctionBody(), context, indent + INDENT);
+    }
+
+//     if(f->getReturnType() != NULL) {
+//       s << printSequenceType(f->getReturnType(), context, indent + INDENT);
+//     }
+
+    if(f->isTemplate()) {
+      s << in << "</TemplateDefinition>" << endl;
+    }
+    else {
+      s << in << "</FunctionDefinition>" << endl;
+    }
   }
 
   return s.str();
@@ -267,6 +342,10 @@ string PrintAST::printASTNode(const ASTNode *item, const DynamicContext *context
     return printDOMConstructor((XQDOMConstructor *)item, context, indent);
     break;
   }
+  case ASTNode::SIMPLE_CONTENT: {
+    return printSimpleContent((XQSimpleContent *)item, context, indent);
+    break;
+  }
   case ASTNode::ORDERING_CHANGE: {
     return printOrderingChange((XQOrderingChange *)item, context, indent);
     break;
@@ -312,7 +391,7 @@ string PrintAST::printASTNode(const ASTNode *item, const DynamicContext *context
     break;
   }
   case ASTNode::USER_FUNCTION: {
-    return printUserFunction((XQUserFunction::Instance *)item, context, indent);
+    return printUserFunction((XQUserFunctionInstance *)item, context, indent);
     break;
   }
   case ASTNode::FTCONTAINS: {
@@ -367,6 +446,42 @@ string PrintAST::printASTNode(const ASTNode *item, const DynamicContext *context
     return printReturn((XQReturn*)item, context, indent);
     break;
   }
+  case ASTNode::NAMESPACE_BINDING: {
+    return printNamespaceBinding((XQNamespaceBinding*)item, context, indent);
+    break;
+  }
+  case ASTNode::FUNCTION_CONVERSION: {
+    return printFunctionConversion((XQFunctionConversion*)item, context, indent);
+    break;
+  }
+  case ASTNode::ANALYZE_STRING: {
+    return printAnalyzeString((XQAnalyzeString*)item, context, indent);
+    break;
+  }
+  case ASTNode::COPY_OF: {
+    return printCopyOf((XQCopyOf*)item, context, indent);
+    break;
+  }
+  case ASTNode::CALL_TEMPLATE: {
+    return printCallTemplate((XQCallTemplate*)item, context, indent);
+    break;
+  }
+  case ASTNode::APPLY_TEMPLATES: {
+    return printApplyTemplates((XQApplyTemplates*)item, context, indent);
+    break;
+  }
+  case ASTNode::INLINE_FUNCTION: {
+    return printInlineFunction((XQInlineFunction*)item, context, indent);
+    break;
+  }
+  case ASTNode::FUNCTION_DEREF: {
+    return printFunctionDeref((XQFunctionDeref*)item, context, indent);
+    break;
+  }
+  case ASTNode::FUNCTION_REF: {
+    return printFunctionRef((XQFunctionRef*)item, context, indent);
+    break;
+  }
   }
   return getIndent(indent) + "<Unknown/>\n";
 }
@@ -402,7 +517,7 @@ string PrintAST::printFunction(const XQFunction *item, const DynamicContext *con
 
   string name("{");
   name += UTF8(funUri);
-  name += "}:";
+  name += "}";
   name += UTF8(funName);
 
   const VectorOfASTNodes &args = item->getArguments();
@@ -530,7 +645,9 @@ string PrintAST::printStep(const XQStep *item, const DynamicContext *context, in
     s << ">" << endl;
     if(type != 0) {
       s << in << "  <ItemType";
-      s << printItemTypeAttrs(type, context);
+      XMLBuffer buf;
+      type->toBuffer(buf);
+      s << " type=\"" << UTF8(buf.getRawBuffer()) << "\"";
       s << "/>" << endl;
     }
     s << in << "</Step>" << endl;
@@ -677,7 +794,7 @@ string PrintAST::printTreatAs(const XQTreatAs *item, const DynamicContext *conte
   return s.str();
 }
 
-string PrintAST::printUserFunction(const XQUserFunction::Instance *item, const DynamicContext *context, int indent)
+string PrintAST::printUserFunction(const XQUserFunctionInstance *item, const DynamicContext *context, int indent)
 {
   ostringstream s;
 
@@ -688,18 +805,28 @@ string PrintAST::printUserFunction(const XQUserFunction::Instance *item, const D
 
   string name("{");
   name += UTF8(funUri);
-  name += "}:";
+  name += "}";
   name += UTF8(funName);
 
   const VectorOfASTNodes &args = item->getArguments();
-  s << in << "<UserFunction name=\"" << name << "\"";
+
+  if(item->getFunctionDefinition()->isTemplate())
+	  s << in << "<Template name=\"" << name << "\"";
+  else s << in << "<UserFunction name=\"" << name << "\"";
 
   if(item->getFunctionDefinition()->getArgumentSpecs() && !item->getFunctionDefinition()->getArgumentSpecs()->empty()) {
     s << ">" << endl;
     XQUserFunction::ArgumentSpecs::const_iterator binding = item->getFunctionDefinition()->getArgumentSpecs()->begin();
     for(VectorOfASTNodes::const_iterator arg = args.begin(); arg != args.end() && binding != item->getFunctionDefinition()->getArgumentSpecs()->end(); ++arg, ++binding) {
       if((*binding)->isUsed()) {
-        s << in << "  <Binding name=\"{" << UTF8((*binding)->getURI()) << "}:" << UTF8((*binding)->getName()) << "\">" << endl;
+        s << in << "  <Binding name=\"";
+        if((*binding)->getQName() != 0) {
+          s << UTF8((*binding)->getQName());
+        }
+        else {
+          s << "{" << UTF8((*binding)->getURI()) << "}" << UTF8((*binding)->getName());
+        }
+        s << "\">" << endl;
         s << printASTNode(*arg, context, indent + INDENT + INDENT);
         s << in << "  </Binding>" << endl;
       }
@@ -707,7 +834,9 @@ string PrintAST::printUserFunction(const XQUserFunction::Instance *item, const D
 
     // We don't output the body, as it may result in an infinite loop
     // for recursive user functions - jpcs
-    s << in << "</UserFunction>" << endl;
+    if(item->getFunctionDefinition()->isTemplate())
+	    s << in << "</Template>" << endl;
+    else s << in << "</UserFunction>" << endl;
   } else {
     s << "/>" << endl;
   }
@@ -794,7 +923,19 @@ string PrintAST::printGlobal(const XQGlobalVariable *item, const DynamicContext 
 
   string in(getIndent(indent));
 
-  s << in << "<GlobalVar name=\"" << UTF8(item->getVariableName()) << "\"";
+  if(item->isParam()) {
+    s << in << "<GlobalParam name=\"";
+  }
+  else {
+    s << in << "<GlobalVar name=\"";
+  }
+  if(item->getVariableName() != 0) {
+    s << UTF8(item->getVariableName());
+  }
+  else {
+    s << "{" << UTF8(item->getVariableURI()) << "}" << UTF8(item->getVariableLocalName());
+  }
+  s << "\"";
   if(item->isExternal()) {
     s << " external=\"true\"";
   }
@@ -806,7 +947,12 @@ string PrintAST::printGlobal(const XQGlobalVariable *item, const DynamicContext 
     if(item->getVariableExpr()) {
       s << printASTNode(item->getVariableExpr(), context, indent + INDENT);
     }
-    s << in << "</GlobalVar>" << endl;
+    if(item->isParam()) {
+      s << in << "</GlobalParam>" << endl;
+    }
+    else {
+      s << in << "</GlobalVar>" << endl;
+    }
   }
   else {
     s << "/>" << endl;
@@ -883,6 +1029,28 @@ string PrintAST::printDOMConstructor(const XQDOMConstructor *item, const Dynamic
       s << item->getQueryPathTree()->toString(indent + INDENT);
 #endif
     s << in << "</DOMConstructor>" << endl;
+  }
+  else {
+    s << "\"/>" << endl;
+  }
+
+  return s.str();
+}
+
+string PrintAST::printSimpleContent(const XQSimpleContent *item, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  s << in << "<SimpleContent";
+  if(item->getChildren() != 0 && !item->getChildren()->empty()) {
+    s << "\">" << endl;
+    for(VectorOfASTNodes::const_iterator i = item->getChildren()->begin();
+        i != item->getChildren()->end(); ++i) {
+      s << printASTNode(*i, context, indent + INDENT + INDENT);
+    }
+    s << in << "</SimpleContent>" << endl;
   }
   else {
     s << "\"/>" << endl;
@@ -1497,10 +1665,10 @@ string PrintAST::printUTransform(const UTransform *item, const DynamicContext *c
 
   s << in << "<UTransform>" << endl;
   for(VectorOfCopyBinding::const_iterator i = bindings->begin(); i != bindings->end(); ++i) {
-	  s << in << "  <Copy name=\"" << UTF8((*i)->qname_);
-	  s << "\">" << endl;
-	  s << printASTNode((*i)->expr_, context, indent + INDENT + INDENT);
-	  s << in << "  </Copy>" << endl;
+    s << in << "  <Copy name=\"" << UTF8((*i)->qname_);
+    s << "\">" << endl;
+    s << printASTNode((*i)->expr_, context, indent + INDENT + INDENT);
+    s << in << "  </Copy>" << endl;
   }
   s << printASTNode(item->getModifyExpr(), context, indent + INDENT);
   s << printASTNode(item->getReturnExpr(), context, indent + INDENT);
@@ -1547,6 +1715,209 @@ string PrintAST::printReturn(const XQReturn *item, const DynamicContext *context
   s << printTupleNode(item->getParent(), context, indent + INDENT);
   s << printASTNode(item->getExpression(), context, indent + INDENT);
   s << in << "</Return>" << endl;
+
+  return s.str();
+}
+
+string PrintAST::printNamespaceBinding(const XQNamespaceBinding *item, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  s << in << "<NamespaceBinding>" << endl;
+  s << printASTNode(item->getExpression(), context, indent + INDENT);
+  s << in << "</NamespaceBinding>" << endl;
+
+  return s.str();
+}
+
+string PrintAST::printFunctionConversion(const XQFunctionConversion *item, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  s << in << "<FunctionConversion>" << endl;
+  s << printASTNode(item->getExpression(), context, indent + INDENT);
+  s << printSequenceType(item->getSequenceType(), context, indent + INDENT);
+  s << in << "</FunctionConversion>" << endl;
+
+  return s.str();
+}
+
+string PrintAST::printAnalyzeString(const XQAnalyzeString *item, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  s << in << "<AnalyzeString>" << endl;
+  s << in << "  <Select>" << endl;
+  s << printASTNode(item->getExpression(), context, indent + INDENT + INDENT);
+  s << in << "  </Select>" << endl;
+  s << in << "  <Regex>" << endl;
+  s << printASTNode(item->getRegex(), context, indent + INDENT + INDENT);
+  s << in << "  </Regex>" << endl;
+  if(item->getFlags() != 0) {
+    s << in << "  <Flags>" << endl;
+    s << printASTNode(item->getFlags(), context, indent + INDENT + INDENT);
+    s << in << "  </Flags>" << endl;
+  }
+  s << in << "  <Match>" << endl;
+  s << printASTNode(item->getMatch(), context, indent + INDENT + INDENT);
+  s << in << "  </Match>" << endl;
+  s << in << "  <NonMatch>" << endl;
+  s << printASTNode(item->getNonMatch(), context, indent + INDENT + INDENT);
+  s << in << "  </NonMatch>" << endl;
+  s << in << "</AnalyzeString>" << endl;
+
+  return s.str();
+}
+
+string PrintAST::printCopyOf(const XQCopyOf *item, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  s << in << "<CopyOf copy-namespaces=\"" << (item->getCopyNamespaces() ? "yes" : "no") << "\">" << endl;
+  s << printASTNode(item->getExpression(), context, indent + INDENT);
+  s << in << "</CopyOf>" << endl;
+
+  return s.str();
+}
+
+string PrintAST::printCallTemplate(const XQCallTemplate *item, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  string name;
+  if(item->getQName() != 0) {
+    name += UTF8(item->getQName());
+  }
+  else if(item->getName() != 0) {
+    name += "{";
+    name += UTF8(item->getURI());
+    name += "}";
+    name += UTF8(item->getName());
+  }
+
+  s << in << "<CallTemplate name=\"" << name << "\">" << endl;
+
+  if(item->getArguments() != NULL) {
+    TemplateArguments::iterator argIt;
+    for(argIt = item->getArguments()->begin(); argIt != item->getArguments()->end(); ++argIt) {
+      s << in << "  <Argument name=\"";
+      if((*argIt)->qname != 0) {
+        s << UTF8((*argIt)->qname);
+      }
+      else {
+        s << "{" << UTF8((*argIt)->uri) << "}" << UTF8((*argIt)->name);
+      }
+      s << "\">" << endl;
+      s << printASTNode((*argIt)->value, context, indent + INDENT + INDENT);
+      s << in << "  </Argument>" << endl;
+    }
+  }
+  s << in << "</CallTemplate>" << endl;
+
+  return s.str();
+}
+
+string PrintAST::printApplyTemplates(const XQApplyTemplates *item, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  s << in << "<ApplyTemplates>" << endl;
+  s << printASTNode(item->getExpression(), context, indent + INDENT);
+  
+  if(item->getArguments() != NULL) {
+    TemplateArguments::iterator argIt;
+    for(argIt = item->getArguments()->begin(); argIt != item->getArguments()->end(); ++argIt) {
+      s << in << "  <Argument name=\"";
+      if((*argIt)->qname != 0) {
+        s << UTF8((*argIt)->qname);
+      }
+      else {
+        s << "{" << UTF8((*argIt)->uri) << "}" << UTF8((*argIt)->name);
+      }
+      s << "\">" << endl;
+      s << printASTNode((*argIt)->value, context, indent + INDENT + INDENT);
+      s << in << "  </Argument>" << endl;
+    }
+  }
+  s << in << "</ApplyTemplates>" << endl;
+
+  return s.str();
+}
+
+string PrintAST::printInlineFunction(const XQInlineFunction *item, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  s << in << "<InlineFunction>" << endl;
+  s << printXQUserFunction(item->getUserFunction(), context, indent + INDENT);
+  s << in << "</InlineFunction>" << endl;
+
+  return s.str();
+}
+
+string PrintAST::printFunctionDeref(const XQFunctionDeref *item, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  s << in << "<FunctionDeref>" << endl;
+  s << printASTNode(item->getExpression(), context, indent + INDENT);
+
+  const VectorOfASTNodes *args = item->getArguments();
+  if(args != 0 && !args->empty()) {
+    s << in << "  <Arguments>" << endl;
+    for(VectorOfASTNodes::const_iterator i = args->begin(); i != args->end(); ++i) {
+      s << printASTNode(*i, context, indent + INDENT + INDENT);
+    }
+    s << in << "  </Arguments>" << endl;
+  }
+
+  s << in << "</FunctionDeref>" << endl;
+
+  return s.str();
+}
+
+string PrintAST::printFunctionRef(const XQFunctionRef *item, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  string name;
+  if(item->getName() != 0) {
+    name += "{";
+    name += UTF8(item->getURI());
+    name += "}";
+    name += UTF8(item->getName());
+  }
+  else if(item->getQName() != 0) {
+    name += UTF8(item->getQName());
+  }
+
+  s << in << "<FunctionRef name=\"" << name
+    << "\" numArgs=\"" << item->getNumArgs() << "\"/>" << endl;
+
+//   s << in << "<FunctionRef name=\"" << UTF8(item->getQName())
+//     << "\" numArgs=\"" << item->getNumArgs() << "\">" << endl;
+
+//   s << printASTNode(item->getInstance(), context, indent + INDENT);
+
+//   s << in << "</FunctionRef>" << endl;
 
   return s.str();
 }
@@ -1638,15 +2009,15 @@ string PrintAST::printOrderByTuple(const OrderByTuple *item, const DynamicContex
   s << in << "<OrderByTuple";
 
   if(item->getModifiers() & OrderByTuple::DESCENDING)
-	  s << " direction=\"descending\"";
+    s << " direction=\"descending\"";
   else s << " direction=\"ascending\"";
 
   if(item->getModifiers() & OrderByTuple::EMPTY_LEAST)
-	  s << " empty=\"least\"";
+    s << " empty=\"least\"";
   else s << " empty=\"greatest\"";
 
   if(item->getModifiers() & OrderByTuple::UNSTABLE)
-	  s << " stable=\"false\"";
+    s << " stable=\"false\"";
   else s << " stable=\"true\"";
 
   s << " collation=\"" << UTF8(item->getCollation()->getCollationName()) << "\">" << endl;
@@ -1675,78 +2046,10 @@ string PrintAST::printSequenceType(const SequenceType *type, const DynamicContex
   string in(getIndent(indent));
 
   s << in << "<SequenceType";
-  s << " occurrence=\"" << getOccurrenceIndicatorName(type->getOccurrenceIndicator()) << "\"";
-  s << printItemTypeAttrs(type->getItemType(), context);
+  XMLBuffer buf;
+  type->toBuffer(buf);
+  s << " type=\"" << UTF8(buf.getRawBuffer()) << "\"";
   s << "/>" << endl;
-
-  return s.str();
-}
-
-string PrintAST::printItemTypeAttrs(const SequenceType::ItemType *type, const DynamicContext *context)
-{
-  if(type == 0) return " testType=\"empty\"";
-
-  ostringstream s;
-
-  s << " testType=\"" << getItemTestTypeName(type->getItemTestType()) << "\"";
-  
-  if(type->getAllowNilled()) {
-    s << " nil=\"true\"";
-  }
-
-  try {
-    const XMLCh *nameURI = type->getNameURI((DynamicContext *)context, 0);
-    if(type->getName() != 0) {
-      s << " name=\"{" << UTF8(nameURI)
-        << "}:" << UTF8(type->getName()->getName()) << "\"";
-    }
-    else if(nameURI != 0) {
-      s << " nameURI=\"" << UTF8(nameURI) << "\"";
-    }
-  }
-  catch(const NamespaceLookupException &e) {
-    if(type->getName() != 0) {
-      s << " name=\"" << UTF8(type->getName()->getPrefix())
-        << ":" << UTF8(type->getName()->getName()) << "\"";
-    }
-  }
-
-  try {
-    const XMLCh *typeURI = type->getTypeURI((DynamicContext *)context, 0);
-    if(type->getType() != 0) {
-      s << " type=\"" << UTF8(typeURI)
-        << ":" << UTF8(type->getType()->getName()) << "\"";
-    }
-    else if(typeURI != 0) {
-      s << " typeURI=\"" << UTF8(typeURI) << "\"";
-    }
-  }
-  catch(const NamespaceLookupException &e) {
-    if(type->getType() != 0) {
-      s << " type=\"" << UTF8(type->getType()->getPrefix())
-        << ":" << UTF8(type->getType()->getName()) << "\"";
-    }
-  }
-
-  return s.str();
-}
-
-string PrintAST::printItem(const Item::Ptr item, const DynamicContext *context, int indent)
-{
-  ostringstream s;
-
-  string in(getIndent(indent));
-  string value(UTF8(item->asString(context)));
-  s << in << "<Item value=\"" << value << "\" type=\"";
-  if(item->isNode()) {
-    s << "node";
-  }
-  else {
-    const AnyAtomicType::Ptr att = (const AnyAtomicType::Ptr )item;
-    s << "{" << UTF8(att->getTypeURI()) << "}:"
-      << UTF8(att->getTypeName());
-  }
-  s << "\"/>" << endl;
 
   return s.str();
 }
@@ -1803,48 +2106,6 @@ string PrintAST::getAxisName(XQStep::Axis axis)
   }
   case XQStep::SELF: {
     return "self";
-  }
-  default: {
-    return "unknown";
-  }
-  }
-}
-
-string PrintAST::getItemTestTypeName(int type)
-{
-  switch(type) {
-  case SequenceType::ItemType::TEST_ELEMENT: {
-    return "element";
-  }
-  case SequenceType::ItemType::TEST_ATTRIBUTE: {
-    return "attribute";
-  }
-  case SequenceType::ItemType::TEST_SCHEMA_ELEMENT: {
-    return "schema-element";
-  }
-  case SequenceType::ItemType::TEST_SCHEMA_ATTRIBUTE: {
-    return "schema-attribute";
-  }
-  case SequenceType::ItemType::TEST_NODE: {
-    return "node";
-  }
-  case SequenceType::ItemType::TEST_PI: {
-    return "processing-instruction";
-  }
-  case SequenceType::ItemType::TEST_COMMENT: {
-    return "comment";
-  }
-  case SequenceType::ItemType::TEST_TEXT: {
-    return "text";
-  }
-  case SequenceType::ItemType::TEST_DOCUMENT: {
-    return "document";
-  }
-  case SequenceType::ItemType::TEST_ANYTHING: {
-    return "anything";
-  }
-  case SequenceType::ItemType::TEST_ATOMIC_TYPE: {
-    return "atomic-type";
   }
   default: {
     return "unknown";

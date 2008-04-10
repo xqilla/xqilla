@@ -27,7 +27,7 @@
 #include <xqilla/context/DynamicContext.hpp>
 
 ResultBuffer::ResultBuffer(const Result &result, unsigned int readCount)
-  : _impl(new ResultBufferImpl(result, readCount))
+  : _impl(const_cast<ResultImpl*>(result.get())->toResultBuffer(readCount))
 {
 }
 

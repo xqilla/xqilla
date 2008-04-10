@@ -19,6 +19,8 @@
  * $Id$
  */
 
+#include <assert.h>
+
 #include "../config/xqilla_config.h"
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/ast/XQContextItem.hpp>
@@ -28,13 +30,13 @@
 #include <xqilla/ast/StaticAnalysis.hpp>
 
 XQContextItem::XQContextItem(XPath2MemoryManager* memMgr)
-	: ASTNodeImpl(memMgr)
+  : ASTNodeImpl(memMgr)
 {
-	setType(ASTNode::CONTEXT_ITEM);
+  setType(ASTNode::CONTEXT_ITEM);
 }
 
 XQContextItem::~XQContextItem() {
-	//no-op
+  //no-op
 }
 
 ASTNode* XQContextItem::staticResolution(StaticContext *context)
@@ -47,9 +49,16 @@ ASTNode *XQContextItem::staticTyping(StaticContext *context)
   _src.clear();
 
   _src.setProperties(StaticAnalysis::DOCORDER | StaticAnalysis::GROUPED |
-	  StaticAnalysis::PEER | StaticAnalysis::SUBTREE | StaticAnalysis::SAMEDOC |
-	  StaticAnalysis::ONENODE | StaticAnalysis::SELF);
+    StaticAnalysis::PEER | StaticAnalysis::SUBTREE | StaticAnalysis::SAMEDOC |
+    StaticAnalysis::ONENODE | StaticAnalysis::SELF);
   _src.getStaticType() = context->getContextItemType();
+  _src.getStaticType().setCardinality(1, 1);
+
+  if(!_src.getStaticType().containsType(StaticType::ITEM_TYPE)) {
+    XQThrow(DynamicErrorException,X("XQContextItem::staticTyping"),
+            X("It is an error for the context item to be undefined when using it [err:XPDY0002]"));
+  }
+
   _src.contextItemUsed(true);
   return this;
 }

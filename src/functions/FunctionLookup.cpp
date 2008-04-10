@@ -334,12 +334,17 @@ const ExternalFunction *FunctionLookup::lookUpGlobalExternalFunction(
 #include <xqilla/update/FunctionPut.hpp>
 // XSLT 2.0 functions
 #include <xqilla/functions/FunctionUnparsedText.hpp>
+#include <xqilla/functions/FunctionRegexGroup.hpp>
 // XQilla extension functions
 #include <xqilla/functions/FunctionParseXML.hpp>
 #include <xqilla/functions/FunctionParseJSON.hpp>
 #include <xqilla/functions/FunctionSerializeJSON.hpp>
 #include <xqilla/functions/FunctionParseHTML.hpp>
 #include <xqilla/functions/FunctionTime.hpp>
+// Higher Order Functions extension functions
+#include <xqilla/functions/FunctionPartialApply.hpp>
+#include <xqilla/functions/FunctionFunctionArity.hpp>
+#include <xqilla/functions/FunctionFunctionName.hpp>
 
 void FunctionLookup::insertUpdateFunctions(XPath2MemoryManager *memMgr)
 {
@@ -605,6 +610,7 @@ static void initGlobalTable(FunctionLookup *t, MemoryManager *memMgr)
 
   // XSLT 2.0 functions
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionUnparsedText>(memMgr));
+  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionRegexGroup>(memMgr));
 
   // XQilla extension functions
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionParseXML>(memMgr));
@@ -615,4 +621,9 @@ static void initGlobalTable(FunctionLookup *t, MemoryManager *memMgr)
 #ifdef HAVE_LIBTIDY
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionParseHTML>(memMgr));
 #endif
+
+  // Higher Order Functions extension functions
+  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionPartialApply>(memMgr));
+  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionFunctionArity>(memMgr));
+  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionFunctionName>(memMgr));
 }

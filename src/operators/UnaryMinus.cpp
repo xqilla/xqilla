@@ -62,10 +62,10 @@ void UnaryMinus::calculateStaticType()
   const StaticType &arg0 = _args[0]->getStaticAnalysis().getStaticType();
   // untypedAtomic will be promoted to xs:double
   if(arg0.containsType(StaticType::NUMERIC_TYPE)) {
-    _src.getStaticType().flags = arg0.flags & StaticType::NUMERIC_TYPE;
+    _src.getStaticType() = arg0 & StaticType::NUMERIC_TYPE;
   }
   if(arg0.containsType(StaticType::UNTYPED_ATOMIC_TYPE)) {
-    _src.getStaticType().flags |= StaticType::DOUBLE_TYPE;
+    _src.getStaticType() |= StaticType::DOUBLE_TYPE;
   }
 }
 

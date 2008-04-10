@@ -24,6 +24,9 @@
 #include <xqilla/ast/XQAtomize.hpp>
 #include <xqilla/items/Node.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>
+#include <xqilla/exceptions/XPath2TypeMatchException.hpp>
+
+XERCES_CPP_NAMESPACE_USE
 
 XQAtomize::XQAtomize(ASTNode* expr, XPath2MemoryManager* memMgr)
   : ASTNodeImpl(memMgr),
@@ -52,27 +55,27 @@ ASTNode *XQAtomize::staticTyping(StaticContext *context)
               "to be an updating expression [err:XUST0001]"));
   }
 
-  if(!_src.getStaticType().containsType(StaticType::NODE_TYPE)) {
+  if(_src.getStaticType().isType(StaticType::FUNCTION_TYPE) &&
+     _src.getStaticType().getMin() > 0) {
+    XMLBuffer buf;
+    buf.set(X("Sequence does not match type (xs:anyAtomicType | node())*"));
+    buf.append(X(" - the expression has a static type of "));
+    _src.getStaticType().typeToBuf(buf);
+    buf.append(X(" [err:XPTY0004]"));
+    XQThrow(XPath2TypeMatchException, X("XQAtomize::staticTyping"), buf.getRawBuffer());
+  }
+
+  if(!_src.getStaticType().containsType(StaticType::NODE_TYPE|StaticType::FUNCTION_TYPE)) {
     // If the expression has no nodes, this function does nothing
     return expr_;
   }
 
-  static const unsigned int anytype_types = StaticType::ELEMENT_TYPE | StaticType::ATTRIBUTE_TYPE;
-  static const unsigned int untyped_types = StaticType::DOCUMENT_TYPE | StaticType::TEXT_TYPE;
-  static const unsigned int string_types = StaticType::NAMESPACE_TYPE | StaticType::COMMENT_TYPE | StaticType::PI_TYPE;
+  _src.getStaticType().substitute(StaticType::ELEMENT_TYPE | StaticType::ATTRIBUTE_TYPE, StaticType(StaticType::ANY_ATOMIC_TYPE, 0, StaticType::UNLIMITED));
+  _src.getStaticType().substitute(StaticType::DOCUMENT_TYPE | StaticType::TEXT_TYPE, StaticType::UNTYPED_ATOMIC_TYPE);
+  _src.getStaticType().substitute(StaticType::NAMESPACE_TYPE | StaticType::COMMENT_TYPE | StaticType::PI_TYPE, StaticType::STRING_TYPE);
 
-  if(_src.getStaticType().containsType(anytype_types)) {
-    _src.getStaticType().flags &= ~anytype_types;
-    _src.getStaticType().flags |= StaticType::ANY_ATOMIC_TYPE;
-  }
-  if(_src.getStaticType().containsType(untyped_types)) {
-    _src.getStaticType().flags &= ~untyped_types;
-    _src.getStaticType().flags |= StaticType::UNTYPED_ATOMIC_TYPE;
-  }
-  if(_src.getStaticType().containsType(string_types)) {
-    _src.getStaticType().flags &= ~string_types;
-    _src.getStaticType().flags |= StaticType::STRING_TYPE;
-  }
+  // Remove function types
+  _src.getStaticType() &= StaticType(StaticType::NODE_TYPE | StaticType::ANY_ATOMIC_TYPE, 0, StaticType::UNLIMITED);
 
   if(expr_->isConstant()) {
     return constantFold(context);
@@ -103,6 +106,14 @@ Item::Ptr AtomizeResult::next(DynamicContext *context)
     if(result->isNode()) {
       _sub = ((Node*)result.get())->dmTypedValue(context);
       result = _sub->next(context);
+    }
+    else if(result->isFunction()) {
+      XMLBuffer buf;
+      buf.set(X("Sequence does not match type (xs:anyAtomicType | node())*"));
+      buf.append(X(" - found item of type "));
+      result->typeToBuffer(context, buf);
+      buf.append(X(" [err:XPTY0004]"));
+      XQThrow(XPath2TypeMatchException, X("AtomizeResult::next"), buf.getRawBuffer());
     }
   }
   return result;

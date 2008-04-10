@@ -40,7 +40,7 @@ const unsigned int FunctionFalse::maxArgs = 0;
 FunctionFalse::FunctionFalse(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "empty()", args, memMgr)
 {
-  _src.getStaticType().flags = StaticType::BOOLEAN_TYPE;
+  _src.getStaticType() = StaticType::BOOLEAN_TYPE;
 }
 
 Sequence FunctionFalse::createSequence(DynamicContext* context, int flags) const

@@ -49,7 +49,7 @@ public:
   void setUserData(void *data) { userData_ = data; }
 
   virtual TupleNode *staticResolution(StaticContext *context) = 0;
-  virtual TupleNode *staticTypingSetup(StaticContext *context) = 0;
+  virtual TupleNode *staticTypingSetup(unsigned int &min, unsigned int &max, StaticContext *context) = 0;
   virtual TupleNode *staticTypingTeardown(StaticContext *context, StaticAnalysis &usedSrc) = 0;
 
   virtual TupleResult::Ptr createResult(DynamicContext* context) const = 0;

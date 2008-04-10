@@ -22,6 +22,9 @@
 #include "../config/xqilla_config.h"
 #include <sstream>
 #include <xqilla/runtime/EmptyResult.hpp>
+#include <xqilla/runtime/Sequence.hpp>
+#include <xqilla/runtime/ResultBufferImpl.hpp>
+#include <xqilla/context/DynamicContext.hpp>
 
 EmptyResult::EmptyResult(const LocationInfo *o)
   : ResultImpl(o)
@@ -31,6 +34,21 @@ EmptyResult::EmptyResult(const LocationInfo *o)
 Item::Ptr EmptyResult::next(DynamicContext *context)
 {
   return 0;
+}
+
+bool EmptyResult::getEffectiveBooleanValue(DynamicContext* context, const LocationInfo *info)
+{
+  return false;
+}
+
+Sequence EmptyResult::toSequence(DynamicContext *context)
+{
+  return Sequence(context->getMemoryManager());
+}
+
+ResultBufferImpl *EmptyResult::toResultBuffer(unsigned int readCount)
+{
+  return new ResultBufferImpl(Result(0), readCount);
 }
 
 std::string EmptyResult::asString(DynamicContext *context, int indent) const

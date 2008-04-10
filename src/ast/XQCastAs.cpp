@@ -67,9 +67,9 @@ ASTNode* XQCastAs::staticResolution(StaticContext *context)
 
   const SequenceType::ItemType *itemType = _exprType->getItemType();
   if(itemType != NULL) {
-    if((XPath2Utils::equals(itemType->getTypeURI(context, this), XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA) &&
+    if((XPath2Utils::equals(itemType->getTypeURI(), XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA) &&
         XPath2Utils::equals(itemType->getType()->getName(), szNOTATION)) ||
-       (XPath2Utils::equals(itemType->getTypeURI(context, this), FunctionConstructor::XMLChXPath2DatatypesURI) &&
+       (XPath2Utils::equals(itemType->getTypeURI(), FunctionConstructor::XMLChXPath2DatatypesURI) &&
         XPath2Utils::equals(itemType->getType()->getName(), AnyAtomicType::fgDT_ANYATOMICTYPE)))
       XQThrow(TypeErrorException,X("XQCastAs::CastAsResult::getSingleResult"),
               X("The target type of a cast expression must be an atomic type that is in the in-scope schema types and is not xs:NOTATION or xdt:anyAtomicType [err:XPST0080]"));
@@ -79,7 +79,7 @@ ASTNode* XQCastAs::staticResolution(StaticContext *context)
     XQThrow(TypeErrorException,X("XQCastAs::staticResolution"),X("Cannot cast to a non atomic type"));
 
   _typeIndex = context->getItemFactory()->
-    getPrimitiveTypeIndex(_exprType->getTypeURI(context),
+    getPrimitiveTypeIndex(_exprType->getTypeURI(),
                           _exprType->getConstrainingType()->getName(), _isPrimitive);
 
   // If this is a cast to xs:QName or xs:NOTATION and the argument is a string literal
@@ -97,7 +97,7 @@ ASTNode* XQCastAs::staticResolution(StaticContext *context)
         item = item->castAsNoCheck(_typeIndex, 0, 0, dContext);
       }
       else {
-        item = item->castAsNoCheck(_typeIndex, _exprType->getTypeURI(dContext),
+        item = item->castAsNoCheck(_typeIndex, _exprType->getTypeURI(),
                                    _exprType->getConstrainingType()->getName(), dContext);
       }
     }
@@ -172,7 +172,7 @@ AnyAtomicType::Ptr XQCastAs::cast(const AnyAtomicType::Ptr &in, DynamicContext *
       return in->castAs(_typeIndex, 0, 0, context);
     }
     else {
-      return in->castAs(_typeIndex, _exprType->getTypeURI(context),
+      return in->castAs(_typeIndex, _exprType->getTypeURI(),
                         _exprType->getConstrainingType()->getName(), context);
     }
   }
@@ -192,7 +192,7 @@ AnyAtomicType::Ptr XQCastAs::cast(const XMLCh *value, DynamicContext *context) c
     }
     else {
       return context->getItemFactory()->
-        createDerivedFromAtomicType(_typeIndex, _exprType->getTypeURI(context),
+        createDerivedFromAtomicType(_typeIndex, _exprType->getTypeURI(),
                                     _exprType->getConstrainingType()->getName(), value, context);
     }
   }

@@ -28,6 +28,7 @@
 #include <xqilla/exceptions/XPath2TypeMatchException.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>
 #include <xqilla/ast/XQSequence.hpp>
+#include <xqilla/ast/XQVariable.hpp>
 #include <xqilla/context/VariableStore.hpp>
 #include <xqilla/context/VariableTypeStore.hpp>
 #include <xqilla/utils/XPath2NSUtils.hpp>
@@ -37,6 +38,7 @@
 #include <xqilla/ast/XQTreatAs.hpp>
 #include <xqilla/update/PendingUpdateList.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>
+#include <xqilla/runtime/ClosureResult.hpp>
 
 #include <xercesc/util/XMLString.hpp>
 #include <xercesc/framework/XMLBuffer.hpp>
@@ -66,16 +68,43 @@ const XMLCh XQUserFunction::XMLChXQueryLocalFunctionsURI[] =
     chNull
 };
 
-XQUserFunction::XQUserFunction(const XMLCh *qname, ArgumentSpecs *argSpecs, ASTNode *body, SequenceType *returnType, bool isUpdating, XPath2MemoryManager *mm)
+XQUserFunction::XQUserFunction(const XMLCh *qname, ArgumentSpecs *argSpecs, ASTNode *body,
+                               SequenceType *returnType, bool isUpdating, bool isGlobal,
+                               XPath2MemoryManager *mm)
   : body_(body),
     exFunc_(NULL),
     name_(NULL),
     qname_(qname),
     uri_(NULL),
     uriname_(NULL),
+    pattern_(0),
+    templateInstance_(0),
     returnType_(returnType),
     argSpecs_(argSpecs),
+    isGlobal_(isGlobal),
     isUpdating_(isUpdating),
+    isTemplate_(false),
+    src_(mm),
+    calculatingSRC_(false),
+    moduleDocCache_(NULL)
+{
+}
+
+XQUserFunction::XQUserFunction(const XMLCh *qname, VectorOfASTNodes *pattern, ArgumentSpecs *argSpecs,
+                               ASTNode *body, SequenceType *returnType, XPath2MemoryManager *mm)
+  : body_(body),
+    exFunc_(NULL),
+    name_(NULL),
+    qname_(qname),
+    uri_(NULL),
+    uriname_(NULL),
+    pattern_(pattern),
+    templateInstance_(0),
+    returnType_(returnType),
+    argSpecs_(argSpecs),
+    isGlobal_(true),
+    isUpdating_(false),
+    isTemplate_(true),
     src_(mm),
     calculatingSRC_(false),
     moduleDocCache_(NULL)
@@ -94,46 +123,65 @@ size_t XQUserFunction::getMaxArgs() const
 
 ASTNode* XQUserFunction::createInstance(const VectorOfASTNodes &args, XPath2MemoryManager *mm) const
 {
-  return new (mm) Instance(this, args, mm);
+  return new (mm) XQUserFunctionInstance(this, args, mm);
 }
 
 void XQUserFunction::ArgumentSpec::staticResolution(StaticContext* context)
 {
-  uri_ = context->getUriBoundToPrefix(XPath2NSUtils::getPrefix(qname_, context->getMemoryManager()), this);
-  name_ = XPath2NSUtils::getLocalName(qname_);
+  if(qname_ != 0) {
+    uri_ = context->getUriBoundToPrefix(XPath2NSUtils::getPrefix(qname_, context->getMemoryManager()), this);
+    name_ = XPath2NSUtils::getLocalName(qname_);
+  }
+
+  seqType_->staticResolution(context);
 
   bool isPrimitive;
-  seqType_->getItemType()->getStaticType(src_.getStaticType(), context, isPrimitive, seqType_);
+  seqType_->getStaticType(src_.getStaticType(), context, isPrimitive, seqType_);
+
+  if(seqType_->getOccurrenceIndicator() == SequenceType::EXACTLY_ONE ||
+     seqType_->getOccurrenceIndicator() == SequenceType::QUESTION_MARK) {
+    src_.setProperties(StaticAnalysis::DOCORDER | StaticAnalysis::GROUPED |
+                       StaticAnalysis::PEER | StaticAnalysis::SUBTREE | StaticAnalysis::SAMEDOC |
+                       StaticAnalysis::ONENODE | StaticAnalysis::SELF);
+  }
 }
 
 void XQUserFunction::staticResolutionStage1(StaticContext *context)
 {
-  const XMLCh *prefix = XPath2NSUtils::getPrefix(qname_, context->getMemoryManager());
-  name_ = XPath2NSUtils::getLocalName(qname_);
+  XPath2MemoryManager *mm = context->getMemoryManager();
 
-  if(prefix == 0 || *prefix == 0) {
-    uri_ = context->getDefaultFuncNS();
+  if(qname_ != 0) {
+    const XMLCh *prefix = XPath2NSUtils::getPrefix(qname_, mm);
+    name_ = XPath2NSUtils::getLocalName(qname_);
+
+    if(prefix == 0 || *prefix == 0) {
+      uri_ = context->getDefaultFuncNS();
+    }
+    else {
+      uri_ = context->getUriBoundToPrefix(prefix, this);
+    }
   }
-  else {
-    uri_ = context->getUriBoundToPrefix(prefix, this);
+
+  if(name_ != 0) {
+    XMLBuffer uriname;
+    uriname.set(name_);
+    uriname.append(uri_);
+    uriname_ = mm->getPooledString(uriname.getRawBuffer());
+
+    if(!isTemplate_) {
+      if(XPath2Utils::equals(uri_, XMLUni::fgXMLURIName) ||
+         XPath2Utils::equals(uri_, SchemaSymbols::fgURI_SCHEMAFORSCHEMA) ||
+         XPath2Utils::equals(uri_, SchemaSymbols::fgURI_XSI) ||
+         XPath2Utils::equals(uri_, XQFunction::XMLChFunctionURI) ||
+         XPath2Utils::equals(uri_, FunctionConstructor::XMLChXPath2DatatypesURI)) {
+        XQThrow(FunctionException, X("XQUserFunction::staticResolutionStage1"),
+                X("A user defined function must not be in the namespaces xml, xsd, xsi, fn or xdt [err:XQST0045]"));
+      }
+      else if(uri_ == 0 || *uri_ == 0)
+        XQThrow(FunctionException, X("XQUserFunction::staticResolutionStage1"),
+                X("A user defined function must be defined in a namespace [err:XQST0060]"));
+    }
   }
-
-  XMLBuffer uriname;
-  uriname.set(name_);
-  uriname.append(uri_);
-  uriname_ = context->getMemoryManager()->getPooledString(uriname.getRawBuffer());
-
-  context->addCustomFunction(this);
-
-  if(XPath2Utils::equals(uri_, XMLUni::fgXMLURIName) ||
-     XPath2Utils::equals(uri_, SchemaSymbols::fgURI_SCHEMAFORSCHEMA) ||
-     XPath2Utils::equals(uri_, SchemaSymbols::fgURI_XSI) ||
-     XPath2Utils::equals(uri_, XQFunction::XMLChFunctionURI) ||
-     XPath2Utils::equals(uri_, FunctionConstructor::XMLChXPath2DatatypesURI)) {
-    XQThrow(FunctionException, X("XQUserFunction::staticResolutionStage1"), X("A user defined function must not be in the namespaces xml, xsd, xsi, fn or xdt [err:XQST0045]"));
-  }
-  else if(uri_ == 0 || *uri_ == 0)
-    XQThrow(FunctionException, X("XQUserFunction::staticResolutionStage1"), X("A user defined function must be defined in a namespace [err:XQST0060]"));
 
   // Check for the implementation of an external function
   if(body_ == NULL) {
@@ -158,18 +206,28 @@ void XQUserFunction::staticResolutionStage1(StaticContext *context)
   // Resolve the parameter names
   if(argSpecs_) {
     ArgumentSpecs::iterator it;
-    for (it = argSpecs_->begin(); it != argSpecs_->end (); ++it) {
+    for(it = argSpecs_->begin(); it != argSpecs_->end (); ++it) {
       (*it)->staticResolution(context);
     }
     // check for duplicate parameters
-    for (it = argSpecs_->begin(); it != argSpecs_->end ()-1; ++it) {
-      for (ArgumentSpecs::iterator it2 = it+1; it2 != argSpecs_->end (); ++it2) {
+    for(it = argSpecs_->begin(); argSpecs_->size() > 1 && it != argSpecs_->end()-1; ++it) {
+      for(ArgumentSpecs::iterator it2 = it+1; it2 != argSpecs_->end (); ++it2) {
         if(XPath2Utils::equals((*it)->getURI(),(*it2)->getURI()) && 
            XPath2Utils::equals((*it)->getName(),(*it2)->getName())) {
           XMLBuffer buf;
-          buf.set(X("User-defined function '"));
-          buf.append(name_);
-          buf.append(X("' has two parameters with the expanded QName '"));
+          if(isTemplate_) {
+            buf.set(X("Template "));
+          } else {
+            buf.set(X("User-defined function "));
+          }
+          if(name_ != 0) {
+            buf.append(X("'{"));
+            buf.append(uri_);
+            buf.append(X("}"));
+            buf.append(name_);
+            buf.append(X("' "));
+          }
+          buf.append(X("has two parameters with the expanded QName '"));
           buf.append(X("{"));
           buf.append((*it)->getURI());
           buf.append(X("}"));
@@ -183,33 +241,61 @@ void XQUserFunction::staticResolutionStage1(StaticContext *context)
 
   // Set up a default StaticType and StaticAnalysis
   if(returnType_ != NULL) {
+    returnType_->staticResolution(context);
+
     if(body_ != NULL) {
       body_ = returnType_->convertFunctionArg(body_, context, /*numericfunction*/false, returnType_);
     }
 
-    const SequenceType::ItemType *itemType = returnType_->getItemType();
-    if(itemType != 0) {
-      bool isPrimitive;
-      itemType->getStaticType(src_.getStaticType(), context, isPrimitive, returnType_);
-    }
-    else {
-      src_.getStaticType().flags = 0;
-    }
+    bool isPrimitive;
+    returnType_->getStaticType(src_.getStaticType(), context, isPrimitive, returnType_);
   }
   else {
     // Default type is item()*
-    src_.getStaticType().flags = StaticType::ITEM_TYPE;
+    src_.getStaticType() = StaticType(StaticType::ITEM_TYPE, 0, StaticType::UNLIMITED);
   }
 
   if(isUpdating_) {
     src_.updating(true);
   }
 
+  // TBD What about the other parts of the StaticAnalysis - jpcs
   src_.forceNoFolding(true);
+
+  if(pattern_ != 0 && !pattern_->empty()) {
+    // Set the pattern's initial static type to NODE_TYPE
+    VectorOfASTNodes::iterator patIt = pattern_->begin();
+    for(; patIt != pattern_->end(); ++patIt) {
+      const_cast<StaticAnalysis&>((*patIt)->getStaticAnalysis()).getStaticType() = StaticType(StaticType::NODE_TYPE, 0, StaticType::UNLIMITED);
+    }
+
+    // Build an instance of the template for us to call
+    VectorOfASTNodes newArgs = VectorOfASTNodes(XQillaAllocator<ASTNode*>(mm));
+
+    if(argSpecs_ != 0) {
+      XQUserFunction::ArgumentSpecs::const_iterator argIt;
+      for(argIt = argSpecs_->begin(); argIt != argSpecs_->end(); ++argIt) {
+        XQVariable *argVar = new (mm) XQVariable((*argIt)->getURI(), (*argIt)->getName(), mm);
+        argVar->setLocationInfo(*argIt);
+        newArgs.push_back(argVar);
+      }
+    }
+
+    templateInstance_ = new (mm) XQUserFunctionInstance(this, newArgs, mm);
+    templateInstance_->setLocationInfo(this);
+  }
 }
 
 void XQUserFunction::staticResolutionStage2(StaticContext *context)
 {
+  if(pattern_ != 0 && !pattern_->empty()) {
+    VectorOfASTNodes::iterator patIt = pattern_->begin();
+    for(; patIt != pattern_->end(); ++patIt) {
+      (*patIt) = (*patIt)->staticResolution(context);
+    }
+
+    templateInstance_->staticResolution(context);
+  }
   if(body_ != NULL) {
     body_ = body_->staticResolution(context);
   }
@@ -221,6 +307,7 @@ void XQUserFunction::staticTyping(StaticContext *context)
   if(body_ == NULL) return;
 
   // Avoid inifinite recursion for recursive functions
+  // TBD Need to declare everything as being used - jpcs
   if(calculatingSRC_) return;
   calculatingSRC_ = true;
 
@@ -228,12 +315,41 @@ void XQUserFunction::staticTyping(StaticContext *context)
 
   if(isUpdating_ && returnType_ != NULL) {
     XQThrow(StaticErrorException, X("XQUserFunction::staticTyping"),
-              X("It is a static error for an updating function to declare a return type [err:XUST0028]"));
+            X("It is a static error for an updating function to declare a return type [err:XUST0028]"));
+  }
+
+  bool ciTypeSet = false;
+  StaticType ciType = StaticType();
+  if(pattern_ != NULL) {
+    VectorOfASTNodes::iterator patIt = pattern_->begin();
+    for(; patIt != pattern_->end(); ++patIt) {
+      (*patIt) = (*patIt)->staticTyping(context);
+      if(!ciTypeSet) {
+        ciTypeSet = true;
+        ciType = (*patIt)->getStaticAnalysis().getStaticType();
+      }
+      else ciType |= (*patIt)->getStaticAnalysis().getStaticType();
+    }
+    if(ciTypeSet) {
+      ciType.setCardinality(1, 1);
+    }
+  }
+  if(isTemplate_ && name_ != 0) {
+    // Named template
+    ciTypeSet = true;
+    ciType = StaticType::ITEM_TYPE;
+  }
+  if(!isTemplate_ && name_ == 0) {
+    // Inline function
+    ciTypeSet = true;
+    ciType = StaticType::ITEM_TYPE;
   }
 
   // define the new variables in a new scope and assign them the proper values
-  VariableTypeStore* varStore = context->getVariableTypeStore();
-  varStore->addLocalScope();
+  VariableTypeStore *varStore = context->getVariableTypeStore();
+
+  if(isGlobal_) varStore->addLocalScope();
+  else varStore->addLogicalBlockScope();
 
   // Declare the parameters
   if(argSpecs_) {
@@ -244,8 +360,15 @@ void XQUserFunction::staticTyping(StaticContext *context)
   }
 
   StaticAnalysis bodySRC(mm);
-  body_ = body_->staticTyping(context);
-  bodySRC.copy(body_->getStaticAnalysis());
+  {
+    // Declare the context item
+    AutoContextItemTypeReset contextTypeReset(context, ciType);
+
+    body_ = body_->staticTyping(context);
+    bodySRC.copy(body_->getStaticAnalysis());
+  }
+
+  varStore->removeScope();
 
   if(isUpdating_) {
     if(!body_->getStaticAnalysis().isUpdating() && !body_->getStaticAnalysis().isPossiblyUpdating())
@@ -254,10 +377,17 @@ void XQUserFunction::staticTyping(StaticContext *context)
                 "not to be an updating expression [err:XUST0002]"));
   }
   else {
-    if(body_->getStaticAnalysis().isUpdating())
-      XQThrow(StaticErrorException, X("XQUserFunction::staticTyping"),
-              X("It is a static error for the body expression of a user defined function "
-                "to be an updating expression [err:XUST0001]"));
+    if(body_->getStaticAnalysis().isUpdating()) {
+      if(isTemplate_) {
+        XQThrow(StaticErrorException, X("XQUserFunction::staticTyping"),
+                X("It is a static error for the body expression of a template "
+                  "to be an updating expression [err:XUST0001]"));
+      } else {
+        XQThrow(StaticErrorException, X("XQUserFunction::staticTyping"),
+                X("It is a static error for the body expression of a user defined function "
+                  "to be an updating expression [err:XUST0001]"));
+      }
+    }
   }
 
   // Remove the parameter variables from the stored StaticAnalysis
@@ -274,14 +404,34 @@ void XQUserFunction::staticTyping(StaticContext *context)
   src_.clear();
   src_.copy(bodySRC);
 
-  varStore->removeScope();
+  // Run staticTyping on the template instances
+  if(templateInstance_ != 0) {
+    StaticAnalysis templateVarSrc(mm);
+    templateVarSrc.getStaticType() = StaticType::ITEM_TYPE;
+
+    varStore->addLogicalBlockScope();
+
+    if(argSpecs_ != 0) {
+      XQUserFunction::ArgumentSpecs::const_iterator argIt;
+      for(argIt = argSpecs_->begin(); argIt != argSpecs_->end(); ++argIt) {
+        varStore->declareVar((*argIt)->getURI(), (*argIt)->getName(), templateVarSrc);
+      }
+    }
+
+    // Turn off warnings here, since they are largely irrelevent to the user
+    AutoMessageListenerReset reset(context);
+
+    templateInstance_->staticTyping(context);
+
+    varStore->removeScope();
+  }
 
   calculatingSRC_ = false;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-XQUserFunction::Instance::Instance(const XQUserFunction* funcDef, const VectorOfASTNodes& args, XPath2MemoryManager* expr) 
+XQUserFunctionInstance::XQUserFunctionInstance(const XQUserFunction* funcDef, const VectorOfASTNodes& args, XPath2MemoryManager* expr) 
   : XQFunction(funcDef->getName(), 0, UNLIMITED,"",args, expr),
     addReturnCheck_(funcDef->body_ == NULL && funcDef->returnType_ != NULL),
     funcDef_(funcDef)
@@ -290,14 +440,14 @@ XQUserFunction::Instance::Instance(const XQUserFunction* funcDef, const VectorOf
   _fURI = funcDef->getURI();
 }
 
-Result XQUserFunction::Instance::getArgument(size_t index, DynamicContext *context) const
+Result XQUserFunctionInstance::getArgument(size_t index, DynamicContext *context) const
 {
   if(index >= funcDef_->getMaxArgs()) return 0;
 
   return _args[index]->createResult(context);
 }
 
-Result XQUserFunction::Instance::createResult(DynamicContext* context, int flags) const
+Result XQUserFunctionInstance::createResult(DynamicContext* context, int flags) const
 {
   if(funcDef_->body_ != NULL) {
     return new FunctionEvaluatorResult(this, context);
@@ -306,7 +456,7 @@ Result XQUserFunction::Instance::createResult(DynamicContext* context, int flags
   }
 }
 
-ASTNode* XQUserFunction::Instance::staticResolution(StaticContext* context)
+ASTNode* XQUserFunctionInstance::staticResolution(StaticContext* context)
 {
   XPath2MemoryManager *mm = context->getMemoryManager();
 
@@ -320,7 +470,7 @@ ASTNode* XQUserFunction::Instance::staticResolution(StaticContext* context)
 
   if(funcDef_->argSpecs_ != 0) {
     VectorOfASTNodes::iterator argIt = _args.begin();
-    for(ArgumentSpecs::iterator defIt = funcDef_->argSpecs_->begin();
+    for(XQUserFunction::ArgumentSpecs::iterator defIt = funcDef_->argSpecs_->begin();
         defIt != funcDef_->argSpecs_->end() && argIt != _args.end(); ++defIt, ++argIt) {
       // The spec doesn't allow us to skip static errors, so we have to check even if
       // the parameter isn't used
@@ -332,17 +482,19 @@ ASTNode* XQUserFunction::Instance::staticResolution(StaticContext* context)
   return this;
 }
 
-ASTNode* XQUserFunction::Instance::staticTyping(StaticContext* context)
-{
-  _src.clear();
+#include <iostream>
 
+ASTNode *XQUserFunctionInstance::staticTyping(StaticContext *context)
+{
   if(funcDef_->body_ != NULL) {
     // See if we can work out a better return type for the user defined function.
     // This call will just return if staticTyping is in our call stack.
     const_cast<XQUserFunction*>(funcDef_)->staticTyping(context);
+    _src.clear();
     _src.copy(funcDef_->src_);
   } else {
     // Force the type check to happen, by declaring our type as item()*
+    _src.clear();
     _src.getStaticType() = StaticType::ITEM_TYPE;
     _src.forceNoFolding(true);
   }
@@ -353,9 +505,15 @@ ASTNode* XQUserFunction::Instance::staticTyping(StaticContext* context)
     *argIt = (*argIt)->staticTyping(context);
 
     if((*argIt)->getStaticAnalysis().isUpdating()) {
-      XQThrow(StaticErrorException, X("XQUserFunction::Instance::staticTyping"),
-              X("It is a static error for the argument expression of a function call expression "
-                "to be an updating expression [err:XUST0001]"));
+      if(funcDef_->isTemplate()) {
+        XQThrow(StaticErrorException, X("XQUserFunctionInstance::staticTyping"),
+                X("It is a static error for the argument expression of a call template expression "
+                  "to be an updating expression [err:XUST0001]"));
+      } else {
+        XQThrow(StaticErrorException, X("XQUserFunctionInstance::staticTyping"),
+                X("It is a static error for the argument expression of a function call expression "
+                  "to be an updating expression [err:XUST0001]"));
+      }
     }
 
     // TBD Check all static errors in staticResolution, so we can skip static typing - jpcs
@@ -364,51 +522,43 @@ ASTNode* XQUserFunction::Instance::staticTyping(StaticContext* context)
   }
 
   // don't constant fold if it's an imported or an external function
-  if(funcDef_->moduleDocCache_==NULL && funcDef_->body_ != NULL && !_src.isUsed()) {
+  if(funcDef_->moduleDocCache_==NULL && funcDef_->body_ != NULL && !_src.isUsed() && !funcDef_->isTemplate()) {
     return constantFold(context);
   }
   return this;
 }
 
-void XQUserFunction::Instance::evaluateArguments(VarStoreImpl &scope, DynamicContext *context) const
+void XQUserFunctionInstance::evaluateArguments(VarStoreImpl &scope, DynamicContext *context) const
 {
-  typedef std::pair<XQUserFunction::ArgumentSpec*, Result> ArgBinding;
-  typedef std::vector<ArgBinding> VectorOfArgBindings;
-
-  VectorOfArgBindings varValues;
   if(funcDef_->getArgumentSpecs() != 0) {
     // the variables should be evaluated in the calling context
     // (before the VariableStore::addLocalScope call: after this call, the variables that can be seen are only the local ones)
     VectorOfASTNodes::const_iterator argIt = _args.begin();
-    for(ArgumentSpecs::const_iterator defIt = funcDef_->argSpecs_->begin();
+    for(XQUserFunction::ArgumentSpecs::const_iterator defIt = funcDef_->argSpecs_->begin();
         defIt != funcDef_->argSpecs_->end() && argIt != _args.end(); ++defIt, ++argIt) {
       if((*defIt)->isUsed()) {
-        // TBD Can we use ClosureResult instead of calling toSequence()? - jpcs
-        varValues.push_back(ArgBinding(*defIt, (*argIt)->createResult(context)->toSequence(context)));
+        // TBD ClosureResult doesn't save RegexGroupStore - jpcs
+        // TBD variable use count - jpcs
+        scope.setVar((*defIt)->getURI(), (*defIt)->getName(), ClosureResult::create(*argIt, context));
       }
       else {
         // Skip evaluation of the parameter, since it isn't used, and debugging isn't enabled
       }
     }
   }
-  // define the new variables in the new scope and assign them the proper values
-  for(VectorOfArgBindings::iterator it2 = varValues.begin(); it2 != varValues.end(); ++it2) {
-    // TBD variable use count - jpcs
-    scope.setVar(it2->first->getURI(), it2->first->getName(), it2->second);
-  }
 }
 
-void XQUserFunction::Instance::generateEvents(EventHandler *events, DynamicContext *context,
-                                              bool preserveNS, bool preserveType) const
+EventGenerator::Ptr XQUserFunctionInstance::generateEvents(EventHandler *events, DynamicContext *context,
+                                                           bool preserveNS, bool preserveType) const
 {
   if(funcDef_->getFunctionBody() == NULL) {
-    ASTNodeImpl::generateEvents(events, context, preserveNS, preserveType);
-    return;
+    return ASTNodeImpl::generateEvents(events, context, preserveNS, preserveType);
   }
 
   context->testInterrupt();
 
-  VarStoreImpl scope(context->getMemoryManager(), context->getGlobalVariableStore());
+  VarStoreImpl scope(context->getMemoryManager(), funcDef_->isGlobal() ?
+                     context->getGlobalVariableStore() : context->getVariableStore());
   evaluateArguments(scope, context);
 
   AutoDocumentCacheReset reset(context);
@@ -416,10 +566,13 @@ void XQUserFunction::Instance::generateEvents(EventHandler *events, DynamicConte
     context->setDocumentCache(funcDef_->getModuleDocumentCache());
 
   AutoVariableStoreReset reset2(context, &scope);
-  funcDef_->getFunctionBody()->generateEvents(events, context, preserveNS, preserveType);
+  AutoRegexGroupStoreReset reset3(context);
+  if(!funcDef_->isTemplate()) context->setRegexGroupStore(0);
+
+  return new ClosureEventGenerator(funcDef_->getFunctionBody(), context, preserveNS, preserveType);
 }
 
-PendingUpdateList XQUserFunction::Instance::createUpdateList(DynamicContext *context) const
+PendingUpdateList XQUserFunctionInstance::createUpdateList(DynamicContext *context) const
 {
   context->testInterrupt();
 
@@ -427,7 +580,8 @@ PendingUpdateList XQUserFunction::Instance::createUpdateList(DynamicContext *con
     return funcDef_->getExternalFunction()->executeUpdate(this, context);
   }
 
-  VarStoreImpl scope(context->getMemoryManager(), context->getGlobalVariableStore());
+  VarStoreImpl scope(context->getMemoryManager(), funcDef_->isGlobal() ?
+                     context->getGlobalVariableStore() : context->getVariableStore());
   evaluateArguments(scope, context);
 
   AutoDocumentCacheReset reset(context);
@@ -435,77 +589,71 @@ PendingUpdateList XQUserFunction::Instance::createUpdateList(DynamicContext *con
     context->setDocumentCache(funcDef_->getModuleDocumentCache());
 
   AutoVariableStoreReset reset2(context, &scope);
+  AutoRegexGroupStoreReset reset3(context, 0);
+  if(!funcDef_->isTemplate()) context->setRegexGroupStore(0);
   PendingUpdateList result = funcDef_->getFunctionBody()->createUpdateList(context);
 
   return result;
 }
 
-XQUserFunction::Instance::FunctionEvaluatorResult::FunctionEvaluatorResult(const Instance *di, DynamicContext *context)
+XQUserFunctionInstance::FunctionEvaluatorResult::FunctionEvaluatorResult(const XQUserFunctionInstance *di, DynamicContext *context)
   : ResultImpl(di),
-    _di(di),
-    _toDo(true),
-    _scope(context->getMemoryManager(), context->getGlobalVariableStore()),
-    _result(0)
+    _di(di)
 {
 }
 
-Item::Ptr XQUserFunction::Instance::FunctionEvaluatorResult::next(DynamicContext *context)
+Item::Ptr XQUserFunctionInstance::FunctionEvaluatorResult::nextOrTail(Result &tail, DynamicContext *context)
 {
   context->testInterrupt();
 
+  VarStoreImpl scope(context->getMemoryManager(), _di->getFunctionDefinition()->isGlobal() ?
+                     context->getGlobalVariableStore() : context->getVariableStore());
+  _di->evaluateArguments(scope, context);
+
+  AutoRegexGroupStoreReset reset3(context);
+  if(!_di->getFunctionDefinition()->isTemplate()) context->setRegexGroupStore(0);
+
   AutoDocumentCacheReset reset(context);
   DocumentCache* docCache = _di->getFunctionDefinition()->getModuleDocumentCache();
-  AutoVariableStoreReset reset2(context);
+  if(docCache)
+    context->setDocumentCache(docCache);
 
-  if(_toDo) {
-    _toDo = false;
-    _di->evaluateArguments(_scope, context);
+  tail = ClosureResult::create(_di->getFunctionDefinition()->getFunctionBody(), context, &scope);
+  return 0;
 
-    if(docCache)
-      context->setDocumentCache(docCache);
-    context->setVariableStore(&_scope);
-    _result = _di->getFunctionDefinition()->getFunctionBody()->createResult(context);
-  }
-  else {
-    if(docCache)
-      context->setDocumentCache(docCache);
-    context->setVariableStore(&_scope);
-  }
-
-  Item::Ptr item = _result->next(context);
-
-  // if we had to switch document cache, check that the returned types are known also in the original context; if not, upgrade them to the base type 
-  if(docCache!=NULL)
-  {
-    if(item!=NULLRCP && !reset.oldDC->isTypeDefined(item->getTypeURI(), item->getTypeName()))
-    {
-      if(item->isNode())
-      {
-        Node::Ptr node = item;
-        // TODO: change the annotation in the DOM elements and attributes
-      }
-      else
-      {
-        AnyAtomicType::Ptr atom = item;
-        const XMLCh* uri = atom->getTypeURI(), *name = atom->getTypeName();
-        while(!reset.oldDC->isTypeDefined(uri, name))
-        {
-            DatatypeValidator* pDV = docCache->getDatatypeValidator(uri, name);
-            assert(pDV!=NULL);
-            DatatypeValidator* pBaseDV = pDV->getBaseValidator();
-            if(pBaseDV==NULL)
-                break;
-            uri = pBaseDV->getTypeUri();
-            name = pBaseDV->getTypeLocalName();
-        }
-        item = context->getItemFactory()->createDerivedFromAtomicType(uri, name, atom->asString(context), context);
-      }
-    }
-  }
-  return item;
+  // TBD Solve this problem again - jpcs
+//   // if we had to switch document cache, check that the returned types are known also in the original context; if not, upgrade them to the base type
+//   if(docCache!=NULL)
+//   {
+//     if(item!=NULLRCP && !reset.oldDC->isTypeDefined(item->getTypeURI(), item->getTypeName()))
+//     {
+//       if(item->isNode())
+//       {
+//         Node::Ptr node = item;
+//         // TODO: change the annotation in the DOM elements and attributes
+//       }
+//       else if(item->isAtomicValue())
+//       {
+//         AnyAtomicType::Ptr atom = item;
+//         const XMLCh* uri = atom->getTypeURI(), *name = atom->getTypeName();
+//         while(!reset.oldDC->isTypeDefined(uri, name))
+//         {
+//             DatatypeValidator* pDV = docCache->getDatatypeValidator(uri, name);
+//             assert(pDV!=NULL);
+//             DatatypeValidator* pBaseDV = pDV->getBaseValidator();
+//             if(pBaseDV==NULL)
+//                 break;
+//             uri = pBaseDV->getTypeUri();
+//             name = pBaseDV->getTypeLocalName();
+//         }
+//         item = context->getItemFactory()->createDerivedFromAtomicType(uri, name, atom->asString(context), context);
+//       }
+//     }
+//   }
+//   return item;
 }
 
-std::string XQUserFunction::Instance::FunctionEvaluatorResult::asString(DynamicContext *context, int indent) const
+std::string XQUserFunctionInstance::FunctionEvaluatorResult::asString(DynamicContext *context, int indent) const
 {
   std::ostringstream oss;
   std::string in(getIndent(indent));
@@ -515,31 +663,21 @@ std::string XQUserFunction::Instance::FunctionEvaluatorResult::asString(DynamicC
   return oss.str();
 }
 
-XQUserFunction::Instance::ExternalFunctionEvaluatorResult::ExternalFunctionEvaluatorResult(const Instance *di)
+XQUserFunctionInstance::ExternalFunctionEvaluatorResult::ExternalFunctionEvaluatorResult(const XQUserFunctionInstance *di)
   : ResultImpl(di),
-    _di(di),
-    _toDo(true),
-    _result(0)
+    _di(di)
 {
 }
 
-Item::Ptr XQUserFunction::Instance::ExternalFunctionEvaluatorResult::next(DynamicContext *context)
+Item::Ptr XQUserFunctionInstance::ExternalFunctionEvaluatorResult::nextOrTail(Result &tail, DynamicContext *context)
 {
-  context->testInterrupt();	
+  context->testInterrupt();
 
-  if(_toDo) {
-    _toDo = false;
-    _result = _di->getFunctionDefinition()->getExternalFunction()->execute(_di, context);
-  }
-
-  Item::Ptr item = _result->next(context);
-  if(item.isNull()) {
-    _result = 0;
-  }
-  return item;
+  tail = _di->getFunctionDefinition()->getExternalFunction()->execute(_di, context);
+  return 0;
 }
 
-std::string XQUserFunction::Instance::ExternalFunctionEvaluatorResult::asString(DynamicContext *context, int indent) const
+std::string XQUserFunctionInstance::ExternalFunctionEvaluatorResult::asString(DynamicContext *context, int indent) const
 {
   return "";
 }

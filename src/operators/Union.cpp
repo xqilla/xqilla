@@ -82,7 +82,7 @@ ASTNode* Union::staticTyping(StaticContext *context)
 
   _args[1] = _args[1]->staticTyping(context);
   _src.add(_args[1]->getStaticAnalysis());
-  _src.getStaticType().typeUnion(_args[1]->getStaticAnalysis().getStaticType());
+  _src.getStaticType().typeConcat(_args[1]->getStaticAnalysis().getStaticType());
 
   if(_args[1]->getStaticAnalysis().isUpdating()) {
     XQThrow(StaticErrorException,X("Union::staticTyping"),

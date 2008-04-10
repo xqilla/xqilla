@@ -62,19 +62,17 @@ ASTNode* XQPromoteUntyped::staticTyping(StaticContext *context)
 
   // crioux thinks this should also add: unless the target type is anyAtomicType!
   if(XPath2Utils::equals(name_, AnyAtomicType::fgDT_ANYATOMICTYPE) && 
-     XPath2Utils::equals(uri_, FunctionConstructor::XMLChXPath2DatatypesURI)) {
+     XPath2Utils::equals(uri_, SchemaSymbols::fgURI_SCHEMAFORSCHEMA)) {
     return expr_;
   }
 
   typeIndex_ = context->getItemFactory()->getPrimitiveTypeIndex(uri_, name_, isPrimitive_);
 
-  if(_src.getStaticType().containsType(StaticType::UNTYPED_ATOMIC_TYPE)) {
-    _src.getStaticType().flags &= ~StaticType::UNTYPED_ATOMIC_TYPE;
-    _src.getStaticType().flags |= StaticType::getFlagsFor(typeIndex_);
-  }
-  else {
+  if(!_src.getStaticType().containsType(StaticType::UNTYPED_ATOMIC_TYPE)) {
     return expr_;
   }
+
+  _src.getStaticType().substitute(StaticType::UNTYPED_ATOMIC_TYPE, StaticType::create(typeIndex_));
 
   if(expr_->isConstant()) {
     return constantFold(context);
@@ -87,7 +85,29 @@ Result XQPromoteUntyped::createResult(DynamicContext* context, int flags) const
   return new PromoteUntypedResult(this, expr_->createResult(context, flags));
 }
 
-Item::Ptr XQPromoteUntyped::PromoteUntypedResult::next(DynamicContext *context)
+PromoteUntypedResult::PromoteUntypedResult(const XQPromoteUntyped *di, const Result &parent)
+  : ResultImpl(di),
+    parent_(parent),
+    isPrimitive_(di->isPrimitive()),
+    typeIndex_(di->getTypeIndex()),
+    uri_(di->getTypeURI()),
+    name_(di->getTypeName())
+{
+}
+
+PromoteUntypedResult::PromoteUntypedResult(const LocationInfo *location, const Result &parent,
+                                           bool isPrimitive, AnyAtomicType::AtomicObjectType typeIndex,
+                                           const XMLCh *uri, const XMLCh *name)
+  : ResultImpl(location),
+    parent_(parent),
+    isPrimitive_(isPrimitive),
+    typeIndex_(typeIndex),
+    uri_(uri),
+    name_(name)
+{
+}
+
+Item::Ptr PromoteUntypedResult::next(DynamicContext *context)
 {
   Item::Ptr item = parent_->next(context);
   if(item.notNull()) {
@@ -99,11 +119,11 @@ Item::Ptr XQPromoteUntyped::PromoteUntypedResult::next(DynamicContext *context)
     //    xdt:untypedAtomic are cast to xs:double.
     if(atomic->getPrimitiveTypeIndex() == AnyAtomicType::UNTYPED_ATOMIC) {
       try {
-        if(di_->isPrimitive()) {
-          item = atomic->castAs(di_->getTypeIndex(), 0, 0, context);
+        if(isPrimitive_) {
+          item = atomic->castAs(typeIndex_, 0, 0, context);
         }
         else {
-          item = atomic->castAs(di_->getTypeIndex(), di_->getTypeURI(), di_->getTypeName(), context);
+          item = atomic->castAs(typeIndex_, uri_, name_, context);
         }
       }
       catch(XPath2TypeCastException &e) {
@@ -147,25 +167,23 @@ ASTNode* XQPromoteNumeric::staticTyping(StaticContext *context)
   _src.add(expr_->getStaticAnalysis());
 
   if(!((XPath2Utils::equals(name_, SchemaSymbols::fgDT_DOUBLE) ||
-        XPath2Utils::equals(name_, SchemaSymbols::fgDT_FLOAT) &&
-        XPath2Utils::equals(uri_, SchemaSymbols::fgURI_SCHEMAFORSCHEMA)))) {
+        XPath2Utils::equals(name_, SchemaSymbols::fgDT_FLOAT)) &&
+       XPath2Utils::equals(uri_, SchemaSymbols::fgURI_SCHEMAFORSCHEMA))) {
     return expr_;
   }
 
   bool isPrimitive;
   typeIndex_ = context->getItemFactory()->getPrimitiveTypeIndex(uri_, name_, isPrimitive);
 
-  if(_src.getStaticType().containsType(StaticType::NUMERIC_TYPE)) {
-    unsigned int flags = StaticType::getFlagsFor(typeIndex_);
-
-    if((flags & StaticType::DOUBLE_TYPE) != 0) {
-	    _src.getStaticType().flags &= ~(StaticType::DECIMAL_TYPE | StaticType::FLOAT_TYPE);
-	    _src.getStaticType().flags |= flags;
-    }
-    else if((flags & StaticType::FLOAT_TYPE) != 0) {
-	    _src.getStaticType().flags &= ~StaticType::DECIMAL_TYPE;
-	    _src.getStaticType().flags |= flags;
-    }
+  if(isPrimitive && typeIndex_ == AnyAtomicType::DOUBLE) {
+    if(!_src.getStaticType().containsType(StaticType::DECIMAL_TYPE | StaticType::FLOAT_TYPE))
+      return expr_;
+    _src.getStaticType().substitute(StaticType::DECIMAL_TYPE | StaticType::FLOAT_TYPE, StaticType::DOUBLE_TYPE);
+  }
+  else if(isPrimitive && typeIndex_ == AnyAtomicType::FLOAT) {
+    if(!_src.getStaticType().containsType(StaticType::DECIMAL_TYPE))
+      return expr_;
+    _src.getStaticType().substitute(StaticType::DECIMAL_TYPE, StaticType::FLOAT_TYPE);
   }
   else {
     return expr_;
@@ -179,10 +197,10 @@ ASTNode* XQPromoteNumeric::staticTyping(StaticContext *context)
 
 Result XQPromoteNumeric::createResult(DynamicContext* context, int flags) const
 {
-  return new PromoteNumericResult(this, expr_->createResult(context, flags));
+  return new PromoteNumericResult(this, expr_->createResult(context, flags), typeIndex_);
 }
 
-Item::Ptr XQPromoteNumeric::PromoteNumericResult::next(DynamicContext *context)
+Item::Ptr PromoteNumericResult::next(DynamicContext *context)
 {
   Item::Ptr item = parent_->next(context);
   if(item.notNull()) {
@@ -194,8 +212,8 @@ Item::Ptr XQPromoteNumeric::PromoteNumericResult::next(DynamicContext *context)
     if(atomic->isNumericValue()) {
       try {
         const Numeric::Ptr promotedType = ((const Numeric*)atomic)->
-          promoteTypeIfApplicable(di_->getTypeIndex(), context);
-        if(promotedType != NULLRCP) {
+          promoteTypeIfApplicable(typeIndex_, context);
+        if(promotedType.notNull()) {
           item = promotedType;
         }
       } catch (XPath2TypeCastException &e) {
@@ -239,18 +257,16 @@ ASTNode *XQPromoteAnyURI::staticTyping(StaticContext *context)
   _src.getStaticType() = expr_->getStaticAnalysis().getStaticType();
   _src.add(expr_->getStaticAnalysis());
 
-  if(_src.getStaticType().flags & StaticType::ANY_URI_TYPE) {
-    _src.getStaticType().flags &= ~StaticType::ANY_URI_TYPE;
-    _src.getStaticType().flags |= StaticType::STRING_TYPE;
-  }
-  else {
-    return expr_;
-  }
-
   if(!XPath2Utils::equals(name_, SchemaSymbols::fgDT_STRING) ||
      !XPath2Utils::equals(uri_, SchemaSymbols::fgURI_SCHEMAFORSCHEMA)) {
     return expr_;
   }
+
+  if(!_src.getStaticType().containsType(StaticType::ANY_URI_TYPE)) {
+    return expr_;
+  }
+
+  _src.getStaticType().substitute(StaticType::ANY_URI_TYPE, StaticType::STRING_TYPE);
 
   if(expr_->isConstant()) {
     return constantFold(context);
@@ -263,7 +279,7 @@ Result XQPromoteAnyURI::createResult(DynamicContext* context, int flags) const
   return new PromoteAnyURIResult(this, expr_->createResult(context, flags));
 }
 
-Item::Ptr XQPromoteAnyURI::PromoteAnyURIResult::next(DynamicContext *context)
+Item::Ptr PromoteAnyURIResult::next(DynamicContext *context)
 {
   Item::Ptr item = parent_->next(context);
   if(item.notNull()) {

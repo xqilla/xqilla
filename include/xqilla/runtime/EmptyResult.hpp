@@ -31,6 +31,10 @@ public:
 
   Item::Ptr next(DynamicContext *context);
 
+  virtual bool getEffectiveBooleanValue(DynamicContext* context, const LocationInfo *info);
+  virtual Sequence toSequence(DynamicContext *context);
+  virtual ResultBufferImpl *toResultBuffer(unsigned int readCount);
+
   std::string asString(DynamicContext *context, int indent) const;
 };
 

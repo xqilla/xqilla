@@ -57,7 +57,11 @@ bool AnyAtomicType::isAtomicValue() const {
 
 /* isNode from Item */
 bool AnyAtomicType::isNode() const {
-  return !isAtomicValue();
+  return false;
+}
+
+bool AnyAtomicType::isFunction() const {
+  return false;
 }
 
 /* is this type numeric?  Return false by default */
@@ -73,6 +77,16 @@ bool AnyAtomicType::isDateOrTimeTypeValue() const {
 /* Get the namespace uri of the primitive type (basic type) of this type */
 const XMLCh* AnyAtomicType::getPrimitiveTypeURI() const{
   return XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA;
+}
+
+void AnyAtomicType::typeToBuffer(DynamicContext *context, XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &buffer) const
+{
+  if(getTypeURI()) {
+    buffer.append('{');
+    buffer.append(getTypeURI());
+    buffer.append('}');
+  }
+  buffer.append(getTypeName());
 }
 
 AnyAtomicType::Ptr AnyAtomicType::castAs(AtomicObjectType targetIndex, const DynamicContext* context) const

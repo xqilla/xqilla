@@ -46,12 +46,28 @@ void ASTVisitor::optimize(XQQuery *query)
 
   UserFunctions &funcs = const_cast<UserFunctions&>(query->getFunctions());
   for(UserFunctions::iterator i2 = funcs.begin(); i2 != funcs.end(); ++i2) {
-    (*i2)->setFunctionBody(optimize(const_cast<ASTNode *>((*i2)->getFunctionBody())));
+    *i2 = optimizeFunctionDef(*i2);
   }
 
   if(query->getQueryBody() != 0) {
     query->setQueryBody(optimize(query->getQueryBody()));
   }
+}
+
+XQGlobalVariable *ASTVisitor::optimizeGlobalVar(XQGlobalVariable *item)
+{
+  if(item->getVariableExpr()) {
+    item->setVariableExpr(optimize(const_cast<ASTNode *>(item->getVariableExpr())));
+  }
+  return item;
+}
+
+XQUserFunction *ASTVisitor::optimizeFunctionDef(XQUserFunction *item)
+{
+  if(item->getFunctionBody()) {
+    item->setFunctionBody(optimize(const_cast<ASTNode*>(item->getFunctionBody())));
+  }
+  return item;
 }
 
 ASTNode *ASTVisitor::optimize(ASTNode *item)
@@ -138,6 +154,10 @@ ASTNode *ASTVisitor::optimize(ASTNode *item)
     result = optimizeDOMConstructor((XQDOMConstructor *)item);
     break;
   }
+  case ASTNode::SIMPLE_CONTENT: {
+    result = optimizeSimpleContent((XQSimpleContent *)item);
+    break;
+  }
   case ASTNode::ORDERING_CHANGE: {
     result = optimizeOrderingChange((XQOrderingChange *)item);
     break;
@@ -171,7 +191,7 @@ ASTNode *ASTVisitor::optimize(ASTNode *item)
     break;
   }
   case ASTNode::USER_FUNCTION: {
-    result = optimizeUserFunction((XQUserFunction::Instance *)item);
+    result = optimizeUserFunction((XQUserFunctionInstance *)item);
     break;
   }
   case ASTNode::NAME_EXPRESSION: {
@@ -232,6 +252,42 @@ ASTNode *ASTVisitor::optimize(ASTNode *item)
   }
   case ASTNode::FTCONTAINS: {
     result = optimizeFTContains((FTContains *)item);
+    break;
+  }
+  case ASTNode::NAMESPACE_BINDING: {
+    result = optimizeNamespaceBinding((XQNamespaceBinding *)item);
+    break;
+  }
+  case ASTNode::FUNCTION_CONVERSION: {
+    result = optimizeFunctionConversion((XQFunctionConversion *)item);
+    break;
+  }
+  case ASTNode::ANALYZE_STRING: {
+    result = optimizeAnalyzeString((XQAnalyzeString *)item);
+    break;
+  }
+  case ASTNode::COPY_OF: {
+    result = optimizeCopyOf((XQCopyOf *)item);
+    break;
+  }
+  case ASTNode::CALL_TEMPLATE: {
+    result = optimizeCallTemplate((XQCallTemplate *)item);
+    break;
+  }
+  case ASTNode::APPLY_TEMPLATES: {
+    result = optimizeApplyTemplates((XQApplyTemplates *)item);
+    break;
+  }
+  case ASTNode::INLINE_FUNCTION: {
+    result = optimizeInlineFunction((XQInlineFunction *)item);
+    break;
+  }
+  case ASTNode::FUNCTION_REF: {
+    result = optimizeFunctionRef((XQFunctionRef *)item);
+    break;
+  }
+  case ASTNode::FUNCTION_DEREF: {
+    result = optimizeFunctionDeref((XQFunctionDeref *)item);
     break;
   }
   }
@@ -367,14 +423,6 @@ ASTNode *ASTVisitor::optimizeValidate(XQValidate *item)
   return item;
 }
 
-XQGlobalVariable *ASTVisitor::optimizeGlobalVar(XQGlobalVariable *item)
-{
-  if(item->getVariableExpr()) {
-    item->setVariableExpr(optimize(const_cast<ASTNode *>(item->getVariableExpr())));
-  }
-  return item;
-}
-
 ASTNode *ASTVisitor::optimizeFunctionCall(XQFunctionCall *item)
 {
   VectorOfASTNodes *args = const_cast<VectorOfASTNodes*>(item->getArguments());
@@ -384,7 +432,7 @@ ASTNode *ASTVisitor::optimizeFunctionCall(XQFunctionCall *item)
   return item;
 }
 
-ASTNode *ASTVisitor::optimizeUserFunction(XQUserFunction::Instance *item)
+ASTNode *ASTVisitor::optimizeUserFunction(XQUserFunctionInstance *item)
 {
   VectorOfASTNodes &args = const_cast<VectorOfASTNodes &>(item->getArguments());
   for(VectorOfASTNodes::iterator i = args.begin(); i != args.end(); ++i) {
@@ -439,6 +487,17 @@ ASTNode *ASTVisitor::optimizeDOMConstructor(XQDOMConstructor *item)
   return item;
 }
 
+ASTNode *ASTVisitor::optimizeSimpleContent(XQSimpleContent *item)
+{
+  VectorOfASTNodes *children = const_cast<VectorOfASTNodes *>(item->getChildren());
+  if(children) {
+    for(VectorOfASTNodes::iterator j = children->begin(); j != children->end(); ++j) {
+      *j = optimize(*j);
+    }
+  }
+  return item;
+}
+
 ASTNode *ASTVisitor::optimizeOrderingChange(XQOrderingChange *item)
 {
   item->setExpr(optimize(item->getExpr()));
@@ -487,6 +546,88 @@ ASTNode *ASTVisitor::optimizePredicate(XQPredicate *item)
   item->setPredicate(optimize(const_cast<ASTNode *>(item->getPredicate())));
   return item;
 }
+
+ASTNode *ASTVisitor::optimizeNamespaceBinding(XQNamespaceBinding *item)
+{
+  item->setExpression(optimize(const_cast<ASTNode *>(item->getExpression())));
+  return item;
+}
+
+ASTNode *ASTVisitor::optimizeFunctionConversion(XQFunctionConversion *item)
+{
+  item->setExpression(optimize(const_cast<ASTNode *>(item->getExpression())));
+  return item;
+}
+
+ASTNode *ASTVisitor::optimizeAnalyzeString(XQAnalyzeString *item)
+{
+  item->setExpression(optimize(const_cast<ASTNode *>(item->getExpression())));
+  item->setRegex(optimize(const_cast<ASTNode *>(item->getRegex())));
+  if(item->getFlags())
+	  item->setFlags(optimize(const_cast<ASTNode *>(item->getFlags())));
+  item->setMatch(optimize(const_cast<ASTNode *>(item->getMatch())));
+  item->setNonMatch(optimize(const_cast<ASTNode *>(item->getNonMatch())));
+  return item;
+}
+
+ASTNode *ASTVisitor::optimizeCopyOf(XQCopyOf *item)
+{
+  item->setExpression(optimize(const_cast<ASTNode *>(item->getExpression())));
+  return item;
+}
+
+ASTNode *ASTVisitor::optimizeCallTemplate(XQCallTemplate *item)
+{
+  TemplateArguments *args = item->getArguments();
+  if(args != 0) {
+    for(TemplateArguments::iterator i = args->begin(); i != args->end(); ++i) {
+      (*i)->value = optimize((*i)->value);
+    }
+  }
+  return item;
+}
+
+ASTNode *ASTVisitor::optimizeApplyTemplates(XQApplyTemplates *item)
+{
+  item->setExpression(optimize(const_cast<ASTNode *>(item->getExpression())));
+
+  TemplateArguments *args = item->getArguments();
+  if(args != 0) {
+    for(TemplateArguments::iterator i = args->begin(); i != args->end(); ++i) {
+      (*i)->value = optimize((*i)->value);
+    }
+  }
+
+  return item;
+}
+
+ASTNode *ASTVisitor::optimizeInlineFunction(XQInlineFunction *item)
+{
+  item->setUserFunction(optimizeFunctionDef(item->getUserFunction()));
+  item->setInstance(optimize(item->getInstance()));
+  return item;
+}
+
+ASTNode *ASTVisitor::optimizeFunctionRef(XQFunctionRef *item)
+{
+  item->setInstance(optimize(item->getInstance()));
+  return item;
+}
+
+ASTNode *ASTVisitor::optimizeFunctionDeref(XQFunctionDeref *item)
+{
+  item->setExpression(optimize(item->getExpression()));
+
+  VectorOfASTNodes *args = const_cast<VectorOfASTNodes*>(item->getArguments());
+  if(args) {
+    for(VectorOfASTNodes::iterator i = args->begin(); i != args->end(); ++i) {
+      *i = optimize(*i);
+    }
+  }
+
+  return item;
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 

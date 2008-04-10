@@ -45,7 +45,7 @@ const unsigned int FunctionRoundHalfToEven::maxArgs = 2;
 FunctionRoundHalfToEven::FunctionRoundHalfToEven(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : NumericFunction(name, minArgs, maxArgs, "anyAtomicType?, integer", args, memMgr)
 {
-  _src.getStaticType().flags = StaticType::NUMERIC_TYPE;
+  _src.getStaticType() = StaticType(StaticType::NUMERIC_TYPE, 0, 1);
 }
 
 Sequence FunctionRoundHalfToEven::createSequence(DynamicContext* context, int flags) const

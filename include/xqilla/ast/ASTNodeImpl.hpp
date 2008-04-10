@@ -66,8 +66,8 @@ public:
 
   /** Returns the result of this expression via the EventHandler provided.
       Default implementation uses result returned from createResult(). */
-  virtual void generateEvents(EventHandler *events, DynamicContext *context,
-                              bool preserveNS, bool preserveType) const;
+  virtual EventGenerator::Ptr generateEvents(EventHandler *events, DynamicContext *context,
+                                               bool preserveNS, bool preserveType) const;
 
   /** Performs constant folding on this ASTNode. */
   ASTNode *constantFold(StaticContext *context);

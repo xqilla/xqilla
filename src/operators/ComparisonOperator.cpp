@@ -86,9 +86,13 @@ ASTNode* ComparisonOperator::staticTyping(StaticContext *context)
 {
   _src.clear();
 
+  bool emptyArgument = false;
   for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
     *i = (*i)->staticTyping(context);
     _src.add((*i)->getStaticAnalysis());
+
+    if((*i)->getStaticAnalysis().getStaticType().getMax() == 0)
+      emptyArgument = true;
 
     if((*i)->getStaticAnalysis().isUpdating()) {
       XQThrow(StaticErrorException,X("ComparisonOperator::staticTyping"),
@@ -100,7 +104,9 @@ ASTNode* ComparisonOperator::staticTyping(StaticContext *context)
       _src.implicitTimezoneUsed(true);
   }
 
-  _src.getStaticType().flags = StaticType::BOOLEAN_TYPE;
+  if(emptyArgument)
+	  _src.getStaticType() = StaticType(StaticType::BOOLEAN_TYPE, 0, 1);
+  else _src.getStaticType() = StaticType(StaticType::BOOLEAN_TYPE, 1, 1);
 
   if(!_src.isUsed()) {
     return constantFold(context);

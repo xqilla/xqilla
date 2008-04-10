@@ -77,10 +77,11 @@ protected:
   virtual PathResult generateQuantified(XQQuantified *item);
   virtual PathResult generateTypeswitch(XQTypeswitch *item);
   virtual PathResult generateDOMConstructor(XQDOMConstructor *item);
+  virtual PathResult generateSimpleContent(XQSimpleContent *item);
   virtual PathResult generateNameExpression(XQNameExpression *item);
   virtual PathResult generateContentSequence(XQContentSequence *item);
   virtual PathResult generateDirectName(XQDirectName *item);
-  virtual PathResult generateUserFunction(XQUserFunction::Instance *item);
+  virtual PathResult generateUserFunction(XQUserFunctionInstance *item);
   virtual PathResult generateContextItem(XQContextItem *item);
   virtual PathResult generateLiteral(XQLiteral *item);
   virtual PathResult generateSequence(XQSequence *item);
@@ -97,6 +98,15 @@ protected:
   virtual PathResult generateFunctionCall(XQFunctionCall *item);
   virtual PathResult generateXPath1CompatConvertFunctionArg(XPath1CompatConvertFunctionArg *item);
   virtual PathResult generateFTContains(FTContains *item);
+  virtual PathResult generateNamespaceBinding(XQNamespaceBinding *item);
+  virtual PathResult generateFunctionConversion(XQFunctionConversion *item);
+  virtual PathResult generateAnalyzeString(XQAnalyzeString *item);
+  virtual PathResult generateCopyOf(XQCopyOf *item);
+  virtual PathResult generateCallTemplate(XQCallTemplate *item);
+  virtual PathResult generateApplyTemplates(XQApplyTemplates *item);
+  virtual PathResult generateInlineFunction(XQInlineFunction *item);
+  virtual PathResult generateFunctionRef(XQFunctionRef *item);
+  virtual PathResult generateFunctionDeref(XQFunctionDeref *item);
 
   virtual PathResult generateUDelete(UDelete *item);
   virtual PathResult generateURename(URename *item);

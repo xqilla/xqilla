@@ -71,20 +71,16 @@ ASTNode *FunctionMax::staticTyping(StaticContext *context)
   if(result != this) return result;
 
   _src.getStaticType() = _args[0]->getStaticAnalysis().getStaticType();
+  _src.getStaticType().setCardinality(_src.getStaticType().getMin() == 0 ? 0 : 1, 1);
 
-  if(_src.getStaticType().containsType(StaticType::UNTYPED_ATOMIC_TYPE)) {
-    _src.getStaticType().flags &= ~StaticType::UNTYPED_ATOMIC_TYPE;
-    _src.getStaticType().flags |= StaticType::DOUBLE_TYPE;
-  }
+  _src.getStaticType().substitute(StaticType::UNTYPED_ATOMIC_TYPE, StaticType::DOUBLE_TYPE);
+
   if(_src.getStaticType().containsType(StaticType::DOUBLE_TYPE)) {
-    _src.getStaticType().flags &= ~(StaticType::DECIMAL_TYPE | StaticType::FLOAT_TYPE);
+    _src.getStaticType().substitute(StaticType::DECIMAL_TYPE | StaticType::FLOAT_TYPE, StaticType::DOUBLE_TYPE);
   }
   if(_src.getStaticType().containsType(StaticType::FLOAT_TYPE)) {
-    _src.getStaticType().flags &= ~StaticType::DECIMAL_TYPE;
+    _src.getStaticType().substitute(StaticType::DECIMAL_TYPE, StaticType::FLOAT_TYPE);
   }
-
-  if(_args.size() > 1)
-    _src.getStaticType().typeUnion(_args[1]->getStaticAnalysis().getStaticType());
 
   return this;
 }

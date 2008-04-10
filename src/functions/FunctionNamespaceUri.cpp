@@ -62,7 +62,7 @@ ASTNode *FunctionNamespaceUri::staticTyping(StaticContext *context)
   if(_args.empty()) {
     _src.contextItemUsed(true);
   }
-  _src.getStaticType().flags = StaticType::ANY_URI_TYPE;
+  _src.getStaticType() = StaticType::ANY_URI_TYPE;
   return calculateSRCForArguments(context);
 }
 

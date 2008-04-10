@@ -47,15 +47,15 @@ void Divide::calculateStaticType()
   // Dividing a duration by a number
   if(arg0.containsType(StaticType::DAY_TIME_DURATION_TYPE|StaticType::YEAR_MONTH_DURATION_TYPE)
      && arg1.containsType(StaticType::NUMERIC_TYPE)) {
-    _src.getStaticType().flags |= arg0.flags & (StaticType::DAY_TIME_DURATION_TYPE|StaticType::YEAR_MONTH_DURATION_TYPE);
+    _src.getStaticType() |= arg0 & (StaticType::DAY_TIME_DURATION_TYPE|StaticType::YEAR_MONTH_DURATION_TYPE);
   }
 
   // Dividing a duration by a duration
   if(arg0.containsType(StaticType::DAY_TIME_DURATION_TYPE) && arg1.containsType(StaticType::DAY_TIME_DURATION_TYPE)) {
-    _src.getStaticType().flags |= StaticType::DECIMAL_TYPE;
+    _src.getStaticType() |= StaticType::DECIMAL_TYPE;
   }
   if(arg0.containsType(StaticType::YEAR_MONTH_DURATION_TYPE) && arg1.containsType(StaticType::YEAR_MONTH_DURATION_TYPE)) {
-    _src.getStaticType().flags |= StaticType::DECIMAL_TYPE;
+    _src.getStaticType() |= StaticType::DECIMAL_TYPE;
   }
 }
 

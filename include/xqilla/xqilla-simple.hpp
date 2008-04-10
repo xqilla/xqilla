@@ -22,6 +22,7 @@
 #include <xqilla/simple-api/XQilla.hpp>
 #include <xqilla/simple-api/XQQuery.hpp>
 #include <xqilla/context/DynamicContext.hpp>
+#include <xqilla/context/ItemFactory.hpp>
 #include <xqilla/exceptions/XQException.hpp>
 #include <xqilla/utils/XStr.hpp>
 #include <xqilla/utils/UTF8Str.hpp>

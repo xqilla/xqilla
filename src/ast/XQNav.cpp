@@ -164,6 +164,9 @@ ASTNode* XQNav::staticTyping(StaticContext *context)
 
   Steps newSteps(XQillaAllocator<StepInfo>(context->getMemoryManager()));
 
+  StaticType ciType;
+  unsigned int min = 1, max = 1;
+
   Steps::iterator begin = _steps.begin();
   Steps::iterator end = _steps.end();
   Steps::iterator it = begin;
@@ -171,13 +174,21 @@ ASTNode* XQNav::staticTyping(StaticContext *context)
     // Statically resolve our step
     ASTNode *step = it->step->staticTyping(context);
     const StaticAnalysis &stepSrc = step->getStaticAnalysis();
-    context->setContextItemType(stepSrc.getStaticType());
+
+    ciType = stepSrc.getStaticType();
+    ciType.setCardinality(1, 1);
+    context->setContextItemType(ciType);
+
+    min *= stepSrc.getStaticType().getMin();
+    if(max == StaticType::UNLIMITED || stepSrc.getStaticType().getMax() == StaticType::UNLIMITED)
+      max = StaticType::UNLIMITED;
+    else max *= stepSrc.getStaticType().getMax();
 
     props = combineProperties(props, stepSrc.getProperties());
 
     if(stepSrc.areContextFlagsUsed() || _src.isNoFoldingForced() ||
        stepSrc.getStaticType().containsType(StaticType::ANY_ATOMIC_TYPE) ||
-       !stepSrc.isCreative()) {
+       stepSrc.isCreative()) {
       if(it != begin) {
         // Remove context item usage
         _src.addExceptContextFlags(stepSrc);
@@ -203,7 +214,7 @@ ASTNode* XQNav::staticTyping(StaticContext *context)
       }
     }
     else {
-	    newSteps.push_back(step);
+      newSteps.push_back(step);
     }
   }
 
@@ -271,6 +282,7 @@ ASTNode* XQNav::staticTyping(StaticContext *context)
 
   if(!_steps.empty()) {
     _src.getStaticType() = _steps.back().step->getStaticAnalysis().getStaticType();
+    _src.getStaticType().multiply(min, max);
   }
 
   _src.setProperties(props);
@@ -407,7 +419,7 @@ Item::Ptr IntermediateStepCheckResult::next(DynamicContext *context)
   Item::Ptr result = parent_->next(context);
 
   // Check it's a node
-  if(result != NULLRCP && !result->isNode()) {
+  if(!result.isNull() && !result->isNode()) {
     XQThrow(TypeErrorException,X("NavStepResult::next"),
              X("The result of a step expression (StepExpr) is not a sequence of nodes [err:XPTY0019]"));
   }

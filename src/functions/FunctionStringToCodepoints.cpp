@@ -44,7 +44,7 @@ const unsigned int FunctionStringToCodepoints::maxArgs = 1;
 FunctionStringToCodepoints::FunctionStringToCodepoints(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "string?", args, memMgr) // 1 argument
 {
-  _src.getStaticType().flags = StaticType::DECIMAL_TYPE;
+  _src.getStaticType() = StaticType(StaticType::DECIMAL_TYPE, 0, StaticType::UNLIMITED);
 }
 
 Sequence FunctionStringToCodepoints::createSequence(DynamicContext* context, int flags) const

@@ -92,12 +92,23 @@ protected:
 class XQILLA_API AutoContextInfoReset
 {
 public:
-  AutoContextInfoReset(DynamicContext* context)
+  AutoContextInfoReset(DynamicContext *context)
     : oldContextItem(context->getContextItem()),
       oldContextPosition(context->getContextPosition()),
       oldContextSize(context->getContextSize()),
       context_(context)
   {
+  }
+
+  AutoContextInfoReset(DynamicContext *context, const Item::Ptr &contextItem, unsigned int contextPosition = 0, unsigned int contextSize = 0)
+    : oldContextItem(context->getContextItem()),
+      oldContextPosition(context->getContextPosition()),
+      oldContextSize(context->getContextSize()),
+      context_(context)
+  {
+    context->setContextItem(contextItem);
+    context->setContextPosition(contextPosition);
+    context->setContextSize(contextSize);
   }
 
   ~AutoContextInfoReset()
@@ -164,7 +175,52 @@ public:
 protected:
   DynamicContext *_context;
   const VariableStore *_oldVarStore;
-  
+};
+
+class XQILLA_API AutoRegexGroupStoreReset
+{
+public:
+  AutoRegexGroupStoreReset(DynamicContext *context, const RegexGroupStore *store = 0)
+  {
+    _context = context;
+    _oldRegexStore = _context->getRegexGroupStore();
+    if(store)
+      _context->setRegexGroupStore(store);
+  }
+
+  ~AutoRegexGroupStoreReset()
+  {
+    _context->setRegexGroupStore(_oldRegexStore);
+  }
+
+  void reset()
+  {
+    _context->setRegexGroupStore(_oldRegexStore);
+  }
+
+protected:
+  DynamicContext *_context;
+  const RegexGroupStore *_oldRegexStore;
+};
+
+class XQILLA_API AutoMessageListenerReset
+{
+public:
+  AutoMessageListenerReset(StaticContext* context, MessageListener *listener = 0)
+  {
+    context_ = context;
+    listener_ = context->getMessageListener();
+    context->setMessageListener(listener);
+  }
+
+  ~AutoMessageListenerReset()
+  {
+    context_->setMessageListener(listener_);
+  }
+
+protected:
+  StaticContext* context_;
+  MessageListener *listener_;  
 };
 
 #endif

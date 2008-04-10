@@ -90,16 +90,16 @@ private:
   unsigned int level_;
 };
 
-void XQDocumentConstructor::generateEvents(EventHandler *events, DynamicContext *context,
-                                           bool preserveNS, bool preserveType) const
+EventGenerator::Ptr XQDocumentConstructor::generateEvents(EventHandler *events, DynamicContext *context,
+                                                     bool preserveNS, bool preserveType) const
 {
   events->startDocumentEvent(0, 0);
 
   DocConstructFilter filter(events, this);
-  m_value->generateEvents(&filter, context, preserveNS, preserveType);
+  m_value->generateAndTailCall(&filter, context, preserveNS, preserveType);
 
   events->endDocumentEvent();
-  events->endEvent();
+  return 0;
 }
 
 ASTNode* XQDocumentConstructor::staticResolution(StaticContext *context)
@@ -127,13 +127,12 @@ ASTNode* XQDocumentConstructor::staticTyping(StaticContext *context)
               "to be an updating expression [err:XUST0001]"));
   }
 
-  _src.getStaticType().flags = StaticType::DOCUMENT_TYPE;
-  _src.forceNoFolding(true);
+  _src.getStaticType() = StaticType::DOCUMENT_TYPE;
   _src.creative(true);
   _src.setProperties(StaticAnalysis::DOCORDER | StaticAnalysis::GROUPED |
 	  StaticAnalysis::PEER | StaticAnalysis::SUBTREE | StaticAnalysis::SAMEDOC |
 	  StaticAnalysis::ONENODE);
-  return this; // Never constant fold
+  return this;
 }
 
 const XMLCh* XQDocumentConstructor::getNodeType() const

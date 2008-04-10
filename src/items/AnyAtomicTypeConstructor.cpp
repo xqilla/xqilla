@@ -38,7 +38,7 @@ AnyAtomicTypeConstructor::AnyAtomicTypeConstructor(const XMLCh* typeURI,
     _value(value),
     _primitiveType(primitiveType)
 {
-  _sType.flags = StaticType::getFlagsFor(primitiveType);
+  _sType = StaticType::create(primitiveType);
 }
 
 Item::Ptr AnyAtomicTypeConstructor::createItem(const DynamicContext* context) const

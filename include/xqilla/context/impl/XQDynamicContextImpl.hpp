@@ -108,6 +108,9 @@ public:
   virtual void setExternalVariable(const XMLCh *namespaceURI, const XMLCh *name, const Sequence &value);
   virtual void setExternalVariable(const XMLCh *qname, const Sequence &value);
 
+  virtual const RegexGroupStore* getRegexGroupStore() const;
+  virtual void setRegexGroupStore(const RegexGroupStore *store);
+
   /** Return the current time */
   virtual time_t getCurrentTime() const;
   /** Set the current time */
@@ -203,14 +206,14 @@ public:
   /** get the variable type store */
   virtual VariableTypeStore* getVariableTypeStore();
 
-  /** adds a custom function to the function table */
+  virtual void addTemplate(XQUserFunction *tp);
+  virtual const XQUserFunction *lookUpNamedTemplate(const XMLCh *uri, const XMLCh *name) const;
+  virtual const UserFunctions &getTemplateRules() const;
+
   virtual void addCustomFunction(FuncFactory *func);
-  /** returns a function object with the given uri, localname and number of arguments triple */
   virtual ASTNode *lookUpFunction(const XMLCh *uri, const XMLCh* name, const VectorOfASTNodes &v) const;
 
-  /** adds an external function implementation to the function table */
   virtual void addExternalFunction(const ExternalFunction *func);
-  /** returns an external function implementation for the given uri and localname */
   virtual const ExternalFunction *lookUpExternalFunction(const XMLCh *uri, const XMLCh *name, size_t numArgs) const;
 
   /** Get the implementation for the specified collation */
@@ -323,6 +326,8 @@ protected:
   const VariableStore *_globalVarStore;
   VarStoreImpl _defaultVarStore;
 
+  const RegexGroupStore *_regexStore;
+
   /** Current date and time. This information  represents an
    * implementation-dependent point in time during processing of a query
    * or transformation */
@@ -371,6 +376,8 @@ inline void XQDynamicContextImpl::setXPath1CompatibilityMode(bool newMode)
 inline void XQDynamicContextImpl::setDefaultFuncNS(const XMLCh* newNS)
 { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
 inline void XQDynamicContextImpl::setBaseURI(const XMLCh* newURI)
+{ XQThrow2(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
+inline void XQDynamicContextImpl::addTemplate(XQUserFunction *tp)
 { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
 inline void XQDynamicContextImpl::addCustomFunction(FuncFactory *func)
 { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
@@ -421,5 +428,7 @@ inline bool XQDynamicContextImpl::isTypeOrDerivedFromType(const XMLCh* uri, cons
 inline bool XQDynamicContextImpl::getInheritNamespaces() const { return _staticContext->getInheritNamespaces(); }
 inline bool XQDynamicContextImpl::getPreserveNamespaces() const { return _staticContext->getPreserveNamespaces(); }
 inline StaticContext::ConstructionMode XQDynamicContextImpl::getConstructionMode() const { return _staticContext->getConstructionMode(); }
+inline const UserFunctions &XQDynamicContextImpl::getTemplateRules() const { return _staticContext->getTemplateRules(); }
+inline const XQUserFunction *XQDynamicContextImpl::lookUpNamedTemplate(const XMLCh *uri, const XMLCh *name) const { return _staticContext->lookUpNamedTemplate(uri, name); }
 
 #endif

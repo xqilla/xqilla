@@ -50,7 +50,7 @@ public:
   /// Filters the given Result, returning only Items that match the NodeTest
   Result filterResult(const Result &toFilter, const LocationInfo *info) const;
   ///check if a node has to be placed in the result set
-  bool filterNode(Node::Ptr node, DynamicContext* context, const LocationInfo *info) const;
+  bool filterNode(Node::Ptr node, DynamicContext* context) const;
 
   void staticResolution(StaticContext *context, const LocationInfo *location);
 

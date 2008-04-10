@@ -29,9 +29,6 @@
 #include <xercesc/util/PlatformUtils.hpp>
 #include <xercesc/util/XMemory.hpp>
 
-// Copied from ASTNode.hpp
-typedef std::vector<ASTNode*,XQillaAllocator<ASTNode*> > VectorOfASTNodes;
-
 class DynamicContext;
 class XPath2MemoryManager;
 class FuncFactory;
@@ -44,6 +41,11 @@ class ModuleResolver;
 class MessageListener;
 class ExternalFunction;
 class XQillaConfiguration;
+class XQUserFunction;
+
+// Copied from ASTNode.hpp
+typedef std::vector<ASTNode*,XQillaAllocator<ASTNode*> > VectorOfASTNodes;
+typedef std::vector<XQUserFunction*, XQillaAllocator<XQUserFunction*> > UserFunctions;
 
 XERCES_CPP_NAMESPACE_BEGIN
 class DOMDocument;
@@ -158,10 +160,17 @@ public:
   /** get the variable type store */
   virtual VariableTypeStore* getVariableTypeStore() = 0;
 
+  /** adds a template definition to the template tables */
+  virtual void addTemplate(XQUserFunction *tp) = 0;
+  /** look up a template definition by name */
+  virtual const XQUserFunction *lookUpNamedTemplate(const XMLCh *uri, const XMLCh *name) const = 0;
+  /** Return a vector of all the templates with patterns */
+  virtual const UserFunctions &getTemplateRules() const = 0;
+
   /** adds a custom function to the function table */
   virtual void addCustomFunction(FuncFactory *func) = 0;
   /** returns a function object with the given uri, localname and number of arguments triple */
-  virtual ASTNode *lookUpFunction(const XMLCh *uri, const XMLCh* name, const VectorOfASTNodes &v) const = 0;
+  virtual ASTNode *lookUpFunction(const XMLCh *uri, const XMLCh *name, const VectorOfASTNodes &v) const = 0;
 
   /** adds an external function implementation to the function table */
   virtual void addExternalFunction(const ExternalFunction *func) = 0;

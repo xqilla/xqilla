@@ -16,6 +16,9 @@ nested loop elimination (group recognition, join recognition)
 variable inlining
 common sub-expression extraction
 faster modifiable data model
+Document projection for recursive functions
+Query option to disable document projection
+Option to disable schema validation of input documents
 pull event execution
 
 
@@ -41,4 +44,6 @@ fix XQTS bugs
 new test suite
 test XQuery Fulltext
 Fix ATDoubleOrDerivedImpl and ATFloatOrDerivedImpl to use double and float types
+Make xs:decimal infinite length
+Fix numeric output methods to use variable size buffers
 

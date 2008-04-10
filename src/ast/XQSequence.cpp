@@ -45,52 +45,49 @@
 
 inline ItemConstructor *itemToItemConstructor(const Item::Ptr &item, DynamicContext *context, XPath2MemoryManager *memMgr)
 {
-  if(item->isNode()) {
-    XQThrow2(IllegalArgumentException, X("itemToItemConstructor"), X("Cannot create an ItemConstructor for a Node"));
-  }
-  else {
+  if(item->isAtomicValue()) {
     const AnyAtomicType *atom = (const AnyAtomicType*)item.get();
-    switch(atom->getPrimitiveTypeIndex())
-    {
-    case AnyAtomicType::QNAME: 
-        {
-          const ATQNameOrDerived *qname = (const ATQNameOrDerived*)atom;
-          return new (memMgr) ATQNameConstructor(atom->getTypeURI(),
-                                                 atom->getTypeName(),
-                                                 qname->getURI(),
-                                                 qname->getPrefix(),
-                                                 qname->getName());
-        }
+    switch(atom->getPrimitiveTypeIndex()) {
+    case AnyAtomicType::QNAME: {
+      const ATQNameOrDerived *qname = (const ATQNameOrDerived*)atom;
+      return new (memMgr) ATQNameConstructor(atom->getTypeURI(),
+                                             atom->getTypeName(),
+                                             qname->getURI(),
+                                             qname->getPrefix(),
+                                             qname->getName());
+    }
     case AnyAtomicType::DECIMAL:
     case AnyAtomicType::DOUBLE:
-    case AnyAtomicType::FLOAT:
-        {
-          const Numeric *number = (const Numeric*)atom;
-          if((number->getState()==Numeric::NUM || number->getState()==Numeric::NEG_NUM) && !number->isZero())
-            return new (memMgr) NumericTypeConstructor(number->getTypeURI(),
-                                                       number->getTypeName(),
-                                                       number->asMAPM(),
-                                                       number->getPrimitiveTypeIndex(),
-                                                       memMgr);
-          else
-            return new (memMgr) AnyAtomicTypeConstructor(number->getTypeURI(),
-                                                         number->getTypeName(),
-                                                         number->asString(context),
-                                                         number->getPrimitiveTypeIndex());
-        }
-    default:
-          return new (memMgr) AnyAtomicTypeConstructor(atom->getTypeURI(),
-                                                       atom->getTypeName(),
-                                                       atom->asString(context),
-                                                       atom->getPrimitiveTypeIndex());
+    case AnyAtomicType::FLOAT: {
+      const Numeric *number = (const Numeric*)atom;
+      if((number->getState()==Numeric::NUM || number->getState()==Numeric::NEG_NUM) && !number->isZero())
+        return new (memMgr) NumericTypeConstructor(number->getTypeURI(),
+                                                   number->getTypeName(),
+                                                   number->asMAPM(),
+                                                   number->getPrimitiveTypeIndex(),
+                                                   memMgr);
+      else
+        return new (memMgr) AnyAtomicTypeConstructor(number->getTypeURI(),
+                                                     number->getTypeName(),
+                                                     number->asString(context),
+                                                     number->getPrimitiveTypeIndex());
     }
+    default:
+      return new (memMgr) AnyAtomicTypeConstructor(atom->getTypeURI(),
+                                                   atom->getTypeName(),
+                                                   atom->asString(context),
+                                                   atom->getPrimitiveTypeIndex());
+    }
+  }
+  else {
+    XQThrow2(IllegalArgumentException, X("itemToItemConstructor"), X("Cannot create an ItemConstructor for a non atomic item"));
   }
 }
 
 static const unsigned int CONSTANT_FOLD_LIMIT = 30;
 
 XQSequence *XQSequence::constantFold(Result &result, DynamicContext *context, XPath2MemoryManager* memMgr,
-	const LocationInfo *location)
+                                     const LocationInfo *location)
 {
   XQSequence *seq = new (memMgr) XQSequence(memMgr);
   seq->setLocationInfo(location);
@@ -138,7 +135,7 @@ ASTNode *XQSequence::staticTyping(StaticContext *context)
 {
   _src.clear();
 
-  _src.getStaticType().flags = 0;
+  _src.getStaticType() = StaticType();
 
   ItemConstructor::Vector::iterator it = _itemConstructors.begin();
   if(it == _itemConstructors.end()) {
@@ -146,7 +143,7 @@ ASTNode *XQSequence::staticTyping(StaticContext *context)
   }
   else {
     for(; it != _itemConstructors.end(); ++it) {
-      _src.getStaticType().typeUnion((*it)->getStaticType());
+      _src.getStaticType().typeConcat((*it)->getStaticType());
     }
   }
 
@@ -158,13 +155,14 @@ Result XQSequence::createResult(DynamicContext* context, int flags) const
   return new SequenceResult(this);
 }
 
-void XQSequence::generateEvents(EventHandler *events, DynamicContext *context,
+EventGenerator::Ptr XQSequence::generateEvents(EventHandler *events, DynamicContext *context,
                                 bool preserveNS, bool preserveType) const
 {
   for(ItemConstructor::Vector::const_iterator it = _itemConstructors.begin();
       it != _itemConstructors.end(); ++it) {
     (*it)->generateEvents(events, context);
   }
+  return 0;
 }
 
 /** Returns true if this XQ has no predicates, and is an instance of

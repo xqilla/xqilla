@@ -31,6 +31,7 @@ class URIResolver;
 class VariableStore;
 class SequenceBuilder;
 class UpdateFactory;
+class RegexGroupStore;
 
 /// The execution time dynamic context interface
 class XQILLA_API DynamicContext : public StaticContext
@@ -71,6 +72,11 @@ public:
   virtual void setExternalVariable(const XMLCh *namespaceURI, const XMLCh *name, const Sequence &value) = 0;
   /** set the value of an external global variable with the given QName */
   virtual void setExternalVariable(const XMLCh *qname, const Sequence &value) = 0;
+
+  /** get the regex group store */
+  virtual const RegexGroupStore* getRegexGroupStore() const = 0;
+  /** set the regex group store */
+  virtual void setRegexGroupStore(const RegexGroupStore *store) = 0;
 
   /** Return the current time */
   virtual time_t getCurrentTime() const = 0;

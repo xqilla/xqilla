@@ -36,7 +36,7 @@ public:
   XQDOMConstructor(XPath2MemoryManager* mm);
 
   virtual Sequence createSequence(DynamicContext *context, int flags) const;
-  virtual void generateEvents(EventHandler *events, DynamicContext *context,
+  virtual EventGenerator::Ptr generateEvents(EventHandler *events, DynamicContext *context,
                               bool preserveNS, bool preserveType) const = 0;
 
   virtual const XMLCh* getNodeType() const = 0;
@@ -68,7 +68,7 @@ public:
   virtual ASTNode *staticResolution(StaticContext *context);
   virtual ASTNode *staticTyping(StaticContext *context);
   virtual Sequence createSequence(DynamicContext* context, int flags=0) const;
-  virtual void generateEvents(EventHandler *events, DynamicContext *context,
+  virtual EventGenerator::Ptr generateEvents(EventHandler *events, DynamicContext *context,
                               bool preserveNS, bool preserveType) const;
 
   const ASTNode *getExpression() const { return expr_; }
@@ -121,6 +121,35 @@ private:
   };
 
   ASTNode *expr_;
+};
+
+class XQILLA_API XQSimpleContent : public ASTNodeImpl
+{
+public:
+  XQSimpleContent(VectorOfASTNodes *children, XPath2MemoryManager* mm);
+
+  virtual ASTNode *staticResolution(StaticContext *context);
+  virtual ASTNode *staticTyping(StaticContext *context);
+  virtual Result createResult(DynamicContext* context, int flags=0) const;
+
+  const VectorOfASTNodes *getChildren() const { return children_; }
+
+private:
+  class SimpleContentResult : public SingleResult
+  {
+  public:
+    SimpleContentResult(const XQSimpleContent *ast)
+      : SingleResult(ast), ast_(ast) {}
+
+    Item::Ptr getSingleResult(DynamicContext *context) const;
+    std::string asString(DynamicContext *context, int indent) const
+    { return ""; }
+
+  private:
+    const XQSimpleContent *ast_;
+  };
+
+  VectorOfASTNodes *children_;
 };
 
 #endif

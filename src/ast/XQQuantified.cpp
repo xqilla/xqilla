@@ -48,11 +48,12 @@ ASTNode *XQQuantified::staticTyping(StaticContext *context)
 {
   _src.clear();
 
-  parent_ = parent_->staticTypingSetup(context);
+  unsigned int min, max;
+  parent_ = parent_->staticTypingSetup(min, max, context);
 
   expr_ = expr_->staticTyping(context);
   _src.add(expr_->getStaticAnalysis());
-  _src.getStaticType().flags = StaticType::BOOLEAN_TYPE;
+  _src.getStaticType() = StaticType::BOOLEAN_TYPE;
 
   parent_ = parent_->staticTypingTeardown(context, _src);
 

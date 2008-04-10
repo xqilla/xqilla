@@ -49,7 +49,7 @@ NumericTypeConstructor::NumericTypeConstructor(const XMLCh* typeURI,
     _typeName(typeName),
     _primitiveType(primitiveType)
 {
-  _sType.flags = StaticType::getFlagsFor(_primitiveType);
+  _sType = StaticType::create(_primitiveType);
 
   memset(&_value, 0, sizeof(_value));
 

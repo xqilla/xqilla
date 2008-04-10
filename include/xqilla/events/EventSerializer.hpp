@@ -36,6 +36,8 @@ public:
                   XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mm =
                   XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager);
 
+  virtual void setLocationInfo(const LocationInfo *location) {}
+
   virtual void startDocumentEvent(const XMLCh *documentURI, const XMLCh *encoding);
   virtual void endDocumentEvent();
   virtual void startElementEvent(const XMLCh *prefix, const XMLCh *uri, const XMLCh *localname);

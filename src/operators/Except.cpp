@@ -68,7 +68,7 @@ ASTNode* Except::staticResolution(StaticContext *context)
 
 ASTNode* Except::staticTyping(StaticContext *context)
 {
-  _src.getStaticType().flags = StaticType::NODE_TYPE;
+  _src.clear();
 
   _args[0] = _args[0]->staticTyping(context);
   _src.copy(_args[0]->getStaticAnalysis());

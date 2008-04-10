@@ -47,3 +47,42 @@ const XMLCh Node::comment_string[] =
 const XMLCh Node::namespace_string[] = 
 { XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_m, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_s, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_p, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_c, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
 
+bool Node::isAtomicValue() const {
+  return false;
+}
+
+bool Node::isNode() const {
+  return true;
+}
+
+bool Node::isFunction() const {
+  return false;
+}
+
+void Node::typeToBuffer(DynamicContext *context, XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &buffer) const
+{
+    buffer.append(dmNodeKind());
+    buffer.append('(');
+
+    if(dmNodeKind() == element_string ||
+       dmNodeKind() == attribute_string) {
+      ATQNameOrDerived::Ptr qname = dmNodeName(context);
+      if(qname->getURI()) {
+        buffer.append('{');
+        buffer.append(qname->getURI());
+        buffer.append('}');
+      }
+      buffer.append(qname->getName());
+
+      buffer.append(',');
+      buffer.append(' ');
+      if(getTypeURI()) {
+        buffer.append('{');
+        buffer.append(getTypeURI());
+        buffer.append('}');
+      }
+      buffer.append(getTypeName());
+    }
+
+    buffer.append(')');
+}

@@ -82,18 +82,20 @@ ASTNode *XQInstanceOf::staticTyping(StaticContext *context)
   }
   catch(const XPath2TypeMatchException &ex) {
     // The expression was constant folded, and the type matching failed.
-    AnyAtomicTypeConstructor *construct = 
-      new (mm) AnyAtomicTypeConstructor(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                                        SchemaSymbols::fgDT_BOOLEAN,
-                                        SchemaSymbols::fgATTVAL_FALSE,
-                                        AnyAtomicType::BOOLEAN);
-    ASTNode *result = new (mm) XQSequence(construct, mm);
-    result->setLocationInfo(this);
-    return result->staticTyping(context);
+    if(!_expr->getStaticAnalysis().isNoFoldingForced()) {
+      AnyAtomicTypeConstructor *construct = 
+        new (mm) AnyAtomicTypeConstructor(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                                          SchemaSymbols::fgDT_BOOLEAN,
+                                          SchemaSymbols::fgATTVAL_FALSE,
+                                          AnyAtomicType::BOOLEAN);
+      ASTNode *result = new (mm) XQSequence(construct, mm);
+      result->setLocationInfo(this);
+      return result->staticTyping(context);
+    }
   }
 
   _src.add(_expr->getStaticAnalysis());
-  _src.getStaticType().flags = StaticType::BOOLEAN_TYPE;
+  _src.getStaticType() = StaticType::BOOLEAN_TYPE;
 
   if(_expr->isConstant()) {
     return constantFold(context);

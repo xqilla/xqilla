@@ -67,7 +67,7 @@ ASTNode* Range::staticTyping(StaticContext *context)
 {
   _src.clear();
 
-  _src.getStaticType().flags = StaticType::DECIMAL_TYPE;
+  _src.getStaticType() = StaticType(StaticType::DECIMAL_TYPE, 0, StaticType::UNLIMITED);
 
   for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
     *i = (*i)->staticTyping(context);

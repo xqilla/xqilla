@@ -24,14 +24,18 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/items/AnyAtomicType.hpp>
+#include <xqilla/framework/XPath2MemoryManager.hpp>
+
+#include <xercesc/framework/XMLBuffer.hpp>
+#include <xercesc/util/XMemory.hpp>
 
 /**
- * Class that represents the static type of a sub-expression
+ * Class that represents the static type of an expression
  */
-class XQILLA_API StaticType {
+class XQILLA_API StaticType : public XERCES_CPP_NAMESPACE_QUALIFIER XMemory {
 public:
   /**
-   * Flags that determine what item types are returned from a sub-expression
+   * Flags that determine what item types are returned from an expression
    */
   enum StaticTypeFlags {
     DOCUMENT_TYPE            = 0x00000001,
@@ -66,6 +70,8 @@ public:
     UNTYPED_ATOMIC_TYPE      = 0x10000000,
     YEAR_MONTH_DURATION_TYPE = 0x20000000,
 
+    FUNCTION_TYPE            = 0x40000000,
+
     NODE_TYPE                = (DOCUMENT_TYPE | ELEMENT_TYPE | ATTRIBUTE_TYPE | TEXT_TYPE | PI_TYPE | COMMENT_TYPE |
                                 NAMESPACE_TYPE),
 
@@ -80,25 +86,90 @@ public:
 
     ANY_ATOMIC_TYPE          = (TYPED_ATOMIC_TYPE | UNTYPED_ATOMIC_TYPE),
 
-    ITEM_TYPE                = (NODE_TYPE | ANY_ATOMIC_TYPE),
+    ITEM_TYPE                = (NODE_TYPE | ANY_ATOMIC_TYPE | FUNCTION_TYPE),
 
     EMPTY_TYPE               = 0
   };
 
-  StaticType() : flags(0) {}
-  StaticType(unsigned int f) : flags(f) {}
+  static const unsigned int UNLIMITED;
 
-  static unsigned int getFlagsFor(const XMLCh *uri, const XMLCh *name, const StaticContext *context,
+  /// Constructor for an empty type
+  StaticType();
+  // Constructor for normal types
+  StaticType(StaticTypeFlags f, unsigned int min = 1, unsigned int max = 1);
+  /// Constructor for a function type
+  StaticType(XPath2MemoryManager *mm, unsigned int numArgs, const StaticType &returnType, unsigned int min = 1, unsigned int max = 1);
+  /// Constructor for a function type
+  StaticType(XPath2MemoryManager *mm, unsigned int minArgs, unsigned int maxArgs, const StaticType &returnType,
+             unsigned int min = 1, unsigned int max = 1);
+
+  StaticType(const StaticType &o);
+  StaticType &operator=(const StaticType &o);
+  ~StaticType();
+
+  static StaticType create(const XMLCh *uri, const XMLCh *name, const StaticContext *context,
                                   bool &isExact);
-  static unsigned int getFlagsFor(AnyAtomicType::AtomicObjectType primitiveType);
+  static StaticType create(AnyAtomicType::AtomicObjectType primitiveType);
 
   void typeUnion(const StaticType &st);
   void typeIntersect(const StaticType &st);
+  void typeExcept(const StaticType &st);
 
-  bool containsType(unsigned int type) const;
-  bool isType(unsigned int type) const;
+  void typeConcat(const StaticType &st);
+  void typeNodeIntersect(const StaticType &st);
 
-  unsigned int flags;
+  StaticType operator|(const StaticType &st) const;
+  StaticType &operator|=(const StaticType &st);
+
+  StaticType operator&(const StaticType &st) const;
+  StaticType &operator&=(const StaticType &st);
+
+  StaticType &substitute(const StaticType &from, const StaticType &to);
+  StaticType &multiply(unsigned int min, unsigned int max);
+  void setCardinality(unsigned int min, unsigned int max);
+
+  bool containsType(const StaticType &type) const;
+  bool containsType(StaticType::StaticTypeFlags flags) const;
+  bool isType(const StaticType &type) const;
+
+  enum TypeMatchEnum {
+    NEVER = 0,
+    PROBABLY_NOT = 1,
+    MAYBE = 2,
+    ALWAYS = 3
+  };
+
+  struct TypeMatch
+  {
+    TypeMatchEnum type, cardinality;
+  };
+
+  TypeMatch matches(const StaticType &actual) const;
+
+  unsigned int getMin() const { return min_; }
+  unsigned int getMax() const { return max_; }
+
+  unsigned int getMinArgs() const { return minArgs_; }
+  unsigned int getMaxArgs() const { return maxArgs_; }
+  const StaticType *getReturnType() const { return returnType_; }
+
+  void typeToBuf(XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &buf) const;
+
+private:
+  TypeMatchEnum matchesFunctionType(const StaticType &type) const;
+  TypeMatchEnum matchesType(const StaticType &type) const;
+
+  unsigned int flags_;
+  unsigned int min_;
+  unsigned int max_;
+
+  XPath2MemoryManager *mm_;
+  unsigned int minArgs_;
+  unsigned int maxArgs_;
+  StaticType *returnType_;
 };
+
+StaticType::StaticTypeFlags operator|(StaticType::StaticTypeFlags a, StaticType::StaticTypeFlags b);
+StaticType::StaticTypeFlags operator&(StaticType::StaticTypeFlags a, StaticType::StaticTypeFlags b);
 
 #endif

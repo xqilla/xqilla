@@ -54,7 +54,7 @@ ASTNode *FunctionDocAvailable::staticTyping(StaticContext *context)
 {
   _src.clear();
 
-  _src.getStaticType().flags = StaticType::BOOLEAN_TYPE;
+  _src.getStaticType() = StaticType::BOOLEAN_TYPE;
   _src.availableDocumentsUsed(true);
   return calculateSRCForArguments(context);
 }

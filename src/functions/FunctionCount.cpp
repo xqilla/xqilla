@@ -21,6 +21,8 @@
 
 #include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionCount.hpp>
+#include <xqilla/ast/XQSequence.hpp>
+#include <xqilla/exceptions/XQException.hpp>
 #include <xqilla/runtime/Sequence.hpp>
 #include <xqilla/items/ATDecimalOrDerived.hpp>
 #include <xqilla/context/DynamicContext.hpp>
@@ -52,9 +54,29 @@ ASTNode* FunctionCount::staticResolution(StaticContext *context) {
 ASTNode *FunctionCount::staticTyping(StaticContext *context)
 {
   _src.clear();
+  _src.getStaticType() = StaticType::DECIMAL_TYPE;
 
-  _src.getStaticType().flags = StaticType::DECIMAL_TYPE;
-  return calculateSRCForArguments(context);
+  ASTNode *result = calculateSRCForArguments(context);
+  if(result == this) {
+    const StaticType &sType = _args[0]->getStaticAnalysis().getStaticType();
+    if(sType.getMin() == sType.getMax()) {
+      XPath2MemoryManager* mm = context->getMemoryManager();
+
+      try {
+        AutoDelete<DynamicContext> dContext(context->createDynamicContext());
+        dContext->setMemoryManager(mm);
+
+        result = new (mm) XQSequence(mm->createInteger(sType.getMin()), dContext, mm);
+        result->setLocationInfo(this);
+        return result->staticTyping(context);
+      }
+      catch(XQException &ex) {
+        // Constant folding failed
+      }
+    }
+  }
+
+  return result;
 }
 
 Sequence FunctionCount::createSequence(DynamicContext* context, int flags) const

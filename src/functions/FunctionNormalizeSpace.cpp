@@ -30,13 +30,15 @@
 #include <xercesc/util/XMLString.hpp>
 #include <xqilla/ast/StaticAnalysis.hpp>
 
+XERCES_CPP_NAMESPACE_USE;
+
 const XMLCh FunctionNormalizeSpace::name[] = {
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_r, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_m, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_l, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_i, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_z, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chDash,    XERCES_CPP_NAMESPACE_QUALIFIER chLatin_s, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_p, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_c, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chNull 
+  chLatin_n, chLatin_o, chLatin_r, 
+  chLatin_m, chLatin_a, chLatin_l, 
+  chLatin_i, chLatin_z, chLatin_e, 
+  chDash,    chLatin_s, chLatin_p, 
+  chLatin_a, chLatin_c, chLatin_e, 
+  chNull 
 };
 const unsigned int FunctionNormalizeSpace::minArgs = 0;
 const unsigned int FunctionNormalizeSpace::maxArgs = 1;
@@ -51,16 +53,17 @@ FunctionNormalizeSpace::FunctionNormalizeSpace(const VectorOfASTNodes &args, XPa
 {
 }
 
-const XMLCh* FunctionNormalizeSpace::getString(DynamicContext* context) const {
-  XPath2MemoryManager* memMgr = context->getMemoryManager();
-  //setup xf:string with empty args
-  VectorOfASTNodes args=VectorOfASTNodes(XQillaAllocator<ASTNode*>(memMgr));
-  FunctionString stringGrabber(args, memMgr);
-  //call xf:string and extract result
-  return stringGrabber.createResult(context)->next(context)->asString(context);
-}
+ASTNode* FunctionNormalizeSpace::staticResolution(StaticContext *context)
+{
+  XPath2MemoryManager *mm = context->getMemoryManager();
 
-ASTNode* FunctionNormalizeSpace::staticResolution(StaticContext *context) {
+  if(_args.empty()) {
+    FunctionString *arg = new (mm) FunctionString(VectorOfASTNodes(XQillaAllocator<ASTNode*>(mm)), mm);
+    arg->setLocationInfo(this);
+
+    _args.push_back(arg);
+  }
+
   return resolveArguments(context);
 }
 
@@ -68,62 +71,49 @@ ASTNode *FunctionNormalizeSpace::staticTyping(StaticContext *context)
 {
   _src.clear();
 
-  _src.getStaticType().flags = StaticType::STRING_TYPE;
-  if(_args.empty()) {
-    _src.contextItemUsed(true);
-  }
+  _src.getStaticType() = StaticType::STRING_TYPE;
   return calculateSRCForArguments(context);
 }
 
 Sequence FunctionNormalizeSpace::createSequence(DynamicContext* context, int flags) const
 {
-    XPath2MemoryManager* memMgr = context->getMemoryManager();
-    const XMLCh* str;
-    if (getNumArgs() == 0) {
-        str = getString(context);
-    } else {
-        Sequence strParm=getParamNumber(1,context)->toSequence(context);
-        if(strParm.isEmpty())
-            return Sequence(context->getItemFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context), memMgr);
+    XPath2MemoryManager *mm = context->getMemoryManager();
 
-        str = strParm.first()->asString(context);
-    }
-    const XMLCh* result = XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString;
+    Item::Ptr strParm = getParamNumber(1,context)->next(context);
+    if(strParm.isNull())
+      return Sequence(context->getItemFactory()->createString(XMLUni::fgZeroLenString, context), mm);
 
-    int whitespace = 0; 
-    for(unsigned int i = 0; i < XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(str); i++) 
-    {
-        XMLCh ch = str[i];
+    const XMLCh *str = strParm->asString(context);
 
-        if((ch == 0x9) || (ch == 0xA) || (ch == 0xD) || (ch == 0x20))
-        {
-            whitespace++;
-            ch = 0x20;
-        }
-        else
-        {
-            whitespace = 0;
-        }
-        if(whitespace < 2)
-        {
-            result = XPath2Utils::concatStrings(result, ch, memMgr);
-        }
+    // Skip leading whitespace
+    while(*str) {
+      XMLCh ch = *str;
+
+      if((ch == 0x9) || (ch == 0xA) || (ch == 0xD) || (ch == 0x20)) {
+        ++str;
+        continue;
+      }
+      break;
     }
 
-    if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(result)>0)
-    {
-        XMLCh first = result[0];
-        if((first == 0x9) || (first == 0xA) || (first == 0xD) || (first == 0x20)) {
-            result = XPath2Utils::deleteData(result, 0, 1, memMgr); 
-        }
+    XMLBuffer buf(XMLString::stringLen(str));
+
+    // Compact whitespace, and skip trailing whitespace
+    bool whitespace = false;
+    while(*str) {
+      XMLCh ch = *str;
+
+      if((ch == 0x9) || (ch == 0xA) || (ch == 0xD) || (ch == 0x20)) {
+        whitespace = true;
+      }
+      else {
+        if(whitespace) buf.append(' ');
+        buf.append(ch);
+        whitespace = false;
+      }
+      ++str;
     }
-    if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(result)>0)
-    {
-        XMLCh last = result[XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(result) - 1];
-        if((last == 0x9) || (last == 0xA) || (last == 0xD) || (last == 0x20)) {
-            result = XPath2Utils::deleteData(result, XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(result) -1, 1, memMgr);
-        }
-    }
-    return Sequence(context->getItemFactory()->createString(result, context), memMgr);
+
+    return Sequence(context->getItemFactory()->createString(buf.getRawBuffer(), context), mm);
 }
 

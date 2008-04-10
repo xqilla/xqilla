@@ -28,6 +28,8 @@
 #endif
 
 #include <iostream>
+#include <sstream>
+
 #include <xqilla/utils/UTF8Str.hpp>
 
 #include "../lexer/XQLexer.hpp"
@@ -48,8 +50,10 @@
 #include <xqilla/ast/XQOrderingChange.hpp>
 #include <xqilla/ast/XQDocumentOrder.hpp>
 #include <xqilla/ast/XQReturn.hpp>
+#include <xqilla/ast/XQNamespaceBinding.hpp>
 
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
+#include <xercesc/dom/DOMXPathNSResolver.hpp>
 
 #include <xqilla/items/AnyAtomicTypeConstructor.hpp>
 
@@ -63,11 +67,18 @@
 #include <xqilla/ast/XQCastAs.hpp>
 #include <xqilla/ast/XQCastableAs.hpp>
 #include <xqilla/ast/XQTreatAs.hpp>
+#include <xqilla/ast/XQFunctionConversion.hpp>
+#include <xqilla/ast/XQAnalyzeString.hpp>
+#include <xqilla/ast/XQCopyOf.hpp>
 #include <xqilla/ast/XQAtomize.hpp>
 #include <xqilla/ast/ConvertFunctionArg.hpp>
 #include <xqilla/ast/XQIf.hpp>
 #include <xqilla/ast/XQContextItem.hpp>
 #include <xqilla/ast/XQPredicate.hpp>
+#include <xqilla/ast/XQApplyTemplates.hpp>
+#include <xqilla/ast/XQInlineFunction.hpp>
+#include <xqilla/ast/XQFunctionDeref.hpp>
+#include <xqilla/ast/XQFunctionRef.hpp>
 
 #include <xqilla/fulltext/FTContains.hpp>
 #include <xqilla/fulltext/FTOr.hpp>
@@ -125,6 +136,8 @@
 
 #include <xqilla/functions/FunctionConstructor.hpp>
 #include <xqilla/functions/FunctionRoot.hpp>
+#include <xqilla/functions/FunctionQName.hpp>
+#include <xqilla/functions/XQillaFunction.hpp>
 
 #include <xqilla/axis/NodeTest.hpp>
 
@@ -134,6 +147,8 @@
 #include <xqilla/exceptions/ContextException.hpp>
 
 #include <xqilla/utils/XPath2Utils.hpp>
+#include <xqilla/utils/XPath2NSUtils.hpp>
+#include <xqilla/utils/UTF8Str.hpp>
 #include "../config/xqilla_config.h"
 
 #define YYPARSE_PARAM qp
@@ -166,13 +181,16 @@ void *alloca (size_t);
 #define LANGUAGE (QP->_lexer->getLanguage())
 #define MEMMGR   (CONTEXT->getMemoryManager())
 
-#define REJECT_NOT_XQUERY(where,pos)   if(!QP->_lexer->isXQuery())   { yyerror(LANGUAGE, #where, (pos).first_line, (pos).first_column); }
+#define REJECT_NOT_XQUERY(where,pos)      if(!QP->_lexer->isXQuery()) { yyerror(LANGUAGE, #where, (pos).first_line, (pos).first_column); }
+#define REJECT_NOT_EXTENSION(where,pos)   if(!QP->_lexer->isExtensions()) { yyerror(LANGUAGE, #where, (pos).first_line, (pos).first_column); }
 
 #define WRAP(pos,object)        (wrapForDebug((QP), (object), (pos).first_line, (pos).first_column))
 
 #define LOCATION(pos,name) LocationInfo name(QP->_query->getFile(), (pos).first_line, (pos).first_column)
 
 #define GET_NAVIGATION(pos, object) (((object)->getType() == ASTNode::NAVIGATION) ? (XQNav*)(object) : WRAP(pos, new (MEMMGR) XQNav((object), MEMMGR)))
+
+#define PRESERVE_NS(pos, object) (QP->_lexer->getNSResolver() == 0 ? (object) : WRAP((pos), new (MEMMGR) XQNamespaceBinding(QP->_lexer->getNSResolver(), (object), MEMMGR)))
 
 #define BIT_ORDERING_SPECIFIED                  0
 #define BIT_BOUNDARY_SPECIFIED                  1
@@ -210,8 +228,13 @@ void *alloca (size_t);
 #define yyerror QP->_lexer->error
 
 XERCES_CPP_NAMESPACE_USE;
+using namespace std;
 
 static const XMLCh sz1_0[] = { chDigit_1, chPeriod, chDigit_0, chNull };
+static const XMLCh option_projection[] = { 'p', 'r', 'o', 'j', 'e', 'c', 't', 'i', 'o', 'n', 0 };
+static const XMLCh option_psvi[] = { 'p', 's', 'v', 'i', 0 };
+static const XMLCh var_name[] = { 'n', 'a', 'm', 'e', 0 };
+
 static const XMLCh err_XPDY0050[] = { 'e', 'r', 'r', ':', 'X', 'P', 'D', 'Y', '0', '0', '5', '0', 0 };
 
 static inline VectorOfASTNodes packageArgs(ASTNode *arg1Impl, ASTNode *arg2Impl, XPath2MemoryManager* memMgr)
@@ -243,6 +266,64 @@ TYPE *wrapForDebug(XQParserArgs *qp, TYPE* pObjToWrap, unsigned int line, unsign
   return pObjToWrap;
 }
 
+#define RESOLVE_QNAME(pos, qname) const XMLCh *uri, *name; resolveQName((pos), QP, (qname), uri, name)
+
+static void resolveQName(const yyltype &pos, XQParserArgs *qp, const XMLCh *qname, const XMLCh *&uri, const XMLCh *&name)
+{
+  const XMLCh *prefix = XPath2NSUtils::getPrefix(qname, MEMMGR);
+  name = XPath2NSUtils::getLocalName(qname);
+
+  if(prefix == 0 || *prefix == 0) {
+    uri = 0;
+  }
+  else {
+    if(QP->_lexer->getNSResolver() == 0) {
+      uri = CONTEXT->getNSResolver()->lookupNamespaceURI(prefix);
+    }
+    else {
+      uri = QP->_lexer->getNSResolver()->lookupNamespaceURI(prefix);
+    }
+
+    if(uri == 0 || *uri == 0) {
+      ostringstream oss;
+      oss << "No namespace binding for prefix '" << UTF8(prefix) << "' [err:XTSE0280]";
+      yyerror(pos, oss.str().c_str());
+    }
+  }
+}
+
+#define XSLT_VARIABLE_VALUE(pos, select, seqConstruct, seqType) variableValueXSLT((pos), QP, (select), (seqConstruct), (seqType))
+
+static ASTNode *variableValueXSLT(const yyltype &pos, XQParserArgs *qp, ASTNode *select, XQParenthesizedExpr *seqConstruct, SequenceType *seqType)
+{
+  if(!seqConstruct->getChildren().empty()) {
+    if(select != 0) return 0; // signifies an error
+    
+    if(seqType == 0) {
+      return WRAP(pos, new (MEMMGR) XQDocumentConstructor(seqConstruct, MEMMGR));
+    }
+
+    return WRAP(pos, new (MEMMGR) XQFunctionConversion(seqConstruct, seqType, MEMMGR));
+  }
+
+  if(select != 0) {
+    if(seqType == 0) return select;
+
+    return WRAP(pos, new (MEMMGR) XQFunctionConversion(select, seqType, MEMMGR));
+  }
+
+  if(seqType == 0) {
+    return WRAP(pos, new (MEMMGR) XQLiteral(
+                  new (MEMMGR) AnyAtomicTypeConstructor(
+                  SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                  SchemaSymbols::fgDT_STRING,
+                  XMLUni::fgZeroLenString, AnyAtomicType::STRING),
+                  MEMMGR));
+  }
+
+  return WRAP(pos, new (MEMMGR) XQFunctionConversion(WRAP(pos, new (MEMMGR) XQSequence(MEMMGR)), seqType, MEMMGR));
+}
+
 namespace XQParser {
 
 %}
@@ -251,12 +332,12 @@ namespace XQParser {
 %token MYEOF 0                    "<end of file>"
 
 /* "Fake" tokens that decide which language we're parsing */
-%token _LANG_XPATH2_
-%token _LANG_XQUERY_
-%token _LANG_XPATH2_FULLTEXT_
-%token _LANG_XQUERY_FULLTEXT_
-%token _LANG_XQUERY_UPDATE_
-%token _LANG_XQUERY_FULLTEXT_UPDATE_
+%token _LANG_XPATH2_                   "<Language: XPath2>"
+%token _LANG_XQUERY_                   "<Language: XQuery>"
+%token _LANG_XQUERY_FULLTEXT_          "<Language: XQuery Fulltext>"
+%token _LANG_XQUERY_UPDATE_            "<Language: XQuery Update>"
+%token _LANG_XQUERY_FULLTEXT_UPDATE_   "<Language: XQuery Fulltext Update>"
+%token _LANG_XSLT2_                    "<Language: XSLT 2.0>"
 
 %token _DOLLAR_ "$"
 %token _COLON_EQUALS_ ":="
@@ -283,27 +364,29 @@ namespace XQParser {
 %token _XML_COMMENT_END_ "-->"
 %token _SLASH_SLASH_ "//"
 %token _END_TAG_OPEN_ "</"
-%token _PRAGMA_OPEN_          "(#"
-%token _COMMA_              ","
-%token _PLUS_              "+"
-%token _MINUS_              "-"
-%token _SLASH_              "/"
-%token _EQUALS_              "= (comparison operator)"
-%token _DOT_              "."
-%token _DOT_DOT_            ".."
-%token _LPAR_              "("
-%token _RPAR_              ")"
-%token _EMPTY_TAG_CLOSE_        "/>"
-%token _VALUE_INDICATOR_        "="
-%token _OPEN_QUOT_            "\" (open)"
+%token _PRAGMA_OPEN_           "(#"
+%token _COMMA_                 ","
+%token _PLUS_                  "+"
+%token _MINUS_                 "-"
+%token _SLASH_                 "/"
+%token _EQUALS_                "= (comparison operator)"
+%token _DOT_                   "."
+%token _DOT_DOT_               ".."
+%token _LPAR_                  "("
+%token _RPAR_                  ")"
+%token _EMPTY_TAG_CLOSE_       "/>"
+%token _VALUE_INDICATOR_       "="
+%token _OPEN_QUOT_             "\" (open)"
 %token _CLOSE_QUOT_            "\" (close)"
-%token _OPEN_APOS_            "' (open)"
+%token _OPEN_APOS_             "' (open)"
 %token _CLOSE_APOS_            "' (close)"
-%token _LBRACE_              "{"
+%token _LBRACE_                "{"
 %token _LBRACE_EXPR_ENCLOSURE_ "{ (expression enclosure)"
-%token _RBRACE_              "}"
-%token _SEMICOLON_            ";"
-%token _BANG_                                           "!"
+%token _RBRACE_                "}"
+%token _SEMICOLON_             ";"
+%token _BANG_                  "!"
+%token _HASH_                  "#"
+%token _ARROW_                 "=>"
 
 %token <str> _INTEGER_LITERAL_ "<integer literal>"
 %token <str> _DECIMAL_LITERAL_ "<decimal literal>"
@@ -442,6 +525,7 @@ namespace XQParser {
 %token <str> _MODULE_                  "module"
 %token <str> _ELEMENT_                "element"
 %token <str> _FUNCTION_                "function"
+%token <str> _FUNCTION_EXT_                "function (ext)"
 %token <str> _SCORE_                                          "score"
 %token <str> _FTCONTAINS_                                     "ftcontains"
 %token <str> _WEIGHT_                                         "weight"
@@ -481,10 +565,70 @@ namespace XQParser {
 %token <str> _DELETE_                                         "delete"
 %token <str> _INTO_                                           "into"
 %token <str> _UPDATING_                                       "updating"
+%token <str> _ID_                                             "id"
+%token <str> _KEY_                                            "key"
+%token <str> _TEMPLATE_                                       "template"
+%token <str> _MATCHES_                                        "matches"
+%token <str> _NAME_                                           "name"
+%token <str> _CALL_                                           "call"
+%token <str> _APPLY_                                          "apply"
+%token <str> _TEMPLATES_                                      "templates"
 
-%type <functDecl>    FunctionDecl FunctionDecl_XQ
-%type <argSpec>      Param
-%type <argSpecs>    ParamList FunctionParamList
+/* XSLT 2.0 tokens */
+%token _XSLT_END_ELEMENT_                                     "<XSLT end element>"
+%token _XSLT_STYLESHEET_                                      "<xsl:stylesheet..."
+%token _XSLT_TEMPLATE_                                        "<xsl:template..."
+%token _XSLT_VALUE_OF_                                        "<xsl:value-of..."
+%token _XSLT_TEXT_                                            "<xsl:text..."
+%token _XSLT_APPLY_TEMPLATES_                                 "<xsl:apply-templates..."
+%token _XSLT_CALL_TEMPLATE_                                   "<xsl:call-template..."
+%token _XSLT_WITH_PARAM_                                      "<xsl:with-param..."
+%token _XSLT_SEQUENCE_                                        "<xsl:sequence..."
+%token _XSLT_PARAM_                                           "<xsl:param..."
+%token _XSLT_FUNCTION_                                        "<xsl:function..."
+%token _XSLT_CHOOSE_                                          "<xsl:choose..."
+%token _XSLT_WHEN_                                            "<xsl:when..."
+%token _XSLT_OTHERWISE_                                       "<xsl:otherwise..."
+%token _XSLT_IF_                                              "<xsl:if..."
+%token _XSLT_VARIABLE_                                        "<xsl:variable..."
+%token _XSLT_COMMENT_                                         "<xsl:comment..."
+%token _XSLT_PI_                                              "<xsl:processing-instruction..."
+%token _XSLT_DOCUMENT_                                        "<xsl:document..."
+%token _XSLT_ATTRIBUTE_                                       "<xsl:attribute..."
+%token _XSLT_ANALYZE_STRING_                                  "<xsl:analyze-string..."
+%token _XSLT_MATCHING_SUBSTRING_                              "<xsl:matching-substring..."
+%token _XSLT_NON_MATCHING_SUBSTRING_                          "<xsl:non-matching-substring..."
+%token _XSLT_COPY_OF_                                         "<xsl:copy-of..."
+%token _XSLT_COPY_                                            "<xsl:copy..."
+
+%token <str> _XSLT_VERSION_                                   "version='...'"
+%token <str> _XSLT_MODE_                                      "mode='...'"
+%token <str> _XSLT_NAME_                                      "name='...'"
+%token <boolean> _XSLT_TUNNEL_                                "tunnel='...'"
+%token <boolean> _XSLT_REQUIRED_                              "required='...'"
+%token <boolean> _XSLT_OVERRIDE_                              "override='...'"
+%token <boolean> _XSLT_COPY_NAMESPACES_                       "copy-namespaces='...'"
+%token <boolean> _XSLT_INHERIT_NAMESPACES_                    "inherit-namespaces='...'"
+%token _XSLT_MATCH_                                           "match='...'"
+%token _XSLT_AS_                                              "as='...'"
+%token _XSLT_SELECT_                                          "select='...'"
+%token _XSLT_PRIORITY_                                        "priority='...'"
+%token _XSLT_TEST_                                            "test='...'"
+%token _XSLT_SEPARATOR_                                       "separator='...'"
+%token _XSLT_NAMESPACE_A_                                     "namespace='...'"
+%token _XSLT_REGEX_                                           "regex='...'"
+%token _XSLT_FLAGS_                                           "flags='...'"
+
+%token <astNode> _XSLT_ELEMENT_NAME_                          "<XSLT element name>"
+%token <astNode> _XSLT_XMLNS_ATTR_                            "<XSLT XMLNS attr>"
+%token <astNode> _XSLT_ATTR_NAME_                             "<XSLT attr name>"
+%token <astNode> _XSLT_TEXT_NODE_                             "<XSLT text node>"
+%token <astNode> _XSLT_WS_TEXT_NODE_                          "<XSLT whitespace text node>"
+
+%type <functDecl>    FunctionDecl FunctionDecl_XQ TemplateDecl FunctionAttrs_XSLT TemplateAttrs_XSLT
+%type <globalVar>    GlobalVariableAttrs_XSLT GlobalParamAttrs_XSLT
+%type <argSpec>      Param Param_XSLT ParamAttrs_XSLT
+%type <argSpecs>     ParamList FunctionParamList TemplateParamList ParamList_XSLT
 %type <astNode>      Expr ExprSingle OrExpr AndExpr EnclosedExpr FLWORExpr IfExpr ComparisonExpr DecimalLiteral VarRef
 %type <astNode>      RangeExpr AdditiveExpr MultiplicativeExpr UnionExpr QuantifiedExpr StringLiteral Literal ContextItemExpr
 %type <astNode>      UnaryExpr ValidateExpr CastExpr TreatExpr IntersectExceptExpr ParenthesizedExpr PrimaryExpr FunctionCall
@@ -495,6 +639,17 @@ namespace XQParser {
 %type <astNode>      ExtensionExpr FTContainsExpr FTIgnoreOption VarDeclValue LeadingSlash CompPINCName
 %type <astNode>      InsertExpr DeleteExpr RenameExpr ReplaceExpr TransformExpr CompConstructorName
 %type <astNode>      ForwardStep ReverseStep AbbrevForwardStep AbbrevReverseStep OrderExpr CompPIConstructorContent
+%type <astNode>      PathPattern_XSLT RelativePathPattern_XSLT PatternStep_XSLT
+%type <astNode>      IdKeyPattern_XSLT IdValue_XSLT KeyValue_XSLT PathPatternStart_XSLT CallTemplateExpr ApplyTemplatesExpr
+%type <astNode>      DereferencedFunctionCall InlineFunction LiteralFunctionRef FunctionRef
+%type <astNode>      LiteralResultElement_XSLT ValueOf_XSLT ValueOfAttrs_XSLT Text_XSLT TextNode_XSLT ApplyTemplates_XSLT
+%type <astNode>      ApplyTemplatesAttrs_XSLT CallTemplate_XSLT CallTemplateAttrs_XSLT Sequence_XSLT Choose_XSLT If_XSLT
+%type <astNode>      WhenList_XSLT When_XSLT Otherwise_XSLT Variable_XSLT Comment_XSLT CommentAttrs_XSLT
+%type <astNode>      PI_XSLT PIAttrs_XSLT Document_XSLT DocumentAttrs_XSLT Attribute_XSLT AttributeAttrs_XSLT
+%type <astNode>      AnalyzeString_XSLT AnalyzeStringAttrs_XSLT MatchingSubstring_XSLT NonMatchingSubstring_XSLT
+%type <astNode>      CopyOf_XSLT CopyOfAttrs_XSLT
+
+%type <parenExpr>    SequenceConstructor_XSLT
 
 %type <ftselection>     FTSelection FTWords FTWordsSelection FTUnaryNot FTMildnot FTAnd FTOr
 %type <ftoption>        FTProximity
@@ -503,25 +658,31 @@ namespace XQParser {
 %type <ftrange>         FTRange
 %type <ftunit>          FTUnit FTBigUnit
 
-%type <itemList>      DirElementContent DirAttributeList QuotAttrValueContent AposAttrValueContent DirAttributeValue FunctionCallArgumentList
-%type <itemList>      ContentExpr LiteralDirAttributeValue LiteralQuotAttrValueContent LiteralAposAttrValueContent
-%type <predicates>    PredicateList
-%type <axis>              ForwardAxis ReverseAxis
-%type <nodeTest>      NodeTest NameTest Wildcard
-%type <qName>        QName AtomicType TypeName ElementName AttributeName ElementNameOrWildcard AttribNameOrWildcard AttributeDeclaration ElementDeclaration
-%type <sequenceType>    SequenceType TypeDeclaration SingleType
+%type <itemList>        DirElementContent DirAttributeList QuotAttrValueContent AposAttrValueContent DirAttributeValue FunctionCallArgumentList
+%type <itemList>        ContentExpr LiteralDirAttributeValue LiteralQuotAttrValueContent LiteralAposAttrValueContent AttrValueTemplate_XSLT Pattern_XSLT
+%type <itemList>        LiteralResultElementAttrs_XSLT
+%type <predicates>      PredicateList PatternStepPredicateList_XSLT
+%type <axis>            ForwardAxis ReverseAxis
+%type <nodeTest>        NodeTest NameTest Wildcard PatternAxis_XSLT
+%type <qName>           QName AtomicType TypeName ElementName AttributeName ElementNameOrWildcard AttribNameOrWildcard AttributeDeclaration ElementDeclaration
+%type <sequenceType>    SequenceType TypeDeclaration SingleType TemplateSequenceType
+%type <sequenceTypes>   FunctionTypeArguments
 %type <occurrence>      OccurrenceIndicator SingleTypeOccurrence
-%type <itemType>      ItemType KindTest AttributeTest SchemaAttributeTest PITest CommentTest TextTest AnyKindTest ElementTest DocumentTest SchemaElementTest
-%type <copyBinding>    TransformBinding
+%type <itemType>        ItemType KindTest AttributeTest SchemaAttributeTest PITest CommentTest TextTest AnyKindTest ElementTest DocumentTest SchemaElementTest
+%type <itemType>        FunctionType ParenthesizedItemType
+%type <copyBinding>     TransformBinding
 %type <copyBindingList> TransformBindingList
-%type <tupleNode>    ForBinding LetBinding WhereClause FLWORTuples OrderByClause OrderSpec OrderSpecList
-%type <tupleNode> FlworExprForLetList ForClause LetClause ForBindingList LetBindingList QuantifyBinding QuantifyBindingList
-%type <caseClause>        CaseClause DefaultCase
-%type <caseClauses>      CaseClauseList
-%type <orderByModifier>    OrderDirection EmptyHandling
+%type <templateArg>     TemplateArgument WithParamAttrs_XSLT WithParam_XSLT
+%type <templateArgs>    TemplateArgumentList ApplyTemplatesContent_XSLT CallTemplateContent_XSLT
+%type <tupleNode>       ForBinding LetBinding WhereClause FLWORTuples OrderByClause OrderSpec OrderSpecList
+%type <tupleNode>       FlworExprForLetList ForClause LetClause ForBindingList LetBindingList QuantifyBinding QuantifyBindingList
+%type <letTuple>        VariableAttrs_XSLT
+%type <caseClause>      CaseClause DefaultCase
+%type <caseClauses>     CaseClauseList
+%type <orderByModifier> OrderDirection EmptyHandling
 %type <stringList>      ResourceLocations
-%type <str>          PositionalVar SchemaPrefix URILiteral FTScoreVar DirCommentContents DirElemConstructorQName
-%type <str>                 FunctionName QNameValue VarName NCName DirPIContents PragmaContents
+%type <str>             PositionalVar SchemaPrefix URILiteral FTScoreVar DirCommentContents DirElemConstructorQName
+%type <str>             FunctionName QNameValue VarName NCName DirPIContents PragmaContents Number_XSLT
 
 %type <boolean> FunctionDeclUpdating PreserveMode InheritMode
 
@@ -532,19 +693,1263 @@ namespace XQParser {
 // We're expecting 50 shift/reduce conflicts. These have been checked and are harmless.
 // 48 arise from the xgs:leading-lone-slash grammar constraint (http://www.w3.org/TR/xquery/#parse-note-leading-lone-slash)
 // 2 arise from the xgs:occurrence-indicator grammar constriant (http://www.w3.org/TR/xquery/#parse-note-occurence-indicators)
-%expect 50
+//%expect 50
+
+// We're expecting 76 shift/reduce conflicts. These have been checked and are harmless.
+// 48 arise from the xgs:leading-lone-slash grammar constraint (http://www.w3.org/TR/xquery/#parse-note-leading-lone-slash)
+// 3 arise from the xgs:occurrence-indicator grammar constriant (http://www.w3.org/TR/xquery/#parse-note-occurence-indicators)
+// 14 are due to template extensions
+// 17 are due to Variable_XSLT
+// 1 is due to FunctionType
+%expect 83
 
 %%
 
 // Select the language we parse, based on the (fake) first token from the lexer
 SelectLanguage:
-  _LANG_XPATH2_ QueryBody
+    _LANG_XPATH2_ QueryBody
+
   | _LANG_XQUERY_ Module_XQ
-  | _LANG_XPATH2_FULLTEXT_ QueryBody
   | _LANG_XQUERY_FULLTEXT_ Module_XQF
   | _LANG_XQUERY_UPDATE_ Module_XQU
   | _LANG_XQUERY_FULLTEXT_UPDATE_ Module
+
+  | _LANG_XSLT2_ Start_XSLT
   ;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// XSLT rules
+
+Start_XSLT:
+    Stylesheet_XSLT
+  {
+    SequenceType *optionalString =
+      WRAP(@1, new (MEMMGR) SequenceType(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                                         SchemaSymbols::fgDT_STRING,
+                                         SequenceType::QUESTION_MARK, MEMMGR));
+
+    XQGlobalVariable *nameVar =
+      WRAP(@1, new (MEMMGR) XQGlobalVariable(0, optionalString,
+                                             WRAP(@1, new (MEMMGR) XQSequence(MEMMGR)), MEMMGR, /*isParam*/true));
+    nameVar->setVariableURI(XQillaFunction::XMLChFunctionURI);
+    nameVar->setVariableLocalName(var_name);
+
+    QP->_query->addVariable(nameVar);
+
+    // TBD execution of a named template - jpcs
+/*     ASTNode *nameVarRef1 = WRAP(@1, new (MEMMGR) XQVariable(XQillaFunction::XMLChFunctionURI, var_name, MEMMGR)); */
+/*     ASTNode *cast = WRAP(@1, new (MEMMGR) XQNameExpression(nameVarRef1, MEMMGR)); */
+/*     XQCallTemplate *call = WRAP(@1, new (MEMMGR) XQCallTemplate(cast, 0, MEMMGR)); */
+
+    ASTNode *empty =  WRAP(@1, new (MEMMGR) XQSequence(MEMMGR));
+
+    ASTNode *ci = WRAP(@1, new (MEMMGR) XQContextItem(MEMMGR));
+    ASTNode *apply = WRAP(@1, new (MEMMGR) XQApplyTemplates(ci, 0, MEMMGR));
+
+    ASTNode *nameVarRef2 = WRAP(@1, new (MEMMGR) XQVariable(XQillaFunction::XMLChFunctionURI, var_name, MEMMGR));
+    QP->_query->setQueryBody(WRAP(@1, new (MEMMGR) XQIf(nameVarRef2, empty, apply, MEMMGR)));
+
+  }
+  | LiteralResultElement_XSLT
+  {
+    // TBD Check for xsl:version attr - jpcs
+    NodeTest *nt = new (MEMMGR) NodeTest();
+    nt->setNodeType(Node::document_string);
+    nt->setNameWildcard();
+    nt->setNamespaceWildcard();
+
+    VectorOfASTNodes *pattern = new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
+    pattern->push_back(WRAP(@1, new (MEMMGR) XQStep(XQStep::SELF, nt, MEMMGR)));
+
+    QP->_query->addFunction(WRAP(@1, new (MEMMGR) XQUserFunction(0, pattern, 0, $1, 0, MEMMGR)));
+
+    // TBD execution of a named template - jpcs
+    ASTNode *ci = WRAP(@1, new (MEMMGR) XQContextItem(MEMMGR));
+    QP->_query->setQueryBody(WRAP(@1, new (MEMMGR) XQApplyTemplates(ci, 0, MEMMGR)));
+  }
+  ;
+
+Stylesheet_XSLT:
+    _XSLT_STYLESHEET_ StylesheetAttrs_XSLT StylesheetContent_XSLT _XSLT_END_ELEMENT_
+  {
+  }
+  ;
+
+StylesheetAttrs_XSLT:
+    /* empty */
+  | StylesheetAttrs_XSLT _XSLT_VERSION_
+  {
+    // TBD Check the value - jpcs
+  }
+  // TBD the rest of the attrs - jpcs
+  ;
+
+StylesheetContent_XSLT:
+    /* empty */
+  | StylesheetContent_XSLT Template_XSLT
+  | StylesheetContent_XSLT Function_XSLT
+  | StylesheetContent_XSLT GlobalParam_XSLT
+  | StylesheetContent_XSLT GlobalVariable_XSLT
+  ;
+
+Template_XSLT:
+    TemplateAttrs_XSLT ParamList_XSLT SequenceConstructor_XSLT _XSLT_END_ELEMENT_
+  {
+    if($1->getName() == 0 && $1->getPattern() == 0) {
+      yyerror(@1, "The xsl:template declaration does not have either a {}name or {}match attribute, or both [err:XTSE0500]");
+    }
+
+    $1->setArgumentSpecs($2);
+    $1->setFunctionBody($3);
+    QP->_query->addFunction($1);
+  }
+  ;
+
+TemplateAttrs_XSLT:
+    _XSLT_TEMPLATE_
+  {
+    $$ = WRAP(@1, new (MEMMGR) XQUserFunction(0, 0, 0, 0, 0, MEMMGR));
+  }
+  | TemplateAttrs_XSLT _XSLT_MATCH_ Pattern_XSLT
+  {
+    $$ = $1;
+    $$->setPattern($3);
+  }
+  | TemplateAttrs_XSLT _XSLT_NAME_
+  {
+    $$ = $1;
+    RESOLVE_QNAME(@2, $2);
+    $$->setURI(uri);
+    $$->setName(name);
+  }
+  | TemplateAttrs_XSLT _XSLT_PRIORITY_ Number_XSLT
+  {
+    $$ = $1;
+    // TBD priority - jpcs
+  }
+  | TemplateAttrs_XSLT _XSLT_MODE_
+  {
+    $$ = $1;
+    // TBD mode - jpcs
+  }
+  | TemplateAttrs_XSLT _XSLT_AS_ SequenceType
+  {
+    $$ = $1;
+    $$->setReturnType($3);
+  }
+  ;
+
+Number_XSLT: _INTEGER_LITERAL_ | _DECIMAL_LITERAL_ | _DOUBLE_LITERAL_;
+
+Function_XSLT:
+    FunctionAttrs_XSLT ParamList_XSLT SequenceConstructor_XSLT _XSLT_END_ELEMENT_
+  {
+    if($1->getName() == 0) {
+      yyerror(@1, "The xsl:function declaration does not have a {}name attribute");
+    }
+
+    $1->setArgumentSpecs($2);
+    $1->setFunctionBody($3);
+    QP->_query->addFunction($1);
+  }
+  ;
+
+FunctionAttrs_XSLT:
+    _XSLT_FUNCTION_
+  {
+    $$ = WRAP(@1, new (MEMMGR) XQUserFunction(0, 0, 0, 0, false, true, MEMMGR));
+  }
+  | FunctionAttrs_XSLT _XSLT_NAME_
+  {
+    $$ = $1;
+    RESOLVE_QNAME(@2, $2);
+    $$->setURI(uri);
+    $$->setName(name);
+  }
+  | FunctionAttrs_XSLT _XSLT_AS_ SequenceType
+  {
+    $$ = $1;
+    $$->setReturnType($3);
+  }
+  | FunctionAttrs_XSLT _XSLT_OVERRIDE_
+  {
+    $$ = $1;
+    // TBD override - jpcs
+  }
+  ;
+
+ParamList_XSLT:
+    /* empty */
+  {
+    $$ = new (MEMMGR) XQUserFunction::ArgumentSpecs(XQillaAllocator<XQUserFunction::ArgumentSpec*>(MEMMGR));
+  }
+  | ParamList_XSLT Param_XSLT
+  {
+    $$ = $1;
+    $$->push_back($2);
+  }
+  ;
+
+Param_XSLT:
+    ParamAttrs_XSLT SequenceConstructor_XSLT _XSLT_END_ELEMENT_
+  {
+    $$ = $1;
+
+    if($$->getName() == 0) {
+      yyerror(@1, "The xsl:param instruction does not have a {}name attribute");
+    }
+
+    if($$->getType() == 0) {
+      $$->setType(WRAP(@1, new (MEMMGR) SequenceType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ANYTHING), SequenceType::STAR)));
+    }
+
+    // TBD default parameter values - jpcs
+
+/*     if(!$2->getChildren().empty()) { */
+/*       if($$->value != 0) { */
+/*         yyerror(@1, "The xsl:with-param instruction has both a select attribute and a sequence constructor [err:XTSE0870]"); */
+/*       } */
+/*       $$->value = $2; */
+/*     } */
+/*     else if($$->value == 0) { */
+/*       yyerror(@1, "The xsl:with-param instruction has neither a select attribute nor a sequence constructor [err:XTSE0870]"); */
+/*     } */
+  }
+  ;
+
+ParamAttrs_XSLT:
+    _XSLT_PARAM_
+  {
+    $$ = WRAP(@1, new (MEMMGR) XQUserFunction::ArgumentSpec(0, 0, MEMMGR));
+  }
+  | ParamAttrs_XSLT _XSLT_NAME_
+  {
+    $$ = $1;
+    RESOLVE_QNAME(@2, $2);
+    $$->setURI(uri);
+    $$->setName(name);
+  }
+  | ParamAttrs_XSLT _XSLT_SELECT_ Expr
+  {
+    $$ = $1;
+    // TBD default parameter values - jpcs
+/*     $$->value = PRESERVE_NS(@2, $3); */
+  }
+  | ParamAttrs_XSLT _XSLT_AS_ SequenceType
+  {
+    $$ = $1;
+    $$->setType($3);
+  }
+  | ParamAttrs_XSLT _XSLT_REQUIRED_
+  {
+    $$ = $1;
+    // TBD required - jpcs
+  }
+  | ParamAttrs_XSLT _XSLT_TUNNEL_
+  {
+    $$ = $1;
+    // TBD tunnel parameters - jpcs
+  }
+  ;
+
+
+GlobalParam_XSLT:
+    GlobalParamAttrs_XSLT SequenceConstructor_XSLT _XSLT_END_ELEMENT_
+  {
+    if($1->isRequired()) {
+      if($1->getVariableExpr() != 0 || !$2->getChildren().empty()) {
+        yyerror(@1, "A required xsl:param declaration must be empty and must not specify a {}select attribute");
+      }
+    }
+    else {
+      $1->setVariableExpr(XSLT_VARIABLE_VALUE(@1, (ASTNode*)$1->getVariableExpr(), $2, (SequenceType*)$1->getSequenceType()));
+
+      if($1->getVariableExpr() == 0) {
+        yyerror(@1, "The xsl:param declaration has both a select attribute and a sequence constructor [err:XTSE0620]");
+      }
+    }
+
+    if($1->getVariableLocalName() == 0) {
+      yyerror(@1, "The xsl:param declaration does not have a {}name attribute");
+    }
+
+    QP->_query->addVariable($1);
+  }
+  ;
+
+GlobalParamAttrs_XSLT:
+    _XSLT_PARAM_
+  {
+    $$ = WRAP(@1, new (MEMMGR) XQGlobalVariable(0, 0, 0, MEMMGR, /*isParam*/true));
+  }
+  | GlobalParamAttrs_XSLT _XSLT_NAME_
+  {
+    RESOLVE_QNAME(@2, $2);
+    $1->setVariableURI(uri);
+    $1->setVariableLocalName(name);
+    $$ = $1;
+  }
+  | GlobalParamAttrs_XSLT _XSLT_SELECT_ Expr
+  {
+    $1->setVariableExpr(PRESERVE_NS(@2, $3));
+    $$ = $1;
+  }
+  | GlobalParamAttrs_XSLT _XSLT_AS_ SequenceType
+  {
+    $1->setSequenceType($3);
+    $$ = $1;
+  }
+  | GlobalParamAttrs_XSLT _XSLT_REQUIRED_
+  {
+    $$ = $1;
+    $$->setRequired($2);
+  }
+  | GlobalParamAttrs_XSLT _XSLT_TUNNEL_
+  {
+    $$ = $1;
+    if($2) {
+      yyerror(@2, "An xsl:param declaration cannot have a {}tunnel attribute with a value of \"yes\"");
+    }
+  }
+  ;
+
+
+GlobalVariable_XSLT:
+    GlobalVariableAttrs_XSLT SequenceConstructor_XSLT _XSLT_END_ELEMENT_
+  {
+    $1->setVariableExpr(XSLT_VARIABLE_VALUE(@1, (ASTNode*)$1->getVariableExpr(), $2, (SequenceType*)$1->getSequenceType()));
+    $1->setSequenceType(0);
+
+    if($1->getVariableExpr() == 0) {
+      yyerror(@1, "The xsl:variable declaration has both a select attribute and a sequence constructor [err:XTSE0620]");
+    }
+
+    if($1->getVariableLocalName() == 0) {
+      yyerror(@1, "The xsl:variable declaration does not have a {}name attribute");
+    }
+
+    QP->_query->addVariable($1);
+  }
+  ;
+
+GlobalVariableAttrs_XSLT:
+    _XSLT_VARIABLE_
+  {
+    $$ = WRAP(@1, new (MEMMGR) XQGlobalVariable(0, 0, 0, MEMMGR));
+  }
+  | GlobalVariableAttrs_XSLT _XSLT_NAME_
+  {
+    RESOLVE_QNAME(@2, $2);
+    $1->setVariableURI(uri);
+    $1->setVariableLocalName(name);
+    $$ = $1;
+  }
+  | GlobalVariableAttrs_XSLT _XSLT_SELECT_ Expr
+  {
+    $1->setVariableExpr(PRESERVE_NS(@2, $3));
+    $$ = $1;
+  }
+  | GlobalVariableAttrs_XSLT _XSLT_AS_ SequenceType
+  {
+    $1->setSequenceType($3);
+    $$ = $1;
+  }
+  ;
+
+LiteralResultElement_XSLT:
+    _XSLT_ELEMENT_NAME_ LiteralResultElementAttrs_XSLT SequenceConstructor_XSLT _XSLT_END_ELEMENT_
+  {
+    VectorOfASTNodes *children = new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
+    *children = $3->getChildren();
+
+    $$ = WRAP(@1, new (MEMMGR) XQElementConstructor($1, $2, children, MEMMGR));
+  }
+  ;
+
+LiteralResultElementAttrs_XSLT:
+    /* empty */
+  {
+    $$ = new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR)); 
+  }
+  | LiteralResultElementAttrs_XSLT _XSLT_ATTR_NAME_ AttrValueTemplate_XSLT
+  {
+    $$ = $1;
+
+    ASTNode *attrItem = WRAP(@2, new (MEMMGR) XQAttributeConstructor($2, $3, MEMMGR));
+    $$->push_back(attrItem);
+  }
+  | LiteralResultElementAttrs_XSLT _XSLT_XMLNS_ATTR_
+  {
+    $$ = $1;
+    $$->insert($$->begin(), $2);
+  }
+  /* TBD xsl:use-attribute-sets - jpcs */
+  ;
+
+AttrValueTemplate_XSLT:
+  /* empty */
+  { 
+    $$ = new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
+  }
+  | AttrValueTemplate_XSLT EnclosedExpr
+  {
+    $$ = $1;
+    $$->push_back(PRESERVE_NS(@2, $2));
+  }
+  | AttrValueTemplate_XSLT _QUOT_ATTR_CONTENT_
+  {
+    $$ = $1;
+
+    AnyAtomicTypeConstructor *ic = new (MEMMGR)
+      AnyAtomicTypeConstructor(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                               SchemaSymbols::fgDT_STRING,
+                               $2, AnyAtomicType::STRING);
+    $$->push_back(WRAP(@2, new (MEMMGR) XQLiteral(ic, MEMMGR)));
+  }
+  ;
+
+SequenceConstructor_XSLT:
+    /* empty */
+  {
+    $$ = WRAP(@$, new (MEMMGR) XQParenthesizedExpr(MEMMGR));
+  }
+  | SequenceConstructor_XSLT TextNode_XSLT
+  {
+    $$ = $1;
+    $$->addItem(WRAP(@1, new (MEMMGR) XQTextConstructor($2, MEMMGR)));
+  }
+  | SequenceConstructor_XSLT LiteralResultElement_XSLT
+  {
+    $$ = $1;
+    $$->addItem($2);
+  }
+  | SequenceConstructor_XSLT ValueOf_XSLT
+  {
+    $$ = $1;
+    $$->addItem($2);
+  }
+  | SequenceConstructor_XSLT Text_XSLT
+  {
+    $$ = $1;
+    $$->addItem($2);
+  }
+  | SequenceConstructor_XSLT ApplyTemplates_XSLT
+  {
+    $$ = $1;
+    $$->addItem($2);
+  }
+  | SequenceConstructor_XSLT CallTemplate_XSLT
+  {
+    $$ = $1;
+    $$->addItem($2);
+  }
+  | SequenceConstructor_XSLT Sequence_XSLT
+  {
+    $$ = $1;
+    $$->addItem($2);
+  }
+  | SequenceConstructor_XSLT Choose_XSLT
+  {
+    $$ = $1;
+    $$->addItem($2);
+  }
+  | SequenceConstructor_XSLT If_XSLT
+  {
+    $$ = $1;
+    $$->addItem($2);
+  }
+  | SequenceConstructor_XSLT Variable_XSLT
+  {
+    $$ = $1;
+    $$->addItem($2);
+  }
+  | SequenceConstructor_XSLT Comment_XSLT
+  {
+    $$ = $1;
+    $$->addItem($2);
+  }
+  | SequenceConstructor_XSLT PI_XSLT
+  {
+    $$ = $1;
+    $$->addItem($2);
+  }
+  | SequenceConstructor_XSLT Document_XSLT
+  {
+    $$ = $1;
+    $$->addItem($2);
+  }
+  | SequenceConstructor_XSLT Attribute_XSLT
+  {
+    $$ = $1;
+    $$->addItem($2);
+  }
+  | SequenceConstructor_XSLT AnalyzeString_XSLT
+  {
+    $$ = $1;
+    $$->addItem($2);
+  }
+  | SequenceConstructor_XSLT CopyOf_XSLT
+  {
+    $$ = $1;
+    $$->addItem($2);
+  }
+  ;
+
+ValueOf_XSLT:
+    ValueOfAttrs_XSLT SequenceConstructor_XSLT _XSLT_END_ELEMENT_
+  {
+    XQTextConstructor *text = (XQTextConstructor*)$1;
+    $$ = text;
+
+    if(!$2->getChildren().empty()) {
+      if(text->getValue() != 0) {
+        yyerror(@1, "The xsl:value-of instruction has both a select attribute and a sequence constructor [err:XTSE0870]");
+      }
+      text->setValue($2);
+    }
+    else if(text->getValue() == 0) {
+      yyerror(@1, "The xsl:value-of instruction has neither a select attribute nor a sequence constructor [err:XTSE0870]");
+    }
+  }
+  ;
+
+ValueOfAttrs_XSLT:
+    _XSLT_VALUE_OF_
+  {
+    $$ = WRAP(@1, new (MEMMGR) XQTextConstructor(0, MEMMGR));
+  }
+  | ValueOfAttrs_XSLT _XSLT_SELECT_ Expr
+  {
+    $$ = $1;
+    ((XQTextConstructor*)$$)->setValue(PRESERVE_NS(@2, $3));
+  }
+  | ValueOfAttrs_XSLT _XSLT_SEPARATOR_ AttrValueTemplate_XSLT
+  {
+    $$ = $1;
+    // TBD separator - jpcs
+/*     ((XQTextConstructor*)$$)->setValue(PRESERVE_NS(@2, $3)); */
+  }
+  ;
+
+Text_XSLT:
+    _XSLT_TEXT_ TextNode_XSLT _XSLT_END_ELEMENT_
+  {
+    $$ = WRAP(@1, new (MEMMGR) XQTextConstructor($2, MEMMGR));
+  }
+  ;
+
+TextNode_XSLT: _XSLT_TEXT_NODE_ | _XSLT_WS_TEXT_NODE_;
+
+ApplyTemplates_XSLT:
+    ApplyTemplatesAttrs_XSLT ApplyTemplatesContent_XSLT _XSLT_END_ELEMENT_
+  {
+    // TBD xsl:sort - jpcs
+    XQApplyTemplates *apply = (XQApplyTemplates*)$1;
+    $$ = apply;
+
+    apply->setArguments($2);
+
+    if(apply->getExpression() == 0) {
+      NodeTest *nt = new (MEMMGR) NodeTest();
+      nt->setTypeWildcard();
+      nt->setNameWildcard();
+      nt->setNamespaceWildcard();
+
+      apply->setExpression(WRAP(@1, new (MEMMGR) XQStep(XQStep::CHILD, nt, MEMMGR)));
+    }
+  }
+  ;
+
+ApplyTemplatesAttrs_XSLT:
+    _XSLT_APPLY_TEMPLATES_
+  {
+    $$ = WRAP(@1, new (MEMMGR) XQApplyTemplates(0, 0, MEMMGR));
+  }
+  | ApplyTemplatesAttrs_XSLT _XSLT_SELECT_ Expr
+  {
+    $$ = $1;
+    ((XQApplyTemplates*)$$)->setExpression(PRESERVE_NS(@2, $3));
+  }
+  | ApplyTemplatesAttrs_XSLT _XSLT_MODE_
+  {
+    // TBD mode - jpcs
+    $$ = $1;
+  }
+  ;
+
+ApplyTemplatesContent_XSLT:
+    /* empty */
+  {
+    $$ = new (MEMMGR) TemplateArguments(XQillaAllocator<XQTemplateArgument*>(MEMMGR));
+  }
+  | ApplyTemplatesContent_XSLT WithParam_XSLT
+  {
+    $$ = $1;
+    $$->push_back($2);
+  }
+  ;
+
+CallTemplate_XSLT:
+    CallTemplateAttrs_XSLT CallTemplateContent_XSLT _XSLT_END_ELEMENT_
+  {
+    XQCallTemplate *call = (XQCallTemplate*)$1;
+    call->setArguments($2);
+    $$ = call;
+
+    if(call->getName() == 0) {
+      yyerror(@1, "The xsl:call-template instruction does not have a {}name attribute");
+    }
+  }
+  ;
+
+CallTemplateAttrs_XSLT:
+    _XSLT_CALL_TEMPLATE_
+  {
+    $$ = WRAP(@1, new (MEMMGR) XQCallTemplate(0, 0, MEMMGR));
+  }
+  | CallTemplateAttrs_XSLT _XSLT_NAME_
+  {
+    $$ = $1;
+    RESOLVE_QNAME(@2, $2);
+    ((XQCallTemplate*)$$)->setURI(uri);
+    ((XQCallTemplate*)$$)->setName(name);
+  }
+  ;
+
+CallTemplateContent_XSLT:
+    /* empty */
+  {
+    $$ = new (MEMMGR) TemplateArguments(XQillaAllocator<XQTemplateArgument*>(MEMMGR));
+  }
+  | CallTemplateContent_XSLT WithParam_XSLT
+  {
+    $$ = $1;
+    $$->push_back($2);
+  }
+  ;
+
+WithParam_XSLT:
+    WithParamAttrs_XSLT SequenceConstructor_XSLT _XSLT_END_ELEMENT_
+  {
+    $$ = $1;
+
+    if($$->name == 0) {
+      yyerror(@1, "The xsl:with-param instruction does not have a {}name attribute");
+    }
+
+    $1->value = XSLT_VARIABLE_VALUE(@1, $1->value, $2, $1->seqType);
+    $1->seqType = 0;
+
+    if($1->value == 0) {
+      yyerror(@1, "The xsl:with-param instruction has both a select attribute and a sequence constructor [err:XTSE0870]");
+    }
+  }
+  ;
+
+WithParamAttrs_XSLT:
+    _XSLT_WITH_PARAM_
+  {
+    $$ = WRAP(@1, new (MEMMGR) XQTemplateArgument(0, 0, MEMMGR));
+  }
+  | WithParamAttrs_XSLT _XSLT_NAME_
+  {
+    $$ = $1;
+    RESOLVE_QNAME(@2, $2);
+    $$->uri = uri;
+    $$->name = name;
+  }
+  | WithParamAttrs_XSLT _XSLT_SELECT_ Expr
+  {
+    $$ = $1;
+    $$->value = PRESERVE_NS(@2, $3);
+  }
+  | WithParamAttrs_XSLT _XSLT_AS_ SequenceType
+  {
+    $$ = $1;
+    $$->seqType = $3;
+  }
+  | WithParamAttrs_XSLT _XSLT_TUNNEL_
+  {
+    $$ = $1;
+    // TBD tunnel parameters - jpcs
+  }
+  ;
+
+Sequence_XSLT:
+    _XSLT_SEQUENCE_ _XSLT_SELECT_ Expr _XSLT_END_ELEMENT_
+  {
+    // TBD xsl:fallback - jpcs
+    $$ = PRESERVE_NS(@2, $3);
+  }
+  ;
+
+If_XSLT:
+    _XSLT_IF_ _XSLT_TEST_ Expr SequenceConstructor_XSLT _XSLT_END_ELEMENT_
+  {
+    ASTNode *empty = WRAP(@1, new (MEMMGR) XQSequence(MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) XQIf(PRESERVE_NS(@2, $3), $4, empty, MEMMGR));
+  }
+  ;
+
+Choose_XSLT:
+    _XSLT_CHOOSE_ WhenList_XSLT Otherwise_XSLT _XSLT_END_ELEMENT_
+  {
+    XQIf *iff = (XQIf*)$2;
+    while(iff->getWhenFalse() != 0) {
+      iff = (XQIf*)iff->getWhenFalse();
+    }
+
+    iff->setWhenFalse($3);
+
+    $$ = $2;
+  }
+  ;
+
+WhenList_XSLT:
+    When_XSLT
+  {
+    $$ = $1;
+  }
+  | WhenList_XSLT When_XSLT
+  {
+    XQIf *iff = (XQIf*)$1;
+    while(iff->getWhenFalse() != 0) {
+      iff = (XQIf*)iff->getWhenFalse();
+    }
+
+    iff->setWhenFalse($2);
+
+    $$ = $1;
+  }
+  ;
+
+When_XSLT:
+    _XSLT_WHEN_ _XSLT_TEST_ Expr SequenceConstructor_XSLT _XSLT_END_ELEMENT_
+  {
+    $$ = WRAP(@1, new (MEMMGR) XQIf(PRESERVE_NS(@2, $3), $4, 0, MEMMGR));
+  }
+  ;
+
+Otherwise_XSLT:
+    /* empty */
+  {
+    $$ = WRAP(@$, new (MEMMGR) XQSequence(MEMMGR));
+  }
+  | _XSLT_OTHERWISE_ SequenceConstructor_XSLT _XSLT_END_ELEMENT_
+  {
+    $$ = $2;
+  }
+  ;
+
+AnalyzeString_XSLT:
+    AnalyzeStringAttrs_XSLT MatchingSubstring_XSLT NonMatchingSubstring_XSLT _XSLT_END_ELEMENT_
+  {
+    // TBD xsl:fallback - jpcs
+
+    XQAnalyzeString *as = (XQAnalyzeString*)$$;
+    $$ = $1;
+
+    if(as->getExpression() == 0) {
+      yyerror(@1, "The xsl:analyze-string instruction does not have a {}select attribute");
+    }
+
+    if(as->getRegex() == 0) {
+      yyerror(@1, "The xsl:analyze-string instruction does not have a {}regex attribute");
+    }
+
+    if($2 == 0) {
+      if($3 == 0) {
+        yyerror(@1, "The xsl:analyze-string instruction doesn't contain an xsl:matching-substring or xsl:non-matching-substring child [err:XTSE1130]");
+      }
+
+      as->setMatch(WRAP(@1, new (MEMMGR) XQSequence(MEMMGR)));
+    }
+    else {
+      as->setMatch($2);
+    }
+    if($3 == 0) {
+      as->setNonMatch(WRAP(@1, new (MEMMGR) XQSequence(MEMMGR)));
+    }
+    else {
+      as->setNonMatch($3);
+    }
+  }
+  ;
+
+AnalyzeStringAttrs_XSLT:
+    _XSLT_ANALYZE_STRING_
+  {
+    $$ = WRAP(@$, new (MEMMGR) XQAnalyzeString(MEMMGR));
+  }
+  | AnalyzeStringAttrs_XSLT _XSLT_SELECT_ Expr
+  {
+    $$ = $1;
+    ((XQAnalyzeString*)$$)->setExpression(PRESERVE_NS(@2, $3));
+  }
+  | AnalyzeStringAttrs_XSLT _XSLT_REGEX_ AttrValueTemplate_XSLT
+  {
+    $$ = $1;
+    ASTNode *content = WRAP(@3, new (MEMMGR) XQSimpleContent($3, MEMMGR));
+    ((XQAnalyzeString*)$$)->setRegex(PRESERVE_NS(@2, content));
+  }
+  | AnalyzeStringAttrs_XSLT _XSLT_FLAGS_ AttrValueTemplate_XSLT
+  {
+    $$ = $1;
+    ASTNode *content = WRAP(@3, new (MEMMGR) XQSimpleContent($3, MEMMGR));
+    ((XQAnalyzeString*)$$)->setFlags(PRESERVE_NS(@2, content));
+  }
+  ;
+
+MatchingSubstring_XSLT:
+    /* empty */
+  {
+    $$ = 0;
+  }
+  | _XSLT_MATCHING_SUBSTRING_ SequenceConstructor_XSLT _XSLT_END_ELEMENT_
+  {
+    $$ = $2;
+  }
+  ;
+
+NonMatchingSubstring_XSLT:
+    /* empty */
+  {
+    $$ = 0;
+  }
+  | _XSLT_NON_MATCHING_SUBSTRING_ SequenceConstructor_XSLT _XSLT_END_ELEMENT_
+  {
+    $$ = $2;
+  }
+  ;
+
+Variable_XSLT:
+    VariableAttrs_XSLT SequenceConstructor_XSLT _XSLT_END_ELEMENT_ SequenceConstructor_XSLT
+  {
+    $1->setExpression(XSLT_VARIABLE_VALUE(@1, $1->getExpression(), $2, $1->seqType));
+    $1->seqType = 0;
+
+    if($1->getExpression() == 0) {
+      yyerror(@1, "The xsl:variable instruction has both a select attribute and a sequence constructor [err:XTSE0620]");
+    }
+
+    if($1->getVarName() == 0) {
+      yyerror(@1, "The xsl:variable instruction does not have a {}name attribute");
+    }
+
+    $$ = WRAP(@1, new (MEMMGR) XQReturn($1, $4, MEMMGR));
+  }
+  ;
+
+VariableAttrs_XSLT:
+    _XSLT_VARIABLE_
+  {
+    $$ = WRAP(@1, new (MEMMGR) LetTuple(WRAP(@1, new (MEMMGR) ContextTuple()), 0, 0, MEMMGR));
+  }
+  | VariableAttrs_XSLT _XSLT_NAME_
+  {
+    RESOLVE_QNAME(@2, $2);
+    $1->setVarURI(uri);
+    $1->setVarName(name);
+    $$ = $1;
+  }
+  | VariableAttrs_XSLT _XSLT_SELECT_ Expr
+  {
+    $1->setExpression($3);
+    $$ = $1;
+  }
+  | VariableAttrs_XSLT _XSLT_AS_ SequenceType
+  {
+    $1->seqType = $3;
+    $$ = $1;
+  }
+  ;
+
+Comment_XSLT:
+    CommentAttrs_XSLT SequenceConstructor_XSLT _XSLT_END_ELEMENT_
+  {
+    XQCommentConstructor *comment = (XQCommentConstructor*)$1;
+    $$ = comment;
+
+    if(!$2->getChildren().empty()) {
+      if(comment->getValue() != 0) {
+        yyerror(@1, "The xsl:comment instruction has both a select attribute and a sequence constructor [err:XTSE0940]");
+      }
+      comment->setValue($2);
+    }
+    else if(comment->getValue() == 0) {
+      comment->setValue(WRAP(@1, new (MEMMGR) XQSequence(MEMMGR)));
+    }
+  }
+  ;
+
+CommentAttrs_XSLT:
+    _XSLT_COMMENT_
+  {
+    $$ = WRAP(@1, new (MEMMGR) XQCommentConstructor(0, MEMMGR, /*xslt*/true));
+  }
+  | CommentAttrs_XSLT _XSLT_SELECT_ Expr
+  {
+    $$ = $1;
+    ((XQCommentConstructor*)$$)->setValue(PRESERVE_NS(@2, $3));
+  }
+  ;
+
+PI_XSLT:
+    PIAttrs_XSLT SequenceConstructor_XSLT _XSLT_END_ELEMENT_
+  {
+    XQPIConstructor *pi = (XQPIConstructor*)$1;
+    $$ = pi;
+
+    if(pi->getName() == 0) {
+      yyerror(@1, "The xsl:processing-instruction instruction does not have a {}name attribute");
+    }
+
+    if(!$2->getChildren().empty()) {
+      if(pi->getValue() != 0) {
+        yyerror(@1, "The xsl:processing-instruction instruction has both a select attribute and a sequence constructor [err:XTSE0880]");
+      }
+      pi->setValue($2);
+    }
+    else if(pi->getValue() == 0) {
+      pi->setValue(WRAP(@1, new (MEMMGR) XQSequence(MEMMGR)));
+    }
+  }
+  ;
+
+PIAttrs_XSLT:
+    _XSLT_PI_
+  {
+    $$ = WRAP(@1, new (MEMMGR) XQPIConstructor(0, 0, MEMMGR, /*xslt*/true));
+  }
+  | PIAttrs_XSLT _XSLT_NAME_ AttrValueTemplate_XSLT
+  {
+    $$ = $1;
+
+    ASTNode *content = WRAP(@3, new (MEMMGR) XQSimpleContent($3, MEMMGR));
+    ((XQPIConstructor*)$$)->setName(PRESERVE_NS(@2, content));
+  }
+  | PIAttrs_XSLT _XSLT_SELECT_ Expr
+  {
+    $$ = $1;
+    ((XQPIConstructor*)$$)->setValue(PRESERVE_NS(@2, $3));
+  }
+  ;
+
+Document_XSLT:
+    DocumentAttrs_XSLT SequenceConstructor_XSLT _XSLT_END_ELEMENT_
+  {
+    XQDocumentConstructor *doc = (XQDocumentConstructor*)$1;
+    doc->setValue($2);
+    $$ = doc;
+  }
+  ;
+
+DocumentAttrs_XSLT:
+    _XSLT_DOCUMENT_
+  {
+    $$ = WRAP(@1, new (MEMMGR) XQDocumentConstructor(0, MEMMGR));
+  }
+  // TBD validation attrs - jpcs
+  ;
+
+Attribute_XSLT:
+    AttributeAttrs_XSLT SequenceConstructor_XSLT _XSLT_END_ELEMENT_
+  {
+    XQAttributeConstructor *attr = (XQAttributeConstructor*)$1;
+    $$ = attr;
+
+    if(attr->getName() == 0) {
+      yyerror(@1, "The xsl:attribute instruction does not have a {}name attribute");
+    }
+
+    if(attr->namespaceExpr != 0) {
+      // Use fn:QName() to assign the correct URI
+      VectorOfASTNodes args(XQillaAllocator<ASTNode*>(MEMMGR));
+      args.push_back(attr->namespaceExpr);
+      args.push_back(const_cast<ASTNode*>(attr->getName()));
+      FunctionQName *name = WRAP(@1, new (MEMMGR) FunctionQName(args, MEMMGR));
+      attr->setName(name);
+      attr->namespaceExpr = 0;
+    }
+
+    if(!$2->getChildren().empty()) {
+      if(attr->getChildren() != 0 && !attr->getChildren()->empty()) {
+        yyerror(@1, "The xsl:attribute instruction has both a select attribute and a sequence constructor [err:XTSE0840]");
+      }
+
+      VectorOfASTNodes *children = new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
+      *children = $2->getChildren();
+      attr->setChildren(children);
+    }
+  }
+  ;
+
+AttributeAttrs_XSLT:
+    _XSLT_ATTRIBUTE_
+  {
+    $$ = WRAP(@1, new (MEMMGR) XQAttributeConstructor(0, 0, MEMMGR));
+  }
+  | AttributeAttrs_XSLT _XSLT_NAME_ AttrValueTemplate_XSLT
+  {
+    $$ = $1;
+
+    ASTNode *content = WRAP(@3, new (MEMMGR) XQSimpleContent($3, MEMMGR));
+    ((XQAttributeConstructor*)$$)->setName(PRESERVE_NS(@2, content));
+  }
+  | AttributeAttrs_XSLT _XSLT_NAMESPACE_A_ AttrValueTemplate_XSLT
+  {
+    $$ = $1;
+
+    ASTNode *content = WRAP(@3, new (MEMMGR) XQSimpleContent($3, MEMMGR));
+    ((XQAttributeConstructor*)$$)->namespaceExpr = PRESERVE_NS(@2, content);
+  }
+  | AttributeAttrs_XSLT _XSLT_SELECT_ Expr
+  {
+    $$ = $1;
+
+    VectorOfASTNodes *children = new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
+    children->push_back(PRESERVE_NS(@2, $3));
+
+    ((XQAttributeConstructor*)$$)->setChildren(children);
+  }
+  | AttributeAttrs_XSLT _XSLT_SEPARATOR_ AttrValueTemplate_XSLT
+  {
+    $$ = $1;
+    // TBD separator - jpcs
+/*     ((XQAttributeConstructor*)$$)->setChildren(children); */
+  }
+  ;
+
+CopyOf_XSLT:
+    CopyOfAttrs_XSLT _XSLT_END_ELEMENT_
+  {
+    XQCopyOf *as = (XQCopyOf*)$$;
+    $$ = $1;
+
+    if(as->getExpression() == 0) {
+      yyerror(@1, "The xsl:copy-of instruction does not have a {}select attribute");
+    }
+  }
+  ;
+
+CopyOfAttrs_XSLT:
+    _XSLT_COPY_OF_
+  {
+    $$ = WRAP(@$, new (MEMMGR) XQCopyOf(MEMMGR));
+  }
+  | CopyOfAttrs_XSLT _XSLT_SELECT_ Expr
+  {
+    $$ = $1;
+    ((XQCopyOf*)$$)->setExpression(PRESERVE_NS(@2, $3));
+  }
+  | CopyOfAttrs_XSLT _XSLT_COPY_NAMESPACES_
+  {
+    $$ = $1;
+    ((XQCopyOf*)$$)->setCopyNamespaces($2);
+  }
+  // TBD type and validation - jpcs
+  ;
+
+
+
+
+// [1]       Pattern       ::=       PathPattern
+//       | Pattern '|' PathPattern
+Pattern_XSLT:
+    Pattern_XSLT _BAR_ PathPattern_XSLT
+  {
+    $$ = $1;
+    $$->push_back(PRESERVE_NS(@3, $3));
+  }
+  | PathPattern_XSLT
+  {
+    $$ = new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
+    $$->push_back(PRESERVE_NS(@1, $1));
+  }
+  ;
+
+// [2]      PathPattern      ::=      RelativePathPattern
+//       | '/' RelativePathPattern?
+//       | '//' RelativePathPattern
+//       | IdKeyPattern (('/' | '//') RelativePathPattern)?
+PathPattern_XSLT:
+    RelativePathPattern_XSLT
+  {
+    $$ = $1;
+  }
+  | _SLASH_
+  {
+    NodeTest *nt = new (MEMMGR) NodeTest();
+    nt->setNodeType(Node::document_string);
+    nt->setNameWildcard();
+    nt->setNamespaceWildcard();
+    $$ = WRAP(@1, new (MEMMGR) XQStep(XQStep::SELF, nt, MEMMGR));
+  }
+  | PathPatternStart_XSLT RelativePathPattern_XSLT
+  {
+    // TBD buggy - jpcs
+    XQPredicate *pred = 0;
+    ASTNode *step = $2;
+    while(step->getType() == ASTNode::PREDICATE) {
+      pred = (XQPredicate*)step;
+      step = (ASTNode*)pred->getPredicate();
+    }
+
+    XQPredicate *newPred = WRAP(@1, new (MEMMGR) XQPredicate(step, $1, MEMMGR));
+
+    $$ = $2;
+    if(pred != 0) {
+      pred->setPredicate(newPred);
+    } else {
+      $$ = newPred;
+    }
+  }
+  | IdKeyPattern_XSLT
+  {
+    // TBD id() and key() - jpcs
+    $$ = 0;
+  }
+  | IdKeyPattern_XSLT _SLASH_ RelativePathPattern_XSLT
+  {
+    // TBD id() and key() - jpcs
+    $$ = 0;
+  }
+  | IdKeyPattern_XSLT _SLASH_SLASH_ RelativePathPattern_XSLT
+  {
+    // TBD id() and key() - jpcs
+    $$ = 0;
+  }
+  ;
+
+PathPatternStart_XSLT:
+    _SLASH_
+  {
+    NodeTest *nt = new (MEMMGR) NodeTest();
+    nt->setNodeType(Node::document_string);
+    nt->setNameWildcard();
+    nt->setNamespaceWildcard();
+    $$ = WRAP(@1, new (MEMMGR) XQStep(XQStep::PARENT, nt, MEMMGR));
+  }
+  | _SLASH_SLASH_
+  {
+    NodeTest *nt = new (MEMMGR) NodeTest();
+    nt->setNodeType(Node::document_string);
+    nt->setNameWildcard();
+    nt->setNamespaceWildcard();
+    $$ = WRAP(@1, new (MEMMGR) XQStep(XQStep::ANCESTOR, nt, MEMMGR));
+  }
+  ;
+
+//
+// foo/bar/@baz -> self::attribute(baz)[parent::bar[parent::foo]]
+//
+// foo//bar ->self::bar[ancestor::foo]
+//
+// /foo/bar -> self::bar[parent::foo[parent::document-node()]]
+//
+// //foo -> self::foo[ancestor::document-node()]
+//
+
+// [3]      RelativePathPattern      ::=      PatternStep (('/' | '//') RelativePathPattern)?
+RelativePathPattern_XSLT:
+    PatternStep_XSLT
+  {
+    $$ = $1;
+  }
+  | RelativePathPattern_XSLT _SLASH_ PatternStep_XSLT
+  {
+    ASTNode *step = $1;
+    while(step->getType() == ASTNode::PREDICATE)
+      step = (ASTNode*)((XQPredicate*)step)->getExpression();
+
+    ((XQStep*)step)->setAxis(XQStep::PARENT);
+
+    $$ = WRAP(@2, new (MEMMGR) XQPredicate($3, $1, MEMMGR));
+  }
+  | RelativePathPattern_XSLT _SLASH_SLASH_ PatternStep_XSLT
+  {
+    ASTNode *step = $1;
+    while(step->getType() == ASTNode::PREDICATE)
+      step = (ASTNode*)((XQPredicate*)step)->getExpression();
+
+    ((XQStep*)step)->setAxis(XQStep::ANCESTOR);
+
+    $$ = WRAP(@2, new (MEMMGR) XQPredicate($3, $1, MEMMGR));
+  }
+  ;
+
+// [4]      PatternStep      ::=      PatternAxis? NodeTest PredicateList
+PatternStep_XSLT:
+    PatternAxis_XSLT PatternStepPredicateList_XSLT
+  {
+    $$ = XQPredicate::addPredicates(WRAP(@1, new (MEMMGR) XQStep(XQStep::SELF, $1, MEMMGR)), $2);
+  }
+  ;
+
+// [5]      PatternAxis      ::=      ('child' '::' | 'attribute' '::' | '@')
+PatternAxis_XSLT:
+    NodeTest
+  {
+    if(!$1->isNodeTypeSet())
+      $1->setNodeType(Node::element_string);
+    $$ = $1;
+  }
+  | _CHILD_ _COLON_COLON_ NodeTest
+  {
+    if(!$3->isNodeTypeSet())
+      $3->setNodeType(Node::element_string);
+    $$ = $3;
+  }
+  | _ATTRIBUTE_ _COLON_COLON_ NodeTest
+  {
+    if(!$3->isNodeTypeSet())
+      $3->setNodeType(Node::attribute_string);
+    $$ = $3;
+  }
+  | _AT_SIGN_ NodeTest
+  {
+    if(!$2->isNodeTypeSet())
+      $2->setNodeType(Node::attribute_string);
+    $$ = $2;
+  }
+  ;
+
+// [85]    PredicateList    ::=    Predicate* 
+// [86]    Predicate    ::=    "[" Expr "]" 
+PatternStepPredicateList_XSLT:
+  /* empty */
+  {
+    $$ = new (MEMMGR) VectorOfPredicates(MEMMGR);
+  }
+  | PredicateList _LSQUARE_ Expr _RSQUARE_
+  {
+    XQPredicate *pred = WRAP(@2, new (MEMMGR) XQPredicate($3, MEMMGR));
+    $1->push_back(pred);
+    $$ = $1; 
+  }
+  ;
+
+// [6]      IdKeyPattern      ::=      'id' '(' IdValue ')'
+//       | 'key' '(' StringLiteralXP ',' KeyValue ')'
+IdKeyPattern_XSLT:
+    _ID_ _LPAR_ IdValue_XSLT _RPAR_
+  {
+    // TBD id() and key() - jpcs
+    $$ = 0;
+  }
+  | _KEY_ _LPAR_ StringLiteral _COMMA_ KeyValue_XSLT _RPAR_
+  {
+    // TBD id() and key() - jpcs
+    $$ = 0;
+  }
+  ;
+
+// [7]      IdValue      ::=      StringLiteralXP | VarRef XP
+IdValue_XSLT: StringLiteral | VarRef;
+
+// [8]      KeyValue      ::=      Literal XP | VarRef XP
+KeyValue_XSLT: Literal | VarRef;
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // XQuery rules
@@ -593,6 +1998,12 @@ Prolog_XQ:
     XQUserFunction* decl=$2;
     QP->_query->addFunction(decl);
   }
+  | Prolog_XQ TemplateDecl Separator
+  {
+    QP->_flags.set(BIT_DECLARE_SECOND_STEP);
+    XQUserFunction* decl=$2;
+    QP->_query->addFunction(decl);
+  }
   | Prolog_XQ OptionDecl Separator
   {
     QP->_flags.set(BIT_DECLARE_SECOND_STEP);
@@ -619,23 +2030,25 @@ Setter_XQ:
 // [26]    FunctionDecl      ::=   "declare" "function" QName "(" ParamList? ")" ("as" SequenceType)?
 //                    (EnclosedExpr | "external")
 FunctionDecl_XQ:
-  _DECLARE_ _FUNCTION_ FunctionName FunctionParamList EnclosedExpr
+  _DECLARE_ FunctionKeyword FunctionName FunctionParamList EnclosedExpr
   {
-    $$ = WRAP(@1, new (MEMMGR) XQUserFunction($3, $4, $5, NULL, false, MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) XQUserFunction($3, $4, $5, NULL, false, true, MEMMGR));
   }
-  | _DECLARE_ _FUNCTION_ FunctionName FunctionParamList _AS_ SequenceType EnclosedExpr
+  | _DECLARE_ FunctionKeyword FunctionName FunctionParamList _AS_ SequenceType EnclosedExpr
   {
-    $$ = WRAP(@1, new (MEMMGR) XQUserFunction($3, $4, $7, $6, false, MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) XQUserFunction($3, $4, $7, $6, false, true, MEMMGR));
   }
-  | _DECLARE_ _FUNCTION_ FunctionName FunctionParamList _EXTERNAL_
+  | _DECLARE_ FunctionKeyword FunctionName FunctionParamList _EXTERNAL_
   {
-    $$ = WRAP(@1, new (MEMMGR) XQUserFunction($3, $4, NULL, NULL, false, MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) XQUserFunction($3, $4, NULL, NULL, false, true, MEMMGR));
   }
-  | _DECLARE_ _FUNCTION_ FunctionName FunctionParamList _AS_ SequenceType _EXTERNAL_
+  | _DECLARE_ FunctionKeyword FunctionName FunctionParamList _AS_ SequenceType _EXTERNAL_
   {
-    $$ = WRAP(@1, new (MEMMGR) XQUserFunction($3, $4, NULL, $6, false, MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) XQUserFunction($3, $4, NULL, $6, false, true, MEMMGR));
   }
   ;
+
+FunctionKeyword: _FUNCTION_ | _FUNCTION_EXT_;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // XQuery Fulltext rules
@@ -679,6 +2092,12 @@ Prolog_XQF:
     QP->_flags.set(BIT_DECLARE_SECOND_STEP);
   }
   | Prolog_XQF FunctionDecl_XQ Separator
+  {
+    QP->_flags.set(BIT_DECLARE_SECOND_STEP);
+    XQUserFunction* decl=$2;
+    QP->_query->addFunction(decl);
+  }
+  | Prolog_XQF TemplateDecl Separator
   {
     QP->_flags.set(BIT_DECLARE_SECOND_STEP);
     XQUserFunction* decl=$2;
@@ -736,6 +2155,12 @@ Prolog_XQU:
     QP->_flags.set(BIT_DECLARE_SECOND_STEP);
   }
   | Prolog_XQU FunctionDecl Separator
+  {
+    QP->_flags.set(BIT_DECLARE_SECOND_STEP);
+    XQUserFunction* decl=$2;
+    QP->_query->addFunction(decl);
+  }
+  | Prolog_XQU TemplateDecl Separator
   {
     QP->_flags.set(BIT_DECLARE_SECOND_STEP);
     XQUserFunction* decl=$2;
@@ -834,6 +2259,12 @@ Prolog:
     XQUserFunction* decl=$2;
     QP->_query->addFunction(decl);
   }
+  | Prolog TemplateDecl Separator
+  {
+    QP->_flags.set(BIT_DECLARE_SECOND_STEP);
+    XQUserFunction* decl=$2;
+    QP->_query->addFunction(decl);
+  }
   | Prolog OptionDecl Separator
   {
     QP->_flags.set(BIT_DECLARE_SECOND_STEP);
@@ -897,7 +2328,7 @@ DefaultNamespaceDecl:
     CHECK_SPECIFIED(@1, BIT_DEFAULTELEMENTNAMESPACE_SPECIFIED, "default element namespace", "XQST0066");
     CONTEXT->setDefaultElementAndTypeNS($5);
   }
-  | _DECLARE_ _DEFAULT_ _FUNCTION_ _NAMESPACE_ URILiteral
+  | _DECLARE_ _DEFAULT_ FunctionKeyword _NAMESPACE_ URILiteral
   { 
     CHECK_SPECIFIED(@1, BIT_DEFAULTFUNCTIONNAMESPACE_SPECIFIED, "default function namespace", "XQST0066");
     CONTEXT->setDefaultFuncNS($5);
@@ -911,15 +2342,44 @@ OptionDecl:
     // validate the QName
     QualifiedName qName($3);
     const XMLCh* prefix = qName.getPrefix();
-    if(prefix==NULL || *prefix==0)
+    if(prefix == 0 || *prefix == 0)
       yyerror(@3, "The option name must have a prefix [err:XPST0081]");
 
+    const XMLCh *uri = 0;
     try {
       LOCATION(@3, loc);
-      CONTEXT->getUriBoundToPrefix(prefix, &loc);
+      uri = CONTEXT->getUriBoundToPrefix(prefix, &loc);
     }
     catch(NamespaceLookupException&) {
       yyerror(@3, "The option name is using an undefined namespace prefix [err:XPST0081]");
+    }
+
+    if(XPath2Utils::equals(uri, XQillaFunction::XMLChFunctionURI)) {
+      if(XPath2Utils::equals(qName.getName(), option_projection)) {
+        if(XPath2Utils::equals($4, SchemaSymbols::fgATTVAL_TRUE)) {
+          CONTEXT->setProjection(true);
+        }
+        else if(XPath2Utils::equals($4, SchemaSymbols::fgATTVAL_FALSE)) {
+          CONTEXT->setProjection(false);
+        }
+        else {
+          yyerror(@4, "Unknown value for option xqilla:projection. Should be 'true' or 'false' [err:XQILLA]");
+        }
+      }
+      else if(XPath2Utils::equals(qName.getName(), option_psvi)) {
+        if(XPath2Utils::equals($4, SchemaSymbols::fgATTVAL_TRUE)) {
+/*           CONTEXT->setDoPSVI(true); */
+        }
+        else if(XPath2Utils::equals($4, SchemaSymbols::fgATTVAL_FALSE)) {
+/*           CONTEXT->setDoPSVI(false); */
+        }
+        else {
+          yyerror(@4, "Unknown value for option xqilla:psvi. Should be 'true' or 'false' [err:XQILLA]");
+        }
+      }
+      else {
+        yyerror(@3, "Unknown option name in the xqilla namespace [err:XQILLA]");
+      }
     }
   }
   ;
@@ -1126,21 +2586,21 @@ ConstructionDecl:
 // [26]    FunctionDecl      ::=   "declare" "updating"? "function" QName "(" ParamList? ")" ("as" SequenceType)?
 //                    (EnclosedExpr | "external")
 FunctionDecl:
-    _DECLARE_ FunctionDeclUpdating _FUNCTION_ FunctionName FunctionParamList EnclosedExpr
+    _DECLARE_ FunctionDeclUpdating FunctionKeyword FunctionName FunctionParamList EnclosedExpr
     {
-      $$ = WRAP(@1, new (MEMMGR) XQUserFunction($4,$5,WRAP(@6, $6),NULL, $2, MEMMGR));
+      $$ = WRAP(@1, new (MEMMGR) XQUserFunction($4,$5,WRAP(@6, $6),NULL, $2, true, MEMMGR));
     }
-  | _DECLARE_ FunctionDeclUpdating _FUNCTION_ FunctionName FunctionParamList _AS_ SequenceType EnclosedExpr
+  | _DECLARE_ FunctionDeclUpdating FunctionKeyword FunctionName FunctionParamList _AS_ SequenceType EnclosedExpr
     {
-      $$ = WRAP(@1, new (MEMMGR) XQUserFunction($4,$5,WRAP(@8, $8),$7, $2, MEMMGR));
+      $$ = WRAP(@1, new (MEMMGR) XQUserFunction($4,$5,WRAP(@8, $8),$7, $2, true, MEMMGR));
     }
-  | _DECLARE_ FunctionDeclUpdating _FUNCTION_ FunctionName FunctionParamList _EXTERNAL_
+  | _DECLARE_ FunctionDeclUpdating FunctionKeyword FunctionName FunctionParamList _EXTERNAL_
     {
-      $$ = WRAP(@1, new (MEMMGR) XQUserFunction($4,$5,NULL,NULL, $2, MEMMGR));
+      $$ = WRAP(@1, new (MEMMGR) XQUserFunction($4,$5,NULL,NULL, $2, true, MEMMGR));
     }
-  | _DECLARE_ FunctionDeclUpdating _FUNCTION_ FunctionName FunctionParamList _AS_ SequenceType _EXTERNAL_
+  | _DECLARE_ FunctionDeclUpdating FunctionKeyword FunctionName FunctionParamList _AS_ SequenceType _EXTERNAL_
     {
-      $$ = WRAP(@1, new (MEMMGR) XQUserFunction($4,$5,NULL,$7, $2, MEMMGR));
+      $$ = WRAP(@1, new (MEMMGR) XQUserFunction($4,$5,NULL,$7, $2, true, MEMMGR));
     }
   ;
 
@@ -1223,8 +2683,7 @@ Expr:
         ((XQParenthesizedExpr *)prevExpr)->addItem($3);
         $$ = $1;
       }
-      else
-      {
+      else {
         XQParenthesizedExpr *dis = WRAP(@2, new (MEMMGR) XQParenthesizedExpr(MEMMGR));
         dis->addItem($1);
         dis->addItem($3);
@@ -1236,18 +2695,21 @@ Expr:
 
 // [32]      ExprSingle    ::=    FLWORExpr | QuantifiedExpr | TypeswitchExpr | IfExpr | InsertExpr
 //                               | DeleteExpr | RenameExpr | ReplaceExpr | TransformExpr | OrExpr
+//                               | CallTemplateExpr | ApplyTemplatesExpr
 ExprSingle:
     FLWORExpr
-    | QuantifiedExpr
-    | TypeswitchExpr
-    | IfExpr
-    | InsertExpr
-    | DeleteExpr
-    | RenameExpr
-    | ReplaceExpr
-    | TransformExpr
-    | OrExpr
-    ;
+  | QuantifiedExpr
+  | TypeswitchExpr
+  | IfExpr
+  | InsertExpr
+  | DeleteExpr
+  | RenameExpr
+  | ReplaceExpr
+  | TransformExpr
+  | OrExpr
+  | CallTemplateExpr
+  | ApplyTemplatesExpr
+  ;
 
 // [34]    FLWORExpr    ::=    (ForClause |  LetClause)+ WhereClause? OrderByClause? "return" ExprSingle 
 FLWORExpr:
@@ -2174,15 +3636,18 @@ PredicateList:
   ;
 
 // [87]    PrimaryExpr    ::=    Literal |  VarRef | ParenthesizedExpr | ContextItemExpr | FunctionCall | Constructor | OrderedExpr | UnorderedExpr
+//                               | FunctionRef | DereferencedFunctionCall
 PrimaryExpr:
-     Literal 
-  |  VarRef
-  |  ParenthesizedExpr 
-  |  ContextItemExpr
-  |  FunctionCall 
-  |  Constructor
-  |  OrderedExpr 
-  |  UnorderedExpr
+    Literal
+  | VarRef
+  | ParenthesizedExpr
+  | ContextItemExpr
+  | FunctionCall
+  | Constructor
+  | OrderedExpr 
+  | UnorderedExpr
+  | FunctionRef
+  | DereferencedFunctionCall
   ;
 
 // [88]    Literal    ::=    NumericLiteral |  StringLiteral 
@@ -2242,7 +3707,7 @@ UnorderedExpr:
   }
   ;
 
-// [96]    FunctionCall    ::=    <QName "("> (ExprSingle ("," ExprSingle)*)? ")" 
+// FunctionCall ::= QName "(" (ExprSingle ("," ExprSingle)*)? ")"
 FunctionCall:
   FunctionName _LPAR_ _RPAR_
   {
@@ -2729,17 +4194,19 @@ OccurrenceIndicator:
   { $$ = SequenceType::QUESTION_MARK; }
   ;
 
-// [124]    ItemType    ::=    AtomicType | KindTest | <"item" "(" ")"> 
+// ItemType ::= KindTest | "item" "(" ")" | AtomicType | FunctionType | ParenthesizedItemType
 ItemType:
-  AtomicType 
+    AtomicType 
   {
     $$ = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ATOMIC_TYPE, NULL, $1);
   }
-  | KindTest 
   | _ITEM_ _LPAR_ _RPAR_
   {
     $$ = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ANYTHING);
   }
+  | KindTest
+  | FunctionType
+  | ParenthesizedItemType
   ;
 
 // [125]    AtomicType    ::=    QName 
@@ -3426,8 +4893,8 @@ RevalidationDecl:
   }
   ;
 
-// [142]      InsertExprTargetChoice ::=   	(("as" ("first" | "last"))? "into") | "after" | "before"
-// [143]      InsertExpr             ::=   	"insert" ("node" | "nodes") SourceExpr InsertExprTargetChoice TargetExpr
+// [142]      InsertExprTargetChoice ::=     (("as" ("first" | "last"))? "into") | "after" | "before"
+// [143]      InsertExpr             ::=     "insert" ("node" | "nodes") SourceExpr InsertExprTargetChoice TargetExpr
 // [147]      SourceExpr      ::=      ExprSingle
 // [148]      TargetExpr      ::=      ExprSingle
 InsertExpr:
@@ -3466,7 +4933,7 @@ DeleteExpr:
 
 DeleteExprBegin: _DELETE_ _NODE_ | _DELETE_ _NODES_ ;
 
-// [145]   	ReplaceExpr	   ::=   	"replace" ("value" "of")? "node" TargetExpr "with" ExprSingle
+// [145]     ReplaceExpr     ::=     "replace" ("value" "of")? "node" TargetExpr "with" ExprSingle
 // [148]      TargetExpr      ::=      ExprSingle
 ReplaceExpr:
   _REPLACE_ _VALUE_ _OF_ _NODE_ ExprSingle _WITH_ ExprSingle
@@ -3479,7 +4946,7 @@ ReplaceExpr:
   }
   ;
 
-// [146]   	RenameExpr	   ::=   	"rename" "node" TargetExpr "as" NewNameExpr
+// [146]     RenameExpr     ::=     "rename" "node" TargetExpr "as" NewNameExpr
 // [148]      TargetExpr      ::=      ExprSingle
 // [149]      NewNameExpr      ::=      ExprSingle
 RenameExpr:
@@ -3522,12 +4989,12 @@ TransformBinding:
 IntegerLiteral:
   _INTEGER_LITERAL_
   {
-    $$ = new (MEMMGR) XQLiteral(
+    $$ = WRAP(@1, new (MEMMGR) XQLiteral(
                   new (MEMMGR) AnyAtomicTypeConstructor(
                   SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                   SchemaSymbols::fgDT_INTEGER,
                   $1, AnyAtomicType::DECIMAL),
-                  MEMMGR);
+                  MEMMGR));
   }
   ;
 
@@ -3535,12 +5002,12 @@ IntegerLiteral:
 DecimalLiteral:
   _DECIMAL_LITERAL_
   {
-    $$ = new (MEMMGR) XQLiteral(
+    $$ = WRAP(@1, new (MEMMGR) XQLiteral(
                   new (MEMMGR) AnyAtomicTypeConstructor(
                   SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                   SchemaSymbols::fgDT_DECIMAL,
                   $1, AnyAtomicType::DECIMAL),
-                  MEMMGR);
+                  MEMMGR));
   }
   ;
 
@@ -3548,12 +5015,12 @@ DecimalLiteral:
 DoubleLiteral:
   _DOUBLE_LITERAL_
   {
-    $$ = new (MEMMGR) XQLiteral(
+    $$ = WRAP(@1, new (MEMMGR) XQLiteral(
                   new (MEMMGR) AnyAtomicTypeConstructor(
                   SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                   SchemaSymbols::fgDT_DOUBLE,
                   $1, AnyAtomicType::DOUBLE),
-                  MEMMGR);
+                  MEMMGR));
   }
   ;
 
@@ -3562,12 +5029,12 @@ DoubleLiteral:
 StringLiteral:
   _STRING_LITERAL_
   {
-    $$ = new (MEMMGR) XQLiteral(
+    $$ = WRAP(@1, new (MEMMGR) XQLiteral(
                   new (MEMMGR) AnyAtomicTypeConstructor(
                   SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                   SchemaSymbols::fgDT_STRING,
                   $1, AnyAtomicType::STRING),
-                  MEMMGR);
+                  MEMMGR));
   }
   ;
 
@@ -3587,9 +5054,193 @@ QName:
   }
   ;
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// Template Extension Rules
+
+// TemplateDecl ::= "declare" "template" (("name" QName)? "matches" Pattern) | ("name" QName)) ("(" ParamList? ")" ("as" SequenceType)?)?
+//                    EnclosedExpr
+TemplateDecl:
+    _DECLARE_ _TEMPLATE_ _NAME_ QNameValue EnclosedExpr
+  {
+    $$ = WRAP(@1, new (MEMMGR) XQUserFunction($4, 0, 0, $5, 0, MEMMGR));
+  }
+  | _DECLARE_ _TEMPLATE_ _NAME_ QNameValue TemplateParamList TemplateSequenceType EnclosedExpr
+  {
+    $$ = WRAP(@1, new (MEMMGR) XQUserFunction($4, 0, $5, $7, $6, MEMMGR));
+  }
+  | _DECLARE_ _TEMPLATE_ _NAME_ QNameValue _MATCHES_ Pattern_XSLT EnclosedExpr
+  {
+    $$ = WRAP(@1, new (MEMMGR) XQUserFunction($4, $6, 0, $7, 0, MEMMGR));
+  }
+  | _DECLARE_ _TEMPLATE_ _NAME_ QNameValue _MATCHES_ Pattern_XSLT TemplateParamList TemplateSequenceType EnclosedExpr
+  {
+    $$ = WRAP(@1, new (MEMMGR) XQUserFunction($4, $6, $7, $9, $8, MEMMGR));
+  }
+  | _DECLARE_ _TEMPLATE_ _MATCHES_ Pattern_XSLT EnclosedExpr
+  {
+    $$ = WRAP(@1, new (MEMMGR) XQUserFunction(0, $4, 0, $5, 0, MEMMGR));
+  }
+  | _DECLARE_ _TEMPLATE_ _MATCHES_ Pattern_XSLT TemplateParamList TemplateSequenceType EnclosedExpr
+  {
+    $$ = WRAP(@1, new (MEMMGR) XQUserFunction(0, $4, $5, $7, $6, MEMMGR));
+  }
+  ;
+
+TemplateSequenceType:
+    /* empty */
+  {
+    $$ = 0;
+  }
+  | _AS_ SequenceType
+  {
+    $$ = $2;
+  }
+  ;
+
+// TBD required and tunnel - jpcs
+TemplateParamList:
+    _LPAR_ _RPAR_
+  {
+    $$ = 0;
+  }
+  | _LPAR_ ParamList _RPAR_
+  {
+    $$ = $2;
+  }
+  ;
+
+
+// CallTemplateExpr ::= "call" "template" QName ("with" "(" TemplateArgumentList ")")?
+CallTemplateExpr:
+    _CALL_ _TEMPLATE_ QNameValue
+  {
+    $$ = WRAP(@1, new (MEMMGR) XQCallTemplate($3, 0, MEMMGR));
+  }
+  | _CALL_ _TEMPLATE_ QNameValue _WITH_ _LPAR_ TemplateArgumentList _RPAR_
+  {
+    $$ = WRAP(@1, new (MEMMGR) XQCallTemplate($3, $6, MEMMGR));
+  }
+  ;
+
+// ApplyTemplatesExpr ::= "apply" "templates" ExprSingle ("with" "(" TemplateArgumentList ")")?
+// TBD mode - jpcs
+ApplyTemplatesExpr:
+    _APPLY_ _TEMPLATES_ ExprSingle
+  {
+    $$ = WRAP(@1, new (MEMMGR) XQApplyTemplates($3, 0, MEMMGR));
+  }
+  |_APPLY_ _TEMPLATES_ ExprSingle _WITH_ _LPAR_ TemplateArgumentList _RPAR_
+  {
+    $$ = WRAP(@1, new (MEMMGR) XQApplyTemplates($3, $6, MEMMGR));
+  }
+  ;
+
+// TemplateArgumentList ::= TemplateArgument ("," TemplateArgument)*
+TemplateArgumentList:
+    TemplateArgument
+  {
+    $$ = new (MEMMGR) TemplateArguments(XQillaAllocator<XQTemplateArgument*>(MEMMGR));
+    $$->push_back($1);
+  }
+  | TemplateArgumentList _COMMA_ TemplateArgument
+  {
+    $$ = $1;
+    $$->push_back($3);
+  }
+  ;
+
+// TemplateArgument ::= "tunnel"? "$" VarName TypeDeclaration? ":=" ExprSingle
+// TBD tunnel - jpcs
+TemplateArgument:
+    _DOLLAR_ VarName TypeDeclaration _COLON_EQUALS_ ExprSingle
+  {
+    if($3 != 0)
+      $5 = $3->convertFunctionArg($5, CONTEXT, /*numericfunction*/false, $3);
+    $$ = WRAP(@1, new (MEMMGR) XQTemplateArgument($2, $5, MEMMGR));
+  }
+  ;
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// Higher Order Functions Extension Rules
+
+// FunctionRef ::= LiteralFunctionRef | InlineFunction
+FunctionRef: LiteralFunctionRef | InlineFunction;
+
+// LiteralFunctionRef ::= QName "#" IntegerLiteral
+LiteralFunctionRef:
+    FunctionName _HASH_ _INTEGER_LITERAL_
+  {
+    $$ = WRAP(@1, new (MEMMGR) XQFunctionRef($1, atoi(UTF8($3)), MEMMGR));
+  }
+  ;
+
+// InlineFunction ::= "function" "(" ParamList? ")" ("as" SequenceType)? EnclosedExpr
+InlineFunction:
+    _FUNCTION_EXT_ FunctionParamList TypeDeclaration EnclosedExpr
+  {
+    XQUserFunction *func = WRAP(@1, new (MEMMGR) XQUserFunction(0, $2, $4, $3, false, false, MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) XQInlineFunction(func, MEMMGR));
+  }
+  ;
+
+// DereferencedFunctionCall ::= FilterExpr "=>" "(" (ExprSingle ("," ExprSingle)*)? ")"
+DereferencedFunctionCall:
+    FilterExpr _ARROW_ _LPAR_ _RPAR_
+  {
+    REJECT_NOT_EXTENSION(DereferencedFunctionCall, @1);
+    $$ = WRAP(@2, new (MEMMGR) XQFunctionDeref($1, new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR)), MEMMGR));
+  }
+  | FilterExpr _ARROW_ _LPAR_ FunctionCallArgumentList _RPAR_
+  {
+    REJECT_NOT_EXTENSION(DereferencedFunctionCall, @1);
+    $$ = WRAP(@2, new (MEMMGR) XQFunctionDeref($1, $4, MEMMGR));
+  }
+  ;
+
+// FunctionType ::= "function" "(" ")" | "function" "(" (SequenceType ("," SequenceType)*)?  ")" "as" SequenceType
+FunctionType:
+    _FUNCTION_EXT_ _LPAR_ _RPAR_
+  {
+    $$ = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_FUNCTION);
+  }
+  | _FUNCTION_EXT_ _LPAR_ _RPAR_ _AS_ SequenceType
+  {
+    $$ = new (MEMMGR) SequenceType::ItemType(new (MEMMGR) VectorOfSequenceTypes(XQillaAllocator<SequenceType*>(MEMMGR)), $5);
+  }
+  | _FUNCTION_EXT_ _LPAR_ FunctionTypeArguments _RPAR_ _AS_ SequenceType
+  {
+    $$ = new (MEMMGR) SequenceType::ItemType($3, $6);
+  }
+  ;
+
+FunctionTypeArguments:
+    SequenceType
+  {
+    $$ = new (MEMMGR) VectorOfSequenceTypes(XQillaAllocator<SequenceType*>(MEMMGR));
+    $$->push_back($1);
+  }
+  | FunctionTypeArguments _COMMA_ SequenceType
+  {
+    $$ = $1;
+    $$->push_back($3);
+  }
+  ;
+
+// ParenthesizedItemType ::= "(" ItemType ")"
+ParenthesizedItemType:
+    _LPAR_ ItemType _RPAR_
+  {
+    $$ = $2;
+  }
+  ;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 QNameValue:
 FunctionName | _ATTRIBUTE_ | _COMMENT_ | _DOCUMENT_NODE_ | _ELEMENT_ | _ITEM_ | _IF_ | _NODE_ |
-_PROCESSING_INSTRUCTION_ | _SCHEMA_ATTRIBUTE_ | _SCHEMA_ELEMENT_ | _TEXT_ | _TYPESWITCH_ | _EMPTY_SEQUENCE_
+_PROCESSING_INSTRUCTION_ | _SCHEMA_ATTRIBUTE_ | _SCHEMA_ELEMENT_ | _TEXT_ | _TYPESWITCH_ | _EMPTY_SEQUENCE_ |
+_FUNCTION_EXT_
   ;
 
 FunctionName:
@@ -3607,7 +5258,7 @@ _FUNCTION_ | _SCORE_ | _FTCONTAINS_ | _WEIGHT_ | _WINDOW_ | _DISTANCE_ | _OCCURS
 _DIFFERENT_ | _LOWERCASE_ | _UPPERCASE_ | _RELATIONSHIP_ | _LEVELS_ | _LANGUAGE_ | _ANY_ | _ALL_ | _PHRASE_ |
 _EXACTLY_ | _FROM_ | _WORDS_ | _SENTENCES_ | _PARAGRAPHS_ | _SENTENCE_ | _PARAGRAPH_ | _REPLACE_ | _MODIFY_ | _FIRST_ |
 _INSERT_ | _BEFORE_ | _AFTER_ | _REVALIDATION_ | _WITH_ | _NODES_ | _RENAME_ | _LAST_ | _DELETE_ | _INTO_ | _UPDATING_ |
-_ORDERED_ | _UNORDERED_
+_ORDERED_ | _UNORDERED_ | _ID_ | _KEY_ | _TEMPLATE_ | _MATCHES_ | _NAME_ | _CALL_ | _APPLY_ | _TEMPLATES_
   ;
 
 /* _XQUERY_ | */

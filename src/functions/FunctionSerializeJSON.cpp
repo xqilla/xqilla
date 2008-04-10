@@ -61,7 +61,7 @@ ASTNode *FunctionSerializeJSON::staticTyping(StaticContext *context)
 {
   _src.clear();
 
-  _src.getStaticType().flags = StaticType::STRING_TYPE;
+  _src.getStaticType() = StaticType(StaticType::STRING_TYPE, 0, 1);
   return calculateSRCForArguments(context);
 }
 
@@ -339,7 +339,7 @@ private:
 Sequence FunctionSerializeJSON::createSequence(DynamicContext* context, int flags) const
 {
   JSONSerializer serializer(this);
-  _args[0]->generateEvents(&serializer, context, false, false);
+  _args[0]->generateAndTailCall(&serializer, context, false, false);
 
   if(serializer.isEmpty()) return Sequence(context->getMemoryManager());
 

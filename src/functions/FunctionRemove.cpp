@@ -61,6 +61,8 @@ ASTNode *FunctionRemove::staticTyping(StaticContext *context)
   ASTNode *result = calculateSRCForArguments(context);
   if(result == this) {
     _src.getStaticType() = _args[0]->getStaticAnalysis().getStaticType();
+    if(_src.getStaticType().getMin() > 0)
+      _src.getStaticType().setCardinality(_src.getStaticType().getMin() - 1, _src.getStaticType().getMax());
   }
   return result;
 }

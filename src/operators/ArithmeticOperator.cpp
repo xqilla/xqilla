@@ -100,7 +100,7 @@ ASTNode* ArithmeticOperator::staticTyping(StaticContext *context)
                 "to be an updating expression [err:XUST0001]"));
     }
 
-    if((*i)->getStaticAnalysis().getStaticType().flags == 0)
+    if((*i)->getStaticAnalysis().getStaticType().getMax() == 0)
       emptyArgument = true;
     _src.add((*i)->getStaticAnalysis());
 
@@ -108,16 +108,20 @@ ASTNode* ArithmeticOperator::staticTyping(StaticContext *context)
       _src.implicitTimezoneUsed(true);
   }
 
-  _src.getStaticType().flags = 0;
+  _src.getStaticType() = StaticType();
   calculateStaticType();
 
-  if(!emptyArgument && _src.getStaticType().flags == 0) {
+  if(!emptyArgument && _src.getStaticType().getMax() == 0) {
     XMLBuffer errMsg;
     errMsg.set(X("The operator "));
     errMsg.append(_opName);
     errMsg.append(X(" has been called on invalid operand types [err:XPTY0004]"));
     XQThrow(XPath2ErrorException,X("ArithmeticOperator::staticResolution"), errMsg.getRawBuffer());
   }
+
+  if(emptyArgument)
+	  _src.getStaticType().setCardinality(0, 1);
+  else _src.getStaticType().setCardinality(1, 1);
 
   if(!_src.isUsed()) {
     return constantFold(context);
@@ -130,29 +134,29 @@ void ArithmeticOperator::calculateStaticTypeForNumerics(const StaticType &arg0, 
   // Deal with numerics and numeric type promotion
   if(arg0.containsType(StaticType::DECIMAL_TYPE)) {
     if(arg1.containsType(StaticType::DECIMAL_TYPE)) {
-      _src.getStaticType().flags |= StaticType::DECIMAL_TYPE;
+      _src.getStaticType() |= StaticType::DECIMAL_TYPE;
     }
     if(arg1.containsType(StaticType::FLOAT_TYPE)) {
-      _src.getStaticType().flags |= StaticType::FLOAT_TYPE;
+      _src.getStaticType() |= StaticType::FLOAT_TYPE;
     }
     // untypedAtomic will be promoted to xs:double
     if(arg1.containsType(StaticType::DOUBLE_TYPE|StaticType::UNTYPED_ATOMIC_TYPE)) {
-      _src.getStaticType().flags |= StaticType::DOUBLE_TYPE;
+      _src.getStaticType() |= StaticType::DOUBLE_TYPE;
     }
   }
   if(arg0.containsType(StaticType::FLOAT_TYPE)) {
     if(arg1.containsType(StaticType::DECIMAL_TYPE|StaticType::FLOAT_TYPE)) {
-      _src.getStaticType().flags |= StaticType::FLOAT_TYPE;
+      _src.getStaticType() |= StaticType::FLOAT_TYPE;
     }
     // untypedAtomic will be promoted to xs:double
     if(arg1.containsType(StaticType::DOUBLE_TYPE|StaticType::UNTYPED_ATOMIC_TYPE)) {
-      _src.getStaticType().flags |= StaticType::DOUBLE_TYPE;
+      _src.getStaticType() |= StaticType::DOUBLE_TYPE;
     }
   }
   // untypedAtomic will be promoted to xs:double
   if(arg0.containsType(StaticType::DOUBLE_TYPE|StaticType::UNTYPED_ATOMIC_TYPE)) {
     if(arg1.containsType(StaticType::DECIMAL_TYPE|StaticType::FLOAT_TYPE|StaticType::DOUBLE_TYPE|StaticType::UNTYPED_ATOMIC_TYPE)) {
-      _src.getStaticType().flags |= StaticType::DOUBLE_TYPE;
+      _src.getStaticType() |= StaticType::DOUBLE_TYPE;
     }
   }
 }

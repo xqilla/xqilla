@@ -57,7 +57,7 @@ ASTNode *FunctionName::staticTyping(StaticContext *context)
 {
   _src.clear();
 
-  _src.getStaticType().flags = StaticType::STRING_TYPE;
+  _src.getStaticType() = StaticType::STRING_TYPE;
   if(_args.empty()) {
     _src.contextItemUsed(true);
   }

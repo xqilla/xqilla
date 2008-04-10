@@ -127,7 +127,7 @@ int XPath2ResultImpl::asInt() const
     throw DOMException(DOMException::INVALID_STATE_ERR, XMLString::transcode("There is no current result in the result")); 
   }
 
-  if(_currentItem->isNode()) {
+  if(!_currentItem->isAtomicValue()) {
     throw XQillaException(DOMXPathException::TYPE_ERR, X("Cannot convert result to int"));
   }  
 
@@ -149,7 +149,7 @@ double XPath2ResultImpl::asDouble() const
     throw DOMException(DOMException::INVALID_STATE_ERR, XMLString::transcode("There is no current result in the result"));
   }
 
-  if(_currentItem->isNode()) {
+  if(!_currentItem->isAtomicValue()) {
     throw XQillaException(DOMXPathException::TYPE_ERR, X("Cannot convert result to double"));
   }
 
@@ -170,7 +170,7 @@ const XMLCh* XPath2ResultImpl::asString() const
     throw DOMException(DOMException::INVALID_STATE_ERR, XMLString::transcode("There is no current result in the result"));
   }
 
-  if(_currentItem->isNode()) {
+  if(!_currentItem->isAtomicValue()) {
     throw XQillaException(DOMXPathException::TYPE_ERR, X("Cannot convert result to a string"));
   }
 
@@ -183,7 +183,7 @@ bool XPath2ResultImpl::asBoolean() const
     throw DOMException(DOMException::INVALID_STATE_ERR, XMLString::transcode("There is no current result in the result"));
   }
 
-  if(_currentItem->isNode()) {
+  if(!_currentItem->isAtomicValue()) {
     throw XQillaException(DOMXPathException::TYPE_ERR, X("Cannot convert result to a boolean"));
   }
 

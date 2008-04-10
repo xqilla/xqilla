@@ -62,6 +62,18 @@ static inline const XMLCh *nullTerm(const FAXPP_Text &text, XPath2MemoryManager 
   return mm->getPooledString((XMLCh*)text.ptr, text.len / sizeof(XMLCh));
 }
 
+static inline void setLocation(LocationInfo &info, const FAXPP_Event *event)
+{
+  info.setLocationInfo(info.getFile(), event->line, event->column);
+}
+
+static inline void setLocation(LocationInfo &info, const FAXPP_Attribute *attr)
+{
+  info.setLocationInfo(info.getFile(), attr->line, attr->column);
+}
+
+#define LOCATION(o) setLocation(location_, (o))
+
 void FaxppDocumentCacheImpl::parseDocument(InputSource &srcToUse, EventHandler *handler, DynamicContext *context)
 {
   XPath2MemoryManager *mm = context->getMemoryManager();
@@ -82,7 +94,7 @@ void FaxppDocumentCacheImpl::parseDocument(InputSource &srcToUse, EventHandler *
   if(srcToUse.getEncoding()) {
     FAXPP_DecodeFunction decode = FAXPP_string_to_decode(UTF8(srcToUse.getEncoding()));
     if(decode == 0) err = UNSUPPORTED_ENCODING;
-    FAXPP_set_decode(parser_, decode);
+    else FAXPP_set_decode(parser_, decode);
   }
 #if 0
   else if(stream->getContentType()) {
@@ -92,6 +104,8 @@ void FaxppDocumentCacheImpl::parseDocument(InputSource &srcToUse, EventHandler *
   if(err == UNSUPPORTED_ENCODING) {
     XQThrow2(XMLParseException, X("FaxppDocumentCacheImpl::loadDocument"), X("Unsupported encoding"));
   }
+
+  location_.setLocationInfo(srcToUse.getSystemId(), 0, 0);
 
   unsigned int i;
   FAXPP_Attribute *attr;
@@ -107,9 +121,12 @@ void FaxppDocumentCacheImpl::parseDocument(InputSource &srcToUse, EventHandler *
     }
 
     const FAXPP_Event *event = FAXPP_get_current_event(parser_);
+    LOCATION(event);
+
     switch(event->type) {
     case START_DOCUMENT_EVENT:
       // TBD Get encoding from parser if not specified in document - jpcs
+      events_->setLocationInfo(&location_);
       events_->startDocumentEvent(srcToUse.getSystemId(), nullTerm(event->encoding, mm));
       break;
     case END_DOCUMENT_EVENT:
@@ -121,6 +138,8 @@ void FaxppDocumentCacheImpl::parseDocument(InputSource &srcToUse, EventHandler *
 
       for(i = 0; i < event->attr_count; ++i) {
         attr = &event->attrs[i];
+        LOCATION(attr);
+
         if(attr->xmlns_attr) {
           if(attr->prefix.ptr == 0)
             events_->namespaceEvent(0, nullTerm(attr->value.value, mm));

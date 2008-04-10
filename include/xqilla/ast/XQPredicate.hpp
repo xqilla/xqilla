@@ -70,7 +70,6 @@ class XQILLA_API PredicateFilterResult : public ResultImpl
 public:
 	PredicateFilterResult(const Result &parent, const ASTNode *pred, size_t contextSize);
 	Item::Ptr next(DynamicContext *context);
-	void skip();
 	std::string asString(DynamicContext *context, int indent) const;
 private:
 	bool todo_;
@@ -87,7 +86,6 @@ class NonNumericPredicateFilterResult : public ResultImpl
 public:
 	NonNumericPredicateFilterResult(const Result &parent, const ASTNode *pred, size_t contextSize);
 	Item::Ptr next(DynamicContext *context);
-	void skip();
 	std::string asString(DynamicContext *context, int indent) const;
 private:
 	bool todo_;
@@ -102,7 +100,6 @@ class NumericPredicateFilterResult : public ResultImpl
 public:
 	NumericPredicateFilterResult(const Result &parent, const ASTNode *pred, size_t contextSize);
 	Item::Ptr next(DynamicContext *context);
-	void skip();
 	std::string asString(DynamicContext *context, int indent) const;
 private:
 	bool todo_;

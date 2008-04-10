@@ -32,12 +32,14 @@
 #include <xercesc/util/XMLString.hpp>
 #include <xercesc/util/regx/RegxUtil.hpp>
 
+XERCES_CPP_NAMESPACE_USE;
+
 const XMLCh FunctionStringLength::name[] = {
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_s, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_r, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_i, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_g, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chDash,    XERCES_CPP_NAMESPACE_QUALIFIER chLatin_l, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_g, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_h, XERCES_CPP_NAMESPACE_QUALIFIER chNull 
+  chLatin_s, chLatin_t, chLatin_r, 
+  chLatin_i, chLatin_n, chLatin_g, 
+  chDash,    chLatin_l, chLatin_e, 
+  chLatin_n, chLatin_g, chLatin_t, 
+  chLatin_h, chNull 
 };
 const unsigned int FunctionStringLength::minArgs = 0;
 const unsigned int FunctionStringLength::maxArgs = 1;
@@ -52,16 +54,17 @@ FunctionStringLength::FunctionStringLength(const VectorOfASTNodes &args, XPath2M
 {
 }
 
-const XMLCh* FunctionStringLength::getString(DynamicContext* context) const {
-  XPath2MemoryManager* memMgr = context->getMemoryManager();
-  //setup xf:string with empty args
-  VectorOfASTNodes args=VectorOfASTNodes(XQillaAllocator<ASTNode*>(context->getMemoryManager()));
-  FunctionString stringGrabber(args, memMgr);
-  //call xf:string and extract result
-  return stringGrabber.createResult(context)->next(context)->asString(context);
-}
+ASTNode* FunctionStringLength::staticResolution(StaticContext *context)
+{
+  XPath2MemoryManager *mm = context->getMemoryManager();
 
-ASTNode* FunctionStringLength::staticResolution(StaticContext *context) {
+  if(_args.empty()) {
+    FunctionString *arg = new (mm) FunctionString(VectorOfASTNodes(XQillaAllocator<ASTNode*>(mm)), mm);
+    arg->setLocationInfo(this);
+
+    _args.push_back(arg);
+  }
+
   return resolveArguments(context);
 }
 
@@ -69,36 +72,26 @@ ASTNode *FunctionStringLength::staticTyping(StaticContext *context)
 {
   _src.clear();
 
-  if(_args.empty()) {
-    _src.contextItemUsed(true);
-  }
-  _src.getStaticType().flags = StaticType::DECIMAL_TYPE;
+  _src.getStaticType() = StaticType::DECIMAL_TYPE;
   return calculateSRCForArguments(context);
 }
 
 Sequence FunctionStringLength::createSequence(DynamicContext* context, int flags) const
-{ 
-    const XMLCh* str;
-    XPath2MemoryManager* memMgr = context->getMemoryManager();
-    if (getNumArgs() == 0) {
-        str = getString(context);
-    } else {
+{
+  XPath2MemoryManager *mm = context->getMemoryManager();
 
-        Sequence strParm=getParamNumber(1,context)->toSequence(context);
-        if(strParm.isEmpty())
-            return Sequence(context->getItemFactory()->createInteger(0, context), memMgr);
+  Item::Ptr strParm = getParamNumber(1,context)->next(context);
+  if(strParm.isNull())
+    return Sequence(context->getItemFactory()->createInteger(0, context), mm);
 
-        str = strParm.first()->asString(context);
-    }
-    const XMLCh* cursor=str;
-    long length=0;
-    while(*cursor)
-    {
-        length++;
-        if(XERCES_CPP_NAMESPACE_QUALIFIER RegxUtil::isHighSurrogate(*cursor) && 
-           XERCES_CPP_NAMESPACE_QUALIFIER RegxUtil::isLowSurrogate(*(cursor+1)))
-            cursor++;
-        cursor++;
-    }
-    return Sequence(context->getItemFactory()->createInteger(length, context), memMgr);
+  const XMLCh *str = strParm->asString(context);
+
+  long length = 0;
+  while(*str) {
+    ++length;
+    if(RegxUtil::isHighSurrogate(*str)) ++str;
+    ++str;
+  }
+
+  return Sequence(context->getItemFactory()->createInteger(length, context), mm);
 }

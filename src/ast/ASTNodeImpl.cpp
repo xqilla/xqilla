@@ -93,8 +93,8 @@ Result ASTNodeImpl::createResult(DynamicContext* context, int flags) const
   return new CreateSequenceResult(this, flags, context);
 }
 
-void ASTNodeImpl::generateEvents(EventHandler *events, DynamicContext *context,
-                                 bool preserveNS, bool preserveType) const
+EventGenerator::Ptr ASTNodeImpl::generateEvents(EventHandler *events, DynamicContext *context,
+                                           bool preserveNS, bool preserveType) const
 {
   Result result = createResult(context);
   Item::Ptr item;
@@ -102,11 +102,17 @@ void ASTNodeImpl::generateEvents(EventHandler *events, DynamicContext *context,
     if(item->isNode()) {
       ((Node*)item.get())->generateEvents(events, context, preserveNS, preserveType);
     }
-    else {
+    else if(item->isAtomicValue()) {
       events->atomicItemEvent(((AnyAtomicType*)item.get())->getPrimitiveTypeIndex(), item->asString(context),
                               item->getTypeURI(), item->getTypeName());
     }
+    else if(item->isFunction()) {
+      // TBD What do we do here? - jpcs
+      events->atomicItemEvent(AnyAtomicType::STRING, item->asString(context), 0, 0);
+    }
   }
+
+  return 0;
 }
 
 Sequence ASTNodeImpl::createSequence(DynamicContext* context, int flags) const

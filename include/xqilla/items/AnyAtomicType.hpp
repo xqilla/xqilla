@@ -60,34 +60,6 @@ public:
     NumAtomicObjectTypes= 23
   };
 
-  /* same ordering as in cast table in F&O, for debug
-   * enum AtomicObjectType {
-    UNTYPED_ATOMIC     = 0,
-    ANY_SIMPLE_TYPE    = 1,
-    STRING             = 2,
-    FLOAT              = 3,
-    DOUBLE             = 4,
-    DECIMAL            = 5,
-    DURATION           = 6,
-    YEAR_MONTH_DURATION= 7,
-    DAY_TIME_DURATION  = 8,
-    DATE_TIME          = 9,
-    TIME               = 10,
-    DATE               = 11,
-    G_YEAR_MONTH       = 12,
-    G_YEAR             = 13,
-    G_MONTH_DAY        = 14,
-    G_DAY              = 15,
-    G_MONTH            = 16,
-    BOOLEAN            = 17,
-    BASE_64_BINARY     = 18,
-    HEX_BINARY         = 19,
-    ANY_URI            = 20,
-    QNAME              = 21,
-    NOTATION           = 22,
-    NumAtomicObjectTypes= 23
-  };*/
-
   typedef RefCountPointer<const AnyAtomicType> Ptr;
 
   /* isAtomicValue from Item */
@@ -95,6 +67,8 @@ public:
 
   /* isNode from Item */
   virtual bool isNode() const;
+
+  virtual bool isFunction() const;
 
   /* is this type numeric?  Return false by default */
   virtual bool isNumericValue() const;
@@ -142,6 +116,8 @@ public:
   /* Returns true if this typeName and uri match the given typeName and uri,
    * or if any of this type's parents match the given typeName and uri */
   virtual bool isInstanceOfType(const XMLCh* targetURI, const XMLCh* targetType, const StaticContext* context) const;
+
+  virtual void typeToBuffer(DynamicContext *context, XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &buffer) const;
   
   /**
    * Returns true if 
@@ -186,4 +162,4 @@ private:
   static const CastTable staticCastTable;  
 };
 
-#endif //  _ANYATOMICTYPE_HPP
+#endif

@@ -29,9 +29,9 @@ class EventHandler;
 class XQILLA_API XQPIConstructor : public XQDOMConstructor
 {
 public:
-  XQPIConstructor(ASTNode* name, ASTNode* value, XPath2MemoryManager* mm);
+  XQPIConstructor(ASTNode* name, ASTNode* value, XPath2MemoryManager* mm, bool xslt = false);
 
-  virtual void generateEvents(EventHandler *events, DynamicContext *context,
+  virtual EventGenerator::Ptr generateEvents(EventHandler *events, DynamicContext *context,
                               bool preserveNS, bool preserveType) const;
   virtual ASTNode* staticResolution(StaticContext *context);
   virtual ASTNode *staticTyping(StaticContext *context);
@@ -45,6 +45,7 @@ public:
 
 private:
   ASTNode* m_name, *m_value;
+  bool xslt_;
 };
 
 #endif

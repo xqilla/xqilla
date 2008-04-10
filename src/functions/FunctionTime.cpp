@@ -174,13 +174,14 @@ Result FunctionTime::createResult(DynamicContext* context, int flags) const
   return new FunctionTimeResult(this);
 }
 
-void FunctionTime::generateEvents(EventHandler *events, DynamicContext *context,
-                                  bool preserveNS, bool preserveType) const
+EventGenerator::Ptr FunctionTime::generateEvents(EventHandler *events, DynamicContext *context,
+                                            bool preserveNS, bool preserveType) const
 {
   Timer timer(getParamNumber(2, context)->next(context)->asString(context),
               context, this);
 
-  _args[0]->generateEvents(events, context, preserveNS, preserveType);
+  _args[0]->generateAndTailCall(events, context, preserveNS, preserveType);
+  return 0;
 }
 
 PendingUpdateList FunctionTime::createUpdateList(DynamicContext *context) const

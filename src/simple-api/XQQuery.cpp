@@ -133,7 +133,7 @@ void XQQuery::execute(EventHandler *events, DynamicContext* context) const
   if(m_query != NULL) {
     try {
       // execute the query body
-      m_query->generateEvents(events, context, true, true);
+      m_query->generateAndTailCall(events, context, true, true);
       events->endEvent();
     }
     catch(XQException& e) {
@@ -154,8 +154,16 @@ void XQQuery::staticResolution(StaticContext *context)
   UserFunctions::iterator i;
   for(i = m_userDefFns.begin(); i != m_userDefFns.end(); ++i) {
     (*i)->staticResolutionStage1(context);
-    if(getIsLibraryModule() && !XERCES_CPP_NAMESPACE::XMLString::equals((*i)->getURI(), getModuleTargetNamespace()))
+
+    if(getIsLibraryModule() && !(*i)->isTemplate() && !XERCES_CPP_NAMESPACE::XMLString::equals((*i)->getURI(), getModuleTargetNamespace()))
       XQThrow3(StaticErrorException,X("XQQuery::staticResolution"), X("Every function in a module must be in the module namespace [err:XQST0048]."), *i);
+
+    if((*i)->isTemplate()) {
+      context->addTemplate(*i);
+    }
+    else if((*i)->getName()) {
+      context->addCustomFunction(*i);
+    }
   }
 
   // Define types for the imported variables
@@ -170,8 +178,7 @@ void XQQuery::staticResolution(StaticContext *context)
   }
 
   // Run staticResolution on the global variables
-  if(!m_userDefVars.empty())
-  {
+  if(!m_userDefVars.empty()) {
     GlobalVariables::iterator itVar, itVar2;
     // declare all the global variables with a special StaticAnalysis, in order to recognize 'variable is defined later' errors 
     // instead of more generic 'variable not found'
@@ -250,6 +257,8 @@ void XQQuery::staticResolution(StaticContext *context)
   for(i = m_userDefFns.begin(); i != m_userDefFns.end(); ++i) {
     (*i)->staticResolutionStage2(context);
   }
+
+  // Run static resolution on the query body
   if(m_query) m_query = m_query->staticResolution(context);
 
   staticTyping(context);
@@ -272,8 +281,7 @@ void XQQuery::staticTyping(StaticContext *context)
   }
 
   // Run staticTyping on the global variables
-  if(!m_userDefVars.empty())
-  {
+  if(!m_userDefVars.empty()) {
     // declare all the global variables with a special StaticAnalysis, in order to recognize 'variable is defined
     // later' errors instead of more generic 'variable not found'. In order to catch references to not yet defined
     // variables (but when no recursion happens) we also create a scope where we undefine the rest of the variables (once
@@ -308,6 +316,8 @@ void XQQuery::staticTyping(StaticContext *context)
   for(i = m_userDefFns.begin(); i != m_userDefFns.end(); ++i) {
     (*i)->staticTyping(context);
   }
+
+  // Run staticTyping on the query body
   if(m_query) m_query = m_query->staticTyping(context);
 }
 
@@ -468,7 +478,12 @@ void XQQuery::importModule(const XMLCh* szUri, VectorOfStrings* locations, Stati
     // now move the variable declarations and the function definitions into my context
     for(UserFunctions::iterator itFn = pParsedQuery->m_userDefFns.begin(); itFn != pParsedQuery->m_userDefFns.end(); ++itFn) {
       (*itFn)->setModuleDocumentCache(const_cast<DocumentCache*>(moduleCtx->getDocumentCache()));
-      context->addCustomFunction(*itFn);
+      if((*itFn)->isTemplate()) {
+        context->addTemplate(*itFn);
+      }
+      else if((*itFn)->getName()) {
+        context->addCustomFunction(*itFn);
+      }
     }
     for(GlobalVariables::iterator itVar = pParsedQuery->m_userDefVars.begin(); itVar != pParsedQuery->m_userDefVars.end(); ++itVar) {
       for(ImportedModules::const_iterator modIt = m_importedModules.begin();
@@ -521,32 +536,22 @@ const XMLCh* XQQuery::getQueryText() const
 
 XQQuery::QueryResult::QueryResult(const XQQuery *query)
   : ResultImpl(query->getQueryBody()),
-    _query(query),
-    _parent(0),
-    _toDo(true)
+    _query(query)
 {
 }
 
-Item::Ptr XQQuery::QueryResult::next(DynamicContext *context)
+Item::Ptr XQQuery::QueryResult::nextOrTail(Result &tail, DynamicContext *context)
 {
-  if(_toDo) {
-    _toDo = false;
+  _query->executeProlog(context);
 
-    _query->executeProlog(context);
-
-    // execute the query body
-    if(_query->getQueryBody() != NULL) {
-      _parent = _query->getQueryBody()->createResult(context);
-    }
+  if(_query->getQueryBody() != NULL) {
+    // No closure needed here
+    tail = _query->getQueryBody()->createResult(context);
   }
-
-  Item::Ptr item = _parent->next(context);
-
-  if(item == NULLRCP) {
-    _parent = 0;
+  else {
+    tail = 0;
   }
-
-  return item;
+  return 0;
 }
 
 std::string XQQuery::QueryResult::asString(DynamicContext *context, int indent) const
@@ -555,7 +560,6 @@ std::string XQQuery::QueryResult::asString(DynamicContext *context, int indent) 
   std::string in(getIndent(indent));
 
   oss << in << "<queryresult>" << std::endl;
-  oss << _parent->asString(context, indent + 1);
   oss << in << "</queryresult>" << std::endl;
 
   return oss.str();

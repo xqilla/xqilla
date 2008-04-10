@@ -39,7 +39,7 @@ public:
 
     void staticResolution(StaticContext* context);
     void staticTyping(const StaticAnalysis &var_src, StaticContext* context,
-                      StaticAnalysis &src, bool &possiblyUpdating);
+                      StaticAnalysis &src, bool &possiblyUpdating, bool first);
 
     const XMLCh *getQName() const { return qname_; }
     const XMLCh *getURI() const { return uri_; }
@@ -70,7 +70,7 @@ public:
   virtual ASTNode *staticTyping(StaticContext *context);
 
   virtual Result createResult(DynamicContext* context, int flags=0) const;
-  virtual void generateEvents(EventHandler *events, DynamicContext *context,
+  virtual EventGenerator::Ptr generateEvents(EventHandler *events, DynamicContext *context,
                               bool preserveNS, bool preserveType) const;
   virtual PendingUpdateList createUpdateList(DynamicContext *context) const;
 
@@ -88,15 +88,11 @@ private:
   public:
     TypeswitchResult(const XQTypeswitch *di);
 
-    Item::Ptr next(DynamicContext *context);
+    Item::Ptr nextOrTail(Result &tail, DynamicContext *context);
     std::string asString(DynamicContext *context, int indent) const;
 
   private:
     const XQTypeswitch *_di;
-
-    SingleVarStore _scope;
-    bool _scopeUsed;
-    Result _result;
   };
 
   ASTNode *expr_;

@@ -46,7 +46,7 @@ const unsigned int FunctionTranslate::maxArgs = 3;
 FunctionTranslate::FunctionTranslate(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "string?,string,string", args, memMgr)
 {
-  _src.getStaticType().flags = StaticType::STRING_TYPE;
+  _src.getStaticType() = StaticType::STRING_TYPE;
 }
 
 Sequence FunctionTranslate::createSequence(DynamicContext* context, int flags) const

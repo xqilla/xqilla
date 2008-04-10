@@ -78,10 +78,12 @@
       <File RelativePath="..\..\include\xqilla\ast\TupleNode.hpp"/>
       <File RelativePath="..\..\include\xqilla\ast\WhereTuple.hpp"/>
       <File RelativePath="..\..\include\xqilla\ast\XPath1Compat.hpp"/>
+      <File RelativePath="..\..\include\xqilla\ast\XQAnalyzeString.hpp"/>
       <File RelativePath="..\..\include\xqilla\ast\XQAtomize.hpp"/>
       <File RelativePath="..\..\include\xqilla\ast\XQCastAs.hpp"/>
       <File RelativePath="..\..\include\xqilla\ast\XQCastableAs.hpp"/>
       <File RelativePath="..\..\include\xqilla\ast\XQContextItem.hpp"/>
+      <File RelativePath="..\..\include\xqilla\ast\XQCopyOf.hpp"/>
       <File RelativePath="..\..\include\xqilla\ast\XQDOMConstructor.hpp"/>
       <File RelativePath="..\..\include\xqilla\ast\XQDocumentConstructor.hpp"/>
       <File RelativePath="..\..\include\xqilla\ast\XQElementConstructor.hpp"/>
@@ -92,6 +94,7 @@
       <File RelativePath="..\..\include\xqilla\ast\XQDocumentOrder.hpp"/>
       <File RelativePath="..\..\include\xqilla\ast\XQFunction.hpp"/>
       <File RelativePath="..\..\include\xqilla\ast\XQFunctionCall.hpp"/>
+      <File RelativePath="..\..\include\xqilla\ast\XQFunctionConversion.hpp"/>
       <File RelativePath="..\..\include\xqilla\ast\XQGlobalVariable.hpp"/>
       <File RelativePath="..\..\include\xqilla\ast\XQIf.hpp"/>
       <File RelativePath="..\..\include\xqilla\ast\XQInstanceOf.hpp"/>
@@ -120,6 +123,7 @@
       <File RelativePath="..\..\include\xqilla\context\URIResolver.hpp"/>
       <File RelativePath="..\..\include\xqilla\context\MessageListener.hpp"/>
       <File RelativePath="..\..\include\xqilla\context\ModuleResolver.hpp"/>
+      <File RelativePath="..\..\include\xqilla\context\RegexGroupStore.hpp"/>
       <File RelativePath="..\..\include\xqilla\context\UpdateFactory.hpp"/>
       <File RelativePath="..\..\include\xqilla\context\VarHashEntry.hpp"/>
       <File RelativePath="..\..\include\xqilla\context\VariableStore.hpp"/>
@@ -137,6 +141,7 @@
       <File RelativePath="..\..\include\xqilla\dom-api\XQillaNSResolver.hpp"/>
       <File RelativePath="..\..\include\xqilla\dom-api\impl\XQillaNSResolverImpl.hpp"/>
       <File RelativePath="..\..\include\xqilla\events\ContentSequenceFilter.hpp"/>
+      <File RelativePath="..\..\include\xqilla\events\EventGenerator.hpp"/>
       <File RelativePath="..\..\include\xqilla\events\EventHandler.hpp"/>
       <File RelativePath="..\..\include\xqilla\events\EventSerializer.hpp"/>
       <File RelativePath="..\..\include\xqilla\events\NSFixupFilter.hpp"/>
@@ -209,6 +214,8 @@
       <File RelativePath="..\..\include\xqilla\functions\FunctionExists.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionFalse.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionFloor.hpp"/>
+      <File RelativePath="..\..\include\xqilla\functions\FunctionFunctionArity.hpp"/>
+      <File RelativePath="..\..\include\xqilla\functions\FunctionFunctionName.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionHoursFromDateTime.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionHoursFromDuration.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionHoursFromTime.hpp"/>
@@ -248,9 +255,11 @@
       <File RelativePath="..\..\include\xqilla\functions\FunctionParseHTML.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionParseJSON.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionParseXML.hpp"/>
+      <File RelativePath="..\..\include\xqilla\functions\FunctionPartialApply.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionPosition.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionPrefixFromQName.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionQName.hpp"/>
+      <File RelativePath="..\..\include\xqilla\functions\FunctionRegexGroup.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionRemove.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionReplace.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionResolveQName.hpp"/>
@@ -450,10 +459,12 @@
       <File RelativePath="..\..\src\ast\StaticType.cpp"/>
       <File RelativePath="..\..\src\ast\WhereTuple.cpp"/>
       <File RelativePath="..\..\src\ast\XPath1Compat.cpp"/>
+      <File RelativePath="..\..\src\ast\XQAnalyzeString.cpp"/>
       <File RelativePath="..\..\src\ast\XQAtomize.cpp"/>
       <File RelativePath="..\..\src\ast\XQCastAs.cpp"/>
       <File RelativePath="..\..\src\ast\XQCastableAs.cpp"/>
       <File RelativePath="..\..\src\ast\XQContextItem.cpp"/>
+      <File RelativePath="..\..\src\ast\XQCopyOf.cpp"/>
       <File RelativePath="..\..\src\ast\XQDOMConstructor.cpp"/>
       <File RelativePath="..\..\src\ast\XQDocumentConstructor.cpp"/>
       <File RelativePath="..\..\src\ast\XQElementConstructor.cpp"/>
@@ -464,6 +475,7 @@
       <File RelativePath="..\..\src\ast\XQDocumentOrder.cpp"/>
       <File RelativePath="..\..\src\ast\XQFunction.cpp"/>
       <File RelativePath="..\..\src\ast\XQFunctionCall.cpp"/>
+      <File RelativePath="..\..\src\ast\XQFunctionConversion.cpp"/>
       <File RelativePath="..\..\src\ast\XQGlobalVariable.cpp"/>
       <File RelativePath="..\..\src\ast\XQIf.cpp"/>
       <File RelativePath="..\..\src\ast\XQInstanceOf.cpp"/>
@@ -521,6 +533,7 @@
     </Filter>
     <Filter Name="events" Filter="">
       <File RelativePath="..\..\src\events\ContentSequenceFilter.cpp"/>
+      <File RelativePath="..\..\src\events\EventGenerator.cpp"/>
       <File RelativePath="..\..\src\events\EventSerializer.cpp"/>
       <File RelativePath="..\..\src\events\NoInheritFilter.hpp"/>
       <File RelativePath="..\..\src\events\NoInheritFilter.cpp"/>
@@ -609,6 +622,8 @@
       <File RelativePath="..\..\src\functions\FunctionExists.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionFalse.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionFloor.cpp"/>
+      <File RelativePath="..\..\src\functions\FunctionFunctionArity.cpp"/>
+      <File RelativePath="..\..\src\functions\FunctionFunctionName.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionHoursFromDateTime.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionHoursFromDuration.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionHoursFromTime.cpp"/>
@@ -648,9 +663,11 @@
       <File RelativePath="..\..\src\functions\FunctionParseHTML.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionParseJSON.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionParseXML.cpp"/>
+      <File RelativePath="..\..\src\functions\FunctionPartialApply.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionPosition.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionPrefixFromQName.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionQName.cpp"/>
+      <File RelativePath="..\..\src\functions\FunctionRegexGroup.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionRemove.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionReplace.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionResolveQName.cpp"/>
@@ -742,6 +759,8 @@
       <File RelativePath="..\..\src\lexer\XQLexer.cpp"/>
       <File RelativePath="..\..\src\lexer\XQLexer2.cpp"/>
       <File RelativePath="..\..\src\lexer\XQLexer.hpp"/>
+      <File RelativePath="..\..\src\lexer\XSLT2Lexer.cpp"/>
+      <File RelativePath="..\..\src\lexer\XSLT2Lexer.hpp"/>
     </Filter>
     <Filter Name="mapm" Filter="">
       <File RelativePath="..\..\src\mapm\m_apm.cpp"/>

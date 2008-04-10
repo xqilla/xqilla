@@ -191,12 +191,12 @@ bool equalCompareFn(const Item::Ptr &first, const Item::Ptr &second)
 
 void Sequence::sortIntoDocumentOrder(const DynamicContext *context)
 {
-    // REVISIT: we should ensure that the sequence is made only of nodes, but for performance reason
-    // we just check the first item.
-    // Note that it is OK that we are asked to sort a sequence made of atomic values, as a path expression
-    // can now return it, so we should not complain
-    if(isEmpty() || !first()->isNode())
-        return;
+  // REVISIT: we should ensure that the sequence is made only of nodes, but for performance reason
+  // we just check the first item.
+  // Note that it is OK that we are asked to sort a sequence made of atomic values, as a path expression
+  // can now return it, so we should not complain
+  if(isEmpty() || !first()->isNode()) return;
+
   // Sort
   std::sort(_itemList.begin(), _itemList.end(), lessThanCompareFn(context));
 

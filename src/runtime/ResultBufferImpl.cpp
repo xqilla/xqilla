@@ -47,6 +47,13 @@ ResultBufferImpl::~ResultBufferImpl()
   // Do nothing
 }
 
+void ResultBufferImpl::increaseMaxReadCount(unsigned int readCount)
+{
+  if(_maxReadCount == UNLIMITED_COUNT || readCount == UNLIMITED_COUNT)
+    _maxReadCount = UNLIMITED_COUNT;
+  else _maxReadCount += readCount;
+}
+
 Result ResultBufferImpl::createResult()
 {
   return new BufferedResult(this);
@@ -82,6 +89,12 @@ BufferedResult::BufferedResult(ResultBufferImpl *impl)
 Item::Ptr BufferedResult::next(DynamicContext *context)
 {
   return _impl->item(_pos++, context);
+}
+
+ResultBufferImpl *BufferedResult::toResultBuffer(unsigned int readCount)
+{
+  _impl->increaseMaxReadCount(readCount);
+  return _impl;
 }
 
 std::string BufferedResult::asString(DynamicContext *context, int indent) const

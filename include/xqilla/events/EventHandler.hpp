@@ -24,6 +24,7 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/items/AnyAtomicType.hpp>
+#include <xqilla/ast/LocationInfo.hpp>
 
 #include <xercesc/util/XercesDefs.hpp>
 
@@ -31,6 +32,10 @@ class XQILLA_API EventHandler
 {
 public:
   virtual ~EventHandler() {};
+
+  /** Recieves a LocationInfo object that is owned by the caller, and will be
+      updated with the current location information as the parse progresses. */
+  virtual void setLocationInfo(const LocationInfo *location) {}
 
   /** Handles a document node as an event */
   virtual void startDocumentEvent(const XMLCh *documentURI, const XMLCh *encoding) = 0;
@@ -72,6 +77,11 @@ public:
   void setNextEventHandler(EventHandler *next)
   {
     next_ = next;
+  }
+
+  virtual void setLocationInfo(const LocationInfo *location)
+  {
+    next_->setLocationInfo(location);
   }
 
   virtual void startDocumentEvent(const XMLCh *documentURI, const XMLCh *encoding)

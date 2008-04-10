@@ -47,7 +47,7 @@ const unsigned int FunctionNamespaceURIFromQName::maxArgs = 1;
 FunctionNamespaceURIFromQName::FunctionNamespaceURIFromQName(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "QName?", args, memMgr)
 {
-  _src.getStaticType().flags = StaticType::ANY_URI_TYPE;
+  _src.getStaticType() = StaticType(StaticType::ANY_URI_TYPE, 0, 1);
 }
 
 Sequence FunctionNamespaceURIFromQName::createSequence(DynamicContext* context, int flags) const

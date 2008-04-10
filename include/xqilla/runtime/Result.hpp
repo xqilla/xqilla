@@ -35,7 +35,7 @@ class SequenceType;
 class DynamicContext;
 class StaticType;
 
-/** A reference counting wrapper for the lazily evaluated query result */
+/** A scoped pointer wrapper for the lazily evaluated query result */
 class XQILLA_API Result
 {
 public:
@@ -94,16 +94,6 @@ inline ResultImpl *Result::operator->()
 inline const ResultImpl *Result::operator->() const
 {
   return get();
-}
-
-inline Result &Result::operator=(const Result &o)
-{
-  if(o._impl != _impl) {
-    if(_impl) _impl->decrementRefCount();
-    _impl = o._impl;
-    if(_impl) _impl->incrementRefCount();
-  }
-  return *this;
 }
 
 #endif

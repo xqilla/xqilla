@@ -79,7 +79,7 @@ ASTNode* Intersect::staticTyping(StaticContext *context)
 
   _args[1] = _args[1]->staticTyping(context);
   _src.add(_args[1]->getStaticAnalysis());
-  _src.getStaticType().typeIntersect(_args[1]->getStaticAnalysis().getStaticType());
+  _src.getStaticType().typeNodeIntersect(_args[1]->getStaticAnalysis().getStaticType());
 
   if(_args[1]->getStaticAnalysis().isUpdating()) {
     XQThrow(StaticErrorException,X("Intersect::staticTyping"),

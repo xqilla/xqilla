@@ -141,7 +141,19 @@ SOURCE=..\..\src\ast\XPath1Compat.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\ast\XQAnalyzeString.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\ast\XQApplyTemplates.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\ast\XQAtomize.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\ast\XQCallTemplate.cpp
 # End Source File
 # Begin Source File
 
@@ -197,6 +209,18 @@ SOURCE=..\..\src\ast\XQFunctionCall.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\ast\XQFunctionConversion.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\ast\XQFunctionDeref.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\ast\XQFunctionRef.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\ast\XQGlobalVariable.cpp
 # End Source File
 # Begin Source File
@@ -205,11 +229,19 @@ SOURCE=..\..\src\ast\XQIf.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\ast\XQInlineFunction.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\ast\XQInstanceOf.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\src\ast\XQLiteral.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\ast\XQNamespaceBinding.cpp
 # End Source File
 # Begin Source File
 
@@ -325,7 +357,19 @@ SOURCE=..\..\include\xqilla\ast\XPath1Compat.hpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\include\xqilla\ast\XQAnalyzeString.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\ast\XQApplyTemplates.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\include\xqilla\ast\XQAtomize.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\ast\XQCallTemplate.hpp
 # End Source File
 # Begin Source File
 
@@ -381,6 +425,18 @@ SOURCE=..\..\include\xqilla\ast\XQFunctionCall.hpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\include\xqilla\ast\XQFunctionConversion.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\ast\XQFunctionDeref.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\ast\XQFunctionRef.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\include\xqilla\ast\XQGlobalVariable.hpp
 # End Source File
 # Begin Source File
@@ -389,11 +445,19 @@ SOURCE=..\..\include\xqilla\ast\XQIf.hpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\include\xqilla\ast\XQInlineFunction.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\include\xqilla\ast\XQInstanceOf.hpp
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\include\xqilla\ast\XQLiteral.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\ast\XQNamespaceBinding.hpp
 # End Source File
 # Begin Source File
 
@@ -1421,6 +1485,10 @@ SOURCE=..\..\src\functions\FunctionQName.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\functions\FunctionRegexGroup.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\functions\FunctionRemove.cpp
 # End Source File
 # Begin Source File
@@ -1913,6 +1981,10 @@ SOURCE=..\..\include\xqilla\functions\FunctionQName.hpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\include\xqilla\functions\FunctionRegexGroup.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\include\xqilla\functions\FunctionRemove.hpp
 # End Source File
 # Begin Source File
@@ -2192,6 +2264,14 @@ SOURCE=..\..\src\items\impl\ATUntypedAtomicImpl.hpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\items\impl\FunctionRefImpl.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\items\impl\FunctionRefImpl.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\include\xqilla\items\impl\ATBooleanOrDerivedImpl.hpp
 # End Source File
 # Begin Source File
@@ -2413,6 +2493,10 @@ SOURCE=..\..\include\xqilla\items\DateOrTimeType.hpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\include\xqilla\items\FunctionRef.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\include\xqilla\items\Item.hpp
 # End Source File
 # Begin Source File
@@ -2458,6 +2542,14 @@ SOURCE=..\..\src\lexer\XQLexer2.cpp
 # Begin Source File
 
 SOURCE=..\..\src\lexer\XQLexer.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\lexer\XSLT2Lexer.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\lexer\XSLT2Lexer.hpp
 # End Source File
 # End Group
 # Begin Group "mapm"

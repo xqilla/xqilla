@@ -34,9 +34,9 @@
 class DynamicContext;
 class XQUserFunction;
 class XQGlobalVariable;
+class XQUserFunctionInstance;
 class XQQuery;
 
-typedef std::vector<XQUserFunction*, XQillaAllocator<XQUserFunction*> > UserFunctions;
 typedef std::vector<XQGlobalVariable*, XQillaAllocator<XQGlobalVariable*> > GlobalVariables;
 typedef std::vector<XQQuery*, XQillaAllocator<XQQuery*> > ImportedModules;
 
@@ -157,7 +157,7 @@ public:
   /// Set the query body to an ASTNode
   void setQueryBody(ASTNode* query);
 
-  /// Adds an XQUserFunction to the query
+  /// Adds an XQUserFunction to the query (also adds it as a template if necessary)
   void addFunction(XQUserFunction* fnDef);
   /// Returns a vector of all XQUserFunction objects from the query
   const UserFunctions &getFunctions() const { return m_userDefFns; }
@@ -202,13 +202,11 @@ private:
   public:
     QueryResult(const XQQuery *query);
 
-    Item::Ptr next(DynamicContext *context);
+    Item::Ptr nextOrTail(Result &tail, DynamicContext *context);
     std::string asString(DynamicContext *context, int indent) const;
 
   private:
     const XQQuery *_query;
-    Result _parent;
-    bool _toDo;
   };
 
 private:

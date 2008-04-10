@@ -19,19 +19,11 @@
  * $Id$
  */
 
-/*
-
-  String-length function
-
-*/
-
 #ifndef _FUNCTIONSTRINGLENGTH_HPP
 #define _FUNCTIONSTRINGLENGTH_HPP
 
-
 #include <xqilla/ast/XQFunction.hpp>
 
-/** String-length function. */
 class XQILLA_API FunctionStringLength : public XQFunction
 {
 public:
@@ -41,19 +33,10 @@ public:
 
   FunctionStringLength(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
-  /**
-   * Called during static analysis to determine if statically correct.
-   * Performs constant folding if the function has an argument, and it
-   * is constant.
-   */
-  virtual ASTNode* staticResolution(StaticContext *context);
+  virtual ASTNode *staticResolution(StaticContext *context);
   virtual ASTNode *staticTyping(StaticContext *context);
 
-  /** Returns the readable length of the string argument. **/
   Sequence createSequence(DynamicContext* context, int flags=0) const;
-
-private:
-  const XMLCh* getString(DynamicContext* context) const;
 };
 
-#endif // _FUNCTIONSTRINGLENGTH_HPP
+#endif

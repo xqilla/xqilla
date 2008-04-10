@@ -116,10 +116,12 @@
         <file name='include/xqilla/ast/TupleNode.hpp' />
         <file name='include/xqilla/ast/WhereTuple.hpp' />
         <file name='include/xqilla/ast/XPath1Compat.hpp' />
+        <file name='include/xqilla/ast/XQAnalyzeString.hpp' />
         <file name='include/xqilla/ast/XQAtomize.hpp' />
         <file name='include/xqilla/ast/XQCastAs.hpp' />
         <file name='include/xqilla/ast/XQCastableAs.hpp' />
         <file name='include/xqilla/ast/XQContextItem.hpp' />
+        <file name='include/xqilla/ast/XQCopyOf.hpp' />
         <file name='include/xqilla/ast/XQDOMConstructor.hpp' />
         <file name='include/xqilla/ast/XQDocumentConstructor.hpp' />
         <file name='include/xqilla/ast/XQElementConstructor.hpp' />
@@ -130,6 +132,7 @@
         <file name='include/xqilla/ast/XQDocumentOrder.hpp' />
         <file name='include/xqilla/ast/XQFunction.hpp' />
         <file name='include/xqilla/ast/XQFunctionCall.hpp' />
+        <file name='include/xqilla/ast/XQFunctionConversion.hpp' />
         <file name='include/xqilla/ast/XQGlobalVariable.hpp' />
         <file name='include/xqilla/ast/XQIf.hpp' />
         <file name='include/xqilla/ast/XQInstanceOf.hpp' />
@@ -158,6 +161,7 @@
         <file name='include/xqilla/context/URIResolver.hpp' />
         <file name='include/xqilla/context/MessageListener.hpp' />
         <file name='include/xqilla/context/ModuleResolver.hpp' />
+        <file name='include/xqilla/context/RegexGroupStore.hpp' />
         <file name='include/xqilla/context/UpdateFactory.hpp' />
         <file name='include/xqilla/context/VarHashEntry.hpp' />
         <file name='include/xqilla/context/VariableStore.hpp' />
@@ -175,6 +179,7 @@
         <file name='include/xqilla/dom-api/XQillaNSResolver.hpp' />
         <file name='include/xqilla/dom-api/impl/XQillaNSResolverImpl.hpp' />
         <file name='include/xqilla/events/ContentSequenceFilter.hpp' />
+        <file name='include/xqilla/events/EventGenerator.hpp' />
         <file name='include/xqilla/events/EventHandler.hpp' />
         <file name='include/xqilla/events/EventSerializer.hpp' />
         <file name='include/xqilla/events/NSFixupFilter.hpp' />
@@ -247,6 +252,8 @@
         <file name='include/xqilla/functions/FunctionExists.hpp' />
         <file name='include/xqilla/functions/FunctionFalse.hpp' />
         <file name='include/xqilla/functions/FunctionFloor.hpp' />
+        <file name='include/xqilla/functions/FunctionFunctionArity.hpp' />
+        <file name='include/xqilla/functions/FunctionFunctionName.hpp' />
         <file name='include/xqilla/functions/FunctionHoursFromDateTime.hpp' />
         <file name='include/xqilla/functions/FunctionHoursFromDuration.hpp' />
         <file name='include/xqilla/functions/FunctionHoursFromTime.hpp' />
@@ -286,9 +293,11 @@
         <file name='include/xqilla/functions/FunctionParseHTML.hpp' />
         <file name='include/xqilla/functions/FunctionParseJSON.hpp' />
         <file name='include/xqilla/functions/FunctionParseXML.hpp' />
+        <file name='include/xqilla/functions/FunctionPartialApply.hpp' />
         <file name='include/xqilla/functions/FunctionPosition.hpp' />
         <file name='include/xqilla/functions/FunctionPrefixFromQName.hpp' />
         <file name='include/xqilla/functions/FunctionQName.hpp' />
+        <file name='include/xqilla/functions/FunctionRegexGroup.hpp' />
         <file name='include/xqilla/functions/FunctionRemove.hpp' />
         <file name='include/xqilla/functions/FunctionReplace.hpp' />
         <file name='include/xqilla/functions/FunctionResolveQName.hpp' />
@@ -488,10 +497,12 @@
         <file name='src/ast/StaticType.cpp' />
         <file name='src/ast/WhereTuple.cpp' />
         <file name='src/ast/XPath1Compat.cpp' />
+        <file name='src/ast/XQAnalyzeString.cpp' />
         <file name='src/ast/XQAtomize.cpp' />
         <file name='src/ast/XQCastAs.cpp' />
         <file name='src/ast/XQCastableAs.cpp' />
         <file name='src/ast/XQContextItem.cpp' />
+        <file name='src/ast/XQCopyOf.cpp' />
         <file name='src/ast/XQDOMConstructor.cpp' />
         <file name='src/ast/XQDocumentConstructor.cpp' />
         <file name='src/ast/XQElementConstructor.cpp' />
@@ -502,6 +513,7 @@
         <file name='src/ast/XQDocumentOrder.cpp' />
         <file name='src/ast/XQFunction.cpp' />
         <file name='src/ast/XQFunctionCall.cpp' />
+        <file name='src/ast/XQFunctionConversion.cpp' />
         <file name='src/ast/XQGlobalVariable.cpp' />
         <file name='src/ast/XQIf.cpp' />
         <file name='src/ast/XQInstanceOf.cpp' />
@@ -559,6 +571,7 @@
       </filter>
       <filter name='events'>
         <file name='src/events/ContentSequenceFilter.cpp' />
+        <file name='src/events/EventGenerator.cpp' />
         <file name='src/events/EventSerializer.cpp' />
         <file name='src/events/NoInheritFilter.hpp' />
         <file name='src/events/NoInheritFilter.cpp' />
@@ -647,6 +660,8 @@
         <file name='src/functions/FunctionExists.cpp' />
         <file name='src/functions/FunctionFalse.cpp' />
         <file name='src/functions/FunctionFloor.cpp' />
+        <file name='src/functions/FunctionFunctionArity.cpp' />
+        <file name='src/functions/FunctionFunctionName.cpp' />
         <file name='src/functions/FunctionHoursFromDateTime.cpp' />
         <file name='src/functions/FunctionHoursFromDuration.cpp' />
         <file name='src/functions/FunctionHoursFromTime.cpp' />
@@ -686,9 +701,11 @@
         <file name='src/functions/FunctionParseHTML.cpp' />
         <file name='src/functions/FunctionParseJSON.cpp' />
         <file name='src/functions/FunctionParseXML.cpp' />
+        <file name='src/functions/FunctionPartialApply.cpp' />
         <file name='src/functions/FunctionPosition.cpp' />
         <file name='src/functions/FunctionPrefixFromQName.cpp' />
         <file name='src/functions/FunctionQName.cpp' />
+        <file name='src/functions/FunctionRegexGroup.cpp' />
         <file name='src/functions/FunctionRemove.cpp' />
         <file name='src/functions/FunctionReplace.cpp' />
         <file name='src/functions/FunctionResolveQName.cpp' />
@@ -780,6 +797,8 @@
         <file name='src/lexer/XQLexer.cpp' />
         <file name='src/lexer/XQLexer2.cpp' />
         <file name='src/lexer/XQLexer.hpp' />
+        <file name="src/lexer/XSLT2Lexer.cpp" />
+        <file name="src/lexer/XSLT2Lexer.hpp" />
       </filter>
       <filter name='mapm'>
         <file name='src/mapm/m_apm.cpp' />

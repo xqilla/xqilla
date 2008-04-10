@@ -26,6 +26,7 @@
 #include <xqilla/ast/StaticAnalysis.hpp>
 
 class ASTNode;
+class SequenceType;
 
 class XQILLA_API LetTuple : public TupleNode
 {
@@ -33,16 +34,21 @@ public:
   LetTuple(TupleNode *parent, const XMLCh *varQName, ASTNode *expr, XPath2MemoryManager *mm);
 
   const XMLCh *getVarURI() const { return varURI_; }
+  void setVarURI(const XMLCh *uri) { varURI_ = uri; }
   const XMLCh *getVarName() const { return varName_; }
+  void setVarName(const XMLCh *name) { varName_ = name; }
 
   ASTNode *getExpression() const { return expr_; }
   void setExpression(ASTNode *expr) { expr_ = expr; }
 
   virtual TupleNode *staticResolution(StaticContext *context);
-  virtual TupleNode *staticTypingSetup(StaticContext *context);
+  virtual TupleNode *staticTypingSetup(unsigned int &min, unsigned int &max, StaticContext *context);
   virtual TupleNode *staticTypingTeardown(StaticContext *context, StaticAnalysis &usedSrc);
 
   virtual TupleResult::Ptr createResult(DynamicContext* context) const;
+
+  // Used during parsing
+  SequenceType *seqType;
 
 private:
   const XMLCh *varQName_, *varURI_, *varName_;

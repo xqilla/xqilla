@@ -50,7 +50,7 @@ const unsigned int FunctionCodepointsToString::maxArgs = 1;
 FunctionCodepointsToString::FunctionCodepointsToString(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "integer*", args, memMgr) // 1 argument
 {
-  _src.getStaticType().flags = StaticType::STRING_TYPE;
+  _src.getStaticType() = StaticType::STRING_TYPE;
 }
 
 Sequence FunctionCodepointsToString::createSequence(DynamicContext* context, int flags) const

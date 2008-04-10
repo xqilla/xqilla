@@ -46,7 +46,7 @@ const unsigned int FunctionTimezoneFromDate::maxArgs = 1;
 FunctionTimezoneFromDate::FunctionTimezoneFromDate(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "date?", args, memMgr)
 {
-  _src.getStaticType().flags = StaticType::DAY_TIME_DURATION_TYPE;
+  _src.getStaticType() = StaticType(StaticType::DAY_TIME_DURATION_TYPE, 0, 1);
 }
 
 Sequence FunctionTimezoneFromDate::createSequence(DynamicContext* context, int flags) const

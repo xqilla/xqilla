@@ -45,6 +45,8 @@ public:
   
   virtual void addNamespaceBinding(const XMLCh* prefix, const XMLCh* uri);
 
+  void setPreviousScope(const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver *prevScope) { _prevScope = prevScope; }
+
   virtual void release();
 
 protected:

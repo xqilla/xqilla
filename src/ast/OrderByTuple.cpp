@@ -87,9 +87,9 @@ static TupleNode *findOrderByAncestor(TupleNode *ancestor, const StaticAnalysis 
   return found;
 }
 
-TupleNode *OrderByTuple::staticTypingSetup(StaticContext *context)
+TupleNode *OrderByTuple::staticTypingSetup(unsigned int &min, unsigned int &max, StaticContext *context)
 {
-  parent_ = parent_->staticTypingSetup(context);
+  parent_ = parent_->staticTypingSetup(min, max, context);
 
   {
     AutoNodeSetOrderingReset orderReset(context, (modifiers_ & UNSTABLE) == 0 ?

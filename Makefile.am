@@ -31,13 +31,16 @@ src/context/impl/XQContextImpl.cpp \
 src/context/impl/XQDynamicContextImpl.cpp \
 src/context/impl/ItemFactoryImpl.cpp \
 src/ast/XQAtomize.cpp \
+src/ast/XQAnalyzeString.cpp \
 src/ast/XQCastableAs.cpp \
 src/ast/XQCastAs.cpp \
 src/ast/XQContextItem.cpp \
+src/ast/XQCopyOf.cpp \
 src/ast/XQFunction.cpp \
 src/ast/XQIf.cpp \
 src/ast/ASTNodeImpl.cpp \
 src/ast/XQInstanceOf.cpp \
+src/ast/XQInlineFunction.cpp \
 src/ast/XQLiteral.cpp \
 src/ast/XQNav.cpp \
 src/ast/XQOperator.cpp \
@@ -58,6 +61,9 @@ src/ast/XQPIConstructor.cpp \
 src/ast/XQCommentConstructor.cpp \
 src/ast/XQTextConstructor.cpp \
 src/ast/XQFunctionCall.cpp \
+src/ast/XQFunctionConversion.cpp \
+src/ast/XQFunctionDeref.cpp \
+src/ast/XQFunctionRef.cpp \
 src/ast/XQGlobalVariable.cpp \
 src/ast/XQOrderingChange.cpp \
 src/ast/XQQuantified.cpp \
@@ -73,7 +79,11 @@ src/ast/ForTuple.cpp \
 src/ast/LetTuple.cpp \
 src/ast/WhereTuple.cpp \
 src/ast/OrderByTuple.cpp \
+src/ast/XQNamespaceBinding.cpp \
+src/ast/XQCallTemplate.cpp \
+src/ast/XQApplyTemplates.cpp \
 src/events/ContentSequenceFilter.cpp \
+src/events/EventGenerator.cpp \
 src/events/EventSerializer.cpp \
 src/events/NoInheritFilter.cpp \
 src/events/NoInheritFilter.hpp \
@@ -172,6 +182,8 @@ src/functions/FunctionExactlyOne.cpp \
 src/functions/FunctionExists.cpp \
 src/functions/FunctionFalse.cpp \
 src/functions/FunctionFloor.cpp \
+src/functions/FunctionFunctionArity.cpp \
+src/functions/FunctionFunctionName.cpp \
 src/functions/FunctionId.cpp \
 src/functions/FunctionIdref.cpp \
 src/functions/FunctionImplicitTimezone.cpp \
@@ -201,6 +213,7 @@ src/functions/FunctionOneOrMore.cpp \
 src/functions/FunctionPosition.cpp \
 src/functions/FunctionPrefixFromQName.cpp \
 src/functions/FunctionQName.cpp \
+src/functions/FunctionRegexGroup.cpp \
 src/functions/FunctionRemove.cpp \
 src/functions/FunctionReplace.cpp \
 src/functions/FunctionResolveQName.cpp \
@@ -256,6 +269,7 @@ src/functions/FunctionYearsFromDuration.cpp \
 src/functions/FunctionParseJSON.cpp \
 src/functions/FunctionSerializeJSON.cpp \
 src/functions/FunctionParseHTML.cpp \
+src/functions/FunctionPartialApply.cpp \
 src/functions/XQUserFunction.cpp \
 src/items/impl/ATAnySimpleTypeImpl.cpp \
 src/items/impl/ATAnySimpleTypeImpl.hpp \
@@ -285,6 +299,8 @@ src/items/impl/ATStringOrDerivedImpl.hpp \
 src/items/impl/ATTimeOrDerivedImpl.cpp \
 src/items/impl/ATUntypedAtomicImpl.cpp \
 src/items/impl/ATUntypedAtomicImpl.hpp \
+src/items/impl/FunctionRefImpl.cpp \
+src/items/impl/FunctionRefImpl.hpp \
 src/items/DatatypeFactory.cpp \
 src/items/DatatypeFactoryTemplate.hpp \
 src/items/DatatypeLookup.cpp \
@@ -306,6 +322,8 @@ src/lexer/FlexLexer.h \
 src/lexer/XQLexer.cpp \
 src/lexer/XQLexer2.cpp \
 src/lexer/XQLexer.hpp \
+src/lexer/XSLT2Lexer.cpp \
+src/lexer/XSLT2Lexer.hpp \
 src/mapm/mapm5sin.c \
 src/mapm/mapm_add.c \
 src/mapm/mapmasin.c \

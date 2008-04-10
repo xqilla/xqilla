@@ -36,7 +36,7 @@ public:
   void addItem(ASTNode* di);
 
   virtual Result createResult(DynamicContext* context, int flags=0) const;
-  virtual void generateEvents(EventHandler *events, DynamicContext *context,
+  virtual EventGenerator::Ptr generateEvents(EventHandler *events, DynamicContext *context,
                               bool preserveNS, bool preserveType) const;
   virtual ASTNode* staticResolution(StaticContext *context);
   virtual ASTNode *staticTyping(StaticContext *context);
@@ -48,13 +48,12 @@ private:
   class ParenthesizedResult : public ResultImpl
   {
   public:
-    ParenthesizedResult(const XQParenthesizedExpr *di, int flags);
+    ParenthesizedResult(const XQParenthesizedExpr *di);
 
-    Item::Ptr next(DynamicContext *context);
+    Item::Ptr nextOrTail(Result &tail, DynamicContext *context);
     std::string asString(DynamicContext *context, int indent) const;
 
   private:
-    int _flags;
     const XQParenthesizedExpr *_di;
     VectorOfASTNodes::const_iterator _i;
     Result _result;

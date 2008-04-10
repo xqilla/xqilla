@@ -38,30 +38,54 @@ EmptyResult Result::_empty(0);
 Result::Result(const Item::Ptr &item)
   : _impl(new SequenceResult(0, item))
 {
-  _impl->incrementRefCount();
+  _impl->setResultPointer(this);
 }
 
 Result::Result(const Sequence &seq)
   : _impl(new SequenceResult(0, seq))
 {
-  _impl->incrementRefCount();
+  _impl->setResultPointer(this);
 }
 
 Result::Result(ResultImpl *impl)
   : _impl(impl)
 {
-  if(_impl) _impl->incrementRefCount();
+  if(_impl) {
+    if(_impl->getResultPointer()) {
+      _impl->getResultPointer()->_impl = 0;
+    }
+    _impl->setResultPointer(this);
+  }
 }
 
 Result::Result(const Result &o)
   : _impl(o._impl)
 {
-  if(_impl) _impl->incrementRefCount();
+  if(_impl) {
+    _impl->setResultPointer(this);
+    const_cast<Result&>(o)._impl = 0;
+  }
+}
+
+Result &Result::operator=(const Result &o)
+{
+  if(o._impl != _impl) {
+    ResultImpl *tmp = _impl;
+
+    _impl = o._impl;
+    if(_impl) {
+      _impl->setResultPointer(this);
+      const_cast<Result&>(o)._impl = 0;
+    }
+
+    delete tmp;
+  }
+  return *this;
 }
 
 Result::~Result()
 {
-  if(_impl) _impl->decrementRefCount();
+  delete _impl;
 }
 
 EmptyResult* Result::getEmpty() const

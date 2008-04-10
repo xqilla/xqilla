@@ -55,7 +55,7 @@ const unsigned int FunctionNamespaceURIForPrefix::maxArgs = 2;
 FunctionNamespaceURIForPrefix::FunctionNamespaceURIForPrefix(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "string?, element()", args, memMgr)
 {
-  _src.getStaticType().flags = StaticType::ANY_URI_TYPE;
+  _src.getStaticType() = StaticType(StaticType::ANY_URI_TYPE, 0, 1);
 }
 
 Sequence FunctionNamespaceURIForPrefix::createSequence(DynamicContext* context, int flags) const

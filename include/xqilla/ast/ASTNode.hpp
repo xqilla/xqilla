@@ -26,6 +26,7 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/framework/XPath2MemoryManager.hpp>
+#include <xqilla/events/EventGenerator.hpp>
 #include <xqilla/ast/LocationInfo.hpp>
 
 class DynamicContext;
@@ -83,7 +84,18 @@ public:
     NAME_EXPRESSION,
     CONTENT_SEQUENCE,
     DIRECT_NAME,
-    RETURN
+    RETURN,
+    NAMESPACE_BINDING,
+    FUNCTION_CONVERSION,
+    SIMPLE_CONTENT,
+    ANALYZE_STRING,
+    CALL_TEMPLATE,
+    APPLY_TEMPLATES,
+    INLINE_FUNCTION,
+    FUNCTION_REF,
+    FUNCTION_DEREF,
+    COPY_OF,
+    COPY
   } whichType;
 
   ASTNode() : userData_(0) {}
@@ -93,9 +105,13 @@ public:
       The flags parameter is currently unused */
   virtual Result createResult(DynamicContext* context, int flags=0) const = 0;
 
-  /** Returns the result of this expression via the EventHandler provided. */
-  virtual void generateEvents(EventHandler *events, DynamicContext *context,
-                              bool preserveNS, bool preserveType) const = 0;
+  /** Returns the result of this expression via the EventHandler provided.
+      An ASTNode may be returned to be called as a tail call optimization */
+  virtual EventGenerator::Ptr generateEvents(EventHandler *events, DynamicContext *context,
+                                             bool preserveNS, bool preserveType) const = 0;
+
+  void generateAndTailCall(EventHandler *events, DynamicContext *context,
+                           bool preserveNS, bool preserveType) const;
 
   /// Executes an update expression
   virtual PendingUpdateList createUpdateList(DynamicContext *context) const = 0;
@@ -123,6 +139,13 @@ public:
 private:
   void *userData_;
 };
+
+inline void ASTNode::generateAndTailCall(EventHandler *events, DynamicContext *context,
+                                         bool preserveNS, bool preserveType) const
+{
+  EventGenerator::generateAndTailCall(generateEvents(events, context, preserveNS, preserveType),
+                                      events, context);
+}
 
 typedef std::vector<ASTNode*,XQillaAllocator<ASTNode*> > VectorOfASTNodes;
 
