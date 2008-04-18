@@ -180,6 +180,9 @@ public:
   }
 
 private:
+  class OrderComparison;
+  friend class OrderComparison;
+
   class OrderPair
   {
   public:
