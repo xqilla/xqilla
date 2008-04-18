@@ -26,7 +26,7 @@
 #include <xercesc/dom/DOMException.hpp>
 #include <xercesc/dom/DOMDocument.hpp>
 #include <xercesc/dom/impl/DOMDocumentImpl.hpp>
-#include <xercesc/dom/impl/DOMAttrImpl.hpp>
+#include <xercesc/dom/DOMAttr.hpp>
 #include <xercesc/util/XercesVersion.hpp>
 #include <xercesc/dom/impl/DOMCasts.hpp>
 #include <xercesc/dom/impl/DOMNodeImpl.hpp>
@@ -224,7 +224,7 @@ short            XPathNamespaceImpl::compareTreePosition(const XERCES_CPP_NAMESP
     // we are now interested in the owner to determine position.
 
     if (thisAncestorType == XERCES_CPP_NAMESPACE_QUALIFIER DOMNode::ATTRIBUTE_NODE) {
-        thisNode = ((XERCES_CPP_NAMESPACE_QUALIFIER DOMAttrImpl *)thisAncestor)->getOwnerElement();
+        thisNode = ((XERCES_CPP_NAMESPACE_QUALIFIER DOMAttr *)thisAncestor)->getOwnerElement();
     }
 
     if (thisAncestorType == XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNamespace::XPATH_NAMESPACE_NODE) {
@@ -232,7 +232,7 @@ short            XPathNamespaceImpl::compareTreePosition(const XERCES_CPP_NAMESP
     }
 
     if (otherAncestorType == XERCES_CPP_NAMESPACE_QUALIFIER DOMNode::ATTRIBUTE_NODE) {
-        otherNode = ((XERCES_CPP_NAMESPACE_QUALIFIER DOMAttrImpl *)otherAncestor)->getOwnerElement();
+        otherNode = ((XERCES_CPP_NAMESPACE_QUALIFIER DOMAttr *)otherAncestor)->getOwnerElement();
     }
 
     if (otherAncestorType == XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNamespace::XPATH_NAMESPACE_NODE) {
