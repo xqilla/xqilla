@@ -52,6 +52,8 @@ public:
   static const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *getNextSibling(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *node);
   static const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *getPreviousSibling(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *node);
 
+  static const XMLCh *getLocalName(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *node);
+
 protected:
   Node::Ptr nodeObj_;
   const AxisNodeFactory &factory_;
@@ -60,6 +62,12 @@ protected:
   const NodeTest *nodeTest_;
   bool toDo_;
 };
+
+inline const XMLCh *Axis::getLocalName(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *node)
+{
+  if(node->getLocalName() == 0) return node->getNodeName();
+  return node->getLocalName();
+}
 
 #endif
 
