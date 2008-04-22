@@ -71,14 +71,14 @@ Item::Ptr Axis::next(DynamicContext *context)
         }
         case DOMNode::ELEMENT_NODE: {
           if(!nodeTest_->getTypeWildcard() && nodeTest_->getNodeType() != Node::element_string) continue;
-          if(!nodeTest_->getNameWildcard() && !XPath2Utils::equals(node->getLocalName(), nodeTest_->getNodeName())) continue;
+          if(!nodeTest_->getNameWildcard() && !XPath2Utils::equals(getLocalName(node), nodeTest_->getNodeName())) continue;
           if(!nodeTest_->getNamespaceWildcard() && !XPath2Utils::equals(node->getNamespaceURI(), nodeTest_->getNodeUri())) continue;
           break;
         }
         case DOMNode::ATTRIBUTE_NODE: {
           if(nodeTest_->getTypeWildcard()) { if(nodeTest_->getHasChildren()) continue; }
           else if(nodeTest_->getNodeType() != Node::attribute_string) continue;
-          if(!nodeTest_->getNameWildcard() && !XPath2Utils::equals(node->getLocalName(), nodeTest_->getNodeName())) continue;
+          if(!nodeTest_->getNameWildcard() && !XPath2Utils::equals(getLocalName(node), nodeTest_->getNodeName())) continue;
           if(!nodeTest_->getNamespaceWildcard() && !XPath2Utils::equals(node->getNamespaceURI(), nodeTest_->getNodeUri())) continue;
           break;
         }

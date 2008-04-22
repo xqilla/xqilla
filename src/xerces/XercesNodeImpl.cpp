@@ -148,7 +148,7 @@ static void outputInheritedNamespaces(const DOMNode *node, EventHandler *events)
     for(unsigned int i = 0; i < attrs->getLength(); ++i) {
       DOMNode *attr = attrs->item(i);
       if(XPath2Utils::equals(XMLUni::fgXMLNSURIName, attr->getNamespaceURI())) {
-        const XMLCh *prefix = emptyString(attr->getPrefix()) ? 0 : attr->getLocalName();
+        const XMLCh *prefix = emptyString(attr->getPrefix()) ? 0 : Axis::getLocalName(attr);
         if(done.insert(prefix).second && !emptyString(attr->getNodeValue())) {
           events->namespaceEvent(prefix, attr->getNodeValue());
         }
@@ -177,7 +177,7 @@ static void toEventsImpl(const DOMNode *node, EventHandler *events,
     break;
   }
   case DOMNode::ELEMENT_NODE: {
-    events->startElementEvent(emptyToNull(node->getPrefix()), emptyToNull(node->getNamespaceURI()), emptyToNull(node->getLocalName()));
+    events->startElementEvent(emptyToNull(node->getPrefix()), emptyToNull(node->getNamespaceURI()), emptyToNull(Axis::getLocalName(node)));
 
     DOMNamedNodeMap *attrs = node->getAttributes();
     for(unsigned int i = 0; i < attrs->getLength(); ++i) {
@@ -198,7 +198,7 @@ static void toEventsImpl(const DOMNode *node, EventHandler *events,
     const XMLCh *typeName = DocumentCache::g_szUntyped;
     if(preserveType) XercesNodeImpl::typeUriAndName(node, typeURI, typeName);
 
-    events->endElementEvent(emptyToNull(node->getPrefix()), emptyToNull(node->getNamespaceURI()), node->getLocalName(),
+    events->endElementEvent(emptyToNull(node->getPrefix()), emptyToNull(node->getNamespaceURI()), emptyToNull(Axis::getLocalName(node)),
                             typeURI, typeName);
     break;
   }
@@ -215,7 +215,7 @@ static void toEventsImpl(const DOMNode *node, EventHandler *events,
   case DOMNode::ATTRIBUTE_NODE:
     if(XPath2Utils::equals(XMLUni::fgXMLNSURIName, node->getNamespaceURI())) {
       if(outputNamespaces && !inheritedNamespaces) {
-        const XMLCh *prefix = emptyString(node->getPrefix()) ? 0 : node->getLocalName();
+        const XMLCh *prefix = emptyString(node->getPrefix()) ? 0 : Axis::getLocalName(node);
         events->namespaceEvent(prefix, emptyToNull(node->getNodeValue()));
       }
     }
@@ -224,7 +224,7 @@ static void toEventsImpl(const DOMNode *node, EventHandler *events,
       const XMLCh *typeName = ATUntypedAtomic::fgDT_UNTYPEDATOMIC;
       if(preserveType) XercesNodeImpl::typeUriAndName(node, typeURI, typeName);
 
-      events->attributeEvent(emptyToNull(node->getPrefix()), emptyToNull(node->getNamespaceURI()), node->getLocalName(),
+      events->attributeEvent(emptyToNull(node->getPrefix()), emptyToNull(node->getNamespaceURI()), Axis::getLocalName(node),
                              node->getNodeValue(), typeURI, typeName);
     }
     break;
@@ -360,10 +360,10 @@ ATQNameOrDerived::Ptr XercesNodeImpl::dmNodeName(const DynamicContext* context) 
 	switch(fNode->getNodeType())
 	{
 	case DOMNode::ELEMENT_NODE:
-        return context->getItemFactory()->createQName(fNode->getNamespaceURI(), fNode->getPrefix(), fNode->getLocalName(), context);
+        return context->getItemFactory()->createQName(fNode->getNamespaceURI(), fNode->getPrefix(), Axis::getLocalName(fNode), context);
 
 	case DOMNode::ATTRIBUTE_NODE:				
-        return context->getItemFactory()->createQName(fNode->getNamespaceURI(), fNode->getPrefix(), fNode->getLocalName(), context);
+        return context->getItemFactory()->createQName(fNode->getNamespaceURI(), fNode->getPrefix(), Axis::getLocalName(fNode), context);
 
 	case DOMNode::PROCESSING_INSTRUCTION_NODE:	
         return context->getItemFactory()->createQName(XMLUni::fgZeroLenString, XMLUni::fgZeroLenString, fNode->getNodeName(), context);
