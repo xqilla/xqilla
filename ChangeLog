@@ -1,5 +1,14 @@
 XQilla: an XQuery and XPath 2.0 library and command line interpreter.
 
+version 2.1.2 (2008.04.28):
+	* Fixed a bug in static resolution of replace expressions
+	* Fixed the Xerces-C data model layer to work correctly with DOM Level 1
+	  elements and attributes.
+	* Worked around a Xerces-C bug that resulted in exceptions when using
+	  the DOM 3 API with certain schemas.
+	* Fixed a 64 bit compilation problem.
+	* Fixed a Solaris compilation problem.
+	
 version 2.1.1 (2008.04.08):
 	* Added the xqilla:parse-json() and xqilla:serialize-json() extension
 	  functions to parse and serialize JSON.

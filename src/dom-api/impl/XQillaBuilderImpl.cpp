@@ -87,12 +87,19 @@ XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* XQillaBuilderImpl::getDocumentAndAdd
     }
 
     //we copy this gramamr and reset the parser one in the process.
+    XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool *oldGrPool = getGrammarResolver()->getGrammarPool();
     XQillaXMLGrammarPoolImpl *gr = new (getMemoryManager()) XQillaXMLGrammarPoolImpl(getMemoryManager());
 
-    XERCES_CPP_NAMESPACE_QUALIFIER RefHashTableOfEnumerator< XERCES_CPP_NAMESPACE_QUALIFIER Grammar> enumerator
-        = getGrammarResolver()->getCachedGrammarEnumerator();
+    // manually copy string pool contents to work around XERCESC-1798.
+    const XERCES_CPP_NAMESPACE_QUALIFIER XMLStringPool* src = oldGrPool->getURIStringPool();
+    XERCES_CPP_NAMESPACE_QUALIFIER XMLStringPool* dst = gr->getURIStringPool();
 
-    XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool *oldGrPool = getGrammarResolver()->getGrammarPool();
+    for (unsigned int i = 1; i < src->getStringCount() + 1; ++i)
+        dst->addOrFind (src->getValueForId(i));
+
+    XERCES_CPP_NAMESPACE_QUALIFIER RefHashTableOfEnumerator< XERCES_CPP_NAMESPACE_QUALIFIER Grammar> enumerator
+        = oldGrPool->getGrammarEnumerator();
+
     while(enumerator.hasMoreElements()) {
         XERCES_CPP_NAMESPACE_QUALIFIER Grammar &g = enumerator.nextElement();
         gr->cacheGrammar(oldGrPool->orphanGrammar(g.getGrammarDescription()->getGrammarKey()));
