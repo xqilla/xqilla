@@ -328,6 +328,9 @@ private:
   XMLBuffer buffer_;
   const LocationInfo *loc_;
 
+  struct StackObject;
+  friend struct StackObject;
+
   struct StackObject {
     StackObject(Type t) : type(t), seenOne(false) {}
     Type type;
