@@ -131,8 +131,8 @@ Item::Ptr XQInstanceOf::InstanceOfResult::getSingleResult(DynamicContext *contex
   catch(const XPath2TypeMatchException &ex) {
     return (const Item::Ptr)context->getItemFactory()->createBoolean(false, context);
   }
-
-  return (const Item::Ptr)context->getItemFactory()->createBoolean(true, context);
+  ATBooleanOrDerived::Ptr ptr = context->getItemFactory()->createBoolean(true, context);
+  return Item::Ptr(ptr.get());
 }
 
 std::string XQInstanceOf::InstanceOfResult::asString(DynamicContext *context, int indent) const
