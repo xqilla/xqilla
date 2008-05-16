@@ -1,5 +1,9 @@
 XQilla: an XQuery and XPath 2.0 library and command line interpreter.
 
+version 2.1.x ():
+	* Workaround a Windows optimizer issue that caused instance of 
+	  queries to fail in a release build on Windows.
+
 version 2.1.2 (2008.04.28):
 	* Fixed a bug in static resolution of replace expressions
 	* Fixed the Xerces-C data model layer to work correctly with DOM Level 1
