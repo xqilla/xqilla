@@ -47,3 +47,12 @@ Fix ATDoubleOrDerivedImpl and ATFloatOrDerivedImpl to use double and float types
 Make xs:decimal infinite length
 Fix numeric output methods to use variable size buffers
 
+
+Query Prepare Optimization
+--------------------------
+
+Don't create a new DynamicContext every time we constant fold (or make creating a DynamicContext cheaper)
+Rewrite DatatypeLookup to be cheaper and more efficient - maybe write our own primitive type handling?
+DocumentCacheImpl is expensive to create, maybe don't always create a scanner? Maybe handle primitive schema types ourselves?
+Remove XQSequence and XQLiteral in favour of XQParenthesizedExpr and ItemConstructor. (Reduce constant folding necessary)
+Save out parsed query to disk

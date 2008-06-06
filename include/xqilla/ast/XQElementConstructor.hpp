@@ -23,8 +23,11 @@
 #define XQELEMENTCONSTRUCTOR_HPP
 
 #include <xqilla/ast/XQDOMConstructor.hpp>
+#include <xqilla/events/EventHandler.hpp>
 
 #include <xercesc/util/RefHashTableOf.hpp>
+
+#include <set>
 
 class XQILLA_API XQElementConstructor : public XQDOMConstructor
 {
@@ -47,6 +50,39 @@ protected:
   ASTNode* m_name;
   VectorOfASTNodes* m_attrList, *m_children;
   XERCES_CPP_NAMESPACE_QUALIFIER RefHashTableOf< XMLCh >* m_namespaces;
+};
+
+class ElemConstructFilter : public EventFilter
+{
+public:
+  ElemConstructFilter(EventHandler *next, const LocationInfo *location, XPath2MemoryManager *mm);
+
+  virtual void startElementEvent(const XMLCh *prefix, const XMLCh *uri, const XMLCh *localname);
+  virtual void endElementEvent(const XMLCh *prefix, const XMLCh *uri, const XMLCh *localname,
+                               const XMLCh *typeURI, const XMLCh *typeName);
+  virtual void piEvent(const XMLCh *target, const XMLCh *value);
+  virtual void textEvent(const XMLCh *value);
+  virtual void textEvent(const XMLCh *chars, unsigned int length);
+  virtual void commentEvent(const XMLCh *value);
+  virtual void attributeEvent(const XMLCh *prefix, const XMLCh *uri, const XMLCh *localname, const XMLCh *value,
+                              const XMLCh *typeURI, const XMLCh *typeName);
+  virtual void namespaceEvent(const XMLCh *prefix, const XMLCh *uri);
+
+private:
+  struct AttrRecord {
+    AttrRecord(const XMLCh *u, const XMLCh *n, XPath2MemoryManager *mm);
+
+    bool operator<(const AttrRecord &o) const;
+
+    const XMLCh *uri;
+    const XMLCh *name;
+  };
+
+  XPath2MemoryManager *mm_;
+  const LocationInfo *location_;
+  unsigned int level_;
+  bool seenContent_;
+  std::set<AttrRecord> attrs_;
 };
 
 #endif

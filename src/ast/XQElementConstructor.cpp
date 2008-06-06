@@ -48,7 +48,6 @@
 #include <xercesc/framework/XMLBuffer.hpp>
 #include <xercesc/util/XMLChar.hpp>
 #include <assert.h>
-#include <set>
 
 #if defined(XERCES_HAS_CPP_NAMESPACE)
 XERCES_CPP_NAMESPACE_USE
@@ -66,113 +65,6 @@ XQElementConstructor::XQElementConstructor(ASTNode* name, VectorOfASTNodes* attr
 {
   setType(ASTNode::DOM_CONSTRUCTOR);
 }
-
-
-class ElemConstructFilter : public EventFilter
-{
-public:
-  ElemConstructFilter(EventHandler *next, const XQElementConstructor *ast, XPath2MemoryManager *mm)
-    : EventFilter(next),
-      mm_(mm),
-      ast_(ast),
-      level_(0),
-      seenContent_(false)
-  {
-  }
-
-  virtual void startElementEvent(const XMLCh *prefix, const XMLCh *uri, const XMLCh *localname)
-  {
-    seenContent_ = true;
-    ++level_;
-    next_->startElementEvent(prefix, uri, localname);
-  }
-
-  virtual void endElementEvent(const XMLCh *prefix, const XMLCh *uri, const XMLCh *localname,
-                               const XMLCh *typeURI, const XMLCh *typeName)
-  {
-    next_->endElementEvent(prefix, uri, localname, typeURI, typeName);
-    --level_;
-  }
-
-  virtual void piEvent(const XMLCh *target, const XMLCh *value)
-  {
-    seenContent_ = true;
-    next_->piEvent(target, value);
-  }
-
-  virtual void textEvent(const XMLCh *value)
-  {
-    seenContent_ = true;
-    next_->textEvent(value);
-  }
-
-  virtual void textEvent(const XMLCh *chars, unsigned int length)
-  {
-    seenContent_ = true;
-    next_->textEvent(chars, length);
-  }
-
-  virtual void commentEvent(const XMLCh *value)
-  {
-    seenContent_ = true;
-    next_->commentEvent(value);
-  }
-
-  virtual void attributeEvent(const XMLCh *prefix, const XMLCh *uri, const XMLCh *localname, const XMLCh *value,
-                              const XMLCh *typeURI, const XMLCh *typeName)
-  {
-    if(level_ == 0) {
-      if(seenContent_)
-        XQThrow3(ASTException,X("ElemConstructFilter::attributeEvent"),
-                 X("Attribute nodes must be created before the other content of an element [err:XQTY0024]"), ast_);
-
-      if(!attrs_.insert(AttrRecord(uri, localname, mm_)).second)
-        XQThrow3(ASTException,X("ElemConstructFilter::attributeEvent"),
-                 X("An element has two attributes with the same expanded name [err:XQDY0025]"), ast_);
-    }
-
-    next_->attributeEvent(prefix, uri, localname, value, typeURI, typeName);
-  }
-
-  virtual void namespaceEvent(const XMLCh *prefix, const XMLCh *uri)
-  {
-    if(level_ == 0) {
-      if(seenContent_)
-        XQThrow3(ASTException,X("ElemConstructFilter::namespaceEvent"),
-                 X("Namespace nodes must be created before the other content of an element [err:XQTY0024]"), ast_);
-      if(!attrs_.insert(AttrRecord(prefix, 0, mm_)).second)
-        XQThrow3(ASTException,X("ElemConstructFilter::namespaceEvent"),
-                 X("An element has two namespaces for the same prefix [err:XQDY0025]"), ast_);
-    }
-
-    next_->namespaceEvent(prefix, uri);
-  }
-
-  void setSeenContent(bool val) { seenContent_ = val; }
-
-private:
-  struct AttrRecord {
-    AttrRecord(const XMLCh *u, const XMLCh *n, XPath2MemoryManager *mm)
-      : uri(mm->getPooledString(u)), name(mm->getPooledString(n)) {}
-
-    bool operator<(const AttrRecord &o) const
-    {
-      int cmp = XMLString::compareString(name, o.name);
-      if(cmp < 0) return true;
-      if(cmp > 0) return false;
-      return XMLString::compareString(uri, o.uri) < 0;
-    }
-
-    const XMLCh *uri;
-    const XMLCh *name;
-  };
-
-  XPath2MemoryManager *mm_;
-  const XQElementConstructor *ast_;
-  unsigned int level_;
-  bool seenContent_;
-  set<AttrRecord> attrs_;
-};
 
 EventGenerator::Ptr XQElementConstructor::generateEvents(EventHandler *events, DynamicContext *context,
                                                     bool preserveNS, bool preserveType) const
@@ -446,4 +338,97 @@ const VectorOfASTNodes *XQElementConstructor::getChildren() const
 void XQElementConstructor::setName(ASTNode *name)
 {
   m_name = name;
+}
+
+//////////////////////////////////////////////////////////////////////
+
+ElemConstructFilter::ElemConstructFilter(EventHandler *next, const LocationInfo *location, XPath2MemoryManager *mm)
+    : EventFilter(next),
+      mm_(mm),
+      location_(location),
+      level_(0),
+      seenContent_(false)
+{
+}
+
+void ElemConstructFilter::startElementEvent(const XMLCh *prefix, const XMLCh *uri, const XMLCh *localname)
+{
+  seenContent_ = true;
+  ++level_;
+  next_->startElementEvent(prefix, uri, localname);
+}
+
+void ElemConstructFilter::endElementEvent(const XMLCh *prefix, const XMLCh *uri, const XMLCh *localname,
+                                          const XMLCh *typeURI, const XMLCh *typeName)
+{
+  next_->endElementEvent(prefix, uri, localname, typeURI, typeName);
+  --level_;
+}
+
+void ElemConstructFilter::piEvent(const XMLCh *target, const XMLCh *value)
+{
+  seenContent_ = true;
+  next_->piEvent(target, value);
+}
+
+void ElemConstructFilter::textEvent(const XMLCh *value)
+{
+  seenContent_ = true;
+  next_->textEvent(value);
+}
+
+void ElemConstructFilter::textEvent(const XMLCh *chars, unsigned int length)
+{
+  seenContent_ = true;
+  next_->textEvent(chars, length);
+}
+
+void ElemConstructFilter::commentEvent(const XMLCh *value)
+{
+  seenContent_ = true;
+  next_->commentEvent(value);
+}
+
+void ElemConstructFilter::attributeEvent(const XMLCh *prefix, const XMLCh *uri, const XMLCh *localname, const XMLCh *value,
+                                         const XMLCh *typeURI, const XMLCh *typeName)
+{
+  if(level_ == 0) {
+    if(seenContent_)
+      XQThrow3(ASTException,X("ElemConstructFilter::attributeEvent"),
+               X("Attribute nodes must be created before the other content of an element [err:XQTY0024]"), location_);
+
+    if(!attrs_.insert(AttrRecord(uri, localname, mm_)).second)
+      XQThrow3(ASTException,X("ElemConstructFilter::attributeEvent"),
+               X("An element has two attributes with the same expanded name [err:XQDY0025]"), location_);
+  }
+
+  next_->attributeEvent(prefix, uri, localname, value, typeURI, typeName);
+}
+
+void ElemConstructFilter::namespaceEvent(const XMLCh *prefix, const XMLCh *uri)
+{
+  if(level_ == 0) {
+    if(seenContent_)
+      XQThrow3(ASTException,X("ElemConstructFilter::namespaceEvent"),
+               X("Namespace nodes must be created before the other content of an element [err:XQTY0024]"), location_);
+    if(!attrs_.insert(AttrRecord(prefix, 0, mm_)).second)
+      XQThrow3(ASTException,X("ElemConstructFilter::namespaceEvent"),
+               X("An element has two namespaces for the same prefix [err:XQDY0025]"), location_);
+  }
+
+  next_->namespaceEvent(prefix, uri);
+}
+
+ElemConstructFilter::AttrRecord::AttrRecord(const XMLCh *u, const XMLCh *n, XPath2MemoryManager *mm)
+  : uri(mm->getPooledString(u)),
+    name(mm->getPooledString(n))
+{
+}
+
+bool ElemConstructFilter::AttrRecord::operator<(const AttrRecord &o) const
+{
+  int cmp = XMLString::compareString(name, o.name);
+  if(cmp < 0) return true;
+  if(cmp > 0) return false;
+  return XMLString::compareString(uri, o.uri) < 0;
 }

@@ -40,11 +40,11 @@ XERCES_CPP_NAMESPACE_USE;
 
 DocumentCache *FastXDMConfiguration::createDocumentCache(MemoryManager *memMgr)
 {
-// #ifdef HAVE_FAXPP
-//   return new (memMgr) FaxppDocumentCacheImpl(memMgr);
-// #else
+#ifdef HAVE_FAXPP
+  return new (memMgr) FaxppDocumentCacheImpl(memMgr);
+#else
   return new (memMgr) DocumentCacheImpl(memMgr);
-// #endif
+#endif
 }
 
 SequenceBuilder *FastXDMConfiguration::createSequenceBuilder(const DynamicContext *context)

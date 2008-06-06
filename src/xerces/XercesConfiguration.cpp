@@ -23,6 +23,7 @@
 
 #include <xqilla/xerces/XercesConfiguration.hpp>
 #include <xqilla/schema/DocumentCacheImpl.hpp>
+#include "../schema/FaxppDocumentCacheImpl.hpp"
 #include <xqilla/context/impl/ItemFactoryImpl.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
@@ -41,7 +42,11 @@ const XMLCh XercesConfiguration::gXerces[] =   // Points to "Xerces"
 
 DocumentCache *XercesConfiguration::createDocumentCache(MemoryManager *memMgr)
 {
+#ifdef HAVE_FAXPP
+  return new (memMgr) FaxppDocumentCacheImpl(memMgr);
+#else
   return new (memMgr) DocumentCacheImpl(memMgr);
+#endif
 }
 
 SequenceBuilder *XercesConfiguration::createSequenceBuilder(const DynamicContext *context)

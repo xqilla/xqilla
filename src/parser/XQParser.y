@@ -70,6 +70,7 @@
 #include <xqilla/ast/XQFunctionConversion.hpp>
 #include <xqilla/ast/XQAnalyzeString.hpp>
 #include <xqilla/ast/XQCopyOf.hpp>
+#include <xqilla/ast/XQCopy.hpp>
 #include <xqilla/ast/XQAtomize.hpp>
 #include <xqilla/ast/ConvertFunctionArg.hpp>
 #include <xqilla/ast/XQIf.hpp>
@@ -647,7 +648,7 @@ namespace XQParser {
 %type <astNode>      WhenList_XSLT When_XSLT Otherwise_XSLT Variable_XSLT Comment_XSLT CommentAttrs_XSLT
 %type <astNode>      PI_XSLT PIAttrs_XSLT Document_XSLT DocumentAttrs_XSLT Attribute_XSLT AttributeAttrs_XSLT
 %type <astNode>      AnalyzeString_XSLT AnalyzeStringAttrs_XSLT MatchingSubstring_XSLT NonMatchingSubstring_XSLT
-%type <astNode>      CopyOf_XSLT CopyOfAttrs_XSLT
+%type <astNode>      CopyOf_XSLT CopyOfAttrs_XSLT Copy_XSLT CopyAttrs_XSLT
 
 %type <parenExpr>    SequenceConstructor_XSLT
 
@@ -699,9 +700,9 @@ namespace XQParser {
 // 48 arise from the xgs:leading-lone-slash grammar constraint (http://www.w3.org/TR/xquery/#parse-note-leading-lone-slash)
 // 3 arise from the xgs:occurrence-indicator grammar constriant (http://www.w3.org/TR/xquery/#parse-note-occurence-indicators)
 // 14 are due to template extensions
-// 17 are due to Variable_XSLT
+// 18 are due to Variable_XSLT
 // 1 is due to FunctionType
-%expect 83
+%expect 84
 
 %%
 
@@ -1189,6 +1190,11 @@ SequenceConstructor_XSLT:
     $$->addItem($2);
   }
   | SequenceConstructor_XSLT CopyOf_XSLT
+  {
+    $$ = $1;
+    $$->addItem($2);
+  }
+  | SequenceConstructor_XSLT Copy_XSLT
   {
     $$ = $1;
     $$->addItem($2);
@@ -1746,6 +1752,37 @@ CopyOfAttrs_XSLT:
   {
     $$ = $1;
     ((XQCopyOf*)$$)->setCopyNamespaces($2);
+  }
+  // TBD type and validation - jpcs
+  ;
+
+Copy_XSLT:
+    CopyAttrs_XSLT SequenceConstructor_XSLT _XSLT_END_ELEMENT_
+  {
+    XQCopy *as = (XQCopy*)$$;
+    $$ = $1;
+
+    XQContextItem *ci = WRAP(@1, new (MEMMGR) XQContextItem(MEMMGR));
+    as->setExpression(ci);
+
+    as->setChildren($2->getChildren());
+  }
+  ;
+
+CopyAttrs_XSLT:
+    _XSLT_COPY_
+  {
+    $$ = WRAP(@$, new (MEMMGR) XQCopy(MEMMGR));
+  }
+  | CopyAttrs_XSLT _XSLT_COPY_NAMESPACES_
+  {
+    $$ = $1;
+    ((XQCopy*)$$)->setCopyNamespaces($2);
+  }
+  | CopyAttrs_XSLT _XSLT_INHERIT_NAMESPACES_
+  {
+    $$ = $1;
+    ((XQCopy*)$$)->setInheritNamespaces($2);
   }
   // TBD type and validation - jpcs
   ;

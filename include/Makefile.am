@@ -5,6 +5,7 @@ xqilla/ast/LocationInfo.hpp \
 xqilla/ast/XQCastableAs.hpp \
 xqilla/ast/XQCastAs.hpp \
 xqilla/ast/XQContextItem.hpp \
+xqilla/ast/XQCopy.hpp \
 xqilla/ast/XQCopyOf.hpp \
 xqilla/ast/XQFunction.hpp \
 xqilla/ast/ASTNode.hpp \
