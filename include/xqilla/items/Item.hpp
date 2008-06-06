@@ -33,6 +33,7 @@ XERCES_CPP_NAMESPACE_END
 // forward declare when we can
 class XPath2MemoryManager;
 class DynamicContext;
+class EventHandler;
 
 class XQILLA_API Item : public ReferenceCounted
 {
@@ -53,6 +54,10 @@ public:
   virtual const XMLCh* getTypeURI() const = 0;
 
   virtual const XMLCh* getTypeName() const = 0;
+
+  /** Generate events for this Item to the given EventHandler */
+  virtual void generateEvents(EventHandler *events, const DynamicContext *context,
+                              bool preserveNS = true, bool preserveType = true) const = 0;
 
   /** Method for returning arbitrary interfaces from the implementations */
   virtual void *getInterface(const XMLCh *name) const = 0;

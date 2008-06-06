@@ -33,6 +33,8 @@ extern "C" {
 #include <xqilla/schema/DocumentCacheImpl.hpp>
 #include <xqilla/schema/SchemaValidatorFilter.hpp>
 
+struct EntityCallbackUserData;
+
 class FaxppDocumentCacheImpl : public DocumentCacheImpl
 {
 public:
@@ -42,6 +44,9 @@ public:
   virtual void parseDocument(XERCES_CPP_NAMESPACE_QUALIFIER InputSource &srcToUse, EventHandler *handler, DynamicContext *context);
 
   virtual DocumentCache *createDerivedCache(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr) const;
+
+  FAXPP_Error entityCallback(EntityCallbackUserData *userData, FAXPP_EntityType type,
+                             const FAXPP_Text *base_uri, const FAXPP_Text *systemid, const FAXPP_Text *publicid);
 
 protected:
   FAXPP_Parser *parser_;

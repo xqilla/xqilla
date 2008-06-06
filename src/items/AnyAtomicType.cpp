@@ -32,20 +32,23 @@
 #include <xqilla/exceptions/NamespaceLookupException.hpp>
 #include <xqilla/exceptions/IllegalArgumentException.hpp>
 #include <xqilla/context/ItemFactory.hpp>
+#include <xqilla/events/EventHandler.hpp>
 
 #include <xercesc/util/XMLString.hpp>
 #include <xercesc/util/XMLUniDefs.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 #include <xercesc/framework/XMLBuffer.hpp>
 
+XERCES_CPP_NAMESPACE_USE
+
 /* anyAtomicType */
 const XMLCh AnyAtomicType::fgDT_ANYATOMICTYPE[]=
 { 
-	XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_y, 
-	XERCES_CPP_NAMESPACE_QUALIFIER chLatin_A, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, 
-	XERCES_CPP_NAMESPACE_QUALIFIER chLatin_m, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_i, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_c, 
-	XERCES_CPP_NAMESPACE_QUALIFIER chLatin_T, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_y, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_p, 
-	XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, XERCES_CPP_NAMESPACE_QUALIFIER chNull 
+	chLatin_a, chLatin_n, chLatin_y, 
+	chLatin_A, chLatin_t, chLatin_o, 
+	chLatin_m, chLatin_i, chLatin_c, 
+	chLatin_T, chLatin_y, chLatin_p, 
+	chLatin_e, chNull 
 };
 
 const AnyAtomicType::CastTable AnyAtomicType::staticCastTable;
@@ -74,12 +77,19 @@ bool AnyAtomicType::isDateOrTimeTypeValue() const {
   return false;
 }
 
-/* Get the namespace uri of the primitive type (basic type) of this type */
-const XMLCh* AnyAtomicType::getPrimitiveTypeURI() const{
-  return XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA;
+void AnyAtomicType::generateEvents(EventHandler *events, const DynamicContext *context,
+                                   bool preserveNS, bool preserveType) const
+{
+  events->atomicItemEvent(getPrimitiveTypeIndex(), asString(context),
+                          getTypeURI(), getTypeName());
 }
 
-void AnyAtomicType::typeToBuffer(DynamicContext *context, XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &buffer) const
+/* Get the namespace uri of the primitive type (basic type) of this type */
+const XMLCh* AnyAtomicType::getPrimitiveTypeURI() const{
+  return SchemaSymbols::fgURI_SCHEMAFORSCHEMA;
+}
+
+void AnyAtomicType::typeToBuffer(DynamicContext *context, XMLBuffer &buffer) const
 {
   if(getTypeURI()) {
     buffer.append('{');
@@ -104,7 +114,7 @@ AnyAtomicType::Ptr AnyAtomicType::castAs(AtomicObjectType targetIndex, const XML
       context->getItemFactory()->getPrimitiveTypeName(targetIndex, targetTypeURI, targetTypeName);
     }
 
-    XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buffer(1023, context->getMemoryManager());
+    XMLBuffer buffer(1023, context->getMemoryManager());
     buffer.set(X("Casting from {"));
     buffer.append(getTypeURI());
     buffer.append(X("}"));
@@ -165,7 +175,7 @@ bool AnyAtomicType::castable(AtomicObjectType targetIndex, const XMLCh* targetTy
   // validate the data by calling castAs (can't use checkInstance)
   try {
     castAsInternal(targetIndex, targetTypeURI, targetTypeName, context);
-  } catch (IllegalArgumentException &e) {
+  } catch (::IllegalArgumentException &e) {
     return false;
   } catch (XPath2TypeCastException &e) {
     return false;

@@ -48,6 +48,9 @@ public:
 
   virtual const XMLCh *asString(const DynamicContext *context) const;
 
+  virtual void generateEvents(EventHandler *events, const DynamicContext *context,
+                              bool preserveNS, bool preserveType) const;
+
   virtual void typeToBuffer(DynamicContext *context, XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &buffer) const;
 
   virtual void *getInterface(const XMLCh *name) const;

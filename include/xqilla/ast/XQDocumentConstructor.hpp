@@ -23,6 +23,7 @@
 #define XQDOCUMENTCONSTRUCTOR_HPP
 
 #include <xqilla/ast/XQDOMConstructor.hpp>
+#include <xqilla/events/EventHandler.hpp>
 
 class XQILLA_API XQDocumentConstructor : public XQDOMConstructor
 {
@@ -41,6 +42,23 @@ public:
 
 protected:
   ASTNode *m_value;
+};
+
+class DocConstructFilter : public EventFilter
+{
+public:
+  DocConstructFilter(EventHandler *next, const LocationInfo *location);
+
+  virtual void startElementEvent(const XMLCh *prefix, const XMLCh *uri, const XMLCh *localname);
+  virtual void endElementEvent(const XMLCh *prefix, const XMLCh *uri, const XMLCh *localname,
+                               const XMLCh *typeURI, const XMLCh *typeName);
+  virtual void attributeEvent(const XMLCh *prefix, const XMLCh *uri, const XMLCh *localname, const XMLCh *value,
+                              const XMLCh *typeURI, const XMLCh *typeName);
+  virtual void namespaceEvent(const XMLCh *prefix, const XMLCh *uri);
+
+private:
+  const LocationInfo *location_;
+  unsigned int level_;
 };
 
 #endif

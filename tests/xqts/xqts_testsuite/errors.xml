@@ -72,42 +72,35 @@
   <error id="fn-doc-14" reason="error failure"/>
   <error id="fn-doc-8" reason="error failure"/>
   <error id="fn-doc-9" reason="error failure"/>
-  <error id="fn-id-dtd-10" reason="error failure"/>
-  <error id="fn-id-dtd-11" reason="error failure"/>
-  <error id="fn-id-dtd-12" reason="error failure"/>
-  <error id="fn-id-dtd-13" reason="error failure"/>
-  <error id="fn-id-dtd-14" reason="error failure"/>
-  <error id="fn-id-dtd-15" reason="error failure"/>
-  <error id="fn-id-dtd-16" reason="error failure"/>
-  <error id="fn-id-dtd-17" reason="error failure"/>
-  <error id="fn-id-dtd-18" reason="error failure"/>
-  <error id="fn-id-dtd-19" reason="error failure"/>
-  <error id="fn-id-dtd-20" reason="error failure"/>
-  <error id="fn-id-dtd-21" reason="error failure"/>
-  <error id="fn-id-dtd-23" reason="error failure"/>
-  <error id="fn-id-dtd-5" reason="error failure"/>
-  <error id="fn-id-dtd-6" reason="error failure"/>
-  <error id="fn-id-dtd-7" reason="error failure"/>
-  <error id="fn-id-dtd-8" reason="error failure"/>
-  <error id="fn-id-dtd-9" reason="error failure"/>
-  <error id="fn-idref-dtd-10" reason="error failure"/>
-  <error id="fn-idref-dtd-11" reason="error failure"/>
-  <error id="fn-idref-dtd-12" reason="error failure"/>
-  <error id="fn-idref-dtd-13" reason="error failure"/>
-  <error id="fn-idref-dtd-14" reason="error failure"/>
-  <error id="fn-idref-dtd-15" reason="error failure"/>
-  <error id="fn-idref-dtd-16" reason="error failure"/>
-  <error id="fn-idref-dtd-17" reason="error failure"/>
-  <error id="fn-idref-dtd-18" reason="error failure"/>
-  <error id="fn-idref-dtd-19" reason="error failure"/>
-  <error id="fn-idref-dtd-20" reason="error failure"/>
-  <error id="fn-idref-dtd-21" reason="error failure"/>
-  <error id="fn-idref-dtd-23" reason="error failure"/>
-  <error id="fn-idref-dtd-5" reason="error failure"/>
-  <error id="fn-idref-dtd-6" reason="error failure"/>
-  <error id="fn-idref-dtd-7" reason="error failure"/>
-  <error id="fn-idref-dtd-8" reason="error failure"/>
-  <error id="fn-idref-dtd-9" reason="error failure"/>
+  <error id="fn-id-dtd-12" reason="result failure"/>
+  <error id="fn-id-dtd-13" reason="result failure"/>
+  <error id="fn-id-dtd-15" reason="result failure"/>
+  <error id="fn-id-dtd-16" reason="result failure"/>
+  <error id="fn-id-dtd-17" reason="result failure"/>
+  <error id="fn-id-dtd-18" reason="result failure"/>
+  <error id="fn-id-dtd-19" reason="result failure"/>
+  <error id="fn-id-dtd-20" reason="result failure"/>
+  <error id="fn-id-dtd-21" reason="result failure"/>
+  <error id="fn-id-dtd-23" reason="result failure"/>
+  <error id="fn-id-dtd-5" reason="result failure"/>
+  <error id="fn-id-dtd-7" reason="result failure"/>
+  <error id="fn-id-dtd-8" reason="result failure"/>
+  <error id="fn-id-dtd-9" reason="result failure"/>
+  <error id="fn-idref-dtd-12" reason="result failure"/>
+  <error id="fn-idref-dtd-13" reason="result failure"/>
+  <error id="fn-idref-dtd-14" reason="result failure"/>
+  <error id="fn-idref-dtd-15" reason="result failure"/>
+  <error id="fn-idref-dtd-16" reason="result failure"/>
+  <error id="fn-idref-dtd-17" reason="result failure"/>
+  <error id="fn-idref-dtd-18" reason="result failure"/>
+  <error id="fn-idref-dtd-19" reason="result failure"/>
+  <error id="fn-idref-dtd-20" reason="result failure"/>
+  <error id="fn-idref-dtd-21" reason="result failure"/>
+  <error id="fn-idref-dtd-23" reason="result failure"/>
+  <error id="fn-idref-dtd-5" reason="result failure"/>
+  <error id="fn-idref-dtd-7" reason="result failure"/>
+  <error id="fn-idref-dtd-8" reason="no error failure"/>
+  <error id="fn-idref-dtd-9" reason="result failure"/>
   <error id="fn-implicit-timezone-14" reason="inspect" action="pass"/>
   <error id="fn-implicit-timezone-15" reason="inspect" action="pass"/>
   <error id="fn-implicit-timezone-16" reason="inspect" action="pass"/>

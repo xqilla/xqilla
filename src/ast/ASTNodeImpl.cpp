@@ -94,22 +94,12 @@ Result ASTNodeImpl::createResult(DynamicContext* context, int flags) const
 }
 
 EventGenerator::Ptr ASTNodeImpl::generateEvents(EventHandler *events, DynamicContext *context,
-                                           bool preserveNS, bool preserveType) const
+                                                bool preserveNS, bool preserveType) const
 {
   Result result = createResult(context);
   Item::Ptr item;
   while((item = result->next(context)).notNull()) {
-    if(item->isNode()) {
-      ((Node*)item.get())->generateEvents(events, context, preserveNS, preserveType);
-    }
-    else if(item->isAtomicValue()) {
-      events->atomicItemEvent(((AnyAtomicType*)item.get())->getPrimitiveTypeIndex(), item->asString(context),
-                              item->getTypeURI(), item->getTypeName());
-    }
-    else if(item->isFunction()) {
-      // TBD What do we do here? - jpcs
-      events->atomicItemEvent(AnyAtomicType::STRING, item->asString(context), 0, 0);
-    }
+    item->generateEvents(events, context, preserveNS, preserveType);
   }
 
   return 0;

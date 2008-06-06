@@ -30,6 +30,7 @@
 #include <xqilla/context/ItemFactory.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/schema/SequenceType.hpp>
+#include <xqilla/events/EventHandler.hpp>
 
 XERCES_CPP_NAMESPACE_USE;
 using namespace std;
@@ -180,6 +181,13 @@ FunctionRef::Ptr FunctionRefImpl::partialApply(const Result &arg, unsigned int a
   }
 
   return new FunctionRefImpl(this, arg, argNum - 1, context);
+}
+
+void FunctionRefImpl::generateEvents(EventHandler *events, const DynamicContext *context,
+                                     bool preserveNS, bool preserveType) const
+{
+  // TBD What is the correct way to generate events for a FunctionRef? - jpcs
+  events->atomicItemEvent(AnyAtomicType::STRING, asString(context), 0, 0);
 }
 
 const XMLCh *FunctionRefImpl::asString(const DynamicContext *context) const

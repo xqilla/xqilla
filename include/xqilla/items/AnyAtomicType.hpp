@@ -88,6 +88,9 @@ public:
   /* Get the name of this type  (ie "integer" for xs:integer) */
   virtual const XMLCh* getTypeName() const = 0;
 
+  virtual void generateEvents(EventHandler *events, const DynamicContext *context,
+                              bool preserveNS = true, bool preserveType = true) const;
+
   /* If possible, cast this type to the target type  -- no casting table lookup made */
   AnyAtomicType::Ptr castAs(AtomicObjectType targetIndex, const DynamicContext* context) const;
 

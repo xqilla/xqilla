@@ -134,7 +134,9 @@ void DocumentCacheImpl::init(XMLGrammarPool *gramPool, bool makeScanner)
 
     // Hack around a Xerces bug, where the GrammarResolver doesn't
     // initialise it's XSModel correctly from a locked XMLGrammarPool - jpcs
-    ((GrammarResolverHack*)grammarResolver_)->fGrammarPoolXSModel = gramPool->getXSModel();
+
+    // 2008/06/06 I don't think this is needed anymore - jpcs
+//     ((GrammarResolverHack*)grammarResolver_)->fGrammarPoolXSModel = gramPool->getXSModel();
   }
 
   if(makeScanner) {
@@ -221,6 +223,28 @@ void DocumentCacheImpl::error(const unsigned int errCode, const XMLCh* const err
     throw SAXParseException(errorText, publicId, systemId, lineNum, colNum, memMgr_);
 }
 
+InputSource *DocumentCacheImpl::resolveURI(const XMLCh *uri, const XMLCh *baseUri)
+{
+  InputSource *srcToUse = 0;
+
+  XMLURL urlTmp;
+  if(urlTmp.setURL(baseUri, uri, urlTmp) && !urlTmp.isRelative()) {
+    srcToUse = new URLInputSource(urlTmp);
+  }
+  else {
+    // It's not a URL, so let's assume it's a local file name.
+    if(baseUri && baseUri[0]) {
+      AutoDeallocate<XMLCh> tmpBuf(XMLPlatformUtils::weavePaths(baseUri, uri), XMLPlatformUtils::fgMemoryManager);
+      srcToUse = new LocalFileInputSource(tmpBuf);
+    }
+    else {
+      srcToUse = new LocalFileInputSource(uri);
+    }
+  }
+
+  return srcToUse;
+}
+
 Node::Ptr DocumentCacheImpl::loadDocument(const XMLCh* uri, DynamicContext *context, const QueryPathNode *projection)
 {
   InputSource* srcToUse = 0;
@@ -231,21 +255,7 @@ Node::Ptr DocumentCacheImpl::loadDocument(const XMLCh* uri, DynamicContext *cont
   }
 
   if(srcToUse == 0) {
-    XMLURL urlTmp(context->getMemoryManager());
-    if(urlTmp.setURL(context->getBaseURI(), uri, urlTmp) && !urlTmp.isRelative()) {
-      srcToUse = new URLInputSource(urlTmp);
-    }
-    else {
-      // It's not a URL, so let's assume it's a local file name.
-      const XMLCh *baseUri = context->getBaseURI();
-      if(baseUri && baseUri[0]) {
-        AutoDeallocate<XMLCh> tmpBuf(XMLPlatformUtils::weavePaths(baseUri, uri), XMLPlatformUtils::fgMemoryManager);
-        srcToUse = new LocalFileInputSource(tmpBuf);
-      }
-      else {
-        srcToUse = new LocalFileInputSource(uri);
-      }
-    }
+    srcToUse = resolveURI(uri, context->getBaseURI());
   }
 
   Janitor<InputSource> janIS(srcToUse);
@@ -708,7 +718,7 @@ ComplexTypeInfo*  DocumentCacheImpl::getComplexTypeInfo(const XMLCh* uri, const 
 
 DocumentCache *DocumentCacheImpl::createDerivedCache(MemoryManager *memMgr) const
 {
-  // lock the grammar pool, so we can share it accross threads
+  // lock the grammar pool, so we can share it across threads
   grammarResolver_->getGrammarPool()->lockPool();
 
   // Construct a new DocumentCacheImpl, based on this one

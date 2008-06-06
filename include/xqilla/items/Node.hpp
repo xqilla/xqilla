@@ -126,10 +126,6 @@ public:
   /* Get the name of the DOM type  (ie "integer" for xs:integer) */
   virtual const XMLCh* getTypeName() const = 0;
 
-  /** Generate events for this Node to the given EventHandler */
-  virtual void generateEvents(EventHandler *events, const DynamicContext *context,
-                              bool preserveNS = true, bool preserveType = true) const = 0;
-
   static const XMLCh document_string[];
   static const XMLCh element_string[];
   static const XMLCh attribute_string[];

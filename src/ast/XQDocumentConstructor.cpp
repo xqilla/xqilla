@@ -41,55 +41,6 @@ XQDocumentConstructor::XQDocumentConstructor(ASTNode *value, XPath2MemoryManager
   setType(ASTNode::DOM_CONSTRUCTOR);
 }
 
-class DocConstructFilter : public EventFilter
-{
-public:
-  DocConstructFilter(EventHandler *next, const XQDocumentConstructor *ast)
-    : EventFilter(next),
-      ast_(ast),
-      level_(0)
-  {
-  }
-
-  virtual void startElementEvent(const XMLCh *prefix, const XMLCh *uri, const XMLCh *localname)
-  {
-    ++level_;
-    next_->startElementEvent(prefix, uri, localname);
-  }
-
-  virtual void endElementEvent(const XMLCh *prefix, const XMLCh *uri, const XMLCh *localname,
-                               const XMLCh *typeURI, const XMLCh *typeName)
-  {
-    next_->endElementEvent(prefix, uri, localname, typeURI, typeName);
-    --level_;
-  }
-
-  virtual void attributeEvent(const XMLCh *prefix, const XMLCh *uri, const XMLCh *localname, const XMLCh *value,
-                              const XMLCh *typeURI, const XMLCh *typeName)
-  {
-    if(level_ == 0) {
-      XQThrow3(ASTException,X("DocConstructFilter::attributeEvent"),
-               X("An attribute node cannot be a child of a document [err:XPTY0004]."), ast_);
-    }
-
-    next_->attributeEvent(prefix, uri, localname, value, typeURI, typeName);
-  }
-
-  virtual void namespaceEvent(const XMLCh *prefix, const XMLCh *uri)
-  {
-    if(level_ == 0) {
-      XQThrow3(ASTException,X("DocConstructFilter::attributeEvent"),
-               X("An namespace node cannot be a child of a document [err:XPTY0004]."), ast_);
-    }
-
-    next_->namespaceEvent(prefix, uri);
-  }
-
-private:
-  const XQDocumentConstructor *ast_;
-  unsigned int level_;
-};
-
 EventGenerator::Ptr XQDocumentConstructor::generateEvents(EventHandler *events, DynamicContext *context,
                                                      bool preserveNS, bool preserveType) const
 {
@@ -150,3 +101,45 @@ void XQDocumentConstructor::setValue(ASTNode *value)
   m_value = value;
 }
 
+//////////////////////////////////////////////////////////////////////
+
+DocConstructFilter::DocConstructFilter(EventHandler *next, const LocationInfo *location)
+  : EventFilter(next),
+    location_(location),
+    level_(0)
+{
+}
+
+void DocConstructFilter::startElementEvent(const XMLCh *prefix, const XMLCh *uri, const XMLCh *localname)
+{
+  ++level_;
+  next_->startElementEvent(prefix, uri, localname);
+}
+
+void DocConstructFilter::endElementEvent(const XMLCh *prefix, const XMLCh *uri, const XMLCh *localname,
+                                         const XMLCh *typeURI, const XMLCh *typeName)
+{
+  next_->endElementEvent(prefix, uri, localname, typeURI, typeName);
+  --level_;
+}
+
+void DocConstructFilter::attributeEvent(const XMLCh *prefix, const XMLCh *uri, const XMLCh *localname, const XMLCh *value,
+                                        const XMLCh *typeURI, const XMLCh *typeName)
+{
+  if(level_ == 0) {
+    XQThrow3(ASTException,X("DocConstructFilter::attributeEvent"),
+             X("An attribute node cannot be a child of a document [err:XPTY0004]."), location_);
+  }
+
+  next_->attributeEvent(prefix, uri, localname, value, typeURI, typeName);
+}
+
+void DocConstructFilter::namespaceEvent(const XMLCh *prefix, const XMLCh *uri)
+{
+  if(level_ == 0) {
+    XQThrow3(ASTException,X("DocConstructFilter::attributeEvent"),
+             X("An namespace node cannot be a child of a document [err:XPTY0004]."), location_);
+  }
+
+  next_->namespaceEvent(prefix, uri);
+}

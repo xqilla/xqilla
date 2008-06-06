@@ -35,6 +35,7 @@ src/ast/XQAnalyzeString.cpp \
 src/ast/XQCastableAs.cpp \
 src/ast/XQCastAs.cpp \
 src/ast/XQContextItem.cpp \
+src/ast/XQCopy.cpp \
 src/ast/XQCopyOf.cpp \
 src/ast/XQFunction.cpp \
 src/ast/XQIf.cpp \
