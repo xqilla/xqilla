@@ -46,7 +46,6 @@ private:
     RemoveResult(const FunctionRemove *func);
 
     Item::Ptr next(DynamicContext *context);
-    std::string asString(DynamicContext *context, int indent) const;
   private:
     const FunctionRemove *_func;
     Numeric::Ptr _position;

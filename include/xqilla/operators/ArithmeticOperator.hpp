@@ -50,7 +50,6 @@ protected:
     ArithmeticResult(const ArithmeticOperator *op);
 
     Item::Ptr getSingleResult(DynamicContext *context) const;
-    std::string asString(DynamicContext *context, int indent) const;    
   private:
     const ArithmeticOperator *_op;
   };

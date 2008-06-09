@@ -137,14 +137,3 @@ ResultBufferImpl *ResultImpl::toResultBuffer(unsigned int readCount)
 
   return new ResultBufferImpl(me, readCount);
 }
-
-std::string ResultImpl::getIndent(int indent)
-{
-  std::ostringstream oss;
-
-  for(int i = 0; i < indent; ++i) {
-    oss << "  ";
-  }
-
-  return oss.str();
-}

@@ -35,7 +35,6 @@ public:
   XQLiteral(ItemConstructor *ic, XPath2MemoryManager* memMgr);
 
   virtual bool isDateOrTimeAndHasNoTimezone(StaticContext* context) const;
-  virtual bool isSingleNumericConstant(StaticContext *context) const;
   virtual ASTNode *staticTyping(StaticContext *context);
 
   virtual ASTNode* staticResolution(StaticContext *context);

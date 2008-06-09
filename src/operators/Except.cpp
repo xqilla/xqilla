@@ -142,12 +142,3 @@ Item::Ptr Except::ExceptResult::next(DynamicContext *context)
   return item;
 }
 
-std::string Except::ExceptResult::asString(DynamicContext *context, int indent) const
-{
-  std::ostringstream oss;
-  std::string in(getIndent(indent));
-
-  oss << in << "<except/>" << std::endl;
-
-  return oss.str();
-}

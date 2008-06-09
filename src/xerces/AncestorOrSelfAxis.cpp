@@ -45,7 +45,3 @@ const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *AncestorOrSelfAxis::nextNode(Dynam
   return ancestor_;
 }
 
-std::string AncestorOrSelfAxis::asString(DynamicContext *context, int indent) const
-{
-  return getIndent(indent) + "<ancestor_or_self_axis/>";
-}

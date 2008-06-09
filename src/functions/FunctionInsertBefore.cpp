@@ -122,12 +122,3 @@ Item::Ptr FunctionInsertBefore::InsertBeforeResult::next(DynamicContext *context
   return result;
 }
 
-std::string FunctionInsertBefore::InsertBeforeResult::asString(DynamicContext *context, int indent) const
-{
-  std::ostringstream oss;
-  std::string in(getIndent(indent));
-
-  oss << in << "<insertbefore/>" << std::endl;
-
-  return oss.str();
-}

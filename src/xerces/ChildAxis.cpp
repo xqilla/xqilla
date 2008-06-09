@@ -45,7 +45,3 @@ const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *ChildAxis::nextNode(DynamicContext
   return child_;
 }
 
-std::string ChildAxis::asString(DynamicContext *context, int indent) const
-{
-  return getIndent(indent) + "<child_axis/>";
-}

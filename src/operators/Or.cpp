@@ -116,12 +116,3 @@ Item::Ptr Or::OrResult::getSingleResult(DynamicContext *context) const
 	return (const Item::Ptr)context->getItemFactory()->createBoolean(false, context);
 }
 
-std::string Or::OrResult::asString(DynamicContext *context, int indent) const
-{
-  std::ostringstream oss;
-  std::string in(getIndent(indent));
-
-  oss << in << "<or/>" << std::endl;
-
-  return oss.str();
-}

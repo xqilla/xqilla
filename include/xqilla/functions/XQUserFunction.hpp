@@ -61,7 +61,6 @@ protected:
     FunctionEvaluatorResult(const XQUserFunctionInstance *di, DynamicContext *context);
 
     Item::Ptr nextOrTail(Result &tail, DynamicContext *context);
-    std::string asString(DynamicContext *context, int indent) const;
   private:
     const XQUserFunctionInstance *_di;
   };
@@ -72,7 +71,6 @@ protected:
     ExternalFunctionEvaluatorResult(const XQUserFunctionInstance *di);
 
     Item::Ptr nextOrTail(Result &tail, DynamicContext *context);
-    std::string asString(DynamicContext *context, int indent) const;
   private:
     const XQUserFunctionInstance *_di;
   };

@@ -68,7 +68,6 @@ protected:
     GeneralCompResult(const GeneralComp *op);
 
     Item::Ptr getSingleResult(DynamicContext *context) const;
-    std::string asString(DynamicContext *context, int indent) const;    
   private:
     const GeneralComp *_op;
   };
@@ -78,7 +77,7 @@ protected:
   bool xpath1compat_;
 };
 
-#endif // _GENERALCOMP_HPP
+#endif
 
 
 

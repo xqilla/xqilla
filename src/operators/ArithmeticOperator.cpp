@@ -190,12 +190,3 @@ Item::Ptr ArithmeticOperator::ArithmeticResult::getSingleResult(DynamicContext *
   }
 }
 
-std::string ArithmeticOperator::ArithmeticResult::asString(DynamicContext *context, int indent) const
-{
-  std::ostringstream oss;
-  std::string in(getIndent(indent));
-
-  oss << in << "<arithmeticop/>" << std::endl;
-
-  return oss.str();
-}

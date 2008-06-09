@@ -165,12 +165,3 @@ Item::Ptr XQParenthesizedExpr::ParenthesizedResult::nextOrTail(Result &tail, Dyn
   return item;
 }
 
-std::string XQParenthesizedExpr::ParenthesizedResult::asString(DynamicContext *context, int indent) const
-{
-  std::ostringstream oss;
-  std::string in(getIndent(indent));
-
-  oss << in << "<parenthesized/>" << std::endl;
-
-  return oss.str();
-}

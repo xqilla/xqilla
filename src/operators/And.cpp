@@ -115,12 +115,3 @@ Item::Ptr And::AndResult::getSingleResult(DynamicContext *context) const
   return (const Item::Ptr)context->getItemFactory()->createBoolean(true, context);
 }
 
-std::string And::AndResult::asString(DynamicContext *context, int indent) const
-{
-  std::ostringstream oss;
-  std::string in(getIndent(indent));
-
-  oss << in << "<and/>" << std::endl;
-
-  return oss.str();
-}

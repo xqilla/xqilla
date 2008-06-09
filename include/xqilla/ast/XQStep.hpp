@@ -55,6 +55,7 @@ public:
   virtual ASTNode* staticResolution(StaticContext *context);
   virtual ASTNode *staticTyping(StaticContext *context);
   virtual Result createResult(DynamicContext* context, int flags=0) const;
+  virtual Result iterateResult(const Result &contextItems, DynamicContext* context) const;
 
   const NodeTest *getNodeTest() const;
   void setNodeTest(NodeTest *nodeTest);
@@ -68,26 +69,6 @@ public:
 private:
   NodeTest* nodeTest_;
   Axis axis_;
-};
-
-/**
- * Lazily apply an axis and NodeTest filter to the context node
- */
-class XQILLA_API StepResult : public ResultImpl
-{
-public:
-  StepResult(XQStep::Axis axis, const NodeTest *nt, const LocationInfo *location);
-  virtual ~StepResult() {}
-
-  Item::Ptr next(DynamicContext *context);
-  std::string asString(DynamicContext *context, int indent) const;
-
-protected:
-  bool toDo_;
-  Result result_;
-
-  XQStep::Axis axis_;
-  const NodeTest *nodeTest_;
 };
 
 #endif

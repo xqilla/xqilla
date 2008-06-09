@@ -51,7 +51,6 @@ private:
     UnionResult(const Union *op, int flags);
 
     Item::Ptr next(DynamicContext *context);
-    std::string asString(DynamicContext *context, int indent) const;  
   private:
     const Union *_op;
     unsigned int _flags;

@@ -71,6 +71,7 @@ class XQNamespaceBinding;
 class XQFunctionConversion;
 class XQAnalyzeString;
 class XQCopyOf;
+class XQCopy;
 class XQCallTemplate;
 class XQApplyTemplates;
 class XQInlineFunction;
@@ -165,6 +166,7 @@ public:
   virtual std::string printFunctionConversion(const XQFunctionConversion *item, const DynamicContext *context, int indent);
   virtual std::string printAnalyzeString(const XQAnalyzeString *item, const DynamicContext *context, int indent);
   virtual std::string printCopyOf(const XQCopyOf *item, const DynamicContext *context, int indent);
+  virtual std::string printCopy(const XQCopy *item, const DynamicContext *context, int indent);
   virtual std::string printCallTemplate(const XQCallTemplate *item, const DynamicContext *context, int indent);
   virtual std::string printApplyTemplates(const XQApplyTemplates *item, const DynamicContext *context, int indent);
   virtual std::string printInlineFunction(const XQInlineFunction *item, const DynamicContext *context, int indent);

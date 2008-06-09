@@ -126,7 +126,6 @@ protected:
     virtual ~FilterResult() {}
 
     Item::Ptr next(DynamicContext *context);
-    std::string asString(DynamicContext *context, int indent) const;
 
   protected:
     Result toFilter_;

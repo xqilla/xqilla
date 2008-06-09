@@ -68,12 +68,12 @@ Result XQContextItem::createResult(DynamicContext* context, int flags) const
   return new ContextItemResult(this);
 }
 
-XQContextItem::ContextItemResult::ContextItemResult(const LocationInfo *location)
+ContextItemResult::ContextItemResult(const LocationInfo *location)
   : SingleResult(location)
 {
 }
 
-Item::Ptr XQContextItem::ContextItemResult::getSingleResult(DynamicContext *context) const
+Item::Ptr ContextItemResult::getSingleResult(DynamicContext *context) const
 {
   const Item::Ptr item = context->getContextItem();
   if(item == NULLRCP) {
@@ -83,7 +83,3 @@ Item::Ptr XQContextItem::ContextItemResult::getSingleResult(DynamicContext *cont
   return item;
 }
 
-std::string XQContextItem::ContextItemResult::asString(DynamicContext *context, int indent) const
-{
-  return "<contextitemresult/>";
-}

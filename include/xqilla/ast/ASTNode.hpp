@@ -105,8 +105,12 @@ public:
       The flags parameter is currently unused */
   virtual Result createResult(DynamicContext* context, int flags=0) const = 0;
 
+  /** Returns a result iterator with the result of applying this expression to
+      each of the given context items in turn. */
+  virtual Result iterateResult(const Result &contextItems, DynamicContext* context) const = 0;
+
   /** Returns the result of this expression via the EventHandler provided.
-      An ASTNode may be returned to be called as a tail call optimization */
+      An EventGenerator may be returned to be called as a tail call optimization */
   virtual EventGenerator::Ptr generateEvents(EventHandler *events, DynamicContext *context,
                                              bool preserveNS, bool preserveType) const = 0;
 
@@ -124,7 +128,6 @@ public:
       is a single DateOrTimeType, then !hasTimezone() on it must return true,
       otherwise this method will return false. */
   virtual bool isDateOrTimeAndHasNoTimezone(StaticContext* context) const = 0;
-  virtual bool isSingleNumericConstant(StaticContext *context) const = 0;
 
   virtual whichType getType(void) const = 0;
 

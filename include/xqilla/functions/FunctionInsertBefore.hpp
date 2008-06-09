@@ -50,7 +50,6 @@ private:
     InsertBeforeResult(const FunctionInsertBefore *func);
 
     Item::Ptr next(DynamicContext *context);
-    std::string asString(DynamicContext *context, int indent) const;
   private:
     const FunctionInsertBefore *_func;
     Numeric::Ptr _position;

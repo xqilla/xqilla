@@ -568,14 +568,15 @@ static inline Item::Ptr testNode(const FastXDMDocument::Ptr &document, const Fas
     break;
   }
   case FastXDMDocument::ELEMENT: {
-    if(!nodeTest->getTypeWildcard() && nodeTest->getNodeType() != Node::element_string) return 0;
-    if(!nodeTest->getNameWildcard() && !XPath2Utils::equals(node->data.element.localname, nodeTest->getNodeName())) return 0;
-    if(!nodeTest->getNamespaceWildcard() && !XPath2Utils::equals(node->data.element.uri, nodeTest->getNodeUri())) return 0;
+    if(nodeTest->getNodeType() != Node::element_string && !nodeTest->getTypeWildcard()) return 0;
+    if(!XPath2Utils::equals(node->data.element.localname, nodeTest->getNodeName()) && !nodeTest->getNameWildcard()) return 0;
+    if(!XPath2Utils::equals(node->data.element.uri, nodeTest->getNodeUri()) && !nodeTest->getNamespaceWildcard()) return 0;
     break;
   }
   case FastXDMDocument::TEXT: {
-    if(nodeTest->getTypeWildcard()) { if(nodeTest->getHasChildren()) return 0; }
-    else if(nodeTest->getNodeType() != Node::text_string) return 0;
+    if(nodeTest->getNodeType() != Node::text_string) {
+      if(!nodeTest->getTypeWildcard() || nodeTest->getHasChildren()) return 0;
+    }
     if(!nodeTest->getNameWildcard() || !nodeTest->getNamespaceWildcard()) return 0;
     break;
   }
@@ -609,10 +610,11 @@ static inline Item::Ptr testAttribute(const FastXDMDocument::Ptr &document, cons
         }
       }
 
-      if(nodeTest->getTypeWildcard()) { if(nodeTest->getHasChildren()) return 0; }
-      else if(nodeTest->getNodeType() != Node::attribute_string) return 0;
-      if(!nodeTest->getNameWildcard() && !XPath2Utils::equals(attr->localname, nodeTest->getNodeName())) return 0;
-      if(!nodeTest->getNamespaceWildcard() && !XPath2Utils::equals(attr->uri, nodeTest->getNodeUri())) return 0;
+      if(nodeTest->getNodeType() != Node::attribute_string) {
+        if(!nodeTest->getTypeWildcard() || nodeTest->getHasChildren()) return 0;
+      }
+      if(!XPath2Utils::equals(attr->localname, nodeTest->getNodeName()) && !nodeTest->getNameWildcard()) return 0;
+      if(!XPath2Utils::equals(attr->uri, nodeTest->getNodeUri()) && !nodeTest->getNamespaceWildcard()) return 0;
   }
   return new FastXDMAttributeNodeImpl(document, attr);
 }

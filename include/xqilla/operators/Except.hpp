@@ -53,7 +53,6 @@ private:
     ExceptResult(const Except *op, int flags);
 
     Item::Ptr next(DynamicContext *context);
-    std::string asString(DynamicContext *context, int indent) const;  
   private:
     const Except *_op;
     unsigned int _flags;

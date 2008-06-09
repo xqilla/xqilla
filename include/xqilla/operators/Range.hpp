@@ -48,7 +48,6 @@ private:
     RangeResult(const Range *op, DynamicContext *context);
 
     Item::Ptr next(DynamicContext *context);
-    std::string asString(DynamicContext *context, int indent) const;
 
   private:
     const Range *_op;

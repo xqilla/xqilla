@@ -45,12 +45,3 @@ Sequence SequenceResult::toSequence(DynamicContext *context)
   return seq_;
 }
 
-std::string SequenceResult::asString(DynamicContext *context, int indent) const
-{
-  std::ostringstream oss;
-  std::string in(getIndent(indent));
-
-  oss << in << "<sequence/>" << std::endl;
-
-  return oss.str();
-}

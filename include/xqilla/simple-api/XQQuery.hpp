@@ -203,7 +203,6 @@ private:
     QueryResult(const XQQuery *query);
 
     Item::Ptr nextOrTail(Result &tail, DynamicContext *context);
-    std::string asString(DynamicContext *context, int indent) const;
 
   private:
     const XQQuery *_query;
