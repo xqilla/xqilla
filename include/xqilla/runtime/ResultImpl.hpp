@@ -61,11 +61,6 @@ public:
   /// Returns a result buffer of the result
   virtual ResultBufferImpl *toResultBuffer(unsigned int readCount);
 
-  /// Debug method to visualise the Result
-  virtual std::string asString(DynamicContext *context, int indent) const = 0;
-
-  static std::string getIndent(int indent);
-
 protected:
   ResultImpl(const LocationInfo *o);
 

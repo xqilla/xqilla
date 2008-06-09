@@ -402,12 +402,3 @@ Item::Ptr NodeTest::FilterResult::next(DynamicContext *context)
   return result;
 }
 
-std::string NodeTest::FilterResult::asString(DynamicContext *context, int indent) const
-{
-  std::ostringstream oss;
-  std::string in(getIndent(indent));
-
-  oss << in << "<nodetest_filter/>" << std::endl;
-
-  return oss.str();
-}

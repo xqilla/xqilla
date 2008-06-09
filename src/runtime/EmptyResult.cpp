@@ -51,12 +51,3 @@ ResultBufferImpl *EmptyResult::toResultBuffer(unsigned int readCount)
   return new ResultBufferImpl(Result(0), readCount);
 }
 
-std::string EmptyResult::asString(DynamicContext *context, int indent) const
-{
-  std::ostringstream oss;
-  std::string in(getIndent(indent));
-
-  oss << in << "<empty/>" << std::endl;
-
-  return oss.str();
-}

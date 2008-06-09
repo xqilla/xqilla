@@ -52,19 +52,6 @@ bool XQLiteral::isDateOrTimeAndHasNoTimezone(StaticContext *context) const
   return false;
 }
 
-bool XQLiteral::isSingleNumericConstant(StaticContext *context) const
-{
-  AutoDelete<DynamicContext> dContext(context->createDynamicContext());
-  dContext->setMemoryManager(context->getMemoryManager());
-
-  Item::Ptr item = _itemConstructor->createItem(dContext);
-  if(item->isAtomicValue() &&
-     ((const AnyAtomicType::Ptr)item)->isNumericValue()) {
-    return true;
-  }
-  return false;
-}
-
 ASTNode* XQLiteral::staticResolution(StaticContext *context)
 {
   // Constant fold, to parse numeric literals

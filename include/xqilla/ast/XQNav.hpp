@@ -78,10 +78,8 @@ public:
   NavStepResult(const Result &parent, const ASTNode *step, size_t contextSize);
 
   Item::Ptr next(DynamicContext *context);
-  std::string asString(DynamicContext *context, int indent) const;
 
 private:
-  bool initialised_;
   Result parent_;
   const ASTNode *step_;
   Result stepResult_;
@@ -96,7 +94,6 @@ public:
   IntermediateStepCheckResult(const LocationInfo *o, const Result &parent);
 
   Item::Ptr next(DynamicContext *context);
-  std::string asString(DynamicContext *context, int indent) const;
 
 private:
   Result parent_;
@@ -108,7 +105,6 @@ public:
   LastStepCheckResult(const LocationInfo *o, const Result &parent);
 
   Item::Ptr next(DynamicContext *context);
-  std::string asString(DynamicContext *context, int indent) const;
 
 private:
   Result parent_;

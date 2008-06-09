@@ -1247,18 +1247,6 @@ Item::Ptr SequenceType::OccurrenceMatchesResult::next(DynamicContext *context)
   return item;
 }
 
-std::string SequenceType::OccurrenceMatchesResult::asString(DynamicContext *context, int indent) const
-{
-  std::ostringstream oss;
-  std::string in(getIndent(indent));
-
-  oss << in << "<occurrence_matches>" << std::endl;
-  oss << _parent->asString(context, indent + 1);
-  oss << in << "</occurrence_matches>" << std::endl;
-
-  return oss.str();
-}
-
 ////////////////////////////////////////
 // TypeMatchesResult
 ////////////////////////////////////////
@@ -1292,14 +1280,3 @@ Item::Ptr SequenceType::TypeMatchesResult::next(DynamicContext *context)
   return item;
 }
 
-std::string SequenceType::TypeMatchesResult::asString(DynamicContext *context, int indent) const
-{
-  std::ostringstream oss;
-  std::string in(getIndent(indent));
-
-  oss << in << "<type_matches>" << std::endl;
-  oss << _parent->asString(context, indent + 1);
-  oss << in << "</type_matches>" << std::endl;
-
-  return oss.str();
-}

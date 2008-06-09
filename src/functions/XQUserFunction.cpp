@@ -653,16 +653,6 @@ Item::Ptr XQUserFunctionInstance::FunctionEvaluatorResult::nextOrTail(Result &ta
 //   return item;
 }
 
-std::string XQUserFunctionInstance::FunctionEvaluatorResult::asString(DynamicContext *context, int indent) const
-{
-  std::ostringstream oss;
-  std::string in(getIndent(indent));
-
-  oss << in << "<functionevaluator/>" << std::endl;
-
-  return oss.str();
-}
-
 XQUserFunctionInstance::ExternalFunctionEvaluatorResult::ExternalFunctionEvaluatorResult(const XQUserFunctionInstance *di)
   : ResultImpl(di),
     _di(di)
@@ -677,7 +667,3 @@ Item::Ptr XQUserFunctionInstance::ExternalFunctionEvaluatorResult::nextOrTail(Re
   return 0;
 }
 
-std::string XQUserFunctionInstance::ExternalFunctionEvaluatorResult::asString(DynamicContext *context, int indent) const
-{
-  return "";
-}

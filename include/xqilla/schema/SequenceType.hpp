@@ -230,7 +230,6 @@ protected:
     OccurrenceMatchesResult(const Result &parent, const SequenceType *seqType, const LocationInfo *location, const XMLCh *errorCode);
 
     Item::Ptr next(DynamicContext *context);
-    std::string asString(DynamicContext *context, int indent) const;
   private:
     const SequenceType *_seqType;
     Result _parent;
@@ -244,7 +243,6 @@ protected:
     TypeMatchesResult(const Result &parent, const SequenceType *seqType, const LocationInfo *location, const XMLCh *errorCode);
 
     Item::Ptr next(DynamicContext *context);
-    std::string asString(DynamicContext *context, int indent) const;
   private:
     const SequenceType *_seqType;
     Result _parent;

@@ -195,13 +195,3 @@ Item::Ptr XQCastableAs::CastableAsResult::getSingleResult(DynamicContext *contex
   return (const Item::Ptr)context->getItemFactory()->createBoolean(result, context);
 }
 
-std::string XQCastableAs::CastableAsResult::asString(DynamicContext *context, int indent) const
-{
-  std::ostringstream oss;
-  std::string in(getIndent(indent));
-
-  oss << in << "<castableas/>" << std::endl;
-
-  return oss.str();
-
-}

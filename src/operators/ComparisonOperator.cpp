@@ -148,12 +148,3 @@ Item::Ptr ComparisonOperator::ComparisonResult::getSingleResult(DynamicContext *
   }
 }
 
-std::string ComparisonOperator::ComparisonResult::asString(DynamicContext *context, int indent) const
-{
-  std::ostringstream oss;
-  std::string in(getIndent(indent));
-
-  oss << in << "<comparisonop/>" << std::endl;
-
-  return oss.str();
-}

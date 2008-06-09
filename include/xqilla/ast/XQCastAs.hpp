@@ -55,7 +55,6 @@ protected:
     CastAsResult(const XQCastAs *di);
 
     Item::Ptr getSingleResult(DynamicContext *context) const;
-    std::string asString(DynamicContext *context, int indent) const;
 
   private:
     const XQCastAs *_di;
@@ -67,4 +66,4 @@ protected:
   AnyAtomicType::AtomicObjectType _typeIndex;
 };
 
-#endif // _XQCASTAS_HPP
+#endif

@@ -130,12 +130,3 @@ Item::Ptr Union::UnionResult::next(DynamicContext *context)
   return 0;
 }
 
-std::string Union::UnionResult::asString(DynamicContext *context, int indent) const
-{
-  std::ostringstream oss;
-  std::string in(getIndent(indent));
-
-  oss << in << "<union/>" << std::endl;
-
-  return oss.str();
-}

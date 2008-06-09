@@ -186,21 +186,6 @@ bool XQSequence::isDateOrTimeAndHasNoTimezone(StaticContext *context) const
   return false;
 }
 
-bool XQSequence::isSingleNumericConstant(StaticContext *context) const
-{
-  if(_itemConstructors.size() == 1) {
-    AutoDelete<DynamicContext> dContext(context->createDynamicContext());
-    dContext->setMemoryManager(context->getMemoryManager());
-
-    Item::Ptr item = _itemConstructors[0]->createItem(dContext);
-    if(item->isAtomicValue() &&
-       ((const AnyAtomicType::Ptr)item)->isNumericValue()) {
-      return true;
-    }
-  }
-  return false;
-}
-
 XQSequence::SequenceResult::SequenceResult(const XQSequence *seq)
   : ResultImpl(seq),
     _seq(seq),
@@ -218,12 +203,3 @@ Item::Ptr XQSequence::SequenceResult::next(DynamicContext *context)
   return item;
 }
 
-std::string XQSequence::SequenceResult::asString(DynamicContext *context, int indent) const
-{
-  std::ostringstream oss;
-  std::string in(getIndent(indent));
-
-  oss << in << "<sequence/>" << std::endl;
-
-  return oss.str();
-}

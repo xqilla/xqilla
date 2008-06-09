@@ -20,7 +20,6 @@
  */
 
 #include "../config/xqilla_config.h"
-#include <sstream>
 
 #include <xqilla/utils/PrintAST.hpp>
 #include <xqilla/ast/XQNav.hpp>
@@ -78,14 +77,7 @@ Result XQNav::createResult(DynamicContext* context, int flags) const
 
       step = it->step;
 
-      if(step->getStaticAnalysis().isContextSizeUsed()) {
-        // We need the context size, so convert to a Sequence to work it out
-        Sequence seq(result->toSequence(context));
-        result = new NavStepResult(new SequenceResult(step, seq), step, seq.getLength());
-      }
-      else {
-        result = new NavStepResult(result, step, 0);
-      }
+      result = step->iterateResult(result, context);
 
       st = step->getStaticAnalysis().getStaticType();
     }
@@ -349,7 +341,6 @@ unsigned int XQNav::combineProperties(unsigned int prev_props, unsigned int step
 
 NavStepResult::NavStepResult(const Result &parent, const ASTNode *step, size_t contextSize)
   : ResultImpl(step),
-    initialised_(false),
     parent_(parent),
     step_(step),
     stepResult_(0),
@@ -391,23 +382,6 @@ Item::Ptr NavStepResult::next(DynamicContext *context)
   return result;
 }
 
-std::string NavStepResult::asString(DynamicContext *context, int indent) const
-{
-  std::ostringstream oss;
-  std::string in(getIndent(indent));
-
-  oss << in << "<step contextSize=\"" << (unsigned long)contextSize_ << "\">" << std::endl;
-  if(!parent_.isNull()) {
-    oss << in << "  <parent>" << std::endl;
-    oss << parent_->asString(context, indent + 2);
-    oss << in << "  </parent>" << std::endl;
-  }
-  oss << PrintAST::print(step_, context, indent + 1);
-  oss << in << "</step>" << std::endl;
-
-  return oss.str();
-}
-
 IntermediateStepCheckResult::IntermediateStepCheckResult(const LocationInfo *o, const Result &parent)
   : ResultImpl(o),
     parent_(parent)
@@ -425,22 +399,6 @@ Item::Ptr IntermediateStepCheckResult::next(DynamicContext *context)
   }
 
   return result;
-}
-
-std::string IntermediateStepCheckResult::asString(DynamicContext *context, int indent) const
-{
-  std::ostringstream oss;
-  std::string in(getIndent(indent));
-
-  oss << in << "<intermediatestepcheck>" << std::endl;
-  if(!parent_.isNull()) {
-    oss << in << "  <parent>" << std::endl;
-    oss << parent_->asString(context, indent + 2);
-    oss << in << "  </parent>" << std::endl;
-  }
-  oss << in << "</intermediatestepcheck>" << std::endl;
-
-  return oss.str();
 }
 
 LastStepCheckResult::LastStepCheckResult(const LocationInfo *o, const Result &parent)
@@ -472,18 +430,3 @@ Item::Ptr LastStepCheckResult::next(DynamicContext *context)
   return result;
 }
 
-std::string LastStepCheckResult::asString(DynamicContext *context, int indent) const
-{
-  std::ostringstream oss;
-  std::string in(getIndent(indent));
-
-  oss << in << "<laststepcheck>" << std::endl;
-  if(!parent_.isNull()) {
-    oss << in << "  <parent>" << std::endl;
-    oss << parent_->asString(context, indent + 2);
-    oss << in << "  </parent>" << std::endl;
-  }
-  oss << in << "</laststepcheck>" << std::endl;
-
-  return oss.str();
-}

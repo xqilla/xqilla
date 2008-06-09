@@ -33,6 +33,7 @@
 #include <xqilla/exceptions/DynamicErrorException.hpp>
 #include <xqilla/utils/PrintAST.hpp>
 #include <xqilla/ast/XQDocumentOrder.hpp>
+#include <xqilla/ast/XQContextItem.hpp>
 
 XQStep::XQStep(Axis axis, NodeTest* nodeTest, XPath2MemoryManager* memMgr)
   : ASTNodeImpl(memMgr),
@@ -136,11 +137,6 @@ ASTNode *XQStep::staticTyping(StaticContext *context)
   return this;
 }
 
-Result XQStep::createResult(DynamicContext* context, int flags) const 
-{
-  return new StepResult(axis_, nodeTest_, this);
-}
-
 bool XQStep::isForwardAxis(Axis axis)
 {
   switch(axis) {
@@ -180,41 +176,51 @@ void XQStep::setAxis(XQStep::Axis a) {
   axis_ = a;
 }
 
-StepResult::StepResult(XQStep::Axis axis, const NodeTest *nt, const LocationInfo *location)
-  : ResultImpl(location),
-    toDo_(true),
-    result_(0),
-    axis_(axis),
-    nodeTest_(nt)
+class StepResult : public ResultImpl
 {
-}
-
-Item::Ptr StepResult::next(DynamicContext *context)
-{
-  if(toDo_) {
-    toDo_ = false;
-
-    Item::Ptr item = context->getContextItem();
-
-    if(item == NULLRCP) {
-      XQThrow(TypeErrorException,X("StepResult::next"), X("It is an error for the context item to be undefined when using it [err:XPDY0002]"));
-    }
-    if(!item->isNode()) {
-      XQThrow(TypeErrorException,X("StepResult::next"), X("An attempt was made to perform an axis step when the Context Item was not a node [err:XPTY0020]"));
-    }
-
-    result_ = ((Node*)item.get())->getAxisResult(axis_, nodeTest_, context, this);
+public:
+  StepResult(const Result &parent, const XQStep *step)
+    : ResultImpl(step),
+      parent_(parent),
+      step_(step),
+      stepResult_(0)
+  {
   }
 
-  return result_->next(context);
-}
+  Item::Ptr next(DynamicContext *context)
+  {
+    Item::Ptr result;
+    while((result = stepResult_->next(context)).isNull()) {
+      context->testInterrupt();
 
-std::string StepResult::asString(DynamicContext *context, int indent) const
+      Item::Ptr item = parent_->next(context);
+
+      if(item.isNull()) {
+        return 0;
+      }
+      if(!item->isNode()) {
+        XQThrow(TypeErrorException,X("StepResult::next"), X("An attempt was made to perform an axis step when the Context Item was not a node [err:XPTY0020]"));
+      }
+
+      stepResult_ = ((Node*)item.get())->getAxisResult(step_->getAxis(), step_->getNodeTest(), context, this);
+    }
+
+    return result;
+  }
+
+protected:
+  Result parent_;
+  const XQStep *step_;
+  Result stepResult_;
+};
+
+Result XQStep::createResult(DynamicContext* context, int flags) const 
 {
-  std::ostringstream oss;
-  std::string in(getIndent(indent));
-
-  oss << in << "<step name=\"" << PrintAST::getAxisName(axis_) << "\"/>" << std::endl;
-
-  return oss.str();
+  return new StepResult(new ContextItemResult(this), this);
 }
+
+Result XQStep::iterateResult(const Result &contextItems, DynamicContext* context) const
+{
+  return new StepResult(contextItems, this);
+}
+

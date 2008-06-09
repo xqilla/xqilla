@@ -23,6 +23,7 @@
 #include <sstream>
 
 #include <xqilla/ast/ASTNodeImpl.hpp>
+#include <xqilla/ast/XQNav.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/utils/NumUtils.hpp>
 #include <xqilla/ast/ASTNode.hpp>
@@ -78,11 +79,6 @@ void ASTNodeImpl::setType(ASTNode::whichType t)
   _type = t;
 }
 
-bool ASTNodeImpl::isSingleNumericConstant(StaticContext *context) const
-{
-  return false;
-}
-
 PendingUpdateList ASTNodeImpl::createUpdateList(DynamicContext *context) const
 {
   return PendingUpdateList();
@@ -91,6 +87,16 @@ PendingUpdateList ASTNodeImpl::createUpdateList(DynamicContext *context) const
 Result ASTNodeImpl::createResult(DynamicContext* context, int flags) const
 {
   return new CreateSequenceResult(this, flags, context);
+}
+
+Result ASTNodeImpl::iterateResult(const Result &contextItems, DynamicContext* context) const
+{
+  if(_src.isContextSizeUsed()) {
+    // We need the context size, so convert contextItems to a Sequence to work it out
+    Sequence seq(((ResultImpl*)contextItems.get())->toSequence(context));
+    return new NavStepResult(new SequenceResult(this, seq), this, seq.getLength());
+  }
+  return new NavStepResult(contextItems, this, 0);
 }
 
 EventGenerator::Ptr ASTNodeImpl::generateEvents(EventHandler *events, DynamicContext *context,
@@ -161,14 +167,4 @@ void ASTNodeImpl::CreateSequenceResult::getResult(Sequence &toFill, DynamicConte
         e.setXQueryPosition(this);
       throw e;
   }
-}
-
-std::string ASTNodeImpl::CreateSequenceResult::asString(DynamicContext *context, int indent) const
-{
-  std::ostringstream oss;
-  std::string in(getIndent(indent));
-
-  oss << in << "<collapsetreeinternal/>" << std::endl;
-
-  return oss.str();
 }

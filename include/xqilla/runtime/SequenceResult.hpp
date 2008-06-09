@@ -37,8 +37,6 @@ public:
   /// Cast operator to a Sequence
   virtual Sequence toSequence(DynamicContext *context = 0);
 
-  virtual std::string asString(DynamicContext *context, int indent) const;
-
 private:
   Sequence::iterator it_;
   Sequence seq_;

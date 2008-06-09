@@ -46,7 +46,6 @@ private:
     SubsequenceResult(const FunctionSubsequence *func);
 
     Item::Ptr next(DynamicContext *context);
-    std::string asString(DynamicContext *context, int indent) const;
   private:
     const FunctionSubsequence *_func;
     Numeric::Ptr _end;

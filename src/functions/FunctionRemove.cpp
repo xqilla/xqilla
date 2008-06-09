@@ -20,7 +20,6 @@
  */
 
 #include "../config/xqilla_config.h"
-#include <sstream>
 
 #include <xqilla/functions/FunctionRemove.hpp>
 #include <xqilla/ast/XQLiteral.hpp>
@@ -105,12 +104,3 @@ Item::Ptr FunctionRemove::RemoveResult::next(DynamicContext *context)
   return _target->next(context);
 }
 
-std::string FunctionRemove::RemoveResult::asString(DynamicContext *context, int indent) const
-{
-  std::ostringstream oss;
-  std::string in(getIndent(indent));
-
-  oss << in << "<remove/>" << std::endl;
-
-  return oss.str();
-}

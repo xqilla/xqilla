@@ -135,12 +135,3 @@ Item::Ptr XQInstanceOf::InstanceOfResult::getSingleResult(DynamicContext *contex
   return Item::Ptr(ptr.get());
 }
 
-std::string XQInstanceOf::InstanceOfResult::asString(DynamicContext *context, int indent) const
-{
-  std::ostringstream oss;
-  std::string in(getIndent(indent));
-
-  oss << in << "<instanceof/>" << std::endl;
-
-  return oss.str();
-}

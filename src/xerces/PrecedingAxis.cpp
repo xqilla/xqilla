@@ -68,7 +68,3 @@ const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *PrecedingAxis::nextNode(DynamicCon
   return node_;
 }
 
-std::string PrecedingAxis::asString(DynamicContext *context, int indent) const
-{
-  return getIndent(indent) + "<preceding_axis/>";
-}

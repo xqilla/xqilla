@@ -126,12 +126,3 @@ Item::Ptr Range::RangeResult::next(DynamicContext *context)
   return (const Item::Ptr)_last;
 }
 
-std::string Range::RangeResult::asString(DynamicContext *context, int indent) const
-{
-  std::ostringstream oss;
-  std::string in(getIndent(indent));
-
-  oss << in << "<range/>" << std::endl;
-
-  return oss.str();
-}

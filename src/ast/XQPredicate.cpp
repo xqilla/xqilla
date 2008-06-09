@@ -80,19 +80,31 @@ ASTNode* XQPredicate::staticTyping(StaticContext *context)
 
   const StaticAnalysis &newSrc = predicate_->getStaticAnalysis();
 
-  if(!newSrc.isUsed() && !predicate_->isSingleNumericConstant(context)) {
-    // It's not a numeric constant
+  if(!newSrc.isUsed()) {
+    // It's constant
     AutoDelete<DynamicContext> dContext(context->createDynamicContext());
     dContext->setMemoryManager(mm);
-    if(predicate_->createResult(dContext)->getEffectiveBooleanValue(dContext, this)) {
-      // We have a true predicate
-      return expr_;
+
+    Result pred_result = predicate_->createResult(dContext);
+    Item::Ptr first = pred_result->next(dContext);
+    Item::Ptr second;
+    if(first.notNull()) {
+      second = pred_result->next(dContext);
     }
-    else {
-      // We have a false predicate, which is constant folded to an empty sequence
-      ASTNode *result = new (mm) XQSequence(mm);
-      result->setLocationInfo(expr_);
-      return result;
+
+    if(first.isNull() || second.notNull() || !first->isAtomicValue() ||
+       !((AnyAtomicType*)first.get())->isNumericValue()) {
+      // It's not a single numeric item
+      if(ResultImpl::getEffectiveBooleanValue(first, second, dContext, this)) {
+        // We have a true predicate
+        return expr_;
+      }
+      else {
+        // We have a false predicate, which is constant folded to an empty sequence
+        ASTNode *result = new (mm) XQSequence(mm);
+        result->setLocationInfo(expr_);
+        return result;
+      }
     }
   }
 
@@ -182,9 +194,9 @@ Item::Ptr PredicateFilterResult::next(DynamicContext *context)
     pred_->getStaticAnalysis().isContextPositionUsed();
 
   Item::Ptr result = 0;
-  while(result == NULLRCP) {
+  while(result.isNull()) {
     result = parent_->next(context);
-    if(result == NULLRCP) {
+    if(result.isNull()) {
       parent_ = 0;
       return 0;
     }
@@ -200,7 +212,7 @@ Item::Ptr PredicateFilterResult::next(DynamicContext *context)
 
       Result pred_result = pred_->createResult(context);
       first_ = pred_result->next(context);
-      if(first_ != NULLRCP) {
+      if(first_.notNull()) {
         second_ = pred_result->next(context);
       }
 
@@ -211,7 +223,7 @@ Item::Ptr PredicateFilterResult::next(DynamicContext *context)
     // The predicate truth value is derived by applying the following rules, in order:
     // 1) If the value of the predicate expression is an atomic value of a numeric type, the predicate truth
     // value is true if and only if the value of the predicate expression is equal to the context position.
-    if(first_ != NULLRCP && second_ == NULLRCP && first_->isAtomicValue() &&
+    if(first_.notNull() && second_.isNull() && first_->isAtomicValue() &&
        ((const AnyAtomicType::Ptr)first_)->isNumericValue()) {
       const Numeric::Ptr num = (const Numeric::Ptr)first_;
       if(!num->equals((const AnyAtomicType::Ptr)context->getItemFactory()->createInteger((long)contextPos_, context), context)) {
@@ -259,9 +271,9 @@ Item::Ptr NonNumericPredicateFilterResult::next(DynamicContext *context)
     pred_->getStaticAnalysis().isContextPositionUsed();
 
   Item::Ptr result = 0;
-  while(result == NULLRCP) {
+  while(result.isNull()) {
     result = parent_->next(context);
-    if(result == NULLRCP) {
+    if(result.isNull()) {
       parent_ = 0;
       return 0;
     }
@@ -325,14 +337,14 @@ Item::Ptr NumericPredicateFilterResult::next(DynamicContext *context)
 
     Result pred_result = pred_->createResult(context);
     Numeric::Ptr first = (Numeric::Ptr)pred_result->next(context);
-    if(first == NULLRCP) {
+    if(first.isNull()) {
       // The effective boolean value is therefore false
       parent_ = 0;
       return 0;
     }
 
     Item::Ptr second = pred_result->next(context);
-    if(second != NULLRCP) {
+    if(second.notNull()) {
       // The effective boolean value causes an error -
       // so call it to get the correct error
       parent_ = 0;
@@ -343,7 +355,7 @@ Item::Ptr NumericPredicateFilterResult::next(DynamicContext *context)
     autoReset.resetContextInfo();
 
     int pos = 1;
-    while(pFactory->createInteger(pos, context)->lessThan(first, context) && parent_->next(context) != NULLRCP) {
+    while(pFactory->createInteger(pos, context)->lessThan(first, context) && parent_->next(context).notNull()) {
       pos++;
     }
 

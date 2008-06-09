@@ -42,7 +42,3 @@ Item::Ptr SelfAxis::next(DynamicContext *context)
   }
 }
 
-std::string SelfAxis::asString(DynamicContext *context, int indent) const
-{
-  return getIndent(indent) + "<self_axis/>";
-}

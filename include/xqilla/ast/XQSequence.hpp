@@ -40,7 +40,6 @@ public:
   ~XQSequence();
 
   virtual bool isDateOrTimeAndHasNoTimezone(StaticContext* context) const;
-  virtual bool isSingleNumericConstant(StaticContext *context) const;
 
   virtual ASTNode* staticResolution(StaticContext *context);
   virtual ASTNode *staticTyping(StaticContext *context);
@@ -62,7 +61,6 @@ private:
     SequenceResult(const XQSequence *seq);
 
     Item::Ptr next(DynamicContext *context);
-    std::string asString(DynamicContext *context, int indent) const;
   private:
     const XQSequence *_seq;
     ItemConstructor::Vector::const_iterator _it;

@@ -554,13 +554,3 @@ Item::Ptr XQQuery::QueryResult::nextOrTail(Result &tail, DynamicContext *context
   return 0;
 }
 
-std::string XQQuery::QueryResult::asString(DynamicContext *context, int indent) const
-{
-  std::ostringstream oss;
-  std::string in(getIndent(indent));
-
-  oss << in << "<queryresult>" << std::endl;
-  oss << in << "</queryresult>" << std::endl;
-
-  return oss.str();
-}

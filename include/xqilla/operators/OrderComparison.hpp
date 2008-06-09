@@ -48,7 +48,6 @@ private:
     OrderComparisonResult(const OrderComparison *op);
 
     Item::Ptr getSingleResult(DynamicContext *context) const;
-    std::string asString(DynamicContext *context, int indent) const;    
   private:
     const OrderComparison *_op;
   };

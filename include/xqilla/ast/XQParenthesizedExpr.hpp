@@ -51,7 +51,6 @@ private:
     ParenthesizedResult(const XQParenthesizedExpr *di);
 
     Item::Ptr nextOrTail(Result &tail, DynamicContext *context);
-    std::string asString(DynamicContext *context, int indent) const;
 
   private:
     const XQParenthesizedExpr *_di;

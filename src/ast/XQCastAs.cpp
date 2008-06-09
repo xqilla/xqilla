@@ -244,13 +244,3 @@ Item::Ptr XQCastAs::CastAsResult::getSingleResult(DynamicContext *context) const
   return _di->cast((const AnyAtomicType*)first.get(), context);
 }
 
-std::string XQCastAs::CastAsResult::asString(DynamicContext *context, int indent) const
-{
-  std::ostringstream oss;
-  std::string in(getIndent(indent));
-
-  oss << in << "<castas/>" << std::endl;
-
-  return oss.str();
-
-}

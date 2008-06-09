@@ -72,6 +72,7 @@
 #include <xqilla/ast/XQFunctionConversion.hpp>
 #include <xqilla/ast/XQAnalyzeString.hpp>
 #include <xqilla/ast/XQCopyOf.hpp>
+#include <xqilla/ast/XQCopy.hpp>
 #include <xqilla/ast/XQCallTemplate.hpp>
 #include <xqilla/ast/XQApplyTemplates.hpp>
 #include <xqilla/ast/XQInlineFunction.hpp>
@@ -460,6 +461,10 @@ string PrintAST::printASTNode(const ASTNode *item, const DynamicContext *context
   }
   case ASTNode::COPY_OF: {
     return printCopyOf((XQCopyOf*)item, context, indent);
+    break;
+  }
+  case ASTNode::COPY: {
+    return printCopy((XQCopy*)item, context, indent);
     break;
   }
   case ASTNode::CALL_TEMPLATE: {
@@ -1045,7 +1050,7 @@ string PrintAST::printSimpleContent(const XQSimpleContent *item, const DynamicCo
 
   s << in << "<SimpleContent";
   if(item->getChildren() != 0 && !item->getChildren()->empty()) {
-    s << "\">" << endl;
+    s << ">" << endl;
     for(VectorOfASTNodes::const_iterator i = item->getChildren()->begin();
         i != item->getChildren()->end(); ++i) {
       s << printASTNode(*i, context, indent + INDENT + INDENT);
@@ -1784,6 +1789,23 @@ string PrintAST::printCopyOf(const XQCopyOf *item, const DynamicContext *context
   s << in << "<CopyOf copy-namespaces=\"" << (item->getCopyNamespaces() ? "yes" : "no") << "\">" << endl;
   s << printASTNode(item->getExpression(), context, indent + INDENT);
   s << in << "</CopyOf>" << endl;
+
+  return s.str();
+}
+
+string PrintAST::printCopy(const XQCopy *item, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  s << in << "<Copy>" << endl;
+  s << printASTNode(item->getExpression(), context, indent + INDENT);
+  for(VectorOfASTNodes::const_iterator i = item->getChildren().begin();
+      i != item->getChildren().end(); ++i) {
+	  s << printASTNode(*i, context, indent + INDENT + INDENT);
+  }
+  s << in << "</Copy>" << endl;
 
   return s.str();
 }

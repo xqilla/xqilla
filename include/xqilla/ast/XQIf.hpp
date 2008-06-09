@@ -54,7 +54,6 @@ protected:
     IfResult(const XQIf *di);
 
     Item::Ptr nextOrTail(Result &tail, DynamicContext *context);
-    std::string asString(DynamicContext *context, int indent) const;
 
   private:
     const XQIf *_di;
@@ -63,6 +62,6 @@ protected:
   ASTNode* _test,* _whenTrue,* _whenFalse;
 };
 
-#endif // _XQIF_HPP
+#endif
 
 

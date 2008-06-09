@@ -47,8 +47,6 @@ public:
       otherwise this method will return false. */
   virtual bool isDateOrTimeAndHasNoTimezone(StaticContext* context) const;
 
-  virtual bool isSingleNumericConstant(StaticContext *context) const;
-
   /// Default - returns an empty update list
   virtual PendingUpdateList createUpdateList(DynamicContext *context) const;
 
@@ -57,6 +55,12 @@ public:
    * SequenceResult made from the Sequence returned by createSequence.
    */
   virtual Result createResult(DynamicContext* context, int flags=0) const;
+
+  /**
+   * Can be overridden by derived classes. Default implementation returns a
+   * NavStepResult constructed using contextItems and this expression.
+   */
+  virtual Result iterateResult(const Result &contextItems, DynamicContext* context) const;
 
   /**
    * Collapse the compiled expression based on context. Default implementation
@@ -84,7 +88,6 @@ protected:
     CreateSequenceResult(const ASTNodeImpl *di, int flags, DynamicContext *context);
 
     void getResult(Sequence &toFill, DynamicContext *context) const;
-    std::string asString(DynamicContext *context, int indent) const;
 
   private:
     int _flags;

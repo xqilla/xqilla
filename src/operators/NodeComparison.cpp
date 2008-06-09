@@ -98,12 +98,3 @@ Item::Ptr NodeComparison::NodeComparisonResult::getSingleResult(DynamicContext *
 	return context->getItemFactory()->createBoolean(((Node*)arg1.get())->equals((Node*)arg2.get()), context);
 }
 
-std::string NodeComparison::NodeComparisonResult::asString(DynamicContext *context, int indent) const
-{
-  std::ostringstream oss;
-  std::string in(getIndent(indent));
-
-  oss << in << "<nodecomparison/>" << std::endl;
-
-  return oss.str();
-}

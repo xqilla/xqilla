@@ -144,12 +144,3 @@ Item::Ptr FunctionSubsequence::SubsequenceResult::next(DynamicContext *context)
   return _source->next(context);
 }
 
-std::string FunctionSubsequence::SubsequenceResult::asString(DynamicContext *context, int indent) const
-{
-  std::ostringstream oss;
-  std::string in(getIndent(indent));
-
-  oss << in << "<subsequence/>" << std::endl;
-
-  return oss.str();
-}

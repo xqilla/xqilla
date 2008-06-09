@@ -202,12 +202,3 @@ Item::Ptr GeneralComp::GeneralCompResult::getSingleResult(DynamicContext *contex
   return (const Item::Ptr)context->getItemFactory()->createBoolean(false, context);
 }
 
-std::string GeneralComp::GeneralCompResult::asString(DynamicContext *context, int indent) const
-{
-  std::ostringstream oss;
-  std::string in(getIndent(indent));
-
-  oss << in << "<generalcomp/>" << std::endl;
-
-  return oss.str();
-}

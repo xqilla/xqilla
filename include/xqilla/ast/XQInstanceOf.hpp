@@ -49,7 +49,6 @@ protected:
     InstanceOfResult(const XQInstanceOf *di, int flags);
 
     Item::Ptr getSingleResult(DynamicContext *context) const;
-    std::string asString(DynamicContext *context, int indent) const;
 
   private:
     int _flags;
