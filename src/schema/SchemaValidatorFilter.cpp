@@ -207,6 +207,12 @@ void SchemaValidatorFilter::processStartElement()
       laxThisOne = true;
     }
   }
+  else {
+    // Switch to the initial Grammar for the root element.
+    // This is added to fix a bug which used fSchemaGrammar rather than the
+    // real grammar when the document is in no namespace - jpcs
+    switchGrammar(uri_.getRawBuffer());
+  }
 
   XMLElementDecl* elemDecl = createElementDecl(uriId, currentScope, laxThisOne);
   assert(elemDecl);
