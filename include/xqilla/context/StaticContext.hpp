@@ -254,7 +254,7 @@ public:
    * Sets whether document projection is enabled. Document projection
    * can be enabled or disabled at compile time, as well as overridden
    * at runtime. By default document projection is enabled unless query
-   * complilation is unable to guarentee it's correctness.
+   * complilation is unable to guarentee its correctness.
    *
    * Document projection is an optimisation that uses query analysis
    * to remove sub-trees from documents that aren't needed by the

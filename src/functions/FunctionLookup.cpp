@@ -341,6 +341,7 @@ const ExternalFunction *FunctionLookup::lookUpGlobalExternalFunction(
 #include <xqilla/functions/FunctionSerializeJSON.hpp>
 #include <xqilla/functions/FunctionParseHTML.hpp>
 #include <xqilla/functions/FunctionTime.hpp>
+#include <xqilla/functions/FunctionAnalyzeString.hpp>
 // Higher Order Functions extension functions
 #include <xqilla/functions/FunctionPartialApply.hpp>
 #include <xqilla/functions/FunctionFunctionArity.hpp>
@@ -617,6 +618,7 @@ static void initGlobalTable(FunctionLookup *t, MemoryManager *memMgr)
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionParseJSON>(memMgr));
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionSerializeJSON>(memMgr));
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionTime>(memMgr));
+  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionAnalyzeString>(memMgr));
 
 #ifdef HAVE_LIBTIDY
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionParseHTML>(memMgr));

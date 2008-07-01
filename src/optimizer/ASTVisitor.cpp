@@ -270,6 +270,14 @@ ASTNode *ASTVisitor::optimize(ASTNode *item)
     result = optimizeCopyOf((XQCopyOf *)item);
     break;
   }
+  case ASTNode::COPY: {
+    result = optimizeCopy((XQCopy *)item);
+    break;
+  }
+  case ASTNode::DEBUG_HOOK: {
+    result = optimizeASTDebugHook((ASTDebugHook *)item);
+    break;
+  }
   case ASTNode::CALL_TEMPLATE: {
     result = optimizeCallTemplate((XQCallTemplate *)item);
     break;
@@ -576,6 +584,24 @@ ASTNode *ASTVisitor::optimizeCopyOf(XQCopyOf *item)
   return item;
 }
 
+ASTNode *ASTVisitor::optimizeCopy(XQCopy *item)
+{
+  item->setExpression(optimize(const_cast<ASTNode *>(item->getExpression())));
+
+  VectorOfASTNodes &args = const_cast<VectorOfASTNodes &>(item->getChildren());
+  for(VectorOfASTNodes::iterator i = args.begin(); i != args.end(); ++i) {
+    *i = optimize(*i);
+  }
+
+  return item;
+}
+
+ASTNode *ASTVisitor::optimizeASTDebugHook(ASTDebugHook *item)
+{
+  item->setExpression(optimize(const_cast<ASTNode *>(item->getExpression())));
+  return item;
+}
+
 ASTNode *ASTVisitor::optimizeCallTemplate(XQCallTemplate *item)
 {
   TemplateArguments *args = item->getArguments();
@@ -750,6 +776,10 @@ TupleNode *ASTVisitor::optimizeTupleNode(TupleNode *item)
     result = optimizeOrderByTuple((OrderByTuple*)item);
     break;
   }
+  case TupleNode::DEBUG_HOOK: {
+    result = optimizeTupleDebugHook((TupleDebugHook*)item);
+    break;
+  }
   }
   return result;
 }
@@ -784,6 +814,12 @@ TupleNode *ASTVisitor::optimizeOrderByTuple(OrderByTuple *item)
 {
   item->setParent(optimizeTupleNode(const_cast<TupleNode*>(item->getParent())));
   item->setExpression(optimize(item->getExpression()));
+  return item;
+}
+
+TupleNode *ASTVisitor::optimizeTupleDebugHook(TupleDebugHook *item)
+{
+  item->setParent(optimizeTupleNode(const_cast<TupleNode*>(item->getParent())));
   return item;
 }
 

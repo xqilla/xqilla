@@ -35,7 +35,8 @@ public:
     FOR,
     LET,
     WHERE,
-    ORDER_BY
+    ORDER_BY,
+    DEBUG_HOOK
   };
 
   virtual ~TupleNode() {}

@@ -43,9 +43,10 @@ public:
   XQPredicate(ASTNode *predicate, XPath2MemoryManager* memMgr);
   XQPredicate(ASTNode *expr, ASTNode *predicate, XPath2MemoryManager* memMgr);
 
-  virtual Result createResult(DynamicContext* context, int flags=0) const;
   virtual ASTNode* staticResolution(StaticContext *context);
   virtual ASTNode *staticTyping(StaticContext *context);
+  virtual Result createResult(DynamicContext* context, int flags=0) const;
+  virtual Result iterateResult(const Result &contextItems, DynamicContext* context) const;
 
   const ASTNode *getExpression() const { return expr_; }
   void setExpression(ASTNode *expr) { expr_ = expr; }

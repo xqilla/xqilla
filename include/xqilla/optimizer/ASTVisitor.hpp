@@ -57,6 +57,8 @@
 #include <xqilla/ast/XQFunctionConversion.hpp>
 #include <xqilla/ast/XQAnalyzeString.hpp>
 #include <xqilla/ast/XQCopyOf.hpp>
+#include <xqilla/ast/XQCopy.hpp>
+#include <xqilla/debug/ASTDebugHook.hpp>
 #include <xqilla/ast/XQCallTemplate.hpp>
 #include <xqilla/ast/XQApplyTemplates.hpp>
 #include <xqilla/ast/XQInlineFunction.hpp>
@@ -68,6 +70,7 @@
 #include <xqilla/ast/LetTuple.hpp>
 #include <xqilla/ast/WhereTuple.hpp>
 #include <xqilla/ast/OrderByTuple.hpp>
+#include <xqilla/debug/TupleDebugHook.hpp>
 
 #include <xqilla/functions/XQUserFunction.hpp>
 
@@ -135,6 +138,8 @@ protected:
   virtual ASTNode *optimizeFunctionConversion(XQFunctionConversion *item);
   virtual ASTNode *optimizeAnalyzeString(XQAnalyzeString *item);
   virtual ASTNode *optimizeCopyOf(XQCopyOf *item);
+  virtual ASTNode *optimizeCopy(XQCopy *item);
+  virtual ASTNode *optimizeASTDebugHook(ASTDebugHook *item);
   virtual ASTNode *optimizeCallTemplate(XQCallTemplate *item);
   virtual ASTNode *optimizeApplyTemplates(XQApplyTemplates *item);
   virtual ASTNode *optimizeInlineFunction(XQInlineFunction *item);
@@ -161,6 +166,7 @@ protected:
   virtual TupleNode *optimizeLetTuple(LetTuple *item);
   virtual TupleNode *optimizeWhereTuple(WhereTuple *item);
   virtual TupleNode *optimizeOrderByTuple(OrderByTuple *item);
+  virtual TupleNode *optimizeTupleDebugHook(TupleDebugHook *item);
 };
 
 #endif

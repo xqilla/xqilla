@@ -23,6 +23,10 @@
 #define XQANALYZESTRING_HPP
 
 #include <xqilla/ast/ASTNodeImpl.hpp>
+#include <xqilla/context/RegexGroupStore.hpp>
+
+#include <xercesc/util/regx/Match.hpp>
+#include <xercesc/util/RefVectorOf.hpp>
 
 class XQILLA_API XQAnalyzeString : public ASTNodeImpl
 {
@@ -50,6 +54,33 @@ protected:
   ASTNode *flags_;
   ASTNode *match_;
   ASTNode *nonMatch_;
+};
+
+class XQILLA_API AnalyzeStringResult : public ResultImpl, private RegexGroupStore
+{
+public:
+  AnalyzeStringResult(const LocationInfo *info);
+
+  virtual const XMLCh *getInput(DynamicContext *context) = 0;
+  virtual const XMLCh *getPattern(DynamicContext *context) = 0;
+  virtual const XMLCh *getFlags(DynamicContext *context) = 0;
+  virtual Result getMatchResult(const XMLCh *matchString, size_t matchPos, size_t numberOfMatches,
+                                bool match, DynamicContext *context) = 0;
+
+  virtual Item::Ptr next(DynamicContext *context);
+
+private:
+  virtual const XMLCh *getGroup(int index) const;
+
+  const XMLCh *input_;
+  XERCES_CPP_NAMESPACE_QUALIFIER RefVectorOf<XERCES_CPP_NAMESPACE_QUALIFIER Match> matches_;
+  std::vector<std::pair<const XMLCh*, XERCES_CPP_NAMESPACE_QUALIFIER Match*> > strings_;
+
+  size_t contextPos_;
+  XERCES_CPP_NAMESPACE_QUALIFIER Match *currentMatch_;
+  XPath2MemoryManager *mm_;
+
+  Result result_;
 };
 
 #endif

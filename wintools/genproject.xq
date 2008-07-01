@@ -3,8 +3,6 @@
 *  projects.  It should not be changed independently or in any way that makes
 *  it project-dependent.
 *
-*  @PROJECT_NAME@  - name of the Visual Studio project
-*  @PROJECT_INPUT@ - input XML document that drives the script.
 * TBD:
 *  1. Could drive the remaining variables, including Visual Studio
 *  variables, off of the xml file and provide the XML input 
@@ -13,10 +11,10 @@
 *  2. Generate AdditionalIncludeDirectories based on the <depends> elements for 
 *  projects rather than just including "all" 
 :)
-declare variable $projectList := "@PROJECT_INPUT@";
-declare variable $vsversion := "@VISUAL_STUDIO_VERSION@";
-declare variable $sourcePath := doc($projectList)/projects/variable[@name="sourcePath"];
-declare variable $outputBase := doc($projectList)/projects/variable[@name="outputBase.@VISUAL_STUDIO_VERSION@"];
+declare variable $projectFile external;
+declare variable $outputPath external;
+declare variable $projectDoc := doc($projectFile);
+declare variable $sourcePath := $projectDoc/projects/variable[@name="sourcePath"];
 
 (: Visual Studio Variables --relatively static :)
 declare variable $debugOptLevel := "0";  (: VS -- no optimization :)
@@ -41,7 +39,7 @@ declare function local:configurationType($projectType)
   else if ($projectType eq "app") then $appType
   else if ($projectType eq "static_lib") then $staticType
   else if ($projectType eq "static_app") then $appType
-  else error("Unknown project type")
+  else error(QName("", "dbxml"), "Unknown project type")
 };
 
 (: "normalize" Windows file paths :)
@@ -79,9 +77,9 @@ declare function local:addDebugInformation($config)
 
 declare function local:generateCompilerPreprocessorDefs($project, $config)
 {
-  let $generic := doc($projectList)/projects/preprocessor[@config="all" or contains($config,@config)]
+  let $generic := $projectDoc/projects/preprocessor[@config="all" or contains($config,@config)]
   let $proj := $project/preprocessor[@config="all" or contains(@config,$config)]
-  let $type := doc($projectList)/projects/preprocessor[@config=$project/type]
+  let $type := $projectDoc/projects/preprocessor[@config=$project/type]
 
   return string-join(($generic,$proj,$type),";")
 };
@@ -112,7 +110,7 @@ declare function local:runtimeLibrary($config,$static as xs:boolean)
 
 declare function local:getLibName($name, $config)
 {
-  doc($projectList)/projects/library[@name=$name]/libname[@config=$config]
+  $projectDoc/projects/library[@name=$name]/libname[@config=$config]
 };
 
 declare function local:makeStaticOutputFile($project, $config)
@@ -165,7 +163,7 @@ declare function local:addLibraryDependencies($project,$config)
    return concat(local:getLibName($dep, $config),".lib")," ")}
 };
 
-declare function local:makeLibraryDirectory($lib,$platform,$config)
+declare function local:makeLibraryDirectory($lib,$platform,$config,$vsversion)
 {
    for $dir in $lib/platform[contains(@name,$platform)]/config[$config=./@type]/libdir
    return 
@@ -175,16 +173,16 @@ declare function local:makeLibraryDirectory($lib,$platform,$config)
 };
 
 (: The simple thing is to add all libraries for all projects :)
-declare function local:addLibraryDirectories($project,$platform,$config)
+declare function local:addLibraryDirectories($project,$platform,$config,$vsversion)
 {
   attribute{"AdditionalLibraryDirectories"}{string-join(for $dep in $project/depends
-   return local:makeLibraryDirectory(doc($projectList)/projects/library[@name=$dep],$platform,$config),";")}
+   return local:makeLibraryDirectory($projectDoc/projects/library[@name=$dep],$platform,$config,$vsversion),";")}
 };
 
 (: The simple thing is to add all libraries for all projects :)
 declare function local:addIncludeDirectories($project,$config)
 {
-  let $incref := for $inc in $project/include[@type="ref"] return doc($projectList)/projects/include[@name=$inc]
+  let $incref := for $inc in $project/include[@type="ref"] return $projectDoc/projects/include[@name=$inc]
   let $increl := $project/include[@type="rel"]
   return
    attribute{"AdditionalIncludeDirectories"}{string-join(($incref,$increl),",")}
@@ -198,7 +196,7 @@ local:indent(6),<Tool>
     {if (not(empty($project/event[@name="postbuild"]))) then
            (attribute{"CommandLine"}{$project/event[@name="postbuild"]/command[@config=$config]},
            attribute{"Description"}{$project/event[@name="postbuild"]/description})
-     else let $ev := doc($projectList)/projects/event[@name="postbuild" and @type=$project/type]
+     else let $ev := $projectDoc/projects/event[@name="postbuild" and @type=$project/type]
            return if (not(empty($ev))) then 
 	              (attribute{"CommandLine"}{replace($ev/command[@config=$config],"@pname@",if (not(empty($project/@output))) then $project/@output else $project/@name)},
            	      attribute{"Description"}{$ev/description})
@@ -231,13 +229,13 @@ local:indent(6),<Tool>
 </Tool>
 };
 
-declare function local:generateConfigLinkerAndMidl($project, $platform, $config)
+declare function local:generateConfigLinkerAndMidl($project, $platform, $config, $vsversion)
 {
 local:indent(6),<Tool>
   {attribute{"Name"}{"VCLinkerTool"}}
   {local:addLinkOptions($project, $platform, $config)}
   {local:addLibraryDependencies($project,$config)}
-  {local:addLibraryDirectories($project,$platform,$config)}
+  {local:addLibraryDirectories($project,$platform,$config,$vsversion)}
   {local:makeOutputFile($project, $config)}
   {local:makeOutputPDBFile($project, $config)}
   {attribute{"LinkIncremental"}{"1"}}
@@ -250,7 +248,7 @@ local:indent(6),<Tool>
 </Tool>
 };
 
-declare function local:generateConfigCompiler($project, $platform, $config, $static as xs:boolean)
+declare function local:generateConfigCompiler($project, $platform, $config, $static as xs:boolean, $vsversion)
 {
 local:indent(6),<Tool>
   {attribute{"Name"}{"VCCLCompilerTool"}}
@@ -287,50 +285,51 @@ local:indent(6),<Tool Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
 };
 
 (: use "platform/configuration" :)
-declare function local:generateOutputDirectory($platform,$config,$static)
+declare function local:generateOutputDirectory($platform,$config,$static,$vsversion)
 {
-    attribute{"OutputDirectory"}{local:windowsPath(concat($outputBase,"$(PlatformName)","/",string-join(tokenize($config," "),"_"),$static))}
+  let $outputBase := $projectDoc/projects/variable[@name=concat("outputBase.", $vsversion)]
+  return attribute{"OutputDirectory"}{local:windowsPath(concat($outputBase,"$(PlatformName)","/",string-join(tokenize($config," "),"_"),$static))}
 };
 
-declare function local:generateConfig($project, $platform, $config)
+declare function local:generateConfig($project, $platform, $config, $vsversion)
 {
 local:indent(4),<Configuration>
     {attribute{"Name"}{concat($config,"|",$platform)}}
-    {local:generateOutputDirectory($platform,$config,"")}
+    {local:generateOutputDirectory($platform,$config,"", $vsversion)}
     {attribute{"IntermediateDirectory"}{concat("./$(OutDir)/",$project/@name)}}
     {attribute{"ConfigurationType"}{local:configurationType($project/type)}}
     {attribute{"UseOfMFC"}{"0"}}
     {attribute{"ATLMinimizesCRunTimeLibraryUsage"}{"FALSE"}}
     {attribute{"CharacterSet"}{"2"}}
     {local:generateConfigBoilerplate($config)}
-    {local:generateConfigCompiler($project, $platform, $config,xs:boolean("false"))}
-    {local:generateConfigLinkerAndMidl($project, $platform, $config)}
+    {local:generateConfigCompiler($project, $platform, $config,false(),$vsversion)}
+    {local:generateConfigLinkerAndMidl($project, $platform, $config, $vsversion)}
     {local:generatePostBuildEvent($project,if (local:isDebug($config)) then "Debug" else "Release")}
     {local:generateCustomBuildTool($project,if (local:isDebug($config)) then "Debug" else "Release")}
   </Configuration>
 };
 
-declare function local:generateStaticConfig($project, $platform, $config)
+declare function local:generateStaticConfig($project, $platform, $config, $vsversion)
 {
   local:indent(4),<Configuration>
     {attribute{"Name"}{concat($config,"|",$platform)}}
-    {local:generateOutputDirectory($platform,$config,"_static")}
+    {local:generateOutputDirectory($platform,$config,"_static", $vsversion)}
     {attribute{"IntermediateDirectory"}{concat("./$(OutDir)/",$project/@name)}}
     {attribute{"ConfigurationType"}{local:configurationType($project/type)}}
     {attribute{"UseOfMFC"}{"0"}}
     {attribute{"ATLMinimizesCRunTimeLibraryUsage"}{"FALSE"}}
     {attribute{"CharacterSet"}{"2"}}
     {local:generateConfigBoilerplate($config)}
-    {local:generateConfigCompiler($project, $platform, $config,xs:boolean("true"))}
+    {local:generateConfigCompiler($project, $platform, $config,true(),$vsversion)}
     {if (contains($project/type,"lib")) then 
          local:generateConfigLibrarian($project, $config)
      else
-         local:generateConfigLinkerAndMidl($project, $platform, $config)
+         local:generateConfigLinkerAndMidl($project, $platform, $config, $vsversion)
     }
   </Configuration>
 };
 
-declare function local:generateRcFile($file)
+declare function local:generateRcFile($file, $vsversion)
 {
 	local:indent(4),<File RelativePath="{local:windowsPath(concat($sourcePath,$file/@name))}">
 	{ for $platform in local:getPlatforms($vsversion) return 
@@ -342,29 +341,29 @@ declare function local:generateRcFile($file)
 	{local:indent(4)}</File>
 };
 
-declare function local:generateFilesNoFilter($project)
+declare function local:generateFilesNoFilter($project, $vsversion)
 {
     for $file in $project/files/file
-        return  if (ends-with($file/@name,".rc")) then local:generateRcFile($file)
+        return  if (ends-with($file/@name,".rc")) then local:generateRcFile($file, $vsversion)
 	  else  (local:indent(4),<File RelativePath="{local:windowsPath(concat($sourcePath,$file/@name))}"/>)
 };
 
-declare function local:generateFilesWithFilter($project,$filter)
+declare function local:generateFilesWithFilter($project,$filter,$vsversion)
 {
     for $file in $project/files/filter[@name=$filter]/file
-        return if (ends-with($file/@name,".rc")) then local:generateRcFile($file)
+        return if (ends-with($file/@name,".rc")) then local:generateRcFile($file, $vsversion)
 	  else (local:indent(6),<File RelativePath="{local:windowsPath(concat($sourcePath,$file/@name))}"/>)
 };
 
-declare function local:generateFiles($project)
+declare function local:generateFiles($project, $vsversion)
 {
   let $filters := $project/files/filter/@name
   return if (empty($filters)) then
-          local:generateFilesNoFilter($project)
+          local:generateFilesNoFilter($project, $vsversion)
      else
          for $filter in $filters
          return (local:indent(4),<Filter Name="{$filter}" Filter="">
-               {local:generateFilesWithFilter($project,$filter)}
+               {local:generateFilesWithFilter($project,$filter,$vsversion)}
          {local:indent(4)}</Filter>)
 };
 
@@ -379,17 +378,19 @@ declare function local:getPlatforms($version)
 	else ("Win32", "x64", "IA64")
 };
 
-declare function local:getProjects()
+declare function local:getOutputName($project, $vsversion)
 {
-  (: doc($projectList)/projects/project :)
-  doc($projectList)/projects/project[@name="@PROJECT_NAME@"]
+  let $vsname := if($vsversion = "7.10") then "VC7.1" else "VC8"
+  return
+    concat($outputPath, "/", $vsname, "/", $project/@name, ".vcproj")
 };
 
-for $project in local:getProjects()
+for $vsversion in distinct-values($projectDoc//libbase/@vsver)
+for $project in $projectDoc/projects/project
 let $static := contains($project/@name,"static")
-let $proj := if ($static) then doc($projectList)/projects/project[@name=substring-before($project/@name,"_static")] else $project
+let $proj := if ($static) then $projectDoc/projects/project[@name=substring-before($project/@name,"_static")] else $project
 return 
-<VisualStudioProject
+put(<VisualStudioProject
    ProjectType="Visual C++"
    Version="{$vsversion}"
    Name="{string($project/@name)}"
@@ -402,12 +403,14 @@ return
    {local:indent(2)}<Configurations>
     {
     for $platform in local:getPlatforms($vsversion) return 
-    for $config in ("Debug","Release") return if ($static) then local:generateStaticConfig($project, $platform, $config) else local:generateConfig($project, $platform, $config)
+    for $config in ("Debug","Release")
+    return if ($static) then local:generateStaticConfig($project, $platform, $config, $vsversion)
+      else local:generateConfig($project, $platform, $config, $vsversion)
     }
   {local:indent(2)}</Configurations>
   {local:indent(2)}<References/>
   {local:indent(2)}<Files>
-    {local:generateFiles($proj)}
+    {local:generateFiles($proj, $vsversion)}
   {local:indent(2)}</Files>
   {local:indent(2)}<Globals/>
-{"&#xa;"}</VisualStudioProject>
+{"&#xa;"}</VisualStudioProject>, local:getOutputName($project, $vsversion))

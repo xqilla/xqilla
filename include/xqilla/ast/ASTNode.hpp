@@ -95,7 +95,8 @@ public:
     FUNCTION_REF,
     FUNCTION_DEREF,
     COPY_OF,
-    COPY
+    COPY,
+    DEBUG_HOOK
   } whichType;
 
   ASTNode() : userData_(0) {}

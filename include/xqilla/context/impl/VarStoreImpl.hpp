@@ -41,6 +41,8 @@ public:
   VarStoreImpl(const VarStoreImpl &other, XPath2MemoryManager *mm);
 
   virtual Result getVar(const XMLCh *namespaceURI, const XMLCh *name) const;
+  virtual void getInScopeVariables(std::vector<std::pair<const XMLCh*, const XMLCh*> > &variables) const;
+
   void setVar(const XMLCh *namespaceURI, const XMLCh *name, const Result &value, unsigned int readCount = ResultBufferImpl::UNLIMITED_COUNT);
   void clear();
 
@@ -62,6 +64,7 @@ public:
   SingleVarStore();
 
   virtual Result getVar(const XMLCh *namespaceURI, const XMLCh *name) const;
+  virtual void getInScopeVariables(std::vector<std::pair<const XMLCh*, const XMLCh*> > &variables) const;
 
   void setAsVariableStore(const XMLCh *namespaceURI, const XMLCh *name, DynamicContext *context);
   void unsetAsVariableStore(DynamicContext *context);

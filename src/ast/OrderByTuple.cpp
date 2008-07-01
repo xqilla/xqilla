@@ -152,6 +152,11 @@ public:
     return (*tupleIt_)->varStore.getVar(namespaceURI, name);
   }
 
+  virtual void getInScopeVariables(std::vector<std::pair<const XMLCh*, const XMLCh*> > &variables) const
+  {
+    (*tupleIt_)->varStore.getInScopeVariables(variables);
+  }
+
   virtual bool next(DynamicContext *context)
   {
     if(toDo_) {

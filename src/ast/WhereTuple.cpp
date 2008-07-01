@@ -144,6 +144,11 @@ public:
     return parent_->getVar(namespaceURI, name);
   }
 
+  virtual void getInScopeVariables(std::vector<std::pair<const XMLCh*, const XMLCh*> > &variables) const
+  {
+    parent_->getInScopeVariables(variables);
+  }
+
   virtual bool next(DynamicContext *context)
   {
     while(parent_->next(context)) {

@@ -32,6 +32,7 @@ class VariableStore;
 class SequenceBuilder;
 class UpdateFactory;
 class RegexGroupStore;
+class DebugListener;
 
 /// The execution time dynamic context interface
 class XQILLA_API DynamicContext : public StaticContext
@@ -109,6 +110,11 @@ public:
   virtual URIResolver *getDefaultURIResolver() const = 0;
   /** Sets the default URIResolver */
   virtual void setDefaultURIResolver(URIResolver *resolver, bool adopt) = 0;
+
+  /** Set the listener for debug messages */
+  virtual void setDebugListener(DebugListener *listener) = 0;
+  /** Gets the listener for debug messages */
+  virtual DebugListener *getDebugListener() const = 0;
 
   /** Parse an XML document from the provided InputSource */
   virtual Node::Ptr parseDocument(XERCES_CPP_NAMESPACE_QUALIFIER InputSource &srcToUse,

@@ -82,6 +82,7 @@ XQContextImpl::XQContextImpl(XQillaConfiguration *conf, XQilla::Language languag
     _regexStore(0),
     _resolvers(XQillaAllocator<ResolverEntry>(&_internalMM)),
     _moduleResolver(0),
+    _debugListener(0),
     _projection(true),
     _tmpVarCounter(0)
 {
@@ -194,6 +195,9 @@ DynamicContext *XQContextImpl::createModuleContext(MemoryManager *memMgr) const
   // Set the MessageListener
   moduleCtx->setMessageListener(_messageListener);
 
+  // Set the DebugListener
+  moduleCtx->setDebugListener(_debugListener);
+
   // Add our collations
   for(std::vector<Collation*, XQillaAllocator<Collation*> >::const_iterator it= _collations.begin(); it!=_collations.end(); ++it)
     moduleCtx->addCollation(*it);
@@ -226,6 +230,9 @@ DynamicContext *XQContextImpl::createModuleDynamicContext(const DynamicContext* 
 
   // Set the MessageListener
   moduleDCtx->setMessageListener(_messageListener);
+
+  // Set the DebugListener
+  moduleDCtx->setDebugListener(_debugListener);
 
   _conf->populateDynamicContext(moduleDCtx);
   return moduleDCtx;
@@ -859,6 +866,16 @@ void XQContextImpl::setMessageListener(MessageListener *listener)
 MessageListener *XQContextImpl::getMessageListener() const
 {
   return _messageListener;
+}
+
+void XQContextImpl::setDebugListener(DebugListener *listener)
+{
+  _debugListener = listener;
+}
+
+DebugListener *XQContextImpl::getDebugListener() const
+{
+  return _debugListener;
 }
 
 void XQContextImpl::testInterrupt() const

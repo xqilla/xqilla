@@ -243,6 +243,12 @@ xqilla/ast/WhereTuple.hpp \
 xqilla/ast/XQNamespaceBinding.hpp \
 xqilla/ast/XQCallTemplate.hpp \
 xqilla/ast/XQApplyTemplates.hpp \
+xqilla/debug/InteractiveDebugger.hpp \
+xqilla/debug/InputParser.hpp \
+xqilla/debug/DebugListener.hpp \
+xqilla/debug/DebugHookDecorator.hpp \
+xqilla/debug/ASTDebugHook.hpp \
+xqilla/debug/TupleDebugHook.hpp \
 xqilla/events/ContentSequenceFilter.hpp \
 xqilla/events/EventGenerator.hpp \
 xqilla/events/EventHandler.hpp \
@@ -321,6 +327,7 @@ xqilla/exceptions/QueryInterruptedException.hpp \
 xqilla/exceptions/QueryTimeoutException.hpp \
 xqilla/functions/ExternalFunction.hpp \
 xqilla/functions/FunctionLookup.hpp \
+xqilla/functions/FunctionAnalyzeString.hpp \
 xqilla/functions/FunctionAbs.hpp \
 xqilla/functions/FunctionAdjustDateTimeToTimezone.hpp \
 xqilla/functions/FunctionAdjustDateToTimezone.hpp \
@@ -847,6 +854,14 @@ $(top_srcdir)/docs/.dev-api-timestamp: $(nobase_include_HEADERS) $(top_srcdir)/d
 
 $(top_srcdir)/docs/Doxyfile.devapi: $(top_srcdir)/docs/Doxyfile.devapi.in
 	sed -e "s,%xerces_include%,$(xerces_include_dir)," $(top_srcdir)/docs/Doxyfile.devapi.in >$(top_srcdir)/docs/Doxyfile.devapi
+
+# Target to help keep the windows projects up-to-date
+winprojects:
+	@echo "      <filter name='include'>" >winprojects_files.xml
+	@list='$(nobase_include_HEADERS)'; for f in $$list; do \
+    echo "        <file name='include/$$f'/>" >>winprojects_files.xml; \
+  done
+	@echo "      </filter>" >>winprojects_files.xml
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

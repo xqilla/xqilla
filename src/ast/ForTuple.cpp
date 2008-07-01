@@ -162,6 +162,15 @@ public:
     return parent_->getVar(namespaceURI, name);
   }
 
+  virtual void getInScopeVariables(std::vector<std::pair<const XMLCh*, const XMLCh*> > &variables) const
+  {
+    variables.push_back(std::pair<const XMLCh*, const XMLCh*>(ast_->getVarURI(), ast_->getVarName()));
+    if(ast_->getPosName())
+      variables.push_back(std::pair<const XMLCh*, const XMLCh*>(ast_->getPosURI(), ast_->getPosName()));
+
+    parent_->getInScopeVariables(variables);
+  }
+
   virtual bool next(DynamicContext *context)
   {
     AutoVariableStoreReset reset(context, parent_);

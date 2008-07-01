@@ -66,6 +66,19 @@ Result VarStoreImpl::getVar(const XMLCh *namespaceURI, const XMLCh *name) const
   return 0;
 }
 
+void VarStoreImpl::getInScopeVariables(vector<pair<const XMLCh*, const XMLCh*> > &variables) const
+{
+  RefHash2KeysTableOfEnumerator<ResultBuffer> en(&const_cast<VarStoreImpl*>(this)->store_);
+  while(en.hasMoreElements()) {
+    void *name;
+    int nsID;
+    en.nextElementKey(name, nsID);
+    variables.push_back(pair<const XMLCh*, const XMLCh*>(uriPool_.getValueForId(nsID), (XMLCh*)name));
+  }
+
+  if(parent_ != 0) parent_->getInScopeVariables(variables);
+}
+
 void VarStoreImpl::setVar(const XMLCh *namespaceURI, const XMLCh *name, const Result &value, unsigned int readCount)
 {
   unsigned int nsID = uriPool_.addOrFind(namespaceURI);
@@ -97,6 +110,13 @@ Result SingleVarStore::getVar(const XMLCh *namespaceURI, const XMLCh *name) cons
     return value;
 
   return parent_->getVar(namespaceURI, name);
+}
+
+void SingleVarStore::getInScopeVariables(vector<pair<const XMLCh*, const XMLCh*> > &variables) const
+{
+  variables.push_back(pair<const XMLCh*, const XMLCh*>(uri_, name_));
+
+  if(parent_ != 0) parent_->getInScopeVariables(variables);
 }
 
 void SingleVarStore::setAsVariableStore(const XMLCh *namespaceURI, const XMLCh *name, DynamicContext *context)

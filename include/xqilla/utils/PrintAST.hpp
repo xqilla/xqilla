@@ -72,6 +72,7 @@ class XQFunctionConversion;
 class XQAnalyzeString;
 class XQCopyOf;
 class XQCopy;
+class ASTDebugHook;
 class XQCallTemplate;
 class XQApplyTemplates;
 class XQInlineFunction;
@@ -117,6 +118,7 @@ class ForTuple;
 class LetTuple;
 class WhereTuple;
 class OrderByTuple;
+class TupleDebugHook;
 
 class XQILLA_API PrintAST
 {
@@ -126,6 +128,7 @@ public:
   static std::string print(const XQillaExpression *expr, const DynamicContext *context, int indent = 0);
   static std::string print(const XQQuery *query, const DynamicContext *context, int indent = 0);
   static std::string print(const ASTNode *item, const DynamicContext *context, int indent = 0);
+  static std::string print(const TupleNode *item, const DynamicContext *context, int indent = 0);
 
   virtual std::string printASTNode(const ASTNode *item, const DynamicContext *context, int indent = 0);
   virtual std::string printFunction(const XQFunction *item, const DynamicContext *context, int indent);
@@ -167,6 +170,7 @@ public:
   virtual std::string printAnalyzeString(const XQAnalyzeString *item, const DynamicContext *context, int indent);
   virtual std::string printCopyOf(const XQCopyOf *item, const DynamicContext *context, int indent);
   virtual std::string printCopy(const XQCopy *item, const DynamicContext *context, int indent);
+  virtual std::string printASTDebugHook(const ASTDebugHook *item, const DynamicContext *context, int indent);
   virtual std::string printCallTemplate(const XQCallTemplate *item, const DynamicContext *context, int indent);
   virtual std::string printApplyTemplates(const XQApplyTemplates *item, const DynamicContext *context, int indent);
   virtual std::string printInlineFunction(const XQInlineFunction *item, const DynamicContext *context, int indent);
@@ -211,6 +215,7 @@ public:
   virtual std::string printLetTuple(const LetTuple *item, const DynamicContext *context, int indent);
   virtual std::string printWhereTuple(const WhereTuple *item, const DynamicContext *context, int indent);
   virtual std::string printOrderByTuple(const OrderByTuple *item, const DynamicContext *context, int indent);
+  virtual std::string printTupleDebugHook(const TupleDebugHook *item, const DynamicContext *context, int indent);
 
   virtual std::string printSequenceType(const SequenceType *type, const DynamicContext *context, int indent);
   virtual std::string printCase(const XQTypeswitch::Case *cse, const DynamicContext *context, int indent);

@@ -78,6 +78,7 @@
 #include <xqilla/ast/XQInlineFunction.hpp>
 #include <xqilla/ast/XQFunctionDeref.hpp>
 #include <xqilla/ast/XQFunctionRef.hpp>
+#include <xqilla/debug/ASTDebugHook.hpp>
 #include <xqilla/functions/XQUserFunction.hpp>
 
 #include <xqilla/fulltext/FTContains.hpp>
@@ -111,6 +112,7 @@
 #include <xqilla/ast/LetTuple.hpp>
 #include <xqilla/ast/WhereTuple.hpp>
 #include <xqilla/ast/OrderByTuple.hpp>
+#include <xqilla/debug/TupleDebugHook.hpp>
 
 #include <xqilla/functions/FunctionDoc.hpp>
 #include <xqilla/functions/FunctionCollection.hpp>
@@ -465,6 +467,10 @@ string PrintAST::printASTNode(const ASTNode *item, const DynamicContext *context
   }
   case ASTNode::COPY: {
     return printCopy((XQCopy*)item, context, indent);
+    break;
+  }
+  case ASTNode::DEBUG_HOOK: {
+    return printASTDebugHook((ASTDebugHook*)item, context, indent);
     break;
   }
   case ASTNode::CALL_TEMPLATE: {
@@ -1810,6 +1816,21 @@ string PrintAST::printCopy(const XQCopy *item, const DynamicContext *context, in
   return s.str();
 }
 
+string PrintAST::printASTDebugHook(const ASTDebugHook *item, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  s << in << "<ASTDebugHook";
+  s << " location=\"" << UTF8(item->getFile()) << ":" << item->getLine() << ":" << item->getColumn() << "\"";
+  s <<">" << endl;
+  s << printASTNode(item->getExpression(), context, indent + INDENT);
+  s << in << "</ASTDebugHook>" << endl;
+
+  return s.str();
+}
+
 string PrintAST::printCallTemplate(const XQCallTemplate *item, const DynamicContext *context, int indent)
 {
   ostringstream s;
@@ -1944,6 +1965,12 @@ string PrintAST::printFunctionRef(const XQFunctionRef *item, const DynamicContex
   return s.str();
 }
 
+string PrintAST::print(const TupleNode *item, const DynamicContext *context, int indent)
+{
+  PrintAST p;
+  return p.printTupleNode(item, context, indent);
+}
+
 string PrintAST::printTupleNode(const TupleNode *item, const DynamicContext *context, int indent)
 {
   switch(item->getType()) {
@@ -1957,6 +1984,8 @@ string PrintAST::printTupleNode(const TupleNode *item, const DynamicContext *con
     return printWhereTuple((WhereTuple*)item, context, indent);
   case TupleNode::ORDER_BY:
     return printOrderByTuple((OrderByTuple*)item, context, indent);
+  case TupleNode::DEBUG_HOOK:
+    return printTupleDebugHook((TupleDebugHook*)item, context, indent);
   default:
     break;
   }
@@ -2046,6 +2075,21 @@ string PrintAST::printOrderByTuple(const OrderByTuple *item, const DynamicContex
   s << printTupleNode(item->getParent(), context, indent + INDENT);
   s << printASTNode(item->getExpression(), context, indent + INDENT);
   s << in << "</OrderByTuple>" << endl;
+
+  return s.str();
+}
+
+string PrintAST::printTupleDebugHook(const TupleDebugHook *item, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  s << in << "<TupleDebugHook";
+  s << " location=\"" << UTF8(item->getFile()) << ":" << item->getLine() << ":" << item->getColumn() << "\"";
+  s << ">" << endl;
+  s << printTupleNode(item->getParent(), context, indent + INDENT);
+  s << in << "</TupleDebugHook>" << endl;
 
   return s.str();
 }

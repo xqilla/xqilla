@@ -139,14 +139,30 @@ Result XQPredicate::createResult(DynamicContext* context, int flags) const
     return new NumericPredicateFilterResult(parent, predicate_, contextSize);
   }
   else if(!src.getStaticType().containsType(StaticType::NUMERIC_TYPE) ||
-	  src.getStaticType().getMin() > 1 ||
-	  src.getStaticType().getMax() < 1) {
+          src.getStaticType().getMin() > 1 ||
+          src.getStaticType().getMax() < 1) {
     // It only contains non-numeric results
     return new NonNumericPredicateFilterResult(parent, predicate_, contextSize);
   }
   else {
     return new PredicateFilterResult(parent, predicate_, contextSize);
   }
+}
+
+Result XQPredicate::iterateResult(const Result &contextItems, DynamicContext *context) const
+{
+  const StaticAnalysis &src = predicate_->getStaticAnalysis();
+
+  if((src.getStaticType().containsType(StaticType::NUMERIC_TYPE) &&
+      src.getStaticType().getMin() <= 1 &&
+      src.getStaticType().getMax() >= 1)
+     || src.isContextPositionUsed() || src.isContextSizeUsed()) {
+    return ASTNodeImpl::iterateResult(contextItems, context);
+  }
+
+  Result parent = expr_->iterateResult(contextItems, context);
+  // It only contains non-numeric results
+  return new NonNumericPredicateFilterResult(parent, predicate_, 0);
 }
 
 ASTNode *XQPredicate::addPredicates(ASTNode *expr, VectorOfPredicates *preds)

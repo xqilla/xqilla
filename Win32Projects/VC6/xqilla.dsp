@@ -153,11 +153,11 @@ SOURCE=..\..\src\ast\XQAtomize.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\ast\XQCallTemplate.cpp
+SOURCE=..\..\src\ast\XQAttributeConstructor.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\ast\XQCastAs.cpp
+SOURCE=..\..\src\ast\XQCallTemplate.cpp
 # End Source File
 # Begin Source File
 
@@ -165,27 +165,7 @@ SOURCE=..\..\src\ast\XQCastableAs.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\ast\XQContextItem.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\ast\XQDOMConstructor.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\ast\XQDocumentConstructor.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\ast\XQElementConstructor.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\ast\XQAttributeConstructor.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\ast\XQPIConstructor.cpp
+SOURCE=..\..\src\ast\XQCastAs.cpp
 # End Source File
 # Begin Source File
 
@@ -193,11 +173,31 @@ SOURCE=..\..\src\ast\XQCommentConstructor.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\ast\XQTextConstructor.cpp
+SOURCE=..\..\src\ast\XQContextItem.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\ast\XQCopy.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\ast\XQCopyOf.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\ast\XQDocumentConstructor.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\src\ast\XQDocumentOrder.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\ast\XQDOMConstructor.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\ast\XQElementConstructor.cpp
 # End Source File
 # Begin Source File
 
@@ -261,6 +261,10 @@ SOURCE=..\..\src\ast\XQParenthesizedExpr.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\ast\XQPIConstructor.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\ast\XQPredicate.cpp
 # End Source File
 # Begin Source File
@@ -278,6 +282,10 @@ SOURCE=..\..\src\ast\XQSequence.cpp
 # Begin Source File
 
 SOURCE=..\..\src\ast\XQStep.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\ast\XQTextConstructor.cpp
 # End Source File
 # Begin Source File
 
@@ -369,11 +377,11 @@ SOURCE=..\..\include\xqilla\ast\XQAtomize.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\include\xqilla\ast\XQCallTemplate.hpp
+SOURCE=..\..\include\xqilla\ast\XQAttributeConstructor.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\include\xqilla\ast\XQCastAs.hpp
+SOURCE=..\..\include\xqilla\ast\XQCallTemplate.hpp
 # End Source File
 # Begin Source File
 
@@ -381,27 +389,7 @@ SOURCE=..\..\include\xqilla\ast\XQCastableAs.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\include\xqilla\ast\XQContextItem.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\include\xqilla\ast\XQDOMConstructor.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\include\xqilla\ast\XQDocumentConstructor.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\include\xqilla\ast\XQElementConstructor.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\include\xqilla\ast\XQAttributeConstructor.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\include\xqilla\ast\XQPIConstructor.hpp
+SOURCE=..\..\include\xqilla\ast\XQCastAs.hpp
 # End Source File
 # Begin Source File
 
@@ -409,11 +397,31 @@ SOURCE=..\..\include\xqilla\ast\XQCommentConstructor.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\include\xqilla\ast\XQTextConstructor.hpp
+SOURCE=..\..\include\xqilla\ast\XQContextItem.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\ast\XQCopy.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\ast\XQCopyOf.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\ast\XQDocumentConstructor.hpp
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\include\xqilla\ast\XQDocumentOrder.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\ast\XQDOMConstructor.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\ast\XQElementConstructor.hpp
 # End Source File
 # Begin Source File
 
@@ -477,6 +485,10 @@ SOURCE=..\..\include\xqilla\ast\XQParenthesizedExpr.hpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\include\xqilla\ast\XQPIConstructor.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\include\xqilla\ast\XQPredicate.hpp
 # End Source File
 # Begin Source File
@@ -494,6 +506,10 @@ SOURCE=..\..\include\xqilla\ast\XQSequence.hpp
 # Begin Source File
 
 SOURCE=..\..\include\xqilla\ast\XQStep.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\ast\XQTextConstructor.hpp
 # End Source File
 # Begin Source File
 
@@ -592,11 +608,11 @@ SOURCE=..\..\include\xqilla\context\impl\VarHashEntryImpl.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\include\xqilla\context\impl\VarStoreImpl.hpp
+SOURCE=..\..\include\xqilla\context\impl\VariableStoreTemplate.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\include\xqilla\context\impl\VariableStoreTemplate.hpp
+SOURCE=..\..\include\xqilla\context\impl\VarStoreImpl.hpp
 # End Source File
 # Begin Source File
 
@@ -629,18 +645,6 @@ SOURCE=..\..\include\xqilla\context\ItemFactory.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\include\xqilla\context\Scope.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\include\xqilla\context\StaticContext.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\include\xqilla\context\URIResolver.hpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\include\xqilla\context\MessageListener.hpp
 # End Source File
 # Begin Source File
@@ -649,7 +653,27 @@ SOURCE=..\..\include\xqilla\context\ModuleResolver.hpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\include\xqilla\context\ModuleResolver.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\context\RegexGroupStore.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\context\Scope.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\context\StaticContext.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\include\xqilla\context\UpdateFactory.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\context\URIResolver.hpp
 # End Source File
 # Begin Source File
 
@@ -662,6 +686,54 @@ SOURCE=..\..\include\xqilla\context\VariableStore.hpp
 # Begin Source File
 
 SOURCE=..\..\include\xqilla\context\VariableTypeStore.hpp
+# End Source File
+# End Group
+# Begin Group "debug"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\src\debug\ASTDebugHook.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\debug\DebugHookDecorator.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\debug\InputParser.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\debug\InteractiveDebugger.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\debug\TupleDebugHook.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\debug\ASTDebugHook.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\debug\DebugHookDecorator.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\debug\DebugListener.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\debug\InputParser.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\debug\InteractiveDebugger.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\debug\TupleDebugHook.hpp
 # End Source File
 # End Group
 # Begin Group "dom-api"
@@ -773,15 +845,19 @@ SOURCE=..\..\src\events\ContentSequenceFilter.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\events\EventGenerator.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\events\EventSerializer.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\events\NoInheritFilter.hpp
+SOURCE=..\..\src\events\NoInheritFilter.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\events\NoInheritFilter.cpp
+SOURCE=..\..\src\events\NoInheritFilter.hpp
 # End Source File
 # Begin Source File
 
@@ -794,6 +870,10 @@ SOURCE=..\..\src\events\QueryPathTreeFilter.cpp
 # Begin Source File
 
 SOURCE=..\..\include\xqilla\events\ContentSequenceFilter.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\events\EventGenerator.hpp
 # End Source File
 # Begin Source File
 
@@ -917,7 +997,7 @@ SOURCE=..\..\src\fastxdm\FastXDMConfiguration.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\fastxdm\FastXDMDocument.hpp
+SOURCE=..\..\src\fastxdm\FastXDMConfiguration.cpp
 # End Source File
 # Begin Source File
 
@@ -925,7 +1005,15 @@ SOURCE=..\..\src\fastxdm\FastXDMDocument.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\fastxdm\FastXDMNodeImpl.hpp
+SOURCE=..\..\src\fastxdm\FastXDMDocument.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\fastxdm\FastXDMDocument.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\fastxdm\FastXDMDocument.hpp
 # End Source File
 # Begin Source File
 
@@ -933,7 +1021,15 @@ SOURCE=..\..\src\fastxdm\FastXDMNodeImpl.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\fastxdm\FastXDMSequenceBuilder.hpp
+SOURCE=..\..\src\fastxdm\FastXDMNodeImpl.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\fastxdm\FastXDMNodeImpl.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\fastxdm\FastXDMNodeImpl.hpp
 # End Source File
 # Begin Source File
 
@@ -941,11 +1037,31 @@ SOURCE=..\..\src\fastxdm\FastXDMSequenceBuilder.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\fastxdm\FastXDMUpdateFactory.hpp
+SOURCE=..\..\src\fastxdm\FastXDMSequenceBuilder.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\fastxdm\FastXDMSequenceBuilder.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\fastxdm\FastXDMSequenceBuilder.hpp
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\src\fastxdm\FastXDMUpdateFactory.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\fastxdm\FastXDMUpdateFactory.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\fastxdm\FastXDMUpdateFactory.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\fastxdm\FastXDMUpdateFactory.hpp
 # End Source File
 # Begin Source File
 
@@ -1009,30 +1125,6 @@ SOURCE=..\..\include\xqilla\framework\XQillaExport.hpp
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\..\src\fulltext\FTContains.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\fulltext\FTWords.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\fulltext\FTOr.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\fulltext\FTAnd.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\fulltext\FTMildnot.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\fulltext\FTUnaryNot.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\fulltext\DefaultTokenizer.cpp
 # End Source File
 # Begin Source File
@@ -1041,15 +1133,11 @@ SOURCE=..\..\src\fulltext\DefaultTokenStore.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\fulltext\FTOrder.cpp
+SOURCE=..\..\src\fulltext\FTAnd.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\fulltext\FTDistance.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\fulltext\FTScope.cpp
+SOURCE=..\..\src\fulltext\FTContains.cpp
 # End Source File
 # Begin Source File
 
@@ -1057,7 +1145,35 @@ SOURCE=..\..\src\fulltext\FTContent.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\fulltext\FTDistance.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\fulltext\FTMildnot.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\fulltext\FTOr.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\fulltext\FTOrder.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\fulltext\FTScope.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\fulltext\FTUnaryNot.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\fulltext\FTWindow.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\fulltext\FTWords.cpp
 # End Source File
 # Begin Source File
 
@@ -1174,6 +1290,10 @@ SOURCE=..\..\src\functions\FunctionAdjustDateToTimezone.cpp
 # Begin Source File
 
 SOURCE=..\..\src\functions\FunctionAdjustTimeToTimezone.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\functions\FunctionAnalyzeString.cpp
 # End Source File
 # Begin Source File
 
@@ -1317,6 +1437,14 @@ SOURCE=..\..\src\functions\FunctionFloor.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\functions\FunctionFunctionArity.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\functions\FunctionFunctionName.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\functions\FunctionHoursFromDateTime.cpp
 # End Source File
 # Begin Source File
@@ -1341,11 +1469,11 @@ SOURCE=..\..\src\functions\FunctionImplicitTimezone.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\functions\FunctionInScopePrefixes.cpp
+SOURCE=..\..\src\functions\FunctionIndexOf.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\functions\FunctionIndexOf.cpp
+SOURCE=..\..\src\functions\FunctionInScopePrefixes.cpp
 # End Source File
 # Begin Source File
 
@@ -1365,11 +1493,15 @@ SOURCE=..\..\src\functions\FunctionLast.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\functions\FunctionLocalNameFromQName.cpp
+SOURCE=..\..\src\functions\FunctionLast.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\src\functions\FunctionLocalname.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\functions\FunctionLocalNameFromQName.cpp
 # End Source File
 # Begin Source File
 
@@ -1421,15 +1553,15 @@ SOURCE=..\..\src\functions\FunctionName.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\functions\FunctionNamespaceUri.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\functions\FunctionNamespaceURIForPrefix.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\src\functions\FunctionNamespaceURIFromQName.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\functions\FunctionNamespaceUri.cpp
 # End Source File
 # Begin Source File
 
@@ -1470,6 +1602,10 @@ SOURCE=..\..\src\functions\FunctionParseJSON.cpp
 # Begin Source File
 
 SOURCE=..\..\src\functions\FunctionParseXML.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\functions\FunctionPartialApply.cpp
 # End Source File
 # Begin Source File
 
@@ -1673,6 +1809,10 @@ SOURCE=..\..\include\xqilla\functions\FunctionAdjustTimeToTimezone.hpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\include\xqilla\functions\FunctionAnalyzeString.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\include\xqilla\functions\FunctionAvg.hpp
 # End Source File
 # Begin Source File
@@ -1813,6 +1953,14 @@ SOURCE=..\..\include\xqilla\functions\FunctionFloor.hpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\include\xqilla\functions\FunctionFunctionArity.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\functions\FunctionFunctionName.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\include\xqilla\functions\FunctionHoursFromDateTime.hpp
 # End Source File
 # Begin Source File
@@ -1837,11 +1985,11 @@ SOURCE=..\..\include\xqilla\functions\FunctionImplicitTimezone.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\include\xqilla\functions\FunctionInScopePrefixes.hpp
+SOURCE=..\..\include\xqilla\functions\FunctionIndexOf.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\include\xqilla\functions\FunctionIndexOf.hpp
+SOURCE=..\..\include\xqilla\functions\FunctionInScopePrefixes.hpp
 # End Source File
 # Begin Source File
 
@@ -1861,11 +2009,11 @@ SOURCE=..\..\include\xqilla\functions\FunctionLast.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\include\xqilla\functions\FunctionLocalNameFromQName.hpp
+SOURCE=..\..\include\xqilla\functions\FunctionLocalname.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\include\xqilla\functions\FunctionLocalname.hpp
+SOURCE=..\..\include\xqilla\functions\FunctionLocalNameFromQName.hpp
 # End Source File
 # Begin Source File
 
@@ -1917,15 +2065,15 @@ SOURCE=..\..\include\xqilla\functions\FunctionName.hpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\include\xqilla\functions\FunctionNamespaceUri.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\include\xqilla\functions\FunctionNamespaceURIForPrefix.hpp
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\include\xqilla\functions\FunctionNamespaceURIFromQName.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\include\xqilla\functions\FunctionNamespaceUri.hpp
 # End Source File
 # Begin Source File
 
@@ -1966,6 +2114,10 @@ SOURCE=..\..\include\xqilla\functions\FunctionParseJSON.hpp
 # Begin Source File
 
 SOURCE=..\..\include\xqilla\functions\FunctionParseXML.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\functions\FunctionPartialApply.hpp
 # End Source File
 # Begin Source File
 
@@ -2276,6 +2428,14 @@ SOURCE=..\..\include\xqilla\items\impl\ATBooleanOrDerivedImpl.hpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\include\xqilla\items\impl\ATDateOrDerivedImpl.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\items\impl\ATDateTimeOrDerivedImpl.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\include\xqilla\items\impl\ATDecimalOrDerivedImpl.hpp
 # End Source File
 # Begin Source File
@@ -2284,27 +2444,11 @@ SOURCE=..\..\include\xqilla\items\impl\ATDoubleOrDerivedImpl.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\include\xqilla\items\impl\ATFloatOrDerivedImpl.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\include\xqilla\items\impl\ATQNameOrDerivedImpl.hpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\include\xqilla\items\impl\ATDurationOrDerivedImpl.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\include\xqilla\items\impl\ATDateTimeOrDerivedImpl.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\include\xqilla\items\impl\ATDateOrDerivedImpl.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\include\xqilla\items\impl\ATTimeOrDerivedImpl.hpp
+SOURCE=..\..\include\xqilla\items\impl\ATFloatOrDerivedImpl.hpp
 # End Source File
 # Begin Source File
 
@@ -2326,7 +2470,23 @@ SOURCE=..\..\include\xqilla\items\impl\ATGYearMonthOrDerivedImpl.hpp
 
 SOURCE=..\..\include\xqilla\items\impl\ATGYearOrDerivedImpl.hpp
 # End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\items\impl\ATQNameOrDerivedImpl.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\items\impl\ATTimeOrDerivedImpl.hpp
+# End Source File
 # End Group
+# Begin Source File
+
+SOURCE=..\..\src\items\AnyAtomicType.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\items\AnyAtomicTypeConstructor.cpp
+# End Source File
 # Begin Source File
 
 SOURCE=..\..\src\items\ATDurationOrDerived.cpp
@@ -2338,14 +2498,6 @@ SOURCE=..\..\src\items\ATQNameConstructor.cpp
 # Begin Source File
 
 SOURCE=..\..\src\items\ATUntypedAtomic.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\items\AnyAtomicType.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\items\AnyAtomicTypeConstructor.cpp
 # End Source File
 # Begin Source File
 
@@ -2382,6 +2534,14 @@ SOURCE=..\..\src\items\NumericTypeConstructor.cpp
 # Begin Source File
 
 SOURCE=..\..\src\items\Timezone.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\items\AnyAtomicType.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\items\AnyAtomicTypeConstructor.hpp
 # End Source File
 # Begin Source File
 
@@ -2473,14 +2633,6 @@ SOURCE=..\..\include\xqilla\items\ATUntypedAtomic.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\include\xqilla\items\AnyAtomicType.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\include\xqilla\items\AnyAtomicTypeConstructor.hpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\include\xqilla\items\DatatypeFactory.hpp
 # End Source File
 # Begin Source File
@@ -2529,19 +2681,15 @@ SOURCE=..\..\src\lexer\FlexLexer.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\lexer\XQLexer.l
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\lexer\XQLexer.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\lexer\XQLexer2.cpp
+SOURCE=..\..\src\lexer\XQLexer.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\lexer\XQLexer.hpp
+SOURCE=..\..\src\lexer\XQLexer2.cpp
 # End Source File
 # Begin Source File
 
@@ -2957,10 +3105,6 @@ SOURCE=..\..\src\parser\QName.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\parser\XQParser.y
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\parser\XQParser.cpp
 # End Source File
 # Begin Source File
@@ -3113,19 +3257,23 @@ SOURCE=..\..\include\xqilla\schema\SequenceType.hpp
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\..\src\simple-api\XQQuery.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\simple-api\XQilla.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\include\xqilla\simple-api\XQQuery.hpp
+SOURCE=..\..\src\simple-api\XQQuery.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\include\xqilla\simple-api\XQilla.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\simple-api\XQillaConfiguration.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\simple-api\XQQuery.hpp
 # End Source File
 # End Group
 # Begin Group "update"
@@ -3149,15 +3297,7 @@ SOURCE=..\..\src\update\UDelete.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\update\URename.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\update\UReplace.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\update\UReplaceValueOf.cpp
+SOURCE=..\..\src\update\UInsertAfter.cpp
 # End Source File
 # Begin Source File
 
@@ -3169,15 +3309,27 @@ SOURCE=..\..\src\update\UInsertAsLast.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\update\UInsertInto.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\update\UInsertAfter.cpp
+SOURCE=..\..\src\update\UInsertAsLast.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\src\update\UInsertBefore.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\update\UInsertInto.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\update\URename.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\update\UReplace.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\update\UReplaceValueOf.cpp
 # End Source File
 # Begin Source File
 
@@ -3201,15 +3353,7 @@ SOURCE=..\..\include\xqilla\update\UDelete.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\include\xqilla\update\URename.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\include\xqilla\update\UReplace.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\include\xqilla\update\UReplaceValueOf.hpp
+SOURCE=..\..\include\xqilla\update\UInsertAfter.hpp
 # End Source File
 # Begin Source File
 
@@ -3221,15 +3365,23 @@ SOURCE=..\..\include\xqilla\update\UInsertAsLast.hpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\include\xqilla\update\UInsertBefore.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\include\xqilla\update\UInsertInto.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\include\xqilla\update\UInsertAfter.hpp
+SOURCE=..\..\include\xqilla\update\URename.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\include\xqilla\update\UInsertBefore.hpp
+SOURCE=..\..\include\xqilla\update\UReplace.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\update\UReplaceValueOf.hpp
 # End Source File
 # Begin Source File
 
@@ -3349,59 +3501,11 @@ SOURCE=..\..\include\xqilla\utils\XStr.hpp
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\..\src\xerces\AncestorAxis.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\xerces\AncestorOrSelfAxis.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\xerces\AttributeAxis.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\xerces\Axis.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\xerces\ChildAxis.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\xerces\DescendantAxis.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\xerces\DescendantOrSelfAxis.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\xerces\FollowingAxis.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\xerces\FollowingSiblingAxis.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\xerces\NamespaceAxis.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\xerces\ParentAxis.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\xerces\PrecedingAxis.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\xerces\PrecedingSiblingAxis.hpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\xerces\AncestorAxis.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\xerces\AncestorAxis.hpp
 # End Source File
 # Begin Source File
 
@@ -3409,7 +3513,15 @@ SOURCE=..\..\src\xerces\AncestorOrSelfAxis.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\xerces\AncestorOrSelfAxis.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\xerces\AttributeAxis.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\xerces\AttributeAxis.hpp
 # End Source File
 # Begin Source File
 
@@ -3417,7 +3529,15 @@ SOURCE=..\..\src\xerces\Axis.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\xerces\Axis.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\xerces\ChildAxis.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\xerces\ChildAxis.hpp
 # End Source File
 # Begin Source File
 
@@ -3425,7 +3545,15 @@ SOURCE=..\..\src\xerces\DescendantAxis.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\xerces\DescendantAxis.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\xerces\DescendantOrSelfAxis.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\xerces\DescendantOrSelfAxis.hpp
 # End Source File
 # Begin Source File
 
@@ -3433,7 +3561,15 @@ SOURCE=..\..\src\xerces\FollowingAxis.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\xerces\FollowingAxis.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\xerces\FollowingSiblingAxis.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\xerces\FollowingSiblingAxis.hpp
 # End Source File
 # Begin Source File
 
@@ -3441,7 +3577,15 @@ SOURCE=..\..\src\xerces\NamespaceAxis.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\xerces\NamespaceAxis.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\xerces\ParentAxis.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\xerces\ParentAxis.hpp
 # End Source File
 # Begin Source File
 
@@ -3449,7 +3593,15 @@ SOURCE=..\..\src\xerces\PrecedingAxis.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\xerces\PrecedingAxis.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\xerces\PrecedingSiblingAxis.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\xerces\PrecedingSiblingAxis.hpp
 # End Source File
 # Begin Source File
 
@@ -3457,15 +3609,11 @@ SOURCE=..\..\src\xerces\XercesConfiguration.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\xerces\XercesNodeImpl.hpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\xerces\XercesNodeImpl.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\xerces\XercesSequenceBuilder.hpp
+SOURCE=..\..\src\xerces\XercesNodeImpl.hpp
 # End Source File
 # Begin Source File
 
@@ -3473,7 +3621,7 @@ SOURCE=..\..\src\xerces\XercesSequenceBuilder.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\xerces\XercesUpdateFactory.hpp
+SOURCE=..\..\src\xerces\XercesSequenceBuilder.hpp
 # End Source File
 # Begin Source File
 
@@ -3481,11 +3629,15 @@ SOURCE=..\..\src\xerces\XercesUpdateFactory.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\xerces\XercesURIResolver.hpp
+SOURCE=..\..\src\xerces\XercesUpdateFactory.hpp
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\src\xerces\XercesURIResolver.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\xerces\XercesURIResolver.hpp
 # End Source File
 # Begin Source File
 

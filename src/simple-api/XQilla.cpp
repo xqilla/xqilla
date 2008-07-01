@@ -28,6 +28,7 @@
 #include <xqilla/exceptions/XQException.hpp>
 #include <xqilla/fastxdm/FastXDMConfiguration.hpp>
 #include <xqilla/optimizer/QueryPathTreeGenerator.hpp>
+#include <xqilla/debug/DebugHookDecorator.hpp>
 #include "../lexer/XQLexer.hpp"
 #include "../lexer/XSLT2Lexer.hpp"
 
@@ -81,9 +82,12 @@ XQQuery* XQilla::parse(const XMLCh* inputQuery, DynamicContext* context,
 
   // Perform static resolution, if requested
   if((flags & NO_STATIC_RESOLUTION) == 0) {
-    StaticResolver *sr = new StaticResolver(context);
-    QueryPathTreeGenerator *qpt = new QueryPathTreeGenerator(context, sr);
-    AutoDelete<Optimizer> optimizer(qpt);
+    Optimizer *optimizer = new StaticResolver(context);
+    optimizer = new QueryPathTreeGenerator(context, optimizer);
+    if((flags & DEBUG_QUERY) != 0) {
+	    optimizer = new DebugHookDecorator(context, optimizer);
+    }
+    AutoDelete<Optimizer> optGuard(optimizer);
     optimizer->startOptimize(args._query);
   }
 
@@ -131,9 +135,12 @@ XQQuery* XQilla::parse(const InputSource& querySrc, DynamicContext* context,
 
   // Perform static resolution, if requested
   if((flags & NO_STATIC_RESOLUTION) == 0) {
-    StaticResolver *sr = new StaticResolver(context);
-    QueryPathTreeGenerator *qpt = new QueryPathTreeGenerator(context, sr);
-    AutoDelete<Optimizer> optimizer(qpt);
+    Optimizer *optimizer = new StaticResolver(context);
+    optimizer = new QueryPathTreeGenerator(context, optimizer);
+    if((flags & DEBUG_QUERY) != 0) {
+	    optimizer = new DebugHookDecorator(context, optimizer);
+    }
+    AutoDelete<Optimizer> optGuard(optimizer);
     optimizer->startOptimize(args._query);
   }
 
@@ -157,26 +164,6 @@ XQQuery* XQilla::parseFromURI(const XMLCh* queryFile, DynamicContext* context,
     srcToFill.reset(new (memMgr) LocalFileInputSource(queryFile));
   }
   return parse(*srcToFill.get(), context, flags, memMgr);
-
-
-//   XMLBuffer moduleText;
-//   try {
-//     if(!readQuery(queryFile, memMgr, moduleText)) {
-//       XMLBuffer buf(1023,context->getMemoryManager());
-//       buf.set(X("Cannot read query content from "));
-//       buf.append(queryFile);
-//       buf.append(X(" [err:XQST0059]"));
-//       XQThrow2(ContextException,X("XQilla::parseFromURI"), buf.getRawBuffer());
-//     }
-//   }
-//   catch(XMLException& e) {
-//     XMLBuffer buf(1023,context->getMemoryManager());
-//     buf.set(X("Exception reading query content: "));
-//     buf.append(e.getMessage());
-//     XQThrow2(ContextException,X("XQilla::parseFromURI"), buf.getRawBuffer());
-//   }
-
-//   return parse(moduleText.getRawBuffer(), context, queryFile, flags, memMgr);
 }
 
 static FastXDMConfiguration _gDefaultConfiguration;
