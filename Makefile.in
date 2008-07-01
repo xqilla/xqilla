@@ -86,7 +86,9 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	ConvertFunctionArg.lo XQDocumentOrder.lo XQPredicate.lo \
 	XQReturn.lo ContextTuple.lo ForTuple.lo LetTuple.lo \
 	WhereTuple.lo OrderByTuple.lo XQNamespaceBinding.lo \
-	XQCallTemplate.lo XQApplyTemplates.lo ContentSequenceFilter.lo \
+	XQCallTemplate.lo XQApplyTemplates.lo ASTDebugHook.lo \
+	DebugHookDecorator.lo TupleDebugHook.lo InputParser.lo \
+	InteractiveDebugger.lo ContentSequenceFilter.lo \
 	EventGenerator.lo EventSerializer.lo NoInheritFilter.lo \
 	NSFixupFilter.lo QueryPathTreeFilter.lo FTContains.lo \
 	FTWords.lo FTOr.lo FTAnd.lo FTMildnot.lo FTUnaryNot.lo \
@@ -156,7 +158,8 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	FunctionTimezoneFromTime.lo FunctionYearFromDate.lo \
 	FunctionYearFromDateTime.lo FunctionYearsFromDuration.lo \
 	FunctionParseJSON.lo FunctionSerializeJSON.lo \
-	FunctionParseHTML.lo FunctionPartialApply.lo XQUserFunction.lo \
+	FunctionParseHTML.lo FunctionPartialApply.lo \
+	FunctionAnalyzeString.lo XQUserFunction.lo \
 	ATAnySimpleTypeImpl.lo ATAnyURIOrDerivedImpl.lo \
 	ATBase64BinaryOrDerivedImpl.lo ATBooleanOrDerivedImpl.lo \
 	ATDateOrDerivedImpl.lo ATDateTimeOrDerivedImpl.lo \
@@ -503,6 +506,11 @@ src/ast/OrderByTuple.cpp \
 src/ast/XQNamespaceBinding.cpp \
 src/ast/XQCallTemplate.cpp \
 src/ast/XQApplyTemplates.cpp \
+src/debug/ASTDebugHook.cpp \
+src/debug/DebugHookDecorator.cpp \
+src/debug/TupleDebugHook.cpp \
+src/debug/InputParser.cpp \
+src/debug/InteractiveDebugger.cpp \
 src/events/ContentSequenceFilter.cpp \
 src/events/EventGenerator.cpp \
 src/events/EventSerializer.cpp \
@@ -691,6 +699,7 @@ src/functions/FunctionParseJSON.cpp \
 src/functions/FunctionSerializeJSON.cpp \
 src/functions/FunctionParseHTML.cpp \
 src/functions/FunctionPartialApply.cpp \
+src/functions/FunctionAnalyzeString.cpp \
 src/functions/XQUserFunction.cpp \
 src/items/impl/ATAnySimpleTypeImpl.cpp \
 src/items/impl/ATAnySimpleTypeImpl.hpp \
@@ -1159,6 +1168,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ASTDebugHook.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ASTNodeImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ASTVisitor.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATAnySimpleTypeImpl.Plo@am__quote@
@@ -1209,6 +1219,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DatatypeLookup.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DateOrTimeType.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DateUtils.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DebugHookDecorator.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DefaultTokenStore.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DefaultTokenizer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DescendantAxis.Plo@am__quote@
@@ -1246,6 +1257,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionAdjustDateTimeToTimezone.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionAdjustDateToTimezone.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionAdjustTimeToTimezone.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionAnalyzeString.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionAvg.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionBaseURI.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionBoolean.Plo@am__quote@
@@ -1370,7 +1382,9 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GeneralComp.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GreaterThan.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GreaterThanEqual.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/InputParser.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/IntegerDivide.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/InteractiveDebugger.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Intersect.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Item.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ItemFactoryImpl.Plo@am__quote@
@@ -1426,6 +1440,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TestSuiteResultListener.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TestSuiteRunner.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Timezone.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TupleDebugHook.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UApplyUpdates.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UCANormalizer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UCANormalizer1.Plo@am__quote@
@@ -2382,6 +2397,41 @@ XQApplyTemplates.lo: src/ast/XQApplyTemplates.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/ast/XQApplyTemplates.cpp' object='XQApplyTemplates.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQApplyTemplates.lo `test -f 'src/ast/XQApplyTemplates.cpp' || echo '$(srcdir)/'`src/ast/XQApplyTemplates.cpp
+
+ASTDebugHook.lo: src/debug/ASTDebugHook.cpp
+@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ASTDebugHook.lo -MD -MP -MF $(DEPDIR)/ASTDebugHook.Tpo -c -o ASTDebugHook.lo `test -f 'src/debug/ASTDebugHook.cpp' || echo '$(srcdir)/'`src/debug/ASTDebugHook.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/ASTDebugHook.Tpo $(DEPDIR)/ASTDebugHook.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/debug/ASTDebugHook.cpp' object='ASTDebugHook.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ASTDebugHook.lo `test -f 'src/debug/ASTDebugHook.cpp' || echo '$(srcdir)/'`src/debug/ASTDebugHook.cpp
+
+DebugHookDecorator.lo: src/debug/DebugHookDecorator.cpp
+@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DebugHookDecorator.lo -MD -MP -MF $(DEPDIR)/DebugHookDecorator.Tpo -c -o DebugHookDecorator.lo `test -f 'src/debug/DebugHookDecorator.cpp' || echo '$(srcdir)/'`src/debug/DebugHookDecorator.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/DebugHookDecorator.Tpo $(DEPDIR)/DebugHookDecorator.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/debug/DebugHookDecorator.cpp' object='DebugHookDecorator.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DebugHookDecorator.lo `test -f 'src/debug/DebugHookDecorator.cpp' || echo '$(srcdir)/'`src/debug/DebugHookDecorator.cpp
+
+TupleDebugHook.lo: src/debug/TupleDebugHook.cpp
+@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT TupleDebugHook.lo -MD -MP -MF $(DEPDIR)/TupleDebugHook.Tpo -c -o TupleDebugHook.lo `test -f 'src/debug/TupleDebugHook.cpp' || echo '$(srcdir)/'`src/debug/TupleDebugHook.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/TupleDebugHook.Tpo $(DEPDIR)/TupleDebugHook.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/debug/TupleDebugHook.cpp' object='TupleDebugHook.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o TupleDebugHook.lo `test -f 'src/debug/TupleDebugHook.cpp' || echo '$(srcdir)/'`src/debug/TupleDebugHook.cpp
+
+InputParser.lo: src/debug/InputParser.cpp
+@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT InputParser.lo -MD -MP -MF $(DEPDIR)/InputParser.Tpo -c -o InputParser.lo `test -f 'src/debug/InputParser.cpp' || echo '$(srcdir)/'`src/debug/InputParser.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/InputParser.Tpo $(DEPDIR)/InputParser.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/debug/InputParser.cpp' object='InputParser.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o InputParser.lo `test -f 'src/debug/InputParser.cpp' || echo '$(srcdir)/'`src/debug/InputParser.cpp
+
+InteractiveDebugger.lo: src/debug/InteractiveDebugger.cpp
+@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT InteractiveDebugger.lo -MD -MP -MF $(DEPDIR)/InteractiveDebugger.Tpo -c -o InteractiveDebugger.lo `test -f 'src/debug/InteractiveDebugger.cpp' || echo '$(srcdir)/'`src/debug/InteractiveDebugger.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/InteractiveDebugger.Tpo $(DEPDIR)/InteractiveDebugger.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/debug/InteractiveDebugger.cpp' object='InteractiveDebugger.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o InteractiveDebugger.lo `test -f 'src/debug/InteractiveDebugger.cpp' || echo '$(srcdir)/'`src/debug/InteractiveDebugger.cpp
 
 ContentSequenceFilter.lo: src/events/ContentSequenceFilter.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ContentSequenceFilter.lo -MD -MP -MF $(DEPDIR)/ContentSequenceFilter.Tpo -c -o ContentSequenceFilter.lo `test -f 'src/events/ContentSequenceFilter.cpp' || echo '$(srcdir)/'`src/events/ContentSequenceFilter.cpp
@@ -3600,6 +3650,13 @@ FunctionPartialApply.lo: src/functions/FunctionPartialApply.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/FunctionPartialApply.cpp' object='FunctionPartialApply.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionPartialApply.lo `test -f 'src/functions/FunctionPartialApply.cpp' || echo '$(srcdir)/'`src/functions/FunctionPartialApply.cpp
+
+FunctionAnalyzeString.lo: src/functions/FunctionAnalyzeString.cpp
+@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionAnalyzeString.lo -MD -MP -MF $(DEPDIR)/FunctionAnalyzeString.Tpo -c -o FunctionAnalyzeString.lo `test -f 'src/functions/FunctionAnalyzeString.cpp' || echo '$(srcdir)/'`src/functions/FunctionAnalyzeString.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/FunctionAnalyzeString.Tpo $(DEPDIR)/FunctionAnalyzeString.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/FunctionAnalyzeString.cpp' object='FunctionAnalyzeString.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionAnalyzeString.lo `test -f 'src/functions/FunctionAnalyzeString.cpp' || echo '$(srcdir)/'`src/functions/FunctionAnalyzeString.cpp
 
 XQUserFunction.lo: src/functions/XQUserFunction.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQUserFunction.lo -MD -MP -MF $(DEPDIR)/XQUserFunction.Tpo -c -o XQUserFunction.lo `test -f 'src/functions/XQUserFunction.cpp' || echo '$(srcdir)/'`src/functions/XQUserFunction.cpp
@@ -5028,6 +5085,25 @@ devdocs:
 
 devdocsclean:
 	$(MAKE) -C include devdocsclean
+
+# Target to help keep the windows projects up-to-date
+winprojects: winprojects.xq xqilla
+	$(MAKE) -C include winprojects
+	./xqilla winprojects.xq > winprojects_files.xml
+
+winprojects.xq: $(libxqilla_la_SOURCES)
+	@echo "let \$$filedump := <filedump>" >winprojects.xq
+	@list='$(libxqilla_la_SOURCES)'; for f in $$list; do \
+    echo "  <file name='$$f'/>" >>winprojects.xq; \
+  done
+	@echo "</filedump>" >>winprojects.xq
+	@echo "for \$$dir in distinct-values(\$$filedump//file/@name/substring-before(substring-after(., '/'), '/'))" >>winprojects.xq
+	@echo "order by \$$dir" >>winprojects.xq
+	@echo "return document{'      ', <filter name='{\$$dir}'>{" >>winprojects.xq
+	@echo "  for \$$f in \$$filedump/file[contains(@name, \$$dir)]" >>winprojects.xq
+	@echo "  order by \$$f/@name" >>winprojects.xq
+	@echo "  return ('&#10;        ', \$$f)" >>winprojects.xq
+	@echo "}&#10;      </filter>}" >>winprojects.xq
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

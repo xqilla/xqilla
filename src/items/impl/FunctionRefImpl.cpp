@@ -128,6 +128,12 @@ public:
     return scope_.getVar(namespaceURI, name);
   }
 
+  void getInScopeVariables(std::vector<std::pair<const XMLCh*, const XMLCh*> > &variables) const
+  {
+    func_->varStore_.getInScopeVariables(variables);
+    scope_.getInScopeVariables(variables);
+  }
+
   Item::Ptr next(DynamicContext *context)
   {
     AutoVariableStoreReset vsReset(context, this);

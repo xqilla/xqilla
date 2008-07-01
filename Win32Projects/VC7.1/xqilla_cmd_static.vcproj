@@ -1,28 +1,28 @@
-<VisualStudioProject ProjectType="Visual C++" Version="7.10" Name="xqilla_cmd_static" ProjectGUID="{411BCA29-C615-4E4F-B6F0-07580823EC0B}">
+<VisualStudioProject Name="xqilla_cmd_static" ProjectGUID="{411BCA29-C615-4E4F-B6F0-07580823EC0B}" ProjectType="Visual C++" Version="7.10">
   <Platforms>
     <Platform Name="Win32"/>
     <Platform Name="x64"/>
     <Platform Name="IA64"/>
   </Platforms>
   <Configurations>
-    <Configuration Name="Debug|Win32" OutputDirectory="..\..\build\windows\VC7.1\$(PlatformName)\Debug_static" IntermediateDirectory="./$(OutDir)/xqilla_cmd_static" ConfigurationType="1" UseOfMFC="0" ATLMinimizesCRunTimeLibraryUsage="FALSE" CharacterSet="2">
+    <Configuration ATLMinimizesCRunTimeLibraryUsage="FALSE" CharacterSet="2" ConfigurationType="1" IntermediateDirectory="./$(OutDir)/xqilla_cmd_static" Name="Debug|Win32" OutputDirectory="..\..\build\windows\VC7.1\$(PlatformName)\Debug_static" UseOfMFC="0">
       <Tool Name="VCPreBuildEventTool"/>
       <Tool Name="VCPreLinkEventTool"/>
       <Tool Name="VCResourceCompilerTool"/>
       <Tool Name="VCXMLDataGeneratorTool"/>
       <Tool Name="VCManagedWrapperGeneratorTool"/>
       <Tool Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
-      <Tool Name="VCCLCompilerTool" Optimization="0" MinimalRebuild="TRUE" AdditionalIncludeDirectories="../../include,../../src/lexer,../../../xerces-c-src/include,../../../xerces-c-src/src" PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;XQILLA_API=;XML_LIBRARY=" StringPooling="TRUE" RuntimeLibrary="1" UsePrecompiledHeader="0" PrecompiledHeaderFile="./$(OutDir)/xqilla_cmd_static.pch" AssemblerListingLocation="./$(OutDir)/" ObjectFile="./$(OutDir)/" WarningLevel="3" Detect64BitPortabilityProblems="TRUE" SuppressStartupBanner="TRUE" DebugInformationFormat="3" BasicRuntimeChecks="3" CompileAs="0"/>
-      <Tool Name="VCLinkerTool" AdditionalOptions="/machine:x86" AdditionalDependencies="xqilla21sd.lib xerces-c_static_2d.lib" AdditionalLibraryDirectories="$(OutDir);../../../xerces-c-src/Build/Win32/VC7.1/Static$(ConfigurationName);../../../xerces-c-src/Build/Win32/VC8/Static$(ConfigurationName)" OutputFile="$(OutDir)/xqilla.exe" ProgramDatabaseFile="$(OutDir)/xqilla.pdb" LinkIncremental="1" GenerateDebugInformation="TRUE" SuppressStartupBanner="TRUE" OptimizeReferences="2" TargetMachine="0"/></Configuration>
-    <Configuration Name="Release|Win32" OutputDirectory="..\..\build\windows\VC7.1\$(PlatformName)\Release_static" IntermediateDirectory="./$(OutDir)/xqilla_cmd_static" ConfigurationType="1" UseOfMFC="0" ATLMinimizesCRunTimeLibraryUsage="FALSE" CharacterSet="2">
+      <Tool AdditionalIncludeDirectories="../../include,../../src/lexer,../../../xerces-c-src/include,../../../xerces-c-src/src" AssemblerListingLocation="./$(OutDir)/" BasicRuntimeChecks="3" CompileAs="0" DebugInformationFormat="3" Detect64BitPortabilityProblems="TRUE" MinimalRebuild="TRUE" Name="VCCLCompilerTool" ObjectFile="./$(OutDir)/" Optimization="0" PrecompiledHeaderFile="./$(OutDir)/xqilla_cmd_static.pch" PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;XQILLA_API=;XML_LIBRARY=" RuntimeLibrary="1" StringPooling="TRUE" SuppressStartupBanner="TRUE" UsePrecompiledHeader="0" WarningLevel="3"/>
+      <Tool AdditionalDependencies="xqilla21sd.lib xerces-c_static_2d.lib" AdditionalLibraryDirectories="$(OutDir);../../../xerces-c-src/Build/Win32/VC7.1/Static$(ConfigurationName);../../../xerces-c-src/Build/Win32/VC8/Static$(ConfigurationName)" AdditionalOptions="/machine:x86" GenerateDebugInformation="TRUE" LinkIncremental="1" Name="VCLinkerTool" OptimizeReferences="2" OutputFile="$(OutDir)/xqilla.exe" ProgramDatabaseFile="$(OutDir)/xqilla.pdb" SuppressStartupBanner="TRUE" TargetMachine="0"/></Configuration>
+    <Configuration ATLMinimizesCRunTimeLibraryUsage="FALSE" CharacterSet="2" ConfigurationType="1" IntermediateDirectory="./$(OutDir)/xqilla_cmd_static" Name="Release|Win32" OutputDirectory="..\..\build\windows\VC7.1\$(PlatformName)\Release_static" UseOfMFC="0">
       <Tool Name="VCPreBuildEventTool"/>
       <Tool Name="VCPreLinkEventTool"/>
       <Tool Name="VCResourceCompilerTool"/>
       <Tool Name="VCXMLDataGeneratorTool"/>
       <Tool Name="VCManagedWrapperGeneratorTool"/>
       <Tool Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
-      <Tool Name="VCCLCompilerTool" Optimization="2" MinimalRebuild="TRUE" InlineFunctionExpansion="1" AdditionalIncludeDirectories="../../include,../../src/lexer,../../../xerces-c-src/include,../../../xerces-c-src/src" PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;XQILLA_API=;XML_LIBRARY=" StringPooling="TRUE" RuntimeLibrary="0" EnableFunctionLevelLinking="TRUE" UsePrecompiledHeader="0" PrecompiledHeaderFile="./$(OutDir)/xqilla_cmd_static.pch" AssemblerListingLocation="./$(OutDir)/" ObjectFile="./$(OutDir)/" WarningLevel="3" Detect64BitPortabilityProblems="TRUE" SuppressStartupBanner="TRUE" DebugInformationFormat="3" CompileAs="0"/>
-      <Tool Name="VCLinkerTool" AdditionalOptions="/machine:x86" AdditionalDependencies="xqilla21s.lib xerces-c_static_2.lib" AdditionalLibraryDirectories="$(OutDir);../../../xerces-c-src/Build/Win32/VC7.1/Static$(ConfigurationName);../../../xerces-c-src/Build/Win32/VC8/Static$(ConfigurationName)" OutputFile="$(OutDir)/xqilla.exe" ProgramDatabaseFile="$(OutDir)/xqilla.pdb" LinkIncremental="1" GenerateDebugInformation="TRUE" SuppressStartupBanner="TRUE" OptimizeReferences="2" TargetMachine="0"/></Configuration>
+      <Tool AdditionalIncludeDirectories="../../include,../../src/lexer,../../../xerces-c-src/include,../../../xerces-c-src/src" AssemblerListingLocation="./$(OutDir)/" CompileAs="0" DebugInformationFormat="3" Detect64BitPortabilityProblems="TRUE" EnableFunctionLevelLinking="TRUE" InlineFunctionExpansion="1" MinimalRebuild="TRUE" Name="VCCLCompilerTool" ObjectFile="./$(OutDir)/" Optimization="2" PrecompiledHeaderFile="./$(OutDir)/xqilla_cmd_static.pch" PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;XQILLA_API=;XML_LIBRARY=" RuntimeLibrary="0" StringPooling="TRUE" SuppressStartupBanner="TRUE" UsePrecompiledHeader="0" WarningLevel="3"/>
+      <Tool AdditionalDependencies="xqilla21s.lib xerces-c_static_2.lib" AdditionalLibraryDirectories="$(OutDir);../../../xerces-c-src/Build/Win32/VC7.1/Static$(ConfigurationName);../../../xerces-c-src/Build/Win32/VC8/Static$(ConfigurationName)" AdditionalOptions="/machine:x86" GenerateDebugInformation="TRUE" LinkIncremental="1" Name="VCLinkerTool" OptimizeReferences="2" OutputFile="$(OutDir)/xqilla.exe" ProgramDatabaseFile="$(OutDir)/xqilla.pdb" SuppressStartupBanner="TRUE" TargetMachine="0"/></Configuration>
   </Configurations>
   <References/>
   <Files>

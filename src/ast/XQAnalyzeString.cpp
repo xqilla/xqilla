@@ -31,7 +31,7 @@
 #include <xqilla/schema/SequenceType.hpp>
 #include <xqilla/exceptions/ASTException.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
-#include <xqilla/context/RegexGroupStore.hpp>
+#include <xqilla/runtime/ClosureResult.hpp>
 
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 #include <xercesc/util/regx/RegularExpression.hpp>
@@ -111,161 +111,171 @@ ASTNode *XQAnalyzeString::staticTyping(StaticContext *context)
   return this;
 }
 
-class AnalyzeStringResult : public ResultImpl, private RegexGroupStore
+AnalyzeStringResult::AnalyzeStringResult(const LocationInfo *info)
+  : ResultImpl(info),
+    input_(0),
+    matches_(10, true),
+    contextPos_(0),
+    currentMatch_(0),
+    mm_(0),
+    result_(0)
+{
+}
+
+Item::Ptr AnalyzeStringResult::next(DynamicContext *context)
+{
+  XPath2MemoryManager *mm = context->getMemoryManager();
+
+  if(input_ == 0) {
+    input_ = getInput(context);
+    const XMLCh *pattern = getPattern(context);
+    const XMLCh *options = getFlags(context);
+  
+    //Check that the options are valid - throw an exception if not (can have s,m,i and x)
+    //Note: Are allowed to duplicate the letters.
+    const XMLCh* cursor = options;
+    for(; *cursor != 0; ++cursor){
+      switch(*cursor) {
+      case chLatin_s:
+      case chLatin_m:
+      case chLatin_i:
+      case chLatin_x:
+        break;
+      default:
+        XQThrow(ASTException, X("AnalyzeStringResult::next"),X("Invalid regular expression flags [err:XTDE1145]."));
+      }
+    }
+
+    mm_ = mm;
+
+    // Always turn off head character optimisation, since it is broken
+    XMLBuffer optionsBuf;
+    optionsBuf.set(options);
+    optionsBuf.append(chLatin_H);
+
+    try {
+      // Parse and execute the regular expression
+      RegularExpression regEx(pattern, optionsBuf.getRawBuffer(), mm);
+      regEx.allMatches(input_, 0, XMLString::stringLen(input_), &matches_);
+    }
+    catch (ParseException &e){ 
+      XMLBuffer buf;
+      buf.set(X("Invalid regular expression: "));
+      buf.append(e.getMessage());
+      buf.append(X(" [err:XTDE1140]"));
+      XQThrow(ASTException, X("AnalyzeStringResult::next"), buf.getRawBuffer());
+    }
+    catch (RuntimeException &e){ 
+      if(e.getCode()==XMLExcepts::Regex_RepPatMatchesZeroString)
+        XQThrow(ASTException, X("AnalyzeStringResult::next"), X("The pattern matches the zero-length string [err:XTDE1150]"));
+      else 
+        XQThrow(ASTException, X("AnalyzeStringResult::next"), e.getMessage());
+    }
+
+    int tokStart = 0;
+
+    unsigned int i = 0;
+    for(; i < matches_.size(); ++i) {
+      Match *match = matches_.elementAt(i);
+      int matchStart = match->getStartPos(0);
+      int matchEnd = match->getEndPos(0);
+
+      if(tokStart < matchStart) {
+        const XMLCh *str = XPath2Utils::subString(input_, tokStart, matchStart - tokStart, mm);
+        strings_.push_back(pair<const XMLCh*, Match*>(str, 0));
+      }
+
+      const XMLCh *str = XPath2Utils::subString(input_, matchStart, matchEnd - matchStart, mm);
+      strings_.push_back(pair<const XMLCh*, Match*>(str, match));
+
+      tokStart = matchEnd;
+    }
+  }
+
+  AutoRegexGroupStoreReset regexReset(context, this);
+
+  Item::Ptr item;
+  while((item = result_->next(context)).isNull()) {
+    context->testInterrupt();
+
+    regexReset.reset();
+
+    if(contextPos_ < strings_.size()) {
+      const XMLCh *matchString = strings_[contextPos_].first;
+      currentMatch_ = strings_[contextPos_].second;
+      ++contextPos_;
+
+      context->setRegexGroupStore(this);
+
+      result_ = getMatchResult(matchString, contextPos_, strings_.size(),
+                               currentMatch_ != 0, context);
+    }
+    else {
+      return 0;
+    }
+  }
+
+  return item;
+}
+
+const XMLCh *AnalyzeStringResult::getGroup(int index) const
+{
+  if(currentMatch_ == 0 || index < 0 || index >= currentMatch_->getNoGroups())
+    return 0;
+
+  int matchStart = currentMatch_->getStartPos(index);
+  return XPath2Utils::subString(input_, matchStart, currentMatch_->getEndPos(index) - matchStart, mm_);
+}
+
+class XslAnalyzeStringResult : public AnalyzeStringResult
 {
 public:
-  AnalyzeStringResult(const XQAnalyzeString *ast)
-    : ResultImpl(ast),
-      ast_(ast),
-      input_(0),
-      matches_(10, true),
-      contextPos_(0),
-      contextItem_(0),
-      currentMatch_(0),
-      mm_(0),
-      result_(0)
+  XslAnalyzeStringResult(const XQAnalyzeString *ast)
+    : AnalyzeStringResult(ast),
+      ast_(ast)
   {
   }
 
-  virtual Item::Ptr next(DynamicContext *context)
+  const XMLCh *getInput(DynamicContext *context)
   {
-    XPath2MemoryManager *mm = context->getMemoryManager();
+    return ast_->getExpression()->createResult(context)->next(context)->asString(context);
+  }
 
-    if(input_ == 0) {
-      input_ = ast_->getExpression()->createResult(context)->next(context)->asString(context);
-      const XMLCh *pattern = ast_->getRegex()->createResult(context)->next(context)->asString(context);
+  const XMLCh *getPattern(DynamicContext *context)
+  {
+    return ast_->getRegex()->createResult(context)->next(context)->asString(context);
+  }
 
-      const XMLCh *options = XMLUni::fgZeroLenString;
-      if(ast_->getFlags())
-        options = ast_->getFlags()->createResult(context)->next(context)->asString(context);
-  
-      //Check that the options are valid - throw an exception if not (can have s,m,i and x)
-      //Note: Are allowed to duplicate the letters.
-      const XMLCh* cursor = options;
-      for(; *cursor != 0; ++cursor){
-        switch(*cursor) {
-        case chLatin_s:
-        case chLatin_m:
-        case chLatin_i:
-        case chLatin_x:
-          break;
-        default:
-          XQThrow(ASTException, X("AnalyzeStringResult::next"),X("Invalid regular expression flags [err:XTDE1145]."));
-        }
-      }
+  const XMLCh *getFlags(DynamicContext *context)
+  {
+    if(ast_->getFlags())
+      return ast_->getFlags()->createResult(context)->next(context)->asString(context);
+    return XMLUni::fgZeroLenString;
+  }
 
-      mm_ = mm;
-
-      // Always turn off head character optimisation, since it is broken
-      XMLBuffer optionsBuf;
-      optionsBuf.set(options);
-      optionsBuf.append(chLatin_H);
-
-      try {
-        // Parse and execute the regular expression
-        RegularExpression regEx(pattern, optionsBuf.getRawBuffer(), mm);
-        regEx.allMatches(input_, 0, XMLString::stringLen(input_), &matches_);
-      }
-      catch (ParseException &e){ 
-        XMLBuffer buf;
-        buf.set(X("Invalid regular expression: "));
-        buf.append(e.getMessage());
-        buf.append(X(" [err:XTDE1140]"));
-        XQThrow(ASTException, X("AnalyzeStringResult::next"), buf.getRawBuffer());
-      }
-      catch (RuntimeException &e){ 
-        if(e.getCode()==XMLExcepts::Regex_RepPatMatchesZeroString)
-          XQThrow(ASTException, X("AnalyzeStringResult::next"), X("The pattern matches the zero-length string [err:XTDE1150]"));
-        else 
-          XQThrow(ASTException, X("AnalyzeStringResult::next"), e.getMessage());
-      }
-
-      int tokStart = 0;
-
-      unsigned int i = 0;
-      for(; i < matches_.size(); ++i) {
-        Match *match = matches_.elementAt(i);
-        int matchStart = match->getStartPos(0);
-        int matchEnd = match->getEndPos(0);
-
-        if(tokStart < matchStart) {
-          const XMLCh *str = XPath2Utils::subString(input_, tokStart, matchStart - tokStart, mm);
-          strings_.push_back(pair<const XMLCh*, Match*>(str, 0));
-        }
-
-        const XMLCh *str = XPath2Utils::subString(input_, matchStart, matchEnd - matchStart, mm);
-        strings_.push_back(pair<const XMLCh*, Match*>(str, match));
-
-        tokStart = matchEnd;
-      }
-    }
-
+  Result getMatchResult(const XMLCh *matchString, size_t matchPos,
+                        size_t numberOfMatches, bool match, DynamicContext *context)
+  {
     AutoContextInfoReset autoReset(context);
-    AutoRegexGroupStoreReset regexReset(context, this);
 
-    context->setContextSize(strings_.size());
-    context->setContextPosition(contextPos_);
-    context->setContextItem(contextItem_);
+    context->setContextSize(numberOfMatches);
+    context->setContextPosition(matchPos);
+    context->setContextItem(context->getItemFactory()->createString(matchString, context));
 
-    Item::Ptr item;
-    while((item = result_->next(context)).isNull()) {
-      context->testInterrupt();
-
-      autoReset.resetContextInfo();
-      regexReset.reset();
-
-      if(contextPos_ < strings_.size()) {
-        contextItem_ = context->getItemFactory()->createString(strings_[contextPos_].first, context);
-        currentMatch_ = strings_[contextPos_].second;
-        ++contextPos_;
-
-        context->setContextSize(strings_.size());
-        context->setContextPosition(contextPos_);
-        context->setContextItem(contextItem_);
-        context->setRegexGroupStore(this);
-
-        if(currentMatch_) {
-          result_ = ast_->getMatch()->createResult(context);
-        }
-        else {
-          result_ = ast_->getNonMatch()->createResult(context);
-        }
-      }
-      else {
-        return 0;
-      }
+    if(match) {
+      return ClosureResult::create(ast_->getMatch(), context);
     }
-
-    return item;
+    else {
+      return ClosureResult::create(ast_->getNonMatch(), context);
+    }
   }
-
-  virtual std::string asString(DynamicContext *context, int indent) const { return ""; }
 
 private:
-  virtual const XMLCh *getGroup(int index) const
-  {
-    if(currentMatch_ == 0 || index < 0 || index >= currentMatch_->getNoGroups())
-      return 0;
-
-    int matchStart = currentMatch_->getStartPos(index);
-    return XPath2Utils::subString(input_, matchStart, currentMatch_->getEndPos(index) - matchStart, mm_);
-  }
-
   const XQAnalyzeString *ast_;
-
-  const XMLCh *input_;
-  RefVectorOf<Match> matches_;
-  vector<pair<const XMLCh*, Match*> > strings_;
-
-  size_t contextPos_;
-  Item::Ptr contextItem_;
-  Match *currentMatch_;
-  XPath2MemoryManager *mm_;
-
-  Result result_;
 };
 
 Result XQAnalyzeString::createResult(DynamicContext* context, int flags) const
 {
-  return new AnalyzeStringResult(this);
+  return new XslAnalyzeStringResult(this);
 }
+

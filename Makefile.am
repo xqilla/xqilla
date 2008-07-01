@@ -83,6 +83,11 @@ src/ast/OrderByTuple.cpp \
 src/ast/XQNamespaceBinding.cpp \
 src/ast/XQCallTemplate.cpp \
 src/ast/XQApplyTemplates.cpp \
+src/debug/ASTDebugHook.cpp \
+src/debug/DebugHookDecorator.cpp \
+src/debug/TupleDebugHook.cpp \
+src/debug/InputParser.cpp \
+src/debug/InteractiveDebugger.cpp \
 src/events/ContentSequenceFilter.cpp \
 src/events/EventGenerator.cpp \
 src/events/EventSerializer.cpp \
@@ -271,6 +276,7 @@ src/functions/FunctionParseJSON.cpp \
 src/functions/FunctionSerializeJSON.cpp \
 src/functions/FunctionParseHTML.cpp \
 src/functions/FunctionPartialApply.cpp \
+src/functions/FunctionAnalyzeString.cpp \
 src/functions/XQUserFunction.cpp \
 src/items/impl/ATAnySimpleTypeImpl.cpp \
 src/items/impl/ATAnySimpleTypeImpl.hpp \
@@ -612,3 +618,22 @@ devdocs:
 
 devdocsclean:
 	$(MAKE) -C include devdocsclean
+
+# Target to help keep the windows projects up-to-date
+winprojects: winprojects.xq xqilla
+	$(MAKE) -C include winprojects
+	./xqilla winprojects.xq > winprojects_files.xml
+
+winprojects.xq: $(libxqilla_la_SOURCES)
+	@echo "let \$$filedump := <filedump>" >winprojects.xq
+	@list='$(libxqilla_la_SOURCES)'; for f in $$list; do \
+    echo "  <file name='$$f'/>" >>winprojects.xq; \
+  done
+	@echo "</filedump>" >>winprojects.xq
+	@echo "for \$$dir in distinct-values(\$$filedump//file/@name/substring-before(substring-after(., '/'), '/'))" >>winprojects.xq
+	@echo "order by \$$dir" >>winprojects.xq
+	@echo "return document{'      ', <filter name='{\$$dir}'>{" >>winprojects.xq
+	@echo "  for \$$f in \$$filedump/file[contains(@name, \$$dir)]" >>winprojects.xq
+	@echo "  order by \$$f/@name" >>winprojects.xq
+	@echo "  return ('&#10;        ', \$$f)" >>winprojects.xq
+	@echo "}&#10;      </filter>}" >>winprojects.xq

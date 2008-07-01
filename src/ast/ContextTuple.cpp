@@ -53,6 +53,11 @@ public:
     return varStore_->getVar(namespaceURI, name);
   }
 
+  virtual void getInScopeVariables(std::vector<std::pair<const XMLCh*, const XMLCh*> > &variables) const
+  {
+    varStore_->getInScopeVariables(variables);
+  }
+
   virtual bool next(DynamicContext *context)
   {
     if(varStore_ != 0) return false;

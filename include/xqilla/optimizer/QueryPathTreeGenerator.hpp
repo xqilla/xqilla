@@ -37,7 +37,7 @@ typedef std::map<const XMLCh *, QueryPathNode*> QPNMap;
  * Generates QueryPathNode trees of the paths
  * in the documents that will be navigated.
  */
-class QueryPathTreeGenerator : public Optimizer
+class XQILLA_API QueryPathTreeGenerator : public Optimizer
 {
 public:
   QueryPathTreeGenerator(DynamicContext *context, Optimizer *parent = 0);
@@ -102,6 +102,8 @@ protected:
   virtual PathResult generateFunctionConversion(XQFunctionConversion *item);
   virtual PathResult generateAnalyzeString(XQAnalyzeString *item);
   virtual PathResult generateCopyOf(XQCopyOf *item);
+  virtual PathResult generateCopy(XQCopy *item);
+  virtual PathResult generateASTDebugHook(ASTDebugHook *item);
   virtual PathResult generateCallTemplate(XQCallTemplate *item);
   virtual PathResult generateApplyTemplates(XQApplyTemplates *item);
   virtual PathResult generateInlineFunction(XQInlineFunction *item);
@@ -125,6 +127,7 @@ protected:
   virtual void generateLetTuple(LetTuple *item);
   virtual void generateWhereTuple(WhereTuple *item);
   virtual void generateOrderByTuple(OrderByTuple *item);
+  virtual void generateTupleDebugHook(TupleDebugHook *item);
 
   virtual void generateGlobalVar(XQGlobalVariable *item);
   virtual void generateFunctionDef(XQUserFunction *item);

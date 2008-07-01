@@ -132,6 +132,9 @@ public:
   virtual URIResolver *getDefaultURIResolver() const;
   virtual void setDefaultURIResolver(URIResolver *resolver, bool adopt);
 
+  virtual void setDebugListener(DebugListener *listener);
+  virtual DebugListener *getDebugListener() const;
+
   virtual Node::Ptr parseDocument(XERCES_CPP_NAMESPACE_QUALIFIER InputSource &srcToUse,
                                   const LocationInfo *location, const QueryPathNode *projection);
   virtual Sequence resolveDocument(const XMLCh* uri, const LocationInfo *location,
@@ -467,6 +470,8 @@ protected:
   ResolverEntry _defaultResolver;
 
   ModuleResolver *_moduleResolver;
+
+  DebugListener *_debugListener;
 
   bool _projection;
 

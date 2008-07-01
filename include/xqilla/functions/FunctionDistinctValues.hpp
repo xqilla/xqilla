@@ -48,4 +48,4 @@ public:
   virtual Result createResult(DynamicContext* context, int flags=0) const;
 };
 
-#endif // _FUNCTIONDISTINCTVALUES_HPP
+#endif

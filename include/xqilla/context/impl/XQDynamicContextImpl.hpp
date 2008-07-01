@@ -125,6 +125,9 @@ public:
   virtual URIResolver *getDefaultURIResolver() const;
   virtual void setDefaultURIResolver(URIResolver *resolver, bool adopt);
 
+  virtual void setDebugListener(DebugListener *listener);
+  virtual DebugListener *getDebugListener() const;
+
   virtual Node::Ptr parseDocument(XERCES_CPP_NAMESPACE_QUALIFIER InputSource &srcToUse,
                                   const LocationInfo *location, const QueryPathNode *projection);
   virtual Sequence resolveDocument(const XMLCh* uri, const LocationInfo *location,
@@ -354,6 +357,8 @@ protected:
   /// A stack of URIResolver pointers
   std::vector<ResolverEntry, XQillaAllocator<ResolverEntry> > _resolvers;
   ResolverEntry _defaultResolver;
+
+  DebugListener *_debugListener;
 
   /** Contains the XMLGrammarPool of the StaticContext, and is used to
    * load xml documents for resolveCollection and resolveDocument */

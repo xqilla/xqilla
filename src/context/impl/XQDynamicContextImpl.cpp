@@ -60,6 +60,7 @@ XQDynamicContextImpl::XQDynamicContextImpl(XQillaConfiguration *conf, const Stat
     _regexStore(0),
     _implicitTimezone(0),
     _resolvers(XQillaAllocator<ResolverEntry>(&_internalMM)),
+    _debugListener(0),
     // This is created with the _createdWith memory manager,
     // since a bug in xerces means we can't use a non-thread-safe
     // memory manager - jpcs
@@ -123,6 +124,9 @@ DynamicContext *XQDynamicContextImpl::createModuleDynamicContext(const DynamicCo
 
   // Set the MessageListener
   moduleDCtx->setMessageListener(_messageListener);
+
+  // Set the DebugListener
+  moduleDCtx->setDebugListener(_debugListener);
 
   _conf->populateDynamicContext(moduleDCtx);
   return moduleDCtx;
@@ -497,6 +501,16 @@ void XQDynamicContextImpl::setMessageListener(MessageListener *listener)
 MessageListener *XQDynamicContextImpl::getMessageListener() const
 {
   return _messageListener;
+}
+
+void XQDynamicContextImpl::setDebugListener(DebugListener *listener)
+{
+  _debugListener = listener;
+}
+
+DebugListener *XQDynamicContextImpl::getDebugListener() const
+{
+  return _debugListener;
 }
 
 void XQDynamicContextImpl::testInterrupt() const

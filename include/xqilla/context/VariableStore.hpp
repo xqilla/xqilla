@@ -22,8 +22,9 @@
 #ifndef _VARIABLESTORE_HPP
 #define _VARIABLESTORE_HPP
 
-#include <xqilla/framework/XQillaExport.hpp>
+#include <vector>
 
+#include <xqilla/framework/XQillaExport.hpp>
 #include <xercesc/util/XercesDefs.hpp>
 
 class Result;
@@ -37,6 +38,9 @@ public:
 
   /** Looks up the value of a variable by namespace URI and localname pair. */
   virtual Result getVar(const XMLCh *namespaceURI, const XMLCh *name) const = 0;
+
+  /** Fills the vector provided with the uri and localname of the variables in scope */
+  virtual void getInScopeVariables(std::vector<std::pair<const XMLCh*, const XMLCh*> > &variables) const = 0;
 };
 
 #endif

@@ -383,6 +383,14 @@ QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generate(ASTNode *ite
     result = generateCopyOf((XQCopyOf *)item);
     break;
   }
+  case ASTNode::COPY: {
+    result = generateCopy((XQCopy *)item);
+    break;
+  }
+  case ASTNode::DEBUG_HOOK: {
+    result = generateASTDebugHook((ASTDebugHook *)item);
+    break;
+  }
   case ASTNode::CALL_TEMPLATE: {
     result = generateCallTemplate((XQCallTemplate *)item);
     break;
@@ -1171,6 +1179,10 @@ void QueryPathTreeGenerator::generateTupleNode(TupleNode *item)
     generateOrderByTuple((OrderByTuple*)item);
     break;
   }
+  case TupleNode::DEBUG_HOOK: {
+    generateTupleDebugHook((TupleDebugHook*)item);
+    break;
+  }
   default: break;
   }
 }
@@ -1212,6 +1224,11 @@ void QueryPathTreeGenerator::generateOrderByTuple(OrderByTuple *item)
   generateTupleNode(const_cast<TupleNode*>(item->getParent()));
 
   generate(item->getExpression());
+}
+
+void QueryPathTreeGenerator::generateTupleDebugHook(TupleDebugHook *item)
+{
+  generateTupleNode(const_cast<TupleNode*>(item->getParent()));
 }
 
 QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateReturn(XQReturn *item)
@@ -1611,6 +1628,21 @@ QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateAnalyzeString
 QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateCopyOf(XQCopyOf *item)
 {
   return copyNodes(generate(const_cast<ASTNode *>(item->getExpression())));
+}
+
+QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateCopy(XQCopy *item)
+{
+  VectorOfASTNodes &children = const_cast<VectorOfASTNodes&>(item->getChildren());
+  for(VectorOfASTNodes::iterator j = children.begin(); j != children.end(); ++j) {
+    generate(*j).markSubtreeResult();
+  }
+
+  return copyNodes(generate(const_cast<ASTNode *>(item->getExpression())));
+}
+
+QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateASTDebugHook(ASTDebugHook *item)
+{
+  return generate(const_cast<ASTNode *>(item->getExpression()));
 }
 
 QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateCallTemplate(XQCallTemplate *item)
