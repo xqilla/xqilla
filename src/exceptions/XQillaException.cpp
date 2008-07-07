@@ -23,6 +23,7 @@
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/exceptions/XQillaException.hpp>
 #include <xqilla/exceptions/XQException.hpp>
+#include <xqilla/utils/XPath2Utils.hpp>
 
 #include <xercesc/framework/XMLBuffer.hpp>
 
@@ -30,19 +31,48 @@ bool XQillaException::_debug = false;
 
 XERCES_CPP_NAMESPACE_USE;
 
+#if _XERCES_VERSION >= 30000
 XQillaException::XQillaException(short code, const XMLCh* message)
-  : DOMXPathException(code, XMLString::replicate(message))
+  : DOMXPathException(code)
+{
+    if(msg) fMemoryManager->deallocate((void*)msg);
+    msg = XMLString::replicate(message, fMemoryManager);
+}
+
+XQillaException::XQillaException(const XQException &ex)
+  : DOMXPathException(INVALID_EXPRESSION_ERR)
+{
+  XMLBuffer buffer(1023);
+  buffer.append(ex.getError());
+
+  if(ex.getXQueryLine() != 0) {
+    buffer.append(' ');
+    buffer.append('a');
+    buffer.append('t');
+    buffer.append(' ');
+    buffer.append(ex.getXQueryFile());
+    buffer.append(':');
+    XPath2Utils::numToBuf(ex.getXQueryLine(), buffer);
+    buffer.append(':');
+    XPath2Utils::numToBuf(ex.getXQueryColumn(), buffer);
+  }
+
+  if(msg) fMemoryManager->deallocate((void*)msg);
+  msg = XMLString::replicate(buffer.getRawBuffer(), fMemoryManager);
+}
+
+XQillaException::XQillaException(const XQillaException &other)
+  : DOMXPathException(other)
 {
 }
 
-static void outputNumber(unsigned int num, XMLBuffer &buffer)
+XQillaException::~XQillaException()
 {
-  if(num >= 10) {
-    outputNumber(num / 10, buffer);
-    num = num % 10;
-  }
-
-  buffer.append('0' + num);
+}
+#else
+XQillaException::XQillaException(short code, const XMLCh* message)
+  : DOMXPathException(code, XMLString::replicate(message))
+{
 }
 
 XQillaException::XQillaException(const XQException &ex)
@@ -58,42 +88,41 @@ XQillaException::XQillaException(const XQException &ex)
     buffer.append(' ');
     buffer.append(ex.getXQueryFile());
     buffer.append(':');
-    outputNumber(ex.getXQueryLine(), buffer);
+    XPath2Utils::numToBuf(ex.getXQueryLine(), buffer);
     buffer.append(':');
-    outputNumber(ex.getXQueryColumn(), buffer);
+    XPath2Utils::numToBuf(ex.getXQueryColumn(), buffer);
   }
 
   msg = XMLString::replicate(buffer.getRawBuffer());
 }
 
 XQillaException::XQillaException(const XQillaException &other)
-  : DOMXPathException(other.code, XMLString::replicate(other.msg)) 
+  : DOMXPathException(other.code, XMLString::replicate(other.msg))
 {
-  // nothing to do
 }
-
 
 XQillaException::~XQillaException()
 {
   XMLString::release(const_cast<XMLCh**>(&msg));
 }
+#endif
 
-/*static*/ void XQillaException::setDebug(bool flag)
+void XQillaException::setDebug(bool flag)
 {
   _debug = flag;
 }
 
-/*static*/ bool XQillaException::getDebug(void)
+bool XQillaException::getDebug(void)
 {
   return _debug;
 }
 
 DOMXPathException::ExceptionCode XQillaException::getCode(void) const 
 {
-  return code;
-}//getCode
+  return (DOMXPathException::ExceptionCode)code;
+}
 
 const XMLCh* XQillaException::getString(void) const 
 {
   return msg;
-}//getString
+}

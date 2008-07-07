@@ -45,20 +45,33 @@
 
 #include <xqilla/utils/XPath2Utils.hpp>
 
-XQillaDocumentImpl::XQillaDocumentImpl(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr)
-  : XERCES_CPP_NAMESPACE_QUALIFIER DOMDocumentImpl(memMgr),
-  _memMgr(memMgr),
-  _xmlGrammarPool(0),
-  _adoptGramPool(false)
+XERCES_CPP_NAMESPACE_USE;
+
+XQillaDocumentImpl::XQillaDocumentImpl(DOMImplementation* domImpl,
+                                       MemoryManager* const memMgr)
+#if _XERCES_VERSION >= 30000
+  : DOMDocumentImpl(domImpl, memMgr),
+#else
+  : DOMDocumentImpl(memMgr),
+#endif
+    _memMgr(memMgr),
+    _xmlGrammarPool(0),
+    _adoptGramPool(false)
 {
 }
 
-XQillaDocumentImpl::XQillaDocumentImpl(const XMLCh *fNamespaceURI, const XMLCh *qualifiedName, XERCES_CPP_NAMESPACE_QUALIFIER DOMDocumentType *doctype,
-                                       XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* const memMgr) 
-  : XERCES_CPP_NAMESPACE_QUALIFIER DOMDocumentImpl(fNamespaceURI, qualifiedName, doctype, memMgr),
-  _memMgr(memMgr),
-  _xmlGrammarPool(0),
-  _adoptGramPool(false)
+XQillaDocumentImpl::XQillaDocumentImpl(const XMLCh* namespaceURI, const XMLCh* qualifiedName,
+                                       DOMDocumentType* doctype,
+                                       DOMImplementation* domImpl,
+                                       MemoryManager* const memMgr)
+#if _XERCES_VERSION >= 30000
+  : DOMDocumentImpl(namespaceURI, qualifiedName, doctype, domImpl, memMgr),
+#else
+  : DOMDocumentImpl(namespaceURI, qualifiedName, doctype, memMgr),
+#endif
+    _memMgr(memMgr),
+    _xmlGrammarPool(0),
+    _adoptGramPool(false)
 {
 }
 
@@ -68,9 +81,15 @@ XQillaDocumentImpl::~XQillaDocumentImpl()
 }
 
 // weak version, create a context within
-const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathExpression*
+#if _XERCES_VERSION >= 30000
+DOMXPathExpression*
 XQillaDocumentImpl::createExpression(const XMLCh* expression, 
-                                     const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver* resolver)
+                                     const DOMXPathNSResolver* resolver)
+#else
+const DOMXPathExpression*
+XQillaDocumentImpl::createExpression(const XMLCh* expression, 
+                                     const DOMXPathNSResolver* resolver)
+#endif
 {
   // Use placement new, because XQillaExpressionImpl inherits from XercesConfiguration,
   // which inherits from XMemory - which screws up out operator new overload
@@ -79,27 +98,37 @@ XQillaDocumentImpl::createExpression(const XMLCh* expression,
   return (XQillaExpressionImpl*)mem;
 }
 
-// weak version, create context within
+
+#if _XERCES_VERSION >= 30000
+DOMXPathResult* XQillaDocumentImpl::evaluate(const XMLCh *expression, const DOMNode *contextNode,
+                                             const DOMXPathNSResolver *resolver,
+                                             DOMXPathResult::ResultType type,
+                                             DOMXPathResult* reuseableResult)
+#else
 void* XQillaDocumentImpl::evaluate(const XMLCh* expression,
-                                   XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* contextNode,
-                                   const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver* resolver,
+                                   DOMNode* contextNode,
+                                   const DOMXPathNSResolver* resolver,
                                    unsigned short type,
                                    void* reuseableResult)
+#endif
 {
   return ((XQillaExpressionImpl*)createExpression(expression, resolver))->evaluateOnce(contextNode, type, reuseableResult);
 }
 
-/** Create an NSResolver */
-const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver*
-XQillaDocumentImpl::createNSResolver(XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* nodeResolver) {
-  return _memMgr.createNSResolver(nodeResolver);
+#if _XERCES_VERSION >= 30000
+DOMXPathNSResolver *XQillaDocumentImpl::createNSResolver(const DOMNode *nodeResolver)
+#else
+const DOMXPathNSResolver *XQillaDocumentImpl::createNSResolver(DOMNode* nodeResolver)
+#endif
+{
+  return _memMgr.createNSResolver(const_cast<DOMNode*>(nodeResolver));
 }
 
-void XQillaDocumentImpl::setGrammarPool(XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool *xmlGrammarPool, bool adoptGramPool) {
+void XQillaDocumentImpl::setGrammarPool(XMLGrammarPool *xmlGrammarPool, bool adoptGramPool) {
     _xmlGrammarPool = xmlGrammarPool;
     _adoptGramPool = adoptGramPool;
 }
 
-XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool *XQillaDocumentImpl::getGrammarPool() {
+XMLGrammarPool *XQillaDocumentImpl::getGrammarPool() {
   return _xmlGrammarPool;
 }

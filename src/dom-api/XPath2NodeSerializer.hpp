@@ -23,7 +23,13 @@
 #define __XPATH2NODESERIALIZER_HPP
 
 #include <xqilla/framework/XQillaExport.hpp>
+
+#include <xercesc/util/XercesVersion.hpp>
+#if _XERCES_VERSION >= 30000
+#include <xercesc/dom/impl/DOMLSSerializerImpl.hpp>
+#else
 #include <xercesc/dom/impl/DOMWriterImpl.hpp>
+#endif
 
 XERCES_CPP_NAMESPACE_BEGIN
 
@@ -32,30 +38,16 @@ class XMLFormatter;
 
 XERCES_CPP_NAMESPACE_END
 
-class XQILLA_API XPath2NodeSerializer: public XERCES_CPP_NAMESPACE_QUALIFIER DOMWriterImpl {
+class XQILLA_API XPath2NodeSerializer :
+#if _XERCES_VERSION >= 30000
+  public XERCES_CPP_NAMESPACE_QUALIFIER DOMLSSerializerImpl
+#else
+  public XERCES_CPP_NAMESPACE_QUALIFIER DOMWriterImpl
+#endif
+{
 public:
-  /** @name Constructor */
-  //@{
-  
-  /**
-   * Constructor.
-   * 
-   * Constructs an XPath2NodeSerializer 
-   * 
-   */
   XPath2NodeSerializer(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* const manager = XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager);
-
-  // -----------------------------------------------------------------------
-  //  All constructors are hidden, just the destructor is available
-  // -----------------------------------------------------------------------
-  /** @name Destructor */
-  //@{
-  /**
-   * Destructor
-   *
-   */
   virtual ~XPath2NodeSerializer();
-  //@}
 
 protected:
 
@@ -63,5 +55,5 @@ protected:
 
 };
 
-#endif // __XPATH2NODESERIALIZER_HPP
+#endif
 

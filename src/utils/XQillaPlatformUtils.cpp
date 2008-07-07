@@ -55,8 +55,12 @@ void XQillaPlatformUtils::initialize(MemoryManager *memMgr) {
     // Add the extra XQuery types to the built-in datatype registry
     DatatypeValidatorFactory dvf;
 
+#if _XERCES_VERSION >= 30000
+    // Handled during XMLPlatformUtils::Initialize() in Xerces-C 3.0
+#else
     // Trigger the creation of the built-in datatype registry
     dvf.expandRegistryToFullSchemaSet();
+#endif
 
     // Expand the Xerces built-in registry to include xs:anyAtomicType
     // as a base type

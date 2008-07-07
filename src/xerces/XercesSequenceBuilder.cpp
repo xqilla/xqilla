@@ -19,6 +19,7 @@
  * $Id$
  */
 
+#include "../config/xqilla_config.h"
 #include "XercesSequenceBuilder.hpp"
 #include "XercesNodeImpl.hpp"
 
@@ -26,6 +27,7 @@
 #include <xqilla/context/ItemFactory.hpp>
 
 #include "../dom-api/impl/XPathDocumentImpl.hpp"
+#include "../dom-api/XQillaImplementation.hpp"
 
 #include <xercesc/dom/DOM.hpp>
 #include <xercesc/dom/impl/DOMTypeInfoImpl.hpp>
@@ -52,14 +54,18 @@ XercesSequenceBuilder::~XercesSequenceBuilder()
 void XercesSequenceBuilder::startDocumentEvent(const XMLCh *documentURI, const XMLCh *encoding)
 {
   if(document_ == 0) {
-    document_ = new (context_->getMemoryManager()) XPathDocumentImpl(context_->getMemoryManager());
+    document_ = new (context_->getMemoryManager()) XPathDocumentImpl(XQillaImplementation::getDOMImplementationImpl(), context_->getMemoryManager());
   }
 
   currentParent_ = document_;
   currentNode_   = document_;
 
   document_->setDocumentURI(documentURI);
+#if _XERCES_VERSION >= 30000
+  document_->setInputEncoding(encoding);
+#else
   document_->setActualEncoding(encoding);
+#endif
 }
 
 void XercesSequenceBuilder::endDocumentEvent()
@@ -81,7 +87,7 @@ void XercesSequenceBuilder::endEvent()
 void XercesSequenceBuilder::startElementEvent(const XMLCh *prefix, const XMLCh *uri, const XMLCh *localname)
 {
   if(document_ == 0) {
-    document_ = new (context_->getMemoryManager()) XPathDocumentImpl(context_->getMemoryManager());
+    document_ = new (context_->getMemoryManager()) XPathDocumentImpl(XQillaImplementation::getDOMImplementationImpl(), context_->getMemoryManager());
   }
 
   DOMElement *elem = document_->createElementNS(uri, localname);
@@ -101,7 +107,11 @@ void XercesSequenceBuilder::setElementTypeInfo(DOMElement *element, const XMLCh 
   DOMDocument *document = element->getOwnerDocument();
   DOMTypeInfoImpl* pInfo = new (document) DOMTypeInfoImpl(typeURI, typeName);
   pInfo->setNumericProperty(DOMPSVITypeInfo::PSVI_Validity, PSVIItem::VALIDITY_VALID);
+#if _XERCES_VERSION >= 30000
+  ((DOMElementNSImpl*)element)->setSchemaTypeInfo(pInfo);
+#else
   ((DOMElementNSImpl*)element)->setTypeInfo(pInfo);
+#endif
 }
 
 void XercesSequenceBuilder::endElementEvent(const XMLCh *prefix, const XMLCh *uri, const XMLCh *localname,
@@ -122,7 +132,7 @@ void XercesSequenceBuilder::endElementEvent(const XMLCh *prefix, const XMLCh *ur
 void XercesSequenceBuilder::piEvent(const XMLCh *target, const XMLCh *value)
 {
   if(document_ == 0) {
-    document_ = new (context_->getMemoryManager()) XPathDocumentImpl(context_->getMemoryManager());
+    document_ = new (context_->getMemoryManager()) XPathDocumentImpl(XQillaImplementation::getDOMImplementationImpl(), context_->getMemoryManager());
   }
 
   DOMProcessingInstruction *pi = document_->createProcessingInstruction(target, value);
@@ -141,7 +151,7 @@ void XercesSequenceBuilder::piEvent(const XMLCh *target, const XMLCh *value)
 void XercesSequenceBuilder::textEvent(const XMLCh *value)
 {
   if(document_ == 0) {
-    document_ = new (context_->getMemoryManager()) XPathDocumentImpl(context_->getMemoryManager());
+    document_ = new (context_->getMemoryManager()) XPathDocumentImpl(XQillaImplementation::getDOMImplementationImpl(), context_->getMemoryManager());
   }
 
   if(currentNode_ != 0 && currentNode_->getNodeType() == DOMNode::TEXT_NODE) {
@@ -168,7 +178,7 @@ void XercesSequenceBuilder::textEvent(const XMLCh *value)
 void XercesSequenceBuilder::textEvent(const XMLCh *chars, unsigned int length)
 {
   if(document_ == 0) {
-    document_ = new (context_->getMemoryManager()) XPathDocumentImpl(context_->getMemoryManager());
+    document_ = new (context_->getMemoryManager()) XPathDocumentImpl(XQillaImplementation::getDOMImplementationImpl(), context_->getMemoryManager());
   }
 
   if(currentNode_->getNodeType() == DOMNode::TEXT_NODE) {
@@ -199,7 +209,7 @@ void XercesSequenceBuilder::textEvent(const XMLCh *chars, unsigned int length)
 void XercesSequenceBuilder::commentEvent(const XMLCh *value)
 {
   if(document_ == 0) {
-    document_ = new (context_->getMemoryManager()) XPathDocumentImpl(context_->getMemoryManager());
+    document_ = new (context_->getMemoryManager()) XPathDocumentImpl(XQillaImplementation::getDOMImplementationImpl(), context_->getMemoryManager());
   }
 
   DOMComment *comment = document_->createComment(value);
@@ -221,14 +231,18 @@ void XercesSequenceBuilder::setAttributeTypeInfo(DOMAttr *attr, const XMLCh *typ
   DOMDocument *document = attr->getOwnerDocument();
   DOMTypeInfoImpl* pInfo = new (document) DOMTypeInfoImpl(typeURI, typeName);
   pInfo->setNumericProperty(DOMPSVITypeInfo::PSVI_Validity, PSVIItem::VALIDITY_VALID);
+#if _XERCES_VERSION >= 30000
+  ((DOMAttrImpl*)attr)->setSchemaTypeInfo(pInfo);
+#else
   ((DOMAttrImpl*)attr)->setTypeInfo(pInfo);
+#endif
 }
 
 void XercesSequenceBuilder::attributeEvent(const XMLCh *prefix, const XMLCh *uri, const XMLCh *localname, const XMLCh *value,
                                            const XMLCh *typeURI, const XMLCh *typeName)
 {
   if(document_ == 0) {
-    document_ = new (context_->getMemoryManager()) XPathDocumentImpl(context_->getMemoryManager());
+    document_ = new (context_->getMemoryManager()) XPathDocumentImpl(XQillaImplementation::getDOMImplementationImpl(), context_->getMemoryManager());
   }
 
   DOMAttr *attr = document_->createAttributeNS(uri, localname);

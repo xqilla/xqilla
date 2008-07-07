@@ -135,5 +135,9 @@ const XMLCh *FunctionReplace::replace(const XMLCh *input, const XMLCh *pattern, 
 
   //Now attempt to replace
   RegularExpression regEx(pattern, optionsBuf.getRawBuffer(), mm);
+#ifdef HAVE_ALLMATCHES
   return regEx.replace(input, replacement, mm);
+#else
+  return regEx.replace(input, replacement);
+#endif
 }

@@ -30,6 +30,8 @@
 #include <xqilla/exceptions/ASTException.hpp>
 #include <xqilla/xerces/XercesConfiguration.hpp>
 
+#include "../dom-api/XQillaImplementation.hpp"
+
 #include <xercesc/util/XMLURL.hpp>
 #include <xercesc/util/XMLUri.hpp>
 #include <xercesc/util/HashPtr.hpp>
@@ -188,6 +190,22 @@ bool XercesURIResolver::putDocument(const Node::Ptr &document, const XMLCh *uri,
     const DOMNode *domnode = (const DOMNode*)document->getInterface(XercesConfiguration::gXerces);
     if(!domnode) return false;
 
+    // Write the document to disk
+    DOMImplementation *impl = XQillaImplementation::getDOMImplementationImpl();
+
+    const XMLCh *path = uri_obj.getPath();
+    //Get rid of the leading / if it is a Windows path.
+    int colonIdx = XMLString::indexOf(path, chColon);
+    if(path && colonIdx == 2 && XMLString::isAlpha(path[1])){
+      path++;
+    }
+    LocalFileFormatTarget target(path);
+
+#if _XERCES_VERSION >= 30000
+    AutoRelease<DOMLSSerializer> writer(impl->createLSSerializer());
+    AutoRelease<DOMLSOutput> output(impl->createLSOutput());
+    output->setByteStream(&target);
+#else
     // Find the encoding to use
     const XMLCh *encoding = 0;
     if(domnode->getNodeType() == DOMNode::DOCUMENT_NODE) {
@@ -199,21 +217,16 @@ bool XercesURIResolver::putDocument(const Node::Ptr &document, const XMLCh *uri,
       encoding = utf8_str;
     }
 
-    // Write the document to disk
-    DOMImplementation *impl = DOMImplementationRegistry::getDOMImplementation(ls_string);
     AutoRelease<DOMWriter> writer(((DOMImplementationLS*)impl)->createDOMWriter());
+    writer->setEncoding(encoding);
+#endif
 
     try {
-      writer->setEncoding(encoding);
-      const XMLCh *path = uri_obj.getPath();
-      //Get rid of the leading / if it is a Windows path.
-      int colonIdx = XMLString::indexOf(path, chColon);
-      if(path && colonIdx == 2 && XMLString::isAlpha(path[1])){
-        path++;
-      }
-      LocalFileFormatTarget target(path);
-
+#if _XERCES_VERSION >= 30000
+      if(!writer->write(domnode, output)) {
+#else
       if(!writer->writeNode(&target, *domnode)) {
+#endif
         XMLBuffer buf;
         buf.append(X("Writing to URI \""));
         buf.append(uri_obj.getUriText());

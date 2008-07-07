@@ -23,7 +23,15 @@
 #define __XQILLADOMBUILDERIMPL_HPP
 
 #include <xqilla/framework/XQillaExport.hpp>
+#include "../../config/xqilla_config.h"
+
+#include <xercesc/util/XercesVersion.hpp>
+
+#if _XERCES_VERSION >= 30000
+#include <xercesc/parsers/DOMLSParserImpl.hpp>
+#else
 #include <xercesc/parsers/DOMBuilderImpl.hpp>
+#endif
 
 XERCES_CPP_NAMESPACE_BEGIN
 class DOMInputSource;
@@ -32,7 +40,12 @@ class MemoryManager;
 class XMLValidator;
 XERCES_CPP_NAMESPACE_END  
 
-class XQillaBuilderImpl : public XERCES_CPP_NAMESPACE_QUALIFIER DOMBuilderImpl
+class XQillaBuilderImpl :
+#if _XERCES_VERSION >= 30000
+	public XERCES_CPP_NAMESPACE_QUALIFIER DOMLSParserImpl
+#else
+	public XERCES_CPP_NAMESPACE_QUALIFIER DOMBuilderImpl
+#endif
 {
 public:
 
@@ -61,84 +74,18 @@ public:
 
   virtual ~XQillaBuilderImpl();
 
-    /**
-      * <p><b>"Experimental - subject to change"</b></p>
-      *
-      * Parse via an input source object
-      *
-      * This method invokes the parsing process on the XML file specified
-      * by the DOMInputSource parameter. This API is borrowed from the
-      * SAX Parser interface.
-      *
-      * @param source A const reference to the DOMInputSource object which
-      *               points to the XML file to be parsed.
-      * @return If the DOMBuilder is a synchronous DOMBuilder the newly created
-      *         and populated Document is returned. If the DOMBuilder is
-      *         asynchronous then <code>null</code> is returned since the
-      *         document object is not yet parsed when this method returns.
-      * @exception SAXException Any SAX exception, possibly
-      *            wrapping another exception.
-      * @exception XMLException An exception from the parser or client
-      *            handler code.
-      * @exception DOMException A DOM exception as per DOM spec.
-      *
-      * @see DOMInputSource#DOMInputSource
-      * @see #setEntityResolver
-      * @see #setErrorHandler
-      */
-    XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* parse(const XERCES_CPP_NAMESPACE_QUALIFIER DOMInputSource& source);
+#if _XERCES_VERSION >= 30000
+  XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* parse(const XERCES_CPP_NAMESPACE_QUALIFIER DOMLSInput* source);
+#else
+  XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* parse(const XERCES_CPP_NAMESPACE_QUALIFIER DOMInputSource& source);
+#endif
 
-    /**
-      * <p><b>"Experimental - subject to change"</b></p>
-      *
-      * Parse via a file path or URL
-      *
-      * This method invokes the parsing process on the XML file specified by
-      * the Unicode string parameter 'systemId'.
-      *
-      * @param systemId A const XMLCh pointer to the Unicode string which
-      *                 contains the path to the XML file to be parsed.
-      * @return If the DOMBuilder is a synchronous DOMBuilder the newly created
-      *         and populated Document is returned. If the DOMBuilder is
-      *         asynchronous then <code>null</code> is returned since the
-      *         document object is not yet parsed when this method returns.
-      * @exception SAXException Any SAX exception, possibly
-      *            wrapping another exception.
-      * @exception XMLException An exception from the parser or client
-      *            handler code.
-      * @exception DOM_DOMException A DOM exception as per DOM spec.
-      *
-      * @see #parse(DOMInputSource,...)
-      */
-    XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* parseURI(const XMLCh* const systemId);
+  XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* parseURI(const XMLCh* const systemId);
 
-    /**
-      * <p><b>"Experimental - subject to change"</b></p>
-      *
-      * Parse via a file path or URL (in the local code page)
-      *
-      * This method invokes the parsing process on the XML file specified by
-      * the native char* string parameter 'systemId'.
-      *
-      * @param systemId A const char pointer to a native string which
-      *                 contains the path to the XML file to be parsed.
-      * @return If the DOMBuilder is a synchronous DOMBuilder the newly created
-      *         and populated Document is returned. If the DOMBuilder is
-      *         asynchronous then <code>null</code> is returned since the
-      *         document object is not yet parsed when this method returns.
-      * @exception SAXException Any SAX exception, possibly
-      *            wrapping another exception.
-      * @exception XMLException An exception from the parser or client
-      *            handler code.
-      * @exception DOM_DOMException A DOM exception as per DOM spec.
-      *
-      * @see #parse(DOMInputSource,...)
-      */
-    XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* parseURI(const char* const systemId);
+  XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* parseURI(const char* const systemId);
 
 
-    static const XMLCh gXQilla[];
-
+  static const XMLCh gXQilla[];
 
 private:
   void initParser();

@@ -12,24 +12,22 @@ int main(int argc, char *argv[]) {
   DOMImplementation *xqillaImplementation =
     DOMImplementationRegistry::getDOMImplementation(X("XPath2 3.0"));
 
-  // Create a DOMDocument
-  DOMDocument* document = xqillaImplementation->createDocument();
+  // Make sure the DOM objects are released before we call XQillaPlatformUtils::terminate()
+  {
+    // Create a DOMDocument
+    AutoRelease<DOMDocument> document(xqillaImplementation->createDocument());
 
-  // Parse an XPath 2 expression
-  const DOMXPathExpression *expression = document->createExpression(X("1 to 100"), 0);
+    // Parse an XPath 2 expression
+    AutoRelease<DOMXPathExpression> expression(document->createExpression(X("1 to 100"), 0));
 
-  // Execute the query
-  XPath2Result* result = (XPath2Result*)expression->evaluate(0, XPath2Result::ITERATOR_RESULT, 0);
+    // Execute the query
+    AutoRelease<DOMXPathResult> result(expression->evaluate(0, DOMXPathResult::ITERATOR_RESULT_TYPE, 0));
 
-  // Iterate over the results, printing them
-  while(result->iterateNext()) {
-    std::cout << result->asInt() << std::endl;
+    // Iterate over the results, printing them
+    while(result->iterateNext()) {
+      std::cout << result->getIntegerValue() << std::endl;
+    }
   }
-
-  // Clean up all the objects we have created
-  result->release();
-  ((XQillaExpression*)expression)->release();
-  delete document;
 
   // Terminate Xerces-C and XQilla using XQillaPlatformUtils
   XQillaPlatformUtils::terminate();

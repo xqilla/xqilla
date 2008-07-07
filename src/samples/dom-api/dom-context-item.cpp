@@ -13,47 +13,42 @@ int main(int argc, char *argv[]) {
   DOMImplementation *xqillaImplementation =
     DOMImplementationRegistry::getDOMImplementation(X("XPath2 3.0"));
 
-  // Create a DOMBuilder object
-  DOMBuilder *builder = xqillaImplementation->createDOMBuilder(DOMImplementationLS::MODE_SYNCHRONOUS, 0);
-  builder->setFeature(X("namespaces"), true);
-  builder->setFeature(X("http://apache.org/xml/features/validation/schema"), true);
-  builder->setFeature(X("validation"), true);
-
-  // Parse a DOMDocument
-  DOMDocument *document = builder->parseURI("foo.xml");
-  if(document == 0) {
-    std::cerr << "Document not found." << std::endl;
-    return 1;
-  }
-
   try {
+    // Create a DOMLSParser object
+    AutoRelease<DOMLSParser> parser(xqillaImplementation->createLSParser(DOMImplementationLS::MODE_SYNCHRONOUS, 0));
+    parser->getDomConfig()->setParameter(XMLUni::fgDOMNamespaces, true);
+    parser->getDomConfig()->setParameter(XMLUni::fgXercesSchema, true);
+    parser->getDomConfig()->setParameter(XMLUni::fgDOMValidateIfSchema, true);
+
+    // Parse a DOMDocument
+    DOMDocument *document = parser->parseURI("foo.xml");
+    if(document == 0) {
+      std::cerr << "Document not found." << std::endl;
+      return 1;
+    }
+
     // Parse an XPath 2 expression
-    const DOMXPathExpression *expression = document->createExpression(X("foo/bar/@baz"), 0);
+    AutoRelease<DOMXPathExpression> expression(document->createExpression(X("foo/bar/@baz"), 0));
 
     // Execute the query
-    XPath2Result *result = (XPath2Result*)expression->evaluate(document, XPath2Result::ITERATOR_RESULT, 0);
+    AutoRelease<DOMXPathResult> result(expression->evaluate(document, DOMXPathResult::ITERATOR_RESULT_TYPE, 0));
 
-    // Create a DOMWriter to output the nodes
-    DOMWriter *writer = xqillaImplementation->createDOMWriter();
+    // Create a DOMLSSerializer to output the nodes
+    AutoRelease<DOMLSSerializer> serializer(xqillaImplementation->createLSSerializer());
+    AutoRelease<DOMLSOutput> output(xqillaImplementation->createLSOutput());
     StdOutFormatTarget target;
+    output->setByteStream(&target);
 
     // Iterate over the results, printing them
     while(result->iterateNext()) {
-      writer->writeNode(&target, *(result->asNode()));
+      serializer->write(result->getNodeValue(), output);
       std::cout << std::endl;
     }
-
-    // Clean up all the objects we have created
-    writer->release();
-    result->release();
-    ((XQillaExpression*)expression)->release();
   }
   catch(XQillaException &e) {
     std::cerr << "XQillaException: " << UTF8(e.getString()) << std::endl;
     return 1;
   }
-
-  builder->release();
 
   // Terminate Xerces-C and XQilla using XQillaPlatformUtils
   XQillaPlatformUtils::terminate();

@@ -31,52 +31,54 @@
 #include <xercesc/dom/DOMDocument.hpp>
 #include <xercesc/dom/DOMDocumentType.hpp>
 #include <xercesc/dom/DOMImplementation.hpp>
-#include <xercesc/dom/DOMWriter.hpp>
 #include <xercesc/dom/DOMException.hpp>
+#if _XERCES_VERSION >= 30000
+#include <xercesc/dom/impl/DOMImplementationListImpl.hpp>
+#include <xercesc/dom/DOMLSSerializer.hpp>
+#else
+#include <xercesc/dom/DOMWriter.hpp>
+#endif
 
 #include <xercesc/util/PlatformUtils.hpp>
 #include <xercesc/util/XMLStringTokenizer.hpp>
 #include <xercesc/util/XMLUniDefs.hpp>
 
+XERCES_CPP_NAMESPACE_USE;
+
 const XMLCh XQillaImplementation::gXQilla[] =   // Points to "XPath2"
-{XERCES_CPP_NAMESPACE_QUALIFIER chLatin_X, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_P, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_h, XERCES_CPP_NAMESPACE_QUALIFIER chDigit_2, XERCES_CPP_NAMESPACE_QUALIFIER chNull};
+{chLatin_X, chLatin_P, chLatin_a, chLatin_t, chLatin_h, chDigit_2, chNull};
  
 const XMLCh XQillaImplementation::g3_0[] =      // Points to "3.0"
-        {XERCES_CPP_NAMESPACE_QUALIFIER chDigit_3, XERCES_CPP_NAMESPACE_QUALIFIER chPeriod, XERCES_CPP_NAMESPACE_QUALIFIER chDigit_0, XERCES_CPP_NAMESPACE_QUALIFIER chNull};
+        {chDigit_3, chPeriod, chDigit_0, chNull};
 
-XQillaImplementation::XQillaImplementation() {
-    domImpl = XERCES_CPP_NAMESPACE_QUALIFIER DOMImplementation::getImplementation();
+XQillaImplementation::XQillaImplementation()
+{
+    domImpl = DOMImplementation::getImplementation();
 }
   
-XQillaImplementation::~XQillaImplementation() {
-  // nothing to do
+XQillaImplementation::~XQillaImplementation()
+{
 }
 
-// -----------------------------------------------------------------------
-//  Singleton DOMImplementationImpl
-// -----------------------------------------------------------------------
 XQillaImplementation * XQillaImplementation::gDomimp = 0;
 
-//static
 void XQillaImplementation::initialize()
 {
-	if (gDomimp)
-		delete gDomimp;
-	gDomimp = new XQillaImplementation();
-	XERCES_CPP_NAMESPACE_QUALIFIER DOMImplementationRegistry::addSource(
-		gDomimp);
+  if(gDomimp) delete gDomimp;
+  gDomimp = new XQillaImplementation();
+  DOMImplementationRegistry::addSource(gDomimp);
 }
 
 void XQillaImplementation::terminate()
 {
-	if (gDomimp)
-		delete gDomimp;
-	gDomimp = 0;
+  if(gDomimp) delete gDomimp;
+  gDomimp = 0;
 }
 
-XQillaImplementation* XQillaImplementation::getDOMImplementationImpl() {
-	// initialized by XQillaImplementation::initialize()
-	return gDomimp;
+XQillaImplementation* XQillaImplementation::getDOMImplementationImpl()
+{
+  // initialized by XQillaImplementation::initialize()
+  return gDomimp;
 }
 
 bool XQillaImplementation::hasFeature(const  XMLCh * feature,  const  XMLCh * version) const
@@ -84,36 +86,32 @@ bool XQillaImplementation::hasFeature(const  XMLCh * feature,  const  XMLCh * ve
   if (!feature)
     return false;
     
-  if (XERCES_CPP_NAMESPACE_QUALIFIER XMLString::compareIString(feature, gXQilla) == 0
-      && (version == 0 || !*version || XERCES_CPP_NAMESPACE_QUALIFIER XMLString::equals(version, g3_0)))
+  if (XMLString::compareIString(feature, gXQilla) == 0
+      && (version == 0 || !*version || XMLString::equals(version, g3_0)))
       return true;
   
   return domImpl->hasFeature(feature, version);
 }
 
-XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* XQillaImplementation::createDocument(const XMLCh *namespaceURI,
-	const XMLCh *qualifiedName, XERCES_CPP_NAMESPACE_QUALIFIER DOMDocumentType *doctype, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* const manager)
+DOMDocument* XQillaImplementation::createDocument(const XMLCh *namespaceURI,
+  const XMLCh *qualifiedName, DOMDocumentType *doctype, MemoryManager* const manager)
 {
-    return new (manager) XQillaDocumentImpl(namespaceURI, qualifiedName, doctype, manager);
+    return new (manager) XQillaDocumentImpl(namespaceURI, qualifiedName, doctype, this, manager);
 }
 
 
-XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* XQillaImplementation::createDocument(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* const manager)
+DOMDocument* XQillaImplementation::createDocument(MemoryManager* const manager)
 {
-  return new (manager) XQillaDocumentImpl(manager);
+  return new (manager) XQillaDocumentImpl(this, manager);
 }
 
-XERCES_CPP_NAMESPACE_QUALIFIER DOMWriter* XQillaImplementation::createDOMWriter(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* const manager)
+#if _XERCES_VERSION >= 30000
+DOMLSParser* XQillaImplementation::createLSParser(const DOMImplementationLS::DOMImplementationLSMode mode,
+                                                  const XMLCh* const     schemaType,
+                                                  MemoryManager* const   manager,
+                                                  XMLGrammarPool*  const gramPool)
 {
-    return new (manager) XPath2NodeSerializer(manager);
-}
-
-XERCES_CPP_NAMESPACE_QUALIFIER DOMBuilder* XQillaImplementation::createDOMBuilder(const short mode,
-                                                                                  const XMLCh* const schemaType,
-                                                                                  XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* const manager,
-                                                                                  XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool*  const gramPool)
-{
-  XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool *temp = 0;
+  XMLGrammarPool *temp = 0;
   bool adoptGramPool = false;
   
   if(!gramPool) {
@@ -124,23 +122,80 @@ XERCES_CPP_NAMESPACE_QUALIFIER DOMBuilder* XQillaImplementation::createDOMBuilde
     temp = gramPool;
   }
 
-  if(mode == XERCES_CPP_NAMESPACE_QUALIFIER DOMImplementationLS::MODE_ASYNCHRONOUS)
-    throw XERCES_CPP_NAMESPACE_QUALIFIER DOMException(XERCES_CPP_NAMESPACE_QUALIFIER DOMException::NOT_SUPPORTED_ERR, 0);
+  if(mode == DOMImplementationLS::MODE_ASYNCHRONOUS)
+    throw DOMException(DOMException::NOT_SUPPORTED_ERR, 0);
 
-  XERCES_CPP_NAMESPACE_QUALIFIER DOMBuilder *tmp = new (manager) XQillaBuilderImpl(0, manager, temp, adoptGramPool);
-  tmp->setProperty(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgXercesParserUseDocumentFromImplementation, (void*)gXQilla);
-  tmp->setFeature(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgXercesCacheGrammarFromParse, true);
+  DOMLSParser *tmp = new (manager) XQillaBuilderImpl(0, manager, temp, adoptGramPool);
+#if _XERCES_VERSION >= 30000
+  tmp->getDomConfig()->setParameter(XMLUni::fgXercesParserUseDocumentFromImplementation, (void*)gXQilla);
+  tmp->getDomConfig()->setParameter(XMLUni::fgXercesCacheGrammarFromParse, true);
+#else
+  tmp->setProperty(XMLUni::fgXercesParserUseDocumentFromImplementation, (void*)gXQilla);
+  tmp->setFeature(XMLUni::fgXercesCacheGrammarFromParse, true);
+#endif
 
   return tmp;
 }
 
-
-
-XERCES_CPP_NAMESPACE_QUALIFIER DOMImplementation* XQillaImplementation::getDOMImplementation(const XMLCh* features) const
+DOMLSSerializer* XQillaImplementation::createLSSerializer(MemoryManager* const manager)
 {
-  XERCES_CPP_NAMESPACE_QUALIFIER  DOMImplementation* impl = XQillaImplementation::getDOMImplementationImpl();
+  return new (manager) XPath2NodeSerializer(manager);
+}
 
-  XERCES_CPP_NAMESPACE_QUALIFIER XMLStringTokenizer tokenizer(features);
+DOMLSInput* XQillaImplementation::createLSInput(MemoryManager* const manager)
+{
+  return domImpl->createLSInput(manager);
+}
+
+DOMLSOutput* XQillaImplementation::createLSOutput(MemoryManager* const manager)
+{
+  return domImpl->createLSOutput(manager);
+}
+#else
+DOMWriter* XQillaImplementation::createDOMWriter(MemoryManager* const manager)
+{
+    return new (manager) XPath2NodeSerializer(manager);
+}
+
+DOMBuilder* XQillaImplementation::createDOMBuilder(const short mode,
+                                                   const XMLCh* const schemaType,
+                                                   MemoryManager* const manager,
+                                                   XMLGrammarPool*  const gramPool)
+{
+  XMLGrammarPool *temp = 0;
+  bool adoptGramPool = false;
+  
+  if(!gramPool) {
+    temp = new (manager) XQillaXMLGrammarPoolImpl(manager);
+    adoptGramPool = true;
+  }
+  else {
+    temp = gramPool;
+  }
+
+  if(mode == DOMImplementationLS::MODE_ASYNCHRONOUS)
+    throw DOMException(DOMException::NOT_SUPPORTED_ERR, 0);
+
+  DOMBuilder *tmp = new (manager) XQillaBuilderImpl(0, manager, temp, adoptGramPool);
+  tmp->setProperty(XMLUni::fgXercesParserUseDocumentFromImplementation, (void*)gXQilla);
+  tmp->setFeature(XMLUni::fgXercesCacheGrammarFromParse, true);
+
+  return tmp;
+}
+
+DOMInputSource* XQillaImplementation::createDOMInputSource()
+{
+  return domImpl->createDOMInputSource();
+}
+#endif
+
+
+
+DOMImplementation* XQillaImplementation::getDOMImplementation(const XMLCh* features) const
+{
+   DOMImplementation* impl = XQillaImplementation::getDOMImplementationImpl();
+
+  XMLStringTokenizer tokenizer(features);
   const XMLCh* feature = 0;
 
   while (feature || tokenizer.hasMoreTokens()) {
@@ -151,7 +206,7 @@ XERCES_CPP_NAMESPACE_QUALIFIER DOMImplementation* XQillaImplementation::getDOMIm
     const XMLCh* version = 0;
     const XMLCh* token = tokenizer.nextToken();
     
-    if (token && XERCES_CPP_NAMESPACE_QUALIFIER XMLString::isDigit(token[0]))
+    if (token && XMLString::isDigit(token[0]))
       version = token;
     
     if (!impl->hasFeature(feature, version))
@@ -163,21 +218,31 @@ XERCES_CPP_NAMESPACE_QUALIFIER DOMImplementation* XQillaImplementation::getDOMIm
   return impl;
 }
 
-
-XERCES_CPP_NAMESPACE_QUALIFIER DOMInputSource* XQillaImplementation::createDOMInputSource()
+#if _XERCES_VERSION >= 30000
+DOMImplementationList *XQillaImplementation::getDOMImplementationList(const XMLCh* features) const
 {
-    throw XERCES_CPP_NAMESPACE_QUALIFIER DOMException(XERCES_CPP_NAMESPACE_QUALIFIER DOMException::NOT_SUPPORTED_ERR, 0);
-    return 0;
+  DOMImplementationListImpl* list = new DOMImplementationListImpl;
+  DOMImplementation* myImpl=getDOMImplementation(features);
+  if(myImpl)
+    list->add(myImpl);
+  return list;
 }
+#endif
 
-XERCES_CPP_NAMESPACE_QUALIFIER DOMDocumentType *XQillaImplementation::createDocumentType(const XMLCh *qualifiedName,
-	const XMLCh * publicId, const XMLCh *systemId)
+DOMDocumentType *XQillaImplementation::createDocumentType(const XMLCh *qualifiedName,
+                                                          const XMLCh * publicId, const XMLCh *systemId)
 {
     return domImpl->createDocumentType(qualifiedName, publicId, systemId); 
 }
 
-//Introduced in DOM Level 3
-XERCES_CPP_NAMESPACE_QUALIFIER DOMImplementation* XQillaImplementation::getInterface(const XMLCh* feature){
-    throw XERCES_CPP_NAMESPACE_QUALIFIER DOMException(XERCES_CPP_NAMESPACE_QUALIFIER DOMException::NOT_SUPPORTED_ERR, 0);
-    return 0;
+#if _XERCES_VERSION >= 30000
+void* XQillaImplementation::getFeature(const XMLCh* feature, const XMLCh* version) const
+{
+  return domImpl->getFeature(feature, version);
 }
+#else
+DOMImplementation* XQillaImplementation::getInterface(const XMLCh* feature)
+{
+  return domImpl->getInterface(feature);
+}
+#endif

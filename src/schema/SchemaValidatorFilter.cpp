@@ -922,14 +922,14 @@ void SchemaValidatorFilter::docCharacters(const XMLCh* const chars, const unsign
   next_->textEvent(chars, length);
 }
 
-void SchemaValidatorFilter::error(const unsigned int errCode, const XMLCh* const errDomain, const XMLErrorReporter::ErrTypes errType, const XMLCh* const errorText,
-                                  const XMLCh* const systemId, const XMLCh* const publicId, const XMLSSize_t lineNum, const XMLSSize_t colNum)
+void SchemaValidatorFilter::error(const unsigned int errCode, const XMLCh* const errDomain, const XMLErrorReporter::ErrTypes type, const XMLCh* const errorText,
+                                  const XMLCh* const systemId, const XMLCh* const publicId, const XMLFileLoc lineNum, const XMLFileLoc colNum)
 {
   errorOccurred_ = true;
 
   // Skip validation errors if validation isn't strict
   if(!strictValidation_ && errDomain == XMLUni::fgValidityDomain &&
-     errType != XMLErrorReporter::ErrType_Fatal)
+     type != XMLErrorReporter::ErrType_Fatal)
     return;
 
   XMLBuffer exc_msg(1023);

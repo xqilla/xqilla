@@ -211,15 +211,15 @@ void DocumentCacheImpl::resetErrors()
 {
 }
 
-void DocumentCacheImpl::error(const unsigned int errCode, const XMLCh* const errDomain, const XMLErrorReporter::ErrTypes errType, const XMLCh* const errorText,
-                              const XMLCh* const systemId, const XMLCh* const publicId, const XMLSSize_t lineNum, const XMLSSize_t colNum)
+void DocumentCacheImpl::error(const unsigned int errCode, const XMLCh* const errDomain, const XMLErrorReporter::ErrTypes type, const XMLCh* const errorText,
+                              const XMLCh* const systemId, const XMLCh* const publicId, const XMLFileLoc lineNum, const XMLFileLoc colNum)
 {
   // Skip validation errors if validation isn't strict
   if(!strictValidation_ && errDomain == XMLUni::fgValidityDomain)
     return;
 
   // Throw for errors and fatal errors
-  if(errType != XMLErrorReporter::ErrType_Warning)
+  if(type != XMLErrorReporter::ErrType_Warning)
     throw SAXParseException(errorText, publicId, systemId, lineNum, colNum, memMgr_);
 }
 

@@ -47,7 +47,7 @@ public:
    * @param code The error code which indicates the exception
    * @param message The string containing the error message
    */
-	XQillaException(short code, const XMLCh* message);
+  XQillaException(short code, const XMLCh* message);
 
   /**
    * Constructor which takes an error code and a message.
@@ -55,7 +55,7 @@ public:
    * @param code The error code which indicates the exception
    * @param message The string containing the error message
    */
-	XQillaException(const XQException &ex);
+  XQillaException(const XQException &ex);
 
   /**
    * Copy constructor.
@@ -83,7 +83,7 @@ public:
    * RUNTIME_ERR If XQilla encounters a runtime exception
    */
   enum valExtension {
-     RUNTIME_ERR = 53
+     RUNTIME_ERR = 54
    };
   //@}
 
@@ -136,7 +136,7 @@ public:
 
 private:
   static bool _debug;
-};//XQillaException
+};
 
-#endif //__XQILLAEXCEPTION_HPP
+#endif
 

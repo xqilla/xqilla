@@ -167,7 +167,11 @@ static void toEventsImpl(const DOMNode *node, EventHandler *events,
 {
   switch(node->getNodeType()) {
   case DOMNode::DOCUMENT_NODE: {
+#if _XERCES_VERSION >= 30000
+    events->startDocumentEvent(((DOMDocument*)node)->getDocumentURI(), ((DOMDocument*)node)->getInputEncoding());
+#else
     events->startDocumentEvent(((DOMDocument*)node)->getDocumentURI(), ((DOMDocument*)node)->getActualEncoding());
+#endif
     DOMNode *child = node->getFirstChild();
     while(child != 0) {
       toEventsImpl(child, events, outputNamespaces, preserveType, false);
@@ -259,7 +263,7 @@ Sequence XercesNodeImpl::dmBaseURI(const DynamicContext* context) const
 {
   static XMLCh base_str[] = { 'b', 'a', 's', 'e', 0 };
 
-	switch (fNode->getNodeType()) {
+  switch (fNode->getNodeType()) {
   case DOMNode::DOCUMENT_NODE: {
     const XMLCh *baseURI = context->getBaseURI();
 
@@ -315,7 +319,8 @@ Sequence XercesNodeImpl::dmBaseURI(const DynamicContext* context) const
     }
     return Sequence(context->getMemoryManager());
   }
-	}
+  default: break;
+  }
 
   return Sequence(context->getMemoryManager());
 }
@@ -349,7 +354,9 @@ const XMLCh* XercesNodeImpl::dmNodeKind(void) const {
         
     case DOMXPathNamespace::XPATH_NAMESPACE_NODE:
         return namespace_string;
-	}
+
+    default: break;
+  }
     
   XQThrow2(ItemException, X("XercesNodeImpl::dmNodeKind"), X("Unknown node type."));
 }
@@ -357,25 +364,26 @@ const XMLCh* XercesNodeImpl::dmNodeKind(void) const {
 
 ATQNameOrDerived::Ptr XercesNodeImpl::dmNodeName(const DynamicContext* context) const {
   
-	switch(fNode->getNodeType())
-	{
-	case DOMNode::ELEMENT_NODE:
+  switch(fNode->getNodeType())
+  {
+  case DOMNode::ELEMENT_NODE:
         return context->getItemFactory()->createQName(fNode->getNamespaceURI(), fNode->getPrefix(), Axis::getLocalName(fNode), context);
 
-	case DOMNode::ATTRIBUTE_NODE:				
+  case DOMNode::ATTRIBUTE_NODE:        
         return context->getItemFactory()->createQName(fNode->getNamespaceURI(), fNode->getPrefix(), Axis::getLocalName(fNode), context);
 
-	case DOMNode::PROCESSING_INSTRUCTION_NODE:	
+  case DOMNode::PROCESSING_INSTRUCTION_NODE:  
         return context->getItemFactory()->createQName(XMLUni::fgZeroLenString, XMLUni::fgZeroLenString, fNode->getNodeName(), context);
 
-	case DOMXPathNamespace::XPATH_NAMESPACE_NODE:  
+  case DOMXPathNamespace::XPATH_NAMESPACE_NODE:  
         {
             const XMLCh* prefix = fNode->getPrefix();
             if(prefix)
                 return context->getItemFactory()->createQName(XMLUni::fgZeroLenString, XMLUni::fgZeroLenString, prefix, context);
         }
-	}
-	return 0;
+  default: break;
+  }
+  return 0;
 }
 
 
@@ -402,76 +410,76 @@ void XercesNodeImpl::addStringValueToBuffer(const DOMNode* node, XMLBuffer& buff
 
 const XMLCh* XercesNodeImpl::dmStringValue(const DynamicContext* context) const {
 
-	switch(fNode->getNodeType())
-	{
-	case DOMNode::DOCUMENT_NODE:
-		{
-			// Returns the concatenation of the string-values of all its text node descendants in document order
-			XMLBuffer str(1023, context->getMemoryManager());
-			addStringValueToBuffer(fNode,str);
-		    return context->getMemoryManager()->getPooledString(str.getRawBuffer());
-		}
+  switch(fNode->getNodeType())
+  {
+  case DOMNode::DOCUMENT_NODE:
+    {
+      // Returns the concatenation of the string-values of all its text node descendants in document order
+      XMLBuffer str(1023, context->getMemoryManager());
+      addStringValueToBuffer(fNode,str);
+        return context->getMemoryManager()->getPooledString(str.getRawBuffer());
+    }
         break;
 
-	case DOMNode::ELEMENT_NODE:
-		{
-			XMLBuffer str(1023, context->getMemoryManager());
+  case DOMNode::ELEMENT_NODE:
+    {
+      XMLBuffer str(1023, context->getMemoryManager());
             const XMLCh* typeUri, *typeName;
             getTypeUriAndName(typeUri,typeName);
-		    //Returns the string value calculated as follows:
-		    // - If the element has a type of xdt:untyped, a complex type with complex content, or a complex type with mixed content, 
-		    //   returns the concatenation of the string-values of all its text node descendants in document order. 
-		    //   It returns "" if the element has no text node descendants.
-		    // - If the element has a complex type with empty content, returns "".
-		    if(XPath2Utils::equals(typeName, DocumentCache::g_szUntyped) && XPath2Utils::equals(typeUri, FunctionConstructor::XMLChXPath2DatatypesURI)
-		       || context->getDocumentCache()->getComplexTypeInfo(typeUri, typeName)!=NULL)
-			    addStringValueToBuffer(fNode,str);
-		    else
-		    {
-			    // - If the element has a simple type or a complex type with simple content:
-			    //     - If the element type is xs:string, or a type derived from xs:string, returns that string.
-			    if(context->getDocumentCache()->isTypeOrDerivedFromType(typeUri,typeName,SchemaSymbols::fgURI_SCHEMAFORSCHEMA, SchemaSymbols::fgDT_STRING))
-				    str.set(fNode->getTextContent());
-			    //     - If the element type is xs:anyURI, returns the characters of the URI.
-			    else if(XPath2Utils::equals(typeName, SchemaSymbols::fgDT_ANYURI) &&
-					    XPath2Utils::equals(typeUri, SchemaSymbols::fgURI_SCHEMAFORSCHEMA))
-				    str.set(fNode->getTextContent());
-			    //     - If the element type is xs:QName returns the value calculated as follows:
-			    //          - If the value has no namespace URI and the in-scope namespaces map the default namespace to any 
-			    //            namespace URI, then an error is raised ("default namespace is defined").
-			    //          - If the value has a namespace URI, then there must be at least one prefix mapped to that URI in 
-			    //            the in-scope namespaces. If there is no such prefix, an error is raised ("no prefix defined for namespace"). 
-			    //            If there is more than one such prefix, the one that is chosen is implementation dependent.
-			    //          - If no error occurs, returns a string with the lexical form of a xs:QName using the prefix chosen 
-			    //            as described above, and the local name of the value.
-			    else if(XPath2Utils::equals(typeName, SchemaSymbols::fgDT_QNAME) &&
-					    XPath2Utils::equals(typeUri, SchemaSymbols::fgURI_SCHEMAFORSCHEMA))
-			    {
-				    // REVISIT: the rules assume that a QName has been expanded upon loading, but we don't do that...
-				    str.set(fNode->getTextContent());
-			    }
-			    //     - If the element type is xs:dateTime, xs:date, or xs:time, returns the original lexical representation of 
-			    //       the typed value recovered as follows: if an explicit timezone was present, the normalized value is adjusted 
-			    //       using the explicit timezone; if an explicit timezone was not present, the Z is dropped from the normalized value. 
-			    //       The normalized value and the explicit timezone, if present, are converted separately to xs:string and concatenated 
-			    //       to yield the string value.
-			    else if(XPath2Utils::equals(typeUri, SchemaSymbols::fgURI_SCHEMAFORSCHEMA) &&
-					    (XPath2Utils::equals(typeName, SchemaSymbols::fgDT_DATETIME) ||
-					     XPath2Utils::equals(typeName, SchemaSymbols::fgDT_DATE) ||
-					     XPath2Utils::equals(typeName, SchemaSymbols::fgDT_TIME)))
-			    {
-				    const AnyAtomicType::Ptr item = context->getItemFactory()->createDerivedFromAtomicType(typeUri, typeName, fNode->getTextContent(), context);
-				    str.set(item->asString(context));
-			    }
-			    //     - In all other cases, returns the concatenation of the string-values of all its text node descendants in document order.
-			    else
-				    addStringValueToBuffer(fNode,str);
-		    }
-		    return context->getMemoryManager()->getPooledString(str.getRawBuffer());
-		}
+        //Returns the string value calculated as follows:
+        // - If the element has a type of xdt:untyped, a complex type with complex content, or a complex type with mixed content, 
+        //   returns the concatenation of the string-values of all its text node descendants in document order. 
+        //   It returns "" if the element has no text node descendants.
+        // - If the element has a complex type with empty content, returns "".
+        if(XPath2Utils::equals(typeName, DocumentCache::g_szUntyped) && XPath2Utils::equals(typeUri, FunctionConstructor::XMLChXPath2DatatypesURI)
+           || context->getDocumentCache()->getComplexTypeInfo(typeUri, typeName)!=NULL)
+          addStringValueToBuffer(fNode,str);
+        else
+        {
+          // - If the element has a simple type or a complex type with simple content:
+          //     - If the element type is xs:string, or a type derived from xs:string, returns that string.
+          if(context->getDocumentCache()->isTypeOrDerivedFromType(typeUri,typeName,SchemaSymbols::fgURI_SCHEMAFORSCHEMA, SchemaSymbols::fgDT_STRING))
+            str.set(fNode->getTextContent());
+          //     - If the element type is xs:anyURI, returns the characters of the URI.
+          else if(XPath2Utils::equals(typeName, SchemaSymbols::fgDT_ANYURI) &&
+              XPath2Utils::equals(typeUri, SchemaSymbols::fgURI_SCHEMAFORSCHEMA))
+            str.set(fNode->getTextContent());
+          //     - If the element type is xs:QName returns the value calculated as follows:
+          //          - If the value has no namespace URI and the in-scope namespaces map the default namespace to any 
+          //            namespace URI, then an error is raised ("default namespace is defined").
+          //          - If the value has a namespace URI, then there must be at least one prefix mapped to that URI in 
+          //            the in-scope namespaces. If there is no such prefix, an error is raised ("no prefix defined for namespace"). 
+          //            If there is more than one such prefix, the one that is chosen is implementation dependent.
+          //          - If no error occurs, returns a string with the lexical form of a xs:QName using the prefix chosen 
+          //            as described above, and the local name of the value.
+          else if(XPath2Utils::equals(typeName, SchemaSymbols::fgDT_QNAME) &&
+              XPath2Utils::equals(typeUri, SchemaSymbols::fgURI_SCHEMAFORSCHEMA))
+          {
+            // REVISIT: the rules assume that a QName has been expanded upon loading, but we don't do that...
+            str.set(fNode->getTextContent());
+          }
+          //     - If the element type is xs:dateTime, xs:date, or xs:time, returns the original lexical representation of 
+          //       the typed value recovered as follows: if an explicit timezone was present, the normalized value is adjusted 
+          //       using the explicit timezone; if an explicit timezone was not present, the Z is dropped from the normalized value. 
+          //       The normalized value and the explicit timezone, if present, are converted separately to xs:string and concatenated 
+          //       to yield the string value.
+          else if(XPath2Utils::equals(typeUri, SchemaSymbols::fgURI_SCHEMAFORSCHEMA) &&
+              (XPath2Utils::equals(typeName, SchemaSymbols::fgDT_DATETIME) ||
+               XPath2Utils::equals(typeName, SchemaSymbols::fgDT_DATE) ||
+               XPath2Utils::equals(typeName, SchemaSymbols::fgDT_TIME)))
+          {
+            const AnyAtomicType::Ptr item = context->getItemFactory()->createDerivedFromAtomicType(typeUri, typeName, fNode->getTextContent(), context);
+            str.set(item->asString(context));
+          }
+          //     - In all other cases, returns the concatenation of the string-values of all its text node descendants in document order.
+          else
+            addStringValueToBuffer(fNode,str);
+        }
+        return context->getMemoryManager()->getPooledString(str.getRawBuffer());
+    }
         break;
 
-	case DOMNode::ATTRIBUTE_NODE:
+  case DOMNode::ATTRIBUTE_NODE:
         {
             const XMLCh* typeUri, *typeName;
             getTypeUriAndName(typeUri,typeName);
@@ -515,21 +523,21 @@ const XMLCh* XercesNodeImpl::dmStringValue(const DynamicContext* context) const 
                 return context->getMemoryManager()->getPooledString(fNode->getNodeValue());
         }
         break;
-	case DOMNode::PROCESSING_INSTRUCTION_NODE:
-	case DOMNode::COMMENT_NODE:
-	case DOMNode::TEXT_NODE:
-	case DOMNode::CDATA_SECTION_NODE:
+  case DOMNode::PROCESSING_INSTRUCTION_NODE:
+  case DOMNode::COMMENT_NODE:
+  case DOMNode::TEXT_NODE:
+  case DOMNode::CDATA_SECTION_NODE:
         // Returns the value of the content property.
         return context->getMemoryManager()->getPooledString(fNode->getNodeValue());
         break;
 
-	case DOMXPathNamespace::XPATH_NAMESPACE_NODE:
+  case DOMXPathNamespace::XPATH_NAMESPACE_NODE:
         // Returns the value of the uri property.
         return context->getMemoryManager()->getPooledString(fNode->getTextContent());
         break;
-
-	}
-	return XMLUni::fgZeroLenString;
+  default: break;
+  }
+  return XMLUni::fgZeroLenString;
 }
 
 Sequence XercesNodeImpl::getListTypeTypedValue(DatatypeValidator *dtv, const DynamicContext* context) const {
@@ -740,6 +748,7 @@ Sequence XercesNodeImpl::dmTypedValue(DynamicContext* context) const {
             return Sequence(untypedAtomic, context->getMemoryManager());
         }
         break;
+    default: break;
     }
     return Sequence(context->getMemoryManager());
 }
@@ -782,7 +791,11 @@ ATBooleanOrDerived::Ptr XercesNodeImpl::dmNilled(const DynamicContext* context) 
     // attempted or did not succeed, the nilled property is "false".
     try
     {
+#if _XERCES_VERSION >= 30000
+        DOMPSVITypeInfo* psviType=(DOMPSVITypeInfo*)const_cast<DOMNode*>(fNode)->getFeature(XMLUni::fgXercescInterfacePSVITypeInfo, 0);
+#else
         DOMPSVITypeInfo* psviType=(DOMPSVITypeInfo*)const_cast<DOMNode*>(fNode)->getInterface(XMLUni::fgXercescInterfacePSVITypeInfo);
+#endif
         if(psviType && psviType->getNumericProperty(DOMPSVITypeInfo::PSVI_Validity)==PSVIItem::VALIDITY_VALID)
         {
             bool isNil=(psviType->getNumericProperty(DOMPSVITypeInfo::PSVI_Nil)!=0);
@@ -806,6 +819,13 @@ bool XercesNodeImpl::lessThan(const Node::Ptr &other, const DynamicContext *cont
   }
 
   const DOMNode* otherNode = otherImpl->getDOMNode();
+
+#if _XERCES_VERSION >= 30000
+  short pos = const_cast<DOMNode *>(fNode)->compareDocumentPosition(const_cast<DOMNode *>(otherNode));
+  if(pos & DOMNode::DOCUMENT_POSITION_FOLLOWING)
+    return true;
+  return false;
+#else
   short pos = const_cast<DOMNode *>(fNode)->compareTreePosition(const_cast<DOMNode *>(otherNode));
   // compareTreePosition returns the position of the other node, compared to my position; so, if it sets the bit
   // TREE_POSITION_FOLLOWING, it means that we come before it
@@ -814,40 +834,35 @@ bool XercesNodeImpl::lessThan(const Node::Ptr &other, const DynamicContext *cont
   if(pos & DOMNode::TREE_POSITION_PRECEDING)
     return false;
   if(pos & DOMNode::TREE_POSITION_SAME_NODE)
-	  return false;
+    return false;
   // if the two nodes are attributes or namespaces, we get that they are equivalent; we need a stable ordering, so
   // we resort to comparing their pointers (we could even decide to sort them on their names...)
   if(pos & DOMNode::TREE_POSITION_EQUIVALENT)
     return fNode < otherNode;
+
   // if we get they are disconnected, it could be they belong to different documents; in this case, order them according
   // to the pointer of their documents (all the nodes in document A must come before or after all the nodes in document B,
   // regardless of the chosen ordering criteria)
   // If they belong to the same document, they are floating, or maybe just one of them is floating; let's state we consider
   // the one connected coming before the disconnected one, and, if both are disconnected, we compare the two roots
-  if(pos == DOMNode::TREE_POSITION_DISCONNECTED)
-  {
-    if(fNode->getOwnerDocument()!=otherNode->getOwnerDocument())
-      return fNode->getOwnerDocument()<otherNode->getOwnerDocument();
-    else
-    {
-      const DOMNode* myParent=fNode;
-      const DOMNode* tmpParent = XPath2NSUtils::getParent(fNode);
-      while(tmpParent != 0) {
-        myParent = tmpParent;
-        tmpParent = tmpParent->getParentNode();
-      }
-      const DOMNode* otherParent=otherNode;
-      tmpParent = XPath2NSUtils::getParent(otherNode);
-      while(tmpParent != 0) {
-        otherParent = tmpParent;
-        tmpParent = tmpParent->getParentNode();
-      }
+  if(fNode->getOwnerDocument()!=otherNode->getOwnerDocument())
+    return fNode->getOwnerDocument()<otherNode->getOwnerDocument();
 
-      return myParent < otherParent;
-    }
+  const DOMNode* myParent=fNode;
+  const DOMNode* tmpParent = XPath2NSUtils::getParent(fNode);
+  while(tmpParent != 0) {
+    myParent = tmpParent;
+    tmpParent = tmpParent->getParentNode();
   }
-  assert(false);
-  return true;
+  const DOMNode* otherParent=otherNode;
+  tmpParent = XPath2NSUtils::getParent(otherNode);
+  while(tmpParent != 0) {
+    otherParent = tmpParent;
+    tmpParent = tmpParent->getParentNode();
+  }
+
+  return myParent < otherParent;
+#endif
 }
 
 bool XercesNodeImpl::equals(const Node::Ptr &other) const
@@ -990,6 +1005,19 @@ ATBooleanOrDerived::Ptr XercesNodeImpl::dmIsId(const DynamicContext* context) co
 {
   const DOMTypeInfo *typeInfo = 0;
 
+#if _XERCES_VERSION >= 30000
+  if(fNode->getNodeType() == DOMNode::ELEMENT_NODE) {
+    typeInfo = ((const DOMElement*)fNode)->getSchemaTypeInfo();
+  }
+  else if(fNode->getNodeType() == DOMNode::ATTRIBUTE_NODE) {
+    typeInfo = ((const DOMAttr*)fNode)->getSchemaTypeInfo();
+  }
+
+  if(typeInfo != 0 &&
+     XPath2Utils::equals(typeInfo->getTypeName(), XMLUni::fgIDString) &&
+     (XPath2Utils::equals(typeInfo->getTypeNamespace(), SchemaSymbols::fgURI_SCHEMAFORSCHEMA) ||
+      XPath2Utils::equals(typeInfo->getTypeNamespace(), XMLUni::fgInfosetURIName)))
+#else
   if(fNode->getNodeType() == DOMNode::ELEMENT_NODE) {
     typeInfo = ((const DOMElement*)fNode)->getTypeInfo();
   }
@@ -1001,6 +1029,7 @@ ATBooleanOrDerived::Ptr XercesNodeImpl::dmIsId(const DynamicContext* context) co
      XPath2Utils::equals(typeInfo->getName(), XMLUni::fgIDString) &&
      (XPath2Utils::equals(typeInfo->getNamespace(), SchemaSymbols::fgURI_SCHEMAFORSCHEMA) ||
       XPath2Utils::equals(typeInfo->getNamespace(), XMLUni::fgInfosetURIName)))
+#endif
   {
     return context->getItemFactory()->createBoolean(true, context);
   }
@@ -1012,6 +1041,20 @@ ATBooleanOrDerived::Ptr XercesNodeImpl::dmIsIdRefs(const DynamicContext* context
 {
   const DOMTypeInfo *typeInfo = 0;
 
+#if _XERCES_VERSION >= 30000
+  if(fNode->getNodeType() == DOMNode::ELEMENT_NODE) {
+    typeInfo = ((const DOMElement*)fNode)->getSchemaTypeInfo();
+  }
+  else if(fNode->getNodeType() == DOMNode::ATTRIBUTE_NODE) {
+    typeInfo = ((const DOMAttr*)fNode)->getSchemaTypeInfo();
+  }
+
+  if(typeInfo != 0 &&
+     (XPath2Utils::equals(typeInfo->getTypeName(), XMLUni::fgIDRefString) ||
+      XPath2Utils::equals(typeInfo->getTypeName(), XMLUni::fgIDRefsString)) &&
+     (XPath2Utils::equals(typeInfo->getTypeNamespace(), SchemaSymbols::fgURI_SCHEMAFORSCHEMA) ||
+      XPath2Utils::equals(typeInfo->getTypeNamespace(), XMLUni::fgInfosetURIName)))
+#else
   if(fNode->getNodeType() == DOMNode::ELEMENT_NODE) {
     typeInfo = ((const DOMElement*)fNode)->getTypeInfo();
   }
@@ -1024,6 +1067,7 @@ ATBooleanOrDerived::Ptr XercesNodeImpl::dmIsIdRefs(const DynamicContext* context
       XPath2Utils::equals(typeInfo->getName(), XMLUni::fgIDRefsString)) &&
      (XPath2Utils::equals(typeInfo->getNamespace(), SchemaSymbols::fgURI_SCHEMAFORSCHEMA) ||
       XPath2Utils::equals(typeInfo->getNamespace(), XMLUni::fgInfosetURIName)))
+#endif
   {
     return context->getItemFactory()->createBoolean(true, context);
   }
@@ -1040,7 +1084,11 @@ void XercesNodeImpl::getMemberTypeUriAndName(const XMLCh*& uri, const XMLCh*& na
             nodeType == DOMNode::ATTRIBUTE_NODE) 
         {
             // check if we have PSVI info
+#if _XERCES_VERSION >= 30000
+            DOMPSVITypeInfo* psviType=(DOMPSVITypeInfo*)const_cast<DOMNode*>(fNode)->getFeature(XMLUni::fgXercescInterfacePSVITypeInfo, 0);
+#else
             DOMPSVITypeInfo* psviType=(DOMPSVITypeInfo*)const_cast<DOMNode*>(fNode)->getInterface(XMLUni::fgXercescInterfacePSVITypeInfo);
+#endif
             if(psviType)
             {
                 // check if we have PSVI info for the content of a union-validated type
@@ -1072,7 +1120,11 @@ void XercesNodeImpl::typeUriAndName(const DOMNode *node, const XMLCh*& uri, cons
         // check if we have PSVI info
         try
         {
+#if _XERCES_VERSION >= 30000
+            DOMPSVITypeInfo* psviType=(DOMPSVITypeInfo*)const_cast<DOMNode*>(node)->getFeature(XMLUni::fgXercescInterfacePSVITypeInfo, 0);
+#else
             DOMPSVITypeInfo* psviType=(DOMPSVITypeInfo*)const_cast<DOMNode*>(node)->getInterface(XMLUni::fgXercescInterfacePSVITypeInfo);
+#endif
             if(psviType && psviType->getNumericProperty(DOMPSVITypeInfo::PSVI_Validity)==PSVIItem::VALIDITY_VALID)
             {
                 uri=psviType->getStringProperty(DOMPSVITypeInfo::PSVI_Type_Definition_Namespace);
@@ -1091,7 +1143,11 @@ void XercesNodeImpl::typeUriAndName(const DOMNode *node, const XMLCh*& uri, cons
         // check if we have PSVI info
         try
         {
+#if _XERCES_VERSION >= 30000
+            DOMPSVITypeInfo* psviType=(DOMPSVITypeInfo*)const_cast<DOMNode*>(node)->getFeature(XMLUni::fgXercescInterfacePSVITypeInfo, 0);
+#else
             DOMPSVITypeInfo* psviType=(DOMPSVITypeInfo*)const_cast<DOMNode*>(node)->getInterface(XMLUni::fgXercescInterfacePSVITypeInfo);
+#endif
             if(psviType && psviType->getNumericProperty(DOMPSVITypeInfo::PSVI_Validity)==PSVIItem::VALIDITY_VALID)
             {
                 uri=psviType->getStringProperty(DOMPSVITypeInfo::PSVI_Type_Definition_Namespace);
@@ -1102,12 +1158,21 @@ void XercesNodeImpl::typeUriAndName(const DOMNode *node, const XMLCh*& uri, cons
             // ignore it; the implementation of getInterface for Xerces < 2.6 will throw it
         }
         // check if we have type informations coming from a DTD
+#if _XERCES_VERSION >= 30000
+        const DOMTypeInfo* pTypeInfo=((DOMAttr*)node)->getSchemaTypeInfo();
+        const XMLCh* szUri=pTypeInfo->getTypeNamespace();
+#else
         const DOMTypeInfo* pTypeInfo=((DOMAttr*)node)->getTypeInfo();
         const XMLCh* szUri=pTypeInfo->getNamespace();
+#endif
         if(szUri==0 || szUri[0]==0)
         {
             // in these cases, we are xs:*
+#if _XERCES_VERSION >= 30000
+            const XMLCh* szName=pTypeInfo->getTypeName();
+#else
             const XMLCh* szName=pTypeInfo->getName();
+#endif
             if(XPath2Utils::equals(szName,XMLUni::fgIDString) ||
                XPath2Utils::equals(szName,XMLUni::fgIDRefString) ||
                XPath2Utils::equals(szName,XMLUni::fgIDRefsString) ||

@@ -55,6 +55,8 @@ static string regexFind(const char *regex, const string &str, int groupNo = 1)
   try {
     XStr str16(str.c_str());
     RegularExpression re(regex, "mH");
+
+#ifdef HAVE_ALLMATCHES
     RefVectorOf<XERCES_CPP_NAMESPACE_QUALIFIER Match> matches(10, true);
     re.allMatches(str16.unicodeForm(), 0, XMLString::stringLen(str16.unicodeForm()), &matches);
     if(matches.size() >= 1) {
@@ -62,6 +64,14 @@ static string regexFind(const char *regex, const string &str, int groupNo = 1)
       if(match->getNoGroups() >= groupNo && match->getStartPos(groupNo) != -1)
         return str.substr(match->getStartPos(groupNo), match->getEndPos(groupNo) - match->getStartPos(groupNo));
     }
+#else
+    XERCES_CPP_NAMESPACE_QUALIFIER Match match;
+    if(re.matches(str16.unicodeForm(), 0, XMLString::stringLen(str16.unicodeForm()), &match)) {
+      if(match.getNoGroups() >= groupNo && match.getStartPos(groupNo) != -1)
+        return str.substr(match.getStartPos(groupNo), match.getEndPos(groupNo) - match.getStartPos(groupNo));
+    }
+#endif
+
   }
   catch(XMLException &ex) {
     cerr << "Regex exception: " << UTF8(ex.getMessage()) << endl;

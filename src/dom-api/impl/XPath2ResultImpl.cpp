@@ -43,12 +43,14 @@
 #include <xqilla/xerces/XercesConfiguration.hpp>
 
 #include <xercesc/dom/DOMException.hpp>
+#include <xercesc/dom/DOMXPathException.hpp>
 #include <xercesc/dom/DOMElement.hpp>
 #include <xercesc/dom/DOMAttr.hpp>
 #include <xercesc/dom/DOMNode.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 #include <xercesc/util/XMLString.hpp>
 #include <xercesc/dom/impl/DOMDocumentImpl.hpp>
+#include <xercesc/util/XMLDOMMsg.hpp>
 
 using namespace std;
 XERCES_CPP_NAMESPACE_USE;
@@ -83,8 +85,9 @@ XPath2ResultImpl::XPath2ResultImpl(DOMNode* contextNode,
     //More illegal types here?
     switch (contextNode->getNodeType()) {
     case DOMNode::ENTITY_REFERENCE_NODE:
-      throw DOMException(DOMException::NOT_SUPPORTED_ERR, X("Context node of illegal type."));
+      throw XQillaException(DOMException::NOT_SUPPORTED_ERR, X("Context node of illegal type."));
       break;
+    default: break;
     }
     _context->setContextItem(((XercesConfiguration*)_context->getConfiguration())->
 	    createNode(contextNode, _context));
@@ -107,24 +110,45 @@ bool XPath2ResultImpl::isNode() const {
   return !_currentItem.isNull() && _currentItem->isNode();
 }
 
-/// DOMTypeInfo method
+/// DOMTypeInfo methods
+#if _XERCES_VERSION >= 30000
+const XMLCh* XPath2ResultImpl::getTypeName() const
+{
+   if(_currentItem.isNull()) return 0;
+   return _currentItem->getTypeName();
+}
+
+const XMLCh* XPath2ResultImpl::getTypeNamespace() const
+{
+   if(_currentItem.isNull()) return 0;
+   return _currentItem->getTypeURI();
+}
+
+bool XPath2ResultImpl::isDerivedFrom(const XMLCh* typeNamespaceArg,
+                               const XMLCh* typeNameArg,
+                               DerivationMethods derivationMethod) const
+{
+  // TBD implement this - jpcs
+  return false;
+}
+#else
 const XMLCh* XPath2ResultImpl::getName() const
 {
    if(_currentItem.isNull()) return 0;
    return _currentItem->getTypeName();
 }
 
-/// DOMTypeInfo method
 const XMLCh* XPath2ResultImpl::getNamespace() const
 {
    if(_currentItem.isNull()) return 0;
    return _currentItem->getTypeURI();
 }
+#endif
 
-int XPath2ResultImpl::asInt() const
+int XPath2ResultImpl::getIntegerValue() const
 {
   if(_currentItem.isNull()) {
-    throw DOMException(DOMException::INVALID_STATE_ERR, XMLString::transcode("There is no current result in the result")); 
+    throw XQillaException(DOMException::INVALID_STATE_ERR, XMLString::transcode("There is no current result in the result")); 
   }
 
   if(!_currentItem->isAtomicValue()) {
@@ -143,10 +167,10 @@ int XPath2ResultImpl::asInt() const
   return atoi(UTF8(integer->asString(_context)));
 }
 
-double XPath2ResultImpl::asDouble() const
+double XPath2ResultImpl::getNumberValue() const
 {
   if(_currentItem.isNull()) {
-    throw DOMException(DOMException::INVALID_STATE_ERR, XMLString::transcode("There is no current result in the result"));
+    throw XQillaException(DOMException::INVALID_STATE_ERR, XMLString::transcode("There is no current result in the result"));
   }
 
   if(!_currentItem->isAtomicValue()) {
@@ -164,10 +188,10 @@ double XPath2ResultImpl::asDouble() const
   return atof(UTF8(doubleValue->asString(_context)));
 }
 
-const XMLCh* XPath2ResultImpl::asString() const
+const XMLCh* XPath2ResultImpl::getStringValue() const
 {
   if(_currentItem.isNull()) {
-    throw DOMException(DOMException::INVALID_STATE_ERR, XMLString::transcode("There is no current result in the result"));
+    throw XQillaException(DOMException::INVALID_STATE_ERR, XMLString::transcode("There is no current result in the result"));
   }
 
   if(!_currentItem->isAtomicValue()) {
@@ -177,10 +201,10 @@ const XMLCh* XPath2ResultImpl::asString() const
   return _currentItem->asString(_context);
 }
 
-bool XPath2ResultImpl::asBoolean() const
+bool XPath2ResultImpl::getBooleanValue() const
 {
   if(_currentItem.isNull()) {
-    throw DOMException(DOMException::INVALID_STATE_ERR, XMLString::transcode("There is no current result in the result"));
+    throw XQillaException(DOMException::INVALID_STATE_ERR, XMLString::transcode("There is no current result in the result"));
   }
 
   if(!_currentItem->isAtomicValue()) {
@@ -197,17 +221,17 @@ bool XPath2ResultImpl::asBoolean() const
   return ((const ATBooleanOrDerived*)boolean.get())->isTrue();
 }
 
-const DOMNode* XPath2ResultImpl::asNode() const
+DOMNode* XPath2ResultImpl::getNodeValue() const
 {
   if(_currentItem.isNull()) {
-    throw DOMException(DOMException::INVALID_STATE_ERR, XMLString::transcode("There is no current result in the result"));
+    throw XQillaException(DOMException::INVALID_STATE_ERR, XMLString::transcode("There is no current result in the result"));
   }
 
   if(!_currentItem->isNode()) {
     throw XQillaException(DOMXPathException::TYPE_ERR, X("The requested result is not a node"));
   }
 
-  const DOMNode *node = (const DOMNode*)_currentItem->getInterface(XercesConfiguration::gXerces);
+  DOMNode *node = (DOMNode*)_currentItem->getInterface(XercesConfiguration::gXerces);
   if(node == 0) {
     // Should never happen
     throw XQillaException(DOMXPathException::TYPE_ERR, X("The requested result not a XQilla implementation node"));
@@ -260,9 +284,17 @@ void XPath2FirstResultImpl::release()
   _createdWith->deallocate(this);
 }
 
-XPath2Result::ResultType XPath2FirstResultImpl::getResultType() const {
+#if _XERCES_VERSION >= 30000
+DOMXPathResult::ResultType XPath2FirstResultImpl::getResultType() const
+{
+  return DOMXPathResult::FIRST_RESULT_TYPE;
+}
+#else
+XPath2Result::ResultType XPath2FirstResultImpl::getResultType() const
+{
   return XPath2Result::FIRST_RESULT;
 }
+#endif
 
 bool XPath2FirstResultImpl::getInvalidIteratorState() const {
   return false;
@@ -331,9 +363,15 @@ void XPath2SnapshotResultImpl::release()
   _createdWith->deallocate(this);
 }
 
+#if _XERCES_VERSION >= 30000
+DOMXPathResult::ResultType XPath2SnapshotResultImpl::getResultType() const {
+  return DOMXPathResult::SNAPSHOT_RESULT_TYPE;
+}
+#else
 XPath2Result::ResultType XPath2SnapshotResultImpl::getResultType() const {
   return XPath2Result::SNAPSHOT_RESULT;
 }
+#endif
 
 bool XPath2SnapshotResultImpl::getInvalidIteratorState() const {
   return false;
@@ -420,10 +458,17 @@ void XPath2IteratorResultImpl::release()
   _createdWith->deallocate(this);
 }
 
+#if _XERCES_VERSION >= 30000
+DOMXPathResult::ResultType XPath2IteratorResultImpl::getResultType() const
+{
+  return DOMXPathResult::ITERATOR_RESULT_TYPE;
+}
+#else
 XPath2Result::ResultType XPath2IteratorResultImpl::getResultType() const
 {
   return XPath2Result::ITERATOR_RESULT;
 }
+#endif
 
 bool XPath2IteratorResultImpl::getInvalidIteratorState() const
 {
@@ -434,8 +479,8 @@ bool XPath2IteratorResultImpl::iterateNext()
 {
   // check for document changes
   if(getInvalidIteratorState()) {
-    throw DOMException(DOMException::INVALID_STATE_ERR, XMLString::transcode("Document has changed"));
-  }//if
+    throw XQillaException(DOMException::INVALID_STATE_ERR, XMLString::transcode("Document has changed"));
+  }
 
   try {
     _currentItem = _results->next(_context);

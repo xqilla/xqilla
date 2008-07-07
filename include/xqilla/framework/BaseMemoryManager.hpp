@@ -55,6 +55,7 @@ public:
   // from MemoryManager
   virtual void* allocate(size_t numElements);
   virtual void deallocate(void* p);
+  virtual XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *getExceptionMemoryManager();
   
   /** Returns a copy of the given string */
   virtual const XMLCh* getPooledString(const XMLCh *src);
@@ -69,7 +70,7 @@ public:
   virtual size_t getAllocatedObjectCount() const { return objectsAllocated_; }
   virtual size_t getTotalAllocatedMemory() const { return totalMemoryAllocated_; }
   virtual const StringPool *getStringPool() const {
-	  return fStringPool;
+    return fStringPool;
   }
   
   /** create a collation */

@@ -11,15 +11,8 @@
   <error id="K-InternalVariablesWith-23" reason="error failure"/>
   <error id="K-NumericAdd-5" reason="result failure"/>
   <error id="K-NumericAdd-6" reason="result failure"/>
-  <error id="K-SeqAVGFunc-32" reason="error failure"/>
-  <error id="K-SeqAVGFunc-33" reason="error failure"/>
   <error id="K-SeqExprCast-1496" reason="error failure"/>
   <error id="K-SeqExprCast-1497" reason="error failure"/>
-  <error id="K-SeqSUMFunc-24" reason="error failure"/>
-  <error id="K-SeqSUMFunc-25" reason="error failure"/>
-  <error id="K-SeqSUMFunc-26" reason="error failure"/>
-  <error id="base-URI-18" reason="error failure"/>
-  <error id="base-URI-24" reason="error failure"/>
   <error id="caselessmatch04" reason="result failure"/>
   <error id="caselessmatch05" reason="result failure"/>
   <error id="caselessmatch06" reason="result failure"/>
@@ -34,7 +27,6 @@
   <error id="fn-avg-mix-args-015" reason="result failure"/>
   <error id="fn-avg-mix-args-020" reason="result failure"/>
   <error id="fn-avg-mix-args-022" reason="result failure"/>
-  <error id="fn-base-uri-23" reason="error failure"/>
   <error id="fn-current-date-1" reason="inspect" action="pass"/>
   <error id="fn-current-date-10" reason="inspect" action="pass"/>
   <error id="fn-current-date-11" reason="inspect" action="pass"/>

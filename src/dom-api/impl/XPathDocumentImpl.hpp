@@ -30,19 +30,18 @@
 class XQILLA_API XPathDocumentImpl : public XERCES_CPP_NAMESPACE_QUALIFIER DOMDocumentImpl
 {
 public:
-	//Main constructor
-	XPathDocumentImpl(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr);
-	virtual ~XPathDocumentImpl();
+  XPathDocumentImpl(XERCES_CPP_NAMESPACE_QUALIFIER DOMImplementation* domImpl, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr);
+  virtual ~XPathDocumentImpl();
 
-    virtual XERCES_CPP_NAMESPACE_QUALIFIER DOMNode*             insertBefore(XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *newChild, XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *refChild);
-    virtual XERCES_CPP_NAMESPACE_QUALIFIER DOMNode*             removeChild(XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *oldChild);
-    virtual XERCES_CPP_NAMESPACE_QUALIFIER DOMNode*             replaceChild(XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *newChild, XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *oldChild);
-    virtual XERCES_CPP_NAMESPACE_QUALIFIER DOMDocumentType*     getDoctype() const;
-    virtual XERCES_CPP_NAMESPACE_QUALIFIER DOMElement*          getDocumentElement() const;
+  virtual XERCES_CPP_NAMESPACE_QUALIFIER DOMNode*             insertBefore(XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *newChild, XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *refChild);
+  virtual XERCES_CPP_NAMESPACE_QUALIFIER DOMNode*             removeChild(XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *oldChild);
+  virtual XERCES_CPP_NAMESPACE_QUALIFIER DOMNode*             replaceChild(XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *newChild, XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *oldChild);
+  virtual XERCES_CPP_NAMESPACE_QUALIFIER DOMDocumentType*     getDoctype() const;
+  virtual XERCES_CPP_NAMESPACE_QUALIFIER DOMElement*          getDocumentElement() const;
 
 protected:
-    XERCES_CPP_NAMESPACE_QUALIFIER DOMDocumentType*      fMyDocType;
-    XERCES_CPP_NAMESPACE_QUALIFIER DOMElement*           fMyDocElement;
+  XERCES_CPP_NAMESPACE_QUALIFIER DOMDocumentType*      fMyDocType;
+  XERCES_CPP_NAMESPACE_QUALIFIER DOMElement*           fMyDocElement;
 
 };
 

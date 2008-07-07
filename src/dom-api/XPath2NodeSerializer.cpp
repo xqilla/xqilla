@@ -28,7 +28,16 @@
 #include <xercesc/util/XMLUniDefs.hpp>
 #include <xercesc/util/XercesDefs.hpp>
 
-XPath2NodeSerializer::XPath2NodeSerializer(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* const manager) : XERCES_CPP_NAMESPACE_QUALIFIER DOMWriterImpl(manager) {
+XERCES_CPP_NAMESPACE_USE;
+
+XPath2NodeSerializer::XPath2NodeSerializer(MemoryManager* const manager)
+  :
+#if _XERCES_VERSION >= 30000
+  DOMLSSerializerImpl(manager)
+#else
+  DOMWriterImpl(manager)
+#endif
+{
 }
   
 XPath2NodeSerializer::~XPath2NodeSerializer() {
@@ -36,22 +45,22 @@ XPath2NodeSerializer::~XPath2NodeSerializer() {
 }
 
 
-bool XPath2NodeSerializer::customNodeSerialize(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* const nodeToWrite, int level) {
+bool XPath2NodeSerializer::customNodeSerialize(const DOMNode* const nodeToWrite, int level) {
 
   switch (nodeToWrite->getNodeType ()) {
-    case XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNamespace::XPATH_NAMESPACE_NODE: 
+    case DOMXPathNamespace::XPATH_NAMESPACE_NODE: 
       {
         const XMLCh* localName = nodeToWrite->getLocalName();
         const XMLCh* namespaceURI = nodeToWrite->getNamespaceURI();
 
-        *fFormatter << XERCES_CPP_NAMESPACE_QUALIFIER XMLFormatter::NoEscapes
-                    << XERCES_CPP_NAMESPACE_QUALIFIER chOpenSquare
+        *fFormatter << XMLFormatter::NoEscapes
+                    << chOpenSquare
                     << localName
-                    << XERCES_CPP_NAMESPACE_QUALIFIER chEqual 
-                    << XERCES_CPP_NAMESPACE_QUALIFIER chDoubleQuote
+                    << chEqual 
+                    << chDoubleQuote
                     << namespaceURI
-                    << XERCES_CPP_NAMESPACE_QUALIFIER chDoubleQuote 
-                    << XERCES_CPP_NAMESPACE_QUALIFIER chCloseSquare;
+                    << chDoubleQuote 
+                    << chCloseSquare;
        
         return true;
         break;

@@ -51,12 +51,24 @@ public:
                        XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool *xmlGP);
   virtual ~XQillaExpressionImpl();
 
+#if _XERCES_VERSION >= 30000
+  virtual XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathResult*
+  evaluate(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *contextNode,
+           XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathResult::ResultType type,
+           XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathResult* result) const;
+
+  virtual XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathResult*
+  evaluateOnce(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *contextNode,
+           XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathResult::ResultType type,
+           XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathResult* result);
+#else
   virtual void* evaluate(XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* contextNode,
                          unsigned short type,
                          void* reuseableResult) const;
   virtual void* evaluateOnce(XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* contextNode,
                              unsigned short type,
                              void* reuseableResult);
+#endif
 
   virtual void release();
 

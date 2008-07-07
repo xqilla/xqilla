@@ -134,9 +134,6 @@
 /* Define to 1 if you have the <wchar.h> header file. */
 #undef HAVE_WCHAR_H
 
-/* Define to 1 if the Xerces-C library used is version 3 or later. */
-#undef HAVE_XERCES3
-
 /* Define to 1 if the system has the type `_Bool'. */
 #undef HAVE__BOOL
 
