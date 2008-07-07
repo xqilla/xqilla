@@ -169,7 +169,7 @@ string PrintAST::print(const XQQuery *query, const DynamicContext *context, int 
     s << p.printASTNode(query->getQueryBody(), context, indent + INDENT);
 
   if(query->getIsLibraryModule()) {
-    s << in << "</Module>";
+    s << in << "</Module>" << endl;
   }
   else {
     s << in << "</XQuery>";
