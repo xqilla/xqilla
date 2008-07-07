@@ -1506,7 +1506,7 @@ Optional Features:
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
-  --with-xerces=DIR       Path of Xerces. DIR="../xerces-c-src"
+  --with-xerces=DIR       Path of Xerces. DIR="/usr/local"
   --with-faxpp=DIR        Path of FAXPP. DIR="/usr/local"
   --with-tidy=DIR         Path of the HTML Tidy library. DIR="/usr"
   --with-gnu-ld           assume the C compiler uses GNU ld [default=no]
@@ -2646,7 +2646,7 @@ else
 	CXXFLAGS=${CXXFLAGS-"$CFLAGS"}
 fi
 
-# Check Xerces library name
+# Check for the Xerces-C library
 { echo "$as_me:$LINENO: checking if --with-xerces=DIR option specified" >&5
 echo $ECHO_N "checking if --with-xerces=DIR option specified... $ECHO_C" >&6; }
 
@@ -2662,56 +2662,66 @@ echo "${ECHO_T}$with_xerces" >&6; }
 if test "$with_xerces" = "no"; then
         with_xerces="/usr/local"
 fi
-xerces3="no"
-if test `ls $with_xerces/lib/libxerces-c.*2[6-8].* 2>/dev/null | wc -l` -gt 0 ; then
-        { echo "$as_me:$LINENO: checking for Xerces C++ version from source tree" >&5
-echo $ECHO_N "checking for Xerces C++ version from source tree... $ECHO_C" >&6; }
-        xerces_version=`ls "$with_xerces"/lib/libxerces-c.*[0-9][0-9].* | tail -1 | sed 's/.*xerces-c.*\([0-9]\)\([0-9]\).*/\1.\2/'`
-        { echo "$as_me:$LINENO: result: $xerces_version" >&5
-echo "${ECHO_T}$xerces_version" >&6; }
-        xerces_lib="$with_xerces/lib"
-        xerces_include_dir="$with_xerces/src"
-        xerces_include="-I$with_xerces/src"
-elif test `ls $with_xerces/lib/libxerces-c*2[6-8].* 2>/dev/null | wc -l` -gt 0 ; then
-        { echo "$as_me:$LINENO: checking for Xerces C++ version from source tree" >&5
-echo $ECHO_N "checking for Xerces C++ version from source tree... $ECHO_C" >&6; }
-        xerces_version=`ls "$with_xerces"/lib/libxerces-c*[0-9][0-9].* | tail -1 | sed 's/.*xerces-c*\([0-9]\)\([0-9]\).*/\1.\2/'`
-        { echo "$as_me:$LINENO: result: $xerces_version" >&5
-echo "${ECHO_T}$xerces_version" >&6; }
-        xerces_lib="$with_xerces/lib"
-        xerces_include_dir="$with_xerces/src"
-        xerces_include="-I$with_xerces/src"
-elif test `ls $with_xerces/src/libxerces-c.* 2>/dev/null | wc -l` -gt 0 ; then
-        { echo "$as_me:$LINENO: checking for Xerces C++ version from source tree" >&5
-echo $ECHO_N "checking for Xerces C++ version from source tree... $ECHO_C" >&6; }
-        { echo "$as_me:$LINENO: result: 3.0+" >&5
-echo "${ECHO_T}3.0+" >&6; }
-        xerces3="yes"
-        xerces_lib="$with_xerces/src"
 
-        if test `ls $with_xerces/src/xercesc/util/PlatformUtils.hpp 2>/dev/null | wc -l` -gt 0 ; then
-           xerces_include_dir="$with_xerces/src"
-           xerces_include="-I$with_xerces/src"
-        elif test `ls $with_xerces/../src/xercesc/util/PlatformUtils.hpp 2>/dev/null | wc -l` -gt 0 ; then
-           xerces_include_dir="$with_xerces/../src"
-           xerces_include="-I$with_xerces/../src -I$with_xerces/src"
-        else
-           xerces_include_dir="$with_xerces/src"
-           xerces_include="-I$with_xerces/src"
-           { echo "$as_me:$LINENO: WARNING: Cannot find the Xerces-C source directory - you will have to manually configure $xerces_include." >&5
-echo "$as_me: WARNING: Cannot find the Xerces-C source directory - you will have to manually configure $xerces_include." >&2;}
-        fi
+# Find the include directory
+if test `ls $with_xerces/src/xercesc/util/XercesVersion.hpp 2>/dev/null | wc -l` -gt 0 ; then
+   xerces_include_dir="$with_xerces/src"
+   xerces_include="-I$with_xerces/src"
+   xerces_source_tree="yes"
+
+elif test `ls $with_xerces/include/xercesc/util/XercesVersion.hpp 2>/dev/null | wc -l` -gt 0 ; then
+   xerces_include_dir="$with_xerces/include"
+   xerces_include="-I$with_xerces/include"
+   xerces_source_tree="no"
+
+elif test `ls $with_xerces/../src/xercesc/util/XercesVersion.hpp 2>/dev/null | wc -l` -gt 0 ; then
+   xerces_include_dir="$with_xerces/../src"
+   xerces_include="-I$with_xerces/../src -I$with_xerces/src"
+   xerces_source_tree="yes"
+
 else
-        { { echo "$as_me:$LINENO: error: The Xerces-C source is required to build XQilla.  $with_xerces is not a valid, compiled source tree for Xerces-C.  You must specify the path where Xerces is installed with --with-xerces." >&5
-echo "$as_me: error: The Xerces-C source is required to build XQilla.  $with_xerces is not a valid, compiled source tree for Xerces-C.  You must specify the path where Xerces is installed with --with-xerces." >&2;}
+   { { echo "$as_me:$LINENO: error: Unable to find the Xerces-C include directory." >&5
+echo "$as_me: error: Unable to find the Xerces-C include directory." >&2;}
    { (exit 1); exit 1; }; }
+fi
+
+# Work out the Xerces-C version
+{ echo "$as_me:$LINENO: checking for Xerces-C version" >&5
+echo $ECHO_N "checking for Xerces-C version... $ECHO_C" >&6; }
+xerces_version_major=`grep "^\#define XERCES_VERSION_MAJOR" "$xerces_include_dir"/xercesc/util/XercesVersion.hpp | sed -e 's/^\#define XERCES_VERSION_MAJOR \([0-9]*\)/\1/'`
+xerces_version_minor=`grep "^\#define XERCES_VERSION_MINOR" "$xerces_include_dir"/xercesc/util/XercesVersion.hpp | sed -e 's/^\#define XERCES_VERSION_MINOR \([0-9]*\)/\1/'`
+xerces_version=$xerces_version_major"."$xerces_version_minor
+{ echo "$as_me:$LINENO: result: $xerces_version" >&5
+echo "${ECHO_T}$xerces_version" >&6; }
+
+if test "$xerces_version_major" -lt "3" -a "$xerces_source_tree" = "no"; then
+   { { echo "$as_me:$LINENO: error: For Xerces-C versions before 3.0 the source tree is required to build XQilla. You must specify the path to the Xerces-C source tree using --with-xerces." >&5
+echo "$as_me: error: For Xerces-C versions before 3.0 the source tree is required to build XQilla. You must specify the path to the Xerces-C source tree using --with-xerces." >&2;}
+   { (exit 1); exit 1; }; }
+fi
+
+# Find the library
+if test `ls $with_xerces/lib/libxerces-c.* 2>/dev/null | wc -l` -gt 0 ; then
+   xerces_lib="$with_xerces/lib"
+elif test `ls $with_xerces/src/libxerces-c.* 2>/dev/null | wc -l` -gt 0 ; then
+   xerces_lib="$with_xerces/src"
+else
+   if test "$xerces_source_tree" = "yes" -a "$xerces_version_major" -ge "3"; then
+      xerces_lib="$with_xerces/src"
+   else
+      xerces_lib="$with_xerces/lib"
+   fi
+
+   { echo "$as_me:$LINENO: WARNING: Unable to find the Xerces-C library. Guessed path is $xerces_lib." >&5
+echo "$as_me: WARNING: Unable to find the Xerces-C library. Guessed path is $xerces_lib." >&2;}
 fi
 
 
 
 
+
 # The DOM samples only build against Xerces-C 3.0 or newer
- if test "$xerces3" = "yes"; then
+ if test "$xerces_version_major" -ge "3"; then
   BUILD_DOM_SAMPLES_TRUE=
   BUILD_DOM_SAMPLES_FALSE='#'
 else
@@ -3515,7 +3525,7 @@ _ACEOF
 cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
 /* end confdefs.h.  */
-#include<xercesc/util/BinMemInputStream.hpp>
+#include <xercesc/util/BinMemInputStream.hpp>
 int
 main ()
 {
@@ -5749,7 +5759,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 5752 "configure"' > conftest.$ac_ext
+  echo '#line 5762 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -8328,11 +8338,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:8331: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:8341: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:8335: \$? = $ac_status" >&5
+   echo "$as_me:8345: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -8618,11 +8628,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:8621: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:8631: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:8625: \$? = $ac_status" >&5
+   echo "$as_me:8635: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -8722,11 +8732,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:8725: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:8735: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:8729: \$? = $ac_status" >&5
+   echo "$as_me:8739: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -11099,7 +11109,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 11102 "configure"
+#line 11112 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -11199,7 +11209,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 11202 "configure"
+#line 11212 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -13600,11 +13610,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:13603: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:13613: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:13607: \$? = $ac_status" >&5
+   echo "$as_me:13617: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -13704,11 +13714,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:13707: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:13717: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:13711: \$? = $ac_status" >&5
+   echo "$as_me:13721: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -15302,11 +15312,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15305: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15315: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:15309: \$? = $ac_status" >&5
+   echo "$as_me:15319: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -15406,11 +15416,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15409: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15419: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:15413: \$? = $ac_status" >&5
+   echo "$as_me:15423: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -17626,11 +17636,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:17629: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:17639: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:17633: \$? = $ac_status" >&5
+   echo "$as_me:17643: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -17916,11 +17926,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:17919: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:17929: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:17923: \$? = $ac_status" >&5
+   echo "$as_me:17933: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -18020,11 +18030,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:18023: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:18033: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:18027: \$? = $ac_status" >&5
+   echo "$as_me:18037: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
