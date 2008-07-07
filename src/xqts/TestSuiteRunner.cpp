@@ -35,6 +35,7 @@
 #include <xercesc/util/BinFileInputStream.hpp>
 #include <xercesc/framework/URLInputSource.hpp>
 #include <xercesc/framework/MemBufInputSource.hpp>
+#include <xercesc/util/XMLChar.hpp>
 
 #if defined(XERCES_HAS_CPP_NAMESPACE)
 XERCES_CPP_NAMESPACE_USE
@@ -173,7 +174,7 @@ static bool isIgnorableWS(DOMNode* node)
 {
   return node!=NULL &&
     node->getNodeType()==DOMNode::TEXT_NODE && 
-    XMLString::isAllWhiteSpace(node->getNodeValue()) &&
+    XMLChar1_0::isAllSpaces(node->getNodeValue(), XMLString::stringLen(node->getNodeValue())) &&
     (node->getPreviousSibling()==NULL || (node->getPreviousSibling()->getNodeType()==DOMNode::ELEMENT_NODE || 
                                           node->getPreviousSibling()->getNodeType()==DOMNode::PROCESSING_INSTRUCTION_NODE ||
                                           node->getPreviousSibling()->getNodeType()==DOMNode::COMMENT_NODE)) &&

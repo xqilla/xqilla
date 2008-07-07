@@ -6,7 +6,11 @@ LDFLAGS = -L$(xerces_lib) -R$(xerces_lib) $(faxpp_lib) $(tidy_lib) -lxerces-c $(
 LDADD = libxqilla.la
 
 bin_PROGRAMS = xqilla
-noinst_PROGRAMS = xqtsRunner xmarkRunner simple-basic simple-context-item dom-basic dom-context-item dom-resolver
+noinst_PROGRAMS = xqtsRunner xmarkRunner simple-basic simple-context-item
+
+if BUILD_DOM_SAMPLES
+noinst_PROGRAMS += dom-basic dom-context-item dom-resolver
+endif
 
 lib_LTLIBRARIES = libxqilla.la
 

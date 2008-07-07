@@ -109,7 +109,7 @@ public:
    * @exception DOMException
    * INVALID_STATE_ERR: There is no current result in the result.
    */
-  virtual double asDouble() const = 0;
+  virtual double getNumberValue() const = 0;
 
   /**
    * Conversion of the current result to int.
@@ -119,7 +119,7 @@ public:
    * @exception DOMException
    * INVALID_STATE_ERR: There is no current result in the result.
    */
-  virtual int asInt() const = 0;
+  virtual int getIntegerValue() const = 0;
 
   /**
    * Conversion of the current result to string.
@@ -129,7 +129,7 @@ public:
    * @exception DOMException
    * INVALID_STATE_ERR: There is no current result in the result.
    */
-  virtual const XMLCh* asString() const = 0;
+  virtual const XMLCh* getStringValue() const = 0;
 
   /**
    * Conversion of the current result to boolean.
@@ -139,7 +139,7 @@ public:
    * @exception DOMException
    * INVALID_STATE_ERR: There is no current result in the result.
    */
-  virtual bool asBoolean() const = 0;
+  virtual bool getBooleanValue() const = 0;
 
   /**
    * Retrieve the current node value.
@@ -149,7 +149,7 @@ public:
    * @exception DOMException
    * INVALID_STATE_ERR: There is no current result in the result.
    */
-  virtual const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* asNode() const = 0;
+  virtual XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* getNodeValue() const = 0;
 
   /**
    * Signifies that the iterator has become invalid.

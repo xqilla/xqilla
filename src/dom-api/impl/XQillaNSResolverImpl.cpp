@@ -110,7 +110,11 @@ const XMLCh* XQillaNSResolverImpl::lookupPrefix(const XMLCh* uri) const
   }
 
   if(_resolverNode != 0) {
+#if _XERCES_VERSION >= 30000
+    const XMLCh *prefix = _resolverNode->lookupPrefix(uri);
+#else
     const XMLCh *prefix = _resolverNode->lookupNamespacePrefix(uri, false);
+#endif
     if(prefix != NULL && *prefix != 0) return prefix;
   }
 

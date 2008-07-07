@@ -37,8 +37,8 @@ target_triplet = @target@
 bin_PROGRAMS = xqilla$(EXEEXT)
 noinst_PROGRAMS = xqtsRunner$(EXEEXT) xmarkRunner$(EXEEXT) \
 	simple-basic$(EXEEXT) simple-context-item$(EXEEXT) \
-	dom-basic$(EXEEXT) dom-context-item$(EXEEXT) \
-	dom-resolver$(EXEEXT)
+	$(am__EXEEXT_1)
+@BUILD_DOM_SAMPLES_TRUE@am__append_1 = dom-basic dom-context-item dom-resolver
 subdir = .
 DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(top_srcdir)/configure \
@@ -216,6 +216,9 @@ libxqilla_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
 	$(CXXFLAGS) $(libxqilla_la_LDFLAGS) $(LDFLAGS) -o $@
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
+@BUILD_DOM_SAMPLES_TRUE@am__EXEEXT_1 = dom-basic$(EXEEXT) \
+@BUILD_DOM_SAMPLES_TRUE@	dom-context-item$(EXEEXT) \
+@BUILD_DOM_SAMPLES_TRUE@	dom-resolver$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS) $(noinst_PROGRAMS)
 am_dom_basic_OBJECTS = dom-basic.$(OBJEXT)
 dom_basic_OBJECTS = $(am_dom_basic_OBJECTS)

@@ -62,7 +62,6 @@ else
 fi
 
 # Check Xerces library name
-AH_TEMPLATE(HAVE_XERCES3, [Define to 1 if the Xerces-C library used is version 3 or later.])
 AC_MSG_CHECKING([if --with-xerces=DIR option specified])
 AC_ARG_WITH(xerces,
         [AS_HELP_STRING(--with-xerces=DIR,Path of Xerces. [DIR="../xerces-c-src"])],
@@ -71,6 +70,7 @@ AC_MSG_RESULT($with_xerces)
 if test "$with_xerces" = "no"; then
         with_xerces="/usr/local"
 fi
+xerces3="no"
 if test `ls $with_xerces/lib/libxerces-c.*2[[6-8]].* 2>/dev/null | wc -l` -gt 0 ; then
         AC_MSG_CHECKING([for Xerces C++ version from source tree])
         xerces_version=`ls "$with_xerces"/lib/libxerces-c.*[[0-9]][[0-9]].* | tail -1 | sed 's/.*xerces-c.*\([[0-9]]\)\([[0-9]]\).*/\1.\2/'`
@@ -85,11 +85,11 @@ elif test `ls $with_xerces/lib/libxerces-c*2[[6-8]].* 2>/dev/null | wc -l` -gt 0
         xerces_lib="$with_xerces/lib"
         xerces_include_dir="$with_xerces/src"
         xerces_include="-I$with_xerces/src"
-elif test `ls $with_xerces/obj/libxerces-c.* 2>/dev/null | wc -l` -gt 0 ; then
+elif test `ls $with_xerces/src/libxerces-c.* 2>/dev/null | wc -l` -gt 0 ; then
         AC_MSG_CHECKING([for Xerces C++ version from source tree])
         AC_MSG_RESULT(3.0+)
-        AC_DEFINE(HAVE_XERCES3)
-        xerces_lib="$with_xerces/lib"
+        xerces3="yes"
+        xerces_lib="$with_xerces/src"
 
         if test `ls $with_xerces/src/xercesc/util/PlatformUtils.hpp 2>/dev/null | wc -l` -gt 0 ; then
            xerces_include_dir="$with_xerces/src"
@@ -109,6 +109,9 @@ AC_SUBST(xerces_include)
 AC_SUBST(xerces_include_dir)
 AC_SUBST(xerces_lib)
 
+# The DOM samples only build against Xerces-C 3.0 or newer
+AM_CONDITIONAL([BUILD_DOM_SAMPLES], [test "$xerces3" = "yes"])
+
 # Check for the BinInputStream::getContentType() method
 AH_TEMPLATE(HAVE_GETCONTENTTYPE, [Define to 1 if the Xerces-C library supports the BinInputStream::getContentType() method.])
 CPPFLAGS_BKUP="$CPPFLAGS"
@@ -125,7 +128,7 @@ if test "$ac_found_getcontenttype" = yes
 then
         AC_DEFINE(HAVE_GETCONTENTTYPE)
 else
-        AC_MSG_ERROR([The Xerces-C source code must be patched with the content type patch: xqilla/src/xercesc_content_type.patch])
+        AC_MSG_WARN([XQilla will build with reduced functionality. To change this, either use Xerces-C 3.0 or apply xqilla/src/xercesc_content_type.patch to Xerces-C 2.8.])
 fi
 
 # Check for the RegularExpression::allMatches() method
@@ -144,7 +147,7 @@ if test "$ac_found_allmatches" = yes
 then
         AC_DEFINE(HAVE_ALLMATCHES)
 else
-        AC_MSG_ERROR([The Xerces-C source code must be patched with the regex patch: xqilla/src/xercesc_regex.patch])
+        AC_MSG_WARN([XQilla will build with reduced functionality. To change this, either use Xerces-C 3.0 or apply xqilla/src/xercesc_regex.patch to Xerces-C 2.8.])
 fi
 
 
@@ -242,9 +245,11 @@ AM_PROG_LEX
 # Check for unicode support in flex
 AC_MSG_CHECKING([unicode support in flex])
 flex --help | grep "\-U" > /dev/null
-if test "$?" -eq "0"
-	then AC_MSG_RESULT([found])
-        else AC_MSG_WARN([not found. XQilla requires a version of flex supporting the -U (16-bit unicode) flag if you need to rebuild the lexer.])
+if test "$?" -eq "0"; then
+	AC_MSG_RESULT([found])
+else
+	AC_MSG_RESULT([not found])
+  AC_MSG_WARN([XQilla requires a version of flex supporting the -U (16-bit unicode) flag if you need to rebuild the lexer.])
 fi
 
 # Set up extra compiler flags for GCC

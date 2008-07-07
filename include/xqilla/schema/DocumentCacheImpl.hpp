@@ -39,6 +39,10 @@ class GrammarResolver;
 class XMLScanner;
 XERCES_CPP_NAMESPACE_END
 
+#if _XERCES_VERSION < 30000
+typedef XMLSSize_t XMLFileLoc;
+#endif
+
 /// The class that performs the parsing of input documents
 class XQILLA_API DocumentCacheImpl : public DocumentCache,
                                      private XERCES_CPP_NAMESPACE_QUALIFIER XMLDocumentHandler,
@@ -112,8 +116,8 @@ protected:
 
   // XMLErrorReporter
   virtual void resetErrors();
-  virtual void error(const unsigned int, const XMLCh* const, const XMLErrorReporter::ErrTypes errType, const XMLCh* const errorText,
-                     const XMLCh* const systemId, const XMLCh* const publicId, const XMLSSize_t lineNum, const XMLSSize_t colNum);
+  virtual void error(const unsigned int errCode, const XMLCh* const errDomain, const XMLErrorReporter::ErrTypes type, const XMLCh* const errorText,
+                     const XMLCh* const systemId, const XMLCh* const publicId, const XMLFileLoc lineNum, const XMLFileLoc colNum);
 
   // XMLDocumentHandler
   virtual void startDocument();

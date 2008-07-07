@@ -29,12 +29,19 @@
 #include <xqilla/runtime/Result.hpp>
 
 #include <xercesc/dom/impl/DOMDocumentImpl.hpp>
+#include <xercesc/dom/DOMXPathResult.hpp>
 
 class DynamicContext;
 class XQQuery;
 class XQillaExpressionImpl;
 
-class XQILLA_API XPath2ResultImpl : public XPath2Result, XERCES_CPP_NAMESPACE_QUALIFIER DOMTypeInfo
+class XQILLA_API XPath2ResultImpl : public
+#if _XERCES_VERSION >= 30000
+  XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathResult,
+#else
+  XPath2Result,
+#endif
+  XERCES_CPP_NAMESPACE_QUALIFIER DOMTypeInfo
 {
 public:
   XPath2ResultImpl(XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* contextNode,
@@ -48,16 +55,23 @@ public:
   virtual const XERCES_CPP_NAMESPACE_QUALIFIER DOMTypeInfo *getTypeInfo() const;
 
 
-  virtual int asInt() const;
-  virtual double asDouble() const;
-  virtual const XMLCh* asString() const;
-  virtual bool asBoolean() const;
-  virtual const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* asNode() const;
+  virtual int getIntegerValue() const;
+  virtual double getNumberValue() const;
+  virtual const XMLCh* getStringValue() const;
+  virtual bool getBooleanValue() const;
+  virtual XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* getNodeValue() const;
 
-  /// DOMTypeInfo method
+  /// DOMTypeInfo methods
+#if _XERCES_VERSION >= 30000
+    virtual const XMLCh* getTypeName() const;
+    virtual const XMLCh* getTypeNamespace() const;
+    virtual bool isDerivedFrom(const XMLCh* typeNamespaceArg,
+                               const XMLCh* typeNameArg,
+                               DerivationMethods derivationMethod) const;
+#else
   virtual const XMLCh* getName() const;
-  /// DOMTypeInfo method
   virtual const XMLCh* getNamespace() const;
+#endif
 
 protected:
   XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* _createdWith;

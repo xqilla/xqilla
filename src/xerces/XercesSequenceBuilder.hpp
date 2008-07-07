@@ -25,7 +25,7 @@
 #include <xqilla/events/SequenceBuilder.hpp>
 #include <xqilla/runtime/Sequence.hpp>
 
-#include <xercesc/dom/DOMDocument.hpp>
+#include "../dom-api/impl/XPathDocumentImpl.hpp"
 
 class XercesSequenceBuilder : public SequenceBuilder
 {
@@ -56,7 +56,7 @@ public:
 
 private:
   const DynamicContext *context_;
-  XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *document_;
+  XPathDocumentImpl *document_;
   XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *currentParent_;
   XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *currentNode_;
   Sequence seq_;

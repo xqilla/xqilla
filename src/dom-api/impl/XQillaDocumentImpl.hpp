@@ -43,25 +43,39 @@ XERCES_CPP_NAMESPACE_END
 class XQillaDocumentImpl : public XERCES_CPP_NAMESPACE_QUALIFIER DOMDocumentImpl
 {
 public:
-  XQillaDocumentImpl(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr);
-  XQillaDocumentImpl(const XMLCh *fNamespaceURI, const XMLCh *qualifiedName, XERCES_CPP_NAMESPACE_QUALIFIER DOMDocumentType *doctype,
-                     XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* const memMgr);
+  XQillaDocumentImpl(XERCES_CPP_NAMESPACE_QUALIFIER DOMImplementation* domImpl,
+                     XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* const manager);
+  XQillaDocumentImpl(const XMLCh* namespaceURI, const XMLCh* qualifiedName,
+                     XERCES_CPP_NAMESPACE_QUALIFIER DOMDocumentType* doctype,
+                     XERCES_CPP_NAMESPACE_QUALIFIER DOMImplementation* domImpl,
+                     XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* const manager);
   virtual ~XQillaDocumentImpl();
   
-  // weak version, need to create a context from scratch inside
+#if _XERCES_VERSION >= 30000
+  virtual XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathExpression*
+  createExpression(const XMLCh *expression, const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver *resolver);
+
+  virtual XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver*
+  createNSResolver(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *nodeResolver);
+
+  virtual XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathResult*
+  evaluate(const XMLCh *expression, const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *contextNode,
+           const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver *resolver,
+           XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathResult::ResultType type,
+           XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathResult* result);
+#else
   virtual const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathExpression*
-  createExpression(const XMLCh* expression, const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver* resolver);
+  createExpression(const XMLCh *expression, const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver *resolver);
   
-  // create an NS Resolver
   virtual const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver*
   createNSResolver(XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* nodeResolver);
   
-  // weak version, need to create a context from scratch inside
   virtual void* evaluate(const XMLCh* expression,
                          XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* contextNode,
                          const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver* resolver,
                          unsigned short type,
                          void* reuseableResult);
+#endif
   
   virtual void setGrammarPool(XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool *xmlGrammarPool, bool adoptGramPool);
   virtual XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool *getGrammarPool();

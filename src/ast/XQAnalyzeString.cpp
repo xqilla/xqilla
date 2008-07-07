@@ -124,6 +124,7 @@ AnalyzeStringResult::AnalyzeStringResult(const LocationInfo *info)
 
 Item::Ptr AnalyzeStringResult::next(DynamicContext *context)
 {
+#ifdef HAVE_ALLMATCHES
   XPath2MemoryManager *mm = context->getMemoryManager();
 
   if(input_ == 0) {
@@ -216,6 +217,9 @@ Item::Ptr AnalyzeStringResult::next(DynamicContext *context)
   }
 
   return item;
+#else
+  XQThrow(ASTException, X("AnalyzeStringResult::next"),X("xsl:analyze-string is only supported with Xerces-C 3.0 or newer."));
+#endif
 }
 
 const XMLCh *AnalyzeStringResult::getGroup(int index) const

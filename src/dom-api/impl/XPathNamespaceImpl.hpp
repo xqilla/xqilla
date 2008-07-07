@@ -64,7 +64,11 @@ public:
     virtual const XMLCh*           getNamespaceURI() const ;
     virtual       XERCES_CPP_NAMESPACE_QUALIFIER DOMNode*         getNextSibling() const ;
     virtual const XMLCh*           getNodeName() const ;
-    virtual       short            getNodeType() const ;
+#if _XERCES_VERSION >= 30000
+    virtual       NodeType         getNodeType() const;
+#else
+    virtual       short            getNodeType() const;
+#endif
     virtual const XMLCh*           getNodeValue() const ;
     virtual       XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument*     getOwnerDocument() const ;
     virtual const XMLCh*           getPrefix() const ;
@@ -84,13 +88,25 @@ public:
     virtual       bool             isSameNode(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* other) const;
     virtual       bool             isEqualNode(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* arg) const;
     virtual const XMLCh*           getBaseURI() const ;
+#if _XERCES_VERSION >= 30000
+    virtual short                  compareDocumentPosition(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* other) const ;
+#else
     virtual short                  compareTreePosition(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* other) const ;
+#endif
     virtual const XMLCh*           getTextContent() const ;
     virtual void                   setTextContent(const XMLCh* textContent) ;
+#if _XERCES_VERSION >= 30000
+    virtual const XMLCh*      lookupPrefix(const XMLCh* namespaceURI) const;
+#else
     virtual const XMLCh*           lookupNamespacePrefix(const XMLCh* namespaceURI, bool useDefault) const  ;
+#endif
     virtual bool                   isDefaultNamespace(const XMLCh* namespaceURI) const;
     virtual const XMLCh*           lookupNamespaceURI(const XMLCh* prefix) const  ;
+#if _XERCES_VERSION >= 30000
+    virtual void*             getFeature(const XMLCh* feature, const XMLCh* version) const;
+#else
     virtual       XERCES_CPP_NAMESPACE_QUALIFIER DOMNode*         getInterface(const XMLCh* feature) ;
+#endif
     virtual       void             release();
 
 

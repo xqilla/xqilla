@@ -31,94 +31,96 @@
 #include <xercesc/dom/impl/DOMCasts.hpp>
 #include <xercesc/dom/impl/DOMNodeImpl.hpp>
 
-//Main constructor
+XERCES_CPP_NAMESPACE_USE;
+
 XPathNamespaceImpl::XPathNamespaceImpl(const XMLCh* const nsPrefix, 
-		const XMLCh* const nsUri, XERCES_CPP_NAMESPACE_QUALIFIER DOMElement *owner, XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *docOwner) 
+		const XMLCh* const nsUri, DOMElement *owner, DOMDocument *docOwner) 
 	: fNode(docOwner)
 {
-    XERCES_CPP_NAMESPACE_QUALIFIER DOMNodeImpl *argImpl = XERCES_CPP_NAMESPACE_QUALIFIER castToNodeImpl(this);
+    DOMNodeImpl *argImpl = castToNodeImpl(this);
     argImpl->fOwnerNode = owner;
     argImpl->isOwned(true);
     argImpl->setIsLeafNode(true);
 
-    XERCES_CPP_NAMESPACE_QUALIFIER DOMDocumentImpl *docImpl = (XERCES_CPP_NAMESPACE_QUALIFIER DOMDocumentImpl *)docOwner;
+    DOMDocumentImpl *docImpl = (DOMDocumentImpl *)docOwner;
     uri = docImpl->getPooledString(nsUri);
     prefix = docImpl->getPooledString(nsPrefix);
 
     //	this->ownerElement = owner;
-}//constructor
+}
 
-
-//Copy constructor
 XPathNamespaceImpl::XPathNamespaceImpl(const XPathNamespaceImpl &other) 
 	: fNode(other.fNode), uri(other.uri), prefix(other.prefix)
 {
-}//copy constructor
+}
 
-
-//Destructor
 XPathNamespaceImpl::~XPathNamespaceImpl()
 {
-	//Nothing
-}//destructor
+}
 
-
-XERCES_CPP_NAMESPACE_QUALIFIER DOMNode * XPathNamespaceImpl::cloneNode(bool deep) const 
+DOMNode * XPathNamespaceImpl::cloneNode(bool deep) const 
 {
-	throw XERCES_CPP_NAMESPACE_QUALIFIER DOMException::NOT_SUPPORTED_ERR;
-}//cloneNode
+	throw DOMException::NOT_SUPPORTED_ERR;
+}
 
 const XMLCh *XPathNamespaceImpl::getNodeName() const
 {
 	return prefix;
-}//getNodeName
+}
 
+#if _XERCES_VERSION >= 30000
+DOMNode::NodeType XPathNamespaceImpl::getNodeType() const
+#else
 short XPathNamespaceImpl::getNodeType() const
+#endif
 {
-  //	return XERCES_CPP_NAMESPACE_QUALIFIER DOMNode::XPATH_NAMESPACE_NODE;
-  return XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNamespace::XPATH_NAMESPACE_NODE;
-}//getNodeType
+  return (DOMNode::NodeType)DOMXPathNamespace::XPATH_NAMESPACE_NODE;
+}
 
 const XMLCh *XPathNamespaceImpl::getPrefix() const
 {
 	return prefix;
-}//getPrefix
+}
 
 
 const XMLCh *XPathNamespaceImpl::getNamespaceURI() const 
 {
 	return uri;
-}//getNamespaceURI
+}
 
-XERCES_CPP_NAMESPACE_QUALIFIER DOMElement *XPathNamespaceImpl::getOwnerElement() const 
+DOMElement *XPathNamespaceImpl::getOwnerElement() const 
 {
-    return (XERCES_CPP_NAMESPACE_QUALIFIER DOMElement *) (fNode.isOwned() ? fNode.fOwnerNode : 0);
-}//getOwnerElement
+    return (DOMElement *) (fNode.isOwned() ? fNode.fOwnerNode : 0);
+}
 
 const XMLCh *XPathNamespaceImpl::getNodeValue() const 
 {
 	return 0;
-}//getNodeVale
+}
 
 void XPathNamespaceImpl::setNodeValue(const XMLCh *value)
 {
-	throw XERCES_CPP_NAMESPACE_QUALIFIER DOMException(XERCES_CPP_NAMESPACE_QUALIFIER DOMException::NO_MODIFICATION_ALLOWED_ERR, 0);
-}//setNodeValue
+	throw DOMException(DOMException::NO_MODIFICATION_ALLOWED_ERR, 0);
+}
 
-
-void* XPathNamespaceImpl::setUserData(const XMLCh* key, void* data, XERCES_CPP_NAMESPACE_QUALIFIER DOMUserDataHandler* handler)
+void* XPathNamespaceImpl::setUserData(const XMLCh* key, void* data, DOMUserDataHandler* handler)
 {
-	throw XERCES_CPP_NAMESPACE_QUALIFIER DOMException(XERCES_CPP_NAMESPACE_QUALIFIER DOMException::NO_MODIFICATION_ALLOWED_ERR, 0);
+	throw DOMException(DOMException::NO_MODIFICATION_ALLOWED_ERR, 0);
 }
 
 void XPathNamespaceImpl::setPrefix(const XMLCh *prefix)
 {
-	throw XERCES_CPP_NAMESPACE_QUALIFIER DOMException(XERCES_CPP_NAMESPACE_QUALIFIER DOMException::NO_MODIFICATION_ALLOWED_ERR, 0);
-}//setPrefix
+	throw DOMException(DOMException::NO_MODIFICATION_ALLOWED_ERR, 0);
+}
 
 
 
-short            XPathNamespaceImpl::compareTreePosition(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* other) const {
+#if _XERCES_VERSION >= 30000
+short            XPathNamespaceImpl::compareDocumentPosition(const DOMNode* other) const
+#else
+short            XPathNamespaceImpl::compareTreePosition(const DOMNode* other) const
+#endif
+{
 
     //note: order of namespace nodes currently has issues (number 51). For our purposes
     //namespace nodes belong to the element on which they were originally declared
@@ -162,28 +164,40 @@ short            XPathNamespaceImpl::compareTreePosition(const XERCES_CPP_NAMESP
 
 
 
-    const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* thisNode = this;
+    const DOMNode* thisNode = this;
 
     // If the nodes are the same...
     if (thisNode == other)
-        return (XERCES_CPP_NAMESPACE_QUALIFIER DOMNode::TREE_POSITION_SAME_NODE | XERCES_CPP_NAMESPACE_QUALIFIER DOMNode::TREE_POSITION_EQUIVALENT);
+#if _XERCES_VERSION >= 30000
+        return 0;
+#else
+        return (DOMNode::TREE_POSITION_SAME_NODE | DOMNode::TREE_POSITION_EQUIVALENT);
+#endif
 
     // If either node is of type ENTITY or NOTATION, compare as disconnected
     short thisType = thisNode->getNodeType();
     short otherType = other->getNodeType();
 
     // If either node is of type ENTITY or NOTATION, compare as disconnected
-    if (thisType == XERCES_CPP_NAMESPACE_QUALIFIER DOMNode::ENTITY_NODE ||
-            thisType == XERCES_CPP_NAMESPACE_QUALIFIER DOMNode::NOTATION_NODE ||
-            otherType == XERCES_CPP_NAMESPACE_QUALIFIER DOMNode::ENTITY_NODE ||
-            otherType == XERCES_CPP_NAMESPACE_QUALIFIER DOMNode::NOTATION_NODE ) {
-        return XERCES_CPP_NAMESPACE_QUALIFIER DOMNode::TREE_POSITION_DISCONNECTED;
+    if (thisType == DOMNode::ENTITY_NODE ||
+            thisType == DOMNode::NOTATION_NODE ||
+            otherType == DOMNode::ENTITY_NODE ||
+            otherType == DOMNode::NOTATION_NODE ) {
+#if _XERCES_VERSION >= 30000
+        return DOMNode::DOCUMENT_POSITION_DISCONNECTED;
+#else
+        return DOMNode::TREE_POSITION_DISCONNECTED;
+#endif
     }
 
     //if it is a custom node and bigger than us we must ask it for the order
-    if(otherType > XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNamespace::XPATH_NAMESPACE_NODE) {
-        XERCES_CPP_NAMESPACE_QUALIFIER DOMNodeImpl tmp(0);
+    if(otherType > DOMXPathNamespace::XPATH_NAMESPACE_NODE) {
+        DOMNodeImpl tmp(0);
+#if _XERCES_VERSION >= 30000
+        return tmp.reverseTreeOrderBitPattern(other->compareDocumentPosition(this));
+#else
         return tmp.reverseTreeOrderBitPattern(other->compareTreePosition(this));
+#endif
     }
 
     // Find the ancestor of each node, and the distance each node is from
@@ -193,16 +207,20 @@ short            XPathNamespaceImpl::compareTreePosition(const XERCES_CPP_NAMESP
     // We do this now, so that we get this info correct for attribute nodes
     // and their children.
 
-    const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *node;
-    const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *thisAncestor = this;
-    const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *otherAncestor = other;
+    const DOMNode *node;
+    const DOMNode *thisAncestor = this;
+    const DOMNode *otherAncestor = other;
     int thisDepth=0;
     int otherDepth=0;
     for (node = this; node != 0; node = node->getParentNode()) {
         thisDepth +=1;
         if (node == other)
             // The other node is an ancestor of this one.
-            return (XERCES_CPP_NAMESPACE_QUALIFIER DOMNode::TREE_POSITION_ANCESTOR | XERCES_CPP_NAMESPACE_QUALIFIER DOMNode::TREE_POSITION_PRECEDING);
+#if _XERCES_VERSION >= 30000
+            return (DOMNode::DOCUMENT_POSITION_CONTAINS | DOMNode::DOCUMENT_POSITION_PRECEDING);
+#else
+            return (DOMNode::TREE_POSITION_ANCESTOR | DOMNode::TREE_POSITION_PRECEDING);
+#endif
         thisAncestor = node;
     }
 
@@ -210,12 +228,16 @@ short            XPathNamespaceImpl::compareTreePosition(const XERCES_CPP_NAMESP
         otherDepth +=1;
         if (node == this)
             // The other node is a descendent of the reference node.
-            return (XERCES_CPP_NAMESPACE_QUALIFIER DOMNode::TREE_POSITION_DESCENDANT | XERCES_CPP_NAMESPACE_QUALIFIER DOMNode::TREE_POSITION_FOLLOWING);
+#if _XERCES_VERSION >= 30000
+            return (DOMNode::DOCUMENT_POSITION_CONTAINED_BY | DOMNode::DOCUMENT_POSITION_FOLLOWING);
+#else
+            return (DOMNode::TREE_POSITION_DESCENDANT | DOMNode::TREE_POSITION_FOLLOWING);
+#endif
         otherAncestor = node;
     }
 
 
-    const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *otherNode = other;
+    const DOMNode *otherNode = other;
 
     short thisAncestorType = thisAncestor->getNodeType();
     short otherAncestorType = otherAncestor->getNodeType();
@@ -223,91 +245,128 @@ short            XPathNamespaceImpl::compareTreePosition(const XERCES_CPP_NAMESP
     // if the ancestor is an attribute, get owning element.
     // we are now interested in the owner to determine position.
 
-    if (thisAncestorType == XERCES_CPP_NAMESPACE_QUALIFIER DOMNode::ATTRIBUTE_NODE) {
-        thisNode = ((XERCES_CPP_NAMESPACE_QUALIFIER DOMAttr *)thisAncestor)->getOwnerElement();
+    if (thisAncestorType == DOMNode::ATTRIBUTE_NODE) {
+        thisNode = ((DOMAttr *)thisAncestor)->getOwnerElement();
     }
 
-    if (thisAncestorType == XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNamespace::XPATH_NAMESPACE_NODE) {
+    if (thisAncestorType == DOMXPathNamespace::XPATH_NAMESPACE_NODE) {
         thisNode = ((XPathNamespaceImpl *)thisAncestor)->getOwnerElement();
     }
 
-    if (otherAncestorType == XERCES_CPP_NAMESPACE_QUALIFIER DOMNode::ATTRIBUTE_NODE) {
-        otherNode = ((XERCES_CPP_NAMESPACE_QUALIFIER DOMAttr *)otherAncestor)->getOwnerElement();
+    if (otherAncestorType == DOMNode::ATTRIBUTE_NODE) {
+        otherNode = ((DOMAttr *)otherAncestor)->getOwnerElement();
     }
 
-    if (otherAncestorType == XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNamespace::XPATH_NAMESPACE_NODE) {
+    if (otherAncestorType == DOMXPathNamespace::XPATH_NAMESPACE_NODE) {
         otherNode = ((XPathNamespaceImpl *)otherAncestor)->getOwnerElement();
     }
 
 
     // Before proceeding, we should check if both ancestor nodes turned
     // out to be attributes for the same element
-    if (thisAncestorType == XERCES_CPP_NAMESPACE_QUALIFIER DOMNode::ATTRIBUTE_NODE &&
-        otherAncestorType == XERCES_CPP_NAMESPACE_QUALIFIER DOMNode::ATTRIBUTE_NODE &&
+    if (thisAncestorType == DOMNode::ATTRIBUTE_NODE &&
+        otherAncestorType == DOMNode::ATTRIBUTE_NODE &&
             thisNode==otherNode)
-        return XERCES_CPP_NAMESPACE_QUALIFIER DOMNode::TREE_POSITION_EQUIVALENT;
+#if _XERCES_VERSION >= 30000
+        return DOMNode::DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC | (thisAncestor<otherAncestor ? DOMNode::DOCUMENT_POSITION_FOLLOWING:DOMNode::DOCUMENT_POSITION_PRECEDING);
+#else
+        return DOMNode::TREE_POSITION_EQUIVALENT;
+#endif
 
     //now do the same for namespace nodes
-    if (thisAncestorType == XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNamespace::XPATH_NAMESPACE_NODE &&
-        otherAncestorType == XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNamespace::XPATH_NAMESPACE_NODE &&
+    if (thisAncestorType == DOMXPathNamespace::XPATH_NAMESPACE_NODE &&
+        otherAncestorType == DOMXPathNamespace::XPATH_NAMESPACE_NODE &&
             thisNode==otherNode)
-        return XERCES_CPP_NAMESPACE_QUALIFIER DOMNode::TREE_POSITION_EQUIVALENT;
+#if _XERCES_VERSION >= 30000
+        return DOMNode::DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC | (thisAncestor<otherAncestor ? DOMNode::DOCUMENT_POSITION_FOLLOWING:DOMNode::DOCUMENT_POSITION_PRECEDING);
+#else
+        return DOMNode::TREE_POSITION_EQUIVALENT;
+#endif
 
     //now do comparison between attrs
-    if (thisAncestorType == XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNamespace::XPATH_NAMESPACE_NODE &&
-        otherAncestorType == XERCES_CPP_NAMESPACE_QUALIFIER DOMNode::ATTRIBUTE_NODE &&
+    if (thisAncestorType == DOMXPathNamespace::XPATH_NAMESPACE_NODE &&
+        otherAncestorType == DOMNode::ATTRIBUTE_NODE &&
             thisNode==otherNode)
-        return XERCES_CPP_NAMESPACE_QUALIFIER DOMNode::TREE_POSITION_FOLLOWING;
+#if _XERCES_VERSION >= 30000
+        return DOMNode::DOCUMENT_POSITION_FOLLOWING;
+#else
+        return DOMNode::TREE_POSITION_FOLLOWING;
+#endif
 
     //now do comparison between attrs
-    if (thisAncestorType == XERCES_CPP_NAMESPACE_QUALIFIER DOMNode::ATTRIBUTE_NODE &&
-        otherAncestorType == XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNamespace::XPATH_NAMESPACE_NODE &&
+    if (thisAncestorType == DOMNode::ATTRIBUTE_NODE &&
+        otherAncestorType == DOMXPathNamespace::XPATH_NAMESPACE_NODE &&
             thisNode==otherNode)
-        return XERCES_CPP_NAMESPACE_QUALIFIER DOMNode::TREE_POSITION_PRECEDING;
+#if _XERCES_VERSION >= 30000
+        return DOMNode::DOCUMENT_POSITION_PRECEDING;
+#else
+        return DOMNode::TREE_POSITION_PRECEDING;
+#endif
 
 
     // Now, find the ancestor of the owning element, if the original
     // ancestor was an attribute
 
-    if (thisAncestorType == XERCES_CPP_NAMESPACE_QUALIFIER DOMNode::ATTRIBUTE_NODE || thisAncestorType == XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNamespace::XPATH_NAMESPACE_NODE) {
+    if (thisAncestorType == DOMNode::ATTRIBUTE_NODE || thisAncestorType == DOMXPathNamespace::XPATH_NAMESPACE_NODE) {
         thisDepth=0;
         for (node=thisNode; node != 0; node = node->getParentNode()) {
             thisDepth +=1;
             if (node == otherNode)
                 // The other node is an ancestor of the owning element
-                return XERCES_CPP_NAMESPACE_QUALIFIER DOMNode::TREE_POSITION_PRECEDING;
+#if _XERCES_VERSION >= 30000
+                return DOMNode::DOCUMENT_POSITION_PRECEDING;
+#else
+                return DOMNode::TREE_POSITION_PRECEDING;
+#endif
             thisAncestor = node;
         }
         for (node=otherNode; node != 0; node = node->getParentNode()) {
             if (node == thisNode)
                 // The other node is an ancestor of the owning element
-                return XERCES_CPP_NAMESPACE_QUALIFIER DOMNode::TREE_POSITION_FOLLOWING;
+#if _XERCES_VERSION >= 30000
+                return DOMNode::DOCUMENT_POSITION_FOLLOWING;
+#else
+                return DOMNode::TREE_POSITION_FOLLOWING;
+#endif
         }
     }
 
     // Now, find the ancestor of the owning element, if the original
     // ancestor was an attribute
-    if (otherAncestorType == XERCES_CPP_NAMESPACE_QUALIFIER DOMNode::ATTRIBUTE_NODE || otherAncestorType == XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNamespace::XPATH_NAMESPACE_NODE) {
+    if (otherAncestorType == DOMNode::ATTRIBUTE_NODE || otherAncestorType == DOMXPathNamespace::XPATH_NAMESPACE_NODE) {
         otherDepth=0;
         for (node=otherNode; node != 0; node = node->getParentNode()) {
             otherDepth +=1;
             if (node == thisNode)
                 // The other node is a descendent of the reference
                 // node's element
-                return XERCES_CPP_NAMESPACE_QUALIFIER DOMNode::TREE_POSITION_FOLLOWING;
+#if _XERCES_VERSION >= 30000
+                return DOMNode::DOCUMENT_POSITION_FOLLOWING;
+#else
+                return DOMNode::TREE_POSITION_FOLLOWING;
+#endif
             otherAncestor = node;
         }
         for (node=thisNode; node != 0; node = node->getParentNode()) {
             if (node == otherNode)
                 // The other node is an ancestor of the owning element
-                return XERCES_CPP_NAMESPACE_QUALIFIER DOMNode::TREE_POSITION_PRECEDING;
+#if _XERCES_VERSION >= 30000
+                return DOMNode::DOCUMENT_POSITION_PRECEDING;
+#else
+                return DOMNode::TREE_POSITION_PRECEDING;
+#endif
         }
     }
 
     // thisAncestor and otherAncestor must be the same at this point,
     // otherwise, we are not in the same tree or document fragment
     if (thisAncestor != otherAncestor)
-        return XERCES_CPP_NAMESPACE_QUALIFIER DOMNode::TREE_POSITION_DISCONNECTED;
+#if _XERCES_VERSION >= 30000
+        return DOMNode::DOCUMENT_POSITION_DISCONNECTED | DOMNode::DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC |
+              (thisAncestor<otherAncestor ? DOMNode::DOCUMENT_POSITION_PRECEDING : DOMNode::DOCUMENT_POSITION_FOLLOWING);
+#else
+        return DOMNode::TREE_POSITION_DISCONNECTED;
+#endif
 
     // Determine which node is of the greatest depth.
     if (thisDepth > otherDepth) {
@@ -321,7 +380,7 @@ short            XPathNamespaceImpl::compareTreePosition(const XERCES_CPP_NAMESP
 
     // We now have nodes at the same depth in the tree.  Find a common
     // ancestor.
-    XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *thisNodeP, *otherNodeP;
+    DOMNode *thisNodeP, *otherNodeP;
     for (thisNodeP = thisNode->getParentNode(),
                  otherNodeP = otherNode->getParentNode();
              thisNodeP != otherNodeP;) {
@@ -332,14 +391,22 @@ short            XPathNamespaceImpl::compareTreePosition(const XERCES_CPP_NAMESP
     }
 
     // See whether thisNode or otherNode is the leftmost
-    for (XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *current = thisNodeP->getFirstChild();
+    for (DOMNode *current = thisNodeP->getFirstChild();
              current != 0;
              current = current->getNextSibling()) {
         if (current == otherNode) {
-            return XERCES_CPP_NAMESPACE_QUALIFIER DOMNode::TREE_POSITION_PRECEDING;
+#if _XERCES_VERSION >= 30000
+            return DOMNode::DOCUMENT_POSITION_PRECEDING;
+#else
+            return DOMNode::TREE_POSITION_PRECEDING;
+#endif
         }
         else if (current == thisNode) {
-            return XERCES_CPP_NAMESPACE_QUALIFIER DOMNode::TREE_POSITION_FOLLOWING;
+#if _XERCES_VERSION >= 30000
+            return DOMNode::DOCUMENT_POSITION_FOLLOWING;
+#else
+            return DOMNode::TREE_POSITION_FOLLOWING;
+#endif
         }
     }
     // REVISIT:  shouldn't get here.   Should probably throw an
@@ -347,27 +414,27 @@ short            XPathNamespaceImpl::compareTreePosition(const XERCES_CPP_NAMESP
     return 0;
 }
 
-//Should be moved into XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument
+//Should be moved into DOMDocument
 //Produce a new XPathNamespace object or give one back from the internal map
-XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNamespace *XPathNamespaceImpl::createXPathNamespace(const XMLCh* const prefix, const XMLCh* const uri, XERCES_CPP_NAMESPACE_QUALIFIER DOMElement *owner)
+DOMXPathNamespace *XPathNamespaceImpl::createXPathNamespace(const XMLCh* const prefix, const XMLCh* const uri, DOMElement *owner)
 {
-    XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *ownerDocument = owner->getOwnerDocument();
-    return new ((XERCES_CPP_NAMESPACE_QUALIFIER DOMDocumentImpl *)ownerDocument, (XERCES_CPP_NAMESPACE_QUALIFIER DOMDocumentImpl::NodeObjectType)XPathNamespaceImpl::XPATH_NAMESPACE_OBJECT) XPathNamespaceImpl(prefix, uri, owner, ownerDocument);
+    DOMDocument *ownerDocument = owner->getOwnerDocument();
+    return new ((DOMDocumentImpl *)ownerDocument, (DOMDocumentImpl::NodeObjectType)XPathNamespaceImpl::XPATH_NAMESPACE_OBJECT) XPathNamespaceImpl(prefix, uri, owner, ownerDocument);
 }
 
 
 void  XPathNamespaceImpl::release() {
     if (fNode.isOwned() && !fNode.isToBeReleased())
-        throw XERCES_CPP_NAMESPACE_QUALIFIER DOMException(XERCES_CPP_NAMESPACE_QUALIFIER DOMException::INVALID_ACCESS_ERR,0);
+        throw DOMException(DOMException::INVALID_ACCESS_ERR,0);
 
-    XERCES_CPP_NAMESPACE_QUALIFIER DOMDocumentImpl* doc = (XERCES_CPP_NAMESPACE_QUALIFIER DOMDocumentImpl*) getOwnerDocument();
+    DOMDocumentImpl* doc = (DOMDocumentImpl*) getOwnerDocument();
     if (doc) {
-        fNode.callUserDataHandlers(XERCES_CPP_NAMESPACE_QUALIFIER DOMUserDataHandler::NODE_DELETED, 0, 0);
-        doc->release(this, (XERCES_CPP_NAMESPACE_QUALIFIER DOMDocumentImpl::NodeObjectType)XPathNamespaceImpl::XPATH_NAMESPACE_OBJECT);
+        fNode.callUserDataHandlers(DOMUserDataHandler::NODE_DELETED, 0, 0);
+        doc->release(this, (DOMDocumentImpl::NodeObjectType)XPathNamespaceImpl::XPATH_NAMESPACE_OBJECT);
     }
     else {
         // shouldn't reach here
-        throw XERCES_CPP_NAMESPACE_QUALIFIER DOMException(XERCES_CPP_NAMESPACE_QUALIFIER DOMException::INVALID_ACCESS_ERR,0);
+        throw DOMException(DOMException::INVALID_ACCESS_ERR,0);
     }
 
 }
@@ -384,34 +451,38 @@ const XMLCh* XPathNamespaceImpl::getLocalName() const {
 //   Functions inherited from Node
 //
 
-           XERCES_CPP_NAMESPACE_QUALIFIER DOMNamedNodeMap* XPathNamespaceImpl::getAttributes() const                   {return fNode.getAttributes (); };
-           XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument*     XPathNamespaceImpl::getOwnerDocument() const                {return getOwnerElement()->getOwnerDocument(); };
+           DOMNamedNodeMap* XPathNamespaceImpl::getAttributes() const                   {return fNode.getAttributes (); };
+           DOMDocument*     XPathNamespaceImpl::getOwnerDocument() const                {return getOwnerElement()->getOwnerDocument(); };
            bool             XPathNamespaceImpl::hasAttributes() const                   {return fNode.hasAttributes(); };
-           bool             XPathNamespaceImpl::isEqualNode(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* arg) const   {return fNode.isEqualNode(arg); };
+           bool             XPathNamespaceImpl::isEqualNode(const DOMNode* arg) const   {return fNode.isEqualNode(arg); };
 
-           XERCES_CPP_NAMESPACE_QUALIFIER DOMNode*         XPathNamespaceImpl::appendChild(XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *newChild)          {return fNode.appendChild (newChild); };
-           XERCES_CPP_NAMESPACE_QUALIFIER DOMNodeList*     XPathNamespaceImpl::getChildNodes() const                   {return fNode.getChildNodes (); };
-           XERCES_CPP_NAMESPACE_QUALIFIER DOMNode*         XPathNamespaceImpl::getFirstChild() const                   {return fNode.getFirstChild (); };
-           XERCES_CPP_NAMESPACE_QUALIFIER DOMNode*         XPathNamespaceImpl::getLastChild() const                    {return fNode.getLastChild (); };
-           XERCES_CPP_NAMESPACE_QUALIFIER DOMNode*         XPathNamespaceImpl::getNextSibling() const                  {return fNode.getNextSibling (); };
+           DOMNode*         XPathNamespaceImpl::appendChild(DOMNode *newChild)          {return fNode.appendChild (newChild); };
+           DOMNodeList*     XPathNamespaceImpl::getChildNodes() const                   {return fNode.getChildNodes (); };
+           DOMNode*         XPathNamespaceImpl::getFirstChild() const                   {return fNode.getFirstChild (); };
+           DOMNode*         XPathNamespaceImpl::getLastChild() const                    {return fNode.getLastChild (); };
+           DOMNode*         XPathNamespaceImpl::getNextSibling() const                  {return fNode.getNextSibling (); };
 
 //The exception is wrong - we need to sort out all these methods when we can compile again.
-           XERCES_CPP_NAMESPACE_QUALIFIER DOMNode*         XPathNamespaceImpl::getParentNode() const                   {return fNode.getParentNode ();};
-           XERCES_CPP_NAMESPACE_QUALIFIER DOMNode*         XPathNamespaceImpl::getPreviousSibling() const              {return fNode.getParentNode ();};
+           DOMNode*         XPathNamespaceImpl::getParentNode() const                   {return fNode.getParentNode ();};
+           DOMNode*         XPathNamespaceImpl::getPreviousSibling() const              {return fNode.getParentNode ();};
            bool             XPathNamespaceImpl::hasChildNodes() const                   {return fNode.hasChildNodes ();};
-           XERCES_CPP_NAMESPACE_QUALIFIER DOMNode*         XPathNamespaceImpl::insertBefore(XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *newChild, XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *refChild)
+           DOMNode*         XPathNamespaceImpl::insertBefore(DOMNode *newChild, DOMNode *refChild)
                                                                                     {return fNode.insertBefore (newChild, refChild); };
            void             XPathNamespaceImpl::normalize()                             {fNode.normalize (); };
-           XERCES_CPP_NAMESPACE_QUALIFIER DOMNode*         XPathNamespaceImpl::removeChild(XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *oldChild)          {return fNode.removeChild (oldChild); };
-           XERCES_CPP_NAMESPACE_QUALIFIER DOMNode*         XPathNamespaceImpl::replaceChild(XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *newChild, XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *oldChild)
+           DOMNode*         XPathNamespaceImpl::removeChild(DOMNode *oldChild)          {return fNode.removeChild (oldChild); };
+           DOMNode*         XPathNamespaceImpl::replaceChild(DOMNode *newChild, DOMNode *oldChild)
                                                                                     {return fNode.replaceChild (newChild, oldChild); };
            bool             XPathNamespaceImpl::isSupported(const XMLCh *feature, const XMLCh *version) const
                                                                                     {return fNode.isSupported (feature, version); };
-           bool             XPathNamespaceImpl::isSameNode(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* other) const       {return fNode.isSameNode(other); };
+           bool             XPathNamespaceImpl::isSameNode(const DOMNode* other) const       {return fNode.isSameNode(other); };
            void*            XPathNamespaceImpl::getUserData(const XMLCh* key) const     {return fNode.getUserData(key); };
            void             XPathNamespaceImpl::setTextContent(const XMLCh* textContent){fNode.setTextContent(textContent); };
 #if _XERCES_VERSION >= 20100
+#if _XERCES_VERSION >= 30000
+           const XMLCh*     XPathNamespaceImpl::lookupPrefix(const XMLCh* namespaceURI) const {return fNode.lookupPrefix(namespaceURI); };
+#else
            const XMLCh*     XPathNamespaceImpl::lookupNamespacePrefix(const XMLCh* namespaceURI, bool useDefault) const {return fNode.lookupNamespacePrefix(namespaceURI, useDefault); };
+#endif
            bool             XPathNamespaceImpl::isDefaultNamespace(const XMLCh* namespaceURI) const {return fNode.isDefaultNamespace(namespaceURI); };
            const XMLCh*     XPathNamespaceImpl::lookupNamespaceURI(const XMLCh* prefix) const {return fNode.lookupNamespaceURI(prefix); };
 #else
@@ -422,4 +493,8 @@ const XMLCh* XPathNamespaceImpl::getLocalName() const {
  
            const XMLCh*     XPathNamespaceImpl::getBaseURI() const                      {return fNode.getBaseURI(); };
 
-           XERCES_CPP_NAMESPACE_QUALIFIER DOMNode*         XPathNamespaceImpl::getInterface(const XMLCh* feature)      {return fNode.getInterface(feature); };
+#if _XERCES_VERSION >= 30000
+           void*            XPathNamespaceImpl::getFeature(const XMLCh* feature, const XMLCh* version) const {return fNode.getFeature(feature, version); }
+#else
+           DOMNode*         XPathNamespaceImpl::getInterface(const XMLCh* feature)      {return fNode.getInterface(feature); };
+#endif

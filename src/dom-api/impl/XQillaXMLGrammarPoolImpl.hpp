@@ -23,7 +23,14 @@
 #define __XQILLAXMLGRAMMARPOOLIMPL_HPP
 
 #include <xqilla/framework/XQillaExport.hpp>
+
+#include <xercesc/util/XercesVersion.hpp>
+
+#if _XERCES_VERSION >= 30000
+#include <xercesc/framework/XMLGrammarPoolImpl.hpp>
+#else
 #include <xercesc/internal/XMLGrammarPoolImpl.hpp>
+#endif
 
 
 XERCES_CPP_NAMESPACE_BEGIN

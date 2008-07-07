@@ -81,6 +81,11 @@ void BaseMemoryManager::releaseAll()
   }
 }
 
+MemoryManager *BaseMemoryManager::getExceptionMemoryManager()
+{
+  return XMLPlatformUtils::fgMemoryManager;
+}
+
 void *BaseMemoryManager::allocate(size_t amount)
 {
 #if ALLOCATE_IN_CHUNKS

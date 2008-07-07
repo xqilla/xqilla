@@ -47,7 +47,11 @@ ATHexBinaryOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLC
   XMLCh* tempValue=XMLString::replicate(value, context->getMemoryManager());
   XMLString::upperCase(tempValue);
   _hexBinaryData = context->getMemoryManager()->getPooledString(tempValue);
+#if _XERCES_VERSION >= 30000
+  XMLString::release(&tempValue, context->getMemoryManager());
+#else
   XMLString::release((void**)&tempValue, context->getMemoryManager());
+#endif
 }
 
 void *ATHexBinaryOrDerivedImpl::getInterface(const XMLCh *name) const

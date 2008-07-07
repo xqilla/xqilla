@@ -31,21 +31,25 @@
 XERCES_CPP_NAMESPACE_USE
 #endif
 
-//Main constructor
-XPathDocumentImpl::XPathDocumentImpl(MemoryManager* memMgr)
-	: DOMDocumentImpl(memMgr),
+XPathDocumentImpl::XPathDocumentImpl(DOMImplementation* domImpl, MemoryManager* memMgr)
+#if _XERCES_VERSION >= 30000
+  : DOMDocumentImpl(domImpl, memMgr),
+#else
+  : DOMDocumentImpl(memMgr),
+#endif
     fMyDocType(NULL),
     fMyDocElement(NULL)
 {
-    setVersion(XMLUni::fgVersion1_1);
-}//constructor
+#if _XERCES_VERSION >= 30000
+  setXmlVersion(XMLUni::fgVersion1_1);
+#else
+  setVersion(XMLUni::fgVersion1_1);
+#endif
+}
 
-
-//Destructor
 XPathDocumentImpl::~XPathDocumentImpl()
 {
-	//Nothing
-}//destructor
+}
 
 DOMNode *XPathDocumentImpl::insertBefore(DOMNode *newChild, DOMNode *refChild)
 {

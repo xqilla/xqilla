@@ -25,7 +25,6 @@
 #include "XQillaXMLGrammarPoolImpl.hpp"
 
 #include <xercesc/framework/XMLGrammarPool.hpp>
-#include <xercesc/framework/Wrapper4DOMInputSource.hpp>
 #include <xercesc/framework/XMLValidator.hpp>
 #include <xercesc/util/XMLUni.hpp>
 #include <xercesc/dom/impl/DOMDocumentImpl.hpp>
@@ -33,6 +32,12 @@
 #include <xercesc/framework/XMLSchemaDescription.hpp>
 #include <xercesc/internal/XMLScanner.hpp>
 #include <xercesc/internal/XMLScannerResolver.hpp>
+
+#if _XERCES_VERSION >= 30000
+#include <xercesc/framework/Wrapper4DOMLSInput.hpp>
+#else
+#include <xercesc/framework/Wrapper4DOMInputSource.hpp>
+#endif
 
 const XMLCh XQillaBuilderImpl::gXQilla[] =   // Points to "XPath2"
 {XERCES_CPP_NAMESPACE_QUALIFIER chLatin_X, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_P, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_h, XERCES_CPP_NAMESPACE_QUALIFIER chDigit_2, XERCES_CPP_NAMESPACE_QUALIFIER chNull};
@@ -44,8 +49,13 @@ XQillaBuilderImpl::XQillaBuilderImpl(XERCES_CPP_NAMESPACE_QUALIFIER XMLValidator
                                      XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* const  manager,
                                      XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool* const gramPool,
                                      bool adoptGramPool)
-  : DOMBuilderImpl(valToAdopt, manager, gramPool),
-    gramPool_(adoptGramPool ? gramPool : 0)
+  :
+#if _XERCES_VERSION >= 30000
+	DOMLSParserImpl(valToAdopt, manager, gramPool),
+#else
+	DOMBuilderImpl(valToAdopt, manager, gramPool),
+#endif
+  gramPool_(adoptGramPool ? gramPool : 0)
 {
 }
 
@@ -57,6 +67,19 @@ XQillaBuilderImpl::~XQillaBuilderImpl()
 // ---------------------------------------------------------------------------
 //  DOMBuilderImpl: Parsing methods
 // ---------------------------------------------------------------------------
+#if _XERCES_VERSION >= 30000
+XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* XQillaBuilderImpl::parse(const XERCES_CPP_NAMESPACE_QUALIFIER DOMLSInput* source)
+{
+    initParser();
+    
+    XERCES_CPP_NAMESPACE_QUALIFIER Wrapper4DOMLSInput isWrapper((XERCES_CPP_NAMESPACE_QUALIFIER DOMLSInput*)source, false, getMemoryManager());
+
+    AbstractDOMParser::parse(isWrapper);
+
+    return getDocumentAndAddGrammar();
+
+}
+#else
 XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* XQillaBuilderImpl::parse(const XERCES_CPP_NAMESPACE_QUALIFIER DOMInputSource& source)
 {
     initParser();
@@ -68,17 +91,26 @@ XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* XQillaBuilderImpl::parse(const XERCE
     return getDocumentAndAddGrammar();
 
 }
+#endif
 
 void XQillaBuilderImpl::initParser() {
     //set it here in case someone has messed it up.
+#if _XERCES_VERSION >= 30000
+    setParameter(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgXercesParserUseDocumentFromImplementation, (void*)gXQilla);
+#else
     setProperty(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgXercesParserUseDocumentFromImplementation, (void*)gXQilla);
+#endif
 }
 
 
 XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* XQillaBuilderImpl::getDocumentAndAddGrammar() {
     XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *doc = 0;
 
+#if _XERCES_VERSION >= 30000
+    if ((bool)getParameter(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgXercesUserAdoptsDOMDocument))
+#else
     if (getFeature(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgXercesUserAdoptsDOMDocument))
+#endif
         doc = adoptDocument();
     else
         doc = getDocument();

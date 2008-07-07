@@ -46,11 +46,14 @@
 #include <xercesc/dom/DOMDocument.hpp>
 #include <xercesc/dom/DOMException.hpp>
 #include <xercesc/util/XercesDefs.hpp>
+#include <xercesc/dom/DOMXPathResult.hpp>
+
+XERCES_CPP_NAMESPACE_USE;
 
 XQillaExpressionImpl::XQillaExpressionImpl(const XMLCh *expression,
-                                           XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr,
-                                           const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver *nsr,
-                                           XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool *xmlGP)
+                                           MemoryManager* memMgr,
+                                           const DOMXPathNSResolver *nsr,
+                                           XMLGrammarPool *xmlGP)
   : _createdWith(memMgr),
     _xmlgr(xmlGP)
 {
@@ -80,12 +83,83 @@ void XQillaExpressionImpl::release()
   _createdWith->deallocate(this);
 }
 
-DocumentCache *XQillaExpressionImpl::createDocumentCache(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr)
+DocumentCache *XQillaExpressionImpl::createDocumentCache(MemoryManager *memMgr)
 {
   return new(memMgr) DocumentCacheImpl(memMgr, _xmlgr);
 }
 
-void* XQillaExpressionImpl::evaluate(XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* contextNode,
+#if _XERCES_VERSION >= 30000
+DOMXPathResult *XQillaExpressionImpl::evaluate(const DOMNode *contextNode,
+                                               DOMXPathResult::ResultType type,
+                                               DOMXPathResult* result) const
+{
+  // TBD deal with the other result types - jpcs
+  switch(type) {
+  case DOMXPathResult::FIRST_RESULT_TYPE: {
+    return new (_createdWith) XPath2FirstResultImpl(_compiledExpression, const_cast<DOMNode*>(contextNode),
+                                                    _staticContext, _createdWith);
+    break;
+  }
+  case DOMXPathResult::UNORDERED_NODE_ITERATOR_TYPE:
+  case DOMXPathResult::ORDERED_NODE_ITERATOR_TYPE:
+  case DOMXPathResult::ITERATOR_RESULT_TYPE: {
+    return new (_createdWith) XPath2IteratorResultImpl(_compiledExpression, const_cast<DOMNode*>(contextNode),
+                                                       _staticContext, _createdWith);
+    break;
+  }
+  case DOMXPathResult::ANY_TYPE:
+  case DOMXPathResult::NUMBER_TYPE:
+  case DOMXPathResult::STRING_TYPE:
+  case DOMXPathResult::BOOLEAN_TYPE:
+  case DOMXPathResult::ANY_UNORDERED_NODE_TYPE:
+  case DOMXPathResult::FIRST_ORDERED_NODE_TYPE:
+  case DOMXPathResult::UNORDERED_NODE_SNAPSHOT_TYPE:
+  case DOMXPathResult::ORDERED_NODE_SNAPSHOT_TYPE:
+  case DOMXPathResult::SNAPSHOT_RESULT_TYPE: {
+    return new (_createdWith) XPath2SnapshotResultImpl(_compiledExpression, const_cast<DOMNode*>(contextNode),
+                                                       _staticContext, _createdWith);
+    break;
+  }
+  }
+  return 0;
+}
+
+DOMXPathResult *XQillaExpressionImpl::evaluateOnce(const DOMNode *contextNode,
+                                                   DOMXPathResult::ResultType type,
+                                                   DOMXPathResult* result)
+{
+  // TBD deal with the other result types - jpcs
+  switch(type) {
+  case DOMXPathResult::FIRST_RESULT_TYPE: {
+    return new (_createdWith) XPath2FirstResultImpl(_compiledExpression, const_cast<DOMNode*>(contextNode),
+                                                    _staticContext, _createdWith, this);
+    break;
+  }
+  case DOMXPathResult::UNORDERED_NODE_ITERATOR_TYPE:
+  case DOMXPathResult::ORDERED_NODE_ITERATOR_TYPE:
+  case DOMXPathResult::ITERATOR_RESULT_TYPE: {
+    return new (_createdWith) XPath2IteratorResultImpl(_compiledExpression, const_cast<DOMNode*>(contextNode),
+                                                       _staticContext, _createdWith, this);
+    break;
+  }
+  case DOMXPathResult::ANY_TYPE:
+  case DOMXPathResult::NUMBER_TYPE:
+  case DOMXPathResult::STRING_TYPE:
+  case DOMXPathResult::BOOLEAN_TYPE:
+  case DOMXPathResult::ANY_UNORDERED_NODE_TYPE:
+  case DOMXPathResult::FIRST_ORDERED_NODE_TYPE:
+  case DOMXPathResult::UNORDERED_NODE_SNAPSHOT_TYPE:
+  case DOMXPathResult::ORDERED_NODE_SNAPSHOT_TYPE:
+  case DOMXPathResult::SNAPSHOT_RESULT_TYPE: {
+    return new (_createdWith) XPath2SnapshotResultImpl(_compiledExpression, const_cast<DOMNode*>(contextNode),
+                                                       _staticContext, _createdWith, this);
+    break;
+  }
+  }
+  return 0;
+}
+#else
+void* XQillaExpressionImpl::evaluate(DOMNode* contextNode,
                                      unsigned short type,
                                      void*) const
 {
@@ -109,7 +183,7 @@ void* XQillaExpressionImpl::evaluate(XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* con
   return 0;
 }
 
-void* XQillaExpressionImpl::evaluateOnce(XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* contextNode,
+void* XQillaExpressionImpl::evaluateOnce(DOMNode* contextNode,
                                          unsigned short type,
                                          void*)
 {
@@ -132,3 +206,4 @@ void* XQillaExpressionImpl::evaluateOnce(XERCES_CPP_NAMESPACE_QUALIFIER DOMNode*
   }
   return 0;
 }
+#endif
