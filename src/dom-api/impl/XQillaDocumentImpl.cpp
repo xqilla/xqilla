@@ -92,7 +92,7 @@ XQillaDocumentImpl::createExpression(const XMLCh* expression,
 #endif
 {
   // Use placement new, because XQillaExpressionImpl inherits from XercesConfiguration,
-  // which inherits from XMemory - which screws up out operator new overload
+  // which inherits from XMemory - which screws up our operator new overload
   void *mem = _memMgr.allocate(sizeof(XQillaExpressionImpl));
   new (mem) XQillaExpressionImpl(expression, &_memMgr, resolver, _xmlGrammarPool);
   return (XQillaExpressionImpl*)mem;

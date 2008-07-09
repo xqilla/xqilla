@@ -305,7 +305,7 @@ void XPath2Utils::readSource(BinInputStream *stream, MemoryManager *mm, XMLBuffe
 #ifdef HAVE_GETCONTENTTYPE
     RegularExpression charsetRE(".*; *charset=([^ ;]*|\"[^\"]*\").*", "iH", mm);
     if(charsetRE.matches(stream->getContentType(), mm)) {
-      XMLCh *charset = charsetRE.replace(stream->getContentType(), X("$1"));
+      XMLCh *charset = charsetRE.replace(stream->getContentType(), X("$1"), mm);
       AutoDeallocate<XMLCh> charsetGuard(charset, mm);
 
       if(*charset == '"') {

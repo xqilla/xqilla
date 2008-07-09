@@ -47,6 +47,7 @@
 #include <xercesc/dom/DOMException.hpp>
 #include <xercesc/util/XercesDefs.hpp>
 #include <xercesc/dom/DOMXPathResult.hpp>
+#include <xercesc/dom/DOMXPathNSResolver.hpp>
 
 XERCES_CPP_NAMESPACE_USE;
 
@@ -59,7 +60,13 @@ XQillaExpressionImpl::XQillaExpressionImpl(const XMLCh *expression,
 {
   try {
     _staticContext = XQilla::createContext(XQilla::XPATH2, this, _createdWith);
-    if(nsr != 0) _staticContext->setNSResolver(nsr);
+    if(nsr != 0) {
+	    _staticContext->setNSResolver(nsr);
+
+	    const XMLCh *defaultElementNS = _staticContext->getMemoryManager()->
+		    getPooledString(nsr->lookupNamespaceURI(XMLUni::fgZeroLenString));
+	    _staticContext->setDefaultElementAndTypeNS(defaultElementNS);
+    }
     _compiledExpression = XQilla::parse(expression, _staticContext, NULL, XQilla::NO_ADOPT_CONTEXT,
                                         _createdWith);
   }
