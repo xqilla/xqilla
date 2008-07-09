@@ -436,11 +436,6 @@ UpdateFactory *XQDynamicContextImpl::createUpdateFactory() const
   return _conf->createUpdateFactory(const_cast<ProxyMemoryManager*>(&_internalMM));
 }
 
-void XQDynamicContextImpl::setNamespaceBinding(const XMLCh* prefix, const XMLCh* uri)
-{
-	((XQillaNSResolverImpl*)_nsResolver)->addNamespaceBinding(prefix,uri);
-}
-
 void XQDynamicContextImpl::setNSResolver(const DOMXPathNSResolver* resolver) {
   _nsResolver = resolver;
 }

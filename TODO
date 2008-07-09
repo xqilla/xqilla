@@ -3,10 +3,11 @@ Features
 
 complete XQuery Fulltext support
 XQueryP support
-Grouping support
+XQuery 1.1 Grouping support
 XSLT 2.0 support
 Higher order functions
 Support pre-parsed modules
+Improve exceptions heirachy, and implement XQuery 1.1 try/catch
 
 
 Optimization

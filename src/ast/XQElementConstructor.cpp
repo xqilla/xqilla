@@ -184,7 +184,7 @@ ASTNode* XQElementConstructor::staticResolution(StaticContext *context)
         uri=nsUri->asString(dContext);
       }
       if(XMLNSPrefix != XMLUni::fgZeroLenString) {
-        context->setNamespaceBinding(XMLNSPrefix, uri);
+        newNSScope.addNamespaceBinding(XMLNSPrefix, uri);
       }
       else {
         context->setDefaultElementAndTypeNS(uri);
@@ -274,7 +274,7 @@ ASTNode* XQElementConstructor::staticTyping(StaticContext *context)
         context->setDefaultElementAndTypeNS(uri);
       }
       else {
-        context->setNamespaceBinding(prefix, uri);
+        newNSScope.addNamespaceBinding(prefix, uri);
       }
     }
   }

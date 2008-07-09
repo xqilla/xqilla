@@ -35,6 +35,7 @@
 
 class XQillaConfiguration;
 class FunctionLookup;
+class XQillaNSResolver;
 
 class XQILLA_API XQContextImpl : public DynamicContext
 {
@@ -316,7 +317,7 @@ protected:
   const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver* _nsResolver;
 
   /** The original (global scope) DOMXPathNSResolver */
-  const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver* _globalNSResolver;
+  XQillaNSResolver* _globalNSResolver;
 
   /** Default element/type namespace. This is a namespace URI or "none". This
    * namespace is used for any unprefixed QName appearing in a
