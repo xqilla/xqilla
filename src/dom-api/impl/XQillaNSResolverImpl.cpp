@@ -23,6 +23,8 @@
 #include <xqilla/dom-api/impl/XQillaNSResolverImpl.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/framework/XPath2MemoryManager.hpp>
+#include <xqilla/exceptions/StaticErrorException.hpp>
+
 #include <xercesc/dom/DOMElement.hpp>
 #include <xercesc/util/XMLUni.hpp>
 #include <xercesc/util/XMLUniDefs.hpp>
@@ -135,3 +137,12 @@ void XQillaNSResolverImpl::release() {
   _memMgr->deallocate(this);
 }
 
+void XQillaNSResolverImpl::forbiddenBindingCheck(const XMLCh* prefix, const XMLCh* uri, const LocationInfo *info)
+{
+  if(XPath2Utils::equals(prefix,XMLUni::fgXMLNSString) || XPath2Utils::equals(prefix,XMLUni::fgXMLString))
+    XQThrow3(StaticErrorException,X("XQillaNSResolverImpl::forbiddenBindingCheck"),
+             X("The prefixes 'xmlns' and 'xml' cannot be used in a namespace declaration [err:XQST0070]"), info);
+  if(XPath2Utils::equals(uri,XMLUni::fgXMLURIName))
+    XQThrow3(StaticErrorException,X("XQillaNSResolverImpl::forbiddenBindingCheck"),
+             X("The 'http://www.w3.org/XML/1998/namespace' namespace cannot be bound to any prefix [err:XQST0070]"), info);
+}

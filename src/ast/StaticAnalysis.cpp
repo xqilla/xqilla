@@ -27,19 +27,18 @@
 #include <xqilla/utils/XPath2NSUtils.hpp>
 #include <xqilla/utils/UTF8Str.hpp>
 
+XERCES_CPP_NAMESPACE_USE;
 using namespace std;
 
 StaticAnalysis::StaticAnalysis(XPath2MemoryManager* memMgr)
-  : _dynamicVariables(17, false, memMgr),
-    _uriPool(17, memMgr),
+  : _dynamicVariables(0),
     _memMgr(memMgr)
 {
   clear();
 }
 
 StaticAnalysis::StaticAnalysis(const StaticAnalysis &o, XPath2MemoryManager* memMgr)
-  : _dynamicVariables(17, false, memMgr),
-    _uriPool(17, memMgr),
+  : _dynamicVariables(0),
     _memMgr(memMgr)
 {
   clear();
@@ -70,8 +69,12 @@ void StaticAnalysis::clear()
   _properties = 0;
   _staticType = StaticType();
 
-  _dynamicVariables.removeAll();
-  _uriPool.flushAll();
+  VarEntry *tmp;
+  while(_dynamicVariables) {
+    tmp = _dynamicVariables;
+    _dynamicVariables = tmp->prev;
+    _memMgr->deallocate(tmp);
+  }
 }
 
 void StaticAnalysis::contextItemUsed(bool value)
@@ -149,23 +152,27 @@ void StaticAnalysis::variableUsed(const XMLCh *namespaceURI, const XMLCh *name)
 {
   namespaceURI = _memMgr->getPooledString(namespaceURI);
   name = _memMgr->getPooledString(name);
-  unsigned int nsID = _uriPool.addOrFind(namespaceURI);
-  _dynamicVariables.put((void*)name, nsID, 0);
+
+  VarEntry *entry = _dynamicVariables;
+  while(entry) {
+    if(entry->uri == namespaceURI && entry->name == name) {
+      return;
+    }
+    entry = entry->prev;
+  }
+
+  _dynamicVariables = new (_memMgr) VarEntry(namespaceURI, name, _dynamicVariables);
 }
 
 vector<pair<const XMLCh*, const XMLCh*> > StaticAnalysis::variablesUsed() const
 {
   vector<pair<const XMLCh*, const XMLCh*> > result;
 
-  const XMLCh* namespaceURI;
-  const XMLCh* name;
-  int nsID;
-  VariableAccessSetEnumerator it(const_cast<VariableAccessSet *>(&_dynamicVariables));
-  while(it.hasMoreElements()) {
-    it.nextElementKey((void*&)name, nsID);
-    namespaceURI = _uriPool.getValueForId(nsID);
-    result.push_back(pair<const XMLCh*, const XMLCh*>(namespaceURI, name));
-  }  
+  VarEntry *entry = _dynamicVariables;
+  while(entry) {
+    result.push_back(pair<const XMLCh*, const XMLCh*>(entry->uri, entry->name));
+    entry = entry->prev;
+  }
 
   return result;
 }
@@ -174,11 +181,19 @@ bool StaticAnalysis::removeVariable(const XMLCh *namespaceURI, const XMLCh *name
 {
   namespaceURI = _memMgr->getPooledString(namespaceURI);
   name = _memMgr->getPooledString(name);
-  unsigned int nsID = _uriPool.getId(namespaceURI);
-  if(nsID != 0 && _dynamicVariables.containsKey((void*)name, nsID)) {
-    _dynamicVariables.removeKey((void*)name, nsID);
-    return true;
+
+  VarEntry **parent = &_dynamicVariables;
+  while(*parent) {
+    if((*parent)->uri == namespaceURI && (*parent)->name == name) {
+      VarEntry *tmp = *parent;
+      *parent = tmp->prev;
+      _memMgr->deallocate(tmp);
+      return true;
+    }
+
+    parent = &(*parent)->prev;
   }
+
   return false;
 }
 
@@ -186,10 +201,15 @@ bool StaticAnalysis::isVariableUsed(const XMLCh *namespaceURI, const XMLCh *name
 {
   namespaceURI = _memMgr->getPooledString(namespaceURI);
   name = _memMgr->getPooledString(name);
-  unsigned int nsID = _uriPool.getId(namespaceURI);
-  if(nsID != 0 && _dynamicVariables.containsKey((void*)name, nsID)) {
-    return true;
+
+  VarEntry *entry = _dynamicVariables;
+  while(entry) {
+    if(entry->uri == namespaceURI && entry->name == name) {
+      return true;
+    }
+    entry = entry->prev;
   }
+
   return false;
 }
 
@@ -208,15 +228,10 @@ void StaticAnalysis::add(const StaticAnalysis &o)
   if(o._updating) _updating = true;
   // Don't copy _possiblyUpdating
 
-  const XMLCh* namespaceURI;
-  const XMLCh* name;
-  int nsID;
-  // No const enumerator is provided...
-  VariableAccessSetEnumerator it(const_cast<VariableAccessSet *>(&o._dynamicVariables));
-  while(it.hasMoreElements()) {
-    it.nextElementKey((void*&)name, nsID);
-    namespaceURI = o._uriPool.getValueForId(nsID);
-    variableUsed(namespaceURI, name);
+  VarEntry *entry = o._dynamicVariables;
+  while(entry) {
+    variableUsed(entry->uri, entry->name);
+    entry = entry->prev;
   }
 }
 
@@ -231,15 +246,10 @@ void StaticAnalysis::addExceptContextFlags(const StaticAnalysis &o)
   if(o._updating) _updating = true;
   // Don't copy _possiblyUpdating
 
-  const XMLCh* namespaceURI;
-  const XMLCh* name;
-  int nsID;
-  // No const enumerator is provided...
-  VariableAccessSetEnumerator it(const_cast<VariableAccessSet *>(&o._dynamicVariables));
-  while(it.hasMoreElements()) {
-    it.nextElementKey((void*&)name, nsID);
-    namespaceURI = o._uriPool.getValueForId(nsID);
-    variableUsed(namespaceURI, name);
+  VarEntry *entry = o._dynamicVariables;
+  while(entry) {
+    variableUsed(entry->uri, entry->name);
+    entry = entry->prev;
   }
 }
 
@@ -249,13 +259,13 @@ bool StaticAnalysis::isUsed() const
 {
   return _contextItem || _contextPosition || _contextSize
     || _currentTime || _implicitTimezone || _availableCollections
-    || _availableDocuments || _forceNoFolding || !_dynamicVariables.isEmpty();
+    || _availableDocuments || _forceNoFolding || _dynamicVariables;
 }
 
 bool StaticAnalysis::isUsedExceptContextFlags() const
 {
   return _currentTime || _implicitTimezone || _availableCollections
-    || _availableDocuments || _forceNoFolding || !_dynamicVariables.isEmpty();
+    || _availableDocuments || _forceNoFolding || _dynamicVariables;
 }
 
 void StaticAnalysis::creative(bool value)
@@ -324,16 +334,10 @@ std::string StaticAnalysis::toString() const
   s << "Updating:              " << (_updating ? "true" : "false") << std::endl;
   s << "Possibly Updating:     " << (_possiblyUpdating ? "true" : "false") << std::endl;
 
-  s << "Variables Used: [";
-  const XMLCh* namespaceURI;
-  const XMLCh* name;
-  int nsID;
+  s << "Variables Used:        [";
   bool first = true;
-  VariableAccessSetEnumerator it(const_cast<VariableAccessSet *>(&_dynamicVariables));
-  while(it.hasMoreElements()) {
-		it.nextElementKey((void*&)name, nsID);
-    namespaceURI = _uriPool.getValueForId(nsID);
-
+  VarEntry *entry = _dynamicVariables;
+  while(entry) {
     if(first) {
       first = false;
     }
@@ -341,9 +345,15 @@ std::string StaticAnalysis::toString() const
       s << ", ";
     }
 
-    s << "{" << UTF8(namespaceURI) << "}:" << UTF8(name);
-	}
+    s << "{" << UTF8(entry->uri) << "}" << UTF8(entry->name);
+    entry = entry->prev;
+  }
   s << "]" << std::endl;
+
+
+  XMLBuffer buf;
+  _staticType.typeToBuf(buf);
+  s << "Static Type:           " << UTF8(buf.getRawBuffer()) << std::endl;
 
   return s.str();
 }

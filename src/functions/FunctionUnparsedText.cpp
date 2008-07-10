@@ -33,6 +33,7 @@
 #include <xercesc/framework/URLInputSource.hpp>
 #include <xercesc/framework/LocalFileInputSource.hpp>
 #include <xercesc/util/BinInputStream.hpp>
+#include <xercesc/util/Janitor.hpp>
 
 XERCES_CPP_NAMESPACE_USE;
 using namespace std;
