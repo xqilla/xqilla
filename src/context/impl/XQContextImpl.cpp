@@ -257,13 +257,7 @@ void XQContextImpl::setMemoryManager(XPath2MemoryManager* memMgr)
 
 void XQContextImpl::setNamespaceBinding(const XMLCh* prefix, const XMLCh* uri)
 {
-  if(XPath2Utils::equals(prefix,XMLUni::fgXMLNSString) || XPath2Utils::equals(prefix,XMLUni::fgXMLString))
-    XQThrow2(StaticErrorException,X("XQContextImpl::setNamespaceBinding"),
-             X("The prefixes 'xmlns' and 'xml' cannot be used in a namespace declaration [err:XQST0070]"));
-  if(XPath2Utils::equals(uri,XMLUni::fgXMLURIName))
-    XQThrow2(StaticErrorException,X("XQContextImpl::setNamespaceBinding"),
-             X("The 'http://www.w3.org/XML/1998/namespace' namespace cannot be bound to any prefix [err:XQST0070]"));
-
+  XQillaNSResolverImpl::forbiddenBindingCheck(prefix, uri, 0);
   _globalNSResolver->addNamespaceBinding(prefix,uri);
 }
 

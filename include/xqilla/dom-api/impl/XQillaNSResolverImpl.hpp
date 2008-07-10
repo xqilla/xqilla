@@ -30,6 +30,7 @@
 #include <xercesc/util/RefHashTableOf.hpp>
 
 class XPath2MemoryManager;
+class LocationInfo;
 
 class XQILLA_API XQillaNSResolverImpl : public XQillaNSResolver
 {
@@ -48,6 +49,8 @@ public:
   void setPreviousScope(const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver *prevScope) { _prevScope = prevScope; }
 
   virtual void release();
+
+  static void forbiddenBindingCheck(const XMLCh* prefix, const XMLCh* uri, const LocationInfo *info);
 
 protected:
   XERCES_CPP_NAMESPACE_QUALIFIER RefHashTableOf< XMLCh > _namespaceBindings;

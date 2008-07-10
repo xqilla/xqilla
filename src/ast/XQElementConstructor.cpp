@@ -56,7 +56,7 @@ XERCES_CPP_NAMESPACE_USE
 using namespace std;
 
 XQElementConstructor::XQElementConstructor(ASTNode* name, VectorOfASTNodes* attrList, VectorOfASTNodes* children,
-	XPath2MemoryManager* mm)
+                                           XPath2MemoryManager* mm)
   : XQDOMConstructor(mm),
     m_name(name),
     m_attrList(attrList),
@@ -184,6 +184,7 @@ ASTNode* XQElementConstructor::staticResolution(StaticContext *context)
         uri=nsUri->asString(dContext);
       }
       if(XMLNSPrefix != XMLUni::fgZeroLenString) {
+        XQillaNSResolverImpl::forbiddenBindingCheck(XMLNSPrefix, uri, this);
         newNSScope.addNamespaceBinding(XMLNSPrefix, uri);
       }
       else {
@@ -213,13 +214,13 @@ ASTNode* XQElementConstructor::staticResolution(StaticContext *context)
       XQDOMConstructor* attrConstructor=(XQDOMConstructor*)astNode;
       const ASTNode* dItem=attrConstructor->getName();
       if(dItem->getType() == ASTNode::NAME_EXPRESSION) {
-	      dItem = ((XQNameExpression*)dItem)->getExpression();
+        dItem = ((XQNameExpression*)dItem)->getExpression();
       }
       if(dItem->getType() == ASTNode::TREAT_AS) {
-	      dItem = ((XQAtomize*)dItem)->getExpression();
+        dItem = ((XQAtomize*)dItem)->getExpression();
       }
       if(dItem->getType() == ASTNode::ATOMIZE) {
-	      dItem = ((XQAtomize*)dItem)->getExpression();
+        dItem = ((XQAtomize*)dItem)->getExpression();
       }
       assert(dItem->getType()==ASTNode::SEQUENCE); 
       const ItemConstructor::Vector &ics = ((XQSequence*)dItem)->getItemConstructors();

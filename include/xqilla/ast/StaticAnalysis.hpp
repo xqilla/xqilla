@@ -27,15 +27,9 @@
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/ast/StaticType.hpp>
 
-#include <xercesc/util/RefHash2KeysTableOf.hpp>
-#include <xercesc/util/StringPool.hpp>
-
 #include <vector>
 
 class XPath2MemoryManager;
-
-typedef XERCES_CPP_NAMESPACE_QUALIFIER RefHash2KeysTableOf<int> VariableAccessSet;
-typedef XERCES_CPP_NAMESPACE_QUALIFIER RefHash2KeysTableOfEnumerator<int> VariableAccessSetEnumerator;
 
 /**
  * Records access to various parts of the context during static resolution.
@@ -136,9 +130,18 @@ private:
   unsigned int _properties;
   StaticType _staticType;
 
-  VariableAccessSet _dynamicVariables;
-  XERCES_CPP_NAMESPACE_QUALIFIER XMLStringPool _uriPool;
-  XPath2MemoryManager* _memMgr;
+  class VarEntry
+  {
+  public:
+    VarEntry(const XMLCh *u, const XMLCh *n, VarEntry *p)
+      : uri(u), name(n), prev(p) {}
+
+    const XMLCh *uri, *name;
+    VarEntry *prev;
+  };
+
+  VarEntry *_dynamicVariables;
+  XPath2MemoryManager *_memMgr;
 };
 
 #endif

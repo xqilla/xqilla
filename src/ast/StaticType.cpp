@@ -280,6 +280,10 @@ void StaticType::typeConcat(const StaticType &st)
 
 void StaticType::typeNodeIntersect(const StaticType &st)
 {
+  if(flags_ != st.flags_ && (flags_ & st.flags_) != 0) {
+    min_ = 0;
+  }
+
   flags_ &= st.flags_;
   min_ = (min_ < st.min_) ? min_ : st.min_;
   max_ = (max_ < st.max_) ? max_ : st.max_;

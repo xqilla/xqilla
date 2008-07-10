@@ -233,8 +233,12 @@ ASTNode *XQNameExpression::staticTyping(StaticContext *context)
 
   if(!expr_->getStaticAnalysis().getStaticType().
      containsType(StaticType::QNAME_TYPE|StaticType::STRING_TYPE|StaticType::UNTYPED_ATOMIC_TYPE)) {
-    XQThrow(XPath2TypeMatchException,X("XQNameExpression::staticTyping"),
-            X("The name expression must be a single xs:QName, xs:string or xs:untypedAtomic [err:XPTY0004]"));
+    XMLBuffer buf;
+    buf.set(X("The name expression must be a single xs:QName, xs:string or xs:untypedAtomic"));
+    buf.append(X(" - the expression has a static type of "));
+    expr_->getStaticAnalysis().getStaticType().typeToBuf(buf);
+    buf.append(X(" [err:XPTY0004]"));
+    XQThrow(XPath2TypeMatchException, X("XQNameExpression::staticTyping"), buf.getRawBuffer());
   }
 
   if(expr_->isConstant()) {
@@ -268,8 +272,12 @@ Item::Ptr XQNameExpression::NameExpressionResult::getSingleResult(DynamicContext
       break;
     }
 
-    XQThrow(XPath2TypeMatchException,X("XQNameExpression::NameExpressionResult::getSingleResult"),
-            X("The name expression must be a single xs:QName, xs:string or xs:untypedAtomic [err:XPTY0004]"));
+    XMLBuffer buf;
+    buf.set(X("The name expression must be a single xs:QName, xs:string or xs:untypedAtomic"));
+    buf.append(X(" - found item of type "));
+    itemName->typeToBuffer(context, buf);
+    buf.append(X(" [err:XPTY0004]"));
+    XQThrow(XPath2TypeMatchException, X("XQNameExpression::NameExpressionResult::getSingleResult"), buf.getRawBuffer());
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
