@@ -22,6 +22,7 @@ Document projection for recursive functions
 Query option to disable document projection
 Option to disable schema validation of input documents
 pull event execution
+Remove and free unused functions / global variables
 
 
 Infrastructure
@@ -32,10 +33,10 @@ string pool that returns numeric identifier
 support for UTF-8 execution?
 extract basic schema types from Xerces-C
 abstract schema type access (no direct access to Xerces objects)
-Build without code that needs a source version of Xerces-C?
 Improve MAPM concurrency
 Windows -- re-enable warning 4996 (xqilla_config.h) and address the "unsafe" warnings
 	for use of strcat, strcpy, etc
+Add ability to free and copy the AST
 
 
 QA
