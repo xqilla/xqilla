@@ -52,6 +52,9 @@
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/context/ItemFactory.hpp>
 #include <xqilla/events/QueryPathTreeFilter.hpp>
+#include <xercesc/framework/psvi/PSVIElement.hpp>
+#include <xercesc/framework/psvi/PSVIAttribute.hpp>
+#include <xercesc/framework/psvi/PSVIAttributeList.hpp>
 
 XERCES_CPP_NAMESPACE_USE;
 

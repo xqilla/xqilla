@@ -487,17 +487,24 @@ void SchemaValidatorFilter::endElementEvent(const XMLCh *prefix, const XMLCh *ur
       }
     }
 
+#if _XERCES_VERSION >= 30000
+    XMLSize_t failure;
+    bool success = fValidator->checkContent(topElem->fThisElement, topElem->fChildren, topElem->fChildCount, &failure);
+#else
     int res = fValidator->checkContent(topElem->fThisElement, topElem->fChildren, topElem->fChildCount);
+    bool success = res >= 0;
+    XMLSize_t failure = (XMLSize_t)res;
+#endif
 
-    if(res >= 0) {
+    if(success) {
       if(!topElem->fChildCount) {
         fValidator->emitError(XMLValid::EmptyNotValidForContent, topElem->fThisElement->getFormattedContentModel());
       }
-      else if((unsigned int)res >= topElem->fChildCount) {
+      else if(failure >= topElem->fChildCount) {
         fValidator->emitError(XMLValid::NotEnoughElemsForCM, topElem->fThisElement->getFormattedContentModel());
       }
       else {
-        fValidator->emitError(XMLValid::ElementNotValidForContent, topElem->fChildren[res]->getRawName(), topElem->fThisElement->getFormattedContentModel());
+        fValidator->emitError(XMLValid::ElementNotValidForContent, topElem->fChildren[failure]->getRawName(), topElem->fThisElement->getFormattedContentModel());
       }
     }
 
