@@ -16,32 +16,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * $Id$
+ * $Id: TupleNode.hpp 551 2008-07-01 13:16:55Z jpcs $
  */
 
-#ifndef WHERETUPLE_HPP
-#define WHERETUPLE_HPP
-
 #include <xqilla/ast/TupleNode.hpp>
+#include <xqilla/optimizer/ASTReleaser.hpp>
 
-class ASTNode;
-
-class XQILLA_API WhereTuple : public TupleNode
+void TupleNode::release()
 {
-public:
-  WhereTuple(TupleNode *parent, ASTNode *expr, XPath2MemoryManager *mm);
-
-  ASTNode *getExpression() const { return expr_; }
-  void setExpression(ASTNode *expr) { expr_ = expr; }
-
-  virtual TupleNode *staticResolution(StaticContext *context);
-  virtual TupleNode *staticTypingSetup(unsigned int &min, unsigned int &max, StaticContext *context);
-  virtual TupleNode *staticTypingTeardown(StaticContext *context, StaticAnalysis &usedSrc);
-
-  virtual TupleResult::Ptr createResult(DynamicContext* context) const;
-
-private:
-  ASTNode *expr_;
-};
-
-#endif
+  ASTReleaser().release(this);
+}

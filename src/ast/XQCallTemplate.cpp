@@ -42,13 +42,12 @@ XQTemplateArgument::XQTemplateArgument(const XMLCh *qn, ASTNode *v, XPath2Memory
 }
 
 XQCallTemplate::XQCallTemplate(const XMLCh *qname, TemplateArguments *args, XPath2MemoryManager *mm)
-  : ASTNodeImpl(mm),
+  : ASTNodeImpl(CALL_TEMPLATE, mm),
     qname_(qname),
     uri_(0),
     name_(0),
     args_(args)
 {
-  setType(CALL_TEMPLATE);
 }
 
 ASTNode* XQCallTemplate::staticResolution(StaticContext *context) 

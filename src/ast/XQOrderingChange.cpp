@@ -28,11 +28,10 @@
 #include <xqilla/context/ContextHelpers.hpp>
 
 XQOrderingChange::XQOrderingChange(StaticContext::NodeSetOrdering ordering, ASTNode* astNode, XPath2MemoryManager* expr)
-  : ASTNodeImpl(expr),
+  : ASTNodeImpl(ORDERING_CHANGE, expr),
     m_nOrdering(ordering),
     m_pExpr(astNode)
 {
-  setType(ASTNode::ORDERING_CHANGE);
 }
 
 Result XQOrderingChange::createResult(DynamicContext *context, int flags) const

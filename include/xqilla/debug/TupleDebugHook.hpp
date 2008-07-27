@@ -27,7 +27,7 @@
 class XQILLA_API TupleDebugHook : public TupleNode
 {
 public:
-  TupleDebugHook(TupleNode *parent);
+  TupleDebugHook(TupleNode *parent, XPath2MemoryManager *mm);
 
   virtual TupleNode *staticResolution(StaticContext *context);
   virtual TupleNode *staticTypingSetup(unsigned int &min, unsigned int &max, StaticContext *context);

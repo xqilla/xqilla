@@ -11975,7 +11975,7 @@ static yyconst short int yy_chk[17743] =
 #define ATTR_VALUE_TEMPLATE 14
 
 #line 174 "../src/lexer/XQLexer.l"
-char *xqGetStateName(int state)
+const char *xqGetStateName(int state)
 {
   switch(state) {
   case INITIAL: return "INITIAL";

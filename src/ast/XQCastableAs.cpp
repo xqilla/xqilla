@@ -43,13 +43,12 @@
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 
 XQCastableAs::XQCastableAs(ASTNode* expr, SequenceType* exprType, XPath2MemoryManager* memMgr)
-  : ASTNodeImpl(memMgr),
+  : ASTNodeImpl(CASTABLE_AS, memMgr),
     _expr(expr),
     _exprType(exprType),
     _isPrimitive(false),
     _typeIndex((AnyAtomicType::AtomicObjectType)-1)
 {
-  setType(ASTNode::CASTABLE_AS);
 }
 
 Result XQCastableAs::createResult(DynamicContext* context, int flags) const

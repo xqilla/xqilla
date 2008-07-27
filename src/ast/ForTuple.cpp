@@ -35,7 +35,7 @@ XERCES_CPP_NAMESPACE_USE;
 
 ForTuple::ForTuple(TupleNode *parent, const XMLCh *varQName, const XMLCh *posQName,
                    ASTNode *expr, XPath2MemoryManager *mm)
-  : TupleNode(FOR, parent),
+  : TupleNode(FOR, parent, mm),
     varQName_(varQName),
     varURI_(0),
     varName_(0),

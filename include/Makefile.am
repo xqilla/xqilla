@@ -341,6 +341,7 @@ xqilla/operators/Range.hpp \
 xqilla/operators/UnaryMinus.hpp \
 xqilla/operators/Union.hpp \
 xqilla/optimizer/Optimizer.hpp \
+xqilla/optimizer/ASTReleaser.hpp \
 xqilla/optimizer/ASTVisitor.hpp \
 xqilla/optimizer/QueryPathNode.hpp \
 xqilla/optimizer/QueryPathTreeGenerator.hpp \

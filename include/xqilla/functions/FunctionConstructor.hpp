@@ -19,10 +19,6 @@
  * $Id$
  */
 
-/**
- * xs:TYP(item $srcval) => TYP 
-**/
-
 #ifndef _FUNCTIONCONSTRUCTOR_HPP
 #define _FUNCTIONCONSTRUCTOR_HPP
 
@@ -45,4 +41,4 @@ public:
   virtual ASTNode *staticTyping(StaticContext *context);
 };
 
-#endif // _FUNCTIONCONSTRUCTOR_HPP
+#endif

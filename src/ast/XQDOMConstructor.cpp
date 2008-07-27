@@ -47,7 +47,7 @@ XERCES_CPP_NAMESPACE_USE
 #endif
 
 XQDOMConstructor::XQDOMConstructor(XPath2MemoryManager* mm)
-  : ASTNodeImpl(mm),
+  : ASTNodeImpl(DOM_CONSTRUCTOR, mm),
     queryPathTree_(0)
 {
 }
@@ -96,10 +96,9 @@ bool XQDOMConstructor::getStringValue(const ASTNode *child, XMLBuffer &value, Dy
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 XQContentSequence::XQContentSequence(ASTNode *expr, XPath2MemoryManager* mm)
-  : ASTNodeImpl(mm),
+  : ASTNodeImpl(CONTENT_SEQUENCE, mm),
     expr_(expr)
 {
-  setType(ASTNode::CONTENT_SEQUENCE);
 }
 
 ASTNode* XQContentSequence::staticResolution(StaticContext *context)
@@ -156,11 +155,10 @@ EventGenerator::Ptr XQContentSequence::generateEvents(EventHandler *events, Dyna
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 XQDirectName::XQDirectName(const XMLCh *qname, bool isAttr, XPath2MemoryManager* mm)
-  : ASTNodeImpl(mm),
+  : ASTNodeImpl(DIRECT_NAME, mm),
     qname_(qname),
     isAttr_(isAttr)
 {
-  setType(ASTNode::DIRECT_NAME);
 }
 
 ASTNode *XQDirectName::staticResolution(StaticContext *context)
@@ -196,10 +194,9 @@ ASTNode *XQDirectName::staticTyping(StaticContext *context)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 XQNameExpression::XQNameExpression(ASTNode *expr, XPath2MemoryManager* mm)
-  : ASTNodeImpl(mm),
+  : ASTNodeImpl(NAME_EXPRESSION, mm),
     expr_(expr)
 {
-  setType(ASTNode::NAME_EXPRESSION);
 }
 
 ASTNode* XQNameExpression::staticResolution(StaticContext *context)
@@ -283,10 +280,9 @@ Item::Ptr XQNameExpression::NameExpressionResult::getSingleResult(DynamicContext
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 XQSimpleContent::XQSimpleContent(VectorOfASTNodes *children, XPath2MemoryManager* mm)
-  : ASTNodeImpl(mm),
+  : ASTNodeImpl(SIMPLE_CONTENT, mm),
     children_(children)
 {
-  setType(ASTNode::SIMPLE_CONTENT);
 }
 
 ASTNode* XQSimpleContent::staticResolution(StaticContext *context)

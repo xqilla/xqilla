@@ -34,12 +34,11 @@
 #include <xqilla/runtime/ClosureResult.hpp>
 
 XQTypeswitch::  XQTypeswitch(ASTNode *expr, Cases *cases, Case *defaultCase, XPath2MemoryManager *mm)
-  : ASTNodeImpl(mm),
+  : ASTNodeImpl(TYPESWITCH, mm),
     expr_(expr),
     cases_(cases),
     default_(defaultCase)
 {
-  setType(ASTNode::TYPESWITCH);
 }
 
 Result XQTypeswitch::createResult(DynamicContext *context, int flags) const

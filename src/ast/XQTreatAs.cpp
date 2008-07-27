@@ -50,7 +50,7 @@ static const XMLCh err_XPTY0004[] = { 'e', 'r', 'r', ':', 'X', 'P', 'T', 'Y', '0
 static const XMLCh funcVarName[] = { '#', 'f', 'u', 'n', 'c', 'V', 'a', 'r', 0 };
 
 XQTreatAs::XQTreatAs(ASTNode* expr, SequenceType* exprType, XPath2MemoryManager* memMgr, const XMLCh *errorCode)
-  : ASTNodeImpl(memMgr),
+  : ASTNodeImpl(TREAT_AS, memMgr),
     _expr(expr),
     _exprType(exprType),
     _errorCode(errorCode),
@@ -58,8 +58,6 @@ XQTreatAs::XQTreatAs(ASTNode* expr, SequenceType* exprType, XPath2MemoryManager*
     _doCardinalityCheck(true),
     _funcConvert(0)
 {
-  setType(ASTNode::TREAT_AS);
-
   if(_errorCode == 0) _errorCode = err_XPTY0004;
 }
 
@@ -203,7 +201,7 @@ ASTNode *XQTreatAs::staticTyping(StaticContext *context)
 
     if(!_doTypeCheck && !_doCardinalityCheck) {
       // It always matches
-      return _expr;
+      return substitute(_expr);
     }
   }
 

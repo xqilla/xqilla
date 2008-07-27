@@ -38,13 +38,12 @@ XERCES_CPP_NAMESPACE_USE
 using namespace std;
 
 XQCopy::XQCopy(XPath2MemoryManager* memMgr)
-  : ASTNodeImpl(memMgr),
+  : ASTNodeImpl(COPY, memMgr),
     expr_(0),
     children_(XQillaAllocator<ASTNode*>(memMgr)),
     copyNamespaces_(true),
     inheritNamespaces_(true)
 {
-  setType(ASTNode::COPY);
 }
 
 ASTNode* XQCopy::staticResolution(StaticContext *context)

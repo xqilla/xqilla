@@ -31,9 +31,9 @@
 #include <xqilla/update/PendingUpdateList.hpp>
 
 XQParenthesizedExpr::XQParenthesizedExpr(XPath2MemoryManager* memMgr)
-  : ASTNodeImpl(memMgr), _astNodes(XQillaAllocator<ASTNode*>(memMgr))
+  : ASTNodeImpl(PARENTHESIZED, memMgr),
+    _astNodes(XQillaAllocator<ASTNode*>(memMgr))
 {
-  setType(ASTNode::PARENTHESIZED);
 }
 
 Result XQParenthesizedExpr::createResult(DynamicContext* context, int flags) const

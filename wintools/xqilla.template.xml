@@ -443,6 +443,7 @@
         <file name='include/xqilla/operators/UnaryMinus.hpp'/>
         <file name='include/xqilla/operators/Union.hpp'/>
         <file name='include/xqilla/optimizer/Optimizer.hpp'/>
+        <file name='include/xqilla/optimizer/ASTReleaser.hpp'/>
         <file name='include/xqilla/optimizer/ASTVisitor.hpp'/>
         <file name='include/xqilla/optimizer/QueryPathNode.hpp'/>
         <file name='include/xqilla/optimizer/QueryPathTreeGenerator.hpp'/>
@@ -504,6 +505,7 @@
       <filter name="ast">
         <file name="src/ast/ASTNodeImpl.cpp"/>
         <file name="src/ast/ConstantFoldingFunction.cpp"/>
+        <file name="src/ast/TupleNode.cpp"/>
         <file name="src/ast/ContextTuple.cpp"/>
         <file name="src/ast/ConvertFunctionArg.cpp"/>
         <file name="src/ast/ForTuple.cpp"/>
@@ -913,6 +915,7 @@
         <file name="src/operators/Union.cpp"/>
       </filter>
       <filter name="optimizer">
+        <file name="src/optimizer/ASTReleaser.cpp"/>
         <file name="src/optimizer/ASTVisitor.cpp"/>
         <file name="src/optimizer/Optimizer.cpp"/>
         <file name="src/optimizer/QueryPathNode.cpp"/>

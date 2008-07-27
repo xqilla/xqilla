@@ -28,8 +28,8 @@
 #include <xqilla/utils/XStr.hpp>
 #include <xqilla/operators/And.hpp>
 
-WhereTuple::WhereTuple(TupleNode *parent, ASTNode *expr)
-  : TupleNode(WHERE, parent),
+WhereTuple::WhereTuple(TupleNode *parent, ASTNode *expr, XPath2MemoryManager *mm)
+  : TupleNode(WHERE, parent, mm),
     expr_(expr)
 {
 }
@@ -86,9 +86,13 @@ TupleNode *WhereTuple::staticTypingSetup(unsigned int &min, unsigned int &max, S
     And *andOp = (And*)expr_;
     TupleNode *result = parent_;
     for(unsigned int index = 0; index < andOp->getNumArgs(); ++index) {
-      result = new (mm) WhereTuple(result, andOp->getArgument(index));
+      result = new (mm) WhereTuple(result, andOp->getArgument(index), mm);
       result->setLocationInfo(this);
     }
+
+    parent_ = 0;
+    expr_ = 0;
+    this->release();
 
     return result->staticTypingSetup(min, max, context);
   }

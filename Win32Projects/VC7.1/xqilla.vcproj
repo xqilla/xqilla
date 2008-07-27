@@ -373,6 +373,7 @@
       <File RelativePath="..\..\include\xqilla\operators\UnaryMinus.hpp"/>
       <File RelativePath="..\..\include\xqilla\operators\Union.hpp"/>
       <File RelativePath="..\..\include\xqilla\optimizer\Optimizer.hpp"/>
+      <File RelativePath="..\..\include\xqilla\optimizer\ASTReleaser.hpp"/>
       <File RelativePath="..\..\include\xqilla\optimizer\ASTVisitor.hpp"/>
       <File RelativePath="..\..\include\xqilla\optimizer\QueryPathNode.hpp"/>
       <File RelativePath="..\..\include\xqilla\optimizer\QueryPathTreeGenerator.hpp"/>
@@ -434,6 +435,7 @@
     <Filter Filter="" Name="ast">
       <File RelativePath="..\..\src\ast\ASTNodeImpl.cpp"/>
       <File RelativePath="..\..\src\ast\ConstantFoldingFunction.cpp"/>
+      <File RelativePath="..\..\src\ast\TupleNode.cpp"/>
       <File RelativePath="..\..\src\ast\ContextTuple.cpp"/>
       <File RelativePath="..\..\src\ast\ConvertFunctionArg.cpp"/>
       <File RelativePath="..\..\src\ast\ForTuple.cpp"/>
@@ -843,6 +845,7 @@
       <File RelativePath="..\..\src\operators\Union.cpp"/>
     </Filter>
     <Filter Filter="" Name="optimizer">
+      <File RelativePath="..\..\src\optimizer\ASTReleaser.cpp"/>
       <File RelativePath="..\..\src\optimizer\ASTVisitor.cpp"/>
       <File RelativePath="..\..\src\optimizer\Optimizer.cpp"/>
       <File RelativePath="..\..\src\optimizer\QueryPathNode.cpp"/>

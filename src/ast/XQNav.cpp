@@ -37,19 +37,17 @@
 #include <xqilla/context/ContextHelpers.hpp>
 
 XQNav::XQNav(XPath2MemoryManager* memMgr)
-  : ASTNodeImpl(memMgr),
+  : ASTNodeImpl(NAVIGATION, memMgr),
     _steps(XQillaAllocator<StepInfo>(memMgr)),
     _sortAdded(false)
 {
-  setType(NAVIGATION);
 }
 
 XQNav::XQNav(ASTNode *ast, XPath2MemoryManager* memMgr)
-  : ASTNodeImpl(memMgr),
+  : ASTNodeImpl(NAVIGATION, memMgr),
     _steps(XQillaAllocator<StepInfo>(memMgr)),
     _sortAdded(false)
 {
-  setType(NAVIGATION);
   addStep(ast);
 }
 

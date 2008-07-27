@@ -171,7 +171,7 @@ CharRef "&#"({Digits}|("x"{HexDigits}))";"
 %x ATTR_VALUE_TEMPLATE
 
 %{
-char *xqGetStateName(int state)
+const char *xqGetStateName(int state)
 {
   switch(state) {
   case INITIAL: return "INITIAL";

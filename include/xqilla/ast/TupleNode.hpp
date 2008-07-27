@@ -26,6 +26,7 @@
 
 class StaticContext;
 class StaticAnalysis;
+class XPath2MemoryManager;
 
 class XQILLA_API TupleNode : public LocationInfo
 {
@@ -41,7 +42,10 @@ public:
 
   virtual ~TupleNode() {}
 
+  virtual void release();
+
   virtual Type getType() const { return type_; }
+  virtual XPath2MemoryManager *getMemoryManager() const { return mm_; }
 
   TupleNode *getParent() const { return parent_; }
   void setParent(TupleNode *parent) { parent_ = parent; }
@@ -56,12 +60,13 @@ public:
   virtual TupleResult::Ptr createResult(DynamicContext* context) const = 0;
 
 protected:
-  TupleNode(Type type, TupleNode *parent)
-    : type_(type), parent_(parent), userData_(0) {}
+  TupleNode(Type type, TupleNode *parent, XPath2MemoryManager *mm)
+    : type_(type), parent_(parent), userData_(0), mm_(mm) {}
 
   Type type_;
   TupleNode *parent_;
   void *userData_;
+  XPath2MemoryManager *mm_;
 };
 
 #endif

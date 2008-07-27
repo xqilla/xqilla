@@ -88,6 +88,79 @@
 
 #include <xqilla/fulltext/FTContains.hpp>
 
+#define ALL_ASTVISITOR_METHODS() \
+  virtual XQGlobalVariable *optimizeGlobalVar(XQGlobalVariable *item); \
+  virtual XQUserFunction *optimizeFunctionDef(XQUserFunction *item); \
+\
+  virtual ASTNode *optimizeUnknown(ASTNode *item); \
+  virtual ASTNode *optimizeFunction(XQFunction *item); \
+  virtual ASTNode *optimizeLiteral(XQLiteral *item); \
+  virtual ASTNode *optimizeNav(XQNav *item); \
+  virtual ASTNode *optimizeParenthesizedExpr(XQParenthesizedExpr *item); \
+  virtual ASTNode *optimizeSequence(XQSequence *item); \
+  virtual ASTNode *optimizeStep(XQStep *item); \
+  virtual ASTNode *optimizeVariable(XQVariable *item); \
+  virtual ASTNode *optimizeIf(XQIf *item); \
+  virtual ASTNode *optimizeInstanceOf(XQInstanceOf *item); \
+  virtual ASTNode *optimizeCastableAs(XQCastableAs *item); \
+  virtual ASTNode *optimizeCastAs(XQCastAs *item); \
+  virtual ASTNode *optimizeTreatAs(XQTreatAs *item); \
+  virtual ASTNode *optimizeOperator(XQOperator *item); \
+  virtual ASTNode *optimizeContextItem(XQContextItem *item); \
+  virtual ASTNode *optimizeReturn(XQReturn *item); \
+  virtual ASTNode *optimizeQuantified(XQQuantified *item); \
+  virtual ASTNode *optimizeTypeswitch(XQTypeswitch *item); \
+  virtual ASTNode *optimizeValidate(XQValidate *item); \
+  virtual ASTNode *optimizeFunctionCall(XQFunctionCall *item); \
+  virtual ASTNode *optimizeDOMConstructor(XQDOMConstructor *item); \
+  virtual ASTNode *optimizeSimpleContent(XQSimpleContent *item); \
+  virtual ASTNode *optimizeOrderingChange(XQOrderingChange *item); \
+  virtual ASTNode *optimizeAtomize(XQAtomize *item); \
+  virtual ASTNode *optimizeXPath1CompatConvertFunctionArg(XPath1CompatConvertFunctionArg *item); \
+  virtual ASTNode *optimizePromoteUntyped(XQPromoteUntyped *item); \
+  virtual ASTNode *optimizePromoteNumeric(XQPromoteNumeric *item); \
+  virtual ASTNode *optimizePromoteAnyURI(XQPromoteAnyURI *item); \
+  virtual ASTNode *optimizeDocumentOrder(XQDocumentOrder *item); \
+  virtual ASTNode *optimizePredicate(XQPredicate *item); \
+  virtual ASTNode *optimizeUserFunction(XQUserFunctionInstance *item); \
+  virtual ASTNode *optimizeNameExpression(XQNameExpression *item); \
+  virtual ASTNode *optimizeContentSequence(XQContentSequence *item); \
+  virtual ASTNode *optimizeDirectName(XQDirectName *item); \
+  virtual ASTNode *optimizeNamespaceBinding(XQNamespaceBinding *item); \
+  virtual ASTNode *optimizeFunctionConversion(XQFunctionConversion *item); \
+  virtual ASTNode *optimizeAnalyzeString(XQAnalyzeString *item); \
+  virtual ASTNode *optimizeCopyOf(XQCopyOf *item); \
+  virtual ASTNode *optimizeCopy(XQCopy *item); \
+  virtual ASTNode *optimizeASTDebugHook(ASTDebugHook *item); \
+  virtual ASTNode *optimizeCallTemplate(XQCallTemplate *item); \
+  virtual ASTNode *optimizeApplyTemplates(XQApplyTemplates *item); \
+  virtual ASTNode *optimizeInlineFunction(XQInlineFunction *item); \
+  virtual ASTNode *optimizeFunctionRef(XQFunctionRef *item); \
+  virtual ASTNode *optimizeFunctionDeref(XQFunctionDeref *item); \
+\
+  virtual ASTNode *optimizeUDelete(UDelete *item); \
+  virtual ASTNode *optimizeURename(URename *item); \
+  virtual ASTNode *optimizeUReplace(UReplace *item); \
+  virtual ASTNode *optimizeUReplaceValueOf(UReplaceValueOf *item); \
+  virtual ASTNode *optimizeUInsertAsFirst(UInsertAsFirst *item); \
+  virtual ASTNode *optimizeUInsertAsLast(UInsertAsLast *item); \
+  virtual ASTNode *optimizeUInsertInto(UInsertInto *item); \
+  virtual ASTNode *optimizeUInsertAfter(UInsertAfter *item); \
+  virtual ASTNode *optimizeUInsertBefore(UInsertBefore *item); \
+  virtual ASTNode *optimizeUTransform(UTransform *item); \
+  virtual ASTNode *optimizeUApplyUpdates(UApplyUpdates *item); \
+\
+  virtual ASTNode *optimizeFTContains(FTContains *item); \
+\
+  virtual TupleNode *optimizeUnknownTupleNode(TupleNode *item); \
+  virtual TupleNode *optimizeContextTuple(ContextTuple *item); \
+  virtual TupleNode *optimizeForTuple(ForTuple *item); \
+  virtual TupleNode *optimizeLetTuple(LetTuple *item); \
+  virtual TupleNode *optimizeWhereTuple(WhereTuple *item); \
+  virtual TupleNode *optimizeOrderByTuple(OrderByTuple *item); \
+  virtual TupleNode *optimizeTupleDebugHook(TupleDebugHook *item);
+
+
 class XQILLA_API ASTVisitor : public Optimizer
 {
 public:
@@ -96,77 +169,10 @@ public:
 
 protected:
   virtual void optimize(XQQuery *query);
-
-  virtual XQGlobalVariable *optimizeGlobalVar(XQGlobalVariable *item);
-  virtual XQUserFunction *optimizeFunctionDef(XQUserFunction *item);
-
   virtual ASTNode *optimize(ASTNode *item);
-  virtual ASTNode *optimizeFunction(XQFunction *item);
-  virtual ASTNode *optimizeLiteral(XQLiteral *item);
-  virtual ASTNode *optimizeNav(XQNav *item);
-  virtual ASTNode *optimizeParenthesizedExpr(XQParenthesizedExpr *item);
-  virtual ASTNode *optimizeSequence(XQSequence *item);
-  virtual ASTNode *optimizeStep(XQStep *item);
-  virtual ASTNode *optimizeVariable(XQVariable *item);
-  virtual ASTNode *optimizeIf(XQIf *item);
-  virtual ASTNode *optimizeInstanceOf(XQInstanceOf *item);
-  virtual ASTNode *optimizeCastableAs(XQCastableAs *item);
-  virtual ASTNode *optimizeCastAs(XQCastAs *item);
-  virtual ASTNode *optimizeTreatAs(XQTreatAs *item);
-  virtual ASTNode *optimizeOperator(XQOperator *item);
-  virtual ASTNode *optimizeContextItem(XQContextItem *item);
-  virtual ASTNode *optimizeReturn(XQReturn *item);
-  virtual ASTNode *optimizeQuantified(XQQuantified *item);
-  virtual ASTNode *optimizeTypeswitch(XQTypeswitch *item);
-  virtual ASTNode *optimizeValidate(XQValidate *item);
-  virtual ASTNode *optimizeFunctionCall(XQFunctionCall *item);
-  virtual ASTNode *optimizeDOMConstructor(XQDOMConstructor *item);
-  virtual ASTNode *optimizeSimpleContent(XQSimpleContent *item);
-  virtual ASTNode *optimizeOrderingChange(XQOrderingChange *item);
-  virtual ASTNode *optimizeAtomize(XQAtomize *item);
-  virtual ASTNode *optimizeXPath1CompatConvertFunctionArg(XPath1CompatConvertFunctionArg *item);
-  virtual ASTNode *optimizePromoteUntyped(XQPromoteUntyped *item);
-  virtual ASTNode *optimizePromoteNumeric(XQPromoteNumeric *item);
-  virtual ASTNode *optimizePromoteAnyURI(XQPromoteAnyURI *item);
-  virtual ASTNode *optimizeDocumentOrder(XQDocumentOrder *item);
-  virtual ASTNode *optimizePredicate(XQPredicate *item);
-  virtual ASTNode *optimizeUserFunction(XQUserFunctionInstance *item);
-  virtual ASTNode *optimizeNameExpression(XQNameExpression *item);
-  virtual ASTNode *optimizeContentSequence(XQContentSequence *item);
-  virtual ASTNode *optimizeDirectName(XQDirectName *item);
-  virtual ASTNode *optimizeNamespaceBinding(XQNamespaceBinding *item);
-  virtual ASTNode *optimizeFunctionConversion(XQFunctionConversion *item);
-  virtual ASTNode *optimizeAnalyzeString(XQAnalyzeString *item);
-  virtual ASTNode *optimizeCopyOf(XQCopyOf *item);
-  virtual ASTNode *optimizeCopy(XQCopy *item);
-  virtual ASTNode *optimizeASTDebugHook(ASTDebugHook *item);
-  virtual ASTNode *optimizeCallTemplate(XQCallTemplate *item);
-  virtual ASTNode *optimizeApplyTemplates(XQApplyTemplates *item);
-  virtual ASTNode *optimizeInlineFunction(XQInlineFunction *item);
-  virtual ASTNode *optimizeFunctionRef(XQFunctionRef *item);
-  virtual ASTNode *optimizeFunctionDeref(XQFunctionDeref *item);
-
-  virtual ASTNode *optimizeUDelete(UDelete *item);
-  virtual ASTNode *optimizeURename(URename *item);
-  virtual ASTNode *optimizeUReplace(UReplace *item);
-  virtual ASTNode *optimizeUReplaceValueOf(UReplaceValueOf *item);
-  virtual ASTNode *optimizeUInsertAsFirst(UInsertAsFirst *item);
-  virtual ASTNode *optimizeUInsertAsLast(UInsertAsLast *item);
-  virtual ASTNode *optimizeUInsertInto(UInsertInto *item);
-  virtual ASTNode *optimizeUInsertAfter(UInsertAfter *item);
-  virtual ASTNode *optimizeUInsertBefore(UInsertBefore *item);
-  virtual ASTNode *optimizeUTransform(UTransform *item);
-  virtual ASTNode *optimizeUApplyUpdates(UApplyUpdates *item);
-
-  virtual ASTNode *optimizeFTContains(FTContains *item);
-
   virtual TupleNode *optimizeTupleNode(TupleNode *item);
-  virtual TupleNode *optimizeContextTuple(ContextTuple *item);
-  virtual TupleNode *optimizeForTuple(ForTuple *item);
-  virtual TupleNode *optimizeLetTuple(LetTuple *item);
-  virtual TupleNode *optimizeWhereTuple(WhereTuple *item);
-  virtual TupleNode *optimizeOrderByTuple(OrderByTuple *item);
-  virtual TupleNode *optimizeTupleDebugHook(TupleDebugHook *item);
+
+  ALL_ASTVISITOR_METHODS()
 };
 
 #endif

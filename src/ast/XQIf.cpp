@@ -32,12 +32,11 @@
 #include <xqilla/runtime/ClosureResult.hpp>
 
 XQIf::XQIf(ASTNode* test, ASTNode* whenTrue, ASTNode* whenFalse, XPath2MemoryManager* memMgr)
-  : ASTNodeImpl(memMgr),
+  : ASTNodeImpl(IF, memMgr),
   _test(test),
   _whenTrue(whenTrue),
   _whenFalse(whenFalse)
 {
-  setType(ASTNode::IF);
 }
 
 Result XQIf::createResult(DynamicContext* context, int flags) const
@@ -110,10 +109,10 @@ ASTNode *XQIf::staticTyping(StaticContext *context)
     AutoDelete<DynamicContext> dContext(context->createDynamicContext());
     dContext->setMemoryManager(context->getMemoryManager());
     if(_test->createResult(dContext)->getEffectiveBooleanValue(dContext, this)) {
-      return _whenTrue;
+      return substitute(_whenTrue);
     }
     else {
-      return _whenFalse;
+      return substitute(_whenFalse);
     }
   }
 

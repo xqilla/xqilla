@@ -43,17 +43,40 @@
 #include <xqilla/context/ContextHelpers.hpp>
 #include <xqilla/update/PendingUpdateList.hpp>
 #include <xqilla/events/EventHandler.hpp>
+#include <xqilla/optimizer/ASTReleaser.hpp>
 
-ASTNodeImpl::ASTNodeImpl(XPath2MemoryManager* memMgr)
+ASTNodeImpl::ASTNodeImpl(whichType type, XPath2MemoryManager* memMgr)
   : _src(memMgr),
+    _type(type),
     _memMgr(memMgr)
 {
-  // Nothing to do
 }
 
-ASTNodeImpl::~ASTNodeImpl(void)
+ASTNodeImpl::~ASTNodeImpl()
 {
-  //no-op
+}
+
+void ASTNodeImpl::release()
+{
+  ASTReleaser().release(this);
+}
+
+ASTNode *ASTNodeImpl::copy(XPath2MemoryManager *mm) const
+{
+  // TBD - jpcs
+  return 0;
+}
+
+bool ASTNodeImpl::isSubsetOf(const ASTNode *other) const
+{
+  // TBD - jpcs
+  return false;
+}
+
+bool ASTNodeImpl::isEqualTo(const ASTNode *other) const
+{
+  // TBD - jpcs
+  return false;
 }
 
 bool ASTNodeImpl::isConstant() const
@@ -69,24 +92,14 @@ bool ASTNodeImpl::isDateOrTimeAndHasNoTimezone(StaticContext *context) const
   return _src.getStaticType().containsType(StaticType::TIMEZONE_TYPE);
 }
 
-ASTNode::whichType ASTNodeImpl::getType(void) const
+ASTNode::whichType ASTNodeImpl::getType() const
 {
   return _type;
-}
-
-void ASTNodeImpl::setType(ASTNode::whichType t)
-{
-  _type = t;
 }
 
 PendingUpdateList ASTNodeImpl::createUpdateList(DynamicContext *context) const
 {
   return PendingUpdateList();
-}
-
-Result ASTNodeImpl::createResult(DynamicContext* context, int flags) const
-{
-  return new CreateSequenceResult(this, flags, context);
 }
 
 Result ASTNodeImpl::iterateResult(const Result &contextItems, DynamicContext* context) const
@@ -129,6 +142,7 @@ ASTNode *ASTNodeImpl::constantFold(StaticContext *context)
     if(newBlock == 0) return this; // Constant folding failed
 
     newBlock->setLocationInfo(this);
+    this->release();
     return newBlock->staticTyping(context);
   }
   catch(XQException &ex) {
@@ -136,7 +150,15 @@ ASTNode *ASTNodeImpl::constantFold(StaticContext *context)
   }
 }
 
-XPath2MemoryManager* ASTNodeImpl::getMemoryManager(void) const {
+ASTNode *ASTNodeImpl::substitute(ASTNode *&result)
+{
+  ASTNode *tmp = result;
+  result = 0;
+  this->release();
+  return tmp;
+}
+
+XPath2MemoryManager* ASTNodeImpl::getMemoryManager() const {
 
   return _memMgr;
 }
@@ -146,25 +168,35 @@ const StaticAnalysis &ASTNodeImpl::getStaticAnalysis() const
   return _src;
 }
 
-/////////////////////////////////////
-// CreateSequenceResult
-/////////////////////////////////////
-
-ASTNodeImpl::CreateSequenceResult::CreateSequenceResult(const ASTNodeImpl *di, int flags, DynamicContext *context)
-  : LazySequenceResult(di, context),
-    _flags(flags),
-    _di(di)
+class CreateSequenceResult : public LazySequenceResult
 {
-}
-
-void ASTNodeImpl::CreateSequenceResult::getResult(Sequence &toFill, DynamicContext *context) const
-{
-  try {
-    toFill = _di->createSequence(context, _flags);
+public:
+  CreateSequenceResult(const ASTNodeImpl *di, int flags, DynamicContext *context)
+    : LazySequenceResult(di, context),
+      _flags(flags),
+      _di(di)
+  {
   }
-  catch(XQException &e) {
+
+  void getResult(Sequence &toFill, DynamicContext *context) const
+  {
+    try {
+      toFill = _di->createSequence(context, _flags);
+    }
+    catch(XQException &e) {
       if(e.getXQueryLine() == 0)
         e.setXQueryPosition(this);
       throw e;
+    }
   }
+
+private:
+  int _flags;
+  const ASTNodeImpl *_di;
+};
+
+Result ASTNodeImpl::createResult(DynamicContext* context, int flags) const
+{
+  return new CreateSequenceResult(this, flags, context);
 }
+

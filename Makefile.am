@@ -79,6 +79,7 @@ src/ast/ConvertFunctionArg.cpp \
 src/ast/XQDocumentOrder.cpp \
 src/ast/XQPredicate.cpp \
 src/ast/XQReturn.cpp \
+src/ast/TupleNode.cpp \
 src/ast/ContextTuple.cpp \
 src/ast/ForTuple.cpp \
 src/ast/LetTuple.cpp \
@@ -479,6 +480,7 @@ src/xerces/XercesUpdateFactory.cpp \
 src/xerces/XercesURIResolver.hpp \
 src/xerces/XercesURIResolver.cpp \
 src/optimizer/Optimizer.cpp \
+src/optimizer/ASTReleaser.cpp \
 src/optimizer/ASTVisitor.cpp \
 src/optimizer/QueryPathNode.cpp \
 src/optimizer/QueryPathTreeGenerator.cpp \

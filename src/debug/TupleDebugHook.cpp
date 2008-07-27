@@ -26,8 +26,8 @@
 
 XERCES_CPP_NAMESPACE_USE;
 
-TupleDebugHook::TupleDebugHook(TupleNode *parent)
-  : TupleNode(DEBUG_HOOK, parent)
+TupleDebugHook::TupleDebugHook(TupleNode *parent, XPath2MemoryManager *mm)
+  : TupleNode(DEBUG_HOOK, parent, mm)
 {
   setLocationInfo(parent);
 }

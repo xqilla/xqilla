@@ -26,11 +26,10 @@
 #include <xqilla/items/Node.hpp>
 
 XQDocumentOrder::XQDocumentOrder(ASTNode* expr, XPath2MemoryManager* memMgr)
-  : ASTNodeImpl(memMgr),
+  : ASTNodeImpl(DOCUMENT_ORDER, memMgr),
     expr_(expr),
     unordered_(false)
 {
-  setType(ASTNode::DOCUMENT_ORDER);
 }
 
 ASTNode* XQDocumentOrder::staticResolution(StaticContext *context)
@@ -55,13 +54,13 @@ ASTNode *XQDocumentOrder::staticTyping(StaticContext *context)
 
   // Check if nodes will be returned
   if(!_src.getStaticType().containsType(StaticType::NODE_TYPE)) {
-    return expr_;
+    return substitute(expr_);
   }
 
   // Check if it's already in document order
   if((expr_->getStaticAnalysis().getProperties() &
       StaticAnalysis::DOCORDER) != 0) {
-    return expr_;
+    return substitute(expr_);
   }
 
   _src.setProperties(expr_->getStaticAnalysis().getProperties()

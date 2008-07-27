@@ -43,7 +43,6 @@ XQPIConstructor::XQPIConstructor(ASTNode* name, ASTNode* value, XPath2MemoryMana
     m_value(value),
     xslt_(xslt)
 {
-  setType(ASTNode::DOM_CONSTRUCTOR);
 }
 
 static bool checkString(const XMLCh *str)

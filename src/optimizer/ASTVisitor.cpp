@@ -72,234 +72,126 @@ XQUserFunction *ASTVisitor::optimizeFunctionDef(XQUserFunction *item)
 
 ASTNode *ASTVisitor::optimize(ASTNode *item)
 {
-  ASTNode *result = item;
   switch(item->getType()) {
-  case ASTNode::LITERAL: {
-    result = optimizeLiteral((XQLiteral *)item);
-    break;
+  case ASTNode::LITERAL:
+    return optimizeLiteral((XQLiteral *)item);
+  case ASTNode::SEQUENCE:
+    return optimizeSequence((XQSequence *)item);
+  case ASTNode::FUNCTION:
+    return optimizeFunction((XQFunction *)item);
+  case ASTNode::NAVIGATION:
+    return optimizeNav((XQNav *)item);
+  case ASTNode::VARIABLE:
+    return optimizeVariable((XQVariable *)item);
+  case ASTNode::STEP:
+    return optimizeStep((XQStep *)item);
+  case ASTNode::IF:
+    return optimizeIf((XQIf *)item);
+  case ASTNode::INSTANCE_OF:
+    return optimizeInstanceOf((XQInstanceOf *)item);
+  case ASTNode::CASTABLE_AS:
+    return optimizeCastableAs((XQCastableAs *)item);
+  case ASTNode::CAST_AS:
+    return optimizeCastAs((XQCastAs *)item);
+  case ASTNode::TREAT_AS:
+    return optimizeTreatAs((XQTreatAs *)item);
+  case ASTNode::PARENTHESIZED:
+    return optimizeParenthesizedExpr((XQParenthesizedExpr *)item);
+  case ASTNode::OPERATOR:
+    return optimizeOperator((XQOperator *)item);
+  case ASTNode::CONTEXT_ITEM:
+    return optimizeContextItem((XQContextItem *)item);
+  case ASTNode::RETURN:
+    return optimizeReturn((XQReturn *)item);
+  case ASTNode::QUANTIFIED:
+    return optimizeQuantified((XQQuantified *)item);
+  case ASTNode::TYPESWITCH:
+    return optimizeTypeswitch((XQTypeswitch *)item);
+  case ASTNode::VALIDATE:
+    return optimizeValidate((XQValidate *)item);
+  case ASTNode::FUNCTION_CALL:
+    return optimizeFunctionCall((XQFunctionCall *)item);
+  case ASTNode::DOM_CONSTRUCTOR:
+    return optimizeDOMConstructor((XQDOMConstructor *)item);
+  case ASTNode::SIMPLE_CONTENT:
+    return optimizeSimpleContent((XQSimpleContent *)item);
+  case ASTNode::ORDERING_CHANGE:
+    return optimizeOrderingChange((XQOrderingChange *)item);
+  case ASTNode::ATOMIZE:
+    return optimizeAtomize((XQAtomize *)item);
+  case ASTNode::XPATH1_CONVERT:
+    return optimizeXPath1CompatConvertFunctionArg((XPath1CompatConvertFunctionArg *)item);
+  case ASTNode::PROMOTE_UNTYPED:
+    return optimizePromoteUntyped((XQPromoteUntyped *)item);
+  case ASTNode::PROMOTE_NUMERIC:
+    return optimizePromoteNumeric((XQPromoteNumeric *)item);
+  case ASTNode::PROMOTE_ANY_URI:
+    return optimizePromoteAnyURI((XQPromoteAnyURI *)item);
+  case ASTNode::DOCUMENT_ORDER:
+    return optimizeDocumentOrder((XQDocumentOrder *)item);
+  case ASTNode::PREDICATE:
+    return optimizePredicate((XQPredicate *)item);
+  case ASTNode::USER_FUNCTION:
+    return optimizeUserFunction((XQUserFunctionInstance *)item);
+  case ASTNode::NAME_EXPRESSION:
+    return optimizeNameExpression((XQNameExpression *)item);
+  case ASTNode::CONTENT_SEQUENCE:
+    return optimizeContentSequence((XQContentSequence *)item);
+  case ASTNode::DIRECT_NAME:
+    return optimizeDirectName((XQDirectName *)item);
+  case ASTNode::UDELETE:
+    return optimizeUDelete((UDelete *)item);
+  case ASTNode::URENAME:
+    return optimizeURename((URename *)item);
+  case ASTNode::UREPLACE:
+    return optimizeUReplace((UReplace *)item);
+  case ASTNode::UREPLACE_VALUE_OF:
+    return optimizeUReplaceValueOf((UReplaceValueOf *)item);
+  case ASTNode::UINSERT_AS_FIRST:
+    return optimizeUInsertAsFirst((UInsertAsFirst *)item);
+  case ASTNode::UINSERT_AS_LAST:
+    return optimizeUInsertAsLast((UInsertAsLast *)item);
+  case ASTNode::UINSERT_INTO:
+    return optimizeUInsertInto((UInsertInto *)item);
+  case ASTNode::UINSERT_AFTER:
+    return optimizeUInsertAfter((UInsertAfter *)item);
+  case ASTNode::UINSERT_BEFORE:
+    return optimizeUInsertBefore((UInsertBefore *)item);
+  case ASTNode::UTRANSFORM:
+    return optimizeUTransform((UTransform *)item);
+  case ASTNode::UAPPLY_UPDATES:
+    return optimizeUApplyUpdates((UApplyUpdates *)item);
+  case ASTNode::FTCONTAINS:
+    return optimizeFTContains((FTContains *)item);
+  case ASTNode::NAMESPACE_BINDING:
+    return optimizeNamespaceBinding((XQNamespaceBinding *)item);
+  case ASTNode::FUNCTION_CONVERSION:
+    return optimizeFunctionConversion((XQFunctionConversion *)item);
+  case ASTNode::ANALYZE_STRING:
+    return optimizeAnalyzeString((XQAnalyzeString *)item);
+  case ASTNode::COPY_OF:
+    return optimizeCopyOf((XQCopyOf *)item);
+  case ASTNode::COPY:
+    return optimizeCopy((XQCopy *)item);
+  case ASTNode::DEBUG_HOOK:
+    return optimizeASTDebugHook((ASTDebugHook *)item);
+  case ASTNode::CALL_TEMPLATE:
+    return optimizeCallTemplate((XQCallTemplate *)item);
+  case ASTNode::APPLY_TEMPLATES:
+    return optimizeApplyTemplates((XQApplyTemplates *)item);
+  case ASTNode::INLINE_FUNCTION:
+    return optimizeInlineFunction((XQInlineFunction *)item);
+  case ASTNode::FUNCTION_REF:
+    return optimizeFunctionRef((XQFunctionRef *)item);
+  case ASTNode::FUNCTION_DEREF:
+    return optimizeFunctionDeref((XQFunctionDeref *)item);
   }
-  case ASTNode::SEQUENCE: {
-    result = optimizeSequence((XQSequence *)item);
-    break;
-  }
-  case ASTNode::FUNCTION: {
-    result = optimizeFunction((XQFunction *)item);
-    break;
-  }
-  case ASTNode::NAVIGATION: {
-    result = optimizeNav((XQNav *)item);
-    break;
-  }
-  case ASTNode::VARIABLE: {
-    result = optimizeVariable((XQVariable *)item);
-    break;
-  }
-  case ASTNode::STEP: {
-    result = optimizeStep((XQStep *)item);
-    break;
-  }
-  case ASTNode::IF: {
-    result = optimizeIf((XQIf *)item);
-    break;
-  }
-  case ASTNode::INSTANCE_OF: {
-    result = optimizeInstanceOf((XQInstanceOf *)item);
-    break;
-  }
-  case ASTNode::CASTABLE_AS: {
-    result = optimizeCastableAs((XQCastableAs *)item);
-    break;
-  }
-  case ASTNode::CAST_AS: {
-    result = optimizeCastAs((XQCastAs *)item);
-    break;
-  }
-  case ASTNode::TREAT_AS: {
-    result = optimizeTreatAs((XQTreatAs *)item);
-    break;
-  }
-  case ASTNode::PARENTHESIZED: {
-    result = optimizeParenthesizedExpr((XQParenthesizedExpr *)item);
-    break;
-  }
-  case ASTNode::OPERATOR: {
-    result = optimizeOperator((XQOperator *)item);
-    break;
-  }
-  case ASTNode::CONTEXT_ITEM: {
-    result = optimizeContextItem((XQContextItem *)item);
-    break;
-  }
-  case ASTNode::RETURN: {
-    result = optimizeReturn((XQReturn *)item);
-    break;
-  }
-  case ASTNode::QUANTIFIED: {
-    result = optimizeQuantified((XQQuantified *)item);
-    break;
-  }
-  case ASTNode::TYPESWITCH: {
-    result = optimizeTypeswitch((XQTypeswitch *)item);
-    break;
-  }
-  case ASTNode::VALIDATE: {
-    result = optimizeValidate((XQValidate *)item);
-    break;
-  }
-  case ASTNode::FUNCTION_CALL: {
-    result = optimizeFunctionCall((XQFunctionCall *)item);
-    break;
-  }
-  case ASTNode::DOM_CONSTRUCTOR: {
-    result = optimizeDOMConstructor((XQDOMConstructor *)item);
-    break;
-  }
-  case ASTNode::SIMPLE_CONTENT: {
-    result = optimizeSimpleContent((XQSimpleContent *)item);
-    break;
-  }
-  case ASTNode::ORDERING_CHANGE: {
-    result = optimizeOrderingChange((XQOrderingChange *)item);
-    break;
-  }
-  case ASTNode::ATOMIZE: {
-    result = optimizeAtomize((XQAtomize *)item);
-    break;
-  }
-  case ASTNode::XPATH1_CONVERT: {
-    result = optimizeXPath1CompatConvertFunctionArg((XPath1CompatConvertFunctionArg *)item);
-    break;
-  }
-  case ASTNode::PROMOTE_UNTYPED: {
-    result = optimizePromoteUntyped((XQPromoteUntyped *)item);
-    break;
-  }
-  case ASTNode::PROMOTE_NUMERIC: {
-    result = optimizePromoteNumeric((XQPromoteNumeric *)item);
-    break;
-  }
-  case ASTNode::PROMOTE_ANY_URI: {
-    result = optimizePromoteAnyURI((XQPromoteAnyURI *)item);
-    break;
-  }
-  case ASTNode::DOCUMENT_ORDER: {
-    result = optimizeDocumentOrder((XQDocumentOrder *)item);
-    break;
-  }
-  case ASTNode::PREDICATE: {
-    result = optimizePredicate((XQPredicate *)item);
-    break;
-  }
-  case ASTNode::USER_FUNCTION: {
-    result = optimizeUserFunction((XQUserFunctionInstance *)item);
-    break;
-  }
-  case ASTNode::NAME_EXPRESSION: {
-    result = optimizeNameExpression((XQNameExpression *)item);
-    break;
-  }
-  case ASTNode::CONTENT_SEQUENCE: {
-    result = optimizeContentSequence((XQContentSequence *)item);
-    break;
-  }
-  case ASTNode::DIRECT_NAME: {
-    result = optimizeDirectName((XQDirectName *)item);
-    break;
-  }
-  case ASTNode::UDELETE: {
-    result = optimizeUDelete((UDelete *)item);
-    break;
-  }
-  case ASTNode::URENAME: {
-    result = optimizeURename((URename *)item);
-    break;
-  }
-  case ASTNode::UREPLACE: {
-    result = optimizeUReplace((UReplace *)item);
-    break;
-  }
-  case ASTNode::UREPLACE_VALUE_OF: {
-    result = optimizeUReplaceValueOf((UReplaceValueOf *)item);
-    break;
-  }
-  case ASTNode::UINSERT_AS_FIRST: {
-    result = optimizeUInsertAsFirst((UInsertAsFirst *)item);
-    break;
-  }
-  case ASTNode::UINSERT_AS_LAST: {
-    result = optimizeUInsertAsLast((UInsertAsLast *)item);
-    break;
-  }
-  case ASTNode::UINSERT_INTO: {
-    result = optimizeUInsertInto((UInsertInto *)item);
-    break;
-  }
-  case ASTNode::UINSERT_AFTER: {
-    result = optimizeUInsertAfter((UInsertAfter *)item);
-    break;
-  }
-  case ASTNode::UINSERT_BEFORE: {
-    result = optimizeUInsertBefore((UInsertBefore *)item);
-    break;
-  }
-  case ASTNode::UTRANSFORM: {
-    result = optimizeUTransform((UTransform *)item);
-    break;
-  }
-  case ASTNode::UAPPLY_UPDATES: {
-    result = optimizeUApplyUpdates((UApplyUpdates *)item);
-    break;
-  }
-  case ASTNode::FTCONTAINS: {
-    result = optimizeFTContains((FTContains *)item);
-    break;
-  }
-  case ASTNode::NAMESPACE_BINDING: {
-    result = optimizeNamespaceBinding((XQNamespaceBinding *)item);
-    break;
-  }
-  case ASTNode::FUNCTION_CONVERSION: {
-    result = optimizeFunctionConversion((XQFunctionConversion *)item);
-    break;
-  }
-  case ASTNode::ANALYZE_STRING: {
-    result = optimizeAnalyzeString((XQAnalyzeString *)item);
-    break;
-  }
-  case ASTNode::COPY_OF: {
-    result = optimizeCopyOf((XQCopyOf *)item);
-    break;
-  }
-  case ASTNode::COPY: {
-    result = optimizeCopy((XQCopy *)item);
-    break;
-  }
-  case ASTNode::DEBUG_HOOK: {
-    result = optimizeASTDebugHook((ASTDebugHook *)item);
-    break;
-  }
-  case ASTNode::CALL_TEMPLATE: {
-    result = optimizeCallTemplate((XQCallTemplate *)item);
-    break;
-  }
-  case ASTNode::APPLY_TEMPLATES: {
-    result = optimizeApplyTemplates((XQApplyTemplates *)item);
-    break;
-  }
-  case ASTNode::INLINE_FUNCTION: {
-    result = optimizeInlineFunction((XQInlineFunction *)item);
-    break;
-  }
-  case ASTNode::FUNCTION_REF: {
-    result = optimizeFunctionRef((XQFunctionRef *)item);
-    break;
-  }
-  case ASTNode::FUNCTION_DEREF: {
-    result = optimizeFunctionDeref((XQFunctionDeref *)item);
-    break;
-  }
-  }
-  return result;
+  return optimizeUnknown(item);
+}
+
+ASTNode *ASTVisitor::optimizeUnknown(ASTNode *item)
+{
+  return item;
 }
 
 ASTNode *ASTVisitor::optimizeFunction(XQFunction *item)
@@ -754,34 +646,28 @@ ASTNode *ASTVisitor::optimizeFTContains(FTContains *item)
 
 TupleNode *ASTVisitor::optimizeTupleNode(TupleNode *item)
 {
-  TupleNode *result = item;
   switch(item->getType()) {
-  case TupleNode::CONTEXT_TUPLE: {
-    result = optimizeContextTuple((ContextTuple*)item);
-    break;
+  case TupleNode::CONTEXT_TUPLE:
+    return optimizeContextTuple((ContextTuple*)item);
+  case TupleNode::FOR:
+    return optimizeForTuple((ForTuple*)item);
+  case TupleNode::LET:
+    return optimizeLetTuple((LetTuple*)item);
+  case TupleNode::WHERE:
+    return optimizeWhereTuple((WhereTuple*)item);
+  case TupleNode::ORDER_BY:
+    return optimizeOrderByTuple((OrderByTuple*)item);
+  case TupleNode::DEBUG_HOOK:
+    return optimizeTupleDebugHook((TupleDebugHook*)item);
   }
-  case TupleNode::FOR: {
-    result = optimizeForTuple((ForTuple*)item);
-    break;
-  }
-  case TupleNode::LET: {
-    result = optimizeLetTuple((LetTuple*)item);
-    break;
-  }
-  case TupleNode::WHERE: {
-    result = optimizeWhereTuple((WhereTuple*)item);
-    break;
-  }
-  case TupleNode::ORDER_BY: {
-    result = optimizeOrderByTuple((OrderByTuple*)item);
-    break;
-  }
-  case TupleNode::DEBUG_HOOK: {
-    result = optimizeTupleDebugHook((TupleDebugHook*)item);
-    break;
-  }
-  }
-  return result;
+  return optimizeUnknownTupleNode(item);
+}
+
+TupleNode *ASTVisitor::optimizeUnknownTupleNode(TupleNode *item)
+{
+  if(item->getParent())
+    item->setParent(optimizeTupleNode(const_cast<TupleNode*>(item->getParent())));
+  return item;
 }
 
 TupleNode *ASTVisitor::optimizeContextTuple(ContextTuple *item)

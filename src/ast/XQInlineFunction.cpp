@@ -33,11 +33,10 @@ XERCES_CPP_NAMESPACE_USE;
 using namespace std;
 
 XQInlineFunction::XQInlineFunction(XQUserFunction *func, XPath2MemoryManager *mm)
-  : ASTNodeImpl(mm),
+  : ASTNodeImpl(INLINE_FUNCTION, mm),
     func_(func),
     instance_(0)
 {
-  setType(INLINE_FUNCTION);
 }
 
 ASTNode *XQInlineFunction::staticResolution(StaticContext *context)

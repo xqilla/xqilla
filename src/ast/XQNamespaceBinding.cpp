@@ -31,11 +31,10 @@ XERCES_CPP_NAMESPACE_USE
 using namespace std;
 
 XQNamespaceBinding::XQNamespaceBinding(DOMXPathNSResolver *namespaces, ASTNode *expr, XPath2MemoryManager *mm)
-  : ASTNodeImpl(mm),
+  : ASTNodeImpl(NAMESPACE_BINDING, mm),
     expr_(expr),
     namespaces_(namespaces)
 {
-  setType(ASTNode::NAMESPACE_BINDING);
 }
 
 Result XQNamespaceBinding::createResult(DynamicContext *context, int flags) const

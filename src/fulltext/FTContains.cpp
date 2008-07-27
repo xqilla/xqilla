@@ -31,12 +31,11 @@
 #include <xqilla/exceptions/XPath2TypeMatchException.hpp>
 
 FTContains::FTContains(ASTNode *argument, FTSelection *selection, ASTNode *ignore, XPath2MemoryManager* memMgr)
-  : ASTNodeImpl(memMgr),
+  : ASTNodeImpl(FTCONTAINS, memMgr),
     argument_(argument),
     selection_(selection),
     ignore_(ignore)
 {
-  setType(ASTNode::FTCONTAINS);
 }
 
 FTContains::~FTContains()

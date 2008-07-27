@@ -36,11 +36,10 @@
 #include <xqilla/ast/XQContextItem.hpp>
 
 XQStep::XQStep(Axis axis, NodeTest* nodeTest, XPath2MemoryManager* memMgr)
-  : ASTNodeImpl(memMgr),
+  : ASTNodeImpl(STEP, memMgr),
     nodeTest_(nodeTest),
     axis_(axis)
 {
-  setType(ASTNode::STEP);
 }
 
 XQStep::~XQStep()

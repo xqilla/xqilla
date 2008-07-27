@@ -32,11 +32,10 @@ XERCES_CPP_NAMESPACE_USE;
 using namespace std;
 
 XQFunctionDeref::XQFunctionDeref(ASTNode *expr, VectorOfASTNodes *args, XPath2MemoryManager *mm)
-  : ASTNodeImpl(mm),
+  : ASTNodeImpl(FUNCTION_DEREF, mm),
     expr_(expr),
     args_(args)
 {
-  setType(FUNCTION_DEREF);
 }
 
 static const XMLCh err_TBD[] = { 'e', 'r', 'r', ':', 'T', 'B', 'D', 0 };

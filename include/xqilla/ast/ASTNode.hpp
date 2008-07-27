@@ -102,6 +102,30 @@ public:
   ASTNode() : userData_(0) {}
   virtual ~ASTNode() {}
 
+  virtual void release() = 0;
+  virtual ASTNode *copy(XPath2MemoryManager *mm) const = 0;
+
+  virtual bool isSubsetOf(const ASTNode *other) const = 0;
+  virtual bool isEqualTo(const ASTNode *other) const = 0;
+
+  virtual whichType getType() const = 0;
+  virtual XPath2MemoryManager *getMemoryManager() const = 0;
+
+  virtual ASTNode *staticResolution(StaticContext *context) = 0;
+  virtual ASTNode *staticTyping(StaticContext *context) = 0;
+
+  /// Returns the StaticAnalysis for this ASTNode
+  virtual const StaticAnalysis &getStaticAnalysis() const = 0;
+
+  /** Returns true if this ASTNode has no predicates, and is an instance of
+      XQSequence or XQLiteral */
+  virtual bool isConstant() const = 0;
+  /** Returns true if this ASTNode has no predicates, and is an instance of
+      XQSequence or XQLiteral. If the literal value of this ASTNode
+      is a single DateOrTimeType, then !hasTimezone() on it must return true,
+      otherwise this method will return false. */
+  virtual bool isDateOrTimeAndHasNoTimezone(StaticContext* context) const = 0;
+
   /** Returns a Result iterator for the results of this expression.
       The flags parameter is currently unused */
   virtual Result createResult(DynamicContext* context, int flags=0) const = 0;
@@ -120,22 +144,6 @@ public:
 
   /// Executes an update expression
   virtual PendingUpdateList createUpdateList(DynamicContext *context) const = 0;
-
-  /** Returns true if this ASTNode has no predicates, and is an instance of
-      XQSequence or XQLiteral */
-  virtual bool isConstant() const = 0;
-  /** Returns true if this ASTNode has no predicates, and is an instance of
-      XQSequence or XQLiteral. If the literal value of this ASTNode
-      is a single DateOrTimeType, then !hasTimezone() on it must return true,
-      otherwise this method will return false. */
-  virtual bool isDateOrTimeAndHasNoTimezone(StaticContext* context) const = 0;
-
-  virtual whichType getType(void) const = 0;
-
-  virtual ASTNode *staticResolution(StaticContext *context) = 0;
-  virtual ASTNode *staticTyping(StaticContext *context) = 0;
-  /// Returns the StaticAnalysis for this ASTNode
-  virtual const StaticAnalysis &getStaticAnalysis() const = 0;
 
   void *getUserData() const { return userData_; }
   void setUserData(void *data) { userData_ = data; }

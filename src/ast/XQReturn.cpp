@@ -26,11 +26,10 @@
 #include <xqilla/update/PendingUpdateList.hpp>
 
 XQReturn::XQReturn(TupleNode *parent, ASTNode *expr, XPath2MemoryManager *mm)
-  : ASTNodeImpl(mm),
+  : ASTNodeImpl(RETURN, mm),
     parent_(parent),
     expr_(expr)
 {
-  setType(RETURN);
 }
 
 ASTNode *XQReturn::staticResolution(StaticContext *context)

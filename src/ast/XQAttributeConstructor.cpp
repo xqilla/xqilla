@@ -50,7 +50,6 @@ XQAttributeConstructor::XQAttributeConstructor(ASTNode* name, VectorOfASTNodes* 
     m_name(name),
     m_children(children)
 {
-  setType(ASTNode::DOM_CONSTRUCTOR);
 }
 
 EventGenerator::Ptr XQAttributeConstructor::generateEvents(EventHandler *events, DynamicContext *context,

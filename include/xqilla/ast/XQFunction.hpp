@@ -38,7 +38,6 @@ class XQILLA_API XQFunction : public ASTNodeImpl
 
 public:
   XQFunction(const XMLCh* name, size_t argsFrom, size_t argsTo, const char* paramDecl, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
-  virtual ~XQFunction();
 
   const XMLCh* getFunctionURI()const;
   const XMLCh* getFunctionName()const;
