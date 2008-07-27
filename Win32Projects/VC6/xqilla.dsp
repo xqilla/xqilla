@@ -133,6 +133,10 @@ SOURCE=..\..\src\ast\StaticType.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\ast\TupleNode.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\ast\WhereTuple.cpp
 # End Source File
 # Begin Source File
@@ -3065,6 +3069,10 @@ SOURCE=..\..\include\xqilla\operators\Union.hpp
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=..\..\src\optimizer\ASTReleaser.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\optimizer\ASTVisitor.cpp
 # End Source File
 # Begin Source File
@@ -3078,6 +3086,10 @@ SOURCE=..\..\src\optimizer\QueryPathNode.cpp
 # Begin Source File
 
 SOURCE=..\..\src\optimizer\QueryPathTreeGenerator.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\optimizer\ASTReleaser.hpp
 # End Source File
 # Begin Source File
 

@@ -27,11 +27,9 @@
 #include <xqilla/update/PendingUpdateList.hpp>
 
 ASTDebugHook::ASTDebugHook(ASTNode *astNode, XPath2MemoryManager *mm)
-  : ASTNodeImpl(mm),
+  : ASTNodeImpl(DEBUG_HOOK, mm),
     expr_(astNode)
 {
-  setType(ASTNode::DEBUG_HOOK);
-
   _src.copy(expr_->getStaticAnalysis());
   setLocationInfo(expr_);
 }

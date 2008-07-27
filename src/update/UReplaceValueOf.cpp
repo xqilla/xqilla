@@ -41,11 +41,10 @@ XERCES_CPP_NAMESPACE_USE
 #endif
 
 UReplaceValueOf::UReplaceValueOf(ASTNode *target, ASTNode *expr, XPath2MemoryManager* memMgr)
-  : ASTNodeImpl(memMgr),
+  : ASTNodeImpl(UREPLACE_VALUE_OF, memMgr),
     target_(target),
     expr_(expr)
 {
-  setType(ASTNode::UREPLACE_VALUE_OF);
 }
 
 static const XMLCh err_XUTY0008[] = { 'e', 'r', 'r', ':', 'X', 'U', 'T', 'Y', '0', '0', '0', '8', 0 };

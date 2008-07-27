@@ -63,7 +63,6 @@ XQElementConstructor::XQElementConstructor(ASTNode* name, VectorOfASTNodes* attr
     m_children(children),
     m_namespaces(NULL)
 {
-  setType(ASTNode::DOM_CONSTRUCTOR);
 }
 
 EventGenerator::Ptr XQElementConstructor::generateEvents(EventHandler *events, DynamicContext *context,

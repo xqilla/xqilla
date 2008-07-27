@@ -27,11 +27,10 @@
 #include <xqilla/update/PendingUpdateList.hpp>
 
 UApplyUpdates::UApplyUpdates(ASTNode *expr, XPath2MemoryManager* memMgr)
-  : ASTNodeImpl(memMgr),
+  : ASTNodeImpl(UAPPLY_UPDATES, memMgr),
     expr_(expr),
     valMode_(DocumentCache::VALIDATION_SKIP)
 {
-  setType(ASTNode::UAPPLY_UPDATES);
 }
 
 ASTNode* UApplyUpdates::staticResolution(StaticContext *context)

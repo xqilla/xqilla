@@ -42,7 +42,6 @@ XQCommentConstructor::XQCommentConstructor(ASTNode *value, XPath2MemoryManager* 
     m_value(value),
     xslt_(xslt)
 {
-  setType(ASTNode::DOM_CONSTRUCTOR);
 }
 
 EventGenerator::Ptr XQCommentConstructor::generateEvents(EventHandler *events, DynamicContext *context,

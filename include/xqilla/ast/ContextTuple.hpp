@@ -27,7 +27,7 @@
 class XQILLA_API ContextTuple : public TupleNode
 {
 public:
-  ContextTuple() : TupleNode(CONTEXT_TUPLE, 0) {}
+  ContextTuple(XPath2MemoryManager *mm) : TupleNode(CONTEXT_TUPLE, 0, mm) {}
 
   virtual TupleNode *staticResolution(StaticContext *context);
   virtual TupleNode *staticTypingSetup(unsigned int &min, unsigned int &max, StaticContext *context);

@@ -41,13 +41,12 @@
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 
 XQCastAs::XQCastAs(ASTNode* expr, SequenceType* exprType, XPath2MemoryManager* memMgr)
-  : ASTNodeImpl(memMgr),
+  : ASTNodeImpl(CAST_AS, memMgr),
     _expr(expr),
     _exprType(exprType),
     _isPrimitive(false),
     _typeIndex((AnyAtomicType::AtomicObjectType)-1)
 {
-	setType(ASTNode::CAST_AS);
 }
 
 Result XQCastAs::createResult(DynamicContext* context, int flags) const

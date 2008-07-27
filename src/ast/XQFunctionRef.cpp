@@ -36,14 +36,13 @@ XERCES_CPP_NAMESPACE_USE;
 using namespace std;
 
 XQFunctionRef::XQFunctionRef(const XMLCh *qname, unsigned int numArgs, XPath2MemoryManager *mm)
-  : ASTNodeImpl(mm),
+  : ASTNodeImpl(FUNCTION_REF, mm),
     qname_(qname),
     uri_(0),
     name_(0),
     numArgs_(numArgs),
     instance_(0)
 {
-  setType(FUNCTION_REF);
 }
 
 ASTNode *XQFunctionRef::staticResolution(StaticContext *context)

@@ -30,9 +30,8 @@
 #include <xqilla/ast/StaticAnalysis.hpp>
 
 XQContextItem::XQContextItem(XPath2MemoryManager* memMgr)
-  : ASTNodeImpl(memMgr)
+  : ASTNodeImpl(CONTEXT_ITEM, memMgr)
 {
-  setType(ASTNode::CONTEXT_ITEM);
 }
 
 XQContextItem::~XQContextItem() {

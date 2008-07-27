@@ -37,11 +37,10 @@
 XERCES_CPP_NAMESPACE_USE;
 
 URename::URename(ASTNode *target, ASTNode *name, XPath2MemoryManager* memMgr)
-  : ASTNodeImpl(memMgr),
+  : ASTNodeImpl(URENAME, memMgr),
     target_(target),
     name_(name)
 {
-  setType(ASTNode::URENAME);
 }
 
 static const XMLCh err_XUTY0012[] = { 'e', 'r', 'r', ':', 'X', 'U', 'T', 'Y', '0', '0', '1', '2', 0 };

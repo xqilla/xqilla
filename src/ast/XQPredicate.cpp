@@ -28,21 +28,19 @@
 #include <xqilla/runtime/SequenceResult.hpp>
 
 XQPredicate::XQPredicate(ASTNode *predicate, XPath2MemoryManager* memMgr)
-  : ASTNodeImpl(memMgr),
+  : ASTNodeImpl(PREDICATE, memMgr),
     expr_(0),
     predicate_(predicate),
     reverse_(false)
 {
-  setType(ASTNode::PREDICATE);
 }
 
 XQPredicate::XQPredicate(ASTNode* expr, ASTNode *predicate, XPath2MemoryManager* memMgr)
-  : ASTNodeImpl(memMgr),
+  : ASTNodeImpl(PREDICATE, memMgr),
     expr_(expr),
     predicate_(predicate),
     reverse_(false)
 {
-  setType(ASTNode::PREDICATE);
 }
 
 ASTNode* XQPredicate::staticResolution(StaticContext *context)
@@ -69,7 +67,7 @@ ASTNode* XQPredicate::staticTyping(StaticContext *context)
 
   if(expr_->getType() == SEQUENCE &&
      ((XQSequence*)expr_)->getItemConstructors().empty()) {
-    return expr_;
+    return substitute(expr_);
   }
 
   StaticType ciType = expr_->getStaticAnalysis().getStaticType();
@@ -97,12 +95,13 @@ ASTNode* XQPredicate::staticTyping(StaticContext *context)
       // It's not a single numeric item
       if(ResultImpl::getEffectiveBooleanValue(first, second, dContext, this)) {
         // We have a true predicate
-        return expr_;
+        return substitute(expr_);
       }
       else {
         // We have a false predicate, which is constant folded to an empty sequence
         ASTNode *result = new (mm) XQSequence(mm);
         result->setLocationInfo(expr_);
+	this->release();
         return result;
       }
     }

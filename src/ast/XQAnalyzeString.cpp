@@ -43,14 +43,13 @@ XERCES_CPP_NAMESPACE_USE
 using namespace std;
 
 XQAnalyzeString::XQAnalyzeString(XPath2MemoryManager* memMgr)
-  : ASTNodeImpl(memMgr),
+  : ASTNodeImpl(ANALYZE_STRING, memMgr),
     expr_(0),
     regex_(0),
     flags_(0),
     match_(0),
     nonMatch_(0)
 {
-  setType(ASTNode::ANALYZE_STRING);
 }
 
 ASTNode* XQAnalyzeString::staticResolution(StaticContext *context)

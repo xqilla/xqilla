@@ -102,23 +102,23 @@ XQSequence *XQSequence::constantFold(Result &result, DynamicContext *context, XP
 }
 
 XQSequence::XQSequence(const Item::Ptr &item, DynamicContext *context, XPath2MemoryManager* memMgr)
-  : ASTNodeImpl(memMgr), _itemConstructors(XQillaAllocator<ItemConstructor*>(memMgr))
+  : ASTNodeImpl(SEQUENCE, memMgr),
+    _itemConstructors(XQillaAllocator<ItemConstructor*>(memMgr))
 {
-  setType(ASTNode::SEQUENCE);
   _itemConstructors.push_back(itemToItemConstructor(item, context, memMgr));
 }
 
 XQSequence::XQSequence(ItemConstructor *ic, XPath2MemoryManager* memMgr)
-  : ASTNodeImpl(memMgr), _itemConstructors(XQillaAllocator<ItemConstructor*>(memMgr))
+  : ASTNodeImpl(SEQUENCE, memMgr),
+    _itemConstructors(XQillaAllocator<ItemConstructor*>(memMgr))
 {
-  setType(ASTNode::SEQUENCE);
   _itemConstructors.push_back(ic);
 }
 
 XQSequence::XQSequence(XPath2MemoryManager* memMgr)
-  : ASTNodeImpl(memMgr), _itemConstructors(XQillaAllocator<ItemConstructor*>(memMgr))
+  : ASTNodeImpl(SEQUENCE, memMgr),
+    _itemConstructors(XQillaAllocator<ItemConstructor*>(memMgr))
 {
-  setType(ASTNode::SEQUENCE);
 }
 
 XQSequence::~XQSequence()

@@ -35,6 +35,6 @@ ASTNode *DebugHookDecorator::optimize(ASTNode *item)
 
 TupleNode *DebugHookDecorator::optimizeTupleNode(TupleNode *item)
 {
-  return new (mm_) TupleDebugHook(ASTVisitor::optimizeTupleNode(item));
+  return new (mm_) TupleDebugHook(ASTVisitor::optimizeTupleNode(item), mm_);
 }
 

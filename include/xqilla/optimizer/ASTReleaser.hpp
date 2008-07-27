@@ -19,29 +19,24 @@
  * $Id$
  */
 
-#ifndef WHERETUPLE_HPP
-#define WHERETUPLE_HPP
+#ifndef _ASTRELEASER_HPP
+#define _ASTRELEASER_HPP
 
-#include <xqilla/ast/TupleNode.hpp>
+#include <xqilla/optimizer/ASTVisitor.hpp>
 
-class ASTNode;
-
-class XQILLA_API WhereTuple : public TupleNode
+class XQILLA_API ASTReleaser : public ASTVisitor
 {
 public:
-  WhereTuple(TupleNode *parent, ASTNode *expr, XPath2MemoryManager *mm);
+  ASTReleaser();
 
-  ASTNode *getExpression() const { return expr_; }
-  void setExpression(ASTNode *expr) { expr_ = expr; }
+  void release(ASTNode *item);
+  void release(TupleNode *item);
 
-  virtual TupleNode *staticResolution(StaticContext *context);
-  virtual TupleNode *staticTypingSetup(unsigned int &min, unsigned int &max, StaticContext *context);
-  virtual TupleNode *staticTypingTeardown(StaticContext *context, StaticAnalysis &usedSrc);
+protected:
+  virtual ASTNode *optimize(ASTNode *item);
+  virtual TupleNode *optimizeTupleNode(TupleNode *item);
 
-  virtual TupleResult::Ptr createResult(DynamicContext* context) const;
-
-private:
-  ASTNode *expr_;
+  ALL_ASTVISITOR_METHODS()
 };
 
 #endif

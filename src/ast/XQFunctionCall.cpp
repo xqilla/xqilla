@@ -31,11 +31,10 @@
 XERCES_CPP_NAMESPACE_USE;
 
 XQFunctionCall::XQFunctionCall(const XMLCh *qname, VectorOfASTNodes *args, XPath2MemoryManager *mm)
-  : ASTNodeImpl(mm),
+  : ASTNodeImpl(FUNCTION_CALL, mm),
     qname_(qname),
     args_(args ? args : new (mm) VectorOfASTNodes(XQillaAllocator<ASTNode*>(mm)))
 {
-  setType(ASTNode::FUNCTION_CALL);
 }
 
 ASTNode* XQFunctionCall::staticResolution(StaticContext *context) 
@@ -65,6 +64,14 @@ ASTNode* XQFunctionCall::staticResolution(StaticContext *context)
     XQThrow(StaticErrorException, X("XQFunctionCall::staticResolution"), buf.getRawBuffer());
   }
   result->setLocationInfo(this);
+
+  // Our arguments don't belong to us anymore
+  for(VectorOfASTNodes::iterator i = args_->begin(); i != args_->end(); ++i) {
+    *i = 0;
+  }
+  // Release this object
+  this->release();
+
   return result->staticResolution(context);
 }
 

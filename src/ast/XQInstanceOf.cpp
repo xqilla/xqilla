@@ -42,11 +42,10 @@ XERCES_CPP_NAMESPACE_USE
 #endif
 
 XQInstanceOf::XQInstanceOf(ASTNode* expr, SequenceType* exprType, XPath2MemoryManager* memMgr)
-  : ASTNodeImpl(memMgr),
+  : ASTNodeImpl(INSTANCE_OF, memMgr),
   _expr(expr),
   _exprType(exprType)
 {
-  setType(ASTNode::INSTANCE_OF);
 }
 
 Result XQInstanceOf::createResult(DynamicContext* context, int flags) const

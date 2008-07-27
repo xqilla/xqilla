@@ -32,11 +32,10 @@ XERCES_CPP_NAMESPACE_USE
 #endif
 
 XQFunctionConversion::XQFunctionConversion(ASTNode* expr, SequenceType* seqType, XPath2MemoryManager* memMgr)
-  : ASTNodeImpl(memMgr),
+  : ASTNodeImpl(FUNCTION_CONVERSION, memMgr),
     expr_(expr),
     seqType_(seqType)
 {
-  setType(ASTNode::FUNCTION_CONVERSION);
 }
 
 ASTNode* XQFunctionConversion::staticResolution(StaticContext *context)

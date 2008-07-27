@@ -31,7 +31,7 @@
 #include <xqilla/utils/XStr.hpp>
 
 LetTuple::LetTuple(TupleNode *parent, const XMLCh *varQName, ASTNode *expr, XPath2MemoryManager *mm)
-  : TupleNode(LET, parent),
+  : TupleNode(LET, parent, mm),
     seqType(0),
     varQName_(varQName),
     varURI_(0),

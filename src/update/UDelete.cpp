@@ -30,10 +30,9 @@
 #include <xqilla/update/PendingUpdateList.hpp>
 
 UDelete::UDelete(ASTNode *expr, XPath2MemoryManager* memMgr)
-  : ASTNodeImpl(memMgr),
+  : ASTNodeImpl(UDELETE, memMgr),
     expr_(expr)
 {
-  setType(ASTNode::UDELETE);
 }
 
 static const XMLCh err_XUTY0007[] = { 'e', 'r', 'r', ':', 'X', 'U', 'T', 'Y', '0', '0', '0', '7', 0 };

@@ -27,7 +27,7 @@
 class XQILLA_API DebugHookDecorator : public ASTVisitor
 {
 public:
-	DebugHookDecorator(DynamicContext *context, Optimizer *parent = 0);
+  DebugHookDecorator(DynamicContext *context, Optimizer *parent = 0);
 
 protected:
   virtual ASTNode *optimize(ASTNode *item);

@@ -33,11 +33,10 @@
 XERCES_CPP_NAMESPACE_USE;
 
 XQValidate::XQValidate(ASTNode *expr, DocumentCache::ValidationMode mode, XPath2MemoryManager *mm)
-  : ASTNodeImpl(mm),
+  : ASTNodeImpl(VALIDATE, mm),
     expr_(expr),
     mode_(mode)
 {
-  setType(ASTNode::VALIDATE);
 }
 
 Sequence XQValidate::createSequence(DynamicContext *context, int flags) const 

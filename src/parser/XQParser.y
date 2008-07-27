@@ -1549,7 +1549,7 @@ Variable_XSLT:
 VariableAttrs_XSLT:
     _XSLT_VARIABLE_
   {
-    $$ = WRAP(@1, new (MEMMGR) LetTuple(WRAP(@1, new (MEMMGR) ContextTuple()), 0, 0, MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) LetTuple(WRAP(@1, new (MEMMGR) ContextTuple(MEMMGR)), 0, 0, MEMMGR));
   }
   | VariableAttrs_XSLT _XSLT_NAME_
   {
@@ -2753,7 +2753,7 @@ FLWORExpr:
       FLWORTuples _RETURN_ ExprSingle
     {
       // Add a ContextTuple at the start
-      TupleNode *tmp = setLastAncestor($1, WRAP(@1, new (MEMMGR) ContextTuple()));
+      TupleNode *tmp = setLastAncestor($1, WRAP(@1, new (MEMMGR) ContextTuple(MEMMGR)));
 
       // Add the return expression
       $$ = WRAP(@2, new (MEMMGR) XQReturn(tmp, $3, MEMMGR));
@@ -2878,7 +2878,7 @@ LetBinding:
 WhereClause:
   _WHERE_ ExprSingle
   { 
-    $$ = WRAP(@1, new (MEMMGR) WhereTuple(0, $2));
+    $$ = WRAP(@1, new (MEMMGR) WhereTuple(0, $2, MEMMGR));
   }
 ;
 
@@ -2985,7 +2985,7 @@ QuantifiedExpr:
   _SOME_ QuantifyBindingList _SATISFIES_ ExprSingle
   {
     // Add a ContextTuple at the start
-    TupleNode *tmp = setLastAncestor($2, WRAP(@1, new (MEMMGR) ContextTuple()));
+    TupleNode *tmp = setLastAncestor($2, WRAP(@1, new (MEMMGR) ContextTuple(MEMMGR)));
 
     // Add the return expression
     $$ = WRAP(@3, new (MEMMGR) XQQuantified(XQQuantified::SOME, tmp, $4, MEMMGR));
@@ -2993,7 +2993,7 @@ QuantifiedExpr:
   | _EVERY_ QuantifyBindingList _SATISFIES_ ExprSingle
   {
     // Add a ContextTuple at the start
-    TupleNode *tmp = setLastAncestor($2, WRAP(@1, new (MEMMGR) ContextTuple()));
+    TupleNode *tmp = setLastAncestor($2, WRAP(@1, new (MEMMGR) ContextTuple(MEMMGR)));
 
     // Add the return expression
     $$ = WRAP(@3, new (MEMMGR) XQQuantified(XQQuantified::EVERY, tmp, $4, MEMMGR));

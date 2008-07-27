@@ -60,13 +60,12 @@ CopyBinding::CopyBinding(XPath2MemoryManager* memMgr, const CopyBinding &o)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTransform::UTransform(VectorOfCopyBinding* bindings, ASTNode *modifyExpr, ASTNode* returnExpr, XPath2MemoryManager* mm)
-  : ASTNodeImpl(mm),
+  : ASTNodeImpl(UTRANSFORM, mm),
     bindings_(bindings),
     modify_(modifyExpr),
     return_(returnExpr),
     valMode_(DocumentCache::VALIDATION_SKIP)
 {
-  setType(UTRANSFORM);
 }
 
 static const XMLCh err_XUTY0013[] = { 'e', 'r', 'r', ':', 'X', 'U', 'T', 'Y', '0', '0', '1', '3', 0 };

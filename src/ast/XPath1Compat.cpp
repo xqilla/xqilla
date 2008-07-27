@@ -36,11 +36,10 @@ XERCES_CPP_NAMESPACE_USE
 #endif
 
 XPath1CompatConvertFunctionArg::XPath1CompatConvertFunctionArg(ASTNode* expr, SequenceType *seqType, XPath2MemoryManager* memMgr)
-  : ASTNodeImpl(memMgr),
+  : ASTNodeImpl(XPATH1_CONVERT, memMgr),
     expr_(expr),
     seqType_(seqType)
 {
-  setType(ASTNode::XPATH1_CONVERT);
 }
 
 ASTNode* XPath1CompatConvertFunctionArg::staticResolution(StaticContext *context)

@@ -28,12 +28,11 @@
 #include <xqilla/context/ContextHelpers.hpp>
 
 XQQuantified::XQQuantified(Type qtype, TupleNode *parent, ASTNode *expr, XPath2MemoryManager *mm)
-  : ASTNodeImpl(mm),
+  : ASTNodeImpl(QUANTIFIED, mm),
     qtype_(qtype),
     parent_(parent),
     expr_(expr)
 {
-  setType(QUANTIFIED);
 }
 
 ASTNode *XQQuantified::staticResolution(StaticContext *context)

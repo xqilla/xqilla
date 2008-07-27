@@ -41,7 +41,6 @@ XQTextConstructor::XQTextConstructor(ASTNode *value, XPath2MemoryManager* mm)
     m_nodeType(Node::text_string),
     m_value(value)
 {
-  setType(ASTNode::DOM_CONSTRUCTOR);
 }
 
 EventGenerator::Ptr XQTextConstructor::generateEvents(EventHandler *events, DynamicContext *context,

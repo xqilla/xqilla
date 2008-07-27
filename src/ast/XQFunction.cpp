@@ -68,13 +68,12 @@ const size_t XQFunction::UNLIMITED = 10000; // A reasonably large number
 
 XQFunction::XQFunction(const XMLCh* name, size_t argsFrom, size_t argsTo, const char* paramDecl,
                        const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : ASTNodeImpl(memMgr),
+  : ASTNodeImpl(FUNCTION, memMgr),
     _fName(name), _fURI(XMLChFunctionURI), 
     _nArgsFrom(argsFrom), _nArgsTo(argsTo),
     _paramDecl(XQillaAllocator<SequenceType*>(memMgr)),
     _args(args)
 {
-  setType(ASTNode::FUNCTION);
   parseParamDecl(paramDecl, memMgr);
 
   if((argsFrom != UNLIMITED && argsFrom > args.size()) ||
@@ -88,47 +87,64 @@ XQFunction::XQFunction(const XMLCh* name, size_t argsFrom, size_t argsTo, const 
   }
   const XMLCh* paramString=memMgr->getPooledString(paramDecl);
   if(argsFrom==argsTo)
-	  _signature=paramString;
+    _signature=paramString;
   else
   {
-	  // place the optional arguments between [ and ]
-	  static const XMLCh comma[]={ chComma, chNull };
-	  static const XMLCh openSquare[]={ chSpace, chOpenSquare, chNull };
-	  static const XMLCh closSquare[]={ chCloseSquare, chNull };
-	  XMLStringTokenizer tokenizer(paramString,comma);
-	  unsigned int i;
-	  unsigned int nTokens=tokenizer.countTokens();
-	  _signature=XMLUni::fgZeroLenString;
+    // place the optional arguments between [ and ]
+    static const XMLCh comma[]={ chComma, chNull };
+    static const XMLCh openSquare[]={ chSpace, chOpenSquare, chNull };
+    static const XMLCh closSquare[]={ chCloseSquare, chNull };
+    XMLStringTokenizer tokenizer(paramString,comma);
+    unsigned int i;
+    unsigned int nTokens=tokenizer.countTokens();
+    _signature=XMLUni::fgZeroLenString;
 
-	  for(i=0;i<argsFrom;i++)
-	  {
-		  if(i==0)
-			  _signature=XPath2Utils::concatStrings(_signature,tokenizer.nextToken(),memMgr);
-		  else
-			  _signature=XPath2Utils::concatStrings(_signature,comma,tokenizer.nextToken(),memMgr);
-	  }
-	  if(i<nTokens)
-	  {
-		  _signature=XPath2Utils::concatStrings(_signature,openSquare,memMgr);
-		  for(;i<nTokens;i++)
-			  if(i==0)
-				  _signature=XPath2Utils::concatStrings(_signature,tokenizer.nextToken(),memMgr);
-			  else
-				  _signature=XPath2Utils::concatStrings(_signature,comma,tokenizer.nextToken(),memMgr);
-		  _signature=XPath2Utils::concatStrings(_signature,closSquare,memMgr);
-	  }
-	  if(argsTo==UNLIMITED)
-	  {
-		  static const XMLCh ellipsis[]={ chComma, chPeriod, chPeriod, chPeriod, chNull };
-		  _signature=XPath2Utils::concatStrings(_signature,ellipsis,memMgr);
-	  }
+    for(i=0;i<argsFrom;i++)
+    {
+      if(i==0)
+        _signature=XPath2Utils::concatStrings(_signature,tokenizer.nextToken(),memMgr);
+      else
+        _signature=XPath2Utils::concatStrings(_signature,comma,tokenizer.nextToken(),memMgr);
+    }
+    if(i<nTokens)
+    {
+      _signature=XPath2Utils::concatStrings(_signature,openSquare,memMgr);
+      for(;i<nTokens;i++)
+        if(i==0)
+          _signature=XPath2Utils::concatStrings(_signature,tokenizer.nextToken(),memMgr);
+        else
+          _signature=XPath2Utils::concatStrings(_signature,comma,tokenizer.nextToken(),memMgr);
+      _signature=XPath2Utils::concatStrings(_signature,closSquare,memMgr);
+    }
+    if(argsTo==UNLIMITED)
+    {
+      static const XMLCh ellipsis[]={ chComma, chPeriod, chPeriod, chPeriod, chNull };
+      _signature=XPath2Utils::concatStrings(_signature,ellipsis,memMgr);
+    }
   }
 }
 
 
-XQFunction::~XQFunction()
-{
-}
+// bool XQFunction::isSubsetOf(const ASTNode *other) const
+// {
+//   if(other->getType() != getType()) return false;
+
+//   const XQFunction *o = (const XQFunction*)other;
+//   if(!XPath2Utils::equals(_fURI, o._fURI) ||
+//      !XPath2Utils::equals(_fName, o._fName) ||
+//      _args.size() != o._args.size())
+//     return false;
+
+//   VectorOfASTNodes::iterator i = _args.begin();
+//   VectorOfASTNodes::iterator j = o._args.begin();
+//   for(; i != _args.end(); ++i, ++j) {
+//     // TBD non-deterministic functions - jpcs
+//     if(!(*i)->isEqualTo(*j))
+//       return false;
+//   }
+
+//   return true;
+// }
 
 const XMLCh* XQFunction::getFunctionURI()const {
   return _fURI;
@@ -183,9 +199,9 @@ ASTNode *XQFunction::calculateSRCForArguments(StaticContext *context, bool check
 
 Result XQFunction::getParamNumber(size_t number, DynamicContext* context, int flags) const
 {
-	assert(number > 0);
-	assert(number <= getNumArgs());
-	return _args[number - 1]->createResult(context, flags);
+  assert(number > 0);
+  assert(number <= getNumArgs());
+  return _args[number - 1]->createResult(context, flags);
 }
 
 size_t XQFunction::getNumArgs() const

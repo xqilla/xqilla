@@ -32,7 +32,7 @@
 using namespace std;
 
 OrderByTuple::OrderByTuple(TupleNode *parent, ASTNode *expr, int modifiers, Collation *collation, XPath2MemoryManager *mm)
-  : TupleNode(ORDER_BY, parent),
+  : TupleNode(ORDER_BY, parent, mm),
     expr_(expr),
     modifiers_((Modifiers)modifiers),
     collation_(collation),

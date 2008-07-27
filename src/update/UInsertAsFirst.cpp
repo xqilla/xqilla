@@ -38,11 +38,10 @@
 XERCES_CPP_NAMESPACE_USE;
 
 UInsertAsFirst::UInsertAsFirst(ASTNode *source, ASTNode *target, XPath2MemoryManager* memMgr)
-  : ASTNodeImpl(memMgr),
+  : ASTNodeImpl(UINSERT_AS_FIRST, memMgr),
     source_(source),
     target_(target)
 {
-  setType(ASTNode::UINSERT_AS_FIRST);
 }
 
 static const XMLCh err_XUTY0005[] = { 'e', 'r', 'r', ':', 'X', 'U', 'T', 'Y', '0', '0', '0', '5', 0 };

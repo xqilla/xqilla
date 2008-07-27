@@ -35,12 +35,11 @@ using namespace std;
 XERCES_CPP_NAMESPACE_USE;
 
 XQApplyTemplates::XQApplyTemplates(ASTNode *expr, TemplateArguments *args, XPath2MemoryManager *mm)
-  : ASTNodeImpl(mm),
+  : ASTNodeImpl(APPLY_TEMPLATES, mm),
     expr_(expr),
     args_(args),
     templates_(XQillaAllocator<XQUserFunction*>(mm))
 {
-  setType(APPLY_TEMPLATES);
 }
 
 static const XMLCh err_XTTE0520[] = { 'e', 'r', 'r', ':', 'X', 'T', 'T', 'E', '0', '5', '2', '0', 0 };

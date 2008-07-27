@@ -37,23 +37,20 @@
 XERCES_CPP_NAMESPACE_USE;
 
 XQVariable::XQVariable(const XMLCh *qualifiedName, XPath2MemoryManager* memMgr)
-  : ASTNodeImpl(memMgr),
+  : ASTNodeImpl(VARIABLE, memMgr),
     _uri(0)
 {
-  setType(ASTNode::VARIABLE);
-
   QualifiedName qname(qualifiedName, getMemoryManager());
   _prefix = qname.getPrefix();
   _name = qname.getName();
 }
 
 XQVariable::XQVariable(const XMLCh *uri, const XMLCh *name, XPath2MemoryManager* memMgr)
-  : ASTNodeImpl(memMgr),
+  : ASTNodeImpl(VARIABLE, memMgr),
     _prefix(0),
     _uri(uri),
     _name(name)
 {
-  setType(ASTNode::VARIABLE);
 }
 
 XQVariable::~XQVariable()

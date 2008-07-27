@@ -29,10 +29,9 @@
 XERCES_CPP_NAMESPACE_USE
 
 XQAtomize::XQAtomize(ASTNode* expr, XPath2MemoryManager* memMgr)
-  : ASTNodeImpl(memMgr),
-  expr_(expr)
+  : ASTNodeImpl(ATOMIZE, memMgr),
+    expr_(expr)
 {
-  setType(ASTNode::ATOMIZE);
 }
 
 ASTNode* XQAtomize::staticResolution(StaticContext *context)
@@ -67,7 +66,7 @@ ASTNode *XQAtomize::staticTyping(StaticContext *context)
 
   if(!_src.getStaticType().containsType(StaticType::NODE_TYPE|StaticType::FUNCTION_TYPE)) {
     // If the expression has no nodes, this function does nothing
-    return expr_;
+    return substitute(expr_);
   }
 
   _src.getStaticType().substitute(StaticType::ELEMENT_TYPE | StaticType::ATTRIBUTE_TYPE, StaticType(StaticType::ANY_ATOMIC_TYPE, 0, StaticType::UNLIMITED));

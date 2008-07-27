@@ -28,10 +28,9 @@
 #include <xqilla/items/DatatypeFactory.hpp>
 
 XQLiteral::XQLiteral(ItemConstructor *ic, XPath2MemoryManager* memMgr)
-	: ASTNodeImpl(memMgr),
+  : ASTNodeImpl(LITERAL, memMgr),
     _itemConstructor(ic)
 {
-  setType(ASTNode::LITERAL);
 }
 
 /** Returns true if this XQ has no predicates, and is an instance of

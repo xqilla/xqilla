@@ -31,11 +31,10 @@
 #include <xqilla/items/DatatypeFactory.hpp>
 
 XQOperator::XQOperator(const XMLCh* opName, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : ASTNodeImpl(memMgr),
+  : ASTNodeImpl(OPERATOR, memMgr),
   _args(args)
 {
   _opName=opName;
-  setType(ASTNode::OPERATOR);
 }
 
 void XQOperator::addArgument(ASTNode* arg)

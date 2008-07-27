@@ -436,7 +436,7 @@ XQUserFunctionInstance::XQUserFunctionInstance(const XQUserFunction* funcDef, co
     addReturnCheck_(funcDef->body_ == NULL && funcDef->returnType_ != NULL),
     funcDef_(funcDef)
 {
-  setType(ASTNode::USER_FUNCTION);
+  _type = ASTNode::USER_FUNCTION;
   _fURI = funcDef->getURI();
 }
 

@@ -38,7 +38,6 @@ XQDocumentConstructor::XQDocumentConstructor(ASTNode *value, XPath2MemoryManager
   : XQDOMConstructor(mm),
     m_value(value)
 {
-  setType(ASTNode::DOM_CONSTRUCTOR);
 }
 
 EventGenerator::Ptr XQDocumentConstructor::generateEvents(EventHandler *events, DynamicContext *context,

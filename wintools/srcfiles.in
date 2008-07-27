@@ -40,6 +40,7 @@ src/ast/NumericFunction.cpp lib
 src/ast/OrderByTuple.cpp lib
 src/ast/StaticAnalysis.cpp lib
 src/ast/StaticType.cpp lib
+src/ast/TupleNode.cpp lib
 src/ast/WhereTuple.cpp lib
 src/ast/XPath1Compat.cpp lib
 src/ast/XQAnalyzeString.cpp lib
@@ -410,6 +411,7 @@ src/operators/Plus.cpp lib
 src/operators/Range.cpp lib
 src/operators/UnaryMinus.cpp lib
 src/operators/Union.cpp lib
+src/optimizer/ASTReleaser.cpp lib
 src/optimizer/ASTVisitor.cpp lib
 src/optimizer/Optimizer.cpp lib
 src/optimizer/QueryPathNode.cpp lib
@@ -870,6 +872,7 @@ include/xqilla/operators/Plus.hpp lib
 include/xqilla/operators/Range.hpp lib
 include/xqilla/operators/UnaryMinus.hpp lib
 include/xqilla/operators/Union.hpp lib
+include/xqilla/optimizer/ASTReleaser.hpp lib
 include/xqilla/optimizer/ASTVisitor.hpp lib
 include/xqilla/optimizer/Optimizer.hpp lib
 include/xqilla/optimizer/QueryPathNode.hpp lib

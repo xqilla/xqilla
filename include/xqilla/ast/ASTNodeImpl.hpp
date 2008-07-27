@@ -34,11 +34,17 @@ class Numeric;
 class XQILLA_API ASTNodeImpl : public ASTNode
 {
 public:
-  ASTNodeImpl(XPath2MemoryManager* memMgr);
+  ASTNodeImpl(whichType type, XPath2MemoryManager* memMgr);
   virtual ~ASTNodeImpl();
 
-  ASTNode::whichType getType(void) const;
+  virtual whichType getType() const;
 	
+  virtual void release();
+  virtual ASTNode *copy(XPath2MemoryManager *mm) const;
+
+  virtual bool isSubsetOf(const ASTNode *other) const;
+  virtual bool isEqualTo(const ASTNode *other) const;
+
   /** Returns true if this ASTNode is an instance of XQSequence or XQLiteral */
   virtual bool isConstant() const;
   /** Returns true if this ASTNode has no predicates, and is an instance of
@@ -76,27 +82,15 @@ public:
   /** Performs constant folding on this ASTNode. */
   ASTNode *constantFold(StaticContext *context);
 
+  /** Returns the given ASTNode* after setting the referenced var to 0 and releasing this */
+  ASTNode *substitute(ASTNode *&result);
+
+  virtual XPath2MemoryManager *getMemoryManager() const;
+
   virtual const StaticAnalysis &getStaticAnalysis() const;
 
 protected:
-  void setType(ASTNode::whichType t);
-  XPath2MemoryManager* getMemoryManager(void) const;
-
-  class CreateSequenceResult : public LazySequenceResult
-  {
-  public:
-    CreateSequenceResult(const ASTNodeImpl *di, int flags, DynamicContext *context);
-
-    void getResult(Sequence &toFill, DynamicContext *context) const;
-
-  private:
-    int _flags;
-    const ASTNodeImpl *_di;
-  };
-
   StaticAnalysis _src;
-
-private:
   whichType _type;
   XPath2MemoryManager* _memMgr;
 };
