@@ -492,11 +492,11 @@ void SchemaValidatorFilter::endElementEvent(const XMLCh *prefix, const XMLCh *ur
     bool success = fValidator->checkContent(topElem->fThisElement, topElem->fChildren, topElem->fChildCount, &failure);
 #else
     int res = fValidator->checkContent(topElem->fThisElement, topElem->fChildren, topElem->fChildCount);
-    bool success = res >= 0;
+    bool success = res == -1;
     XMLSize_t failure = (XMLSize_t)res;
 #endif
 
-    if(success) {
+    if(!success) {
       if(!topElem->fChildCount) {
         fValidator->emitError(XMLValid::EmptyNotValidForContent, topElem->fThisElement->getFormattedContentModel());
       }
