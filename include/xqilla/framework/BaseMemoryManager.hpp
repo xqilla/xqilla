@@ -118,8 +118,12 @@ protected:
 
   StringPool *fStringPool;
 
+#if _XERCES_VERSION >= 30000
+  XERCES_CPP_NAMESPACE_QUALIFIER RefHashTableOf<ATDecimalOrDerived, XERCES_CPP_NAMESPACE_QUALIFIER PtrHasher>* fIntegerPool;
+#else
   XERCES_CPP_NAMESPACE_QUALIFIER RefHashTableOf<ATDecimalOrDerived>* fIntegerPool;
+#endif
 };
 
-#endif //__BASEMEMORYMANAGER_HPP
+#endif
 

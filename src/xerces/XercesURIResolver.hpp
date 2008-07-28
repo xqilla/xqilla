@@ -59,7 +59,11 @@ private:
 
   DocRefCount *_firstDocRefCount;
   XERCES_CPP_NAMESPACE_QUALIFIER RefHashTableOf< XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument > _documentMap;
+#if _XERCES_VERSION >= 30000
+  XERCES_CPP_NAMESPACE_QUALIFIER RefHashTableOf< XMLCh, XERCES_CPP_NAMESPACE_QUALIFIER PtrHasher > _uriMap;
+#else
   XERCES_CPP_NAMESPACE_QUALIFIER RefHashTableOf< XMLCh > _uriMap;
+#endif
   XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *_mm;
 };
 

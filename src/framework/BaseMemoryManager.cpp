@@ -24,8 +24,10 @@
 
 #include <xercesc/util/XMLString.hpp>
 #include <xercesc/util/RuntimeException.hpp>
-#include <xercesc/util/HashPtr.hpp>
 #include <xercesc/util/XMLUni.hpp>
+#if _XERCES_VERSION < 30000
+#include <xercesc/util/HashPtr.hpp>
+#endif
 
 #if defined(XERCES_HAS_CPP_NAMESPACE)
 XERCES_CPP_NAMESPACE_USE
@@ -296,7 +298,11 @@ VariableTypeStore* BaseMemoryManager::createVariableTypeStore() {
 /** create a ATDecimalOrDerived for the given integer */
 ATDecimalOrDerived* BaseMemoryManager::createInteger(int value) {
   if (!fIntegerPool)
+#if _XERCES_VERSION >= 30000
+    fIntegerPool = new (this) RefHashTableOf<ATDecimalOrDerived, PtrHasher>(53, true, this);
+#else
     fIntegerPool = new (this) RefHashTableOf<ATDecimalOrDerived>(53,true, new (this) HashPtr(),this);
+#endif
 
   ATDecimalOrDerived* itemValue=fIntegerPool->get((const void*)((size_t)value));
   if(itemValue!=NULL)

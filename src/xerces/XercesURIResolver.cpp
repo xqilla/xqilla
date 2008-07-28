@@ -34,7 +34,9 @@
 
 #include <xercesc/util/XMLURL.hpp>
 #include <xercesc/util/XMLUri.hpp>
+#if _XERCES_VERSION < 30000
 #include <xercesc/util/HashPtr.hpp>
+#endif
 
 #include <xercesc/dom/DOM.hpp>
 #include <xercesc/framework/LocalFileFormatTarget.hpp>
@@ -46,7 +48,11 @@ XERCES_CPP_NAMESPACE_USE;
 XercesURIResolver::XercesURIResolver(MemoryManager *mm)
   : _firstDocRefCount(new (mm) DocRefCount()),
     _documentMap(3,false,mm),
+#if _XERCES_VERSION >= 30000
+    _uriMap(3,false, mm),
+#else
     _uriMap(3,false, new (mm) HashPtr(), mm),
+#endif
     _mm(mm)
 {
 }
