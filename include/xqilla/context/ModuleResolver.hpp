@@ -24,15 +24,15 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 
-class DynamicContext;
+class StaticContext;
 
 class XQILLA_API ModuleResolver {
-  public:
-    /* virtual destructor, does nothing */
-    virtual ~ModuleResolver() {};      
+public:
+  /** virtual destructor, does nothing */
+  virtual ~ModuleResolver() {};      
 
-    /* Fills the string vector with a list of locations tht, once assembled, build the module referenced by the given URI.
-       If the URI is unknown, returns false, otherwise returns true. */
-    virtual bool resolveModuleLocation(VectorOfStrings* result, const XMLCh* nsUri, const StaticContext* context) = 0;
+  /** Fills the string vector with a list of locations tht, once assembled, build the module referenced by the given URI.
+     If the URI is unknown, returns false, otherwise returns true. */
+  virtual bool resolveModuleLocation(VectorOfStrings* result, const XMLCh* nsUri, const StaticContext* context) = 0;
 };
-#endif // _MODULERESOLVER_HPP
+#endif
