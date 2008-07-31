@@ -72,7 +72,7 @@ XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* XQillaBuilderImpl::parse(const XERCE
 {
     initParser();
     
-    XERCES_CPP_NAMESPACE_QUALIFIER Wrapper4DOMLSInput isWrapper((XERCES_CPP_NAMESPACE_QUALIFIER DOMLSInput*)source, false, getMemoryManager());
+    XERCES_CPP_NAMESPACE_QUALIFIER Wrapper4DOMLSInput isWrapper((XERCES_CPP_NAMESPACE_QUALIFIER DOMLSInput*)source, 0, false, getMemoryManager());
 
     AbstractDOMParser::parse(isWrapper);
 
