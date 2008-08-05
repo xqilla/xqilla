@@ -146,6 +146,11 @@ void MAPM::toIntegerString(char *dest) const
 {
     m_apm_to_integer_string(dest,cval());
 }
+
+double MAPM::toDouble() const
+{
+  return m_apm_get_double(cval());
+}
 	
 MAPM & MAPM::operator=(const MAPM &m)
 {

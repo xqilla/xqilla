@@ -77,19 +77,15 @@
 XERCES_CPP_NAMESPACE_USE
 #endif
 
-XercesNodeImpl::XercesNodeImpl(const DOMNode *node, const DynamicContext *context)
+XercesNodeImpl::XercesNodeImpl(const DOMNode *node, XercesURIResolver *resolver)
   : fNode(node),
-    resolver_((XercesURIResolver*)context->getDefaultURIResolver())
+//     resolver_((XercesURIResolver*)context->getDefaultURIResolver())
+    resolver_(resolver)
 {  
   assert(node!=0);
-  resolver_->incrementDocumentRefCount(XPath2Utils::getOwnerDoc(fNode));
-}
-
-XercesNodeImpl::XercesNodeImpl(const DOMNode *node)
-  : fNode(node),
-    resolver_(0)
-{
-  assert(node!=0);
+  if(resolver_ != 0) {
+    resolver_->incrementDocumentRefCount(XPath2Utils::getOwnerDoc(fNode));
+  }
 }
 
 XercesNodeImpl::~XercesNodeImpl()
@@ -101,7 +97,7 @@ XercesNodeImpl::~XercesNodeImpl()
 
 Node::Ptr XercesNodeImpl::createNode(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *node, const DynamicContext *context) const
 {
-  return new XercesNodeImpl(node, context);
+  return new XercesNodeImpl(node, resolver_);
 }
 
 void *XercesNodeImpl::getInterface(const XMLCh *name) const
@@ -900,7 +896,7 @@ Node::Ptr XercesNodeImpl::root(const DynamicContext* context) const
     parent = parent->getParentNode();
   }
 
-  return new XercesNodeImpl(result, context);
+  return new XercesNodeImpl(result, resolver_);
 }
 
 Node::Ptr XercesNodeImpl::dmParent(const DynamicContext* context) const
@@ -914,7 +910,7 @@ Node::Ptr XercesNodeImpl::dmParent(const DynamicContext* context) const
 
   if(parent == 0) return 0;
 
-  return new XercesNodeImpl(parent, context);
+  return new XercesNodeImpl(parent, resolver_);
 }
 
 Result XercesNodeImpl::dmAttributes(const DynamicContext* context, const LocationInfo *info) const

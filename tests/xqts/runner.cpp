@@ -70,7 +70,7 @@ private:
   virtual bool resolveDocument(Sequence &result, const XMLCh* uri, DynamicContext* context, const QueryPathNode *projection);
   virtual bool resolveCollection(Sequence &result, const XMLCh* uri, DynamicContext* context, const QueryPathNode *projection);
   virtual bool resolveDefaultCollection(Sequence &result, DynamicContext* context, const QueryPathNode *projection);
-  virtual bool putDocument(const Node::Ptr &document, const XMLCh *uri, DynamicContext *context) { return false; }
+  virtual bool putDocument(const Node::Ptr &document, const XMLCh *uri, DynamicContext *context) { return true; }
 
 private:
   XQillaConfiguration *m_conf;
@@ -88,7 +88,8 @@ private:
   // id -> list of inputFiles ID
   map<string, list<string> > m_collections;
 
-  set<string> m_filesToDelete;
+  AutoDelete<XQQuery> m_docQuery;
+  map<string, Sequence> m_inputDocs;
 };
 
 void usage(const char *progname)
@@ -264,17 +265,13 @@ XQillaTestSuiteRunner::XQillaTestSuiteRunner(const string &singleTest, TestSuite
     m_conf(conf),
     m_lang(lang),
     m_szSingleTest(singleTest),
-    m_pCurTestCase(NULL)
+    m_pCurTestCase(NULL),
+    m_docQuery(0)
 {
 }
 
 XQillaTestSuiteRunner::~XQillaTestSuiteRunner()
 {
-  // Delete the copied source files
-  set<string>::iterator it = m_filesToDelete.begin();
-  for(; it != m_filesToDelete.end(); ++it) {
-    remove(it->c_str());
-  }
 }
 
 void XQillaTestSuiteRunner::startTestGroup(const string &name)
@@ -338,51 +335,54 @@ void XQillaTestSuiteRunner::runTestCase(const TestCase &testCase)
   XQilla xqilla;
 
   m_pCurTestCase=&testCase;
-  Janitor<DynamicContext> context(xqilla.createContext(m_lang, m_conf));
+
+  DynamicContext *context = xqilla.createContext(m_lang, m_conf);
+  AutoDelete<DynamicContext> contextGuard(context);
+
   try {
     context->setImplicitTimezone(context->getItemFactory()->
-                                 createDayTimeDuration(X("PT0S"), context.get()));
+                                 createDayTimeDuration(X("PT0S"), context));
     context->setXMLEntityResolver(this);
     context->setModuleResolver(this);
     context->registerURIResolver(this, /*adopt*/false);
 
-    // TBD - jpcs
-    context->setRevalidationMode(DocumentCache::VALIDATION_LAX);
+    XQQuery *parsedQuery = xqilla.parseFromURI(X(testCase.queryURL.c_str()), contextGuard.adopt());
+    AutoDelete<XQQuery> parsedQueryGuard(parsedQuery);
 
-    Janitor<XQQuery> pParsedQuery(xqilla.parseFromURI(X(testCase.queryURL.c_str()), context.get(), XQilla::NO_ADOPT_CONTEXT));
+    if(testCase.updateTest && testCase.stateTime == 0) {
+      m_inputDocs.clear();
+      m_docQuery.set(parsedQuery);
+      parsedQueryGuard.adopt();
+    }
 
     map<string, string>::const_iterator v;
     for(v=testCase.extraVars.begin();v!=testCase.extraVars.end();v++) {
-      Janitor<XQQuery> pInnerQuery(xqilla.parseFromURI(X(v->second.c_str()), context.get(), XQilla::NO_ADOPT_CONTEXT));
-      Sequence doc=pInnerQuery->execute(context.get())->toSequence(context.get());
+      AutoDelete<XQQuery> pInnerQuery(xqilla.parseFromURI(X(v->second.c_str()), context, XQilla::NO_ADOPT_CONTEXT));
+      Sequence doc=pInnerQuery->execute(context)->toSequence(context);
       context->setExternalVariable(X(v->first.c_str()), doc);
     }
     for(v=testCase.inputVars.begin();v!=testCase.inputVars.end();v++) {
       string filename = v->second;
+      Sequence doc;
 
       if(testCase.updateTest) {
-        // Copy the file, because an update tests might modify it
-        filename = ".xqts_" + filename + ".xml";
-
-        // Only the copy the file once, at the start of the test
-        if(testCase.stateTime == 0) {
-          string oldFilename;
-          map<string, string>::iterator it = m_inputFiles.find(v->second);
-          if(it != m_inputFiles.end()) {
-            oldFilename = it->second;
-          }
-
-          std::ifstream input(oldFilename.c_str() + 8); // Take off the "file:///" from the begining
-          std::ofstream output(filename.c_str()); 
-          output << input.rdbuf();
+        if(m_inputDocs.find(v->first) != m_inputDocs.end()) {
+          doc = m_inputDocs[v->first];
+        }
+        else {
+          doc = const_cast<DynamicContext*>(m_docQuery->getStaticContext())->
+            resolveDocument(X(filename.c_str()), 0);
+          m_inputDocs[v->first] = doc;
         }
       }
+      else {
+        doc = context->resolveDocument(X(filename.c_str()), 0);
+      }
 
-      Sequence doc = context->resolveDocument(X(filename.c_str()), 0);
       context->setExternalVariable(X(v->first.c_str()), doc);
     }
     for(v=testCase.inputURIVars.begin();v!=testCase.inputURIVars.end();v++) {
-      Item::Ptr uri = context->getItemFactory()->createString(X(v->second.c_str()),context.get());
+      Item::Ptr uri = context->getItemFactory()->createString(X(v->second.c_str()),context);
       context->setExternalVariable(X(v->first.c_str()), uri);
     }
     if(!testCase.contextItem.empty())
@@ -401,7 +401,7 @@ void XQillaTestSuiteRunner::runTestCase(const TestCase &testCase)
     NSFixupFilter nsfilter(&writer, context->getMemoryManager());
     ContentSequenceFilter csfilter(&nsfilter);
 
-    pParsedQuery->execute(&csfilter, context.get());
+    parsedQuery->execute(&csfilter, context);
     testResults(testCase, (char*)target.getRawBuffer());
   }
   catch(XQException& e) {

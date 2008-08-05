@@ -56,7 +56,7 @@ protected:
   void completeDeletions(DynamicContext *context);
   void completeRevalidation(DynamicContext *context);
   void removeType(XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *node);
-  void setToUntyped(XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *node);
+  void setTypes(XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *node, const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *from);
   void addToPutSet(const Node::Ptr &node, const LocationInfo *location, DynamicContext *context);
 
   typedef std::set<XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *> DOMNodeSet;

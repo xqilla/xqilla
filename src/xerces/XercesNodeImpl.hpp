@@ -45,7 +45,7 @@ class XercesNodeImpl : public Node, private AxisNodeFactory
 public:
   typedef RefCountPointer<const XercesNodeImpl> Ptr;
 
-  XercesNodeImpl(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *node, const DynamicContext *context);
+  XercesNodeImpl(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *node, XercesURIResolver *resolver);
   ~XercesNodeImpl();
 
   virtual void *getInterface(const XMLCh *name) const;
@@ -92,8 +92,6 @@ public:
   static void generateEvents(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *node, EventHandler *events, bool preserveNS = true, bool preserveType = true);
 
 protected:
-  XercesNodeImpl(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *node);
-
   virtual Node::Ptr createNode(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *node, const DynamicContext *context) const;
 
   virtual void getTypeUriAndName(const XMLCh*& uri, const XMLCh*& name) const;

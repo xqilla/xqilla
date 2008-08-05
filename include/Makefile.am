@@ -1,6 +1,8 @@
 nobase_include_HEADERS = \
+xqc.h \
 xqilla/xqilla-dom3.hpp \
 xqilla/xqilla-simple.hpp \
+xqilla/xqilla-xqc.h \
 xqilla/ast/LocationInfo.hpp \
 xqilla/ast/XQCastableAs.hpp \
 xqilla/ast/XQCastAs.hpp \

@@ -19,12 +19,6 @@
  * $Id$
  */
 
-/*
-
-  String function
-
-*/
-
 #ifndef _FUNCTIONSTRING_HPP
 #define _FUNCTIONSTRING_HPP
 
@@ -32,7 +26,6 @@
 
 #include <xqilla/ast/XQFunction.hpp>
 
-/** String operator function. */
 class XQILLA_API FunctionString : public XQFunction
 {
 public:
@@ -42,18 +35,13 @@ public:
 
   FunctionString(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
-  /**
-   * Called during static analysis to determine if statically correct.
-   * Performs constant folding if the function has an argument, and it
-   * is constant.
-   */
   virtual ASTNode* staticResolution(StaticContext *context);
   virtual ASTNode *staticTyping(StaticContext *context);
 
-  /** Returns the argument as a String **/
   Sequence createSequence(DynamicContext* context, int flags=0) const;
 
-  static Item::Ptr string(const Item::Ptr &item, DynamicContext *context);
+  static const XMLCh *string(const Item::Ptr &item, DynamicContext *context);
+  static Item::Ptr string_item(const Item::Ptr &item, DynamicContext *context);
 };
 
-#endif // _FUNCTIONSTRING_HPP
+#endif

@@ -80,16 +80,45 @@ Sequence FunctionNumber::createSequence(DynamicContext* context, int flags) cons
                   context->getMemoryManager());
 }
 
-Item::Ptr FunctionNumber::number(const AnyAtomicType::Ptr &item, DynamicContext *context)
+Numeric::Ptr FunctionNumber::number(const AnyAtomicType *item, DynamicContext *context)
 {
-  if(item.isNull()) {
+  if(item == 0) {
     return context->getItemFactory()->createDouble(Numeric::NaN_string, context);
   }
   else {
     try {
-      return item->castAs(AnyAtomicType::DOUBLE, 0, 0, context);
+      return (Numeric*)item->castAs(AnyAtomicType::DOUBLE, 0, 0, context).get();
     } catch (XPath2TypeCastException &e) {
       return context->getItemFactory()->createDouble(Numeric::NaN_string, context);
     }   
   }
+}
+
+Numeric::Ptr FunctionNumber::number(const Item::Ptr &item, DynamicContext *context, const LocationInfo *location)
+{
+  Item::Ptr tmp = item;
+
+  if(item.isNull()) {
+    // Do nothing
+  }
+  else if(item->isNode()) {
+    // Atomize first
+    Result atomized = ((Node*)item.get())->dmTypedValue(context);
+    tmp = atomized->next(context);
+
+    if(tmp.notNull() && atomized->next(context).notNull()) {
+      XQThrow3(XPath2TypeMatchException, X("XPath1CompatConvertFunctionArgResult::next"),
+               X("Sequence does not match type xs:anyAtomicType? - found more than one item [err:XPTY0004]"), location);
+    }
+  }
+  else if(item->isFunction()) {
+    XMLBuffer buf;
+    buf.set(X("Sequence does not match type (xs:anyAtomicType | node())*"));
+    buf.append(X(" - found item of type "));
+    item->typeToBuffer(context, buf);
+    buf.append(X(" [err:XPTY0004]"));
+    XQThrow3(XPath2TypeMatchException, X("XPath1CompatConvertFunctionArgResult::next"), buf.getRawBuffer(), location);
+  }
+
+  return number((AnyAtomicType*)tmp.get(), context);
 }

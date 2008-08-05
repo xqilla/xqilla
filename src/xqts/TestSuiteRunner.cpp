@@ -164,6 +164,11 @@ static string loadExpectedResult(const string &file) {
           c++;
       while(expectedResult.size()>0 && expectedResult[expectedResult.size()-1]==0xA)
         expectedResult.erase(expectedResult.size()-1);
+
+      if(expectedResult.find("<?xml") == 0) {
+        size_t end = expectedResult.find("?>");
+        expectedResult.erase(0, end + 2);
+      }
     }
   } catch(...) {}
 

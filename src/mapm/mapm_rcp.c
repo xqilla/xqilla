@@ -79,7 +79,6 @@ M_restore_stack(2);
 void	m_apm_reciprocal(M_APM rr, int places, M_APM aa)
 {
 M_APM   last_x, guess, tmpN, tmp1, tmp2;
-char    sbuf[32];
 int	ii, bflag, dplaces, nexp, tolerance;
 
 if (aa->m_apm_sign == 0)
@@ -108,8 +107,7 @@ m_apm_absolute_value(tmpN, aa);
 nexp = aa->m_apm_exponent;
 tmpN->m_apm_exponent -= nexp;
 
-m_apm_to_string(sbuf, 15, tmpN);
-m_apm_set_double(guess, (1.0 / atof(sbuf)));
+m_apm_set_double(guess, (1.0 / m_apm_get_double(tmpN)));
 
 tolerance = places + 4;
 dplaces   = places + 16;

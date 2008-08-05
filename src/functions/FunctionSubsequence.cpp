@@ -94,10 +94,6 @@ public:
     return 0;
   }
 
-  std::string asString(DynamicContext *context, int indent) const
-  {
-    return "";
-  }
 private:
   const FunctionSubsequence *_func;
 };

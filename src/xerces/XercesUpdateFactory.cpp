@@ -62,13 +62,36 @@ void XercesUpdateFactory::applyPut(const PendingUpdate &update, DynamicContext *
   }
 }
 
+#include <iostream>
+#include <xqilla/utils/UTF8Str.hpp>
+
+void printTypes(const char *label, const DOMNode *node, int indent = 0)
+{
+  if(indent == 0) std::cerr << "\n";
+
+  if(node->getNodeType() == DOMNode::ELEMENT_NODE) {
+    const XMLCh *typeURI, *typeName;
+    XercesNodeImpl::typeUriAndName(node, typeURI, typeName);
+    std::cerr << label << ":" << std::string(indent * 2, ' ')
+              << "name: {" << UTF8(node->getNamespaceURI()) << "}" << UTF8(Axis::getLocalName(node))
+              << ", type: {" << UTF8(typeURI) << "}" << UTF8(typeName) << "\n";
+
+    DOMNode *child = node->getFirstChild();
+    while(child) {
+      printTypes(label, child, indent + 1);
+      child = child->getNextSibling();
+    }
+  }
+}
+
 void XercesUpdateFactory::applyInsertInto(const PendingUpdate &update, DynamicContext *context)
 {
   const XercesNodeImpl *nodeImpl = (const XercesNodeImpl*)update.getTarget()->getInterface(Item::gXQilla);
   DOMNode *domnode = const_cast<DOMNode*>(nodeImpl->getDOMNode());
   DOMDocument *doc = const_cast<DOMDocument*>(XPath2Utils::getOwnerDoc(domnode));
 
-  bool untyped = XPath2Utils::equals(nodeImpl->getTypeName(), DocumentCache::g_szUntyped) &&
+  bool untyped = nodeImpl->dmNodeKind() == Node::element_string &&
+    XPath2Utils::equals(nodeImpl->getTypeName(), DocumentCache::g_szUntyped) &&
     XPath2Utils::equals(nodeImpl->getTypeURI(), SchemaSymbols::fgURI_SCHEMAFORSCHEMA);
 
   bool containsElementOrText = false;
@@ -86,7 +109,7 @@ void XercesUpdateFactory::applyInsertInto(const PendingUpdate &update, DynamicCo
 
     // If the type-name property of $target is xs:untyped, then upd:setToUntyped() is invoked on each
     // element or attribute node in $content.
-    if(untyped) setToUntyped(newChild);
+    if(!untyped) setTypes(newChild, childImpl->getDOMNode());
 
     // For each node in $content, the parent property is set to parent($target).
     // The children property of $target is modified to add the nodes in $content, preserving their order.
@@ -107,7 +130,8 @@ void XercesUpdateFactory::applyInsertAttributes(const PendingUpdate &update, Dyn
   DOMElement *element = (DOMElement*)nodeImpl->getDOMNode();
   DOMDocument *doc = const_cast<DOMDocument*>(XPath2Utils::getOwnerDoc(element));
 
-  bool untyped = XPath2Utils::equals(nodeImpl->getTypeName(), DocumentCache::g_szUntyped) &&
+  bool untyped = nodeImpl->dmNodeKind() == Node::element_string &&
+    XPath2Utils::equals(nodeImpl->getTypeName(), DocumentCache::g_szUntyped) &&
     XPath2Utils::equals(nodeImpl->getTypeURI(), SchemaSymbols::fgURI_SCHEMAFORSCHEMA);
 
   Result children = update.getValue();
@@ -124,7 +148,7 @@ void XercesUpdateFactory::applyInsertAttributes(const PendingUpdate &update, Dyn
     // Checks performed by UpdateFactory
 
     // If the type-name property of $target is xs:untyped, then upd:setToUntyped($A) is invoked.
-    if(untyped) setToUntyped(newChild);
+    if(!untyped) setTypes(newChild, childImpl->getDOMNode());
 
     // The parent property of $A is set to $target.
     // attributes: Modified to include the nodes in $content.
@@ -191,7 +215,7 @@ void XercesUpdateFactory::applyRename(const PendingUpdate &update, DynamicContex
 
   // Deliberately create a new XercesNodeImpl, since the PI is actually
   // replaced, not just renamed, meaning it is no longer attached to the tree
-  addToPutSet(new XercesNodeImpl(domnode, context), &update, context);
+  addToPutSet(nodeImpl, &update, context);
 }
 
 void XercesUpdateFactory::applyDelete(const PendingUpdate &update, DynamicContext *context)
@@ -212,7 +236,8 @@ void XercesUpdateFactory::applyInsertBefore(const PendingUpdate &update, Dynamic
   DOMNode *parent = domnode->getParentNode();
   DOMDocument *doc = const_cast<DOMDocument*>(XPath2Utils::getOwnerDoc(domnode));
 
-  bool untyped = XPath2Utils::equals(parentNode->getTypeName(), DocumentCache::g_szUntyped) &&
+  bool untyped = parentNode->dmNodeKind() == Node::element_string &&
+    XPath2Utils::equals(parentNode->getTypeName(), DocumentCache::g_szUntyped) &&
     XPath2Utils::equals(parentNode->getTypeURI(), SchemaSymbols::fgURI_SCHEMAFORSCHEMA);
 
   bool containsElementOrText = false;
@@ -230,7 +255,7 @@ void XercesUpdateFactory::applyInsertBefore(const PendingUpdate &update, Dynamic
 
     // If the type-name property of parent($target) is xs:untyped, then upd:setToUntyped() is invoked on each
     // element or attribute node in $content.
-    if(untyped) setToUntyped(newChild);
+    if(!untyped) setTypes(newChild, childImpl->getDOMNode());
 
     // For each node in $content, the parent property is set to parent($target).
     // The children property of parent($target) is modified to add the nodes in $content just before $target,
@@ -255,7 +280,8 @@ void XercesUpdateFactory::applyInsertAfter(const PendingUpdate &update, DynamicC
   DOMNode *parent = domnode->getParentNode();
   DOMDocument *doc = const_cast<DOMDocument*>(XPath2Utils::getOwnerDoc(domnode));
 
-  bool untyped = XPath2Utils::equals(parentNode->getTypeName(), DocumentCache::g_szUntyped) &&
+  bool untyped = parentNode->dmNodeKind() == Node::element_string &&
+    XPath2Utils::equals(parentNode->getTypeName(), DocumentCache::g_szUntyped) &&
     XPath2Utils::equals(parentNode->getTypeURI(), SchemaSymbols::fgURI_SCHEMAFORSCHEMA);
 
   bool containsElementOrText = false;
@@ -273,7 +299,7 @@ void XercesUpdateFactory::applyInsertAfter(const PendingUpdate &update, DynamicC
 
     // If the type-name property of parent($target) is xs:untyped, then upd:setToUntyped() is invoked on each
     // element or attribute node in $content.
-    if(untyped) setToUntyped(newChild);
+    if(!untyped) setTypes(newChild, childImpl->getDOMNode());
 
     // For each node in $content, the parent property is set to parent($target).
     // The children property of parent($target) is modified to add the nodes in $content just before $target,
@@ -296,7 +322,8 @@ void XercesUpdateFactory::applyInsertAsFirst(const PendingUpdate &update, Dynami
   DOMNode *firstChild = domnode->getFirstChild();
   DOMDocument *doc = const_cast<DOMDocument*>(XPath2Utils::getOwnerDoc(domnode));
 
-  bool untyped = XPath2Utils::equals(nodeImpl->getTypeName(), DocumentCache::g_szUntyped) &&
+  bool untyped = nodeImpl->dmNodeKind() == Node::element_string &&
+    XPath2Utils::equals(nodeImpl->getTypeName(), DocumentCache::g_szUntyped) &&
     XPath2Utils::equals(nodeImpl->getTypeURI(), SchemaSymbols::fgURI_SCHEMAFORSCHEMA);
 
   bool containsElementOrText = false;
@@ -314,7 +341,7 @@ void XercesUpdateFactory::applyInsertAsFirst(const PendingUpdate &update, Dynami
 
     // If the type-name property of $target is xs:untyped, then upd:setToUntyped() is invoked on each
     // element or attribute node in $content.
-    if(untyped) setToUntyped(newChild);
+    if(!untyped) setTypes(newChild, childImpl->getDOMNode());
 
     // For each node in $content, the parent property is set to parent($target).
     // The children property of $target is modified to add the nodes in $content just before $target,
@@ -336,7 +363,8 @@ void XercesUpdateFactory::applyInsertAsLast(const PendingUpdate &update, Dynamic
   DOMNode *domnode = const_cast<DOMNode*>(nodeImpl->getDOMNode());
   DOMDocument *doc = const_cast<DOMDocument*>(XPath2Utils::getOwnerDoc(domnode));
 
-  bool untyped = XPath2Utils::equals(nodeImpl->getTypeName(), DocumentCache::g_szUntyped) &&
+  bool untyped = nodeImpl->dmNodeKind() == Node::element_string &&
+    XPath2Utils::equals(nodeImpl->getTypeName(), DocumentCache::g_szUntyped) &&
     XPath2Utils::equals(nodeImpl->getTypeURI(), SchemaSymbols::fgURI_SCHEMAFORSCHEMA);
 
   bool containsElementOrText = false;
@@ -354,7 +382,7 @@ void XercesUpdateFactory::applyInsertAsLast(const PendingUpdate &update, Dynamic
 
     // If the type-name property of $target is xs:untyped, then upd:setToUntyped() is invoked on each
     // element or attribute node in $content.
-    if(untyped) setToUntyped(newChild);
+    if(!untyped) setTypes(newChild, childImpl->getDOMNode());
 
     // For each node in $content, the parent property is set to parent($target).
     // The children property of $target is modified to add the nodes in $content just before $target,
@@ -378,7 +406,8 @@ void XercesUpdateFactory::applyReplaceNode(const PendingUpdate &update, DynamicC
   DOMNode *parent = domnode->getParentNode();
   DOMDocument *doc = const_cast<DOMDocument*>(XPath2Utils::getOwnerDoc(domnode));
 
-  bool untyped = XPath2Utils::equals(parentNode->getTypeName(), DocumentCache::g_szUntyped) &&
+  bool untyped = parentNode->dmNodeKind() == Node::element_string &&
+    XPath2Utils::equals(parentNode->getTypeName(), DocumentCache::g_szUntyped) &&
     XPath2Utils::equals(parentNode->getTypeURI(), SchemaSymbols::fgURI_SCHEMAFORSCHEMA);
 
   Result children = update.getValue();
@@ -389,7 +418,7 @@ void XercesUpdateFactory::applyReplaceNode(const PendingUpdate &update, DynamicC
 
     // 1b. If the type-name property of parent($target) is xs:untyped, then upd:setToUntyped() is invoked
     //     on each element node in $replacement.
-    if(untyped) setToUntyped(newChild);
+    if(!untyped) setTypes(newChild, childImpl->getDOMNode());
 
     // 1a. For each node in $replacement, the parent property is set to parent($target).
     // 3b. If $target is an element, text, comment, or processing instruction node, the children property
@@ -415,7 +444,8 @@ void XercesUpdateFactory::applyReplaceAttribute(const PendingUpdate &update, Dyn
   DOMElement *element = domnode->getOwnerElement();
   DOMDocument *doc = element->getOwnerDocument();
 
-  bool untyped = XPath2Utils::equals(parentNode->getTypeName(), DocumentCache::g_szUntyped) &&
+  bool untyped = parentNode->dmNodeKind() == Node::element_string &&
+    XPath2Utils::equals(parentNode->getTypeName(), DocumentCache::g_szUntyped) &&
     XPath2Utils::equals(parentNode->getTypeURI(), SchemaSymbols::fgURI_SCHEMAFORSCHEMA);
 
   Result children = update.getValue();
@@ -433,7 +463,7 @@ void XercesUpdateFactory::applyReplaceAttribute(const PendingUpdate &update, Dyn
 
     // 2b. If the type-name property of parent($target) is xs:untyped, then upd:setToUntyped() is invoked
     //     on each element node in $replacement.
-    if(untyped) setToUntyped(newChild);
+    if(!untyped) setTypes(newChild, childImpl->getDOMNode());
 
     // 2a. For each node in $replacement, the parent property is set to parent($target).
     // 4a. If $target is an attribute node, the attributes property of parent($target) is modified by removing $target
@@ -533,40 +563,34 @@ void XercesUpdateFactory::removeType(DOMNode *node)
   }
 }
 
-void XercesUpdateFactory::setToUntyped(DOMNode *node)
+void XercesUpdateFactory::setTypes(DOMNode *node, const DOMNode *from)
 {
-  // 1. If $N is an element node, its properties are changed as follows:
   if(node->getNodeType() == DOMNode::ELEMENT_NODE) {
-    // a. type-name is set to xs:untyped.
-    XercesSequenceBuilder::setElementTypeInfo((DOMElement *)node, SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                                              DocumentCache::g_szUntyped);
-    // b. typed-value is set equal to the string-value property, as an instance of xs:untypedAtomic.
-    // c. nilled, is-id, and is-idrefs are set to false.
+    const XMLCh *turi, *tname;
+    XercesNodeImpl::typeUriAndName(from, turi, tname);
+    XercesSequenceBuilder::setElementTypeInfo((DOMElement *)node, turi, tname);
 
-    // Automatically done by changing the type
-
-    // d. upd:setToUntyped() is invoked on the attributes and child element nodes of $N.
     DOMNamedNodeMap *attrs = node->getAttributes();
-    for(unsigned int i = 0; i < attrs->getLength(); ++i)
-      setToUntyped(attrs->item(i));
+    DOMNamedNodeMap *attrsfrom = from->getAttributes();
+    for(unsigned int i = 0; i < attrs->getLength(); ++i) {
+      DOMNode *a = attrs->item(i);
+      DOMNode *afrom = attrsfrom->getNamedItemNS(a->getNamespaceURI(), Axis::getLocalName(a));
+      if(afrom) setTypes(a, afrom);
+    }
 
     DOMNode *child = node->getFirstChild();
+    DOMNode *cfrom = from->getFirstChild();
     while(child) {
       if(child->getNodeType() == DOMNode::ELEMENT_NODE)
-        setToUntyped(child);
+        setTypes(child, cfrom);
       child = child->getNextSibling();
+      cfrom = cfrom->getNextSibling();
     }
   }
-  // 2. If $N is an attribute node, its properties are changed as follows:
   else if(node->getNodeType() == DOMNode::ATTRIBUTE_NODE) {
-    // a. type-name is set to xs:untypedAtomic.
-    XercesSequenceBuilder::setAttributeTypeInfo((DOMAttr *)node, SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                                                ATUntypedAtomic::fgDT_UNTYPEDATOMIC);
-
-    // b. typed-value is set equal to the string-value property, as an instance of xs:untypedAtomic.
-    // c. is-id and is-idrefs are set to false.
-
-    // Automatically done by changing the type
+    const XMLCh *turi, *tname;
+    XercesNodeImpl::typeUriAndName(from, turi, tname);
+    XercesSequenceBuilder::setAttributeTypeInfo((DOMAttr *)node, turi, tname);
   }
 }
 
@@ -707,7 +731,8 @@ public:
     // Add the attribute
     if(!at) {
       at = node_->getOwnerDocument()->createAttributeNS(uri, localname);
-      at->setPrefix(prefix);
+      if(prefix && *prefix)
+        at->setPrefix(prefix);
       attrs->setNamedItemNS(at);
     }
 

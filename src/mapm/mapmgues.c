@@ -28,23 +28,13 @@
 /****************************************************************************/
 void	M_get_sqrt_guess(M_APM r, M_APM a)
 {
-char	buf[48];
-double  dd;
-
-m_apm_to_string(buf, 15, a);
-dd = atof(buf);                     /* sqrt algorithm actually finds 1/sqrt */
-m_apm_set_double(r, (1.0 / sqrt(dd)));
+  /* sqrt algorithm actually finds 1/sqrt */
+  m_apm_set_double(r, (1.0 / sqrt(m_apm_get_double(a))));
 }
 /****************************************************************************/
 void	M_get_cbrt_guess(M_APM r, M_APM a)
 {
-char	buf[48];
-double  dd;
-
-m_apm_to_string(buf, 15, a);
-dd = atof(buf);
-dd = log(dd) / 3.0;
-m_apm_set_double(r, exp(dd));
+  m_apm_set_double(r, exp(log(m_apm_get_double(a)) / 3.0));
 }
 /****************************************************************************/
 /*
@@ -57,12 +47,8 @@ m_apm_set_double(r, exp(dd));
  */
 void	M_get_log_guess(M_APM r, M_APM a)
 {
-char	buf[48];
-double  dd;
-
-m_apm_to_string(buf, 15, a);
-dd = atof(buf);
-m_apm_set_double(r, (1.00001 * log(dd)));        /* induce error of 10 ^ -5 */
+  /* induce error of 10 ^ -5 */
+  m_apm_set_double(r, (1.00001 * log(m_apm_get_double(a))));
 }
 /****************************************************************************/
 /*
@@ -72,22 +58,14 @@ m_apm_set_double(r, (1.00001 * log(dd)));        /* induce error of 10 ^ -5 */
  */
 void	M_get_asin_guess(M_APM r, M_APM a)
 {
-char	buf[48];
-double  dd;
-
-m_apm_to_string(buf, 15, a);
-dd = atof(buf);
-m_apm_set_double(r, (1.00001 * asin(dd)));       /* induce error of 10 ^ -5 */
+  /* induce error of 10 ^ -5 */
+  m_apm_set_double(r, (1.00001 * asin(m_apm_get_double(a))));
 }
 /****************************************************************************/
 void	M_get_acos_guess(M_APM r, M_APM a)
 {
-char	buf[48];
-double  dd;
-
-m_apm_to_string(buf, 15, a);
-dd = atof(buf);
-m_apm_set_double(r, (1.00001 * acos(dd)));       /* induce error of 10 ^ -5 */
+  /* induce error of 10 ^ -5 */
+  m_apm_set_double(r, (1.00001 * acos(m_apm_get_double(a))));
 }
 /****************************************************************************/
 /*
@@ -132,5 +110,35 @@ else
 
    m_apm_set_string(atmp, buf);
   }
+}
+/****************************************************************************/
+/*
+	convert a M_APM value into a C 'double'
+*/
+double m_apm_get_double(M_APM atmp)
+{
+  UCHAR	numdiv, numrem;
+
+  double result = 0;
+
+  int max_i = (atmp->m_apm_datalength + 1) >> 1;
+  if(max_i > ((17 + 1) >> 1)) {
+    // We only need to deal with the top 17 digits, by which point we've
+    // maxed out the double's mantissa.
+    max_i = ((17 + 1) >> 1);
+  }
+
+  int index = 0;
+  for(; index < max_i; ++index) {
+    M_get_div_rem_10((int)atmp->m_apm_data[index], &numdiv, &numrem);
+    result = result * 100 + (double)numdiv * 10 + numrem;
+  }
+
+  result *= pow(10, atmp->m_apm_exponent - (max_i << 1));
+
+  if(atmp->m_apm_sign == -1)
+    result *= -1;
+  
+  return result;
 }
 /****************************************************************************/

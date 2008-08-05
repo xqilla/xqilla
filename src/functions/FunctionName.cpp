@@ -78,7 +78,7 @@ Sequence FunctionName::createSequence(DynamicContext* context, int flags) const
   if(arg.isNull())
     return Sequence(context->getItemFactory()->createString(XMLUni::fgZeroLenString, context), mm);
 
-  return Sequence(FunctionString::string(((Node*)arg.get())->dmNodeName(context), context), mm);
+  return Sequence(FunctionString::string_item(((Node*)arg.get())->dmNodeName(context), context), mm);
 }
 
 

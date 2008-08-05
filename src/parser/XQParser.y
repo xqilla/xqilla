@@ -387,7 +387,6 @@ namespace XQParser {
 %token _SEMICOLON_             ";"
 %token _BANG_                  "!"
 %token _HASH_                  "#"
-%token _ARROW_                 "=>"
 
 %token <str> _INTEGER_LITERAL_ "<integer literal>"
 %token <str> _DECIMAL_LITERAL_ "<decimal literal>"
@@ -4292,7 +4291,7 @@ DocumentTest:
   | _DOCUMENT_NODE_ _LPAR_ SchemaElementTest _RPAR_ 
   {
     $$ = $3;
-    $$->setItemTestType(SequenceType::ItemType::TEST_DOCUMENT);
+    $$->setItemTestType(SequenceType::ItemType::TEST_SCHEMA_DOCUMENT);
   }
   ;
   
@@ -5221,17 +5220,17 @@ InlineFunction:
   }
   ;
 
-// DereferencedFunctionCall ::= FilterExpr "=>" "(" (ExprSingle ("," ExprSingle)*)? ")"
+// DereferencedFunctionCall ::= FilterExpr "(" (ExprSingle ("," ExprSingle)*)? ")"
 DereferencedFunctionCall:
-    FilterExpr _ARROW_ _LPAR_ _RPAR_
+    FilterExpr _LPAR_ _RPAR_
   {
     REJECT_NOT_EXTENSION(DereferencedFunctionCall, @1);
     $$ = WRAP(@2, new (MEMMGR) XQFunctionDeref($1, new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR)), MEMMGR));
   }
-  | FilterExpr _ARROW_ _LPAR_ FunctionCallArgumentList _RPAR_
+  | FilterExpr _LPAR_ FunctionCallArgumentList _RPAR_
   {
     REJECT_NOT_EXTENSION(DereferencedFunctionCall, @1);
-    $$ = WRAP(@2, new (MEMMGR) XQFunctionDeref($1, $4, MEMMGR));
+    $$ = WRAP(@2, new (MEMMGR) XQFunctionDeref($1, $3, MEMMGR));
   }
   ;
 

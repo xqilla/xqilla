@@ -180,7 +180,7 @@ void FaxppDocumentCacheImpl::parseDocument(InputSource &srcToUse, EventHandler *
   FAXPP_Error err = FAXPP_init_parse_callback(parser_, binInputStreamReadCallback, stream);
 
   // Set the correct base URI
-  if(err == NO_ERROR) {
+  if(err == NO_ERROR && srcToUse.getSystemId()) {
     FAXPP_Text base = { (void*)srcToUse.getSystemId(), (XMLString::stringLen(srcToUse.getSystemId()) + 1) * sizeof(XMLCh) };
     err = FAXPP_set_base_uri(parser_, &base);
   }

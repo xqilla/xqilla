@@ -37,7 +37,7 @@ target_triplet = @target@
 bin_PROGRAMS = xqilla$(EXEEXT)
 noinst_PROGRAMS = xqtsRunner$(EXEEXT) xmarkRunner$(EXEEXT) \
 	simple-basic$(EXEEXT) simple-context-item$(EXEEXT) \
-	$(am__EXEEXT_1)
+	xqc-basic$(EXEEXT) xqc-context-item$(EXEEXT) $(am__EXEEXT_1)
 @BUILD_DOM_SAMPLES_TRUE@am__append_1 = dom-basic dom-context-item dom-resolver
 subdir = .
 DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
@@ -210,7 +210,10 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	XercesSequenceBuilder.lo XercesUpdateFactory.lo \
 	XercesURIResolver.lo Optimizer.lo ASTReleaser.lo ASTVisitor.lo \
 	QueryPathNode.lo QueryPathTreeGenerator.lo yajl_buf.lo yajl.lo \
-	yajl_encode.lo yajl_gen.lo yajl_lex.lo yajl_parser.lo
+	yajl_encode.lo yajl_gen.lo yajl_lex.lo yajl_parser.lo \
+	XQillaXQCImplementation.lo XQillaXQCStaticContext.lo \
+	XQillaXQCDynamicContext.lo XQillaXQCExpression.lo \
+	XQillaXQCSequence.lo
 libxqilla_la_OBJECTS = $(am_libxqilla_la_OBJECTS)
 libxqilla_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
@@ -244,6 +247,14 @@ am_xmarkRunner_OBJECTS = xmark.$(OBJEXT)
 xmarkRunner_OBJECTS = $(am_xmarkRunner_OBJECTS)
 xmarkRunner_LDADD = $(LDADD)
 xmarkRunner_DEPENDENCIES = libxqilla.la
+am_xqc_basic_OBJECTS = xqc-basic.$(OBJEXT)
+xqc_basic_OBJECTS = $(am_xqc_basic_OBJECTS)
+xqc_basic_LDADD = $(LDADD)
+xqc_basic_DEPENDENCIES = libxqilla.la
+am_xqc_context_item_OBJECTS = xqc-context-item.$(OBJEXT)
+xqc_context_item_OBJECTS = $(am_xqc_context_item_OBJECTS)
+xqc_context_item_LDADD = $(LDADD)
+xqc_context_item_DEPENDENCIES = libxqilla.la
 am_xqilla_OBJECTS = xqilla-commandline.$(OBJEXT)
 xqilla_OBJECTS = $(am_xqilla_OBJECTS)
 xqilla_LDADD = $(LDADD)
@@ -276,11 +287,15 @@ CXXLINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 SOURCES = $(libxqilla_la_SOURCES) $(dom_basic_SOURCES) \
 	$(dom_context_item_SOURCES) $(dom_resolver_SOURCES) \
 	$(simple_basic_SOURCES) $(simple_context_item_SOURCES) \
-	$(xmarkRunner_SOURCES) $(xqilla_SOURCES) $(xqtsRunner_SOURCES)
+	$(xmarkRunner_SOURCES) $(xqc_basic_SOURCES) \
+	$(xqc_context_item_SOURCES) $(xqilla_SOURCES) \
+	$(xqtsRunner_SOURCES)
 DIST_SOURCES = $(libxqilla_la_SOURCES) $(dom_basic_SOURCES) \
 	$(dom_context_item_SOURCES) $(dom_resolver_SOURCES) \
 	$(simple_basic_SOURCES) $(simple_context_item_SOURCES) \
-	$(xmarkRunner_SOURCES) $(xqilla_SOURCES) $(xqtsRunner_SOURCES)
+	$(xmarkRunner_SOURCES) $(xqc_basic_SOURCES) \
+	$(xqc_context_item_SOURCES) $(xqilla_SOURCES) \
+	$(xqtsRunner_SOURCES)
 RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
 	html-recursive info-recursive install-data-recursive \
 	install-dvi-recursive install-exec-recursive \
@@ -439,7 +454,7 @@ lib_LTLIBRARIES = libxqilla.la
 
 # Library version, see http://sourceware.org/autobook/autobook/autobook_91.html
 # -no-undefined for Cygwin (bug #1639669)
-libxqilla_la_LDFLAGS = -version-info 4:1:0 -no-undefined
+libxqilla_la_LDFLAGS = -version-info 5:0:0 -no-undefined
 libxqilla_la_SOURCES = \
 src/framework/ReferenceCounted.cpp \
 src/framework/BaseMemoryManager.cpp \
@@ -918,7 +933,18 @@ src/yajl/yajl_parser.c \
 src/yajl/yajl_parser.h \
 src/yajl/yajl_common.h \
 src/yajl/yajl_gen.h \
-src/yajl/yajl_parse.h
+src/yajl/yajl_parse.h \
+src/xqc/XQillaXQCImplementation.cpp \
+src/xqc/XQillaXQCImplementation.hpp \
+src/xqc/XQillaXQCStaticContext.cpp \
+src/xqc/XQillaXQCStaticContext.hpp \
+src/xqc/XQillaXQCDynamicContext.cpp \
+src/xqc/XQillaXQCDynamicContext.hpp \
+src/xqc/XQillaXQCExpression.cpp \
+src/xqc/XQillaXQCExpression.hpp \
+src/xqc/XQillaXQCSequence.cpp \
+src/xqc/XQillaXQCSequence.hpp \
+src/xqc/XQillaXQCInputStream.hpp
 
 EXTRA_DIST = \
 src/lexer/flex.skl \
@@ -1017,6 +1043,12 @@ src/samples/dom-api/dom-context-item.cpp
 
 dom_resolver_SOURCES = \
 src/samples/dom-api/dom-resolver.cpp
+
+xqc_basic_SOURCES = \
+src/samples/xqc-api/xqc-basic.c
+
+xqc_context_item_SOURCES = \
+src/samples/xqc-api/xqc-context-item.c
 
 LEXERFILE = $(top_srcdir)/src/lexer/XQLexer.cpp
 LEXTEMPLATE = $(top_srcdir)/src/lexer/XQLexer.l
@@ -1160,6 +1192,12 @@ simple-context-item$(EXEEXT): $(simple_context_item_OBJECTS) $(simple_context_it
 xmarkRunner$(EXEEXT): $(xmarkRunner_OBJECTS) $(xmarkRunner_DEPENDENCIES) 
 	@rm -f xmarkRunner$(EXEEXT)
 	$(CXXLINK) $(xmarkRunner_OBJECTS) $(xmarkRunner_LDADD) $(LIBS)
+xqc-basic$(EXEEXT): $(xqc_basic_OBJECTS) $(xqc_basic_DEPENDENCIES) 
+	@rm -f xqc-basic$(EXEEXT)
+	$(LINK) $(xqc_basic_OBJECTS) $(xqc_basic_LDADD) $(LIBS)
+xqc-context-item$(EXEEXT): $(xqc_context_item_OBJECTS) $(xqc_context_item_DEPENDENCIES) 
+	@rm -f xqc-context-item$(EXEEXT)
+	$(LINK) $(xqc_context_item_OBJECTS) $(xqc_context_item_LDADD) $(LIBS)
 xqilla$(EXEEXT): $(xqilla_OBJECTS) $(xqilla_DEPENDENCIES) 
 	@rm -f xqilla$(EXEEXT)
 	$(CXXLINK) $(xqilla_OBJECTS) $(xqilla_LDADD) $(LIBS)
@@ -1540,6 +1578,11 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQillaNSResolverImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQillaPlatformUtils.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQillaXMLGrammarPoolImpl.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQillaXQCDynamicContext.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQillaXQCExpression.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQillaXQCImplementation.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQillaXQCSequence.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQillaXQCStaticContext.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XSLT2Lexer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XStr.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XercesConfiguration.Plo@am__quote@
@@ -1592,6 +1635,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/simple-basic.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/simple-context-item.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xmark.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xqc-basic.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xqc-context-item.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xqilla-commandline.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/yajl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/yajl_buf.Plo@am__quote@
@@ -1914,6 +1959,34 @@ yajl_parser.lo: src/yajl/yajl_parser.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='src/yajl/yajl_parser.c' object='yajl_parser.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o yajl_parser.lo `test -f 'src/yajl/yajl_parser.c' || echo '$(srcdir)/'`src/yajl/yajl_parser.c
+
+xqc-basic.o: src/samples/xqc-api/xqc-basic.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT xqc-basic.o -MD -MP -MF $(DEPDIR)/xqc-basic.Tpo -c -o xqc-basic.o `test -f 'src/samples/xqc-api/xqc-basic.c' || echo '$(srcdir)/'`src/samples/xqc-api/xqc-basic.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/xqc-basic.Tpo $(DEPDIR)/xqc-basic.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='src/samples/xqc-api/xqc-basic.c' object='xqc-basic.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o xqc-basic.o `test -f 'src/samples/xqc-api/xqc-basic.c' || echo '$(srcdir)/'`src/samples/xqc-api/xqc-basic.c
+
+xqc-basic.obj: src/samples/xqc-api/xqc-basic.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT xqc-basic.obj -MD -MP -MF $(DEPDIR)/xqc-basic.Tpo -c -o xqc-basic.obj `if test -f 'src/samples/xqc-api/xqc-basic.c'; then $(CYGPATH_W) 'src/samples/xqc-api/xqc-basic.c'; else $(CYGPATH_W) '$(srcdir)/src/samples/xqc-api/xqc-basic.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/xqc-basic.Tpo $(DEPDIR)/xqc-basic.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='src/samples/xqc-api/xqc-basic.c' object='xqc-basic.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o xqc-basic.obj `if test -f 'src/samples/xqc-api/xqc-basic.c'; then $(CYGPATH_W) 'src/samples/xqc-api/xqc-basic.c'; else $(CYGPATH_W) '$(srcdir)/src/samples/xqc-api/xqc-basic.c'; fi`
+
+xqc-context-item.o: src/samples/xqc-api/xqc-context-item.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT xqc-context-item.o -MD -MP -MF $(DEPDIR)/xqc-context-item.Tpo -c -o xqc-context-item.o `test -f 'src/samples/xqc-api/xqc-context-item.c' || echo '$(srcdir)/'`src/samples/xqc-api/xqc-context-item.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/xqc-context-item.Tpo $(DEPDIR)/xqc-context-item.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='src/samples/xqc-api/xqc-context-item.c' object='xqc-context-item.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o xqc-context-item.o `test -f 'src/samples/xqc-api/xqc-context-item.c' || echo '$(srcdir)/'`src/samples/xqc-api/xqc-context-item.c
+
+xqc-context-item.obj: src/samples/xqc-api/xqc-context-item.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT xqc-context-item.obj -MD -MP -MF $(DEPDIR)/xqc-context-item.Tpo -c -o xqc-context-item.obj `if test -f 'src/samples/xqc-api/xqc-context-item.c'; then $(CYGPATH_W) 'src/samples/xqc-api/xqc-context-item.c'; else $(CYGPATH_W) '$(srcdir)/src/samples/xqc-api/xqc-context-item.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/xqc-context-item.Tpo $(DEPDIR)/xqc-context-item.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='src/samples/xqc-api/xqc-context-item.c' object='xqc-context-item.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o xqc-context-item.obj `if test -f 'src/samples/xqc-api/xqc-context-item.c'; then $(CYGPATH_W) 'src/samples/xqc-api/xqc-context-item.c'; else $(CYGPATH_W) '$(srcdir)/src/samples/xqc-api/xqc-context-item.c'; fi`
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -4567,6 +4640,41 @@ QueryPathTreeGenerator.lo: src/optimizer/QueryPathTreeGenerator.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/optimizer/QueryPathTreeGenerator.cpp' object='QueryPathTreeGenerator.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o QueryPathTreeGenerator.lo `test -f 'src/optimizer/QueryPathTreeGenerator.cpp' || echo '$(srcdir)/'`src/optimizer/QueryPathTreeGenerator.cpp
+
+XQillaXQCImplementation.lo: src/xqc/XQillaXQCImplementation.cpp
+@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQillaXQCImplementation.lo -MD -MP -MF $(DEPDIR)/XQillaXQCImplementation.Tpo -c -o XQillaXQCImplementation.lo `test -f 'src/xqc/XQillaXQCImplementation.cpp' || echo '$(srcdir)/'`src/xqc/XQillaXQCImplementation.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/XQillaXQCImplementation.Tpo $(DEPDIR)/XQillaXQCImplementation.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/xqc/XQillaXQCImplementation.cpp' object='XQillaXQCImplementation.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQillaXQCImplementation.lo `test -f 'src/xqc/XQillaXQCImplementation.cpp' || echo '$(srcdir)/'`src/xqc/XQillaXQCImplementation.cpp
+
+XQillaXQCStaticContext.lo: src/xqc/XQillaXQCStaticContext.cpp
+@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQillaXQCStaticContext.lo -MD -MP -MF $(DEPDIR)/XQillaXQCStaticContext.Tpo -c -o XQillaXQCStaticContext.lo `test -f 'src/xqc/XQillaXQCStaticContext.cpp' || echo '$(srcdir)/'`src/xqc/XQillaXQCStaticContext.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/XQillaXQCStaticContext.Tpo $(DEPDIR)/XQillaXQCStaticContext.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/xqc/XQillaXQCStaticContext.cpp' object='XQillaXQCStaticContext.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQillaXQCStaticContext.lo `test -f 'src/xqc/XQillaXQCStaticContext.cpp' || echo '$(srcdir)/'`src/xqc/XQillaXQCStaticContext.cpp
+
+XQillaXQCDynamicContext.lo: src/xqc/XQillaXQCDynamicContext.cpp
+@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQillaXQCDynamicContext.lo -MD -MP -MF $(DEPDIR)/XQillaXQCDynamicContext.Tpo -c -o XQillaXQCDynamicContext.lo `test -f 'src/xqc/XQillaXQCDynamicContext.cpp' || echo '$(srcdir)/'`src/xqc/XQillaXQCDynamicContext.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/XQillaXQCDynamicContext.Tpo $(DEPDIR)/XQillaXQCDynamicContext.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/xqc/XQillaXQCDynamicContext.cpp' object='XQillaXQCDynamicContext.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQillaXQCDynamicContext.lo `test -f 'src/xqc/XQillaXQCDynamicContext.cpp' || echo '$(srcdir)/'`src/xqc/XQillaXQCDynamicContext.cpp
+
+XQillaXQCExpression.lo: src/xqc/XQillaXQCExpression.cpp
+@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQillaXQCExpression.lo -MD -MP -MF $(DEPDIR)/XQillaXQCExpression.Tpo -c -o XQillaXQCExpression.lo `test -f 'src/xqc/XQillaXQCExpression.cpp' || echo '$(srcdir)/'`src/xqc/XQillaXQCExpression.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/XQillaXQCExpression.Tpo $(DEPDIR)/XQillaXQCExpression.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/xqc/XQillaXQCExpression.cpp' object='XQillaXQCExpression.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQillaXQCExpression.lo `test -f 'src/xqc/XQillaXQCExpression.cpp' || echo '$(srcdir)/'`src/xqc/XQillaXQCExpression.cpp
+
+XQillaXQCSequence.lo: src/xqc/XQillaXQCSequence.cpp
+@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQillaXQCSequence.lo -MD -MP -MF $(DEPDIR)/XQillaXQCSequence.Tpo -c -o XQillaXQCSequence.lo `test -f 'src/xqc/XQillaXQCSequence.cpp' || echo '$(srcdir)/'`src/xqc/XQillaXQCSequence.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/XQillaXQCSequence.Tpo $(DEPDIR)/XQillaXQCSequence.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/xqc/XQillaXQCSequence.cpp' object='XQillaXQCSequence.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQillaXQCSequence.lo `test -f 'src/xqc/XQillaXQCSequence.cpp' || echo '$(srcdir)/'`src/xqc/XQillaXQCSequence.cpp
 
 dom-basic.o: src/samples/dom-api/dom-basic.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT dom-basic.o -MD -MP -MF $(DEPDIR)/dom-basic.Tpo -c -o dom-basic.o `test -f 'src/samples/dom-api/dom-basic.cpp' || echo '$(srcdir)/'`src/samples/dom-api/dom-basic.cpp

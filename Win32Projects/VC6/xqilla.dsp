@@ -53,7 +53,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /machine:I386
-# ADD LINK32 /libpath:"../../build/windows/VC6/Release" xerces-c_2.lib /nologo /base:"0x69000000" /dll /machine:I386 /out:"../../build/windows/VC6/Release/xqilla21.dll" /implib:"../../build/windows/VC6/Release/xqilla21.lib" /libpath:"../../../xerces-c-src/Build/Win32/VC6/Release" /OPT:REF
+# ADD LINK32 /libpath:"../../build/windows/VC6/Release" xerces-c_2.lib /nologo /base:"0x69000000" /dll /machine:I386 /out:"../../build/windows/VC6/Release/xqilla22.dll" /implib:"../../build/windows/VC6/Release/xqilla22.lib" /libpath:"../../../xerces-c-src/Build/Win32/VC6/Release" /OPT:REF
 # SUBTRACT LINK32 /pdb:none
 
 !ELSEIF  "$(CFG)" == "xqilla - Win32 Debug"
@@ -80,7 +80,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 /libpath:"../../build/windows/VC6/Debug" xerces-c_2D.lib /nologo /base:"0x69000000" /dll /debug /machine:I386 /out:"../../build/windows/VC6/Debug/xqilla21d.dll" /implib:"../../build/windows/VC6/Debug/xqilla21d.lib" /pdbtype:sept /pdb:"../../build/windows/VC6/Debug/xqilla21d.pdb" /libpath:"../../../xerces-c-src/Build/Win32/VC6/Debug"
+# ADD LINK32 /libpath:"../../build/windows/VC6/Debug" xerces-c_2D.lib /nologo /base:"0x69000000" /dll /debug /machine:I386 /out:"../../build/windows/VC6/Debug/xqilla22d.dll" /implib:"../../build/windows/VC6/Debug/xqilla22d.lib" /pdbtype:sept /pdb:"../../build/windows/VC6/Debug/xqilla22d.pdb" /libpath:"../../../xerces-c-src/Build/Win32/VC6/Debug"
 
 !ENDIF 
 
@@ -2865,6 +2865,10 @@ SOURCE=..\..\src\mapm\mapmutl2.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\mapm\README
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\include\xqilla\mapm\m_apm.h
 # End Source File
 # End Group
@@ -3654,6 +3658,54 @@ SOURCE=..\..\src\xerces\XercesURIResolver.hpp
 # Begin Source File
 
 SOURCE=..\..\include\xqilla\xerces\XercesConfiguration.hpp
+# End Source File
+# End Group
+# Begin Group "xqc"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\src\xqc\XQillaXQCDynamicContext.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\xqc\XQillaXQCDynamicContext.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\xqc\XQillaXQCExpression.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\xqc\XQillaXQCExpression.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\xqc\XQillaXQCImplementation.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\xqc\XQillaXQCImplementation.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\xqc\XQillaXQCInputStream.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\xqc\XQillaXQCSequence.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\xqc\XQillaXQCSequence.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\xqc\XQillaXQCStaticContext.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\xqc\XQillaXQCStaticContext.hpp
 # End Source File
 # End Group
 # Begin Group "xqts"

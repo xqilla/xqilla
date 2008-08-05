@@ -3,4 +3,6 @@
   <error id="statictyp-xqupd-58" reason="error failure"/>
   <error id="statictyp-xqupd-59" reason="error failure"/>
   <error id="statictyp-xqupd-60" reason="error failure"/>
+  <error id="valskip-ins-008" reason="result failure"/>
+  <error id="valskip-ren-003" reason="result failure"/>
 </errors>
