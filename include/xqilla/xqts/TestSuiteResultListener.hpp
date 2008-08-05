@@ -95,8 +95,8 @@ private:
 
   // testName -> (reason, comment, action)
   std::map<std::string, Error> errors_;
-  std::vector<std::string> nowPass_;
-  std::vector<std::string> nowFail_;  
+  std::map<std::string, Error> nowPass_;
+  std::vector<std::string> nowFail_;
 };
 
 class XQILLA_API ConsoleResultListener : public TestSuiteResultListener
@@ -126,6 +126,8 @@ private:
 private:
   std::string m_szFullTestName;
 
+  // testname -> "p|s|i|f"
+  std::map<std::string, std::string> testsRecorded_;
   unsigned int m_nTotalTests, m_nPassedTests, m_nSkippedTests, m_nInspectTests;
 
   int testDepth_;

@@ -72,8 +72,5 @@ URIResolver *XercesConfiguration::createDefaultURIResolver(MemoryManager *memMgr
 
 Node::Ptr XercesConfiguration::createNode(const DOMNode *node, const DynamicContext *context) const
 {
-  // bump the document reference count, so that it will never reach zero...
-  ((XercesURIResolver*)context->getDefaultURIResolver())->
-    incrementDocumentRefCount(XPath2Utils::getOwnerDoc(node));
-  return new XercesNodeImpl(node, context);
+  return new XercesNodeImpl(node, 0);
 }

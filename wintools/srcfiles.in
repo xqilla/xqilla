@@ -29,7 +29,7 @@
 # the module's source listing
 # o all matching files will be placed in that folder
 # 
-lib.filters=ast axis context debug dom-api events exceptions fastxdm framework fulltext functions items lexer mapm operators optimizer parser runtime schema simple-api update utils xerces xqts yajl
+lib.filters=ast axis context debug dom-api events exceptions fastxdm framework fulltext functions items lexer mapm operators optimizer parser runtime schema simple-api update utils xerces xqc xqts yajl
 src/ast/ASTNodeImpl.cpp lib
 src/ast/ConstantFoldingFunction.cpp lib
 src/ast/ContextTuple.cpp lib
@@ -434,6 +434,8 @@ src/samples/dom-api/dom-context-item.cpp app=dom-context-item
 src/samples/dom-api/dom-resolver.cpp app=dom-resolver
 src/samples/simple-api/simple-basic.cpp app=simple-basic
 src/samples/simple-api/simple-context-item.cpp app=simple-context-item
+src/samples/xqc-api/xqc-basic.c app=xqc-basic
+src/samples/xqc-api/xqc-context-item.c app=xqc-context-item
 src/samples/xqilla/xqilla-commandline.cpp app=xqilla_cmd
 src/schema/AnyAtomicTypeDatatypeValidator.cpp lib
 src/schema/DocumentCacheImpl.cpp lib
@@ -508,6 +510,17 @@ src/xerces/XercesUpdateFactory.cpp lib
 src/xerces/XercesUpdateFactory.hpp lib
 src/xerces/XercesURIResolver.cpp lib
 src/xerces/XercesURIResolver.hpp lib
+src/xqc/XQillaXQCDynamicContext.cpp lib
+src/xqc/XQillaXQCDynamicContext.hpp lib
+src/xqc/XQillaXQCExpression.cpp lib
+src/xqc/XQillaXQCExpression.hpp lib
+src/xqc/XQillaXQCImplementation.cpp lib
+src/xqc/XQillaXQCImplementation.hpp lib
+src/xqc/XQillaXQCInputStream.hpp lib
+src/xqc/XQillaXQCSequence.cpp lib
+src/xqc/XQillaXQCSequence.hpp lib
+src/xqc/XQillaXQCStaticContext.cpp lib
+src/xqc/XQillaXQCStaticContext.hpp lib
 src/xqts/TestSuiteParser.cpp lib
 src/xqts/TestSuiteResultListener.cpp lib
 src/xqts/TestSuiteRunner.cpp lib
@@ -526,6 +539,7 @@ src/yajl/yajl_parser.c lib
 src/yajl/yajl_parser.h lib
 tests/xmark/xmark.cpp app=xmarkRunner
 tests/xqts/runner.cpp app=xqtsRunner
+include/xqc.h lib
 include/xqilla/ast/ASTNode.hpp lib
 include/xqilla/ast/ASTNodeImpl.hpp lib
 include/xqilla/ast/ConstantFoldingFunction.hpp lib
@@ -923,6 +937,7 @@ include/xqilla/utils/XStr.hpp lib
 include/xqilla/xerces/XercesConfiguration.hpp lib
 include/xqilla/xqilla-dom3.hpp lib
 include/xqilla/xqilla-simple.hpp lib
+include/xqilla/xqilla-xqc.h lib
 include/xqilla/xqts/TestSuiteParser.hpp lib
 include/xqilla/xqts/TestSuiteResultListener.hpp lib
 include/xqilla/xqts/TestSuiteRunner.hpp lib

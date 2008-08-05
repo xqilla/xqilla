@@ -75,20 +75,25 @@ ASTNode *FunctionString::staticTyping(StaticContext *context)
 
 Sequence FunctionString::createSequence(DynamicContext* context, int flags) const
 {
-  return Sequence(string(getParamNumber(1, context)->next(context), context),
+  return Sequence(string_item(getParamNumber(1, context)->next(context), context),
 	  context->getMemoryManager());
 }
 
-Item::Ptr FunctionString::string(const Item::Ptr &item, DynamicContext *context)
+Item::Ptr FunctionString::string_item(const Item::Ptr &item, DynamicContext *context)
+{
+  return context->getItemFactory()->createString(string(item, context), context);
+}
+
+const XMLCh *FunctionString::string(const Item::Ptr &item, DynamicContext *context)
 {
   if(item.isNull()) {
-    return context->getItemFactory()->createString(XMLUni::fgZeroLenString, context);
+    // Do nothing
   }
   else if(item->isNode()) {
-    return context->getItemFactory()->createString(((Node*)item.get())->dmStringValue(context), context);
+    return ((Node*)item.get())->dmStringValue(context);
   }
   else if(item->isAtomicValue()) {
-    return ((AnyAtomicType*)item.get())->castAs(AnyAtomicType::STRING, context);
+    return ((AnyAtomicType*)item.get())->asString(context);
   }
-  return context->getItemFactory()->createString(XMLUni::fgZeroLenString, context);
+  return XMLUni::fgZeroLenString;
 }

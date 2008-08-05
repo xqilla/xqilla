@@ -117,34 +117,14 @@ Item::Ptr XPath1CompatConvertFunctionArgResult::next(DynamicContext *context)
     //    fn:string(V).
     if(XPath2Utils::equals(typeName, SchemaSymbols::fgDT_STRING) &&
        XPath2Utils::equals(typeURI, SchemaSymbols::fgURI_SCHEMAFORSCHEMA)) {
-      item = FunctionString::string(item, context);
+      item = FunctionString::string_item(item, context);
     }
 
     // 3. If the expected type is xs:double or xs:double?, then the value V is effectively replaced by
     //    fn:number(V).
     else if(XPath2Utils::equals(typeName, SchemaSymbols::fgDT_DOUBLE) &&
             XPath2Utils::equals(typeURI, SchemaSymbols::fgURI_SCHEMAFORSCHEMA)) {
-
-      // Atomize first
-      if(item->isNode()) {
-        Result atomized = ((Node*)item.get())->dmTypedValue(context);
-        item = atomized->next(context);
-
-        if(item.notNull() && atomized->next(context).notNull()) {
-          XQThrow(XPath2TypeMatchException, X("XPath1CompatConvertFunctionArgResult::next"),
-                  X("Sequence does not match type xs:anyAtomicType? - found more than one item [err:XPTY0004]"));
-        }
-      }
-      else if(item->isFunction()) {
-        XMLBuffer buf;
-        buf.set(X("Sequence does not match type (xs:anyAtomicType | node())*"));
-        buf.append(X(" - found item of type "));
-        item->typeToBuffer(context, buf);
-        buf.append(X(" [err:XPTY0004]"));
-        XQThrow(XPath2TypeMatchException, X("XPath1CompatConvertFunctionArgResult::next"), buf.getRawBuffer());
-      }
-
-      item = FunctionNumber::number((AnyAtomicType*)item.get(), context);
+      item = FunctionNumber::number(item, context, this);
     }
   }
 

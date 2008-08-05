@@ -169,7 +169,8 @@ void SequenceType::ItemType::staticResolution(StaticContext *context, const Loca
       // if we are testing for an attribute, an empty prefix means empty namespace; if we are testing an element, it means 
       // the default element and type namespace
       if(prefix == 0 || *prefix == 0) {
-        if(m_nTestType == TEST_ELEMENT || m_nTestType == TEST_SCHEMA_ELEMENT)
+        if(m_nTestType == TEST_ELEMENT || m_nTestType == TEST_SCHEMA_ELEMENT ||
+           m_nTestType == TEST_DOCUMENT || m_nTestType == TEST_SCHEMA_DOCUMENT)
           m_NameURI = context->getDefaultElementAndTypeNS();
       } else {
         m_NameURI = context->getUriBoundToPrefix(prefix, location);
@@ -213,6 +214,7 @@ void SequenceType::ItemType::staticResolution(StaticContext *context, const Loca
   }
 
   switch(m_nTestType) {
+  case TEST_SCHEMA_DOCUMENT:
   case TEST_SCHEMA_ELEMENT: {
     // retrieve the type of the element name
     SchemaElementDecl *elemDecl = context->getDocumentCache()->getElementDecl(m_NameURI, m_pName->getName());
@@ -419,6 +421,11 @@ void SequenceType::ItemType::getStaticType(StaticType &st, const StaticContext *
     isExact = false;
     break;
   }
+  case TEST_SCHEMA_DOCUMENT: {
+    st = StaticType::DOCUMENT_TYPE;
+    isExact = false;
+    break;
+  }
   case TEST_COMMENT: {
     st = StaticType::COMMENT_TYPE;
     isExact = true;
@@ -497,21 +504,32 @@ void SequenceType::ItemType::toBuffer(XMLBuffer &buffer, bool addBrackets) const
     buffer.append(m_pType->getName());
     break;
   }
+  case TEST_SCHEMA_DOCUMENT:
   case TEST_DOCUMENT: {
-    buffer.append(X("document("));
+    buffer.append(X("document-node("));
 
-    if(m_pName != NULL) {
-      outputPrefixOrURI(m_pName->getPrefix(), m_NameURI, buffer);
-      buffer.append(m_pName->getName());
-    }
+    if(m_pName != NULL || m_pType != NULL) {
 
-    if(m_pType != NULL) {
-      if(m_pName == NULL) {
-        buffer.append('*');
+      if(m_nTestType == TEST_DOCUMENT)
+        buffer.append(X("element("));
+      else
+        buffer.append(X("schema-element("));
+
+      if(m_pName != NULL) {
+        outputPrefixOrURI(m_pName->getPrefix(), m_NameURI, buffer);
+        buffer.append(m_pName->getName());
       }
-      buffer.append(X(", "));
-      outputPrefixOrURI(m_pType->getPrefix(), m_TypeURI, buffer);
-      buffer.append(m_pType->getName());
+
+      if(m_pType != NULL) {
+        if(m_pName == NULL) {
+          buffer.append('*');
+        }
+        buffer.append(X(", "));
+        outputPrefixOrURI(m_pType->getPrefix(), m_TypeURI, buffer);
+        buffer.append(m_pType->getName());
+      }
+
+      buffer.append(')');
     }
 
     buffer.append(')');
@@ -667,6 +685,62 @@ bool SequenceType::ItemType::matchesNameType(const Item::Ptr &toBeTested, const 
   return true;
 }
 
+bool SequenceType::ItemType::matchesSchemaElement(const Node::Ptr &toBeTested, const DynamicContext* context) const
+{
+  // retrieve the type of the element name
+  assert(m_pName!=NULL);
+  const XMLCh* elementNS=m_NameURI;
+  const XMLCh* elementName=m_pName->getName();
+  SchemaElementDecl *elemDecl=context->getDocumentCache()->getElementDecl(elementNS, elementName);
+  assert(elemDecl != NULL);
+
+  // 1. The name of the candidate node matches the specified ElementName or matches the name of an element in a 
+  //    substitution group headed by an element named ElementName.
+  ATQNameOrDerived::Ptr name = toBeTested->dmNodeName(context);
+  if(name.isNull()) return false;
+  const XMLCh *node_uri = ((const ATQNameOrDerived*)name.get())->getURI();
+  const XMLCh *node_name = ((const ATQNameOrDerived*)name.get())->getName();
+
+  if(!(XPath2Utils::equals(elementName, node_name)) ||
+     !(XPath2Utils::equals(elementNS, node_uri)))
+  {
+    // the node doesn't match the ElementName; check if it is in its substitution group
+    SchemaElementDecl* thisElemDecl=context->getDocumentCache()->getElementDecl(node_uri, node_name);
+    if(thisElemDecl==NULL) // the node to be tested has no type info
+      return false;
+
+    SchemaElementDecl* rootElemDecl=thisElemDecl->getSubstitutionGroupElem();
+    bool foundIt=false;
+    while (rootElemDecl)
+    {
+      if (XPath2Utils::equals(rootElemDecl->getBaseName(), elementName) &&
+          XPath2Utils::equals(context->getDocumentCache()->getSchemaUri(rootElemDecl->getURI()), elementNS))
+      {
+        foundIt = true;
+        break;
+      }
+
+      rootElemDecl = rootElemDecl->getSubstitutionGroupElem();
+    }
+    if(!foundIt)
+      return false;
+  }
+
+  // 2. derives-from(AT, ET) is true, where AT is the type of the candidate node and ET is the type declared for 
+  //    element ElementName in the in-scope element declarations.
+  ComplexTypeInfo* pTypeInfo=elemDecl->getComplexTypeInfo();
+  if(pTypeInfo && !toBeTested->hasInstanceOfType(pTypeInfo->getTypeUri(), pTypeInfo->getTypeLocalName(), context))
+    return false;
+
+  // 3. Either the nilled property of the candidate node is false, or the element declaration for ElementName in 
+  //    the in-scope element declarations is nillable.
+  if(toBeTested->dmNilled(context).get()->isTrue() &&
+     !(elemDecl->getMiscFlags() & SchemaSymbols::XSD_NILLABLE))
+    return false;
+      
+  return true;
+}
+
 bool SequenceType::ItemType::matches(const Node::Ptr &toBeTested, DynamicContext* context) const
 {
   switch(m_nTestType) {
@@ -699,58 +773,7 @@ bool SequenceType::ItemType::matches(const Node::Ptr &toBeTested, DynamicContext
       if(toBeTested->dmNodeKind() != Node::element_string)
         return false;
 
-      // retrieve the type of the element name
-      assert(m_pName!=NULL);
-      const XMLCh* elementNS=m_NameURI;
-      const XMLCh* elementName=m_pName->getName();
-      SchemaElementDecl *elemDecl=context->getDocumentCache()->getElementDecl(elementNS, elementName);
-      assert(elemDecl != NULL);
-
-      // 1. The name of the candidate node matches the specified ElementName or matches the name of an element in a 
-      //    substitution group headed by an element named ElementName.
-      ATQNameOrDerived::Ptr name = toBeTested->dmNodeName(context);
-      if(name.isNull()) return false;
-      const XMLCh *node_uri = ((const ATQNameOrDerived*)name.get())->getURI();
-      const XMLCh *node_name = ((const ATQNameOrDerived*)name.get())->getName();
-
-      if(!(XPath2Utils::equals(elementName, node_name)) ||
-         !(XPath2Utils::equals(elementNS, node_uri)))
-      {
-        // the node doesn't match the ElementName; check if it is in its substitution group
-        SchemaElementDecl* thisElemDecl=context->getDocumentCache()->getElementDecl(node_uri, node_name);
-        if(thisElemDecl==NULL) // the node to be tested has no type info
-            return false;
-
-        SchemaElementDecl* rootElemDecl=thisElemDecl->getSubstitutionGroupElem();
-        bool foundIt=false;
-        while (rootElemDecl)
-        {
-          if (XPath2Utils::equals(rootElemDecl->getBaseName(), elementName) &&
-              XPath2Utils::equals(context->getDocumentCache()->getSchemaUri(rootElemDecl->getURI()), elementNS))
-          {
-            foundIt = true;
-            break;
-          }
-
-          rootElemDecl = rootElemDecl->getSubstitutionGroupElem();
-        }
-        if(!foundIt)
-          return false;
-      }
-
-      // 2. derives-from(AT, ET) is true, where AT is the type of the candidate node and ET is the type declared for 
-      //    element ElementName in the in-scope element declarations.
-      ComplexTypeInfo* pTypeInfo=elemDecl->getComplexTypeInfo();
-      if(pTypeInfo && !toBeTested->hasInstanceOfType(pTypeInfo->getTypeUri(), pTypeInfo->getTypeLocalName(), context))
-        return false;
-
-      // 3. Either the nilled property of the candidate node is false, or the element declaration for ElementName in 
-      //    the in-scope element declarations is nillable.
-      if(toBeTested->dmNilled(context).get()->isTrue() &&
-         !(elemDecl->getMiscFlags() & SchemaSymbols::XSD_NILLABLE))
-        return false;
-      
-      return true;
+      return matchesSchemaElement(toBeTested, context);
     }
 
     case TEST_SCHEMA_ATTRIBUTE:
@@ -803,24 +826,27 @@ bool SequenceType::ItemType::matches(const Node::Ptr &toBeTested, DynamicContext
       return (toBeTested->dmNodeKind() == Node::text_string);
     }
 
+    case TEST_SCHEMA_DOCUMENT:
     case TEST_DOCUMENT:
     {
         if(toBeTested->dmNodeKind() != Node::document_string)
           return false;
-        if(m_pName!=NULL || m_pType!=NULL) {
 
-          // if we have a constraint on name/type, they apply to the document element
-          Result children = toBeTested->dmChildren(context, 0);
-          Node::Ptr docElement;
-          while((docElement = children->next(context)).notNull() &&
-                docElement->dmNodeKind() != Node::element_string) {}
+        if(m_pName == NULL && m_pType == NULL)
+          return true;
 
-          if(docElement.isNull()) return false;
+        // if we have a constraint on name/type, they apply to the document element
+        Result children = toBeTested->dmChildren(context, 0);
+        Node::Ptr docElement;
+        while((docElement = children->next(context)).notNull() &&
+              docElement->dmNodeKind() != Node::element_string) {}
 
-          if(!matchesNameType(docElement, context))
-            return false;            
-        }
-        return true;
+        if(docElement.isNull()) return false;
+
+        if(m_nTestType == TEST_DOCUMENT)
+          return matchesNameType(docElement, context);
+        else
+          return matchesSchemaElement(docElement, context);
     }
 
     case TEST_NODE:
@@ -854,6 +880,7 @@ bool SequenceType::ItemType::matches(const Item::Ptr &toBeTested, DynamicContext
     case TEST_COMMENT:
     case TEST_TEXT:
     case TEST_DOCUMENT:
+    case TEST_SCHEMA_DOCUMENT:
     {
       return false;
     }
@@ -945,6 +972,7 @@ bool SequenceType::ItemType::matches(const ItemType *toBeTested, const StaticCon
     case TEST_COMMENT:
     case TEST_TEXT:
     case TEST_DOCUMENT:
+    case TEST_SCHEMA_DOCUMENT:
       return true;
     default:
       return false;
@@ -1006,6 +1034,14 @@ bool SequenceType::ItemType::matches(const ItemType *toBeTested, const StaticCon
 
   case TEST_DOCUMENT: {
     if(toBeTested->m_nTestType != TEST_DOCUMENT)
+      return false;
+    if(!matchesNameType(toBeTested, context))
+      return false;
+    return true;
+  }
+    
+  case TEST_SCHEMA_DOCUMENT: {
+    if(toBeTested->m_nTestType != TEST_SCHEMA_DOCUMENT)
       return false;
     if(!matchesNameType(toBeTested, context))
       return false;

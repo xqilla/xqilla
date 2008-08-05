@@ -185,8 +185,10 @@ xerces_include = @xerces_include@
 xerces_include_dir = @xerces_include_dir@
 xerces_lib = @xerces_lib@
 nobase_include_HEADERS = \
+xqc.h \
 xqilla/xqilla-dom3.hpp \
 xqilla/xqilla-simple.hpp \
+xqilla/xqilla-xqc.h \
 xqilla/ast/LocationInfo.hpp \
 xqilla/ast/XQCastableAs.hpp \
 xqilla/ast/XQCastAs.hpp \
@@ -598,9 +600,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  include/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  include/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign  include/Makefile
+	  $(AUTOMAKE) --gnu  include/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \

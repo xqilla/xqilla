@@ -51,6 +51,7 @@ public:
       TEST_ATTRIBUTE,    ///< attribute node
       TEST_SCHEMA_ELEMENT,      ///< element node
       TEST_SCHEMA_ATTRIBUTE,    ///< attribute node
+      TEST_SCHEMA_DOCUMENT,     ///< document node
       TEST_NODE,         ///< node
       TEST_PI,           ///< processing instruction node
       TEST_COMMENT,      ///< comment node
@@ -100,6 +101,7 @@ public:
     bool matches(const Item::Ptr &toBeTested, DynamicContext* context) const;
     bool matches(const Node::Ptr &toBeTested, DynamicContext* context) const;
     bool matchesNameType(const Item::Ptr &toBeTested, const DynamicContext* context) const;
+    bool matchesSchemaElement(const Node::Ptr &toBeTested, const DynamicContext* context) const;
 
     bool matches(const ItemType *toBeTested, const StaticContext* context) const;
     bool matchesNameType(const ItemType *toBeTested, const StaticContext* context) const;

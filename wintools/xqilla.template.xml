@@ -101,8 +101,10 @@
     <preprocessor config='all'>XQILLA_APIS</preprocessor>
     <files>
       <filter name='include'>
+        <file name='include/xqc.h'/>
         <file name='include/xqilla/xqilla-dom3.hpp'/>
         <file name='include/xqilla/xqilla-simple.hpp'/>
+        <file name='include/xqilla/xqilla-xqc.h'/>
         <file name='include/xqilla/ast/LocationInfo.hpp'/>
         <file name='include/xqilla/ast/XQCastableAs.hpp'/>
         <file name='include/xqilla/ast/XQCastAs.hpp'/>
@@ -1040,6 +1042,19 @@
         <file name="src/yajl/yajl_parser.c"/>
         <file name="src/yajl/yajl_parser.h"/>
       </filter>
+      <filter name="xqc">
+        <file name="src/xqc/XQillaXQCImplementation.cpp"/>
+        <file name="src/xqc/XQillaXQCImplementation.hpp"/>
+        <file name="src/xqc/XQillaXQCStaticContext.cpp"/>
+        <file name="src/xqc/XQillaXQCStaticContext.hpp"/>
+        <file name="src/xqc/XQillaXQCDynamicContext.cpp"/>
+        <file name="src/xqc/XQillaXQCDynamicContext.hpp"/>
+        <file name="src/xqc/XQillaXQCExpression.cpp"/>
+        <file name="src/xqc/XQillaXQCExpression.hpp"/>
+        <file name="src/xqc/XQillaXQCSequence.cpp"/>
+        <file name="src/xqc/XQillaXQCSequence.hpp"/>
+        <file name="src/xqc/XQillaXQCInputStream.hpp"/>
+      </filter>
     </files>
   </project>
   <project name='xqilla_static' guid='B96FD1CF-A620-4A8A-AC4B-EBCFA324D9D1'>
@@ -1106,6 +1121,24 @@
     <include type='ref'>all</include>
     <files>
       <file name='src/samples/dom-api/dom-resolver.cpp' />
+    </files>
+  </project>
+  <project name='xqc-basic' guid='C03914F5-AA13-4B1C-A4B0-8FD6560AB574'>
+    <type>app</type>
+    <depends>xqilla</depends>
+    <depends>xerces</depends>
+    <include type='ref'>all</include>
+    <files>
+      <file name='src/samples/xqc-api/xqc-basic.c' />
+    </files>
+  </project>
+  <project name='xqc-context-item' guid='C03914F5-AA13-4B1C-A4B0-8FD6560AB575'>
+    <type>app</type>
+    <depends>xqilla</depends>
+    <depends>xerces</depends>
+    <include type='ref'>all</include>
+    <files>
+      <file name='src/samples/xqc-api/xqc-context-item.c' />
     </files>
   </project>
   <project name='xqtsRunner' guid='E8F410F3-AA0A-4E73-97DC-B444C2CBDAA3'>

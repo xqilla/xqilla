@@ -96,6 +96,8 @@ extern	void	m_apm_set_string(M_APM, char *);
 extern	void	m_apm_set_double(M_APM, double);
 extern	void	m_apm_set_long(M_APM, long);
 
+extern double m_apm_get_double(M_APM atmp);
+
 extern	void	m_apm_to_string(char *, int, M_APM);
 extern  void	m_apm_to_fixpt_string(char *, int, M_APM);
 extern  void	m_apm_to_fixpt_stringex(char *, int, M_APM, char, char, int);
@@ -328,6 +330,8 @@ public:
 	void toFixPtStringEx(char *dest,int dp,char a,char b,int c) const;
 	char *toFixPtStringExp(int dp,char a,char b,int c) const;
 	void toIntegerString(char *dest) const;
+
+  double toDouble() const;
 	
 	/* Basic operators: */
 	MAPM &operator=(const MAPM &m); /* Assigment operator */

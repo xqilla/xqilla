@@ -74,7 +74,7 @@ void XercesSequenceBuilder::endDocumentEvent()
   currentParent_ = currentParent_->getParentNode();
 
   if(currentParent_ == 0) {
-    seq_.addItem(new XercesNodeImpl(currentNode_, context_));
+    seq_.addItem(new XercesNodeImpl(currentNode_, (XercesURIResolver*)context_->getDefaultURIResolver()));
     document_ = 0;
     currentNode_ = 0;
   }
@@ -123,7 +123,7 @@ void XercesSequenceBuilder::endElementEvent(const XMLCh *prefix, const XMLCh *ur
   setElementTypeInfo((DOMElement*)currentNode_, typeURI, typeName);
 
   if(currentParent_ == 0) {
-    seq_.addItem(new XercesNodeImpl(currentNode_, context_));
+    seq_.addItem(new XercesNodeImpl(currentNode_, (XercesURIResolver*)context_->getDefaultURIResolver()));
     document_ = 0;
     currentNode_ = 0;
   }
@@ -142,7 +142,7 @@ void XercesSequenceBuilder::piEvent(const XMLCh *target, const XMLCh *value)
   currentNode_ = pi;
 
   if(currentParent_ == 0) {
-    seq_.addItem(new XercesNodeImpl(currentNode_, context_));
+    seq_.addItem(new XercesNodeImpl(currentNode_, (XercesURIResolver*)context_->getDefaultURIResolver()));
     document_ = 0;
     currentNode_ = 0;
   }
@@ -169,7 +169,7 @@ void XercesSequenceBuilder::textEvent(const XMLCh *value)
   }
 
   if(currentParent_ == 0) {
-    seq_.addItem(new XercesNodeImpl(currentNode_, context_));
+    seq_.addItem(new XercesNodeImpl(currentNode_, (XercesURIResolver*)context_->getDefaultURIResolver()));
     document_ = 0;
     currentNode_ = 0;
   }
@@ -200,7 +200,7 @@ void XercesSequenceBuilder::textEvent(const XMLCh *chars, unsigned int length)
   }
 
   if(currentParent_ == 0) {
-    seq_.addItem(new XercesNodeImpl(currentNode_, context_));
+    seq_.addItem(new XercesNodeImpl(currentNode_, (XercesURIResolver*)context_->getDefaultURIResolver()));
     document_ = 0;
     currentNode_ = 0;
   }
@@ -219,7 +219,7 @@ void XercesSequenceBuilder::commentEvent(const XMLCh *value)
   currentNode_ = comment;
 
   if(currentParent_ == 0) {
-    seq_.addItem(new XercesNodeImpl(currentNode_, context_));
+    seq_.addItem(new XercesNodeImpl(currentNode_, (XercesURIResolver*)context_->getDefaultURIResolver()));
     document_ = 0;
     currentNode_ = 0;
   }
@@ -257,7 +257,7 @@ void XercesSequenceBuilder::attributeEvent(const XMLCh *prefix, const XMLCh *uri
   currentNode_ = attr;
 
   if(currentParent_ == 0) {
-    seq_.addItem(new XercesNodeImpl(currentNode_, context_));
+    seq_.addItem(new XercesNodeImpl(currentNode_, (XercesURIResolver*)context_->getDefaultURIResolver()));
     document_ = 0;
     currentNode_ = 0;
   }

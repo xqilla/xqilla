@@ -25,6 +25,7 @@
 #include <xqilla/utils/XPath2Utils.hpp>
 
 #include <xercesc/util/XMLUni.hpp>
+#include <xercesc/util/XMLUTF8Transcoder.hpp>
 
 #include <iostream>
 
@@ -167,10 +168,21 @@ const XMLCh *StringPool::getPooledString(const XMLCh *src, unsigned int length)
 const XMLCh *StringPool::getPooledString(const char *src)
 {
   if(src == 0) return 0;
-  if(*src == 0) return XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString;
+  if(*src == 0) return XMLUni::fgZeroLenString;
 
-  XMLCh *transcoded = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::transcode(src, _mm);
-  if(!transcoded) return 0;
+  XMLCh *transcoded;
+  {
+    XMLUTF8Transcoder t(0, 512);
+    size_t l = XMLString::stringLen(src);
+    const size_t needed = l * 2 + 2; // 2 chars per byte is the worst case, + '\0'
+    transcoded = (XMLCh*)_mm->allocate(needed);
+
+    unsigned int bytesEaten = 0;
+    AutoDeleteArray<unsigned char> charSizes(new unsigned char[needed]);
+
+    t.transcodeFrom((const XMLByte*)src, (unsigned int)l+1, transcoded,
+      (unsigned int)needed, bytesEaten, charSizes);
+  }
 
   // strings longer than lengthThreshold bytes are not pooled, as it is not probable they can be recycled
   const XMLCh* pszTmp = transcoded + 1;
@@ -260,7 +272,7 @@ void StringPool::dumpStatistics() const
             bucket = bucket->next;
           }
           if (n > maxn)
-            maxn = n;		
+            maxn = n;
       }
   std::cout << "\tStringPool empty buckets: " << zero << std::endl;
   std::cout << "\tStringPool max buckets:   " << maxn << std::endl;

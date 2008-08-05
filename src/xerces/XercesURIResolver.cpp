@@ -102,7 +102,7 @@ bool XercesURIResolver::resolveDocument(Sequence &result, const XMLCh* uri, Dyna
     }
   }
   else {
-    doc = new XercesNodeImpl(found, context);
+    doc = new XercesNodeImpl(found, (XercesURIResolver*)context->getDefaultURIResolver());
   }
 
   if(doc.notNull()) {
@@ -154,7 +154,7 @@ bool XercesURIResolver::resolveCollection(Sequence &result, const XMLCh* uri, Dy
     }
   }
   else {
-    doc = new XercesNodeImpl(found, context);
+    doc = new XercesNodeImpl(found, (XercesURIResolver*)context->getDefaultURIResolver());
   }
 
   if(doc.notNull()) {

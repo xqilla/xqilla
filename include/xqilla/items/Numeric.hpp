@@ -118,6 +118,8 @@ public:
   virtual AnyAtomicType::AtomicObjectType getPrimitiveTypeIndex() const = 0;
 
   virtual const MAPM &asMAPM() const = 0;
+  virtual double asDouble() const;
+  virtual int asInt() const;
 
   enum State {
     NEG_INF = 0,

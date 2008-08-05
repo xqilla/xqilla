@@ -452,13 +452,6 @@ void XQLexer::undoLessThan()
     return error("Unrecognized token '#'");
   }
 }
-<INITIAL>"=>" {
-  if(isExtensions()) {
-    RECOGNIZE(_ARROW_);
-  } else {
-    return error("Unrecognized token '=>'");
-  }
-}
 
 <INITIAL>"let" {
   if(isXQuery()) {

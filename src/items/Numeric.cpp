@@ -20,6 +20,7 @@
  */
 
 #include <assert.h>
+#include <limits>
 
 #include "../config/xqilla_config.h"
 #include <xqilla/items/Numeric.hpp>
@@ -372,4 +373,25 @@ const XMLCh *Numeric::asDoubleString(State state1, const MAPM &value1, int signi
   }
 
   return 0;
+}
+
+double Numeric::asDouble() const
+{
+  switch(getState()) {
+  case NaN:
+    return std::numeric_limits<double>::quiet_NaN();
+  case INF:
+    return std::numeric_limits<double>::infinity();
+  case NEG_INF:
+    return -std::numeric_limits<double>::infinity();
+  case NUM:
+  case NEG_NUM:
+    break;
+  }
+  return asMAPM().toDouble();
+}
+
+int Numeric::asInt() const
+{
+  return (int)asMAPM().toDouble();
 }

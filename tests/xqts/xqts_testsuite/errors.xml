@@ -18,9 +18,7 @@
   <error id="caselessmatch06" reason="result failure"/>
   <error id="caselessmatch07" reason="result failure"/>
   <error id="caselessmatch08" reason="error failure"/>
-  <error id="caselessmatch09" reason="error failure"/>
-  <error id="caselessmatch10" reason="error failure"/>
-  <error id="caselessmatch11" reason="error failure"/>
+  <error id="caselessmatch13" reason="result failure"/>
   <error id="casthcds9" reason="result failure"/>
   <error id="fn-avg-mix-args-012" reason="result failure"/>
   <error id="fn-avg-mix-args-013" reason="result failure"/>

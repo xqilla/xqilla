@@ -6,7 +6,7 @@ LDFLAGS = -L$(xerces_lib) -R$(xerces_lib) $(faxpp_lib) $(tidy_lib) -lxerces-c $(
 LDADD = libxqilla.la
 
 bin_PROGRAMS = xqilla
-noinst_PROGRAMS = xqtsRunner xmarkRunner simple-basic simple-context-item
+noinst_PROGRAMS = xqtsRunner xmarkRunner simple-basic simple-context-item xqc-basic xqc-context-item
 
 if BUILD_DOM_SAMPLES
 noinst_PROGRAMS += dom-basic dom-context-item dom-resolver
@@ -16,7 +16,7 @@ lib_LTLIBRARIES = libxqilla.la
 
 # Library version, see http://sourceware.org/autobook/autobook/autobook_91.html
 # -no-undefined for Cygwin (bug #1639669)
-libxqilla_la_LDFLAGS = -version-info 4:1:0 -no-undefined
+libxqilla_la_LDFLAGS = -version-info 5:0:0 -no-undefined
 
 libxqilla_la_SOURCES = \
 src/framework/ReferenceCounted.cpp \
@@ -496,7 +496,18 @@ src/yajl/yajl_parser.c \
 src/yajl/yajl_parser.h \
 src/yajl/yajl_common.h \
 src/yajl/yajl_gen.h \
-src/yajl/yajl_parse.h
+src/yajl/yajl_parse.h \
+src/xqc/XQillaXQCImplementation.cpp \
+src/xqc/XQillaXQCImplementation.hpp \
+src/xqc/XQillaXQCStaticContext.cpp \
+src/xqc/XQillaXQCStaticContext.hpp \
+src/xqc/XQillaXQCDynamicContext.cpp \
+src/xqc/XQillaXQCDynamicContext.hpp \
+src/xqc/XQillaXQCExpression.cpp \
+src/xqc/XQillaXQCExpression.hpp \
+src/xqc/XQillaXQCSequence.cpp \
+src/xqc/XQillaXQCSequence.hpp \
+src/xqc/XQillaXQCInputStream.hpp
 
 EXTRA_DIST = \
 src/lexer/flex.skl \
@@ -596,6 +607,12 @@ src/samples/dom-api/dom-context-item.cpp
 
 dom_resolver_SOURCES = \
 src/samples/dom-api/dom-resolver.cpp
+
+xqc_basic_SOURCES = \
+src/samples/xqc-api/xqc-basic.c
+
+xqc_context_item_SOURCES = \
+src/samples/xqc-api/xqc-context-item.c
 
 LEXERFILE   = $(top_srcdir)/src/lexer/XQLexer.cpp
 LEXTEMPLATE = $(top_srcdir)/src/lexer/XQLexer.l

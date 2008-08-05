@@ -13,7 +13,7 @@
       <Tool Name="VCManagedWrapperGeneratorTool"/>
       <Tool Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
       <Tool AdditionalIncludeDirectories="../../include,../../src/lexer,../../../xerces-c-src/include,../../../xerces-c-src/src" AssemblerListingLocation="./$(OutDir)/" BasicRuntimeChecks="3" CompileAs="0" DebugInformationFormat="3" Detect64BitPortabilityProblems="TRUE" MinimalRebuild="TRUE" Name="VCCLCompilerTool" ObjectFile="./$(OutDir)/" Optimization="0" PrecompiledHeaderFile="./$(OutDir)/xqilla_static.pch" PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_LIB;XQILLA_API=;XML_LIBRARY=" RuntimeLibrary="1" StringPooling="TRUE" SuppressStartupBanner="TRUE" UsePrecompiledHeader="0" WarningLevel="3"/>
-      <Tool Name="VCLibrarianTool" OutputFile="$(OutDir)/xqilla21sd.lib"/></Configuration>
+      <Tool Name="VCLibrarianTool" OutputFile="$(OutDir)/xqilla22sd.lib"/></Configuration>
     <Configuration ATLMinimizesCRunTimeLibraryUsage="FALSE" CharacterSet="2" ConfigurationType="4" IntermediateDirectory="./$(OutDir)/xqilla_static" Name="Release|Win32" OutputDirectory="..\..\build\windows\VC7.1\$(PlatformName)\Release_static" UseOfMFC="0">
       <Tool Name="VCPreBuildEventTool"/>
       <Tool Name="VCPreLinkEventTool"/>
@@ -22,13 +22,15 @@
       <Tool Name="VCManagedWrapperGeneratorTool"/>
       <Tool Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
       <Tool AdditionalIncludeDirectories="../../include,../../src/lexer,../../../xerces-c-src/include,../../../xerces-c-src/src" AssemblerListingLocation="./$(OutDir)/" CompileAs="0" DebugInformationFormat="3" Detect64BitPortabilityProblems="TRUE" EnableFunctionLevelLinking="TRUE" InlineFunctionExpansion="1" MinimalRebuild="TRUE" Name="VCCLCompilerTool" ObjectFile="./$(OutDir)/" Optimization="2" PrecompiledHeaderFile="./$(OutDir)/xqilla_static.pch" PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_LIB;XQILLA_API=;XML_LIBRARY=" RuntimeLibrary="0" StringPooling="TRUE" SuppressStartupBanner="TRUE" UsePrecompiledHeader="0" WarningLevel="3"/>
-      <Tool Name="VCLibrarianTool" OutputFile="$(OutDir)/xqilla21s.lib"/></Configuration>
+      <Tool Name="VCLibrarianTool" OutputFile="$(OutDir)/xqilla22s.lib"/></Configuration>
   </Configurations>
   <References/>
   <Files>
     <Filter Filter="" Name="include">
+      <File RelativePath="..\..\include\xqc.h"/>
       <File RelativePath="..\..\include\xqilla\xqilla-dom3.hpp"/>
       <File RelativePath="..\..\include\xqilla\xqilla-simple.hpp"/>
+      <File RelativePath="..\..\include\xqilla\xqilla-xqc.h"/>
       <File RelativePath="..\..\include\xqilla\ast\LocationInfo.hpp"/>
       <File RelativePath="..\..\include\xqilla\ast\XQCastableAs.hpp"/>
       <File RelativePath="..\..\include\xqilla\ast\XQCastAs.hpp"/>
@@ -965,6 +967,19 @@
       <File RelativePath="..\..\src\yajl\yajl_parse.h"/>
       <File RelativePath="..\..\src\yajl\yajl_parser.c"/>
       <File RelativePath="..\..\src\yajl\yajl_parser.h"/>
+    </Filter>
+    <Filter Filter="" Name="xqc">
+      <File RelativePath="..\..\src\xqc\XQillaXQCImplementation.cpp"/>
+      <File RelativePath="..\..\src\xqc\XQillaXQCImplementation.hpp"/>
+      <File RelativePath="..\..\src\xqc\XQillaXQCStaticContext.cpp"/>
+      <File RelativePath="..\..\src\xqc\XQillaXQCStaticContext.hpp"/>
+      <File RelativePath="..\..\src\xqc\XQillaXQCDynamicContext.cpp"/>
+      <File RelativePath="..\..\src\xqc\XQillaXQCDynamicContext.hpp"/>
+      <File RelativePath="..\..\src\xqc\XQillaXQCExpression.cpp"/>
+      <File RelativePath="..\..\src\xqc\XQillaXQCExpression.hpp"/>
+      <File RelativePath="..\..\src\xqc\XQillaXQCSequence.cpp"/>
+      <File RelativePath="..\..\src\xqc\XQillaXQCSequence.hpp"/>
+      <File RelativePath="..\..\src\xqc\XQillaXQCInputStream.hpp"/>
     </Filter>
   </Files>
   <Globals/>

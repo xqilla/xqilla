@@ -294,103 +294,144 @@ void SchemaValidatorFilter::processAttrs(XMLElementDecl *elemDecl)
     bool attrValid = true;
     DatatypeValidator *attrValidator = 0;
 
-    // Some checking for attribute wild card first (for schema)
-    bool laxThisOne = false;
-    bool skipThisOne = false;
+    bool xsiAttr = false;
+    if(XMLString::equals(uri, SchemaSymbols::fgURI_XSI)) {
+      xsiAttr = true;
 
-    XMLAttDef *attDef = 0;
-
-    //retrieve the att def
-    SchemaAttDef* attWildCard = 0;
-    if(currType) {
-      attDef = currType->getAttDef(localname, uriId);
-      attWildCard = currType->getAttWildCard();
+      if(XMLString::equals(localname, SchemaSymbols::fgATT_NILL)) {
+        attrValidator = DatatypeValidatorFactory::getBuiltInRegistry()->get(SchemaSymbols::fgDT_BOOLEAN);
+      }
+      else if(XMLString::equals(localname, SchemaSymbols::fgXSI_SCHEMALOCACTION)) {
+      }
+      else if(XMLString::equals(localname, SchemaSymbols::fgXSI_NONAMESPACESCHEMALOCACTION)) {
+      }
+      else if(XMLString::equals(localname, SchemaSymbols::fgXSI_TYPE)) {
+        attrValidator = DatatypeValidatorFactory::getBuiltInRegistry()->get(SchemaSymbols::fgDT_QNAME);
+      }
+      else {
+        xsiAttr = false;
+      }
     }
-    else if(!currDV) { // check explicitly-set wildcard
-      attWildCard = ((SchemaElementDecl*)elemDecl)->getAttWildCard();
+
+    if(xsiAttr) {
+//         // Just normalize as CDATA
+//         attType = XMLAttDef::CData;
+//         normalizeAttRawValue
+//           (
+//            namePtr
+//            , curPair->getValue()
+//            , normBuf
+//            );
+
+      if(fValidate && attrValidator) {
+        try {
+          attrValidator->validate(value, fValidationContext, fMemoryManager);
+        }
+        catch (const XMLException& idve) {
+          attrValid = false;
+          fValidator->emitError (XMLValid::DatatypeError, idve.getCode(), idve.getType(), idve.getMessage());
+        }
+      }
     }
+    else {
+      // Some checking for attribute wild card first (for schema)
+      bool laxThisOne = false;
+      bool skipThisOne = false;
 
-    // if not found or faulted in - check for a matching wildcard attribute
-    // if no matching wildcard attribute, check (un)qualifed cases and flag
-    // appropriate errors
-    if (!attDef || (attDef->getCreateReason() == XMLAttDef::JustFaultIn)) {
+      XMLAttDef *attDef = 0;
 
-      if (attWildCard) {
-        //if schema, see if we should lax or skip the validation of this attribute
-        if (anyAttributeValidation(attWildCard, uriId, skipThisOne, laxThisOne)) {
+      //retrieve the att def
+      SchemaAttDef* attWildCard = 0;
+      if(currType) {
+        attDef = currType->getAttDef(localname, uriId);
+        attWildCard = currType->getAttWildCard();
+      }
+      else if(!currDV) { // check explicitly-set wildcard
+        attWildCard = ((SchemaElementDecl*)elemDecl)->getAttWildCard();
+      }
 
-          if(!skipThisOne)
-          {
-            SchemaGrammar* sGrammar = (SchemaGrammar*) fGrammarResolver->getGrammar(getURIText(uriId));
-            if (sGrammar && sGrammar->getGrammarType() == Grammar::SchemaGrammarType) {
-              RefHashTableOf<XMLAttDef>* attRegistry = sGrammar->getAttributeDeclRegistry();
-              if (attRegistry) {
-                attDef = attRegistry->get(localname);
+      // if not found or faulted in - check for a matching wildcard attribute
+      // if no matching wildcard attribute, check (un)qualifed cases and flag
+      // appropriate errors
+      if (!attDef || (attDef->getCreateReason() == XMLAttDef::JustFaultIn)) {
+
+        if (attWildCard) {
+          //if schema, see if we should lax or skip the validation of this attribute
+          if (anyAttributeValidation(attWildCard, uriId, skipThisOne, laxThisOne)) {
+
+            if(!skipThisOne)
+            {
+              SchemaGrammar* sGrammar = (SchemaGrammar*) fGrammarResolver->getGrammar(getURIText(uriId));
+              if (sGrammar && sGrammar->getGrammarType() == Grammar::SchemaGrammarType) {
+                RefHashTableOf<XMLAttDef>* attRegistry = sGrammar->getAttributeDeclRegistry();
+                if (attRegistry) {
+                  attDef = attRegistry->get(localname);
+                }
               }
             }
           }
         }
-      }
-      else if (currType) {
-        // not found, see if the attDef should be qualified or not
-        if (uriId == fEmptyNamespaceId) {
-          attDef = currType->getAttDef(localname, fURIStringPool->getId(fGrammar->getTargetNamespace()));
-          if (fValidate && attDef && attDef->getCreateReason() != XMLAttDef::JustFaultIn) {
-            // the attribute should be qualified
-            fValidator->emitError(XMLValid::AttributeNotQualified, attDef->getFullName());
-            attrValid = false;
+        else if (currType) {
+          // not found, see if the attDef should be qualified or not
+          if (uriId == fEmptyNamespaceId) {
+            attDef = currType->getAttDef(localname, fURIStringPool->getId(fGrammar->getTargetNamespace()));
+            if (fValidate && attDef && attDef->getCreateReason() != XMLAttDef::JustFaultIn) {
+              // the attribute should be qualified
+              fValidator->emitError(XMLValid::AttributeNotQualified, attDef->getFullName());
+              attrValid = false;
+            }
+          }
+          else {
+            attDef = currType->getAttDef(localname, fEmptyNamespaceId);
+            if (fValidate && attDef && attDef->getCreateReason() != XMLAttDef::JustFaultIn) {
+              // the attribute should be qualified
+              fValidator->emitError(XMLValid::AttributeNotUnQualified, attDef->getFullName());
+              attrValid = false;
+            }
           }
         }
-        else {
-          attDef = currType->getAttDef(localname, fEmptyNamespaceId);
-          if (fValidate && attDef && attDef->getCreateReason() != XMLAttDef::JustFaultIn) {
-            // the attribute should be qualified
-            fValidator->emitError(XMLValid::AttributeNotUnQualified, attDef->getFullName());
-            attrValid = false;
-          }
+      }
+
+      if(!attDef) attrValid = false;
+
+      if(fValidate && !attDef && !skipThisOne && !laxThisOne) {
+        //
+        //  Its not valid for this element, so issue an error if we are
+        //  validating.
+        //
+        XMLBufBid bbMsg(&fBufMgr);
+        XMLBuffer& bufMsg = bbMsg.getBuffer();
+        if(uriId != fEmptyNamespaceId) {
+          XMLBufBid bbURI(&fBufMgr);
+          XMLBuffer& bufURI = bbURI.getBuffer();
+
+          getURIText(uriId, bufURI);
+
+          bufMsg.append(chOpenCurly);
+          bufMsg.append(bufURI.getRawBuffer());
+          bufMsg.append(chCloseCurly);
         }
-      }
-    }
-
-    if(!attDef) attrValid = false;
-
-    if(fValidate && !attDef && !skipThisOne && !laxThisOne) {
-      //
-      //  Its not valid for this element, so issue an error if we are
-      //  validating.
-      //
-      XMLBufBid bbMsg(&fBufMgr);
-      XMLBuffer& bufMsg = bbMsg.getBuffer();
-      if(uriId != fEmptyNamespaceId) {
-        XMLBufBid bbURI(&fBufMgr);
-        XMLBuffer& bufURI = bbURI.getBuffer();
-
-        getURIText(uriId, bufURI);
-
-        bufMsg.append(chOpenCurly);
-        bufMsg.append(bufURI.getRawBuffer());
-        bufMsg.append(chCloseCurly);
-      }
-      bufMsg.append(localname);
-      fValidator->emitError(XMLValid::AttNotDefinedForElement, bufMsg.getRawBuffer(), elemDecl->getFullName());
-    }
-
-    // TBD? - jpcs
-//     normalizeAttValue(attDef, namePtr, value, normBuf);
-
-    if(attDef) {
-      DatatypeValidator* tempDV = ((SchemaAttDef*) attDef)->getDatatypeValidator();
-      if(tempDV && tempDV->getWSFacet() != DatatypeValidator::PRESERVE) {
-        // normalize the attribute according to schema whitespace facet
-        ((SchemaValidator*) fValidator)->normalizeWhiteSpace(tempDV, value, fWSNormalizeBuf);
-        value = fWSNormalizeBuf.getRawBuffer();
+        bufMsg.append(localname);
+        fValidator->emitError(XMLValid::AttNotDefinedForElement, bufMsg.getRawBuffer(), elemDecl->getFullName());
       }
 
-      if(fValidate && !skipThisOne) {
-        fValidator->validateAttrValue(attDef, value, false, elemDecl);
-        attrValidator = ((SchemaValidator *)fValidator)->getMostRecentAttrValidator();
-        if(((SchemaValidator *)fValidator)->getErrorOccurred())
-          attrValid = false;
+      // TBD? - jpcs
+//       normalizeAttValue(attDef, namePtr, value, normBuf);
+
+      if(attDef) {
+        DatatypeValidator* tempDV = ((SchemaAttDef*) attDef)->getDatatypeValidator();
+        if(tempDV && tempDV->getWSFacet() != DatatypeValidator::PRESERVE) {
+          // normalize the attribute according to schema whitespace facet
+          ((SchemaValidator*) fValidator)->normalizeWhiteSpace(tempDV, value, fWSNormalizeBuf);
+          value = fWSNormalizeBuf.getRawBuffer();
+        }
+
+        if(fValidate && !skipThisOne) {
+          fValidator->validateAttrValue(attDef, value, false, elemDecl);
+          attrValidator = ((SchemaValidator *)fValidator)->getMostRecentAttrValidator();
+          if(((SchemaValidator *)fValidator)->getErrorOccurred())
+            attrValid = false;
+        }
       }
     }
 
@@ -425,7 +466,7 @@ void SchemaValidatorFilter::processAttrs(XMLElementDecl *elemDecl)
           break;
       }
 
-      if(index < attrCount_) {
+      if(index >= attrCount_) {
         switch(defType) {
         case XMLAttDef::Required:
         case XMLAttDef::Required_And_Fixed:
@@ -518,6 +559,11 @@ void SchemaValidatorFilter::endElementEvent(const XMLCh *prefix, const XMLCh *ur
       fICHandler->deactivateContext((SchemaElementDecl*)topElem->fThisElement, fContent.getRawBuffer());
   }
 
+  if(!fValidate || errorOccurred_) {
+    typeURI = SchemaSymbols::fgURI_SCHEMAFORSCHEMA;
+    typeName = DocumentCache::g_szUntyped;
+  }
+
   fElemStack.popTop(); 
 
   const bool isRoot = fElemStack.isEmpty();
@@ -532,11 +578,6 @@ void SchemaValidatorFilter::endElementEvent(const XMLCh *prefix, const XMLCh *ur
     fGrammar = fElemStack.getCurrentGrammar();
     fValidator->setGrammar(fGrammar);
     fValidate = fElemStack.getValidationFlag();
-  }
-
-  if(!fValidate || errorOccurred_) {
-    typeURI = SchemaSymbols::fgURI_SCHEMAFORSCHEMA;
-    typeName = DocumentCache::g_szUntyped;
   }
 
   next_->endElementEvent(prefix, uri, localname, emptyToNull(typeURI), typeName);

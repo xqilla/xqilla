@@ -70,7 +70,7 @@ void KnownErrorChecker::reportPass(const TestCase &testCase, const string &comme
 {
   map<string, Error>::iterator i = errors_.find(testCase.name);
   if(i != errors_.end() && i->second.reason != "inspect") {
-    nowPass_.push_back(testCase.name);
+    nowPass_[i->first] = i->second;
     errors_.erase(i);
   }
 
@@ -112,7 +112,13 @@ void KnownErrorChecker::reportFail(const TestCase &testCase, const string &actua
   string newComment = comment;
   map<string, Error>::iterator i = errors_.find(testCase.name);
   if(i == errors_.end()) {
-    nowFail_.push_back(testCase.name);
+    map<string, Error>::iterator j = nowPass_.find(testCase.name);
+    if(j != nowPass_.end()) {
+      errors_[j->first] = j->second;
+      nowPass_.erase(j);
+    }
+    else
+      nowFail_.push_back(testCase.name);
   }
   else {
     if(i->second.comment != "") {
@@ -140,7 +146,13 @@ void KnownErrorChecker::reportFailNoError(const TestCase &testCase, const string
   string newComment = comment;
   map<string, Error>::iterator i = errors_.find(testCase.name);
   if(i == errors_.end()) {
-    nowFail_.push_back(testCase.name);
+    map<string, Error>::iterator j = nowPass_.find(testCase.name);
+    if(j != nowPass_.end()) {
+      errors_[j->first] = j->second;
+      nowPass_.erase(j);
+    }
+    else
+      nowFail_.push_back(testCase.name);
   }
   else {
     if(i->second.comment != "") {
@@ -168,7 +180,13 @@ void KnownErrorChecker::reportFailUnexpectedError(const TestCase &testCase, cons
   string newComment = comment;
   map<string, Error>::iterator i = errors_.find(testCase.name);
   if(i == errors_.end()) {
-    nowFail_.push_back(testCase.name);
+    map<string, Error>::iterator j = nowPass_.find(testCase.name);
+    if(j != nowPass_.end()) {
+      errors_[j->first] = j->second;
+      nowPass_.erase(j);
+    }
+    else
+      nowFail_.push_back(testCase.name);
   }
   else {
     if(i->second.comment != "") {
@@ -203,8 +221,8 @@ bool KnownErrorChecker::printReport() const
 
     if(!nowPass_.empty()) {
       cout << (unsigned int)nowPass_.size() << " unexpected passes:" << endl;
-      for(vector<string>::const_iterator j = nowPass_.begin(); j != nowPass_.end(); ++j) {
-        cout << "\t" << *j << endl;
+      for(map<string, Error>::const_iterator j = nowPass_.begin(); j != nowPass_.end(); ++j) {
+        cout << "\t" << j->first << endl;
       }
     }
   }
@@ -320,8 +338,11 @@ void ConsoleResultListener::endTestGroup()
 
 void ConsoleResultListener::reportPass(const TestCase &testCase, const string &comment)
 {
-  ++m_nTotalTests;
-  ++m_nPassedTests;
+  if(testsRecorded_.find(testCase.name) == testsRecorded_.end()) {
+    testsRecorded_[testCase.name] = "p";
+    ++m_nTotalTests;
+    ++m_nPassedTests;
+  }
 
   cout << "." << flush;
 }
@@ -329,8 +350,15 @@ void ConsoleResultListener::reportPass(const TestCase &testCase, const string &c
 void ConsoleResultListener::reportInspect(const TestCase &testCase, const string &actualResult,
                                           const std::list<std::string> &expectedResult, const string &comment)
 {
-  ++m_nTotalTests;
-  ++m_nInspectTests;
+  if(testsRecorded_.find(testCase.name) == testsRecorded_.end()) {
+    testsRecorded_[testCase.name] = "i";
+    ++m_nTotalTests;
+    ++m_nInspectTests;
+  }
+  else if(testsRecorded_[testCase.name] == "p") {
+    --m_nPassedTests;
+    ++m_nInspectTests;
+  }
 
   cout << "," << flush;
 
@@ -356,8 +384,15 @@ void ConsoleResultListener::reportInspect(const TestCase &testCase, const string
 
 void ConsoleResultListener::reportSkip(const TestCase &testCase, const std::string &comment)
 {
-  ++m_nTotalTests;
-  ++m_nSkippedTests;
+  if(testsRecorded_.find(testCase.name) == testsRecorded_.end()) {
+    testsRecorded_[testCase.name] = "s";
+    ++m_nTotalTests;
+    ++m_nSkippedTests;
+  }
+  else if(testsRecorded_[testCase.name] == "p") {
+    --m_nPassedTests;
+    ++m_nSkippedTests;
+  }
 
   cout << "^" << flush;
 }
@@ -365,7 +400,13 @@ void ConsoleResultListener::reportSkip(const TestCase &testCase, const std::stri
 void ConsoleResultListener::reportFail(const TestCase &testCase, const string &actualResult,
                                        const std::list<std::string> &expectedResult, const string &comment)
 {
-  ++m_nTotalTests;
+  if(testsRecorded_.find(testCase.name) == testsRecorded_.end()) {
+    testsRecorded_[testCase.name] = "f";
+    ++m_nTotalTests;
+  }
+  else if(testsRecorded_[testCase.name] == "p") {
+    --m_nPassedTests;
+  }
 
   cout << "!" << flush;
 
@@ -391,7 +432,13 @@ void ConsoleResultListener::reportFail(const TestCase &testCase, const string &a
 void ConsoleResultListener::reportFailNoError(const TestCase &testCase, const string &actualResult,
                                               const string &comment)
 {
-  ++m_nTotalTests;
+  if(testsRecorded_.find(testCase.name) == testsRecorded_.end()) {
+    testsRecorded_[testCase.name] = "f";
+    ++m_nTotalTests;
+  }
+  else if(testsRecorded_[testCase.name] == "p") {
+    --m_nPassedTests;
+  }
 
   cout << "!" << flush;
 
@@ -411,7 +458,13 @@ void ConsoleResultListener::reportFailNoError(const TestCase &testCase, const st
 void ConsoleResultListener::reportFailUnexpectedError(const TestCase &testCase, const string &unexpectedError,
                                                       const string &comment)
 {
-  ++m_nTotalTests;
+  if(testsRecorded_.find(testCase.name) == testsRecorded_.end()) {
+    testsRecorded_[testCase.name] = "f";
+    ++m_nTotalTests;
+  }
+  else if(testsRecorded_[testCase.name] == "p") {
+    --m_nPassedTests;
+  }
 
   cout << "!" << flush;
 

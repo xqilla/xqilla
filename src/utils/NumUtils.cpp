@@ -23,16 +23,12 @@
 #include <xqilla/utils/NumUtils.hpp>
 #include <stdlib.h>
 
-int NumUtils::MAPMtoInt(MAPM m) {
-  char tmpout[1024];
-  m.toIntegerString(tmpout);
-  int result = atoi(tmpout);
-  return result; 
+int NumUtils::MAPMtoInt(MAPM m)
+{
+  return (int)m.toDouble();
 }   
     
-double NumUtils::MAPMtoDouble(MAPM m) {
-  char tmpdouble[1024];
-  m.toFixPtString(tmpdouble,1000);
-  double result = atof(tmpdouble);
-  return result;
+double NumUtils::MAPMtoDouble(MAPM m)
+{
+  return m.toDouble();
 }   

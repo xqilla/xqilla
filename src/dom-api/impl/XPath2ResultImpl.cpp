@@ -36,6 +36,8 @@
 #include <xqilla/simple-api/XQQuery.hpp>
 #include <xqilla/utils/UTF8Str.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
+#include <xqilla/functions/FunctionNumber.hpp>
+#include <xqilla/functions/FunctionString.hpp>
 
 #include <xqilla/exceptions/FunctionException.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
@@ -151,20 +153,7 @@ int XPath2ResultImpl::getIntegerValue() const
     throw XQillaException(DOMException::INVALID_STATE_ERR, XMLString::transcode("There is no current result in the result")); 
   }
 
-  if(!_currentItem->isAtomicValue()) {
-    throw XQillaException(DOMXPathException::TYPE_ERR, X("Cannot convert result to int"));
-  }  
-
-  AnyAtomicType::Ptr atom = (const AnyAtomicType::Ptr)_currentItem;
-  Item::Ptr integer;
-  try {
-    integer = atom->castAs(AnyAtomicType::DECIMAL, SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                           SchemaSymbols::fgDT_INTEGER, _context);
-  } catch (XPath2TypeCastException &e) {
-    throw XQillaException(DOMXPathException::TYPE_ERR, X("Cannot convert result to int"));
-  }
-  
-  return atoi(UTF8(integer->asString(_context)));
+  return FunctionNumber::number(_currentItem, _context, 0)->asInt();
 }
 
 double XPath2ResultImpl::getNumberValue() const
@@ -173,19 +162,7 @@ double XPath2ResultImpl::getNumberValue() const
     throw XQillaException(DOMException::INVALID_STATE_ERR, XMLString::transcode("There is no current result in the result"));
   }
 
-  if(!_currentItem->isAtomicValue()) {
-    throw XQillaException(DOMXPathException::TYPE_ERR, X("Cannot convert result to double"));
-  }
-
-  AnyAtomicType::Ptr atom = (const AnyAtomicType::Ptr)_currentItem;
-  Item::Ptr doubleValue;
-  try {
-    doubleValue = atom->castAs(AnyAtomicType::DOUBLE, _context);
-  } catch (XPath2TypeCastException &e) {
-    throw XQillaException(DOMXPathException::TYPE_ERR, X("Cannot convert result to double"));
-  }
-
-  return atof(UTF8(doubleValue->asString(_context)));
+  return FunctionNumber::number(_currentItem, _context, 0)->asDouble();
 }
 
 const XMLCh* XPath2ResultImpl::getStringValue() const
@@ -194,11 +171,7 @@ const XMLCh* XPath2ResultImpl::getStringValue() const
     throw XQillaException(DOMException::INVALID_STATE_ERR, XMLString::transcode("There is no current result in the result"));
   }
 
-  if(!_currentItem->isAtomicValue()) {
-    throw XQillaException(DOMXPathException::TYPE_ERR, X("Cannot convert result to a string"));
-  }
-
-  return _currentItem->asString(_context);
+  return FunctionString::string(_currentItem, _context);
 }
 
 bool XPath2ResultImpl::getBooleanValue() const

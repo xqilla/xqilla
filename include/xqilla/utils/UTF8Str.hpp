@@ -30,19 +30,26 @@
 class XQILLA_API UTF8Str
 {
 public :
-    UTF8Str(const XMLCh* const toTranscode);
-    ~UTF8Str()
-    {
-        delete [] fUTF8Form;
-    }
+  UTF8Str(const XMLCh* const toTranscode);
+  ~UTF8Str()
+  {
+    delete [] fUTF8Form;
+  }
 
-    const char* UTF8Form() const
-    {
-        return (char*)fUTF8Form;
-    }
+  const char* UTF8Form() const
+  {
+    return (char*)fUTF8Form;
+  }
+
+  char* adopt()
+  {
+    char *result = (char*)fUTF8Form;
+    fUTF8Form = 0;
+    return result;
+  }
 
 private :
-    XMLByte *fUTF8Form;
+  XMLByte *fUTF8Form;
 };
 
 #define UTF8(str) UTF8Str((const XMLCh*)(str)).UTF8Form()
