@@ -127,13 +127,8 @@ public:
   // from FuncFactory
   virtual ASTNode *createInstance(const VectorOfASTNodes &args, XPath2MemoryManager* expr) const;
   virtual const XMLCh *getQName() const { return qname_; }
-  virtual const XMLCh *getName() const { return name_; }
   void setName(const XMLCh *name) { name_ = name; }
-  virtual const XMLCh *getURI() const { return uri_; }
   void setURI(const XMLCh *uri) { uri_ = uri; }
-  virtual const XMLCh *getURINameHash() const { return uriname_; }
-  virtual size_t getMinArgs() const;
-  virtual size_t getMaxArgs() const;
 
   VectorOfASTNodes *getPattern() const { return pattern_; }
   void setPattern(VectorOfASTNodes *pattern) { pattern_ = pattern; }
@@ -168,8 +163,7 @@ public:
 protected:
   ASTNode *body_;
   const ExternalFunction *exFunc_;
-  const XMLCh *name_, *qname_, *uri_;
-  const XMLCh *uriname_;
+  const XMLCh *qname_;
   VectorOfASTNodes *pattern_;
   XQUserFunctionInstance *templateInstance_;
   SequenceType *returnType_;

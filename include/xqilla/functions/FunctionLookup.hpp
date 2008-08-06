@@ -42,8 +42,6 @@ public:
 
   ///adds a function to the custom function table
   void insertFunction(FuncFactory *func);
-  /// replaces the implementation of an existing function
-  void replaceFunction(FuncFactory *func);
   ///returns the approriate Function object
   ASTNode* lookUpFunction(const XMLCh* URI, const XMLCh* fname,
 			  const VectorOfASTNodes &args,

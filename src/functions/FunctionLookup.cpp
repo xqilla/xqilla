@@ -43,11 +43,6 @@ FunctionLookup::FunctionLookup(XPath2MemoryManager* memMgr)
 FunctionLookup::~FunctionLookup()
 {
 }
-void FunctionLookup::replaceFunction(FuncFactory *func)
-{
-  size_t secondaryKey = SECONDARY_KEY(func);
-  _funcTable.put((void*)func->getURINameHash(), (int)secondaryKey, func);
-}
 
 void FunctionLookup::insertFunction(FuncFactory *func)
 {

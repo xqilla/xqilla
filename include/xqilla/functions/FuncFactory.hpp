@@ -19,31 +19,36 @@
  * $Id$
  */
 
-/*
-  Factory base class
-*/
-
 #ifndef _FUNCFACTORY_HPP
 #define _FUNCFACTORY_HPP
 
 #include <xqilla/framework/XQillaExport.hpp>
-
 #include <xqilla/ast/ASTNode.hpp>
+
+#include <xercesc/framework/XMLBuffer.hpp>
 
 class XQILLA_API FuncFactory
 {
 public:
-  FuncFactory();
-  virtual ~FuncFactory();
+  FuncFactory(const XMLCh *uri, const XMLCh *name, size_t minArgs, size_t maxArgs,
+              XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mm);
+  FuncFactory(size_t numArgs, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mm);
+  virtual ~FuncFactory() {}
 
   ///Create instance of a function, using FuncFactoryTemplate to determine type
   virtual ASTNode *createInstance(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr) const = 0;
 
-  virtual const XMLCh *getName() const = 0;
-  virtual const XMLCh *getURI() const = 0;
-  virtual const XMLCh *getURINameHash() const = 0;
-  virtual size_t getMinArgs() const = 0;
-  virtual size_t getMaxArgs() const = 0;
+  const XMLCh *getURI() const { return uri_; }
+  const XMLCh *getName() const { return name_; }
+  const XMLCh *getURINameHash() const { return uriname_.getRawBuffer(); }
+  void setURINameHash(const XMLCh *uri, const XMLCh *name);
+  size_t getMinArgs() const { return minArgs_; }
+  size_t getMaxArgs() const { return maxArgs_; }
+
+protected:
+  const XMLCh *uri_, *name_;
+  size_t minArgs_, maxArgs_;
+  XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer uriname_;
 };
 
 #endif

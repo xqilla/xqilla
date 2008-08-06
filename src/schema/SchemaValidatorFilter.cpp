@@ -329,7 +329,11 @@ void SchemaValidatorFilter::processAttrs(XMLElementDecl *elemDecl)
         }
         catch (const XMLException& idve) {
           attrValid = false;
+#if _XERCES_VERSION >= 20800
           fValidator->emitError (XMLValid::DatatypeError, idve.getCode(), idve.getType(), idve.getMessage());
+#else
+          fValidator->emitError (XMLValid::DatatypeError, idve.getType(), idve.getMessage());
+#endif
         }
       }
     }
