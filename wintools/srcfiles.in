@@ -601,6 +601,7 @@ include/xqilla/axis/SelfAxis.hpp lib
 include/xqilla/context/Collation.hpp lib
 include/xqilla/context/ContextHelpers.hpp lib
 include/xqilla/context/DynamicContext.hpp lib
+include/xqilla/context/ExternalFunctionResolver.hpp lib
 include/xqilla/context/impl/CodepointCollation.hpp lib
 include/xqilla/context/impl/CollationImpl.hpp lib
 include/xqilla/context/impl/ItemFactoryImpl.hpp lib

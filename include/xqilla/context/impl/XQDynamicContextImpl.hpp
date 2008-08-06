@@ -187,26 +187,19 @@ public:
    * (except of course, call with URIs, not prefixes!)
    */
   virtual bool isTypeOrDerivedFromType(const XMLCh* const uri, const XMLCh* const typeName, const XMLCh* const uriToCheck, const XMLCh* const typeNameToCheck) const;
-  /**
-   * Sets the XMLEntityResolver that is used by Xerces when it is used
-   * to parse documents. This affects the behaviour of XQilla whenever
-   * it retrieves a DTD or XML Schema grammar.
-   */
+
   virtual void setXMLEntityResolver(XERCES_CPP_NAMESPACE_QUALIFIER XMLEntityResolver* const handler);
-  /** Returns the entity resolver currently set */
   virtual XERCES_CPP_NAMESPACE_QUALIFIER XMLEntityResolver* getXMLEntityResolver() const;
 
-  /** Register a callback object for resolving module URIs */
   virtual void setModuleResolver(ModuleResolver *resolver);
-  /** Returns the module resolver currently set */
   virtual ModuleResolver *getModuleResolver() const;
-  /* Retrieve a list of locations for the given module URI */
   virtual VectorOfStrings* resolveModuleURI(const XMLCh* uri) const;
 
-  /** add the location for the grammar of a specific namespace **/
   virtual void addSchemaLocation(const XMLCh* uri, VectorOfStrings* locations, const LocationInfo *location);
 
-  /** get the variable type store */
+  virtual void setExternalFunctionResolver(ExternalFunctionResolver *resolver);
+  virtual ExternalFunctionResolver *getExternalFunctionResolver() const;
+
   virtual VariableTypeStore* getVariableTypeStore();
 
   virtual void addTemplate(XQUserFunction *tp);
@@ -408,6 +401,8 @@ inline void XQDynamicContextImpl::setNodeSetOrdering(NodeSetOrdering newOrder)
 { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
 inline void XQDynamicContextImpl::setModuleResolver(ModuleResolver *resolver)
 { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
+inline void XQDynamicContextImpl::setExternalFunctionResolver(ExternalFunctionResolver *resolver)
+{ XQThrow2(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
 inline void XQDynamicContextImpl::setRevalidationMode(DocumentCache::ValidationMode mode)
 { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
 inline const XMLCh *XQDynamicContextImpl::allocateTempVarName()
@@ -420,6 +415,7 @@ inline const StaticType &XQDynamicContextImpl::getContextItemType() const { XQTh
 inline const XMLCh* XQDynamicContextImpl::getDefaultFuncNS() const { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("The static context is not available from a proxying dynamic context")); }
 inline StaticContext::NodeSetOrdering XQDynamicContextImpl::getNodeSetOrdering() const { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("The static context is not available from a proxying dynamic context")); }
 inline ModuleResolver * XQDynamicContextImpl::getModuleResolver() const { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("The static context is not available from a proxying dynamic context")); }
+inline ExternalFunctionResolver * XQDynamicContextImpl::getExternalFunctionResolver() const { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("The static context is not available from a proxying dynamic context")); }
 inline ASTNode* XQDynamicContextImpl::lookUpFunction(const XMLCh* uri, const XMLCh* name, const VectorOfASTNodes& v) const { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("The static context is not available from a proxying dynamic context")); }
 inline const ExternalFunction *XQDynamicContextImpl::lookUpExternalFunction(const XMLCh *uri, const XMLCh *name, size_t numArgs) const { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("The static context is not available from a proxying dynamic context")); }
 inline StaticContext::FLWOROrderingMode XQDynamicContextImpl::getDefaultFLWOROrderingMode() const { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("The static context is not available from a proxying dynamic context")); }

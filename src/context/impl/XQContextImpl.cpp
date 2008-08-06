@@ -30,6 +30,7 @@
 #include <xqilla/context/VariableTypeStore.hpp>
 #include <xqilla/context/URIResolver.hpp>
 #include <xqilla/context/ModuleResolver.hpp>
+#include <xqilla/context/ExternalFunctionResolver.hpp>
 #include <xqilla/context/Collation.hpp>
 #include <xqilla/ast/XQFunction.hpp>
 #include <xqilla/ast/XQSequence.hpp>
@@ -82,6 +83,8 @@ XQContextImpl::XQContextImpl(XQillaConfiguration *conf, XQilla::Language languag
     _regexStore(0),
     _resolvers(XQillaAllocator<ResolverEntry>(&_internalMM)),
     _moduleResolver(0),
+    _exFuncResolver(0),
+    _exFuncs(XQillaAllocator<ExternalFunction*>(&_internalMM)),
     _debugListener(0),
     _projection(true),
     _tmpVarCounter(0)
@@ -180,6 +183,11 @@ XQContextImpl::~XQContextImpl()
   }
   if(_defaultResolver.adopt)
     delete _defaultResolver.resolver;
+
+  std::vector<ExternalFunction*, XQillaAllocator<ExternalFunction*> >::iterator end2 = _exFuncs.end();
+  for(std::vector<ExternalFunction*, XQillaAllocator<ExternalFunction*> >::iterator j = _exFuncs.begin(); j != end2; ++j) {
+    delete *j;
+  }
 }
 
 DynamicContext *XQContextImpl::createModuleContext(MemoryManager *memMgr) const
@@ -191,6 +199,9 @@ DynamicContext *XQContextImpl::createModuleContext(MemoryManager *memMgr) const
 
   // Set the ModuleResolver
   moduleCtx->setModuleResolver(_moduleResolver);
+
+  // Set the ExternalFunctionResolver
+  moduleCtx->setExternalFunctionResolver(_exFuncResolver);
 
   // Set the MessageListener
   moduleCtx->setMessageListener(_messageListener);
@@ -655,8 +666,17 @@ void XQContextImpl::addExternalFunction(const ExternalFunction *func)
 }
 
 const ExternalFunction *XQContextImpl::lookUpExternalFunction(const XMLCh *uri, const XMLCh *name,
-							      size_t numArgs) const
+                                                              size_t numArgs) const
 {
+  if(_exFuncResolver) {
+    ExternalFunction *result = _exFuncResolver->resolveExternalFunction(uri, name, numArgs, this);
+    if(result != 0) {
+      // Store the ExternalFunction so we can delete it later
+      const_cast<XQContextImpl*>(this)->_exFuncs.push_back(result);
+      return result;
+    }
+  }
+
   return FunctionLookup::lookUpGlobalExternalFunction(uri, name, numArgs, _functionTable);
 }
 
@@ -792,6 +812,16 @@ VectorOfStrings* XQContextImpl::resolveModuleURI(const XMLCh* uri) const
   if(_moduleResolver)
     _moduleResolver->resolveModuleLocation(vect, uri, this);
   return vect;
+}
+
+void XQContextImpl::setExternalFunctionResolver(ExternalFunctionResolver *resolver)
+{
+  _exFuncResolver=resolver;
+}
+
+ExternalFunctionResolver *XQContextImpl::getExternalFunctionResolver() const
+{
+  return _exFuncResolver;
 }
 
 /*

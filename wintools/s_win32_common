@@ -125,6 +125,7 @@ create_project()
      < $projtemplate > $output.new
 
     # Set the file mode to 644 because the IDE needs a writeable file
+    unix2dos $output.new
     cmp $output.new $output > /dev/null 2>&1 ||
     (echo "Building $output" && rm -f $output &&
 	cp $output.new $output && chmod 664 $output)
