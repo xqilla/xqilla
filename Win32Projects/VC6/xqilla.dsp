@@ -645,6 +645,10 @@ SOURCE=..\..\include\xqilla\context\DynamicContext.hpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\include\xqilla\context\ExternalFunctionResolver.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\include\xqilla\context\ItemFactory.hpp
 # End Source File
 # Begin Source File

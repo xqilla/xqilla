@@ -195,26 +195,19 @@ public:
    * (except of course, call with URIs, not prefixes!)
    */
   virtual bool isTypeOrDerivedFromType(const XMLCh* const uri, const XMLCh* const typeName, const XMLCh* const uriToCheck, const XMLCh* const typeNameToCheck) const;
-  /**
-   * Sets the XMLEntityResolver that is used by Xerces when it is used
-   * to parse documents. This affects the behaviour of XQilla whenever
-   * it retrieves a DTD or XML Schema grammar.
-   */
+
   virtual void setXMLEntityResolver(XERCES_CPP_NAMESPACE_QUALIFIER XMLEntityResolver* const handler);
-  /** Returns the entity resolver currently set */
   virtual XERCES_CPP_NAMESPACE_QUALIFIER XMLEntityResolver* getXMLEntityResolver() const;
 
-  /** Register a callback object for resolving module URIs */
   virtual void setModuleResolver(ModuleResolver *resolver);
-  /** Returns the module resolver currently set */
   virtual ModuleResolver *getModuleResolver() const;
-  /* Retrieve a list of locations for the given module URI */
   virtual VectorOfStrings* resolveModuleURI(const XMLCh* uri) const;
 
-  /** add the location for the grammar of a specific namespace **/
   virtual void addSchemaLocation(const XMLCh* uri, VectorOfStrings* locations, const LocationInfo *location);
 
-  /** get the variable type store */
+  virtual void setExternalFunctionResolver(ExternalFunctionResolver *resolver);
+  virtual ExternalFunctionResolver *getExternalFunctionResolver() const;
+
   virtual VariableTypeStore* getVariableTypeStore();
 
   virtual void addTemplate(XQUserFunction *tp);
@@ -471,6 +464,9 @@ protected:
   ResolverEntry _defaultResolver;
 
   ModuleResolver *_moduleResolver;
+  ExternalFunctionResolver *_exFuncResolver;
+
+  std::vector<ExternalFunction*, XQillaAllocator<ExternalFunction*> > _exFuncs;
 
   DebugListener *_debugListener;
 

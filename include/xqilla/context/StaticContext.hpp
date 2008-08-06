@@ -38,6 +38,7 @@ class VariableTypeStore;
 class ItemFactory;
 class StaticType;
 class ModuleResolver;
+class ExternalFunctionResolver;
 class MessageListener;
 class ExternalFunction;
 class XQillaConfiguration;
@@ -156,7 +157,7 @@ public:
 
   /** add the location for the grammar of a specific namespace **/
   virtual void addSchemaLocation(const XMLCh* uri, VectorOfStrings* locations, const LocationInfo *location = 0) = 0;
-  
+
   /** get the variable type store */
   virtual VariableTypeStore* getVariableTypeStore() = 0;
 
@@ -172,6 +173,10 @@ public:
   /** returns a function object with the given uri, localname and number of arguments triple */
   virtual ASTNode *lookUpFunction(const XMLCh *uri, const XMLCh *name, const VectorOfASTNodes &v) const = 0;
 
+  /** Register a callback object for resolving external function implementations */
+  virtual void setExternalFunctionResolver(ExternalFunctionResolver *resolver) = 0;
+  /** Returns the external function resolver currently set */
+  virtual ExternalFunctionResolver *getExternalFunctionResolver() const = 0;
   /** adds an external function implementation to the function table */
   virtual void addExternalFunction(const ExternalFunction *func) = 0;
   /** returns an external function implementation for the given uri and localname */
