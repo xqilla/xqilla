@@ -71,12 +71,10 @@ const XMLCh XQUserFunction::XMLChXQueryLocalFunctionsURI[] =
 XQUserFunction::XQUserFunction(const XMLCh *qname, ArgumentSpecs *argSpecs, ASTNode *body,
                                SequenceType *returnType, bool isUpdating, bool isGlobal,
                                XPath2MemoryManager *mm)
-  : body_(body),
+  : FuncFactory(argSpecs_ == 0 ? 0 : argSpecs_->size(), mm),
+    body_(body),
     exFunc_(NULL),
-    name_(NULL),
     qname_(qname),
-    uri_(NULL),
-    uriname_(NULL),
     pattern_(0),
     templateInstance_(0),
     returnType_(returnType),
@@ -92,12 +90,10 @@ XQUserFunction::XQUserFunction(const XMLCh *qname, ArgumentSpecs *argSpecs, ASTN
 
 XQUserFunction::XQUserFunction(const XMLCh *qname, VectorOfASTNodes *pattern, ArgumentSpecs *argSpecs,
                                ASTNode *body, SequenceType *returnType, XPath2MemoryManager *mm)
-  : body_(body),
+  : FuncFactory(argSpecs_ == 0 ? 0 : argSpecs_->size(), mm),
+    body_(body),
     exFunc_(NULL),
-    name_(NULL),
     qname_(qname),
-    uri_(NULL),
-    uriname_(NULL),
     pattern_(pattern),
     templateInstance_(0),
     returnType_(returnType),
@@ -109,16 +105,6 @@ XQUserFunction::XQUserFunction(const XMLCh *qname, VectorOfASTNodes *pattern, Ar
     calculatingSRC_(false),
     moduleDocCache_(NULL)
 {
-}
-
-size_t XQUserFunction::getMinArgs() const
-{
-  return (argSpecs_ == 0 ? 0 : argSpecs_->size());
-}
-
-size_t XQUserFunction::getMaxArgs() const
-{
-  return (argSpecs_ == 0 ? 0 : argSpecs_->size());
 }
 
 ASTNode* XQUserFunction::createInstance(const VectorOfASTNodes &args, XPath2MemoryManager *mm) const
@@ -163,10 +149,7 @@ void XQUserFunction::staticResolutionStage1(StaticContext *context)
   }
 
   if(name_ != 0) {
-    XMLBuffer uriname;
-    uriname.set(name_);
-    uriname.append(uri_);
-    uriname_ = mm->getPooledString(uriname.getRawBuffer());
+    setURINameHash(uri_, name_);
 
     if(!isTemplate_) {
       if(XPath2Utils::equals(uri_, XMLUni::fgXMLURIName) ||

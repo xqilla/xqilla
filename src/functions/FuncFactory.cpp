@@ -22,12 +22,33 @@
 #include "../config/xqilla_config.h"
 #include <xqilla/functions/FuncFactory.hpp>
 
-FuncFactory::FuncFactory()
+XERCES_CPP_NAMESPACE_USE;
+
+FuncFactory::FuncFactory(const XMLCh *uri, const XMLCh *name, size_t minArgs, size_t maxArgs,
+                         MemoryManager *mm)
+  : uri_(uri),
+    name_(name),
+    minArgs_(minArgs),
+    maxArgs_(maxArgs),
+    uriname_(1023, mm)
+{
+  setURINameHash(uri, name);
+}
+
+FuncFactory::FuncFactory(size_t numArgs, MemoryManager *mm)
+  : uri_(0),
+    name_(0),
+    minArgs_(numArgs),
+    maxArgs_(numArgs),
+    uriname_(1023, mm)
 {
 }
 
-FuncFactory::~FuncFactory()
+void FuncFactory::setURINameHash(const XMLCh *uri, const XMLCh *name)
 {
+  uri_ = uri;
+  name_ = name;
+
+  uriname_.set(name);
+  uriname_.append(uri);
 }
-
-
