@@ -82,6 +82,12 @@ ASTNode* Except::staticTyping(StaticContext *context)
   _args[1] = _args[1]->staticTyping(context);
   _src.add(_args[1]->getStaticAnalysis());
 
+  unsigned int min = 0;
+  if(_src.getStaticType().getMin() > _args[1]->getStaticAnalysis().getStaticType().getMax())
+	  min = _src.getStaticType().getMin() - _args[1]->getStaticAnalysis().getStaticType().getMax();
+
+  _src.getStaticType().setCardinality(min, _src.getStaticType().getMax());
+
   if(_args[1]->getStaticAnalysis().isUpdating()) {
     XQThrow(StaticErrorException,X("Except::staticTyping"),
             X("It is a static error for an operand of an operator "

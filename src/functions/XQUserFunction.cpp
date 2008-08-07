@@ -71,7 +71,7 @@ const XMLCh XQUserFunction::XMLChXQueryLocalFunctionsURI[] =
 XQUserFunction::XQUserFunction(const XMLCh *qname, ArgumentSpecs *argSpecs, ASTNode *body,
                                SequenceType *returnType, bool isUpdating, bool isGlobal,
                                XPath2MemoryManager *mm)
-  : FuncFactory(argSpecs_ == 0 ? 0 : argSpecs_->size(), mm),
+  : FuncFactory(argSpecs == 0 ? 0 : argSpecs->size(), mm),
     body_(body),
     exFunc_(NULL),
     qname_(qname),
@@ -90,7 +90,7 @@ XQUserFunction::XQUserFunction(const XMLCh *qname, ArgumentSpecs *argSpecs, ASTN
 
 XQUserFunction::XQUserFunction(const XMLCh *qname, VectorOfASTNodes *pattern, ArgumentSpecs *argSpecs,
                                ASTNode *body, SequenceType *returnType, XPath2MemoryManager *mm)
-  : FuncFactory(argSpecs_ == 0 ? 0 : argSpecs_->size(), mm),
+  : FuncFactory(argSpecs == 0 ? 0 : argSpecs->size(), mm),
     body_(body),
     exFunc_(NULL),
     qname_(qname),

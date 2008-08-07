@@ -259,13 +259,15 @@ bool StaticAnalysis::isUsed() const
 {
   return _contextItem || _contextPosition || _contextSize
     || _currentTime || _implicitTimezone || _availableCollections
-    || _availableDocuments || _forceNoFolding || _dynamicVariables;
+    || _availableDocuments || _forceNoFolding || _creative
+    || _dynamicVariables;
 }
 
 bool StaticAnalysis::isUsedExceptContextFlags() const
 {
   return _currentTime || _implicitTimezone || _availableCollections
-    || _availableDocuments || _forceNoFolding || _dynamicVariables;
+    || _availableDocuments || _forceNoFolding || _creative
+    || _dynamicVariables;
 }
 
 void StaticAnalysis::creative(bool value)

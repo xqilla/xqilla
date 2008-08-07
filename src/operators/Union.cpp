@@ -84,6 +84,12 @@ ASTNode* Union::staticTyping(StaticContext *context)
   _src.add(_args[1]->getStaticAnalysis());
   _src.getStaticType().typeConcat(_args[1]->getStaticAnalysis().getStaticType());
 
+  unsigned int min = _args[0]->getStaticAnalysis().getStaticType().getMin();
+  if(min > _args[1]->getStaticAnalysis().getStaticType().getMin())
+    min = _args[1]->getStaticAnalysis().getStaticType().getMin();
+
+  _src.getStaticType().setCardinality(min, _src.getStaticType().getMax());
+
   if(_args[1]->getStaticAnalysis().isUpdating()) {
     XQThrow(StaticErrorException,X("Union::staticTyping"),
             X("It is a static error for an operand of an operator "
