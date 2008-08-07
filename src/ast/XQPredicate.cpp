@@ -63,7 +63,7 @@ ASTNode* XQPredicate::staticTyping(StaticContext *context)
 
   expr_ = expr_->staticTyping(context);
   _src.copy(expr_->getStaticAnalysis());
-  _src.getStaticType().setCardinality(0, _src.getStaticType().getMax());
+  _src.getStaticType().multiply(0, 1);
 
   if(expr_->getType() == SEQUENCE &&
      ((XQSequence*)expr_)->getItemConstructors().empty()) {

@@ -235,7 +235,6 @@ void StaticType::typeIntersect(const StaticType &st)
 
 void StaticType::typeExcept(const StaticType &st)
 {
-  assert((flags_ & FUNCTION_TYPE) == 0);
   assert((st.flags_ & FUNCTION_TYPE) == 0);
 
   flags_ &= ~st.flags_;
