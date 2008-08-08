@@ -181,7 +181,7 @@ void XQDynamicContextImpl::clearDynamicContext()
   time(&_currentTime);
 }
 
-const DocumentCache *XQDynamicContextImpl::getDocumentCache() const
+DocumentCache *XQDynamicContextImpl::getDocumentCache() const
 {
   return _docCache;
 }

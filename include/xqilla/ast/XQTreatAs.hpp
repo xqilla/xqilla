@@ -44,6 +44,9 @@ public:
 
   void setExpression(ASTNode *item);
 
+  static const XMLCh err_XPDY0050[];
+  static const XMLCh err_XPTY0004[];
+
 protected:
   ASTNode* _expr;
   SequenceType *_exprType;

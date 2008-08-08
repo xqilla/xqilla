@@ -234,9 +234,8 @@ using namespace std;
 static const XMLCh sz1_0[] = { chDigit_1, chPeriod, chDigit_0, chNull };
 static const XMLCh option_projection[] = { 'p', 'r', 'o', 'j', 'e', 'c', 't', 'i', 'o', 'n', 0 };
 static const XMLCh option_psvi[] = { 'p', 's', 'v', 'i', 0 };
+static const XMLCh option_lint[] = { 'l', 'i', 'n', 't', 0 };
 static const XMLCh var_name[] = { 'n', 'a', 'm', 'e', 0 };
-
-static const XMLCh err_XPDY0050[] = { 'e', 'r', 'r', ':', 'X', 'P', 'D', 'Y', '0', '0', '5', '0', 0 };
 
 static inline VectorOfASTNodes packageArgs(ASTNode *arg1Impl, ASTNode *arg2Impl, XPath2MemoryManager* memMgr)
 {
@@ -2404,13 +2403,24 @@ OptionDecl:
       }
       else if(XPath2Utils::equals(qName.getName(), option_psvi)) {
         if(XPath2Utils::equals($4, SchemaSymbols::fgATTVAL_TRUE)) {
-/*           CONTEXT->setDoPSVI(true); */
+          CONTEXT->getDocumentCache()->setDoPSVI(true);
         }
         else if(XPath2Utils::equals($4, SchemaSymbols::fgATTVAL_FALSE)) {
-/*           CONTEXT->setDoPSVI(false); */
+          CONTEXT->getDocumentCache()->setDoPSVI(false);
         }
         else {
           yyerror(@4, "Unknown value for option xqilla:psvi. Should be 'true' or 'false' [err:XQILLA]");
+        }
+      }
+      else if(XPath2Utils::equals(qName.getName(), option_lint)) {
+        if(XPath2Utils::equals($4, SchemaSymbols::fgATTVAL_TRUE)) {
+          CONTEXT->setDoLintWarnings(true);
+        }
+        else if(XPath2Utils::equals($4, SchemaSymbols::fgATTVAL_FALSE)) {
+          CONTEXT->setDoLintWarnings(false);
+        }
+        else {
+          yyerror(@4, "Unknown value for option xqilla:lint. Should be 'true' or 'false' [err:XQILLA]");
         }
       }
       else {
@@ -3262,7 +3272,7 @@ InstanceofExpr:
 TreatExpr:
   CastableExpr _TREAT_ _AS_ SequenceType
   {
-    XQTreatAs* treatAs = new (MEMMGR) XQTreatAs($1,$4,MEMMGR, err_XPDY0050);
+    XQTreatAs* treatAs = new (MEMMGR) XQTreatAs($1,$4,MEMMGR, XQTreatAs::err_XPDY0050);
     $$ = WRAP(@2, treatAs);
   }
   | CastableExpr

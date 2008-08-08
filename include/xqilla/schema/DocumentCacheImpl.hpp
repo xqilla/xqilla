@@ -64,6 +64,9 @@ public:
   virtual void setXMLEntityResolver(XERCES_CPP_NAMESPACE_QUALIFIER XMLEntityResolver* const handler);
   virtual XERCES_CPP_NAMESPACE_QUALIFIER XMLEntityResolver* getXMLEntityResolver() const;
 
+  virtual bool getDoPSVI() const { return doPSVI_; }
+  virtual void setDoPSVI(bool value) { doPSVI_ = value; }
+
   virtual Node::Ptr loadDocument(const XMLCh* uri, DynamicContext *context, const QueryPathNode *projection = 0);
   virtual Node::Ptr parseDocument(XERCES_CPP_NAMESPACE_QUALIFIER InputSource &srcToUse, DynamicContext *context, const QueryPathNode *projection = 0);
   virtual void parseDocument(XERCES_CPP_NAMESPACE_QUALIFIER InputSource &srcToUse, EventHandler *handler, DynamicContext *context);
@@ -150,6 +153,7 @@ protected:
   XERCES_CPP_NAMESPACE_QUALIFIER GrammarResolver *grammarResolver_;
   XERCES_CPP_NAMESPACE_QUALIFIER XMLScanner *scanner_;
   XERCES_CPP_NAMESPACE_QUALIFIER XMLEntityResolver *entityResolver_;
+  bool doPSVI_;
 
   LocationInfo location_;
   EventHandler *events_;

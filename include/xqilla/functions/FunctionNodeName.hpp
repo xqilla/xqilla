@@ -19,10 +19,6 @@
  * $Id$
  */
 
-/*
-  xf:node-name(node $srcval) => QName?
-*/
-
 #ifndef _FUNCTIONNODENAME_HPP
 #define _FUNCTIONNODENAME_HPP
 
@@ -39,10 +35,11 @@ public:
 
   FunctionNodeName(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
 
+  ASTNode *staticTyping(StaticContext *context);
   Sequence createSequence(DynamicContext* context, int flags=0) const;
 };
 
-#endif // _FUNCTIONNODEName_HPP
+#endif
 
 
 

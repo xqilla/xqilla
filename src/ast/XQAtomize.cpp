@@ -22,6 +22,7 @@
 #include "../config/xqilla_config.h"
 
 #include <xqilla/ast/XQAtomize.hpp>
+#include <xqilla/context/StaticContext.hpp>
 #include <xqilla/items/Node.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>
 #include <xqilla/exceptions/XPath2TypeMatchException.hpp>
@@ -69,9 +70,18 @@ ASTNode *XQAtomize::staticTyping(StaticContext *context)
     return substitute(expr_);
   }
 
-  _src.getStaticType().substitute(StaticType::ELEMENT_TYPE | StaticType::ATTRIBUTE_TYPE, StaticType(StaticType::ANY_ATOMIC_TYPE, 0, StaticType::UNLIMITED));
-  _src.getStaticType().substitute(StaticType::DOCUMENT_TYPE | StaticType::TEXT_TYPE, StaticType::UNTYPED_ATOMIC_TYPE);
-  _src.getStaticType().substitute(StaticType::NAMESPACE_TYPE | StaticType::COMMENT_TYPE | StaticType::PI_TYPE, StaticType::STRING_TYPE);
+  if(context->getDocumentCache()->getDoPSVI()) {
+    _src.getStaticType().substitute(StaticType::ELEMENT_TYPE | StaticType::ATTRIBUTE_TYPE,
+                                    StaticType(StaticType::ANY_ATOMIC_TYPE, 0, StaticType::UNLIMITED));
+  } else {
+    _src.getStaticType().substitute(StaticType::ELEMENT_TYPE | StaticType::ATTRIBUTE_TYPE,
+                                    StaticType::UNTYPED_ATOMIC_TYPE);
+  }
+
+  _src.getStaticType().substitute(StaticType::DOCUMENT_TYPE | StaticType::TEXT_TYPE,
+                                  StaticType::UNTYPED_ATOMIC_TYPE);
+  _src.getStaticType().substitute(StaticType::NAMESPACE_TYPE | StaticType::COMMENT_TYPE |
+                                  StaticType::PI_TYPE, StaticType::STRING_TYPE);
 
   // Remove function types
   _src.getStaticType() &= StaticType(StaticType::NODE_TYPE | StaticType::ANY_ATOMIC_TYPE, 0, StaticType::UNLIMITED);

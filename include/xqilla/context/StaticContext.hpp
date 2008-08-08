@@ -126,7 +126,7 @@ public:
   virtual void setDefaultFuncNS(const XMLCh* newNS) = 0;
 
   /** retrieve the repository for the grammars **/
-  virtual const DocumentCache* getDocumentCache() const = 0;
+  virtual DocumentCache* getDocumentCache() const = 0;
   /** sets the repository for the grammars **/
   virtual void setDocumentCache(DocumentCache* docCache) = 0;
 
@@ -272,6 +272,9 @@ public:
    * results.
    */
   virtual void setProjection(bool enabled) = 0;
+
+  virtual bool getDoLintWarnings() const = 0;
+  virtual void setDoLintWarnings(bool enabled) = 0;
 
   /** Return a unique name that can be used for a temporary variable */
   virtual const XMLCh *allocateTempVarName() = 0;
