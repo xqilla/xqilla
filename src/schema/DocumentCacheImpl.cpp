@@ -92,6 +92,7 @@ DocumentCacheImpl::DocumentCacheImpl(MemoryManager* memMgr, XMLGrammarPool *xmlg
   : grammarResolver_(0),
     scanner_(0),
     entityResolver_(0),
+    doPSVI_(true),
     events_(0),
     attrList_(0),
     attrCount_(0),
@@ -109,6 +110,7 @@ DocumentCacheImpl::DocumentCacheImpl(const DocumentCacheImpl *parent, MemoryMana
   : grammarResolver_(0),
     scanner_(0),
     entityResolver_(0),
+    doPSVI_(parent->doPSVI_),
     events_(0),
     attrList_(0),
     attrCount_(0),
@@ -287,6 +289,7 @@ void DocumentCacheImpl::parseDocument(InputSource &srcToUse, EventHandler *handl
   strictValidation_ = false;
 
   try {
+    scanner_->setDoSchema(doPSVI_);
     scanner_->scanDocument(srcToUse);
   }
   catch(const SAXException& toCatch) {

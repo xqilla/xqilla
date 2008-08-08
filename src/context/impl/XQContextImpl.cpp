@@ -87,6 +87,7 @@ XQContextImpl::XQContextImpl(XQillaConfiguration *conf, XQilla::Language languag
     _exFuncs(XQillaAllocator<ExternalFunction*>(&_internalMM)),
     _debugListener(0),
     _projection(true),
+    _lint(false),
     _tmpVarCounter(0)
 {
   _memMgr = &_internalMM;
@@ -468,7 +469,7 @@ void XQContextImpl::setContextItem(const Item::Ptr &item)
 
 void XQContextImpl::addTemplate(XQUserFunction *tp)
 {
-  if(tp->getURINameHash() != 0) {
+  if(tp->getName() != 0) {
     if(_templateNameMap.containsKey((void*)tp->getURINameHash())) {
       // [ERR XTSE0660] It is a static error if a stylesheet contains more than one template with
       // the same name and the same import precedence, unless it also contains a template with the
@@ -843,7 +844,7 @@ void XQContextImpl::addSchemaLocation(const XMLCh* uri, VectorOfStrings* locatio
   _docCache->addSchemaLocation(uri, locations, this, location);
 }
 
-const DocumentCache* XQContextImpl::getDocumentCache() const
+DocumentCache* XQContextImpl::getDocumentCache() const
 {
   return _docCache;
 }

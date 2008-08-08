@@ -46,7 +46,8 @@
 XERCES_CPP_NAMESPACE_USE
 using namespace std;
 
-static const XMLCh err_XPTY0004[] = { 'e', 'r', 'r', ':', 'X', 'P', 'T', 'Y', '0', '0', '0', '4', 0 };
+const XMLCh XQTreatAs::err_XPDY0050[] = { 'e', 'r', 'r', ':', 'X', 'P', 'D', 'Y', '0', '0', '5', '0', 0 };
+const XMLCh XQTreatAs::err_XPTY0004[] = { 'e', 'r', 'r', ':', 'X', 'P', 'T', 'Y', '0', '0', '0', '4', 0 };
 static const XMLCh funcVarName[] = { '#', 'f', 'u', 'n', 'c', 'V', 'a', 'r', 0 };
 
 XQTreatAs::XQTreatAs(ASTNode* expr, SequenceType* exprType, XPath2MemoryManager* memMgr, const XMLCh *errorCode)
@@ -180,7 +181,7 @@ ASTNode *XQTreatAs::staticTyping(StaticContext *context)
     }
 
     MessageListener *mlistener = context->getMessageListener();
-    if(mlistener) {
+    if(mlistener && context->getDoLintWarnings() && _errorCode != err_XPDY0050) {
       if(match.type == StaticType::PROBABLY_NOT || match.cardinality == StaticType::PROBABLY_NOT) {
         // It might not match
         XMLBuffer buf;

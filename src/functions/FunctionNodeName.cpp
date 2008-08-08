@@ -41,16 +41,33 @@ const unsigned int FunctionNodeName::maxArgs = 1;
 FunctionNodeName::FunctionNodeName(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ConstantFoldingFunction(name, minArgs, maxArgs, "node()?", args, memMgr)
 {
-  _src.getStaticType() = StaticType(StaticType::QNAME_TYPE, 0, 1);
+}
+
+ASTNode* FunctionNodeName::staticTyping(StaticContext *context)
+{
+  _src.clear();
+
+  ASTNode *result = calculateSRCForArguments(context);
+  if(result != this) return result;
+
+  if(_args[0]->getStaticAnalysis().getStaticType().getMin() == 1 &&
+     _args[0]->getStaticAnalysis().getStaticType().isType(StaticType::ELEMENT_TYPE | StaticType::ATTRIBUTE_TYPE |
+                                                          StaticType::PI_TYPE | StaticType::NAMESPACE_TYPE)) {
+    _src.getStaticType() = StaticType::QNAME_TYPE;
+  }
+  else {
+    _src.getStaticType() = StaticType(StaticType::QNAME_TYPE, 0, 1);
+  }
+
+  return this;
 }
 
 Sequence FunctionNodeName::createSequence(DynamicContext* context, int flags) const
 {
-  Sequence items=getParamNumber(1,context)->toSequence(context);
-  if(items.isEmpty())
+  Item::Ptr item = getParamNumber(1,context)->next(context);
+  if(item.isNull())
     return Sequence(context->getMemoryManager());
-  const Node::Ptr node = (const Node::Ptr )items.first();
-  return Sequence(node->dmNodeName(context), context->getMemoryManager());
+  return Sequence(((Node*)item.get())->dmNodeName(context), context->getMemoryManager());
 }
 
 

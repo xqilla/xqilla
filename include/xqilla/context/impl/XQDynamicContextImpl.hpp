@@ -175,7 +175,7 @@ public:
   virtual void setDefaultFuncNS(const XMLCh* newNS);
 
   /** retrieve the repository for the grammars **/
-  virtual const DocumentCache* getDocumentCache() const;
+  virtual DocumentCache* getDocumentCache() const;
   /** sets the repository for the grammars **/
   virtual void setDocumentCache(DocumentCache* docCache);
   /** returns true if the type represented by uri:typename is an instance of uriToCheck:typeNameToCheck
@@ -268,6 +268,9 @@ public:
 
   virtual bool getProjection() const { return _projection; }
   virtual void setProjection(bool enabled) { _projection = enabled; }
+
+  virtual bool getDoLintWarnings() const;
+  virtual void setDoLintWarnings(bool enabled);
 
   virtual const XMLCh *allocateTempVarName();
 
@@ -409,6 +412,8 @@ inline const XMLCh *XQDynamicContextImpl::allocateTempVarName()
 { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); return 0; }
 inline void XQDynamicContextImpl::setNamespaceBinding(const XMLCh* prefix, const XMLCh* uri)
 { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
+inline void XQDynamicContextImpl::setDoLintWarnings(bool enabled)
+{ XQThrow2(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
 
 
 inline const StaticType &XQDynamicContextImpl::getContextItemType() const { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("The static context is not available from a proxying dynamic context")); }
@@ -422,6 +427,7 @@ inline StaticContext::FLWOROrderingMode XQDynamicContextImpl::getDefaultFLWOROrd
 inline bool XQDynamicContextImpl::getXPath1CompatibilityMode() const { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("The static context is not available from a proxying dynamic context")); }
 inline bool XQDynamicContextImpl::getPreserveBoundarySpace() const { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("The static context is not available from a proxying dynamic context")); }
 inline DocumentCache::ValidationMode XQDynamicContextImpl::getRevalidationMode() const { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("The static context is not available from a proxying dynamic context")); }
+inline bool XQDynamicContextImpl::getDoLintWarnings() const { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("The static context is not available from a proxying dynamic context")); }
 
 
 inline XQilla::Language XQDynamicContextImpl::getLanguage() const { return _staticContext->getLanguage(); }

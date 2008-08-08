@@ -81,6 +81,9 @@ public:
   virtual void setXMLEntityResolver(XERCES_CPP_NAMESPACE_QUALIFIER XMLEntityResolver* const handler) = 0;
   virtual XERCES_CPP_NAMESPACE_QUALIFIER XMLEntityResolver* getXMLEntityResolver() const = 0;
 
+  virtual bool getDoPSVI() const = 0;
+  virtual void setDoPSVI(bool value) = 0;
+
   /*
    * returns true if the type represented by uri:typename is an instance of uriToCheck:typeNameToCheck 
    *

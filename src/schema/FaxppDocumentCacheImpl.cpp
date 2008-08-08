@@ -163,8 +163,13 @@ void FaxppDocumentCacheImpl::parseDocument(InputSource &srcToUse, EventHandler *
 {
   XPath2MemoryManager *mm = context->getMemoryManager();
 
-  validator_.setNextEventHandler(handler);
-  events_ = &validator_;
+  if(doPSVI_) {
+    validator_.setNextEventHandler(handler);
+    events_ = &validator_;
+  }
+  else {
+    events_ = handler;
+  }
 
   // Register our entity resolution callback
   EntityCallbackUserData ecud(mm, this);

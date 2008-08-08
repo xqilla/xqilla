@@ -183,7 +183,7 @@ public:
   virtual void setDefaultFuncNS(const XMLCh* newNS);
 
   /** retrieve the repository for the grammars **/
-  virtual const DocumentCache* getDocumentCache() const;
+  virtual DocumentCache* getDocumentCache() const;
   /** sets the repository for the grammars **/
   virtual void setDocumentCache(DocumentCache* docCache);
   /** returns true if the type represented by uri:typename is an instance of uriToCheck:typeNameToCheck
@@ -276,6 +276,9 @@ public:
 
   virtual bool getProjection() const { return _projection; }
   virtual void setProjection(bool enabled) { _projection = enabled; }
+
+  virtual bool getDoLintWarnings() const { return _lint; }
+  virtual void setDoLintWarnings(bool enabled) { _lint = enabled; }
 
   virtual const XMLCh *allocateTempVarName();
 
@@ -471,6 +474,7 @@ protected:
   DebugListener *_debugListener;
 
   bool _projection;
+  bool _lint;
 
   unsigned int _tmpVarCounter;
 
