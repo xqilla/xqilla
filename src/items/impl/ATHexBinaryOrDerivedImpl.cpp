@@ -38,6 +38,12 @@
 XERCES_CPP_NAMESPACE_USE
 #endif
 
+#if _XERCES_VERSION >= 30000
+typedef XMLSize_t stringLen_t;
+#else
+typedef unsigned int stringLen_t;
+#endif
+
 ATHexBinaryOrDerivedImpl::
 ATHexBinaryOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* value, const StaticContext* context): 
     ATHexBinaryOrDerived(),
@@ -92,13 +98,13 @@ AnyAtomicType::Ptr ATHexBinaryOrDerivedImpl::castAsInternal(AtomicObjectType tar
   switch(targetIndex) {
     case BASE_64_BINARY: {
       XMLByte* binData=HexBin::decodeToXMLByte(_hexBinaryData, context->getMemoryManager());
-      unsigned int length=0;
+      stringLen_t length=0;
       XMLByte* base64Data=Base64::encode(binData, 
-                                                                        XMLString::stringLen(_hexBinaryData)/2, 
-                                                                        &length, 
-                                                                        context->getMemoryManager()); 
+                                         XMLString::stringLen(_hexBinaryData)/2, 
+                                         &length, 
+                                         context->getMemoryManager()); 
       XMLCh* uniBase64=(XMLCh*)context->getMemoryManager()->allocate((length+1)*sizeof(XMLCh));
-      unsigned int i;
+      stringLen_t i;
       for(i=0;i<length;i++)
           uniBase64[i]=(XMLCh)base64Data[i];
       uniBase64[i]=0;

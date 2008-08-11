@@ -71,6 +71,12 @@ FunctionIriToUri::FunctionIriToUri(const VectorOfASTNodes &args, XPath2MemoryMan
   _src.getStaticType() = StaticType::STRING_TYPE;
 }
 
+#if _XERCES_VERSION >= 30000
+typedef XMLSize_t stringLen_t;
+#else
+typedef unsigned int stringLen_t;
+#endif
+
 Sequence FunctionIriToUri::createSequence(DynamicContext* context, int flags) const
 {
     Sequence uriPart=getParamNumber(1,context)->toSequence(context);
@@ -78,10 +84,10 @@ Sequence FunctionIriToUri::createSequence(DynamicContext* context, int flags) co
         return Sequence(context->getItemFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context), context->getMemoryManager());
 
     const XMLCh* source = uriPart.first()->asString(context);
-    unsigned len=XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(source);
+    stringLen_t len=XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(source);
     XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer outString(len+1, context->getMemoryManager());
     XERCES_CPP_NAMESPACE_QUALIFIER XMLUTF8Transcoder utf8Trans(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgUTF8EncodingString, 10, context->getMemoryManager());
-    for(unsigned i=0;i<len;i++)
+    for(stringLen_t i=0;i<len;i++)
     {
         // If $uri-part contains a character that is invalid in an IRI, such as a space character, the invalid character is 
         // replaced by its percent-encoded form as described in [RFC 3986] before the conversion is performed.
@@ -94,9 +100,9 @@ Sequence FunctionIriToUri::createSequence(DynamicContext* context, int flags) co
         else if(isUCSCharOrIPrivate(source[i]))
         {
             XMLByte utf8Str[8];
-            unsigned int charsEaten;
-            unsigned int nLen=utf8Trans.transcodeTo(&source[i], 1, utf8Str, 7, charsEaten, XERCES_CPP_NAMESPACE_QUALIFIER XMLTranscoder::UnRep_RepChar);
-            for(unsigned int j=0;j<nLen;j++)
+            stringLen_t charsEaten;
+            stringLen_t nLen=utf8Trans.transcodeTo(&source[i], 1, utf8Str, 7, charsEaten, XERCES_CPP_NAMESPACE_QUALIFIER XMLTranscoder::UnRep_RepChar);
+            for(stringLen_t j=0;j<nLen;j++)
             {
                 outString.append(XERCES_CPP_NAMESPACE_QUALIFIER chPercent);
                 outString.append(HEX_DIGITS[utf8Str[j] >> 4]);

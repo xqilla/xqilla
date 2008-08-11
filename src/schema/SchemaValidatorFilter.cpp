@@ -968,7 +968,11 @@ XMLElementDecl *SchemaValidatorFilter::createElementDecl(unsigned int uriId, uns
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+#if _XERCES_VERSION >= 30000
+void SchemaValidatorFilter::docCharacters(const XMLCh* const chars, const XMLSize_t length, const bool cdataSection)
+#else
 void SchemaValidatorFilter::docCharacters(const XMLCh* const chars, const unsigned int length, const bool cdataSection)
+#endif
 {
   // The SchemaValidator calls this method to report default element values
   next_->textEvent(chars, length);
@@ -1005,4 +1009,3 @@ void SchemaValidatorFilter::error(const unsigned int errCode, const XMLCh* const
   exc_msg.append(X(" [err:XQDY0027]"));
   XQThrow3(DynamicErrorException,X("SchemaValidatorFilter::error"), exc_msg.getRawBuffer(), info_);
 }
-

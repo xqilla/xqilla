@@ -177,11 +177,17 @@ const XMLCh *StringPool::getPooledString(const char *src)
     const size_t needed = l * 2 + 2; // 2 chars per byte is the worst case, + '\0'
     transcoded = (XMLCh*)_mm->allocate(needed);
 
-    unsigned int bytesEaten = 0;
     AutoDeleteArray<unsigned char> charSizes(new unsigned char[needed]);
 
+#if _XERCES_VERSION >= 30000
+    XMLSize_t bytesEaten = 0;
+    t.transcodeFrom((const XMLByte*)src, l+1, transcoded,
+      needed, bytesEaten, charSizes);
+#else
+    unsigned int bytesEaten = 0;
     t.transcodeFrom((const XMLByte*)src, (unsigned int)l+1, transcoded,
-      (unsigned int)needed, bytesEaten, charSizes);
+                    (unsigned int)needed, bytesEaten, charSizes);
+#endif
   }
 
   // strings longer than lengthThreshold bytes are not pooled, as it is not probable they can be recycled
