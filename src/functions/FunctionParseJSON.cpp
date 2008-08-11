@@ -275,13 +275,13 @@ void FunctionParseJSON::parseJSON(const XMLCh *jsonString, EventHandler *handler
   yajl_parser_config cfg = { 0 };
   yajl_handle yajl = yajl_alloc(&json2xml_callbacks, &cfg, &env);
 
-  yajl_status stat = yajl_parse(yajl, (unsigned char*)utf8.UTF8Form(),
-                                (unsigned int)strlen(utf8.UTF8Form()));
+  yajl_status stat = yajl_parse(yajl, (unsigned char*)utf8.str(),
+                                (unsigned int)strlen(utf8.str()));
   if(stat != yajl_status_ok) {
     XMLBuffer buf;
     buf.append(X("JSON "));
-    unsigned char *str = yajl_get_error(yajl, 1, (unsigned char*)utf8.UTF8Form(),
-                                        (unsigned int)strlen(utf8.UTF8Form()));
+    unsigned char *str = yajl_get_error(yajl, 1, (unsigned char*)utf8.str(),
+                                        (unsigned int)strlen(utf8.str()));
     buf.append(X((char*)str));
     yajl_free_error(str);
     XQThrow3(FunctionException, X("FunctionParseJSON::parseJSON"), buf.getRawBuffer(), location);

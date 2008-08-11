@@ -5,35 +5,40 @@
 #include <xercesc/util/XMLString.hpp>
 #include <xercesc/util/XMLUTF8Transcoder.hpp>
 
-XStr::XStr(const char* const toTranscode)
+XERCES_CPP_NAMESPACE_USE;
+
+XStr::XStr(const char* const toTranscode, MemoryManager *mm)
+  : str_(0),
+    mm_(mm)
 {
   if(toTranscode == 0) {
-    fUnicodeForm = new XMLCh[1];
-    fUnicodeForm[0] = 0;
+    str_ = mm_ ? (XMLCh*)mm_->allocate(1 * sizeof(XMLCh)) : new XMLCh[1];
+    str_[0] = 0;
   }
   else {
-    XERCES_CPP_NAMESPACE_QUALIFIER XMLUTF8Transcoder t(0, 512);
-    size_t l = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(toTranscode);
+    XMLUTF8Transcoder t(0, 512);
+    size_t l = XMLString::stringLen(toTranscode);
     const size_t needed = l * 2 + 1; // 2 chars per byte is the worst case, + '\0'
-    fUnicodeForm = new XMLCh[needed];
+    str_ = mm_ ? (XMLCh*)mm_->allocate(needed * sizeof(XMLCh)) : new XMLCh[needed];
 
     AutoDeleteArray<unsigned char> charSizes(new unsigned char[needed]);
 
 #if _XERCES_VERSION >= 30000
     XMLSize_t bytesEaten = 0;
-    t.transcodeFrom((const XMLByte*)toTranscode, l+1, fUnicodeForm,
+    t.transcodeFrom((const XMLByte*)toTranscode, l+1, str_,
                     needed, bytesEaten, charSizes);
 #else
     unsigned int bytesEaten = 0;
-    t.transcodeFrom((const XMLByte*)toTranscode, (unsigned int)l+1, fUnicodeForm,
+    t.transcodeFrom((const XMLByte*)toTranscode, (unsigned int)l+1, str_,
                     (unsigned int)needed, bytesEaten, charSizes);
 #endif
   }
-//   fUnicodeForm = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::transcode(toTranscode);
 }
 
 XStr::~XStr()
 {
-  delete [] fUnicodeForm;
-//   XERCES_CPP_NAMESPACE_QUALIFIER XMLString::release(&fUnicodeForm);
+  if(str_) {
+    if(mm_) mm_->deallocate(str_);
+    else delete [] str_;
+  }
 }
