@@ -44,7 +44,8 @@ XERCES_CPP_NAMESPACE_USE
 using namespace std;
 
 TestSuiteParser::TestSuiteParser(const string &pathToTestSuite, TestSuiteRunner *runner)
-  : runner_(runner)
+  : runner_(runner),
+    xslt_(false)
 {
   string szXQTSLocation = string("file:///") + pathToTestSuite;
 
@@ -68,6 +69,7 @@ void TestSuiteParser::handleUnknownElement(const string &elementName)
 
 void TestSuiteParser::run()
 {
+  xslt_ = false;
   SAX2XMLReader* parser = XMLReaderFactory::createXMLReader();
   try {
     parser->setContentHandler(this);
@@ -91,14 +93,18 @@ void TestSuiteParser::fatalError(const SAXParseException& exc)
   cerr << "FATAL ERROR parsing catalog: " << UTF8(exc.getMessage()) << endl;
 }
 
+static XMLCh g_szName[]     = { chLatin_n, chLatin_a, chLatin_m, chLatin_e, chNull };
+static XMLCh g_szPath[]     = { chLatin_F, chLatin_i, chLatin_l, chLatin_e, chLatin_P, chLatin_a, chLatin_t, chLatin_h, chNull };
+static XMLCh g_szVar[]      = { chLatin_v, chLatin_a, chLatin_r, chLatin_i, chLatin_a, chLatin_b, chLatin_l, chLatin_e, chNull };
+static XMLCh g_szDotXQ[]    = { chPeriod, chLatin_x, chLatin_q, chNull };
+static XMLCh g_szCompare[]  = { chLatin_c, chLatin_o, chLatin_m, chLatin_p, chLatin_a, chLatin_r, chLatin_e, chNull };
+static XMLCh g_szTime[]     = { chLatin_t, chLatin_i, chLatin_m, chLatin_e, chNull };
+static XMLCh g_szRole[]     = { chLatin_r, chLatin_o, chLatin_l, chLatin_e, chNull };
+static XMLCh g_szFile[]     = { chLatin_f, chLatin_i, chLatin_l, chLatin_e, chNull };
+static XMLCh g_szType[]     = { chLatin_t, chLatin_y, chLatin_p, chLatin_e, chNull };
+
 void TestSuiteParser::startElement(const XMLCh* const uri, const XMLCh* const localname, const XMLCh* const qname, const Attributes&  attributes)
 {
-    static XMLCh g_szName[]  = { chLatin_n, chLatin_a, chLatin_m, chLatin_e, chNull };
-    static XMLCh g_szPath[]  = { chLatin_F, chLatin_i, chLatin_l, chLatin_e, chLatin_P, chLatin_a, chLatin_t, chLatin_h, chNull };
-    static XMLCh g_szVar[]   = { chLatin_v, chLatin_a, chLatin_r, chLatin_i, chLatin_a, chLatin_b, chLatin_l, chLatin_e, chNull };
-    static XMLCh g_szDotXQ[] = { chPeriod, chLatin_x, chLatin_q, chNull };
-    static XMLCh g_szCompare[]  = { chLatin_c, chLatin_o, chLatin_m, chLatin_p, chLatin_a, chLatin_r, chLatin_e, chNull };
-    static XMLCh g_szTime[]  = { chLatin_t, chLatin_i, chLatin_m, chLatin_e, chNull };
     string szName=UTF8(localname);
     string szURI=UTF8(uri);
 //     if(szURI=="http://www.w3.org/2005/02/query-test-XQTSCatalog")
@@ -110,13 +116,47 @@ void TestSuiteParser::startElement(const XMLCh* const uri, const XMLCh* const lo
         urlXQTSQueriesDirectory_.setURL(urlXQTSCatalog_, attributes.getValue(X("XQueryQueryOffsetPath")));
         urlXQTSResultsDirectory_.setURL(urlXQTSCatalog_, attributes.getValue(X("ResultOffsetPath")));
       }
+      else if(szName=="testcases") {
+        // XSLT test suite
+        xslt_ = true;
+
+        runner_->getResultListener()->reportVersion(UTF8(attributes.getValue(X("testSuiteVersion"))), false);
+
+        urlXQTSQueriesDirectory_.setURL(urlXQTSCatalog_, attributes.getValue(X("InputOffsetPath")));
+        urlXQTSResultsDirectory_.setURL(urlXQTSCatalog_, attributes.getValue(X("ResultOffsetPath")));
+      }
       else if(szName=="test-group") {
         runner_->startTestGroup(UTF8(attributes.getValue(g_szName)));
       }
-      else if(szName=="test-case")
-      {
+      else if(szName=="test-case") {
         testCase_.name = UTF8(attributes.getValue(g_szName));
         testCase_.updateTest = false;
+        testCase_.xsltTest = false;
+        testCase_.stateTime = -1;
+        testCase_.queryURL = "";
+        testCase_.query = "";
+        testCase_.contextItem = "";
+        testCase_.defaultCollection = "";
+        testCase_.inputURIVars.clear();
+        testCase_.inputVars.clear();
+        testCase_.extraVars.clear();
+        testCase_.expectedErrors.clear();
+        testCase_.outputFiles.clear();
+        testCase_.moduleFiles.clear();
+
+        variableBoundToInput_=compareMethod_="";
+        urlQuery_=XMLURL();
+        XMLBuffer buff;
+        buff.set(attributes.getValue(g_szPath));
+        buff.append('/');
+        urlBasePath_.setURL(urlXQTSQueriesDirectory_, buff.getRawBuffer());
+        urlBasePathReferenceFiles_.setURL(urlXQTSResultsDirectory_, buff.getRawBuffer());
+      }
+      else if(szName=="testcase") {
+        // XSLT test case
+        testCase_.name = "";
+        testCase_.updateTest = false;
+        testCase_.xsltTest = true;
         testCase_.stateTime = -1;
         testCase_.queryURL = "";
         testCase_.query = "";
@@ -140,6 +180,7 @@ void TestSuiteParser::startElement(const XMLCh* const uri, const XMLCh* const lo
       else if(szName=="state")
       {
         testCase_.updateTest = true;
+        testCase_.xsltTest = false;
         testCase_.stateTime = atoi(UTF8(attributes.getValue(g_szTime)));
         testCase_.queryURL = "";
         testCase_.query = "";
@@ -174,6 +215,60 @@ void TestSuiteParser::startElement(const XMLCh* const uri, const XMLCh* const lo
             stream->readBytes((XMLByte*)testCase_.query.c_str(), dwSize);
           }
         } catch(...) {}
+      }
+      else if(szName=="stylesheet")
+      {
+        // XSLT test suite
+        testCase_.xsltTest = true;
+
+        const XMLCh *role = attributes.getValue(g_szRole);
+        if(XMLString::equals(role, X("principal"))) {
+          const XMLCh *file = attributes.getValue(g_szFile);
+          urlQuery_.setURL(urlXQTSQueriesDirectory_, file);
+          testCase_.queryURL = UTF8(urlQuery_.getURLText());
+
+          try {
+            testCase_.query = "#Not found";
+            Janitor<BinFileInputStream> stream((BinFileInputStream*)URLInputSource(urlQuery_).makeStream());
+            if(stream.get()) {
+              unsigned int dwSize=stream->getSize();
+              testCase_.query.resize(dwSize);
+              stream->readBytes((XMLByte*)testCase_.query.c_str(), dwSize);
+            }
+          } catch(...) {}
+        }
+      }
+      else if(szName=="source-document")
+      {
+        // XSLT test suite
+        testCase_.xsltTest = true;
+
+        const XMLCh *role = attributes.getValue(g_szRole);
+        if(XMLString::equals(role, X("principal"))) {
+          const XMLCh *file = attributes.getValue(g_szFile);
+          urlQuery_.setURL(urlXQTSQueriesDirectory_, file);
+          testCase_.contextItem = UTF8(urlQuery_.getURLText());
+        }
+      }
+      else if(szName=="result-document")
+      {
+        // XSLT test suite
+        testCase_.xsltTest = true;
+
+        const XMLCh *role = attributes.getValue(g_szRole);
+        if(XMLString::equals(role, X("principal"))) {
+          const XMLCh *file = attributes.getValue(g_szFile);
+          urlQuery_.setURL(urlXQTSQueriesDirectory_, file);
+
+          const XMLCh *type = attributes.getValue(g_szType);
+          testCase_.outputFiles[UTF8(urlQuery_.getURLText())]=UTF8(type);
+        }
+      }
+      else if(szName=="error")
+      {
+        // XSLT test suite
+        const XMLCh *id = attributes.getValue(X("error-id"));
+        testCase_.expectedErrors.push_back(UTF8(id));
       }
       else if(szName=="input-query")
       {
@@ -220,11 +315,22 @@ void TestSuiteParser::startElement(const XMLCh* const uri, const XMLCh* const lo
         readingChars_=true;
         chars_="";
       }
+      else if(szName=="name")
+      {
+        // XSLT test suite
+        readingChars_=true;
+        chars_="";
+      }
+      else if(szName=="description")
+      {
+        readingChars_=true;
+        chars_="";
+      }
       else if(szName=="source") {
         XMLURL realFile(urlXQTSCatalog_, attributes.getValue(X("FileName")));
         runner_->addSource(UTF8(attributes.getValue(X("ID"))), UTF8(realFile.getURLText()), UTF8(attributes.getValue(X("schema"))));
       }
-      else if(szName=="schema") {
+      else if(szName=="schema" && !xslt_) {
         XMLURL realFile(urlXQTSCatalog_, attributes.getValue(X("FileName")));
         runner_->addSchema(UTF8(attributes.getValue(X("ID"))), UTF8(realFile.getURLText()), UTF8(attributes.getValue(X("uri"))));
       }
@@ -279,6 +385,9 @@ void TestSuiteParser::endElement(const XMLCh* const uri, const XMLCh* const loca
       if(szName == "test-group") {
         runner_->endTestGroup();
       }
+      else if(szName=="testcases") {
+        if(xsltGroupName_ != "") runner_->endTestGroup();
+      }
       else if(szName == "test-case") {
         if(!testCase_.updateTest) {
           if(testCase_.query == "#Not found") {
@@ -287,6 +396,25 @@ void TestSuiteParser::endElement(const XMLCh* const uri, const XMLCh* const loca
           else {
             runner_->runTestCase(testCase_);
           }
+        }
+      }
+      else if(szName == "testcase") {
+        size_t pos = 0;
+        while((testCase_.name[pos] >= 'A' && testCase_.name[pos] <= 'Z') ||
+              (testCase_.name[pos] >= 'a' && testCase_.name[pos] <= 'z')) ++pos;
+
+        string group = testCase_.name.substr(0, pos);
+        if(xsltGroupName_ != group) {
+          if(xsltGroupName_ != "") runner_->endTestGroup();
+          xsltGroupName_ = group;
+          if(xsltGroupName_ != "") runner_->startTestGroup(xsltGroupName_);
+        }
+
+        if(testCase_.query == "#Not found") {
+          runner_->getResultListener()->reportFail(testCase_, "", list<string>(), "Bad test! Query not found: " + testCase_.queryURL);
+        }
+        else {
+          runner_->runTestCase(testCase_);
         }
       }
       else if(szName == "state") {
@@ -330,6 +458,16 @@ void TestSuiteParser::endElement(const XMLCh* const uri, const XMLCh* const loca
       {
         readingChars_=false;
         testCase_.expectedErrors.push_back(chars_);
+      }
+      else if(szName == "name")
+      {
+        readingChars_=false;
+        testCase_.name = chars_;
+      }
+      else if(szName == "description")
+      {
+        readingChars_=false;
+        testCase_.description = chars_;
       }
       else if(szName == "module")
       {
