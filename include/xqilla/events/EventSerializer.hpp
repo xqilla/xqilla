@@ -29,12 +29,13 @@
 class XQILLA_API EventSerializer : public EventHandler
 {
 public:
-  EventSerializer(char *encoding, char *xmlVersion, XERCES_CPP_NAMESPACE_QUALIFIER XMLFormatTarget *target,
+  EventSerializer(const char *encoding, const char *xmlVersion, XERCES_CPP_NAMESPACE_QUALIFIER XMLFormatTarget *target,
                   XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mm =
                   XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager);
   EventSerializer(XERCES_CPP_NAMESPACE_QUALIFIER XMLFormatTarget *target,
                   XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mm =
                   XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager);
+  ~EventSerializer();
 
   virtual void setLocationInfo(const LocationInfo *location) {}
 
@@ -55,12 +56,16 @@ public:
   virtual void endEvent();
 
   void addNewlines(bool add) { addNewlines_ = add; }
+  void useSelfClosingElement(bool value) { selfClosing_ = value; }
+  void addXMLDeclarations(bool value) { xmlDecls_ = value; }
 
 private:
   XERCES_CPP_NAMESPACE_QUALIFIER XMLFormatter formatter_;
   bool elementStarted_;
   unsigned int level_;
-  bool addNewlines_;
+  XMLCh *version_, *encoding_;
+  bool addNewlines_, selfClosing_, xmlDecls_;
+  XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mm_;
 };
 
 #endif

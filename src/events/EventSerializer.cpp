@@ -45,11 +45,16 @@ static const XMLCh openSquare = '[';
 static const XMLCh closeSquare = ']';
 static const XMLCh newline = '\n';
 
-EventSerializer::EventSerializer(char *encoding, char *xmlVersion, XMLFormatTarget *target, MemoryManager *mm)
+EventSerializer::EventSerializer(const char *encoding, const char *xmlVersion, XMLFormatTarget *target, MemoryManager *mm)
   : formatter_(encoding, xmlVersion, target, XMLFormatter::CharEscapes, XMLFormatter::UnRep_CharRef, mm),
     elementStarted_(false),
     level_(0),
-    addNewlines_(false)
+    version_(XStr(xmlVersion, mm).adopt()),
+    encoding_(XStr(encoding, mm).adopt()),
+    addNewlines_(false),
+    selfClosing_(true),
+    xmlDecls_(true),
+    mm_(mm)
 {
 }
 
@@ -57,13 +62,34 @@ EventSerializer::EventSerializer(XMLFormatTarget *target, MemoryManager *mm)
   : formatter_("UTF-16", "1.1", target, XMLFormatter::CharEscapes, XMLFormatter::UnRep_CharRef, mm),
     elementStarted_(false),
     level_(0),
-    addNewlines_(false)
+    version_(XStr("1.1", mm).adopt()),
+    encoding_(XStr("UTF-16", mm).adopt()),
+    addNewlines_(false),
+    selfClosing_(true),
+    xmlDecls_(true),
+    mm_(mm)
 {
+}
+
+EventSerializer::~EventSerializer()
+{
+  mm_->deallocate(version_);
+  mm_->deallocate(encoding_);
 }
 
 void EventSerializer::startDocumentEvent(const XMLCh *documentURI, const XMLCh *encoding)
 {
-  // TBD XML decl? - jpcs
+  if(xmlDecls_) {
+    formatter_ << XMLFormatter::NoEscapes << XMLFormatter::UnRep_Fail;
+    formatter_ << pi_start;
+    formatter_ << X("xml version=\"");
+    formatter_ << version_;
+    formatter_ << X("\" encoding=\""); 
+    formatter_ << encoding_;
+    formatter_ << X("\"");
+    formatter_ << pi_end;
+    formatter_ << newline;
+  }  
   ++level_;
 }
 
@@ -108,6 +134,11 @@ void EventSerializer::endElementEvent(const XMLCh *prefix, const XMLCh *uri, con
 {
   --level_;
   formatter_ << XMLFormatter::NoEscapes << XMLFormatter::UnRep_Fail;
+
+  if(elementStarted_ && !selfClosing_) {
+    elementStarted_ = false;
+    formatter_ << elem_end;
+  }
 
   if(elementStarted_) {
     elementStarted_ = false;
