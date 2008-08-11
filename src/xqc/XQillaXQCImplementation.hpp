@@ -22,10 +22,11 @@
 #ifndef _XQILLAXQCIMPLEMENTATION_HPP
 #define _XQILLAXQCIMPLEMENTATION_HPP
 
+#include <stddef.h>
 #include <xqilla/xqilla-xqc.h>
 #include <xqilla/simple-api/XQilla.hpp>
 
-#define CLASS_OFFSET(class, member) (((int)&(((class*)1000)->member)) - 1000)
+#define CLASS_OFFSET(class, member) (((ssize_t)&(((class*)1000)->member)) - 1000)
 
 class XQException;
 
@@ -86,4 +87,3 @@ private:
 };
 
 #endif
-

@@ -126,14 +126,23 @@ protected:
   virtual void startDocument();
   virtual void endDocument();
   virtual void resetDocument();
+#if _XERCES_VERSION >= 30000
+  virtual void startElement(const XERCES_CPP_NAMESPACE_QUALIFIER XMLElementDecl& elemDecl, const unsigned int urlId,
+                            const XMLCh* const elemPrefix,
+                            const XERCES_CPP_NAMESPACE_QUALIFIER RefVectorOf<XERCES_CPP_NAMESPACE_QUALIFIER XMLAttr>& attrList,
+                            const XMLSize_t attrCount, const bool isEmpty, const bool isRoot);
+  virtual void docCharacters(const XMLCh* const chars, const XMLSize_t length, const bool cdataSection);
+  virtual void ignorableWhitespace(const XMLCh* const chars, const XMLSize_t length, const bool cdataSection);
+#else
   virtual void startElement(const XERCES_CPP_NAMESPACE_QUALIFIER XMLElementDecl& elemDecl, const unsigned int urlId,
                             const XMLCh* const elemPrefix,
                             const XERCES_CPP_NAMESPACE_QUALIFIER RefVectorOf<XERCES_CPP_NAMESPACE_QUALIFIER XMLAttr>& attrList,
                             const unsigned int attrCount, const bool isEmpty, const bool isRoot);
-  virtual void endElement(const XERCES_CPP_NAMESPACE_QUALIFIER XMLElementDecl& elemDecl, const unsigned int urlId,
-                          const bool isRoot, const XMLCh* const elemPrefix=0);
   virtual void docCharacters(const XMLCh* const chars, const unsigned int length, const bool cdataSection);
   virtual void ignorableWhitespace(const XMLCh* const chars, const unsigned int length, const bool cdataSection);
+#endif
+  virtual void endElement(const XERCES_CPP_NAMESPACE_QUALIFIER XMLElementDecl& elemDecl, const unsigned int urlId,
+                          const bool isRoot, const XMLCh* const elemPrefix=0);
   virtual void docComment(const XMLCh* const comment);
   virtual void docPI(const XMLCh* const target, const XMLCh* const data);
   virtual void startEntityReference(const XERCES_CPP_NAMESPACE_QUALIFIER XMLEntityDecl& entDecl);
@@ -170,4 +179,3 @@ protected:
 };
 
 #endif
-

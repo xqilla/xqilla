@@ -34,8 +34,14 @@ UTF8Str::UTF8Str(const XMLCh* const toTranscode)
     size_t l = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(toTranscode);
     const size_t needed = l * 3 + 1; // 3 bytes per XMLCh is the worst case, + '\0'
     fUTF8Form = new XMLByte[needed];
+#if _XERCES_VERSION >= 30000
+    XMLSize_t charsEaten= 0;
+    t.transcodeTo(toTranscode, l+1, fUTF8Form,
+                  needed, charsEaten, XERCES_CPP_NAMESPACE_QUALIFIER XMLTranscoder::UnRep_Throw);
+#else
     unsigned int charsEaten= 0;
     t.transcodeTo(toTranscode, (unsigned int)l+1, fUTF8Form, 
-		(unsigned int)needed, charsEaten, XERCES_CPP_NAMESPACE_QUALIFIER XMLTranscoder::UnRep_Throw);
+                  (unsigned int)needed, charsEaten, XERCES_CPP_NAMESPACE_QUALIFIER XMLTranscoder::UnRep_Throw);
+#endif
   }
 }

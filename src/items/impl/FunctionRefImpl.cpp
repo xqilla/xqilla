@@ -158,7 +158,7 @@ Result FunctionRefImpl::execute(const VectorOfResults &args, DynamicContext *con
   if(args.size() != getNumArgs()) {
     XMLBuffer buf;
     buf.set(X("The function item invoked does not accept "));
-    XPath2Utils::numToBuf(args.size(), buf);
+    XPath2Utils::numToBuf((unsigned int)args.size(), buf);
     buf.append(X(" arguments - found item of type "));
     typeToBuffer(context, buf);
     buf.append(X(" [err:TBD]"));
@@ -200,7 +200,7 @@ const XMLCh *FunctionRefImpl::asString(const DynamicContext *context) const
 {
   XMLBuffer buf;
   buf.append(X("function(#"));
-  XPath2Utils::numToBuf(getNumArgs(), buf);
+  XPath2Utils::numToBuf((unsigned int)getNumArgs(), buf);
   buf.append(')');
   return context->getMemoryManager()->getPooledString(buf.getRawBuffer());
 }
@@ -208,7 +208,7 @@ const XMLCh *FunctionRefImpl::asString(const DynamicContext *context) const
 void FunctionRefImpl::typeToBuffer(DynamicContext *context, XMLBuffer &buffer) const
 {
   buffer.append(X("function("));
-  XPath2Utils::numToBuf(getNumArgs(), buffer);
+  XPath2Utils::numToBuf((unsigned int)getNumArgs(), buffer);
   buffer.append(X(")"));
 }
 

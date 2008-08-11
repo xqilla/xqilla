@@ -65,6 +65,12 @@ FunctionEncodeForUri::FunctionEncodeForUri(const VectorOfASTNodes &args, XPath2M
   _src.getStaticType() = StaticType::STRING_TYPE;
 }
 
+#if _XERCES_VERSION >= 30000
+typedef XMLSize_t stringLen_t;
+#else
+typedef unsigned int stringLen_t;
+#endif
+
 Sequence FunctionEncodeForUri::createSequence(DynamicContext* context, int flags) const
 {
     Item::Ptr uriPart = getParamNumber(1,context)->next(context);
@@ -72,17 +78,17 @@ Sequence FunctionEncodeForUri::createSequence(DynamicContext* context, int flags
         return Sequence(context->getItemFactory()->createString(XMLUni::fgZeroLenString, context), context->getMemoryManager());
 
     const XMLCh* source = uriPart->asString(context);
-    unsigned len = XMLString::stringLen(source);
+    stringLen_t len = XMLString::stringLen(source);
     XMLBuffer outString(len + 1, context->getMemoryManager());
     XMLUTF8Transcoder utf8Trans(XMLUni::fgUTF8EncodingString, 10, context->getMemoryManager());
-    for(unsigned i = 0; i < len; ++i) {
+    for(stringLen_t i = 0; i < len; ++i) {
         if(XMLString::isAlphaNum(source[i]) || XMLString::indexOf(RESERVED_CHARACTERS, source[i]) != -1)
             outString.append(source[i]);
         else {
             XMLByte utf8Str[8];
-            unsigned int charsEaten;
-            unsigned int nLen=utf8Trans.transcodeTo(&source[i], 1, utf8Str, 7, charsEaten, XMLTranscoder::UnRep_RepChar);
-            for(unsigned int j = 0; j < nLen; ++j) {
+            stringLen_t charsEaten;
+            stringLen_t nLen=utf8Trans.transcodeTo(&source[i], 1, utf8Str, 7, charsEaten, XMLTranscoder::UnRep_RepChar);
+            for(stringLen_t j = 0; j < nLen; ++j) {
                 outString.append(chPercent);
                 outString.append(HEX_DIGITS[utf8Str[j] >> 4]);
                 outString.append(HEX_DIGITS[utf8Str[j] & 0xF]);

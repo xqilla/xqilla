@@ -328,9 +328,15 @@ void DocumentCacheImpl::resetDocument()
 {
 }
 
+#if _XERCES_VERSION >= 30000
+void DocumentCacheImpl::startElement(const XMLElementDecl& elemDecl, const unsigned int urlId,
+                                     const XMLCh* const elemPrefix, const RefVectorOf<XMLAttr>& attrList,
+                                     const XMLSize_t attrCount, const bool isEmpty, const bool isRoot)
+#else
 void DocumentCacheImpl::startElement(const XMLElementDecl& elemDecl, const unsigned int urlId,
                                      const XMLCh* const elemPrefix, const RefVectorOf<XMLAttr>& attrList,
                                      const unsigned int attrCount, const bool isEmpty, const bool isRoot)
+#endif
 {
   LOCATION;
   events_->startElementEvent(emptyToNull(elemPrefix), emptyToNull(scanner_->getURIText(urlId)), elemDecl.getBaseName());
@@ -374,7 +380,11 @@ void DocumentCacheImpl::endElement(const XMLElementDecl& elemDecl, const unsigne
   elementInfo_ = 0;
 }
 
+#if _XERCES_VERSION >= 30000
+void DocumentCacheImpl::docCharacters(const XMLCh* const chars, const XMLSize_t length, const bool cdataSection)
+#else
 void DocumentCacheImpl::docCharacters(const XMLCh* const chars, const unsigned int length, const bool cdataSection)
+#endif
 {
   LOCATION;
   events_->textEvent(chars, length);
@@ -392,8 +402,13 @@ void DocumentCacheImpl::docPI(const XMLCh* const target, const XMLCh* const data
   events_->piEvent(target, data);
 }
 
+#if _XERCES_VERSION >= 30000
+void DocumentCacheImpl::ignorableWhitespace(const XMLCh* const chars, const XMLSize_t length,
+                                            const bool cdataSection)
+#else
 void DocumentCacheImpl::ignorableWhitespace(const XMLCh* const chars, const unsigned int length,
                                             const bool cdataSection)
+#endif
 {
   // No-op
 }
@@ -730,4 +745,3 @@ DocumentCache *DocumentCacheImpl::createDerivedCache(MemoryManager *memMgr) cons
   // Construct a new DocumentCacheImpl, based on this one
   return new (memMgr) DocumentCacheImpl(this, memMgr);
 }
-

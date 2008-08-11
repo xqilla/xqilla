@@ -334,8 +334,13 @@ void XPath2Utils::readSource(BinInputStream *stream, MemoryManager *mm, XMLBuffe
 
   XMLCh tempBuff[BUFFER_SIZE];
   unsigned char charSizes[BUFFER_SIZE];
+#if _XERCES_VERSION >= 30000
+  XMLSize_t bytesEaten = 0, nOffset = 0;
+  XMLSize_t nCount;
+#else
   unsigned int bytesEaten = 0, nOffset = 0;
   unsigned int nCount;
+#endif
 
   do {
     nCount = transcoder->transcodeFrom(buffer, nRead, tempBuff, BUFFER_SIZE, bytesEaten, charSizes);

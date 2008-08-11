@@ -38,6 +38,12 @@
 XERCES_CPP_NAMESPACE_USE
 #endif
 
+#if _XERCES_VERSION >= 30000
+typedef XMLSize_t stringLen_t;
+#else
+typedef unsigned int stringLen_t;
+#endif
+
 ATBase64BinaryOrDerivedImpl::
 ATBase64BinaryOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* value, const StaticContext* context): 
     _typeName(typeName),
@@ -45,16 +51,16 @@ ATBase64BinaryOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const X
     
   // check if it's a valid base64 sequence, and then make it canonical by stripping whitespace
   MemoryManager* mm = context->getMemoryManager();
-  unsigned int srcLen = XMLString::stringLen(value);
+  stringLen_t srcLen = XMLString::stringLen(value);
   XMLByte *dataInByte = (XMLByte*) mm->allocate((srcLen+1) * sizeof(XMLByte));
   ArrayJanitor<XMLByte> janFill(dataInByte, mm);
-  unsigned int i;
+  stringLen_t i;
   for (i = 0; i < srcLen; i++)
     dataInByte[i] = (XMLByte)value[i];
 
   dataInByte[srcLen] = 0;
 
-  unsigned int length=0, outLength=0;
+  stringLen_t length=0, outLength=0;
   AutoDeallocate<XMLByte> decodedBinary(Base64::decode(dataInByte, &length, mm, Base64::Conf_Schema), mm);
   AutoDeallocate<XMLByte> encodedBase64(Base64::encode(decodedBinary, length, &outLength, mm), mm);
   _base64Data = (XMLCh*) mm->allocate((outLength+1) * sizeof(XMLCh));
@@ -110,17 +116,17 @@ AnyAtomicType::Ptr ATBase64BinaryOrDerivedImpl::castAsInternal(AtomicObjectType 
 
   switch(targetIndex) {
     case HEX_BINARY: {
-      unsigned int srcLen = XMLString::stringLen(_base64Data);
+      stringLen_t srcLen = XMLString::stringLen(_base64Data);
       XMLByte *dataInByte = (XMLByte*) context->getMemoryManager()->allocate((srcLen+1) * sizeof(XMLByte));
       ArrayJanitor<XMLByte> janFill(dataInByte, context->getMemoryManager());
 
-      unsigned int i;
+      stringLen_t i;
       for (i = 0; i < srcLen; i++)
         dataInByte[i] = (XMLByte)_base64Data[i];
 
       dataInByte[srcLen] = 0;
 
-      unsigned int length=0;
+      stringLen_t length=0;
       AutoDeallocate<XMLByte> decodedBinary(Base64::decode(dataInByte, &length, context->getMemoryManager(),
                                                            Base64::Conf_Schema), context->getMemoryManager());
 
