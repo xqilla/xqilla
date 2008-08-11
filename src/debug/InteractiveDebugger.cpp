@@ -1028,7 +1028,7 @@ void InteractiveDebugger::outputLocationFromString(const XMLCh *query, unsigned 
     }
     else if(*query == '\r') {
       ++curLine;
-      if(*(query + 1) != '\n') {
+      if(*(query + 1) == '\n') {
         ++query;
       }
     }
@@ -1043,11 +1043,11 @@ void InteractiveDebugger::outputLocationFromString(const XMLCh *query, unsigned 
 
       if(*query == '\n' || *query == '\r') {
         if(curLine < 100) cerr << " ";
-        if(curLine < 10) cerr << "  ";
+        if(curLine < 10) cerr << " ";
         cerr << curLine << ": " << UTF8(query_line.getRawBuffer()) << endl;
         query_line.reset();
         ++curLine;
-        if(*query == '\r' && *(query + 1) != '\n') {
+        if(*query == '\r' && *(query + 1) == '\n') {
           ++query;
         }
       }
