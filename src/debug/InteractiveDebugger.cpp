@@ -58,7 +58,7 @@ static string regexFind(const char *regex, const string &str, int groupNo = 1)
 
 #ifdef HAVE_ALLMATCHES
     RefVectorOf<XERCES_CPP_NAMESPACE_QUALIFIER Match> matches(10, true);
-    re.allMatches(str16.unicodeForm(), 0, XMLString::stringLen(str16.unicodeForm()), &matches);
+    re.allMatches(str16.str(), 0, XMLString::stringLen(str16.str()), &matches);
     if(matches.size() >= 1) {
       XERCES_CPP_NAMESPACE_QUALIFIER Match *match = matches.elementAt(0);
       if(match->getNoGroups() >= groupNo && match->getStartPos(groupNo) != -1)
@@ -66,7 +66,7 @@ static string regexFind(const char *regex, const string &str, int groupNo = 1)
     }
 #else
     XERCES_CPP_NAMESPACE_QUALIFIER Match match;
-    if(re.matches(str16.unicodeForm(), 0, XMLString::stringLen(str16.unicodeForm()), &match)) {
+    if(re.matches(str16.str(), 0, XMLString::stringLen(str16.str()), &match)) {
       if(match.getNoGroups() >= groupNo && match.getStartPos(groupNo) != -1)
         return str.substr(match.getStartPos(groupNo), match.getEndPos(groupNo) - match.getStartPos(groupNo));
     }

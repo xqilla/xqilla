@@ -23,25 +23,37 @@
 #include <xercesc/util/XMLString.hpp>
 #include <xqilla/utils/UTF8Str.hpp>
 
-UTF8Str::UTF8Str(const XMLCh* const toTranscode)
+XERCES_CPP_NAMESPACE_USE;
+
+UTF8Str::UTF8Str(const XMLCh* const toTranscode, MemoryManager *mm)
+  : str_(0),
+    mm_(mm)
 {
   if(toTranscode == 0) {
-    fUTF8Form = new XMLByte[1];
-    fUTF8Form[0] = 0;
+    str_ = mm_ ? (XMLByte*)mm_->allocate(1 * sizeof(XMLByte)) : new XMLByte[1];
+    str_[0] = 0;
   }
   else {
     XERCES_CPP_NAMESPACE_QUALIFIER XMLUTF8Transcoder t(0, 512);
     size_t l = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(toTranscode);
     const size_t needed = l * 3 + 1; // 3 bytes per XMLCh is the worst case, + '\0'
-    fUTF8Form = new XMLByte[needed];
+    str_ = mm_ ? (XMLByte*)mm_->allocate(needed * sizeof(XMLByte)) : new XMLByte[needed];
 #if _XERCES_VERSION >= 30000
     XMLSize_t charsEaten= 0;
-    t.transcodeTo(toTranscode, l+1, fUTF8Form,
+    t.transcodeTo(toTranscode, l+1, str_,
                   needed, charsEaten, XERCES_CPP_NAMESPACE_QUALIFIER XMLTranscoder::UnRep_Throw);
 #else
     unsigned int charsEaten= 0;
-    t.transcodeTo(toTranscode, (unsigned int)l+1, fUTF8Form, 
+    t.transcodeTo(toTranscode, (unsigned int)l+1, str_, 
                   (unsigned int)needed, charsEaten, XERCES_CPP_NAMESPACE_QUALIFIER XMLTranscoder::UnRep_Throw);
 #endif
+  }
+}
+
+UTF8Str::~UTF8Str()
+{
+  if(str_) {
+    if(mm_) mm_->deallocate(str_);
+    else delete [] str_;
   }
 }

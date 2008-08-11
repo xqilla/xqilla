@@ -23,35 +23,33 @@
 #define _UTF8STR_HPP
 
 #include <xqilla/framework/XQillaExport.hpp>
-#include <xercesc/util/XercesDefs.hpp>
 
+#include <xercesc/util/XercesDefs.hpp>
 #include <xercesc/util/XMLUTF8Transcoder.hpp>
 
 class XQILLA_API UTF8Str
 {
 public :
-  UTF8Str(const XMLCh* const toTranscode);
-  ~UTF8Str()
+  UTF8Str(const XMLCh* const toTranscode, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mm = 0);
+  ~UTF8Str();
+
+  const char *str() const
   {
-    delete [] fUTF8Form;
+    return (char*)str_;
   }
 
-  const char* UTF8Form() const
+  char *adopt()
   {
-    return (char*)fUTF8Form;
-  }
-
-  char* adopt()
-  {
-    char *result = (char*)fUTF8Form;
-    fUTF8Form = 0;
+    char *result = (char*)str_;
+    str_ = 0;
     return result;
   }
 
 private :
-  XMLByte *fUTF8Form;
+  XMLByte *str_;
+  XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mm_;
 };
 
-#define UTF8(str) UTF8Str((const XMLCh*)(str)).UTF8Form()
+#define UTF8(strg) UTF8Str((const XMLCh*)(strg)).str()
 
 #endif

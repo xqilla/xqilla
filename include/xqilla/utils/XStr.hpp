@@ -3,42 +3,33 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xercesc/util/XercesDefs.hpp>
+#include <xercesc/framework/MemoryManager.hpp>
 
 // From Xerces 2.0
-
-// ---------------------------------------------------------------------------
-//  This is a simple class that lets us do easy (though not terribly efficient)
-//  trancoding of char* data to XMLCh data.
-// ---------------------------------------------------------------------------
 
 class XQILLA_API XStr
 {
 public :
-    // -----------------------------------------------------------------------
-    //  Constructors and Destructor
-    // -----------------------------------------------------------------------
-    XStr(const char* const toTranscode);
-    ~XStr();
+  XStr(const char* const toTranscode, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mm = 0);
+  ~XStr();
 
+  const XMLCh *str() const
+  {
+    return str_;
+  }
 
-    // -----------------------------------------------------------------------
-    //  Getter methods
-    // -----------------------------------------------------------------------
-    const XMLCh* unicodeForm() const
-    {
-        return fUnicodeForm;
-    }
+  XMLCh *adopt()
+  {
+    XMLCh *result = (XMLCh*)str_;
+    str_ = 0;
+    return result;
+  }
 
 private :
-    // -----------------------------------------------------------------------
-    //  Private data members
-    //
-    //  fUnicodeForm
-    //      This is the Unicode XMLCh format of the string.
-    // -----------------------------------------------------------------------
-    XMLCh*   fUnicodeForm;
+  XMLCh *str_;
+  XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mm_;
 };
 
-#define X(str) XStr(str).unicodeForm()
+#define X(strg) XStr(strg).str()
 
 #endif
