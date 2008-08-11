@@ -121,6 +121,7 @@ int main(int argc, char *argv[])
   string outputErrorFile;
   bool xmlResults = false;
   bool update = false;
+  bool xslt = false;
 
   XercesConfiguration xercesConf;
   FastXDMConfiguration fastConf;
@@ -159,6 +160,10 @@ int main(int argc, char *argv[])
       case 'u': {
         update = true;
         conf = &xercesConf;
+        break;
+      }
+      case 's': {
+        xslt = true;
         break;
       }
       case 'x': {
@@ -233,7 +238,11 @@ int main(int argc, char *argv[])
     return 1;
   }
 
-  XQillaTestSuiteRunner runner(singleTest, &knownErrors, conf, update ? XQilla::XQUERY_UPDATE : XQilla::XQUERY);
+  XQilla::Language lang = XQilla::XQUERY;
+  if(update) lang = XQilla::XQUERY_UPDATE;
+  else if(xslt) lang = XQilla::XSLT2;
+
+  XQillaTestSuiteRunner runner(singleTest, &knownErrors, conf, lang);
   TestSuiteParser parser(testSuitePath, &runner);
 
   parser.run();

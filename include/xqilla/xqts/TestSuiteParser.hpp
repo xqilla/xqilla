@@ -38,7 +38,9 @@ class XQILLA_API TestCase
 {
 public:
   std::string name;
+  std::string description;
   bool updateTest;
+  bool xsltTest;
   int stateTime;
   std::string queryURL;
   std::string query;
@@ -72,6 +74,8 @@ private:
 
 private:
   TestSuiteRunner *runner_;
+  bool xslt_;
+  std::string xsltGroupName_;
 
   XERCES_CPP_NAMESPACE_QUALIFIER XMLURL urlXQTSCatalog_, urlXQTSQueriesDirectory_, urlXQTSResultsDirectory_, 
     urlBasePath_, urlBasePathReferenceFiles_, urlQuery_;

@@ -69,9 +69,21 @@ void TestSuiteRunner::testResults(const TestCase &testCase, const std::string &x
         return;
       }
 
-      if(compareMethod=="Text" || compareMethod=="Fragment" || compareMethod=="XML") {
+//       <xs:enumeration value="xml"/>
+//       <xs:enumeration value="xml-output"/>
+//       <xs:enumeration value="html-output"/>
+//       <xs:enumeration value="xhtml-output"/>
+//       <xs:enumeration value="xml-frag"/>
+//       <xs:enumeration value="text"/>
+//       <xs:enumeration value="ignore"/>
+//       <xs:enumeration value="inspect"/>                  
+
+      if(compareMethod=="Text" || compareMethod=="Fragment" || compareMethod=="XML" ||
+         compareMethod=="text" || compareMethod=="xml-frag" || compareMethod=="xml" ||
+         compareMethod=="xml-output" || compareMethod=="xhtml-output") {
         outputResult = xmlResult;
-        if(compareMethod=="Text" || compareMethod=="Fragment") {
+        if(compareMethod=="Text" || compareMethod=="Fragment" ||
+           compareMethod=="text" || compareMethod=="xml-frag") {
           expectedResult="<wrapper>"+expectedResult+"</wrapper>";
           outputResult="<wrapper>"+outputResult+"</wrapper>";
         }
@@ -94,7 +106,7 @@ void TestSuiteRunner::testResults(const TestCase &testCase, const std::string &x
         }
         catch(...) {}
       }
-      else if(compareMethod == "Inspect") {
+      else if(compareMethod == "Inspect" || compareMethod == "inspect") {
         // Try if they match 
         if(expectedResult==xmlResult)
           passed=true;
