@@ -30,7 +30,7 @@ XERCES_CPP_NAMESPACE_USE;
 XQLexer::XQLexer(XPath2MemoryManager* memMgr, const XMLCh *queryFile, const XMLCh* query, XQilla::Language lang)
   : Lexer(memMgr, lang, queryFile, 1, 1),
     firstToken_(_LANG_XQUERY_),
-    parseAttrValueTemplate_(false),
+    mode_(MODE_NORMAL),
     m_szQuery(XPath2Utils::normalizeEOL(query, memMgr)),
     m_nLength(XMLString::stringLen(m_szQuery)),
     m_position(0),
@@ -53,10 +53,10 @@ XQLexer::XQLexer(XPath2MemoryManager* memMgr, const XMLCh *queryFile, const XMLC
 }
 
 XQLexer::XQLexer(XPath2MemoryManager* memMgr, const XMLCh *queryFile, int line, int column, const XMLCh* query,
-                 XQilla::Language lang, bool attrValueTemplate)
+                 XQilla::Language lang, StartMode mode)
   : Lexer(memMgr, lang, queryFile, line, column),
     firstToken_(MYEOF),
-    parseAttrValueTemplate_(attrValueTemplate),
+    mode_(mode),
     m_szQuery(XPath2Utils::normalizeEOL(query, memMgr)),
     m_nLength(XMLString::stringLen(m_szQuery)),
     m_position(0),
@@ -68,7 +68,7 @@ XQLexer::XQLexer(XPath2MemoryManager* memMgr, const XMLCh *queryFile, int line, 
 XQLexer::XQLexer(const XQLexer *other)
   : Lexer(other->mm_, other->m_language, other->m_szQueryFile, 1, 1),
     firstToken_(MYEOF),
-    parseAttrValueTemplate_(false),
+    mode_(MODE_NORMAL),
     m_szQuery(other->m_szQuery + other->m_index),
     m_nLength(other->m_nLength - other->m_index),
     m_position(0),

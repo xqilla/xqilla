@@ -109,6 +109,8 @@ typedef union {
   XQUserFunction* functDecl;
   XQUserFunction::ArgumentSpec* argSpec;
   XQUserFunction::ArgumentSpecs* argSpecs;
+  XQUserFunction::Mode* mode;
+  XQUserFunction::ModeList* modeList;
   XQGlobalVariable *globalVar;
   NodeTest *nodeTest;
   XQStep::Axis axis;
@@ -210,9 +212,15 @@ protected:
 class XQILLA_API XQLexer : public Lexer, public yyFlexLexer
 {
 public:
+  enum StartMode {
+    MODE_NORMAL,
+    MODE_ATTR_VALUE_TEMPLATE,
+    MODE_TEMPLATE_MODES
+  };
+
   XQLexer(XPath2MemoryManager* memMgr, const XMLCh *queryFile, const XMLCh* query, XQilla::Language lang);
   XQLexer(XPath2MemoryManager* memMgr, const XMLCh *queryFile, int line, int column, const XMLCh* query,
-          XQilla::Language lang, bool attrValueTemplate = false);
+          XQilla::Language lang, StartMode mode = MODE_NORMAL);
 
   // Implemented in XQLexer.cpp, output of XQLexer.l
   int yylex();
@@ -250,7 +258,7 @@ protected:
   YYLTYPE yyloc;
 
   int firstToken_;
-  bool parseAttrValueTemplate_;
+  StartMode mode_;
 
   const XMLCh* m_szQuery;
   unsigned int m_nLength;

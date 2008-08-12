@@ -77,6 +77,7 @@ XQUserFunction::XQUserFunction(const XMLCh *qname, ArgumentSpecs *argSpecs, ASTN
     qname_(qname),
     pattern_(0),
     templateInstance_(0),
+    modes_(0),
     returnType_(returnType),
     argSpecs_(argSpecs),
     isGlobal_(isGlobal),
@@ -96,6 +97,7 @@ XQUserFunction::XQUserFunction(const XMLCh *qname, VectorOfASTNodes *pattern, Ar
     qname_(qname),
     pattern_(pattern),
     templateInstance_(0),
+    modes_(0),
     returnType_(returnType),
     argSpecs_(argSpecs),
     isGlobal_(true),
@@ -130,6 +132,23 @@ void XQUserFunction::ArgumentSpec::staticResolution(StaticContext* context)
                        StaticAnalysis::PEER | StaticAnalysis::SUBTREE | StaticAnalysis::SAMEDOC |
                        StaticAnalysis::ONENODE | StaticAnalysis::SELF);
   }
+}
+
+void XQUserFunction::Mode::staticResolution(StaticContext* context)
+{
+  if(qname_ != 0) {
+    uri_ = context->getUriBoundToPrefix(XPath2NSUtils::getPrefix(qname_, context->getMemoryManager()), this);
+    name_ = XPath2NSUtils::getLocalName(qname_);
+  }
+}
+
+bool XQUserFunction::Mode::equals(const Mode *o) const
+{
+  if(o == 0) return state_ == DEFAULT;
+  if(state_ == ALL || o->state_ == CURRENT) return true;
+
+  return state_ == o->state_ && XPath2Utils::equals(uri_, o->uri_) &&
+    XPath2Utils::equals(name_, o->name_);
 }
 
 void XQUserFunction::staticResolutionStage1(StaticContext *context)
@@ -217,6 +236,41 @@ void XQUserFunction::staticResolutionStage1(StaticContext *context)
           buf.append((*it)->getName());
           buf.append(X("' [err:XQST0039]"));
           XQThrow(StaticErrorException, X("XQUserFunction::staticResolution"), buf.getRawBuffer());
+        }
+      }
+    }
+  }
+
+  // Resolve the mode names
+  if(modes_) {
+    if(modes_->empty()) {
+      XQThrow(StaticErrorException, X("XQUserFunction::staticResolution"),
+              X("At least one mode must be specified for a template [err:XTSE0550]"));
+    }
+
+    ModeList::iterator it, it2;
+    for(it = modes_->begin(); it != modes_->end(); ++it) {
+      (*it)->staticResolution(context);
+
+      // Check for "#all" with other values
+      if((*it)->getState() == Mode::ALL && modes_->size() != 1) {
+        XQThrow3(StaticErrorException, X("XQUserFunction::staticResolution"),
+                 X("The mode #all must not be specified in addition to other modes [err:XTSE0550]"), *it);
+      }
+
+      // Check for duplicate modes
+      it2 = it;
+      for(++it2; it2 != modes_->end(); ++it2) {
+        if((*it)->getState() == (*it2)->getState() &&
+           XPath2Utils::equals((*it)->getName(), (*it2)->getName()) &&
+           XPath2Utils::equals((*it)->getURI(), (*it2)->getURI())) {
+          XMLBuffer buf;
+          buf.append(X("The mode {"));
+          buf.append((*it)->getURI());
+          buf.append(X("}"));
+          buf.append((*it)->getName());
+          buf.append(X(" has been specified more than once [err:XTSE0550]"));
+          XQThrow3(StaticErrorException, X("XQUserFunction::staticResolution"), buf.getRawBuffer(), *it2);
         }
       }
     }

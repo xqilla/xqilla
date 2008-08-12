@@ -169,6 +169,7 @@ CharRef "&#"({Digits}|("x"{HexDigits}))";"
 %x XML_COMMENT
 %x COMPUTED_CONSTRUCTOR
 %x ATTR_VALUE_TEMPLATE
+%x TEMPLATE_MODES
 
 %{
 const char *xqGetStateName(int state)
@@ -189,6 +190,7 @@ const char *xqGetStateName(int state)
   case XML_COMMENT: return "XML_COMMENT";
   case COMPUTED_CONSTRUCTOR: return "COMPUTED_CONSTRUCTOR";
   case ATTR_VALUE_TEMPLATE: return "ATTR_VALUE_TEMPLATE";
+  case TEMPLATE_MODES: return "TEMPLATE_MODES";
   }
   return "unknown";
 }
@@ -209,9 +211,17 @@ void XQLexer::undoLessThan()
     RECOGNIZE(token);
   }
 
-  if(parseAttrValueTemplate_) {
-    parseAttrValueTemplate_ = false;
+  switch(mode_) {
+  case MODE_ATTR_VALUE_TEMPLATE:
+    mode_ = MODE_NORMAL;
     CHANGE_STATE(ATTR_VALUE_TEMPLATE);
+    break;
+  case MODE_TEMPLATE_MODES:
+    mode_ = MODE_NORMAL;
+    CHANGE_STATE(TEMPLATE_MODES);
+    break;
+  case MODE_NORMAL:
+    break;
   }
 %}
 
@@ -434,6 +444,13 @@ void XQLexer::undoLessThan()
 <INITIAL>"templates" {
   if(isExtensions()) {
     RECOGNIZE_VALUE(_TEMPLATES_, yytext);
+  } else {
+    RECOGNIZE_VALUE(_QNAME_, yytext);
+  }
+}
+<INITIAL>"mode" {
+  if(isExtensions()) {
+    RECOGNIZE_VALUE(_MODE_, yytext);
   } else {
     RECOGNIZE_VALUE(_QNAME_, yytext);
   }
@@ -667,7 +684,13 @@ void XQLexer::undoLessThan()
 <INITIAL>{NCName}":*" RECOGNIZE_VALUE_LEN(_NCNAME_COLON_STAR_, yytext, yyleng - 2);
 <INITIAL>"*:"{NCName} RECOGNIZE_VALUE(_STAR_COLON_NCNAME_, yytext + 2);
 
-<INITIAL,START_TAG,END_TAG>{WhitespaceChar}+ RECOGNIZE(_WHITESPACE_);
+<START_TAG,END_TAG>{WhitespaceChar}+ RECOGNIZE(_WHITESPACE_);
+
+<TEMPLATE_MODES>{QName} RECOGNIZE_VALUE(_QNAME_, yytext);
+<INITIAL,TEMPLATE_MODES>"#default" RECOGNIZE(_HASH_DEFAULT_);
+<INITIAL,TEMPLATE_MODES>"#all" RECOGNIZE(_HASH_ALL_);
+<INITIAL,TEMPLATE_MODES>"#current" RECOGNIZE(_HASH_CURRENT_);
+<TEMPLATE_MODES>{WhitespaceChar}+ /* Do nothing */
 
 <INITIAL>{NotNumber} {
   std::ostringstream oss;

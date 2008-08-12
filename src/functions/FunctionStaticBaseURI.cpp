@@ -57,7 +57,7 @@ ASTNode* FunctionStaticBaseURI::staticResolution(StaticContext *context) {
 
   ItemConstructor *item = new (mm) AnyAtomicTypeConstructor(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                                                             SchemaSymbols::fgDT_ANYURI,
-                                                            context->getBaseURI(),
+                                                            context->getBaseURI() ? context->getBaseURI() : XMLUni::fgZeroLenString,
                                                             AnyAtomicType::ANY_URI);
   ASTNode* newBlock = new (mm) XQSequence(item, mm);
   newBlock->setLocationInfo(this);

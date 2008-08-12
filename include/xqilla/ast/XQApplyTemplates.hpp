@@ -29,7 +29,7 @@
 class XQILLA_API XQApplyTemplates : public ASTNodeImpl
 {
 public:
-  XQApplyTemplates(ASTNode *expr, TemplateArguments *args, XPath2MemoryManager *mm);
+  XQApplyTemplates(ASTNode *expr, TemplateArguments *args, XQUserFunction::Mode *mode, XPath2MemoryManager *mm);
 
   virtual ASTNode *staticResolution(StaticContext *context);
   virtual ASTNode *staticTyping(StaticContext *context);
@@ -39,6 +39,8 @@ public:
   void setExpression(ASTNode *expr) { expr_ = expr; }
   TemplateArguments *getArguments() const { return args_; }
   void setArguments(TemplateArguments *args) { args_ = args; }
+  XQUserFunction::Mode *getMode() const { return mode_; }
+  void setMode(XQUserFunction::Mode *mode) { mode_ = mode; }
   const UserFunctions &getTemplates() const { return templates_; }
 
   void evaluateArguments(VarStoreImpl &scope, DynamicContext *context) const;
@@ -46,6 +48,7 @@ public:
 private:
   ASTNode *expr_;
   TemplateArguments *args_;
+  XQUserFunction::Mode *mode_;
   UserFunctions templates_;
 };
 

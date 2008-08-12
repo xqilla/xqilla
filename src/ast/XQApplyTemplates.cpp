@@ -34,10 +34,11 @@
 using namespace std;
 XERCES_CPP_NAMESPACE_USE;
 
-XQApplyTemplates::XQApplyTemplates(ASTNode *expr, TemplateArguments *args, XPath2MemoryManager *mm)
+XQApplyTemplates::XQApplyTemplates(ASTNode *expr, TemplateArguments *args, XQUserFunction::Mode *mode, XPath2MemoryManager *mm)
   : ASTNodeImpl(APPLY_TEMPLATES, mm),
     expr_(expr),
     args_(args),
+    mode_(mode),
     templates_(XQillaAllocator<XQUserFunction*>(mm))
 {
 }
@@ -83,6 +84,10 @@ ASTNode* XQApplyTemplates::staticResolution(StaticContext *context)
     }
   }
 
+  if(mode_ != 0) {
+    mode_->staticResolution(context);
+  }
+
   return this;
 }
 
@@ -109,12 +114,30 @@ ASTNode *XQApplyTemplates::staticTyping(StaticContext *context)
 
   UserFunctions::iterator inIt;
   VectorOfASTNodes::iterator patIt;
+  XQUserFunction::ModeList::iterator modeIt;
+  bool found;
   for(inIt = templates_.begin(); inIt != templates_.end(); ++inIt) {
     if((*inIt) == 0) continue;
 
+    // Eliminate templates based on mode
+    found = false;
+    for(modeIt = (*inIt)->getModeList()->begin();
+        modeIt != (*inIt)->getModeList()->end(); ++modeIt) {
+      if((*modeIt)->equals(mode_)) {
+        found = true;
+        break;
+      }
+    }
+
+    if(!found) {
+      // We can't match this template
+      *inIt = 0;
+      continue;
+    }
+
     // See if we can eliminate some templates based on the static type
     // of the select expression
-    bool found = false;
+    found = false;
     for(patIt = (*inIt)->getPattern()->begin();
         patIt != (*inIt)->getPattern()->end(); ++patIt) {
       if((*patIt)->getStaticAnalysis().getStaticType().containsType(expr_->getStaticAnalysis().getStaticType())) {
@@ -122,21 +145,22 @@ ASTNode *XQApplyTemplates::staticTyping(StaticContext *context)
         break;
       }
     }
-    if(found) {
-      if(first) {
-        first = false;
-        _src.getStaticType() = (*inIt)->getTemplateInstance()->getStaticAnalysis().getStaticType();
-        _src.setProperties((*inIt)->getTemplateInstance()->getStaticAnalysis().getProperties());
-      } else {
-        _src.getStaticType() |= (*inIt)->getTemplateInstance()->getStaticAnalysis().getStaticType();
-        _src.setProperties(_src.getProperties() & (*inIt)->getTemplateInstance()->getStaticAnalysis().getProperties());
-      }
-      newSrc.add((*inIt)->getTemplateInstance()->getStaticAnalysis());
-    }
-    else {
+
+    if(!found) {
       // We can't match this template
       *inIt = 0;
+      continue;
     }
+
+    if(first) {
+      first = false;
+      _src.getStaticType() = (*inIt)->getTemplateInstance()->getStaticAnalysis().getStaticType();
+      _src.setProperties((*inIt)->getTemplateInstance()->getStaticAnalysis().getProperties());
+    } else {
+      _src.getStaticType() |= (*inIt)->getTemplateInstance()->getStaticAnalysis().getStaticType();
+      _src.setProperties(_src.getProperties() & (*inIt)->getTemplateInstance()->getStaticAnalysis().getProperties());
+    }
+    newSrc.add((*inIt)->getTemplateInstance()->getStaticAnalysis());
   }
 
   if(args_ != 0) {
@@ -211,6 +235,10 @@ public:
       UserFunctions::const_iterator it = templates_.begin();
       for(; tplt == 0 && it != templates_.end(); ++it) {
         if(*it == 0) continue;
+
+        if(ast_->getMode() && ast_->getMode()->getState() == XQUserFunction::Mode::CURRENT) {
+          // TBD filter on the current mode - jpcs
+        }
 
         VectorOfASTNodes::const_iterator patIt = (*it)->getPattern()->begin();
         for(; patIt != (*it)->getPattern()->end(); ++patIt) {
