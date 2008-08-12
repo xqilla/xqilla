@@ -332,7 +332,7 @@ void XQillaTestSuiteRunner::runTestCase(const TestCase &testCase)
     return;
   }
 
-  if(m_szFullTestName.substr(0,21)=="Optional:StaticTyping") {
+  if(m_szFullTestName.substr(0,21)=="Optional:StaticTyping" && !testCase.updateTest) {
     m_results->reportSkip(testCase, "Static typing not supported");
     return;
   }
