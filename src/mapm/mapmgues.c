@@ -120,6 +120,7 @@ double m_apm_get_double(M_APM atmp)
   UCHAR	numdiv, numrem;
 
   double result = 0;
+  int index=0;
 
   int max_i = (atmp->m_apm_datalength + 1) >> 1;
   if(max_i > ((17 + 1) >> 1)) {
@@ -128,7 +129,6 @@ double m_apm_get_double(M_APM atmp)
     max_i = ((17 + 1) >> 1);
   }
 
-  int index = 0;
   for(; index < max_i; ++index) {
     M_get_div_rem_10((int)atmp->m_apm_data[index], &numdiv, &numrem);
     result = result * 100 + (double)numdiv * 10 + numrem;
