@@ -156,6 +156,10 @@ Item::Ptr AnalyzeStringResult::next(DynamicContext *context)
     try {
       // Parse and execute the regular expression
       RegularExpression regEx(pattern, optionsBuf.getRawBuffer(), mm);
+
+      if(regEx.matches(XMLUni::fgZeroLenString))
+        XQThrow(ASTException, X("AnalyzeStringResult::next"), X("The pattern matches the zero-length string [err:XTDE1150]"));
+
       regEx.allMatches(input_, 0, XMLString::stringLen(input_), &matches_);
     }
     catch (ParseException &e){ 

@@ -572,6 +572,7 @@ namespace XQParser {
 %token <str> _CALL_                                           "call"
 %token <str> _APPLY_                                          "apply"
 %token <str> _TEMPLATES_                                      "templates"
+%token <str> _MODE_                                           "mode"
 
 /* XSLT 2.0 tokens */
 %token _XSLT_END_ELEMENT_                                     "<XSLT end element>"
@@ -623,6 +624,11 @@ namespace XQParser {
 %token <astNode> _XSLT_ATTR_NAME_                             "<XSLT attr name>"
 %token <astNode> _XSLT_TEXT_NODE_                             "<XSLT text node>"
 %token <astNode> _XSLT_WS_TEXT_NODE_                          "<XSLT whitespace text node>"
+
+%token _HASH_DEFAULT_                                         "#default"
+%token _HASH_ALL_                                             "#all"
+%token _HASH_CURRENT_                                         "#current"
+
 
 %type <functDecl>    FunctionDecl FunctionDecl_XQ TemplateDecl FunctionAttrs_XSLT TemplateAttrs_XSLT
 %type <globalVar>    GlobalVariableAttrs_XSLT GlobalParamAttrs_XSLT
@@ -683,6 +689,9 @@ namespace XQParser {
 %type <str>             PositionalVar SchemaPrefix URILiteral FTScoreVar DirCommentContents DirElemConstructorQName
 %type <str>             FunctionName QNameValue VarName NCName DirPIContents PragmaContents Number_XSLT
 
+%type <modeList>        TemplateModes_XSLT TemplateDeclModesSection TemplateDeclModes
+%type <mode>            ApplyTemplatesMode_XSLT ApplyTemplatesMode TemplateDeclMode
+
 %type <boolean> FunctionDeclUpdating PreserveMode InheritMode
 
 %start SelectLanguage
@@ -694,13 +703,13 @@ namespace XQParser {
 // 2 arise from the xgs:occurrence-indicator grammar constriant (http://www.w3.org/TR/xquery/#parse-note-occurence-indicators)
 //%expect 50
 
-// We're expecting 76 shift/reduce conflicts. These have been checked and are harmless.
+// We're expecting 87 shift/reduce conflicts. These have been checked and are harmless.
 // 48 arise from the xgs:leading-lone-slash grammar constraint (http://www.w3.org/TR/xquery/#parse-note-leading-lone-slash)
 // 3 arise from the xgs:occurrence-indicator grammar constriant (http://www.w3.org/TR/xquery/#parse-note-occurence-indicators)
-// 14 are due to template extensions
+// 17 are due to template extensions
 // 18 are due to Variable_XSLT
 // 1 is due to FunctionType
-%expect 84
+%expect 87
 
 %%
 
@@ -743,7 +752,7 @@ Start_XSLT:
     ASTNode *empty =  WRAP(@1, new (MEMMGR) XQSequence(MEMMGR));
 
     ASTNode *ci = WRAP(@1, new (MEMMGR) XQContextItem(MEMMGR));
-    ASTNode *apply = WRAP(@1, new (MEMMGR) XQApplyTemplates(ci, 0, MEMMGR));
+    ASTNode *apply = WRAP(@1, new (MEMMGR) XQApplyTemplates(ci, 0, 0, MEMMGR));
 
     ASTNode *nameVarRef2 = WRAP(@1, new (MEMMGR) XQVariable(XQillaFunction::XMLChFunctionURI, var_name, MEMMGR));
     QP->_query->setQueryBody(WRAP(@1, new (MEMMGR) XQIf(nameVarRef2, empty, apply, MEMMGR)));
@@ -760,11 +769,17 @@ Start_XSLT:
     VectorOfASTNodes *pattern = new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
     pattern->push_back(WRAP(@1, new (MEMMGR) XQStep(XQStep::SELF, nt, MEMMGR)));
 
-    QP->_query->addFunction(WRAP(@1, new (MEMMGR) XQUserFunction(0, pattern, 0, $1, 0, MEMMGR)));
+    XQUserFunction::ModeList *modelist = new (MEMMGR) XQUserFunction::ModeList(XQillaAllocator<XQUserFunction::Mode*>(MEMMGR));
+    modelist->push_back(WRAP(@1, new (MEMMGR) XQUserFunction::Mode(XQUserFunction::Mode::DEFAULT)));
+
+    XQUserFunction *func = WRAP(@1, new (MEMMGR) XQUserFunction(0, pattern, 0, $1, 0, MEMMGR));
+    func->setModeList(modelist);
+
+    QP->_query->addFunction(func);
 
     // TBD execution of a named template - jpcs
     ASTNode *ci = WRAP(@1, new (MEMMGR) XQContextItem(MEMMGR));
-    QP->_query->setQueryBody(WRAP(@1, new (MEMMGR) XQApplyTemplates(ci, 0, MEMMGR)));
+    QP->_query->setQueryBody(WRAP(@1, new (MEMMGR) XQApplyTemplates(ci, 0, 0, MEMMGR)));
   }
   ;
 
@@ -798,6 +813,12 @@ Template_XSLT:
       yyerror(@1, "The xsl:template declaration does not have either a {}name or {}match attribute, or both [err:XTSE0500]");
     }
 
+    if($1->getPattern() != 0 && $1->getModeList() == 0) {
+      XQUserFunction::ModeList *modelist = new (MEMMGR) XQUserFunction::ModeList(XQillaAllocator<XQUserFunction::Mode*>(MEMMGR));
+      modelist->push_back(WRAP(@1, new (MEMMGR) XQUserFunction::Mode(XQUserFunction::Mode::DEFAULT)));
+      $1->setModeList(modelist);
+    }
+
     $1->setArgumentSpecs($2);
     $1->setFunctionBody($3);
     QP->_query->addFunction($1);
@@ -826,15 +847,38 @@ TemplateAttrs_XSLT:
     $$ = $1;
     // TBD priority - jpcs
   }
-  | TemplateAttrs_XSLT _XSLT_MODE_
+  | TemplateAttrs_XSLT _XSLT_MODE_ TemplateModes_XSLT
   {
     $$ = $1;
-    // TBD mode - jpcs
+    $$->setModeList($3);
   }
   | TemplateAttrs_XSLT _XSLT_AS_ SequenceType
   {
     $$ = $1;
     $$->setReturnType($3);
+  }
+  ;
+
+TemplateModes_XSLT:
+    /* empty */
+  {
+    $$ = new (MEMMGR) XQUserFunction::ModeList(XQillaAllocator<XQUserFunction::Mode*>(MEMMGR));
+  }
+  | TemplateModes_XSLT _QNAME_
+  {
+    RESOLVE_QNAME(@2, $2);
+    $1->push_back(WRAP(@2, new (MEMMGR) XQUserFunction::Mode(uri, name)));
+    $$ = $1;
+  }
+  | TemplateModes_XSLT _HASH_DEFAULT_
+  {
+    $1->push_back(WRAP(@2, new (MEMMGR) XQUserFunction::Mode(XQUserFunction::Mode::DEFAULT)));
+    $$ = $1;
+  }
+  | TemplateModes_XSLT _HASH_ALL_
+  {
+    $1->push_back(WRAP(@2, new (MEMMGR) XQUserFunction::Mode(XQUserFunction::Mode::ALL)));
+    $$ = $1;
   }
   ;
 
@@ -1267,17 +1311,33 @@ ApplyTemplates_XSLT:
 ApplyTemplatesAttrs_XSLT:
     _XSLT_APPLY_TEMPLATES_
   {
-    $$ = WRAP(@1, new (MEMMGR) XQApplyTemplates(0, 0, MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) XQApplyTemplates(0, 0, 0, MEMMGR));
   }
   | ApplyTemplatesAttrs_XSLT _XSLT_SELECT_ Expr
   {
     $$ = $1;
     ((XQApplyTemplates*)$$)->setExpression(PRESERVE_NS(@2, $3));
   }
-  | ApplyTemplatesAttrs_XSLT _XSLT_MODE_
+  | ApplyTemplatesAttrs_XSLT _XSLT_MODE_ ApplyTemplatesMode_XSLT
   {
-    // TBD mode - jpcs
     $$ = $1;
+    ((XQApplyTemplates*)$$)->setMode($3);
+  }
+  ;
+
+ApplyTemplatesMode_XSLT:
+    _QNAME_
+  {
+    RESOLVE_QNAME(@1, $1);
+    $$ = WRAP(@1, new (MEMMGR) XQUserFunction::Mode(uri, name));
+  }
+  | _HASH_DEFAULT_
+  {
+    $$ = WRAP(@1, new (MEMMGR) XQUserFunction::Mode(XQUserFunction::Mode::DEFAULT));
+  }
+  | _HASH_CURRENT_
+  {
+    $$ = WRAP(@1, new (MEMMGR) XQUserFunction::Mode(XQUserFunction::Mode::CURRENT));
   }
   ;
 
@@ -1683,6 +1743,11 @@ Attribute_XSLT:
 
       VectorOfASTNodes *children = new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
       *children = $2->getChildren();
+      attr->setChildren(children);
+    }
+    else if(attr->getChildren() == 0) {
+      VectorOfASTNodes *children = new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
+      children->push_back(WRAP(@1, new (MEMMGR) XQSequence(MEMMGR)));
       attr->setChildren(children);
     }
   }
@@ -5103,8 +5168,8 @@ QName:
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Template Extension Rules
 
-// TemplateDecl ::= "declare" "template" (("name" QName)? "matches" Pattern) | ("name" QName)) ("(" ParamList? ")" ("as" SequenceType)?)?
-//                    EnclosedExpr
+// TemplateDecl ::= "declare" "template" ((("name" QName)? ("mode" TemplateDeclModes)? "matches" Pattern) | ("name" QName))
+//                  ("(" ParamList? ")" ("as" SequenceType)?)? EnclosedExpr
 TemplateDecl:
     _DECLARE_ _TEMPLATE_ _NAME_ QNameValue EnclosedExpr
   {
@@ -5114,21 +5179,25 @@ TemplateDecl:
   {
     $$ = WRAP(@1, new (MEMMGR) XQUserFunction($4, 0, $5, $7, $6, MEMMGR));
   }
-  | _DECLARE_ _TEMPLATE_ _NAME_ QNameValue _MATCHES_ Pattern_XSLT EnclosedExpr
+  | _DECLARE_ _TEMPLATE_ _NAME_ QNameValue TemplateDeclModesSection _MATCHES_ Pattern_XSLT EnclosedExpr
   {
-    $$ = WRAP(@1, new (MEMMGR) XQUserFunction($4, $6, 0, $7, 0, MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) XQUserFunction($4, $7, 0, $8, 0, MEMMGR));
+    $$->setModeList($5);
   }
-  | _DECLARE_ _TEMPLATE_ _NAME_ QNameValue _MATCHES_ Pattern_XSLT TemplateParamList TemplateSequenceType EnclosedExpr
+  | _DECLARE_ _TEMPLATE_ _NAME_ QNameValue TemplateDeclModesSection _MATCHES_ Pattern_XSLT TemplateParamList TemplateSequenceType EnclosedExpr
   {
-    $$ = WRAP(@1, new (MEMMGR) XQUserFunction($4, $6, $7, $9, $8, MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) XQUserFunction($4, $7, $8, $10, $9, MEMMGR));
+    $$->setModeList($5);
   }
-  | _DECLARE_ _TEMPLATE_ _MATCHES_ Pattern_XSLT EnclosedExpr
+  | _DECLARE_ _TEMPLATE_ TemplateDeclModesSection _MATCHES_ Pattern_XSLT EnclosedExpr
   {
-    $$ = WRAP(@1, new (MEMMGR) XQUserFunction(0, $4, 0, $5, 0, MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) XQUserFunction(0, $5, 0, $6, 0, MEMMGR));
+    $$->setModeList($3);
   }
-  | _DECLARE_ _TEMPLATE_ _MATCHES_ Pattern_XSLT TemplateParamList TemplateSequenceType EnclosedExpr
+  | _DECLARE_ _TEMPLATE_ TemplateDeclModesSection _MATCHES_ Pattern_XSLT TemplateParamList TemplateSequenceType EnclosedExpr
   {
-    $$ = WRAP(@1, new (MEMMGR) XQUserFunction(0, $4, $5, $7, $6, MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) XQUserFunction(0, $5, $6, $8, $7, MEMMGR));
+    $$->setModeList($3);
   }
   ;
 
@@ -5155,6 +5224,47 @@ TemplateParamList:
   }
   ;
 
+TemplateDeclModesSection:
+    /* empty */
+  {
+    $$ = new (MEMMGR) XQUserFunction::ModeList(XQillaAllocator<XQUserFunction::Mode*>(MEMMGR));
+    $$->push_back(WRAP(@$, new (MEMMGR) XQUserFunction::Mode(XQUserFunction::Mode::DEFAULT)));
+  }
+  | _MODE_ TemplateDeclModes
+  {
+    $$ = $2;
+  }
+  ;
+
+// TemplateDeclModes ::= TemplateDeclMode ("," TemplateDeclMode)*
+TemplateDeclModes:
+    TemplateDeclMode
+  {
+    $$ = new (MEMMGR) XQUserFunction::ModeList(XQillaAllocator<XQUserFunction::Mode*>(MEMMGR));
+    $$->push_back($1);
+  }
+  | TemplateDeclModes _COMMA_ TemplateDeclMode
+  {
+    $1->push_back($3);
+    $$ = $1;
+  }
+  ;
+
+// TemplateDeclMode ::= QName | "#default" | "#all"
+TemplateDeclMode:
+    _QNAME_
+  {
+    $$ = WRAP(@1, new (MEMMGR) XQUserFunction::Mode($1));
+  }
+  | _HASH_DEFAULT_
+  {
+    $$ = WRAP(@1, new (MEMMGR) XQUserFunction::Mode(XQUserFunction::Mode::DEFAULT));
+  }
+  | _HASH_ALL_
+  {
+    $$ = WRAP(@1, new (MEMMGR) XQUserFunction::Mode(XQUserFunction::Mode::ALL));
+  }
+  ;
 
 // CallTemplateExpr ::= "call" "template" QName ("with" "(" TemplateArgumentList ")")?
 CallTemplateExpr:
@@ -5168,16 +5278,39 @@ CallTemplateExpr:
   }
   ;
 
-// ApplyTemplatesExpr ::= "apply" "templates" ExprSingle ("with" "(" TemplateArgumentList ")")?
-// TBD mode - jpcs
+// ApplyTemplatesExpr ::= "apply" "templates" ("mode" ApplyTemplatesMode)? ExprSingle ("with" "(" TemplateArgumentList ")")?
 ApplyTemplatesExpr:
     _APPLY_ _TEMPLATES_ ExprSingle
   {
-    $$ = WRAP(@1, new (MEMMGR) XQApplyTemplates($3, 0, MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) XQApplyTemplates($3, 0, 0, MEMMGR));
   }
   |_APPLY_ _TEMPLATES_ ExprSingle _WITH_ _LPAR_ TemplateArgumentList _RPAR_
   {
-    $$ = WRAP(@1, new (MEMMGR) XQApplyTemplates($3, $6, MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) XQApplyTemplates($3, $6, 0, MEMMGR));
+  }
+  | _APPLY_ _TEMPLATES_ ExprSingle _MODE_ ApplyTemplatesMode
+  {
+    $$ = WRAP(@1, new (MEMMGR) XQApplyTemplates($3, 0, $5, MEMMGR));
+  }
+  |_APPLY_ _TEMPLATES_ ExprSingle _MODE_ ApplyTemplatesMode _WITH_ _LPAR_ TemplateArgumentList _RPAR_
+  {
+    $$ = WRAP(@1, new (MEMMGR) XQApplyTemplates($3, $8, $5, MEMMGR));
+  }
+  ;
+
+// ApplyTemplatesMode ::= QName | "#default" | "#current"
+ApplyTemplatesMode:
+    QNameValue
+  {
+    $$ = WRAP(@1, new (MEMMGR) XQUserFunction::Mode($1));
+  }
+  | _HASH_DEFAULT_
+  {
+    $$ = WRAP(@1, new (MEMMGR) XQUserFunction::Mode(XQUserFunction::Mode::DEFAULT));
+  }
+  | _HASH_CURRENT_
+  {
+    $$ = WRAP(@1, new (MEMMGR) XQUserFunction::Mode(XQUserFunction::Mode::CURRENT));
   }
   ;
 
@@ -5304,7 +5437,7 @@ _FUNCTION_ | _SCORE_ | _FTCONTAINS_ | _WEIGHT_ | _WINDOW_ | _DISTANCE_ | _OCCURS
 _DIFFERENT_ | _LOWERCASE_ | _UPPERCASE_ | _RELATIONSHIP_ | _LEVELS_ | _LANGUAGE_ | _ANY_ | _ALL_ | _PHRASE_ |
 _EXACTLY_ | _FROM_ | _WORDS_ | _SENTENCES_ | _PARAGRAPHS_ | _SENTENCE_ | _PARAGRAPH_ | _REPLACE_ | _MODIFY_ | _FIRST_ |
 _INSERT_ | _BEFORE_ | _AFTER_ | _REVALIDATION_ | _WITH_ | _NODES_ | _RENAME_ | _LAST_ | _DELETE_ | _INTO_ | _UPDATING_ |
-_ORDERED_ | _UNORDERED_ | _ID_ | _KEY_ | _TEMPLATE_ | _MATCHES_ | _NAME_ | _CALL_ | _APPLY_ | _TEMPLATES_
+_ORDERED_ | _UNORDERED_ | _ID_ | _KEY_ | _TEMPLATE_ | _MATCHES_ | _NAME_ | _CALL_ | _APPLY_ | _TEMPLATES_ | _MODE_
   ;
 
 /* _XQUERY_ | */

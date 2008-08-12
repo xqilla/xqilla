@@ -116,7 +116,8 @@ struct AttrData
     ATTR_VALUE_TEMPLATE,
     STRING,
     QNAME,
-    YESNO
+    YESNO,
+    TEMPLATE_MODES
   } type;
 };
 
@@ -136,7 +137,7 @@ const AttrData TEMPLATE_ATTR_DATA[] = {
   { MATCH_NAME, _XSLT_MATCH_, AttrData::PATTERN },
   NAME_ATTR_DATA,
   { PRIORITY_NAME, _XSLT_PRIORITY_, AttrData::EXPRESSION },
-  { MODE_NAME, _XSLT_MODE_, AttrData::STRING },
+  { MODE_NAME, _XSLT_MODE_, AttrData::TEMPLATE_MODES },
   AS_ATTR_DATA,
   END_ATTR_DATA
 };
@@ -155,7 +156,7 @@ const AttrData VALUE_OF_ATTR_DATA[] = {
 };
 
 const AttrData APPLY_TEMPLATES_ATTR_DATA[] = {
-  { MODE_NAME, _XSLT_MODE_, AttrData::STRING },
+  { MODE_NAME, _XSLT_MODE_, AttrData::TEMPLATE_MODES },
   SELECT_ATTR_DATA,
   END_ATTR_DATA
 };
@@ -394,20 +395,18 @@ int XSLT2Lexer::attrs_state(YYSTYPE* pYYLVAL, YYLTYPE* pYYLOC)
         if(XPath2Utils::equals(name, entry->name)) {
           switch(entry->type) {
           case AttrData::PATTERN:
-            childLexer_.set(new XQLexer(mm_, m_szQueryFile, attr->value.line, attr->value.column, nullTerm(attr->value.value, mm_),
-                                        (XQilla::Language)((m_language & ~XQilla::XSLT2) | XQilla::XPATH2)));
-            break;
           case AttrData::SEQUENCE_TYPE:
-            childLexer_.set(new XQLexer(mm_, m_szQueryFile, attr->value.line, attr->value.column, nullTerm(attr->value.value, mm_),
-                                        (XQilla::Language)((m_language & ~XQilla::XSLT2) | XQilla::XPATH2)));
-            break;
           case AttrData::EXPRESSION:
             childLexer_.set(new XQLexer(mm_, m_szQueryFile, attr->value.line, attr->value.column, nullTerm(attr->value.value, mm_),
                                         (XQilla::Language)((m_language & ~XQilla::XSLT2) | XQilla::XPATH2)));
             break;
           case AttrData::ATTR_VALUE_TEMPLATE:
             childLexer_.set(new XQLexer(mm_, m_szQueryFile, attr->value.line, attr->value.column, nullTerm(attr->value.value, mm_),
-                                        (XQilla::Language)((m_language & ~XQilla::XSLT2) | XQilla::XPATH2), /*attrValueTemplate*/true));
+                                        (XQilla::Language)((m_language & ~XQilla::XSLT2) | XQilla::XPATH2), XQLexer::MODE_ATTR_VALUE_TEMPLATE));
+            break;
+          case AttrData::TEMPLATE_MODES:
+            childLexer_.set(new XQLexer(mm_, m_szQueryFile, attr->value.line, attr->value.column, nullTerm(attr->value.value, mm_),
+                                        (XQilla::Language)((m_language & ~XQilla::XSLT2) | XQilla::XPATH2), XQLexer::MODE_TEMPLATE_MODES));
             break;
           case AttrData::STRING:
             pYYLVAL->str = (XMLCh*)nullTerm(attr->value.value, mm_);
@@ -445,7 +444,7 @@ int XSLT2Lexer::attrs_state(YYSTYPE* pYYLVAL, YYLTYPE* pYYLOC)
 
       // Set up childLexer_ to lex the attribute value as an attribute value template
       childLexer_.set(new XQLexer(mm_, m_szQueryFile, attr->value.line, attr->value.column, nullTerm(attr->value.value, mm_),
-                                  (XQilla::Language)((m_language & ~XQilla::XSLT2) | XQilla::XPATH2), /*attrValueTemplate*/true));
+                                  (XQilla::Language)((m_language & ~XQilla::XSLT2) | XQilla::XPATH2), XQLexer::MODE_ATTR_VALUE_TEMPLATE));
 
       RECOGNIZE(_XSLT_ATTR_NAME_);
     }

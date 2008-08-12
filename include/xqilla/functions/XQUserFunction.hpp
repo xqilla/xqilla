@@ -82,6 +82,39 @@ protected:
 class XQILLA_API XQUserFunction : public FuncFactory, public LocationInfo
 {
 public:
+  class Mode : public LocationInfo
+  {
+  public:
+    enum State {
+      QNAME,
+      DEFAULT,
+      ALL,
+      CURRENT
+    };
+
+    Mode(const XMLCh *qname) : state_(QNAME), qname_(qname), uri_(0), name_(0) {}
+    Mode(const XMLCh *uri, const XMLCh *name) : state_(QNAME), qname_(0), uri_(uri), name_(name) {}
+    Mode(State state) : state_(state), qname_(0), uri_(0), name_(0) {}
+
+    State getState() const { return state_; }
+
+    const XMLCh *getURI() const { return uri_; }
+    void setURI(const XMLCh *uri) { uri_ = uri; }
+    const XMLCh *getName() const { return name_; }
+    void setName(const XMLCh *name) { name_ = name; }
+    const XMLCh *getQName() const { return qname_; }
+
+    bool equals(const Mode *o) const;
+
+    void staticResolution(StaticContext* context);
+
+  private:
+    State state_;
+    const XMLCh *qname_, *uri_, *name_;
+  };
+
+  typedef std::vector<Mode*,XQillaAllocator<Mode*> > ModeList;
+
   class ArgumentSpec : public LocationInfo
   {
   public:
@@ -133,6 +166,9 @@ public:
   VectorOfASTNodes *getPattern() const { return pattern_; }
   void setPattern(VectorOfASTNodes *pattern) { pattern_ = pattern; }
 
+  ModeList *getModeList() const { return modes_; }
+  void setModeList(ModeList *modes) { modes_ = modes; }
+
   const ArgumentSpecs* getArgumentSpecs() const { return argSpecs_; }
   void setArgumentSpecs(ArgumentSpecs *argSpecs) { argSpecs_ = argSpecs; }
 
@@ -164,8 +200,11 @@ protected:
   ASTNode *body_;
   const ExternalFunction *exFunc_;
   const XMLCh *qname_;
+
   VectorOfASTNodes *pattern_;
   XQUserFunctionInstance *templateInstance_;
+  ModeList *modes_;
+
   SequenceType *returnType_;
   ArgumentSpecs *argSpecs_;
   bool isGlobal_;
