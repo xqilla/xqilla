@@ -82,7 +82,7 @@ using namespace std;
 static const XMLCh XMLChDot[] = { chColon, chColon, chLatin_d, chLatin_o, chLatin_t, chNull };
 
 QueryPathTreeGenerator::QueryPathTreeGenerator(DynamicContext *context, Optimizer *parent)
-  : Optimizer(parent),
+  : ASTVisitor(parent),
     mm_(context->getMemoryManager()),
     context_(context),
     varStore_(&varStoreMemMgr_)
@@ -116,36 +116,39 @@ void QueryPathTreeGenerator::resetInternal()
   varStore_.setGlobalVar(XMLChDot, XMLChDot, contextResult);
 }
 
+void QueryPathTreeGenerator::push(PathResult result)
+{
+  results_.push_back(result);
+}
+
+QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::pop()
+{
+  PathResult result = results_.back();
+  results_.pop_back();
+  return result;
+}
+
+QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generate(ASTNode *item)
+{
+  optimize(item);
+  return pop();
+}
+
 ASTNode *QueryPathTreeGenerator::optimize(ASTNode *item)
 {
-  generate(item).markSubtreeResult();
-  return item;
+  return ASTVisitor::optimize(item);
 }
 
 void QueryPathTreeGenerator::optimize(XQQuery *query)
 {
-  // Generate the imported module's global variables
-  ImportedModules &modules = const_cast<ImportedModules&>(query->getImportedModules());
-  for(ImportedModules::const_iterator it2 = modules.begin(); it2 != modules.end(); ++it2) {
-    optimize(*it2);
-  }
-
-  for(UserFunctions::const_iterator it = query->getFunctions().begin();
-      it != query->getFunctions().end(); ++it) {
-    generateFunctionDef(*it);
-  }
-
-  for(GlobalVariables::const_iterator it3 = query->getVariables().begin();
-      it3 != query->getVariables().end(); ++it3) {
-    generateGlobalVar(*it3);
-  }
+  ASTVisitor::optimize(query);
 
   if(query->getQueryBody() != 0) {
-    generate(query->getQueryBody()).markSubtreeResult();
+    pop().markSubtreeResult();
   }
 }
 
-void QueryPathTreeGenerator::generateFunctionDef(XQUserFunction *item)
+XQUserFunction *QueryPathTreeGenerator::optimizeFunctionDef(XQUserFunction *item)
 {
   if(item->getFunctionBody() != 0) {
     const XQUserFunction::ArgumentSpecs *params = item->getArgumentSpecs();
@@ -167,9 +170,11 @@ void QueryPathTreeGenerator::generateFunctionDef(XQUserFunction *item)
       delete varStore_.popScope();
     }
   }
+
+  return item;
 }
 
-void QueryPathTreeGenerator::generateGlobalVar(XQGlobalVariable *item)
+XQGlobalVariable *QueryPathTreeGenerator::optimizeGlobalVar(XQGlobalVariable *item)
 {
   PathResult result;
 
@@ -181,242 +186,8 @@ void QueryPathTreeGenerator::generateGlobalVar(XQGlobalVariable *item)
   }
 
   varStore_.setGlobalVar(item->getVariableURI(), item->getVariableLocalName(), result);
-}
 
-QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generate(ASTNode *item)
-{
-  PathResult result;
-  switch(item->getType()) {
-  case ASTNode::LITERAL: {
-    result = generateLiteral((XQLiteral *)item);
-    break;
-  }
-  case ASTNode::SEQUENCE: {
-    result = generateSequence((XQSequence *)item);
-    break;
-  }
-  case ASTNode::FUNCTION: {
-    result = generateFunction((XQFunction *)item);
-    break;
-  }
-  case ASTNode::NAVIGATION: {
-    result = generateNav((XQNav *)item);
-    break;
-  }
-  case ASTNode::VARIABLE: {
-    result = generateVariable((XQVariable *)item);
-    break;
-  }
-  case ASTNode::STEP: {
-    result = generateStep((XQStep *)item);
-    break;
-  }
-  case ASTNode::IF: {
-    result = generateIf((XQIf *)item);
-    break;
-  }
-  case ASTNode::INSTANCE_OF: {
-    result = generateInstanceOf((XQInstanceOf *)item);
-    break;
-  }
-  case ASTNode::CASTABLE_AS: {
-    result = generateCastableAs((XQCastableAs *)item);
-    break;
-  }
-  case ASTNode::CAST_AS: {
-    result = generateCastAs((XQCastAs *)item);
-    break;
-  }
-  case ASTNode::TREAT_AS: {
-    result = generateTreatAs((XQTreatAs *)item);
-    break;
-  }
-  case ASTNode::PARENTHESIZED: {
-    result = generateParenthesizedExpr((XQParenthesizedExpr *)item);
-    break;
-  }
-  case ASTNode::OPERATOR: {
-    result = generateOperator((XQOperator *)item);
-    break;
-  }
-  case ASTNode::CONTEXT_ITEM: {
-    result = generateContextItem((XQContextItem *)item);
-    break;
-  }
-  case ASTNode::RETURN: {
-    result = generateReturn((XQReturn *)item);
-    break;
-  }
-  case ASTNode::QUANTIFIED: {
-    result = generateQuantified((XQQuantified *)item);
-    break;
-  }
-  case ASTNode::TYPESWITCH: {
-    result = generateTypeswitch((XQTypeswitch *)item);
-    break;
-  }
-  case ASTNode::VALIDATE: {
-    result = generateValidate((XQValidate *)item);
-    break;
-  }
-  case ASTNode::DOM_CONSTRUCTOR: {
-    result = generateDOMConstructor((XQDOMConstructor *)item);
-    break;
-  }
-  case ASTNode::SIMPLE_CONTENT: {
-    result = generateSimpleContent((XQSimpleContent *)item);
-    break;
-  }
-  case ASTNode::NAME_EXPRESSION: {
-    result = generateNameExpression((XQNameExpression *)item);
-    break;
-  }
-  case ASTNode::CONTENT_SEQUENCE: {
-    result = generateContentSequence((XQContentSequence *)item);
-    break;
-  }
-  case ASTNode::DIRECT_NAME: {
-    result = generateDirectName((XQDirectName *)item);
-    break;
-  }
-  case ASTNode::ORDERING_CHANGE: {
-    result = generateOrderingChange((XQOrderingChange *)item);
-    break;
-  }
-  case ASTNode::ATOMIZE: {
-    result = generateAtomize((XQAtomize *)item);
-    break;
-  }
-  case ASTNode::MAP: {
-    result = generateMap((XQMap *)item);
-    break;
-  }
-  case ASTNode::PROMOTE_UNTYPED: {
-    result = generatePromoteUntyped((XQPromoteUntyped *)item);
-    break;
-  }
-  case ASTNode::PROMOTE_NUMERIC: {
-    result = generatePromoteNumeric((XQPromoteNumeric *)item);
-    break;
-  }
-  case ASTNode::PROMOTE_ANY_URI: {
-    result = generatePromoteAnyURI((XQPromoteAnyURI *)item);
-    break;
-  }
-  case ASTNode::DOCUMENT_ORDER: {
-    result = generateDocumentOrder((XQDocumentOrder *)item);
-    break;
-  }
-  case ASTNode::PREDICATE: {
-    result = generatePredicate((XQPredicate *)item);
-    break;
-  }
-  case ASTNode::USER_FUNCTION: {
-    result = generateUserFunction((XQUserFunctionInstance *)item);
-    break;
-  }
-  case ASTNode::UDELETE: {
-    result = generateUDelete((UDelete *)item);
-    break;
-  }
-  case ASTNode::URENAME: {
-    result = generateURename((URename *)item);
-    break;
-  }
-  case ASTNode::UREPLACE: {
-    result = generateUReplace((UReplace *)item);
-    break;
-  }
-  case ASTNode::UREPLACE_VALUE_OF: {
-    result = generateUReplaceValueOf((UReplaceValueOf *)item);
-    break;
-  }
-  case ASTNode::UINSERT_AS_FIRST: {
-    result = generateUInsertAsFirst((UInsertAsFirst *)item);
-    break;
-  }
-  case ASTNode::UINSERT_AS_LAST: {
-    result = generateUInsertAsLast((UInsertAsLast *)item);
-    break;
-  }
-  case ASTNode::UINSERT_INTO: {
-    result = generateUInsertInto((UInsertInto *)item);
-    break;
-  }
-  case ASTNode::UINSERT_AFTER: {
-    result = generateUInsertAfter((UInsertAfter *)item);
-    break;
-  }
-  case ASTNode::UINSERT_BEFORE: {
-    result = generateUInsertBefore((UInsertBefore *)item);
-    break;
-  }
-  case ASTNode::UTRANSFORM: {
-    result = generateUTransform((UTransform *)item);
-    break;
-  }
-  case ASTNode::UAPPLY_UPDATES: {
-    result = generateUApplyUpdates((UApplyUpdates *)item);
-    break;
-  }
-  case ASTNode::FUNCTION_CALL: {
-    result = generateFunctionCall((XQFunctionCall *)item);
-    break;
-  }
-  case ASTNode::XPATH1_CONVERT: {
-    result = generateXPath1CompatConvertFunctionArg((XPath1CompatConvertFunctionArg *)item);
-    break;
-  }
-  case ASTNode::FTCONTAINS: {
-    result = generateFTContains((FTContains *)item);
-    break;
-  }
-  case ASTNode::NAMESPACE_BINDING: {
-    result = generateNamespaceBinding((XQNamespaceBinding *)item);
-    break;
-  }
-  case ASTNode::FUNCTION_CONVERSION: {
-    result = generateFunctionConversion((XQFunctionConversion *)item);
-    break;
-  }
-  case ASTNode::ANALYZE_STRING: {
-    result = generateAnalyzeString((XQAnalyzeString *)item);
-    break;
-  }
-  case ASTNode::COPY_OF: {
-    result = generateCopyOf((XQCopyOf *)item);
-    break;
-  }
-  case ASTNode::COPY: {
-    result = generateCopy((XQCopy *)item);
-    break;
-  }
-  case ASTNode::DEBUG_HOOK: {
-    result = generateASTDebugHook((ASTDebugHook *)item);
-    break;
-  }
-  case ASTNode::CALL_TEMPLATE: {
-    result = generateCallTemplate((XQCallTemplate *)item);
-    break;
-  }
-  case ASTNode::APPLY_TEMPLATES: {
-    result = generateApplyTemplates((XQApplyTemplates *)item);
-    break;
-  }
-  case ASTNode::INLINE_FUNCTION: {
-    result = generateInlineFunction((XQInlineFunction *)item);
-    break;
-  }
-  case ASTNode::FUNCTION_REF: {
-    result = generateFunctionRef((XQFunctionRef *)item);
-    break;
-  }
-  case ASTNode::FUNCTION_DEREF: {
-    result = generateFunctionDeref((XQFunctionDeref *)item);
-    break;
-  }
-  }
-  return result;
+  return item;
 }
 
 static QueryPathNode::Type getTypeFromAxis(XQStep::Axis axis)
@@ -459,7 +230,7 @@ void QueryPathTreeGenerator::setVariable(const XMLCh *uri, const XMLCh *name, co
   varStore_.declareVar(uri, name, value);
 }
 
-QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateStep(XQStep *item)
+ASTNode *QueryPathTreeGenerator::optimizeStep(XQStep *item)
 {
   XQStep::Axis axis = item->getAxis();
   const NodeTest *nodeTest = item->getNodeTest();
@@ -521,7 +292,8 @@ QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateStep(XQStep *
     }
   }
 
-  return result;
+  push(result);
+  return item;
 }
 
 QueryPathNode *QueryPathTreeGenerator::createQueryPathNode(const NodeTest *nodeTest, QueryPathNode::Type type)
@@ -680,7 +452,7 @@ void QueryPathTreeGenerator::generateSiblingStep(QueryPathNode *target, QueryPat
   }
 }
 
-QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateNav(XQNav *item)
+ASTNode *QueryPathTreeGenerator::optimizeNav(XQNav *item)
 {
   PathResult result = getCurrentContext();
 
@@ -700,7 +472,8 @@ QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateNav(XQNav *it
     setContext = true;
   }
 
-  return result;
+  push(result);
+  return item;
 }
 
 static const XMLCh *resolveURIArg(const ASTNode *arg, DynamicContext *context, bool &defaultCollection)
@@ -735,7 +508,7 @@ static const XMLCh *resolveURIArg(const ASTNode *arg, DynamicContext *context, b
   return 0;
 }
 
-QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateFunction(XQFunction *item)
+ASTNode *QueryPathTreeGenerator::optimizeFunction(XQFunction *item)
 {
   VectorOfASTNodes &args = const_cast<VectorOfASTNodes &>(item->getArguments());
   const XMLCh *uri = item->getFunctionURI();
@@ -756,7 +529,7 @@ QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateFunction(XQFu
         ret = currentContext;
       }
       else {
-        ret = generate(args[0]);
+        generate(args[0]);
       }
 
       for(QueryPathNode::Vector::iterator it = ret.returnPaths.begin();
@@ -1008,7 +781,8 @@ QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateFunction(XQFu
     }
   }
 
-  return result;
+  push(result);
+  return item;
 }
 
 class ArgHolder {
@@ -1020,7 +794,7 @@ public:
   QueryPathTreeGenerator::PathResult value;
 };
 
-QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateUserFunction(XQUserFunctionInstance *item)
+ASTNode *QueryPathTreeGenerator::optimizeUserFunction(XQUserFunctionInstance *item)
 {
   PathResult result;
 
@@ -1058,7 +832,9 @@ QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateUserFunction(
       delete varStore_.popScope();
 
       userFunctionStack_.erase(ins.first);
-      return result;
+
+      push(result);
+      return item;
     }
   }
 
@@ -1068,10 +844,11 @@ QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateUserFunction(
     it->value.markRoot();
   }
 
-  return result;
+  push(result);
+  return item;
 }
 
-QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateOperator(XQOperator *item)
+ASTNode *QueryPathTreeGenerator::optimizeOperator(XQOperator *item)
 {
   PathResult result;
 
@@ -1105,10 +882,11 @@ QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateOperator(XQOp
     }
   }
 
-  return result;
+  push(result);
+  return item;
 }
 
-QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateParenthesizedExpr(XQParenthesizedExpr *item)
+ASTNode *QueryPathTreeGenerator::optimizeParenthesizedExpr(XQParenthesizedExpr *item)
 {
   VectorOfASTNodes &args = const_cast<VectorOfASTNodes &>(item->getChildren());
   PathResult result;
@@ -1117,10 +895,11 @@ QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateParenthesized
     result.join(ret);
   }
 
-  return result;
+  push(result);
+  return item;
 }
 
-QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateVariable(XQVariable *item)
+ASTNode *QueryPathTreeGenerator::optimizeVariable(XQVariable *item)
 {
   VarStoreRef *ref = varStore_.getVar(item->getURI(), item->getName());
 
@@ -1133,10 +912,11 @@ QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateVariable(XQVa
     varStore_.setGlobalVar(item->getURI(), item->getName(), result);
   }
 
-  return result;
+  push(result);
+  return item;
 }
 
-QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateIf(XQIf *item)
+ASTNode *QueryPathTreeGenerator::optimizeIf(XQIf *item)
 {
   PathResult result;
 
@@ -1148,52 +928,13 @@ QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateIf(XQIf *item
   ret = generate(const_cast<ASTNode *>(item->getWhenFalse()));
   result.join(ret);
 
-  return result;
+  push(result);
+  return item;
 }
 
-QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateInstanceOf(XQInstanceOf *item)
+TupleNode *QueryPathTreeGenerator::optimizeForTuple(ForTuple *item)
 {
-  return generate(const_cast<ASTNode *>(item->getExpression()));
-}
-
-QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateCastableAs(XQCastableAs *item)
-{
-  return generate(const_cast<ASTNode *>(item->getExpression()));
-}
-
-void QueryPathTreeGenerator::generateTupleNode(TupleNode *item)
-{
-  switch(item->getType()) {
-  case TupleNode::CONTEXT_TUPLE: {
-    break;
-  }
-  case TupleNode::FOR: {
-    generateForTuple((ForTuple*)item);
-    break;
-  }
-  case TupleNode::LET: {
-    generateLetTuple((LetTuple*)item);
-    break;
-  }
-  case TupleNode::WHERE: {
-    generateWhereTuple((WhereTuple*)item);
-    break;
-  }
-  case TupleNode::ORDER_BY: {
-    generateOrderByTuple((OrderByTuple*)item);
-    break;
-  }
-  case TupleNode::DEBUG_HOOK: {
-    generateTupleDebugHook((TupleDebugHook*)item);
-    break;
-  }
-  default: break;
-  }
-}
-
-void QueryPathTreeGenerator::generateForTuple(ForTuple *item)
-{
-  generateTupleNode(const_cast<TupleNode*>(item->getParent()));
+  optimizeTupleNode(const_cast<TupleNode*>(item->getParent()));
 
   PathResult r = generate(item->getExpression());
 
@@ -1203,63 +944,74 @@ void QueryPathTreeGenerator::generateForTuple(ForTuple *item)
   if(item->getPosName()) {
     setVariable(item->getPosURI(), item->getPosName(), PathResult());
   }
+
+  return item;
 }
 
-void QueryPathTreeGenerator::generateLetTuple(LetTuple *item)
+TupleNode *QueryPathTreeGenerator::optimizeLetTuple(LetTuple *item)
 {
-  generateTupleNode(const_cast<TupleNode*>(item->getParent()));
+  optimizeTupleNode(const_cast<TupleNode*>(item->getParent()));
 
   PathResult r = generate(item->getExpression());
 
   if(item->getVarName()) {
     setVariable(item->getVarURI(), item->getVarName(), r);
   }
+
+  return item;
 }
 
-void QueryPathTreeGenerator::generateWhereTuple(WhereTuple *item)
+TupleNode *QueryPathTreeGenerator::optimizeWhereTuple(WhereTuple *item)
 {
-  generateTupleNode(const_cast<TupleNode*>(item->getParent()));
+  optimizeTupleNode(const_cast<TupleNode*>(item->getParent()));
 
   generate(item->getExpression());
+
+  return item;
 }
 
-void QueryPathTreeGenerator::generateOrderByTuple(OrderByTuple *item)
+TupleNode *QueryPathTreeGenerator::optimizeOrderByTuple(OrderByTuple *item)
 {
-  generateTupleNode(const_cast<TupleNode*>(item->getParent()));
+  optimizeTupleNode(const_cast<TupleNode*>(item->getParent()));
 
   generate(item->getExpression());
+
+  return item;
 }
 
-void QueryPathTreeGenerator::generateTupleDebugHook(TupleDebugHook *item)
+TupleNode *QueryPathTreeGenerator::optimizeTupleDebugHook(TupleDebugHook *item)
 {
-  generateTupleNode(const_cast<TupleNode*>(item->getParent()));
+  optimizeTupleNode(const_cast<TupleNode*>(item->getParent()));
+  return item;
 }
 
-QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateReturn(XQReturn *item)
+ASTNode *QueryPathTreeGenerator::optimizeReturn(XQReturn *item)
 {
   varStore_.addScope(VarStore::MyScope::LOGICAL_BLOCK_SCOPE);
 
-  generateTupleNode(const_cast<TupleNode*>(item->getParent()));
+  optimizeTupleNode(const_cast<TupleNode*>(item->getParent()));
   PathResult result = generate(item->getExpression());
   
   delete varStore_.popScope();
 
-  return result;
+  push(result);
+  return item;
 }
 
-QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateQuantified(XQQuantified *item)
+ASTNode *QueryPathTreeGenerator::optimizeQuantified(XQQuantified *item)
 {
   varStore_.addScope(VarStore::MyScope::LOGICAL_BLOCK_SCOPE);
 
-  generateTupleNode(const_cast<TupleNode*>(item->getParent()));
+  optimizeTupleNode(const_cast<TupleNode*>(item->getParent()));
   generate(item->getExpression());
   
   delete varStore_.popScope();
 
-  return PathResult();
+  push(PathResult());
+  return item;
 }
 
-QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateTypeswitch(XQTypeswitch *item)
+ASTNode *QueryPathTreeGenerator::optimizeTypeswitch(XQTypeswitch *item)
 {
   PathResult result;
 
@@ -1294,10 +1046,11 @@ QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateTypeswitch(XQ
     delete varStore_.popScope();
   }
 
-  return result;
+  push(result);
+  return item;
 }
 
-QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateDOMConstructor(XQDOMConstructor *item)
+ASTNode *QueryPathTreeGenerator::optimizeDOMConstructor(XQDOMConstructor *item)
 {
   PathResult result;
 
@@ -1339,10 +1092,11 @@ QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateDOMConstructo
   }
 
   result.join(item->getQueryPathTree());
-  return result;
+  push(result);
+  return item;
 }
 
-QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateSimpleContent(XQSimpleContent *item)
+ASTNode *QueryPathTreeGenerator::optimizeSimpleContent(XQSimpleContent *item)
 {
   VectorOfASTNodes *children = const_cast<VectorOfASTNodes *>(item->getChildren());
   if(children) {
@@ -1351,12 +1105,8 @@ QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateSimpleContent
     }
   }
 
-  return PathResult();
-}
-
-QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateNameExpression(XQNameExpression *item)
-{
-  return generate(const_cast<ASTNode *>(item->getExpression()));
+  push(PathResult());
+  return item;
 }
 
 QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::copyNodes(const PathResult &r)
@@ -1397,53 +1147,44 @@ QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::copyNodes(const PathR
   return copyResult;
 }
 
-QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateContentSequence(XQContentSequence *item)
+ASTNode *QueryPathTreeGenerator::optimizeContentSequence(XQContentSequence *item)
 {
-  return copyNodes(generate(const_cast<ASTNode *>(item->getExpression())));
+  push(copyNodes(generate(const_cast<ASTNode *>(item->getExpression()))));
+  return item;
 }
 
-QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateDirectName(XQDirectName *item)
+ASTNode *QueryPathTreeGenerator::optimizeDirectName(XQDirectName *item)
 {
-  return PathResult();
+  push(PathResult());
+  return item;
 }
 
-QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateContextItem(XQContextItem *item)
+ASTNode *QueryPathTreeGenerator::optimizeContextItem(XQContextItem *item)
 {
-  return getCurrentContext();
+  push(getCurrentContext());
+  return item;
 }
 
-QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateLiteral(XQLiteral *item)
+ASTNode *QueryPathTreeGenerator::optimizeLiteral(XQLiteral *item)
 {
-  return PathResult();
+  push(PathResult());
+  return item;
 }
 
-QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateSequence(XQSequence *item)
+ASTNode *QueryPathTreeGenerator::optimizeSequence(XQSequence *item)
 {
-  return PathResult();
+  push(PathResult());
+  return item;
 }
 
-QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateCastAs(XQCastAs *item)
-{
-  return generate(const_cast<ASTNode*>(item->getExpression()));
-}
-
-QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateTreatAs(XQTreatAs *item)
-{
-  return generate(const_cast<ASTNode *>(item->getExpression()));
-}
-
-QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateOrderingChange(XQOrderingChange *item)
-{
-  return generate(item->getExpr());
-}
-
-QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateAtomize(XQAtomize *item)
+ASTNode *QueryPathTreeGenerator::optimizeAtomize(XQAtomize *item)
 {
   generate(const_cast<ASTNode *>(item->getExpression())).markSubtreeValue();
-  return PathResult();
+  push(PathResult());
+  return item;
 }
 
-QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateMap(XQMap *item)
+ASTNode *QueryPathTreeGenerator::optimizeMap(XQMap *item)
 {
   PathResult result = generate(item->getArg1());
 
@@ -1458,35 +1199,17 @@ QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateMap(XQMap *it
 
   delete varStore_.popScope();
 
-  return result;
+  push(result);
+  return item;
 }
 
-QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generatePromoteUntyped(XQPromoteUntyped *item)
+ASTNode *QueryPathTreeGenerator::optimizeValidate(XQValidate *item)
 {
-  return generate(const_cast<ASTNode *>(item->getExpression()));
+  push(copyNodes(generate(const_cast<ASTNode *>(item->getExpression()))));
+  return item;
 }
 
-QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generatePromoteNumeric(XQPromoteNumeric *item)
-{
-  return generate(const_cast<ASTNode *>(item->getExpression()));
-}
-
-QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generatePromoteAnyURI(XQPromoteAnyURI *item)
-{
-  return generate(const_cast<ASTNode *>(item->getExpression()));
-}
-
-QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateDocumentOrder(XQDocumentOrder *item)
-{
-  return generate(const_cast<ASTNode *>(item->getExpression()));
-}
-
-QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateValidate(XQValidate *item)
-{
-  return copyNodes(generate(const_cast<ASTNode *>(item->getExpression())));
-}
-
-QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generatePredicate(XQPredicate *item)
+ASTNode *QueryPathTreeGenerator::optimizePredicate(XQPredicate *item)
 {
   PathResult result = generate(const_cast<ASTNode *>(item->getExpression()));
 
@@ -1496,81 +1219,91 @@ QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generatePredicate(XQP
   generate(const_cast<ASTNode *>(item->getPredicate()));
 
   delete varStore_.popScope();
-  return result;
+  push(result);
+  return item;
 }
 
-QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateUDelete(UDelete *item)
+ASTNode *QueryPathTreeGenerator::optimizeUDelete(UDelete *item)
 {
   // Any tree that is updated can't be document projected
   generate(const_cast<ASTNode *>(item->getExpression())).markRoot();
-  return PathResult();
+  push(PathResult());
+  return item;
 }
 
-QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateURename(URename *item)
+ASTNode *QueryPathTreeGenerator::optimizeURename(URename *item)
 {
   // Any tree that is updated can't be document projected
   generate(const_cast<ASTNode *>(item->getTarget())).markRoot();
   generate(const_cast<ASTNode *>(item->getName()));
-  return PathResult();
+  push(PathResult());
+  return item;
 }
 
-QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateUReplace(UReplace *item)
+ASTNode *QueryPathTreeGenerator::optimizeUReplace(UReplace *item)
 {
   // Any tree that is updated can't be document projected
   generate(const_cast<ASTNode *>(item->getTarget())).markRoot();
   generate(const_cast<ASTNode *>(item->getExpression())).markSubtreeResult();
-  return PathResult();
+  push(PathResult());
+  return item;
 }
 
-QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateUReplaceValueOf(UReplaceValueOf *item)
+ASTNode *QueryPathTreeGenerator::optimizeUReplaceValueOf(UReplaceValueOf *item)
 {
   // Any tree that is updated can't be document projected
   generate(const_cast<ASTNode *>(item->getTarget())).markRoot();
   generate(const_cast<ASTNode *>(item->getExpression()));
-  return PathResult();
+  push(PathResult());
+  return item;
 }
 
-QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateUInsertAsFirst(UInsertAsFirst *item)
+ASTNode *QueryPathTreeGenerator::optimizeUInsertAsFirst(UInsertAsFirst *item)
 {
   // Any tree that is updated can't be document projected
   generate(const_cast<ASTNode *>(item->getTarget())).markRoot();
   generate(const_cast<ASTNode *>(item->getSource())).markSubtreeResult();
-  return PathResult();
+  push(PathResult());
+  return item;
 }
 
-QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateUInsertAsLast(UInsertAsLast *item)
+ASTNode *QueryPathTreeGenerator::optimizeUInsertAsLast(UInsertAsLast *item)
 {
   // Any tree that is updated can't be document projected
   generate(const_cast<ASTNode *>(item->getTarget())).markRoot();
   generate(const_cast<ASTNode *>(item->getSource())).markSubtreeResult();
-  return PathResult();
+  push(PathResult());
+  return item;
 }
 
-QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateUInsertInto(UInsertInto *item)
+ASTNode *QueryPathTreeGenerator::optimizeUInsertInto(UInsertInto *item)
 {
   // Any tree that is updated can't be document projected
   generate(const_cast<ASTNode *>(item->getTarget())).markRoot();
   generate(const_cast<ASTNode *>(item->getSource())).markSubtreeResult();
-  return PathResult();
+  push(PathResult());
+  return item;
 }
 
-QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateUInsertAfter(UInsertAfter *item)
+ASTNode *QueryPathTreeGenerator::optimizeUInsertAfter(UInsertAfter *item)
 {
   // Any tree that is updated can't be document projected
   generate(const_cast<ASTNode *>(item->getTarget())).markRoot();
   generate(const_cast<ASTNode *>(item->getSource())).markSubtreeResult();
-  return PathResult();
+  push(PathResult());
+  return item;
 }
 
-QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateUInsertBefore(UInsertBefore *item)
+ASTNode *QueryPathTreeGenerator::optimizeUInsertBefore(UInsertBefore *item)
 {
   // Any tree that is updated can't be document projected
   generate(const_cast<ASTNode *>(item->getTarget())).markRoot();
   generate(const_cast<ASTNode *>(item->getSource())).markSubtreeResult();
-  return PathResult();
+  push(PathResult());
+  return item;
 }
 
-QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateUTransform(UTransform *item)
+ASTNode *QueryPathTreeGenerator::optimizeUTransform(UTransform *item)
 {
   varStore_.addScope(VarStore::MyScope::LOGICAL_BLOCK_SCOPE);
 
@@ -1584,50 +1317,33 @@ QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateUTransform(UT
 
   delete varStore_.popScope();
 
-  return result;
+  push(result);
+  return item;
 }
 
-QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateUApplyUpdates(UApplyUpdates *item)
-{
-  return generate(const_cast<ASTNode *>(item->getExpression()));
-}
-
-QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateFunctionCall(XQFunctionCall *item)
+ASTNode *QueryPathTreeGenerator::optimizeFunctionCall(XQFunctionCall *item)
 {
   // Shouldn't happen
   VectorOfASTNodes *args = const_cast<VectorOfASTNodes*>(item->getArguments());
   for(VectorOfASTNodes::iterator i = args->begin(); i != args->end(); ++i) {
     generate(*i);
   }
-  return PathResult();
+  push(PathResult());
+  return item;
 }
 
-QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateXPath1CompatConvertFunctionArg(XPath1CompatConvertFunctionArg *item)
-{
-  return generate(const_cast<ASTNode *>(item->getExpression()));
-}
-
-QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateFTContains(FTContains *item)
+ASTNode *QueryPathTreeGenerator::optimizeFTContains(FTContains *item)
 {
   // TBD implement optimization of FTSelection objects - jpcs
   PathResult result = generate(item->getArgument());
   //   item->setSelection(optimizeFTSelection(item->getSelection()));
   if(item->getIgnore())
     generate(item->getIgnore());
-  return result;
+  push(result);
+  return item;
 }
 
-QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateNamespaceBinding(XQNamespaceBinding *item)
-{
-  return generate(const_cast<ASTNode *>(item->getExpression()));
-}
-
-QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateFunctionConversion(XQFunctionConversion *item)
-{
-  return generate(const_cast<ASTNode *>(item->getExpression()));
-}
-
-QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateAnalyzeString(XQAnalyzeString *item)
+ASTNode *QueryPathTreeGenerator::optimizeAnalyzeString(XQAnalyzeString *item)
 {
   PathResult result;
 
@@ -1644,30 +1360,28 @@ QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateAnalyzeString
 
   delete varStore_.popScope();
 
-  return result;
+  push(result);
+  return item;
 }
 
-QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateCopyOf(XQCopyOf *item)
+ASTNode *QueryPathTreeGenerator::optimizeCopyOf(XQCopyOf *item)
 {
-  return copyNodes(generate(const_cast<ASTNode *>(item->getExpression())));
+  push(copyNodes(generate(const_cast<ASTNode *>(item->getExpression()))));
+  return item;
 }
 
-QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateCopy(XQCopy *item)
+ASTNode *QueryPathTreeGenerator::optimizeCopy(XQCopy *item)
 {
   VectorOfASTNodes &children = const_cast<VectorOfASTNodes&>(item->getChildren());
   for(VectorOfASTNodes::iterator j = children.begin(); j != children.end(); ++j) {
     generate(*j).markSubtreeResult();
   }
 
-  return copyNodes(generate(const_cast<ASTNode *>(item->getExpression())));
+  push(copyNodes(generate(const_cast<ASTNode *>(item->getExpression()))));
+  return item;
 }
 
-QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateASTDebugHook(ASTDebugHook *item)
-{
-  return generate(const_cast<ASTNode *>(item->getExpression()));
-}
-
-QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateCallTemplate(XQCallTemplate *item)
+ASTNode *QueryPathTreeGenerator::optimizeCallTemplate(XQCallTemplate *item)
 {
   // Shouldn't happen
   TemplateArguments *args = item->getArguments();
@@ -1676,10 +1390,11 @@ QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateCallTemplate(
       generate((*i)->value);
     }
   }
-  return PathResult();
+  push(PathResult());
+  return item;
 }
 
-QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateApplyTemplates(XQApplyTemplates *item)
+ASTNode *QueryPathTreeGenerator::optimizeApplyTemplates(XQApplyTemplates *item)
 {
   // TBD Could be better - jpcs
   context_->setProjection(false);
@@ -1698,25 +1413,28 @@ QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateApplyTemplate
     }
   }
 
-  return PathResult();
+  push(PathResult());
+  return item;
 }
 
-QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateInlineFunction(XQInlineFunction *item)
+ASTNode *QueryPathTreeGenerator::optimizeInlineFunction(XQInlineFunction *item)
 {
-  generateFunctionDef(item->getUserFunction());
+  optimizeFunctionDef(item->getUserFunction());
 
   // TBD What about the function instance? - jpcs
 
-  return PathResult();
+  push(PathResult());
+  return item;
 }
 
-QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateFunctionRef(XQFunctionRef *item)
+ASTNode *QueryPathTreeGenerator::optimizeFunctionRef(XQFunctionRef *item)
 {
   // TBD What about the function instance? - jpcs
-  return PathResult();
+  push(PathResult());
+  return item;
 }
 
-QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateFunctionDeref(XQFunctionDeref *item)
+ASTNode *QueryPathTreeGenerator::optimizeFunctionDeref(XQFunctionDeref *item)
 {
   // TBD Could be better - jpcs
   context_->setProjection(false);
@@ -1734,7 +1452,48 @@ QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateFunctionDeref
     }
   }
 
-  return PathResult();
+  push(PathResult());
+  return item;
+}
+
+#define UNCHANGED_FULL(methodname, classname) \
+ASTNode *QueryPathTreeGenerator::optimize ## methodname (classname *item) \
+{ \
+  return ASTVisitor::optimize ## methodname (item); \
+}
+
+#define UNCHANGED_XQ(name) UNCHANGED_FULL(name, XQ ## name)
+#define UNCHANGED(name) UNCHANGED_FULL(name, name)
+
+UNCHANGED_XQ(NameExpression)
+UNCHANGED_XQ(CastAs)
+UNCHANGED_XQ(TreatAs)
+UNCHANGED_XQ(OrderingChange)
+UNCHANGED_XQ(InstanceOf)
+UNCHANGED_XQ(CastableAs)
+UNCHANGED_XQ(PromoteUntyped)
+UNCHANGED_XQ(PromoteNumeric)
+UNCHANGED_XQ(PromoteAnyURI)
+UNCHANGED_XQ(DocumentOrder)
+UNCHANGED(UApplyUpdates)
+UNCHANGED(XPath1CompatConvertFunctionArg)
+UNCHANGED_XQ(NamespaceBinding)
+UNCHANGED_XQ(FunctionConversion)
+UNCHANGED(ASTDebugHook)
+
+ASTNode *QueryPathTreeGenerator::optimizeUnknown(ASTNode *item)
+{
+  return ASTVisitor::optimizeUnknown(item);
+}
+
+TupleNode *QueryPathTreeGenerator::optimizeUnknownTupleNode(TupleNode *item)
+{
+  return ASTVisitor::optimizeUnknownTupleNode(item);
+}
+
+TupleNode *QueryPathTreeGenerator::optimizeContextTuple(ContextTuple *item)
+{
+  return ASTVisitor::optimizeContextTuple(item);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
