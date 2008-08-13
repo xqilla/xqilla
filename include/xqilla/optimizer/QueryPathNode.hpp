@@ -74,15 +74,15 @@ public:
   QueryPathNode *appendChild(QueryPathNode *childToAdopt);
   void removeChild(QueryPathNode *child, bool deleteChild = true);
   void stealChildren(QueryPathNode *victim);
-  void markSubtreeValue();
-  void markSubtreeResult();
+  virtual void markSubtreeValue();
+  virtual void markSubtreeResult();
 
   virtual std::string toString(int level = 0) const;
 
   virtual bool equals(const QueryPathNode *o) const;
   virtual bool isSubsetOf(const QueryPathNode *node) const;
 
-private:
+protected:
   QueryPathNode(const QueryPathNode &);
   QueryPathNode &operator=(const QueryPathNode &);
 
