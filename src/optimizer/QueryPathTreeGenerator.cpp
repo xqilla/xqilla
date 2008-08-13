@@ -529,7 +529,7 @@ ASTNode *QueryPathTreeGenerator::optimizeFunction(XQFunction *item)
         ret = currentContext;
       }
       else {
-        generate(args[0]);
+        ret = generate(args[0]);
       }
 
       for(QueryPathNode::Vector::iterator it = ret.returnPaths.begin();
@@ -1090,6 +1090,7 @@ ASTNode *QueryPathTreeGenerator::optimizeDOMConstructor(XQDOMConstructor *item)
       item->setQueryPathTree(new (mm_) QueryPathNode(new (mm_) NodeTest((XMLCh*)0), QueryPathNode::CHILD, mm_));
     }
   }
+
 
   result.join(item->getQueryPathTree());
   push(result);
