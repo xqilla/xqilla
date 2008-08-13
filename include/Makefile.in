@@ -191,6 +191,7 @@ xqilla/xqilla-simple.hpp \
 xqilla/xqilla-xqc.h \
 xqilla/ast/LocationInfo.hpp \
 xqilla/ast/XQCastableAs.hpp \
+xqilla/ast/XQMap.hpp \
 xqilla/ast/XQCastAs.hpp \
 xqilla/ast/XQContextItem.hpp \
 xqilla/ast/XQCopy.hpp \
@@ -295,6 +296,7 @@ xqilla/context/VarHashEntry.hpp \
 xqilla/context/VariableTypeStore.hpp \
 xqilla/context/Collation.hpp \
 xqilla/context/ModuleResolver.hpp \
+xqilla/context/ExternalFunctionResolver.hpp \
 xqilla/context/UpdateFactory.hpp \
 xqilla/context/RegexGroupStore.hpp \
 xqilla/context/impl/CollationImpl.hpp \

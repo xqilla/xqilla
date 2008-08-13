@@ -454,6 +454,7 @@ bool FastXDMNodeImpl::lessThan(const Node::Ptr &other, const DynamicContext *con
 
   const FastXDMNamespaceNodeImpl *nsImpl = (const FastXDMNamespaceNodeImpl*)other->getInterface(FastXDMNamespaceNodeImpl::fastxdm_ns_string);
   if(nsImpl != 0) {
+    if(nsImpl->getOwner().isNull()) return false;
     return lessThan(nsImpl->getOwner(), context);
   }
 
@@ -1321,6 +1322,8 @@ bool FastXDMAttributeNodeImpl::lessThan(const Node::Ptr &other, const DynamicCon
   const FastXDMNamespaceNodeImpl *nsImpl = (const FastXDMNamespaceNodeImpl*)other->
     getInterface(FastXDMNamespaceNodeImpl::fastxdm_ns_string);
   if(nsImpl != 0) {
+    if(nsImpl->getOwner().isNull()) return false;
+
     // Order first by the address of the FastXDMDocument object
     if(document_.get() != nsImpl->getOwner()->getDocument().get())
       return document_.get() < nsImpl->getOwner()->getDocument().get();
@@ -1587,6 +1590,16 @@ bool FastXDMNamespaceNodeImpl::lessThan(const Node::Ptr &other, const DynamicCon
 {
   const FastXDMNamespaceNodeImpl *otherImpl = (const FastXDMNamespaceNodeImpl*)other->getInterface(fastxdm_ns_string);
   if(otherImpl != 0) {
+    // Check if out owner is null
+    if(owner_.isNull()) {
+      if(otherImpl->getOwner().notNull()) return true;
+
+      return this < otherImpl;
+    }
+    if(otherImpl->getOwner().isNull()) {
+      return false;
+    }
+
     // Order first by the owner object
     if(!owner_->equals(otherImpl->getOwner()))
       return owner_->lessThan(otherImpl->getOwner(), context);
@@ -1597,6 +1610,9 @@ bool FastXDMNamespaceNodeImpl::lessThan(const Node::Ptr &other, const DynamicCon
 
   const FastXDMNodeImpl *nodeImpl = (const FastXDMNodeImpl*)other->getInterface(FastXDMNodeImpl::fastxdm_string);
   if(nodeImpl != 0) {
+    // Check if out owner is null
+    if(owner_.isNull()) return true;
+
     // Order first by the address of the FastXDMDocument object
     if(owner_->getDocument().get() != nodeImpl->getDocument().get())
       return owner_->getDocument().get() < nodeImpl->getDocument().get();
@@ -1609,6 +1625,9 @@ bool FastXDMNamespaceNodeImpl::lessThan(const Node::Ptr &other, const DynamicCon
   const FastXDMAttributeNodeImpl *attrImpl = (const FastXDMAttributeNodeImpl*)other->
     getInterface(FastXDMAttributeNodeImpl::fastxdm_attr_string);
   if(attrImpl != 0) {
+    // Check if out owner is null
+    if(owner_.isNull()) return true;
+
     // Order first by the address of the FastXDMDocument object
     if(owner_->getDocument().get() != attrImpl->getDocument().get())
       return owner_->getDocument().get() < attrImpl->getDocument().get();
@@ -1629,9 +1648,12 @@ bool FastXDMNamespaceNodeImpl::lessThan(const Node::Ptr &other, const DynamicCon
 
 bool FastXDMNamespaceNodeImpl::equals(const Node::Ptr &other) const
 {
+  if(owner_.isNull()) return false;
+
   const FastXDMNamespaceNodeImpl *otherImpl = (const FastXDMNamespaceNodeImpl*)other->getInterface(fastxdm_ns_string);
   if(otherImpl == 0) return false;
 
+  if(otherImpl->getOwner().isNull()) return false;
   if(!owner_->equals(otherImpl->getOwner())) return false;
 
   return order_ == otherImpl->getOrder();
@@ -1706,7 +1728,7 @@ protected:
 
 Node::Ptr FastXDMNamespaceNodeImpl::root(const DynamicContext* context) const
 {
-  return owner_->root(context);
+  return owner_.isNull() ? this : owner_->root(context);
 }
 
 Node::Ptr FastXDMNamespaceNodeImpl::dmParent(const DynamicContext* context) const
@@ -1733,19 +1755,30 @@ Result FastXDMNamespaceNodeImpl::getAxisResult(XQStep::Axis axis, const NodeTest
 {
   switch(axis) {
   case XQStep::ANCESTOR: {
-    return new FastXDMAncestorOrSelfAxis(info, owner_->getDocument(), owner_->getNode(), nodeTest);
+    if(owner_.notNull())
+      return new FastXDMAncestorOrSelfAxis(info, owner_->getDocument(), owner_->getNode(), nodeTest);
+    break;
   }
   case XQStep::ANCESTOR_OR_SELF: {
-    return new FastXDMNamespaceAncestorOrSelfAxis(info, this, nodeTest);
+    if(owner_.notNull())
+      return new FastXDMNamespaceAncestorOrSelfAxis(info, this, nodeTest);
+    else 
+      return nodeTest->filterResult(new SelfAxis(info, this), info);
   }
   case XQStep::FOLLOWING: {
-    return new FastXDMFollowingAxis(info, owner_->getDocument(), this, nodeTest);
+    if(owner_.notNull())
+      return new FastXDMFollowingAxis(info, owner_->getDocument(), this, nodeTest);
+    break;
   }
   case XQStep::PARENT: {
-    return nodeTest->filterResult(new SelfAxis(info, owner_), info);
+    if(owner_.notNull())
+      return nodeTest->filterResult(new SelfAxis(info, owner_), info);
+    break;
   }
   case XQStep::PRECEDING: {
-    return new FastXDMPrecedingAxis(info, owner_->getDocument(), owner_->getNode(), nodeTest);
+    if(owner_.notNull())
+      return new FastXDMPrecedingAxis(info, owner_->getDocument(), owner_->getNode(), nodeTest);
+    break;
   }
   case XQStep::DESCENDANT_OR_SELF:
   case XQStep::SELF: {

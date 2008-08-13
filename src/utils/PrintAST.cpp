@@ -78,6 +78,7 @@
 #include <xqilla/ast/XQInlineFunction.hpp>
 #include <xqilla/ast/XQFunctionDeref.hpp>
 #include <xqilla/ast/XQFunctionRef.hpp>
+#include <xqilla/ast/XQMap.hpp>
 #include <xqilla/debug/ASTDebugHook.hpp>
 #include <xqilla/functions/XQUserFunction.hpp>
 
@@ -357,6 +358,10 @@ string PrintAST::printASTNode(const ASTNode *item, const DynamicContext *context
     return printAtomize((XQAtomize *)item, context, indent);
     break;
   }
+  case ASTNode::MAP: {
+    return printMap((XQMap *)item, context, indent);
+    break;
+  }
   case ASTNode::DOCUMENT_ORDER: {
     return printDocumentOrder((XQDocumentOrder *)item, context, indent);
     break;
@@ -494,6 +499,11 @@ string PrintAST::printASTNode(const ASTNode *item, const DynamicContext *context
     break;
   }
   }
+  return printUnknown(item, context, indent);
+}
+
+string PrintAST::printUnknown(const ASTNode *item, const DynamicContext *context, int indent)
+{
   return getIndent(indent) + "<Unknown/>\n";
 }
 
@@ -1417,6 +1427,25 @@ string PrintAST::printAtomize(const XQAtomize *item, const DynamicContext *conte
   return s.str();
 }
 
+string PrintAST::printMap(const XQMap *item, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  s << in << "<Map";
+  if(item->getName() != 0) {
+    s << " uri=\"" << UTF8(item->getURI()) << "\"";
+    s << " name=\"" << UTF8(item->getName()) << "\"";
+  }
+  s << ">" << endl;
+  s << printASTNode(item->getArg1(), context, indent + INDENT);
+  s << printASTNode(item->getArg2(), context, indent + INDENT);
+  s << in << "</Map>" << endl;
+
+  return s.str();
+}
+
 string PrintAST::printDocumentOrder(const XQDocumentOrder *item, const DynamicContext *context, int indent)
 {
   ostringstream s;
@@ -1989,6 +2018,11 @@ string PrintAST::printTupleNode(const TupleNode *item, const DynamicContext *con
   default:
     break;
   }
+  return printUnknownTupleNode(item, context, indent);
+}
+
+string PrintAST::printUnknownTupleNode(const TupleNode *item, const DynamicContext *context, int indent)
+{
   return getIndent(indent) + "<Unknown/>\n";
 }
 

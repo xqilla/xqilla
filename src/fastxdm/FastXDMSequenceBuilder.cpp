@@ -164,9 +164,11 @@ void FastXDMSequenceBuilder::attributeEvent(const XMLCh *prefix, const XMLCh *ur
 
 void FastXDMSequenceBuilder::namespaceEvent(const XMLCh *prefix, const XMLCh *uri)
 {
-  assert(level_ != 0);
-
-  document_->namespaceEvent(prefix, uri);
+  if(level_ == 0) {
+    seq_.addItem(new FastXDMNamespaceNodeImpl(0, prefix, uri, 0));
+  } else {
+    document_->namespaceEvent(prefix, uri);
+  }
 }
 
 void FastXDMSequenceBuilder::atomicItemEvent(AnyAtomicType::AtomicObjectType type, const XMLCh *value, const XMLCh *typeURI,

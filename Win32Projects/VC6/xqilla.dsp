@@ -53,7 +53,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /machine:I386
-# ADD LINK32 /libpath:"../../build/windows/VC6/Release" xerces-c_2.lib /nologo /base:"0x69000000" /dll /machine:I386 /out:"../../build/windows/VC6/Release/xqilla22.dll" /implib:"../../build/windows/VC6/Release/xqilla22.lib" /libpath:"../../../xerces-c-src/Build/Win32/VC6/Release" /OPT:REF
+# ADD LINK32 /libpath:"../../build/windows/VC6/Release" xerces-c_3.lib /nologo /base:"0x69000000" /dll /machine:I386 /out:"../../build/windows/VC6/Release/xqilla22.dll" /implib:"../../build/windows/VC6/Release/xqilla22.lib" /libpath:"../../../xerces-c-src/Build/Win32/VC6/Release" /OPT:REF
 # SUBTRACT LINK32 /pdb:none
 
 !ELSEIF  "$(CFG)" == "xqilla - Win32 Debug"
@@ -80,7 +80,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 /libpath:"../../build/windows/VC6/Debug" xerces-c_2D.lib /nologo /base:"0x69000000" /dll /debug /machine:I386 /out:"../../build/windows/VC6/Debug/xqilla22d.dll" /implib:"../../build/windows/VC6/Debug/xqilla22d.lib" /pdbtype:sept /pdb:"../../build/windows/VC6/Debug/xqilla22d.pdb" /libpath:"../../../xerces-c-src/Build/Win32/VC6/Debug"
+# ADD LINK32 /libpath:"../../build/windows/VC6/Debug" xerces-c_3D.lib /nologo /base:"0x69000000" /dll /debug /machine:I386 /out:"../../build/windows/VC6/Debug/xqilla22d.dll" /implib:"../../build/windows/VC6/Debug/xqilla22d.lib" /pdbtype:sept /pdb:"../../build/windows/VC6/Debug/xqilla22d.pdb" /libpath:"../../../xerces-c-src/Build/Win32/VC6/Debug"
 
 !ENDIF 
 
@@ -242,6 +242,10 @@ SOURCE=..\..\src\ast\XQInstanceOf.cpp
 # Begin Source File
 
 SOURCE=..\..\src\ast\XQLiteral.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\ast\XQMap.cpp
 # End Source File
 # Begin Source File
 
@@ -466,6 +470,10 @@ SOURCE=..\..\include\xqilla\ast\XQInstanceOf.hpp
 # Begin Source File
 
 SOURCE=..\..\include\xqilla\ast\XQLiteral.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\ast\XQMap.hpp
 # End Source File
 # Begin Source File
 

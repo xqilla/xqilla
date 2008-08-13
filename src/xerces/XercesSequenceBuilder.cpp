@@ -28,6 +28,7 @@
 
 #include "../dom-api/impl/XPathDocumentImpl.hpp"
 #include "../dom-api/XQillaImplementation.hpp"
+#include "../dom-api/impl/XPathNamespaceImpl.hpp"
 
 #include <xercesc/dom/DOM.hpp>
 #include <xercesc/dom/impl/DOMTypeInfoImpl.hpp>
@@ -265,14 +266,23 @@ void XercesSequenceBuilder::attributeEvent(const XMLCh *prefix, const XMLCh *uri
 
 void XercesSequenceBuilder::namespaceEvent(const XMLCh *prefix, const XMLCh *uri)
 {
-  assert(currentParent_ != 0);
+  if(currentParent_ != 0) {
+    DOMAttr *attr = document_->createAttributeNS(XMLUni::fgXMLNSURIName, prefix == 0 ? XMLUni::fgXMLNSString : prefix);
+    if(prefix != 0) attr->setPrefix(XMLUni::fgXMLNSString);
+    attr->setValue(uri);
 
-  DOMAttr *attr = document_->createAttributeNS(XMLUni::fgXMLNSURIName, prefix == 0 ? XMLUni::fgXMLNSString : prefix);
-  if(prefix != 0) attr->setPrefix(XMLUni::fgXMLNSString);
-  attr->setValue(uri);
+    currentParent_->getAttributes()->setNamedItemNS(attr);
+    currentNode_ = attr;
+  } else {
+    document_ = new (context_->getMemoryManager()) XPathDocumentImpl(XQillaImplementation::getDOMImplementationImpl(), context_->getMemoryManager());
 
-  currentParent_->getAttributes()->setNamedItemNS(attr);
-  currentNode_ = attr;
+    DOMXPathNamespace *ns = new (document_, (DOMDocumentImpl::NodeObjectType)XPathNamespaceImpl::XPATH_NAMESPACE_OBJECT)
+      XPathNamespaceImpl(prefix, uri, 0, document_);
+
+    seq_.addItem(new XercesNodeImpl(ns, (XercesURIResolver*)context_->getDefaultURIResolver()));
+    document_ = 0;
+    currentNode_ = 0;
+  }
 }
 
 void XercesSequenceBuilder::atomicItemEvent(AnyAtomicType::AtomicObjectType type, const XMLCh *value, const XMLCh *typeURI,

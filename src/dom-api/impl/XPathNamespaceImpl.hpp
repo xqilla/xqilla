@@ -51,8 +51,6 @@ public:
 	XPathNamespaceImpl(const XPathNamespaceImpl &other);
 	virtual ~XPathNamespaceImpl();
 
-	static XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNamespace *createXPathNamespace(const XMLCh* const prefix, const XMLCh* const uri, XERCES_CPP_NAMESPACE_QUALIFIER DOMElement *owner);
-
 	// Declare functions from DOMNode.  They all must be implemented by this class
     virtual       XERCES_CPP_NAMESPACE_QUALIFIER DOMNode*         appendChild(XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *newChild) ;
     virtual       XERCES_CPP_NAMESPACE_QUALIFIER DOMNode*         cloneNode(bool deep) const ;

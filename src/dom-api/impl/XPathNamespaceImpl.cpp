@@ -38,8 +38,14 @@ XPathNamespaceImpl::XPathNamespaceImpl(const XMLCh* const nsPrefix,
 	: fNode(docOwner)
 {
     DOMNodeImpl *argImpl = castToNodeImpl(this);
-    argImpl->fOwnerNode = owner;
-    argImpl->isOwned(true);
+
+    if(owner) {
+      argImpl->fOwnerNode = owner;
+      argImpl->isOwned(true);
+    } else {
+      argImpl->fOwnerNode = docOwner;
+      argImpl->isOwned(false);
+    }
     argImpl->setIsLeafNode(true);
 
     DOMDocumentImpl *docImpl = (DOMDocumentImpl *)docOwner;
@@ -413,15 +419,6 @@ short            XPathNamespaceImpl::compareTreePosition(const DOMNode* other) c
     // exception
     return 0;
 }
-
-//Should be moved into DOMDocument
-//Produce a new XPathNamespace object or give one back from the internal map
-DOMXPathNamespace *XPathNamespaceImpl::createXPathNamespace(const XMLCh* const prefix, const XMLCh* const uri, DOMElement *owner)
-{
-    DOMDocument *ownerDocument = owner->getOwnerDocument();
-    return new ((DOMDocumentImpl *)ownerDocument, (DOMDocumentImpl::NodeObjectType)XPathNamespaceImpl::XPATH_NAMESPACE_OBJECT) XPathNamespaceImpl(prefix, uri, owner, ownerDocument);
-}
-
 
 void  XPathNamespaceImpl::release() {
     if (fNode.isOwned() && !fNode.isToBeReleased())

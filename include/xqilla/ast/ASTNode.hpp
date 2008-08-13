@@ -96,6 +96,7 @@ public:
     FUNCTION_DEREF,
     COPY_OF,
     COPY,
+    MAP,
     DEBUG_HOOK
   } whichType;
 

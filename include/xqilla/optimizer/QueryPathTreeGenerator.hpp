@@ -109,6 +109,7 @@ protected:
   virtual PathResult generateInlineFunction(XQInlineFunction *item);
   virtual PathResult generateFunctionRef(XQFunctionRef *item);
   virtual PathResult generateFunctionDeref(XQFunctionDeref *item);
+  virtual PathResult generateMap(XQMap *item);
 
   virtual PathResult generateUDelete(UDelete *item);
   virtual PathResult generateURename(URename *item);

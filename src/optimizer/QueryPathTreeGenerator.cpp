@@ -287,6 +287,10 @@ QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generate(ASTNode *ite
     result = generateAtomize((XQAtomize *)item);
     break;
   }
+  case ASTNode::MAP: {
+    result = generateMap((XQMap *)item);
+    break;
+  }
   case ASTNode::PROMOTE_UNTYPED: {
     result = generatePromoteUntyped((XQPromoteUntyped *)item);
     break;
@@ -1437,6 +1441,24 @@ QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateAtomize(XQAto
 {
   generate(const_cast<ASTNode *>(item->getExpression())).markSubtreeValue();
   return PathResult();
+}
+
+QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generateMap(XQMap *item)
+{
+  PathResult result = generate(item->getArg1());
+
+  varStore_.addScope(VarStore::MyScope::LOGICAL_BLOCK_SCOPE);
+  if(item->getName() == 0) {
+    setCurrentContext(result);
+  } else {
+    setVariable(item->getURI(), item->getName(), result);
+  }
+
+  result = generate(item->getArg2());
+
+  delete varStore_.popScope();
+
+  return result;
 }
 
 QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::generatePromoteUntyped(XQPromoteUntyped *item)
