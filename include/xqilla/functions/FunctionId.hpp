@@ -28,11 +28,6 @@
 
 #include <vector>
 
-/** 
- * Id function 
- *
- * fn:id(string* $srcval) => element*
- */
 class XQILLA_API FunctionId : public XQFunction
 {
 public:
@@ -55,5 +50,5 @@ public:
   Sequence createSequence(DynamicContext* context, int flags=0) const;
 };
 
-#endif // _FUNCTIONID_HPP
+#endif
 

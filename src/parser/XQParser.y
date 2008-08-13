@@ -138,6 +138,7 @@
 #include <xqilla/functions/FunctionConstructor.hpp>
 #include <xqilla/functions/FunctionRoot.hpp>
 #include <xqilla/functions/FunctionQName.hpp>
+#include <xqilla/functions/FunctionId.hpp>
 #include <xqilla/functions/XQillaFunction.hpp>
 
 #include <xqilla/axis/NodeTest.hpp>
@@ -644,8 +645,7 @@ namespace XQParser {
 %type <astNode>      ExtensionExpr FTContainsExpr FTIgnoreOption VarDeclValue LeadingSlash CompPINCName
 %type <astNode>      InsertExpr DeleteExpr RenameExpr ReplaceExpr TransformExpr CompConstructorName
 %type <astNode>      ForwardStep ReverseStep AbbrevForwardStep AbbrevReverseStep OrderExpr CompPIConstructorContent
-%type <astNode>      PathPattern_XSLT RelativePathPattern_XSLT PatternStep_XSLT
-%type <astNode>      IdKeyPattern_XSLT IdValue_XSLT KeyValue_XSLT PathPatternStart_XSLT CallTemplateExpr ApplyTemplatesExpr
+%type <astNode>      PathPattern_XSLT IdValue_XSLT KeyValue_XSLT CallTemplateExpr ApplyTemplatesExpr
 %type <astNode>      DereferencedFunctionCall InlineFunction LiteralFunctionRef FunctionRef
 %type <astNode>      LiteralResultElement_XSLT ValueOf_XSLT ValueOfAttrs_XSLT Text_XSLT TextNode_XSLT ApplyTemplates_XSLT
 %type <astNode>      ApplyTemplatesAttrs_XSLT CallTemplate_XSLT CallTemplateAttrs_XSLT Sequence_XSLT Choose_XSLT If_XSLT
@@ -653,6 +653,7 @@ namespace XQParser {
 %type <astNode>      PI_XSLT PIAttrs_XSLT Document_XSLT DocumentAttrs_XSLT Attribute_XSLT AttributeAttrs_XSLT
 %type <astNode>      AnalyzeString_XSLT AnalyzeStringAttrs_XSLT MatchingSubstring_XSLT NonMatchingSubstring_XSLT
 %type <astNode>      CopyOf_XSLT CopyOfAttrs_XSLT Copy_XSLT CopyAttrs_XSLT
+%type <astNode>      RelativePathPattern_XSLT PatternStep_XSLT IdKeyPattern_XSLT PathPatternStart_XSLT
 
 %type <parenExpr>    SequenceConstructor_XSLT
 
@@ -1885,39 +1886,15 @@ PathPattern_XSLT:
     nt->setNamespaceWildcard();
     $$ = WRAP(@1, new (MEMMGR) XQStep(XQStep::SELF, nt, MEMMGR));
   }
-  | PathPatternStart_XSLT RelativePathPattern_XSLT
-  {
-    // TBD buggy - jpcs
-    XQPredicate *pred = 0;
-    ASTNode *step = $2;
-    while(step->getType() == ASTNode::PREDICATE) {
-      pred = (XQPredicate*)step;
-      step = (ASTNode*)pred->getPredicate();
-    }
-
-    XQPredicate *newPred = WRAP(@1, new (MEMMGR) XQPredicate(step, $1, MEMMGR));
-
-    $$ = $2;
-    if(pred != 0) {
-      pred->setPredicate(newPred);
-    } else {
-      $$ = newPred;
-    }
-  }
   | IdKeyPattern_XSLT
   {
-    // TBD id() and key() - jpcs
-    $$ = 0;
-  }
-  | IdKeyPattern_XSLT _SLASH_ RelativePathPattern_XSLT
-  {
-    // TBD id() and key() - jpcs
-    $$ = 0;
-  }
-  | IdKeyPattern_XSLT _SLASH_SLASH_ RelativePathPattern_XSLT
-  {
-    // TBD id() and key() - jpcs
-    $$ = 0;
+    // . intersect id("a")
+
+    VectorOfASTNodes oargs(XQillaAllocator<ASTNode*>(MEMMGR));
+    oargs.push_back(WRAP(@1, new (MEMMGR) XQContextItem(MEMMGR)));
+    oargs.push_back($1);
+
+    $$ = WRAP(@1, new (MEMMGR) Intersect(oargs, MEMMGR));
   }
   ;
 
@@ -1940,6 +1917,35 @@ PathPatternStart_XSLT:
   }
   ;
 
+// [6]      IdKeyPattern      ::=      'id' '(' IdValue ')'
+//       | 'key' '(' StringLiteralXP ',' KeyValue ')'
+IdKeyPattern_XSLT:
+    _ID_ _LPAR_ IdValue_XSLT _RPAR_
+  {
+    VectorOfASTNodes fargs(XQillaAllocator<ASTNode*>(MEMMGR));
+    fargs.push_back($3);
+
+    $$ = WRAP(@1, new (MEMMGR) FunctionId(fargs, MEMMGR));
+  }
+  | _KEY_ _LPAR_ StringLiteral _COMMA_ KeyValue_XSLT _RPAR_
+  {
+//     VectorOfASTNodes fargs(XQillaAllocator<ASTNode*>(MEMMGR));
+//     fargs.push_back($3);
+//     fargs.push_back($5);
+
+//     $$ = WRAP(@1, new (MEMMGR) FunctionKey(fargs, MEMMGR));
+
+    // TBD key() - jpcs
+    $$ = WRAP(@1, new (MEMMGR) XQContextItem(MEMMGR));
+  }
+  ;
+
+// [7]      IdValue      ::=      StringLiteralXP | VarRef XP
+IdValue_XSLT: StringLiteral | VarRef;
+
+// [8]      KeyValue      ::=      Literal XP | VarRef XP
+KeyValue_XSLT: Literal | VarRef;
+
 //
 // foo/bar/@baz -> self::attribute(baz)[parent::bar[parent::foo]]
 //
@@ -1949,12 +1955,60 @@ PathPatternStart_XSLT:
 //
 // //foo -> self::foo[ancestor::document-node()]
 //
+// /foo[baz]/bar -> self::bar[parent::foo[baz][parent::document-node()]]
+//
+// id("a")/foo/bar -> self::bar[parent::foo[parent::node() intersect id("a")]]
+//
+// / -> self::document-node()
+//
+// id("a") -> . intersect id("a")
+//
 
 // [3]      RelativePathPattern      ::=      PatternStep (('/' | '//') RelativePathPattern)?
 RelativePathPattern_XSLT:
     PatternStep_XSLT
   {
     $$ = $1;
+  }
+  | PathPatternStart_XSLT PatternStep_XSLT
+  {
+    $$ = WRAP(@1, new (MEMMGR) XQPredicate($2, $1, MEMMGR));
+  }
+  | IdKeyPattern_XSLT _SLASH_ PatternStep_XSLT
+  {
+    // id("a")/foo -> self::foo[parent::node() intersect id("a")]
+
+    NodeTest *nt = new (MEMMGR) NodeTest();
+    nt->setTypeWildcard();
+    nt->setNameWildcard();
+    nt->setNamespaceWildcard();
+    XQStep *step = WRAP(@1, new (MEMMGR) XQStep(XQStep::PARENT, nt, MEMMGR));
+
+    VectorOfASTNodes oargs(XQillaAllocator<ASTNode*>(MEMMGR));
+    oargs.push_back(step);
+    oargs.push_back($1);
+
+    Intersect *intersect = WRAP(@1, new (MEMMGR) Intersect(oargs, MEMMGR));
+
+    $$ = WRAP(@1, new (MEMMGR) XQPredicate($3, intersect, MEMMGR));
+  }
+  | IdKeyPattern_XSLT _SLASH_SLASH_ PatternStep_XSLT
+  {
+    // id("a")/foo -> self::foo[ancestor::node() intersect id("a")]
+
+    NodeTest *nt = new (MEMMGR) NodeTest();
+    nt->setTypeWildcard();
+    nt->setNameWildcard();
+    nt->setNamespaceWildcard();
+    XQStep *step = WRAP(@1, new (MEMMGR) XQStep(XQStep::ANCESTOR, nt, MEMMGR));
+
+    VectorOfASTNodes oargs(XQillaAllocator<ASTNode*>(MEMMGR));
+    oargs.push_back(step);
+    oargs.push_back($1);
+
+    Intersect *intersect = WRAP(@1, new (MEMMGR) Intersect(oargs, MEMMGR));
+
+    $$ = WRAP(@1, new (MEMMGR) XQPredicate($3, intersect, MEMMGR));
   }
   | RelativePathPattern_XSLT _SLASH_ PatternStep_XSLT
   {
@@ -2028,27 +2082,6 @@ PatternStepPredicateList_XSLT:
     $$ = $1; 
   }
   ;
-
-// [6]      IdKeyPattern      ::=      'id' '(' IdValue ')'
-//       | 'key' '(' StringLiteralXP ',' KeyValue ')'
-IdKeyPattern_XSLT:
-    _ID_ _LPAR_ IdValue_XSLT _RPAR_
-  {
-    // TBD id() and key() - jpcs
-    $$ = 0;
-  }
-  | _KEY_ _LPAR_ StringLiteral _COMMA_ KeyValue_XSLT _RPAR_
-  {
-    // TBD id() and key() - jpcs
-    $$ = 0;
-  }
-  ;
-
-// [7]      IdValue      ::=      StringLiteralXP | VarRef XP
-IdValue_XSLT: StringLiteral | VarRef;
-
-// [8]      KeyValue      ::=      Literal XP | VarRef XP
-KeyValue_XSLT: Literal | VarRef;
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
