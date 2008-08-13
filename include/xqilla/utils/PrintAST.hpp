@@ -81,6 +81,7 @@ class XQFunctionRef;
 class XQUserFunction;
 class XQUserFunctionInstance;
 class XQSimpleContent;
+class XQMap;
 class DynamicContext;
 class Item;
 
@@ -176,6 +177,8 @@ public:
   virtual std::string printInlineFunction(const XQInlineFunction *item, const DynamicContext *context, int indent);
   virtual std::string printFunctionDeref(const XQFunctionDeref *item, const DynamicContext *context, int indent);
   virtual std::string printFunctionRef(const XQFunctionRef *item, const DynamicContext *context, int indent);
+  virtual std::string printMap(const XQMap *item, const DynamicContext *context, int indent);
+  virtual std::string printUnknown(const ASTNode *item, const DynamicContext *context, int indent);
 
   virtual std::string printXQUserFunction(const XQUserFunction *item, const DynamicContext *context, int indent);
 
@@ -216,6 +219,7 @@ public:
   virtual std::string printWhereTuple(const WhereTuple *item, const DynamicContext *context, int indent);
   virtual std::string printOrderByTuple(const OrderByTuple *item, const DynamicContext *context, int indent);
   virtual std::string printTupleDebugHook(const TupleDebugHook *item, const DynamicContext *context, int indent);
+  virtual std::string printUnknownTupleNode(const TupleNode *item, const DynamicContext *context, int indent);
 
   virtual std::string printSequenceType(const SequenceType *type, const DynamicContext *context, int indent);
   virtual std::string printCase(const XQTypeswitch::Case *cse, const DynamicContext *context, int indent);

@@ -79,6 +79,7 @@ const XMLCh MATCHING_SUBSTRING_NAME[] = { 'm', 'a', 't', 'c', 'h', 'i', 'n', 'g'
 const XMLCh NON_MATCHING_SUBSTRING_NAME[] = { 'n', 'o', 'n', '-', 'm', 'a', 't', 'c', 'h', 'i', 'n', 'g', '-', 's', 'u', 'b', 's', 't', 'r', 'i', 'n', 'g', 0 };
 const XMLCh COPY_OF_NAME[] = { 'c', 'o', 'p', 'y', '-', 'o', 'f', 0 };
 const XMLCh COPY_NAME[] = { 'c', 'o', 'p', 'y', 0 };
+const XMLCh FOR_EACH_NAME[] = { 'f', 'o', 'r', '-', 'e', 'a', 'c', 'h', 0 };
 
 const XMLCh VERSION_NAME[] = { 'v', 'e', 'r', 's', 'i', 'o', 'n', 0 };
 const XMLCh MATCH_NAME[] = { 'm', 'a', 't', 'c', 'h', 0 };
@@ -242,6 +243,10 @@ const AttrData COPY_ATTR_DATA[] = {
   END_ATTR_DATA
 };
 
+const AttrData FOR_EACH_ATTR_DATA[] = {
+  SELECT_ATTR_DATA
+};
+
 struct InstructionInfo
 {
   const XMLCh *name;
@@ -281,6 +286,7 @@ const InstructionInfo INSTRUCTION_INFO[] = {
   { NON_MATCHING_SUBSTRING_NAME, _XSLT_NON_MATCHING_SUBSTRING_, 0,                         InstructionInfo::DEFAULT  },
   { COPY_OF_NAME,                _XSLT_COPY_OF_,                COPY_OF_ATTR_DATA,         InstructionInfo::DEFAULT  },
   { COPY_NAME,                   _XSLT_COPY_,                   COPY_ATTR_DATA,            InstructionInfo::DEFAULT  },
+  { FOR_EACH_NAME,               _XSLT_FOR_EACH_,               FOR_EACH_ATTR_DATA,        InstructionInfo::DEFAULT  },
   { 0, 0 }
 };
 

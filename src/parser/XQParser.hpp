@@ -304,31 +304,32 @@
      _XSLT_NON_MATCHING_SUBSTRING_ = 519,
      _XSLT_COPY_OF_ = 520,
      _XSLT_COPY_ = 521,
-     _XSLT_VERSION_ = 522,
-     _XSLT_MODE_ = 523,
-     _XSLT_NAME_ = 524,
-     _XSLT_TUNNEL_ = 525,
-     _XSLT_REQUIRED_ = 526,
-     _XSLT_OVERRIDE_ = 527,
-     _XSLT_COPY_NAMESPACES_ = 528,
-     _XSLT_INHERIT_NAMESPACES_ = 529,
-     _XSLT_MATCH_ = 530,
-     _XSLT_AS_ = 531,
-     _XSLT_SELECT_ = 532,
-     _XSLT_PRIORITY_ = 533,
-     _XSLT_TEST_ = 534,
-     _XSLT_SEPARATOR_ = 535,
-     _XSLT_NAMESPACE_A_ = 536,
-     _XSLT_REGEX_ = 537,
-     _XSLT_FLAGS_ = 538,
-     _XSLT_ELEMENT_NAME_ = 539,
-     _XSLT_XMLNS_ATTR_ = 540,
-     _XSLT_ATTR_NAME_ = 541,
-     _XSLT_TEXT_NODE_ = 542,
-     _XSLT_WS_TEXT_NODE_ = 543,
-     _HASH_DEFAULT_ = 544,
-     _HASH_ALL_ = 545,
-     _HASH_CURRENT_ = 546
+     _XSLT_FOR_EACH_ = 522,
+     _XSLT_VERSION_ = 523,
+     _XSLT_MODE_ = 524,
+     _XSLT_NAME_ = 525,
+     _XSLT_TUNNEL_ = 526,
+     _XSLT_REQUIRED_ = 527,
+     _XSLT_OVERRIDE_ = 528,
+     _XSLT_COPY_NAMESPACES_ = 529,
+     _XSLT_INHERIT_NAMESPACES_ = 530,
+     _XSLT_MATCH_ = 531,
+     _XSLT_AS_ = 532,
+     _XSLT_SELECT_ = 533,
+     _XSLT_PRIORITY_ = 534,
+     _XSLT_TEST_ = 535,
+     _XSLT_SEPARATOR_ = 536,
+     _XSLT_NAMESPACE_A_ = 537,
+     _XSLT_REGEX_ = 538,
+     _XSLT_FLAGS_ = 539,
+     _XSLT_ELEMENT_NAME_ = 540,
+     _XSLT_XMLNS_ATTR_ = 541,
+     _XSLT_ATTR_NAME_ = 542,
+     _XSLT_TEXT_NODE_ = 543,
+     _XSLT_WS_TEXT_NODE_ = 544,
+     _HASH_DEFAULT_ = 545,
+     _HASH_ALL_ = 546,
+     _HASH_CURRENT_ = 547
    };
 #endif
 /* Tokens.  */
@@ -597,31 +598,32 @@
 #define _XSLT_NON_MATCHING_SUBSTRING_ 519
 #define _XSLT_COPY_OF_ 520
 #define _XSLT_COPY_ 521
-#define _XSLT_VERSION_ 522
-#define _XSLT_MODE_ 523
-#define _XSLT_NAME_ 524
-#define _XSLT_TUNNEL_ 525
-#define _XSLT_REQUIRED_ 526
-#define _XSLT_OVERRIDE_ 527
-#define _XSLT_COPY_NAMESPACES_ 528
-#define _XSLT_INHERIT_NAMESPACES_ 529
-#define _XSLT_MATCH_ 530
-#define _XSLT_AS_ 531
-#define _XSLT_SELECT_ 532
-#define _XSLT_PRIORITY_ 533
-#define _XSLT_TEST_ 534
-#define _XSLT_SEPARATOR_ 535
-#define _XSLT_NAMESPACE_A_ 536
-#define _XSLT_REGEX_ 537
-#define _XSLT_FLAGS_ 538
-#define _XSLT_ELEMENT_NAME_ 539
-#define _XSLT_XMLNS_ATTR_ 540
-#define _XSLT_ATTR_NAME_ 541
-#define _XSLT_TEXT_NODE_ 542
-#define _XSLT_WS_TEXT_NODE_ 543
-#define _HASH_DEFAULT_ 544
-#define _HASH_ALL_ 545
-#define _HASH_CURRENT_ 546
+#define _XSLT_FOR_EACH_ 522
+#define _XSLT_VERSION_ 523
+#define _XSLT_MODE_ 524
+#define _XSLT_NAME_ 525
+#define _XSLT_TUNNEL_ 526
+#define _XSLT_REQUIRED_ 527
+#define _XSLT_OVERRIDE_ 528
+#define _XSLT_COPY_NAMESPACES_ 529
+#define _XSLT_INHERIT_NAMESPACES_ 530
+#define _XSLT_MATCH_ 531
+#define _XSLT_AS_ 532
+#define _XSLT_SELECT_ 533
+#define _XSLT_PRIORITY_ 534
+#define _XSLT_TEST_ 535
+#define _XSLT_SEPARATOR_ 536
+#define _XSLT_NAMESPACE_A_ 537
+#define _XSLT_REGEX_ 538
+#define _XSLT_FLAGS_ 539
+#define _XSLT_ELEMENT_NAME_ 540
+#define _XSLT_XMLNS_ATTR_ 541
+#define _XSLT_ATTR_NAME_ 542
+#define _XSLT_TEXT_NODE_ 543
+#define _XSLT_WS_TEXT_NODE_ 544
+#define _HASH_DEFAULT_ 545
+#define _HASH_ALL_ 546
+#define _HASH_CURRENT_ 547
 
 
 

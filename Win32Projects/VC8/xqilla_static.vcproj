@@ -108,6 +108,7 @@
       <File RelativePath="..\..\include\xqilla\ast\XQTypeswitch.hpp"/>
       <File RelativePath="..\..\include\xqilla\ast\XQValidate.hpp"/>
       <File RelativePath="..\..\include\xqilla\ast\XQAtomize.hpp"/>
+      <File RelativePath="..\..\include\xqilla\ast\XQMap.hpp"/>
       <File RelativePath="..\..\include\xqilla\ast\XQAnalyzeString.hpp"/>
       <File RelativePath="..\..\include\xqilla\ast\XPath1Compat.hpp"/>
       <File RelativePath="..\..\include\xqilla\ast\ConvertFunctionArg.hpp"/>
@@ -484,6 +485,7 @@
       <File RelativePath="..\..\src\ast\XQAnalyzeString.cpp"/>
       <File RelativePath="..\..\src\ast\XQApplyTemplates.cpp"/>
       <File RelativePath="..\..\src\ast\XQAtomize.cpp"/>
+      <File RelativePath="..\..\src\ast\XQMap.cpp"/>
       <File RelativePath="..\..\src\ast\XQAttributeConstructor.cpp"/>
       <File RelativePath="..\..\src\ast\XQCallTemplate.cpp"/>
       <File RelativePath="..\..\src\ast\XQCastAs.cpp"/>

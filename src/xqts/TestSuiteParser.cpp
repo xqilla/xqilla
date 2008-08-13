@@ -258,7 +258,7 @@ void TestSuiteParser::startElement(const XMLCh* const uri, const XMLCh* const lo
         const XMLCh *role = attributes.getValue(g_szRole);
         if(XMLString::equals(role, X("principal"))) {
           const XMLCh *file = attributes.getValue(g_szFile);
-          urlQuery_.setURL(urlXQTSQueriesDirectory_, file);
+          urlQuery_.setURL(urlXQTSResultsDirectory_, file);
 
           const XMLCh *type = attributes.getValue(g_szType);
           testCase_.outputFiles[UTF8(urlQuery_.getURLText())]=UTF8(type);

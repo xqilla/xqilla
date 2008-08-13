@@ -80,6 +80,7 @@
 #include <xqilla/ast/XQInlineFunction.hpp>
 #include <xqilla/ast/XQFunctionDeref.hpp>
 #include <xqilla/ast/XQFunctionRef.hpp>
+#include <xqilla/ast/XQMap.hpp>
 
 #include <xqilla/fulltext/FTContains.hpp>
 #include <xqilla/fulltext/FTOr.hpp>
@@ -601,6 +602,7 @@ namespace XQParser {
 %token _XSLT_NON_MATCHING_SUBSTRING_                          "<xsl:non-matching-substring..."
 %token _XSLT_COPY_OF_                                         "<xsl:copy-of..."
 %token _XSLT_COPY_                                            "<xsl:copy..."
+%token _XSLT_FOR_EACH_                                        "<xsl:for-each..."
 
 %token <str> _XSLT_VERSION_                                   "version='...'"
 %token <str> _XSLT_MODE_                                      "mode='...'"
@@ -652,7 +654,7 @@ namespace XQParser {
 %type <astNode>      WhenList_XSLT When_XSLT Otherwise_XSLT Variable_XSLT Comment_XSLT CommentAttrs_XSLT
 %type <astNode>      PI_XSLT PIAttrs_XSLT Document_XSLT DocumentAttrs_XSLT Attribute_XSLT AttributeAttrs_XSLT
 %type <astNode>      AnalyzeString_XSLT AnalyzeStringAttrs_XSLT MatchingSubstring_XSLT NonMatchingSubstring_XSLT
-%type <astNode>      CopyOf_XSLT CopyOfAttrs_XSLT Copy_XSLT CopyAttrs_XSLT
+%type <astNode>      CopyOf_XSLT CopyOfAttrs_XSLT Copy_XSLT CopyAttrs_XSLT ForEach_XSLT ForEachAttrs_XSLT Instruction_XSLT
 %type <astNode>      RelativePathPattern_XSLT PatternStep_XSLT IdKeyPattern_XSLT PathPatternStart_XSLT
 
 %type <parenExpr>    SequenceConstructor_XSLT
@@ -704,13 +706,13 @@ namespace XQParser {
 // 2 arise from the xgs:occurrence-indicator grammar constriant (http://www.w3.org/TR/xquery/#parse-note-occurence-indicators)
 //%expect 50
 
-// We're expecting 87 shift/reduce conflicts. These have been checked and are harmless.
+// We're expecting 88 shift/reduce conflicts. These have been checked and are harmless.
 // 48 arise from the xgs:leading-lone-slash grammar constraint (http://www.w3.org/TR/xquery/#parse-note-leading-lone-slash)
 // 3 arise from the xgs:occurrence-indicator grammar constriant (http://www.w3.org/TR/xquery/#parse-note-occurence-indicators)
 // 17 are due to template extensions
-// 18 are due to Variable_XSLT
+// 19 are due to Variable_XSLT
 // 1 is due to FunctionType
-%expect 87
+%expect 88
 
 %%
 
@@ -1167,81 +1169,30 @@ SequenceConstructor_XSLT:
     $$ = $1;
     $$->addItem($2);
   }
-  | SequenceConstructor_XSLT ValueOf_XSLT
+  | SequenceConstructor_XSLT Instruction_XSLT
   {
     $$ = $1;
     $$->addItem($2);
   }
-  | SequenceConstructor_XSLT Text_XSLT
-  {
-    $$ = $1;
-    $$->addItem($2);
-  }
-  | SequenceConstructor_XSLT ApplyTemplates_XSLT
-  {
-    $$ = $1;
-    $$->addItem($2);
-  }
-  | SequenceConstructor_XSLT CallTemplate_XSLT
-  {
-    $$ = $1;
-    $$->addItem($2);
-  }
-  | SequenceConstructor_XSLT Sequence_XSLT
-  {
-    $$ = $1;
-    $$->addItem($2);
-  }
-  | SequenceConstructor_XSLT Choose_XSLT
-  {
-    $$ = $1;
-    $$->addItem($2);
-  }
-  | SequenceConstructor_XSLT If_XSLT
-  {
-    $$ = $1;
-    $$->addItem($2);
-  }
-  | SequenceConstructor_XSLT Variable_XSLT
-  {
-    $$ = $1;
-    $$->addItem($2);
-  }
-  | SequenceConstructor_XSLT Comment_XSLT
-  {
-    $$ = $1;
-    $$->addItem($2);
-  }
-  | SequenceConstructor_XSLT PI_XSLT
-  {
-    $$ = $1;
-    $$->addItem($2);
-  }
-  | SequenceConstructor_XSLT Document_XSLT
-  {
-    $$ = $1;
-    $$->addItem($2);
-  }
-  | SequenceConstructor_XSLT Attribute_XSLT
-  {
-    $$ = $1;
-    $$->addItem($2);
-  }
-  | SequenceConstructor_XSLT AnalyzeString_XSLT
-  {
-    $$ = $1;
-    $$->addItem($2);
-  }
-  | SequenceConstructor_XSLT CopyOf_XSLT
-  {
-    $$ = $1;
-    $$->addItem($2);
-  }
-  | SequenceConstructor_XSLT Copy_XSLT
-  {
-    $$ = $1;
-    $$->addItem($2);
-  }
+  ;
+
+Instruction_XSLT:
+    ValueOf_XSLT
+  | Text_XSLT
+  | ApplyTemplates_XSLT
+  | CallTemplate_XSLT
+  | Sequence_XSLT
+  | Choose_XSLT
+  | If_XSLT
+  | Variable_XSLT
+  | Comment_XSLT
+  | PI_XSLT
+  | Document_XSLT
+  | Attribute_XSLT
+  | AnalyzeString_XSLT
+  | CopyOf_XSLT
+  | Copy_XSLT
+  | ForEach_XSLT
   ;
 
 ValueOf_XSLT:
@@ -1823,8 +1774,8 @@ CopyOfAttrs_XSLT:
 Copy_XSLT:
     CopyAttrs_XSLT SequenceConstructor_XSLT _XSLT_END_ELEMENT_
   {
-    XQCopy *as = (XQCopy*)$$;
     $$ = $1;
+    XQCopy *as = (XQCopy*)$$;
 
     XQContextItem *ci = WRAP(@1, new (MEMMGR) XQContextItem(MEMMGR));
     as->setExpression(ci);
@@ -1849,6 +1800,32 @@ CopyAttrs_XSLT:
     ((XQCopy*)$$)->setInheritNamespaces($2);
   }
   // TBD type and validation - jpcs
+  ;
+
+ForEach_XSLT:
+    ForEachAttrs_XSLT SequenceConstructor_XSLT _XSLT_END_ELEMENT_
+  {
+    // TBD xsl:sort - jpcs
+    $$ = $1;
+    XQMap *map = (XQMap*)$$;
+    map->setArg2($2);
+
+    if(map->getArg1() == 0) {
+      yyerror(@1, "The xsl:for-each instruction does not have a {}select attribute");
+    }
+  }
+  ;
+
+ForEachAttrs_XSLT:
+    _XSLT_FOR_EACH_
+  {
+    $$ = WRAP(@1, new (MEMMGR) XQMap(0, 0, MEMMGR));
+  }
+  | ForEachAttrs_XSLT _XSLT_SELECT_ Expr
+  {
+    $$ = $1;
+    ((XQMap*)$$)->setArg1(PRESERVE_NS(@2, $3));
+  }
   ;
 
 

@@ -5,6 +5,7 @@ xqilla/xqilla-simple.hpp \
 xqilla/xqilla-xqc.h \
 xqilla/ast/LocationInfo.hpp \
 xqilla/ast/XQCastableAs.hpp \
+xqilla/ast/XQMap.hpp \
 xqilla/ast/XQCastAs.hpp \
 xqilla/ast/XQContextItem.hpp \
 xqilla/ast/XQCopy.hpp \

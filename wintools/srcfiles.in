@@ -68,6 +68,7 @@ src/ast/XQIf.cpp lib
 src/ast/XQInlineFunction.cpp lib
 src/ast/XQInstanceOf.cpp lib
 src/ast/XQLiteral.cpp lib
+src/ast/XQMap.cpp lib
 src/ast/XQNamespaceBinding.cpp lib
 src/ast/XQNav.cpp lib
 src/ast/XQOperator.cpp lib
@@ -580,6 +581,7 @@ include/xqilla/ast/XQIf.hpp lib
 include/xqilla/ast/XQInlineFunction.hpp lib
 include/xqilla/ast/XQInstanceOf.hpp lib
 include/xqilla/ast/XQLiteral.hpp lib
+include/xqilla/ast/XQMap.hpp lib
 include/xqilla/ast/XQNamespaceBinding.hpp lib
 include/xqilla/ast/XQNav.hpp lib
 include/xqilla/ast/XQOperator.hpp lib
