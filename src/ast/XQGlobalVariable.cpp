@@ -42,7 +42,8 @@ XQGlobalVariable::XQGlobalVariable(const XMLCh* varQName, SequenceType* seqType,
     m_szLocalName(0),
     m_Type(seqType),
     m_Value(value),
-    _src(mm)
+    _src(mm),
+    staticTyped_(false)
 {
 }
 
@@ -134,6 +135,13 @@ void XQGlobalVariable::staticResolution(StaticContext* context)
     }
     m_Value = m_Value->staticResolution(context);
   }
+}
+
+void XQGlobalVariable::staticTypingOnce(StaticContext* context)
+{
+  if(staticTyped_) return;
+  staticTyped_ = true;
+  staticTyping(context);
 }
 
 void XQGlobalVariable::staticTyping(StaticContext* context)
