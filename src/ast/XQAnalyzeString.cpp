@@ -153,6 +153,7 @@ Item::Ptr AnalyzeStringResult::next(DynamicContext *context)
     optionsBuf.set(options);
     optionsBuf.append(chLatin_H);
 
+    size_t length = XMLString::stringLen(input_);
     try {
       // Parse and execute the regular expression
       RegularExpression regEx(pattern, optionsBuf.getRawBuffer(), mm);
@@ -160,7 +161,7 @@ Item::Ptr AnalyzeStringResult::next(DynamicContext *context)
       if(regEx.matches(XMLUni::fgZeroLenString))
         XQThrow(ASTException, X("AnalyzeStringResult::next"), X("The pattern matches the zero-length string [err:XTDE1150]"));
 
-      regEx.allMatches(input_, 0, XMLString::stringLen(input_), &matches_);
+      regEx.allMatches(input_, 0, length, &matches_);
     }
     catch (ParseException &e){ 
       XMLBuffer buf;
@@ -176,13 +177,13 @@ Item::Ptr AnalyzeStringResult::next(DynamicContext *context)
         XQThrow(ASTException, X("AnalyzeStringResult::next"), e.getMessage());
     }
 
-    int tokStart = 0;
+    size_t tokStart = 0;
 
     unsigned int i = 0;
     for(; i < matches_.size(); ++i) {
       Match *match = matches_.elementAt(i);
-      int matchStart = match->getStartPos(0);
-      int matchEnd = match->getEndPos(0);
+      size_t matchStart = match->getStartPos(0);
+      size_t matchEnd = match->getEndPos(0);
 
       if(tokStart < matchStart) {
         const XMLCh *str = XPath2Utils::subString(input_, tokStart, matchStart - tokStart, mm);
@@ -193,6 +194,11 @@ Item::Ptr AnalyzeStringResult::next(DynamicContext *context)
       strings_.push_back(pair<const XMLCh*, Match*>(str, match));
 
       tokStart = matchEnd;
+    }
+
+    if(tokStart < length) {
+      const XMLCh *str = XPath2Utils::subString(input_, tokStart, length - tokStart, mm);
+      strings_.push_back(pair<const XMLCh*, Match*>(str, 0));
     }
   }
 
