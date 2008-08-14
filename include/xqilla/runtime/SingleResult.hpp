@@ -30,12 +30,9 @@ class XQILLA_API SingleResult : public ResultImpl
 public:
   SingleResult(const LocationInfo *o);
 
-  virtual Item::Ptr next(DynamicContext *context);
+  virtual Item::Ptr nextOrTail(Result &tail, DynamicContext *context);
 
   virtual Item::Ptr getSingleResult(DynamicContext *context) const = 0;
-
-private:
-  bool toDo_;
 };
 
 #endif
