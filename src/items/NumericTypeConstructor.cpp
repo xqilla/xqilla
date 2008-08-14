@@ -86,26 +86,6 @@ Item::Ptr NumericTypeConstructor::createItem(const DynamicContext* context) cons
     assert(false);
     break;
   }
-  // check if it's a valid instance
-  DatatypeValidator* validator=context->getDocumentCache()->getDatatypeValidator(_typeURI, _typeName);
-  if(!validator) {
-    XMLBuffer buf(1023, context->getMemoryManager());
-    buf.append(X("Type "));
-    buf.append(_typeURI);
-    buf.append(chColon);
-    buf.append(_typeName);
-    buf.append(X(" not found"));
-    XQThrow2(TypeNotFoundException, X("NumericTypeConstructor::createItem"), buf.getRawBuffer());
-  }
-  try {
-    const XMLCh* valueToValidate=retVal->asString(context);
-    validator->validate(valueToValidate, 0, context->getMemoryManager());
-  } catch (XMLException &e) {
-    XMLBuffer buf(1023, context->getMemoryManager());
-    buf.append(e.getMessage());
-    buf.append(X(" [err:FORG0001]"));
-    XQThrow2(InvalidLexicalSpaceException, X("NumericTypeConstructor::createItem"), buf.getRawBuffer());
-  }
   return retVal;
 }
 
