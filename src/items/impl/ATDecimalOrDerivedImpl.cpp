@@ -472,9 +472,7 @@ bool ATDecimalOrDerivedImpl::isPositive() const {
 /** Treat this decimal (must be integer) as a codepoint **/
 XMLInt32 ATDecimalOrDerivedImpl::treatAsCodepoint(const DynamicContext* context) const {
   if(_isInteger) {
-    char out_string[256];
-    _decimal.toIntegerString(out_string);
-    int integer = atoi(out_string);
+    int integer = (int)_decimal.toDouble();
     XMLInt32 ch = (XMLInt32)integer;
     if(integer<=0 || (int)ch != integer) { // negative or lost some info
       XQThrow2(XPath2ErrorException, X("ATDecimalOrDerivedImpl::treatAsCodepoint"), X("Codepoint not legal [err:FOCH0001]."));

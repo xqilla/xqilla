@@ -146,5 +146,5 @@ public:
   static struct tm *threadsafe_gmtime(const time_t *timep, struct tm *result);
 };
 
-#endif // _DATEUTILS_HPP
+#endif
 
