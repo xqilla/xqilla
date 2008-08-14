@@ -39,6 +39,7 @@
 #include <xqilla/update/PendingUpdateList.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>
 #include <xqilla/runtime/ClosureResult.hpp>
+#include <xqilla/optimizer/ASTVisitor.hpp>
 
 #include <xercesc/util/XMLString.hpp>
 #include <xercesc/framework/XMLBuffer.hpp>
@@ -84,7 +85,7 @@ XQUserFunction::XQUserFunction(const XMLCh *qname, ArgumentSpecs *argSpecs, ASTN
     isUpdating_(isUpdating),
     isTemplate_(false),
     src_(mm),
-    calculatingSRC_(false),
+    staticTyped_(false),
     moduleDocCache_(NULL)
 {
 }
@@ -104,7 +105,7 @@ XQUserFunction::XQUserFunction(const XMLCh *qname, VectorOfASTNodes *pattern, Ar
     isUpdating_(false),
     isTemplate_(true),
     src_(mm),
-    calculatingSRC_(false),
+    staticTyped_(false),
     moduleDocCache_(NULL)
 {
 }
@@ -338,15 +339,58 @@ void XQUserFunction::staticResolutionStage2(StaticContext *context)
   }
 }
 
+class UDFStaticTyper : private ASTVisitor
+{
+public:
+  UDFStaticTyper() : context_(0) {}
+
+  void run(ASTNode *item, StaticContext *context)
+  {
+    context_ = context;
+    optimize(item);
+  }
+
+private:
+  virtual ASTNode *optimizeUserFunction(XQUserFunctionInstance *item)
+  {
+    // See if we can work out a better return type for the user defined function.
+    // This call will just return if it's already been static typed
+    const_cast<XQUserFunction*>(item->getFunctionDefinition())->staticTypingOnce(context_);
+
+    return ASTVisitor::optimizeUserFunction(item);
+  }
+
+  virtual ASTNode *optimizeApplyTemplates(XQApplyTemplates *item)
+  {
+    // The XQApplyTemplates could call any template - so try to static type
+    // all of them before us
+
+    const UserFunctions &templates = context_->getTemplateRules();
+
+    UserFunctions::const_iterator inIt;
+    for(inIt = templates.begin(); inIt != templates.end(); ++inIt) {
+      (*inIt)->staticTypingOnce(context_);
+    }
+
+    return ASTVisitor::optimizeApplyTemplates(item);
+  }
+
+  StaticContext *context_;
+};
+
+void XQUserFunction::staticTypingOnce(StaticContext *context)
+{
+  // Avoid inifinite recursion for recursive functions
+  // TBD Need to declare everything as being used - jpcs
+  if(staticTyped_) return;
+  staticTyped_ = true;
+  staticTyping(context);
+}
+
 void XQUserFunction::staticTyping(StaticContext *context)
 {
   // Nothing more to do for external functions
   if(body_ == NULL) return;
-
-  // Avoid inifinite recursion for recursive functions
-  // TBD Need to declare everything as being used - jpcs
-  if(calculatingSRC_) return;
-  calculatingSRC_ = true;
 
   XPath2MemoryManager *mm = context->getMemoryManager();
 
@@ -354,6 +398,10 @@ void XQUserFunction::staticTyping(StaticContext *context)
     XQThrow(StaticErrorException, X("XQUserFunction::staticTyping"),
             X("It is a static error for an updating function to declare a return type [err:XUST0028]"));
   }
+
+  // Find user defined functions and templates that are referenced in our body,
+  // and try to call staticTyping() on them before us.
+  UDFStaticTyper().run(body_, context);
 
   bool ciTypeSet = false;
   StaticType ciType = StaticType();
@@ -462,8 +510,6 @@ void XQUserFunction::staticTyping(StaticContext *context)
 
     varStore->removeScope();
   }
-
-  calculatingSRC_ = false;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -524,9 +570,6 @@ ASTNode* XQUserFunctionInstance::staticResolution(StaticContext* context)
 ASTNode *XQUserFunctionInstance::staticTyping(StaticContext *context)
 {
   if(funcDef_->body_ != NULL) {
-    // See if we can work out a better return type for the user defined function.
-    // This call will just return if staticTyping is in our call stack.
-    const_cast<XQUserFunction*>(funcDef_)->staticTyping(context);
     _src.clear();
     _src.copy(funcDef_->src_);
   } else {

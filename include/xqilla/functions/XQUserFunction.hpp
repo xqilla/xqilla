@@ -184,6 +184,7 @@ public:
   void staticResolutionStage1(StaticContext* context);
   /// Resolve the function body, work out a more static return type
   void staticResolutionStage2(StaticContext* context);
+  void staticTypingOnce(StaticContext *context);
   void staticTyping(StaticContext *context);
 
   void setFunctionBody(ASTNode* value) { body_ = value; }
@@ -213,7 +214,7 @@ protected:
 
   XPath2MemoryManager *memMgr_;
   StaticAnalysis src_;
-  bool calculatingSRC_;
+  bool staticTyped_;
   DocumentCache *moduleDocCache_;
 
   friend class XQUserFunctionInstance;

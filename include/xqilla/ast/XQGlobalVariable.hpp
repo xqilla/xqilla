@@ -33,6 +33,7 @@ public:
 
   void execute(DynamicContext* context) const;
   void staticResolution(StaticContext *context);
+  void staticTypingOnce(StaticContext *context);
   void staticTyping(StaticContext *context);
 
   const XMLCh* getVariableName() const;
@@ -63,6 +64,7 @@ protected:
   SequenceType* m_Type;
   ASTNode* m_Value;
   StaticAnalysis _src;
+  bool staticTyped_;
 };
 
 #endif

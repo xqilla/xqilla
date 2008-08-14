@@ -154,13 +154,13 @@ ASTNode *XQApplyTemplates::staticTyping(StaticContext *context)
 
     if(first) {
       first = false;
-      _src.getStaticType() = (*inIt)->getTemplateInstance()->getStaticAnalysis().getStaticType();
-      _src.setProperties((*inIt)->getTemplateInstance()->getStaticAnalysis().getProperties());
+      _src.getStaticType() = (*inIt)->getBodyStaticAnalysis().getStaticType();
+      _src.setProperties((*inIt)->getBodyStaticAnalysis().getProperties());
     } else {
-      _src.getStaticType() |= (*inIt)->getTemplateInstance()->getStaticAnalysis().getStaticType();
-      _src.setProperties(_src.getProperties() & (*inIt)->getTemplateInstance()->getStaticAnalysis().getProperties());
+      _src.getStaticType() |= (*inIt)->getBodyStaticAnalysis().getStaticType();
+      _src.setProperties(_src.getProperties() & (*inIt)->getBodyStaticAnalysis().getProperties());
     }
-    newSrc.add((*inIt)->getTemplateInstance()->getStaticAnalysis());
+    newSrc.add((*inIt)->getBodyStaticAnalysis());
   }
 
   if(args_ != 0) {
