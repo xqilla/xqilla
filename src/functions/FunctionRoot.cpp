@@ -65,8 +65,6 @@ ASTNode* FunctionRoot::staticResolution(StaticContext *context)
 
 ASTNode *FunctionRoot::staticTyping(StaticContext *context)
 {
-  XPath2MemoryManager *mm = context->getMemoryManager();
-
   _src.clear();
 
   _src.setProperties(StaticAnalysis::DOCORDER | StaticAnalysis::GROUPED |
