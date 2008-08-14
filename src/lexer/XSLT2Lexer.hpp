@@ -46,6 +46,7 @@ public:
   virtual int yylex(YYSTYPE* pYYLVAL, YYLTYPE* pYYLOC);
 
   virtual XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver *getNSResolver() const;
+  virtual void undoLessThan();
 
 protected:
   enum State {

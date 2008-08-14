@@ -603,15 +603,29 @@ namespace XQParser {
 %token _XSLT_COPY_OF_                                         "<xsl:copy-of..."
 %token _XSLT_COPY_                                            "<xsl:copy..."
 %token _XSLT_FOR_EACH_                                        "<xsl:for-each..."
+%token _XSLT_OUTPUT_                                          "<xsl:output..."
 
 %token <str> _XSLT_VERSION_                                   "version='...'"
 %token <str> _XSLT_MODE_                                      "mode='...'"
 %token <str> _XSLT_NAME_                                      "name='...'"
+%token <str> _XSLT_DOCTYPE_PUBLIC_                            "doctype-public='...'"
+%token <str> _XSLT_DOCTYPE_SYSTEM_                            "doctype-system='...'"
+%token <str> _XSLT_ENCODING_                                  "encoding='...'"
+%token <str> _XSLT_MEDIA_TYPE_                                "media-type='...'"
+%token <str> _XSLT_NORMALIZATION_FORM_                        "normalization-form='...'"
+%token <str> _XSLT_STANDALONE_                                "standalone='...'"
+%token <str> _XSLT_EXCLUDE_RESULT_PREFIXES_                   "exclude-result-prefixes='...'"
 %token <boolean> _XSLT_TUNNEL_                                "tunnel='...'"
 %token <boolean> _XSLT_REQUIRED_                              "required='...'"
 %token <boolean> _XSLT_OVERRIDE_                              "override='...'"
 %token <boolean> _XSLT_COPY_NAMESPACES_                       "copy-namespaces='...'"
 %token <boolean> _XSLT_INHERIT_NAMESPACES_                    "inherit-namespaces='...'"
+%token <boolean> _XSLT_BYTE_ORDER_MARK_                       "byte-order-mark='...'"
+%token <boolean> _XSLT_ESCAPE_URI_ATTRIBUTES_                 "escape-uri-attributes='...'"
+%token <boolean> _XSLT_INCLUDE_CONTENT_TYPE_                  "include-content-type='...'"
+%token <boolean> _XSLT_INDENT_                                "indent='...'"
+%token <boolean> _XSLT_OMIT_XML_DECLARATION_                  "omit-xml-declaration='...'"
+%token <boolean> _XSLT_UNDECLARE_PREFIXES_                    "undeclare-prefixes='...'"
 %token _XSLT_MATCH_                                           "match='...'"
 %token _XSLT_AS_                                              "as='...'"
 %token _XSLT_SELECT_                                          "select='...'"
@@ -621,6 +635,9 @@ namespace XQParser {
 %token _XSLT_NAMESPACE_A_                                     "namespace='...'"
 %token _XSLT_REGEX_                                           "regex='...'"
 %token _XSLT_FLAGS_                                           "flags='...'"
+%token _XSLT_METHOD_                                          "method='...'"
+%token _XSLT_CDATA_SECTION_ELEMENTS_                          "cdata-section-elements='...'"
+%token _XSLT_USE_CHARACTER_MAPS_                              "use-character-maps='...'"
 
 %token <astNode> _XSLT_ELEMENT_NAME_                          "<XSLT element name>"
 %token <astNode> _XSLT_XMLNS_ATTR_                            "<XSLT XMLNS attr>"
@@ -631,6 +648,9 @@ namespace XQParser {
 %token _HASH_DEFAULT_                                         "#default"
 %token _HASH_ALL_                                             "#all"
 %token _HASH_CURRENT_                                         "#current"
+%token _XML_                                                  "xml"
+%token _HTML_                                                 "html"
+%token _XHTML_                                                "xhtml"
 
 
 %type <functDecl>    FunctionDecl FunctionDecl_XQ TemplateDecl FunctionAttrs_XSLT TemplateAttrs_XSLT
@@ -798,6 +818,10 @@ StylesheetAttrs_XSLT:
   {
     // TBD Check the value - jpcs
   }
+  | StylesheetAttrs_XSLT _XSLT_EXCLUDE_RESULT_PREFIXES_
+  {
+    // TBD implement exclude-result-prefixes - jpcs
+  }
   // TBD the rest of the attrs - jpcs
   ;
 
@@ -807,6 +831,7 @@ StylesheetContent_XSLT:
   | StylesheetContent_XSLT Function_XSLT
   | StylesheetContent_XSLT GlobalParam_XSLT
   | StylesheetContent_XSLT GlobalVariable_XSLT
+  | StylesheetContent_XSLT Output_XSLT
   ;
 
 Template_XSLT:
@@ -1099,6 +1124,113 @@ GlobalVariableAttrs_XSLT:
   {
     $1->setSequenceType($3);
     $$ = $1;
+  }
+  ;
+
+Output_XSLT:
+    OutputAttrs_XSLT _XSLT_END_ELEMENT_
+  {
+    // TBD Add the output to the static context - jpcs
+  }
+  ;
+
+// <xsl:output
+//   name? = qname
+//   method? = "xml" | "html" | "xhtml" | "text" | qname-but-not-ncname
+//   byte-order-mark? = "yes" | "no"
+//   cdata-section-elements? = qnames
+//   doctype-public? = string
+//   doctype-system? = string
+//   encoding? = string
+//   escape-uri-attributes? = "yes" | "no"
+//   include-content-type? = "yes" | "no"
+//   indent? = "yes" | "no"
+//   media-type? = string
+//   normalization-form? = "NFC" | "NFD" | "NFKC" | "NFKD" | "fully-normalized" | "none" | nmtoken
+//   omit-xml-declaration? = "yes" | "no"
+//   standalone? = "yes" | "no" | "omit"
+//   undeclare-prefixes? = "yes" | "no"
+//   use-character-maps? = qnames
+//   version? = nmtoken />
+OutputAttrs_XSLT:
+    _XSLT_OUTPUT_
+  {
+  }
+  | OutputAttrs_XSLT _XSLT_NAME_
+  {
+  }
+  | OutputAttrs_XSLT _XSLT_METHOD_ OutputMethod_XSLT
+  {
+  }
+  | OutputAttrs_XSLT _XSLT_BYTE_ORDER_MARK_
+  {
+  }
+  | OutputAttrs_XSLT _XSLT_CDATA_SECTION_ELEMENTS_ QNames_XSLT
+  {
+  }
+  | OutputAttrs_XSLT _XSLT_DOCTYPE_PUBLIC_
+  {
+  }
+  | OutputAttrs_XSLT _XSLT_DOCTYPE_SYSTEM_
+  {
+  }
+  | OutputAttrs_XSLT _XSLT_ENCODING_
+  {
+  }
+  | OutputAttrs_XSLT _XSLT_ESCAPE_URI_ATTRIBUTES_
+  {
+  }
+  | OutputAttrs_XSLT _XSLT_INCLUDE_CONTENT_TYPE_
+  {
+  }
+  | OutputAttrs_XSLT _XSLT_INDENT_
+  {
+  }
+  | OutputAttrs_XSLT _XSLT_MEDIA_TYPE_
+  {
+  }
+  | OutputAttrs_XSLT _XSLT_NORMALIZATION_FORM_
+  {
+  }
+  | OutputAttrs_XSLT _XSLT_OMIT_XML_DECLARATION_
+  {
+  }
+  | OutputAttrs_XSLT _XSLT_STANDALONE_
+  {
+  }
+  | OutputAttrs_XSLT _XSLT_UNDECLARE_PREFIXES_
+  {
+  }
+  | OutputAttrs_XSLT _XSLT_USE_CHARACTER_MAPS_ QNames_XSLT
+  {
+  }
+  | OutputAttrs_XSLT _XSLT_VERSION_
+  {
+  }
+  ;
+
+OutputMethod_XSLT:
+    _XML_
+  | _HTML_
+  | _XHTML_
+  | _TEXT_
+  | _QNAME_
+  {
+//     $$ = $1;
+    const XMLCh *p = $1;
+    while(*p && *p != ':') ++p;
+    if(*p == 0) {
+      yyerror(@1, "The method for the xsl:output declaration does not have a prefix");
+    }
+  }
+  ;
+
+QNames_XSLT:
+    _QNAME_
+  {
+  }
+  | QNames_XSLT _QNAME_
+  {
   }
   ;
 
