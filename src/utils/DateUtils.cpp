@@ -22,6 +22,7 @@
 #include "../config/xqilla_config.h"
 
 #include <math.h>
+#include <limits>
 #include <stdio.h> // for sprintf
 #if defined(WIN32) && !defined(__CYGWIN__)
 #define snprintf _snprintf
@@ -146,9 +147,7 @@ int DateUtils::asInt(MAPM num)
   if(num < INT_MIN || num > INT_MAX) {
     XQThrow2(XPath2TypeCastException, X("DateUtils::asInt"), X("Invalid representation of an int [err:FORG0001]"));
   } else {
-    char out_string[256];
-    num.toIntegerString(out_string);
-    return atoi(out_string);
+    return (int)num.toDouble();
   }
 }
 
