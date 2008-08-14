@@ -26,6 +26,7 @@
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/exceptions/FunctionException.hpp>
 #include <xqilla/ast/StaticAnalysis.hpp>
+#include <xqilla/runtime/ResultImpl.hpp>
 
 const XMLCh FunctionPosition::name[] = {
   XERCES_CPP_NAMESPACE_QUALIFIER chLatin_p, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_s, 
@@ -37,7 +38,7 @@ const unsigned int FunctionPosition::maxArgs = 0;
 
 /**
  * fn:position() as xs:integer
-**/
+ */
 
 FunctionPosition::FunctionPosition(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : XQFunction(name, minArgs, maxArgs, "empty()", args, memMgr)
@@ -57,27 +58,24 @@ ASTNode *FunctionPosition::staticTyping(StaticContext *context)
   return calculateSRCForArguments(context);
 }
 
-Sequence FunctionPosition::createSequence(DynamicContext* context, int flags) const
+class FunctionPositionResult : public ResultImpl
 {
-  XPath2MemoryManager* memMgr = context->getMemoryManager();
+public:
+  FunctionPositionResult(const LocationInfo *o)
+    : ResultImpl(o) {}
 
-  if(context->getContextItem()==NULLRCP)
-    XQThrow(FunctionException,X("FunctionPosition::createSequence"), X("Undefined context item in fn:position [err:XPDY0002]"));
-  return Sequence(context->getItemFactory()->createInteger((long)context->getContextPosition(), context), memMgr);
+  virtual Item::Ptr nextOrTail(Result &tail, DynamicContext *context)
+  {
+    if(context->getContextItem().isNull())
+      XQThrow(FunctionException,X("FunctionPosition::createSequence"),
+              X("Undefined context item in fn:position [err:XPDY0002]"));
+
+    tail = 0;
+    return context->getItemFactory()->createInteger((long)context->getContextPosition(), context);
+  }
+};
+
+Result FunctionPosition::createResult(DynamicContext* context, int flags) const
+{
+  return new FunctionPositionResult(this);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
