@@ -170,6 +170,8 @@ CharRef "&#"({Digits}|("x"{HexDigits}))";"
 %x COMPUTED_CONSTRUCTOR
 %x ATTR_VALUE_TEMPLATE
 %x TEMPLATE_MODES
+%x OUTPUT_METHOD
+%x QNAMES
 
 %{
 const char *xqGetStateName(int state)
@@ -191,6 +193,8 @@ const char *xqGetStateName(int state)
   case COMPUTED_CONSTRUCTOR: return "COMPUTED_CONSTRUCTOR";
   case ATTR_VALUE_TEMPLATE: return "ATTR_VALUE_TEMPLATE";
   case TEMPLATE_MODES: return "TEMPLATE_MODES";
+  case OUTPUT_METHOD: return "OUTPUT_METHOD";
+  case QNAMES: return "QNAMES";
   }
   return "unknown";
 }
@@ -219,6 +223,14 @@ void XQLexer::undoLessThan()
   case MODE_TEMPLATE_MODES:
     mode_ = MODE_NORMAL;
     CHANGE_STATE(TEMPLATE_MODES);
+    break;
+  case MODE_OUTPUT_METHOD:
+    mode_ = MODE_NORMAL;
+    CHANGE_STATE(OUTPUT_METHOD);
+    break;
+  case MODE_QNAMES:
+    mode_ = MODE_NORMAL;
+    CHANGE_STATE(QNAMES);
     break;
   case MODE_NORMAL:
     break;
@@ -691,6 +703,16 @@ void XQLexer::undoLessThan()
 <INITIAL,TEMPLATE_MODES>"#all" RECOGNIZE(_HASH_ALL_);
 <INITIAL,TEMPLATE_MODES>"#current" RECOGNIZE(_HASH_CURRENT_);
 <TEMPLATE_MODES>{WhitespaceChar}+ /* Do nothing */
+
+<OUTPUT_METHOD>"xml" RECOGNIZE_VALUE(_XML_, yytext);
+<OUTPUT_METHOD>"html" RECOGNIZE_VALUE(_HTML_, yytext);
+<OUTPUT_METHOD>"xhtml" RECOGNIZE_VALUE(_XHTML_, yytext);
+<OUTPUT_METHOD>"text" RECOGNIZE_VALUE(_TEXT_, yytext);
+<OUTPUT_METHOD>{QName} RECOGNIZE_VALUE(_QNAME_, yytext);
+<OUTPUT_METHOD>{WhitespaceChar}+ /* Do nothing */
+
+<QNAMES>{QName} RECOGNIZE_VALUE(_QNAME_, yytext);
+<QNAMES>{WhitespaceChar}+ /* Do nothing */
 
 <INITIAL>{NotNumber} {
   std::ostringstream oss;

@@ -183,7 +183,7 @@ public:
 
   void setGenerateErrorException(bool bEnable) { m_bGenerateErrorException=bEnable; }
 
-  virtual void undoLessThan() {}
+  virtual void undoLessThan() = 0;
   virtual XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver *getNSResolver() const { return 0; }
 
 protected:
@@ -215,7 +215,9 @@ public:
   enum StartMode {
     MODE_NORMAL,
     MODE_ATTR_VALUE_TEMPLATE,
-    MODE_TEMPLATE_MODES
+    MODE_TEMPLATE_MODES,
+    MODE_OUTPUT_METHOD,
+    MODE_QNAMES
   };
 
   XQLexer(XPath2MemoryManager* memMgr, const XMLCh *queryFile, const XMLCh* query, XQilla::Language lang);

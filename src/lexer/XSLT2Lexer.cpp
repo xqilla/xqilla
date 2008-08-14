@@ -80,6 +80,7 @@ const XMLCh NON_MATCHING_SUBSTRING_NAME[] = { 'n', 'o', 'n', '-', 'm', 'a', 't',
 const XMLCh COPY_OF_NAME[] = { 'c', 'o', 'p', 'y', '-', 'o', 'f', 0 };
 const XMLCh COPY_NAME[] = { 'c', 'o', 'p', 'y', 0 };
 const XMLCh FOR_EACH_NAME[] = { 'f', 'o', 'r', '-', 'e', 'a', 'c', 'h', 0 };
+const XMLCh OUTPUT_NAME[] = { 'o', 'u', 't', 'p', 'u', 't', 0 };
 
 const XMLCh VERSION_NAME[] = { 'v', 'e', 'r', 's', 'i', 'o', 'n', 0 };
 const XMLCh MATCH_NAME[] = { 'm', 'a', 't', 'c', 'h', 0 };
@@ -97,6 +98,22 @@ const XMLCh REGEX_NAME[] = { 'r', 'e', 'g', 'e', 'x', 0 };
 const XMLCh FLAGS_NAME[] = { 'f', 'l', 'a', 'g', 's', 0 };
 const XMLCh COPY_NAMESPACES_NAME[] = { 'c', 'o', 'p', 'y', '-', 'n', 'a', 'm', 'e', 's', 'p', 'a', 'c', 'e', 's', 0 };
 const XMLCh INHERIT_NAMESPACES_NAME[] = { 'i', 'n', 'h', 'e', 'r', 'i', 't', '-', 'n', 'a', 'm', 'e', 's', 'p', 'a', 'c', 'e', 's', 0 };
+const XMLCh METHOD_NAME[] = { 'm', 'e', 't', 'h', 'o', 'd', 0 };
+const XMLCh BYTE_ORDER_MARK_NAME[] = { 'b', 'y', 't', 'e', '-', 'o', 'r', 'd', 'e', 'r', '-', 'm', 'a', 'r', 'k', 0 };
+const XMLCh CDATA_SECTION_ELEMENTS_NAME[] = { 'c', 'd', 'a', 't', 'a', '-', 's', 'e', 'c', 't', 'i', 'o', 'n', '-', 'e', 'l', 'e', 'm', 'e', 'n', 't', 's', 0 };
+const XMLCh DOCTYPE_PUBLIC_NAME[] = { 'd', 'o', 'c', 't', 'y', 'p', 'e', '-', 'p', 'u', 'b', 'l', 'i', 'c', 0 };
+const XMLCh DOCTYPE_SYSTEM_NAME[] = { 'd', 'o', 'c', 't', 'y', 'p', 'e', '-', 's', 'y', 's', 't', 'e', 'm', 0 };
+const XMLCh ENCODING_NAME[] = { 'e', 'n', 'c', 'o', 'd', 'i', 'n', 'g', 0 };
+const XMLCh ESCAPE_URI_ATTRIBUTES_NAME[] = { 'e', 's', 'c', 'a', 'p', 'e', '-', 'u', 'r', 'i', '-', 'a', 't', 't', 'r', 'i', 'b', 'u', 't', 'e', 's', 0 };
+const XMLCh INCLUDE_CONTENT_TYPE_NAME[] = { 'i', 'n', 'c', 'l', 'u', 'd', 'e', '-', 'c', 'o', 'n', 't', 'e', 'n', 't', '-', 't', 'y', 'p', 'e', 0 };
+const XMLCh INDENT_NAME[] = { 'i', 'n', 'd', 'e', 'n', 't', 0 };
+const XMLCh MEDIA_TYPE_NAME[] = { 'm', 'e', 'd', 'i', 'a', '-', 't', 'y', 'p', 'e', 0 };
+const XMLCh NORMALIZATION_FORM_NAME[] = { 'n', 'o', 'r', 'm', 'a', 'l', 'i', 'z', 'a', 't', 'i', 'o', 'n', '-', 'f', 'o', 'r', 'm', 0 };
+const XMLCh OMIT_XML_DECLARATION_NAME[] = { 'o', 'm', 'i', 't', '-', 'x', 'm', 'l', '-', 'd', 'e', 'c', 'l', 'a', 'r', 'a', 't', 'i', 'o', 'n', 0 };
+const XMLCh STANDALONE_NAME[] = { 's', 't', 'a', 'n', 'd', 'a', 'l', 'o', 'n', 'e', 0 };
+const XMLCh UNDECLARE_PREFIXES_NAME[] = { 'u', 'n', 'd', 'e', 'c', 'l', 'a', 'r', 'e', '-', 'p', 'r', 'e', 'f', 'i', 'x', 'e', 's', 0 };
+const XMLCh USE_CHARACTER_MAPS_NAME[] = { 'u', 's', 'e', '-', 'c', 'h', 'a', 'r', 'a', 'c', 't', 'e', 'r', '-', 'm', 'a', 'p', 's', 0 };
+const XMLCh EXCLUDE_RESULT_PREFIXES_NAME[] = { 'e', 'x', 'c', 'l', 'u', 'd', 'e', '-', 'r', 'e', 's', 'u', 'l', 't', '-', 'p', 'r', 'e', 'f', 'i', 'x', 'e', 's', 0 };
 
 const XMLCh SPACE_NAME[] = { 's', 'p', 'a', 'c', 'e', 0 };
 const XMLCh PRESERVE_NAME[] = { 'p', 'r', 'e', 's', 'e', 'r', 'v', 'e', 0 };
@@ -118,7 +135,9 @@ struct AttrData
     STRING,
     QNAME,
     YESNO,
-    TEMPLATE_MODES
+    TEMPLATE_MODES,
+    OUTPUT_METHOD,
+    QNAMES
   } type;
 };
 
@@ -130,6 +149,7 @@ struct AttrData
 
 const AttrData STYLESHEET_ATTR_DATA[] = {
   { VERSION_NAME, _XSLT_VERSION_, AttrData::STRING },
+  { EXCLUDE_RESULT_PREFIXES_NAME, _XSLT_EXCLUDE_RESULT_PREFIXES_, AttrData::STRING },
   // TBD the rest of the attrs - jpcs
   END_ATTR_DATA
 };
@@ -247,6 +267,44 @@ const AttrData FOR_EACH_ATTR_DATA[] = {
   SELECT_ATTR_DATA
 };
 
+const AttrData OUTPUT_ATTR_DATA[] = {
+  // <xsl:output
+  //   name? = qname
+  NAME_ATTR_DATA,
+  //   method? = "xml" | "html" | "xhtml" | "text" | qname-but-not-ncname
+  { METHOD_NAME, _XSLT_METHOD_, AttrData::OUTPUT_METHOD },
+  //   byte-order-mark? = "yes" | "no"
+  { BYTE_ORDER_MARK_NAME, _XSLT_BYTE_ORDER_MARK_, AttrData::YESNO },
+  //   cdata-section-elements? = qnames
+  { CDATA_SECTION_ELEMENTS_NAME, _XSLT_CDATA_SECTION_ELEMENTS_, AttrData::QNAMES },
+  //   doctype-public? = string
+  { DOCTYPE_PUBLIC_NAME, _XSLT_DOCTYPE_PUBLIC_, AttrData::STRING },
+  //   doctype-system? = string
+  { DOCTYPE_SYSTEM_NAME, _XSLT_DOCTYPE_SYSTEM_, AttrData::STRING },
+  //   encoding? = string
+  { ENCODING_NAME, _XSLT_ENCODING_, AttrData::STRING },
+  //   escape-uri-attributes? = "yes" | "no"
+  { ESCAPE_URI_ATTRIBUTES_NAME, _XSLT_ESCAPE_URI_ATTRIBUTES_, AttrData::YESNO },
+  //   include-content-type? = "yes" | "no"
+  { INCLUDE_CONTENT_TYPE_NAME, _XSLT_INCLUDE_CONTENT_TYPE_, AttrData::YESNO },
+  //   indent? = "yes" | "no"
+  { INDENT_NAME, _XSLT_INDENT_, AttrData::YESNO },
+  //   media-type? = string
+  { MEDIA_TYPE_NAME, _XSLT_MEDIA_TYPE_, AttrData::STRING },
+  //   normalization-form? = "NFC" | "NFD" | "NFKC" | "NFKD" | "fully-normalized" | "none" | nmtoken
+  { NORMALIZATION_FORM_NAME, _XSLT_NORMALIZATION_FORM_, AttrData::STRING },
+  //   omit-xml-declaration? = "yes" | "no"
+  { OMIT_XML_DECLARATION_NAME, _XSLT_OMIT_XML_DECLARATION_, AttrData::YESNO },
+  //   standalone? = "yes" | "no" | "omit"
+  { STANDALONE_NAME, _XSLT_STANDALONE_, AttrData::STRING },
+  //   undeclare-prefixes? = "yes" | "no"
+  { UNDECLARE_PREFIXES_NAME, _XSLT_UNDECLARE_PREFIXES_, AttrData::YESNO },
+  //   use-character-maps? = qnames
+  { USE_CHARACTER_MAPS_NAME, _XSLT_USE_CHARACTER_MAPS_, AttrData::QNAMES },
+  //   version? = nmtoken />
+  { VERSION_NAME, _XSLT_VERSION_, AttrData::STRING }
+};
+
 struct InstructionInfo
 {
   const XMLCh *name;
@@ -287,6 +345,7 @@ const InstructionInfo INSTRUCTION_INFO[] = {
   { COPY_OF_NAME,                _XSLT_COPY_OF_,                COPY_OF_ATTR_DATA,         InstructionInfo::DEFAULT  },
   { COPY_NAME,                   _XSLT_COPY_,                   COPY_ATTR_DATA,            InstructionInfo::DEFAULT  },
   { FOR_EACH_NAME,               _XSLT_FOR_EACH_,               FOR_EACH_ATTR_DATA,        InstructionInfo::DEFAULT  },
+  { OUTPUT_NAME,                 _XSLT_OUTPUT_,                 OUTPUT_ATTR_DATA,          InstructionInfo::DEFAULT  },
   { 0, 0 }
 };
 
@@ -352,6 +411,13 @@ XSLT2Lexer::~XSLT2Lexer()
   }
 }
 
+void XSLT2Lexer::undoLessThan()
+{
+  if(childLexer_.get() != 0) {
+    childLexer_->undoLessThan();
+  }
+}
+
 int XSLT2Lexer::lang_token_state(YYSTYPE* pYYLVAL, YYLTYPE* pYYLOC)
 {
   state_ = NEXT_EVENT;
@@ -414,13 +480,24 @@ int XSLT2Lexer::attrs_state(YYSTYPE* pYYLVAL, YYLTYPE* pYYLOC)
             childLexer_.set(new XQLexer(mm_, m_szQueryFile, attr->value.line, attr->value.column, nullTerm(attr->value.value, mm_),
                                         (XQilla::Language)((m_language & ~XQilla::XSLT2) | XQilla::XPATH2), XQLexer::MODE_TEMPLATE_MODES));
             break;
+          case AttrData::OUTPUT_METHOD:
+            childLexer_.set(new XQLexer(mm_, m_szQueryFile, attr->value.line, attr->value.column, nullTerm(attr->value.value, mm_),
+                                        (XQilla::Language)((m_language & ~XQilla::XSLT2) | XQilla::XPATH2), XQLexer::MODE_OUTPUT_METHOD));
+            break;
+          case AttrData::QNAMES:
+            childLexer_.set(new XQLexer(mm_, m_szQueryFile, attr->value.line, attr->value.column, nullTerm(attr->value.value, mm_),
+                                        (XQilla::Language)((m_language & ~XQilla::XSLT2) | XQilla::XPATH2), XQLexer::MODE_QNAMES));
+            break;
           case AttrData::STRING:
             pYYLVAL->str = (XMLCh*)nullTerm(attr->value.value, mm_);
             break;
           case AttrData::QNAME:
             pYYLVAL->str = (XMLCh*)nullTerm(attr->value.value, mm_);
-            if(!XMLChar1_0::isValidQName(pYYLVAL->str, XMLString::stringLen(pYYLVAL->str)))
-              error("The attribute value is not a valid xs:QName [err:XTSE0020]");
+            if(!XMLChar1_0::isValidQName(pYYLVAL->str, XMLString::stringLen(pYYLVAL->str))) {
+              std::ostringstream oss;
+              oss << "The attribute value \"" << UTF8(pYYLVAL->str) << "\" is not a valid xs:QName [err:XTSE0020]";
+              error(oss.str().c_str());
+            }
             break;
           case AttrData::YESNO:
             XMLBuffer value;
@@ -545,8 +622,11 @@ int XSLT2Lexer::current_event_state(YYSTYPE* pYYLVAL, YYLTYPE* pYYLOC)
             elementStack_->info = entry;
           }
         }
-        if(elementStack_->info == 0)
-          error("Unrecognized XSLT element");
+        if(elementStack_->info == 0) {
+          std::ostringstream oss;
+          oss << "Unrecognized XSLT element {" << UTF8(uri) << "}" << UTF8(name);
+          error(oss.str().c_str());
+        }
       }
 
       // Check for namespace attrs
