@@ -484,9 +484,7 @@ void XQContextImpl::addTemplate(XQUserFunction *tp)
     }
     _templateNameMap.put((void*)tp->getURINameHash(), tp);
   }
-  if(tp->getPattern() != 0) {
-    _templates.push_back(tp);
-  }
+  _templates.push_back(tp);
 }
 
 const XQUserFunction *XQContextImpl::lookUpNamedTemplate(const XMLCh *uri, const XMLCh *name) const

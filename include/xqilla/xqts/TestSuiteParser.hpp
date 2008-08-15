@@ -46,9 +46,11 @@ public:
   std::string query;
   std::string contextItem;
   std::string defaultCollection;
+  std::string templateName;
   std::map<std::string, std::string> inputURIVars;
   std::map<std::string, std::string> inputVars;
   std::map<std::string, std::string> extraVars;
+  std::map<std::string, std::string> inputParams;
   std::map<std::string, std::string> outputFiles;
   std::list<std::pair<std::string, std::string> > moduleFiles;
   std::list<std::string> expectedErrors;

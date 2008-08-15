@@ -394,6 +394,14 @@ void XQillaTestSuiteRunner::runTestCase(const TestCase &testCase)
       Item::Ptr uri = context->getItemFactory()->createString(X(v->second.c_str()),context);
       context->setExternalVariable(X(v->first.c_str()), uri);
     }
+    for(v=testCase.inputParams.begin();v!=testCase.inputParams.end();v++) {
+      Item::Ptr value = context->getItemFactory()->createUntypedAtomic(X(v->second.c_str()),context);
+      context->setExternalVariable(X(v->first.c_str()), value);
+    }
+    if(testCase.templateName != "") {
+      Item::Ptr value = context->getItemFactory()->createUntypedAtomic(X(testCase.templateName.c_str()),context);
+      context->setExternalVariable(X("http://xqilla.sourceforge.net/Functions"), X("name"), value);
+    }
     if(!testCase.contextItem.empty())
     {
       Sequence doc=context->resolveDocument(X(testCase.contextItem.c_str()), 0);

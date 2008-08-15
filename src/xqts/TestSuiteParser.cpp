@@ -130,6 +130,7 @@ void TestSuiteParser::startElement(const XMLCh* const uri, const XMLCh* const lo
       }
       else if(szName=="test-case") {
         testCase_.name = UTF8(attributes.getValue(g_szName));
+        testCase_.description = "";
         testCase_.updateTest = false;
         testCase_.xsltTest = false;
         testCase_.stateTime = -1;
@@ -137,7 +138,9 @@ void TestSuiteParser::startElement(const XMLCh* const uri, const XMLCh* const lo
         testCase_.query = "";
         testCase_.contextItem = "";
         testCase_.defaultCollection = "";
+        testCase_.templateName = "";
         testCase_.inputURIVars.clear();
+        testCase_.inputParams.clear();
         testCase_.inputVars.clear();
         testCase_.extraVars.clear();
         testCase_.expectedErrors.clear();
@@ -155,6 +158,7 @@ void TestSuiteParser::startElement(const XMLCh* const uri, const XMLCh* const lo
       else if(szName=="testcase") {
         // XSLT test case
         testCase_.name = "";
+        testCase_.description = "";
         testCase_.updateTest = false;
         testCase_.xsltTest = true;
         testCase_.stateTime = -1;
@@ -162,7 +166,9 @@ void TestSuiteParser::startElement(const XMLCh* const uri, const XMLCh* const lo
         testCase_.query = "";
         testCase_.contextItem = "";
         testCase_.defaultCollection = "";
+        testCase_.templateName = "";
         testCase_.inputURIVars.clear();
+        testCase_.inputParams.clear();
         testCase_.inputVars.clear();
         testCase_.extraVars.clear();
         testCase_.expectedErrors.clear();
@@ -186,7 +192,9 @@ void TestSuiteParser::startElement(const XMLCh* const uri, const XMLCh* const lo
         testCase_.query = "";
         testCase_.contextItem = "";
         testCase_.defaultCollection = "";
+        testCase_.templateName = "";
         testCase_.inputURIVars.clear();
+        testCase_.inputParams.clear();
         testCase_.inputVars.clear();
         testCase_.extraVars.clear();
         testCase_.expectedErrors.clear();
@@ -264,6 +272,11 @@ void TestSuiteParser::startElement(const XMLCh* const uri, const XMLCh* const lo
           testCase_.outputFiles[UTF8(urlQuery_.getURLText())]=UTF8(type);
         }
       }
+      else if(szName=="entry-named-template")
+      {
+        // XSLT test suite
+        testCase_.templateName = UTF8(attributes.getValue(X("qname")));
+      }
       else if(szName=="error")
       {
         // XSLT test suite
@@ -293,6 +306,12 @@ void TestSuiteParser::startElement(const XMLCh* const uri, const XMLCh* const lo
         readingChars_=true;
         chars_="";
         variableBoundToInput_=UTF8(attributes.getValue(g_szVar));
+      }
+      else if(szName=="param")
+      {
+        readingChars_=true;
+        chars_="";
+        variableBoundToInput_=UTF8(attributes.getValue(X("qname")));
       }
       else if(szName=="contextItem")
       {
@@ -435,6 +454,12 @@ void TestSuiteParser::endElement(const XMLCh* const uri, const XMLCh* const loca
       {
         readingChars_=false;
         testCase_.inputURIVars[variableBoundToInput_]=chars_;
+        variableBoundToInput_="";
+      }
+      else if(szName=="param")
+      {
+        readingChars_=false;
+        testCase_.inputParams[variableBoundToInput_]=chars_;
         variableBoundToInput_="";
       }
       else if(szName=="contextItem")
