@@ -22,7 +22,7 @@
 #include "../config/xqilla_config.h"
 
 #include <math.h>
-#include <limits>
+#include <climits>
 #include <stdio.h> // for sprintf
 #if defined(WIN32) && !defined(__CYGWIN__)
 #define snprintf _snprintf
