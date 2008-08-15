@@ -1384,13 +1384,17 @@ ASTNode *QueryPathTreeGenerator::optimizeCopy(XQCopy *item)
 
 ASTNode *QueryPathTreeGenerator::optimizeCallTemplate(XQCallTemplate *item)
 {
-  // Shouldn't happen
+  // TBD Could be better - jpcs
+  context_->setProjection(false);
+
   TemplateArguments *args = item->getArguments();
   if(args != 0) {
     for(TemplateArguments::iterator i = args->begin(); i != args->end(); ++i) {
-      generate((*i)->value);
+      generate((*i)->value).markRoot();
     }
   }
+  if(item->getASTName())
+	  generate(item->getASTName());
   push(PathResult());
   return item;
 }

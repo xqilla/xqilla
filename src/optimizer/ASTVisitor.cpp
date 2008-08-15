@@ -511,6 +511,8 @@ ASTNode *ASTVisitor::optimizeCallTemplate(XQCallTemplate *item)
       (*i)->value = optimize((*i)->value);
     }
   }
+  if(item->getASTName())
+	  item->setASTName(optimize(item->getASTName()));
   return item;
 }
 

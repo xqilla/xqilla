@@ -43,6 +43,7 @@ class XQILLA_API XQCallTemplate : public ASTNodeImpl
 {
 public:
   XQCallTemplate(const XMLCh *qname, TemplateArguments *args, XPath2MemoryManager *mm);
+  XQCallTemplate(ASTNode *qname, TemplateArguments *args, XPath2MemoryManager *mm);
 
   virtual ASTNode *staticResolution(StaticContext *context);
   virtual ASTNode *staticTyping(StaticContext *context);
@@ -54,11 +55,14 @@ public:
   void setURI(const XMLCh *uri) { uri_ = uri; }
   const XMLCh *getName() const { return name_; }
   void setName(const XMLCh *name) { name_ = name; }
+  ASTNode *getASTName() const { return astName_; }
+  void setASTName(ASTNode *name) { astName_ = name; }
   TemplateArguments *getArguments() const { return args_; }
   void setArguments(TemplateArguments *args) { args_ = args; }
 
 private:
   const XMLCh *qname_, *uri_, *name_;
+  ASTNode *astName_;
   TemplateArguments *args_;
 };
 

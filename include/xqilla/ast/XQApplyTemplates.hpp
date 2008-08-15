@@ -26,6 +26,8 @@
 #include <xqilla/functions/XQUserFunction.hpp>
 #include <xqilla/simple-api/XQQuery.hpp>
 
+class VariableStore;
+
 class XQILLA_API XQApplyTemplates : public ASTNodeImpl
 {
 public:
@@ -44,6 +46,10 @@ public:
   const UserFunctions &getTemplates() const { return templates_; }
 
   void evaluateArguments(VarStoreImpl &scope, DynamicContext *context) const;
+
+  static Result executeTemplate(const XQUserFunction *tplt, const TemplateArguments *args, const VariableStore *scope,
+                                DynamicContext *context, const LocationInfo *location);
+
 
 private:
   ASTNode *expr_;

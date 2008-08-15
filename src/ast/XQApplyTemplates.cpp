@@ -119,6 +119,11 @@ ASTNode *XQApplyTemplates::staticTyping(StaticContext *context)
   for(inIt = templates_.begin(); inIt != templates_.end(); ++inIt) {
     if((*inIt) == 0) continue;
 
+    if((*inIt)->getPattern() == 0) {
+      *inIt = 0;
+      continue;
+    }
+
     // Eliminate templates based on mode
     found = false;
     for(modeIt = (*inIt)->getModeList()->begin();
@@ -174,6 +179,51 @@ ASTNode *XQApplyTemplates::staticTyping(StaticContext *context)
   _src.add(newSrc);
 
   return this;
+}
+
+Result XQApplyTemplates::executeTemplate(const XQUserFunction *tplt, const TemplateArguments *args, const VariableStore *scope,
+                                         DynamicContext *context, const LocationInfo *location)
+{
+  VarStoreImpl localscope(context->getMemoryManager(), context->getVariableStore());
+  if(scope == 0) scope = &localscope;
+
+  // Check to see if we set the correct parameters for the template
+  if(tplt->getArgumentSpecs() != 0) {
+    XQUserFunction::ArgumentSpecs::const_iterator argIt = tplt->getArgumentSpecs()->begin();
+    for(; argIt != tplt->getArgumentSpecs()->end(); ++argIt) {
+      bool found = false;
+
+      if(args != 0) {
+        TemplateArguments::const_iterator it;
+        for(it = args->begin(); it != args->end(); ++it) {
+          if(XPath2Utils::equals((*it)->name, (*argIt)->getName()) &&
+             XPath2Utils::equals((*it)->uri, (*argIt)->getURI())) {
+            if(scope == &localscope)
+              localscope.setVar((*it)->uri, (*it)->name, ClosureResult::create((*it)->value, context));
+            found = true;
+            break;
+          }
+        }
+      }
+
+      if(!found) {
+        // [ERR XTSE0690] It is a static error  if a template that is invoked using xsl:call-template
+        // declares a template parameter  specifying required="yes" and not specifying tunnel="yes", if
+        // no value for this parameter is supplied by the calling instruction.
+        XMLBuffer buf;
+        buf.set(X("No value is specified for the template parameter {"));
+        buf.append((*argIt)->getURI());
+        buf.append(X("}"));
+        buf.append((*argIt)->getName());
+        buf.append(X(" [err:XTSE0690]"));
+
+        XQThrow3(StaticErrorException, X("XQApplyTemplates::staticResolution"), buf.getRawBuffer(), location);
+      }
+
+    }
+  }
+
+  return ClosureResult::create(tplt->getTemplateInstance(), context, scope);
 }
 
 void XQApplyTemplates::evaluateArguments(VarStoreImpl &scope, DynamicContext *context) const
@@ -234,7 +284,7 @@ public:
       XQUserFunction *tplt = 0;
       UserFunctions::const_iterator it = templates_.begin();
       for(; tplt == 0 && it != templates_.end(); ++it) {
-        if(*it == 0) continue;
+        if(*it == 0 || (*it)->getPattern() == 0) continue;
 
         if(ast_->getMode() && ast_->getMode()->getState() == XQUserFunction::Mode::CURRENT) {
           // TBD filter on the current mode - jpcs
@@ -252,51 +302,13 @@ public:
       context->setVariableStore(&scope_);
 
       if(tplt != 0) {
-        result_ = executeTemplate(tplt, context);
+        result_ = XQApplyTemplates::executeTemplate(tplt, ast_->getArguments(), &scope_, context, this);
       } else {
         result_ = executeDefaultTemplate(context);
       }
     }
 
     return item;
-  }
-
-  Result executeTemplate(const XQUserFunction *tplt, DynamicContext *context)
-  {
-    // Check to see if we set the correct parameters for the template
-    if(tplt->getArgumentSpecs() != 0) {
-      XQUserFunction::ArgumentSpecs::const_iterator argIt = tplt->getArgumentSpecs()->begin();
-      for(; argIt != tplt->getArgumentSpecs()->end(); ++argIt) {
-        bool found = false;
-
-        if(ast_->getArguments() != 0) {
-          TemplateArguments::const_iterator it;
-          for(it = ast_->getArguments()->begin(); it != ast_->getArguments()->end(); ++it) {
-            if(XPath2Utils::equals((*it)->name, (*argIt)->getName()) &&
-               XPath2Utils::equals((*it)->uri, (*argIt)->getURI())) {
-              found = true;
-              break;
-            }
-          }
-        }
-
-        if(!found) {
-          // [ERR XTSE0690] It is a static error  if a template that is invoked using xsl:call-template
-          // declares a template parameter  specifying required="yes" and not specifying tunnel="yes", if
-          // no value for this parameter is supplied by the calling instruction.
-          XMLBuffer buf;
-          buf.set(X("No value is specified for the template parameter {"));
-          buf.append((*argIt)->getURI());
-          buf.append(X("}"));
-          buf.append((*argIt)->getName());
-          buf.append(X(" [err:XTSE0690]"));
-
-          XQThrow(StaticErrorException, X("XQApplyTemplates::staticResolution"), buf.getRawBuffer());
-        }
-      }
-    }
-
-    return tplt->getTemplateInstance()->createResult(context);
   }
 
   Result executeDefaultTemplate(DynamicContext *context)

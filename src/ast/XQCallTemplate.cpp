@@ -20,6 +20,8 @@
  */
 
 #include <xqilla/ast/XQCallTemplate.hpp>
+#include <xqilla/ast/XQApplyTemplates.hpp>
+#include <xqilla/ast/XQDOMConstructor.hpp>
 #include <xqilla/functions/XQUserFunction.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>
 #include <xqilla/context/DynamicContext.hpp>
@@ -46,6 +48,17 @@ XQCallTemplate::XQCallTemplate(const XMLCh *qname, TemplateArguments *args, XPat
     qname_(qname),
     uri_(0),
     name_(0),
+    astName_(0),
+    args_(args)
+{
+}
+
+XQCallTemplate::XQCallTemplate(ASTNode *qname, TemplateArguments *args, XPath2MemoryManager *mm)
+  : ASTNodeImpl(CALL_TEMPLATE, mm),
+    qname_(0),
+    uri_(0),
+    name_(0),
+    astName_(qname),
     args_(args)
 {
 }
@@ -55,7 +68,12 @@ ASTNode* XQCallTemplate::staticResolution(StaticContext *context)
   XPath2MemoryManager *mm = context->getMemoryManager();
 
   // Resolve the template name
-  if(name_ == 0) {
+  if(astName_) {
+    astName_ = new (mm) XQNameExpression(astName_, mm);
+    astName_->setLocationInfo(this);
+    astName_ = astName_->staticResolution(context);
+  }
+  else if(name_ == 0) {
     const XMLCh *prefix = XPath2NSUtils::getPrefix(qname_, mm);
     name_ = XPath2NSUtils::getLocalName(qname_);
 
@@ -65,19 +83,6 @@ ASTNode* XQCallTemplate::staticResolution(StaticContext *context)
     else {
       uri_ = context->getUriBoundToPrefix(prefix, this);
     }
-  }
-
-  // Lookup the template
-  const XQUserFunction *tplt = context->lookUpNamedTemplate(uri_, name_);
-  if(tplt == 0) {
-    XMLBuffer buf;
-    buf.set(X("A template called {"));
-    buf.append(uri_);
-    buf.append(X("}"));
-    buf.append(name_);
-    buf.append(X(" is not defined [err:XTSE0650]"));
-
-    XQThrow(StaticErrorException, X("XQCallTemplate::staticResolution"), buf.getRawBuffer());
   }
 
   // Resolve the call template argument names and check for duplicates
@@ -104,6 +109,21 @@ ASTNode* XQCallTemplate::staticResolution(StaticContext *context)
         }
       }
     }
+  }
+
+  if(astName_ != 0) return this;
+
+  // Lookup the template
+  const XQUserFunction *tplt = context->lookUpNamedTemplate(uri_, name_);
+  if(tplt == 0) {
+    XMLBuffer buf;
+    buf.set(X("A template called {"));
+    buf.append(uri_);
+    buf.append(X("}"));
+    buf.append(name_);
+    buf.append(X(" is not defined [err:XTSE0650]"));
+
+    XQThrow(StaticErrorException, X("XQCallTemplate::staticResolution"), buf.getRawBuffer());
   }
 
   // Check the template's expected parameters against the call template arguments,
@@ -174,12 +194,73 @@ ASTNode* XQCallTemplate::staticResolution(StaticContext *context)
 
 ASTNode *XQCallTemplate::staticTyping(StaticContext *context)
 {
-  // Should never happen
+  _src.clear();
+
+  // At this point we know astName_ is not null
+  astName_ = astName_->staticTyping(context);
+  _src.add(astName_->getStaticAnalysis());
+
+  TemplateArguments::iterator it;
+  if(args_ != 0) {
+    for(it = args_->begin(); it != args_->end(); ++it) {
+      (*it)->value = (*it)->value->staticTyping(context);
+      _src.add((*it)->value->getStaticAnalysis());
+    }
+  }
+
+  // Calculate our static type from the template instances with names
+  const UserFunctions &templates = context->getTemplateRules();
+
+  bool first = true;
+  StaticAnalysis newSrc(context->getMemoryManager());
+
+  UserFunctions::const_iterator inIt;
+  for(inIt = templates.begin(); inIt != templates.end(); ++inIt) {
+    if((*inIt)->getName() == 0) continue;
+
+    if(first) {
+      first = false;
+      _src.getStaticType() = (*inIt)->getBodyStaticAnalysis().getStaticType();
+      _src.setProperties((*inIt)->getBodyStaticAnalysis().getProperties());
+    } else {
+      _src.getStaticType() |= (*inIt)->getBodyStaticAnalysis().getStaticType();
+      _src.setProperties(_src.getProperties() & (*inIt)->getBodyStaticAnalysis().getProperties());
+    }
+    newSrc.add((*inIt)->getBodyStaticAnalysis());
+  }
+
+  if(args_ != 0) {
+    for(it = args_->begin(); it != args_->end(); ++it) {
+      if(!newSrc.removeVariable((*it)->uri, (*it)->name)) {
+        // TBD This parameter will never be used - jpcs
+      }
+    }
+  }
+
+  _src.add(newSrc);
+
   return this;
 }
 
 Result XQCallTemplate::createResult(DynamicContext *context, int flags) const
 {
-  // Should never happen
-  return 0;
+  AnyAtomicType::Ptr itemName = astName_->createResult(context)->next(context);
+  const ATQNameOrDerived *pQName = (const ATQNameOrDerived*)itemName.get();
+  const XMLCh *uri = pQName->getURI();
+  const XMLCh *localname = pQName->getName();
+
+  // Lookup the template
+  const XQUserFunction *tplt = context->lookUpNamedTemplate(uri, localname);
+  if(tplt == 0) {
+    XMLBuffer buf;
+    buf.set(X("A template called {"));
+    buf.append(uri);
+    buf.append(X("}"));
+    buf.append(localname);
+    buf.append(X(" is not defined [err:XTSE0650]"));
+
+    XQThrow(StaticErrorException, X("XQCallTemplate::staticResolution"), buf.getRawBuffer());
+  }
+
+  return XQApplyTemplates::executeTemplate(tplt, args_, 0, context, this);
 }

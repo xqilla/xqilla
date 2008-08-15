@@ -306,7 +306,9 @@ void XQUserFunction::staticResolutionStage1(StaticContext *context)
     for(; patIt != pattern_->end(); ++patIt) {
       const_cast<StaticAnalysis&>((*patIt)->getStaticAnalysis()).getStaticType() = StaticType(StaticType::NODE_TYPE, 0, StaticType::UNLIMITED);
     }
+  }
 
+  if(isTemplate_) {
     // Build an instance of the template for us to call
     VectorOfASTNodes newArgs = VectorOfASTNodes(XQillaAllocator<ASTNode*>(mm));
 
@@ -331,7 +333,8 @@ void XQUserFunction::staticResolutionStage2(StaticContext *context)
     for(; patIt != pattern_->end(); ++patIt) {
       (*patIt) = (*patIt)->staticResolution(context);
     }
-
+  }
+  if(templateInstance_) {
     templateInstance_->staticResolution(context);
   }
   if(body_ != NULL) {
@@ -362,17 +365,34 @@ private:
 
   virtual ASTNode *optimizeApplyTemplates(XQApplyTemplates *item)
   {
-    // The XQApplyTemplates could call any template - so try to static type
-    // all of them before us
+    // The XQApplyTemplates could call any template with a pattern -
+    // so try to static type all of them before us
 
     const UserFunctions &templates = context_->getTemplateRules();
 
     UserFunctions::const_iterator inIt;
     for(inIt = templates.begin(); inIt != templates.end(); ++inIt) {
-      (*inIt)->staticTypingOnce(context_);
+      if((*inIt)->getPattern() != 0)
+        (*inIt)->staticTypingOnce(context_);
     }
 
     return ASTVisitor::optimizeApplyTemplates(item);
+  }
+
+  virtual ASTNode *optimizeCallTemplate(XQCallTemplate *item)
+  {
+    // The XQCallTemplate could call any template with a name -
+    // so try to static type all of them before us
+
+    const UserFunctions &templates = context_->getTemplateRules();
+
+    UserFunctions::const_iterator inIt;
+    for(inIt = templates.begin(); inIt != templates.end(); ++inIt) {
+      if((*inIt)->getName() != 0)
+        (*inIt)->staticTypingOnce(context_);
+    }
+
+    return ASTVisitor::optimizeCallTemplate(item);
   }
 
   StaticContext *context_;

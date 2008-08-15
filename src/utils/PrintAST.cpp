@@ -1877,7 +1877,20 @@ string PrintAST::printCallTemplate(const XQCallTemplate *item, const DynamicCont
     name += UTF8(item->getName());
   }
 
-  s << in << "<CallTemplate name=\"" << name << "\">" << endl;
+  s << in << "<CallTemplate";
+
+  if(item->getQName() != 0) {
+    s << " name=\"" << UTF8(item->getQName()) << "\"";
+  }
+  else if(item->getName() != 0) {
+    s << " name=\"{" << UTF8(item->getURI()) << "}" << UTF8(item->getName()) << "\"";
+  }
+
+  s << ">" << endl;
+
+  if(item->getASTName() != 0) {
+    s << printASTNode(item->getASTName(), context, indent + INDENT);
+  }
 
   if(item->getArguments() != NULL) {
     TemplateArguments::iterator argIt;

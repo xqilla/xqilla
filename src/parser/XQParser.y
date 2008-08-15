@@ -767,19 +767,20 @@ Start_XSLT:
 
     QP->_query->addVariable(nameVar);
 
-    // TBD execution of a named template - jpcs
-/*     ASTNode *nameVarRef1 = WRAP(@1, new (MEMMGR) XQVariable(XQillaFunction::XMLChFunctionURI, var_name, MEMMGR)); */
-/*     ASTNode *cast = WRAP(@1, new (MEMMGR) XQNameExpression(nameVarRef1, MEMMGR)); */
-/*     XQCallTemplate *call = WRAP(@1, new (MEMMGR) XQCallTemplate(cast, 0, MEMMGR)); */
-
-    ASTNode *empty =  WRAP(@1, new (MEMMGR) XQSequence(MEMMGR));
+    ASTNode *nameVarRef1 = WRAP(@1, new (MEMMGR) XQVariable(XQillaFunction::XMLChFunctionURI, var_name, MEMMGR));
+    XQCallTemplate *call = WRAP(@1, new (MEMMGR) XQCallTemplate(nameVarRef1, 0, MEMMGR));
 
     ASTNode *ci = WRAP(@1, new (MEMMGR) XQContextItem(MEMMGR));
     ASTNode *apply = WRAP(@1, new (MEMMGR) XQApplyTemplates(ci, 0, 0, MEMMGR));
 
     ASTNode *nameVarRef2 = WRAP(@1, new (MEMMGR) XQVariable(XQillaFunction::XMLChFunctionURI, var_name, MEMMGR));
-    QP->_query->setQueryBody(WRAP(@1, new (MEMMGR) XQIf(nameVarRef2, empty, apply, MEMMGR)));
+    QP->_query->setQueryBody(WRAP(@1, new (MEMMGR) XQIf(nameVarRef2, call, apply, MEMMGR)));
+  }
+  ;
 
+Stylesheet_XSLT:
+    _XSLT_STYLESHEET_ StylesheetAttrs_XSLT StylesheetContent_XSLT _XSLT_END_ELEMENT_
+  {
   }
   | LiteralResultElement_XSLT
   {
@@ -799,16 +800,6 @@ Start_XSLT:
     func->setModeList(modelist);
 
     QP->_query->addFunction(func);
-
-    // TBD execution of a named template - jpcs
-    ASTNode *ci = WRAP(@1, new (MEMMGR) XQContextItem(MEMMGR));
-    QP->_query->setQueryBody(WRAP(@1, new (MEMMGR) XQApplyTemplates(ci, 0, 0, MEMMGR)));
-  }
-  ;
-
-Stylesheet_XSLT:
-    _XSLT_STYLESHEET_ StylesheetAttrs_XSLT StylesheetContent_XSLT _XSLT_END_ELEMENT_
-  {
   }
   ;
 
@@ -1453,7 +1444,7 @@ CallTemplate_XSLT:
 CallTemplateAttrs_XSLT:
     _XSLT_CALL_TEMPLATE_
   {
-    $$ = WRAP(@1, new (MEMMGR) XQCallTemplate(0, 0, MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) XQCallTemplate((const XMLCh*)0, 0, MEMMGR));
   }
   | CallTemplateAttrs_XSLT _XSLT_NAME_
   {
