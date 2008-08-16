@@ -118,12 +118,15 @@ XQQuery* XQilla::parse(const InputSource& querySrc, DynamicContext* context,
     return parse(moduleText.getRawBuffer(), context, querySrc.getSystemId(), flags, memMgr);
   }
 
-#ifdef HAVE_FAXPP
   bool contextOwned = (flags & NO_ADOPT_CONTEXT) == 0;
 
   Janitor<XQQuery> query(new (memMgr) XQQuery(0, context, contextOwned, memMgr));
 
-  XSLT2Lexer lexer(context, querySrc, context->getLanguage());
+#ifdef HAVE_FAXPP
+  FAXPPXSLT2Lexer lexer(context, querySrc, context->getLanguage());
+#else
+  XercesXSLT2Lexer lexer(context, querySrc, context->getLanguage());
+#endif
 
   XQParserArgs args;
   args._context = context;
@@ -145,9 +148,6 @@ XQQuery* XQilla::parse(const InputSource& querySrc, DynamicContext* context,
   }
 
   return query.release();
-#endif
-
-  XQThrow2(ContextException,X("XQilla::parse"), X("XSLT 2.0 not compiled in"));
 }
 
 XQQuery* XQilla::parseFromURI(const XMLCh* queryFile, DynamicContext* context,

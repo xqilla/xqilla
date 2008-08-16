@@ -21,8 +21,6 @@
 
 #include "XSLT2Lexer.hpp"
 
-#ifdef HAVE_FAXPP
-
 #include <sstream>
 
 #include <xqilla/ast/XQLiteral.hpp>
@@ -36,6 +34,10 @@
 #include <xercesc/util/BinInputStream.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 #include <xercesc/util/XMLChar.hpp>
+#include <xercesc/internal/DGXMLScanner.hpp>
+#include <xercesc/sax/Locator.hpp>
+#include <xercesc/sax/SAXException.hpp>
+#include <xercesc/util/XMLEntityResolver.hpp>
 
 #ifdef XQ_DEBUG_LEXER
 
@@ -375,33 +377,12 @@ static inline const XMLCh *nullTerm(const FAXPP_Text &text, XPath2MemoryManager 
 XSLT2Lexer::XSLT2Lexer(DynamicContext *context, const InputSource &srcToUse, XQilla::Language lang)
   : Lexer(context->getMemoryManager(), lang, context->getMemoryManager()->getPooledString(srcToUse.getSystemId()), 0, 0),
     context_(context),
-    parser_(0),
-    stream_(0),
     childLexer_(0),
     elementStack_(0),
     state_(LANG_TOKEN),
-    index_(0),
-    selfClose_(false),
     textBuffer_(1023, context->getMemoryManager()),
     textToCreate_(false)
 {
-  parser_ = FAXPP_create_parser(WELL_FORMED_PARSE_MODE, FAXPP_utf16_native_transcoder);
-  if(parser_ == 0) error("Out of memory");
-
-  stream_.set(srcToUse.makeStream());
-  if(stream_.get() == NULL) error("Document not found");
-
-  FAXPP_Error err = FAXPP_init_parse_callback(parser_, binInputStreamReadCallback, stream_.get());
-  if(err == OUT_OF_MEMORY) error("Out of memory");
-
-  // Force use of encoding set on InputSource
-  if(srcToUse.getEncoding()) {
-    FAXPP_DecodeFunction decode = FAXPP_string_to_decode(UTF8(srcToUse.getEncoding()));
-    if(decode == 0) err = UNSUPPORTED_ENCODING;
-    else FAXPP_set_decode(parser_, decode);
-  }
-
-  if(err == UNSUPPORTED_ENCODING) error("Unsupported encoding");
 }
 
 XSLT2Lexer::~XSLT2Lexer()
@@ -426,120 +407,110 @@ int XSLT2Lexer::lang_token_state(YYSTYPE* pYYLVAL, YYLTYPE* pYYLOC)
 
 int XSLT2Lexer::attrs_state(YYSTYPE* pYYLVAL, YYLTYPE* pYYLOC)
 {
-  const FAXPP_Event *event = FAXPP_get_current_event(parser_);
-  FAXPP_Attribute *attr = &event->attrs[index_];
+  const XMLCh *prefix, *uri, *name, *value;
+  unsigned int length;
+  getEventName(prefix, uri, name);
+  getEventValue(value, length);
+  getEventLocation(pYYLOC);
 
-  setLocation(pYYLOC, attr);
-
-  ++index_;
-  if(index_ >= event->attr_count) {
-    state_ = NEXT_EVENT;
-  }
-
-  if(attr->xmlns_attr) {
-    if(elementStack_->info == 0) {
-      VectorOfASTNodes *value = new (mm_) VectorOfASTNodes(XQillaAllocator<ASTNode*>(mm_));
-      value->push_back(makeStringLiteral(nullTerm(attr->value.value, mm_)));
-
-      pYYLVAL->astNode = wrap(new (mm_) XQAttributeConstructor(makeDirectName(nullTerm(attr->prefix, mm_), nullTerm(attr->name, mm_)), value, mm_));
-
-      RECOGNIZE(_XSLT_XMLNS_ATTR_);
+  if(XPath2Utils::equals(uri, XMLUni::fgXMLURIName) && XPath2Utils::equals(name, SPACE_NAME)) {
+    value = mm_->getPooledString(value, length);
+    // Keep track of the xml:space policy
+    if(XPath2Utils::equals(value, PRESERVE_NAME)) {
+      elementStack_->xmlSpacePreserve = true;
     }
-    else {
-      return yylex(pYYLVAL, pYYLOC);
+    else if(XPath2Utils::equals(value, DEFAULT_NAME)) {
+      elementStack_->xmlSpacePreserve = false;
     }
   }
-  else {
-    const XMLCh *uri = nullTerm(attr->uri, mm_);
-    const XMLCh *name = nullTerm(attr->name, mm_);
+  else if(elementStack_->info != 0 && elementStack_->info->attrs != 0 && uri == 0) {
+    for(const AttrData *entry = elementStack_->info->attrs; entry->name != 0; ++entry) {
+      if(XPath2Utils::equals(name, entry->name)) {
+        switch(entry->type) {
+        case AttrData::PATTERN:
+        case AttrData::SEQUENCE_TYPE:
+        case AttrData::EXPRESSION:
+          getValueLocation(pYYLOC);
+          childLexer_.set(new XQLexer(mm_, m_szQueryFile, m_lineno, m_columnno, mm_->getPooledString(value, length),
+                                      (XQilla::Language)((m_language & ~XQilla::XSLT2) | XQilla::XPATH2)));
+          break;
+        case AttrData::ATTR_VALUE_TEMPLATE:
+          getValueLocation(pYYLOC);
+          childLexer_.set(new XQLexer(mm_, m_szQueryFile, m_lineno, m_columnno, mm_->getPooledString(value, length),
+                                      (XQilla::Language)((m_language & ~XQilla::XSLT2) | XQilla::XPATH2), XQLexer::MODE_ATTR_VALUE_TEMPLATE));
+          break;
+        case AttrData::TEMPLATE_MODES:
+          getValueLocation(pYYLOC);
+          childLexer_.set(new XQLexer(mm_, m_szQueryFile, m_lineno, m_columnno, mm_->getPooledString(value, length),
+                                      (XQilla::Language)((m_language & ~XQilla::XSLT2) | XQilla::XPATH2), XQLexer::MODE_TEMPLATE_MODES));
+          break;
+        case AttrData::OUTPUT_METHOD:
+          getValueLocation(pYYLOC);
+          childLexer_.set(new XQLexer(mm_, m_szQueryFile, m_lineno, m_columnno, mm_->getPooledString(value, length),
+                                      (XQilla::Language)((m_language & ~XQilla::XSLT2) | XQilla::XPATH2), XQLexer::MODE_OUTPUT_METHOD));
+          break;
+        case AttrData::QNAMES:
+          getValueLocation(pYYLOC);
+          childLexer_.set(new XQLexer(mm_, m_szQueryFile, m_lineno, m_columnno, mm_->getPooledString(value, length),
+                                      (XQilla::Language)((m_language & ~XQilla::XSLT2) | XQilla::XPATH2), XQLexer::MODE_QNAMES));
+          break;
+        case AttrData::STRING:
+          pYYLVAL->str = (XMLCh*)mm_->getPooledString(value, length);
+          break;
+        case AttrData::QNAME:
+          pYYLVAL->str = (XMLCh*)mm_->getPooledString(value, length);
+          if(!XMLChar1_0::isValidQName(value, length)) {
+            getValueLocation(pYYLOC);
+            std::ostringstream oss;
+            oss << "The attribute value \"" << UTF8(pYYLVAL->str) << "\" is not a valid xs:QName [err:XTSE0020]";
+            error(oss.str().c_str());
+          }
+          break;
+        case AttrData::YESNO:
+          XMLBuffer valueBuf;
+          valueBuf.set(value, length);
+          XMLString::collapseWS(valueBuf.getRawBuffer());
 
-    if(attr->xml_attr && XPath2Utils::equals(name, SPACE_NAME)) {
-      // Keep track of the xml:space policy
-      if(XPath2Utils::equals(nullTerm(attr->value.value, mm_), PRESERVE_NAME)) {
-        elementStack_->xmlSpacePreserve = true;
-      }
-      else if(XPath2Utils::equals(nullTerm(attr->value.value, mm_), DEFAULT_NAME)) {
-        elementStack_->xmlSpacePreserve = false;
-      }
-    }
-    else if(elementStack_->info != 0 && elementStack_->info->attrs != 0 && uri == 0) {
-      for(const AttrData *entry = elementStack_->info->attrs; entry->name != 0; ++entry) {
-        if(XPath2Utils::equals(name, entry->name)) {
-          switch(entry->type) {
-          case AttrData::PATTERN:
-          case AttrData::SEQUENCE_TYPE:
-          case AttrData::EXPRESSION:
-            childLexer_.set(new XQLexer(mm_, m_szQueryFile, attr->value.line, attr->value.column, nullTerm(attr->value.value, mm_),
-                                        (XQilla::Language)((m_language & ~XQilla::XSLT2) | XQilla::XPATH2)));
-            break;
-          case AttrData::ATTR_VALUE_TEMPLATE:
-            childLexer_.set(new XQLexer(mm_, m_szQueryFile, attr->value.line, attr->value.column, nullTerm(attr->value.value, mm_),
-                                        (XQilla::Language)((m_language & ~XQilla::XSLT2) | XQilla::XPATH2), XQLexer::MODE_ATTR_VALUE_TEMPLATE));
-            break;
-          case AttrData::TEMPLATE_MODES:
-            childLexer_.set(new XQLexer(mm_, m_szQueryFile, attr->value.line, attr->value.column, nullTerm(attr->value.value, mm_),
-                                        (XQilla::Language)((m_language & ~XQilla::XSLT2) | XQilla::XPATH2), XQLexer::MODE_TEMPLATE_MODES));
-            break;
-          case AttrData::OUTPUT_METHOD:
-            childLexer_.set(new XQLexer(mm_, m_szQueryFile, attr->value.line, attr->value.column, nullTerm(attr->value.value, mm_),
-                                        (XQilla::Language)((m_language & ~XQilla::XSLT2) | XQilla::XPATH2), XQLexer::MODE_OUTPUT_METHOD));
-            break;
-          case AttrData::QNAMES:
-            childLexer_.set(new XQLexer(mm_, m_szQueryFile, attr->value.line, attr->value.column, nullTerm(attr->value.value, mm_),
-                                        (XQilla::Language)((m_language & ~XQilla::XSLT2) | XQilla::XPATH2), XQLexer::MODE_QNAMES));
-            break;
-          case AttrData::STRING:
-            pYYLVAL->str = (XMLCh*)nullTerm(attr->value.value, mm_);
-            break;
-          case AttrData::QNAME:
-            pYYLVAL->str = (XMLCh*)nullTerm(attr->value.value, mm_);
-            if(!XMLChar1_0::isValidQName(pYYLVAL->str, XMLString::stringLen(pYYLVAL->str))) {
-              std::ostringstream oss;
-              oss << "The attribute value \"" << UTF8(pYYLVAL->str) << "\" is not a valid xs:QName [err:XTSE0020]";
-              error(oss.str().c_str());
-            }
-            break;
-          case AttrData::YESNO:
-            XMLBuffer value;
-            value.set((XMLCh*)attr->value.value.ptr, attr->value.value.len / sizeof(XMLCh));
-            XMLString::collapseWS(value.getRawBuffer());
-
-            if(XPath2Utils::equals(value.getRawBuffer(), YES_VALUE)) {
-              pYYLVAL->boolean = true;
-            }
-            else if(XPath2Utils::equals(value.getRawBuffer(), NO_VALUE)) {
-              pYYLVAL->boolean = false;
-            }
-            else {
-              error("The attribute does not have a value of \"yes\" or \"no\" [err:XTSE0020]");
-            }
-
-            break;
+          if(XPath2Utils::equals(valueBuf.getRawBuffer(), YES_VALUE)) {
+            pYYLVAL->boolean = true;
+          }
+          else if(XPath2Utils::equals(valueBuf.getRawBuffer(), NO_VALUE)) {
+            pYYLVAL->boolean = false;
+          }
+          else {
+            getValueLocation(pYYLOC);
+            error("The attribute does not have a value of \"yes\" or \"no\" [err:XTSE0020]");
           }
 
-          RECOGNIZE(entry->token);
+          break;
         }
+
+        state_ = NEXT_EVENT;
+        RECOGNIZE(entry->token);
       }
     }
+  }
 
-    if(elementStack_->info == 0) {
-      pYYLVAL->astNode = makeQNameLiteral(uri, nullTerm(attr->prefix, mm_), name);
+  if(elementStack_->info == 0) {
+    pYYLVAL->astNode = makeQNameLiteral(uri, prefix, name);
 
-      // Set up childLexer_ to lex the attribute value as an attribute value template
-      childLexer_.set(new XQLexer(mm_, m_szQueryFile, attr->value.line, attr->value.column, nullTerm(attr->value.value, mm_),
-                                  (XQilla::Language)((m_language & ~XQilla::XSLT2) | XQilla::XPATH2), XQLexer::MODE_ATTR_VALUE_TEMPLATE));
+    // Set up childLexer_ to lex the attribute value as an attribute value template
+    getValueLocation(pYYLOC);
+    childLexer_.set(new XQLexer(mm_, m_szQueryFile, m_lineno, m_columnno, mm_->getPooledString(value, length),
+                                (XQilla::Language)((m_language & ~XQilla::XSLT2) | XQilla::XPATH2), XQLexer::MODE_ATTR_VALUE_TEMPLATE));
 
-      RECOGNIZE(_XSLT_ATTR_NAME_);
-    }
-    else if(uri != 0) {
-      // Extension attribute - ignore for the moment
-      return yylex(pYYLVAL, pYYLOC);
-    }
-    else {
-      ostringstream oss;
-      oss << "Unexpected attribute {" << UTF8(uri) << "}" << UTF8(name) << " [err:XTSE0090]";
-      error(oss.str().c_str());
-    }
+    state_ = NEXT_EVENT;
+    RECOGNIZE(_XSLT_ATTR_NAME_);
+  }
+  else if(uri != 0) {
+    // Extension attribute - ignore for the moment
+    state_ = NEXT_EVENT;
+    return yylex(pYYLVAL, pYYLOC);
+  }
+  else {
+    ostringstream oss;
+    oss << "Unexpected attribute {" << UTF8(uri) << "}" << UTF8(name) << " [err:XTSE0090]";
+    error(oss.str().c_str());
   }
 
   // Never happens
@@ -575,24 +546,7 @@ int XSLT2Lexer::attrs_state(YYSTYPE* pYYLVAL, YYLTYPE* pYYLOC)
 
 int XSLT2Lexer::next_event_state(YYSTYPE* pYYLVAL, YYLTYPE* pYYLOC)
 {
-  if(selfClose_) {
-    selfClose_ = false;
-
-    setLocation(pYYLOC, FAXPP_get_current_event(parser_));
-    popElementStack();
-
-    RECOGNIZE(_XSLT_END_ELEMENT_);
-  }
-
-  FAXPP_Error err = FAXPP_next_event(parser_);
-  if(err != NO_ERROR) {
-    setErrorLocation(pYYLOC);
-
-    ostringstream oss;
-    oss << "Error parsing document: " << FAXPP_err_to_string(err);
-    error(oss.str().c_str());
-  }
-
+  nextEvent(pYYLOC);
   state_ = CURRENT_EVENT;
   return current_event_state(pYYLVAL, pYYLOC);
 }
@@ -600,20 +554,24 @@ int XSLT2Lexer::next_event_state(YYSTYPE* pYYLVAL, YYLTYPE* pYYLOC)
 int XSLT2Lexer::current_event_state(YYSTYPE* pYYLVAL, YYLTYPE* pYYLOC)
 {
   while(true) {
-    const FAXPP_Event *event = FAXPP_get_current_event(parser_);
+    switch(getEventType()) {
+    case START_DOCUMENT:
+      pushElementStack();
+      break;
+    case END_DOCUMENT:
+      popElementStack();
 
-    switch(event->type) {
-    case SELF_CLOSING_ELEMENT_EVENT:
-      selfClose_ = true;
-      // Fall through
-    case START_ELEMENT_EVENT: {
-      const XMLCh *uri = nullTerm(event->uri, mm_);
-      const XMLCh *name = nullTerm(event->name, mm_);
+      // End of file
+      RECOGNIZE(MYEOF);
+      break;
+    case START_ELEMENT: {
+      const XMLCh *prefix, *uri, *name;
+      getEventName(prefix, uri, name);
 
       checkTextBuffer(uri, name);
 
-      setLocation(pYYLOC, event);
-      elementStack_ = new ElementStackEntry(elementStack_);
+      getEventLocation(pYYLOC);
+      pushElementStack();
 
       // See if we recognize the element
       if(XPath2Utils::equals(uri, XSLT_URI)) {
@@ -629,96 +587,73 @@ int XSLT2Lexer::current_event_state(YYSTYPE* pYYLVAL, YYLTYPE* pYYLOC)
         }
       }
 
-      // Check for namespace attrs
-      for(unsigned int i = 0; i < event->attr_count; ++i) {
-        FAXPP_Attribute *attr = &event->attrs[i];
-
-        if(attr->xmlns_attr) {
-          const XMLCh *prefix = attr->prefix.len != 0 ? nullTerm(attr->name, mm_) : 0;
-          const XMLCh *uri = nullTerm(attr->value.value, mm_);
-
-          if(elementStack_->info != 0 && elementStack_->info->token == _XSLT_STYLESHEET_) {
-            // If this is the xsl:stylesheet element, add the namespace bindings to the context
-            context_->setNamespaceBinding(prefix, uri);
-          }
-          else {
-            if(elementStack_->nsResolver == elementStack_->prev->nsResolver) {
-              elementStack_->nsResolver = new (mm_) XQillaNSResolverImpl(mm_, elementStack_->nsResolver != 0 ?
-                                                                         elementStack_->nsResolver : context_->getNSResolver());
-            }
-
-            elementStack_->nsResolver->addNamespaceBinding(prefix, uri);
-          }
-        }
-      }
-
-      if(event->attr_count != 0) {
-        state_ = ATTRS;
-        index_ = 0;
-      }
-      else {
-        state_ = NEXT_EVENT;
-      }
-
+      state_ = NEXT_EVENT;
       if(elementStack_->info != 0) {
         RECOGNIZE(elementStack_->info->token);
       }
 
-      pYYLVAL->astNode = makeQNameLiteral(uri, nullTerm(event->prefix, mm_), name);
+      pYYLVAL->astNode = makeQNameLiteral(uri, prefix, name);
 
       RECOGNIZE(_XSLT_ELEMENT_NAME_);
+      break;
     }
-    case END_ELEMENT_EVENT:
+    case END_ELEMENT:
       checkTextBuffer(0, 0);
 
-      setLocation(pYYLOC, event);
+      getEventLocation(pYYLOC);
       popElementStack();
 
       state_ = NEXT_EVENT;
       RECOGNIZE(_XSLT_END_ELEMENT_);
-    case ENTITY_REFERENCE_EVENT:
-      // TBD handle external parsed entities - jpcs
-      if(event->value.ptr == 0) break;
-      // Fall through
-    case DEC_CHAR_REFERENCE_EVENT:
-    case HEX_CHAR_REFERENCE_EVENT:
-    case CHARACTERS_EVENT:
-    case CDATA_EVENT:
-      if(!textToCreate_) setLocation(pYYLOC, event);
+      break;
+    case TEXT:
+      if(!textToCreate_) getEventLocation(pYYLOC);
 
-      textBuffer_.append((XMLCh*)event->value.ptr, event->value.len / sizeof(XMLCh));
+      const XMLCh *value;
+      unsigned int length;
+      getEventValue(value, length);
+
+      textBuffer_.append(value, length);
       textToCreate_ = true;
       break;
-    case START_DOCUMENT_EVENT:
-      elementStack_ = new ElementStackEntry();
-      break;
-    case END_DOCUMENT_EVENT:
-      popElementStack();
+    case NAMESPACE: {
+      const XMLCh *prefix, *uri, *name, *value;
+      unsigned int length;
+      getEventName(prefix, uri, name);
+      getEventValue(value, length);
 
-      // End of file
-      RECOGNIZE(MYEOF);
-    case COMMENT_EVENT:
-    case PI_EVENT:
-      // 4.2.1 All comments and processing instructions are removed.
-    case IGNORABLE_WHITESPACE_EVENT:
-    case DOCTYPE_EVENT:
-    case ENTITY_REFERENCE_START_EVENT:
-    case ENTITY_REFERENCE_END_EVENT:
-    case START_EXTERNAL_ENTITY_EVENT:
-    case END_EXTERNAL_ENTITY_EVENT:
-    case NO_EVENT:
-      // Ignore
+      const XMLCh *nsprefix = prefix != 0 ? name : 0;
+      const XMLCh *nsuri = mm_->getPooledString(value, length);
+
+      if(elementStack_->info != 0 && elementStack_->info->token == _XSLT_STYLESHEET_) {
+        // If this is the xsl:stylesheet element, add the namespace bindings to the context
+        context_->setNamespaceBinding(nsprefix, nsuri);
+      }
+      else {
+        if(elementStack_->nsResolver == elementStack_->prev->nsResolver) {
+          elementStack_->nsResolver = new (mm_) XQillaNSResolverImpl(mm_, elementStack_->nsResolver != 0 ?
+                                                                     elementStack_->nsResolver : context_->getNSResolver());
+        }
+
+        elementStack_->nsResolver->addNamespaceBinding(nsprefix, nsuri);
+      }
+
+      if(elementStack_->info == 0) {
+        VectorOfASTNodes *valueVector = new (mm_) VectorOfASTNodes(XQillaAllocator<ASTNode*>(mm_));
+        valueVector->push_back(makeStringLiteral(nsuri));
+
+        pYYLVAL->astNode = wrap(new (mm_) XQAttributeConstructor(makeDirectName(prefix, name), valueVector, mm_));
+
+        state_ = NEXT_EVENT;
+        RECOGNIZE(_XSLT_XMLNS_ATTR_);
+      }
       break;
     }
-
-    FAXPP_Error err = FAXPP_next_event(parser_);
-    if(err != NO_ERROR) {
-      setErrorLocation(pYYLOC);
-
-      ostringstream oss;
-      oss << "Error parsing document: " << FAXPP_err_to_string(err);
-      error(oss.str().c_str());
+    case ATTRIBUTE:
+      return attrs_state(pYYLVAL, pYYLOC);
     }
+
+    nextEvent(pYYLOC);
   }
 
   // Never happens
@@ -741,8 +676,6 @@ int XSLT2Lexer::yylex(YYSTYPE* pYYLVAL, YYLTYPE* pYYLOC)
   switch(state_) {
   case LANG_TOKEN:
     return lang_token_state(pYYLVAL, pYYLOC);
-  case ATTRS:
-    return attrs_state(pYYLVAL, pYYLOC);
   case NEXT_EVENT:
     return next_event_state(pYYLVAL, pYYLOC);
   case CURRENT_EVENT:
@@ -786,22 +719,9 @@ ASTNode *XSLT2Lexer::makeStringLiteral(const XMLCh *value) const
   return wrap(new (mm_) XQLiteral(constr, mm_));
 }
 
-void XSLT2Lexer::setLocation(YYLTYPE* pYYLOC, const FAXPP_Event *event)
+void XSLT2Lexer::pushElementStack()
 {
-  pYYLOC->first_line = m_lineno = event->line;
-  pYYLOC->first_column = m_columnno = event->column;
-}
-
-void XSLT2Lexer::setLocation(YYLTYPE* pYYLOC, const FAXPP_Attribute *attr)
-{
-  pYYLOC->first_line = m_lineno = attr->line;
-  pYYLOC->first_column = m_columnno = attr->column;
-}
-
-void XSLT2Lexer::setErrorLocation(YYLTYPE* pYYLOC)
-{
-  pYYLOC->first_line = m_lineno = FAXPP_get_error_line(parser_);
-  pYYLOC->first_column = m_columnno = FAXPP_get_error_column(parser_);
+  elementStack_ = new ElementStackEntry(elementStack_);
 }
 
 void XSLT2Lexer::popElementStack()
@@ -818,18 +738,10 @@ DOMXPathNSResolver *XSLT2Lexer::getNSResolver() const
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-XSLT2Lexer::ElementStackEntry::ElementStackEntry()
-  : info(0),
-    xmlSpacePreserve(false),
-    nsResolver(0),
-    prev(0)
-{
-}
-
 XSLT2Lexer::ElementStackEntry::ElementStackEntry(ElementStackEntry *p)
   : info(0),
-    xmlSpacePreserve(p->xmlSpacePreserve),
-    nsResolver(p->nsResolver),
+    xmlSpacePreserve(p ? p->xmlSpacePreserve : false),
+    nsResolver(p ? p->nsResolver : 0),
     prev(p)
 {
 }
@@ -840,4 +752,499 @@ bool XSLT2Lexer::ElementStackEntry::reportWhitespace() const
   return info != 0 && info->whitespace == InstructionInfo::PRESERVE;
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#ifdef HAVE_FAXPP
+
+FAXPPXSLT2Lexer::FAXPPXSLT2Lexer(DynamicContext *context, const InputSource &srcToUse, XQilla::Language lang)
+  : XSLT2Lexer(context, srcToUse, lang),
+    parser_(0),
+    stream_(0),
+    eventType_(END_ELEMENT),
+    attrIndex_(0)
+{
+  parser_ = FAXPP_create_parser(WELL_FORMED_PARSE_MODE, FAXPP_utf16_native_transcoder);
+  if(parser_ == 0) error("Out of memory");
+
+  stream_.set(srcToUse.makeStream());
+  if(stream_.get() == NULL) error("Document not found");
+
+  FAXPP_Error err = FAXPP_init_parse_callback(parser_, binInputStreamReadCallback, stream_.get());
+  if(err == OUT_OF_MEMORY) error("Out of memory");
+
+  // Force use of encoding set on InputSource
+  if(srcToUse.getEncoding()) {
+    FAXPP_DecodeFunction decode = FAXPP_string_to_decode(UTF8(srcToUse.getEncoding()));
+    if(decode == 0) err = UNSUPPORTED_ENCODING;
+    else FAXPP_set_decode(parser_, decode);
+  }
+
+  if(err == UNSUPPORTED_ENCODING) error("Unsupported encoding");
+}
+
+FAXPPXSLT2Lexer::~FAXPPXSLT2Lexer()
+{
+  FAXPP_free_parser(parser_);
+}
+
+bool FAXPPXSLT2Lexer::nextNamespace()
+{
+  const FAXPP_Event *event = FAXPP_get_current_event(parser_);
+
+  eventType_ = NAMESPACE;
+  while(attrIndex_ < event->attr_count) {
+    if(event->attrs[attrIndex_].xmlns_attr)
+      return true;
+    ++attrIndex_;
+  }
+
+  attrIndex_ = 0;
+  return nextAttribute();
+}
+
+bool FAXPPXSLT2Lexer::nextAttribute()
+{
+  const FAXPP_Event *event = FAXPP_get_current_event(parser_);
+
+  eventType_ = ATTRIBUTE;
+  while(attrIndex_ < event->attr_count) {
+    if(!event->attrs[attrIndex_].xmlns_attr)
+      return true;
+    ++attrIndex_;
+  }
+
+  eventType_ = (XSLT2Lexer::EventType)-1;
+  return false;
+}
+
+void FAXPPXSLT2Lexer::nextEvent(YYLTYPE* pYYLOC)
+{
+  const FAXPP_Event *event = FAXPP_get_current_event(parser_);
+
+  if(eventType_ == START_ELEMENT) {
+    attrIndex_ = 0;
+    if(nextNamespace()) return;
+  }
+
+  if(eventType_ == NAMESPACE) {
+    ++attrIndex_;
+    if(nextNamespace()) return;
+  }
+
+  if(eventType_ == ATTRIBUTE) {
+    ++attrIndex_;
+    if(nextAttribute()) return;
+  }
+
+  if(eventType_ != END_ELEMENT && event->type == SELF_CLOSING_ELEMENT_EVENT) {
+    eventType_ = END_ELEMENT;
+    return;
+  }
+
+  eventType_ = (XSLT2Lexer::EventType)-1;
+  while(eventType_ == (XSLT2Lexer::EventType)-1) {
+    FAXPP_Error err = FAXPP_next_event(parser_);
+    if(err != NO_ERROR) {
+      setErrorLocation(pYYLOC);
+
+      ostringstream oss;
+      oss << "Error parsing document: " << FAXPP_err_to_string(err);
+      error(oss.str().c_str());
+    }
+
+    event = FAXPP_get_current_event(parser_);
+    switch(event->type) {
+    case SELF_CLOSING_ELEMENT_EVENT:
+    case START_ELEMENT_EVENT:
+      eventType_ = START_ELEMENT;
+      break;
+    case END_ELEMENT_EVENT:
+      eventType_ = END_ELEMENT;
+      break;
+    case ENTITY_REFERENCE_EVENT:
+      // TBD handle external parsed entities - jpcs
+      if(event->value.ptr == 0) break;
+      // Fall through
+    case DEC_CHAR_REFERENCE_EVENT:
+    case HEX_CHAR_REFERENCE_EVENT:
+    case CHARACTERS_EVENT:
+    case CDATA_EVENT:
+      eventType_ = TEXT;
+      break;
+    case START_DOCUMENT_EVENT:
+      eventType_ = START_DOCUMENT;
+      break;
+    case END_DOCUMENT_EVENT:
+      eventType_ = END_DOCUMENT;
+      break;
+    case COMMENT_EVENT:
+    case PI_EVENT:
+    case IGNORABLE_WHITESPACE_EVENT:
+    case DOCTYPE_EVENT:
+    case ENTITY_REFERENCE_START_EVENT:
+    case ENTITY_REFERENCE_END_EVENT:
+    case START_EXTERNAL_ENTITY_EVENT:
+    case END_EXTERNAL_ENTITY_EVENT:
+    case NO_EVENT:
+      // Ignore
+      break;
+    }
+  }
+}
+
+XSLT2Lexer::EventType FAXPPXSLT2Lexer::getEventType()
+{
+  return eventType_;
+}
+
+void FAXPPXSLT2Lexer::getEventName(const XMLCh *&prefix, const XMLCh *&uri, const XMLCh *&localname)
+{
+  const FAXPP_Event *event = FAXPP_get_current_event(parser_);
+
+  if(eventType_ == ATTRIBUTE || eventType_ == NAMESPACE) {
+    FAXPP_Attribute *attr = &event->attrs[attrIndex_];
+//     setLocation(pYYLOC, attr);
+
+    prefix = nullTerm(attr->prefix, mm_);
+    uri = nullTerm(attr->uri, mm_);
+    localname = nullTerm(attr->name, mm_);
+  }
+  else {
+    prefix = nullTerm(event->prefix, mm_);
+    uri = nullTerm(event->uri, mm_);
+    localname = nullTerm(event->name, mm_);
+  }
+}
+
+void FAXPPXSLT2Lexer::getEventValue(const XMLCh *&value, unsigned int &length)
+{
+  const FAXPP_Event *event = FAXPP_get_current_event(parser_);
+
+  if(eventType_ == ATTRIBUTE || eventType_ == NAMESPACE) {
+    FAXPP_Attribute *attr = &event->attrs[attrIndex_];
+
+    value = (XMLCh*)attr->value.value.ptr;
+    length = attr->value.value.len / sizeof(XMLCh);
+  }
+  else {
+    value = (XMLCh*)event->value.ptr;
+    length = event->value.len / sizeof(XMLCh);
+  }
+}
+
+void FAXPPXSLT2Lexer::getEventLocation(YYLTYPE* pYYLOC)
+{
+  if(eventType_ == ATTRIBUTE || eventType_ == NAMESPACE) {
+    FAXPP_Attribute *attr = &FAXPP_get_current_event(parser_)->attrs[attrIndex_];
+    setLocation(pYYLOC, attr);
+  }
+  else {
+    setLocation(pYYLOC, FAXPP_get_current_event(parser_));
+  }
+}
+
+void FAXPPXSLT2Lexer::getValueLocation(YYLTYPE* pYYLOC)
+{
+  const FAXPP_Event *event = FAXPP_get_current_event(parser_);
+
+  if(eventType_ == ATTRIBUTE || eventType_ == NAMESPACE) {
+    FAXPP_Attribute *attr = &event->attrs[attrIndex_];
+    setLocation(pYYLOC, &attr->value);
+  }
+  else {
+    setLocation(pYYLOC, event);
+  }
+}
+
+void FAXPPXSLT2Lexer::setLocation(YYLTYPE* pYYLOC, const FAXPP_Event *event)
+{
+  pYYLOC->first_line = m_lineno = event->line;
+  pYYLOC->first_column = m_columnno = event->column;
+}
+
+void FAXPPXSLT2Lexer::setLocation(YYLTYPE* pYYLOC, const FAXPP_Attribute *attr)
+{
+  pYYLOC->first_line = m_lineno = attr->line;
+  pYYLOC->first_column = m_columnno = attr->column;
+}
+
+void FAXPPXSLT2Lexer::setLocation(YYLTYPE* pYYLOC, const FAXPP_AttrValue *attrval)
+{
+  pYYLOC->first_line = m_lineno = attrval->line;
+  pYYLOC->first_column = m_columnno = attrval->column;
+}
+
+void FAXPPXSLT2Lexer::setErrorLocation(YYLTYPE* pYYLOC)
+{
+  pYYLOC->first_line = m_lineno = FAXPP_get_error_line(parser_);
+  pYYLOC->first_column = m_columnno = FAXPP_get_error_column(parser_);
+}
+
+#endif // HAVE_FAXPP
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+XercesXSLT2Lexer::XercesXSLT2Lexer(DynamicContext *context, const InputSource &srcToUse, XQilla::Language lang)
+  : XSLT2Lexer(context, srcToUse, lang),
+    grammarResolver_(0),
+    scanner_(0),
+    currentEvent_(0),
+    firstEvent_(0),
+    lastEvent_(0)
+{
+  try {
+    grammarResolver_ = new GrammarResolver(0);
+    scanner_ = new DGXMLScanner(0, grammarResolver_);
+    scanner_->setURIStringPool(grammarResolver_->getStringPool());
+    scanner_->setDocHandler(this);
+    scanner_->setEntityHandler(this);
+    scanner_->setDoNamespaces(true);
+
+    scanner_->scanFirst(srcToUse, pptoken_);
+  }
+  catch(const SAXException& toCatch) {
+    ostringstream oss;
+    oss << "Error parsing document: " << UTF8(toCatch.getMessage());
+    error(oss.str().c_str());
+  }
+  catch(const XMLException& toCatch) {
+    ostringstream oss;
+    oss << "Error parsing document: " << UTF8(toCatch.getMessage());
+    error(oss.str().c_str());
+  }
+}
+
+XercesXSLT2Lexer::~XercesXSLT2Lexer()
+{
+  delete currentEvent_;
+
+  CachedEvent *tmp;
+  while(firstEvent_) {
+    tmp = firstEvent_;
+    firstEvent_ = firstEvent_->next;
+    delete tmp;
+  }
+
+  delete scanner_;
+  delete grammarResolver_;
+}
+
+void XercesXSLT2Lexer::nextEvent(YYLTYPE* pYYLOC)
+{
+  if(currentEvent_) {
+    if(currentEvent_->type == END_DOCUMENT)
+      return;
+
+    delete currentEvent_;
+    currentEvent_ = 0;
+  }
+
+  while(currentEvent_ == 0) {
+    if(firstEvent_ != 0) {
+      currentEvent_ = firstEvent_;
+      firstEvent_ = firstEvent_->next;
+      if(firstEvent_ == 0) lastEvent_ = 0;
+      currentEvent_->next = 0;
+    }
+    else {
+      try {
+        scanner_->scanNext(pptoken_);
+      }
+      catch(const SAXException& toCatch) {
+        ostringstream oss;
+        oss << "Error parsing document: " << UTF8(toCatch.getMessage());
+        error(oss.str().c_str());
+      }
+      catch(const XMLException& toCatch) {
+        ostringstream oss;
+        oss << "Error parsing document: " << UTF8(toCatch.getMessage());
+        error(oss.str().c_str());
+      }
+    }
+  }
+}
+
+XSLT2Lexer::EventType XercesXSLT2Lexer::getEventType()
+{
+  return currentEvent_->type;
+}
+
+void XercesXSLT2Lexer::getEventName(const XMLCh *&prefix, const XMLCh *&uri, const XMLCh *&localname)
+{
+  prefix = currentEvent_->prefix;
+  uri = currentEvent_->uri;
+  localname = currentEvent_->localname;
+}
+
+void XercesXSLT2Lexer::getEventValue(const XMLCh *&value, unsigned int &length)
+{
+  value = currentEvent_->value.getRawBuffer();
+  length = currentEvent_->value.getLen();
+}
+
+void XercesXSLT2Lexer::getEventLocation(YYLTYPE* pYYLOC)
+{
+  pYYLOC->first_line = m_lineno = currentEvent_->line;
+  pYYLOC->first_column = m_columnno = currentEvent_->column;
+}
+
+void XercesXSLT2Lexer::getValueLocation(YYLTYPE* pYYLOC)
+{
+  pYYLOC->first_line = m_lineno = currentEvent_->line;
+  pYYLOC->first_column = m_columnno = currentEvent_->column;
+}
+
+InputSource* XercesXSLT2Lexer::resolveEntity(XMLResourceIdentifier* resourceIdentifier)
+{
+  if(context_->getXMLEntityResolver()) 
+    return context_->getXMLEntityResolver()->resolveEntity(resourceIdentifier);
+  return 0;
+}
+
+void XercesXSLT2Lexer::startDocument()
+{
+  lastEvent_ = new CachedEvent(START_DOCUMENT, scanner_->getLocator(), lastEvent_);
+  if(firstEvent_ == 0) firstEvent_ = lastEvent_;
+}
+
+void XercesXSLT2Lexer::endDocument()
+{
+  lastEvent_ = new CachedEvent(END_DOCUMENT, scanner_->getLocator(), lastEvent_);
+  if(firstEvent_ == 0) firstEvent_ = lastEvent_;
+}
+
+#if _XERCES_VERSION >= 30000
+void XercesXSLT2Lexer::startElement(const XMLElementDecl& elemDecl, const unsigned int urlId,
+                                    const XMLCh* const elemPrefix,
+                                    const RefVectorOf<XMLAttr>& attrList,
+                                    const XMLSize_t attrCount, const bool isEmpty, const bool isRoot)
+#else
+void XercesXSLT2Lexer::startElement(const XMLElementDecl& elemDecl, const unsigned int urlId,
+                                    const XMLCh* const elemPrefix,
+                                    const RefVectorOf<XMLAttr>& attrList,
+                                    const unsigned int attrCount, const bool isEmpty, const bool isRoot)
 #endif
+{
+  lastEvent_ = new CachedEvent(mm_->getPooledString(elemPrefix),
+                               mm_->getPooledString(scanner_->getURIText(urlId)),
+                               mm_->getPooledString(elemDecl.getBaseName()),
+                               scanner_->getLocator(), lastEvent_);
+  if(firstEvent_ == 0) firstEvent_ = lastEvent_;
+
+  unsigned int i;
+  for(i = 0; i < attrCount; ++i) {
+    const XMLAttr *attr = attrList.elementAt(i);
+
+    if(attr->getURIId() == scanner_->getXMLNSNamespaceId()) {
+      lastEvent_ = new CachedEvent(NAMESPACE,
+                                   mm_->getPooledString(attr->getPrefix()),
+                                   mm_->getPooledString(scanner_->getURIText(attr->getURIId())),
+                                   mm_->getPooledString(attr->getName()),
+                                   attr->getValue(),
+                                   scanner_->getLocator(), lastEvent_);
+      if(firstEvent_ == 0) firstEvent_ = lastEvent_;
+    }
+    else if(XPath2Utils::equals(attr->getName(), XMLUni::fgXMLNSString)) {
+      lastEvent_ = new CachedEvent(NAMESPACE,
+                                   mm_->getPooledString(attr->getPrefix()),
+                                   XMLUni::fgXMLNSURIName,
+                                   mm_->getPooledString(attr->getName()),
+                                   attr->getValue(),
+                                   scanner_->getLocator(), lastEvent_);
+      if(firstEvent_ == 0) firstEvent_ = lastEvent_;
+    }
+  }
+
+  for(i = 0; i < attrCount; ++i) {
+    const XMLAttr *attr = attrList.elementAt(i);
+
+    if(attr->getURIId() != scanner_->getXMLNSNamespaceId() &&
+       !XPath2Utils::equals(attr->getName(), XMLUni::fgXMLNSString)) {
+      lastEvent_ = new CachedEvent(ATTRIBUTE,
+                                   mm_->getPooledString(attr->getPrefix()),
+                                   mm_->getPooledString(scanner_->getURIText(attr->getURIId())),
+                                   mm_->getPooledString(attr->getName()),
+                                   attr->getValue(),
+                                   scanner_->getLocator(), lastEvent_);
+      if(firstEvent_ == 0) firstEvent_ = lastEvent_;
+    }
+  }
+
+  if(isEmpty) {
+    lastEvent_ = new CachedEvent(END_ELEMENT, scanner_->getLocator(), lastEvent_);
+    if(firstEvent_ == 0) firstEvent_ = lastEvent_;
+  }
+}
+
+#if _XERCES_VERSION >= 30000
+void XercesXSLT2Lexer::docCharacters(const XMLCh* const chars, const XMLSize_t length, const bool cdataSection)
+#else
+void XercesXSLT2Lexer::docCharacters(const XMLCh* const chars, const unsigned int length, const bool cdataSection)
+#endif
+{
+  lastEvent_ = new CachedEvent(chars, length, scanner_->getLocator(), lastEvent_);
+  if(firstEvent_ == 0) firstEvent_ = lastEvent_;
+}
+
+void XercesXSLT2Lexer::endElement(const XMLElementDecl& elemDecl, const unsigned int urlId,
+                                  const bool isRoot, const XMLCh* const elemPrefix)
+{
+  lastEvent_ = new CachedEvent(END_ELEMENT, scanner_->getLocator(), lastEvent_);
+  if(firstEvent_ == 0) firstEvent_ = lastEvent_;
+}
+
+#define emptyToNull(p) ((p && *p) ? (p) : 0)
+
+XercesXSLT2Lexer::CachedEvent::CachedEvent(EventType t, const Locator *locator, CachedEvent *p)
+  : type(t),
+    prefix(0),
+    uri(0),
+    localname(0),
+    line(locator->getLineNumber()),
+    column(locator->getColumnNumber()),
+    prev(p),
+    next(0)
+{
+  if(p) p->next = this;
+}
+
+XercesXSLT2Lexer::CachedEvent::CachedEvent(const XMLCh *p, const XMLCh *u, const XMLCh *l, const Locator *locator, CachedEvent *pv)
+  : type(START_ELEMENT),
+    prefix(emptyToNull(p)),
+    uri(emptyToNull(u)),
+    localname(l),
+    line(locator->getLineNumber()),
+    column(locator->getColumnNumber()),
+    prev(pv),
+    next(0)
+{
+  if(pv) pv->next = this;
+}
+
+XercesXSLT2Lexer::CachedEvent::CachedEvent(EventType t, const XMLCh *p, const XMLCh *u, const XMLCh *l, const XMLCh *v, const Locator *locator, CachedEvent *pv)
+  : type(t),
+    prefix(emptyToNull(p)),
+    uri(emptyToNull(u)),
+    localname(l),
+    line(locator->getLineNumber()),
+    column(locator->getColumnNumber()),
+    prev(pv),
+    next(0)
+{
+  value.set(v);
+  if(pv) pv->next = this;
+}
+
+XercesXSLT2Lexer::CachedEvent::CachedEvent(const XMLCh *v, size_t length, const Locator *locator, CachedEvent *p)
+  : type(TEXT),
+    prefix(0),
+    uri(0),
+    localname(0),
+    line(locator->getLineNumber()),
+    column(locator->getColumnNumber()),
+    prev(p),
+    next(0)
+{
+  value.set(v, length);
+  if(p) p->next = this;
+}
