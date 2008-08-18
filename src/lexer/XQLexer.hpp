@@ -220,9 +220,14 @@ public:
     MODE_QNAMES
   };
 
+  struct ValueOffset {
+    ValueOffset(int i, int l, int c) : index(i), lineOffset(l), columnOffset(c) {}
+    int index, lineOffset, columnOffset;
+  };
+
   XQLexer(XPath2MemoryManager* memMgr, const XMLCh *queryFile, const XMLCh* query, XQilla::Language lang);
   XQLexer(XPath2MemoryManager* memMgr, const XMLCh *queryFile, int line, int column, const XMLCh* query,
-          XQilla::Language lang, StartMode mode = MODE_NORMAL);
+          unsigned int length, const std::vector<ValueOffset> &offsets, XQilla::Language lang, StartMode mode = MODE_NORMAL);
 
   // Implemented in XQLexer.cpp, output of XQLexer.l
   int yylex();
@@ -264,7 +269,10 @@ protected:
 
   const XMLCh* m_szQuery;
   unsigned int m_nLength;
+  std::vector<ValueOffset> m_offsets;
+
   int m_position,m_index;
+  unsigned int m_currentOffset;
 
   int m_nOpenComments;
 };

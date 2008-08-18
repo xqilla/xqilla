@@ -364,16 +364,6 @@ const InstructionInfo INSTRUCTION_INFO[] = {
 //         xsl:stylesheet
 //         xsl:transform
 
-static unsigned int binInputStreamReadCallback(void *userData, void *buffer, unsigned int length)
-{
-  return ((BinInputStream*)userData)->readBytes((XMLByte*)buffer, length);
-}
-
-static inline const XMLCh *nullTerm(const FAXPP_Text &text, XPath2MemoryManager *mm)
-{
-  return mm->getPooledString((XMLCh*)text.ptr, text.len / sizeof(XMLCh));
-}
-
 XSLT2Lexer::XSLT2Lexer(DynamicContext *context, const InputSource &srcToUse, XQilla::Language lang)
   : Lexer(context->getMemoryManager(), lang, context->getMemoryManager()->getPooledString(srcToUse.getSystemId()), 0, 0),
     context_(context),
@@ -410,7 +400,7 @@ int XSLT2Lexer::attrs_state(YYSTYPE* pYYLVAL, YYLTYPE* pYYLOC)
   const XMLCh *prefix, *uri, *name, *value;
   unsigned int length;
   getEventName(prefix, uri, name);
-  getEventValue(value, length);
+  getEventValue(value, length, offsets_);
   getEventLocation(pYYLOC);
 
   if(XPath2Utils::equals(uri, XMLUni::fgXMLURIName) && XPath2Utils::equals(name, SPACE_NAME)) {
@@ -431,27 +421,27 @@ int XSLT2Lexer::attrs_state(YYSTYPE* pYYLVAL, YYLTYPE* pYYLOC)
         case AttrData::SEQUENCE_TYPE:
         case AttrData::EXPRESSION:
           getValueLocation(pYYLOC);
-          childLexer_.set(new XQLexer(mm_, m_szQueryFile, m_lineno, m_columnno, mm_->getPooledString(value, length),
+          childLexer_.set(new XQLexer(mm_, m_szQueryFile, m_lineno, m_columnno, value, length, offsets_,
                                       (XQilla::Language)((m_language & ~XQilla::XSLT2) | XQilla::XPATH2)));
           break;
         case AttrData::ATTR_VALUE_TEMPLATE:
           getValueLocation(pYYLOC);
-          childLexer_.set(new XQLexer(mm_, m_szQueryFile, m_lineno, m_columnno, mm_->getPooledString(value, length),
+          childLexer_.set(new XQLexer(mm_, m_szQueryFile, m_lineno, m_columnno, value, length, offsets_,
                                       (XQilla::Language)((m_language & ~XQilla::XSLT2) | XQilla::XPATH2), XQLexer::MODE_ATTR_VALUE_TEMPLATE));
           break;
         case AttrData::TEMPLATE_MODES:
           getValueLocation(pYYLOC);
-          childLexer_.set(new XQLexer(mm_, m_szQueryFile, m_lineno, m_columnno, mm_->getPooledString(value, length),
+          childLexer_.set(new XQLexer(mm_, m_szQueryFile, m_lineno, m_columnno, value, length, offsets_,
                                       (XQilla::Language)((m_language & ~XQilla::XSLT2) | XQilla::XPATH2), XQLexer::MODE_TEMPLATE_MODES));
           break;
         case AttrData::OUTPUT_METHOD:
           getValueLocation(pYYLOC);
-          childLexer_.set(new XQLexer(mm_, m_szQueryFile, m_lineno, m_columnno, mm_->getPooledString(value, length),
+          childLexer_.set(new XQLexer(mm_, m_szQueryFile, m_lineno, m_columnno, value, length, offsets_,
                                       (XQilla::Language)((m_language & ~XQilla::XSLT2) | XQilla::XPATH2), XQLexer::MODE_OUTPUT_METHOD));
           break;
         case AttrData::QNAMES:
           getValueLocation(pYYLOC);
-          childLexer_.set(new XQLexer(mm_, m_szQueryFile, m_lineno, m_columnno, mm_->getPooledString(value, length),
+          childLexer_.set(new XQLexer(mm_, m_szQueryFile, m_lineno, m_columnno, value, length, offsets_,
                                       (XQilla::Language)((m_language & ~XQilla::XSLT2) | XQilla::XPATH2), XQLexer::MODE_QNAMES));
           break;
         case AttrData::STRING:
@@ -496,7 +486,7 @@ int XSLT2Lexer::attrs_state(YYSTYPE* pYYLVAL, YYLTYPE* pYYLOC)
 
     // Set up childLexer_ to lex the attribute value as an attribute value template
     getValueLocation(pYYLOC);
-    childLexer_.set(new XQLexer(mm_, m_szQueryFile, m_lineno, m_columnno, mm_->getPooledString(value, length),
+    childLexer_.set(new XQLexer(mm_, m_szQueryFile, m_lineno, m_columnno, value, length, offsets_,
                                 (XQilla::Language)((m_language & ~XQilla::XSLT2) | XQilla::XPATH2), XQLexer::MODE_ATTR_VALUE_TEMPLATE));
 
     state_ = NEXT_EVENT;
@@ -611,7 +601,7 @@ int XSLT2Lexer::current_event_state(YYSTYPE* pYYLVAL, YYLTYPE* pYYLOC)
 
       const XMLCh *value;
       unsigned int length;
-      getEventValue(value, length);
+      getEventValue(value, length, offsets_);
 
       textBuffer_.append(value, length);
       textToCreate_ = true;
@@ -620,7 +610,7 @@ int XSLT2Lexer::current_event_state(YYSTYPE* pYYLVAL, YYLTYPE* pYYLOC)
       const XMLCh *prefix, *uri, *name, *value;
       unsigned int length;
       getEventName(prefix, uri, name);
-      getEventValue(value, length);
+      getEventValue(value, length, offsets_);
 
       const XMLCh *nsprefix = prefix != 0 ? name : 0;
       const XMLCh *nsuri = mm_->getPooledString(value, length);
@@ -756,6 +746,16 @@ bool XSLT2Lexer::ElementStackEntry::reportWhitespace() const
 
 #ifdef HAVE_FAXPP
 
+static unsigned int binInputStreamReadCallback(void *userData, void *buffer, unsigned int length)
+{
+  return ((BinInputStream*)userData)->readBytes((XMLByte*)buffer, length);
+}
+
+static inline const XMLCh *nullTerm(const FAXPP_Text &text, XPath2MemoryManager *mm)
+{
+  return mm->getPooledString((XMLCh*)text.ptr, text.len / sizeof(XMLCh));
+}
+
 FAXPPXSLT2Lexer::FAXPPXSLT2Lexer(DynamicContext *context, const InputSource &srcToUse, XQilla::Language lang)
   : XSLT2Lexer(context, srcToUse, lang),
     parser_(0),
@@ -765,6 +765,9 @@ FAXPPXSLT2Lexer::FAXPPXSLT2Lexer(DynamicContext *context, const InputSource &src
 {
   parser_ = FAXPP_create_parser(WELL_FORMED_PARSE_MODE, FAXPP_utf16_native_transcoder);
   if(parser_ == 0) error("Out of memory");
+
+  // We'll normalize attributes ourselves
+  FAXPP_set_normalize_attrs(parser_, false);
 
   stream_.set(srcToUse.makeStream());
   if(stream_.get() == NULL) error("Document not found");
@@ -916,15 +919,55 @@ void FAXPPXSLT2Lexer::getEventName(const XMLCh *&prefix, const XMLCh *&uri, cons
   }
 }
 
-void FAXPPXSLT2Lexer::getEventValue(const XMLCh *&value, unsigned int &length)
+void FAXPPXSLT2Lexer::getEventValue(const XMLCh *&value, unsigned int &length, std::vector<XQLexer::ValueOffset> &offsets)
 {
   const FAXPP_Event *event = FAXPP_get_current_event(parser_);
+  offsets.clear();
 
   if(eventType_ == ATTRIBUTE || eventType_ == NAMESPACE) {
     FAXPP_Attribute *attr = &event->attrs[attrIndex_];
+    value_.reset();
 
-    value = (XMLCh*)attr->value.value.ptr;
-    length = attr->value.value.len / sizeof(XMLCh);
+    // Normalize the attribute value and calculate offsets into
+    // it to compensate for things like expanded entity references
+    // and line ending conversion.
+    const FAXPP_AttrValue *aval = &attr->value;
+    int index = 0, line = aval->line, column = aval->column + 1;
+    for(; aval; aval = aval->next) {
+      if((unsigned)line != aval->line || (unsigned)column != (aval->column + 1)) {
+        offsets.push_back(XQLexer::ValueOffset(index, aval->line - line, (aval->column + 1) - column));
+        line = aval->line;
+        column = aval->column + 1;
+      }
+
+      const XMLCh *pos = (const XMLCh*)aval->value.ptr;
+      const XMLCh *end = (const XMLCh*)((char*)aval->value.ptr + aval->value.len);
+      for(; pos < end; ++pos) {
+        switch(*pos) {
+        case '\r':
+          if((pos + 1) < end && *(pos + 1) == '\n') ++pos;
+          // Fall through
+        case '\n':
+          offsets.push_back(XQLexer::ValueOffset(index, 1, -column));
+          line += 1;
+          column = 1;
+          value_.append(' ');
+          break;
+        case '\t':
+          value_.append(' ');
+          ++column;
+          break;
+        default:
+          value_.append(*pos);
+          ++column;
+          break;
+        }
+        ++index;
+      }
+    }
+
+    value = value_.getRawBuffer();
+    length = value_.getLen();
   }
   else {
     value = (XMLCh*)event->value.ptr;
@@ -959,25 +1002,25 @@ void FAXPPXSLT2Lexer::getValueLocation(YYLTYPE* pYYLOC)
 void FAXPPXSLT2Lexer::setLocation(YYLTYPE* pYYLOC, const FAXPP_Event *event)
 {
   pYYLOC->first_line = m_lineno = event->line;
-  pYYLOC->first_column = m_columnno = event->column;
+  pYYLOC->first_column = m_columnno = event->column + 1;
 }
 
 void FAXPPXSLT2Lexer::setLocation(YYLTYPE* pYYLOC, const FAXPP_Attribute *attr)
 {
   pYYLOC->first_line = m_lineno = attr->line;
-  pYYLOC->first_column = m_columnno = attr->column;
+  pYYLOC->first_column = m_columnno = attr->column + 1;
 }
 
 void FAXPPXSLT2Lexer::setLocation(YYLTYPE* pYYLOC, const FAXPP_AttrValue *attrval)
 {
   pYYLOC->first_line = m_lineno = attrval->line;
-  pYYLOC->first_column = m_columnno = attrval->column;
+  pYYLOC->first_column = m_columnno = attrval->column + 1;
 }
 
 void FAXPPXSLT2Lexer::setErrorLocation(YYLTYPE* pYYLOC)
 {
   pYYLOC->first_line = m_lineno = FAXPP_get_error_line(parser_);
-  pYYLOC->first_column = m_columnno = FAXPP_get_error_column(parser_);
+  pYYLOC->first_column = m_columnno = FAXPP_get_error_column(parser_) + 1;
 }
 
 #endif // HAVE_FAXPP
@@ -1076,8 +1119,9 @@ void XercesXSLT2Lexer::getEventName(const XMLCh *&prefix, const XMLCh *&uri, con
   localname = currentEvent_->localname;
 }
 
-void XercesXSLT2Lexer::getEventValue(const XMLCh *&value, unsigned int &length)
+void XercesXSLT2Lexer::getEventValue(const XMLCh *&value, unsigned int &length, std::vector<XQLexer::ValueOffset> &offsets)
 {
+  offsets.clear();
   value = currentEvent_->value.getRawBuffer();
   length = currentEvent_->value.getLen();
 }
