@@ -35,6 +35,7 @@ XQLexer::XQLexer(XPath2MemoryManager* memMgr, const XMLCh *queryFile, const XMLC
     m_nLength(XMLString::stringLen(m_szQuery)),
     m_position(0),
     m_index(0),
+    m_currentOffset(0),
     m_nOpenComments(0)
 {
   if((m_language & XQilla::XPATH2) != 0) {
@@ -53,14 +54,16 @@ XQLexer::XQLexer(XPath2MemoryManager* memMgr, const XMLCh *queryFile, const XMLC
 }
 
 XQLexer::XQLexer(XPath2MemoryManager* memMgr, const XMLCh *queryFile, int line, int column, const XMLCh* query,
-                 XQilla::Language lang, StartMode mode)
+                 unsigned int length, const std::vector<ValueOffset> &offsets, XQilla::Language lang, StartMode mode)
   : Lexer(memMgr, lang, queryFile, line, column),
     firstToken_(MYEOF),
     mode_(mode),
-    m_szQuery(XPath2Utils::normalizeEOL(query, memMgr)),
-    m_nLength(XMLString::stringLen(m_szQuery)),
+    m_szQuery(query),
+    m_nLength(length),
+    m_offsets(offsets),
     m_position(0),
     m_index(0),
+    m_currentOffset(0),
     m_nOpenComments(0)
 {
 }
@@ -71,8 +74,10 @@ XQLexer::XQLexer(const XQLexer *other)
     mode_(MODE_NORMAL),
     m_szQuery(other->m_szQuery + other->m_index),
     m_nLength(other->m_nLength - other->m_index),
+    m_offsets(other->m_offsets),
     m_position(0),
     m_index(0),
+    m_currentOffset(other->m_currentOffset),
     m_nOpenComments(0)
 {
   m_bGenerateErrorException = false;
@@ -350,6 +355,17 @@ void XQLexer::userAction(YY_CHAR* text, int length)
     else if(text[i] != '\r')
       ++m_columnno;
   }
+
+  // Make adjustments for the offsets we've been given
+  while(m_currentOffset < m_offsets.size()) {
+    ValueOffset &off = m_offsets[m_currentOffset];
+    if(off.index >= m_index) break;
+
+    m_lineno += off.lineOffset;
+    m_columnno += off.columnOffset;
+    ++m_currentOffset;
+  }
+
   yyloc.last_line = m_lineno;
   yyloc.last_column = m_columnno;
   yyloc.last_offset = m_index - 1;

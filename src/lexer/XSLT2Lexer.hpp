@@ -92,14 +92,14 @@ protected:
     START_ELEMENT,
     END_ELEMENT,
     NAMESPACE,
-    ATTRIBUTE,
+    ATTRIBUTE,      
     TEXT
   };
 
   virtual void nextEvent(YYLTYPE* pYYLOC) = 0;
   virtual EventType getEventType() = 0;
   virtual void getEventName(const XMLCh *&prefix, const XMLCh *&uri, const XMLCh *&localname) = 0;
-  virtual void getEventValue(const XMLCh *&value, unsigned int &length) = 0;
+  virtual void getEventValue(const XMLCh *&value, unsigned int &length, std::vector<XQLexer::ValueOffset> &offsets) = 0;
 
   virtual void getEventLocation(YYLTYPE* pYYLOC) = 0;
   virtual void getValueLocation(YYLTYPE* pYYLOC) = 0;
@@ -107,6 +107,7 @@ protected:
   DynamicContext *context_;
 
   AutoDelete<Lexer> childLexer_;
+  std::vector<XQLexer::ValueOffset> offsets_;
 
   ElementStackEntry *elementStack_;
 
@@ -147,7 +148,7 @@ protected:
   virtual void nextEvent(YYLTYPE* pYYLOC);
   virtual EventType getEventType();
   virtual void getEventName(const XMLCh *&prefix, const XMLCh *&uri, const XMLCh *&localname);
-  virtual void getEventValue(const XMLCh *&value, unsigned int &length);
+  virtual void getEventValue(const XMLCh *&value, unsigned int &length, std::vector<XQLexer::ValueOffset> &offsets);
 
   virtual void getEventLocation(YYLTYPE* pYYLOC);
   virtual void getValueLocation(YYLTYPE* pYYLOC);
@@ -212,7 +213,7 @@ protected:
   virtual void nextEvent(YYLTYPE* pYYLOC);
   virtual EventType getEventType();
   virtual void getEventName(const XMLCh *&prefix, const XMLCh *&uri, const XMLCh *&localname);
-  virtual void getEventValue(const XMLCh *&value, unsigned int &length);
+  virtual void getEventValue(const XMLCh *&value, unsigned int &length, std::vector<XQLexer::ValueOffset> &offsets);
 
   virtual void getEventLocation(YYLTYPE* pYYLOC);
   virtual void getValueLocation(YYLTYPE* pYYLOC);
@@ -229,6 +230,7 @@ protected:
   AutoDelete<XERCES_CPP_NAMESPACE_QUALIFIER BinInputStream> stream_;
   EventType eventType_;
   unsigned int attrIndex_;
+  XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer value_;
 };
 
 #endif
