@@ -86,6 +86,7 @@ XQContextImpl::XQContextImpl(XQillaConfiguration *conf, XQilla::Language languag
     _exFuncResolver(0),
     _exFuncs(XQillaAllocator<ExternalFunction*>(&_internalMM)),
     _debugListener(0),
+    _stackFrame(0),
     _projection(true),
     _lint(false),
     _tmpVarCounter(0)
@@ -243,8 +244,9 @@ DynamicContext *XQContextImpl::createModuleDynamicContext(const DynamicContext* 
   // Set the MessageListener
   moduleDCtx->setMessageListener(_messageListener);
 
-  // Set the DebugListener
+  // Set the DebugListener and StackFrame
   moduleDCtx->setDebugListener(_debugListener);
+  moduleDCtx->setStackFrame(_stackFrame);
 
   _conf->populateDynamicContext(moduleDCtx);
   return moduleDCtx;
@@ -900,6 +902,16 @@ void XQContextImpl::setDebugListener(DebugListener *listener)
 DebugListener *XQContextImpl::getDebugListener() const
 {
   return _debugListener;
+}
+
+void XQContextImpl::setStackFrame(const StackFrame *frame)
+{
+  _stackFrame = frame;
+}
+
+const StackFrame *XQContextImpl::getStackFrame() const
+{
+  return _stackFrame;
 }
 
 void XQContextImpl::testInterrupt() const

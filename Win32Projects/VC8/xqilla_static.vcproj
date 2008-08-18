@@ -130,6 +130,7 @@
       <File RelativePath="..\..\include\xqilla\debug\DebugHookDecorator.hpp"/>
       <File RelativePath="..\..\include\xqilla\debug\ASTDebugHook.hpp"/>
       <File RelativePath="..\..\include\xqilla\debug\TupleDebugHook.hpp"/>
+      <File RelativePath="..\..\include\xqilla\debug\StackFrame.hpp"/>
       <File RelativePath="..\..\include\xqilla\events\ContentSequenceFilter.hpp"/>
       <File RelativePath="..\..\include\xqilla\events\EventGenerator.hpp"/>
       <File RelativePath="..\..\include\xqilla\events\EventHandler.hpp"/>
@@ -558,6 +559,7 @@
       <File RelativePath="..\..\src\debug\InputParser.cpp"/>
       <File RelativePath="..\..\src\debug\InteractiveDebugger.cpp"/>
       <File RelativePath="..\..\src\debug\TupleDebugHook.cpp"/>
+      <File RelativePath="..\..\src\debug\StackFrame.cpp"/>
     </Filter>
     <Filter Filter="" Name="dom-api">
       <File RelativePath="..\..\src\dom-api\XPath2NodeSerializer.cpp"/>

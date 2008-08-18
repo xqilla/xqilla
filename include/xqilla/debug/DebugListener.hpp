@@ -25,9 +25,7 @@
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xercesc/util/XercesDefs.hpp>
 
-class ASTNode;
-class TupleNode;
-class LocationInfo;
+class StackFrame;
 class DynamicContext;
 class XQException;
 
@@ -36,28 +34,13 @@ class XQException;
  */
 class XQILLA_API DebugListener {
 public:
-
-  class XQILLA_API Info {
-  public:
-    virtual ~Info() {}
-
-    /** Method for returning arbitrary interfaces from the implementation */
-    virtual void *getInterface(const XMLCh *name) const { return 0; }
-
-    virtual const ASTNode *getASTNode() const = 0;
-    virtual const TupleNode *getTupleNode() const = 0;
-    virtual const LocationInfo *getLocationInfo() const = 0;
-  };
-
-
-  /* virtual destructor, does nothing */
   virtual ~DebugListener() {}
 
-  virtual void start(const Info *info, const DynamicContext *context) {}
-  virtual void end(const Info *info, const DynamicContext *context) {}
-  virtual void enter(const Info *info, const DynamicContext *context) {}
-  virtual void exit(const Info *info, const DynamicContext *context) {}
-  virtual void error(const XQException &error, const Info *info, const DynamicContext *context) {}
+  virtual void start(const StackFrame *stack, const DynamicContext *context) {}
+  virtual void end(const StackFrame *stack, const DynamicContext *context) {}
+  virtual void enter(const StackFrame *stack, const DynamicContext *context) {}
+  virtual void exit(const StackFrame *stack, const DynamicContext *context) {}
+  virtual void error(const XQException &error, const StackFrame *stack, const DynamicContext *context) {}
 
   virtual bool doLazyEvaluation() const { return true; }
   virtual bool doFocusOptimizations() const { return true; }

@@ -36,10 +36,9 @@
 // XQilla includes
 #include <xqilla/xqilla-simple.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
-#include <xqilla/utils/PrintAST.hpp>
-#include <xqilla/context/VariableTypeStore.hpp>
 
 #include <xqilla/debug/InteractiveDebugger.hpp>
+#include <xqilla/debug/StackFrame.hpp>
 #include <xqilla/debug/InputParser.hpp>
 
 #if defined(XERCES_HAS_CPP_NAMESPACE)
@@ -97,7 +96,7 @@ public:
   {
   }
   
-  void execute(InputParser::Args &args, InteractiveDebugger &debugger)
+  void execute(InputParser::Args &args, BaseInteractiveDebugger &debugger)
   {
     if(args.size() > 2) {
       cerr << "Wrong number of arguments" << endl;
@@ -159,7 +158,7 @@ public:
   {
   }
 
-  void execute(InputParser::Args &args, InteractiveDebugger &debugger)
+  void execute(InputParser::Args &args, BaseInteractiveDebugger &debugger)
   {
     if(args.size() > 1) {
       cerr << "Wrong number of arguments" << endl;
@@ -185,7 +184,7 @@ public:
   {
   }
 
-  void execute(InputParser::Args &args, InteractiveDebugger &debugger)
+  void execute(InputParser::Args &args, BaseInteractiveDebugger &debugger)
   {
     if(args.size() > 1) {
       cerr << "Wrong number of arguments" << endl;
@@ -196,7 +195,7 @@ public:
       cerr << "No query execution in progress." << endl;
     }
     else {
-      throw InteractiveDebugger::Continue();
+      throw BaseInteractiveDebugger::Continue();
     }
   }
 };
@@ -211,7 +210,7 @@ public:
   {
   }
 
-  void execute(InputParser::Args &args, InteractiveDebugger &debugger)
+  void execute(InputParser::Args &args, BaseInteractiveDebugger &debugger)
   {
     if(args.size() > 1) {
       cerr << "Wrong number of arguments" << endl;
@@ -224,7 +223,7 @@ public:
     }
 
     debugger.setNext();
-    throw InteractiveDebugger::Continue();
+    throw BaseInteractiveDebugger::Continue();
   }
 };
 
@@ -238,7 +237,7 @@ public:
   {
   }
 
-  void execute(InputParser::Args &args, InteractiveDebugger &debugger)
+  void execute(InputParser::Args &args, BaseInteractiveDebugger &debugger)
   {
     if(args.size() > 1) {
       cerr << "Wrong number of arguments" << endl;
@@ -248,7 +247,7 @@ public:
     debugger.setStep();
 
     if(debugger.queryStarted()) {
-      throw InteractiveDebugger::Continue();
+      throw BaseInteractiveDebugger::Continue();
     }
 
     debugger.run();
@@ -265,14 +264,14 @@ public:
   {
   }
 
-  void execute(InputParser::Args &args, InteractiveDebugger &debugger)
+  void execute(InputParser::Args &args, BaseInteractiveDebugger &debugger)
   {
     if(args.size() > 1) {
       cerr << "Wrong number of arguments" << endl;
       return;
     }
 
-    if(debugger.queryStarted()) throw InteractiveDebugger::Run();
+    if(debugger.queryStarted()) throw BaseInteractiveDebugger::Run();
     debugger.run();
   }
 };
@@ -287,14 +286,14 @@ public:
   {
   }
 
-  void execute(InputParser::Args &args, InteractiveDebugger &debugger)
+  void execute(InputParser::Args &args, BaseInteractiveDebugger &debugger)
   {
     if(args.size() > 1) {
       cerr << "Wrong number of arguments" << endl;
       return;
     }
 
-    throw InteractiveDebugger::Quit();
+    throw BaseInteractiveDebugger::Quit();
   }
 };
 
@@ -309,7 +308,7 @@ public:
   {
   }
 
-  void execute(InputParser::Args &args, InteractiveDebugger &debugger)
+  void execute(InputParser::Args &args, BaseInteractiveDebugger &debugger)
   {
     if(args.size() != 2) {
       cerr << "Wrong number of arguments" << endl;
@@ -320,10 +319,7 @@ public:
       cerr << "Invalid frame number: " << args[1] << endl;
     }
     else {
-      cerr << "#" << args[1];
-      debugger.getCurrentFrame()->output(&debugger);
-      cerr << endl;
-      InteractiveDebugger::outputLocation(debugger.getCurrentFrame()->info->getLocationInfo());
+      debugger.outputCurrentFrame();
     }
   }
 };
@@ -338,20 +334,16 @@ public:
   {
   }
 
-  void execute(InputParser::Args &args, InteractiveDebugger &debugger)
+  void execute(InputParser::Args &args, BaseInteractiveDebugger &debugger)
   {
     if(args.size() != 1) {
       cerr << "Wrong number of arguments" << endl;
       return;
     }
 
-    const StackEntry *entry = debugger.getCurrentFrame();
-    if(entry == 0) {
+    if(!debugger.outputCurrentFrameQueryPlan()) {
       cerr << "There is no current frame" << endl;
-      return;
     }
-
-    cout << debugger.getQueryPlan(entry->info) << endl;;
   }
 };
 
@@ -367,16 +359,10 @@ public:
   {
   }
 
-  void execute(InputParser::Args &args, InteractiveDebugger &debugger)
+  void execute(InputParser::Args &args, BaseInteractiveDebugger &debugger)
   {
     if(args.size() > 2) {
       cerr << "Wrong number of arguments" << endl;
-      return;
-    }
-
-    const StackEntry *entry = debugger.getCurrentFrame();
-    if(entry == 0) {
-      cerr << "There is no current frame" << endl;
       return;
     }
 
@@ -384,10 +370,9 @@ public:
     if(args.size() == 2)
       context = atoi(args[1].c_str());
 
-    cerr << "#" << debugger.getCurrentFrameNumber();
-    debugger.getCurrentFrame()->output(&debugger);
-    cerr << endl << endl;
-    InteractiveDebugger::outputLocation(debugger.getCurrentFrame()->info->getLocationInfo(), context);
+    if(!debugger.outputCurrentFrame(context)) {
+      cerr << "There is no current frame" << endl;
+    }
   }
 };
 
@@ -403,58 +388,15 @@ public:
   {
   }
 
-  void execute(InputParser::Args &args, InteractiveDebugger &debugger)
+  void execute(InputParser::Args &args, BaseInteractiveDebugger &debugger)
   {
     if(args.size() != 2) {
       cerr << "Wrong number of arguments" << endl;
       return;
     }
 
-    const StackEntry *entry = debugger.getCurrentFrame();
-    if(entry == 0) {
+    if(!debugger.queryCurrentFrame(args[1].c_str())) {
       cerr << "There is no current frame" << endl;
-      return;
-    }
-
-    try {
-      AutoDelete<DynamicContext> context(XQilla::createContext(debugger.getContext()->getLanguage(),
-                                                               debugger.getContext()->getConfiguration()));
-
-      VariableTypeStore *store = context->getVariableTypeStore();
-      XPath2MemoryManager *memMgr = context->getMemoryManager();
-      StaticAnalysis src(memMgr);
-      src.getStaticType() = StaticType(StaticType::ITEM_TYPE, 0, StaticType::UNLIMITED);
-
-      vector<pair<const XMLCh *, const XMLCh*> > inScopeVars;
-      entry->variables->getInScopeVariables(inScopeVars);
-      vector<pair<const XMLCh *, const XMLCh*> >::iterator i = inScopeVars.begin();
-      for(; i != inScopeVars.end(); ++i) {
-        store->declareGlobalVar(i->first, i->second, src);
-      }
-
-      AutoDelete<XQQuery> query(XQilla::parse(X(args[1].c_str()), context.get(), 0, XQilla::NO_ADOPT_CONTEXT));
-
-      context->setContextItem(entry->contextItem);
-      context->setContextPosition(entry->contextPosition);
-      context->setContextSize(entry->contextSize);
-      context->setVariableStore(entry->variables);
-
-      StdOutFormatTarget target;
-      EventSerializer writer((char*)"UTF-8", (char*)"1.1", &target, memMgr);
-      writer.addNewlines(true);
-      NSFixupFilter nsfilter(&writer, memMgr);
-      query->execute(&nsfilter, context);
-    }
-    catch(XQException &e) {
-      cerr << UTF8(e.getXQueryFile()) << ":" << e.getXQueryLine() << ":" << e.getXQueryColumn()
-           << ": error: " << UTF8(e.getError()) << endl;
-      if(e.getXQueryFile() == 0)
-        InteractiveDebugger::outputLocationFromString(X(args[1].c_str()), e.getXQueryLine(), e.getXQueryColumn());
-      else
-        InteractiveDebugger::outputLocation(e.getXQueryFile(), e.getXQueryLine(), e.getXQueryColumn());
-    }
-    catch(...) {
-      cerr << "Caught unknown exception" << endl;
     }
   }
 };
@@ -477,26 +419,26 @@ public:
   {
   }
 
-  void execute(InputParser::Args &args, InteractiveDebugger &debugger)
+  void execute(InputParser::Args &args, BaseInteractiveDebugger &debugger)
   {
     bool temporary = args[0][0] == 't';
 
     string file;
     int line = 0, column = 0;
 
-    const StackEntry *entry = debugger.getCurrentFrame();
+    const XMLCh *currentFile;
+    unsigned int currentLine, currentColumn;
+    bool frame = debugger.currentFrameLocation(currentFile, currentLine, currentColumn);
 
     if(args.size() == 1) {
-      if(!debugger.queryStarted() || entry == 0) {
+      if(!debugger.queryStarted() || !frame) {
         cerr << "No query execution in progress." << endl;
         return;
       }
       else {
-        const LocationInfo *loc = entry->info->getLocationInfo();
-
-        file = UTF8(loc->getFile());
-        line = loc->getLine();
-        column = loc->getColumn();
+        file = UTF8(currentFile);
+        line = currentLine;
+        column = currentColumn;
       }
     }
     else if(args.size() == 2) {
@@ -513,10 +455,7 @@ public:
         lstr = regexFind(BREAK_REGEX_2, args[1], 1);
         cstr = regexFind(BREAK_REGEX_2, args[1], 3);
         if(lstr != "" && file == "") {
-          if(debugger.queryStarted() && entry != 0)
-            file = UTF8(entry->info->getLocationInfo()->getFile());
-          else
-            file = UTF8(debugger.getQuery()->getFile());
+          file = UTF8(currentFile);
         }
       }
       if(lstr != "") line = atoi(lstr.c_str());
@@ -549,7 +488,7 @@ public:
   {
   }
 
-  void execute(InputParser::Args &args, InteractiveDebugger &debugger)
+  void execute(InputParser::Args &args, BaseInteractiveDebugger &debugger)
   {
     if(args.size() != 1) {
       cerr << "Wrong number of arguments" << endl;
@@ -570,7 +509,7 @@ public:
   {
   }
 
-  void execute(InputParser::Args &args, InteractiveDebugger &debugger)
+  void execute(InputParser::Args &args, BaseInteractiveDebugger &debugger)
   {
     if(args.size() != 2) {
       cerr << "Wrong number of arguments" << endl;
@@ -593,7 +532,7 @@ public:
   {
   }
 
-  void execute(InputParser::Args &args, InteractiveDebugger &debugger)
+  void execute(InputParser::Args &args, BaseInteractiveDebugger &debugger)
   {
     if(args.size() != 2) {
       cerr << "Wrong number of arguments" << endl;
@@ -616,7 +555,7 @@ public:
   {
   }
 
-  void execute(InputParser::Args &args, InteractiveDebugger &debugger)
+  void execute(InputParser::Args &args, BaseInteractiveDebugger &debugger)
   {
     if(args.size() != 2) {
       cerr << "Wrong number of arguments" << endl;
@@ -624,11 +563,11 @@ public:
     }
 
     if(args[1] == "on") {
-      debugger.getContext()->setProjection(true);
+      debugger.setDoProjection(true);
       cout << "Document projection on" << endl;
     }
     else {
-      debugger.getContext()->setProjection(false);
+      debugger.setDoProjection(false);
       cout << "Document projection off" << endl;
     }
   }
@@ -644,7 +583,7 @@ public:
   {
   }
 
-  void execute(InputParser::Args &args, InteractiveDebugger &debugger)
+  void execute(InputParser::Args &args, BaseInteractiveDebugger &debugger)
   {
     if(args.size() != 2) {
       cerr << "Wrong number of arguments" << endl;
@@ -666,15 +605,15 @@ class FocusOptimizationsCommand : public DebugCommand
 {
 public:
   FocusOptimizationsCommand()
-    : DebugCommand("focusOptimizations", "",
+    : DebugCommand("optimizeFocus", "",
                    "Enables or disable focus optimisations",
-                   "Usage: focusOptimizations <on | off>\n"
+                   "Usage: optimizeFocus <on | off>\n"
                    "Focus optimizations are off by default whilst debugging. Enabling them can result\n"
                    "in the context item not being set to what the user expects it to be.")
   {
   }
 
-  void execute(InputParser::Args &args, InteractiveDebugger &debugger)
+  void execute(InputParser::Args &args, BaseInteractiveDebugger &debugger)
   {
     if(args.size() != 2) {
       cerr << "Wrong number of arguments" << endl;
@@ -694,20 +633,12 @@ public:
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-InteractiveDebugger::InteractiveDebugger(const XQQuery *query, DynamicContext *context)
+BaseInteractiveDebugger::BaseInteractiveDebugger()
   : prevcmd_(0),
     queryStarted_(false),
     step_(false),
-    next_(0),
-    currentFrame_(0),
-    query_(query),
-    context_(context),
-    lazy_(false),
-    focusOptimzations_(false)
+    next_(0)
 {
-  context->setDebugListener(this);
-  context->setProjection(false);
-
   commands_.push_back(new BacktraceCommand());
   commands_.push_back(new BreakCommand());
   commands_.push_back(new BreakpointsCommand());
@@ -728,7 +659,7 @@ InteractiveDebugger::InteractiveDebugger(const XQQuery *query, DynamicContext *c
   commands_.push_back(new StepCommand());
 }
 
-InteractiveDebugger::~InteractiveDebugger()
+BaseInteractiveDebugger::~BaseInteractiveDebugger()
 {
   for(vector<DebugCommand*>::iterator i = commands_.begin();
       i != commands_.end(); ++i) {
@@ -736,18 +667,7 @@ InteractiveDebugger::~InteractiveDebugger()
   }
 }
 
-void InteractiveDebugger::debugQuery(const XQQuery *query, DynamicContext *context)
-{
-  InteractiveDebugger debugger(query, context);
-
-  try {
-    debugger.readCommand();
-  }
-  catch(Quit) {
-  }
-}
-
-void InteractiveDebugger::readCommand()
+void BaseInteractiveDebugger::readCommand()
 {
   InputParser iParser;
   InputParser::Args args;
@@ -778,26 +698,13 @@ void InteractiveDebugger::readCommand()
 
 }
 
-const StackEntry *InteractiveDebugger::getCurrentFrame() const
-{
-  if(stack_.empty()) return 0;
-  return &stack_[stack_.size() - currentFrame_ - 1];
-}
-
-bool InteractiveDebugger::changeFrame(unsigned int number)
-{
-  if(number >= stack_.size()) return false;
-  currentFrame_ = number;
-  return true;
-}
-
-unsigned int InteractiveDebugger::setBreakPoint(const std::string &file, unsigned int line, unsigned int column, bool temporary)
+unsigned int BaseInteractiveDebugger::setBreakPoint(const std::string &file, unsigned int line, unsigned int column, bool temporary)
 {
   breaks_.push_back(BreakPoint(file, line, column, temporary));
   return breaks_.size();
 }
 
-void InteractiveDebugger::listBreakPoints() const
+void BaseInteractiveDebugger::listBreakPoints() const
 {
   if(breaks_.empty()) {
     cerr << "No breakpoints set" << endl;
@@ -821,7 +728,7 @@ void InteractiveDebugger::listBreakPoints() const
   }
 }
 
-bool InteractiveDebugger::disableBreakPoint(unsigned int number)
+bool BaseInteractiveDebugger::disableBreakPoint(unsigned int number)
 {
   if(number > breaks_.size()) return false;
 
@@ -829,7 +736,7 @@ bool InteractiveDebugger::disableBreakPoint(unsigned int number)
   return true;
 }
 
-bool InteractiveDebugger::enableBreakPoint(unsigned int number)
+bool BaseInteractiveDebugger::enableBreakPoint(unsigned int number)
 {
   if(number > breaks_.size()) return false;
 
@@ -837,65 +744,17 @@ bool InteractiveDebugger::enableBreakPoint(unsigned int number)
   return true;
 }
 
-void InteractiveDebugger::setNext()
+void BaseInteractiveDebugger::setNext()
 {
-  next_ = stack_.size();
+  next_ = getStackSize();
 }
 
-void InteractiveDebugger::setStep()
+void BaseInteractiveDebugger::setStep()
 {
   step_ = true;
 }
 
-void InteractiveDebugger::run()
-{
-  while(true) {
-    next_ = 0;
-    stack_.clear();
-
-    try {
-      queryStarted_ = true;
-
-      StdOutFormatTarget target;
-      EventSerializer writer((char*)"UTF-8", (char*)"1.1", &target, context_->getMemoryManager());
-      writer.addNewlines(true);
-      NSFixupFilter nsfilter(&writer, context_->getMemoryManager());
-      query_->execute(&nsfilter, context_);
-
-      queryStarted_ = false;
-      cout << endl << "Query completed." << endl;
-      return;
-    }
-    catch(Run) {
-      queryStarted_ = false;
-    }
-    catch(Quit) {
-      throw;
-    }
-    catch(XQException &e) {
-      queryStarted_ = false;
-      cerr << UTF8(e.getXQueryFile()) << ":" << e.getXQueryLine() << ":" << e.getXQueryColumn()
-           << ": error: " << UTF8(e.getError()) << endl;
-      outputLocation(e.getXQueryFile(), e.getXQueryLine(), e.getXQueryColumn());
-    }
-    catch(...) {
-      queryStarted_ = false;
-      cerr << "Caught unknown exception" << endl;
-    }
-  }
-}
-
-string InteractiveDebugger::getQueryPlan(const DebugListener::Info *info) const
-{
-  if(info->getASTNode())
-    return PrintAST::print(info->getASTNode(), context_, 0);
-  if(info->getTupleNode())
-    return PrintAST::print(info->getTupleNode(), context_, 0);
-  return "";
-}
-
-
-DebugCommand *InteractiveDebugger::findCommand(std::string &command) const
+DebugCommand *BaseInteractiveDebugger::findCommand(std::string &command) const
 {
   vector<DebugCommand*>::const_iterator end =
     commands_.end();
@@ -910,20 +769,23 @@ DebugCommand *InteractiveDebugger::findCommand(std::string &command) const
   return 0;
 }
 
-void InteractiveDebugger::checkBreak(bool entering)
+void BaseInteractiveDebugger::checkBreak(bool entering)
 {
   if(step_) {
     step_ = false;
   }
-  else if(!entering && next_ == stack_.size()) {
+  else if(!entering && next_ == getStackSize()) {
     next_ = 0;
     step_ = true;
     return;
   }
   else if(entering) {
     // Work out the filename and file basename
-    const LocationInfo *loc = stack_.back().info->getLocationInfo();
-    string file(UTF8(loc->getFile()));
+    const XMLCh *currentFile;
+    unsigned int currentLine, currentColumn;
+    currentFrameLocation(currentFile, currentLine, currentColumn);
+
+    string file(UTF8(currentFile));
     string basename = regexFind(".*/(.*)", file);
 
     // Search to see if we've hit a breakpoint
@@ -934,9 +796,9 @@ void InteractiveDebugger::checkBreak(bool entering)
         continue;
       if(i->file != "" && i->file != file && (basename == "" || i->file != basename))
         continue;
-      if(i->line != 0 && i->line != loc->getLine())
+      if(i->line != 0 && i->line != currentLine)
         continue;
-      if(i->column != 0 && i->column != loc->getColumn())
+      if(i->column != 0 && i->column != currentColumn)
         continue;
       break;
     }
@@ -949,48 +811,27 @@ void InteractiveDebugger::checkBreak(bool entering)
       i->disabled = true;
     }
 
-    currentFrame_ = 0;
-
     cerr << "Breakpoint #" << position << ", ";
   }
   else return;
 
-  cerr << (entering ? "Entering" : "Exiting");
-  stack_.back().output(this);
-  cerr << endl;
-  InteractiveDebugger::outputLocation(stack_.back().info->getLocationInfo());
+  cerr << (entering ? "Entering " : "Exiting ");
+  outputCurrentFrame();
 
   readCommand();
 
-  if(!entering && next_ == stack_.size()) {
+  if(!entering && next_ == getStackSize()) {
     next_ = 0;
     step_ = true;
   }
 }
 
-void InteractiveDebugger::enter(const Info *info, const DynamicContext *context)
-{
-  // Push onto the stack
-  stack_.push_back(StackEntry(info, context));
-
-  checkBreak(/*entering*/true);
-}
-
-void InteractiveDebugger::exit(const Info *info, const DynamicContext *context)
-{
-  checkBreak(/*entering*/false);
-
-  // Pop the stack
-  StackEntry entry = stack_.back();
-  stack_.pop_back();
-}
-
-void InteractiveDebugger::outputLocation(const LocationInfo *info, unsigned int context)
+void BaseInteractiveDebugger::outputLocation(const LocationInfo *info, unsigned int context)
 {
   outputLocation(info->getFile(), info->getLine(), info->getColumn(), context);
 }
 
-void InteractiveDebugger::outputLocation(const XMLCh *file, unsigned int line, unsigned int column, unsigned int context)
+void BaseInteractiveDebugger::outputLocation(const XMLCh *file, unsigned int line, unsigned int column, unsigned int context)
 {
   if(file == 0 || line == 0) return;
 
@@ -1011,7 +852,7 @@ void InteractiveDebugger::outputLocation(const XMLCh *file, unsigned int line, u
   outputLocationFromString(queryText.getRawBuffer(), line, column, context);
 }
 
-void InteractiveDebugger::outputLocationFromString(const XMLCh *query, unsigned int line, unsigned int column, unsigned int context)
+void BaseInteractiveDebugger::outputLocationFromString(const XMLCh *query, unsigned int line, unsigned int column, unsigned int context)
 {
   if(line == 0) return;
 
@@ -1087,42 +928,220 @@ void InteractiveDebugger::outputLocationFromString(const XMLCh *query, unsigned 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void InteractiveDebugger::stackTrace()
+void InteractiveDebugger::debugQuery(const XQQuery *query, DynamicContext *context)
 {
-  int position = 0;
-  vector<StackEntry>::reverse_iterator i = stack_.rbegin();
-  for(; i != stack_.rend(); ++i) {
-    cerr << "#" << position;
-    i->output(this);
-    cerr << endl;
-    ++position;
+  InteractiveDebugger debugger(query, context);
+
+  try {
+    debugger.readCommand();
+  }
+  catch(Quit) {
   }
 }
 
-StackEntry::StackEntry(const DebugListener::Info *i, const DynamicContext *context)
-  : info(i),
-    contextItem(context->getContextItem()),
-    contextPosition(context->getContextPosition()),
-    contextSize(context->getContextSize()),
-    variables(context->getVariableStore())
+InteractiveDebugger::InteractiveDebugger(const XQQuery *query, DynamicContext *context)
+  : stack_(0),
+    currentFrame_(0),
+    query_(query),
+    context_(context),
+    lazy_(false),
+    focusOptimzations_(false)
 {
+  context->setDebugListener(this);
+  context->setProjection(false);
 }
 
-void StackEntry::output(InteractiveDebugger *debugger) const
+void InteractiveDebugger::run()
 {
-  string where = regexFind("(<[^>]+>)", debugger->getQueryPlan(info));
+  while(true) {
+    next_ = 0;
+    stack_ = 0;
+    currentFrame_ = 0;
+
+    try {
+      queryStarted_ = true;
+
+      StdOutFormatTarget target;
+      EventSerializer writer((char*)"UTF-8", (char*)"1.1", &target, context_->getMemoryManager());
+      writer.addNewlines(true);
+      NSFixupFilter nsfilter(&writer, context_->getMemoryManager());
+      query_->execute(&nsfilter, context_);
+
+      queryStarted_ = false;
+      cout << endl << "Query completed." << endl;
+      return;
+    }
+    catch(Run) {
+      queryStarted_ = false;
+    }
+    catch(Quit) {
+      throw;
+    }
+    catch(XQException &e) {
+      queryStarted_ = false;
+      cerr << UTF8(e.getXQueryFile()) << ":" << e.getXQueryLine() << ":" << e.getXQueryColumn()
+           << ": error: " << UTF8(e.getError()) << endl;
+      outputLocation(e.getXQueryFile(), e.getXQueryLine(), e.getXQueryColumn());
+    }
+    catch(...) {
+      queryStarted_ = false;
+      cerr << "Caught unknown exception" << endl;
+    }
+  }
+}
+
+void InteractiveDebugger::enter(const StackFrame *stack, const DynamicContext *context)
+{
+  stack_ = stack;
+  currentFrame_ = stack;
+
+  checkBreak(/*entering*/true);
+}
+
+void InteractiveDebugger::exit(const StackFrame *stack, const DynamicContext *context)
+{
+  stack_ = stack;
+  currentFrame_ = stack;
+
+  checkBreak(/*entering*/false);
+}
+
+bool InteractiveDebugger::changeFrame(unsigned int number)
+{
+  const StackFrame *frame = stack_;
+  unsigned int count = 0;
+  while(frame && count < number) {
+    frame = frame->getPreviousFrame();
+    ++count;
+  }
+
+  if(frame == 0 || count < number) return false;
+  currentFrame_ = frame;
+  return true;
+}
+
+unsigned int InteractiveDebugger::getCurrentFrameNumber() const
+{
+  const StackFrame *frame = stack_;
+  unsigned int count = 0;
+  while(frame && frame != currentFrame_) {
+    frame = frame->getPreviousFrame();
+    ++count;
+  }
+  return count;
+}
+
+unsigned int InteractiveDebugger::getStackSize() const
+{
+  const StackFrame *frame = stack_;
+  unsigned int count = 0;
+  while(frame) {
+    frame = frame->getPreviousFrame();
+    ++count;
+  }
+  return count;
+}
+
+void InteractiveDebugger::stackTrace() const
+{
+  int count = 0;
+  const StackFrame *frame = stack_;
+  while(frame) {
+    cerr << "#" << count;
+    output(frame);
+    cerr << endl;
+
+    frame = frame->getPreviousFrame();
+    ++count;
+  }
+}
+
+bool InteractiveDebugger::outputCurrentFrame(unsigned int context) const
+{
+  if(currentFrame_ == 0) return false;
+
+	cerr << "#" << getCurrentFrameNumber();
+  output(currentFrame_);
+  cerr << endl << endl;
+  BaseInteractiveDebugger::outputLocation(currentFrame_->getLocationInfo(), context);
+
+  return true;
+}
+
+bool InteractiveDebugger::outputCurrentFrameQueryPlan() const
+{
+  if(currentFrame_ == 0) return false;
+
+  cout << currentFrame_->getQueryPlan() << endl;;
+
+  return true;
+}
+
+bool InteractiveDebugger::queryCurrentFrame(const char *queryString) const
+{
+  if(currentFrame_ == 0) return false;
+
+  XStr query16(queryString);
+  try {
+    XPath2MemoryManager *memMgr = context_->getMemoryManager();
+
+    StdOutFormatTarget target;
+    EventSerializer writer((char*)"UTF-8", (char*)"1.1", &target, memMgr);
+    writer.addNewlines(true);
+    NSFixupFilter nsfilter(&writer, memMgr);
+
+    currentFrame_->query(query16.str(), &nsfilter);
+  }
+  catch(XQException &e) {
+    cerr << UTF8(e.getXQueryFile()) << ":" << e.getXQueryLine() << ":" << e.getXQueryColumn()
+         << ": error: " << UTF8(e.getError()) << endl;
+    if(e.getXQueryFile() == 0)
+      BaseInteractiveDebugger::outputLocationFromString(query16.str(), e.getXQueryLine(), e.getXQueryColumn());
+    else
+      BaseInteractiveDebugger::outputLocation(e.getXQueryFile(), e.getXQueryLine(), e.getXQueryColumn());
+  }
+  catch(...) {
+    cerr << "Caught unknown exception" << endl;
+  }
+
+  return true;
+}
+
+bool InteractiveDebugger::currentFrameLocation(const XMLCh *&file, unsigned int &line, unsigned int &column) const
+{
+  if(currentFrame_ == 0) {
+    file = query_->getFile();
+    line = 0;
+    column = 0;
+    return false;
+  }
+
+  file = currentFrame_->getLocationInfo()->getFile();
+  line = currentFrame_->getLocationInfo()->getLine();
+  column = currentFrame_->getLocationInfo()->getColumn();
+  return true;
+}
+
+void InteractiveDebugger::setDoProjection(bool opt)
+{
+  context_->setProjection(opt);
+}
+  
+void InteractiveDebugger::output(const StackFrame *frame) const
+{
+  string where = regexFind("(<[^>]+>)", frame->getQueryPlan());
   if(where != "") cerr << " in " << where;
 
-  const LocationInfo *loc = info->getLocationInfo();
+  const LocationInfo *loc = frame->getLocationInfo();
   cerr << " at " << UTF8(loc->getFile()) << ":" << loc->getLine() << ":" << loc->getColumn();
 }
 
-void StackEntry::report() const
+void InteractiveDebugger::report(const StackFrame *frame) const
 {
-  const LocationInfo *loc = info->getLocationInfo();
+  const LocationInfo *loc = frame->getLocationInfo();
   cerr << UTF8(loc->getFile()) << ":" << loc->getLine() << ":" << loc->getColumn() << endl;
 
-  InteractiveDebugger::outputLocation(loc);
+  BaseInteractiveDebugger::outputLocation(loc);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

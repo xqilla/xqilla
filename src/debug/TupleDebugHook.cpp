@@ -20,9 +20,12 @@
  */
 
 #include <xqilla/debug/TupleDebugHook.hpp>
+#include <xqilla/context/ContextHelpers.hpp>
 #include <xqilla/debug/DebugListener.hpp>
+#include <xqilla/debug/StackFrame.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/exceptions/XQException.hpp>
+#include <xqilla/utils/PrintAST.hpp>
 
 XERCES_CPP_NAMESPACE_USE;
 
@@ -50,16 +53,17 @@ TupleNode *TupleDebugHook::staticTypingTeardown(StaticContext *context, StaticAn
   return this;
 }
 
-class TupleNodeInfo : public DebugListener::Info {
+class TupleStackFrame : public StackFrame {
 public:
-  TupleNodeInfo(const TupleNode *ast)
-    : tuple_(ast) {}
+  TupleStackFrame(const TupleNode *ast, DynamicContext *context)
+    : StackFrame(ast, context) {}
 
   const ASTNode *getASTNode() const { return 0; }
-  const TupleNode *getTupleNode() const { return tuple_; }
-  const LocationInfo *getLocationInfo() const { return tuple_; }
-
-  const TupleNode *tuple_;
+  const TupleNode *getTupleNode() const { return (TupleNode*)location_; }
+  virtual std::string getQueryPlan() const
+  {
+    return PrintAST::print(getTupleNode(), context_, 0);
+  }
 };
 
 class TupleDebugHookResult : public TupleResult
@@ -68,23 +72,25 @@ public:
   TupleDebugHookResult(const TupleNode *expr, DynamicContext *context)
     : TupleResult(expr),
       context_(context),
-      info_(expr),
+      frame_(expr, context),
       parent_(0)
   {
-    context->getDebugListener()->start(&info_, context);
+    AutoStackFrameReset reset(context, &frame_);
+    context->getDebugListener()->start(&frame_, context);
     try {
       parent_ = expr->createResult(context);
     }
     catch(XQException &ex) {
-      context->getDebugListener()->error(ex, &info_, context);
-      context->getDebugListener()->end(&info_, context);
+      context->getDebugListener()->error(ex, &frame_, context);
+      context->getDebugListener()->end(&frame_, context);
       throw;
     }
   }
 
   ~TupleDebugHookResult()
   {
-    context_->getDebugListener()->end(&info_, context_);
+    AutoStackFrameReset reset(context_, &frame_);
+    context_->getDebugListener()->end(&frame_, context_);
   }
   
   virtual Result getVar(const XMLCh *namespaceURI, const XMLCh *name) const
@@ -99,22 +105,23 @@ public:
 
   virtual bool next(DynamicContext *context)
   {
-    context->getDebugListener()->enter(&info_, context);
+    AutoStackFrameReset reset(context, &frame_);
+    context->getDebugListener()->enter(&frame_, context);
     try {
       bool result = parent_->next(context);
-      context->getDebugListener()->exit(&info_, context);
+      context->getDebugListener()->exit(&frame_, context);
       return result;
     }
     catch(XQException &ex) {
-      context->getDebugListener()->error(ex, &info_, context);
-      context->getDebugListener()->exit(&info_, context);
+      context->getDebugListener()->error(ex, &frame_, context);
+      context->getDebugListener()->exit(&frame_, context);
       throw;
     }
   }
 
 private:
   DynamicContext *context_;
-  TupleNodeInfo info_;
+  TupleStackFrame frame_;
   TupleResult::Ptr parent_;
 };
 

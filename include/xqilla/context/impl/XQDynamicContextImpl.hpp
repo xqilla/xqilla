@@ -128,6 +128,9 @@ public:
   virtual void setDebugListener(DebugListener *listener);
   virtual DebugListener *getDebugListener() const;
 
+  virtual void setStackFrame(const StackFrame *frame);
+  virtual const StackFrame *getStackFrame() const;
+
   virtual Node::Ptr parseDocument(XERCES_CPP_NAMESPACE_QUALIFIER InputSource &srcToUse,
                                   const LocationInfo *location, const QueryPathNode *projection);
   virtual Sequence resolveDocument(const XMLCh* uri, const LocationInfo *location,
@@ -355,6 +358,7 @@ protected:
   ResolverEntry _defaultResolver;
 
   DebugListener *_debugListener;
+  const StackFrame *_stackFrame;
 
   /** Contains the XMLGrammarPool of the StaticContext, and is used to
    * load xml documents for resolveCollection and resolveDocument */

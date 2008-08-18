@@ -223,4 +223,29 @@ protected:
   MessageListener *listener_;  
 };
 
+class XQILLA_API AutoStackFrameReset
+{
+public:
+  AutoStackFrameReset(DynamicContext *context, const StackFrame *frame)
+  {
+    _context = context;
+    _oldFrame = _context->getStackFrame();
+    _context->setStackFrame(frame);
+  }
+
+  ~AutoStackFrameReset()
+  {
+    _context->setStackFrame(_oldFrame);
+  }
+
+  void reset()
+  {
+    _context->setStackFrame(_oldFrame);
+  }
+
+protected:
+  DynamicContext *_context;
+  const StackFrame *_oldFrame;
+};
+
 #endif

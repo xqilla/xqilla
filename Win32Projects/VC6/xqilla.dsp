@@ -725,6 +725,10 @@ SOURCE=..\..\src\debug\InteractiveDebugger.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\debug\StackFrame.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\debug\TupleDebugHook.cpp
 # End Source File
 # Begin Source File
@@ -746,6 +750,10 @@ SOURCE=..\..\include\xqilla\debug\InputParser.hpp
 # Begin Source File
 
 SOURCE=..\..\include\xqilla\debug\InteractiveDebugger.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\debug\StackFrame.hpp
 # End Source File
 # Begin Source File
 

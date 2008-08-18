@@ -94,6 +94,7 @@ src/debug/DebugHookDecorator.cpp \
 src/debug/TupleDebugHook.cpp \
 src/debug/InputParser.cpp \
 src/debug/InteractiveDebugger.cpp \
+src/debug/StackFrame.cpp \
 src/events/ContentSequenceFilter.cpp \
 src/events/EventGenerator.cpp \
 src/events/EventSerializer.cpp \

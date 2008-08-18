@@ -66,6 +66,7 @@ xqilla/debug/DebugListener.hpp \
 xqilla/debug/DebugHookDecorator.hpp \
 xqilla/debug/ASTDebugHook.hpp \
 xqilla/debug/TupleDebugHook.hpp \
+xqilla/debug/StackFrame.hpp \
 xqilla/events/ContentSequenceFilter.hpp \
 xqilla/events/EventGenerator.hpp \
 xqilla/events/EventHandler.hpp \

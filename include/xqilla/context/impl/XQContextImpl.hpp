@@ -136,6 +136,9 @@ public:
   virtual void setDebugListener(DebugListener *listener);
   virtual DebugListener *getDebugListener() const;
 
+  virtual void setStackFrame(const StackFrame *frame);
+  virtual const StackFrame *getStackFrame() const;
+
   virtual Node::Ptr parseDocument(XERCES_CPP_NAMESPACE_QUALIFIER InputSource &srcToUse,
                                   const LocationInfo *location, const QueryPathNode *projection);
   virtual Sequence resolveDocument(const XMLCh* uri, const LocationInfo *location,
@@ -472,6 +475,7 @@ protected:
   std::vector<ExternalFunction*, XQillaAllocator<ExternalFunction*> > _exFuncs;
 
   DebugListener *_debugListener;
+  const StackFrame *_stackFrame;
 
   bool _projection;
   bool _lint;
