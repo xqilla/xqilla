@@ -101,6 +101,7 @@ src/debug/ASTDebugHook.cpp lib
 src/debug/DebugHookDecorator.cpp lib
 src/debug/InputParser.cpp lib
 src/debug/InteractiveDebugger.cpp lib
+src/debug/StackFrame.cpp lib
 src/debug/TupleDebugHook.cpp lib
 src/dom-api/impl/XPath2ResultImpl.cpp lib
 src/dom-api/impl/XPath2ResultImpl.hpp lib
@@ -629,6 +630,7 @@ include/xqilla/debug/DebugHookDecorator.hpp lib
 include/xqilla/debug/DebugListener.hpp lib
 include/xqilla/debug/InputParser.hpp lib
 include/xqilla/debug/InteractiveDebugger.hpp lib
+include/xqilla/debug/StackFrame.hpp lib
 include/xqilla/debug/TupleDebugHook.hpp lib
 include/xqilla/dom-api/impl/XQillaNSResolverImpl.hpp lib
 include/xqilla/dom-api/XPath2Result.hpp lib

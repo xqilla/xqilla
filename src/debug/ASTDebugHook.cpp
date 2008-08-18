@@ -22,9 +22,12 @@
 #include <xqilla/debug/ASTDebugHook.hpp>
 
 #include <xqilla/context/DynamicContext.hpp>
+#include <xqilla/context/ContextHelpers.hpp>
 #include <xqilla/debug/DebugListener.hpp>
+#include <xqilla/debug/StackFrame.hpp>
 #include <xqilla/exceptions/XQException.hpp>
 #include <xqilla/update/PendingUpdateList.hpp>
+#include <xqilla/utils/PrintAST.hpp>
 
 ASTDebugHook::ASTDebugHook(ASTNode *astNode, XPath2MemoryManager *mm)
   : ASTNodeImpl(DEBUG_HOOK, mm),
@@ -60,16 +63,17 @@ ASTNode *ASTDebugHook::staticTyping(StaticContext *context)
   return this;
 }
 
-class ASTNodeInfo : public DebugListener::Info {
+class ASTStackFrame : public StackFrame {
 public:
-  ASTNodeInfo(const ASTNode *ast)
-    : ast_(ast) {}
+  ASTStackFrame(const ASTNode *ast, DynamicContext *context)
+    : StackFrame(ast, context) {}
 
-  const ASTNode *getASTNode() const { return ast_; }
+  const ASTNode *getASTNode() const { return (ASTNode*)location_; }
   const TupleNode *getTupleNode() const { return 0; }
-  const LocationInfo *getLocationInfo() const { return ast_; }
-
-  const ASTNode *ast_;
+  virtual std::string getQueryPlan() const
+  {
+    return PrintAST::print(getASTNode(), context_, 0);
+  }
 };
 
 class ASTDebugHookResult : public ResultImpl
@@ -78,16 +82,17 @@ public:
   ASTDebugHookResult(const ASTNode *expr, DynamicContext *context)
     : ResultImpl(expr),
       context_(context),
-      info_(expr),
+      frame_(expr, context),
       parent_(0)
   {
-    context->getDebugListener()->start(&info_, context);
+    AutoStackFrameReset reset(context, &frame_);
+    context->getDebugListener()->start(&frame_, context);
     try {
       parent_ = expr->createResult(context);
     }
     catch(XQException &ex) {
-      context->getDebugListener()->error(ex, &info_, context);
-      context->getDebugListener()->end(&info_, context);
+      context->getDebugListener()->error(ex, &frame_, context);
+      context->getDebugListener()->end(&frame_, context);
       throw;
     }
   }
@@ -95,43 +100,46 @@ public:
   ASTDebugHookResult(const Result &contextItems, const ASTNode *expr, DynamicContext *context)
     : ResultImpl(expr),
       context_(context),
-      info_(expr),
+      frame_(expr, context),
       parent_(0)
   {
-    context->getDebugListener()->start(&info_, context);
+    AutoStackFrameReset reset(context, &frame_);
+    context->getDebugListener()->start(&frame_, context);
     try {
       parent_ = expr->iterateResult(contextItems, context);
     }
     catch(XQException &ex) {
-      context->getDebugListener()->error(ex, &info_, context);
-      context->getDebugListener()->end(&info_, context);
+      context->getDebugListener()->error(ex, &frame_, context);
+      context->getDebugListener()->end(&frame_, context);
       throw;
     }
   }
 
   ~ASTDebugHookResult()
   {
-    context_->getDebugListener()->end(&info_, context_);
+    AutoStackFrameReset reset(context_, &frame_);
+    context_->getDebugListener()->end(&frame_, context_);
   }
   
   Item::Ptr next(DynamicContext *context)
   {
-    context->getDebugListener()->enter(&info_, context);
+    AutoStackFrameReset reset(context, &frame_);
+    context->getDebugListener()->enter(&frame_, context);
     try {
       Item::Ptr item = parent_->next(context);
-      context->getDebugListener()->exit(&info_, context);
+      context->getDebugListener()->exit(&frame_, context);
       return item;
     }
     catch(XQException &ex) {
-      context->getDebugListener()->error(ex, &info_, context);
-      context->getDebugListener()->exit(&info_, context);
+      context->getDebugListener()->error(ex, &frame_, context);
+      context->getDebugListener()->exit(&frame_, context);
       throw;
     }
   }
 
 protected:
   DynamicContext *context_;
-  ASTNodeInfo info_;
+  ASTStackFrame frame_;
   Result parent_;
 };
 
@@ -143,19 +151,21 @@ Result ASTDebugHook::createResult(DynamicContext *context, int flags) const
   if(context->getDebugListener()->doLazyEvaluation())
     return new ASTDebugHookResult(expr_, context);
 
-  ASTNodeInfo info(expr_);
-  context->getDebugListener()->start(&info, context);
-  context->getDebugListener()->enter(&info, context);
+  ASTStackFrame frame(expr_, context);
+  AutoStackFrameReset reset(context, &frame);
+
+  context->getDebugListener()->start(&frame, context);
+  context->getDebugListener()->enter(&frame, context);
   Sequence result(context->getMemoryManager());
   try {
     result = expr_->createResult(context)->toSequence(context);
-    context->getDebugListener()->exit(&info, context);
-    context->getDebugListener()->end(&info, context);
+    context->getDebugListener()->exit(&frame, context);
+    context->getDebugListener()->end(&frame, context);
   }
   catch(XQException &ex) {
-    context->getDebugListener()->error(ex, &info, context);
-    context->getDebugListener()->exit(&info, context);
-    context->getDebugListener()->end(&info, context);
+    context->getDebugListener()->error(ex, &frame, context);
+    context->getDebugListener()->exit(&frame, context);
+    context->getDebugListener()->end(&frame, context);
     throw;
   }
 
@@ -180,18 +190,20 @@ EventGenerator::Ptr ASTDebugHook::generateEvents(EventHandler *events, DynamicCo
   if(!context->getDebugListener())
     return expr_->generateEvents(events, context, preserveNS, preserveType);
 
-  ASTNodeInfo info(expr_);
-  context->getDebugListener()->start(&info, context);
-  context->getDebugListener()->enter(&info, context);
+  ASTStackFrame frame(expr_, context);
+  AutoStackFrameReset reset(context, &frame);
+
+  context->getDebugListener()->start(&frame, context);
+  context->getDebugListener()->enter(&frame, context);
   try {
     expr_->generateAndTailCall(events, context, preserveNS, preserveType);
-    context->getDebugListener()->exit(&info, context);
-    context->getDebugListener()->end(&info, context);
+    context->getDebugListener()->exit(&frame, context);
+    context->getDebugListener()->end(&frame, context);
   }
   catch(XQException &ex) {
-    context->getDebugListener()->error(ex, &info, context);
-    context->getDebugListener()->exit(&info, context);
-    context->getDebugListener()->end(&info, context);
+    context->getDebugListener()->error(ex, &frame, context);
+    context->getDebugListener()->exit(&frame, context);
+    context->getDebugListener()->end(&frame, context);
     throw;
   }
 
@@ -203,19 +215,21 @@ PendingUpdateList ASTDebugHook::createUpdateList(DynamicContext *context) const
   if(!context->getDebugListener())
     return expr_->createUpdateList(context);
 
-  ASTNodeInfo info(expr_);
-  context->getDebugListener()->start(&info, context);
-  context->getDebugListener()->enter(&info, context);
+  ASTStackFrame frame(expr_, context);
+  AutoStackFrameReset reset(context, &frame);
+
+  context->getDebugListener()->start(&frame, context);
+  context->getDebugListener()->enter(&frame, context);
   PendingUpdateList pul;
   try {
     pul = expr_->createUpdateList(context);
-    context->getDebugListener()->exit(&info, context);
-    context->getDebugListener()->end(&info, context);
+    context->getDebugListener()->exit(&frame, context);
+    context->getDebugListener()->end(&frame, context);
   }
   catch(XQException &ex) {
-    context->getDebugListener()->error(ex, &info, context);
-    context->getDebugListener()->exit(&info, context);
-    context->getDebugListener()->end(&info, context);
+    context->getDebugListener()->error(ex, &frame, context);
+    context->getDebugListener()->exit(&frame, context);
+    context->getDebugListener()->end(&frame, context);
     throw;
   }
 

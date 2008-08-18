@@ -33,6 +33,7 @@ class SequenceBuilder;
 class UpdateFactory;
 class RegexGroupStore;
 class DebugListener;
+class StackFrame;
 
 /// The execution time dynamic context interface
 class XQILLA_API DynamicContext : public StaticContext
@@ -115,6 +116,11 @@ public:
   virtual void setDebugListener(DebugListener *listener) = 0;
   /** Gets the listener for debug messages */
   virtual DebugListener *getDebugListener() const = 0;
+
+  /** Sets the current stack frame whilst debugging */
+  virtual void setStackFrame(const StackFrame *frame) = 0;
+  /** Gets the listener for debug messages */
+  virtual const StackFrame *getStackFrame() const = 0;
 
   /** Parse an XML document from the provided InputSource */
   virtual Node::Ptr parseDocument(XERCES_CPP_NAMESPACE_QUALIFIER InputSource &srcToUse,

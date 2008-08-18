@@ -36,33 +36,20 @@ class DynamicContext;
 class DebugCommand;
 class InteractiveDebugger;
 
-struct XQILLA_API StackEntry
+class XQILLA_API BaseInteractiveDebugger
 {
-  StackEntry(const DebugListener::Info *i, const DynamicContext *context);
-
-  void output(InteractiveDebugger *debugger) const;
-  void report() const;
-
-  const DebugListener::Info *info;
-  Item::Ptr contextItem;
-  size_t contextPosition;
-  size_t contextSize;
-  const VariableStore *variables;
-};
-
-class XQILLA_API InteractiveDebugger : private DebugListener {
 public:
   struct XQILLA_API Run {};
   struct XQILLA_API Continue {};
   struct XQILLA_API Quit {};
-
-  static void debugQuery(const XQQuery *query, DynamicContext *context);
 
   static void outputLocation(const LocationInfo *info, unsigned int context = 0);
   static void outputLocation(const XMLCh *file, unsigned int line, unsigned int column,
                              unsigned int context = 0);
   static void outputLocationFromString(const XMLCh *query, unsigned int line, unsigned int column,
                                        unsigned int context = 0);
+
+  virtual ~BaseInteractiveDebugger();
 
   unsigned int setBreakPoint(const std::string &file, unsigned int line, unsigned int column, bool temporary);
   bool disableBreakPoint(unsigned int number);
@@ -71,31 +58,24 @@ public:
 
   void setStep();
   void setNext();
-  void run();
-  void stackTrace();
-
-  unsigned int getCurrentFrameNumber() const { return currentFrame_; }
-  const StackEntry *getCurrentFrame() const;
-  bool changeFrame(unsigned int number);
-
-  const XQQuery *getQuery() const { return query_; }
-  DynamicContext *getContext() const { return context_; }
   bool queryStarted() const { return queryStarted_; }
 
-  virtual std::string getQueryPlan(const DebugListener::Info *info) const;
+  virtual void run() = 0;
 
-  virtual bool doLazyEvaluation() const { return lazy_; }
-  virtual bool doFocusOptimizations() const { return focusOptimzations_; }
-  void setDoLazyEvaluation(bool lazy) { lazy_ = lazy; }
-  void setDoFocusOptimizationsn(bool opt) { focusOptimzations_ = opt; }
+  virtual bool changeFrame(unsigned int number) = 0;
+  virtual unsigned int getStackSize() const = 0;
+  virtual void stackTrace() const = 0;
+  virtual bool outputCurrentFrame(unsigned int context = 0) const = 0;
+  virtual bool outputCurrentFrameQueryPlan() const = 0;
+  virtual bool queryCurrentFrame(const char *queryString) const = 0;
+  virtual bool currentFrameLocation(const XMLCh *&file, unsigned int &line, unsigned int &column) const = 0;
 
-  virtual ~InteractiveDebugger();
+  virtual void setDoLazyEvaluation(bool lazy) = 0;
+  virtual void setDoFocusOptimizationsn(bool opt) = 0;
+  virtual void setDoProjection(bool opt) = 0;
 
 protected:
-  InteractiveDebugger(const XQQuery *query, DynamicContext *context);
-
-  virtual void enter(const Info *info, const DynamicContext *context);
-  virtual void exit(const Info *info, const DynamicContext *context);
+  BaseInteractiveDebugger();
 
   DebugCommand *findCommand(std::string &command) const;
   void checkBreak(bool entering);
@@ -120,14 +100,6 @@ protected:
   std::vector<BreakPoint> breaks_;
   bool step_;
   unsigned int next_;
-
-  std::vector<StackEntry> stack_;
-  unsigned int currentFrame_;
-
-  const XQQuery *query_;
-  DynamicContext *context_;
-  bool lazy_;
-  bool focusOptimzations_;
 };
 
 class XQILLA_API DebugCommand
@@ -144,7 +116,7 @@ public:
           const std::string &toMatch);
   virtual bool matches(const std::string &command) const;
 
-  virtual void execute(InputParser::Args &args, InteractiveDebugger &env) = 0;
+  virtual void execute(InputParser::Args &args, BaseInteractiveDebugger &env) = 0;
 
 protected:
   DebugCommand(const char *name, const char *compatName,
@@ -155,6 +127,47 @@ protected:
   const char *compatName_;
   const char *briefHelp_;
   const char *moreHelp_;
+};
+
+class XQILLA_API InteractiveDebugger :  private BaseInteractiveDebugger,
+                                        private DebugListener
+{
+public:
+  static void debugQuery(const XQQuery *query, DynamicContext *context);
+
+private:
+  InteractiveDebugger(const XQQuery *query, DynamicContext *context);
+
+  virtual void enter(const StackFrame *stack, const DynamicContext *context);
+  virtual void exit(const StackFrame *stack, const DynamicContext *context);
+  virtual bool doLazyEvaluation() const { return lazy_; }
+  virtual bool doFocusOptimizations() const { return focusOptimzations_; }
+
+  virtual void run();
+
+  virtual bool changeFrame(unsigned int number);
+  virtual unsigned int getStackSize() const;
+  virtual void stackTrace() const;
+  virtual bool outputCurrentFrame(unsigned int context) const;
+  virtual bool outputCurrentFrameQueryPlan() const;
+  virtual bool queryCurrentFrame(const char *queryString) const;
+  virtual bool currentFrameLocation(const XMLCh *&file, unsigned int &line, unsigned int &column) const;
+
+  virtual void setDoLazyEvaluation(bool lazy) { lazy_ = lazy; }
+  virtual void setDoFocusOptimizationsn(bool opt) { focusOptimzations_ = opt; }
+  virtual void setDoProjection(bool opt);
+
+  unsigned int getCurrentFrameNumber() const;
+  void output(const StackFrame *frame) const;
+  void report(const StackFrame *frame) const;
+
+  const StackFrame *stack_;
+  const StackFrame *currentFrame_;
+
+  const XQQuery *query_;
+  DynamicContext *context_;
+  bool lazy_;
+  bool focusOptimzations_;
 };
 
 #endif

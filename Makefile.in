@@ -89,15 +89,15 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	OrderByTuple.lo XQNamespaceBinding.lo XQCallTemplate.lo \
 	XQApplyTemplates.lo ASTDebugHook.lo DebugHookDecorator.lo \
 	TupleDebugHook.lo InputParser.lo InteractiveDebugger.lo \
-	ContentSequenceFilter.lo EventGenerator.lo EventSerializer.lo \
-	NoInheritFilter.lo NSFixupFilter.lo QueryPathTreeFilter.lo \
-	FTContains.lo FTWords.lo FTOr.lo FTAnd.lo FTMildnot.lo \
-	FTUnaryNot.lo DefaultTokenizer.lo DefaultTokenStore.lo \
-	FTOrder.lo FTDistance.lo FTScope.lo FTContent.lo FTWindow.lo \
-	XQillaBuilderImpl.lo XQillaDocumentImpl.lo \
-	XQillaExpressionImpl.lo XQillaNSResolverImpl.lo \
-	XQillaXMLGrammarPoolImpl.lo XPathDocumentImpl.lo \
-	XPathNamespaceImpl.lo XPath2ResultImpl.lo \
+	StackFrame.lo ContentSequenceFilter.lo EventGenerator.lo \
+	EventSerializer.lo NoInheritFilter.lo NSFixupFilter.lo \
+	QueryPathTreeFilter.lo FTContains.lo FTWords.lo FTOr.lo \
+	FTAnd.lo FTMildnot.lo FTUnaryNot.lo DefaultTokenizer.lo \
+	DefaultTokenStore.lo FTOrder.lo FTDistance.lo FTScope.lo \
+	FTContent.lo FTWindow.lo XQillaBuilderImpl.lo \
+	XQillaDocumentImpl.lo XQillaExpressionImpl.lo \
+	XQillaNSResolverImpl.lo XQillaXMLGrammarPoolImpl.lo \
+	XPathDocumentImpl.lo XPathNamespaceImpl.lo XPath2ResultImpl.lo \
 	XQillaImplementation.lo XPath2NodeSerializer.lo XQilla.lo \
 	XQQuery.lo UTF8Str.lo XMLChCompare.lo XStr.lo ContextUtils.lo \
 	DateUtils.lo NumUtils.lo XQillaPlatformUtils.lo PrintAST.lo \
@@ -531,6 +531,7 @@ src/debug/DebugHookDecorator.cpp \
 src/debug/TupleDebugHook.cpp \
 src/debug/InputParser.cpp \
 src/debug/InteractiveDebugger.cpp \
+src/debug/StackFrame.cpp \
 src/events/ContentSequenceFilter.cpp \
 src/events/EventGenerator.cpp \
 src/events/EventSerializer.cpp \
@@ -1478,6 +1479,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SequenceResult.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SequenceType.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SingleResult.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/StackFrame.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/StaticAnalysis.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/StaticType.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/StringPool.Plo@am__quote@
@@ -2528,6 +2530,13 @@ InteractiveDebugger.lo: src/debug/InteractiveDebugger.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/debug/InteractiveDebugger.cpp' object='InteractiveDebugger.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o InteractiveDebugger.lo `test -f 'src/debug/InteractiveDebugger.cpp' || echo '$(srcdir)/'`src/debug/InteractiveDebugger.cpp
+
+StackFrame.lo: src/debug/StackFrame.cpp
+@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT StackFrame.lo -MD -MP -MF $(DEPDIR)/StackFrame.Tpo -c -o StackFrame.lo `test -f 'src/debug/StackFrame.cpp' || echo '$(srcdir)/'`src/debug/StackFrame.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/StackFrame.Tpo $(DEPDIR)/StackFrame.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/debug/StackFrame.cpp' object='StackFrame.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o StackFrame.lo `test -f 'src/debug/StackFrame.cpp' || echo '$(srcdir)/'`src/debug/StackFrame.cpp
 
 ContentSequenceFilter.lo: src/events/ContentSequenceFilter.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ContentSequenceFilter.lo -MD -MP -MF $(DEPDIR)/ContentSequenceFilter.Tpo -c -o ContentSequenceFilter.lo `test -f 'src/events/ContentSequenceFilter.cpp' || echo '$(srcdir)/'`src/events/ContentSequenceFilter.cpp
