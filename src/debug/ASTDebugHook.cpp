@@ -68,6 +68,11 @@ public:
   ASTStackFrame(const ASTNode *ast, DynamicContext *context)
     : StackFrame(ast, context) {}
 
+  void setPreviousFrame(DynamicContext *context)
+  {
+    prev_ = context->getStackFrame();
+  }
+
   const ASTNode *getASTNode() const { return (ASTNode*)location_; }
   const TupleNode *getTupleNode() const { return 0; }
   virtual std::string getQueryPlan() const
@@ -85,14 +90,16 @@ public:
       frame_(expr, context),
       parent_(0)
   {
+    DebugListener *dl = context->getDebugListener();
+
     AutoStackFrameReset reset(context, &frame_);
-    context->getDebugListener()->start(&frame_, context);
+    if(dl) dl->start(&frame_, context);
     try {
       parent_ = expr->createResult(context);
     }
     catch(XQException &ex) {
-      context->getDebugListener()->error(ex, &frame_, context);
-      context->getDebugListener()->end(&frame_, context);
+      if(dl) dl->error(ex, &frame_, context);
+      if(dl) dl->end(&frame_, context);
       throw;
     }
   }
@@ -103,36 +110,64 @@ public:
       frame_(expr, context),
       parent_(0)
   {
+    DebugListener *dl = context->getDebugListener();
+
     AutoStackFrameReset reset(context, &frame_);
-    context->getDebugListener()->start(&frame_, context);
+    if(dl) dl->start(&frame_, context);
     try {
       parent_ = expr->iterateResult(contextItems, context);
     }
     catch(XQException &ex) {
-      context->getDebugListener()->error(ex, &frame_, context);
-      context->getDebugListener()->end(&frame_, context);
+      if(dl) dl->error(ex, &frame_, context);
+      if(dl) dl->end(&frame_, context);
       throw;
     }
   }
 
   ~ASTDebugHookResult()
   {
+    DebugListener *dl = context_->getDebugListener();
+
     AutoStackFrameReset reset(context_, &frame_);
-    context_->getDebugListener()->end(&frame_, context_);
+    if(dl) dl->end(&frame_, context_);
   }
   
   Item::Ptr next(DynamicContext *context)
   {
+    DebugListener *dl = context->getDebugListener();
+
+    frame_.setPreviousFrame(context);
     AutoStackFrameReset reset(context, &frame_);
-    context->getDebugListener()->enter(&frame_, context);
+    if(dl) dl->enter(&frame_, context);
     try {
       Item::Ptr item = parent_->next(context);
-      context->getDebugListener()->exit(&frame_, context);
+      if(dl) dl->exit(&frame_, context);
       return item;
     }
     catch(XQException &ex) {
-      context->getDebugListener()->error(ex, &frame_, context);
-      context->getDebugListener()->exit(&frame_, context);
+      if(dl) dl->error(ex, &frame_, context);
+      if(dl) dl->exit(&frame_, context);
+      throw;
+    }
+  }
+
+  Item::Ptr nextOrTail(Result &tail, DynamicContext *context)
+  {
+    DebugListener *dl = context->getDebugListener();
+
+    frame_.setPreviousFrame(context);
+    AutoStackFrameReset reset(context, &frame_);
+    if(dl) dl->enter(&frame_, context);
+    try {
+      ResultImpl *oldparent = parent_.get();
+      Item::Ptr item = parent_->nextOrTail(parent_, context);
+      if(dl) dl->exit(&frame_, context);
+      if(parent_.get() != oldparent) tail = parent_;
+      return item;
+    }
+    catch(XQException &ex) {
+      if(dl) dl->error(ex, &frame_, context);
+      if(dl) dl->exit(&frame_, context);
       throw;
     }
   }
@@ -185,7 +220,7 @@ Result ASTDebugHook::iterateResult(const Result &contextItems, DynamicContext *c
 }
 
 EventGenerator::Ptr ASTDebugHook::generateEvents(EventHandler *events, DynamicContext *context,
-                                             bool preserveNS, bool preserveType) const
+                                                 bool preserveNS, bool preserveType) const
 {
   if(!context->getDebugListener())
     return expr_->generateEvents(events, context, preserveNS, preserveType);
@@ -196,9 +231,10 @@ EventGenerator::Ptr ASTDebugHook::generateEvents(EventHandler *events, DynamicCo
   context->getDebugListener()->start(&frame, context);
   context->getDebugListener()->enter(&frame, context);
   try {
-    expr_->generateAndTailCall(events, context, preserveNS, preserveType);
+    EventGenerator::Ptr result = expr_->generateEvents(events, context, preserveNS, preserveType);
     context->getDebugListener()->exit(&frame, context);
     context->getDebugListener()->end(&frame, context);
+    return result;
   }
   catch(XQException &ex) {
     context->getDebugListener()->error(ex, &frame, context);
