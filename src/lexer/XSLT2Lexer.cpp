@@ -116,6 +116,7 @@ const XMLCh STANDALONE_NAME[] = { 's', 't', 'a', 'n', 'd', 'a', 'l', 'o', 'n', '
 const XMLCh UNDECLARE_PREFIXES_NAME[] = { 'u', 'n', 'd', 'e', 'c', 'l', 'a', 'r', 'e', '-', 'p', 'r', 'e', 'f', 'i', 'x', 'e', 's', 0 };
 const XMLCh USE_CHARACTER_MAPS_NAME[] = { 'u', 's', 'e', '-', 'c', 'h', 'a', 'r', 'a', 'c', 't', 'e', 'r', '-', 'm', 'a', 'p', 's', 0 };
 const XMLCh EXCLUDE_RESULT_PREFIXES_NAME[] = { 'e', 'x', 'c', 'l', 'u', 'd', 'e', '-', 'r', 'e', 's', 'u', 'l', 't', '-', 'p', 'r', 'e', 'f', 'i', 'x', 'e', 's', 0 };
+const XMLCh XPATH_DEFAULT_NAMESPACE_NAME[] = { 'x', 'p', 'a', 't', 'h', '-', 'd', 'e', 'f', 'a', 'u', 'l', 't', '-', 'n', 'a', 'm', 'e', 's', 'p', 'a', 'c', 'e', 0 };
 
 const XMLCh SPACE_NAME[] = { 's', 'p', 'a', 'c', 'e', 0 };
 const XMLCh PRESERVE_NAME[] = { 'p', 'r', 'e', 's', 'e', 'r', 'v', 'e', 0 };
@@ -413,71 +414,78 @@ int XSLT2Lexer::attrs_state(YYSTYPE* pYYLVAL, YYLTYPE* pYYLOC)
       elementStack_->xmlSpacePreserve = false;
     }
   }
-  else if(elementStack_->info != 0 && elementStack_->info->attrs != 0 && uri == 0) {
-    for(const AttrData *entry = elementStack_->info->attrs; entry->name != 0; ++entry) {
-      if(XPath2Utils::equals(name, entry->name)) {
-        switch(entry->type) {
-        case AttrData::PATTERN:
-        case AttrData::SEQUENCE_TYPE:
-        case AttrData::EXPRESSION:
-          getValueLocation(pYYLOC);
-          childLexer_.set(new XQLexer(mm_, m_szQueryFile, m_lineno, m_columnno, value, length, offsets_,
-                                      (XQilla::Language)((m_language & ~XQilla::XSLT2) | XQilla::XPATH2)));
-          break;
-        case AttrData::ATTR_VALUE_TEMPLATE:
-          getValueLocation(pYYLOC);
-          childLexer_.set(new XQLexer(mm_, m_szQueryFile, m_lineno, m_columnno, value, length, offsets_,
-                                      (XQilla::Language)((m_language & ~XQilla::XSLT2) | XQilla::XPATH2), XQLexer::MODE_ATTR_VALUE_TEMPLATE));
-          break;
-        case AttrData::TEMPLATE_MODES:
-          getValueLocation(pYYLOC);
-          childLexer_.set(new XQLexer(mm_, m_szQueryFile, m_lineno, m_columnno, value, length, offsets_,
-                                      (XQilla::Language)((m_language & ~XQilla::XSLT2) | XQilla::XPATH2), XQLexer::MODE_TEMPLATE_MODES));
-          break;
-        case AttrData::OUTPUT_METHOD:
-          getValueLocation(pYYLOC);
-          childLexer_.set(new XQLexer(mm_, m_szQueryFile, m_lineno, m_columnno, value, length, offsets_,
-                                      (XQilla::Language)((m_language & ~XQilla::XSLT2) | XQilla::XPATH2), XQLexer::MODE_OUTPUT_METHOD));
-          break;
-        case AttrData::QNAMES:
-          getValueLocation(pYYLOC);
-          childLexer_.set(new XQLexer(mm_, m_szQueryFile, m_lineno, m_columnno, value, length, offsets_,
-                                      (XQilla::Language)((m_language & ~XQilla::XSLT2) | XQilla::XPATH2), XQLexer::MODE_QNAMES));
-          break;
-        case AttrData::STRING:
-          pYYLVAL->str = (XMLCh*)mm_->getPooledString(value, length);
-          break;
-        case AttrData::QNAME:
-          pYYLVAL->str = (XMLCh*)mm_->getPooledString(value, length);
-          if(!XMLChar1_0::isValidQName(value, length)) {
+  else if(elementStack_->info != 0 && uri == 0) {
+    if(elementStack_->info->attrs != 0) {
+      for(const AttrData *entry = elementStack_->info->attrs; entry->name != 0; ++entry) {
+        if(XPath2Utils::equals(name, entry->name)) {
+          switch(entry->type) {
+          case AttrData::PATTERN:
+          case AttrData::SEQUENCE_TYPE:
+          case AttrData::EXPRESSION:
             getValueLocation(pYYLOC);
-            std::ostringstream oss;
-            oss << "The attribute value \"" << UTF8(pYYLVAL->str) << "\" is not a valid xs:QName [err:XTSE0020]";
-            error(oss.str().c_str());
-          }
-          break;
-        case AttrData::YESNO:
-          XMLBuffer valueBuf;
-          valueBuf.set(value, length);
-          XMLString::collapseWS(valueBuf.getRawBuffer());
-
-          if(XPath2Utils::equals(valueBuf.getRawBuffer(), YES_VALUE)) {
-            pYYLVAL->boolean = true;
-          }
-          else if(XPath2Utils::equals(valueBuf.getRawBuffer(), NO_VALUE)) {
-            pYYLVAL->boolean = false;
-          }
-          else {
+            childLexer_.set(new XQLexer(mm_, m_szQueryFile, m_lineno, m_columnno, value, length, offsets_,
+                                        (XQilla::Language)((m_language & ~XQilla::XSLT2) | XQilla::XPATH2)));
+            break;
+          case AttrData::ATTR_VALUE_TEMPLATE:
             getValueLocation(pYYLOC);
-            error("The attribute does not have a value of \"yes\" or \"no\" [err:XTSE0020]");
+            childLexer_.set(new XQLexer(mm_, m_szQueryFile, m_lineno, m_columnno, value, length, offsets_,
+                                        (XQilla::Language)((m_language & ~XQilla::XSLT2) | XQilla::XPATH2), XQLexer::MODE_ATTR_VALUE_TEMPLATE));
+            break;
+          case AttrData::TEMPLATE_MODES:
+            getValueLocation(pYYLOC);
+            childLexer_.set(new XQLexer(mm_, m_szQueryFile, m_lineno, m_columnno, value, length, offsets_,
+                                        (XQilla::Language)((m_language & ~XQilla::XSLT2) | XQilla::XPATH2), XQLexer::MODE_TEMPLATE_MODES));
+            break;
+          case AttrData::OUTPUT_METHOD:
+            getValueLocation(pYYLOC);
+            childLexer_.set(new XQLexer(mm_, m_szQueryFile, m_lineno, m_columnno, value, length, offsets_,
+                                        (XQilla::Language)((m_language & ~XQilla::XSLT2) | XQilla::XPATH2), XQLexer::MODE_OUTPUT_METHOD));
+            break;
+          case AttrData::QNAMES:
+            getValueLocation(pYYLOC);
+            childLexer_.set(new XQLexer(mm_, m_szQueryFile, m_lineno, m_columnno, value, length, offsets_,
+                                        (XQilla::Language)((m_language & ~XQilla::XSLT2) | XQilla::XPATH2), XQLexer::MODE_QNAMES));
+            break;
+          case AttrData::STRING:
+            pYYLVAL->str = (XMLCh*)mm_->getPooledString(value, length);
+            break;
+          case AttrData::QNAME:
+            pYYLVAL->str = (XMLCh*)mm_->getPooledString(value, length);
+            if(!XMLChar1_0::isValidQName(value, length)) {
+              getValueLocation(pYYLOC);
+              std::ostringstream oss;
+              oss << "The attribute value \"" << UTF8(pYYLVAL->str) << "\" is not a valid xs:QName [err:XTSE0020]";
+              error(oss.str().c_str());
+            }
+            break;
+          case AttrData::YESNO:
+            XMLBuffer valueBuf;
+            valueBuf.set(value, length);
+            XMLString::collapseWS(valueBuf.getRawBuffer());
+
+            if(XPath2Utils::equals(valueBuf.getRawBuffer(), YES_VALUE)) {
+              pYYLVAL->boolean = true;
+            }
+            else if(XPath2Utils::equals(valueBuf.getRawBuffer(), NO_VALUE)) {
+              pYYLVAL->boolean = false;
+            }
+            else {
+              getValueLocation(pYYLOC);
+              error("The attribute does not have a value of \"yes\" or \"no\" [err:XTSE0020]");
+            }
+
+            break;
           }
 
-          break;
+          state_ = NEXT_EVENT;
+          RECOGNIZE(entry->token);
         }
-
-        state_ = NEXT_EVENT;
-        RECOGNIZE(entry->token);
       }
+    }
+
+    // Is it one of the standard attributes?
+    if(XPath2Utils::equals(name, XPATH_DEFAULT_NAMESPACE_NAME)) {
+      // TBD xpath-default-name - jpcs
     }
   }
 
@@ -539,6 +547,24 @@ int XSLT2Lexer::next_event_state(YYSTYPE* pYYLVAL, YYLTYPE* pYYLOC)
   nextEvent(pYYLOC);
   state_ = CURRENT_EVENT;
   return current_event_state(pYYLVAL, pYYLOC);
+}
+
+void XSLT2Lexer::setNamespace(const XMLCh *prefix, const XMLCh *uri)
+{
+  if(elementStack_->info != 0 && elementStack_->info->token == _XSLT_STYLESHEET_) {
+    // If this is the xsl:stylesheet element, add the namespace bindings to the context
+    if(prefix == 0 || *prefix == 0)
+      context_->setDefaultElementAndTypeNS(uri);
+    else context_->setNamespaceBinding(prefix, uri);
+  }
+  else {
+    if(elementStack_->nsResolver == elementStack_->prev->nsResolver) {
+      elementStack_->nsResolver = new (mm_) XQillaNSResolverImpl(mm_, elementStack_->nsResolver != 0 ?
+                                                                 elementStack_->nsResolver : context_->getNSResolver());
+    }
+
+    elementStack_->nsResolver->addNamespaceBinding(prefix, uri);
+  }
 }
 
 int XSLT2Lexer::current_event_state(YYSTYPE* pYYLVAL, YYLTYPE* pYYLOC)
@@ -612,30 +638,26 @@ int XSLT2Lexer::current_event_state(YYSTYPE* pYYLVAL, YYLTYPE* pYYLOC)
       getEventName(prefix, uri, name);
       getEventValue(value, length, offsets_);
 
-      const XMLCh *nsprefix = prefix != 0 ? name : 0;
       const XMLCh *nsuri = mm_->getPooledString(value, length);
 
-      if(elementStack_->info != 0 && elementStack_->info->token == _XSLT_STYLESHEET_) {
-        // If this is the xsl:stylesheet element, add the namespace bindings to the context
-        context_->setNamespaceBinding(nsprefix, nsuri);
+      if(!XPath2Utils::equals(uri, XMLUni::fgXMLNSURIName) &&
+         XPath2Utils::equals(name, XPATH_DEFAULT_NAMESPACE_NAME)) {
+        setNamespace(0, nsuri);
       }
       else {
-        if(elementStack_->nsResolver == elementStack_->prev->nsResolver) {
-          elementStack_->nsResolver = new (mm_) XQillaNSResolverImpl(mm_, elementStack_->nsResolver != 0 ?
-                                                                     elementStack_->nsResolver : context_->getNSResolver());
+        if(prefix != 0 && *prefix != 0) {
+          setNamespace(name, nsuri);
         }
 
-        elementStack_->nsResolver->addNamespaceBinding(nsprefix, nsuri);
-      }
+        if(elementStack_->info == 0) {
+          VectorOfASTNodes *valueVector = new (mm_) VectorOfASTNodes(XQillaAllocator<ASTNode*>(mm_));
+          valueVector->push_back(makeStringLiteral(nsuri));
 
-      if(elementStack_->info == 0) {
-        VectorOfASTNodes *valueVector = new (mm_) VectorOfASTNodes(XQillaAllocator<ASTNode*>(mm_));
-        valueVector->push_back(makeStringLiteral(nsuri));
+          pYYLVAL->astNode = wrap(new (mm_) XQAttributeConstructor(makeDirectName(prefix, name), valueVector, mm_));
 
-        pYYLVAL->astNode = wrap(new (mm_) XQAttributeConstructor(makeDirectName(prefix, name), valueVector, mm_));
-
-        state_ = NEXT_EVENT;
-        RECOGNIZE(_XSLT_XMLNS_ATTR_);
+          state_ = NEXT_EVENT;
+          RECOGNIZE(_XSLT_XMLNS_ATTR_);
+        }
       }
       break;
     }
@@ -796,8 +818,26 @@ bool FAXPPXSLT2Lexer::nextNamespace()
 
   eventType_ = NAMESPACE;
   while(attrIndex_ < event->attr_count) {
-    if(event->attrs[attrIndex_].xmlns_attr)
+    FAXPP_Attribute *attr = &event->attrs[attrIndex_];
+
+    if(attr->xmlns_attr)
       return true;
+
+    // Recoginze [xsl:]xpath-default-namespace as a type NAMESPACE too
+    if(XPath2Utils::equals(nullTerm(event->uri, mm_), XSLT_URI)) {
+      if(attr->uri.len == 0 && XPath2Utils::equals(nullTerm(attr->name, mm_), XPATH_DEFAULT_NAMESPACE_NAME)) {
+        attr->xmlns_attr = 1;
+        return true;
+      }
+    }
+    else {
+      if(XPath2Utils::equals(nullTerm(attr->name, mm_), XPATH_DEFAULT_NAMESPACE_NAME) &&
+         XPath2Utils::equals(nullTerm(attr->uri, mm_), XSLT_URI)) {
+        attr->xmlns_attr = 1;
+        return true;
+      }
+    }
+
     ++attrIndex_;
   }
 

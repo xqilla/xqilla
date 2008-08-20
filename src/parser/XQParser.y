@@ -280,7 +280,9 @@ static void resolveQName(const yyltype &pos, XQParserArgs *qp, const XMLCh *qnam
   }
   else {
     if(QP->_lexer->getNSResolver() == 0) {
-      uri = CONTEXT->getNSResolver()->lookupNamespaceURI(prefix);
+      if(prefix == 0 || *prefix == 0)
+        uri = CONTEXT->getDefaultElementAndTypeNS();
+      else uri = CONTEXT->getNSResolver()->lookupNamespaceURI(prefix);
     }
     else {
       uri = QP->_lexer->getNSResolver()->lookupNamespaceURI(prefix);
@@ -675,6 +677,7 @@ namespace XQParser {
 %type <astNode>      PI_XSLT PIAttrs_XSLT Document_XSLT DocumentAttrs_XSLT Attribute_XSLT AttributeAttrs_XSLT
 %type <astNode>      AnalyzeString_XSLT AnalyzeStringAttrs_XSLT MatchingSubstring_XSLT NonMatchingSubstring_XSLT
 %type <astNode>      CopyOf_XSLT CopyOfAttrs_XSLT Copy_XSLT CopyAttrs_XSLT ForEach_XSLT ForEachAttrs_XSLT Instruction_XSLT
+%type <astNode>      SequenceAttrs_XSLT IfAttrs_XSLT WhenAttrs_XSLT
 %type <astNode>      RelativePathPattern_XSLT PatternStep_XSLT IdKeyPattern_XSLT PathPatternStart_XSLT
 
 %type <parenExpr>    SequenceConstructor_XSLT
@@ -1515,7 +1518,13 @@ WithParamAttrs_XSLT:
   ;
 
 Sequence_XSLT:
-    _XSLT_SEQUENCE_ _XSLT_SELECT_ Expr _XSLT_END_ELEMENT_
+    SequenceAttrs_XSLT _XSLT_END_ELEMENT_
+  {
+    $$ = $1;
+  }
+
+SequenceAttrs_XSLT:
+    _XSLT_SEQUENCE_ _XSLT_SELECT_ Expr
   {
     // TBD xsl:fallback - jpcs
     $$ = PRESERVE_NS(@2, $3);
@@ -1523,10 +1532,17 @@ Sequence_XSLT:
   ;
 
 If_XSLT:
-    _XSLT_IF_ _XSLT_TEST_ Expr SequenceConstructor_XSLT _XSLT_END_ELEMENT_
+    IfAttrs_XSLT SequenceConstructor_XSLT _XSLT_END_ELEMENT_
   {
     ASTNode *empty = WRAP(@1, new (MEMMGR) XQSequence(MEMMGR));
-    $$ = WRAP(@1, new (MEMMGR) XQIf(PRESERVE_NS(@2, $3), $4, empty, MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) XQIf($1, $2, empty, MEMMGR));
+  }
+  ;
+
+IfAttrs_XSLT:
+    _XSLT_IF_ _XSLT_TEST_ Expr
+  {
+    $$ = PRESERVE_NS(@2, $3);
   }
   ;
 
@@ -1563,9 +1579,18 @@ WhenList_XSLT:
   ;
 
 When_XSLT:
-    _XSLT_WHEN_ _XSLT_TEST_ Expr SequenceConstructor_XSLT _XSLT_END_ELEMENT_
+    WhenAttrs_XSLT SequenceConstructor_XSLT _XSLT_END_ELEMENT_
   {
-    $$ = WRAP(@1, new (MEMMGR) XQIf(PRESERVE_NS(@2, $3), $4, 0, MEMMGR));
+    XQIf *iff = (XQIf*)$1;
+    iff->setWhenTrue($2);
+    $$ = $1;
+  }
+  ;
+
+WhenAttrs_XSLT:
+    _XSLT_WHEN_ _XSLT_TEST_ Expr
+  {
+    $$ = WRAP(@1, new (MEMMGR) XQIf(PRESERVE_NS(@2, $3), 0, 0, MEMMGR));
   }
   ;
 
