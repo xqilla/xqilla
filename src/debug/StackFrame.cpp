@@ -49,7 +49,7 @@ Sequence StackFrame::query(const XMLCh *queryString) const
 
 void StackFrame::query(const XMLCh *queryString, EventHandler *events) const
 {
-  AutoDelete<DynamicContext> context(XQilla::createContext(context_->getLanguage(),
+  AutoDelete<DynamicContext> context(XQilla::createContext((XQilla::Language)(XQilla::XQUERY | XQilla::EXTENSIONS),
                                                            context_->getConfiguration()));
 
   // Set up the static type of all the in-scope variables
@@ -66,6 +66,8 @@ void StackFrame::query(const XMLCh *queryString, EventHandler *events) const
   for(; i != inScopeVars.end(); ++i) {
     store->declareGlobalVar(i->first, i->second, src);
   }
+
+  // TBD What about the namespaces from the original query? functions? - jpcs
 
   AutoDelete<XQQuery> query(XQilla::parse(queryString, context.get(), 0, XQilla::NO_ADOPT_CONTEXT));
 
