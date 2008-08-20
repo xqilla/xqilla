@@ -85,6 +85,7 @@ protected:
 
   void pushElementStack();
   void popElementStack();
+  void setNamespace(const XMLCh *prefix, const XMLCh *uri);
 
   enum EventType {
     START_DOCUMENT,

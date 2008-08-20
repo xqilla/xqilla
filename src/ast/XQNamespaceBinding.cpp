@@ -46,6 +46,10 @@ ASTNode *XQNamespaceBinding::staticResolution(StaticContext *context)
 {
   AutoNsScopeReset jan(context, namespaces_);
 
+  const XMLCh *defaultElementNS = context->getMemoryManager()->
+	  getPooledString(namespaces_->lookupNamespaceURI(XMLUni::fgZeroLenString));
+  context->setDefaultElementAndTypeNS(defaultElementNS);
+
   expr_ = expr_->staticResolution(context);
 
   return this;
@@ -56,6 +60,10 @@ ASTNode *XQNamespaceBinding::staticTyping(StaticContext *context)
   _src.clear();
 
   AutoNsScopeReset jan(context, namespaces_);
+
+  const XMLCh *defaultElementNS = context->getMemoryManager()->
+	  getPooledString(namespaces_->lookupNamespaceURI(XMLUni::fgZeroLenString));
+  context->setDefaultElementAndTypeNS(defaultElementNS);
 
   expr_ = expr_->staticTyping(context);
   _src.copy(expr_->getStaticAnalysis());
