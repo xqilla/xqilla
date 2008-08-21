@@ -354,6 +354,7 @@ void XQillaTestSuiteRunner::runTestCase(const TestCase &testCase)
     context->setXMLEntityResolver(this);
     context->setModuleResolver(this);
     context->registerURIResolver(this, /*adopt*/false);
+    context->setBaseURI(X(testCase.queryURL.c_str()));
 
     XQQuery *parsedQuery = xqilla.parseFromURI(X(testCase.queryURL.c_str()), contextGuard.adopt());
     AutoDelete<XQQuery> parsedQueryGuard(parsedQuery);
