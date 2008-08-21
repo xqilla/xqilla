@@ -83,6 +83,7 @@ const XMLCh COPY_OF_NAME[] = { 'c', 'o', 'p', 'y', '-', 'o', 'f', 0 };
 const XMLCh COPY_NAME[] = { 'c', 'o', 'p', 'y', 0 };
 const XMLCh FOR_EACH_NAME[] = { 'f', 'o', 'r', '-', 'e', 'a', 'c', 'h', 0 };
 const XMLCh OUTPUT_NAME[] = { 'o', 'u', 't', 'p', 'u', 't', 0 };
+const XMLCh IMPORT_SCHEMA_NAME[] = { 'i', 'm', 'p', 'o', 'r', 't', '-', 's', 'c', 'h', 'e', 'm', 'a', 0 };
 
 const XMLCh VERSION_NAME[] = { 'v', 'e', 'r', 's', 'i', 'o', 'n', 0 };
 const XMLCh MATCH_NAME[] = { 'm', 'a', 't', 'c', 'h', 0 };
@@ -117,6 +118,7 @@ const XMLCh UNDECLARE_PREFIXES_NAME[] = { 'u', 'n', 'd', 'e', 'c', 'l', 'a', 'r'
 const XMLCh USE_CHARACTER_MAPS_NAME[] = { 'u', 's', 'e', '-', 'c', 'h', 'a', 'r', 'a', 'c', 't', 'e', 'r', '-', 'm', 'a', 'p', 's', 0 };
 const XMLCh EXCLUDE_RESULT_PREFIXES_NAME[] = { 'e', 'x', 'c', 'l', 'u', 'd', 'e', '-', 'r', 'e', 's', 'u', 'l', 't', '-', 'p', 'r', 'e', 'f', 'i', 'x', 'e', 's', 0 };
 const XMLCh XPATH_DEFAULT_NAMESPACE_NAME[] = { 'x', 'p', 'a', 't', 'h', '-', 'd', 'e', 'f', 'a', 'u', 'l', 't', '-', 'n', 'a', 'm', 'e', 's', 'p', 'a', 'c', 'e', 0 };
+const XMLCh SCHEMA_LOCATION_NAME[] = { 's', 'c', 'h', 'e', 'm', 'a', '-', 'l', 'o', 'c', 'a', 't', 'i', 'o', 'n', 0 };
 
 const XMLCh SPACE_NAME[] = { 's', 'p', 'a', 'c', 'e', 0 };
 const XMLCh PRESERVE_NAME[] = { 'p', 'r', 'e', 's', 'e', 'r', 'v', 'e', 0 };
@@ -308,6 +310,12 @@ const AttrData OUTPUT_ATTR_DATA[] = {
   { VERSION_NAME, _XSLT_VERSION_, AttrData::STRING }
 };
 
+const AttrData IMPORT_SCHEMA_ATTR_DATA[] = {
+  { NAMESPACE_NAME, _XSLT_NAMESPACE_STR_, AttrData::STRING },
+  { SCHEMA_LOCATION_NAME, _XSLT_SCHEMA_LOCATION_, AttrData::STRING },
+  END_ATTR_DATA
+};
+
 struct InstructionInfo
 {
   const XMLCh *name;
@@ -349,6 +357,7 @@ const InstructionInfo INSTRUCTION_INFO[] = {
   { COPY_NAME,                   _XSLT_COPY_,                   COPY_ATTR_DATA,            InstructionInfo::DEFAULT  },
   { FOR_EACH_NAME,               _XSLT_FOR_EACH_,               FOR_EACH_ATTR_DATA,        InstructionInfo::DEFAULT  },
   { OUTPUT_NAME,                 _XSLT_OUTPUT_,                 OUTPUT_ATTR_DATA,          InstructionInfo::DEFAULT  },
+  { IMPORT_SCHEMA_NAME,          _XSLT_IMPORT_SCHEMA_,          IMPORT_SCHEMA_ATTR_DATA,   InstructionInfo::DEFAULT  },
   { 0, 0 }
 };
 
@@ -617,9 +626,9 @@ int XSLT2Lexer::current_event_state(YYSTYPE* pYYLVAL, YYLTYPE* pYYLOC)
       checkTextBuffer(0, 0);
 
       getEventLocation(pYYLOC);
-      popElementStack();
 
-      state_ = NEXT_EVENT;
+      // Put off popping the stack until before the next token
+      state_ = POP_STACK;
       RECOGNIZE(_XSLT_END_ELEMENT_);
       break;
     case TEXT:
@@ -688,6 +697,10 @@ int XSLT2Lexer::yylex(YYSTYPE* pYYLVAL, YYLTYPE* pYYLOC)
   switch(state_) {
   case LANG_TOKEN:
     return lang_token_state(pYYLVAL, pYYLOC);
+  case POP_STACK:
+    popElementStack();
+    state_ = NEXT_EVENT;
+    // Fall through
   case NEXT_EVENT:
     return next_event_state(pYYLVAL, pYYLOC);
   case CURRENT_EVENT:
@@ -1237,21 +1250,57 @@ void XercesXSLT2Lexer::startElement(const XMLElementDecl& elemDecl, const unsign
                                    scanner_->getLocator(), lastEvent_);
       if(firstEvent_ == 0) firstEvent_ = lastEvent_;
     }
+
+    // Recoginze [xsl:]xpath-default-namespace as a type NAMESPACE too
+    if(XPath2Utils::equals(scanner_->getURIText(urlId), XSLT_URI)) {
+      if(attr->getURIId() == 0 && XPath2Utils::equals(attr->getName(), XPATH_DEFAULT_NAMESPACE_NAME)) {
+        lastEvent_ = new CachedEvent(NAMESPACE,
+                                     mm_->getPooledString(attr->getPrefix()),
+                                     mm_->getPooledString(scanner_->getURIText(attr->getURIId())),
+                                     mm_->getPooledString(attr->getName()),
+                                     attr->getValue(),
+                                     scanner_->getLocator(), lastEvent_);
+        if(firstEvent_ == 0) firstEvent_ = lastEvent_;
+      }
+    }
+    else {
+      if(XPath2Utils::equals(attr->getName(), XPATH_DEFAULT_NAMESPACE_NAME) &&
+         XPath2Utils::equals(scanner_->getURIText(attr->getURIId()), XSLT_URI)) {
+        lastEvent_ = new CachedEvent(NAMESPACE,
+                                     mm_->getPooledString(attr->getPrefix()),
+                                     mm_->getPooledString(scanner_->getURIText(attr->getURIId())),
+                                     mm_->getPooledString(attr->getName()),
+                                     attr->getValue(),
+                                     scanner_->getLocator(), lastEvent_);
+        if(firstEvent_ == 0) firstEvent_ = lastEvent_;
+      }
+    }
   }
 
   for(i = 0; i < attrCount; ++i) {
     const XMLAttr *attr = attrList.elementAt(i);
 
-    if(attr->getURIId() != scanner_->getXMLNSNamespaceId() &&
-       !XPath2Utils::equals(attr->getName(), XMLUni::fgXMLNSString)) {
-      lastEvent_ = new CachedEvent(ATTRIBUTE,
-                                   mm_->getPooledString(attr->getPrefix()),
-                                   mm_->getPooledString(scanner_->getURIText(attr->getURIId())),
-                                   mm_->getPooledString(attr->getName()),
-                                   attr->getValue(),
-                                   scanner_->getLocator(), lastEvent_);
-      if(firstEvent_ == 0) firstEvent_ = lastEvent_;
+    if(attr->getURIId() == scanner_->getXMLNSNamespaceId() ||
+       XPath2Utils::equals(attr->getName(), XMLUni::fgXMLNSString))
+      continue;
+
+    if(XPath2Utils::equals(scanner_->getURIText(urlId), XSLT_URI)) {
+      if(attr->getURIId() == 0 && XPath2Utils::equals(attr->getName(), XPATH_DEFAULT_NAMESPACE_NAME))
+        continue;
     }
+    else {
+      if(XPath2Utils::equals(attr->getName(), XPATH_DEFAULT_NAMESPACE_NAME) &&
+         XPath2Utils::equals(scanner_->getURIText(attr->getURIId()), XSLT_URI))
+        continue;
+    }
+
+    lastEvent_ = new CachedEvent(ATTRIBUTE,
+                                 mm_->getPooledString(attr->getPrefix()),
+                                 mm_->getPooledString(scanner_->getURIText(attr->getURIId())),
+                                 mm_->getPooledString(attr->getName()),
+                                 attr->getValue(),
+                                 scanner_->getLocator(), lastEvent_);
+    if(firstEvent_ == 0) firstEvent_ = lastEvent_;
   }
 
   if(isEmpty) {

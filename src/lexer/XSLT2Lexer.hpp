@@ -56,7 +56,8 @@ protected:
   enum State {
     LANG_TOKEN,
     NEXT_EVENT,
-    CURRENT_EVENT
+    CURRENT_EVENT,
+    POP_STACK
   };
 
   struct ElementStackEntry
