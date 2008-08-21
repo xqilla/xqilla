@@ -26,7 +26,9 @@
 #include <string>
 #include <istream>
 
-class InputParser
+#include <xqilla/framework/XQillaExport.hpp>
+
+class XQILLA_API InputParser
 {
 public:
   typedef std::vector<std::string> Args;
