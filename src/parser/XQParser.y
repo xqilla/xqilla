@@ -606,6 +606,7 @@ namespace XQParser {
 %token _XSLT_COPY_                                            "<xsl:copy..."
 %token _XSLT_FOR_EACH_                                        "<xsl:for-each..."
 %token _XSLT_OUTPUT_                                          "<xsl:output..."
+%token _XSLT_IMPORT_SCHEMA_                                   "<xsl:import-schema..."
 
 %token <str> _XSLT_VERSION_                                   "version='...'"
 %token <str> _XSLT_MODE_                                      "mode='...'"
@@ -617,6 +618,8 @@ namespace XQParser {
 %token <str> _XSLT_NORMALIZATION_FORM_                        "normalization-form='...'"
 %token <str> _XSLT_STANDALONE_                                "standalone='...'"
 %token <str> _XSLT_EXCLUDE_RESULT_PREFIXES_                   "exclude-result-prefixes='...'"
+%token <str> _XSLT_NAMESPACE_STR_                             "namespace='...'"
+%token <str> _XSLT_SCHEMA_LOCATION_                           "schema-location='...'"
 %token <boolean> _XSLT_TUNNEL_                                "tunnel='...'"
 %token <boolean> _XSLT_REQUIRED_                              "required='...'"
 %token <boolean> _XSLT_OVERRIDE_                              "override='...'"
@@ -826,6 +829,7 @@ StylesheetContent_XSLT:
   | StylesheetContent_XSLT GlobalParam_XSLT
   | StylesheetContent_XSLT GlobalVariable_XSLT
   | StylesheetContent_XSLT Output_XSLT
+  | StylesheetContent_XSLT ImportSchema_XSLT
   ;
 
 Template_XSLT:
@@ -1225,6 +1229,45 @@ QNames_XSLT:
   }
   | QNames_XSLT _QNAME_
   {
+  }
+  ;
+
+ImportSchema_XSLT: ImportSchemaAttrs_XSLT _XSLT_END_ELEMENT_;
+
+ImportSchemaAttrs_XSLT:
+    _XSLT_IMPORT_SCHEMA_
+  {
+    LOCATION(@1, loc);
+    CONTEXT->addSchemaLocation(XMLUni::fgZeroLenString, 0, &loc);
+  }
+  | _XSLT_IMPORT_SCHEMA_ _XSLT_NAMESPACE_STR_
+  {
+    LOCATION(@1, loc);
+    CONTEXT->addSchemaLocation($2, 0, &loc);
+  }
+  | _XSLT_IMPORT_SCHEMA_ _XSLT_SCHEMA_LOCATION_
+  {
+    VectorOfStrings schemaLoc(XQillaAllocator<const XMLCh*>(MEMMGR));
+    schemaLoc.push_back($2);
+
+    LOCATION(@1, loc);
+    CONTEXT->addSchemaLocation(XMLUni::fgZeroLenString, &schemaLoc, &loc);
+  }
+  | _XSLT_IMPORT_SCHEMA_ _XSLT_NAMESPACE_STR_ _XSLT_SCHEMA_LOCATION_
+  {
+    VectorOfStrings schemaLoc(XQillaAllocator<const XMLCh*>(MEMMGR));
+    schemaLoc.push_back($3);
+
+    LOCATION(@1, loc);
+    CONTEXT->addSchemaLocation($2, &schemaLoc, &loc);
+  }
+  | _XSLT_IMPORT_SCHEMA_ _XSLT_SCHEMA_LOCATION_ _XSLT_NAMESPACE_STR_
+  {
+    VectorOfStrings schemaLoc(XQillaAllocator<const XMLCh*>(MEMMGR));
+    schemaLoc.push_back($2);
+
+    LOCATION(@1, loc);
+    CONTEXT->addSchemaLocation($3, &schemaLoc, &loc);
   }
   ;
 
