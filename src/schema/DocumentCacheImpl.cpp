@@ -486,6 +486,11 @@ void DocumentCacheImpl::handleAttributesPSVI(const XMLCh* const localName, const
   attrCount_ = 0;
 }
 
+static inline const XMLCh *nullToZeroLength(const XMLCh *in)
+{
+  return in ? in : XMLUni::fgZeroLenString;
+}
+
 /*
  * returns true if the type represented by uri:typename is an instance of uriToCheck:typeNameToCheck 
  *
@@ -508,7 +513,7 @@ bool DocumentCacheImpl::isTypeOrDerivedFromType(const XMLCh* const uri, const XM
      XPath2Utils::equals(typeNameToCheck, SchemaSymbols::fgATTVAL_ANYTYPE))
     return true;
 
-  DatatypeValidator* dtvDerived = grammarResolver_->getDatatypeValidator(uri,typeName);
+  DatatypeValidator* dtvDerived = grammarResolver_->getDatatypeValidator(nullToZeroLength(uri), typeName);
   if(dtvDerived == NULL) {
     // now lets take a look at complex stuff
     ComplexTypeInfo *cti = getComplexTypeInfo(uri, typeName);
@@ -548,7 +553,7 @@ bool DocumentCacheImpl::isTypeOrDerivedFromType(const XMLCh* const uri, const XM
      XPath2Utils::equals(uriToCheck, FunctionConstructor::XMLChXPath2DatatypesURI) )
     return dtvDerived->isAtomic();
 
-  DatatypeValidator* dtvBase = grammarResolver_->getDatatypeValidator(uriToCheck,typeNameToCheck);
+  DatatypeValidator* dtvBase = grammarResolver_->getDatatypeValidator(nullToZeroLength(uriToCheck), typeNameToCheck);
   if(dtvBase==NULL)
     return false;
   while(dtvDerived != 0) {
@@ -566,7 +571,7 @@ bool DocumentCacheImpl::isTypeDefined(const XMLCh* const uri, const XMLCh* const
   if(getComplexTypeInfo(uri, typeName) != NULL)
     return true;
 
-  if(grammarResolver_->getDatatypeValidator(uri,typeName) != NULL)
+  if(grammarResolver_->getDatatypeValidator(nullToZeroLength(uri), typeName) != NULL)
     return true;
 
   // these types are not present in the XMLSchema grammar, but they are defined
@@ -620,13 +625,14 @@ void DocumentCacheImpl::addSchemaLocation(const XMLCh* uri, VectorOfStrings* loc
       }
     }
   }
-  if(!bFoundSchema)
-    {
-      if(buf.isEmpty())
-        XQThrow3(StaticErrorException,X("DocumentCacheImpl::addSchemaLocation"), X("Schema not found [err:XQST0059]"), location);
-      else
-        XQThrow3(StaticErrorException,X("DocumentCacheImpl::addSchemaLocation"), buf.getRawBuffer(), location);
+  if(!bFoundSchema) {
+    if(buf.isEmpty()) {
+      buf.set(X("Schema for namespace \""));
+      buf.append(uri);
+      buf.append(X("\" not found [err:XQST0059]"));
     }
+    XQThrow3(StaticErrorException,X("DocumentCacheImpl::addSchemaLocation"), buf.getRawBuffer(), location);
+  }
 }
 
 void DocumentCacheImpl::loadSchema(const XMLCh* const uri, const XMLCh* location, StaticContext *context, const LocationInfo *info)
@@ -693,7 +699,7 @@ GrammarResolver *DocumentCacheImpl::getGrammarResolver() const
 
 DatatypeValidator*  DocumentCacheImpl::getDatatypeValidator(const XMLCh* uri, const XMLCh* typeName) const
 {
-  return grammarResolver_->getDatatypeValidator(uri,typeName);
+  return grammarResolver_->getDatatypeValidator(nullToZeroLength(uri), typeName);
 }
 
 SchemaElementDecl* DocumentCacheImpl::getElementDecl(const XMLCh* elementUri, const XMLCh* elementName) const
