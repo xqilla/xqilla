@@ -957,8 +957,6 @@ src/samples/dom-api/data.xml \
 src/samples/dom-api/data.xsd \
 src/samples/dom-api/foo.xml \
 src/samples/simple-api/foo.xml \
-src/xercesc_content_type.patch \
-src/xercesc_regex.patch \
 LICENSE \
 TODO \
 README \
