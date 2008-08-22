@@ -25,6 +25,10 @@
 #include <stddef.h>
 #include <xqilla/xqilla-xqc.h>
 #include <xqilla/simple-api/XQilla.hpp>
+#if defined(_MSC_VER)
+#include <BaseTsd.h>
+#define ssize_t SSIZE_T
+#endif
 
 #define CLASS_OFFSET(class, member) (((ssize_t)&(((class*)1000)->member)) - 1000)
 
