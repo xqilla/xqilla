@@ -53,19 +53,25 @@
 /* Intel & Alpha architechtures are small endian */
 #undef WORDS_BIGENDIAN
 
-/* Define to 1 if the Xerces-C library supports the
-   RegularExpression::allMatches() method. */
-#define HAVE_ALLMATCHES 1
-
-/* Define to 1 if the Xerces-C library supports the
-   BinInputStream::getContentType() method. */
-#define HAVE_GETCONTENTTYPE 1
-
 /* Define to 1 if the FAXPP library is present. */
 #undef HAVE_FAXPP
 
 /* Define to 1 if the HTML Tidy library is present. */
 #undef HAVE_LIBTIDY
+
+/* Define to 1 if the Xerces-C library supports the
+   RegularExpression::allMatches() method. */
+#undef HAVE_ALLMATCHES
+
+/* Define to 1 if the Xerces-C library supports the
+   BinInputStream::getContentType() method. */
+#undef HAVE_GETCONTENTTYPE
+
+#include <xercesc/util/XercesVersion.hpp>
+#if _XERCES_VERSION >= 30000
+#define HAVE_ALLMATCHES 1
+#define HAVE_GETCONTENTTYPE 1
+#endif
 
 #else
 
