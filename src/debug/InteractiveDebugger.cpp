@@ -826,9 +826,25 @@ void BaseInteractiveDebugger::checkBreak(bool entering)
   }
 }
 
-void BaseInteractiveDebugger::outputLocation(const LocationInfo *info, unsigned int context)
+void BaseInteractiveDebugger::breakForError(const char *message)
 {
-  outputLocation(info->getFile(), info->getLine(), info->getColumn(), context);
+  cerr << "Error: " << message << endl;
+  outputCurrentFrame();
+
+  while(true) {
+    // Clear any pending next or step operation
+    next_ = 0;
+    step_ = false;
+
+    readCommand();
+
+    cerr << "An error has occurred - query execution cannot resume" << endl;
+  }
+}
+
+void InteractiveDebugger::outputLocation(const LocationInfo *info, unsigned int context)
+{
+  BaseInteractiveDebugger::outputLocation(info->getFile(), info->getLine(), info->getColumn(), context);
 }
 
 void BaseInteractiveDebugger::outputLocation(const XMLCh *file, unsigned int line, unsigned int column, unsigned int context)
@@ -880,7 +896,7 @@ void BaseInteractiveDebugger::outputLocationFromString(const XMLCh *query, unsig
 
   if(context != 0) {
     while(curLine < endLine) {
-      if(*query == 0) return;
+      if(*query == 0) break;
 
       if(*query == '\n' || *query == '\r') {
         if(curLine < 100) cerr << " ";
@@ -896,6 +912,12 @@ void BaseInteractiveDebugger::outputLocationFromString(const XMLCh *query, unsig
         query_line.append(*query);
       }
       ++query;
+    }
+
+    if(!query_line.isEmpty()) {
+      if(curLine < 100) cerr << " ";
+      if(curLine < 10) cerr << " ";
+      cerr << curLine << ": " << UTF8(query_line.getRawBuffer()) << endl;
     }
   }
   else {
@@ -981,7 +1003,7 @@ void InteractiveDebugger::run()
       queryStarted_ = false;
       cerr << UTF8(e.getXQueryFile()) << ":" << e.getXQueryLine() << ":" << e.getXQueryColumn()
            << ": error: " << UTF8(e.getError()) << endl;
-      outputLocation(e.getXQueryFile(), e.getXQueryLine(), e.getXQueryColumn());
+      BaseInteractiveDebugger::outputLocation(e.getXQueryFile(), e.getXQueryLine(), e.getXQueryColumn());
     }
     catch(...) {
       queryStarted_ = false;
@@ -1004,6 +1026,14 @@ void InteractiveDebugger::exit(const StackFrame *stack, const DynamicContext *co
   currentFrame_ = stack;
 
   checkBreak(/*entering*/false);
+}
+
+void InteractiveDebugger::error(const XQException &error, const StackFrame *stack, const DynamicContext *context)
+{
+  stack_ = stack;
+  currentFrame_ = stack;
+
+  breakForError(UTF8(error.getError()));
 }
 
 bool InteractiveDebugger::changeFrame(unsigned int number)
@@ -1063,7 +1093,7 @@ bool InteractiveDebugger::outputCurrentFrame(unsigned int context) const
 	cerr << "#" << getCurrentFrameNumber();
   output(currentFrame_);
   cerr << endl << endl;
-  BaseInteractiveDebugger::outputLocation(currentFrame_->getLocationInfo(), context);
+  outputLocation(currentFrame_->getLocationInfo(), context);
 
   return true;
 }
@@ -1140,8 +1170,7 @@ void InteractiveDebugger::report(const StackFrame *frame) const
 {
   const LocationInfo *loc = frame->getLocationInfo();
   cerr << UTF8(loc->getFile()) << ":" << loc->getLine() << ":" << loc->getColumn() << endl;
-
-  BaseInteractiveDebugger::outputLocation(loc);
+  outputLocation(loc);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
