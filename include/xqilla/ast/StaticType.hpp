@@ -169,7 +169,7 @@ private:
   StaticType *returnType_;
 };
 
-StaticType::StaticTypeFlags operator|(StaticType::StaticTypeFlags a, StaticType::StaticTypeFlags b);
-StaticType::StaticTypeFlags operator&(StaticType::StaticTypeFlags a, StaticType::StaticTypeFlags b);
+XQILLA_API StaticType::StaticTypeFlags operator|(StaticType::StaticTypeFlags a, StaticType::StaticTypeFlags b);
+XQILLA_API StaticType::StaticTypeFlags operator&(StaticType::StaticTypeFlags a, StaticType::StaticTypeFlags b);
 
 #endif
