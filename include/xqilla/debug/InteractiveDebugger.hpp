@@ -43,7 +43,6 @@ public:
   struct XQILLA_API Continue {};
   struct XQILLA_API Quit {};
 
-  static void outputLocation(const LocationInfo *info, unsigned int context = 0);
   static void outputLocation(const XMLCh *file, unsigned int line, unsigned int column,
                              unsigned int context = 0);
   static void outputLocationFromString(const XMLCh *query, unsigned int line, unsigned int column,
@@ -79,6 +78,7 @@ protected:
 
   DebugCommand *findCommand(std::string &command) const;
   void checkBreak(bool entering);
+  void breakForError(const char *message);
   void readCommand();
 
   std::vector<DebugCommand*> commands_;
@@ -134,12 +134,14 @@ class XQILLA_API InteractiveDebugger :  private BaseInteractiveDebugger,
 {
 public:
   static void debugQuery(const XQQuery *query, DynamicContext *context);
+  static void outputLocation(const LocationInfo *info, unsigned int context = 0);
 
 private:
   InteractiveDebugger(const XQQuery *query, DynamicContext *context);
 
   virtual void enter(const StackFrame *stack, const DynamicContext *context);
   virtual void exit(const StackFrame *stack, const DynamicContext *context);
+  virtual void error(const XQException &error, const StackFrame *stack, const DynamicContext *context);
   virtual bool doLazyEvaluation() const { return lazy_; }
   virtual bool doFocusOptimizations() const { return focusOptimzations_; }
 
