@@ -31,7 +31,7 @@
 
 class NodeTest;
 
-class QueryPathNode : public XERCES_CPP_NAMESPACE_QUALIFIER XMemory
+class XQILLA_API QueryPathNode : public XERCES_CPP_NAMESPACE_QUALIFIER XMemory
 {
 public:
   typedef enum {
