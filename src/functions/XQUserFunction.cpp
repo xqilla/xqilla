@@ -407,6 +407,11 @@ void XQUserFunction::staticTypingOnce(StaticContext *context)
   staticTyping(context);
 }
 
+void XQUserFunction::resetStaticTypingOnce()
+{
+  staticTyped_ = false;
+}
+
 void XQUserFunction::staticTyping(StaticContext *context)
 {
   // Nothing more to do for external functions
