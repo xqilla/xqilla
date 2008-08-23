@@ -37,6 +37,10 @@ class EventHandler;
 class Sequence;
 class VariableStore;
 
+XERCES_CPP_NAMESPACE_BEGIN
+class DOMXPathNSResolver;
+XERCES_CPP_NAMESPACE_END
+
 /** 
  * A class that represents an item in a query call stack
  */
@@ -65,6 +69,8 @@ protected:
   size_t contextPosition_;
   size_t contextSize_;
   const VariableStore *variables_;
+  const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver *nsResolver_;
+  const XMLCh *defaultElementNS_;
 
   const StackFrame *prev_;
 

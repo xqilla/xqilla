@@ -44,6 +44,15 @@ public:
   virtual DynamicContext *createDynamicContext(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr
                                                = XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager) const;
 
+  virtual DynamicContext *createDebugQueryContext(const Item::Ptr &contextItem,
+                                                  size_t contextPosition,
+                                                  size_t contextSize,
+                                                  const VariableStore *variables,
+                                                  const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver *nsResolver,
+                                                  const XMLCh *defaultElementNS,
+                                                  XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr =
+                                                  XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager) const;
+
   virtual XQillaConfiguration *getConfiguration() const;
 
   virtual XQilla::Language getLanguage() const;
@@ -146,49 +155,25 @@ public:
   // Static Context Accessors     //
   //////////////////////////////////
 
-  /** Get the static type of the context item */
   virtual const StaticType &getContextItemType() const;
-  /** Set the static type of the context item */
   virtual void setContextItemType(const StaticType &st);
 
-  /** Get the current XPath 1.0 compatibility mode */
   virtual bool getXPath1CompatibilityMode() const;
-  /** Set the current XPath 1.0 compatibility mode */
   virtual void setXPath1CompatibilityMode(bool newMode);
 
-  /** Get the NS resolver */
   virtual const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver* getNSResolver() const;
-  /** returns the URI that is bound in prefix in the current scope or zero
-      length string otherwise */
   virtual const XMLCh* getUriBoundToPrefix(const XMLCh* prefix, const LocationInfo *location) const;
-  /** returns the prefix that is bound in uri in the current scope or zero
-      length string otherwise */
   virtual const XMLCh* getPrefixBoundToUri(const XMLCh* uri) const;
-  /** Set the NS resolver */
   virtual void setNSResolver(const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver* resolver);
 
-  /** get the value of the default namespace for elements and types */
   virtual const XMLCh* getDefaultElementAndTypeNS() const;
-  /** set the value of the default namespace for elements and types */
   virtual void setDefaultElementAndTypeNS(const XMLCh* newNS);
 
-  /** Return the default namespace for functions */
   virtual const XMLCh* getDefaultFuncNS() const;
-  /** Set the default namespace for functions */
   virtual void setDefaultFuncNS(const XMLCh* newNS);
 
-  /** retrieve the repository for the grammars **/
   virtual DocumentCache* getDocumentCache() const;
-  /** sets the repository for the grammars **/
   virtual void setDocumentCache(DocumentCache* docCache);
-  /** returns true if the type represented by uri:typename is an instance of uriToCheck:typeNameToCheck
-   *
-   * ie: to check
-   * xs:integer instance of xs:decimal,
-   * call
-   * isTypeOrDerivedFromType("xs", "integer", "xs", "decimal")
-   * (except of course, call with URIs, not prefixes!)
-   */
   virtual bool isTypeOrDerivedFromType(const XMLCh* const uri, const XMLCh* const typeName, const XMLCh* const uriToCheck, const XMLCh* const typeNameToCheck) const;
 
   virtual void setXMLEntityResolver(XERCES_CPP_NAMESPACE_QUALIFIER XMLEntityResolver* const handler);

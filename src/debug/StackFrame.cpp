@@ -36,6 +36,8 @@ StackFrame::StackFrame(const LocationInfo *location, DynamicContext *context)
     contextPosition_(context->getContextPosition()),
     contextSize_(context->getContextSize()),
     variables_(context->getVariableStore()),
+    nsResolver_(context->getNSResolver()),
+    defaultElementNS_(context->getDefaultElementAndTypeNS()),
     prev_(context->getStackFrame())
 {
 }
@@ -49,32 +51,9 @@ Sequence StackFrame::query(const XMLCh *queryString) const
 
 void StackFrame::query(const XMLCh *queryString, EventHandler *events) const
 {
-  AutoDelete<DynamicContext> context(XQilla::createContext((XQilla::Language)(XQilla::XQUERY | XQilla::EXTENSIONS),
-                                                           context_->getConfiguration()));
-
-  // Set up the static type of all the in-scope variables
-  VariableTypeStore *store = context->getVariableTypeStore();
-  XPath2MemoryManager *memMgr = context->getMemoryManager();
-
-  // For simplicity we'll make them all have type item()*
-  StaticAnalysis src(memMgr);
-  src.getStaticType() = StaticType(StaticType::ITEM_TYPE, 0, StaticType::UNLIMITED);
-
-  vector<pair<const XMLCh *, const XMLCh*> > inScopeVars;
-  variables_->getInScopeVariables(inScopeVars);
-  vector<pair<const XMLCh *, const XMLCh*> >::iterator i = inScopeVars.begin();
-  for(; i != inScopeVars.end(); ++i) {
-    store->declareGlobalVar(i->first, i->second, src);
-  }
-
-  // TBD What about the namespaces from the original query? functions? - jpcs
-
+  AutoDelete<DynamicContext> context(context_->createDebugQueryContext(contextItem_, contextPosition_,
+                                                                       contextSize_, variables_,
+                                                                       nsResolver_, defaultElementNS_));
   AutoDelete<XQQuery> query(XQilla::parse(queryString, context.get(), 0, XQilla::NO_ADOPT_CONTEXT));
-
-  context->setContextItem(contextItem_);
-  context->setContextPosition(contextPosition_);
-  context->setContextSize(contextSize_);
-  context->setVariableStore(variables_);
-
   query->execute(events, context);
 }
