@@ -312,9 +312,14 @@ void XQQuery::staticTyping(StaticContext *context)
 
   // Run staticTyping on the user defined functions,
   // which calculates a better type for them
-  UserFunctions::iterator i;
+  UserFunctions::iterator i, j;
   for(i = m_userDefFns.begin(); i != m_userDefFns.end(); ++i) {
-    (*i)->staticTyping(context);
+
+    for(j = m_userDefFns.begin(); j != m_userDefFns.end(); ++j) {
+      (*j)->resetStaticTypingOnce();
+    }
+
+    (*i)->staticTypingOnce(context);
   }
 
   // Run staticTyping on the query body
