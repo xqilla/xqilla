@@ -43,6 +43,7 @@ class MessageListener;
 class ExternalFunction;
 class XQillaConfiguration;
 class XQUserFunction;
+class XQillaNSResolver;
 
 // Copied from ASTNode.hpp
 typedef std::vector<ASTNode*,XQillaAllocator<ASTNode*> > VectorOfASTNodes;
@@ -79,6 +80,15 @@ public:
                                               XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager) const = 0;
   virtual DynamicContext *createDynamicContext(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr =
                                                XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager) const = 0;
+
+  virtual DynamicContext *createDebugQueryContext(const Item::Ptr &contextItem,
+                                                  size_t contextPosition,
+                                                  size_t contextSize,
+                                                  const VariableStore *variables,
+                                                  const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver *nsResolver,
+                                                  const XMLCh *defaultElementNS,
+                                                  XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr =
+                                                  XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager) const = 0;
 
   /** Returns the configuration object for this context */
   virtual XQillaConfiguration *getConfiguration() const = 0;

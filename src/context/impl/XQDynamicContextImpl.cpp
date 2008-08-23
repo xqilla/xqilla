@@ -139,6 +139,18 @@ DynamicContext *XQDynamicContextImpl::createDynamicContext(MemoryManager *memMgr
   return _staticContext->createDynamicContext(memMgr);
 }
 
+DynamicContext *XQDynamicContextImpl::createDebugQueryContext(const Item::Ptr &contextItem,
+                                                              size_t contextPosition,
+                                                              size_t contextSize,
+                                                              const VariableStore *variables,
+                                                              const DOMXPathNSResolver *nsResolver,
+                                                              const XMLCh *defaultElementNS,
+                                                              MemoryManager *memMgr) const
+{
+  return _staticContext->createDebugQueryContext(contextItem, contextPosition, contextSize,
+                                                 variables, nsResolver, defaultElementNS, memMgr);
+}
+
 XQillaConfiguration *XQDynamicContextImpl::getConfiguration() const
 {
   return _conf;

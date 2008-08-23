@@ -29,6 +29,8 @@ using namespace std;
 
 Result ClosureResult::create(const ASTNode *ast, DynamicContext *context, const VariableStore *sourceScope)
 {
+  // TBD We probably need to store the regex groups here too - jpcs
+
   if(ast->getStaticAnalysis().variablesUsed().empty() &&
      !ast->getStaticAnalysis().areContextFlagsUsed()) {
     return ast->createResult(context);

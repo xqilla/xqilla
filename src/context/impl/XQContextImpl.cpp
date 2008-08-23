@@ -110,6 +110,8 @@ XQContextImpl::XQContextImpl(XQillaConfiguration *conf, XQilla::Language languag
   // since a bug in xerces means we can't use a non-thread-safe
   // memory manager - jpcs
   _docCache = conf->createDocumentCache(_createdWith);
+  _itemFactory = conf->createItemFactory(_docCache, &_internalMM);
+  _docCacheOwned = true;
 
   if(_varTypeStore==NULL)
     _varTypeStore=_internalMM.createVariableTypeStore();
@@ -118,8 +120,6 @@ XQContextImpl::XQContextImpl(XQillaConfiguration *conf, XQilla::Language languag
     _functionTable = new (&_internalMM) FunctionLookup(&_internalMM);
     _functionTable->insertUpdateFunctions(&_internalMM);
   }
-
-  _itemFactory = conf->createItemFactory(_docCache, &_internalMM);
 
   // insert the default collation
   addCollation(_internalMM.createCollation(&g_codepointCollation));
@@ -174,8 +174,10 @@ XQContextImpl::~XQContextImpl()
   _defaultVarStore.clear();
 
   delete _varTypeStore;
-  delete _itemFactory;
-  delete _docCache;
+  if(_docCacheOwned) {
+    delete _itemFactory;
+    delete _docCache;
+  }
 
   std::vector<ResolverEntry, XQillaAllocator<ResolverEntry> >::reverse_iterator end = _resolvers.rend();
   for(std::vector<ResolverEntry, XQillaAllocator<ResolverEntry> >::reverse_iterator i = _resolvers.rbegin(); i != end; ++i) {
@@ -256,6 +258,65 @@ DynamicContext *XQContextImpl::createDynamicContext(MemoryManager *memMgr) const
 {
   DynamicContext *result = new (memMgr) XQDynamicContextImpl(_conf, this, memMgr);
   _conf->populateDynamicContext(result);
+  return result;
+}
+
+DynamicContext *XQContextImpl::createDebugQueryContext(const Item::Ptr &contextItem,
+                                                       size_t contextPosition,
+                                                       size_t contextSize,
+                                                       const VariableStore *variables,
+                                                       const DOMXPathNSResolver *nsResolver,
+                                                       const XMLCh *defaultElementNS,
+                                                       MemoryManager *memMgr) const
+{
+  XQContextImpl *result = new (memMgr) XQContextImpl(_conf,
+                                                     (XQilla::Language)(XQilla::XQUERY | XQilla::EXTENSIONS),
+                                                     memMgr);
+
+  // Set up the static type of all the in-scope variables
+  VariableTypeStore *store = result->getVariableTypeStore();
+  XPath2MemoryManager *rmm = result->getMemoryManager();
+
+  // For simplicity we'll make them all have type item()*
+  StaticAnalysis *src = new (rmm) StaticAnalysis(rmm);
+  src->getStaticType() = StaticType(StaticType::ITEM_TYPE, 0, StaticType::UNLIMITED);
+
+  std::vector<std::pair<const XMLCh *, const XMLCh*> > inScopeVars;
+  variables->getInScopeVariables(inScopeVars);
+  std::vector<std::pair<const XMLCh *, const XMLCh*> >::iterator i = inScopeVars.begin();
+  for(; i != inScopeVars.end(); ++i) {
+    store->declareGlobalVar(i->first, i->second, *src);
+  }
+
+  // Set up all the in-scope namespaces
+  XQillaNSResolver *newresolver = new (rmm) XQillaNSResolverImpl(rmm, nsResolver);
+  result->_globalNSResolver = newresolver;
+  result->_nsResolver = newresolver;
+
+  result->_defaultElementNS = defaultElementNS;
+  result->_functionNS = _functionNS;
+
+  // Set up the functions
+  result->_functionTable = _functionTable;
+
+  // Set up the schema definitions
+  if(result->_docCacheOwned) {
+    delete result->_itemFactory;
+    delete result->_docCache;
+  }
+
+  result->_docCache = _docCache;
+  result->_itemFactory = _itemFactory;
+  result->_docCacheOwned = false;
+
+  // Set up the focus and in-scope variable values
+  result->setContextItem(contextItem);
+  result->setContextPosition(contextPosition);
+  result->setContextSize(contextSize);
+  result->setVariableStore(variables);
+
+  // TBD regex groups? - jpcs
+
   return result;
 }
 
