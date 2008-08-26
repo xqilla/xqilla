@@ -45,6 +45,7 @@
 #include <xercesc/validators/schema/ComplexTypeInfo.hpp>
 #include <xercesc/validators/schema/SchemaElementDecl.hpp>
 #include <xercesc/util/XMLUri.hpp>
+#include <xercesc/util/XMLURL.hpp>
 
 #include <set>
 
@@ -136,9 +137,14 @@ Sequence FastXDMNodeImpl::dmBaseURI(const DynamicContext* context) const
 
         if(uri && *uri) {
           if(baseURI && *baseURI) {
-            XMLUri temp(baseURI, context->getMemoryManager());
-            XMLUri temp2(&temp, uri, context->getMemoryManager());
-            baseURI = context->getMemoryManager()->getPooledString(temp2.getUriText());
+            try {
+              XMLUri temp(baseURI, context->getMemoryManager());
+              XMLUri temp2(&temp, uri, context->getMemoryManager());
+              baseURI = context->getMemoryManager()->getPooledString(temp2.getUriText());
+            }
+            catch(const MalformedURLException &ex) {
+              baseURI = uri;
+            }
           }
           else baseURI = uri;
         }
