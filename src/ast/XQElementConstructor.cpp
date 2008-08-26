@@ -58,6 +58,7 @@ using namespace std;
 XQElementConstructor::XQElementConstructor(ASTNode* name, VectorOfASTNodes* attrList, VectorOfASTNodes* children,
                                            XPath2MemoryManager* mm)
   : XQDOMConstructor(mm),
+    namespaceExpr(0),
     m_name(name),
     m_attrList(attrList),
     m_children(children),

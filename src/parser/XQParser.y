@@ -599,6 +599,7 @@ namespace XQParser {
 %token _XSLT_PI_                                              "<xsl:processing-instruction..."
 %token _XSLT_DOCUMENT_                                        "<xsl:document..."
 %token _XSLT_ATTRIBUTE_                                       "<xsl:attribute..."
+%token _XSLT_ELEMENT_                                         "<xsl:element..."
 %token _XSLT_ANALYZE_STRING_                                  "<xsl:analyze-string..."
 %token _XSLT_MATCHING_SUBSTRING_                              "<xsl:matching-substring..."
 %token _XSLT_NON_MATCHING_SUBSTRING_                          "<xsl:non-matching-substring..."
@@ -680,7 +681,7 @@ namespace XQParser {
 %type <astNode>      PI_XSLT PIAttrs_XSLT Document_XSLT DocumentAttrs_XSLT Attribute_XSLT AttributeAttrs_XSLT
 %type <astNode>      AnalyzeString_XSLT AnalyzeStringAttrs_XSLT MatchingSubstring_XSLT NonMatchingSubstring_XSLT
 %type <astNode>      CopyOf_XSLT CopyOfAttrs_XSLT Copy_XSLT CopyAttrs_XSLT ForEach_XSLT ForEachAttrs_XSLT Instruction_XSLT
-%type <astNode>      SequenceAttrs_XSLT IfAttrs_XSLT WhenAttrs_XSLT
+%type <astNode>      SequenceAttrs_XSLT IfAttrs_XSLT WhenAttrs_XSLT Element_XSLT ElementAttrs_XSLT
 %type <astNode>      RelativePathPattern_XSLT PatternStep_XSLT IdKeyPattern_XSLT PathPatternStart_XSLT
 
 %type <parenExpr>    SequenceConstructor_XSLT
@@ -732,13 +733,13 @@ namespace XQParser {
 // 2 arise from the xgs:occurrence-indicator grammar constriant (http://www.w3.org/TR/xquery/#parse-note-occurence-indicators)
 //%expect 50
 
-// We're expecting 88 shift/reduce conflicts. These have been checked and are harmless.
+// We're expecting 89 shift/reduce conflicts. These have been checked and are harmless.
 // 48 arise from the xgs:leading-lone-slash grammar constraint (http://www.w3.org/TR/xquery/#parse-note-leading-lone-slash)
 // 3 arise from the xgs:occurrence-indicator grammar constriant (http://www.w3.org/TR/xquery/#parse-note-occurence-indicators)
 // 17 are due to template extensions
-// 19 are due to Variable_XSLT
+// 20 are due to Variable_XSLT
 // 1 is due to FunctionType
-%expect 88
+%expect 89
 
 %%
 
@@ -1358,6 +1359,7 @@ Instruction_XSLT:
   | PI_XSLT
   | Document_XSLT
   | Attribute_XSLT
+  | Element_XSLT
   | AnalyzeString_XSLT
   | CopyOf_XSLT
   | Copy_XSLT
@@ -1929,6 +1931,53 @@ AttributeAttrs_XSLT:
     $$ = $1;
     // TBD separator - jpcs
 /*     ((XQAttributeConstructor*)$$)->setChildren(children); */
+  }
+  ;
+
+Element_XSLT:
+    ElementAttrs_XSLT SequenceConstructor_XSLT _XSLT_END_ELEMENT_
+  {
+    XQElementConstructor *elem = (XQElementConstructor*)$1;
+    $$ = elem;
+
+    if(elem->getName() == 0) {
+      yyerror(@1, "The xsl:element instruction does not have a {}name attribute");
+    }
+
+    if(elem->namespaceExpr != 0) {
+      // Use fn:QName() to assign the correct URI
+      VectorOfASTNodes args(XQillaAllocator<ASTNode*>(MEMMGR));
+      args.push_back(elem->namespaceExpr);
+      args.push_back(const_cast<ASTNode*>(elem->getName()));
+      FunctionQName *name = WRAP(@1, new (MEMMGR) FunctionQName(args, MEMMGR));
+      elem->setName(name);
+      elem->namespaceExpr = 0;
+    }
+
+    VectorOfASTNodes *children = new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
+    *children = $2->getChildren();
+    elem->setChildren(children);
+  }
+  ;
+
+ElementAttrs_XSLT:
+    _XSLT_ELEMENT_
+  {
+    $$ = WRAP(@1, new (MEMMGR) XQElementConstructor(0, 0, 0, MEMMGR));
+  }
+  | ElementAttrs_XSLT _XSLT_NAME_ AttrValueTemplate_XSLT
+  {
+    $$ = $1;
+
+    ASTNode *content = WRAP(@3, new (MEMMGR) XQSimpleContent($3, MEMMGR));
+    ((XQElementConstructor*)$$)->setName(PRESERVE_NS(@2, content));
+  }
+  | ElementAttrs_XSLT _XSLT_NAMESPACE_A_ AttrValueTemplate_XSLT
+  {
+    $$ = $1;
+
+    ASTNode *content = WRAP(@3, new (MEMMGR) XQSimpleContent($3, MEMMGR));
+    ((XQElementConstructor*)$$)->namespaceExpr = PRESERVE_NS(@2, content);
   }
   ;
 
