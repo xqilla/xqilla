@@ -63,6 +63,7 @@ src/ast/XQDOMConstructor.cpp \
 src/ast/XQDocumentConstructor.cpp \
 src/ast/XQElementConstructor.cpp \
 src/ast/XQAttributeConstructor.cpp \
+src/ast/XQNamespaceConstructor.cpp \
 src/ast/XQPIConstructor.cpp \
 src/ast/XQCommentConstructor.cpp \
 src/ast/XQTextConstructor.cpp \

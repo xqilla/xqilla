@@ -218,6 +218,7 @@ xqilla/ast/XQDOMConstructor.hpp \
 xqilla/ast/XQDocumentConstructor.hpp \
 xqilla/ast/XQElementConstructor.hpp \
 xqilla/ast/XQAttributeConstructor.hpp \
+xqilla/ast/XQNamespaceConstructor.hpp \
 xqilla/ast/XQPIConstructor.hpp \
 xqilla/ast/XQCommentConstructor.hpp \
 xqilla/ast/XQTextConstructor.hpp \
