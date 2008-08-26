@@ -164,17 +164,9 @@ void StaticAnalysis::variableUsed(const XMLCh *namespaceURI, const XMLCh *name)
   _dynamicVariables = new (_memMgr) VarEntry(namespaceURI, name, _dynamicVariables);
 }
 
-vector<pair<const XMLCh*, const XMLCh*> > StaticAnalysis::variablesUsed() const
+StaticAnalysis::VarEntry *StaticAnalysis::variablesUsed() const
 {
-  vector<pair<const XMLCh*, const XMLCh*> > result;
-
-  VarEntry *entry = _dynamicVariables;
-  while(entry) {
-    result.push_back(pair<const XMLCh*, const XMLCh*>(entry->uri, entry->name));
-    entry = entry->prev;
-  }
-
-  return result;
+  return _dynamicVariables;
 }
 
 bool StaticAnalysis::removeVariable(const XMLCh *namespaceURI, const XMLCh *name)

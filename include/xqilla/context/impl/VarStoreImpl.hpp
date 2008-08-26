@@ -39,6 +39,7 @@ class XQILLA_API VarStoreImpl : public VariableStore
 public:
   VarStoreImpl(XPath2MemoryManager *mm, const VariableStore *parent = 0);
   VarStoreImpl(const VarStoreImpl &other, XPath2MemoryManager *mm);
+  ~VarStoreImpl();
 
   virtual Result getVar(const XMLCh *namespaceURI, const XMLCh *name) const;
   virtual void getInScopeVariables(std::vector<std::pair<const XMLCh*, const XMLCh*> > &variables) const;
@@ -49,10 +50,17 @@ public:
   void cacheVariableStore(const StaticAnalysis &src, const VariableStore *toCache);
 
 private:
-  typedef XERCES_CPP_NAMESPACE_QUALIFIER RefHash2KeysTableOf<ResultBuffer> VariableHash;
+  class VarEntry {
+  public:
+    VarEntry(const XMLCh *uri, const XMLCh *name, const Result &result, unsigned int readCount, VarEntry *prev);
+    VarEntry(const XMLCh *uri, const XMLCh *name, const ResultBuffer &buffer, VarEntry *prev);
 
-  XERCES_CPP_NAMESPACE_QUALIFIER XMLStringPool uriPool_;
-  VariableHash store_;
+    const XMLCh *uri, *name;
+    ResultBuffer buffer;
+    VarEntry *prev;
+  };
+
+  VarEntry *store_;
 
   const VariableStore *parent_;
   XPath2MemoryManager *mm_;

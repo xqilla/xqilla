@@ -31,7 +31,7 @@ Result ClosureResult::create(const ASTNode *ast, DynamicContext *context, const 
 {
   // TBD We probably need to store the regex groups here too - jpcs
 
-  if(ast->getStaticAnalysis().variablesUsed().empty() &&
+  if(!ast->getStaticAnalysis().variablesUsed() &&
      !ast->getStaticAnalysis().areContextFlagsUsed()) {
     return ast->createResult(context);
   }
@@ -61,6 +61,16 @@ ClosureResult::ClosureResult(const ASTNode *ast, DynamicContext *context, const 
     varStore_.clear();
     throw;
   }
+}
+
+Item::Ptr ClosureResult::next(DynamicContext *context)
+{
+  AutoDocumentCacheReset dcReset(context);
+  context->setDocumentCache(docCache_);
+  AutoContextInfoReset ciReset(context, contextItem_, contextPosition_, contextSize_);
+  AutoVariableStoreReset vsReset(context, &varStore_);
+
+  return result_->next(context);
 }
 
 Item::Ptr ClosureResult::nextOrTail(Result &tail, DynamicContext *context)

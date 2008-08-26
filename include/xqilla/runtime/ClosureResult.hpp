@@ -33,9 +33,8 @@ class DocumentCache;
 class XQILLA_API ClosureResult : public ResultImpl
 {
 public:
+  virtual Item::Ptr next(DynamicContext *context);
   virtual Item::Ptr nextOrTail(Result &tail, DynamicContext *context);
-
-  virtual std::string asString(DynamicContext *context, int indent) const { return ""; }
 
   static Result create(const ASTNode *ast, DynamicContext *context, const VariableStore *varStore = 0);
 
