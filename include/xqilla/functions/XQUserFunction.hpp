@@ -196,6 +196,8 @@ public:
   DocumentCache *getModuleDocumentCache() const { return moduleDocCache_; }
   const StaticAnalysis &getBodyStaticAnalysis() const { return src_; }
 
+  static void staticTypeFunctionCalls(ASTNode *item, StaticContext *context);
+
   static const XMLCh XMLChXQueryLocalFunctionsURI[];
 
 protected:

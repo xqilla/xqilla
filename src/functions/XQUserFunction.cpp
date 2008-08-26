@@ -398,6 +398,11 @@ private:
   StaticContext *context_;
 };
 
+void XQUserFunction::staticTypeFunctionCalls(ASTNode *item, StaticContext *context)
+{
+  UDFStaticTyper().run(item, context);
+}
+
 void XQUserFunction::staticTypingOnce(StaticContext *context)
 {
   // Avoid inifinite recursion for recursive functions
@@ -426,7 +431,7 @@ void XQUserFunction::staticTyping(StaticContext *context)
 
   // Find user defined functions and templates that are referenced in our body,
   // and try to call staticTyping() on them before us.
-  UDFStaticTyper().run(body_, context);
+  staticTypeFunctionCalls(body_, context);
 
   bool ciTypeSet = false;
   StaticType ciType = StaticType();

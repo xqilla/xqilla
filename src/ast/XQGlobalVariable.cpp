@@ -32,6 +32,7 @@
 #include <xqilla/exceptions/StaticErrorException.hpp>
 #include <xercesc/framework/XMLBuffer.hpp>
 #include <xqilla/ast/XQTreatAs.hpp>
+#include <xqilla/functions/XQUserFunction.hpp>
 
 XQGlobalVariable::XQGlobalVariable(const XMLCh* varQName, SequenceType* seqType, ASTNode* value, XPath2MemoryManager *mm, bool isParam)
   : isParam_(isParam),
@@ -149,6 +150,8 @@ void XQGlobalVariable::staticTyping(StaticContext* context)
   VariableTypeStore* varStore = context->getVariableTypeStore();
 
   if(m_Value != NULL) {
+    XQUserFunction::staticTypeFunctionCalls(m_Value, context);
+
     m_Value = m_Value->staticTyping(context);
     _src.copy(m_Value->getStaticAnalysis());
 
