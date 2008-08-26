@@ -156,49 +156,61 @@ ASTNode* GeneralComp::staticTyping(StaticContext *context)
   return this;
 }
 
+class GeneralCompResult : public ResultImpl
+{
+public:
+  GeneralCompResult(const GeneralComp *op)
+    : ResultImpl(op),
+      _op(op)
+  {
+  }
+
+  virtual Item::Ptr nextOrTail(Result &tail, DynamicContext *context)
+  {
+    // Atomization is applied to each operand of a general comparison.
+    Result arg1 = _op->getArgument(0)->createResult(context);
+    Result arg2 = _op->getArgument(1)->createResult(context);
+
+    // The result of the comparison is true if and only if there is a pair of atomic values, 
+    // one belonging to the result of atomization of the first operand and the other belonging 
+    // to the result of atomization of the second operand, that have the required magnitude relationship.
+    // Otherwise the result of the general comparison is false.
+
+    AnyAtomicType::Ptr item1 = (const AnyAtomicType::Ptr)arg1->next(context);
+    if(item1 != NULLRCP) {
+      // The first time we loop over arg2, we store it in a sequence
+      AnyAtomicType::Ptr item2;
+      Sequence arg2_sequence(context->getMemoryManager());
+      while((item2 = (const AnyAtomicType::Ptr)arg2->next(context)) != NULLRCP) {
+        if(GeneralComp::compare(_op->getOperation(), item1, item2, _op->getCollation(), context, _op->getXPath1CompatibilityMode(), this)) {
+          tail = 0;
+          return context->getItemFactory()->createBoolean(true, context);
+        }
+        arg2_sequence.addItem(item2);
+      }
+
+      // The second and subsequent times, we iterate over the sequence
+      Sequence::iterator itSecond;
+      while((item1 = (const AnyAtomicType::Ptr)arg1->next(context)) != NULLRCP) {
+        for(itSecond = arg2_sequence.begin(); itSecond != arg2_sequence.end(); ++itSecond) {
+          if(GeneralComp::compare(_op->getOperation(), item1, (const AnyAtomicType::Ptr)*itSecond, _op->getCollation(), context,
+                     _op->getXPath1CompatibilityMode(), this)) {
+            tail = 0;
+            return context->getItemFactory()->createBoolean(true, context);
+          }
+        }
+      }
+    }
+    tail = 0;
+    return context->getItemFactory()->createBoolean(false, context);
+  }
+
+private:
+  const GeneralComp *_op;
+};
+
 Result GeneralComp::createResult(DynamicContext* context, int flags) const
 {
   return new GeneralCompResult(this);
-}
-
-GeneralComp::GeneralCompResult::GeneralCompResult(const GeneralComp *op)
-  : SingleResult(op),
-    _op(op)
-{
-}
-
-Item::Ptr GeneralComp::GeneralCompResult::getSingleResult(DynamicContext *context) const
-{
-  // Atomization is applied to each operand of a general comparison.
-  Result arg1 = _op->getArgument(0)->createResult(context);
-  Result arg2 = _op->getArgument(1)->createResult(context);
-
-  // The result of the comparison is true if and only if there is a pair of atomic values, 
-  // one belonging to the result of atomization of the first operand and the other belonging 
-  // to the result of atomization of the second operand, that have the required magnitude relationship.
-  // Otherwise the result of the general comparison is false.
-
-  AnyAtomicType::Ptr item1 = (const AnyAtomicType::Ptr)arg1->next(context);
-  if(item1 != NULLRCP) {
-    // The first time we loop over arg2, we store it in a sequence
-    AnyAtomicType::Ptr item2;
-    Sequence arg2_sequence(context->getMemoryManager());
-    while((item2 = (const AnyAtomicType::Ptr)arg2->next(context)) != NULLRCP) {
-      if(compare(_op->getOperation(), item1, item2, _op->getCollation(), context, _op->getXPath1CompatibilityMode(), this))
-        return (const Item::Ptr)context->getItemFactory()->createBoolean(true, context);
-      arg2_sequence.addItem(item2);
-    }
-
-    // The second and subsequent times, we iterate over the sequence
-    Sequence::iterator itSecond;
-    while((item1 = (const AnyAtomicType::Ptr)arg1->next(context)) != NULLRCP) {
-      for(itSecond = arg2_sequence.begin(); itSecond != arg2_sequence.end(); ++itSecond) {
-        if(compare(_op->getOperation(), item1, (const AnyAtomicType::Ptr)*itSecond, _op->getCollation(), context,
-                   _op->getXPath1CompatibilityMode(), this))
-          return (const Item::Ptr)context->getItemFactory()->createBoolean(true, context);
-      }
-    }
-  }
-  return (const Item::Ptr)context->getItemFactory()->createBoolean(false, context);
 }
 
