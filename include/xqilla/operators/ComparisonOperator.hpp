@@ -36,21 +36,7 @@ public:
   virtual ASTNode *staticTyping(StaticContext *context);
   Result createResult(DynamicContext* context, int flags=0) const;
 
-  AnyAtomicType::Ptr getArgument(unsigned int index, DynamicContext *context) const;
-
   virtual bool execute(const AnyAtomicType::Ptr &arg1, const AnyAtomicType::Ptr &arg2, DynamicContext *context) const = 0;
-
-protected:
-
-  class ComparisonResult : public SingleResult
-  {
-  public:
-    ComparisonResult(const ComparisonOperator *op);
-
-    Item::Ptr getSingleResult(DynamicContext *context) const;
-  private:
-    const ComparisonOperator *_op;
-  };
 };
 
-#endif // _COMPARISONOPERATOR_HPP
+#endif
