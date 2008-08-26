@@ -29,36 +29,39 @@ XERCES_CPP_NAMESPACE_USE;
 using namespace std;
 
 VarStoreImpl::VarStoreImpl(XPath2MemoryManager *mm, const VariableStore *parent)
-  : uriPool_(1, mm),
-    store_(5, true, mm),
+  : store_(0),
     parent_(parent),
     mm_(mm)
 {
 }
 
 VarStoreImpl::VarStoreImpl(const VarStoreImpl &other, XPath2MemoryManager *mm)
-  : uriPool_(1, mm),
-    store_(5, true, mm),
+  : store_(0),
     parent_(other.parent_),
     mm_(mm)
 {
-  RefHash2KeysTableOfEnumerator<ResultBuffer> en(&const_cast<VarStoreImpl&>(other).store_);
-  RefHash2KeysTableOfEnumerator<ResultBuffer> en2(&const_cast<VarStoreImpl&>(other).store_);
-  while(en.hasMoreElements()) {
-    void *name;
-    int nsID;
-    en.nextElementKey(name, nsID);
-    setVar(other.uriPool_.getValueForId(nsID), (XMLCh*)name, en2.nextElement().createResult());
+  VarEntry *entry = other.store_;
+  while(entry) {
+    store_ = new VarEntry(entry->uri, entry->name, entry->buffer, store_);
+    entry = entry->prev;
   }
+}
+
+VarStoreImpl::~VarStoreImpl()
+{
+  clear();
 }
 
 Result VarStoreImpl::getVar(const XMLCh *namespaceURI, const XMLCh *name) const
 {
-  unsigned int nsID = uriPool_.getId(namespaceURI);
-  // if the namespace is not in the map, the variable is not there neither
-  if(nsID != 0) {
-    const ResultBuffer *result = store_.get(mm_->getPooledString(name), nsID);
-    if(result != 0) return const_cast<ResultBuffer*>(result)->createResult();
+  VarEntry *entry = store_;
+  while(entry) {
+    if(XPath2Utils::equals(name, entry->name) &&
+       XPath2Utils::equals(namespaceURI, entry->uri)) {
+      return entry->buffer.createResult();
+    }
+
+    entry = entry->prev;
   }
 
   if(parent_ != 0) return parent_->getVar(namespaceURI, name);
@@ -68,12 +71,10 @@ Result VarStoreImpl::getVar(const XMLCh *namespaceURI, const XMLCh *name) const
 
 void VarStoreImpl::getInScopeVariables(vector<pair<const XMLCh*, const XMLCh*> > &variables) const
 {
-  RefHash2KeysTableOfEnumerator<ResultBuffer> en(&const_cast<VarStoreImpl*>(this)->store_);
-  while(en.hasMoreElements()) {
-    void *name;
-    int nsID;
-    en.nextElementKey(name, nsID);
-    variables.push_back(pair<const XMLCh*, const XMLCh*>(uriPool_.getValueForId(nsID), (XMLCh*)name));
+  VarEntry *entry = store_;
+  while(entry) {
+    variables.push_back(pair<const XMLCh*, const XMLCh*>(entry->uri, entry->name));
+    entry = entry->prev;
   }
 
   if(parent_ != 0) parent_->getInScopeVariables(variables);
@@ -81,23 +82,56 @@ void VarStoreImpl::getInScopeVariables(vector<pair<const XMLCh*, const XMLCh*> >
 
 void VarStoreImpl::setVar(const XMLCh *namespaceURI, const XMLCh *name, const Result &value, unsigned int readCount)
 {
-  unsigned int nsID = uriPool_.addOrFind(namespaceURI);
-  store_.put((void*)mm_->getPooledString(name), nsID, new ResultBuffer(value, readCount));
+  VarEntry *entry = store_;
+  while(entry) {
+    if(XPath2Utils::equals(name, entry->name) &&
+       XPath2Utils::equals(namespaceURI, entry->uri)) {
+      entry->buffer = ResultBuffer(value, readCount);
+      return;
+    }
+
+    entry = entry->prev;
+  }
+
+  store_ = new VarEntry(mm_->getPooledString(namespaceURI), mm_->getPooledString(name),
+                        value, readCount, store_);
 }
 
 void VarStoreImpl::clear()
 {
-  uriPool_.flushAll();
-  store_.removeAll();
+  VarEntry *tmp;
+  while(store_) {
+    tmp = store_;
+    store_ = store_->prev;
+    delete tmp;
+  }
 }
 
 void VarStoreImpl::cacheVariableStore(const StaticAnalysis &src, const VariableStore *toCache)
 {
-  vector<pair<const XMLCh*, const XMLCh*> > vars = src.variablesUsed();
-  for(vector<pair<const XMLCh*, const XMLCh*> >::iterator i = vars.begin(); i != vars.end(); ++i) {
+  StaticAnalysis::VarEntry *entry = src.variablesUsed();
+  while(entry) {
     // TBD variable use count - jpcs
-    setVar(i->first, i->second, toCache->getVar(i->first, i->second));
+    store_ = new VarEntry(entry->uri, entry->name, toCache->getVar(entry->uri, entry->name),
+                          ResultBufferImpl::UNLIMITED_COUNT, store_);
+    entry = entry->prev;
   }
+}
+
+VarStoreImpl::VarStoreImpl::VarEntry::VarEntry(const XMLCh *u, const XMLCh *n, const Result &r, unsigned int readCount, VarEntry *p)
+  : uri(u),
+    name(n),
+    buffer(r, readCount),
+    prev(p)
+{
+}
+
+VarStoreImpl::VarEntry::VarEntry(const XMLCh *u, const XMLCh *n, const ResultBuffer &buffer, VarEntry *p)
+  : uri(u),
+    name(n),
+    buffer(buffer),
+    prev(p)
+{
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

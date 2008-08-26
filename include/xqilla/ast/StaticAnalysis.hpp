@@ -37,6 +37,16 @@ class XPath2MemoryManager;
 class XQILLA_API StaticAnalysis
 {
 public:
+  class XQILLA_API VarEntry
+  {
+  public:
+    VarEntry(const XMLCh *u, const XMLCh *n, VarEntry *p)
+      : uri(u), name(n), prev(p) {}
+
+    const XMLCh *uri, *name;
+    VarEntry *prev;
+  };
+
   StaticAnalysis(XPath2MemoryManager* memMgr);
   StaticAnalysis(const StaticAnalysis &o, XPath2MemoryManager* memMgr);
 
@@ -69,7 +79,7 @@ public:
   void variableUsed(const XMLCh *namespaceURI, const XMLCh *name);
   bool removeVariable(const XMLCh *namespaceURI, const XMLCh *name);
   bool isVariableUsed(const XMLCh *namespaceURI, const XMLCh *name) const;
-  std::vector<std::pair<const XMLCh*, const XMLCh*> > variablesUsed() const;
+  VarEntry *variablesUsed() const;
 
   /** Sets the members of this StaticAnalysis from the given StaticAnalysis */
   void add(const StaticAnalysis &o);
@@ -129,16 +139,6 @@ private:
 
   unsigned int _properties;
   StaticType _staticType;
-
-  class VarEntry
-  {
-  public:
-    VarEntry(const XMLCh *u, const XMLCh *n, VarEntry *p)
-      : uri(u), name(n), prev(p) {}
-
-    const XMLCh *uri, *name;
-    VarEntry *prev;
-  };
 
   VarEntry *_dynamicVariables;
   XPath2MemoryManager *_memMgr;
