@@ -70,6 +70,7 @@ src/ast/XQInstanceOf.cpp lib
 src/ast/XQLiteral.cpp lib
 src/ast/XQMap.cpp lib
 src/ast/XQNamespaceBinding.cpp lib
+src/ast/XQNamespaceConstructor.cpp lib
 src/ast/XQNav.cpp lib
 src/ast/XQOperator.cpp lib
 src/ast/XQOrderingChange.cpp lib
@@ -584,6 +585,7 @@ include/xqilla/ast/XQInstanceOf.hpp lib
 include/xqilla/ast/XQLiteral.hpp lib
 include/xqilla/ast/XQMap.hpp lib
 include/xqilla/ast/XQNamespaceBinding.hpp lib
+include/xqilla/ast/XQNamespaceConstructor.hpp lib
 include/xqilla/ast/XQNav.hpp lib
 include/xqilla/ast/XQOperator.hpp lib
 include/xqilla/ast/XQOrderingChange.hpp lib

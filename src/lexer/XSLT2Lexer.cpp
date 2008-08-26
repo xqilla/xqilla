@@ -375,6 +375,7 @@ const InstructionInfo INSTRUCTION_INFO[] = {
   { OUTPUT_NAME,                 _XSLT_OUTPUT_,                 OUTPUT_ATTR_DATA,          InstructionInfo::DEFAULT  },
   { IMPORT_SCHEMA_NAME,          _XSLT_IMPORT_SCHEMA_,          IMPORT_SCHEMA_ATTR_DATA,   InstructionInfo::DEFAULT  },
   { ELEMENT_NAME,                _XSLT_ELEMENT_,                ELEMENT_ATTR_DATA,         InstructionInfo::DEFAULT  },
+  { NAMESPACE_NAME,              _XSLT_NAMESPACE_,              NAMESPACE_ATTR_DATA,       InstructionInfo::DEFAULT  },
   { 0, 0 }
 };
 

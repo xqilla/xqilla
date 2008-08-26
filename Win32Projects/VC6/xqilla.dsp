@@ -253,6 +253,10 @@ SOURCE=..\..\src\ast\XQNamespaceBinding.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\ast\XQNamespaceConstructor.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\ast\XQNav.cpp
 # End Source File
 # Begin Source File
@@ -478,6 +482,10 @@ SOURCE=..\..\include\xqilla\ast\XQMap.hpp
 # Begin Source File
 
 SOURCE=..\..\include\xqilla\ast\XQNamespaceBinding.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\ast\XQNamespaceConstructor.hpp
 # End Source File
 # Begin Source File
 

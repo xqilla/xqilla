@@ -1,8 +1,6 @@
 <errors>
-  <error id="accessor20_012_01" reason="error failure"/>
   <error id="accessor20_013_01" reason="result failure"/>
   <error id="accessor20_015_01" reason="result failure"/>
-  <error id="accessor20_019_01" reason="error failure"/>
   <error id="accessor20_032_01" reason="error failure"/>
   <error id="atrs01" reason="error failure"/>
   <error id="atrs02" reason="error failure"/>
@@ -61,7 +59,6 @@
   <error id="attrconstructerr20_004_01" reason="error failure"/>
   <error id="attribvaltemplate20_004_01" reason="result failure"/>
   <error id="attribvaltemplate20_006_01" reason="result failure"/>
-  <error id="attribvaltemplate20_007_01" reason="error failure"/>
   <error id="attribvaltemplate20_009_01" reason="error failure"/>
   <error id="attribvaltemplate20_018_01" reason="error failure"/>
   <error id="attribvaltemplate20_019_01" reason="error failure"/>
@@ -515,7 +512,6 @@
   <error id="docs20_030_01" reason="error failure"/>
   <error id="docs20_036_01" reason="result failure"/>
   <error id="elemconstruct20_002_01" reason="error failure"/>
-  <error id="elemconstruct20_004_01" reason="error failure"/>
   <error id="elemconstruct20_005_01" reason="error failure"/>
   <error id="elemconstruct20_006_01" reason="result failure"/>
   <error id="elemconstruct20_007_01" reason="error failure"/>
@@ -548,7 +544,7 @@
   <error id="error012" reason="error failure"/>
   <error id="error018" reason="error failure"/>
   <error id="error019" reason="error failure"/>
-  <error id="error020" reason="error failure"/>
+  <error id="error020" reason="no error failure"/>
   <error id="error021" reason="error failure"/>
   <error id="error023" reason="error failure"/>
   <error id="error024" reason="error failure"/>
@@ -726,7 +722,7 @@
   <error id="errorcode0410" reason="error failure"/>
   <error id="errorcode0420" reason="error failure"/>
   <error id="errorcode0430" reason="error failure"/>
-  <error id="errorcode0440" reason="error failure"/>
+  <error id="errorcode0440" reason="no error failure"/>
   <error id="errorcode0485" reason="error failure"/>
   <error id="errorcode0500a" reason="no error failure"/>
   <error id="errorcode0500b" reason="no error failure"/>
@@ -772,13 +768,8 @@
   <error id="errorcode0865" reason="error failure"/>
   <error id="errorcode0890" reason="error failure"/>
   <error id="errorcode0890a" reason="error failure"/>
-  <error id="errorcode0905" reason="error failure"/>
+  <error id="errorcode0905" reason="no error failure"/>
   <error id="errorcode0910" reason="error failure"/>
-  <error id="errorcode0920" reason="error failure"/>
-  <error id="errorcode0920a" reason="error failure"/>
-  <error id="errorcode0925" reason="error failure"/>
-  <error id="errorcode0925a" reason="error failure"/>
-  <error id="errorcode0930" reason="error failure"/>
   <error id="errorcode0950" reason="error failure"/>
   <error id="errorcode0950a" reason="error failure"/>
   <error id="errorcode0975" reason="error failure"/>
@@ -882,7 +873,7 @@
   <error id="errorcode1600" reason="error failure"/>
   <error id="expr02" reason="error failure"/>
   <error id="expr10" reason="error failure"/>
-  <error id="expr15" reason="result failure"/>
+  <error id="expr14" reason="result failure"/>
   <error id="expr16" reason="error failure"/>
   <error id="expr17" reason="error failure"/>
   <error id="expr36" reason="result failure"/>
@@ -1355,7 +1346,6 @@
   <error id="node15" reason="error failure"/>
   <error id="node20" reason="result failure"/>
   <error id="node21" reason="result failure"/>
-  <error id="node54" reason="error failure"/>
   <error id="node56" reason="error failure"/>
   <error id="nodeconstruct20_006_01" reason="result failure"/>
   <error id="nodeconstruct20_009_01" reason="error failure"/>
@@ -1476,7 +1466,6 @@
   <error id="nspc18" reason="error failure"/>
   <error id="nspc19" reason="error failure"/>
   <error id="nspc20" reason="error failure"/>
-  <error id="nspc21" reason="error failure"/>
   <error id="nspc24" reason="result failure"/>
   <error id="nspc25" reason="result failure"/>
   <error id="nspc26" reason="result failure"/>
@@ -1494,13 +1483,12 @@
   <error id="nspc39" reason="error failure"/>
   <error id="nspc40" reason="result failure"/>
   <error id="nspc42" reason="result failure"/>
-  <error id="nspc43" reason="error failure"/>
+  <error id="nspc43" reason="result failure"/>
   <error id="nspc45" reason="error failure"/>
   <error id="nspc48" reason="result failure"/>
   <error id="nspc49" reason="result failure"/>
   <error id="nspc50" reason="error failure"/>
   <error id="nspc51" reason="error failure"/>
-  <error id="nspc53" reason="error failure"/>
   <error id="nspc55" reason="error failure"/>
   <error id="nspc56" reason="error failure"/>
   <error id="nspc57" reason="error failure"/>

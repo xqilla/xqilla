@@ -79,25 +79,26 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	ConstantFoldingFunction.lo NumericFunction.lo \
 	XQDOMConstructor.lo XQDocumentConstructor.lo \
 	XQElementConstructor.lo XQAttributeConstructor.lo \
-	XQPIConstructor.lo XQCommentConstructor.lo \
-	XQTextConstructor.lo XQFunctionCall.lo XQFunctionConversion.lo \
-	XQFunctionDeref.lo XQFunctionRef.lo XQGlobalVariable.lo \
-	XQOrderingChange.lo XQQuantified.lo XQValidate.lo \
-	XQTypeswitch.lo XPath1Compat.lo ConvertFunctionArg.lo \
-	XQDocumentOrder.lo XQPredicate.lo XQReturn.lo TupleNode.lo \
-	ContextTuple.lo ForTuple.lo LetTuple.lo WhereTuple.lo \
-	OrderByTuple.lo XQNamespaceBinding.lo XQCallTemplate.lo \
-	XQApplyTemplates.lo ASTDebugHook.lo DebugHookDecorator.lo \
-	TupleDebugHook.lo InputParser.lo InteractiveDebugger.lo \
-	StackFrame.lo ContentSequenceFilter.lo EventGenerator.lo \
-	EventSerializer.lo NoInheritFilter.lo NSFixupFilter.lo \
-	QueryPathTreeFilter.lo FTContains.lo FTWords.lo FTOr.lo \
-	FTAnd.lo FTMildnot.lo FTUnaryNot.lo DefaultTokenizer.lo \
-	DefaultTokenStore.lo FTOrder.lo FTDistance.lo FTScope.lo \
-	FTContent.lo FTWindow.lo XQillaBuilderImpl.lo \
-	XQillaDocumentImpl.lo XQillaExpressionImpl.lo \
-	XQillaNSResolverImpl.lo XQillaXMLGrammarPoolImpl.lo \
-	XPathDocumentImpl.lo XPathNamespaceImpl.lo XPath2ResultImpl.lo \
+	XQNamespaceConstructor.lo XQPIConstructor.lo \
+	XQCommentConstructor.lo XQTextConstructor.lo XQFunctionCall.lo \
+	XQFunctionConversion.lo XQFunctionDeref.lo XQFunctionRef.lo \
+	XQGlobalVariable.lo XQOrderingChange.lo XQQuantified.lo \
+	XQValidate.lo XQTypeswitch.lo XPath1Compat.lo \
+	ConvertFunctionArg.lo XQDocumentOrder.lo XQPredicate.lo \
+	XQReturn.lo TupleNode.lo ContextTuple.lo ForTuple.lo \
+	LetTuple.lo WhereTuple.lo OrderByTuple.lo \
+	XQNamespaceBinding.lo XQCallTemplate.lo XQApplyTemplates.lo \
+	ASTDebugHook.lo DebugHookDecorator.lo TupleDebugHook.lo \
+	InputParser.lo InteractiveDebugger.lo StackFrame.lo \
+	ContentSequenceFilter.lo EventGenerator.lo EventSerializer.lo \
+	NoInheritFilter.lo NSFixupFilter.lo QueryPathTreeFilter.lo \
+	FTContains.lo FTWords.lo FTOr.lo FTAnd.lo FTMildnot.lo \
+	FTUnaryNot.lo DefaultTokenizer.lo DefaultTokenStore.lo \
+	FTOrder.lo FTDistance.lo FTScope.lo FTContent.lo FTWindow.lo \
+	XQillaBuilderImpl.lo XQillaDocumentImpl.lo \
+	XQillaExpressionImpl.lo XQillaNSResolverImpl.lo \
+	XQillaXMLGrammarPoolImpl.lo XPathDocumentImpl.lo \
+	XPathNamespaceImpl.lo XPath2ResultImpl.lo \
 	XQillaImplementation.lo XPath2NodeSerializer.lo XQilla.lo \
 	XQQuery.lo UTF8Str.lo XMLChCompare.lo XStr.lo ContextUtils.lo \
 	DateUtils.lo NumUtils.lo XQillaPlatformUtils.lo PrintAST.lo \
@@ -500,6 +501,7 @@ src/ast/XQDOMConstructor.cpp \
 src/ast/XQDocumentConstructor.cpp \
 src/ast/XQElementConstructor.cpp \
 src/ast/XQAttributeConstructor.cpp \
+src/ast/XQNamespaceConstructor.cpp \
 src/ast/XQPIConstructor.cpp \
 src/ast/XQCommentConstructor.cpp \
 src/ast/XQTextConstructor.cpp \
@@ -1552,6 +1554,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQLiteral.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQMap.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQNamespaceBinding.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQNamespaceConstructor.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQNav.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQOperator.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQOrderingChange.Plo@am__quote@
@@ -2311,6 +2314,13 @@ XQAttributeConstructor.lo: src/ast/XQAttributeConstructor.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/ast/XQAttributeConstructor.cpp' object='XQAttributeConstructor.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQAttributeConstructor.lo `test -f 'src/ast/XQAttributeConstructor.cpp' || echo '$(srcdir)/'`src/ast/XQAttributeConstructor.cpp
+
+XQNamespaceConstructor.lo: src/ast/XQNamespaceConstructor.cpp
+@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQNamespaceConstructor.lo -MD -MP -MF $(DEPDIR)/XQNamespaceConstructor.Tpo -c -o XQNamespaceConstructor.lo `test -f 'src/ast/XQNamespaceConstructor.cpp' || echo '$(srcdir)/'`src/ast/XQNamespaceConstructor.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/XQNamespaceConstructor.Tpo $(DEPDIR)/XQNamespaceConstructor.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/ast/XQNamespaceConstructor.cpp' object='XQNamespaceConstructor.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQNamespaceConstructor.lo `test -f 'src/ast/XQNamespaceConstructor.cpp' || echo '$(srcdir)/'`src/ast/XQNamespaceConstructor.cpp
 
 XQPIConstructor.lo: src/ast/XQPIConstructor.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQPIConstructor.lo -MD -MP -MF $(DEPDIR)/XQPIConstructor.Tpo -c -o XQPIConstructor.lo `test -f 'src/ast/XQPIConstructor.cpp' || echo '$(srcdir)/'`src/ast/XQPIConstructor.cpp

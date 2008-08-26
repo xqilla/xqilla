@@ -63,6 +63,7 @@
       <File RelativePath="..\..\include\xqilla\ast\XQDocumentConstructor.hpp"/>
       <File RelativePath="..\..\include\xqilla\ast\XQElementConstructor.hpp"/>
       <File RelativePath="..\..\include\xqilla\ast\XQAttributeConstructor.hpp"/>
+      <File RelativePath="..\..\include\xqilla\ast\XQNamespaceConstructor.hpp"/>
       <File RelativePath="..\..\include\xqilla\ast\XQPIConstructor.hpp"/>
       <File RelativePath="..\..\include\xqilla\ast\XQCommentConstructor.hpp"/>
       <File RelativePath="..\..\include\xqilla\ast\XQTextConstructor.hpp"/>
@@ -456,6 +457,7 @@
       <File RelativePath="..\..\src\ast\XQAtomize.cpp"/>
       <File RelativePath="..\..\src\ast\XQMap.cpp"/>
       <File RelativePath="..\..\src\ast\XQAttributeConstructor.cpp"/>
+      <File RelativePath="..\..\src\ast\XQNamespaceConstructor.cpp"/>
       <File RelativePath="..\..\src\ast\XQCallTemplate.cpp"/>
       <File RelativePath="..\..\src\ast\XQCastAs.cpp"/>
       <File RelativePath="..\..\src\ast\XQCastableAs.cpp"/>

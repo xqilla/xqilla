@@ -39,6 +39,7 @@
 #include <xqilla/ast/XQDocumentConstructor.hpp>
 #include <xqilla/ast/XQElementConstructor.hpp>
 #include <xqilla/ast/XQAttributeConstructor.hpp>
+#include <xqilla/ast/XQNamespaceConstructor.hpp>
 #include <xqilla/ast/XQPIConstructor.hpp>
 #include <xqilla/ast/XQCommentConstructor.hpp>
 #include <xqilla/ast/XQTextConstructor.hpp>
@@ -599,6 +600,7 @@ namespace XQParser {
 %token _XSLT_PI_                                              "<xsl:processing-instruction..."
 %token _XSLT_DOCUMENT_                                        "<xsl:document..."
 %token _XSLT_ATTRIBUTE_                                       "<xsl:attribute..."
+%token _XSLT_NAMESPACE_                                       "<xsl:namespace..."
 %token _XSLT_ELEMENT_                                         "<xsl:element..."
 %token _XSLT_ANALYZE_STRING_                                  "<xsl:analyze-string..."
 %token _XSLT_MATCHING_SUBSTRING_                              "<xsl:matching-substring..."
@@ -681,7 +683,7 @@ namespace XQParser {
 %type <astNode>      PI_XSLT PIAttrs_XSLT Document_XSLT DocumentAttrs_XSLT Attribute_XSLT AttributeAttrs_XSLT
 %type <astNode>      AnalyzeString_XSLT AnalyzeStringAttrs_XSLT MatchingSubstring_XSLT NonMatchingSubstring_XSLT
 %type <astNode>      CopyOf_XSLT CopyOfAttrs_XSLT Copy_XSLT CopyAttrs_XSLT ForEach_XSLT ForEachAttrs_XSLT Instruction_XSLT
-%type <astNode>      SequenceAttrs_XSLT IfAttrs_XSLT WhenAttrs_XSLT Element_XSLT ElementAttrs_XSLT
+%type <astNode>      SequenceAttrs_XSLT IfAttrs_XSLT WhenAttrs_XSLT Element_XSLT ElementAttrs_XSLT Namespace_XSLT NamespaceAttrs_XSLT
 %type <astNode>      RelativePathPattern_XSLT PatternStep_XSLT IdKeyPattern_XSLT PathPatternStart_XSLT
 
 %type <parenExpr>    SequenceConstructor_XSLT
@@ -733,13 +735,13 @@ namespace XQParser {
 // 2 arise from the xgs:occurrence-indicator grammar constriant (http://www.w3.org/TR/xquery/#parse-note-occurence-indicators)
 //%expect 50
 
-// We're expecting 89 shift/reduce conflicts. These have been checked and are harmless.
+// We're expecting 90 shift/reduce conflicts. These have been checked and are harmless.
 // 48 arise from the xgs:leading-lone-slash grammar constraint (http://www.w3.org/TR/xquery/#parse-note-leading-lone-slash)
 // 3 arise from the xgs:occurrence-indicator grammar constriant (http://www.w3.org/TR/xquery/#parse-note-occurence-indicators)
 // 17 are due to template extensions
-// 20 are due to Variable_XSLT
+// 21 are due to Variable_XSLT
 // 1 is due to FunctionType
-%expect 89
+%expect 90
 
 %%
 
@@ -1359,6 +1361,7 @@ Instruction_XSLT:
   | PI_XSLT
   | Document_XSLT
   | Attribute_XSLT
+  | Namespace_XSLT
   | Element_XSLT
   | AnalyzeString_XSLT
   | CopyOf_XSLT
@@ -1931,6 +1934,56 @@ AttributeAttrs_XSLT:
     $$ = $1;
     // TBD separator - jpcs
 /*     ((XQAttributeConstructor*)$$)->setChildren(children); */
+  }
+  ;
+
+Namespace_XSLT:
+    NamespaceAttrs_XSLT SequenceConstructor_XSLT _XSLT_END_ELEMENT_
+  {
+    XQNamespaceConstructor *ns = (XQNamespaceConstructor*)$1;
+    $$ = ns;
+
+    if(ns->getName() == 0) {
+      yyerror(@1, "The xsl:namespace instruction does not have a {}name attribute");
+    }
+
+    if(!$2->getChildren().empty()) {
+      if(ns->getChildren() != 0 && !ns->getChildren()->empty()) {
+        yyerror(@1, "The xsl:namespace instruction has both a select attribute and a sequence constructor [err:XTSE0840]");
+      }
+
+      VectorOfASTNodes *children = new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
+      *children = $2->getChildren();
+      ns->setChildren(children);
+    }
+    else if(ns->getChildren() == 0) {
+      VectorOfASTNodes *children = new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
+      children->push_back(WRAP(@1, new (MEMMGR) XQSequence(MEMMGR)));
+      ns->setChildren(children);
+    }
+  }
+  ;
+
+NamespaceAttrs_XSLT:
+    _XSLT_NAMESPACE_
+  {
+    $$ = WRAP(@1, new (MEMMGR) XQNamespaceConstructor(0, 0, MEMMGR));
+  }
+  | NamespaceAttrs_XSLT _XSLT_NAME_ AttrValueTemplate_XSLT
+  {
+    $$ = $1;
+
+    ASTNode *content = WRAP(@3, new (MEMMGR) XQSimpleContent($3, MEMMGR));
+    ((XQNamespaceConstructor*)$$)->setName(PRESERVE_NS(@2, content));
+  }
+  | NamespaceAttrs_XSLT _XSLT_SELECT_ Expr
+  {
+    $$ = $1;
+
+    VectorOfASTNodes *children = new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
+    children->push_back(PRESERVE_NS(@2, $3));
+
+    ((XQNamespaceConstructor*)$$)->setChildren(children);
   }
   ;
 
