@@ -31,6 +31,7 @@
 #include <xqilla/exceptions/IllegalArgumentException.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/context/ItemFactory.hpp>
+#include <xqilla/utils/XPath2Utils.hpp>
 
 #include <xercesc/util/XMLUniDefs.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
@@ -204,17 +205,16 @@ AnyAtomicType::Ptr Numeric::castAsInternal(AtomicObjectType targetIndex, const X
       if(targetType != 0 && context->isTypeOrDerivedFromType(targetURI, targetType,
                                                              SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                                                              SchemaSymbols::fgDT_INTEGER)) {
-        if(isNegative()) {
-          return context->getItemFactory()->createDecimalOrDerived(targetURI, targetType, asMAPM().ceil(), context);
+        if(XPath2Utils::equals(targetType, SchemaSymbols::fgDT_INTEGER) &&
+           XPath2Utils::equals(targetURI, SchemaSymbols::fgURI_SCHEMAFORSCHEMA)) {
+          return context->getItemFactory()->createInteger(isNegative() ? asMAPM().ceil() : asMAPM().floor(), context);
         }
-        else {
-          return context->getItemFactory()->createDecimalOrDerived(targetURI, targetType, asMAPM().floor(), context);
-        }
+
+        return context->getItemFactory()->createDecimalOrDerived(targetURI, targetType, isNegative() ? asMAPM().ceil() : asMAPM().floor(), context);
       }    
       else {
         if(targetType == 0) {
-          targetURI = SchemaSymbols::fgURI_SCHEMAFORSCHEMA;
-          targetType = SchemaSymbols::fgDT_DECIMAL;
+          return context->getItemFactory()->createDecimal(asMAPM(), context);
         }
         return context->getItemFactory()->createDecimalOrDerived(targetURI, targetType, asMAPM(), context);
       }
@@ -234,8 +234,7 @@ AnyAtomicType::Ptr Numeric::castAsInternal(AtomicObjectType targetIndex, const X
       // Fall through
     case NUM:
       if(targetType == 0) {
-        targetURI = SchemaSymbols::fgURI_SCHEMAFORSCHEMA;
-        targetType = SchemaSymbols::fgDT_FLOAT;
+        return context->getItemFactory()->createFloat(asMAPM(), context);
       }
       return context->getItemFactory()->createFloatOrDerived(targetURI, targetType, asMAPM(), context);
     }
@@ -254,8 +253,7 @@ AnyAtomicType::Ptr Numeric::castAsInternal(AtomicObjectType targetIndex, const X
       // Fall through
     case NUM:
       if(targetType == 0) {
-        targetURI = SchemaSymbols::fgURI_SCHEMAFORSCHEMA;
-        targetType = SchemaSymbols::fgDT_DOUBLE;
+        return context->getItemFactory()->createDouble(asMAPM(), context);
       }
       return context->getItemFactory()->createDoubleOrDerived(targetURI, targetType, asMAPM(), context);
     }
