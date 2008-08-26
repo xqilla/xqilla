@@ -60,7 +60,7 @@ inline ItemConstructor *itemToItemConstructor(const Item::Ptr &item, DynamicCont
     case AnyAtomicType::DOUBLE:
     case AnyAtomicType::FLOAT: {
       const Numeric *number = (const Numeric*)atom;
-      if((number->getState()==Numeric::NUM || number->getState()==Numeric::NEG_NUM) && !number->isZero())
+      if(number->getState()==Numeric::NUM || (number->getState()==Numeric::NEG_NUM && !number->isZero()))
         return new (memMgr) NumericTypeConstructor(number->getTypeURI(),
                                                    number->getTypeName(),
                                                    number->asMAPM(),
