@@ -114,37 +114,45 @@ ASTNode* ComparisonOperator::staticTyping(StaticContext *context)
   return this;
 }
 
-Result ComparisonOperator::createResult(DynamicContext* context, int flags) const
+class ComparisonResult : public ResultImpl
 {
-  return new ComparisonResult(this);
-}
-
-AnyAtomicType::Ptr ComparisonOperator::getArgument(unsigned int index, DynamicContext *context) const
-{
-  assert(getNumArgs() > index);
-  return (const AnyAtomicType::Ptr )_args[index]->createResult(context)->next(context);
-}
-
-ComparisonOperator::ComparisonResult::ComparisonResult(const ComparisonOperator *op)
-  : SingleResult(op),
-    _op(op)
-{
-}
-
-Item::Ptr ComparisonOperator::ComparisonResult::getSingleResult(DynamicContext *context) const
-{
-  try {
-    AnyAtomicType::Ptr left=_op->getArgument(0, context);
-    if(left.isNull()) return 0;
-    AnyAtomicType::Ptr right=_op->getArgument(1, context);
-    if(right.isNull()) return 0;
-    bool result = _op->execute(left, right, context);
-    return (const Item::Ptr)context->getItemFactory()->createBoolean(result, context);
+public:
+  ComparisonResult(const ComparisonOperator *op)
+    : ResultImpl(op),
+      _op(op)
+  {
   }
-  catch(XQException &e) {
+
+  virtual Item::Ptr nextOrTail(Result &tail, DynamicContext *context)
+  {
+    try {
+      AnyAtomicType::Ptr left = (AnyAtomicType*)_op->getArguments()[0]->createResult(context)->next(context).get();
+      if(left.isNull()) {
+        tail = 0;
+        return 0;
+      }
+      AnyAtomicType::Ptr right = (AnyAtomicType*)_op->getArguments()[1]->createResult(context)->next(context).get();
+      if(right.isNull()) {
+        tail = 0;
+        return 0;
+      }
+      bool result = _op->execute(left, right, context);
+      tail = 0;
+      return context->getItemFactory()->createBoolean(result, context);
+    }
+    catch(XQException &e) {
       if(e.getXQueryLine() == 0)
         e.setXQueryPosition(this);
       throw;
+    }
   }
+
+private:
+  const ComparisonOperator *_op;
+};
+
+Result ComparisonOperator::createResult(DynamicContext* context, int flags) const
+{
+  return new ComparisonResult(this);
 }
 
