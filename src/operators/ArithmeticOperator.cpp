@@ -161,32 +161,66 @@ void ArithmeticOperator::calculateStaticTypeForNumerics(const StaticType &arg0, 
   }
 }
 
-Result ArithmeticOperator::createResult(DynamicContext* context, int flags) const
+class ArithmeticResult : public ResultImpl
 {
-  return new ArithmeticResult(this);
-}
-
-AnyAtomicType::Ptr ArithmeticOperator::getArgument(unsigned int index, DynamicContext *context) const
-{
-  if(getNumArgs() <= index) return 0;
-  return (const AnyAtomicType::Ptr )_args[index]->createResult(context)->next(context);
-}
-
-ArithmeticOperator::ArithmeticResult::ArithmeticResult(const ArithmeticOperator *op)
-  : SingleResult(op),
-    _op(op)
-{
-}
-
-Item::Ptr ArithmeticOperator::ArithmeticResult::getSingleResult(DynamicContext *context) const
-{
-  try {
-    return _op->execute(_op->getArgument(0, context), _op->getArgument(1, context), context);
+public:
+  ArithmeticResult(const ArithmeticOperator *op)
+    : ResultImpl(op),
+      _op(op)
+  {
   }
-  catch(XQException &e) {
+
+  virtual Item::Ptr nextOrTail(Result &tail, DynamicContext *context)
+  {
+    try {
+      Item::Ptr item = _op->execute((AnyAtomicType*)_op->getArguments()[0]->createResult(context)->next(context).get(),
+                                    (AnyAtomicType*)_op->getArguments()[1]->createResult(context)->next(context).get(),
+                                    context);
+      tail = 0;
+      return item;
+    }
+    catch(XQException &e) {
       if(e.getXQueryLine() == 0)
         e.setXQueryPosition(this);
       throw;
+    }
   }
+
+private:
+  const ArithmeticOperator *_op;
+};
+
+class UnaryArithmeticResult : public ResultImpl
+{
+public:
+  UnaryArithmeticResult(const ArithmeticOperator *op)
+    : ResultImpl(op),
+      _op(op)
+  {
+  }
+
+  virtual Item::Ptr nextOrTail(Result &tail, DynamicContext *context)
+  {
+    try {
+      Item::Ptr item = _op->execute((AnyAtomicType*)_op->getArguments()[0]->createResult(context)->next(context).get(),
+                                    0, context);
+      tail = 0;
+      return item;
+    }
+    catch(XQException &e) {
+      if(e.getXQueryLine() == 0)
+        e.setXQueryPosition(this);
+      throw;
+    }
+  }
+
+private:
+  const ArithmeticOperator *_op;
+};
+
+Result ArithmeticOperator::createResult(DynamicContext* context, int flags) const
+{
+  if(getNumArgs() == 1) return new UnaryArithmeticResult(this);
+  return new ArithmeticResult(this);
 }
 
