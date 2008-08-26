@@ -42,9 +42,14 @@ public:
   virtual const XMLCh* getNodeType() const;
   virtual const ASTNode *getName() const;
   virtual const VectorOfASTNodes *getAttributes() const;
+  void setAttributes(VectorOfASTNodes *a) { m_attrList = a; }
   virtual const VectorOfASTNodes *getChildren() const;
+  void setChildren(VectorOfASTNodes *c) { m_children = c; }
 
   virtual void setName(ASTNode *name);
+
+  // Used for parsing only
+  ASTNode *namespaceExpr;
 
 protected:
   ASTNode* m_name;

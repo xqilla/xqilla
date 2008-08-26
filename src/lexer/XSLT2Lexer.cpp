@@ -84,6 +84,7 @@ const XMLCh COPY_NAME[] = { 'c', 'o', 'p', 'y', 0 };
 const XMLCh FOR_EACH_NAME[] = { 'f', 'o', 'r', '-', 'e', 'a', 'c', 'h', 0 };
 const XMLCh OUTPUT_NAME[] = { 'o', 'u', 't', 'p', 'u', 't', 0 };
 const XMLCh IMPORT_SCHEMA_NAME[] = { 'i', 'm', 'p', 'o', 'r', 't', '-', 's', 'c', 'h', 'e', 'm', 'a', 0 };
+const XMLCh ELEMENT_NAME[] = { 'e', 'l', 'e', 'm', 'e', 'n', 't', 0 };
 
 const XMLCh VERSION_NAME[] = { 'v', 'e', 'r', 's', 'i', 'o', 'n', 0 };
 const XMLCh MATCH_NAME[] = { 'm', 'a', 't', 'c', 'h', 0 };
@@ -246,6 +247,21 @@ const AttrData ATTRIBUTE_ATTR_DATA[] = {
   END_ATTR_DATA
 };
 
+const AttrData NAMESPACE_ATTR_DATA[] = {
+  { NAME_NAME,      _XSLT_NAME_,        AttrData::ATTR_VALUE_TEMPLATE },
+  SELECT_ATTR_DATA,
+  END_ATTR_DATA
+};
+
+const AttrData ELEMENT_ATTR_DATA[] = {
+  { NAME_NAME,      _XSLT_NAME_,        AttrData::ATTR_VALUE_TEMPLATE },
+  { NAMESPACE_NAME, _XSLT_NAMESPACE_A_, AttrData::ATTR_VALUE_TEMPLATE },
+  // TBD inherit-namespaces - jpcs
+  // TBD use-attribute-sets - jpcs
+  // TBD validation and type - jpcs
+  END_ATTR_DATA
+};
+
 const AttrData ANALYZE_STRING_ATTR_DATA[] = {
   SELECT_ATTR_DATA,
   { REGEX_NAME, _XSLT_REGEX_, AttrData::ATTR_VALUE_TEMPLATE },
@@ -358,6 +374,7 @@ const InstructionInfo INSTRUCTION_INFO[] = {
   { FOR_EACH_NAME,               _XSLT_FOR_EACH_,               FOR_EACH_ATTR_DATA,        InstructionInfo::DEFAULT  },
   { OUTPUT_NAME,                 _XSLT_OUTPUT_,                 OUTPUT_ATTR_DATA,          InstructionInfo::DEFAULT  },
   { IMPORT_SCHEMA_NAME,          _XSLT_IMPORT_SCHEMA_,          IMPORT_SCHEMA_ATTR_DATA,   InstructionInfo::DEFAULT  },
+  { ELEMENT_NAME,                _XSLT_ELEMENT_,                ELEMENT_ATTR_DATA,         InstructionInfo::DEFAULT  },
   { 0, 0 }
 };
 
