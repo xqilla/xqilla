@@ -32,6 +32,9 @@
 #include <xqilla/items/ATDurationOrDerived.hpp>
 #include <xqilla/items/ATUntypedAtomic.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
+#include <xqilla/utils/XStr.hpp>
+#include <xqilla/exceptions/TypeNotFoundException.hpp>
+#include "../../exceptions/InvalidLexicalSpaceException.hpp"
 
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 
@@ -84,22 +87,20 @@ ATQNameOrDerived::Ptr ItemFactoryImpl::createQName(const XMLCh* uri,
     );
 }
 
-ATDoubleOrDerived::Ptr ItemFactoryImpl::createDouble(const MAPM value, const DynamicContext* context) {
-  return createDoubleOrDerived(
-    SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-    SchemaSymbols::fgDT_DOUBLE,
-    value, context);
+ATDoubleOrDerived::Ptr ItemFactoryImpl::createDouble(const MAPM value, const DynamicContext* context)
+{
+  return new ATDoubleOrDerivedImpl(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                                   SchemaSymbols::fgDT_DOUBLE, value, context);
 }
 
 ATDoubleOrDerived::Ptr ItemFactoryImpl::createDouble(const XMLCh* value, const DynamicContext* context) {
   return (ATDoubleOrDerived*)datatypeLookup_->getDoubleFactory()->createInstance(value, context).get();
 }
 
-ATFloatOrDerived::Ptr ItemFactoryImpl::createFloat(const MAPM value, const DynamicContext* context) {
-  return createFloatOrDerived(
-    SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-    SchemaSymbols::fgDT_FLOAT,
-    value, context);
+ATFloatOrDerived::Ptr ItemFactoryImpl::createFloat(const MAPM value, const DynamicContext* context)
+{
+  return new ATFloatOrDerivedImpl(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                                  SchemaSymbols::fgDT_FLOAT, value, context);
 }
 
 ATFloatOrDerived::Ptr ItemFactoryImpl::createFloat(const XMLCh* value, const DynamicContext* context) {
@@ -107,10 +108,8 @@ ATFloatOrDerived::Ptr ItemFactoryImpl::createFloat(const XMLCh* value, const Dyn
 }
 
 ATDecimalOrDerived::Ptr ItemFactoryImpl::createDecimal(const MAPM value, const DynamicContext* context) {
-  return createDecimalOrDerived(
-    SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-    SchemaSymbols::fgDT_DECIMAL,
-    value, context);
+  return new ATDecimalOrDerivedImpl(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                                    SchemaSymbols::fgDT_DECIMAL, value, context);
 }
 
 ATDecimalOrDerived::Ptr ItemFactoryImpl::createDecimal(const XMLCh* value, const DynamicContext* context) {
@@ -121,7 +120,13 @@ ATDecimalOrDerived::Ptr ItemFactoryImpl::createInteger(const int value, const Dy
   return context->getMemoryManager()->createInteger(value);
 }
 
-ATDecimalOrDerived::Ptr ItemFactoryImpl::createInteger(const MAPM value, const DynamicContext* context) {
+ATDecimalOrDerived::Ptr ItemFactoryImpl::createInteger(const MAPM value, const DynamicContext* context)
+{
+  if(value.is_integer()) {
+    return new ATDecimalOrDerivedImpl(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                                      SchemaSymbols::fgDT_INTEGER, value, context);
+  }
+
   return createDecimalOrDerived(
     SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
     SchemaSymbols::fgDT_INTEGER,
@@ -146,7 +151,13 @@ ATBooleanOrDerived::Ptr ItemFactoryImpl::createBoolean(const XMLCh* value, const
   return (ATBooleanOrDerived*)datatypeLookup_->getBooleanFactory()->createInstance(value, context).get();
 }
 
-ATDecimalOrDerived::Ptr ItemFactoryImpl::createNonNegativeInteger(const MAPM value, const DynamicContext* context) {
+ATDecimalOrDerived::Ptr ItemFactoryImpl::createNonNegativeInteger(const MAPM value, const DynamicContext* context)
+{
+  if(value.is_integer() && value.sign() >= 0) {
+    return new ATDecimalOrDerivedImpl(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                                      SchemaSymbols::fgDT_NONNEGATIVEINTEGER, value, context);
+  }
+
   return createDecimalOrDerived(
     SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
     SchemaSymbols::fgDT_NONNEGATIVEINTEGER,
@@ -275,9 +286,31 @@ ATDecimalOrDerived::Ptr ItemFactoryImpl::createDecimalOrDerived(const XMLCh* typ
 ATDecimalOrDerived::Ptr ItemFactoryImpl::createDecimalOrDerived(const XMLCh* typeURI, 
                                                                   const XMLCh* typeName,
                                                                   const MAPM value,
-                                                                  const DynamicContext* context){
-  // No need to validate
-  return new ATDecimalOrDerivedImpl(typeURI, typeName, value, context);
+                                                                  const DynamicContext* context)
+{
+  ATDecimalOrDerived::Ptr retVal = new ATDecimalOrDerivedImpl(typeURI, typeName, value, context);
+
+  // check if it's a valid instance
+  DatatypeValidator* validator = context->getDocumentCache()->getDatatypeValidator(typeURI, typeName);
+  if(!validator) {
+    XMLBuffer buf(1023, context->getMemoryManager());
+    buf.append(X("Type "));
+    buf.append(typeURI);
+    buf.append(chColon);
+    buf.append(typeName);
+    buf.append(X(" not found"));
+    XQThrow2(TypeNotFoundException, X("ItemFactoryImpl::createDecimalOrDerived"), buf.getRawBuffer());
+  }
+  try {
+    validator->validate(retVal->asString(context), 0, context->getMemoryManager());
+  } catch (XMLException &e) {
+    XMLBuffer buf(1023, context->getMemoryManager());
+    buf.append(e.getMessage());
+    buf.append(X(" [err:FORG0001]"));
+    XQThrow2(InvalidLexicalSpaceException, X("ItemFactoryImpl::createDecimalOrDerived"), buf.getRawBuffer());
+  }
+
+  return retVal;
 }
 
 
@@ -296,9 +329,31 @@ ATDoubleOrDerived::Ptr ItemFactoryImpl::createDoubleOrDerived(const XMLCh* typeU
 ATDoubleOrDerived::Ptr ItemFactoryImpl::createDoubleOrDerived(const XMLCh* typeURI, 
                                                                 const XMLCh* typeName,
                                                                 const MAPM value, 
-                                                                const DynamicContext* context){
-  // No need to validate
-  return  new ATDoubleOrDerivedImpl(typeURI, typeName, value, context);
+                                                                const DynamicContext* context)
+{
+  ATDoubleOrDerived::Ptr retVal = new ATDoubleOrDerivedImpl(typeURI, typeName, value, context);
+
+  // check if it's a valid instance
+  DatatypeValidator* validator = context->getDocumentCache()->getDatatypeValidator(typeURI, typeName);
+  if(!validator) {
+    XMLBuffer buf(1023, context->getMemoryManager());
+    buf.append(X("Type "));
+    buf.append(typeURI);
+    buf.append(chColon);
+    buf.append(typeName);
+    buf.append(X(" not found"));
+    XQThrow2(TypeNotFoundException, X("ItemFactoryImpl::createDoubleOrDerived"), buf.getRawBuffer());
+  }
+  try {
+    validator->validate(retVal->asString(context), 0, context->getMemoryManager());
+  } catch (XMLException &e) {
+    XMLBuffer buf(1023, context->getMemoryManager());
+    buf.append(e.getMessage());
+    buf.append(X(" [err:FORG0001]"));
+    XQThrow2(InvalidLexicalSpaceException, X("ItemFactoryImpl::createDoubleOrDerived"), buf.getRawBuffer());
+  }
+
+  return retVal;
 }
 
 
@@ -318,9 +373,31 @@ ATFloatOrDerived::Ptr ItemFactoryImpl::createFloatOrDerived(const XMLCh* typeURI
 ATFloatOrDerived::Ptr ItemFactoryImpl::createFloatOrDerived(const XMLCh* typeURI, 
                                                               const XMLCh* typeName,
                                                               const MAPM value, 
-                                                              const DynamicContext* context) {
-  // No need to validate
-  return  new ATFloatOrDerivedImpl(typeURI, typeName, value, context);
+                                                              const DynamicContext* context)
+{ 
+  ATFloatOrDerived::Ptr retVal = new ATFloatOrDerivedImpl(typeURI, typeName, value, context);
+
+  // check if it's a valid instance
+  DatatypeValidator* validator = context->getDocumentCache()->getDatatypeValidator(typeURI, typeName);
+  if(!validator) {
+    XMLBuffer buf(1023, context->getMemoryManager());
+    buf.append(X("Type "));
+    buf.append(typeURI);
+    buf.append(chColon);
+    buf.append(typeName);
+    buf.append(X(" not found"));
+    XQThrow2(TypeNotFoundException, X("ItemFactoryImpl::createDoubleOrDerived"), buf.getRawBuffer());
+  }
+  try {
+    validator->validate(retVal->asString(context), 0, context->getMemoryManager());
+  } catch (XMLException &e) {
+    XMLBuffer buf(1023, context->getMemoryManager());
+    buf.append(e.getMessage());
+    buf.append(X(" [err:FORG0001]"));
+    XQThrow2(InvalidLexicalSpaceException, X("ItemFactoryImpl::createDoubleOrDerived"), buf.getRawBuffer());
+  }
+
+  return retVal;
 }
 
 /** create a xs:gDay */
