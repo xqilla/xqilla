@@ -62,16 +62,6 @@ public:
                       bool xpath1compat, const LocationInfo *info);
 
 protected:
-  class GeneralCompResult : public SingleResult
-  {
-  public:
-    GeneralCompResult(const GeneralComp *op);
-
-    Item::Ptr getSingleResult(DynamicContext *context) const;
-  private:
-    const GeneralComp *_op;
-  };
-
   ComparisonOperation operation_;
   Collation* collation_;
   bool xpath1compat_;
