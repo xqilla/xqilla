@@ -27,10 +27,12 @@
 #include <xercesc/framework/XMLBuffer.hpp>
 #include <xqilla/context/ItemFactory.hpp>
 
+XERCES_CPP_NAMESPACE_USE
+
 const XMLCh FunctionConcat::name[] = {
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_c, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_c, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chNull 
+  chLatin_c, chLatin_o, chLatin_n, 
+  chLatin_c, chLatin_a, chLatin_t, 
+  chNull 
 };
 const unsigned int FunctionConcat::minArgs = 2;
 const unsigned int FunctionConcat::maxArgs = (unsigned int) UNLIMITED;
@@ -48,14 +50,12 @@ FunctionConcat::FunctionConcat(const VectorOfASTNodes &args, XPath2MemoryManager
 
 Sequence FunctionConcat::createSequence(DynamicContext* context, int flags) const
 {
-  XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer result(1023, context->getMemoryManager());
+  XMLBuffer result;
   for(unsigned int i = 1; i <= getNumArgs(); ++i) {
-    Sequence item = getParamNumber(i,context)->toSequence(context);
-    if(!item.isEmpty()) {
-      result.append(item.first()->asString(context));
+    Item::Ptr item = getParamNumber(i,context)->next(context);
+    if(!item.isNull()) {
+      result.append(item->asString(context));
     }
   }
-  const ATStringOrDerived::Ptr strResult = context->getItemFactory()->createString(result.getRawBuffer(), context);
-
-  return Sequence(strResult, context->getMemoryManager());
+  return Sequence(context->getItemFactory()->createString(result.getRawBuffer(), context), context->getMemoryManager());
 }
