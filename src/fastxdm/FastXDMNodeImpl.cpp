@@ -1574,7 +1574,7 @@ const XMLCh* FastXDMNamespaceNodeImpl::dmStringValue(const DynamicContext* conte
 
 Sequence FastXDMNamespaceNodeImpl::dmTypedValue(DynamicContext* context) const
 {
-  return Sequence(context->getItemFactory()->createUntypedAtomic(uri_, context), context->getMemoryManager()); 
+  return Sequence(context->getItemFactory()->createString(uri_, context), context->getMemoryManager());
 }
 
 Sequence FastXDMNamespaceNodeImpl::dmDocumentURI(const DynamicContext* context) const
