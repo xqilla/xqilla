@@ -110,6 +110,9 @@ void NodeTest::getStaticType(StaticType &st, const StaticContext *context,
     else if(_type == Node::attribute_string) {
       st = StaticType::ATTRIBUTE_TYPE;
     }
+    else if(_type == Node::namespace_string) {
+      st = StaticType::NAMESPACE_TYPE;
+    }
     else if(_type == Node::processing_instruction_string) {
       st = StaticType::PI_TYPE;
     }
