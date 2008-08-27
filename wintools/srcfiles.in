@@ -203,6 +203,7 @@ src/functions/FunctionDefaultCollation.cpp lib
 src/functions/FunctionDistinctValues.cpp lib
 src/functions/FunctionDoc.cpp lib
 src/functions/FunctionDocAvailable.cpp lib
+src/functions/FunctionDocument.cpp lib
 src/functions/FunctionDocumentURI.cpp lib
 src/functions/FunctionEmpty.cpp lib
 src/functions/FunctionEncodeForUri.cpp lib
@@ -724,6 +725,7 @@ include/xqilla/functions/FunctionDefaultCollation.hpp lib
 include/xqilla/functions/FunctionDistinctValues.hpp lib
 include/xqilla/functions/FunctionDoc.hpp lib
 include/xqilla/functions/FunctionDocAvailable.hpp lib
+include/xqilla/functions/FunctionDocument.hpp lib
 include/xqilla/functions/FunctionDocumentURI.hpp lib
 include/xqilla/functions/FunctionEmpty.hpp lib
 include/xqilla/functions/FunctionEncodeForUri.hpp lib

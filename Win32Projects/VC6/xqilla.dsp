@@ -1429,6 +1429,10 @@ SOURCE=..\..\src\functions\FunctionDocAvailable.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\functions\FunctionDocument.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\functions\FunctionDocumentURI.cpp
 # End Source File
 # Begin Source File
@@ -1942,6 +1946,10 @@ SOURCE=..\..\include\xqilla\functions\FunctionDoc.hpp
 # Begin Source File
 
 SOURCE=..\..\include\xqilla\functions\FunctionDocAvailable.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\functions\FunctionDocument.hpp
 # End Source File
 # Begin Source File
 

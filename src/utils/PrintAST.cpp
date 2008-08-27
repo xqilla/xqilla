@@ -116,6 +116,7 @@
 #include <xqilla/debug/TupleDebugHook.hpp>
 
 #include <xqilla/functions/FunctionDoc.hpp>
+#include <xqilla/functions/FunctionDocument.hpp>
 #include <xqilla/functions/FunctionCollection.hpp>
 #include <xqilla/functions/FunctionParseXML.hpp>
 #include <xqilla/functions/FunctionParseJSON.hpp>
@@ -521,6 +522,9 @@ string PrintAST::printFunction(const XQFunction *item, const DynamicContext *con
   if(funUri == XQFunction::XMLChFunctionURI) {
     if(funName == FunctionDoc::name) {
       queryPathTree = ((FunctionDoc*)item)->getQueryPathTree();
+    }
+    else if(funName == FunctionDocument::name) {
+      queryPathTree = ((FunctionDocument*)item)->getQueryPathTree();
     }
     else if(funName == FunctionCollection::name) {
       queryPathTree = ((FunctionCollection*)item)->getQueryPathTree();

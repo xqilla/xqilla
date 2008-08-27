@@ -234,6 +234,7 @@ const ExternalFunction *FunctionLookup::lookUpGlobalExternalFunction(
 #include <xqilla/functions/FunctionDefaultCollation.hpp>
 #include <xqilla/functions/FunctionDistinctValues.hpp>
 #include <xqilla/functions/FunctionDoc.hpp>
+#include <xqilla/functions/FunctionDocument.hpp>
 #include <xqilla/functions/FunctionDocAvailable.hpp>
 #include <xqilla/functions/FunctionDocumentURI.hpp>
 #include <xqilla/functions/FunctionEmpty.hpp>
@@ -607,6 +608,7 @@ static void initGlobalTable(FunctionLookup *t, MemoryManager *memMgr)
   // XSLT 2.0 functions
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionUnparsedText>(memMgr));
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionRegexGroup>(memMgr));
+  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionDocument>(memMgr));
 
   // XQilla extension functions
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionParseXML>(memMgr));

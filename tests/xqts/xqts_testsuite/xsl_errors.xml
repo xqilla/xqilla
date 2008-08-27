@@ -1,5 +1,4 @@
 <errors>
-  <error id="accessor20_015_01" reason="result failure"/>
   <error id="accessor20_032_01" reason="error failure"/>
   <error id="atrs01" reason="error failure"/>
   <error id="atrs02" reason="error failure"/>
@@ -84,7 +83,6 @@
   <error id="axes286" reason="error failure"/>
   <error id="axes301" reason="error failure"/>
   <error id="axes302" reason="result failure"/>
-  <error id="axes502" reason="result failure"/>
   <error id="axes507" reason="result failure"/>
   <error id="backwards001" reason="result failure"/>
   <error id="backwards002" reason="result failure"/>
@@ -189,9 +187,7 @@
   <error id="bug38" reason="result failure"/>
   <error id="bug40" reason="result failure"/>
   <error id="bug42" reason="error failure"/>
-  <error id="bug43" reason="error failure"/>
   <error id="bug44" reason="error failure"/>
-  <error id="bug45" reason="error failure"/>
   <error id="bug46" reason="error failure"/>
   <error id="bug51" reason="result failure"/>
   <error id="bug53" reason="error failure"/>
@@ -230,12 +226,8 @@
   <error id="builtinas20_307_01" reason="error failure"/>
   <error id="builtinas20_380_01" reason="error failure"/>
   <error id="builtinas20_391_01" reason="error failure"/>
-  <error id="builtinas20_416_01" reason="error failure"/>
-  <error id="builtinas20_417_01" reason="error failure"/>
-  <error id="builtinas20_418_01" reason="error failure"/>
   <error id="builtinas20_423_01" reason="error failure"/>
   <error id="builtinas20_429_01" reason="error failure"/>
-  <error id="builtinas20_445_01" reason="error failure"/>
   <error id="builtinas20_451_01" reason="result failure"/>
   <error id="builtinaserr20_062_01" reason="error failure"/>
   <error id="builtinrules20_002_01" reason="result failure"/>
@@ -352,7 +344,6 @@
   <error id="copy20" reason="error failure"/>
   <error id="copy21" reason="error failure"/>
   <error id="copy22" reason="result failure"/>
-  <error id="copy27" reason="error failure"/>
   <error id="copy29" reason="error failure"/>
   <error id="copy30" reason="error failure"/>
   <error id="copy38" reason="result failure"/>
@@ -494,14 +485,12 @@
   <error id="docnodeconstruct20_020_01" reason="error failure"/>
   <error id="docnodeconstruct20_023_01" reason="error failure"/>
   <error id="docnodeconstruct20_024_01" reason="error failure"/>
-  <error id="docs20_001_01" reason="error failure"/>
-  <error id="docs20_002_01" reason="error failure"/>
-  <error id="docs20_003_01" reason="error failure"/>
-  <error id="docs20_004_01" reason="error failure"/>
-  <error id="docs20_005_01" reason="error failure"/>
-  <error id="docs20_006_01" reason="error failure"/>
-  <error id="docs20_007_01" reason="error failure"/>
-  <error id="docs20_008_01" reason="error failure"/>
+  <error id="docs20_001_01" reason="result failure"/>
+  <error id="docs20_002_01" reason="result failure"/>
+  <error id="docs20_003_01" reason="result failure"/>
+  <error id="docs20_005_01" reason="result failure"/>
+  <error id="docs20_006_01" reason="result failure"/>
+  <error id="docs20_007_01" reason="result failure"/>
   <error id="docs20_009_01" reason="error failure"/>
   <error id="docs20_020_01" reason="result failure"/>
   <error id="docs20_023_01" reason="error failure"/>
@@ -872,7 +861,6 @@
   <error id="errorcode1600" reason="error failure"/>
   <error id="expr02" reason="error failure"/>
   <error id="expr10" reason="error failure"/>
-  <error id="expr14" reason="result failure"/>
   <error id="expr16" reason="error failure"/>
   <error id="expr17" reason="error failure"/>
   <error id="expr36" reason="result failure"/>
@@ -996,7 +984,7 @@
   <error id="group905err" reason="error failure"/>
   <error id="group906err" reason="error failure"/>
   <error id="group907err" reason="error failure"/>
-  <error id="id010" reason="error failure"/>
+  <error id="id010" reason="result failure"/>
   <error id="id011" reason="result failure"/>
   <error id="id017" reason="result failure"/>
   <error id="id027" reason="result failure"/>
@@ -1219,25 +1207,21 @@
   <error id="math-two96" reason="result failure"/>
   <error id="math-two98" reason="result failure"/>
   <error id="math-two99" reason="result failure"/>
-  <error id="mdocs01" reason="error failure"/>
   <error id="mdocs02" reason="error failure"/>
-  <error id="mdocs03" reason="error failure"/>
-  <error id="mdocs05" reason="error failure"/>
+  <error id="mdocs03" reason="result failure"/>
   <error id="mdocs06" reason="result failure"/>
-  <error id="mdocs07" reason="error failure"/>
+  <error id="mdocs07" reason="result failure"/>
   <error id="mdocs08" reason="error failure"/>
   <error id="mdocs09" reason="error failure"/>
   <error id="mdocs12" reason="error failure"/>
   <error id="mdocs13" reason="error failure"/>
-  <error id="mdocs15" reason="error failure"/>
-  <error id="mdocs16" reason="error failure"/>
   <error id="mdocs17" reason="error failure"/>
   <error id="mdocs18" reason="error failure"/>
   <error id="mdocs19" reason="result failure"/>
-  <error id="mdocs20" reason="error failure"/>
+  <error id="mdocs20" reason="result failure"/>
   <error id="mdocs21" reason="error failure"/>
   <error id="mdocs22" reason="error failure"/>
-  <error id="mdocs23" reason="error failure"/>
+  <error id="mdocs23" reason="result failure"/>
   <error id="mdocs24" reason="result failure"/>
   <error id="mdocs25" reason="error failure"/>
   <error id="mdocs26" reason="error failure"/>
@@ -1407,7 +1391,6 @@
   <error id="nspc-n139" reason="result failure"/>
   <error id="nspc-n14" reason="error failure"/>
   <error id="nspc-n140" reason="result failure"/>
-  <error id="nspc-n142" reason="result failure"/>
   <error id="nspc-n15" reason="error failure"/>
   <error id="nspc-n16" reason="error failure"/>
   <error id="nspc-n17" reason="result failure"/>
@@ -1463,7 +1446,7 @@
   <error id="nspc16" reason="error failure"/>
   <error id="nspc17" reason="error failure"/>
   <error id="nspc18" reason="error failure"/>
-  <error id="nspc19" reason="error failure"/>
+  <error id="nspc19" reason="result failure"/>
   <error id="nspc20" reason="error failure"/>
   <error id="nspc24" reason="result failure"/>
   <error id="nspc25" reason="result failure"/>
@@ -1475,7 +1458,6 @@
   <error id="nspc31" reason="error failure"/>
   <error id="nspc33" reason="result failure"/>
   <error id="nspc34" reason="result failure"/>
-  <error id="nspc35" reason="result failure"/>
   <error id="nspc36" reason="error failure"/>
   <error id="nspc37" reason="error failure"/>
   <error id="nspc38" reason="error failure"/>
@@ -1976,7 +1958,6 @@
   <error id="regex20_024_01" reason="error failure"/>
   <error id="regex20_030_01" reason="error failure"/>
   <error id="regex20_031_01" reason="result failure"/>
-  <error id="regex20_033_01" reason="error failure"/>
   <error id="regex20_035_01" reason="error failure"/>
   <error id="regex20_036_01" reason="error failure"/>
   <error id="regex20_037_01" reason="error failure"/>
@@ -2005,7 +1986,6 @@
   <error id="reluri07" reason="error failure"/>
   <error id="reluri08" reason="error failure"/>
   <error id="reluri09" reason="error failure"/>
-  <error id="reluri10" reason="error failure"/>
   <error id="reluri11" reason="error failure"/>
   <error id="reluri12" reason="result failure"/>
   <error id="reluri13" reason="result failure"/>
@@ -2189,7 +2169,6 @@
   <error id="schemaas20_098_01" reason="error failure"/>
   <error id="schemaas20_115_01" reason="result failure"/>
   <error id="schemaas20_116_01" reason="result failure"/>
-  <error id="schemaas20_130_01" reason="error failure"/>
   <error id="schemaas20_134_01" reason="error failure"/>
   <error id="schemaas20_209_01" reason="error failure"/>
   <error id="schemaas20_221_01" reason="error failure"/>
@@ -2370,11 +2349,9 @@
   <error id="select55" reason="error failure"/>
   <error id="select59" reason="error failure"/>
   <error id="select64" reason="error failure"/>
-  <error id="select67" reason="error failure"/>
-  <error id="select68" reason="error failure"/>
+  <error id="select68" reason="result failure"/>
   <error id="select69" reason="error failure"/>
   <error id="select70" reason="error failure"/>
-  <error id="select71" reason="error failure"/>
   <error id="select73" reason="result failure"/>
   <error id="select74" reason="result failure"/>
   <error id="select78" reason="error failure"/>
@@ -2390,7 +2367,6 @@
   <error id="seq007" reason="error failure"/>
   <error id="seq008" reason="error failure"/>
   <error id="seq012" reason="result failure"/>
-  <error id="seq013" reason="error failure"/>
   <error id="seq014" reason="error failure"/>
   <error id="seq015" reason="error failure"/>
   <error id="seq016" reason="error failure"/>
@@ -2433,7 +2409,6 @@
   <error id="seqconstruct20_044_01" reason="error failure"/>
   <error id="seqconstruct20_046_01" reason="result failure"/>
   <error id="seqconstruct20_047_01" reason="result failure"/>
-  <error id="seqconstruct20_063_01" reason="error failure"/>
   <error id="seqconstruct20_064_01" reason="error failure"/>
   <error id="seqconstructerr20_001_01" reason="error failure"/>
   <error id="seqconstructerr20_011_01" reason="error failure"/>
@@ -2750,7 +2725,6 @@
   <error id="variable18" reason="error failure"/>
   <error id="variable21" reason="error failure"/>
   <error id="variable22" reason="error failure"/>
-  <error id="variable24" reason="error failure"/>
   <error id="variable26" reason="error failure"/>
   <error id="variable27" reason="error failure"/>
   <error id="variable28" reason="error failure"/>
