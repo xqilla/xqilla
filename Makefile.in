@@ -115,18 +115,18 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	FunctionCurrentTime.lo FunctionData.lo FunctionDateTime.lo \
 	FunctionDeepEqual.lo FunctionDefaultCollation.lo \
 	FunctionDistinctValues.lo FunctionDocAvailable.lo \
-	FunctionDoc.lo FunctionDocumentURI.lo FunctionEmpty.lo \
-	FunctionEncodeForUri.lo FunctionEndsWith.lo FunctionError.lo \
-	FunctionEscapeHtmlUri.lo FunctionExactlyOne.lo \
-	FunctionExists.lo FunctionFalse.lo FunctionFloor.lo \
-	FunctionFunctionArity.lo FunctionFunctionName.lo FunctionId.lo \
-	FunctionIdref.lo FunctionImplicitTimezone.lo \
-	FunctionIndexOf.lo FunctionInScopePrefixes.lo \
-	FunctionInsertBefore.lo FunctionIriToUri.lo FunctionLang.lo \
-	FunctionLast.lo FunctionLocalname.lo \
-	FunctionLocalNameFromQName.lo FunctionLowerCase.lo \
-	FunctionMatches.lo FunctionMax.lo FunctionMin.lo \
-	FunctionName.lo FunctionNamespaceUri.lo \
+	FunctionDoc.lo FunctionDocument.lo FunctionDocumentURI.lo \
+	FunctionEmpty.lo FunctionEncodeForUri.lo FunctionEndsWith.lo \
+	FunctionError.lo FunctionEscapeHtmlUri.lo \
+	FunctionExactlyOne.lo FunctionExists.lo FunctionFalse.lo \
+	FunctionFloor.lo FunctionFunctionArity.lo \
+	FunctionFunctionName.lo FunctionId.lo FunctionIdref.lo \
+	FunctionImplicitTimezone.lo FunctionIndexOf.lo \
+	FunctionInScopePrefixes.lo FunctionInsertBefore.lo \
+	FunctionIriToUri.lo FunctionLang.lo FunctionLast.lo \
+	FunctionLocalname.lo FunctionLocalNameFromQName.lo \
+	FunctionLowerCase.lo FunctionMatches.lo FunctionMax.lo \
+	FunctionMin.lo FunctionName.lo FunctionNamespaceUri.lo \
 	FunctionNamespaceURIForPrefix.lo \
 	FunctionNamespaceURIFromQName.lo FunctionNilled.lo \
 	FunctionNodeName.lo FunctionNormalizeSpace.lo \
@@ -624,6 +624,7 @@ src/functions/FunctionDefaultCollation.cpp \
 src/functions/FunctionDistinctValues.cpp \
 src/functions/FunctionDocAvailable.cpp \
 src/functions/FunctionDoc.cpp \
+src/functions/FunctionDocument.cpp \
 src/functions/FunctionDocumentURI.cpp \
 src/functions/FunctionEmpty.cpp \
 src/functions/FunctionEncodeForUri.cpp \
@@ -1329,6 +1330,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionDistinctValues.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionDoc.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionDocAvailable.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionDocument.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionDocumentURI.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionEmpty.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionEncodeForUri.Plo@am__quote@
@@ -3077,6 +3079,13 @@ FunctionDoc.lo: src/functions/FunctionDoc.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/FunctionDoc.cpp' object='FunctionDoc.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionDoc.lo `test -f 'src/functions/FunctionDoc.cpp' || echo '$(srcdir)/'`src/functions/FunctionDoc.cpp
+
+FunctionDocument.lo: src/functions/FunctionDocument.cpp
+@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionDocument.lo -MD -MP -MF $(DEPDIR)/FunctionDocument.Tpo -c -o FunctionDocument.lo `test -f 'src/functions/FunctionDocument.cpp' || echo '$(srcdir)/'`src/functions/FunctionDocument.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/FunctionDocument.Tpo $(DEPDIR)/FunctionDocument.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/FunctionDocument.cpp' object='FunctionDocument.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionDocument.lo `test -f 'src/functions/FunctionDocument.cpp' || echo '$(srcdir)/'`src/functions/FunctionDocument.cpp
 
 FunctionDocumentURI.lo: src/functions/FunctionDocumentURI.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionDocumentURI.lo -MD -MP -MF $(DEPDIR)/FunctionDocumentURI.Tpo -c -o FunctionDocumentURI.lo `test -f 'src/functions/FunctionDocumentURI.cpp' || echo '$(srcdir)/'`src/functions/FunctionDocumentURI.cpp

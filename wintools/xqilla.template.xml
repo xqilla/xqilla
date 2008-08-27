@@ -279,6 +279,7 @@
         <file name='include/xqilla/functions/FunctionDistinctValues.hpp'/>
         <file name='include/xqilla/functions/FunctionDocAvailable.hpp'/>
         <file name='include/xqilla/functions/FunctionDoc.hpp'/>
+        <file name='include/xqilla/functions/FunctionDocument.hpp'/>
         <file name='include/xqilla/functions/FunctionDocumentURI.hpp'/>
         <file name='include/xqilla/functions/FunctionEmpty.hpp'/>
         <file name='include/xqilla/functions/FunctionEncodeForUri.hpp'/>
@@ -703,6 +704,7 @@
         <file name="src/functions/FunctionDefaultCollation.cpp"/>
         <file name="src/functions/FunctionDistinctValues.cpp"/>
         <file name="src/functions/FunctionDoc.cpp"/>
+        <file name="src/functions/FunctionDocument.cpp"/>
         <file name="src/functions/FunctionDocAvailable.cpp"/>
         <file name="src/functions/FunctionDocumentURI.cpp"/>
         <file name="src/functions/FunctionEmpty.cpp"/>

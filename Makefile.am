@@ -186,6 +186,7 @@ src/functions/FunctionDefaultCollation.cpp \
 src/functions/FunctionDistinctValues.cpp \
 src/functions/FunctionDocAvailable.cpp \
 src/functions/FunctionDoc.cpp \
+src/functions/FunctionDocument.cpp \
 src/functions/FunctionDocumentURI.cpp \
 src/functions/FunctionEmpty.cpp \
 src/functions/FunctionEncodeForUri.cpp \

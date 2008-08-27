@@ -52,6 +52,7 @@
 #include <xqilla/functions/FunctionCollection.hpp>
 #include <xqilla/functions/FunctionDeepEqual.hpp>
 #include <xqilla/functions/FunctionDoc.hpp>
+#include <xqilla/functions/FunctionDocument.hpp>
 #include <xqilla/functions/FunctionExactlyOne.hpp>
 #include <xqilla/functions/FunctionId.hpp>
 #include <xqilla/functions/FunctionIdref.hpp>
@@ -560,6 +561,33 @@ ASTNode *QueryPathTreeGenerator::optimizeFunction(XQFunction *item)
         }
 
         ((FunctionDoc*)item)->setQueryPathTree(root);
+      }
+
+      result.join(root);
+    }
+
+    else if(name == FunctionDocument::name) {
+      ASTNode *arg = args[0];
+      generate(arg);
+
+      QueryPathNode *root = ((FunctionDoc*)item)->getQueryPathTree();
+      if(!root) {
+        // Check criteria for safe document projection
+        if(!arg->isConstant() || args.size() > 1) context_->setProjection(false);
+
+        // Check to see if this document URI has already been accessed
+        bool defaultCollection = false;
+        const XMLCh *uriArg = resolveURIArg(arg, context_, defaultCollection);
+        if(uriArg != 0) root = projectionMap_[uriArg];
+
+        // If we've not found a root QueryPathNode, create a new one
+        if(!root) {
+          NodeTest *nt = new (mm_) NodeTest(Node::document_string);
+          root = new (mm_) QueryPathNode(nt, QueryPathNode::ROOT, mm_);
+          if(uriArg != 0) projectionMap_[uriArg] = root;
+        }
+
+        ((FunctionDocument*)item)->setQueryPathTree(root);
       }
 
       result.join(root);

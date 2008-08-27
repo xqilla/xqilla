@@ -209,6 +209,7 @@
       <File RelativePath="..\..\include\xqilla\functions\FunctionDistinctValues.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionDocAvailable.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionDoc.hpp"/>
+      <File RelativePath="..\..\include\xqilla\functions\FunctionDocument.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionDocumentURI.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionEmpty.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionEncodeForUri.hpp"/>
@@ -633,6 +634,7 @@
       <File RelativePath="..\..\src\functions\FunctionDefaultCollation.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionDistinctValues.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionDoc.cpp"/>
+      <File RelativePath="..\..\src\functions\FunctionDocument.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionDocAvailable.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionDocumentURI.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionEmpty.cpp"/>

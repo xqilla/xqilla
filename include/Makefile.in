@@ -363,6 +363,7 @@ xqilla/functions/FunctionDefaultCollation.hpp \
 xqilla/functions/FunctionDistinctValues.hpp \
 xqilla/functions/FunctionDocAvailable.hpp \
 xqilla/functions/FunctionDoc.hpp \
+xqilla/functions/FunctionDocument.hpp \
 xqilla/functions/FunctionDocumentURI.hpp \
 xqilla/functions/FunctionEmpty.hpp \
 xqilla/functions/FunctionEncodeForUri.hpp \
