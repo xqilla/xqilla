@@ -36,6 +36,7 @@
 #include <xqilla/ast/XQTreatAs.hpp>
 #include <xqilla/schema/SequenceType.hpp>
 #include <xqilla/ast/ConvertFunctionArg.hpp>
+#include <xqilla/ast/XQSequence.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>
 
 #if defined(XERCES_HAS_CPP_NAMESPACE)
@@ -91,7 +92,15 @@ ASTNode* ComparisonOperator::staticTyping(StaticContext *context)
     *i = (*i)->staticTyping(context);
     _src.add((*i)->getStaticAnalysis());
 
-    if((*i)->getStaticAnalysis().getStaticType().getMax() == 0)
+    if((*i)->getStaticAnalysis().getStaticType().getMax() == 0) {
+      // The result is always empty if one of our arguments is always empty
+      XPath2MemoryManager* mm = context->getMemoryManager();
+      ASTNode *result = new (mm) XQSequence(mm);
+      result->setLocationInfo(this);
+      return result->staticTyping(context);
+    }
+
+    if((*i)->getStaticAnalysis().getStaticType().getMin() == 0)
       emptyArgument = true;
 
     if((*i)->getStaticAnalysis().isUpdating()) {
@@ -105,7 +114,7 @@ ASTNode* ComparisonOperator::staticTyping(StaticContext *context)
   }
 
   if(emptyArgument)
-	  _src.getStaticType() = StaticType(StaticType::BOOLEAN_TYPE, 0, 1);
+    _src.getStaticType() = StaticType(StaticType::BOOLEAN_TYPE, 0, 1);
   else _src.getStaticType() = StaticType(StaticType::BOOLEAN_TYPE, 1, 1);
 
   if(!_src.isUsed()) {
