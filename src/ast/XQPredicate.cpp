@@ -23,6 +23,7 @@
 
 #include <xqilla/ast/XQPredicate.hpp>
 #include <xqilla/ast/XQSequence.hpp>
+#include <xqilla/ast/XQEffectiveBooleanValue.hpp>
 #include <xqilla/context/ContextHelpers.hpp>
 #include <xqilla/context/ItemFactory.hpp>
 #include <xqilla/runtime/SequenceResult.hpp>
@@ -93,7 +94,7 @@ ASTNode* XQPredicate::staticTyping(StaticContext *context)
     if(first.isNull() || second.notNull() || !first->isAtomicValue() ||
        !((AnyAtomicType*)first.get())->isNumericValue()) {
       // It's not a single numeric item
-      if(ResultImpl::getEffectiveBooleanValue(first, second, dContext, this)) {
+      if(XQEffectiveBooleanValue::get(first, second, dContext, this)) {
         // We have a true predicate
         return substitute(expr_);
       }
@@ -106,6 +107,8 @@ ASTNode* XQPredicate::staticTyping(StaticContext *context)
       }
     }
   }
+
+  // TBD Use StaticType to determine result of EBV - jpcs
 
   // Remove context item usage
   _src.addExceptContextFlags(newSrc);
@@ -250,7 +253,7 @@ Item::Ptr PredicateFilterResult::next(DynamicContext *context)
     }
     else {
       // 2) Otherwise, the predicate truth value is the effective boolean value of the predicate expression
-      if(!ResultImpl::getEffectiveBooleanValue(first_, second_, context, this)) {
+      if(!XQEffectiveBooleanValue::get(first_, second_, context, this)) {
         result = 0;
       }
     }
@@ -303,7 +306,8 @@ Item::Ptr NonNumericPredicateFilterResult::next(DynamicContext *context)
       context->setContextItem(result);
 
       // 2) Otherwise, the predicate truth value is the effective boolean value of the predicate expression
-      if(!pred_->createResult(context)->getEffectiveBooleanValue(context, this)) {
+      Result predResult = new EffectiveBooleanValueResult(this, pred_->createResult(context));
+      if(!((ATBooleanOrDerived*)predResult->next(context).get())->isTrue()) {
         result = 0;
         if(!contextUsed) {
           parent_ = 0;
@@ -363,7 +367,7 @@ Item::Ptr NumericPredicateFilterResult::next(DynamicContext *context)
       // The effective boolean value causes an error -
       // so call it to get the correct error
       parent_ = 0;
-      ResultImpl::getEffectiveBooleanValue(first, second, context, this);
+      XQEffectiveBooleanValue::get(first, second, context, this);
       return 0;
     }
 

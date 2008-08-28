@@ -70,35 +70,35 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	UpdateFactory.lo CollationImpl.lo CodepointCollation.lo \
 	VarStoreImpl.lo VarTypeStoreImpl.lo VarHashEntryImpl.lo \
 	XQContextImpl.lo XQDynamicContextImpl.lo ItemFactoryImpl.lo \
-	XQAtomize.lo XQMap.lo XQAnalyzeString.lo XQCastableAs.lo \
-	XQCastAs.lo XQContextItem.lo XQCopy.lo XQCopyOf.lo \
-	XQFunction.lo XQIf.lo ASTNodeImpl.lo XQInstanceOf.lo \
-	XQInlineFunction.lo XQLiteral.lo XQNav.lo XQOperator.lo \
-	XQParenthesizedExpr.lo XQSequence.lo XQStep.lo XQTreatAs.lo \
-	XQVariable.lo StaticAnalysis.lo StaticType.lo \
-	ConstantFoldingFunction.lo NumericFunction.lo \
-	XQDOMConstructor.lo XQDocumentConstructor.lo \
-	XQElementConstructor.lo XQAttributeConstructor.lo \
-	XQNamespaceConstructor.lo XQPIConstructor.lo \
-	XQCommentConstructor.lo XQTextConstructor.lo XQFunctionCall.lo \
-	XQFunctionConversion.lo XQFunctionDeref.lo XQFunctionRef.lo \
-	XQGlobalVariable.lo XQOrderingChange.lo XQQuantified.lo \
-	XQValidate.lo XQTypeswitch.lo XPath1Compat.lo \
-	ConvertFunctionArg.lo XQDocumentOrder.lo XQPredicate.lo \
-	XQReturn.lo TupleNode.lo ContextTuple.lo ForTuple.lo \
-	LetTuple.lo WhereTuple.lo OrderByTuple.lo \
-	XQNamespaceBinding.lo XQCallTemplate.lo XQApplyTemplates.lo \
-	ASTDebugHook.lo DebugHookDecorator.lo TupleDebugHook.lo \
-	InputParser.lo InteractiveDebugger.lo StackFrame.lo \
-	ContentSequenceFilter.lo EventGenerator.lo EventSerializer.lo \
-	NoInheritFilter.lo NSFixupFilter.lo QueryPathTreeFilter.lo \
-	FTContains.lo FTWords.lo FTOr.lo FTAnd.lo FTMildnot.lo \
-	FTUnaryNot.lo DefaultTokenizer.lo DefaultTokenStore.lo \
-	FTOrder.lo FTDistance.lo FTScope.lo FTContent.lo FTWindow.lo \
-	XQillaBuilderImpl.lo XQillaDocumentImpl.lo \
-	XQillaExpressionImpl.lo XQillaNSResolverImpl.lo \
-	XQillaXMLGrammarPoolImpl.lo XPathDocumentImpl.lo \
-	XPathNamespaceImpl.lo XPath2ResultImpl.lo \
+	XQAtomize.lo XQEffectiveBooleanValue.lo XQMap.lo \
+	XQAnalyzeString.lo XQCastableAs.lo XQCastAs.lo \
+	XQContextItem.lo XQCopy.lo XQCopyOf.lo XQFunction.lo XQIf.lo \
+	ASTNodeImpl.lo XQInstanceOf.lo XQInlineFunction.lo \
+	XQLiteral.lo XQNav.lo XQOperator.lo XQParenthesizedExpr.lo \
+	XQSequence.lo XQStep.lo XQTreatAs.lo XQVariable.lo \
+	StaticAnalysis.lo StaticType.lo ConstantFoldingFunction.lo \
+	NumericFunction.lo XQDOMConstructor.lo \
+	XQDocumentConstructor.lo XQElementConstructor.lo \
+	XQAttributeConstructor.lo XQNamespaceConstructor.lo \
+	XQPIConstructor.lo XQCommentConstructor.lo \
+	XQTextConstructor.lo XQFunctionCall.lo XQFunctionConversion.lo \
+	XQFunctionDeref.lo XQFunctionRef.lo XQGlobalVariable.lo \
+	XQOrderingChange.lo XQQuantified.lo XQValidate.lo \
+	XQTypeswitch.lo XPath1Compat.lo ConvertFunctionArg.lo \
+	XQDocumentOrder.lo XQPredicate.lo XQReturn.lo TupleNode.lo \
+	ContextTuple.lo ForTuple.lo LetTuple.lo WhereTuple.lo \
+	OrderByTuple.lo XQNamespaceBinding.lo XQCallTemplate.lo \
+	XQApplyTemplates.lo ASTDebugHook.lo DebugHookDecorator.lo \
+	TupleDebugHook.lo InputParser.lo InteractiveDebugger.lo \
+	StackFrame.lo ContentSequenceFilter.lo EventGenerator.lo \
+	EventSerializer.lo NoInheritFilter.lo NSFixupFilter.lo \
+	QueryPathTreeFilter.lo FTContains.lo FTWords.lo FTOr.lo \
+	FTAnd.lo FTMildnot.lo FTUnaryNot.lo DefaultTokenizer.lo \
+	DefaultTokenStore.lo FTOrder.lo FTDistance.lo FTScope.lo \
+	FTContent.lo FTWindow.lo XQillaBuilderImpl.lo \
+	XQillaDocumentImpl.lo XQillaExpressionImpl.lo \
+	XQillaNSResolverImpl.lo XQillaXMLGrammarPoolImpl.lo \
+	XPathDocumentImpl.lo XPathNamespaceImpl.lo XPath2ResultImpl.lo \
 	XQillaImplementation.lo XPath2NodeSerializer.lo XQilla.lo \
 	XQQuery.lo UTF8Str.lo XMLChCompare.lo XStr.lo ContextUtils.lo \
 	DateUtils.lo NumUtils.lo XQillaPlatformUtils.lo PrintAST.lo \
@@ -473,6 +473,7 @@ src/context/impl/XQContextImpl.cpp \
 src/context/impl/XQDynamicContextImpl.cpp \
 src/context/impl/ItemFactoryImpl.cpp \
 src/ast/XQAtomize.cpp \
+src/ast/XQEffectiveBooleanValue.cpp \
 src/ast/XQMap.cpp \
 src/ast/XQAnalyzeString.cpp \
 src/ast/XQCastableAs.cpp \
@@ -1540,6 +1541,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQDocumentConstructor.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQDocumentOrder.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQDynamicContextImpl.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQEffectiveBooleanValue.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQElementConstructor.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQException.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQFunction.Plo@am__quote@
@@ -2120,6 +2122,13 @@ XQAtomize.lo: src/ast/XQAtomize.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/ast/XQAtomize.cpp' object='XQAtomize.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQAtomize.lo `test -f 'src/ast/XQAtomize.cpp' || echo '$(srcdir)/'`src/ast/XQAtomize.cpp
+
+XQEffectiveBooleanValue.lo: src/ast/XQEffectiveBooleanValue.cpp
+@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQEffectiveBooleanValue.lo -MD -MP -MF $(DEPDIR)/XQEffectiveBooleanValue.Tpo -c -o XQEffectiveBooleanValue.lo `test -f 'src/ast/XQEffectiveBooleanValue.cpp' || echo '$(srcdir)/'`src/ast/XQEffectiveBooleanValue.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/XQEffectiveBooleanValue.Tpo $(DEPDIR)/XQEffectiveBooleanValue.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/ast/XQEffectiveBooleanValue.cpp' object='XQEffectiveBooleanValue.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQEffectiveBooleanValue.lo `test -f 'src/ast/XQEffectiveBooleanValue.cpp' || echo '$(srcdir)/'`src/ast/XQEffectiveBooleanValue.cpp
 
 XQMap.lo: src/ast/XQMap.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQMap.lo -MD -MP -MF $(DEPDIR)/XQMap.Tpo -c -o XQMap.lo `test -f 'src/ast/XQMap.cpp' || echo '$(srcdir)/'`src/ast/XQMap.cpp

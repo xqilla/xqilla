@@ -201,6 +201,10 @@ SOURCE=..\..\src\ast\XQDOMConstructor.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\ast\XQEffectiveBooleanValue.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\ast\XQElementConstructor.cpp
 # End Source File
 # Begin Source File
@@ -430,6 +434,10 @@ SOURCE=..\..\include\xqilla\ast\XQDocumentOrder.hpp
 # Begin Source File
 
 SOURCE=..\..\include\xqilla\ast\XQDOMConstructor.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\ast\XQEffectiveBooleanValue.hpp
 # End Source File
 # Begin Source File
 

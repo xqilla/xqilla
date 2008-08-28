@@ -23,10 +23,11 @@
 #include <xqilla/ast/LetTuple.hpp>
 #include <xqilla/ast/WhereTuple.hpp>
 #include <xqilla/context/DynamicContext.hpp>
-#include <xqilla/context/ContextHelpers.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>
 #include <xqilla/utils/XStr.hpp>
 #include <xqilla/operators/And.hpp>
+#include <xqilla/context/ContextHelpers.hpp>
+#include <xqilla/ast/XQEffectiveBooleanValue.hpp>
 
 WhereTuple::WhereTuple(TupleNode *parent, ASTNode *expr, XPath2MemoryManager *mm)
   : TupleNode(WHERE, parent, mm),
@@ -36,9 +37,15 @@ WhereTuple::WhereTuple(TupleNode *parent, ASTNode *expr, XPath2MemoryManager *mm
 
 TupleNode *WhereTuple::staticResolution(StaticContext *context)
 {
+  XPath2MemoryManager *mm = context->getMemoryManager();
+
   parent_ = parent_->staticResolution(context);
 
-  AutoNodeSetOrderingReset orderReset(context);
+  if(expr_->getType() != ASTNode::OPERATOR || ((XQOperator*)expr_)->getOperatorName() != And::name) {
+    expr_ = new (mm) XQEffectiveBooleanValue(expr_, mm);
+    expr_->setLocationInfo(this);
+  }
+
   expr_ = expr_->staticResolution(context);
 
   return this;
@@ -100,10 +107,7 @@ TupleNode *WhereTuple::staticTypingSetup(unsigned int &min, unsigned int &max, S
   parent_ = parent_->staticTypingSetup(min, max, context);
 
   // call static resolution on the value
-  {
-    AutoNodeSetOrderingReset orderReset(context);
-    expr_ = expr_->staticTyping(context);
-  }
+  expr_ = expr_->staticTyping(context);
 
   if(expr_->getStaticAnalysis().isUpdating()) {
     XQThrow(StaticErrorException,X("WhereTuple::staticTypingSetup"),
@@ -159,7 +163,7 @@ public:
       context->testInterrupt();
 
       AutoVariableStoreReset reset(context, parent_);
-      if(ast_->getExpression()->createResult(context)->getEffectiveBooleanValue(context, this))
+      if(((ATBooleanOrDerived*)ast_->getExpression()->createResult(context)->next(context).get())->isTrue())
         return true;
     }
 

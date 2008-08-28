@@ -23,6 +23,7 @@
 #include <sstream>
 
 #include <xqilla/ast/XQIf.hpp>
+#include <xqilla/ast/XQEffectiveBooleanValue.hpp>
 #include <xqilla/runtime/Sequence.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/ast/StaticAnalysis.hpp>
@@ -47,7 +48,7 @@ Result XQIf::createResult(DynamicContext* context, int flags) const
 EventGenerator::Ptr XQIf::generateEvents(EventHandler *events, DynamicContext *context,
                                     bool preserveNS, bool preserveType) const
 {
-  if(_test->createResult(context)->getEffectiveBooleanValue(context, this)) {
+  if(((ATBooleanOrDerived*)_test->createResult(context)->next(context).get())->isTrue()) {
     return new ClosureEventGenerator(_whenTrue, context, preserveNS, preserveType);
   }
   else {
@@ -55,11 +56,13 @@ EventGenerator::Ptr XQIf::generateEvents(EventHandler *events, DynamicContext *c
   }
 }
 
-ASTNode* XQIf::staticResolution(StaticContext *context) {
-  {
-    AutoNodeSetOrderingReset orderReset(context);
-    _test = _test->staticResolution(context);
-  }
+ASTNode* XQIf::staticResolution(StaticContext *context)
+{
+  XPath2MemoryManager *mm = context->getMemoryManager();
+
+  _test = new (mm) XQEffectiveBooleanValue(_test, mm);
+  _test->setLocationInfo(this);
+  _test = _test->staticResolution(context);
 
   _whenTrue = _whenTrue->staticResolution(context);
   _whenFalse = _whenFalse->staticResolution(context);
@@ -108,7 +111,7 @@ ASTNode *XQIf::staticTyping(StaticContext *context)
   if(_test->isConstant()) {
     AutoDelete<DynamicContext> dContext(context->createDynamicContext());
     dContext->setMemoryManager(context->getMemoryManager());
-    if(_test->createResult(dContext)->getEffectiveBooleanValue(dContext, this)) {
+    if(((ATBooleanOrDerived*)_test->createResult(dContext)->next(dContext).get())->isTrue()) {
       return substitute(_whenTrue);
     }
     else {
@@ -148,12 +151,12 @@ void XQIf::setWhenFalse(ASTNode *item)
 
 PendingUpdateList XQIf::createUpdateList(DynamicContext *context) const
 {
-    if(_test->createResult(context)->getEffectiveBooleanValue(context, this)) {
-      return _whenTrue->createUpdateList(context);
-    }
-    else {
-      return _whenFalse->createUpdateList(context);
-    }
+  if(((ATBooleanOrDerived*)_test->createResult(context)->next(context).get())->isTrue()) {
+    return _whenTrue->createUpdateList(context);
+  }
+  else {
+    return _whenFalse->createUpdateList(context);
+  }
 }
 
 XQIf::IfResult::IfResult(const XQIf *di)
@@ -164,7 +167,7 @@ XQIf::IfResult::IfResult(const XQIf *di)
 
 Item::Ptr XQIf::IfResult::nextOrTail(Result &tail, DynamicContext *context)
 {
-  if(_di->getTest()->createResult(context)->getEffectiveBooleanValue(context, this)) {
+  if(((ATBooleanOrDerived*)_di->getTest()->createResult(context)->next(context).get())->isTrue()) {
     tail = ClosureResult::create(_di->getWhenTrue(), context);
   }
   else {

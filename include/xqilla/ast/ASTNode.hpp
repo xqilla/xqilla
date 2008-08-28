@@ -69,6 +69,7 @@ public:
     DOCUMENT_ORDER,
     PREDICATE,
     ATOMIZE,
+    EBV,
     FTCONTAINS,
     UDELETE,
     URENAME,

@@ -4,6 +4,7 @@
   <error id="Constr-inscope-3" reason="inspect" action="pass"/>
   <error id="Constr-inscope-4" reason="inspect" action="pass"/>
   <error id="Constr-namespace-13" reason="result failure"/>
+  <error id="K-FunctionCallExpr-11" reason="error failure" comment="XQilla provides the fn:document() function from XSLT 2.0"/>
   <error id="K-FunctionCallExpr-12" reason="error failure" comment="XQilla provides the fn:unparsed-text() function from XSLT 2.0"/>
   <error id="K-FunctionProlog-12" reason="no error failure"/>
   <error id="K-InternalVariablesWith-21" reason="error failure"/>
@@ -17,7 +18,7 @@
   <error id="caselessmatch05" reason="result failure"/>
   <error id="caselessmatch06" reason="result failure"/>
   <error id="caselessmatch07" reason="result failure"/>
-  <error id="caselessmatch08" reason="error failure"/>
+  <error id="caselessmatch08" reason="result failure"/>
   <error id="caselessmatch13" reason="result failure"/>
   <error id="casthcds9" reason="result failure"/>
   <error id="fn-avg-mix-args-012" reason="result failure"/>
@@ -111,5 +112,5 @@
   <error id="fn-resolve-uri-4" reason="no error failure"/>
   <error id="fn-resolve-uri-9" reason="result failure"/>
   <error id="normalization-1" reason="no error failure"/>
-  <error id="validateexpr-26" reason="error failure" action="pass" comment="&quot;Element {}a is not defined as a global element [err:XQDY0084]&quot; returned instead"/>
+  <error id="validateexpr-26" reason="error failure" action="pass" comment="'Element {}a is not defined as a global element [err:XQDY0084]' returned instead"/>
 </errors>

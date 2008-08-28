@@ -119,6 +119,8 @@ ASTNode *ASTVisitor::optimize(ASTNode *item)
     return optimizeOrderingChange((XQOrderingChange *)item);
   case ASTNode::ATOMIZE:
     return optimizeAtomize((XQAtomize *)item);
+  case ASTNode::EBV:
+    return optimizeEffectiveBooleanValue((XQEffectiveBooleanValue *)item);
   case ASTNode::MAP:
     return optimizeMap((XQMap *)item);
   case ASTNode::XPATH1_CONVERT:
@@ -407,6 +409,12 @@ ASTNode *ASTVisitor::optimizeOrderingChange(XQOrderingChange *item)
 }
 
 ASTNode *ASTVisitor::optimizeAtomize(XQAtomize *item)
+{
+  item->setExpression(optimize(const_cast<ASTNode *>(item->getExpression())));
+  return item;
+}
+
+ASTNode *ASTVisitor::optimizeEffectiveBooleanValue(XQEffectiveBooleanValue *item)
 {
   item->setExpression(optimize(const_cast<ASTNode *>(item->getExpression())));
   return item;

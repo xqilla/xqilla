@@ -36,11 +36,6 @@ Item::Ptr EmptyResult::next(DynamicContext *context)
   return 0;
 }
 
-bool EmptyResult::getEffectiveBooleanValue(DynamicContext* context, const LocationInfo *info)
-{
-  return false;
-}
-
 Sequence EmptyResult::toSequence(DynamicContext *context)
 {
   return Sequence(context->getMemoryManager());

@@ -147,6 +147,7 @@
         <file name='include/xqilla/ast/XQTypeswitch.hpp'/>
         <file name='include/xqilla/ast/XQValidate.hpp'/>
         <file name='include/xqilla/ast/XQAtomize.hpp'/>
+        <file name='include/xqilla/ast/XQEffectiveBooleanValue.hpp'/>
         <file name='include/xqilla/ast/XQMap.hpp'/>
         <file name='include/xqilla/ast/XQAnalyzeString.hpp'/>
         <file name='include/xqilla/ast/XPath1Compat.hpp'/>
@@ -526,6 +527,7 @@
         <file name="src/ast/XQAnalyzeString.cpp"/>
         <file name="src/ast/XQApplyTemplates.cpp"/>
         <file name="src/ast/XQAtomize.cpp"/>
+        <file name="src/ast/XQEffectiveBooleanValue.cpp"/>
         <file name="src/ast/XQMap.cpp"/>
         <file name="src/ast/XQAttributeConstructor.cpp"/>
         <file name="src/ast/XQNamespaceConstructor.cpp"/>

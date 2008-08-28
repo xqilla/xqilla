@@ -26,6 +26,7 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/context/ItemFactory.hpp>
 #include <xqilla/context/ContextHelpers.hpp>
+#include <xqilla/ast/XQEffectiveBooleanValue.hpp>
 
 XQQuantified::XQQuantified(Type qtype, TupleNode *parent, ASTNode *expr, XPath2MemoryManager *mm)
   : ASTNodeImpl(QUANTIFIED, mm),
@@ -37,7 +38,12 @@ XQQuantified::XQQuantified(Type qtype, TupleNode *parent, ASTNode *expr, XPath2M
 
 ASTNode *XQQuantified::staticResolution(StaticContext *context)
 {
+  XPath2MemoryManager *mm = context->getMemoryManager();
+
   parent_ = parent_->staticResolution(context);
+
+  expr_ = new (mm) XQEffectiveBooleanValue(expr_, mm);
+  expr_->setLocationInfo(this);
   expr_ = expr_->staticResolution(context);
 
   return this;
@@ -63,7 +69,7 @@ ASTNode *XQQuantified::staticTyping(StaticContext *context)
   if(expr_->isConstant()) {
     AutoDelete<DynamicContext> dContext(context->createDynamicContext());
     dContext->setMemoryManager(context->getMemoryManager());
-    bool value = expr_->createResult(dContext)->getEffectiveBooleanValue(dContext, this);
+    bool value = ((ATBooleanOrDerived*)expr_->createResult(dContext)->next(dContext).get())->isTrue();
     ASTNode *result = new (getMemoryManager())
       XQSequence(dContext->getItemFactory()->createBoolean(value, dContext),
                  dContext, getMemoryManager());
@@ -93,7 +99,7 @@ public:
     while(tuples->next(context)) {
       context->setVariableStore(tuples);
 
-      bool result = ast_->getExpression()->createResult(context)->getEffectiveBooleanValue(context, this);
+      bool result = ((ATBooleanOrDerived*)ast_->getExpression()->createResult(context)->next(context).get())->isTrue();
       if(defaultResult != result) {
         defaultResult = result;
         break;

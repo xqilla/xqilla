@@ -35,6 +35,7 @@ src/context/impl/XQContextImpl.cpp \
 src/context/impl/XQDynamicContextImpl.cpp \
 src/context/impl/ItemFactoryImpl.cpp \
 src/ast/XQAtomize.cpp \
+src/ast/XQEffectiveBooleanValue.cpp \
 src/ast/XQMap.cpp \
 src/ast/XQAnalyzeString.cpp \
 src/ast/XQCastableAs.cpp \
