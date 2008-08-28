@@ -19,12 +19,6 @@
  * $Id$
  */
 
-/*
-
-  Boolean function
-
-*/
-
 #ifndef _FUNCTIONBOOLEAN_HPP
 #define _FUNCTIONBOOLEAN_HPP
 
@@ -32,8 +26,6 @@
 
 #include <xqilla/ast/ConstantFoldingFunction.hpp>
 
-/** Boolean operator function, and exists functions. Warning, you may need to think
-    about this one, but in fact, these two functions have the same behaviour. */
 class XQILLA_API FunctionBoolean : public ConstantFoldingFunction
 {
 public:
@@ -41,13 +33,10 @@ public:
   static const unsigned int minArgs;
   static const unsigned int maxArgs;
 
-  ///Constructor. Sets arg def to NOT_OPTIONAL
   FunctionBoolean(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   ASTNode* staticResolution(StaticContext *context);
   virtual ASTNode *staticTyping(StaticContext *context);
-  /** Returns the argument as a boolean. Sets result to value of getNextBool() **/
-  Sequence createSequence(DynamicContext* context, int flags=0) const;
 };
 
-#endif // _FUNCTIONBOOLEAN_HPP
+#endif

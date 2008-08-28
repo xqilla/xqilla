@@ -1213,6 +1213,13 @@ ASTNode *QueryPathTreeGenerator::optimizeAtomize(XQAtomize *item)
   return item;
 }
 
+ASTNode *QueryPathTreeGenerator::optimizeEffectiveBooleanValue(XQEffectiveBooleanValue *item)
+{
+  generate(const_cast<ASTNode *>(item->getExpression())).markSubtreeValue();
+  push(PathResult());
+  return item;
+}
+
 ASTNode *QueryPathTreeGenerator::optimizeMap(XQMap *item)
 {
   PathResult result = generate(item->getArg1());

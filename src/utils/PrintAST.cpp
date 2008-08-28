@@ -63,6 +63,7 @@
 #include <xqilla/ast/XQValidate.hpp>
 #include <xqilla/ast/XQOrderingChange.hpp>
 #include <xqilla/ast/XQAtomize.hpp>
+#include <xqilla/ast/XQEffectiveBooleanValue.hpp>
 #include <xqilla/ast/XPath1Compat.hpp>
 #include <xqilla/ast/ConvertFunctionArg.hpp>
 #include <xqilla/ast/XQDocumentOrder.hpp>
@@ -357,6 +358,10 @@ string PrintAST::printASTNode(const ASTNode *item, const DynamicContext *context
   }
   case ASTNode::ATOMIZE: {
     return printAtomize((XQAtomize *)item, context, indent);
+    break;
+  }
+  case ASTNode::EBV: {
+    return printEffectiveBooleanValue((XQEffectiveBooleanValue *)item, context, indent);
     break;
   }
   case ASTNode::MAP: {
@@ -1427,6 +1432,19 @@ string PrintAST::printAtomize(const XQAtomize *item, const DynamicContext *conte
   s << in << "<Atomize>" << endl;
   s << printASTNode(item->getExpression(), context, indent + INDENT);
   s << in << "</Atomize>" << endl;
+
+  return s.str();
+}
+
+string PrintAST::printEffectiveBooleanValue(const XQEffectiveBooleanValue *item, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  s << in << "<EffectiveBooleanValue>" << endl;
+  s << printASTNode(item->getExpression(), context, indent + INDENT);
+  s << in << "</EffectiveBooleanValue>" << endl;
 
   return s.str();
 }

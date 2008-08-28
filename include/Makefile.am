@@ -46,6 +46,7 @@ xqilla/ast/XQQuantified.hpp \
 xqilla/ast/XQTypeswitch.hpp \
 xqilla/ast/XQValidate.hpp \
 xqilla/ast/XQAtomize.hpp \
+xqilla/ast/XQEffectiveBooleanValue.hpp \
 xqilla/ast/XQAnalyzeString.hpp \
 xqilla/ast/XPath1Compat.hpp \
 xqilla/ast/ConvertFunctionArg.hpp \

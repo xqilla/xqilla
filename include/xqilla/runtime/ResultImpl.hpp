@@ -22,14 +22,10 @@
 #ifndef _RESULTIMPL_HPP
 #define _RESULTIMPL_HPP
 
-#include <string>
-#include <xercesc/util/XercesDefs.hpp>
-
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/items/Item.hpp>
 #include <xqilla/ast/LocationInfo.hpp>
 
-class SequenceType;
 class DynamicContext;
 class Sequence;
 class Result;
@@ -49,11 +45,6 @@ public:
 
   /// Gets the next item, or returns a tail call Result which will give the next item.
   virtual Item::Ptr nextOrTail(Result &tail, DynamicContext *context);
-
-  /// Returns the effective boolean value of the sequence. Only works properly before next() has been called.
-  virtual bool getEffectiveBooleanValue(DynamicContext* context, const LocationInfo *info);
-  /// Returns the effective boolean value of the sequence.
-  static bool getEffectiveBooleanValue(const Item::Ptr &first, const Item::Ptr &second, DynamicContext* context, const LocationInfo *info);
 
   /// Cast operator to a Sequence. Only works properly before next() has been called.
   virtual Sequence toSequence(DynamicContext *context);

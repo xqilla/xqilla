@@ -24,7 +24,7 @@
 #include <xqilla/items/ATBooleanOrDerived.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xqilla/context/ContextHelpers.hpp>
+#include <xqilla/ast/XQEffectiveBooleanValue.hpp>
 
 const XMLCh FunctionNot::name[] = {
   XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t, 
@@ -42,22 +42,33 @@ FunctionNot::FunctionNot(const VectorOfASTNodes &args, XPath2MemoryManager* memM
 {
 }
 
-ASTNode* FunctionNot::staticResolution(StaticContext *context) {
-  AutoNodeSetOrderingReset orderReset(context);
-  return resolveArguments(context);
+ASTNode* FunctionNot::staticResolution(StaticContext *context)
+{
+  XPath2MemoryManager *mm = context->getMemoryManager();
+
+  _args[0] = new (mm) XQEffectiveBooleanValue(_args[0], mm);
+  _args[0]->setLocationInfo(this);
+  _args[0] = _args[0]->staticResolution(context);
+
+  return this;
 }
 
 ASTNode *FunctionNot::staticTyping(StaticContext *context)
 {
   _src.clear();
 
-  _src.getStaticType() = StaticType::BOOLEAN_TYPE;
-  return calculateSRCForArguments(context);
+  _args[0] = _args[0]->staticTyping(context);
+  _src.copy(_args[0]->getStaticAnalysis());
+
+  if(isConstant()) {
+    return constantFold(context);
+  }
+  return this;
 }
 
 Sequence FunctionNot::createSequence(DynamicContext* context, int flags) const
 {
-	bool result = !getParamNumber(1,context)->getEffectiveBooleanValue(context, this);
-	XPath2MemoryManager* memMgr = context->getMemoryManager();
-	return Sequence(context->getItemFactory()->createBoolean(result, context), memMgr);
+  bool result = !((ATBooleanOrDerived*)getParamNumber(1,context)->next(context).get())->isTrue();
+  XPath2MemoryManager* memMgr = context->getMemoryManager();
+  return Sequence(context->getItemFactory()->createBoolean(result, context), memMgr);
 }

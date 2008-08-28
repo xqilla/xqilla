@@ -57,6 +57,7 @@ src/ast/XQCopyOf.cpp lib
 src/ast/XQDocumentConstructor.cpp lib
 src/ast/XQDocumentOrder.cpp lib
 src/ast/XQDOMConstructor.cpp lib
+src/ast/XQEffectiveBooleanValue.cpp lib
 src/ast/XQElementConstructor.cpp lib
 src/ast/XQFunction.cpp lib
 src/ast/XQFunctionCall.cpp lib
@@ -573,6 +574,7 @@ include/xqilla/ast/XQCopyOf.hpp lib
 include/xqilla/ast/XQDocumentConstructor.hpp lib
 include/xqilla/ast/XQDocumentOrder.hpp lib
 include/xqilla/ast/XQDOMConstructor.hpp lib
+include/xqilla/ast/XQEffectiveBooleanValue.hpp lib
 include/xqilla/ast/XQElementConstructor.hpp lib
 include/xqilla/ast/XQFunction.hpp lib
 include/xqilla/ast/XQFunctionCall.hpp lib

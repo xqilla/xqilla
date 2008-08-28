@@ -31,6 +31,7 @@
 #include <xqilla/context/ItemFactory.hpp>
 #include <xqilla/context/ContextHelpers.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>
+#include <xqilla/ast/XQEffectiveBooleanValue.hpp>
 
 /*static*/ const XMLCh Or::name[]={ XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_r, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
 
@@ -47,8 +48,11 @@ Result Or::createResult(DynamicContext* context, int flags) const
 
 ASTNode* Or::staticResolution(StaticContext *context)
 {
-  AutoNodeSetOrderingReset orderReset(context);
+  XPath2MemoryManager *mm = context->getMemoryManager();
+
   for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
+    *i = new (mm) XQEffectiveBooleanValue(*i, mm);
+    (*i)->setLocationInfo(this);
     *i = (*i)->staticResolution(context);
   }
   return this;
@@ -81,13 +85,13 @@ ASTNode* Or::staticTyping(StaticContext *context)
     else {
       AutoDelete<DynamicContext> dContext(context->createDynamicContext());
       dContext->setMemoryManager(context->getMemoryManager());
-      if((*i)->createResult(dContext)->getEffectiveBooleanValue(dContext, *i)) {
+      if(((ATBooleanOrDerived*)(*i)->createResult(dContext)->next(dContext).get())->isTrue()) {
         // It's constantly true, so this expression is true
         ASTNode* newBlock = new (getMemoryManager())
           XQSequence(dContext->getItemFactory()->createBoolean(true, dContext),
                            dContext, getMemoryManager());
-	newBlock->setLocationInfo(this);
-        return newBlock->staticResolution(context);
+        newBlock->setLocationInfo(this);
+        return newBlock->staticTyping(context);
       }
     }
   }
@@ -108,11 +112,11 @@ Item::Ptr Or::OrResult::getSingleResult(DynamicContext *context) const
 {
   unsigned int numArgs=_op->getNumArgs();
   for(unsigned int i=0;i<numArgs;i++) {
-    if(_op->getArgument(i)->createResult(context)->getEffectiveBooleanValue(context, _op->getArgument(i))) {
-      return (const Item::Ptr)context->getItemFactory()->createBoolean(true, context);
+    if(((ATBooleanOrDerived*)_op->getArgument(i)->createResult(context)->next(context).get())->isTrue()) {
+      return context->getItemFactory()->createBoolean(true, context);
     }
   }
 
-	return (const Item::Ptr)context->getItemFactory()->createBoolean(false, context);
+  return context->getItemFactory()->createBoolean(false, context);
 }
 

@@ -21,17 +21,15 @@
 
 #include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionBoolean.hpp>
-#include <xqilla/items/ATBooleanOrDerived.hpp>
-#include <xqilla/items/Item.hpp>
 #include <xqilla/context/DynamicContext.hpp>
-#include <xqilla/items/DatatypeFactory.hpp>
-#include <xqilla/context/ItemFactory.hpp>
-#include <xqilla/context/ContextHelpers.hpp>
+#include <xqilla/ast/XQEffectiveBooleanValue.hpp>
+
+XERCES_CPP_NAMESPACE_USE;
 
 const XMLCh FunctionBoolean::name[] = {
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_b, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_l, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, XERCES_CPP_NAMESPACE_QUALIFIER chNull 
+  chLatin_b, chLatin_o, chLatin_o, 
+  chLatin_l, chLatin_e, chLatin_a, 
+  chLatin_n, chNull 
 };
 const unsigned int FunctionBoolean::minArgs = 1;
 const unsigned int FunctionBoolean::maxArgs = 1;
@@ -45,22 +43,18 @@ FunctionBoolean::FunctionBoolean(const VectorOfASTNodes &args, XPath2MemoryManag
 {
 }
 
-ASTNode* FunctionBoolean::staticResolution(StaticContext *context) {
-  AutoNodeSetOrderingReset orderReset(context);
-  return resolveArguments(context);
+ASTNode* FunctionBoolean::staticResolution(StaticContext *context)
+{
+  XPath2MemoryManager *mm = context->getMemoryManager();
+
+  ASTNode *result = new (mm) XQEffectiveBooleanValue(_args.front(), mm);
+  result->setLocationInfo(this);
+
+  return result->staticResolution(context);
 }
 
 ASTNode *FunctionBoolean::staticTyping(StaticContext *context)
 {
-  _src.clear();
-
-  _src.getStaticType() = StaticType::BOOLEAN_TYPE;
-  return calculateSRCForArguments(context);
-}
-
-Sequence FunctionBoolean::createSequence(DynamicContext* context, int flags) const
-{
-  bool result = getParamNumber(1,context)->getEffectiveBooleanValue(context, this);
-  return Sequence(context->getItemFactory()->createBoolean(result, context),
-                  context->getMemoryManager());
+  // Shouldn't happen
+  return this;
 }
