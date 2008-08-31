@@ -57,6 +57,7 @@ public:
   };
 protected:
   virtual QueryPathNode *createQueryPathNode(const NodeTest *nodeTest, QueryPathNode::Type type);
+  virtual NodeTest *createNodeTest(const XMLCh *nodeType, const XMLCh *uri = 0, const XMLCh *name = 0);
 
   virtual void resetInternal();
 
