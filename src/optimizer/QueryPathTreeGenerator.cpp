@@ -91,18 +91,28 @@ QueryPathTreeGenerator::QueryPathTreeGenerator(DynamicContext *context, Optimize
   resetInternal();
 }
 
+QueryPathNode *QueryPathTreeGenerator::createQueryPathNode(const NodeTest *nodeTest, QueryPathNode::Type type)
+{
+  return new (mm_) QueryPathNode(nodeTest, type, mm_);
+}
+
+NodeTest *QueryPathTreeGenerator::createNodeTest(const XMLCh *nodeType, const XMLCh *uri, const XMLCh *name)
+{
+  return new (mm_) NodeTest(nodeType, uri, name);
+}
+
 void QueryPathTreeGenerator::createAnyNodeResult(PathResult &result)
 {
-  NodeTest *nt = new (mm_) NodeTest(Node::document_string);
-  QueryPathNode *root = new (mm_) QueryPathNode(nt, QueryPathNode::ROOT, mm_);
+  NodeTest *nt = createNodeTest(Node::document_string);
+  QueryPathNode *root = createQueryPathNode(nt, QueryPathNode::ROOT);
   result.join(root);
 
-  QueryPathNode *pisn = root->appendChild(new (mm_) QueryPathNode(new (mm_) NodeTest((XMLCh*)0),
-                                                                  QueryPathNode::DESCENDANT, mm_));
+  QueryPathNode *pisn = root->appendChild(createQueryPathNode(createNodeTest((XMLCh*)0),
+                                                              QueryPathNode::DESCENDANT));
   result.join(pisn);
 
-  QueryPathNode *cisn = pisn->appendChild(new (mm_) QueryPathNode(new (mm_) NodeTest(Node::attribute_string),
-                                                                  QueryPathNode::ATTRIBUTE, mm_));
+  QueryPathNode *cisn = pisn->appendChild(createQueryPathNode(createNodeTest(Node::attribute_string),
+                                                              QueryPathNode::ATTRIBUTE));
   result.join(cisn);
 }
 
@@ -295,11 +305,6 @@ ASTNode *QueryPathTreeGenerator::optimizeStep(XQStep *item)
 
   push(result);
   return item;
-}
-
-QueryPathNode *QueryPathTreeGenerator::createQueryPathNode(const NodeTest *nodeTest, QueryPathNode::Type type)
-{
-  return new (mm_) QueryPathNode(nodeTest, type, mm_);
 }
 
 void QueryPathTreeGenerator::generateBuiltInStep(QueryPathNode *target, QueryPathNode &node, PathResult &result)
@@ -555,8 +560,8 @@ ASTNode *QueryPathTreeGenerator::optimizeFunction(XQFunction *item)
 
         // If we've not found a root QueryPathNode, create a new one
         if(!root) {
-          NodeTest *nt = new (mm_) NodeTest(Node::document_string);
-          root = new (mm_) QueryPathNode(nt, QueryPathNode::ROOT, mm_);
+          NodeTest *nt = createNodeTest(Node::document_string);
+          root = createQueryPathNode(nt, QueryPathNode::ROOT);
           if(uriArg != 0) projectionMap_[uriArg] = root;
         }
 
@@ -582,8 +587,8 @@ ASTNode *QueryPathTreeGenerator::optimizeFunction(XQFunction *item)
 
         // If we've not found a root QueryPathNode, create a new one
         if(!root) {
-          NodeTest *nt = new (mm_) NodeTest(Node::document_string);
-          root = new (mm_) QueryPathNode(nt, QueryPathNode::ROOT, mm_);
+          NodeTest *nt = createNodeTest(Node::document_string);
+          root = createQueryPathNode(nt, QueryPathNode::ROOT);
           if(uriArg != 0) projectionMap_[uriArg] = root;
         }
 
@@ -617,8 +622,8 @@ ASTNode *QueryPathTreeGenerator::optimizeFunction(XQFunction *item)
 
         // If we've not found a root QueryPathNode, create a new one
         if(!root) {
-          NodeTest *nt = new (mm_) NodeTest(Node::document_string);
-          root = new (mm_) QueryPathNode(nt, QueryPathNode::ROOT, mm_);
+          NodeTest *nt = createNodeTest(Node::document_string);
+          root = createQueryPathNode(nt, QueryPathNode::ROOT);
           if(uriArg != 0 || defaultCollection) projectionMap_[uriArg] = root;
         }
 
@@ -701,7 +706,7 @@ ASTNode *QueryPathTreeGenerator::optimizeFunction(XQFunction *item)
 
       // We want all the xml:lang attributes from all our lookup node's ancestors
 
-      NodeTest *nt = new (mm_) NodeTest(Node::element_string);
+      NodeTest *nt = createNodeTest(Node::element_string);
       QueryPathNode dummy(nt, QueryPathNode::CHILD, mm_);
       PathResult ancestorResult;
       QueryPathNode::Vector::const_iterator it;
@@ -709,7 +714,7 @@ ASTNode *QueryPathTreeGenerator::optimizeFunction(XQFunction *item)
         generateAncestorOrSelfStep(*it, dummy, ancestorResult);
       }
 
-      NodeTest *nt2 = new (mm_) NodeTest(Node::attribute_string, XMLUni::fgXMLURIName, mm_->getPooledString("lang"));
+      NodeTest *nt2 = createNodeTest(Node::attribute_string, XMLUni::fgXMLURIName, mm_->getPooledString("lang"));
       QueryPathNode dummy2(nt2, QueryPathNode::ATTRIBUTE, mm_);
       PathResult attrResult;
       for(it = ancestorResult.returnPaths.begin(); it != ancestorResult.returnPaths.end(); ++it) {
@@ -725,7 +730,7 @@ ASTNode *QueryPathTreeGenerator::optimizeFunction(XQFunction *item)
 
       // We want all the xml:base attributes from all our lookup node's ancestors
 
-      NodeTest *nt = new (mm_) NodeTest(Node::element_string);
+      NodeTest *nt = createNodeTest(Node::element_string);
       QueryPathNode dummy(nt, QueryPathNode::CHILD, mm_);
       PathResult ancestorResult;
       QueryPathNode::Vector::const_iterator it;
@@ -733,7 +738,7 @@ ASTNode *QueryPathTreeGenerator::optimizeFunction(XQFunction *item)
         generateAncestorOrSelfStep(*it, dummy, ancestorResult);
       }
 
-      NodeTest *nt2 = new (mm_) NodeTest(Node::attribute_string, XMLUni::fgXMLURIName, mm_->getPooledString("base"));
+      NodeTest *nt2 = createNodeTest(Node::attribute_string, XMLUni::fgXMLURIName, mm_->getPooledString("base"));
       QueryPathNode dummy2(nt2, QueryPathNode::ATTRIBUTE, mm_);
       PathResult attrResult;
       for(it = ancestorResult.returnPaths.begin(); it != ancestorResult.returnPaths.end(); ++it) {
@@ -772,8 +777,8 @@ ASTNode *QueryPathTreeGenerator::optimizeFunction(XQFunction *item)
 
       QueryPathNode *root = ((FunctionParseXML*)item)->getQueryPathTree();
       if(!root) {
-        NodeTest *nt = new (mm_) NodeTest(Node::document_string);
-        root = new (mm_) QueryPathNode(nt, QueryPathNode::ROOT, mm_);
+        NodeTest *nt = createNodeTest(Node::document_string);
+        root = createQueryPathNode(nt, QueryPathNode::ROOT);
         ((FunctionParseXML*)item)->setQueryPathTree(root);
       }
 
@@ -786,8 +791,8 @@ ASTNode *QueryPathTreeGenerator::optimizeFunction(XQFunction *item)
 
       QueryPathNode *root = ((FunctionParseJSON*)item)->getQueryPathTree();
       if(!root) {
-        NodeTest *nt = new (mm_) NodeTest(Node::element_string);
-        root = new (mm_) QueryPathNode(nt, QueryPathNode::CHILD, mm_);
+        NodeTest *nt = createNodeTest(Node::element_string);
+        root = createQueryPathNode(nt, QueryPathNode::CHILD);
         ((FunctionParseJSON*)item)->setQueryPathTree(root);
       }
 
@@ -960,6 +965,12 @@ ASTNode *QueryPathTreeGenerator::optimizeIf(XQIf *item)
   return item;
 }
 
+ASTNode *QueryPathTreeGenerator::optimizeInstanceOf(XQInstanceOf *item)
+{
+  generate(const_cast<ASTNode *>(item->getExpression()));
+  return item;
+}
+
 TupleNode *QueryPathTreeGenerator::optimizeForTuple(ForTuple *item)
 {
   optimizeTupleNode(const_cast<TupleNode*>(item->getParent()));
@@ -1106,16 +1117,16 @@ ASTNode *QueryPathTreeGenerator::optimizeDOMConstructor(XQDOMConstructor *item)
 
   if(!item->getQueryPathTree()) {
     if(item->getNodeType() == Node::document_string) {
-      item->setQueryPathTree(new (mm_) QueryPathNode(new (mm_) NodeTest(Node::document_string), QueryPathNode::ROOT, mm_));
+      item->setQueryPathTree(createQueryPathNode(createNodeTest(Node::document_string), QueryPathNode::ROOT));
     }
     else if(item->getNodeType() == Node::element_string) {
-      item->setQueryPathTree(new (mm_) QueryPathNode(new (mm_) NodeTest(Node::element_string), QueryPathNode::CHILD, mm_));
+      item->setQueryPathTree(createQueryPathNode(createNodeTest(Node::element_string), QueryPathNode::CHILD));
     }
     else if(item->getNodeType() == Node::attribute_string) {
-      item->setQueryPathTree(new (mm_) QueryPathNode(new (mm_) NodeTest(Node::attribute_string), QueryPathNode::ATTRIBUTE, mm_));
+      item->setQueryPathTree(createQueryPathNode(createNodeTest(Node::attribute_string), QueryPathNode::ATTRIBUTE));
     }
     else {
-      item->setQueryPathTree(new (mm_) QueryPathNode(new (mm_) NodeTest((XMLCh*)0), QueryPathNode::CHILD, mm_));
+      item->setQueryPathTree(createQueryPathNode(createNodeTest((XMLCh*)0), QueryPathNode::CHILD));
     }
   }
 
@@ -1145,24 +1156,24 @@ QueryPathTreeGenerator::PathResult QueryPathTreeGenerator::copyNodes(const PathR
 
   r.markSubtreeResult();
 
-  NodeTest *nt = new (mm_) NodeTest(Node::document_string);
-  QueryPathNode *root = new (mm_) QueryPathNode(nt, QueryPathNode::ROOT, mm_);
+  NodeTest *nt = createNodeTest(Node::document_string);
+  QueryPathNode *root = createQueryPathNode(nt, QueryPathNode::ROOT);
 
   QueryPathNode::Vector::const_iterator j = r.returnPaths.begin();
   for(; j != r.returnPaths.end(); ++j) {
     switch((*j)->getType()) {
     case QueryPathNode::ATTRIBUTE: {
-      QueryPathNode *pisn = new (mm_) QueryPathNode(new (mm_) NodeTest(Node::element_string),
-                                                    QueryPathNode::DESCENDANT, mm_);
+      QueryPathNode *pisn = createQueryPathNode(createNodeTest(Node::element_string),
+                                                QueryPathNode::DESCENDANT);
       pisn = root->appendChild(pisn);
-      copyResult.join(pisn->appendChild(new (mm_) QueryPathNode((*j)->getNodeTest(),
-                                                                QueryPathNode::ATTRIBUTE, mm_)));
+      copyResult.join(pisn->appendChild(createQueryPathNode((*j)->getNodeTest(),
+                                                            QueryPathNode::ATTRIBUTE)));
       break;
     }
     case QueryPathNode::CHILD:
     case QueryPathNode::DESCENDANT: {
-      copyResult.join(root->appendChild(new (mm_) QueryPathNode((*j)->getNodeTest(),
-                                                                QueryPathNode::DESCENDANT, mm_)));
+      copyResult.join(root->appendChild(createQueryPathNode((*j)->getNodeTest(),
+                                                            QueryPathNode::DESCENDANT)));
       break;
     }
     case QueryPathNode::ROOT: {
@@ -1509,7 +1520,6 @@ UNCHANGED_XQ(NameExpression)
 UNCHANGED_XQ(CastAs)
 UNCHANGED_XQ(TreatAs)
 UNCHANGED_XQ(OrderingChange)
-UNCHANGED_XQ(InstanceOf)
 UNCHANGED_XQ(CastableAs)
 UNCHANGED_XQ(PromoteUntyped)
 UNCHANGED_XQ(PromoteNumeric)

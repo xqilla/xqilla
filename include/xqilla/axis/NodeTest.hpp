@@ -41,7 +41,7 @@ class XQILLA_API NodeTest
 public:
   NodeTest();
   NodeTest(const XMLCh *nodeType, const XMLCh *uri = 0, const XMLCh *name = 0);
-	NodeTest(const NodeTest *other);
+  NodeTest(const NodeTest *other);
   virtual ~NodeTest();
 
   /** Method for returning arbitrary interfaces from the implementations */
