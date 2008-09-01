@@ -55,10 +55,25 @@ ASTNode *UApplyUpdates::staticTyping(StaticContext *context)
   return this;
 }
 
-Sequence UApplyUpdates::createSequence(DynamicContext* context, int flags) const
+class ApplyUpdatesResult : public ResultImpl
 {
-  AutoDelete<UpdateFactory> ufactory(context->createUpdateFactory());
-  ufactory->applyUpdates(expr_->createUpdateList(context), context, valMode_);
-  return Sequence(context->getMemoryManager());
-}
+public:
+  ApplyUpdatesResult(const UApplyUpdates *ast) : ResultImpl(ast), ast_(ast) {}
 
+  virtual Item::Ptr nextOrTail(Result &tail, DynamicContext *context)
+  {
+    AutoDelete<UpdateFactory> ufactory(context->createUpdateFactory());
+    ufactory->applyUpdates(ast_->getExpression()->createUpdateList(context), context,
+                           ast_->getRevalidationMode());
+    tail = 0;
+    return 0;
+  }
+
+private:
+  const UApplyUpdates *ast_;
+};
+
+Result UApplyUpdates::createResult(DynamicContext* context, int flags) const
+{
+  return new ApplyUpdatesResult(this);
+}

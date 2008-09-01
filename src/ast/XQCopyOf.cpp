@@ -63,12 +63,9 @@ ASTNode *XQCopyOf::staticTyping(StaticContext *context)
   return this;
 }
 
-Sequence XQCopyOf::createSequence(DynamicContext* context, int flags) const
+Result XQCopyOf::createResult(DynamicContext* context, int flags) const
 {
-  AutoDelete<SequenceBuilder> builder(context->createSequenceBuilder());
-  generateAndTailCall(builder.get(), context, true, true);
-  builder->endEvent();
-  return builder->getSequence();
+  return new GenerateEventsResult(this, 0);
 }
 
 EventGenerator::Ptr XQCopyOf::generateEvents(EventHandler *events, DynamicContext *context,

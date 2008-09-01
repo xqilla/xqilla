@@ -106,6 +106,11 @@ ASTNode *URename::staticTyping(StaticContext *context)
   return this;
 }
 
+Result URename::createResult(DynamicContext* context, int flags) const
+{
+  return 0;
+}
+
 PendingUpdateList URename::createUpdateList(DynamicContext *context) const
 {
   Node::Ptr node = (Node*)target_->createResult(context)->next(context).get();

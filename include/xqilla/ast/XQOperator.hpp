@@ -55,4 +55,4 @@ protected:
   const XMLCh* _opName;
 };
 
-#endif // _XQOPERATOR_HPP
+#endif

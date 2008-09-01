@@ -124,11 +124,6 @@ EventGenerator::Ptr ASTNodeImpl::generateEvents(EventHandler *events, DynamicCon
   return 0;
 }
 
-Sequence ASTNodeImpl::createSequence(DynamicContext* context, int flags) const
-{
-  return Sequence(context->getMemoryManager());
-}
-
 ASTNode *ASTNodeImpl::constantFold(StaticContext *context)
 {
   XPath2MemoryManager* mm = context->getMemoryManager();
@@ -166,37 +161,5 @@ XPath2MemoryManager* ASTNodeImpl::getMemoryManager() const {
 const StaticAnalysis &ASTNodeImpl::getStaticAnalysis() const
 {
   return _src;
-}
-
-class CreateSequenceResult : public LazySequenceResult
-{
-public:
-  CreateSequenceResult(const ASTNodeImpl *di, int flags, DynamicContext *context)
-    : LazySequenceResult(di, context),
-      _flags(flags),
-      _di(di)
-  {
-  }
-
-  void getResult(Sequence &toFill, DynamicContext *context) const
-  {
-    try {
-      toFill = _di->createSequence(context, _flags);
-    }
-    catch(XQException &e) {
-      if(e.getXQueryLine() == 0)
-        e.setXQueryPosition(this);
-      throw e;
-    }
-  }
-
-private:
-  int _flags;
-  const ASTNodeImpl *_di;
-};
-
-Result ASTNodeImpl::createResult(DynamicContext* context, int flags) const
-{
-  return new CreateSequenceResult(this, flags, context);
 }
 

@@ -24,10 +24,12 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/framework/ReferenceCounted.hpp>
+#include <xqilla/runtime/ResultImpl.hpp>
 
 class DynamicContext;
 class EventHandler;
 class ASTNode;
+class QueryPathNode;
 
 class XQILLA_API EventGenerator : public ReferenceCounted
 {
@@ -61,6 +63,18 @@ public:
 protected:
   const ASTNode *ast_;
   bool preserveNS_, preserveType_;
+};
+
+class XQILLA_API GenerateEventsResult : public ResultImpl
+{
+public:
+  GenerateEventsResult(const ASTNode *ast, const QueryPathNode *projection);
+
+  virtual Item::Ptr nextOrTail(Result &tail, DynamicContext *context);
+
+private:
+  const ASTNode *ast_;
+  const QueryPathNode *projection_;
 };
 
 #endif

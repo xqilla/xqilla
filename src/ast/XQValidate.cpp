@@ -39,12 +39,9 @@ XQValidate::XQValidate(ASTNode *expr, DocumentCache::ValidationMode mode, XPath2
 {
 }
 
-Sequence XQValidate::createSequence(DynamicContext *context, int flags) const 
+Result XQValidate::createResult(DynamicContext* context, int flags) const
 {
-  AutoDelete<SequenceBuilder> builder(context->createSequenceBuilder());
-  generateAndTailCall(builder.get(), context, true, true);
-  builder->endEvent();
-  return builder->getSequence();
+  return new GenerateEventsResult(this, 0);
 }
 
 EventGenerator::Ptr XQValidate::generateEvents(EventHandler *events, DynamicContext *context,

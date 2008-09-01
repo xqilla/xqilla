@@ -34,9 +34,7 @@
 #include <xqilla/exceptions/ASTException.hpp>
 #include <xqilla/exceptions/XPath2TypeMatchException.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>
-#include <xqilla/events/SequenceBuilder.hpp>
 #include <xqilla/events/ContentSequenceFilter.hpp>
-#include <xqilla/events/QueryPathTreeFilter.hpp>
 #include <xqilla/runtime/ClosureResult.hpp>
 
 #include <xercesc/util/XMLChar.hpp>
@@ -52,19 +50,9 @@ XQDOMConstructor::XQDOMConstructor(XPath2MemoryManager* mm)
 {
 }
 
-Sequence XQDOMConstructor::createSequence(DynamicContext *context, int flags) const 
+Result XQDOMConstructor::createResult(DynamicContext* context, int flags) const
 {
-  AutoDelete<SequenceBuilder> builder(context->createSequenceBuilder());
-  if(context->getProjection() && queryPathTree_ != 0) {
-    QueryPathTreeFilter qptf(queryPathTree_, builder.get());
-    generateAndTailCall(&qptf, context, true, true);
-    qptf.endEvent();
-  }
-  else {
-    generateAndTailCall(builder.get(), context, true, true);
-    builder->endEvent();
-  }
-  return builder->getSequence();
+  return new GenerateEventsResult(this, queryPathTree_);
 }
 
 bool XQDOMConstructor::getStringValue(const VectorOfASTNodes* m_children, XMLBuffer &value, DynamicContext *context)
@@ -129,12 +117,9 @@ ASTNode *XQContentSequence::staticTyping(StaticContext *context)
   return this;
 }
 
-Sequence XQContentSequence::createSequence(DynamicContext* context, int flags) const
+Result XQContentSequence::createResult(DynamicContext* context, int flags) const
 {
-  AutoDelete<SequenceBuilder> builder(context->createSequenceBuilder());
-  generateAndTailCall(builder.get(), context, true, true);
-  builder->endEvent();
-  return builder->getSequence();
+  return new GenerateEventsResult(this, 0);
 }
 
 EventGenerator::Ptr XQContentSequence::generateEvents(EventHandler *events, DynamicContext *context,
@@ -189,6 +174,12 @@ ASTNode *XQDirectName::staticTyping(StaticContext *context)
 {
   // Never happens
   return this;
+}
+
+Result XQDirectName::createResult(DynamicContext* context, int flags) const
+{
+  // Never happens
+  return 0;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
