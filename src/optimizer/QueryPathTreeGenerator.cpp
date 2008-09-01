@@ -968,6 +968,7 @@ ASTNode *QueryPathTreeGenerator::optimizeIf(XQIf *item)
 ASTNode *QueryPathTreeGenerator::optimizeInstanceOf(XQInstanceOf *item)
 {
   generate(const_cast<ASTNode *>(item->getExpression()));
+  push(PathResult());
   return item;
 }
 
