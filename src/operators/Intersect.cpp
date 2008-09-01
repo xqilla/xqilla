@@ -30,7 +30,9 @@
 #include <xqilla/schema/SequenceType.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>
 
-/*static*/ const XMLCh Intersect::name[]={ XERCES_CPP_NAMESPACE_QUALIFIER chLatin_i, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_r, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_s, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_c, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
+XERCES_CPP_NAMESPACE_USE;
+
+const XMLCh Intersect::name[]={ chLatin_i, chLatin_n, chLatin_t, chLatin_e, chLatin_r, chLatin_s, chLatin_e, chLatin_c, chLatin_t, chNull };
 
 Intersect::Intersect(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : XQOperator(name, args, memMgr),
@@ -92,26 +94,41 @@ ASTNode* Intersect::staticTyping(StaticContext *context)
   return this;
 }
 
-Sequence Intersect::createSequence(DynamicContext* context, int flags) const
+class IntersectResult : public ResultImpl
 {
-  Sequence param1 = _args[0]->createResult(context, flags)->toSequence(context);
-  Sequence param2 = _args[1]->createResult(context, flags)->toSequence(context);
+public:
+  IntersectResult(const Intersect *ast) : ResultImpl(ast), ast_(ast) {}
 
-  XPath2MemoryManager* memMgr = context->getMemoryManager();
-  Sequence result(param1.getLength(),memMgr);
+  virtual Item::Ptr nextOrTail(Result &tail, DynamicContext *context)
+  {
+    Sequence param1 = ast_->getArgument(0)->createResult(context)->toSequence(context);
+    Sequence param2 = ast_->getArgument(1)->createResult(context)->toSequence(context);
 
-  Sequence::const_iterator p1It = param1.begin();
-  Sequence::const_iterator p2It;
-  Sequence::const_iterator end1 = param1.end();
-  Sequence::const_iterator end2 = param2.end();
+    XPath2MemoryManager* memMgr = context->getMemoryManager();
+    Sequence result(param1.getLength(),memMgr);
 
-  for(;p1It != end1; ++p1It) {
-    for(p2It = param2.begin();p2It != end2; ++p2It) {
-      if(((Node*)p1It->get())->equals((Node*)p2It->get())) {
-        result.addItem(*p1It);
+    Sequence::const_iterator p1It = param1.begin();
+    Sequence::const_iterator p2It;
+    Sequence::const_iterator end1 = param1.end();
+    Sequence::const_iterator end2 = param2.end();
+
+    for(;p1It != end1; ++p1It) {
+      for(p2It = param2.begin();p2It != end2; ++p2It) {
+        if(((Node*)p1It->get())->equals((Node*)p2It->get())) {
+          result.addItem(*p1It);
+        }
       }
     }
+
+    tail = result;
+    return 0;
   }
 
-  return result;
+private:
+  const Intersect *ast_;
+};
+
+Result Intersect::createResult(DynamicContext* context, int flags) const
+{
+  return new IntersectResult(this);
 }

@@ -35,7 +35,7 @@ class XQILLA_API XQDOMConstructor : public ASTNodeImpl
 public:
   XQDOMConstructor(XPath2MemoryManager* mm);
 
-  virtual Sequence createSequence(DynamicContext *context, int flags) const;
+  virtual Result createResult(DynamicContext* context, int flags=0) const;
   virtual EventGenerator::Ptr generateEvents(EventHandler *events, DynamicContext *context,
                               bool preserveNS, bool preserveType) const = 0;
 
@@ -67,7 +67,7 @@ public:
 
   virtual ASTNode *staticResolution(StaticContext *context);
   virtual ASTNode *staticTyping(StaticContext *context);
-  virtual Sequence createSequence(DynamicContext* context, int flags=0) const;
+  virtual Result createResult(DynamicContext* context, int flags=0) const;
   virtual EventGenerator::Ptr generateEvents(EventHandler *events, DynamicContext *context,
                               bool preserveNS, bool preserveType) const;
 
@@ -85,6 +85,7 @@ public:
 
   virtual ASTNode *staticResolution(StaticContext *context);
   virtual ASTNode *staticTyping(StaticContext *context);
+  virtual Result createResult(DynamicContext* context, int flags=0) const;
 
   const XMLCh *getQName() const { return qname_; }
 

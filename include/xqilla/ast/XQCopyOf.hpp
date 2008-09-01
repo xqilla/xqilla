@@ -32,7 +32,7 @@ public:
   virtual ASTNode *staticResolution(StaticContext *context);
   virtual ASTNode *staticTyping(StaticContext *context);
 
-  virtual Sequence createSequence(DynamicContext *context, int flags) const;
+  virtual Result createResult(DynamicContext* context, int flags=0) const;
   virtual EventGenerator::Ptr generateEvents(EventHandler *events, DynamicContext *context,
                                         bool preserveNS, bool preserveType) const;
 

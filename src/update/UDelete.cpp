@@ -69,6 +69,11 @@ ASTNode *UDelete::staticTyping(StaticContext *context)
   return this;
 }
 
+Result UDelete::createResult(DynamicContext* context, int flags) const
+{
+  return 0;
+}
+
 PendingUpdateList UDelete::createUpdateList(DynamicContext *context) const
 {
   PendingUpdateList pul;

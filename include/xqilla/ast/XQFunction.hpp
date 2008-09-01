@@ -52,6 +52,9 @@ public:
   ASTNode *resolveArguments(StaticContext *context, bool checkTimezone = false, bool numericFunction = false);
   ASTNode *calculateSRCForArguments(StaticContext *context, bool checkTimezone = false, bool numericFunction = false);
 
+  virtual Result createResult(DynamicContext* context, int flags=0) const;
+  virtual Sequence createSequence(DynamicContext* context, int flags=0) const;
+
   /** casts the expression given as a parameter into the appropriate type and returns the guaranteed correctly typed objects in a sequence  */
   virtual Result getParamNumber(size_t number, DynamicContext* context, int flags=0) const;
 

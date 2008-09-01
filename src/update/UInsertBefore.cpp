@@ -100,6 +100,11 @@ ASTNode *UInsertBefore::staticTyping(StaticContext *context)
   return this;
 }
 
+Result UInsertBefore::createResult(DynamicContext* context, int flags) const
+{
+  return 0;
+}
+
 PendingUpdateList UInsertBefore::createUpdateList(DynamicContext *context) const
 {
   Node::Ptr node = (Node*)target_->createResult(context)->next(context).get();

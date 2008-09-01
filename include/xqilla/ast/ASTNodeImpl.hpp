@@ -58,21 +58,9 @@ public:
 
   /**
    * Can be overridden by derived classes. Default implementation returns a
-   * SequenceResult made from the Sequence returned by createSequence.
-   */
-  virtual Result createResult(DynamicContext* context, int flags=0) const;
-
-  /**
-   * Can be overridden by derived classes. Default implementation returns a
    * NavStepResult constructed using contextItems and this expression.
    */
   virtual Result iterateResult(const Result &contextItems, DynamicContext* context) const;
-
-  /**
-   * Collapse the compiled expression based on context. Default implementation
-   * returns an empty sequence.
-   */
-  virtual Sequence createSequence(DynamicContext* context, int flags=0) const;
 
   /** Returns the result of this expression via the EventHandler provided.
       Default implementation uses result returned from createResult(). */

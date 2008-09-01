@@ -19,12 +19,6 @@
  * $Id$
  */
 
-/*
-
-   Op Intersect 
-The intersect operator takes two node sequences as operands and returns a sequence containing all the nodes that occur in both operands.
-*/
-
 #ifndef _INTERSECT_HPP
 #define _INTERSECT_HPP
 
@@ -41,7 +35,7 @@ public:
   
   ASTNode* staticResolution(StaticContext *context);
   virtual ASTNode *staticTyping(StaticContext *context);
-  Sequence createSequence(DynamicContext* context, int flags=0) const;
+  virtual Result createResult(DynamicContext* context, int flags=0) const;
 
 private:
   bool sortAdded_;
