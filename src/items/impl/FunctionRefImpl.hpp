@@ -66,6 +66,6 @@ protected:
   std::vector<unsigned int> args_;
   VarStoreImpl varStore_;
 
-  friend class FunctionRefResult;
+  friend class FunctionRefScope;
 };
 #endif
