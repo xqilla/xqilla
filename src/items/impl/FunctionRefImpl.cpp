@@ -31,6 +31,7 @@
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/schema/SequenceType.hpp>
 #include <xqilla/events/EventHandler.hpp>
+#include <xqilla/runtime/ClosureResult.hpp>
 
 XERCES_CPP_NAMESPACE_USE;
 using namespace std;
@@ -87,27 +88,14 @@ FunctionRefImpl::FunctionRefImpl(const FunctionRefImpl *other, const Result &arg
   varStore_.setVar(0, context->getMemoryManager()->getPooledString(buf.getRawBuffer()), argument);
 }
 
-class FunctionRefResult : public ResultImpl, public VariableStore
+class FunctionRefScope : public VariableStore
 {
 public:
-  FunctionRefResult(const FunctionRefImpl::Ptr func, const VectorOfResults &args, DynamicContext *context, const LocationInfo *location)
-    : ResultImpl(location),
-      func_(func),
-      scope_(context->getMemoryManager(), context->getVariableStore()),
-      result_(0)
+  FunctionRefScope(const FunctionRefImpl::Ptr func, const VectorOfResults &args, DynamicContext *context)
+    : func_(func),
+      scope_(context->getMemoryManager(), context->getVariableStore())
   {
     XPath2MemoryManager *mm = context->getMemoryManager();
-
-//     VectorOfResults::const_iterator i = args.begin();
-//     unsigned int count = func_->boundArgs_;
-//     for(; i != args.end(); ++i) {
-//       XMLBuffer buf(20);
-//       buf.set(FunctionRefImpl::argVarPrefix);
-//       XPath2Utils::numToBuf(count, buf);
-//       ++count;
-
-//       scope_.setVar(0, mm->getPooledString(buf.getRawBuffer()), *i);
-//     }
 
     VectorOfResults::const_iterator i = args.begin();
     vector<unsigned int>::const_iterator argsIt = func_->args_.begin();
@@ -134,23 +122,9 @@ public:
     scope_.getInScopeVariables(variables);
   }
 
-  Item::Ptr next(DynamicContext *context)
-  {
-    AutoVariableStoreReset vsReset(context, this);
-
-    if(result_.isNull()) {
-      result_ = func_->instance_->createResult(context);
-    }
-
-    return result_->next(context);
-  }
-
-  string asString(DynamicContext *context, int indent) const { return ""; }
-
 private:
   FunctionRefImpl::Ptr func_;
   VarStoreImpl scope_;
-  Result result_;
 };
 
 Result FunctionRefImpl::execute(const VectorOfResults &args, DynamicContext *context, const LocationInfo *location) const
@@ -165,7 +139,8 @@ Result FunctionRefImpl::execute(const VectorOfResults &args, DynamicContext *con
     XQThrow3(XPath2TypeMatchException, X("FunctionRefImpl::execute"), buf.getRawBuffer(), location);
   }
 
-  return new FunctionRefResult(this, args, context, location);
+  FunctionRefScope scope(this, args, context);
+  return ClosureResult::create(instance_, context, &scope);
 }
 
 ATQNameOrDerived::Ptr FunctionRefImpl::getName(const DynamicContext *context) const
