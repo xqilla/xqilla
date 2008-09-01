@@ -148,7 +148,7 @@ ASTNode *ASTReleaser::optimizeNav(XQNav *item)
 {
   ASTVisitor::optimizeNav(item);
   // Release the step vector
-  const_cast<XQNav::Steps&>(item->getSteps()).~vector();
+  const_cast<XQNav::Steps&>(item->getSteps()).~vector<XQNav::StepInfo,XQillaAllocator<XQNav::StepInfo> >();
   RELEASE_IMPL();
 }
 
@@ -177,7 +177,7 @@ ASTNode *ASTReleaser::optimizeTypeswitch(XQTypeswitch *item)
   for(XQTypeswitch::Cases::iterator i = clauses->begin(); i != clauses->end(); ++i) {
     item->getMemoryManager()->deallocate(*i);
   }
-  clauses->~vector();
+  clauses->~vector<XQTypeswitch::Case*, XQillaAllocator<XQTypeswitch::Case*> >();
   item->getMemoryManager()->deallocate(clauses);
 
   RELEASE_IMPL();
