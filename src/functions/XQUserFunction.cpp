@@ -395,6 +395,16 @@ private:
     return ASTVisitor::optimizeCallTemplate(item);
   }
 
+  virtual ASTNode *optimizeInlineFunction(XQInlineFunction *item)
+  {
+    return item;
+  }
+
+  virtual ASTNode *optimizeFunctionRef(XQFunctionRef *item)
+  {
+    return item;
+  }
+
   StaticContext *context_;
 };
 
