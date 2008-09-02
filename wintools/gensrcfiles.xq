@@ -1,8 +1,3 @@
-(:
-*  IMPORTANT: this file is shared (identical) between the BDB XML and XQilla
-*  projects.  It should not be changed independently or in any way that makes
-*  it project-dependent.
-:)
 declare variable $projectFile external;
 declare variable $projectDoc := doc($projectFile);
 
