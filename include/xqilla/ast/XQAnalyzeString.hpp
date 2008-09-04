@@ -32,6 +32,7 @@ class XQILLA_API XQAnalyzeString : public ASTNodeImpl
 {
 public:
   XQAnalyzeString(XPath2MemoryManager* memMgr);
+  XQAnalyzeString(ASTNode *expr, ASTNode *regex, ASTNode *flags, ASTNode *match, ASTNode *nonMatch, XPath2MemoryManager* memMgr);
 
   virtual Result createResult(DynamicContext *context, int flags=0) const;
   virtual ASTNode *staticResolution(StaticContext *context);

@@ -45,6 +45,16 @@ XQFunctionRef::XQFunctionRef(const XMLCh *qname, unsigned int numArgs, XPath2Mem
 {
 }
 
+XQFunctionRef::XQFunctionRef(const XMLCh *uri, const XMLCh *name, unsigned int numArgs, ASTNode *instance, XPath2MemoryManager *mm)
+  : ASTNodeImpl(FUNCTION_REF, mm),
+    qname_(0),
+    uri_(uri),
+    name_(name),
+    numArgs_(numArgs),
+    instance_(instance)
+{
+}
+
 ASTNode *XQFunctionRef::staticResolution(StaticContext *context)
 {
   XPath2MemoryManager *mm = context->getMemoryManager();

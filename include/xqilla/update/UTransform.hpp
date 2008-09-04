@@ -48,6 +48,7 @@ class XQILLA_API UTransform : public ASTNodeImpl
 {
 public:
   UTransform(VectorOfCopyBinding* bindings, ASTNode *modifyExpr, ASTNode* returnExpr, XPath2MemoryManager *expr);
+  UTransform(VectorOfCopyBinding* bindings, ASTNode *modifyExpr, ASTNode* returnExpr, DocumentCache::ValidationMode valMode, XPath2MemoryManager *expr);
 
   virtual ASTNode *staticResolution(StaticContext* context);
   virtual ASTNode *staticTyping(StaticContext *context);
@@ -55,10 +56,10 @@ public:
 
   const VectorOfCopyBinding *getBindings() const { return bindings_; }
 
-  const ASTNode *getModifyExpr() const { return modify_; }
+  ASTNode *getModifyExpr() const { return modify_; }
   void setModifyExpr(ASTNode *modify) { modify_ = modify; }
 
-  const ASTNode *getReturnExpr() const { return return_; }
+  ASTNode *getReturnExpr() const { return return_; }
   void setReturnExpr(ASTNode *ret) { return_ = ret; }
 
   DocumentCache::ValidationMode getRevalidationMode() const { return valMode_; }

@@ -68,6 +68,15 @@ UTransform::UTransform(VectorOfCopyBinding* bindings, ASTNode *modifyExpr, ASTNo
 {
 }
 
+UTransform::UTransform(VectorOfCopyBinding* bindings, ASTNode *modifyExpr, ASTNode* returnExpr, DocumentCache::ValidationMode valMode, XPath2MemoryManager* mm)
+  : ASTNodeImpl(UTRANSFORM, mm),
+    bindings_(bindings),
+    modify_(modifyExpr),
+    return_(returnExpr),
+    valMode_(valMode)
+{
+}
+
 static const XMLCh err_XUTY0013[] = { 'e', 'r', 'r', ':', 'X', 'U', 'T', 'Y', '0', '0', '1', '3', 0 };
 
 ASTNode *UTransform::staticResolution(StaticContext* context)

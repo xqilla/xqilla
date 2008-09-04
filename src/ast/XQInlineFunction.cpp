@@ -39,6 +39,13 @@ XQInlineFunction::XQInlineFunction(XQUserFunction *func, XPath2MemoryManager *mm
 {
 }
 
+XQInlineFunction::XQInlineFunction(XQUserFunction *func, ASTNode *instance, XPath2MemoryManager *mm)
+  : ASTNodeImpl(INLINE_FUNCTION, mm),
+    func_(func),
+    instance_(instance)
+{
+}
+
 ASTNode *XQInlineFunction::staticResolution(StaticContext *context)
 {
   XPath2MemoryManager *mm = context->getMemoryManager();

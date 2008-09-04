@@ -32,6 +32,8 @@ class XQILLA_API ForTuple : public TupleNode
 public:
   ForTuple(TupleNode *parent, const XMLCh *varQName, const XMLCh *posQName, ASTNode *expr,
            XPath2MemoryManager *mm);
+  ForTuple(TupleNode *parent, const XMLCh *varURI, const XMLCh *varName,
+	  const XMLCh *posURI, const XMLCh *posName, ASTNode *expr, XPath2MemoryManager *mm);
 
   const XMLCh *getVarURI() const { return varURI_; }
   const XMLCh *getVarName() const { return varName_; }
@@ -43,6 +45,7 @@ public:
   void setExpression(ASTNode *expr) { expr_ = expr; }
 
   const StaticAnalysis &getVarSRC() const { return varSrc_; }
+  const StaticAnalysis &getPosSRC() const { return posSrc_; }
 
   virtual TupleNode *staticResolution(StaticContext *context);
   virtual TupleNode *staticTypingSetup(unsigned int &min, unsigned int &max, StaticContext *context);

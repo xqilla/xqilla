@@ -105,7 +105,7 @@ public:
   virtual ~ASTNode() {}
 
   virtual void release() = 0;
-  virtual ASTNode *copy(XPath2MemoryManager *mm) const = 0;
+  virtual ASTNode *copy(DynamicContext *context) const = 0;
 
   virtual bool isSubsetOf(const ASTNode *other) const = 0;
   virtual bool isEqualTo(const ASTNode *other) const = 0;

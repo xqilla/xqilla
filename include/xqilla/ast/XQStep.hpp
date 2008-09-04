@@ -57,7 +57,7 @@ public:
   virtual Result createResult(DynamicContext* context, int flags=0) const;
   virtual Result iterateResult(const Result &contextItems, DynamicContext* context) const;
 
-  const NodeTest *getNodeTest() const;
+  NodeTest *getNodeTest() const;
   void setNodeTest(NodeTest *nodeTest);
 
   Axis getAxis() const;

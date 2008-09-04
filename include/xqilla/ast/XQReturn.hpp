@@ -31,7 +31,7 @@ class XQILLA_API XQReturn : public ASTNodeImpl
 public:
   XQReturn(TupleNode *parent, ASTNode *expr, XPath2MemoryManager *mm);
 
-  const TupleNode *getParent() const { return parent_; }
+  TupleNode *getParent() const { return parent_; }
   void setParent(TupleNode *parent) { parent_ = parent; }
 
   ASTNode *getExpression() const { return expr_; }

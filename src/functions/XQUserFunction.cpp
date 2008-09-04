@@ -563,6 +563,15 @@ XQUserFunctionInstance::XQUserFunctionInstance(const XQUserFunction* funcDef, co
   _fURI = funcDef->getURI();
 }
 
+XQUserFunctionInstance::XQUserFunctionInstance(const XQUserFunction *funcDef, const VectorOfASTNodes& args, bool addReturnCheck, XPath2MemoryManager *mm)
+  : XQFunction(funcDef->getName(), 0, UNLIMITED,"",args, mm),
+    addReturnCheck_(addReturnCheck),
+    funcDef_(funcDef)
+{
+  _type = ASTNode::USER_FUNCTION;
+  _fURI = funcDef->getURI();
+}
+
 Result XQUserFunctionInstance::getArgument(size_t index, DynamicContext *context) const
 {
   if(index >= funcDef_->getMaxArgs()) return 0;

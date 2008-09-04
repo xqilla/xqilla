@@ -48,6 +48,21 @@ ForTuple::ForTuple(TupleNode *parent, const XMLCh *varQName, const XMLCh *posQNa
 {
 }
 
+ForTuple::ForTuple(TupleNode *parent, const XMLCh *varURI, const XMLCh *varName,
+                   const XMLCh *posURI, const XMLCh *posName, ASTNode *expr, XPath2MemoryManager *mm)
+  : TupleNode(FOR, parent, mm),
+    varQName_(0),
+    varURI_(varURI),
+    varName_(varName),
+    posQName_(0),
+    posURI_(posURI),
+    posName_(posName),
+    varSrc_(mm),
+    posSrc_(mm),
+    expr_(expr)
+{
+}
+
 TupleNode *ForTuple::staticResolution(StaticContext *context)
 {
   parent_ = parent_->staticResolution(context);

@@ -146,7 +146,7 @@ const XMLCh* XQAttributeConstructor::getNodeType() const
   return Node::attribute_string;
 }
 
-const ASTNode *XQAttributeConstructor::getName() const
+ASTNode *XQAttributeConstructor::getName() const
 {
   return m_name;
 }

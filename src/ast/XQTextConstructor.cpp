@@ -38,7 +38,6 @@ XERCES_CPP_NAMESPACE_USE
 
 XQTextConstructor::XQTextConstructor(ASTNode *value, XPath2MemoryManager* mm)
   : XQDOMConstructor(mm),
-    m_nodeType(Node::text_string),
     m_value(value)
 {
 }
@@ -87,10 +86,10 @@ ASTNode* XQTextConstructor::staticTyping(StaticContext *context)
 
 const XMLCh* XQTextConstructor::getNodeType() const
 {
-  return m_nodeType;
+  return Node::text_string;
 }
 
-const ASTNode *XQTextConstructor::getValue() const
+ASTNode *XQTextConstructor::getValue() const
 {
   return m_value;
 }

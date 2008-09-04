@@ -40,7 +40,7 @@ public:
   virtual whichType getType() const;
 	
   virtual void release();
-  virtual ASTNode *copy(XPath2MemoryManager *mm) const;
+  virtual ASTNode *copy(DynamicContext *context) const;
 
   virtual bool isSubsetOf(const ASTNode *other) const;
   virtual bool isEqualTo(const ASTNode *other) const;

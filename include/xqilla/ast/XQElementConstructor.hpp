@@ -33,6 +33,8 @@ class XQILLA_API XQElementConstructor : public XQDOMConstructor
 {
 public:
   XQElementConstructor(ASTNode* name, VectorOfASTNodes* attrList, VectorOfASTNodes* children, XPath2MemoryManager *mm);
+  XQElementConstructor(ASTNode* name, VectorOfASTNodes* attrList, VectorOfASTNodes* children,
+                       XERCES_CPP_NAMESPACE_QUALIFIER RefHashTableOf< XMLCh > *namespaces, XPath2MemoryManager *mm);
 
   virtual EventGenerator::Ptr generateEvents(EventHandler *events, DynamicContext *context,
                               bool preserveNS, bool preserveType) const;
@@ -40,11 +42,13 @@ public:
   virtual ASTNode *staticTyping(StaticContext *context);
 
   virtual const XMLCh* getNodeType() const;
-  virtual const ASTNode *getName() const;
+  virtual ASTNode *getName() const;
   virtual const VectorOfASTNodes *getAttributes() const;
   void setAttributes(VectorOfASTNodes *a) { m_attrList = a; }
   virtual const VectorOfASTNodes *getChildren() const;
   void setChildren(VectorOfASTNodes *c) { m_children = c; }
+
+  XERCES_CPP_NAMESPACE_QUALIFIER RefHashTableOf< XMLCh > *getNamespaces() const { return m_namespaces; }
 
   virtual void setName(ASTNode *name);
 

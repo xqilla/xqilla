@@ -425,6 +425,7 @@
       <File RelativePath="..\..\include\xqilla\operators\UnaryMinus.hpp"/>
       <File RelativePath="..\..\include\xqilla\operators\Union.hpp"/>
       <File RelativePath="..\..\include\xqilla\optimizer\Optimizer.hpp"/>
+      <File RelativePath="..\..\include\xqilla\optimizer\ASTCopier.hpp"/>
       <File RelativePath="..\..\include\xqilla\optimizer\ASTReleaser.hpp"/>
       <File RelativePath="..\..\include\xqilla\optimizer\ASTVisitor.hpp"/>
       <File RelativePath="..\..\include\xqilla\optimizer\QueryPathNode.hpp"/>
@@ -902,6 +903,7 @@
       <File RelativePath="..\..\src\operators\Union.cpp"/>
     </Filter>
     <Filter Filter="" Name="optimizer">
+      <File RelativePath="..\..\src\optimizer\ASTCopier.cpp"/>
       <File RelativePath="..\..\src\optimizer\ASTReleaser.cpp"/>
       <File RelativePath="..\..\src\optimizer\ASTVisitor.cpp"/>
       <File RelativePath="..\..\src\optimizer\Optimizer.cpp"/>

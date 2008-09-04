@@ -90,7 +90,7 @@ const XMLCh* XQDocumentConstructor::getNodeType() const
   return Node::document_string;
 }
 
-const ASTNode *XQDocumentConstructor::getValue() const
+ASTNode *XQDocumentConstructor::getValue() const
 {
   return m_value;
 }

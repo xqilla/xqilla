@@ -40,10 +40,10 @@ public:
                               bool preserveNS, bool preserveType) const = 0;
 
   virtual const XMLCh* getNodeType() const = 0;
-  virtual const ASTNode *getName() const { return 0; }
+  virtual ASTNode *getName() const { return 0; }
   virtual const VectorOfASTNodes *getAttributes() const { return 0; }
   virtual const VectorOfASTNodes *getChildren() const { return 0; }
-  virtual const ASTNode *getValue() const { return 0; }
+  virtual ASTNode *getValue() const { return 0; }
 
   virtual void setName(ASTNode *name) {}
   virtual void setValue(ASTNode *value) {}
@@ -71,7 +71,7 @@ public:
   virtual EventGenerator::Ptr generateEvents(EventHandler *events, DynamicContext *context,
                               bool preserveNS, bool preserveType) const;
 
-  const ASTNode *getExpression() const { return expr_; }
+  ASTNode *getExpression() const { return expr_; }
   void setExpression(ASTNode *expr) { expr_ = expr; }
 
 private:
@@ -88,6 +88,7 @@ public:
   virtual Result createResult(DynamicContext* context, int flags=0) const;
 
   const XMLCh *getQName() const { return qname_; }
+  bool getIsAttr() const { return isAttr_; }
 
 private:
   const XMLCh *qname_;
@@ -103,7 +104,7 @@ public:
   virtual ASTNode *staticTyping(StaticContext *context);
   virtual Result createResult(DynamicContext* context, int flags=0) const;
 
-  const ASTNode *getExpression() const { return expr_; }
+  ASTNode *getExpression() const { return expr_; }
   void setExpression(ASTNode *expr) { expr_ = expr; }
 
 private:

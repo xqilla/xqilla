@@ -31,6 +31,7 @@ class XQILLA_API XQInlineFunction : public ASTNodeImpl
 {
 public:
   XQInlineFunction(XQUserFunction *func, XPath2MemoryManager *mm);
+  XQInlineFunction(XQUserFunction *func, ASTNode *instance, XPath2MemoryManager *mm);
 
   virtual ASTNode *staticResolution(StaticContext *context);
   virtual ASTNode *staticTyping(StaticContext *context);

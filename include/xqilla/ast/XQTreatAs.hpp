@@ -33,16 +33,22 @@ class XQILLA_API XQTreatAs : public ASTNodeImpl
 {
 public:
   XQTreatAs(ASTNode* expr, SequenceType *exprType, XPath2MemoryManager* memMgr, const XMLCh *errorCode = 0);
+  XQTreatAs(ASTNode* expr, SequenceType *exprType, const XMLCh *errorCode, bool doTypeCheck, bool doCardinalityCheck,
+            ASTNode *funcConvert, XPath2MemoryManager* memMgr);
 
   virtual Result createResult(DynamicContext* context, int flags=0) const;
   virtual ASTNode* staticResolution(StaticContext *context);
   virtual ASTNode *staticTyping(StaticContext *context);
 
-  const ASTNode *getExpression() const;
-  const SequenceType *getSequenceType() const;
+  ASTNode *getExpression() const;
+  ASTNode *getFuncConvert() const { return _funcConvert; }
+  SequenceType *getSequenceType() const;
   bool getDoTypeCheck() const { return _doTypeCheck; }
+  bool getDoCardinalityCheck() const { return _doCardinalityCheck; }
+  const XMLCh *getErrorCode() const { return _errorCode; }
 
   void setExpression(ASTNode *item);
+  void setFuncConvert(ASTNode *item) { _funcConvert = item; }
 
   static const XMLCh err_XPDY0050[];
   static const XMLCh err_XPTY0004[];

@@ -159,7 +159,7 @@ bool XQStep::isForwardAxis(Axis axis)
   return false;
 }
 
-const NodeTest *XQStep::getNodeTest() const {
+NodeTest *XQStep::getNodeTest() const {
   return nodeTest_;
 }
 

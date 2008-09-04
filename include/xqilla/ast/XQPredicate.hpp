@@ -42,19 +42,20 @@ class XQILLA_API XQPredicate : public ASTNodeImpl
 public:
   XQPredicate(ASTNode *predicate, XPath2MemoryManager* memMgr);
   XQPredicate(ASTNode *expr, ASTNode *predicate, XPath2MemoryManager* memMgr);
+  XQPredicate(ASTNode *expr, ASTNode *predicate, bool reverse, XPath2MemoryManager* memMgr);
 
   virtual ASTNode* staticResolution(StaticContext *context);
   virtual ASTNode *staticTyping(StaticContext *context);
   virtual Result createResult(DynamicContext* context, int flags=0) const;
   virtual Result iterateResult(const Result &contextItems, DynamicContext* context) const;
 
-  const ASTNode *getExpression() const { return expr_; }
+  ASTNode *getExpression() const { return expr_; }
   void setExpression(ASTNode *expr) { expr_ = expr; }
 
-  const ASTNode *getPredicate() const { return predicate_; }
+  ASTNode *getPredicate() const { return predicate_; }
   void setPredicate(ASTNode *pred) { predicate_ = pred; }
 
-  bool isReverse() const { return reverse_; }
+  bool getReverse() const { return reverse_; }
   void setReverse(bool reverse) { reverse_ = reverse; }
 
   static ASTNode *addPredicates(ASTNode *expr, VectorOfPredicates *preds);

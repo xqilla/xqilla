@@ -39,9 +39,9 @@ public:
   virtual ASTNode *staticTyping(StaticContext *context);
   virtual PendingUpdateList createUpdateList(DynamicContext *context) const;
 
-  const ASTNode *getTest() const;
-  const ASTNode *getWhenTrue() const;
-  const ASTNode *getWhenFalse() const;
+  ASTNode *getTest() const;
+  ASTNode *getWhenTrue() const;
+  ASTNode *getWhenFalse() const;
 
   void setTest(ASTNode *item);
   void setWhenTrue(ASTNode *item);

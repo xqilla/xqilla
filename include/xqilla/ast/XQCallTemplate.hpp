@@ -44,6 +44,7 @@ class XQILLA_API XQCallTemplate : public ASTNodeImpl
 public:
   XQCallTemplate(const XMLCh *qname, TemplateArguments *args, XPath2MemoryManager *mm);
   XQCallTemplate(ASTNode *qname, TemplateArguments *args, XPath2MemoryManager *mm);
+  XQCallTemplate(const XMLCh *qname, const XMLCh *uri, const XMLCh *name, ASTNode *astName, TemplateArguments *args, XPath2MemoryManager *mm);
 
   virtual ASTNode *staticResolution(StaticContext *context);
   virtual ASTNode *staticTyping(StaticContext *context);

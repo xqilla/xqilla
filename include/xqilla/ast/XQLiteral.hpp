@@ -40,7 +40,7 @@ public:
   virtual ASTNode* staticResolution(StaticContext *context);
   virtual Result createResult(DynamicContext* context, int flags=0) const;
 
-  const ItemConstructor *getItemConstructor() const
+  ItemConstructor *getItemConstructor() const
   {
     return _itemConstructor;
   }

@@ -63,6 +63,16 @@ XQCallTemplate::XQCallTemplate(ASTNode *qname, TemplateArguments *args, XPath2Me
 {
 }
 
+XQCallTemplate::XQCallTemplate(const XMLCh *qname, const XMLCh *uri, const XMLCh *name, ASTNode *astName, TemplateArguments *args, XPath2MemoryManager *mm)
+  : ASTNodeImpl(CALL_TEMPLATE, mm),
+    qname_(qname),
+    uri_(uri),
+    name_(name),
+    astName_(astName),
+    args_(args)
+{
+}
+
 ASTNode* XQCallTemplate::staticResolution(StaticContext *context) 
 {
   XPath2MemoryManager *mm = context->getMemoryManager();

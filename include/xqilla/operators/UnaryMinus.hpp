@@ -19,17 +19,12 @@
  * $Id$
  */
 
-/*
-   UnaryMinus operator function
-*/
-
 #ifndef _UNARYMINUS_HPP
 #define _UNARYMINUS_HPP
 
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/operators/ArithmeticOperator.hpp>
 
-/** Unary Minus operator function*/
 class XQILLA_API UnaryMinus : public ArithmeticOperator
 {
 public:
@@ -49,5 +44,5 @@ private:
   bool positive_;
 };
 
-#endif // _UNARYMINUS_HPP
+#endif
 

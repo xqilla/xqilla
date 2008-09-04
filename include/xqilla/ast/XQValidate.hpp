@@ -37,7 +37,7 @@ public:
   virtual EventGenerator::Ptr generateEvents(EventHandler *events, DynamicContext *context,
                               bool preserveNS, bool preserveType) const;
 
-  const ASTNode *getExpression() const { return expr_; }
+  ASTNode *getExpression() const { return expr_; }
   DocumentCache::ValidationMode getMode() const { return mode_; }
 
   void setExpression(ASTNode *expr) { expr_ = expr; }

@@ -38,7 +38,7 @@ public:
 
   Type getQuantifierType() const { return qtype_; }
 
-  const TupleNode *getParent() const { return parent_; }
+  TupleNode *getParent() const { return parent_; }
   void setParent(TupleNode *parent) { parent_ = parent; }
 
   ASTNode *getExpression() const { return expr_; }

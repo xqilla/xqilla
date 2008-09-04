@@ -50,4 +50,4 @@ private:
   };
 };
 
-#endif // _AND_HPP
+#endif

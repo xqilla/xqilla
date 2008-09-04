@@ -44,6 +44,7 @@
 #include <xqilla/update/PendingUpdateList.hpp>
 #include <xqilla/events/EventHandler.hpp>
 #include <xqilla/optimizer/ASTReleaser.hpp>
+#include <xqilla/optimizer/ASTCopier.hpp>
 
 ASTNodeImpl::ASTNodeImpl(whichType type, XPath2MemoryManager* memMgr)
   : _src(memMgr),
@@ -61,10 +62,9 @@ void ASTNodeImpl::release()
   ASTReleaser().release(this);
 }
 
-ASTNode *ASTNodeImpl::copy(XPath2MemoryManager *mm) const
+ASTNode *ASTNodeImpl::copy(DynamicContext *context) const
 {
-  // TBD - jpcs
-  return 0;
+  return ASTCopier().copy(this, context);
 }
 
 bool ASTNodeImpl::isSubsetOf(const ASTNode *other) const

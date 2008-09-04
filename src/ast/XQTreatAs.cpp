@@ -62,6 +62,18 @@ XQTreatAs::XQTreatAs(ASTNode* expr, SequenceType* exprType, XPath2MemoryManager*
   if(_errorCode == 0) _errorCode = err_XPTY0004;
 }
 
+XQTreatAs::XQTreatAs(ASTNode* expr, SequenceType *exprType, const XMLCh *errorCode, bool doTypeCheck, bool doCardinalityCheck,
+	ASTNode *funcConvert, XPath2MemoryManager* memMgr)
+  : ASTNodeImpl(TREAT_AS, memMgr),
+    _expr(expr),
+    _exprType(exprType),
+    _errorCode(errorCode),
+    _doTypeCheck(doTypeCheck),
+    _doCardinalityCheck(doCardinalityCheck),
+    _funcConvert(funcConvert)
+{
+}
+
 ASTNode* XQTreatAs::staticResolution(StaticContext *context)
 {
   XPath2MemoryManager *mm = context->getMemoryManager();
@@ -212,11 +224,11 @@ ASTNode *XQTreatAs::staticTyping(StaticContext *context)
   return this;
 }
 
-const ASTNode *XQTreatAs::getExpression() const {
+ASTNode *XQTreatAs::getExpression() const {
   return _expr;
 }
 
-const SequenceType *XQTreatAs::getSequenceType() const {
+SequenceType *XQTreatAs::getSequenceType() const {
   return _exprType;
 }
 

@@ -35,8 +35,10 @@ public:
   virtual ASTNode *staticResolution(StaticContext *context);
   virtual ASTNode *staticTyping(StaticContext *context);
 
-  const ASTNode *getExpression() const { return expr_; }
+  ASTNode *getExpression() const { return expr_; }
   void setExpression(ASTNode *expr) { expr_ = expr; }
+
+  XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver *getNamespaces() const { return namespaces_; }
 
 protected:
   ASTNode *expr_;

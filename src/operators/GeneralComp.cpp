@@ -50,6 +50,14 @@ GeneralComp::GeneralComp(ComparisonOperation operation, const VectorOfASTNodes &
 {
 }
 
+GeneralComp::GeneralComp(ComparisonOperation operation, const VectorOfASTNodes &args, Collation *collation, bool xpath1Compat, XPath2MemoryManager* memMgr)
+  : XQOperator(name, args, memMgr),
+    operation_(operation),
+    collation_(collation),
+    xpath1compat_(xpath1Compat)
+{
+}
+
 bool GeneralComp::compare(GeneralComp::ComparisonOperation operation, AnyAtomicType::Ptr first, AnyAtomicType::Ptr second,
                           Collation* collation, DynamicContext *context, bool xpath1compat, const LocationInfo *info)
 {

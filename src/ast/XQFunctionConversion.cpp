@@ -57,11 +57,11 @@ Result XQFunctionConversion::createResult(DynamicContext* context, int flags) co
   return 0;
 }
 
-const ASTNode *XQFunctionConversion::getExpression() const {
+ASTNode *XQFunctionConversion::getExpression() const {
   return expr_;
 }
 
-const SequenceType *XQFunctionConversion::getSequenceType() const {
+SequenceType *XQFunctionConversion::getSequenceType() const {
   return seqType_;
 }
 

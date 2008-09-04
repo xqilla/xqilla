@@ -28,6 +28,7 @@ class XQILLA_API XQCopyOf : public ASTNodeImpl
 {
 public:
   XQCopyOf(XPath2MemoryManager* memMgr);
+  XQCopyOf(ASTNode *expr, bool copyNamespaces, XPath2MemoryManager* memMgr);
 
   virtual ASTNode *staticResolution(StaticContext *context);
   virtual ASTNode *staticTyping(StaticContext *context);

@@ -45,6 +45,17 @@ XQPromoteUntyped::XQPromoteUntyped(ASTNode* expr, const XMLCh *uri, const XMLCh 
 {
 }
 
+XQPromoteUntyped::XQPromoteUntyped(ASTNode* expr, const XMLCh *uri, const XMLCh *name, bool isPrimitive,
+                                   AnyAtomicType::AtomicObjectType typeIndex, XPath2MemoryManager* memMgr)
+  : ASTNodeImpl(PROMOTE_UNTYPED, memMgr),
+    expr_(expr),
+    uri_(uri),
+    name_(name),
+    isPrimitive_(isPrimitive),
+    typeIndex_(typeIndex)
+{
+}
+
 ASTNode* XQPromoteUntyped::staticResolution(StaticContext *context)
 {
   expr_ = expr_->staticResolution(context);
@@ -87,7 +98,7 @@ Result XQPromoteUntyped::createResult(DynamicContext* context, int flags) const
 PromoteUntypedResult::PromoteUntypedResult(const XQPromoteUntyped *di, const Result &parent)
   : ResultImpl(di),
     parent_(parent),
-    isPrimitive_(di->isPrimitive()),
+    isPrimitive_(di->getIsPrimitive()),
     typeIndex_(di->getTypeIndex()),
     uri_(di->getTypeURI()),
     name_(di->getTypeName())
@@ -147,6 +158,16 @@ XQPromoteNumeric::XQPromoteNumeric(ASTNode* expr, const XMLCh *uri, const XMLCh 
     uri_(uri),
     name_(name),
     typeIndex_((AnyAtomicType::AtomicObjectType)-1)
+{
+}
+
+XQPromoteNumeric::XQPromoteNumeric(ASTNode* expr, const XMLCh *uri, const XMLCh *name,
+                                   AnyAtomicType::AtomicObjectType typeIndex, XPath2MemoryManager* memMgr)
+  : ASTNodeImpl(PROMOTE_NUMERIC, memMgr),
+    expr_(expr),
+    uri_(uri),
+    name_(name),
+    typeIndex_(typeIndex)
 {
 }
 

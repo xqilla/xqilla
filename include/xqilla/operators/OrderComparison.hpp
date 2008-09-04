@@ -52,7 +52,7 @@ private:
     const OrderComparison *_op;
   };
 
-	bool _testBefore;
+  bool _testBefore;
 };
 
-#endif // _FUNCTIONOPPLUS_HPP
+#endif

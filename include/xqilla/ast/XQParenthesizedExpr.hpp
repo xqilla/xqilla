@@ -31,6 +31,7 @@ class XQILLA_API XQParenthesizedExpr : public ASTNodeImpl
 
 public:
   XQParenthesizedExpr(XPath2MemoryManager* memMgr);	
+  XQParenthesizedExpr(const VectorOfASTNodes &children, XPath2MemoryManager* memMgr);	
 
   ///adds a ASTNode to this XQParenthesizedExpr
   void addItem(ASTNode* di);

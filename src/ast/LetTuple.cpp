@@ -41,6 +41,17 @@ LetTuple::LetTuple(TupleNode *parent, const XMLCh *varQName, ASTNode *expr, XPat
 {
 }
 
+LetTuple::LetTuple(TupleNode *parent, const XMLCh *varURI, const XMLCh *varName, ASTNode *expr, XPath2MemoryManager *mm)
+  : TupleNode(LET, parent, mm),
+    seqType(0),
+    varQName_(0),
+    varURI_(varURI),
+    varName_(varName),
+    varSrc_(mm),
+    expr_(expr)
+{
+}
+
 TupleNode *LetTuple::staticResolution(StaticContext *context)
 {
   parent_ = parent_->staticResolution(context);
