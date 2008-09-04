@@ -42,6 +42,7 @@ public:
 
   XQNav(XPath2MemoryManager* memMgr);
   XQNav(ASTNode *step, XPath2MemoryManager* memMgr);
+  XQNav(const Steps &steps, bool sortAdded, XPath2MemoryManager* memMgr);
   virtual ~XQNav();
 	
 

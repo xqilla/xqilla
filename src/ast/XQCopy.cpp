@@ -47,6 +47,16 @@ XQCopy::XQCopy(XPath2MemoryManager* memMgr)
 {
 }
 
+XQCopy::XQCopy(ASTNode *expr, const VectorOfASTNodes &children, bool copyNamespaces, bool inheritNamespaces, XPath2MemoryManager* memMgr)
+  : ASTNodeImpl(COPY, memMgr),
+    expr_(expr),
+    children_(XQillaAllocator<ASTNode*>(memMgr)),
+    copyNamespaces_(copyNamespaces),
+    inheritNamespaces_(inheritNamespaces)
+{
+  children_ = children;
+}
+
 ASTNode* XQCopy::staticResolution(StaticContext *context)
 {
   XPath2MemoryManager *mm = context->getMemoryManager();

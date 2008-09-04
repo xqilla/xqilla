@@ -121,6 +121,13 @@ XQSequence::XQSequence(XPath2MemoryManager* memMgr)
 {
 }
 
+XQSequence::XQSequence(const ItemConstructor::Vector &ic, XPath2MemoryManager* memMgr)
+  : ASTNodeImpl(SEQUENCE, memMgr),
+    _itemConstructors(XQillaAllocator<ItemConstructor*>(memMgr))
+{
+  _itemConstructors = ic;
+}
+
 XQSequence::~XQSequence()
 {
   //no-op

@@ -186,6 +186,15 @@ XQTypeswitch::Case::Case(const XMLCh *qname, SequenceType *seqType, ASTNode *exp
 {
 }
 
+XQTypeswitch::Case::Case(const XMLCh *qname, const XMLCh *uri, const XMLCh *name, SequenceType *seqType, ASTNode *expr)
+  : qname_(qname),
+    uri_(uri),
+    name_(name),
+    seqType_(seqType),
+    expr_(expr)
+{
+}
+
 void XQTypeswitch::Case::staticResolution(StaticContext* context)
 {
   if(seqType_)

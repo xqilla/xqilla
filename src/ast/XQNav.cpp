@@ -51,6 +51,14 @@ XQNav::XQNav(ASTNode *ast, XPath2MemoryManager* memMgr)
   addStep(ast);
 }
 
+XQNav::XQNav(const Steps &steps, bool sortAdded, XPath2MemoryManager* memMgr)
+  : ASTNodeImpl(NAVIGATION, memMgr),
+    _steps(XQillaAllocator<StepInfo>(memMgr)),
+    _sortAdded(sortAdded)
+{
+  _steps = steps;
+}
+
 XQNav::~XQNav()
 {
   //no-op

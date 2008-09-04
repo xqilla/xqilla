@@ -33,12 +33,13 @@ class XQILLA_API XQDocumentOrder : public ASTNodeImpl
 {
 public:
   XQDocumentOrder(ASTNode* expr, XPath2MemoryManager* memMgr);
+  XQDocumentOrder(ASTNode* expr, bool unordered, XPath2MemoryManager* memMgr);
 
   virtual Result createResult(DynamicContext* context, int flags=0) const;
   virtual ASTNode* staticResolution(StaticContext *context);
   virtual ASTNode *staticTyping(StaticContext *context);
 
-  const ASTNode *getExpression() const { return expr_; }
+  ASTNode *getExpression() const { return expr_; }
   void setExpression(ASTNode *expr) { expr_ = expr; }
   bool getUnordered() const { return unordered_; }
 

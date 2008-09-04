@@ -36,6 +36,13 @@ XQParenthesizedExpr::XQParenthesizedExpr(XPath2MemoryManager* memMgr)
 {
 }
 
+XQParenthesizedExpr::XQParenthesizedExpr(const VectorOfASTNodes &children, XPath2MemoryManager* memMgr)
+  : ASTNodeImpl(PARENTHESIZED, memMgr),
+    _astNodes(XQillaAllocator<ASTNode*>(memMgr))
+{
+  _astNodes = children;
+}
+
 Result XQParenthesizedExpr::createResult(DynamicContext* context, int flags) const
 {
   return new ParenthesizedResult(this);

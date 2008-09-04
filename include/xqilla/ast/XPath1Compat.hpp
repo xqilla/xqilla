@@ -36,9 +36,9 @@ public:
   virtual ASTNode* staticResolution(StaticContext *context);
   virtual ASTNode *staticTyping(StaticContext *context);
 
-  const ASTNode *getExpression() const { return expr_; }
+  ASTNode *getExpression() const { return expr_; }
   void setExpression(ASTNode *expr) { expr_ = expr; }
-  const SequenceType *getSequenceType() const { return seqType_; }
+  SequenceType *getSequenceType() const { return seqType_; }
 
 protected:
   ASTNode* expr_;

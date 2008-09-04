@@ -35,6 +35,7 @@ class XQILLA_API XQSequence : public ASTNodeImpl
 public:
   XQSequence(const Item::Ptr &item, DynamicContext *context, XPath2MemoryManager* memMgr);
   XQSequence(ItemConstructor *ic, XPath2MemoryManager* memMgr);
+  XQSequence(const ItemConstructor::Vector &ic, XPath2MemoryManager* memMgr);
   XQSequence(XPath2MemoryManager* memMgr);
 
   ~XQSequence();

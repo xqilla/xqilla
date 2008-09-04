@@ -278,7 +278,9 @@ ASTNode *ASTVisitor::optimizeCastAs(XQCastAs *item)
 
 ASTNode *ASTVisitor::optimizeTreatAs(XQTreatAs *item)
 {
-  item->setExpression(optimize(const_cast<ASTNode *>(item->getExpression())));
+  item->setExpression(optimize(item->getExpression()));
+  if(item->getFuncConvert())
+    item->setFuncConvert(optimize(item->getFuncConvert()));
   return item;
 }
 

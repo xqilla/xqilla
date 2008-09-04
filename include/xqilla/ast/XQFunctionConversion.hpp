@@ -33,8 +33,8 @@ public:
   virtual ASTNode* staticResolution(StaticContext *context);
   virtual ASTNode *staticTyping(StaticContext *context);
 
-  const ASTNode *getExpression() const;
-  const SequenceType *getSequenceType() const;
+  ASTNode *getExpression() const;
+  SequenceType *getSequenceType() const;
 
   void setExpression(ASTNode *item);
 

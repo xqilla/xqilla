@@ -33,6 +33,13 @@ UApplyUpdates::UApplyUpdates(ASTNode *expr, XPath2MemoryManager* memMgr)
 {
 }
 
+UApplyUpdates::UApplyUpdates(ASTNode *expr, DocumentCache::ValidationMode valMode, XPath2MemoryManager* memMgr)
+  : ASTNodeImpl(UAPPLY_UPDATES, memMgr),
+    expr_(expr),
+    valMode_(valMode)
+{
+}
+
 ASTNode* UApplyUpdates::staticResolution(StaticContext *context)
 {
   expr_ = expr_->staticResolution(context);

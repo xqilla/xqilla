@@ -52,6 +52,16 @@ XQAnalyzeString::XQAnalyzeString(XPath2MemoryManager* memMgr)
 {
 }
 
+XQAnalyzeString::XQAnalyzeString(ASTNode *expr, ASTNode *regex, ASTNode *flags, ASTNode *match, ASTNode *nonMatch, XPath2MemoryManager* memMgr)
+  : ASTNodeImpl(ANALYZE_STRING, memMgr),
+    expr_(expr),
+    regex_(regex),
+    flags_(flags),
+    match_(match),
+    nonMatch_(nonMatch)
+{
+}
+
 ASTNode* XQAnalyzeString::staticResolution(StaticContext *context)
 {
   XPath2MemoryManager *mm = context->getMemoryManager();

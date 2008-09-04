@@ -49,6 +49,15 @@ XQCastAs::XQCastAs(ASTNode* expr, SequenceType* exprType, XPath2MemoryManager* m
 {
 }
 
+XQCastAs::XQCastAs(ASTNode* expr, SequenceType* exprType, bool isPrimitive, AnyAtomicType::AtomicObjectType typeIndex, XPath2MemoryManager* memMgr)
+  : ASTNodeImpl(CAST_AS, memMgr),
+    _expr(expr),
+    _exprType(exprType),
+    _isPrimitive(isPrimitive),
+    _typeIndex(typeIndex)
+{
+}
+
 Result XQCastAs::createResult(DynamicContext* context, int flags) const
 {
   return new CastAsResult(this);
@@ -152,11 +161,11 @@ ASTNode *XQCastAs::staticTyping(StaticContext *context)
   return this;
 }
 
-const ASTNode *XQCastAs::getExpression() const {
+ASTNode *XQCastAs::getExpression() const {
   return _expr;
 }
 
-const SequenceType *XQCastAs::getSequenceType() const {
+SequenceType *XQCastAs::getSequenceType() const {
   return _exprType;
 }
 

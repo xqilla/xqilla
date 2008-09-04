@@ -37,8 +37,9 @@ public:
   virtual ASTNode *staticTyping(StaticContext *context);
 
   virtual const XMLCh* getNodeType() const;
-  virtual const ASTNode *getName() const;
-  virtual const ASTNode *getValue() const;
+  virtual ASTNode *getName() const;
+  virtual ASTNode *getValue() const;
+  bool isXSLT() const { return xslt_; }
 
   virtual void setName(ASTNode *name);
   virtual void setValue(ASTNode *value);

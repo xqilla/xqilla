@@ -19,10 +19,6 @@
  * $Id$
  */
 
-/*
-   Equals operator function
-*/
-
 #ifndef _EQUALS_HPP
 #define _EQUALS_HPP
 
@@ -32,7 +28,6 @@
 
 class Collation;
 
-/** OpEqualsEquals operator function*/
 class XQILLA_API Equals : public ComparisonOperator
 {
 public:
@@ -47,5 +42,5 @@ public:
   bool execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::Ptr &atom2, DynamicContext *context) const;
 };
 
-#endif // _EQUALS_HPP
+#endif
 

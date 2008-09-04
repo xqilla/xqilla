@@ -36,7 +36,8 @@ class XQUserFunction;
 class XQILLA_API XQUserFunctionInstance : public XQFunction, public ExternalFunction::Arguments
 {
 public:
-  XQUserFunctionInstance(const XQUserFunction *funcDef, const VectorOfASTNodes& args, XPath2MemoryManager* expr);
+  XQUserFunctionInstance(const XQUserFunction *funcDef, const VectorOfASTNodes& args, XPath2MemoryManager *mm);
+  XQUserFunctionInstance(const XQUserFunction *funcDef, const VectorOfASTNodes& args, bool addReturnCheck, XPath2MemoryManager *mm);
 
   virtual Result getArgument(size_t index, DynamicContext *context) const;
 
@@ -53,6 +54,8 @@ public:
   {
     return funcDef_;
   }
+
+  bool getAddReturnCheck() const { return addReturnCheck_; }
 
 protected:
   class FunctionEvaluatorResult : public ResultImpl

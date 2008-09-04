@@ -209,12 +209,12 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	PrecedingAxis.lo PrecedingSiblingAxis.lo \
 	XercesConfiguration.lo XercesNodeImpl.lo \
 	XercesSequenceBuilder.lo XercesUpdateFactory.lo \
-	XercesURIResolver.lo Optimizer.lo ASTReleaser.lo ASTVisitor.lo \
-	QueryPathNode.lo QueryPathTreeGenerator.lo yajl_buf.lo yajl.lo \
-	yajl_encode.lo yajl_gen.lo yajl_lex.lo yajl_parser.lo \
-	XQillaXQCImplementation.lo XQillaXQCStaticContext.lo \
-	XQillaXQCDynamicContext.lo XQillaXQCExpression.lo \
-	XQillaXQCSequence.lo
+	XercesURIResolver.lo Optimizer.lo ASTCopier.lo ASTReleaser.lo \
+	ASTVisitor.lo QueryPathNode.lo QueryPathTreeGenerator.lo \
+	yajl_buf.lo yajl.lo yajl_encode.lo yajl_gen.lo yajl_lex.lo \
+	yajl_parser.lo XQillaXQCImplementation.lo \
+	XQillaXQCStaticContext.lo XQillaXQCDynamicContext.lo \
+	XQillaXQCExpression.lo XQillaXQCSequence.lo
 libxqilla_la_OBJECTS = $(am_libxqilla_la_OBJECTS)
 libxqilla_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
@@ -923,6 +923,7 @@ src/xerces/XercesUpdateFactory.cpp \
 src/xerces/XercesURIResolver.hpp \
 src/xerces/XercesURIResolver.cpp \
 src/optimizer/Optimizer.cpp \
+src/optimizer/ASTCopier.cpp \
 src/optimizer/ASTReleaser.cpp \
 src/optimizer/ASTVisitor.cpp \
 src/optimizer/QueryPathNode.cpp \
@@ -1215,6 +1216,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ASTCopier.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ASTDebugHook.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ASTNodeImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ASTReleaser.Plo@am__quote@
@@ -4656,6 +4658,13 @@ Optimizer.lo: src/optimizer/Optimizer.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/optimizer/Optimizer.cpp' object='Optimizer.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o Optimizer.lo `test -f 'src/optimizer/Optimizer.cpp' || echo '$(srcdir)/'`src/optimizer/Optimizer.cpp
+
+ASTCopier.lo: src/optimizer/ASTCopier.cpp
+@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ASTCopier.lo -MD -MP -MF $(DEPDIR)/ASTCopier.Tpo -c -o ASTCopier.lo `test -f 'src/optimizer/ASTCopier.cpp' || echo '$(srcdir)/'`src/optimizer/ASTCopier.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/ASTCopier.Tpo $(DEPDIR)/ASTCopier.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/optimizer/ASTCopier.cpp' object='ASTCopier.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ASTCopier.lo `test -f 'src/optimizer/ASTCopier.cpp' || echo '$(srcdir)/'`src/optimizer/ASTCopier.cpp
 
 ASTReleaser.lo: src/optimizer/ASTReleaser.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ASTReleaser.lo -MD -MP -MF $(DEPDIR)/ASTReleaser.Tpo -c -o ASTReleaser.lo `test -f 'src/optimizer/ASTReleaser.cpp' || echo '$(srcdir)/'`src/optimizer/ASTReleaser.cpp

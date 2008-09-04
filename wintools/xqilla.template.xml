@@ -451,6 +451,7 @@
         <file name='include/xqilla/operators/UnaryMinus.hpp'/>
         <file name='include/xqilla/operators/Union.hpp'/>
         <file name='include/xqilla/optimizer/Optimizer.hpp'/>
+        <file name='include/xqilla/optimizer/ASTCopier.hpp'/>
         <file name='include/xqilla/optimizer/ASTReleaser.hpp'/>
         <file name='include/xqilla/optimizer/ASTVisitor.hpp'/>
         <file name='include/xqilla/optimizer/QueryPathNode.hpp'/>
@@ -928,6 +929,7 @@
         <file name="src/operators/Union.cpp"/>
       </filter>
       <filter name="optimizer">
+        <file name="src/optimizer/ASTCopier.cpp"/>
         <file name="src/optimizer/ASTReleaser.cpp"/>
         <file name="src/optimizer/ASTVisitor.cpp"/>
         <file name="src/optimizer/Optimizer.cpp"/>

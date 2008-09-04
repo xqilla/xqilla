@@ -32,6 +32,13 @@ XQDocumentOrder::XQDocumentOrder(ASTNode* expr, XPath2MemoryManager* memMgr)
 {
 }
 
+XQDocumentOrder::XQDocumentOrder(ASTNode* expr, bool unordered, XPath2MemoryManager* memMgr)
+  : ASTNodeImpl(DOCUMENT_ORDER, memMgr),
+    expr_(expr),
+    unordered_(unordered)
+{
+}
+
 ASTNode* XQDocumentOrder::staticResolution(StaticContext *context)
 {
   unordered_ = context->getNodeSetOrdering() == StaticContext::ORDERING_UNORDERED;

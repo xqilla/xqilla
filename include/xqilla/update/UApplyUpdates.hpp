@@ -30,12 +30,13 @@ class XQILLA_API UApplyUpdates : public ASTNodeImpl
 {
 public:
   UApplyUpdates(ASTNode *expr, XPath2MemoryManager* memMgr);
+  UApplyUpdates(ASTNode *expr, DocumentCache::ValidationMode valMode, XPath2MemoryManager* memMgr);
 
   virtual ASTNode *staticResolution(StaticContext *context);
   virtual ASTNode *staticTyping(StaticContext *context);
   virtual Result createResult(DynamicContext* context, int flags=0) const;
 
-  const ASTNode *getExpression() const { return expr_; }
+  ASTNode *getExpression() const { return expr_; }
   void setExpression(ASTNode *expr) { expr_ = expr; }
 
   DocumentCache::ValidationMode getRevalidationMode() const { return valMode_; }

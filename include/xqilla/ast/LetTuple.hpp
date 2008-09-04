@@ -32,6 +32,7 @@ class XQILLA_API LetTuple : public TupleNode
 {
 public:
   LetTuple(TupleNode *parent, const XMLCh *varQName, ASTNode *expr, XPath2MemoryManager *mm);
+  LetTuple(TupleNode *parent, const XMLCh *varURI, const XMLCh *varName, ASTNode *expr, XPath2MemoryManager *mm);
 
   const XMLCh *getVarURI() const { return varURI_; }
   void setVarURI(const XMLCh *uri) { varURI_ = uri; }
@@ -40,6 +41,8 @@ public:
 
   ASTNode *getExpression() const { return expr_; }
   void setExpression(ASTNode *expr) { expr_ = expr; }
+
+  const StaticAnalysis &getVarSRC() const { return varSrc_; }
 
   virtual TupleNode *staticResolution(StaticContext *context);
   virtual TupleNode *staticTypingSetup(unsigned int &min, unsigned int &max, StaticContext *context);

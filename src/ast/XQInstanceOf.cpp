@@ -102,11 +102,11 @@ ASTNode *XQInstanceOf::staticTyping(StaticContext *context)
   return this;
 }
 
-const ASTNode *XQInstanceOf::getExpression() const {
+ASTNode *XQInstanceOf::getExpression() const {
   return _expr;
 }
 
-const SequenceType *XQInstanceOf::getSequenceType() const {
+SequenceType *XQInstanceOf::getSequenceType() const {
   return _exprType;
 }
 

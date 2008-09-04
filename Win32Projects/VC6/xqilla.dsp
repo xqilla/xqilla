@@ -2909,10 +2909,6 @@ SOURCE=..\..\src\mapm\mapmutl2.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\mapm\README
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\include\xqilla\mapm\m_apm.h
 # End Source File
 # End Group
@@ -3117,6 +3113,10 @@ SOURCE=..\..\include\xqilla\operators\Union.hpp
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=..\..\src\optimizer\ASTCopier.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\optimizer\ASTReleaser.cpp
 # End Source File
 # Begin Source File
@@ -3134,6 +3134,10 @@ SOURCE=..\..\src\optimizer\QueryPathNode.cpp
 # Begin Source File
 
 SOURCE=..\..\src\optimizer\QueryPathTreeGenerator.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\optimizer\ASTCopier.hpp
 # End Source File
 # Begin Source File
 

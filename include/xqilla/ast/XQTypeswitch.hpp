@@ -36,6 +36,7 @@ public:
   {
   public:
     Case(const XMLCh *qname, SequenceType *seqType, ASTNode *expr);
+    Case(const XMLCh *qname, const XMLCh *uri, const XMLCh *name, SequenceType *seqType, ASTNode *expr);
 
     void staticResolution(StaticContext* context);
     void staticTyping(const StaticAnalysis &var_src, StaticContext* context,
@@ -76,7 +77,7 @@ public:
 
   const Case *chooseCase(DynamicContext *context, Sequence &resultSeq) const;
 
-  const ASTNode *getExpression() const { return expr_; }
+  ASTNode *getExpression() const { return expr_; }
   void setExpression(ASTNode *expr) { expr_ = expr; }
 
   const Case *getDefaultCase() const { return default_; }

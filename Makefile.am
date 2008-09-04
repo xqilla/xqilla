@@ -485,6 +485,7 @@ src/xerces/XercesUpdateFactory.cpp \
 src/xerces/XercesURIResolver.hpp \
 src/xerces/XercesURIResolver.cpp \
 src/optimizer/Optimizer.cpp \
+src/optimizer/ASTCopier.cpp \
 src/optimizer/ASTReleaser.cpp \
 src/optimizer/ASTVisitor.cpp \
 src/optimizer/QueryPathNode.cpp \

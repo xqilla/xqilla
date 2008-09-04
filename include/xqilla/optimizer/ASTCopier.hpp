@@ -19,30 +19,24 @@
  * $Id$
  */
 
-#ifndef XQTEXTCONSTRUCTOR_HPP
-#define XQTEXTCONSTRUCTOR_HPP
+#ifndef _ASTCOPIER_HPP
+#define _ASTCOPIER_HPP
 
-#include <xqilla/ast/XQDOMConstructor.hpp>
+#include <xqilla/optimizer/ASTVisitor.hpp>
 
-class EventHandler;
-
-class XQILLA_API XQTextConstructor : public XQDOMConstructor
+class XQILLA_API ASTCopier : public ASTVisitor
 {
 public:
-  XQTextConstructor(ASTNode *value, XPath2MemoryManager* mm);
+  ASTCopier();
 
-  virtual EventGenerator::Ptr generateEvents(EventHandler *events, DynamicContext *context,
-                              bool preserveNS, bool preserveType) const;
-  virtual ASTNode* staticResolution(StaticContext *context);
-  virtual ASTNode *staticTyping(StaticContext *context);
+  ASTNode *copy(const ASTNode *item, DynamicContext *context);
+  TupleNode *copy(const TupleNode *item, DynamicContext *context);
 
-  virtual const XMLCh* getNodeType() const;
-  virtual ASTNode *getValue() const;
+protected:
+  ALL_ASTVISITOR_METHODS();
 
-  virtual void setValue(ASTNode *value);
-
-private:
-  ASTNode *m_value;
+  DynamicContext *context_;
+  XPath2MemoryManager *mm_;
 };
 
 #endif

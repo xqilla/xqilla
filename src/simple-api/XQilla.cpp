@@ -85,7 +85,7 @@ XQQuery* XQilla::parse(const XMLCh* inputQuery, DynamicContext* context,
     Optimizer *optimizer = new StaticResolver(context);
     optimizer = new QueryPathTreeGenerator(context, optimizer);
     if((flags & DEBUG_QUERY) != 0) {
-	    optimizer = new DebugHookDecorator(context, optimizer);
+      optimizer = new DebugHookDecorator(context, optimizer);
     }
     AutoDelete<Optimizer> optGuard(optimizer);
     optimizer->startOptimize(args._query);
@@ -141,7 +141,7 @@ XQQuery* XQilla::parse(const InputSource& querySrc, DynamicContext* context,
     Optimizer *optimizer = new StaticResolver(context);
     optimizer = new QueryPathTreeGenerator(context, optimizer);
     if((flags & DEBUG_QUERY) != 0) {
-	    optimizer = new DebugHookDecorator(context, optimizer);
+      optimizer = new DebugHookDecorator(context, optimizer);
     }
     AutoDelete<Optimizer> optGuard(optimizer);
     optimizer->startOptimize(args._query);

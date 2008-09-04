@@ -29,16 +29,17 @@ class XQILLA_API XQPromoteUntyped : public ASTNodeImpl
 {
 public:
   XQPromoteUntyped(ASTNode* expr, const XMLCh *uri, const XMLCh *name, XPath2MemoryManager* memMgr);
+  XQPromoteUntyped(ASTNode* expr, const XMLCh *uri, const XMLCh *name, bool isPrimitive, AnyAtomicType::AtomicObjectType typeIndex, XPath2MemoryManager* memMgr);
 
   virtual Result createResult(DynamicContext* context, int flags=0) const;
   virtual ASTNode* staticResolution(StaticContext *context);
   virtual ASTNode *staticTyping(StaticContext *context);
 
-  const ASTNode *getExpression() const { return expr_; }
+  ASTNode *getExpression() const { return expr_; }
   void setExpression(ASTNode *expr) { expr_ = expr; }
   const XMLCh *getTypeURI() const { return uri_; }
   const XMLCh *getTypeName() const { return name_; }
-  bool isPrimitive() const { return isPrimitive_; }
+  bool getIsPrimitive() const { return isPrimitive_; }
   AnyAtomicType::AtomicObjectType getTypeIndex() const { return typeIndex_; }  
 
 protected:
@@ -71,12 +72,13 @@ class XQILLA_API XQPromoteNumeric : public ASTNodeImpl
 {
 public:
   XQPromoteNumeric(ASTNode* expr, const XMLCh *uri, const XMLCh *name, XPath2MemoryManager* memMgr);
+  XQPromoteNumeric(ASTNode* expr, const XMLCh *uri, const XMLCh *name, AnyAtomicType::AtomicObjectType typeIndex, XPath2MemoryManager* memMgr);
 
   virtual Result createResult(DynamicContext* context, int flags=0) const;
   virtual ASTNode* staticResolution(StaticContext *context);
   virtual ASTNode *staticTyping(StaticContext *context);
 
-  const ASTNode *getExpression() const { return expr_; }
+  ASTNode *getExpression() const { return expr_; }
   void setExpression(ASTNode *expr) { expr_ = expr; }
   const XMLCh *getTypeURI() const { return uri_; }
   const XMLCh *getTypeName() const { return name_; }
@@ -112,7 +114,7 @@ public:
   virtual ASTNode* staticResolution(StaticContext *context);
   virtual ASTNode *staticTyping(StaticContext *context);
 
-  const ASTNode *getExpression() const { return expr_; }
+  ASTNode *getExpression() const { return expr_; }
   void setExpression(ASTNode *expr) { expr_ = expr; }
   const XMLCh *getTypeURI() const { return uri_; }
   const XMLCh *getTypeName() const { return name_; }

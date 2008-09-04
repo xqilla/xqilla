@@ -35,7 +35,7 @@ public:
   virtual ASTNode *staticTyping(StaticContext *context);
 
   virtual const XMLCh* getNodeType() const;
-  virtual const ASTNode *getName() const;
+  virtual ASTNode *getName() const;
   virtual const VectorOfASTNodes *getChildren() const;
   void setChildren(VectorOfASTNodes *c) { m_children = c; }
 

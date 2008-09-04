@@ -37,6 +37,13 @@ XQCopyOf::XQCopyOf(XPath2MemoryManager* memMgr)
 {
 }
 
+XQCopyOf::XQCopyOf(ASTNode *expr, bool copyNamespaces, XPath2MemoryManager* memMgr)
+  : ASTNodeImpl(COPY_OF, memMgr),
+    expr_(expr),
+    copyNamespaces_(copyNamespaces)
+{
+}
+
 ASTNode* XQCopyOf::staticResolution(StaticContext *context)
 {
   expr_ = expr_->staticResolution(context);

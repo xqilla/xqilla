@@ -143,7 +143,7 @@ const XMLCh* XQNamespaceConstructor::getNodeType() const
   return Node::namespace_string;
 }
 
-const ASTNode *XQNamespaceConstructor::getName() const
+ASTNode *XQNamespaceConstructor::getName() const
 {
   return m_name;
 }

@@ -44,6 +44,14 @@ XQPredicate::XQPredicate(ASTNode* expr, ASTNode *predicate, XPath2MemoryManager*
 {
 }
 
+XQPredicate::XQPredicate(ASTNode *expr, ASTNode *predicate, bool reverse, XPath2MemoryManager* memMgr)
+  : ASTNodeImpl(PREDICATE, memMgr),
+    expr_(expr),
+    predicate_(predicate),
+    reverse_(reverse)
+{
+}
+
 ASTNode* XQPredicate::staticResolution(StaticContext *context)
 {
   expr_ = expr_->staticResolution(context);

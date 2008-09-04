@@ -51,6 +51,15 @@ XQCastableAs::XQCastableAs(ASTNode* expr, SequenceType* exprType, XPath2MemoryMa
 {
 }
 
+XQCastableAs::XQCastableAs(ASTNode* expr, SequenceType* exprType, bool isPrimitive, AnyAtomicType::AtomicObjectType typeIndex, XPath2MemoryManager* memMgr)
+  : ASTNodeImpl(CASTABLE_AS, memMgr),
+    _expr(expr),
+    _exprType(exprType),
+    _isPrimitive(isPrimitive),
+    _typeIndex(typeIndex)
+{
+}
+
 Result XQCastableAs::createResult(DynamicContext* context, int flags) const
 {
   return new CastableAsResult(this);
@@ -137,11 +146,11 @@ ASTNode *XQCastableAs::staticTyping(StaticContext *context)
   return this;
 }
 
-const ASTNode *XQCastableAs::getExpression() const {
+ASTNode *XQCastableAs::getExpression() const {
   return _expr;
 }
 
-const SequenceType *XQCastableAs::getSequenceType() const {
+SequenceType *XQCastableAs::getSequenceType() const {
   return _exprType;
 }
 
@@ -180,7 +189,7 @@ Item::Ptr XQCastableAs::CastableAsResult::getSingleResult(DynamicContext *contex
     else {
       //    4. If the result of atomization is a single atomic value, the result of the cast expression depends on the input type and the target type.
       //       The normative definition of these rules is given in [XQuery 1.0 and XPath 2.0 Functions and Operators].
-      if(_di->isPrimitive()) {
+      if(_di->getIsPrimitive()) {
         result = ((const AnyAtomicType::Ptr)first)->castable(_di->getTypeIndex(), 0, 0, context);
       }
       else {

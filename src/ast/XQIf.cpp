@@ -122,15 +122,15 @@ ASTNode *XQIf::staticTyping(StaticContext *context)
   return this;
 }
 
-const ASTNode *XQIf::getTest() const {
+ASTNode *XQIf::getTest() const {
   return _test;
 }
 
-const ASTNode *XQIf::getWhenTrue() const {
+ASTNode *XQIf::getWhenTrue() const {
   return _whenTrue;
 }
 
-const ASTNode *XQIf::getWhenFalse() const {
+ASTNode *XQIf::getWhenFalse() const {
   return _whenFalse;
 }
 

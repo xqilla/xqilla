@@ -35,10 +35,10 @@ public:
   virtual Result createResult(DynamicContext* context, int flags=0) const;
   virtual PendingUpdateList createUpdateList(DynamicContext *context) const;
 
-  const ASTNode *getSource() const { return source_; }
+  ASTNode *getSource() const { return source_; }
   void setSource(ASTNode *source) { source_ = source; }
 
-  const ASTNode *getTarget() const { return target_; }
+  ASTNode *getTarget() const { return target_; }
   void setTarget(ASTNode *target) { target_ = target; }
 
 protected:

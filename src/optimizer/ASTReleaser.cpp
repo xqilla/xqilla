@@ -90,6 +90,7 @@ ASTNode *ASTReleaser::optimize ## methodname (classname *item) \
 
 // TBD release ItemConstructor objects - jpcs
 // TBD release SequenceType objects - jpcs
+// TBD release FTSelection objects - jpcs
 
 RELEASE_XQ(Literal)
 RELEASE_XQ(Sequence)

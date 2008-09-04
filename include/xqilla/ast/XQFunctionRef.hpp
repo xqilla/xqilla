@@ -30,6 +30,7 @@ class XQILLA_API XQFunctionRef : public ASTNodeImpl
 {
 public:
   XQFunctionRef(const XMLCh *qname, unsigned int numArgs, XPath2MemoryManager *mm);
+  XQFunctionRef(const XMLCh *uri, const XMLCh *name, unsigned int numArgs, ASTNode *instance, XPath2MemoryManager *mm);
 
   virtual ASTNode *staticResolution(StaticContext *context);
   virtual ASTNode *staticTyping(StaticContext *context);

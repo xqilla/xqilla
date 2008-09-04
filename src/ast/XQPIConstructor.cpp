@@ -160,12 +160,12 @@ const XMLCh* XQPIConstructor::getNodeType() const
   return Node::processing_instruction_string;
 }
 
-const ASTNode *XQPIConstructor::getName() const
+ASTNode *XQPIConstructor::getName() const
 {
   return m_name;
 }
 
-const ASTNode *XQPIConstructor::getValue() const
+ASTNode *XQPIConstructor::getValue() const
 {
   return m_value;
 }

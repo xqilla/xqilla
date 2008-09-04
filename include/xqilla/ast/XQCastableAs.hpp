@@ -33,14 +33,15 @@ class XQILLA_API XQCastableAs : public ASTNodeImpl
 {
 public:
   XQCastableAs(ASTNode* expr, SequenceType* exprType, XPath2MemoryManager* memMgr);
+  XQCastableAs(ASTNode* expr, SequenceType* exprType, bool isPrimitive, AnyAtomicType::AtomicObjectType typeIndex, XPath2MemoryManager* memMgr);
 
   virtual Result createResult(DynamicContext* context, int flags=0) const;
   virtual ASTNode* staticResolution(StaticContext *context);
   virtual ASTNode *staticTyping(StaticContext *context);
 
-  const ASTNode *getExpression() const;
-  const SequenceType *getSequenceType() const;
-  bool isPrimitive() const { return _isPrimitive; }
+  ASTNode *getExpression() const;
+  SequenceType *getSequenceType() const;
+  bool getIsPrimitive() const { return _isPrimitive; }
   AnyAtomicType::AtomicObjectType getTypeIndex() const { return _typeIndex; }  
 
   void setExpression(ASTNode *item);
@@ -63,4 +64,4 @@ protected:
   AnyAtomicType::AtomicObjectType _typeIndex;
 };
 
-#endif // _XQCASTABLEAS_HPP
+#endif

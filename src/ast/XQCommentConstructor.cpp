@@ -135,7 +135,7 @@ const XMLCh* XQCommentConstructor::getNodeType() const
   return Node::comment_string;
 }
 
-const ASTNode *XQCommentConstructor::getValue() const
+ASTNode *XQCommentConstructor::getValue() const
 {
   return m_value;
 }

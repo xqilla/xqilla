@@ -66,6 +66,17 @@ XQElementConstructor::XQElementConstructor(ASTNode* name, VectorOfASTNodes* attr
 {
 }
 
+XQElementConstructor::XQElementConstructor(ASTNode* name, VectorOfASTNodes* attrList, VectorOfASTNodes* children,
+                                           RefHashTableOf< XMLCh > *namespaces, XPath2MemoryManager *mm)
+  : XQDOMConstructor(mm),
+    namespaceExpr(0),
+    m_name(name),
+    m_attrList(attrList),
+    m_children(children),
+    m_namespaces(namespaces)
+{
+}
+
 EventGenerator::Ptr XQElementConstructor::generateEvents(EventHandler *events, DynamicContext *context,
                                                     bool preserveNS, bool preserveType) const
 {
@@ -321,7 +332,7 @@ const XMLCh* XQElementConstructor::getNodeType() const
   return Node::element_string;
 }
 
-const ASTNode *XQElementConstructor::getName() const
+ASTNode *XQElementConstructor::getName() const
 {
   return m_name;
 }
