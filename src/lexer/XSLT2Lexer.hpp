@@ -129,7 +129,6 @@ public:
   XercesXSLT2Lexer(DynamicContext *context, const XERCES_CPP_NAMESPACE_QUALIFIER InputSource &srcToUse, XQilla::Language lang = XQilla::XSLT2);
   virtual ~XercesXSLT2Lexer();
 
-protected:
   struct CachedEvent {
     CachedEvent(EventType t, const XERCES_CPP_NAMESPACE_QUALIFIER Locator *locator, CachedEvent *pv);
     CachedEvent(const XMLCh *p, const XMLCh *u, const XMLCh *l, const XERCES_CPP_NAMESPACE_QUALIFIER Locator *locator, CachedEvent *pv);
@@ -146,6 +145,7 @@ protected:
     CachedEvent *prev, *next;
   };
 
+protected:
   // From XSLT2Lexer
   virtual void nextEvent(YYLTYPE* pYYLOC);
   virtual EventType getEventType();
