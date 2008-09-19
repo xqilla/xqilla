@@ -66,7 +66,7 @@ ASTNode *XQQuantified::staticTyping(StaticContext *context)
     return constantFold(context);
   }
 
-  if(expr_->isConstant()) {
+  if(context && expr_->isConstant()) {
     AutoDelete<DynamicContext> dContext(context->createDynamicContext());
     dContext->setMemoryManager(context->getMemoryManager());
     bool value = ((ATBooleanOrDerived*)expr_->createResult(dContext)->next(dContext).get())->isTrue();

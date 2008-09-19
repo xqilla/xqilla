@@ -24,6 +24,7 @@
 #include <xqilla/ast/StaticAnalysis.hpp>
 #include <xqilla/ast/XQSequence.hpp>
 #include <xqilla/ast/XQLiteral.hpp>
+#include <xqilla/ast/XQNamespaceBinding.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/context/ItemFactory.hpp>
 #include <xqilla/context/ContextHelpers.hpp>
@@ -83,22 +84,7 @@ EventGenerator::Ptr XQElementConstructor::generateEvents(EventHandler *events, D
   NoInheritFilter niFilter(events, context->getMemoryManager());
   if(!context->getInheritNamespaces()) events = &niFilter;
 
-  // Add a new scope for the namespace definitions, before we try to assign a URI to the name of the element
-  XQillaNSResolverImpl locallyDefinedNamespaces(context->getMemoryManager());
-  XQillaNSResolverImpl newNSScope(context->getMemoryManager(), context->getNSResolver());
-  AutoNsScopeReset jan(context, &newNSScope);
-
-  if(m_namespaces != 0) {
-    RefHashTableOfEnumerator<XMLCh> nsEnumVal(m_namespaces, false, context->getMemoryManager());
-    RefHashTableOfEnumerator<XMLCh> nsEnumKey(m_namespaces, false, context->getMemoryManager());
-    while(nsEnumVal.hasMoreElements()) {
-      XMLCh* uri=&nsEnumVal.nextElement();
-      XMLCh* prefix=(XMLCh*)nsEnumKey.nextElementKey();
-      locallyDefinedNamespaces.addNamespaceBinding(prefix, uri);
-    }
-  }
-
-  // Now that we have converted our namespace attributes into namespace bindings, resolve the name
+  // Resolve the name
   AnyAtomicType::Ptr itemName = m_name->createResult(context)->next(context);
   const ATQNameOrDerived *pQName = (const ATQNameOrDerived*)itemName.get();
   const XMLCh *prefix = emptyToNull(pQName->getPrefix());
@@ -142,8 +128,9 @@ ASTNode* XQElementConstructor::staticResolution(StaticContext *context)
   XPath2MemoryManager *mm = context->getMemoryManager();
 
   // Add a new scope for the namespace definitions
-  XQillaNSResolverImpl newNSScope(context->getMemoryManager(), context->getNSResolver());
-  AutoNsScopeReset jan(context, &newNSScope);
+  XQillaNSResolverImpl *newNSScope = new (mm) XQillaNSResolverImpl(mm, context->getNSResolver());
+  AutoNsScopeReset jan(context, newNSScope);
+  bool namespacesFound = false;
   unsigned int i;
 
   if(m_attrList != 0) {
@@ -177,6 +164,7 @@ ASTNode* XQElementConstructor::staticResolution(StaticContext *context)
         break;
 
       // we are a namespace attribute: check that we have a constant value
+      namespacesFound = true;
       const VectorOfASTNodes *children=attrConstructor->getChildren();
       const XMLCh* uri=NULL;
       if(children->size()==0) { // supporting Namespace 1.1 means unsetting the binding...
@@ -196,10 +184,11 @@ ASTNode* XQElementConstructor::staticResolution(StaticContext *context)
       }
       if(XMLNSPrefix != XMLUni::fgZeroLenString) {
         XQillaNSResolverImpl::forbiddenBindingCheck(XMLNSPrefix, uri, this);
-        newNSScope.addNamespaceBinding(XMLNSPrefix, uri);
+        newNSScope->addNamespaceBinding(XMLNSPrefix, uri);
       }
       else {
         context->setDefaultElementAndTypeNS(uri);
+        newNSScope->addNamespaceBinding(XMLUni::fgZeroLenString, uri);
       }
       if(m_namespaces==NULL)
         m_namespaces = new (mm) RefHashTableOf< XMLCh >(5, false, mm);
@@ -257,7 +246,6 @@ ASTNode* XQElementConstructor::staticResolution(StaticContext *context)
   m_name->setLocationInfo(this);
   m_name = m_name->staticResolution(context);
 
-
   for(i = 0; i < m_children->size(); ++i) {
     (*m_children)[i] = new (mm) XQContentSequence((*m_children)[i], mm);
     (*m_children)[i]->setLocationInfo(this);
@@ -265,31 +253,18 @@ ASTNode* XQElementConstructor::staticResolution(StaticContext *context)
     (*m_children)[i] = (*m_children)[i]->staticResolution(context);
   }
 
+  if(namespacesFound) {
+    // Add an XQNamespaceBinding object to sort out our namespaces
+    XQNamespaceBinding *result = new (mm) XQNamespaceBinding(newNSScope, this, mm);
+    result->setLocationInfo(this);
+    return result;
+  }
   return this;
 }
 
 ASTNode* XQElementConstructor::staticTyping(StaticContext *context)
 {
   _src.clear();
-
-  // Add a new scope for the namespace definitions
-  XQillaNSResolverImpl newNSScope(context->getMemoryManager(), context->getNSResolver());
-  AutoNsScopeReset jan(context, &newNSScope);
-
-  if(m_namespaces != 0) {
-    RefHashTableOfEnumerator<XMLCh> nsEnumVal(m_namespaces, false, context->getMemoryManager());
-    RefHashTableOfEnumerator<XMLCh> nsEnumKey(m_namespaces, false, context->getMemoryManager());
-    while(nsEnumVal.hasMoreElements()) {
-      XMLCh *prefix = (XMLCh*)nsEnumKey.nextElementKey();
-      XMLCh *uri = &nsEnumVal.nextElement();
-      if(XPath2Utils::equals(prefix, XMLUni::fgZeroLenString)) {
-        context->setDefaultElementAndTypeNS(uri);
-      }
-      else {
-        newNSScope.addNamespaceBinding(prefix, uri);
-      }
-    }
-  }
 
   unsigned int i;
   if(m_attrList != 0) {

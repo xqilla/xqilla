@@ -76,7 +76,8 @@ ASTNode* XQPromoteUntyped::staticTyping(StaticContext *context)
     return substitute(expr_);
   }
 
-  typeIndex_ = context->getItemFactory()->getPrimitiveTypeIndex(uri_, name_, isPrimitive_);
+  if(context)
+    typeIndex_ = context->getItemFactory()->getPrimitiveTypeIndex(uri_, name_, isPrimitive_);
 
   if(!_src.getStaticType().containsType(StaticType::UNTYPED_ATOMIC_TYPE)) {
     return substitute(expr_);
@@ -191,21 +192,23 @@ ASTNode* XQPromoteNumeric::staticTyping(StaticContext *context)
     return substitute(expr_);
   }
 
-  bool isPrimitive;
-  typeIndex_ = context->getItemFactory()->getPrimitiveTypeIndex(uri_, name_, isPrimitive);
+  if(context) {
+    bool isPrimitive;
+    typeIndex_ = context->getItemFactory()->getPrimitiveTypeIndex(uri_, name_, isPrimitive);
 
-  if(isPrimitive && typeIndex_ == AnyAtomicType::DOUBLE) {
-    if(!_src.getStaticType().containsType(StaticType::DECIMAL_TYPE | StaticType::FLOAT_TYPE))
+    if(isPrimitive && typeIndex_ == AnyAtomicType::DOUBLE) {
+      if(!_src.getStaticType().containsType(StaticType::DECIMAL_TYPE | StaticType::FLOAT_TYPE))
+        return substitute(expr_);
+      _src.getStaticType().substitute(StaticType::DECIMAL_TYPE | StaticType::FLOAT_TYPE, StaticType::DOUBLE_TYPE);
+    }
+    else if(isPrimitive && typeIndex_ == AnyAtomicType::FLOAT) {
+      if(!_src.getStaticType().containsType(StaticType::DECIMAL_TYPE))
+        return substitute(expr_);
+      _src.getStaticType().substitute(StaticType::DECIMAL_TYPE, StaticType::FLOAT_TYPE);
+    }
+    else {
       return substitute(expr_);
-    _src.getStaticType().substitute(StaticType::DECIMAL_TYPE | StaticType::FLOAT_TYPE, StaticType::DOUBLE_TYPE);
-  }
-  else if(isPrimitive && typeIndex_ == AnyAtomicType::FLOAT) {
-    if(!_src.getStaticType().containsType(StaticType::DECIMAL_TYPE))
-      return substitute(expr_);
-    _src.getStaticType().substitute(StaticType::DECIMAL_TYPE, StaticType::FLOAT_TYPE);
-  }
-  else {
-    return substitute(expr_);
+    }
   }
 
   if(expr_->isConstant()) {

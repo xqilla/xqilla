@@ -88,6 +88,10 @@ ASTNode* XQTypeswitch::staticTyping(StaticContext *context)
     (*it)->staticTyping(expr_->getStaticAnalysis(), context, _src, possiblyUpdating, /*first*/false);
   }
 
+  if(!context) {
+    return this;
+  }
+
   if(exprSrc.isUsed()) {
     // Do basic static type checking on the clauses,
     // to eliminate ones which will never be matches,
@@ -112,8 +116,8 @@ ASTNode* XQTypeswitch::staticTyping(StaticContext *context)
       }
       else if((cseType.getMin() > sType.getMax()) ||
               (cseType.getMax() < sType.getMin()) ||
-	      (!sType.containsType(cseType) &&
-		      (cseType.getMin() > 0 || sType.getMin() > 0))) {
+              (!sType.containsType(cseType) &&
+               (cseType.getMin() > 0 || sType.getMin() > 0))) {
         // It never matches, so don't add it to the new clauses
       }
       else {
@@ -205,38 +209,38 @@ void XQTypeswitch::Case::staticResolution(StaticContext* context)
 void XQTypeswitch::Case::staticTyping(const StaticAnalysis &var_src, StaticContext* context,
                                       StaticAnalysis &src, bool &possiblyUpdating, bool first)
 {
-  VariableTypeStore* varStore = context->getVariableTypeStore();
+  if(context) {
+    VariableTypeStore* varStore = context->getVariableTypeStore();
 
-  StaticAnalysis caseSrc(context->getMemoryManager());
-  caseSrc.copy(var_src);
+    StaticAnalysis caseSrc(context->getMemoryManager());
+    caseSrc.copy(var_src);
 
-  if(seqType_ != 0) {
-    bool isExact;
-    StaticType type;
-    seqType_->getStaticType(type, context, isExact, this);
-	  
-    caseSrc.getStaticType() &= type;
+    if(seqType_ != 0) {
+      bool isExact;
+      StaticType type;
+      seqType_->getStaticType(type, context, isExact, this);
+  
+      caseSrc.getStaticType() &= type;
+    }
+
+    if(qname_ != 0) {
+      varStore->addLogicalBlockScope();
+      uri_ = context->getUriBoundToPrefix(XPath2NSUtils::getPrefix(qname_, context->getMemoryManager()), this);
+      name_ = XPath2NSUtils::getLocalName(qname_);
+      varStore->declareVar(uri_, name_, caseSrc);
+    }
   }
 
-  if(qname_ != 0) {
-    varStore->addLogicalBlockScope();
-    uri_ = context->getUriBoundToPrefix(XPath2NSUtils::getPrefix(qname_, context->getMemoryManager()), this);
-    name_ = XPath2NSUtils::getLocalName(qname_);
-    varStore->declareVar(uri_, name_, caseSrc);
-  }
-
-  StaticAnalysis newSrc(context->getMemoryManager());
   expr_ = expr_->staticTyping(context);
-  newSrc.add(expr_->getStaticAnalysis());
 
   if(seqType_ != 0) {
     if(src.isUpdating()) {
-      if(!newSrc.isUpdating() && !expr_->getStaticAnalysis().isPossiblyUpdating())
+      if(!expr_->getStaticAnalysis().isUpdating() && !expr_->getStaticAnalysis().isPossiblyUpdating())
         XQThrow(StaticErrorException, X("XQTypeswitch::Case::staticTyping"),
                 X("Mixed updating and non-updating operands [err:XUST0001]"));
     }
     else {
-      if(newSrc.isUpdating() && !possiblyUpdating)
+      if(expr_->getStaticAnalysis().isUpdating() && !possiblyUpdating)
         XQThrow(StaticErrorException, X("XQTypeswitch::Case::staticTyping"),
                 X("Mixed updating and non-updating operands [err:XUST0001]"));
     }
@@ -244,11 +248,11 @@ void XQTypeswitch::Case::staticTyping(const StaticAnalysis &var_src, StaticConte
 
   if(qname_ != 0) {
     // Remove the local variable from the StaticAnalysis
-    if(!newSrc.removeVariable(uri_, name_)) {
+    if(!expr_->getStaticAnalysis().isVariableUsed(uri_, name_)) {
       // If the variable isn't used, don't bother setting it when we execute
       qname_ = 0;
     }
-    varStore->removeScope();
+    if(context) context->getVariableTypeStore()->removeScope();
   }
 
   if(possiblyUpdating)
@@ -261,7 +265,12 @@ void XQTypeswitch::Case::staticTyping(const StaticAnalysis &var_src, StaticConte
     src.getStaticType() |= expr_->getStaticAnalysis().getStaticType();
     src.setProperties(src.getProperties() & expr_->getStaticAnalysis().getProperties());
   }
-  src.add(newSrc);
+  if(qname_ != 0) {
+    src.addExceptVariable(uri_, name_, expr_->getStaticAnalysis());
+  }
+  else {
+    src.add(expr_->getStaticAnalysis());
+  }
 }
 
 const XQTypeswitch::Case *XQTypeswitch::chooseCase(DynamicContext *context, Sequence &resultSeq) const

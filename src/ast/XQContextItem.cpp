@@ -45,6 +45,8 @@ ASTNode* XQContextItem::staticResolution(StaticContext *context)
 
 ASTNode *XQContextItem::staticTyping(StaticContext *context)
 {
+  if(context == 0) return this;
+
   _src.clear();
 
   _src.setProperties(StaticAnalysis::DOCORDER | StaticAnalysis::GROUPED |

@@ -32,6 +32,8 @@ class XQILLA_API XQApplyTemplates : public ASTNodeImpl
 {
 public:
   XQApplyTemplates(ASTNode *expr, TemplateArguments *args, XQUserFunction::Mode *mode, XPath2MemoryManager *mm);
+  XQApplyTemplates(ASTNode *expr, TemplateArguments *args, XQUserFunction::Mode *mode,
+                   const UserFunctions &templates, XPath2MemoryManager *mm);
 
   virtual ASTNode *staticResolution(StaticContext *context);
   virtual ASTNode *staticTyping(StaticContext *context);

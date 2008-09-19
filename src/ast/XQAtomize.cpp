@@ -31,13 +31,22 @@ XERCES_CPP_NAMESPACE_USE
 
 XQAtomize::XQAtomize(ASTNode* expr, XPath2MemoryManager* memMgr)
   : ASTNodeImpl(ATOMIZE, memMgr),
-    expr_(expr)
+    expr_(expr),
+    doPSVI_(true)
+{
+}
+
+XQAtomize::XQAtomize(ASTNode* expr, bool doPSVI, XPath2MemoryManager* memMgr)
+  : ASTNodeImpl(ATOMIZE, memMgr),
+    expr_(expr),
+    doPSVI_(doPSVI)
 {
 }
 
 ASTNode* XQAtomize::staticResolution(StaticContext *context)
 {
   expr_ = expr_->staticResolution(context);
+  doPSVI_ = context->getDocumentCache()->getDoPSVI();
   return this;
 }
 
@@ -70,7 +79,7 @@ ASTNode *XQAtomize::staticTyping(StaticContext *context)
     return substitute(expr_);
   }
 
-  if(context->getDocumentCache()->getDoPSVI()) {
+  if(doPSVI_) {
     _src.getStaticType().substitute(StaticType::ELEMENT_TYPE | StaticType::ATTRIBUTE_TYPE,
                                     StaticType(StaticType::ANY_ATOMIC_TYPE, 0, StaticType::UNLIMITED));
   } else {

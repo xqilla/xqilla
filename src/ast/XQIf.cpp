@@ -108,7 +108,7 @@ ASTNode *XQIf::staticTyping(StaticContext *context)
   _src.setProperties(_src.getProperties() & _whenFalse->getStaticAnalysis().getProperties());
   _src.add(_whenFalse->getStaticAnalysis());
 
-  if(_test->isConstant()) {
+  if(context && _test->isConstant()) {
     AutoDelete<DynamicContext> dContext(context->createDynamicContext());
     dContext->setMemoryManager(context->getMemoryManager());
     if(((ATBooleanOrDerived*)_test->createResult(dContext)->next(dContext).get())->isTrue()) {

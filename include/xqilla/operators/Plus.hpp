@@ -19,10 +19,6 @@
  * $Id$
  */
 
-/*
-   OpPlus operator function
-*/
-
 #ifndef _PLUS_HPP
 #define _PLUS_HPP
 
@@ -30,7 +26,6 @@
 
 #include <xqilla/operators/ArithmeticOperator.hpp>
 
-/** OpPlus operator function*/
 class XQILLA_API Plus : public ArithmeticOperator
 {
 public:
@@ -44,5 +39,5 @@ public:
   static Item::Ptr plus(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::Ptr &atom2, DynamicContext *context, const LocationInfo *info);
 };
 
-#endif // _FUNCTIONOPPLUS_HPP
+#endif
 

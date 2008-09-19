@@ -56,7 +56,7 @@ ASTNode *FunctionEmpty::staticTyping(StaticContext *context)
   _src.getStaticType() = StaticType::BOOLEAN_TYPE;
 
   ASTNode *result = calculateSRCForArguments(context);
-  if(result == this) {
+  if(context && result == this) {
     const StaticType &sType = _args[0]->getStaticAnalysis().getStaticType();
     if(sType.getMin() > 0 || sType.getMax() == 0) {
       XPath2MemoryManager* mm = context->getMemoryManager();

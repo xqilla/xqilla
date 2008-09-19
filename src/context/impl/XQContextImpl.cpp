@@ -980,12 +980,15 @@ void XQContextImpl::testInterrupt() const
   _conf->testInterrupt();
 }
 
-const XMLCh *XQContextImpl::allocateTempVarName()
+const XMLCh *XQContextImpl::allocateTempVarName(const XMLCh *prefix)
 {
-  static XMLCh prefix[] = { '#', 't', 'm', 'p', 0 };
+  static XMLCh default_prefix[] = { 't', 'm', 'p', 0 };
+
+  if(prefix == 0) prefix = default_prefix;
 
   XMLBuffer buf(20);
-  buf.set(prefix);
+  buf.append('#');
+  buf.append(prefix);
   XPath2Utils::numToBuf(_tmpVarCounter, buf);
 
   ++_tmpVarCounter;

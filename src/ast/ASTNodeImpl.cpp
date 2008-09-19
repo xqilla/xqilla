@@ -126,6 +126,8 @@ EventGenerator::Ptr ASTNodeImpl::generateEvents(EventHandler *events, DynamicCon
 
 ASTNode *ASTNodeImpl::constantFold(StaticContext *context)
 {
+  if(context == 0) return this;
+
   XPath2MemoryManager* mm = context->getMemoryManager();
 
   try {

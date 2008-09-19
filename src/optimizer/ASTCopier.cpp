@@ -158,7 +158,8 @@ ASTNode *ASTCopier::optimize ## methodname (classname *item) \
 #define COPY_FULL5(methodname, classname, arg1name, arg2name, arg3name, arg4name, arg5name) \
 ASTNode *ASTCopier::optimize ## methodname (classname *item) \
 { \
-  classname *result = new (mm_) classname(item->get ## arg1name (), item->get ## arg2name (), item->get ## arg3name (), item->get ## arg4name (), item->get ## arg5name (), mm_); \
+  classname *result = new (mm_) classname(item->get ## arg1name (), item->get ## arg2name (), item->get ## arg3name (), item->get ## arg4name (), \
+    item->get ## arg5name (), mm_); \
   ASTVisitor::optimize ## methodname (result); \
   COPY_IMPL(); \
 }
@@ -178,6 +179,34 @@ ASTNode *ASTCopier::optimize ## methodname (classname *item) \
 #define COPY_XQ6(name, arg1name, arg2name, arg3name, arg4name, arg5name, arg6name) COPY_FULL6(name, XQ ## name, arg1name, arg2name, arg3name, arg4name, arg5name, arg6name)
 #define COPY6(name, arg1name, arg2name, arg3name, arg4name, arg5name, arg6name) COPY_FULL6(name, name, arg1name, arg2name, arg3name, arg4name, arg5name, arg6name)
 
+#define COPY_FULL7(methodname, classname, arg1name, arg2name, arg3name, arg4name, arg5name, arg6name, arg7name) \
+ASTNode *ASTCopier::optimize ## methodname (classname *item) \
+{ \
+  classname *result = new (mm_) classname(item->get ## arg1name (), item->get ## arg2name (), item->get ## arg3name (), item->get ## arg4name (), \
+    item->get ## arg5name (), item->get ## arg6name (), item->get ## arg7name (), mm_); \
+  ASTVisitor::optimize ## methodname (result); \
+  COPY_IMPL(); \
+}
+
+#define COPY_XQ7(name, arg1name, arg2name, arg3name, arg4name, arg5name, arg6name, arg7name) \
+  COPY_FULL7(name, XQ ## name, arg1name, arg2name, arg3name, arg4name, arg5name, arg6name, arg7name)
+#define COPY7(name, arg1name, arg2name, arg3name, arg4name, arg5name, arg6name, arg7name) \
+  COPY_FULL7(name, name, arg1name, arg2name, arg3name, arg4name, arg5name, arg6name, arg7name)
+
+#define COPY_FULL8(methodname, classname, arg1name, arg2name, arg3name, arg4name, arg5name, arg6name, arg7name, arg8name) \
+ASTNode *ASTCopier::optimize ## methodname (classname *item) \
+{ \
+  classname *result = new (mm_) classname(item->get ## arg1name (), item->get ## arg2name (), item->get ## arg3name (), item->get ## arg4name (), \
+    item->get ## arg5name (), item->get ## arg6name (), item->get ## arg7name (), item->get ## arg8name (), mm_); \
+  ASTVisitor::optimize ## methodname (result); \
+  COPY_IMPL(); \
+}
+
+#define COPY_XQ8(name, arg1name, arg2name, arg3name, arg4name, arg5name, arg6name, arg7name, arg8name) \
+  COPY_FULL8(name, XQ ## name, arg1name, arg2name, arg3name, arg4name, arg5name, arg6name, arg7name, arg8name)
+#define COPY8(name, arg1name, arg2name, arg3name, arg4name, arg5name, arg6name, arg7name, arg8name) \
+  COPY_FULL8(name, name, arg1name, arg2name, arg3name, arg4name, arg5name, arg6name, arg7name, arg8name)
+
 // TBD copy ItemConstructor objects - jpcs
 // TBD copy SequenceType objects - jpcs
 // TBD copy NodeTest objects - jpcs
@@ -190,13 +219,13 @@ COPY_XQ3(If, Test, WhenTrue, WhenFalse)
 COPY_XQ2(InstanceOf, Expression, SequenceType) // SequenceType
 COPY_XQ4(CastableAs, Expression, SequenceType, IsPrimitive, TypeIndex)
 COPY_XQ4(CastAs, Expression, SequenceType, IsPrimitive, TypeIndex)
-COPY_XQ6(TreatAs, Expression, SequenceType, ErrorCode, DoTypeCheck, DoCardinalityCheck, FuncConvert)
+COPY_XQ8(TreatAs, Expression, SequenceType, ErrorCode, DoTypeCheck, DoCardinalityCheck, FuncConvert, TreatType, IsExact)
 COPY_XQ0(ContextItem)
 COPY_XQ2(Return, Parent, Expression)
 COPY_XQ3(Quantified, QuantifierType, Parent, Expression)
 COPY_XQ2(Validate, Expression, Mode)
 COPY_XQ2(OrderingChange, OrderingValue, Expr)
-COPY_XQ1(Atomize, Expression)
+COPY_XQ2(Atomize, Expression, DoPSVI)
 COPY_XQ1(EffectiveBooleanValue, Expression)
 COPY2(XPath1CompatConvertFunctionArg, Expression, SequenceType) // SequenceType
 COPY_XQ5(PromoteUntyped, Expression, TypeURI, TypeName, IsPrimitive, TypeIndex)
@@ -401,14 +430,15 @@ static TemplateArguments *copyTemplateArgs(const TemplateArguments *in, XPath2Me
 ASTNode *ASTCopier::optimizeCallTemplate(XQCallTemplate *item)
 {
   XQCallTemplate *result = new (mm_) XQCallTemplate(item->getQName(), item->getURI(), item->getName(), item->getASTName(),
-                                                    copyTemplateArgs(item->getArguments(), mm_), mm_);
+                                                    copyTemplateArgs(item->getArguments(), mm_), item->getTemplates(), mm_);
   ASTVisitor::optimizeCallTemplate(result);
   COPY_IMPL();
 }
 
 ASTNode *ASTCopier::optimizeApplyTemplates(XQApplyTemplates *item)
 {
-  XQApplyTemplates *result = new (mm_) XQApplyTemplates(item->getExpression(), copyTemplateArgs(item->getArguments(), mm_), item->getMode(), mm_);
+  XQApplyTemplates *result = new (mm_) XQApplyTemplates(item->getExpression(), copyTemplateArgs(item->getArguments(), mm_),
+                                                        item->getMode(), item->getTemplates(), mm_);
   ASTVisitor::optimizeApplyTemplates(result);
   COPY_IMPL();
 }

@@ -55,6 +55,14 @@ ASTNode* FunctionPartialApply::staticResolution(StaticContext *context)
 
 ASTNode *FunctionPartialApply::staticTyping(StaticContext *context)
 {
+  if(!context) {
+    // TBD Can we do better - jpcs
+    for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
+      *i = (*i)->staticTyping(context);
+    }
+    return this;
+  }
+
   _src.clear();
 
   for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {

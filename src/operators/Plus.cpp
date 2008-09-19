@@ -22,6 +22,7 @@
 #include "../config/xqilla_config.h"
 #include <assert.h>
 #include <xqilla/operators/Plus.hpp>
+#include <xqilla/operators/Minus.hpp>
 #include <xqilla/exceptions/XPath2ErrorException.hpp>
 #include <xqilla/items/ATDurationOrDerived.hpp>
 #include <xqilla/items/ATDateTimeOrDerived.hpp>
@@ -30,12 +31,13 @@
 #include <xqilla/items/Numeric.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 
-/*static*/ const XMLCh Plus::name[]={ XERCES_CPP_NAMESPACE_QUALIFIER chLatin_p, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_l, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_u, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_s, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
+XERCES_CPP_NAMESPACE_USE;
+
+const XMLCh Plus::name[]={ chLatin_p, chLatin_l, chLatin_u, chLatin_s, chNull };
 
 Plus::Plus(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ArithmeticOperator(name, args, memMgr)
 {
-  // Nothing to do
 }
 
 void Plus::calculateStaticType()

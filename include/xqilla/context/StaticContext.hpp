@@ -287,7 +287,7 @@ public:
   virtual void setDoLintWarnings(bool enabled) = 0;
 
   /** Return a unique name that can be used for a temporary variable */
-  virtual const XMLCh *allocateTempVarName() = 0;
+  virtual const XMLCh *allocateTempVarName(const XMLCh *prefix = 0) = 0;
 
   /** Get the memory manager */
   virtual XPath2MemoryManager* getMemoryManager() const = 0;

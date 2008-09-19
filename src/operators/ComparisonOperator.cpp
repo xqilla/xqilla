@@ -92,7 +92,7 @@ ASTNode* ComparisonOperator::staticTyping(StaticContext *context)
     *i = (*i)->staticTyping(context);
     _src.add((*i)->getStaticAnalysis());
 
-    if((*i)->getStaticAnalysis().getStaticType().getMax() == 0) {
+    if(context && (*i)->getStaticAnalysis().getStaticType().getMax() == 0) {
       // The result is always empty if one of our arguments is always empty
       XPath2MemoryManager* mm = context->getMemoryManager();
       ASTNode *result = new (mm) XQSequence(mm);

@@ -90,10 +90,15 @@ ASTNode *XQFunctionRef::staticResolution(StaticContext *context)
 
 ASTNode *XQFunctionRef::staticTyping(StaticContext *context)
 {
-  XPath2MemoryManager *mm = context->getMemoryManager();
+  if(!context) {
+    // TBD Can we do better - jpcs
+    instance_ = instance_->staticTyping(context);
+    return this;
+  }
 
   _src.clear();
 
+  XPath2MemoryManager *mm = context->getMemoryManager();
   StaticAnalysis instanceVarSrc(mm);
   instanceVarSrc.getStaticType() = StaticType(StaticType::ITEM_TYPE, 0, StaticType::UNLIMITED);
 

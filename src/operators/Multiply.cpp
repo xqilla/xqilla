@@ -53,25 +53,25 @@ void Multiply::calculateStaticType()
 
 Item::Ptr Multiply::execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::Ptr &atom2, DynamicContext *context) const
 {
-  if(atom1 == NULLRCP || atom2 == NULLRCP) return 0;
+  if(atom1.isNull() || atom2.isNull()) return 0;
 
   // xs:double * xs:duration (only xdt:dayTimeDuration and xdt:yearMonthDuration)
   if(atom1->isNumericValue() &&
      (atom2->getPrimitiveTypeIndex() == AnyAtomicType::DAY_TIME_DURATION ||
       atom2->getPrimitiveTypeIndex() == AnyAtomicType::YEAR_MONTH_DURATION)) {
-      return (const Item::Ptr)((const ATDurationOrDerived*)atom2.get())->multiply((const Numeric::Ptr)atom1, context);
+      return ((const ATDurationOrDerived*)atom2.get())->multiply((const Numeric*)atom1.get(), context);
   }
   // xs:duration * xs:double (only xdt:dayTimeDuration and xdt:yearMonthDuration)
   if(atom2->isNumericValue() &&
      (atom1->getPrimitiveTypeIndex() == AnyAtomicType::DAY_TIME_DURATION ||
       atom1->getPrimitiveTypeIndex() == AnyAtomicType::YEAR_MONTH_DURATION)) {
-    return (const Item::Ptr)((const ATDurationOrDerived*)atom1.get())->multiply((const Numeric::Ptr)atom2, context);
+    return ((const ATDurationOrDerived*)atom1.get())->multiply((const Numeric*)atom2.get(), context);
   }
 
   // numeric * numeric
   if(atom1->isNumericValue()) {
     if(atom2->isNumericValue()) {
-      return (const Item::Ptr)((Numeric*)(const AnyAtomicType*)atom1)->multiply((const Numeric::Ptr )atom2, context);
+      return ((const Numeric*)atom1.get())->multiply((const Numeric*)atom2.get(), context);
     }
     else {
       XQThrow(XPath2ErrorException,X("Multiply::createSequence"), X("An attempt to multiply a non numeric type to a numeric type has occurred [err:XPTY0004]"));

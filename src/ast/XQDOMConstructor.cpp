@@ -24,6 +24,7 @@
 #include <xqilla/ast/XQAtomize.hpp>
 #include <xqilla/ast/XQTreatAs.hpp>
 #include <xqilla/ast/XQSequence.hpp>
+#include <xqilla/ast/XQNamespaceBinding.hpp>
 #include <xqilla/schema/SequenceType.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/context/ItemFactory.hpp>
@@ -106,7 +107,9 @@ ASTNode *XQContentSequence::staticTyping(StaticContext *context)
     ASTNode *pChild = expr_;
 
     // Not needed if the wrapped expression is a DOM_CONSTRUCTOR
-    if(pChild->getType() == ASTNode::DOM_CONSTRUCTOR) {
+    if(pChild->getType() == ASTNode::DOM_CONSTRUCTOR ||
+       (pChild->getType() == ASTNode::NAMESPACE_BINDING &&
+        ((XQNamespaceBinding*)pChild)->getExpression()->getType() == ASTNode::DOM_CONSTRUCTOR)) {
       return expr_->staticTyping(context);
     }
   }

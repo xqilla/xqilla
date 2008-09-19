@@ -90,7 +90,9 @@ ASTNode* XQParenthesizedExpr::staticTyping(StaticContext *context)
 {
   bool doneOne = false;
   bool possiblyUpdating = true;
-  for(VectorOfASTNodes::iterator i = _astNodes.begin(); i != _astNodes.end(); ++i) {
+  bool nestedParen = false;
+  VectorOfASTNodes::iterator i;
+  for(i = _astNodes.begin(); i != _astNodes.end(); ++i) {
     *i = (*i)->staticTyping(context);
 
     if(_src.isUpdating()) {
@@ -115,7 +117,27 @@ ASTNode* XQParenthesizedExpr::staticTyping(StaticContext *context)
       _src.getStaticType().typeConcat((*i)->getStaticAnalysis().getStaticType());
     }
 
+    if((*i)->getType() == PARENTHESIZED)
+      nestedParen = true;
+
     _src.add((*i)->getStaticAnalysis());
+  }
+
+  if(context && nestedParen) {
+    XPath2MemoryManager *mm = context->getMemoryManager();
+    VectorOfASTNodes newArgs = VectorOfASTNodes(XQillaAllocator<ASTNode*>(mm));
+    for(i = _astNodes.begin(); i != _astNodes.end(); ++i) {
+      if((*i)->getType() == PARENTHESIZED) {
+        XQParenthesizedExpr *arg = (XQParenthesizedExpr*)*i;
+        for(VectorOfASTNodes::iterator j = arg->_astNodes.begin(); j != arg->_astNodes.end(); ++j) {
+          newArgs.push_back(*j);
+        }
+      }
+      else {
+        newArgs.push_back(*i);
+      }
+    }
+    _astNodes = newArgs;
   }
 
   if(!_src.isUsed()) {

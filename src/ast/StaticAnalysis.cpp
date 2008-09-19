@@ -245,6 +245,30 @@ void StaticAnalysis::addExceptContextFlags(const StaticAnalysis &o)
   }
 }
 
+void StaticAnalysis::addExceptVariable(const XMLCh *namespaceURI, const XMLCh *name, const StaticAnalysis &o)
+{
+  namespaceURI = _memMgr->getPooledString(namespaceURI);
+  name = _memMgr->getPooledString(name);
+
+  if(o._contextItem) _contextItem = true;
+  if(o._contextPosition) _contextPosition = true;
+  if(o._contextSize) _contextSize = true;
+  if(o._currentTime) _currentTime = true;
+  if(o._implicitTimezone) _implicitTimezone = true;
+  if(o._availableDocuments) _availableDocuments = true;
+  if(o._availableCollections) _availableCollections = true;
+  if(o._forceNoFolding) _forceNoFolding = true;
+  if(o._creative) _creative = true;
+  if(o._updating) _updating = true;
+  // Don't copy _possiblyUpdating
+
+  VarEntry *entry = o._dynamicVariables;
+  while(entry) {
+    if(namespaceURI != entry->uri || name != entry->name)
+      variableUsed(entry->uri, entry->name);
+    entry = entry->prev;
+  }
+}
 
 /** Returns true if flags are set, or variables have been used */
 bool StaticAnalysis::isUsed() const

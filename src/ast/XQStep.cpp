@@ -92,7 +92,7 @@ ASTNode *XQStep::staticTyping(StaticContext *context)
 {
   _src.clear();
 
-  if(!context->getContextItemType().containsType(StaticType::ITEM_TYPE)) {
+  if(context && !context->getContextItemType().containsType(StaticType::ITEM_TYPE)) {
     XQThrow(DynamicErrorException,X("XQStep::staticTyping"),
             X("It is an error for the context item to be undefined when using it [err:XPDY0002]"));
   }
@@ -106,7 +106,8 @@ ASTNode *XQStep::staticTyping(StaticContext *context)
 
   switch(axis_) {
   case SELF:
-    _src.getStaticType().typeNodeIntersect(context->getContextItemType());
+    if(context)
+      _src.getStaticType().typeNodeIntersect(context->getContextItemType());
     break;
   case ATTRIBUTE:
     _src.getStaticType().typeNodeIntersect(StaticType(StaticType::ATTRIBUTE_TYPE, 0, StaticType::UNLIMITED));

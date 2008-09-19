@@ -87,7 +87,7 @@ static TupleNode *findWhereAncestor(TupleNode *ancestor, const StaticAnalysis &e
 TupleNode *WhereTuple::staticTypingSetup(unsigned int &min, unsigned int &max, StaticContext *context)
 {
   // Split if expr_ is the And operator
-  if(expr_->getType() == ASTNode::OPERATOR && ((XQOperator*)expr_)->getOperatorName() == And::name) {
+  if(context && expr_->getType() == ASTNode::OPERATOR && ((XQOperator*)expr_)->getOperatorName() == And::name) {
     XPath2MemoryManager *mm = context->getMemoryManager();
 
     And *andOp = (And*)expr_;

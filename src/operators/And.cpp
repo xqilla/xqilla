@@ -61,11 +61,10 @@ ASTNode* And::staticTyping(StaticContext *context)
 {
   _src.clear();
 
-  VectorOfASTNodes newArgs(XQillaAllocator<ASTNode*>(context->getMemoryManager()));
-
   VectorOfASTNodes::iterator i;
   for(i = _args.begin(); i != _args.end(); ++i) {
     *i = (*i)->staticTyping(context);
+    _src.add((*i)->getStaticAnalysis());
 
     if((*i)->getStaticAnalysis().isUpdating()) {
       XQThrow(StaticErrorException,X("And::staticTyping"),
@@ -74,30 +73,31 @@ ASTNode* And::staticTyping(StaticContext *context)
     }
   }
 
-  for(i = _args.begin(); i != _args.end(); ++i) {
-    const StaticAnalysis &valueSrc = (*i)->getStaticAnalysis();
+  if(context) {
+    VectorOfASTNodes newArgs(XQillaAllocator<ASTNode*>(context->getMemoryManager()));
 
-    if(valueSrc.isUsed()) {
-      _src.add(valueSrc);
-      newArgs.push_back(*i);
-    }
-    else {
-      AutoDelete<DynamicContext> dContext(context->createDynamicContext());
-      dContext->setMemoryManager(context->getMemoryManager());
-      if(!((ATBooleanOrDerived*)(*i)->createResult(dContext)->next(dContext).get())->isTrue()) {
-        // It's constantly false, so this expression is false
-        ASTNode* newBlock = new (getMemoryManager())
-          XQSequence(dContext->getItemFactory()->createBoolean(false, dContext),
-                           dContext, getMemoryManager());
-        newBlock->setLocationInfo(this);
-        return newBlock->staticTyping(context);
+    for(i = _args.begin(); i != _args.end(); ++i) {
+      if((*i)->getStaticAnalysis().isUsed()) {
+        newArgs.push_back(*i);
+      }
+      else {
+        AutoDelete<DynamicContext> dContext(context->createDynamicContext());
+        dContext->setMemoryManager(context->getMemoryManager());
+        if(!((ATBooleanOrDerived*)(*i)->createResult(dContext)->next(dContext).get())->isTrue()) {
+          // It's constantly false, so this expression is false
+          ASTNode* newBlock = new (getMemoryManager())
+            XQSequence(dContext->getItemFactory()->createBoolean(false, dContext),
+                       dContext, getMemoryManager());
+          newBlock->setLocationInfo(this);
+          return newBlock->staticTyping(context);
+        }
       }
     }
+
+    _args = newArgs;
   }
 
   _src.getStaticType() = StaticType::BOOLEAN_TYPE;
-
-  _args = newArgs;
   return this;
 }
 

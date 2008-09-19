@@ -29,6 +29,7 @@ class XQILLA_API XQAtomize : public ASTNodeImpl
 {
 public:
   XQAtomize(ASTNode* expr, XPath2MemoryManager* memMgr);
+  XQAtomize(ASTNode* expr, bool doPSVI, XPath2MemoryManager* memMgr);
 
   virtual Result createResult(DynamicContext* context, int flags=0) const;
   virtual ASTNode* staticResolution(StaticContext *context);
@@ -37,8 +38,11 @@ public:
   ASTNode *getExpression() const { return expr_; }
   void setExpression(ASTNode *expr) { expr_ = expr; }
 
+  bool getDoPSVI() const { return doPSVI_; }
+
 protected:
   ASTNode* expr_;
+  bool doPSVI_;
 };
 
 class XQILLA_API AtomizeResult : public ResultImpl

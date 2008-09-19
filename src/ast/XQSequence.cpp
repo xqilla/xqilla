@@ -98,6 +98,8 @@ XQSequence *XQSequence::constantFold(Result &result, DynamicContext *context, XP
     seq->_itemConstructors.push_back(itemToItemConstructor(item, context, memMgr));
   }
 
+  // Don't specify a context for staticTyping
+  seq->staticTyping(0);
   return seq;
 }
 
@@ -106,6 +108,7 @@ XQSequence::XQSequence(const Item::Ptr &item, DynamicContext *context, XPath2Mem
     _itemConstructors(XQillaAllocator<ItemConstructor*>(memMgr))
 {
   _itemConstructors.push_back(itemToItemConstructor(item, context, memMgr));
+  staticTyping(0);
 }
 
 XQSequence::XQSequence(ItemConstructor *ic, XPath2MemoryManager* memMgr)
@@ -113,12 +116,14 @@ XQSequence::XQSequence(ItemConstructor *ic, XPath2MemoryManager* memMgr)
     _itemConstructors(XQillaAllocator<ItemConstructor*>(memMgr))
 {
   _itemConstructors.push_back(ic);
+  staticTyping(0);
 }
 
 XQSequence::XQSequence(XPath2MemoryManager* memMgr)
   : ASTNodeImpl(SEQUENCE, memMgr),
     _itemConstructors(XQillaAllocator<ItemConstructor*>(memMgr))
 {
+  staticTyping(0);
 }
 
 XQSequence::XQSequence(const ItemConstructor::Vector &ic, XPath2MemoryManager* memMgr)
@@ -126,6 +131,7 @@ XQSequence::XQSequence(const ItemConstructor::Vector &ic, XPath2MemoryManager* m
     _itemConstructors(XQillaAllocator<ItemConstructor*>(memMgr))
 {
   _itemConstructors = ic;
+  staticTyping(0);
 }
 
 XQSequence::~XQSequence()
@@ -178,6 +184,8 @@ EventGenerator::Ptr XQSequence::generateEvents(EventHandler *events, DynamicCont
     otherwise this method will return false. */
 bool XQSequence::isDateOrTimeAndHasNoTimezone(StaticContext *context) const
 {
+  if(context == 0) return ASTNodeImpl::isDateOrTimeAndHasNoTimezone(context);
+
   AutoDelete<DynamicContext> dContext(context->createDynamicContext());
   dContext->setMemoryManager(context->getMemoryManager());
 
