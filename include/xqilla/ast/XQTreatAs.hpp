@@ -34,7 +34,7 @@ class XQILLA_API XQTreatAs : public ASTNodeImpl
 public:
   XQTreatAs(ASTNode* expr, SequenceType *exprType, XPath2MemoryManager* memMgr, const XMLCh *errorCode = 0);
   XQTreatAs(ASTNode* expr, SequenceType *exprType, const XMLCh *errorCode, bool doTypeCheck, bool doCardinalityCheck,
-            ASTNode *funcConvert, XPath2MemoryManager* memMgr);
+            ASTNode *funcConvert, const StaticType &treatType, bool isExact, XPath2MemoryManager* memMgr);
 
   virtual Result createResult(DynamicContext* context, int flags=0) const;
   virtual ASTNode* staticResolution(StaticContext *context);
@@ -46,6 +46,8 @@ public:
   bool getDoTypeCheck() const { return _doTypeCheck; }
   bool getDoCardinalityCheck() const { return _doCardinalityCheck; }
   const XMLCh *getErrorCode() const { return _errorCode; }
+  const StaticType &getTreatType() const { return _treatType; }
+  bool getIsExact() const { return _isExact; }
 
   void setExpression(ASTNode *item);
   void setFuncConvert(ASTNode *item) { _funcConvert = item; }
@@ -60,6 +62,8 @@ protected:
   bool _doTypeCheck;
   bool _doCardinalityCheck;
   ASTNode *_funcConvert;
+  StaticType _treatType;
+  bool _isExact;
 };
 
 #endif

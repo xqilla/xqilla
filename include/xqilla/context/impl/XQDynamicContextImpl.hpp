@@ -260,7 +260,7 @@ public:
   virtual bool getDoLintWarnings() const;
   virtual void setDoLintWarnings(bool enabled);
 
-  virtual const XMLCh *allocateTempVarName();
+  virtual const XMLCh *allocateTempVarName(const XMLCh *prefix = 0);
 
   /** Get the memory manager */
   virtual XPath2MemoryManager* getMemoryManager() const;
@@ -397,7 +397,7 @@ inline void XQDynamicContextImpl::setExternalFunctionResolver(ExternalFunctionRe
 { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
 inline void XQDynamicContextImpl::setRevalidationMode(DocumentCache::ValidationMode mode)
 { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
-inline const XMLCh *XQDynamicContextImpl::allocateTempVarName()
+inline const XMLCh *XQDynamicContextImpl::allocateTempVarName(const XMLCh *prefix)
 { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); return 0; }
 inline void XQDynamicContextImpl::setNamespaceBinding(const XMLCh* prefix, const XMLCh* uri)
 { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }

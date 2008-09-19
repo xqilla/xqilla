@@ -63,13 +63,18 @@ ASTNode *XQInlineFunction::staticResolution(StaticContext *context)
 
 ASTNode *XQInlineFunction::staticTyping(StaticContext *context)
 {
-  XPath2MemoryManager *mm = context->getMemoryManager();
+  if(!context) {
+    // TBD Can we do better - jpcs
+    instance_ = instance_->staticTyping(context);
+    return this;
+  }
 
   _src.clear();
 
   func_->staticTyping(context);
   _src.addExceptContextFlags(func_->getBodyStaticAnalysis());
 
+  XPath2MemoryManager *mm = context->getMemoryManager();
   StaticAnalysis instanceVarSrc(mm);
   instanceVarSrc.getStaticType() = StaticType(StaticType::ITEM_TYPE, 0, StaticType::UNLIMITED);
 

@@ -133,8 +133,7 @@ ASTNode *XQCastAs::staticTyping(StaticContext *context)
 
   const SequenceType::ItemType *itemType = _exprType->getItemType();
   if(itemType != NULL) {
-    bool isPrimitive;
-    itemType->getStaticType(_src.getStaticType(), context, isPrimitive, this);
+    _src.getStaticType() = StaticType::create(_typeIndex);
   }
 
   _expr = _expr->staticTyping(context);

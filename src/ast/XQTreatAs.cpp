@@ -57,20 +57,23 @@ XQTreatAs::XQTreatAs(ASTNode* expr, SequenceType* exprType, XPath2MemoryManager*
     _errorCode(errorCode),
     _doTypeCheck(true),
     _doCardinalityCheck(true),
-    _funcConvert(0)
+    _funcConvert(0),
+    _isExact(false)
 {
   if(_errorCode == 0) _errorCode = err_XPTY0004;
 }
 
 XQTreatAs::XQTreatAs(ASTNode* expr, SequenceType *exprType, const XMLCh *errorCode, bool doTypeCheck, bool doCardinalityCheck,
-	ASTNode *funcConvert, XPath2MemoryManager* memMgr)
+                     ASTNode *funcConvert, const StaticType &treatType, bool isExact, XPath2MemoryManager* memMgr)
   : ASTNodeImpl(TREAT_AS, memMgr),
     _expr(expr),
     _exprType(exprType),
     _errorCode(errorCode),
     _doTypeCheck(doTypeCheck),
     _doCardinalityCheck(doCardinalityCheck),
-    _funcConvert(funcConvert)
+    _funcConvert(funcConvert),
+    _treatType(treatType),
+    _isExact(isExact)
 {
 }
 
@@ -88,6 +91,8 @@ ASTNode* XQTreatAs::staticResolution(StaticContext *context)
   else {
     _expr = _expr->staticResolution(context);
   }
+
+  _exprType->getStaticType(_treatType, context, _isExact, this);
 
   const SequenceType::ItemType *type = _exprType->getItemType();
 
@@ -140,39 +145,38 @@ ASTNode* XQTreatAs::staticResolution(StaticContext *context)
 
 ASTNode *XQTreatAs::staticTyping(StaticContext *context)
 {
-  XPath2MemoryManager *mm = context->getMemoryManager();
-
   _src.clear();
 
   _expr = _expr->staticTyping(context);
 
   if(_funcConvert) {
-    // Could do better on the static type
-    StaticAnalysis varSrc(mm);
-    varSrc.getStaticType() = StaticType::FUNCTION_TYPE;
+    if(context) {
+      // Could do better on the static type
+      StaticAnalysis varSrc(context->getMemoryManager());
+      varSrc.getStaticType() = StaticType::FUNCTION_TYPE;
 
-    VariableTypeStore *varStore = context->getVariableTypeStore();
-    varStore->addLogicalBlockScope();
-    varStore->declareVar(0, funcVarName, varSrc);
+      VariableTypeStore *varStore = context->getVariableTypeStore();
+      varStore->addLogicalBlockScope();
+      varStore->declareVar(0, funcVarName, varSrc);
+    }
 
     {
       AutoMessageListenerReset reset(context); // Turn off warnings
       _funcConvert = _funcConvert->staticTyping(context);
     }
 
-    varStore->removeScope();
+    if(context)
+      context->getVariableTypeStore()->removeScope();
   }
 
   // Do as much static time type checking as we can, given the
   // limited static typing that we implement
   const StaticType &actualType = _expr->getStaticAnalysis().getStaticType();
 
-  bool isExact;
-  _exprType->getStaticType(_src.getStaticType(), context, isExact, this);
-
-  StaticType::TypeMatch match = _src.getStaticType().matches(actualType);
+  StaticType::TypeMatch match = _treatType.matches(actualType);
 
   // Get a better static type by looking at our expression's type too
+  _src.getStaticType() = _treatType;
   _src.getStaticType() &= actualType;
 
   _src.setProperties(_expr->getStaticAnalysis().getProperties());
@@ -192,7 +196,7 @@ ASTNode *XQTreatAs::staticTyping(StaticContext *context)
       XQThrow(XPath2TypeMatchException, X("XQTreatAs::staticTyping"), buf.getRawBuffer());
     }
 
-    MessageListener *mlistener = context->getMessageListener();
+    MessageListener *mlistener = context ? context->getMessageListener() : 0;
     if(mlistener && context->getDoLintWarnings() && _errorCode != err_XPDY0050) {
       if(match.type == StaticType::PROBABLY_NOT || match.cardinality == StaticType::PROBABLY_NOT) {
         // It might not match
@@ -205,7 +209,7 @@ ASTNode *XQTreatAs::staticTyping(StaticContext *context)
       }
     }
 
-    if(isExact && match.type == StaticType::ALWAYS) {
+    if(_isExact && match.type == StaticType::ALWAYS) {
       _doTypeCheck = false;
     }
     if(match.cardinality == StaticType::ALWAYS) {

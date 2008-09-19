@@ -51,8 +51,6 @@ ASTNode* XQEffectiveBooleanValue::staticResolution(StaticContext *context)
 
 ASTNode *XQEffectiveBooleanValue::staticTyping(StaticContext *context)
 {
-  XPath2MemoryManager *mm = context->getMemoryManager();
-
   _src.clear();
 
   {
@@ -69,28 +67,33 @@ ASTNode *XQEffectiveBooleanValue::staticTyping(StaticContext *context)
               "of an updating expression [err:XUST0001]"));
   }
 
-  if(expr_->getStaticAnalysis().getStaticType().getMax() == 0) {
-    AnyAtomicTypeConstructor *construct = 
-      new (mm) AnyAtomicTypeConstructor(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                                        SchemaSymbols::fgDT_BOOLEAN,
-                                        SchemaSymbols::fgATTVAL_FALSE,
-                                        AnyAtomicType::BOOLEAN);
-    ASTNode *result = new (mm) XQSequence(construct, mm);
-    result->setLocationInfo(this);
-    return result->staticTyping(context);
+  if(context) {
+    XPath2MemoryManager *mm = context->getMemoryManager();
+
+    if(expr_->getStaticAnalysis().getStaticType().getMax() == 0) {
+      AnyAtomicTypeConstructor *construct = 
+        new (mm) AnyAtomicTypeConstructor(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                                          SchemaSymbols::fgDT_BOOLEAN,
+                                          SchemaSymbols::fgATTVAL_FALSE,
+                                          AnyAtomicType::BOOLEAN);
+      ASTNode *result = new (mm) XQSequence(construct, mm);
+      result->setLocationInfo(this);
+      return result->staticTyping(context);
+    }
+    else if(expr_->getStaticAnalysis().getStaticType().getMin() == 1 &&
+            expr_->getStaticAnalysis().getStaticType().isType(StaticType::NODE_TYPE)) {
+      AnyAtomicTypeConstructor *construct = 
+        new (mm) AnyAtomicTypeConstructor(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                                          SchemaSymbols::fgDT_BOOLEAN,
+                                          SchemaSymbols::fgATTVAL_TRUE,
+                                          AnyAtomicType::BOOLEAN);
+      ASTNode *result = new (mm) XQSequence(construct, mm);
+      result->setLocationInfo(this);
+      return result->staticTyping(context);
+    }
   }
-  else if(expr_->getStaticAnalysis().getStaticType().getMin() == 1 &&
-          expr_->getStaticAnalysis().getStaticType().isType(StaticType::NODE_TYPE)) {
-    AnyAtomicTypeConstructor *construct = 
-      new (mm) AnyAtomicTypeConstructor(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                                        SchemaSymbols::fgDT_BOOLEAN,
-                                        SchemaSymbols::fgATTVAL_TRUE,
-                                        AnyAtomicType::BOOLEAN);
-    ASTNode *result = new (mm) XQSequence(construct, mm);
-    result->setLocationInfo(this);
-    return result->staticTyping(context);
-  }
-  else if(expr_->getStaticAnalysis().getStaticType().getMin() == 1 &&
+
+  if(expr_->getStaticAnalysis().getStaticType().getMin() == 1 &&
           expr_->getStaticAnalysis().getStaticType().getMax() == 1 &&
           expr_->getStaticAnalysis().getStaticType().isType(StaticType::BOOLEAN_TYPE)) {
     return expr_;

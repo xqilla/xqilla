@@ -267,7 +267,7 @@ public:
   virtual bool getDoLintWarnings() const { return _lint; }
   virtual void setDoLintWarnings(bool enabled) { _lint = enabled; }
 
-  virtual const XMLCh *allocateTempVarName();
+  virtual const XMLCh *allocateTempVarName(const XMLCh *prefix = 0);
 
   /** Get the memory manager */
   virtual XPath2MemoryManager* getMemoryManager() const;

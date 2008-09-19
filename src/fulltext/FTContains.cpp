@@ -67,7 +67,7 @@ ASTNode *FTContains::staticTyping(StaticContext *context)
   selection_ = selection_->staticTyping(context);
   _src.add(selection_->getStaticAnalysis());
 
-  {
+  if(context) {
     AutoDelete<DynamicContext> dContext(context->createDynamicContext());
     dContext->setMemoryManager(context->getMemoryManager());
     DefaultTokenizer tokenizer;

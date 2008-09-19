@@ -31,13 +31,17 @@ public:
   AutoNodeSetOrderingReset(StaticContext* context, StaticContext::NodeSetOrdering ordering = StaticContext::ORDERING_UNORDERED)
   {
     context_ = context;
-    ordering_ = context->getNodeSetOrdering();
-    context->setNodeSetOrdering(ordering);
+    if(context_) {
+      ordering_ = context->getNodeSetOrdering();
+      context->setNodeSetOrdering(ordering);
+    }
   }
 
   ~AutoNodeSetOrderingReset()
   {
-    context_->setNodeSetOrdering(ordering_);
+    if(context_) {
+      context_->setNodeSetOrdering(ordering_);
+    }
   }
 
 protected:
@@ -48,16 +52,28 @@ protected:
 class XQILLA_API AutoContextItemTypeReset
 {
 public:
+  AutoContextItemTypeReset(StaticContext* context)
+  {
+    context_ = context;
+    if(context_) {
+      sType_ = context->getContextItemType();
+    }
+  }
+
   AutoContextItemTypeReset(StaticContext* context, const StaticType &sType)
   {
     context_ = context;
-    sType_ = context->getContextItemType();
-    context->setContextItemType(sType);
+    if(context_) {
+      sType_ = context->getContextItemType();
+      context->setContextItemType(sType);
+    }
   }
 
   ~AutoContextItemTypeReset()
   {
-    context_->setContextItemType(sType_);
+    if(context_) {
+      context_->setContextItemType(sType_);
+    }
   }
 
 protected:
@@ -70,20 +86,24 @@ class XQILLA_API AutoNsScopeReset
 public:
   AutoNsScopeReset(StaticContext* context, XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver* newResolver)
   {
-    _context=context;
-    _oldNSResolver=_context->getNSResolver();
-    _defaultElementAndTypeNS=context->getDefaultElementAndTypeNS();
-    _context->setNSResolver(newResolver);
+    context_=context;
+    if(context_) {
+      _oldNSResolver=context_->getNSResolver();
+      _defaultElementAndTypeNS=context->getDefaultElementAndTypeNS();
+      context_->setNSResolver(newResolver);
+    }
   }
 
   ~AutoNsScopeReset()
   {
-    _context->setNSResolver(_oldNSResolver);
-    _context->setDefaultElementAndTypeNS(_defaultElementAndTypeNS);
+    if(context_) {
+      context_->setNSResolver(_oldNSResolver);
+      context_->setDefaultElementAndTypeNS(_defaultElementAndTypeNS);
+    }
   }
 
 protected:
-  StaticContext* _context;
+  StaticContext* context_;
   const XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver* _oldNSResolver;
   const XMLCh *_defaultElementAndTypeNS;
   
@@ -156,24 +176,24 @@ class XQILLA_API AutoVariableStoreReset
 public:
   AutoVariableStoreReset(DynamicContext *context, const VariableStore *store = 0)
   {
-    _context = context;
-    _oldVarStore = _context->getVariableStore();
+    context_ = context;
+    _oldVarStore = context_->getVariableStore();
     if(store)
-      _context->setVariableStore(store);
+      context_->setVariableStore(store);
   }
 
   ~AutoVariableStoreReset()
   {
-    _context->setVariableStore(_oldVarStore);
+    context_->setVariableStore(_oldVarStore);
   }
 
   void reset()
   {
-    _context->setVariableStore(_oldVarStore);
+    context_->setVariableStore(_oldVarStore);
   }
 
 protected:
-  DynamicContext *_context;
+  DynamicContext *context_;
   const VariableStore *_oldVarStore;
 };
 
@@ -182,24 +202,24 @@ class XQILLA_API AutoRegexGroupStoreReset
 public:
   AutoRegexGroupStoreReset(DynamicContext *context, const RegexGroupStore *store = 0)
   {
-    _context = context;
-    _oldRegexStore = _context->getRegexGroupStore();
+    context_ = context;
+    _oldRegexStore = context_->getRegexGroupStore();
     if(store)
-      _context->setRegexGroupStore(store);
+      context_->setRegexGroupStore(store);
   }
 
   ~AutoRegexGroupStoreReset()
   {
-    _context->setRegexGroupStore(_oldRegexStore);
+    context_->setRegexGroupStore(_oldRegexStore);
   }
 
   void reset()
   {
-    _context->setRegexGroupStore(_oldRegexStore);
+    context_->setRegexGroupStore(_oldRegexStore);
   }
 
 protected:
-  DynamicContext *_context;
+  DynamicContext *context_;
   const RegexGroupStore *_oldRegexStore;
 };
 
@@ -209,13 +229,17 @@ public:
   AutoMessageListenerReset(StaticContext* context, MessageListener *listener = 0)
   {
     context_ = context;
-    listener_ = context->getMessageListener();
-    context->setMessageListener(listener);
+    if(context_) {
+      listener_ = context->getMessageListener();
+      context->setMessageListener(listener);
+    }
   }
 
   ~AutoMessageListenerReset()
   {
-    context_->setMessageListener(listener_);
+    if(context_) {
+      context_->setMessageListener(listener_);
+    }
   }
 
 protected:
@@ -228,23 +252,23 @@ class XQILLA_API AutoStackFrameReset
 public:
   AutoStackFrameReset(DynamicContext *context, const StackFrame *frame)
   {
-    _context = context;
-    _oldFrame = _context->getStackFrame();
-    _context->setStackFrame(frame);
+    context_ = context;
+    _oldFrame = context_->getStackFrame();
+    context_->setStackFrame(frame);
   }
 
   ~AutoStackFrameReset()
   {
-    _context->setStackFrame(_oldFrame);
+    context_->setStackFrame(_oldFrame);
   }
 
   void reset()
   {
-    _context->setStackFrame(_oldFrame);
+    context_->setStackFrame(_oldFrame);
   }
 
 protected:
-  DynamicContext *_context;
+  DynamicContext *context_;
   const StackFrame *_oldFrame;
 };
 

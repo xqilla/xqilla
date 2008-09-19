@@ -183,6 +183,8 @@ public:
   bool isUpdating() const { return isUpdating_; }
   bool isTemplate() const { return isTemplate_; }
 
+  bool isRecursive() const { return recursive_; }
+
   /// Resolve URIs, give the function a default static type
   void staticResolutionStage1(StaticContext* context);
   /// Resolve the function body, work out a more static return type
@@ -221,6 +223,7 @@ protected:
   XPath2MemoryManager *memMgr_;
   StaticAnalysis src_;
   bool staticTyped_;
+  bool recursive_;
   DocumentCache *moduleDocCache_;
 
   friend class XQUserFunctionInstance;

@@ -86,6 +86,7 @@ XQUserFunction::XQUserFunction(const XMLCh *qname, ArgumentSpecs *argSpecs, ASTN
     isTemplate_(false),
     src_(mm),
     staticTyped_(false),
+    recursive_(false),
     moduleDocCache_(NULL)
 {
 }
@@ -106,6 +107,7 @@ XQUserFunction::XQUserFunction(const XMLCh *qname, VectorOfASTNodes *pattern, Ar
     isTemplate_(true),
     src_(mm),
     staticTyped_(false),
+    recursive_(false),
     moduleDocCache_(NULL)
 {
 }
@@ -417,7 +419,10 @@ void XQUserFunction::staticTypingOnce(StaticContext *context)
 {
   // Avoid inifinite recursion for recursive functions
   // TBD Need to declare everything as being used - jpcs
-  if(staticTyped_) return;
+  if(staticTyped_) {
+    recursive_ = true;
+    return;
+  }
   staticTyped_ = true;
   staticTyping(context);
 }
@@ -614,8 +619,6 @@ ASTNode* XQUserFunctionInstance::staticResolution(StaticContext* context)
   return this;
 }
 
-#include <iostream>
-
 ASTNode *XQUserFunctionInstance::staticTyping(StaticContext *context)
 {
   if(funcDef_->body_ != NULL) {
@@ -628,7 +631,8 @@ ASTNode *XQUserFunctionInstance::staticTyping(StaticContext *context)
     _src.forceNoFolding(true);
   }
 
-  for(VectorOfASTNodes::iterator argIt = _args.begin(); argIt != _args.end(); ++argIt) {
+  VectorOfASTNodes::iterator argIt;
+  for(argIt = _args.begin(); argIt != _args.end(); ++argIt) {
     // The spec doesn't allow us to skip static errors, so we have to check even if
     // the parameter isn't used
     *argIt = (*argIt)->staticTyping(context);
@@ -646,12 +650,12 @@ ASTNode *XQUserFunctionInstance::staticTyping(StaticContext *context)
     }
 
     // TBD Check all static errors in staticResolution, so we can skip static typing - jpcs
-    // if((*defIt)->_qname || context->isDebuggingEnabled())
+    // if((*defIt)->_qname)
     _src.add((*argIt)->getStaticAnalysis());
   }
 
   // don't constant fold if it's an imported or an external function
-  if(funcDef_->moduleDocCache_==NULL && funcDef_->body_ != NULL && !_src.isUsed() && !funcDef_->isTemplate()) {
+  if(funcDef_->body_ != NULL && !_src.isUsed() && !funcDef_->isTemplate()) {
     return constantFold(context);
   }
   return this;

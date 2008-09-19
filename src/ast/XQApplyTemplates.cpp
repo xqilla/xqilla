@@ -43,6 +43,17 @@ XQApplyTemplates::XQApplyTemplates(ASTNode *expr, TemplateArguments *args, XQUse
 {
 }
 
+XQApplyTemplates::XQApplyTemplates(ASTNode *expr, TemplateArguments *args, XQUserFunction::Mode *mode,
+                                   const UserFunctions &templates, XPath2MemoryManager *mm)
+  : ASTNodeImpl(APPLY_TEMPLATES, mm),
+    expr_(expr),
+    args_(args),
+    mode_(mode),
+    templates_(XQillaAllocator<XQUserFunction*>(mm))
+{
+  templates_ = templates;
+}
+
 static const XMLCh err_XTTE0520[] = { 'e', 'r', 'r', ':', 'X', 'T', 'T', 'E', '0', '5', '2', '0', 0 };
 
 ASTNode* XQApplyTemplates::staticResolution(StaticContext *context) 
@@ -96,21 +107,19 @@ ASTNode *XQApplyTemplates::staticTyping(StaticContext *context)
   _src.clear();
 
   expr_ = expr_->staticTyping(context);
-  _src.add(expr_->getStaticAnalysis());
 
   TemplateArguments::iterator it;
   if(args_ != 0) {
     for(it = args_->begin(); it != args_->end(); ++it) {
       (*it)->value = (*it)->value->staticTyping(context);
-      _src.add((*it)->value->getStaticAnalysis());
     }
   }
 
   // Calculate our static type from the template instances
-  templates_ = context->getTemplateRules();
+  if(context)
+    templates_ = context->getTemplateRules();
 
   bool first = true;
-  StaticAnalysis newSrc(context->getMemoryManager());
 
   UserFunctions::iterator inIt;
   VectorOfASTNodes::iterator patIt;
@@ -165,18 +174,24 @@ ASTNode *XQApplyTemplates::staticTyping(StaticContext *context)
       _src.getStaticType() |= (*inIt)->getBodyStaticAnalysis().getStaticType();
       _src.setProperties(_src.getProperties() & (*inIt)->getBodyStaticAnalysis().getProperties());
     }
-    newSrc.add((*inIt)->getBodyStaticAnalysis());
+    _src.add((*inIt)->getBodyStaticAnalysis());
   }
 
   if(args_ != 0) {
     for(it = args_->begin(); it != args_->end(); ++it) {
-      if(!newSrc.removeVariable((*it)->uri, (*it)->name)) {
+      if(!_src.removeVariable((*it)->uri, (*it)->name)) {
         // TBD This parameter will never be used - jpcs
       }
     }
   }
 
-  _src.add(newSrc);
+  _src.add(expr_->getStaticAnalysis());
+
+  if(args_ != 0) {
+    for(it = args_->begin(); it != args_->end(); ++it) {
+      _src.add((*it)->value->getStaticAnalysis());
+    }
+  }
 
   return this;
 }

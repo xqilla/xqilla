@@ -49,7 +49,8 @@ XQCallTemplate::XQCallTemplate(const XMLCh *qname, TemplateArguments *args, XPat
     uri_(0),
     name_(0),
     astName_(0),
-    args_(args)
+    args_(args),
+    templates_(XQillaAllocator<XQUserFunction*>(mm))
 {
 }
 
@@ -59,18 +60,22 @@ XQCallTemplate::XQCallTemplate(ASTNode *qname, TemplateArguments *args, XPath2Me
     uri_(0),
     name_(0),
     astName_(qname),
-    args_(args)
+    args_(args),
+    templates_(XQillaAllocator<XQUserFunction*>(mm))
 {
 }
 
-XQCallTemplate::XQCallTemplate(const XMLCh *qname, const XMLCh *uri, const XMLCh *name, ASTNode *astName, TemplateArguments *args, XPath2MemoryManager *mm)
+XQCallTemplate::XQCallTemplate(const XMLCh *qname, const XMLCh *uri, const XMLCh *name, ASTNode *astName, TemplateArguments *args,
+                               const UserFunctions &templates, XPath2MemoryManager *mm)
   : ASTNodeImpl(CALL_TEMPLATE, mm),
     qname_(qname),
     uri_(uri),
     name_(name),
     astName_(astName),
-    args_(args)
+    args_(args),
+    templates_(XQillaAllocator<XQUserFunction*>(mm))
 {
+  templates_ = templates;
 }
 
 ASTNode* XQCallTemplate::staticResolution(StaticContext *context) 
@@ -208,25 +213,26 @@ ASTNode *XQCallTemplate::staticTyping(StaticContext *context)
 
   // At this point we know astName_ is not null
   astName_ = astName_->staticTyping(context);
-  _src.add(astName_->getStaticAnalysis());
 
   TemplateArguments::iterator it;
   if(args_ != 0) {
     for(it = args_->begin(); it != args_->end(); ++it) {
       (*it)->value = (*it)->value->staticTyping(context);
-      _src.add((*it)->value->getStaticAnalysis());
     }
   }
 
   // Calculate our static type from the template instances with names
-  const UserFunctions &templates = context->getTemplateRules();
+  if(context)
+    templates_ = context->getTemplateRules();
 
   bool first = true;
-  StaticAnalysis newSrc(context->getMemoryManager());
 
-  UserFunctions::const_iterator inIt;
-  for(inIt = templates.begin(); inIt != templates.end(); ++inIt) {
-    if((*inIt)->getName() == 0) continue;
+  UserFunctions::iterator inIt;
+  for(inIt = templates_.begin(); inIt != templates_.end(); ++inIt) {
+    if((*inIt) == 0 || (*inIt)->getName() == 0) {
+      *inIt = 0;
+      continue;
+    }
 
     if(first) {
       first = false;
@@ -236,18 +242,24 @@ ASTNode *XQCallTemplate::staticTyping(StaticContext *context)
       _src.getStaticType() |= (*inIt)->getBodyStaticAnalysis().getStaticType();
       _src.setProperties(_src.getProperties() & (*inIt)->getBodyStaticAnalysis().getProperties());
     }
-    newSrc.add((*inIt)->getBodyStaticAnalysis());
+    _src.add((*inIt)->getBodyStaticAnalysis());
   }
 
   if(args_ != 0) {
     for(it = args_->begin(); it != args_->end(); ++it) {
-      if(!newSrc.removeVariable((*it)->uri, (*it)->name)) {
+      if(!_src.removeVariable((*it)->uri, (*it)->name)) {
         // TBD This parameter will never be used - jpcs
       }
     }
   }
 
-  _src.add(newSrc);
+  _src.add(astName_->getStaticAnalysis());
+
+  if(args_ != 0) {
+    for(it = args_->begin(); it != args_->end(); ++it) {
+      _src.add((*it)->value->getStaticAnalysis());
+    }
+  }
 
   return this;
 }

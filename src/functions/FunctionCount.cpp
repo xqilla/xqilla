@@ -57,7 +57,7 @@ ASTNode *FunctionCount::staticTyping(StaticContext *context)
   _src.getStaticType() = StaticType::DECIMAL_TYPE;
 
   ASTNode *result = calculateSRCForArguments(context);
-  if(result == this) {
+  if(context && result == this) {
     const StaticType &sType = _args[0]->getStaticAnalysis().getStaticType();
     if(sType.getMin() == sType.getMax()) {
       XPath2MemoryManager* mm = context->getMemoryManager();

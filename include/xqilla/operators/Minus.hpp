@@ -19,10 +19,6 @@
  * $Id$
  */
 
-/*
-   Minus operator function
-*/
-
 #ifndef _MINUS_HPP
 #define _MINUS_HPP
 
@@ -30,7 +26,6 @@
 
 #include <xqilla/operators/ArithmeticOperator.hpp>
 
-/** OpMinus operator function*/
 class XQILLA_API Minus : public ArithmeticOperator
 {
 public:
@@ -42,5 +37,5 @@ public:
   Item::Ptr execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::Ptr &atom2, DynamicContext *context) const;
 };
 
-#endif // _FUNCTIONOPMINUS_HPP
+#endif
 

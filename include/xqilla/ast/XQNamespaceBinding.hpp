@@ -31,9 +31,14 @@ class XQILLA_API XQNamespaceBinding : public ASTNodeImpl
 public:
   XQNamespaceBinding(XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver *namespaces, ASTNode *expr, XPath2MemoryManager *mm);
 
-  virtual Result createResult(DynamicContext *context, int flags=0) const;
   virtual ASTNode *staticResolution(StaticContext *context);
   virtual ASTNode *staticTyping(StaticContext *context);
+
+  virtual Result createResult(DynamicContext *context, int flags=0) const;
+  virtual Result iterateResult(const Result &contextItems, DynamicContext *context) const;
+  virtual EventGenerator::Ptr generateEvents(EventHandler *events, DynamicContext *context,
+                                             bool preserveNS, bool preserveType) const;
+  virtual PendingUpdateList createUpdateList(DynamicContext *context) const;
 
   ASTNode *getExpression() const { return expr_; }
   void setExpression(ASTNode *expr) { expr_ = expr; }

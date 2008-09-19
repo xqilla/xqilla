@@ -102,8 +102,6 @@ TupleNode *LetTuple::staticTypingSetup(unsigned int &min, unsigned int &max, Sta
 {
   parent_ = parent_->staticTypingSetup(min, max, context);
 
-  VariableTypeStore* varStore = context->getVariableTypeStore();
-
   // call static resolution on the value
   expr_ = expr_->staticTyping(context);
 
@@ -113,12 +111,15 @@ TupleNode *LetTuple::staticTypingSetup(unsigned int &min, unsigned int &max, Sta
               "to be an updating expression [err:XUST0001]"));
   }
 
-  varStore->addLogicalBlockScope();
+  if(context) {
+    VariableTypeStore* varStore = context->getVariableTypeStore();
+    varStore->addLogicalBlockScope();
 
-  // Declare the variable binding
-  varSrc_.getStaticType() = expr_->getStaticAnalysis().getStaticType();
-  varSrc_.setProperties(expr_->getStaticAnalysis().getProperties());
-  varStore->declareVar(varURI_, varName_, varSrc_);
+    // Declare the variable binding
+    varSrc_.getStaticType() = expr_->getStaticAnalysis().getStaticType();
+    varSrc_.setProperties(expr_->getStaticAnalysis().getProperties());
+    varStore->declareVar(varURI_, varName_, varSrc_);
+  }
 
   // Push back if possible
   if(!expr_->getStaticAnalysis().isCreative()) {
@@ -137,7 +138,8 @@ TupleNode *LetTuple::staticTypingSetup(unsigned int &min, unsigned int &max, Sta
 TupleNode *LetTuple::staticTypingTeardown(StaticContext *context, StaticAnalysis &usedSrc)
 {
   // Remove our variable binding and the scope we added
-  context->getVariableTypeStore()->removeScope();
+  if(context)
+    context->getVariableTypeStore()->removeScope();
 
   // Remove our binding variable from the StaticAnalysis data (removing it if it's not used)
   // TBD Use counts for the variable - jpcs

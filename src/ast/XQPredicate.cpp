@@ -68,8 +68,6 @@ ASTNode* XQPredicate::staticTyping(StaticContext *context)
 {
   _src.clear();
 
-  XPath2MemoryManager *mm = context->getMemoryManager();
-
   expr_ = expr_->staticTyping(context);
   _src.copy(expr_->getStaticAnalysis());
   _src.getStaticType().multiply(0, 1);
@@ -87,7 +85,9 @@ ASTNode* XQPredicate::staticTyping(StaticContext *context)
 
   const StaticAnalysis &newSrc = predicate_->getStaticAnalysis();
 
-  if(!newSrc.isUsed()) {
+  if(context && !newSrc.isUsed()) {
+    XPath2MemoryManager *mm = context->getMemoryManager();
+
     // It's constant
     AutoDelete<DynamicContext> dContext(context->createDynamicContext());
     dContext->setMemoryManager(mm);
@@ -110,7 +110,7 @@ ASTNode* XQPredicate::staticTyping(StaticContext *context)
         // We have a false predicate, which is constant folded to an empty sequence
         ASTNode *result = new (mm) XQSequence(mm);
         result->setLocationInfo(expr_);
-	this->release();
+        this->release();
         return result;
       }
     }

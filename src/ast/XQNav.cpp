@@ -154,13 +154,14 @@ ASTNode* XQNav::staticTyping(StaticContext *context)
 {
   _src.clear();
 
-  AutoContextItemTypeReset contextTypeReset(context, context->getContextItemType());
+  AutoContextItemTypeReset contextTypeReset(context);
 
   unsigned int props = StaticAnalysis::DOCORDER | StaticAnalysis::GROUPED |
     StaticAnalysis::PEER | StaticAnalysis::SUBTREE | StaticAnalysis::SAMEDOC |
     StaticAnalysis::ONENODE;
 
-  Steps newSteps(XQillaAllocator<StepInfo>(context->getMemoryManager()));
+  AutoDelete<Steps> newSteps(0);
+  if(context) newSteps.set(new Steps(XQillaAllocator<StepInfo>(context->getMemoryManager())));
 
   StaticType ciType;
   unsigned int min = 1, max = 1;
@@ -173,9 +174,11 @@ ASTNode* XQNav::staticTyping(StaticContext *context)
     ASTNode *step = it->step->staticTyping(context);
     const StaticAnalysis &stepSrc = step->getStaticAnalysis();
 
-    ciType = stepSrc.getStaticType();
-    ciType.setCardinality(1, 1);
-    context->setContextItemType(ciType);
+    if(context) {
+      ciType = stepSrc.getStaticType();
+      ciType.setCardinality(1, 1);
+      context->setContextItemType(ciType);
+    }
 
     min *= stepSrc.getStaticType().getMin();
     if(max == StaticType::UNLIMITED || stepSrc.getStaticType().getMax() == StaticType::UNLIMITED)
@@ -184,7 +187,7 @@ ASTNode* XQNav::staticTyping(StaticContext *context)
 
     props = combineProperties(props, stepSrc.getProperties());
 
-    if(stepSrc.areContextFlagsUsed() || _src.isNoFoldingForced() ||
+    if(!context || stepSrc.areContextFlagsUsed() || _src.isNoFoldingForced() ||
        stepSrc.getStaticType().containsType(StaticType::ANY_ATOMIC_TYPE) ||
        stepSrc.isCreative()) {
       if(it != begin) {
@@ -200,83 +203,87 @@ ASTNode* XQNav::staticTyping(StaticContext *context)
       // This is only possible because the result of steps has to be nodes, and
       // duplicates are removed, which means we aren't forced to execute a constant
       // step a set number of times.
-      newSteps.clear();
+      newSteps->clear();
       _src.add(stepSrc);
     }
 
-    if(step->getType() == NAVIGATION) {
-      Steps &navSteps = ((XQNav*)step)->_steps;
-      for(Steps::iterator it2 = navSteps.begin();
-          it2 != navSteps.end(); ++it2) {
-        newSteps.push_back(it2->step);
+    if(context) {
+      if(step->getType() == NAVIGATION) {
+        Steps &navSteps = ((XQNav*)step)->_steps;
+        for(Steps::iterator it2 = navSteps.begin();
+            it2 != navSteps.end(); ++it2) {
+          newSteps->push_back(it2->step);
+        }
       }
-    }
-    else {
-      newSteps.push_back(step);
+      else {
+        newSteps->push_back(step);
+      }
     }
   }
 
-  _steps = newSteps;
-  newSteps.clear();
+  if(context) {
+    _steps = *newSteps.get();
+    newSteps->clear();
 
-  it = _steps.begin();
-  end = _steps.end();
-  for(; it != end; ++it) {
-    // Special case, to optimise //foo or //descendant::foo
-    if(it->step->getType() == STEP) {
-      XQStep *step = (XQStep*)it->step;
-      NodeTest *nodetest = (NodeTest*)step->getNodeTest();
+    it = _steps.begin();
+    end = _steps.end();
+    for(; it != end; ++it) {
+      // Special case, to optimise //foo or //descendant::foo
+      if(it->step->getType() == STEP) {
+        XQStep *step = (XQStep*)it->step;
+        NodeTest *nodetest = (NodeTest*)step->getNodeTest();
 
-      // Check for a step with a type wildcard
-      if(nodetest->getTypeWildcard() && (it + 1) != end) {
+        // Check for a step with a type wildcard
+        if(nodetest->getTypeWildcard() && (it + 1) != end) {
 
-        bool usesContextPositionOrSize = false;
-        const ASTNode *peek = (it + 1)->step;
-        while(peek->getType() == PREDICATE) {
-          const XQPredicate *pred = (const XQPredicate*)peek;
-          if(pred->getPredicate()->getStaticAnalysis().isContextPositionUsed() ||
-             pred->getPredicate()->getStaticAnalysis().isContextSizeUsed() ||
-             pred->getPredicate()->getStaticAnalysis().getStaticType().containsType(StaticType::NUMERIC_TYPE)) {
-            usesContextPositionOrSize = true;
-          }
-          peek = pred->getExpression();
-        }
-
-        if(peek->getType() == STEP) {
-          const XQStep *peekstep = (XQStep*)peek;
-          // If the next node is CHILD or DESCENDANT axis, then
-          // this step must have children
-          if(peekstep->getAxis() == XQStep::CHILD || peekstep->getAxis() == XQStep::DESCENDANT) {
-
-            // Check for a descendant-or-self axis
-            if(step->getAxis() == XQStep::DESCENDANT_OR_SELF) {
-              if(!usesContextPositionOrSize) {
-                // This is a descendant-or-self::node()/child::foo that we can optimise into descendant::foo
-                ++it;
-                const_cast<XQStep*>(peekstep)->setAxis(XQStep::DESCENDANT);
-                // Set the properties to those for descendant axis
-                const_cast<StaticAnalysis&>(peekstep->getStaticAnalysis()).
-                  setProperties(StaticAnalysis::SUBTREE | StaticAnalysis::DOCORDER |
-                                StaticAnalysis::GROUPED | StaticAnalysis::SAMEDOC);
-              }
+          bool usesContextPositionOrSize = false;
+          const ASTNode *peek = (it + 1)->step;
+          while(peek->getType() == PREDICATE) {
+            const XQPredicate *pred = (const XQPredicate*)peek;
+            if(pred->getPredicate()->getStaticAnalysis().isContextPositionUsed() ||
+               pred->getPredicate()->getStaticAnalysis().isContextSizeUsed() ||
+               pred->getPredicate()->getStaticAnalysis().getStaticType().containsType(StaticType::NUMERIC_TYPE)) {
+              usesContextPositionOrSize = true;
             }
-
-            nodetest->setHasChildren();
+            peek = pred->getExpression();
           }
-          // If the next node is ATTRIBUTE axis, then this step needs to be
-          // an element
-          else if(peekstep->getAxis() == XQStep::ATTRIBUTE) {
-            nodetest->setTypeWildcard(false);
-            nodetest->setNodeType(Node::element_string);
+
+          if(peek->getType() == STEP) {
+            const XQStep *peekstep = (XQStep*)peek;
+            // If the next node is CHILD or DESCENDANT axis, then
+            // this step must have children
+            if(peekstep->getAxis() == XQStep::CHILD || peekstep->getAxis() == XQStep::DESCENDANT) {
+
+              // Check for a descendant-or-self axis
+              if(step->getAxis() == XQStep::DESCENDANT_OR_SELF) {
+                if(!usesContextPositionOrSize) {
+                  // This is a descendant-or-self::node()/child::foo that we can optimise into descendant::foo
+                  ++it;
+                  const_cast<XQStep*>(peekstep)->setAxis(XQStep::DESCENDANT);
+                  // Set the properties to those for descendant axis
+                  const_cast<StaticAnalysis&>(peekstep->getStaticAnalysis()).
+                    setProperties(StaticAnalysis::SUBTREE | StaticAnalysis::DOCORDER |
+                                  StaticAnalysis::GROUPED | StaticAnalysis::SAMEDOC);
+                }
+              }
+
+              nodetest->setHasChildren();
+            }
+            // If the next node is ATTRIBUTE axis, then this step needs to be
+            // an element
+            else if(peekstep->getAxis() == XQStep::ATTRIBUTE) {
+              nodetest->setTypeWildcard(false);
+              nodetest->setNodeType(Node::element_string);
+            }
           }
         }
       }
+
+      newSteps->push_back(*it);
     }
 
-    newSteps.push_back(*it);
+    _steps = *newSteps.get();
   }
-
-  _steps = newSteps;
 
   if(!_steps.empty()) {
     _src.getStaticType() = _steps.back().step->getStaticAnalysis().getStaticType();

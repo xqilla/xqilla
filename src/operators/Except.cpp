@@ -84,7 +84,7 @@ ASTNode* Except::staticTyping(StaticContext *context)
 
   unsigned int min = 0;
   if(_src.getStaticType().getMin() > _args[1]->getStaticAnalysis().getStaticType().getMax())
-	  min = _src.getStaticType().getMin() - _args[1]->getStaticAnalysis().getStaticType().getMax();
+    min = _src.getStaticType().getMin() - _args[1]->getStaticAnalysis().getStaticType().getMax();
 
   _src.getStaticType().setCardinality(min, _src.getStaticType().getMax());
 

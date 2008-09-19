@@ -23,6 +23,7 @@
 #define XQCALLTEMPLATE_HPP
 
 #include <xqilla/ast/ASTNodeImpl.hpp>
+#include <xqilla/simple-api/XQQuery.hpp>
 
 class SequenceType;
 
@@ -44,7 +45,8 @@ class XQILLA_API XQCallTemplate : public ASTNodeImpl
 public:
   XQCallTemplate(const XMLCh *qname, TemplateArguments *args, XPath2MemoryManager *mm);
   XQCallTemplate(ASTNode *qname, TemplateArguments *args, XPath2MemoryManager *mm);
-  XQCallTemplate(const XMLCh *qname, const XMLCh *uri, const XMLCh *name, ASTNode *astName, TemplateArguments *args, XPath2MemoryManager *mm);
+  XQCallTemplate(const XMLCh *qname, const XMLCh *uri, const XMLCh *name, ASTNode *astName, TemplateArguments *args,
+                 const UserFunctions &templates, XPath2MemoryManager *mm);
 
   virtual ASTNode *staticResolution(StaticContext *context);
   virtual ASTNode *staticTyping(StaticContext *context);
@@ -60,11 +62,13 @@ public:
   void setASTName(ASTNode *name) { astName_ = name; }
   TemplateArguments *getArguments() const { return args_; }
   void setArguments(TemplateArguments *args) { args_ = args; }
+  const UserFunctions &getTemplates() const { return templates_; }
 
 private:
   const XMLCh *qname_, *uri_, *name_;
   ASTNode *astName_;
   TemplateArguments *args_;
+  UserFunctions templates_;
 };
 
 #endif

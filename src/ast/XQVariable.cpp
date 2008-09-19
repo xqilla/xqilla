@@ -72,6 +72,8 @@ ASTNode* XQVariable::staticResolution(StaticContext *context)
 
 ASTNode *XQVariable::staticTyping(StaticContext *context)
 {
+  if(context == 0) return this;
+
   _src.clear();
 
   const StaticAnalysis *var_src = context->getVariableTypeStore()->getVar(_uri, _name);

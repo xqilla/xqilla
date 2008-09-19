@@ -25,6 +25,7 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/context/VariableStore.hpp>
 #include <xqilla/context/VariableTypeStore.hpp>
+#include <xqilla/context/ContextHelpers.hpp>
 #include <xqilla/functions/FunctionLookup.hpp>
 #include <xqilla/functions/XQUserFunction.hpp>
 #include <xqilla/exceptions/XQException.hpp>
@@ -314,7 +315,6 @@ void XQQuery::staticTyping(StaticContext *context)
   // which calculates a better type for them
   UserFunctions::iterator i, j;
   for(i = m_userDefFns.begin(); i != m_userDefFns.end(); ++i) {
-
     for(j = m_userDefFns.begin(); j != m_userDefFns.end(); ++j) {
       (*j)->resetStaticTypingOnce();
     }

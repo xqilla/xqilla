@@ -24,6 +24,8 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/context/ContextHelpers.hpp>
 #include <xqilla/update/PendingUpdateList.hpp>
+#include <xqilla/optimizer/ASTVisitor.hpp>
+#include <xqilla/utils/XPath2Utils.hpp>
 
 XQReturn::XQReturn(TupleNode *parent, ASTNode *expr, XPath2MemoryManager *mm)
   : ASTNodeImpl(RETURN, mm),
@@ -54,6 +56,10 @@ ASTNode *XQReturn::staticTyping(StaticContext *context)
   _src.getStaticType().multiply(min, max);
 
   parent_ = parent_->staticTypingTeardown(context, _src);
+
+  if(parent_->getType() == TupleNode::CONTEXT_TUPLE) {
+    return expr_;
+  }
 
   if(!_src.isUsed()) {
     return constantFold(context);

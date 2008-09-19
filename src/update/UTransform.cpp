@@ -118,19 +118,15 @@ ASTNode *UTransform::staticTyping(StaticContext *context)
 {
   _src.clear();
 
-  VectorOfCopyBinding *newBindings =
-    new (getMemoryManager()) VectorOfCopyBinding(XQillaAllocator<CopyBinding*>(getMemoryManager()));
-
-  VariableTypeStore* varStore = context->getVariableTypeStore();
+  VariableTypeStore* varStore = context ? context->getVariableTypeStore() : 0;
 
   // Add all the binding variables to the new scope
   VectorOfCopyBinding::iterator end = bindings_->end();
   for(VectorOfCopyBinding::iterator it0 = bindings_->begin(); it0 != end; ++it0) {
-    varStore->addLogicalBlockScope();
-
     // call static resolution on the value
     (*it0)->expr_ = (*it0)->expr_->staticTyping(context);
     (*it0)->src_.getStaticType() = (*it0)->expr_->getStaticAnalysis().getStaticType();
+    (*it0)->src_.setProperties((*it0)->expr_->getStaticAnalysis().getProperties());
 
     if((*it0)->expr_->getStaticAnalysis().isUpdating()) {
       XQThrow(StaticErrorException,X("UTransform::staticTyping"),
@@ -139,8 +135,10 @@ ASTNode *UTransform::staticTyping(StaticContext *context)
     }
 
     // Declare the variable binding
-    (*it0)->src_.setProperties((*it0)->expr_->getStaticAnalysis().getProperties());
-    varStore->declareVar((*it0)->uri_, (*it0)->name_, (*it0)->src_);
+    if(context) {
+      varStore->addLogicalBlockScope();
+      varStore->declareVar((*it0)->uri_, (*it0)->name_, (*it0)->src_);
+    }
   }
 
   // Call staticTyping on the modify expression
@@ -164,13 +162,17 @@ ASTNode *UTransform::staticTyping(StaticContext *context)
               "to be an updating expression [err:XUST0001]"));
   }
 
+  VectorOfCopyBinding *newBindings = context == 0 ? 0 :
+    new (context->getMemoryManager()) VectorOfCopyBinding(XQillaAllocator<CopyBinding*>(context->getMemoryManager()));
+
   VectorOfCopyBinding::reverse_iterator rend = bindings_->rend();
   for(VectorOfCopyBinding::reverse_iterator it = bindings_->rbegin(); it != rend; ++it) {
     CopyBinding *newVB = new (getMemoryManager()) CopyBinding(getMemoryManager(), **it);
     newVB->setLocationInfo(*it);
 
     // Remove our variable binding and the scope we added
-    varStore->removeScope();
+    if(context)
+      varStore->removeScope();
 
     // Remove our binding variable from the StaticAnalysis data (removing it if it's not used)
     if(!_src.removeVariable(newVB->uri_, newVB->name_)) {
@@ -181,13 +183,14 @@ ASTNode *UTransform::staticTyping(StaticContext *context)
 
     // Add the new VB at the front of the new Bindings
     // (If it's a let binding, and it's variable isn't used, don't add it - there's no point)
-    if(newVB->qname_) {
+    if(newBindings && newVB->qname_) {
       newBindings->insert(newBindings->begin(), newVB);
     }
   }
 
   // Overwrite our bindings with the new ones
-  bindings_ = newBindings;
+  if(newBindings)
+    bindings_ = newBindings;
 
   return this;
 }

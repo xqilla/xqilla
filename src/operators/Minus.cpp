@@ -22,6 +22,7 @@
 #include "../config/xqilla_config.h"
 #include <assert.h>
 #include <xqilla/operators/Minus.hpp>
+#include <xqilla/operators/Plus.hpp>
 #include <xqilla/items/ATDurationOrDerived.hpp>
 #include <xqilla/items/ATDateTimeOrDerived.hpp>
 #include <xqilla/items/ATDateOrDerived.hpp>
@@ -30,7 +31,9 @@
 #include <xqilla/exceptions/XPath2ErrorException.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 
-/*static*/ const XMLCh Minus::name[]={ XERCES_CPP_NAMESPACE_QUALIFIER chLatin_m, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_i, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_u, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_s, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
+XERCES_CPP_NAMESPACE_USE;
+
+const XMLCh Minus::name[]={ chLatin_m, chLatin_i, chLatin_n, chLatin_u, chLatin_s, chNull };
 
 Minus::Minus(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ArithmeticOperator(name, args, memMgr)
@@ -71,7 +74,7 @@ Item::Ptr Minus::execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::P
 
   if(atom1->isNumericValue()) {
     if(atom2->isNumericValue()) {
-      return (const Item::Ptr)((Numeric*)(const AnyAtomicType*)atom1)->subtract((const Numeric::Ptr )atom2, context);
+      return ((Numeric*)atom1.get())->subtract((const Numeric::Ptr )atom2, context);
     }
     else {
       XQThrow(XPath2ErrorException,X("Minus::createSequence"), X("An attempt to subtract a non numeric type from a numeric type has occurred [err:XPTY0004]"));
@@ -82,13 +85,13 @@ Item::Ptr Minus::execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::P
   case AnyAtomicType::DATE : {
     switch(atom2->getPrimitiveTypeIndex()) {
     case AnyAtomicType::DAY_TIME_DURATION: {
-      return (const Item::Ptr)((ATDateOrDerived*)atom1.get())->subtractDayTimeDuration((const ATDurationOrDerived *)atom2.get(), context);
+      return ((ATDateOrDerived*)atom1.get())->subtractDayTimeDuration((const ATDurationOrDerived *)atom2.get(), context);
     }
     case AnyAtomicType::YEAR_MONTH_DURATION: {
-      return (const Item::Ptr)((ATDateOrDerived*)atom1.get())->subtractYearMonthDuration((const ATDurationOrDerived *)atom2.get(), context);
+      return ((ATDateOrDerived*)atom1.get())->subtractYearMonthDuration((const ATDurationOrDerived *)atom2.get(), context);
     }
     case AnyAtomicType::DATE: {
-      return (const Item::Ptr)((ATDateOrDerived*)atom1.get())->subtractDate((const ATDateOrDerived *)atom2.get(), context);
+      return ((ATDateOrDerived*)atom1.get())->subtractDate((const ATDateOrDerived *)atom2.get(), context);
     }
     default: {
       XQThrow(XPath2ErrorException,X("Minus::createSequence"), X("An invalid attempt to subtract from xs:date type has occurred [err:XPTY0004]"));
@@ -98,10 +101,10 @@ Item::Ptr Minus::execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::P
   case AnyAtomicType::TIME : {
     switch(atom2->getPrimitiveTypeIndex()) {
     case AnyAtomicType::DAY_TIME_DURATION : {
-      return (const Item::Ptr)((ATTimeOrDerived*)atom1.get())->subtractDayTimeDuration((const ATDurationOrDerived *)atom2.get(), context );
+      return ((ATTimeOrDerived*)atom1.get())->subtractDayTimeDuration((const ATDurationOrDerived *)atom2.get(), context );
     }
     case AnyAtomicType::TIME : {
-      return (const Item::Ptr)((ATTimeOrDerived*)atom1.get())->subtractTime((const ATTimeOrDerived *)atom2.get(), context);
+      return ((ATTimeOrDerived*)atom1.get())->subtractTime((const ATTimeOrDerived *)atom2.get(), context);
     }
     default: {
       XQThrow(XPath2ErrorException,X("Minus::createSequence"), X("An invalid attempt to subtract from xs:time type has occurred [err:XPTY0004]"));
@@ -111,13 +114,13 @@ Item::Ptr Minus::execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::P
   case AnyAtomicType::DATE_TIME : {
     switch(atom2->getPrimitiveTypeIndex()) {
     case AnyAtomicType::DAY_TIME_DURATION: {
-      return (const Item::Ptr)((ATDateTimeOrDerived*)atom1.get())->subtractDayTimeDuration((const ATDurationOrDerived*)atom2.get(), context);
+      return ((ATDateTimeOrDerived*)atom1.get())->subtractDayTimeDuration((const ATDurationOrDerived*)atom2.get(), context);
     }
     case AnyAtomicType::YEAR_MONTH_DURATION: {
-      return (const Item::Ptr)((ATDateTimeOrDerived*)atom1.get())->subtractYearMonthDuration((const ATDurationOrDerived*)atom2.get(), context);
+      return ((ATDateTimeOrDerived*)atom1.get())->subtractYearMonthDuration((const ATDurationOrDerived*)atom2.get(), context);
     }
     case AnyAtomicType::DATE_TIME : {
-      return (const Item::Ptr)((ATDateTimeOrDerived*)(const AnyAtomicType*)atom1)->subtractDateTimeAsDayTimeDuration((const ATDateTimeOrDerived::Ptr )atom2, context);
+      return ((ATDateTimeOrDerived*)atom1.get())->subtractDateTimeAsDayTimeDuration((const ATDateTimeOrDerived::Ptr )atom2, context);
     }
     default: {
       XQThrow(XPath2ErrorException,X("Minus::createSequence"), X("An invalid attempt to subtract from xs:dateTime type has occurred [err:XPTY0004]"));
@@ -127,7 +130,7 @@ Item::Ptr Minus::execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::P
   case AnyAtomicType::DAY_TIME_DURATION: {
     switch(atom2->getPrimitiveTypeIndex()) {
     case AnyAtomicType::DAY_TIME_DURATION: {
-      return (const Item::Ptr)((ATDurationOrDerived*)atom1.get())->subtract((const ATDurationOrDerived *)atom2.get(), context);
+      return ((ATDurationOrDerived*)atom1.get())->subtract((const ATDurationOrDerived *)atom2.get(), context);
     }
     default: {
       XQThrow(XPath2ErrorException,X("Minus::createSequence"), X("An invalid attempt to subtract from xdt:dayTimeDuration type has occurred [err:XPTY0004]"));
@@ -137,7 +140,7 @@ Item::Ptr Minus::execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::P
   case AnyAtomicType::YEAR_MONTH_DURATION: {
     switch(atom2->getPrimitiveTypeIndex()) {
     case AnyAtomicType::YEAR_MONTH_DURATION: {
-      return (const Item::Ptr)((ATDurationOrDerived*)atom1.get())->subtract((const ATDurationOrDerived *)atom2.get(), context);
+      return ((ATDurationOrDerived*)atom1.get())->subtract((const ATDurationOrDerived *)atom2.get(), context);
     }
     default: {
       XQThrow(XPath2ErrorException,X("Minus::createSequence"), X("An invalid attempt to subtract from xdt:yearMonthDuration type has occurred [err:XPTY0004]"));

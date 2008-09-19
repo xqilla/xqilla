@@ -84,6 +84,7 @@ public:
   /** Sets the members of this StaticAnalysis from the given StaticAnalysis */
   void add(const StaticAnalysis &o);
   void addExceptContextFlags(const StaticAnalysis &o);
+  void addExceptVariable(const XMLCh *namespaceURI, const XMLCh *name, const StaticAnalysis &o);
 
   /** Returns true if flags are set, or variables have been used */
   bool isUsed() const;

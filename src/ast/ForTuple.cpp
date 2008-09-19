@@ -94,8 +94,6 @@ TupleNode *ForTuple::staticTypingSetup(unsigned int &min, unsigned int &max, Sta
 {
   parent_ = parent_->staticTypingSetup(min, max, context);
 
-  VariableTypeStore* varStore = context->getVariableTypeStore();
-
   // call static resolution on the value
   expr_ = expr_->staticTyping(context);
 
@@ -112,20 +110,23 @@ TupleNode *ForTuple::staticTypingSetup(unsigned int &min, unsigned int &max, Sta
     max = StaticType::UNLIMITED;
   else max *= sType.getMax();
 
-  varStore->addLogicalBlockScope();
+  if(context) {
+    VariableTypeStore* varStore = context->getVariableTypeStore();
+    varStore->addLogicalBlockScope();
 
-  // Declare the variable binding
-  varSrc_.getStaticType() = sType;
-  varSrc_.getStaticType().setCardinality(1, 1);
-  varSrc_.setProperties(StaticAnalysis::DOCORDER | StaticAnalysis::GROUPED |
-                        StaticAnalysis::PEER | StaticAnalysis::SUBTREE | StaticAnalysis::SAMEDOC |
-                        StaticAnalysis::ONENODE | StaticAnalysis::SELF);
-  varStore->declareVar(varURI_, varName_, varSrc_);
+    // Declare the variable binding
+    varSrc_.getStaticType() = sType;
+    varSrc_.getStaticType().setCardinality(1, 1);
+    varSrc_.setProperties(StaticAnalysis::DOCORDER | StaticAnalysis::GROUPED |
+                          StaticAnalysis::PEER | StaticAnalysis::SUBTREE | StaticAnalysis::SAMEDOC |
+                          StaticAnalysis::ONENODE | StaticAnalysis::SELF);
+    varStore->declareVar(varURI_, varName_, varSrc_);
 
-  if(posName_) {
-    // Declare the positional variable binding
-    posSrc_.getStaticType() = StaticType::DECIMAL_TYPE;
-    varStore->declareVar(posURI_, posName_, posSrc_);
+    if(posName_) {
+      // Declare the positional variable binding
+      posSrc_.getStaticType() = StaticType::DECIMAL_TYPE;
+      varStore->declareVar(posURI_, posName_, posSrc_);
+    }
   }
 
   return this;
@@ -134,7 +135,8 @@ TupleNode *ForTuple::staticTypingSetup(unsigned int &min, unsigned int &max, Sta
 TupleNode *ForTuple::staticTypingTeardown(StaticContext *context, StaticAnalysis &usedSrc)
 {
   // Remove our variable binding and the scope we added
-  context->getVariableTypeStore()->removeScope();
+  if(context)
+    context->getVariableTypeStore()->removeScope();
 
   // Remove our binding variable from the StaticAnalysis data (removing it if it's not used)
   if(varName_ && !usedSrc.removeVariable(varURI_, varName_)) {

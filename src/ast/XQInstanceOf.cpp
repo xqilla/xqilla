@@ -72,8 +72,6 @@ ASTNode* XQInstanceOf::staticResolution(StaticContext *context)
 
 ASTNode *XQInstanceOf::staticTyping(StaticContext *context)
 {
-  XPath2MemoryManager *mm = context->getMemoryManager();
-
   _src.clear();
 
   try {
@@ -81,7 +79,9 @@ ASTNode *XQInstanceOf::staticTyping(StaticContext *context)
   }
   catch(const XPath2TypeMatchException &ex) {
     // The expression was constant folded, and the type matching failed.
-    if(!_expr->getStaticAnalysis().isNoFoldingForced()) {
+    if(context && !_expr->getStaticAnalysis().isNoFoldingForced()) {
+      XPath2MemoryManager *mm = context->getMemoryManager();
+
       AnyAtomicTypeConstructor *construct = 
         new (mm) AnyAtomicTypeConstructor(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                                           SchemaSymbols::fgDT_BOOLEAN,
