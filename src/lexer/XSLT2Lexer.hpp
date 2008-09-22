@@ -44,6 +44,16 @@ class XQillaNSResolverImpl;
 class XSLT2Lexer : public Lexer
 {
 public:
+  enum EventType {
+    START_DOCUMENT,
+    END_DOCUMENT,
+    START_ELEMENT,
+    END_ELEMENT,
+    NAMESPACE,
+    ATTRIBUTE,      
+    TEXT
+  };
+
   XSLT2Lexer(DynamicContext *context, const XERCES_CPP_NAMESPACE_QUALIFIER InputSource &srcToUse, XQilla::Language lang = XQilla::XSLT2);
   virtual ~XSLT2Lexer();
 
@@ -87,16 +97,6 @@ protected:
   void pushElementStack();
   void popElementStack();
   void setNamespace(const XMLCh *prefix, const XMLCh *uri);
-
-  enum EventType {
-    START_DOCUMENT,
-    END_DOCUMENT,
-    START_ELEMENT,
-    END_ELEMENT,
-    NAMESPACE,
-    ATTRIBUTE,      
-    TEXT
-  };
 
   virtual void nextEvent(YYLTYPE* pYYLOC) = 0;
   virtual EventType getEventType() = 0;
