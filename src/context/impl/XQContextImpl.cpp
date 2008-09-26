@@ -378,26 +378,24 @@ void XQContextImpl::clearDynamicContext()
   _varStore = &_defaultVarStore;
   _globalVarStore = &_defaultVarStore;
 
-  if(_defaultResolver.adopt)
-    delete _defaultResolver.resolver;
-  _defaultResolver.adopt = false;
-  _defaultResolver.resolver = 0;
+//   if(_defaultResolver.adopt)
+//     delete _defaultResolver.resolver;
+//   _defaultResolver.adopt = false;
+//   _defaultResolver.resolver = 0;
 
-  std::vector<ResolverEntry, XQillaAllocator<ResolverEntry> >::reverse_iterator end = _resolvers.rend();
-  for(std::vector<ResolverEntry, XQillaAllocator<ResolverEntry> >::reverse_iterator i = _resolvers.rbegin(); i != end; ++i) {
-    if(i->adopt) {
-      delete i->resolver;
-    }
-  }
-  _resolvers.clear();
+//   std::vector<ResolverEntry, XQillaAllocator<ResolverEntry> >::reverse_iterator end = _resolvers.rend();
+//   for(std::vector<ResolverEntry, XQillaAllocator<ResolverEntry> >::reverse_iterator i = _resolvers.rbegin(); i != end; ++i) {
+//     if(i->adopt) {
+//       delete i->resolver;
+//     }
+//   }
+//   _resolvers.clear();
 
-  _defaultResolver.resolver = _conf->createDefaultURIResolver(&_internalMM);
-  if(_defaultResolver.resolver != 0) {
-    _defaultResolver.adopt = true;
-  }
-//   registerURIResolver(_conf->createDefaultURIResolver(&_internalMM), /*adopt*/true);
+//   _defaultResolver.resolver = _conf->createDefaultURIResolver(&_internalMM);
+//   if(_defaultResolver.resolver != 0) {
+//     _defaultResolver.adopt = true;
+//   }
 
-  _moduleResolver = 0;
   time(&_currentTime);
 }
 
