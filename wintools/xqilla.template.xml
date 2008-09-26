@@ -454,6 +454,7 @@
         <file name='include/xqilla/optimizer/ASTCopier.hpp'/>
         <file name='include/xqilla/optimizer/ASTReleaser.hpp'/>
         <file name='include/xqilla/optimizer/ASTVisitor.hpp'/>
+        <file name='include/xqilla/optimizer/PartialEvaluator.hpp'/>
         <file name='include/xqilla/optimizer/QueryPathNode.hpp'/>
         <file name='include/xqilla/optimizer/QueryPathTreeGenerator.hpp'/>
         <file name='include/xqilla/parser/QName.hpp'/>
@@ -932,6 +933,7 @@
         <file name="src/optimizer/ASTCopier.cpp"/>
         <file name="src/optimizer/ASTReleaser.cpp"/>
         <file name="src/optimizer/ASTVisitor.cpp"/>
+        <file name="src/optimizer/PartialEvaluator.cpp"/>
         <file name="src/optimizer/Optimizer.cpp"/>
         <file name="src/optimizer/QueryPathNode.cpp"/>
         <file name="src/optimizer/QueryPathTreeGenerator.cpp"/>

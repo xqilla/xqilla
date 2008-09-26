@@ -28,6 +28,7 @@
 #include <xqilla/exceptions/XQException.hpp>
 #include <xqilla/fastxdm/FastXDMConfiguration.hpp>
 #include <xqilla/optimizer/QueryPathTreeGenerator.hpp>
+#include <xqilla/optimizer/PartialEvaluator.hpp>
 #include <xqilla/debug/DebugHookDecorator.hpp>
 #include "../lexer/XQLexer.hpp"
 #include "../lexer/XSLT2Lexer.hpp"
@@ -84,6 +85,8 @@ XQQuery* XQilla::parse(const XMLCh* inputQuery, DynamicContext* context,
   if((flags & NO_STATIC_RESOLUTION) == 0) {
     Optimizer *optimizer = new StaticResolver(context);
     optimizer = new QueryPathTreeGenerator(context, optimizer);
+    optimizer = new PartialEvaluator(context, optimizer);
+    optimizer = new StaticTyper(context, optimizer);
     if((flags & DEBUG_QUERY) != 0) {
       optimizer = new DebugHookDecorator(context, optimizer);
     }
@@ -140,6 +143,8 @@ XQQuery* XQilla::parse(const InputSource& querySrc, DynamicContext* context,
   if((flags & NO_STATIC_RESOLUTION) == 0) {
     Optimizer *optimizer = new StaticResolver(context);
     optimizer = new QueryPathTreeGenerator(context, optimizer);
+    optimizer = new PartialEvaluator(context, optimizer);
+    optimizer = new StaticTyper(context, optimizer);
     if((flags & DEBUG_QUERY) != 0) {
       optimizer = new DebugHookDecorator(context, optimizer);
     }
