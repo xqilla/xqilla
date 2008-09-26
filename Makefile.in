@@ -210,11 +210,12 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	XercesConfiguration.lo XercesNodeImpl.lo \
 	XercesSequenceBuilder.lo XercesUpdateFactory.lo \
 	XercesURIResolver.lo Optimizer.lo ASTCopier.lo ASTReleaser.lo \
-	ASTVisitor.lo QueryPathNode.lo QueryPathTreeGenerator.lo \
-	yajl_buf.lo yajl.lo yajl_encode.lo yajl_gen.lo yajl_lex.lo \
-	yajl_parser.lo XQillaXQCImplementation.lo \
-	XQillaXQCStaticContext.lo XQillaXQCDynamicContext.lo \
-	XQillaXQCExpression.lo XQillaXQCSequence.lo
+	ASTVisitor.lo PartialEvaluator.lo QueryPathNode.lo \
+	QueryPathTreeGenerator.lo yajl_buf.lo yajl.lo yajl_encode.lo \
+	yajl_gen.lo yajl_lex.lo yajl_parser.lo \
+	XQillaXQCImplementation.lo XQillaXQCStaticContext.lo \
+	XQillaXQCDynamicContext.lo XQillaXQCExpression.lo \
+	XQillaXQCSequence.lo
 libxqilla_la_OBJECTS = $(am_libxqilla_la_OBJECTS)
 libxqilla_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
@@ -926,6 +927,7 @@ src/optimizer/Optimizer.cpp \
 src/optimizer/ASTCopier.cpp \
 src/optimizer/ASTReleaser.cpp \
 src/optimizer/ASTVisitor.cpp \
+src/optimizer/PartialEvaluator.cpp \
 src/optimizer/QueryPathNode.cpp \
 src/optimizer/QueryPathTreeGenerator.cpp \
 src/yajl/yajl_buf.c \
@@ -1462,6 +1464,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/OrderByTuple.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/OrderComparison.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ParentAxis.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PartialEvaluator.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PendingUpdateList.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Plus.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PrecedingAxis.Plo@am__quote@
@@ -4679,6 +4682,13 @@ ASTVisitor.lo: src/optimizer/ASTVisitor.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/optimizer/ASTVisitor.cpp' object='ASTVisitor.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ASTVisitor.lo `test -f 'src/optimizer/ASTVisitor.cpp' || echo '$(srcdir)/'`src/optimizer/ASTVisitor.cpp
+
+PartialEvaluator.lo: src/optimizer/PartialEvaluator.cpp
+@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT PartialEvaluator.lo -MD -MP -MF $(DEPDIR)/PartialEvaluator.Tpo -c -o PartialEvaluator.lo `test -f 'src/optimizer/PartialEvaluator.cpp' || echo '$(srcdir)/'`src/optimizer/PartialEvaluator.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/PartialEvaluator.Tpo $(DEPDIR)/PartialEvaluator.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/optimizer/PartialEvaluator.cpp' object='PartialEvaluator.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o PartialEvaluator.lo `test -f 'src/optimizer/PartialEvaluator.cpp' || echo '$(srcdir)/'`src/optimizer/PartialEvaluator.cpp
 
 QueryPathNode.lo: src/optimizer/QueryPathNode.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT QueryPathNode.lo -MD -MP -MF $(DEPDIR)/QueryPathNode.Tpo -c -o QueryPathNode.lo `test -f 'src/optimizer/QueryPathNode.cpp' || echo '$(srcdir)/'`src/optimizer/QueryPathNode.cpp

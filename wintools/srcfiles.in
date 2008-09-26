@@ -420,6 +420,7 @@ src/optimizer/ASTCopier.cpp lib
 src/optimizer/ASTReleaser.cpp lib
 src/optimizer/ASTVisitor.cpp lib
 src/optimizer/Optimizer.cpp lib
+src/optimizer/PartialEvaluator.cpp lib
 src/optimizer/QueryPathNode.cpp lib
 src/optimizer/QueryPathTreeGenerator.cpp lib
 src/parser/QName.cpp lib
@@ -902,6 +903,7 @@ include/xqilla/optimizer/ASTCopier.hpp lib
 include/xqilla/optimizer/ASTReleaser.hpp lib
 include/xqilla/optimizer/ASTVisitor.hpp lib
 include/xqilla/optimizer/Optimizer.hpp lib
+include/xqilla/optimizer/PartialEvaluator.hpp lib
 include/xqilla/optimizer/QueryPathNode.hpp lib
 include/xqilla/optimizer/QueryPathTreeGenerator.hpp lib
 include/xqilla/parser/QName.hpp lib

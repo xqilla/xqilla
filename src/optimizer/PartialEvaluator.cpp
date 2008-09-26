@@ -1,0 +1,1114 @@
+/*
+ * Copyright (c) 2001-2008
+ *     DecisionSoft Limited. All rights reserved.
+ * Copyright (c) 2004-2008
+ *     Oracle. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * $Id$
+ */
+
+#include <xqilla/optimizer/PartialEvaluator.hpp>
+#include <xqilla/framework/XPath2MemoryManager.hpp>
+#include <xqilla/context/DynamicContext.hpp>
+#include <xqilla/utils/XPath2Utils.hpp>
+#include <xqilla/ast/XQSequence.hpp>
+#include <xqilla/exceptions/XQException.hpp>
+
+#include <xqilla/operators/Plus.hpp>
+#include <xqilla/operators/Minus.hpp>
+#include <xqilla/operators/Multiply.hpp>
+#include <xqilla/operators/Divide.hpp>
+#include <xqilla/operators/IntegerDivide.hpp>
+#include <xqilla/operators/Mod.hpp>
+
+#include <set>
+#include <map>
+
+using namespace std;
+
+PartialEvaluator::PartialEvaluator(DynamicContext *context, Optimizer *parent)
+  : ASTVisitor(parent),
+    context_(context),
+    functionInlineLimit_(5)
+{
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Remove unused user-defined functions
+
+class FunctionReferenceFinder : public ASTVisitor
+{
+public:
+  const set<XQUserFunction*> &find(ASTNode *ast)
+  {
+    functions_.clear();
+    newFunctions_.clear();
+    optimize(ast);
+
+    set<XQUserFunction*>::iterator i = newFunctions_.begin();
+    while(i != newFunctions_.end()) {
+      XQUserFunction *uf = *i;
+
+      optimize((ASTNode*)uf->getFunctionBody());
+
+      newFunctions_.erase(uf);
+      i = newFunctions_.begin();
+    }
+
+    return functions_;
+  }
+
+protected:
+  virtual ASTNode *optimizeUserFunction(XQUserFunctionInstance *item)
+  {
+    if(functions_.insert(const_cast<XQUserFunction*>(item->getFunctionDefinition())).second) {
+      newFunctions_.insert(const_cast<XQUserFunction*>(item->getFunctionDefinition()));
+    }
+
+    return ASTVisitor::optimizeUserFunction(item);
+  }
+
+  set<XQUserFunction*> functions_;
+  set<XQUserFunction*> newFunctions_;
+};
+
+static void removeUnusedFunctions(XQQuery *query, const set<XQUserFunction*> &foundFunctions,
+                                  XPath2MemoryManager *mm)
+{
+    UserFunctions newFuncs = UserFunctions(XQillaAllocator<XQUserFunction*>(mm));
+    UserFunctions *funcs = const_cast<UserFunctions*>(&query->getFunctions());
+    UserFunctions::iterator funcIt;
+    for(funcIt = funcs->begin(); funcIt != funcs->end(); ++funcIt) {
+      if(foundFunctions.find(*funcIt) != foundFunctions.end()) {
+        newFuncs.push_back(*funcIt);
+      }
+      else {
+        const_cast<ASTNode*>((*funcIt)->getFunctionBody())->release();
+        // TBD Free patterns, template instance
+      }
+    }
+    *funcs = newFuncs;
+
+    ImportedModules &modules = const_cast<ImportedModules&>(query->getImportedModules());
+    for(ImportedModules::iterator modIt = modules.begin(); modIt != modules.end(); ++modIt) {
+      removeUnusedFunctions(*modIt, foundFunctions, mm);
+    }    
+}
+
+void PartialEvaluator::optimize(XQQuery *query)
+{
+  ASTVisitor::optimize(query);
+
+  if(query->getQueryBody() != 0) {
+    // Find and remove all the unused user defined functions
+    removeUnusedFunctions(query, FunctionReferenceFinder().find(query->getQueryBody()),
+                          context_->getMemoryManager());
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Constant fold
+
+ASTNode *PartialEvaluator::optimize(ASTNode *item)
+{
+  item = ASTVisitor::optimize(item);
+
+  // Constant fold
+  if(!item->getStaticAnalysis().isUsed()) {
+    XPath2MemoryManager* mm = context_->getMemoryManager();
+
+    try {
+      ASTNode *newBlock = 0;
+      {
+        Result result = item->createResult(context_);
+        newBlock = XQSequence::constantFold(result, context_, mm, item);
+      }
+
+      context_->clearDynamicContext();
+
+      if(newBlock != 0) {
+        item->release();
+        return newBlock;
+      }
+    }
+    catch(XQException &ex) {
+      // Constant folding failed
+    }
+  }
+  return item;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Inline user-defined functions
+
+template<typename T> class XQILLA_API AutoReset
+{
+public:
+  AutoReset(T &orig)
+    : orig_(orig)
+  {
+    old_ = orig;
+  }
+
+  ~AutoReset()
+  {
+    reset();
+  }
+
+  void reset()
+  {
+    orig_ = old_;
+  }
+
+protected:
+  T &orig_;
+  T old_;
+};
+
+// Base class that tracks variable scope
+class VariableScopeTracker : public ASTVisitor
+{
+public:
+  VariableScopeTracker()
+    : uri_(0),
+      name_(0),
+      required_(0),
+      active_(false),
+      inScope_(true)
+  {
+  }
+
+protected:
+  ASTNode *run(const XMLCh *uri, const XMLCh *name, ASTNode *expr, const StaticAnalysis *required = 0)
+  {
+    uri_ = uri;
+    name_ = name;
+    required_ = required;
+    active_ = true;
+    inScope_ = true;
+
+    return optimize(expr);
+  }
+
+  virtual TupleNode *optimizeForTuple(ForTuple *item)
+  {
+    item->setParent(optimizeTupleNode(const_cast<TupleNode*>(item->getParent())));
+    item->setExpression(optimize(item->getExpression()));
+
+    if(required_ && required_->isVariableUsed(item->getVarURI(), item->getVarName()))
+      inScope_ = false;
+
+    if(XPath2Utils::equals(uri_, item->getVarURI()) &&
+       XPath2Utils::equals(name_, item->getVarName()))
+      active_ = false;
+
+    if(required_ && required_->isVariableUsed(item->getPosURI(), item->getPosName()))
+      inScope_ = false;
+
+    if(XPath2Utils::equals(uri_, item->getPosURI()) &&
+       XPath2Utils::equals(name_, item->getPosName()))
+      active_ = false;
+
+    return item;
+  }
+
+  virtual TupleNode *optimizeLetTuple(LetTuple *item)
+  {
+    item->setParent(optimizeTupleNode(const_cast<TupleNode*>(item->getParent())));
+    item->setExpression(optimize(item->getExpression()));
+
+    if(required_ && required_->isVariableUsed(item->getVarURI(), item->getVarName()))
+      inScope_ = false;
+
+    if(XPath2Utils::equals(uri_, item->getVarURI()) &&
+       XPath2Utils::equals(name_, item->getVarName()))
+      active_ = false;
+
+    return item;
+  }
+
+  virtual ASTNode *optimizeReturn(XQReturn *item)
+  {
+    AutoReset<bool> reset(active_);
+    AutoReset<bool> reset2(inScope_);
+    return ASTVisitor::optimizeReturn(item);
+  }
+
+  virtual ASTNode *optimizeMap(XQMap *item)
+  {
+    item->setArg1(optimize(item->getArg1()));
+
+    AutoReset<bool> reset(active_);
+    AutoReset<bool> reset2(inScope_);
+
+    if(item->getName()) {
+      if(required_ && required_->isVariableUsed(item->getURI(), item->getName()))
+        inScope_ = false;
+
+      if(XPath2Utils::equals(uri_, item->getURI()) &&
+         XPath2Utils::equals(name_, item->getName()))
+        active_ = false;
+    }
+    else {
+      if(required_ && required_->areContextFlagsUsed())
+        inScope_ = false;
+
+      if(name_ == 0)
+        active_ = false;
+    }
+
+    item->setArg2(optimize(item->getArg2()));
+    return item;
+  }
+
+  virtual ASTNode *optimizeTypeswitch(XQTypeswitch *item)
+  {
+    item->setExpression(optimize(const_cast<ASTNode *>(item->getExpression())));
+
+    AutoReset<bool> reset(active_);
+    AutoReset<bool> reset2(inScope_);
+
+    XQTypeswitch::Cases *clauses = const_cast<XQTypeswitch::Cases *>(item->getCases());
+    for(XQTypeswitch::Cases::iterator i = clauses->begin(); i != clauses->end(); ++i) {
+      reset.reset();
+      reset2.reset();
+
+      if((*i)->isVariableUsed()) {
+        if(required_ && required_->isVariableUsed((*i)->getURI(), (*i)->getName()))
+          inScope_ = false;
+
+        if(XPath2Utils::equals(uri_, (*i)->getURI()) &&
+           XPath2Utils::equals(name_, (*i)->getName()))
+          active_ = false;
+      }
+
+      (*i)->setExpression(optimize((*i)->getExpression()));
+    }
+
+    reset.reset();
+    reset2.reset();
+
+    if(item->getDefaultCase()->isVariableUsed()) {
+      if(required_ && required_->isVariableUsed(item->getDefaultCase()->getURI(), item->getDefaultCase()->getName()))
+        inScope_ = false;
+
+      if(XPath2Utils::equals(uri_, item->getDefaultCase()->getURI()) &&
+         XPath2Utils::equals(name_, item->getDefaultCase()->getName()))
+        active_ = false;
+    }
+
+    const_cast<XQTypeswitch::Case *>(item->getDefaultCase())->
+      setExpression(optimize(item->getDefaultCase()->getExpression()));
+
+    return item;
+  }
+
+  virtual ASTNode *optimizeNav(XQNav *item)
+  {
+    AutoReset<bool> reset(active_);
+    AutoReset<bool> reset2(inScope_);
+
+    XQNav::Steps &args = const_cast<XQNav::Steps &>(item->getSteps());
+    for(XQNav::Steps::iterator i = args.begin(); i != args.end(); ++i) {
+      i->step = optimize(i->step);
+
+      if(required_ && required_->areContextFlagsUsed())
+        inScope_ = false;
+
+      if(name_ == 0)
+        active_ = false;
+    }
+    return item;
+  }
+
+  virtual ASTNode *optimizePredicate(XQPredicate *item)
+  {
+    item->setExpression(optimize(const_cast<ASTNode *>(item->getExpression())));
+
+    AutoReset<bool> reset(active_);
+    AutoReset<bool> reset2(inScope_);
+    if(required_ && required_->areContextFlagsUsed())
+      inScope_ = false;
+    if(name_ == 0)
+      active_ = false;
+
+    item->setPredicate(optimize(const_cast<ASTNode *>(item->getPredicate())));
+    return item;
+  }
+
+  virtual ASTNode *optimizeAnalyzeString(XQAnalyzeString *item)
+  {
+    item->setExpression(optimize(const_cast<ASTNode *>(item->getExpression())));
+    item->setRegex(optimize(const_cast<ASTNode *>(item->getRegex())));
+    if(item->getFlags())
+      item->setFlags(optimize(const_cast<ASTNode *>(item->getFlags())));
+
+    AutoReset<bool> reset(active_);
+    AutoReset<bool> reset2(inScope_);
+    if(required_ && required_->areContextFlagsUsed())
+      inScope_ = false;
+    if(name_ == 0)
+      active_ = false;
+
+    item->setMatch(optimize(const_cast<ASTNode *>(item->getMatch())));
+    item->setNonMatch(optimize(const_cast<ASTNode *>(item->getNonMatch())));
+    return item;
+  }
+
+  const XMLCh *uri_, *name_;
+  const StaticAnalysis *required_;
+  bool active_, inScope_;
+};
+
+class InlineVar : public VariableScopeTracker
+{
+public:
+  InlineVar()
+    : let_(0),
+      removeLet_(false),
+      varValue_(0),
+      context_(0),
+      successful_(false)
+  {
+  }
+
+  ASTNode *run(const XMLCh *uri, const XMLCh *name, const ASTNode *varValue, ASTNode *expr, DynamicContext *context)
+  {
+    let_ = 0;
+    varValue_ = varValue;
+    context_ = context;
+
+    return VariableScopeTracker::run(uri, name, expr, &varValue->getStaticAnalysis());
+  }
+
+  void inlineLet(XQReturn *ret, LetTuple *let, DynamicContext *context)
+  {
+    let_ = let;
+    context_ = context;
+
+    // Do a dummy run, to see if we would be 100% successful
+    varValue_ = 0;
+    successful_ = true;
+    VariableScopeTracker::run(let->getVarURI(), let->getVarName(), ret, &let->getExpression()->getStaticAnalysis());
+
+    removeLet_ = successful_;
+
+    if(let->getExpression()->getStaticAnalysis().isVariableUsed(let->getVarURI(), let->getVarName())) {
+      // The LetTuple expression uses a variable with the same name as the LetTuple itself.
+      // We can only inline it if the inline will be 100% successful, and we can remove the
+      // LetTuple itself.
+      if(!removeLet_) return;
+    }
+
+    // Perform the actual substitution
+    varValue_ = let->getExpression();
+    VariableScopeTracker::run(let->getVarURI(), let->getVarName(), ret, &let->getExpression()->getStaticAnalysis());
+
+    if(removeLet_) {
+      let->setParent(0);
+      let->release();
+    }
+  }
+
+protected:
+
+  virtual TupleNode *optimizeLetTuple(LetTuple *item)
+  {
+    if(item != let_)
+      return VariableScopeTracker::optimizeLetTuple(item);
+
+    if(varValue_ && removeLet_) {
+      // Remove the LetTuple itself - we checked this was ok to do in inlineLet() above
+      return item->getParent();
+    }
+
+    return item;
+  }
+
+  virtual ASTNode *optimizeVariable(XQVariable *item)
+  {
+    if(active_ &&
+       XPath2Utils::equals(item->getName(), name_) &&
+       XPath2Utils::equals(item->getURI(), uri_)) {
+      if(inScope_) {
+        if(varValue_) {
+          item->release();
+          return varValue_->copy(context_);
+        }
+      }
+      else {
+        successful_ = false;
+      }
+    }
+    return item;
+  }
+
+  LetTuple *let_;
+  bool removeLet_;
+
+  const ASTNode *varValue_;
+  DynamicContext *context_;
+
+  bool successful_;
+};
+
+ASTNode *PartialEvaluator::optimizeUserFunction(XQUserFunctionInstance *item)
+{
+  VectorOfASTNodes &args = const_cast<VectorOfASTNodes &>(item->getArguments());
+  bool constantArg = args.empty();
+  for(VectorOfASTNodes::iterator i = args.begin(); i != args.end(); ++i) {
+    *i = optimize(*i);
+    if((*i)->isConstant()) constantArg = true;
+  }
+
+  const XQUserFunction *funcDef = item->getFunctionDefinition();
+
+  if(constantArg && funcDef->getFunctionBody() && (!funcDef->isRecursive() || functionInlineLimit_ > 0)) {
+    AutoReset<unsigned int> reset(functionInlineLimit_);
+
+    if(funcDef->isRecursive()) {
+      --functionInlineLimit_;
+    }
+
+    XPath2MemoryManager *mm = context_->getMemoryManager();
+    TupleNode *tuple = new (mm) ContextTuple(mm);
+    tuple->setLocationInfo(item);
+
+    ASTNode *bodyCopy = funcDef->getFunctionBody()->copy(context_);
+    InlineVar inliner;
+
+    if(!args.empty()) {
+      XQUserFunction::ArgumentSpecs::const_iterator defIt = funcDef->getArgumentSpecs()->begin();
+      VectorOfASTNodes::const_iterator argIt = item->getArguments().begin();
+      for(; defIt != funcDef->getArgumentSpecs()->end() && argIt != item->getArguments().end(); ++defIt, ++argIt) {
+        // Rename the variable to avoid naming conflicts
+        const XMLCh *newName = context_->allocateTempVarName((*defIt)->getName());
+
+        tuple = new (mm) LetTuple(tuple, (*defIt)->getURI(), newName, *argIt, mm);
+        tuple->setLocationInfo(item);
+
+        AutoRelease<ASTNode> newVar(new (mm) XQVariable((*defIt)->getURI(), newName, mm));
+        newVar->setLocationInfo(*argIt);
+        StaticAnalysis &varSrc = const_cast<StaticAnalysis&>(newVar->getStaticAnalysis());
+        varSrc.getStaticType() = (*argIt)->getStaticAnalysis().getStaticType();
+        varSrc.setProperties((*argIt)->getStaticAnalysis().getProperties() & ~(StaticAnalysis::SUBTREE|StaticAnalysis::SAMEDOC));
+        varSrc.variableUsed((*defIt)->getURI(), newName);
+
+        bodyCopy = inliner.run((*defIt)->getURI(), (*defIt)->getName(), newVar, bodyCopy, context_);
+      }
+    }
+
+    ASTNode *result = new (mm) XQReturn(tuple, bodyCopy, mm);
+    result->setLocationInfo(item);
+    const_cast<StaticAnalysis&>(result->getStaticAnalysis()).copy(funcDef->getBodyStaticAnalysis());
+
+    return optimize(result);
+  }
+
+  return item;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Inline variables
+
+class CountVarUse : public VariableScopeTracker
+{
+public:
+  CountVarUse()
+    : count_(0)
+  {
+  }
+
+  unsigned int run(const XMLCh *uri, const XMLCh *name, const ASTNode *expr)
+  {
+    count_ = 0;
+    VariableScopeTracker::run(uri, name, (ASTNode*)expr);
+    return count_;
+  }
+
+protected:
+  virtual ASTNode *optimizeVariable(XQVariable *item)
+  {
+    if(active_ &&
+       XPath2Utils::equals(item->getName(), name_) &&
+       XPath2Utils::equals(item->getURI(), uri_)) {
+      ++count_;
+    }
+    return item;
+  }
+
+  unsigned int count_;
+};
+
+static void countLetUsage(ASTNode *expr, map<LetTuple*, unsigned int> &toCount)
+{
+  CountVarUse counter;
+  map<LetTuple*, unsigned int>::iterator j = toCount.begin();
+  for(; j != toCount.end(); ++j) {
+    j->second += counter.run(j->first->getVarURI(), j->first->getVarName(), expr);
+  }
+}
+
+static void findLetsToInline(TupleNode *ancestor, vector<LetTuple*> &toInline, map<LetTuple*, unsigned int> &toCount, bool seenFor = false)
+{
+  if(ancestor == 0) return;
+
+  switch(ancestor->getType()) {
+  case TupleNode::LET: {
+    findLetsToInline(ancestor->getParent(), toInline, toCount, seenFor);
+
+    LetTuple *f = (LetTuple*)ancestor;
+
+    countLetUsage(f->getExpression(), toCount);
+
+    if(f->getExpression()->isConstant() ||
+       f->getExpression()->getType() == ASTNode::VARIABLE ||
+       f->getExpression()->getType() == ASTNode::CONTEXT_ITEM) {
+      toInline.push_back(f);
+    }
+    else if(!seenFor) {
+      toCount[f] = 0;
+    }
+    break;
+  }
+  case TupleNode::WHERE: {
+    findLetsToInline(ancestor->getParent(), toInline, toCount, seenFor);
+    countLetUsage(((WhereTuple*)ancestor)->getExpression(), toCount);
+    break;
+  }
+  case TupleNode::ORDER_BY: {
+    findLetsToInline(ancestor->getParent(), toInline, toCount, seenFor);
+    countLetUsage(((OrderByTuple*)ancestor)->getExpression(), toCount);
+    break;
+  }
+  default:
+  case TupleNode::FOR:
+    findLetsToInline(ancestor->getParent(), toInline, toCount, /*seenFor*/true);
+    countLetUsage(((ForTuple*)ancestor)->getExpression(), toCount);
+    break;
+  }
+}
+
+static ASTNode *inlineLets(XQReturn *item, DynamicContext *context)
+{
+  map<LetTuple*, unsigned int> toCount;
+  vector<LetTuple*> toInline;
+  findLetsToInline(const_cast<TupleNode*>(item->getParent()), toInline, toCount);
+  countLetUsage(item->getExpression(), toCount);
+
+  InlineVar inliner;
+  vector<LetTuple*>::iterator i = toInline.begin();
+  for(; i != toInline.end(); ++i) {
+    inliner.inlineLet(item, *i, context);
+  }
+
+  map<LetTuple*, unsigned int>::iterator j = toCount.begin();
+  for(; j != toCount.end(); ++j) {
+    if(j->second == 1) {
+      inliner.inlineLet(item, j->first, context);
+    }
+  }
+
+  return item->staticTyping(0);
+}
+
+ASTNode *PartialEvaluator::optimizeReturn(XQReturn *item)
+{
+  ASTNode *result = inlineLets(item, context_);
+  if(result != item) return optimize(result);
+
+  result = ASTVisitor::optimizeReturn(item);
+  if(result != item) return result;
+
+  return inlineLets(item, context_);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Make decisions early
+
+ASTNode *PartialEvaluator::optimizeIf(XQIf *item)
+{
+  item->setTest(optimize(const_cast<ASTNode *>(item->getTest())));
+
+  if(item->getTest()->isConstant()) {
+    bool result = ((ATBooleanOrDerived*)item->getTest()->createResult(context_)->next(context_).get())->isTrue();
+    context_->clearDynamicContext();
+
+    if(result) {
+      ASTNode *tmp = const_cast<ASTNode *>(item->getWhenTrue());
+      item->setWhenTrue(0);
+      item->release();
+      return optimize(tmp);
+    }
+    else {
+      ASTNode *tmp = const_cast<ASTNode *>(item->getWhenFalse());
+      item->setWhenFalse(0);
+      item->release();
+      return optimize(tmp);
+    }
+  }
+
+  item->setWhenTrue(optimize(const_cast<ASTNode *>(item->getWhenTrue())));
+  item->setWhenFalse(optimize(const_cast<ASTNode *>(item->getWhenFalse())));
+  return item;
+}
+
+ASTNode *PartialEvaluator::optimizePredicate(XQPredicate *item)
+{
+  item->setPredicate(optimize(const_cast<ASTNode *>(item->getPredicate())));
+
+  if(item->getPredicate()->isConstant()) {
+    context_->clearDynamicContext();
+
+    Result pred_result = item->getPredicate()->createResult(context_);
+    Item::Ptr first = pred_result->next(context_);
+    Item::Ptr second;
+    if(first.notNull()) {
+      second = pred_result->next(context_);
+    }
+
+    if(first.isNull() || second.notNull() || !first->isAtomicValue() ||
+       !((AnyAtomicType*)first.get())->isNumericValue()) {
+      // It's not a single numeric item
+      if(XQEffectiveBooleanValue::get(first, second, context_, item)) {
+        // We have a true predicate
+        ASTNode *tmp = const_cast<ASTNode *>(item->getExpression());
+        item->setExpression(0);
+        item->release();
+        return optimize(tmp);
+      }
+      else {
+        // We have a false predicate, which is constant folded to an empty sequence
+        XPath2MemoryManager *mm = context_->getMemoryManager();
+        ASTNode *result = new (mm) XQSequence(mm);
+        result->setLocationInfo(item->getExpression());
+        item->release();
+        return optimize(result);
+      }
+    }
+  }
+
+  item->setExpression(optimize(const_cast<ASTNode *>(item->getExpression())));
+  return item;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Arithmetic folding rules
+
+ASTNode *PartialEvaluator::optimizeOperator(XQOperator *item)
+{
+  ASTNode *result = ASTVisitor::optimizeOperator(item);
+  if(result != item) return result;
+
+  const XMLCh *name = item->getOperatorName();
+
+  if(name == Plus::name) {
+    return optimizePlus((Plus*)item);
+  }
+  else if(name == Minus::name) {
+    return optimizeMinus((Minus*)item);
+  }
+  else if(name == Multiply::name) {
+    return optimizeMultiply((Multiply*)item);
+  }
+  else if(name == Divide::name) {
+    return optimizeDivide((Divide*)item);
+  }
+
+  return item;
+}
+
+ASTNode *PartialEvaluator::optimizePlus(Plus *item)
+{
+  XPath2MemoryManager *mm = context_->getMemoryManager();
+
+  VectorOfASTNodes &args = const_cast<VectorOfASTNodes &>(item->getArguments());
+
+  if(!item->getStaticAnalysis().getStaticType().isType(StaticType::NUMERIC_TYPE))
+    return item;
+
+  if(args[1]->isConstant() && args[0]->getType() == ASTNode::OPERATOR) {
+    XQOperator *op = (XQOperator*)args[0];
+    if(op->getOperatorName() == Minus::name || op->getOperatorName() == Plus::name) {
+      if(op->getArguments()[0]->isConstant()) {
+        // (A (+/-) B) + C = (A + C) (+/-) B
+        args[0] = op->getArguments()[0];
+        const_cast<VectorOfASTNodes&>(op->getArguments())[0] = item;
+        return optimize(op->staticTyping(0));
+      }
+      else if(op->getArguments()[1]->isConstant()) {
+        // (A - B) + C = A - (B - C)
+        // (A + B) + C = A + (B + C)
+        args[0] = op->getArguments()[1];
+
+        if(op->getOperatorName() == Minus::name) {
+          const_cast<VectorOfASTNodes&>(op->getArguments())[1] = new (mm) Minus(args, mm);
+          const_cast<VectorOfASTNodes&>(op->getArguments())[1]->setLocationInfo(item);
+        }
+        else {
+          const_cast<VectorOfASTNodes&>(op->getArguments())[1] = item;
+        }
+        return optimize(op->staticTyping(0));
+      }
+    }
+  }
+
+  if(args[0]->isConstant() && args[1]->getType() == ASTNode::OPERATOR) {
+    XQOperator *op = (XQOperator*)args[1];
+    if(op->getOperatorName() == Minus::name || op->getOperatorName() == Plus::name) {
+      if(op->getArguments()[0]->isConstant()) {
+        // A + (B (+/-) C) = (A + B) (+/-) C
+        args[1] = op->getArguments()[0];
+        const_cast<VectorOfASTNodes&>(op->getArguments())[0] = item;
+        return optimize(op->staticTyping(0));
+      }
+      else if(op->getArguments()[1]->isConstant()) {
+        // A + (B + C) = (A + C) + B
+        // A + (B - C) = (A - C) + B
+        args[1] = op->getArguments()[0];
+        const_cast<VectorOfASTNodes&>(op->getArguments())[0] = args[0];
+        return optimize(item->staticTyping(0));
+      }
+    }
+  }
+
+  if(args[1]->isConstant()) {
+    AnyAtomicType::Ptr arg1 = (AnyAtomicType*)args[1]->createResult(context_)->next(context_).get();
+    if(arg1.notNull() && arg1->isNumericValue()) {
+      // TBD type promotion - jpcs
+      Numeric *num = (Numeric*)arg1.get();
+      if(num->asMAPM() == 0) {
+        // X + 0 = X
+        return args[0];
+      }
+    }
+  }
+
+  if(args[0]->isConstant()) {
+    AnyAtomicType::Ptr arg0 = (AnyAtomicType*)args[0]->createResult(context_)->next(context_).get();
+    if(arg0.notNull() && arg0->isNumericValue()) {
+      // TBD type promotion - jpcs
+      Numeric *num = (Numeric*)arg0.get();
+      if(num->asMAPM() == 0) {
+        // 0 + X = X
+        return args[1];
+      }
+    }
+  }
+
+  return item;
+}
+
+ASTNode *PartialEvaluator::optimizeMinus(Minus *item)
+{
+  XPath2MemoryManager *mm = context_->getMemoryManager();
+
+  VectorOfASTNodes &args = const_cast<VectorOfASTNodes &>(item->getArguments());
+
+  if(!item->getStaticAnalysis().getStaticType().isType(StaticType::NUMERIC_TYPE))
+    return item;
+
+  if(args[1]->isConstant() && args[0]->getType() == ASTNode::OPERATOR) {
+    XQOperator *op = (XQOperator*)args[0];
+    if(op->getOperatorName() == Minus::name || op->getOperatorName() == Plus::name) {
+      if(op->getArguments()[0]->isConstant()) {
+        // (A (+/-) B) - C = (A - C) (+/-) B
+        args[0] = op->getArguments()[0];
+        const_cast<VectorOfASTNodes&>(op->getArguments())[0] = item;
+        return optimize(op->staticTyping(0));
+      }
+      else if(op->getArguments()[1]->isConstant()) {
+        // (A - B) - C = A - (B + C)
+        // (A + B) - C = A + (B - C)
+        args[0] = op->getArguments()[1];
+
+        if(op->getOperatorName() == Minus::name) {
+          const_cast<VectorOfASTNodes&>(op->getArguments())[1] = new (mm) Plus(args, mm);
+          const_cast<VectorOfASTNodes&>(op->getArguments())[1]->setLocationInfo(item);
+        }
+        else {
+          const_cast<VectorOfASTNodes&>(op->getArguments())[1] = item;
+        }
+        return optimize(op->staticTyping(0));
+      }
+    }
+  }
+
+  if(args[0]->isConstant() && args[1]->getType() == ASTNode::OPERATOR) {
+    XQOperator *op = (XQOperator*)args[1];
+    if(op->getOperatorName() == Minus::name || op->getOperatorName() == Plus::name) {
+      if(op->getArguments()[0]->isConstant()) {
+        // A - (B (+/-) C) = (A - B) (+/-) C
+        args[1] = op->getArguments()[0];
+        const_cast<VectorOfASTNodes&>(op->getArguments())[0] = item;
+        return optimize(op->staticTyping(0));
+      }
+      else if(op->getArguments()[1]->isConstant()) {
+        // A - (B + C) = (A - C) - B
+        // A - (B - C) = (A + C) - B
+        args[1] = op->getArguments()[0];
+        const_cast<VectorOfASTNodes&>(op->getArguments())[0] = args[0];
+
+        if(op->getOperatorName() == Minus::name) {
+          args[0] = new (mm) Plus(op->getArguments(), mm);
+          args[0]->setLocationInfo(op);
+        }
+        else {
+          args[0] = new (mm) Minus(op->getArguments(), mm);
+          args[0]->setLocationInfo(op);
+        }
+        return optimize(item->staticTyping(0));
+      }
+    }
+  }
+
+  if(args[1]->isConstant()) {
+    AnyAtomicType::Ptr arg1 = (AnyAtomicType*)args[1]->createResult(context_)->next(context_).get();
+    if(arg1.notNull() && arg1->isNumericValue()) {
+      // TBD type promotion - jpcs
+      Numeric *num = (Numeric*)arg1.get();
+      if(num->asMAPM() == 0) {
+        // X - 0 = X
+        return args[0];
+      }
+    }
+  }
+
+  if(args[0]->isConstant()) {
+    AnyAtomicType::Ptr arg0 = (AnyAtomicType*)args[0]->createResult(context_)->next(context_).get();
+    if(arg0.notNull() && arg0->isNumericValue()) {
+      // TBD type promotion - jpcs
+      Numeric *num = (Numeric*)arg0.get();
+      if(num->asMAPM() == 0) {
+        // 0 - X = X
+        return args[1];
+      }
+    }
+  }
+
+  return item;
+}
+
+ASTNode *PartialEvaluator::optimizeMultiply(Multiply *item)
+{
+  VectorOfASTNodes &args = const_cast<VectorOfASTNodes &>(item->getArguments());
+
+  if(!item->getStaticAnalysis().getStaticType().isType(StaticType::NUMERIC_TYPE))
+    return item;
+
+  if(args[1]->isConstant() && args[0]->getType() == ASTNode::OPERATOR) {
+    XQOperator *op = (XQOperator*)args[0];
+    if(op->getOperatorName() == Multiply::name || op->getOperatorName() == Divide::name) {
+      if(op->getArguments()[0]->isConstant()) {
+        // (A * B) * C = (A * C) * B
+        // (A / B) * C = (A * C) / B
+        args[0] = op->getArguments()[0];
+        const_cast<VectorOfASTNodes&>(op->getArguments())[0] = item;
+        return optimize(op->staticTyping(0));
+      }
+      else if(op->getArguments()[1]->isConstant()) {
+        // (A * B) * C = A * (B * C)
+        // (A / B) * C = A * (B / C)
+        args[0] = op->getArguments()[0];
+        const_cast<VectorOfASTNodes&>(op->getArguments())[0] = op->getArguments()[1];
+        const_cast<VectorOfASTNodes&>(op->getArguments())[1] = args[1];
+        args[1] = op;
+        return optimize(item->staticTyping(0));
+      }
+    }
+  }
+
+  if(args[0]->isConstant() && args[1]->getType() == ASTNode::OPERATOR) {
+    XQOperator *op = (XQOperator*)args[1];
+    if(op->getOperatorName() == Multiply::name || op->getOperatorName() == Divide::name) {
+      if(op->getArguments()[0]->isConstant()) {
+        // A * (B * C) = (A * B) * C
+        // A * (B / C) = (A * B) / C
+        args[1] = op->getArguments()[0];
+        const_cast<VectorOfASTNodes&>(op->getArguments())[0] = item;
+        return optimize(op->staticTyping(0));
+      }
+      else if(op->getArguments()[1]->isConstant()) {
+        // A * (B * C) = (A * C) * B
+        // A * (B / C) = (A / C) * B
+        args[1] = op->getArguments()[0];
+        const_cast<VectorOfASTNodes&>(op->getArguments())[0] = args[0];
+        return optimize(item->staticTyping(0));
+      }
+    }
+  }
+
+  if(args[1]->isConstant()) {
+    AnyAtomicType::Ptr arg1 = (AnyAtomicType*)args[1]->createResult(context_)->next(context_).get();
+    if(arg1.notNull() && arg1->isNumericValue()) {
+      // TBD type promotion - jpcs
+      Numeric *num = (Numeric*)arg1.get();
+      if(num->asMAPM() == 0) {
+        // X * 0 = 0
+        return args[1];
+      }
+      else if(num->asMAPM() == 1) {
+        // X * 1 = X
+        return args[0];
+      }
+    }
+  }
+
+  if(args[0]->isConstant()) {
+    AnyAtomicType::Ptr arg0 = (AnyAtomicType*)args[0]->createResult(context_)->next(context_).get();
+    if(arg0.notNull() && arg0->isNumericValue()) {
+      // TBD type promotion - jpcs
+      Numeric *num = (Numeric*)arg0.get();
+      if(num->asMAPM() == 0) {
+        // 0 * X = 0
+        return args[0];
+      }
+      else if(num->asMAPM() == 1) {
+        // 1 * X = X
+        return args[1];
+      }
+    }
+  }
+
+  return item;
+}
+
+ASTNode *PartialEvaluator::optimizeDivide(Divide *item)
+{
+  XPath2MemoryManager *mm = context_->getMemoryManager();
+
+  VectorOfASTNodes &args = const_cast<VectorOfASTNodes &>(item->getArguments());
+
+  if(!item->getStaticAnalysis().getStaticType().isType(StaticType::NUMERIC_TYPE))
+    return item;
+
+  // duration / duration = decimal
+  if(args[0]->getStaticAnalysis().getStaticType().containsType(StaticType::DAY_TIME_DURATION_TYPE | StaticType::YEAR_MONTH_DURATION_TYPE) ||
+     args[1]->getStaticAnalysis().getStaticType().containsType(StaticType::DAY_TIME_DURATION_TYPE | StaticType::YEAR_MONTH_DURATION_TYPE))
+    return item;
+
+  if(args[1]->isConstant() && args[0]->getType() == ASTNode::OPERATOR) {
+    XQOperator *op = (XQOperator*)args[0];
+    if(op->getOperatorName() == Multiply::name || op->getOperatorName() == Divide::name) {
+      if(op->getArguments()[0]->isConstant()) {
+        // (A / B) / C = (A / C) / B
+        // (A * B) / C = (A / C) * B
+        args[0] = op->getArguments()[0];
+        const_cast<VectorOfASTNodes&>(op->getArguments())[0] = item;
+        return optimize(op->staticTyping(0));
+      }
+      else if(op->getArguments()[1]->isConstant()) {
+        // (A / B) / C = A / (B * C)
+        // (A * B) / C = A * (B / C)
+        args[0] = op->getArguments()[1];
+
+        if(op->getOperatorName() == Divide::name) {
+          const_cast<VectorOfASTNodes&>(op->getArguments())[1] = new (mm) Multiply(args, mm);
+          const_cast<VectorOfASTNodes&>(op->getArguments())[1]->setLocationInfo(item);
+        }
+        else {
+          const_cast<VectorOfASTNodes&>(op->getArguments())[1] = item;
+        }
+        return optimize(op->staticTyping(0));
+      }
+    }
+  }
+
+  if(args[0]->isConstant() && args[1]->getType() == ASTNode::OPERATOR) {
+    XQOperator *op = (XQOperator*)args[1];
+    if(op->getOperatorName() == Multiply::name || op->getOperatorName() == Divide::name) {
+      if(op->getArguments()[0]->isConstant()) {
+        // A / (B / C) = (A / B) * C
+        // A / (B * C) = (A / B) / C
+        args[1] = op->getArguments()[0];
+        const_cast<VectorOfASTNodes&>(op->getArguments())[0] = item;
+
+        if(op->getOperatorName() == Divide::name) {
+          op = new (mm) Multiply(op->getArguments(), mm);
+          op->setLocationInfo(op);
+        }
+        else {
+          op = new (mm) Divide(op->getArguments(), mm);
+          op->setLocationInfo(op);
+        }
+        return optimize(op->staticTyping(0));
+      }
+      else if(op->getArguments()[1]->isConstant()) {
+        // A / (B / C) = (A * C) / B
+        // A / (B * C) = (A / C) / B
+        args[1] = op->getArguments()[0];
+        const_cast<VectorOfASTNodes&>(op->getArguments())[0] = args[0];
+
+        if(op->getOperatorName() == Divide::name) {
+          args[0] = new (mm) Multiply(op->getArguments(), mm);
+          args[0]->setLocationInfo(op);
+        }
+        else {
+          args[0] = new (mm) Divide(op->getArguments(), mm);
+          args[0]->setLocationInfo(op);
+        }
+        return optimize(item->staticTyping(0));
+      }
+    }
+  }
+
+  if(args[1]->isConstant()) {
+    AnyAtomicType::Ptr arg1 = (AnyAtomicType*)args[1]->createResult(context_)->next(context_).get();
+    if(arg1.notNull() && arg1->isNumericValue()) {
+      // TBD type promotion - jpcs
+      Numeric *num = (Numeric*)arg1.get();
+      if(num->asMAPM() == 1) {
+        // X / 1 = X
+        return args[0];
+      }
+    }
+  }
+
+  if(args[0]->isConstant()) {
+    AnyAtomicType::Ptr arg0 = (AnyAtomicType*)args[0]->createResult(context_)->next(context_).get();
+    if(arg0.notNull() && arg0->isNumericValue()) {
+      // TBD type promotion - jpcs
+      Numeric *num = (Numeric*)arg0.get();
+      if(num->asMAPM() == 0) {
+        // 0 / X = 0
+        return args[0];
+      }
+    }
+  }
+
+  return item;
+}
+
+
+// Other things to constant fold:
+//
+// XQQuantified
+// XQMap
+// XQTypeswitch - reduce to Let if one clause
+// And / Or
+// WhereTuple
+// 
+//
+// XQNav
+// LetTuple
+// casts, conversions, atomize, EBV
+// FunctionCount
+// 

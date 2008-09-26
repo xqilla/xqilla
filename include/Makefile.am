@@ -352,6 +352,7 @@ xqilla/optimizer/Optimizer.hpp \
 xqilla/optimizer/ASTCopier.hpp \
 xqilla/optimizer/ASTReleaser.hpp \
 xqilla/optimizer/ASTVisitor.hpp \
+xqilla/optimizer/PartialEvaluator.hpp \
 xqilla/optimizer/QueryPathNode.hpp \
 xqilla/optimizer/QueryPathTreeGenerator.hpp \
 xqilla/parser/QName.hpp \

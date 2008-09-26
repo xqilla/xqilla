@@ -2909,6 +2909,10 @@ SOURCE=..\..\src\mapm\mapmutl2.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\mapm\README
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\include\xqilla\mapm\m_apm.h
 # End Source File
 # End Group
@@ -3129,6 +3133,10 @@ SOURCE=..\..\src\optimizer\Optimizer.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\optimizer\PartialEvaluator.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\optimizer\QueryPathNode.cpp
 # End Source File
 # Begin Source File
@@ -3150,6 +3158,10 @@ SOURCE=..\..\include\xqilla\optimizer\ASTVisitor.hpp
 # Begin Source File
 
 SOURCE=..\..\include\xqilla\optimizer\Optimizer.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\optimizer\PartialEvaluator.hpp
 # End Source File
 # Begin Source File
 
