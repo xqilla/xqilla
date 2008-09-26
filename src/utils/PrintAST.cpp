@@ -841,7 +841,7 @@ string PrintAST::printUserFunction(const XQUserFunctionInstance *item, const Dyn
   const VectorOfASTNodes &args = item->getArguments();
 
   if(item->getFunctionDefinition()->isTemplate())
-	  s << in << "<Template name=\"" << name << "\"";
+    s << in << "<Template name=\"" << name << "\"";
   else s << in << "<UserFunction name=\"" << name << "\"";
 
   if(item->getFunctionDefinition()->getArgumentSpecs() && !item->getFunctionDefinition()->getArgumentSpecs()->empty()) {
@@ -865,7 +865,7 @@ string PrintAST::printUserFunction(const XQUserFunctionInstance *item, const Dyn
     // We don't output the body, as it may result in an infinite loop
     // for recursive user functions - jpcs
     if(item->getFunctionDefinition()->isTemplate())
-	    s << in << "</Template>" << endl;
+      s << in << "</Template>" << endl;
     else s << in << "</UserFunction>" << endl;
   } else {
     s << "/>" << endl;
@@ -1860,7 +1860,7 @@ string PrintAST::printCopy(const XQCopy *item, const DynamicContext *context, in
   s << printASTNode(item->getExpression(), context, indent + INDENT);
   for(VectorOfASTNodes::const_iterator i = item->getChildren().begin();
       i != item->getChildren().end(); ++i) {
-	  s << printASTNode(*i, context, indent + INDENT + INDENT);
+    s << printASTNode(*i, context, indent + INDENT + INDENT);
   }
   s << in << "</Copy>" << endl;
 
@@ -1869,17 +1869,19 @@ string PrintAST::printCopy(const XQCopy *item, const DynamicContext *context, in
 
 string PrintAST::printASTDebugHook(const ASTDebugHook *item, const DynamicContext *context, int indent)
 {
-  ostringstream s;
+  return printASTNode(item->getExpression(), context, indent);
 
-  string in(getIndent(indent));
+//   ostringstream s;
 
-  s << in << "<ASTDebugHook";
-  s << " location=\"" << UTF8(item->getFile()) << ":" << item->getLine() << ":" << item->getColumn() << "\"";
-  s <<">" << endl;
-  s << printASTNode(item->getExpression(), context, indent + INDENT);
-  s << in << "</ASTDebugHook>" << endl;
+//   string in(getIndent(indent));
 
-  return s.str();
+//   s << in << "<ASTDebugHook";
+//   s << " location=\"" << UTF8(item->getFile()) << ":" << item->getLine() << ":" << item->getColumn() << "\"";
+//   s <<">" << endl;
+//   s << printASTNode(item->getExpression(), context, indent + INDENT);
+//   s << in << "</ASTDebugHook>" << endl;
+
+//   return s.str();
 }
 
 string PrintAST::printCallTemplate(const XQCallTemplate *item, const DynamicContext *context, int indent)
@@ -2150,17 +2152,19 @@ string PrintAST::printOrderByTuple(const OrderByTuple *item, const DynamicContex
 
 string PrintAST::printTupleDebugHook(const TupleDebugHook *item, const DynamicContext *context, int indent)
 {
-  ostringstream s;
+  return printTupleNode(item->getParent(), context, indent);
 
-  string in(getIndent(indent));
+//   ostringstream s;
 
-  s << in << "<TupleDebugHook";
-  s << " location=\"" << UTF8(item->getFile()) << ":" << item->getLine() << ":" << item->getColumn() << "\"";
-  s << ">" << endl;
-  s << printTupleNode(item->getParent(), context, indent + INDENT);
-  s << in << "</TupleDebugHook>" << endl;
+//   string in(getIndent(indent));
 
-  return s.str();
+//   s << in << "<TupleDebugHook";
+//   s << " location=\"" << UTF8(item->getFile()) << ":" << item->getLine() << ":" << item->getColumn() << "\"";
+//   s << ">" << endl;
+//   s << printTupleNode(item->getParent(), context, indent + INDENT);
+//   s << in << "</TupleDebugHook>" << endl;
+
+//   return s.str();
 }
 
 string PrintAST::printContextTuple(const ContextTuple *item, const DynamicContext *context, int indent)
