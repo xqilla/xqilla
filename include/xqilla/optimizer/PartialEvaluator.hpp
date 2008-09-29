@@ -37,6 +37,7 @@ public:
 protected:
   virtual void optimize(XQQuery *query);
   virtual ASTNode *optimize(ASTNode *item);
+  virtual XQUserFunction *optimizeFunctionDef(XQUserFunction *item);
   virtual ASTNode *optimizeUserFunction(XQUserFunctionInstance *item);
   virtual ASTNode *optimizeReturn(XQReturn *item);
   virtual ASTNode *optimizeIf(XQIf *item);
@@ -48,8 +49,11 @@ protected:
   ASTNode *optimizeMultiply(Multiply *item);
   ASTNode *optimizeDivide(Divide *item);
 
+  bool checkSizeLimit(const ASTNode *oldAST, const ASTNode *newAST);
+
   DynamicContext *context_;
-  unsigned int functionInlineLimit_;
+  size_t functionInlineLimit_;
+  size_t sizeLimit_;
 };
 
 #endif

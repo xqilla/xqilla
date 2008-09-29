@@ -38,10 +38,14 @@
 
 using namespace std;
 
+#define FUNCTION_SIZE_RATIO 2
+#define BODY_SIZE_RATIO 6
+
 PartialEvaluator::PartialEvaluator(DynamicContext *context, Optimizer *parent)
   : ASTVisitor(parent),
     context_(context),
-    functionInlineLimit_(5)
+    functionInlineLimit_(0),
+    sizeLimit_(0)
 {
 }
 
@@ -108,20 +112,81 @@ static void removeUnusedFunctions(XQQuery *query, const set<XQUserFunction*> &fo
     }    
 }
 
+class ASTCounter : public ASTVisitor
+{
+public:
+
+  size_t count(const XQQuery *query)
+  {
+    count_ = 0;
+    ASTVisitor::optimize(const_cast<XQQuery*>(query));
+    return count_;
+  }
+
+  size_t count(const ASTNode *item)
+  {
+    count_ = 0;
+    optimize(const_cast<ASTNode*>(item));
+    return count_;
+  }
+
+protected:
+  virtual ASTNode *optimize(ASTNode *item)
+  {
+    if(item == 0) return 0;
+    ++count_;
+    return ASTVisitor::optimize(item);
+  }
+
+  virtual TupleNode *optimizeTupleNode(TupleNode *item)
+  {
+    if(item == 0) return 0;
+    ++count_;
+    return ASTVisitor::optimizeTupleNode(item);
+  }
+
+  size_t count_;
+};
+
 void PartialEvaluator::optimize(XQQuery *query)
 {
+  if(query->getQueryBody() == 0) {
+    ASTVisitor::optimize(query);
+    return;
+  }
+
+  // Find and remove all the unused user defined functions
+  removeUnusedFunctions(query, FunctionReferenceFinder().find(query->getQueryBody()),
+                        context_->getMemoryManager());
+
+  // Calculate a size limit on the partially evaluated AST
+  sizeLimit_ = ASTCounter().count(query) * BODY_SIZE_RATIO;
+
+  // Also limit the recursive depth we're willing to evaluate to
+  functionInlineLimit_ = 100;
+
+  // Perform partial evaluation
   ASTVisitor::optimize(query);
 
-  if(query->getQueryBody() != 0) {
-    // Find and remove all the unused user defined functions
-    removeUnusedFunctions(query, FunctionReferenceFinder().find(query->getQueryBody()),
-                          context_->getMemoryManager());
-  }
+  // Find and remove all the unused user defined functions
+  removeUnusedFunctions(query, FunctionReferenceFinder().find(query->getQueryBody()),
+                        context_->getMemoryManager());
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // Constant fold
+
+bool PartialEvaluator::checkSizeLimit(const ASTNode *oldAST, const ASTNode *newAST)
+{
+  size_t oldSize = ASTCounter().count(oldAST);
+  size_t newSize = ASTCounter().count(newAST);
+  if((sizeLimit_ + oldSize) < newSize)
+    return false;
+  sizeLimit_ += oldSize;
+  sizeLimit_ -= newSize;
+  return true;
+}
 
 ASTNode *PartialEvaluator::optimize(ASTNode *item)
 {
@@ -141,8 +206,14 @@ ASTNode *PartialEvaluator::optimize(ASTNode *item)
       context_->clearDynamicContext();
 
       if(newBlock != 0) {
-        item->release();
-        return newBlock;
+        if(checkSizeLimit(item, newBlock)) {
+          item->release();
+          return newBlock;
+        }
+        else {
+          newBlock->release();
+          return item;
+        }
       }
     }
     catch(XQException &ex) {
@@ -383,7 +454,8 @@ public:
       removeLet_(false),
       varValue_(0),
       context_(0),
-      successful_(false)
+      successful_(false),
+      count_(0)
   {
   }
 
@@ -396,7 +468,7 @@ public:
     return VariableScopeTracker::run(uri, name, expr, &varValue->getStaticAnalysis());
   }
 
-  void inlineLet(XQReturn *ret, LetTuple *let, DynamicContext *context)
+  void inlineLet(XQReturn *ret, LetTuple *let, DynamicContext *context, size_t &sizeLimit)
   {
     let_ = let;
     context_ = context;
@@ -404,6 +476,7 @@ public:
     // Do a dummy run, to see if we would be 100% successful
     varValue_ = 0;
     successful_ = true;
+    count_ = 0;
     VariableScopeTracker::run(let->getVarURI(), let->getVarName(), ret, &let->getExpression()->getStaticAnalysis());
 
     removeLet_ = successful_;
@@ -414,6 +487,16 @@ public:
       // LetTuple itself.
       if(!removeLet_) return;
     }
+
+    if(removeLet_)
+      count_ -= ASTCounter().count(let->getExpression()) + 1;
+
+    // Check that we won't exceed the size limit
+    if(count_ > 0 && (size_t)count_ > sizeLimit) {
+      return;
+    }
+
+    sizeLimit -= count_;
 
     // Perform the actual substitution
     varValue_ = let->getExpression();
@@ -446,6 +529,8 @@ protected:
        XPath2Utils::equals(item->getName(), name_) &&
        XPath2Utils::equals(item->getURI(), uri_)) {
       if(inScope_) {
+        count_ -= 1;
+        count_ += ASTCounter().count(varValue_);
         if(varValue_) {
           item->release();
           return varValue_->copy(context_);
@@ -465,7 +550,15 @@ protected:
   DynamicContext *context_;
 
   bool successful_;
+  ssize_t count_;
 };
+
+XQUserFunction *PartialEvaluator::optimizeFunctionDef(XQUserFunction *item)
+{
+  AutoReset<size_t> reset(sizeLimit_);
+  sizeLimit_ = ASTCounter().count(item->getFunctionBody()) * FUNCTION_SIZE_RATIO;
+  return ASTVisitor::optimizeFunctionDef(item);
+}
 
 ASTNode *PartialEvaluator::optimizeUserFunction(XQUserFunctionInstance *item)
 {
@@ -478,12 +571,9 @@ ASTNode *PartialEvaluator::optimizeUserFunction(XQUserFunctionInstance *item)
 
   const XQUserFunction *funcDef = item->getFunctionDefinition();
 
-  if(constantArg && funcDef->getFunctionBody() && (!funcDef->isRecursive() || functionInlineLimit_ > 0)) {
+  if(funcDef->getFunctionBody() && functionInlineLimit_ > 0 && (!funcDef->isRecursive() || constantArg)) {
     AutoReset<unsigned int> reset(functionInlineLimit_);
-
-    if(funcDef->isRecursive()) {
-      --functionInlineLimit_;
-    }
+    --functionInlineLimit_;
 
     XPath2MemoryManager *mm = context_->getMemoryManager();
     TupleNode *tuple = new (mm) ContextTuple(mm);
@@ -499,7 +589,7 @@ ASTNode *PartialEvaluator::optimizeUserFunction(XQUserFunctionInstance *item)
         // Rename the variable to avoid naming conflicts
         const XMLCh *newName = context_->allocateTempVarName((*defIt)->getName());
 
-        tuple = new (mm) LetTuple(tuple, (*defIt)->getURI(), newName, *argIt, mm);
+        tuple = new (mm) LetTuple(tuple, (*defIt)->getURI(), newName, (*argIt)->copy(context_), mm);
         tuple->setLocationInfo(item);
 
         AutoRelease<ASTNode> newVar(new (mm) XQVariable((*defIt)->getURI(), newName, mm));
@@ -517,7 +607,14 @@ ASTNode *PartialEvaluator::optimizeUserFunction(XQUserFunctionInstance *item)
     result->setLocationInfo(item);
     const_cast<StaticAnalysis&>(result->getStaticAnalysis()).copy(funcDef->getBodyStaticAnalysis());
 
-    return optimize(result);
+    if(checkSizeLimit(item, result)) {
+      item->release();
+      return optimize(result);
+    }
+    else {
+      result->release();
+      return item;
+    }
   }
 
   return item;
@@ -605,7 +702,7 @@ static void findLetsToInline(TupleNode *ancestor, vector<LetTuple*> &toInline, m
   }
 }
 
-static ASTNode *inlineLets(XQReturn *item, DynamicContext *context)
+static ASTNode *inlineLets(XQReturn *item, DynamicContext *context, size_t &sizeLimit)
 {
   map<LetTuple*, unsigned int> toCount;
   vector<LetTuple*> toInline;
@@ -615,13 +712,13 @@ static ASTNode *inlineLets(XQReturn *item, DynamicContext *context)
   InlineVar inliner;
   vector<LetTuple*>::iterator i = toInline.begin();
   for(; i != toInline.end(); ++i) {
-    inliner.inlineLet(item, *i, context);
+    inliner.inlineLet(item, *i, context, sizeLimit);
   }
 
   map<LetTuple*, unsigned int>::iterator j = toCount.begin();
   for(; j != toCount.end(); ++j) {
     if(j->second == 1) {
-      inliner.inlineLet(item, j->first, context);
+      inliner.inlineLet(item, j->first, context, sizeLimit);
     }
   }
 
@@ -630,13 +727,42 @@ static ASTNode *inlineLets(XQReturn *item, DynamicContext *context)
 
 ASTNode *PartialEvaluator::optimizeReturn(XQReturn *item)
 {
-  ASTNode *result = inlineLets(item, context_);
+  ASTNode *result = inlineLets(item, context_, sizeLimit_);
   if(result != item) return optimize(result);
 
   result = ASTVisitor::optimizeReturn(item);
   if(result != item) return result;
 
-  return inlineLets(item, context_);
+  // Combine nested FLWORs
+  if(item->getExpression()->getType() == ASTNode::RETURN) {
+    XQReturn *otherReturn = (XQReturn*)item->getExpression();;
+
+    // We can't combine if the nested tuple uses an "order by"
+    TupleNode *parent = otherReturn->getParent();
+    while(parent) {
+      if(parent->getType() == TupleNode::ORDER_BY)
+        break;
+      parent = parent->getParent();
+    }
+
+    if(parent == 0) {
+      // Combine the FLWORs
+      TupleNode *prev = 0;
+      parent = otherReturn->getParent();
+      while(parent->getType() != TupleNode::CONTEXT_TUPLE) {
+        prev = parent;
+        parent = parent->getParent();
+      }
+      if(prev) prev->setParent(item->getParent());
+      item->setParent(0);
+      item->setExpression(0);
+      sizeLimit_ += ASTCounter().count(item);
+      item->release();
+      item = otherReturn;
+    }
+  }
+
+  return inlineLets(item, context_, sizeLimit_);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -654,12 +780,14 @@ ASTNode *PartialEvaluator::optimizeIf(XQIf *item)
     if(result) {
       ASTNode *tmp = const_cast<ASTNode *>(item->getWhenTrue());
       item->setWhenTrue(0);
+      sizeLimit_ += ASTCounter().count(item);
       item->release();
       return optimize(tmp);
     }
     else {
       ASTNode *tmp = const_cast<ASTNode *>(item->getWhenFalse());
       item->setWhenFalse(0);
+      sizeLimit_ += ASTCounter().count(item);
       item->release();
       return optimize(tmp);
     }
@@ -691,6 +819,7 @@ ASTNode *PartialEvaluator::optimizePredicate(XQPredicate *item)
         // We have a true predicate
         ASTNode *tmp = const_cast<ASTNode *>(item->getExpression());
         item->setExpression(0);
+        sizeLimit_ += ASTCounter().count(item);
         item->release();
         return optimize(tmp);
       }
@@ -699,6 +828,7 @@ ASTNode *PartialEvaluator::optimizePredicate(XQPredicate *item)
         XPath2MemoryManager *mm = context_->getMemoryManager();
         ASTNode *result = new (mm) XQSequence(mm);
         result->setLocationInfo(item->getExpression());
+        sizeLimit_ += ASTCounter().count(item);
         item->release();
         return optimize(result);
       }
