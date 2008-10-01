@@ -27,7 +27,7 @@
 #include <xqilla/items/ATBooleanOrDerived.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/ast/StaticAnalysis.hpp>
-#include <xqilla/ast/XQSequence.hpp>
+#include <xqilla/ast/XQLiteral.hpp>
 #include <xqilla/context/ItemFactory.hpp>
 #include <xqilla/context/ContextHelpers.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>
@@ -85,11 +85,7 @@ ASTNode* And::staticTyping(StaticContext *context)
         dContext->setMemoryManager(context->getMemoryManager());
         if(!((ATBooleanOrDerived*)(*i)->createResult(dContext)->next(dContext).get())->isTrue()) {
           // It's constantly false, so this expression is false
-          ASTNode* newBlock = new (getMemoryManager())
-            XQSequence(dContext->getItemFactory()->createBoolean(false, dContext),
-                       dContext, getMemoryManager());
-          newBlock->setLocationInfo(this);
-          return newBlock->staticTyping(context);
+          return XQLiteral::create(dContext->getItemFactory()->createBoolean(false, dContext), dContext, context->getMemoryManager(), this)->staticTyping(context);
         }
       }
     }

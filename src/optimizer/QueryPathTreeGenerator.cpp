@@ -919,7 +919,7 @@ ASTNode *QueryPathTreeGenerator::optimizeOperator(XQOperator *item)
   return item;
 }
 
-ASTNode *QueryPathTreeGenerator::optimizeParenthesizedExpr(XQParenthesizedExpr *item)
+ASTNode *QueryPathTreeGenerator::optimizeSequence(XQSequence *item)
 {
   VectorOfASTNodes &args = const_cast<VectorOfASTNodes &>(item->getChildren());
   PathResult result;
@@ -1212,7 +1212,13 @@ ASTNode *QueryPathTreeGenerator::optimizeLiteral(XQLiteral *item)
   return item;
 }
 
-ASTNode *QueryPathTreeGenerator::optimizeSequence(XQSequence *item)
+ASTNode *QueryPathTreeGenerator::optimizeQNameLiteral(XQQNameLiteral *item)
+{
+  push(PathResult());
+  return item;
+}
+
+ASTNode *QueryPathTreeGenerator::optimizeNumericLiteral(XQNumericLiteral *item)
 {
   push(PathResult());
   return item;

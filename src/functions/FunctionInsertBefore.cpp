@@ -29,6 +29,7 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/context/ItemFactory.hpp>
+#include <xqilla/runtime/ClosureResult.hpp>
 
 const XMLCh FunctionInsertBefore::name[] = { 
   XERCES_CPP_NAMESPACE_QUALIFIER chLatin_i, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_s, 
@@ -66,59 +67,75 @@ ASTNode *FunctionInsertBefore::staticTyping(StaticContext *context)
   return result;
 }
 
+class InsertBeforeResult : public ResultImpl
+{
+public:
+  InsertBeforeResult(const FunctionInsertBefore *func)
+    : ResultImpl(func),
+      _func(func),
+      _position(0),
+      _one(0),
+      _i(0),
+      _doInserts(false),
+      _target(0),
+      _inserts(0)
+  {
+  }
+
+  virtual Item::Ptr nextOrTail(Result &tail, DynamicContext *context)
+  {
+    if(_position.isNull()) {
+      _position = (const ATDecimalOrDerived*)_func->getParamNumber(2, context)->next(context).get();
+      _one = context->getItemFactory()->createInteger(1, context);
+      _i = _one;
+      _target = ClosureResult::create(_func->getArguments()[0], context);
+
+      if(!_position->greaterThan(_one, context)) {
+        _inserts = _func->getParamNumber(3, context);
+        _doInserts = true;
+      }
+    }
+
+    Item::Ptr result = 0;
+    while(result.isNull()) {
+      if(_doInserts) {
+        result = _inserts->next(context);
+        if(result.isNull()) {
+          // Tail call optimisation
+          tail = _target;
+          return 0;
+        }
+      }
+      else {
+        result = _target->next(context);
+        _i = _i->add(_one, context);
+        if(result.isNull()) {
+          // Tail call optimisation
+          tail = ClosureResult::create(_func->getArguments()[2], context);
+          return 0;
+        }
+        else if(_position->equals((const AnyAtomicType*)_i.get(), context)) {
+          _inserts = _func->getParamNumber(3, context);
+          _doInserts = true;
+        }
+      }
+    }
+
+    return result;
+  }
+
+private:
+  const FunctionInsertBefore *_func;
+  Numeric::Ptr _position;
+  Numeric::Ptr _one;
+  Numeric::Ptr _i;
+  bool _doInserts;
+  Result _target;
+  Result _inserts;
+};
+
 Result FunctionInsertBefore::createResult(DynamicContext* context, int flags) const
 {
   return new InsertBeforeResult(this);
-}
-
-FunctionInsertBefore::InsertBeforeResult::InsertBeforeResult(const FunctionInsertBefore *func)
-  : ResultImpl(func),
-    _func(func),
-    _position(0),
-    _one(0),
-    _i(0),
-    _insertsDone(false),
-    _target(0),
-    _inserts(0)
-{
-}
-
-Item::Ptr FunctionInsertBefore::InsertBeforeResult::next(DynamicContext *context)
-{
-  if(_position == NULLRCP) {
-    _position = ((const ATDecimalOrDerived::Ptr )_func->getParamNumber(2, context)->next(context));
-    _one = context->getItemFactory()->createInteger(1, context);
-    _i = _one;
-    _target = _func->getParamNumber(1, context);
-
-    if(!_position->greaterThan(_one, context)) {
-      _inserts = _func->getParamNumber(3, context);
-    }
-  }
-
-  Item::Ptr result = 0;
-  while(result == NULLRCP) {
-    if(!_inserts.isNull()) {
-      result = _inserts->next(context);
-      if(result == NULLRCP) {
-        _inserts = 0;
-        _insertsDone = true;
-      }
-    }
-    else {
-      result = _target->next(context);
-      if(!_insertsDone) {
-        _i = _i->add(_one, context);
-        if(result == NULLRCP || _position->equals((const AnyAtomicType::Ptr)_i, context)) {
-          _inserts = _func->getParamNumber(3, context);
-        }
-      }
-      else if(result == NULLRCP) {
-        break;
-      }
-    }
-  }
-
-  return result;
 }
 

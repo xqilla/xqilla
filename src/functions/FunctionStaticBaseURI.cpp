@@ -22,8 +22,7 @@
 #include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionStaticBaseURI.hpp>
 #include <xqilla/context/DynamicContext.hpp>
-#include <xqilla/items/AnyAtomicTypeConstructor.hpp>
-#include <xqilla/ast/XQSequence.hpp>
+#include <xqilla/ast/XQLiteral.hpp>
 
 #include <xercesc/util/XMLUni.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
@@ -52,14 +51,14 @@ FunctionStaticBaseURI::FunctionStaticBaseURI(const VectorOfASTNodes &args, XPath
 {
 }
 
-ASTNode* FunctionStaticBaseURI::staticResolution(StaticContext *context) {
+ASTNode* FunctionStaticBaseURI::staticResolution(StaticContext *context)
+{
   XPath2MemoryManager* mm=context->getMemoryManager();
 
-  ItemConstructor *item = new (mm) AnyAtomicTypeConstructor(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                                                            SchemaSymbols::fgDT_ANYURI,
-                                                            context->getBaseURI() ? context->getBaseURI() : XMLUni::fgZeroLenString,
-                                                            AnyAtomicType::ANY_URI);
-  ASTNode* newBlock = new (mm) XQSequence(item, mm);
+  ASTNode* newBlock = new (mm) XQLiteral(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                                         SchemaSymbols::fgDT_ANYURI,
+                                         context->getBaseURI() ? context->getBaseURI() : XMLUni::fgZeroLenString,
+                                         AnyAtomicType::ANY_URI, mm);
   newBlock->setLocationInfo(this);
 
   return newBlock->staticResolution(context);

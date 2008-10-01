@@ -75,7 +75,6 @@ src/ast/XQNamespaceConstructor.cpp lib
 src/ast/XQNav.cpp lib
 src/ast/XQOperator.cpp lib
 src/ast/XQOrderingChange.cpp lib
-src/ast/XQParenthesizedExpr.cpp lib
 src/ast/XQPIConstructor.cpp lib
 src/ast/XQPredicate.cpp lib
 src/ast/XQQuantified.cpp lib
@@ -303,9 +302,7 @@ src/functions/FunctionZeroOrOne.cpp lib
 src/functions/XQillaFunction.cpp lib
 src/functions/XQUserFunction.cpp lib
 src/items/AnyAtomicType.cpp lib
-src/items/AnyAtomicTypeConstructor.cpp lib
 src/items/ATDurationOrDerived.cpp lib
-src/items/ATQNameConstructor.cpp lib
 src/items/ATUntypedAtomic.cpp lib
 src/items/DatatypeFactory.cpp lib
 src/items/DatatypeFactoryTemplate.hpp lib
@@ -344,7 +341,6 @@ src/items/impl/FunctionRefImpl.hpp lib
 src/items/Item.cpp lib
 src/items/Node.cpp lib
 src/items/Numeric.cpp lib
-src/items/NumericTypeConstructor.cpp lib
 src/items/Timezone.cpp lib
 src/lexer/FlexLexer.h lib
 src/lexer/XQLexer.cpp lib
@@ -594,7 +590,6 @@ include/xqilla/ast/XQNamespaceConstructor.hpp lib
 include/xqilla/ast/XQNav.hpp lib
 include/xqilla/ast/XQOperator.hpp lib
 include/xqilla/ast/XQOrderingChange.hpp lib
-include/xqilla/ast/XQParenthesizedExpr.hpp lib
 include/xqilla/ast/XQPIConstructor.hpp lib
 include/xqilla/ast/XQPredicate.hpp lib
 include/xqilla/ast/XQQuantified.hpp lib
@@ -827,7 +822,6 @@ include/xqilla/functions/FunctionZeroOrOne.hpp lib
 include/xqilla/functions/XQillaFunction.hpp lib
 include/xqilla/functions/XQUserFunction.hpp lib
 include/xqilla/items/AnyAtomicType.hpp lib
-include/xqilla/items/AnyAtomicTypeConstructor.hpp lib
 include/xqilla/items/ATAnySimpleType.hpp lib
 include/xqilla/items/ATAnyURIOrDerived.hpp lib
 include/xqilla/items/ATBase64BinaryOrDerived.hpp lib
@@ -845,7 +839,6 @@ include/xqilla/items/ATGYearMonthOrDerived.hpp lib
 include/xqilla/items/ATGYearOrDerived.hpp lib
 include/xqilla/items/ATHexBinaryOrDerived.hpp lib
 include/xqilla/items/ATNotationOrDerived.hpp lib
-include/xqilla/items/ATQNameConstructor.hpp lib
 include/xqilla/items/ATQNameOrDerived.hpp lib
 include/xqilla/items/ATStringOrDerived.hpp lib
 include/xqilla/items/ATTimeOrDerived.hpp lib
@@ -869,10 +862,8 @@ include/xqilla/items/impl/ATGYearOrDerivedImpl.hpp lib
 include/xqilla/items/impl/ATQNameOrDerivedImpl.hpp lib
 include/xqilla/items/impl/ATTimeOrDerivedImpl.hpp lib
 include/xqilla/items/Item.hpp lib
-include/xqilla/items/ItemConstructor.hpp lib
 include/xqilla/items/Node.hpp lib
 include/xqilla/items/Numeric.hpp lib
-include/xqilla/items/NumericTypeConstructor.hpp lib
 include/xqilla/items/Timezone.hpp lib
 include/xqilla/mapm/m_apm.h lib
 include/xqilla/operators/And.hpp lib

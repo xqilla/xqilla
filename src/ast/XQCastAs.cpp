@@ -33,7 +33,6 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/Item.hpp>
 #include <xqilla/items/AnyAtomicType.hpp>
-#include <xqilla/items/ItemConstructor.hpp>
 #include <xqilla/ast/XQAtomize.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/functions/FunctionConstructor.hpp>
@@ -94,12 +93,12 @@ ASTNode* XQCastAs::staticResolution(StaticContext *context)
   // evaluate immediately, since they aren't allowed otherwise
   if((_typeIndex == AnyAtomicType::QNAME || _typeIndex == AnyAtomicType::NOTATION) &&
      _expr->getType() == LITERAL &&
-     (((XQLiteral*)_expr)->getItemConstructor())->getStaticType().isType(StaticType::STRING_TYPE)) {
+     ((XQLiteral*)_expr)->getPrimitiveType() == AnyAtomicType::STRING) {
 
     AutoDelete<DynamicContext> dContext(context->createDynamicContext());
     dContext->setMemoryManager(mm);
 
-    AnyAtomicType::Ptr item = ((XQLiteral*)_expr)->getItemConstructor()->createItem(dContext);
+    AnyAtomicType::Ptr item = (AnyAtomicType*)_expr->createResult(dContext)->next(dContext).get();
     try {
       if(_isPrimitive) {
         item = item->castAsNoCheck(_typeIndex, 0, 0, dContext);
@@ -115,9 +114,7 @@ ASTNode* XQCastAs::staticResolution(StaticContext *context)
       throw;
     }
 
-    XQSequence *seq = new (mm) XQSequence(item, dContext, mm);
-    seq->setLocationInfo(this);
-    return seq->staticResolution(context);
+    return XQLiteral::create(item, dContext, mm, this)->staticResolution(context);
   }
 
   _expr = new (mm) XQAtomize(_expr, mm);

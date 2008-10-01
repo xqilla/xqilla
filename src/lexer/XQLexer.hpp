@@ -83,7 +83,7 @@ typedef struct yyltype
 
 #ifndef YYSTYPE
 #include <xqilla/ast/ASTNode.hpp>
-#include <xqilla/ast/XQParenthesizedExpr.hpp>
+#include <xqilla/ast/XQSequence.hpp>
 #include <xqilla/ast/TupleNode.hpp>
 #include <xqilla/ast/OrderByTuple.hpp>
 #include <xqilla/ast/XQNav.hpp>
@@ -105,7 +105,7 @@ class XQGlobalVariable;
 typedef union {
   XMLCh* str;
   ASTNode* astNode;
-  XQParenthesizedExpr *parenExpr;
+  XQSequence *parenExpr;
   XQUserFunction* functDecl;
   XQUserFunction::ArgumentSpec* argSpec;
   XQUserFunction::ArgumentSpecs* argSpecs;

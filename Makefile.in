@@ -74,31 +74,31 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	XQAnalyzeString.lo XQCastableAs.lo XQCastAs.lo \
 	XQContextItem.lo XQCopy.lo XQCopyOf.lo XQFunction.lo XQIf.lo \
 	ASTNodeImpl.lo XQInstanceOf.lo XQInlineFunction.lo \
-	XQLiteral.lo XQNav.lo XQOperator.lo XQParenthesizedExpr.lo \
-	XQSequence.lo XQStep.lo XQTreatAs.lo XQVariable.lo \
-	StaticAnalysis.lo StaticType.lo ConstantFoldingFunction.lo \
-	NumericFunction.lo XQDOMConstructor.lo \
-	XQDocumentConstructor.lo XQElementConstructor.lo \
-	XQAttributeConstructor.lo XQNamespaceConstructor.lo \
-	XQPIConstructor.lo XQCommentConstructor.lo \
-	XQTextConstructor.lo XQFunctionCall.lo XQFunctionConversion.lo \
-	XQFunctionDeref.lo XQFunctionRef.lo XQGlobalVariable.lo \
-	XQOrderingChange.lo XQQuantified.lo XQValidate.lo \
-	XQTypeswitch.lo XPath1Compat.lo ConvertFunctionArg.lo \
-	XQDocumentOrder.lo XQPredicate.lo XQReturn.lo TupleNode.lo \
-	ContextTuple.lo ForTuple.lo LetTuple.lo WhereTuple.lo \
-	OrderByTuple.lo XQNamespaceBinding.lo XQCallTemplate.lo \
-	XQApplyTemplates.lo ASTDebugHook.lo DebugHookDecorator.lo \
-	TupleDebugHook.lo InputParser.lo InteractiveDebugger.lo \
-	StackFrame.lo ContentSequenceFilter.lo EventGenerator.lo \
-	EventSerializer.lo NoInheritFilter.lo NSFixupFilter.lo \
-	QueryPathTreeFilter.lo FTContains.lo FTWords.lo FTOr.lo \
-	FTAnd.lo FTMildnot.lo FTUnaryNot.lo DefaultTokenizer.lo \
-	DefaultTokenStore.lo FTOrder.lo FTDistance.lo FTScope.lo \
-	FTContent.lo FTWindow.lo XQillaBuilderImpl.lo \
-	XQillaDocumentImpl.lo XQillaExpressionImpl.lo \
-	XQillaNSResolverImpl.lo XQillaXMLGrammarPoolImpl.lo \
-	XPathDocumentImpl.lo XPathNamespaceImpl.lo XPath2ResultImpl.lo \
+	XQLiteral.lo XQNav.lo XQOperator.lo XQSequence.lo XQStep.lo \
+	XQTreatAs.lo XQVariable.lo StaticAnalysis.lo StaticType.lo \
+	ConstantFoldingFunction.lo NumericFunction.lo \
+	XQDOMConstructor.lo XQDocumentConstructor.lo \
+	XQElementConstructor.lo XQAttributeConstructor.lo \
+	XQNamespaceConstructor.lo XQPIConstructor.lo \
+	XQCommentConstructor.lo XQTextConstructor.lo XQFunctionCall.lo \
+	XQFunctionConversion.lo XQFunctionDeref.lo XQFunctionRef.lo \
+	XQGlobalVariable.lo XQOrderingChange.lo XQQuantified.lo \
+	XQValidate.lo XQTypeswitch.lo XPath1Compat.lo \
+	ConvertFunctionArg.lo XQDocumentOrder.lo XQPredicate.lo \
+	XQReturn.lo TupleNode.lo ContextTuple.lo ForTuple.lo \
+	LetTuple.lo WhereTuple.lo OrderByTuple.lo \
+	XQNamespaceBinding.lo XQCallTemplate.lo XQApplyTemplates.lo \
+	ASTDebugHook.lo DebugHookDecorator.lo TupleDebugHook.lo \
+	InputParser.lo InteractiveDebugger.lo StackFrame.lo \
+	ContentSequenceFilter.lo EventGenerator.lo EventSerializer.lo \
+	NoInheritFilter.lo NSFixupFilter.lo QueryPathTreeFilter.lo \
+	FTContains.lo FTWords.lo FTOr.lo FTAnd.lo FTMildnot.lo \
+	FTUnaryNot.lo DefaultTokenizer.lo DefaultTokenStore.lo \
+	FTOrder.lo FTDistance.lo FTScope.lo FTContent.lo FTWindow.lo \
+	XQillaBuilderImpl.lo XQillaDocumentImpl.lo \
+	XQillaExpressionImpl.lo XQillaNSResolverImpl.lo \
+	XQillaXMLGrammarPoolImpl.lo XPathDocumentImpl.lo \
+	XPathNamespaceImpl.lo XPath2ResultImpl.lo \
 	XQillaImplementation.lo XPath2NodeSerializer.lo XQilla.lo \
 	XQQuery.lo UTF8Str.lo XMLChCompare.lo XStr.lo ContextUtils.lo \
 	DateUtils.lo NumUtils.lo XQillaPlatformUtils.lo PrintAST.lo \
@@ -172,25 +172,24 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	ATNotationOrDerivedImpl.lo ATQNameOrDerivedImpl.lo \
 	ATStringOrDerivedImpl.lo ATTimeOrDerivedImpl.lo \
 	ATUntypedAtomicImpl.lo FunctionRefImpl.lo DatatypeFactory.lo \
-	DatatypeLookup.lo AnyAtomicTypeConstructor.lo AnyAtomicType.lo \
-	ATDurationOrDerived.lo ATQNameConstructor.lo \
+	DatatypeLookup.lo AnyAtomicType.lo ATDurationOrDerived.lo \
 	ATUntypedAtomic.lo DateOrTimeType.lo Item.lo Node.lo \
-	Numeric.lo NumericTypeConstructor.lo Timezone.lo QName.lo \
-	XQParser.lo XQLexer.lo XQLexer2.lo XSLT2Lexer.lo mapm5sin.lo \
-	mapm_add.lo mapmasin.lo mapmasn0.lo mapmcbrt.lo mapmcnst.lo \
-	mapm_cpi.lo m_apm.lo mapm_div.lo mapm_exp.lo mapmfact.lo \
-	mapm_fam.lo mapm_fft.lo mapm_flr.lo mapmfmul.lo mapm_fpf.lo \
-	mapm_gcd.lo mapmgues.lo mapmhasn.lo mapmhsin.lo mapmipwr.lo \
-	mapmistr.lo mapm_lg2.lo mapm_lg3.lo mapm_log.lo mapm_mt.lo \
-	mapm_mul.lo mapm_pow.lo mapmpwr2.lo mapm_rcp.lo mapm_rnd.lo \
-	mapmrsin.lo mapm_set.lo mapm_sin.lo mapmsqrt.lo mapmstck.lo \
-	mapmutil.lo mapmutl2.lo NodeTest.lo SelfAxis.lo And.lo \
-	ArithmeticOperator.lo ComparisonOperator.lo Divide.lo \
-	Equals.lo Except.lo GeneralComp.lo GreaterThan.lo \
-	GreaterThanEqual.lo IntegerDivide.lo Intersect.lo LessThan.lo \
-	LessThanEqual.lo Minus.lo Mod.lo Multiply.lo NodeComparison.lo \
-	NotEquals.lo Or.lo OrderComparison.lo Plus.lo Range.lo \
-	UnaryMinus.lo Union.lo DocumentCacheImpl.lo SequenceType.lo \
+	Numeric.lo Timezone.lo QName.lo XQParser.lo XQLexer.lo \
+	XQLexer2.lo XSLT2Lexer.lo mapm5sin.lo mapm_add.lo mapmasin.lo \
+	mapmasn0.lo mapmcbrt.lo mapmcnst.lo mapm_cpi.lo m_apm.lo \
+	mapm_div.lo mapm_exp.lo mapmfact.lo mapm_fam.lo mapm_fft.lo \
+	mapm_flr.lo mapmfmul.lo mapm_fpf.lo mapm_gcd.lo mapmgues.lo \
+	mapmhasn.lo mapmhsin.lo mapmipwr.lo mapmistr.lo mapm_lg2.lo \
+	mapm_lg3.lo mapm_log.lo mapm_mt.lo mapm_mul.lo mapm_pow.lo \
+	mapmpwr2.lo mapm_rcp.lo mapm_rnd.lo mapmrsin.lo mapm_set.lo \
+	mapm_sin.lo mapmsqrt.lo mapmstck.lo mapmutil.lo mapmutl2.lo \
+	NodeTest.lo SelfAxis.lo And.lo ArithmeticOperator.lo \
+	ComparisonOperator.lo Divide.lo Equals.lo Except.lo \
+	GeneralComp.lo GreaterThan.lo GreaterThanEqual.lo \
+	IntegerDivide.lo Intersect.lo LessThan.lo LessThanEqual.lo \
+	Minus.lo Mod.lo Multiply.lo NodeComparison.lo NotEquals.lo \
+	Or.lo OrderComparison.lo Plus.lo Range.lo UnaryMinus.lo \
+	Union.lo DocumentCacheImpl.lo SequenceType.lo \
 	AnyAtomicTypeDatatypeValidator.lo SchemaValidatorFilter.lo \
 	FaxppDocumentCacheImpl.lo ClosureResult.lo EmptyResult.lo \
 	LazySequenceResult.lo ResultBuffer.lo ResultBufferImpl.lo \
@@ -490,7 +489,6 @@ src/ast/XQInlineFunction.cpp \
 src/ast/XQLiteral.cpp \
 src/ast/XQNav.cpp \
 src/ast/XQOperator.cpp \
-src/ast/XQParenthesizedExpr.cpp \
 src/ast/XQSequence.cpp \
 src/ast/XQStep.cpp \
 src/ast/XQTreatAs.cpp \
@@ -760,16 +758,13 @@ src/items/impl/FunctionRefImpl.hpp \
 src/items/DatatypeFactory.cpp \
 src/items/DatatypeFactoryTemplate.hpp \
 src/items/DatatypeLookup.cpp \
-src/items/AnyAtomicTypeConstructor.cpp \
 src/items/AnyAtomicType.cpp \
 src/items/ATDurationOrDerived.cpp \
-src/items/ATQNameConstructor.cpp \
 src/items/ATUntypedAtomic.cpp \
 src/items/DateOrTimeType.cpp \
 src/items/Item.cpp \
 src/items/Node.cpp \
 src/items/Numeric.cpp \
-src/items/NumericTypeConstructor.cpp \
 src/items/Timezone.cpp \
 src/parser/QName.cpp \
 src/parser/XQParser.cpp \
@@ -1241,7 +1236,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATGYearOrDerivedImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATHexBinaryOrDerivedImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATNotationOrDerivedImpl.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATQNameConstructor.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATQNameOrDerivedImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATStringOrDerivedImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATTimeOrDerivedImpl.Plo@am__quote@
@@ -1251,7 +1245,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AncestorOrSelfAxis.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/And.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AnyAtomicType.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AnyAtomicTypeConstructor.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AnyAtomicTypeDatatypeValidator.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ArithmeticOperator.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AttributeAxis.Plo@am__quote@
@@ -1458,7 +1451,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NumUtils.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Numeric.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NumericFunction.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NumericTypeConstructor.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Optimizer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Or.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/OrderByTuple.Plo@am__quote@
@@ -1568,7 +1560,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQOperator.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQOrderingChange.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQPIConstructor.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQParenthesizedExpr.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQParser.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQPredicate.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQQuantified.Plo@am__quote@
@@ -2239,13 +2230,6 @@ XQOperator.lo: src/ast/XQOperator.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/ast/XQOperator.cpp' object='XQOperator.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQOperator.lo `test -f 'src/ast/XQOperator.cpp' || echo '$(srcdir)/'`src/ast/XQOperator.cpp
-
-XQParenthesizedExpr.lo: src/ast/XQParenthesizedExpr.cpp
-@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQParenthesizedExpr.lo -MD -MP -MF $(DEPDIR)/XQParenthesizedExpr.Tpo -c -o XQParenthesizedExpr.lo `test -f 'src/ast/XQParenthesizedExpr.cpp' || echo '$(srcdir)/'`src/ast/XQParenthesizedExpr.cpp
-@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/XQParenthesizedExpr.Tpo $(DEPDIR)/XQParenthesizedExpr.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/ast/XQParenthesizedExpr.cpp' object='XQParenthesizedExpr.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQParenthesizedExpr.lo `test -f 'src/ast/XQParenthesizedExpr.cpp' || echo '$(srcdir)/'`src/ast/XQParenthesizedExpr.cpp
 
 XQSequence.lo: src/ast/XQSequence.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQSequence.lo -MD -MP -MF $(DEPDIR)/XQSequence.Tpo -c -o XQSequence.lo `test -f 'src/ast/XQSequence.cpp' || echo '$(srcdir)/'`src/ast/XQSequence.cpp
@@ -3969,13 +3953,6 @@ DatatypeLookup.lo: src/items/DatatypeLookup.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DatatypeLookup.lo `test -f 'src/items/DatatypeLookup.cpp' || echo '$(srcdir)/'`src/items/DatatypeLookup.cpp
 
-AnyAtomicTypeConstructor.lo: src/items/AnyAtomicTypeConstructor.cpp
-@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT AnyAtomicTypeConstructor.lo -MD -MP -MF $(DEPDIR)/AnyAtomicTypeConstructor.Tpo -c -o AnyAtomicTypeConstructor.lo `test -f 'src/items/AnyAtomicTypeConstructor.cpp' || echo '$(srcdir)/'`src/items/AnyAtomicTypeConstructor.cpp
-@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/AnyAtomicTypeConstructor.Tpo $(DEPDIR)/AnyAtomicTypeConstructor.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/items/AnyAtomicTypeConstructor.cpp' object='AnyAtomicTypeConstructor.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o AnyAtomicTypeConstructor.lo `test -f 'src/items/AnyAtomicTypeConstructor.cpp' || echo '$(srcdir)/'`src/items/AnyAtomicTypeConstructor.cpp
-
 AnyAtomicType.lo: src/items/AnyAtomicType.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT AnyAtomicType.lo -MD -MP -MF $(DEPDIR)/AnyAtomicType.Tpo -c -o AnyAtomicType.lo `test -f 'src/items/AnyAtomicType.cpp' || echo '$(srcdir)/'`src/items/AnyAtomicType.cpp
 @am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/AnyAtomicType.Tpo $(DEPDIR)/AnyAtomicType.Plo
@@ -3989,13 +3966,6 @@ ATDurationOrDerived.lo: src/items/ATDurationOrDerived.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/items/ATDurationOrDerived.cpp' object='ATDurationOrDerived.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ATDurationOrDerived.lo `test -f 'src/items/ATDurationOrDerived.cpp' || echo '$(srcdir)/'`src/items/ATDurationOrDerived.cpp
-
-ATQNameConstructor.lo: src/items/ATQNameConstructor.cpp
-@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATQNameConstructor.lo -MD -MP -MF $(DEPDIR)/ATQNameConstructor.Tpo -c -o ATQNameConstructor.lo `test -f 'src/items/ATQNameConstructor.cpp' || echo '$(srcdir)/'`src/items/ATQNameConstructor.cpp
-@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/ATQNameConstructor.Tpo $(DEPDIR)/ATQNameConstructor.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/items/ATQNameConstructor.cpp' object='ATQNameConstructor.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ATQNameConstructor.lo `test -f 'src/items/ATQNameConstructor.cpp' || echo '$(srcdir)/'`src/items/ATQNameConstructor.cpp
 
 ATUntypedAtomic.lo: src/items/ATUntypedAtomic.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATUntypedAtomic.lo -MD -MP -MF $(DEPDIR)/ATUntypedAtomic.Tpo -c -o ATUntypedAtomic.lo `test -f 'src/items/ATUntypedAtomic.cpp' || echo '$(srcdir)/'`src/items/ATUntypedAtomic.cpp
@@ -4031,13 +4001,6 @@ Numeric.lo: src/items/Numeric.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/items/Numeric.cpp' object='Numeric.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o Numeric.lo `test -f 'src/items/Numeric.cpp' || echo '$(srcdir)/'`src/items/Numeric.cpp
-
-NumericTypeConstructor.lo: src/items/NumericTypeConstructor.cpp
-@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT NumericTypeConstructor.lo -MD -MP -MF $(DEPDIR)/NumericTypeConstructor.Tpo -c -o NumericTypeConstructor.lo `test -f 'src/items/NumericTypeConstructor.cpp' || echo '$(srcdir)/'`src/items/NumericTypeConstructor.cpp
-@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/NumericTypeConstructor.Tpo $(DEPDIR)/NumericTypeConstructor.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/items/NumericTypeConstructor.cpp' object='NumericTypeConstructor.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o NumericTypeConstructor.lo `test -f 'src/items/NumericTypeConstructor.cpp' || echo '$(srcdir)/'`src/items/NumericTypeConstructor.cpp
 
 Timezone.lo: src/items/Timezone.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT Timezone.lo -MD -MP -MF $(DEPDIR)/Timezone.Tpo -c -o Timezone.lo `test -f 'src/items/Timezone.cpp' || echo '$(srcdir)/'`src/items/Timezone.cpp

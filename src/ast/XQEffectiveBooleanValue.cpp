@@ -27,8 +27,7 @@
 #include <xqilla/exceptions/StaticErrorException.hpp>
 #include <xqilla/exceptions/XPath2TypeMatchException.hpp>
 #include <xqilla/context/ContextHelpers.hpp>
-#include <xqilla/ast/XQSequence.hpp>
-#include <xqilla/items/AnyAtomicTypeConstructor.hpp>
+#include <xqilla/ast/XQLiteral.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/context/ItemFactory.hpp>
 
@@ -71,23 +70,19 @@ ASTNode *XQEffectiveBooleanValue::staticTyping(StaticContext *context)
     XPath2MemoryManager *mm = context->getMemoryManager();
 
     if(expr_->getStaticAnalysis().getStaticType().getMax() == 0) {
-      AnyAtomicTypeConstructor *construct = 
-        new (mm) AnyAtomicTypeConstructor(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                                          SchemaSymbols::fgDT_BOOLEAN,
-                                          SchemaSymbols::fgATTVAL_FALSE,
-                                          AnyAtomicType::BOOLEAN);
-      ASTNode *result = new (mm) XQSequence(construct, mm);
+      ASTNode *result = new (mm) XQLiteral(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                                           SchemaSymbols::fgDT_BOOLEAN,
+                                           SchemaSymbols::fgATTVAL_FALSE,
+                                           AnyAtomicType::BOOLEAN, mm);
       result->setLocationInfo(this);
       return result->staticTyping(context);
     }
     else if(expr_->getStaticAnalysis().getStaticType().getMin() == 1 &&
             expr_->getStaticAnalysis().getStaticType().isType(StaticType::NODE_TYPE)) {
-      AnyAtomicTypeConstructor *construct = 
-        new (mm) AnyAtomicTypeConstructor(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                                          SchemaSymbols::fgDT_BOOLEAN,
-                                          SchemaSymbols::fgATTVAL_TRUE,
-                                          AnyAtomicType::BOOLEAN);
-      ASTNode *result = new (mm) XQSequence(construct, mm);
+      ASTNode *result = new (mm) XQLiteral(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                                           SchemaSymbols::fgDT_BOOLEAN,
+                                           SchemaSymbols::fgATTVAL_TRUE,
+                                           AnyAtomicType::BOOLEAN, mm);
       result->setLocationInfo(this);
       return result->staticTyping(context);
     }

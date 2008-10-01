@@ -31,8 +31,7 @@
 #include <xqilla/exceptions/XPath2TypeMatchException.hpp>
 #include <xqilla/context/ItemFactory.hpp>
 #include <xqilla/ast/XQTreatAs.hpp>
-#include <xqilla/ast/XQSequence.hpp>
-#include <xqilla/items/AnyAtomicTypeConstructor.hpp>
+#include <xqilla/ast/XQLiteral.hpp>
 #include <xqilla/context/ContextHelpers.hpp>
 
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
@@ -82,12 +81,10 @@ ASTNode *XQInstanceOf::staticTyping(StaticContext *context)
     if(context && !_expr->getStaticAnalysis().isNoFoldingForced()) {
       XPath2MemoryManager *mm = context->getMemoryManager();
 
-      AnyAtomicTypeConstructor *construct = 
-        new (mm) AnyAtomicTypeConstructor(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                                          SchemaSymbols::fgDT_BOOLEAN,
-                                          SchemaSymbols::fgATTVAL_FALSE,
-                                          AnyAtomicType::BOOLEAN);
-      ASTNode *result = new (mm) XQSequence(construct, mm);
+      ASTNode *result = new (mm) XQLiteral(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                                           SchemaSymbols::fgDT_BOOLEAN,
+                                           SchemaSymbols::fgATTVAL_FALSE,
+                                           AnyAtomicType::BOOLEAN, mm);
       result->setLocationInfo(this);
       return result->staticTyping(context);
     }

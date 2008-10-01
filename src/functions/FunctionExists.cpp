@@ -21,7 +21,7 @@
 
 #include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionExists.hpp>
-#include <xqilla/ast/XQSequence.hpp>
+#include <xqilla/ast/XQLiteral.hpp>
 #include <xqilla/exceptions/XQException.hpp>
 #include <xqilla/items/ATBooleanOrDerived.hpp>
 #include <xqilla/context/DynamicContext.hpp>
@@ -66,8 +66,7 @@ ASTNode *FunctionExists::staticTyping(StaticContext *context)
         AutoDelete<DynamicContext> dContext(context->createDynamicContext());
         dContext->setMemoryManager(mm);
 
-        result = new (mm) XQSequence(dContext->getItemFactory()->createBoolean(sType.getMin() > 0, dContext), dContext, mm);
-        result->setLocationInfo(this);
+        result = XQLiteral::create(dContext->getItemFactory()->createBoolean(sType.getMin() > 0, dContext), dContext, mm, this);
         return result->staticTyping(context);
       }
       catch(XQException &ex) {

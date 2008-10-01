@@ -21,7 +21,7 @@
 
 #include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionCount.hpp>
-#include <xqilla/ast/XQSequence.hpp>
+#include <xqilla/ast/XQLiteral.hpp>
 #include <xqilla/exceptions/XQException.hpp>
 #include <xqilla/runtime/Sequence.hpp>
 #include <xqilla/items/ATDecimalOrDerived.hpp>
@@ -66,8 +66,7 @@ ASTNode *FunctionCount::staticTyping(StaticContext *context)
         AutoDelete<DynamicContext> dContext(context->createDynamicContext());
         dContext->setMemoryManager(mm);
 
-        result = new (mm) XQSequence(mm->createInteger(sType.getMin()), dContext, mm);
-        result->setLocationInfo(this);
+        result = XQLiteral::create(mm->createInteger(sType.getMin()), dContext, mm, this);
         return result->staticTyping(context);
       }
       catch(XQException &ex) {

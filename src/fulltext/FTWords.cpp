@@ -29,7 +29,6 @@
 #include <xqilla/fulltext/FTDistance.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/context/ItemFactory.hpp>
-#include <xqilla/items/AnyAtomicTypeConstructor.hpp>
 #include <xqilla/ast/XQSequence.hpp>
 #include <xqilla/exceptions/XPath2TypeMatchException.hpp>
 #include <xqilla/schema/SequenceType.hpp>

@@ -31,7 +31,6 @@
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/utils/XPath2NSUtils.hpp>
 #include <xqilla/items/Node.hpp>
-#include <xqilla/items/AnyAtomicTypeConstructor.hpp>
 #include <xqilla/ast/XQAtomize.hpp>
 #include <xqilla/events/EventHandler.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>

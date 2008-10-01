@@ -22,36 +22,89 @@
 #ifndef _XQLITERAL_HPP
 #define _XQLITERAL_HPP
 
-#include <xqilla/framework/XQillaExport.hpp>
-
 #include <xqilla/ast/ASTNodeImpl.hpp>
+#include <xqilla/mapm/m_apm.h>
 
-class ItemConstructor;
-
-/** defines the behaviour for the literal  types*/
 class XQILLA_API XQLiteral : public ASTNodeImpl
 {
 public:
-  XQLiteral(ItemConstructor *ic, XPath2MemoryManager* memMgr);
+  XQLiteral(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* value,
+            AnyAtomicType::AtomicObjectType primitiveType, XPath2MemoryManager* memMgr);
 
   virtual bool isDateOrTimeAndHasNoTimezone(StaticContext* context) const;
+
+  virtual ASTNode *staticResolution(StaticContext *context);
   virtual ASTNode *staticTyping(StaticContext *context);
-
-  virtual ASTNode* staticResolution(StaticContext *context);
   virtual Result createResult(DynamicContext* context, int flags=0) const;
+  virtual EventGenerator::Ptr generateEvents(EventHandler *events, DynamicContext *context,
+                                             bool preserveNS, bool preserveType) const;
 
-  ItemConstructor *getItemConstructor() const
-  {
-    return _itemConstructor;
-  }
+  AnyAtomicType::AtomicObjectType getPrimitiveType() const { return primitiveType_; }
+  const XMLCh *getTypeURI() const { return typeURI_; }
+  const XMLCh *getTypeName() const { return typeName_; }
+  const XMLCh *getValue() const { return value_; }
 
-  void setItemConstructor(ItemConstructor *i)
-  {
-    _itemConstructor = i;
-  }
+  static ASTNode *create(const Item::Ptr &item, DynamicContext *context, XPath2MemoryManager* memMgr,
+                         const LocationInfo *location);
 
 private:
-  ItemConstructor *_itemConstructor;
+  const XMLCh *typeURI_;
+  const XMLCh *typeName_;
+  AnyAtomicType::AtomicObjectType primitiveType_;
+  const XMLCh *value_;
+};
+
+class XQILLA_API XQQNameLiteral : public ASTNodeImpl
+{
+public:
+  XQQNameLiteral(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* uri,
+                 const XMLCh* prefix, const XMLCh* localname, XPath2MemoryManager* memMgr);
+
+  virtual bool isDateOrTimeAndHasNoTimezone(StaticContext* context) const;
+
+  virtual ASTNode *staticResolution(StaticContext *context);
+  virtual ASTNode *staticTyping(StaticContext *context);
+  virtual Result createResult(DynamicContext* context, int flags=0) const;
+  virtual EventGenerator::Ptr generateEvents(EventHandler *events, DynamicContext *context,
+                                             bool preserveNS, bool preserveType) const;
+
+  const XMLCh *getTypeURI() const { return typeURI_; }
+  const XMLCh *getTypeName() const { return typeName_; }
+  const XMLCh *getURI() const { return uri_; }
+  const XMLCh *getLocalname() const { return localname_; }
+  const XMLCh *getPrefix() const { return prefix_; }
+
+private:
+  const XMLCh *typeURI_;
+  const XMLCh *typeName_;
+  const XMLCh *uri_, *prefix_, *localname_;
+};
+
+class XQILLA_API XQNumericLiteral : public ASTNodeImpl
+{
+public:
+  XQNumericLiteral(const XMLCh* typeURI, const XMLCh* typeName, const MAPM& value,
+                   AnyAtomicType::AtomicObjectType primitiveType, XPath2MemoryManager* memMgr);
+
+  virtual bool isDateOrTimeAndHasNoTimezone(StaticContext* context) const;
+
+  virtual ASTNode *staticResolution(StaticContext *context);
+  virtual ASTNode *staticTyping(StaticContext *context);
+  virtual Result createResult(DynamicContext* context, int flags=0) const;
+  virtual EventGenerator::Ptr generateEvents(EventHandler *events, DynamicContext *context,
+                                             bool preserveNS, bool preserveType) const;
+
+  AnyAtomicType::AtomicObjectType getPrimitiveType() const { return primitiveType_; }
+  const XMLCh *getTypeURI() const { return typeURI_; }
+  const XMLCh *getTypeName() const { return typeName_; }
+  MAPM getValue() const;
+  const M_APM_struct &getRawValue() const { return value_; }
+
+private:
+  const XMLCh *typeURI_;
+  const XMLCh *typeName_;
+  AnyAtomicType::AtomicObjectType primitiveType_;
+  M_APM_struct value_;
 };
 
 #endif

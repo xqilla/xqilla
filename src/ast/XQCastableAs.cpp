@@ -95,7 +95,7 @@ ASTNode* XQCastableAs::staticResolution(StaticContext *context)
   // evaluate immediately, since they aren't allowed otherwise
   if((_typeIndex == AnyAtomicType::QNAME || _typeIndex == AnyAtomicType::NOTATION) &&
      _expr->getType() == LITERAL &&
-     (((XQLiteral*)_expr)->getItemConstructor())->getStaticType().isType(StaticType::STRING_TYPE)) {
+     ((XQLiteral*)_expr)->getPrimitiveType() == AnyAtomicType::STRING) {
 
     AutoDelete<DynamicContext> dContext(context->createDynamicContext());
     dContext->setMemoryManager(mm);
@@ -103,11 +103,11 @@ ASTNode* XQCastableAs::staticResolution(StaticContext *context)
     bool result = false;
     try {
       if(_isPrimitive) {
-        ((AnyAtomicType*)((XQLiteral*)_expr)->getItemConstructor()->createItem(dContext).get())->
+        ((AnyAtomicType*)_expr->createResult(dContext)->next(dContext).get())->
           castAsNoCheck(_typeIndex, 0, 0, dContext);
       }
       else {
-        ((AnyAtomicType*)((XQLiteral*)_expr)->getItemConstructor()->createItem(dContext).get())->
+        ((AnyAtomicType*)_expr->createResult(dContext)->next(dContext).get())->
           castAsNoCheck(_typeIndex, _exprType->getTypeURI(),
                         _exprType->getConstrainingType()->getName(), dContext);
       }
@@ -115,9 +115,7 @@ ASTNode* XQCastableAs::staticResolution(StaticContext *context)
     }
     catch(XQException &e) {}
 
-    XQSequence *seq = new (mm) XQSequence(dContext->getItemFactory()->createBoolean(result, dContext), dContext, mm);
-    seq->setLocationInfo(this);
-    return seq->staticResolution(context);
+    return XQLiteral::create(dContext->getItemFactory()->createBoolean(result, dContext), dContext, mm, this)->staticResolution(context);
   }
 
   _expr = new (mm) XQAtomize(_expr, mm);

@@ -35,7 +35,6 @@
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/utils/XPath2NSUtils.hpp>
 #include <xqilla/items/Node.hpp>
-#include <xqilla/items/AnyAtomicTypeConstructor.hpp>
 #include <xqilla/ast/XQAtomize.hpp>
 #include <xqilla/parser/QName.hpp>
 #include <xqilla/events/EventHandler.hpp>
@@ -176,7 +175,7 @@ ASTNode* XQElementConstructor::staticResolution(StaticContext *context)
                                                             "be a literal string [err:XQST0022]"));
       }
       else {
-        Item::Ptr nsUri = ((XQLiteral*)(*children)[0])->getItemConstructor()->createItem(dContext);
+        Item::Ptr nsUri = (*children)[0]->createResult(dContext)->next(dContext);
         if(nsUri == NULLRCP)
           XQThrow(StaticErrorException,X("DOM Constructor"),X("The value of a namespace declaration attribute must "
                                                               "be a literal string [err:XQST0022]"));
@@ -222,10 +221,8 @@ ASTNode* XQElementConstructor::staticResolution(StaticContext *context)
       if(dItem->getType() == ASTNode::ATOMIZE) {
         dItem = ((XQAtomize*)dItem)->getExpression();
       }
-      assert(dItem->getType()==ASTNode::SEQUENCE); 
-      const ItemConstructor::Vector &ics = ((XQSequence*)dItem)->getItemConstructors();
-      assert(ics.size() == 1);
-      Item::Ptr item = ics[0]->createItem(dContext);
+      assert(dItem->getType()==ASTNode::QNAME_LITERAL); 
+      Item::Ptr item = dItem->createResult(dContext)->next(dContext);
       QualifiedName attrName(item->asString(dContext));
       XMLBuffer buff(200, dContext->getMemoryManager());
       if(attrName.getPrefix()!=0 && *attrName.getPrefix()!=0)

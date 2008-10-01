@@ -120,7 +120,6 @@
         <file name='include/xqilla/ast/XQLiteral.hpp'/>
         <file name='include/xqilla/ast/XQNav.hpp'/>
         <file name='include/xqilla/ast/XQOperator.hpp'/>
-        <file name='include/xqilla/ast/XQParenthesizedExpr.hpp'/>
         <file name='include/xqilla/ast/XQSequence.hpp'/>
         <file name='include/xqilla/ast/XQStep.hpp'/>
         <file name='include/xqilla/ast/XQTreatAs.hpp'/>
@@ -394,20 +393,16 @@
         <file name='include/xqilla/items/ATGYearOrDerived.hpp'/>
         <file name='include/xqilla/items/ATHexBinaryOrDerived.hpp'/>
         <file name='include/xqilla/items/ATNotationOrDerived.hpp'/>
-        <file name='include/xqilla/items/ATQNameConstructor.hpp'/>
         <file name='include/xqilla/items/ATQNameOrDerived.hpp'/>
         <file name='include/xqilla/items/ATStringOrDerived.hpp'/>
         <file name='include/xqilla/items/ATTimeOrDerived.hpp'/>
         <file name='include/xqilla/items/ATUntypedAtomic.hpp'/>
-        <file name='include/xqilla/items/AnyAtomicTypeConstructor.hpp'/>
         <file name='include/xqilla/items/AnyAtomicType.hpp'/>
         <file name='include/xqilla/items/DateOrTimeType.hpp'/>
         <file name='include/xqilla/items/FunctionRef.hpp'/>
-        <file name='include/xqilla/items/ItemConstructor.hpp'/>
         <file name='include/xqilla/items/Item.hpp'/>
         <file name='include/xqilla/items/Node.hpp'/>
         <file name='include/xqilla/items/Numeric.hpp'/>
-        <file name='include/xqilla/items/NumericTypeConstructor.hpp'/>
         <file name='include/xqilla/items/Timezone.hpp'/>
         <file name='include/xqilla/items/DatatypeLookup.hpp'/>
         <file name='include/xqilla/items/DatatypeFactory.hpp'/>
@@ -559,7 +554,6 @@
         <file name="src/ast/XQOperator.cpp"/>
         <file name="src/ast/XQOrderingChange.cpp"/>
         <file name="src/ast/XQPIConstructor.cpp"/>
-        <file name="src/ast/XQParenthesizedExpr.cpp"/>
         <file name="src/ast/XQPredicate.cpp"/>
         <file name="src/ast/XQQuantified.cpp"/>
         <file name="src/ast/XQReturn.cpp"/>
@@ -809,10 +803,8 @@
       </filter>
       <filter name="items">
         <file name="src/items/ATDurationOrDerived.cpp"/>
-        <file name="src/items/ATQNameConstructor.cpp"/>
         <file name="src/items/ATUntypedAtomic.cpp"/>
         <file name="src/items/AnyAtomicType.cpp"/>
-        <file name="src/items/AnyAtomicTypeConstructor.cpp"/>
         <file name="src/items/DatatypeFactory.cpp"/>
         <file name="src/items/DatatypeFactoryTemplate.hpp"/>
         <file name="src/items/DatatypeLookup.cpp"/>
@@ -820,7 +812,6 @@
         <file name="src/items/Item.cpp"/>
         <file name="src/items/Node.cpp"/>
         <file name="src/items/Numeric.cpp"/>
-        <file name="src/items/NumericTypeConstructor.cpp"/>
         <file name="src/items/Timezone.cpp"/>
         <file name="src/items/impl/ATAnySimpleTypeImpl.cpp"/>
         <file name="src/items/impl/ATAnySimpleTypeImpl.hpp"/>

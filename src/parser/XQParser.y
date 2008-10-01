@@ -56,10 +56,7 @@
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 #include <xercesc/dom/DOMXPathNSResolver.hpp>
 
-#include <xqilla/items/AnyAtomicTypeConstructor.hpp>
-
 #include <xqilla/ast/XQSequence.hpp>
-#include <xqilla/ast/XQParenthesizedExpr.hpp>
 #include <xqilla/ast/XQNav.hpp>
 #include <xqilla/ast/XQStep.hpp>
 #include <xqilla/ast/XQLiteral.hpp>
@@ -299,7 +296,7 @@ static void resolveQName(const yyltype &pos, XQParserArgs *qp, const XMLCh *qnam
 
 #define XSLT_VARIABLE_VALUE(pos, select, seqConstruct, seqType) variableValueXSLT((pos), QP, (select), (seqConstruct), (seqType))
 
-static ASTNode *variableValueXSLT(const yyltype &pos, XQParserArgs *qp, ASTNode *select, XQParenthesizedExpr *seqConstruct, SequenceType *seqType)
+static ASTNode *variableValueXSLT(const yyltype &pos, XQParserArgs *qp, ASTNode *select, XQSequence *seqConstruct, SequenceType *seqType)
 {
   if(!seqConstruct->getChildren().empty()) {
     if(select != 0) return 0; // signifies an error
@@ -319,10 +316,9 @@ static ASTNode *variableValueXSLT(const yyltype &pos, XQParserArgs *qp, ASTNode 
 
   if(seqType == 0) {
     return WRAP(pos, new (MEMMGR) XQLiteral(
-                  new (MEMMGR) AnyAtomicTypeConstructor(
                   SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                   SchemaSymbols::fgDT_STRING,
-                  XMLUni::fgZeroLenString, AnyAtomicType::STRING),
+                  XMLUni::fgZeroLenString, AnyAtomicType::STRING,
                   MEMMGR));
   }
 
@@ -1317,19 +1313,16 @@ AttrValueTemplate_XSLT:
   | AttrValueTemplate_XSLT _QUOT_ATTR_CONTENT_
   {
     $$ = $1;
-
-    AnyAtomicTypeConstructor *ic = new (MEMMGR)
-      AnyAtomicTypeConstructor(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+    $$->push_back(WRAP(@2, new (MEMMGR) XQLiteral(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                                SchemaSymbols::fgDT_STRING,
-                               $2, AnyAtomicType::STRING);
-    $$->push_back(WRAP(@2, new (MEMMGR) XQLiteral(ic, MEMMGR)));
+                               $2, AnyAtomicType::STRING, MEMMGR)));
   }
   ;
 
 SequenceConstructor_XSLT:
     /* empty */
   {
-    $$ = WRAP(@$, new (MEMMGR) XQParenthesizedExpr(MEMMGR));
+    $$ = WRAP(@$, new (MEMMGR) XQSequence(MEMMGR));
   }
   | SequenceConstructor_XSLT TextNode_XSLT
   {
@@ -3092,13 +3085,13 @@ Expr:
     Expr _COMMA_ ExprSingle
     {
       ASTNode* prevExpr=$1;
-      if(prevExpr->getType()==ASTNode::PARENTHESIZED)
+      if(prevExpr->getType()==ASTNode::SEQUENCE)
       {
-        ((XQParenthesizedExpr *)prevExpr)->addItem($3);
+        ((XQSequence *)prevExpr)->addItem($3);
         $$ = $1;
       }
       else {
-        XQParenthesizedExpr *dis = WRAP(@2, new (MEMMGR) XQParenthesizedExpr(MEMMGR));
+        XQSequence *dis = WRAP(@2, new (MEMMGR) XQSequence(MEMMGR));
         dis->addItem($1);
         dis->addItem($3);
         $$ = dis;
@@ -4250,12 +4243,9 @@ QuotAttrValueContent:
   | QuotAttrValueContent _QUOT_ATTR_CONTENT_
   {
     $$ = $1;
-
-    AnyAtomicTypeConstructor *ic = new (MEMMGR)
-      AnyAtomicTypeConstructor(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+    $$->push_back(WRAP(@2, new (MEMMGR) XQLiteral(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                                SchemaSymbols::fgDT_STRING,
-                               $2, AnyAtomicType::STRING);
-    $$->push_back(WRAP(@2, new (MEMMGR) XQLiteral(ic, MEMMGR)));
+                               $2, AnyAtomicType::STRING, MEMMGR)));
   }
   ;
 
@@ -4271,12 +4261,9 @@ LiteralQuotAttrValueContent:
   | LiteralQuotAttrValueContent _QUOT_ATTR_CONTENT_
   {
     $$ = $1;
-
-    AnyAtomicTypeConstructor *ic = new (MEMMGR)
-      AnyAtomicTypeConstructor(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+    $$->push_back(WRAP(@2, new (MEMMGR) XQLiteral(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                                SchemaSymbols::fgDT_STRING,
-                               $2, AnyAtomicType::STRING);
-    $$->push_back(WRAP(@2, new (MEMMGR) XQLiteral(ic, MEMMGR)));
+                               $2, AnyAtomicType::STRING, MEMMGR)));
   }
   ;
 
@@ -4296,12 +4283,9 @@ AposAttrValueContent:
   | AposAttrValueContent _APOS_ATTR_CONTENT_
   {
     $$ = $1;
-
-    AnyAtomicTypeConstructor *ic = new (MEMMGR)
-      AnyAtomicTypeConstructor(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+    $$->push_back(WRAP(@2, new (MEMMGR) XQLiteral(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                                SchemaSymbols::fgDT_STRING,
-                               $2, AnyAtomicType::STRING);
-    $$->push_back(WRAP(@2, new (MEMMGR) XQLiteral(ic, MEMMGR)));
+                               $2, AnyAtomicType::STRING, MEMMGR)));
   }
   ;
 
@@ -4317,12 +4301,9 @@ LiteralAposAttrValueContent:
   | LiteralAposAttrValueContent _APOS_ATTR_CONTENT_
   {
     $$ = $1;
-
-    AnyAtomicTypeConstructor *ic = new (MEMMGR)
-      AnyAtomicTypeConstructor(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+    $$->push_back(WRAP(@2, new (MEMMGR) XQLiteral(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                                SchemaSymbols::fgDT_STRING,
-                               $2, AnyAtomicType::STRING);
-    $$->push_back(WRAP(@2, new (MEMMGR) XQLiteral(ic, MEMMGR)));
+                               $2, AnyAtomicType::STRING, MEMMGR)));
   }
   ;
 
@@ -4351,23 +4332,17 @@ DirElementContent:
   | DirElementContent _ELEMENT_CONTENT_
   {
     $$ = $1;
-    AnyAtomicTypeConstructor *ic = new (MEMMGR)
-      AnyAtomicTypeConstructor(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+    $$->push_back(WRAP(@2, new (MEMMGR) XQLiteral(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                                SchemaSymbols::fgDT_STRING,
-                               $2, AnyAtomicType::STRING);
-
-    $$->push_back(WRAP(@2, new (MEMMGR) XQLiteral(ic, MEMMGR)));
+                               $2, AnyAtomicType::STRING, MEMMGR)));
   }
   | DirElementContent _WHITESPACE_ELEMENT_CONTENT_
   {
     $$ = $1;
     if(CONTEXT->getPreserveBoundarySpace()) {
-      AnyAtomicTypeConstructor *ic = new (MEMMGR)
-        AnyAtomicTypeConstructor(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+      $$->push_back(WRAP(@2, new (MEMMGR) XQLiteral(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                                  SchemaSymbols::fgDT_STRING,
-                                 $2, AnyAtomicType::STRING);
-
-      $$->push_back(WRAP(@2, new (MEMMGR) XQLiteral(ic, MEMMGR)));
+                                 $2, AnyAtomicType::STRING, MEMMGR)));
     }
   }
   ;
@@ -4377,10 +4352,9 @@ DirCommentConstructor:
   _XML_COMMENT_START_ DirCommentContents _XML_COMMENT_END_
   {
     ASTNode *value = WRAP(@1, new (MEMMGR) XQLiteral(
-                  new (MEMMGR) AnyAtomicTypeConstructor(
                   SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                   SchemaSymbols::fgDT_STRING,
-                  $2, AnyAtomicType::STRING),
+                  $2, AnyAtomicType::STRING,
                   MEMMGR));
     $$ = WRAP(@1, new (MEMMGR) XQCommentConstructor(value, MEMMGR));
   }
@@ -4400,17 +4374,15 @@ DirPIConstructor:
   _PI_START_ _PI_TARGET_ DirPIContents
   {
     ASTNode *value = WRAP(@3, new (MEMMGR) XQLiteral(
-                  new (MEMMGR) AnyAtomicTypeConstructor(
                   SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                   SchemaSymbols::fgDT_STRING,
-                  $3, AnyAtomicType::STRING),
+                  $3, AnyAtomicType::STRING,
                   MEMMGR));
     $$ = WRAP(@1, new (MEMMGR) XQPIConstructor(
                     WRAP(@2, new (MEMMGR) XQLiteral(
-                  new (MEMMGR) AnyAtomicTypeConstructor(
                   SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                   SchemaSymbols::fgDT_STRING,
-                  $2, AnyAtomicType::STRING),
+                  $2, AnyAtomicType::STRING,
                   MEMMGR)), 
                   value, MEMMGR));
   }
@@ -4520,12 +4492,9 @@ CompPINCName:
     for(XMLCh *tmp = $1; *tmp; ++tmp)
       if(*tmp == ':') yyerror(@1, "Expecting an NCName, found a QName");
 
-    AnyAtomicTypeConstructor *ic = new (MEMMGR)
-      AnyAtomicTypeConstructor(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+    $$ = WRAP(@1, new (MEMMGR) XQLiteral(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                                SchemaSymbols::fgDT_STRING,
-                               $1, AnyAtomicType::STRING);
-
-    $$ = WRAP(@1, new (MEMMGR) XQLiteral(ic, MEMMGR));
+                               $1, AnyAtomicType::STRING, MEMMGR));
   }
   | _LBRACE_EXPR_ENCLOSURE_ Expr _RBRACE_
   {
@@ -5404,10 +5373,9 @@ IntegerLiteral:
   _INTEGER_LITERAL_
   {
     $$ = WRAP(@1, new (MEMMGR) XQLiteral(
-                  new (MEMMGR) AnyAtomicTypeConstructor(
                   SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                   SchemaSymbols::fgDT_INTEGER,
-                  $1, AnyAtomicType::DECIMAL),
+                  $1, AnyAtomicType::DECIMAL,
                   MEMMGR));
   }
   ;
@@ -5417,10 +5385,9 @@ DecimalLiteral:
   _DECIMAL_LITERAL_
   {
     $$ = WRAP(@1, new (MEMMGR) XQLiteral(
-                  new (MEMMGR) AnyAtomicTypeConstructor(
                   SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                   SchemaSymbols::fgDT_DECIMAL,
-                  $1, AnyAtomicType::DECIMAL),
+                  $1, AnyAtomicType::DECIMAL,
                   MEMMGR));
   }
   ;
@@ -5430,10 +5397,9 @@ DoubleLiteral:
   _DOUBLE_LITERAL_
   {
     $$ = WRAP(@1, new (MEMMGR) XQLiteral(
-                  new (MEMMGR) AnyAtomicTypeConstructor(
                   SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                   SchemaSymbols::fgDT_DOUBLE,
-                  $1, AnyAtomicType::DOUBLE),
+                  $1, AnyAtomicType::DOUBLE,
                   MEMMGR));
   }
   ;
@@ -5444,10 +5410,9 @@ StringLiteral:
   _STRING_LITERAL_
   {
     $$ = WRAP(@1, new (MEMMGR) XQLiteral(
-                  new (MEMMGR) AnyAtomicTypeConstructor(
                   SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                   SchemaSymbols::fgDT_STRING,
-                  $1, AnyAtomicType::STRING),
+                  $1, AnyAtomicType::STRING,
                   MEMMGR));
   }
   ;

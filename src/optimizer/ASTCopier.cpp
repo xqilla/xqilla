@@ -211,8 +211,10 @@ ASTNode *ASTCopier::optimize ## methodname (classname *item) \
 // TBD copy SequenceType objects - jpcs
 // TBD copy NodeTest objects - jpcs
 
-COPY_XQ1(Literal, ItemConstructor)
-COPY_XQ1(Sequence, ItemConstructors)
+COPY_XQ4(Literal, TypeURI, TypeName, Value, PrimitiveType)
+COPY_XQ5(QNameLiteral, TypeURI, TypeName, URI, Prefix, Localname)
+COPY_XQ4(NumericLiteral, TypeURI, TypeName, Value, PrimitiveType)
+COPY_XQ1(Sequence, Children)
 COPY_XQ2(Step, Axis, NodeTest)
 COPY_XQ2(Variable, URI, Name)
 COPY_XQ3(If, Test, WhenTrue, WhenFalse)
@@ -256,7 +258,6 @@ COPY2(UInsertBefore, Source, Target)
 COPY2(UApplyUpdates, Expression, RevalidationMode)
 COPY3(FTContains, Argument, Selection, Ignore);
 COPY_XQ2(Nav, Steps, SortAdded);
-COPY_XQ1(ParenthesizedExpr, Children);
 COPY_FULL3(UserFunction, XQUserFunctionInstance, FunctionDefinition, Arguments, AddReturnCheck);
 
 ASTNode *ASTCopier::optimizeFunction(XQFunction *item)

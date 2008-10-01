@@ -75,6 +75,10 @@ ASTNode *ASTVisitor::optimize(ASTNode *item)
   switch(item->getType()) {
   case ASTNode::LITERAL:
     return optimizeLiteral((XQLiteral *)item);
+  case ASTNode::QNAME_LITERAL:
+    return optimizeQNameLiteral((XQQNameLiteral *)item);
+  case ASTNode::NUMERIC_LITERAL:
+    return optimizeNumericLiteral((XQNumericLiteral *)item);
   case ASTNode::SEQUENCE:
     return optimizeSequence((XQSequence *)item);
   case ASTNode::FUNCTION:
@@ -95,8 +99,6 @@ ASTNode *ASTVisitor::optimize(ASTNode *item)
     return optimizeCastAs((XQCastAs *)item);
   case ASTNode::TREAT_AS:
     return optimizeTreatAs((XQTreatAs *)item);
-  case ASTNode::PARENTHESIZED:
-    return optimizeParenthesizedExpr((XQParenthesizedExpr *)item);
   case ASTNode::OPERATOR:
     return optimizeOperator((XQOperator *)item);
   case ASTNode::CONTEXT_ITEM:
@@ -217,6 +219,16 @@ ASTNode *ASTVisitor::optimizeLiteral(XQLiteral *item)
   return item;
 }
 
+ASTNode *ASTVisitor::optimizeQNameLiteral(XQQNameLiteral *item)
+{
+  return item;
+}
+
+ASTNode *ASTVisitor::optimizeNumericLiteral(XQNumericLiteral *item)
+{
+  return item;
+}
+
 ASTNode *ASTVisitor::optimizeNav(XQNav *item)
 {
   XQNav::Steps &args = const_cast<XQNav::Steps &>(item->getSteps());
@@ -226,17 +238,12 @@ ASTNode *ASTVisitor::optimizeNav(XQNav *item)
   return item;
 }
 
-ASTNode *ASTVisitor::optimizeParenthesizedExpr(XQParenthesizedExpr *item)
+ASTNode *ASTVisitor::optimizeSequence(XQSequence *item)
 {
   VectorOfASTNodes &args = const_cast<VectorOfASTNodes &>(item->getChildren());
   for(VectorOfASTNodes::iterator i = args.begin(); i != args.end(); ++i) {
     *i = optimize(*i);
   }
-  return item;
-}
-
-ASTNode *ASTVisitor::optimizeSequence(XQSequence *item)
-{
   return item;
 }
 
