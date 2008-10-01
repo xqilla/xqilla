@@ -34,7 +34,6 @@
 #include <xqilla/ast/ASTNodeImpl.hpp>
 #include <xqilla/ast/XQLiteral.hpp>
 #include <xqilla/ast/XQNav.hpp>
-#include <xqilla/ast/XQParenthesizedExpr.hpp>
 #include <xqilla/ast/XQSequence.hpp>
 #include <xqilla/ast/XQStep.hpp>
 #include <xqilla/ast/XQVariable.hpp>
@@ -276,6 +275,14 @@ string PrintAST::printASTNode(const ASTNode *item, const DynamicContext *context
     return printLiteral((XQLiteral *)item, context, indent);
     break;
   }
+  case ASTNode::QNAME_LITERAL: {
+    return printQNameLiteral((XQQNameLiteral *)item, context, indent);
+    break;
+  }
+  case ASTNode::NUMERIC_LITERAL: {
+    return printNumericLiteral((XQNumericLiteral *)item, context, indent);
+    break;
+  }
   case ASTNode::SEQUENCE: {
     return printSequence((XQSequence *)item, context, indent);
     break;
@@ -314,10 +321,6 @@ string PrintAST::printASTNode(const ASTNode *item, const DynamicContext *context
   }
   case ASTNode::TREAT_AS: {
     return printTreatAs((XQTreatAs *)item, context, indent);
-    break;
-  }
-  case ASTNode::PARENTHESIZED: {
-    return printParenthesized((XQParenthesizedExpr *)item, context, indent);
     break;
   }
   case ASTNode::OPERATOR: {
@@ -609,9 +612,45 @@ string PrintAST::printLiteral(const XQLiteral *item, const DynamicContext *conte
 
   string in(getIndent(indent));
 
-  s << in << "<Literal>" << endl;
-  s << in << "  " << item->getItemConstructor()->asString(context) << endl;
-  s << in << "</Literal>" << endl;
+  s << in << "<Literal";
+  s << " value=\"" << UTF8(item->getValue());
+  s << "\" typeuri=\"" << UTF8(item->getTypeURI());
+  s << "\" typename=\"" << UTF8(item->getTypeName());
+  s << "\"/>" << endl;
+
+  return s.str();
+}
+
+string PrintAST::printQNameLiteral(const XQQNameLiteral *item, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  s << in << "<QNameLiteral";
+  s << " uri=\"" << UTF8(item->getURI());
+  s << "\" prefix=\"" << UTF8(item->getPrefix());
+  s << "\" localname=\"" << UTF8(item->getLocalname());
+  s << "\" typeuri=\"" << UTF8(item->getTypeURI());
+  s << "\" typename=\"" << UTF8(item->getTypeName());
+  s << "\"/>" << endl;
+
+  return s.str();
+}
+
+string PrintAST::printNumericLiteral(const XQNumericLiteral *item, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  s << in << "<NumericLiteral";
+  char obuf[1024];
+  m_apm_to_string_mt(obuf, item->getRawValue().m_apm_datalength, const_cast<M_APM>(&item->getRawValue()));
+  s << " value=\"" << obuf;
+  s << "\" typeuri=\"" << UTF8(item->getTypeURI());
+  s << "\" typename=\"" << UTF8(item->getTypeName());
+  s << "\"/>" << endl;
 
   return s.str();
 }
@@ -689,7 +728,7 @@ string PrintAST::printStep(const XQStep *item, const DynamicContext *context, in
   return s.str();
 }
 
-string PrintAST::printParenthesized(const XQParenthesizedExpr *item, const DynamicContext *context, int indent)
+string PrintAST::printSequence(const XQSequence *item, const DynamicContext *context, int indent)
 {
   ostringstream s;
 
@@ -697,33 +736,12 @@ string PrintAST::printParenthesized(const XQParenthesizedExpr *item, const Dynam
   const VectorOfASTNodes &children = item->getChildren();
 
   if(children.empty()) {
-    s << in << "<Parenthesized/>" << endl;
-  }
-  else {
-    s << in << "<Parenthesized>" << endl;
-    for(VectorOfASTNodes::const_iterator i = children.begin(); i != children.end(); ++i) {
-      s << printASTNode(*i, context, indent + INDENT);
-    }
-    s << in << "</Parenthesized>" << endl;
-  }
-
-  return s.str();
-}
-
-string PrintAST::printSequence(const XQSequence *item, const DynamicContext *context, int indent)
-{
-  ostringstream s;
-
-  string in(getIndent(indent));
-  const ItemConstructor::Vector &values = item->getItemConstructors();
-
-  if(values.empty()) {
     s << in << "<Sequence/>" << endl;
   }
   else {
     s << in << "<Sequence>" << endl;
-    for(ItemConstructor::Vector::const_iterator i = values.begin(); i != values.end(); ++i) {
-      s << in << "  " << (*i)->asString(context) << endl;
+    for(VectorOfASTNodes::const_iterator i = children.begin(); i != children.end(); ++i) {
+      s << printASTNode(*i, context, indent + INDENT);
     }
     s << in << "</Sequence>" << endl;
   }

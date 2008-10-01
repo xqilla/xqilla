@@ -51,7 +51,6 @@ src/ast/XQInlineFunction.cpp \
 src/ast/XQLiteral.cpp \
 src/ast/XQNav.cpp \
 src/ast/XQOperator.cpp \
-src/ast/XQParenthesizedExpr.cpp \
 src/ast/XQSequence.cpp \
 src/ast/XQStep.cpp \
 src/ast/XQTreatAs.cpp \
@@ -321,16 +320,13 @@ src/items/impl/FunctionRefImpl.hpp \
 src/items/DatatypeFactory.cpp \
 src/items/DatatypeFactoryTemplate.hpp \
 src/items/DatatypeLookup.cpp \
-src/items/AnyAtomicTypeConstructor.cpp \
 src/items/AnyAtomicType.cpp \
 src/items/ATDurationOrDerived.cpp \
-src/items/ATQNameConstructor.cpp \
 src/items/ATUntypedAtomic.cpp \
 src/items/DateOrTimeType.cpp \
 src/items/Item.cpp \
 src/items/Node.cpp \
 src/items/Numeric.cpp \
-src/items/NumericTypeConstructor.cpp \
 src/items/Timezone.cpp \
 src/parser/QName.cpp \
 src/parser/XQParser.cpp \

@@ -25,8 +25,6 @@
 
 #include <xqilla/ast/XQLiteral.hpp>
 #include <xqilla/ast/XQAttributeConstructor.hpp>
-#include <xqilla/items/ATQNameConstructor.hpp>
-#include <xqilla/items/AnyAtomicTypeConstructor.hpp>
 #include <xqilla/utils/UTF8Str.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/dom-api/impl/XQillaNSResolverImpl.hpp>
@@ -737,12 +735,9 @@ ASTNode *XSLT2Lexer::wrap(ASTNode *result) const
 
 ASTNode *XSLT2Lexer::makeQNameLiteral(const XMLCh *uri, const XMLCh *prefix, const XMLCh *name) const
 {
-  ATQNameConstructor *constr = new (mm_)
-    ATQNameConstructor(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                       SchemaSymbols::fgDT_QNAME,
-                       uri, prefix, name);
-
-  return wrap(new (mm_) XQLiteral(constr, mm_));
+  return wrap(new (mm_) XQQNameLiteral(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                                       SchemaSymbols::fgDT_QNAME,
+                                       uri, prefix, name, mm_));
 }
 
 ASTNode *XSLT2Lexer::makeDirectName(const XMLCh *prefix, const XMLCh *name) const
@@ -754,12 +749,9 @@ ASTNode *XSLT2Lexer::makeDirectName(const XMLCh *prefix, const XMLCh *name) cons
 
 ASTNode *XSLT2Lexer::makeStringLiteral(const XMLCh *value) const
 {
-  AnyAtomicTypeConstructor *constr = new (mm_)
-    AnyAtomicTypeConstructor(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                             SchemaSymbols::fgDT_STRING,
-                             value, AnyAtomicType::STRING);
-
-  return wrap(new (mm_) XQLiteral(constr, mm_));
+  return wrap(new (mm_) XQLiteral(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                                  SchemaSymbols::fgDT_STRING,
+                                  value, AnyAtomicType::STRING, mm_));
 }
 
 void XSLT2Lexer::pushElementStack()

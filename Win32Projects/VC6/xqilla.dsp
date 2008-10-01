@@ -273,10 +273,6 @@ SOURCE=..\..\src\ast\XQOrderingChange.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\ast\XQParenthesizedExpr.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\ast\XQPIConstructor.cpp
 # End Source File
 # Begin Source File
@@ -506,10 +502,6 @@ SOURCE=..\..\include\xqilla\ast\XQOperator.hpp
 # Begin Source File
 
 SOURCE=..\..\include\xqilla\ast\XQOrderingChange.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\include\xqilla\ast\XQParenthesizedExpr.hpp
 # End Source File
 # Begin Source File
 
@@ -2533,15 +2525,7 @@ SOURCE=..\..\src\items\AnyAtomicType.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\items\AnyAtomicTypeConstructor.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\items\ATDurationOrDerived.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\items\ATQNameConstructor.cpp
 # End Source File
 # Begin Source File
 
@@ -2577,19 +2561,11 @@ SOURCE=..\..\src\items\Numeric.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\items\NumericTypeConstructor.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\items\Timezone.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\include\xqilla\items\AnyAtomicType.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\include\xqilla\items\AnyAtomicTypeConstructor.hpp
 # End Source File
 # Begin Source File
 
@@ -2661,10 +2637,6 @@ SOURCE=..\..\include\xqilla\items\ATNotationOrDerived.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\include\xqilla\items\ATQNameConstructor.hpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\include\xqilla\items\ATQNameOrDerived.hpp
 # End Source File
 # Begin Source File
@@ -2701,19 +2673,11 @@ SOURCE=..\..\include\xqilla\items\Item.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\include\xqilla\items\ItemConstructor.hpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\include\xqilla\items\Node.hpp
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\include\xqilla\items\Numeric.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\include\xqilla\items\NumericTypeConstructor.hpp
 # End Source File
 # Begin Source File
 
@@ -2906,10 +2870,6 @@ SOURCE=..\..\src\mapm\mapmutil.c
 # Begin Source File
 
 SOURCE=..\..\src\mapm\mapmutl2.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\mapm\README
 # End Source File
 # Begin Source File
 

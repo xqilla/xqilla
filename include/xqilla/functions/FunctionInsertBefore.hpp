@@ -19,10 +19,6 @@
  * $Id$
  */
 
-/*
-  xf:insert-before(item* $target, decimal $position, item* $inserts) => item*
-*/
-
 #ifndef _FUNCTIONINSERTBEFORE_HPP
 #define _FUNCTIONINSERTBEFORE_HPP
 
@@ -42,23 +38,6 @@ public:
   ASTNode* staticResolution(StaticContext *context);
   ASTNode *staticTyping(StaticContext *context);
   Result createResult(DynamicContext* context, int flags=0) const;
-
-private:
-  class InsertBeforeResult : public ResultImpl
-  {
-  public:
-    InsertBeforeResult(const FunctionInsertBefore *func);
-
-    Item::Ptr next(DynamicContext *context);
-  private:
-    const FunctionInsertBefore *_func;
-    Numeric::Ptr _position;
-    Numeric::Ptr _one;
-    Numeric::Ptr _i;
-    bool _insertsDone;
-    Result _target;
-    Result _inserts;
-  };
 };
 
-#endif // _FUNCTIONINSERTBEFORE_HPP
+#endif

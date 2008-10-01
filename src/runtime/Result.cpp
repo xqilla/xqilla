@@ -35,8 +35,28 @@
 
 EmptyResult Result::_empty(0);
 
+class ItemResult : public ResultImpl
+{
+public:
+  ItemResult(const Item::Ptr &item)
+    : ResultImpl(0),
+      item_(item)
+  {
+  }
+
+  virtual Item::Ptr nextOrTail(Result &tail, DynamicContext *context)
+  {
+    Item::Ptr item = item_;
+    tail = 0;
+    return item;
+  }
+
+private:
+  Item::Ptr item_;
+};
+
 Result::Result(const Item::Ptr &item)
-  : _impl(new SequenceResult(0, item))
+  : _impl(new ItemResult(item))
 {
   _impl->setResultPointer(this);
 }

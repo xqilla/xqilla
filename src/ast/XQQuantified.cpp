@@ -20,7 +20,7 @@
  */
 
 #include <xqilla/ast/XQQuantified.hpp>
-#include <xqilla/ast/XQSequence.hpp>
+#include <xqilla/ast/XQLiteral.hpp>
 #include <xqilla/ast/TupleNode.hpp>
 #include <xqilla/runtime/SingleResult.hpp>
 #include <xqilla/context/DynamicContext.hpp>
@@ -70,11 +70,7 @@ ASTNode *XQQuantified::staticTyping(StaticContext *context)
     AutoDelete<DynamicContext> dContext(context->createDynamicContext());
     dContext->setMemoryManager(context->getMemoryManager());
     bool value = ((ATBooleanOrDerived*)expr_->createResult(dContext)->next(dContext).get())->isTrue();
-    ASTNode *result = new (getMemoryManager())
-      XQSequence(dContext->getItemFactory()->createBoolean(value, dContext),
-                 dContext, getMemoryManager());
-    result->setLocationInfo(this);
-    return result->staticTyping(context);
+    return XQLiteral::create(dContext->getItemFactory()->createBoolean(value, dContext), dContext, context->getMemoryManager(), this)->staticTyping(context);
   }
 
   return this;

@@ -22,52 +22,32 @@
 #ifndef _XQSEQUENCE_HPP
 #define _XQSEQUENCE_HPP
 
-#include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/ast/ASTNodeImpl.hpp>
-#include <xqilla/items/ItemConstructor.hpp>
 
-class XPath2MemoryManager;
-class DynamicContext;
-
-/** deals with the numeric data type */
 class XQILLA_API XQSequence : public ASTNodeImpl
 {
 public:
-  XQSequence(const Item::Ptr &item, DynamicContext *context, XPath2MemoryManager* memMgr);
-  XQSequence(ItemConstructor *ic, XPath2MemoryManager* memMgr);
-  XQSequence(const ItemConstructor::Vector &ic, XPath2MemoryManager* memMgr);
-  XQSequence(XPath2MemoryManager* memMgr);
+  XQSequence(XPath2MemoryManager* memMgr);	
+  XQSequence(const VectorOfASTNodes &children, XPath2MemoryManager* memMgr);	
 
-  ~XQSequence();
+  ///adds a ASTNode to this XQSequence
+  void addItem(ASTNode* di);
 
-  virtual bool isDateOrTimeAndHasNoTimezone(StaticContext* context) const;
-
-  virtual ASTNode* staticResolution(StaticContext *context);
+  virtual ASTNode *staticResolution(StaticContext *context);
   virtual ASTNode *staticTyping(StaticContext *context);
+
   virtual Result createResult(DynamicContext* context, int flags=0) const;
   virtual EventGenerator::Ptr generateEvents(EventHandler *events, DynamicContext *context,
                               bool preserveNS, bool preserveType) const;
+  virtual PendingUpdateList createUpdateList(DynamicContext *context) const;
 
-  const ItemConstructor::Vector &getItemConstructors() const
-  {
-    return _itemConstructors;
-  }
+  const VectorOfASTNodes &getChildren() const { return _astNodes; }
 
   static XQSequence *constantFold(Result &result, DynamicContext *context, XPath2MemoryManager* memMgr,
                                   const LocationInfo *location);
 
 private:
-  class SequenceResult : public ResultImpl {
-  public:
-    SequenceResult(const XQSequence *seq);
-
-    Item::Ptr next(DynamicContext *context);
-  private:
-    const XQSequence *_seq;
-    ItemConstructor::Vector::const_iterator _it;
-  };
-
-  ItemConstructor::Vector _itemConstructors;
+  VectorOfASTNodes _astNodes;
 };
 
 #endif

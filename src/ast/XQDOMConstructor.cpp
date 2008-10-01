@@ -23,7 +23,7 @@
 #include <xqilla/ast/XQDOMConstructor.hpp>
 #include <xqilla/ast/XQAtomize.hpp>
 #include <xqilla/ast/XQTreatAs.hpp>
-#include <xqilla/ast/XQSequence.hpp>
+#include <xqilla/ast/XQLiteral.hpp>
 #include <xqilla/ast/XQNamespaceBinding.hpp>
 #include <xqilla/schema/SequenceType.hpp>
 #include <xqilla/context/DynamicContext.hpp>
@@ -31,7 +31,6 @@
 #include <xqilla/context/ContextHelpers.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/utils/XPath2NSUtils.hpp>
-#include <xqilla/items/ATQNameConstructor.hpp>
 #include <xqilla/exceptions/ASTException.hpp>
 #include <xqilla/exceptions/XPath2TypeMatchException.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>
@@ -165,12 +164,9 @@ ASTNode *XQDirectName::staticResolution(StaticContext *context)
     uri = context->getUriBoundToPrefix(prefix, this);
   }
 
-  ATQNameConstructor *constr = new (mm)
-    ATQNameConstructor(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                       SchemaSymbols::fgDT_QNAME,
-                       uri, prefix, XPath2NSUtils::getLocalName(qname_));
-
-  return (new (mm) XQSequence(constr, mm))->staticResolution(context);
+  return (new (mm) XQQNameLiteral(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                                  SchemaSymbols::fgDT_QNAME, uri, prefix,
+                                  XPath2NSUtils::getLocalName(qname_), mm))->staticResolution(context);
 }
 
 ASTNode *XQDirectName::staticTyping(StaticContext *context)

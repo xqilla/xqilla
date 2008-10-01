@@ -94,7 +94,6 @@
       <File RelativePath="..\..\include\xqilla\ast\XQLiteral.hpp"/>
       <File RelativePath="..\..\include\xqilla\ast\XQNav.hpp"/>
       <File RelativePath="..\..\include\xqilla\ast\XQOperator.hpp"/>
-      <File RelativePath="..\..\include\xqilla\ast\XQParenthesizedExpr.hpp"/>
       <File RelativePath="..\..\include\xqilla\ast\XQSequence.hpp"/>
       <File RelativePath="..\..\include\xqilla\ast\XQStep.hpp"/>
       <File RelativePath="..\..\include\xqilla\ast\XQTreatAs.hpp"/>
@@ -368,20 +367,16 @@
       <File RelativePath="..\..\include\xqilla\items\ATGYearOrDerived.hpp"/>
       <File RelativePath="..\..\include\xqilla\items\ATHexBinaryOrDerived.hpp"/>
       <File RelativePath="..\..\include\xqilla\items\ATNotationOrDerived.hpp"/>
-      <File RelativePath="..\..\include\xqilla\items\ATQNameConstructor.hpp"/>
       <File RelativePath="..\..\include\xqilla\items\ATQNameOrDerived.hpp"/>
       <File RelativePath="..\..\include\xqilla\items\ATStringOrDerived.hpp"/>
       <File RelativePath="..\..\include\xqilla\items\ATTimeOrDerived.hpp"/>
       <File RelativePath="..\..\include\xqilla\items\ATUntypedAtomic.hpp"/>
-      <File RelativePath="..\..\include\xqilla\items\AnyAtomicTypeConstructor.hpp"/>
       <File RelativePath="..\..\include\xqilla\items\AnyAtomicType.hpp"/>
       <File RelativePath="..\..\include\xqilla\items\DateOrTimeType.hpp"/>
       <File RelativePath="..\..\include\xqilla\items\FunctionRef.hpp"/>
-      <File RelativePath="..\..\include\xqilla\items\ItemConstructor.hpp"/>
       <File RelativePath="..\..\include\xqilla\items\Item.hpp"/>
       <File RelativePath="..\..\include\xqilla\items\Node.hpp"/>
       <File RelativePath="..\..\include\xqilla\items\Numeric.hpp"/>
-      <File RelativePath="..\..\include\xqilla\items\NumericTypeConstructor.hpp"/>
       <File RelativePath="..\..\include\xqilla\items\Timezone.hpp"/>
       <File RelativePath="..\..\include\xqilla\items\DatatypeLookup.hpp"/>
       <File RelativePath="..\..\include\xqilla\items\DatatypeFactory.hpp"/>
@@ -533,7 +528,6 @@
       <File RelativePath="..\..\src\ast\XQOperator.cpp"/>
       <File RelativePath="..\..\src\ast\XQOrderingChange.cpp"/>
       <File RelativePath="..\..\src\ast\XQPIConstructor.cpp"/>
-      <File RelativePath="..\..\src\ast\XQParenthesizedExpr.cpp"/>
       <File RelativePath="..\..\src\ast\XQPredicate.cpp"/>
       <File RelativePath="..\..\src\ast\XQQuantified.cpp"/>
       <File RelativePath="..\..\src\ast\XQReturn.cpp"/>
@@ -783,10 +777,8 @@
     </Filter>
     <Filter Filter="" Name="items">
       <File RelativePath="..\..\src\items\ATDurationOrDerived.cpp"/>
-      <File RelativePath="..\..\src\items\ATQNameConstructor.cpp"/>
       <File RelativePath="..\..\src\items\ATUntypedAtomic.cpp"/>
       <File RelativePath="..\..\src\items\AnyAtomicType.cpp"/>
-      <File RelativePath="..\..\src\items\AnyAtomicTypeConstructor.cpp"/>
       <File RelativePath="..\..\src\items\DatatypeFactory.cpp"/>
       <File RelativePath="..\..\src\items\DatatypeFactoryTemplate.hpp"/>
       <File RelativePath="..\..\src\items\DatatypeLookup.cpp"/>
@@ -794,7 +786,6 @@
       <File RelativePath="..\..\src\items\Item.cpp"/>
       <File RelativePath="..\..\src\items\Node.cpp"/>
       <File RelativePath="..\..\src\items\Numeric.cpp"/>
-      <File RelativePath="..\..\src\items\NumericTypeConstructor.cpp"/>
       <File RelativePath="..\..\src\items\Timezone.cpp"/>
       <File RelativePath="..\..\src\items\impl\ATAnySimpleTypeImpl.cpp"/>
       <File RelativePath="..\..\src\items\impl\ATAnySimpleTypeImpl.hpp"/>

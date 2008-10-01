@@ -19,70 +19,15 @@
  * $Id$
  */
 
-#include <sstream>
-
 #include "../config/xqilla_config.h"
 #include <assert.h>
 #include <xqilla/ast/XQSequence.hpp>
-#include <xqilla/ast/ASTNode.hpp>
-
-#if defined(WIN32) && !defined(__CYGWIN__)
-#define snprintf _snprintf
-#endif
-
-#include <xqilla/ast/StaticAnalysis.hpp>
-#include <xqilla/runtime/Sequence.hpp>
-#include <xqilla/runtime/SequenceResult.hpp>
+#include <xqilla/ast/XQLiteral.hpp>
+#include <xqilla/update/PendingUpdateList.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/Item.hpp>
-#include <xqilla/items/AnyAtomicTypeConstructor.hpp>
-#include <xqilla/items/NumericTypeConstructor.hpp>
-#include <xqilla/items/ATQNameConstructor.hpp>
-#include <xqilla/items/ATQNameOrDerived.hpp>
-#include <xqilla/items/DateOrTimeType.hpp>
-#include <xqilla/utils/XPath2Utils.hpp>
-#include <xqilla/exceptions/IllegalArgumentException.hpp>
-
-inline ItemConstructor *itemToItemConstructor(const Item::Ptr &item, DynamicContext *context, XPath2MemoryManager *memMgr)
-{
-  if(item->isAtomicValue()) {
-    const AnyAtomicType *atom = (const AnyAtomicType*)item.get();
-    switch(atom->getPrimitiveTypeIndex()) {
-    case AnyAtomicType::QNAME: {
-      const ATQNameOrDerived *qname = (const ATQNameOrDerived*)atom;
-      return new (memMgr) ATQNameConstructor(atom->getTypeURI(),
-                                             atom->getTypeName(),
-                                             qname->getURI(),
-                                             qname->getPrefix(),
-                                             qname->getName());
-    }
-    case AnyAtomicType::DECIMAL:
-    case AnyAtomicType::DOUBLE:
-    case AnyAtomicType::FLOAT: {
-      const Numeric *number = (const Numeric*)atom;
-      if(number->getState()==Numeric::NUM || (number->getState()==Numeric::NEG_NUM && !number->isZero()))
-        return new (memMgr) NumericTypeConstructor(number->getTypeURI(),
-                                                   number->getTypeName(),
-                                                   number->asMAPM(),
-                                                   number->getPrimitiveTypeIndex(),
-                                                   memMgr);
-      else
-        return new (memMgr) AnyAtomicTypeConstructor(number->getTypeURI(),
-                                                     number->getTypeName(),
-                                                     number->asString(context),
-                                                     number->getPrimitiveTypeIndex());
-    }
-    default:
-      return new (memMgr) AnyAtomicTypeConstructor(atom->getTypeURI(),
-                                                   atom->getTypeName(),
-                                                   atom->asString(context),
-                                                   atom->getPrimitiveTypeIndex());
-    }
-  }
-  else {
-    XQThrow2(IllegalArgumentException, X("itemToItemConstructor"), X("Cannot create an ItemConstructor for a non atomic item"));
-  }
-}
+#include <xqilla/exceptions/StaticErrorException.hpp>
+#include <xqilla/runtime/ClosureResult.hpp>
 
 static const unsigned int CONSTANT_FOLD_LIMIT = 30;
 
@@ -94,8 +39,11 @@ XQSequence *XQSequence::constantFold(Result &result, DynamicContext *context, XP
 
   Item::Ptr item;
   while((item = result->next(context)).notNull()) {
-    if(seq->_itemConstructors.size() > CONSTANT_FOLD_LIMIT) return 0;
-    seq->_itemConstructors.push_back(itemToItemConstructor(item, context, memMgr));
+    if(seq->_astNodes.size() > CONSTANT_FOLD_LIMIT) {
+      seq->release();
+      return 0;
+    }
+    seq->addItem(XQLiteral::create(item, context, memMgr, location));
   }
 
   // Don't specify a context for staticTyping
@@ -103,118 +51,163 @@ XQSequence *XQSequence::constantFold(Result &result, DynamicContext *context, XP
   return seq;
 }
 
-XQSequence::XQSequence(const Item::Ptr &item, DynamicContext *context, XPath2MemoryManager* memMgr)
-  : ASTNodeImpl(SEQUENCE, memMgr),
-    _itemConstructors(XQillaAllocator<ItemConstructor*>(memMgr))
-{
-  _itemConstructors.push_back(itemToItemConstructor(item, context, memMgr));
-  staticTyping(0);
-}
-
-XQSequence::XQSequence(ItemConstructor *ic, XPath2MemoryManager* memMgr)
-  : ASTNodeImpl(SEQUENCE, memMgr),
-    _itemConstructors(XQillaAllocator<ItemConstructor*>(memMgr))
-{
-  _itemConstructors.push_back(ic);
-  staticTyping(0);
-}
-
 XQSequence::XQSequence(XPath2MemoryManager* memMgr)
   : ASTNodeImpl(SEQUENCE, memMgr),
-    _itemConstructors(XQillaAllocator<ItemConstructor*>(memMgr))
+    _astNodes(XQillaAllocator<ASTNode*>(memMgr))
 {
-  staticTyping(0);
 }
 
-XQSequence::XQSequence(const ItemConstructor::Vector &ic, XPath2MemoryManager* memMgr)
+XQSequence::XQSequence(const VectorOfASTNodes &children, XPath2MemoryManager* memMgr)
   : ASTNodeImpl(SEQUENCE, memMgr),
-    _itemConstructors(XQillaAllocator<ItemConstructor*>(memMgr))
+    _astNodes(XQillaAllocator<ASTNode*>(memMgr))
 {
-  _itemConstructors = ic;
-  staticTyping(0);
+  _astNodes = children;
 }
 
-XQSequence::~XQSequence()
+void XQSequence::addItem(ASTNode* di)
 {
-  //no-op
+  _astNodes.push_back(di);
 }
 
 ASTNode* XQSequence::staticResolution(StaticContext *context)
 {
+  for(VectorOfASTNodes::iterator i = _astNodes.begin(); i != _astNodes.end(); ++i) {
+    *i = (*i)->staticResolution(context);
+  }
   return this;
 }
 
-ASTNode *XQSequence::staticTyping(StaticContext *context)
+ASTNode* XQSequence::staticTyping(StaticContext *context)
 {
   _src.clear();
 
-  _src.getStaticType() = StaticType();
+  bool doneOne = false;
+  bool possiblyUpdating = true;
+  bool nestedSeq = false;
+  VectorOfASTNodes::iterator i = _astNodes.begin();
 
-  ItemConstructor::Vector::iterator it = _itemConstructors.begin();
-  if(it == _itemConstructors.end()) {
+  if(i == _astNodes.end()) {
     _src.possiblyUpdating(true);
   }
-  else {
-    for(; it != _itemConstructors.end(); ++it) {
-      _src.getStaticType().typeConcat((*it)->getStaticType());
+
+  for(; i != _astNodes.end(); ++i) {
+    *i = (*i)->staticTyping(context);
+
+    if(_src.isUpdating()) {
+      if(!(*i)->getStaticAnalysis().isUpdating() &&
+         !(*i)->getStaticAnalysis().isPossiblyUpdating())
+        XQThrow(StaticErrorException, X("XQSequence::staticTyping"),
+                X("Mixed updating and non-updating operands [err:XUST0001]"));
     }
+    else {
+      if((*i)->getStaticAnalysis().isUpdating() && !possiblyUpdating)
+        XQThrow(StaticErrorException, X("XQSequence::staticTyping"),
+                X("Mixed updating and non-updating operands [err:XUST0001]"));
+    }
+
+    if(possiblyUpdating)
+      possiblyUpdating = (*i)->getStaticAnalysis().isPossiblyUpdating();
+
+    if(!doneOne) {
+      doneOne = true;
+      _src.getStaticType() = (*i)->getStaticAnalysis().getStaticType();
+    } else {
+      _src.getStaticType().typeConcat((*i)->getStaticAnalysis().getStaticType());
+    }
+
+    if((*i)->getType() == SEQUENCE)
+      nestedSeq = true;
+
+    _src.add((*i)->getStaticAnalysis());
   }
 
+  if(context && nestedSeq) {
+    XPath2MemoryManager *mm = context->getMemoryManager();
+    VectorOfASTNodes newArgs = VectorOfASTNodes(XQillaAllocator<ASTNode*>(mm));
+    for(i = _astNodes.begin(); i != _astNodes.end(); ++i) {
+      if((*i)->getType() == SEQUENCE) {
+        XQSequence *arg = (XQSequence*)*i;
+        for(VectorOfASTNodes::iterator j = arg->_astNodes.begin(); j != arg->_astNodes.end(); ++j) {
+          newArgs.push_back(*j);
+        }
+      }
+      else {
+        newArgs.push_back(*i);
+      }
+    }
+    _astNodes = newArgs;
+  }
+
+  // Dissolve ourselves if we have only one child
+  if(context && _astNodes.size() == 1) {
+    return _astNodes.front()->staticTyping(context);
+  }
   return this;
 }
 
+EventGenerator::Ptr XQSequence::generateEvents(EventHandler *events, DynamicContext *context,
+                                                        bool preserveNS, bool preserveType) const
+{
+  VectorOfASTNodes::const_iterator i = _astNodes.begin();
+  VectorOfASTNodes::const_iterator end = _astNodes.end();
+  if(i == end) return 0;
+  --end;
+  for(; i != end; ++i) {
+    (*i)->generateAndTailCall(events, context, preserveNS, preserveType);
+  }
+  return new ClosureEventGenerator(*i, context, preserveNS, preserveType);
+}
+
+PendingUpdateList XQSequence::createUpdateList(DynamicContext *context) const
+{
+  PendingUpdateList result;
+  for(VectorOfASTNodes::const_iterator i = _astNodes.begin(); i != _astNodes.end(); ++i) {
+    result.mergeUpdates((*i)->createUpdateList(context));
+  }
+  return result;
+}
+
+class XQSequenceResult : public ResultImpl
+{
+public:
+  XQSequenceResult(const XQSequence *ast)
+    : ResultImpl(ast),
+      ast_(ast),
+      i_(ast->getChildren().begin()),
+      result_(0)
+  {
+  }
+
+  virtual Item::Ptr nextOrTail(Result &tail, DynamicContext *context)
+  {
+    Item::Ptr item = result_->next(context);
+
+    while(item.isNull()) {
+      const ASTNode *ast = *i_;
+      ++i_;
+
+      if(i_ == ast_->getChildren().end()) {
+        // Tail call optimisation
+        tail = ClosureResult::create(ast, context);
+        return 0;
+      }
+
+      result_ = ast->createResult(context);
+      item = result_->next(context);
+    }
+
+    return item;
+  }
+
+private:
+  const XQSequence *ast_;
+  VectorOfASTNodes::const_iterator i_;
+  Result result_;
+};
+
 Result XQSequence::createResult(DynamicContext* context, int flags) const
 {
-  return new SequenceResult(this);
-}
-
-EventGenerator::Ptr XQSequence::generateEvents(EventHandler *events, DynamicContext *context,
-                                bool preserveNS, bool preserveType) const
-{
-  for(ItemConstructor::Vector::const_iterator it = _itemConstructors.begin();
-      it != _itemConstructors.end(); ++it) {
-    (*it)->generateEvents(events, context);
-  }
-  return 0;
-}
-
-/** Returns true if this XQ has no predicates, and is an instance of
-    XQSequence or XQLiteral. If the literal value of this XQ
-    is a single DateOrTimeType, then !hasTimezone() on it must return true,
-    otherwise this method will return false. */
-bool XQSequence::isDateOrTimeAndHasNoTimezone(StaticContext *context) const
-{
-  if(context == 0) return ASTNodeImpl::isDateOrTimeAndHasNoTimezone(context);
-
-  AutoDelete<DynamicContext> dContext(context->createDynamicContext());
-  dContext->setMemoryManager(context->getMemoryManager());
-
-  ItemConstructor::Vector::const_iterator it = _itemConstructors.begin();
-  for(; it != _itemConstructors.end(); ++it) {
-    Item::Ptr item = (*it)->createItem(dContext);
-    if(item->isAtomicValue() &&
-       ((const AnyAtomicType::Ptr)item)->isDateOrTimeTypeValue() &&
-       !((const DateOrTimeType::Ptr)item)->hasTimezone()) {
-      return true;
-    }
-  }
-  return false;
-}
-
-XQSequence::SequenceResult::SequenceResult(const XQSequence *seq)
-  : ResultImpl(seq),
-    _seq(seq),
-    _it(seq->getItemConstructors().begin())
-{
-}
-
-Item::Ptr XQSequence::SequenceResult::next(DynamicContext *context)
-{
-  Item::Ptr item;
-  if(_it != _seq->getItemConstructors().end()) {
-    item = (*_it)->createItem(context);
-    ++_it;
-  }
-  return item;
+  if(_astNodes.empty()) return 0;
+  return new XQSequenceResult(this);
 }
 

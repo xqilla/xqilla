@@ -29,7 +29,6 @@
 #include <xqilla/ast/ASTNodeImpl.hpp>
 #include <xqilla/ast/XQLiteral.hpp>
 #include <xqilla/ast/XQNav.hpp>
-#include <xqilla/ast/XQParenthesizedExpr.hpp>
 #include <xqilla/ast/XQSequence.hpp>
 #include <xqilla/ast/XQStep.hpp>
 #include <xqilla/ast/XQVariable.hpp>
@@ -97,8 +96,9 @@
   virtual ASTNode *optimizeUnknown(ASTNode *item); \
   virtual ASTNode *optimizeFunction(XQFunction *item); \
   virtual ASTNode *optimizeLiteral(XQLiteral *item); \
+  virtual ASTNode *optimizeQNameLiteral(XQQNameLiteral *item); \
+  virtual ASTNode *optimizeNumericLiteral(XQNumericLiteral *item); \
   virtual ASTNode *optimizeNav(XQNav *item); \
-  virtual ASTNode *optimizeParenthesizedExpr(XQParenthesizedExpr *item); \
   virtual ASTNode *optimizeSequence(XQSequence *item); \
   virtual ASTNode *optimizeStep(XQStep *item); \
   virtual ASTNode *optimizeVariable(XQVariable *item); \

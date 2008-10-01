@@ -93,7 +93,8 @@ ASTNode *ASTReleaser::optimize ## methodname (classname *item) \
 // TBD release FTSelection objects - jpcs
 
 RELEASE_XQ(Literal)
-RELEASE_XQ(Sequence)
+RELEASE_XQ(QNameLiteral)
+RELEASE_XQ(NumericLiteral)
 RELEASE_XQ(Step)
 RELEASE_XQ(Variable)
 RELEASE_XQ(If)
@@ -153,9 +154,9 @@ ASTNode *ASTReleaser::optimizeNav(XQNav *item)
   RELEASE_IMPL();
 }
 
-ASTNode *ASTReleaser::optimizeParenthesizedExpr(XQParenthesizedExpr *item)
+ASTNode *ASTReleaser::optimizeSequence(XQSequence *item)
 {
-  ASTVisitor::optimizeParenthesizedExpr(item);
+  ASTVisitor::optimizeSequence(item);
   // Release the argument vector
   const_cast<VectorOfASTNodes&>(item->getChildren()).~VectorOfASTNodes();
   RELEASE_IMPL();
