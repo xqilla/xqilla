@@ -549,7 +549,7 @@ ASTNode *PartialEvaluator::optimizeUserFunction(XQUserFunctionInstance *item)
   const XQUserFunction *funcDef = item->getFunctionDefinition();
 
   if(funcDef->getFunctionBody() && functionInlineLimit_ > 0 && (!funcDef->isRecursive() || constantArg)) {
-    AutoReset<unsigned int> reset(functionInlineLimit_);
+    AutoReset<size_t> reset(functionInlineLimit_);
     --functionInlineLimit_;
 
     XPath2MemoryManager *mm = context_->getMemoryManager();
