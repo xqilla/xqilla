@@ -31,8 +31,6 @@
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/context/ItemFactory.hpp>
 
-#include <xercesc/validators/schema/SchemaSymbols.hpp>
-
 XERCES_CPP_NAMESPACE_USE
 
 XQEffectiveBooleanValue::XQEffectiveBooleanValue(ASTNode* expr, XPath2MemoryManager* memMgr)
@@ -66,41 +64,12 @@ ASTNode *XQEffectiveBooleanValue::staticTyping(StaticContext *context)
               "of an updating expression [err:XUST0001]"));
   }
 
-  if(context) {
-    XPath2MemoryManager *mm = context->getMemoryManager();
-
-    if(expr_->getStaticAnalysis().getStaticType().getMax() == 0) {
-      ASTNode *result = new (mm) XQLiteral(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                                           SchemaSymbols::fgDT_BOOLEAN,
-                                           SchemaSymbols::fgATTVAL_FALSE,
-                                           AnyAtomicType::BOOLEAN, mm);
-      result->setLocationInfo(this);
-      return result->staticTyping(context);
-    }
-    else if(expr_->getStaticAnalysis().getStaticType().getMin() == 1 &&
-            expr_->getStaticAnalysis().getStaticType().isType(StaticType::NODE_TYPE)) {
-      ASTNode *result = new (mm) XQLiteral(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                                           SchemaSymbols::fgDT_BOOLEAN,
-                                           SchemaSymbols::fgATTVAL_TRUE,
-                                           AnyAtomicType::BOOLEAN, mm);
-      result->setLocationInfo(this);
-      return result->staticTyping(context);
-    }
-  }
-
-  if(expr_->getStaticAnalysis().getStaticType().getMin() == 1 &&
-          expr_->getStaticAnalysis().getStaticType().getMax() == 1 &&
-          expr_->getStaticAnalysis().getStaticType().isType(StaticType::BOOLEAN_TYPE)) {
-    return expr_;
-  }
-  else if(expr_->getStaticAnalysis().getStaticType().getMin() >= 2) {
+  if(expr_->getStaticAnalysis().getStaticType().getMin() >= 2 &&
+     !expr_->getStaticAnalysis().getStaticType().containsType(StaticType::NODE_TYPE)) {
     XQThrow(XPath2TypeMatchException, X("XQEffectiveBooleanValue::staticTyping"),
             X("Effective Boolean Value cannot be extracted from this type [err:FORG0006]"));
   }
 
-  if(expr_->isConstant()) {
-    return constantFold(context);
-  }
   return this;
 }
 

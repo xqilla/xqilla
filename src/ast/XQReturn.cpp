@@ -57,13 +57,6 @@ ASTNode *XQReturn::staticTyping(StaticContext *context)
 
   parent_ = parent_->staticTypingTeardown(context, _src);
 
-  if(parent_->getType() == TupleNode::CONTEXT_TUPLE) {
-    return expr_;
-  }
-
-  if(!_src.isUsed()) {
-    return constantFold(context);
-  }
   return this;
 }
 

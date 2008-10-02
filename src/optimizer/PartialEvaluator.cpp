@@ -33,6 +33,9 @@
 #include <xqilla/operators/Divide.hpp>
 #include <xqilla/operators/IntegerDivide.hpp>
 #include <xqilla/operators/Mod.hpp>
+#include <xqilla/operators/UnaryMinus.hpp>
+#include <xqilla/operators/And.hpp>
+#include <xqilla/operators/Or.hpp>
 
 #include <set>
 #include <map>
@@ -103,6 +106,7 @@ static void removeUnusedFunctions(XQQuery *query, const set<XQUserFunction*> &fo
       else {
         const_cast<ASTNode*>((*funcIt)->getFunctionBody())->release();
         // TBD Free patterns, template instance
+        // TBD Remove function from function table! - jpcs
       }
     }
     *funcs = newFuncs;
@@ -194,33 +198,43 @@ ASTNode *PartialEvaluator::optimize(ASTNode *item)
   item = ASTVisitor::optimize(item);
 
   // Constant fold
-  if(!item->getStaticAnalysis().isUsed()) {
-    XPath2MemoryManager* mm = context_->getMemoryManager();
+  switch(item->getType()) {
+  case ASTNode::SEQUENCE:
+  case ASTNode::LITERAL:
+  case ASTNode::NUMERIC_LITERAL:
+  case ASTNode::QNAME_LITERAL:
+    break;
+  default:
+    if(!item->getStaticAnalysis().isUsed()) {
+      XPath2MemoryManager* mm = context_->getMemoryManager();
 
-    try {
-      ASTNode *newBlock = 0;
-      {
-        Result result = item->createResult(context_);
-        newBlock = XQSequence::constantFold(result, context_, mm, item);
+      try {
+        ASTNode *newBlock = 0;
+        {
+          Result result = item->createResult(context_);
+          newBlock = XQSequence::constantFold(result, context_, mm, item);
+        }
+
+        context_->clearDynamicContext();
+
+        if(newBlock != 0) {
+          if(checkSizeLimit(item, newBlock)) {
+            item->release();
+            return newBlock;
+          }
+          else {
+            newBlock->release();
+            return item;
+          }
+        }
       }
-
-      context_->clearDynamicContext();
-
-      if(newBlock != 0) {
-        if(checkSizeLimit(item, newBlock)) {
-          item->release();
-          return newBlock;
-        }
-        else {
-          newBlock->release();
-          return item;
-        }
+      catch(XQException &ex) {
+        // Constant folding failed
       }
     }
-    catch(XQException &ex) {
-      // Constant folding failed
-    }
+    break;
   }
+
   return item;
 }
 
@@ -739,7 +753,18 @@ ASTNode *PartialEvaluator::optimizeReturn(XQReturn *item)
     }
   }
 
-  return inlineLets(item, context_, sizeLimit_);
+  result = inlineLets(item, context_, sizeLimit_);
+  if(result != item) return result;
+
+  if(item->getParent()->getType() == TupleNode::CONTEXT_TUPLE) {
+    result = item->getExpression();
+    item->setExpression(0);
+    sizeLimit_ += ASTCounter().count(item);
+    item->release();
+    return result;
+  }
+
+  return item;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -812,13 +837,139 @@ ASTNode *PartialEvaluator::optimizePredicate(XQPredicate *item)
     }
   }
 
+  if(item->getPredicate()->getStaticAnalysis().getStaticType().getMax() == 0) {
+    // If there are no items EBV returns false, which is constant folded to an empty sequence
+    XPath2MemoryManager *mm = context_->getMemoryManager();
+    ASTNode *result = new (mm) XQSequence(mm);
+    result->setLocationInfo(item->getExpression());
+    sizeLimit_ += ASTCounter().count(item);
+    item->release();
+    return optimize(result);
+  }
+
+  if(item->getPredicate()->getStaticAnalysis().getStaticType().getMin() >= 1 &&
+     item->getPredicate()->getStaticAnalysis().getStaticType().isType(StaticType::NODE_TYPE)) {
+    // If there is one or more nodes, EBV returns true
+    ASTNode *tmp = const_cast<ASTNode *>(item->getExpression());
+    item->setExpression(0);
+    sizeLimit_ += ASTCounter().count(item);
+    item->release();
+    return optimize(tmp);
+  }
+
   item->setExpression(optimize(const_cast<ASTNode *>(item->getExpression())));
+
+  if(item->getExpression()->getStaticAnalysis().getStaticType().getMax() == 0) {
+    // If the expression doesn't return any results, it doesn't need a predicate!
+    ASTNode *result = item->getExpression();
+    item->setExpression(0);
+    sizeLimit_ += ASTCounter().count(item);
+    item->release();
+    return result;
+  }
+
+  return item;
+}
+
+ASTNode *PartialEvaluator::optimizeAnd(And *item)
+{
+  VectorOfASTNodes &args = const_cast<VectorOfASTNodes &>(item->getArguments());
+
+  VectorOfASTNodes::iterator i;
+  for(i = args.begin(); i != args.end(); ++i) {
+    if(!(*i)->getStaticAnalysis().isUsed()) {
+      if(!((ATBooleanOrDerived*)(*i)->createResult(context_)->next(context_).get())->isTrue()) {
+        // It's constantly false, so this expression is false
+        ASTNode *result = XQLiteral::create(false, context_->getMemoryManager(), item);
+        sizeLimit_ += ASTCounter().count(item);
+        sizeLimit_ -= ASTCounter().count(result);
+        item->release();
+        return result;
+      }
+    }
+  }
+
+  return item;
+}
+
+ASTNode *PartialEvaluator::optimizeOr(Or *item)
+{
+  VectorOfASTNodes &args = const_cast<VectorOfASTNodes &>(item->getArguments());
+
+  VectorOfASTNodes::iterator i;
+  for(i = args.begin(); i != args.end(); ++i) {
+    if(!(*i)->getStaticAnalysis().isUsed()) {
+      if(((ATBooleanOrDerived*)(*i)->createResult(context_)->next(context_).get())->isTrue()) {
+        // It's constantly true, so this expression is true
+        ASTNode *result = XQLiteral::create(true, context_->getMemoryManager(), item);
+        sizeLimit_ += ASTCounter().count(item);
+        sizeLimit_ -= ASTCounter().count(result);
+        item->release();
+        return result;
+      }
+    }
+  }
+
+  return item;
+}
+
+ASTNode *PartialEvaluator::optimizeEffectiveBooleanValue(XQEffectiveBooleanValue *item)
+{
+  item->setExpression(optimize(item->getExpression()));
+
+  if(item->getExpression()->getStaticAnalysis().getStaticType().getMax() == 0) {
+    // If there are no items, EBV returns false
+    ASTNode *result = XQLiteral::create(false, context_->getMemoryManager(), item);
+    sizeLimit_ += ASTCounter().count(item);
+    sizeLimit_ -= ASTCounter().count(result);
+    item->release();
+    return result;
+  }
+
+  if(item->getExpression()->getStaticAnalysis().getStaticType().getMin() >= 1 &&
+     item->getExpression()->getStaticAnalysis().getStaticType().isType(StaticType::NODE_TYPE)) {
+    // If there is one or more nodes, EBV returns true
+    ASTNode *result = XQLiteral::create(true, context_->getMemoryManager(), item);
+    sizeLimit_ += ASTCounter().count(item);
+    sizeLimit_ -= ASTCounter().count(result);
+    item->release();
+    return result;
+  }
+
+  if(item->getExpression()->getStaticAnalysis().getStaticType().getMin() == 1 &&
+     item->getExpression()->getStaticAnalysis().getStaticType().getMax() == 1 &&
+     item->getExpression()->getStaticAnalysis().getStaticType().isType(StaticType::BOOLEAN_TYPE)) {
+    // If there is a single boolean, EBV isn't needed
+    ASTNode *result = item->getExpression();
+    item->setExpression(0);
+    sizeLimit_ += ASTCounter().count(item);
+    item->release();
+    return result;
+  }
+
   return item;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // Arithmetic folding rules
+
+static ASTNode *foldEmptyArgument(XQOperator *item, DynamicContext *context)
+{
+  VectorOfASTNodes &args = const_cast<VectorOfASTNodes &>(item->getArguments());
+
+  for(VectorOfASTNodes::iterator i = args.begin(); i != args.end(); ++i) {
+    if((*i)->getStaticAnalysis().getStaticType().getMax() == 0) {
+      // The result is always empty if one of our arguments is always empty
+      XPath2MemoryManager* mm = context->getMemoryManager();
+      ASTNode *result = new (mm) XQSequence(mm);
+      result->setLocationInfo(item);
+      return result;
+    }
+  }
+
+  return item;
+}
 
 ASTNode *PartialEvaluator::optimizeOperator(XQOperator *item)
 {
@@ -840,6 +991,23 @@ ASTNode *PartialEvaluator::optimizeOperator(XQOperator *item)
     return optimizeDivide((Divide*)item);
   }
 
+  else if(name == Mod::name) {
+    return foldEmptyArgument(item, context_);
+  }
+  else if(name == IntegerDivide::name) {
+    return foldEmptyArgument(item, context_);
+  }
+  else if(name == UnaryMinus::name) {
+    return foldEmptyArgument(item, context_);
+  }
+
+  else if(name == And::name) {
+    return optimizeAnd((And*)item);
+  }
+  else if(name == Or::name) {
+    return optimizeOr((Or*)item);
+  }
+
   return item;
 }
 
@@ -850,7 +1018,7 @@ ASTNode *PartialEvaluator::optimizePlus(Plus *item)
   VectorOfASTNodes &args = const_cast<VectorOfASTNodes &>(item->getArguments());
 
   if(!item->getStaticAnalysis().getStaticType().isType(StaticType::NUMERIC_TYPE))
-    return item;
+    return foldEmptyArgument(item, context_);
 
   if(args[1]->isConstant() && args[0]->getType() == ASTNode::OPERATOR) {
     XQOperator *op = (XQOperator*)args[0];
@@ -904,7 +1072,11 @@ ASTNode *PartialEvaluator::optimizePlus(Plus *item)
       Numeric *num = (Numeric*)arg1.get();
       if(num->asMAPM() == 0) {
         // X + 0 = X
-        return args[0];
+        ASTNode *result = args[0];
+        args[0] = 0;
+        sizeLimit_ += ASTCounter().count(item);
+        item->release();
+        return result;
       }
     }
   }
@@ -916,12 +1088,16 @@ ASTNode *PartialEvaluator::optimizePlus(Plus *item)
       Numeric *num = (Numeric*)arg0.get();
       if(num->asMAPM() == 0) {
         // 0 + X = X
-        return args[1];
+        ASTNode *result = args[1];
+        args[1] = 0;
+        sizeLimit_ += ASTCounter().count(item);
+        item->release();
+        return result;
       }
     }
   }
 
-  return item;
+  return foldEmptyArgument(item, context_);
 }
 
 ASTNode *PartialEvaluator::optimizeMinus(Minus *item)
@@ -931,7 +1107,7 @@ ASTNode *PartialEvaluator::optimizeMinus(Minus *item)
   VectorOfASTNodes &args = const_cast<VectorOfASTNodes &>(item->getArguments());
 
   if(!item->getStaticAnalysis().getStaticType().isType(StaticType::NUMERIC_TYPE))
-    return item;
+    return foldEmptyArgument(item, context_);
 
   if(args[1]->isConstant() && args[0]->getType() == ASTNode::OPERATOR) {
     XQOperator *op = (XQOperator*)args[0];
@@ -994,7 +1170,11 @@ ASTNode *PartialEvaluator::optimizeMinus(Minus *item)
       Numeric *num = (Numeric*)arg1.get();
       if(num->asMAPM() == 0) {
         // X - 0 = X
-        return args[0];
+        ASTNode *result = args[0];
+        args[0] = 0;
+        sizeLimit_ += ASTCounter().count(item);
+        item->release();
+        return result;
       }
     }
   }
@@ -1005,13 +1185,22 @@ ASTNode *PartialEvaluator::optimizeMinus(Minus *item)
       // TBD type promotion - jpcs
       Numeric *num = (Numeric*)arg0.get();
       if(num->asMAPM() == 0) {
-        // 0 - X = X
-        return args[1];
+        // 0 - X = -X
+        VectorOfASTNodes newArgs = VectorOfASTNodes(XQillaAllocator<ASTNode*>(mm));
+        newArgs.push_back(args[1]);
+        ASTNode *result = new (mm) UnaryMinus(false, newArgs, mm);
+        result->setLocationInfo(item);
+
+        sizeLimit_ += ASTCounter().count(item);
+        sizeLimit_ -= ASTCounter().count(result);
+        args[1] = 0;
+        item->release();
+        return result;
       }
     }
   }
 
-  return item;
+  return foldEmptyArgument(item, context_);
 }
 
 ASTNode *PartialEvaluator::optimizeMultiply(Multiply *item)
@@ -1019,7 +1208,7 @@ ASTNode *PartialEvaluator::optimizeMultiply(Multiply *item)
   VectorOfASTNodes &args = const_cast<VectorOfASTNodes &>(item->getArguments());
 
   if(!item->getStaticAnalysis().getStaticType().isType(StaticType::NUMERIC_TYPE))
-    return item;
+    return foldEmptyArgument(item, context_);
 
   if(args[1]->isConstant() && args[0]->getType() == ASTNode::OPERATOR) {
     XQOperator *op = (XQOperator*)args[0];
@@ -1068,13 +1257,22 @@ ASTNode *PartialEvaluator::optimizeMultiply(Multiply *item)
     if(arg1.notNull() && arg1->isNumericValue()) {
       // TBD type promotion - jpcs
       Numeric *num = (Numeric*)arg1.get();
-      if(num->asMAPM() == 0) {
+      if(num->asMAPM() == 0 && item->getStaticAnalysis().getStaticType().isType(StaticType::DECIMAL_TYPE)) {
         // X * 0 = 0
-        return args[1];
+        // but only for xs:decimal, since otherwise "-0" messes things up
+        ASTNode *result = args[1];
+        args[1] = 0;
+        sizeLimit_ += ASTCounter().count(item);
+        item->release();
+        return result;
       }
       else if(num->asMAPM() == 1) {
         // X * 1 = X
-        return args[0];
+        ASTNode *result = args[0];
+        args[0] = 0;
+        sizeLimit_ += ASTCounter().count(item);
+        item->release();
+        return result;
       }
     }
   }
@@ -1084,18 +1282,27 @@ ASTNode *PartialEvaluator::optimizeMultiply(Multiply *item)
     if(arg0.notNull() && arg0->isNumericValue()) {
       // TBD type promotion - jpcs
       Numeric *num = (Numeric*)arg0.get();
-      if(num->asMAPM() == 0) {
+      if(num->asMAPM() == 0 && item->getStaticAnalysis().getStaticType().isType(StaticType::DECIMAL_TYPE)) {
         // 0 * X = 0
-        return args[0];
+        // but only for xs:decimal, since otherwise "-0" messes things up
+        ASTNode *result = args[0];
+        args[0] = 0;
+        sizeLimit_ += ASTCounter().count(item);
+        item->release();
+        return result;
       }
       else if(num->asMAPM() == 1) {
         // 1 * X = X
-        return args[1];
+        ASTNode *result = args[1];
+        args[1] = 0;
+        sizeLimit_ += ASTCounter().count(item);
+        item->release();
+        return result;
       }
     }
   }
 
-  return item;
+  return foldEmptyArgument(item, context_);
 }
 
 ASTNode *PartialEvaluator::optimizeDivide(Divide *item)
@@ -1105,12 +1312,12 @@ ASTNode *PartialEvaluator::optimizeDivide(Divide *item)
   VectorOfASTNodes &args = const_cast<VectorOfASTNodes &>(item->getArguments());
 
   if(!item->getStaticAnalysis().getStaticType().isType(StaticType::NUMERIC_TYPE))
-    return item;
+    return foldEmptyArgument(item, context_);
 
   // duration / duration = decimal
   if(args[0]->getStaticAnalysis().getStaticType().containsType(StaticType::DAY_TIME_DURATION_TYPE | StaticType::YEAR_MONTH_DURATION_TYPE) ||
      args[1]->getStaticAnalysis().getStaticType().containsType(StaticType::DAY_TIME_DURATION_TYPE | StaticType::YEAR_MONTH_DURATION_TYPE))
-    return item;
+    return foldEmptyArgument(item, context_);
 
   if(args[1]->isConstant() && args[0]->getType() == ASTNode::OPERATOR) {
     XQOperator *op = (XQOperator*)args[0];
@@ -1184,24 +1391,18 @@ ASTNode *PartialEvaluator::optimizeDivide(Divide *item)
       Numeric *num = (Numeric*)arg1.get();
       if(num->asMAPM() == 1) {
         // X / 1 = X
-        return args[0];
+        ASTNode *result = args[0];
+        args[0] = 0;
+        sizeLimit_ += ASTCounter().count(item);
+        item->release();
+        return result;
       }
     }
   }
 
-  if(args[0]->isConstant()) {
-    AnyAtomicType::Ptr arg0 = (AnyAtomicType*)args[0]->createResult(context_)->next(context_).get();
-    if(arg0.notNull() && arg0->isNumericValue()) {
-      // TBD type promotion - jpcs
-      Numeric *num = (Numeric*)arg0.get();
-      if(num->asMAPM() == 0) {
-        // 0 / X = 0
-        return args[0];
-      }
-    }
-  }
+  // 0 / X = 0, but only if X != 0 - so we leave that one for regular constant folding
 
-  return item;
+  return foldEmptyArgument(item, context_);
 }
 
 
@@ -1210,12 +1411,12 @@ ASTNode *PartialEvaluator::optimizeDivide(Divide *item)
 // XQQuantified
 // XQMap
 // XQTypeswitch - reduce to Let if one clause
-// And / Or
-// WhereTuple
+// XQSequence
+// empty(), exists(), count()
 // 
 //
 // XQNav
 // LetTuple
-// casts, conversions, atomize, EBV
+// casts, conversions, atomize
 // FunctionCount
 // 

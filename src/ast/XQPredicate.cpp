@@ -72,57 +72,17 @@ ASTNode* XQPredicate::staticTyping(StaticContext *context)
   _src.copy(expr_->getStaticAnalysis());
   _src.getStaticType().multiply(0, 1);
 
-  if(expr_->getStaticAnalysis().getStaticType().getMax() == 0) {
-    return substitute(expr_);
-  }
-
   StaticType ciType = expr_->getStaticAnalysis().getStaticType();
   ciType.setCardinality(1, 1);
   AutoContextItemTypeReset contextTypeReset(context, ciType);
 
   predicate_ = predicate_->staticTyping(context);
 
-  const StaticAnalysis &newSrc = predicate_->getStaticAnalysis();
-
-  if(context && !newSrc.isUsed()) {
-    XPath2MemoryManager *mm = context->getMemoryManager();
-
-    // It's constant
-    AutoDelete<DynamicContext> dContext(context->createDynamicContext());
-    dContext->setMemoryManager(mm);
-
-    Result pred_result = predicate_->createResult(dContext);
-    Item::Ptr first = pred_result->next(dContext);
-    Item::Ptr second;
-    if(first.notNull()) {
-      second = pred_result->next(dContext);
-    }
-
-    if(first.isNull() || second.notNull() || !first->isAtomicValue() ||
-       !((AnyAtomicType*)first.get())->isNumericValue()) {
-      // It's not a single numeric item
-      if(XQEffectiveBooleanValue::get(first, second, dContext, this)) {
-        // We have a true predicate
-        return substitute(expr_);
-      }
-      else {
-        // We have a false predicate, which is constant folded to an empty sequence
-        ASTNode *result = new (mm) XQSequence(mm);
-        result->setLocationInfo(expr_);
-        this->release();
-        return result;
-      }
-    }
-  }
-
   // TBD Use StaticType to determine result of EBV - jpcs
 
   // Remove context item usage
-  _src.addExceptContextFlags(newSrc);
+  _src.addExceptContextFlags(predicate_->getStaticAnalysis());
 
-  if(!_src.isUsed()) {
-    return constantFold(context);
-  }
   return this;
 }
 

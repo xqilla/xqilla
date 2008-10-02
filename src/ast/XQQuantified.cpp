@@ -70,7 +70,7 @@ ASTNode *XQQuantified::staticTyping(StaticContext *context)
     AutoDelete<DynamicContext> dContext(context->createDynamicContext());
     dContext->setMemoryManager(context->getMemoryManager());
     bool value = ((ATBooleanOrDerived*)expr_->createResult(dContext)->next(dContext).get())->isTrue();
-    return XQLiteral::create(dContext->getItemFactory()->createBoolean(value, dContext), dContext, context->getMemoryManager(), this)->staticTyping(context);
+    return XQLiteral::create(value, context->getMemoryManager(), this)->staticTyping(context);
   }
 
   return this;

@@ -101,14 +101,6 @@ ASTNode* ArithmeticOperator::staticTyping(StaticContext *context)
                 "to be an updating expression [err:XUST0001]"));
     }
 
-    if(context && (*i)->getStaticAnalysis().getStaticType().getMax() == 0) {
-      // The result is always empty if one of our arguments is always empty
-      XPath2MemoryManager* mm = context->getMemoryManager();
-      ASTNode *result = new (mm) XQSequence(mm);
-      result->setLocationInfo(this);
-      return result->staticTyping(context);
-    }
-
     if((*i)->getStaticAnalysis().getStaticType().getMin() == 0)
       emptyArgument = true;
     _src.add((*i)->getStaticAnalysis());
@@ -132,9 +124,6 @@ ASTNode* ArithmeticOperator::staticTyping(StaticContext *context)
     _src.getStaticType().setCardinality(0, 1);
   else _src.getStaticType().setCardinality(1, 1);
 
-  if(!_src.isUsed()) {
-    return constantFold(context);
-  }
   return this;
 }
 
