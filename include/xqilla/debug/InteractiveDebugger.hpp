@@ -47,6 +47,7 @@ public:
                              unsigned int context = 0);
   static void outputLocationFromString(const XMLCh *query, unsigned int line, unsigned int column,
                                        unsigned int context = 0);
+  static std::string regexFind(const char *regex, const std::string &str, int groupNo = 1);
 
   virtual ~BaseInteractiveDebugger();
 
@@ -65,9 +66,9 @@ public:
   virtual unsigned int getStackSize() const = 0;
   virtual void stackTrace() const = 0;
   virtual bool outputCurrentFrame(unsigned int context = 0) const = 0;
-  virtual bool outputCurrentFrameQueryPlan() const = 0;
+  virtual void outputCurrentFrameQueryPlan() const = 0;
   virtual bool queryCurrentFrame(const char *queryString) const = 0;
-  virtual bool currentFrameLocation(const XMLCh *&file, unsigned int &line, unsigned int &column) const = 0;
+  virtual bool currentFrameLocation(std::string &file, unsigned int &line, unsigned int &column) const = 0;
 
   virtual void setDoLazyEvaluation(bool lazy) = 0;
   virtual void setDoFocusOptimizationsn(bool opt) = 0;
@@ -79,6 +80,7 @@ protected:
   DebugCommand *findCommand(std::string &command) const;
   void checkBreak(bool entering);
   void breakForError(const char *message);
+  void interrupted();
   void readCommand();
 
   std::vector<DebugCommand*> commands_;
@@ -151,9 +153,9 @@ private:
   virtual unsigned int getStackSize() const;
   virtual void stackTrace() const;
   virtual bool outputCurrentFrame(unsigned int context) const;
-  virtual bool outputCurrentFrameQueryPlan() const;
+  virtual void outputCurrentFrameQueryPlan() const;
   virtual bool queryCurrentFrame(const char *queryString) const;
-  virtual bool currentFrameLocation(const XMLCh *&file, unsigned int &line, unsigned int &column) const;
+  virtual bool currentFrameLocation(std::string &file, unsigned int &line, unsigned int &column) const;
 
   virtual void setDoLazyEvaluation(bool lazy) { lazy_ = lazy; }
   virtual void setDoFocusOptimizationsn(bool opt) { focusOptimzations_ = opt; }

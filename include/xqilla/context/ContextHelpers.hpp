@@ -272,4 +272,28 @@ protected:
   const StackFrame *_oldFrame;
 };
 
+template<typename T> class XQILLA_API AutoReset
+{
+public:
+  AutoReset(T &orig)
+    : orig_(orig)
+  {
+    old_ = orig;
+  }
+
+  ~AutoReset()
+  {
+    reset();
+  }
+
+  void reset()
+  {
+    orig_ = old_;
+  }
+
+protected:
+  T &orig_;
+  T old_;
+};
+
 #endif

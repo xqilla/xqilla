@@ -36,6 +36,8 @@
 // XQilla includes
 #include <xqilla/xqilla-simple.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
+#include <xqilla/utils/PrintAST.hpp>
+#include <xqilla/context/ContextHelpers.hpp>
 
 #include <xqilla/debug/InteractiveDebugger.hpp>
 #include <xqilla/debug/StackFrame.hpp>
@@ -49,7 +51,7 @@ using namespace std;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-static string regexFind(const char *regex, const string &str, int groupNo = 1)
+string BaseInteractiveDebugger::regexFind(const char *regex, const string &str, int groupNo)
 {
   try {
     XStr str16(str.c_str());
@@ -341,9 +343,7 @@ public:
       return;
     }
 
-    if(!debugger.outputCurrentFrameQueryPlan()) {
-      cerr << "There is no current frame" << endl;
-    }
+    debugger.outputCurrentFrameQueryPlan();
   }
 };
 
@@ -426,7 +426,7 @@ public:
     string file;
     int line = 0, column = 0;
 
-    const XMLCh *currentFile;
+    string currentFile;
     unsigned int currentLine, currentColumn;
     bool frame = debugger.currentFrameLocation(currentFile, currentLine, currentColumn);
 
@@ -436,7 +436,7 @@ public:
         return;
       }
       else {
-        file = UTF8(currentFile);
+        file = currentFile;
         line = currentLine;
         column = currentColumn;
       }
@@ -445,17 +445,21 @@ public:
       static const char *BREAK_REGEX_1 = "([^:0-9][^:]*)(:([0-9]+)(:([0-9]+))?)?";
       static const char *BREAK_REGEX_2 = "([0-9]+)(:([0-9]+))?";
 
-      file = regexFind(BREAK_REGEX_1, args[1], 1);
+      file = BaseInteractiveDebugger::regexFind(BREAK_REGEX_1, args[1], 1);
       string lstr, cstr;
       if(file != "") {
-        lstr = regexFind(BREAK_REGEX_1, args[1], 3);
-        cstr = regexFind(BREAK_REGEX_1, args[1], 5);
+        lstr = BaseInteractiveDebugger::regexFind(BREAK_REGEX_1, args[1], 3);
+        cstr = BaseInteractiveDebugger::regexFind(BREAK_REGEX_1, args[1], 5);
       }
       else {
-        lstr = regexFind(BREAK_REGEX_2, args[1], 1);
-        cstr = regexFind(BREAK_REGEX_2, args[1], 3);
+        lstr = BaseInteractiveDebugger::regexFind(BREAK_REGEX_2, args[1], 1);
+        cstr = BaseInteractiveDebugger::regexFind(BREAK_REGEX_2, args[1], 3);
         if(lstr != "" && file == "") {
-          file = UTF8(currentFile);
+          if(!debugger.queryStarted() || !frame) {
+            cerr << "No query execution in progress." << endl;
+            return;
+          }
+          file = currentFile;
         }
       }
       if(lstr != "") line = atoi(lstr.c_str());
@@ -466,7 +470,7 @@ public:
       return;
     }
 
-    if(file == "" || line == 0) {
+    if(line == 0 && args.size() == 2) {
       cerr << "Breakpoint not recognized: " << args[1] << endl;
     }
     else {
@@ -694,8 +698,7 @@ void BaseInteractiveDebugger::readCommand()
       cerr << "Unknown command: " << args[0] << endl;
     }
 
-  } while(true);
-
+  } while(!cin.eof());
 }
 
 unsigned int BaseInteractiveDebugger::setBreakPoint(const std::string &file, unsigned int line, unsigned int column, bool temporary)
@@ -779,13 +782,13 @@ void BaseInteractiveDebugger::checkBreak(bool entering)
     step_ = true;
     return;
   }
-  else if(entering) {
+  else {
     // Work out the filename and file basename
-    const XMLCh *currentFile;
+    string currentFile;
     unsigned int currentLine, currentColumn;
     currentFrameLocation(currentFile, currentLine, currentColumn);
 
-    string file(UTF8(currentFile));
+    string file(currentFile);
     string basename = regexFind(".*/(.*)", file);
 
     // Search to see if we've hit a breakpoint
@@ -813,7 +816,6 @@ void BaseInteractiveDebugger::checkBreak(bool entering)
 
     cerr << "Breakpoint #" << position << ", ";
   }
-  else return;
 
   cerr << (entering ? "Entering " : "Exiting ");
   outputCurrentFrame();
@@ -840,6 +842,18 @@ void BaseInteractiveDebugger::breakForError(const char *message)
 
     cerr << "An error has occurred - query execution cannot resume" << endl;
   }
+}
+
+void BaseInteractiveDebugger::interrupted()
+{
+  cerr << "Interrupted!" << endl;
+  outputCurrentFrame();
+
+  // Clear any pending next or step operation
+  next_ = 0;
+  step_ = false;
+
+  readCommand();
 }
 
 void InteractiveDebugger::outputLocation(const LocationInfo *info, unsigned int context)
@@ -1004,16 +1018,20 @@ void InteractiveDebugger::run()
       cerr << UTF8(e.getXQueryFile()) << ":" << e.getXQueryLine() << ":" << e.getXQueryColumn()
            << ": error: " << UTF8(e.getError()) << endl;
       BaseInteractiveDebugger::outputLocation(e.getXQueryFile(), e.getXQueryLine(), e.getXQueryColumn());
+      break;
     }
     catch(...) {
       queryStarted_ = false;
       cerr << "Caught unknown exception" << endl;
+      break;
     }
   }
 }
 
 void InteractiveDebugger::enter(const StackFrame *stack, const DynamicContext *context)
 {
+  AutoReset<const StackFrame *> reset(stack_);
+  AutoReset<const StackFrame *> reset2(currentFrame_);
   stack_ = stack;
   currentFrame_ = stack;
 
@@ -1022,6 +1040,8 @@ void InteractiveDebugger::enter(const StackFrame *stack, const DynamicContext *c
 
 void InteractiveDebugger::exit(const StackFrame *stack, const DynamicContext *context)
 {
+  AutoReset<const StackFrame *> reset(stack_);
+  AutoReset<const StackFrame *> reset2(currentFrame_);
   stack_ = stack;
   currentFrame_ = stack;
 
@@ -1030,6 +1050,8 @@ void InteractiveDebugger::exit(const StackFrame *stack, const DynamicContext *co
 
 void InteractiveDebugger::error(const XQException &error, const StackFrame *stack, const DynamicContext *context)
 {
+  AutoReset<const StackFrame *> reset(stack_);
+  AutoReset<const StackFrame *> reset2(currentFrame_);
   stack_ = stack;
   currentFrame_ = stack;
 
@@ -1098,13 +1120,14 @@ bool InteractiveDebugger::outputCurrentFrame(unsigned int context) const
   return true;
 }
 
-bool InteractiveDebugger::outputCurrentFrameQueryPlan() const
+void InteractiveDebugger::outputCurrentFrameQueryPlan() const
 {
-  if(currentFrame_ == 0) return false;
-
-  cout << currentFrame_->getQueryPlan() << endl;;
-
-  return true;
+  if(currentFrame_ == 0) {
+    cout << PrintAST::print(query_, context_, 0) << endl;;
+  }
+  else {
+    cout << currentFrame_->getQueryPlan() << endl;;
+  }
 }
 
 bool InteractiveDebugger::queryCurrentFrame(const char *queryString) const
@@ -1137,16 +1160,16 @@ bool InteractiveDebugger::queryCurrentFrame(const char *queryString) const
   return true;
 }
 
-bool InteractiveDebugger::currentFrameLocation(const XMLCh *&file, unsigned int &line, unsigned int &column) const
+bool InteractiveDebugger::currentFrameLocation(string &file, unsigned int &line, unsigned int &column) const
 {
   if(currentFrame_ == 0) {
-    file = query_->getFile();
+    file = UTF8(query_->getFile());
     line = 0;
     column = 0;
     return false;
   }
 
-  file = currentFrame_->getLocationInfo()->getFile();
+  file = UTF8(currentFrame_->getLocationInfo()->getFile());
   line = currentFrame_->getLocationInfo()->getLine();
   column = currentFrame_->getLocationInfo()->getColumn();
   return true;
