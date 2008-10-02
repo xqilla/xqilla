@@ -350,6 +350,9 @@ void UpdateFactory::applyUpdates(const PendingUpdateList &pul, DynamicContext *c
     }
   }
 
+  // Call checkUpdates to allow implementations to perform their own checks
+  checkUpdates(pul, context, valMode);
+	  
   // We apply PUT first, to catch the duplicate puts properly
   for(i = pul.begin(); i != pul.end(); ++i) {
     switch(i->getType()) {

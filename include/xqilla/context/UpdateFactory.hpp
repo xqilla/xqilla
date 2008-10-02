@@ -37,6 +37,7 @@ public:
   virtual ~UpdateFactory() {}
 
   virtual void applyUpdates(const PendingUpdateList &pul, DynamicContext *context, DocumentCache::ValidationMode valMode);
+  virtual void checkUpdates(const PendingUpdateList &pul, DynamicContext *context, DocumentCache::ValidationMode valMode) {}
 
   virtual void applyPut(const PendingUpdate &update, DynamicContext *context) = 0;
   virtual void applyInsertInto(const PendingUpdate &update, DynamicContext *context) = 0;
