@@ -22,6 +22,7 @@
 #include <xqilla/optimizer/PartialEvaluator.hpp>
 #include <xqilla/framework/XPath2MemoryManager.hpp>
 #include <xqilla/context/DynamicContext.hpp>
+#include <xqilla/context/ContextHelpers.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/ast/XQSequence.hpp>
 #include <xqilla/exceptions/XQException.hpp>
@@ -226,30 +227,6 @@ ASTNode *PartialEvaluator::optimize(ASTNode *item)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // Inline user-defined functions
-
-template<typename T> class XQILLA_API AutoReset
-{
-public:
-  AutoReset(T &orig)
-    : orig_(orig)
-  {
-    old_ = orig;
-  }
-
-  ~AutoReset()
-  {
-    reset();
-  }
-
-  void reset()
-  {
-    orig_ = old_;
-  }
-
-protected:
-  T &orig_;
-  T old_;
-};
 
 // Base class that tracks variable scope
 class VariableScopeTracker : public ASTVisitor
