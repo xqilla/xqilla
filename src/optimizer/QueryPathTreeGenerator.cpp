@@ -1233,7 +1233,7 @@ ASTNode *QueryPathTreeGenerator::optimizeAtomize(XQAtomize *item)
 
 ASTNode *QueryPathTreeGenerator::optimizeEffectiveBooleanValue(XQEffectiveBooleanValue *item)
 {
-  generate(const_cast<ASTNode *>(item->getExpression())).markSubtreeValue();
+  generate(const_cast<ASTNode *>(item->getExpression()));
   push(PathResult());
   return item;
 }
