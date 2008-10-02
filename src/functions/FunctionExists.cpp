@@ -61,17 +61,7 @@ ASTNode *FunctionExists::staticTyping(StaticContext *context)
     const StaticType &sType = _args[0]->getStaticAnalysis().getStaticType();
     if(sType.getMin() > 0 || sType.getMax() == 0) {
       XPath2MemoryManager* mm = context->getMemoryManager();
-
-      try {
-        AutoDelete<DynamicContext> dContext(context->createDynamicContext());
-        dContext->setMemoryManager(mm);
-
-        result = XQLiteral::create(dContext->getItemFactory()->createBoolean(sType.getMin() > 0, dContext), dContext, mm, this);
-        return result->staticTyping(context);
-      }
-      catch(XQException &ex) {
-        // Constant folding failed
-      }
+      return XQLiteral::create(sType.getMin() > 0, mm, this)->staticTyping(context);
     }
   }
 

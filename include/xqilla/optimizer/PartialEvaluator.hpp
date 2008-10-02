@@ -28,6 +28,8 @@ class Plus;
 class Minus;
 class Multiply;
 class Divide;
+class And;
+class Or;
 
 class XQILLA_API PartialEvaluator : public ASTVisitor
 {
@@ -42,12 +44,15 @@ protected:
   virtual ASTNode *optimizeReturn(XQReturn *item);
   virtual ASTNode *optimizeIf(XQIf *item);
   virtual ASTNode *optimizePredicate(XQPredicate *item);
+  virtual ASTNode *optimizeEffectiveBooleanValue(XQEffectiveBooleanValue *item);
   virtual ASTNode *optimizeOperator(XQOperator *item);
 
   ASTNode *optimizePlus(Plus *item);
   ASTNode *optimizeMinus(Minus *item);
   ASTNode *optimizeMultiply(Multiply *item);
   ASTNode *optimizeDivide(Divide *item);
+  ASTNode *optimizeAnd(And *item);
+  ASTNode *optimizeOr(Or *item);
 
   bool checkSizeLimit(const ASTNode *oldAST, const ASTNode *newAST);
 

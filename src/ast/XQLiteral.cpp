@@ -32,6 +32,8 @@
 #include <xqilla/items/impl/ATFloatOrDerivedImpl.hpp>
 #include <xqilla/exceptions/IllegalArgumentException.hpp>
 
+#include <xercesc/validators/schema/SchemaSymbols.hpp>
+
 XERCES_CPP_NAMESPACE_USE;
 
 ASTNode *XQLiteral::create(const Item::Ptr &item, DynamicContext *context, XPath2MemoryManager* memMgr,
@@ -72,6 +74,16 @@ ASTNode *XQLiteral::create(const Item::Ptr &item, DynamicContext *context, XPath
   else {
     XQThrow2(IllegalArgumentException, X("XQLiteral::create"), X("Cannot create an ASTNode literal for a non atomic item"));
   }
+}
+
+ASTNode *XQLiteral::create(bool value, XPath2MemoryManager* mm, const LocationInfo *location)
+{
+  ASTNode *result = new (mm) XQLiteral(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                                       SchemaSymbols::fgDT_BOOLEAN,
+                                       value ? SchemaSymbols::fgATTVAL_TRUE : SchemaSymbols::fgATTVAL_FALSE,
+                                       AnyAtomicType::BOOLEAN, mm);
+  result->setLocationInfo(location);
+  return result;
 }
 
 XQLiteral::XQLiteral(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* value,

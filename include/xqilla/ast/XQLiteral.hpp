@@ -46,6 +46,7 @@ public:
 
   static ASTNode *create(const Item::Ptr &item, DynamicContext *context, XPath2MemoryManager* memMgr,
                          const LocationInfo *location);
+  static ASTNode *create(bool value, XPath2MemoryManager* memMgr, const LocationInfo *location);
 
 private:
   const XMLCh *typeURI_;

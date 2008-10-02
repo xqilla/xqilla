@@ -73,26 +73,6 @@ ASTNode* And::staticTyping(StaticContext *context)
     }
   }
 
-  if(context) {
-    VectorOfASTNodes newArgs(XQillaAllocator<ASTNode*>(context->getMemoryManager()));
-
-    for(i = _args.begin(); i != _args.end(); ++i) {
-      if((*i)->getStaticAnalysis().isUsed()) {
-        newArgs.push_back(*i);
-      }
-      else {
-        AutoDelete<DynamicContext> dContext(context->createDynamicContext());
-        dContext->setMemoryManager(context->getMemoryManager());
-        if(!((ATBooleanOrDerived*)(*i)->createResult(dContext)->next(dContext).get())->isTrue()) {
-          // It's constantly false, so this expression is false
-          return XQLiteral::create(dContext->getItemFactory()->createBoolean(false, dContext), dContext, context->getMemoryManager(), this)->staticTyping(context);
-        }
-      }
-    }
-
-    _args = newArgs;
-  }
-
   _src.getStaticType() = StaticType::BOOLEAN_TYPE;
   return this;
 }
