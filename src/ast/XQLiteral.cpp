@@ -22,6 +22,7 @@
 #include "../config/xqilla_config.h"
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/ast/XQLiteral.hpp>
+#include <xqilla/ast/XQSequence.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/Item.hpp>
 #include <xqilla/context/ItemFactory.hpp>
@@ -125,16 +126,24 @@ ASTNode* XQLiteral::staticResolution(StaticContext *context)
   switch(primitiveType_) {
   case AnyAtomicType::DECIMAL:
   case AnyAtomicType::FLOAT:
-  case AnyAtomicType::DOUBLE:
+  case AnyAtomicType::DOUBLE: {
     // Constant fold, to parse numeric literals
-    return constantFold(context);
+    XPath2MemoryManager* mm = context->getMemoryManager();
+    AutoDelete<DynamicContext> dContext(context->createDynamicContext());
+    dContext->setMemoryManager(mm);
+
+    Result result = createResult(dContext);
+    ASTNode *newBlock = XQSequence::constantFold(result, dContext, mm, this);
+    this->release();
+    return newBlock;
+  }
   default: break;
   }
 
   return this;
 }
 
-ASTNode *XQLiteral::staticTyping(StaticContext *context)
+ASTNode *XQLiteral::staticTypingImpl(StaticContext *context)
 {
   return this;
 }
@@ -175,7 +184,7 @@ ASTNode* XQQNameLiteral::staticResolution(StaticContext *context)
   return this;
 }
 
-ASTNode *XQQNameLiteral::staticTyping(StaticContext *context)
+ASTNode *XQQNameLiteral::staticTypingImpl(StaticContext *context)
 {
   return this;
 }
@@ -233,7 +242,7 @@ ASTNode* XQNumericLiteral::staticResolution(StaticContext *context)
   return this;
 }
 
-ASTNode *XQNumericLiteral::staticTyping(StaticContext *context)
+ASTNode *XQNumericLiteral::staticTypingImpl(StaticContext *context)
 {
   return this;
 }

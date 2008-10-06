@@ -74,7 +74,7 @@ ASTNode *FunctionAnalyzeString::staticResolution(StaticContext *context)
   return resolveArguments(context);
 }
 
-ASTNode *FunctionAnalyzeString::staticTyping(StaticContext *context)
+ASTNode *FunctionAnalyzeString::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 

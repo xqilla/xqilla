@@ -59,7 +59,7 @@ ASTNode* FunctionAvg::staticResolution(StaticContext *context)
   return resolveArguments(context);
 }
 
-ASTNode *FunctionAvg::staticTyping(StaticContext *context)
+ASTNode *FunctionAvg::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 

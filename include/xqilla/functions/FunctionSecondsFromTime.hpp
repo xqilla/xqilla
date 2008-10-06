@@ -44,7 +44,7 @@ public:
   FunctionSecondsFromTime(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
 
   ASTNode* staticResolution(StaticContext *context);
-  virtual ASTNode *staticTyping(StaticContext *context);
+  virtual ASTNode *staticTypingImpl(StaticContext *context);
 
   /**
    * Returns the integer representing the seconds in the value of $srcval

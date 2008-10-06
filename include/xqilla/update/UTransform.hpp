@@ -51,7 +51,7 @@ public:
   UTransform(VectorOfCopyBinding* bindings, ASTNode *modifyExpr, ASTNode* returnExpr, DocumentCache::ValidationMode valMode, XPath2MemoryManager *expr);
 
   virtual ASTNode *staticResolution(StaticContext* context);
-  virtual ASTNode *staticTyping(StaticContext *context);
+  virtual ASTNode *staticTypingImpl(StaticContext *context);
   virtual Result createResult(DynamicContext* context, int flags) const;
 
   const VectorOfCopyBinding *getBindings() const { return bindings_; }

@@ -50,7 +50,7 @@ ASTNode* FunctionData::staticResolution(StaticContext *context)
   return result->staticResolution(context);
 }
 
-ASTNode *FunctionData::staticTyping(StaticContext *context)
+ASTNode *FunctionData::staticTypingImpl(StaticContext *context)
 {
   // Should never happen
   return this;

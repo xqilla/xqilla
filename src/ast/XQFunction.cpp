@@ -178,7 +178,6 @@ ASTNode *XQFunction::resolveArguments(StaticContext *context, bool checkTimezone
 ASTNode *XQFunction::calculateSRCForArguments(StaticContext *context, bool checkTimezone, bool numericFunction)
 {
   for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
-    *i = (*i)->staticTyping(context);
     _src.add((*i)->getStaticAnalysis());
 
     if((*i)->getStaticAnalysis().isUpdating()) {
@@ -191,9 +190,6 @@ ASTNode *XQFunction::calculateSRCForArguments(StaticContext *context, bool check
       _src.implicitTimezoneUsed(true);
   }
 
-  if(!_src.isUsed()) {
-    return constantFold(context);
-  }
   return this;
 }
 

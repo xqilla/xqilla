@@ -45,7 +45,7 @@ public:
   virtual EventGenerator::Ptr generateEvents(EventHandler *events, DynamicContext *context,
                                 bool preserveNS, bool preserveType) const;
   ASTNode* staticResolution(StaticContext* context);
-  virtual ASTNode *staticTyping(StaticContext *context);
+  virtual ASTNode *staticTypingImpl(StaticContext *context);
   virtual PendingUpdateList createUpdateList(DynamicContext *context) const;
 
   void evaluateArguments(VarStoreImpl &scope, DynamicContext *context) const;

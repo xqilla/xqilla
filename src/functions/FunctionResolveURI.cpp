@@ -61,7 +61,7 @@ ASTNode* FunctionResolveURI::staticResolution(StaticContext *context)
   return resolveArguments(context);
 }
 
-ASTNode *FunctionResolveURI::staticTyping(StaticContext *context)
+ASTNode *FunctionResolveURI::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 

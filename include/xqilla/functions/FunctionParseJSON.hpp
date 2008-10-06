@@ -35,7 +35,7 @@ public:
 
   FunctionParseJSON(const VectorOfASTNodes &args, XPath2MemoryManager *memMgr);
   
-  virtual ASTNode *staticTyping(StaticContext *context);
+  virtual ASTNode *staticTypingImpl(StaticContext *context);
 
   Sequence createSequence(DynamicContext* context, int flags=0) const;
 

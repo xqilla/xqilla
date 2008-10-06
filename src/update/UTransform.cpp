@@ -114,35 +114,21 @@ ASTNode *UTransform::staticResolution(StaticContext* context)
   return this;
 }
 
-ASTNode *UTransform::staticTyping(StaticContext *context)
+ASTNode *UTransform::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
-
-  VariableTypeStore* varStore = context ? context->getVariableTypeStore() : 0;
 
   // Add all the binding variables to the new scope
   VectorOfCopyBinding::iterator end = bindings_->end();
   for(VectorOfCopyBinding::iterator it0 = bindings_->begin(); it0 != end; ++it0) {
-    // call static resolution on the value
-    (*it0)->expr_ = (*it0)->expr_->staticTyping(context);
-    (*it0)->src_.getStaticType() = (*it0)->expr_->getStaticAnalysis().getStaticType();
-    (*it0)->src_.setProperties((*it0)->expr_->getStaticAnalysis().getProperties());
-
     if((*it0)->expr_->getStaticAnalysis().isUpdating()) {
       XQThrow(StaticErrorException,X("UTransform::staticTyping"),
               X("It is a static error for the copy expression of a transform expression "
                 "to be an updating expression [err:XUST0001]"));
     }
-
-    // Declare the variable binding
-    if(context) {
-      varStore->addLogicalBlockScope();
-      varStore->declareVar((*it0)->uri_, (*it0)->name_, (*it0)->src_);
-    }
   }
 
   // Call staticTyping on the modify expression
-  modify_ = modify_->staticTyping(context);
   _src.add(modify_->getStaticAnalysis());
   _src.updating(false);
 
@@ -151,7 +137,6 @@ ASTNode *UTransform::staticTyping(StaticContext *context)
             X("The modify expression is not an updating expression [err:XUST0002]"));
 
   // Call staticResolution on the return expression
-  return_ = return_->staticTyping(context);
   _src.getStaticType() = return_->getStaticAnalysis().getStaticType();
   _src.setProperties(return_->getStaticAnalysis().getProperties());
   _src.add(return_->getStaticAnalysis());
@@ -167,23 +152,18 @@ ASTNode *UTransform::staticTyping(StaticContext *context)
 
   VectorOfCopyBinding::reverse_iterator rend = bindings_->rend();
   for(VectorOfCopyBinding::reverse_iterator it = bindings_->rbegin(); it != rend; ++it) {
-    CopyBinding *newVB = new (getMemoryManager()) CopyBinding(getMemoryManager(), **it);
-    newVB->setLocationInfo(*it);
-
-    // Remove our variable binding and the scope we added
-    if(context)
-      varStore->removeScope();
-
     // Remove our binding variable from the StaticAnalysis data (removing it if it's not used)
-    if(!_src.removeVariable(newVB->uri_, newVB->name_)) {
-      newVB->qname_ = 0;
+    if(!_src.removeVariable((*it)->uri_, (*it)->name_)) {
+      (*it)->qname_ = 0;
     }
 
-    _src.add(newVB->expr_->getStaticAnalysis());
+    _src.add((*it)->expr_->getStaticAnalysis());
 
     // Add the new VB at the front of the new Bindings
     // (If it's a let binding, and it's variable isn't used, don't add it - there's no point)
-    if(newBindings && newVB->qname_) {
+    if(newBindings && (*it)->qname_) {
+      CopyBinding *newVB = new (context->getMemoryManager()) CopyBinding(context->getMemoryManager(), **it);
+      newVB->setLocationInfo(*it);
       newBindings->insert(newBindings->begin(), newVB);
     }
   }
@@ -239,7 +219,8 @@ Item::Ptr UTransform::TransformResult::next(DynamicContext *context)
     VectorOfCopyBinding::const_iterator end = transform_->getBindings()->end();
     for(VectorOfCopyBinding::const_iterator it = transform_->getBindings()->begin();
         it != end; ++it) {
-
+      if((*it)->qname_ == 0) continue;
+      
       Sequence values = (*it)->expr_->createResult(context)->toSequence(context);
 
       // Keep a record of the nodes that have been copied

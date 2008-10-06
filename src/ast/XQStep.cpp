@@ -88,7 +88,7 @@ ASTNode* XQStep::staticResolution(StaticContext *context)
   return this;
 }
 
-ASTNode *XQStep::staticTyping(StaticContext *context)
+ASTNode *XQStep::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 

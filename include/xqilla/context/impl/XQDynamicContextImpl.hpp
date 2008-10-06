@@ -195,6 +195,7 @@ public:
   virtual const UserFunctions &getTemplateRules() const;
 
   virtual void addCustomFunction(FuncFactory *func);
+  virtual void removeCustomFunction(FuncFactory *func);
   virtual ASTNode *lookUpFunction(const XMLCh *uri, const XMLCh* name, const VectorOfASTNodes &v) const;
 
   virtual void addExternalFunction(const ExternalFunction *func);
@@ -370,6 +371,8 @@ inline void XQDynamicContextImpl::setBaseURI(const XMLCh* newURI)
 inline void XQDynamicContextImpl::addTemplate(XQUserFunction *tp)
 { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
 inline void XQDynamicContextImpl::addCustomFunction(FuncFactory *func)
+{ XQThrow2(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
+inline void XQDynamicContextImpl::removeCustomFunction(FuncFactory *func)
 { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
 inline void XQDynamicContextImpl::addExternalFunction(const ExternalFunction *func)
 { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }

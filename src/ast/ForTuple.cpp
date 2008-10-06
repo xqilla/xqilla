@@ -90,13 +90,8 @@ TupleNode *ForTuple::staticResolution(StaticContext *context)
   return this;
 }
 
-TupleNode *ForTuple::staticTypingSetup(unsigned int &min, unsigned int &max, StaticContext *context)
+TupleNode *ForTuple::staticTypingImpl(StaticContext *context)
 {
-  parent_ = parent_->staticTypingSetup(min, max, context);
-
-  // call static resolution on the value
-  expr_ = expr_->staticTyping(context);
-
   if(expr_->getStaticAnalysis().isUpdating()) {
     XQThrow(StaticErrorException,X("ForTuple::staticTypingSetup"),
             X("It is a static error for the for expression of a FLWOR expression "
@@ -105,39 +100,16 @@ TupleNode *ForTuple::staticTypingSetup(unsigned int &min, unsigned int &max, Sta
 
   const StaticType &sType = expr_->getStaticAnalysis().getStaticType();
 
-  min *= sType.getMin();
-  if(max == StaticType::UNLIMITED || sType.getMax() == StaticType::UNLIMITED)
-    max = StaticType::UNLIMITED;
-  else max *= sType.getMax();
-
-  if(context) {
-    VariableTypeStore* varStore = context->getVariableTypeStore();
-    varStore->addLogicalBlockScope();
-
-    // Declare the variable binding
-    varSrc_.getStaticType() = sType;
-    varSrc_.getStaticType().setCardinality(1, 1);
-    varSrc_.setProperties(StaticAnalysis::DOCORDER | StaticAnalysis::GROUPED |
-                          StaticAnalysis::PEER | StaticAnalysis::SUBTREE | StaticAnalysis::SAMEDOC |
-                          StaticAnalysis::ONENODE | StaticAnalysis::SELF);
-    varStore->declareVar(varURI_, varName_, varSrc_);
-
-    if(posName_) {
-      // Declare the positional variable binding
-      posSrc_.getStaticType() = StaticType::DECIMAL_TYPE;
-      varStore->declareVar(posURI_, posName_, posSrc_);
-    }
-  }
+  min_ = parent_->getMin() * sType.getMin();
+  if(parent_->getMax() == StaticType::UNLIMITED || sType.getMax() == StaticType::UNLIMITED)
+    max_ = StaticType::UNLIMITED;
+  else max_ = parent_->getMax() * sType.getMax();
 
   return this;
 }
 
 TupleNode *ForTuple::staticTypingTeardown(StaticContext *context, StaticAnalysis &usedSrc)
 {
-  // Remove our variable binding and the scope we added
-  if(context)
-    context->getVariableTypeStore()->removeScope();
-
   // Remove our binding variable from the StaticAnalysis data (removing it if it's not used)
   if(varName_ && !usedSrc.removeVariable(varURI_, varName_)) {
     varURI_ = 0;

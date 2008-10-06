@@ -53,7 +53,7 @@ ASTNode* FunctionHoursFromDateTime::staticResolution(StaticContext *context)
   return resolveArguments(context, /*checkTimezone*/true);
 }
 
-ASTNode *FunctionHoursFromDateTime::staticTyping(StaticContext *context)
+ASTNode *FunctionHoursFromDateTime::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 

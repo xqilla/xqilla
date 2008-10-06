@@ -53,20 +53,16 @@ ASTNode* FunctionPartialApply::staticResolution(StaticContext *context)
   return resolveArguments(context);
 }
 
-ASTNode *FunctionPartialApply::staticTyping(StaticContext *context)
+ASTNode *FunctionPartialApply::staticTypingImpl(StaticContext *context)
 {
   if(!context) {
     // TBD Can we do better - jpcs
-    for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
-      *i = (*i)->staticTyping(context);
-    }
     return this;
   }
 
   _src.clear();
 
   for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
-    *i = (*i)->staticTyping(context);
     _src.add((*i)->getStaticAnalysis());
 
     if((*i)->getStaticAnalysis().isUpdating()) {

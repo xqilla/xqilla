@@ -57,7 +57,7 @@ FunctionParseJSON::FunctionParseJSON(const VectorOfASTNodes &args, XPath2MemoryM
 {
 }
 
-ASTNode *FunctionParseJSON::staticTyping(StaticContext *context)
+ASTNode *FunctionParseJSON::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 

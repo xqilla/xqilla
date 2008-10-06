@@ -209,9 +209,9 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	XercesConfiguration.lo XercesNodeImpl.lo \
 	XercesSequenceBuilder.lo XercesUpdateFactory.lo \
 	XercesURIResolver.lo Optimizer.lo ASTCopier.lo ASTReleaser.lo \
-	ASTVisitor.lo PartialEvaluator.lo QueryPathNode.lo \
-	QueryPathTreeGenerator.lo yajl_buf.lo yajl.lo yajl_encode.lo \
-	yajl_gen.lo yajl_lex.lo yajl_parser.lo \
+	ASTVisitor.lo PartialEvaluator.lo StaticTyper.lo \
+	QueryPathNode.lo QueryPathTreeGenerator.lo yajl_buf.lo yajl.lo \
+	yajl_encode.lo yajl_gen.lo yajl_lex.lo yajl_parser.lo \
 	XQillaXQCImplementation.lo XQillaXQCStaticContext.lo \
 	XQillaXQCDynamicContext.lo XQillaXQCExpression.lo \
 	XQillaXQCSequence.lo
@@ -923,6 +923,7 @@ src/optimizer/ASTCopier.cpp \
 src/optimizer/ASTReleaser.cpp \
 src/optimizer/ASTVisitor.cpp \
 src/optimizer/PartialEvaluator.cpp \
+src/optimizer/StaticTyper.cpp \
 src/optimizer/QueryPathNode.cpp \
 src/optimizer/QueryPathTreeGenerator.cpp \
 src/yajl/yajl_buf.c \
@@ -1482,6 +1483,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/StackFrame.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/StaticAnalysis.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/StaticType.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/StaticTyper.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/StringPool.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TestSuiteParser.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TestSuiteResultListener.Plo@am__quote@
@@ -4652,6 +4654,13 @@ PartialEvaluator.lo: src/optimizer/PartialEvaluator.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/optimizer/PartialEvaluator.cpp' object='PartialEvaluator.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o PartialEvaluator.lo `test -f 'src/optimizer/PartialEvaluator.cpp' || echo '$(srcdir)/'`src/optimizer/PartialEvaluator.cpp
+
+StaticTyper.lo: src/optimizer/StaticTyper.cpp
+@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT StaticTyper.lo -MD -MP -MF $(DEPDIR)/StaticTyper.Tpo -c -o StaticTyper.lo `test -f 'src/optimizer/StaticTyper.cpp' || echo '$(srcdir)/'`src/optimizer/StaticTyper.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/StaticTyper.Tpo $(DEPDIR)/StaticTyper.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/optimizer/StaticTyper.cpp' object='StaticTyper.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o StaticTyper.lo `test -f 'src/optimizer/StaticTyper.cpp' || echo '$(srcdir)/'`src/optimizer/StaticTyper.cpp
 
 QueryPathNode.lo: src/optimizer/QueryPathNode.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT QueryPathNode.lo -MD -MP -MF $(DEPDIR)/QueryPathNode.Tpo -c -o QueryPathNode.lo `test -f 'src/optimizer/QueryPathNode.cpp' || echo '$(srcdir)/'`src/optimizer/QueryPathNode.cpp

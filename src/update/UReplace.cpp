@@ -72,11 +72,10 @@ ASTNode* UReplace::staticResolution(StaticContext *context)
   return this;
 }
 
-ASTNode *UReplace::staticTyping(StaticContext *context)
+ASTNode *UReplace::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 
-  target_ = target_->staticTyping(context);
   _src.add(target_->getStaticAnalysis());
 
   if(target_->getStaticAnalysis().isUpdating()) {
@@ -85,7 +84,6 @@ ASTNode *UReplace::staticTyping(StaticContext *context)
               "to be an updating expression [err:XUST0001]"));
   }
 
-  expr_ = expr_->staticTyping(context);
   _src.add(expr_->getStaticAnalysis());
 
   if(expr_->getStaticAnalysis().isUpdating()) {

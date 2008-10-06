@@ -51,41 +51,40 @@ TupleNode *WhereTuple::staticResolution(StaticContext *context)
   return this;
 }
 
-static TupleNode *findWhereAncestor(TupleNode *ancestor, const StaticAnalysis &exprSrc)
+static bool canPushWhereBack(TupleNode *ancestor, const StaticAnalysis &exprSrc)
 {
-  // Find the furthest ancestor that we can safely be placed before
-  TupleNode *found = 0;
-
-  while(ancestor != 0) {
-    switch(ancestor->getType()) {
-    case TupleNode::FOR: {
-      ForTuple *f = (ForTuple*)ancestor;
-      if((f->getVarName() && exprSrc.isVariableUsed(f->getVarURI(), f->getVarName())) ||
-         (f->getPosName() && exprSrc.isVariableUsed(f->getPosURI(), f->getPosName()))) {
-        return found;
-      }
-      found = ancestor;
-      break;
-    }
-    case TupleNode::LET: {
-      LetTuple *f = (LetTuple*)ancestor;
-      if((f->getVarName() && exprSrc.isVariableUsed(f->getVarURI(), f->getVarName()))) {
-        return found;
-      }
-      found = ancestor;
-      break;
-    }
-    default: break;
-    }
-
-    ancestor = ancestor->getParent();
+  switch(ancestor->getType()) {
+  case TupleNode::FOR: {
+    ForTuple *f = (ForTuple*)ancestor;
+    if(!exprSrc.isVariableUsed(f->getVarURI(), f->getVarName()) &&
+       !exprSrc.isVariableUsed(f->getPosURI(), f->getPosName()))
+      return true;
+    break;
   }
-
-  return found;
+  case TupleNode::LET: {
+    LetTuple *f = (LetTuple*)ancestor;
+    if(!exprSrc.isVariableUsed(f->getVarURI(), f->getVarName()))
+      return true;
+    break;
+  }
+  case TupleNode::WHERE:
+    return canPushWhereBack(ancestor->getParent(), exprSrc);
+  case TupleNode::CONTEXT_TUPLE:
+    break;
+  default:
+    return true;
+  }
+  return false;
 }
 
-TupleNode *WhereTuple::staticTypingSetup(unsigned int &min, unsigned int &max, StaticContext *context)
+TupleNode *WhereTuple::staticTypingImpl(StaticContext *context)
 {
+  if(expr_->getStaticAnalysis().isUpdating()) {
+    XQThrow(StaticErrorException,X("WhereTuple::staticTypingSetup"),
+            X("It is a static error for the where expression of a FLWOR expression "
+              "to be an updating expression [err:XUST0001]"));
+  }
+
   // Split if expr_ is the And operator
   if(context && expr_->getType() == ASTNode::OPERATOR && ((XQOperator*)expr_)->getOperatorName() == And::name) {
     XPath2MemoryManager *mm = context->getMemoryManager();
@@ -95,36 +94,27 @@ TupleNode *WhereTuple::staticTypingSetup(unsigned int &min, unsigned int &max, S
     for(unsigned int index = 0; index < andOp->getNumArgs(); ++index) {
       result = new (mm) WhereTuple(result, andOp->getArgument(index), mm);
       result->setLocationInfo(this);
+      result = result->staticTypingImpl(context);
     }
 
     parent_ = 0;
     expr_ = 0;
     this->release();
 
-    return result->staticTypingSetup(min, max, context);
+    return result;
   }
-
-  parent_ = parent_->staticTypingSetup(min, max, context);
-
-  // call static resolution on the value
-  expr_ = expr_->staticTyping(context);
-
-  if(expr_->getStaticAnalysis().isUpdating()) {
-    XQThrow(StaticErrorException,X("WhereTuple::staticTypingSetup"),
-            X("It is a static error for the where expression of a FLWOR expression "
-              "to be an updating expression [err:XUST0001]"));
-  }
-
-  min = 0;
 
   // Push back if possible
-  TupleNode *found = findWhereAncestor(parent_, expr_->getStaticAnalysis());
-  if(found) {
+  if(canPushWhereBack(parent_, expr_->getStaticAnalysis())) {
+    // Swap parent_ and this WhereTuple, re-executing their staticTypingImpl() methods
     TupleNode *tmp = parent_;
-    parent_ = found->getParent();
-    found->setParent(this);
-    return tmp;
+    parent_ = tmp->getParent();
+    tmp->setParent(this->staticTypingImpl(context));
+    return tmp->staticTypingImpl(context);
   }
+
+  min_ = 0;
+  max_ = parent_->getMax();
 
   return this;
 }

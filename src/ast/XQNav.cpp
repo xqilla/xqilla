@@ -150,11 +150,9 @@ ASTNode* XQNav::staticResolution(StaticContext *context)
   return this;
 }
 
-ASTNode* XQNav::staticTyping(StaticContext *context)
+ASTNode *XQNav::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
-
-  AutoContextItemTypeReset contextTypeReset(context);
 
   unsigned int props = StaticAnalysis::DOCORDER | StaticAnalysis::GROUPED |
     StaticAnalysis::PEER | StaticAnalysis::SUBTREE | StaticAnalysis::SAMEDOC |
@@ -163,7 +161,6 @@ ASTNode* XQNav::staticTyping(StaticContext *context)
   AutoDelete<Steps> newSteps(0);
   if(context) newSteps.set(new Steps(XQillaAllocator<StepInfo>(context->getMemoryManager())));
 
-  StaticType ciType;
   unsigned int min = 1, max = 1;
 
   Steps::iterator begin = _steps.begin();
@@ -171,14 +168,8 @@ ASTNode* XQNav::staticTyping(StaticContext *context)
   Steps::iterator it = begin;
   for(; it != end; ++it) {
     // Statically resolve our step
-    ASTNode *step = it->step->staticTyping(context);
+    ASTNode *step = it->step;
     const StaticAnalysis &stepSrc = step->getStaticAnalysis();
-
-    if(context) {
-      ciType = stepSrc.getStaticType();
-      ciType.setCardinality(1, 1);
-      context->setContextItemType(ciType);
-    }
 
     min *= stepSrc.getStaticType().getMin();
     if(max == StaticType::UNLIMITED || stepSrc.getStaticType().getMax() == StaticType::UNLIMITED)
@@ -292,9 +283,6 @@ ASTNode* XQNav::staticTyping(StaticContext *context)
 
   _src.setProperties(props);
 
-  if(!_src.isUsed()) {
-    return constantFold(context);
-  }
   return this;
 }
 

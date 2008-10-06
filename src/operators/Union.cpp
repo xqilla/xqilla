@@ -66,11 +66,10 @@ ASTNode* Union::staticResolution(StaticContext *context)
   return this;
 }
 
-ASTNode* Union::staticTyping(StaticContext *context)
+ASTNode *Union::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 
-  _args[0] = _args[0]->staticTyping(context);
   _src.add(_args[0]->getStaticAnalysis());
   _src.getStaticType() = _args[0]->getStaticAnalysis().getStaticType();
 
@@ -80,7 +79,6 @@ ASTNode* Union::staticTyping(StaticContext *context)
               "to be an updating expression [err:XUST0001]"));
   }
 
-  _args[1] = _args[1]->staticTyping(context);
   _src.add(_args[1]->getStaticAnalysis());
   _src.getStaticType().typeConcat(_args[1]->getStaticAnalysis().getStaticType());
 

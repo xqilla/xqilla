@@ -53,7 +53,7 @@ ASTNode* FunctionBoolean::staticResolution(StaticContext *context)
   return result->staticResolution(context);
 }
 
-ASTNode *FunctionBoolean::staticTyping(StaticContext *context)
+ASTNode *FunctionBoolean::staticTypingImpl(StaticContext *context)
 {
   // Shouldn't happen
   return this;

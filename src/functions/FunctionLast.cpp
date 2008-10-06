@@ -47,7 +47,7 @@ ASTNode* FunctionLast::staticResolution(StaticContext *context) {
   return resolveArguments(context);
 }
 
-ASTNode *FunctionLast::staticTyping(StaticContext *context)
+ASTNode *FunctionLast::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 

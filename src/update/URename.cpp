@@ -73,11 +73,10 @@ ASTNode* URename::staticResolution(StaticContext *context)
   return this;
 }
 
-ASTNode *URename::staticTyping(StaticContext *context)
+ASTNode *URename::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 
-  target_ = target_->staticTyping(context);
   _src.add(target_->getStaticAnalysis());
 
   if(target_->getStaticAnalysis().isUpdating()) {
@@ -93,7 +92,6 @@ ASTNode *URename::staticTyping(StaticContext *context)
               "attribute or processing instruction [err:XUTY0012]"));
   }
 
-  name_ = name_->staticTyping(context);
   _src.add(name_->getStaticAnalysis());
 
   if(name_->getStaticAnalysis().isUpdating()) {

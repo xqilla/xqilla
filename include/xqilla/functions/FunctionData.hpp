@@ -36,7 +36,7 @@ public:
   FunctionData(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
 
   virtual ASTNode* staticResolution(StaticContext *context);
-  virtual ASTNode *staticTyping(StaticContext *context);
+  virtual ASTNode *staticTypingImpl(StaticContext *context);
 };
 
 #endif

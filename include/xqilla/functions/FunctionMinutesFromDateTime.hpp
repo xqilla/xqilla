@@ -44,7 +44,7 @@ public:
   FunctionMinutesFromDateTime(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
 
   ASTNode* staticResolution(StaticContext *context);
-  virtual ASTNode *staticTyping(StaticContext *context);
+  virtual ASTNode *staticTypingImpl(StaticContext *context);
 
   /**
    * Returns an integer representing the minutes component in the value

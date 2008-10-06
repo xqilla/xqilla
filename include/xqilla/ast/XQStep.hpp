@@ -53,7 +53,7 @@ public:
   ~XQStep();
 
   virtual ASTNode* staticResolution(StaticContext *context);
-  virtual ASTNode *staticTyping(StaticContext *context);
+  virtual ASTNode *staticTypingImpl(StaticContext *context);
   virtual Result createResult(DynamicContext* context, int flags=0) const;
   virtual Result iterateResult(const Result &contextItems, DynamicContext* context) const;
 

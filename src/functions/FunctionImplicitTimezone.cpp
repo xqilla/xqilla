@@ -50,7 +50,7 @@ ASTNode* FunctionImplicitTimezone::staticResolution(StaticContext *context) {
   return resolveArguments(context);
 }
 
-ASTNode *FunctionImplicitTimezone::staticTyping(StaticContext *context)
+ASTNode *FunctionImplicitTimezone::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 

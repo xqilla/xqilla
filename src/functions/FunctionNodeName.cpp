@@ -43,7 +43,7 @@ FunctionNodeName::FunctionNodeName(const VectorOfASTNodes &args, XPath2MemoryMan
 {
 }
 
-ASTNode* FunctionNodeName::staticTyping(StaticContext *context)
+ASTNode *FunctionNodeName::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 

@@ -202,6 +202,7 @@ public:
   virtual const UserFunctions &getTemplateRules() const;
 
   virtual void addCustomFunction(FuncFactory *func);
+  virtual void removeCustomFunction(FuncFactory *func);
   virtual ASTNode *lookUpFunction(const XMLCh *uri, const XMLCh* name, const VectorOfASTNodes &v) const;
 
   virtual void addExternalFunction(const ExternalFunction *func);

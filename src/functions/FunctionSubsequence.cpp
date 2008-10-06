@@ -58,7 +58,7 @@ ASTNode* FunctionSubsequence::staticResolution(StaticContext *context)
   return resolveArguments(context);
 }
 
-ASTNode *FunctionSubsequence::staticTyping(StaticContext *context)
+ASTNode *FunctionSubsequence::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 

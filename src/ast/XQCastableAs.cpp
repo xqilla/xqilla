@@ -129,18 +129,13 @@ ASTNode* XQCastableAs::staticResolution(StaticContext *context)
   return this;
 }
 
-ASTNode *XQCastableAs::staticTyping(StaticContext *context)
+ASTNode *XQCastableAs::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
-
-  _expr = _expr->staticTyping(context);
 
   _src.getStaticType() = StaticType::BOOLEAN_TYPE;
   _src.add(_expr->getStaticAnalysis());
 
-  if(_expr->isConstant()) {
-    return constantFold(context);
-  }
   return this;
 }
 

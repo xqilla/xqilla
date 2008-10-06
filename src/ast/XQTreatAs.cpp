@@ -48,7 +48,7 @@ using namespace std;
 
 const XMLCh XQTreatAs::err_XPDY0050[] = { 'e', 'r', 'r', ':', 'X', 'P', 'D', 'Y', '0', '0', '5', '0', 0 };
 const XMLCh XQTreatAs::err_XPTY0004[] = { 'e', 'r', 'r', ':', 'X', 'P', 'T', 'Y', '0', '0', '0', '4', 0 };
-static const XMLCh funcVarName[] = { '#', 'f', 'u', 'n', 'c', 'V', 'a', 'r', 0 };
+const XMLCh XQTreatAs::funcVarName[] = { '#', 'f', 'u', 'n', 'c', 'V', 'a', 'r', 0 };
 
 XQTreatAs::XQTreatAs(ASTNode* expr, SequenceType* exprType, XPath2MemoryManager* memMgr, const XMLCh *errorCode)
   : ASTNodeImpl(TREAT_AS, memMgr),
@@ -143,31 +143,9 @@ ASTNode* XQTreatAs::staticResolution(StaticContext *context)
   return this;
 }
 
-ASTNode *XQTreatAs::staticTyping(StaticContext *context)
+ASTNode *XQTreatAs::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
-
-  _expr = _expr->staticTyping(context);
-
-  if(_funcConvert) {
-    if(context) {
-      // Could do better on the static type
-      StaticAnalysis varSrc(context->getMemoryManager());
-      varSrc.getStaticType() = StaticType::FUNCTION_TYPE;
-
-      VariableTypeStore *varStore = context->getVariableTypeStore();
-      varStore->addLogicalBlockScope();
-      varStore->declareVar(0, funcVarName, varSrc);
-    }
-
-    {
-      AutoMessageListenerReset reset(context); // Turn off warnings
-      _funcConvert = _funcConvert->staticTyping(context);
-    }
-
-    if(context)
-      context->getVariableTypeStore()->removeScope();
-  }
 
   // Do as much static time type checking as we can, given the
   // limited static typing that we implement
@@ -222,9 +200,6 @@ ASTNode *XQTreatAs::staticTyping(StaticContext *context)
     }
   }
 
-  if(_expr->isConstant() && !_expr->getStaticAnalysis().isUpdating()) {
-    return constantFold(context);
-  }
   return this;
 }
 
@@ -258,7 +233,7 @@ public:
       XPath2MemoryManager *mm = context->getMemoryManager();
 
       VarStoreImpl scope(mm, context->getVariableStore());
-      scope.setVar(0, funcVarName, item);
+      scope.setVar(0, XQTreatAs::funcVarName, item);
 
       AutoVariableStoreReset vsReset(context, &scope);
 

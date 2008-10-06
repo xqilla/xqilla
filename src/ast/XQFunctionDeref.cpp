@@ -61,16 +61,14 @@ ASTNode *XQFunctionDeref::staticResolution(StaticContext *context)
   return this;
 }
 
-ASTNode *XQFunctionDeref::staticTyping(StaticContext *context)
+ASTNode *XQFunctionDeref::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 
-  expr_ = expr_->staticTyping(context);
   _src.add(expr_->getStaticAnalysis());
 
   if(args_) {
     for(VectorOfASTNodes::iterator i = args_->begin(); i != args_->end(); ++i) {
-      *i = (*i)->staticTyping(context);
       _src.add((*i)->getStaticAnalysis());
     }
   }
@@ -87,9 +85,6 @@ ASTNode *XQFunctionDeref::staticTyping(StaticContext *context)
   _src.contextPositionUsed(true);
   _src.contextSizeUsed(true);
 
-  if(!_src.isUsed()) {
-    return constantFold(context);
-  }
   return this;
 }
 

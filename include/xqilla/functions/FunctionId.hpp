@@ -41,7 +41,7 @@ public:
   FunctionId(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   virtual ASTNode* staticResolution(StaticContext *context);
-  virtual ASTNode *staticTyping(StaticContext *context);
+  virtual ASTNode *staticTypingImpl(StaticContext *context);
 
   /** 
    * Returns the sequence of element nodes with ID values matching the value 

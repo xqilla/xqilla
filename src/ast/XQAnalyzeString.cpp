@@ -85,38 +85,27 @@ ASTNode* XQAnalyzeString::staticResolution(StaticContext *context)
   return this;
 }
 
-ASTNode *XQAnalyzeString::staticTyping(StaticContext *context)
+ASTNode *XQAnalyzeString::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 
-  expr_ = expr_->staticTyping(context);
   _src.add(expr_->getStaticAnalysis());
 
   // TBD Precompile the regex - jpcs
-  regex_ = regex_->staticTyping(context);
   _src.add(regex_->getStaticAnalysis());
 
   if(flags_) {
-    flags_ = flags_->staticTyping(context);
     _src.add(flags_->getStaticAnalysis());
   }
 
-  StaticType ciType(StaticType::STRING_TYPE, 1, 1);
-  AutoContextItemTypeReset contextTypeReset(context, ciType);
-  
-  match_ = match_->staticTyping(context);
   _src.add(match_->getStaticAnalysis());
   _src.getStaticType() = match_->getStaticAnalysis().getStaticType();
 
-  nonMatch_ = nonMatch_->staticTyping(context);
   _src.add(nonMatch_->getStaticAnalysis());
   _src.getStaticType().typeConcat(nonMatch_->getStaticAnalysis().getStaticType());
 
   _src.getStaticType().multiply(0, StaticType::UNLIMITED);
 
-  if(!_src.isUsed()) {
-    return constantFold(context);
-  }
   return this;
 }
 

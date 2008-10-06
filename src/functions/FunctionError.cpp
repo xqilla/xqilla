@@ -51,7 +51,7 @@ ASTNode* FunctionError::staticResolution(StaticContext *context)
   return resolveArguments(context);
 }
 
-ASTNode *FunctionError::staticTyping(StaticContext *context)
+ASTNode *FunctionError::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 

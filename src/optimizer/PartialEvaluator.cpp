@@ -37,9 +37,12 @@
 #include <xqilla/operators/And.hpp>
 #include <xqilla/operators/Or.hpp>
 
+#include "../items/impl/FunctionRefImpl.hpp"
+
 #include <set>
 #include <map>
 
+XERCES_CPP_NAMESPACE_USE;
 using namespace std;
 
 #define FUNCTION_SIZE_RATIO 2
@@ -60,11 +63,11 @@ PartialEvaluator::PartialEvaluator(DynamicContext *context, Optimizer *parent)
 class FunctionReferenceFinder : public ASTVisitor
 {
 public:
-  const set<XQUserFunction*> &find(ASTNode *ast)
+  const set<XQUserFunction*> &find(XQQuery *query)
   {
     functions_.clear();
     newFunctions_.clear();
-    optimize(ast);
+    optimize(query);
 
     set<XQUserFunction*>::iterator i = newFunctions_.begin();
     while(i != newFunctions_.end()) {
@@ -80,6 +83,27 @@ public:
   }
 
 protected:
+  using ASTVisitor::optimize;
+
+  virtual void optimize(XQQuery *query)
+  {
+    ImportedModules &modules = const_cast<ImportedModules&>(query->getImportedModules());
+    for(ImportedModules::iterator it2 = modules.begin(); it2 != modules.end(); ++it2) {
+      optimize(*it2);
+    }
+
+    GlobalVariables &vars = const_cast<GlobalVariables&>(query->getVariables());
+    for(GlobalVariables::iterator it = vars.begin(); it != vars.end(); ++it) {
+      (*it) = optimizeGlobalVar(*it);
+    }
+
+    // Don't look inside XQUserFunctions
+
+    if(query->getQueryBody() != 0) {
+      query->setQueryBody(optimize(query->getQueryBody()));
+    }
+  }
+
   virtual ASTNode *optimizeUserFunction(XQUserFunctionInstance *item)
   {
     if(functions_.insert(const_cast<XQUserFunction*>(item->getFunctionDefinition())).second) {
@@ -161,7 +185,7 @@ void PartialEvaluator::optimize(XQQuery *query)
   }
 
   // Find and remove all the unused user defined functions
-  removeUnusedFunctions(query, FunctionReferenceFinder().find(query->getQueryBody()),
+  removeUnusedFunctions(query, FunctionReferenceFinder().find(query),
                         context_->getMemoryManager());
 
   // Calculate a size limit on the partially evaluated AST
@@ -174,7 +198,7 @@ void PartialEvaluator::optimize(XQQuery *query)
   ASTVisitor::optimize(query);
 
   // Find and remove all the unused user defined functions
-  removeUnusedFunctions(query, FunctionReferenceFinder().find(query->getQueryBody()),
+  removeUnusedFunctions(query, FunctionReferenceFinder().find(query),
                         context_->getMemoryManager());
 }
 
@@ -235,6 +259,21 @@ ASTNode *PartialEvaluator::optimize(ASTNode *item)
     break;
   }
 
+  return item;
+}
+
+ASTNode *PartialEvaluator::optimizeNamespaceBinding(XQNamespaceBinding *item)
+{
+  // Make sure the correct namespaces are in scope for sub-expressions that are constant folded
+  AutoNsScopeReset jan(context_, item->getNamespaces());
+
+  if(context_) {
+    const XMLCh *defaultElementNS = context_->getMemoryManager()->
+      getPooledString(item->getNamespaces()->lookupNamespaceURI(XMLUni::fgZeroLenString));
+    context_->setDefaultElementAndTypeNS(defaultElementNS);
+  }
+
+  item->setExpression(optimize(const_cast<ASTNode *>(item->getExpression())));
   return item;
 }
 
@@ -429,6 +468,99 @@ protected:
 
     item->setMatch(optimize(const_cast<ASTNode *>(item->getMatch())));
     item->setNonMatch(optimize(const_cast<ASTNode *>(item->getNonMatch())));
+    return item;
+  }
+
+  virtual ASTNode *optimizeUTransform(UTransform *item)
+  {
+    AutoReset<bool> reset(active_);
+    AutoReset<bool> reset2(inScope_);
+
+    VectorOfCopyBinding *bindings = const_cast<VectorOfCopyBinding*>(item->getBindings());
+    for(VectorOfCopyBinding::iterator i = bindings->begin(); i != bindings->end(); ++i) {
+      (*i)->expr_ = optimize((*i)->expr_);
+
+      if(required_ && required_->isVariableUsed((*i)->uri_, (*i)->name_))
+        inScope_ = false;
+
+      if(XPath2Utils::equals(uri_, (*i)->uri_) &&
+         XPath2Utils::equals(name_, (*i)->name_))
+        active_ = false;
+    }
+
+    item->setModifyExpr(optimize(const_cast<ASTNode *>(item->getModifyExpr())));
+    item->setReturnExpr(optimize(const_cast<ASTNode *>(item->getReturnExpr())));
+
+    return item;
+  }
+
+  virtual ASTNode *optimizeTreatAs(XQTreatAs *item)
+  {
+    item->setExpression(optimize(item->getExpression()));
+
+    if(item->getFuncConvert()) {
+      AutoReset<bool> reset(active_);
+      AutoReset<bool> reset2(inScope_);
+
+      if(required_ && required_->isVariableUsed(0, XQTreatAs::funcVarName))
+        inScope_ = false;
+
+      if(XPath2Utils::equals(uri_, 0) &&
+         XPath2Utils::equals(name_, XQTreatAs::funcVarName))
+        active_ = false;
+
+      item->setFuncConvert(optimize(item->getFuncConvert()));
+    }
+
+    return item;
+  }
+
+  virtual ASTNode *optimizeFunctionRef(XQFunctionRef *item)
+  {
+    AutoReset<bool> reset(active_);
+    AutoReset<bool> reset2(inScope_);
+
+    for(unsigned int i = 0; i < item->getNumArgs(); ++i) {
+      XMLBuffer buf(20);
+      buf.set(FunctionRefImpl::argVarPrefix);
+      XPath2Utils::numToBuf(i, buf);
+
+      if(required_ && required_->isVariableUsed(0, buf.getRawBuffer()))
+        inScope_ = false;
+
+      if(XPath2Utils::equals(uri_, 0) &&
+         XPath2Utils::equals(name_, buf.getRawBuffer()))
+        active_ = false;
+    }
+
+    item->setInstance(optimize(item->getInstance()));
+
+    return item;
+  }
+
+  virtual ASTNode *optimizeInlineFunction(XQInlineFunction *item)
+  {
+    item->setUserFunction(optimizeFunctionDef(item->getUserFunction()));
+
+    AutoReset<bool> reset(active_);
+    AutoReset<bool> reset2(inScope_);
+
+    size_t numArgs = item->getUserFunction()->getArgumentSpecs() ? item->getUserFunction()->getArgumentSpecs()->size() : 0;
+    for(unsigned int i = 0; i < numArgs; ++i) {
+      XMLBuffer buf(20);
+      buf.set(FunctionRefImpl::argVarPrefix);
+      XPath2Utils::numToBuf(i, buf);
+
+      if(required_ && required_->isVariableUsed(0, buf.getRawBuffer()))
+        inScope_ = false;
+
+      if(XPath2Utils::equals(uri_, 0) &&
+         XPath2Utils::equals(name_, buf.getRawBuffer()))
+        active_ = false;
+    }
+
+    item->setInstance(optimize(item->getInstance()));
+
     return item;
   }
 
@@ -708,7 +840,7 @@ static ASTNode *inlineLets(XQReturn *item, DynamicContext *context, size_t &size
 
   map<LetTuple*, unsigned int>::iterator j = toCount.begin();
   for(; j != toCount.end(); ++j) {
-    if(j->second == 1) {
+    if(j->second <= 1) {
       inliner.inlineLet(item, j->first, context, sizeLimit);
     }
   }
@@ -1070,7 +1202,7 @@ ASTNode *PartialEvaluator::optimizePlus(Plus *item)
     if(arg1.notNull() && arg1->isNumericValue()) {
       // TBD type promotion - jpcs
       Numeric *num = (Numeric*)arg1.get();
-      if(num->asMAPM() == 0) {
+      if((num->getState() == Numeric::NUM || num->getState() == Numeric::NEG_NUM) && num->asMAPM() == 0) {
         // X + 0 = X
         ASTNode *result = args[0];
         args[0] = 0;
@@ -1086,7 +1218,7 @@ ASTNode *PartialEvaluator::optimizePlus(Plus *item)
     if(arg0.notNull() && arg0->isNumericValue()) {
       // TBD type promotion - jpcs
       Numeric *num = (Numeric*)arg0.get();
-      if(num->asMAPM() == 0) {
+      if((num->getState() == Numeric::NUM || num->getState() == Numeric::NEG_NUM) && num->asMAPM() == 0) {
         // 0 + X = X
         ASTNode *result = args[1];
         args[1] = 0;
@@ -1168,7 +1300,7 @@ ASTNode *PartialEvaluator::optimizeMinus(Minus *item)
     if(arg1.notNull() && arg1->isNumericValue()) {
       // TBD type promotion - jpcs
       Numeric *num = (Numeric*)arg1.get();
-      if(num->asMAPM() == 0) {
+      if((num->getState() == Numeric::NUM || num->getState() == Numeric::NEG_NUM) && num->asMAPM() == 0) {
         // X - 0 = X
         ASTNode *result = args[0];
         args[0] = 0;
@@ -1184,7 +1316,7 @@ ASTNode *PartialEvaluator::optimizeMinus(Minus *item)
     if(arg0.notNull() && arg0->isNumericValue()) {
       // TBD type promotion - jpcs
       Numeric *num = (Numeric*)arg0.get();
-      if(num->asMAPM() == 0) {
+      if((num->getState() == Numeric::NUM || num->getState() == Numeric::NEG_NUM) && num->asMAPM() == 0) {
         // 0 - X = -X
         VectorOfASTNodes newArgs = VectorOfASTNodes(XQillaAllocator<ASTNode*>(mm));
         newArgs.push_back(args[1]);
@@ -1257,7 +1389,8 @@ ASTNode *PartialEvaluator::optimizeMultiply(Multiply *item)
     if(arg1.notNull() && arg1->isNumericValue()) {
       // TBD type promotion - jpcs
       Numeric *num = (Numeric*)arg1.get();
-      if(num->asMAPM() == 0 && item->getStaticAnalysis().getStaticType().isType(StaticType::DECIMAL_TYPE)) {
+      if(num->getState() == Numeric::NUM && num->asMAPM() == 0 &&
+         item->getStaticAnalysis().getStaticType().isType(StaticType::DECIMAL_TYPE)) {
         // X * 0 = 0
         // but only for xs:decimal, since otherwise "-0" messes things up
         ASTNode *result = args[1];

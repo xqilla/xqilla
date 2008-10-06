@@ -45,6 +45,9 @@ public:
   virtual bool isSubsetOf(const ASTNode *other) const;
   virtual bool isEqualTo(const ASTNode *other) const;
 
+  virtual ASTNode *staticTyping(StaticContext *context);
+  virtual ASTNode *staticTypingImpl(StaticContext *context);
+
   /** Returns true if this ASTNode is an instance of XQSequence or XQLiteral */
   virtual bool isConstant() const;
   /** Returns true if this ASTNode has no predicates, and is an instance of
@@ -66,9 +69,6 @@ public:
       Default implementation uses result returned from createResult(). */
   virtual EventGenerator::Ptr generateEvents(EventHandler *events, DynamicContext *context,
                                                bool preserveNS, bool preserveType) const;
-
-  /** Performs constant folding on this ASTNode. */
-  ASTNode *constantFold(StaticContext *context);
 
   /** Returns the given ASTNode* after setting the referenced var to 0 and releasing this */
   ASTNode *substitute(ASTNode *&result);

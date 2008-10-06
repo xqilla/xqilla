@@ -45,7 +45,7 @@ public:
   const StaticAnalysis &getVarSRC() const { return varSrc_; }
 
   virtual TupleNode *staticResolution(StaticContext *context);
-  virtual TupleNode *staticTypingSetup(unsigned int &min, unsigned int &max, StaticContext *context);
+  virtual TupleNode *staticTypingImpl(StaticContext *context);
   virtual TupleNode *staticTypingTeardown(StaticContext *context, StaticAnalysis &usedSrc);
 
   virtual TupleResult::Ptr createResult(DynamicContext* context) const;

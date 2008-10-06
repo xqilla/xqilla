@@ -46,6 +46,7 @@ protected:
   virtual ASTNode *optimizePredicate(XQPredicate *item);
   virtual ASTNode *optimizeEffectiveBooleanValue(XQEffectiveBooleanValue *item);
   virtual ASTNode *optimizeOperator(XQOperator *item);
+  virtual ASTNode *optimizeNamespaceBinding(XQNamespaceBinding *item);
 
   ASTNode *optimizePlus(Plus *item);
   ASTNode *optimizeMinus(Minus *item);

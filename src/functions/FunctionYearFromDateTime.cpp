@@ -53,7 +53,7 @@ ASTNode* FunctionYearFromDateTime::staticResolution(StaticContext *context)
   return resolveArguments(context, /*checkTimezone*/true);
 }
 
-ASTNode *FunctionYearFromDateTime::staticTyping(StaticContext *context)
+ASTNode *FunctionYearFromDateTime::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 

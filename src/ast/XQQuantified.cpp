@@ -49,28 +49,20 @@ ASTNode *XQQuantified::staticResolution(StaticContext *context)
   return this;
 }
 
-ASTNode *XQQuantified::staticTyping(StaticContext *context)
+ASTNode *XQQuantified::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 
-  unsigned int min, max;
-  parent_ = parent_->staticTypingSetup(min, max, context);
-
-  expr_ = expr_->staticTyping(context);
   _src.add(expr_->getStaticAnalysis());
   _src.getStaticType() = StaticType::BOOLEAN_TYPE;
 
   parent_ = parent_->staticTypingTeardown(context, _src);
 
-  if(!_src.isUsed()) {
-    return constantFold(context);
-  }
-
   if(context && expr_->isConstant()) {
     AutoDelete<DynamicContext> dContext(context->createDynamicContext());
     dContext->setMemoryManager(context->getMemoryManager());
     bool value = ((ATBooleanOrDerived*)expr_->createResult(dContext)->next(dContext).get())->isTrue();
-    return XQLiteral::create(value, context->getMemoryManager(), this)->staticTyping(context);
+    return XQLiteral::create(value, context->getMemoryManager(), this);
   }
 
   return this;

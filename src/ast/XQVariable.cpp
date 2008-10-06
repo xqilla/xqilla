@@ -70,7 +70,7 @@ ASTNode* XQVariable::staticResolution(StaticContext *context)
   return this;
 }
 
-ASTNode *XQVariable::staticTyping(StaticContext *context)
+ASTNode *XQVariable::staticTypingImpl(StaticContext *context)
 {
   if(context == 0) return this;
 

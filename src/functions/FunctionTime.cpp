@@ -50,14 +50,12 @@ ASTNode *FunctionTime::staticResolution(StaticContext *context)
   return resolveArguments(context);
 }
 
-ASTNode *FunctionTime::staticTyping(StaticContext *context)
+ASTNode *FunctionTime::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 
-  _args[0] = _args[0]->staticTyping(context);
   _src.copy(_args[0]->getStaticAnalysis());
 
-  _args[1] = _args[1]->staticTyping(context);
   _src.add(_args[1]->getStaticAnalysis());
 
   if(_args[1]->getStaticAnalysis().isUpdating()) {

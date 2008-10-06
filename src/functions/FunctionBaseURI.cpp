@@ -50,7 +50,7 @@ ASTNode* FunctionBaseURI::staticResolution(StaticContext *context) {
   return resolveArguments(context);
 }
 
-ASTNode *FunctionBaseURI::staticTyping(StaticContext *context)
+ASTNode *FunctionBaseURI::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 

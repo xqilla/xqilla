@@ -48,7 +48,7 @@ ASTNode* FunctionRegexGroup::staticResolution(StaticContext *context)
   return resolveArguments(context);
 }
 
-ASTNode *FunctionRegexGroup::staticTyping(StaticContext *context)
+ASTNode *FunctionRegexGroup::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 

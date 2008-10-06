@@ -619,7 +619,7 @@ ASTNode* XQUserFunctionInstance::staticResolution(StaticContext* context)
   return this;
 }
 
-ASTNode *XQUserFunctionInstance::staticTyping(StaticContext *context)
+ASTNode *XQUserFunctionInstance::staticTypingImpl(StaticContext *context)
 {
   if(funcDef_->body_ != NULL) {
     _src.clear();
@@ -635,8 +635,6 @@ ASTNode *XQUserFunctionInstance::staticTyping(StaticContext *context)
   for(argIt = _args.begin(); argIt != _args.end(); ++argIt) {
     // The spec doesn't allow us to skip static errors, so we have to check even if
     // the parameter isn't used
-    *argIt = (*argIt)->staticTyping(context);
-
     if((*argIt)->getStaticAnalysis().isUpdating()) {
       if(funcDef_->isTemplate()) {
         XQThrow(StaticErrorException, X("XQUserFunctionInstance::staticTyping"),
@@ -654,10 +652,6 @@ ASTNode *XQUserFunctionInstance::staticTyping(StaticContext *context)
     _src.add((*argIt)->getStaticAnalysis());
   }
 
-  // don't constant fold if it's an imported or an external function
-  if(funcDef_->body_ != NULL && !_src.isUsed() && !funcDef_->isTemplate()) {
-    return constantFold(context);
-  }
   return this;
 }
 

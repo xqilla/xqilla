@@ -51,11 +51,10 @@ ASTNode* XQCopyOf::staticResolution(StaticContext *context)
   return this;
 }
 
-ASTNode *XQCopyOf::staticTyping(StaticContext *context)
+ASTNode *XQCopyOf::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 
-  expr_ = expr_->staticTyping(context);
   _src.copy(expr_->getStaticAnalysis());
 
   _src.setProperties(0);
@@ -64,9 +63,6 @@ ASTNode *XQCopyOf::staticTyping(StaticContext *context)
     return expr_;
   }
 
-  if(!_src.isUsed()) {
-    return constantFold(context);
-  }
   return this;
 }
 

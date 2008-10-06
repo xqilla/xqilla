@@ -50,7 +50,7 @@ ASTNode* FunctionUnordered::staticResolution(StaticContext *context)
   return resolveArguments(context);
 }
 
-ASTNode *FunctionUnordered::staticTyping(StaticContext *context)
+ASTNode *FunctionUnordered::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 

@@ -54,7 +54,7 @@ ASTNode* FunctionLang::staticResolution(StaticContext *context) {
   return resolveArguments(context);
 }
 
-ASTNode *FunctionLang::staticTyping(StaticContext *context)
+ASTNode *FunctionLang::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 

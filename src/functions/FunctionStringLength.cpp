@@ -68,7 +68,7 @@ ASTNode* FunctionStringLength::staticResolution(StaticContext *context)
   return resolveArguments(context);
 }
 
-ASTNode *FunctionStringLength::staticTyping(StaticContext *context)
+ASTNode *FunctionStringLength::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 

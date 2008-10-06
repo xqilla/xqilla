@@ -53,16 +53,10 @@ ASTNode* FunctionNot::staticResolution(StaticContext *context)
   return this;
 }
 
-ASTNode *FunctionNot::staticTyping(StaticContext *context)
+ASTNode *FunctionNot::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
-
-  _args[0] = _args[0]->staticTyping(context);
   _src.copy(_args[0]->getStaticAnalysis());
-
-  if(isConstant()) {
-    return constantFold(context);
-  }
   return this;
 }
 

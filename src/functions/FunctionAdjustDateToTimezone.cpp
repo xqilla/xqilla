@@ -58,7 +58,7 @@ ASTNode* FunctionAdjustDateToTimezone::staticResolution(StaticContext *context) 
   return resolveArguments(context);
 }
 
-ASTNode *FunctionAdjustDateToTimezone::staticTyping(StaticContext *context)
+ASTNode *FunctionAdjustDateToTimezone::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 

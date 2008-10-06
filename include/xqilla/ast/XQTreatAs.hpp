@@ -38,7 +38,7 @@ public:
 
   virtual Result createResult(DynamicContext* context, int flags=0) const;
   virtual ASTNode* staticResolution(StaticContext *context);
-  virtual ASTNode *staticTyping(StaticContext *context);
+  virtual ASTNode *staticTypingImpl(StaticContext *context);
 
   ASTNode *getExpression() const;
   ASTNode *getFuncConvert() const { return _funcConvert; }
@@ -54,6 +54,7 @@ public:
 
   static const XMLCh err_XPDY0050[];
   static const XMLCh err_XPTY0004[];
+  static const XMLCh funcVarName[];
 
 protected:
   ASTNode* _expr;

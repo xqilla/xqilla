@@ -55,7 +55,7 @@ ASTNode* FunctionInsertBefore::staticResolution(StaticContext *context)
   return resolveArguments(context);
 }
 
-ASTNode *FunctionInsertBefore::staticTyping(StaticContext *context)
+ASTNode *FunctionInsertBefore::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 

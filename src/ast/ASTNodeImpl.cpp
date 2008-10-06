@@ -36,7 +36,6 @@
 #include <xqilla/items/DateOrTimeType.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xqilla/ast/XQSequence.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 #include <xqilla/runtime/SequenceResult.hpp>
 #include <xqilla/context/ItemFactory.hpp>
@@ -45,6 +44,7 @@
 #include <xqilla/events/EventHandler.hpp>
 #include <xqilla/optimizer/ASTReleaser.hpp>
 #include <xqilla/optimizer/ASTCopier.hpp>
+#include <xqilla/optimizer/StaticTyper.hpp>
 
 ASTNodeImpl::ASTNodeImpl(whichType type, XPath2MemoryManager* memMgr)
   : _src(memMgr),
@@ -77,6 +77,16 @@ bool ASTNodeImpl::isEqualTo(const ASTNode *other) const
 {
   // TBD - jpcs
   return false;
+}
+
+ASTNode *ASTNodeImpl::staticTyping(StaticContext *context)
+{
+  return StaticTyper().run(this, context);
+}
+
+ASTNode *ASTNodeImpl::staticTypingImpl(StaticContext *context)
+{
+  return staticTyping(context);
 }
 
 bool ASTNodeImpl::isConstant() const
@@ -122,29 +132,6 @@ EventGenerator::Ptr ASTNodeImpl::generateEvents(EventHandler *events, DynamicCon
   }
 
   return 0;
-}
-
-ASTNode *ASTNodeImpl::constantFold(StaticContext *context)
-{
-  if(context == 0) return this;
-
-  XPath2MemoryManager* mm = context->getMemoryManager();
-
-  try {
-    AutoDelete<DynamicContext> dContext(context->createDynamicContext());
-    dContext->setMemoryManager(mm);
-
-    Result result = createResult(dContext);
-    ASTNode *newBlock = XQSequence::constantFold(result, dContext, mm, this);
-    if(newBlock == 0) return this; // Constant folding failed
-
-    newBlock->setLocationInfo(this);
-    this->release();
-    return newBlock->staticTyping(context);
-  }
-  catch(XQException &ex) {
-    return this; // Constant folding failed
-  }
 }
 
 ASTNode *ASTNodeImpl::substitute(ASTNode *&result)

@@ -75,7 +75,7 @@ ASTNode* XQFunctionCall::staticResolution(StaticContext *context)
   return result->staticResolution(context);
 }
 
-ASTNode *XQFunctionCall::staticTyping(StaticContext *context)
+ASTNode *XQFunctionCall::staticTypingImpl(StaticContext *context)
 {
   // Should never happen
   return this;

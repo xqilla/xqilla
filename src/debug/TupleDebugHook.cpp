@@ -41,9 +41,8 @@ TupleNode *TupleDebugHook::staticResolution(StaticContext *context)
   return this;
 }
 
-TupleNode *TupleDebugHook::staticTypingSetup(unsigned int &min, unsigned int &max, StaticContext *context)
+TupleNode *TupleDebugHook::staticTypingImpl(StaticContext *context)
 {
-  parent_ = parent_->staticTypingSetup(min, max, context);
   return this;
 }
 

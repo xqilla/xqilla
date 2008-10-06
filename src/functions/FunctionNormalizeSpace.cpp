@@ -67,7 +67,7 @@ ASTNode* FunctionNormalizeSpace::staticResolution(StaticContext *context)
   return resolveArguments(context);
 }
 
-ASTNode *FunctionNormalizeSpace::staticTyping(StaticContext *context)
+ASTNode *FunctionNormalizeSpace::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 

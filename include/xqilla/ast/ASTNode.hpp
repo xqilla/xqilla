@@ -116,6 +116,7 @@ public:
 
   virtual ASTNode *staticResolution(StaticContext *context) = 0;
   virtual ASTNode *staticTyping(StaticContext *context) = 0;
+  virtual ASTNode *staticTypingImpl(StaticContext *context) = 0;
 
   /// Returns the StaticAnalysis for this ASTNode
   virtual const StaticAnalysis &getStaticAnalysis() const = 0;

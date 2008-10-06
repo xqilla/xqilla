@@ -57,7 +57,7 @@ FunctionSerializeJSON::FunctionSerializeJSON(const VectorOfASTNodes &args, XPath
 {
 }
 
-ASTNode *FunctionSerializeJSON::staticTyping(StaticContext *context)
+ASTNode *FunctionSerializeJSON::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 

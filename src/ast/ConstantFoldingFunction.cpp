@@ -33,10 +33,12 @@ ConstantFoldingFunction::~ConstantFoldingFunction()
 {
 }
 
-ASTNode* ConstantFoldingFunction::staticResolution(StaticContext *context) {
+ASTNode* ConstantFoldingFunction::staticResolution(StaticContext *context)
+{
   return resolveArguments(context);
 }
 
-ASTNode* ConstantFoldingFunction::staticTyping(StaticContext *context) {
+ASTNode *ConstantFoldingFunction::staticTypingImpl(StaticContext *context)
+{
   return calculateSRCForArguments(context);
 }

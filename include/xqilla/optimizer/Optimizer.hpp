@@ -67,20 +67,4 @@ private:
   DynamicContext *xpc_;
 };
 
-class XQILLA_API StaticTyper : public Optimizer
-{
-public:
-  StaticTyper(DynamicContext *xpc, Optimizer *parent = 0)
-    : Optimizer(parent), xpc_(xpc) {}
-  virtual ~StaticTyper() {}
-
-protected:
-  virtual void optimize(XQQuery *query);
-  virtual ASTNode *optimize(ASTNode *item);
-  virtual void resetInternal() {}
-
-private:
-  DynamicContext *xpc_;
-};
-
 #endif
