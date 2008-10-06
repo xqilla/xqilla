@@ -74,11 +74,10 @@ ASTNode* UInsertAfter::staticResolution(StaticContext *context)
   return this;
 }
 
-ASTNode *UInsertAfter::staticTyping(StaticContext *context)
+ASTNode *UInsertAfter::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 
-  source_ = source_->staticTyping(context);
   _src.add(source_->getStaticAnalysis());
 
   if(source_->getStaticAnalysis().isUpdating()) {
@@ -87,7 +86,6 @@ ASTNode *UInsertAfter::staticTyping(StaticContext *context)
               "to be an updating expression [err:XUST0001]"));
   }
 
-  target_ = target_->staticTyping(context);
   _src.add(target_->getStaticAnalysis());
 
   if(target_->getStaticAnalysis().isUpdating()) {

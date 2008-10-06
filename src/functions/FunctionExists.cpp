@@ -51,7 +51,7 @@ ASTNode* FunctionExists::staticResolution(StaticContext *context) {
   return resolveArguments(context);
 }
 
-ASTNode *FunctionExists::staticTyping(StaticContext *context)
+ASTNode *FunctionExists::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
   _src.getStaticType() = StaticType::BOOLEAN_TYPE;
@@ -61,7 +61,7 @@ ASTNode *FunctionExists::staticTyping(StaticContext *context)
     const StaticType &sType = _args[0]->getStaticAnalysis().getStaticType();
     if(sType.getMin() > 0 || sType.getMax() == 0) {
       XPath2MemoryManager* mm = context->getMemoryManager();
-      return XQLiteral::create(sType.getMin() > 0, mm, this)->staticTyping(context);
+      return XQLiteral::create(sType.getMin() > 0, mm, this);
     }
   }
 

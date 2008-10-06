@@ -42,17 +42,19 @@ public:
 
   ///adds a function to the custom function table
   void insertFunction(FuncFactory *func);
+  /// Remove a function
+  void removeFunction(FuncFactory *func);
   ///returns the approriate Function object
   ASTNode* lookUpFunction(const XMLCh* URI, const XMLCh* fname,
-			  const VectorOfASTNodes &args,
-			  XPath2MemoryManager* memMgr) const;
+                          const VectorOfASTNodes &args,
+                          XPath2MemoryManager* memMgr) const;
 
   ///adds a function to the external function table
   void insertExternalFunction(const ExternalFunction *func);
   ///returns the approriate ExternalFunction object
   const ExternalFunction *lookUpExternalFunction(const XMLCh* URI,
-						 const XMLCh* fname,
-						 size_t numArgs) const;
+                                                 const XMLCh* fname,
+                                                 size_t numArgs) const;
   void copyExternalFunctionsTo(DynamicContext *context) const;
 
   void insertUpdateFunctions(XPath2MemoryManager *memMgr);
@@ -67,12 +69,11 @@ public:
   static void insertGlobalExternalFunction(const ExternalFunction *func);
   // next two look in global table first, then the contextTable
   static ASTNode* lookUpGlobalFunction(const XMLCh* URI, const XMLCh* fname,
-				       const VectorOfASTNodes &args,
-				       XPath2MemoryManager* memMgr,
-				       const FunctionLookup *contextTable);
-  static const ExternalFunction *lookUpGlobalExternalFunction(
-	  const XMLCh* URI, const XMLCh* fname, size_t numArgs,
-	  const FunctionLookup *contextTable);
+                                       const VectorOfASTNodes &args,
+                                       XPath2MemoryManager* memMgr,
+                                       const FunctionLookup *contextTable);
+  static const ExternalFunction *lookUpGlobalExternalFunction(const XMLCh* URI, const XMLCh* fname, size_t numArgs,
+                                                              const FunctionLookup *contextTable);
   static void initialize();
   static void terminate();
 private:

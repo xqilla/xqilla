@@ -46,14 +46,9 @@ ASTNode* XQEffectiveBooleanValue::staticResolution(StaticContext *context)
   return this;
 }
 
-ASTNode *XQEffectiveBooleanValue::staticTyping(StaticContext *context)
+ASTNode *XQEffectiveBooleanValue::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
-
-  {
-    AutoNodeSetOrderingReset orderReset(context);
-    expr_ = expr_->staticTyping(context);
-  }
 
   _src.add(expr_->getStaticAnalysis());
   _src.getStaticType() = StaticType::BOOLEAN_TYPE;

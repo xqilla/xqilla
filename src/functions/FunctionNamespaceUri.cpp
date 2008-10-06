@@ -55,7 +55,7 @@ ASTNode* FunctionNamespaceUri::staticResolution(StaticContext *context) {
   return resolveArguments(context);
 }
 
-ASTNode *FunctionNamespaceUri::staticTyping(StaticContext *context)
+ASTNode *FunctionNamespaceUri::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 

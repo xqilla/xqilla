@@ -62,11 +62,10 @@ ASTNode *XQValidate::staticResolution(StaticContext* context)
   return this;
 }
 
-ASTNode *XQValidate::staticTyping(StaticContext *context)
+ASTNode *XQValidate::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 
-  expr_ = expr_->staticTyping(context);
   _src.add(expr_->getStaticAnalysis());
 
   _src.getStaticType() = expr_->getStaticAnalysis().getStaticType();

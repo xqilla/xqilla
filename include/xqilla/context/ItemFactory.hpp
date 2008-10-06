@@ -123,7 +123,8 @@ public:
   virtual ATAnyURIOrDerived::Ptr createAnyURI(const XMLCh* value, const DynamicContext* context) = 0;
 
   virtual ATQNameOrDerived::Ptr createQName(const XMLCh* uri, const XMLCh* prefix, const XMLCh* name, const DynamicContext* context) = 0;
-  virtual ATQNameOrDerived::Ptr createQNameOrDerived(const XMLCh* typeURI, const XMLCh *prefix, const XMLCh* typeName, const XMLCh* uri, const XMLCh* name, const DynamicContext* context) = 0;
+  virtual ATQNameOrDerived::Ptr createQNameOrDerived(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* uri, const XMLCh *prefix,
+                                                     const XMLCh* name, const DynamicContext* context) = 0;
 
 };
 

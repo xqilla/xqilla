@@ -63,11 +63,10 @@ ASTNode* XQTextConstructor::staticResolution(StaticContext *context)
   return this;
 }
 
-ASTNode* XQTextConstructor::staticTyping(StaticContext *context)
+ASTNode *XQTextConstructor::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 
-  m_value = m_value->staticTyping(context);
   _src.add(m_value->getStaticAnalysis());
 
   if(m_value->getStaticAnalysis().isUpdating()) {

@@ -76,18 +76,3 @@ ASTNode *StaticResolver::optimize(ASTNode *item)
   return item->staticResolution(xpc_);
 }
 
-void StaticTyper::optimize(XQQuery *query)
-{
-  const ImportedModules &modules = query->getImportedModules();
-  for(ImportedModules::const_iterator it = modules.begin();
-      it != modules.end(); ++it) {
-    (*it)->staticTyping(const_cast<DynamicContext*>((*it)->getStaticContext()));
-  }
-
-  query->staticTyping(xpc_);
-}
-
-ASTNode *StaticTyper::optimize(ASTNode *item)
-{
-  return item->staticTyping(xpc_);
-}

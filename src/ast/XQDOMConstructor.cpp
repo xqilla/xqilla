@@ -95,11 +95,10 @@ ASTNode* XQContentSequence::staticResolution(StaticContext *context)
   return this;
 }
 
-ASTNode *XQContentSequence::staticTyping(StaticContext *context)
+ASTNode *XQContentSequence::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 
-  expr_ = expr_->staticTyping(context);
   _src.copy(expr_->getStaticAnalysis());
 
   if(!expr_->getStaticAnalysis().getStaticType().containsType(StaticType::DOCUMENT_TYPE|StaticType::ANY_ATOMIC_TYPE)) {
@@ -109,7 +108,7 @@ ASTNode *XQContentSequence::staticTyping(StaticContext *context)
     if(pChild->getType() == ASTNode::DOM_CONSTRUCTOR ||
        (pChild->getType() == ASTNode::NAMESPACE_BINDING &&
         ((XQNamespaceBinding*)pChild)->getExpression()->getType() == ASTNode::DOM_CONSTRUCTOR)) {
-      return expr_->staticTyping(context);
+      return expr_;
     }
   }
 
@@ -169,7 +168,7 @@ ASTNode *XQDirectName::staticResolution(StaticContext *context)
                                   XPath2NSUtils::getLocalName(qname_), mm))->staticResolution(context);
 }
 
-ASTNode *XQDirectName::staticTyping(StaticContext *context)
+ASTNode *XQDirectName::staticTypingImpl(StaticContext *context)
 {
   // Never happens
   return this;
@@ -205,13 +204,12 @@ ASTNode* XQNameExpression::staticResolution(StaticContext *context)
   return this;
 }
 
-ASTNode *XQNameExpression::staticTyping(StaticContext *context)
+ASTNode *XQNameExpression::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 
   _src.getStaticType() = StaticType::QNAME_TYPE;
 
-  expr_ = expr_->staticTyping(context);
   _src.add(expr_->getStaticAnalysis());
 
   if(expr_->getStaticAnalysis().getStaticType().isType(StaticType::QNAME_TYPE)) {
@@ -228,9 +226,6 @@ ASTNode *XQNameExpression::staticTyping(StaticContext *context)
     XQThrow(XPath2TypeMatchException, X("XQNameExpression::staticTyping"), buf.getRawBuffer());
   }
 
-  if(expr_->isConstant()) {
-    return constantFold(context);
-  }
   return this;
 }
 
@@ -291,14 +286,13 @@ ASTNode* XQSimpleContent::staticResolution(StaticContext *context)
   return this;
 }
 
-ASTNode *XQSimpleContent::staticTyping(StaticContext *context)
+ASTNode *XQSimpleContent::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 
   bool constant = true;
   unsigned int i;
   for(i = 0; i < children_->size(); ++i) {
-    (*children_)[i] = (*children_)[i]->staticTyping(context);
     _src.add((*children_)[i]->getStaticAnalysis());
 
     if((*children_)[i]->getStaticAnalysis().isUpdating()) {
@@ -312,9 +306,6 @@ ASTNode *XQSimpleContent::staticTyping(StaticContext *context)
 
   _src.getStaticType() = StaticType::STRING_TYPE;
 
-  if(constant) {
-    return constantFold(context);
-  }
   return this;
 }
 

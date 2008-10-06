@@ -33,7 +33,7 @@ public:
   NumericFunction(const XMLCh* name, unsigned int argsFrom, unsigned int argsTo, const char* paramDecl, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
 
   virtual ASTNode* staticResolution(StaticContext *context);
-  virtual ASTNode *staticTyping(StaticContext *context);
+  virtual ASTNode *staticTypingImpl(StaticContext *context);
 
 protected:
   Numeric::Ptr getNumericParam(unsigned int number, DynamicContext *context, int flags=0) const;

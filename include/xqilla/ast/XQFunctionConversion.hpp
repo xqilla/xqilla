@@ -31,7 +31,7 @@ public:
 
   virtual Result createResult(DynamicContext *context, int flags=0) const;
   virtual ASTNode* staticResolution(StaticContext *context);
-  virtual ASTNode *staticTyping(StaticContext *context);
+  virtual ASTNode *staticTypingImpl(StaticContext *context);
 
   ASTNode *getExpression() const;
   SequenceType *getSequenceType() const;

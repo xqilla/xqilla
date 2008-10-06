@@ -138,12 +138,11 @@ ASTNode* GeneralComp::staticResolution(StaticContext *context)
   return this;
 }
 
-ASTNode* GeneralComp::staticTyping(StaticContext *context)
+ASTNode *GeneralComp::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 
   for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
-    *i = (*i)->staticTyping(context);
     _src.add((*i)->getStaticAnalysis());
 
     if((*i)->getStaticAnalysis().isUpdating()) {
@@ -158,9 +157,6 @@ ASTNode* GeneralComp::staticTyping(StaticContext *context)
 
   _src.getStaticType() = StaticType::BOOLEAN_TYPE;
 
-  if(!_src.isUsed()) {
-    return constantFold(context);
-  }
   return this;
 }
 

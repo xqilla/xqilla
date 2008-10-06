@@ -59,7 +59,7 @@ ASTNode* FunctionSum::staticResolution(StaticContext *context) {
   return resolveArguments(context);
 }
 
-ASTNode *FunctionSum::staticTyping(StaticContext *context)
+ASTNode *FunctionSum::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 
@@ -78,8 +78,12 @@ ASTNode *FunctionSum::staticTyping(StaticContext *context)
     _src.getStaticType().substitute(StaticType::DECIMAL_TYPE, StaticType::FLOAT_TYPE);
   }
 
-  if(_args.size() > 1)
-    _src.getStaticType() |= _args[1]->getStaticAnalysis().getStaticType();
+  if(_args[0]->getStaticAnalysis().getStaticType().getMin() == 0) {
+    if(_args.size() == 1)
+      _src.getStaticType() |= StaticType::DECIMAL_TYPE;
+    else
+      _src.getStaticType() |= _args[1]->getStaticAnalysis().getStaticType();
+  }
 
   return this;
 }

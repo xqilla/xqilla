@@ -66,7 +66,7 @@ public:
   XQContentSequence(ASTNode *expr, XPath2MemoryManager* mm);
 
   virtual ASTNode *staticResolution(StaticContext *context);
-  virtual ASTNode *staticTyping(StaticContext *context);
+  virtual ASTNode *staticTypingImpl(StaticContext *context);
   virtual Result createResult(DynamicContext* context, int flags=0) const;
   virtual EventGenerator::Ptr generateEvents(EventHandler *events, DynamicContext *context,
                               bool preserveNS, bool preserveType) const;
@@ -84,7 +84,7 @@ public:
   XQDirectName(const XMLCh *qname, bool isAttr, XPath2MemoryManager* mm);
 
   virtual ASTNode *staticResolution(StaticContext *context);
-  virtual ASTNode *staticTyping(StaticContext *context);
+  virtual ASTNode *staticTypingImpl(StaticContext *context);
   virtual Result createResult(DynamicContext* context, int flags=0) const;
 
   const XMLCh *getQName() const { return qname_; }
@@ -101,7 +101,7 @@ public:
   XQNameExpression(ASTNode *expr, XPath2MemoryManager* mm);
 
   virtual ASTNode *staticResolution(StaticContext *context);
-  virtual ASTNode *staticTyping(StaticContext *context);
+  virtual ASTNode *staticTypingImpl(StaticContext *context);
   virtual Result createResult(DynamicContext* context, int flags=0) const;
 
   ASTNode *getExpression() const { return expr_; }
@@ -131,7 +131,7 @@ public:
   XQSimpleContent(VectorOfASTNodes *children, XPath2MemoryManager* mm);
 
   virtual ASTNode *staticResolution(StaticContext *context);
-  virtual ASTNode *staticTyping(StaticContext *context);
+  virtual ASTNode *staticTypingImpl(StaticContext *context);
   virtual Result createResult(DynamicContext* context, int flags=0) const;
 
   const VectorOfASTNodes *getChildren() const { return children_; }

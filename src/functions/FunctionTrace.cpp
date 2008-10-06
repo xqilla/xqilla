@@ -47,7 +47,7 @@ ASTNode* FunctionTrace::staticResolution(StaticContext *context) {
   return resolveArguments(context);
 }
 
-ASTNode *FunctionTrace::staticTyping(StaticContext *context)
+ASTNode *FunctionTrace::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 

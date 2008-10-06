@@ -50,11 +50,10 @@ ASTNode* XQAtomize::staticResolution(StaticContext *context)
   return this;
 }
 
-ASTNode *XQAtomize::staticTyping(StaticContext *context)
+ASTNode *XQAtomize::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 
-  expr_ = expr_->staticTyping(context);
   _src.getStaticType() = expr_->getStaticAnalysis().getStaticType();
   _src.add(expr_->getStaticAnalysis());
 
@@ -95,9 +94,6 @@ ASTNode *XQAtomize::staticTyping(StaticContext *context)
   // Remove function types
   _src.getStaticType() &= StaticType(StaticType::NODE_TYPE | StaticType::ANY_ATOMIC_TYPE, 0, StaticType::UNLIMITED);
 
-  if(expr_->isConstant()) {
-    return constantFold(context);
-  }
   return this;
 }
 

@@ -68,7 +68,7 @@ public:
   XQTypeswitch(ASTNode *expr, Cases *cases, Case *defaultCase, XPath2MemoryManager *mm);
 
   virtual ASTNode *staticResolution(StaticContext *context);
-  virtual ASTNode *staticTyping(StaticContext *context);
+  virtual ASTNode *staticTypingImpl(StaticContext *context);
 
   virtual Result createResult(DynamicContext* context, int flags=0) const;
   virtual EventGenerator::Ptr generateEvents(EventHandler *events, DynamicContext *context,

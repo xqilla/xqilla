@@ -66,86 +66,59 @@ TupleNode *LetTuple::staticResolution(StaticContext *context)
   return this;
 }
 
-static TupleNode *findLetAncestor(TupleNode *ancestor, const StaticAnalysis &exprSrc)
+static bool canPushLetBack(TupleNode *ancestor, const StaticAnalysis &exprSrc)
 {
-  // Find the furthest ancestor that we can safely be placed before
-  TupleNode *found = 0;
-
-  while(ancestor != 0) {
-    switch(ancestor->getType()) {
-    case TupleNode::FOR: {
-      ForTuple *f = (ForTuple*)ancestor;
-      if((f->getVarName() && exprSrc.isVariableUsed(f->getVarURI(), f->getVarName())) ||
-         (f->getPosName() && exprSrc.isVariableUsed(f->getPosURI(), f->getPosName()))) {
-        return found;
-      }
-      found = ancestor;
-      break;
-    }
-    case TupleNode::LET: {
-      LetTuple *f = (LetTuple*)ancestor;
-      if((f->getVarName() && exprSrc.isVariableUsed(f->getVarURI(), f->getVarName()))) {
-        return found;
-      }
-      break;
-    }
-    default: break;
-    }
-
-    ancestor = ancestor->getParent();
+  switch(ancestor->getType()) {
+  case TupleNode::FOR: {
+    ForTuple *f = (ForTuple*)ancestor;
+    if(!exprSrc.isVariableUsed(f->getVarURI(), f->getVarName()) &&
+       !exprSrc.isVariableUsed(f->getPosURI(), f->getPosName()))
+      return true;
+    break;
   }
-
-  return found;
+  case TupleNode::LET: {
+    LetTuple *f = (LetTuple*)ancestor;
+    if(!exprSrc.isVariableUsed(f->getVarURI(), f->getVarName()))
+      return canPushLetBack(f->getParent(), exprSrc);
+    break;
+  }
+  case TupleNode::ORDER_BY:
+  case TupleNode::WHERE:
+    return canPushLetBack(ancestor->getParent(), exprSrc);
+  case TupleNode::CONTEXT_TUPLE:
+    break;
+  default:
+    return true;
+  }
+  return false;
 }
 
-TupleNode *LetTuple::staticTypingSetup(unsigned int &min, unsigned int &max, StaticContext *context)
+TupleNode *LetTuple::staticTypingImpl(StaticContext *context)
 {
-  parent_ = parent_->staticTypingSetup(min, max, context);
-
-  // call static resolution on the value
-  expr_ = expr_->staticTyping(context);
-
   if(expr_->getStaticAnalysis().isUpdating()) {
     XQThrow(StaticErrorException,X("LetTuple::staticTypingSetup"),
             X("It is a static error for the let expression of a FLWOR expression "
               "to be an updating expression [err:XUST0001]"));
   }
 
-  if(context) {
-    VariableTypeStore* varStore = context->getVariableTypeStore();
-    varStore->addLogicalBlockScope();
-
-    // Declare the variable binding
-    varSrc_.getStaticType() = expr_->getStaticAnalysis().getStaticType();
-    varSrc_.setProperties(expr_->getStaticAnalysis().getProperties());
-    varStore->declareVar(varURI_, varName_, varSrc_);
-  }
-
   // Push back if possible
-  if(!expr_->getStaticAnalysis().isCreative()) {
-    TupleNode *found = findLetAncestor(parent_, expr_->getStaticAnalysis());
-    if(found) {
-      TupleNode *tmp = parent_;
-      parent_ = found->getParent();
-      found->setParent(this);
-      return tmp;
-    }
+  if(!expr_->getStaticAnalysis().isCreative() && canPushLetBack(parent_, expr_->getStaticAnalysis())) {
+    // Swap parent_ and this LetTuple, re-executing their staticTypingImpl() methods
+    TupleNode *tmp = parent_;
+    parent_ = tmp->getParent();
+    tmp->setParent(this->staticTypingImpl(context));
+    return tmp->staticTypingImpl(context);
   }
+
+  min_ = parent_->getMin();
+  max_ = parent_->getMax();
 
   return this;
 }
 
 TupleNode *LetTuple::staticTypingTeardown(StaticContext *context, StaticAnalysis &usedSrc)
 {
-  // Remove our variable binding and the scope we added
-  if(context)
-    context->getVariableTypeStore()->removeScope();
-
-  // Remove our binding variable from the StaticAnalysis data (removing it if it's not used)
-  // TBD Use counts for the variable - jpcs
-  if(!usedSrc.removeVariable(varURI_, varName_)) {
-    return parent_->staticTypingTeardown(context, usedSrc);
-  }
+  usedSrc.removeVariable(varURI_, varName_);
 
   usedSrc.add(expr_->getStaticAnalysis());
   parent_ = parent_->staticTypingTeardown(context, usedSrc);

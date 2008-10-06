@@ -58,7 +58,7 @@ ASTNode* FunctionUnparsedText::staticResolution(StaticContext *context)
   return resolveArguments(context);
 }
 
-ASTNode *FunctionUnparsedText::staticTyping(StaticContext *context)
+ASTNode *FunctionUnparsedText::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 

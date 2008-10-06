@@ -49,7 +49,7 @@ ASTNode* FunctionNilled::staticResolution(StaticContext *context) {
   return resolveArguments(context);
 }
 
-ASTNode *FunctionNilled::staticTyping(StaticContext *context)
+ASTNode *FunctionNilled::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 

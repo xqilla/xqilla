@@ -51,52 +51,35 @@ TupleNode *OrderByTuple::staticResolution(StaticContext *context)
   return this;
 }
 
-static TupleNode *findOrderByAncestor(TupleNode *ancestor, const StaticAnalysis &exprSrc)
+static bool canPushOrderByBack(TupleNode *ancestor, const StaticAnalysis &exprSrc)
 {
-  // Find the furthest ancestor that we can safely be placed before
-  TupleNode *found = 0;
-
-  while(ancestor != 0) {
-    switch(ancestor->getType()) {
-    case TupleNode::FOR: {
-      ForTuple *f = (ForTuple*)ancestor;
-      if((f->getVarName() && exprSrc.isVariableUsed(f->getVarURI(), f->getVarName())) ||
-         (f->getPosName() && exprSrc.isVariableUsed(f->getPosURI(), f->getPosName()))) {
-        return found;
-      }
-      found = ancestor;
-      break;
-    }
-    case TupleNode::LET: {
-      LetTuple *f = (LetTuple*)ancestor;
-      if((f->getVarName() && exprSrc.isVariableUsed(f->getVarURI(), f->getVarName()))) {
-        return found;
-      }
-      found = ancestor;
-      break;
-    }
-    case TupleNode::ORDER_BY: {
-      return found;
-    }
-    default: break;
-    }
-
-    ancestor = ancestor->getParent();
+  switch(ancestor->getType()) {
+  case TupleNode::FOR: {
+    ForTuple *f = (ForTuple*)ancestor;
+    if(!exprSrc.isVariableUsed(f->getVarURI(), f->getVarName()) &&
+       !exprSrc.isVariableUsed(f->getPosURI(), f->getPosName()))
+      return true;
+    break;
   }
-
-  return found;
+  case TupleNode::LET: {
+    LetTuple *f = (LetTuple*)ancestor;
+    if(!exprSrc.isVariableUsed(f->getVarURI(), f->getVarName()))
+      return true;
+    break;
+  }
+  case TupleNode::WHERE:
+    return canPushOrderByBack(ancestor->getParent(), exprSrc);
+  case TupleNode::ORDER_BY:
+  case TupleNode::CONTEXT_TUPLE:
+    break;
+  default:
+    return true;
+  }
+  return false;
 }
 
-TupleNode *OrderByTuple::staticTypingSetup(unsigned int &min, unsigned int &max, StaticContext *context)
+TupleNode *OrderByTuple::staticTypingImpl(StaticContext *context)
 {
-  parent_ = parent_->staticTypingSetup(min, max, context);
-
-  {
-    AutoNodeSetOrderingReset orderReset(context, (modifiers_ & UNSTABLE) == 0 ?
-                                        StaticContext::ORDERING_ORDERED : StaticContext::ORDERING_UNORDERED);
-    expr_ = expr_->staticTyping(context);
-  }
-
   if(expr_->getStaticAnalysis().isUpdating()) {
     XQThrow(StaticErrorException,X("OrderByTuple::staticTypingSetup"),
             X("It is a static error for the order by expression of a FLWOR expression "
@@ -104,13 +87,16 @@ TupleNode *OrderByTuple::staticTypingSetup(unsigned int &min, unsigned int &max,
   }
 
   // Push back if possible
-  TupleNode *found = findOrderByAncestor(parent_, expr_->getStaticAnalysis());
-  if(found) {
+  if(canPushOrderByBack(parent_, expr_->getStaticAnalysis())) {
+    // Swap parent_ and this OrderByTuple, re-executing their staticTypingImpl() methods
     TupleNode *tmp = parent_;
-    parent_ = found->getParent();
-    found->setParent(this);
-    return tmp;
+    parent_ = tmp->getParent();
+    tmp->setParent(this->staticTypingImpl(context));
+    return tmp->staticTypingImpl(context);
   }
+
+  min_ = parent_->getMin();
+  max_ = parent_->getMax();
 
   return this;
 }

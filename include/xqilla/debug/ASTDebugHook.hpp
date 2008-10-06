@@ -30,7 +30,7 @@ public:
   ASTDebugHook(ASTNode *astNode, XPath2MemoryManager *mm);
 
   virtual ASTNode *staticResolution(StaticContext *context);
-  virtual ASTNode *staticTyping(StaticContext *context);
+  virtual ASTNode *staticTypingImpl(StaticContext *context);
 
   virtual Result createResult(DynamicContext *context, int flags) const;
   virtual Result iterateResult(const Result &contextItems, DynamicContext *context) const;

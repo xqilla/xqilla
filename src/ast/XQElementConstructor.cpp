@@ -259,19 +259,17 @@ ASTNode* XQElementConstructor::staticResolution(StaticContext *context)
   return this;
 }
 
-ASTNode* XQElementConstructor::staticTyping(StaticContext *context)
+ASTNode *XQElementConstructor::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 
   unsigned int i;
   if(m_attrList != 0) {
     for(i = 0; i < m_attrList->size(); ++i) {
-      (*m_attrList)[i] = (*m_attrList)[i]->staticTyping(context);
       _src.add((*m_attrList)[i]->getStaticAnalysis()); 
     }
   }
 
-  m_name = m_name->staticTyping(context);
   _src.add(m_name->getStaticAnalysis());
 
   if(m_name->getStaticAnalysis().isUpdating()) {
@@ -281,7 +279,6 @@ ASTNode* XQElementConstructor::staticTyping(StaticContext *context)
   }
 
   for(i = 0; i < m_children->size(); ++i) {
-    (*m_children)[i] = (*m_children)[i]->staticTyping(context);
     _src.add((*m_children)[i]->getStaticAnalysis());
 
     if((*m_children)[i]->getStaticAnalysis().isUpdating()) {

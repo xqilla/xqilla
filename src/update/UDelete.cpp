@@ -52,11 +52,10 @@ ASTNode *UDelete::staticResolution(StaticContext *context)
   return this;
 }
 
-ASTNode *UDelete::staticTyping(StaticContext *context)
+ASTNode *UDelete::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 
-  expr_ = expr_->staticTyping(context);
   _src.add(expr_->getStaticAnalysis());
 
   if(expr_->getStaticAnalysis().isUpdating()) {

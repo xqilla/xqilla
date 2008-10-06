@@ -45,7 +45,7 @@ ASTNode* XQFunctionConversion::staticResolution(StaticContext *context)
     ->staticResolution(context);
 }
 
-ASTNode *XQFunctionConversion::staticTyping(StaticContext *context)
+ASTNode *XQFunctionConversion::staticTypingImpl(StaticContext *context)
 {
   // Never happens
   return this;

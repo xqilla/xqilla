@@ -51,45 +51,90 @@ ASTNode *XQNamespaceBinding::staticResolution(StaticContext *context)
   return this;
 }
 
-ASTNode *XQNamespaceBinding::staticTyping(StaticContext *context)
+ASTNode *XQNamespaceBinding::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
-
-  AutoNsScopeReset jan(context, namespaces_);
-
-  if(context) {
-    const XMLCh *defaultElementNS = context->getMemoryManager()->
-      getPooledString(namespaces_->lookupNamespaceURI(XMLUni::fgZeroLenString));
-    context->setDefaultElementAndTypeNS(defaultElementNS);
-  }
-
-  expr_ = expr_->staticTyping(context);
   _src.copy(expr_->getStaticAnalysis());
-
-  if(!_src.isUsed()) {
-    return constantFold(context);
-  }
   return this;
 }
 
+class NamespaceBindingResult : public ResultImpl
+{
+public:
+  NamespaceBindingResult(const XQNamespaceBinding *ast, DynamicContext *context)
+    : ResultImpl(ast),
+      ast_(ast),
+      result_(0)
+  {
+    AutoNsScopeReset jan(context, ast_->getNamespaces());
+
+    const XMLCh *defaultElementNS = context->getMemoryManager()->
+      getPooledString(ast_->getNamespaces()->lookupNamespaceURI(XMLUni::fgZeroLenString));
+    context->setDefaultElementAndTypeNS(defaultElementNS);
+
+    result_ = ast->getExpression()->createResult(context);
+  }
+
+  NamespaceBindingResult(const XQNamespaceBinding *ast, const Result &contextItems, DynamicContext *context)
+    : ResultImpl(ast),
+      ast_(ast),
+      result_(0)
+  {
+    AutoNsScopeReset jan(context, ast_->getNamespaces());
+
+    const XMLCh *defaultElementNS = context->getMemoryManager()->
+      getPooledString(ast_->getNamespaces()->lookupNamespaceURI(XMLUni::fgZeroLenString));
+    context->setDefaultElementAndTypeNS(defaultElementNS);
+
+    result_ = ast->getExpression()->iterateResult(contextItems, context);
+  }
+
+  virtual Item::Ptr next(DynamicContext *context)
+  {
+    AutoNsScopeReset jan(context, ast_->getNamespaces());
+
+    const XMLCh *defaultElementNS = context->getMemoryManager()->
+      getPooledString(ast_->getNamespaces()->lookupNamespaceURI(XMLUni::fgZeroLenString));
+    context->setDefaultElementAndTypeNS(defaultElementNS);
+
+    return result_->next(context);
+  }
+
+private:
+  const XQNamespaceBinding *ast_;
+  Result result_;
+};
+
 Result XQNamespaceBinding::createResult(DynamicContext *context, int flags) const
 {
-  return expr_->createResult(context);
+  return new NamespaceBindingResult(this, context);
 }
 
 Result XQNamespaceBinding::iterateResult(const Result &contextItems, DynamicContext *context) const
 {
-  return expr_->iterateResult(contextItems, context);
+  return new NamespaceBindingResult(this, contextItems, context);
 }
 
 EventGenerator::Ptr XQNamespaceBinding::generateEvents(EventHandler *events, DynamicContext *context,
                                                        bool preserveNS, bool preserveType) const
 {
+  AutoNsScopeReset jan(context, namespaces_);
+
+  const XMLCh *defaultElementNS = context->getMemoryManager()->
+    getPooledString(namespaces_->lookupNamespaceURI(XMLUni::fgZeroLenString));
+  context->setDefaultElementAndTypeNS(defaultElementNS);
+
   return expr_->generateEvents(events, context, preserveNS, preserveType);
 }
 
 PendingUpdateList XQNamespaceBinding::createUpdateList(DynamicContext *context) const
 {
+  AutoNsScopeReset jan(context, namespaces_);
+
+  const XMLCh *defaultElementNS = context->getMemoryManager()->
+    getPooledString(namespaces_->lookupNamespaceURI(XMLUni::fgZeroLenString));
+  context->setDefaultElementAndTypeNS(defaultElementNS);
+
   return expr_->createUpdateList(context);
 }
 

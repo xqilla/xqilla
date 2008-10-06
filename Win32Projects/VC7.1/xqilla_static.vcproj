@@ -376,6 +376,7 @@
       <File RelativePath="..\..\include\xqilla\optimizer\ASTReleaser.hpp"/>
       <File RelativePath="..\..\include\xqilla\optimizer\ASTVisitor.hpp"/>
       <File RelativePath="..\..\include\xqilla\optimizer\PartialEvaluator.hpp"/>
+      <File RelativePath="..\..\include\xqilla\optimizer\StaticTyper.hpp"/>
       <File RelativePath="..\..\include\xqilla\optimizer\QueryPathNode.hpp"/>
       <File RelativePath="..\..\include\xqilla\optimizer\QueryPathTreeGenerator.hpp"/>
       <File RelativePath="..\..\include\xqilla\parser\QName.hpp"/>
@@ -851,6 +852,7 @@
       <File RelativePath="..\..\src\optimizer\ASTReleaser.cpp"/>
       <File RelativePath="..\..\src\optimizer\ASTVisitor.cpp"/>
       <File RelativePath="..\..\src\optimizer\PartialEvaluator.cpp"/>
+      <File RelativePath="..\..\src\optimizer\StaticTyper.cpp"/>
       <File RelativePath="..\..\src\optimizer\Optimizer.cpp"/>
       <File RelativePath="..\..\src\optimizer\QueryPathNode.cpp"/>
       <File RelativePath="..\..\src\optimizer\QueryPathTreeGenerator.cpp"/>

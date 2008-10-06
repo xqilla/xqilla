@@ -53,7 +53,7 @@ ASTNode* FunctionRemove::staticResolution(StaticContext *context)
   return resolveArguments(context);
 }
 
-ASTNode *FunctionRemove::staticTyping(StaticContext *context)
+ASTNode *FunctionRemove::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 

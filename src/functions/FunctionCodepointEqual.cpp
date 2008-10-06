@@ -53,7 +53,7 @@ ASTNode* FunctionCodepointEqual::staticResolution(StaticContext *context)
   return resolveArguments(context);
 }
 
-ASTNode *FunctionCodepointEqual::staticTyping(StaticContext *context)
+ASTNode *FunctionCodepointEqual::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 

@@ -53,13 +53,10 @@ ASTNode *ASTDebugHook::staticResolution(StaticContext* context)
   return this;
 }
 
-ASTNode *ASTDebugHook::staticTyping(StaticContext *context)
+ASTNode *ASTDebugHook::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
-
-  expr_ = expr_->staticTyping(context);
   _src.copy(expr_->getStaticAnalysis());
-
   return this;
 }
 

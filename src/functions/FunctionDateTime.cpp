@@ -54,7 +54,7 @@ ASTNode* FunctionDateTime::staticResolution(StaticContext *context)
   return resolveArguments(context, /*checkTimezone*/true);
 }
 
-ASTNode *FunctionDateTime::staticTyping(StaticContext *context)
+ASTNode *FunctionDateTime::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 

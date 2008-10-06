@@ -46,7 +46,7 @@ FunctionParseXML::FunctionParseXML(const VectorOfASTNodes &args, XPath2MemoryMan
 {
 }
 
-ASTNode *FunctionParseXML::staticTyping(StaticContext *context)
+ASTNode *FunctionParseXML::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 

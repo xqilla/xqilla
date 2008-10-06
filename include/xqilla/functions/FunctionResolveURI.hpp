@@ -42,7 +42,7 @@ public:
   FunctionResolveURI(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   ASTNode* staticResolution(StaticContext *context);
-  virtual ASTNode *staticTyping(StaticContext *context);
+  virtual ASTNode *staticTypingImpl(StaticContext *context);
 
  /** 
   * Returns an absolute anyURI given a base URI and a relative URI.

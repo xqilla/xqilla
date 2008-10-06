@@ -51,7 +51,7 @@ ASTNode* FunctionCount::staticResolution(StaticContext *context) {
   return resolveArguments(context);
 }
 
-ASTNode *FunctionCount::staticTyping(StaticContext *context)
+ASTNode *FunctionCount::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
   _src.getStaticType() = StaticType::DECIMAL_TYPE;
@@ -65,9 +65,7 @@ ASTNode *FunctionCount::staticTyping(StaticContext *context)
       try {
         AutoDelete<DynamicContext> dContext(context->createDynamicContext());
         dContext->setMemoryManager(mm);
-
-        result = XQLiteral::create(mm->createInteger(sType.getMin()), dContext, mm, this);
-        return result->staticTyping(context);
+        return XQLiteral::create(mm->createInteger(sType.getMin()), dContext, mm, this);
       }
       catch(XQException &ex) {
         // Constant folding failed

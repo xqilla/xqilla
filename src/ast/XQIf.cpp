@@ -70,11 +70,9 @@ ASTNode* XQIf::staticResolution(StaticContext *context)
   return this;
 }
 
-ASTNode *XQIf::staticTyping(StaticContext *context)
+ASTNode *XQIf::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
-
-  _test = _test->staticTyping(context);
 
   if(_test->getStaticAnalysis().isUpdating()) {
     XQThrow(StaticErrorException,X("XQIf::staticTyping"),
@@ -84,12 +82,9 @@ ASTNode *XQIf::staticTyping(StaticContext *context)
 
   _src.add(_test->getStaticAnalysis());
 
-  _whenTrue = _whenTrue->staticTyping(context);
   _src.getStaticType() = _whenTrue->getStaticAnalysis().getStaticType();
   _src.setProperties(_whenTrue->getStaticAnalysis().getProperties());
   _src.add(_whenTrue->getStaticAnalysis());
-
-  _whenFalse = _whenFalse->staticTyping(context);
 
   if(_src.isUpdating()) {
     if(!_whenFalse->getStaticAnalysis().isUpdating() &&

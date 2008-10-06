@@ -47,11 +47,10 @@ ASTNode* UApplyUpdates::staticResolution(StaticContext *context)
   return this;
 }
 
-ASTNode *UApplyUpdates::staticTyping(StaticContext *context)
+ASTNode *UApplyUpdates::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 
-  expr_ = expr_->staticTyping(context);
   _src.add(expr_->getStaticAnalysis());
 
   if(!expr_->getStaticAnalysis().isUpdating()) {

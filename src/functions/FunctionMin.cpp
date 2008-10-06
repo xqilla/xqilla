@@ -63,7 +63,7 @@ ASTNode* FunctionMin::staticResolution(StaticContext *context) {
   return resolveArguments(context);
 }
 
-ASTNode *FunctionMin::staticTyping(StaticContext *context)
+ASTNode *FunctionMin::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 

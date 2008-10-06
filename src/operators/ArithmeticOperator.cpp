@@ -87,14 +87,12 @@ ASTNode* ArithmeticOperator::staticResolution(StaticContext *context)
   return this;
 }
 
-ASTNode* ArithmeticOperator::staticTyping(StaticContext *context)
+ASTNode *ArithmeticOperator::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 
   bool emptyArgument = false;
   for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
-    *i = (*i)->staticTyping(context);
-
     if((*i)->getStaticAnalysis().isUpdating()) {
       XQThrow(StaticErrorException,X("ArithmeticOperator::staticTyping"),
               X("It is a static error for an operand of an operator "

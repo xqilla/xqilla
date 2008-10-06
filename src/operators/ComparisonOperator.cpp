@@ -83,13 +83,12 @@ ASTNode* ComparisonOperator::staticResolution(StaticContext *context)
   return this;
 }
 
-ASTNode* ComparisonOperator::staticTyping(StaticContext *context)
+ASTNode *ComparisonOperator::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 
   bool emptyArgument = false;
   for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
-    *i = (*i)->staticTyping(context);
     _src.add((*i)->getStaticAnalysis());
 
     if(context && (*i)->getStaticAnalysis().getStaticType().getMax() == 0) {
@@ -97,7 +96,7 @@ ASTNode* ComparisonOperator::staticTyping(StaticContext *context)
       XPath2MemoryManager* mm = context->getMemoryManager();
       ASTNode *result = new (mm) XQSequence(mm);
       result->setLocationInfo(this);
-      return result->staticTyping(context);
+      return result->staticTypingImpl(context);
     }
 
     if((*i)->getStaticAnalysis().getStaticType().getMin() == 0)
@@ -117,9 +116,6 @@ ASTNode* ComparisonOperator::staticTyping(StaticContext *context)
     _src.getStaticType() = StaticType(StaticType::BOOLEAN_TYPE, 0, 1);
   else _src.getStaticType() = StaticType(StaticType::BOOLEAN_TYPE, 1, 1);
 
-  if(!_src.isUsed()) {
-    return constantFold(context);
-  }
   return this;
 }
 

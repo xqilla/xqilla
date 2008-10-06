@@ -30,7 +30,7 @@ public:
   TupleDebugHook(TupleNode *parent, XPath2MemoryManager *mm);
 
   virtual TupleNode *staticResolution(StaticContext *context);
-  virtual TupleNode *staticTypingSetup(unsigned int &min, unsigned int &max, StaticContext *context);
+  virtual TupleNode *staticTypingImpl(StaticContext *context);
   virtual TupleNode *staticTypingTeardown(StaticContext *context, StaticAnalysis &usedSrc);
 
   virtual TupleResult::Ptr createResult(DynamicContext* context) const;

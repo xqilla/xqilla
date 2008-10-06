@@ -48,11 +48,10 @@ ASTNode* XQDocumentOrder::staticResolution(StaticContext *context)
   return this;
 }
 
-ASTNode *XQDocumentOrder::staticTyping(StaticContext *context)
+ASTNode *XQDocumentOrder::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 
-  expr_ = expr_->staticTyping(context);
   _src.add(expr_->getStaticAnalysis());
 
   _src.getStaticType() = expr_->getStaticAnalysis().getStaticType();
@@ -65,8 +64,7 @@ ASTNode *XQDocumentOrder::staticTyping(StaticContext *context)
   }
 
   // Check if it's already in document order
-  if((expr_->getStaticAnalysis().getProperties() &
-      StaticAnalysis::DOCORDER) != 0) {
+  if((expr_->getStaticAnalysis().getProperties() & StaticAnalysis::DOCORDER) != 0) {
     return substitute(expr_);
   }
 
@@ -74,9 +72,6 @@ ASTNode *XQDocumentOrder::staticTyping(StaticContext *context)
                      | StaticAnalysis::DOCORDER
                      | StaticAnalysis::GROUPED);
 
-  if(expr_->isConstant()) {
-    return constantFold(context);
-  }
   return this;
 }
 

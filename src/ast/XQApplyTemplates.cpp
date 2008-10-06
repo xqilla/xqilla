@@ -102,18 +102,9 @@ ASTNode* XQApplyTemplates::staticResolution(StaticContext *context)
   return this;
 }
 
-ASTNode *XQApplyTemplates::staticTyping(StaticContext *context)
+ASTNode *XQApplyTemplates::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
-
-  expr_ = expr_->staticTyping(context);
-
-  TemplateArguments::iterator it;
-  if(args_ != 0) {
-    for(it = args_->begin(); it != args_->end(); ++it) {
-      (*it)->value = (*it)->value->staticTyping(context);
-    }
-  }
 
   // Calculate our static type from the template instances
   if(context)
@@ -176,6 +167,8 @@ ASTNode *XQApplyTemplates::staticTyping(StaticContext *context)
     }
     _src.add((*inIt)->getBodyStaticAnalysis());
   }
+
+  TemplateArguments::iterator it;
 
   if(args_ != 0) {
     for(it = args_->begin(); it != args_->end(); ++it) {

@@ -64,14 +64,13 @@ ASTNode* OrderComparison::staticResolution(StaticContext *context)
   return this;
 }
 
-ASTNode* OrderComparison::staticTyping(StaticContext *context)
+ASTNode *OrderComparison::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 
   _src.getStaticType() = StaticType(StaticType::BOOLEAN_TYPE, 0, 1);
 
   for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
-    *i = (*i)->staticTyping(context);
     _src.add((*i)->getStaticAnalysis());
 
     if((*i)->getStaticAnalysis().isUpdating()) {

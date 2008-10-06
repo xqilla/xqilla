@@ -52,7 +52,7 @@ ASTNode* FunctionMonthFromDate::staticResolution(StaticContext *context)
   return resolveArguments(context, /*checkTimezone*/true);
 }
 
-ASTNode *FunctionMonthFromDate::staticTyping(StaticContext *context)
+ASTNode *FunctionMonthFromDate::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 

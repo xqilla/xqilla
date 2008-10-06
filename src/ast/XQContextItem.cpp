@@ -43,7 +43,7 @@ ASTNode* XQContextItem::staticResolution(StaticContext *context)
   return this;
 }
 
-ASTNode *XQContextItem::staticTyping(StaticContext *context)
+ASTNode *XQContextItem::staticTypingImpl(StaticContext *context)
 {
   if(context == 0) return this;
 

@@ -207,19 +207,9 @@ ASTNode* XQCallTemplate::staticResolution(StaticContext *context)
   return result->staticResolution(context);
 }
 
-ASTNode *XQCallTemplate::staticTyping(StaticContext *context)
+ASTNode *XQCallTemplate::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
-
-  // At this point we know astName_ is not null
-  astName_ = astName_->staticTyping(context);
-
-  TemplateArguments::iterator it;
-  if(args_ != 0) {
-    for(it = args_->begin(); it != args_->end(); ++it) {
-      (*it)->value = (*it)->value->staticTyping(context);
-    }
-  }
 
   // Calculate our static type from the template instances with names
   if(context)
@@ -245,6 +235,8 @@ ASTNode *XQCallTemplate::staticTyping(StaticContext *context)
     _src.add((*inIt)->getBodyStaticAnalysis());
   }
 
+  TemplateArguments::iterator it;
+
   if(args_ != 0) {
     for(it = args_->begin(); it != args_->end(); ++it) {
       if(!_src.removeVariable((*it)->uri, (*it)->name)) {
@@ -253,6 +245,7 @@ ASTNode *XQCallTemplate::staticTyping(StaticContext *context)
     }
   }
 
+  // At this point we know astName_ is not null
   _src.add(astName_->getStaticAnalysis());
 
   if(args_ != 0) {

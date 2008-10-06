@@ -79,6 +79,12 @@ void FunctionLookup::insertFunction(FuncFactory *func)
   _funcTable.put((void*)func->getURINameHash(), (int)secondaryKey, func);
 }
 
+void FunctionLookup::removeFunction(FuncFactory *func)
+{
+  size_t secondaryKey = SECONDARY_KEY(func);
+  _funcTable.removeKey((void*)func->getURINameHash(), (int)secondaryKey);
+}
+
 ASTNode* FunctionLookup::lookUpFunction(const XMLCh* URI, const XMLCh* fname,
                                         const VectorOfASTNodes &args, XPath2MemoryManager* memMgr) const
 {

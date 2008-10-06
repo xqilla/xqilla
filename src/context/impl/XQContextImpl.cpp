@@ -568,6 +568,12 @@ void XQContextImpl::addCustomFunction(FuncFactory *func)
   _functionTable->insertFunction(func);
 }
 
+void XQContextImpl::removeCustomFunction(FuncFactory *func)
+{
+  if(_functionTable != NULL)
+    _functionTable->removeFunction(func);
+}
+
 void XQContextImpl::setContextSize(size_t size)
 {
   _contextSize = size;

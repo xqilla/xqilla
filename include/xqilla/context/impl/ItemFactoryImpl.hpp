@@ -105,8 +105,8 @@ public:
   virtual ATAnyURIOrDerived::Ptr createAnyURI(const XMLCh* value, const DynamicContext* context);
 
   virtual ATQNameOrDerived::Ptr createQName(const XMLCh* uri, const XMLCh* prefix, const XMLCh* name, const DynamicContext* context);
-  virtual ATQNameOrDerived::Ptr createQNameOrDerived(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* uri, const XMLCh* prefix,
-                                                     const XMLCh* name, const DynamicContext* context);
+  virtual ATQNameOrDerived::Ptr createQNameOrDerived(const XMLCh *typeURI, const XMLCh *typeName, const XMLCh *uri, const XMLCh *prefix,
+                                                     const XMLCh *name, const DynamicContext* context);
 
 protected:
   ItemFactoryImpl(DatatypeLookup *dl);

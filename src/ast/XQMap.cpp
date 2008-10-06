@@ -60,50 +60,20 @@ ASTNode *XQMap::staticResolution(StaticContext *context)
   return this;
 }
 
-ASTNode *XQMap::staticTyping(StaticContext *context)
+ASTNode *XQMap::staticTypingImpl(StaticContext *context)
 {
-  VariableTypeStore* varStore = context ? context->getVariableTypeStore() : 0;
-
   _src.clear();
 
-  if(context) arg1_ = arg1_->staticTyping(context);
+  const StaticAnalysis &arg2Src = arg2_->getStaticAnalysis();
+  if(name_ == 0) {
+    _src.addExceptContextFlags(arg2Src);
+  } else {
+    _src.addExceptVariable(uri_, name_, arg2Src);
+  }
+
   const StaticAnalysis &arg1Src = arg1_->getStaticAnalysis();
   _src.add(arg1Src);
 
-  StaticType oldContextItemType;
-  if(context) {
-    varSrc_.getStaticType() = arg1Src.getStaticType();
-    varSrc_.setProperties(StaticAnalysis::DOCORDER | StaticAnalysis::GROUPED |
-                          StaticAnalysis::PEER | StaticAnalysis::SUBTREE | StaticAnalysis::SAMEDOC |
-                          StaticAnalysis::ONENODE | StaticAnalysis::SELF);
-
-    oldContextItemType = context->getContextItemType();
-    if(name_ == 0) {
-      context->setContextItemType(varSrc_.getStaticType());
-    } else {
-      varStore->addLogicalBlockScope();
-      varStore->declareVar(uri_, name_, varSrc_);
-    }
-
-    arg2_ = arg2_->staticTyping(context);
-  }
-  const StaticAnalysis &arg2Src = arg2_->getStaticAnalysis();
-
-  StaticAnalysis newSrc(getMemoryManager());
-  if(name_ == 0) {
-    newSrc.addExceptContextFlags(arg2Src);
-
-    if(context)
-      context->setContextItemType(oldContextItemType);
-  } else {
-    newSrc.add(arg2Src);
-    newSrc.removeVariable(uri_, name_);
-
-    if(context)
-      varStore->removeScope();
-  }
-
-  _src.add(newSrc);
   _src.getStaticType() = arg2Src.getStaticType();
   _src.getStaticType().multiply(arg1Src.getStaticType().getMin(), arg1Src.getStaticType().getMax());
 

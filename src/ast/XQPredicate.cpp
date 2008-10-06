@@ -64,21 +64,12 @@ ASTNode* XQPredicate::staticResolution(StaticContext *context)
   return this;
 }
 
-ASTNode* XQPredicate::staticTyping(StaticContext *context)
+ASTNode *XQPredicate::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 
-  expr_ = expr_->staticTyping(context);
   _src.copy(expr_->getStaticAnalysis());
   _src.getStaticType().multiply(0, 1);
-
-  StaticType ciType = expr_->getStaticAnalysis().getStaticType();
-  ciType.setCardinality(1, 1);
-  AutoContextItemTypeReset contextTypeReset(context, ciType);
-
-  predicate_ = predicate_->staticTyping(context);
-
-  // TBD Use StaticType to determine result of EBV - jpcs
 
   // Remove context item usage
   _src.addExceptContextFlags(predicate_->getStaticAnalysis());

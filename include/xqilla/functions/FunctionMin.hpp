@@ -42,7 +42,7 @@ public:
   FunctionMin(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   ASTNode* staticResolution(StaticContext *context);
-  virtual ASTNode *staticTyping(StaticContext *context);
+  virtual ASTNode *staticTypingImpl(StaticContext *context);
   /** Returns the maximum value from the given sequence. **/
   Sequence createSequence(DynamicContext* context, int flags=0) const;
 

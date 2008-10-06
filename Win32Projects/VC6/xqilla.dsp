@@ -2873,6 +2873,10 @@ SOURCE=..\..\src\mapm\mapmutl2.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\mapm\README
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\include\xqilla\mapm\m_apm.h
 # End Source File
 # End Group
@@ -3105,6 +3109,10 @@ SOURCE=..\..\src\optimizer\QueryPathTreeGenerator.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\optimizer\StaticTyper.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\include\xqilla\optimizer\ASTCopier.hpp
 # End Source File
 # Begin Source File
@@ -3130,6 +3138,10 @@ SOURCE=..\..\include\xqilla\optimizer\QueryPathNode.hpp
 # Begin Source File
 
 SOURCE=..\..\include\xqilla\optimizer\QueryPathTreeGenerator.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\optimizer\StaticTyper.hpp
 # End Source File
 # End Group
 # Begin Group "parser"

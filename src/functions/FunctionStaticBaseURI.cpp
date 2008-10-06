@@ -64,7 +64,7 @@ ASTNode* FunctionStaticBaseURI::staticResolution(StaticContext *context)
   return newBlock->staticResolution(context);
 }
 
-ASTNode *FunctionStaticBaseURI::staticTyping(StaticContext *context)
+ASTNode *FunctionStaticBaseURI::staticTypingImpl(StaticContext *context)
 {
   // Should never happen
   return this;

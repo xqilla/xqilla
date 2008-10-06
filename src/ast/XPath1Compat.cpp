@@ -49,11 +49,10 @@ ASTNode* XPath1CompatConvertFunctionArg::staticResolution(StaticContext *context
   return this;
 }
 
-ASTNode *XPath1CompatConvertFunctionArg::staticTyping(StaticContext *context)
+ASTNode *XPath1CompatConvertFunctionArg::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 
-  expr_ = expr_->staticTyping(context);
   _src.copy(expr_->getStaticAnalysis());
 
   unsigned int min = _src.getStaticType().getMin() == 0 ? 0 : 1;
@@ -75,9 +74,6 @@ ASTNode *XPath1CompatConvertFunctionArg::staticTyping(StaticContext *context)
     }
   }
 
-  if(!_src.isUsed()) {
-    return constantFold(context);
-  }
   return this;
 }
 

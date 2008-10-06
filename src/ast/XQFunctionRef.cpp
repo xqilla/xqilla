@@ -88,38 +88,16 @@ ASTNode *XQFunctionRef::staticResolution(StaticContext *context)
   return this;
 }
 
-ASTNode *XQFunctionRef::staticTyping(StaticContext *context)
+ASTNode *XQFunctionRef::staticTypingImpl(StaticContext *context)
 {
   if(!context) {
     // TBD Can we do better - jpcs
-    instance_ = instance_->staticTyping(context);
     return this;
   }
 
   _src.clear();
 
   XPath2MemoryManager *mm = context->getMemoryManager();
-  StaticAnalysis instanceVarSrc(mm);
-  instanceVarSrc.getStaticType() = StaticType(StaticType::ITEM_TYPE, 0, StaticType::UNLIMITED);
-
-  VariableTypeStore *varStore = context->getVariableTypeStore();
-  varStore->addLogicalBlockScope();
-
-  for(unsigned int i = 0; i < numArgs_; ++i) {
-    XMLBuffer buf(20);
-    buf.set(FunctionRefImpl::argVarPrefix);
-    XPath2Utils::numToBuf(i, buf);
-
-    varStore->declareVar(0, mm->getPooledString(buf.getRawBuffer()), instanceVarSrc);
-  }
-
-  {
-    AutoMessageListenerReset reset(context); // Turn off warnings
-    instance_ = instance_->staticTyping(context);
-  }
-
-  varStore->removeScope();
-
   _src.getStaticType() = StaticType(mm, numArgs_, instance_->getStaticAnalysis().getStaticType());
 
   return this;

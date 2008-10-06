@@ -63,7 +63,7 @@ ASTNode* FunctionRoot::staticResolution(StaticContext *context)
   return resolveArguments(context);
 }
 
-ASTNode *FunctionRoot::staticTyping(StaticContext *context)
+ASTNode *FunctionRoot::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 
@@ -71,7 +71,6 @@ ASTNode *FunctionRoot::staticTyping(StaticContext *context)
                      StaticAnalysis::PEER | StaticAnalysis::SAMEDOC | StaticAnalysis::ONENODE);
   _src.getStaticType() = StaticType(StaticType::NODE_TYPE, 0, 1);
 
-  _args[0] = _args[0]->staticTyping(context);
   _src.add(_args[0]->getStaticAnalysis());
 
   if(_args[0]->getStaticAnalysis().isUpdating()) {

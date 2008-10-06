@@ -180,6 +180,8 @@ public:
 
   /** adds a custom function to the function table */
   virtual void addCustomFunction(FuncFactory *func) = 0;
+  /** removes a custom function to the function table */
+  virtual void removeCustomFunction(FuncFactory *func) = 0;
   /** returns a function object with the given uri, localname and number of arguments triple */
   virtual ASTNode *lookUpFunction(const XMLCh *uri, const XMLCh *name, const VectorOfASTNodes &v) const = 0;
 

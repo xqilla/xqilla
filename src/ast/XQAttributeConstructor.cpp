@@ -107,11 +107,10 @@ ASTNode* XQAttributeConstructor::staticResolution(StaticContext *context)
   return this;
 }
 
-ASTNode* XQAttributeConstructor::staticTyping(StaticContext *context)
+ASTNode *XQAttributeConstructor::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 
-  m_name = m_name->staticTyping(context);
   _src.add(m_name->getStaticAnalysis());
 
   if(m_name->getStaticAnalysis().isUpdating()) {
@@ -122,7 +121,6 @@ ASTNode* XQAttributeConstructor::staticTyping(StaticContext *context)
 
   unsigned int i;
   for(i = 0; i < m_children->size(); ++i) {
-    (*m_children)[i] = (*m_children)[i]->staticTyping(context);
     _src.add((*m_children)[i]->getStaticAnalysis());
 
     if((*m_children)[i]->getStaticAnalysis().isUpdating()) {

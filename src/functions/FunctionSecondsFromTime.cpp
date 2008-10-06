@@ -52,7 +52,7 @@ ASTNode* FunctionSecondsFromTime::staticResolution(StaticContext *context)
   return resolveArguments(context, /*checkTimezone*/true);
 }
 
-ASTNode *FunctionSecondsFromTime::staticTyping(StaticContext *context)
+ASTNode *FunctionSecondsFromTime::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 

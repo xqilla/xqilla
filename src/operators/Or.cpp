@@ -58,13 +58,12 @@ ASTNode* Or::staticResolution(StaticContext *context)
   return this;
 }
 
-ASTNode* Or::staticTyping(StaticContext *context)
+ASTNode *Or::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 
   VectorOfASTNodes::iterator i;
   for(i = _args.begin(); i != _args.end(); ++i) {
-    *i = (*i)->staticTyping(context);
     _src.add((*i)->getStaticAnalysis());
 
     if((*i)->getStaticAnalysis().isUpdating()) {

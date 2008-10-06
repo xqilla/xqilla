@@ -66,11 +66,10 @@ ASTNode* Intersect::staticResolution(StaticContext *context)
   return this;
 }
 
-ASTNode* Intersect::staticTyping(StaticContext *context)
+ASTNode *Intersect::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 
-  _args[0] = _args[0]->staticTyping(context);
   _src.copy(_args[0]->getStaticAnalysis());
 
   if(_args[0]->getStaticAnalysis().isUpdating()) {
@@ -79,7 +78,6 @@ ASTNode* Intersect::staticTyping(StaticContext *context)
               "to be an updating expression [err:XUST0001]"));
   }
 
-  _args[1] = _args[1]->staticTyping(context);
   _src.add(_args[1]->getStaticAnalysis());
 
   _src.getStaticType().typeNodeIntersect(_args[1]->getStaticAnalysis().getStaticType());

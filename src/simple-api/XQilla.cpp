@@ -29,6 +29,7 @@
 #include <xqilla/fastxdm/FastXDMConfiguration.hpp>
 #include <xqilla/optimizer/QueryPathTreeGenerator.hpp>
 #include <xqilla/optimizer/PartialEvaluator.hpp>
+#include <xqilla/optimizer/StaticTyper.hpp>
 #include <xqilla/debug/DebugHookDecorator.hpp>
 #include "../lexer/XQLexer.hpp"
 #include "../lexer/XSLT2Lexer.hpp"

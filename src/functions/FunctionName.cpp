@@ -63,7 +63,7 @@ ASTNode* FunctionName::staticResolution(StaticContext *context)
   return resolveArguments(context);
 }
 
-ASTNode *FunctionName::staticTyping(StaticContext *context)
+ASTNode *FunctionName::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
   _src.getStaticType() = StaticType::STRING_TYPE;

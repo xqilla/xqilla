@@ -42,18 +42,14 @@ ASTNode *XQReturn::staticResolution(StaticContext *context)
   return this;
 }
 
-ASTNode *XQReturn::staticTyping(StaticContext *context)
+ASTNode *XQReturn::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 
-  unsigned int min, max;
-  parent_ = parent_->staticTypingSetup(min, max, context);
-
-  expr_ = expr_->staticTyping(context);
   _src.add(expr_->getStaticAnalysis());
 
   _src.getStaticType() = expr_->getStaticAnalysis().getStaticType();
-  _src.getStaticType().multiply(min, max);
+  _src.getStaticType().multiply(parent_->getMin(), parent_->getMax());
 
   parent_ = parent_->staticTypingTeardown(context, _src);
 

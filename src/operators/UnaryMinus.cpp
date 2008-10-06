@@ -43,11 +43,11 @@ ASTNode* UnaryMinus::staticResolution(StaticContext *context)
   return ArithmeticOperator::staticResolution(context);
 }
 
-ASTNode* UnaryMinus::staticTyping(StaticContext *context)
+ASTNode *UnaryMinus::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 
-  ASTNode *result = ArithmeticOperator::staticTyping(context);
+  ASTNode *result = ArithmeticOperator::staticTypingImpl(context);
 
   if(result == this && positive_) {
     // constant fold unary plus after type checking

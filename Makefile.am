@@ -485,6 +485,7 @@ src/optimizer/ASTCopier.cpp \
 src/optimizer/ASTReleaser.cpp \
 src/optimizer/ASTVisitor.cpp \
 src/optimizer/PartialEvaluator.cpp \
+src/optimizer/StaticTyper.cpp \
 src/optimizer/QueryPathNode.cpp \
 src/optimizer/QueryPathTreeGenerator.cpp \
 src/yajl/yajl_buf.c \

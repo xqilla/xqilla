@@ -55,7 +55,7 @@ ASTNode* FunctionIdref::staticResolution(StaticContext *context) {
   return resolveArguments(context);
 }
 
-ASTNode *FunctionIdref::staticTyping(StaticContext *context)
+ASTNode *FunctionIdref::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 

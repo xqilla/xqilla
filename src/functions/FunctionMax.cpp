@@ -63,7 +63,7 @@ ASTNode* FunctionMax::staticResolution(StaticContext *context) {
   return resolveArguments(context);
 }
 
-ASTNode *FunctionMax::staticTyping(StaticContext *context)
+ASTNode *FunctionMax::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 

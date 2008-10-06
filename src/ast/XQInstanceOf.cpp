@@ -69,33 +69,13 @@ ASTNode* XQInstanceOf::staticResolution(StaticContext *context)
   return this;
 }
 
-ASTNode *XQInstanceOf::staticTyping(StaticContext *context)
+ASTNode *XQInstanceOf::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
-
-  try {
-    _expr = _expr->staticTyping(context);
-  }
-  catch(const XPath2TypeMatchException &ex) {
-    // The expression was constant folded, and the type matching failed.
-    if(context && !_expr->getStaticAnalysis().isNoFoldingForced()) {
-      XPath2MemoryManager *mm = context->getMemoryManager();
-
-      ASTNode *result = new (mm) XQLiteral(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                                           SchemaSymbols::fgDT_BOOLEAN,
-                                           SchemaSymbols::fgATTVAL_FALSE,
-                                           AnyAtomicType::BOOLEAN, mm);
-      result->setLocationInfo(this);
-      return result->staticTyping(context);
-    }
-  }
 
   _src.add(_expr->getStaticAnalysis());
   _src.getStaticType() = StaticType::BOOLEAN_TYPE;
 
-  if(_expr->isConstant()) {
-    return constantFold(context);
-  }
   return this;
 }
 

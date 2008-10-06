@@ -125,11 +125,10 @@ ASTNode* XQPIConstructor::staticResolution(StaticContext *context)
   return this;
 }
 
-ASTNode* XQPIConstructor::staticTyping(StaticContext *context)
+ASTNode *XQPIConstructor::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 
-  m_name = m_name->staticTyping(context);
   _src.add(m_name->getStaticAnalysis());
 
   if(m_name->getStaticAnalysis().isUpdating()) {
@@ -138,7 +137,6 @@ ASTNode* XQPIConstructor::staticTyping(StaticContext *context)
               "to be an updating expression [err:XUST0001]"));
   }
 
-  m_value = m_value->staticTyping(context);
   _src.add(m_value->getStaticAnalysis());
 
   if(m_value->getStaticAnalysis().isUpdating()) {

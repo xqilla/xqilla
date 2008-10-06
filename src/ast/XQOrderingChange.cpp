@@ -46,10 +46,9 @@ ASTNode* XQOrderingChange::staticResolution(StaticContext* context)
   return this;
 }
 
-ASTNode *XQOrderingChange::staticTyping(StaticContext *context)
+ASTNode *XQOrderingChange::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
-  m_pExpr = m_pExpr->staticTyping(context);
   _src.copy(m_pExpr->getStaticAnalysis());
   return this;
 }

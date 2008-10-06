@@ -63,12 +63,11 @@ ASTNode* XQTypeswitch::staticResolution(StaticContext *context)
 
 static const XMLCh no_err[] = { 0 };
 
-ASTNode* XQTypeswitch::staticTyping(StaticContext *context)
+ASTNode *XQTypeswitch::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 
   // Statically resolve the test expression
-  expr_ = expr_->staticTyping(context);
   const StaticAnalysis &exprSrc = expr_->getStaticAnalysis();
 
   if(exprSrc.isUpdating()) {
@@ -173,10 +172,6 @@ ASTNode* XQTypeswitch::staticTyping(StaticContext *context)
     _src.clear();
     default_->staticTyping(expr_->getStaticAnalysis(), context, _src, possiblyUpdating, /*first*/true);
 
-    // Constant fold if possible
-    if(!_src.isUsed()) {
-      return constantFold(context);
-    }
     return this;
   }
 }
@@ -204,35 +199,16 @@ void XQTypeswitch::Case::staticResolution(StaticContext* context)
   if(seqType_)
     seqType_->staticResolution(context);
   expr_ = expr_->staticResolution(context);
+
+  if(qname_ != 0) {
+    uri_ = context->getUriBoundToPrefix(XPath2NSUtils::getPrefix(qname_, context->getMemoryManager()), this);
+    name_ = XPath2NSUtils::getLocalName(qname_);
+  }
 }
 
 void XQTypeswitch::Case::staticTyping(const StaticAnalysis &var_src, StaticContext* context,
                                       StaticAnalysis &src, bool &possiblyUpdating, bool first)
 {
-  if(context) {
-    VariableTypeStore* varStore = context->getVariableTypeStore();
-
-    StaticAnalysis caseSrc(context->getMemoryManager());
-    caseSrc.copy(var_src);
-
-    if(seqType_ != 0) {
-      bool isExact;
-      StaticType type;
-      seqType_->getStaticType(type, context, isExact, this);
-  
-      caseSrc.getStaticType() &= type;
-    }
-
-    if(qname_ != 0) {
-      varStore->addLogicalBlockScope();
-      uri_ = context->getUriBoundToPrefix(XPath2NSUtils::getPrefix(qname_, context->getMemoryManager()), this);
-      name_ = XPath2NSUtils::getLocalName(qname_);
-      varStore->declareVar(uri_, name_, caseSrc);
-    }
-  }
-
-  expr_ = expr_->staticTyping(context);
-
   if(seqType_ != 0) {
     if(src.isUpdating()) {
       if(!expr_->getStaticAnalysis().isUpdating() && !expr_->getStaticAnalysis().isPossiblyUpdating())
@@ -252,7 +228,6 @@ void XQTypeswitch::Case::staticTyping(const StaticAnalysis &var_src, StaticConte
       // If the variable isn't used, don't bother setting it when we execute
       qname_ = 0;
     }
-    if(context) context->getVariableTypeStore()->removeScope();
   }
 
   if(possiblyUpdating)

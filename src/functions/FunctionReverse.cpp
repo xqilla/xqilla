@@ -45,7 +45,7 @@ ASTNode* FunctionReverse::staticResolution(StaticContext *context)
   return resolveArguments(context);
 }
 
-ASTNode *FunctionReverse::staticTyping(StaticContext *context)
+ASTNode *FunctionReverse::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 

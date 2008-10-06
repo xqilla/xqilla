@@ -50,7 +50,7 @@ ASTNode* FunctionDocAvailable::staticResolution(StaticContext *context) {
   return resolveArguments(context);
 }
 
-ASTNode *FunctionDocAvailable::staticTyping(StaticContext *context)
+ASTNode *FunctionDocAvailable::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 

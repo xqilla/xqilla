@@ -52,7 +52,7 @@ ASTNode* FunctionCurrentTime::staticResolution(StaticContext *context) {
   return resolveArguments(context);
 }
 
-ASTNode *FunctionCurrentTime::staticTyping(StaticContext *context)
+ASTNode *FunctionCurrentTime::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 

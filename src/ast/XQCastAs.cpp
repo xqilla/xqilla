@@ -124,16 +124,18 @@ ASTNode* XQCastAs::staticResolution(StaticContext *context)
   return this;
 }
 
-ASTNode *XQCastAs::staticTyping(StaticContext *context)
+ASTNode *XQCastAs::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 
   const SequenceType::ItemType *itemType = _exprType->getItemType();
   if(itemType != NULL) {
     _src.getStaticType() = StaticType::create(_typeIndex);
+    if(_exprType->getOccurrenceIndicator() == SequenceType::QUESTION_MARK) {
+      _src.getStaticType().multiply(0, 1);
+    }
   }
 
-  _expr = _expr->staticTyping(context);
   _src.add(_expr->getStaticAnalysis());
 
   if(_typeIndex == AnyAtomicType::QNAME &&
@@ -151,9 +153,6 @@ ASTNode *XQCastAs::staticTyping(StaticContext *context)
             X("Only a subtype of xs:NOTATION can be cast to a subtype of xs:NOTATION [err:XPTY0004]"));
   }
 
-  if(_expr->isConstant()) {
-    return constantFold(context);
-  }
   return this;
 }
 

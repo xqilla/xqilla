@@ -47,7 +47,7 @@ XQSequence *XQSequence::constantFold(Result &result, DynamicContext *context, XP
   }
 
   // Don't specify a context for staticTyping
-  seq->staticTyping(0);
+  seq->staticTypingImpl(0);
   return seq;
 }
 
@@ -77,7 +77,7 @@ ASTNode* XQSequence::staticResolution(StaticContext *context)
   return this;
 }
 
-ASTNode* XQSequence::staticTyping(StaticContext *context)
+ASTNode *XQSequence::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 
@@ -91,8 +91,6 @@ ASTNode* XQSequence::staticTyping(StaticContext *context)
   }
 
   for(; i != _astNodes.end(); ++i) {
-    *i = (*i)->staticTyping(context);
-
     if(_src.isUpdating()) {
       if(!(*i)->getStaticAnalysis().isUpdating() &&
          !(*i)->getStaticAnalysis().isPossiblyUpdating())
@@ -140,7 +138,7 @@ ASTNode* XQSequence::staticTyping(StaticContext *context)
 
   // Dissolve ourselves if we have only one child
   if(context && _astNodes.size() == 1) {
-    return _astNodes.front()->staticTyping(context);
+    return _astNodes.front();
   }
   return this;
 }

@@ -357,11 +357,21 @@ void XQillaTestSuiteRunner::runTestCase(const TestCase &testCase)
     if(testCase.xsltTest)
       context->setBaseURI(X(testCase.queryURL.c_str()));
 
+    if(testCase.updateTest) {
+      if(testCase.stateTime == 0) {
+        m_inputDocs.clear();
+        m_docQuery.set(0);
+      }
+      else if(m_docQuery.get() == 0) {
+        m_results->reportSkip(testCase, "State 0 failed");
+        return;
+      }
+    }
+
     XQQuery *parsedQuery = xqilla.parseFromURI(X(testCase.queryURL.c_str()), contextGuard.adopt());
     AutoDelete<XQQuery> parsedQueryGuard(parsedQuery);
 
     if(testCase.updateTest && testCase.stateTime == 0) {
-      m_inputDocs.clear();
       m_docQuery.set(parsedQuery);
       parsedQueryGuard.adopt();
     }

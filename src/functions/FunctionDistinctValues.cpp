@@ -75,7 +75,7 @@ ASTNode* FunctionDistinctValues::staticResolution(StaticContext *context)
   return resolveArguments(context);
 }
 
-ASTNode *FunctionDistinctValues::staticTyping(StaticContext *context)
+ASTNode *FunctionDistinctValues::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 
