@@ -34,6 +34,7 @@
 
 class DynamicContext;
 class StaticContext;
+class StaticTyper;
 
 class XQILLA_API FTContext
 {
@@ -74,7 +75,7 @@ public:
   virtual const StaticAnalysis &getStaticAnalysis() const { return src_; }
 
   virtual FTSelection *staticResolution(StaticContext *context) = 0;
-  virtual FTSelection *staticTyping(StaticContext *context) = 0;
+  virtual FTSelection *staticTyping(StaticContext *context, StaticTyper *styper) = 0;
   virtual FTSelection *optimize(FTContext *context, bool execute) const = 0;
   virtual AllMatches::Ptr execute(FTContext *ftcontext) const = 0;
 

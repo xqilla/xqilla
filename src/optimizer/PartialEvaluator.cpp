@@ -845,7 +845,7 @@ static ASTNode *inlineLets(XQReturn *item, DynamicContext *context, size_t &size
     }
   }
 
-  return item->staticTyping(0);
+  return item->staticTyping(0, 0);
 }
 
 ASTNode *PartialEvaluator::optimizeReturn(XQReturn *item)
@@ -1159,7 +1159,7 @@ ASTNode *PartialEvaluator::optimizePlus(Plus *item)
         // (A (+/-) B) + C = (A + C) (+/-) B
         args[0] = op->getArguments()[0];
         const_cast<VectorOfASTNodes&>(op->getArguments())[0] = item;
-        return optimize(op->staticTyping(0));
+        return optimize(op->staticTyping(0, 0));
       }
       else if(op->getArguments()[1]->isConstant()) {
         // (A - B) + C = A - (B - C)
@@ -1173,7 +1173,7 @@ ASTNode *PartialEvaluator::optimizePlus(Plus *item)
         else {
           const_cast<VectorOfASTNodes&>(op->getArguments())[1] = item;
         }
-        return optimize(op->staticTyping(0));
+        return optimize(op->staticTyping(0, 0));
       }
     }
   }
@@ -1185,14 +1185,14 @@ ASTNode *PartialEvaluator::optimizePlus(Plus *item)
         // A + (B (+/-) C) = (A + B) (+/-) C
         args[1] = op->getArguments()[0];
         const_cast<VectorOfASTNodes&>(op->getArguments())[0] = item;
-        return optimize(op->staticTyping(0));
+        return optimize(op->staticTyping(0, 0));
       }
       else if(op->getArguments()[1]->isConstant()) {
         // A + (B + C) = (A + C) + B
         // A + (B - C) = (A - C) + B
         args[1] = op->getArguments()[0];
         const_cast<VectorOfASTNodes&>(op->getArguments())[0] = args[0];
-        return optimize(item->staticTyping(0));
+        return optimize(item->staticTyping(0, 0));
       }
     }
   }
@@ -1248,7 +1248,7 @@ ASTNode *PartialEvaluator::optimizeMinus(Minus *item)
         // (A (+/-) B) - C = (A - C) (+/-) B
         args[0] = op->getArguments()[0];
         const_cast<VectorOfASTNodes&>(op->getArguments())[0] = item;
-        return optimize(op->staticTyping(0));
+        return optimize(op->staticTyping(0, 0));
       }
       else if(op->getArguments()[1]->isConstant()) {
         // (A - B) - C = A - (B + C)
@@ -1262,7 +1262,7 @@ ASTNode *PartialEvaluator::optimizeMinus(Minus *item)
         else {
           const_cast<VectorOfASTNodes&>(op->getArguments())[1] = item;
         }
-        return optimize(op->staticTyping(0));
+        return optimize(op->staticTyping(0, 0));
       }
     }
   }
@@ -1274,7 +1274,7 @@ ASTNode *PartialEvaluator::optimizeMinus(Minus *item)
         // A - (B (+/-) C) = (A - B) (+/-) C
         args[1] = op->getArguments()[0];
         const_cast<VectorOfASTNodes&>(op->getArguments())[0] = item;
-        return optimize(op->staticTyping(0));
+        return optimize(op->staticTyping(0, 0));
       }
       else if(op->getArguments()[1]->isConstant()) {
         // A - (B + C) = (A - C) - B
@@ -1290,7 +1290,7 @@ ASTNode *PartialEvaluator::optimizeMinus(Minus *item)
           args[0] = new (mm) Minus(op->getArguments(), mm);
           args[0]->setLocationInfo(op);
         }
-        return optimize(item->staticTyping(0));
+        return optimize(item->staticTyping(0, 0));
       }
     }
   }
@@ -1350,7 +1350,7 @@ ASTNode *PartialEvaluator::optimizeMultiply(Multiply *item)
         // (A / B) * C = (A * C) / B
         args[0] = op->getArguments()[0];
         const_cast<VectorOfASTNodes&>(op->getArguments())[0] = item;
-        return optimize(op->staticTyping(0));
+        return optimize(op->staticTyping(0, 0));
       }
       else if(op->getArguments()[1]->isConstant()) {
         // (A * B) * C = A * (B * C)
@@ -1359,7 +1359,7 @@ ASTNode *PartialEvaluator::optimizeMultiply(Multiply *item)
         const_cast<VectorOfASTNodes&>(op->getArguments())[0] = op->getArguments()[1];
         const_cast<VectorOfASTNodes&>(op->getArguments())[1] = args[1];
         args[1] = op;
-        return optimize(item->staticTyping(0));
+        return optimize(item->staticTyping(0, 0));
       }
     }
   }
@@ -1372,14 +1372,14 @@ ASTNode *PartialEvaluator::optimizeMultiply(Multiply *item)
         // A * (B / C) = (A * B) / C
         args[1] = op->getArguments()[0];
         const_cast<VectorOfASTNodes&>(op->getArguments())[0] = item;
-        return optimize(op->staticTyping(0));
+        return optimize(op->staticTyping(0, 0));
       }
       else if(op->getArguments()[1]->isConstant()) {
         // A * (B * C) = (A * C) * B
         // A * (B / C) = (A / C) * B
         args[1] = op->getArguments()[0];
         const_cast<VectorOfASTNodes&>(op->getArguments())[0] = args[0];
-        return optimize(item->staticTyping(0));
+        return optimize(item->staticTyping(0, 0));
       }
     }
   }
@@ -1460,7 +1460,7 @@ ASTNode *PartialEvaluator::optimizeDivide(Divide *item)
         // (A * B) / C = (A / C) * B
         args[0] = op->getArguments()[0];
         const_cast<VectorOfASTNodes&>(op->getArguments())[0] = item;
-        return optimize(op->staticTyping(0));
+        return optimize(op->staticTyping(0, 0));
       }
       else if(op->getArguments()[1]->isConstant()) {
         // (A / B) / C = A / (B * C)
@@ -1474,7 +1474,7 @@ ASTNode *PartialEvaluator::optimizeDivide(Divide *item)
         else {
           const_cast<VectorOfASTNodes&>(op->getArguments())[1] = item;
         }
-        return optimize(op->staticTyping(0));
+        return optimize(op->staticTyping(0, 0));
       }
     }
   }
@@ -1496,7 +1496,7 @@ ASTNode *PartialEvaluator::optimizeDivide(Divide *item)
           op = new (mm) Divide(op->getArguments(), mm);
           op->setLocationInfo(op);
         }
-        return optimize(op->staticTyping(0));
+        return optimize(op->staticTyping(0, 0));
       }
       else if(op->getArguments()[1]->isConstant()) {
         // A / (B / C) = (A * C) / B
@@ -1512,7 +1512,7 @@ ASTNode *PartialEvaluator::optimizeDivide(Divide *item)
           args[0] = new (mm) Divide(op->getArguments(), mm);
           args[0]->setLocationInfo(op);
         }
-        return optimize(item->staticTyping(0));
+        return optimize(item->staticTyping(0, 0));
       }
     }
   }

@@ -138,21 +138,21 @@ void XQGlobalVariable::staticResolution(StaticContext* context)
   }
 }
 
-void XQGlobalVariable::staticTypingOnce(StaticContext* context)
+void XQGlobalVariable::staticTypingOnce(StaticContext* context, StaticTyper *styper)
 {
   if(staticTyped_) return;
   staticTyped_ = true;
-  staticTyping(context);
+  staticTyping(context, styper);
 }
 
-void XQGlobalVariable::staticTyping(StaticContext* context)
+void XQGlobalVariable::staticTyping(StaticContext* context, StaticTyper *styper)
 {
   VariableTypeStore* varStore = context->getVariableTypeStore();
 
   if(m_Value != NULL) {
-    XQUserFunction::staticTypeFunctionCalls(m_Value, context);
+    XQUserFunction::staticTypeFunctionCalls(m_Value, context, styper);
 
-    m_Value = m_Value->staticTyping(context);
+    m_Value = m_Value->staticTyping(context, styper);
     _src.copy(m_Value->getStaticAnalysis());
 
     if(m_Value->getStaticAnalysis().isUpdating()) {

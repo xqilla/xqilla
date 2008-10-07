@@ -65,18 +65,18 @@ FTSelection *FTDistance::staticResolution(StaticContext *context)
   return this;
 }
 
-FTSelection *FTDistance::staticTyping(StaticContext *context)
+FTSelection *FTDistance::staticTyping(StaticContext *context, StaticTyper *styper)
 {
   src_.clear();
 
-  arg_ = arg_->staticTyping(context);
+  arg_ = arg_->staticTyping(context, styper);
   src_.add(arg_->getStaticAnalysis());
 
-  range_.arg1 = range_.arg1->staticTyping(context);
+  range_.arg1 = range_.arg1->staticTyping(context, styper);
   src_.add(range_.arg1->getStaticAnalysis());
 
   if(range_.arg2 != NULL) {
-    range_.arg2 = range_.arg2->staticTyping(context);
+    range_.arg2 = range_.arg2->staticTyping(context, styper);
     src_.add(range_.arg2->getStaticAnalysis());
   }
 
@@ -146,11 +146,11 @@ FTSelection *FTDistanceLiteral::staticResolution(StaticContext *context)
   return this;
 }
 
-FTSelection *FTDistanceLiteral::staticTyping(StaticContext *context)
+FTSelection *FTDistanceLiteral::staticTyping(StaticContext *context, StaticTyper *styper)
 {
   src_.clear();
 
-  arg_ = arg_->staticTyping(context);
+  arg_ = arg_->staticTyping(context, styper);
   src_.add(arg_->getStaticAnalysis());
 
   return this;

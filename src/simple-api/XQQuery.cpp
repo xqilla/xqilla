@@ -40,6 +40,7 @@
 #include <xqilla/utils/XPath2NSUtils.hpp>
 #include <xqilla/utils/PrintAST.hpp>
 #include <xqilla/events/EventHandler.hpp>
+#include <xqilla/optimizer/StaticTyper.hpp>
 
 #include <xercesc/util/XMLUni.hpp>
 #include <xercesc/util/XMLURL.hpp>
@@ -261,12 +262,12 @@ void XQQuery::staticResolution(StaticContext *context)
 
   // Run static resolution on the query body
   if(m_query) m_query = m_query->staticResolution(context);
-
-  staticTyping(context);
 }
 
-void XQQuery::staticTyping(StaticContext *context)
+void XQQuery::staticTyping(StaticContext *context, StaticTyper *styper)
 {
+  StaticTyper defaultTyper;
+  if(styper == 0) styper = &defaultTyper;
   if(context == 0) context = m_context;
 
   VariableTypeStore* varStore = context->getVariableTypeStore();
@@ -306,7 +307,7 @@ void XQQuery::staticTyping(StaticContext *context)
         varStore->declareVar((*itVar2)->getVariableURI(), (*itVar2)->getVariableLocalName(),
                              undefinedVar);
       }
-      (*itVar)->staticTyping(context);
+      (*itVar)->staticTyping(context, styper);
       varStore->removeScope();
     }
   }
@@ -319,11 +320,11 @@ void XQQuery::staticTyping(StaticContext *context)
       (*j)->resetStaticTypingOnce();
     }
 
-    (*i)->staticTypingOnce(context);
+    (*i)->staticTypingOnce(context, styper);
   }
 
   // Run staticTyping on the query body
-  if(m_query) m_query = m_query->staticTyping(context);
+  if(m_query) m_query = m_query->staticTyping(context, styper);
 }
 
 std::string XQQuery::getQueryPlan() const

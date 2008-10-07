@@ -33,8 +33,8 @@ public:
 
   void execute(DynamicContext* context) const;
   void staticResolution(StaticContext *context);
-  void staticTypingOnce(StaticContext *context);
-  void staticTyping(StaticContext *context);
+  void staticTypingOnce(StaticContext *context, StaticTyper *styper);
+  void staticTyping(StaticContext *context, StaticTyper *styper);
 
   const XMLCh* getVariableName() const;
   bool isExternal() const;

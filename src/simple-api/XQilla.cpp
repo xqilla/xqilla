@@ -85,6 +85,7 @@ XQQuery* XQilla::parse(const XMLCh* inputQuery, DynamicContext* context,
   // Perform static resolution, if requested
   if((flags & NO_STATIC_RESOLUTION) == 0) {
     Optimizer *optimizer = new StaticResolver(context);
+    optimizer = new StaticTyper(context, optimizer);
     optimizer = new PartialEvaluator(context, optimizer);
     optimizer = new StaticTyper(context, optimizer);
     optimizer = new QueryPathTreeGenerator(context, optimizer);
@@ -143,6 +144,7 @@ XQQuery* XQilla::parse(const InputSource& querySrc, DynamicContext* context,
   // Perform static resolution, if requested
   if((flags & NO_STATIC_RESOLUTION) == 0) {
     Optimizer *optimizer = new StaticResolver(context);
+    optimizer = new StaticTyper(context, optimizer);
     optimizer = new PartialEvaluator(context, optimizer);
     optimizer = new StaticTyper(context, optimizer);
     optimizer = new QueryPathTreeGenerator(context, optimizer);

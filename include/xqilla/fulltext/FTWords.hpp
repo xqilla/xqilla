@@ -42,7 +42,7 @@ public:
   FTWords(ASTNode *expr, FTAnyallOption option, XPath2MemoryManager *memMgr);
 
   virtual FTSelection *staticResolution(StaticContext *context);
-  virtual FTSelection *staticTyping(StaticContext *context);
+  virtual FTSelection *staticTyping(StaticContext *context, StaticTyper *styper);
   virtual FTSelection *optimize(FTContext *context, bool execute) const;
   virtual AllMatches::Ptr execute(FTContext *ftcontext) const;
 
@@ -66,7 +66,7 @@ public:
   FTWord(const XMLCh *queryString, XPath2MemoryManager *memMgr);
 
   virtual FTSelection *staticResolution(StaticContext *context);
-  virtual FTSelection *staticTyping(StaticContext *context);
+  virtual FTSelection *staticTyping(StaticContext *context, StaticTyper *styper);
   virtual FTSelection *optimize(FTContext *context, bool execute) const;
   virtual AllMatches::Ptr execute(FTContext *ftcontext) const;
 

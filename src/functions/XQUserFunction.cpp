@@ -347,11 +347,12 @@ void XQUserFunction::staticResolutionStage2(StaticContext *context)
 class UDFStaticTyper : private ASTVisitor
 {
 public:
-  UDFStaticTyper() : context_(0) {}
+  UDFStaticTyper() : context_(0), styper_(0) {}
 
-  void run(ASTNode *item, StaticContext *context)
+  void run(ASTNode *item, StaticContext *context, StaticTyper *styper)
   {
     context_ = context;
+    styper_ = styper;
     optimize(item);
   }
 
@@ -360,7 +361,7 @@ private:
   {
     // See if we can work out a better return type for the user defined function.
     // This call will just return if it's already been static typed
-    const_cast<XQUserFunction*>(item->getFunctionDefinition())->staticTypingOnce(context_);
+    const_cast<XQUserFunction*>(item->getFunctionDefinition())->staticTypingOnce(context_, styper_);
 
     return ASTVisitor::optimizeUserFunction(item);
   }
@@ -375,7 +376,7 @@ private:
     UserFunctions::const_iterator inIt;
     for(inIt = templates.begin(); inIt != templates.end(); ++inIt) {
       if((*inIt)->getPattern() != 0)
-        (*inIt)->staticTypingOnce(context_);
+        (*inIt)->staticTypingOnce(context_, styper_);
     }
 
     return ASTVisitor::optimizeApplyTemplates(item);
@@ -391,7 +392,7 @@ private:
     UserFunctions::const_iterator inIt;
     for(inIt = templates.begin(); inIt != templates.end(); ++inIt) {
       if((*inIt)->getName() != 0)
-        (*inIt)->staticTypingOnce(context_);
+        (*inIt)->staticTypingOnce(context_, styper_);
     }
 
     return ASTVisitor::optimizeCallTemplate(item);
@@ -408,14 +409,16 @@ private:
   }
 
   StaticContext *context_;
+  StaticTyper *styper_;
 };
 
-void XQUserFunction::staticTypeFunctionCalls(ASTNode *item, StaticContext *context)
+void XQUserFunction::staticTypeFunctionCalls(ASTNode *item, StaticContext *context, StaticTyper *styper)
 {
-  UDFStaticTyper().run(item, context);
+  // TBD DB XML version of UDFStaticTyper? - jpcs
+  UDFStaticTyper().run(item, context, styper);
 }
 
-void XQUserFunction::staticTypingOnce(StaticContext *context)
+void XQUserFunction::staticTypingOnce(StaticContext *context, StaticTyper *styper)
 {
   // Avoid inifinite recursion for recursive functions
   // TBD Need to declare everything as being used - jpcs
@@ -424,7 +427,7 @@ void XQUserFunction::staticTypingOnce(StaticContext *context)
     return;
   }
   staticTyped_ = true;
-  staticTyping(context);
+  staticTyping(context, styper);
 }
 
 void XQUserFunction::resetStaticTypingOnce()
@@ -432,7 +435,7 @@ void XQUserFunction::resetStaticTypingOnce()
   staticTyped_ = false;
 }
 
-void XQUserFunction::staticTyping(StaticContext *context)
+void XQUserFunction::staticTyping(StaticContext *context, StaticTyper *styper)
 {
   // Nothing more to do for external functions
   if(body_ == NULL) return;
@@ -446,14 +449,14 @@ void XQUserFunction::staticTyping(StaticContext *context)
 
   // Find user defined functions and templates that are referenced in our body,
   // and try to call staticTyping() on them before us.
-  staticTypeFunctionCalls(body_, context);
+  staticTypeFunctionCalls(body_, context, styper);
 
   bool ciTypeSet = false;
   StaticType ciType = StaticType();
   if(pattern_ != NULL) {
     VectorOfASTNodes::iterator patIt = pattern_->begin();
     for(; patIt != pattern_->end(); ++patIt) {
-      (*patIt) = (*patIt)->staticTyping(context);
+      (*patIt) = (*patIt)->staticTyping(context, styper);
       if(!ciTypeSet) {
         ciTypeSet = true;
         ciType = (*patIt)->getStaticAnalysis().getStaticType();
@@ -494,7 +497,7 @@ void XQUserFunction::staticTyping(StaticContext *context)
     // Declare the context item
     AutoContextItemTypeReset contextTypeReset(context, ciType);
 
-    body_ = body_->staticTyping(context);
+    body_ = body_->staticTyping(context, styper);
     bodySRC.copy(body_->getStaticAnalysis());
   }
 
@@ -551,7 +554,7 @@ void XQUserFunction::staticTyping(StaticContext *context)
     // Turn off warnings here, since they are largely irrelevent to the user
     AutoMessageListenerReset reset(context);
 
-    templateInstance_->staticTyping(context);
+    templateInstance_->staticTyping(context, styper);
 
     varStore->removeScope();
   }
