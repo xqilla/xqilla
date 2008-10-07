@@ -27,6 +27,8 @@
 #include <xqilla/context/VariableTypeStore.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/exceptions/XPath2TypeMatchException.hpp>
+#include <xqilla/fulltext/FTSelection.hpp>
+#include <xqilla/fulltext/DefaultTokenizer.hpp>
 
 #include "../items/impl/FunctionRefImpl.hpp"
 
@@ -42,7 +44,7 @@ ASTNode *StaticTyper::run(ASTNode *item, StaticContext *context)
 
 void StaticTyper::optimize(XQQuery *query)
 {
-  query->staticTyping(context_);
+  query->staticTyping(context_, this);
 }
 
 ASTNode *StaticTyper::optimize(ASTNode *item)
@@ -313,7 +315,7 @@ ASTNode *StaticTyper::optimizeFunctionRef(XQFunctionRef *item)
 
 ASTNode *StaticTyper::optimizeInlineFunction(XQInlineFunction *item)
 {
-  item->getUserFunction()->staticTyping(context_);
+  item->getUserFunction()->staticTyping(context_, this);
 
   if(context_) {
     XPath2MemoryManager *mm = context_->getMemoryManager();
@@ -370,6 +372,26 @@ ASTNode *StaticTyper::optimizeInstanceOf(XQInstanceOf *item)
       return optimize(result);
     }
   }
+  return item;
+}
+
+ASTNode *StaticTyper::optimizeFTContains(FTContains *item)
+{
+  item->setArgument(optimize(item->getArgument()));
+
+  item->getSelection()->staticTyping(context_, this);
+
+  if(context_) {
+    AutoDelete<DynamicContext> dContext(context_->createDynamicContext());
+    dContext->setMemoryManager(context_->getMemoryManager());
+
+    DefaultTokenizer tokenizer;
+    FTContext ftcontext(&tokenizer, 0, dContext);
+    item->setSelection(item->getSelection()->optimize(&ftcontext, /*execute*/false));
+  }
+
+  if(item->getIgnore())
+    item->setIgnore(optimize(item->getIgnore()));
   return item;
 }
 

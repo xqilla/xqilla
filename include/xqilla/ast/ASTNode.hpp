@@ -35,6 +35,7 @@ class Result;
 class StaticAnalysis;
 class PendingUpdateList;
 class EventHandler;
+class StaticTyper;
 
 class XQILLA_API ASTNode : public LocationInfo
 {
@@ -115,7 +116,7 @@ public:
   virtual XPath2MemoryManager *getMemoryManager() const = 0;
 
   virtual ASTNode *staticResolution(StaticContext *context) = 0;
-  virtual ASTNode *staticTyping(StaticContext *context) = 0;
+  virtual ASTNode *staticTyping(StaticContext *context, StaticTyper *styper) = 0;
   virtual ASTNode *staticTypingImpl(StaticContext *context) = 0;
 
   /// Returns the StaticAnalysis for this ASTNode

@@ -45,8 +45,7 @@ public:
   virtual bool isSubsetOf(const ASTNode *other) const;
   virtual bool isEqualTo(const ASTNode *other) const;
 
-  virtual ASTNode *staticTyping(StaticContext *context);
-  virtual ASTNode *staticTypingImpl(StaticContext *context);
+  virtual ASTNode *staticTyping(StaticContext *context, StaticTyper *styper);
 
   /** Returns true if this ASTNode is an instance of XQSequence or XQLiteral */
   virtual bool isConstant() const;

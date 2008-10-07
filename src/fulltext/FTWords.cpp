@@ -66,11 +66,11 @@ FTSelection *FTWords::staticResolution(StaticContext *context)
   return this;
 }
 
-FTSelection *FTWords::staticTyping(StaticContext *context)
+FTSelection *FTWords::staticTyping(StaticContext *context, StaticTyper *styper)
 {
   src_.clear();
 
-  expr_ = expr_->staticTyping(context);
+  expr_ = expr_->staticTyping(context, styper);
   src_.add(expr_->getStaticAnalysis());
 
   return this;
@@ -217,7 +217,7 @@ FTSelection *FTWord::staticResolution(StaticContext *context)
   return this;
 }
 
-FTSelection *FTWord::staticTyping(StaticContext *context)
+FTSelection *FTWord::staticTyping(StaticContext *context, StaticTyper *styper)
 {
   src_.clear();
   return this;

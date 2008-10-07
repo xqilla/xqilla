@@ -49,13 +49,13 @@ FTSelection *FTAnd::staticResolution(StaticContext *context)
   return this;
 }
 
-FTSelection *FTAnd::staticTyping(StaticContext *context)
+FTSelection *FTAnd::staticTyping(StaticContext *context, StaticTyper *styper)
 {
   src_.clear();
 
   for(VectorOfFTSelections::iterator i = args_.begin();
       i != args_.end(); ++i) {
-    *i = (*i)->staticTyping(context);
+    *i = (*i)->staticTyping(context, styper);
     src_.add((*i)->getStaticAnalysis());
   }
 

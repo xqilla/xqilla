@@ -38,14 +38,14 @@ FTSelection *FTMildnot::staticResolution(StaticContext *context)
   return this;
 }
 
-FTSelection *FTMildnot::staticTyping(StaticContext *context)
+FTSelection *FTMildnot::staticTyping(StaticContext *context, StaticTyper *styper)
 {
   src_.clear();
 
-  left_ = left_->staticTyping(context);
+  left_ = left_->staticTyping(context, styper);
   src_.add(left_->getStaticAnalysis());
 
-  right_ = right_->staticTyping(context);
+  right_ = right_->staticTyping(context, styper);
   src_.add(right_->getStaticAnalysis());
 
   return this;

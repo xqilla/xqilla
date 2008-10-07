@@ -189,9 +189,9 @@ public:
   void staticResolutionStage1(StaticContext* context);
   /// Resolve the function body, work out a more static return type
   void staticResolutionStage2(StaticContext* context);
-  void staticTypingOnce(StaticContext *context);
+  void staticTypingOnce(StaticContext *context, StaticTyper *styper);
   void resetStaticTypingOnce();
-  void staticTyping(StaticContext *context);
+  void staticTyping(StaticContext *context, StaticTyper *styper);
 
   void setFunctionBody(ASTNode* value) { body_ = value; }
   void setModuleDocumentCache(DocumentCache* docCache) { moduleDocCache_ = docCache; }
@@ -201,7 +201,7 @@ public:
   DocumentCache *getModuleDocumentCache() const { return moduleDocCache_; }
   const StaticAnalysis &getBodyStaticAnalysis() const { return src_; }
 
-  static void staticTypeFunctionCalls(ASTNode *item, StaticContext *context);
+  static void staticTypeFunctionCalls(ASTNode *item, StaticContext *context, StaticTyper *styper);
 
   static const XMLCh XMLChXQueryLocalFunctionsURI[];
 

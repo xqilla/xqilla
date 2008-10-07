@@ -134,7 +134,7 @@ public:
    *
    * @exception XQException If a static resolution time error occurs
    */
-  void staticTyping(StaticContext *context = 0);
+  void staticTyping(StaticContext *context = 0, StaticTyper *styper = 0);
 
   //@}
 

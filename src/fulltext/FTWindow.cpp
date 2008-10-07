@@ -55,14 +55,14 @@ FTSelection *FTWindow::staticResolution(StaticContext *context)
   return this;
 }
 
-FTSelection *FTWindow::staticTyping(StaticContext *context)
+FTSelection *FTWindow::staticTyping(StaticContext *context, StaticTyper *styper)
 {
   src_.clear();
 
-  arg_ = arg_->staticTyping(context);
+  arg_ = arg_->staticTyping(context, styper);
   src_.add(arg_->getStaticAnalysis());
 
-  expr_ = expr_->staticTyping(context);
+  expr_ = expr_->staticTyping(context, styper);
   src_.add(expr_->getStaticAnalysis());
 
   return this;
@@ -109,11 +109,11 @@ FTSelection *FTWindowLiteral::staticResolution(StaticContext *context)
   return this;
 }
 
-FTSelection *FTWindowLiteral::staticTyping(StaticContext *context)
+FTSelection *FTWindowLiteral::staticTyping(StaticContext *context, StaticTyper *styper)
 {
   src_.clear();
 
-  arg_ = arg_->staticTyping(context);
+  arg_ = arg_->staticTyping(context, styper);
   src_.add(arg_->getStaticAnalysis());
 
   return this;

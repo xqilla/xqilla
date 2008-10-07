@@ -79,14 +79,11 @@ bool ASTNodeImpl::isEqualTo(const ASTNode *other) const
   return false;
 }
 
-ASTNode *ASTNodeImpl::staticTyping(StaticContext *context)
+ASTNode *ASTNodeImpl::staticTyping(StaticContext *context, StaticTyper *styper)
 {
-  return StaticTyper().run(this, context);
-}
-
-ASTNode *ASTNodeImpl::staticTypingImpl(StaticContext *context)
-{
-  return staticTyping(context);
+  StaticTyper defaultTyper;
+  if(styper == 0) styper = &defaultTyper;
+  return styper->run(this, context);
 }
 
 bool ASTNodeImpl::isConstant() const

@@ -30,11 +30,11 @@ FTSelection *FTContent::staticResolution(StaticContext *context)
   return this;
 }
 
-FTSelection *FTContent::staticTyping(StaticContext *context)
+FTSelection *FTContent::staticTyping(StaticContext *context, StaticTyper *styper)
 {
   src_.clear();
 
-  arg_ = arg_->staticTyping(context);
+  arg_ = arg_->staticTyping(context, styper);
   src_.add(arg_->getStaticAnalysis());
 
   return this;
