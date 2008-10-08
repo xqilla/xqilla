@@ -41,6 +41,9 @@
 #include <xqilla/utils/XStr.hpp>
 #include <xqilla/utils/UTF8Str.hpp>
 
+// Added so xqilla will compile on SunOS 10 using STLPort
+#include <stdio.h>
+
 #if defined(XERCES_HAS_CPP_NAMESPACE)
 XERCES_CPP_NAMESPACE_USE
 #endif

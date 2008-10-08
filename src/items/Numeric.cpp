@@ -36,6 +36,9 @@
 #include <xercesc/util/XMLUniDefs.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 
+// Added so xqilla will compile on SunOS 10 using STLPort
+#include <stdio.h>
+
 #ifndef min
 #define min(a,b) ((a) < (b) ? (a) : (b))
 #endif
