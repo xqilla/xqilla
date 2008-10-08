@@ -28,6 +28,8 @@
 #include <cstring>
 //Added so xqilla will compile under CC on Solaris
 #include <string>
+// Added so xqilla will compile on SunOS 10 using STLPort
+#include <memory.h>
 
 class XQILLA_API StringPool
 {
