@@ -50,9 +50,10 @@ class XQILLA_API XQilla : public XERCES_CPP_NAMESPACE_QUALIFIER XMemory
 public:
   /// Flags used by the XQilla methods. These are used by bitwise OR-ing (|) their values together.
   enum Flags {
-    NO_STATIC_RESOLUTION = 0x1, ///< Don't perform static resolution
+    NO_STATIC_RESOLUTION = 0x1, ///< Don't perform static resolution or any optimization
     NO_ADOPT_CONTEXT     = 0x2, ///< Don't adopt the context and delete it when the XQQuery is deleted
-    DEBUG_QUERY          = 0x4  ///< Build debugging hooks into the query to enable the use of DebugListener
+    DEBUG_QUERY          = 0x4, ///< Build debugging hooks into the query to enable the use of DebugListener
+    NO_OPTIMIZATION      = 0x8  ///< Don't perform optimization
   };
 
   /// Enumeration used to select a language to parse

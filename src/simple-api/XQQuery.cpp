@@ -465,7 +465,7 @@ void XQQuery::importModule(const XMLCh* szUri, VectorOfStrings* locations, Stati
     LoopDetector loopDetector(context->getXMLEntityResolver(), szUri, location);
     moduleCtx->setXMLEntityResolver(&loopDetector);
 
-    AutoDelete<XQQuery> pParsedQuery(XQilla::parse(*srcToUse, ctxGuard.adopt()));
+    AutoDelete<XQQuery> pParsedQuery(XQilla::parse(*srcToUse, ctxGuard.adopt(), XQilla::NO_OPTIMIZATION));
 
     if(!pParsedQuery->getIsLibraryModule()) {
       XMLBuffer buf(1023,context->getMemoryManager());
