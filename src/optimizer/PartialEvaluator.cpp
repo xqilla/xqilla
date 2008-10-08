@@ -807,20 +807,20 @@ static void findLetsToInline(TupleNode *ancestor, vector<LetTuple*> &toInline, m
     }
     break;
   }
-  case TupleNode::WHERE: {
+  case TupleNode::WHERE:
     findLetsToInline(ancestor->getParent(), toInline, toCount, seenFor);
     countLetUsage(((WhereTuple*)ancestor)->getExpression(), toCount);
     break;
-  }
-  case TupleNode::ORDER_BY: {
+  case TupleNode::ORDER_BY:
     findLetsToInline(ancestor->getParent(), toInline, toCount, seenFor);
     countLetUsage(((OrderByTuple*)ancestor)->getExpression(), toCount);
     break;
-  }
-  default:
   case TupleNode::FOR:
     findLetsToInline(ancestor->getParent(), toInline, toCount, /*seenFor*/true);
     countLetUsage(((ForTuple*)ancestor)->getExpression(), toCount);
+    break;
+  case TupleNode::CONTEXT_TUPLE:
+  case TupleNode::DEBUG_HOOK:
     break;
   }
 }
