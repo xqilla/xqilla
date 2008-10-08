@@ -86,9 +86,12 @@ XQQuery* XQilla::parse(const XMLCh* inputQuery, DynamicContext* context,
   if((flags & NO_STATIC_RESOLUTION) == 0) {
     Optimizer *optimizer = new StaticResolver(context);
     optimizer = new StaticTyper(context, optimizer);
-    optimizer = new PartialEvaluator(context, optimizer);
-    optimizer = new StaticTyper(context, optimizer);
-    optimizer = new QueryPathTreeGenerator(context, optimizer);
+
+    if((flags & NO_OPTIMIZATION) == 0) {
+      optimizer = new PartialEvaluator(context, optimizer);
+      optimizer = new StaticTyper(context, optimizer);
+      optimizer = new QueryPathTreeGenerator(context, optimizer);
+    }
     if((flags & DEBUG_QUERY) != 0) {
       optimizer = new DebugHookDecorator(context, optimizer);
     }
@@ -145,9 +148,12 @@ XQQuery* XQilla::parse(const InputSource& querySrc, DynamicContext* context,
   if((flags & NO_STATIC_RESOLUTION) == 0) {
     Optimizer *optimizer = new StaticResolver(context);
     optimizer = new StaticTyper(context, optimizer);
-    optimizer = new PartialEvaluator(context, optimizer);
-    optimizer = new StaticTyper(context, optimizer);
-    optimizer = new QueryPathTreeGenerator(context, optimizer);
+
+    if((flags & NO_OPTIMIZATION) == 0) {
+      optimizer = new PartialEvaluator(context, optimizer);
+      optimizer = new StaticTyper(context, optimizer);
+      optimizer = new QueryPathTreeGenerator(context, optimizer);
+    }
     if((flags & DEBUG_QUERY) != 0) {
       optimizer = new DebugHookDecorator(context, optimizer);
     }
