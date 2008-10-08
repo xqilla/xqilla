@@ -1,11 +1,10 @@
 Features
 --------
 
-complete XQuery Fulltext support
+Complete XQuery Fulltext support
 XQueryP support
 XQuery 1.1 Grouping support
-XSLT 2.0 support
-Higher order functions
+Complete XSLT 2.0 support
 Support pre-parsed modules
 Improve exceptions heirachy, and implement XQuery 1.1 try/catch
 
@@ -15,14 +14,12 @@ Optimization
 
 Hash map implementation of distinct-values()
 nested loop elimination (group recognition, join recognition)
-variable inlining
 common sub-expression extraction
 faster modifiable data model
 Document projection for recursive functions
-Query option to disable document projection
-Option to disable schema validation of input documents
 pull event execution
-Remove and free unused functions / global variables
+Remove and free unused global variables
+Better static typing esp. for higher order functions
 
 
 Infrastructure
@@ -36,7 +33,8 @@ abstract schema type access (no direct access to Xerces objects)
 Improve MAPM concurrency
 Windows -- re-enable warning 4996 (xqilla_config.h) and address the "unsafe" warnings
 	for use of strcat, strcpy, etc
-Add ability to free and copy the AST
+Write query plans to byte code, and execute the byte code in a virtual machine
+Save out parsed query to disk
 
 
 QA
@@ -58,8 +56,5 @@ Fix module import to work correctly, including:
 Query Prepare Optimization
 --------------------------
 
-Don't create a new DynamicContext every time we constant fold (or make creating a DynamicContext cheaper)
 Rewrite DatatypeLookup to be cheaper and more efficient - maybe write our own primitive type handling?
 DocumentCacheImpl is expensive to create, maybe don't always create a scanner? Maybe handle primitive schema types ourselves?
-Remove XQSequence and XQLiteral in favour of XQParenthesizedExpr and ItemConstructor. (Reduce constant folding necessary)
-Save out parsed query to disk
