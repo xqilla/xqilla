@@ -47,6 +47,10 @@ using namespace std;
 
 #define FUNCTION_SIZE_RATIO 2
 #define BODY_SIZE_RATIO 6
+#ifdef _MSC_VER
+#include <BaseTsd.h>
+#define ssize_t SSIZE_T
+#endif
 
 PartialEvaluator::PartialEvaluator(DynamicContext *context, Optimizer *parent)
   : ASTVisitor(parent),

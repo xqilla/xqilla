@@ -43,7 +43,7 @@ public:
   QueryPathTreeGenerator(DynamicContext *context, Optimizer *parent = 0);
   virtual ~QueryPathTreeGenerator() { varStore_.clear(); }
 
-  class PathResult {
+  class XQILLA_API PathResult {
   public:
     void join(const QueryPathNode::MVector &o);
     void join(const PathResult &o);
