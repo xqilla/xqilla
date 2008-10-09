@@ -25,6 +25,7 @@
 #include "../config/xqilla_config.h"
 
 #include "XQLexer.hpp"
+#include "../schema/FaxppDocumentCacheImpl.hpp"
 
 #include <xercesc/framework/XMLBuffer.hpp>
 #include <xercesc/framework/XMLDocumentHandler.hpp>
@@ -228,8 +229,7 @@ protected:
   void setLocation(YYLTYPE* pYYLOC, const FAXPP_AttrValue *attrval);
   void setErrorLocation(YYLTYPE* pYYLOC);
 
-  FAXPP_Parser *parser_;
-  AutoDelete<XERCES_CPP_NAMESPACE_QUALIFIER BinInputStream> stream_;
+  FaxppParserWrapper wrapper_;
   EventType eventType_;
   unsigned int attrIndex_;
   XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer value_;

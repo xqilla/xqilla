@@ -791,11 +791,6 @@ bool XSLT2Lexer::ElementStackEntry::reportWhitespace() const
 
 #ifdef HAVE_FAXPP
 
-static unsigned int binInputStreamReadCallback(void *userData, void *buffer, unsigned int length)
-{
-  return ((BinInputStream*)userData)->readBytes((XMLByte*)buffer, length);
-}
-
 static inline const XMLCh *nullTerm(const FAXPP_Text &text, XPath2MemoryManager *mm)
 {
   return mm->getPooledString((XMLCh*)text.ptr, text.len / sizeof(XMLCh));
@@ -803,41 +798,26 @@ static inline const XMLCh *nullTerm(const FAXPP_Text &text, XPath2MemoryManager 
 
 FAXPPXSLT2Lexer::FAXPPXSLT2Lexer(DynamicContext *context, const InputSource &srcToUse, XQilla::Language lang)
   : XSLT2Lexer(context, srcToUse, lang),
-    parser_(0),
-    stream_(0),
+    wrapper_(context->getDocumentCache()->getXMLEntityResolver()),
     eventType_(END_ELEMENT),
     attrIndex_(0)
 {
-  parser_ = FAXPP_create_parser(WELL_FORMED_PARSE_MODE, FAXPP_utf16_native_transcoder);
-  if(parser_ == 0) error("Out of memory");
-
   // We'll normalize attributes ourselves
-  FAXPP_set_normalize_attrs(parser_, false);
+  FAXPP_set_normalize_attrs(wrapper_.parser, false);
 
-  stream_.set(srcToUse.makeStream());
-  if(stream_.get() == NULL) error("Document not found");
+  FAXPP_Error err = wrapper_.parseInputSource(srcToUse, context->getMemoryManager());
 
-  FAXPP_Error err = FAXPP_init_parse_callback(parser_, binInputStreamReadCallback, stream_.get());
   if(err == OUT_OF_MEMORY) error("Out of memory");
-
-  // Force use of encoding set on InputSource
-  if(srcToUse.getEncoding()) {
-    FAXPP_DecodeFunction decode = FAXPP_string_to_decode(UTF8(srcToUse.getEncoding()));
-    if(decode == 0) err = UNSUPPORTED_ENCODING;
-    else FAXPP_set_decode(parser_, decode);
-  }
-
   if(err == UNSUPPORTED_ENCODING) error("Unsupported encoding");
 }
 
 FAXPPXSLT2Lexer::~FAXPPXSLT2Lexer()
 {
-  FAXPP_free_parser(parser_);
 }
 
 bool FAXPPXSLT2Lexer::nextNamespace()
 {
-  const FAXPP_Event *event = FAXPP_get_current_event(parser_);
+  const FAXPP_Event *event = FAXPP_get_current_event(wrapper_.parser);
 
   eventType_ = NAMESPACE;
   while(attrIndex_ < event->attr_count) {
@@ -870,7 +850,7 @@ bool FAXPPXSLT2Lexer::nextNamespace()
 
 bool FAXPPXSLT2Lexer::nextAttribute()
 {
-  const FAXPP_Event *event = FAXPP_get_current_event(parser_);
+  const FAXPP_Event *event = FAXPP_get_current_event(wrapper_.parser);
 
   eventType_ = ATTRIBUTE;
   while(attrIndex_ < event->attr_count) {
@@ -885,7 +865,7 @@ bool FAXPPXSLT2Lexer::nextAttribute()
 
 void FAXPPXSLT2Lexer::nextEvent(YYLTYPE* pYYLOC)
 {
-  const FAXPP_Event *event = FAXPP_get_current_event(parser_);
+  const FAXPP_Event *event = FAXPP_get_current_event(wrapper_.parser);
 
   if(eventType_ == START_ELEMENT) {
     attrIndex_ = 0;
@@ -909,7 +889,7 @@ void FAXPPXSLT2Lexer::nextEvent(YYLTYPE* pYYLOC)
 
   eventType_ = (XSLT2Lexer::EventType)-1;
   while(eventType_ == (XSLT2Lexer::EventType)-1) {
-    FAXPP_Error err = FAXPP_next_event(parser_);
+    FAXPP_Error err = FAXPP_next_event(wrapper_.parser);
     if(err != NO_ERROR) {
       setErrorLocation(pYYLOC);
 
@@ -918,7 +898,7 @@ void FAXPPXSLT2Lexer::nextEvent(YYLTYPE* pYYLOC)
       error(oss.str().c_str());
     }
 
-    event = FAXPP_get_current_event(parser_);
+    event = FAXPP_get_current_event(wrapper_.parser);
     switch(event->type) {
     case SELF_CLOSING_ELEMENT_EVENT:
     case START_ELEMENT_EVENT:
@@ -965,7 +945,7 @@ XSLT2Lexer::EventType FAXPPXSLT2Lexer::getEventType()
 
 void FAXPPXSLT2Lexer::getEventName(const XMLCh *&prefix, const XMLCh *&uri, const XMLCh *&localname)
 {
-  const FAXPP_Event *event = FAXPP_get_current_event(parser_);
+  const FAXPP_Event *event = FAXPP_get_current_event(wrapper_.parser);
 
   if(eventType_ == ATTRIBUTE || eventType_ == NAMESPACE) {
     FAXPP_Attribute *attr = &event->attrs[attrIndex_];
@@ -984,7 +964,7 @@ void FAXPPXSLT2Lexer::getEventName(const XMLCh *&prefix, const XMLCh *&uri, cons
 
 void FAXPPXSLT2Lexer::getEventValue(const XMLCh *&value, unsigned int &length, std::vector<XQLexer::ValueOffset> &offsets)
 {
-  const FAXPP_Event *event = FAXPP_get_current_event(parser_);
+  const FAXPP_Event *event = FAXPP_get_current_event(wrapper_.parser);
   offsets.clear();
 
   if(eventType_ == ATTRIBUTE || eventType_ == NAMESPACE) {
@@ -1041,17 +1021,17 @@ void FAXPPXSLT2Lexer::getEventValue(const XMLCh *&value, unsigned int &length, s
 void FAXPPXSLT2Lexer::getEventLocation(YYLTYPE* pYYLOC)
 {
   if(eventType_ == ATTRIBUTE || eventType_ == NAMESPACE) {
-    FAXPP_Attribute *attr = &FAXPP_get_current_event(parser_)->attrs[attrIndex_];
+    FAXPP_Attribute *attr = &FAXPP_get_current_event(wrapper_.parser)->attrs[attrIndex_];
     setLocation(pYYLOC, attr);
   }
   else {
-    setLocation(pYYLOC, FAXPP_get_current_event(parser_));
+    setLocation(pYYLOC, FAXPP_get_current_event(wrapper_.parser));
   }
 }
 
 void FAXPPXSLT2Lexer::getValueLocation(YYLTYPE* pYYLOC)
 {
-  const FAXPP_Event *event = FAXPP_get_current_event(parser_);
+  const FAXPP_Event *event = FAXPP_get_current_event(wrapper_.parser);
 
   if(eventType_ == ATTRIBUTE || eventType_ == NAMESPACE) {
     FAXPP_Attribute *attr = &event->attrs[attrIndex_];
@@ -1082,8 +1062,8 @@ void FAXPPXSLT2Lexer::setLocation(YYLTYPE* pYYLOC, const FAXPP_AttrValue *attrva
 
 void FAXPPXSLT2Lexer::setErrorLocation(YYLTYPE* pYYLOC)
 {
-  pYYLOC->first_line = m_lineno = FAXPP_get_error_line(parser_);
-  pYYLOC->first_column = m_columnno = FAXPP_get_error_column(parser_) + 1;
+  pYYLOC->first_line = m_lineno = FAXPP_get_error_line(wrapper_.parser);
+  pYYLOC->first_column = m_columnno = FAXPP_get_error_column(wrapper_.parser) + 1;
 }
 
 #endif // HAVE_FAXPP
