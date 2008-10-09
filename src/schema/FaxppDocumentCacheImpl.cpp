@@ -40,21 +40,6 @@
 XERCES_CPP_NAMESPACE_USE;
 using namespace std;
 
-FaxppDocumentCacheImpl::FaxppDocumentCacheImpl(MemoryManager* memMgr, XMLGrammarPool *xmlgr)
-  : DocumentCacheImpl(memMgr, xmlgr, /*makeScanner*/true),
-    parser_(0),
-    validator_(/*strictValidation*/false, 0, grammarResolver_, memMgr, 0)
-{
-  parser_ = FAXPP_create_parser(WELL_FORMED_PARSE_MODE, FAXPP_utf16_native_transcoder);
-  if(parser_ == 0)
-    XQThrow2(XMLParseException, X("FaxppDocumentCacheImpl::init"), X("Out of memory"));
-}
-
-FaxppDocumentCacheImpl::~FaxppDocumentCacheImpl()
-{
-  if(parser_) FAXPP_free_parser(parser_);
-}
-
 static unsigned int binInputStreamReadCallback(void *userData, void *buffer, unsigned int length)
 {
   BinInputStream *stream = (BinInputStream*)userData;
@@ -75,47 +60,25 @@ static inline const XMLCh *nullTerm(const FAXPP_Text &text, XPath2MemoryManager 
   return mm->getPooledString((XMLCh*)text.ptr, text.len / sizeof(XMLCh));
 }
 
-struct EntityCallbackUserData
-{
-  EntityCallbackUserData(XPath2MemoryManager *m, FaxppDocumentCacheImpl *f)
-    : mm(m), docCache(f) {}
-  ~EntityCallbackUserData()
-  {
-    vector<BinInputStream*>::iterator i = inputStreams.begin();
-    for(; i != inputStreams.end(); ++i) {
-      delete *i;
-    }
-  }
-
-  vector<BinInputStream*> inputStreams;
-  XPath2MemoryManager *mm;
-  FaxppDocumentCacheImpl *docCache;
-};
-
 static FAXPP_Error staticEntityCallback(void *userData, FAXPP_Parser *parser, FAXPP_EntityType type,
                                         const FAXPP_Text *base_uri, const FAXPP_Text *systemid, const FAXPP_Text *publicid)
 {
-  EntityCallbackUserData *ecud = (EntityCallbackUserData*)userData;
-  return ecud->docCache->entityCallback(ecud, type, base_uri, systemid, publicid);
-}
+  FaxppParserWrapper *fw = (FaxppParserWrapper*)userData;
 
-FAXPP_Error FaxppDocumentCacheImpl::entityCallback(EntityCallbackUserData *userData, FAXPP_EntityType type,
-                                                   const FAXPP_Text *base_uri, const FAXPP_Text *systemid, const FAXPP_Text *publicid)
-{
   try {
     // Resolve the entity
-    const XMLCh *system16 = nullTerm(*systemid, userData->mm);
-    const XMLCh *public16 = nullTerm(*publicid, userData->mm);
+    const XMLCh *system16 = nullTerm(*systemid, fw->mm);
+    const XMLCh *public16 = nullTerm(*publicid, fw->mm);
 
     InputSource* srcToUse = 0;
-    if(entityResolver_){
+    if(fw->entityResolver){
       XMLResourceIdentifier resourceIdentifier(XMLResourceIdentifier::ExternalEntity, system16, 0,
                                                public16, (XMLCh*)base_uri->ptr);
-      srcToUse = entityResolver_->resolveEntity(&resourceIdentifier);
+      srcToUse = fw->entityResolver->resolveEntity(&resourceIdentifier);
     }
 
     if(srcToUse == 0) {
-      srcToUse = resolveURI(system16, (XMLCh*)base_uri->ptr);
+      srcToUse = DocumentCacheImpl::resolveURI(system16, (XMLCh*)base_uri->ptr);
     }
     Janitor<InputSource> janIS(srcToUse);
 
@@ -123,21 +86,21 @@ FAXPP_Error FaxppDocumentCacheImpl::entityCallback(EntityCallbackUserData *userD
     BinInputStream *stream = srcToUse->makeStream();
     if(stream == NULL)
       return CANT_LOCATE_EXTERNAL_ENTITY;
-    userData->inputStreams.push_back(stream);
+    fw->inputStreams.push_back(stream);
 
-    FAXPP_Error err = FAXPP_parse_external_entity_callback(parser_, type, binInputStreamReadCallback, stream);
+    FAXPP_Error err = FAXPP_parse_external_entity_callback(parser, type, binInputStreamReadCallback, stream);
 
     // Set the correct base URI
     if(err == NO_ERROR) {
       FAXPP_Text base = { (void*)srcToUse->getSystemId(), (XMLString::stringLen(srcToUse->getSystemId()) + 1) * sizeof(XMLCh) };
-      err = FAXPP_set_base_uri(parser_, &base);
+      err = FAXPP_set_base_uri(parser, &base);
     }
 
     // Force use of encoding set on InputSource (this is done by FunctionParseXML)
     if(err == NO_ERROR && srcToUse->getEncoding()) {
       FAXPP_DecodeFunction decode = FAXPP_string_to_decode(UTF8(srcToUse->getEncoding()));
       if(decode == 0) err = UNSUPPORTED_ENCODING;
-      else FAXPP_set_decode(parser_, decode);
+      else FAXPP_set_decode(parser, decode);
     }
 
     return err;
@@ -145,6 +108,84 @@ FAXPP_Error FaxppDocumentCacheImpl::entityCallback(EntityCallbackUserData *userD
   catch(...) {
     return CANT_LOCATE_EXTERNAL_ENTITY;
   }
+}
+
+FaxppParserWrapper::FaxppParserWrapper(XMLEntityResolver *e)
+  : mm(0),
+    entityResolver(e),
+    parser(0)
+{
+  parser = FAXPP_create_parser(WELL_FORMED_PARSE_MODE, FAXPP_utf16_native_transcoder);
+  if(parser == 0)
+    XQThrow2(XMLParseException, X("FaxppParserWrapper::FaxppParserWrapper"), X("Out of memory"));
+
+  // Register our entity resolution callback
+  FAXPP_set_external_entity_callback(parser, staticEntityCallback, this);
+}
+
+FaxppParserWrapper::~FaxppParserWrapper()
+{
+  reset();
+  if(parser) FAXPP_free_parser(parser);
+}
+
+void FaxppParserWrapper::reset()
+{
+  vector<BinInputStream*>::iterator i = inputStreams.begin();
+  for(; i != inputStreams.end(); ++i) {
+    delete *i;
+  }
+  inputStreams.clear();
+  mm = 0;
+}
+
+FAXPP_Error FaxppParserWrapper::parseInputSource(const InputSource &srcToUse, XPath2MemoryManager *m)
+{
+  reset();
+  mm = m;
+
+  // Create a BinInputStream
+  BinInputStream *stream = srcToUse.makeStream();
+  if(stream == NULL)
+    XQThrow2(XMLParseException, X("FaxppParserWrapper::parseInputSource"), X("Document not found"));
+  inputStreams.push_back(stream);
+
+  // Initialize the parse
+  FAXPP_Error err = FAXPP_init_parse_callback(parser, binInputStreamReadCallback, stream);
+
+  // Set the correct base URI
+  if(err == NO_ERROR && srcToUse.getSystemId()) {
+    FAXPP_Text base = { (void*)srcToUse.getSystemId(), (XMLString::stringLen(srcToUse.getSystemId()) + 1) * sizeof(XMLCh) };
+    err = FAXPP_set_base_uri(parser, &base);
+  }
+
+  // Force use of encoding set on InputSource (this is done by FunctionParseXML)
+  if(err == NO_ERROR && srcToUse.getEncoding()) {
+    FAXPP_DecodeFunction decode = FAXPP_string_to_decode(UTF8(srcToUse.getEncoding()));
+    if(decode == 0) err = UNSUPPORTED_ENCODING;
+    else FAXPP_set_decode(parser, decode);
+  }
+#if 0
+  else if(stream->getContentType()) {
+  }
+#endif
+
+  return err;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+FaxppDocumentCacheImpl::FaxppDocumentCacheImpl(MemoryManager* memMgr, XMLGrammarPool *xmlgr)
+  : DocumentCacheImpl(memMgr, xmlgr, /*makeScanner*/true),
+    wrapper_(0),
+    validator_(/*strictValidation*/false, 0, grammarResolver_, memMgr, 0)
+{
+}
+
+void FaxppDocumentCacheImpl::setXMLEntityResolver(XMLEntityResolver* const handler)
+{
+  entityResolver_ = handler;
+  wrapper_.entityResolver = handler;
 }
 
 static inline void setLocation(LocationInfo &info, const FAXPP_Event *event)
@@ -171,38 +212,10 @@ void FaxppDocumentCacheImpl::parseDocument(InputSource &srcToUse, EventHandler *
     events_ = handler;
   }
 
-  // Register our entity resolution callback
-  EntityCallbackUserData ecud(mm, this);
-  FAXPP_set_external_entity_callback(parser_, staticEntityCallback, &ecud);
-
-  // Create a BinInputStream
-  BinInputStream *stream = srcToUse.makeStream();
-  if(stream == NULL)
-    XQThrow2(XMLParseException, X("FaxppDocumentCacheImpl::loadDocument"), X("Document not found"));
-  ecud.inputStreams.push_back(stream);
-
-  // Initialize the parse
-  FAXPP_Error err = FAXPP_init_parse_callback(parser_, binInputStreamReadCallback, stream);
-
-  // Set the correct base URI
-  if(err == NO_ERROR && srcToUse.getSystemId()) {
-    FAXPP_Text base = { (void*)srcToUse.getSystemId(), (XMLString::stringLen(srcToUse.getSystemId()) + 1) * sizeof(XMLCh) };
-    err = FAXPP_set_base_uri(parser_, &base);
-  }
+  FAXPP_Error err = wrapper_.parseInputSource(srcToUse, mm);
 
   if(err == OUT_OF_MEMORY)
     XQThrow2(XMLParseException, X("FaxppDocumentCacheImpl::loadDocument"), X("Out of memory"));
-
-  // Force use of encoding set on InputSource (this is done by FunctionParseXML)
-  if(srcToUse.getEncoding()) {
-    FAXPP_DecodeFunction decode = FAXPP_string_to_decode(UTF8(srcToUse.getEncoding()));
-    if(decode == 0) err = UNSUPPORTED_ENCODING;
-    else FAXPP_set_decode(parser_, decode);
-  }
-#if 0
-  else if(stream->getContentType()) {
-  }
-#endif
 
   if(err == UNSUPPORTED_ENCODING) {
     XQThrow2(XMLParseException, X("FaxppDocumentCacheImpl::loadDocument"), X("Unsupported encoding"));
@@ -216,7 +229,7 @@ void FaxppDocumentCacheImpl::parseDocument(InputSource &srcToUse, EventHandler *
   FAXPP_Attribute *attr;
 
   while(true) {
-    err = FAXPP_next_event(parser_);
+    err = FAXPP_next_event(wrapper_.parser);
     if(err != NO_ERROR) {
       // TBD add line and column information - jpcs
       XMLBuffer buf;
@@ -225,7 +238,7 @@ void FaxppDocumentCacheImpl::parseDocument(InputSource &srcToUse, EventHandler *
       XQThrow2(XMLParseException, X("FaxppDocumentCacheImpl::loadDocument"), buf.getRawBuffer());
     }
 
-    const FAXPP_Event *event = FAXPP_get_current_event(parser_);
+    const FAXPP_Event *event = FAXPP_get_current_event(wrapper_.parser);
     LOCATION(event);
 
     switch(event->type) {

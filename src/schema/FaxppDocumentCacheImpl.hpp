@@ -33,23 +33,37 @@ extern "C" {
 #include <xqilla/schema/DocumentCacheImpl.hpp>
 #include <xqilla/schema/SchemaValidatorFilter.hpp>
 
-struct EntityCallbackUserData;
+XERCES_CPP_NAMESPACE_BEGIN
+class BinInputStream;
+XERCES_CPP_NAMESPACE_END
+
+struct FaxppParserWrapper
+{
+  FaxppParserWrapper(XERCES_CPP_NAMESPACE_QUALIFIER XMLEntityResolver *e);
+  ~FaxppParserWrapper();
+
+  void reset();
+  FAXPP_Error parseInputSource(const XERCES_CPP_NAMESPACE_QUALIFIER InputSource &srcToUse, XPath2MemoryManager *m);
+
+  std::vector<XERCES_CPP_NAMESPACE_QUALIFIER BinInputStream*> inputStreams;
+  XPath2MemoryManager *mm;
+  XERCES_CPP_NAMESPACE_QUALIFIER XMLEntityResolver *entityResolver;
+  FAXPP_Parser *parser;
+};
 
 class FaxppDocumentCacheImpl : public DocumentCacheImpl
 {
 public:
   FaxppDocumentCacheImpl(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr, XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool* xmlgr = 0);
-  virtual ~FaxppDocumentCacheImpl();
+
+  virtual void setXMLEntityResolver(XERCES_CPP_NAMESPACE_QUALIFIER XMLEntityResolver* const handler);
 
   virtual void parseDocument(XERCES_CPP_NAMESPACE_QUALIFIER InputSource &srcToUse, EventHandler *handler, DynamicContext *context);
 
   virtual DocumentCache *createDerivedCache(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr) const;
 
-  FAXPP_Error entityCallback(EntityCallbackUserData *userData, FAXPP_EntityType type,
-                             const FAXPP_Text *base_uri, const FAXPP_Text *systemid, const FAXPP_Text *publicid);
-
 protected:
-  FAXPP_Parser *parser_;
+  FaxppParserWrapper wrapper_;
   SchemaValidatorFilter validator_;
 };
 

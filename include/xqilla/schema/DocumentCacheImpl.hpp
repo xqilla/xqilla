@@ -102,9 +102,9 @@ public:
 
   virtual DocumentCache *createDerivedCache(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr) const;
 
-protected:
   static XERCES_CPP_NAMESPACE_QUALIFIER InputSource *resolveURI(const XMLCh *uri, const XMLCh *baseUri);
 
+protected:
   void init(XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool *gramPool = 0, bool makeScanner = true);
 
   void loadSchema(const XMLCh* const uri, const XMLCh* location, StaticContext *context, const LocationInfo *info);
