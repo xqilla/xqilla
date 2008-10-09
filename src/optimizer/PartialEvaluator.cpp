@@ -98,6 +98,13 @@ protected:
     }
 
     // Don't look inside XQUserFunctions
+    // But do add all templates to the list of used functions
+    UserFunctions &funcs = const_cast<UserFunctions&>(query->getFunctions());
+    for(UserFunctions::iterator i2 = funcs.begin(); i2 != funcs.end(); ++i2) {
+      if((*i2)->isTemplate() && functions_.insert(*i2).second) {
+        newFunctions_.insert(*i2);
+      }
+    }
 
     if(query->getQueryBody() != 0) {
       query->setQueryBody(optimize(query->getQueryBody()));
