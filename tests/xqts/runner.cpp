@@ -110,6 +110,7 @@ void usage(const char *progname)
   cout << "-h             : Show this display" << endl;
   cout << "-r             : Output results as XML" << endl;
   cout << "-u             : Parse XQuery Update (also uses Xerces-C data model)" << endl;
+  cout << "-s             : Parse XSLT 2.0" << endl;
   cout << "-x             : Use the Xerces-C data model (default is FastXDM)" << endl;
 }
 
