@@ -118,7 +118,7 @@ void VarStoreImpl::cacheVariableStore(const StaticAnalysis &src, const VariableS
   }
 }
 
-VarStoreImpl::VarStoreImpl::VarEntry::VarEntry(const XMLCh *u, const XMLCh *n, const Result &r, unsigned int readCount, VarEntry *p)
+VarStoreImpl::VarEntry::VarEntry(const XMLCh *u, const XMLCh *n, const Result &r, unsigned int readCount, VarEntry *p)
   : uri(u),
     name(n),
     buffer(r, readCount),
