@@ -77,7 +77,8 @@ public:
     while(i != newFunctions_.end()) {
       XQUserFunction *uf = *i;
 
-      optimize((ASTNode*)uf->getFunctionBody());
+      if(uf->getFunctionBody())
+        optimize((ASTNode*)uf->getFunctionBody());
 
       newFunctions_.erase(uf);
       i = newFunctions_.begin();
@@ -586,6 +587,7 @@ public:
   InlineVar()
     : let_(0),
       removeLet_(false),
+      dummyRun_(true),
       varValue_(0),
       context_(0),
       successful_(false),
@@ -598,6 +600,8 @@ public:
     let_ = 0;
     varValue_ = varValue;
     context_ = context;
+    removeLet_ = false;
+    dummyRun_ = false;
 
     return VariableScopeTracker::run(uri, name, expr, &varValue->getStaticAnalysis());
   }
@@ -606,9 +610,10 @@ public:
   {
     let_ = let;
     context_ = context;
+    varValue_ = let->getExpression();
 
     // Do a dummy run, to see if we would be 100% successful
-    varValue_ = 0;
+    dummyRun_ = true;
     successful_ = true;
     count_ = 0;
     VariableScopeTracker::run(let->getVarURI(), let->getVarName(), ret, &let->getExpression()->getStaticAnalysis());
@@ -626,14 +631,12 @@ public:
       count_ -= ASTCounter().count(let->getExpression()) + 1;
 
     // Check that we won't exceed the size limit
-    if(count_ > 0 && (size_t)count_ > sizeLimit) {
-      return;
-    }
+    if(count_ > 0 && (size_t)count_ > sizeLimit) return;
 
     sizeLimit -= count_;
 
     // Perform the actual substitution
-    varValue_ = let->getExpression();
+    dummyRun_ = false;
     VariableScopeTracker::run(let->getVarURI(), let->getVarName(), ret, &let->getExpression()->getStaticAnalysis());
 
     if(removeLet_) {
@@ -649,7 +652,7 @@ protected:
     if(item != let_)
       return VariableScopeTracker::optimizeLetTuple(item);
 
-    if(varValue_ && removeLet_) {
+    if(!dummyRun_ && removeLet_) {
       // Remove the LetTuple itself - we checked this was ok to do in inlineLet() above
       return item->getParent();
     }
@@ -663,9 +666,12 @@ protected:
        XPath2Utils::equals(item->getName(), name_) &&
        XPath2Utils::equals(item->getURI(), uri_)) {
       if(inScope_) {
-        count_ -= 1;
-        count_ += ASTCounter().count(varValue_);
-        if(varValue_) {
+        if(dummyRun_) {
+          // Mock up the extra size required to make this change
+          count_ -= 1;
+          count_ += ASTCounter().count(varValue_);
+        }
+        else {
           item->release();
           return varValue_->copy(context_);
         }
@@ -679,6 +685,7 @@ protected:
 
   LetTuple *let_;
   bool removeLet_;
+  bool dummyRun_;
 
   const ASTNode *varValue_;
   DynamicContext *context_;
@@ -742,8 +749,9 @@ ASTNode *PartialEvaluator::optimizeUserFunction(XQUserFunctionInstance *item)
     const_cast<StaticAnalysis&>(result->getStaticAnalysis()).copy(funcDef->getBodyStaticAnalysis());
 
     if(checkSizeLimit(item, result)) {
+      result = optimize(result);
       item->release();
-      return optimize(result);
+      return result;
     }
     else {
       result->release();
