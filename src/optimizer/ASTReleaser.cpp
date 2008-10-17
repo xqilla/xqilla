@@ -124,7 +124,6 @@ RELEASE_XQ(FunctionConversion)
 RELEASE_XQ(AnalyzeString)
 RELEASE_XQ(CopyOf)
 RELEASE(ASTDebugHook)
-RELEASE_XQ(InlineFunction)
 RELEASE_XQ(FunctionRef)
 RELEASE(UDelete)
 RELEASE(URename)
@@ -137,6 +136,15 @@ RELEASE(UInsertAfter)
 RELEASE(UInsertBefore)
 RELEASE(UApplyUpdates)
 RELEASE(FTContains)
+
+ASTNode *ASTReleaser::optimizeInlineFunction(XQInlineFunction *item)
+{
+  // Don't release XQUserFunction
+  // TBD work out a way to release the XQUserFunction - jpcs
+
+  item->setInstance(optimize(item->getInstance()));
+  RELEASE_IMPL();
+}
 
 ASTNode *ASTReleaser::optimizeFunction(XQFunction *item)
 {
