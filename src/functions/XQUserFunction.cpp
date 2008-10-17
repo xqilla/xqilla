@@ -440,8 +440,6 @@ void XQUserFunction::staticTyping(StaticContext *context, StaticTyper *styper)
   // Nothing more to do for external functions
   if(body_ == NULL) return;
 
-  XPath2MemoryManager *mm = context->getMemoryManager();
-
   if(isUpdating_ && returnType_ != NULL) {
     XQThrow(StaticErrorException, X("XQUserFunction::staticTyping"),
             X("It is a static error for an updating function to declare a return type [err:XUST0028]"));
@@ -449,7 +447,7 @@ void XQUserFunction::staticTyping(StaticContext *context, StaticTyper *styper)
 
   // Find user defined functions and templates that are referenced in our body,
   // and try to call staticTyping() on them before us.
-  staticTypeFunctionCalls(body_, context, styper);
+  if(context) staticTypeFunctionCalls(body_, context, styper);
 
   bool ciTypeSet = false;
   StaticType ciType = StaticType();
@@ -479,29 +477,29 @@ void XQUserFunction::staticTyping(StaticContext *context, StaticTyper *styper)
   }
 
   // define the new variables in a new scope and assign them the proper values
-  VariableTypeStore *varStore = context->getVariableTypeStore();
+  if(context) {
+    VariableTypeStore *varStore = context->getVariableTypeStore();
 
-  if(isGlobal_) varStore->addLocalScope();
-  else varStore->addLogicalBlockScope();
+    if(isGlobal_) varStore->addLocalScope();
+    else varStore->addLogicalBlockScope();
 
-  // Declare the parameters
-  if(argSpecs_) {
-    ArgumentSpecs::iterator it;
-    for(it = argSpecs_->begin(); it != argSpecs_->end (); ++it) {
-      varStore->declareVar((*it)->getURI(), (*it)->getName(), (*it)->getStaticAnalysis());
+    // Declare the parameters
+    if(argSpecs_) {
+      ArgumentSpecs::iterator it;
+      for(it = argSpecs_->begin(); it != argSpecs_->end (); ++it) {
+        varStore->declareVar((*it)->getURI(), (*it)->getName(), (*it)->getStaticAnalysis());
+      }
     }
   }
 
-  StaticAnalysis bodySRC(mm);
   {
     // Declare the context item
     AutoContextItemTypeReset contextTypeReset(context, ciType);
-
     body_ = body_->staticTyping(context, styper);
-    bodySRC.copy(body_->getStaticAnalysis());
   }
 
-  varStore->removeScope();
+  if(context)
+    context->getVariableTypeStore()->removeScope();
 
   if(isUpdating_) {
     if(!body_->getStaticAnalysis().isUpdating() && !body_->getStaticAnalysis().isPossiblyUpdating())
@@ -524,24 +522,23 @@ void XQUserFunction::staticTyping(StaticContext *context, StaticTyper *styper)
   }
 
   // Remove the parameter variables from the stored StaticAnalysis
+  src_.clear();
+  src_.copy(body_->getStaticAnalysis());
   if(argSpecs_) {
     for(ArgumentSpecs::iterator it = argSpecs_->begin(); it != argSpecs_->end (); ++it) {
-      if(!bodySRC.removeVariable((*it)->getURI(), (*it)->getName())) {
+      if(!src_.removeVariable((*it)->getURI(), (*it)->getName())) {
         // The parameter isn't used, so set it to null, so that we don't bother to evaluate it
         (*it)->setNotUsed();
       }
     }
   }
 
-  // Swap bodySRC with our StaticAnalysis
-  src_.clear();
-  src_.copy(bodySRC);
-
   // Run staticTyping on the template instances
-  if(templateInstance_ != 0) {
-    StaticAnalysis templateVarSrc(mm);
+  if(templateInstance_ != 0 && context) {
+    StaticAnalysis templateVarSrc(context->getMemoryManager());
     templateVarSrc.getStaticType() = StaticType::ITEM_TYPE;
 
+    VariableTypeStore *varStore = context->getVariableTypeStore();
     varStore->addLogicalBlockScope();
 
     if(argSpecs_ != 0) {
