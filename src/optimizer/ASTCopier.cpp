@@ -244,7 +244,6 @@ COPY_XQ5(AnalyzeString, Expression, Regex, Flags, Match, NonMatch)
 COPY_XQ2(CopyOf, Expression, CopyNamespaces)
 COPY_XQ4(Copy, Expression, Children, CopyNamespaces, InheritNamespaces)
 COPY1(ASTDebugHook, Expression)
-COPY_XQ2(InlineFunction, UserFunction, Instance)
 COPY_XQ4(FunctionRef, URI, Name, NumArgs, Instance)
 COPY1(UDelete, Expression)
 COPY2(URename, Target, Name)
@@ -259,6 +258,19 @@ COPY2(UApplyUpdates, Expression, RevalidationMode)
 COPY3(FTContains, Argument, Selection, Ignore);
 COPY_XQ2(Nav, Steps, SortAdded);
 COPY_FULL3(UserFunction, XQUserFunctionInstance, FunctionDefinition, Arguments, AddReturnCheck);
+
+ASTNode *ASTCopier::optimizeInlineFunction(XQInlineFunction *item)
+{
+  XQInlineFunction *result = new (mm_) XQInlineFunction(item->getUserFunction(), item->getInstance(), mm_);
+
+  // Don't copy XQUserFunction
+  // TBD Is this safe? Maybe we should copy it completely - jpcs
+
+  item->setInstance(optimize(item->getInstance()));
+
+  ASTVisitor::optimizeInlineFunction(result);
+  COPY_IMPL();
+}
 
 ASTNode *ASTCopier::optimizeFunction(XQFunction *item)
 {
