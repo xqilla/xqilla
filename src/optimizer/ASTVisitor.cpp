@@ -67,6 +67,15 @@ XQUserFunction *ASTVisitor::optimizeFunctionDef(XQUserFunction *item)
   if(item->getFunctionBody()) {
     item->setFunctionBody(optimize(const_cast<ASTNode*>(item->getFunctionBody())));
   }
+  if(item->getPattern()) {
+    VectorOfASTNodes::iterator patIt = item->getPattern()->begin();
+    for(; patIt != item->getPattern()->end(); ++patIt) {
+      (*patIt) = optimize(*patIt);
+    }
+  }
+  if(item->getTemplateInstance()) {
+    item->setTemplateInstance(optimize(item->getTemplateInstance()));
+  }
   return item;
 }
 
