@@ -189,6 +189,8 @@ protected:
   size_t count_;
 };
 
+// TBD Implement recalculation of StaticAnalysis up the ancestors - jpcs
+
 void PartialEvaluator::optimize(XQQuery *query)
 {
   if(query->getQueryBody() == 0) {
@@ -204,6 +206,7 @@ void PartialEvaluator::optimize(XQQuery *query)
   sizeLimit_ = ASTCounter().count(query) * BODY_SIZE_RATIO;
 
   // Also limit the recursive depth we're willing to evaluate to
+  // TBD Implement a breadth first function inlining algorithm - jpcs
   functionInlineLimit_ = 100;
 
   // Perform partial evaluation
@@ -722,6 +725,7 @@ protected:
 XQUserFunction *PartialEvaluator::optimizeFunctionDef(XQUserFunction *item)
 {
   AutoReset<size_t> reset(sizeLimit_);
+  // TBD Maybe make this related to the number of times the function is called as well? - jpcs
   sizeLimit_ = ASTCounter().count(item->getFunctionBody()) * FUNCTION_SIZE_RATIO;
   return ASTVisitor::optimizeFunctionDef(item);
 }
@@ -737,6 +741,7 @@ ASTNode *PartialEvaluator::optimizeUserFunction(XQUserFunctionInstance *item)
 
   const XQUserFunction *funcDef = item->getFunctionDefinition();
 
+  // TBD Maybe make this dependant on the number of times the function is called in the query as well? - jpcs
   if(funcDef->getFunctionBody() && functionInlineLimit_ > 0 && (!funcDef->isRecursive() || constantArg)) {
     AutoReset<size_t> reset(functionInlineLimit_);
     --functionInlineLimit_;
@@ -775,6 +780,81 @@ ASTNode *PartialEvaluator::optimizeUserFunction(XQUserFunctionInstance *item)
 
     if(checkSizeLimit(item, result)) {
       result = optimize(result);
+      item->release();
+      return result;
+    }
+    else {
+      result->release();
+      return item;
+    }
+  }
+
+  return item;
+}
+
+ASTNode *PartialEvaluator::optimizeFunctionDeref(XQFunctionDeref *item)
+{
+  ASTVisitor::optimizeFunctionDeref(item);
+
+  size_t numArgs = 0;
+  ASTNode *instance = 0;
+  switch(item->getExpression()->getType()) {
+    case ASTNode::INLINE_FUNCTION:
+      numArgs = ((XQInlineFunction*)item->getExpression())->getUserFunction()->getArgumentSpecs() ?
+        ((XQInlineFunction*)item->getExpression())->getUserFunction()->getArgumentSpecs()->size() : 0;
+      instance = ((XQInlineFunction*)item->getExpression())->getInstance();
+      break;
+    case ASTNode::FUNCTION_REF:
+      numArgs = ((XQFunctionRef*)item->getExpression())->getNumArgs();
+      instance = ((XQFunctionRef*)item->getExpression())->getInstance();
+      break;
+  default: break;
+  }
+
+  VectorOfASTNodes *args = const_cast<VectorOfASTNodes*>(item->getArguments());
+  size_t numGiven = args ? args->size() : 0;
+
+  if(instance && numArgs == numGiven && functionInlineLimit_ > 0) {
+    AutoReset<size_t> reset(functionInlineLimit_);
+    --functionInlineLimit_;
+
+    XPath2MemoryManager *mm = context_->getMemoryManager();
+    TupleNode *tuple = new (mm) ContextTuple(mm);
+    tuple->setLocationInfo(item);
+
+    ASTNode *bodyCopy = instance->copy(context_);
+    InlineVar inliner;
+
+    VectorOfASTNodes *args = const_cast<VectorOfASTNodes*>(item->getArguments());
+    if(args) {
+      size_t i = 0;
+      for(VectorOfASTNodes::iterator argIt = args->begin(); argIt != args->end(); ++argIt) {
+        XMLBuffer buf(20);
+        buf.set(FunctionRefImpl::argVarPrefix);
+        XPath2Utils::numToBuf(i, buf);
+
+        // Rename the variable to avoid naming conflicts
+        const XMLCh *newName = context_->allocateTempVarName(buf.getRawBuffer());
+
+        tuple = new (mm) LetTuple(tuple, 0, newName, (*argIt)->copy(context_), mm);
+        tuple->setLocationInfo(item);
+
+        AutoRelease<ASTNode> newVar(new (mm) XQVariable(0, newName, mm));
+        newVar->setLocationInfo(*argIt);
+        StaticAnalysis &varSrc = const_cast<StaticAnalysis&>(newVar->getStaticAnalysis());
+        varSrc.getStaticType() = (*argIt)->getStaticAnalysis().getStaticType();
+        varSrc.setProperties((*argIt)->getStaticAnalysis().getProperties() & ~(StaticAnalysis::SUBTREE|StaticAnalysis::SAMEDOC));
+        varSrc.variableUsed(0, newName);
+
+        bodyCopy = inliner.run(0, buf.getRawBuffer(), newVar, bodyCopy, context_);
+      }
+    }
+
+    ASTNode *result = new (mm) XQReturn(tuple, bodyCopy, mm);
+    result->setLocationInfo(item);
+
+    if(checkSizeLimit(item, result)) {
+      result = optimize(result->staticTyping(0, 0));
       item->release();
       return result;
     }
