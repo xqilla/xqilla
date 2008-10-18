@@ -93,35 +93,28 @@ class FunctionDerefResult : public ResultImpl
 public:
   FunctionDerefResult(const XQFunctionDeref *ast)
     : ResultImpl(ast),
-      ast_(ast),
-      result_(0)
+      ast_(ast)
   {
   }
 
-  virtual Item::Ptr next(DynamicContext *context)
+  virtual Item::Ptr nextOrTail(Result &tail, DynamicContext *context)
   {
-    if(result_.isNull()) {
-      FunctionRef::Ptr func = (FunctionRef*)ast_->getExpression()->createResult(context)->next(context).get();
-      if(func.isNull()) return 0;
+    FunctionRef::Ptr func = (FunctionRef*)ast_->getExpression()->createResult(context)->next(context).get();
+    if(func.isNull()) return 0;
 
-      VectorOfResults args;
-      if(ast_->getArguments()) {
-        for(VectorOfASTNodes::iterator i = ast_->getArguments()->begin(); i != ast_->getArguments()->end(); ++i) {
-          args.push_back(ClosureResult::create(*i, context));
-        }
+    VectorOfResults args;
+    if(ast_->getArguments()) {
+      for(VectorOfASTNodes::iterator i = ast_->getArguments()->begin(); i != ast_->getArguments()->end(); ++i) {
+        args.push_back(ClosureResult::create(*i, context));
       }
-
-      result_ = func->execute(args, context, this);
     }
 
-    return result_->next(context);
+    tail = func->execute(args, context, this);
+    return 0;
   }
-
-  string asString(DynamicContext *context, int indent) const { return ""; }
 
 private:
   const XQFunctionDeref *ast_;
-  Result result_;
 };
 
 Result XQFunctionDeref::createResult(DynamicContext *context, int flags) const
