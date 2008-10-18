@@ -98,6 +98,7 @@ public:
     Mode(const XMLCh *qname) : state_(QNAME), qname_(qname), uri_(0), name_(0) {}
     Mode(const XMLCh *uri, const XMLCh *name) : state_(QNAME), qname_(0), uri_(uri), name_(name) {}
     Mode(State state) : state_(state), qname_(0), uri_(0), name_(0) {}
+    Mode(const Mode *o) : state_(o->state_), qname_(o->qname_), uri_(o->uri_), name_(o->name_) {}
 
     State getState() const { return state_; }
 
@@ -127,6 +128,15 @@ public:
         name_(0),
         used_(true),
         seqType_(type),
+        src_(memMgr)
+    {
+    }
+    ArgumentSpec(const ArgumentSpec *o, XPath2MemoryManager *memMgr)
+      : qname_(o->qname_),
+        uri_(o->uri_),
+        name_(o->name_),
+        used_(o->used_),
+        seqType_(o->seqType_),
         src_(memMgr)
     {
     }
@@ -178,7 +188,9 @@ public:
   const SequenceType* getReturnType() const { return returnType_; }
   void setReturnType(SequenceType *returnType) { returnType_ = returnType; }
 
-  const XQUserFunctionInstance *getTemplateInstance() const { return templateInstance_; }
+  ASTNode *getTemplateInstance() const { return templateInstance_; }
+  void setTemplateInstance(ASTNode *ast) { templateInstance_ = ast; }
+
   bool isGlobal() const { return isGlobal_; }
   bool isUpdating() const { return isUpdating_; }
   bool isTemplate() const { return isTemplate_; }
@@ -201,17 +213,24 @@ public:
   DocumentCache *getModuleDocumentCache() const { return moduleDocCache_; }
   const StaticAnalysis &getBodyStaticAnalysis() const { return src_; }
 
+  XPath2MemoryManager *getMemoryManager() const { return memMgr_; }
+
   static void staticTypeFunctionCalls(ASTNode *item, StaticContext *context, StaticTyper *styper);
 
   static const XMLCh XMLChXQueryLocalFunctionsURI[];
 
 protected:
+  // Constructor for copying
+  XQUserFunction(const XQUserFunction *o, XPath2MemoryManager *mm);
+  // Implementation for releasing
+  void releaseImpl();
+
   ASTNode *body_;
   const ExternalFunction *exFunc_;
   const XMLCh *qname_;
 
   VectorOfASTNodes *pattern_;
-  XQUserFunctionInstance *templateInstance_;
+  ASTNode *templateInstance_;
   ModeList *modes_;
 
   SequenceType *returnType_;
@@ -227,6 +246,8 @@ protected:
   DocumentCache *moduleDocCache_;
 
   friend class XQUserFunctionInstance;
+  friend class ASTCopier;
+  friend class ASTReleaser;
 };
 
 #endif

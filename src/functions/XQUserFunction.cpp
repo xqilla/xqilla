@@ -84,6 +84,7 @@ XQUserFunction::XQUserFunction(const XMLCh *qname, ArgumentSpecs *argSpecs, ASTN
     isGlobal_(isGlobal),
     isUpdating_(isUpdating),
     isTemplate_(false),
+    memMgr_(mm),
     src_(mm),
     staticTyped_(false),
     recursive_(false),
@@ -105,11 +106,87 @@ XQUserFunction::XQUserFunction(const XMLCh *qname, VectorOfASTNodes *pattern, Ar
     isGlobal_(true),
     isUpdating_(false),
     isTemplate_(true),
+    memMgr_(mm),
     src_(mm),
     staticTyped_(false),
     recursive_(false),
     moduleDocCache_(NULL)
 {
+}
+
+XQUserFunction::XQUserFunction(const XQUserFunction *o, XPath2MemoryManager *mm)
+  : FuncFactory(o->uri_, o->name_, o->minArgs_, o->maxArgs_, mm),
+    body_(o->body_),
+    exFunc_(o->exFunc_),
+    qname_(o->qname_),
+    pattern_(0),
+    templateInstance_(o->templateInstance_),
+    modes_(0),
+    returnType_(o->returnType_),
+    argSpecs_(0),
+    isGlobal_(o->isGlobal_),
+    isUpdating_(o->isUpdating_),
+    isTemplate_(o->isTemplate_),
+    memMgr_(mm),
+    src_(mm),
+    staticTyped_(o->staticTyped_),
+    recursive_(o->recursive_),
+    moduleDocCache_(o->moduleDocCache_)
+{
+  if(o->pattern_) {
+    pattern_ = new (mm) VectorOfASTNodes(XQillaAllocator<ASTNode*>(mm));
+    *pattern_ = *o->pattern_;
+  }
+  if(o->modes_) {
+    modes_ = new (mm) ModeList(XQillaAllocator<Mode*>(mm));
+
+    XQUserFunction::ModeList::const_iterator modeIt = o->getModeList()->begin();
+    for(; modeIt != o->getModeList()->end(); ++modeIt) {
+      modes_->push_back(new (mm) Mode(*modeIt));
+    }
+  }
+  if(o->argSpecs_) {
+    argSpecs_ = new (mm) ArgumentSpecs(XQillaAllocator<ArgumentSpec*>(mm));
+
+    XQUserFunction::ArgumentSpecs::const_iterator argIt = o->getArgumentSpecs()->begin();
+    for(; argIt != o->getArgumentSpecs()->end(); ++argIt) {
+      argSpecs_->push_back(new (mm) ArgumentSpec(*argIt, mm));
+    }
+  }
+  setLocationInfo(o);
+  src_.copy(o->src_);
+}
+
+void XQUserFunction::releaseImpl()
+{
+  if(pattern_) {
+    pattern_->~VectorOfASTNodes();
+    memMgr_->deallocate(pattern_);
+  }
+
+  if(modes_) {
+    XQUserFunction::ModeList::iterator modeIt = modes_->begin();
+    for(; modeIt != modes_->end(); ++modeIt) {
+      memMgr_->deallocate(*modeIt);
+    }
+
+    modes_->~ModeList();
+    memMgr_->deallocate(modes_);
+  }
+
+  if(argSpecs_) {
+    XQUserFunction::ArgumentSpecs::iterator argIt = argSpecs_->begin();
+    for(; argIt != argSpecs_->end(); ++argIt) {
+      const_cast<StaticAnalysis&>((*argIt)->getStaticAnalysis()).clear();
+      memMgr_->deallocate(*argIt);
+    }
+
+    argSpecs_->~ArgumentSpecs();
+    memMgr_->deallocate(argSpecs_);
+  }
+
+  src_.clear();
+  memMgr_->deallocate(this);
 }
 
 ASTNode* XQUserFunction::createInstance(const VectorOfASTNodes &args, XPath2MemoryManager *mm) const
@@ -323,7 +400,7 @@ void XQUserFunction::staticResolutionStage1(StaticContext *context)
       }
     }
 
-    templateInstance_ = new (mm) XQUserFunctionInstance(this, newArgs, mm);
+    templateInstance_ = createInstance(newArgs, mm);
     templateInstance_->setLocationInfo(this);
   }
 }
@@ -337,7 +414,7 @@ void XQUserFunction::staticResolutionStage2(StaticContext *context)
     }
   }
   if(templateInstance_) {
-    templateInstance_->staticResolution(context);
+    templateInstance_ = templateInstance_->staticResolution(context);
   }
   if(body_ != NULL) {
     body_ = body_->staticResolution(context);
@@ -551,7 +628,7 @@ void XQUserFunction::staticTyping(StaticContext *context, StaticTyper *styper)
     // Turn off warnings here, since they are largely irrelevent to the user
     AutoMessageListenerReset reset(context);
 
-    templateInstance_->staticTyping(context, styper);
+    templateInstance_ = templateInstance_->staticTyping(context, styper);
 
     varStore->removeScope();
   }
