@@ -43,7 +43,9 @@ XQGlobalVariable *ASTReleaser::optimizeGlobalVar(XQGlobalVariable *item)
 
 XQUserFunction *ASTReleaser::optimizeFunctionDef(XQUserFunction *item)
 {
-  return ASTVisitor::optimizeFunctionDef(item);
+  ASTVisitor::optimizeFunctionDef(item);
+  item->releaseImpl();
+  return 0;
 }
 
 ASTNode *ASTReleaser::optimizeUnknown(ASTNode *item)
@@ -125,6 +127,7 @@ RELEASE_XQ(AnalyzeString)
 RELEASE_XQ(CopyOf)
 RELEASE(ASTDebugHook)
 RELEASE_XQ(FunctionRef)
+RELEASE_XQ(InlineFunction)
 RELEASE(UDelete)
 RELEASE(URename)
 RELEASE(UReplace)
@@ -136,15 +139,6 @@ RELEASE(UInsertAfter)
 RELEASE(UInsertBefore)
 RELEASE(UApplyUpdates)
 RELEASE(FTContains)
-
-ASTNode *ASTReleaser::optimizeInlineFunction(XQInlineFunction *item)
-{
-  // Don't release XQUserFunction
-  // TBD work out a way to release the XQUserFunction - jpcs
-
-  item->setInstance(optimize(item->getInstance()));
-  RELEASE_IMPL();
-}
 
 ASTNode *ASTReleaser::optimizeFunction(XQFunction *item)
 {
