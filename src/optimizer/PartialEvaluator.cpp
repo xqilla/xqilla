@@ -576,6 +576,31 @@ protected:
     return item;
   }
 
+  virtual XQUserFunction *optimizeFunctionDef(XQUserFunction *item)
+  {
+    if(item->getFunctionBody()) {
+      AutoReset<bool> reset(active_);
+      AutoReset<bool> reset2(inScope_);
+
+      const XQUserFunction::ArgumentSpecs *params = item->getArgumentSpecs();
+      if(params) {
+        for(XQUserFunction::ArgumentSpecs::const_iterator it = params->begin();
+            it != params->end(); ++it) {
+
+          if(required_ && required_->isVariableUsed((*it)->getURI(), (*it)->getName()))
+            inScope_ = false;
+
+          if(XPath2Utils::equals(uri_, (*it)->getURI()) &&
+             XPath2Utils::equals(name_, (*it)->getName()))
+            active_ = false;
+        }
+      }
+
+      item->setFunctionBody(optimize(const_cast<ASTNode*>(item->getFunctionBody())));
+    }
+    return item;
+  }
+
   const XMLCh *uri_, *name_;
   const StaticAnalysis *required_;
   bool active_, inScope_;
