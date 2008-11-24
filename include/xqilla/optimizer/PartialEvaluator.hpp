@@ -36,6 +36,8 @@ class XQILLA_API PartialEvaluator : public ASTVisitor
 public:
   PartialEvaluator(DynamicContext *context, Optimizer *parent = 0);
 
+  static ASTNode *inlineFunction(const XQUserFunctionInstance *item, DynamicContext *context);
+
 protected:
   virtual void optimize(XQQuery *query);
   virtual ASTNode *optimize(ASTNode *item);
@@ -48,6 +50,7 @@ protected:
   virtual ASTNode *optimizeEffectiveBooleanValue(XQEffectiveBooleanValue *item);
   virtual ASTNode *optimizeOperator(XQOperator *item);
   virtual ASTNode *optimizeNamespaceBinding(XQNamespaceBinding *item);
+  virtual ASTNode *optimizeInlineFunction(XQInlineFunction *item);
 
   ASTNode *optimizePlus(Plus *item);
   ASTNode *optimizeMinus(Minus *item);
@@ -61,6 +64,8 @@ protected:
   DynamicContext *context_;
   size_t functionInlineLimit_;
   size_t sizeLimit_;
+
+  bool redoTyping_;
 };
 
 #endif

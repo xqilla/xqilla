@@ -54,6 +54,7 @@ public:
   {
     return funcDef_;
   }
+  void setFunctionDefinition(const XQUserFunction *f) { funcDef_ = f; }
 
   bool getAddReturnCheck() const { return addReturnCheck_; }
 

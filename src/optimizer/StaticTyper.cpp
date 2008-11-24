@@ -315,7 +315,8 @@ ASTNode *StaticTyper::optimizeFunctionRef(XQFunctionRef *item)
 
 ASTNode *StaticTyper::optimizeInlineFunction(XQInlineFunction *item)
 {
-  item->getUserFunction()->staticTyping(context_, this);
+  if(item->getUserFunction())
+    item->getUserFunction()->staticTyping(context_, this);
 
   if(context_) {
     XPath2MemoryManager *mm = context_->getMemoryManager();
@@ -325,8 +326,7 @@ ASTNode *StaticTyper::optimizeInlineFunction(XQInlineFunction *item)
     VariableTypeStore *varStore = context_->getVariableTypeStore();
     varStore->addLogicalBlockScope();
 
-    size_t numArgs = item->getUserFunction()->getArgumentSpecs() ? item->getUserFunction()->getArgumentSpecs()->size() : 0;
-    for(unsigned int i = 0; i < numArgs; ++i) {
+    for(unsigned int i = 0; i < item->getNumArgs(); ++i) {
       XMLBuffer buf(20);
       buf.set(FunctionRefImpl::argVarPrefix);
       XPath2Utils::numToBuf(i, buf);

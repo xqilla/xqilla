@@ -31,11 +31,13 @@ class XQILLA_API XQInlineFunction : public ASTNodeImpl
 {
 public:
   XQInlineFunction(XQUserFunction *func, XPath2MemoryManager *mm);
-  XQInlineFunction(XQUserFunction *func, ASTNode *instance, XPath2MemoryManager *mm);
+  XQInlineFunction(XQUserFunction *func, unsigned int numArgs, ASTNode *instance, XPath2MemoryManager *mm);
 
   virtual ASTNode *staticResolution(StaticContext *context);
   virtual ASTNode *staticTypingImpl(StaticContext *context);
   virtual Result createResult(DynamicContext* context, int flags=0) const;
+
+  unsigned int getNumArgs() const { return numArgs_; }
 
   XQUserFunction *getUserFunction() const { return func_; }
   void setUserFunction(XQUserFunction *func) { func_ = func; }
@@ -45,6 +47,7 @@ public:
 
 private:
   XQUserFunction *func_;
+  unsigned int numArgs_;
   ASTNode *instance_;
 
   friend class InlineFunctionResult;

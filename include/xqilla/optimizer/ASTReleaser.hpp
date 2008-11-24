@@ -31,6 +31,7 @@ public:
 
   void release(ASTNode *item);
   void release(TupleNode *item);
+  void release(XQUserFunction *item);
 
 protected:
   virtual ASTNode *optimize(ASTNode *item);
