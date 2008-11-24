@@ -79,10 +79,47 @@ XQGlobalVariable *ASTCopier::optimizeGlobalVar(XQGlobalVariable *item)
   return ASTVisitor::optimizeGlobalVar(item);
 }
 
+class UpdateInstance : public ASTVisitor
+{
+public:
+
+  void run(ASTNode *item, const XQUserFunction *oldFunc, XQUserFunction *newFunc)
+  {
+    oldFunc_ = oldFunc;
+    newFunc_ = newFunc;
+    optimize(item);
+  }
+
+protected:
+  virtual XQUserFunction *optimizeFunctionDef(XQUserFunction *item)
+  {
+    if(item == oldFunc_) return newFunc_;
+    return item;
+  }
+
+  virtual ASTNode *optimizeUserFunction(XQUserFunctionInstance *item)
+  {
+    if(item->getFunctionDefinition() == oldFunc_) item->setFunctionDefinition(newFunc_);
+    return ASTVisitor::optimizeUserFunction(item);
+  }
+
+  const XQUserFunction *oldFunc_;
+  XQUserFunction *newFunc_;
+};
+
 XQUserFunction *ASTCopier::optimizeFunctionDef(XQUserFunction *item)
 {
+  if(item == 0) return 0;
+
   XQUserFunction *result = new (mm_) XQUserFunction(item, mm_);
-  return ASTVisitor::optimizeFunctionDef(result);
+  ASTVisitor::optimizeFunctionDef(result);
+
+  if(result->getTemplateInstance()) {
+    // Update the pointers to the XQUserFunction in the instance
+    UpdateInstance().run(result->getTemplateInstance(), item, result);
+  }
+
+  return result;
 }
 
 ASTNode *ASTCopier::optimizeUnknown(ASTNode *item)
@@ -246,7 +283,6 @@ COPY_XQ2(CopyOf, Expression, CopyNamespaces)
 COPY_XQ4(Copy, Expression, Children, CopyNamespaces, InheritNamespaces)
 COPY1(ASTDebugHook, Expression)
 COPY_XQ4(FunctionRef, URI, Name, NumArgs, Instance)
-COPY_XQ2(InlineFunction, UserFunction, Instance)
 COPY1(UDelete, Expression)
 COPY2(URename, Target, Name)
 COPY2(UReplace, Target, Expression)
@@ -260,6 +296,20 @@ COPY2(UApplyUpdates, Expression, RevalidationMode)
 COPY3(FTContains, Argument, Selection, Ignore);
 COPY_XQ2(Nav, Steps, SortAdded);
 COPY_FULL3(UserFunction, XQUserFunctionInstance, FunctionDefinition, Arguments, AddReturnCheck);
+
+
+ASTNode *ASTCopier::optimizeInlineFunction(XQInlineFunction *item)
+{
+  XQInlineFunction *result = new (mm_) XQInlineFunction(item->getUserFunction(), item->getNumArgs(), item->getInstance(), mm_);
+  ASTVisitor::optimizeInlineFunction(result);
+
+  if(result->getUserFunction()) {
+    // Update the pointers to the XQUserFunction in the instance
+    UpdateInstance().run(result->getInstance(), item->getUserFunction(), result->getUserFunction());
+  }
+
+  COPY_IMPL();
+}
 
 ASTNode *ASTCopier::optimizeFunction(XQFunction *item)
 {

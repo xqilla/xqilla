@@ -35,13 +35,15 @@ using namespace std;
 XQInlineFunction::XQInlineFunction(XQUserFunction *func, XPath2MemoryManager *mm)
   : ASTNodeImpl(INLINE_FUNCTION, mm),
     func_(func),
+    numArgs_(func->getArgumentSpecs() ? func->getArgumentSpecs()->size() : 0),
     instance_(0)
 {
 }
 
-XQInlineFunction::XQInlineFunction(XQUserFunction *func, ASTNode *instance, XPath2MemoryManager *mm)
+XQInlineFunction::XQInlineFunction(XQUserFunction *func, unsigned int numArgs, ASTNode *instance, XPath2MemoryManager *mm)
   : ASTNodeImpl(INLINE_FUNCTION, mm),
     func_(func),
+    numArgs_(numArgs),
     instance_(instance)
 {
 }
@@ -52,8 +54,7 @@ ASTNode *XQInlineFunction::staticResolution(StaticContext *context)
 
   func_->staticResolutionStage1(context);
 
-  size_t numArgs = func_->getArgumentSpecs() ? func_->getArgumentSpecs()->size() : 0;
-  instance_ = FunctionRefImpl::createInstance(func_, numArgs, mm, this);
+  instance_ = FunctionRefImpl::createInstance(func_, numArgs_, mm, this);
   instance_ = instance_->staticResolution(context);
 
   func_->staticResolutionStage2(context);
@@ -70,11 +71,19 @@ ASTNode *XQInlineFunction::staticTypingImpl(StaticContext *context)
 
   _src.clear();
 
-  _src.addExceptContextFlags(func_->getBodyStaticAnalysis());
+  _src.addExceptContextFlags(instance_->getStaticAnalysis());
 
+  // Remove the argument variables
   XPath2MemoryManager *mm = context->getMemoryManager();
-  size_t numArgs = func_->getArgumentSpecs() ? func_->getArgumentSpecs()->size() : 0;
-  _src.getStaticType() = StaticType(mm, numArgs, instance_->getStaticAnalysis().getStaticType());
+  for(unsigned int i = 0; i < numArgs_; ++i) {
+    XMLBuffer buf(20);
+    buf.set(FunctionRefImpl::argVarPrefix);
+    XPath2Utils::numToBuf(i, buf);
+
+    _src.removeVariable(0, mm->getPooledString(buf.getRawBuffer()));
+  }
+
+  _src.getStaticType() = StaticType(mm, numArgs_, instance_->getStaticAnalysis().getStaticType());
 
   return this;
 }
@@ -90,8 +99,7 @@ public:
 
   virtual Item::Ptr getSingleResult(DynamicContext *context) const
   {
-    size_t numArgs = ast_->func_->getArgumentSpecs() ? ast_->func_->getArgumentSpecs()->size() : 0;
-    return new FunctionRefImpl(ast_->instance_, numArgs, ast_->func_->getBodyStaticAnalysis(), context);
+    return new FunctionRefImpl(ast_->instance_, ast_->numArgs_, ast_->getStaticAnalysis(), context);
   }
 
   string asString(DynamicContext *context, int indent) const { return ""; }

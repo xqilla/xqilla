@@ -538,7 +538,7 @@ ASTNode *ASTVisitor::optimizeCallTemplate(XQCallTemplate *item)
     }
   }
   if(item->getASTName())
-	  item->setASTName(optimize(item->getASTName()));
+    item->setASTName(optimize(item->getASTName()));
   return item;
 }
 
@@ -558,7 +558,8 @@ ASTNode *ASTVisitor::optimizeApplyTemplates(XQApplyTemplates *item)
 
 ASTNode *ASTVisitor::optimizeInlineFunction(XQInlineFunction *item)
 {
-  item->setUserFunction(optimizeFunctionDef(item->getUserFunction()));
+  if(item->getUserFunction())
+    item->setUserFunction(optimizeFunctionDef(item->getUserFunction()));
   item->setInstance(optimize(item->getInstance()));
   return item;
 }

@@ -1447,7 +1447,7 @@ ASTNode *QueryPathTreeGenerator::optimizeCallTemplate(XQCallTemplate *item)
     }
   }
   if(item->getASTName())
-	  generate(item->getASTName());
+    generate(item->getASTName());
   push(PathResult());
   return item;
 }
@@ -1477,7 +1477,8 @@ ASTNode *QueryPathTreeGenerator::optimizeApplyTemplates(XQApplyTemplates *item)
 
 ASTNode *QueryPathTreeGenerator::optimizeInlineFunction(XQInlineFunction *item)
 {
-  optimizeFunctionDef(item->getUserFunction());
+  if(item->getUserFunction())
+    optimizeFunctionDef(item->getUserFunction());
 
   // TBD What about the function instance? - jpcs
 

@@ -36,6 +36,11 @@ void ASTReleaser::release(TupleNode *item)
   optimizeTupleNode(item);
 }
 
+void ASTReleaser::release(XQUserFunction *item)
+{
+  optimizeFunctionDef(item);
+}
+
 XQGlobalVariable *ASTReleaser::optimizeGlobalVar(XQGlobalVariable *item)
 {
   return ASTVisitor::optimizeGlobalVar(item);
@@ -43,8 +48,10 @@ XQGlobalVariable *ASTReleaser::optimizeGlobalVar(XQGlobalVariable *item)
 
 XQUserFunction *ASTReleaser::optimizeFunctionDef(XQUserFunction *item)
 {
-  ASTVisitor::optimizeFunctionDef(item);
-  item->releaseImpl();
+  if(item) {
+    ASTVisitor::optimizeFunctionDef(item);
+    item->releaseImpl();
+  }
   return 0;
 }
 

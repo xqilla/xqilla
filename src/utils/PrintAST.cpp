@@ -1990,7 +1990,12 @@ string PrintAST::printInlineFunction(const XQInlineFunction *item, const Dynamic
   string in(getIndent(indent));
 
   s << in << "<InlineFunction>" << endl;
-  s << printXQUserFunction(item->getUserFunction(), context, indent + INDENT);
+  if(item->getUserFunction()) {
+    s << printXQUserFunction(item->getUserFunction(), context, indent + INDENT);
+  }
+  else {
+    s << printASTNode(item->getInstance(), context, indent + INDENT);
+  }
   s << in << "</InlineFunction>" << endl;
 
   return s.str();
