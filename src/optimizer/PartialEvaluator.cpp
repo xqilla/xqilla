@@ -1111,6 +1111,32 @@ ASTNode *PartialEvaluator::optimizeIf(XQIf *item)
   return item;
 }
 
+ASTNode *PartialEvaluator::optimizeQuantified(XQQuantified *item)
+{
+  item->setParent(optimizeTupleNode(const_cast<TupleNode*>(item->getParent())));
+
+  if(item->getParent()->getMax() == 0) {
+    ASTNode *result = XQLiteral::create(item->getQuantifierType() == XQQuantified::EVERY, context_->getMemoryManager(), item);
+    sizeLimit_ += ASTCounter().count(item);
+    sizeLimit_ -= ASTCounter().count(result);
+    item->release();
+    return result;
+  }
+
+  item->setExpression(optimize(item->getExpression()));
+
+  if(item->getExpression()->isConstant() && item->getParent()->getMin() != 0) {
+    bool value = ((ATBooleanOrDerived*)item->getExpression()->createResult(context_)->next(context_).get())->isTrue();
+    ASTNode *result = XQLiteral::create(value, context_->getMemoryManager(), item);
+    sizeLimit_ += ASTCounter().count(item);
+    sizeLimit_ -= ASTCounter().count(result);
+    item->release();
+    return result;
+  }
+
+  return item;
+}
+
 ASTNode *PartialEvaluator::optimizePredicate(XQPredicate *item)
 {
   item->setPredicate(optimize(const_cast<ASTNode *>(item->getPredicate())));
@@ -1737,15 +1763,15 @@ ASTNode *PartialEvaluator::optimizeDivide(Divide *item)
 
 // Other things to constant fold:
 //
-// XQQuantified
 // XQMap
 // XQTypeswitch - reduce to Let if one clause
 // XQSequence
 // empty(), exists(), count()
+// global variables
 // 
 //
 // XQNav
 // LetTuple
 // casts, conversions, atomize
 // FunctionCount
-// 
+//
