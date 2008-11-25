@@ -90,41 +90,18 @@ ASTNode *XQFunctionRef::staticResolution(StaticContext *context)
 
 ASTNode *XQFunctionRef::staticTypingImpl(StaticContext *context)
 {
-  if(!context) {
-    // TBD Can we do better - jpcs
-    return this;
-  }
-
   _src.clear();
 
-  XPath2MemoryManager *mm = context->getMemoryManager();
+  // TBD Using getMemoryManager() might not be thread safe in DB XML - jpcs
+
+  XPath2MemoryManager *mm = getMemoryManager();
   _src.getStaticType() = StaticType(mm, numArgs_, instance_->getStaticAnalysis().getStaticType());
 
   return this;
 }
 
-class XQFunctionRefResult : public SingleResult
-{
-public:
-  XQFunctionRefResult(const XQFunctionRef *ast)
-    : SingleResult(ast),
-      ast_(ast)
-  {
-  }
-
-  virtual Item::Ptr getSingleResult(DynamicContext *context) const
-  {
-    return new FunctionRefImpl(ast_->prefix_, ast_->uri_, ast_->name_,
-                               ast_->instance_, ast_->numArgs_, context);
-  }
-
-  string asString(DynamicContext *context, int indent) const { return ""; }
-
-private:
-  const XQFunctionRef *ast_;
-};
-
 Result XQFunctionRef::createResult(DynamicContext *context, int flags) const
 {
-  return new XQFunctionRefResult(this);
+  return (Item::Ptr)new FunctionRefImpl(prefix_, uri_, name_,
+                                        instance_, numArgs_, context);
 }
