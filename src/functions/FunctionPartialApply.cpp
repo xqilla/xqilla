@@ -55,11 +55,6 @@ ASTNode* FunctionPartialApply::staticResolution(StaticContext *context)
 
 ASTNode *FunctionPartialApply::staticTypingImpl(StaticContext *context)
 {
-  if(!context) {
-    // TBD Can we do better - jpcs
-    return this;
-  }
-
   _src.clear();
 
   for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
@@ -92,27 +87,28 @@ ASTNode *FunctionPartialApply::staticTypingImpl(StaticContext *context)
     if(minArgs > 0) --minArgs;
     if(maxArgs > 0) --maxArgs;
 
-    _src.getStaticType() = StaticType(context->getMemoryManager(), minArgs, maxArgs,
+    // TBD Using getMemoryManager() might not be thread safe in DB XML - jpcs
+    _src.getStaticType() = StaticType(getMemoryManager(), minArgs, maxArgs,
                                       *inType.getReturnType());
   }
 
   return this;
 }
 
-Sequence FunctionPartialApply::createSequence(DynamicContext* context, int flags) const
+Result FunctionPartialApply::createResult(DynamicContext* context, int flags) const
 {
   int argNum = 1;
 
   if(getNumArgs() == 3) {
-    Numeric::Ptr num = (Numeric*)getParamNumber(3, context)->next(context).get();
-    argNum = ::atoi(UTF8(num->asString(context)));
+    argNum = ((Numeric*)getParamNumber(3, context)->next(context).get())->asInt();
 
     if(argNum < 1) {
       XQThrow(FunctionException, X("FunctionPartialApply::staticTyping"), X("The argument number provided to fn:partial-apply() is less than 1 [err:TBD]"));
     }
   }
 
-  return Sequence(((FunctionRef*)getParamNumber(1, context)->next(context).get())->
-                  partialApply(getParamNumber(2, context), argNum, context, this),
-                  context->getMemoryManager());
+  Result arg = getParamNumber(2, context);
+
+  return (Item::Ptr)((FunctionRef*)getParamNumber(1, context)->next(context).get())->
+    partialApply(arg, argNum, context, this);
 }

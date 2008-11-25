@@ -260,7 +260,9 @@ ASTNode *PartialEvaluator::optimize(ASTNode *item)
   case ASTNode::QNAME_LITERAL:
     break;
   default:
-    if(!item->getStaticAnalysis().isUsed()) {
+    if(!item->getStaticAnalysis().isUsed() &&
+       !item->getStaticAnalysis().getStaticType().isType(StaticType::NODE_TYPE) &&
+       !item->getStaticAnalysis().getStaticType().isType(StaticType::FUNCTION_TYPE)) {
       XPath2MemoryManager* mm = context_->getMemoryManager();
 
       try {
@@ -782,6 +784,13 @@ ASTNode *PartialEvaluator::inlineFunction(const XQUserFunctionInstance *item, Dy
   result->setLocationInfo(item);
   const_cast<StaticAnalysis&>(result->getStaticAnalysis()).copy(funcDef->getBodyStaticAnalysis());
 
+  if(!item->getArguments().empty()) {
+    VectorOfASTNodes::const_iterator argIt = item->getArguments().begin();
+    for(; argIt != item->getArguments().end(); ++argIt) {
+      const_cast<StaticAnalysis&>(result->getStaticAnalysis()).add((*argIt)->getStaticAnalysis());
+    }
+  }
+
   return result;
 }
 
@@ -804,7 +813,8 @@ ASTNode *PartialEvaluator::optimizeUserFunction(XQUserFunctionInstance *item)
     ASTNode *result = inlineFunction(item, context_);
 
     if(checkSizeLimit(item, result)) {
-      result = optimize(result);
+      redoTyping_ = true;
+      result = optimize(result->staticTyping(0, 0));
       item->release();
       return result;
     }
@@ -824,7 +834,8 @@ ASTNode *PartialEvaluator::optimizeInlineFunction(XQInlineFunction *item)
     ASTReleaser().release(item->getUserFunction());
     item->getInstance()->release();
     item->setUserFunction(0);
-    item->setInstance(result);
+    redoTyping_ = true;
+    item->setInstance(result->staticTyping(0, 0));
   }
   item->setInstance(optimize(item->getInstance()));
   return item;

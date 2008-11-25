@@ -64,17 +64,14 @@ ASTNode *XQInlineFunction::staticResolution(StaticContext *context)
 
 ASTNode *XQInlineFunction::staticTypingImpl(StaticContext *context)
 {
-  if(!context) {
-    // TBD Can we do better - jpcs
-    return this;
-  }
-
   _src.clear();
 
   _src.addExceptContextFlags(instance_->getStaticAnalysis());
 
+  // TBD Using getMemoryManager() might not be thread safe in DB XML - jpcs
+
   // Remove the argument variables
-  XPath2MemoryManager *mm = context->getMemoryManager();
+  XPath2MemoryManager *mm = getMemoryManager();
   for(unsigned int i = 0; i < numArgs_; ++i) {
     XMLBuffer buf(20);
     buf.set(FunctionRefImpl::argVarPrefix);
@@ -88,27 +85,7 @@ ASTNode *XQInlineFunction::staticTypingImpl(StaticContext *context)
   return this;
 }
 
-class InlineFunctionResult : public SingleResult
-{
-public:
-  InlineFunctionResult(const XQInlineFunction *ast)
-    : SingleResult(ast),
-      ast_(ast)
-  {
-  }
-
-  virtual Item::Ptr getSingleResult(DynamicContext *context) const
-  {
-    return new FunctionRefImpl(ast_->instance_, ast_->numArgs_, ast_->getStaticAnalysis(), context);
-  }
-
-  string asString(DynamicContext *context, int indent) const { return ""; }
-
-private:
-  const XQInlineFunction *ast_;
-};
-
 Result XQInlineFunction::createResult(DynamicContext *context, int flags) const
 {
-  return new InlineFunctionResult(this);
+  return (Item::Ptr)new FunctionRefImpl(instance_, numArgs_, _src, context);
 }
