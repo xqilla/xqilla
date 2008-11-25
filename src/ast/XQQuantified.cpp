@@ -58,13 +58,6 @@ ASTNode *XQQuantified::staticTypingImpl(StaticContext *context)
 
   parent_ = parent_->staticTypingTeardown(context, _src);
 
-  if(context && expr_->isConstant()) {
-    AutoDelete<DynamicContext> dContext(context->createDynamicContext());
-    dContext->setMemoryManager(context->getMemoryManager());
-    bool value = ((ATBooleanOrDerived*)expr_->createResult(dContext)->next(dContext).get())->isTrue();
-    return XQLiteral::create(value, context->getMemoryManager(), this);
-  }
-
   return this;
 }
 
