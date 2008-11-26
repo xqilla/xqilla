@@ -67,10 +67,13 @@
    BinInputStream::getContentType() method. */
 #undef HAVE_GETCONTENTTYPE
 
+/* C code should not care about Xerces-C++ facilities. */
+#ifdef __cplusplus
 #include <xercesc/util/XercesVersion.hpp>
 #if _XERCES_VERSION >= 30000
 #define HAVE_ALLMATCHES 1
 #define HAVE_GETCONTENTTYPE 1
+#endif
 #endif
 
 #else
