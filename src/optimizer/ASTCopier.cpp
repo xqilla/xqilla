@@ -54,6 +54,8 @@
 #include <xqilla/operators/UnaryMinus.hpp>
 #include <xqilla/operators/Union.hpp>
 
+#include <xqilla/update/FunctionPut.hpp>
+
 XERCES_CPP_NAMESPACE_USE;
 
 ASTCopier::ASTCopier()
@@ -313,7 +315,19 @@ ASTNode *ASTCopier::optimizeInlineFunction(XQInlineFunction *item)
 
 ASTNode *ASTCopier::optimizeFunction(XQFunction *item)
 {
-  XQFunction *result = (XQFunction*)context_->lookUpFunction(item->getFunctionURI(), item->getFunctionName(), item->getArguments());
+  const XMLCh *uri = item->getFunctionURI();
+  const XMLCh *name = item->getFunctionName();
+
+  XQFunction *result = 0;
+  if(uri == XQFunction::XMLChFunctionURI) {
+    if(name == FunctionPut::name) {
+      result = new (mm_) FunctionPut(((FunctionPut*)item)->getBaseURI(), item->getArguments(), mm_);
+    }
+  }
+
+  if(result == 0)
+    result = (XQFunction*)context_->lookUpFunction(item->getFunctionURI(), item->getFunctionName(), item->getArguments());
+
   ASTVisitor::optimizeFunction(result);
   COPY_IMPL();
 }
