@@ -875,7 +875,7 @@ ASTNode *PartialEvaluator::optimizeFunctionDeref(XQFunctionDeref *item)
 
     VectorOfASTNodes *args = const_cast<VectorOfASTNodes*>(item->getArguments());
     if(args) {
-      size_t i = 0;
+      unsigned int i = 0;
       for(VectorOfASTNodes::iterator argIt = args->begin(); argIt != args->end(); ++argIt) {
         XMLBuffer buf(20);
         buf.set(FunctionRefImpl::argVarPrefix);
