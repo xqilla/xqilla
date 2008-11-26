@@ -355,7 +355,7 @@ void XQillaTestSuiteRunner::runTestCase(const TestCase &testCase)
     context->setXMLEntityResolver(this);
     context->setModuleResolver(this);
     context->registerURIResolver(this, /*adopt*/false);
-    if(testCase.xsltTest)
+    if(testCase.xsltTest || testCase.updateTest)
       context->setBaseURI(X(testCase.queryURL.c_str()));
 
     if(testCase.updateTest) {
