@@ -131,7 +131,10 @@ void SchemaValidatorFilter::startDocumentEvent(const XMLCh *documentURI, const X
 
 void SchemaValidatorFilter::endDocumentEvent()
 {
-  if(fValidate) fICHandler->endDocument();
+  if(fValidate) {
+    checkIDRefs();
+    fICHandler->endDocument();
+  }
 
   next_->endDocumentEvent();
 }
