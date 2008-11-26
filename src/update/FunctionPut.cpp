@@ -50,6 +50,12 @@ FunctionPut::FunctionPut(const VectorOfASTNodes &args, XPath2MemoryManager* memM
 {
 }
 
+FunctionPut::FunctionPut(const XMLCh *baseURI, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
+  : XQFunction(name, minArgs, maxArgs, "node(), string?", args, memMgr),
+    baseURI_(baseURI)
+{
+}
+
 ASTNode* FunctionPut::staticResolution(StaticContext *context)
 {
   baseURI_ = context->getBaseURI();
