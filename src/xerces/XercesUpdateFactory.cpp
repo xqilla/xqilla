@@ -56,7 +56,7 @@ void XercesUpdateFactory::applyPut(const PendingUpdate &update, DynamicContext *
     XMLBuffer buf;
     buf.append(X("fn:put() called with the URI \""));
     buf.append(item.uri);
-    buf.append(X("\" twice."));
+    buf.append(X("\" twice. [err:XUDY0031]"));
 
     XQThrow3(ASTException, X("XercesUpdateFactory::applyPut"), buf.getRawBuffer(), &update);
   }

@@ -34,10 +34,13 @@ public:
   static const unsigned int maxArgs;
 
   FunctionPut(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
+  FunctionPut(const XMLCh *baseURI, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   virtual ASTNode *staticResolution(StaticContext *context);
   virtual ASTNode *staticTypingImpl(StaticContext *context);
   virtual PendingUpdateList createUpdateList(DynamicContext *context) const;
+
+  const XMLCh *getBaseURI() const { return baseURI_; }
 
 private:
   const XMLCh *baseURI_;
