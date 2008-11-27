@@ -273,21 +273,34 @@ bool XPath2FirstResultImpl::getInvalidIteratorState() const {
   return false;
 }
 
+#if _XERCES_VERSION >= 30000
+XMLSize_t XPath2FirstResultImpl::getSnapshotLength() const {
+  string error = errorMessage(XPath2Result::SNAPSHOT_RESULT, XPath2Result::FIRST_RESULT);
+  throw XQillaException(DOMXPathException::TYPE_ERR, X(error.c_str()));
+}
+#else
 size_t XPath2FirstResultImpl::getSnapshotLength() const {
   string error = errorMessage(XPath2Result::SNAPSHOT_RESULT, XPath2Result::FIRST_RESULT);
   throw XQillaException(DOMXPathException::TYPE_ERR, X(error.c_str()));
 }
+#endif
 
 bool XPath2FirstResultImpl::iterateNext() {
   string error = errorMessage(XPath2Result::ITERATOR_RESULT, XPath2Result::FIRST_RESULT);
   throw XQillaException(DOMXPathException::TYPE_ERR, X(error.c_str()));
 }
 
+#if _XERCES_VERSION >= 30000
+bool XPath2FirstResultImpl::snapshotItem(XMLSize_t index) {
+  string error = errorMessage(XPath2Result::SNAPSHOT_RESULT, XPath2Result::FIRST_RESULT);
+  throw XQillaException(DOMXPathException::TYPE_ERR, X(error.c_str()));
+}
+#else
 bool XPath2FirstResultImpl::snapshotItem(size_t index) {
   string error = errorMessage(XPath2Result::SNAPSHOT_RESULT, XPath2Result::FIRST_RESULT);
   throw XQillaException(DOMXPathException::TYPE_ERR, X(error.c_str()));
 }
-
+#endif
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 XPath2SnapshotResultImpl::XPath2SnapshotResultImpl(const XQQuery *expression,
@@ -350,15 +363,34 @@ bool XPath2SnapshotResultImpl::getInvalidIteratorState() const {
   return false;
 }
 
+#if _XERCES_VERSION >= 30000
+XMLSize_t XPath2SnapshotResultImpl::getSnapshotLength() const {
+  return _sequence->getLength();
+}
+#else
 size_t XPath2SnapshotResultImpl::getSnapshotLength() const {
   return _sequence->getLength();
 }
+#endif
 
 bool XPath2SnapshotResultImpl::iterateNext() {
   string error = errorMessage(XPath2Result::ITERATOR_RESULT, XPath2Result::SNAPSHOT_RESULT);
   throw XQillaException(DOMXPathException::TYPE_ERR, X(error.c_str()));
 }
 
+#if _XERCES_VERSION >= 30000
+bool XPath2SnapshotResultImpl::snapshotItem(XMLSize_t index) {
+  //Reached end of set, return false
+  if(index >= _sequence->getLength()) {
+    _currentItem = 0;
+    return false;
+  }
+
+  // this method is const, need to cast that away
+  _currentItem = _sequence->item(index);
+  return true;
+}
+#else
 bool XPath2SnapshotResultImpl::snapshotItem(size_t index) {
   //Reached end of set, return false
   if(index >= _sequence->getLength()) {
@@ -370,7 +402,7 @@ bool XPath2SnapshotResultImpl::snapshotItem(size_t index) {
   _currentItem = _sequence->item(index);
   return true;
 }
-
+#endif
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 XPath2IteratorResultImpl::XPath2IteratorResultImpl(const XQQuery *expression,
@@ -473,6 +505,19 @@ bool XPath2IteratorResultImpl::iterateNext()
   return true;
 }
 
+#if _XERCES_VERSION >= 30000
+XMLSize_t XPath2IteratorResultImpl::getSnapshotLength() const
+{
+  string error = errorMessage(XPath2Result::SNAPSHOT_RESULT, XPath2Result::ITERATOR_RESULT);
+  throw XQillaException(DOMXPathException::TYPE_ERR, X(error.c_str()));
+}
+
+bool XPath2IteratorResultImpl::snapshotItem(XMLSize_t index)
+{
+  string error = errorMessage(XPath2Result::SNAPSHOT_RESULT, XPath2Result::ITERATOR_RESULT);
+  throw XQillaException(DOMXPathException::TYPE_ERR, X(error.c_str()));
+}
+#else
 size_t XPath2IteratorResultImpl::getSnapshotLength() const
 {
   string error = errorMessage(XPath2Result::SNAPSHOT_RESULT, XPath2Result::ITERATOR_RESULT);
@@ -484,3 +529,5 @@ bool XPath2IteratorResultImpl::snapshotItem(size_t index)
   string error = errorMessage(XPath2Result::SNAPSHOT_RESULT, XPath2Result::ITERATOR_RESULT);
   throw XQillaException(DOMXPathException::TYPE_ERR, X(error.c_str()));
 }
+#endif
+

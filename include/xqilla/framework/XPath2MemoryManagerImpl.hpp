@@ -41,7 +41,11 @@ public:
   virtual ~XPath2MemoryManagerImpl();
 
 #if defined(WIN_USE_HEAP)
+#if _XERCES_VERSION >= 30000
+  virtual void *allocate(XMLSize_t numElements);
+#else
   virtual void *allocate(size_t numElements);
+#endif
   virtual void deallocate(void* p);
 #endif
 

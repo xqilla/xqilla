@@ -88,7 +88,11 @@ MemoryManager *BaseMemoryManager::getExceptionMemoryManager()
   return XMLPlatformUtils::fgMemoryManager;
 }
 
+#if _XERCES_VERSION >= 30000
+void *BaseMemoryManager::allocate(XMLSize_t amount)
+#else
 void *BaseMemoryManager::allocate(size_t amount)
+#endif	
 {
 #if ALLOCATE_IN_CHUNKS
 #error "alignment constraints are not implemented for this case; fix that or remove this error if you think it is unnecessary for your platform"	
