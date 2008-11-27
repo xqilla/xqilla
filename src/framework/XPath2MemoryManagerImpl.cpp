@@ -33,12 +33,21 @@ XPath2MemoryManagerImpl::~XPath2MemoryManagerImpl()
 }
 
 #ifdef WIN_USE_HEAP
+#if _XERCES_VERSION >= 30000
+void *XPath2MemoryManagerImpl::allocate(XMLSize_t amount)
+{
+  ++objectsAllocated_;
+  totalMemoryAllocated_ += amount;
+  return HeapAlloc(fHeap,HEAP_NO_SERIALIZE|HEAP_ZERO_MEMORY,amount);
+}
+#else
 void *XPath2MemoryManagerImpl::allocate(size_t amount)
 {
   ++objectsAllocated_;
   totalMemoryAllocated_ += amount;
   return HeapAlloc(fHeap,HEAP_NO_SERIALIZE|HEAP_ZERO_MEMORY,amount);
 }
+#endif
 
 void XPath2MemoryManagerImpl::deallocate(void* p)
 {

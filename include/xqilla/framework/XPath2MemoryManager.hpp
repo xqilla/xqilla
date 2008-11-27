@@ -57,7 +57,11 @@ public:
   virtual const XMLCh* getPooledString(const char *src) = 0;
 
   // from MemoryManager
-  virtual void* allocate(size_t numElements) = 0;
+#if _XERCES_VERSION >= 30000
+  virtual void* allocate(XMLSize_t numElements) = 0;
+#else
+  virtual void* allocate(size_t numElements) = 0;	
+#endif  
   virtual void deallocate(void* p) = 0;
   
   /** create a collation */

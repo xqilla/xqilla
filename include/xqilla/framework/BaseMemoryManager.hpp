@@ -53,7 +53,12 @@ public:
   virtual ~BaseMemoryManager();
 
   // from MemoryManager
-  virtual void* allocate(size_t numElements);
+#if _XERCES_VERSION >= 30000
+  virtual void* allocate(XMLSize_t numElements);
+#else
+  virtual void* allocate(size_t numElements); 
+#endif
+ 
   virtual void deallocate(void* p);
   virtual XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *getExceptionMemoryManager();
   
