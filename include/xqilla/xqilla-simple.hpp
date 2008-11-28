@@ -35,3 +35,15 @@
 #include <xqilla/fastxdm/FastXDMConfiguration.hpp>
 #include <xqilla/context/ModuleResolver.hpp>
 #include <xqilla/context/URIResolver.hpp>
+
+/**
+ * \example simple-basic.cpp
+ *
+ * This example executes a simple XQuery expression ("1 to 100"), which returns the numbers from 1 to 100 inclusive.
+ */
+
+/**
+ * \example simple-context-item.cpp
+ *
+ * This example parses a document and sets it as the context item. It then executes an XQuery expression that navigates relative to the context item.
+ */

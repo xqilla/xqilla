@@ -337,6 +337,7 @@ WARN_LOGFILE           =
 # with spaces.
 
 INPUT                  = \
+../include/xqilla/xqilla-simple.hpp \
 ../include/xqilla/simple-api \
 ../include/xqilla/context \
 ../include/xqilla/context \
@@ -344,6 +345,10 @@ INPUT                  = \
 ../include/xqilla/fastxdm \
 ../include/xqilla/xerces \
 ../include/xqilla/items \
+../include/xqilla/debug/DebugListener.hpp \
+../include/xqilla/debug/InputParser.hpp \
+../include/xqilla/debug/InteractiveDebugger.hpp \
+../include/xqilla/debug/StackFrame.hpp \
 ../include/xqilla/framework/ReferenceCounted.hpp \
 ../include/xqilla/framework/XPath2MemoryManager.hpp \
 ../include/xqilla/framework/StringPool.hpp \
@@ -418,7 +423,7 @@ EXCLUDE_PATTERNS       =
 # directories that contain example code fragments that are included (see 
 # the \include command).
 
-EXAMPLE_PATH           = 
+EXAMPLE_PATH           = ../src/samples/simple-api/
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the 
 # EXAMPLE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp 

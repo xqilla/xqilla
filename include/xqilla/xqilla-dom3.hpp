@@ -27,3 +27,21 @@
 #include <xqilla/utils/XStr.hpp>
 #include <xqilla/utils/UTF8Str.hpp>
 #include <xqilla/framework/XPath2MemoryManager.hpp>
+
+/**
+ * \example dom-basic.cpp
+ *
+ * This example executes a simple XQuery expression ("1 to 100"), which returns the numbers from 1 to 100 inclusive.
+ */
+
+/**
+ * \example dom-context-item.cpp
+ *
+ * This example parses a document and sets it as the context item. It then executes an XQuery expression that navigates relative to the context item.
+ */
+
+/**
+ * \example dom-resolver.cpp
+ *
+ * This example shows an example of running multiple queries, using a DOMXPathNSResolver to resolve namespaces.
+ */
