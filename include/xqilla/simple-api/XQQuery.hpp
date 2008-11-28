@@ -90,6 +90,39 @@ public:
   Result execute(DynamicContext* context) const;
 
   /**
+   * Executes the query or stylesheet using the given context item and DynamicContext, returning
+   * a lazy iterator over the results.
+   *
+   * @param contextItem The context item to use to execute the query.
+   * @param context The DynamicContext to use to execute the
+   * query. This contains runtime values for variables, the value
+   * of the context item, and other relevent information.
+   *
+   * @return The Result object - a lazy iterator over the query
+   * results.
+   *
+   * @exception XQException If a runtime error occurs
+   */
+  Result execute(const Item::Ptr &contextItem, DynamicContext *context) const;
+
+  /**
+   * Executes the stylesheet starting at the named template using the given DynamicContext, returning
+   * a lazy iterator over the results.
+   *
+   * @param templateQName The name of the template to start executing. If the QName
+   * includes a prefix, it is resolved using the in-scope namespaces for the stylesheet.
+   * @param context The DynamicContext to use to execute the
+   * query. This contains runtime values for variables, the value
+   * of the context item, and other relevent information.
+   *
+   * @return The Result object - a lazy iterator over the query
+   * results.
+   *
+   * @exception XQException If a runtime error occurs
+   */
+  Result execute(const XMLCh *templateQName, DynamicContext *context) const;
+
+  /**
    * Executes the query using the given DynamicContext, sending
    * the output of the query to the given EventHandler.
    *
@@ -102,10 +135,37 @@ public:
   void execute(EventHandler *events, DynamicContext* context) const;
 
   /**
+   * Executes the query or stylesheet using the given context item and  DynamicContext, sending
+   * the output of the query to the given EventHandler.
+   *
+   * @param contextItem The context item to use to execute the query.
+   * @param context The DynamicContext to use to execute the
+   * query. This contains runtime values for variables, the value
+   * of the context item, and other relevent information.
+   *
+   * @exception XQException If a runtime error occurs
+   */
+  void execute(EventHandler *events, const Item::Ptr &contextItem, DynamicContext *context) const;
+
+  /**
+   * Executes the stylesheet starting at the named template using the given DynamicContext, sending
+   * the output of the query to the given EventHandler.
+   *
+   * @param templateQName The name of the template to start executing. If the QName
+   * includes a prefix, it is resolved using the in-scope namespaces for the stylesheet.
+   * @param context The DynamicContext to use to execute the
+   * query. This contains runtime values for variables, the value
+   * of the context item, and other relevent information.
+   *
+   * @exception XQException If a runtime error occurs
+   */
+  void execute(EventHandler *events, const XMLCh *templateQName, DynamicContext *context) const;
+
+  /**
    * Perform static resolution on the query. This operation is not
    * thread safe, and should only be performed once.
    *
-   * Static reolution resolves prefixes to namespace URIs, variable
+   * Static resolution resolves prefixes to namespace URIs, variable
    * names to variables, function names to functions, and performs
    * some basic query optimisation.
    *

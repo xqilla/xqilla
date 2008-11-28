@@ -41,6 +41,7 @@
 #include <xqilla/utils/PrintAST.hpp>
 #include <xqilla/events/EventHandler.hpp>
 #include <xqilla/optimizer/StaticTyper.hpp>
+#include <xqilla/functions/XQillaFunction.hpp>
 
 #include <xercesc/util/XMLUni.hpp>
 #include <xercesc/util/XMLURL.hpp>
@@ -94,6 +95,19 @@ Result XQQuery::execute(DynamicContext* context) const
   return new QueryResult(this);
 }
 
+Result XQQuery::execute(const Item::Ptr &contextItem, DynamicContext *context) const
+{
+  context->setContextItem(contextItem);
+  return execute(context);
+}
+
+Result XQQuery::execute(const XMLCh *templateQName, DynamicContext *context) const
+{
+  Item::Ptr value = context->getItemFactory()->createUntypedAtomic(templateQName, context);
+  context->setExternalVariable(XQillaFunction::XMLChFunctionURI, X("name"), value);
+  return execute(context);
+}
+
 void XQQuery::executeProlog(DynamicContext *context) const
 {
   try {
@@ -145,6 +159,19 @@ void XQQuery::execute(EventHandler *events, DynamicContext* context) const
       throw e;
     }
   }
+}
+
+void XQQuery::execute(EventHandler *events, const Item::Ptr &contextItem, DynamicContext *context) const
+{
+  context->setContextItem(contextItem);
+  execute(events, context);
+}
+
+void XQQuery::execute(EventHandler *events, const XMLCh *templateQName, DynamicContext *context) const
+{
+  Item::Ptr value = context->getItemFactory()->createUntypedAtomic(templateQName, context);
+  context->setExternalVariable(XQillaFunction::XMLChFunctionURI, X("name"), value);
+  execute(events, context);
 }
 
 void XQQuery::staticResolution(StaticContext *context)
