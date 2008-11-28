@@ -138,6 +138,7 @@
 #include <xqilla/functions/FunctionRoot.hpp>
 #include <xqilla/functions/FunctionQName.hpp>
 #include <xqilla/functions/FunctionId.hpp>
+#include <xqilla/functions/FunctionExists.hpp>
 #include <xqilla/functions/XQillaFunction.hpp>
 
 #include <xqilla/axis/NodeTest.hpp>
@@ -761,7 +762,7 @@ Start_XSLT:
   {
     SequenceType *optionalString =
       WRAP(@1, new (MEMMGR) SequenceType(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                                         SchemaSymbols::fgDT_STRING,
+                                         AnyAtomicType::fgDT_ANYATOMICTYPE,
                                          SequenceType::QUESTION_MARK, MEMMGR));
 
     XQGlobalVariable *nameVar =
@@ -778,8 +779,11 @@ Start_XSLT:
     ASTNode *ci = WRAP(@1, new (MEMMGR) XQContextItem(MEMMGR));
     ASTNode *apply = WRAP(@1, new (MEMMGR) XQApplyTemplates(ci, 0, 0, MEMMGR));
 
-    ASTNode *nameVarRef2 = WRAP(@1, new (MEMMGR) XQVariable(XQillaFunction::XMLChFunctionURI, var_name, MEMMGR));
-    QP->_query->setQueryBody(WRAP(@1, new (MEMMGR) XQIf(nameVarRef2, call, apply, MEMMGR)));
+    VectorOfASTNodes args(XQillaAllocator<ASTNode*>(MEMMGR));
+    args.push_back(WRAP(@1, new (MEMMGR) XQVariable(XQillaFunction::XMLChFunctionURI, var_name, MEMMGR)));
+    FunctionExists *exists = WRAP(@1, new (MEMMGR) FunctionExists(args, MEMMGR));
+
+    QP->_query->setQueryBody(WRAP(@1, new (MEMMGR) XQIf(exists, call, apply, MEMMGR)));
   }
   ;
 
