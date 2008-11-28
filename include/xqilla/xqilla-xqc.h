@@ -28,7 +28,22 @@
 extern "C" {
 #endif
 
+/**
+ * Creates an XQC_Implementation object that uses XQilla.
+ */
 XQC_Implementation *createXQillaXQCImplementation(int version);
+
+/**
+ * \example xqc-basic.c
+ *
+ * This example executes a simple XQuery expression ("1 to 100"), which returns the numbers from 1 to 100 inclusive.
+ */
+
+/**
+ * \example xqc-context-item.c
+ *
+ * This example parses a document and sets it as the context item. It then executes an XQuery expression that navigates relative to the context item.
+ */
 
 #ifdef  __cplusplus
 }

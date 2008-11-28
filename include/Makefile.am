@@ -407,12 +407,12 @@ xqilla/xqts/TestSuiteResultListener.hpp \
 xqilla/xqts/TestSuiteRunner.hpp
 
 
-docs: $(top_srcdir)/docs/.simple-api-timestamp $(top_srcdir)/docs/.dom3-api-timestamp
+docs: $(top_srcdir)/docs/.simple-api-timestamp $(top_srcdir)/docs/.dom3-api-timestamp $(top_srcdir)/docs/.xqc-api-timestamp
 
 docsclean:
-	rm -rf $(top_srcdir)/docs/simple-api $(top_srcdir)/docs/dom3-api && \
-	rm $(top_srcdir)/docs/.simple-api-timestamp $(top_srcdir)/docs/.dom3-api-timestamp && \
-	rm $(top_srcdir)/docs/Doxyfile.simpleapi $(top_srcdir)/docs/Doxyfile.dom3api
+	rm -rf $(top_srcdir)/docs/simple-api $(top_srcdir)/docs/dom3-api $(top_srcdir)/docs/xqc-api && \
+	rm $(top_srcdir)/docs/.simple-api-timestamp $(top_srcdir)/docs/.dom3-api-timestamp $(top_srcdir)/docs/.xqc-api-timestamp && \
+	rm $(top_srcdir)/docs/Doxyfile.simpleapi $(top_srcdir)/docs/Doxyfile.dom3api $(top_srcdir)/docs/Doxyfile.xqc
 
 $(top_srcdir)/docs/.simple-api-timestamp: $(nobase_include_HEADERS) $(top_srcdir)/docs/Doxyfile.simpleapi $(top_srcdir)/docs/simple_header.html
 	cd $(top_srcdir)/docs && \
@@ -429,6 +429,14 @@ $(top_srcdir)/docs/.dom3-api-timestamp: $(nobase_include_HEADERS) $(top_srcdir)/
 
 $(top_srcdir)/docs/Doxyfile.dom3api: $(top_srcdir)/docs/Doxyfile.dom3api.in $(top_srcdir)/docs/dom3_header.html
 	sed -e "s,%xerces_include%,$(xerces_include_dir)," -e "s,%version%,$(VERSION)," $(top_srcdir)/docs/Doxyfile.dom3api.in >$(top_srcdir)/docs/Doxyfile.dom3api
+
+$(top_srcdir)/docs/.xqc-api-timestamp: $(nobase_include_HEADERS) $(top_srcdir)/docs/Doxyfile.xqc $(top_srcdir)/docs/xqc_header.html
+	cd $(top_srcdir)/docs && \
+		doxygen Doxyfile.xqc && \
+		touch .xqc-api-timestamp
+
+$(top_srcdir)/docs/Doxyfile.xqc: $(top_srcdir)/docs/Doxyfile.xqc.in
+	sed -e "s,%xerces_include%,$(xerces_include_dir)," -e "s,%version%,$(VERSION)," $(top_srcdir)/docs/Doxyfile.xqc.in >$(top_srcdir)/docs/Doxyfile.xqc
 
 devdocs: $(top_srcdir)/docs/.dev-api-timestamp
 
