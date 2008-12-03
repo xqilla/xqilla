@@ -582,9 +582,13 @@ src/samples/dom-api/dom-context-item.cpp
 dom_resolver_SOURCES = \
 src/samples/dom-api/dom-resolver.cpp
 
+# Dummy C++ source to cause C++ linking.
+nodist_EXTRA_xqc_basic_SOURCES = dummy.cpp
 xqc_basic_SOURCES = \
 src/samples/xqc-api/xqc-basic.c
 
+# Dummy C++ source to cause C++ linking.
+nodist_EXTRA_xqc_context_item_SOURCES = dummy.cpp
 xqc_context_item_SOURCES = \
 src/samples/xqc-api/xqc-context-item.c
 

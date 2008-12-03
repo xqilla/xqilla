@@ -289,7 +289,8 @@ SOURCES = $(libxqilla_la_SOURCES) $(dom_basic_SOURCES) \
 	$(dom_context_item_SOURCES) $(dom_resolver_SOURCES) \
 	$(simple_basic_SOURCES) $(simple_context_item_SOURCES) \
 	$(xmarkRunner_SOURCES) $(xqc_basic_SOURCES) \
-	$(xqc_context_item_SOURCES) $(xqilla_SOURCES) \
+	$(nodist_EXTRA_xqc_basic_SOURCES) $(xqc_context_item_SOURCES) \
+	$(nodist_EXTRA_xqc_context_item_SOURCES) $(xqilla_SOURCES) \
 	$(xqtsRunner_SOURCES)
 DIST_SOURCES = $(libxqilla_la_SOURCES) $(dom_basic_SOURCES) \
 	$(dom_context_item_SOURCES) $(dom_resolver_SOURCES) \
@@ -1019,9 +1020,15 @@ src/samples/dom-api/dom-context-item.cpp
 dom_resolver_SOURCES = \
 src/samples/dom-api/dom-resolver.cpp
 
+
+# Dummy C++ source to cause C++ linking.
+nodist_EXTRA_xqc_basic_SOURCES = dummy.cpp
 xqc_basic_SOURCES = \
 src/samples/xqc-api/xqc-basic.c
 
+
+# Dummy C++ source to cause C++ linking.
+nodist_EXTRA_xqc_context_item_SOURCES = dummy.cpp
 xqc_context_item_SOURCES = \
 src/samples/xqc-api/xqc-context-item.c
 
@@ -1169,10 +1176,10 @@ xmarkRunner$(EXEEXT): $(xmarkRunner_OBJECTS) $(xmarkRunner_DEPENDENCIES)
 	$(CXXLINK) $(xmarkRunner_OBJECTS) $(xmarkRunner_LDADD) $(LIBS)
 xqc-basic$(EXEEXT): $(xqc_basic_OBJECTS) $(xqc_basic_DEPENDENCIES) 
 	@rm -f xqc-basic$(EXEEXT)
-	$(LINK) $(xqc_basic_OBJECTS) $(xqc_basic_LDADD) $(LIBS)
+	$(CXXLINK) $(xqc_basic_OBJECTS) $(xqc_basic_LDADD) $(LIBS)
 xqc-context-item$(EXEEXT): $(xqc_context_item_OBJECTS) $(xqc_context_item_DEPENDENCIES) 
 	@rm -f xqc-context-item$(EXEEXT)
-	$(LINK) $(xqc_context_item_OBJECTS) $(xqc_context_item_LDADD) $(LIBS)
+	$(CXXLINK) $(xqc_context_item_OBJECTS) $(xqc_context_item_LDADD) $(LIBS)
 xqilla$(EXEEXT): $(xqilla_OBJECTS) $(xqilla_DEPENDENCIES) 
 	@rm -f xqilla$(EXEEXT)
 	$(CXXLINK) $(xqilla_OBJECTS) $(xqilla_LDADD) $(LIBS)
@@ -1572,6 +1579,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dom-basic.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dom-context-item.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dom-resolver.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dummy.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/m_apm.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mapm5sin.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mapm_add.Plo@am__quote@
