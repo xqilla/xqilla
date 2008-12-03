@@ -1,5 +1,31 @@
 XQilla: an XQuery and XPath 2.0 library and command line interpreter.
 
+version 2.2.0 (2008.12.03):
+	* Added a debugging API, and a command line debugger invoked by passing
+	  a "-d" flag to the command line tool.
+	* Added a partial implementation of XSLT 2.0. This should currently be
+	  considered alpha quality.
+	* Added an implementation of the current draft of XQC, a standard C API
+	  for accessing XQuery implementations.
+	* Added a prototype implementation of higher order functions for XQuery.
+	* Added the ExternalFunctionResolver API to resolve implementations for
+	  external functions that are unknown before compile time.
+	* Added the xqilla:analyze-string() extension function for performing
+	  complex regular expression analysis.
+	* Added query options for controlling schema validation, document
+	  projection and lint warnings.
+	* Added a --disable-rpath configure option for maintainers.
+	* Implemented function and variable inlining, and other partial
+	  evaluation optimizations.
+	* Implemented tail recursion optimization.
+	* Modified XQilla to compile against Xerces-C 3.0. A source installation
+	  of Xerces-C is no longer necessary for compilation.
+	* Improved static typing with cardinality information.
+	* Fixed a bug in schema validation of a document in no namespace.
+	* Fixed schema validation to check ID/IDREF constraints correctly.
+	* Fixed a bug in validation of SequenceTypes like
+	  document-node(schema-element(XX)).
+	
 version 2.1.4 (2008.07.31):
 	* Fixed a bug in XQTreatAs that removed type checking under
 	  circumstances where it was still needed.
