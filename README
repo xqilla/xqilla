@@ -15,32 +15,3 @@ make
 cd xqilla/
 ./configure --with-xerces=`pwd`/../xerces-c-3.0.0/
 make
-
-
-Building with Xerces-C 2.8
---------------------------
-
-XQilla can also be built against Xerces-C 2.7 and 2.8.
-
-1. Download a source distribution of Xerces-C 2.8
-2. IF REQUIRED, apply the patches src/xercesc_content_type.patch and src/xercesc_regex.patch
-   to Xerces-C:
-
-cd xerces-c-src_2_8_0/
-patch -p1 <../xqilla/src/xercesc_content_type.patch
-patch -p1 <../xqilla/src/xercesc_regex.patch
-
-3. Build Xerces-C
-
-cd xerces-c-src_2_8_0/
-export XERCESCROOT=`pwd`
-cd src/xercesc
-./runConfigure
-make
-
-4. Build XQilla
-
-cd xqilla/
-./configure --with-xerces=`pwd`/../xerces-c-src_2_8_0/
-make
-
