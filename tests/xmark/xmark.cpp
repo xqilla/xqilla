@@ -22,6 +22,7 @@
 #ifdef _MSC_VER
 #pragma warning(disable: 4786)
 #include <time.h>
+#define snprintf _snprintf
 #else
 #include <sys/time.h>
 #endif
