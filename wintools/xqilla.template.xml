@@ -854,7 +854,6 @@
         <file name="src/lexer/XSLT2Lexer.hpp"/>
       </filter>
       <filter name="mapm">
-        <file name="src/mapm/README"/>
         <file name="src/mapm/m_apm.cpp"/>
         <file name="src/mapm/m_apm_lc.h"/>
         <file name="src/mapm/mapm5sin.c"/>

@@ -828,7 +828,6 @@
       <File RelativePath="..\..\src\lexer\XSLT2Lexer.hpp"/>
     </Filter>
     <Filter Filter="" Name="mapm">
-      <File RelativePath="..\..\src\mapm\README"/>
       <File RelativePath="..\..\src\mapm\m_apm.cpp"/>
       <File RelativePath="..\..\src\mapm\m_apm_lc.h"/>
       <File RelativePath="..\..\src\mapm\mapm5sin.c"/>

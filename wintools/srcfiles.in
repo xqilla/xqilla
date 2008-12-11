@@ -387,7 +387,6 @@ src/mapm/mapmsqrt.c lib
 src/mapm/mapmstck.c lib
 src/mapm/mapmutil.c lib
 src/mapm/mapmutl2.c lib
-src/mapm/README lib
 src/operators/And.cpp lib
 src/operators/ArithmeticOperator.cpp lib
 src/operators/ComparisonOperator.cpp lib
