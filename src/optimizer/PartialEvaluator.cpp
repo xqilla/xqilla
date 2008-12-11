@@ -143,7 +143,9 @@ static void removeUnusedFunctions(XQQuery *query, const set<XQUserFunction*> &fo
         newFuncs.push_back(*funcIt);
       }
       else {
-        const_cast<ASTNode*>((*funcIt)->getFunctionBody())->release();
+        if((*funcIt)->getFunctionBody()) {
+          const_cast<ASTNode*>((*funcIt)->getFunctionBody())->release();
+        }
         // TBD Free patterns, template instance
         // TBD Remove function from function table! - jpcs
       }
