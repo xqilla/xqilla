@@ -2873,10 +2873,6 @@ SOURCE=..\..\src\mapm\mapmutl2.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\mapm\README
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\include\xqilla\mapm\m_apm.h
 # End Source File
 # End Group
