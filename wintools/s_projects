@@ -37,7 +37,7 @@ $XQILLA gensrcfiles.xq -v projectFile "$CONFIG_OUTPUT" -o srcfiles.in
 # Post process the VC7.1 files to put the "Name" attribute first,
 # since VC7.1 doesn't use a proper XML parser :-(
 
-for file in `ls ../Win32Projects/VC7.1/*.vcproj`
+for file in `ls ../Win32Projects/VC7.1/*.vcproj ../Win32Projects/VC8/*.vcproj`
 do
 # This only works if the start elements are always on a single line.
 #

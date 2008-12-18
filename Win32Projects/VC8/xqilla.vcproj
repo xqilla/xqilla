@@ -5,76 +5,76 @@
     <Platform Name="IA64"/>
   </Platforms>
   <Configurations>
-    <Configuration ATLMinimizesCRunTimeLibraryUsage="FALSE" CharacterSet="2" ConfigurationType="2" IntermediateDirectory="./$(OutDir)/xqilla" Name="Debug|Win32" OutputDirectory="..\..\build\windows\VC8\$(PlatformName)\Debug" UseOfMFC="0">
+    <Configuration Name="Debug|Win32" ATLMinimizesCRunTimeLibraryUsage="FALSE" CharacterSet="2" ConfigurationType="2" IntermediateDirectory="./$(OutDir)/xqilla" OutputDirectory="..\..\build\windows\VC8\$(PlatformName)\Debug" UseOfMFC="0">
       <Tool Name="VCPreBuildEventTool"/>
       <Tool Name="VCPreLinkEventTool"/>
       <Tool Name="VCResourceCompilerTool"/>
       <Tool Name="VCXMLDataGeneratorTool"/>
       <Tool Name="VCManagedWrapperGeneratorTool"/>
       <Tool Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
-      <Tool AdditionalIncludeDirectories="../../include,../../src/lexer,../../../xerces-c-src/include,../../../xerces-c-src/src" AssemblerListingLocation="./$(OutDir)/" BasicRuntimeChecks="3" CompileAs="0" DebugInformationFormat="3" MinimalRebuild="TRUE" Name="VCCLCompilerTool" ObjectFile="./$(OutDir)/" Optimization="0" PrecompiledHeaderFile="./$(OutDir)/xqilla.pch" PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;XQILLA_APIS;_USRDLL" RuntimeLibrary="3" StringPooling="TRUE" SuppressStartupBanner="TRUE" UsePrecompiledHeader="0" WarningLevel="3"/>
-      <Tool AdditionalDependencies="xerces-c_3d.lib" AdditionalLibraryDirectories="../../../xerces-c-src/Build/Win32/VC7.1/$(ConfigurationName);../../../xerces-c-src/Build/Win32/VC8/$(ConfigurationName)" AdditionalOptions="/machine:x86" GenerateDebugInformation="TRUE" ImportLibrary="$(OutDir)/xqilla22d.lib" LinkIncremental="1" Name="VCLinkerTool" OptimizeReferences="2" OutputFile="$(OutDir)/xqilla22d.dll" ProgramDatabaseFile="$(OutDir)/xqilla22d.pdb" SuppressStartupBanner="TRUE" TargetMachine="0"/>
+      <Tool Name="VCCLCompilerTool" AdditionalIncludeDirectories="../../include,../../src/lexer,../../../xerces-c-src/include,../../../xerces-c-src/src" AssemblerListingLocation="./$(OutDir)/" BasicRuntimeChecks="3" CompileAs="0" DebugInformationFormat="3" MinimalRebuild="TRUE" ObjectFile="./$(OutDir)/" Optimization="0" PrecompiledHeaderFile="./$(OutDir)/xqilla.pch" PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;XQILLA_APIS;_USRDLL" RuntimeLibrary="3" StringPooling="TRUE" SuppressStartupBanner="TRUE" UsePrecompiledHeader="0" WarningLevel="3"/>
+      <Tool Name="VCLinkerTool" AdditionalDependencies="xerces-c_3d.lib" AdditionalLibraryDirectories="../../../xerces-c-src/Build/Win32/VC7.1/$(ConfigurationName);../../../xerces-c-src/Build/Win32/VC8/$(ConfigurationName)" AdditionalOptions="/machine:x86" GenerateDebugInformation="TRUE" ImportLibrary="$(OutDir)/xqilla22d.lib" LinkIncremental="1" OptimizeReferences="2" OutputFile="$(OutDir)/xqilla22d.dll" ProgramDatabaseFile="$(OutDir)/xqilla22d.pdb" SuppressStartupBanner="TRUE" TargetMachine="0"/>
       <Tool Name="VCPostBuildEventTool"/>
       <Tool Name="VCCustomBuildTool"/></Configuration>
-    <Configuration ATLMinimizesCRunTimeLibraryUsage="FALSE" CharacterSet="2" ConfigurationType="2" IntermediateDirectory="./$(OutDir)/xqilla" Name="Release|Win32" OutputDirectory="..\..\build\windows\VC8\$(PlatformName)\Release" UseOfMFC="0">
+    <Configuration Name="Release|Win32" ATLMinimizesCRunTimeLibraryUsage="FALSE" CharacterSet="2" ConfigurationType="2" IntermediateDirectory="./$(OutDir)/xqilla" OutputDirectory="..\..\build\windows\VC8\$(PlatformName)\Release" UseOfMFC="0">
       <Tool Name="VCPreBuildEventTool"/>
       <Tool Name="VCPreLinkEventTool"/>
       <Tool Name="VCResourceCompilerTool"/>
       <Tool Name="VCXMLDataGeneratorTool"/>
       <Tool Name="VCManagedWrapperGeneratorTool"/>
       <Tool Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
-      <Tool AdditionalIncludeDirectories="../../include,../../src/lexer,../../../xerces-c-src/include,../../../xerces-c-src/src" AssemblerListingLocation="./$(OutDir)/" CompileAs="0" DebugInformationFormat="3" EnableFunctionLevelLinking="TRUE" InlineFunctionExpansion="1" MinimalRebuild="TRUE" Name="VCCLCompilerTool" ObjectFile="./$(OutDir)/" Optimization="2" PrecompiledHeaderFile="./$(OutDir)/xqilla.pch" PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;XQILLA_APIS;_USRDLL" RuntimeLibrary="2" StringPooling="TRUE" SuppressStartupBanner="TRUE" UsePrecompiledHeader="0" WarningLevel="3"/>
-      <Tool AdditionalDependencies="xerces-c_3.lib" AdditionalLibraryDirectories="../../../xerces-c-src/Build/Win32/VC7.1/$(ConfigurationName);../../../xerces-c-src/Build/Win32/VC8/$(ConfigurationName)" AdditionalOptions="/machine:x86" GenerateDebugInformation="TRUE" ImportLibrary="$(OutDir)/xqilla22.lib" LinkIncremental="1" Name="VCLinkerTool" OptimizeReferences="2" OutputFile="$(OutDir)/xqilla22.dll" ProgramDatabaseFile="$(OutDir)/xqilla22.pdb" SuppressStartupBanner="TRUE" TargetMachine="0"/>
+      <Tool Name="VCCLCompilerTool" AdditionalIncludeDirectories="../../include,../../src/lexer,../../../xerces-c-src/include,../../../xerces-c-src/src" AssemblerListingLocation="./$(OutDir)/" CompileAs="0" DebugInformationFormat="3" EnableFunctionLevelLinking="TRUE" InlineFunctionExpansion="1" MinimalRebuild="TRUE" ObjectFile="./$(OutDir)/" Optimization="2" PrecompiledHeaderFile="./$(OutDir)/xqilla.pch" PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;XQILLA_APIS;_USRDLL" RuntimeLibrary="2" StringPooling="TRUE" SuppressStartupBanner="TRUE" UsePrecompiledHeader="0" WarningLevel="3"/>
+      <Tool Name="VCLinkerTool" AdditionalDependencies="xerces-c_3.lib" AdditionalLibraryDirectories="../../../xerces-c-src/Build/Win32/VC7.1/$(ConfigurationName);../../../xerces-c-src/Build/Win32/VC8/$(ConfigurationName)" AdditionalOptions="/machine:x86" GenerateDebugInformation="TRUE" ImportLibrary="$(OutDir)/xqilla22.lib" LinkIncremental="1" OptimizeReferences="2" OutputFile="$(OutDir)/xqilla22.dll" ProgramDatabaseFile="$(OutDir)/xqilla22.pdb" SuppressStartupBanner="TRUE" TargetMachine="0"/>
       <Tool Name="VCPostBuildEventTool"/>
       <Tool Name="VCCustomBuildTool"/></Configuration>
-    <Configuration ATLMinimizesCRunTimeLibraryUsage="FALSE" CharacterSet="2" ConfigurationType="2" IntermediateDirectory="./$(OutDir)/xqilla" Name="Debug|x64" OutputDirectory="..\..\build\windows\VC8\$(PlatformName)\Debug" UseOfMFC="0">
+    <Configuration Name="Debug|x64" ATLMinimizesCRunTimeLibraryUsage="FALSE" CharacterSet="2" ConfigurationType="2" IntermediateDirectory="./$(OutDir)/xqilla" OutputDirectory="..\..\build\windows\VC8\$(PlatformName)\Debug" UseOfMFC="0">
       <Tool Name="VCPreBuildEventTool"/>
       <Tool Name="VCPreLinkEventTool"/>
       <Tool Name="VCResourceCompilerTool"/>
       <Tool Name="VCXMLDataGeneratorTool"/>
       <Tool Name="VCManagedWrapperGeneratorTool"/>
       <Tool Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
-      <Tool AdditionalIncludeDirectories="../../include,../../src/lexer,../../../xerces-c-src/include,../../../xerces-c-src/src" AssemblerListingLocation="./$(OutDir)/" BasicRuntimeChecks="3" CompileAs="0" DebugInformationFormat="3" MinimalRebuild="TRUE" Name="VCCLCompilerTool" ObjectFile="./$(OutDir)/" Optimization="0" PrecompiledHeaderFile="./$(OutDir)/xqilla.pch" PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;XQILLA_APIS;_USRDLL" RuntimeLibrary="3" StringPooling="TRUE" SuppressStartupBanner="TRUE" UsePrecompiledHeader="0" WarningLevel="3"/>
-      <Tool AdditionalDependencies="xerces-c_3d.lib" AdditionalLibraryDirectories="../../../xerces-c-src/Build/Win64/VC8/$(ConfigurationName)" AdditionalOptions="/machine:x64" GenerateDebugInformation="TRUE" ImportLibrary="$(OutDir)/xqilla22d.lib" LinkIncremental="1" Name="VCLinkerTool" OptimizeReferences="2" OutputFile="$(OutDir)/xqilla22d.dll" ProgramDatabaseFile="$(OutDir)/xqilla22d.pdb" SuppressStartupBanner="TRUE" TargetMachine="0"/>
+      <Tool Name="VCCLCompilerTool" AdditionalIncludeDirectories="../../include,../../src/lexer,../../../xerces-c-src/include,../../../xerces-c-src/src" AssemblerListingLocation="./$(OutDir)/" BasicRuntimeChecks="3" CompileAs="0" DebugInformationFormat="3" MinimalRebuild="TRUE" ObjectFile="./$(OutDir)/" Optimization="0" PrecompiledHeaderFile="./$(OutDir)/xqilla.pch" PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;XQILLA_APIS;_USRDLL" RuntimeLibrary="3" StringPooling="TRUE" SuppressStartupBanner="TRUE" UsePrecompiledHeader="0" WarningLevel="3"/>
+      <Tool Name="VCLinkerTool" AdditionalDependencies="xerces-c_3d.lib" AdditionalLibraryDirectories="../../../xerces-c-src/Build/Win64/VC8/$(ConfigurationName)" AdditionalOptions="/machine:x64" GenerateDebugInformation="TRUE" ImportLibrary="$(OutDir)/xqilla22d.lib" LinkIncremental="1" OptimizeReferences="2" OutputFile="$(OutDir)/xqilla22d.dll" ProgramDatabaseFile="$(OutDir)/xqilla22d.pdb" SuppressStartupBanner="TRUE" TargetMachine="0"/>
       <Tool Name="VCPostBuildEventTool"/>
       <Tool Name="VCCustomBuildTool"/></Configuration>
-    <Configuration ATLMinimizesCRunTimeLibraryUsage="FALSE" CharacterSet="2" ConfigurationType="2" IntermediateDirectory="./$(OutDir)/xqilla" Name="Release|x64" OutputDirectory="..\..\build\windows\VC8\$(PlatformName)\Release" UseOfMFC="0">
+    <Configuration Name="Release|x64" ATLMinimizesCRunTimeLibraryUsage="FALSE" CharacterSet="2" ConfigurationType="2" IntermediateDirectory="./$(OutDir)/xqilla" OutputDirectory="..\..\build\windows\VC8\$(PlatformName)\Release" UseOfMFC="0">
       <Tool Name="VCPreBuildEventTool"/>
       <Tool Name="VCPreLinkEventTool"/>
       <Tool Name="VCResourceCompilerTool"/>
       <Tool Name="VCXMLDataGeneratorTool"/>
       <Tool Name="VCManagedWrapperGeneratorTool"/>
       <Tool Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
-      <Tool AdditionalIncludeDirectories="../../include,../../src/lexer,../../../xerces-c-src/include,../../../xerces-c-src/src" AssemblerListingLocation="./$(OutDir)/" CompileAs="0" DebugInformationFormat="3" EnableFunctionLevelLinking="TRUE" InlineFunctionExpansion="1" MinimalRebuild="TRUE" Name="VCCLCompilerTool" ObjectFile="./$(OutDir)/" Optimization="2" PrecompiledHeaderFile="./$(OutDir)/xqilla.pch" PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;XQILLA_APIS;_USRDLL" RuntimeLibrary="2" StringPooling="TRUE" SuppressStartupBanner="TRUE" UsePrecompiledHeader="0" WarningLevel="3"/>
-      <Tool AdditionalDependencies="xerces-c_3.lib" AdditionalLibraryDirectories="../../../xerces-c-src/Build/Win64/VC8/$(ConfigurationName)" AdditionalOptions="/machine:x64" GenerateDebugInformation="TRUE" ImportLibrary="$(OutDir)/xqilla22.lib" LinkIncremental="1" Name="VCLinkerTool" OptimizeReferences="2" OutputFile="$(OutDir)/xqilla22.dll" ProgramDatabaseFile="$(OutDir)/xqilla22.pdb" SuppressStartupBanner="TRUE" TargetMachine="0"/>
+      <Tool Name="VCCLCompilerTool" AdditionalIncludeDirectories="../../include,../../src/lexer,../../../xerces-c-src/include,../../../xerces-c-src/src" AssemblerListingLocation="./$(OutDir)/" CompileAs="0" DebugInformationFormat="3" EnableFunctionLevelLinking="TRUE" InlineFunctionExpansion="1" MinimalRebuild="TRUE" ObjectFile="./$(OutDir)/" Optimization="2" PrecompiledHeaderFile="./$(OutDir)/xqilla.pch" PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;XQILLA_APIS;_USRDLL" RuntimeLibrary="2" StringPooling="TRUE" SuppressStartupBanner="TRUE" UsePrecompiledHeader="0" WarningLevel="3"/>
+      <Tool Name="VCLinkerTool" AdditionalDependencies="xerces-c_3.lib" AdditionalLibraryDirectories="../../../xerces-c-src/Build/Win64/VC8/$(ConfigurationName)" AdditionalOptions="/machine:x64" GenerateDebugInformation="TRUE" ImportLibrary="$(OutDir)/xqilla22.lib" LinkIncremental="1" OptimizeReferences="2" OutputFile="$(OutDir)/xqilla22.dll" ProgramDatabaseFile="$(OutDir)/xqilla22.pdb" SuppressStartupBanner="TRUE" TargetMachine="0"/>
       <Tool Name="VCPostBuildEventTool"/>
       <Tool Name="VCCustomBuildTool"/></Configuration>
-    <Configuration ATLMinimizesCRunTimeLibraryUsage="FALSE" CharacterSet="2" ConfigurationType="2" IntermediateDirectory="./$(OutDir)/xqilla" Name="Debug|IA64" OutputDirectory="..\..\build\windows\VC8\$(PlatformName)\Debug" UseOfMFC="0">
+    <Configuration Name="Debug|IA64" ATLMinimizesCRunTimeLibraryUsage="FALSE" CharacterSet="2" ConfigurationType="2" IntermediateDirectory="./$(OutDir)/xqilla" OutputDirectory="..\..\build\windows\VC8\$(PlatformName)\Debug" UseOfMFC="0">
       <Tool Name="VCPreBuildEventTool"/>
       <Tool Name="VCPreLinkEventTool"/>
       <Tool Name="VCResourceCompilerTool"/>
       <Tool Name="VCXMLDataGeneratorTool"/>
       <Tool Name="VCManagedWrapperGeneratorTool"/>
       <Tool Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
-      <Tool AdditionalIncludeDirectories="../../include,../../src/lexer,../../../xerces-c-src/include,../../../xerces-c-src/src" AssemblerListingLocation="./$(OutDir)/" BasicRuntimeChecks="3" CompileAs="0" DebugInformationFormat="3" MinimalRebuild="TRUE" Name="VCCLCompilerTool" ObjectFile="./$(OutDir)/" Optimization="0" PrecompiledHeaderFile="./$(OutDir)/xqilla.pch" PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;XQILLA_APIS;_USRDLL" RuntimeLibrary="3" StringPooling="TRUE" SuppressStartupBanner="TRUE" UsePrecompiledHeader="0" WarningLevel="3"/>
-      <Tool AdditionalDependencies="xerces-c_3d.lib" AdditionalLibraryDirectories="../../../xerces-c-src/Build/Win64/VC8/$(ConfigurationName)" AdditionalOptions="/machine:IA64" GenerateDebugInformation="TRUE" ImportLibrary="$(OutDir)/xqilla22d.lib" LinkIncremental="1" Name="VCLinkerTool" OptimizeReferences="2" OutputFile="$(OutDir)/xqilla22d.dll" ProgramDatabaseFile="$(OutDir)/xqilla22d.pdb" SuppressStartupBanner="TRUE" TargetMachine="0"/>
+      <Tool Name="VCCLCompilerTool" AdditionalIncludeDirectories="../../include,../../src/lexer,../../../xerces-c-src/include,../../../xerces-c-src/src" AssemblerListingLocation="./$(OutDir)/" BasicRuntimeChecks="3" CompileAs="0" DebugInformationFormat="3" MinimalRebuild="TRUE" ObjectFile="./$(OutDir)/" Optimization="0" PrecompiledHeaderFile="./$(OutDir)/xqilla.pch" PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;XQILLA_APIS;_USRDLL" RuntimeLibrary="3" StringPooling="TRUE" SuppressStartupBanner="TRUE" UsePrecompiledHeader="0" WarningLevel="3"/>
+      <Tool Name="VCLinkerTool" AdditionalDependencies="xerces-c_3d.lib" AdditionalLibraryDirectories="../../../xerces-c-src/Build/Win64/VC8/$(ConfigurationName)" AdditionalOptions="/machine:IA64" GenerateDebugInformation="TRUE" ImportLibrary="$(OutDir)/xqilla22d.lib" LinkIncremental="1" OptimizeReferences="2" OutputFile="$(OutDir)/xqilla22d.dll" ProgramDatabaseFile="$(OutDir)/xqilla22d.pdb" SuppressStartupBanner="TRUE" TargetMachine="0"/>
       <Tool Name="VCPostBuildEventTool"/>
       <Tool Name="VCCustomBuildTool"/></Configuration>
-    <Configuration ATLMinimizesCRunTimeLibraryUsage="FALSE" CharacterSet="2" ConfigurationType="2" IntermediateDirectory="./$(OutDir)/xqilla" Name="Release|IA64" OutputDirectory="..\..\build\windows\VC8\$(PlatformName)\Release" UseOfMFC="0">
+    <Configuration Name="Release|IA64" ATLMinimizesCRunTimeLibraryUsage="FALSE" CharacterSet="2" ConfigurationType="2" IntermediateDirectory="./$(OutDir)/xqilla" OutputDirectory="..\..\build\windows\VC8\$(PlatformName)\Release" UseOfMFC="0">
       <Tool Name="VCPreBuildEventTool"/>
       <Tool Name="VCPreLinkEventTool"/>
       <Tool Name="VCResourceCompilerTool"/>
       <Tool Name="VCXMLDataGeneratorTool"/>
       <Tool Name="VCManagedWrapperGeneratorTool"/>
       <Tool Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
-      <Tool AdditionalIncludeDirectories="../../include,../../src/lexer,../../../xerces-c-src/include,../../../xerces-c-src/src" AssemblerListingLocation="./$(OutDir)/" CompileAs="0" DebugInformationFormat="3" EnableFunctionLevelLinking="TRUE" InlineFunctionExpansion="1" MinimalRebuild="TRUE" Name="VCCLCompilerTool" ObjectFile="./$(OutDir)/" Optimization="2" PrecompiledHeaderFile="./$(OutDir)/xqilla.pch" PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;XQILLA_APIS;_USRDLL" RuntimeLibrary="2" StringPooling="TRUE" SuppressStartupBanner="TRUE" UsePrecompiledHeader="0" WarningLevel="3"/>
-      <Tool AdditionalDependencies="xerces-c_3.lib" AdditionalLibraryDirectories="../../../xerces-c-src/Build/Win64/VC8/$(ConfigurationName)" AdditionalOptions="/machine:IA64" GenerateDebugInformation="TRUE" ImportLibrary="$(OutDir)/xqilla22.lib" LinkIncremental="1" Name="VCLinkerTool" OptimizeReferences="2" OutputFile="$(OutDir)/xqilla22.dll" ProgramDatabaseFile="$(OutDir)/xqilla22.pdb" SuppressStartupBanner="TRUE" TargetMachine="0"/>
+      <Tool Name="VCCLCompilerTool" AdditionalIncludeDirectories="../../include,../../src/lexer,../../../xerces-c-src/include,../../../xerces-c-src/src" AssemblerListingLocation="./$(OutDir)/" CompileAs="0" DebugInformationFormat="3" EnableFunctionLevelLinking="TRUE" InlineFunctionExpansion="1" MinimalRebuild="TRUE" ObjectFile="./$(OutDir)/" Optimization="2" PrecompiledHeaderFile="./$(OutDir)/xqilla.pch" PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;XQILLA_APIS;_USRDLL" RuntimeLibrary="2" StringPooling="TRUE" SuppressStartupBanner="TRUE" UsePrecompiledHeader="0" WarningLevel="3"/>
+      <Tool Name="VCLinkerTool" AdditionalDependencies="xerces-c_3.lib" AdditionalLibraryDirectories="../../../xerces-c-src/Build/Win64/VC8/$(ConfigurationName)" AdditionalOptions="/machine:IA64" GenerateDebugInformation="TRUE" ImportLibrary="$(OutDir)/xqilla22.lib" LinkIncremental="1" OptimizeReferences="2" OutputFile="$(OutDir)/xqilla22.dll" ProgramDatabaseFile="$(OutDir)/xqilla22.pdb" SuppressStartupBanner="TRUE" TargetMachine="0"/>
       <Tool Name="VCPostBuildEventTool"/>
       <Tool Name="VCCustomBuildTool"/></Configuration>
   </Configurations>
   <References/>
   <Files>
-    <Filter Filter="" Name="include">
+    <Filter Name="include" Filter="">
       <File RelativePath="..\..\include\xqc.h"/>
       <File RelativePath="..\..\include\xqilla\xqilla-dom3.hpp"/>
       <File RelativePath="..\..\include\xqilla\xqilla-simple.hpp"/>
@@ -482,7 +482,7 @@
       <File RelativePath="..\..\include\xqilla\xqts\TestSuiteResultListener.hpp"/>
       <File RelativePath="..\..\include\xqilla\xqts\TestSuiteRunner.hpp"/>
     </Filter>
-    <Filter Filter="" Name="ast">
+    <Filter Name="ast" Filter="">
       <File RelativePath="..\..\src\ast\ASTNodeImpl.cpp"/>
       <File RelativePath="..\..\src\ast\ConstantFoldingFunction.cpp"/>
       <File RelativePath="..\..\src\ast\TupleNode.cpp"/>
@@ -551,11 +551,11 @@
       <File RelativePath="..\..\src\functions\FunctionLast.cpp"/>
       <File RelativePath="..\..\src\update\UInsertAsLast.cpp"/>
     </Filter>
-    <Filter Filter="" Name="axis">
+    <Filter Name="axis" Filter="">
       <File RelativePath="..\..\src\axis\NodeTest.cpp"/>
       <File RelativePath="..\..\src\axis\SelfAxis.cpp"/>
     </Filter>
-    <Filter Filter="" Name="context">
+    <Filter Name="context" Filter="">
       <File RelativePath="..\..\src\context\UpdateFactory.cpp"/>
       <File RelativePath="..\..\src\context\impl\CodepointCollation.cpp"/>
       <File RelativePath="..\..\src\context\impl\CollationImpl.cpp"/>
@@ -567,7 +567,7 @@
       <File RelativePath="..\..\src\context\impl\XQContextImpl.cpp"/>
       <File RelativePath="..\..\src\context\impl\XQDynamicContextImpl.cpp"/>
     </Filter>
-    <Filter Filter="" Name="debug">
+    <Filter Name="debug" Filter="">
       <File RelativePath="..\..\src\debug\ASTDebugHook.cpp"/>
       <File RelativePath="..\..\src\debug\DebugHookDecorator.cpp"/>
       <File RelativePath="..\..\src\debug\InputParser.cpp"/>
@@ -575,7 +575,7 @@
       <File RelativePath="..\..\src\debug\TupleDebugHook.cpp"/>
       <File RelativePath="..\..\src\debug\StackFrame.cpp"/>
     </Filter>
-    <Filter Filter="" Name="dom-api">
+    <Filter Name="dom-api" Filter="">
       <File RelativePath="..\..\src\dom-api\XPath2NodeSerializer.cpp"/>
       <File RelativePath="..\..\src\dom-api\XPath2NodeSerializer.hpp"/>
       <File RelativePath="..\..\src\dom-api\XQillaImplementation.cpp"/>
@@ -596,7 +596,7 @@
       <File RelativePath="..\..\src\dom-api\impl\XQillaXMLGrammarPoolImpl.cpp"/>
       <File RelativePath="..\..\src\dom-api\impl\XQillaXMLGrammarPoolImpl.hpp"/>
     </Filter>
-    <Filter Filter="" Name="events">
+    <Filter Name="events" Filter="">
       <File RelativePath="..\..\src\events\ContentSequenceFilter.cpp"/>
       <File RelativePath="..\..\src\events\EventGenerator.cpp"/>
       <File RelativePath="..\..\src\events\EventSerializer.cpp"/>
@@ -605,13 +605,13 @@
       <File RelativePath="..\..\src\events\NoInheritFilter.hpp"/>
       <File RelativePath="..\..\src\events\QueryPathTreeFilter.cpp"/>
     </Filter>
-    <Filter Filter="" Name="exceptions">
+    <Filter Name="exceptions" Filter="">
       <File RelativePath="..\..\src\exceptions\InvalidLexicalSpaceException.hpp"/>
       <File RelativePath="..\..\src\exceptions\MiscException.hpp"/>
       <File RelativePath="..\..\src\exceptions\XQException.cpp"/>
       <File RelativePath="..\..\src\exceptions\XQillaException.cpp"/>
     </Filter>
-    <Filter Filter="" Name="fastxdm">
+    <Filter Name="fastxdm" Filter="">
       <File RelativePath="..\..\src\fastxdm\FastXDMConfiguration.cpp"/>
       <File RelativePath="..\..\src\fastxdm\FastXDMDocument.cpp"/>
       <File RelativePath="..\..\src\fastxdm\FastXDMDocument.hpp"/>
@@ -622,14 +622,14 @@
       <File RelativePath="..\..\src\fastxdm\FastXDMUpdateFactory.cpp"/>
       <File RelativePath="..\..\src\fastxdm\FastXDMUpdateFactory.hpp"/>
     </Filter>
-    <Filter Filter="" Name="framework">
+    <Filter Name="framework" Filter="">
       <File RelativePath="..\..\src\framework\BaseMemoryManager.cpp"/>
       <File RelativePath="..\..\src\framework\ProxyMemoryManager.cpp"/>
       <File RelativePath="..\..\src\framework\ReferenceCounted.cpp"/>
       <File RelativePath="..\..\src\framework\StringPool.cpp"/>
       <File RelativePath="..\..\src\framework\XPath2MemoryManagerImpl.cpp"/>
     </Filter>
-    <Filter Filter="" Name="fulltext">
+    <Filter Name="fulltext" Filter="">
       <File RelativePath="..\..\src\fulltext\DefaultTokenStore.cpp"/>
       <File RelativePath="..\..\src\fulltext\DefaultTokenizer.cpp"/>
       <File RelativePath="..\..\src\fulltext\FTAnd.cpp"/>
@@ -644,7 +644,7 @@
       <File RelativePath="..\..\src\fulltext\FTWindow.cpp"/>
       <File RelativePath="..\..\src\fulltext\FTWords.cpp"/>
     </Filter>
-    <Filter Filter="" Name="functions">
+    <Filter Name="functions" Filter="">
       <File RelativePath="..\..\src\functions\ExternalFunction.cpp"/>
       <File RelativePath="..\..\src\functions\FuncFactory.cpp"/>
       <File RelativePath="..\..\src\functions\FuncFactoryTemplate.hpp"/>
@@ -776,7 +776,7 @@
       <File RelativePath="..\..\src\functions\XQUserFunction.cpp"/>
       <File RelativePath="..\..\src\functions\XQillaFunction.cpp"/>
     </Filter>
-    <Filter Filter="" Name="items">
+    <Filter Name="items" Filter="">
       <File RelativePath="..\..\src\items\ATDurationOrDerived.cpp"/>
       <File RelativePath="..\..\src\items\ATUntypedAtomic.cpp"/>
       <File RelativePath="..\..\src\items\AnyAtomicType.cpp"/>
@@ -819,7 +819,7 @@
       <File RelativePath="..\..\src\items\impl\FunctionRefImpl.cpp"/>
       <File RelativePath="..\..\src\items\impl\FunctionRefImpl.hpp"/>
     </Filter>
-    <Filter Filter="" Name="lexer">
+    <Filter Name="lexer" Filter="">
       <File RelativePath="..\..\src\lexer\FlexLexer.h"/>
       <File RelativePath="..\..\src\lexer\XQLexer.cpp"/>
       <File RelativePath="..\..\src\lexer\XQLexer.hpp"/>
@@ -827,7 +827,7 @@
       <File RelativePath="..\..\src\lexer\XSLT2Lexer.cpp"/>
       <File RelativePath="..\..\src\lexer\XSLT2Lexer.hpp"/>
     </Filter>
-    <Filter Filter="" Name="mapm">
+    <Filter Name="mapm" Filter="">
       <File RelativePath="..\..\src\mapm\m_apm.cpp"/>
       <File RelativePath="..\..\src\mapm\m_apm_lc.h"/>
       <File RelativePath="..\..\src\mapm\mapm5sin.c"/>
@@ -868,7 +868,7 @@
       <File RelativePath="..\..\src\mapm\mapmutil.c"/>
       <File RelativePath="..\..\src\mapm\mapmutl2.c"/>
     </Filter>
-    <Filter Filter="" Name="operators">
+    <Filter Name="operators" Filter="">
       <File RelativePath="..\..\src\operators\And.cpp"/>
       <File RelativePath="..\..\src\operators\ArithmeticOperator.cpp"/>
       <File RelativePath="..\..\src\operators\ComparisonOperator.cpp"/>
@@ -894,7 +894,7 @@
       <File RelativePath="..\..\src\operators\UnaryMinus.cpp"/>
       <File RelativePath="..\..\src\operators\Union.cpp"/>
     </Filter>
-    <Filter Filter="" Name="optimizer">
+    <Filter Name="optimizer" Filter="">
       <File RelativePath="..\..\src\optimizer\ASTCopier.cpp"/>
       <File RelativePath="..\..\src\optimizer\ASTReleaser.cpp"/>
       <File RelativePath="..\..\src\optimizer\ASTVisitor.cpp"/>
@@ -904,12 +904,12 @@
       <File RelativePath="..\..\src\optimizer\QueryPathNode.cpp"/>
       <File RelativePath="..\..\src\optimizer\QueryPathTreeGenerator.cpp"/>
     </Filter>
-    <Filter Filter="" Name="parser">
+    <Filter Name="parser" Filter="">
       <File RelativePath="..\..\src\parser\QName.cpp"/>
       <File RelativePath="..\..\src\parser\XQParser.cpp"/>
       <File RelativePath="..\..\src\parser\XQParser.hpp"/>
     </Filter>
-    <Filter Filter="" Name="runtime">
+    <Filter Name="runtime" Filter="">
       <File RelativePath="..\..\src\runtime\ClosureResult.cpp"/>
       <File RelativePath="..\..\src\runtime\EmptyResult.cpp"/>
       <File RelativePath="..\..\src\runtime\LazySequenceResult.cpp"/>
@@ -921,7 +921,7 @@
       <File RelativePath="..\..\src\runtime\SequenceResult.cpp"/>
       <File RelativePath="..\..\src\runtime\SingleResult.cpp"/>
     </Filter>
-    <Filter Filter="" Name="schema">
+    <Filter Name="schema" Filter="">
       <File RelativePath="..\..\src\schema\AnyAtomicTypeDatatypeValidator.cpp"/>
       <File RelativePath="..\..\src\schema\DocumentCacheImpl.cpp"/>
       <File RelativePath="..\..\src\schema\FaxppDocumentCacheImpl.cpp"/>
@@ -929,11 +929,11 @@
       <File RelativePath="..\..\src\schema\SchemaValidatorFilter.cpp"/>
       <File RelativePath="..\..\src\schema\SequenceType.cpp"/>
     </Filter>
-    <Filter Filter="" Name="simple-api">
+    <Filter Name="simple-api" Filter="">
       <File RelativePath="..\..\src\simple-api\XQQuery.cpp"/>
       <File RelativePath="..\..\src\simple-api\XQilla.cpp"/>
     </Filter>
-    <Filter Filter="" Name="update">
+    <Filter Name="update" Filter="">
       <File RelativePath="..\..\src\update\FunctionPut.cpp"/>
       <File RelativePath="..\..\src\update\PendingUpdateList.cpp"/>
       <File RelativePath="..\..\src\update\UApplyUpdates.cpp"/>
@@ -948,7 +948,7 @@
       <File RelativePath="..\..\src\update\UReplaceValueOf.cpp"/>
       <File RelativePath="..\..\src\update\UTransform.cpp"/>
     </Filter>
-    <Filter Filter="" Name="utils">
+    <Filter Name="utils" Filter="">
       <File RelativePath="..\..\src\utils\ContextUtils.cpp"/>
       <File RelativePath="..\..\src\utils\DateUtils.cpp"/>
       <File RelativePath="..\..\src\utils\DateUtils.hpp"/>
@@ -966,7 +966,7 @@
       <File RelativePath="..\..\src\utils\XQillaPlatformUtils.cpp"/>
       <File RelativePath="..\..\src\utils\XStr.cpp"/>
     </Filter>
-    <Filter Filter="" Name="xerces">
+    <Filter Name="xerces" Filter="">
       <File RelativePath="..\..\src\xerces\AncestorAxis.cpp"/>
       <File RelativePath="..\..\src\xerces\AncestorAxis.hpp"/>
       <File RelativePath="..\..\src\xerces\AncestorOrSelfAxis.cpp"/>
@@ -1003,12 +1003,12 @@
       <File RelativePath="..\..\src\xerces\XercesUpdateFactory.cpp"/>
       <File RelativePath="..\..\src\xerces\XercesUpdateFactory.hpp"/>
     </Filter>
-    <Filter Filter="" Name="xqts">
+    <Filter Name="xqts" Filter="">
       <File RelativePath="..\..\src\xqts\TestSuiteParser.cpp"/>
       <File RelativePath="..\..\src\xqts\TestSuiteResultListener.cpp"/>
       <File RelativePath="..\..\src\xqts\TestSuiteRunner.cpp"/>
     </Filter>
-    <Filter Filter="" Name="yajl">
+    <Filter Name="yajl" Filter="">
       <File RelativePath="..\..\src\yajl\yajl.c"/>
       <File RelativePath="..\..\src\yajl\yajl_buf.c"/>
       <File RelativePath="..\..\src\yajl\yajl_buf.h"/>
@@ -1023,7 +1023,7 @@
       <File RelativePath="..\..\src\yajl\yajl_parser.c"/>
       <File RelativePath="..\..\src\yajl\yajl_parser.h"/>
     </Filter>
-    <Filter Filter="" Name="xqc">
+    <Filter Name="xqc" Filter="">
       <File RelativePath="..\..\src\xqc\XQillaXQCImplementation.cpp"/>
       <File RelativePath="..\..\src\xqc\XQillaXQCImplementation.hpp"/>
       <File RelativePath="..\..\src\xqc\XQillaXQCStaticContext.cpp"/>
