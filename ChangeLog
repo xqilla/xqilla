@@ -25,6 +25,8 @@ version 2.2.0 (2008.12.03):
 	* Fixed schema validation to check ID/IDREF constraints correctly.
 	* Fixed a bug in validation of SequenceTypes like
 	  document-node(schema-element(XX)).
+	* Fixed a bug in re-writing documents to disk after updating them, when
+	  they have a space in their document URIs.
 	
 version 2.1.4 (2008.07.31):
 	* Fixed a bug in XQTreatAs that removed type checking under
