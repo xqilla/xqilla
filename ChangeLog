@@ -1,6 +1,6 @@
 XQilla: an XQuery and XPath 2.0 library and command line interpreter.
 
-version 2.2.0 (2008.12.03):
+version 2.2.0 (2009.01.05):
 	* Added a debugging API, and a command line debugger invoked by passing
 	  a "-d" flag to the command line tool.
 	* Added a partial implementation of XSLT 2.0. This should currently be
