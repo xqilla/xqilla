@@ -27,6 +27,7 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/exceptions/XMLParseException.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
+#include <xqilla/utils/UTF8Str.hpp>
 #include <xqilla/exceptions/ASTException.hpp>
 #include <xqilla/xerces/XercesConfiguration.hpp>
 
@@ -44,6 +45,7 @@
 #include <xercesc/framework/XMLBuffer.hpp>
 
 XERCES_CPP_NAMESPACE_USE;
+using namespace std;
 
 XercesURIResolver::XercesURIResolver(MemoryManager *mm)
   : _firstDocRefCount(new (mm) DocRefCount()),
@@ -180,6 +182,8 @@ static const XMLCh ls_string[] = { chLatin_L, chLatin_S, chNull };
 static const XMLCh file_scheme[] = { chLatin_f, chLatin_i, chLatin_l, chLatin_e, 0 };
 static const XMLCh utf8_str[] = { chLatin_u, chLatin_t, chLatin_f, chDash, chDigit_8, 0 };
 
+#define char2hexdigit(ch) (((ch) >= 'a') ? (ch) - 'a' : (((ch) >= 'A') ? (ch) - 'A' : (ch) - '0'))
+
 bool XercesURIResolver::putDocument(const Node::Ptr &document, const XMLCh *uri, DynamicContext *context)
 {
   // Ignore nodes with no URI
@@ -205,7 +209,26 @@ bool XercesURIResolver::putDocument(const Node::Ptr &document, const XMLCh *uri,
     if(path && colonIdx == 2 && XMLString::isAlpha(path[1])){
       path++;
     }
-    LocalFileFormatTarget target(path);
+
+    // Unescape the URI
+    // Since URI escaping encodes UTF-8 char sequences, it's easier to do the unescaping with a UTF-8 string.
+    UTF8Str path8(path);
+    string unencode8;
+    const char *ptr = path8.str();
+    while(*ptr) {
+      if(*ptr == '%') {
+        if(ptr[1] == 0) throw MalformedURLException(__FILE__, __LINE__, XMLExcepts::URL_MalformedURL);
+        if(ptr[2] == 0) throw MalformedURLException(__FILE__, __LINE__, XMLExcepts::URL_MalformedURL);
+        unencode8.append(1, char2hexdigit(ptr[1]) * 0x10 + char2hexdigit(ptr[2]));
+        ptr += 3;
+      }
+      else {
+        unencode8.append(1, *ptr);
+        ptr += 1;
+      }
+    }
+
+    LocalFileFormatTarget target(X(unencode8.c_str()));
 
 #if _XERCES_VERSION >= 30000
     AutoRelease<DOMLSSerializer> writer(impl->createLSSerializer());

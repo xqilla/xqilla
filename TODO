@@ -7,6 +7,7 @@ XQuery 1.1 Grouping support
 Complete XSLT 2.0 support
 Support pre-parsed modules
 Improve exceptions heirachy, and implement XQuery 1.1 try/catch
+Implement EXSLT math functions
 
 
 Optimization

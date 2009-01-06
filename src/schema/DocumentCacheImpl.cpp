@@ -238,13 +238,13 @@ InputSource *DocumentCacheImpl::resolveURI(const XMLCh *uri, const XMLCh *baseUr
   }
   else {
     // It's not a URL, so let's assume it's a local file name.
+    AutoDeallocate<XMLCh> tmpBuf(0, XMLPlatformUtils::fgMemoryManager);
     if(baseUri && baseUri[0]) {
-      AutoDeallocate<XMLCh> tmpBuf(XMLPlatformUtils::weavePaths(baseUri, uri), XMLPlatformUtils::fgMemoryManager);
-      srcToUse = new LocalFileInputSource(tmpBuf);
+      tmpBuf.set(XMLPlatformUtils::weavePaths(baseUri, uri));
+      uri = tmpBuf;
     }
-    else {
-      srcToUse = new LocalFileInputSource(uri);
-    }
+
+    srcToUse = new LocalFileInputSource(uri);
   }
 
   return srcToUse;
@@ -314,8 +314,22 @@ void DocumentCacheImpl::startDocument()
 {
   LOCATION;
   events_->setLocationInfo(&location_);
-  events_->startDocumentEvent(scanner_->getLocator()->getSystemId(),
-                              scanner_->getReaderMgr()->getCurrentEncodingStr());
+
+  // Encode space chars in the document URI as %20
+  const XMLCh *uri = scanner_->getLocator()->getSystemId();
+  XMLBuffer encode(XMLString::stringLen(uri) + 1);
+  for(const XMLCh *uptr = uri; *uptr; ++uptr) {
+    if(*uptr != ' ')
+      encode.append(*uptr);
+    else {
+      encode.append('%');
+      encode.append('2');
+      encode.append('0');
+    }
+  }
+  uri = encode.getRawBuffer();
+
+  events_->startDocumentEvent(uri, scanner_->getReaderMgr()->getCurrentEncodingStr());
 }
 
 void DocumentCacheImpl::endDocument()
