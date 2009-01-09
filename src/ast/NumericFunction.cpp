@@ -50,16 +50,11 @@ ASTNode *NumericFunction::staticTypingImpl(StaticContext *context)
 
 Numeric::Ptr NumericFunction::getNumericParam(unsigned int number, DynamicContext *context, int flags) const
 {
-  Result arg = XQFunction::getParamNumber(number, context, flags);
-  Item::Ptr item = arg->next(context);
+  Item::Ptr item = XQFunction::getParamNumber(number, context, flags)->next(context);
 
-  if(item.isNull()) {
-    return 0;
-  }
-  else if(item->isAtomicValue() && ((const AnyAtomicType *)item.get())->isNumericValue()) {
-    return (const Numeric *)item.get();
-  } else {
+  if(item.notNull() && (!item->isAtomicValue() || !((const AnyAtomicType *)item.get())->isNumericValue()))
     XQThrow(FunctionException,X("NumericFunction::getParamNumber"), X("Non-numeric argument in numeric function [err:XPTY0004]"));
-  }
+
+  return (const Numeric *)item.get();
 }
 

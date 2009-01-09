@@ -145,10 +145,14 @@ xqilla/exceptions/XPath2TypeMatchException.hpp \
 xqilla/exceptions/XQException.hpp \
 xqilla/exceptions/QueryInterruptedException.hpp \
 xqilla/exceptions/QueryTimeoutException.hpp \
+xqilla/functions/EXSLTMathFunction.hpp \
 xqilla/functions/ExternalFunction.hpp \
 xqilla/functions/FunctionLookup.hpp \
 xqilla/functions/FunctionAnalyzeString.hpp \
 xqilla/functions/FunctionAbs.hpp \
+xqilla/functions/FunctionAcos.hpp \
+xqilla/functions/FunctionAsin.hpp \
+xqilla/functions/FunctionAtan.hpp \
 xqilla/functions/FunctionAdjustDateTimeToTimezone.hpp \
 xqilla/functions/FunctionAdjustDateToTimezone.hpp \
 xqilla/functions/FunctionAdjustTimeToTimezone.hpp \
@@ -163,6 +167,7 @@ xqilla/functions/FunctionCompare.hpp \
 xqilla/functions/FunctionConcat.hpp \
 xqilla/functions/FunctionConstructor.hpp \
 xqilla/functions/FunctionContains.hpp \
+xqilla/functions/FunctionCos.hpp \
 xqilla/functions/FunctionCount.hpp \
 xqilla/functions/FunctionCurrentDate.hpp \
 xqilla/functions/FunctionCurrentDateTime.hpp \
@@ -182,6 +187,7 @@ xqilla/functions/FunctionDocumentURI.hpp \
 xqilla/functions/FunctionEmpty.hpp \
 xqilla/functions/FunctionEncodeForUri.hpp \
 xqilla/functions/FunctionEndsWith.hpp \
+xqilla/functions/FunctionExp.hpp \
 xqilla/functions/FunctionError.hpp \
 xqilla/functions/FunctionEscapeHtmlUri.hpp \
 xqilla/functions/FunctionExactlyOne.hpp \
@@ -204,6 +210,7 @@ xqilla/functions/FunctionLang.hpp \
 xqilla/functions/FunctionLast.hpp \
 xqilla/functions/FunctionLocalNameFromQName.hpp \
 xqilla/functions/FunctionLocalname.hpp \
+xqilla/functions/FunctionLog.hpp \
 xqilla/functions/FunctionLowerCase.hpp \
 xqilla/functions/FunctionMatches.hpp \
 xqilla/functions/FunctionMax.hpp \
@@ -231,6 +238,7 @@ xqilla/functions/FunctionSerializeJSON.hpp \
 xqilla/functions/FunctionParseXML.hpp \
 xqilla/functions/FunctionPartialApply.hpp \
 xqilla/functions/FunctionPosition.hpp \
+xqilla/functions/FunctionPower.hpp \
 xqilla/functions/FunctionPrefixFromQName.hpp \
 xqilla/functions/FunctionQName.hpp \
 xqilla/functions/FunctionRegexGroup.hpp \
@@ -245,6 +253,8 @@ xqilla/functions/FunctionRound.hpp \
 xqilla/functions/FunctionSecondsFromDateTime.hpp \
 xqilla/functions/FunctionSecondsFromDuration.hpp \
 xqilla/functions/FunctionSecondsFromTime.hpp \
+xqilla/functions/FunctionSin.hpp \
+xqilla/functions/FunctionSqrt.hpp \
 xqilla/functions/FunctionStartsWith.hpp \
 xqilla/functions/FunctionStaticBaseURI.hpp \
 xqilla/functions/FunctionString.hpp \
@@ -256,6 +266,7 @@ xqilla/functions/FunctionSubstringAfter.hpp \
 xqilla/functions/FunctionSubstringBefore.hpp \
 xqilla/functions/FunctionSubstring.hpp \
 xqilla/functions/FunctionSum.hpp \
+xqilla/functions/FunctionTan.hpp \
 xqilla/functions/FunctionTime.hpp \
 xqilla/functions/FunctionTimezoneFromDate.hpp \
 xqilla/functions/FunctionTimezoneFromDateTime.hpp \

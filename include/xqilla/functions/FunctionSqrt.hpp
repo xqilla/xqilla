@@ -16,28 +16,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * $Id$
+ * $Id: FunctionSqrt.hpp 475 2008-12-30 18:47:44Z jpcs $
  */
 
-#ifndef _FUNCTIONABS_HPP
-#define _FUNCTIONABS_HPP
+#ifndef _FUNCTIONSQRT_HPP
+#define _FUNCTIONSQRT_HPP
 
 #include <xqilla/framework/XQillaExport.hpp>
 
-#include <xqilla/ast/NumericFunction.hpp>
+#include <xqilla/functions/EXSLTMathFunction.hpp>
 
-class XQILLA_API FunctionAbs : public NumericFunction
+class XQILLA_API FunctionSqrt : public EXSLTMathFunction
 {
 public:
   static const XMLCh name[];
   static const unsigned int minArgs;
   static const unsigned int maxArgs;
 
-  FunctionAbs(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
+  FunctionSqrt(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
 
   virtual ASTNode *staticTypingImpl(StaticContext *context);
   virtual Result createResult(DynamicContext* context, int flags=0) const;
 };
 
 #endif
-

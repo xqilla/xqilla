@@ -94,7 +94,36 @@ public:
 
   /** Returns the absolute value of this Numeric */
   virtual Numeric::Ptr abs(const DynamicContext* context) const;
+
+  /** Returns the square root of this Numeric */
+  virtual Numeric::Ptr sqrt(const DynamicContext* context) const;
   
+  /** Returns the sinus of this Numeric */
+  virtual Numeric::Ptr sin(const DynamicContext* context) const;
+  
+  /** Returns the cosinus of this Numeric */
+  virtual Numeric::Ptr cos(const DynamicContext* context) const;
+
+  /** Returns the tangens of this Numeric */
+  virtual Numeric::Ptr tan(const DynamicContext* context) const;
+
+  /** Returns the arcsinus of this Numeric */
+  virtual Numeric::Ptr asin(const DynamicContext* context) const;
+
+  /** Returns the arccosinux of this Numeric */
+  virtual Numeric::Ptr acos(const DynamicContext* context) const;
+
+  /** Returns the arctangens of this Numeric */
+  virtual Numeric::Ptr atan(const DynamicContext* context) const;
+
+  /** Returns the ln of this Numeric */
+  virtual Numeric::Ptr log(const DynamicContext* context) const;
+
+  /** Returns the exp of this Numeric */
+  virtual Numeric::Ptr exp(const DynamicContext* context) const;
+
+  virtual Numeric::Ptr power(const Numeric::Ptr &other, const DynamicContext* context) const;
+
   /** Does this Numeric have value 0? */
   virtual bool isZero() const;
   

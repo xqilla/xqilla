@@ -16,40 +16,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * $Id$
+ * $Id: FunctionAbs.cpp 531 2008-04-10 23:23:07Z jpcs $
  */
 
 #include "../config/xqilla_config.h"
-#include <xqilla/functions/FunctionAbs.hpp>
+#include <xqilla/functions/FunctionLog.hpp>
 
 #include <xqilla/items/Numeric.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 
-const XMLCh FunctionAbs::name[] = {
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_b, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_s, 
+const XMLCh FunctionLog::name[] = {
+  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_l, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_g, 
   XERCES_CPP_NAMESPACE_QUALIFIER chNull 
 };
-const unsigned int FunctionAbs::minArgs = 1;
-const unsigned int FunctionAbs::maxArgs = 1;
+const unsigned int FunctionLog::minArgs = 1;
+const unsigned int FunctionLog::maxArgs = 1;
 
 /*
- * fn:abs($arg as numeric?) as numeric?
+ * math:log($arg as numeric?) as numeric?
  */
-FunctionAbs::FunctionAbs(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : NumericFunction(name, minArgs, maxArgs, "anyAtomicType?", args, memMgr)
+FunctionLog::FunctionLog(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
+  : EXSLTMathFunction(name, minArgs, maxArgs, "anyAtomicType?", args, memMgr)
 {
 }
 
-ASTNode *FunctionAbs::staticTypingImpl(StaticContext *context)
+ASTNode *FunctionLog::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
   _src.getStaticType() = StaticType(StaticType::NUMERIC_TYPE, 0, 1);
   return NumericFunction::staticTypingImpl(context);
 }
 
-Result FunctionAbs::createResult(DynamicContext* context, int flags) const
+Result FunctionLog::createResult(DynamicContext* context, int flags) const
 {
   Numeric::Ptr num = getNumericParam(1, context);
   if(num.isNull()) return 0;
-  return (Item::Ptr)num->abs(context);
+  return (Item::Ptr)num->log(context);
 }

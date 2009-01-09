@@ -157,6 +157,7 @@ src/exceptions/XQillaException.cpp \
 src/exceptions/XQException.cpp \
 src/exceptions/InvalidLexicalSpaceException.hpp \
 src/exceptions/MiscException.hpp \
+src/functions/EXSLTMathFunction.cpp \
 src/functions/ExternalFunction.cpp \
 src/functions/XQillaFunction.cpp \
 src/functions/FunctionParseXML.cpp \
@@ -164,6 +165,9 @@ src/functions/FuncFactory.cpp \
 src/functions/FuncFactoryTemplate.hpp \
 src/functions/FunctionLookup.cpp \
 src/functions/FunctionAbs.cpp \
+src/functions/FunctionAcos.cpp \
+src/functions/FunctionAsin.cpp \
+src/functions/FunctionAtan.cpp \
 src/functions/FunctionAvg.cpp \
 src/functions/FunctionBaseURI.cpp \
 src/functions/FunctionBoolean.cpp \
@@ -176,6 +180,7 @@ src/functions/FunctionConcat.cpp \
 src/functions/FunctionConstructor.cpp \
 src/functions/FunctionContains.cpp \
 src/functions/FunctionCount.cpp \
+src/functions/FunctionCos.cpp \
 src/functions/FunctionCurrentDate.cpp \
 src/functions/FunctionCurrentDateTime.cpp \
 src/functions/FunctionCurrentTime.cpp \
@@ -195,6 +200,7 @@ src/functions/FunctionError.cpp \
 src/functions/FunctionEscapeHtmlUri.cpp \
 src/functions/FunctionExactlyOne.cpp \
 src/functions/FunctionExists.cpp \
+src/functions/FunctionExp.cpp \
 src/functions/FunctionFalse.cpp \
 src/functions/FunctionFloor.cpp \
 src/functions/FunctionFunctionArity.cpp \
@@ -210,6 +216,7 @@ src/functions/FunctionLang.cpp \
 src/functions/FunctionLast.cpp \
 src/functions/FunctionLocalname.cpp \
 src/functions/FunctionLocalNameFromQName.cpp \
+src/functions/FunctionLog.cpp \
 src/functions/FunctionLowerCase.cpp \
 src/functions/FunctionMatches.cpp \
 src/functions/FunctionMax.cpp \
@@ -226,6 +233,7 @@ src/functions/FunctionNot.cpp \
 src/functions/FunctionNumber.cpp \
 src/functions/FunctionOneOrMore.cpp \
 src/functions/FunctionPosition.cpp \
+src/functions/FunctionPower.cpp \
 src/functions/FunctionPrefixFromQName.cpp \
 src/functions/FunctionQName.cpp \
 src/functions/FunctionRegexGroup.cpp \
@@ -237,6 +245,9 @@ src/functions/FunctionReverse.cpp \
 src/functions/FunctionRoot.cpp \
 src/functions/FunctionRound.cpp \
 src/functions/FunctionRoundHalfToEven.cpp \
+src/functions/FunctionSin.cpp \
+src/functions/FunctionSqrt.cpp \
+src/functions/FunctionTan.cpp \
 src/functions/FunctionStartsWith.cpp \
 src/functions/FunctionStaticBaseURI.cpp \
 src/functions/FunctionString.cpp \

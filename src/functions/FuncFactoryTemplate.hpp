@@ -33,6 +33,12 @@ public:
     : FuncFactory(TYPE::XMLChFunctionURI, TYPE::name, TYPE::minArgs, TYPE::maxArgs, memMgr)
   {
   }
+
+  FuncFactoryTemplate(const XMLCh *uri, const XMLCh *name, size_t minArgs, size_t maxArgs,
+                      XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mm)
+    : FuncFactory(uri, name, minArgs, maxArgs, mm)
+  {
+  }
   
   virtual ASTNode *createInstance(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr) const
   {

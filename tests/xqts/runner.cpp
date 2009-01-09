@@ -243,6 +243,8 @@ int main(int argc, char *argv[])
   if(update) lang = XQilla::XQUERY_UPDATE;
   else if(xslt) lang = XQilla::XSLT2;
 
+  lang = (XQilla::Language)(lang | XQilla::EXTENSIONS);
+
   XQillaTestSuiteRunner runner(singleTest, &knownErrors, conf, lang);
   TestSuiteParser parser(testSuitePath, &runner);
 

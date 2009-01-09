@@ -428,6 +428,58 @@ Numeric::Ptr ATFloatOrDerivedImpl::mod(const Numeric::Ptr &other, const DynamicC
   }
 }
 
+Numeric::Ptr ATFloatOrDerivedImpl::power(const Numeric::Ptr &other, const DynamicContext* context) const
+{
+  switch(other->getPrimitiveTypeIndex()) {
+  case DECIMAL:
+    // if other is a decimal, promote it to xs:float
+    return power(context->getItemFactory()->createFloat(other->asMAPM(), context), context);
+  case FLOAT: {
+    ATFloatOrDerivedImpl *otherImpl = (ATFloatOrDerivedImpl*)other.get();
+
+    switch(_state) {
+    case NaN: return this;
+    case INF: {
+      switch(otherImpl->_state) {
+      case NaN: return other;
+      case NEG_NUM:
+      case NUM:
+      case INF:
+      case NEG_INF: return this;
+      default: assert(false); return 0; // should never get here
+      }
+    }
+    case NEG_INF: {
+      switch(otherImpl->_state) {
+      case NaN: return other;
+      case NEG_NUM:
+      case NUM:
+      case INF:
+      case NEG_INF: return this;
+      default: assert(false); return 0; // should never get here
+      }
+    }                
+    case NEG_NUM:
+    case NUM: {
+      switch(otherImpl->_state) {
+      case NaN: return other;
+      case INF: return other;
+      case NEG_INF: return infinity(context);
+      case NEG_NUM:
+      case NUM: 
+        return newFloat(_float.pow(otherImpl->_float), context);
+      default: assert(false); return 0;  // should never get here
+      }
+    }
+    default: assert(false); return 0;  // should never get here
+    } 
+  }
+  case DOUBLE:
+    return ((Numeric*)this->castAs(DOUBLE, context).get())->power(other, context);
+  default: assert(false); return 0; // Shouldn't happen
+  }
+}
+
 /** Returns the floor of this Numeric */
 Numeric::Ptr ATFloatOrDerivedImpl::floor(const DynamicContext* context) const {
   switch (_state) {
@@ -539,6 +591,124 @@ Numeric::Ptr ATFloatOrDerivedImpl::invert(const DynamicContext* context) const {
             return negZero(context);
         }
         return newFloat(_float.neg(), context);
+    default: assert(false); return 0;  // should never get here
+  }
+}
+
+Numeric::Ptr ATFloatOrDerivedImpl::abs(const DynamicContext* context) const {
+  switch (_state) {
+    case NaN: return this;
+    case INF: return infinity(context);
+    case NEG_INF: return infinity(context);
+    case NEG_NUM:
+    case NUM: return newFloat(_float.abs(), context);
+    default: assert(false); return 0;  // should never get here
+  }
+}
+
+/** Returns the square root of this Numeric */
+Numeric::Ptr ATFloatOrDerivedImpl::sqrt(const DynamicContext* context) const {
+  switch (_state) {
+    case NaN: return this;
+    case INF: return infinity(context);
+    case NEG_INF: return notANumber(context);
+    case NEG_NUM: return notANumber(context);
+    case NUM: return newFloat(_float.sqrt(), context);
+    default: assert(false); return 0;  // should never get here
+  }
+}
+
+/** Returns the sinus of this Numeric */
+Numeric::Ptr ATFloatOrDerivedImpl::sin(const DynamicContext* context) const {
+  switch (_state) {
+    case NaN: return this;
+    case INF: return notANumber(context);;
+    case NEG_INF: return notANumber(context);;
+    case NEG_NUM:
+    case NUM: return newFloat(_float.sin(), context);
+    default: assert(false); return 0;  // should never get here
+  }
+}
+
+Numeric::Ptr ATFloatOrDerivedImpl::cos(const DynamicContext* context) const {
+  switch (_state) {
+    case NaN: return this;
+    case INF: return notANumber(context);
+    case NEG_INF: return notANumber(context);;
+    case NEG_NUM:
+    case NUM: return newFloat(_float.cos(), context);
+    default: assert(false); return 0;  // should never get here
+  }
+}
+
+Numeric::Ptr ATFloatOrDerivedImpl::tan(const DynamicContext* context) const {
+  switch (_state) {
+    case NaN: return this;
+    case INF: return notANumber(context);
+    case NEG_INF: return notANumber(context);
+    case NEG_NUM:
+    case NUM: return newFloat(_float.tan(), context);
+    default: assert(false); return 0;  // should never get here
+  }
+}
+
+Numeric::Ptr ATFloatOrDerivedImpl::asin(const DynamicContext* context) const {
+  switch (_state) {
+    case NaN: return this;
+    case INF: return notANumber(context);
+    case NEG_INF: return notANumber(context);
+    case NEG_NUM:
+    case NUM: 
+               if(_float.abs() > 1)return notANumber(context);
+               return newFloat(_float.asin(), context);
+    default: assert(false); return 0;  // should never get here
+  }
+}
+
+Numeric::Ptr ATFloatOrDerivedImpl::acos(const DynamicContext* context) const {
+  switch (_state) {
+    case NaN: return this;
+    case INF: return notANumber(context);
+    case NEG_INF: return notANumber(context);
+    case NEG_NUM:
+    case NUM: 
+               if(_float.abs() > 1)return notANumber(context);
+               return newFloat(_float.acos(), context);
+    default: assert(false); return 0;  // should never get here
+  }
+}
+
+Numeric::Ptr ATFloatOrDerivedImpl::atan(const DynamicContext* context) const {
+  switch (_state) {
+    case NaN: return this;
+    case INF:     return newFloat((MM_HALF_PI), context);
+    case NEG_INF: return newFloat(MAPM(MM_HALF_PI).neg(), context);
+    case NEG_NUM:
+    case NUM: return newFloat(_float.atan(), context);
+    default: assert(false); return 0;  // should never get here
+  }
+}
+
+Numeric::Ptr ATFloatOrDerivedImpl::log(const DynamicContext* context) const {
+  switch (_state) {
+    case NaN: return this;
+    case INF: return infinity(context);
+    case NEG_INF: return notANumber(context);
+    case NEG_NUM: return notANumber(context);
+    case NUM: 
+              if(_float == 0)return notANumber(context);
+              return newFloat(_float.log(), context);
+    default: assert(false); return 0;  // should never get here
+  }
+}
+
+Numeric::Ptr ATFloatOrDerivedImpl::exp(const DynamicContext* context) const {
+  switch (_state) {
+    case NaN: return this;
+    case INF: return infinity(context);
+    case NEG_INF: return newFloat(0, context);
+    case NEG_NUM:
+    case NUM: return newFloat(_float.exp(), context);
     default: assert(false); return 0;  // should never get here
   }
 }

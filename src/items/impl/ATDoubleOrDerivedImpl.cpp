@@ -392,6 +392,56 @@ Numeric::Ptr ATDoubleOrDerivedImpl::mod(const Numeric::Ptr &other, const Dynamic
   } 
 }
 
+Numeric::Ptr ATDoubleOrDerivedImpl::power(const Numeric::Ptr &other, const DynamicContext* context) const
+{
+  switch(other->getPrimitiveTypeIndex()) {
+  case DECIMAL:
+  case FLOAT:
+    return power((Numeric*)other->castAs(DOUBLE, context).get(), context);
+  case DOUBLE: {
+    ATDoubleOrDerivedImpl *otherImpl = (ATDoubleOrDerivedImpl*)other.get();
+
+    switch(_state) {
+    case NaN: return this;
+    case INF: {
+      switch(otherImpl->_state) {
+      case NaN: return other;
+      case NEG_NUM:
+      case NUM:
+      case INF:
+      case NEG_INF: return this;
+      default: assert(false); return 0; // should never get here
+      }
+    }
+    case NEG_INF: {
+      switch(otherImpl->_state) {
+      case NaN: return other;
+      case NEG_NUM:
+      case NUM:
+      case INF:
+      case NEG_INF: return this;
+      default: assert(false); return 0; // should never get here
+      }
+    }                
+    case NEG_NUM:
+    case NUM: {
+      switch(otherImpl->_state) {
+      case NaN: return other;
+      case INF: return other;
+      case NEG_INF: return infinity(context);
+      case NEG_NUM:
+      case NUM: 
+        return newDouble(_double.pow(otherImpl->_double), context);
+      default: assert(false); return 0;  // should never get here
+      }
+    }
+    default: assert(false); return 0;  // should never get here
+    } 
+  }
+  default: assert(false); return 0; // Shouldn't happen
+  }
+}
+
 /** Returns the floor of this Numeric */
 Numeric::Ptr ATDoubleOrDerivedImpl::floor(const DynamicContext* context) const {
   switch (_state) {
@@ -518,6 +568,112 @@ Numeric::Ptr ATDoubleOrDerivedImpl::abs(const DynamicContext* context) const {
     default: assert(false); return 0;  // should never get here
   }
 }
+
+/** Returns the square root of this Numeric */
+Numeric::Ptr ATDoubleOrDerivedImpl::sqrt(const DynamicContext* context) const {
+  switch (_state) {
+    case NaN: return this;
+    case INF: return infinity(context);
+    case NEG_INF: return notANumber(context);
+    case NEG_NUM: return notANumber(context);
+    case NUM: return newDouble(_double.sqrt(), context);
+    default: assert(false); return 0;  // should never get here
+  }
+}
+
+Numeric::Ptr ATDoubleOrDerivedImpl::sin(const DynamicContext* context) const {
+  switch (_state) {
+    case NaN: return this;
+    case INF: return notANumber(context);
+    case NEG_INF: return notANumber(context);
+    case NEG_NUM:
+    case NUM: return newDouble(_double.sin(), context);
+    default: assert(false); return 0;  // should never get here
+  }
+}
+
+Numeric::Ptr ATDoubleOrDerivedImpl::cos(const DynamicContext* context) const {
+  switch (_state) {
+    case NaN: return this;
+    case INF: return notANumber(context);
+    case NEG_INF: return notANumber(context);;
+    case NEG_NUM:
+    case NUM: return newDouble(_double.cos(), context);
+    default: assert(false); return 0;  // should never get here
+  }
+}
+
+Numeric::Ptr ATDoubleOrDerivedImpl::tan(const DynamicContext* context) const {
+  switch (_state) {
+    case NaN: return this;
+    case INF: return notANumber(context);
+    case NEG_INF: return notANumber(context);
+    case NEG_NUM:
+    case NUM: return newDouble(_double.tan(), context);
+    default: assert(false); return 0;  // should never get here
+  }
+}
+
+Numeric::Ptr ATDoubleOrDerivedImpl::asin(const DynamicContext* context) const {
+  switch (_state) {
+    case NaN: return this;
+    case INF: return notANumber(context);
+    case NEG_INF: return notANumber(context);
+    case NEG_NUM:
+    case NUM: 
+               if(_double.abs() > 1)return notANumber(context);
+               return newDouble(_double.acos(), context);
+    default: assert(false); return 0;  // should never get here
+  }
+}
+
+Numeric::Ptr ATDoubleOrDerivedImpl::acos(const DynamicContext* context) const {
+  switch (_state) {
+    case NaN: return this;
+    case INF: return notANumber(context);
+    case NEG_INF: return notANumber(context);
+    case NEG_NUM:
+    case NUM: 
+               if(_double.abs() > 1)return notANumber(context);
+               return newDouble(_double.acos(), context);
+    default: assert(false); return 0;  // should never get here
+  }
+}
+
+Numeric::Ptr ATDoubleOrDerivedImpl::atan(const DynamicContext* context) const {
+  switch (_state) {
+    case NaN: return this;
+    case INF:     return newDouble((MM_HALF_PI), context);
+    case NEG_INF: return newDouble(MAPM(MM_HALF_PI).neg() , context);
+    case NEG_NUM: 
+    case NUM: return newDouble(_double.atan(), context);
+    default: assert(false); return 0;  // should never get here
+  }
+}
+
+Numeric::Ptr ATDoubleOrDerivedImpl::log(const DynamicContext* context) const {
+  switch (_state) {
+    case NaN: return this;
+    case INF: return infinity(context);
+    case NEG_INF: return notANumber(context);
+    case NEG_NUM: return notANumber(context);
+    case NUM: if(_double == 0) return notANumber(context);
+                  return newDouble(_double.log(), context);
+    default: assert(false); return 0;  // should never get here
+  }
+}
+
+Numeric::Ptr ATDoubleOrDerivedImpl::exp(const DynamicContext* context) const {
+  switch (_state) {
+    case NaN: return this;
+    case INF: return infinity(context);
+    case NEG_INF: return newDouble(0, context);
+    case NEG_NUM:
+    case NUM: return newDouble(_double.exp(), context);
+    default: assert(false); return 0;  // should never get here
+  }
+}
+
 
 /** Does this Numeric have value 0? */
 bool ATDoubleOrDerivedImpl::isZero() const {

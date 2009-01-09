@@ -87,10 +87,16 @@ MAPM::MAPM(const MAPM &m)
     ref(myVal);
 }
 
-MAPM::MAPM(M_APM m)
+MAPM::MAPM(M_APM m, bool copy)
 {
+  if(copy) {
+    create();
+    m_apm_copy(myVal, m);
+  }
+  else {
     myVal=(M_APM)m;
     ref(myVal);
+  }
 }
 
 MAPM::MAPM(const char *s)

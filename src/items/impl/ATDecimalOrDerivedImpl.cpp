@@ -380,6 +380,21 @@ Numeric::Ptr ATDecimalOrDerivedImpl::mod(const Numeric::Ptr &other, const Dynami
 
 }
 
+Numeric::Ptr ATDecimalOrDerivedImpl::power(const Numeric::Ptr &other, const DynamicContext* context) const
+{
+  switch(other->getPrimitiveTypeIndex()) {
+  case DECIMAL: {
+    ATDecimalOrDerivedImpl *otherImpl = (ATDecimalOrDerivedImpl*)other.get();
+    return context->getItemFactory()->createDecimal(_decimal.pow(otherImpl->_decimal), context);
+  }
+  case FLOAT:
+    return context->getItemFactory()->createFloat(_decimal, context)->power(other, context);
+  case DOUBLE:
+    return context->getItemFactory()->createDouble(_decimal, context)->power(other, context);
+  default: assert(false); return 0; // Shouldn't happen
+  }
+}
+
 /** Returns the floor of this Numeric */
 Numeric::Ptr ATDecimalOrDerivedImpl::floor(const DynamicContext* context) const {
   // if integer, return xs:integer, otherwise xs:decimal    
@@ -452,6 +467,49 @@ Numeric::Ptr ATDecimalOrDerivedImpl::invert(const DynamicContext* context) const
 /** Returns the absolute value of this Numeric */
 Numeric::Ptr ATDecimalOrDerivedImpl::abs(const DynamicContext* context) const {
   return context->getItemFactory()->createDecimal(_decimal.abs(), context);
+}
+
+/** Returns the square root of this Numeric */
+Numeric::Ptr ATDecimalOrDerivedImpl::sqrt(const DynamicContext* context) const {
+  if (_decimal < 0) return context->getItemFactory()->createDecimal(MAPM(0), context);
+  return context->getItemFactory()->createDecimal(_decimal.sqrt(), context);
+}
+
+/** Returns the sinus of this Numeric */
+Numeric::Ptr ATDecimalOrDerivedImpl::sin(const DynamicContext* context) const {
+  return context->getItemFactory()->createDecimal(_decimal.sin(), context);
+}
+
+/** Returns the cosinus of this Numeric */
+Numeric::Ptr ATDecimalOrDerivedImpl::cos(const DynamicContext* context) const {
+  return context->getItemFactory()->createDecimal(_decimal.cos(), context);
+}
+
+Numeric::Ptr ATDecimalOrDerivedImpl::tan(const DynamicContext* context) const {
+  return context->getItemFactory()->createDecimal(_decimal.tan(), context);
+}
+
+Numeric::Ptr ATDecimalOrDerivedImpl::asin(const DynamicContext* context) const {
+  if (_decimal.abs() > 1) return context->getItemFactory()->createDecimal(MAPM(0), context);
+  return context->getItemFactory()->createDecimal(_decimal.asin(), context);
+}
+
+Numeric::Ptr ATDecimalOrDerivedImpl::acos(const DynamicContext* context) const {
+  if (_decimal.abs() > 1) return context->getItemFactory()->createDecimal(MAPM(0), context);
+  return context->getItemFactory()->createDecimal(_decimal.acos(), context);
+}
+
+Numeric::Ptr ATDecimalOrDerivedImpl::atan(const DynamicContext* context) const {
+  return context->getItemFactory()->createDecimal(_decimal.atan(), context);
+}
+
+Numeric::Ptr ATDecimalOrDerivedImpl::log(const DynamicContext* context) const {
+  if (_decimal <= 0) return context->getItemFactory()->createDecimal(MAPM(0), context);
+  return context->getItemFactory()->createDecimal(_decimal.log(), context);
+}
+
+Numeric::Ptr ATDecimalOrDerivedImpl::exp(const DynamicContext* context) const {
+  return context->getItemFactory()->createDecimal(_decimal.exp(), context);
 }
 
 /** Does this Numeric have value 0? */

@@ -348,6 +348,17 @@ const ExternalFunction *FunctionLookup::lookUpGlobalExternalFunction(
 #include <xqilla/functions/FunctionPartialApply.hpp>
 #include <xqilla/functions/FunctionFunctionArity.hpp>
 #include <xqilla/functions/FunctionFunctionName.hpp>
+//exslt math functions
+#include <xqilla/functions/FunctionSqrt.hpp>
+#include <xqilla/functions/FunctionSin.hpp>
+#include <xqilla/functions/FunctionCos.hpp>
+#include <xqilla/functions/FunctionTan.hpp>
+#include <xqilla/functions/FunctionAcos.hpp>
+#include <xqilla/functions/FunctionAsin.hpp>
+#include <xqilla/functions/FunctionAtan.hpp>
+#include <xqilla/functions/FunctionLog.hpp>
+#include <xqilla/functions/FunctionExp.hpp>
+#include <xqilla/functions/FunctionPower.hpp>
 
 void FunctionLookup::insertUpdateFunctions(XPath2MemoryManager *memMgr)
 {
@@ -631,4 +642,17 @@ static void initGlobalTable(FunctionLookup *t, MemoryManager *memMgr)
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionPartialApply>(memMgr));
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionFunctionArity>(memMgr));
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionFunctionName>(memMgr));
+
+  //exslt math functions
+  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionAbs>(EXSLTMathFunction::XMLChFunctionURI, FunctionAbs::name, 1, 1, memMgr));
+  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionSqrt>(memMgr));
+  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionSin>(memMgr));
+  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionCos>(memMgr));
+  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionTan>(memMgr));
+  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionAcos>(memMgr));
+  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionAsin>(memMgr));
+  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionAtan>(memMgr));
+  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionLog>(memMgr));
+  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionExp>(memMgr));
+  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionPower>(memMgr));
 }

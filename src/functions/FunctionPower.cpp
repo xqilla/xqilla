@@ -16,40 +16,43 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * $Id$
+ * $Id: FunctionAbs.cpp 531 2008-04-10 23:23:07Z jpcs $
  */
 
 #include "../config/xqilla_config.h"
-#include <xqilla/functions/FunctionAbs.hpp>
+#include <xqilla/functions/FunctionPower.hpp>
 
 #include <xqilla/items/Numeric.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 
-const XMLCh FunctionAbs::name[] = {
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_b, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_s, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chNull 
+XERCES_CPP_NAMESPACE_USE
+
+const XMLCh FunctionPower::name[] = {
+  chLatin_p, chLatin_o, chLatin_w, chLatin_e,  chLatin_r,  chNull 
 };
-const unsigned int FunctionAbs::minArgs = 1;
-const unsigned int FunctionAbs::maxArgs = 1;
+const unsigned int FunctionPower::minArgs = 2;
+const unsigned int FunctionPower::maxArgs = 2;
 
 /*
- * fn:abs($arg as numeric?) as numeric?
+ * math:power($arg as numeric?, $arg as numeric?) as numeric?
  */
-FunctionAbs::FunctionAbs(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : NumericFunction(name, minArgs, maxArgs, "anyAtomicType?", args, memMgr)
+FunctionPower::FunctionPower(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
+  : EXSLTMathFunction(name, minArgs, maxArgs, "anyAtomicType?, anyAtomicType?", args, memMgr)
 {
 }
 
-ASTNode *FunctionAbs::staticTypingImpl(StaticContext *context)
+ASTNode *FunctionPower::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
   _src.getStaticType() = StaticType(StaticType::NUMERIC_TYPE, 0, 1);
   return NumericFunction::staticTypingImpl(context);
 }
 
-Result FunctionAbs::createResult(DynamicContext* context, int flags) const
+Result FunctionPower::createResult(DynamicContext* context, int flags) const
 {
-  Numeric::Ptr num = getNumericParam(1, context);
-  if(num.isNull()) return 0;
-  return (Item::Ptr)num->abs(context);
+  Numeric::Ptr base = getNumericParam(1, context);
+  if(base.isNull()) return 0;
+  Numeric::Ptr pow = getNumericParam(2, context);
+  if(pow.isNull()) return 0;
+  return (Item::Ptr)base->power(pow, context);
 }

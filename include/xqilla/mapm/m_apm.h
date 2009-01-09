@@ -314,7 +314,7 @@ public:
 	/* Constructors: */
 	MAPM(void); /* Default constructor (takes no value) */
 	MAPM(const MAPM &m); /* Copy constructor */
-	MAPM(M_APM m); /* M_APM constructor (refcount starts at one) */
+	MAPM(M_APM m, bool copy=true); /* M_APM constructor (refcount starts at one) */
 	MAPM(const char *s); /* Constructor from string */
 	MAPM(double d); /* Constructor from double-precision float */
 	MAPM(int l); /* Constructor from int */

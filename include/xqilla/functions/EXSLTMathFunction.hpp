@@ -16,28 +16,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * $Id$
+ * $Id: NumericFunction.hpp 659 2008-10-06 00:11:22Z jpcs $
  */
 
-#ifndef _FUNCTIONABS_HPP
-#define _FUNCTIONABS_HPP
-
-#include <xqilla/framework/XQillaExport.hpp>
+#ifndef _EXSLTMATHFUNCTION_HPP
+#define _EXSLTMATHFUNCTION_HPP
 
 #include <xqilla/ast/NumericFunction.hpp>
 
-class XQILLA_API FunctionAbs : public NumericFunction
+class XQILLA_API EXSLTMathFunction : public NumericFunction
 {
 public:
-  static const XMLCh name[];
-  static const unsigned int minArgs;
-  static const unsigned int maxArgs;
+  static const XMLCh XMLChFunctionURI[];
 
-  FunctionAbs(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
-
-  virtual ASTNode *staticTypingImpl(StaticContext *context);
-  virtual Result createResult(DynamicContext* context, int flags=0) const;
+  EXSLTMathFunction(const XMLCh* name, unsigned int argsFrom, unsigned int argsTo, const char* paramDecl, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
 };
-
 #endif
-
