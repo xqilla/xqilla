@@ -1,0 +1,115 @@
+<test-suite version="$Id$"
+            ResultOffsetPath="./"
+            XQueryQueryOffsetPath="./"
+            XQueryFileExtension=".xq">
+
+  <test-suite-info> 
+    <title>XQilla XQuery Test Suite</title> 
+  </test-suite-info> 
+
+  <sources>
+<!--     <source ID="category" FileName="TestSources/category.xml"/> -->
+
+    <schema ID="schema1" uri="" FileName="schema/schema1.xsd"/>
+
+    <module ID="functional" FileName="hofunctions/functional"/>
+
+<!--     <collection ID="categoryCollection"> -->
+<!--       <input-document>category</input-document> -->
+<!--     </collection> -->
+  </sources>
+
+  <test-group name="schema">
+    <GroupInfo>
+      <title>Tests for schema validation</title>
+    </GroupInfo>
+    <test-case name="schema1" FilePath="schema/">
+      <query name="schema1"/>
+      <output-file compare="Fragment">schema1.out</output-file>
+    </test-case>
+  </test-group>
+
+  <test-group name="regex">
+    <GroupInfo>
+      <title>Tests for regular expression support</title>
+    </GroupInfo>
+    <test-case name="regex1" FilePath="regex/">
+      <query name="regex1"/>
+      <output-file compare="Fragment">regex1.out</output-file>
+    </test-case>
+    <test-case name="regex2" FilePath="regex/">
+      <query name="regex2"/>
+      <output-file compare="Fragment">regex2.out</output-file>
+    </test-case>
+    <test-case name="regex3" FilePath="regex/">
+      <query name="regex3"/>
+      <output-file compare="Fragment">regex3.out</output-file>
+    </test-case>
+    <test-case name="regex4" FilePath="regex/">
+      <query name="regex4"/>
+      <output-file compare="Fragment">regex4.out</output-file>
+    </test-case>
+    <test-case name="regex5" FilePath="regex/">
+      <query name="regex5"/>
+      <output-file compare="Fragment">regex5.out</output-file>
+    </test-case>
+    <test-case name="regex6" FilePath="regex/">
+      <query name="regex6"/>
+      <output-file compare="Fragment">regex6.out</output-file>
+    </test-case>
+    <test-case name="regex7" FilePath="regex/">
+      <query name="regex7"/>
+      <output-file compare="Fragment">regex7.out</output-file>
+    </test-case>
+    <test-case name="regex8" FilePath="regex/">
+      <query name="regex8"/>
+      <output-file compare="Fragment">regex8.out</output-file>
+    </test-case>
+  </test-group>
+
+  <test-group name="hofunctions">
+    <GroupInfo>
+      <title>Tests for higher order functions</title>
+    </GroupInfo>
+    <test-case name="hofunctions1" FilePath="hofunctions/">
+      <query name="hofunctions1"/>
+      <output-file compare="Fragment">hofunctions1.out</output-file>
+    </test-case>
+    <test-case name="hofunctions2" FilePath="hofunctions/">
+      <module namespace="http://snelson.org.uk/functions/functional">functional</module>
+      <query name="curry"/>
+      <output-file compare="Fragment">curry.out</output-file>
+    </test-case>
+    <test-case name="hofunctions3" FilePath="hofunctions/">
+      <module namespace="http://snelson.org.uk/functions/functional">functional</module>
+      <query name="fibonacci"/>
+      <output-file compare="Fragment">fibonacci.out</output-file>
+    </test-case>
+  </test-group>
+
+  <test-group name="tailcall">
+    <GroupInfo>
+      <title>Tests for tail calls</title>
+    </GroupInfo>
+    <test-case name="tailcall1" FilePath="tailcall/">
+      <query name="tailcall"/>
+      <output-file compare="Fragment">tailcall.out</output-file>
+    </test-case>
+  </test-group>
+
+  <test-group name="exslt">
+    <GroupInfo>
+      <title>Tests for EXSLT functions</title>
+    </GroupInfo>
+    <test-group name="math">
+      <GroupInfo>
+        <title>Tests for EXSLT math functions</title>
+      </GroupInfo>
+      <test-case name="math1" FilePath="exslt/math/">
+        <query name="math1"/>
+        <output-file compare="Fragment">math1.out</output-file>
+      </test-case>
+    </test-group>
+  </test-group>
+
+</test-suite>
