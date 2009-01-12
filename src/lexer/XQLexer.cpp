@@ -13708,7 +13708,7 @@ static yyconst short int yy_chk[25949] =
 /*
  * Copyright (c) 2001-2008
  *     DecisionSoft Limited. All rights reserved.
- * Copyright (c) 2004-2008
+ * Copyright (c) 2004-2009
  *     Oracle. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13722,10 +13722,8 @@ static yyconst short int yy_chk[25949] =
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
- * $Id$
  */
-#line 23 "../src/lexer/XQLexer.l"
+#line 21 "../src/lexer/XQLexer.l"
 
 #include <sstream>
 #include <xqilla/utils/UTF8Str.hpp>
@@ -13818,7 +13816,7 @@ static yyconst short int yy_chk[25949] =
 
 #define QNAMES 17
 
-#line 177 "../src/lexer/XQLexer.l"
+#line 175 "../src/lexer/XQLexer.l"
 const char *xqGetStateName(int state)
 {
   switch(state) {
@@ -13849,7 +13847,7 @@ void XQLexer::undoLessThan()
   CHANGE_STATE(INITIAL);
   POP();
 }
-#line 13853 "../src/lexer/XQLexer.cpp"
+#line 13851 "../src/lexer/XQLexer.cpp"
 
 /* Macros after this point can all be overridden by user definitions in
  * section 1.
@@ -13973,7 +13971,7 @@ YY_DECL
 	register YY_CHAR *yy_cp, *yy_bp;
 	register int yy_act;
 
-#line 209 "../src/lexer/XQLexer.l"
+#line 207 "../src/lexer/XQLexer.l"
 
 
 
@@ -14005,7 +14003,7 @@ YY_DECL
   }
 
 
-#line 14009 "../src/lexer/XQLexer.cpp"
+#line 14007 "../src/lexer/XQLexer.cpp"
 
 	if ( yy_init )
 		{
@@ -14086,847 +14084,847 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 240 "../src/lexer/XQLexer.l"
+#line 238 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_INTEGER_LITERAL_, yytext);
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 241 "../src/lexer/XQLexer.l"
+#line 239 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_DECIMAL_LITERAL_, yytext);
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 242 "../src/lexer/XQLexer.l"
+#line 240 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_DOUBLE_LITERAL_, yytext);
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 243 "../src/lexer/XQLexer.l"
+#line 241 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE_UNESCAPE(_STRING_LITERAL_, yytext + 1, yyleng - 2, *yytext, false, true, false);
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 245 "../src/lexer/XQLexer.l"
+#line 243 "../src/lexer/XQLexer.l"
 /* Do nothing */
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 247 "../src/lexer/XQLexer.l"
+#line 245 "../src/lexer/XQLexer.l"
 beginComment(); PUSH_AND_CHANGE_STATE(EXPR_COMMENT);
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 248 "../src/lexer/XQLexer.l"
+#line 246 "../src/lexer/XQLexer.l"
 /* Do nothing */
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 249 "../src/lexer/XQLexer.l"
+#line 247 "../src/lexer/XQLexer.l"
 endComment(); POP();
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 251 "../src/lexer/XQLexer.l"
+#line 249 "../src/lexer/XQLexer.l"
 RECOGNIZE(_MINUS_);
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 252 "../src/lexer/XQLexer.l"
+#line 250 "../src/lexer/XQLexer.l"
 RECOGNIZE(_PLUS_);
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 253 "../src/lexer/XQLexer.l"
+#line 251 "../src/lexer/XQLexer.l"
 RECOGNIZE(_EQUALS_);
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 254 "../src/lexer/XQLexer.l"
+#line 252 "../src/lexer/XQLexer.l"
 RECOGNIZE(_SEMICOLON_);
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 255 "../src/lexer/XQLexer.l"
+#line 253 "../src/lexer/XQLexer.l"
 RECOGNIZE(_COMMA_);
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 256 "../src/lexer/XQLexer.l"
+#line 254 "../src/lexer/XQLexer.l"
 RECOGNIZE(_DOLLAR_);
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 257 "../src/lexer/XQLexer.l"
+#line 255 "../src/lexer/XQLexer.l"
 RECOGNIZE(_COLON_EQUALS_);
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 258 "../src/lexer/XQLexer.l"
+#line 256 "../src/lexer/XQLexer.l"
 RECOGNIZE(_LPAR_);
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 259 "../src/lexer/XQLexer.l"
+#line 257 "../src/lexer/XQLexer.l"
 RECOGNIZE(_RPAR_);
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 260 "../src/lexer/XQLexer.l"
+#line 258 "../src/lexer/XQLexer.l"
 RECOGNIZE(_ASTERISK_);
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 261 "../src/lexer/XQLexer.l"
+#line 259 "../src/lexer/XQLexer.l"
 RECOGNIZE(_BAR_);
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 262 "../src/lexer/XQLexer.l"
+#line 260 "../src/lexer/XQLexer.l"
 RECOGNIZE(_BANG_EQUALS_);
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 263 "../src/lexer/XQLexer.l"
+#line 261 "../src/lexer/XQLexer.l"
 RECOGNIZE(_LESS_THAN_EQUALS_);
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 264 "../src/lexer/XQLexer.l"
+#line 262 "../src/lexer/XQLexer.l"
 RECOGNIZE(_GREATER_THAN_);
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 265 "../src/lexer/XQLexer.l"
+#line 263 "../src/lexer/XQLexer.l"
 RECOGNIZE(_GREATER_THAN_EQUALS_);
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 266 "../src/lexer/XQLexer.l"
+#line 264 "../src/lexer/XQLexer.l"
 RECOGNIZE(_LESS_THAN_LESS_THAN_);
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 267 "../src/lexer/XQLexer.l"
+#line 265 "../src/lexer/XQLexer.l"
 RECOGNIZE(_GREATER_THAN_GREATER_THAN_);
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 268 "../src/lexer/XQLexer.l"
+#line 266 "../src/lexer/XQLexer.l"
 RECOGNIZE(_COLON_COLON_);
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 269 "../src/lexer/XQLexer.l"
+#line 267 "../src/lexer/XQLexer.l"
 RECOGNIZE(_AT_SIGN_);
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 270 "../src/lexer/XQLexer.l"
+#line 268 "../src/lexer/XQLexer.l"
 RECOGNIZE(_DOT_DOT_);
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 271 "../src/lexer/XQLexer.l"
+#line 269 "../src/lexer/XQLexer.l"
 RECOGNIZE(_DOT_);
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 272 "../src/lexer/XQLexer.l"
+#line 270 "../src/lexer/XQLexer.l"
 RECOGNIZE(_LSQUARE_);
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 273 "../src/lexer/XQLexer.l"
+#line 271 "../src/lexer/XQLexer.l"
 RECOGNIZE(_RSQUARE_);
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 274 "../src/lexer/XQLexer.l"
+#line 272 "../src/lexer/XQLexer.l"
 RECOGNIZE(_QUESTION_MARK_);
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 275 "../src/lexer/XQLexer.l"
+#line 273 "../src/lexer/XQLexer.l"
 RECOGNIZE(_BAR_BAR_);
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 276 "../src/lexer/XQLexer.l"
+#line 274 "../src/lexer/XQLexer.l"
 RECOGNIZE(_AMP_AMP_);
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 277 "../src/lexer/XQLexer.l"
+#line 275 "../src/lexer/XQLexer.l"
 RECOGNIZE(_BANG_);
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 279 "../src/lexer/XQLexer.l"
+#line 277 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_EXTERNAL_, yytext);
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 280 "../src/lexer/XQLexer.l"
+#line 278 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_ASCENDING_, yytext);
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 281 "../src/lexer/XQLexer.l"
+#line 279 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_DESCENDING_, yytext);
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 282 "../src/lexer/XQLexer.l"
+#line 280 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_GREATEST_, yytext);
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 283 "../src/lexer/XQLexer.l"
+#line 281 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_LEAST_, yytext);
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 284 "../src/lexer/XQLexer.l"
+#line 282 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_COMMENT_, yytext);
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 285 "../src/lexer/XQLexer.l"
+#line 283 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_DOCUMENT_NODE_, yytext);
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 286 "../src/lexer/XQLexer.l"
+#line 284 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_IF_, yytext);
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 287 "../src/lexer/XQLexer.l"
+#line 285 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_ITEM_, yytext);
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 288 "../src/lexer/XQLexer.l"
+#line 286 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_NODE_, yytext);
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 289 "../src/lexer/XQLexer.l"
+#line 287 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_SCHEMA_ATTRIBUTE_, yytext);
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 290 "../src/lexer/XQLexer.l"
+#line 288 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_SCHEMA_ELEMENT_, yytext);
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 291 "../src/lexer/XQLexer.l"
+#line 289 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_TEXT_, yytext);
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 292 "../src/lexer/XQLexer.l"
+#line 290 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_EMPTY_SEQUENCE_, yytext);
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 293 "../src/lexer/XQLexer.l"
+#line 291 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_VERSION_, yytext);
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 294 "../src/lexer/XQLexer.l"
+#line 292 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_ENCODING_, yytext);
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 295 "../src/lexer/XQLexer.l"
+#line 293 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_DECLARE_, yytext);
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 296 "../src/lexer/XQLexer.l"
+#line 294 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_BOUNDARY_SPACE_, yytext);
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 297 "../src/lexer/XQLexer.l"
+#line 295 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_PRESERVE_, yytext);
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-#line 298 "../src/lexer/XQLexer.l"
+#line 296 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_STRIP_, yytext);
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-#line 299 "../src/lexer/XQLexer.l"
+#line 297 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_DEFAULT_, yytext);
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 300 "../src/lexer/XQLexer.l"
+#line 298 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_OPTION_, yytext);
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
-#line 301 "../src/lexer/XQLexer.l"
+#line 299 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_FT_OPTION_, yytext);
 	YY_BREAK
 case 59:
 YY_RULE_SETUP
-#line 302 "../src/lexer/XQLexer.l"
+#line 300 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_ORDERING_, yytext);
 	YY_BREAK
 case 60:
 YY_RULE_SETUP
-#line 303 "../src/lexer/XQLexer.l"
+#line 301 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_ORDERED_, yytext);
 	YY_BREAK
 case 61:
 YY_RULE_SETUP
-#line 304 "../src/lexer/XQLexer.l"
+#line 302 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_UNORDERED_, yytext);
 	YY_BREAK
 case 62:
 YY_RULE_SETUP
-#line 305 "../src/lexer/XQLexer.l"
+#line 303 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_EMPTY_, yytext);
 	YY_BREAK
 case 63:
 YY_RULE_SETUP
-#line 306 "../src/lexer/XQLexer.l"
+#line 304 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_COPY_NAMESPACES_, yytext);
 	YY_BREAK
 case 64:
 YY_RULE_SETUP
-#line 307 "../src/lexer/XQLexer.l"
+#line 305 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_NO_PRESERVE_, yytext);
 	YY_BREAK
 case 65:
 YY_RULE_SETUP
-#line 308 "../src/lexer/XQLexer.l"
+#line 306 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_INHERIT_, yytext);
 	YY_BREAK
 case 66:
 YY_RULE_SETUP
-#line 309 "../src/lexer/XQLexer.l"
+#line 307 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_NO_INHERIT_, yytext);
 	YY_BREAK
 case 67:
 YY_RULE_SETUP
-#line 310 "../src/lexer/XQLexer.l"
+#line 308 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_COLLATION_, yytext);
 	YY_BREAK
 case 68:
 YY_RULE_SETUP
-#line 311 "../src/lexer/XQLexer.l"
+#line 309 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_BASE_URI_, yytext);
 	YY_BREAK
 case 69:
 YY_RULE_SETUP
-#line 312 "../src/lexer/XQLexer.l"
+#line 310 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_IMPORT_, yytext);
 	YY_BREAK
 case 70:
 YY_RULE_SETUP
-#line 313 "../src/lexer/XQLexer.l"
+#line 311 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_SCHEMA_, yytext);
 	YY_BREAK
 case 71:
 YY_RULE_SETUP
-#line 314 "../src/lexer/XQLexer.l"
+#line 312 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_VARIABLE_, yytext);
 	YY_BREAK
 case 72:
 YY_RULE_SETUP
-#line 315 "../src/lexer/XQLexer.l"
+#line 313 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_CONSTRUCTION_, yytext);
 	YY_BREAK
 case 73:
 YY_RULE_SETUP
-#line 316 "../src/lexer/XQLexer.l"
+#line 314 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_AS_, yytext);
 	YY_BREAK
 case 74:
 YY_RULE_SETUP
-#line 317 "../src/lexer/XQLexer.l"
+#line 315 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_LAX_, yytext);
 	YY_BREAK
 case 75:
 YY_RULE_SETUP
-#line 318 "../src/lexer/XQLexer.l"
+#line 316 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_STRICT_, yytext);
 	YY_BREAK
 case 76:
 YY_RULE_SETUP
-#line 319 "../src/lexer/XQLexer.l"
+#line 317 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_RETURN_, yytext);
 	YY_BREAK
 case 77:
 YY_RULE_SETUP
-#line 320 "../src/lexer/XQLexer.l"
+#line 318 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_FOR_, yytext);
 	YY_BREAK
 case 78:
 YY_RULE_SETUP
-#line 321 "../src/lexer/XQLexer.l"
+#line 319 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_IN_, yytext);
 	YY_BREAK
 case 79:
 YY_RULE_SETUP
-#line 322 "../src/lexer/XQLexer.l"
+#line 320 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_BY_, yytext);
 	YY_BREAK
 case 80:
 YY_RULE_SETUP
-#line 323 "../src/lexer/XQLexer.l"
+#line 321 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_SOME_, yytext);
 	YY_BREAK
 case 81:
 YY_RULE_SETUP
-#line 324 "../src/lexer/XQLexer.l"
+#line 322 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_EVERY_, yytext);
 	YY_BREAK
 case 82:
 YY_RULE_SETUP
-#line 325 "../src/lexer/XQLexer.l"
+#line 323 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_SATISFIES_, yytext);
 	YY_BREAK
 case 83:
 YY_RULE_SETUP
-#line 326 "../src/lexer/XQLexer.l"
+#line 324 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_THEN_, yytext);
 	YY_BREAK
 case 84:
 YY_RULE_SETUP
-#line 327 "../src/lexer/XQLexer.l"
+#line 325 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_ELSE_, yytext);
 	YY_BREAK
 case 85:
 YY_RULE_SETUP
-#line 328 "../src/lexer/XQLexer.l"
+#line 326 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_OR_, yytext);
 	YY_BREAK
 case 86:
 YY_RULE_SETUP
-#line 329 "../src/lexer/XQLexer.l"
+#line 327 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_AND_, yytext);
 	YY_BREAK
 case 87:
 YY_RULE_SETUP
-#line 330 "../src/lexer/XQLexer.l"
+#line 328 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_TO_, yytext);
 	YY_BREAK
 case 88:
 YY_RULE_SETUP
-#line 331 "../src/lexer/XQLexer.l"
+#line 329 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_DIV_, yytext);
 	YY_BREAK
 case 89:
 YY_RULE_SETUP
-#line 332 "../src/lexer/XQLexer.l"
+#line 330 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_IDIV_, yytext);
 	YY_BREAK
 case 90:
 YY_RULE_SETUP
-#line 333 "../src/lexer/XQLexer.l"
+#line 331 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_MOD_, yytext);
 	YY_BREAK
 case 91:
 YY_RULE_SETUP
-#line 334 "../src/lexer/XQLexer.l"
+#line 332 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_UNION_, yytext);
 	YY_BREAK
 case 92:
 YY_RULE_SETUP
-#line 335 "../src/lexer/XQLexer.l"
+#line 333 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_INTERSECT_, yytext);
 	YY_BREAK
 case 93:
 YY_RULE_SETUP
-#line 336 "../src/lexer/XQLexer.l"
+#line 334 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_EXCEPT_, yytext);
 	YY_BREAK
 case 94:
 YY_RULE_SETUP
-#line 337 "../src/lexer/XQLexer.l"
+#line 335 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_INSTANCE_, yytext);
 	YY_BREAK
 case 95:
 YY_RULE_SETUP
-#line 338 "../src/lexer/XQLexer.l"
+#line 336 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_OF_, yytext);
 	YY_BREAK
 case 96:
 YY_RULE_SETUP
-#line 339 "../src/lexer/XQLexer.l"
+#line 337 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_TREAT_, yytext);
 	YY_BREAK
 case 97:
 YY_RULE_SETUP
-#line 340 "../src/lexer/XQLexer.l"
+#line 338 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_CASTABLE_, yytext);
 	YY_BREAK
 case 98:
 YY_RULE_SETUP
-#line 341 "../src/lexer/XQLexer.l"
+#line 339 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_CAST_, yytext);
 	YY_BREAK
 case 99:
 YY_RULE_SETUP
-#line 342 "../src/lexer/XQLexer.l"
+#line 340 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_EQ_, yytext);
 	YY_BREAK
 case 100:
 YY_RULE_SETUP
-#line 343 "../src/lexer/XQLexer.l"
+#line 341 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_NE_, yytext);
 	YY_BREAK
 case 101:
 YY_RULE_SETUP
-#line 344 "../src/lexer/XQLexer.l"
+#line 342 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_LT_, yytext);
 	YY_BREAK
 case 102:
 YY_RULE_SETUP
-#line 345 "../src/lexer/XQLexer.l"
+#line 343 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_LE_, yytext);
 	YY_BREAK
 case 103:
 YY_RULE_SETUP
-#line 346 "../src/lexer/XQLexer.l"
+#line 344 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_GT_, yytext);
 	YY_BREAK
 case 104:
 YY_RULE_SETUP
-#line 347 "../src/lexer/XQLexer.l"
+#line 345 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_GE_, yytext);
 	YY_BREAK
 case 105:
 YY_RULE_SETUP
-#line 348 "../src/lexer/XQLexer.l"
+#line 346 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_IS_, yytext);
 	YY_BREAK
 case 106:
 YY_RULE_SETUP
-#line 349 "../src/lexer/XQLexer.l"
+#line 347 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_VALIDATE_, yytext);
 	YY_BREAK
 case 107:
 YY_RULE_SETUP
-#line 350 "../src/lexer/XQLexer.l"
+#line 348 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_CHILD_, yytext);
 	YY_BREAK
 case 108:
 YY_RULE_SETUP
-#line 351 "../src/lexer/XQLexer.l"
+#line 349 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_DESCENDANT_, yytext);
 	YY_BREAK
 case 109:
 YY_RULE_SETUP
-#line 352 "../src/lexer/XQLexer.l"
+#line 350 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_SELF_, yytext);
 	YY_BREAK
 case 110:
 YY_RULE_SETUP
-#line 353 "../src/lexer/XQLexer.l"
+#line 351 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_DESCENDANT_OR_SELF_, yytext);
 	YY_BREAK
 case 111:
 YY_RULE_SETUP
-#line 354 "../src/lexer/XQLexer.l"
+#line 352 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_FOLLOWING_SIBLING_, yytext);
 	YY_BREAK
 case 112:
 YY_RULE_SETUP
-#line 355 "../src/lexer/XQLexer.l"
+#line 353 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_FOLLOWING_, yytext);
 	YY_BREAK
 case 113:
 YY_RULE_SETUP
-#line 356 "../src/lexer/XQLexer.l"
+#line 354 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_PARENT_, yytext);
 	YY_BREAK
 case 114:
 YY_RULE_SETUP
-#line 357 "../src/lexer/XQLexer.l"
+#line 355 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_ANCESTOR_, yytext);
 	YY_BREAK
 case 115:
 YY_RULE_SETUP
-#line 358 "../src/lexer/XQLexer.l"
+#line 356 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_PRECEDING_SIBLING_, yytext);
 	YY_BREAK
 case 116:
 YY_RULE_SETUP
-#line 359 "../src/lexer/XQLexer.l"
+#line 357 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_PRECEDING_, yytext);
 	YY_BREAK
 case 117:
 YY_RULE_SETUP
-#line 360 "../src/lexer/XQLexer.l"
+#line 358 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_ANCESTOR_OR_SELF_, yytext);
 	YY_BREAK
 case 118:
 YY_RULE_SETUP
-#line 361 "../src/lexer/XQLexer.l"
+#line 359 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_DOCUMENT_, yytext);
 	YY_BREAK
 case 119:
 YY_RULE_SETUP
-#line 362 "../src/lexer/XQLexer.l"
+#line 360 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_WEIGHT_, yytext);
 	YY_BREAK
 case 120:
 YY_RULE_SETUP
-#line 363 "../src/lexer/XQLexer.l"
+#line 361 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_NOT_, yytext);
 	YY_BREAK
 case 121:
 YY_RULE_SETUP
-#line 364 "../src/lexer/XQLexer.l"
+#line 362 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_LOWERCASE_, yytext);
 	YY_BREAK
 case 122:
 YY_RULE_SETUP
-#line 365 "../src/lexer/XQLexer.l"
+#line 363 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_UPPERCASE_, yytext);
 	YY_BREAK
 case 123:
 YY_RULE_SETUP
-#line 366 "../src/lexer/XQLexer.l"
+#line 364 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_SENSITIVE_, yytext);
 	YY_BREAK
 case 124:
 YY_RULE_SETUP
-#line 367 "../src/lexer/XQLexer.l"
+#line 365 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_INSENSITIVE_, yytext);
 	YY_BREAK
 case 125:
 YY_RULE_SETUP
-#line 368 "../src/lexer/XQLexer.l"
+#line 366 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_DIACRITICS_, yytext);
 	YY_BREAK
 case 126:
 YY_RULE_SETUP
-#line 369 "../src/lexer/XQLexer.l"
+#line 367 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_STEMMING_, yytext);
 	YY_BREAK
 case 127:
 YY_RULE_SETUP
-#line 370 "../src/lexer/XQLexer.l"
+#line 368 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_THESAURUS_, yytext);
 	YY_BREAK
 case 128:
 YY_RULE_SETUP
-#line 371 "../src/lexer/XQLexer.l"
+#line 369 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_RELATIONSHIP_, yytext);
 	YY_BREAK
 case 129:
 YY_RULE_SETUP
-#line 372 "../src/lexer/XQLexer.l"
+#line 370 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_LEVELS_, yytext);
 	YY_BREAK
 case 130:
 YY_RULE_SETUP
-#line 373 "../src/lexer/XQLexer.l"
+#line 371 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_STOP_, yytext);
 	YY_BREAK
 case 131:
 YY_RULE_SETUP
-#line 374 "../src/lexer/XQLexer.l"
+#line 372 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_WORDS_, yytext);
 	YY_BREAK
 case 132:
 YY_RULE_SETUP
-#line 375 "../src/lexer/XQLexer.l"
+#line 373 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_LANGUAGE_, yytext);
 	YY_BREAK
 case 133:
 YY_RULE_SETUP
-#line 376 "../src/lexer/XQLexer.l"
+#line 374 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_WILDCARDS_, yytext);
 	YY_BREAK
 case 134:
 YY_RULE_SETUP
-#line 377 "../src/lexer/XQLexer.l"
+#line 375 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_ENTIRE_, yytext);
 	YY_BREAK
 case 135:
 YY_RULE_SETUP
-#line 378 "../src/lexer/XQLexer.l"
+#line 376 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_CONTENT_, yytext);
 	YY_BREAK
 case 136:
 YY_RULE_SETUP
-#line 379 "../src/lexer/XQLexer.l"
+#line 377 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_ANY_, yytext);
 	YY_BREAK
 case 137:
 YY_RULE_SETUP
-#line 380 "../src/lexer/XQLexer.l"
+#line 378 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_ALL_, yytext);
 	YY_BREAK
 case 138:
 YY_RULE_SETUP
-#line 381 "../src/lexer/XQLexer.l"
+#line 379 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_PHRASE_, yytext);
 	YY_BREAK
 case 139:
 YY_RULE_SETUP
-#line 382 "../src/lexer/XQLexer.l"
+#line 380 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_WORD_, yytext);
 	YY_BREAK
 case 140:
 YY_RULE_SETUP
-#line 383 "../src/lexer/XQLexer.l"
+#line 381 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_EXACTLY_, yytext);
 	YY_BREAK
 case 141:
 YY_RULE_SETUP
-#line 384 "../src/lexer/XQLexer.l"
+#line 382 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_FROM_, yytext);
 	YY_BREAK
 case 142:
 YY_RULE_SETUP
-#line 385 "../src/lexer/XQLexer.l"
+#line 383 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_DISTANCE_, yytext);
 	YY_BREAK
 case 143:
 YY_RULE_SETUP
-#line 386 "../src/lexer/XQLexer.l"
+#line 384 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_WINDOW_, yytext);
 	YY_BREAK
 case 144:
 YY_RULE_SETUP
-#line 387 "../src/lexer/XQLexer.l"
+#line 385 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_OCCURS_, yytext);
 	YY_BREAK
 case 145:
 YY_RULE_SETUP
-#line 388 "../src/lexer/XQLexer.l"
+#line 386 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_TIMES_, yytext);
 	YY_BREAK
 case 146:
 YY_RULE_SETUP
-#line 389 "../src/lexer/XQLexer.l"
+#line 387 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_SAME_, yytext);
 	YY_BREAK
 case 147:
 YY_RULE_SETUP
-#line 390 "../src/lexer/XQLexer.l"
+#line 388 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_DIFFERENT_, yytext);
 	YY_BREAK
 case 148:
 YY_RULE_SETUP
-#line 391 "../src/lexer/XQLexer.l"
+#line 389 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_SENTENCES_, yytext);
 	YY_BREAK
 case 149:
 YY_RULE_SETUP
-#line 392 "../src/lexer/XQLexer.l"
+#line 390 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_PARAGRAPHS_, yytext);
 	YY_BREAK
 case 150:
 YY_RULE_SETUP
-#line 393 "../src/lexer/XQLexer.l"
+#line 391 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_SENTENCE_, yytext);
 	YY_BREAK
 case 151:
 YY_RULE_SETUP
-#line 394 "../src/lexer/XQLexer.l"
+#line 392 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_PARAGRAPH_, yytext);
 	YY_BREAK
 case 152:
 YY_RULE_SETUP
-#line 395 "../src/lexer/XQLexer.l"
+#line 393 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_TYPE_, yytext);
 	YY_BREAK
 case 153:
 YY_RULE_SETUP
-#line 396 "../src/lexer/XQLexer.l"
+#line 394 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_START_, yytext);
 	YY_BREAK
 case 154:
 YY_RULE_SETUP
-#line 397 "../src/lexer/XQLexer.l"
+#line 395 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_END_, yytext);
 	YY_BREAK
 case 155:
 YY_RULE_SETUP
-#line 398 "../src/lexer/XQLexer.l"
+#line 396 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_MOST_, yytext);
 	YY_BREAK
 case 156:
 YY_RULE_SETUP
-#line 399 "../src/lexer/XQLexer.l"
+#line 397 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_REVALIDATION_, yytext);
 	YY_BREAK
 case 157:
 YY_RULE_SETUP
-#line 400 "../src/lexer/XQLexer.l"
+#line 398 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_UPDATING_, yytext);
 	YY_BREAK
 case 158:
 YY_RULE_SETUP
-#line 401 "../src/lexer/XQLexer.l"
+#line 399 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_SKIP_, yytext);
 	YY_BREAK
 case 159:
 YY_RULE_SETUP
-#line 402 "../src/lexer/XQLexer.l"
+#line 400 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_VALUE_, yytext);
 	YY_BREAK
 case 160:
 YY_RULE_SETUP
-#line 403 "../src/lexer/XQLexer.l"
+#line 401 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_FIRST_, yytext);
 	YY_BREAK
 case 161:
 YY_RULE_SETUP
-#line 404 "../src/lexer/XQLexer.l"
+#line 402 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_LAST_, yytext);
 	YY_BREAK
 case 162:
 YY_RULE_SETUP
-#line 405 "../src/lexer/XQLexer.l"
+#line 403 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_INTO_, yytext);
 	YY_BREAK
 case 163:
 YY_RULE_SETUP
-#line 406 "../src/lexer/XQLexer.l"
+#line 404 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_AFTER_, yytext);
 	YY_BREAK
 case 164:
 YY_RULE_SETUP
-#line 407 "../src/lexer/XQLexer.l"
+#line 405 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_BEFORE_, yytext);
 	YY_BREAK
 case 165:
 YY_RULE_SETUP
-#line 408 "../src/lexer/XQLexer.l"
+#line 406 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_MODIFY_, yytext);
 	YY_BREAK
 case 166:
 YY_RULE_SETUP
-#line 409 "../src/lexer/XQLexer.l"
+#line 407 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_NODES_, yytext);
 	YY_BREAK
 case 167:
 YY_RULE_SETUP
-#line 410 "../src/lexer/XQLexer.l"
+#line 408 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_ID_, yytext);
 	YY_BREAK
 case 168:
 YY_RULE_SETUP
-#line 411 "../src/lexer/XQLexer.l"
+#line 409 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_KEY_, yytext);
 	YY_BREAK
 case 169:
 YY_RULE_SETUP
-#line 413 "../src/lexer/XQLexer.l"
+#line 411 "../src/lexer/XQLexer.l"
 {
   if(!isXPath() && lookAhead() == _COLON_COLON_) {
     RECOGNIZE_VALUE(_QNAME_, yytext);
@@ -14937,7 +14935,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 170:
 YY_RULE_SETUP
-#line 421 "../src/lexer/XQLexer.l"
+#line 419 "../src/lexer/XQLexer.l"
 {
   if(isExtensions()) {
     RECOGNIZE_VALUE(_TEMPLATE_, yytext);
@@ -14948,7 +14946,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 171:
 YY_RULE_SETUP
-#line 428 "../src/lexer/XQLexer.l"
+#line 426 "../src/lexer/XQLexer.l"
 {
   if(isExtensions()) {
     RECOGNIZE_VALUE(_MATCHES_, yytext);
@@ -14959,7 +14957,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 172:
 YY_RULE_SETUP
-#line 435 "../src/lexer/XQLexer.l"
+#line 433 "../src/lexer/XQLexer.l"
 {
   if(isExtensions()) {
     RECOGNIZE_VALUE(_NAME_, yytext);
@@ -14970,7 +14968,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 173:
 YY_RULE_SETUP
-#line 442 "../src/lexer/XQLexer.l"
+#line 440 "../src/lexer/XQLexer.l"
 {
   if(isExtensions()) {
     RECOGNIZE_VALUE(_CALL_, yytext);
@@ -14981,7 +14979,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 174:
 YY_RULE_SETUP
-#line 449 "../src/lexer/XQLexer.l"
+#line 447 "../src/lexer/XQLexer.l"
 {
   if(isExtensions()) {
     RECOGNIZE_VALUE(_APPLY_, yytext);
@@ -14992,7 +14990,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 175:
 YY_RULE_SETUP
-#line 456 "../src/lexer/XQLexer.l"
+#line 454 "../src/lexer/XQLexer.l"
 {
   if(isExtensions()) {
     RECOGNIZE_VALUE(_TEMPLATES_, yytext);
@@ -15003,7 +15001,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 176:
 YY_RULE_SETUP
-#line 463 "../src/lexer/XQLexer.l"
+#line 461 "../src/lexer/XQLexer.l"
 {
   if(isExtensions()) {
     RECOGNIZE_VALUE(_MODE_, yytext);
@@ -15014,7 +15012,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 177:
 YY_RULE_SETUP
-#line 470 "../src/lexer/XQLexer.l"
+#line 468 "../src/lexer/XQLexer.l"
 {
   if(isExtensions()) {
     RECOGNIZE_VALUE(_FUNCTION_EXT_, yytext);
@@ -15025,7 +15023,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 178:
 YY_RULE_SETUP
-#line 477 "../src/lexer/XQLexer.l"
+#line 475 "../src/lexer/XQLexer.l"
 {
   if(isExtensions()) {
     RECOGNIZE(_HASH_);
@@ -15036,7 +15034,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 179:
 YY_RULE_SETUP
-#line 485 "../src/lexer/XQLexer.l"
+#line 483 "../src/lexer/XQLexer.l"
 {
   if(isXQuery()) {
     RECOGNIZE_VALUE(_LET_, yytext);
@@ -15047,7 +15045,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 180:
 YY_RULE_SETUP
-#line 492 "../src/lexer/XQLexer.l"
+#line 490 "../src/lexer/XQLexer.l"
 {
   if(isXQuery()) {
     RECOGNIZE_VALUE(_WHERE_, yytext);
@@ -15058,7 +15056,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 181:
 YY_RULE_SETUP
-#line 499 "../src/lexer/XQLexer.l"
+#line 497 "../src/lexer/XQLexer.l"
 {
   if(isXQuery()) {
     RECOGNIZE_VALUE(_ORDER_, yytext);
@@ -15069,7 +15067,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 182:
 YY_RULE_SETUP
-#line 506 "../src/lexer/XQLexer.l"
+#line 504 "../src/lexer/XQLexer.l"
 {
   if(isXQuery()) {
     RECOGNIZE_VALUE(_STABLE_, yytext);
@@ -15080,7 +15078,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 183:
 YY_RULE_SETUP
-#line 513 "../src/lexer/XQLexer.l"
+#line 511 "../src/lexer/XQLexer.l"
 {
   if(isXQuery()) {
     RECOGNIZE_VALUE(_TYPESWITCH_, yytext);
@@ -15091,7 +15089,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 184:
 YY_RULE_SETUP
-#line 521 "../src/lexer/XQLexer.l"
+#line 519 "../src/lexer/XQLexer.l"
 {
   if(isFullText()) {
     RECOGNIZE_VALUE(_SCORE_, yytext);
@@ -15102,7 +15100,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 185:
 YY_RULE_SETUP
-#line 528 "../src/lexer/XQLexer.l"
+#line 526 "../src/lexer/XQLexer.l"
 {
   if(isFullText()) {
     RECOGNIZE_VALUE(_FTCONTAINS_, yytext);
@@ -15113,7 +15111,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 186:
 YY_RULE_SETUP
-#line 536 "../src/lexer/XQLexer.l"
+#line 534 "../src/lexer/XQLexer.l"
 {
   if(isUpdate()) {
     RECOGNIZE_VALUE(_INSERT_, yytext);
@@ -15124,7 +15122,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 187:
 YY_RULE_SETUP
-#line 543 "../src/lexer/XQLexer.l"
+#line 541 "../src/lexer/XQLexer.l"
 {
   if(isUpdate()) {
     RECOGNIZE_VALUE(_DELETE_, yytext);
@@ -15135,7 +15133,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 188:
 YY_RULE_SETUP
-#line 550 "../src/lexer/XQLexer.l"
+#line 548 "../src/lexer/XQLexer.l"
 {
   if(isUpdate()) {
     RECOGNIZE_VALUE(_REPLACE_, yytext);
@@ -15146,7 +15144,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 189:
 YY_RULE_SETUP
-#line 557 "../src/lexer/XQLexer.l"
+#line 555 "../src/lexer/XQLexer.l"
 {
   if(isUpdate()) {
     RECOGNIZE_VALUE(_RENAME_, yytext);
@@ -15157,7 +15155,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 190:
 YY_RULE_SETUP
-#line 564 "../src/lexer/XQLexer.l"
+#line 562 "../src/lexer/XQLexer.l"
 {
   if(isUpdate()) {
     RECOGNIZE_VALUE(_COPY_, yytext);
@@ -15168,7 +15166,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 191:
 YY_RULE_SETUP
-#line 572 "../src/lexer/XQLexer.l"
+#line 570 "../src/lexer/XQLexer.l"
 {
   if(lookAhead() == _VERSION_) {
     RECOGNIZE_VALUE(_XQUERY_, yytext);
@@ -15179,7 +15177,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 192:
 YY_RULE_SETUP
-#line 579 "../src/lexer/XQLexer.l"
+#line 577 "../src/lexer/XQLexer.l"
 {
   int tok = lookAhead();
   if(tok == _NAMESPACE_ || tok == _STRING_LITERAL_) {
@@ -15191,7 +15189,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 193:
 YY_RULE_SETUP
-#line 587 "../src/lexer/XQLexer.l"
+#line 585 "../src/lexer/XQLexer.l"
 {
   if(lookAhead() == _CONTENT_) {
     RECOGNIZE_VALUE(_WITHOUT_C_, yytext);
@@ -15202,7 +15200,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 194:
 YY_RULE_SETUP
-#line 594 "../src/lexer/XQLexer.l"
+#line 592 "../src/lexer/XQLexer.l"
 {
   int tok = lookAhead();
   if(tok == _SENSITIVE_ || tok == _INSENSITIVE_) {
@@ -15214,7 +15212,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 195:
 YY_RULE_SETUP
-#line 602 "../src/lexer/XQLexer.l"
+#line 600 "../src/lexer/XQLexer.l"
 {
   int tok = lookAhead();
   if(tok == _DIACRITICS_ || tok == _STEMMING_ || tok == _THESAURUS_ || tok == _STOP_ || tok == _DEFAULT_ || tok == _WILDCARDS_) {
@@ -15226,7 +15224,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 196:
 YY_RULE_SETUP
-#line 610 "../src/lexer/XQLexer.l"
+#line 608 "../src/lexer/XQLexer.l"
 {
   int tok = lookAhead();
   if(tok == _LEAST_ || tok == _MOST_) {
@@ -15238,22 +15236,22 @@ YY_RULE_SETUP
 	YY_BREAK
 case 197:
 YY_RULE_SETUP
-#line 619 "../src/lexer/XQLexer.l"
+#line 617 "../src/lexer/XQLexer.l"
 CHANGE_STATE(COMPUTED_CONSTRUCTOR); RECOGNIZE_VALUE(_ELEMENT_, yytext);
 	YY_BREAK
 case 198:
 YY_RULE_SETUP
-#line 620 "../src/lexer/XQLexer.l"
+#line 618 "../src/lexer/XQLexer.l"
 CHANGE_STATE(COMPUTED_CONSTRUCTOR); RECOGNIZE_VALUE(_ATTRIBUTE_, yytext);
 	YY_BREAK
 case 199:
 YY_RULE_SETUP
-#line 621 "../src/lexer/XQLexer.l"
+#line 619 "../src/lexer/XQLexer.l"
 CHANGE_STATE(COMPUTED_CONSTRUCTOR); RECOGNIZE_VALUE(_PROCESSING_INSTRUCTION_, yytext);
 	YY_BREAK
 case 200:
 YY_RULE_SETUP
-#line 622 "../src/lexer/XQLexer.l"
+#line 620 "../src/lexer/XQLexer.l"
 {
   CHANGE_STATE(INITIAL);
   if(lookAhead() == _LBRACE_EXPR_ENCLOSURE_) {
@@ -15266,7 +15264,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 201:
 YY_RULE_SETUP
-#line 631 "../src/lexer/XQLexer.l"
+#line 629 "../src/lexer/XQLexer.l"
 {
   CHANGE_STATE(INITIAL);
   undoUserAction();
@@ -15275,292 +15273,292 @@ YY_RULE_SETUP
 	YY_BREAK
 case 202:
 YY_RULE_SETUP
-#line 638 "../src/lexer/XQLexer.l"
+#line 636 "../src/lexer/XQLexer.l"
 PUSH_AND_CHANGE_STATE(INITIAL); RECOGNIZE(_LBRACE_);
 	YY_BREAK
 case 203:
 YY_RULE_SETUP
-#line 639 "../src/lexer/XQLexer.l"
+#line 637 "../src/lexer/XQLexer.l"
 PUSH_AND_CHANGE_STATE(INITIAL); RECOGNIZE(_LBRACE_EXPR_ENCLOSURE_);
 	YY_BREAK
 case 204:
 YY_RULE_SETUP
-#line 641 "../src/lexer/XQLexer.l"
+#line 639 "../src/lexer/XQLexer.l"
 return error("It is an error for a right brace to appear in element or attribute content");
 	YY_BREAK
 case 205:
 YY_RULE_SETUP
-#line 642 "../src/lexer/XQLexer.l"
+#line 640 "../src/lexer/XQLexer.l"
 POP(); RECOGNIZE(_RBRACE_);
 	YY_BREAK
 case 206:
 YY_RULE_SETUP
-#line 644 "../src/lexer/XQLexer.l"
+#line 642 "../src/lexer/XQLexer.l"
 return error("It is an error for an ampersand to appear in element or attribute content");
 	YY_BREAK
 case 207:
 YY_RULE_SETUP
-#line 646 "../src/lexer/XQLexer.l"
+#line 644 "../src/lexer/XQLexer.l"
 PUSH_AND_CHANGE_STATE(START_TAG); RECOGNIZE(_LESS_THAN_OP_OR_TAG_);
 	YY_BREAK
 case 208:
 YY_RULE_SETUP
-#line 647 "../src/lexer/XQLexer.l"
+#line 645 "../src/lexer/XQLexer.l"
 return error("It is an error for a left angle bracket to appear in attribute content");
 	YY_BREAK
 case 209:
 YY_RULE_SETUP
-#line 649 "../src/lexer/XQLexer.l"
+#line 647 "../src/lexer/XQLexer.l"
 CHANGE_STATE(ELEMENT_CONTENT); RECOGNIZE(_START_TAG_CLOSE_);
 	YY_BREAK
 case 210:
 YY_RULE_SETUP
-#line 650 "../src/lexer/XQLexer.l"
+#line 648 "../src/lexer/XQLexer.l"
 POP(); RECOGNIZE(_END_TAG_CLOSE_);
 	YY_BREAK
 case 211:
 YY_RULE_SETUP
-#line 652 "../src/lexer/XQLexer.l"
+#line 650 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE_UNESCAPE(_QUOT_ATTR_CONTENT_, yytext, yyleng, 0, true, false, false);
 	YY_BREAK
 case 212:
 YY_RULE_SETUP
-#line 654 "../src/lexer/XQLexer.l"
+#line 652 "../src/lexer/XQLexer.l"
 CHANGE_STATE(QUOT_ATTRIBUTE_CONTENT); RECOGNIZE(_OPEN_QUOT_);
 	YY_BREAK
 case 213:
 YY_RULE_SETUP
-#line 655 "../src/lexer/XQLexer.l"
+#line 653 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE_UNESCAPE(_QUOT_ATTR_CONTENT_, yytext, yyleng, '"', true, true, false);
 	YY_BREAK
 case 214:
 YY_RULE_SETUP
-#line 656 "../src/lexer/XQLexer.l"
+#line 654 "../src/lexer/XQLexer.l"
 CHANGE_STATE(START_TAG); RECOGNIZE(_CLOSE_QUOT_);
 	YY_BREAK
 case 215:
 YY_RULE_SETUP
-#line 658 "../src/lexer/XQLexer.l"
+#line 656 "../src/lexer/XQLexer.l"
 CHANGE_STATE(APOS_ATTRIBUTE_CONTENT); RECOGNIZE(_OPEN_APOS_);
 	YY_BREAK
 case 216:
 YY_RULE_SETUP
-#line 659 "../src/lexer/XQLexer.l"
+#line 657 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE_UNESCAPE(_APOS_ATTR_CONTENT_, yytext, yyleng, '\'', true, true, false);
 	YY_BREAK
 case 217:
 YY_RULE_SETUP
-#line 660 "../src/lexer/XQLexer.l"
+#line 658 "../src/lexer/XQLexer.l"
 CHANGE_STATE(START_TAG); RECOGNIZE(_CLOSE_APOS_);
 	YY_BREAK
 case 218:
 YY_RULE_SETUP
-#line 662 "../src/lexer/XQLexer.l"
+#line 660 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_WHITESPACE_ELEMENT_CONTENT_, yytext);
 	YY_BREAK
 case 219:
 YY_RULE_SETUP
-#line 663 "../src/lexer/XQLexer.l"
+#line 661 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE_UNESCAPE(_ELEMENT_CONTENT_, yytext, yyleng, 0, true, true, true);
 	YY_BREAK
 case 220:
 YY_RULE_SETUP
-#line 665 "../src/lexer/XQLexer.l"
+#line 663 "../src/lexer/XQLexer.l"
 POP(); RECOGNIZE(_EMPTY_TAG_CLOSE_);
 	YY_BREAK
 case 221:
 YY_RULE_SETUP
-#line 667 "../src/lexer/XQLexer.l"
+#line 665 "../src/lexer/XQLexer.l"
 CHANGE_STATE(END_TAG); RECOGNIZE(_END_TAG_OPEN_);
 	YY_BREAK
 case 222:
 YY_RULE_SETUP
-#line 669 "../src/lexer/XQLexer.l"
+#line 667 "../src/lexer/XQLexer.l"
 RECOGNIZE(_VALUE_INDICATOR_);
 	YY_BREAK
 case 223:
 YY_RULE_SETUP
-#line 671 "../src/lexer/XQLexer.l"
+#line 669 "../src/lexer/XQLexer.l"
 CHANGE_STATE(PRAGMA); RECOGNIZE(_PRAGMA_OPEN_);
 	YY_BREAK
 case 224:
 YY_RULE_SETUP
-#line 672 "../src/lexer/XQLexer.l"
+#line 670 "../src/lexer/XQLexer.l"
 RECOGNIZE(_WHITESPACE_);
 	YY_BREAK
 case 225:
 YY_RULE_SETUP
-#line 673 "../src/lexer/XQLexer.l"
+#line 671 "../src/lexer/XQLexer.l"
 CHANGE_STATE(PRAGMAWS); RECOGNIZE_VALUE(_QNAME_, yytext);
 	YY_BREAK
 case 226:
 YY_RULE_SETUP
-#line 674 "../src/lexer/XQLexer.l"
+#line 672 "../src/lexer/XQLexer.l"
 CHANGE_STATE(INITIAL); RECOGNIZE_VALUE_LEN(_PRAGMA_CONTENT_, yytext, yyleng - 2);
 	YY_BREAK
 case 227:
 YY_RULE_SETUP
-#line 675 "../src/lexer/XQLexer.l"
+#line 673 "../src/lexer/XQLexer.l"
 CHANGE_STATE(PRAGMACONTENTS); RECOGNIZE(_WHITESPACE_);
 	YY_BREAK
 case 228:
 YY_RULE_SETUP
-#line 676 "../src/lexer/XQLexer.l"
+#line 674 "../src/lexer/XQLexer.l"
 CHANGE_STATE(INITIAL); RECOGNIZE_VALUE_LEN(_PRAGMA_CONTENT_, yytext, yyleng - 2);
 	YY_BREAK
 case 229:
 YY_RULE_SETUP
-#line 678 "../src/lexer/XQLexer.l"
+#line 676 "../src/lexer/XQLexer.l"
 PUSH_AND_CHANGE_STATE(PROCESSING_INSTRUCTION); RECOGNIZE(_PI_START_);
 	YY_BREAK
 case 230:
 YY_RULE_SETUP
-#line 679 "../src/lexer/XQLexer.l"
+#line 677 "../src/lexer/XQLexer.l"
 return error("The target of a processing instruction must not be 'XML'");
 	YY_BREAK
 case 231:
 YY_RULE_SETUP
-#line 680 "../src/lexer/XQLexer.l"
+#line 678 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_PI_TARGET_, yytext);
 	YY_BREAK
 case 232:
 YY_RULE_SETUP
-#line 681 "../src/lexer/XQLexer.l"
+#line 679 "../src/lexer/XQLexer.l"
 CHANGE_STATE(PROCESSING_INSTRUCTION_CONTENT); RECOGNIZE(_WHITESPACE_);
 	YY_BREAK
 case 233:
 YY_RULE_SETUP
-#line 682 "../src/lexer/XQLexer.l"
+#line 680 "../src/lexer/XQLexer.l"
 POP(); RECOGNIZE_VALUE_LEN(_PI_CONTENT_, yytext, yyleng - 2);
 	YY_BREAK
 case 234:
 YY_RULE_SETUP
-#line 683 "../src/lexer/XQLexer.l"
+#line 681 "../src/lexer/XQLexer.l"
 POP(); RECOGNIZE_VALUE_LEN(_PI_CONTENT_, yytext, yyleng - 2);
 	YY_BREAK
 case 235:
 YY_RULE_SETUP
-#line 685 "../src/lexer/XQLexer.l"
+#line 683 "../src/lexer/XQLexer.l"
 PUSH_AND_CHANGE_STATE(XML_COMMENT); RECOGNIZE(_XML_COMMENT_START_);
 	YY_BREAK
 case 236:
 YY_RULE_SETUP
-#line 686 "../src/lexer/XQLexer.l"
+#line 684 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_XML_COMMENT_CONTENT_, yytext);
 	YY_BREAK
 case 237:
 YY_RULE_SETUP
-#line 687 "../src/lexer/XQLexer.l"
+#line 685 "../src/lexer/XQLexer.l"
 return error("It is an error for a double dash to appear in an XML comment");
 	YY_BREAK
 case 238:
 YY_RULE_SETUP
-#line 688 "../src/lexer/XQLexer.l"
+#line 686 "../src/lexer/XQLexer.l"
 POP(); RECOGNIZE(_XML_COMMENT_END_);
 	YY_BREAK
 case 239:
 YY_RULE_SETUP
-#line 690 "../src/lexer/XQLexer.l"
+#line 688 "../src/lexer/XQLexer.l"
 RECOGNIZE(_SLASH_);
 	YY_BREAK
 case 240:
 YY_RULE_SETUP
-#line 691 "../src/lexer/XQLexer.l"
+#line 689 "../src/lexer/XQLexer.l"
 RECOGNIZE(_SLASH_SLASH_);
 	YY_BREAK
 case 241:
 YY_RULE_SETUP
-#line 693 "../src/lexer/XQLexer.l"
+#line 691 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_XMLNS_QNAME_, yytext);
 	YY_BREAK
 case 242:
 YY_RULE_SETUP
-#line 694 "../src/lexer/XQLexer.l"
+#line 692 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_QNAME_, yytext);
 	YY_BREAK
 case 243:
 YY_RULE_SETUP
-#line 696 "../src/lexer/XQLexer.l"
+#line 694 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE_LEN(_NCNAME_COLON_STAR_, yytext, yyleng - 2);
 	YY_BREAK
 case 244:
 YY_RULE_SETUP
-#line 697 "../src/lexer/XQLexer.l"
+#line 695 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_STAR_COLON_NCNAME_, yytext + 2);
 	YY_BREAK
 case 245:
 YY_RULE_SETUP
-#line 699 "../src/lexer/XQLexer.l"
+#line 697 "../src/lexer/XQLexer.l"
 RECOGNIZE(_WHITESPACE_);
 	YY_BREAK
 case 246:
 YY_RULE_SETUP
-#line 701 "../src/lexer/XQLexer.l"
+#line 699 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_QNAME_, yytext);
 	YY_BREAK
 case 247:
 YY_RULE_SETUP
-#line 702 "../src/lexer/XQLexer.l"
+#line 700 "../src/lexer/XQLexer.l"
 RECOGNIZE(_HASH_DEFAULT_);
 	YY_BREAK
 case 248:
 YY_RULE_SETUP
-#line 703 "../src/lexer/XQLexer.l"
+#line 701 "../src/lexer/XQLexer.l"
 RECOGNIZE(_HASH_ALL_);
 	YY_BREAK
 case 249:
 YY_RULE_SETUP
-#line 704 "../src/lexer/XQLexer.l"
+#line 702 "../src/lexer/XQLexer.l"
 RECOGNIZE(_HASH_CURRENT_);
 	YY_BREAK
 case 250:
 YY_RULE_SETUP
-#line 705 "../src/lexer/XQLexer.l"
+#line 703 "../src/lexer/XQLexer.l"
 /* Do nothing */
 	YY_BREAK
 case 251:
 YY_RULE_SETUP
-#line 707 "../src/lexer/XQLexer.l"
+#line 705 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_XML_, yytext);
 	YY_BREAK
 case 252:
 YY_RULE_SETUP
-#line 708 "../src/lexer/XQLexer.l"
+#line 706 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_HTML_, yytext);
 	YY_BREAK
 case 253:
 YY_RULE_SETUP
-#line 709 "../src/lexer/XQLexer.l"
+#line 707 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_XHTML_, yytext);
 	YY_BREAK
 case 254:
 YY_RULE_SETUP
-#line 710 "../src/lexer/XQLexer.l"
+#line 708 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_TEXT_, yytext);
 	YY_BREAK
 case 255:
 YY_RULE_SETUP
-#line 711 "../src/lexer/XQLexer.l"
+#line 709 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_QNAME_, yytext);
 	YY_BREAK
 case 256:
 YY_RULE_SETUP
-#line 712 "../src/lexer/XQLexer.l"
+#line 710 "../src/lexer/XQLexer.l"
 /* Do nothing */
 	YY_BREAK
 case 257:
 YY_RULE_SETUP
-#line 714 "../src/lexer/XQLexer.l"
+#line 712 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_QNAME_, yytext);
 	YY_BREAK
 case 258:
 YY_RULE_SETUP
-#line 715 "../src/lexer/XQLexer.l"
+#line 713 "../src/lexer/XQLexer.l"
 /* Do nothing */
 	YY_BREAK
 case 259:
 YY_RULE_SETUP
-#line 717 "../src/lexer/XQLexer.l"
+#line 715 "../src/lexer/XQLexer.l"
 {
   std::ostringstream oss;
   oss << "Invalid literal found: " << UTF8((XMLCh*)yytext);
@@ -15569,7 +15567,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 260:
 YY_RULE_SETUP
-#line 723 "../src/lexer/XQLexer.l"
+#line 721 "../src/lexer/XQLexer.l"
 { 
   std::ostringstream oss;
   oss << "Unrecognized character '" << UTF8((XMLCh*)yytext) << "' (" << yytext[0] << ")";
@@ -15578,10 +15576,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 261:
 YY_RULE_SETUP
-#line 729 "../src/lexer/XQLexer.l"
+#line 727 "../src/lexer/XQLexer.l"
 YY_FATAL_ERROR( "flex scanner jammed" );
 	YY_BREAK
-#line 15585 "../src/lexer/XQLexer.cpp"
+#line 15583 "../src/lexer/XQLexer.cpp"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(EXPR_COMMENT):
 case YY_STATE_EOF(PRAGMA):
@@ -16398,5 +16396,5 @@ int main()
 	return 0;
 	}
 #endif
-#line 729 "../src/lexer/XQLexer.l"
+#line 727 "../src/lexer/XQLexer.l"
 

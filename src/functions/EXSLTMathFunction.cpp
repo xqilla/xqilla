@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008
+ * Copyright (c) 2004-2009
  *     Oracle. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,8 +13,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
- * $Id: NumericFunction.cpp 659 2008-10-06 00:11:22Z jpcs $
  */
 
 #include "../config/xqilla_config.h"
