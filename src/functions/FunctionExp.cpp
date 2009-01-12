@@ -1,6 +1,4 @@
 /*
- * Copyright (c) 2001-2008
- *     DecisionSoft Limited. All rights reserved.
  * Copyright (c) 2004-2008
  *     Oracle. All rights reserved.
  *
