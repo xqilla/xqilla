@@ -485,7 +485,7 @@ void XQQuery::importModule(const XMLCh* szUri, VectorOfStrings* locations, Stati
     }
     Janitor<InputSource> janIS(srcToUse);
 
-    AutoDelete<DynamicContext> ctxGuard(context->createModuleContext(context->getMemoryManager()));
+    AutoDelete<DynamicContext> ctxGuard(context->createModuleContext());
     DynamicContext *moduleCtx = ctxGuard.get();
 
     moduleCtx->setBaseURI(srcToUse->getSystemId());
