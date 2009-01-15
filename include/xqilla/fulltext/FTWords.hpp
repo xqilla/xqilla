@@ -79,10 +79,8 @@ class FTStringSearchMatches : public AllMatches
 public:
   FTStringSearchMatches(const LocationInfo *info, const XMLCh *queryString, FTContext *ftcontext);
   Match::Ptr next(DynamicContext *context);
-  AllMatches::Ptr optimize();
 
 private:
-  const XMLCh *queryString_;
   unsigned int queryPos_;
   TokenStream::Ptr tokenStream_;
 };

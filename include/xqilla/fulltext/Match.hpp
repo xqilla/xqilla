@@ -31,11 +31,10 @@ class XQILLA_API StringMatch
 {
 public:
   StringMatch()
-    : queryString(0), queryPos(0), tokenInfo(0), startToken(false), endToken(false) {}
-  StringMatch(const XMLCh *qString, unsigned int qPos, const TokenInfo::Ptr &tInfo)
-    : queryString(qString), queryPos(qPos), tokenInfo(tInfo), startToken(false), endToken(false) {}
+    : queryPos(0), tokenInfo(0), startToken(false), endToken(false) {}
+  StringMatch(unsigned int qPos, const TokenInfo::Ptr &tInfo)
+    : queryPos(qPos), tokenInfo(tInfo), startToken(false), endToken(false) {}
 
-  const XMLCh *queryString;
   unsigned int queryPos;
   TokenInfo::Ptr tokenInfo;
   bool startToken, endToken;
@@ -53,13 +52,13 @@ public:
   const StringMatches &getStringIncludes() const { return includes_; }
   const StringMatches &getStringExcludes() const { return excludes_; }
 
-  void addStringInclude(const XMLCh *queryString, unsigned int queryPos, const TokenInfo::Ptr &tokenInfo)
+  void addStringInclude(unsigned int queryPos, const TokenInfo::Ptr &tokenInfo)
   {
-    includes_.push_back(StringMatch(queryString, queryPos, tokenInfo));
+    includes_.push_back(StringMatch(queryPos, tokenInfo));
   }
-  void addStringExclude(const XMLCh *queryString, unsigned int queryPos, const TokenInfo::Ptr &tokenInfo)
+  void addStringExclude(unsigned int queryPos, const TokenInfo::Ptr &tokenInfo)
   {
-    excludes_.push_back(StringMatch(queryString, queryPos, tokenInfo));
+    excludes_.push_back(StringMatch(queryPos, tokenInfo));
   }
   void addStringInclude(const StringMatch &match)
   {

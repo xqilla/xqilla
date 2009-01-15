@@ -235,7 +235,6 @@ AllMatches::Ptr FTWord::execute(FTContext *ftcontext) const
 
 FTStringSearchMatches::FTStringSearchMatches(const LocationInfo *info, const XMLCh *queryString, FTContext *ftcontext)
   : AllMatches(info),
-    queryString_(queryString),
     queryPos_(ftcontext->queryPos++),
     tokenStream_(ftcontext->tokenStore->findTokens(queryString))
 {
@@ -253,11 +252,6 @@ Match::Ptr FTStringSearchMatches::next(DynamicContext *context)
 
   // TBD query position
   Match::Ptr match = new Match();
-  match->addStringInclude(queryString_, queryPos_, token);
+  match->addStringInclude(queryPos_, token);
   return match;
-}
-
-AllMatches::Ptr FTStringSearchMatches::optimize()
-{
-  return this;
 }
