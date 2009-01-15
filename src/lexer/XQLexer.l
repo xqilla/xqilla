@@ -270,9 +270,6 @@ void XQLexer::undoLessThan()
 <INITIAL>"["                      RECOGNIZE(_LSQUARE_);
 <INITIAL>"]"                      RECOGNIZE(_RSQUARE_);
 <INITIAL>"?"                      RECOGNIZE(_QUESTION_MARK_);
-<INITIAL>"||"                     RECOGNIZE(_BAR_BAR_);
-<INITIAL>"&&"                     RECOGNIZE(_AMP_AMP_);
-<INITIAL>"!"                      RECOGNIZE(_BANG_);
 
 <INITIAL>"external"               RECOGNIZE_VALUE(_EXTERNAL_, yytext);
 <INITIAL>"ascending"              RECOGNIZE_VALUE(_ASCENDING_, yytext);
@@ -526,6 +523,27 @@ void XQLexer::undoLessThan()
 <INITIAL>"ftcontains" {
   if(isFullText()) {
     RECOGNIZE_VALUE(_FTCONTAINS_, yytext);
+  } else {
+    RECOGNIZE_VALUE(_QNAME_, yytext);
+  }
+}
+<INITIAL>"ftor" {
+  if(isFullText()) {
+    RECOGNIZE_VALUE(_FTOR_, yytext);
+  } else {
+    RECOGNIZE_VALUE(_QNAME_, yytext);
+  }
+}
+<INITIAL>"ftand" {
+  if(isFullText()) {
+    RECOGNIZE_VALUE(_FTAND_, yytext);
+  } else {
+    RECOGNIZE_VALUE(_QNAME_, yytext);
+  }
+}
+<INITIAL>"ftnot" {
+  if(isFullText()) {
+    RECOGNIZE_VALUE(_FTNOT_, yytext);
   } else {
     RECOGNIZE_VALUE(_QNAME_, yytext);
   }

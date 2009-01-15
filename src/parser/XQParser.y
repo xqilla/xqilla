@@ -354,8 +354,6 @@ namespace XQParser {
 %token _LSQUARE_ "["
 %token _RSQUARE_ "]"
 %token _QUESTION_MARK_ "?"
-%token _BAR_BAR_ "||"
-%token _AMP_AMP_ "&&"
 %token _LESS_THAN_OP_OR_TAG_ "<"
 %token _START_TAG_CLOSE_ "> (start tag close)"
 %token _END_TAG_CLOSE_ "> (end tag close)"
@@ -384,7 +382,6 @@ namespace XQParser {
 %token _LBRACE_EXPR_ENCLOSURE_ "{ (expression enclosure)"
 %token _RBRACE_                "}"
 %token _SEMICOLON_             ";"
-%token _BANG_                  "!"
 %token _HASH_                  "#"
 
 %token <str> _INTEGER_LITERAL_ "<integer literal>"
@@ -573,6 +570,9 @@ namespace XQParser {
 %token <str> _APPLY_                                          "apply"
 %token <str> _TEMPLATES_                                      "templates"
 %token <str> _MODE_                                           "mode"
+%token <str> _FTOR_                                           "ftor"
+%token <str> _FTAND_                                          "ftand"
+%token <str> _FTNOT_                                          "ftnot"
 
 /* XSLT 2.0 tokens */
 %token _XSLT_END_ELEMENT_                                     "<XSLT end element>"
@@ -683,9 +683,9 @@ namespace XQParser {
 
 %type <parenExpr>    SequenceConstructor_XSLT
 
-%type <ftselection>     FTSelection FTWords FTWordsSelection FTUnaryNot FTMildnot FTAnd FTOr
-%type <ftoption>        FTProximity
-%type <ftoptionlist>    FTSelectionOptions
+%type <ftselection>     FTSelection FTWords FTUnaryNot FTMildnot FTAnd FTOr FTPrimaryWithOptions FTPrimary FTExtensionSelection
+%type <ftoption>        FTPosFilter
+%type <ftoptionlist>    FTPosFilters
 %type <ftanyalloption>  FTAnyallOption
 %type <ftrange>         FTRange
 %type <ftunit>          FTUnit FTBigUnit
@@ -2366,8 +2366,8 @@ MainModule_XQ: Prolog_XQ QueryBody;
 // [4]    LibraryModule    ::=    ModuleDecl Prolog 
 LibraryModule_XQ: ModuleDecl Prolog_XQ;
 
-// [6]    Prolog    ::=    ((Setter | Import | NamespaceDecl | DefaultNamespaceDecl) Separator)* 
-//               ((VarDecl | FunctionDecl | OptionDecl | FTOptionDecl) Separator)*
+// [6]    Prolog    ::=    ((Setter | Import | NamespaceDecl | DefaultNamespaceDecl | FTOptionDecl) Separator)* 
+//               ((VarDecl | FunctionDecl | OptionDecl) Separator)*
 Prolog_XQ:
   /* empty */
   | Prolog_XQ Setter_XQ Separator
@@ -2465,8 +2465,8 @@ MainModule_XQF: Prolog_XQF QueryBody;
 // [4]    LibraryModule    ::=    ModuleDecl Prolog 
 LibraryModule_XQF: ModuleDecl Prolog_XQF;
 
-// [6]    Prolog    ::=    ((Setter | Import | NamespaceDecl | DefaultNamespaceDecl) Separator)* 
-//               ((VarDecl | FunctionDecl | OptionDecl | FTOptionDecl) Separator)*
+// [6]    Prolog    ::=    ((Setter | Import | NamespaceDecl | DefaultNamespaceDecl | FTOptionDecl) Separator)* 
+//               ((VarDecl | FunctionDecl | OptionDecl) Separator)*
 Prolog_XQF:
   /* empty */
   | Prolog_XQF Setter_XQ Separator
@@ -2507,7 +2507,7 @@ Prolog_XQF:
   }
   | Prolog_XQF FTOptionDecl Separator
   {
-    QP->_flags.set(BIT_DECLARE_SECOND_STEP);
+    CHECK_SECOND_STEP(@2, "an ftoption declaration");
   }
 ;
 
@@ -2528,8 +2528,8 @@ MainModule_XQU: Prolog_XQU QueryBody;
 // [4]    LibraryModule    ::=    ModuleDecl Prolog 
 LibraryModule_XQU: ModuleDecl Prolog_XQU;
 
-// [6]    Prolog    ::=    ((Setter | Import | NamespaceDecl | DefaultNamespaceDecl) Separator)* 
-//               ((VarDecl | FunctionDecl | OptionDecl | FTOptionDecl) Separator)*
+// [6]    Prolog    ::=    ((Setter | Import | NamespaceDecl | DefaultNamespaceDecl | FTOptionDecl) Separator)* 
+//               ((VarDecl | FunctionDecl | OptionDecl) Separator)*
 Prolog_XQU:
   /* empty */
   | Prolog_XQU Setter Separator
@@ -2627,8 +2627,8 @@ ModuleDecl:
   }
   ;
 
-// [6]    Prolog    ::=    ((Setter | Import | NamespaceDecl | DefaultNamespaceDecl) Separator)* 
-//               ((VarDecl | FunctionDecl | OptionDecl | FTOptionDecl) Separator)*
+// [6]    Prolog    ::=    ((Setter | Import | NamespaceDecl | DefaultNamespaceDecl | FTOptionDecl) Separator)* 
+//               ((VarDecl | FunctionDecl | OptionDecl) Separator)*
 Prolog:
   /* empty */
   | Prolog Setter Separator
@@ -2669,7 +2669,7 @@ Prolog:
   }
   | Prolog FTOptionDecl Separator
   {
-    QP->_flags.set(BIT_DECLARE_SECOND_STEP);
+    CHECK_SECOND_STEP(@2, "an ftoption declaration");
   }
 ;
 
@@ -2793,10 +2793,11 @@ OptionDecl:
   }
   ;
 
-// [14]    FTOptionDecl    ::=    "declare" "ft-option" FTMatchOption
+// [14]    FTOptionDecl    ::=    "declare" "ft-option" FTMatchOptions
 FTOptionDecl:
-  _DECLARE_ _FT_OPTION_ FTMatchOption
+  _DECLARE_ _FT_OPTION_ FTMatchOptions
   {
+    // TBD FTOptionDecl
   }
   ;
 
@@ -3218,9 +3219,9 @@ FTScoreVar:
   }
 ;
 
-// [38]    LetClause    ::= (("let" "$" VarName TypeDeclaration? FTScoreVar?) |
+// [38]    LetClause    ::= (("let" "$" VarName TypeDeclaration?) |
 //                               ("let" "score" "$" VarName)) ":=" ExprSingle
-//                               ("," (("$" VarName TypeDeclaration? FTScoreVar?) | FTScoreVar) ":=" ExprSingle)*
+//                               ("," (("$" VarName TypeDeclaration?) | FTScoreVar) ":=" ExprSingle)*
 LetClause:
   _LET_ LetBindingList
   {
@@ -3237,9 +3238,9 @@ LetBindingList:
 ;
 
 LetBinding:
-  _DOLLAR_ VarName TypeDeclaration FTScoreVar _COLON_EQUALS_ ExprSingle
+  _DOLLAR_ VarName TypeDeclaration _COLON_EQUALS_ ExprSingle
   {
-    $$ = WRAP(@1, new (MEMMGR) LetTuple(0, $2, WRAP(@3, new (MEMMGR) XQTreatAs($6, $3, MEMMGR)), MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) LetTuple(0, $2, WRAP(@3, new (MEMMGR) XQTreatAs($5, $3, MEMMGR)), MEMMGR));
   }
   | _SCORE_ _DOLLAR_ VarName _COLON_EQUALS_ ExprSingle
   {
@@ -4776,11 +4777,11 @@ URILiteral:
   }
   ;
 
-// [144]    FTSelection    ::=    FTOr (FTMatchOption | FTProximity)* ("weight" DecimalLiteral)?
+// [144]    	FTSelection 	   ::=    	FTOr FTPosFilter* ("weight" RangeExpr)?
 FTSelection:
-  FTOr FTSelectionOptions _WEIGHT_ DecimalLiteral
+  FTOr FTPosFilters FTSelectionWeight
   {
-    // TBD FTSelectionOptions and weight
+    // TBD weight
     $$ = $1;
 
     for(VectorOfFTOptions::iterator i = $2->begin();
@@ -4790,40 +4791,32 @@ FTSelection:
     }
 /*     delete $2; */
   }
-  | FTOr FTSelectionOptions
-  {
-    $$ = $1;
-
-    VectorOfFTOptions *options = $2;
-    for(VectorOfFTOptions::iterator i = options->begin();
-        i != options->end(); ++i) {
-      (*i)->setArgument($$);
-      $$ = *i;
-    }
-/*     delete options; */
-  }
   ;
 
-FTSelectionOptions:
+FTSelectionWeight:
   /* empty */
-  {
-    $$ = new (MEMMGR) VectorOfFTOptions(XQillaAllocator<FTOption*>(MEMMGR));
-  }
-  | FTSelectionOptions FTMatchOption
-  {
-    $$ = $1;
-  }
-  | FTSelectionOptions FTProximity
-  {
-    if($2 != NULL)
-      $1->push_back($2);
-    $$ = $1;
-  }
-  ;
+{
+}
+| _WEIGHT_ RangeExpr
+{
+}
+;
 
-// [145]    FTOr    ::=    FTAnd ( "||" FTAnd )*
+FTPosFilters:
+  /* empty */
+{
+  $$ = new (MEMMGR) VectorOfFTOptions(XQillaAllocator<FTOption*>(MEMMGR));
+}
+| FTPosFilters FTPosFilter
+{
+  if($2 != NULL) $1->push_back($2);
+  $$ = $1;
+}
+;
+
+// [145]    FTOr    ::=    FTAnd ( "ftor" FTAnd )*
 FTOr:
-  FTOr _BAR_BAR_ FTAnd
+  FTOr _FTOR_ FTAnd
   {
     if($1->getType() == FTSelection::OR) {
       FTOr *op = (FTOr*)$1;
@@ -4837,9 +4830,9 @@ FTOr:
   | FTAnd
   ;
 
-// [146]    FTAnd    ::=    FTMildnot ( "&&" FTMildnot )*
+// [146]    FTAnd    ::=    FTMildnot ( "ftand" FTMildnot )*
 FTAnd:
-  FTAnd _AMP_AMP_ FTMildnot
+  FTAnd _FTAND_ FTMildnot
   {
     if($1->getType() == FTSelection::AND) {
       FTAnd *op = (FTAnd*)$1;
@@ -4862,39 +4855,43 @@ FTMildnot:
   | FTUnaryNot
   ;
 
-// [148]    FTUnaryNot    ::=    ("!")? FTWordsSelection
+// [148]    	FTUnaryNot 	   ::=    	("ftnot")? FTPrimaryWithOptions
 FTUnaryNot:
-  _BANG_ FTWordsSelection
+  _FTNOT_ FTPrimaryWithOptions
   {
     $$ = WRAP(@1, new (MEMMGR) FTUnaryNot($2, MEMMGR));
   }
-  | FTWordsSelection
+  | FTPrimaryWithOptions
   ;
 
-// [149]    FTWordsSelection    ::=    FTWords | ("(" FTSelection ")")
-FTWordsSelection:
-  _LPAR_ FTSelection _RPAR_
-  {
-    $$ = $2;
-  }
-  | FTWords
-  ;
+// [149]    	FTPrimaryWithOptions 	   ::=    	FTPrimary FTMatchOptions?
+FTPrimaryWithOptions:
+  FTPrimary
+| FTPrimary FTMatchOptions
+{
+  // TBD match options
+  $$ = $1;
+}
+;
 
-// [150]    FTWords    ::=    (Literal | VarRef | ContextItemExpr | FunctionCall | ("{" Expr "}")) FTAnyallOption?
+// [150]    	FTPrimary 	   ::=    	(FTWords FTTimes?) | ("(" FTSelection ")") | FTExtensionSelection
+FTPrimary:
+  FTWords FTTimes
+{
+  // TBD FTTimes
+  $$ = $1;
+}
+| _LPAR_ FTSelection _RPAR_
+{
+  $$ = $2;
+}
+| FTExtensionSelection
+;
+
+// [151]    	FTWords 	   ::=    	FTWordsValue FTAnyallOption?
+// [152]    	FTWordsValue 	   ::=    	Literal | ("{" Expr "}")
 FTWords:
   Literal FTAnyallOption
-  {
-    $$ = WRAP(@1, new (MEMMGR) FTWords($1, $2, MEMMGR));
-  }
-  | VarRef FTAnyallOption
-  {
-    $$ = WRAP(@1, new (MEMMGR) FTWords($1, $2, MEMMGR));
-  }
-  | ContextItemExpr FTAnyallOption
-  {
-    $$ = WRAP(@1, new (MEMMGR) FTWords($1, $2, MEMMGR));
-  }
-  | FunctionCall FTAnyallOption
   {
     $$ = WRAP(@1, new (MEMMGR) FTWords($1, $2, MEMMGR));
   }
@@ -4904,30 +4901,107 @@ FTWords:
   }
   ;
 
-// [151]    FTProximity    ::=    FTOrderedIndicator | FTWindow | FTDistance | FTTimes | FTScope | FTContent
-// [152]    FTOrderedIndicator    ::=    "ordered"
-// [164]    FTContent    ::=    ("at" "start") | ("at" "end") | ("entire" "content")
-// [167]    FTDistance    ::=    "distance" FTRange FTUnit
-// [168]    FTWindow    ::=    "window" UnionExpr FTUnit
-// [169]    FTTimes    ::=    "occurs" FTRange "times"
-// [170]    FTScope    ::=    ("same" | "different") FTBigUnit
-FTProximity:
+// [153]    	FTExtensionSelection 	   ::=    	Pragma+ "{" FTSelection? "}"
+FTExtensionSelection:
+  PragmaList _LBRACE_EXPR_ENCLOSURE_ _RBRACE_
+{
+  // we don't support any pragma
+  yyerror(@1, "This pragma is not recognized, and no alternative expression is specified [err:XQST0079]");
+}
+| PragmaList _LBRACE_EXPR_ENCLOSURE_ FTSelection _RBRACE_
+{
+  // we don't support any pragma
+  $$ = $3;
+}
+;
+
+// [154]    	FTAnyallOption 	   ::=    	("any" "word"?) | ("all" "words"?) | "phrase"
+FTAnyallOption:
+  /* empty */
+  {
+    $$ = FTWords::ANY;
+  }
+  | _ANY_
+  {
+    $$ = FTWords::ANY;
+  }
+  | _ANY_ _WORD_
+  {
+    $$ = FTWords::ANY_WORD;
+  }
+  | _ALL_
+  {
+    $$ = FTWords::ALL;
+  }
+  | _ALL_ _WORDS_
+  {
+    $$ = FTWords::ALL_WORDS;
+  }
+  | _PHRASE_
+  {
+    $$ = FTWords::PHRASE;
+  }
+  ;
+
+
+// [155]    	FTTimes 	   ::=    	"occurs" FTRange "times"
+FTTimes:
+  /* empty */
+| _OCCURS_ FTRange _TIMES_
+{
+  yyerror(@1, "The FTTimes operator is not supported. [err:FTST0005]");
+}
+;
+
+// [156] FTRange ::= ("exactly" AdditiveExpr)
+//                 | ("at" "least" AdditiveExpr)
+//                 | ("at" "most" AdditiveExpr)
+//                 | ("from" AdditiveExpr "to" AdditiveExpr)
+FTRange:
+  _EXACTLY_ AdditiveExpr
+  {
+    $$.type = FTRange::EXACTLY;
+    $$.arg1 = $2;
+    $$.arg2 = 0;
+  }
+  | _AT_LM_ _LEAST_ AdditiveExpr
+  {
+    $$.type = FTRange::AT_LEAST;
+    $$.arg1 = $3;
+    $$.arg2 = 0;
+  }
+  | _AT_LM_ _MOST_ AdditiveExpr
+  {
+    $$.type = FTRange::AT_MOST;
+    $$.arg1 = $3;
+    $$.arg2 = 0;
+  }
+  | _FROM_ AdditiveExpr _TO_ AdditiveExpr
+  {
+    $$.type = FTRange::FROM_TO;
+    $$.arg1 = $2;
+    $$.arg2 = $4;
+  }
+  ;
+
+// [157]    FTPosFilter ::=    FTOrder | FTWindow | FTDistance | FTScope | FTContent
+// [158]    FTOrder     ::=    "ordered"
+// [159]    FTWindow    ::=    "window" AdditiveExpr FTUnit
+// [160]    FTDistance  ::=    "distance" FTRange FTUnit
+// [162]    FTScope     ::=    ("same" | "different") FTBigUnit
+// [164]    FTContent   ::=    ("at" "start") | ("at" "end") | ("entire" "content")
+FTPosFilter:
   _ORDERED_
   {
     $$ = WRAP(@1, new (MEMMGR) FTOrder(MEMMGR));
   }
-  | _WINDOW_ UnionExpr FTUnit
+  | _WINDOW_ AdditiveExpr FTUnit
   {
     $$ = WRAP(@1, new (MEMMGR) FTWindow($2, $3, MEMMGR));
   }
   | _DISTANCE_ FTRange FTUnit
   {
     $$ = WRAP(@1, new (MEMMGR) FTDistance($2, $3, MEMMGR));
-  }
-  | _OCCURS_ FTRange _TIMES_
-  {
-    std::cerr << "occurs" << std::endl;
-    $$ = NULL;
   }
   | _SAME_ FTBigUnit
   {
@@ -4951,29 +5025,73 @@ FTProximity:
   }
   ;
 
-// [153]    FTMatchOption    ::=    FTCaseOption
-//                                  | FTDiacriticsOption
-//                                  | FTStemOption
-//                                  | FTThesaurusOption
-//                                  | FTStopwordOption
-//                                  | FTLanguageOption
-//                                  | FTWildCardOption
-FTMatchOption:
-  FTCaseOption
-  | FTDiacriticsOption
-  | FTStemOption
-  | FTThesaurusOption
-  | FTStopwordOption
-  | FTLanguageOption
-  | FTWildCardOption
+// [161]    	FTUnit 	   ::=    	"words" | "sentences" | "paragraphs"
+FTUnit:
+  _WORDS_
+  {
+    $$ = FTOption::WORDS;
+  }
+  | _SENTENCES_
+  {
+    $$ = FTOption::SENTENCES;
+  }
+  | _PARAGRAPHS_
+  {
+    $$ = FTOption::PARAGRAPHS;
+  }
   ;
 
-// [154]    FTCaseOption    ::=    "lowercase"
-//                                 | "uppercase"
-//                                 | ("case" "sensitive")
-//                                 | ("case" "insensitive")
+// [163]    	FTBigUnit 	   ::=    	"sentence" | "paragraph"
+FTBigUnit:
+  _SENTENCE_
+  {
+    $$ = FTOption::SENTENCES;
+  }
+  | _PARAGRAPH_
+  {
+    $$ = FTOption::PARAGRAPHS;
+  }
+  ;
+
+// [165]    FTMatchOptions    ::=    FTMatchOption+    /* xgc: multiple-match-options */
+FTMatchOptions:
+  FTMatchOption
+| FTMatchOptions FTMatchOption
+;
+
+// [166]    FTMatchOption ::= FTLanguageOption
+//                          | FTWildCardOption
+//                          | FTThesaurusOption
+//                          | FTStemOption
+//                          | FTCaseOption
+//                          | FTDiacriticsOption
+//                          | FTStopWordOption
+//                          | FTExtensionOption
+FTMatchOption:
+  FTLanguageOption
+| FTWildCardOption
+| FTThesaurusOption
+| FTStemOption
+| FTCaseOption
+| FTDiacriticsOption
+| FTStopWordOption
+| FTExtensionOption
+;
+
+// [167]    FTCaseOption ::= ("case" "insensitive")
+//                         | ("case" "sensitive")
+//                         | "lowercase"
+//                         | "uppercase"
 FTCaseOption:
-  _LOWERCASE_
+    _CASE_S_ _INSENSITIVE_
+  {
+    std::cerr << "case insensitive" << std::endl;
+  }
+  | _CASE_S_ _SENSITIVE_
+  {
+    std::cerr << "case sensitive" << std::endl;
+  }
+  | _LOWERCASE_
   {
     std::cerr << "lowercase" << std::endl;
   }
@@ -4981,40 +5099,22 @@ FTCaseOption:
   {
     std::cerr << "uppercase" << std::endl;
   }
-  | _CASE_S_ _SENSITIVE_
-  {
-    std::cerr << "case sensitive" << std::endl;
-  }
-  | _CASE_S_ _INSENSITIVE_
-  {
-    std::cerr << "case insensitive" << std::endl;
-  }
   ;
 
-// [155]    FTDiacriticsOption    ::=    ("with" "diacritics")
-//                                       | ("without" "diacritics")
-//                                       | ("diacritics" "sensitive")
-//                                       | ("diacritics" "insensitive")
+// [168]    FTDiacriticsOption ::= ("diacritics" "insensitive")
+//                               | ("diacritics" "sensitive")
 FTDiacriticsOption:
-  _WITH_FT_ _DIACRITICS_
+    _DIACRITICS_ _INSENSITIVE_
   {
-    std::cerr << "with diacritics" << std::endl;
-  }
-  | _WITHOUT_ _DIACRITICS_
-  {
-    std::cerr << "without diacritics" << std::endl;
+    std::cerr << "diacritics insensitive" << std::endl;
   }
   | _DIACRITICS_ _SENSITIVE_
   {
     std::cerr << "diacritics sensitive" << std::endl;
   }
-  | _DIACRITICS_ _INSENSITIVE_
-  {
-    std::cerr << "diacritics insensitive" << std::endl;
-  }
   ;
 
-//      [156]    FTStemOption    ::=    ("with" "stemming") | ("without" "stemming")
+// [169]    FTStemOption    ::=    ("with" "stemming") | ("without" "stemming")
 FTStemOption:
   _WITH_FT_ _STEMMING_
   {
@@ -5026,9 +5126,9 @@ FTStemOption:
   }
   ;
 
-// [157]    FTThesaurusOption    ::=    ("with" "thesaurus" (FTThesaurusID | "default"))
-//                                    | ("with" "thesaurus" "(" (FTThesaurusID | "default") ("," FTThesaurusID)* ")")
-//                                    | ("without" "thesaurus")
+// [170]    FTThesaurusOption ::= ("with" "thesaurus" (FTThesaurusID | "default"))
+//                              | ("with" "thesaurus" "(" (FTThesaurusID | "default") ("," FTThesaurusID)* ")")
+//                              | ("without" "thesaurus")
 FTThesaurusOption:
   _WITH_FT_ _THESAURUS_ FTThesaurusID
   {
@@ -5061,90 +5161,90 @@ FTThesaurusIDList:
   }
   ;
 
-// [158]    FTThesaurusID    ::=    "at" StringLiteral ("relationship" StringLiteral)? (FTRange "levels")?
+// [171]    FTThesaurusID    ::=    "at" URILiteral ("relationship" StringLiteral)? (FTRange "levels")?
 FTThesaurusID:
-  _AT_ StringLiteral
+  _AT_ URILiteral
   {
     std::cerr << "at StringLiteral" << std::endl;
   }
-  | _AT_ StringLiteral _RELATIONSHIP_ StringLiteral
+  | _AT_ URILiteral _RELATIONSHIP_ StringLiteral
   {
     std::cerr << "at StringLiteral relationship StringLiteral" << std::endl;
   }
-  | _AT_ StringLiteral FTRange _LEVELS_
+  | _AT_ URILiteral FTRange _LEVELS_
   {
     std::cerr << "at StringLiteral levels" << std::endl;
   }
-  | _AT_ StringLiteral _RELATIONSHIP_ StringLiteral FTRange _LEVELS_
+  | _AT_ URILiteral _RELATIONSHIP_ StringLiteral FTRange _LEVELS_
   {
     std::cerr << "at StringLiteral relationship StringLiteral levels" << std::endl;
   }
   ;
 
-// [159]    FTStopwordOption    ::=    ("with" "stop" "words" FTRefOrList FTInclExclStringLiteral*)
-//                                   | ("without" "stop" "words")
-//                                   | ("with" "default" "stop" "words" FTInclExclStringLiteral*)
-FTStopwordOption:
-  _WITH_FT_ _STOP_ _WORDS_ FTRefOrList FTInclExclStringLiteralList
+// [172]    FTStopWordOption ::= ("with" "stop" "words" FTStopWords FTStopWordsInclExcl*)
+//                             | ("without" "stop" "words")
+//                             | ("with" "default" "stop" "words" FTStopWordsInclExcl*)
+FTStopWordOption:
+  _WITH_FT_ _STOP_ _WORDS_ FTStopWords FTStopWordsInclExclList
   {
-    std::cerr << "with stop words" << std::endl;
+    yyerror(@1, "FTStopWordOption is not supported. [err:FTST0006]");
   }
   | _WITHOUT_ _STOP_ _WORDS_
   {
-    std::cerr << "without stop words" << std::endl;
+    yyerror(@1, "FTStopWordOption is not supported. [err:FTST0006]");
   }
-  | _WITH_FT_ _DEFAULT_ _STOP_ _WORDS_ FTInclExclStringLiteralList
+  | _WITH_FT_ _DEFAULT_ _STOP_ _WORDS_ FTStopWordsInclExclList
   {
-    std::cerr << "with default stop words" << std::endl;
+    yyerror(@1, "FTStopWordOption is not supported. [err:FTST0006]");
   }
   ;
 
-FTInclExclStringLiteralList:
+FTStopWordsInclExclList:
   /* empty */
   {
   }
-  | FTInclExclStringLiteralList FTInclExclStringLiteral
+  | FTStopWordsInclExclList FTStopWordsInclExcl
   {
   }
   ;
 
-// [160]    FTRefOrList    ::=    ("at" StringLiteral)
-//                              | ("(" StringLiteral ("," StringLiteral)* ")")
-FTRefOrList:
-  _AT_ StringLiteral
+// [173]    FTStopWords ::= ("at" URILiteral)
+//                        | ("(" StringLiteral ("," StringLiteral)* ")")
+FTStopWords:
+  _AT_ URILiteral
   {
-    std::cerr << "at StringLiteral" << std::endl;
+    std::cerr << "at URILiteral" << std::endl;
   }
-  | _LPAR_ FTRefOrListStringList _RPAR_
+  | _LPAR_ FTStopWordsStringList _RPAR_
   {
     std::cerr << "()" << std::endl;
   }
   ;
 
-FTRefOrListStringList:
+FTStopWordsStringList:
   StringLiteral
   {
     std::cerr << "StringLiteral" << std::endl;
   }
-  | FTRefOrListStringList _COMMA_ StringLiteral
+  | FTStopWordsStringList _COMMA_ StringLiteral
   {
     std::cerr << ", StringLiteral" << std::endl;
   }
   ;
 
-// [161]    FTInclExclStringLiteral    ::=    ("union" | "except") FTRefOrList
-FTInclExclStringLiteral:
-  _UNION_ FTRefOrList
+// [174]    FTStopWordsInclExcl    ::=    ("union" | "except") FTStopWords
+FTStopWordsInclExcl:
+  _UNION_ FTStopWords
   {
     std::cerr << "union" << std::endl;
   }
-  | _EXCEPT_ FTRefOrList
+  | _EXCEPT_ FTStopWords
   {
     std::cerr << "except" << std::endl;
   }
   ;
 
-// [162]    FTLanguageOption    ::=    "language" StringLiteral
+// [175]    FTLanguageOption    ::=    "language" StringLiteral
 FTLanguageOption:
   _LANGUAGE_ StringLiteral
   {
@@ -5152,7 +5252,7 @@ FTLanguageOption:
   }
   ;
 
-// [163]    FTWildCardOption    ::=    ("with" "wildcards") | ("without" "wildcards")
+// [176]    FTWildCardOption    ::=    ("with" "wildcards") | ("without" "wildcards")
 FTWildCardOption:
   _WITH_FT_ _WILDCARDS_
   {
@@ -5164,94 +5264,14 @@ FTWildCardOption:
   }
   ;
 
-// [165]    FTAnyallOption    ::=    ("any" "word"?) | ("all" "words"?) | "phrase"
-FTAnyallOption:
-  /* empty */
-  {
-    $$ = FTWords::ANY;
-  }
-  | _ANY_
-  {
-    $$ = FTWords::ANY;
-  }
-  | _ANY_ _WORD_
-  {
-    $$ = FTWords::ANY_WORD;
-  }
-  | _ALL_
-  {
-    $$ = FTWords::ALL;
-  }
-  | _ALL_ _WORDS_
-  {
-    $$ = FTWords::ALL_WORDS;
-  }
-  | _PHRASE_
-  {
-    $$ = FTWords::PHRASE;
-  }
-  ;
+// [177]    FTExtensionOption    ::=    "option" QName StringLiteral
+FTExtensionOption:
+  _OPTION_ QNameValue _STRING_LITERAL_
+{
+}
+;
 
-// [166]    FTRange    ::=    ("exactly" UnionExpr)
-//                          | ("at" "least" UnionExpr)
-//                          | ("at" "most" UnionExpr)
-//                          | ("from" UnionExpr "to" UnionExpr)
-FTRange:
-  _EXACTLY_ UnionExpr
-  {
-    $$.type = FTRange::EXACTLY;
-    $$.arg1 = $2;
-    $$.arg2 = 0;
-  }
-  | _AT_LM_ _LEAST_ UnionExpr
-  {
-    $$.type = FTRange::AT_LEAST;
-    $$.arg1 = $3;
-    $$.arg2 = 0;
-  }
-  | _AT_LM_ _MOST_ UnionExpr
-  {
-    $$.type = FTRange::AT_MOST;
-    $$.arg1 = $3;
-    $$.arg2 = 0;
-  }
-  | _FROM_ UnionExpr _TO_ UnionExpr
-  {
-    $$.type = FTRange::FROM_TO;
-    $$.arg1 = $2;
-    $$.arg2 = $4;
-  }
-  ;
-
-// [171]    FTUnit    ::=    "words" | "sentences" | "paragraphs"
-FTUnit:
-  _WORDS_
-  {
-    $$ = FTOption::WORDS;
-  }
-  | _SENTENCES_
-  {
-    $$ = FTOption::SENTENCES;
-  }
-  | _PARAGRAPHS_
-  {
-    $$ = FTOption::PARAGRAPHS;
-  }
-  ;
-
-// [172]    FTBigUnit    ::=    "sentence" | "paragraph"
-FTBigUnit:
-  _SENTENCE_
-  {
-    $$ = FTOption::SENTENCES;
-  }
-  | _PARAGRAPH_
-  {
-    $$ = FTOption::PARAGRAPHS;
-  }
-  ;
-
-// [173]    FTIgnoreOption    ::=    "without" "content" UnionExpr
+// [178]    FTIgnoreOption    ::=    "without" "content" UnionExpr
 FTIgnoreOption:
   _WITHOUT_C_ _CONTENT_ UnionExpr
   {
@@ -5707,7 +5727,8 @@ _FUNCTION_ | _SCORE_ | _FTCONTAINS_ | _WEIGHT_ | _WINDOW_ | _DISTANCE_ | _OCCURS
 _DIFFERENT_ | _LOWERCASE_ | _UPPERCASE_ | _RELATIONSHIP_ | _LEVELS_ | _LANGUAGE_ | _ANY_ | _ALL_ | _PHRASE_ |
 _EXACTLY_ | _FROM_ | _WORDS_ | _SENTENCES_ | _PARAGRAPHS_ | _SENTENCE_ | _PARAGRAPH_ | _REPLACE_ | _MODIFY_ | _FIRST_ |
 _INSERT_ | _BEFORE_ | _AFTER_ | _REVALIDATION_ | _WITH_ | _NODES_ | _RENAME_ | _LAST_ | _DELETE_ | _INTO_ | _UPDATING_ |
-_ORDERED_ | _UNORDERED_ | _ID_ | _KEY_ | _TEMPLATE_ | _MATCHES_ | _NAME_ | _CALL_ | _APPLY_ | _TEMPLATES_ | _MODE_
+_ORDERED_ | _UNORDERED_ | _ID_ | _KEY_ | _TEMPLATE_ | _MATCHES_ | _NAME_ | _CALL_ | _APPLY_ | _TEMPLATES_ | _MODE_ |
+_FTOR_ | _FTAND_
   ;
 
 /* _XQUERY_ | */
