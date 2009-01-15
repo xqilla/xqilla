@@ -80,7 +80,7 @@ Match::Ptr FTMildnotMatches::next(DynamicContext *context)
     while((match = right_->next(context)).notNull()) {
       if(!match->getStringExcludes().empty())
         XQThrow(XPath2ErrorException, X("FTMildnotMatches::next"),
-                X("Invalid expression on the right-hand side of a not-in"));
+                X("Invalid expression on the right-hand side of a not-in [err:FTDY0017]"));
 
       StringMatches::const_iterator end = match->getStringIncludes().end();
       for(StringMatches::const_iterator i = match->getStringIncludes().begin();
@@ -98,6 +98,10 @@ Match::Ptr FTMildnotMatches::next(DynamicContext *context)
       left_ = 0;
       return 0;
     }
+
+    if(!match->getStringExcludes().empty())
+      XQThrow(XPath2ErrorException, X("FTMildnotMatches::next"),
+              X("Invalid expression on the left-hand side of a not-in [err:FTDY0017]"));
 
     StringMatches::const_iterator end = match->getStringIncludes().end();
     for(StringMatches::const_iterator i = match->getStringIncludes().begin();
