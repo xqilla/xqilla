@@ -44,7 +44,8 @@ public:
   virtual FTSelection *optimize(FTContext *context) const;
   virtual AllMatches::Ptr execute(FTContext *ftcontext) const;
 
-  const ASTNode *getExpr() const { return expr_; }
+  ASTNode *getExpr() const { return expr_; }
+  void setExpr(ASTNode *expr) { expr_ = expr; }
   FTAnyallOption getOption() const { return option_; }
 
 private:

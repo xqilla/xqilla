@@ -63,6 +63,11 @@ TupleNode *ASTReleaser::optimizeUnknownTupleNode(TupleNode *item)
   return ASTVisitor::optimizeUnknownTupleNode(item);
 }
 
+FTSelection *ASTReleaser::optimizeUnknownFTSelection(FTSelection *selection)
+{
+  return ASTVisitor::optimizeUnknownFTSelection(selection);
+}
+
 ASTNode *ASTReleaser::optimize(ASTNode *item)
 {
   if(item) {
@@ -75,6 +80,14 @@ TupleNode *ASTReleaser::optimizeTupleNode(TupleNode *item)
 {
   if(item) {
     return ASTVisitor::optimizeTupleNode(item);
+  }
+  return 0;
+}
+
+FTSelection *ASTReleaser::optimizeFTSelection(FTSelection *selection)
+{
+  if(selection) {
+    return ASTVisitor::optimizeFTSelection(selection);
   }
   return 0;
 }
@@ -350,4 +363,44 @@ RELEASE_TUPLE(LetTuple)
 RELEASE_TUPLE(WhereTuple)
 RELEASE_TUPLE(OrderByTuple)
 RELEASE_TUPLE(TupleDebugHook)
+
+
+#define RELEASE_FT(classname) \
+FTSelection *ASTReleaser::optimize ## classname (classname *selection) \
+{ \
+  ASTVisitor::optimize ## classname (selection); \
+  const_cast<StaticAnalysis&>(selection->getStaticAnalysis()).clear(); \
+  selection->getMemoryManager()->deallocate(selection); \
+  return 0; \
+}
+
+RELEASE_FT(FTWords)
+RELEASE_FT(FTWord)
+RELEASE_FT(FTMildnot)
+RELEASE_FT(FTUnaryNot)
+RELEASE_FT(FTOrder)
+RELEASE_FT(FTDistance)
+RELEASE_FT(FTDistanceLiteral)
+RELEASE_FT(FTScope)
+RELEASE_FT(FTContent)
+RELEASE_FT(FTWindow)
+RELEASE_FT(FTWindowLiteral)
+
+FTSelection *ASTReleaser::optimizeFTOr(FTOr *selection)
+{
+  ASTVisitor::optimizeFTOr(selection);
+  const_cast<VectorOfFTSelections&>(selection->getArguments()).~VectorOfFTSelections();
+  const_cast<StaticAnalysis&>(selection->getStaticAnalysis()).clear();
+  selection->getMemoryManager()->deallocate(selection);
+  return 0;
+}
+
+FTSelection *ASTReleaser::optimizeFTAnd(FTAnd *selection)
+{
+  ASTVisitor::optimizeFTAnd(selection);
+  const_cast<VectorOfFTSelections&>(selection->getArguments()).~VectorOfFTSelections();
+  const_cast<StaticAnalysis&>(selection->getStaticAnalysis()).clear();
+  selection->getMemoryManager()->deallocate(selection);
+  return 0;
+}
 

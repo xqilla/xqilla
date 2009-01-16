@@ -77,11 +77,11 @@ public:
   virtual FTSelection *optimize(FTContext *context) const = 0;
   virtual AllMatches::Ptr execute(FTContext *ftcontext) const = 0;
 
+  XPath2MemoryManager *getMemoryManager() const { return memMgr_; }
+
 protected:
   FTSelection(Type type, XPath2MemoryManager *memMgr)
     : src_(memMgr), type_(type), memMgr_(memMgr) {}
-
-  XPath2MemoryManager *getMemoryManager() const { return memMgr_; }
 
   StaticAnalysis src_;
 

@@ -132,6 +132,11 @@ TupleNode *ASTCopier::optimizeUnknownTupleNode(TupleNode *item)
   return ASTVisitor::optimizeUnknownTupleNode(item);
 }
 
+FTSelection *ASTCopier::optimizeUnknownFTSelection(FTSelection *selection)
+{
+  return ASTVisitor::optimizeUnknownFTSelection(selection);
+}
+
 #define COPY_IMPL() { \
   result->setLocationInfo(item); \
   const_cast<StaticAnalysis&>(result->getStaticAnalysis()).copy(item->getStaticAnalysis()); \
@@ -610,3 +615,124 @@ TupleNode *ASTCopier::optimizeTupleDebugHook(TupleDebugHook *item)
   result->setMax(item->getMax());
   return result;
 }
+
+FTSelection *ASTCopier::optimizeFTWords(FTWords *selection)
+{
+  FTWords *result = new (mm_) FTWords(selection->getExpr(), selection->getOption(), mm_);
+  result->setLocationInfo(selection);
+  const_cast<StaticAnalysis&>(result->getStaticAnalysis()).copy(selection->getStaticAnalysis());
+  ASTVisitor::optimizeFTWords(selection);
+  return result;
+}
+
+FTSelection *ASTCopier::optimizeFTWord(FTWord *selection)
+{
+  FTWord *result = new (mm_) FTWord(selection->getQueryString(), mm_);
+  result->setLocationInfo(selection);
+  const_cast<StaticAnalysis&>(result->getStaticAnalysis()).copy(selection->getStaticAnalysis());
+  ASTVisitor::optimizeFTWord(selection);
+  return result;
+}
+
+FTSelection *ASTCopier::optimizeFTOr(FTOr *selection)
+{
+  FTOr *result = new (mm_) FTOr(mm_);
+  result->setLocationInfo(selection);
+  const_cast<VectorOfFTSelections&>(result->getArguments()) = selection->getArguments();
+  const_cast<StaticAnalysis&>(result->getStaticAnalysis()).copy(selection->getStaticAnalysis());
+  ASTVisitor::optimizeFTOr(selection);
+  return result;
+}
+
+FTSelection *ASTCopier::optimizeFTAnd(FTAnd *selection)
+{
+  FTAnd *result = new (mm_) FTAnd(mm_);
+  result->setLocationInfo(selection);
+  const_cast<VectorOfFTSelections&>(result->getArguments()) = selection->getArguments();
+  const_cast<StaticAnalysis&>(result->getStaticAnalysis()).copy(selection->getStaticAnalysis());
+  ASTVisitor::optimizeFTAnd(selection);
+  return result;
+}
+
+FTSelection *ASTCopier::optimizeFTMildnot(FTMildnot *selection)
+{
+  FTMildnot *result = new (mm_) FTMildnot(selection->getLeft(), selection->getRight(), mm_);
+  result->setLocationInfo(selection);
+  const_cast<StaticAnalysis&>(result->getStaticAnalysis()).copy(selection->getStaticAnalysis());
+  ASTVisitor::optimizeFTMildnot(selection);
+  return result;
+}
+
+FTSelection *ASTCopier::optimizeFTUnaryNot(FTUnaryNot *selection)
+{
+  FTUnaryNot *result = new (mm_) FTUnaryNot(selection->getArgument(), mm_);
+  result->setLocationInfo(selection);
+  const_cast<StaticAnalysis&>(result->getStaticAnalysis()).copy(selection->getStaticAnalysis());
+  ASTVisitor::optimizeFTUnaryNot(selection);
+  return result;
+}
+
+FTSelection *ASTCopier::optimizeFTOrder(FTOrder *selection)
+{
+  FTOrder *result = new (mm_) FTOrder(selection->getArgument(), mm_);
+  result->setLocationInfo(selection);
+  const_cast<StaticAnalysis&>(result->getStaticAnalysis()).copy(selection->getStaticAnalysis());
+  ASTVisitor::optimizeFTOrder(selection);
+  return result;
+}
+
+FTSelection *ASTCopier::optimizeFTDistance(FTDistance *selection)
+{
+  FTDistance *result = new (mm_) FTDistance(selection->getRange(), selection->getUnit(), selection->getArgument(), mm_);
+  result->setLocationInfo(selection);
+  const_cast<StaticAnalysis&>(result->getStaticAnalysis()).copy(selection->getStaticAnalysis());
+  ASTVisitor::optimizeFTDistance(selection);
+  return result;
+}
+
+FTSelection *ASTCopier::optimizeFTDistanceLiteral(FTDistanceLiteral *selection)
+{
+  FTDistanceLiteral *result = new (mm_) FTDistanceLiteral(selection->getArgument(), selection->getType(), selection->getDistance(),
+                                                          selection->getDistance2(), selection->getUnit(), mm_);
+  result->setLocationInfo(selection);
+  const_cast<StaticAnalysis&>(result->getStaticAnalysis()).copy(selection->getStaticAnalysis());
+  ASTVisitor::optimizeFTDistanceLiteral(selection);
+  return result;
+}
+
+FTSelection *ASTCopier::optimizeFTScope(FTScope *selection)
+{
+  FTScope *result = new (mm_) FTScope(selection->getArgument(), selection->getType(), selection->getUnit(), mm_);
+  result->setLocationInfo(selection);
+  const_cast<StaticAnalysis&>(result->getStaticAnalysis()).copy(selection->getStaticAnalysis());
+  ASTVisitor::optimizeFTScope(selection);
+  return result;
+}
+
+FTSelection *ASTCopier::optimizeFTContent(FTContent *selection)
+{
+  FTContent *result = new (mm_) FTContent(selection->getArgument(), selection->getType(), mm_);
+  result->setLocationInfo(selection);
+  const_cast<StaticAnalysis&>(result->getStaticAnalysis()).copy(selection->getStaticAnalysis());
+  ASTVisitor::optimizeFTContent(selection);
+  return result;
+}
+
+FTSelection *ASTCopier::optimizeFTWindow(FTWindow *selection)
+{
+  FTWindow *result = new (mm_) FTWindow(selection->getArgument(), selection->getExpr(), selection->getUnit(), mm_);
+  result->setLocationInfo(selection);
+  const_cast<StaticAnalysis&>(result->getStaticAnalysis()).copy(selection->getStaticAnalysis());
+  ASTVisitor::optimizeFTWindow(selection);
+  return result;
+}
+
+FTSelection *ASTCopier::optimizeFTWindowLiteral(FTWindowLiteral *selection)
+{
+  FTWindowLiteral *result = new (mm_) FTWindowLiteral(selection->getArgument(), selection->getDistance(), selection->getUnit(), mm_);
+  result->setLocationInfo(selection);
+  const_cast<StaticAnalysis&>(result->getStaticAnalysis()).copy(selection->getStaticAnalysis());
+  ASTVisitor::optimizeFTWindowLiteral(selection);
+  return result;
+}
+

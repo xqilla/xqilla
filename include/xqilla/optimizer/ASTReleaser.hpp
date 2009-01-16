@@ -34,6 +34,7 @@ public:
 protected:
   virtual ASTNode *optimize(ASTNode *item);
   virtual TupleNode *optimizeTupleNode(TupleNode *item);
+  virtual FTSelection *optimizeFTSelection(FTSelection *selection);
 
   ALL_ASTVISITOR_METHODS()
 };

@@ -41,7 +41,7 @@ public:
   virtual AllMatches::Ptr execute(FTContext *ftcontext) const;
 
   virtual void setArgument(FTSelection *arg) { arg_ = arg; }
-  const FTSelection *getArgument() const { return arg_; }
+  FTSelection *getArgument() const { return arg_; }
   Type getType() const { return type_; }
   FTUnit getUnit() const { return unit_; }
 

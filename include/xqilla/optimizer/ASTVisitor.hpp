@@ -86,6 +86,18 @@
 #include <xqilla/update/UApplyUpdates.hpp>
 
 #include <xqilla/fulltext/FTContains.hpp>
+#include <xqilla/fulltext/FTSelection.hpp>
+#include <xqilla/fulltext/FTWords.hpp>
+#include <xqilla/fulltext/FTOr.hpp>
+#include <xqilla/fulltext/FTAnd.hpp>
+#include <xqilla/fulltext/FTMildnot.hpp>
+#include <xqilla/fulltext/FTUnaryNot.hpp>
+#include <xqilla/fulltext/FTOrder.hpp>
+#include <xqilla/fulltext/FTDistance.hpp>
+#include <xqilla/fulltext/FTRange.hpp>
+#include <xqilla/fulltext/FTScope.hpp>
+#include <xqilla/fulltext/FTContent.hpp>
+#include <xqilla/fulltext/FTWindow.hpp>
 
 #define ALL_ASTVISITOR_METHODS() \
   virtual XQGlobalVariable *optimizeGlobalVar(XQGlobalVariable *item); \
@@ -153,6 +165,20 @@
   virtual ASTNode *optimizeUApplyUpdates(UApplyUpdates *item); \
 \
   virtual ASTNode *optimizeFTContains(FTContains *item); \
+  virtual FTSelection *optimizeUnknownFTSelection(FTSelection *item); \
+  virtual FTSelection *optimizeFTWords(FTWords *selection); \
+  virtual FTSelection *optimizeFTWord(FTWord *selection); \
+  virtual FTSelection *optimizeFTOr(FTOr *selection); \
+  virtual FTSelection *optimizeFTAnd(FTAnd *selection); \
+  virtual FTSelection *optimizeFTMildnot(FTMildnot *selection); \
+  virtual FTSelection *optimizeFTUnaryNot(FTUnaryNot *selection); \
+  virtual FTSelection *optimizeFTOrder(FTOrder *selection); \
+  virtual FTSelection *optimizeFTDistance(FTDistance *selection); \
+  virtual FTSelection *optimizeFTDistanceLiteral(FTDistanceLiteral *selection); \
+  virtual FTSelection *optimizeFTScope(FTScope *selection); \
+  virtual FTSelection *optimizeFTContent(FTContent *selection); \
+  virtual FTSelection *optimizeFTWindow(FTWindow *selection); \
+  virtual FTSelection *optimizeFTWindowLiteral(FTWindowLiteral *selection); \
 \
   virtual TupleNode *optimizeUnknownTupleNode(TupleNode *item); \
   virtual TupleNode *optimizeContextTuple(ContextTuple *item); \
@@ -173,6 +199,7 @@ protected:
   virtual void optimize(XQQuery *query);
   virtual ASTNode *optimize(ASTNode *item);
   virtual TupleNode *optimizeTupleNode(TupleNode *item);
+  virtual FTSelection *optimizeFTSelection(FTSelection *selection);
 
   ALL_ASTVISITOR_METHODS()
 };

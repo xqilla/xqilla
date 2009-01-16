@@ -670,12 +670,139 @@ ASTNode *ASTVisitor::optimizeUApplyUpdates(UApplyUpdates *item)
 
 ASTNode *ASTVisitor::optimizeFTContains(FTContains *item)
 {
-  // TBD implement optimization of FTSelection objects - jpcs
   item->setArgument(optimize(item->getArgument()));
-  //   item->setSelection(optimizeFTSelection(item->getSelection()));
+  item->setSelection(optimizeFTSelection(item->getSelection()));
   if(item->getIgnore())
     item->setIgnore(optimize(item->getIgnore()));
   return item;
+}
+
+FTSelection *ASTVisitor::optimizeFTSelection(FTSelection *selection)
+{
+  switch(selection->getType()) {
+  case FTSelection::OR:
+    return optimizeFTOr((FTOr*)selection);
+  case FTSelection::AND:
+    return optimizeFTAnd((FTAnd*)selection);
+  case FTSelection::MILD_NOT:
+    return optimizeFTMildnot((FTMildnot*)selection);
+  case FTSelection::UNARY_NOT:
+    return optimizeFTUnaryNot((FTUnaryNot*)selection);
+  case FTSelection::WORDS:
+    return optimizeFTWords((FTWords*)selection);
+  case FTSelection::WORD:
+    return optimizeFTWord((FTWord*)selection);
+  case FTSelection::ORDER:
+    return optimizeFTOrder((FTOrder*)selection);
+  case FTSelection::DISTANCE:
+    return optimizeFTDistance((FTDistance*)selection);
+  case FTSelection::DISTANCE_LITERAL:
+    return optimizeFTDistanceLiteral((FTDistanceLiteral*)selection);
+  case FTSelection::SCOPE:
+    return optimizeFTScope((FTScope*)selection);
+  case FTSelection::CONTENT:
+    return optimizeFTContent((FTContent*)selection);
+  case FTSelection::WINDOW:
+    return optimizeFTWindow((FTWindow*)selection);
+  case FTSelection::WINDOW_LITERAL:
+    return optimizeFTWindowLiteral((FTWindowLiteral*)selection);
+  }
+  return optimizeUnknownFTSelection(selection);
+}
+
+FTSelection *ASTVisitor::optimizeUnknownFTSelection(FTSelection *selection)
+{
+  return selection;
+}
+
+FTSelection *ASTVisitor::optimizeFTWords(FTWords *selection)
+{
+  selection->setExpr(optimize(selection->getExpr()));
+  return selection;
+}
+
+FTSelection *ASTVisitor::optimizeFTWord(FTWord *selection)
+{
+  return selection;
+}
+
+FTSelection *ASTVisitor::optimizeFTOr(FTOr *selection)
+{
+  VectorOfFTSelections &args = const_cast<VectorOfFTSelections&>(selection->getArguments());
+  for(VectorOfFTSelections::iterator i = args.begin(); i != args.end(); ++i) {
+    *i = optimizeFTSelection(*i);
+  }
+  return selection;
+}
+
+FTSelection *ASTVisitor::optimizeFTAnd(FTAnd *selection)
+{
+  VectorOfFTSelections &args = const_cast<VectorOfFTSelections&>(selection->getArguments());
+  for(VectorOfFTSelections::iterator i = args.begin(); i != args.end(); ++i) {
+    *i = optimizeFTSelection(*i);
+  }
+  return selection;
+}
+
+FTSelection *ASTVisitor::optimizeFTMildnot(FTMildnot *selection)
+{
+  selection->setLeft(optimizeFTSelection(selection->getLeft()));
+  selection->setRight(optimizeFTSelection(selection->getRight()));
+  return selection;
+}
+
+FTSelection *ASTVisitor::optimizeFTUnaryNot(FTUnaryNot *selection)
+{
+  selection->setArgument(optimizeFTSelection(selection->getArgument()));
+  return selection;
+}
+
+FTSelection *ASTVisitor::optimizeFTOrder(FTOrder *selection)
+{
+  selection->setArgument(optimizeFTSelection(selection->getArgument()));
+  return selection;
+}
+
+FTSelection *ASTVisitor::optimizeFTDistance(FTDistance *selection)
+{
+  selection->setArgument(optimizeFTSelection(selection->getArgument()));
+
+  FTRange &range = const_cast<FTRange&>(selection->getRange());
+  range.arg1 = optimize(range.arg1);
+  if(range.arg2) range.arg2 = optimize(range.arg2);
+
+  return selection;
+}
+
+FTSelection *ASTVisitor::optimizeFTDistanceLiteral(FTDistanceLiteral *selection)
+{
+  selection->setArgument(optimizeFTSelection(selection->getArgument()));
+  return selection;
+}
+
+FTSelection *ASTVisitor::optimizeFTScope(FTScope *selection)
+{
+  selection->setArgument(optimizeFTSelection(selection->getArgument()));
+  return selection;
+}
+
+FTSelection *ASTVisitor::optimizeFTContent(FTContent *selection)
+{
+  selection->setArgument(optimizeFTSelection(selection->getArgument()));
+  return selection;
+}
+
+FTSelection *ASTVisitor::optimizeFTWindow(FTWindow *selection)
+{
+  selection->setArgument(optimizeFTSelection(selection->getArgument()));
+  selection->setExpr(optimize(selection->getExpr()));
+  return selection;
+}
+
+FTSelection *ASTVisitor::optimizeFTWindowLiteral(FTWindowLiteral *selection)
+{
+  selection->setArgument(optimizeFTSelection(selection->getArgument()));
+  return selection;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

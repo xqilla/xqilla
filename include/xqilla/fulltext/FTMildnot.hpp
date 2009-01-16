@@ -34,8 +34,10 @@ public:
   virtual FTSelection *optimize(FTContext *context) const;
   virtual AllMatches::Ptr execute(FTContext *ftcontext) const;
 
-  const FTSelection *getLeft() const { return left_; }
-  const FTSelection *getRight() const { return right_; }
+  FTSelection *getLeft() const { return left_; }
+  void setLeft(FTSelection *expr) { left_ = expr; }
+  FTSelection *getRight() const { return right_; }
+  void setRight(FTSelection *expr) { right_ = expr; }
 
 private:
   FTSelection *left_, *right_;

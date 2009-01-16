@@ -40,8 +40,9 @@ public:
   virtual AllMatches::Ptr execute(FTContext *ftcontext) const;
 
   virtual void setArgument(FTSelection *arg) { arg_ = arg; }
-  const FTSelection *getArgument() const { return arg_; }
-  const ASTNode *getExpr() const { return expr_; }
+  FTSelection *getArgument() const { return arg_; }
+  ASTNode *getExpr() const { return expr_; }
+  void setExpr(ASTNode *expr) { expr_ = expr; }
   FTUnit getUnit() const { return unit_; }
 
 private:
@@ -64,7 +65,7 @@ public:
   virtual AllMatches::Ptr execute(FTContext *ftcontext) const;
 
   virtual void setArgument(FTSelection *arg) { arg_ = arg; }
-  const FTSelection *getArgument() const { return arg_; }
+  FTSelection *getArgument() const { return arg_; }
   unsigned int getDistance() const { return distance_; }
   FTUnit getUnit() const { return unit_; }
 

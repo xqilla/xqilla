@@ -1386,12 +1386,10 @@ ASTNode *QueryPathTreeGenerator::optimizeFunctionCall(XQFunctionCall *item)
 
 ASTNode *QueryPathTreeGenerator::optimizeFTContains(FTContains *item)
 {
-  // TBD implement optimization of FTSelection objects - jpcs
-  PathResult result = generate(item->getArgument());
-  //   item->setSelection(optimizeFTSelection(item->getSelection()));
-  if(item->getIgnore())
-    generate(item->getIgnore());
-  push(result);
+  generate(item->getArgument());
+  optimizeFTSelection(item->getSelection());
+  if(item->getIgnore()) generate(item->getIgnore());
+  push(PathResult());
   return item;
 }
 
@@ -1537,6 +1535,26 @@ UNCHANGED_XQ(NamespaceBinding)
 UNCHANGED_XQ(FunctionConversion)
 UNCHANGED(ASTDebugHook)
 
+#define UNCHANGED_FT(classname) \
+FTSelection *QueryPathTreeGenerator::optimize ## classname (classname *item) \
+{ \
+  return ASTVisitor::optimize ## classname (item); \
+}
+
+UNCHANGED_FT(FTWords)
+UNCHANGED_FT(FTWord)
+UNCHANGED_FT(FTMildnot)
+UNCHANGED_FT(FTUnaryNot)
+UNCHANGED_FT(FTOrder)
+UNCHANGED_FT(FTDistance)
+UNCHANGED_FT(FTDistanceLiteral)
+UNCHANGED_FT(FTScope)
+UNCHANGED_FT(FTContent)
+UNCHANGED_FT(FTWindow)
+UNCHANGED_FT(FTWindowLiteral)
+UNCHANGED_FT(FTOr)
+UNCHANGED_FT(FTAnd)
+
 ASTNode *QueryPathTreeGenerator::optimizeUnknown(ASTNode *item)
 {
   return ASTVisitor::optimizeUnknown(item);
@@ -1545,6 +1563,11 @@ ASTNode *QueryPathTreeGenerator::optimizeUnknown(ASTNode *item)
 TupleNode *QueryPathTreeGenerator::optimizeUnknownTupleNode(TupleNode *item)
 {
   return ASTVisitor::optimizeUnknownTupleNode(item);
+}
+
+FTSelection *QueryPathTreeGenerator::optimizeUnknownFTSelection(FTSelection *selection)
+{
+  return ASTVisitor::optimizeUnknownFTSelection(selection);
 }
 
 TupleNode *QueryPathTreeGenerator::optimizeContextTuple(ContextTuple *item)

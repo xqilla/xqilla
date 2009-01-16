@@ -32,7 +32,8 @@ public:
   virtual FTSelection *optimize(FTContext *context) const;
   virtual AllMatches::Ptr execute(FTContext *ftcontext) const;
 
-  const FTSelection *getArgument() const { return arg_; }
+  FTSelection *getArgument() const { return arg_; }
+  void setArgument(FTSelection *expr) { arg_ = expr; }
 
 private:
   FTSelection *arg_;
