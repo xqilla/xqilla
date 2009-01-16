@@ -73,7 +73,7 @@ public:
   virtual const StaticAnalysis &getStaticAnalysis() const { return src_; }
 
   virtual FTSelection *staticResolution(StaticContext *context) = 0;
-  virtual FTSelection *staticTyping(StaticContext *context, StaticTyper *styper) = 0;
+  virtual FTSelection *staticTypingImpl(StaticContext *context) = 0;
   virtual FTSelection *optimize(FTContext *context) const = 0;
   virtual AllMatches::Ptr execute(FTContext *ftcontext) const = 0;
 

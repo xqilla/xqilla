@@ -33,13 +33,10 @@ FTSelection *FTUnaryNot::staticResolution(StaticContext *context)
   return this;
 }
 
-FTSelection *FTUnaryNot::staticTyping(StaticContext *context, StaticTyper *styper)
+FTSelection *FTUnaryNot::staticTypingImpl(StaticContext *context)
 {
   src_.clear();
-
-  arg_ = arg_->staticTyping(context, styper);
   src_.add(arg_->getStaticAnalysis());
-
   return this;
 }
 

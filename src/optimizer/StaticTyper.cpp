@@ -373,11 +373,12 @@ ASTNode *StaticTyper::optimizeInstanceOf(XQInstanceOf *item)
   return item;
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 ASTNode *StaticTyper::optimizeFTContains(FTContains *item)
 {
   item->setArgument(optimize(item->getArgument()));
-
-  item->getSelection()->staticTyping(context_, this);
+  item->setSelection(optimizeFTSelection(item->getSelection()));
 
   if(context_) {
     AutoDelete<DynamicContext> dContext(context_->createDynamicContext());
@@ -392,6 +393,16 @@ ASTNode *StaticTyper::optimizeFTContains(FTContains *item)
     item->setIgnore(optimize(item->getIgnore()));
   return item;
 }
+
+FTSelection *StaticTyper::optimizeFTSelection(FTSelection *selection)
+{
+  FTSelection *result = ASTVisitor::optimizeFTSelection(selection);
+  if(result != selection) return result;
+
+  return selection->staticTypingImpl(context_);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 TupleNode *StaticTyper::optimizeTupleNode(TupleNode *item)
 {

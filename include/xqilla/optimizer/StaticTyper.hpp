@@ -49,7 +49,9 @@ protected:
   virtual ASTNode *optimizeInlineFunction(XQInlineFunction *item);
   virtual ASTNode *optimizeEffectiveBooleanValue(XQEffectiveBooleanValue *item);
   virtual ASTNode *optimizeUTransform(UTransform *item);
+
   virtual ASTNode *optimizeFTContains(FTContains *item);
+  virtual FTSelection *optimizeFTSelection(FTSelection *selection);
 
   virtual TupleNode *optimizeTupleNode(TupleNode *item);
   virtual TupleNode *optimizeForTuple(ForTuple *item);

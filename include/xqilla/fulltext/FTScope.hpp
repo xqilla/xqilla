@@ -36,7 +36,7 @@ public:
     : FTOption(FTSelection::SCOPE, memMgr), type_(type), unit_(unit), arg_(arg) {}
 
   virtual FTSelection *staticResolution(StaticContext *context);
-  virtual FTSelection *staticTyping(StaticContext *context, StaticTyper *styper);
+  virtual FTSelection *staticTypingImpl(StaticContext *context);
   virtual FTSelection *optimize(FTContext *context) const;
   virtual AllMatches::Ptr execute(FTContext *ftcontext) const;
 

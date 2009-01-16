@@ -31,7 +31,7 @@ public:
   FTOr(FTSelection *left, FTSelection *right, XPath2MemoryManager *memMgr);
 
   virtual FTSelection *staticResolution(StaticContext *context);
-  virtual FTSelection *staticTyping(StaticContext *context, StaticTyper *styper);
+  virtual FTSelection *staticTypingImpl(StaticContext *context);
   virtual FTSelection *optimize(FTContext *context) const;
   virtual AllMatches::Ptr execute(FTContext *ftcontext) const;
 
