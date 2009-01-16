@@ -74,7 +74,7 @@ public:
 
   virtual FTSelection *staticResolution(StaticContext *context) = 0;
   virtual FTSelection *staticTyping(StaticContext *context, StaticTyper *styper) = 0;
-  virtual FTSelection *optimize(FTContext *context, bool execute) const = 0;
+  virtual FTSelection *optimize(FTContext *context) const = 0;
   virtual AllMatches::Ptr execute(FTContext *ftcontext) const = 0;
 
 protected:

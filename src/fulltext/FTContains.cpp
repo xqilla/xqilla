@@ -96,9 +96,7 @@ Item::Ptr FTContains::FTContainsResult::getSingleResult(DynamicContext *context)
 
     FTContext ftcontext(&tokenizer, new DefaultTokenStore((Node*)item.get(), &tokenizer, context), context);
 
-    FTSelection *optimizedSelection = parent_->getSelection()->optimize(&ftcontext, /*execute*/true);
-
-    AllMatches::Ptr matches = optimizedSelection->execute(&ftcontext);
+    AllMatches::Ptr matches = parent_->getSelection()->execute(&ftcontext);
     if(matches.notNull()) {
       StringMatches::const_iterator i;
       StringMatches::const_iterator end;

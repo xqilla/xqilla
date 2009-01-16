@@ -74,35 +74,32 @@ FTSelection *FTWords::staticTyping(StaticContext *context, StaticTyper *styper)
   return this;
 }
 
-FTSelection *FTWords::optimize(FTContext *ftcontext, bool execute) const
+FTSelection *FTWords::optimize(FTContext *ftcontext) const
 {
-  if(execute || expr_->isConstant()) {
+  if(expr_->isConstant()) {
     Result strings = expr_->createResult(ftcontext->context);
 
     switch(option_) {
     case ANY_WORD: {
       return optimizeAnyWord(strings, ftcontext)->
-        optimize(ftcontext, execute);
+        optimize(ftcontext);
     }
     case ALL_WORDS: {
       return optimizeAllWords(strings, ftcontext)->
-        optimize(ftcontext, execute);
+        optimize(ftcontext);
     }
     case PHRASE: {
       return optimizePhrase(strings, ftcontext)->
-        optimize(ftcontext, execute);
+        optimize(ftcontext);
     }
     case ANY: {
       return optimizeAny(strings, ftcontext)->
-        optimize(ftcontext, execute);
+        optimize(ftcontext);
     }
     case ALL: {
       return optimizeAll(strings, ftcontext)->
-        optimize(ftcontext, execute);
+        optimize(ftcontext);
     }
-    default:
-      assert(0);
-      break;
     }
   }
 
@@ -131,6 +128,24 @@ FTSelection *FTWords::optimizeAnyWord(Result strings, FTContext *ftcontext) cons
   return ftor;
 }
 
+AllMatches::Ptr FTWords::executeAnyWord(Result strings, FTContext *ftcontext) const
+{
+  FTDisjunctionMatches *disjunction = new FTDisjunctionMatches(this);
+  AllMatches::Ptr result(disjunction);
+
+  Item::Ptr item;
+  while((item = strings->next(ftcontext->context)).notNull()) {
+    TokenStream::Ptr stream = ftcontext->tokenizer->
+      tokenize(item->asString(ftcontext->context), ftcontext->context->getMemoryManager());
+    TokenInfo::Ptr token;
+    while((token = stream->next()).notNull()) {
+      disjunction->addMatches(new FTStringSearchMatches(this, token->getWord(), ftcontext));
+    }
+  }
+
+  return result;
+}
+
 FTSelection *FTWords::optimizeAllWords(Result strings, FTContext *ftcontext) const
 {
   XPath2MemoryManager *mm = ftcontext->context->getMemoryManager();
@@ -153,6 +168,24 @@ FTSelection *FTWords::optimizeAllWords(Result strings, FTContext *ftcontext) con
   return ftand;
 }
 
+AllMatches::Ptr FTWords::executeAllWords(Result strings, FTContext *ftcontext) const
+{
+  FTConjunctionMatches *conjunction = new FTConjunctionMatches(this);
+  AllMatches::Ptr result(conjunction);
+
+  Item::Ptr item;
+  while((item = strings->next(ftcontext->context)).notNull()) {
+    TokenStream::Ptr stream = ftcontext->tokenizer->
+      tokenize(item->asString(ftcontext->context), ftcontext->context->getMemoryManager());
+    TokenInfo::Ptr token;
+    while((token = stream->next()).notNull()) {
+      conjunction->addMatches(new FTStringSearchMatches(this, token->getWord(), ftcontext));
+    }
+  }
+
+  return result;
+}
+
 FTSelection *FTWords::optimizePhrase(Result strings, FTContext *ftcontext) const
 {
   XPath2MemoryManager *mm = ftcontext->context->getMemoryManager();
@@ -166,6 +199,14 @@ FTSelection *FTWords::optimizePhrase(Result strings, FTContext *ftcontext) const
   return result;
 }
 
+AllMatches::Ptr FTWords::executePhrase(Result strings, FTContext *ftcontext) const
+{
+  AllMatches::Ptr result = executeAllWords(strings, ftcontext);
+  result = new FTOrderMatches(this, result);
+  result = new FTDistanceExactlyMatches(this, 0, FTOption::WORDS, result);
+  return result;
+}
+
 FTSelection *FTWords::optimizeAny(Result strings, FTContext *ftcontext) const
 {
   XPath2MemoryManager *mm = ftcontext->context->getMemoryManager();
@@ -175,10 +216,23 @@ FTSelection *FTWords::optimizeAny(Result strings, FTContext *ftcontext) const
 
   Item::Ptr item;
   while((item = strings->next(ftcontext->context)).notNull()) {
-    ftor->addArg(optimizePhrase(Sequence(item), ftcontext));
+    ftor->addArg(optimizePhrase(item, ftcontext));
   }
 
   return ftor;
+}
+
+AllMatches::Ptr FTWords::executeAny(Result strings, FTContext *ftcontext) const
+{
+  FTDisjunctionMatches *disjunction = new FTDisjunctionMatches(this);
+  AllMatches::Ptr result(disjunction);
+
+  Item::Ptr item;
+  while((item = strings->next(ftcontext->context)).notNull()) {
+    disjunction->addMatches(executePhrase(item, ftcontext));
+  }
+
+  return result;
 }
 
 FTSelection *FTWords::optimizeAll(Result strings, FTContext *ftcontext) const
@@ -190,15 +244,46 @@ FTSelection *FTWords::optimizeAll(Result strings, FTContext *ftcontext) const
 
   Item::Ptr item;
   while((item = strings->next(ftcontext->context)).notNull()) {
-    ftand->addArg(optimizePhrase(Sequence(item), ftcontext));
+    ftand->addArg(optimizePhrase(item, ftcontext));
   }
 
   return ftand;
 }
 
+AllMatches::Ptr FTWords::executeAll(Result strings, FTContext *ftcontext) const
+{
+  FTConjunctionMatches *conjunction = new FTConjunctionMatches(this);
+  AllMatches::Ptr result(conjunction);
+
+  Item::Ptr item;
+  while((item = strings->next(ftcontext->context)).notNull()) {
+    conjunction->addMatches(executePhrase(item, ftcontext));
+  }
+
+  return result;
+}
+
 AllMatches::Ptr FTWords::execute(FTContext *ftcontext) const
 {
-  assert(0);
+  Result strings = expr_->createResult(ftcontext->context);
+
+  switch(option_) {
+  case ANY_WORD: {
+    return executeAnyWord(strings, ftcontext);
+  }
+  case ALL_WORDS: {
+    return executeAllWords(strings, ftcontext);
+  }
+  case PHRASE: {
+    return executePhrase(strings, ftcontext);
+  }
+  case ANY: {
+    return executeAny(strings, ftcontext);
+  }
+  case ALL: {
+    return executeAll(strings, ftcontext);
+  }
+  }
   return 0;
 }
 
@@ -221,7 +306,7 @@ FTSelection *FTWord::staticTyping(StaticContext *context, StaticTyper *styper)
   return this;
 }
 
-FTSelection *FTWord::optimize(FTContext *context, bool execute) const
+FTSelection *FTWord::optimize(FTContext *context) const
 {
   return const_cast<FTWord*>(this);
 }

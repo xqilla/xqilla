@@ -32,7 +32,7 @@ public:
 
   virtual FTSelection *staticResolution(StaticContext *context);
   virtual FTSelection *staticTyping(StaticContext *context, StaticTyper *styper);
-  virtual FTSelection *optimize(FTContext *context, bool execute) const;
+  virtual FTSelection *optimize(FTContext *context) const;
   virtual AllMatches::Ptr execute(FTContext *ftcontext) const;
 
   virtual void setArgument(FTSelection *arg) { arg_ = arg; }
@@ -45,8 +45,8 @@ private:
 class FTOrderMatches : public AllMatches
 {
 public:
-  FTOrderMatches(const FTOrder *ft, const AllMatches::Ptr &arg)
-    : AllMatches(ft), arg_(arg) {}
+  FTOrderMatches(const LocationInfo *info, const AllMatches::Ptr &arg)
+    : AllMatches(info), arg_(arg) {}
   Match::Ptr next(DynamicContext *context);
 
 private:

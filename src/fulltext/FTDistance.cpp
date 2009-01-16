@@ -81,44 +81,35 @@ FTSelection *FTDistance::staticTyping(StaticContext *context, StaticTyper *stype
   return this;
 }
 
-FTSelection *FTDistance::optimize(FTContext *ftcontext, bool execute) const
+FTSelection *FTDistance::optimize(FTContext *ftcontext) const
 {
   XPath2MemoryManager *mm = ftcontext->context->getMemoryManager();
 
-  if(execute || range_.arg1->isConstant()) {
-    Result rangeResult = range_.arg1->createResult(ftcontext->context);
-    Numeric::Ptr num = (Numeric::Ptr)rangeResult->next(ftcontext->context);
-    long distance = ::atol(UTF8(num->asString(ftcontext->context)));
-
+  if(range_.arg1->isConstant()) {
     switch(range_.type) {
-    case FTRange::EXACTLY: {
-      FTSelection *result = new (mm) FTDistanceLiteral(arg_, FTRange::EXACTLY, distance, 0, unit_, mm);
-      result->setLocationInfo(this);
-      return result->optimize(ftcontext, execute);
-    }
-    case FTRange::AT_LEAST: {
-      FTSelection *result = new (mm) FTDistanceLiteral(arg_, FTRange::AT_LEAST, distance, 0, unit_, mm);
-      result->setLocationInfo(this);
-      return result->optimize(ftcontext, execute);
-    }
+    case FTRange::EXACTLY:
+    case FTRange::AT_LEAST:
     case FTRange::AT_MOST: {
-      FTSelection *result = new (mm) FTDistanceLiteral(arg_, FTRange::AT_MOST, distance, 0, unit_, mm);
+      Numeric::Ptr num = (Numeric*)range_.arg1->createResult(ftcontext->context)->next(ftcontext->context).get();
+
+      FTSelection *result = new (mm) FTDistanceLiteral(arg_, range_.type, num->asInt(), 0, unit_, mm);
       result->setLocationInfo(this);
-      return result->optimize(ftcontext, execute);
+      return result->optimize(ftcontext);
     }
     case FTRange::FROM_TO: {
-      Result rangeResult2 = range_.arg2->createResult(ftcontext->context);
-      Numeric::Ptr num2 = (Numeric::Ptr)rangeResult2->next(ftcontext->context);
-      long distance2 = ::atol(UTF8(num->asString(ftcontext->context)));
+      if(range_.arg2->isConstant()) {
+        Numeric::Ptr num = (Numeric*)range_.arg1->createResult(ftcontext->context)->next(ftcontext->context).get();
+        Numeric::Ptr num2 = (Numeric*)range_.arg2->createResult(ftcontext->context)->next(ftcontext->context).get();
 
-      FTSelection *result = new (mm) FTDistanceLiteral(arg_, FTRange::FROM_TO, distance, distance2, unit_, mm);
-      result->setLocationInfo(this);
-      return result->optimize(ftcontext, execute);
+        FTSelection *result = new (mm) FTDistanceLiteral(arg_, FTRange::FROM_TO, num->asInt(), num2->asInt(), unit_, mm);
+        result->setLocationInfo(this);
+        return result->optimize(ftcontext);
+      }
     }
     }
   }
 
-  FTSelection *newarg = arg_->optimize(ftcontext, execute);
+  FTSelection *newarg = arg_->optimize(ftcontext);
   if(newarg == 0) return 0;
 
   if(newarg->getType() == WORD) {
@@ -132,7 +123,23 @@ FTSelection *FTDistance::optimize(FTContext *ftcontext, bool execute) const
 
 AllMatches::Ptr FTDistance::execute(FTContext *ftcontext) const
 {
-  assert(0);
+  Numeric::Ptr num = (Numeric*)range_.arg1->createResult(ftcontext->context)->next(ftcontext->context).get();
+
+  switch(range_.type) {
+  case FTRange::EXACTLY: {
+    return new FTDistanceExactlyMatches(this, num->asInt(), unit_, arg_->execute(ftcontext));
+  }
+  case FTRange::AT_LEAST: {
+    return new FTDistanceAtLeastMatches(this, num->asInt(), unit_, arg_->execute(ftcontext));
+  }
+  case FTRange::AT_MOST: {
+    return new FTDistanceAtMostMatches(this, num->asInt(), unit_, arg_->execute(ftcontext));
+  }
+  case FTRange::FROM_TO: {
+    Numeric::Ptr num2 = (Numeric*)range_.arg2->createResult(ftcontext->context)->next(ftcontext->context).get();
+    return new FTDistanceFromToMatches(this, num->asInt(), num2->asInt(), unit_, arg_->execute(ftcontext));
+  }
+  }
   return 0;
 }
 
@@ -154,11 +161,11 @@ FTSelection *FTDistanceLiteral::staticTyping(StaticContext *context, StaticTyper
   return this;
 }
 
-FTSelection *FTDistanceLiteral::optimize(FTContext *ftcontext, bool execute) const
+FTSelection *FTDistanceLiteral::optimize(FTContext *ftcontext) const
 {
   XPath2MemoryManager *mm = ftcontext->context->getMemoryManager();
 
-  FTSelection *newarg = arg_->optimize(ftcontext, execute);
+  FTSelection *newarg = arg_->optimize(ftcontext);
   if(newarg == 0) return 0;
 
   if(newarg->getType() == WORD) {
@@ -185,9 +192,6 @@ AllMatches::Ptr FTDistanceLiteral::execute(FTContext *ftcontext) const
     case FTRange::FROM_TO: {
       return new FTDistanceFromToMatches(this, distance_, distance2_, unit_, arg_->execute(ftcontext));
     }
-    default:
-      assert(0);
-      break;
     }
     return 0;
 }

@@ -60,7 +60,7 @@ FTSelection *FTOr::staticTyping(StaticContext *context, StaticTyper *styper)
   return this;
 }
 
-FTSelection *FTOr::optimize(FTContext *ftcontext, bool execute) const
+FTSelection *FTOr::optimize(FTContext *ftcontext) const
 {
   XPath2MemoryManager *mm = ftcontext->context->getMemoryManager();
 
@@ -69,7 +69,7 @@ FTSelection *FTOr::optimize(FTContext *ftcontext, bool execute) const
 
   for(VectorOfFTSelections::const_iterator i = args_.begin();
       i != args_.end(); ++i) {
-    FTSelection *arg = (*i)->optimize(ftcontext, execute);
+    FTSelection *arg = (*i)->optimize(ftcontext);
     if(arg != 0)
       ftor->addArg(arg);
   }

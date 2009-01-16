@@ -66,22 +66,19 @@ FTSelection *FTWindow::staticTyping(StaticContext *context, StaticTyper *styper)
   return this;
 }
 
-FTSelection *FTWindow::optimize(FTContext *ftcontext, bool execute) const
+FTSelection *FTWindow::optimize(FTContext *ftcontext) const
 {
   XPath2MemoryManager *mm = ftcontext->context->getMemoryManager();
 
-  if(execute || expr_->isConstant()) {
-    Result rangeResult = expr_->createResult(ftcontext->context);
-    Numeric::Ptr num = (Numeric::Ptr)rangeResult->next(ftcontext->context);
+  if(expr_->isConstant()) {
+    Numeric::Ptr num = (Numeric*)expr_->createResult(ftcontext->context)->next(ftcontext->context).get();
 
-    long distance = ::atol(UTF8(num->asString(ftcontext->context)));
-
-    FTSelection *result = new (mm) FTWindowLiteral(arg_, (unsigned int)distance, unit_, mm);
+    FTSelection *result = new (mm) FTWindowLiteral(arg_, num->asInt(), unit_, mm);
     result->setLocationInfo(this);
-    return result->optimize(ftcontext, execute);
+    return result->optimize(ftcontext);
   }
 
-  FTSelection *newarg = arg_->optimize(ftcontext, execute);
+  FTSelection *newarg = arg_->optimize(ftcontext);
   if(newarg == 0) return 0;
 
   if(newarg->getType() == WORD) {
@@ -95,8 +92,8 @@ FTSelection *FTWindow::optimize(FTContext *ftcontext, bool execute) const
 
 AllMatches::Ptr FTWindow::execute(FTContext *ftcontext) const
 {
-  assert(0);
-  return 0;
+  Numeric::Ptr num = (Numeric*)expr_->createResult(ftcontext->context)->next(ftcontext->context).get();
+  return new FTWindowMatches(this, num->asInt(), unit_, arg_->execute(ftcontext));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -117,11 +114,11 @@ FTSelection *FTWindowLiteral::staticTyping(StaticContext *context, StaticTyper *
   return this;
 }
 
-FTSelection *FTWindowLiteral::optimize(FTContext *ftcontext, bool execute) const
+FTSelection *FTWindowLiteral::optimize(FTContext *ftcontext) const
 {
   XPath2MemoryManager *mm = ftcontext->context->getMemoryManager();
 
-  FTSelection *newarg = arg_->optimize(ftcontext, execute);
+  FTSelection *newarg = arg_->optimize(ftcontext);
   if(newarg == 0) return 0;
 
   if(newarg->getType() == WORD) {

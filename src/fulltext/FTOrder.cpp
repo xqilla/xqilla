@@ -37,11 +37,11 @@ FTSelection *FTOrder::staticTyping(StaticContext *context, StaticTyper *styper)
   return this;
 }
 
-FTSelection *FTOrder::optimize(FTContext *ftcontext, bool execute) const
+FTSelection *FTOrder::optimize(FTContext *ftcontext) const
 {
   XPath2MemoryManager *mm = ftcontext->context->getMemoryManager();
 
-  FTSelection *newarg = arg_->optimize(ftcontext, execute);
+  FTSelection *newarg = arg_->optimize(ftcontext);
   if(newarg == 0) return 0;
 
   if(newarg->getType() == WORD) {

@@ -41,7 +41,7 @@ public:
 
   virtual FTSelection *staticResolution(StaticContext *context);
   virtual FTSelection *staticTyping(StaticContext *context, StaticTyper *styper);
-  virtual FTSelection *optimize(FTContext *context, bool execute) const;
+  virtual FTSelection *optimize(FTContext *context) const;
   virtual AllMatches::Ptr execute(FTContext *ftcontext) const;
 
   const ASTNode *getExpr() const { return expr_; }
@@ -54,6 +54,12 @@ private:
   FTSelection *optimizeAny(Result strings, FTContext *ftcontext) const;
   FTSelection *optimizeAll(Result strings, FTContext *ftcontext) const;
 
+  AllMatches::Ptr executeAnyWord(Result strings, FTContext *ftcontext) const;
+  AllMatches::Ptr executeAllWords(Result strings, FTContext *ftcontext) const;
+  AllMatches::Ptr executePhrase(Result strings, FTContext *ftcontext) const;
+  AllMatches::Ptr executeAny(Result strings, FTContext *ftcontext) const;
+  AllMatches::Ptr executeAll(Result strings, FTContext *ftcontext) const;
+
   ASTNode *expr_;
   FTAnyallOption option_;
 };
@@ -65,7 +71,7 @@ public:
 
   virtual FTSelection *staticResolution(StaticContext *context);
   virtual FTSelection *staticTyping(StaticContext *context, StaticTyper *styper);
-  virtual FTSelection *optimize(FTContext *context, bool execute) const;
+  virtual FTSelection *optimize(FTContext *context) const;
   virtual AllMatches::Ptr execute(FTContext *ftcontext) const;
 
   const XMLCh *getQueryString() const { return queryString_; }

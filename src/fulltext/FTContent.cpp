@@ -38,11 +38,11 @@ FTSelection *FTContent::staticTyping(StaticContext *context, StaticTyper *styper
   return this;
 }
 
-FTSelection *FTContent::optimize(FTContext *ftcontext, bool execute) const
+FTSelection *FTContent::optimize(FTContext *ftcontext) const
 {
   XPath2MemoryManager *mm = ftcontext->context->getMemoryManager();
 
-  FTSelection *newarg = arg_->optimize(ftcontext, execute);
+  FTSelection *newarg = arg_->optimize(ftcontext);
   if(newarg == 0) return 0;
 
   if(type_ == ENTIRE_CONTENT) {

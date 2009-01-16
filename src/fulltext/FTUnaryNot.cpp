@@ -43,11 +43,11 @@ FTSelection *FTUnaryNot::staticTyping(StaticContext *context, StaticTyper *stype
   return this;
 }
 
-FTSelection *FTUnaryNot::optimize(FTContext *ftcontext, bool execute) const
+FTSelection *FTUnaryNot::optimize(FTContext *ftcontext) const
 {
   XPath2MemoryManager *mm = ftcontext->context->getMemoryManager();
 
-  FTSelection *newarg = arg_->optimize(ftcontext, execute);
+  FTSelection *newarg = arg_->optimize(ftcontext);
   if(newarg == 0) return 0;
 
   newarg = new (mm) FTUnaryNot(newarg, mm);
@@ -62,7 +62,8 @@ AllMatches::Ptr FTUnaryNot::execute(FTContext *ftcontext) const
 
 Match::Ptr FTUnaryNotMatches::next(DynamicContext *context)
 {
-  // TBD need to check for StringInclude / StringExclude contradictions
+  // TBD incorrect implementation - jpcs
+  // TBD need to check for StringInclude / StringExclude contradictions - jpcs
 
   if(toDo_) {
     toDo_ = false;

@@ -49,14 +49,14 @@ FTSelection *FTMildnot::staticTyping(StaticContext *context, StaticTyper *styper
   return this;
 }
 
-FTSelection *FTMildnot::optimize(FTContext *ftcontext, bool execute) const
+FTSelection *FTMildnot::optimize(FTContext *ftcontext) const
 {
   XPath2MemoryManager *mm = ftcontext->context->getMemoryManager();
 
-  FTSelection *newleft = left_->optimize(ftcontext, execute);
+  FTSelection *newleft = left_->optimize(ftcontext);
   if(newleft == 0) return 0;
 
-  FTSelection *newright = right_->optimize(ftcontext, execute);
+  FTSelection *newright = right_->optimize(ftcontext);
   if(newright == 0) return newleft;
 
   FTSelection *result = new (mm) FTMildnot(newleft, newright, mm);

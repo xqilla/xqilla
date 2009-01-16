@@ -385,7 +385,7 @@ ASTNode *StaticTyper::optimizeFTContains(FTContains *item)
 
     DefaultTokenizer tokenizer;
     FTContext ftcontext(&tokenizer, 0, dContext);
-    item->setSelection(item->getSelection()->optimize(&ftcontext, /*execute*/false));
+    item->setSelection(item->getSelection()->optimize(&ftcontext));
   }
 
   if(item->getIgnore())

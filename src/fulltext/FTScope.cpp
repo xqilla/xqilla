@@ -41,11 +41,11 @@ FTSelection *FTScope::staticTyping(StaticContext *context, StaticTyper *styper)
   return this;
 }
 
-FTSelection *FTScope::optimize(FTContext *ftcontext, bool execute) const
+FTSelection *FTScope::optimize(FTContext *ftcontext) const
 {
   XPath2MemoryManager *mm = ftcontext->context->getMemoryManager();
 
-  FTSelection *newarg = arg_->optimize(ftcontext, execute);
+  FTSelection *newarg = arg_->optimize(ftcontext);
   if(newarg == 0) return 0;
 
   if(newarg->getType() == WORD) {
