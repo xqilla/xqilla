@@ -76,6 +76,8 @@ bool XercesURIResolver::resolveDocument(Sequence &result, const XMLCh* uri, Dyna
   XMLURL urlTmp(context->getMemoryManager());
   if(urlTmp.setURL(context->getBaseURI(), uri, urlTmp)) {
     systemId = context->getMemoryManager()->getPooledString(urlTmp.getURLText());
+  } else {
+	systemId = context->getMemoryManager()->getPooledString(uri);
   }
 
   // Check in the cache
@@ -128,6 +130,8 @@ bool XercesURIResolver::resolveCollection(Sequence &result, const XMLCh* uri, Dy
   XMLURL urlTmp(context->getMemoryManager());
   if(urlTmp.setURL(context->getBaseURI(), uri, urlTmp)) {
     systemId = context->getMemoryManager()->getPooledString(urlTmp.getURLText());
+  } else {
+	systemId = context->getMemoryManager()->getPooledString(uri);
   }
 
   // Check in the cache
