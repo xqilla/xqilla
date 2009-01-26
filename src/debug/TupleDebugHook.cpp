@@ -74,22 +74,26 @@ public:
       frame_(expr, context),
       parent_(0)
   {
+    DebugListener *dl = context->getDebugListener();
+
     AutoStackFrameReset reset(context, &frame_);
-    context->getDebugListener()->start(&frame_, context);
+    if(dl) dl->start(&frame_, context);
     try {
       parent_ = expr->createResult(context);
     }
     catch(XQException &ex) {
-      context->getDebugListener()->error(ex, &frame_, context);
-      context->getDebugListener()->end(&frame_, context);
-      throw;
+      if(dl) dl->error(ex, &frame_, context);
     }
   }
 
   ~TupleDebugHookResult()
   {
+    parent_ = 0;
+
+    DebugListener *dl = context_->getDebugListener();
+
     AutoStackFrameReset reset(context_, &frame_);
-    context_->getDebugListener()->end(&frame_, context_);
+    if(dl) dl->end(&frame_, context_);
   }
   
   virtual Result getVar(const XMLCh *namespaceURI, const XMLCh *name) const
@@ -104,18 +108,19 @@ public:
 
   virtual bool next(DynamicContext *context)
   {
+    DebugListener *dl = context->getDebugListener();
+
     AutoStackFrameReset reset(context, &frame_);
-    context->getDebugListener()->enter(&frame_, context);
+    if(dl) dl->enter(&frame_, context);
     try {
       bool result = parent_->next(context);
-      context->getDebugListener()->exit(&frame_, context);
+      if(dl) dl->exit(&frame_, context);
       return result;
     }
     catch(XQException &ex) {
-      context->getDebugListener()->error(ex, &frame_, context);
-      context->getDebugListener()->exit(&frame_, context);
-      throw;
+      if(dl) dl->error(ex, &frame_, context);
     }
+    return false;
   }
 
 private:
