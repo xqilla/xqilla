@@ -21,6 +21,7 @@
 #define _DEBUGLISTENER_HPP
 
 #include <xqilla/framework/XQillaExport.hpp>
+#include <xqilla/exceptions/XQException.hpp>
 #include <xercesc/util/XercesDefs.hpp>
 
 class StackFrame;
@@ -38,7 +39,7 @@ public:
   virtual void end(const StackFrame *stack, const DynamicContext *context) {}
   virtual void enter(const StackFrame *stack, const DynamicContext *context) {}
   virtual void exit(const StackFrame *stack, const DynamicContext *context) {}
-  virtual void error(const XQException &error, const StackFrame *stack, const DynamicContext *context) {}
+  virtual void error(const XQException &error, const StackFrame *stack, const DynamicContext *context) { throw error; }
 
   virtual bool doLazyEvaluation() const { return true; }
   virtual bool doFocusOptimizations() const { return true; }
