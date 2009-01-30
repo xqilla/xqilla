@@ -242,7 +242,7 @@ static Sequence getListTypeTypedValue(const XMLCh *stringVal, DatatypeValidator 
   DatatypeValidator* theItemTypeDTV = ((ListDatatypeValidator*)dtv)->getItemTypeDTV();
   if(theItemTypeDTV->getType() == DatatypeValidator::Union) {
     RefVectorOf<DatatypeValidator>* membersDV = ((UnionDatatypeValidator*)theItemTypeDTV)->getMemberTypeValidators();
-    unsigned int size = membersDV->size();
+    unsigned int size = (unsigned int) membersDV->size();
     // find the first datatype in the union that validates the piece
     for ( unsigned int j = 0; j < tokenVector->size(); j++ ) {
       const XMLCh* szPiece=tokenVector->elementAt(j);

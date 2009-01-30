@@ -141,7 +141,7 @@ public:
     const XMLCh *prefix, *uri, *localname;
     XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer value;
 
-    int line, column;
+    XercesFileLoc line, column;
 
     CachedEvent *prev, *next;
   };

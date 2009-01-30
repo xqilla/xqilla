@@ -21,6 +21,7 @@
 
 #include "XQLexer.hpp"
 
+#include "../config/xqilla_config.h"
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/framework/XPath2MemoryManager.hpp>
 #include <xqilla/exceptions/XQException.hpp>
@@ -32,7 +33,7 @@ XQLexer::XQLexer(XPath2MemoryManager* memMgr, const XMLCh *queryFile, const XMLC
     firstToken_(_LANG_XQUERY_),
     mode_(MODE_NORMAL),
     m_szQuery(XPath2Utils::normalizeEOL(query, memMgr)),
-    m_nLength(XMLString::stringLen(m_szQuery)),
+    m_nLength(XPath2Utils::uintStrlen(m_szQuery)),
     m_position(0),
     m_index(0),
     m_currentOffset(0),

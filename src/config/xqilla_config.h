@@ -82,4 +82,20 @@
 
 #endif
 
+/* C code should not care about Xerces-C++ facilities. */
+#ifdef __cplusplus
+#include <xercesc/util/XercesVersion.hpp>
+#include <xercesc/util/XercesDefs.hpp>
+
+#if _XERCES_VERSION >= 30000
+typedef XMLSize_t XercesSizeUint;
+typedef XMLFilePos XercesFilePos;
+typedef XMLFileLoc XercesFileLoc;
+#else
+typedef unsigned int XercesSizeUint;
+typedef unsigned int XercesFilePos;
+typedef XMLSSize_t XercesFileLoc;
+#endif
+#endif
+
 #endif

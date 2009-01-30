@@ -42,8 +42,8 @@ private:
   ClosureResult(const ASTNode *ast, DynamicContext *context, const VariableStore *varStore);
 
   Item::Ptr contextItem_;
-  unsigned int contextPosition_;
-  unsigned int contextSize_;
+  size_t contextPosition_;
+  size_t contextSize_;
   VarStoreImpl varStore_;
   DocumentCache *docCache_;
   Result result_;
@@ -58,8 +58,8 @@ public:
 
 protected:
   Item::Ptr contextItem_;
-  unsigned int contextPosition_;
-  unsigned int contextSize_;
+  size_t contextPosition_;
+  size_t contextSize_;
   VarStoreImpl varStore_;
   DocumentCache *docCache_;
 };

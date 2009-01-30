@@ -218,7 +218,7 @@ void TestSuiteParser::startElement(const XMLCh* const uri, const XMLCh* const lo
           testCase_.query = "#Not found";
           Janitor<BinFileInputStream> stream((BinFileInputStream*)URLInputSource(urlQuery_).makeStream());
           if(stream.get()) {
-            unsigned int dwSize=stream->getSize();
+            unsigned int dwSize = (unsigned int) stream->getSize();
             testCase_.query.resize(dwSize);
             stream->readBytes((XMLByte*)testCase_.query.c_str(), dwSize);
           }
@@ -239,7 +239,7 @@ void TestSuiteParser::startElement(const XMLCh* const uri, const XMLCh* const lo
             testCase_.query = "#Not found";
             Janitor<BinFileInputStream> stream((BinFileInputStream*)URLInputSource(urlQuery_).makeStream());
             if(stream.get()) {
-              unsigned int dwSize=stream->getSize();
+              unsigned int dwSize = (unsigned int) stream->getSize();
               testCase_.query.resize(dwSize);
               stream->readBytes((XMLByte*)testCase_.query.c_str(), dwSize);
             }

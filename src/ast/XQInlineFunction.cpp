@@ -35,7 +35,7 @@ using namespace std;
 XQInlineFunction::XQInlineFunction(XQUserFunction *func, XPath2MemoryManager *mm)
   : ASTNodeImpl(INLINE_FUNCTION, mm),
     func_(func),
-    numArgs_(func->getArgumentSpecs() ? func->getArgumentSpecs()->size() : 0),
+    numArgs_((unsigned int)(func->getArgumentSpecs() ? func->getArgumentSpecs()->size() : 0)),
     instance_(0)
 {
 }

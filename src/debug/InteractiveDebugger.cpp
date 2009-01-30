@@ -704,7 +704,7 @@ void BaseInteractiveDebugger::readCommand()
 unsigned int BaseInteractiveDebugger::setBreakPoint(const std::string &file, unsigned int line, unsigned int column, bool temporary)
 {
   breaks_.push_back(BreakPoint(file, line, column, temporary));
-  return breaks_.size();
+  return (unsigned int) breaks_.size();
 }
 
 void BaseInteractiveDebugger::listBreakPoints() const

@@ -25,27 +25,28 @@
 #include <xqilla/framework/XPath2MemoryManager.hpp>
 #include <xercesc/util/XMLUniDefs.hpp>
 #include <xercesc/util/XMLString.hpp>
+XERCES_CPP_NAMESPACE_USE;
 
 //Parse qualifiedName into prefix and name
 QualifiedName::QualifiedName(const XMLCh* qualifiedName, XPath2MemoryManager* memMgr) : _bDeleteStrings(false)
 {
   if(qualifiedName && *qualifiedName)
   {
-    int colonPos = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::indexOf(qualifiedName, XERCES_CPP_NAMESPACE_QUALIFIER chColon, 0);
+    int colonPos = XMLString::indexOf(qualifiedName, chColon, 0);
     if(colonPos == -1) {
       _name = memMgr->getPooledString(qualifiedName);
       _prefix = 0;
     }
     else {
       XMLCh* tempPrefix = new XMLCh[colonPos + 1];
-      XERCES_CPP_NAMESPACE_QUALIFIER XMLString::subString(tempPrefix, qualifiedName, 0, colonPos);
+      XMLString::subString(tempPrefix, qualifiedName, 0, colonPos);
       tempPrefix[colonPos] = 0;
       _prefix = memMgr->getPooledString(tempPrefix);
       delete [] tempPrefix;
 
-      unsigned int length = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(qualifiedName);
+      unsigned int length = XPath2Utils::uintStrlen(qualifiedName);
       XMLCh* tempName = new XMLCh[length - colonPos];
-      XERCES_CPP_NAMESPACE_QUALIFIER XMLString::subString(tempName, qualifiedName, colonPos + 1, length);
+      XMLString::subString(tempName, qualifiedName, colonPos + 1, length);
       tempName[length - colonPos - 1] = 0;
       _name = memMgr->getPooledString(tempName);
       delete [] tempName;
@@ -53,7 +54,7 @@ QualifiedName::QualifiedName(const XMLCh* qualifiedName, XPath2MemoryManager* me
   }
   else
   {
-    _name = XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString;
+    _name = XMLUni::fgZeroLenString;
     _prefix = 0;
   }
 }
@@ -62,30 +63,30 @@ QualifiedName::QualifiedName(const XMLCh* qualifiedName) : _bDeleteStrings(true)
 {
   if(qualifiedName && *qualifiedName)
   {
-    int colonPos=XERCES_CPP_NAMESPACE_QUALIFIER XMLString::indexOf(qualifiedName, XERCES_CPP_NAMESPACE_QUALIFIER chColon, 0);
+    int colonPos=XMLString::indexOf(qualifiedName, chColon, 0);
     if(colonPos == -1) {
-      _name = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::replicate(qualifiedName);
+      _name = XMLString::replicate(qualifiedName);
       _prefix = 0;
     }
     else
     {
       XMLCh* tempPrefix = new XMLCh[colonPos + 1];
-      XERCES_CPP_NAMESPACE_QUALIFIER XMLString::subString(tempPrefix, qualifiedName, 0, colonPos);
+      XMLString::subString(tempPrefix, qualifiedName, 0, colonPos);
       tempPrefix[colonPos] = 0;
-      _prefix = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::replicate(tempPrefix);
+      _prefix = XMLString::replicate(tempPrefix);
       delete [] tempPrefix;
 
-      unsigned int length = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(qualifiedName);
+      unsigned int length = XPath2Utils::uintStrlen(qualifiedName);
       XMLCh* tempName = new XMLCh[length - colonPos];
-      XERCES_CPP_NAMESPACE_QUALIFIER XMLString::subString(tempName, qualifiedName, colonPos + 1, length);
+      XMLString::subString(tempName, qualifiedName, colonPos + 1, length);
       tempName[length - colonPos - 1] = 0;
-      _name = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::replicate(tempName);
+      _name = XMLString::replicate(tempName);
       delete [] tempName;
     }
   }
   else
   {
-    _name = XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString;
+    _name = XMLUni::fgZeroLenString;
     _prefix = 0;
     _bDeleteStrings = false;
   }
@@ -101,8 +102,8 @@ QualifiedName::~QualifiedName()
 {
   if(_bDeleteStrings)
   {
-      XERCES_CPP_NAMESPACE_QUALIFIER XMLString::release((XMLCh**)&_prefix);
-      XERCES_CPP_NAMESPACE_QUALIFIER XMLString::release((XMLCh**)&_name);
+      XMLString::release((XMLCh**)&_prefix);
+      XMLString::release((XMLCh**)&_name);
   }
 }
 
@@ -116,7 +117,7 @@ const XMLCh* QualifiedName::getName() const {
 
 const XMLCh* QualifiedName::getFullName(XPath2MemoryManager* memMgr) const {
 	if(_prefix != NULL) {
-		XMLCh szColon[2] = {XERCES_CPP_NAMESPACE_QUALIFIER chColon, XERCES_CPP_NAMESPACE_QUALIFIER chNull};
+		XMLCh szColon[2] = {chColon, chNull};
 		return XPath2Utils::concatStrings(_prefix, szColon, _name, memMgr);
 	}
 

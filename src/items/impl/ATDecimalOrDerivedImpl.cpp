@@ -498,7 +498,7 @@ MAPM ATDecimalOrDerivedImpl::parseDecimal(const XMLCh* const value)
     XQThrow2(XPath2TypeCastException,X("ATDecimalOrDerivedImpl::setDecimal"), X("Invalid representation of decimal [err:FORG0001]"));
   }
   
-  unsigned int length=XMLString::stringLen(value) + 1;
+  unsigned int length = XPath2Utils::uintStrlen(value) + 1;
 
   AutoDeleteArray<char> buffer(new char[length]);
 

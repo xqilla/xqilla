@@ -452,7 +452,7 @@ void SequenceType::ItemType::getStaticType(StaticType &st, const StaticContext *
 
       isExact = isExact && argTypes_->size() == 0;
 
-      st = StaticType(context->getMemoryManager(), argTypes_->size(), ret);
+      st = StaticType(context->getMemoryManager(), (unsigned int)argTypes_->size(), ret);
     }
     break;
   }

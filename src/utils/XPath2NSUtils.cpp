@@ -31,12 +31,14 @@
 #include <xercesc/util/XMLUniDefs.hpp>
 #include <xercesc/util/XMLString.hpp>
 
+XERCES_CPP_NAMESPACE_USE;
+
 const XMLCh* XPath2NSUtils::getLocalName(const XMLCh* name)
 {
-  unsigned int len=XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(name);
+  unsigned int len=XPath2Utils::uintStrlen(name);
 
   for(unsigned int i = 0; i < len; i++) {
-    if(name[i] == XERCES_CPP_NAMESPACE_QUALIFIER chColon) {
+    if(name[i] == chColon) {
       return name+i+1;
     }
   }
@@ -45,30 +47,30 @@ const XMLCh* XPath2NSUtils::getLocalName(const XMLCh* name)
 
 const XMLCh* XPath2NSUtils::getPrefix(const XMLCh* name, XPath2MemoryManager* memMgr)
 {
-  unsigned int len=XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(name);
+  unsigned int len=XPath2Utils::uintStrlen(name);
   
   for(unsigned int i = 0; i < len; i++) {
-    if(name[i] == XERCES_CPP_NAMESPACE_QUALIFIER chColon) {
+    if(name[i] == chColon) {
       return XPath2Utils::subString(name, 0, i, memMgr);
     }
   }
-  return XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString;
+  return XMLUni::fgZeroLenString;
 }
 
 const XMLCh* XPath2NSUtils::qualifyName(const XMLCh* prefix, const XMLCh* name, XPath2MemoryManager* memMgr)
 {
   if (prefix != NULL) {
-    XMLCh colon[2] = {XERCES_CPP_NAMESPACE_QUALIFIER chColon, XERCES_CPP_NAMESPACE_QUALIFIER chNull};
+    XMLCh colon[2] = {chColon, chNull};
     return XPath2Utils::concatStrings(prefix, colon, name, memMgr);
   } else {
     return name;
   }
 }
 
-XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *XPath2NSUtils::getParent(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *node)
+DOMNode *XPath2NSUtils::getParent(const DOMNode *node)
 {
-  if(node->getNodeType() == XERCES_CPP_NAMESPACE_QUALIFIER DOMNode::ATTRIBUTE_NODE) {
-    return (static_cast<const XERCES_CPP_NAMESPACE_QUALIFIER DOMAttr *>(node))->getOwnerElement();
+  if(node->getNodeType() == DOMNode::ATTRIBUTE_NODE) {
+    return (static_cast<const DOMAttr *>(node))->getOwnerElement();
   }
   else {
     return node->getParentNode();

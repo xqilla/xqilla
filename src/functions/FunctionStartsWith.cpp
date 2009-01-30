@@ -35,11 +35,13 @@
 #include <xercesc/util/XMLString.hpp>
 #include <xercesc/util/XMLUni.hpp>
 
+XERCES_CPP_NAMESPACE_USE
+
 const XMLCh FunctionStartsWith::name[] = {
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_s, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_r, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_s, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chDash,    XERCES_CPP_NAMESPACE_QUALIFIER chLatin_w, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_i, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_h, XERCES_CPP_NAMESPACE_QUALIFIER chNull 
+  chLatin_s, chLatin_t, chLatin_a, 
+  chLatin_r, chLatin_t, chLatin_s, 
+  chDash,    chLatin_w, chLatin_i, 
+  chLatin_t, chLatin_h, chNull 
 };
 const unsigned int FunctionStartsWith::minArgs = 2;
 const unsigned int FunctionStartsWith::maxArgs = 3;
@@ -62,19 +64,19 @@ Sequence FunctionStartsWith::createSequence(DynamicContext* context, int flags) 
 	Sequence sourceString=getParamNumber(1,context)->toSequence(context);
 	Sequence findString=getParamNumber(2,context)->toSequence(context);
 
-	const XMLCh* source = XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString;
+	const XMLCh* source = XMLUni::fgZeroLenString;
   if(!sourceString.isEmpty())
     source=sourceString.first()->asString(context);
-	const XMLCh* find = XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString;
+	const XMLCh* find = XMLUni::fgZeroLenString;
   if(!findString.isEmpty())
     find=findString.first()->asString(context);
 
 	// If the value of $operand1 is the zero-length string and the value of $operand2 is not the zero-length string, 
 	// then the function returns false. 
-	if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(source)==0 && XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(find)>0)
+	if(XMLString::stringLen(source)==0 && XMLString::stringLen(find)>0)
 		return Sequence(context->getItemFactory()->createBoolean(false, context), memMgr);
 	// If the value of $operand2 is the zero-length string, then the function returns true
-	if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(find)==0)
+	if(XMLString::stringLen(find)==0)
 		return Sequence(context->getItemFactory()->createBoolean(true, context), memMgr);
 
 	Collation* collation=NULL;
@@ -94,10 +96,10 @@ Sequence FunctionStartsWith::createSequence(DynamicContext* context, int flags) 
 	// Returns a boolean indicating whether or not the value of $operand1 ends with a string that is equal to the value 
 	// of $operand2 according to the specified collation
 
-	if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(find)>XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(source)) {
+	if(XMLString::stringLen(find)>XMLString::stringLen(source)) {
 		return Sequence(context->getItemFactory()->createBoolean(false, context), memMgr);
 	}
-	const XMLCh* string = XPath2Utils::subString(source, 0,XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(find), memMgr);
+	const XMLCh* string = XPath2Utils::subString(source, 0, XPath2Utils::uintStrlen(find), memMgr);
 	bool result = (collation->compare(string,find)==0);
 
 	return Sequence(context->getItemFactory()->createBoolean(result, context), memMgr);

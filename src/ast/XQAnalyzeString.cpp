@@ -176,13 +176,13 @@ Item::Ptr AnalyzeStringResult::next(DynamicContext *context)
         XQThrow(ASTException, X("AnalyzeStringResult::next"), e.getMessage());
     }
 
-    size_t tokStart = 0;
+    int tokStart = 0;
 
     unsigned int i = 0;
     for(; i < matches_.size(); ++i) {
       Match *match = matches_.elementAt(i);
-      size_t matchStart = match->getStartPos(0);
-      size_t matchEnd = match->getEndPos(0);
+      int matchStart = match->getStartPos(0);
+      int matchEnd = match->getEndPos(0);
 
       if(tokStart < matchStart) {
         const XMLCh *str = XPath2Utils::subString(input_, tokStart, matchStart - tokStart, mm);
@@ -195,8 +195,9 @@ Item::Ptr AnalyzeStringResult::next(DynamicContext *context)
       tokStart = matchEnd;
     }
 
-    if(tokStart < length) {
-      const XMLCh *str = XPath2Utils::subString(input_, tokStart, length - tokStart, mm);
+    if(tokStart < (int) length) {
+      const XMLCh *str = XPath2Utils::subString(input_, tokStart,
+                                                (unsigned int)(length - tokStart), mm);
       strings_.push_back(pair<const XMLCh*, Match*>(str, 0));
     }
   }

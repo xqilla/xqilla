@@ -75,7 +75,7 @@ Sequence FunctionDoc::createSequence(DynamicContext* context, int flags) const
 
   // on Windows, we can have URIs using \ instead of /; let's normalize them
   if(uri != 0) {
-    unsigned int len = XMLString::stringLen(uri);
+    unsigned int len = XPath2Utils::uintStrlen(uri);
     AutoDeleteArray<XMLCh> newURI(new XMLCh[len + 1]);
 
     const XMLCh *src = uri;

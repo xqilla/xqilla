@@ -606,7 +606,7 @@ static MAPM parse(const XMLCh* const value, Numeric::State &state)
     return 0;
   }
   
-  unsigned int length=XMLString::stringLen(value) + 1;
+  unsigned int length = XPath2Utils::uintStrlen(value) + 1;
 
   AutoDeleteArray<char> buffer(new char[length]);
 

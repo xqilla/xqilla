@@ -35,6 +35,7 @@
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 #include <xqilla/mapm/m_apm.h>
 #include "../../utils/DateUtils.hpp"
+#include <xqilla/utils/XPath2Utils.hpp>
 
 #if defined(XERCES_HAS_CPP_NAMESPACE)
 XERCES_CPP_NAMESPACE_USE
@@ -542,7 +543,7 @@ void ATDurationOrDerivedImpl::setDuration(const XMLCh* const s)
 
 void ATDurationOrDerivedImpl::parseDuration(const XMLCh *const s, MAPM &months, MAPM &seconds)
 {
-  unsigned int length = XMLString::stringLen(s);
+  unsigned int length = XPath2Utils::uintStrlen(s);
  
   if(s == 0) {
     XQThrow2(XPath2TypeCastException,X("XSDurationImpl::setDuration"), X("Invalid representation of duration [err:FORG0001]"));

@@ -64,6 +64,8 @@ public:
   static bool equals(const XMLCh *const str1, const XMLCh *const str2);
   static int compare(const XMLCh *str1, const XMLCh *str2);
 
+  static int intStrlen(const XMLCh *src);
+  static unsigned int uintStrlen(const XMLCh *src);
   /**
    * Return the specified substring.
    */
@@ -162,5 +164,14 @@ inline void XPath2Utils::numToBuf(int n, XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffe
   }
 }
 
+inline int XPath2Utils::intStrlen(const XMLCh *src)
+{
+  return (int) XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(src);        
+}
+
+inline unsigned int XPath2Utils::uintStrlen(const XMLCh *src)
+{
+  return (unsigned int) XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(src);        
+}
 #endif
 

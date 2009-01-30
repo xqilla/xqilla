@@ -42,6 +42,7 @@
 #include <xqilla/items/Timezone.hpp>
 #include <xqilla/items/impl/ATDecimalOrDerivedImpl.hpp>
 #include <xqilla/context/ItemFactory.hpp>
+#include <xqilla/utils/XPath2Utils.hpp>
 
 #include <limits.h>   // for INT_MIN and INT_MAX
 #include <stdlib.h>   // for atoi
@@ -544,7 +545,7 @@ AnyAtomicType::AtomicObjectType ATDateTimeOrDerivedImpl::getPrimitiveTypeIndex()
 }
 
 void ATDateTimeOrDerivedImpl::setDateTime(const XMLCh* const dateTime) {
-  unsigned int length = XMLString::stringLen(dateTime);
+  unsigned int length = XPath2Utils::uintStrlen(dateTime);
 
   if(dateTime == 0) {
     XQThrow2(XPath2TypeCastException,X("ATDateTimeOrDerivedImpl::setDateTime"), X("Invalid representation of dateTime [err:FORG0001]"));

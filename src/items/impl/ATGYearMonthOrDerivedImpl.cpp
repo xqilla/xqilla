@@ -35,6 +35,7 @@
 #include "../../utils/DateUtils.hpp"
 #include <xqilla/context/ItemFactory.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
+#include <xqilla/utils/XPath2Utils.hpp>
 
 #include <xercesc/util/XMLString.hpp>
 
@@ -160,7 +161,7 @@ AnyAtomicType::AtomicObjectType ATGYearMonthOrDerivedImpl::getPrimitiveTypeIndex
 
 /* parse the gYearMonth */
 void ATGYearMonthOrDerivedImpl::setGYearMonth(const XMLCh* const value) {
- unsigned int length = XMLString::stringLen(value);
+        unsigned int length = XPath2Utils::uintStrlen(value);
  
 	if(value == NULL) {
  	  XQThrow2(XPath2TypeCastException,X("ATGYearMonthOrDerivedImpl::setGYearMonth"), X("Invalid representation of gYearMonth [err:FORG0001]"));
