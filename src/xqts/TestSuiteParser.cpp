@@ -387,7 +387,11 @@ void TestSuiteParser::startElement(const XMLCh* const uri, const XMLCh* const lo
 //     }
 }
 
+#if _XERCES_VERSION >= 30000
+void TestSuiteParser::characters(const XMLCh *const chars, const XMLSize_t length)
+#else
 void TestSuiteParser::characters(const XMLCh *const chars, const unsigned int length)
+#endif
 {
     XMLBuffer buff;
     buff.set(chars,length);
