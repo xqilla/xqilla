@@ -81,6 +81,7 @@ public:
   virtual XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool *getGrammarPool();
 
 protected:
+  XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *_createdWith;
   /// Used for creating objects returned from DOMXPathEvaluator methods
   ProxyMemoryManager _memMgr;
 

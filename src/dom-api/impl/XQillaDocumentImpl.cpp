@@ -54,6 +54,7 @@ XQillaDocumentImpl::XQillaDocumentImpl(DOMImplementation* domImpl,
 #else
   : DOMDocumentImpl(memMgr),
 #endif
+    _createdWith(memMgr),
     _memMgr(memMgr),
     _xmlGrammarPool(0),
     _adoptGramPool(false)
@@ -69,6 +70,7 @@ XQillaDocumentImpl::XQillaDocumentImpl(const XMLCh* namespaceURI, const XMLCh* q
 #else
   : DOMDocumentImpl(namespaceURI, qualifiedName, doctype, memMgr),
 #endif
+    _createdWith(memMgr),
     _memMgr(memMgr),
     _xmlGrammarPool(0),
     _adoptGramPool(false)
@@ -93,8 +95,8 @@ XQillaDocumentImpl::createExpression(const XMLCh* expression,
 {
   // Use placement new, because XQillaExpressionImpl inherits from XercesConfiguration,
   // which inherits from XMemory - which screws up our operator new overload
-  void *mem = _memMgr.allocate(sizeof(XQillaExpressionImpl));
-  new (mem) XQillaExpressionImpl(expression, &_memMgr, resolver, _xmlGrammarPool);
+  void *mem = _createdWith->allocate(sizeof(XQillaExpressionImpl));
+  new (mem) XQillaExpressionImpl(expression, _createdWith, resolver, _xmlGrammarPool);
   return (XQillaExpressionImpl*)mem;
 }
 
