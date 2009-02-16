@@ -42,8 +42,10 @@ XERCES_CPP_NAMESPACE_USE
 #include <iostream>
 
 static const unsigned int CHUNK_SIZE = 32 * 1024;
-#if defined(__HP_aCC) && defined(__ia64)
+#if (defined(__HP_aCC) && defined(__ia64)) || defined(__sparcv9)
 #define ALLOC_ALIGN 16
+#elif defined(__sparcv8)
+#define ALLOC_ALIGN 8
 #else
 #define ALLOC_ALIGN 4
 #endif
