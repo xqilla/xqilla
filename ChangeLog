@@ -1,5 +1,18 @@
 XQilla: an XQuery and XPath 2.0 library and command line interpreter.
 
+version 2.2.1 (2009.03.13):
+	* Fixed alignment on sparc architectures that could cause a SIGBUS 
+	  crash.
+	* Workarounds for a bug in Xerces-C that can cause corrupted memory 
+	  when deleting a mutex.
+	* Fixed a Windows memory bug involving the URI used in resolving a
+	  document or collection.
+	* Fixed Windows compile warnings related to Xerces-C types.
+	* Fixed a couple of bugs in the debug API, and made it report exit() 
+	  and end() events correctly.
+	* Fixing a bug related to unsigned int/XMLSize_t type difference 
+	  between Xerces 2.8 and 3.0.
+	
 version 2.2.0 (2009.01.05):
 	* Added a debugging API, and a command line debugger invoked by passing
 	  a "-d" flag to the command line tool.
