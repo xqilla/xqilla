@@ -92,10 +92,10 @@ Sequence FunctionNormalizeUnicode::createSequence(DynamicContext* context, int f
         if((ch != 0x9) && (ch != 0xA) && (ch != 0xD) && (ch != 0x20))
           break;
       }
-      const XMLCh *frontChop = XPath2Utils::subString(normalization, i,XMLString::stringLen(normalization)-i, memMgr);
+      const XMLCh *frontChop = XPath2Utils::subString(normalization, i, XPath2Utils::uintStrlen(normalization)-i, memMgr);
 
       // remove trailing spaces
-      for(i = XMLString::stringLen(frontChop)-1; i !=0 ; i--) 
+      for(i = XPath2Utils::uintStrlen(frontChop)-1; i !=0 ; i--) 
       {
         XMLCh ch = frontChop[i];
         if((ch != 0x9) && (ch != 0xA) && (ch != 0xD) && (ch != 0x20))

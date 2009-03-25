@@ -39,6 +39,7 @@
 #include <xercesc/util/regx/RegxUtil.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 
+XERCES_CPP_NAMESPACE_USE
 
 ATStringOrDerivedImpl::
 ATStringOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* value, const StaticContext* context): 
@@ -64,7 +65,7 @@ const XMLCh* ATStringOrDerivedImpl::getPrimitiveTypeName() const {
 }
 
 const XMLCh* ATStringOrDerivedImpl::getPrimitiveName()  {
-  return XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgDT_STRING;
+  return SchemaSymbols::fgDT_STRING;
 }
 
 /* Get the name of this type  (ie "integer" for xs:integer) */
@@ -107,10 +108,10 @@ Result ATStringOrDerivedImpl::asCodepoints(const DynamicContext* context) const 
   unsigned int length = this->getLength();
   Sequence result(length,context->getMemoryManager());
   for(unsigned int i=0; i<length; i++) {
-    if(XERCES_CPP_NAMESPACE_QUALIFIER RegxUtil::isHighSurrogate(_value[i]) && (i+1)<length && 
-       XERCES_CPP_NAMESPACE_QUALIFIER RegxUtil::isLowSurrogate(_value[i+1]))
+    if(RegxUtil::isHighSurrogate(_value[i]) && (i+1)<length && 
+       RegxUtil::isLowSurrogate(_value[i+1]))
     {
-      result.addItem(context->getItemFactory()->createInteger((long int)XERCES_CPP_NAMESPACE_QUALIFIER RegxUtil::composeFromSurrogate(_value[i], _value[i+1]), context));
+      result.addItem(context->getItemFactory()->createInteger((long int)RegxUtil::composeFromSurrogate(_value[i], _value[i+1]), context));
       i++;
     }
     else
@@ -131,10 +132,10 @@ ATStringOrDerived::Ptr ATStringOrDerivedImpl::substring(const Numeric::Ptr &star
   const Numeric::Ptr endIndex = startIndex->add(length->round(context), context);
 
   if(startIndex->greaterThan(strLength, context) || startIndex->greaterThan(endIndex, context)) {
-    return context->getItemFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context);
+    return context->getItemFactory()->createString(XMLUni::fgZeroLenString, context);
   }
 
-  XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buffer(1023, context->getMemoryManager());
+  XMLBuffer buffer(1023, context->getMemoryManager());
   Numeric::Ptr index = one;
 
   // i is kept at one less than index, since XMLCh* start at index 0
@@ -146,13 +147,13 @@ ATStringOrDerived::Ptr ATStringOrDerivedImpl::substring(const Numeric::Ptr &star
     {
       buffer.append(_value[i]);
       // if it's a non-BMP char, add the following too
-      if(XERCES_CPP_NAMESPACE_QUALIFIER RegxUtil::isHighSurrogate(_value[i]) && (i+1)<nLength && 
-         XERCES_CPP_NAMESPACE_QUALIFIER RegxUtil::isLowSurrogate(_value[i+1]))
+      if(RegxUtil::isHighSurrogate(_value[i]) && (i+1)<nLength && 
+         RegxUtil::isLowSurrogate(_value[i+1]))
         buffer.append(_value[++i]);
     }
     // otherwise, skip the next one too
-    else if(XERCES_CPP_NAMESPACE_QUALIFIER RegxUtil::isHighSurrogate(_value[i]) && (i+1)<nLength && 
-            XERCES_CPP_NAMESPACE_QUALIFIER RegxUtil::isLowSurrogate(_value[i+1]))
+    else if(RegxUtil::isHighSurrogate(_value[i]) && (i+1)<nLength && 
+            RegxUtil::isLowSurrogate(_value[i+1]))
       i++;
   }
 
@@ -169,7 +170,7 @@ ATStringOrDerived::Ptr ATStringOrDerivedImpl::substringAfter(const ATStringOrDer
 	}
 
 	if(patternLength > containerLength) {
-		return context->getItemFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context);
+		return context->getItemFactory()->createString(XMLUni::fgZeroLenString, context);
 	}
 
 	const XMLCh* patternStr = pattern->asString(context);
@@ -189,7 +190,7 @@ ATStringOrDerived::Ptr ATStringOrDerivedImpl::substringAfter(const ATStringOrDer
 		}
 	}
 	
-	return context->getItemFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context);
+	return context->getItemFactory()->createString(XMLUni::fgZeroLenString, context);
 }
 
 /* returns the substring that occurs before the first occurence of pattern */
@@ -202,7 +203,7 @@ ATStringOrDerived::Ptr ATStringOrDerivedImpl::substringBefore(const ATStringOrDe
 	}
 
 	if(patternLength > containerLength) {
-		return context->getItemFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context);
+		return context->getItemFactory()->createString(XMLUni::fgZeroLenString, context);
 	}
 
 	const XMLCh* patternStr = pattern->asString(context);
@@ -220,11 +221,11 @@ ATStringOrDerived::Ptr ATStringOrDerivedImpl::substringBefore(const ATStringOrDe
 			return context->getItemFactory()->createString(value, context);
     }
   }
-	return context->getItemFactory()->createString(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context);
+	return context->getItemFactory()->createString(XMLUni::fgZeroLenString, context);
 }
 
 unsigned int ATStringOrDerivedImpl::getLength() const {
-  return XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(_value);
+  return XPath2Utils::uintStrlen(_value);
 }
 
 /* returns true if the two objects' are equal (string comparison)

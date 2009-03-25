@@ -302,8 +302,8 @@ void DocumentCacheImpl::parseDocument(InputSource &srcToUse, EventHandler *handl
 static inline void setLocation(LocationInfo &info, const Locator *locator)
 {
   info.setLocationInfo(locator->getSystemId(),
-                       locator->getLineNumber(),
-                       locator->getColumnNumber());
+                       (unsigned int)(locator->getLineNumber()),
+                       (unsigned int)(locator->getColumnNumber()));
 }
 
 #define LOCATION setLocation(location_, scanner_->getLocator())
@@ -340,21 +340,15 @@ void DocumentCacheImpl::resetDocument()
 {
 }
 
-#if _XERCES_VERSION >= 30000
 void DocumentCacheImpl::startElement(const XMLElementDecl& elemDecl, const unsigned int urlId,
                                      const XMLCh* const elemPrefix, const RefVectorOf<XMLAttr>& attrList,
-                                     const XMLSize_t attrCount, const bool isEmpty, const bool isRoot)
-#else
-void DocumentCacheImpl::startElement(const XMLElementDecl& elemDecl, const unsigned int urlId,
-                                     const XMLCh* const elemPrefix, const RefVectorOf<XMLAttr>& attrList,
-                                     const unsigned int attrCount, const bool isEmpty, const bool isRoot)
-#endif
+                                     const XercesSizeUint attrCount, const bool isEmpty, const bool isRoot)
 {
   LOCATION;
   events_->startElementEvent(emptyToNull(elemPrefix), emptyToNull(scanner_->getURIText(urlId)), elemDecl.getBaseName());
 
   attrList_ = &attrList;
-  attrCount_ = attrCount;
+  attrCount_ = (unsigned int) attrCount;
   if(!scanner_->getDoSchema() || scanner_->getCurrentGrammarType() != Grammar::SchemaGrammarType) {
     handleAttributesPSVI(0, 0, 0);
   }
@@ -392,14 +386,10 @@ void DocumentCacheImpl::endElement(const XMLElementDecl& elemDecl, const unsigne
   elementInfo_ = 0;
 }
 
-#if _XERCES_VERSION >= 30000
-void DocumentCacheImpl::docCharacters(const XMLCh* const chars, const XMLSize_t length, const bool cdataSection)
-#else
-void DocumentCacheImpl::docCharacters(const XMLCh* const chars, const unsigned int length, const bool cdataSection)
-#endif
+void DocumentCacheImpl::docCharacters(const XMLCh* const chars, const XercesSizeUint length, const bool cdataSection)
 {
   LOCATION;
-  events_->textEvent(chars, length);
+  events_->textEvent(chars, (unsigned int)length);
 }
 
 void DocumentCacheImpl::docComment(const XMLCh* const comment)
@@ -414,13 +404,8 @@ void DocumentCacheImpl::docPI(const XMLCh* const target, const XMLCh* const data
   events_->piEvent(target, data);
 }
 
-#if _XERCES_VERSION >= 30000
-void DocumentCacheImpl::ignorableWhitespace(const XMLCh* const chars, const XMLSize_t length,
+void DocumentCacheImpl::ignorableWhitespace(const XMLCh* const chars, const XercesSizeUint length,
                                             const bool cdataSection)
-#else
-void DocumentCacheImpl::ignorableWhitespace(const XMLCh* const chars, const unsigned int length,
-                                            const bool cdataSection)
-#endif
 {
   // No-op
 }

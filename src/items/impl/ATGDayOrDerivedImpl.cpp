@@ -33,6 +33,7 @@
 #include <xqilla/items/ATDecimalOrDerived.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/context/ItemFactory.hpp>
+#include <xqilla/utils/XPath2Utils.hpp>
 
 #include <xercesc/util/XMLString.hpp>
 
@@ -161,7 +162,7 @@ void ATGDayOrDerivedImpl::setGDay(const XMLCh* const value) {
       XQThrow2(XPath2TypeCastException,X("ATGDayOrDerivedImpl::setGDay"),
                X("Invalid representation of gDay [err:FORG0001]"));
   }
-  unsigned int length = XMLString::stringLen(value);
+  unsigned int length = XPath2Utils::uintStrlen(value);
 	
   // State variables etc.
   bool gotDigit = false;

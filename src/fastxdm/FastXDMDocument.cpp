@@ -120,7 +120,7 @@ FastXDMDocument::Namespace *FastXDMDocument::getNamespace(unsigned int i)
     if(numNodes_ == 0 || !textBuffer_.isEmpty()) { \
       if(numNodes_ == maxNodes_) resizeNodes(); \
 \
-      nodes_[numNodes_].setText(elementStack_.size(), mm_->getPooledString(textBuffer_.getRawBuffer())); \
+      nodes_[numNodes_].setText((unsigned int) elementStack_.size(), mm_->getPooledString(textBuffer_.getRawBuffer())); \
 \
       if(prevNode_ != (unsigned int)-1) \
         getNode(prevNode_)->nextSibling.index = numNodes_; \
@@ -221,8 +221,8 @@ void FastXDMDocument::startElementEvent(const XMLCh *prefix, const XMLCh *uri, c
 
   if(numNodes_ == maxNodes_) resizeNodes();
 
-  nodes_[numNodes_].setElement(elementStack_.size(), mm_->getPooledString(prefix), mm_->getPooledString(uri),
-                               mm_->getPooledString(localname));
+  nodes_[numNodes_].setElement((unsigned int) elementStack_.size(), mm_->getPooledString(prefix),
+                               mm_->getPooledString(uri),  mm_->getPooledString(localname));
 
   if(prevNode_ != (unsigned int)-1)
     getNode(prevNode_)->nextSibling.index = numNodes_;
@@ -247,7 +247,8 @@ void FastXDMDocument::piEvent(const XMLCh *target, const XMLCh *value)
 
   if(numNodes_ == maxNodes_) resizeNodes();
 
-  nodes_[numNodes_].setPI(elementStack_.size(), mm_->getPooledString(target), mm_->getPooledString(value));
+  nodes_[numNodes_].setPI((unsigned int) elementStack_.size(), mm_->getPooledString(target),
+                          mm_->getPooledString(value));
 
   if(prevNode_ != (unsigned int)-1)
     getNode(prevNode_)->nextSibling.index = numNodes_;
@@ -275,7 +276,7 @@ void FastXDMDocument::commentEvent(const XMLCh *value)
 
   if(numNodes_ == maxNodes_) resizeNodes();
 
-  nodes_[numNodes_].setComment(elementStack_.size(), mm_->getPooledString(value));
+  nodes_[numNodes_].setComment((unsigned int) elementStack_.size(), mm_->getPooledString(value));
 
   if(prevNode_ != (unsigned int)-1)
     getNode(prevNode_)->nextSibling.index = numNodes_;

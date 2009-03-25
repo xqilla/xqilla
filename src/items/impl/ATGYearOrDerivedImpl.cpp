@@ -33,6 +33,7 @@
 #include <xqilla/items/ATDecimalOrDerived.hpp>
 #include <xqilla/context/ItemFactory.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
+#include <xqilla/utils/XPath2Utils.hpp>
 
 #include <xercesc/util/XMLString.hpp>
 
@@ -151,7 +152,7 @@ AnyAtomicType::AtomicObjectType ATGYearOrDerivedImpl::getPrimitiveTypeIndex() co
 /* parse the gYear */
 void ATGYearOrDerivedImpl::setGYear(const XMLCh* const value) {
  
-  unsigned int length = XMLString::stringLen(value);
+  unsigned int length = XPath2Utils::uintStrlen(value);
   if(value == NULL) {
     XQThrow2(XPath2TypeCastException,X("ATGYearOrDerivedImpl::setGYear"), X("Invalid representation of gYear [err:FORG0001]"));
   }

@@ -229,7 +229,8 @@ public:
 
     stack_.back().seenOne = true;
 
-    escapeString(value, XMLString::stringLen(value));
+
+    escapeString(value, XPath2Utils::uintStrlen(value));
   }
 
   virtual void textEvent(const XMLCh *chars, unsigned int length)

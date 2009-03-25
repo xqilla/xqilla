@@ -37,6 +37,7 @@
 #include <xqilla/items/ATGYearOrDerived.hpp>
 #include <xqilla/items/Timezone.hpp>
 #include <xqilla/context/ItemFactory.hpp>
+#include <xqilla/utils/XPath2Utils.hpp>
 
 #include <limits.h>   // for INT_MIN and INT_MAX
 #include <stdlib.h>   // for atoi
@@ -401,7 +402,7 @@ AnyAtomicType::AtomicObjectType ATDateOrDerivedImpl::getPrimitiveTypeIndex() con
 }
 
 void ATDateOrDerivedImpl::setDate(const XMLCh* const date) {
-  unsigned int length = XMLString::stringLen(date);
+  unsigned int length = XPath2Utils::uintStrlen(date);
  
   if(date == 0) {
       XQThrow2(XPath2TypeCastException,X("ATDateOrDerived::setDate"), X("Invalid representation of date [err:FORG0001]"));

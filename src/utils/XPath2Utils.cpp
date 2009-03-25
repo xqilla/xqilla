@@ -162,7 +162,7 @@ const XMLCh* XPath2Utils::deleteData( const XMLCh* const target, unsigned int of
     return 0;
   }
 
-  unsigned int targetSize = XMLString::stringLen(target); 
+  unsigned int targetSize = uintStrlen(target);
   unsigned int newSize =  targetSize - count;
   AutoDeleteArray<XMLCh> stringGuard(new XMLCh [newSize + 1]);
   XMLCh *newString = stringGuard;
@@ -199,8 +199,8 @@ const XMLCh* XPath2Utils::toCollapsedWS(const XMLCh* const target, XPath2MemoryM
 }
 
 const XMLCh* XPath2Utils::normalizeEOL(const XMLCh* const src, XPath2MemoryManager* memMgr) {
-    int len=XMLString::stringLen(src);
-	int j=0;
+    int len=intStrlen(src);
+    int j=0;
     XMLCh* dst=(XMLCh*)memMgr->allocate((len+1)*sizeof(XMLCh*));
     // A.2.3 End-of-Line Handling
     // For [XML 1.0] processing, all of the following must be translated to a single #xA character:
@@ -231,7 +231,7 @@ std::vector<const XMLCh*> XPath2Utils::getVal(const XMLCh* values, XPath2MemoryM
   
   /* XPath requires this bizarre WS separated splitting of the string, as the
      string can hold many id's. */
-  int valuesLen = XMLString::stringLen(values);
+  int valuesLen = intStrlen(values);
   
 
   
@@ -288,7 +288,7 @@ void XPath2Utils::readSource(BinInputStream *stream, MemoryManager *mm, XMLBuffe
                              const XMLCh *encoding, bool sniffEncoding)
 {
   XMLByte buffer[BUFFER_SIZE];
-  unsigned int nRead = 0;
+  XercesSizeUint nRead = 0;
 
   Janitor<XMLTranscoder> transcoder(NULL);
   XMLTransService::Codes retCode;
@@ -332,13 +332,8 @@ void XPath2Utils::readSource(BinInputStream *stream, MemoryManager *mm, XMLBuffe
 
   XMLCh tempBuff[BUFFER_SIZE];
   unsigned char charSizes[BUFFER_SIZE];
-#if _XERCES_VERSION >= 30000
-  XMLSize_t bytesEaten = 0, nOffset = 0;
-  XMLSize_t nCount;
-#else
-  unsigned int bytesEaten = 0, nOffset = 0;
-  unsigned int nCount;
-#endif
+  XercesSizeUint bytesEaten = 0, nOffset = 0;
+  XercesSizeUint nCount;
 
   do {
     nCount = transcoder->transcodeFrom(buffer, nRead, tempBuff, BUFFER_SIZE, bytesEaten, charSizes);

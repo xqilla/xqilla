@@ -26,10 +26,7 @@
 
 #include <xercesc/sax/InputSource.hpp>
 #include <xercesc/util/BinInputStream.hpp>
-
-#if _XERCES_VERSION < 30000
-typedef unsigned int XMLFilePos;
-#endif
+#include "../config/xqilla_config.h"
 
 class CharInputStream : public XERCES_CPP_NAMESPACE_QUALIFIER BinInputStream
 {
@@ -41,18 +38,14 @@ public :
   {
   }
 
-  virtual XMLFilePos curPos() const
+  virtual XercesFilePos curPos() const
   {
     return pos_;
   }
 
-#if _XERCES_VERSION < 30000
-  virtual unsigned int readBytes(XMLByte* const toFill, const unsigned int maxToRead)
-#else
-  virtual XMLSize_t readBytes(XMLByte* const toFill, const XMLSize_t maxToRead)
-#endif
+  virtual XercesSizeUint readBytes(XMLByte* const toFill, const XercesSizeUint maxToRead)
   {
-    XMLSize_t read = maxToRead;
+    XercesSizeUint read = maxToRead;
     if(read > len_) read = len_;
 
     memcpy(toFill, string_, read);
@@ -70,8 +63,8 @@ public :
 
 private:
   const char *string_;
-  XMLFilePos len_;
-  XMLFilePos pos_;
+  XMLSize_t len_;
+  XercesFilePos pos_;
 };
 
 class CharInputSource : public XERCES_CPP_NAMESPACE_QUALIFIER InputSource
@@ -101,18 +94,14 @@ public :
   {
   }
 
-  virtual XMLFilePos curPos() const
+  virtual XercesFilePos curPos() const
   {
     return pos_;
   }
 
-#if _XERCES_VERSION < 30000
-  virtual unsigned int readBytes(XMLByte* const toFill, const unsigned int maxToRead)
-#else
-  virtual XMLSize_t readBytes(XMLByte* const toFill, const XMLSize_t maxToRead)
-#endif
+  virtual XercesSizeUint readBytes(XMLByte* const toFill, const XercesSizeUint maxToRead)
   {
-    XMLSize_t read = fread(toFill, maxToRead, 1, file_);
+    XercesSizeUint read = fread(toFill, maxToRead, 1, file_);
     pos_ += read;
     return read;
   }
@@ -124,7 +113,7 @@ public :
 
 private:
   FILE *file_;
-  XMLFilePos pos_;
+  XercesFilePos pos_;
 };
 
 class FileInputSource : public XERCES_CPP_NAMESPACE_QUALIFIER InputSource
@@ -153,18 +142,14 @@ public :
   {
   }
 
-  virtual XMLFilePos curPos() const
+  virtual XercesFilePos curPos() const
   {
     return pos_;
   }
 
-#if _XERCES_VERSION < 30000
-  virtual unsigned int readBytes(XMLByte* const toFill, const unsigned int maxToRead)
-#else
-  virtual XMLSize_t readBytes(XMLByte* const toFill, const XMLSize_t maxToRead)
-#endif
+  virtual XercesSizeUint readBytes(XMLByte* const toFill, const XercesSizeUint maxToRead)
   {
-    XMLSize_t read = stream_->read(stream_, toFill, maxToRead);
+    unsigned int read = stream_->read(stream_, (void *)toFill, (unsigned int)maxToRead);
     pos_ += read;
     return read;
   }
@@ -176,7 +161,7 @@ public :
 
 private:
   XQC_InputStream *stream_;
-  XMLFilePos pos_;
+  XercesFilePos pos_;
 };
 
 class XQCInputSource : public XERCES_CPP_NAMESPACE_QUALIFIER InputSource

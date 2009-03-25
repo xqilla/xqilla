@@ -58,6 +58,6 @@ ASTNode *FunctionFunctionArity::staticTypingImpl(StaticContext *context)
 Sequence FunctionFunctionArity::createSequence(DynamicContext* context, int flags) const
 {
   FunctionRef::Ptr func = (FunctionRef*)getParamNumber(1, context)->next(context).get();
-  return Sequence(context->getItemFactory()->createInteger(func->getNumArgs(), context),
+  return Sequence(context->getItemFactory()->createInteger((const int)func->getNumArgs(), context),
                   context->getMemoryManager());
 }

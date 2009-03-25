@@ -255,7 +255,7 @@ void XQFunction::parseParamDecl(const char* paramString, XPath2MemoryManager *mm
 
     // get the OccurrenceIndicator
     SequenceType::OccurrenceIndicator occurrence=SequenceType::EXACTLY_ONE;
-    unsigned int len=XMLString::stringLen(tmpCurParam);
+    unsigned int len = XPath2Utils::uintStrlen(tmpCurParam);
     if(len>0)
       switch(tmpCurParam[len-1])
       {

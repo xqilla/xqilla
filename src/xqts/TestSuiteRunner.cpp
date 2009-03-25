@@ -158,7 +158,7 @@ static string loadExpectedResult(const string &file) {
   try {
     Janitor<BinFileInputStream> stream((BinFileInputStream*)URLInputSource(file.c_str()).makeStream());
     if(stream.get()) {
-      unsigned int dwSize=stream->getSize();
+      unsigned int dwSize = (unsigned int)stream->getSize();
       expectedResult.resize(dwSize);
       stream->readBytes((XMLByte*)expectedResult.c_str(), dwSize);
       if(dwSize>3 && 

@@ -36,9 +36,12 @@
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/context/ItemFactory.hpp>
 #include <xqilla/utils/ContextUtils.hpp>
+#include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/exceptions/XPath2TypeCastException.hpp>
 
 #include <xercesc/util/Mutexes.hpp>
+
+XERCES_CPP_NAMESPACE_USE;
 
 const int DateUtils::g_secondsPerMinute = 60;
 const int DateUtils::g_minutesPerHour = 60;
@@ -46,7 +49,7 @@ const int DateUtils::g_hoursPerDay = 24;
 const int DateUtils::g_secondsPerHour = DateUtils::g_secondsPerMinute*DateUtils::g_minutesPerHour;
 const int DateUtils::g_secondsPerDay = DateUtils::g_secondsPerHour*DateUtils::g_hoursPerDay;
 
-void DateUtils::formatNumber(int value, int minDigits, XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer& buffer)
+void DateUtils::formatNumber(int value, int minDigits, XMLBuffer& buffer)
 {
   bool bIsNegative=false;
   if(value<0)
@@ -55,15 +58,15 @@ void DateUtils::formatNumber(int value, int minDigits, XERCES_CPP_NAMESPACE_QUAL
     value=-value;
   }
   XMLCh tmpBuff[19];
-  XERCES_CPP_NAMESPACE_QUALIFIER XMLString::binToText(value,tmpBuff,18,10);
+  XMLString::binToText(value,tmpBuff,18,10);
   if(bIsNegative)
-    buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
-  for(int len=XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(tmpBuff);len<minDigits;len++)
-    buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chDigit_0);
+    buffer.append(chDash);
+  for(int len = XPath2Utils::intStrlen(tmpBuff);len<minDigits;len++)
+    buffer.append(chDigit_0);
   buffer.append(tmpBuff);
 }
 
-void DateUtils::formatNumber(const MAPM &value, int minDigits, XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &buffer)
+void DateUtils::formatNumber(const MAPM &value, int minDigits, XMLBuffer &buffer)
 {
   char obuf[1024];
   value.toIntegerString(obuf);
@@ -71,12 +74,12 @@ void DateUtils::formatNumber(const MAPM &value, int minDigits, XERCES_CPP_NAMESP
   char *str = obuf;
   if(value.sign() < 0) {
     ++str;
-    buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chDash);
+    buffer.append(chDash);
   }
 
   size_t length = strlen(str);
   for(int i = (int)length; i < minDigits; ++i) {
-    buffer.append(XERCES_CPP_NAMESPACE_QUALIFIER chDigit_0);
+    buffer.append(chDigit_0);
   }
 
   buffer.append(X(str));
@@ -329,12 +332,12 @@ const ATTimeOrDerived::Ptr DateUtils::getCurrentTime(const DynamicContext* conte
   return time->setTimezone(new Timezone(ContextUtils::getTimezone()), context);
 }
 
-static XERCES_CPP_NAMESPACE_QUALIFIER XMLMutex *time_mutex = 0;
+static XMLMutex *time_mutex = 0;
 
 void DateUtils::initialize()
 {
   if(time_mutex == 0) {
-    time_mutex = new XERCES_CPP_NAMESPACE_QUALIFIER XMLMutex();
+    time_mutex = new XMLMutex();
   }
 }
 
@@ -346,7 +349,7 @@ void DateUtils::terminate()
 
 struct tm *DateUtils::threadsafe_localtime(const time_t *timep, struct tm *result)
 {
-  XERCES_CPP_NAMESPACE_QUALIFIER XMLMutexLock lock(time_mutex);
+  XMLMutexLock lock(time_mutex);
 
   struct tm *tmp = ::localtime(timep);
   memcpy(result, tmp, sizeof(struct tm));
@@ -355,7 +358,7 @@ struct tm *DateUtils::threadsafe_localtime(const time_t *timep, struct tm *resul
 
 struct tm *DateUtils::threadsafe_gmtime(const time_t *timep, struct tm *result)
 {
-  XERCES_CPP_NAMESPACE_QUALIFIER XMLMutexLock lock(time_mutex);
+  XMLMutexLock lock(time_mutex);
 
   struct tm *tmp = ::gmtime(timep);
   memcpy(result, tmp, sizeof(struct tm));

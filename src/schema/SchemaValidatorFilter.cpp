@@ -23,6 +23,7 @@
  * licenced under the Apache License v2.0
  */
 
+#include "../config/xqilla_config.h"
 #include <xqilla/schema/SchemaValidatorFilter.hpp>
 #include <xqilla/schema/DocumentCache.hpp>
 #include <xqilla/items/ATUntypedAtomic.hpp>
@@ -655,7 +656,7 @@ void SchemaValidatorFilter::textEvent(const XMLCh *chars)
         // normalize the character according to schema whitespace facet
         ((SchemaValidator*) fValidator)->normalizeWhiteSpace(tempDV, chars, fWSNormalizeBuf);
         chars = fWSNormalizeBuf.getRawBuffer();
-        len = fWSNormalizeBuf.getLen();
+        len = (unsigned int) fWSNormalizeBuf.getLen();
       }
 
       // tell the schema validation about the character data for checkContent later
@@ -765,7 +766,7 @@ bool SchemaValidatorFilter::laxElementValidation(QName* element, ContentLeafName
 
   if(cv) {
     unsigned int i = 0;
-    unsigned int leafCount = cv->getLeafCount();
+    unsigned int leafCount = (unsigned int) cv->getLeafCount();
 
     for(; i < leafCount; ++i) {
       QName* fElemMap = cv->getLeafNameAt(i);
@@ -855,7 +856,7 @@ bool SchemaValidatorFilter::anyAttributeValidation(SchemaAttDef* attWildCard, un
   }
   else if (wildCardType == XMLAttDef::Any_List) {
     ValueVectorOf<unsigned int>* nameURIList = attWildCard->getNamespaceList();
-    unsigned int listSize = (nameURIList) ? nameURIList->size() : 0;
+    unsigned int listSize = (unsigned int) ((nameURIList) ? nameURIList->size() : 0);
 
     if (listSize) {
       for (unsigned int i=0; i < listSize; i++) {
@@ -969,14 +970,10 @@ XMLElementDecl *SchemaValidatorFilter::createElementDecl(unsigned int uriId, uns
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#if _XERCES_VERSION >= 30000
-void SchemaValidatorFilter::docCharacters(const XMLCh* const chars, const XMLSize_t length, const bool cdataSection)
-#else
-void SchemaValidatorFilter::docCharacters(const XMLCh* const chars, const unsigned int length, const bool cdataSection)
-#endif
+void SchemaValidatorFilter::docCharacters(const XMLCh* const chars, const XercesSizeUint length, const bool cdataSection)
 {
   // The SchemaValidator calls this method to report default element values
-  next_->textEvent(chars, length);
+  next_->textEvent(chars, (unsigned int)length);
 }
 
 void SchemaValidatorFilter::error(const unsigned int errCode, const XMLCh* const errDomain, const XMLErrorReporter::ErrTypes type, const XMLCh* const errorText,

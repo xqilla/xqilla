@@ -920,6 +920,19 @@ ASTNode *PartialEvaluator::optimizeFunctionDeref(XQFunctionDeref *item)
 //
 // Inline variables
 
+static inline unsigned int umultiply(unsigned int a, unsigned int b)
+{
+  return (a == 0 || b == 0) ? 0 :
+    (a == StaticType::UNLIMITED || b == StaticType::UNLIMITED) ? StaticType::UNLIMITED :
+    a * b;
+}
+
+static inline unsigned int uadd(unsigned int a, unsigned int b)
+{
+  return (a == StaticType::UNLIMITED || b == StaticType::UNLIMITED) ? StaticType::UNLIMITED :
+    a + b;
+}
+
 class CountVarUse : public VariableScopeTracker
 {
 public:
@@ -936,12 +949,144 @@ public:
   }
 
 protected:
+  virtual ASTNode *optimizeNav(XQNav *item)
+  {
+    unsigned int factor = 1;
+
+    XQNav::Steps &args = const_cast<XQNav::Steps &>(item->getSteps());
+    for(XQNav::Steps::iterator i = args.begin(); i != args.end(); ++i) {
+      unsigned int tcount = count_;
+      count_ = 0;
+
+      i->step = optimize(i->step);
+
+      count_ = uadd(tcount, umultiply(count_, factor));
+      factor = umultiply(factor, i->step->getStaticAnalysis()
+                         .getStaticType().getMax());
+    }
+    return item;
+  }
+
+  virtual ASTNode *optimizePredicate(XQPredicate *item)
+  {
+    item->setExpression(optimize(const_cast<ASTNode *>(item->getExpression())));
+
+    unsigned int tcount = count_;
+    count_ = 0;
+
+    item->setPredicate(optimize(const_cast<ASTNode *>(item->getPredicate())));
+
+    count_ = uadd(tcount, umultiply(count_, item->getExpression()->
+                                    getStaticAnalysis().getStaticType().getMax()));
+
+    return item;
+  }
+
+  virtual ASTNode *optimizeMap(XQMap *item)
+  {
+    item->setArg1(optimize(item->getArg1()));
+
+    unsigned int tcount = count_;
+    count_ = 0;
+
+    item->setArg2(optimize(item->getArg2()));
+
+    count_ = uadd(tcount, umultiply(count_, item->getArg1()->
+                                    getStaticAnalysis().getStaticType().getMax()));
+
+    return item;
+  }
+
+  virtual TupleNode *optimizeForTuple(ForTuple *item)
+  {
+    item->setParent(optimizeTupleNode(const_cast<TupleNode*>(item->getParent())));
+
+    unsigned int tcount = count_;
+    count_ = 0;
+
+    item->setExpression(optimize(item->getExpression()));
+
+    count_ = uadd(tcount, umultiply(count_, item->getParent()->getMax()));
+
+    return item;
+  }
+
+  virtual TupleNode *optimizeLetTuple(LetTuple *item)
+  {
+    item->setParent(optimizeTupleNode(const_cast<TupleNode*>(item->getParent())));
+
+    unsigned int tcount = count_;
+    count_ = 0;
+
+    item->setExpression(optimize(item->getExpression()));
+
+    count_ = uadd(tcount, umultiply(count_, item->getParent()->getMax()));
+
+    return item;
+  }
+
+  virtual TupleNode *optimizeWhereTuple(WhereTuple *item)
+  {
+    item->setParent(optimizeTupleNode(const_cast<TupleNode*>(item->getParent())));
+
+    unsigned int tcount = count_;
+    count_ = 0;
+
+    item->setExpression(optimize(item->getExpression()));
+
+    count_ = uadd(tcount, umultiply(count_, item->getParent()->getMax()));
+
+    return item;
+  }
+
+  virtual TupleNode *optimizeOrderByTuple(OrderByTuple *item)
+  {
+    item->setParent(optimizeTupleNode(const_cast<TupleNode*>(item->getParent())));
+
+    unsigned int tcount = count_;
+    count_ = 0;
+
+    item->setExpression(optimize(item->getExpression()));
+
+    count_ = uadd(tcount, umultiply(count_, item->getParent()->getMax()));
+
+    return item;
+  }
+
+  virtual ASTNode *optimizeReturn(XQReturn *item)
+  {
+    item->setParent(optimizeTupleNode(const_cast<TupleNode*>(item->getParent())));
+
+    unsigned int tcount = count_;
+    count_ = 0;
+
+    item->setExpression(optimize(item->getExpression()));
+
+    count_ = uadd(tcount, umultiply(count_, item->getParent()->getMax()));
+
+    return item;
+  }
+
+  virtual ASTNode *optimizeQuantified(XQQuantified *item)
+  {
+    item->setParent(optimizeTupleNode(const_cast<TupleNode*>(item->getParent())));
+
+    unsigned int tcount = count_;
+    count_ = 0;
+
+    item->setExpression(optimize(item->getExpression()));
+
+    count_ = uadd(tcount, umultiply(count_, item->getParent()->getMax()));
+
+    return item;
+  }
+
   virtual ASTNode *optimizeVariable(XQVariable *item)
   {
     if(active_ &&
        XPath2Utils::equals(item->getName(), name_) &&
        XPath2Utils::equals(item->getURI(), uri_)) {
-      ++count_;
+      count_ = uadd(count_, 1);
     }
     return item;
   }
@@ -949,48 +1094,53 @@ protected:
   unsigned int count_;
 };
 
-static void countLetUsage(ASTNode *expr, map<LetTuple*, unsigned int> &toCount)
+static void countLetUsage(ASTNode *expr, map<LetTuple*, unsigned int> &toCount, unsigned int factor)
 {
   CountVarUse counter;
   map<LetTuple*, unsigned int>::iterator j = toCount.begin();
   for(; j != toCount.end(); ++j) {
-    j->second += counter.run(j->first->getVarURI(), j->first->getVarName(), expr);
+    unsigned int ecount = counter.run(j->first->getVarURI(), j->first->getVarName(), expr);
+    j->second = uadd(j->second, umultiply(factor, ecount));
   }
 }
 
-static void findLetsToInline(TupleNode *ancestor, vector<LetTuple*> &toInline, map<LetTuple*, unsigned int> &toCount, bool seenFor = false)
+static void findLetsToInline(TupleNode *ancestor, vector<LetTuple*> &toInline, map<LetTuple*, unsigned int> &toCount)
 {
   if(ancestor == 0) return;
 
   switch(ancestor->getType()) {
   case TupleNode::LET: {
-    findLetsToInline(ancestor->getParent(), toInline, toCount, seenFor);
+    findLetsToInline(ancestor->getParent(), toInline, toCount);
 
     LetTuple *f = (LetTuple*)ancestor;
 
-    countLetUsage(f->getExpression(), toCount);
+    countLetUsage(f->getExpression(), toCount,
+                  ancestor->getParent()->getMax());
 
     if(f->getExpression()->isConstant() ||
        f->getExpression()->getType() == ASTNode::VARIABLE ||
        f->getExpression()->getType() == ASTNode::CONTEXT_ITEM) {
       toInline.push_back(f);
     }
-    else if(!seenFor) {
+    else {
       toCount[f] = 0;
     }
     break;
   }
   case TupleNode::WHERE:
-    findLetsToInline(ancestor->getParent(), toInline, toCount, seenFor);
-    countLetUsage(((WhereTuple*)ancestor)->getExpression(), toCount);
+    findLetsToInline(ancestor->getParent(), toInline, toCount);
+    countLetUsage(((WhereTuple*)ancestor)->getExpression(), toCount,
+                  ancestor->getParent()->getMax());
     break;
   case TupleNode::ORDER_BY:
-    findLetsToInline(ancestor->getParent(), toInline, toCount, seenFor);
-    countLetUsage(((OrderByTuple*)ancestor)->getExpression(), toCount);
+    findLetsToInline(ancestor->getParent(), toInline, toCount);
+    countLetUsage(((OrderByTuple*)ancestor)->getExpression(), toCount,
+                  ancestor->getParent()->getMax());
     break;
   case TupleNode::FOR:
-    findLetsToInline(ancestor->getParent(), toInline, toCount, /*seenFor*/true);
-    countLetUsage(((ForTuple*)ancestor)->getExpression(), toCount);
+    findLetsToInline(ancestor->getParent(), toInline, toCount);
+    countLetUsage(((ForTuple*)ancestor)->getExpression(), toCount,
+                  ancestor->getParent()->getMax());
     break;
   case TupleNode::CONTEXT_TUPLE:
   case TupleNode::DEBUG_HOOK:
@@ -1003,7 +1153,8 @@ static ASTNode *inlineLets(XQReturn *item, DynamicContext *context, size_t &size
   map<LetTuple*, unsigned int> toCount;
   vector<LetTuple*> toInline;
   findLetsToInline(const_cast<TupleNode*>(item->getParent()), toInline, toCount);
-  countLetUsage(item->getExpression(), toCount);
+  countLetUsage(item->getExpression(), toCount,
+                item->getParent()->getMax());
 
   InlineVar inliner;
   vector<LetTuple*>::iterator i = toInline.begin();
@@ -1013,7 +1164,7 @@ static ASTNode *inlineLets(XQReturn *item, DynamicContext *context, size_t &size
 
   map<LetTuple*, unsigned int>::iterator j = toCount.begin();
   for(; j != toCount.end(); ++j) {
-    if(j->second <= 1) {
+    if(j->second != StaticType::UNLIMITED && j->second <= 1) {
       inliner.inlineLet(item, j->first, context, sizeLimit);
     }
   }

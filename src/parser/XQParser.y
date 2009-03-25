@@ -4817,6 +4817,7 @@ FTPosFilters:
 // [145]    FTOr    ::=    FTAnd ( "ftor" FTAnd )*
 FTOr:
   FTOr _FTOR_ FTAnd
+/*   FTOr _OR_ FTAnd */
   {
     if($1->getType() == FTSelection::OR) {
       FTOr *op = (FTOr*)$1;
@@ -4833,6 +4834,7 @@ FTOr:
 // [146]    FTAnd    ::=    FTMildnot ( "ftand" FTMildnot )*
 FTAnd:
   FTAnd _FTAND_ FTMildnot
+/*   FTAnd _AND_ FTMildnot */
   {
     if($1->getType() == FTSelection::AND) {
       FTAnd *op = (FTAnd*)$1;
@@ -4858,6 +4860,7 @@ FTMildnot:
 // [148]    	FTUnaryNot 	   ::=    	("ftnot")? FTPrimaryWithOptions
 FTUnaryNot:
   _FTNOT_ FTPrimaryWithOptions
+/*   _NOT_ FTPrimaryWithOptions */
   {
     $$ = WRAP(@1, new (MEMMGR) FTUnaryNot($2, MEMMGR));
   }
@@ -5728,7 +5731,7 @@ _DIFFERENT_ | _LOWERCASE_ | _UPPERCASE_ | _RELATIONSHIP_ | _LEVELS_ | _LANGUAGE_
 _EXACTLY_ | _FROM_ | _WORDS_ | _SENTENCES_ | _PARAGRAPHS_ | _SENTENCE_ | _PARAGRAPH_ | _REPLACE_ | _MODIFY_ | _FIRST_ |
 _INSERT_ | _BEFORE_ | _AFTER_ | _REVALIDATION_ | _WITH_ | _NODES_ | _RENAME_ | _LAST_ | _DELETE_ | _INTO_ | _UPDATING_ |
 _ORDERED_ | _UNORDERED_ | _ID_ | _KEY_ | _TEMPLATE_ | _MATCHES_ | _NAME_ | _CALL_ | _APPLY_ | _TEMPLATES_ | _MODE_ |
-_FTOR_ | _FTAND_
+_FTOR_ | _FTAND_ | _FTNOT_
   ;
 
 /* _XQUERY_ | */

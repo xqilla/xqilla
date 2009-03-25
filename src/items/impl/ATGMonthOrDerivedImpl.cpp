@@ -33,6 +33,7 @@
 #include <xqilla/items/ATDecimalOrDerived.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/context/ItemFactory.hpp>
+#include <xqilla/utils/XPath2Utils.hpp>
 
 #include <xercesc/util/XMLString.hpp>
 
@@ -158,7 +159,7 @@ AnyAtomicType::AtomicObjectType ATGMonthOrDerivedImpl::getPrimitiveTypeIndex() c
 /* parse the gMonth */
 void ATGMonthOrDerivedImpl::setGMonth(const XMLCh* const value) {
  
-   unsigned int length = XMLString::stringLen(value);
+   unsigned int length = XPath2Utils::uintStrlen(value);
  
   if(value == NULL) {
     XQThrow2(XPath2TypeCastException,X("XSGMonthImpl::setGMonth"), X("Invalid representation of gMonth [err:FORG0001]"));

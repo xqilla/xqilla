@@ -67,7 +67,11 @@ private:
   virtual void startElement(const XMLCh* const uri, const XMLCh* const localname, const XMLCh* const qname,
                             const XERCES_CPP_NAMESPACE_QUALIFIER Attributes&  attributes);
   virtual void endElement(const XMLCh* const uri, const XMLCh* const localname,	const XMLCh* const qname);
+#if _XERCES_VERSION >= 30000
+  virtual void characters(const XMLCh* const chars, const XMLSize_t length);
+#else
   virtual void characters(const XMLCh* const chars, const unsigned int length);
+#endif
 
   virtual void error(const XERCES_CPP_NAMESPACE_QUALIFIER SAXParseException& exc);
   virtual void fatalError(const XERCES_CPP_NAMESPACE_QUALIFIER SAXParseException& exc);

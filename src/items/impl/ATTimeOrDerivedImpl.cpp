@@ -33,6 +33,7 @@
 #include <xqilla/items/Timezone.hpp>
 #include <xqilla/items/impl/ATDecimalOrDerivedImpl.hpp>
 #include <xqilla/context/ItemFactory.hpp>
+#include <xqilla/utils/XPath2Utils.hpp>
 
 #include <limits.h>   // for INT_MIN and INT_MAX
 #include <stdlib.h>   // for atoi
@@ -321,7 +322,7 @@ AnyAtomicType::AtomicObjectType ATTimeOrDerivedImpl::getPrimitiveTypeIndex() con
 }
 
 void ATTimeOrDerivedImpl::setTime(const XMLCh* const time) {
-	unsigned int length = XMLString::stringLen(time);
+	unsigned int length = XPath2Utils::uintStrlen(time);
  
 	if(time == NULL) {
 	  XQThrow2(XPath2TypeCastException,X("XSTimeImpl::setTime"), X("Invalid representation of time [err:FORG0001]"));

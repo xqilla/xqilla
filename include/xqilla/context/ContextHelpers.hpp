@@ -118,7 +118,7 @@ public:
   {
   }
 
-  AutoContextInfoReset(DynamicContext *context, const Item::Ptr &contextItem, unsigned int contextPosition = 0, unsigned int contextSize = 0)
+  AutoContextInfoReset(DynamicContext *context, const Item::Ptr &contextItem, size_t contextPosition = 0, size_t contextSize = 0)
     : oldContextItem(context->getContextItem()),
       oldContextPosition(context->getContextPosition()),
       oldContextSize(context->getContextSize()),

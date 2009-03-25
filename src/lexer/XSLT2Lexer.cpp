@@ -1164,19 +1164,19 @@ void XercesXSLT2Lexer::getEventValue(const XMLCh *&value, unsigned int &length, 
 {
   offsets.clear();
   value = currentEvent_->value.getRawBuffer();
-  length = currentEvent_->value.getLen();
+  length = (unsigned int) currentEvent_->value.getLen();
 }
 
 void XercesXSLT2Lexer::getEventLocation(YYLTYPE* pYYLOC)
 {
-  pYYLOC->first_line = m_lineno = currentEvent_->line;
-  pYYLOC->first_column = m_columnno = currentEvent_->column;
+  pYYLOC->first_line = m_lineno = (int) currentEvent_->line;
+  pYYLOC->first_column = m_columnno = (int) currentEvent_->column;
 }
 
 void XercesXSLT2Lexer::getValueLocation(YYLTYPE* pYYLOC)
 {
-  pYYLOC->first_line = m_lineno = currentEvent_->line;
-  pYYLOC->first_column = m_columnno = currentEvent_->column;
+  pYYLOC->first_line = m_lineno = (int) currentEvent_->line;
+  pYYLOC->first_column = m_columnno = (int) currentEvent_->column;
 }
 
 InputSource* XercesXSLT2Lexer::resolveEntity(XMLResourceIdentifier* resourceIdentifier)
