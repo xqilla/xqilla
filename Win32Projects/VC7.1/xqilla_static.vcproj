@@ -491,17 +491,6 @@
       <File RelativePath="..\..\src\ast\XQTypeswitch.cpp"/>
       <File RelativePath="..\..\src\ast\XQValidate.cpp"/>
       <File RelativePath="..\..\src\ast\XQVariable.cpp"/>
-      <File RelativePath="..\..\src\fastxdm\FastXDMConfiguration.cpp"/>
-      <File RelativePath="..\..\src\fastxdm\FastXDMDocument.cpp"/>
-      <File RelativePath="..\..\src\fastxdm\FastXDMDocument.hpp"/>
-      <File RelativePath="..\..\src\fastxdm\FastXDMNodeImpl.cpp"/>
-      <File RelativePath="..\..\src\fastxdm\FastXDMNodeImpl.hpp"/>
-      <File RelativePath="..\..\src\fastxdm\FastXDMSequenceBuilder.cpp"/>
-      <File RelativePath="..\..\src\fastxdm\FastXDMSequenceBuilder.hpp"/>
-      <File RelativePath="..\..\src\fastxdm\FastXDMUpdateFactory.cpp"/>
-      <File RelativePath="..\..\src\fastxdm\FastXDMUpdateFactory.hpp"/>
-      <File RelativePath="..\..\src\functions\FunctionLast.cpp"/>
-      <File RelativePath="..\..\src\update\UInsertAsLast.cpp"/>
     </Filter>
     <Filter Name="axis" Filter="">
       <File RelativePath="..\..\src\axis\NodeTest.cpp"/>

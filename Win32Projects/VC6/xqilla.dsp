@@ -1029,19 +1029,7 @@ SOURCE=..\..\src\fastxdm\FastXDMConfiguration.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\fastxdm\FastXDMConfiguration.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\fastxdm\FastXDMDocument.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\fastxdm\FastXDMDocument.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\fastxdm\FastXDMDocument.hpp
 # End Source File
 # Begin Source File
 
@@ -1053,19 +1041,7 @@ SOURCE=..\..\src\fastxdm\FastXDMNodeImpl.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\fastxdm\FastXDMNodeImpl.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\fastxdm\FastXDMNodeImpl.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\fastxdm\FastXDMNodeImpl.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\fastxdm\FastXDMSequenceBuilder.cpp
 # End Source File
 # Begin Source File
 
@@ -1077,19 +1053,7 @@ SOURCE=..\..\src\fastxdm\FastXDMSequenceBuilder.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\fastxdm\FastXDMSequenceBuilder.hpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\fastxdm\FastXDMUpdateFactory.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\fastxdm\FastXDMUpdateFactory.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\fastxdm\FastXDMUpdateFactory.hpp
 # End Source File
 # Begin Source File
 
@@ -1522,10 +1486,6 @@ SOURCE=..\..\src\functions\FunctionIriToUri.cpp
 # Begin Source File
 
 SOURCE=..\..\src\functions\FunctionLang.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\functions\FunctionLast.cpp
 # End Source File
 # Begin Source File
 
@@ -3346,10 +3306,6 @@ SOURCE=..\..\src\update\UInsertAfter.cpp
 # Begin Source File
 
 SOURCE=..\..\src\update\UInsertAsFirst.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\update\UInsertAsLast.cpp
 # End Source File
 # Begin Source File
 

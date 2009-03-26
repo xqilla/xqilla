@@ -565,17 +565,6 @@
         <file name="src/ast/XQTypeswitch.cpp"/>
         <file name="src/ast/XQValidate.cpp"/>
         <file name="src/ast/XQVariable.cpp"/>
-        <file name="src/fastxdm/FastXDMConfiguration.cpp"/>
-        <file name="src/fastxdm/FastXDMDocument.cpp"/>
-        <file name="src/fastxdm/FastXDMDocument.hpp"/>
-        <file name="src/fastxdm/FastXDMNodeImpl.cpp"/>
-        <file name="src/fastxdm/FastXDMNodeImpl.hpp"/>
-        <file name="src/fastxdm/FastXDMSequenceBuilder.cpp"/>
-        <file name="src/fastxdm/FastXDMSequenceBuilder.hpp"/>
-        <file name="src/fastxdm/FastXDMUpdateFactory.cpp"/>
-        <file name="src/fastxdm/FastXDMUpdateFactory.hpp"/>
-        <file name="src/functions/FunctionLast.cpp"/>
-        <file name="src/update/UInsertAsLast.cpp"/>
       </filter>
       <filter name="axis">
         <file name="src/axis/NodeTest.cpp"/>
