@@ -47,6 +47,7 @@
 #include <xercesc/validators/datatype/DatatypeValidator.hpp>
 
 XERCES_CPP_NAMESPACE_USE;
+using namespace std;
 
  /* http://www.w3.org/2005/xquery-local-functions */
 const XMLCh XQUserFunction::XMLChXQueryLocalFunctionsURI[] =
@@ -170,7 +171,7 @@ void XQUserFunction::releaseImpl()
       memMgr_->deallocate(*modeIt);
     }
 
-    modes_->~ModeList();
+    modes_->~vector<Mode*,XQillaAllocator<Mode*> >();
     memMgr_->deallocate(modes_);
   }
 
@@ -181,7 +182,7 @@ void XQUserFunction::releaseImpl()
       memMgr_->deallocate(*argIt);
     }
 
-    argSpecs_->~ArgumentSpecs();
+    argSpecs_->~vector<ArgumentSpec*,XQillaAllocator<ArgumentSpec*> >();
     memMgr_->deallocate(argSpecs_);
   }
 
