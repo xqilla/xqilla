@@ -247,16 +247,18 @@ void FaxppDocumentCacheImpl::parseDocument(InputSource &srcToUse, EventHandler *
       // Encode space chars in the document URI as %20
       const XMLCh *uri = srcToUse.getSystemId();
       XMLBuffer encode(XMLString::stringLen(uri) + 1);
-      for(const XMLCh *uptr = uri; *uptr; ++uptr) {
-        if(*uptr != ' ')
-          encode.append(*uptr);
-        else {
-          encode.append('%');
-          encode.append('2');
-          encode.append('0');
+      if(uri != 0) {
+        for(const XMLCh *uptr = uri; *uptr; ++uptr) {
+          if(*uptr != ' ')
+            encode.append(*uptr);
+          else {
+            encode.append('%');
+            encode.append('2');
+            encode.append('0');
+          }
         }
+        uri = encode.getRawBuffer();
       }
-      uri = encode.getRawBuffer();
 
       events_->startDocumentEvent(uri, nullTerm(event->encoding, mm));
       break;

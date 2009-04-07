@@ -4,6 +4,7 @@ version 2.2.1 (2009.03.13):
 	* Fixed a couple of bugs in the debug API, and made it report exit() and
 	  end() events correctly.
 	* Fixed variable inlining so that variables are inlined into loops.
+	* Fixed a segfault when parsing a document from a memory buffer.
 	* Workaround a bug in Xerces-C that can cause corrupted memory when
 	  deleting a mutex.
 	* Fixed a bug related to unsigned int/XMLSize_t type difference between

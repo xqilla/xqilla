@@ -315,17 +315,20 @@ void DocumentCacheImpl::startDocument()
 
   // Encode space chars in the document URI as %20
   const XMLCh *uri = scanner_->getLocator()->getSystemId();
+
   XMLBuffer encode(XMLString::stringLen(uri) + 1);
-  for(const XMLCh *uptr = uri; *uptr; ++uptr) {
-    if(*uptr != ' ')
-      encode.append(*uptr);
-    else {
-      encode.append('%');
-      encode.append('2');
-      encode.append('0');
+  if(uri != 0) {
+    for(const XMLCh *uptr = uri; *uptr; ++uptr) {
+      if(*uptr != ' ')
+        encode.append(*uptr);
+      else {
+        encode.append('%');
+        encode.append('2');
+        encode.append('0');
+      }
     }
+    uri = encode.getRawBuffer();
   }
-  uri = encode.getRawBuffer();
 
   events_->startDocumentEvent(uri, scanner_->getReaderMgr()->getCurrentEncodingStr());
 }
