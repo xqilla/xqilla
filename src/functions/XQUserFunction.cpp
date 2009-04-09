@@ -170,8 +170,12 @@ void XQUserFunction::releaseImpl()
     for(; modeIt != modes_->end(); ++modeIt) {
       memMgr_->deallocate(*modeIt);
     }
-
+    
+#if defined(_MSC_VER) && (_MSC_VER < 1300)
     modes_->~vector<Mode*,XQillaAllocator<Mode*> >();
+#else
+    modes_->~ModeList();
+#endif
     memMgr_->deallocate(modes_);
   }
 
@@ -181,8 +185,11 @@ void XQUserFunction::releaseImpl()
       const_cast<StaticAnalysis&>((*argIt)->getStaticAnalysis()).clear();
       memMgr_->deallocate(*argIt);
     }
-
+#if defined(_MSC_VER) && (_MSC_VER < 1300)
     argSpecs_->~vector<ArgumentSpec*,XQillaAllocator<ArgumentSpec*> >();
+#else
+    argSpecs_->~ArgumentSpecs();
+#endif
     memMgr_->deallocate(argSpecs_);
   }
 
