@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2001-2008
  *     DecisionSoft Limited. All rights reserved.
- * Copyright (c) 2004-2009
+ * Copyright (c) 2004-2008
  *     Oracle. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,6 +15,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * $Id$
  */
 
 #include <sstream>
@@ -45,6 +47,7 @@
 #include <xercesc/validators/datatype/DatatypeValidator.hpp>
 
 XERCES_CPP_NAMESPACE_USE;
+using namespace std;
 
  /* http://www.w3.org/2005/xquery-local-functions */
 const XMLCh XQUserFunction::XMLChXQueryLocalFunctionsURI[] =
@@ -167,8 +170,12 @@ void XQUserFunction::releaseImpl()
     for(; modeIt != modes_->end(); ++modeIt) {
       memMgr_->deallocate(*modeIt);
     }
-
+    
+#if defined(_MSC_VER) && (_MSC_VER < 1300)
+    modes_->~vector<Mode*,XQillaAllocator<Mode*> >();
+#else
     modes_->~ModeList();
+#endif
     memMgr_->deallocate(modes_);
   }
 
@@ -178,8 +185,11 @@ void XQUserFunction::releaseImpl()
       const_cast<StaticAnalysis&>((*argIt)->getStaticAnalysis()).clear();
       memMgr_->deallocate(*argIt);
     }
-
+#if defined(_MSC_VER) && (_MSC_VER < 1300)
+    argSpecs_->~vector<ArgumentSpec*,XQillaAllocator<ArgumentSpec*> >();
+#else
     argSpecs_->~ArgumentSpecs();
+#endif
     memMgr_->deallocate(argSpecs_);
   }
 
