@@ -170,7 +170,7 @@ ASTNode *ASTReleaser::optimizeNav(XQNav *item)
 {
   ASTVisitor::optimizeNav(item);
   // Release the step vector
-#ifdef _MSC_VER
+#if defined(_MSC_VER) || defined(__xlC__)
   typedef XQNav::Steps StepVector;
   const_cast<StepVector&>(item->getSteps()).~StepVector();
 #else
@@ -200,7 +200,7 @@ ASTNode *ASTReleaser::optimizeTypeswitch(XQTypeswitch *item)
   ASTVisitor::optimizeTypeswitch(item);
 
   // Release the clauses and vector
-#ifdef _MSC_VER
+#if defined(_MSC_VER) || defined(__xlC__)
   typedef XQTypeswitch::Cases ClauseVector;
   ClauseVector *clauses = const_cast<ClauseVector*>(item->getCases());
 #else
@@ -210,7 +210,7 @@ ASTNode *ASTReleaser::optimizeTypeswitch(XQTypeswitch *item)
   for(XQTypeswitch::Cases::iterator i = clauses->begin(); i != clauses->end(); ++i) {
     item->getMemoryManager()->deallocate(*i);
   }
-#ifdef _MSC_VER
+#if defined(_MSC_VER) || defined(__xlC__)
   clauses->~ClauseVector();
 #else
   clauses->~vector<XQTypeswitch::Case*, XQillaAllocator<XQTypeswitch::Case*> >();
