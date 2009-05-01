@@ -36,7 +36,7 @@
 /*
  * Building statically on Windows:
  *
- * 1) Compile Xerces-C with XML_LIBRARY defined to get a static library
+ * 1) Compile Xerces-C with XERCES_STATIC_LIBRARY defined to get a static library
  * 2) Compile XQilla with XQILLA_API defined to nothing, to compile without
  *    the DLL import/exports
  */

@@ -19,12 +19,14 @@
   <preprocessor config='Release'>NDEBUG</preprocessor>
   <preprocessor config='dll'>_USRDLL</preprocessor>
   <preprocessor config='app'>_CONSOLE</preprocessor>
-  <preprocessor config='static_lib'>_LIB;XQILLA_API=;XML_LIBRARY=</preprocessor>
-  <preprocessor config='static_app'>XQILLA_API=;XML_LIBRARY=</preprocessor>
+  <preprocessor config='static_lib'>_LIB;XQILLA_API=;XERCES_STATIC_LIBRARY</preprocessor>
+  <preprocessor config='static_app'>XQILLA_API=;XERCES_STATIC_LIBRARY=</preprocessor>
   <include name='all'>../../include,../../src/lexer,@XERCES_WINHOME@/include,@XERCES_WINHOME@/src</include>>
   <library name='xqilla'>
     <libname config='Debug'>@XQILLA_LIB@d</libname>
     <libname config='Release'>@XQILLA_LIB@</libname>
+    <libname config='Static Debug'>@XQILLA_STATIC_LIB@d</libname>
+    <libname config='Static Release'>@XQILLA_STATIC_LIB@</libname>
     <platform name='Win32 x64 IA64'>
       <config type='Debug'>
 	<libdir>$(OutDir)</libdir>
@@ -32,16 +34,10 @@
       <config type='Release'>
 	<libdir>$(OutDir)</libdir>
       </config>
-    </platform>
-  </library>
-  <library name='xqilla_static'>
-    <libname config='Debug'>@XQILLA_STATIC_LIB@d</libname>
-    <libname config='Release'>@XQILLA_STATIC_LIB@</libname>
-    <platform name='Win32 x64 IA64'>
-      <config type='Debug'>
+      <config type='Static Debug'>
 	<libdir>$(OutDir)</libdir>
       </config>
-      <config type='Release'>
+      <config type='Static Release'>
 	<libdir>$(OutDir)</libdir>
       </config>
     </platform>
@@ -49,56 +45,33 @@
   <library name="xerces">
     <libname config="Debug">@XERCES_LIB@d</libname>
     <libname config="Release">@XERCES_LIB@</libname>
-    <libbase vsver="7.10">@XERCES_BUILDHOME@</libbase>
-    <libbase vsver="8.00">@XERCES_BUILDHOME@</libbase>
-    <platform name="Win32">
+    <libname config="Static Debug">@XERCES_STATIC_LIB@d</libname>
+    <libname config="Static Release">@XERCES_STATIC_LIB@</libname>
+    <libbase vsver="7.10">@XERCES_LIBHOME7@</libbase>
+    <libbase vsver="8.00">@XERCES_LIBHOME8@</libbase>
+    <platform name="Win32 x64 IA64">
       <config type="Debug">
-	<libdir>Win32/VC7.1/$(ConfigurationName)</libdir>
-	<libdir>Win32/VC8/$(ConfigurationName)</libdir>
+	<libdir>$(ConfigurationName)</libdir>
       </config>
       <config type="Release">
-	<libdir>Win32/VC7.1/$(ConfigurationName)</libdir>
-	<libdir>Win32/VC8/$(ConfigurationName)</libdir>
+	<libdir>$(ConfigurationName)</libdir>
       </config>
-    </platform>
-    <platform name="x64 IA64">
-      <config type="Debug">
-	<libdir>Win64/VC8/$(ConfigurationName)</libdir>
+      <config type="Static Debug">
+	<libdir>$(ConfigurationName)</libdir>
       </config>
-      <config type="Release">
-	<libdir>Win64/VC8/$(ConfigurationName)</libdir>
-      </config>
-    </platform>
-  </library>
-  <library name="xerces_static">
-    <libname config="Debug">@XERCES_STATIC_LIB@d</libname>
-    <libname config="Release">@XERCES_STATIC_LIB@</libname>
-    <libbase vsver="7.10">@XERCES_BUILDHOME@</libbase>
-    <libbase vsver="8.00">@XERCES_BUILDHOME@</libbase>
-    <platform name="Win32">
-      <config type="Debug">
-	<libdir>Win32/VC7.1/Static$(ConfigurationName)</libdir>
-	<libdir>Win32/VC8/Static$(ConfigurationName)</libdir>
-      </config>
-      <config type="Release">
-	<libdir>Win32/VC7.1/Static$(ConfigurationName)</libdir>
-	<libdir>Win32/VC8/Static$(ConfigurationName)</libdir>
-      </config>
-    </platform>
-    <platform name="x64 IA64">
-      <config type="Debug">
-	<libdir>Win64/VC8/Static$(ConfigurationName)</libdir>
-      </config>
-      <config type="Release">
-	<libdir>Win64/VC8/Static$(ConfigurationName)</libdir>
+      <config type="Static Release">
+	<libdir>$(ConfigurationName)</libdir>
       </config>
     </platform>
   </library>
   <project name='xqilla' guid='63E85107-41E0-4FC7-8083-40E85861B426'>
-    <type>dll</type>
+    <type>library</type>
+    <configuration></configuration>
+    <configuration>Static </configuration>
     <depends>xerces</depends>
     <include type='ref'>all</include>
-    <preprocessor config='all'>XQILLA_APIS</preprocessor>
+    <preprocessor config='Release'>XQILLA_APIS</preprocessor>
+    <preprocessor config='Debug'>XQILLA_APIS</preprocessor>
     <files>
       <filter name='include'>
         <file name='include/xqc.h'/>
@@ -1053,14 +1026,10 @@
       </filter>
     </files>
   </project>
-  <project name='xqilla_static' guid='B96FD1CF-A620-4A8A-AC4B-EBCFA324D9D1'>
-    <type>static_lib</type>
-    <depends>xerces</depends>
-    <include type='ref'>all</include>
-    <files />
-  </project>
-  <project name='xqilla_cmd' output='xqilla' guid='44F4673C-C971-4085-8750-3BA0D7FE6FD2'>
+  <project name='xqilla_cmd' outputpdb='xqilla_cmd' output='xqilla' guid='44F4673C-C971-4085-8750-3BA0D7FE6FD2'>
     <type>app</type>
+    <configuration></configuration>
+    <configuration>Static </configuration>
     <depends>xqilla</depends>
     <depends>xerces</depends>
     <include type='ref'>all</include>
@@ -1068,14 +1037,9 @@
       <file name='src/samples/xqilla/xqilla-commandline.cpp' />
     </files>
   </project>
-  <project name='xqilla_cmd_static' output='xqilla' guid='411BCA29-C615-4E4F-B6F0-07580823EC0B'>
-    <type>static_app</type>
-    <depends>xqilla_static</depends>
-    <depends>xerces_static</depends>
-    <include type='ref'>all</include>
-  </project>
   <project name='simple-basic' guid='C03914F5-AA13-4B1C-A4B0-8FD6560AB573'>
     <type>app</type>
+    <configuration></configuration>
     <depends>xqilla</depends>
     <depends>xerces</depends>
     <include type='ref'>all</include>
@@ -1085,6 +1049,7 @@
   </project>
   <project name='simple-context-item' guid='55BEA039-4B29-4909-902A-9DD4BEADBCD0'>
     <type>app</type>
+    <configuration></configuration>
     <depends>xqilla</depends>
     <depends>xerces</depends>
     <include type='ref'>all</include>
@@ -1094,6 +1059,7 @@
   </project>
   <project name='dom-basic' guid='6672DE96-EA92-44A2-900E-6868A86FB044'>
     <type>app</type>
+    <configuration></configuration>
     <depends>xqilla</depends>
     <depends>xerces</depends>
     <include type='ref'>all</include>
@@ -1103,6 +1069,7 @@
   </project>
   <project name='dom-context-item' guid='E1A71F82-696D-4439-B647-CE04D75E49DC'>
     <type>app</type>
+    <configuration></configuration>
     <depends>xqilla</depends>
     <depends>xerces</depends>
     <include type='ref'>all</include>
@@ -1112,6 +1079,7 @@
   </project>
   <project name='dom-resolver' guid='31B7B9AA-109C-4B71-ADA6-274A6420969E'>
     <type>app</type>
+    <configuration></configuration>
     <depends>xqilla</depends>
     <depends>xerces</depends>
     <include type='ref'>all</include>
@@ -1121,6 +1089,7 @@
   </project>
   <project name='xqc-basic' guid='C03914F5-AA13-4B1C-A4B0-8FD6560AB574'>
     <type>app</type>
+    <configuration></configuration>
     <depends>xqilla</depends>
     <depends>xerces</depends>
     <include type='ref'>all</include>
@@ -1130,6 +1099,7 @@
   </project>
   <project name='xqc-context-item' guid='C03914F5-AA13-4B1C-A4B0-8FD6560AB575'>
     <type>app</type>
+    <configuration></configuration>
     <depends>xqilla</depends>
     <depends>xerces</depends>
     <include type='ref'>all</include>
@@ -1139,6 +1109,7 @@
   </project>
   <project name='xqtsRunner' guid='E8F410F3-AA0A-4E73-97DC-B444C2CBDAA3'>
     <type>app</type>
+    <configuration></configuration>
     <depends>xqilla</depends>
     <depends>xerces</depends>
     <include type='ref'>all</include>
@@ -1148,6 +1119,7 @@
   </project>
   <project name='xmarkRunner' guid='619264FA-3730-43C4-A903-0EAA453527AC'>
     <type>app</type>
+    <configuration></configuration>
     <depends>xqilla</depends>
     <depends>xerces</depends>
     <include type='ref'>all</include>

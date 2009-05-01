@@ -11,7 +11,7 @@ declare function local:fileLine($file)
     "&#10;", string($file/@name),
     if($project/@name = $mainProject) then " lib"
     else if($project/@name = $testProjects) then (" test=", $project/@name)
-    else if($project/type = "dll") then (" dll=", $project/@name)
+    else if($project/type = "library") then (" dll=", $project/@name)
     else if($project/type = "app") then (" app=", $project/@name)
     else error(QName("", "error"), "Unknown project type")
   )
