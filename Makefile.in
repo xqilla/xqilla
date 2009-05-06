@@ -985,8 +985,6 @@ Win32Projects/VC8/xqc-basic.vcproj \
 Win32Projects/VC8/xqc-context-item.vcproj \
 Win32Projects/VC8/xqilla.vcproj \
 Win32Projects/VC8/xqilla_cmd.vcproj \
-Win32Projects/VC8/xqilla_cmd_static.vcproj \
-Win32Projects/VC8/xqilla_static.vcproj \
 Win32Projects/VC8/xqtsRunner.vcproj \
 Win32Projects/VC8/XQilla.sln \
 Win32Projects/VC6/simple-context-item.dsp \
@@ -1012,8 +1010,6 @@ Win32Projects/VC7.1/xqc-context-item.vcproj \
 Win32Projects/VC7.1/xqilla.vcproj \
 Win32Projects/VC7.1/xqilla_cmd.vcproj \
 Win32Projects/VC7.1/XQilla.sln \
-Win32Projects/VC7.1/xqilla_cmd_static.vcproj \
-Win32Projects/VC7.1/xqilla_static.vcproj \
 Win32Projects/VC7.1/xqtsRunner.vcproj \
 tests/xqts/xqts_testsuite/errors.xml \
 tests/xqts/xqts_testsuite/update_errors.xml \
