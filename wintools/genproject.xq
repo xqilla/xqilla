@@ -176,7 +176,7 @@ declare function local:addLibraryDependencies($project,$config)
 
 declare function local:makeLibraryDirectory($lib,$platform,$config,$vsversion)
 {
-   for $dir in $lib/platform[contains(@name,$platform)]/config[$config=./@type]/libdir
+   for $dir in $lib/platform[contains(@name,$platform) and contains(@vsver,$vsversion)]/config[$config=./@type]/libdir
    return 
       if (not(empty($lib/libbase[@vsver=$vsversion]))) then
    	concat($lib/libbase[@vsver=$vsversion],"/", $dir)
@@ -402,7 +402,7 @@ declare function local:getConfigurations($project)
         for $config in $project/configuration return concat($config,$compType)
 };
 
-for $vsversion in distinct-values($projectDoc//libbase/@vsver)
+for $vsversion in distinct-values($projectDoc//visualstudioversion)
 for $project in $projectDoc/projects/project
 let $static := contains($project/@name,"static")
 let $proj := $project

@@ -11,6 +11,8 @@
   * TBD: describe format in more detail
   -->
 <projects>
+  <visualstudioversion>7.10</visualstudioversion>
+  <visualstudioversion>8.00</visualstudioversion>
   <variable name='sourcePath'>../../</variable>
   <variable name='outputBase.7.10'>../../build/windows/VC7.1/</variable>
   <variable name='outputBase.8.00'>../../build/windows/VC8/</variable>
@@ -27,7 +29,7 @@
     <libname config='Release'>@XQILLA_LIB@</libname>
     <libname config='Static Debug'>@XQILLA_STATIC_LIB@d</libname>
     <libname config='Static Release'>@XQILLA_STATIC_LIB@</libname>
-    <platform name='Win32 x64 IA64'>
+    <platform name='Win32 x64 IA64' vsver="7.10 8.00">
       <config type='Debug'>
 	<libdir>$(OutDir)</libdir>
       </config>
@@ -47,20 +49,46 @@
     <libname config="Release">@XERCES_LIB@</libname>
     <libname config="Static Debug">@XERCES_STATIC_LIB@d</libname>
     <libname config="Static Release">@XERCES_STATIC_LIB@</libname>
-    <libbase vsver="7.10">@XERCES_LIBHOME7@</libbase>
-    <libbase vsver="8.00">@XERCES_LIBHOME8@</libbase>
-    <platform name="Win32 x64 IA64">
+    <platform name="Win32" vsver="7.10">
       <config type="Debug">
-	<libdir>$(ConfigurationName)</libdir>
+	<libdir>@XERCES_LIBHOME7@/Win32/VC7.1/$(ConfigurationName)</libdir>
       </config>
       <config type="Release">
-	<libdir>$(ConfigurationName)</libdir>
+	<libdir>@XERCES_LIBHOME7@/Win32/VC7.1/$(ConfigurationName)</libdir>
       </config>
       <config type="Static Debug">
-	<libdir>$(ConfigurationName)</libdir>
+	<libdir>@XERCES_LIBHOME7@/Win32/VC7.1/$(ConfigurationName)</libdir>
       </config>
       <config type="Static Release">
-	<libdir>$(ConfigurationName)</libdir>
+	<libdir>@XERCES_LIBHOME7@/Win32/VC7.1/$(ConfigurationName)</libdir>
+      </config>
+    </platform>
+    <platform name="Win32" vsver="8.00">
+      <config type="Debug">
+	<libdir>@XERCES_LIBHOME8@/Win32/VC8/$(ConfigurationName)</libdir>
+      </config>
+      <config type="Release">
+	<libdir>@XERCES_LIBHOME8@/Win32/VC8/$(ConfigurationName)</libdir>
+      </config>
+      <config type="Static Debug">
+	<libdir>@XERCES_LIBHOME8@/Win32/VC8/$(ConfigurationName)</libdir>
+      </config>
+      <config type="Static Release">
+	<libdir>@XERCES_LIBHOME8@/Win32/VC8/$(ConfigurationName)</libdir>
+      </config>
+    </platform>
+    <platform name="x64" vsver="8.00">
+      <config type="Debug">
+	<libdir>@XERCES_LIBHOME8@/Win64/VC8/$(ConfigurationName)</libdir>
+      </config>
+      <config type="Release">
+	<libdir>@XERCES_LIBHOME8@/Win64/VC8/$(ConfigurationName)</libdir>
+      </config>
+      <config type="Static Debug">
+	<libdir>@XERCES_LIBHOME8@/Win64/VC8/$(ConfigurationName)</libdir>
+      </config>
+      <config type="Static Release">
+	<libdir>@XERCES_LIBHOME8@/Win64/VC8/$(ConfigurationName)</libdir>
       </config>
     </platform>
   </library>
