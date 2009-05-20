@@ -232,10 +232,11 @@ local:indent(6),<Tool>
  dependent libraries.  This means that applications need to include them
  for the time being.
 :)
-declare function local:generateConfigLibrarian($project, $config)
+declare function local:generateConfigLibrarian($project, $platform, $config)
 {
 local:indent(6),<Tool>
   {attribute{"Name"}{"VCLibrarianTool"}}
+  {local:addLinkOptions($project,$platform,$config)}
   {local:makeStaticOutputFile($project,$config)}
 </Tool>
 };
@@ -333,7 +334,7 @@ declare function local:generateStaticConfig($project, $platform, $config, $vsver
     {local:generateConfigBoilerplate($config)}
     {local:generateConfigCompiler($project, $platform, $config,true(),$vsversion)}
     {if (contains($project/type,"lib")) then 
-         local:generateConfigLibrarian($project, $config)
+         local:generateConfigLibrarian($project, $platform, $config)
      else
          local:generateConfigLinkerAndMidl($project, $platform, $config, $vsversion)
     }

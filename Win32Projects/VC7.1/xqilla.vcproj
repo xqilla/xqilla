@@ -24,7 +24,7 @@
       <Tool Name="VCManagedWrapperGeneratorTool"/>
       <Tool Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
       <Tool Name="VCCLCompilerTool" AdditionalIncludeDirectories="../../include,../../src/lexer,../../../xerces-c-src/include,../../../xerces-c-src/src" AssemblerListingLocation="./$(IntDir)/" BasicRuntimeChecks="3" CompileAs="0" DebugInformationFormat="3" Detect64BitPortabilityProblems="TRUE" MinimalRebuild="TRUE" ObjectFile="./$(IntDir)/" Optimization="0" PrecompiledHeaderFile="./$(IntDir)/xqilla.pch" PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_LIB;XQILLA_API=;XERCES_STATIC_LIBRARY" RuntimeLibrary="1" StringPooling="TRUE" SuppressStartupBanner="TRUE" UsePrecompiledHeader="0" WarningLevel="3"/>
-      <Tool Name="VCLibrarianTool" OutputFile="$(OutDir)/xqilla22sd.lib"/></Configuration>
+      <Tool Name="VCLibrarianTool" AdditionalOptions="/machine:x86" OutputFile="$(OutDir)/xqilla22sd.lib"/></Configuration>
     <Configuration Name="Release|Win32" ATLMinimizesCRunTimeLibraryUsage="FALSE" CharacterSet="2" ConfigurationType="2" IntermediateDirectory="./$(OutDir)/xqilla" OutputDirectory="..\..\build\windows\VC7.1\$(PlatformName)\Release" UseOfMFC="0">
       <Tool Name="VCPreBuildEventTool"/>
       <Tool Name="VCPreLinkEventTool"/>
@@ -44,7 +44,7 @@
       <Tool Name="VCManagedWrapperGeneratorTool"/>
       <Tool Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
       <Tool Name="VCCLCompilerTool" AdditionalIncludeDirectories="../../include,../../src/lexer,../../../xerces-c-src/include,../../../xerces-c-src/src" AssemblerListingLocation="./$(IntDir)/" CompileAs="0" DebugInformationFormat="3" Detect64BitPortabilityProblems="TRUE" EnableFunctionLevelLinking="TRUE" InlineFunctionExpansion="1" MinimalRebuild="TRUE" ObjectFile="./$(IntDir)/" Optimization="2" PrecompiledHeaderFile="./$(IntDir)/xqilla.pch" PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_LIB;XQILLA_API=;XERCES_STATIC_LIBRARY" RuntimeLibrary="0" StringPooling="TRUE" SuppressStartupBanner="TRUE" UsePrecompiledHeader="0" WarningLevel="3"/>
-      <Tool Name="VCLibrarianTool" OutputFile="$(OutDir)/xqilla22s.lib"/></Configuration>
+      <Tool Name="VCLibrarianTool" AdditionalOptions="/machine:x86" OutputFile="$(OutDir)/xqilla22s.lib"/></Configuration>
   </Configurations>
   <References/>
   <Files>
