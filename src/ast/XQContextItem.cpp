@@ -49,16 +49,16 @@ ASTNode *XQContextItem::staticTypingImpl(StaticContext *context)
 
   _src.clear();
 
+  if(!context->getContextItemType().containsType(StaticType::ITEM_TYPE)) {
+    XQThrow(DynamicErrorException,X("XQContextItem::staticTyping"),
+            X("It is an error for the context item to be undefined when using it [err:XPDY0002]"));
+  }
+
   _src.setProperties(StaticAnalysis::DOCORDER | StaticAnalysis::GROUPED |
     StaticAnalysis::PEER | StaticAnalysis::SUBTREE | StaticAnalysis::SAMEDOC |
     StaticAnalysis::ONENODE | StaticAnalysis::SELF);
   _src.getStaticType() = context->getContextItemType();
   _src.getStaticType().setCardinality(1, 1);
-
-  if(!_src.getStaticType().containsType(StaticType::ITEM_TYPE)) {
-    XQThrow(DynamicErrorException,X("XQContextItem::staticTyping"),
-            X("It is an error for the context item to be undefined when using it [err:XPDY0002]"));
-  }
 
   _src.contextItemUsed(true);
   return this;
