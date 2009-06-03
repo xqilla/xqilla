@@ -65,6 +65,10 @@
       <query name="regex8"/>
       <output-file compare="Fragment">regex8.out</output-file>
     </test-case>
+    <test-case name="regex9" FilePath="regex/">
+      <query name="regex9"/>
+      <output-file compare="Fragment">regex9.out</output-file>
+    </test-case>
   </test-group>
 
   <test-group name="hofunctions">
@@ -110,6 +114,27 @@
         <output-file compare="Fragment">math1.out</output-file>
       </test-case>
     </test-group>
+  </test-group>
+
+  <test-group name="bug-regression">
+    <GroupInfo>
+      <title>Regression tests for bugs found</title>
+    </GroupInfo>
+    <test-case name="bug1" FilePath="bugs/">
+      <!-- Context item static type bug -->
+      <query name="bug1"/>
+      <expected-error>XPDY0002</expected-error>
+    </test-case>
+    <test-case name="bug2" FilePath="bugs/">
+      <!-- Context item static type bug -->
+      <query name="bug2"/>
+      <expected-error>XPDY0002</expected-error>
+    </test-case>
+    <test-case name="bug3" FilePath="bugs/">
+      <!-- Math identity bug -->
+      <query name="bug3"/>
+      <output-file compare="Fragment">bug3.out</output-file>
+    </test-case>
   </test-group>
 
 </test-suite>

@@ -103,9 +103,7 @@ bool FunctionMatches::matches(const XMLCh *input, const XMLCh *pattern, const XM
   // If the value of $operand2 is the zero-length string, then the function returns true
   if(pattern == 0 || *pattern == 0) return true;
 
-  // If the value of $operand1 is the zero-length string and the value of $operand2 is not the zero-length string,
-  // then the function returns false.
-  if(input == 0 || *input == 0) return false;
+  if(input == 0) input = XMLUni::fgZeroLenString;
 
   // Always turn off head character optimisation, since it is broken
   XMLBuffer optionsBuf;

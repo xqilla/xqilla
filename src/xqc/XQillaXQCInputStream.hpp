@@ -101,7 +101,7 @@ public :
 
   virtual XercesSizeUint readBytes(XMLByte* const toFill, const XercesSizeUint maxToRead)
   {
-    XercesSizeUint read = fread(toFill, maxToRead, 1, file_);
+    XercesSizeUint read = fread(toFill, 1, maxToRead, file_);
     pos_ += read;
     return read;
   }

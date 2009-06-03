@@ -1719,11 +1719,11 @@ ASTNode *PartialEvaluator::optimizeMultiply(Multiply *item)
         return optimize(op->staticTyping(0, 0));
       }
       else if(op->getArguments()[1]->isConstant()) {
-        // (A * B) * C = A * (B * C)
-        // (A / B) * C = A * (B / C)
+        // (A * B) * C = A * (C * B)
+        // (A / B) * C = A * (C / B)
         args[0] = op->getArguments()[0];
-        const_cast<VectorOfASTNodes&>(op->getArguments())[0] = op->getArguments()[1];
-        const_cast<VectorOfASTNodes&>(op->getArguments())[1] = args[1];
+        const_cast<VectorOfASTNodes&>(op->getArguments())[0] = args[1];
+        const_cast<VectorOfASTNodes&>(op->getArguments())[1] = op->getArguments()[1];
         args[1] = op;
         redoTyping_ = true;
         return optimize(item->staticTyping(0, 0));

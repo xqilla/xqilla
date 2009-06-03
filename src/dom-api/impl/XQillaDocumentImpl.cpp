@@ -39,7 +39,6 @@
 #include <xercesc/dom/impl/DOMDocumentImpl.hpp>
 #include <xercesc/dom/DOMXPathException.hpp>
 #include <xercesc/framework/XMLGrammarPool.hpp>
-#include <xercesc/dom/DOMException.hpp>
 
 #include <xqilla/utils/XPath2Utils.hpp>
 
@@ -131,4 +130,29 @@ void XQillaDocumentImpl::setGrammarPool(XMLGrammarPool *xmlGrammarPool, bool ado
 
 XMLGrammarPool *XQillaDocumentImpl::getGrammarPool() {
   return _xmlGrammarPool;
+}
+
+DOMNode *XQillaDocumentImpl::cloneNode(bool deep) const
+{
+  // Note:  the cloned document node goes on the same heap we live in.
+  XQillaDocumentImpl *newdoc = new (fMemoryManager) XQillaDocumentImpl(fDOMImplementation, fMemoryManager);
+  newdoc->becomeClone(this, deep);
+
+  fNode.callUserDataHandlers(DOMUserDataHandler::NODE_CLONED, this, newdoc);
+  return newdoc;
+}
+
+void XQillaDocumentImpl::becomeClone(const XQillaDocumentImpl *toClone, bool deep)
+{
+  if(toClone->fXmlEncoding && *toClone->fXmlEncoding)
+    setXmlEncoding(toClone->fXmlEncoding);
+  if(toClone->fXmlVersion && *toClone->fXmlVersion)
+    setXmlVersion(toClone->fXmlVersion);
+  setXmlStandalone(toClone->fXmlStandalone);
+
+  if(deep) {
+    for (DOMNode *n = toClone->getFirstChild(); n != 0; n = n->getNextSibling()) {
+      appendChild(importNode(n, true, true));
+    }
+  }
 }
