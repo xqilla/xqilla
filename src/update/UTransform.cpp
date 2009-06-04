@@ -26,7 +26,7 @@
 #include <xqilla/context/VariableStore.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/ast/StaticAnalysis.hpp>
-#include <xqilla/ast/XQDOMConstructor.hpp>
+#include <xqilla/ast/XQCopyOf.hpp>
 #include <xqilla/context/UpdateFactory.hpp>
 #include <xqilla/context/VariableTypeStore.hpp>
 #include <xqilla/utils/XPath2NSUtils.hpp>
@@ -96,7 +96,7 @@ ASTNode *UTransform::staticResolution(StaticContext* context)
     copyType->setLocationInfo(this);
 
     // call static resolution on the value
-    (*it0)->expr_ = new (mm) XQContentSequence((*it0)->expr_, mm);
+    (*it0)->expr_ = new (mm) XQCopyOf((*it0)->expr_, /*copyNamespaces*/true, mm);
     (*it0)->expr_->setLocationInfo(this);
     (*it0)->expr_ = new (mm) XQTreatAs((*it0)->expr_, copyType, mm, err_XUTY0013);
     (*it0)->expr_->setLocationInfo(this);
