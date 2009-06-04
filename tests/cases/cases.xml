@@ -135,6 +135,11 @@
       <query name="bug3"/>
       <output-file compare="Fragment">bug3.out</output-file>
     </test-case>
+    <test-case name="bug4" FilePath="bugs/">
+      <!-- Transform a document node bug -->
+      <query name="bug4"/>
+      <output-file compare="Fragment">bug4.out</output-file>
+    </test-case>
   </test-group>
 
 </test-suite>
