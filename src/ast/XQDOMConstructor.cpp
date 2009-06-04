@@ -111,6 +111,8 @@ ASTNode *XQContentSequence::staticTypingImpl(StaticContext *context)
   }
 
   _src.getStaticType().substitute(StaticType::ANY_ATOMIC_TYPE, StaticType::TEXT_TYPE);
+  _src.getStaticType().substitute(StaticType::DOCUMENT_TYPE, StaticType(StaticType::ELEMENT_TYPE | StaticType::TEXT_TYPE | StaticType::PI_TYPE |
+                                                                        StaticType::COMMENT_TYPE, 0, StaticType::UNLIMITED));
 
   _src.creative(true);
   return this;
