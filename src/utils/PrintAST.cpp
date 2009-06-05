@@ -2045,7 +2045,8 @@ string PrintAST::printFunctionRef(const XQFunctionRef *item, const DynamicContex
 //   s << in << "<FunctionRef name=\"" << UTF8(item->getQName())
 //     << "\" numArgs=\"" << item->getNumArgs() << "\">" << endl;
 
-//   s << printASTNode(item->getInstance(), context, indent + INDENT);
+//   if(item->getInstance())
+// 	  s << printASTNode(item->getInstance(), context, indent + INDENT);
 
 //   s << in << "</FunctionRef>" << endl;
 

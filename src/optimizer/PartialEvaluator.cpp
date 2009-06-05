@@ -25,6 +25,7 @@
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/ast/XQSequence.hpp>
 #include <xqilla/exceptions/XQException.hpp>
+#include <xqilla/utils/PrintAST.hpp>
 
 #include <xqilla/operators/Plus.hpp>
 #include <xqilla/operators/Minus.hpp>
@@ -875,14 +876,14 @@ ASTNode *PartialEvaluator::optimizeFunctionDeref(XQFunctionDeref *item)
 
     VectorOfASTNodes *args = const_cast<VectorOfASTNodes*>(item->getArguments());
     if(args) {
+      XMLBuffer buf(20);
       unsigned int i = 0;
-      for(VectorOfASTNodes::iterator argIt = args->begin(); argIt != args->end(); ++argIt) {
-        XMLBuffer buf(20);
+      for(VectorOfASTNodes::iterator argIt = args->begin(); argIt != args->end(); ++argIt, ++i) {
         buf.set(FunctionRefImpl::argVarPrefix);
         XPath2Utils::numToBuf(i, buf);
 
         // Rename the variable to avoid naming conflicts
-        const XMLCh *newName = context_->allocateTempVarName(buf.getRawBuffer());
+        const XMLCh *newName = context_->allocateTempVarName(X("inline_arg"));
 
         tuple = new (mm) LetTuple(tuple, 0, newName, (*argIt)->copy(context_), mm);
         tuple->setLocationInfo(item);

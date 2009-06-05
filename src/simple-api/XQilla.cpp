@@ -29,6 +29,7 @@
 #include <xqilla/optimizer/PartialEvaluator.hpp>
 #include <xqilla/optimizer/StaticTyper.hpp>
 #include <xqilla/debug/DebugHookDecorator.hpp>
+#include <xqilla/utils/PrintAST.hpp>
 #include "../lexer/XQLexer.hpp"
 #include "../lexer/XSLT2Lexer.hpp"
 
@@ -82,12 +83,18 @@ XQQuery* XQilla::parse(const XMLCh* inputQuery, DynamicContext* context,
 
   // Perform static resolution, if requested
   if((flags & NO_STATIC_RESOLUTION) == 0) {
-    Optimizer *optimizer = new StaticResolver(context);
+    Optimizer *optimizer = 0;
+//     optimizer = new PrintASTOptimizer("Initial", context, optimizer);
+    optimizer = new StaticResolver(context, optimizer);
+//     optimizer = new PrintASTOptimizer("After static resolution", context, optimizer);
     optimizer = new StaticTyper(context, optimizer);
+//     optimizer = new PrintASTOptimizer("After static typing", context, optimizer);
 
     if((flags & NO_OPTIMIZATION) == 0) {
       optimizer = new PartialEvaluator(context, optimizer);
+//       optimizer = new PrintASTOptimizer("After partial evaluation", context, optimizer);
       optimizer = new StaticTyper(context, optimizer);
+//       optimizer = new PrintASTOptimizer("After static typing (2)", context, optimizer);
       optimizer = new QueryPathTreeGenerator(context, optimizer);
     }
     if((flags & DEBUG_QUERY) != 0) {
