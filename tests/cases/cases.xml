@@ -89,6 +89,10 @@
       <query name="fibonacci"/>
       <output-file compare="Fragment">fibonacci.out</output-file>
     </test-case>
+    <test-case name="hofunctions4" FilePath="hofunctions/">
+      <query name="hof4"/>
+      <output-file compare="Fragment">hof4.out</output-file>
+    </test-case>
   </test-group>
 
   <test-group name="tailcall">
