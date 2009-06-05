@@ -23,6 +23,7 @@
 #define  __PRINTAST_HPP
 
 #include <string>
+#include <iostream>
 
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/ast/ASTNode.hpp>
@@ -32,6 +33,7 @@
 #include <xqilla/ast/XQTypeswitch.hpp>
 #include <xqilla/fulltext/FTOption.hpp>
 #include <xqilla/fulltext/FTRange.hpp>
+#include <xqilla/optimizer/ASTVisitor.hpp>
 
 class XQillaExpression;
 class XQFunction;
@@ -235,6 +237,28 @@ public:
   static std::string getFTUnitName(FTOption::FTUnit unit);
   static std::string getFTRangeTypeName(FTRange::Type type);
 
+};
+
+class PrintASTOptimizer : public Optimizer
+{
+public:
+	PrintASTOptimizer(std::string label, const DynamicContext *context, Optimizer *parent = 0)
+		: Optimizer(parent), label_(label), context_(context) {}
+protected:
+	virtual void optimize(XQQuery *query)
+	{
+		std::cerr << label_ << ":" << std::endl;
+		std::cerr << PrintAST::print(query, context_) << std::endl;
+	}
+	virtual ASTNode *optimize(ASTNode *item)
+	{
+		std::cerr << label_ << ":" << std::endl;
+		std::cerr << PrintAST::print(item, context_) << std::endl;
+		return item;
+	}
+private:
+	std::string label_;
+	const DynamicContext *context_;
 };
 
 #endif
