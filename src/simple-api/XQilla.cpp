@@ -116,7 +116,7 @@ XQQuery* XQilla::parse(const InputSource& querySrc, DynamicContext* context,
     XMLBuffer moduleText;
     try {
       if(!readQuery(querySrc, memMgr, moduleText)) {
-        XMLBuffer buf(1023,context->getMemoryManager());
+        XMLBuffer buf;
         buf.set(X("Cannot read query content from "));
         buf.append(querySrc.getSystemId());
         buf.append(X(" [err:XQST0059]"));
@@ -124,7 +124,7 @@ XQQuery* XQilla::parse(const InputSource& querySrc, DynamicContext* context,
       }
     }
     catch(XMLException& e) {
-      XMLBuffer buf(1023,context->getMemoryManager());
+      XMLBuffer buf;
       buf.set(X("Exception reading query content: "));
       buf.append(e.getMessage());
       XQThrow2(ContextException,X("XQilla::parse"), buf.getRawBuffer());
