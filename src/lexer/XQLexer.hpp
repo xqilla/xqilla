@@ -228,6 +228,7 @@ public:
   XQLexer(XPath2MemoryManager* memMgr, const XMLCh *queryFile, const XMLCh* query, XQilla::Language lang);
   XQLexer(XPath2MemoryManager* memMgr, const XMLCh *queryFile, int line, int column, const XMLCh* query,
           unsigned int length, const std::vector<ValueOffset> &offsets, XQilla::Language lang, StartMode mode = MODE_NORMAL);
+  ~XQLexer();
 
   // Implemented in XQLexer.cpp, output of XQLexer.l
   int yylex();
@@ -268,6 +269,7 @@ protected:
   StartMode mode_;
 
   const XMLCh* m_szQuery;
+  bool m_ownQuery;
   unsigned int m_nLength;
   std::vector<ValueOffset> m_offsets;
 
