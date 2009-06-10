@@ -21,6 +21,7 @@
   <preprocessor config='Release'>NDEBUG</preprocessor>
   <preprocessor config='dll'>_USRDLL</preprocessor>
   <preprocessor config='app'>_CONSOLE</preprocessor>
+  <preprocessor config='app'>_CRT_SECURE_NO_WARNINGS</preprocessor>
   <preprocessor config='static_lib'>_LIB;XQILLA_API=;XERCES_STATIC_LIBRARY</preprocessor>
   <preprocessor config='static_app'>XQILLA_API=;XERCES_STATIC_LIBRARY=</preprocessor>
   <include name='all'>../../include,../../src/lexer,@XERCES_WINHOME@/include,@XERCES_WINHOME@/src</include>>
