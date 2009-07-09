@@ -1261,6 +1261,10 @@ SOURCE=..\..\include\xqilla\fulltext\TokenStore.hpp
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=..\..\src\functions\EXSLTMathFunction.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\functions\ExternalFunction.cpp
 # End Source File
 # Begin Source File
@@ -1277,6 +1281,10 @@ SOURCE=..\..\src\functions\FunctionAbs.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\functions\FunctionAcos.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\functions\FunctionAdjustDateTimeToTimezone.cpp
 # End Source File
 # Begin Source File
@@ -1290,6 +1298,14 @@ SOURCE=..\..\src\functions\FunctionAdjustTimeToTimezone.cpp
 # Begin Source File
 
 SOURCE=..\..\src\functions\FunctionAnalyzeString.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\functions\FunctionAsin.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\functions\FunctionAtan.cpp
 # End Source File
 # Begin Source File
 
@@ -1334,6 +1350,10 @@ SOURCE=..\..\src\functions\FunctionConstructor.cpp
 # Begin Source File
 
 SOURCE=..\..\src\functions\FunctionContains.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\functions\FunctionCos.cpp
 # End Source File
 # Begin Source File
 
@@ -1429,6 +1449,10 @@ SOURCE=..\..\src\functions\FunctionExists.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\functions\FunctionExp.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\functions\FunctionFalse.cpp
 # End Source File
 # Begin Source File
@@ -1498,6 +1522,10 @@ SOURCE=..\..\src\functions\FunctionLocalname.cpp
 # Begin Source File
 
 SOURCE=..\..\src\functions\FunctionLocalNameFromQName.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\functions\FunctionLog.cpp
 # End Source File
 # Begin Source File
 
@@ -1609,6 +1637,10 @@ SOURCE=..\..\src\functions\FunctionPosition.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\functions\FunctionPower.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\functions\FunctionPrefixFromQName.cpp
 # End Source File
 # Begin Source File
@@ -1669,6 +1701,14 @@ SOURCE=..\..\src\functions\FunctionSerializeJSON.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\functions\FunctionSin.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\functions\FunctionSqrt.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\functions\FunctionStartsWith.cpp
 # End Source File
 # Begin Source File
@@ -1710,6 +1750,10 @@ SOURCE=..\..\src\functions\FunctionSubstringBefore.cpp
 # Begin Source File
 
 SOURCE=..\..\src\functions\FunctionSum.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\functions\FunctionTan.cpp
 # End Source File
 # Begin Source File
 
@@ -1781,6 +1825,10 @@ SOURCE=..\..\src\functions\XQUserFunction.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\include\xqilla\functions\EXSLTMathFunction.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\include\xqilla\functions\ExternalFunction.hpp
 # End Source File
 # Begin Source File
@@ -1790,6 +1838,10 @@ SOURCE=..\..\include\xqilla\functions\FuncFactory.hpp
 # Begin Source File
 
 SOURCE=..\..\include\xqilla\functions\FunctionAbs.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\functions\FunctionAcos.hpp
 # End Source File
 # Begin Source File
 
@@ -1806,6 +1858,14 @@ SOURCE=..\..\include\xqilla\functions\FunctionAdjustTimeToTimezone.hpp
 # Begin Source File
 
 SOURCE=..\..\include\xqilla\functions\FunctionAnalyzeString.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\functions\FunctionAsin.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\functions\FunctionAtan.hpp
 # End Source File
 # Begin Source File
 
@@ -1850,6 +1910,10 @@ SOURCE=..\..\include\xqilla\functions\FunctionConstructor.hpp
 # Begin Source File
 
 SOURCE=..\..\include\xqilla\functions\FunctionContains.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\functions\FunctionCos.hpp
 # End Source File
 # Begin Source File
 
@@ -1945,6 +2009,10 @@ SOURCE=..\..\include\xqilla\functions\FunctionExists.hpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\include\xqilla\functions\FunctionExp.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\include\xqilla\functions\FunctionFalse.hpp
 # End Source File
 # Begin Source File
@@ -2014,6 +2082,10 @@ SOURCE=..\..\include\xqilla\functions\FunctionLocalname.hpp
 # Begin Source File
 
 SOURCE=..\..\include\xqilla\functions\FunctionLocalNameFromQName.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\functions\FunctionLog.hpp
 # End Source File
 # Begin Source File
 
@@ -2125,6 +2197,10 @@ SOURCE=..\..\include\xqilla\functions\FunctionPosition.hpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\include\xqilla\functions\FunctionPower.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\include\xqilla\functions\FunctionPrefixFromQName.hpp
 # End Source File
 # Begin Source File
@@ -2185,6 +2261,14 @@ SOURCE=..\..\include\xqilla\functions\FunctionSerializeJSON.hpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\include\xqilla\functions\FunctionSin.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\functions\FunctionSqrt.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\include\xqilla\functions\FunctionStartsWith.hpp
 # End Source File
 # Begin Source File
@@ -2226,6 +2310,10 @@ SOURCE=..\..\include\xqilla\functions\FunctionSubstringBefore.hpp
 # Begin Source File
 
 SOURCE=..\..\include\xqilla\functions\FunctionSum.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\functions\FunctionTan.hpp
 # End Source File
 # Begin Source File
 

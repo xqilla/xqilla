@@ -275,13 +275,17 @@
       <File RelativePath="..\..\include\xqilla\exceptions\XQException.hpp"/>
       <File RelativePath="..\..\include\xqilla\exceptions\QueryInterruptedException.hpp"/>
       <File RelativePath="..\..\include\xqilla\exceptions\QueryTimeoutException.hpp"/>
+      <File RelativePath="..\..\include\xqilla\functions\EXSLTMathFunction.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\ExternalFunction.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionLookup.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionAnalyzeString.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionAbs.hpp"/>
+      <File RelativePath="..\..\include\xqilla\functions\FunctionAcos.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionAdjustDateTimeToTimezone.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionAdjustDateToTimezone.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionAdjustTimeToTimezone.hpp"/>
+      <File RelativePath="..\..\include\xqilla\functions\FunctionAsin.hpp"/>
+      <File RelativePath="..\..\include\xqilla\functions\FunctionAtan.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionAvg.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionBaseURI.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionBoolean.hpp"/>
@@ -293,6 +297,7 @@
       <File RelativePath="..\..\include\xqilla\functions\FunctionConcat.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionConstructor.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionContains.hpp"/>
+      <File RelativePath="..\..\include\xqilla\functions\FunctionCos.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionCount.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionCurrentDate.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionCurrentDateTime.hpp"/>
@@ -316,6 +321,7 @@
       <File RelativePath="..\..\include\xqilla\functions\FunctionEscapeHtmlUri.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionExactlyOne.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionExists.hpp"/>
+      <File RelativePath="..\..\include\xqilla\functions\FunctionExp.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionFalse.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionFloor.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionFunctionArity.hpp"/>
@@ -334,6 +340,7 @@
       <File RelativePath="..\..\include\xqilla\functions\FunctionLast.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionLocalNameFromQName.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionLocalname.hpp"/>
+      <File RelativePath="..\..\include\xqilla\functions\FunctionLog.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionLowerCase.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionMatches.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionMax.hpp"/>
@@ -358,9 +365,12 @@
       <File RelativePath="..\..\include\xqilla\functions\FunctionParseHTML.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionParseJSON.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionSerializeJSON.hpp"/>
+      <File RelativePath="..\..\include\xqilla\functions\FunctionSin.hpp"/>
+      <File RelativePath="..\..\include\xqilla\functions\FunctionSqrt.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionParseXML.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionPartialApply.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionPosition.hpp"/>
+      <File RelativePath="..\..\include\xqilla\functions\FunctionPower.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionPrefixFromQName.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionQName.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionRegexGroup.hpp"/>
@@ -386,6 +396,7 @@
       <File RelativePath="..\..\include\xqilla\functions\FunctionSubstringBefore.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionSubstring.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionSum.hpp"/>
+      <File RelativePath="..\..\include\xqilla\functions\FunctionTan.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionTime.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionTimezoneFromDate.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionTimezoneFromDateTime.hpp"/>
@@ -688,14 +699,18 @@
       <File RelativePath="..\..\src\fulltext\FTWords.cpp"/>
     </Filter>
     <Filter Name="functions" Filter="">
+      <File RelativePath="..\..\src\functions\EXSLTMathFunction.cpp"/>
       <File RelativePath="..\..\src\functions\ExternalFunction.cpp"/>
       <File RelativePath="..\..\src\functions\FuncFactory.cpp"/>
       <File RelativePath="..\..\src\functions\FuncFactoryTemplate.hpp"/>
       <File RelativePath="..\..\src\functions\FunctionAbs.cpp"/>
+      <File RelativePath="..\..\src\functions\FunctionAcos.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionAdjustDateTimeToTimezone.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionAdjustDateToTimezone.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionAdjustTimeToTimezone.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionAnalyzeString.cpp"/>
+      <File RelativePath="..\..\src\functions\FunctionAsin.cpp"/>
+      <File RelativePath="..\..\src\functions\FunctionAtan.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionAvg.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionBaseURI.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionBoolean.cpp"/>
@@ -707,6 +722,7 @@
       <File RelativePath="..\..\src\functions\FunctionConcat.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionConstructor.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionContains.cpp"/>
+      <File RelativePath="..\..\src\functions\FunctionCos.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionCount.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionCurrentDate.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionCurrentDateTime.cpp"/>
@@ -730,6 +746,7 @@
       <File RelativePath="..\..\src\functions\FunctionEscapeHtmlUri.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionExactlyOne.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionExists.cpp"/>
+      <File RelativePath="..\..\src\functions\FunctionExp.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionFalse.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionFloor.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionFunctionArity.cpp"/>
@@ -748,6 +765,7 @@
       <File RelativePath="..\..\src\functions\FunctionLast.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionLocalNameFromQName.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionLocalname.cpp"/>
+      <File RelativePath="..\..\src\functions\FunctionLog.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionLookup.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionLowerCase.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionMatches.cpp"/>
@@ -775,6 +793,7 @@
       <File RelativePath="..\..\src\functions\FunctionParseXML.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionPartialApply.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionPosition.cpp"/>
+      <File RelativePath="..\..\src\functions\FunctionPower.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionPrefixFromQName.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionQName.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionRegexGroup.cpp"/>
@@ -790,6 +809,8 @@
       <File RelativePath="..\..\src\functions\FunctionSecondsFromDuration.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionSecondsFromTime.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionSerializeJSON.cpp"/>
+      <File RelativePath="..\..\src\functions\FunctionSin.cpp"/>
+      <File RelativePath="..\..\src\functions\FunctionSqrt.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionStartsWith.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionStaticBaseURI.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionString.cpp"/>
@@ -801,6 +822,7 @@
       <File RelativePath="..\..\src\functions\FunctionSubstringAfter.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionSubstringBefore.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionSum.cpp"/>
+      <File RelativePath="..\..\src\functions\FunctionTan.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionTime.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionTimezoneFromDate.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionTimezoneFromDateTime.cpp"/>

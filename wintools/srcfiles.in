@@ -161,14 +161,18 @@ src/fulltext/FTScope.cpp lib
 src/fulltext/FTUnaryNot.cpp lib
 src/fulltext/FTWindow.cpp lib
 src/fulltext/FTWords.cpp lib
+src/functions/EXSLTMathFunction.cpp lib
 src/functions/ExternalFunction.cpp lib
 src/functions/FuncFactory.cpp lib
 src/functions/FuncFactoryTemplate.hpp lib
 src/functions/FunctionAbs.cpp lib
+src/functions/FunctionAcos.cpp lib
 src/functions/FunctionAdjustDateTimeToTimezone.cpp lib
 src/functions/FunctionAdjustDateToTimezone.cpp lib
 src/functions/FunctionAdjustTimeToTimezone.cpp lib
 src/functions/FunctionAnalyzeString.cpp lib
+src/functions/FunctionAsin.cpp lib
+src/functions/FunctionAtan.cpp lib
 src/functions/FunctionAvg.cpp lib
 src/functions/FunctionBaseURI.cpp lib
 src/functions/FunctionBoolean.cpp lib
@@ -180,6 +184,7 @@ src/functions/FunctionCompare.cpp lib
 src/functions/FunctionConcat.cpp lib
 src/functions/FunctionConstructor.cpp lib
 src/functions/FunctionContains.cpp lib
+src/functions/FunctionCos.cpp lib
 src/functions/FunctionCount.cpp lib
 src/functions/FunctionCurrentDate.cpp lib
 src/functions/FunctionCurrentDateTime.cpp lib
@@ -203,6 +208,7 @@ src/functions/FunctionError.cpp lib
 src/functions/FunctionEscapeHtmlUri.cpp lib
 src/functions/FunctionExactlyOne.cpp lib
 src/functions/FunctionExists.cpp lib
+src/functions/FunctionExp.cpp lib
 src/functions/FunctionFalse.cpp lib
 src/functions/FunctionFloor.cpp lib
 src/functions/FunctionFunctionArity.cpp lib
@@ -221,6 +227,7 @@ src/functions/FunctionLang.cpp lib
 src/functions/FunctionLast.cpp lib
 src/functions/FunctionLocalname.cpp lib
 src/functions/FunctionLocalNameFromQName.cpp lib
+src/functions/FunctionLog.cpp lib
 src/functions/FunctionLookup.cpp lib
 src/functions/FunctionLowerCase.cpp lib
 src/functions/FunctionMatches.cpp lib
@@ -248,6 +255,7 @@ src/functions/FunctionParseJSON.cpp lib
 src/functions/FunctionParseXML.cpp lib
 src/functions/FunctionPartialApply.cpp lib
 src/functions/FunctionPosition.cpp lib
+src/functions/FunctionPower.cpp lib
 src/functions/FunctionPrefixFromQName.cpp lib
 src/functions/FunctionQName.cpp lib
 src/functions/FunctionRegexGroup.cpp lib
@@ -263,6 +271,8 @@ src/functions/FunctionSecondsFromDateTime.cpp lib
 src/functions/FunctionSecondsFromDuration.cpp lib
 src/functions/FunctionSecondsFromTime.cpp lib
 src/functions/FunctionSerializeJSON.cpp lib
+src/functions/FunctionSin.cpp lib
+src/functions/FunctionSqrt.cpp lib
 src/functions/FunctionStartsWith.cpp lib
 src/functions/FunctionStaticBaseURI.cpp lib
 src/functions/FunctionString.cpp lib
@@ -274,6 +284,7 @@ src/functions/FunctionSubstring.cpp lib
 src/functions/FunctionSubstringAfter.cpp lib
 src/functions/FunctionSubstringBefore.cpp lib
 src/functions/FunctionSum.cpp lib
+src/functions/FunctionTan.cpp lib
 src/functions/FunctionTime.cpp lib
 src/functions/FunctionTimezoneFromDate.cpp lib
 src/functions/FunctionTimezoneFromDateTime.cpp lib
@@ -681,13 +692,17 @@ include/xqilla/fulltext/Match.hpp lib
 include/xqilla/fulltext/TokenInfo.hpp lib
 include/xqilla/fulltext/Tokenizer.hpp lib
 include/xqilla/fulltext/TokenStore.hpp lib
+include/xqilla/functions/EXSLTMathFunction.hpp lib
 include/xqilla/functions/ExternalFunction.hpp lib
 include/xqilla/functions/FuncFactory.hpp lib
 include/xqilla/functions/FunctionAbs.hpp lib
+include/xqilla/functions/FunctionAcos.hpp lib
 include/xqilla/functions/FunctionAdjustDateTimeToTimezone.hpp lib
 include/xqilla/functions/FunctionAdjustDateToTimezone.hpp lib
 include/xqilla/functions/FunctionAdjustTimeToTimezone.hpp lib
 include/xqilla/functions/FunctionAnalyzeString.hpp lib
+include/xqilla/functions/FunctionAsin.hpp lib
+include/xqilla/functions/FunctionAtan.hpp lib
 include/xqilla/functions/FunctionAvg.hpp lib
 include/xqilla/functions/FunctionBaseURI.hpp lib
 include/xqilla/functions/FunctionBoolean.hpp lib
@@ -699,6 +714,7 @@ include/xqilla/functions/FunctionCompare.hpp lib
 include/xqilla/functions/FunctionConcat.hpp lib
 include/xqilla/functions/FunctionConstructor.hpp lib
 include/xqilla/functions/FunctionContains.hpp lib
+include/xqilla/functions/FunctionCos.hpp lib
 include/xqilla/functions/FunctionCount.hpp lib
 include/xqilla/functions/FunctionCurrentDate.hpp lib
 include/xqilla/functions/FunctionCurrentDateTime.hpp lib
@@ -722,6 +738,7 @@ include/xqilla/functions/FunctionError.hpp lib
 include/xqilla/functions/FunctionEscapeHtmlUri.hpp lib
 include/xqilla/functions/FunctionExactlyOne.hpp lib
 include/xqilla/functions/FunctionExists.hpp lib
+include/xqilla/functions/FunctionExp.hpp lib
 include/xqilla/functions/FunctionFalse.hpp lib
 include/xqilla/functions/FunctionFloor.hpp lib
 include/xqilla/functions/FunctionFunctionArity.hpp lib
@@ -740,6 +757,7 @@ include/xqilla/functions/FunctionLang.hpp lib
 include/xqilla/functions/FunctionLast.hpp lib
 include/xqilla/functions/FunctionLocalname.hpp lib
 include/xqilla/functions/FunctionLocalNameFromQName.hpp lib
+include/xqilla/functions/FunctionLog.hpp lib
 include/xqilla/functions/FunctionLookup.hpp lib
 include/xqilla/functions/FunctionLowerCase.hpp lib
 include/xqilla/functions/FunctionMatches.hpp lib
@@ -767,6 +785,7 @@ include/xqilla/functions/FunctionParseJSON.hpp lib
 include/xqilla/functions/FunctionParseXML.hpp lib
 include/xqilla/functions/FunctionPartialApply.hpp lib
 include/xqilla/functions/FunctionPosition.hpp lib
+include/xqilla/functions/FunctionPower.hpp lib
 include/xqilla/functions/FunctionPrefixFromQName.hpp lib
 include/xqilla/functions/FunctionQName.hpp lib
 include/xqilla/functions/FunctionRegexGroup.hpp lib
@@ -782,6 +801,8 @@ include/xqilla/functions/FunctionSecondsFromDateTime.hpp lib
 include/xqilla/functions/FunctionSecondsFromDuration.hpp lib
 include/xqilla/functions/FunctionSecondsFromTime.hpp lib
 include/xqilla/functions/FunctionSerializeJSON.hpp lib
+include/xqilla/functions/FunctionSin.hpp lib
+include/xqilla/functions/FunctionSqrt.hpp lib
 include/xqilla/functions/FunctionStartsWith.hpp lib
 include/xqilla/functions/FunctionStaticBaseURI.hpp lib
 include/xqilla/functions/FunctionString.hpp lib
@@ -793,6 +814,7 @@ include/xqilla/functions/FunctionSubstring.hpp lib
 include/xqilla/functions/FunctionSubstringAfter.hpp lib
 include/xqilla/functions/FunctionSubstringBefore.hpp lib
 include/xqilla/functions/FunctionSum.hpp lib
+include/xqilla/functions/FunctionTan.hpp lib
 include/xqilla/functions/FunctionTime.hpp lib
 include/xqilla/functions/FunctionTimezoneFromDate.hpp lib
 include/xqilla/functions/FunctionTimezoneFromDateTime.hpp lib
