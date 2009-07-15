@@ -1,10 +1,24 @@
 XQilla: an XQuery and XPath 2.0 library and command line interpreter.
 
-version 2.2.1 (2009.03.13):
+version 2.2.2 (2009.07.02):
+	* Fixed XQillaDocumentImpl::cloneNode() to return an instance of 
+	  XQillaDocumentImpl.
+	* Fixed XPath 2.0 so that it doesn't recognize entities in 
+	  string literals.
+	* Fixed a bug in the constant folding identity transforms for
+	  arithmetic expressions.
+	* Fixed a bug in the undefined context item check.
+	* Fixed the transform expression to copy document nodes rather than 
+	  dissolving them.
+	* Fixed a bug in the static typing of external functions. 
+	* Fixed a bug in fn:matches()with a zero-length string as the first 
+	  argument.
 	* Fixed a couple of bugs in the debug API, and made it report exit() and
 	  end() events correctly.
-	* Fixed variable inlining so that variables are inlined into loops.
+	* Fixed variable inlining so that variables aren't inlined into loops.
 	* Fixed a segfault when parsing a document from a memory buffer.
+	* Fixed a bug in XQC_Implementation->parse_document_file() that
+	  caused parsing to always fail.
 	* Workaround a bug in Xerces-C that can cause corrupted memory when
 	  deleting a mutex.
 	* Fixed a bug related to unsigned int/XMLSize_t type difference between
@@ -14,6 +28,8 @@ version 2.2.1 (2009.03.13):
 	* Fixed a Windows memory bug involving the URI used in resolving a
 	  document or collection.
 	* Fixed Windows compile warnings related to Xerces-C types.
+	* Updated libtool version to 2.2.6.
+	* Fixed some compiler issues related to the xlC compiler.
 	
 version 2.2.0 (2009.01.05):
 	* Added a debugging API, and a command line debugger invoked by passing
