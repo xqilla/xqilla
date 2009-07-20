@@ -631,9 +631,9 @@ void SequenceType::ItemType::toBuffer(XMLBuffer &buffer, bool addBrackets) const
       bool doneOne = false;
       for(VectorOfSequenceTypes::const_iterator i = argTypes_->begin();
           i != argTypes_->end(); ++i) {
-        (*i)->toBuffer(buffer);
         if(doneOne) buffer.append(',');
         doneOne = true;
+        (*i)->toBuffer(buffer);
       }
       buffer.append(X(") as "));
       returnType_->toBuffer(buffer);

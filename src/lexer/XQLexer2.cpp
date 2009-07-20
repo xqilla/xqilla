@@ -31,6 +31,7 @@ XQLexer::XQLexer(XPath2MemoryManager* memMgr, const XMLCh *queryFile, const XMLC
     firstToken_(_LANG_XQUERY_),
     mode_(MODE_NORMAL),
     m_szQuery(XPath2Utils::normalizeEOL(query, memMgr)),
+    m_ownQuery(true),
     m_nLength(XPath2Utils::uintStrlen(m_szQuery)),
     m_position(0),
     m_index(0),
@@ -58,6 +59,7 @@ XQLexer::XQLexer(XPath2MemoryManager* memMgr, const XMLCh *queryFile, int line, 
     firstToken_(MYEOF),
     mode_(mode),
     m_szQuery(query),
+    m_ownQuery(false),
     m_nLength(length),
     m_offsets(offsets),
     m_position(0),
@@ -72,6 +74,7 @@ XQLexer::XQLexer(const XQLexer *other)
     firstToken_(MYEOF),
     mode_(MODE_NORMAL),
     m_szQuery(other->m_szQuery + other->m_index),
+    m_ownQuery(false),
     m_nLength(other->m_nLength - other->m_index),
     m_offsets(other->m_offsets),
     m_position(0),
@@ -81,6 +84,12 @@ XQLexer::XQLexer(const XQLexer *other)
 {
   m_bGenerateErrorException = false;
   yy_start = other->yy_start;
+}
+
+XQLexer::~XQLexer()
+{
+  if(m_szQuery && m_ownQuery)
+    mm_->deallocate((void*)m_szQuery);
 }
 
 int XQLexer::yylex(YYSTYPE* pYYLVAL, YYLTYPE* pYYLOC)
