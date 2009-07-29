@@ -1241,10 +1241,6 @@ SOURCE=..\..\include\xqilla\fulltext\FTWords.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\include\xqilla\fulltext\Match.hpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\include\xqilla\fulltext\TokenInfo.hpp
 # End Source File
 # Begin Source File

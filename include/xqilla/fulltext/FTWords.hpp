@@ -42,7 +42,7 @@ public:
   virtual FTSelection *staticResolution(StaticContext *context);
   virtual FTSelection *staticTypingImpl(StaticContext *context);
   virtual FTSelection *optimize(FTContext *context) const;
-  virtual AllMatches::Ptr execute(FTContext *ftcontext) const;
+  virtual AllMatches *execute(FTContext *ftcontext) const;
 
   ASTNode *getExpr() const { return expr_; }
   void setExpr(ASTNode *expr) { expr_ = expr; }
@@ -55,11 +55,11 @@ private:
   FTSelection *optimizeAny(Result strings, FTContext *ftcontext) const;
   FTSelection *optimizeAll(Result strings, FTContext *ftcontext) const;
 
-  AllMatches::Ptr executeAnyWord(Result strings, FTContext *ftcontext) const;
-  AllMatches::Ptr executeAllWords(Result strings, FTContext *ftcontext) const;
-  AllMatches::Ptr executePhrase(Result strings, FTContext *ftcontext) const;
-  AllMatches::Ptr executeAny(Result strings, FTContext *ftcontext) const;
-  AllMatches::Ptr executeAll(Result strings, FTContext *ftcontext) const;
+  AllMatches *executeAnyWord(Result strings, FTContext *ftcontext) const;
+  AllMatches *executeAllWords(Result strings, FTContext *ftcontext) const;
+  AllMatches *executePhrase(Result strings, FTContext *ftcontext) const;
+  AllMatches *executeAny(Result strings, FTContext *ftcontext) const;
+  AllMatches *executeAll(Result strings, FTContext *ftcontext) const;
 
   ASTNode *expr_;
   FTAnyallOption option_;
@@ -73,7 +73,7 @@ public:
   virtual FTSelection *staticResolution(StaticContext *context);
   virtual FTSelection *staticTypingImpl(StaticContext *context);
   virtual FTSelection *optimize(FTContext *context) const;
-  virtual AllMatches::Ptr execute(FTContext *ftcontext) const;
+  virtual AllMatches *execute(FTContext *ftcontext) const;
 
   const XMLCh *getQueryString() const { return queryString_; }
 
@@ -85,11 +85,15 @@ class FTStringSearchMatches : public AllMatches
 {
 public:
   FTStringSearchMatches(const LocationInfo *info, const XMLCh *queryString, FTContext *ftcontext);
-  Match::Ptr next(DynamicContext *context);
+  bool next(DynamicContext *context);
+  const StringMatches &getStringIncludes();
+  const StringMatches &getStringExcludes();
 
 private:
   unsigned int queryPos_;
   TokenStream::Ptr tokenStream_;
+  StringMatches includes_;
+  StringMatches excludes_;
 };
 
 #endif

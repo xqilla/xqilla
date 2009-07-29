@@ -83,10 +83,10 @@ FTSelection *FTOr::optimize(FTContext *ftcontext) const
   return ftor;
 }
 
-AllMatches::Ptr FTOr::execute(FTContext *ftcontext) const
+AllMatches *FTOr::execute(FTContext *ftcontext) const
 {
   FTDisjunctionMatches *disjunction = new FTDisjunctionMatches(this);
-  AllMatches::Ptr result(disjunction);
+  AllMatches *result(disjunction);
 
   for(VectorOfFTSelections::const_iterator i = args_.begin();
       i != args_.end(); ++i) {
@@ -102,26 +102,44 @@ FTDisjunctionMatches::FTDisjunctionMatches(const LocationInfo *info)
 {
 }
 
-Match::Ptr FTDisjunctionMatches::next(DynamicContext *context)
+FTDisjunctionMatches::~FTDisjunctionMatches()
+{
+  for(it_ = args_.begin(); it_ != args_.end(); it_++) {
+    delete *(it_);
+  }
+}
+
+bool FTDisjunctionMatches::next(DynamicContext *context)
 {
   // TBD AllMatches normalization
-
   if(toDo_) {
     toDo_ = false;
     it_ = args_.begin();
   }
 
-  Match::Ptr result(0);
+  bool found = false;
   while(it_ != args_.end()) {
-    result = (*it_)->next(context);
-    if(result.isNull()) {
+    if(!(*it_)->next(context)) {
+      delete *(it_);
       *it_ = 0;
       ++it_;
     }
     else {
+      found = true;
       break;
     }
   }
 
-  return result;
+  return found;
+}
+
+const StringMatches &FTDisjunctionMatches::getStringIncludes()
+{
+  assert(it_ != args_.end());
+  return (*it_)->getStringIncludes();
+}
+const StringMatches &FTDisjunctionMatches::getStringExcludes()
+{
+  assert(it_ != args_.end());
+  return (*it_)->getStringExcludes();
 }

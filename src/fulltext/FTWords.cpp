@@ -114,9 +114,9 @@ FTSelection *FTWords::optimizeAnyWord(Result strings, FTContext *ftcontext) cons
   while((item = strings->next(ftcontext->context)).notNull()) {
     TokenStream::Ptr stream = ftcontext->tokenizer->
       tokenize(item->asString(ftcontext->context), ftcontext->context->getMemoryManager());
-    TokenInfo::Ptr token;
-    while((token = stream->next()).notNull()) {
-      FTSelection *word = new (mm) FTWord(token->getWord(), mm);
+    TokenInfo token;
+    while((token = stream->next()).word_ != 0) {
+      FTSelection *word = new (mm) FTWord(token.word_, mm);
       word->setLocationInfo(this);
       ftor->addArg(word);
     }
@@ -125,18 +125,18 @@ FTSelection *FTWords::optimizeAnyWord(Result strings, FTContext *ftcontext) cons
   return ftor;
 }
 
-AllMatches::Ptr FTWords::executeAnyWord(Result strings, FTContext *ftcontext) const
+AllMatches *FTWords::executeAnyWord(Result strings, FTContext *ftcontext) const
 {
   FTDisjunctionMatches *disjunction = new FTDisjunctionMatches(this);
-  AllMatches::Ptr result(disjunction);
+  AllMatches *result(disjunction);
 
   Item::Ptr item;
   while((item = strings->next(ftcontext->context)).notNull()) {
     TokenStream::Ptr stream = ftcontext->tokenizer->
       tokenize(item->asString(ftcontext->context), ftcontext->context->getMemoryManager());
-    TokenInfo::Ptr token;
-    while((token = stream->next()).notNull()) {
-      disjunction->addMatches(new FTStringSearchMatches(this, token->getWord(), ftcontext));
+    TokenInfo token;
+    while((token = stream->next()).word_ != 0) {
+      disjunction->addMatches(new FTStringSearchMatches(this, token.word_, ftcontext));
     }
   }
 
@@ -154,9 +154,9 @@ FTSelection *FTWords::optimizeAllWords(Result strings, FTContext *ftcontext) con
   while((item = strings->next(ftcontext->context)).notNull()) {
     TokenStream::Ptr stream = ftcontext->tokenizer->
       tokenize(item->asString(ftcontext->context), ftcontext->context->getMemoryManager());
-    TokenInfo::Ptr token;
-    while((token = stream->next()).notNull()) {
-      FTSelection *word = new (mm) FTWord(token->getWord(), mm);
+    TokenInfo token;
+    while((token = stream->next()).word_ != 0) {
+      FTSelection *word = new (mm) FTWord(token.word_, mm);
       word->setLocationInfo(this);
       ftand->addArg(word);
     }
@@ -165,18 +165,18 @@ FTSelection *FTWords::optimizeAllWords(Result strings, FTContext *ftcontext) con
   return ftand;
 }
 
-AllMatches::Ptr FTWords::executeAllWords(Result strings, FTContext *ftcontext) const
+AllMatches *FTWords::executeAllWords(Result strings, FTContext *ftcontext) const
 {
   FTConjunctionMatches *conjunction = new FTConjunctionMatches(this);
-  AllMatches::Ptr result(conjunction);
+  AllMatches *result(conjunction);
 
   Item::Ptr item;
   while((item = strings->next(ftcontext->context)).notNull()) {
     TokenStream::Ptr stream = ftcontext->tokenizer->
       tokenize(item->asString(ftcontext->context), ftcontext->context->getMemoryManager());
-    TokenInfo::Ptr token;
-    while((token = stream->next()).notNull()) {
-      conjunction->addMatches(new FTStringSearchMatches(this, token->getWord(), ftcontext));
+    TokenInfo token;
+    while((token = stream->next()).word_ != 0) {
+      conjunction->addMatches(new FTStringSearchMatches(this, token.word_, ftcontext));
     }
   }
 
@@ -196,9 +196,9 @@ FTSelection *FTWords::optimizePhrase(Result strings, FTContext *ftcontext) const
   return result;
 }
 
-AllMatches::Ptr FTWords::executePhrase(Result strings, FTContext *ftcontext) const
+AllMatches *FTWords::executePhrase(Result strings, FTContext *ftcontext) const
 {
-  AllMatches::Ptr result = executeAllWords(strings, ftcontext);
+  AllMatches *result = executeAllWords(strings, ftcontext);
   result = new FTOrderMatches(this, result);
   result = new FTDistanceExactlyMatches(this, 0, FTOption::WORDS, result);
   return result;
@@ -219,10 +219,10 @@ FTSelection *FTWords::optimizeAny(Result strings, FTContext *ftcontext) const
   return ftor;
 }
 
-AllMatches::Ptr FTWords::executeAny(Result strings, FTContext *ftcontext) const
+AllMatches *FTWords::executeAny(Result strings, FTContext *ftcontext) const
 {
   FTDisjunctionMatches *disjunction = new FTDisjunctionMatches(this);
-  AllMatches::Ptr result(disjunction);
+  AllMatches *result(disjunction);
 
   Item::Ptr item;
   while((item = strings->next(ftcontext->context)).notNull()) {
@@ -247,10 +247,10 @@ FTSelection *FTWords::optimizeAll(Result strings, FTContext *ftcontext) const
   return ftand;
 }
 
-AllMatches::Ptr FTWords::executeAll(Result strings, FTContext *ftcontext) const
+AllMatches *FTWords::executeAll(Result strings, FTContext *ftcontext) const
 {
   FTConjunctionMatches *conjunction = new FTConjunctionMatches(this);
-  AllMatches::Ptr result(conjunction);
+  AllMatches *result(conjunction);
 
   Item::Ptr item;
   while((item = strings->next(ftcontext->context)).notNull()) {
@@ -260,7 +260,7 @@ AllMatches::Ptr FTWords::executeAll(Result strings, FTContext *ftcontext) const
   return result;
 }
 
-AllMatches::Ptr FTWords::execute(FTContext *ftcontext) const
+AllMatches *FTWords::execute(FTContext *ftcontext) const
 {
   Result strings = expr_->createResult(ftcontext->context);
 
@@ -308,7 +308,7 @@ FTSelection *FTWord::optimize(FTContext *context) const
   return const_cast<FTWord*>(this);
 }
 
-AllMatches::Ptr FTWord::execute(FTContext *ftcontext) const
+AllMatches *FTWord::execute(FTContext *ftcontext) const
 {
   return new FTStringSearchMatches(this, queryString_, ftcontext);
 }
@@ -318,22 +318,35 @@ AllMatches::Ptr FTWord::execute(FTContext *ftcontext) const
 FTStringSearchMatches::FTStringSearchMatches(const LocationInfo *info, const XMLCh *queryString, FTContext *ftcontext)
   : AllMatches(info),
     queryPos_(ftcontext->queryPos++),
-    tokenStream_(ftcontext->tokenStore->findTokens(queryString))
+    tokenStream_(ftcontext->tokenStore->findTokens(queryString)),
+    includes_(),
+    excludes_()
 {
 }
 
-Match::Ptr FTStringSearchMatches::next(DynamicContext *context)
+bool FTStringSearchMatches::next(DynamicContext *context)
 {
-  if(tokenStream_.isNull()) return 0;
+  includes_.clear();
+  if(tokenStream_.isNull()) return false;
 
-  TokenInfo::Ptr token = tokenStream_->next();
-  if(token.isNull()) {
+  TokenInfo token = tokenStream_->next();
+  if(token.word_ == 0) {
     tokenStream_ = 0;
-    return 0;
+    return false;
   }
 
   // TBD query position
-  Match::Ptr match = new Match();
-  match->addStringInclude(queryPos_, token);
-  return match;
+  StringMatch sm(queryPos_, token);
+  includes_.push_back(sm);
+  return true;
+}
+
+const StringMatches &FTStringSearchMatches::getStringIncludes()
+{
+  return includes_;
+}
+
+const StringMatches &FTStringSearchMatches::getStringExcludes()
+{
+  return excludes_;
 }

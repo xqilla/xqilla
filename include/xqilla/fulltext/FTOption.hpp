@@ -34,30 +34,39 @@ public:
 
   virtual void setArgument(FTSelection *arg) = 0;
 
-  static unsigned int tokenUnit(const TokenInfo::Ptr t, FTUnit unit)
+  static unsigned int tokenUnit(const TokenInfo &t, FTUnit unit)
   {
     switch(unit) {
     case WORDS:
-      return t->getPosition();
+      return t.position_;
     case SENTENCES:
-      return t->getSentence();
+      return t.sentence_;
     case PARAGRAPHS:
-      return t->getParagraph();
+      return t.paragraph_;
     }
     return 0;
   }
 
-  static unsigned int tokenDistance(const TokenInfo::Ptr a, const TokenInfo::Ptr b, FTUnit unit)
+  static unsigned int tokenDistance(const TokenInfo &a, const TokenInfo &b, FTUnit unit)
   {
     switch(unit) {
     case WORDS:
-      return (unsigned int)labs((long)a->getPosition() - (long)b->getPosition()) - 1;
+      return (unsigned int)labs((long)a.position_ - (long)b.position_) - 1;
     case SENTENCES:
-      return (unsigned int)labs((long)a->getSentence() - (long)b->getSentence());
+      return (unsigned int)labs((long)a.sentence_ - (long)b.sentence_);
     case PARAGRAPHS:
-      return (unsigned int)labs((long)a->getParagraph() - (long)b->getParagraph());
+      return (unsigned int)labs((long)a.paragraph_ - (long)b.paragraph_);
     }
     return 0;
+  }
+
+  static bool lessThanFunc(const TokenInfo &a, const TokenInfo &b)
+  {
+    if (a.paragraph_ != b.paragraph_)
+      return a.paragraph_ < b.paragraph_;
+    if (a.sentence_ != b.sentence_)
+      return a.sentence_ < b.sentence_;
+    return a.position_ < b.position_;
   }
 
 protected:

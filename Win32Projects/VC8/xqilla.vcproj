@@ -214,7 +214,6 @@
       <File RelativePath="..\..\include\xqilla\fulltext\FTMildnot.hpp"/>
       <File RelativePath="..\..\include\xqilla\fulltext\FTUnaryNot.hpp"/>
       <File RelativePath="..\..\include\xqilla\fulltext\AllMatches.hpp"/>
-      <File RelativePath="..\..\include\xqilla\fulltext\Match.hpp"/>
       <File RelativePath="..\..\include\xqilla\fulltext\TokenInfo.hpp"/>
       <File RelativePath="..\..\include\xqilla\fulltext\Tokenizer.hpp"/>
       <File RelativePath="..\..\include\xqilla\fulltext\DefaultTokenizer.hpp"/>

@@ -58,16 +58,20 @@ DefaultTokenizer::DefaultTokenStream::~DefaultTokenStream()
 #define REPORT_TOKEN \
       if(tokenStart_ != 0) { \
         *current_ = 0; \
-        result = new DefaultTokenInfo(mm_->getPooledString(tokenStart_), position_, sentence_, paragraph_); \
+        result.word_ = mm_->getPooledString(tokenStart_); \
+        result.position_ = position_; \
+        result.sentence_ = sentence_; \
+        result.paragraph_ = paragraph_; \
         ++position_; \
         tokenStart_ = 0; \
       }
 
 
-TokenInfo::Ptr DefaultTokenizer::DefaultTokenStream::next()
+TokenInfo DefaultTokenizer::DefaultTokenStream::next()
 {
-  TokenInfo::Ptr result(0);
-  while(result.isNull()) {
+  TokenInfo result;
+  memset(&result, 0, sizeof(TokenInfo));
+  while(result.word_ == 0) {
     switch(*current_) {
     case '\n': {
       REPORT_TOKEN;

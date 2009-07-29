@@ -21,8 +21,6 @@
 #include <xqilla/fulltext/FTScope.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 
-#include <set>
-
 using namespace std;
 
 FTSelection *FTScope::staticResolution(StaticContext *context)
@@ -54,7 +52,7 @@ FTSelection *FTScope::optimize(FTContext *ftcontext) const
   return newarg;
 }
 
-AllMatches::Ptr FTScope::execute(FTContext *ftcontext) const
+AllMatches *FTScope::execute(FTContext *ftcontext) const
 {
   switch(type_) {
   case SAME:
@@ -68,84 +66,127 @@ AllMatches::Ptr FTScope::execute(FTContext *ftcontext) const
   return 0;
 }
 
-Match::Ptr FTScopeSameMatches::next(DynamicContext *context)
+FTScopeSameMatches::~FTScopeSameMatches()
 {
-  if(arg_.isNull()) return 0;
+  delete arg_;
+}
 
-  unsigned int unitValue = 0;
-  Match::Ptr match(0);
-  while(match.isNull()) {
-    match = arg_->next(context);
-    if(match.isNull()) {
-      arg_ = 0;
-      return 0;
-    }
+bool FTScopeSameMatches::next(DynamicContext *context)
+{
+  excludes_.clear();
+  if(!arg_) return false;
 
-    StringMatches::const_iterator i = match->getStringIncludes().begin();
-    StringMatches::const_iterator end = match->getStringIncludes().end();
-    if(i != end) {
-      unitValue = FTOption::tokenUnit(i->tokenInfo, unit_);
+  unitValue_ = 0;
+  bool found = arg_->next(context);
+  if (!found) {
+    delete arg_;
+    arg_ = 0;
+    return false;
+  }
+  while(found) {
+    StringMatches::const_iterator i = arg_->getStringIncludes().begin();
+    StringMatches::const_iterator end = arg_->getStringIncludes().end();
+    if(i != end && (i+1) != end) {
+      unitValue_ = FTOption::tokenUnit(i->tokenInfo, unit_);
       for(++i; i != end; ++i) {
-        if(FTOption::tokenUnit(i->tokenInfo, unit_) != unitValue) {
-          match = 0;
+        found = false;
+        if(FTOption::tokenUnit(i->tokenInfo, unit_) != unitValue_) {
+          found = arg_->next(context);
+          if (!found) {
+            delete arg_;
+            arg_ = 0;
+            return false;
+          }
           break;
         }
       }
     }
     else {
-      // If there are no StringIncludes, the match gets returned as-is.
-      return match;
+      found = arg_->next(context);
+      if (!found) {
+        delete arg_;
+        arg_ = 0;
+        return false;
+      }
     }
   }
 
-  Match::Ptr result = new Match();
-  result->addStringIncludes(match->getStringIncludes());
-
-  StringMatches::const_iterator end = match->getStringExcludes().end();
-  for(StringMatches::const_iterator i = match->getStringExcludes().begin();
-      i != end; ++i) {
-    if(FTOption::tokenUnit(i->tokenInfo, unit_) == unitValue) {
-      result->addStringExclude(*i);
-    }
-  }
-
-  return result;
+  return true;
 }
 
-Match::Ptr FTScopeDifferentMatches::next(DynamicContext *context)
+const StringMatches &FTScopeSameMatches::getStringIncludes()
 {
-  if(arg_.isNull()) return 0;
+  assert(arg_);
+  return arg_->getStringIncludes();
+}
 
-  set<unsigned int> unitValuesSeen;
-  Match::Ptr match(0);
-  while(match.isNull()) {
-    match = arg_->next(context);
-    if(match.isNull()) {
-      arg_ = 0;
-      return 0;
+const StringMatches &FTScopeSameMatches::getStringExcludes()
+{
+  if (arg_ && !excludes_.empty()) {
+    StringMatches::const_iterator end = arg_->getStringExcludes().end();
+    for(StringMatches::const_iterator i = arg_->getStringExcludes().begin();
+        i != end; ++i) {
+      if(FTOption::tokenUnit(i->tokenInfo, unit_) == unitValue_) {
+        excludes_.push_back(*i);
+      }
     }
+  }
+  return excludes_;
+}
 
-    unitValuesSeen.clear();
-    StringMatches::const_iterator end = match->getStringIncludes().end();
-    StringMatches::const_iterator i = match->getStringIncludes().begin();
+FTScopeDifferentMatches::~FTScopeDifferentMatches()
+{
+  delete arg_;
+}
+
+bool FTScopeDifferentMatches::next(DynamicContext *context)
+{
+  excludes_.clear();
+  if(!arg_) return false;
+
+  bool found = arg_->next(context);
+  if (!found) {
+    delete arg_;
+    arg_ = 0;
+    return false;
+  }
+  while(found) {
+    found = false;
+    unitValuesSeen_.clear();
+    StringMatches::const_iterator end = arg_->getStringIncludes().end();
+    StringMatches::const_iterator i = arg_->getStringIncludes().begin();
     for(; i != end; ++i) {
-      if(!unitValuesSeen.insert(FTOption::tokenUnit(i->tokenInfo, unit_)).second) {
-        match = 0;
+      if(!unitValuesSeen_.insert(FTOption::tokenUnit(i->tokenInfo, unit_)).second) {
+        found = arg_->next(context);
+        if (!found) {
+          delete arg_;
+          arg_ = 0;
+          return false;
+        }
         break;
       }
     }
   }
 
-  Match::Ptr result = new Match();
-  result->addStringIncludes(match->getStringIncludes());
+  return true;
+}
 
-  StringMatches::const_iterator end = match->getStringExcludes().end();
-  StringMatches::const_iterator i = match->getStringExcludes().begin();
-  for(; i != end; ++i) {
-    if(unitValuesSeen.find(FTOption::tokenUnit(i->tokenInfo, unit_)) != unitValuesSeen.end()) {
-      result->addStringExclude(*i);
+const StringMatches &FTScopeDifferentMatches::getStringIncludes()
+{
+  assert(arg_);
+  return arg_->getStringIncludes();
+}
+
+const StringMatches &FTScopeDifferentMatches::getStringExcludes()
+{
+  if (arg_ && !excludes_.empty()) {
+    StringMatches::const_iterator end = arg_->getStringExcludes().end();
+    StringMatches::const_iterator i = arg_->getStringExcludes().begin();
+    for(; i != end; ++i) {
+      if(unitValuesSeen_.find(FTOption::tokenUnit(i->tokenInfo, unit_)) != unitValuesSeen_.end()) {
+        excludes_.push_back(*i);
+      }
     }
   }
-
-  return result;
+  return excludes_;
 }

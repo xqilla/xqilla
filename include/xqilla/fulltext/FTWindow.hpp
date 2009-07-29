@@ -37,7 +37,7 @@ public:
   virtual FTSelection *staticResolution(StaticContext *context);
   virtual FTSelection *staticTypingImpl(StaticContext *context);
   virtual FTSelection *optimize(FTContext *context) const;
-  virtual AllMatches::Ptr execute(FTContext *ftcontext) const;
+  virtual AllMatches *execute(FTContext *ftcontext) const;
 
   virtual void setArgument(FTSelection *arg) { arg_ = arg; }
   FTSelection *getArgument() const { return arg_; }
@@ -62,7 +62,7 @@ public:
   virtual FTSelection *staticResolution(StaticContext *context);
   virtual FTSelection *staticTypingImpl(StaticContext *context);
   virtual FTSelection *optimize(FTContext *context) const;
-  virtual AllMatches::Ptr execute(FTContext *ftcontext) const;
+  virtual AllMatches *execute(FTContext *ftcontext) const;
 
   virtual void setArgument(FTSelection *arg) { arg_ = arg; }
   FTSelection *getArgument() const { return arg_; }
@@ -78,17 +78,21 @@ private:
 class FTWindowMatches : public AllMatches
 {
 public:
-  FTWindowMatches(const LocationInfo *info, unsigned int distance, FTOption::FTUnit unit, const AllMatches::Ptr &arg)
-    : AllMatches(info), distance_(distance), unit_(unit), arg_(arg) {}
-  Match::Ptr next(DynamicContext *context);
+  FTWindowMatches(const LocationInfo *info, unsigned int distance, FTOption::FTUnit unit, AllMatches *arg)
+    : AllMatches(info), distance_(distance), unit_(unit), arg_(arg), found_(true), excludes_() {}
+  ~FTWindowMatches();
+  bool next(DynamicContext *context);
+  const StringMatches &getStringIncludes();
+  const StringMatches &getStringExcludes();
 
 private:
   unsigned int distance_;
   FTOption::FTUnit unit_;
-  AllMatches::Ptr arg_;
-  Match::Ptr match_;
+  AllMatches *arg_;
+  bool found_;
   std::set<unsigned int> excludeValues_;
   std::set<unsigned int>::iterator excludeIt_;
+  StringMatches excludes_;
 };
 
 #endif

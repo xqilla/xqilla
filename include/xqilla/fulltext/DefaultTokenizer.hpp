@@ -26,24 +26,6 @@
 class XQILLA_API DefaultTokenizer : public Tokenizer
 {
 public:
-  class DefaultTokenInfo : public TokenInfo
-  {
-  public:
-    DefaultTokenInfo(const XMLCh *word, unsigned int pos, unsigned int sen, unsigned int para)
-      : word_(word), position_(pos), sentence_(sen), paragraph_(para) {}
-
-    virtual const XMLCh *getWord() const { return word_; }
-    virtual unsigned int getPosition() const { return position_; }
-    virtual unsigned int getSentence() const { return sentence_; }
-    virtual unsigned int getParagraph() const { return paragraph_; }
-
-  private:
-    const XMLCh *word_;
-    unsigned int position_;
-    unsigned int sentence_;
-    unsigned int paragraph_;    
-  };
-
   DefaultTokenizer() {}
 
   virtual TokenStream::Ptr tokenize(const Node::Ptr &node, DynamicContext *context) const;
@@ -55,7 +37,7 @@ private:
   public:
     DefaultTokenStream(const XMLCh *str, XPath2MemoryManager *mm);
     virtual ~DefaultTokenStream();
-    virtual TokenInfo::Ptr next();
+    virtual TokenInfo next();
 
   private:
     XMLCh *string_;

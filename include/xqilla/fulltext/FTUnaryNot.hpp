@@ -30,7 +30,7 @@ public:
   virtual FTSelection *staticResolution(StaticContext *context);
   virtual FTSelection *staticTypingImpl(StaticContext *context);
   virtual FTSelection *optimize(FTContext *context) const;
-  virtual AllMatches::Ptr execute(FTContext *ftcontext) const;
+  virtual AllMatches *execute(FTContext *ftcontext) const;
 
   FTSelection *getArgument() const { return arg_; }
   void setArgument(FTSelection *expr) { arg_ = expr; }
@@ -42,13 +42,22 @@ private:
 class FTUnaryNotMatches : public AllMatches
 {
 public:
-  FTUnaryNotMatches(const LocationInfo *info, const AllMatches::Ptr &arg)
-    : AllMatches(info), toDo_(true), arg_(arg) {}
-  Match::Ptr next(DynamicContext *context);
+  FTUnaryNotMatches(const LocationInfo *info, AllMatches *arg)
+    : AllMatches(info), toDo_(true), arg_(arg), includes_(), excludes_() {}
+  ~FTUnaryNotMatches();
+  bool next(DynamicContext *context);
+  const StringMatches &getStringIncludes();
+  const StringMatches &getStringExcludes();
+
+private:
+  void addStringIncludes(const StringMatches &sMatches);
+  void addStringExcludes(const StringMatches &sMatches);
 
 private:
   bool toDo_;
-  AllMatches::Ptr arg_;
+  AllMatches *arg_;
+  StringMatches includes_;
+  StringMatches excludes_;
 };
 
 #endif

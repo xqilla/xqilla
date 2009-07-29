@@ -187,7 +187,6 @@
         <file name='include/xqilla/fulltext/FTMildnot.hpp'/>
         <file name='include/xqilla/fulltext/FTUnaryNot.hpp'/>
         <file name='include/xqilla/fulltext/AllMatches.hpp'/>
-        <file name='include/xqilla/fulltext/Match.hpp'/>
         <file name='include/xqilla/fulltext/TokenInfo.hpp'/>
         <file name='include/xqilla/fulltext/Tokenizer.hpp'/>
         <file name='include/xqilla/fulltext/DefaultTokenizer.hpp'/>

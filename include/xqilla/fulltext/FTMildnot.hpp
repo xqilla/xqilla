@@ -32,7 +32,7 @@ public:
   virtual FTSelection *staticResolution(StaticContext *context);
   virtual FTSelection *staticTypingImpl(StaticContext *context);
   virtual FTSelection *optimize(FTContext *context) const;
-  virtual AllMatches::Ptr execute(FTContext *ftcontext) const;
+  virtual AllMatches *execute(FTContext *ftcontext) const;
 
   FTSelection *getLeft() const { return left_; }
   void setLeft(FTSelection *expr) { left_ = expr; }
@@ -46,13 +46,16 @@ private:
 class FTMildnotMatches : public AllMatches
 {
 public:
-  FTMildnotMatches(const LocationInfo *info, const AllMatches::Ptr &left, const AllMatches::Ptr &right)
+  FTMildnotMatches(const LocationInfo *info, AllMatches *left, AllMatches *right)
     : AllMatches(info), left_(left), right_(right) {}
-  Match::Ptr next(DynamicContext *context);
+  ~FTMildnotMatches();
+  bool next(DynamicContext *context);
+  const StringMatches &getStringIncludes();
+  const StringMatches &getStringExcludes();
 
 private:
-  AllMatches::Ptr left_;
-  AllMatches::Ptr right_;
+  AllMatches *left_;
+  AllMatches *right_;
   std::set<unsigned int> badTokens_;
 };
 

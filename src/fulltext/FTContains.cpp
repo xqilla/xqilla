@@ -89,6 +89,7 @@ Item::Ptr FTContains::FTContainsResult::getSingleResult(DynamicContext *context)
 
   Result argNodes = parent_->getArgument()->createResult(context);
   Item::Ptr item;
+  AllMatches *matches = 0;
   while((item = argNodes->next(context)).notNull()) {
     if(!item->isNode())
       XQThrow(XPath2TypeMatchException, X("FTContains::FTContainsResult::getSingleResult"),
@@ -96,24 +97,24 @@ Item::Ptr FTContains::FTContainsResult::getSingleResult(DynamicContext *context)
 
     FTContext ftcontext(&tokenizer, new DefaultTokenStore((Node*)item.get(), &tokenizer, context), context);
 
-    AllMatches::Ptr matches = parent_->getSelection()->execute(&ftcontext);
-    if(matches.notNull()) {
+    if (matches != 0) delete matches;
+    matches = parent_->getSelection()->execute(&ftcontext);
+    if(matches) {
       StringMatches::const_iterator i;
       StringMatches::const_iterator end;
 
-      Match::Ptr match(0);
-      while((match = matches->next(context)).notNull()) {
+      while(matches->next(context)) {
 
         bool fail = false;
-        i = match->getStringIncludes().begin();
-        end = match->getStringIncludes().end();
+        i = matches->getStringIncludes().begin();
+        end = matches->getStringIncludes().end();
         for(; i != end; ++i) {
-          if(i->startToken && i->tokenInfo->getPosition() !=
+          if(i->startToken && i->tokenInfo.position_ !=
              ftcontext.tokenStore->getStartTokenPosition()) {
             fail = true;
             break;
           }
-          if(i->endToken && i->tokenInfo->getPosition() !=
+          if(i->endToken && i->tokenInfo.position_ !=
              ftcontext.tokenStore->getEndTokenPosition()) {
             fail = true;
             break;
@@ -122,14 +123,14 @@ Item::Ptr FTContains::FTContainsResult::getSingleResult(DynamicContext *context)
 
         if(fail) continue;
 
-        i = match->getStringExcludes().begin();
-        end = match->getStringExcludes().end();
+        i = matches->getStringExcludes().begin();
+        end = matches->getStringExcludes().end();
         for(; i != end; ++i) {
-          if(i->startToken && i->tokenInfo->getPosition() !=
+          if(i->startToken && i->tokenInfo.position_ !=
              ftcontext.tokenStore->getStartTokenPosition()) {
             continue;
           }
-          if(i->endToken && i->tokenInfo->getPosition() !=
+          if(i->endToken && i->tokenInfo.position_ !=
              ftcontext.tokenStore->getEndTokenPosition()) {
             continue;
           }
@@ -139,8 +140,10 @@ Item::Ptr FTContains::FTContainsResult::getSingleResult(DynamicContext *context)
 
         if(fail) continue;
 
+        delete matches;
         return context->getItemFactory()->createBoolean(true, context);
       }
+      delete matches;
     }
   }
 

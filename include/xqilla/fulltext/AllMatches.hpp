@@ -23,19 +23,44 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/framework/ReferenceCounted.hpp>
-#include <xqilla/fulltext/Match.hpp>
+#include <xqilla/fulltext/TokenInfo.hpp>
 
 class DynamicContext;
 
-class XQILLA_API AllMatches : public ReferenceCounted, public LocationInfo
+class XQILLA_API StringMatch
 {
 public:
-  typedef RefCountPointer<AllMatches> Ptr;
+  StringMatch()
+    : tokenInfo(), queryPos(0), startToken(false), endToken(false) 
+  {}
+  StringMatch(unsigned int qPos, const TokenInfo &tInfo)
+    : tokenInfo(tInfo.word_, tInfo.position_, tInfo.sentence_, 
+    tInfo.paragraph_), queryPos(qPos), startToken(false), endToken(false) 
+  {}
 
+  StringMatch(const StringMatch &other)
+    : tokenInfo(other.tokenInfo.word_, other.tokenInfo.position_, 
+      other.tokenInfo.sentence_, other.tokenInfo.paragraph_), queryPos(other.queryPos),
+      startToken(other.startToken), endToken(other.endToken)
+  {}
+
+  TokenInfo tokenInfo;
+  unsigned int queryPos;
+  bool startToken, endToken;
+};
+
+typedef std::vector<StringMatch> StringMatches;
+
+class XQILLA_API AllMatches : public LocationInfo
+{
+public:
   virtual ~AllMatches() {}
 
-  /// Get the next Match from the iterator. Returns null if the is no next value.
-  virtual Match::Ptr next(DynamicContext *context) = 0;
+  /// Get the next Match from the iterator. Returns false if there is no next value.
+  virtual bool next(DynamicContext *context) = 0;
+
+  virtual const StringMatches &getStringIncludes() = 0;
+  virtual const StringMatches &getStringExcludes() = 0;
 
 protected:
   AllMatches(const LocationInfo *o)

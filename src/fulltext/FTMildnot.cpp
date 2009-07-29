@@ -59,54 +59,69 @@ FTSelection *FTMildnot::optimize(FTContext *ftcontext) const
   return result;
 }
 
-AllMatches::Ptr FTMildnot::execute(FTContext *ftcontext) const
+AllMatches *FTMildnot::execute(FTContext *ftcontext) const
 {
-  AllMatches::Ptr leftMatches = left_->execute(ftcontext);
-  AllMatches::Ptr rightMatches = right_->execute(ftcontext);
+  AllMatches *leftMatches = left_->execute(ftcontext);
+  AllMatches *rightMatches = right_->execute(ftcontext);
   return new FTMildnotMatches(this, leftMatches, rightMatches);
 }
 
-Match::Ptr FTMildnotMatches::next(DynamicContext *context)
+FTMildnotMatches::~FTMildnotMatches()
 {
-  if(left_.isNull()) return 0;
+  delete left_;
+  delete right_;
+}
 
-  if(right_.notNull()) {
-    Match::Ptr match(0);
-    while((match = right_->next(context)).notNull()) {
-      if(!match->getStringExcludes().empty())
+bool FTMildnotMatches::next(DynamicContext *context)
+{
+  if(!left_) return false;
+
+  if(right_) {
+    while(right_->next(context)) {
+      if(!right_->getStringExcludes().empty())
         XQThrow(XPath2ErrorException, X("FTMildnotMatches::next"),
                 X("Invalid expression on the right-hand side of a not-in [err:FTDY0017]"));
 
-      StringMatches::const_iterator end = match->getStringIncludes().end();
-      for(StringMatches::const_iterator i = match->getStringIncludes().begin();
+      StringMatches::const_iterator end = right_->getStringIncludes().end();
+      for(StringMatches::const_iterator i = right_->getStringIncludes().begin();
           i != end; ++i) {
-        badTokens_.insert(i->tokenInfo->getPosition());
+        badTokens_.insert(i->tokenInfo.position_);
       }
     }
+    delete right_;
     right_ = 0;
   }
 
-  Match::Ptr match(0);
-  while(match.isNull()) {
-    match = left_->next(context);
-    if(match.isNull()) {
-      left_ = 0;
-      return 0;
-    }
-
-    if(!match->getStringExcludes().empty())
+  while(left_->next(context)) {
+    if(!left_->getStringExcludes().empty())
       XQThrow(XPath2ErrorException, X("FTMildnotMatches::next"),
               X("Invalid expression on the left-hand side of a not-in [err:FTDY0017]"));
 
-    StringMatches::const_iterator end = match->getStringIncludes().end();
-    for(StringMatches::const_iterator i = match->getStringIncludes().begin();
+    bool found = false;
+    StringMatches::const_iterator end = left_->getStringIncludes().end();
+    for(StringMatches::const_iterator i = left_->getStringIncludes().begin();
         i != end; ++i) {
-      if(badTokens_.find(i->tokenInfo->getPosition()) != badTokens_.end()) {
-        match = 0;
+      if(badTokens_.find(i->tokenInfo.position_) != badTokens_.end()) {
+        found = true;
         break;
       }
     }
+    if (!found) return true;
   }
 
-  return match;
+  delete left_;
+  left_ = 0;
+  return false;
+}
+
+const StringMatches &FTMildnotMatches::getStringIncludes()
+{
+  assert(left_);
+  return left_->getStringIncludes();
+}
+
+const StringMatches &FTMildnotMatches::getStringExcludes()
+{
+  assert(left_);
+  return left_->getStringExcludes();
 }

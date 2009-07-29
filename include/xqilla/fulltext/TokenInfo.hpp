@@ -25,20 +25,29 @@
 
 #include <stdlib.h>
 
-class XQILLA_API TokenInfo : public ReferenceCounted
+struct XQILLA_API TokenInfo
 {
-public:
-  typedef RefCountPointer<const TokenInfo> Ptr;
+  const XMLCh *word_;
+  unsigned int position_;
+  unsigned int sentence_;
+  unsigned int paragraph_; 
 
-  virtual ~TokenInfo() {}
+  TokenInfo() 
+  {
+    word_ = 0;
+    position_ = 0;
+    sentence_ = 0;
+    paragraph_ = 0;
+  }
 
-  virtual const XMLCh *getWord() const = 0;
-  virtual unsigned int getPosition() const = 0;
-  virtual unsigned int getSentence() const = 0;
-  virtual unsigned int getParagraph() const = 0;
-
-protected:
-  TokenInfo() {}
+  TokenInfo(const XMLCh *word, unsigned int position, 
+                         unsigned int sentence, unsigned int paragraph) 
+  {
+    word_ = word;
+    position_ = position;
+    sentence_ = sentence;
+    paragraph_ = paragraph;
+  }
 };
 
 class XQILLA_API TokenStream : public ReferenceCounted
@@ -48,7 +57,7 @@ public:
 
   virtual ~TokenStream() {}
 
-  virtual TokenInfo::Ptr next() = 0;
+  virtual TokenInfo next() = 0;
 
 protected:
   TokenStream() {}

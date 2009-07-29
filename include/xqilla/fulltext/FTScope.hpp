@@ -21,6 +21,7 @@
 #define _FTSCOPE_HPP
 
 #include <xqilla/fulltext/FTOption.hpp>
+#include <set>
 
 class XQILLA_API FTScope : public FTOption
 {
@@ -38,7 +39,7 @@ public:
   virtual FTSelection *staticResolution(StaticContext *context);
   virtual FTSelection *staticTypingImpl(StaticContext *context);
   virtual FTSelection *optimize(FTContext *context) const;
-  virtual AllMatches::Ptr execute(FTContext *ftcontext) const;
+  virtual AllMatches *execute(FTContext *ftcontext) const;
 
   virtual void setArgument(FTSelection *arg) { arg_ = arg; }
   FTSelection *getArgument() const { return arg_; }
@@ -54,25 +55,35 @@ private:
 class FTScopeSameMatches : public AllMatches
 {
 public:
-  FTScopeSameMatches(const LocationInfo *info, FTOption::FTUnit unit, const AllMatches::Ptr &arg)
-    : AllMatches(info), unit_(unit), arg_(arg) {}
-  Match::Ptr next(DynamicContext *context);
+  FTScopeSameMatches(const LocationInfo *info, FTOption::FTUnit unit, AllMatches *arg)
+    : AllMatches(info), unit_(unit), arg_(arg), excludes_(), unitValue_(0) {}
+  ~FTScopeSameMatches();
+  bool next(DynamicContext *context);
+  const StringMatches &getStringIncludes();
+  const StringMatches &getStringExcludes();
 
 private:
   FTOption::FTUnit unit_;
-  AllMatches::Ptr arg_;
+  AllMatches *arg_;
+  StringMatches excludes_;
+  unsigned int unitValue_;
 };
 
 class FTScopeDifferentMatches : public AllMatches
 {
 public:
-  FTScopeDifferentMatches(const LocationInfo *info, FTOption::FTUnit unit, const AllMatches::Ptr &arg)
-    : AllMatches(info), unit_(unit), arg_(arg) {}
-  Match::Ptr next(DynamicContext *context);
+  FTScopeDifferentMatches(const LocationInfo *info, FTOption::FTUnit unit, AllMatches *arg)
+    : AllMatches(info), unit_(unit), arg_(arg), excludes_(), unitValuesSeen_() {}
+  ~FTScopeDifferentMatches();
+  bool next(DynamicContext *context);
+  const StringMatches &getStringIncludes();
+  const StringMatches &getStringExcludes();
 
 private:
   FTOption::FTUnit unit_;
-  AllMatches::Ptr arg_;
+  AllMatches *arg_;
+  StringMatches excludes_;
+  std::set<unsigned int> unitValuesSeen_;
 };
 
 #endif

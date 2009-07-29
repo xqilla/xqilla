@@ -35,7 +35,7 @@ class DynamicContext;
 class XQILLA_API DefaultTokenStore : public TokenStore
 {
 public:
-  typedef std::vector<TokenInfo::Ptr> Tokens;
+  typedef std::vector<TokenInfo> Tokens;
 
   class TokenEntryStream : public TokenStream
   {
@@ -43,11 +43,13 @@ public:
     TokenEntryStream(const Tokens &tokens)
       : it_(tokens.begin()), end_(tokens.end()) {}
 
-    virtual TokenInfo::Ptr next()
+    virtual TokenInfo next()
     {
       if(it_ != end_)
         return *it_++;
-      return 0;
+      TokenInfo token;
+      memset(&token, 0, sizeof(TokenInfo));
+      return token;
     }
 
   private:
@@ -68,7 +70,7 @@ private:
   class TokenEntry
   {
   public:
-    void addToken(const TokenInfo::Ptr &token)
+    void addToken(const TokenInfo &token)
     {
       tokens_.push_back(token);
     }

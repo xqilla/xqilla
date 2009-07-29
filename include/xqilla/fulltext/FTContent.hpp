@@ -39,7 +39,7 @@ public:
   virtual FTSelection *staticResolution(StaticContext *context);
   virtual FTSelection *staticTypingImpl(StaticContext *context);
   virtual FTSelection *optimize(FTContext *context) const;
-  virtual AllMatches::Ptr execute(FTContext *ftcontext) const;
+  virtual AllMatches *execute(FTContext *ftcontext) const;
 
   virtual void setArgument(FTSelection *arg) { arg_ = arg; }
   FTSelection *getArgument() const { return arg_; }
@@ -53,23 +53,31 @@ private:
 class FTContentAtStartMatches : public AllMatches
 {
 public:
-  FTContentAtStartMatches(const LocationInfo *info, const AllMatches::Ptr &arg)
-    : AllMatches(info), arg_(arg) {}
-  Match::Ptr next(DynamicContext *context);
+  FTContentAtStartMatches(const LocationInfo *info, AllMatches *arg)
+    : AllMatches(info), arg_(arg), includes_() {}
+  ~FTContentAtStartMatches();
+  bool next(DynamicContext *context);
+  const StringMatches &getStringIncludes();
+  const StringMatches &getStringExcludes();
 
 private:
-  AllMatches::Ptr arg_;
+  AllMatches *arg_;
+  StringMatches includes_;
 };
 
 class FTContentAtEndMatches : public AllMatches
 {
 public:
-  FTContentAtEndMatches(const LocationInfo *info, const AllMatches::Ptr &arg)
-    : AllMatches(info), arg_(arg) {}
-  Match::Ptr next(DynamicContext *context);
+  FTContentAtEndMatches(const LocationInfo *info, AllMatches *arg)
+    : AllMatches(info), arg_(arg), includes_() {}
+  ~FTContentAtEndMatches();
+  bool next(DynamicContext *context);
+  const StringMatches &getStringIncludes();
+  const StringMatches &getStringExcludes();
 
 private:
-  AllMatches::Ptr arg_;
+  AllMatches *arg_;
+  StringMatches includes_;
 };
 
 #endif

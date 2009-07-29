@@ -117,7 +117,7 @@ FTSelection *FTDistance::optimize(FTContext *ftcontext) const
   return newarg;
 }
 
-AllMatches::Ptr FTDistance::execute(FTContext *ftcontext) const
+AllMatches *FTDistance::execute(FTContext *ftcontext) const
 {
   Numeric::Ptr num = (Numeric*)range_.arg1->createResult(ftcontext->context)->next(ftcontext->context).get();
 
@@ -170,7 +170,7 @@ FTSelection *FTDistanceLiteral::optimize(FTContext *ftcontext) const
   return newarg;
 }
 
-AllMatches::Ptr FTDistanceLiteral::execute(FTContext *ftcontext) const
+AllMatches *FTDistanceLiteral::execute(FTContext *ftcontext) const
 {
     switch(type_) {
     case FTRange::EXACTLY: {
@@ -193,23 +193,29 @@ AllMatches::Ptr FTDistanceLiteral::execute(FTContext *ftcontext) const
 
 static bool lessThanCompareFn(const StringMatch &first, const StringMatch &second)
 {
-	return first.tokenInfo->getPosition() < second.tokenInfo->getPosition();
+	return first.tokenInfo.position_ < second.tokenInfo.position_;
 }
 
-Match::Ptr FTDistanceMatches::next(DynamicContext *context)
+FTDistanceMatches::~FTDistanceMatches()
 {
-  if(arg_.isNull()) return 0;
+  delete arg_;
+}
 
-  Match::Ptr match(0);
-  while(match.isNull()) {
-    match = arg_->next(context);
-    if(match.isNull()) {
-      arg_ = 0;
-      return 0;
-    }
+bool FTDistanceMatches::next(DynamicContext *context)
+{
+  excludes_.clear();
+  if(!arg_) return false;
 
-    if(match->getStringIncludes().size() > 1) {
-      StringMatches sMatches = match->getStringIncludes();
+  bool found = arg_->next(context);
+  if (!found) {
+    delete arg_;
+    arg_ = 0;
+    return false;
+  }
+  while(found) {
+    found = false;
+    if(arg_->getStringIncludes().size() > 1) {
+      StringMatches sMatches = arg_->getStringIncludes();
       std::sort(sMatches.begin(), sMatches.end(), lessThanCompareFn);
 
       StringMatches::iterator end = sMatches.end();
@@ -218,29 +224,43 @@ Match::Ptr FTDistanceMatches::next(DynamicContext *context)
       for(; b != end; ++a, ++b) {
         unsigned int actual = FTOption::tokenDistance(a->tokenInfo, b->tokenInfo, unit_);
         if(!distanceMatches(actual)) {
-          match = 0;
+          found = arg_->next(context);
+          if (!found) {
+            delete arg_;
+            arg_ = 0;
+            return false;
+          }
           break;
         }
       }
     }
   }
 
-  Match::Ptr result = new Match();
-  result->addStringIncludes(match->getStringIncludes());
+  return true;
+}
 
-  for(StringMatches::const_iterator i = match->getStringExcludes().begin();
-      i != match->getStringExcludes().end(); ++i) {
-    for(StringMatches::const_iterator j = match->getStringIncludes().begin();
-        j != match->getStringIncludes().end(); ++j) {
-      unsigned int actual = FTOption::tokenDistance(i->tokenInfo, j->tokenInfo, unit_);
-      if(distanceMatches(actual)) {
-        result->addStringExclude(*i);
-        break;
+const StringMatches &FTDistanceMatches::getStringIncludes()
+{
+  assert(arg_);
+  return arg_->getStringIncludes();
+}
+
+const StringMatches &FTDistanceMatches::getStringExcludes()
+{
+  if (arg_ && !excludes_.empty()) {
+    for(StringMatches::const_iterator i = arg_->getStringExcludes().begin();
+        i != arg_->getStringExcludes().end(); ++i) {
+      for(StringMatches::const_iterator j = arg_->getStringIncludes().begin();
+          j != arg_->getStringIncludes().end(); ++j) {
+        unsigned int actual = FTOption::tokenDistance(i->tokenInfo, j->tokenInfo, unit_);
+        if(distanceMatches(actual)) {
+          excludes_.push_back(*i);
+          break;
+        }
       }
     }
   }
-
-  return result;
+  return excludes_;
 }
 
 bool FTDistanceExactlyMatches::distanceMatches(unsigned int actual) const

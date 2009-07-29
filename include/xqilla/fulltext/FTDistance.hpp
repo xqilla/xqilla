@@ -34,7 +34,7 @@ public:
   virtual FTSelection *staticResolution(StaticContext *context);
   virtual FTSelection *staticTypingImpl(StaticContext *context);
   virtual FTSelection *optimize(FTContext *context) const;
-  virtual AllMatches::Ptr execute(FTContext *ftcontext) const;
+  virtual AllMatches *execute(FTContext *ftcontext) const;
 
   virtual void setArgument(FTSelection *arg) { arg_ = arg; }
   FTSelection *getArgument() const { return arg_; }
@@ -62,7 +62,7 @@ public:
   virtual FTSelection *staticResolution(StaticContext *context);
   virtual FTSelection *staticTypingImpl(StaticContext *context);
   virtual FTSelection *optimize(FTContext *context) const;
-  virtual AllMatches::Ptr execute(FTContext *ftcontext) const;
+  virtual AllMatches *execute(FTContext *ftcontext) const;
 
   virtual void setArgument(FTSelection *arg) { arg_ = arg; }
   FTSelection *getArgument() const { return arg_; }
@@ -81,22 +81,26 @@ private:
 class FTDistanceMatches : public AllMatches
 {
 public:
-  FTDistanceMatches(const LocationInfo *info, unsigned int distance, FTOption::FTUnit unit, const AllMatches::Ptr &arg)
-    : AllMatches(info), distance_(distance), unit_(unit), arg_(arg) {}
-  Match::Ptr next(DynamicContext *context);
+  FTDistanceMatches(const LocationInfo *info, unsigned int distance, FTOption::FTUnit unit, AllMatches *arg)
+    : AllMatches(info), distance_(distance), unit_(unit), arg_(arg), excludes_() {}
+  ~FTDistanceMatches();
+  bool next(DynamicContext *context);
+  const StringMatches &getStringIncludes();
+  const StringMatches &getStringExcludes();
 
   virtual bool distanceMatches(unsigned int actual) const = 0;
 
 protected:
   unsigned int distance_;
   FTOption::FTUnit unit_;
-  AllMatches::Ptr arg_;
+  AllMatches *arg_;
+  StringMatches excludes_;
 };
 
 class FTDistanceExactlyMatches : public FTDistanceMatches
 {
 public:
-  FTDistanceExactlyMatches(const LocationInfo *info, unsigned int distance, FTOption::FTUnit unit, const AllMatches::Ptr &arg)
+  FTDistanceExactlyMatches(const LocationInfo *info, unsigned int distance, FTOption::FTUnit unit, AllMatches *arg)
     : FTDistanceMatches(info, distance, unit, arg) {}
   bool distanceMatches(unsigned int actual) const;
 };
@@ -104,7 +108,7 @@ public:
 class FTDistanceAtLeastMatches : public FTDistanceMatches
 {
 public:
-  FTDistanceAtLeastMatches(const LocationInfo *info, unsigned int distance, FTOption::FTUnit unit, const AllMatches::Ptr &arg)
+  FTDistanceAtLeastMatches(const LocationInfo *info, unsigned int distance, FTOption::FTUnit unit, AllMatches *arg)
     : FTDistanceMatches(info, distance, unit, arg) {}
   bool distanceMatches(unsigned int actual) const;
 };
@@ -112,7 +116,7 @@ public:
 class FTDistanceAtMostMatches : public FTDistanceMatches
 {
 public:
-  FTDistanceAtMostMatches(const LocationInfo *info, unsigned int distance, FTOption::FTUnit unit, const AllMatches::Ptr &arg)
+  FTDistanceAtMostMatches(const LocationInfo *info, unsigned int distance, FTOption::FTUnit unit, AllMatches *arg)
     : FTDistanceMatches(info, distance, unit, arg) {}
   bool distanceMatches(unsigned int actual) const;
 };
@@ -120,7 +124,7 @@ public:
 class FTDistanceFromToMatches : public FTDistanceMatches
 {
 public:
-  FTDistanceFromToMatches(const LocationInfo *info, unsigned int from, unsigned int to, FTOption::FTUnit unit, const AllMatches::Ptr &arg)
+  FTDistanceFromToMatches(const LocationInfo *info, unsigned int from, unsigned int to, FTOption::FTUnit unit, AllMatches *arg)
     : FTDistanceMatches(info, from, unit, arg), distance2_(to) {}
   bool distanceMatches(unsigned int actual) const;
 

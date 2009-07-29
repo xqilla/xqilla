@@ -75,7 +75,7 @@ public:
   virtual FTSelection *staticResolution(StaticContext *context) = 0;
   virtual FTSelection *staticTypingImpl(StaticContext *context) = 0;
   virtual FTSelection *optimize(FTContext *context) const = 0;
-  virtual AllMatches::Ptr execute(FTContext *ftcontext) const = 0;
+  virtual AllMatches *execute(FTContext *ftcontext) const = 0;
 
   XPath2MemoryManager *getMemoryManager() const { return memMgr_; }
 

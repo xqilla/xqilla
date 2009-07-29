@@ -688,7 +688,6 @@ include/xqilla/fulltext/FTSelection.hpp lib
 include/xqilla/fulltext/FTUnaryNot.hpp lib
 include/xqilla/fulltext/FTWindow.hpp lib
 include/xqilla/fulltext/FTWords.hpp lib
-include/xqilla/fulltext/Match.hpp lib
 include/xqilla/fulltext/TokenInfo.hpp lib
 include/xqilla/fulltext/Tokenizer.hpp lib
 include/xqilla/fulltext/TokenStore.hpp lib

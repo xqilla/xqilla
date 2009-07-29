@@ -50,53 +50,74 @@ FTSelection *FTOrder::optimize(FTContext *ftcontext) const
   return newarg;
 }
 
-AllMatches::Ptr FTOrder::execute(FTContext *ftcontext) const
+AllMatches *FTOrder::execute(FTContext *ftcontext) const
 {
   return new FTOrderMatches(this, arg_->execute(ftcontext));
 }
 
-Match::Ptr FTOrderMatches::next(DynamicContext *context)
+FTOrderMatches::~FTOrderMatches()
 {
-  if(arg_.isNull()) return 0;
+  delete arg_;
+}
 
-  Match::Ptr match(0);
-  while(match.isNull()) {
-    match = arg_->next(context);
-    if(match.isNull()) {
-      arg_ = 0;
-      return 0;
-    }
+bool FTOrderMatches::next(DynamicContext *context)
+{
+  excludes_.clear();
+  if(!arg_) return false;
 
-    StringMatches::const_iterator begin = match->getStringIncludes().begin();
-    StringMatches::const_iterator end = match->getStringIncludes().end();
+  bool found = arg_->next(context);
+  if (!found) {
+    delete arg_;
+    arg_ = 0;
+    return false;
+  }
+  while(found) {
+    found = false;
+    StringMatches::const_iterator begin = arg_->getStringIncludes().begin();
+    StringMatches::const_iterator end = arg_->getStringIncludes().end();
     StringMatches::const_iterator i, j;
-    for(i = begin; i != end && match.notNull(); ++i) {
+    for(i = begin; i != end; ++i) {
       for(j = i, ++j; j != end; ++j) {
-        if((i->queryPos > j->queryPos && i->tokenInfo->getPosition() < j->tokenInfo->getPosition()) ||
-           (i->queryPos < j->queryPos && i->tokenInfo->getPosition() > j->tokenInfo->getPosition())) {
-          match = 0;
+        if((i->queryPos > j->queryPos && i->tokenInfo.position_ < j->tokenInfo.position_) ||
+           (i->queryPos < j->queryPos && i->tokenInfo.position_ > j->tokenInfo.position_)) {
+          found = arg_->next(context);
+          if (!found) {
+            delete arg_;
+            arg_ = 0;
+            return false;
+          }
           break;
         }
       }
+      if (found) break;
     }
   }
 
-  Match::Ptr result = new Match();
-  result->addStringIncludes(match->getStringIncludes());
+  return true;
+}
 
-  StringMatches::const_iterator e_end = match->getStringExcludes().end();
-  StringMatches::const_iterator e = match->getStringExcludes().begin();
-  StringMatches::const_iterator i_begin = match->getStringIncludes().begin();
-  StringMatches::const_iterator i_end = match->getStringIncludes().end();
-  StringMatches::const_iterator i;
-  for(; e != e_end; ++e) {
-    for(i = i_begin; i != i_end; ++i) {
-      if((i->queryPos <= e->queryPos && i->tokenInfo->getPosition() <= e->tokenInfo->getPosition()) ||
-         (i->queryPos >= e->queryPos && i->tokenInfo->getPosition() >= e->tokenInfo->getPosition())) {
-        result->addStringExclude(*e);
+const StringMatches &FTOrderMatches::getStringIncludes()
+{
+  assert(arg_);
+  return arg_->getStringIncludes();
+}
+
+const StringMatches &FTOrderMatches::getStringExcludes()
+{
+  if (arg_ && !excludes_.empty()) {
+    StringMatches::const_iterator e_end = arg_->getStringExcludes().end();
+    StringMatches::const_iterator e = arg_->getStringExcludes().begin();
+    StringMatches::const_iterator i_begin = arg_->getStringIncludes().begin();
+    StringMatches::const_iterator i_end = arg_->getStringIncludes().end();
+    StringMatches::const_iterator i;
+    for(; e != e_end; ++e) {
+      for(i = i_begin; i != i_end; ++i) {
+        if((i->queryPos <= e->queryPos && i->tokenInfo.position_ <= e->tokenInfo.position_) ||
+           (i->queryPos >= e->queryPos && i->tokenInfo.position_ >= e->tokenInfo.position_)) {
+          excludes_.push_back(*e);
+        }
       }
     }
-  }
-
-  return result;
+  } 
+  return excludes_;
 }

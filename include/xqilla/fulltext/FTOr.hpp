@@ -33,7 +33,7 @@ public:
   virtual FTSelection *staticResolution(StaticContext *context);
   virtual FTSelection *staticTypingImpl(StaticContext *context);
   virtual FTSelection *optimize(FTContext *context) const;
-  virtual AllMatches::Ptr execute(FTContext *ftcontext) const;
+  virtual AllMatches *execute(FTContext *ftcontext) const;
 
   const VectorOfFTSelections &getArguments() const { return args_; }
   void addArg(FTSelection *sel) { args_.push_back(sel); }
@@ -46,18 +46,21 @@ class FTDisjunctionMatches : public AllMatches
 {
 public:
   FTDisjunctionMatches(const LocationInfo *info);
+  ~FTDisjunctionMatches();
 
-  void addMatches(const AllMatches::Ptr &m)
+  void addMatches(AllMatches *m)
   {
     args_.push_back(m);
   }
 
-  Match::Ptr next(DynamicContext *context);
+  bool next(DynamicContext *context);
+  const StringMatches &getStringIncludes();
+  const StringMatches &getStringExcludes();
 
 private:
   bool toDo_;
-  std::vector<AllMatches::Ptr> args_;
-  std::vector<AllMatches::Ptr>::iterator it_;
+  std::vector<AllMatches*> args_;
+  std::vector<AllMatches*>::iterator it_;
 };
 
 #endif

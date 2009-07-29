@@ -85,7 +85,7 @@ FTSelection *FTWindow::optimize(FTContext *ftcontext) const
   return newarg;
 }
 
-AllMatches::Ptr FTWindow::execute(FTContext *ftcontext) const
+AllMatches *FTWindow::execute(FTContext *ftcontext) const
 {
   Numeric::Ptr num = (Numeric*)expr_->createResult(ftcontext->context)->next(ftcontext->context).get();
   return new FTWindowMatches(this, num->asInt(), unit_, arg_->execute(ftcontext));
@@ -122,27 +122,34 @@ FTSelection *FTWindowLiteral::optimize(FTContext *ftcontext) const
   return newarg;
 }
 
-AllMatches::Ptr FTWindowLiteral::execute(FTContext *ftcontext) const
+AllMatches *FTWindowLiteral::execute(FTContext *ftcontext) const
 {
   return new FTWindowMatches(this, distance_, unit_, arg_->execute(ftcontext));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Match::Ptr FTWindowMatches::next(DynamicContext *context)
+FTWindowMatches::~FTWindowMatches()
 {
-  if(arg_.isNull()) return 0;
+  delete arg_;
+}
+
+bool FTWindowMatches::next(DynamicContext *context)
+{
+  excludes_.clear();
+  if(!arg_) return false;
 
   unsigned int unitVal;
-  while(match_.isNull()) {
-    match_ = arg_->next(context);
-    if(match_.isNull()) {
+  while(found_) {
+    found_ = arg_->next(context);
+    if(!found_) {
+      delete arg_;
       arg_ = 0;
-      return 0;
+      return false;
     }
 
-    StringMatches::const_iterator end = match_->getStringIncludes().end();
-    StringMatches::const_iterator i = match_->getStringIncludes().begin();
+    StringMatches::const_iterator end = arg_->getStringIncludes().end();
+    StringMatches::const_iterator i = arg_->getStringIncludes().begin();
     if(i != end) {
       unsigned int includeMin = FTOption::tokenUnit(i->tokenInfo, unit_);
       unsigned int includeMax = includeMin;
@@ -164,8 +171,8 @@ Match::Ptr FTWindowMatches::next(DynamicContext *context)
         unsigned int tokenEnd = includeMin + distance_ - 1;
 
         excludeValues_.clear();
-        end = match_->getStringIncludes().end();
-        i = match_->getStringIncludes().begin();
+        end = arg_->getStringIncludes().end();
+        i = arg_->getStringIncludes().begin();
         for(; i != end; ++i) {
           unitVal = FTOption::tokenUnit(i->tokenInfo, unit_);
           if(tokenStart <= unitVal && unitVal <= tokenEnd) {
@@ -180,25 +187,31 @@ Match::Ptr FTWindowMatches::next(DynamicContext *context)
         break;
       }
     }
-
-    match_ = 0;
   }
 
-  Match::Ptr result = new Match();
-  result->addStringIncludes(match_->getStringIncludes());
-
-  for(StringMatches::const_iterator i = match_->getStringExcludes().begin();
-      i != match_->getStringExcludes().end(); ++i) {
+  for(StringMatches::const_iterator i = arg_->getStringExcludes().begin();
+      i != arg_->getStringExcludes().end(); ++i) {
     unitVal = FTOption::tokenUnit(i->tokenInfo, unit_);
     if(*excludeIt_ <= unitVal && unitVal <= (*excludeIt_ + distance_ - 1)) {
-      result->addStringExclude(*i);
+      excludes_.push_back(*i);
     }
   }
 
   ++excludeIt_;
   if(excludeIt_ == excludeValues_.end()) {
-    match_ = 0;
+    found_ = false;
   }
 
-  return result;
+  return true;
+}
+
+const StringMatches &FTWindowMatches::getStringIncludes()
+{
+  assert(arg_);
+  return arg_->getStringIncludes();
+}
+
+const StringMatches &FTWindowMatches::getStringExcludes()
+{
+  return excludes_;
 }

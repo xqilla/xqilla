@@ -52,31 +52,58 @@ FTSelection *FTUnaryNot::optimize(FTContext *ftcontext) const
   return newarg;
 }
 
-AllMatches::Ptr FTUnaryNot::execute(FTContext *ftcontext) const
+AllMatches *FTUnaryNot::execute(FTContext *ftcontext) const
 {
   return new FTUnaryNotMatches(this, arg_->execute(ftcontext));
 }
 
-Match::Ptr FTUnaryNotMatches::next(DynamicContext *context)
+FTUnaryNotMatches::~FTUnaryNotMatches()
+{
+  delete arg_;
+}
+
+bool FTUnaryNotMatches::next(DynamicContext *context)
 {
   // TBD incorrect implementation - jpcs
   // TBD need to check for StringInclude / StringExclude contradictions - jpcs
-
   if(toDo_) {
     toDo_ = false;
 
-    Match::Ptr result = new Match();
-
-    if(arg_.notNull()) {
-      Match::Ptr match(0);
-      while((match = arg_->next(context)).notNull()) {
-        result->addStringExcludes(match->getStringIncludes());
-        result->addStringIncludes(match->getStringExcludes());
+    if(arg_) {
+      while(arg_->next(context)) {
+        addStringExcludes(arg_->getStringIncludes());
+        addStringIncludes(arg_->getStringExcludes());
       }
     }
 
+    delete arg_;
     arg_ = 0;
-    return result;
+    return true;
   }
-  return 0;
+  includes_.clear();
+  excludes_.clear();
+  return false;
+}
+
+const StringMatches &FTUnaryNotMatches::getStringIncludes()
+{
+  return includes_;
+}
+const StringMatches &FTUnaryNotMatches::getStringExcludes()
+{
+  return excludes_;
+}
+
+void FTUnaryNotMatches::addStringIncludes(const StringMatches &sMatches)
+{
+  for(StringMatches::const_iterator j = sMatches.begin(); j != sMatches.end(); ++j) {
+    includes_.push_back(*j);
+  }
+}
+
+void FTUnaryNotMatches::addStringExcludes(const StringMatches &sMatches)
+{
+  for(StringMatches::const_iterator j = sMatches.begin(); j != sMatches.end(); ++j) {
+    excludes_.push_back(*j);
+  }
 }

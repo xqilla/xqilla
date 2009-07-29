@@ -83,10 +83,10 @@ FTSelection *FTAnd::optimize(FTContext *ftcontext) const
   return ftand;
 }
 
-AllMatches::Ptr FTAnd::execute(FTContext *ftcontext) const
+AllMatches *FTAnd::execute(FTContext *ftcontext) const
 {
   FTConjunctionMatches *conjunction = new FTConjunctionMatches(this);
-  AllMatches::Ptr result(conjunction);
+  AllMatches *result(conjunction);
 
   for(VectorOfFTSelections::const_iterator i = args_.begin();
       i != args_.end(); ++i) {
@@ -96,63 +96,85 @@ AllMatches::Ptr FTAnd::execute(FTContext *ftcontext) const
   return result;
 }
 
-BufferedMatches::BufferedMatches(const LocationInfo *info, const AllMatches::Ptr matches)
+BufferedMatches::BufferedMatches(const LocationInfo *info, AllMatches *matches)
   : AllMatches(info),
     matches_(matches),
-    buffer_(),
-    it_(buffer_.begin())
+    reset_(false),
+    includeBuffer_(),
+    excludeBuffer_(),
+    includeIt_(includeBuffer_.begin()),
+    excludeIt_(excludeBuffer_.begin())
 {
 }
 
-Match::Ptr BufferedMatches::current()
+bool BufferedMatches::next(DynamicContext *context)
 {
-  if(it_ == buffer_.begin()) return 0;
-  Match::Ptr match = *--it_;
-  ++it_;
-  return match;
-}
-
-Match::Ptr BufferedMatches::next(DynamicContext *context)
-{
-  if(it_ != buffer_.end()) return *it_++;
-
-  if(matches_.notNull()) {
-    Match::Ptr match = matches_->next(context);
-    if(match.isNull()) {
-      matches_ = 0;
+  if(includeIt_ != includeBuffer_.end()) {
+    if (reset_) {
+      reset_ = false;
+    } else {
+      includeIt_++;
+      excludeIt_++;
     }
-    else {
-      buffer_.push_back(match);
-      return match;
+    if(includeIt_ != includeBuffer_.end()) 
+      return true;
+  }
+
+  if(matches_) {
+    if(matches_->next(context)) {
+      includeBuffer_.push_back(matches_->getStringIncludes());
+      excludeBuffer_.push_back(matches_->getStringExcludes());
+      includeIt_ = --(includeBuffer_.end());
+      excludeIt_ = --(excludeBuffer_.end());
+      return true;
     }
   }
 
-  return 0;
+  return false;
 }
 
 void BufferedMatches::reset()
 {
-  it_ = buffer_.begin();
+  reset_ = true;
+  includeIt_ = includeBuffer_.begin();
+  excludeIt_ = excludeBuffer_.begin();
+}
+
+AllMatches *BufferedMatches::getAllMatches()
+{
+  return matches_;
 }
 
 FTConjunctionMatches::FTConjunctionMatches(const LocationInfo *info)
   : AllMatches(info),
-    toDo_(true)
+    toDo_(true),
+    includes_(),
+    excludes_()
 {
 }
 
-void FTConjunctionMatches::addMatches(const AllMatches::Ptr &m)
+FTConjunctionMatches::~FTConjunctionMatches()
 {
-  args_.push_back(m.notNull() ? new BufferedMatches(this, m) : 0);
+  deleteMatches();
 }
 
-Match::Ptr FTConjunctionMatches::next(DynamicContext *context)
+void FTConjunctionMatches::addMatches(AllMatches *m)
+{
+  if (m) {
+    BufferedMatches buf(this, m);
+    args_.push_back(buf);
+  }
+}
+
+bool FTConjunctionMatches::next(DynamicContext *context)
 {
   // TBD need to check for StringInclude / StringExclude contradictions
 
-  vector<BufferedMatches::Ptr>::reverse_iterator rend = args_.rend();
-  vector<BufferedMatches::Ptr>::reverse_iterator rbegin = args_.rbegin();
-  vector<BufferedMatches::Ptr>::reverse_iterator it;
+  includes_.clear();
+  excludes_.clear();
+  vector<BufferedMatches>::reverse_iterator rend = args_.rend();
+  vector<BufferedMatches>::reverse_iterator rbegin = args_.rbegin();
+  vector<BufferedMatches>::reverse_iterator it;
 
   bool initialisationState = false;
   if(toDo_) {
@@ -174,8 +196,8 @@ Match::Ptr FTConjunctionMatches::next(DynamicContext *context)
       }
       else {
         --it;
-        (*it)->reset();
-        if((*it)->next(context).isNull()) {
+        it->reset();
+        if(!it->next(context)) {
           initialisationState = false;
           ++it;
         }
@@ -183,11 +205,11 @@ Match::Ptr FTConjunctionMatches::next(DynamicContext *context)
     }
     else {
       if(it == rend) {
-        args_.clear();
-        return 0;
+        deleteMatches();
+        return false;
       }
       else {
-        if((*it)->next(context).notNull()) {
+        if(it->next(context)) {
           initialisationState = true;
         }
         else {
@@ -197,11 +219,50 @@ Match::Ptr FTConjunctionMatches::next(DynamicContext *context)
     }
   }
 
-  Match::Ptr result = new Match();
-  for(vector<BufferedMatches::Ptr>::iterator i = args_.begin();
-      i != args_.end(); ++i) {
-    result->add((*i)->current());
-  }
+  return true;
+}
 
-  return result;
+const StringMatches &FTConjunctionMatches::getStringIncludes()
+{
+  if (includes_.empty()) {
+    for(vector<BufferedMatches>::iterator i = args_.begin();
+        i != args_.end(); ++i) {
+      addStringIncludes(i->getStringIncludes());
+    }
+  }
+  return includes_;
+}
+
+const StringMatches &FTConjunctionMatches::getStringExcludes()
+{
+  if (excludes_.empty()) {
+    for(vector<BufferedMatches>::iterator i = args_.begin();
+        i != args_.end(); ++i) {
+      addStringExcludes(i->getStringExcludes());
+    }
+  }
+  return excludes_;
+}
+
+void FTConjunctionMatches::deleteMatches()
+{
+  for (vector<BufferedMatches>::iterator it = args_.begin(); 
+    it != args_.end(); it++) {
+      delete it->getAllMatches();
+  }
+  args_.clear();
+}
+
+void FTConjunctionMatches::addStringIncludes(const StringMatches &sMatches)
+{
+  for(StringMatches::const_iterator j = sMatches.begin(); j != sMatches.end(); ++j) {
+    includes_.push_back(*j);
+  }
+}
+
+void FTConjunctionMatches::addStringExcludes(const StringMatches &sMatches)
+{
+  for(StringMatches::const_iterator j = sMatches.begin(); j != sMatches.end(); ++j) {
+    excludes_.push_back(*j);
+  }
 }

@@ -33,7 +33,7 @@ public:
   virtual FTSelection *staticResolution(StaticContext *context);
   virtual FTSelection *staticTypingImpl(StaticContext *context);
   virtual FTSelection *optimize(FTContext *context) const;
-  virtual AllMatches::Ptr execute(FTContext *ftcontext) const;
+  virtual AllMatches *execute(FTContext *ftcontext) const;
 
   const VectorOfFTSelections &getArguments() const { return args_; }
   void addArg(FTSelection *sel) { args_.push_back(sel); }
@@ -45,32 +45,48 @@ private:
 class BufferedMatches : public AllMatches
 {
 public:
-  typedef RefCountPointer<BufferedMatches> Ptr;
+  BufferedMatches(const LocationInfo *info, AllMatches *matches);
 
-  BufferedMatches(const LocationInfo *info, const AllMatches::Ptr matches);
-
-  Match::Ptr current();
-  Match::Ptr next(DynamicContext *context);
+  bool next(DynamicContext *context);
   void reset();
 
+  AllMatches *getAllMatches();
+
+  const StringMatches &getStringIncludes() { return *includeIt_; }
+  const StringMatches &getStringExcludes() { return *excludeIt_; }
+
 private:
-  AllMatches::Ptr matches_;
-  std::list<Match::Ptr> buffer_;
-  std::list<Match::Ptr>::iterator it_;
+  AllMatches *matches_;
+  bool reset_;
+  std::vector<StringMatches> includeBuffer_;
+  std::vector<StringMatches> excludeBuffer_;
+  std::vector<StringMatches>::iterator includeIt_;
+  std::vector<StringMatches>::iterator excludeIt_;
 };
 
 class FTConjunctionMatches : public AllMatches
 {
 public:
   FTConjunctionMatches(const LocationInfo *info);
+  ~FTConjunctionMatches();
 
-  void addMatches(const AllMatches::Ptr &m);
+  void addMatches(AllMatches *m);
 
-  Match::Ptr next(DynamicContext *context);
+  bool next(DynamicContext *context);
+  const StringMatches &getStringIncludes();
+  const StringMatches &getStringExcludes();
 
 private:
+  void deleteMatches();
+
+private:
+  void addStringIncludes(const StringMatches &sMatches);
+  void addStringExcludes(const StringMatches &sMatches);
+private:
   bool toDo_;
-  std::vector<BufferedMatches::Ptr> args_;
+  std::vector<BufferedMatches> args_;
+  StringMatches includes_;
+  StringMatches excludes_;
 };
 
 #endif

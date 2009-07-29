@@ -58,7 +58,7 @@ FTSelection *FTContent::optimize(FTContext *ftcontext) const
   return newarg;
 }
 
-AllMatches::Ptr FTContent::execute(FTContext *ftcontext) const
+AllMatches *FTContent::execute(FTContext *ftcontext) const
 {
   switch(type_) {
   case AT_START:
@@ -72,95 +72,119 @@ AllMatches::Ptr FTContent::execute(FTContext *ftcontext) const
   }
   return 0;
 }
-
-Match::Ptr FTContentAtStartMatches::next(DynamicContext *context)
+FTContentAtStartMatches::~FTContentAtStartMatches()
 {
-  if(arg_.isNull()) return 0;
+  delete arg_;
+}
+
+bool FTContentAtStartMatches::next(DynamicContext *context)
+{
+  if(!arg_) return false;
 
   StringMatches::const_iterator smallest;
-  Match::Ptr match(0);
-  while(match.isNull()) {
-    match = arg_->next(context);
-    if(match.isNull()) {
-      arg_ = 0;
-      return 0;
-    }
-
-    StringMatches::const_iterator i = match->getStringIncludes().begin();
-    StringMatches::const_iterator end = match->getStringIncludes().end();
+  bool found = false;
+  while(arg_->next(context)) {
+    StringMatches::const_iterator i = arg_->getStringIncludes().begin();
+    StringMatches::const_iterator end = arg_->getStringIncludes().end();
     if(i != end) {
       smallest = i;
+      found = true;
       for(++i; i != end; ++i) {
-        if(i->tokenInfo->getPosition() < smallest->tokenInfo->getPosition()) {
+        if(i->tokenInfo.position_ < smallest->tokenInfo.position_) {
           smallest = i;
         }
       }
-    }
-    else {
-      match = 0;
+      break;
     }
   }
+  if (!found) {
+    delete arg_;
+    arg_ = 0;
+    return false;
+  }
 
-  Match::Ptr result = new Match();
-  StringMatches::const_iterator i = match->getStringIncludes().begin();
-  StringMatches::const_iterator end = match->getStringIncludes().end();
+  includes_.clear();
+  StringMatches::const_iterator i = arg_->getStringIncludes().begin();
+  StringMatches::const_iterator end = arg_->getStringIncludes().end();
   for(; i != end; ++i) {
     if(i == smallest) {
       StringMatch sm(*i);
       sm.startToken = true;
-      result->addStringInclude(sm);
+      includes_.push_back(sm);
     }
     else {
-      result->addStringInclude(*i);
+      includes_.push_back(*i);
     }
   }
-  result->addStringExcludes(match->getStringExcludes());
-
-  return result;
+  return true;
 }
 
-Match::Ptr FTContentAtEndMatches::next(DynamicContext *context)
+const StringMatches &FTContentAtStartMatches::getStringIncludes()
 {
-  if(arg_.isNull()) return 0;
+  assert(arg_);
+  return includes_;
+}
+const StringMatches &FTContentAtStartMatches::getStringExcludes()
+{
+  assert(arg_);
+  return arg_->getStringExcludes();
+}
+
+FTContentAtEndMatches::~FTContentAtEndMatches()
+{
+  delete arg_;
+}
+
+bool FTContentAtEndMatches::next(DynamicContext *context)
+{
+  if(!arg_) return false;
 
   StringMatches::const_iterator largest;
-  Match::Ptr match(0);
-  while(match.isNull()) {
-    match = arg_->next(context);
-    if(match.isNull()) {
-      arg_ = 0;
-      return 0;
-    }
-
-    StringMatches::const_iterator i = match->getStringIncludes().begin();
-    StringMatches::const_iterator end = match->getStringIncludes().end();
+  bool found = false;
+  while(arg_->next(context)) {
+    StringMatches::const_iterator i = arg_->getStringIncludes().begin();
+    StringMatches::const_iterator end = arg_->getStringIncludes().end();
     if(i != end) {
       largest = i;
+      found = true;
       for(++i; i != end; ++i) {
-        if(i->tokenInfo->getPosition() > largest->tokenInfo->getPosition()) {
+        if(i->tokenInfo.position_ > largest->tokenInfo.position_) {
           largest = i;
         }
       }
-    }
-    else {
-      match = 0;
+      break;
     }
   }
+  if (!found) {
+    delete arg_;
+    arg_ = 0;
+    return false;
+  }
 
-  Match::Ptr result = new Match();
-  StringMatches::const_iterator i = match->getStringIncludes().begin();
-  StringMatches::const_iterator end = match->getStringIncludes().end();
+  includes_.clear();
+  StringMatches::const_iterator i = arg_->getStringIncludes().begin();
+  StringMatches::const_iterator end = arg_->getStringIncludes().end();
   for(; i != end; ++i) {
     if(i == largest) {
       StringMatch sm(*i);
       sm.endToken = true;
-      result->addStringInclude(sm);
+      includes_.push_back(sm);
     }
     else {
-      result->addStringInclude(*i);
+      includes_.push_back(*i);
     }
   }
-  result->addStringExcludes(match->getStringExcludes());
+  return true;
+}
 
-  return result;
+const StringMatches &FTContentAtEndMatches::getStringIncludes()
+{
+  assert(arg_);
+  return includes_;
+}
+
+const StringMatches &FTContentAtEndMatches::getStringExcludes()
+{
+  assert(arg_);
+  return arg_->getStringExcludes();
 }

@@ -38,11 +38,11 @@ DefaultTokenStore::DefaultTokenStore(const Node::Ptr &node, const Tokenizer *tok
     buffer_(1023, context->getMemoryManager())
 {
   TokenStream::Ptr stream = tokenizer->tokenize(node, context);
-  TokenInfo::Ptr token;
-  while((token = stream->next()).notNull()) {
+  TokenInfo token;
+  while((token = stream->next()).word_ != 0) {
     ++numTokens_;
     buffer_.reset();
-    Normalizer::caseFoldAndRemoveDiacritics(token->getWord(), buffer_);
+    Normalizer::caseFoldAndRemoveDiacritics(token.word_, buffer_);
 
     TokenEntry *entry = tokens_.get(buffer_.getRawBuffer());
     if(entry == 0) {
