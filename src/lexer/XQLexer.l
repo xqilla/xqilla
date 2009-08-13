@@ -21,6 +21,7 @@
 
 %{
 
+#include <cstdio>
 #include <sstream>
 #include <xqilla/utils/UTF8Str.hpp>
 #include "XQLexer.hpp"

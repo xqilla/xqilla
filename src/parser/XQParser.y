@@ -27,6 +27,7 @@
 #pragma warning(disable : 4065 4102)
 #endif
 
+#include <cstdio>
 #include <iostream>
 #include <sstream>
 
